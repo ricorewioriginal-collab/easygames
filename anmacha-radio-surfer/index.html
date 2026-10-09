@@ -13,6 +13,7 @@
   canvas{display:block;position:fixed;inset:0;touch-action:none}
   #hud{position:fixed;top:8px;left:0;right:0;padding:6px 14px;display:flex;justify-content:space-between;gap:8px;
     pointer-events:none;font:bold clamp(13px,3.4vw,20px) 'Courier New',monospace;text-shadow:0 0 8px #00ff66;color:#00ff66}
+  #hLives{color:#ff2e88;text-shadow:0 0 8px #ff2e88;letter-spacing:.1em}
   #bar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,#00ff66,#19f0ff);
     box-shadow:0 0 10px #00ff66;pointer-events:none}
   #banner{white-space:pre-line;position:fixed;top:24%;left:0;right:0;text-align:center;font-weight:800;opacity:0;
@@ -59,7 +60,7 @@
 </head>
 <body>
 <div id="bar"></div>
-<div id="hud"><span id="hScore">SCORE 0</span><span id="hLevel">LEVEL 1/10</span><span id="hBest">BEST 0</span></div>
+<div id="hud"><span id="hScore">SCORE 0</span><span id="hLives">♥♥♥</span><span id="hLevel">LEVEL 1/10</span><span id="hBest">BEST 0</span></div>
 <div id="banner"></div>
 <div id="toast"></div>
 <div id="overlay">
@@ -76,7 +77,7 @@
         <span class="dot" style="background:#ffb020"></span>Niedrig (Rahmen gelb): <b style="display:inline;color:#ffb020">springen</b> &nbsp;
         <span class="dot" style="background:#ff2e88"></span>Hängt oben (pink): <b style="display:inline;color:#ff2e88">rutschen</b> &nbsp;
         <span class="dot" style="background:#19f0ff"></span>Hoch (blau): <b style="display:inline;color:#19f0ff">ausweichen</b><br>
-        Schaffe alle 10 Level – ab Level 4 wird es schneller!</div>
+        Du hast 3 Leben ♥. Schaffe alle 10 Level – ab Level 4 wird es schneller!</div>
     </div>
     <button id="btn" disabled>LADE …</button>
     <p id="status"></p>
@@ -464,11 +465,13 @@ let state = 'menu';            // menu | play | dead | over | win
 let time = 0, scroll = 0, dist = 0, score = 0, speed = 12, level = 1;
 let lane = 1, px = 0, py = 0, vy = 0, slideT = 0, wantSlide = false;
 let spawnIn = 0, tipT = 0, deadT = 0, endAt = 0, tipQ = [];
+const MAX_LIVES = 3;
+let lives = MAX_LIVES, invuln = 0, hitShake = 0;
 let obstacles = [], best = 0;
 const BEST_KEY = 'anmachaRadioSurferBest';
 try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
 
-const hScore = $('hScore'), hLevel = $('hLevel'), hBest = $('hBest'), bar = $('bar'), btn = $('btn');
+const hLives = $('hLives'), hScore = $('hScore'), hLevel = $('hLevel'), hBest = $('hBest'), bar = $('bar'), btn = $('btn');
 const setText = (el, t) => { if (el.textContent !== t) el.textContent = t; };
 
 function retrigger(el, cls, text) {
@@ -494,6 +497,7 @@ function startGame() {
   state = 'play'; dist = 0; score = 0; level = 1; speed = BASE_SPEED;
   lane = 1; px = 0; py = 0; vy = 0; slideT = 0; wantSlide = false;
   spawnIn = 1.6; tipT = 7; deadT = 0;
+  lives = MAX_LIVES; invuln = 0; hitShake = 0; player.visible = true;
   $('overlay').classList.add('hidden');
   retrigger($('banner'), 'flash', `LEVEL 1 · ${LEVEL_NAMES[0]}`);
   retrigger($('toast'), 'show', TOUCH ? '👆 Wischen: ← → Spur · ↑ Sprung · ↓ Rutschen' : '⌨️ ← → Spur · ↑ Sprung · ↓ Rutschen (auch WASD)');
@@ -628,6 +632,9 @@ function update(dt) {
 
   // Hindernisse bewegen + Kollision
   const h = slideT > 0 ? 0.8 : 1.8;
+  let hit = null;
+  if (invuln > 0) invuln -= dt;
+  if (hitShake > 0) hitShake -= dt;
   for (let i = obstacles.length - 1; i >= 0; i--) {
     const o = obstacles[i], prev = o.z;
     o.z += move; o.mesh.position.z = o.z;
@@ -636,7 +643,18 @@ function update(dt) {
     if (state === 'play' && o.z + o.hd >= -0.3 && prev - o.hd <= 0.3 &&   // z (inkl. Weg im Frame)
         Math.abs(px - o.x) < o.hw + 0.2 &&                                  // x
         py < o.y1 - 0.05 && py + h > o.y0 + 0.05) {                         // y
-      endGame(false);
+      if (invuln <= 0) hit = o;
+    }
+  }
+  if (hit) {                                                // Treffer: Leben verlieren, Reihe räumen, kurz unverwundbar
+    lives--;
+    if (lives <= 0) endGame(false);
+    else {
+      invuln = 1.8; hitShake = 0.4;
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        if (Math.abs(obstacles[i].z - hit.z) < 2) { scene.remove(obstacles[i].mesh); obstacles.splice(i, 1); }
+      }
+      retrigger($('banner'), 'flash', lives === 1 ? '♥ Letztes Leben!' : `♥ Noch ${lives} Leben`);
     }
   }
 
@@ -651,6 +669,7 @@ function update(dt) {
   rig.rotation.x += (tRot - rig.rotation.x) * kk;
   rig.scale.y += (tScale - rig.scale.y) * kk;
   rig.position.y = 0.09 + (onGround && !sliding ? Math.abs(Math.sin(time * 6)) * 0.03 : 0);
+  player.visible = state === 'dead' || invuln <= 0 || (time * 12 | 0) % 2 === 0;   // Blinken bei Unverwundbarkeit
   player.position.set(px, py, 0);
   player.rotation.z = (px - LANES[lane]) * 0.25;
   ring.position.x = px;
@@ -659,12 +678,13 @@ function update(dt) {
   const aspect = innerWidth / innerHeight;
   const fov = (aspect < 1.2 ? 90 : 68) + (speed - BASE_SPEED) * 0.3;
   if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = fov; camera.aspect = aspect; camera.updateProjectionMatrix(); }
-  const shake = state === 'dead' ? (1 - Math.min(1, deadT / 0.8)) * 0.4 : 0;
+  const shake = state === 'dead' ? (1 - Math.min(1, deadT / 0.8)) * 0.4 : Math.max(0, hitShake);
   camera.position.set(px * 0.55 + (rnd() - 0.5) * shake, 4.4 + py * 0.25 + (rnd() - 0.5) * shake, 7.6);
   camera.lookAt(px * 0.3, 1.4 + py * 0.2, -9);
 
   // HUD
   setText(hScore, 'SCORE ' + Math.floor(score));
+  setText(hLives, '♥'.repeat(Math.max(0, lives)) + '♡'.repeat(MAX_LIVES - Math.max(0, lives)));
   setText(hLevel, `LEVEL ${level}/${LEVELS}`);
   setText(hBest, 'BEST ' + best);
   bar.style.width = (state === 'play' ? (dist % LEVEL_LEN) / LEVEL_LEN * 100 : 0) + '%';
