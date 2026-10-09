@@ -93,7 +93,7 @@ if (typeof THREE === 'undefined') {
   $('btn').textContent = 'OFFLINE';
   throw new Error('THREE missing');
 }
-if (window.self !== window.top) $('back').href = '../?embed=1';
+if (window.self !== window.top) $('back').style.display = 'none';   // eingebettet: Navigation übernimmt die Spieleliste
 
 /* ================= Konfiguration ================= */
 // Hindernis-Bilder: hindernisse/01.png ... hindernisse/20.png (nur vorhandene Dateien werden verwendet)
