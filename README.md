@@ -33,7 +33,7 @@ Komplette Bibliothek (Spieleliste zum Einbetten):
 
 ## AnMaCha Radio Surfer: eigene Hindernisse
 
-Bilder (PNG, quadratisch oder quer, mind. 256 px, transparenter Hintergrund möglich) als
-`anmacha-radio-surfer/hindernisse/01.png` bis `20.png` ablegen. Es werden nur vorhandene Dateien
+Bilder (JPG, JPEG oder PNG, quadratisch oder quer; Größe wird automatisch angepasst) als
+`anmacha-radio-surfer/hindernisse/01.jpg` bis `20.jpg` (auch `.jpeg` oder `.png`) ablegen. Es werden nur vorhandene Dateien
 verwendet; ohne Bilder läuft das Spiel mit Platzhaltern. Jedes Bild erscheint mal niedrig (springen),
 mal hoch (ausweichen), mal hängend (rutschen).

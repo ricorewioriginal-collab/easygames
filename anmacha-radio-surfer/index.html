@@ -97,7 +97,7 @@ if (typeof THREE === 'undefined') {
 if (window.self !== window.top) $('back').style.display = 'none';   // eingebettet: Navigation übernimmt die Spieleliste
 
 /* ================= Konfiguration ================= */
-// Hindernis-Bilder: hindernisse/01.png ... hindernisse/20.png (nur vorhandene Dateien werden verwendet)
+// Hindernis-Bilder: hindernisse/01.png|jpg|jpeg ... 20 (nur vorhandene Dateien werden verwendet)
 const OBSTACLE_DIR = 'hindernisse/', OBSTACLE_MAX = 20;
 
 const LEVELS = 10, LEVEL_LEN = 600;            // Weltmeter pro Level
@@ -338,9 +338,14 @@ function panelTexture(img) {
 }
 function loadObstacleImages() {
   const jobs = Array.from({ length: OBSTACLE_MAX }, (_, i) => new Promise(res => {
-    const img = new Image();
-    img.onload = () => res(img); img.onerror = () => res(null);
-    img.src = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}.png`;
+    const name = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}`, exts = ['png', 'jpg', 'jpeg'];
+    const tryNext = k => {                                   // erste vorhandene Endung gewinnt
+      if (k >= exts.length) return res(null);
+      const img = new Image();
+      img.onload = () => res(img); img.onerror = () => tryNext(k + 1);
+      img.src = `${name}.${exts[k]}`;
+    };
+    tryNext(0);
   }));
   return Promise.all(jobs).then(list => {
     list = list.filter(Boolean);
@@ -707,7 +712,7 @@ loadObstacleImages().then(({ tex, blocked }) => {
   setupKinds();
   $('status').textContent = tex.length ? `${tex.length} Sender-Elemente geladen`
     : blocked ? 'Eigene Bilder werden bei file:// vom Browser blockiert – bitte über einen Webserver / GitHub Pages öffnen.'
-    : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.png … 20.png).';
+    : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.jpg … 20.jpg oder .png).';
   btn.disabled = false; btn.textContent = 'START';
 });
 </script>
