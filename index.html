@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#03090c">
+<title>easygames – Minispiele</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#0a2a30,#03090c 60%);color:#d8fff0;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.5}
+  main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+  h1{margin:0;font-size:clamp(26px,6vw,40px);background:linear-gradient(90deg,#00ff66,#19f0ff);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{margin:2px 0 16px;color:#8fc9b6}
+  .stage{background:rgba(8,26,32,.85);border:1px solid rgba(25,240,255,.35);border-radius:14px;overflow:hidden}
+  .nav{display:flex;align-items:center;gap:10px;padding:10px 12px}
+  .nav .info{flex:1;min-width:0;text-align:center}
+  .nav h2{margin:0;font-size:clamp(16px,4vw,21px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nav p{margin:0;color:#9dd9c4;font-size:clamp(12.5px,3.2vw,14.5px)}
+  .arrow{flex:none;width:46px;height:46px;border-radius:50%;font-size:22px;padding:0}
+  #frame{display:block;width:100%;border:0;background:#000;aspect-ratio:16/10;max-height:78vh}
+  @media (max-aspect-ratio:1/1){#frame{aspect-ratio:3/4;max-height:80vh}}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:10px 12px}
+  .embed{display:none;padding:0 12px 12px}
+  .embed.open{display:block}
+  button,a.btn{font:inherit;font-weight:700;font-size:14.5px;border-radius:999px;padding:8px 16px;cursor:pointer;text-decoration:none;
+    border:1px solid #19f0ff;color:#19f0ff;background:transparent}
+  button.primary{border:0;color:#02140a;background:linear-gradient(90deg,#00ff66,#19f0ff)}
+  button:active{transform:scale(.96)}
+  textarea{width:100%;height:96px;background:#02090c;color:#9ff;border:1px solid #19f0ff55;border-radius:8px;
+    font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:8px;resize:vertical}
+  h3{margin:26px 0 10px;font-size:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .card{display:flex;gap:12px;align-items:center;text-align:left;padding:10px;border-radius:12px;font-weight:400;
+    background:rgba(8,26,32,.8);border:1px solid rgba(25,240,255,.25);color:inherit;font-size:14px}
+  .card.on{border-color:#00ff66;box-shadow:0 0 14px rgba(0,255,102,.35)}
+  .card .ic{flex:none;width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px}
+  .card b{display:block;font-size:15px;color:#fff}
+  .card span{color:#9dd9c4;font-size:12.5px;line-height:1.35;display:block}
+  section.lib{margin-top:26px;background:rgba(8,26,32,.8);border:1px solid rgba(25,240,255,.3);border-radius:14px;padding:14px}
+  section.lib h3{margin:0 0 4px}
+  body.embed-mode .hide-embed{display:none}
+  body.embed-mode main{padding-top:10px}
+</style>
+</head>
+<body>
+<main>
+  <header class="hide-embed">
+    <h1>easygames</h1>
+    <p class="sub">Kleine Spiele für Browser und Handy – hier direkt spielen.</p>
+  </header>
+
+  <div class="stage">
+    <div class="nav">
+      <button class="arrow" id="prev" aria-label="Voriges Spiel">◀</button>
+      <div class="info"><h2 id="gTitle"></h2><p id="gDesc"></p></div>
+      <button class="arrow" id="next" aria-label="Nächstes Spiel">▶</button>
+    </div>
+    <iframe id="frame" allow="fullscreen; autoplay" title="Spiel"></iframe>
+    <div class="tools">
+      <button id="fs">⛶ Vollbild</button>
+      <a class="btn" id="tab" target="_blank" rel="noopener">Neuer Tab ↗</a>
+      <button id="embBtn">&lt;/&gt; Einbetten</button>
+    </div>
+    <div class="embed" id="emb">
+      <textarea id="gameCode" readonly></textarea>
+      <button class="primary" data-copy="gameCode" style="margin-top:6px">Code kopieren</button>
+    </div>
+  </div>
+
+  <h3 class="hide-embed">Alle Spiele</h3>
+  <div class="grid hide-embed" id="grid"></div>
+
+  <section class="lib hide-embed">
+    <h3>Komplette Spielebibliothek einbetten</h3>
+    <p class="sub" style="margin-bottom:8px">Diesen Code auf einer beliebigen Webseite einfügen – die Spieleliste erscheint dort.</p>
+    <textarea id="libCode" readonly></textarea>
+    <button class="primary" data-copy="libCode" style="margin-top:6px">Code kopieren</button>
+  </section>
+</main>
+
+<script>
+// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
+const GAMES = [
+  { id: 'anmacha-radio-surfer', title: 'AnMaCha Radio Surfer', icon: '📻', bg: 'linear-gradient(135deg,#00ff66,#19f0ff)',
+    path: 'anmacha-radio-surfer/',
+    desc: 'Surfe durchs Internet, springe, rutsche und weiche den Sendern aus – 10 Level. Tastatur oder Wischen.' },
+  { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', bg: 'linear-gradient(135deg,#7a3cff,#19f0ff)',
+    path: 'https://ricorewioriginal-collab.github.io/zotik/',
+    desc: 'Browser-Spiel „Die Splitter der Welten“ – direkt hier spielbar.' }
+];
+
+const $ = id => document.getElementById(id);
+const base = new URL('.', location.href).href;
+const abs = p => new URL(p, base).href;
+const iframeCode = (url, title) =>
+  `<iframe src="${url}" title="${title}" allow="fullscreen" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
+const embedMode = new URLSearchParams(location.search).has('embed');
+if (embedMode) document.body.classList.add('embed-mode');
+
+let cur = -1;
+function select(i, fromHash) {
+  i = (i + GAMES.length) % GAMES.length;
+  if (i === cur) return;
+  cur = i;
+  const g = GAMES[i], url = abs(g.path);
+  $('gTitle').textContent = g.title; $('gDesc').textContent = g.desc;
+  $('frame').src = url; $('frame').title = g.title;
+  $('tab').href = url;
+  $('gameCode').value = iframeCode(url, g.title);
+  document.querySelectorAll('.card').forEach((c, k) => c.classList.toggle('on', k === i));
+  if (!fromHash) history.replaceState(null, '', '#' + g.id);
+}
+$('frame').addEventListener('load', () => { try { $('frame').contentWindow.focus(); } catch (e) {} });
+
+GAMES.forEach((g, i) => {
+  const b = document.createElement('button');
+  b.className = 'card';
+  b.innerHTML = `<div class="ic" style="background:${g.bg}">${g.icon}</div><div><b></b><span></span></div>`;
+  b.querySelector('b').textContent = g.title; b.querySelector('span').textContent = g.desc;
+  b.onclick = () => { select(i); $('frame').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  $('grid').appendChild(b);
+});
+$('libCode').value = iframeCode(base + '?embed=1', 'easygames – Spielebibliothek');
+
+$('prev').onclick = () => select(cur - 1);
+$('next').onclick = () => select(cur + 1);
+$('embBtn').onclick = () => $('emb').classList.toggle('open');
+$('fs').onclick = () => { const f = $('frame'); (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f); };
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-copy]'); if (!t) return;
+  const ta = $(t.dataset.copy); ta.select();
+  (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).catch(() => document.execCommand('copy'));
+  const old = t.textContent; t.textContent = 'Kopiert ✓'; setTimeout(() => t.textContent = old, 1500);
+});
+
+const start = GAMES.findIndex(g => '#' + g.id === location.hash);
+select(start < 0 ? 0 : start, true);
+</script>
+</body>
+</html>
