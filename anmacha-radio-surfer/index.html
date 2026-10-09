@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#03090c">
+<title>AnMaCha Radio Surfer</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#03090c;color:#d8fff0;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent}
+  canvas{display:block;position:fixed;inset:0;touch-action:none}
+  #hud{position:fixed;top:8px;left:0;right:0;padding:6px 14px;display:flex;justify-content:space-between;gap:8px;
+    pointer-events:none;font:bold clamp(13px,3.4vw,20px) 'Courier New',monospace;text-shadow:0 0 8px #00ff66;color:#00ff66}
+  #bar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,#00ff66,#19f0ff);
+    box-shadow:0 0 10px #00ff66;pointer-events:none}
+  #banner{white-space:pre-line;position:fixed;top:24%;left:0;right:0;text-align:center;font-weight:800;opacity:0;
+    pointer-events:none;font-size:clamp(24px,7vw,54px);text-shadow:0 0 18px #19f0ff;padding:0 12px;color:#fff}
+  #toast{position:fixed;bottom:7%;left:50%;transform:translateX(-50%);width:max-content;max-width:min(90vw,560px);
+    background:rgba(3,14,20,.88);border:1px solid #19f0ff;box-shadow:0 0 14px rgba(25,240,255,.45);border-radius:10px;
+    padding:10px 16px;opacity:0;pointer-events:none;text-align:center;font-size:clamp(13px,3.4vw,17px)}
+  .show{animation:fade 4s ease forwards}
+  .flash{animation:fade 2.2s ease forwards}
+  @keyframes fade{0%{opacity:0}10%,80%{opacity:1}100%{opacity:0}}
+
+  #overlay{position:fixed;inset:0;overflow:auto;display:flex;padding:16px;
+    background:radial-gradient(ellipse at center,rgba(3,9,12,.35),rgba(3,9,12,.9))}
+  #overlay.hidden{display:none}
+  .card{margin:auto;width:100%;max-width:640px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .eq{display:flex;gap:5px;align-items:flex-end;height:38px}
+  .eq i{width:7px;border-radius:3px;background:linear-gradient(#19f0ff,#00ff66);box-shadow:0 0 10px #00ff66;
+    animation:eq 1s ease-in-out infinite}
+  .eq i:nth-child(2){animation-delay:-.2s}.eq i:nth-child(3){animation-delay:-.5s}
+  .eq i:nth-child(4){animation-delay:-.7s}.eq i:nth-child(5){animation-delay:-.35s}
+  @keyframes eq{0%,100%{height:8px}50%{height:38px}}
+  h1{margin:0;line-height:.95;font-style:italic;font-weight:900;letter-spacing:.02em}
+  h1 span{display:block;font-size:clamp(46px,13vw,92px);background:linear-gradient(90deg,#00ff66,#19f0ff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,255,102,.55))}
+  h1 small{display:block;font-size:clamp(18px,5.5vw,34px);letter-spacing:.35em;color:#fff;text-shadow:0 0 14px #19f0ff;margin-top:4px}
+  .tag{margin:0;color:#9dd9c4;font-size:clamp(14px,3.8vw,18px)}
+  #ovTitle{margin:4px 0 0;font-size:clamp(22px,6vw,34px);color:#fff;text-shadow:0 0 14px #ff2e88}
+  #ovText{margin:0;line-height:1.6;font-size:clamp(15px,4vw,19px);color:#c8f5e2}
+  #help{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
+  .box{background:rgba(8,26,32,.78);border:1px solid rgba(25,240,255,.35);border-radius:12px;padding:10px 12px;font-size:clamp(12.5px,3.3vw,15px);line-height:1.55}
+  .box b{display:block;color:#19f0ff;margin-bottom:2px;font-size:1.05em}
+  .box.wide{grid-column:1/-1}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+  kbd{background:#0d2a33;border:1px solid #19f0ff55;border-radius:5px;padding:0 6px;font:inherit;font-size:.92em}
+  button{font:inherit;font-size:clamp(20px,5vw,26px);font-weight:900;letter-spacing:.08em;color:#02140a;
+    background:linear-gradient(90deg,#00ff66,#19f0ff);border:0;border-radius:999px;padding:14px 48px;cursor:pointer;
+    box-shadow:0 0 24px rgba(0,255,102,.6);min-height:56px}
+  button:active{transform:scale(.96)}
+  button:disabled{opacity:.6;cursor:wait}
+  #status{margin:0;font-size:12.5px;color:#6fa593;min-height:1.2em}
+  #back{font-size:13px;color:#6fd6c0;text-decoration:none}
+  @media (max-width:420px){#help{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="hud"><span id="hScore">SCORE 0</span><span id="hLevel">LEVEL 1/10</span><span id="hBest">BEST 0</span></div>
+<div id="banner"></div>
+<div id="toast"></div>
+<div id="overlay">
+  <div class="card">
+    <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
+    <h1><span>AnMaCha</span><small>RADIO SURFER</small></h1>
+    <p class="tag">Surf durchs Internet – und weiche den Sendern aus!</p>
+    <h2 id="ovTitle"></h2>
+    <p id="ovText"></p>
+    <div id="help">
+      <div class="box"><b>📱 Am Handy</b>Wischen ←&nbsp;→ = Spur wechseln<br>Wischen ↑ oder Tippen = springen<br>Wischen ↓ = rutschen</div>
+      <div class="box"><b>💻 Am PC</b><kbd>←</kbd> <kbd>→</kbd> oder <kbd>A</kbd> <kbd>D</kbd> = Spur<br><kbd>↑</kbd> <kbd>W</kbd> <kbd>Leertaste</kbd> = springen<br><kbd>↓</kbd> <kbd>S</kbd> = rutschen</div>
+      <div class="box wide"><b>Hindernisse</b>
+        <span class="dot" style="background:#ffb020"></span>Niedrig (Rahmen gelb): <b style="display:inline;color:#ffb020">springen</b> &nbsp;
+        <span class="dot" style="background:#ff2e88"></span>Hängt oben (pink): <b style="display:inline;color:#ff2e88">rutschen</b> &nbsp;
+        <span class="dot" style="background:#19f0ff"></span>Hoch (blau): <b style="display:inline;color:#19f0ff">ausweichen</b><br>
+        Schaffe alle 10 Level – ab Level 4 wird es schneller!</div>
+    </div>
+    <button id="btn" disabled>LADE …</button>
+    <p id="status"></p>
+    <a id="back" href="../">← Alle Spiele</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+if (typeof THREE === 'undefined') {
+  $('status').textContent = 'three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen.';
+  $('btn').textContent = 'OFFLINE';
+  throw new Error('THREE missing');
+}
+if (window.self !== window.top) $('back').href = '../?embed=1';
+
+/* ================= Konfiguration ================= */
+// Hindernis-Bilder: hindernisse/01.png ... hindernisse/20.png (nur vorhandene Dateien werden verwendet)
+const OBSTACLE_DIR = 'hindernisse/', OBSTACLE_MAX = 20;
+
+const LEVELS = 10, LEVEL_LEN = 600;            // Weltmeter pro Level
+const BASE_SPEED = 18, SPEED_STEP = 3.2;       // ab Level 4: +SPEED_STEP pro Level
+const LANES = [-2.4, 0, 2.4];
+const JUMP_V = 12, GRAVITY = 32, SLIDE_TIME = 0.7, SPAWN_Z = -105;
+const LEVEL_NAMES = ['Einwahl','Router','Switch','DNS','Backbone','Glasfaser','Cloud','Rechenzentrum','Satellit','Livestream'];
+const TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+
+const TIPS = [
+  '😂 Wie nennt man ein Radio, das nie ausgeht? Dauerwelle.',
+  '😂 Eine Schallplatte hat immer einen guten Lauf – solange sie keinen Sprung hat.',
+  '😂 Treffen sich zwei Radios. „Na, wie ist die Lage?“ – „Alles auf Empfang!“',
+  '😂 Warum flirten Mikrofone so gern? Sie hören jedes Wort.',
+  '😂 Moderator beim Kaffee-Aus: „Wir müssen kurz in die Werbung!“',
+  '😂 Warum ist das WLAN beim Radio so gut? Es hat immer vollen Empfang.',
+  '🎵 Die erste reguläre Radiosendung in Deutschland lief am 29. Oktober 1923 aus dem Berliner Vox-Haus.',
+  '🎵 Die Compact Disc kam 1982 auf den Markt – entwickelt von Philips und Sony.',
+  '🎵 Eine LP dreht sich mit 33⅓ Umdrehungen pro Minute, eine Single mit 45.',
+  '🎵 Heinrich Hertz wies 1886–1888 Funkwellen nach – nach ihm ist die Einheit Hertz benannt.',
+  '🎵 UKW-Radio sendet etwa zwischen 87,5 und 108 MHz.',
+  '🎵 MP3 wurde am Fraunhofer-Institut in Erlangen mitentwickelt.',
+  '🎵 „Internet Talk Radio“ startete 1993 als eine der ersten Audio-Sendungen im Netz.'
+];
+
+/* ================= Hilfsfunktionen ================= */
+const rnd = Math.random, pick = a => a[rnd() * a.length | 0];
+const cache = {};
+const memo = (k, f) => cache[k] || (cache[k] = f());
+const GREEN = 0x00ff66, CYAN = 0x19f0ff, PINK = 0xff2e88, AMBER = 0xffb020;
+
+const lineMat = c => memo('l' + c, () => new THREE.LineBasicMaterial({ color: c }));
+const solidMat = c => memo('s' + c, () => new THREE.MeshBasicMaterial({ color: c }));
+function neon(geo, key, edge, fill, angle) {
+  const m = new THREE.Mesh(geo, solidMat(fill));
+  m.add(new THREE.LineSegments(memo('e' + key, () => new THREE.EdgesGeometry(geo, angle)), lineMat(edge)));
+  return m;
+}
+const neonBox = (w, h, d, edge, fill) => {
+  const k = `b${w},${h},${d}`;
+  return neon(memo(k, () => new THREE.BoxGeometry(w, h, d)), k, edge, fill, 1);
+};
+const neonCyl = (rt, rb, h, seg, edge, fill) => {
+  const k = `y${rt},${rb},${h},${seg}`;
+  return neon(memo(k, () => new THREE.CylinderGeometry(rt, rb, h, seg)), k, edge, fill, 30);
+};
+const circle = (r, c, n = 40) => new THREE.LineLoop(memo(`c${r},${n}`, () => {
+  const p = [];
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; p.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, 0)); }
+  return new THREE.BufferGeometry().setFromPoints(p);
+}), lineMat(c));
+const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
+const seeded = s => () => (s = s * 16807 % 2147483647) / 2147483647;
+
+/* ================= Szene: Rechenzentrum im Internet ================= */
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+renderer.setSize(innerWidth, innerHeight);
+document.body.prepend(renderer.domElement);
+const ANISO = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+
+const FOG = 0x03090c;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(FOG);
+scene.fog = new THREE.Fog(FOG, 38, 118);
+const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.1, 200);
+
+// Boden: Metallplatten mit Lochblech
+const floorTex = (() => {
+  const [c, g] = canvas(128, 128);
+  g.fillStyle = '#17333b'; g.fillRect(0, 0, 128, 128);
+  g.fillStyle = '#0b171c'; g.fillRect(5, 5, 118, 118);
+  g.fillStyle = '#04090b';
+  for (let y = 22; y < 128; y += 26) for (let x = 22; x < 128; x += 26) { g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill(); }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 121); t.anisotropy = ANISO;
+  return t;
+})();
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(8.6, 260).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: floorTex, color: 0xa8c4cc }));
+floor.position.z = -100;
+scene.add(floor);
+[[-3.6, CYAN, 0.12], [-1.2, 0x0e7a8a, 0.05], [1.2, 0x0e7a8a, 0.05], [3.6, CYAN, 0.12]].forEach(([x, c, w]) => {
+  const l = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, 260), solidMat(c));
+  l.position.set(x, 0.02, -100); scene.add(l);
+});
+
+// Server-Racks (Wände) mit blinkenden LEDs: 3 Texturvarianten pro Seite
+function rackSet() {
+  const [base, g] = canvas(256, 256), leds = [], r0 = seeded(7);
+  for (let rk = 0; rk < 2; rk++) {
+    const x0 = rk * 128;
+    g.fillStyle = '#0a1115'; g.fillRect(x0, 0, 128, 256);
+    for (let u = 0; u < 12; u++) {
+      const y = u * 21 + 2;
+      g.fillStyle = '#1b2830'; g.fillRect(x0 + 4, y, 120, 19);
+      g.fillStyle = '#2b3d47'; g.fillRect(x0 + 4, y, 120, 2);
+      g.fillStyle = '#0a1115';
+      for (let v = 0; v < 6; v++) g.fillRect(x0 + 70 + v * 8, y + 5, 4, 10);
+      for (let l = 0; l < 4; l++) leds.push([x0 + 12 + l * 9, y + 10, pick(['#00ff66', '#00ff66', '#ffb020', '#19f0ff', '#ff3a5a'])]);
+    }
+    g.strokeStyle = '#04080a'; g.lineWidth = 3; g.strokeRect(x0 + 1.5, 1.5, 125, 253);
+  }
+  return [0, 1, 2].map(v => {
+    const [c, cg] = canvas(256, 256), r = seeded(11 + v * 37);
+    cg.drawImage(base, 0, 0);
+    leds.forEach(([x, y, col]) => {
+      const on = r() < 0.55;
+      cg.fillStyle = on ? col : '#0c1c18';
+      cg.shadowColor = col; cg.shadowBlur = on ? 6 : 0;
+      cg.beginPath(); cg.arc(x, y, 2.3, 0, 7); cg.fill();
+    });
+    cg.shadowBlur = 0;
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(65, 6); t.anisotropy = ANISO;
+    return t;
+  });
+}
+const rackL = rackSet(), rackR = rackSet();
+const wallGeo = new THREE.PlaneGeometry(260, 24);
+const wallL = new THREE.Mesh(wallGeo, new THREE.MeshBasicMaterial({ map: rackL[0], color: 0xb4c6ce }));
+const wallR = new THREE.Mesh(wallGeo, new THREE.MeshBasicMaterial({ map: rackR[0], color: 0xb4c6ce }));
+wallL.position.set(-9, 11, -100); wallL.rotation.y = Math.PI / 2;
+wallR.position.set(9, 11, -100); wallR.rotation.y = -Math.PI / 2;
+scene.add(wallL, wallR);
+
+// Decke, Leuchtpanele, Tragbögen
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(18.4, 260).rotateX(Math.PI / 2), solidMat(0x070d10));
+ceil.position.set(0, 12, -100); scene.add(ceil);
+const panelGeo = new THREE.BoxGeometry(2.4, 0.05, 1.4), panelMat = solidMat(0xcfeaff);
+const lightsL = [], lightsR = [];
+for (let i = 0; i < 16; i++) [[lightsL, -2.6], [lightsR, 2.6]].forEach(([arr, x]) => {
+  const m = new THREE.Mesh(panelGeo, panelMat); m.position.set(x, 11.9, 0); scene.add(m); arr.push(m);
+});
+const arches = [];
+for (let i = 0; i < 12; i++) {
+  const a = new THREE.Group();
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(18.2, 0.5, 0.7), solidMat(0x101c22)); beam.position.y = 11.6;
+  const edge = new THREE.Mesh(new THREE.BoxGeometry(18, 0.07, 0.12), solidMat(CYAN)); edge.position.y = 11.3;
+  a.add(beam, edge);
+  [-8.5, 8.5].forEach(x => { const v = new THREE.Mesh(new THREE.BoxGeometry(0.1, 11.3, 0.12), solidMat(CYAN)); v.position.set(x, 5.65, 0); a.add(v); });
+  scene.add(a); arches.push(a);
+}
+
+// Glasfaser-/Datenkabel mit laufenden Datenpaketen
+const CABLES = [[-6.3, 7], [6.3, 7], [-7.6, 4.4], [7.6, 4.4], [-1.6, 11.3], [2.2, 11.3], [-8.2, 1.2], [8.2, 1.2]];
+const cableGeo = new THREE.BoxGeometry(0.16, 0.16, 260), cableMat = solidMat(0x1a2329);
+CABLES.forEach(([x, y]) => { const m = new THREE.Mesh(cableGeo, cableMat); m.position.set(x, y, -100); scene.add(m); });
+const streakGeo = new THREE.BoxGeometry(0.2, 0.2, 5), streaks = [];
+for (let i = 0; i < 32; i++) {
+  const [x, y] = CABLES[i % CABLES.length];
+  const s = new THREE.Mesh(streakGeo, solidMat([GREEN, CYAN, 0xffffff, AMBER][i % 4]));
+  s.position.set(x, y, 10 - rnd() * 150); s.userData.k = 1.4 + rnd() * 1.6;
+  scene.add(s); streaks.push(s);
+}
+
+// Schwebende Browser-Fenster (Streams, Pings, WLAN, Statistik)
+function windowTex(v) {
+  const [c, g] = canvas(500, 320);
+  g.fillStyle = '#0b1418'; g.fillRect(0, 0, 500, 320);
+  g.fillStyle = '#16242b'; g.fillRect(0, 0, 500, 44);
+  ['#ff5f57', '#febc2e', '#28c840'].forEach((col, i) => { g.fillStyle = col; g.beginPath(); g.arc(24 + i * 24, 22, 7, 0, 7); g.fill(); });
+  g.fillStyle = '#0b1418'; g.fillRect(105, 9, 380, 26);
+  g.fillStyle = '#7fe9ff'; g.font = '17px monospace'; g.fillText('🔒 https://www.anmacha.de/live', 114, 28);
+  g.strokeStyle = '#19f0ff'; g.fillStyle = '#00ff66'; g.lineWidth = 4;
+  if (v === 0) {
+    g.fillStyle = '#ff3a5a'; g.font = 'bold 22px monospace'; g.fillText('● LIVE', 22, 82);
+    g.strokeStyle = '#00ff66'; g.beginPath(); g.arc(250, 150, 48, 0, 7); g.stroke();
+    g.fillStyle = '#00ff66'; g.beginPath(); g.moveTo(236, 124); g.lineTo(236, 176); g.lineTo(278, 150); g.fill();
+    for (let i = 0; i < 28; i++) { const h = 14 + Math.abs(Math.sin(i * 1.3)) * 60; g.fillStyle = i % 3 ? '#19f0ff' : '#00ff66'; g.fillRect(24 + i * 16.5, 300 - h, 10, h); }
+  } else if (v === 1) {
+    g.font = '21px monospace';
+    ['> GET /stream HTTP/1.1', '< 200 OK', '< ping 12 ms', '< bitrate 128 kbit/s', '< Hörer online: 12.345', '> _'].forEach((t, i) => { g.fillStyle = i % 2 ? '#19f0ff' : '#00ff66'; g.fillText(t, 26, 96 + i * 36); });
+  } else if (v === 2) {
+    g.strokeStyle = '#19f0ff'; g.lineWidth = 12; g.lineCap = 'round';
+    [90, 60, 30].forEach(r => { g.beginPath(); g.arc(250, 230, r, Math.PI * 1.22, Math.PI * 1.78); g.stroke(); });
+    g.fillStyle = '#19f0ff'; g.beginPath(); g.arc(250, 232, 9, 0, 7); g.fill();
+    g.fillStyle = '#d8fff0'; g.font = 'bold 26px sans-serif'; g.textAlign = 'center'; g.fillText('Verbunden · Signal 100 %', 250, 290);
+  } else {
+    g.fillStyle = '#d8fff0'; g.font = 'bold 20px sans-serif'; g.fillText('Hörer heute', 24, 80);
+    g.strokeStyle = '#00ff66'; g.lineWidth = 5; g.beginPath();
+    for (let i = 0; i <= 12; i++) { const x = 30 + i * 36, y = 270 - (Math.sin(i * 0.7) * 50 + i * 9 + 40); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke();
+  }
+  g.lineWidth = 4; g.strokeStyle = '#19f0ff'; g.strokeRect(2, 2, 496, 316);
+  const t = new THREE.CanvasTexture(c); t.anisotropy = ANISO; return t;
+}
+const winGeo = new THREE.PlaneGeometry(5, 3.2), wins = [];
+for (let i = 0; i < 6; i++) {
+  const w = new THREE.Mesh(winGeo, new THREE.MeshBasicMaterial({ map: memo('win' + i % 4, () => windowTex(i % 4)) }));
+  const side = i % 2 ? 1 : -1;
+  w.position.set(side * 7.3, 5.4 + (i % 3) * 1.4, 0);
+  w.rotation.y = -side * (Math.PI / 2 - 0.4);
+  scene.add(w); wins.push(w);
+}
+
+// Leuchtendes Netz-Portal am Ende des Tunnels
+const glow = (() => {
+  const [c, g] = canvas(256, 256), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(220,255,250,1)'); gr.addColorStop(0.25, 'rgba(25,240,255,.6)');
+  gr.addColorStop(0.6, 'rgba(0,255,102,.15)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(70, 42), new THREE.MeshBasicMaterial({
+    map: new THREE.CanvasTexture(c), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  m.position.set(0, 6, -112); scene.add(m); return m;
+})();
+
+// Schwebende Datenpunkte
+const PN = 260, pPos = new Float32Array(PN * 3);
+for (let i = 0; i < PN; i++) { pPos[i * 3] = (rnd() - 0.5) * 16; pPos[i * 3 + 1] = 0.3 + rnd() * 10.5; pPos[i * 3 + 2] = 10 - rnd() * 140; }
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x8fffe0, size: 0.16, transparent: true, opacity: 0.8, depthWrite: false })));
+
+/* ================= Spieler (Surfer auf Funkwellen-Board) ================= */
+const player = new THREE.Group(), rig = new THREE.Group();
+player.add(rig); scene.add(player);
+const board = neonBox(0.7, 0.07, 1.7, CYAN, 0x063a4a); board.position.y = 0.05; player.add(board);
+const body = neonBox(0.6, 0.75, 0.35, GREEN, 0x042a14); body.position.y = 1.0;
+const head = neonBox(0.38, 0.38, 0.38, 0xb6ffd0, 0x0a3d20); head.position.y = 1.6;
+rig.add(body, head);
+const limb = (w, h, x, y, edge) => {
+  const p = new THREE.Group(), m = neonBox(w, h, w, edge, 0x042a14);
+  m.position.y = -h / 2; p.add(m); p.position.set(x, y, 0); rig.add(p); return p;
+};
+const legL = limb(0.22, 0.65, -0.16, 0.65, GREEN), legR = limb(0.22, 0.65, 0.16, 0.65, GREEN);
+const armL = limb(0.16, 0.55, -0.42, 1.3, CYAN), armR = limb(0.16, 0.55, 0.42, 1.3, CYAN);
+const ring = circle(0.55, CYAN); ring.rotation.x = Math.PI / 2; ring.position.y = 0.04; scene.add(ring);
+
+/* ================= Hindernisse ================= */
+// --- A) Eigene Bilder (hindernisse/01.png ...). Jedes Bild kann niedrig, hoch oder hängend erscheinen.
+let images = [], imgBag = [];
+function panelTexture(img) {
+  const S = 256, [c, g] = canvas(S, S), pad = 18, sc = Math.min((S - 2 * pad) / img.width, (S - 2 * pad) / img.height);
+  g.fillStyle = '#eef5f1'; g.fillRect(0, 0, S, S);
+  g.drawImage(img, (S - img.width * sc) / 2, (S - img.height * sc) / 2, img.width * sc, img.height * sc);
+  try { g.getImageData(0, 0, 1, 1); } catch (e) { return null; }       // z. B. file:// -> Browser blockiert Bilder
+  const t = new THREE.CanvasTexture(c); t.anisotropy = ANISO; return t;
+}
+function loadObstacleImages() {
+  const jobs = Array.from({ length: OBSTACLE_MAX }, (_, i) => new Promise(res => {
+    const img = new Image();
+    img.onload = () => res(img); img.onerror = () => res(null);
+    img.src = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}.png`;
+  }));
+  return Promise.all(jobs).then(list => {
+    list = list.filter(Boolean);
+    const tex = list.map(panelTexture).filter(Boolean);
+    return { tex, blocked: list.length > 0 && tex.length === 0 };
+  });
+}
+const nextImg = () => {
+  if (!imgBag.length) imgBag = images.map((_, i) => i).sort(() => rnd() - 0.5);
+  return images[imgBag.pop()];
+};
+const panel = (tex, w, h, x, y, z) => {
+  const m = new THREE.Mesh(memo(`pl${w},${h}`, () => new THREE.PlaneGeometry(w, h)), memo('pm' + tex.uuid, () => new THREE.MeshBasicMaterial({ map: tex })));
+  m.position.set(x, y, z); return m;
+};
+const IMGB = {
+  low(tex) {   // niedriger Aufsteller -> springen
+    const g = new THREE.Group(), b = neonBox(1.7, 0.9, 0.5, AMBER, 0x1a1203);
+    b.position.y = 0.45; g.add(b, panel(tex, 0.8, 0.8, 0, 0.45, 0.26));
+    return { mesh: g, hw: 0.85, hd: 0.3, y0: 0, y1: 1.0 };
+  },
+  block(tex) { // hoher Sockel mit Logo -> ausweichen
+    const g = new THREE.Group(), b = neonBox(1.9, 2.8, 0.4, CYAN, 0x061a22);
+    b.position.y = 1.4;
+    const led = neonBox(1.5, 0.08, 0.05, GREEN, GREEN); led.position.set(0, 0.45, 0.21);
+    g.add(b, led, panel(tex, 1.7, 1.7, 0, 1.75, 0.21));
+    return { mesh: g, hw: 0.95, hd: 0.25, y0: 0, y1: 2.8 };
+  },
+  high(tex) {  // hängendes Banner -> rutschen
+    const g = new THREE.Group();
+    [-1, 1].forEach(s => { const p = neonBox(0.12, 2.4, 0.12, PINK, 0x2a0414); p.position.set(s * 1.05, 1.2, 0); g.add(p); });
+    const b = neonBox(2.0, 1.1, 0.15, PINK, 0x2a0414); b.position.y = 1.7;
+    g.add(b, panel(tex, 1.0, 1.0, 0, 1.7, 0.09));
+    return { mesh: g, hw: 1.05, hd: 0.2, y0: 1.15, y1: 2.5 };
+  }
+};
+
+// --- B) Platzhalter-Hindernisse, solange noch keine Bilder hochgeladen sind
+function logoCanvasTex(label) {
+  const [c, g] = canvas(340, 460);
+  g.fillStyle = '#021218'; g.fillRect(0, 0, 340, 460);
+  g.strokeStyle = '#19f0ff'; g.lineWidth = 8; g.strokeRect(12, 12, 316, 436);
+  g.fillStyle = '#19f0ff'; g.textAlign = 'center'; g.font = 'bold 54px monospace';
+  g.fillText('SENDER', 170, 190); g.fillText('LOGO ' + label, 170, 260);
+  g.font = '28px monospace'; g.fillText('Platzhalter', 170, 330);
+  return new THREE.CanvasTexture(c);
+}
+const logoMats = [1, 2, 3].map(n => new THREE.MeshBasicMaterial({ map: logoCanvasTex(n) }));
+const BUILD = {
+  radio() { // niedrig -> springen
+    const g = new THREE.Group();
+    const b = neonBox(1.5, 0.8, 0.7, AMBER, 0x2a1a02); b.position.y = 0.4; g.add(b);
+    const sp = neonCyl(0.24, 0.24, 0.06, 20, AMBER, 0x120a01); sp.rotation.x = Math.PI / 2; sp.position.set(-0.4, 0.4, 0.37); g.add(sp);
+    const dial = neonBox(0.5, 0.14, 0.06, CYAN, 0x022a2e); dial.position.set(0.35, 0.55, 0.37); g.add(dial);
+    const knob = neonCyl(0.09, 0.09, 0.06, 10, AMBER, 0x120a01); knob.rotation.x = Math.PI / 2; knob.position.set(0.35, 0.25, 0.37); g.add(knob);
+    const ant = neonBox(0.04, 0.7, 0.04, AMBER, AMBER); ant.position.set(0.55, 1.15, 0); ant.rotation.z = -0.35; g.add(ant);
+    return { mesh: g, hw: 0.75, hd: 0.4, y0: 0, y1: 1.0 };
+  },
+  logo() { // hoch -> ausweichen
+    const g = new THREE.Group();
+    const f = neonBox(1.9, 2.5, 0.3, CYAN, 0x041a22); f.position.y = 1.25; g.add(f);
+    const p = new THREE.Mesh(memo('logoPlane', () => new THREE.PlaneGeometry(1.7, 2.3)), pick(logoMats));
+    p.position.set(0, 1.25, 0.16); g.add(p);
+    return { mesh: g, hw: 0.95, hd: 0.2, y0: 0, y1: 2.5 };
+  },
+  wave() { // Störwelle in Kopfhöhe -> rutschen
+    const g = new THREE.Group();
+    [-1, 1].forEach(s => { const p = neonBox(0.12, 2.4, 0.12, PINK, 0x2a0414); p.position.set(s * 1.05, 1.2, 0); g.add(p); });
+    const top = neonBox(2.2, 0.12, 0.12, PINK, 0x2a0414); top.position.y = 2.4; g.add(top);
+    const zig = new THREE.Line(memo('zig', () => {
+      const p = [];
+      for (let i = 0; i <= 40; i++) p.push(new THREE.Vector3(-1 + i * 0.05, (i % 2 ? 1 : -1) * 0.5 * (0.4 + 0.6 * Math.abs(Math.sin(i * 0.7))), 0));
+      return new THREE.BufferGeometry().setFromPoints(p);
+    }), lineMat(PINK));
+    zig.position.y = 1.65;
+    const pane = new THREE.Mesh(memo('pane', () => new THREE.PlaneGeometry(2, 1.3)),
+      memo('paneMat', () => new THREE.MeshBasicMaterial({ color: PINK, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false })));
+    pane.position.y = 1.65;
+    g.add(zig, pane);
+    return { mesh: g, hw: 1.05, hd: 0.25, y0: 1.1, y1: 2.5, update: t => { zig.scale.y = 0.55 + 0.45 * Math.sin(t * 14); } };
+  },
+  mic() { // hoch -> ausweichen
+    const g = new THREE.Group();
+    const base = neonCyl(0.5, 0.55, 0.12, 16, CYAN, 0x022a2e); base.position.y = 0.06;
+    const pole = neonCyl(0.05, 0.05, 1.8, 8, CYAN, CYAN); pole.position.y = 1.0;
+    const mh = new THREE.Mesh(memo('micHead', () => new THREE.SphereGeometry(0.34, 12, 8)),
+      memo('micMat', () => new THREE.MeshBasicMaterial({ color: CYAN, wireframe: true })));
+    mh.position.y = 2.1;
+    g.add(base, pole, mh);
+    return { mesh: g, hw: 0.5, hd: 0.3, y0: 0, y1: 2.45 };
+  },
+  cd() { // stehende CD -> springen
+    const R = 0.75, g = new THREE.Group(), spin = new THREE.Group();
+    const disc = new THREE.Mesh(memo('cdRing', () => new THREE.RingGeometry(0.16, R, 32)),
+      memo('cdMat', () => new THREE.MeshBasicMaterial({ color: 0xffd27a, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false })));
+    const spoke = new THREE.Line(memo('spoke', () => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0.16, 0, 0), new THREE.Vector3(R, 0, 0)])), lineMat(0xffffff));
+    spin.add(disc, circle(R, AMBER), circle(0.16, AMBER), spoke);
+    spin.position.y = R + 0.03; g.add(spin);
+    return { mesh: g, hw: 0.75, hd: 0.2, y0: 0, y1: 1.5, update: t => { spin.rotation.z = -t * 6; } };
+  },
+  vinyl() { // flache Schallplatte -> springen
+    const g = new THREE.Group(), spin = new THREE.Group();
+    spin.position.y = 0.1;
+    spin.add(neonCyl(1, 1, 0.12, 40, AMBER, 0x0a0a0a));
+    [0.75, 0.5].forEach(r => { const c = circle(r, 0x666666); c.rotation.x = Math.PI / 2; c.position.y = 0.07; spin.add(c); });
+    spin.add(neonCyl(0.28, 0.28, 0.14, 16, AMBER, AMBER));
+    const mark = neonBox(0.08, 0.02, 0.4, 0xffffff, 0xffffff); mark.position.set(0.65, 0.07, 0); spin.add(mark);
+    g.add(spin);
+    return { mesh: g, hw: 1.0, hd: 1.0, y0: 0, y1: 0.45, update: t => { spin.rotation.y = t * 3; } };
+  }
+};
+
+// Welche Hindernis-Arten gibt es und wann werden sie freigeschaltet (Level 1/2/3+)?
+let KINDS = [], PASSABLE = [], UNLOCK = [];
+function setupKinds() {
+  if (images.length) { KINDS = ['low', 'block', 'high']; PASSABLE = ['low', 'high']; UNLOCK = [2, 3, 3]; }
+  else { KINDS = ['radio', 'logo', 'wave', 'mic', 'cd', 'vinyl']; PASSABLE = ['radio', 'wave', 'cd', 'vinyl']; UNLOCK = [2, 4, 6]; }
+}
+
+/* ================= Spielzustand ================= */
+let state = 'menu';            // menu | play | dead | over | win
+let time = 0, scroll = 0, dist = 0, score = 0, speed = 12, level = 1;
+let lane = 1, px = 0, py = 0, vy = 0, slideT = 0, wantSlide = false;
+let spawnIn = 0, tipT = 0, deadT = 0, endAt = 0, tipQ = [];
+let obstacles = [], best = 0;
+const BEST_KEY = 'anmachaRadioSurferBest';
+try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
+
+const hScore = $('hScore'), hLevel = $('hLevel'), hBest = $('hBest'), bar = $('bar'), btn = $('btn');
+const setText = (el, t) => { if (el.textContent !== t) el.textContent = t; };
+
+function retrigger(el, cls, text) {
+  el.textContent = text;
+  el.classList.remove('show', 'flash'); void el.offsetWidth; el.classList.add(cls);
+}
+function showTip() {
+  if (!tipQ.length) tipQ = TIPS.map((_, i) => i).sort(() => rnd() - 0.5);
+  retrigger($('toast'), 'show', TIPS[tipQ.pop()]);
+}
+function showOverlay(title, html, label, help) {
+  $('ovTitle').style.display = title ? '' : 'none'; $('ovTitle').textContent = title;
+  $('ovText').style.display = html ? '' : 'none'; $('ovText').innerHTML = html;
+  $('help').style.display = help ? '' : 'none';
+  $('status').style.display = help ? '' : 'none';
+  btn.textContent = label;
+  $('overlay').classList.remove('hidden');
+}
+function clearObstacles() { obstacles.forEach(o => scene.remove(o.mesh)); obstacles = []; }
+
+function startGame() {
+  clearObstacles();
+  state = 'play'; dist = 0; score = 0; level = 1; speed = BASE_SPEED;
+  lane = 1; px = 0; py = 0; vy = 0; slideT = 0; wantSlide = false;
+  spawnIn = 1.6; tipT = 7; deadT = 0;
+  $('overlay').classList.add('hidden');
+  retrigger($('banner'), 'flash', `LEVEL 1 · ${LEVEL_NAMES[0]}`);
+  retrigger($('toast'), 'show', TOUCH ? '👆 Wischen: ← → Spur · ↑ Sprung · ↓ Rutschen' : '⌨️ ← → Spur · ↑ Sprung · ↓ Rutschen (auch WASD)');
+}
+function endGame(won) {
+  const s = Math.floor(score);
+  if (s > best) { best = s; try { localStorage.setItem(BEST_KEY, best); } catch (e) {} }
+  if (won) finishOverlay(true); else { state = 'dead'; deadT = 0; }
+}
+function finishOverlay(won) {
+  state = won ? 'win' : 'over';
+  endAt = performance.now();
+  showOverlay(won ? 'GESCHAFFT! 🏆' : 'GAME OVER',
+    `${won ? 'Alle 10 Level – du bist der beste Radio Surfer!<br>' : `Level ${level} · ${LEVEL_NAMES[level - 1]}<br>`}Score: <b>${Math.floor(score)}</b> &nbsp;·&nbsp; Best: <b>${best}</b>`,
+    won ? 'NOCHMAL' : 'NEUSTART', false);
+}
+
+/* ================= Spawning ================= */
+function addObstacle(type, laneIdx) {
+  const o = images.length ? IMGB[type](nextImg()) : BUILD[type]();
+  o.x = LANES[laneIdx]; o.z = SPAWN_Z;
+  o.mesh.position.set(o.x, 0, o.z);
+  scene.add(o.mesh); obstacles.push(o);
+}
+function spawnRow() {
+  const d = Math.max(0, level - 3);                         // Schwierigkeit steigt erst nach Level 3
+  const av = KINDS.slice(0, UNLOCK[Math.min(level, 3) - 1]);
+  const act = av.filter(t => PASSABLE.includes(t));
+  const pAct = level < 2 ? 0 : level <= 3 ? 0.15 : Math.min(0.4, 0.15 + 0.03 * d);
+  const free = rnd() * 3 | 0;
+  if (act.length && rnd() < pAct) {                         // Sprung-/Rutsch-Wand
+    const t = pick(act), skip = d >= 3 && rnd() < 0.3 ? free : -1;
+    for (let i = 0; i < 3; i++) if (i !== skip) addObstacle(t, i);
+    return;
+  }
+  const p = Math.min(0.92, 0.6 + 0.05 * d);                 // Spur-Reihe: mindestens eine Spur bleibt frei
+  for (let i = 0; i < 3; i++) if (i !== free && rnd() < p) addObstacle(pick(av), i);
+  if (act.length && d >= 2 && rnd() < Math.min(0.5, 0.1 * (d - 1))) addObstacle(pick(act), free);
+}
+const gapTime = () => (level <= 3 ? 1.5 : Math.max(0.9, 1.5 - 0.085 * (level - 3))) + rnd() * 0.25;
+
+/* ================= Steuerung ================= */
+function moveLane(dir) { lane = Math.max(0, Math.min(2, lane + dir)); }
+function jump() { if (py === 0 && vy === 0) { vy = JUMP_V; slideT = 0; } }
+function slide() {
+  if (py > 0) { vy = -24; wantSlide = true; }               // in der Luft: schnell fallen, dann rutschen
+  else slideT = SLIDE_TIME;
+}
+const canRestart = () => (state === 'menu' && !btn.disabled) || ((state === 'over' || state === 'win') && performance.now() - endAt > 400);
+
+addEventListener('keydown', e => {
+  const k = e.code;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(k)) e.preventDefault();
+  if (state !== 'play') { if ((k === 'Enter' || k === 'Space') && canRestart()) startGame(); return; }
+  if (e.repeat) return;
+  if (k === 'ArrowLeft' || k === 'KeyA') moveLane(-1);
+  else if (k === 'ArrowRight' || k === 'KeyD') moveLane(1);
+  else if (k === 'ArrowUp' || k === 'KeyW' || k === 'Space') jump();
+  else if (k === 'ArrowDown' || k === 'KeyS') slide();
+});
+btn.addEventListener('click', () => { if (canRestart()) startGame(); });
+
+// Touch: wischen = Spur/Sprung/Rutschen, tippen = Sprung
+let tx = 0, ty = 0, swiped = false;
+const cv = renderer.domElement;
+cv.addEventListener('touchstart', e => { e.preventDefault(); tx = e.touches[0].clientX; ty = e.touches[0].clientY; swiped = false; }, { passive: false });
+cv.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (swiped || state !== 'play') return;
+  const dx = e.touches[0].clientX - tx, dy = e.touches[0].clientY - ty;
+  if (Math.hypot(dx, dy) < 28) return;
+  swiped = true;
+  if (Math.abs(dx) > Math.abs(dy)) moveLane(dx > 0 ? 1 : -1);
+  else if (dy < 0) jump(); else slide();
+}, { passive: false });
+cv.addEventListener('touchend', e => { e.preventDefault(); if (!swiped && state === 'play') jump(); }, { passive: false });
+
+addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+/* ================= Update ================= */
+function recycle(arr, spacing) {
+  const span = arr.length * spacing;
+  arr.forEach((m, i) => { m.position.z = -span + 10 + ((i * spacing + scroll) % span); });
+}
+
+function update(dt) {
+  time += dt;
+  const playing = state === 'play';
+  if (state === 'menu') { speed = 12; px = Math.sin(time * 0.6) * 2.2; }
+  else if (state === 'dead' || state === 'over') speed *= Math.max(0, 1 - dt * 4);
+  else if (playing) speed += (BASE_SPEED + SPEED_STEP * Math.max(0, level - 3) - speed) * Math.min(1, dt * 2);
+
+  const move = speed * dt;
+  scroll += move;
+
+  // Welt scrollen
+  floorTex.offset.y = scroll / 2.15;
+  const k = (time * 4 | 0) % 3;
+  rackL[k].offset.x = scroll / 4; rackR[k].offset.x = -scroll / 4;
+  wallL.material.map = rackL[k]; wallR.material.map = rackR[k];
+  recycle(lightsL, 12); recycle(lightsR, 12); recycle(arches, 16); recycle(wins, 26);
+  const pp = pGeo.attributes.position.array;
+  for (let i = 0; i < PN; i++) { if ((pp[i * 3 + 2] += move * 1.3) > 10) pp[i * 3 + 2] -= 140; }
+  pGeo.attributes.position.needsUpdate = true;
+  streaks.forEach(s => { if ((s.position.z += move * s.userData.k) > 14) s.position.z -= 150; });
+
+  // Spiel
+  if (playing) {
+    dist += move;
+    score += move * 0.5 * (1 + 0.1 * (level - 1));
+    const lv = Math.min(LEVELS, Math.floor(dist / LEVEL_LEN) + 1);
+    if (lv > level) {
+      level = lv;
+      retrigger($('banner'), 'flash', `LEVEL ${level} · ${LEVEL_NAMES[level - 1]}${level > 3 ? '\n⚡ Tempo steigt' : ''}`);
+    }
+    if (dist >= LEVELS * LEVEL_LEN) endGame(true);
+
+    if ((spawnIn -= dt) <= 0) { spawnRow(); spawnIn = gapTime(); }
+    if ((tipT += dt) >= 12) { tipT = 0; showTip(); }
+
+    if (slideT > 0) slideT -= dt;
+    if (py > 0 || vy > 0) {
+      vy -= GRAVITY * dt; py += vy * dt;
+      if (py <= 0) { py = 0; vy = 0; if (wantSlide) { slideT = SLIDE_TIME; wantSlide = false; } }
+    }
+    px += (LANES[lane] - px) * Math.min(1, dt * 14);
+  }
+
+  // Hindernisse bewegen + Kollision
+  const h = slideT > 0 ? 0.8 : 1.8;
+  for (let i = obstacles.length - 1; i >= 0; i--) {
+    const o = obstacles[i], prev = o.z;
+    o.z += move; o.mesh.position.z = o.z;
+    if (o.update) o.update(time);
+    if (o.z > 12) { scene.remove(o.mesh); obstacles.splice(i, 1); continue; }
+    if (state === 'play' && o.z + o.hd >= -0.3 && prev - o.hd <= 0.3 &&   // z (inkl. Weg im Frame)
+        Math.abs(px - o.x) < o.hw + 0.2 &&                                  // x
+        py < o.y1 - 0.05 && py + h > o.y0 + 0.05) {                         // y
+      endGame(false);
+    }
+  }
+
+  if (state === 'dead') { deadT += dt; if (deadT > 0.8) finishOverlay(false); }
+
+  // Spieler-Animation
+  const onGround = py === 0, ph = scroll * 0.35, sw = Math.sin(ph) * 0.5;
+  if (onGround) { legL.rotation.x = sw * 0.6; legR.rotation.x = -sw * 0.6; armL.rotation.x = -0.5 + sw; armR.rotation.x = -0.5 - sw; }
+  else { legL.rotation.x = -0.5; legR.rotation.x = 0.3; armL.rotation.x = -2.2; armR.rotation.x = -2.2; }
+  const sliding = slideT > 0, dead = state === 'dead' || state === 'over';
+  const tRot = dead ? -1.3 : sliding ? 1.0 : -0.1, tScale = sliding ? 0.7 : 1, kk = Math.min(1, dt * 15);
+  rig.rotation.x += (tRot - rig.rotation.x) * kk;
+  rig.scale.y += (tScale - rig.scale.y) * kk;
+  rig.position.y = 0.09 + (onGround && !sliding ? Math.abs(Math.sin(time * 6)) * 0.03 : 0);
+  player.position.set(px, py, 0);
+  player.rotation.z = (px - LANES[lane]) * 0.25;
+  ring.position.x = px;
+
+  // Kamera
+  const aspect = innerWidth / innerHeight;
+  const fov = (aspect < 1.2 ? 90 : 68) + (speed - BASE_SPEED) * 0.3;
+  if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = fov; camera.aspect = aspect; camera.updateProjectionMatrix(); }
+  const shake = state === 'dead' ? (1 - Math.min(1, deadT / 0.8)) * 0.4 : 0;
+  camera.position.set(px * 0.55 + (rnd() - 0.5) * shake, 4.4 + py * 0.25 + (rnd() - 0.5) * shake, 7.6);
+  camera.lookAt(px * 0.3, 1.4 + py * 0.2, -9);
+
+  // HUD
+  setText(hScore, 'SCORE ' + Math.floor(score));
+  setText(hLevel, `LEVEL ${level}/${LEVELS}`);
+  setText(hBest, 'BEST ' + best);
+  bar.style.width = (state === 'play' ? (dist % LEVEL_LEN) / LEVEL_LEN * 100 : 0) + '%';
+}
+
+let last = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  update(dt);
+  renderer.render(scene, camera);
+}
+
+/* ================= Start ================= */
+showOverlay('', '', 'LADE …', true);
+requestAnimationFrame(frame);
+loadObstacleImages().then(({ tex, blocked }) => {
+  images = tex;
+  setupKinds();
+  $('status').textContent = tex.length ? `${tex.length} Sender-Elemente geladen`
+    : blocked ? 'Eigene Bilder werden bei file:// vom Browser blockiert – bitte über einen Webserver / GitHub Pages öffnen.'
+    : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.png … 20.png).';
+  btn.disabled = false; btn.textContent = 'START';
+});
+</script>
+</body>
+</html>
