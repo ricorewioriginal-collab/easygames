@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#080B12">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<title>AnMaCha Flipper</title>
+<title>AnMaCha Pinball</title>
 <style>
   *{box-sizing:border-box}
   :root{--c:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6}
@@ -128,6 +128,18 @@
   kbd{background:#0f1c2c;border:1px solid rgba(0,229,255,.35);border-radius:5px;padding:0 6px;font:inherit}
   #status{margin:0;font-size:12px;color:#6c8097;min-height:1.2em}
   #back{font-size:13px;color:#00E5FF;text-decoration:none}
+  .seg{display:flex;gap:6px;padding:5px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+  .seg button{border:0;background:transparent;border-radius:999px;padding:10px 18px;font-weight:800;font-size:clamp(13px,3.6vw,16px);color:#b6c5d8;min-height:44px}
+  .seg button.on{background:linear-gradient(90deg,#00E5FF,#8B5CF6);color:#06101a;box-shadow:0 0 16px rgba(0,229,255,.5)}
+  #path{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:420px}
+  #path i{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font:800 12px system-ui,sans-serif;font-style:normal;color:#9fb4c8}
+  #path i.done{background:var(--c);border-color:var(--c);color:#06101a;box-shadow:0 0 10px var(--c)}
+  #goalWrap{margin-top:6px}
+  #goalTxt{font-size:10.5px;letter-spacing:.12em;color:#9fb4c8;font-weight:700}
+  #goalBar{height:6px;border-radius:4px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:3px}
+  #goalBar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c),var(--ma))}
+  #saver{font-size:10.5px;letter-spacing:.1em;color:#00FFC8;font-weight:800;min-height:1em;margin-top:2px}
+  #msg{white-space:pre-line}
   .score-big{font:900 clamp(40px,10vw,64px)/1 'Trebuchet MS',sans-serif;background:linear-gradient(90deg,#fff,#00E5FF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px var(--c))}
 </style>
 </head>
@@ -135,8 +147,8 @@
 <canvas id="gl"></canvas>
 
 <div id="hud">
-  <div id="hL" class="glass"><canvas id="sideLogo" width="256" height="256"></canvas><div class="lbl">SCORE</div><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div></div>
-  <div id="hC" class="glass"><div class="lbl">KUGELN</div><div id="balls"></div><div id="mult"></div></div>
+  <div id="hL" class="glass"><canvas id="sideLogo" width="256" height="256"></canvas><div class="lbl">SCORE</div><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div><div id="goalWrap" class="hidden"><div id="goalTxt"></div><div id="goalBar"><b id="goalFill"></b></div></div></div>
+  <div id="hC" class="glass"><div class="lbl">KUGELN</div><div id="balls"></div><div id="mult"></div><div id="saver"></div></div>
   <div id="hR"><div id="btns">
     <button class="ib glass" id="bPause" aria-label="Pause">⏸</button>
     <button class="ib glass" id="bSound" aria-label="Ton">🔊</button>
@@ -155,9 +167,11 @@
 
 <div id="menu" class="ov">
   <div class="card">
-    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small id="brandSub">FLIPPER</small></h1>
-    <p class="sub">Such dir einen Tisch aus – jeder hat sein eigenes Logo, Layout und Design.<br>5 Kugeln, so viele Punkte wie möglich!</p>
-    <div class="picker">
+    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small id="brandSub">PINBALL</small></h1>
+    <div class="seg"><button id="mCamp" class="on">🏁 Kampagne</button><button id="mFree">🎯 Freies Spiel</button></div>
+    <p class="sub" id="modeInfo"></p>
+    <div id="campBox"><div id="path"></div></div>
+    <div class="picker hidden" id="pickBox">
       <button class="arrow" id="tPrev" aria-label="Voriger Tisch">◀</button>
       <div class="tcard" id="tcard"><canvas id="tprev" width="512" height="280"></canvas>
         <div class="tmeta"><b id="tTitle"></b><span id="tSub"></span></div><div id="dots"></div></div>
@@ -182,7 +196,7 @@
   </div>
 </div>
 <div id="overOv" class="ov hidden">
-  <div class="card"><h2>GAME OVER</h2>
+  <div class="card"><h2 id="oTitle">GAME OVER</h2>
     <div class="score-big" id="oScore">0</div>
     <p class="sub" id="oText"></p>
     <button class="big" id="oAgain">PLAY AGAIN</button>
@@ -223,7 +237,7 @@ let brandTitle = null;       // komplettes Titel-Logo des Spiels (falls vorhande
 
 /* ================= Konfiguration ================= */
 // Logos: logos/01.png|jpg|jpeg ... 13 (jedes Logo = ein eigener Tisch; ohne Logos gibt es 3 Platzhalter-Tische)
-const LOGO_DIR = 'logos/', LOGO_MAX = 13, MIN_TABLES = 3, BALLS = 5;
+const LOGO_DIR = 'logos/', LOGO_MAX = 13, TABLE_COUNT = 13, BALLS = 5;   // 13 Tische (Logo Nr. = Tisch Nr.)
 
 // Logo-Bilder sofort im Hintergrund laden (Endungen parallel prüfen)
 const rawLogos = [], t0 = performance.now();
@@ -238,8 +252,10 @@ for (let i = 0; i < LOGO_MAX; i++) {
 
 /* ================= Physik-Konstanten (logische Einheiten, y nach unten) ================= */
 const W = 620, H = 1000, S = 1 / 50;                 // Tischgröße, Welt-Skalierung
-const G = 1500, BALL_R = 13, VMAX = 2400, DT = 1 / 480;
-const A_REST = 0.52, A_ON = -0.5, FLIP_UP = 17, FLIP_DOWN = 10, FL_LEN = 100;
+let G = 1500, VMAX = 2400, launchScale = 1;           // werden pro Tisch durch die Schwierigkeit gesetzt
+const BALL_R = 13, DT = 1 / 480;
+const A_REST = 0.52, A_ON = -0.5, FLIP_UP = 17, FLIP_DOWN = 10;
+let FL_LEN = 100;
 const LANE_X = 560, LANE_L = 535, DRAIN_Y = 1020;
 const CX = 277.5;                                    // Spielfeld-Mitte (ohne Startbahn)
 const mx = x => 2 * CX - x;
@@ -267,6 +283,17 @@ const LAYOUTS = [
 const SLING_KICK = 430;
 const GATE = { x: 548, y0: 120, y1: 340 };
 LAYOUTS.forEach((l, i) => l.style = i);              // Spielfeld-Kunst je Layout
+// Schwierigkeit pro Tisch (i = 0..12): stärkere Schwerkraft, kürzere Flipper, weniger Kugelrettung, mehr Störsender, höheres Punkteziel
+const difficulty = i => ({
+  g: 1350 + 38 * i, fl: 104 - i,
+  saver: i < 3 ? 15 : i < 6 ? 10 : i < 9 ? 6 : i < 12 ? 3 : 0,
+  jam: [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3][i],
+  goal: 1500 + 700 * (i + 1), stars: 1 + Math.round(i / 3)
+});
+function applyDifficulty(i) {
+  const d = difficulty(i);
+  G = d.g; VMAX = 2400 * Math.sqrt(d.g / 1500); launchScale = Math.sqrt(d.g / 1500); FL_LEN = d.fl;
+}
 const ROLLOVERS = [[200, 130], [CX, 112], [355, 130]];
 
 /* ================= Tische ================= */
@@ -294,16 +321,15 @@ function makeTable(i, logo) {
   let c = logoCanvas(logo, String(i + 1), col);
   const ok = !!(logo && c);
   if (!c) c = logoCanvas(null, String(i + 1), col);          // Bild blockiert (file://) -> Platzhalter
-  return { idx: i, color: col, color2: col2, layout: lay, name: `Tisch ${i + 1} · ${lay.name}`, logo: c, hasLogo: ok };
+  return { idx: i, color: col, color2: col2, layout: lay, diff: difficulty(i), name: `Tisch ${i + 1} · ${lay.name}`, logo: c, hasLogo: ok };
 }
 let loaded = 0;
-function syncTables() {                     // Tische passend zu den gefundenen Logos aufbauen
-  const found = rawLogos.filter(Boolean);
-  const n = Math.max(MIN_TABLES, found.length);
-  if (tables.length === n && loaded === found.length) return false;
-  loaded = found.length;
+function syncTables() {                     // immer 13 Tische; Tisch n bekommt Logo Nr. n (fehlt es: Platzhalter)
+  const found = rawLogos.filter(Boolean).length;
+  if (tables.length === TABLE_COUNT && loaded === found) return false;
+  loaded = found;
   tables.length = 0;
-  for (let i = 0; i < n; i++) tables.push(makeTable(i, found[i] || null));
+  for (let i = 0; i < TABLE_COUNT; i++) tables.push(makeTable(i, rawLogos[i] || null));
   tableIdx = Math.min(tableIdx, tables.length - 1);
   return true;
 }
@@ -344,10 +370,11 @@ function setMuted(m) {
 
 /* ================= Physik ================= */
 const ball = { x: LANE_X, y: 960, vx: 0, vy: 0 };
-let walls = [], bumpers = [], slings = [], rolls = [], flippers = [];
+let walls = [], bumpers = [], slings = [], rolls = [], flippers = [], movers = [];
+const held = [false, false];       // gedrückte Flipper-Tasten (bleiben beim Tischwechsel erhalten)
 
 function buildPhysics(t) {
-  walls = []; bumpers = []; slings = []; rolls = [];
+  walls = []; bumpers = []; slings = []; rolls = []; movers = [];
   const wall = (ax, ay, bx, by, rad = 3.5, e = 0.5) => walls.push({ ax, ay, bx, by, rad, e, vis: true });
   // Bogen oben
   const R = 282.5, cx = 302.5, cy = 292.5;
@@ -375,12 +402,14 @@ function buildPhysics(t) {
     if ((CX - mxp) * nx + (500 - myp) * ny < 0) { nx = -nx; ny = -ny; }   // Richtung Spielfeld-Mitte
     s.nx = nx; s.ny = ny;
   });
-  t.layout.rails.forEach(r => wall(r[0], r[1], r[2], r[3], 3.5, 0.5));
-  t.layout.bumpers.forEach(([type, x, y, r]) => bumpers.push({ type, x, y, r, flash: 0, cd: 0 }));
+  const mir = t.idx >= 5, swap = { onair: 'hit', hit: 'onair' };      // ab Tisch 6: gespiegeltes Layout mit vertauschten Rollen
+  t.layout.rails.forEach(r => mir ? wall(mx(r[0]), r[1], mx(r[2]), r[3], 3.5, 0.5) : wall(r[0], r[1], r[2], r[3], 3.5, 0.5));
+  t.layout.bumpers.forEach(([type, x, y, r]) => bumpers.push({ type: mir ? (swap[type] || type) : type, x: mir ? mx(x) : x, y, r, flash: 0, cd: 0 }));
+  for (let j = 0; j < t.diff.jam; j++) movers.push({ x: CX, y: 600, r: 15, amp: 95 + j * 18, w: 1.1 + j * 0.45, ph: j * 2.1, vx: 0, tm: 0, flash: 0, cd: 0 });   // Störsender pendeln vor den Flippern
   ROLLOVERS.forEach(([x, y]) => rolls.push({ x, y, r: 18, lit: false }));
   flippers = [
-    { px: 160, py: 880, side: 1, a: A_REST, w: 0, on: false, rp: 13, rt: 7 },
-    { px: mx(160), py: 880, side: -1, a: A_REST, w: 0, on: false, rp: 13, rt: 7 }
+    { px: 160, py: 880, side: 1, a: held[0] ? A_ON : A_REST, w: 0, on: held[0], rp: 13, rt: 7 },
+    { px: mx(160), py: 880, side: -1, a: held[1] ? A_ON : A_REST, w: 0, on: held[1], rp: 13, rt: 7 }
   ];
 }
 
@@ -448,6 +477,12 @@ function stepPhysics(dt) {
     const r = bounce(b.x, b.y, b.r, 1, BUMPER[b.type].kick);
     if (r && b.cd <= 0) { b.cd = 0.08; events.push({ k: 'bumper', o: b }); }
   }
+  for (const m of movers) {
+    m.tm += dt; m.x = CX + m.amp * Math.sin(m.w * m.tm + m.ph); m.vx = m.amp * m.w * Math.cos(m.w * m.tm + m.ph);
+    if (m.cd > 0) m.cd -= dt;
+    const r = bounce(m.x, m.y, m.r, 1, 430, m.vx, 0);
+    if (r && m.cd <= 0) { m.cd = 0.1; events.push({ k: 'mover', o: m }); }
+  }
   for (const f of flippers) {
     const dx = f.side * Math.cos(f.a), dy = Math.sin(f.a);
     const tx = (ball.x - f.px) * dx + (ball.y - f.py) * dy, t = Math.max(0, Math.min(1, tx / FL_LEN));
@@ -464,13 +499,16 @@ function stepPhysics(dt) {
 /* ================= Spielzustand ================= */
 let state = 'menu';          // menu | ready | play | drain | paused | over
 let prevState = 'play';
+let mode = 'campaign', tableScore = 0, pendingLoad = null, loadedIdx = -1, saverT = 0, progress = 0;
 let score = 0, best = 0, balls = BALLS, combo = 0, comboT = 0, zoneT = 0, waitT = 0, power = 0, charging = false, stuckT = 0, flipPlayed = [false, false];
-try { best = +localStorage.getItem('anmachaFlipperBest') || 0; } catch (e) {}
+try { best = +localStorage.getItem('anmachaFlipperBest') || 0; progress = +localStorage.getItem('anmachaPinballProgress') || 0;
+  mode = localStorage.getItem('anmachaPinballMode') === 'free' ? 'free' : 'campaign'; } catch (e) {}
 const curMult = () => Math.min(8, 1 + Math.floor(combo / 4) + (zoneT > 0 ? 1 : 0));
 
 function setBallsUI() {
   const el = $('balls');
-  if (el.children.length !== BALLS) { el.textContent = ''; for (let i = 0; i < BALLS; i++) el.appendChild(document.createElement('i')); }
+  const cap = Math.max(BALLS, balls);                  // Bonus-Kugeln werden zusätzlich angezeigt
+  if (el.children.length !== cap) { el.textContent = ''; for (let i = 0; i < cap; i++) el.appendChild(document.createElement('i')); }
   [...el.children].forEach((c, i) => c.classList.toggle('off', i >= balls));
 }
 function message(t, color = '#FF2D95') {
@@ -483,13 +521,15 @@ function resetBall() {
   state = 'ready';
 }
 function newGame() {
-  score = 0; balls = BALLS; combo = 0; comboT = 0; zoneT = 0;
+  if (mode === 'campaign') tableIdx = 0;                       // Kampagne startet immer bei Tisch 1
+  if (loadedIdx !== tableIdx) loadTable(tableIdx);
+  score = 0; tableScore = 0; balls = BALLS; combo = 0; comboT = 0; zoneT = 0; pendingLoad = null; saverT = 0;
   rolls.forEach(r => r.lit = false);
   flippers.forEach(f => { f.on = false; f.a = A_REST; f.w = 0; });
   setBallsUI(); resetBall();
   $('menu').classList.add('hidden'); $('pauseOv').classList.add('hidden'); $('overOv').classList.add('hidden');
   document.body.classList.remove('menu');
-  message('PLAY!', '#00E5FF');
+  message(mode === 'campaign' ? `TISCH 1 · Ziel ${T.diff.goal}` : 'PLAY!', '#00E5FF');
 }
 function loseBall() {
   balls--; combo = 0; comboT = 0; zoneT = 0; setBallsUI(); SFX.lost();
@@ -497,27 +537,47 @@ function loseBall() {
   message(balls === 1 ? 'LETZTE KUGEL!' : `KUGEL VERLOREN · noch ${balls}`);
   state = 'drain'; waitT = 1.0;
 }
-function gameOver() {
-  state = 'over'; SFX.over();
+function gameOver(win) {
+  state = 'over'; win ? SFX.bonus() : SFX.over();
   const fin = Math.floor(score), nb = fin > best;
   if (nb) { best = fin; try { localStorage.setItem('anmachaFlipperBest', best); } catch (e) {} }
+  $('oTitle').textContent = win ? `ALLE ${TABLE_COUNT} TISCHE GESCHAFFT! 🏆` : 'GAME OVER';
   $('oScore').textContent = fin;
-  $('oText').innerHTML = `Best: <b>${best}</b>${nb ? ' · 🏆 Neuer Bestwert!' : ''}`;
+  const where = mode === 'campaign' && !win ? `Erreicht: Tisch ${tableIdx + 1} von ${TABLE_COUNT} · ` : '';
+  $('oText').innerHTML = `${where}Best: <b>${best}</b>${nb ? ' · 🏆 Neuer Bestwert!' : ''}`;
   $('overOv').classList.remove('hidden');
+}
+function saveBall() {                                           // Kugelrettung: ohne Verlust neu starten
+  message('KUGEL GERETTET!', '#00FFC8'); SFX.bonus(); saverT = 0; combo = 0; comboT = 0;
+  state = 'drain'; waitT = 0.8;
+}
+function gain(pts) {                                            // Punkte für Gesamtscore und Tisch-Ziel
+  score += pts; tableScore += pts;
+  if (mode === 'campaign' && state === 'play' && tableScore >= T.diff.goal) clearTable();
+}
+function clearTable() {
+  const n = tableIdx;
+  progress = Math.max(progress, n + 1); try { localStorage.setItem('anmachaPinballProgress', progress); } catch (e) {}
+  SFX.bonus(); burst(CX, 400, 0x00E5FF, 40); burst(CX, 300, 0xFF2D95, 30);
+  if (n >= TABLE_COUNT - 1) { gameOver(true); return; }
+  let txt = `TISCH ${n + 1} GESCHAFFT!`;
+  if ((n + 1) % 3 === 0) { balls++; setBallsUI(); txt += '\n+1 KUGEL'; }
+  message(txt, '#00E5FF');
+  state = 'drain'; waitT = 2.2; pendingLoad = n + 1; combo = 0; comboT = 0; zoneT = 0;
 }
 function pauseGame() { if (state === 'play' || state === 'ready' || state === 'drain') { prevState = state; state = 'paused'; $('pauseOv').classList.remove('hidden'); } }
 function resumeGame() { if (state === 'paused') { state = prevState; $('pauseOv').classList.add('hidden'); } }
 function toMenu() {
   state = 'menu'; ['pauseOv', 'overOv'].forEach(i => $(i).classList.add('hidden')); $('menu').classList.remove('hidden');
   document.body.classList.add('menu'); flippers.forEach((f, i) => setFlip(i, false)); charging = false;
-  loadTable(tableIdx); drawPreview();
+  loadTable(tableIdx); drawPreview(); setMode(mode);
 }
 function restartGame() { if (state !== 'menu') newGame(); }
 
 function addScore(base, x, y, color, label) {
   comboT = 3; combo++;
   const prev = curMult(), pts = base * prev;
-  score += pts;
+  gain(pts);
   popup(`+${pts}`, x, y, color);
   if (combo % 4 === 0) { SFX.combo(); message(`COMBO x${curMult()}`, '#00E5FF'); }
 }
@@ -534,11 +594,13 @@ function handleEvents() {
     } else if (e.k === 'sling') {
       e.o.flash = 1; addScore(20, ball.x, ball.y, '#8B5CF6'); SFX.sling(); burst(ball.x, ball.y, 0x8B5CF6, 6);
     } else if (e.k === 'roll') {
-      score += 100 * curMult(); popup(`+${100 * curMult()}`, e.o.x, e.o.y, '#00FFC8'); SFX.spk();
+      gain(100 * curMult()); popup(`+${100 * curMult()}`, e.o.x, e.o.y, '#00FFC8'); SFX.spk();
       if (rolls.every(r => r.lit)) {
-        score += 1000; SFX.bonus(); message('ON AIR BONUS +1000', '#FF2D95'); burst(CX, 140, 0xFF2D95, 30);
+        gain(1000); SFX.bonus(); message('ON AIR BONUS +1000', '#FF2D95'); burst(CX, 140, 0xFF2D95, 30);
         popup('+1000', CX, 160, '#FF2D95'); setTimeout(() => rolls.forEach(r => r.lit = false), 700);
       }
+    } else if (e.k === 'mover') {
+      e.o.flash = 1; addScore(50, e.o.x, e.o.y, '#FF2D95'); SFX.sling(); burst(e.o.x, e.o.y, 0xFF2D95, 8);
     } else if (e.k === 'flip') { /* Flipper-Treffer: kein Extra-Ton */ }
     else if (e.k === 'wall' && e.v > 500) SFX.wall();
   }
@@ -547,10 +609,18 @@ function handleEvents() {
 
 function simulate(dt) {
   if (state === 'ready' && charging) { power = Math.min(1, power + dt / 1.0); }
-  if (state === 'drain') { waitT -= dt; if (waitT <= 0) resetBall(); return; }
+  if (state === 'drain') {
+    waitT -= dt;
+    if (waitT <= 0) {
+      if (pendingLoad !== null) { const i = pendingLoad; pendingLoad = null; loadTable(i); tableScore = 0; message(`TISCH ${i + 1} · Ziel ${T.diff.goal}`, hex(T.color)); }
+      resetBall();
+    }
+    return;
+  }
   if (state !== 'play' && state !== 'ready') return;
   if (comboT > 0 && (comboT -= dt) <= 0) combo = 0;
   if (zoneT > 0) zoneT -= dt;
+  if (saverT > 0 && state === 'play') saverT -= dt;
   const n = Math.max(1, Math.ceil(dt / DT));
   for (let i = 0; i < n; i++) stepPhysics(dt / n);
   handleEvents();
@@ -560,7 +630,7 @@ function simulate(dt) {
   const sp = Math.hypot(ball.vx, ball.vy), inLane = ball.x > LANE_L && ball.y > 930;
   if (state === 'play') {
     if (inLane && sp < 40) { state = 'ready'; power = 0; }
-    else if (ball.y > DRAIN_Y) loseBall();
+    else if (ball.y > DRAIN_Y) { if (saverT > 0) saveBall(); else loseBall(); }
     // Notfall: Kugel bleibt ewig liegen -> kleiner Stoß
     if (sp < 14 && !inLane) { stuckT += dt; if (stuckT > 3) { ball.vx += (Math.random() - 0.5) * 500; ball.vy -= 350; stuckT = 0; } } else stuckT = 0;
   }
@@ -571,15 +641,15 @@ function launch() {
   if (state !== 'ready' || !charging) { charging = false; return; }
   charging = false;
   const p = Math.max(power, 0.3);
-  ball.vy = -(1750 + 650 * p); ball.vx = 0;
-  state = 'play'; power = 0; SFX.launch(); plungerKick = 1;
+  ball.vy = -(1750 + 650 * p) * launchScale; ball.vx = 0;
+  state = 'play'; power = 0; saverT = T.diff.saver; SFX.launch(); plungerKick = 1;
 }
 function startCharge() { if (state === 'ready') { charging = true; power = 0; } }
 function setFlip(i, on) {
   const f = flippers[i]; if (!f) return;
   if (state === 'paused' || state === 'menu' || state === 'over') on = false;
   if (on && !f.on) SFX.flip();
-  f.on = on;
+  f.on = on; held[i] = on;
 }
 
 /* ================= Eingabe ================= */
@@ -651,7 +721,7 @@ const memo = {}; const cached = (k, f) => memo[k] || (memo[k] = f());
 const boxGeo = () => cached('box', () => new THREE.BoxGeometry(1, 1, 1));
 const edgeGeo = () => cached('edge', () => new THREE.EdgesGeometry(boxGeo()));
 
-let tableGroup = null, T = tables[0], shake = 0, plungerKick = 0;
+let moverMeshes = [], tableGroup = null, T = tables[0], shake = 0, plungerKick = 0;
 let ballMesh, shadowMesh, plunger, needle, eqBars = [], bumperMeshes = [], slingMeshes = [], rollMeshes = [], flipMeshes = [], ownTex = [];
 
 function canvasTex(w, h, draw) {
@@ -782,7 +852,7 @@ function backglassCanvas(t) {
   }
   const tg = g.createLinearGradient(560, 0, 1000, 0); tg.addColorStop(0, '#fff'); tg.addColorStop(1, col);
   g.fillStyle = tg; g.font = 'italic 900 94px "Trebuchet MS",sans-serif'; g.shadowColor = col; g.shadowBlur = 26; g.fillText('AnMaCha', 552, 176);
-  g.shadowBlur = 0; g.fillStyle = '#fff'; g.font = 'italic 900 82px "Trebuchet MS",sans-serif'; g.fillText('FLIPPER', 556, 282);
+  g.shadowBlur = 0; g.fillStyle = '#fff'; g.font = 'italic 900 82px "Trebuchet MS",sans-serif'; g.fillText('PINBALL', 556, 282);
   g.fillStyle = col2; g.font = 'bold 36px sans-serif'; g.fillText(t.name, 556, 350);
   g.fillStyle = '#b0c2d8'; g.font = '26px sans-serif'; g.fillText(t.hasLogo ? 'Radio · Pinball · 5 Kugeln' : 'Eigenes Logo: logos/' + String(t.idx + 1).padStart(2, '0') + '.jpg', 556, 394);
   g.strokeStyle = col; g.lineWidth = 4; g.globalAlpha = 0.8; g.shadowColor = col; g.shadowBlur = 12;
@@ -824,10 +894,11 @@ function loadTable(i) {
   tableIdx = Math.max(0, Math.min(tables.length - 1, i));
   T = tables[tableIdx];
   try { localStorage.setItem('anmachaFlipperTable', tableIdx); } catch (e) {}
+  loadedIdx = tableIdx; applyDifficulty(tableIdx);
   buildPhysics(T);
   if (tableGroup) { scene.remove(tableGroup); disposeGroup(tableGroup); }
   tableGroup = new THREE.Group(); scene.add(tableGroup);
-  bumperMeshes = []; slingMeshes = []; rollMeshes = []; flipMeshes = []; eqBars = [];
+  bumperMeshes = []; slingMeshes = []; rollMeshes = []; flipMeshes = []; eqBars = []; moverMeshes = [];
   const col = T.color, col2 = T.color2, root = document.documentElement.style;
   root.setProperty('--c', hex(col)); root.setProperty('--ma', hex(col2));
   const dark = new THREE.Color(col).multiplyScalar(0.1).getHex(), env = envTexture(col, col2);
@@ -903,6 +974,19 @@ function loadTable(i) {
     g.add(skirt, body, cap, ring); g.position.set(wx(b.x), 0, wz(b.y)); tableGroup.add(g);
     const halo = glowPlane(rr * 4.6, rr * 4.6, wx(b.x), 0.06, wz(b.y), c, 0.3);
     bumperMeshes.push({ g, body, ring, halo, c });
+  });
+
+  // Störsender (pendelnde Kugeln mit Antenne)
+  movers.forEach(m => {
+    const g = new THREE.Group(), rr = m.r * S;
+    const orb = new THREE.Mesh(cached('orb', () => { const q = new THREE.SphereGeometry(1, 20, 14); q.userData.shared = true; return q; }), new THREE.MeshStandardMaterial({ color: 0x2a1030, emissive: 0xFF2D95, emissiveIntensity: 0.6, metalness: 0.6, roughness: 0.3, envMap: env }));
+    orb.scale.setScalar(rr * 1.05); orb.position.y = rr * 1.05;
+    const ant = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: 0xFF2D95 })); ant.scale.set(0.05, 0.7, 0.05); ant.position.y = rr * 2.1 + 0.3;
+    const ring = new THREE.Mesh(cached('jring', () => { const q = new THREE.TorusGeometry(1, 0.06, 8, 28).rotateX(Math.PI / 2); q.userData.shared = true; return q; }), new THREE.MeshBasicMaterial({ color: 0xFF2D95 }));
+    ring.scale.setScalar(rr * 1.3); ring.position.y = rr * 1.05;
+    g.add(orb, ant, ring); g.position.set(wx(m.x), 0, wz(m.y)); tableGroup.add(g);
+    const halo = glowPlane(rr * 6, rr * 6, wx(m.x), 0.07, wz(m.y), 0xFF2D95, 0.35);
+    moverMeshes.push({ g, orb, halo, ring });
   });
 
   // Rollover-Lichter
@@ -1016,7 +1100,7 @@ function drawPreview() {
   const c = $('tprev'), g = c.getContext('2d');
   g.drawImage(backglassCanvas(T), 0, 0, 512, 280);
   $('tTitle').textContent = T.name;
-  $('tSub').textContent = T.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(T.idx + 1).padStart(2, '0')}.jpg`;
+  $('tSub').textContent = '★'.repeat(T.diff.stars) + '☆'.repeat(5 - T.diff.stars) + ' · ' + (T.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(T.idx + 1).padStart(2, '0')}.jpg`);
   const dots = $('dots'); if (dots.children.length !== tables.length) { dots.textContent = ''; tables.forEach(() => dots.appendChild(document.createElement('i'))); }
   [...dots.children].forEach((d, i) => d.classList.toggle('on', i === tableIdx));
 }
@@ -1024,6 +1108,19 @@ function refreshBrand() {                    // Titel-Logo ist geladen: Backbox-
   tables.forEach(t => { t.bg = null; });
   if (state === 'menu' && tables.length && tablesBuilt) { loadTable(tableIdx); drawPreview(); }
 }
+function setMode(m) {
+  mode = m; try { localStorage.setItem('anmachaPinballMode', m); } catch (e) {}
+  $('mCamp').classList.toggle('on', m === 'campaign'); $('mFree').classList.toggle('on', m === 'free');
+  $('campBox').classList.toggle('hidden', m !== 'campaign'); $('pickBox').classList.toggle('hidden', m !== 'free');
+  $('modeInfo').innerHTML = m === 'campaign'
+    ? `Tisch 1 bis ${TABLE_COUNT}: Erreiche auf jedem Tisch das Punkteziel, dann geht es zum nächsten – jeder Tisch ist schwerer. Alle 3 Tische gibt es eine Extra-Kugel.`
+    : 'Such dir einen beliebigen Tisch aus – jeder hat sein eigenes Logo, Layout und eine eigene Schwierigkeit. 5 Kugeln, so viele Punkte wie möglich!';
+  const path = $('path'); path.textContent = '';
+  for (let i = 0; i < TABLE_COUNT; i++) { const d = document.createElement('i'); d.textContent = i + 1; d.classList.toggle('done', i < progress); path.appendChild(d); }
+  if (m === 'free' && tables.length) drawPreview();
+}
+$('mCamp').addEventListener('click', () => setMode('campaign'));
+$('mFree').addEventListener('click', () => setMode('free'));
 function selectTable(i) {
   if (!tables.length) return;
   tableIdx = (i + tables.length) % tables.length;
@@ -1048,6 +1145,11 @@ function animate(dt) {
     const s = 1 + b.flash * 0.18; m.g.scale.set(s, 1 + b.flash * 0.25, s);
     m.body.material.emissiveIntensity = 0.4 + b.flash * 1.6; m.halo.material.opacity = 0.3 + b.flash * 0.6;
   });
+  moverMeshes.forEach((m, i) => {
+    const mv = movers[i]; mv.flash = Math.max(0, mv.flash - dt * 4);
+    m.g.position.x = wx(mv.x); m.halo.position.x = wx(mv.x); m.ring.rotation.y += dt * 4;
+    m.orb.material.emissiveIntensity = 0.6 + mv.flash * 1.4; m.halo.material.opacity = 0.35 + mv.flash * 0.5;
+  });
   slingMeshes.forEach((m, i) => { const s = slings[i]; s.flash = Math.max(0, s.flash - dt * 5); m.face.material.emissiveIntensity = 1 + s.flash * 2; });
   rollMeshes.forEach((m, i) => { m.material.opacity = rolls[i].lit ? 1 : 0.25 + 0.15 * Math.sin(time * 4 + i); });
   // Dial-Nadel: folgt Multiplikator + Geschwindigkeit
@@ -1068,6 +1170,11 @@ function animate(dt) {
   const sc = String(Math.floor(score)); if ($('score').textContent !== sc) $('score').textContent = sc;
   const bs = 'BEST ' + Math.max(best, Math.floor(score)); if ($('best').textContent !== bs) $('best').textContent = bs;
   const m = curMult(), ms = m > 1 ? `x${m}` : ''; if ($('mult').textContent !== ms) $('mult').textContent = ms;
+  const camp = mode === 'campaign', tn = camp ? `Tisch ${tableIdx + 1}/${TABLE_COUNT} · ${T.layout.name}` : T.name;
+  if ($('tname').textContent !== tn) $('tname').textContent = tn;
+  $('goalWrap').classList.toggle('hidden', !camp);
+  if (camp) { const gt = `ZIEL ${Math.min(tableScore, T.diff.goal)} / ${T.diff.goal}`; if ($('goalTxt').textContent !== gt) $('goalTxt').textContent = gt; $('goalFill').style.width = Math.min(100, tableScore / T.diff.goal * 100) + '%'; }
+  const sv = saverT > 0 && state === 'play' ? `SAVER ${Math.ceil(saverT)}s` : ''; if ($('saver').textContent !== sv) $('saver').textContent = sv;
 }
 function frame(now) {
   requestAnimationFrame(frame);
@@ -1076,7 +1183,7 @@ function frame(now) {
   if (!ready) {
     const done = probesLeft === 0;
     if (done || performance.now() - t0 > 3000) {
-      if (syncTables() || !tablesBuilt) { tablesBuilt = true; loadTable(tableIdx); drawPreview(); setBallsUI(); }
+      if (syncTables() || !tablesBuilt) { tablesBuilt = true; loadTable(tableIdx); drawPreview(); setBallsUI(); setMode(mode); }
       if (done) {
         ready = true; $('bPlay').disabled = false; $('bPlay').textContent = 'PLAY';
         const n = rawLogos.filter(Boolean).length;

@@ -6,7 +6,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Spiel | Verzeichnis |
 |---|---|
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
-| AnMaCha Flipper – 3D-Flipper mit eigenen Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) |
+| AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -79,12 +79,15 @@ function doPost(e) {
 
 Hinweis: Ohne Server-Prüfung können Spieler ihren Score manipulieren – für ein Hobby-Ranking meist ausreichend.
 
-## AnMaCha Flipper: eigene Tische und Logos
+## AnMaCha Pinball: 13 Tische, Kampagne und freies Spiel
 
-Jedes Logo ergibt einen eigenen Tisch (anderes Layout und andere Farben, das Logo erscheint oben auf der Backglass).
-Bilder als `anmacha-flipper/logos/01.jpg` bis `13.jpg` ablegen (auch `.jpeg` oder `.png`, ca. 400 × 400 px, unter 200 KB).
-Ohne Logos gibt es 3 Platzhalter-Tische. Steuerung: `←`/`A` und `→`/`D` Flipper, `Leertaste` halten und loslassen startet die Kugel,
-`P` Pause, `R` Neustart, `M` Ton. Am Handy: LINKS / RECHTS / START halten. Bei 5 verlorenen Kugeln ist das Spiel vorbei; der Bestwert wird im Browser gespeichert.
+Es gibt **13 Tische**; Tisch *n* bekommt das Logo `anmacha-flipper/logos/NN.png` (auch `.jpg` / `.jpeg`, `01` … `13`, ca. 400 × 400 px, unter 200 KB).
+Fehlt ein Logo, zeigt der Tisch einen Platzhalter. Jeder Tisch hat ein eigenes Layout, eigene Farben und Spielfeld-Kunst.
+
+- **Kampagne:** startet bei Tisch 1. Pro Tisch gibt es ein Punkteziel (1500 + 700 × Tischnummer); wer es erreicht, kommt zum nächsten Tisch. Alle 3 Tische gibt es eine Extra-Kugel. Wer Tisch 13 schafft, hat gewonnen.
+- **Freies Spiel:** beliebigen Tisch wählen, 5 Kugeln, so viele Punkte wie möglich.
+- **Steigende Schwierigkeit:** pro Tisch stärkere Schwerkraft, kürzere Flipper, kürzere Kugelrettung (Tisch 1–3: 15 s nach dem Start, ab Tisch 13: keine) und ab Tisch 5 pendelnde „Störsender“ vor den Flippern (bis zu 3).
+- Steuerung: `←`/`A`, `→`/`D` Flipper, `Leertaste` halten und loslassen startet die Kugel, `P` Pause, `R` Neustart, `M` Ton. Am Handy: LINKS / RECHTS / START halten. Bei 0 Kugeln ist das Spiel vorbei; Bestwert und Kampagnen-Fortschritt werden im Browser gespeichert.
 
 ## Haupt-Logo
 
