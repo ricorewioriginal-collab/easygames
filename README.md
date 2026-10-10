@@ -20,6 +20,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Frequenzrad – Buchstaben-Rätsel mit Glücksrad, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 150 Rätsel) | [`anmacha-frequenzrad/`](anmacha-frequenzrad/) |
+| AnMaCha Preisradar – Preis-Schätzspiel mit 5 Spielarten, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 208 Produkte) | [`anmacha-preisradar/`](anmacha-preisradar/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
@@ -281,3 +282,13 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **150 Rätsel** in 15 Kategorien (`puzzles-a/b/c.js`, Format `{cat, t}`); eigene Rätsel: Großbuchstaben, Wörter ≤ 13 Zeichen, max. 4 Zeilen – prüfen mit `node anmacha-frequenzrad/tests/check-puzzles.js`.
 - **Technik:** Rad und Studio per Canvas 2D, Ton per WebAudio, keine Bibliothek. Dateien: `engine.js` (Spielablauf, rein), `wheel.js`, `pair.js`/`controller.js`, `audio.js`, `studio.js`, `main.js`.
 - **Tests:** `tests/engine-tests.js` (Regeln, Computergegner, Rätsel-Daten), `tests/check-puzzles.js`, Browser-Tests `tests/e2e.mjs` (Partien mit Computergegnern/zu zweit) und `tests/e2e-pair.mjs` (Spiel + 2 Handys).
+
+## AnMaCha Preisradar – Das Preis-Schätzspiel
+
+- **Prinzip:** Preise schätzen – eigene Spielformen, eigener Name, eigene Produktliste (kein Klon einer bestimmten Show). **Präsentiert vom RicoReWi Radioportal** (Logo im Menü, in der Kopfzeile und am Ende).
+- **Fünf Rundenarten:** 💶 *Gebotsduell* (geheim bieten, am nächsten dran **ohne drüber** gewinnt), 📻 *Frequenz-Skala* (Nadel auf den Preis stellen, Punkte nach Abweichung), ⚖️ *Teurer oder billiger?* (3 Vergleiche in Folge), 🛒 *Einkaufswagen* (8 Artikel, Summe möglichst genau auf das Ziel – nicht drüber, 45 s; das Ziel ist immer genau erreichbar) und zum Schluss das 🏆 *Preisfinale* (Gesamtpreis eines Dreier-Pakets).
+- **Spieler:** 1–4 Menschen, bis zu 2 Computer-Gegner (leicht/normal/schwer), Show mit 4, 6 oder 8 Spielen + Finale. Ohne Handys wird das Gerät herumgereicht („🎩 Spieler X ist dran – alle anderen wegschauen!"), damit die Tipps geheim bleiben.
+- **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy ist das Pad eines Spielers und gibt seine Tipps **gleichzeitig und geheim** ein (Gebot, Regler, Teurer/Billiger, Einkaufswagen). Ohne Handy übernimmt der Gastgeber. Lokale Tests: eigener PeerServer über `?ph=host:9000`.
+- **Produkte:** `products-a/b/c.js` (208 handelsübliche Durchschnittspreise in 15 Kategorien, ohne Markennamen; Format `{n, e, c, p, u?}`) – prüfen mit `node anmacha-preisradar/tests/check-products.js`. Alle Preise ohne Gewähr 😉
+- **Technik:** keine Bibliothek; Studio und Skala per Canvas 2D, Ton per WebAudio. Dateien: `engine.js` (Wertung und Ablauf, rein), `inputs.js` (Eingabe-Elemente für Gastgeber und Handy), `gauge.js`, `pair.js`/`controller.js`, `audio.js`, `studio.js`, `main.js`.
+- **Tests:** `tests/engine-tests.js` (Wertung, Rundenbau, Computer-Shows, Daten), `tests/check-products.js`, Browser-Tests `tests/e2e.mjs` (Hot-Seat + Computer) und `tests/e2e-pair.mjs` (Show + 2 Handys, inkl. abgelehnter 3. Mensch, Geheimhaltung und Fallback).
