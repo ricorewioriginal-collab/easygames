@@ -136,5 +136,6 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Kampf:** rundenbasiert in Ich-Ansicht; Angriff, Fertigkeit (SP), **Spezial (IP-Leiste füllt sich, wenn Helden Schaden nehmen)**, Item, Wache, Flucht. Ausrüstung beim Händler, Stufenaufstieg, Speichern (Brunnen/Menü).
 - **Steuerung:** Pfeiltasten/WASD, `Leertaste`/`Enter` bestätigen, `Esc`/`M` Menü, am Handy Touch-Steuerkreuz und Tippen.
 - **Quellcode:** `anmacha-quest/godot/` ist ein normales Godot-4.3-Projekt (`main.gd` Spiel, `gfx.gd` Pixel-Grafik, `data.gd` Karten/Gegner/Werte). Neu exportieren: `godot --headless --path anmacha-quest/godot --export-release Web ../index.html` (Vorlage „Web“, ohne Threads, Renderer Compatibility). Selbsttest (Karten + Balance): `godot --headless --path anmacha-quest/godot -- --autotest`.
-- Schrift: Pixelify Sans (SIL Open Font License).
+- **Monster:** 30 Gegner in Farbvarianten (je 6 pro Reich, passend zu Rap, Schlager, Weihnachten, Rock und Rausch-Turm) plus 5 große Bosse. Gegner laufen **sichtbar auf der Karte** herum, jagen dich bei Nähe und lösen bei Berührung den Kampf aus (zusätzlich seltene Zufallskämpfe). Flüchten ist möglich, besiegte Gegner verschwinden bis zum nächsten Betreten.
+- Credits: Monster-Sprites aus „Tiny Dungeon“ von Kenney (CC0, kenney.nl), Schrift Pixelify Sans (SIL Open Font License).
 

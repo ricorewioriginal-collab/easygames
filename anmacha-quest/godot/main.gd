@@ -17,7 +17,7 @@ const OW := {
 	"ow_static": ["#4a505e", "#444a58", "#202430", "#606878", "#7cff9a", 0]
 }
 const STAGE_LV := [3, 8, 13, 18, 23]
-const STAGE_POOL := [["beatbandit", "reimruepel", "bassgolem"], ["gecko", "schleim", "aal"], ["geist", "lebkuchen", "schneemann"], ["gargoyle", "mole", "verstaerker"], ["schemen", "stoersignal", "kreischer"]]
+const STAGE_POOL := [["beatbandit", "reimruepel", "bassgolem", "boombox", "graffiti", "mikspin"], ["gecko", "schleim", "aal", "disco", "herz", "zuckerg"], ["geist", "lebkuchen", "schneemann", "eisratte", "eisspin", "zwerg"], ["gargoyle", "mole", "verstaerker", "rifffled", "daemon", "roadie"], ["schemen", "stoersignal", "kreischer", "antspin", "rausritter", "zyklop"]]
 const NPC_PAL := {
 	"shop": {"hair": "#4a2a18", "skin": "#f0c8a0", "cloth": "#f09030", "cloth2": "#b8601a", "boots": "#5a3a22", "acc": "#c03a3a"},
 	"elder": {"hair": "#e8e8f0", "skin": "#e8c8a8", "cloth": "#9aa8d8", "cloth2": "#6a78a8", "boots": "#4a4a5a", "acc": "#ffffff"},
@@ -61,6 +61,7 @@ var anim := 0.0
 var busy := false
 var redraw_t := 0.0
 var stepflip := 0
+var roamers: Array = []
 
 # Grafik-Cache
 var tsets := {}
@@ -182,7 +183,14 @@ func get_tset(key: String) -> Dictionary:
 func mon_tex(id: String) -> ImageTexture:
 	if not mons.has(id):
 		var d: Dictionary = Dat.ENEMIES[id]
-		mons[id] = Gfx.monster(id, d["shape"], Color(d["col"]), d.get("boss", false))
+		var made: ImageTexture = null
+		if d.has("spr"):
+			var t = load("res://monsters/m%d.png" % d["spr"])
+			if t is Texture2D:
+				made = Gfx.tint((t as Texture2D).get_image(), d["hue"], d["sat"], d["val"])
+		if made == null:
+			made = Gfx.monster(id, d.get("shape", 0), Color(d.get("col", "#9a8aff")), d.get("boss", false))
+		mons[id] = made
 	return mons[id]
 
 func sbt() -> StyleBoxTexture:
@@ -664,7 +672,121 @@ func load_map(id: String, at: Vector2i) -> void:
 	ppos = Vector2(at) * TS
 	moving = false
 	grace = 8
+	spawn_roamers()
 	queue_redraw()
+
+func is_portal(c: Vector2i) -> bool:
+	for p in map["portals"]:
+		if p["x"] == c.x and p["y"] == c.y:
+			return true
+	return false
+
+# Sichtbare Monster, die auf der Karte umherlaufen und bei Berührung einen Kampf starten
+func spawn_roamers() -> void:
+	roamers = []
+	var pool: Array = map["enc"]
+	var count := 6
+	if map.get("world", false):
+		pool = STAGE_POOL[stage()]
+		count = 12
+	if pool.is_empty():
+		return
+	var seen := {gp: true}
+	var q: Array = [gp]
+	while not q.is_empty():
+		var c: Vector2i = q.pop_front()
+		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n: Vector2i = c + d
+			if not seen.has(n) and not blocked(n):
+				seen[n] = true
+				q.append(n)
+	var cells: Array = []
+	for c in seen:
+		if absi(c.x - gp.x) + absi(c.y - gp.y) < 7 or not obj_at(c).is_empty() or is_portal(c):
+			continue
+		if map.has("gate") and c.x > map["gate"]["x"]:
+			continue
+		cells.append(c)
+	cells.shuffle()
+	for i in mini(count, cells.size()):
+		var c: Vector2i = cells[i]
+		var p := Vector2(c) * TS
+		roamers.append({"id": pool[rng.randi() % pool.size()], "g": c, "pos": p, "from": p, "to": p, "t": 1.0, "wait": rng.randf() * 0.8, "stun": 0.0})
+
+func roamer_free(n: Vector2i, me: Dictionary) -> bool:
+	if blocked(n) or not obj_at(n).is_empty() or is_portal(n):
+		return false
+	if map.has("gate") and n.x > map["gate"]["x"] and not flags.get(map["gate"]["flag"], false):
+		return false
+	for o in roamers:
+		if o != me and o["g"] == n:
+			return false
+	return true
+
+func roamer_step(r: Dictionary) -> void:
+	var target := gtarget if moving else gp
+	var g: Vector2i = r["g"]
+	var dist: int = absi(target.x - g.x) + absi(target.y - g.y)
+	var opts: Array = []
+	for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		if roamer_free(g + d, r):
+			opts.append(g + d)
+	if opts.is_empty():
+		return
+	var pick: Vector2i = opts[rng.randi() % opts.size()]
+	if dist <= 6 and rng.randf() < 0.85:
+		var best := 9999
+		for n in opts:
+			var dd: int = absi(target.x - n.x) + absi(target.y - n.y)
+			if dd < best:
+				best = dd
+				pick = n
+	elif rng.randf() < 0.5:
+		return
+	r["from"] = r["pos"]
+	r["to"] = Vector2(pick) * TS
+	r["g"] = pick
+	r["t"] = 0.0
+
+func update_roamers(delta: float) -> void:
+	for r in roamers:
+		if r["stun"] > 0.0:
+			r["stun"] -= delta
+		if r["t"] < 1.0:
+			r["t"] = min(1.0, r["t"] + delta / 0.38)
+			r["pos"] = (r["from"] as Vector2).lerp(r["to"], r["t"])
+		else:
+			r["wait"] -= delta
+			if r["wait"] <= 0.0 and r["stun"] <= 0.0:
+				r["wait"] = rng.randf_range(0.2, 0.6)
+				roamer_step(r)
+		if r["stun"] <= 0.0 and not moving and (r["pos"] as Vector2).distance_to(ppos) < 11.0:
+			start_roamer_fight(r)
+			return
+
+func start_roamer_fight(r: Dictionary) -> void:
+	busy = true
+	touch_box.visible = false
+	dpad = Vector2i.ZERO
+	var pool: Array = map["enc"]
+	var bg: String = map["theme"]
+	if map.get("world", false):
+		pool = STAGE_POOL[stage()]
+		bg = reg[gp.y][gp.x]
+	var ids: Array = [r["id"]]
+	for i in int(rng.randf() < 0.5) + int(rng.randf() < 0.2):
+		ids.append(pool[rng.randi() % pool.size()])
+	await bmsg("Ein Monster stellt sich euch in den Weg!", 0.6)
+	var res: String = await run_battle(ids, bg)
+	if res == "win":
+		roamers.erase(r)
+	elif res == "run":
+		r["stun"] = 3.0
+	elif res == "lose":
+		await game_over()
+	grace = 6
+	busy = false
+	touch_box.visible = true
 
 func tile(x: int, y: int) -> String:
 	if x < 0 or y < 0 or x >= mw or y >= mh:
@@ -720,7 +842,7 @@ func on_step() -> void:
 			return
 	if map["rate"] > 0.0:
 		grace -= 1
-		if grace <= 0 and rng.randf() < map["rate"]:
+		if grace <= 0 and rng.randf() < map["rate"] * 0.4:
 			start_encounter()
 
 func use_portal(p: Dictionary) -> void:
@@ -1342,6 +1464,8 @@ func _process(delta: float) -> void:
 			var d := read_dir()
 			if d != Vector2i.ZERO:
 				try_step(d)
+		if not busy and not choosing and not talking:
+			update_roamers(delta)
 		var tgt := ppos + Vector2(8, 8) - Vector2(VW, VH) / 2.0
 		var pw := mw * TS
 		var ph := mh * TS
@@ -1448,6 +1572,11 @@ func draw_world() -> void:
 			"boss":
 				draw_circle(pos + Vector2(8, 8), 14 + sin(anim * 4.0) * 1.5, Color(1, 0.2, 0.2, 0.25))
 				draw_texture_rect(mon_tex(o["d"]["id"]), Rect2(pos + Vector2(-8, -10), Vector2(32, 32)), false)
+	for r in roamers:
+		var rp: Vector2 = r["pos"]
+		var rb := sin(anim * 5.0 + rp.x * 0.1) * 1.0
+		draw_circle(rp + Vector2(8, 14), 6, Color(0, 0, 0, 0.3))
+		draw_texture_rect(mon_tex(r["id"]), Rect2(rp + Vector2(0, -2 + rb), Vector2(16, 16)), false, Color(1, 1, 1, 0.55 if r["stun"] > 0.0 else 1.0))
 	var lead: Dictionary = party[0] if not party.is_empty() else {"id": "andrew"}
 	var bob := absf(sin(mt * PI)) * 1.0 if moving else 0.0
 	draw_hero(str(lead["id"]), ppos + Vector2(0, -bob), face, stepflip if moving else 0)
@@ -1755,6 +1884,10 @@ func _autotest() -> void:
 				if o["t"] == "gate":
 					flags[o["d"]["key"]] = true
 				await interact(o)
+		spawn_roamers()
+		print("Roamer ", mid2, ": ", roamers.size())
+		if not roamers.is_empty():
+			await start_roamer_fight(roamers[0])
 		for h in party:
 			h["lv"] += 14
 			h["hp"] = mhp(h)
@@ -1763,6 +1896,10 @@ func _autotest() -> void:
 			if o["t"] == "boss":
 				await interact(o)
 		print("Auto ", mid2, " Boss-Flag: ", flags.get("boss_" + mid2, false), " Truhen offen: ", flags.get(mid2 + "_key", false))
+	load_map("welt", Vector2i(20, 22))
+	print("Roamer welt: ", roamers.size())
+	if not roamers.is_empty():
+		await start_roamer_fight(roamers[0])
 	for n in Dat.MAPS["hub"]["npcs"]:
 		if n["kind"] != "shop":
 			await talk_npc(n)
@@ -1778,7 +1915,7 @@ func _autotest() -> void:
 				sheet.blit_rect(im, Rect2i(0, 0, 16, 16), Vector2i(x % 512, 0 + (x / 512) * 16))
 				x += 16
 	var mx := 0
-	for id in ["beatbandit", "reimruepel", "bassgolem", "gecko", "schleim", "aal", "geist", "lebkuchen", "schneemann", "gargoyle", "mole", "verstaerker", "schemen", "stoersignal", "kreischer"]:
+	for id in Dat.ENEMIES.keys().filter(func(k: String) -> bool: return not Dat.ENEMIES[k].get("boss", false)):
 		var im: Image = mon_tex(id).get_image()
 		sheet.blit_rect(im, Rect2i(0, 0, 16, 16), Vector2i(mx % 512, 40 + (mx / 512) * 16))
 		mx += 17

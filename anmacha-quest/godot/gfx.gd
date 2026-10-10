@@ -536,3 +536,18 @@ static func house_tile(kind: String) -> ImageTexture:
 			rect(i, 2, 7, 12, 1, Color("#5a3a22"))
 			rect(i, 7, 2, 2, 12, Color("#5a3a22"))
 	return tex(i)
+
+# Farbvariante eines Sprites (Farbton verschieben, Sättigung/Helligkeit skalieren)
+static func tint(src: Image, hue: float, sat: float, val: float) -> ImageTexture:
+	var i := src.duplicate() as Image
+	if i.get_format() != Image.FORMAT_RGBA8:
+		i.convert(Image.FORMAT_RGBA8)
+	for y in i.get_height():
+		for x in i.get_width():
+			var c := i.get_pixel(x, y)
+			if c.a > 0.1:
+				c.h = fposmod(c.h + hue, 1.0)
+				c.s = clampf(c.s * sat, 0.0, 1.0)
+				c.v = clampf(c.v * val, 0.0, 1.0)
+				i.set_pixel(x, y, c)
+	return tex(i)
