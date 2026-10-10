@@ -216,6 +216,37 @@ const ru = await page.evaluate(async () => {
   return { walk, run, n: b.npcs.length, kids, fam, pk, together };
 });
 ok(ru.run > ru.walk * 1.3 && ru.n >= 40 && ru.kids >= 12 && ru.fam >= 8 && ru.pk >= 30 && ru.together, `Rennen ${ru.run.toFixed(1)} > Gehen ${ru.walk.toFixed(1)} m/s, ${ru.n} Menschen (${ru.kids} Kinder, ${ru.fam} in Familien), ${ru.pk} Fahrzeuge, Familie bleibt zusammen`);
+// Helden, Haustiere, Wohnung (Zimmer, Eltern, Schlafen, Umziehen), Dach/Kamera beim selbstgebauten Haus
+const hp = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave();
+  const heroes = [...document.querySelectorAll('#heroPick .hc')]; for (const h of heroes) { h.click(); await sleep(60); } const nh = heroes.length;
+  document.querySelector('#heroPick .hc').click(); const pets = [...document.querySelectorAll('#heroPick .pets .pill')]; const names = []; for (const p of pets) { p.click(); await sleep(60); names.push(b.pup.name); }
+  pets[0].click();
+  return { nh, names, save: b.save.pet };
+});
+ok(hp.nh >= 11 && hp.names.length >= 6 && new Set(hp.names).size === hp.names.length, `Helden (${hp.nh}) und Haustiere (${hp.names.join(', ')}) wechselbar`);
+const wo = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const slot = b.mySlot(), f = b.flats[slot];
+  b.goHome(); await sleep(300); const dd = Math.hypot(b.P.x - f.door.x, b.P.z - f.door.z);
+  b.P.x = f.cx; b.P.z = f.zF - 4; await sleep(2500); const inside = b.W.shelter(b.P.x, b.P.z) === 2, roofHid = !b.W.flatRoof.visible, camUp = b.cam.sp > 1;
+  b.P.x = f.mama.x + 1.2; b.P.z = f.mama.z + 1.2; const nm = b.flatNear() && b.flatNear().k; const s0 = b.save.stars; b.flatAct(b.flatNear()); const kiss = b.save.stars - s0;
+  b.P.x = f.ward.x - 1; b.P.z = f.ward.z; const nw = b.flatNear() && b.flatNear().k; b.flatAct(b.flatNear()); await sleep(300); const wardOn = b.wardOpen && !document.getElementById('wardPanel').hidden; b.closeWard();
+  b.P.x = f.bed.x + 1.2; b.P.z = f.bed.z + .5; const nb = b.flatNear() && b.flatNear().k; b.setNight(1); await sleep(300); b.flatAct(b.flatNear()); let lying = false; for (let i = 0; i < 400 && b.sl.t >= 0; i++) { await sleep(50); if (b.sl.t > 1.5 && b.sl.t < 3) lying = true; }
+  const woke = b.sl.t < 0, day = true; await sleep(300);
+  b.P.x = 0; b.P.z = 30; await sleep(200); const out = b.W.shelter(b.P.x, b.P.z) === 0; b.doFun('home'); await sleep(200); const home2 = Math.hypot(b.P.x - f.door.x, b.P.z - (f.door.z + 1.2)) < 2;
+  return { dd, inside, roofHid, camUp, nm, kiss, nw, wardOn, nb, lying, woke, out, home2 };
+});
+ok(wo.dd < 3 && wo.inside && wo.roofHid && wo.camUp && wo.nm === 'mama' && wo.kiss === 1 && wo.nw === 'ward' && wo.wardOn && wo.nb === 'bed' && wo.lying && wo.woke && wo.out && wo.home2, `Wohnung: Tür, Dach weg + steile Kamera, Mama (+1 ⭐), Kleiderschrank, Schlafen, Nach-Hause-Knopf (${JSON.stringify(wo)})`);
+const hb = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.toggleBuild(); await sleep(200);
+  let gx = 0, gz = 0, found = false; for (let a = 5; a < 30 && !found; a++) for (let c = -30; c < 30 && !found; c++) if (['floor', 'roof', 'wall'].every(t => b.build.canPlace(t, c, a, 0)) && b.build.canPlace('floor', c, a + 1, 0)) { gx = c; gz = a; found = true; }
+  const put = async (t, x, z, r) => { b.build.setType(t); b.build.setCursor(x * 4, z * 4); b.build.rot = r || 0; await sleep(250); return b.build.place(); };
+  const a1 = await put('floor', gx, gz); const a2 = await put('roof', gx, gz); b.toggleBuild(); b.P.x = gx * 4; b.P.z = gz * 4; b.P.y = 0; b.cam.pitch = .3; await sleep(2500);
+  const under = b.build.shelter(b.P.x, b.P.z) === 2, hid = !b.build.roofVisible(), steep = b.cam.sp > 1;
+  b.P.x = gx * 4 + 14; await sleep(1500); const back = b.build.roofVisible();
+  b.build.clearAll(); return { found, a1, a2, under, hid, steep, back };
+});
+ok(hb.found && hb.a1 && hb.a2 && hb.under && hb.hid && hb.steep && hb.back, `Selbstgebautes Haus: Dach verschwindet innen, Kamera steiler, Dach kommt draußen wieder (${JSON.stringify(hb)})`);
 console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 // Handy: fester Joystick sichtbar, Tastatur-Hinweise weg; Desktop: umgekehrt
 {

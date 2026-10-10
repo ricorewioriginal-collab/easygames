@@ -91,13 +91,17 @@ BI.createBuild = function (G) {
   function flushSave() { BI.store.set('build', B.items.map(i => [i.t, i.gx, i.gz, i.r, i.c])); }
 
   /* ---------- Mesh ---------- */
-  let dirty = true, mesh = null, rebuildT = 0;
+  let dirty = true, mesh = null, roofMesh = null, rebuildT = 0; const roofKeys = new Set(), wallKeys = new Set();
   const mat = BI.mat();
   function rebuild() {
-    const dst = new BI.Batch();
-    for (const it of B.items) { const [cx, cz] = center(it.gx, it.gz); append(dst, local(it.t, it.c), cx, cz, it.r * Math.PI / 2); }
-    if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh = null; }
+    const dst = new BI.Batch(), rf = new BI.Batch(); roofKeys.clear(); wallKeys.clear();
+    for (const it of B.items) {
+      const [cx, cz] = center(it.gx, it.gz); append(it.t === 'roof' ? rf : dst, local(it.t, it.c), cx, cz, it.r * Math.PI / 2);
+      if (it.t === 'roof') roofKeys.add(it.gx + ',' + it.gz); else if (CAT[it.t].edge && it.t !== 'fence') wallKeys.add(it.gx + ',' + it.gz);
+    }
+    if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh = null; } if (roofMesh) { scene.remove(roofMesh); roofMesh.geometry.dispose(); roofMesh = null; }
     if (!dst.empty) { mesh = dst.mesh(mat); mesh.frustumCulled = false; scene.add(mesh); }
+    if (!rf.empty) { roofMesh = rf.mesh(mat); roofMesh.frustumCulled = false; scene.add(roofMesh); }
     dirty = false;
   }
 
@@ -130,6 +134,13 @@ BI.createBuild = function (G) {
     if (dirty) { rebuildT -= dt; if (rebuildT <= 0) { rebuild(); rebuildT = .08; } }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) flushSave(); }
     if (B.active) updateGhost();
+    if (roofMesh) { const P = G.P, hide = B.active || (!P.veh && B.shelter(P.x, P.z) === 2); if (roofMesh.visible === hide) roofMesh.visible = !hide; }
+  };
+  /* 2 = unter einem Dach (Dach wird ausgeblendet, Kamera steiler), 1 = nahe an Wänden, 0 = draußen */
+  B.roofVisible = () => !!roofMesh && roofMesh.visible;
+  B.shelter = (x, z) => {
+    const gx = Math.round(x / CELL), gz = Math.round(z / CELL); if (roofKeys.has(gx + ',' + gz)) return 2;
+    for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) if (wallKeys.has((gx + i) + ',' + (gz + j))) return 1; return 0;
   };
   B.nearType = (x, z, key, r) => { for (const it of B.items) if (CAT[it.t][key] && Math.hypot(x - it.gx * CELL, z - it.gz * CELL) < r) return it; return null; };
   Object.defineProperty(B, 'count', { get: () => B.items.length });

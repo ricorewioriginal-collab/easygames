@@ -5,7 +5,7 @@ BI.WORLD = { R: 190, MAP: 236, LIMIT: 178, AX: 140, AZ: 118, CR: 40, ROAD: 9, RA
 
 BI.buildWorld = function (scene) {
   const K = BI.WORLD, rnd = BI.rng(20240611), rr = (a, b) => a + rnd() * (b - a), pick = a => a[(rnd() * a.length) | 0];
-  const st = new BI.Batch(), win = new BI.Batch(), lamp = new BI.Batch();
+  const st = new BI.Batch(), win = new BI.Batch(), lamp = new BI.Batch(), roofB = new BI.Batch();
   const W = { K, boxes: [], circles: [], vehicleSpawns: [], roadPts: [], houses: [], parts: [] };
 
   /* ---------- Kollision (Raster) ---------- */
@@ -423,6 +423,46 @@ BI.buildWorld = function (scene) {
     W.addBox(cx - 3.7, cz - 13.5, cx + 3.7, cz + 12, false, 1.4); W.addBox(cx - 3.7, cz + 6, cx + 3.7, cz + 11, false, 4.4); W.addCircle(cx, cz - 3, .55, false, 12); W.addCircle(cx - 2.3, cz - 7, .75, false, 3.2);
     W.spots.ship = { x: cx, z: cz };
   }
+  { // Wohnblock „Haus Sonnenschein“: 4 Wohnungen (Wohnzimmer mit Eltern vorn, Kinderzimmer mit Bett + Kleiderschrank hinten)
+    const X0 = -60, FW = 12, N = 4, ZF = -124, ZB = -140, ZI = -132, WH = 3.2, TT = .4, GL = 0xa8dcff, WD = 0x8a5a33, LT = 0xd9b88a;
+    const WC = [0xffd6a8, 0xbfe8ff, 0xd8f5c4, 0xffc8e6], RC = [0xe8453c, 0x3f8cff, 0x4cd07d, 0xff8a1f], CAR = [0xff9a9a, 0x9ad0ff, 0xa8e6a8, 0xffc78a], BEDC = [0xff6b6b, 0x4da3ff, 0x6bd67e, 0xb36bff];
+    W.pads.push([X0 - 4, ZB - 4, X0 + FW * N + 4, ZF + 6]); W.spots.flats = [];
+    st.rect(X0 - 2, ZF, X0 + FW * N + 2, ZF + 5, .035, 0xd9cfb8); // Vorplatz + Weg
+    const wall = (x0, x1, z, c, gapA, gapB) => { // Wand entlang x von x0..x1 bei z, optional mit Türlücke gapA..gapB
+      const seg = (a, b) => { if (b - a < .05) return; st.box((a + b) / 2, 0, z, b - a, WH, TT, c); W.addBox(a, z - TT / 2, b, z + TT / 2, false, WH); };
+      if (gapA == null) seg(x0, x1); else { seg(x0, gapA); seg(gapB, x1); st.box((gapA + gapB) / 2, 2.4, z, gapB - gapA, WH - 2.4, TT, c); }
+    };
+    for (let i = 0; i < N; i++) {
+      const x0 = X0 + FW * i, x1 = x0 + FW, cx = x0 + FW / 2, c = WC[i], dk = 0xb08a64;
+      st.rect(x0, ZI, x1, ZF, .05, LT); st.rect(x0, ZB, x1, ZI, .05, CAR[i]);                                  // Böden
+      wall(x0, x1, ZB, c); wall(x0, x1, ZF, c, cx - 1.3, cx + 1.3); wall(x0, x1, ZI, c, cx + 1.4, cx + 3.8);
+      st.box(x0, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x0 - TT / 2, ZB, x0 + TT / 2, ZF, false, WH);
+      if (i === N - 1) { st.box(x1, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x1 - TT / 2, ZB, x1 + TT / 2, ZF, false, WH); }
+      // Haustür, Fenster, Fußmatte, Blumenkasten
+      st.box(cx - 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx + 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx, 2.35, ZF + .1, 2.9, .16, .5, WD); st.box(cx, 0, ZF + 1, 2, .04, 1.2, RC[i]);
+      for (const sx of [-4, 4]) { st.box(cx + sx, 1.0, ZF + .2, 2.3, 1.4, .08, GL); st.box(cx + sx, .95, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.65, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.0, ZF + .24, .1, 1.4, .1, 0xffffff); st.box(cx + sx, .55, ZF + .6, 2.3, .35, .4, 0x8a5a33); for (let k = 0; k < 5; k++) st.sph(cx + sx - 1 + k * .5, .85, ZF + .6, .16, [0xff5a8a, 0xffd23f, 0xff8a1f][k % 3], 0); }
+      st.box(cx + 2, 1.0, ZB + .22, 2.4, 1.3, .08, GL); st.box(cx + 2, 1.0, ZB + .25, .1, 1.3, .1, 0xffffff);                    // Fenster hinten
+      // Wohnzimmer: Teppich, Sofa, Fernseher, Esstisch, Pflanze
+      st.rect(cx - 3.4, ZF - 6.2, cx + 1.4, ZF - 2.4, .062, 0xff8a8a);
+      st.box(cx - 2.6, 0, ZI + 1.0, 3.2, .5, 1.1, 0x4da3ff); st.box(cx - 2.6, .5, ZI + .6, 3.2, .8, .3, 0x3d86e0); st.box(cx - 4.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); st.box(cx - 1.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); W.addBox(cx - 4.3, ZI + .2, cx - .9, ZI + 1.6, false, 1.2);
+      st.box(x1 - 1.0, 0, ZF - 4.2, .7, .6, 2.6, WD); st.box(x1 - 1.0, .6, ZF - 4.2, .16, 1.1, 2.1, 0x23262d); st.box(x1 - 1.1, .68, ZF - 4.2, .04, .94, 1.9, 0x6fd0ff); W.addBox(x1 - 1.4, ZF - 5.5, x1 - .5, ZF - 2.9, false, 1.7);
+      st.box(cx + 2.0, .75, ZF - 2.0, 2.2, .1, 1.3, 0xc8a27a); for (const lx of [-.95, .95]) for (const lz of [-.5, .5]) st.box(cx + 2.0 + lx, 0, ZF - 2.0 + lz, .12, .75, .12, 0x8a6a45); st.sph(cx + 2.0, .98, ZF - 2.0, .14, 0xff5a5a, 0); W.addBox(cx + .85, ZF - 2.7, cx + 3.15, ZF - 1.3, false, .9);
+      st.cyl(x0 + 1.0, 0, ZF - .9, .3, .22, .5, 0xc2453d, 8); st.sph(x0 + 1.0, 1.0, ZF - .9, .55, 0x3fa84e, 1, 1, 1.2, 1); W.addCircle(x0 + 1.0, ZF - .9, .5, false, 1.6);
+      // Kinderzimmer: Bett, Kleiderschrank, Spielkiste, Teppich
+      st.rect(cx - 2.2, ZB + 3.6, cx + 2.6, ZB + 6.6, .062, 0xffffff); st.rect(cx - 2.0, ZB + 3.8, cx + 2.4, ZB + 6.4, .066, 0xffd86b);
+      st.box(cx - 3.6, 0, ZB + 1.9, 2.1, .45, 3.3, WD); st.box(cx - 3.6, .45, ZB + 2.1, 1.95, .3, 2.9, BEDC[i]); st.box(cx - 3.6, .75, ZB + 1.0, 1.1, .16, .6, 0xffffff); st.box(cx - 3.6, .45, ZB + .35, 2.1, 1.0, .12, WD); st.box(cx - 3.6, .75, ZB + 3.0, 1.9, .06, .9, shadeC(BEDC[i]));
+      W.addBox(cx - 4.65, ZB + .2, cx - 2.55, ZB + 3.6, false, 1.0);
+      st.box(x1 - .95, 0, ZB + 3.6, 1.4, 2.7, 3.0, 0xb98650); st.box(x1 - 1.66, .1, ZB + 2.9, .06, 2.3, 1.3, 0x8a5a33); st.box(x1 - 1.66, .1, ZB + 4.3, .06, 2.3, 1.3, 0x8a5a33); st.sph(x1 - 1.72, 1.3, ZB + 3.5, .08, 0xffd23f, 0); st.sph(x1 - 1.72, 1.3, ZB + 3.7, .08, 0xffd23f, 0); st.box(x1 - .95, 2.7, ZB + 3.6, 1.5, .1, 3.1, 0x8a5a33); W.addBox(x1 - 1.7, ZB + 2.1, x1 - .2, ZB + 5.1, false, 2.7);
+      st.box(cx + 1.2, 0, ZB + 1.1, 1.8, .7, 1.1, 0xe0382b); st.box(cx + 1.2, .7, ZB + 1.1, 1.9, .08, 1.2, 0xc02a20); st.sph(cx + .9, .9, ZB + .9, .22, 0xffd23f, 1); st.box(cx + 1.6, .78, ZB + 1.3, .35, .35, .35, 0x4da3ff); W.addBox(cx + .3, ZB + .5, cx + 2.1, ZB + 1.7, false, .8);
+      // Dach (eigenes Mesh, wird innen ausgeblendet)
+      roofB.prism(cx, WH, (ZB + ZF) / 2, FW + .8, 2.3, ZF - ZB + 1.6, RC[i], 0); roofB.box(cx, WH - .05, (ZB + ZF) / 2, FW + .6, .12, ZF - ZB + 1.4, shadeC(RC[i]));
+      const dz = ZF + 2.6;
+      W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
+    }
+    W.spots.flatBlock = { x0: X0, x1: X0 + FW * N, zB: ZB, zF: ZF };
+    function shadeC(c) { const f = v => Math.max(0, Math.round(v * .8)); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); }
+    W.shelter = (x, z) => { const q = W.spots.flatBlock; return x > q.x0 && x < q.x1 && z > q.zB - .5 && z < q.zF + .2 ? 2 : 0; };
+  }
   { // Schießbude: eingezäunte Bahn, Fangwand, Theke mit Spielzeug-Blastern – nur Attrappen als Ziele
     const X = -105, FZ = -66, WZ = -100, WOOD = 0xc8803c, DW = 0x8a5a33, RED = 0xe0382b;
     W.pads.push([-115, WZ - 8, -95, FZ + 6]);
@@ -573,6 +613,7 @@ BI.buildWorld = function (scene) {
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam;
 
   /* ---------- Meshes ---------- */
+  W.flatRoof = roofB.mesh(BI.mat()); W.flatRoof.frustumCulled = false; scene.add(W.flatRoof);
   const stMesh = st.mesh(BI.mat()); stMesh.frustumCulled = false; scene.add(stMesh);
   W.winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff }); W.lampMat = new THREE.MeshBasicMaterial({ color: 0xdcdcdc });
   const winMesh = win.mesh(W.winMat), lampMesh = lamp.mesh(W.lampMat); winMesh.frustumCulled = lampMesh.frustumCulled = false; scene.add(winMesh, lampMesh);
@@ -622,7 +663,7 @@ BI.buildWorld = function (scene) {
     ctx.fillStyle = '#e8d6c0'; for (const b of W.boxes) if (b.x1 - b.x0 > 5 && b.z1 - b.z0 > 5) ctx.fillRect(X(b.x0), Y(b.z0), (b.x1 - b.x0) * k, (b.z1 - b.z0) * k);
     ctx.fillStyle = '#ffb45a'; ctx.fillRect(X(-34), Y(20), 14 * k, 14 * k);
     const mark = (x, z, e) => { ctx.font = Math.round(S * .075) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, X(x), Y(z)); };
-    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
+    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(-36, -133, '🏠'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
   };
   return W;
 };

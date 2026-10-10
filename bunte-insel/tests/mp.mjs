@@ -33,6 +33,7 @@ await A.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/menu.png' :
 await A.click('#bMulti'); await A.click('#mpHost'); await A.waitForFunction(() => /^[A-Z2-9]{4}$/.test(document.getElementById('mpCode').textContent), null, { timeout: 8000 });
 const code = await A.evaluate(() => document.getElementById('mpCode').textContent);
 await A.click('#mpBack'); await A.click('#bStart'); await A.evaluate(() => { const b = window.__bi; b.P.x = 20; b.P.z = 30; });
+await B.evaluate(() => { window.__bi.setPet('mieze'); document.querySelectorAll('#heroPick .hc')[3].click(); });
 // Gast tippt den Code ein (Tastatur) und tritt bei
 await B.click('#bMulti'); await B.click('#mpJoin'); for (const ch of code) await B.keyboard.press(ch.toLowerCase()); 
 const rd = () => B.evaluate(() => document.getElementById('mpJoinCode').textContent.replace(/[\s·]/g, ''));
@@ -45,6 +46,8 @@ await A.waitForFunction(() => window.__bi.net.connected(), null, { timeout: 5000
 await B.click('#mpBack'); await B.click('#bStart'); await B.waitForTimeout(2500);
 const near = await B.evaluate(() => { const b = window.__bi, a = [...b.remote.values()][0]; return a ? { d: Math.hypot(b.P.x - a.x, b.P.z - a.z), ax: a.x, name: a.name, vis: a.char && a.char.group.visible } : null; });
 ok(near && near.d < 6 && Math.abs(near.ax - 20) < 2 && near.name.length > 2 && near.vis, `Gast landet beim Host und sieht ihn (Abstand ${near && near.d.toFixed(1)} m, ${near && near.name})`);
+const pk = await A.evaluate(() => { const a = [...window.__bi.remote.values()][0]; return { k: a.pet && a.pet.k, n: a.name }; });
+ok(pk.k === 'mieze' && /Fee Luna/.test(pk.n), `Freund erscheint mit eigener Figur und eigenem Haustier (${pk.n}, ${pk.k})`);
 // Fahrzeug wird live gezeigt
 await A.evaluate(() => { const b = window.__bi; const v = b.vehicles.find(v => v.type === 'car' && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); v.x += 0; b.inp.sy = 0; }); await B.waitForTimeout(1800);
 const veh = await B.evaluate(() => { const a = [...window.__bi.remote.values()][0]; return { v: a.v, gv: !!a.gv, hid: !a.char.group.visible }; });
