@@ -9,6 +9,8 @@ BI.VEH = {
   bus:       { name: 'Bus', icon: '🚌', max: 16, rev: 5, acc: 6, brake: 18, drag: 4, turn: 1.3, kind: 'car', horn: 'bus', cols: [-2.8, 0, 2.8], r: 1.45, cam: 13 },
   tractor:   { name: 'Traktor', icon: '🚜', max: 10, rev: 4, acc: 5, brake: 14, drag: 4, turn: 1.5, kind: 'tractor', horn: 'tractor', open: true, offroad: 1, cols: [-.8, 1], r: 1.2, cam: 8 },
   rc:        { name: 'RC-Auto', icon: '🏎️', max: 15, rev: 5, acc: 16, brake: 24, drag: 6, turn: 2.8, kind: 'bike', horn: 'bike', cols: [-.42, .42], r: .42, cam: 4.2, scale: .36, remote: true },
+  boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', water: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
+  rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
@@ -85,6 +87,16 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       return { wheels: [[0, .4, 1.0, .4, .2, 1], [0, .4, -.95, .4, .24, 0]], head: [[0, .98, 1.1]], tail: [[0, .72, -1.3]], seat: [0, .85, -.45], lean: 1 };
     }
   };
+  MODELS.boat = b => { // Segelboot: weißer Rumpf, blauer Streifen, Kajüte, Mast mit Segel und Wimpel
+    const W0 = 0xf5f5f5;
+    b.box(0, 0, -.2, 2.2, .75, 4.4, W0); b.box(-.55, 0, 2.5, 1.2, .75, 1.9, W0, -.5); b.box(.55, 0, 2.5, 1.2, .75, 1.9, W0, .5);
+    b.box(0, .3, -.2, 2.24, .2, 4.44, 0x2d8cff); b.box(0, .75, -.1, 2.0, .08, 4.2, 0xc8a27a);
+    b.box(0, .83, -1.35, 1.6, .85, 1.3, W0); b.box(0, 1.1, -1.35, 1.64, .3, 1.34, 0xa8dcff); b.box(0, 1.68, -1.35, 1.7, .08, 1.4, 0x2d8cff);
+    b.cyl(0, .8, .9, .07, .07, 4.8, 0x8a5a33, 6); b.prism(0, 1.3, .0, 3.0, 3.6, .06, 0xfff3d6, Math.PI / 2); b.box(.0, 5.6, .9, .06, .3, .7, 0xff5a5a);
+    b.box(0, .83, -2.3, .8, .08, .5, 0x6b4423);
+    return { wheels: [], head: [[0, .85, 3.0]], tail: [[0, .85, -2.45]], seat: [0, .85, -.4] };
+  };
+  MODELS.rcheli = b => MODELS.heli(b);
   MODELS.rc = b => { // Jannis' rotes Rennauto: tiefer Keil, dunkle Scheiben, graue Felgen, Heckflügel, Aufkleber 38
     const R = 0xe2362a, DK = 0x1c1c24;
     b.box(0, .2, 0, 1.9, .42, 4.2, R); b.box(0, .62, -.3, 1.62, .38, 2.1, DK); b.box(0, .98, -.3, 1.5, .1, 1.5, R); b.box(0, .45, 1.45, 1.7, .1, 1.3, R);
@@ -145,7 +157,20 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       const p = {}; W.resolve(this.x, this.z, this.r, p, this.y); if (p.hit) { this.x = p.x; this.z = p.z; this.v *= .6; }
       return 0;
     }
+    stepBoat(dt, inp, W) {
+      const sp = this.spec, thr = inp.thr, want = thr > 0 ? thr * sp.max * (inp.turbo ? 1.35 : 1) : thr * sp.rev, v0 = this.v;
+      const rate = Math.abs(thr) < .05 ? sp.drag : want * this.v < 0 ? sp.brake : Math.abs(want) > Math.abs(this.v) ? sp.acc : sp.drag * 1.4;
+      this.v += BI.clamp((Math.abs(thr) < .05 ? 0 : want) - this.v, -rate * dt, rate * dt); this.acc = (this.v - v0) / dt; this.steerCur = BI.damp(this.steerCur, inp.steer, 5, dt);
+      this.h -= this.steerCur * sp.turn * BI.clamp(Math.abs(this.v) / 2.5, .15, 1) * Math.sign(this.v || 1) * dt;
+      this.x += Math.sin(this.h) * this.v * dt; this.z += Math.cos(this.h) * this.v * dt;
+      let hit = 0; const lo = 206 + this.r, hi = 330, rad = Math.hypot(this.x, this.z) || 1;
+      if (rad < lo) { this.x *= lo / rad; this.z *= lo / rad; hit = 1; } else if (rad > hi) { this.x *= hi / rad; this.z *= hi / rad; hit = 1; }
+      const P = W.pier, bx = BI.clamp(this.x, P[0], P[2]), bz = BI.clamp(this.z, P[1], P[3]), dx = this.x - bx, dz = this.z - bz, d = Math.hypot(dx, dz);
+      if (d < this.r) { if (d > 1e-6) { this.x += dx / d * (this.r - d); this.z += dz / d * (this.r - d); } else this.x += this.r; hit = 1; }
+      if (hit) this.v *= .6; return 0;
+    }
     step(dt, inp, W, fx) {
+      if (this.spec.water) return this.stepBoat(dt, inp, W);
       if (this.spec.fly) return this.stepFly(dt, inp, W);
       const sp = this.spec, onRoad = W.onRoad(this.x, this.z); this.offroad = !onRoad;
       let max = sp.max * (inp.turbo ? 1.4 : 1) * (onRoad || sp.offroad ? 1 : .72);
@@ -176,7 +201,12 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     }
     /* Optik: Räder, Neigung, Blaulicht */
     visual(dt, t, fx) {
-      const sp = this.spec; this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      const sp = this.spec; if (sp.water) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      if (sp.water) {
+        this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, -this.steerCur * Math.abs(this.v) / sp.max * .22 + Math.sin(t * 1.3) * .03, 5, dt); this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .01, -.08, .08) + Math.sin(t * 1.1) * .02, 4, dt);
+        if (fx && Math.abs(this.v) > 1.5 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 2.2 + (Math.random() - .5), -.1, this.z - Math.cos(this.h) * 2.2 + (Math.random() - .5), (Math.random() - .5) * 1.4, .8, (Math.random() - .5) * 1.4, 1.1, 40, .95, .98, 1, 1, .8);
+        return;
+      }
       if (sp.fly) {
         const air = this.y > .3, on = this.driver || air; this.rotorW = BI.damp(this.rotorW, on ? 32 : 0, on ? 1.2 : .5, dt);
         this.rotorMain.rotation.y += this.rotorW * dt; this.rotorTail.rotation.x += this.rotorW * 1.6 * dt;

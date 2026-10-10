@@ -51,6 +51,7 @@ BI.createFun = function (G) {
 
   /* ---------- Bälle ---------- */
   const balls = [], ballGeo = (() => { const b = new BI.Batch(); b.sph(0, 0, 0, .45, 0xffffff, 1); for (const [x, y, z] of [[.4, 0, 0], [-.4, 0, 0], [0, .4, 0], [0, -.4, 0], [0, 0, .4], [0, 0, -.4]]) b.sph(x, y, z, .17, 0x23262d, 0); return b.mesh(BI.mat()).geometry; })();
+  F.balls = balls;
   F.ball = function () {
     const o = origin(); if (balls.length >= 3) { const old = balls.shift(); scene.remove(old.m); }
     const m = new THREE.Mesh(ballGeo, BI.mat()), b = { m, x: o.x + Math.sin(o.h) * 2.4, y: o.y + 2, z: o.z + Math.cos(o.h) * 2.4, vx: 0, vy: 0, vz: 0, cd: 0 };
@@ -60,6 +61,7 @@ BI.createFun = function (G) {
   function updateBalls(dt) {
     const P = G.P;
     for (const b of balls) {
+      if (b.held) { b.m.position.set(b.x, b.y, b.z); continue; }
       b.cd -= dt; b.vy -= 20 * dt; b.x += b.vx * dt; b.y += b.vy * dt; b.z += b.vz * dt;
       if (b.y < .45) { b.y = .45; if (b.vy < -1.8) { b.vy = -b.vy * .6; } else b.vy = 0; }
       const f = Math.pow(b.y <= .46 ? .3 : .85, dt); b.vx *= f; b.vz *= f;
@@ -209,9 +211,21 @@ BI.createFun = function (G) {
       const w = Math.sin(t * 5) * .05; giant.position.set(P.x, P.y + 1.05, P.z); giant.scale.set(R.r * (1 + w), R.r * (1 - w), R.r * (1 + w)); if (R.t <= 0 || P.veh) endRide();
     }
   }
+  /* ---------- Piratenkanone: Kugel fliegt aufs Meer und platscht ---------- */
+  const balls2 = [];
+  F.cannon = function (c, delay) { balls2.push({ c, delay: delay || 0, on: false, x: c.x, y: c.y, z: c.z, vx: 0, vy: 0, vz: 0 }); };
+  function updateCannons(dt) {
+    for (let i = balls2.length - 1; i >= 0; i--) {
+      const q = balls2[i];
+      if (!q.on) { q.delay -= dt; if (q.delay > 0) continue; q.on = true; A.cannon(); fx.burst(q.c.x, q.c.y, q.c.z, 14, [BI.C.white, BI.C.dust, BI.C.orange], 4, 1.3, 70, 0); q.vx = 26 + Math.random() * 6; q.vy = 6; q.vz = (Math.random() - .5) * 6; continue; }
+      q.vy -= 14 * dt; q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt; fx.emit(q.x, q.y, q.z, 0, 0, 0, .5, 28, .25, .25, .28, 0, .7);
+      if (q.y < -.2) { fx.burst(q.x, 0, q.z, 24, [BI.C.water, BI.C.white], 7, 1, 40, 12); A.splash(); balls2.splice(i, 1); }
+    }
+  }
+
   F.update = function (dt, t) {
     if (partyCool > 0) partyCool -= dt;
-    updateShots(dt); updateBalls(dt); updateBalloons(dt, t); updateRockets(dt); updateDance(dt, t); updateApples(dt); updateBubbles(dt, t); updatePaps(dt, t); G.W.updateTrees(dt, t);
+    updateShots(dt); updateBalls(dt); updateBalloons(dt, t); updateRockets(dt); updateDance(dt, t); updateApples(dt); updateBubbles(dt, t); updatePaps(dt, t); updateCannons(dt); G.W.updateTrees(dt, t);
     for (const n of G.npcs) if (n.dancer > 0) { n.dancer -= dt; if (n.dancer <= 0) n.spd = n.spd0; }
   };
   F.trampAt = null; // wird vom Bau-Modul gesetzt

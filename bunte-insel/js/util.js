@@ -102,8 +102,8 @@ BI.store = {
 
 /* ---- Spielfigur ---- */
 BI.SHIRTS = [0xff5a5a, 0x3fa0ff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8];
-BI.HATS = ['none', 'bear', 'cat', 'bunny', 'cap', 'crown'];
-BI.HAT_ICONS = { none: '🙂', bear: '🐻', cat: '🐱', bunny: '🐰', cap: '🧢', crown: '👑' };
+BI.HATS = ['none', 'bear', 'cat', 'bunny', 'cap', 'crown', 'pirate', 'wizard', 'chef', 'party', 'cowboy', 'helmet'];
+BI.HAT_ICONS = { none: '🙂', bear: '🐻', cat: '🐱', bunny: '🐰', cap: '🧢', crown: '👑', pirate: '🏴‍☠️', wizard: '🧙', chef: '🧑‍🍳', party: '🥳', cowboy: '🤠', helmet: '⛑️' };
 BI.makeChar = function (o) {
   o = o || {};
   const J = o.preset === 'jannis'; // Jannis: blonder Pilzkopf, dunkles Marvel-Shirt, braune Hose, Fernsteuerung
@@ -126,6 +126,15 @@ BI.makeChar = function (o) {
   if (hat === 'bunny') { body.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); body.box(-.11, 1.65, 0, .1, .42, .06, 0xffffff, 0, 0, .12); body.box(.11, 1.65, 0, .1, .42, .06, 0xffffff, 0, 0, -.12); body.box(-.11, 1.7, .03, .05, .3, .03, 0xffb0c8, 0, 0, .12); body.box(.11, 1.7, .03, .05, .3, .03, 0xffb0c8, 0, 0, -.12); }
   if (hat === 'cap') { body.sph(0, 1.55, -.02, .29, 0xe83c3c, 1, 1, .62, 1.02); body.box(0, 1.5, .27, .3, .04, .22, 0xe83c3c); }
   if (hat === 'crown') { body.box(0, 1.66, 0, .32, .1, .32, 0xffcf2e); for (let i = 0; i < 4; i++) body.cone(Math.cos(i * 1.5708) * .13, 1.74, Math.sin(i * 1.5708) * .13, .06, .14, 0xffcf2e, 4); }
+  if (hat === 'pirate') { body.box(0, 1.66, 0, .5, .14, .38, 0x1b1b25); body.box(0, 1.6, 0, .72, .07, .5, 0x1b1b25); body.box(-.34, 1.66, 0, .07, .16, .46, 0x1b1b25); body.box(.34, 1.66, 0, .07, .16, .46, 0x1b1b25); body.box(0, 1.62, .25, .18, .13, .05, 0x1b1b25); body.box(0, 1.67, .285, .11, .09, .02, 0xffffff); body.box(-.025, 1.685, .297, .03, .03, .01, 0x111111); body.box(.025, 1.685, .297, .03, .03, .01, 0x111111); }
+  if (hat === 'wizard') { body.cone(0, 1.6, 0, .3, .72, 0x6a3fd0, 8); body.box(0, 1.58, 0, .74, .04, .74, 0x5a2fc0); body.box(.1, 1.9, .2, .07, .07, .02, 0xffd23f, 0, 0, .8); body.box(-.12, 1.78, .22, .06, .06, .02, 0xffd23f, 0, 0, .8); }
+  if (hat === 'chef') { body.cyl(0, 1.58, 0, .22, .22, .24, 0xffffff, 10); body.sph(0, 1.9, 0, .28, 0xffffff, 1, 1, .8, 1); }
+  if (hat === 'party') { body.cone(0, 1.62, 0, .2, .56, 0xff5ab0, 8); body.box(0, 1.8, 0, .3, .05, .3, 0xffd23f, .5); body.sph(0, 2.2, 0, .07, 0xffd23f, 0); }
+  if (hat === 'cowboy') { body.box(0, 1.6, 0, .86, .04, .76, 0xa8703a); body.cyl(0, 1.62, 0, .2, .2, .22, 0xb98650, 8); body.box(0, 1.66, 0, .43, .05, .43, 0x6b4423); body.box(-.4, 1.62, 0, .1, .06, .7, 0xa8703a, 0, 0, .4); body.box(.4, 1.62, 0, .1, .06, .7, 0xa8703a, 0, 0, -.4); }
+  if (hat === 'helmet') { body.sph(0, 1.56, -.02, .33, 0xffd23f, 1, 1, .7, 1.05); body.box(0, 1.73, 0, .07, .04, .56, 0xffffff); body.box(0, 1.52, .3, .34, .05, .1, 0x1c3f9e); }
+  if (o.patch) { body.box(-.09, 1.4, .275, .13, .13, .03, 0x111111); body.box(0, 1.47, .265, .58, .03, .02, 0x111111, 0, 0, .18); }
+  if (o.cape) { body.box(0, .45, -.2, .54, .8, .05, 0xd8283a); body.box(0, 1.08, -.12, .42, .12, .2, 0xd8283a); body.sph(0, 1.08, .0, .05, 0xffd23f, 0); }
+  if (o.wings) { for (const sd of [-1, 1]) { body.box(sd * .32, .85, -.22, .5, .55, .03, 0xbfe8ff, 0, 0, sd * .55); body.box(sd * .38, .55, -.22, .34, .34, .03, 0xffc8ee, 0, 0, sd * .5); } }
   if (o.glasses) { body.box(0, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(.0, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(-.1, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(.1, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(0, 1.46, .27, .08, .03, .03, 0x1b1b25); body.box(-.19, 1.46, .22, .03, .03, .1, 0x1b1b25); body.box(.19, 1.46, .22, .03, .03, .1, 0x1b1b25); }
   if (o.pack) { body.box(0, .52, -.23, .42, .55, .16, 0x3fa8e8); body.box(0, .98, -.23, .32, .12, .13, 0x2d80c0); body.box(-.15, .55, .155, .05, .5, .02, 0x2d80c0); body.box(.15, .55, .155, .05, .5, .02, 0x2d80c0); }
   if (o.teddy) { body.sph(-.34, 1.3, .03, .11, 0xc8a27a, 1); body.sph(-.34, 1.46, .03, .08, 0xc8a27a, 1); body.sph(-.4, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.28, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.34, 1.44, .1, .035, 0xe8d0b0, 0); }
@@ -192,13 +201,31 @@ BI.makeDog = function (o) {
   b.box(-.15, .98, .78, .09, .24, .09, BLK, 0, 0, .25); b.box(.15, .98, .78, .09, .24, .09, BLK, 0, 0, -.25);
   b.box(-.08, .88, 1.0, .06, .06, .03, 0x111111); b.box(.08, .88, 1.0, .06, .06, .03, 0x111111);
   b.box(0, 1.08, .84, .36, .1, .36, BLUE); b.box(0, 1.17, .82, .24, .07, .24, BLUE); b.box(0, 1.07, 1.03, .32, .04, .13, 0x1c3f9e); b.box(0, 1.2, 1.0, .07, .06, .03, GOLD);
-  root.add(b.mesh(mat));
-  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.box(0, -.36, 0, .13, .36, .13, TAN); l.box(0, -.4, .03, .15, .08, .19, BLK); g.add(l.mesh(mat)); g.position.set(x, .38, z); root.add(g); return g; }
+  const inner = new THREE.Group(); root.add(inner); inner.add(b.mesh(mat));
+  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.box(0, -.36, 0, .13, .36, .13, TAN); l.box(0, -.4, .03, .15, .08, .19, BLK); g.add(l.mesh(mat)); g.position.set(x, .38, z); inner.add(g); return g; }
   const fl = leg(-.15, .5), fr = leg(.15, .5), bl = leg(-.15, -.36), br = leg(.15, -.36);
-  const tg = new THREE.Group(), t = new BI.Batch(); t.box(0, 0, -.2, .1, .1, .42, TAN, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, BLK, 0, -.5); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); root.add(tg);
+  const tg = new THREE.Group(), t = new BI.Batch(); t.box(0, 0, -.2, .1, .1, .42, TAN, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, BLK, 0, -.5); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
   const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(o.name || 'Blitz', 96, 30); cx.fillStyle = '#fff'; cx.fillText(o.name || 'Blitz', 96, 30);
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); root.add(sp);
-  return { group: root, pose(phase, amp, wag) { const s = Math.sin(phase) * amp; fl.rotation.x = s; br.rotation.x = s; fr.rotation.x = -s; bl.rotation.x = -s; tg.rotation.y = Math.sin(phase * (wag ? 3.2 : 1.4)) * (wag ? .7 : .25); } };
+  return {
+    group: root,
+    /* Tricks: sit, paw (Pfötchen), roll, beg (Männchen), flip (Salto); k = 0..1 */
+    trick(name, k) {
+      const e = k < .15 ? k / .15 : k > .85 ? (1 - k) / .15 : 1, kk = Math.min(1, k); inner.rotation.set(0, 0, 0); inner.position.set(0, 0, 0);
+      if (name === 'sit' || name === 'paw') { inner.rotation.x = -.55 * e; inner.position.y = -.2 * e; bl.rotation.x = br.rotation.x = -1.4 * e; fl.rotation.x = fr.rotation.x = 0; if (name === 'paw') fl.rotation.x = -(1.2 + Math.sin(k * 28) * .35) * e; }
+      else if (name === 'roll') { inner.rotation.z = kk * BI.TAU; inner.position.y = .3 * Math.sin(kk * Math.PI); }
+      else if (name === 'beg') { inner.rotation.x = -1.1 * e; inner.position.y = .28 * e; fl.rotation.x = fr.rotation.x = -.9 * e; bl.rotation.x = br.rotation.x = 0; }
+      else if (name === 'flip') { inner.rotation.x = -kk * BI.TAU; inner.position.y = 1.1 * Math.sin(kk * Math.PI); }
+    },
+    reset() { inner.rotation.set(0, 0, 0); inner.position.set(0, 0, 0); },
+    pose(phase, amp, wag) { const s = Math.sin(phase) * amp; fl.rotation.x = s; br.rotation.x = s; fr.rotation.x = -s; bl.rotation.x = -s; tg.rotation.y = Math.sin(phase * (wag ? 3.2 : 1.4)) * (wag ? .7 : .25); } };
+};
+
+/* ---- Drachen mit bunter Schleife ---- */
+BI.makeKite = function () {
+  const b = new BI.Batch(), root = new THREE.Group(); b.box(0, 0, 0, .9, .9, .03, 0xff5a5a, 0, 0, .785); b.box(0, 0, .02, .42, .42, .03, 0xffd23f, 0, 0, .785); b.box(0, -.6, .02, .03, 1.2, .02, 0x6b4a2a); b.box(0, -.1, .02, 1.1, .03, .02, 0x6b4a2a);
+  [0x4da3ff, 0x4cd07d, 0xff8fc8, 0xffd23f, 0xb36bff].forEach((c, i) => b.box(Math.sin(i * 1.3) * .12, -.8 - i * .22, .02, .16, .1, .02, c, 0, 0, i * .3));
+  root.add(b.mesh(BI.mat())); return { group: root };
 };
 
 /* ---- Partikel (Staub, Konfetti, Funken, Wasser) – ein Draw-Call ---- */

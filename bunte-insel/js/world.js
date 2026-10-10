@@ -1,7 +1,7 @@
 'use strict';
 /* Bunte Insel – die Welt: Boden, Straßen, Schienen, Gebäude, Bäume, Strand, Farm, Spielplatz.
    Alles Statische steckt in EINEM Mesh (Vertexfarben), dazu je ein kleines Mesh für Fenster und Laternen (Tag/Nacht). */
-BI.WORLD = { R: 190, LIMIT: 178, AX: 140, AZ: 118, CR: 40, ROAD: 9, RA: 55, RB: 105, RR: 12 };
+BI.WORLD = { R: 190, MAP: 236, LIMIT: 178, AX: 140, AZ: 118, CR: 40, ROAD: 9, RA: 55, RB: 105, RR: 12 };
 
 BI.buildWorld = function (scene) {
   const K = BI.WORLD, rnd = BI.rng(20240611), rr = (a, b) => a + rnd() * (b - a), pick = a => a[(rnd() * a.length) | 0];
@@ -51,7 +51,10 @@ BI.buildWorld = function (scene) {
       }
     }
     const rad = Math.hypot(px, pz);
-    if (rad > K.LIMIT - r) { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
+    if (rad > K.LIMIT - r) {
+      if (alt == null && pz > 150 && Math.abs(px) < 3.3) { px = BI.clamp(px, -2.1, 2.1); pz = Math.min(pz, 207.5); hit = true; } // Steg
+      else { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
+    }
     out.x = px; out.z = pz; out.hit = hit; return out;
   };
   const _o = {};
@@ -396,9 +399,29 @@ BI.buildWorld = function (scene) {
     st.cyl(-160, 0, -36, 2.6, 3.4, 9, 0xffffff, 12); st.cyl(-160, 3, -36, 2.9, 2.9, 2, 0xe53b3b, 12); st.cyl(-160, 6, -36, 2.6, 2.7, 2, 0xe53b3b, 12);
     st.cyl(-160, 9, -36, 3.3, 3.3, .5, 0x333c4a, 12); st.cyl(-160, 9.5, -36, 2, 2, 1.8, 0xfff7c0, 10); st.cone(-160, 11.3, -36, 2.6, 2, 0xe53b3b, 10); W.addCircle(-160, -36, 3.5, false, 14);
     W.spots.lighthouse = { x: -160, z: -36, y: 10.4 };
-    // Steg + Boot
-    st.box(0, .35, 168, 5, .3, 24, 0xb98650); for (let k = 0; k < 9; k++) st.box(-2.4, 0, 158 + k * 2.6, .3, .5, .3, 0x7a5a33), st.box(2.4, 0, 158 + k * 2.6, .3, .5, .3, 0x7a5a33);
-    W.addBox(-2.7, 156, -2.2, 180); W.addBox(2.2, 156, 2.7, 180);
+    // Steg zum Boot (bis z=208)
+    st.box(0, .35, 182, 5, .3, 52, 0xb98650); for (let k = 0; k < 21; k++) st.box(-2.4, 0, 158 + k * 2.5, .3, .5, .3, 0x7a5a33), st.box(2.4, 0, 158 + k * 2.5, .3, .5, .3, 0x7a5a33);
+    W.addBox(-2.7, 156, -2.2, 209, false, 1.2); W.addBox(2.2, 156, 2.7, 209, false, 1.2);
+    st.cyl(-2.1, .6, 207, .2, .2, .6, 0x333c4a, 6); st.cyl(2.1, .6, 207, .2, .2, .6, 0x333c4a, 6); st.cyl(0, 3.4, 207.6, .05, .05, 2, 0xffffff, 4); st.box(.45, 4.0, 207.6, .9, .55, .04, 0xff5a5a);
+    W.pier = [-2.7, 150, 2.7, 211]; W.dock = { x: 4.5, z: 209 };
+  }
+  { // Piratenschiff-Spielplatz am Ost-Strand: Rampe, begehbares Deck, Kanonen, Schatztruhe
+    const cx = 162, cz = -37, WD = 0x8a5a33, DK = 0x5b3a1f, SAIL = 0xfff3d6, ry0 = 0;
+    st.box(cx, 0, cz + 1, 7.4, 2.2, 22, WD); st.box(cx - 1.5, 0, cz - 12.8, 3.2, 2.2, 5, WD, .5); st.box(cx + 1.5, 0, cz - 12.8, 3.2, 2.2, 5, WD, -.5);
+    st.box(cx, 1.4, cz + 1, 7.6, .2, 22.2, DK); st.rect(cx - 3.55, cz - 11, cx + 3.55, cz + 6, 2.22, 0xc8a27a);
+    for (let k = 0; k < 9; k++) st.box(cx - 3.8, 1.0, cz - 9 + k * 2.4, .1, .2, .5, 0xffd23f); // Bullaugen-Zierde
+    st.box(cx, 2.2, cz + 8.5, 7.4, 1.8, 5, DK); st.box(cx, 4.0, cz + 8.5, 7.8, .25, 5.4, WD); for (const x of [-1.8, 1.8]) st.box(cx + x, 2.9, cz + 5.98, 1.0, .8, .05, 0xa8dcff);
+    for (const sx of [-3.55, 3.55]) { st.box(cx + sx, 2.95, cz - 1.8, .14, .12, 15.6, WD); for (let k = 0; k < 6; k++) st.box(cx + sx, 2.2, cz - 9.2 + k * 3, .14, .8, .14, WD); }
+    st.cyl(cx, 2.2, cz - 3, .38, .45, 11, 0x6b4423, 8); st.cyl(cx, 9.0, cz - 3, 1.15, .95, .45, DK, 8); st.box(cx, 4.5, cz - 3, 5.8, 3.6, .1, SAIL); st.box(cx, 8.0, cz - 3, 4.2, 2.0, .1, SAIL);
+    st.box(cx + .5, 11.0, cz - 3, 1.1, .7, .06, 0x15151c); st.sph(cx + .45, 11.38, cz - 2.95, .17, 0xffffff, 0); st.box(cx + .45, 11.0, cz - 2.95, .5, .06, .04, 0xffffff, 0, 0, .5); st.box(cx + .45, 11.0, cz - 2.95, .5, .06, .04, 0xffffff, 0, 0, -.5);
+    st.box(cx, 2.6, cz - 15.4, .25, .25, 4.2, WD, 0, -.3);
+    W.ship = { cx, cz, deck: { x0: cx - 3.6, x1: cx + 3.6, z0: cz - 12, z1: cz + 6, y: 2.2 }, ramp: { x0: 153, x1: 158.4, z0: cz + .5, z1: cz + 3.5 }, chest: { x: cx - 2.3, z: cz - 7 }, wheel: { x: cx, z: cz + 5.3 }, cannons: [] };
+    for (const z of [cz - 7.5, cz - 3.5, cz + .5]) { st.cyl(cx + 3.55, 2.45, z, .24, .3, 1.3, 0x23262d, 8, 0, 0, Math.PI / 2); st.sph(cx + 3.2, 2.45, z, .22, 0x23262d, 1); st.cyl(cx + 3.0, 2.2, z - .3, .22, .22, .08, 0x6b4423, 8, Math.PI / 2); st.cyl(cx + 3.0, 2.2, z + .3, .22, .22, .08, 0x6b4423, 8, Math.PI / 2); W.ship.cannons.push({ x: cx + 4.2, y: 2.75, z }); }
+    st.cyl(cx, 2.2, cz + 5.3, .12, .14, 1.0, 0x6b4423, 6); st.cyl(cx, 3.2, cz + 5.4, .55, .55, .08, 0x6b4423, 12, Math.PI / 2); st.box(cx, 3.2, cz + 5.4, 1.4, .08, .06, 0xffd23f); st.box(cx, 3.2, cz + 5.4, .08, 1.4, .06, 0xffd23f);
+    st.box(cx - 2.3, 2.2, cz - 7, 1.1, .6, .7, 0x8a5a33); st.box(cx - 2.3, 2.8, cz - 7, 1.1, .22, .7, 0x6b4423); st.sph(cx - 2.3, 3.0, cz - 7, .4, 0xffd23f, 1, 1, .5, 1); st.box(cx - 2.3, 2.2, cz - 6.64, 1.15, .62, .06, 0xffd23f); st.sph(cx - 2.0, 3.1, cz - 7.1, .12, 0xff5a5a, 0);
+    st.box(155.7, 1.02, cz + 2, 5.9, .16, 3, 0xb98650, 0, 0, .387); for (const dz of [-1.5, 1.5]) st.box(155.7, 1.5, cz + 2 + dz, 5.9, .1, .1, WD, 0, 0, .387);
+    W.addBox(cx - 3.7, cz - 13.5, cx + 3.7, cz + 12, false, 1.4); W.addBox(cx - 3.7, cz + 6, cx + 3.7, cz + 11, false, 4.4); W.addCircle(cx, cz - 3, .55, false, 12); W.addCircle(cx - 2.3, cz - 7, .75, false, 3.2);
+    W.spots.ship = { x: cx, z: cz };
   }
 
   /* ---------- Bäume, Büsche, Blumen, Steine ---------- */
@@ -544,7 +567,13 @@ BI.buildWorld = function (scene) {
       return { x, z };
     } return { x: 0, z: 30 };
   };
-  W.groundY = (x, z) => { for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2; return 0; };
+  W.groundY = (x, z) => {
+    for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;
+    const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
+    if (Math.abs(x) < 2.5 && z > 156 && z < 208) return .65;
+    return 0;
+  };
+  W.onDeck = (x, z) => { const S = W.ship; return x > S.deck.x0 && x < S.deck.x1 && z > S.deck.z0 && z < S.deck.z1; };
   W.update = function (t, dt, night) {
     W.clouds.rotation.y += dt * .006; W.foam.scale.setScalar(1 + Math.sin(t * .8) * .012); W.foam.material.opacity = .35 + Math.sin(t * .8) * .1;
     if (W.mill) W.mill.rotation.z += dt * .9;
@@ -556,7 +585,7 @@ BI.buildWorld = function (scene) {
     W.cloudMat.emissive.setHex(0x555a66).lerp(new THREE.Color(0x0e1224), n);
   };
   W.minimap = function (ctx, S) {
-    const k = S / (2 * (K.R + 6)), cx = S / 2, cy = S / 2, X = x => cx + x * k, Y = z => cy + z * k;
+    const k = S / (2 * K.MAP), cx = S / 2, cy = S / 2, X = x => cx + x * k, Y = z => cy + z * k;
     ctx.fillStyle = '#3aa8e8'; ctx.fillRect(0, 0, S, S);
     ctx.fillStyle = '#f3dfa2'; ctx.beginPath(); ctx.arc(cx, cy, 180 * k, 0, BI.TAU); ctx.fill();
     ctx.fillStyle = '#86d36a'; ctx.beginPath(); ctx.arc(cx, cy, 166 * k, 0, BI.TAU); ctx.fill();
@@ -568,7 +597,7 @@ BI.buildWorld = function (scene) {
     ctx.fillStyle = '#e8d6c0'; for (const b of W.boxes) if (b.x1 - b.x0 > 5 && b.z1 - b.z0 > 5) ctx.fillRect(X(b.x0), Y(b.z0), (b.x1 - b.x0) * k, (b.z1 - b.z0) * k);
     ctx.fillStyle = '#ffb45a'; ctx.fillRect(X(-34), Y(20), 14 * k, 14 * k);
     const mark = (x, z, e) => { ctx.font = Math.round(S * .075) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, X(x), Y(z)); };
-    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸');
+    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
   };
   return W;
 };

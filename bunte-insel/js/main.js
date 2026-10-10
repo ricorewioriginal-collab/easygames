@@ -55,6 +55,7 @@
   addVeh('car', 9, -24, Math.PI, { color: 0xe8453c }); addVeh('car', -9, 24, 0, { color: 0x3f8cff });
   addVeh('ice', -9, -36, Math.PI); addVeh('bus', 31, 9, Math.PI / 2); addVeh('bike', 14, -9, .5, { color: 0xff8a1f }); addVeh('bike', 150, 14, 1.2, { color: 0xff5a9a });
   addVeh('car', 150, -12, 1.6, { color: 0x4cd07d });
+  const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
   const traffic = [];
   for (let i = 0; i < 5; i++) {
     const dir = i % 2 ? -1 : 1, lane = dir > 0 ? K.RB + 2.2 : K.RB - 2.2, v = addVeh('car', 0, lane, 0, { color: BI.PAINT[(i * 3 + 1) % BI.PAINT.length], ai: true });
@@ -67,7 +68,7 @@
   let char = null;
   function buildChar() {
     if (char) { if (char.group.parent) char.group.parent.remove(char.group); }
-    const E = save.equip || {}, acc = { glasses: !!E.glasses, pack: !!E.pack, teddy: !!E.teddy };
+    const E = save.equip || {}, acc = { glasses: !!E.glasses, pack: !!E.pack, teddy: !!E.teddy, patch: !!E.patch, cape: !!E.cape, wings: !!E.wings };
     char = save.hero === 'custom' ? BI.makeChar(Object.assign({ shirt: BI.SHIRTS[save.shirt], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[save.hat], pants: 0x3d4a7a }, acc)) : BI.makeChar(Object.assign({ preset: 'jannis', name: 'Jannis', hat: E.hat || 'none' }, acc)); scene.add(char.group); return char; scene.add(char.group); return char;
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
@@ -96,11 +97,13 @@
   /* Pappnase: Jannis' Luftballon (an der Schnur), dazu eine große im Spielzeugladen */
   const pap = BI.makePappnase(); pap.group.scale.setScalar(.8); scene.add(pap.group); pap.wiggle = 0; pap.k = null;
   const strGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), str = new THREE.Line(strGeo, new THREE.LineBasicMaterial({ color: 0xffffff })); str.frustumCulled = false; scene.add(str);
+  const kiteC = BI.makeKite(); kiteC.group.visible = false; scene.add(kiteC.group); kiteC.k = null;
+  const kiteLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xffffff })); kiteLine.frustumCulled = false; kiteLine.visible = false; scene.add(kiteLine);
   const shopPap = BI.makePappnase(), SH = W.spots.shop; shopPap.group.scale.setScalar(1.6); shopPap.group.position.set(SH.x + 2.3, 2.6, SH.z + 1.0); scene.add(shopPap.group);
   const shopStr = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(SH.x + 2.3, 2.6, SH.z + 1.0), new THREE.Vector3(SH.x + 1.4, 1.2, SH.z + 3.5)]), new THREE.LineBasicMaterial({ color: 0xffffff })); scene.add(shopStr);
   const keeper = BI.makeChar({ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0xa14a2b, skin: 0xf3c9a0, name: 'Frau Bunt' }); keeper.group.position.set(SH.keeper.x, 0, SH.keeper.z); keeper.group.rotation.y = Math.PI; scene.add(keeper.group);
   /* Blitz, der Polizeihund-Helfer: folgt, bellt, spürt Sterne auf */
-  const pup = { d: BI.makeDog({ name: 'Blitz' }), x: P.x + 2.5, z: P.z + 1.5, h: 0, mode: 'follow', star: null, bark: 0, cd: 0, phase: 0, speed: 0 };
+  const pup = { d: BI.makeDog({ name: 'Blitz' }), x: P.x + 2.5, z: P.z + 1.5, h: 0, mode: 'follow', star: null, bark: 0, cd: 0, phase: 0, speed: 0, trick: null, trickIdx: 0, tricksDone: 0, fetch: null };
   scene.add(pup.d.group);
   const ducks = []; for (let i = 0; i < 3; i++) { const m = animalMesh('duck'); scene.add(m); ducks.push({ m, a: i * 2.1, r: 5 + i * 2 }); }
 
@@ -144,7 +147,7 @@
     if (!P.veh) {
       for (const v of vehicles) { if (v.ai) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
       const dt_ = train.nearest(P.x, P.z); if (dt_ < 4.2 && dt_ < bd) best = trainVeh;
-      if (!best) { const rc = vehicles.find(q => q.spec.remote); if (rc && Math.hypot(P.x - rc.x, P.z - rc.z) < 25) best = rc; }
+      if (!best) { let rd = 25; for (const q of vehicles) if (q.spec.remote) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < rd) { rd = d; best = q; } } }
     }
     return best;
   }
@@ -164,11 +167,13 @@
     const v = P.veh; if (!v) return;
     if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
     if (v.isTrain && train.v > 3) { say('Halte den Zug an zum Aussteigen 🚂', 2200); return; }
+    if (v.spec.water && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
     if (v.spec && v.spec.fly && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
     A.leave(); A.horn('car', false); A.siren('police', false); A.water(false);
     const lx = Math.cos(v.h), lz = -Math.sin(v.h), rad = v.isTrain ? 5.5 : v.r + 1.3;
     let px = v.x + lx * rad, pz = v.z + lz * rad;
     if (v.isTrain) { const L = Math.hypot(v.x, v.z) || 1; px = v.x - v.x / L * 6; pz = v.z - v.z / L * 6; }
+    if (v.spec.water) { px = .2; pz = 205.5; }
     if (!v.isTrain) { v.driver = null; v.siren = false; if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
     P.veh = null; char.group.visible = true;
     const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
@@ -176,8 +181,8 @@
   }
 
   /* ---------- Missionen ---------- */
-  const MISSION_BY = { police: 'patrol', ambulance: 'rescue', fire: 'fire', bus: 'bus', ice: 'ice', car: 'taxi', bike: 'courier', tractor: 'hay', train: 'train', heli: 'fly' };
-  const MTITLE = { patrol: ['🚓', 'Streife fahren'], rescue: ['🚑', 'Notruf!'], fire: ['🚒', 'Feuerwehr-Einsatz'], bus: ['🚌', 'Bus-Linie'], ice: ['🍦', 'Eis-Lieferung'], taxi: ['🚕', 'Taxi-Fahrt'], courier: ['📦', 'Paket-Kurier'], hay: ['🌾', 'Heu einsammeln'], train: ['🚂', 'Zug-Fahrt'], fly: ['🚁', 'Rundflug'] };
+  const MISSION_BY = { police: 'patrol', ambulance: 'rescue', fire: 'fire', bus: 'bus', ice: 'ice', car: 'taxi', bike: 'courier', tractor: 'hay', train: 'train', heli: 'fly', boat: 'sail' };
+  const MTITLE = { patrol: ['🚓', 'Streife fahren'], rescue: ['🚑', 'Notruf!'], fire: ['🚒', 'Feuerwehr-Einsatz'], bus: ['🚌', 'Bus-Linie'], ice: ['🍦', 'Eis-Lieferung'], taxi: ['🚕', 'Taxi-Fahrt'], courier: ['📦', 'Paket-Kurier'], hay: ['🌾', 'Heu einsammeln'], train: ['🚂', 'Zug-Fahrt'], fly: ['🚁', 'Rundflug'], sail: ['⛵', 'Segeltörn'] };
   const beacon = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 38, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .32, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
   beacon.position.y = 19; beacon.visible = false; scene.add(beacon);
   const beaconRing = new THREE.Mesh(new THREE.RingGeometry(2.6, 3.5, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .7, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
@@ -203,6 +208,10 @@
       const ns = train.nextStop(); let i0 = ns.i; if (Math.abs(train.offsetTo(i0)) < 4 && train.v < 1) i0 = (i0 + 1) % W.stations.length;
       for (let k = 0; k < 3; k++) { const idx = (i0 + k) % W.stations.length, stn = W.stations[idx]; M.steps.push({ type: 'tstop', idx, x: stn.x, z: stn.z, label: 'Halt: ' + stn.name + ' ' + stn.icon, phase: 'drive', timer: 0, prec: 0, speeding: false, shown: '' }); }
     }
+    else if (kind === 'sail') {
+      for (let i = 0; i < 4; i++) { const a = .5 + Math.random() * (TAU - 1), d = 222 + Math.random() * 70; M.steps.push(reach({ x: Math.sin(a) * d, z: Math.cos(a) * d }, 'Boje ' + (i + 1) + ' von 4 🛟', false, 9)); }
+      M.steps.push(reach({ x: W.dock.x + 2, z: W.dock.z + 5 }, 'Zurück zum Steg ⚓', false, 8));
+    }
     else if (kind === 'fly') {
       for (let i = 0; i < 4; i++) { const a = Math.random() * TAU, d = 30 + Math.random() * 100; M.steps.push({ x: Math.sin(a) * d, z: Math.cos(a) * d, y: 16 + Math.random() * 22, label: 'Fliege durch den Ring ' + (i + 1) + ' von 4 ⭕', type: 'reach', r: 9, air: true }); }
       M.steps.push({ x: W.spots.helipad.x, z: W.spots.helipad.z, label: 'Lande auf dem Landeplatz 🅷', type: 'land' });
@@ -213,7 +222,7 @@
   function showStep() {
     const M = mission; if (!M) return; const s = M.steps[M.i];
     if (mNpc) { scene.remove(mNpc.c.group); mNpc = null; }
-    const col = { patrol: 0x3f8cff, rescue: 0xff4a4a, fire: 0xff7a1f, bus: 0xffc933, ice: 0xff8fc8, taxi: 0xffd23f, courier: 0x4cd07d, hay: 0xe8c85a, train: 0x7a5ce0, fly: 0x4da3ff }[M.kind];
+    const col = { patrol: 0x3f8cff, rescue: 0xff4a4a, fire: 0xff7a1f, bus: 0xffc933, ice: 0xff8fc8, taxi: 0xffd23f, courier: 0x4cd07d, hay: 0xe8c85a, train: 0x7a5ce0, fly: 0x4da3ff, sail: 0x2d8cff }[M.kind];
     beacon.material.color.setHex(col); beaconRing.material.color.setHex(col);
     const hasPos = s.type === 'reach' || s.type === 'spray' || s.type === 'tstop' || s.type === 'land';
     beacon.visible = beaconRing.visible = hasPos && s.type !== 'spray'; flame.visible = s.type === 'spray';
@@ -297,8 +306,8 @@
   let btnSig = '';
   function updateButtons(force) {
     const v = P.veh, near = state === 'play' && !v && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
-    const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter();
-    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, build.active, !!tree, shopNear].join('|');
+    const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
+    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, build.active, !!tree, shopNear, chestNear].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
     if (v) {
@@ -311,13 +320,13 @@
       }
       jump.hidden = false; horn.hidden = false;
     } else {
-      act.hidden = !(near || shopNear); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; act.classList.toggle('pulse', !!(near || shopNear));
+      act.hidden = !(near || shopNear || chestNear); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; act.classList.toggle('pulse', !!(near || shopNear || chestNear));
       jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
   function drawMini() {
     const c = miniC.getContext('2d'); c.clearRect(0, 0, miniC.width, miniC.height); c.drawImage(miniBase, 0, 0);
-    const S = miniS * 2, k = S / (2 * (K.R + 6)), X = x => S / 2 + x * k, Y = z => S / 2 + z * k;
+    const S = miniS * 2, k = S / (2 * K.MAP), X = x => S / 2 + x * k, Y = z => S / 2 + z * k;
     if (mission) { const s = mission.steps[mission.i]; const tx = s.type === 'spray' ? s.fx : s.x, tz = s.type === 'spray' ? s.fz : s.z; if (s.type !== 'lap') { c.fillStyle = '#ff2d55'; c.beginPath(); c.arc(X(tx), Y(tz), 7, 0, TAU); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.stroke(); } }
     c.fillStyle = '#7a5ce0'; for (const cr of train.cars) c.fillRect(X(cr.x) - 2, Y(cr.z) - 2, 4, 4);
     const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z, ph = P.veh ? P.veh.h : P.h;
@@ -440,29 +449,36 @@
   $('starN').textContent = save.stars;
 
   /* ---------- Spielzeugladen: einkaufen mit Sternen ---------- */
+  const H = (id, icon, name, price) => ({ id: 'hat_' + id, icon, name, price, slot: 'hat', val: id, tab: 0 });
   const SHOP = [
-    { id: 'hat_crown', icon: '👑', name: 'Krone', price: 2, slot: 'hat', val: 'crown' }, { id: 'hat_bunny', icon: '🐰', name: 'Hasenohren', price: 2, slot: 'hat', val: 'bunny' },
-    { id: 'hat_bear', icon: '🐻', name: 'Bärenohren', price: 2, slot: 'hat', val: 'bear' }, { id: 'hat_cat', icon: '🐱', name: 'Katzenohren', price: 2, slot: 'hat', val: 'cat' },
-    { id: 'hat_cap', icon: '🧢', name: 'Cap', price: 2, slot: 'hat', val: 'cap' }, { id: 'glasses', icon: '🕶️', name: 'Sonnenbrille', price: 2, slot: 'glasses' },
-    { id: 'pack', icon: '🎒', name: 'Rucksack', price: 3, slot: 'pack' }, { id: 'teddy', icon: '🧸', name: 'Teddy', price: 3, slot: 'teddy' }
+    H('crown', '👑', 'Krone', 2), H('bunny', '🐰', 'Hasenohren', 2), H('bear', '🐻', 'Bärenohren', 2), H('cat', '🐱', 'Katzenohren', 2), H('cap', '🧢', 'Cap', 2),
+    H('pirate', '🏴‍☠️', 'Piratenhut', 3), H('wizard', '🧙', 'Zauberhut', 3), H('chef', '🧑‍🍳', 'Kochmütze', 2), H('party', '🥳', 'Partyhut', 2), H('cowboy', '🤠', 'Cowboyhut', 3), H('helmet', '⛑️', 'Helm', 2),
+    { id: 'glasses', icon: '🕶️', name: 'Sonnenbrille', price: 2, slot: 'glasses', tab: 1 }, { id: 'patch', icon: '🏴‍☠️', name: 'Augenklappe', price: 2, slot: 'patch', tab: 1 },
+    { id: 'pack', icon: '🎒', name: 'Rucksack', price: 3, slot: 'pack', tab: 1 }, { id: 'teddy', icon: '🧸', name: 'Teddy', price: 3, slot: 'teddy', tab: 1 },
+    { id: 'cape', icon: '🦸', name: 'Umhang', price: 3, slot: 'cape', tab: 1 }, { id: 'wings', icon: '🧚', name: 'Feenflügel', price: 3, slot: 'wings', tab: 1 },
+    { id: 'kite', icon: '🪁', name: 'Drachen', price: 4, slot: 'kite', tab: 2 }, { id: 'rcheli', icon: '🚁', name: 'RC-Hubschrauber', price: 6, slot: 'rcheli', tab: 2 }
   ];
+  const SHOP_TABS = ['👒 Mützen', '🎒 Zubehör', '🧸 Spielzeug']; let shopTab = 0;
   let shopOpen = false, wasInShop = false;
   const shopPanel = $('shopPanel');
   const inShop = () => !P.veh && Math.abs(P.x - SH.x) < SH.half && Math.abs(P.z - SH.z) < SH.half;
   const nearCounter = () => inShop() && Math.hypot(P.x - SH.keeper.x, P.z - (SH.keeper.z - 1.8)) < 5.2;
   const isEq = it => it.slot === 'hat' ? save.equip.hat === it.val : !!save.equip[it.slot];
   function setEq(it, on) { if (it.slot === 'hat') save.equip.hat = on ? it.val : 'none'; else save.equip[it.slot] = on; persist(); buildChar(); }
-  function spawnRC(quiet) {
-    const out = inShop(), hx = out ? SH.x : P.x + Math.sin(P.h) * 2.4, hz = out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4; let v = vehicles.find(q => q.type === 'rc');
-    if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; } else addVeh('rc', hx, hz, P.h);
-    if (!quiet) say('🏎️ Dein rotes RC-Auto steht bereit!', 1800);
+  function spawnRC(quiet, type) {
+    type = type || 'rc'; const out = inShop(), sd = type === 'rcheli' ? 2.2 : 0, hx = (out ? SH.x : P.x + Math.sin(P.h) * 2.4) + Math.cos(P.h) * sd, hz = (out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4) - Math.sin(P.h) * sd; let v = vehicles.find(q => q.type === type);
+    if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } } else addVeh(type, hx, hz, P.h);
+    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : '🏎️ Dein rotes RC-Auto steht bereit!', 1800);
   }
   function renderShop() {
-    $('shopStars').textContent = '⭐ ' + save.stars; const grid = $('shopGrid'); grid.innerHTML = '';
-    for (const it of SHOP) {
+    $('shopStars').textContent = '⭐ ' + save.stars; const tabs = $('shopTabs'); tabs.innerHTML = '';
+    SHOP_TABS.forEach((n, i) => { const t_ = document.createElement('button'); t_.className = 'bt' + (i === shopTab ? ' sel' : ''); t_.textContent = n; t_.onclick = () => { shopTab = i; renderShop(); }; tabs.appendChild(t_); });
+    const grid = $('shopGrid'); grid.innerHTML = '';
+    for (const it of SHOP.filter(q => q.tab === shopTab)) {
       const owned = save.owned.includes(it.id), c = document.createElement('div'), b = document.createElement('button'); c.className = 'sc' + (owned ? ' own' : '');
       c.innerHTML = '<div class="si">' + it.icon + '</div><div class="sn">' + it.name + '</div><div class="sp">' + (owned ? '✔ gehört dir' : it.price + ' ⭐') + '</div>';
       if (!owned) { b.textContent = 'Kaufen'; b.disabled = save.stars < it.price; b.onclick = () => buyItem(it); }
+      else if (it.slot === 'rcheli') { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, 'rcheli'); closeShop(); }; }
       else { b.textContent = isEq(it) ? 'Ablegen' : 'Anziehen'; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderShop(); }; }
       c.appendChild(b); grid.appendChild(c);
     }
@@ -470,13 +486,21 @@
   function buyItem(it) {
     if (save.owned.includes(it.id) || save.stars < it.price) return;
     save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
-    setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '!', 1800); renderShop();
+    if (it.slot === 'rcheli') spawnRC(true, 'rcheli'); else setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '!', 1800); renderShop();
   }
   function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; renderShop(); say('Frau Bunt: „Viel Spaß mit dem Spielzeug!“', 2200); }
   function closeShop() { shopOpen = false; shopPanel.hidden = true; updateButtons(true); }
   $('shopClose').addEventListener('click', closeShop);
 
   /* ---------- Spaß, Bauen, Ego-Kamera, Held ---------- */
+  const SHIP = W.ship; let chestCd = 0, wasOnDeck = false;
+  const onDeck = () => !P.veh && P.y > 1.5 && W.onDeck(P.x, P.z);
+  const nearChest = () => onDeck() && Math.hypot(P.x - SHIP.chest.x, P.z - SHIP.chest.z) < 3;
+  function openChest() {
+    if (chestCd > 0) { say('🏴‍☠️ Die Truhe ist leer – komm später wieder!', 2000); return; }
+    chestCd = 90; A.coins(); A.fanfare(); addStars(3); say('💰 Schatz gefunden! +3 ⭐', 2600); fx.burst(SHIP.chest.x, 3.4, SHIP.chest.z, 40, [BI.C.gold, BI.C.white, BI.C.orange], 7, 1.6, 30, 9);
+  }
+  const TRICKS = [['sit', 'Sitz', 1.7], ['paw', 'Pfötchen', 1.9], ['roll', 'Rolle', 1.1], ['beg', 'Männchen', 1.9], ['flip', 'Salto', 1.0]];
   function doPunch() {
     if (state !== 'play' || P.veh || build.active || shopOpen || P.punchT > 0) return;
     fun.setDance(false); const T = fun.nearTree(); if (T) P.h = Math.atan2(T.x - P.x, T.z - P.z); P.punchT = .4; P.punchHit = false;
@@ -488,13 +512,24 @@
   function doFun(k) {
     if (state !== 'play') return;
     save.use = save.use || {}; save.use[k] = (save.use[k] || 0) + 1; saveT = 1.5;
-    if (k === 'rcfetch') spawnRC();
+    if (k === 'rcfetch') { for (const q of vehicles) if (q.spec.remote && Math.hypot(P.x - q.x, P.z - q.z) > 12) spawnRC(false, q.type); }
+    else if (k === 'cannon') { if (onDeck()) { SHIP.cannons.forEach((c, i) => fun.cannon(c, i * .18)); say('💥 Feuer frei!', 1200); } }
+    else if (k === 'ahoi') { A.arr(); P.wave = 1.6; pap.wiggle = 1; say('🏴‍☠️ Ahoi, Käpt\'n Jannis!', 1800); fx.burst(P.x, 2.6, P.z, 10, [BI.C.gold, BI.C.white, BI.C.red], 3, 1.2, 30, -1); }
+    else if (k === 'trick') {
+      if (pup.trick || pup.mode === 'fetch') return; const T = TRICKS[pup.trickIdx % TRICKS.length]; pup.trickIdx++; pup.mode = 'follow'; pup.trick = { name: T[0], t: 0, dur: T[2] }; A.bark(); say('🐶 Blitz macht ' + T[1] + '!', 1600); fx.burst(pup.x, 1.4, pup.z, 6, [BI.C.pink, BI.C.gold], 2, 1, 30, -1);
+      if (++pup.tricksDone % TRICKS.length === 0) { addStars(2); A.star(); say('🏅 Trick-Meister! Alle Tricks geschafft! +2 ⭐', 2600); }
+    }
+    else if (k === 'fetch') {
+      if (pup.mode === 'fetch' || pup.trick) return; let bl = fun.balls[fun.balls.length - 1]; if (!bl) { fun.ball(); bl = fun.balls[fun.balls.length - 1]; }
+      bl.vx = Math.sin(P.h) * 11; bl.vz = Math.cos(P.h) * 11; bl.vy = 5; bl.cd = .5; pup.fetch = { ball: bl, phase: 'go', t: 0 }; pup.mode = 'fetch'; A.kick(); say('🎾 Hol den Ball, Blitz!', 1800);
+    }
     else if (k === 'dance') { if (P.veh) { say('🕺 Zum Tanzen erst aussteigen', 1600); return; } if (build.active) return; fun.setDance(!fun.dancing); }
     else if (k === 'punch') doPunch();
     else if (k === 'bubbles') fun.bubbles();
     else if (k === 'xxl') fun.xxl();
     else if (k === 'bark') { pup.bark = .6; A.bark(); say('🐶 Wuff!', 900); fx.burst(pup.x, 1.4, pup.z, 5, [BI.C.pink, BI.C.gold], 2, 1, 32, -1); for (const n of npcs) if (Math.hypot(n.x - pup.x, n.z - pup.z) < 12) { n.hop = .6; n.wave = 2; } }
     else if (k === 'search') {
+      if (pup.trick || pup.mode === 'fetch') return;
       if (pup.cd > 0) { say('🐶 Blitz verschnauft kurz …', 1200); return; }
       const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; let best = null, bd = 1e9; for (const s of stars) if (s.on) { const d = Math.hypot(s.x - px, s.z - pz); if (d < bd) { bd = d; best = s; } }
       if (best) { pup.star = best; pup.mode = 'search'; A.bark(); pup.bark = .3; say('🐶 Blitz, such den Stern! 🔎', 1800); }
@@ -506,18 +541,21 @@
     { k: 'punch', icon: '👊', name: 'Baum hauen', key: '6' }, { k: 'rcfetch', icon: '🏎️', name: 'RC-Auto holen', key: '' }, { k: 'dance', icon: '🕺', name: 'Tanzen', key: '1' },
     { k: 'bubbles', icon: '🫧', name: 'Blasen', key: '9' }, { k: 'balloons', icon: '🎈', name: 'Ballons', key: '5' }, { k: 'gum', icon: '🍬', name: 'Kaugummi', key: '2' },
     { k: 'fireworks', icon: '🎆', name: 'Feuerwerk', key: '4' }, { k: 'ball', icon: '⚽', name: 'Ball', key: '3' }, { k: 'search', icon: '🔎', name: 'Blitz such!', key: '8' },
-    { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' }
+    { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' },
+    { k: 'cannon', icon: '💥', name: 'Kanone', key: '' }, { k: 'ahoi', icon: '🏴‍☠️', name: 'Ahoi!', key: '' }, { k: 'trick', icon: '🐾', name: 'Blitz-Trick', key: '' }, { k: 'fetch', icon: '🎾', name: 'Apport', key: '' }
   ];
   let quickAll = false;
   const onFoot = () => !P.veh || P.veh.spec.remote;
   function avail(a) {
     if (a.k === 'punch') return onFoot() && !!fun.nearTree();
     if (a.k === 'dance' || a.k === 'xxl') return onFoot();
-    if (a.k === 'rcfetch') { const rc = vehicles.find(q => q.spec.remote); return !!rc && !(P.veh && P.veh.spec.remote) && Math.hypot(P.x - rc.x, P.z - rc.z) > 12; }
+    if (a.k === 'rcfetch') return !(P.veh && P.veh.spec.remote) && vehicles.some(q => q.spec.remote && Math.hypot(P.x - q.x, P.z - q.z) > 12);
+    if (a.k === 'cannon') return onFoot() && onDeck();
+    if (a.k === 'ahoi' || a.k === 'fetch') return onFoot();
     return true;
   }
   function score(a) {
-    const base = { punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10 };
+    const base = { punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10, cannon: 160, ahoi: 11 + (onDeck() ? 90 : 0), trick: 15, fetch: 13 + (fun.balls.length ? 25 : 0) };
     return (base[a.k] || 0) + (a.k === 'punch' ? 200 : 0) + Math.min((save.use || {})[a.k] || 0, 15) * 1.5;
   }
   function renderQuick() {
@@ -581,7 +619,7 @@
   let hitCool = 0, hornActive = false;
   function updatePlayer(dt) {
     const [jx, jy] = axes();
-    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (shopOpen) closeShop(); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); } }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (shopOpen) closeShop(); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearChest()) openChest(); } }
     if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
     if (fun.dancing && (jx || jy || inp.jump || P.veh)) fun.setDance(false);
     if (P.veh) {
@@ -613,7 +651,7 @@
         P.h += BI.angDiff(P.h, Math.atan2(dx, dz)) * Math.min(1, dt * 14); dx = dx / l * spd * m; dz = dz / l * spd * m;
       }
       P.x += dx * dt; P.z += dz * dt; P.speed = Math.hypot(dx, dz);
-      const q = W.resolve(P.x, P.z, .45, {}); P.x = q.x; P.z = q.z;
+      const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
       const gy = W.groundY(P.x, P.z);
       if (inp.jump) { inp.jump = false; if (P.y <= gy + .05) { P.vy = 7; A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); } }
@@ -641,7 +679,22 @@
     const dv = P.veh && !P.veh.spec.remote ? P.veh : null;
     const px = dv ? dv.x : P.x, pz = dv ? dv.z : P.z, ph = dv ? dv.h : P.h; let tx, tz, sp = 0;
     pup.cd = Math.max(0, pup.cd - dt); pup.bark = Math.max(0, pup.bark - dt);
-    if (pup.mode === 'search') {
+    if (pup.trick) {
+      pup.trick.t += dt; pup.h += BI.angDiff(pup.h, Math.atan2(px - pup.x, pz - pup.z)) * Math.min(1, dt * 5);
+      if (pup.trick.t >= pup.trick.dur) { pup.trick = null; pup.d.reset(); }
+    } else if (pup.mode === 'fetch') {
+      const Fe = pup.fetch;
+      if (!Fe || !fun.balls.includes(Fe.ball) || (Fe.t += dt) > 40) { if (Fe && Fe.ball) Fe.ball.held = false; pup.mode = 'follow'; pup.fetch = null; }
+      else {
+        const bl = Fe.ball;
+        if (Fe.phase === 'go') { tx = bl.x; tz = bl.z; sp = 10; if (Math.hypot(tx - pup.x, tz - pup.z) < 1.1) { Fe.phase = 'bring'; bl.held = true; A.bark(); pup.bark = .3; } }
+        else {
+          tx = px; tz = pz; sp = 8.5; bl.x = pup.x + Math.sin(pup.h) * .7; bl.z = pup.z + Math.cos(pup.h) * .7; bl.y = .55; bl.vx = bl.vz = bl.vy = 0;
+          if (Math.hypot(tx - pup.x, tz - pup.z) < 2.4) { bl.held = false; bl.vx = Math.sin(pup.h) * 2; bl.vz = Math.cos(pup.h) * 2; bl.vy = 2.5; pup.mode = 'follow'; pup.fetch = null; pup.cd = 3; A.star(); addStars(1); pup.bark = .5; say('🐶 Brav, Blitz! Ball gebracht! +1 ⭐', 2200); }
+        }
+      }
+    }
+    if (!pup.trick && pup.mode === 'search') {
       const s = pup.star; if (!s || !s.on) { pup.mode = 'follow'; }
       else {
         tx = s.x; tz = s.z; const d = Math.hypot(tx - pup.x, tz - pup.z);
@@ -649,7 +702,7 @@
         else sp = 9.5;
       }
     }
-    if (pup.mode === 'follow') {
+    if (!pup.trick && pup.mode === 'follow') {
       const bx = -Math.sin(ph) * 2.4 + Math.cos(ph) * 1.0, bz = -Math.cos(ph) * 2.4 - Math.sin(ph) * 1.0; tx = px + bx; tz = pz + bz;
       const d = Math.hypot(tx - pup.x, tz - pup.z);
       if (d > 45) { pup.x = tx; pup.z = tz; fx.burst(pup.x, .6, pup.z, 8, [BI.C.white, BI.C.dust], 3, .6, 30, 2); }
@@ -661,6 +714,7 @@
     const g = pup.d.group; let y = W.groundY(pup.x, pup.z);
     if (pup.bark > 0) y += Math.abs(Math.sin(pup.bark * 14)) * .18; if (fun.dancing) y += Math.abs(Math.sin(t * 8)) * .2;
     g.position.set(pup.x, y, pup.z); g.rotation.y = pup.h + (fun.dancing ? Math.sin(t * 3) * 1.2 : 0); pup.d.pose(pup.phase, sp > .3 ? Math.min(.85, sp * .12) : 0, pup.bark > 0 || fun.dancing || sp === 0);
+    if (pup.trick) pup.d.trick(pup.trick.name, pup.trick.t / pup.trick.dur);
   }
   function updatePap(dt) {
     const dv = P.veh && !P.veh.spec.remote ? P.veh : null;
@@ -677,8 +731,18 @@
     const sg = shopPap.group; sg.position.y = 2.6 + Math.sin(t * 1.3) * .12; sg.rotation.y = Math.atan2(camera.position.x - sg.position.x, camera.position.z - sg.position.z); sg.rotation.z = Math.sin(t * .9) * .06;
     keeper.pose(t * 1.5, 0, Math.sin(t * .6) > .5);
   }
+  function updateKite(dt) {
+    const on = !!(save.equip && save.equip.kite); kiteC.group.visible = kiteLine.visible = on; if (!on) return;
+    const dv = P.veh && !P.veh.spec.remote ? P.veh : null, ph = dv ? dv.h : P.h, bx = dv ? dv.x : P.x, bz = dv ? dv.z : P.z, by = dv ? (dv.y || 0) + 1.7 : P.y + .75;
+    const hx = bx - Math.cos(ph) * .42 + Math.sin(ph) * .1, hz = bz + Math.sin(ph) * .42 + Math.cos(ph) * .1;
+    const tx = hx - Math.cos(ph) * 1.3 + Math.sin(t * .8) * .9, ty = by + 5.2 + Math.sin(t * 1.1) * .5, tz = hz + Math.sin(ph) * 1.3 + Math.cos(t * .9) * .9;
+    if (!kiteC.k) kiteC.k = { x: tx, y: ty, z: tz }; kiteC.k.x = BI.damp(kiteC.k.x, tx, 3, dt); kiteC.k.y = BI.damp(kiteC.k.y, ty, 3, dt); kiteC.k.z = BI.damp(kiteC.k.z, tz, 3, dt);
+    const g = kiteC.group; g.position.set(kiteC.k.x, kiteC.k.y, kiteC.k.z); g.rotation.y = Math.atan2(camera.position.x - g.position.x, camera.position.z - g.position.z); g.rotation.z = Math.sin(t * 1.7) * .25;
+    const a = kiteLine.geometry.attributes.position; a.setXYZ(0, hx, by, hz); a.setXYZ(1, kiteC.k.x, kiteC.k.y - .3, kiteC.k.z); a.needsUpdate = true;
+  }
   function updateWorldActors(dt) {
-    updatePup(dt); updatePap(dt);
+    updatePup(dt); updatePap(dt); updateKite(dt); chestCd = Math.max(0, chestCd - dt);
+    { const od = onDeck(); if (od && !wasOnDeck && state === 'play') say('🏴‍☠️ Ahoi! Kanone 💥 im Schnellmenü, Schatztruhe vorn', 3600); wasOnDeck = od; }
     { const ins = inShop(); if (ins && !wasInShop && state === 'play') say('🧸 Willkommen im Spielzeugladen! An der Theke 🛒 drücken', 3500); wasInShop = ins; }
     // Parkende Fahrzeuge rollen aus
     for (const v of vehicles) if (!v.driver && !v.ai && Math.abs(v.v) > .05) { v.step(dt, { steer: 0, thr: 0 }, W, fx); }
@@ -806,9 +870,9 @@
     if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
     renderer.render(scene, camera);
   }
-  spawnRC(true);
+  spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli');
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
