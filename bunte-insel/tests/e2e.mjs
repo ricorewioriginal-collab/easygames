@@ -381,10 +381,10 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 { // Wetter, Jahreszeiten
   const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
   await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart');
-  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'rain'; w.set('rain'); window.__bi.save.season = 'autumn'; w.applySeason(); }); await p.waitForTimeout(7000);
+  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'rain'; w.set('rain'); window.__bi.save.season = 'autumn'; w.applySeason(); }); await p.waitForFunction(() => window.__bi.weather().rainy > .3, null, { timeout: 40000 }).catch(() => { });
   const r = await p.evaluate(() => { const w = window.__bi.weather(); return [w.kind, w.rainy, w.season()]; });
   ok(r[0] === 'rain' && r[1] > .3 && r[2] === 'autumn', `Wetter: Regen setzt ein (${r[1].toFixed(2)}), Herbst`);
-  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'clear'; w.set('clear'); }); await p.waitForTimeout(6000);
+  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'clear'; w.set('clear'); }); await p.waitForFunction(() => window.__bi.weather().rainy < .15, null, { timeout: 40000 }).catch(() => { });
   ok(await p.evaluate(() => window.__bi.weather().rainy < .15), 'Wetter: Regen hört auf'); await c.close();
 }
 { // Küche: melken, kochen, verkaufen
