@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080B12"><title>AnMaCha Quest RPG – Anleitung</title>
+<style>
+:root{--bg:#080B12;--tx:#EAF2FF;--mut:#9fb2cc;--c:#00E5FF;--o:#FF9A1F;--line:rgba(255,255,255,.14)}
+@media (prefers-color-scheme:light){:root:not([data-x]){--bg:#f4f7fc;--tx:#14213a;--mut:#4a5c7a;--c:#0a6aa8;--o:#b45a00;--line:rgba(0,0,0,.16)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:clamp(26px,6vw,38px);margin:.2em 0 .4em;color:var(--o)}h2{margin:1.6em 0 .4em;color:var(--c);font-size:clamp(20px,4.6vw,26px);border-bottom:1px solid var(--line);padding-bottom:.2em}h3{color:var(--o)}
+p,li{color:var(--tx)}ul,ol{padding-left:1.3em}li{margin:.2em 0}li.sub{margin-left:1.2em;list-style:circle}
+code{background:rgba(127,127,160,.2);padding:.05em .35em;border-radius:5px;font-size:.92em}
+.tw{overflow-x:auto;margin:.8em 0}table{border-collapse:collapse;width:100%;min-width:520px;font-size:.93em}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}th{background:rgba(127,127,160,.18)}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}em{color:var(--mut)}a{color:var(--c)}
+.top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.top a{border:1px solid var(--line);padding:8px 14px;border-radius:999px;text-decoration:none}
+</style></head><body><main>
+<div class="top"><a href="./">▶ Spiel starten</a><a href="../">← Alle Spiele</a></div>
+<h1>AnMaCha Quest RPG – Anleitung &amp; Wegweiser</h1>
+<p>Ein 16-Bit-Rollenspiel für PC und Handy. Spielzeit: ca. 1,5–2,5 Stunden. Der Spielstand wird lokal im Browser gespeichert.</p>
+<h2>1. Steuerung</h2>
+<div class="tw"><table><thead><tr><th>Aktion</th><th>PC</th><th>Handy</th></tr></thead><tbody>
+<tr><td>Laufen</td><td>Pfeiltasten oder <code>W</code> <code>A</code> <code>S</code> <code>D</code></td><td>Steuerkreuz unten links</td></tr>
+<tr><td>Bestätigen / Weiterlesen</td><td><code>Leertaste</code>, <code>Enter</code> oder <code>Z</code> (Mausklick auf Textfeld)</td><td>Textfeld antippen</td></tr>
+<tr><td>Zurück / Abbrechen</td><td><code>Esc</code>, <code>X</code> oder <code>Backspace</code></td><td>– (Menüpunkt „Zurück“)</td></tr>
+<tr><td>Menü öffnen</td><td><code>Esc</code>, <code>M</code> oder <code>Tab</code></td><td>Taste <strong>MENÜ</strong> oben rechts</td></tr>
+<tr><td>Menüpunkte wählen</td><td>Pfeiltasten + Bestätigen</td><td>Antippen</td></tr>
+</tbody></table></div>
+<p><strong>Ansprechen / Öffnen:</strong> Läufst du gegen eine Person, eine Truhe, ein Tor oder einen Boss, wird die Aktion sofort ausgelöst. Eine extra Taste ist nicht nötig.</p>
+<h2>2. Der Bildschirm</h2>
+<ul>
+<li><strong>Oben links:</strong> Name des Ortes und deine Münzen (M).</li>
+<li><strong>Weltkarte:</strong> Städte, Höhlen und der Turm sind beschriftet. Rot gefärbte Eingänge sind noch versiegelt.</li>
+<li><strong>Sichtbare Monster:</strong> Auf Weltkarte und in Dungeons laufen Gegner herum. Kommen sie nahe, jagen sie dich. Bei Berührung beginnt ein Kampf.</li>
+<li><strong>Kampfbildschirm:</strong> Oben die Gegner mit rotem Lebensbalken. Unten ein Fenster pro Held:</li>
+<li class="sub"><strong>Hp</strong> Lebenspunkte (blau/rot, wenn kritisch)</li>
+<li class="sub"><strong>Mp</strong> Spielpunkte für Fertigkeiten (grün, im Spiel „SP“)</li>
+<li class="sub"><strong>Ip</strong> Spezial-Leiste (gelb; blinkt orange, sobald der Spezialangriff bereit ist; der weiße Strich zeigt die nötige Menge)</li>
+</ul>
+<h2>3. Kampf im Detail</h2>
+<p>Alle Helden wählen zuerst ihre Aktion, danach werden die Aktionen nach Tempo ausgeführt. Das <strong>Kreuzmenü</strong> hat diese Felder:</p>
+<div class="tw"><table><thead><tr><th>Symbol</th><th>Befehl</th><th>Wirkung</th></tr></thead><tbody>
+<tr><td>Schwert (Mitte)</td><td><strong>Angriff</strong></td><td>Normaler Angriff auf einen Gegner</td></tr>
+<tr><td>Stab (oben)</td><td><strong>Fertigkeit</strong></td><td>Spezialfähigkeit des Helden, kostet SP</td></tr>
+<tr><td>Flamme (unten)</td><td><strong>Spezial</strong></td><td>Mächtiger Angriff, kostet IP (nur wenn die IP-Leiste voll genug ist)</td></tr>
+<tr><td>Beutel (links)</td><td><strong>Item</strong></td><td>Trank, Ätherchip, Weckruf einsetzen</td></tr>
+<tr><td>Schild (rechts)</td><td><strong>Wache</strong></td><td>Schaden dieser Runde halbieren</td></tr>
+<tr><td>Stiefel (Ecke rechts unten)</td><td><strong>Flucht</strong></td><td>Mit etwa 65 % Chance entkommen, gegen Bosse unmöglich</td></tr>
+</tbody></table></div>
+<p><strong>IP-Leiste:</strong> Sie füllt sich, wenn ein Held Schaden nimmt (bei starken Treffern mehr). Zu Beginn jedes Kampfes ist sie leer.</p>
+<p><strong>Sieg:</strong> Es gibt Erfahrung (EXP), Münzen und manchmal einen Trank. Sind deine Helden schwächer als das Gebiet, bekommen sie Bonus-EXP und holen schnell auf.</p>
+<p><strong>Niederlage:</strong> Ihr wacht in Funkhafen auf, voll geheilt, aber mit halbierten Münzen.</p>
+<h2>4. Die Helden</h2>
+<div class="tw"><table><thead><tr><th>Held</th><th>Rolle</th><th>Fertigkeiten (SP)</th><th>Spezial (IP)</th><th>Dabei ab</th></tr></thead><tbody>
+<tr><td><strong>Andrew</strong></td><td>Held, ausgewogen</td><td>Wuchtschlag (4), Rundumschlag (8, alle)</td><td>Funkenhieb (40) – riesiger Einzelschlag</td><td>Start</td></tr>
+<tr><td><strong>Marco</strong></td><td>Magier, hoher Schaden</td><td>Funkenblitz (4), Störwelle (9, alle)</td><td>Supernova (60) – Magie auf alle</td><td>Start</td></tr>
+<tr><td><strong>Teresa</strong></td><td>Heilerin</td><td>Heilton (4, einer), Chorus (9, alle)</td><td>Segenssong (50) – heilt alle voll, belebt Gefallene</td><td>Sieg im Bass-Keller</td></tr>
+<tr><td><strong>Rico</strong></td><td>Schütze, sehr schnell</td><td>Doppelschuss (5, 2 Treffer), Streufeuer (8, alle)</td><td>Salvenfeuer (50) – alle Gegner</td><td>Sieg auf der Glitzerwiese</td></tr>
+<tr><td><strong>Andy</strong></td><td>Wächter, hohe Abwehr</td><td>Schildschlag (3), Bollwerk (7, Team halbiert Schaden)</td><td>Titanenschlag (40) – Einzelschlag</td><td>Sieg in der Frosthöhle</td></tr>
+</tbody></table></div>
+<p>Neue Mitstreiter warten in <strong>Funkhafen</strong> auf dich (Ansage beim Betreten der Stadt) und steigen auf die Durchschnittsstufe der Gruppe ein.</p>
+<h2>5. Funkhafen (Stadt)</h2>
+<ul>
+<li><strong>Alte Antenne</strong> (Platzmitte): erklärt den Fortschritt und was als Nächstes zu tun ist.</li>
+<li><strong>Tonia</strong> (vor dem Haus oben links der Mitte): Händlerin.</li>
+<li class="sub">Trank 20 M (heilt 70 LP) · Ätherchip 60 M (+20 SP) · Weckruf 120 M (belebt einen Helden)</li>
+<li class="sub"><strong>Ausrüstung:</strong> erhöht Angriff, Abwehr und Magie aller Helden sowie die LP. Kosten 120 M × (Stufe+1)², maximal Stufe 6. Besonders vor dem Endboss lohnend.</li>
+<li><strong>Heilbrunnen</strong> (rechts der Mitte): LP und SP aller Helden komplett auffüllen, speichert zugleich.</li>
+<li><strong>Lotte</strong> und <strong>Wache Piet:</strong> Tipps.</li>
+<li><strong>Ausgang:</strong> südlicher Weg, führt auf die Weltkarte.</li>
+</ul>
+<h2>6. Ablauf der Geschichte</h2>
+<ol>
+<li><strong>Start in Funkhafen</strong> mit Andrew und Marco. Sprich mit der Alten Antenne, kaufe Tränke bei Tonia.</li>
+<li><strong>Weltkarte „Frequenzia“:</strong> Funkhafen liegt unten in der Mitte. Fünf weitere Eingänge, die nacheinander freigeschaltet werden.</li>
+<li><strong>Reich 1 – Bass-Keller (Rap)</strong>, Höhle im Westen (links unten). Boss <strong>MC Dröhn</strong>.</li>
+<li><strong>Reich 2 – Glitzerwiese (Schlager)</strong>, Höhle im Osten (rechts unten). Boss <strong>Königin Schunkel</strong>.</li>
+<li><strong>Reich 3 – Frosthöhle (Weihnachten)</strong>, Höhle links oben. Boss <strong>Der Frost-Moderator</strong>.</li>
+<li><strong>Reich 4 – Vulkanbühne (Rock)</strong>, Höhle rechts oben. Boss <strong>Riff-Titan</strong>.</li>
+<li><strong>Rauschen-Turm</strong>, Turm oben in der Mitte (öffnet sich nach den vier Reichen). Endboss <strong>Das Große Rauschen</strong>.</li>
+</ol>
+<p>Nach jedem Boss: Kristall glüht auf, der nächste Eingang öffnet sich, in Funkhafen wartet ein neuer Mitstreiter (nach den ersten drei Bossen), und der Spielstand wird gespeichert.</p>
+<h2>7. Wegweiser durch die Reiche</h2>
+<p>Jedes Reich (Dungeon) folgt demselben Muster: Eingang unten links, Bossraum oben rechts, davor ein <strong>verriegeltes Tor</strong>. Der Schlüssel liegt in einer Truhe. Dazu gibt es zwei weitere Truhen (Tränke und Münzen) und mehrere sichtbare Monster.</p>
+<p>Orientierung: Beim Betreten stehst du unten links. Der Ausgang ist der Wirbel links neben dir. Das Tor sitzt am linken Rand des Bossraums (oben rechts, etwa auf Höhe der oberen Mitte).</p>
+<div class="tw"><table><thead><tr><th>Reich</th><th>Empf. Stufe</th><th>Schlüssel-Truhe</th><th>Weitere Truhen</th><th>Gegner</th></tr></thead><tbody>
+<tr><td>Bass-Keller</td><td>3</td><td>links oben (obere Hälfte, linkes Drittel)</td><td>Mitte oben (Tränke), oben rechts von der Mitte (Münzen)</td><td>Beat-Bandit, Reim-Rüpel, Bass-Golem, Boombox-Mimik, Graffiti-Geist, Mikrofon-Spinne</td></tr>
+<tr><td>Glitzerwiese</td><td>8</td><td>ganz unten rechts</td><td>Mitte (Tränke), oben links (Münzen)</td><td>Glitzer-Schnecke, Schunkel-Schleim, Akkordeon-Mönch, Disco-Fledermaus, Herz-Ritter, Zuckerwatte-Geist</td></tr>
+<tr><td>Frosthöhle</td><td>13</td><td>links Mitte</td><td>rechts Mitte (Tränke), oben links (Münzen)</td><td>Glöckchen-Geist, Lebkuchen-Golem, Schneemann-Wicht, Eisratte, Eis-Spinne, Zipfel-Zwerg</td></tr>
+<tr><td>Vulkanbühne</td><td>18</td><td>rechts der Mitte</td><td>oben Mitte (Tränke), unten rechts (Münzen)</td><td>Gitarren-Gargoyle, Moshpit-Ratte, Verstärker-Schnecke, Riff-Fledermaus, Headbanger-Dämon, Roadie-Geist</td></tr>
+<tr><td>Rauschen-Turm</td><td>23</td><td>unten Mitte</td><td>Mitte (Tränke), oben Mitte (Münzen)</td><td>Statik-Schemen, Störsignal, Pegel-Kreischer, Antennen-Spinne, Rausch-Ritter, Pixel-Zyklop</td></tr>
+</tbody></table></div>
+<p>Vorgehen pro Reich: erst die Schlüssel-Truhe holen → Tor öffnen (gegen das Tor laufen) → Heilen/Items prüfen → Boss ansprechen.</p>
+<h3>Boss-Tipps</h3>
+<div class="tw"><table><thead><tr><th>Boss</th><th>Besonderheit</th><th>Tipp</th></tr></thead><tbody>
+<tr><td><strong>MC Dröhn</strong></td><td>„Bass-Drop“ trifft alle (jede 3. Runde)</td><td>Gruppe nur zu zweit: Tränke mitnehmen, in der Runde des Bass-Drops „Wache“ nutzen</td></tr>
+<tr><td><strong>Königin Schunkel</strong></td><td>„Schlager-Schmalz“ trifft alle</td><td>Teresas Chorus nach dem Angriff, Marcos Magie nutzen</td></tr>
+<tr><td><strong>Frost-Moderator</strong></td><td>„Eiszeit-Jingle“ trifft alle</td><td>Ausrüstung kaufen; Rico (schnell) für Doppelschuss</td></tr>
+<tr><td><strong>Riff-Titan</strong></td><td>„Feedback-Sturm“ trifft alle, sehr zäh</td><td>Andys Bollwerk vor dem Sturm, IP-Spezialangriffe sammeln</td></tr>
+<tr><td><strong>Das Große Rauschen</strong></td><td>„Weißes Rauschen“, stärkster Gegner</td><td>Ausrüstung voll ausbauen (mind. Stufe 4), Ätherchips und Weckrufe mitnehmen, IP für Segenssong aufheben</td></tr>
+</tbody></table></div>
+<p>Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegner besiegt, ist automatisch stark genug.</p>
+<h2>8. Handlungen im Überblick</h2>
+<div class="tw"><table><thead><tr><th>Handlung</th><th>Wo / Wie</th></tr></thead><tbody>
+<tr><td>Gegner bekämpfen</td><td>In Monster hineinlaufen oder bei Zufallskampf (selten)</td></tr>
+<tr><td>Fliehen</td><td>Kreuzmenü → Stiefel; Monster auf der Karte werden danach kurz betäubt</td></tr>
+<tr><td>Truhe öffnen</td><td>Gegen die Truhe laufen</td></tr>
+<tr><td>Tor öffnen</td><td>Gegen das Tor laufen (Schlüssel nötig)</td></tr>
+<tr><td>Gegenstände einsetzen</td><td>Im Kampf: Beutel; auf der Karte: MENÜ → Items</td></tr>
+<tr><td>Status ansehen</td><td>MENÜ → Status (Stufe, LP, SP, Werte, EXP)</td></tr>
+<tr><td>Einkaufen / Ausrüsten</td><td>Mit Tonia sprechen</td></tr>
+<tr><td>Heilen</td><td>Heilbrunnen in Funkhafen (kostenlos)</td></tr>
+<tr><td>Speichern</td><td>MENÜ → Speichern; automatisch beim Betreten von Funkhafen, nach Bossen und am Brunnen</td></tr>
+<tr><td>Weiterspielen</td><td>Titelbild → Fortsetzen</td></tr>
+<tr><td>Zum Titel</td><td>MENÜ → Titel (speichert vorher)</td></tr>
+</tbody></table></div>
+<p><strong>Speichern:</strong> nur ein Spielstand, lokal im Browser dieses Geräts. „Neues Spiel“ überschreibt ihn; Löschen der Browserdaten entfernt ihn.</p>
+<h2>9. Tipps</h2>
+<ul>
+<li>Vor jedem Boss: heilen (Brunnen oder Tränke), Ausrüstung prüfen, Weckruf einpacken.</li>
+<li>Monster lassen sich umlaufen. Sie sind langsamer als du.</li>
+<li>Nutze Wache in der Runde, in der ein Boss seinen Spezialangriff ausführt (alle 3 Runden).</li>
+<li>Wer in eine Sackgasse läuft, kann jederzeit über den Ausgang (Wirbel links unten) zurück zur Weltkarte.</li>
+<li>Sammle IP: Der Spezialangriff ist oft der entscheidende Schlag gegen Bosse.</li>
+</ul>
+<hr>
+<p><em>Credits: Monster-Sprites aus „Tiny Dungeon“ von Kenney (CC0, kenney.nl), Schrift Pixelify Sans (SIL OFL), Engine Godot 4.</em></p>
+</main></body></html>
