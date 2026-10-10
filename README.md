@@ -201,8 +201,9 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 
 ## AnMaCha Kart Rush
 
-- **Spiel:** Eigenes Arcade-Kartrennen (keine fremden Figuren/Strecken): 8 Karts mit Sender-Logos, 3 Strecken (Funkturm-Wiese, Sonnen-Küste, Neon-City), 2/3/5 Runden. Modi: Einzelrennen, Grand Prix (3 Strecken, Punkte 15–1), Zeitfahren (allein, Bestrunde wird lokal gespeichert).
-- **Fahren:** Gas automatisch, lenken, bremsen, **Driften** mit Mini-/Super-/Ultra-Turbo, Boost-Felder, Item-Boxen mit Radio-Items: Bass-Boost, Störsignal (Falle), Jingle-Rakete (zielsuchend), Frequenz-Schild. Items hängen vom Platz ab (hinten bessere).
-- **Solo:** direkt am Handy (Pfeil-Flächen, optional Kippen zum Lenken) oder am PC (←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, `M` Ton, `Esc` Pause).
-- **Mehrspieler (2–4):** Der große Bildschirm zeigt das Rennen im Splitscreen, die Handys koppeln per Code/QR (PeerJS) und sind Lenkrad (Handy quer halten). Optional ein Tastatur-Spieler am Host. Bots füllen auf 8 Karts auf (3 Stärken, Gummiband).
+- **Spiel:** Eigenes Arcade-Kartrennen (keine fremden Figuren/Strecken): 8 Karts, 3 Strecken (Funkturm-Wiese, Sonnen-Küste, Neon-City), 2/3/5 Runden. Modi: Einzelrennen, Grand Prix (3 Strecken, Punkte 15–1), Zeitfahren (allein, Bestrunde wird lokal gespeichert).
+- **Figuren:** 12 selbst gebaute 3D-Fahrer – Mensch (Mia), Tiere (Fuchs Rufus, Bär Brumm, Katze Luna, Frosch Quak, Pinguin Pico, Panda Bao, Hase Hoppel) und Fantasiewesen (Drache Funke, Einhorn Stella, Roboter Bolt, Alien Zorp). Die Sender-Logos sitzen auf Heckplatte und Seiten der Karts; Bots fahren mit den übrigen Figuren.
+- **Fahren:** Gas automatisch, lenken, bremsen, **Driften** mit Mini-/Super-/Ultra-Turbo, Boost-Felder, Item-Boxen mit Radio-Items: Bass-Boost, Störsignal (Falle), Jingle-Rakete (zielsuchend), Frequenz-Schild. Items hängen vom Platz ab. **Lenkhilfe** (Aus/Leicht/Stark) hält das Kart auf der Strecke.
+- **Steuerung:** *Handy:* links Daumen ziehen = analog lenken (Ring folgt dem Finger), rechts Drift / Item / Bremse, optional Kippen. *PC:* ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, `M` Ton, `Esc` Pause. *Gamepad* (PC oder am Handy gekoppelt): Stick/Steuerkreuz lenken, A/X/RB/RT driften, Y/LB Item, B/LT bremsen.
+- **Mehrspieler (2–4):** Der große Bildschirm zeigt das Rennen im Splitscreen, die Handys koppeln per Code/QR (PeerJS) und sind Lenkrad (Handy quer halten, auch dort Gamepad möglich). Am Host zusätzlich Tastatur- und Gamepad-Spieler. Bots füllen auf 8 Karts auf (3 Stärken, Gummiband).
 - **Technik:** Simulation (`sim.js`) und Strecken (`track.js`) ohne Grafik-Abhängigkeit, Sounds per WebAudio, Logos `anmacha-kart/logos/01..13`, Titel-Logo `anmacha-kart/logo.png`.

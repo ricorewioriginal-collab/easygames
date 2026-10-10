@@ -66,14 +66,23 @@
   #tbar{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top));display:flex;gap:8px}
   #tbar.mid{top:50%;transform:translate(-50%,-50%)}
   /* Touch-Steuerung (Solo am Handy) und Controller */
-  .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none}
+  .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;--s:clamp(80px,23vmin,128px)}
   body.touch.racing .tc.solo{display:block}
-  .tc .zone{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));height:30%;min-height:90px;display:grid;place-items:center;border-radius:20px;border:3px solid rgba(255,255,255,.22);background:rgba(8,10,34,.22);font:900 34px 'Trebuchet MS',sans-serif;color:rgba(255,255,255,.85)}
-  .tc .zone.on{background:rgba(0,229,255,.35);border-color:#00e5ff}
-  .tc .zl{left:12px;width:23%}.tc .zr{left:calc(12px + 23% + 10px);width:23%}
-  .tc .zd{right:12px;width:25%;font-size:20px}.tc .zi{right:calc(12px + 25% + 10px);width:21%;font-size:30px}
-  .tc .zb{left:12px;bottom:calc(14px + 30% + 12px);height:auto;min-height:0;width:23%;padding:10px 0;font-size:15px}
-  .tc .zd.on{background:rgba(255,154,31,.5);border-color:#ff9a1f}.tc .zi.on{background:rgba(255,45,149,.5);border-color:#ff2d95}
+  .tc .tbtn{position:absolute;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;text-align:center;font:900 clamp(13px,3.4vmin,20px) 'Trebuchet MS',sans-serif;letter-spacing:.04em;color:#fff;border:4px solid rgba(255,255,255,.55);background:radial-gradient(circle at 35% 30%,rgba(120,150,255,.55),rgba(20,28,80,.55));box-shadow:0 4px 14px rgba(0,0,0,.4);user-select:none}
+  .tc .tbtn.on{transform:scale(.92);filter:brightness(1.5)}
+  .tc .tb-d{right:calc(14px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));background:radial-gradient(circle at 35% 30%,rgba(255,190,80,.75),rgba(200,90,10,.6));font-size:clamp(15px,3.8vmin,22px)}
+  .tc .tb-i{right:calc(14px + env(safe-area-inset-right));bottom:calc(30px + var(--s) + env(safe-area-inset-bottom));background:radial-gradient(circle at 35% 30%,rgba(255,110,190,.75),rgba(160,20,100,.6))}
+  .tc .tb-b{right:calc(28px + var(--s) + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));width:calc(var(--s) * .72);height:calc(var(--s) * .72)}
+  .tc .steer{position:absolute;left:0;top:0;bottom:0;width:58%}
+  .tc .steer .hint{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));padding:16px 26px;border-radius:999px;border:3px dashed rgba(255,255,255,.4);background:rgba(10,14,40,.35);font:900 clamp(14px,3.6vmin,22px) 'Trebuchet MS',sans-serif;color:rgba(255,255,255,.8);pointer-events:none}
+  .tc .ring{position:absolute;width:clamp(120px,34vmin,200px);height:clamp(120px,34vmin,200px);margin:calc(clamp(120px,34vmin,200px) / -2) 0 0 calc(clamp(120px,34vmin,200px) / -2);border-radius:50%;border:4px solid rgba(255,255,255,.45);background:rgba(10,14,40,.3);display:none;pointer-events:none}
+  .tc .knob{position:absolute;width:clamp(54px,15vmin,84px);height:clamp(54px,15vmin,84px);margin:calc(clamp(54px,15vmin,84px) / -2) 0 0 calc(clamp(54px,15vmin,84px) / -2);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8);box-shadow:0 0 18px #00e5ff;display:none;pointer-events:none}
+  .chars{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%;max-width:560px}
+  .chars button{padding:6px 2px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);font-size:12px;font-weight:800;line-height:1.15}
+  .chars button b{display:block;font-size:26px;line-height:1.1}
+  .chars button small{display:block;font-weight:600;font-size:9.5px;color:var(--mut)}
+  .chars button.on{border-color:var(--ma);box-shadow:0 0 12px rgba(255,45,149,.55);background:rgba(255,45,149,.16)}
+  @media (max-width:420px){.chars{grid-template-columns:repeat(4,1fr)}}
   #ctl{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 0,#15246e,#05060f 70%);overflow:auto;touch-action:pan-y}
   body.ctrl #ctl{display:flex}
   #ctl h2{font-size:22px;text-align:center}
@@ -90,7 +99,7 @@
 <div id="hud" hidden></div>
 <div id="banner" hidden></div>
 <div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button></div>
-<div class="tc solo" id="tcSolo"><div class="zone zl" data-k="l">◀</div><div class="zone zr" data-k="r">▶</div><div class="zone zb" data-k="b">BREMSE</div><div class="zone zd" data-k="d">DRIFT</div><div class="zone zi" data-k="i">ITEM</div></div>
+<div class="tc solo" id="tcSolo"></div>
 
 <div id="menu" class="ov"><div class="box">
   <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha Kart Rush" hidden><small id="brandSub">KART RUSH</small></h1>
@@ -102,12 +111,15 @@
   <div class="row" id="rmode"></div>
   <h3>STRECKE</h3>
   <div class="row" id="tracks"></div>
+  <h3>FIGUR</h3><div class="chars" id="chars"></div>
   <h3>RUNDEN</h3><div class="row" id="laps"></div>
   <h3>GEGNER</h3><div class="row" id="skill"></div>
+  <h3>LENKHILFE</h3><div class="row" id="assist"></div>
   <div class="pc glass" id="pcard"></div>
   <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button></div>
+  <div class="info" id="padInfo" hidden></div>
   <div class="info" id="loadInfo">Rennstrecke wird gebaut …</div>
-  <div class="info">PC: ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item. Handy: Pfeile antippen, Gas ist automatisch.</div>
+  <div class="info">PC: ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item. Handy: links den Daumen ziehen = lenken, rechts Drift/Item/Bremse – Gas ist automatisch. 🎮 Gamepad: Stick/Steuerkreuz, A/RB/RT driften, Y/LB Item, B/LT bremsen.</div>
   <a class="back" id="backLink" href="../">← Alle Spiele</a>
 </div></div>
 
@@ -116,7 +128,7 @@
   <p class="sub">Handy-Kamera auf den QR-Code richten oder die Seite öffnen und den Code eingeben. Bis zu 4 Fahrer.</p>
   <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div>
   <div id="lobList" style="width:100%;max-width:420px"></div>
-  <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button></div>
+  <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button><button class="chip" id="padAdd">🎮 Gamepad-Spieler hinzufügen</button></div>
   <button class="big" id="bGo" disabled>RENNEN STARTEN</button>
   <button class="ghost" id="bLobBack">Zurück</button>
 </div></div>
@@ -131,6 +143,7 @@
 <div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
 
 <script src="audio.js"></script>
+<script src="chars.js"></script>
 <script src="track.js"></script>
 <script src="sim.js"></script>
 <script src="game.js"></script>

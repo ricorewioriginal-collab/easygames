@@ -21,15 +21,32 @@ const TILT = {
     TILT.on = true; return true; },
   disable() { TILT.on = false; TILT.v = 0; }
 };
-// Touch-Flächen: Zeiger -> Taste (auch beim Rüberwischen)
-function bindZones(root, state) {
-  const ptr = new Map(), calc = () => { const on = { l: 0, r: 0, b: 0, d: 0, i: 0 }; ptr.forEach(k => { if (k) on[k] = 1; }); Object.assign(state, on); root.querySelectorAll('.zone').forEach(z => z.classList.toggle('on', !!on[z.dataset.k])); };
-  const keyAt = e => { const el = document.elementFromPoint(e.clientX, e.clientY); return el && el.dataset && el.dataset.k && root.contains(el) ? el.dataset.k : null; };
-  root.addEventListener('pointerdown', e => { ptr.set(e.pointerId, keyAt(e)); calc(); e.preventDefault(); });
-  root.addEventListener('pointermove', e => { if (ptr.has(e.pointerId)) { ptr.set(e.pointerId, keyAt(e)); calc(); } });
-  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => root.addEventListener(ev, e => { ptr.delete(e.pointerId); calc(); }));
-  root.addEventListener('contextmenu', e => e.preventDefault());
+const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
+// Analoge Touch-Steuerung: links Daumen ziehen = lenken (Ring folgt dem Finger), rechts Drift / Item / Bremse
+function buildTouch(root, st) {
+  root.innerHTML = '<div class="steer"><span class="hint">◀ ZIEHEN ZUM LENKEN ▶</span><div class="ring"></div><div class="knob"></div></div><div class="tbtn tb-b" data-k="b">BREMSE</div><div class="tbtn tb-i" data-k="i">ITEM</div><div class="tbtn tb-d" data-k="d">DRIFT</div>';
+  const ring = root.querySelector('.ring'), knob = root.querySelector('.knob'), hint = root.querySelector('.hint'), btns = new Map(); let sid = null, ox = 0, oy = 0;
+  const R = () => Math.max(50, Math.min(100, Math.min(innerWidth, innerHeight) * 0.16)), upd = () => { st.b = st.d = st.i = 0; btns.forEach(k => { st[k] = 1; }); root.querySelectorAll('.tbtn').forEach(el => el.classList.toggle('on', !!st[el.dataset.k])); };
+  root.addEventListener('pointerdown', e => {
+    const bt = e.target.closest('[data-k]'); try { root.setPointerCapture(e.pointerId); } catch (x) {}
+    if (bt) { btns.set(e.pointerId, bt.dataset.k); upd(); }
+    else if (sid === null && e.clientX < innerWidth * 0.6) { sid = e.pointerId; ox = e.clientX; oy = e.clientY; ring.style.display = knob.style.display = 'block'; hint.style.display = 'none'; ring.style.left = knob.style.left = ox + 'px'; ring.style.top = knob.style.top = oy + 'px'; st.s = 0; }
+    e.preventDefault();
+  });
+  root.addEventListener('pointermove', e => { if (e.pointerId === sid) { const dx = e.clientX - ox, r = R(); let s = clampN(dx / r, -1, 1); if (Math.abs(s) < 0.05) s = 0; st.s = s; knob.style.left = (ox + clampN(dx, -r, r)) + 'px'; knob.style.top = oy + 'px'; } });
+  const end = e => { if (e.pointerId === sid) { sid = null; st.s = 0; ring.style.display = knob.style.display = 'none'; hint.style.display = ''; } if (btns.delete(e.pointerId)) upd(); };
+  ['pointerup', 'pointercancel'].forEach(ev => root.addEventListener(ev, end)); root.addEventListener('contextmenu', e => e.preventDefault());
 }
+// Gamepad (Standard-Belegung): Stick/Steuerkreuz lenken, A/X/RB/RT driften, Y/LB Item, B/LT bremsen
+const Pads = {
+  list() { try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []).filter(Boolean); } catch (e) { return []; } },
+  read(pad) {
+    if (!pad) return { s: 0, b: 0, d: 0, i: 0 }; const a = pad.axes || [], bt = pad.buttons || [], pr = i => bt[i] && (bt[i].pressed || bt[i].value > 0.5); let s = a[0] || 0;
+    s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * (Math.abs(s) - 0.14) / 0.86; if (pr(14)) s = -1; else if (pr(15)) s = 1;
+    return { s, b: pr(6) || pr(1) || pr(13) ? 1 : 0, d: pr(7) || pr(5) || pr(0) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
+  },
+  any() { const m = { s: 0, b: 0, d: 0, i: 0 }; Pads.list().forEach(p => { const r = Pads.read(p); if (Math.abs(r.s) > Math.abs(m.s)) m.s = r.s; m.b |= r.b; m.d |= r.d; m.i |= r.i; }); return m; }
+};
 
 if (JOIN) { document.body.classList.add('ctrl'); loadScript('controller.js').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
 else initHost();
@@ -37,12 +54,13 @@ else initHost();
 function initHost() {
   if (window.self !== window.top) $('backLink').hidden = true;
   const coarse = matchMedia('(pointer:coarse)').matches; if (coarse) document.body.classList.add('touch');
-  let save = { rmode: 'race', track: 0, laps: 3, skill: 1, name: '', logo: 6, best: {}, kb: true };
+  let save = { rmode: 'race', track: 0, laps: 3, skill: 1, name: '', logo: 6, char: 1, assist: null, best: {}, kb: true };
   try { const s = JSON.parse(localStorage.getItem('akSave') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
   const persist = () => { try { localStorage.setItem('akSave', JSON.stringify(save)); } catch (e) {} };
   const TR = Track.DEFS; let trCache = {}; const getTrack = i => trCache[i] || (trCache[i] = Track.build(TR[i]));
   let logos = [], ready = false, R = null, lobbyOpen = false, peer = null, room = '', players = [], loopOn = false, lastT = 0, paused = false, curTrackIdx = -1, GP = null, nVp = 1;
-  const kb = { l: 0, r: 0, b: 0, d: 0, i: 0 }, tc = { l: 0, r: 0, b: 0, d: 0, i: 0 };
+  const kb = { l: 0, r: 0, b: 0, d: 0, i: 0 }, tc = { s: 0, b: 0, d: 0, i: 0 };
+  const assistLvl = () => save.assist == null ? (coarse ? 1 : 0) : save.assist, ASSIST = [0, 0.4, 0.75];
 
   // ------------------------------------------------------------------ Logos / Marke
   const probe = i => new Promise(res => { const nn = String(i).padStart(2, '0'), ex = ['png', 'jpg', 'jpeg']; let k = 0; const nx = () => { if (k >= ex.length) return res(null); const src = `logos/${nn}.${ex[k++]}`, im = new Image(); im.onload = () => res({ idx: i - 1, src, im, name: NAMES[i - 1] }); im.onerror = nx; im.src = src; }; nx(); });
@@ -64,6 +82,10 @@ function initHost() {
     $('pcard').innerHTML = `<img alt="" src="${logoSrc(save.logo)}" title="${esc(NAMES[save.logo] || '')}"><input maxlength="14" value="${esc(save.name)}" placeholder="Dein Name"><span class="info">Logo antippen</span>`;
     $('pcard').querySelector('img').onclick = e => { save.logo = nextLogo(save.logo); e.target.src = logoSrc(save.logo); persist(); };
     $('pcard').querySelector('input').oninput = e => { save.name = e.target.value; persist(); };
+    $('chars').innerHTML = CHARS.map((c, i) => `<button class="${save.char === i ? 'on' : ''}" data-ch="${i}"><b>${c.emoji}</b>${c.name}<small>${c.kind}</small></button>`).join('');
+    $('chars').querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { save.char = +b.dataset.ch; persist(); renderMenu(); });
+    $('assist').innerHTML = ['Aus', 'Leicht', 'Stark'].map((s, i) => `<button class="chip ${assistLvl() === i ? 'on' : ''}" data-a="${i}">${s}</button>`).join(''); $('assist').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { save.assist = +b.dataset.a; persist(); renderMenu(); });
+    const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 Gamepad erkannt: ' + pads.map(p => p.id.slice(0, 28)).join(' · ');
     $('bSolo').disabled = $('bMulti').disabled = !ready; $('bSolo').textContent = ready ? (coarse ? 'SOLO – LOS!' : 'SOLO FAHREN') : 'LADEN …';
   }
   const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇 Ton aus' : '🔊 Ton an'; };
@@ -81,8 +103,8 @@ function initHost() {
   }).catch(e => { $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); } });
-  bindZones($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('tiltBtn').classList.toggle('on', TILT.on); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; $('tiltInv').classList.toggle('on', TILT.inv); }; }
-  $('bSolo').onclick = () => { players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
+  buildTouch($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('tiltBtn').classList.toggle('on', TILT.on); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; $('tiltInv').classList.toggle('on', TILT.inv); }; }
+  $('bSolo').onclick = () => { players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, char: save.char, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
   $('bMulti').onclick = openLobby;
 
   // ------------------------------------------------------------------ Koppeln (PeerJS)
@@ -106,22 +128,24 @@ function initHost() {
   const pairUrl = () => location.href.split('#')[0].split('?')[0] + '?join=' + room + (PH ? '&ph=' + encodeURIComponent(PH) : '');
   function showPair() { $('code').textContent = room; const url = pairUrl(); $('pairUrl').textContent = url; try { const q = qrcode(0, 'M'); q.addData(url); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { $('qr').innerHTML = ''; } }
   const send = (c, m) => { try { if (c && c.open) c.send(m); } catch (e) {} };
-  function addKbPlayer() { if (!players.some(p => p.kbp)) players.push({ name: (save.name || '').trim() || 'Tastatur', logo: save.logo, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
+  function addKbPlayer() { if (!players.some(p => p.kbp)) players.push({ name: (save.name || '').trim() || 'Tastatur', logo: save.logo, char: save.char, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
   function onRemote(c, m) {
     if (!m || typeof m !== 'object') return;
     if (m.t === 'join') {
-      const old = players.find(p => p.conn === c); const nm = String(m.name || 'Gast').trim().slice(0, 14) || 'Gast', lg = Number.isInteger(m.logo) && m.logo >= 0 && m.logo < 13 ? m.logo : 6;
-      if (old) { old.name = nm; old.logo = lg; return updateLobby(); }
+      const old = players.find(p => p.conn === c); const nm = String(m.name || 'Gast').trim().slice(0, 14) || 'Gast', lg = Number.isInteger(m.logo) && m.logo >= 0 && m.logo < 13 ? m.logo : 6, ch = Number.isInteger(m.ch) && m.ch >= 0 && m.ch < CHARS.length ? m.ch : 1;
+      if (old) { old.name = nm; old.logo = lg; old.char = ch; return updateLobby(); }
       if (R && R.S.state !== 'done') return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
-      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, conn: c, input: { s: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
+      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, conn: c, input: { s: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
     } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; } }
   }
   function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else players.splice(i, 1); updateLobby(); }
   function updateLobby() {
-    $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${esc(p.name)}</b><span class="info">${p.conn ? '📱 gekoppelt' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
+    $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? '📱 gekoppelt' : p.pad != null ? '🎮 Gamepad' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
     $('bGo').disabled = !players.length; $('kbToggle').classList.toggle('on', players.some(p => p.kbp));
   }
+  $('padAdd').onclick = () => { const used = new Set(players.filter(p => p.pad != null).map(p => p.pad)), pad = Pads.list().find(p => !used.has(p.index)); if (!pad) { $('padAdd').textContent = '🎮 Kein Gamepad – Taste am Gamepad drücken'; setTimeout(() => { $('padAdd').textContent = '🎮 Gamepad-Spieler hinzufügen'; }, 2500); return; } if (players.length < 4) players.push({ name: 'Gamepad ' + (used.size + 1), logo: save.logo, char: save.char, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, pad: pad.index }); updateLobby(); };
+  addEventListener('gamepadconnected', () => { renderMenu(); });
   $('kbToggle').onclick = () => { if (players.some(p => p.kbp)) players = players.filter(p => !p.kbp); else if (players.length < 4) addKbPlayer(); save.kb = players.some(p => p.kbp); persist(); updateLobby(); };
   $('bLobBack').onclick = () => { $('lobby').hidden = true; $('menu').hidden = false; lobbyOpen = false; };
   $('bGo').onclick = () => { $('lobby').hidden = true; lobbyOpen = false; beginSeries(); };
@@ -129,15 +153,15 @@ function initHost() {
   // ------------------------------------------------------------------ Serie / Rennen
   function beginSeries() {
     const multi = players.length > 1 || players.some(p => p.conn), tt = save.rmode === 'tt' && players.length === 1;
-    const total = tt ? 1 : 8, specs = players.map((p, i) => ({ name: p.name, logo: p.logo, human: true })), used = new Set(players.map(p => p.logo));
+    const total = tt ? 1 : 8, specs = players.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
     const pool = Array.from({ length: 13 }, (_, i) => i).filter(i => !used.has(i)).sort(() => Math.random() - 0.5);
-    for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; specs.push({ name: NAMES[lg].replace(/ 24$/, ''), logo: lg, human: false, skill: save.skill }); }
+    for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, human: false, skill: save.skill }); }
     GP = { specs, tt, race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' ? [0, 1, 2] : [save.track], multi };
     startRace();
   }
   function startRace() {
     const tIdx = GP.order[GP.race], tr = getTrack(tIdx); if (curTrackIdx !== tIdx) { View.setTrack(tr); curTrackIdx = tIdx; }
-    const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
+    const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
     const S = Sim.create({ track: tr, laps: save.laps, racers, items: !GP.tt }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
@@ -195,9 +219,12 @@ function initHost() {
   function noteLap(ki, time) { if (GP.multi || ki !== 0) return; const id = R.tr.def.id, b = save.best[id] || (save.best[id] = {}); if (!b.lap || time < b.lap) { b.lap = time; persist(); R.newBest = time; } }
   // Eingabe der Menschen
   function readInputs() {
+    const pads = Pads.list();
     return R.humans.map(p => {
       if (p.conn) return p.input;
-      let s = (kb.r - kb.l) + (tc.r - tc.l); if (TILT.on && !s) s = TILT.v; const i = { s: Math.max(-1, Math.min(1, s)), b: kb.b || tc.b ? 1 : 0, d: kb.d || tc.d ? 1 : 0, i: kb.i || tc.i ? 1 : 0 }; return i;
+      if (p.pad != null) return Pads.read(pads.find(x => x.index === p.pad));
+      const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v;
+      return { s: clampN(s, -1, 1), b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
     });
   }
   function finishRace() {
@@ -209,7 +236,7 @@ function initHost() {
     const rows = GP.gp ? res.slice().sort((a, b) => GP.pts[b.k.k] - GP.pts[a.k.k] || a.pos - b.pos) : res;
     $('resTitle').textContent = finalGp ? '🏆 Grand-Prix-Wertung' : GP.gp ? `Ergebnis ${GP.race}/3 – ${R.tr.def.name}` : GP.tt ? 'Zeitfahren' : R.tr.def.name;
     $('resSub').textContent = R.newBest && !GP.multi ? '🏆 Neue Bestrunde: ' + fmtT(R.newBest) : GP.gp ? 'Punkte: 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1' : '';
-    $('resList').innerHTML = rows.map((r, i) => { const hi = r.k.human, ci = hi ? r.k.k % 4 : -1; return `<div class="brow" style="--sc:${hi ? SLOTC[ci] : '#9fb4d6'}"><span>${GP.gp ? i + 1 : r.pos}. ${esc(r.k.name)}${r.finished ? '' : ' (nicht im Ziel)'} <small style="color:var(--mut)">${r.best ? '⏱ ' + fmtT(r.best) : ''}</small></span><b>${GP.gp ? GP.pts[r.k.k] + ' P.' : fmtT(r.time)}</b></div>`; }).join('');
+    $('resList').innerHTML = rows.map((r, i) => { const hi = r.k.human, ci = hi ? r.k.k % 4 : -1; return `<div class="brow" style="--sc:${hi ? SLOTC[ci] : '#9fb4d6'}"><span>${GP.gp ? i + 1 : r.pos}. ${CHARS[r.k.char % CHARS.length].emoji} ${esc(r.k.name)}${r.finished ? '' : ' (nicht im Ziel)'} <small style="color:var(--mut)">${r.best ? '⏱ ' + fmtT(r.best) : ''}</small></span><b>${GP.gp ? GP.pts[r.k.k] + ' P.' : fmtT(r.time)}</b></div>`; }).join('');
     $('bNext').textContent = GP.gp && !finalGp ? 'NÄCHSTE STRECKE' : 'NOCH EINMAL'; $('res').hidden = false; push('res');
     R.humans.forEach((p, i) => { if (p.conn) send(p.conn, { t: 'ev', e: 'res', pos: res.find(r => r.k.k === i).pos }); });
     R.finalGp = finalGp;
