@@ -63,6 +63,13 @@ BI.addPlaces = function (W, st) {
     W.spots.farm = { stove: { x: sx + 6.4, z: sz - 2 }, shop: { x: sx, z: sz }, customer: { x: sx, z: sz - 1.9 }, farmer: { x: sx, z: sz + 1.2 } }; }
 
   /* ---------- Streichelzoo (Westseite außerhalb der Bahn): 6 Gehege mit Tor nach Osten ---------- */
+  /* ---------- Camp mit Lagerfeuer (Ostseite): Zelte, Baumstämme, Laterne ---------- */
+  { const cx = 70, cz = 30; W.pads.push([cx - 9, cz - 9, cx + 9, cz + 9]); W.spots.camp = { x: cx, z: cz };
+    st.disc(cx, cz, 8, .03, 0xc9b27a, 28); st.ring(cx, cz, 1.0, 1.5, .08, 0x8a8f99, 12); st.disc(cx, cz, 1.0, .05, 0x2b2b30, 12); W.addCircle(cx, cz, 1.4, false, .6);
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + .4, x = cx + Math.sin(a) * 3.2, z = cz + Math.cos(a) * 3.2; st.box(x, 0, z, 2.0, .5, .55, 0x8a5a33, a + Math.PI / 2); W.addCircle(x, z, .7, false, .5); }
+    for (const [dx, dz, c] of [[-5.2, -3.4, 0xe0382b], [5.4, -2.6, 0x3fa0ff]]) { st.prism(cx + dx, 0, cz + dz, 3.6, 2.6, 3.4, c, 0); st.box(cx + dx, 0, cz + dz + 1.7, 1.0, 1.7, .08, 0x2b2f3a); W.addBox(cx + dx - 1.8, cz + dz - 1.7, cx + dx + 1.8, cz + dz + 1.7, false, 2.4); }
+    st.box(cx - 5.5, 0, cz + 4.6, .12, 2.6, .12, 0x6b4a2a); st.sph(cx - 5.5, 2.7, cz + 4.6, .22, 0xffe27a, 1); st.box(cx + 5.5, 0, cz + 4.6, .12, 2.6, .12, 0x6b4a2a); st.sph(cx + 5.5, 2.7, cz + 4.6, .22, 0xffe27a, 1);
+    st.box(cx + 6.8, 0, cz - 6.6, .1, 3.4, .1, 0x8a5a33); st.box(cx + 7.4, 3.0, cz - 6.6, 1.2, .8, .05, 0xff8a1f); }
   W.spots.pens = []; W.pads.push([-172, -38, -144, 46]);
   { const defs = [['pig', -36, -26.5, 4, 0xb9d98a], ['goat', -26, -16.5, 5, 0xb5e08a], ['horse', -16, -6.5, 2, 0xa9e07c], ['chicken', -6, 3.5, 8, 0xc9e89a], ['rabbit', 4, 13.5, 5, 0xb5e08a], ['donkey', 14, 23.5, 2, 0xa9e07c], ['cow', 24, 33.5, 3, 0xa9e07c], ['sheep', 34, 43.5, 5, 0xb5e08a]];
     const x0 = -168, x1 = -146;

@@ -416,5 +416,12 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const r = await p.evaluate(async () => { const b = window.__bi, f = b.flats[0]; b.P.x = f.chest.x; b.P.z = f.chest.z + 1.3; await new Promise(r => setTimeout(r, 300)); const n = b.flatNear(); b.flatAct(n); const o = { k: n && n.k, open: b.room.open }; document.querySelector('#roomBox .sw:nth-child(1)'); document.querySelectorAll('#roomBox .row')[0].children[2].click(); o.wall = b.save.room.wall; b.room.close(); return o; });
   ok(r.k === 'room' && r.open && r.wall === 2, 'Zimmer einrichten: Tapete wählbar, wird gespeichert'); await c.close();
 }
+{ // Fahrrad, Roller, Camp mit Geschichten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, o = {}; const v = b.vehicles.find(x => x.type === 'bicycle'); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); await new Promise(r => setTimeout(r, 200)); o.in = !!b.P.veh; b.leave();
+    const cp = b.W.spots.camp; b.P.x = cp.x; b.P.z = cp.z + 3.4; await new Promise(r => setTimeout(r, 300)); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); o.open = b.camp.open; document.querySelector('#storyList button').click(); o.txt = document.getElementById('storyText').textContent.length > 20; b.camp.close(); return o; });
+  ok(r.in, 'Fahrrad: einsteigen klappt'); ok(r.src === 'camp' && r.open && r.txt, 'Camp: Geschichte am Lagerfeuer'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
