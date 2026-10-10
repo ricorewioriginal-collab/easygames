@@ -110,6 +110,7 @@ var cancelable := false
 var talking := false
 var title_has_save := false
 var autoplay := false
+var logo_tex: Texture2D
 var view3d := true
 var v3: View3D
 var v3_active := false
@@ -118,6 +119,7 @@ var auto_n := 0
 
 # ------------------------------------------------------------------ Start
 func _ready() -> void:
+	logo_tex = load("res://logo.png") as Texture2D
 	font = load("res://font.ttf") as Font
 	if font == null:
 		font = ThemeDB.fallback_font
@@ -1636,9 +1638,11 @@ func draw_title() -> void:
 	draw_line(Vector2(380, 110), Vector2(392, 178), Color("#2a1a4a"), 2.0)
 	for k in 3:
 		draw_arc(Vector2(380, 108), 8.0 + k * 8.0 + fmod(anim * 10.0, 8.0), -PI * 0.8, -PI * 0.2, 10, Color(0.5, 0.9, 1.0, 0.7 - k * 0.2), 1.5)
-	txt(Vector2(0, 92), "ANMACHA", 54, Color(1, 0.78, 0.25), HORIZONTAL_ALIGNMENT_CENTER, VW)
-	txt(Vector2(0, 130), "QUEST RPG", 30, Color(0.5, 0.88, 1.0), HORIZONTAL_ALIGNMENT_CENTER, VW)
-	txt(Vector2(0, 154), "Das Große Rauschen", 15, Color(1, 0.55, 0.8), HORIZONTAL_ALIGNMENT_CENTER, VW)
+	if logo_tex:
+		draw_texture_rect(logo_tex, Rect2((VW - 360.0) / 2.0, 14, 360, 360.0 * 460.0 / 1000.0), false)
+	else:
+		txt(Vector2(0, 92), "ANMACHA", 54, Color(1, 0.78, 0.25), HORIZONTAL_ALIGNMENT_CENTER, VW)
+		txt(Vector2(0, 130), "QUEST RPG", 30, Color(0.5, 0.88, 1.0), HORIZONTAL_ALIGNMENT_CENTER, VW)
 
 func theme_key_at(tx: int, ty: int) -> String:
 	if map.get("world", false):

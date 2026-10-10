@@ -12,6 +12,7 @@ body{color:#fff;background:#05060f;overflow:hidden;touch-action:none;-webkit-tou
 #load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vmin;background:linear-gradient(#05082a,#2a1450 70%,#3a1860);transition:opacity .5s;z-index:5;text-align:center;padding:16px}
 #load.out{opacity:0;pointer-events:none}
 #stars{position:absolute;inset:0;width:100%;height:100%}
+#logo{position:relative;width:min(86vw,560px);height:auto;filter:drop-shadow(0 0 14px rgba(255,170,40,.3))}
 #load h1{margin:0;position:relative;font-size:clamp(34px,11vmin,84px);letter-spacing:.06em;color:#ffc840;text-shadow:0 .08em 0 #8a4a10,0 0 .5em rgba(255,160,40,.5);font-weight:700}
 #load h2{margin:0;position:relative;font-size:clamp(20px,6vmin,44px);letter-spacing:.14em;color:#7fe0ff;text-shadow:0 .1em 0 #1a5a8a;font-weight:700}
 #load p{margin:0;position:relative;color:#ff8ccc;font-size:clamp(12px,3.2vmin,20px)}
@@ -35,7 +36,7 @@ $GODOT_HEAD_INCLUDE
 <div id="rot" class="show" onclick="this.remove()">📱 Für das beste Bild das Handy quer halten (Tippen zum Schließen)</div>
 <div id="load">
   <canvas id="stars"></canvas>
-  <h1>ANMACHA</h1><h2>QUEST RPG</h2><p>Das Große Rauschen</p>
+  <img id="logo" src="logo.png" alt="AnMaCha Quest RPG">
   <div id="lane"><div id="hero"></div><div id="bar"><div id="fill"></div></div></div>
   <div id="pct">Lade Spielwelt …</div>
   <div id="tip"></div>
