@@ -68,27 +68,38 @@ BI.createBuild = function (G) {
     for (const q of c.circ || []) { const p = rotPt(q[0], q[1], ry); out.push(W.addCircle(cx + p[0], cz + p[1], q[2], true, q[3])); }
     return out;
   }
-  function addItem(t, gx, gz, r, c, quiet) {
+  function addItem(t, gx, gz, r, c, quiet, owner) {
     const slot = slotOf(t, r);
-    for (let i = B.items.length - 1; i >= 0; i--) { const o = B.items[i]; if (o.gx === gx && o.gz === gz && slotOf(o.t, o.r) === slot) dropItem(i); }
-    const it = { t, gx, gz, r, c, cols: [] }; it.cols = mkColliders(it); B.items.push(it); dirty = true; if (!quiet) save();
+    for (let i = B.items.length - 1; i >= 0; i--) { const o = B.items[i]; if (o.gx === gx && o.gz === gz && slotOf(o.t, o.r) === slot) { if (owner && o.o !== owner) return null; dropItem(i); } }
+    const it = { t, gx, gz, r, c, cols: [], o: owner }; it.cols = mkColliders(it); B.items.push(it); dirty = true; if (!quiet && !owner) save();
     return it;
   }
   function dropItem(i) { const it = B.items[i]; for (const k of it.cols) W.removeCollider(k); B.items.splice(i, 1); dirty = true; }
   B.place = function () {
     if (!B.valid) { G.say('Hier kann man nicht bauen 🚫', 1400); return false; }
-    addItem(B.sel, B.gx, B.gz, B.rot, B.color); A.place();
+    addItem(B.sel, B.gx, B.gz, B.rot, B.color); A.place(); if (B.onOp) B.onOp({ op: 'a', i: [B.sel, B.gx, B.gz, B.rot, B.color] });
     const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 10, [BI.C.gold, BI.C.white, BI.C.pink], 3, .7, 26, 6); return true;
   };
   B.remove = function () {
     let n = 0; for (let i = B.items.length - 1; i >= 0; i--) if (B.items[i].gx === B.gx && B.items[i].gz === B.gz) { dropItem(i); n++; }
-    if (n) { save(); A.pop(); const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 8, [BI.C.dust, BI.C.white], 3, .6, 30, 6); } else G.say('Hier ist nichts zum Wegräumen', 1400);
+    if (n) { save(); if (B.onOp) B.onOp({ op: 'd', gx: B.gx, gz: B.gz }); A.pop(); const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 8, [BI.C.dust, BI.C.white], 3, .6, 30, 6); } else G.say('Hier ist nichts zum Wegräumen', 1400);
     return n;
   };
-  B.clearAll = function () { for (let i = B.items.length - 1; i >= 0; i--) dropItem(i); save(); };
+  B.clearAll = function () { for (let i = B.items.length - 1; i >= 0; i--) if (!B.items[i].o) dropItem(i); save(); if (B.onOp) B.onOp({ op: 'l', l: [] }); };
+  /* Gemeinsames Bauen: Teile von Freunden sind nur für diese Sitzung da (nicht gespeichert) */
+  B.exportMine = () => B.items.filter(i => !i.o).map(i => [i.t, i.gx, i.gz, i.r, i.c]);
+  B.exportOwner = o => B.items.filter(i => i.o === o).map(i => [i.t, i.gx, i.gz, i.r, i.c]);
+  B.owners = () => [...new Set(B.items.filter(i => i.o).map(i => i.o))];
+  B.dropOwner = o => { let n = 0; for (let i = B.items.length - 1; i >= 0; i--) if (o == null ? !!B.items[i].o : B.items[i].o === o) { dropItem(i); n++; } return n; };
+  B.applyRemote = function (owner, d) {
+    const ok = r => Array.isArray(r) && CAT[r[0]] && B.canPlace(r[0], r[1] | 0, r[2] | 0, r[3] | 0);
+    if (d.op === 'a') { const r = d.i; if (ok(r)) addItem(r[0], r[1] | 0, r[2] | 0, (r[3] | 0) & 3, (r[4] | 0) % PAL.length, true, owner); }
+    else if (d.op === 'd') { for (let i = B.items.length - 1; i >= 0; i--) if (B.items[i].o === owner && B.items[i].gx === (d.gx | 0) && B.items[i].gz === (d.gz | 0)) dropItem(i); }
+    else if (d.op === 'l') { B.dropOwner(owner); for (const r of (Array.isArray(d.l) ? d.l : []).slice(0, MAXP)) if (ok(r)) addItem(r[0], r[1] | 0, r[2] | 0, (r[3] | 0) & 3, (r[4] | 0) % PAL.length, true, owner); }
+  };
   let saveT = 0;
   function save() { saveT = .8; }
-  function flushSave() { BI.store.set('build', B.items.map(i => [i.t, i.gx, i.gz, i.r, i.c])); }
+  function flushSave() { BI.store.set('build', B.exportMine()); }
 
   /* ---------- Mesh ---------- */
   let dirty = true, mesh = null, roofMesh = null, rebuildT = 0; const roofKeys = new Set(), wallKeys = new Set();

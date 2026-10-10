@@ -73,7 +73,7 @@ const bd = await page.evaluate(async () => {
   out.count = B.count; await sleep(500);
   out.wallBlocks = W.resolve(gx * 4, gz * 4 - 2, .45, {}).hit; out.doorOpen = !W.resolve((gx + 1) * 4, (gz + 1) * 4 + 2, .45, {}).hit; out.postBlocked = W.resolve((gx + 1) * 4 + 1.6, (gz + 1) * 4 + 2, .45, {}).hit;
   B.exit(); document.body.classList.remove('building'); b.P.x = (gx + 3) * 4; b.P.z = (gz + 2) * 4; b.P.y = .05; b.P.vy = -3; let peak = 0; for (let i = 0; i < 12; i++) { await sleep(80); peak = Math.max(peak, b.P.y); } out.peak = peak;
-  B.active = true; B.gx = gx; B.gz = gz; const n0 = B.count; B.remove(); B.active = false; out.removed = n0 - B.count; await sleep(1200); out.stored = JSON.parse(localStorage.getItem('bunteInsel.build')).length; out.left = B.count; return out;
+  B.active = true; B.gx = gx; B.gz = gz; const n0 = B.count; B.remove(); B.active = false; out.removed = n0 - B.count; for (let k = 0; k < 40; k++) { await sleep(200); if (JSON.parse(localStorage.getItem('bunteInsel.build')).length === B.count) break; } out.stored = JSON.parse(localStorage.getItem('bunteInsel.build')).length; out.left = B.count; return out;
 });
 ok(bd.roadBlocked && bd.active && bd.count >= 18 && bd.wallBlocks && bd.doorOpen && bd.postBlocked && bd.peak > 1.5 && bd.removed >= 3 && bd.stored === bd.left, `Bauen: ${bd.count} Teile, Wand blockiert, Türlücke offen, Trampolin-Sprung ${bd.peak.toFixed(1)} m, ${bd.removed} entfernt, ${bd.stored} gespeichert`);
 await page.reload(); await page.waitForFunction(() => window.__bi); const again = await page.evaluate(() => window.__bi.build.count);
@@ -247,6 +247,33 @@ const hb = await page.evaluate(async () => {
   b.build.clearAll(); return { found, a1, a2, under, hid, steep, back };
 });
 ok(hb.found && hb.a1 && hb.a2 && hb.under && hb.hid && hb.steep && hb.back, `Selbstgebautes Haus: Dach verschwindet innen, Kamera steiler, Dach kommt draußen wieder (${JSON.stringify(hb)})`);
+// Mini-Spiele allein: Hub, 4 Spiele spielbar mit echten Klicks, Sterne, Rekord; Schatzsuche
+const mg = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.openGames(); const cards = document.querySelectorAll('#gamesGrid .gc').length, soloBtn = document.querySelectorAll('#gamesGrid .gb button').length; b.closeGames();
+  return { cards, soloBtn };
+});
+ok(mg.cards === 8 && mg.soloBtn >= 12, `Spiele-Menü: ${mg.cards} Spiele (${mg.soloBtn} Knöpfe)`);
+const cvBox = async () => page.evaluate(() => { const r = document.getElementById('mgCanvas').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+async function playMini(kind, driver) {
+  const s0 = await page.evaluate(k => { const b = window.__bi; b.startGame(k, true); b.mini.dur = 6; return b.save.stars; }, kind); await page.waitForTimeout(500);
+  const bx = await cvBox(); const t0 = Date.now(); let n = 0;
+  while (Date.now() - t0 < 9000) { const act = await page.evaluate(driver); if (act === 'done') break; if (act) { for (const q of [].concat(act)) { await page.mouse.click(bx.x + q[0], bx.y + q[1]); n++; } } await page.waitForTimeout(120); }
+  await page.waitForFunction(() => !document.getElementById('gameRes').hidden, null, { timeout: 15000 }).catch(() => { });
+  return page.evaluate(s0 => { const b = window.__bi; const r = { shown: !document.getElementById('gameRes').hidden, gained: b.save.stars - s0, active: b.mini.active, txt: document.getElementById('grText').textContent }; document.getElementById('grOk').click(); return r; }, s0);
+}
+const popR = await playMini('pop', () => { const g = window.__bi.mini.cur(); const b = g && g.b && g.b.filter(q => q.y > 40 && q.y < innerHeight - 20)[0]; return b ? [[b.x + Math.sin(b.ph) * 8, b.y]] : null; });
+const moleR = await playMini('mole', () => { const g = window.__bi.mini.cur(); if (!g || !g.h) return null; const out = []; g.h.forEach((q, i) => { if (q.up > .15 && !q.hit) out.push(g.pos(i).map((v, j) => v + (j ? 0 : 0))); }); return out.length ? out : null; });
+const catchR = await playMini('catch', () => { const g = window.__bi.mini.cur(); if (!g || !g.f) return null; const f = g.f.filter(q => q.y > 0)[0]; if (f) g.tx = f.x; return null; });
+const memR = await playMini('memory', () => { const g = window.__bi.mini.cur(); if (!g || !g.c) return 'done'; if (g.wait > 0 || g.sel.length >= 2) return null; const open = g.sel.length ? g.sel[0].e : null, idx = g.c.findIndex(c => !c.m && !g.sel.includes(c) && (open ? c.e === open : true)); if (idx < 0) return null; const i2 = open ? idx : idx; return [[g.ox + (i2 % g.cols) * g.s + g.s / 2, g.oy + ((i2 / g.cols) | 0) * g.s + g.s / 2]]; });
+ok(popR.shown && popR.gained >= 1 && !popR.active, `Ballon-Pop: gespielt, Ergebnis + Sterne (${popR.txt})`);
+ok(moleR.shown && moleR.gained >= 1, `Wackel-Wichtel: gespielt (${moleR.txt})`);
+ok(catchR.shown && catchR.gained >= 1, `Sternenfänger: gespielt (${catchR.txt})`);
+ok(memR.shown && memR.gained >= 1, `Memory: gespielt (${memR.txt})`);
+const tr2 = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 30; b.startGame('treasure', true); await sleep(300); const g = b.gm, far = Math.hypot(g.spot.x - b.P.x, g.spot.z - b.P.z) > 25; const bar0 = document.getElementById('gameBar').textContent; const s0 = b.save.stars;
+  b.P.x = g.spot.x + .5; b.P.z = g.spot.z; await sleep(1500); const done = !b.gm && !document.getElementById('gameRes').hidden; const gained = b.save.stars - s0; document.getElementById('grOk').click(); return { far, bar0, done, gained };
+});
+ok(tr2.far && /Eiskalt|Kalt|Lau|Warm|Heiß|Kochend/.test(tr2.bar0) && tr2.done && tr2.gained >= 3, `Schatzsuche allein: Hinweis „${tr2.bar0}“, Schatz gefunden, +${tr2.gained} ⭐`);
 console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 // Handy: fester Joystick sichtbar, Tastatur-Hinweise weg; Desktop: umgekehrt
 {

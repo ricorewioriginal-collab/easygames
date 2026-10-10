@@ -60,6 +60,55 @@ const cnt = await Promise.all([A, B, C].map(p => p.evaluate(() => window.__bi.re
 ok(cnt.every(n => n === 2), `3 Spieler sehen sich alle gegenseitig (${cnt.join(',')})`);
 const chip = await A.evaluate(() => ({ n: document.getElementById('friendsN').textContent, vis: !document.getElementById('friends').hidden }));
 ok(chip.n === '3' && chip.vis, 'Mitspieler-Anzeige im Spiel zeigt 3');
+// Zurufe, Abklatschen, gemeinsames Bauen, Fangen, Sterne-Wettlauf
+await A.evaluate(() => { const b = window.__bi; if (b.P.veh) b.leave(); b.P.x = 30; b.P.z = 40; }); await B.evaluate(() => { const b = window.__bi; if (b.P.veh) b.leave(); b.P.x = 32; b.P.z = 40; }); await C.evaluate(() => { const b = window.__bi; b.P.x = -40; b.P.z = 40; }); await A.waitForTimeout(1500);
+await A.evaluate(() => window.__bi.sendEmoji('❤️')); await B.waitForTimeout(800);
+const emo = await B.evaluate(() => window.__bi.emosN);
+const st0 = await Promise.all([A, B].map(p => p.evaluate(() => window.__bi.save.stars)));
+await A.evaluate(() => window.__bi.sendEmoji('🙌')); await A.waitForTimeout(300); await B.evaluate(() => window.__bi.sendEmoji('🙌')); await B.waitForTimeout(1200);
+const st1 = await Promise.all([A, B].map(p => p.evaluate(() => window.__bi.save.stars)));
+ok(emo >= 1 && st1[0] === st0[0] + 1 && st1[1] === st0[1] + 1, `Zurufe sichtbar, Abklatschen gibt beiden +1 ⭐ (${st0}→${st1})`);
+const sb = await B.evaluate(async () => { const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); b.toggleBuild(); await sleep(200); let gx = 0, gz = 0, f = false; for (let a = 5; a < 30 && !f; a++) for (let c = 10; c < 40 && !f; c++) if (b.build.canPlace('floor', c, a, 0)) { gx = c; gz = a; f = true; } b.build.setType('floor'); b.build.setCursor(gx * 4, gz * 4); await sleep(300); const ok1 = b.build.place(); b.toggleBuild(); return { ok1, gx, gz }; });
+await A.waitForTimeout(1000);
+const sa = await A.evaluate(s => window.__bi.build.items.some(i => i.o && i.gx === s.gx && i.gz === s.gz && i.t === 'floor'), sb); const sc = await C.evaluate(s => window.__bi.build.items.some(i => i.o && i.gx === s.gx && i.gz === s.gz), sb);
+const savedA = await A.evaluate(() => JSON.stringify(window.__bi.build.exportMine()));
+ok(sb.ok1 && sa && sc && savedA === '[]', 'Gemeinsames Bauen: Teil des Freundes erscheint bei allen, wird beim Zuschauer nicht gespeichert');
+await A.evaluate(() => window.__bi.startGame('tag')); await B.waitForTimeout(1000);
+const g1 = await Promise.all([A, B, C].map(p => p.evaluate(() => { const g = window.__bi.gm; return g && g.it; })));
+const itId = g1[0], same = g1.every(x => x === itId);
+// Fänger läuft zu einem Freund -> wird weitergegeben
+const ids = await Promise.all([A, B, C].map(p => p.evaluate(() => window.__bi.net.id)));
+const itIdx = ids.indexOf(itId), other = [0, 1, 2].find(i => i !== itIdx), ps = [A, B, C];
+const pos = await ps[other].evaluate(() => ({ x: window.__bi.P.x, z: window.__bi.P.z })); await ps[itIdx].evaluate(p => { const b = window.__bi; b.P.x = p.x + .8; b.P.z = p.z; }, pos); await A.waitForTimeout(2500);
+const g2 = await Promise.all(ps.map(p => p.evaluate(() => { const g = window.__bi.gm; return g && { it: g.it, n: g.n }; })));
+ok(same && g2.every(x => x && x.n >= 1 && x.it !== itId), `Fangen: alle sehen denselben Fänger, Berührung gibt ihn weiter (${g1.map(x => x && x.slice(-3))} → ${g2.map(x => x && x.it.slice(-3))})`);
+const st2 = await A.evaluate(() => window.__bi.save.stars);
+await Promise.all(ps.map(p => p.evaluate(() => { window.__bi.gm.dur = 600; }))); await A.waitForTimeout(2500);
+const res = await Promise.all(ps.map(p => p.evaluate(() => ({ gm: window.__bi.gm, shown: !document.getElementById('gameRes').hidden, rows: document.querySelectorAll('#grList .grr').length, stars: window.__bi.save.stars }))));
+ok(res.every(r => !r.gm && r.shown && r.rows === 3), `Fangen endet: Rangliste mit 3 Spielern bei allen (${res.map(r => r.rows)}), Sterne gutgeschrieben (${st2}→${res[0].stars})`);
+for (const p of ps) await p.evaluate(() => document.getElementById('grOk').click());
+await A.evaluate(() => window.__bi.startGame('stars')); await B.waitForTimeout(800);
+await A.evaluate(() => { const b = window.__bi, s = b.stars.find(q => q.on); b.P.x = s.x; b.P.z = s.z; }); await B.waitForTimeout(1500);
+const sg = await Promise.all([A, B].map(p => p.evaluate(() => { const g = window.__bi.gm; return g ? { mine: g.cnt[window.__bi.net.id] || 0, others: Object.values(g.cnt) } : null; })));
+ok(sg[0] && sg[0].mine >= 1 && sg[1] && sg[1].others.some(n => n >= 1), `Sterne-Wettlauf: Zählung wird geteilt (${JSON.stringify(sg)})`);
+await Promise.all(ps.map(p => p.evaluate(() => { window.__bi.gm && (window.__bi.gm.dur = 300); }))); await A.waitForTimeout(2000); for (const p of ps) await p.evaluate(() => document.getElementById('grOk').click());
+// Mini-Spiel mit Freunden (Ballon-Pop, gleiche Ballons, Punkte werden verglichen)
+await A.evaluate(() => window.__bi.startGame('pop', false)); await B.waitForTimeout(1200);
+const mact = await Promise.all(ps.map(p => p.evaluate(() => window.__bi.mini.active && window.__bi.mini.kind)));
+await Promise.all(ps.map((p, i) => p.evaluate(sc => { window.__bi.mini.dur = 2.5; window.__bi.mini.score = sc; }, [5, 9, 2][i]))); await A.waitForTimeout(9000);
+const mres = await Promise.all(ps.map(p => p.evaluate(() => ({ shown: !document.getElementById('gameRes').hidden, title: document.getElementById('grTitle').textContent, rows: [...document.querySelectorAll('#grList .grr')].map(r => r.textContent), gm: !!window.__bi.gm, act: window.__bi.mini.active }))));
+ok(mact.every(k => k === 'pop') && mres.every(r => r.shown && !r.gm && !r.act && r.rows.length === 3) && /Gewonnen/.test(mres[1].title) && !/Gewonnen/.test(mres[0].title), `Mini-Spiel mit 3 Freunden: alle spielen Ballon-Pop, Rangliste bei allen, Sieger bekommt Pokal (${mres[0].rows.map(r => r.slice(-9)).join(' | ')})`);
+for (const p of ps) await p.evaluate(() => document.getElementById('grOk').click());
+// Verstecken: Sucher zählt, Versteckte werden gefunden
+await C.evaluate(() => { window.__bi.P.x = -40; }); await A.evaluate(() => window.__bi.startGame('hide', false)); await B.waitForTimeout(1200);
+const h1 = await Promise.all(ps.map(p => p.evaluate(() => ({ it: window.__bi.gm && window.__bi.gm.it, ph: window.__bi.gm && window.__bi.gm.phase, id: window.__bi.net.id, lock: document.getElementById('fade').classList.contains('on') }))));
+const seeker = h1[0].it, si = h1.findIndex(x => x.id === seeker), locked = h1[si].lock && h1.every(x => x.ph === 'count');
+await Promise.all(ps.map((p, i) => p.evaluate(q => { const b = window.__bi; b.gm.ph0 -= 21000; if (q.i === q.si) { b.P.x = 70; b.P.z = 40; } else { b.P.x = 90 + (q.i % 2) * .6; b.P.z = 60; } }, { i, si })));
+await A.waitForTimeout(1500);
+await ps[si].evaluate(() => { window.__bi.P.x = 90; window.__bi.P.z = 60; }); await A.waitForTimeout(2500);
+const h2 = await Promise.all(ps.map(p => p.evaluate(() => ({ gm: !!window.__bi.gm, shown: !document.getElementById('gameRes').hidden, rows: document.querySelectorAll('#grList .grr').length }))));
+ok(locked && h2.every(x => !x.gm && x.shown && x.rows === 3), `Verstecken: Sucher zählt (Bild dunkel), nach dem Zählen werden alle gefunden, Ergebnis bei allen (${JSON.stringify(h2.map(x => x.rows))})`);
+for (const p of ps) await p.evaluate(() => document.getElementById('grOk').click());
 // Ein Spieler geht
 await B.evaluate(() => window.__bi.net.close()); await A.waitForTimeout(800);
 const left = await Promise.all([A, C].map(p => p.evaluate(() => window.__bi.remote.size)));

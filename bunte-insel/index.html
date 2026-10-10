@@ -152,6 +152,17 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 @media (max-height:640px){.hc{padding:3px 1px;font-size:11px}.hc b{font-size:22px}.hgrid{gap:4px}}
 #wardPanel{z-index:11}
 #fade{position:fixed;inset:0;z-index:9;background:#0b1330;opacity:0;pointer-events:none;display:grid;place-items:center;transition:opacity .9s ease}#fade.on{opacity:1}#fade span{font-size:72px;opacity:0;transition:opacity .6s .5s}#fade.on span{opacity:1;animation:bob 2s ease-in-out infinite}
+#emo{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));z-index:5;display:flex;flex-direction:column;align-items:center;gap:6px}
+#emoRow{display:flex;gap:6px;padding:6px 8px;border-radius:999px;background:var(--glass);box-shadow:var(--shadow)}#emoRow button{width:44px;height:44px;border-radius:50%;background:#fff;font-size:24px;box-shadow:var(--shadow)}#emoRow button:active{transform:scale(.9)}
+#gameBar{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 62px);z-index:3;padding:6px 16px;font-size:18px;font-weight:700;white-space:nowrap}#gameBar.it{background:#ffdede;box-shadow:0 0 0 3px #e0382b,var(--shadow)}
+body.ranging #emo,body.ranging #gameBar{display:none!important}
+@media (max-width:620px){#gameBar{top:calc(max(10px,env(safe-area-inset-top)) + 100px);font-size:15px}}
+@media (max-height:430px){#emo{bottom:max(10px,env(safe-area-inset-bottom))}#gameBar{top:calc(max(10px,env(safe-area-inset-top)) + 46px)}}
+.grr{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:16px;background:#fff;font-weight:700;font-size:18px;box-shadow:var(--shadow)}.grr.me{outline:3px solid var(--pri)}.grr span:last-child{margin-left:auto}
+#mgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:8;touch-action:none;background:#8fd8ff}#mgExit{position:fixed;right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));z-index:9}
+#gamesGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.gc .gh{font-size:12px;opacity:.7;font-weight:600;line-height:1.2;margin:2px 6px 6px}.gb{display:flex;flex-direction:column;gap:5px;width:100%;padding:0 6px}.gb button{width:100%}#gamesPanel{z-index:11}
+@media (min-width:760px){#gamesGrid{grid-template-columns:repeat(4,1fr)}}
+@media (max-height:620px){.gc .gh{display:none}}
 </style>
 </head>
 <body>
@@ -195,6 +206,25 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
   <div id="bItems"></div>
   <div id="bActs"><button id="bRot">⟳<small>Drehen</small></button><button id="bPlace" class="go">✔<small>Bauen</small></button><button id="bDel">🗑️<small>Weg</small></button><button id="bClear">🧹<small>Alles</small></button><button id="bClose">✖<small>Fertig</small></button></div>
 </div>
+<div id="emo" hidden><div id="emoRow" hidden></div><button id="emoBtn" class="tb" aria-label="Zurufen">💬</button></div>
+<div id="gameBar" class="chip" hidden></div>
+<section id="gameRes" class="screen" hidden>
+  <div class="card">
+    <div class="logo" style="font-size:34px" id="grTitle">Geschafft!</div>
+    <div class="sub" id="grText"></div>
+    <div id="grList" class="row" style="flex-direction:column;align-items:stretch"></div>
+    <button class="big" id="grOk" style="font-size:22px;padding:10px 30px">✔ Weiter</button>
+  </div>
+</section>
+<canvas id="mgCanvas" hidden></canvas><button id="mgExit" class="tb" hidden aria-label="Spiel beenden">✖</button>
+<section id="gamesPanel" class="screen" hidden>
+  <div class="card shop">
+    <div class="logo" style="font-size:30px">🎮 Spiele</div>
+    <div class="sub" style="margin:4px 0 8px" id="gamesHint"></div>
+    <div id="gamesGrid"></div>
+    <button class="big" id="gamesClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✖ Zurück</button>
+  </div>
+</section>
 <div id="toast"></div>
 <div id="fade" aria-hidden="true"><span>💤</span></div>
 
@@ -253,6 +283,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
     </div>
     <div data-m="on" hidden>
       <div class="sub" id="mpOnTxt">Verbunden!</div>
+      <div class="row"><button class="pill" id="mpGames">🎮 Spiele</button></div>
       <div id="mpPlayers" class="row"></div>
       <div id="mpOnCode" class="codebig small"></div>
     </div>
@@ -315,6 +346,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 <script src="js/build.js"></script>
 <script src="js/range.js"></script>
 <script src="js/net.js"></script>
+<script src="js/mini.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

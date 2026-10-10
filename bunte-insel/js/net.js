@@ -63,6 +63,7 @@ BI.createNet = function (cb) {
       N.busy = false;
     } catch (e) { N.busy = false; N.close(true); throw e; }
   };
+  N.sendTo = function (id, d) { const c = N.conns.get(id); if (c && c.open) { try { c.send(d); } catch (e) { } } };
   N.send = function (d) { for (const [, c] of N.conns) if (c.open) { try { c.send(d); } catch (e) { } } };
   N.close = function (quiet) {
     const had = N.conns.size; for (const [, c] of N.conns) { try { c.close(); } catch (e) { } } N.conns.clear();
