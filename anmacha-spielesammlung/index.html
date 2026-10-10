@@ -1,0 +1,1808 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080B12">
+<title>AnMaCha Spielesammlung 3D</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<style>
+  :root{--c:#00E5FF;--ma:#FF2D95;--v:#8B5CF6;--o:#FF9A1F;--g:#00FFC8;--bg:#080B12;--tx:#EAF2FF;--mut:#8FA3BD}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#14204a,#080B12 70%);color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;user-select:none;-webkit-user-select:none}
+  #cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .glass{background:rgba(12,18,34,.72);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:14px}
+  .ib{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:18px;color:var(--tx);cursor:pointer;border:1px solid rgba(255,255,255,.16);background:rgba(12,18,34,.72);padding:0}
+  .ib:active,.btn:active{transform:scale(.94)}
+  #hud{position:fixed;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 0;display:flex;gap:8px;align-items:center;z-index:5;pointer-events:none}
+  #hud>*{pointer-events:auto}
+  #stat{flex:1;min-width:0;padding:7px 12px;font-weight:700;font-size:14px;line-height:1.3;text-align:center;min-height:42px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+  #bar{position:fixed;left:0;right:0;bottom:0;padding:10px 10px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center;flex-wrap:wrap;z-index:5;pointer-events:none}
+  #bar>*{pointer-events:auto}
+  .btn{border:0;border-radius:999px;padding:12px 22px;font:800 16px Inter,system-ui,sans-serif;color:#080B12;background:linear-gradient(90deg,var(--c),var(--v) 60%,var(--ma));box-shadow:0 6px 22px rgba(139,92,246,.45);cursor:pointer}
+  .btn.alt{background:rgba(255,255,255,.12);color:var(--tx);box-shadow:none;border:1px solid rgba(255,255,255,.2)}
+  .btn:disabled{opacity:.4}
+  .ov{position:fixed;inset:0;z-index:10;overflow:auto;display:flex;padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 30%,rgba(20,32,74,.9),rgba(8,11,18,.97) 75%)}
+  #modal{background:rgba(8,11,18,.6);z-index:12}
+  .box{margin:auto;width:100%;max-width:760px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  .brand{font:900 italic clamp(38px,11vw,72px)/.95 'Trebuchet MS',sans-serif;letter-spacing:.04em;background:linear-gradient(90deg,var(--g),var(--c) 45%,var(--v));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,229,255,.35));margin:0}
+  .sub{margin:-4px 0 4px;color:var(--mut);font-weight:700;letter-spacing:.18em;font-size:12px;text-transform:uppercase}
+  .sub b{color:var(--ma)}
+  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;width:100%}
+  .card{position:relative;border:0;border-radius:18px;padding:16px 12px 14px;color:#fff;text-align:left;cursor:pointer;min-height:132px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 26px rgba(0,0,0,.35);font-family:inherit;overflow:hidden}
+  .card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.16),transparent 45%);pointer-events:none}
+  .card .ic{font-size:34px;line-height:1}
+  .card b{font-size:16px;line-height:1.15;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+  .card small{font-size:12px;opacity:.92;line-height:1.3}
+  .card i{margin-top:auto;font-style:normal;font-size:11px;font-weight:800;opacity:.85;letter-spacing:.06em}
+  .foot{color:var(--mut);font-size:11px;letter-spacing:.12em;margin-top:6px}
+  .panel{width:100%;max-width:440px;padding:14px;display:flex;flex-direction:column;gap:10px;text-align:left}
+  .seat{display:flex;align-items:center;gap:10px;font-weight:700}
+  .seat span{flex:1}
+  select{font:700 15px Inter,system-ui,sans-serif;color:var(--tx);background:#141c30;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:9px 10px;min-width:170px}
+  .rules{text-align:left;line-height:1.5;font-size:14.5px;max-width:560px;padding:14px 16px}
+  .rules h3{margin:.2em 0 .4em}
+  .rules p,.rules ul{margin:.3em 0}
+  h2{margin:0;font-size:clamp(24px,6vw,34px)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  #side{position:fixed;right:10px;top:calc(60px + env(safe-area-inset-top));bottom:calc(74px + env(safe-area-inset-bottom));width:min(330px,46vw);overflow:auto;z-index:4;padding:6px}
+  #side table{width:100%;border-collapse:collapse;font-size:13px}
+  #side th,#side td{padding:4px 5px;border-bottom:1px solid rgba(255,255,255,.08);text-align:center;white-space:nowrap}
+  #side td:first-child,#side th:first-child{text-align:left;color:var(--mut);font-weight:700}
+  #side .cur{background:rgba(0,229,255,.12)}
+  #side .pv{color:rgba(0,255,200,.75);cursor:pointer;font-style:italic}
+  #side .pv:hover{background:rgba(0,255,200,.18)}
+  #side .pv0{color:rgba(255,120,140,.7)}
+  #side .sum td{font-weight:800;color:var(--tx);background:rgba(255,255,255,.05)}
+  #side .new{animation:fl .8s}
+  @keyframes fl{from{background:rgba(255,45,149,.6)}to{background:transparent}}
+  @media (max-width:720px){#side{left:8px;right:8px;width:auto;top:auto;max-height:44vh}#side.min{max-height:46px;overflow:hidden}}
+  #load{position:fixed;inset:0;display:grid;place-items:center;z-index:20;background:rgba(8,11,18,.85);font-weight:800;letter-spacing:.1em}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud" hidden>
+  <button class="ib" id="bMenu" title="Menü">☰</button>
+  <div id="stat" class="glass"></div>
+  <button class="ib" id="bView" title="Ansicht drehen">↻</button>
+  <button class="ib" id="bRules" title="Regeln">?</button>
+  <button class="ib" id="bSnd" title="Ton">🔊</button>
+</div>
+<div id="side" class="glass" hidden></div>
+<div id="bar" hidden></div>
+<div id="menu" class="ov">
+  <div class="box">
+    <h1 class="brand">ANMACHA</h1>
+    <div class="sub">3D-Spielesammlung · by <b>ricorewi</b></div>
+    <div id="grid"></div>
+    <div class="foot">Gegen den Computer oder zu mehreren an einem Gerät · Handy &amp; PC</div>
+  </div>
+</div>
+<div id="setup" class="ov" hidden>
+  <div class="box">
+    <div class="ic" id="suIc" style="font-size:52px"></div>
+    <h2 id="suName"></h2>
+    <div class="panel glass" id="seats"></div>
+    <div class="row"><button class="btn alt" id="suBack">Zurück</button><button class="btn alt" id="suRules">Regeln</button><button class="btn" id="suGo">Spiel starten</button></div>
+  </div>
+</div>
+<div id="modal" class="ov" hidden><div class="box" id="mBox"></div></div>
+<div id="load" hidden>LADE …</div>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const rnd = n => Math.floor(Math.random() * n);
+const pick = a => a[rnd(a.length)];
+const mk = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const hex = c => '#' + c.toString(16).padStart(6, '0');
+const dot = c => `<i class="dot" style="background:${hex(c)}"></i>`;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('anmacha-sg-' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('anmacha-sg-' + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ---------- Ton (wird im Browser erzeugt) ---------- */
+const Snd = {
+  ctx: null, on: store.get('snd', true),
+  init() {
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; } }
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+  },
+  tone(f, d = .1, type = 'sine', v = .08, delay = 0, slide = 0) {
+    if (!this.on || !this.ctx || Eng.speed < .5) return;
+    const c = this.ctx, t = c.currentTime + delay, o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, f + slide), t + d);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + .03);
+  },
+  click() { this.tone(520, .05, 'triangle', .05); },
+  move() { this.tone(300, .08, 'sine', .08, 0, -90); },
+  hit() { this.tone(200, .2, 'sawtooth', .06, 0, -120); },
+  dice() { for (let i = 0; i < 5; i++) this.tone(260 + rnd(320), .04, 'square', .035, i * .08); },
+  ok() { this.tone(660, .1, 'triangle', .07); this.tone(990, .14, 'triangle', .06, .08); },
+  win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, .22, 'triangle', .08, i * .12)); },
+  lose() { [330, 262, 196].forEach((f, i) => this.tone(f, .26, 'sawtooth', .05, i * .15)); }
+};
+
+/* ---------- 3D-Engine: rendert nur, wenn sich etwas bewegt ---------- */
+const Eng = (() => {
+  let R, scene, camera, world, sun, raf = 0, last = 0, tweens = [];
+  const cam = { az: 0, el: 1, dist: 14, tx: 0, ty: 0, tz: 0, min: 6, max: 30 };
+  cam.g = { az: 0, el: 1, dist: 14, tx: 0, ty: 0, tz: 0 };
+  const E = { speed: 1, pickables: [], onPick: null, cam, ready: false };
+  const KEYS = ['az', 'el', 'dist', 'tx', 'ty', 'tz'];
+  const ease = k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+
+  function place() {
+    const c = Math.cos(cam.el);
+    camera.position.set(cam.tx + cam.dist * c * Math.sin(cam.az), cam.ty + cam.dist * Math.sin(cam.el), cam.tz + cam.dist * c * Math.cos(cam.az));
+    camera.lookAt(cam.tx, cam.ty, cam.tz);
+  }
+  function camStep(dt) {
+    const k = 1 - Math.exp(-dt * 8); let mv = false;
+    for (const p of KEYS) { const d = cam.g[p] - cam[p]; if (Math.abs(d) > 1e-3) { cam[p] += d * k; mv = true; } else cam[p] = cam.g[p]; }
+    place(); return mv;
+  }
+  function frame(t) {
+    raf = 0;
+    const dt = Math.min(.05, Math.max(0, (t - last) / 1000)); last = t;
+    if (tweens.length) {
+      const arr = tweens; tweens = [];
+      for (const w of arr) {
+        w.t += dt;
+        const k = Math.min(1, w.t / Math.max(1e-4, w.d * E.speed));
+        if (w.fn) w.fn(w.e(k));
+        if (k >= 1) w.res(); else tweens.push(w);
+      }
+    }
+    const mv = camStep(dt);
+    R.render(scene, camera);
+    if (tweens.length || mv) raf = requestAnimationFrame(frame);
+  }
+  function kick() { if (!raf && R) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+  function resize() {
+    if (!R) return;
+    const w = innerWidth, h = innerHeight, a = w / h;
+    R.setSize(w, h, false);
+    camera.aspect = a;
+    camera.fov = a < 1 ? Math.min(95, 2 * Math.atan(Math.tan(22.5 * Math.PI / 180) / a) * 180 / Math.PI) : 45;
+    camera.updateProjectionMatrix(); kick();
+  }
+  function bindPointer(cv) {
+    const ptrs = new Map(); let st = null, pinch = 0;
+    const rc = new THREE.Raycaster(), v2 = new THREE.Vector2();
+    cv.addEventListener('pointerdown', e => {
+      Snd.init();
+      try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (ptrs.size === 1) st = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      else { if (st) st.moved = true; const [a, b] = [...ptrs.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); }
+    });
+    cv.addEventListener('pointermove', e => {
+      const p = ptrs.get(e.pointerId); if (!p) return;
+      const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+      if (ptrs.size >= 2) {
+        const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinch > 0 && d > 0) cam.g.dist = Math.min(cam.max, Math.max(cam.min, cam.g.dist * pinch / d));
+        pinch = d; kick(); return;
+      }
+      if (!st || st.id !== e.pointerId) return;
+      if (!st.moved && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 8) st.moved = true;
+      if (st.moved) {
+        cam.g.az -= dx * .007;
+        cam.g.el = Math.min(1.5, Math.max(.22, cam.g.el + dy * .005));
+        kick();
+      }
+    });
+    const up = e => {
+      const had = ptrs.delete(e.pointerId);
+      if (!had) return;
+      if (st && st.id === e.pointerId && !st.moved && e.type === 'pointerup') {
+        v2.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+        rc.setFromCamera(v2, camera);
+        const hits = rc.intersectObjects(E.pickables, true);
+        let info = null;
+        for (const h of hits) { let o = h.object; while (o && o.userData.pick === undefined) o = o.parent; if (o) { info = o.userData.pick; break; } }
+        if (E.onPick) E.onPick(info);
+      }
+      if (st && st.id === e.pointerId) st = null;
+      if (ptrs.size < 2) pinch = 0;
+    };
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('wheel', e => { e.preventDefault(); cam.g.dist = Math.min(cam.max, Math.max(cam.min, cam.g.dist * (e.deltaY > 0 ? 1.1 : .9))); kick(); }, { passive: false });
+    cv.addEventListener('webglcontextlost', e => e.preventDefault());
+    cv.addEventListener('webglcontextrestored', () => kick());
+  }
+  E.init = () => {
+    if (E.ready) return; E.ready = true;
+    const cv = $('cv');
+    R = new THREE.WebGLRenderer({ canvas: cv, antialias: (window.devicePixelRatio || 1) < 2 });
+    R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFShadowMap;
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(45, 1, .1, 200);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x404858, .8));
+    sun = new THREE.DirectionalLight(0xffffff, .85);
+    sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -.0006;
+    scene.add(sun, sun.target);
+    world = new THREE.Group(); scene.add(world);
+    addEventListener('resize', resize); resize(); bindPointer(cv); place();
+  };
+  E.shadow = r => {
+    const c = sun.shadow.camera; c.left = c.bottom = -r; c.right = c.top = r; c.near = .5; c.far = r * 6; c.updateProjectionMatrix();
+    sun.position.set(r * .45, r * 2, r * .8);
+  };
+  E.clear = () => {
+    tweens = []; E.pickables = []; E.onPick = null;
+    world.traverse(m => {
+      if (m.geometry) m.geometry.dispose();
+      const ms = m.material ? (Array.isArray(m.material) ? m.material : [m.material]) : [];
+      for (const mt of ms) { for (const k in mt) { const v = mt[k]; if (v && v.isTexture) v.dispose(); } mt.dispose(); }
+    });
+    scene.remove(world); world = new THREE.Group(); scene.add(world);
+    scene.background = null; kick();
+  };
+  E.add = (...o) => { world.add(...o); kick(); return o[0]; };
+  E.bg = c => { scene.background = new THREE.Color(c); };
+  E.view = (v, snap) => {
+    if (v.az != null) { const d = ((v.az - cam.g.az + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI; cam.g.az += d; }
+    for (const p of KEYS) if (p !== 'az' && v[p] != null) cam.g[p] = v[p];
+    if (v.min) cam.min = v.min; if (v.max) cam.max = v.max;
+    if (snap) for (const p of KEYS) cam[p] = cam.g[p];
+    kick();
+  };
+  E.tw = (d, fn, e = ease) => new Promise(res => { tweens.push({ t: 0, d, fn, e, res }); kick(); });
+  E.wait = s => E.tw(s, null);
+  E.lin = k => k;
+  E.kick = kick;
+  E.mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .55, metalness: .05 }, o));
+  E.tex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t; };
+  E.mesh = (g, m, x = 0, y = 0, z = 0, shadow = 1) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.castShadow = !!(shadow & 1); o.receiveShadow = !!(shadow & 2) || shadow === 1; return o; };
+  E.lathe = (pts, seg = 20) => new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), seg);
+  // unsichtbarer Klick-Bereich (dick, damit man auf dem Handy gut trifft)
+  E.hitMat = () => new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+  return E;
+})();
+
+/* ---------- Oberfläche ---------- */
+const UI = {
+  status(t) { $('stat').innerHTML = t; },
+  bar(btns) {
+    const b = $('bar'); b.innerHTML = '';
+    b.hidden = !btns || !btns.length;
+    (btns || []).forEach(x => {
+      const e = mk('button', 'btn' + (x.alt ? ' alt' : ''), x.label);
+      if (x.dis) e.disabled = true;
+      e.onclick = () => { Snd.init(); Snd.click(); x.fn(); };
+      b.appendChild(e);
+    });
+  },
+  choose(opts) { return new Promise(res => UI.bar(opts.map(o => ({ label: o.label, fn: () => { UI.bar(null); res(o.v); } })))); },
+  modal(html, btns) {
+    const box = $('mBox'); box.innerHTML = html;
+    const row = mk('div', 'row');
+    (btns || []).forEach(x => { const e = mk('button', 'btn' + (x.alt ? ' alt' : ''), x.label); e.onclick = () => { Snd.init(); Snd.click(); x.fn(); }; row.appendChild(e); });
+    box.appendChild(row); $('modal').hidden = false;
+  },
+  close() { $('modal').hidden = true; }
+};
+
+/* ---------- Würfel (gemeinsam für mehrere Spiele) ---------- */
+const Dice = {
+  mats: null,
+  // Augen: +x=3, -x=4, +y=1, -y=6, +z=2, -z=5 (gegenüber ergibt immer 7)
+  make(size) {
+    if (!this.mats) this.mats = [3, 4, 1, 6, 2, 5].map(n => Eng.mat(0xffffff, { roughness: .35, map: this.face(n) }));
+    // Materialien gehören dem aktuellen Spiel und werden beim Aufräumen entsorgt -> Kopie je Spiel
+    const m = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), this.mats.map(x => x.clone()));
+    m.castShadow = true; m.userData.size = size; m.userData.val = 1;
+    return m;
+  },
+  face(n) {
+    const P = { 1: [[.5, .5]], 2: [[.27, .27], [.73, .73]], 3: [[.27, .27], [.5, .5], [.73, .73]], 4: [[.27, .27], [.73, .27], [.27, .73], [.73, .73]],
+      5: [[.27, .27], [.73, .27], [.5, .5], [.27, .73], [.73, .73]], 6: [[.27, .24], [.73, .24], [.27, .5], [.73, .5], [.27, .76], [.73, .76]] };
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fbfbf7'; g.fillRect(0, 0, 128, 128);
+    g.strokeStyle = '#d8d8d0'; g.lineWidth = 6; g.strokeRect(3, 3, 122, 122);
+    g.fillStyle = n === 1 ? '#e8374a' : '#1b1e2b';
+    for (const [x, y] of P[n]) { g.beginPath(); g.arc(x * 128, y * 128, n === 1 ? 16 : 12, 0, 7); g.fill(); }
+    const t = new THREE.CanvasTexture(c); t.userData = { keep: 1 };
+    return t;
+  },
+  quat(v, yaw) {
+    const q = new THREE.Quaternion(), X = new THREE.Vector3(1, 0, 0), Z = new THREE.Vector3(0, 0, 1);
+    if (v === 6) q.setFromAxisAngle(X, Math.PI);
+    else if (v === 3) q.setFromAxisAngle(Z, Math.PI / 2);
+    else if (v === 4) q.setFromAxisAngle(Z, -Math.PI / 2);
+    else if (v === 2) q.setFromAxisAngle(X, -Math.PI / 2);
+    else if (v === 5) q.setFromAxisAngle(X, Math.PI / 2);
+    return new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw).multiply(q);
+  },
+  // Würfel wirft sich auf Position "to" und zeigt am Ende den Wert v oben
+  async roll(m, v, to, dur = .8, h = 1.2) {
+    const from = m.position.clone(), qT = this.quat(v, Math.random() * 6.28);
+    const ax = new THREE.Vector3(Math.random() - .5, Math.random() - .5, Math.random() - .5).normalize();
+    const spin = (5 + rnd(4)) * Math.PI * (Math.random() < .5 ? -1 : 1), qs = new THREE.Quaternion();
+    const off = new THREE.Vector3((Math.random() - .5) * 1.4, 0, (Math.random() - .5) * 1.4);
+    await Eng.tw(dur, k => {
+      qs.setFromAxisAngle(ax, spin * (1 - k)); m.quaternion.copy(qs).multiply(qT);
+      const s = 1 - k;
+      m.position.set(to.x + off.x * s + (from.x - to.x) * s * s, to.y + Math.abs(Math.sin(k * Math.PI * 2.5)) * h * s, to.z + off.z * s + (from.z - to.z) * s * s);
+    }, Eng.lin);
+    m.position.copy(to); m.quaternion.copy(qT); m.userData.val = v;
+  }
+};
+
+// Spielfigur "Hütchen" (Rausschmeißer, Leiterspiel)
+function makePawnGeo() {
+  return {
+    body: Eng.lathe([[0, 0], [.3, 0], [.32, .05], [.24, .13], [.14, .38], [.19, .44], [.19, .5], [.11, .54], [0, .55]], 18),
+    head: new THREE.SphereGeometry(.16, 16, 12),
+    hit: new THREE.CylinderGeometry(.42, .42, 1.1, 8)
+  };
+}
+function makePawn(G, mat, hitMat) {
+  const g = new THREE.Group();
+  const b = new THREE.Mesh(G.body, mat); b.castShadow = true;
+  const h = new THREE.Mesh(G.head, mat); h.position.y = .66; h.castShadow = true;
+  const x = new THREE.Mesh(G.hit, hitMat); x.position.y = .5;
+  g.add(b, h, x); return g;
+}
+async function hop(m, to, dur = .16, h = .35) {
+  const a = m.position.clone(); Snd.move();
+  await Eng.tw(dur, k => { m.position.lerpVectors(a, to, k); m.position.y = a.y + (to.y - a.y) * k + Math.sin(k * Math.PI) * h; }, Eng.lin);
+  m.position.copy(to);
+}
+const seatLabel = (def, cfg, i) => def.seatNames[i] + (cfg.seats[i] && cfg.seats[i].type === 'c' ? ' 🤖' : '');
+</script>
+<script>
+/* ================= Rausschmeißer (Laufspiel mit 4 Figuren) ================= */
+function makeLudo(def, cfg) {
+  const COL = def.seatCols, NM = def.seatNames;
+  const AZ = [-Math.PI / 2, Math.PI, Math.PI / 2, 0];
+  const RING = [[0,4],[1,4],[2,4],[3,4],[4,4],[4,3],[4,2],[4,1],[4,0],[5,0],[6,0],[6,1],[6,2],[6,3],[6,4],[7,4],[8,4],[9,4],[10,4],[10,5],
+    [10,6],[9,6],[8,6],[7,6],[6,6],[6,7],[6,8],[6,9],[6,10],[5,10],[4,10],[4,9],[4,8],[4,7],[4,6],[3,6],[2,6],[1,6],[0,6],[0,5]];
+  const LANE = [[[1,5],[2,5],[3,5],[4,5]], [[5,1],[5,2],[5,3],[5,4]], [[9,5],[8,5],[7,5],[6,5]], [[5,9],[5,8],[5,7],[5,6]]];
+  const START = [0, 10, 20, 30], BC = [[1.5,1.5],[8.5,1.5],[8.5,8.5],[1.5,8.5]];
+  const seat = cfg.seats, act = [0,1,2,3].filter(i => seat[i]);
+  const humans = act.filter(i => seat[i].type === 'h');
+  const pcs = [0,1,2,3].map(() => [-1,-1,-1,-1]), meshes = [[],[],[],[]];
+  let dead = false, cur = act[0], waitRoll = null, waitPick = null, cands = [];
+  const W = (gx, gy, y = 0) => new THREE.Vector3(gx - 5, y, gy - 5);
+  const name = p => dot(COL[p]) + ' <b>' + seatLabel(def, cfg, p) + '</b>';
+
+  function cellOf(p, i) {
+    const r = pcs[p][i];
+    if (r < 0) return [BC[p][0] + (i % 2 ? .75 : -.75), BC[p][1] + (i > 1 ? .75 : -.75)];
+    if (r < 40) return RING[(START[p] + r) % 40];
+    return LANE[p][r - 40];
+  }
+  const posOf = (p, i) => { const c = cellOf(p, i); return W(c[0], c[1], .08); };
+
+  // ---- Brett ----
+  Eng.bg(0x10182c);
+  Eng.shadow(8);
+  const wood = Eng.mat(0xd9a066, { roughness: .7 });
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(12.4, .5, 12.4), wood, 0, -.25, 0, 2));
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(13, .3, 13), Eng.mat(0x6b3f22, { roughness: .8 }), 0, -.55, 0, 2));
+  const cellG = new THREE.CylinderGeometry(.4, .4, .08, 28), padG = new THREE.BoxGeometry(3.3, .04, 3.3);
+  const cream = Eng.mat(0xf6eedc, { roughness: .6 });
+  const pm = COL.map(c => Eng.mat(c, { roughness: .45 }));
+  const pmLight = COL.map(c => Eng.mat(new THREE.Color(c).lerp(new THREE.Color(0xffffff), .55), { roughness: .7 }));
+  for (let p = 0; p < 4; p++) {
+    Eng.add(Eng.mesh(padG, pmLight[p], BC[p][0] - 5, .02, BC[p][1] - 5, 2));
+    for (const c of LANE[p]) Eng.add(Eng.mesh(cellG, pm[p], c[0] - 5, .04, c[1] - 5, 2));
+    for (let i = 0; i < 4; i++) { pcs[p][i] = -1; const c = cellOf(p, i); Eng.add(Eng.mesh(cellG, pm[p], c[0] - 5, .04, c[1] - 5, 2)); }
+  }
+  RING.forEach((c, k) => { const p = START.indexOf(k); Eng.add(Eng.mesh(cellG, p >= 0 ? pm[p] : cream, c[0] - 5, .04, c[1] - 5, 2)); });
+  const turnRing = Eng.add(Eng.mesh(new THREE.RingGeometry(.62, .78, 40), new THREE.MeshBasicMaterial({ color: COL[cur] }), 0, .03, 0, 0));
+  turnRing.rotation.x = -Math.PI / 2;
+
+  // ---- Figuren ----
+  const PG = makePawnGeo(), hitM = Eng.hitMat();
+  const hlG = new THREE.RingGeometry(.42, .54, 28), hlM = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  for (const p of act) for (let i = 0; i < 4; i++) {
+    const g = makePawn(PG, pm[p], hitM);
+    const hl = new THREE.Mesh(hlG, hlM); hl.rotation.x = -Math.PI / 2; hl.position.y = .02; hl.visible = false; g.add(hl); g.userData.hl = hl;
+    g.userData.pick = { p, i }; g.position.copy(posOf(p, i));
+    meshes[p][i] = g; Eng.add(g); Eng.pickables.push(g);
+  }
+  const die = Dice.make(.8); die.position.set(0, .4, 0); die.quaternion.copy(Dice.quat(6, .5)); die.userData.pick = { die: 1 };
+  Eng.add(die); Eng.pickables.push(die);
+
+  const firstH = humans.length ? humans[0] : 3;
+  Eng.view({ az: AZ[firstH], el: 1.0, dist: 17, tx: 0, ty: 0, tz: 0, min: 8, max: 28 }, true);
+
+  // ---- Regeln ----
+  function absAt(p, r) { return r >= 0 && r < 40 ? (START[p] + r) % 40 : -1; }
+  function victimAt(p, abs) {
+    for (const q of act) if (q !== p) for (let j = 0; j < 4; j++) if (absAt(q, pcs[q][j]) === abs) return [q, j];
+    return null;
+  }
+  function legal(p, roll) {
+    const own = new Set(pcs[p].filter(r => r >= 0)), res = [];
+    for (let i = 0; i < 4; i++) {
+      const r = pcs[p][i];
+      let to = -1;
+      if (r < 0) { if (roll === 6 && !own.has(0)) to = 0; }
+      else if (r + roll <= 43 && !own.has(r + roll)) to = r + roll;
+      if (to >= 0) res.push({ i, to, cap: to < 40 ? victimAt(p, absAt(p, to)) : null });
+    }
+    // Startfeld muss geräumt werden, solange noch Figuren im Haus stehen
+    if (pcs[p].includes(-1) && own.has(0)) { const f = res.filter(m => pcs[p][m.i] === 0); if (f.length) return f; }
+    // mit einer 6 muss eine Figur herauskommen
+    if (roll === 6) { const f = res.filter(m => pcs[p][m.i] < 0); if (f.length) return f; }
+    return res;
+  }
+  function settled(p) {
+    const s = new Set(pcs[p]);
+    return pcs[p].every(r => { if (r < 0) return true; if (r < 40) return false; for (let k = r + 1; k <= 43; k++) if (!s.has(k)) return false; return true; });
+  }
+  function danger(p, abs) {
+    if (abs < 0) return 0;
+    for (const q of act) if (q !== p) for (let j = 0; j < 4; j++) {
+      const r = pcs[q][j];
+      if (r >= 0 && r < 40) { const d = (abs - absAt(q, r) + 40) % 40; if (d >= 1 && d <= 6) return 1; }
+      else if (r < 0 && START[q] === abs) return 1;
+    }
+    return 0;
+  }
+  function score(p, m) {
+    const r = pcs[p][m.i]; let s = 0;
+    if (m.cap) s += 100 + pcs[m.cap[0]][m.cap[1]];
+    if (r < 0) s += 60;
+    if (m.to >= 40) s += r < 40 ? 55 : 6; else s += m.to * .5;
+    if (r >= 0 && r < 40 && danger(p, absAt(p, r))) s += 30;
+    if (m.to < 40 && danger(p, absAt(p, m.to))) s -= 35;
+    return s;
+  }
+  function aiPick(p, mv) {
+    const lvl = seat[p].lvl || 2;
+    if (lvl === 1 && Math.random() < .55) return pick(mv);
+    let best = mv[0], bs = -1e9;
+    for (const m of mv) { const s = score(p, m) + Math.random() * (lvl === 3 ? 2 : 20); if (s > bs) { bs = s; best = m; } }
+    return best;
+  }
+
+  // ---- Ablauf ----
+  function doRoll() { if (waitRoll) { const f = waitRoll; waitRoll = null; f(); } }
+  async function rollDie(p, info) {
+    if (seat[p].type === 'h') {
+      UI.status(name(p) + ' – ' + (info || 'würfeln! (Würfel antippen)'));
+      UI.bar([{ label: '🎲 Würfeln', fn: doRoll }]);
+      await new Promise(r => { waitRoll = r; });
+      UI.bar(null);
+    } else { UI.status(name(p) + ' würfelt …'); await Eng.wait(.45); }
+    const v = 1 + rnd(6); Snd.dice();
+    await Dice.roll(die, v, new THREE.Vector3(0, .4, 0), .75, 1.3);
+    return v;
+  }
+  function mark(on) {
+    for (const p of act) for (let i = 0; i < 4; i++) {
+      const g = meshes[p][i], hit = on && p === cur && cands.some(m => m.i === i);
+      g.userData.hl.visible = hit; g.position.y = hit ? .25 : .08;
+    }
+    Eng.kick();
+  }
+  async function choose(p, mv) {
+    if (mv.length === 1 || mv.every(m => pcs[p][m.i] < 0)) { await Eng.wait(.3); return mv[0]; }
+    if (seat[p].type === 'c') { await Eng.wait(.35); return aiPick(p, mv); }
+    cands = mv; mark(true);
+    UI.status(name(p) + ' – tippe eine leuchtende Figur an');
+    const i = await new Promise(r => { waitPick = r; });
+    cands = []; mark(false);
+    return mv.find(m => m.i === i);
+  }
+  async function exec(p, m) {
+    const from = pcs[p][m.i], g = meshes[p][m.i];
+    if (from < 0) { pcs[p][m.i] = 0; await hop(g, posOf(p, m.i), .35, .9); }
+    else for (let r = from + 1; r <= m.to; r++) { pcs[p][m.i] = r; await hop(g, posOf(p, m.i)); }
+    if (m.cap) {
+      const [q, j] = m.cap; pcs[q][j] = -1; Snd.hit();
+      UI.status(name(p) + ' wirft ' + name(q) + ' raus!');
+      await hop(meshes[q][j], posOf(q, j), .55, 2);
+    }
+  }
+  const next = p => act[(act.indexOf(p) + 1) % act.length];
+
+  async function loop() {
+    while (!dead) {
+      const p = cur;
+      turnRing.material.color.setHex(COL[p]);
+      if (humans.length > 1 && seat[p].type === 'h') Eng.view({ az: AZ[p] });
+      const tries = settled(p) ? 3 : 1;
+      let roll = 0, mv = [];
+      for (let a = 0; a < tries; a++) {
+        roll = await rollDie(p, a ? `Versuch ${a + 1} von 3 – würfeln!` : null); if (dead) return;
+        mv = legal(p, roll);
+        if (mv.length) break;
+        UI.status(name(p) + ` hat eine ${roll} – kein Zug möglich`);
+        await Eng.wait(.6); if (dead) return;
+      }
+      if (mv.length) {
+        const m = await choose(p, mv); if (dead) return;
+        await exec(p, m); if (dead) return;
+        if (pcs[p].every(r => r >= 40)) {
+          Snd.win(); gameOver('🎉 ' + seatLabel(def, cfg, p) + ' gewinnt!', 'Alle vier Figuren sind im Ziel.');
+          return;
+        }
+        if (roll === 6) { UI.status(name(p) + ' hat eine 6 – nochmal!'); await Eng.wait(.4); continue; }
+      }
+      cur = next(p);
+    }
+  }
+  Eng.onPick = info => {
+    if (!info) return;
+    if (info.die) { doRoll(); return; }
+    if (waitPick && info.p === cur && cands.some(m => m.i === info.i)) { const f = waitPick; waitPick = null; Snd.click(); f(info.i); }
+  };
+  return { start: loop, dispose() { dead = true; } };
+}
+</script>
+<script>
+/* ================= Würfelfieber (5 Würfel, 13 Felder) ================= */
+const KN_CATS = ['Einer', 'Zweier', 'Dreier', 'Vierer', 'Fünfer', 'Sechser', 'Dreierpasch', 'Viererpasch', 'Full House', 'Kleine Straße', 'Große Straße', 'Fünferpasch', 'Chance'];
+const KN_PAR = [2.1, 5.3, 8.6, 12.2, 15.7, 19.2, 21.7, 13.1, 22.6, 29.5, 32.7, 16.9, 22];
+function knScore(c, d) {
+  const n = [0, 0, 0, 0, 0, 0, 0]; let s = 0;
+  for (const v of d) { n[v]++; s += v; }
+  if (c < 6) return (c + 1) * n[c + 1];
+  const mx = Math.max(n[1], n[2], n[3], n[4], n[5], n[6]);
+  switch (c) {
+    case 6: return mx >= 3 ? s : 0;
+    case 7: return mx >= 4 ? s : 0;
+    case 8: return n.includes(3) && n.includes(2) ? 25 : 0;
+    case 9: return [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]].some(a => a.every(v => n[v])) ? 30 : 0;
+    case 10: return [1, 2, 3, 4, 5].every(v => n[v]) || [2, 3, 4, 5, 6].every(v => n[v]) ? 40 : 0;
+    case 11: return mx === 5 ? 50 : 0;
+    default: return s;
+  }
+}
+function knTotals(sc) {
+  let up = 0, low = 0;
+  for (let c = 0; c < 13; c++) if (sc[c] != null) { if (c < 6) up += sc[c]; else low += sc[c]; }
+  const bonus = up >= 63 ? 35 : 0;
+  return { up, bonus, low, total: up + bonus + low };
+}
+function makeDiceGame(def, cfg) {
+  const act = [0, 1, 2, 3].filter(i => cfg.seats[i]), seat = cfg.seats;
+  const sc = {}; act.forEach(p => { sc[p] = new Array(13).fill(null); });
+  const vals = [1, 2, 3, 4, 5], held = [false, false, false, false, false];
+  let dead = false, ci = 0, rollsLeft = 3, rolled = false, busy = false, waitAct = null, lastSet = null;
+  const cur = () => act[ci], human = () => seat[cur()].type === 'h';
+
+  // ---- Tisch ----
+  Eng.bg(0x0d1424); Eng.shadow(8);
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(15, .4, 9), Eng.mat(0x17694a, { roughness: .95 }), 0, -.2, 0, 2));
+  const rim = Eng.mat(0x5a3520, { roughness: .6 });
+  for (const s of [-1, 1]) {
+    Eng.add(Eng.mesh(new THREE.BoxGeometry(15.8, .7, .4), rim, 0, .05, s * 4.7, 1));
+    Eng.add(Eng.mesh(new THREE.BoxGeometry(.4, .7, 9.8), rim, s * 7.7, .05, 0, 1));
+  }
+  const tray = Eng.add(Eng.mesh(new THREE.BoxGeometry(10.4, .04, 1.9), Eng.mat(0x0f4f37, { roughness: 1 }), 0, .01, -2.5, 2));
+  tray.userData.keep = 1;
+  const SZ = 1.15, dice = [];
+  const homePos = i => new THREE.Vector3((i - 2) * 1.95, SZ / 2, held[i] ? -2.5 : .5);
+  for (let i = 0; i < 5; i++) {
+    const d = Dice.make(SZ); d.position.copy(homePos(i)); d.quaternion.copy(Dice.quat(vals[i], (Math.random() - .5) * .5));
+    d.userData.pick = { die: i }; dice.push(d); Eng.add(d); Eng.pickables.push(d);
+  }
+  const narrow = innerWidth <= 720;
+  Eng.view({ az: 0, el: narrow ? 1.12 : 1.05, dist: narrow ? 11.5 : 13, tx: narrow ? 0 : 2.6, ty: 0, tz: narrow ? 2.6 : .2, min: 7, max: 24 }, true);
+
+  // ---- Zettel ----
+  const side = $('side'); side.hidden = false; side.classList.remove('min');
+  function cellHtml(p, c) {
+    const v = sc[p][c];
+    if (v != null) return `<td class="${lastSet && lastSet[0] === p && lastSet[1] === c ? 'new' : ''}">${v}</td>`;
+    if (p === cur() && rolled && !busy) { const s = knScore(c, vals); return `<td class="pv${s ? '' : ' pv0'}" data-c="${c}">${s}</td>`; }
+    return '<td></td>';
+  }
+  function render() {
+    let h = '<table><tr><th>📋</th>';
+    for (const p of act) h += `<th class="${p === cur() ? 'cur' : ''}">${dot(def.seatCols[p])}<br>${seatLabel(def, cfg, p)}</th>`;
+    h += '</tr>';
+    const row = (lbl, f, cls) => { h += `<tr class="${cls || ''}"><td>${lbl}</td>` + act.map(f).join('') + '</tr>'; };
+    for (let c = 0; c < 6; c++) row(KN_CATS[c], p => cellHtml(p, c));
+    row('Summe oben', p => `<td>${knTotals(sc[p]).up}</td>`, 'sum');
+    row('Bonus (ab 63)', p => `<td>${knTotals(sc[p]).bonus}</td>`, 'sum');
+    for (let c = 6; c < 13; c++) row(KN_CATS[c], p => cellHtml(p, c));
+    row('Gesamt', p => `<td>${knTotals(sc[p]).total}</td>`, 'sum');
+    side.innerHTML = h + '</table>';
+    // aktuelle Spalte markieren
+    const idx = act.indexOf(cur()) + 2;
+    side.querySelectorAll(`tr > :nth-child(${idx})`).forEach(e => e.classList.add('cur'));
+  }
+  side.onclick = e => {
+    const td = e.target.closest('td[data-c]');
+    if (td && waitAct && human()) { Snd.click(); resolveAct({ cat: +td.dataset.c }); return; }
+    if (innerWidth <= 720 && !td) side.classList.toggle('min');
+  };
+  function resolveAct(a) { if (waitAct) { const f = waitAct; waitAct = null; f(a); } }
+
+  function setBar() {
+    if (!human()) { UI.bar(null); return; }
+    const b = [];
+    if (rollsLeft > 0) b.push({ label: `🎲 Würfeln (${rollsLeft})`, fn: () => resolveAct({ roll: 1 }) });
+    UI.bar(b);
+  }
+  function statusTxt() {
+    const p = cur(), nm = dot(def.seatCols[p]) + ' <b>' + seatLabel(def, cfg, p) + '</b>';
+    if (!human()) return nm + ' ist dran …';
+    if (!rolled) return nm + ' – würfeln!';
+    if (rollsLeft > 0) return nm + ' – Würfel antippen = halten · nochmal würfeln oder Feld im Zettel wählen';
+    return nm + ' – wähle ein Feld im Zettel';
+  }
+
+  async function moveHeld(i) {
+    const d = dice[i], a = d.position.clone(), b = homePos(i);
+    await Eng.tw(.18, k => { d.position.lerpVectors(a, b, k); d.position.y = SZ / 2 + Math.sin(k * Math.PI) * .5; });
+  }
+  async function doRoll() {
+    busy = true; render(); Snd.dice();
+    rollsLeft--;
+    const jobs = [];
+    for (let i = 0; i < 5; i++) if (!held[i]) {
+      vals[i] = 1 + rnd(6);
+      jobs.push(Dice.roll(dice[i], vals[i], homePos(i), .7 + Math.random() * .25, 1.6));
+    }
+    await Promise.all(jobs);
+    rolled = true; busy = false;
+  }
+
+  // ---- Computer ----
+  function bestCat(d, open) {
+    let bc = open[0], bv = -1e9;
+    for (const c of open) { const v = knScore(c, d) - KN_PAR[c] + (c < 6 ? (knScore(c, d) - 3 * (c + 1)) * .6 : 0); if (v > bv) { bv = v; bc = c; } }
+    return [bc, bv];
+  }
+  function aiDecide(p) {
+    const open = []; for (let c = 0; c < 13; c++) if (sc[p][c] == null) open.push(c);
+    const lvl = seat[p].lvl || 2;
+    if (!rolled) return { roll: 1 };
+    const [bc, bv] = bestCat(vals, open);
+    if (rollsLeft === 0) return { cat: lvl === 1 && Math.random() < .3 ? pick(open) : bc };
+    const N = lvl === 1 ? 10 : lvl === 2 ? 40 : 120, tmp = [0, 0, 0, 0, 0];
+    let bm = 31, bmv = bv;
+    for (let mask = 0; mask < 31; mask++) {
+      let sum = 0;
+      for (let n = 0; n < N; n++) {
+        for (let i = 0; i < 5; i++) tmp[i] = (mask >> i) & 1 ? vals[i] : 1 + rnd(6);
+        sum += bestCat(tmp, open)[1];
+      }
+      let v = sum / N + (lvl === 1 ? (Math.random() - .5) * 12 : 0);
+      if (v > bmv) { bmv = v; bm = mask; }
+    }
+    if (bm === 31) return { cat: bc };
+    return { roll: 1, hold: bm };
+  }
+
+  async function loop() {
+    render();
+    while (!dead) {
+      const p = cur();
+      rollsLeft = 3; rolled = false;
+      for (let i = 0; i < 5; i++) if (held[i]) { held[i] = false; moveHeld(i); }
+      render();
+      while (!dead) {
+        UI.status(statusTxt()); setBar(); render();
+        let a;
+        if (human()) {
+          if (innerWidth <= 720 && rolled) side.classList.remove('min');
+          a = await new Promise(r => { waitAct = r; });
+        } else { await Eng.wait(rolled ? .7 : .5); a = aiDecide(p); }
+        if (dead) return;
+        UI.bar(null);
+        if (a.hold != null) {
+          const jobs = [];
+          for (let i = 0; i < 5; i++) { const h = !!((a.hold >> i) & 1); if (h !== held[i]) { held[i] = h; jobs.push(moveHeld(i)); } }
+          await Promise.all(jobs); await Eng.wait(.25); if (dead) return;
+        }
+        if (a.roll) { await doRoll(); if (dead) return; continue; }
+        if (a.cat != null && sc[p][a.cat] == null && rolled) {
+          sc[p][a.cat] = knScore(a.cat, vals); lastSet = [p, a.cat];
+          sc[p][a.cat] ? Snd.ok() : Snd.click();
+          break;
+        }
+      }
+      render();
+      await Eng.wait(.5); if (dead) return;
+      if (act.every(q => sc[q].every(v => v != null))) {
+        const res = act.map(q => [q, knTotals(sc[q]).total]).sort((a, b) => b[1] - a[1]);
+        const top = res.filter(r => r[1] === res[0][1]);
+        Snd.win();
+        gameOver(top.length > 1 ? '🤝 Unentschieden!' : '🎉 ' + seatLabel(def, cfg, top[0][0]) + ' gewinnt!',
+          res.map((r, k) => `${k + 1}. ${dot(def.seatCols[r[0]])} ${seatLabel(def, cfg, r[0])}: <b>${r[1]}</b> Punkte`).join('<br>'));
+        return;
+      }
+      ci = (ci + 1) % act.length; lastSet = null;
+    }
+  }
+  Eng.onPick = info => {
+    if (!info || info.die == null || !waitAct || !human() || !rolled || rollsLeft === 0 || busy) return;
+    const i = info.die; held[i] = !held[i]; Snd.click(); moveHeld(i);
+  };
+  return { start: loop, dispose() { dead = true; side.hidden = true; side.innerHTML = ''; side.onclick = null; } };
+}
+</script>
+<script>
+/* ================= Schach: Regeln + Computer ================= */
+const CH = (() => {
+  const KN = [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]];
+  const KG = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+  const DIAG = [[1,1],[1,-1],[-1,1],[-1,-1]], ORTH = [[1,0],[-1,0],[0,1],[0,-1]];
+  const VAL = [0, 100, 320, 330, 500, 900, 0];
+  const CEN = new Array(64);
+  for (let s = 0; s < 64; s++) { const r = s >> 3, f = s & 7; CEN[s] = (3.5 - Math.abs(f - 3.5)) + (3.5 - Math.abs(r - 3.5)); }
+  function init() {
+    const b = new Int8Array(64), back = [4, 2, 3, 5, 6, 3, 2, 4];
+    for (let f = 0; f < 8; f++) { b[f] = back[f]; b[8 + f] = 1; b[48 + f] = -1; b[56 + f] = -back[f]; }
+    return { b, t: 1, c: 15, ep: -1, hm: 0, k: [4, 60] };
+  }
+  function attacked(b, sq, by) {
+    const r = sq >> 3, f = sq & 7;
+    const pr = r - by;
+    if (pr >= 0 && pr < 8) for (const df of [-1, 1]) { const ff = f + df; if (ff >= 0 && ff < 8 && b[pr * 8 + ff] === by) return true; }
+    for (const [dr, df] of KN) { const rr = r + dr, ff = f + df; if (rr >= 0 && rr < 8 && ff >= 0 && ff < 8 && b[rr * 8 + ff] === 2 * by) return true; }
+    for (const [dr, df] of KG) { const rr = r + dr, ff = f + df; if (rr >= 0 && rr < 8 && ff >= 0 && ff < 8 && b[rr * 8 + ff] === 6 * by) return true; }
+    for (const [dr, df] of DIAG) { let rr = r + dr, ff = f + df; while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) { const p = b[rr * 8 + ff]; if (p) { if (p === 3 * by || p === 5 * by) return true; break; } rr += dr; ff += df; } }
+    for (const [dr, df] of ORTH) { let rr = r + dr, ff = f + df; while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) { const p = b[rr * 8 + ff]; if (p) { if (p === 4 * by || p === 5 * by) return true; break; } rr += dr; ff += df; } }
+    return false;
+  }
+  function gen(st, capsOnly) {
+    const b = st.b, t = st.t, out = [];
+    const add = (f, to, o) => { const m = { f, t: to, p: 0, e: 0, c: 0, d: 0 }; if (o) Object.assign(m, o); out.push(m); };
+    for (let s = 0; s < 64; s++) {
+      const pc = b[s]; if (!pc || (pc > 0) !== (t > 0)) continue;
+      const a = pc * t, r = s >> 3, f = s & 7;
+      if (a === 1) {
+        const nr = r + t; if (nr < 0 || nr > 7) continue;
+        const promo = nr === 7 || nr === 0;
+        const push = (to, o) => { if (promo) for (const p of [5, 4, 3, 2]) add(s, to, Object.assign({ p }, o)); else add(s, to, o); };
+        if (b[nr * 8 + f] === 0 && (!capsOnly || promo)) {
+          push(nr * 8 + f);
+          const sr = t > 0 ? 1 : 6;
+          if (!capsOnly && r === sr && b[(r + 2 * t) * 8 + f] === 0) add(s, (r + 2 * t) * 8 + f, { d: 1 });
+        }
+        for (const df of [-1, 1]) {
+          const ff = f + df; if (ff < 0 || ff > 7) continue;
+          const to = nr * 8 + ff, q = b[to];
+          if (q && (q > 0) !== (t > 0)) push(to); else if (to === st.ep) add(s, to, { e: 1 });
+        }
+      } else if (a === 2 || a === 6) {
+        for (const [dr, df] of (a === 2 ? KN : KG)) {
+          const rr = r + dr, ff = f + df; if (rr < 0 || rr > 7 || ff < 0 || ff > 7) continue;
+          const q = b[rr * 8 + ff];
+          if (q ? (q > 0) !== (t > 0) : !capsOnly) add(s, rr * 8 + ff);
+        }
+        if (a === 6 && !capsOnly && s === (t > 0 ? 4 : 60) && !attacked(b, s, -t)) {
+          const kb = t > 0 ? 1 : 4, qb = t > 0 ? 2 : 8;
+          if ((st.c & kb) && !b[s + 1] && !b[s + 2] && b[s + 3] === 4 * t && !attacked(b, s + 1, -t)) add(s, s + 2, { c: 1 });
+          if ((st.c & qb) && !b[s - 1] && !b[s - 2] && !b[s - 3] && b[s - 4] === 4 * t && !attacked(b, s - 1, -t)) add(s, s - 2, { c: 1 });
+        }
+      } else {
+        const dirs = a === 3 ? DIAG : a === 4 ? ORTH : DIAG.concat(ORTH);
+        for (const [dr, df] of dirs) {
+          let rr = r + dr, ff = f + df;
+          while (rr >= 0 && rr < 8 && ff >= 0 && ff < 8) {
+            const q = b[rr * 8 + ff];
+            if (q) { if ((q > 0) !== (t > 0)) add(s, rr * 8 + ff); break; }
+            if (!capsOnly) add(s, rr * 8 + ff);
+            rr += dr; ff += df;
+          }
+        }
+      }
+    }
+    return out;
+  }
+  function apply(st, m) {
+    const b = Int8Array.from(st.b), t = st.t, pc = b[m.f], cap = b[m.t];
+    b[m.t] = m.p ? m.p * t : pc; b[m.f] = 0;
+    if (m.e) b[m.t - 8 * t] = 0;
+    if (m.c) { if (m.t > m.f) { b[m.f + 1] = b[m.f + 3]; b[m.f + 3] = 0; } else { b[m.f - 1] = b[m.f - 4]; b[m.f - 4] = 0; } }
+    let c = st.c;
+    if (pc * t === 6) c &= t > 0 ? ~3 : ~12;
+    if (m.f === 0 || m.t === 0) c &= ~2; if (m.f === 7 || m.t === 7) c &= ~1;
+    if (m.f === 56 || m.t === 56) c &= ~8; if (m.f === 63 || m.t === 63) c &= ~4;
+    const k = st.k.slice(); if (pc * t === 6) k[t > 0 ? 0 : 1] = m.t;
+    return { b, t: -t, c, ep: m.d ? (m.f + m.t) >> 1 : -1, hm: (pc * t === 1 || cap || m.e) ? 0 : st.hm + 1, k };
+  }
+  const inCheck = st => attacked(st.b, st.k[st.t > 0 ? 0 : 1], -st.t);
+  function legal(st, capsOnly) {
+    const out = [];
+    for (const m of gen(st, capsOnly)) { const n = apply(st, m); if (!attacked(n.b, n.k[st.t > 0 ? 0 : 1], -st.t)) { m.n = n; out.push(m); } }
+    return out;
+  }
+  function evaluate(st) {
+    const b = st.b; let npm = 0, s = 0;
+    for (let q = 0; q < 64; q++) { const a = Math.abs(b[q]); if (a > 1 && a < 6) npm += VAL[a]; }
+    const ph = Math.min(1, npm / 4600);
+    for (let q = 0; q < 64; q++) {
+      const p = b[q]; if (!p) continue;
+      const a = p > 0 ? p : -p, col = p > 0 ? 1 : -1, r = q >> 3, rr = col > 0 ? r : 7 - r, c = CEN[q];
+      let v = VAL[a];
+      if (a === 1) v += [0, 0, 4, 9, 18, 32, 60, 0][rr] + (rr < 5 ? c * 1.5 : 0);
+      else if (a === 2) v += c * 6 - 14;
+      else if (a === 3) v += c * 3;
+      else if (a === 4) v += rr === 6 ? 18 : 0;
+      else if (a === 5) v += c;
+      else v += ph * ((rr === 0 ? 14 : 0) - c * 4) + (1 - ph) * c * 7;
+      s += col * v;
+    }
+    return s;
+  }
+  function order(st, ms) {
+    for (const m of ms) { const cap = st.b[m.t]; m.s = (cap ? 10 * Math.abs(cap) - Math.abs(st.b[m.f]) + 50 : 0) + (m.p ? m.p * 20 : 0); }
+    ms.sort((a, b) => b.s - a.s);
+  }
+  let nodes = 0;
+  function qs(st, alpha, beta, d) {
+    nodes++;
+    const stand = evaluate(st) * st.t;
+    if (stand >= beta || d === 0) return stand;
+    if (stand > alpha) alpha = stand;
+    const ms = legal(st, true); order(st, ms);
+    for (const m of ms) {
+      const v = -qs(m.n, -beta, -alpha, d - 1);
+      if (v >= beta) return v;
+      if (v > alpha) alpha = v;
+    }
+    return alpha;
+  }
+  function nm(st, d, alpha, beta, ply) {
+    nodes++;
+    const ms = legal(st);
+    if (!ms.length) return inCheck(st) ? -99000 + ply : 0;
+    if (st.hm >= 100) return 0;
+    if (d <= 0) return qs(st, alpha, beta, 4);
+    order(st, ms);
+    for (const m of ms) {
+      const v = -nm(m.n, d - 1, -beta, -alpha, ply + 1);
+      if (v >= beta) return v;
+      if (v > alpha) alpha = v;
+    }
+    return alpha;
+  }
+  function best(st, lvl) {
+    nodes = 0;
+    const ms = legal(st); order(st, ms);
+    const depth = lvl === 1 ? 1 : lvl === 2 ? 2 : 3;
+    const scored = [];
+    let alpha = -1e9;
+    for (const m of ms) {
+      const v = -nm(m.n, depth - 1, -1e9, lvl === 1 ? 1e9 : -alpha + 7, 1) + Math.random() * 6;
+      scored.push([v, m]); if (v > alpha) alpha = v;
+    }
+    scored.sort((a, b) => b[0] - a[0]);
+    if (lvl === 1) { const top = scored.filter(x => x[0] > scored[0][0] - 120).slice(0, 4); return pick(top)[1]; }
+    return scored[0][1];
+  }
+  function key(st) { return Array.prototype.join.call(st.b, '') + st.t + '|' + st.c + '|' + st.ep; }
+  function insufficient(b) {
+    const o = []; for (let q = 0; q < 64; q++) { const a = Math.abs(b[q]); if (a && a !== 6) o.push(a); }
+    return !o.length || (o.length === 1 && (o[0] === 2 || o[0] === 3));
+  }
+  return { init, legal, apply, inCheck, best, key, insufficient, evaluate, get nodes() { return nodes; } };
+})();
+
+/* ================= Schach: 3D ================= */
+function makeChessPieces() {
+  const L = Eng.lathe;
+  const geo = {
+    1: [L([[0,0],[.3,0],[.31,.06],[.22,.12],[.13,.32],[.19,.36],[.19,.4],[.11,.43],[0,.43]])],
+    2: [L([[0,0],[.32,0],[.33,.06],[.24,.13],[.22,.2],[0,.2]])],
+    3: [L([[0,0],[.31,0],[.32,.06],[.21,.14],[.12,.42],[.21,.47],[.21,.52],[.12,.55],[0,.55]])],
+    4: [L([[0,0],[.33,0],[.34,.07],[.25,.14],[.21,.52],[.29,.56],[.29,.72],[0,.72]])],
+    5: [L([[0,0],[.35,0],[.36,.07],[.24,.16],[.13,.55],[.23,.62],[.18,.68],[.28,.86],[0,.86]])],
+    6: [L([[0,0],[.36,0],[.37,.07],[.25,.16],[.14,.6],[.25,.67],[.19,.73],[.26,.88],[0,.88]])]
+  };
+  const parts = {
+    1: [[new THREE.SphereGeometry(.15, 16, 12), 0, .55, 0]],
+    2: [[new THREE.BoxGeometry(.24, .42, .3), 0, .4, -.02, -.25], [new THREE.BoxGeometry(.22, .2, .44), 0, .62, .1, .35], [new THREE.ConeGeometry(.05, .14, 6), .07, .8, -.06], [new THREE.ConeGeometry(.05, .14, 6), -.07, .8, -.06]],
+    3: [[new THREE.SphereGeometry(.17, 16, 12), 0, .72, 0, 0, 1.35], [new THREE.SphereGeometry(.05, 8, 6), 0, .98, 0]],
+    4: [[new THREE.BoxGeometry(.13, .12, .13), .17, .78, .17], [new THREE.BoxGeometry(.13, .12, .13), -.17, .78, .17], [new THREE.BoxGeometry(.13, .12, .13), .17, .78, -.17], [new THREE.BoxGeometry(.13, .12, .13), -.17, .78, -.17]],
+    5: [[new THREE.SphereGeometry(.11, 12, 10), 0, .96, 0]],
+    6: [[new THREE.BoxGeometry(.08, .3, .08), 0, 1.02, 0], [new THREE.BoxGeometry(.24, .08, .08), 0, 1.04, 0]]
+  };
+  const hit = new THREE.CylinderGeometry(.42, .42, 1.1, 8), hitM = Eng.hitMat();
+  const mats = { 1: Eng.mat(0xf3ead6, { roughness: .4 }), '-1': Eng.mat(0x2b2b33, { roughness: .35, metalness: .2 }) };
+  return function make(code) {
+    const a = Math.abs(code), col = code > 0 ? 1 : -1, m = mats[col], g = new THREE.Group();
+    for (const gg of geo[a]) { const o = new THREE.Mesh(gg, m); o.castShadow = true; g.add(o); }
+    for (const [gg, x, y, z, rx, sy] of parts[a]) { const o = new THREE.Mesh(gg, m); o.position.set(x, y, z); if (rx) o.rotation.x = rx; if (sy) o.scale.y = sy; o.castShadow = true; g.add(o); }
+    const h = new THREE.Mesh(hit, hitM); h.position.y = .5; g.add(h);
+    if (a === 2 && col > 0) g.rotation.y = Math.PI;
+    g.scale.setScalar(1.05);
+    return g;
+  };
+}
+function boardFrameTex(n, letters) {
+  return Eng.tex(1024, 1024, (g, w) => {
+    g.fillStyle = '#5a3520'; g.fillRect(0, 0, w, w);
+    const m = w * .8 / (n + 1.6), cell = (w - 2 * m) / n;
+    g.fillStyle = '#e9d3a8'; g.font = `bold ${Math.round(m * .5)}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    if (letters) for (let i = 0; i < n; i++) {
+      g.fillText('ABCDEFGH'[i], m + cell * (i + .5), w - m / 2); g.fillText('ABCDEFGH'[i], m + cell * (i + .5), m / 2);
+      g.fillText(String(i + 1), m / 2, w - m - cell * (i + .5)); g.fillText(String(i + 1), w - m / 2, w - m - cell * (i + .5));
+    }
+  });
+}
+// gemeinsames 8x8-Brett für Schach und Dame
+function makeBoard8(letters) {
+  Eng.bg(0x0f1626); Eng.shadow(7);
+  const frameMat = Eng.mat(0xffffff, { map: boardFrameTex(8, letters), roughness: .6 });
+  const base = Eng.add(Eng.mesh(new THREE.BoxGeometry(9.6, .5, 9.6), [Eng.mat(0x4a2b19), Eng.mat(0x4a2b19), frameMat, Eng.mat(0x4a2b19), Eng.mat(0x4a2b19), Eng.mat(0x4a2b19)], 0, -.3, 0, 2));
+  base.receiveShadow = true;
+  const sqG = new THREE.BoxGeometry(1, .1, 1), light = Eng.mat(0xecd6ad, { roughness: .5 }), darkM = Eng.mat(0x8b5a3c, { roughness: .5 });
+  const squares = [];
+  for (let s = 0; s < 64; s++) {
+    const r = s >> 3, f = s & 7;
+    const m = Eng.mesh(sqG, (r + f) % 2 ? light : darkM, f - 3.5, -.05, 3.5 - r, 2);
+    m.userData.pick = { sq: s }; squares.push(m); Eng.add(m); Eng.pickables.push(m);
+  }
+  const marks = new THREE.Group(); Eng.add(marks);
+  const dotG = new THREE.CircleGeometry(.16, 20), ringG = new THREE.RingGeometry(.36, .46, 28), sqMG = new THREE.PlaneGeometry(1, 1);
+  const M = {
+    dot: new THREE.MeshBasicMaterial({ color: 0x00e5a0, transparent: true, opacity: .85 }),
+    cap: new THREE.MeshBasicMaterial({ color: 0xff3d6e, transparent: true, opacity: .9 }),
+    sel: new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: .45 }),
+    last: new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .35 }),
+    chk: new THREE.MeshBasicMaterial({ color: 0xff2040, transparent: true, opacity: .6 })
+  };
+  const P = s => new THREE.Vector3((s & 7) - 3.5, 0, 3.5 - (s >> 3));
+  function mark(list) { // [[sq,kind],...]
+    marks.clear();
+    for (const [s, k] of list) {
+      const g = k === 'dot' ? dotG : k === 'cap' ? ringG : sqMG;
+      const o = new THREE.Mesh(g, M[k]); o.rotation.x = -Math.PI / 2;
+      const p = P(s); o.position.set(p.x, k === 'dot' || k === 'cap' ? .012 : .006, p.z); o.renderOrder = 1;
+      marks.add(o);
+    }
+    Eng.kick();
+  }
+  return { P, mark, squares };
+}
+async function slide(g, to, h = .45, dur = .38) {
+  const a = g.position.clone(); Snd.move();
+  await Eng.tw(dur, k => { g.position.lerpVectors(a, to, k); g.position.y = a.y + Math.sin(k * Math.PI) * h; });
+  g.position.copy(to);
+}
+async function vanish(g) {
+  await Eng.tw(.22, k => g.scale.setScalar(Math.max(.001, 1.05 * (1 - k))));
+  g.parent && g.parent.remove(g);
+  const i = Eng.pickables.indexOf(g); if (i >= 0) Eng.pickables.splice(i, 1);
+}
+
+function makeChess(def, cfg) {
+  const seat = cfg.seats, human = c => seat[c > 0 ? 0 : 1].type === 'h';
+  const both = human(1) && human(-1);
+  const B = makeBoard8(true), make = makeChessPieces();
+  let st = CH.init(), dead = false, waitMove = null, sel = -1, legalNow = [], lastMv = null;
+  const rep = new Map(), pm = new Array(64).fill(null);
+  const nm = c => (c > 0 ? '⚪ ' : '⚫ ') + '<b>' + seatLabel(def, cfg, c > 0 ? 0 : 1) + '</b>';
+  for (let s = 0; s < 64; s++) if (st.b[s]) {
+    const g = make(st.b[s]); g.position.copy(B.P(s)); g.userData.pick = { sq: s };
+    pm[s] = g; Eng.add(g); Eng.pickables.push(g);
+  }
+  const viewAz = c => c > 0 ? 0 : Math.PI;
+  Eng.view({ az: viewAz(human(1) || !human(-1) ? 1 : -1), el: 1.0, dist: 13, tx: 0, ty: 0, tz: 0, min: 6, max: 22 }, true);
+
+  function baseMarks() {
+    const l = [];
+    if (lastMv) l.push([lastMv.f, 'last'], [lastMv.t, 'last']);
+    if (CH.inCheck(st)) l.push([st.k[st.t > 0 ? 0 : 1], 'chk']);
+    return l;
+  }
+  function showSel() {
+    const l = baseMarks();
+    if (sel >= 0) {
+      l.push([sel, 'sel']);
+      for (const m of legalNow) if (m.f === sel) l.push([m.t, st.b[m.t] || m.e ? 'cap' : 'dot']);
+    }
+    B.mark(l);
+  }
+  async function animate(m) {
+    const g = pm[m.f], t = st.t, jobs = [];
+    let vs = m.e ? m.t - 8 * t : m.t;
+    const victim = pm[vs];
+    if (victim) { pm[vs] = null; jobs.push(Eng.wait(.2).then(() => vanish(victim))); Snd.hit(); }
+    if (m.c) {
+      const rf = m.t > m.f ? m.f + 3 : m.f - 4, rt = m.t > m.f ? m.f + 1 : m.f - 1, rg = pm[rf];
+      pm[rf] = null; pm[rt] = rg; rg.userData.pick.sq = rt; jobs.push(slide(rg, B.P(rt), .6));
+    }
+    jobs.push(slide(g, B.P(m.t), Math.abs(st.b[m.f]) === 2 ? .9 : .45));
+    pm[m.f] = null; pm[m.t] = g; g.userData.pick.sq = m.t;
+    await Promise.all(jobs);
+    if (m.p) {
+      g.parent.remove(g); Eng.pickables.splice(Eng.pickables.indexOf(g), 1);
+      const n = make(m.p * t); n.position.copy(B.P(m.t)); n.userData.pick = { sq: m.t };
+      pm[m.t] = n; Eng.add(n); Eng.pickables.push(n); Snd.ok();
+    }
+  }
+  async function humanMove() {
+    legalNow = CH.legal(st); sel = -1; showSel();
+    UI.status(nm(st.t) + (CH.inCheck(st) ? ' – <b style="color:#ff5d7a">Schach!</b>' : '') + ' – Figur antippen, dann Zielfeld');
+    const opts = await new Promise(r => { waitMove = r; });
+    if (opts.length === 1) return opts[0];
+    const p = await UI.choose([5, 4, 3, 2].map(v => ({ label: { 5: '♛ Dame', 4: '♜ Turm', 3: '♝ Läufer', 2: '♞ Springer' }[v], v })));
+    return opts.find(m => m.p === p);
+  }
+  Eng.onPick = info => {
+    if (!waitMove || !info || info.sq == null) return;
+    const s = info.sq;
+    if (sel >= 0) {
+      const opts = legalNow.filter(m => m.f === sel && m.t === s);
+      if (opts.length) { const f = waitMove; waitMove = null; sel = -1; f(opts); return; }
+    }
+    const p = st.b[s];
+    if (p && (p > 0) === (st.t > 0) && legalNow.some(m => m.f === s)) { sel = s; Snd.click(); } else sel = -1;
+    showSel();
+  };
+  async function loop() {
+    rep.set(CH.key(st), 1);
+    while (!dead) {
+      const t = st.t; let m;
+      if (both) Eng.view({ az: viewAz(t) });
+      if (human(t)) m = await humanMove();
+      else {
+        UI.status(nm(t) + (CH.inCheck(st) ? ' – Schach!' : '') + ' denkt …'); B.mark(baseMarks());
+        await Eng.wait(.35); if (dead) return;
+        m = CH.best(st, seat[t > 0 ? 0 : 1].lvl || 2);
+      }
+      if (dead) return;
+      sel = -1; B.mark(baseMarks());
+      await animate(m); if (dead) return;
+      st = CH.apply(st, m); lastMv = m;
+      const k = CH.key(st); rep.set(k, (rep.get(k) || 0) + 1);
+      B.mark(baseMarks());
+      const moves = CH.legal(st);
+      let end = null;
+      if (!moves.length) end = CH.inCheck(st) ? ['🏆 Schachmatt!', nm(-st.t) + ' gewinnt.', 1] : ['🤝 Patt', 'Unentschieden – keine Züge mehr möglich.'];
+      else if (st.hm >= 100) end = ['🤝 Remis', '50 Züge ohne Schlagen oder Bauernzug.'];
+      else if (rep.get(k) >= 3) end = ['🤝 Remis', 'Dreimal dieselbe Stellung.'];
+      else if (CH.insufficient(st.b)) end = ['🤝 Remis', 'Zu wenig Material zum Mattsetzen.'];
+      if (end) { end[2] ? Snd.win() : Snd.lose(); gameOver(end[0], end[1]); return; }
+      if (CH.inCheck(st)) Snd.hit();
+    }
+  }
+  return { start: loop, dispose() { dead = true; } };
+}
+</script>
+<script>
+/* ================= Leiterspiel (Schlangen & Leitern) ================= */
+function makeLadder(def, cfg) {
+  const COL = def.seatCols, seat = cfg.seats, act = [0, 1, 2, 3].filter(i => cfg.seats[i]);
+  const humans = act.filter(i => seat[i].type === 'h');
+  const LAD = { 1: 38, 4: 14, 9: 31, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 80: 100 };
+  const SN = { 16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78 };
+  const SLOT = [[-.22, -.22], [.22, -.22], [-.22, .22], [.22, .22]];
+  const pos = [0, 0, 0, 0];
+  let dead = false, ci = 0, waitRoll = null;
+  const cell = n => { const r = Math.floor((n - 1) / 10), c = r % 2 ? 9 - (n - 1) % 10 : (n - 1) % 10; return [c - 4.5, 4.5 - r]; };
+  const at = (p, n) => {
+    const s = SLOT[p];
+    if (n <= 0) return new THREE.Vector3(-4.5 + p * .75, .08, 6.05);
+    const [x, z] = cell(n); return new THREE.Vector3(x + s[0], .08, z + s[1]);
+  };
+  const name = p => dot(COL[p]) + ' <b>' + seatLabel(def, cfg, p) + '</b>';
+
+  // ---- Brett ----
+  Eng.bg(0x0e1a2a); Eng.shadow(8);
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(11, .5, 12.6), Eng.mat(0x6b4226, { roughness: .7 }), 0, -.26, .75, 2));
+  const pal = ['#ffd6e0', '#fff1b8', '#c9f2d9', '#cfe3ff', '#e6d6ff'];
+  const tex = Eng.tex(1000, 1000, g => {
+    for (let n = 1; n <= 100; n++) {
+      const r = Math.floor((n - 1) / 10), c = r % 2 ? 9 - (n - 1) % 10 : (n - 1) % 10, x = c * 100, y = (9 - r) * 100;
+      g.fillStyle = (r + c) % 2 ? pal[(r + c) % 5] : '#ffffff'; g.fillRect(x, y, 100, 100);
+      g.strokeStyle = 'rgba(0,0,0,.12)'; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, 98, 98);
+      g.fillStyle = LAD[n] ? '#1f8a4c' : SN[n] ? '#c22a4a' : '#2a3350';
+      g.font = 'bold 34px sans-serif'; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(n, x + 8, y + 6);
+    }
+    g.font = 'bold 30px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ff2d95'; g.fillText('★ ZIEL', 50, 55);
+  });
+  const top = Eng.add(Eng.mesh(new THREE.PlaneGeometry(10, 10), Eng.mat(0xffffff, { map: tex, roughness: .7 }), 0, .005, 0, 2));
+  top.rotation.x = -Math.PI / 2;
+  const startPad = Eng.add(Eng.mesh(new THREE.BoxGeometry(10, .04, 1.1), Eng.mat(0xf0e0c0), 0, .02, 6.05, 2));
+  startPad.userData.keep = 1;
+
+  // Leitern
+  const railM = Eng.mat(0xc98a3d, { roughness: .6 });
+  for (const a in LAD) {
+    const [x1, z1] = cell(+a), [x2, z2] = cell(LAD[a]), dx = x2 - x1, dz = z2 - z1, L = Math.hypot(dx, dz);
+    const g = new THREE.Group(); g.position.set((x1 + x2) / 2, .13, (z1 + z2) / 2); g.rotation.y = Math.atan2(dx, dz);
+    for (const s of [-.2, .2]) g.add(Eng.mesh(new THREE.BoxGeometry(.07, .07, L), railM, s, 0, 0));
+    const rg = new THREE.BoxGeometry(.44, .05, .06);
+    for (let z = -L / 2 + .25; z < L / 2 - .1; z += .4) g.add(Eng.mesh(rg, railM, 0, 0, z));
+    Eng.add(g);
+  }
+  // Schlangen
+  const SCOL = [0x2fbf71, 0xe8374a, 0x8b5cf6, 0xff9a1f, 0x00b8d9];
+  const curves = {}; let si = 0;
+  const eyeG = new THREE.SphereGeometry(.05, 8, 6), eyeM = Eng.mat(0x111111);
+  for (const a in SN) {
+    const [x1, z1] = cell(+a), [x2, z2] = cell(SN[a]);
+    const v1 = new THREE.Vector3(x1, .15, z1), v2 = new THREE.Vector3(x2, .15, z2);
+    const dir = v2.clone().sub(v1), per = new THREE.Vector3(-dir.z, 0, dir.x).normalize(), pts = [];
+    const waves = Math.max(2, Math.round(dir.length() / 1.6));
+    for (let i = 0; i <= 12; i++) { const k = i / 12; pts.push(v1.clone().lerp(v2, k).addScaledVector(per, Math.sin(k * Math.PI * waves) * .32 * (1 - k * .5))); }
+    const cv = new THREE.CatmullRomCurve3(pts); curves[a] = cv;
+    const m = Eng.mat(SCOL[si++ % SCOL.length], { roughness: .35 });
+    Eng.add(Eng.mesh(new THREE.TubeGeometry(cv, 80, .1, 8, false), m));
+    const head = Eng.add(Eng.mesh(new THREE.SphereGeometry(.2, 14, 10), m, x1, .2, z1));
+    head.scale.set(1, .7, 1.2); head.lookAt(pts[1].x, .2, pts[1].z);
+    for (const s of [-1, 1]) { const e = new THREE.Mesh(eyeG, eyeM); e.position.set(s * .1, .12, -.1); head.add(e); }
+  }
+  // Figuren + Würfel
+  const PG = makePawnGeo(), hitM = Eng.hitMat(), figs = [];
+  for (const p of act) { const g = makePawn(PG, Eng.mat(COL[p], { roughness: .4 }), hitM); g.scale.setScalar(.72); g.position.copy(at(p, 0)); figs[p] = g; Eng.add(g); }
+  const DIE_AT = new THREE.Vector3(3.6, .4, 6.05);
+  const die = Dice.make(.8); die.position.copy(DIE_AT); die.userData.pick = { die: 1 }; Eng.add(die); Eng.pickables.push(die);
+  const narrow = innerWidth / innerHeight < 1;
+  Eng.view({ az: 0, el: narrow ? 1.15 : 1.0, dist: narrow ? 16 : 16, tx: 0, ty: 0, tz: .9, min: 7, max: 26 }, true);
+
+  function doRoll() { if (waitRoll) { const f = waitRoll; waitRoll = null; f(); } }
+  Eng.onPick = info => { if (info && info.die) doRoll(); };
+
+  async function loop() {
+    while (!dead) {
+      const p = act[ci];
+      if (seat[p].type === 'h') {
+        UI.status(name(p) + ` (Feld ${pos[p]}) – würfeln!`);
+        UI.bar([{ label: '🎲 Würfeln', fn: doRoll }]);
+        await new Promise(r => { waitRoll = r; });
+        UI.bar(null);
+      } else { UI.status(name(p) + ' würfelt …'); await Eng.wait(.5); }
+      if (dead) return;
+      const v = 1 + rnd(6); Snd.dice();
+      await Dice.roll(die, v, DIE_AT, .7, 1.3); if (dead) return;
+      const g = figs[p];
+      if (pos[p] + v > 100) {
+        UI.status(name(p) + ` hat eine ${v} – zu viel, genau 100 nötig`); await Eng.wait(.8);
+      } else {
+        for (let k = 0; k < v; k++) { pos[p]++; await hop(g, at(p, pos[p]), .17, .3); if (dead) return; }
+        const n = pos[p];
+        if (LAD[n]) {
+          UI.status(name(p) + ' klettert die Leiter hoch! 🪜'); Snd.ok();
+          const a = g.position.clone(), b = at(p, LAD[n]); pos[p] = LAD[n];
+          await Eng.tw(.9, k => { g.position.lerpVectors(a, b, k); g.position.y = .08 + Math.sin(k * Math.PI) * .5; });
+        } else if (SN[n]) {
+          UI.status(name(p) + ' rutscht die Schlange runter! 🐍'); Snd.lose();
+          const cv = curves[n], s = SLOT[p], v3 = new THREE.Vector3(); pos[p] = SN[n];
+          await Eng.tw(1.1, k => { cv.getPoint(k, v3); g.position.set(v3.x + s[0] * k, .12, v3.z + s[1] * k); });
+          g.position.copy(at(p, pos[p]));
+        }
+        if (dead) return;
+        if (pos[p] === 100) { Snd.win(); gameOver('🎉 ' + seatLabel(def, cfg, p) + ' gewinnt!', 'Als Erstes genau auf Feld 100.'); return; }
+      }
+      if (v === 6) { UI.status(name(p) + ' hat eine 6 – nochmal!'); await Eng.wait(.5); continue; }
+      ci = (ci + 1) % act.length;
+      if (humans.length > 1) Eng.kick();
+    }
+  }
+  return { start: loop, dispose() { dead = true; } };
+}
+</script>
+<script>
+/* ================= Vier in einer Reihe ================= */
+const C4 = (() => {
+  const WIN = []; // alle 69 Viererreihen als Indizes c*6+r
+  for (let c = 0; c < 7; c++) for (let r = 0; r < 6; r++)
+    for (const [dc, dr] of [[1, 0], [0, 1], [1, 1], [1, -1]]) {
+      const ce = c + 3 * dc, re = r + 3 * dr;
+      if (ce < 7 && re >= 0 && re < 6) WIN.push([0, 1, 2, 3].map(k => (c + k * dc) * 6 + r + k * dr));
+    }
+  const BY = Array.from({ length: 42 }, () => []);
+  WIN.forEach(w => w.forEach(i => BY[i].push(w)));
+  const ORD = [3, 2, 4, 1, 5, 0, 6];
+  const line = (b, i, p) => BY[i].find(w => w.every(j => b[j] === p)) || null;
+  function evalB(b, p) {
+    let s = 0;
+    for (const w of WIN) {
+      let me = 0, op = 0;
+      for (const j of w) { if (b[j] === p) me++; else if (b[j]) op++; }
+      if (op === 0) s += me === 3 ? 8 : me === 2 ? 2 : 0;
+      else if (me === 0) s -= op === 3 ? 9 : op === 2 ? 2 : 0;
+    }
+    for (let r = 0; r < 6; r++) { const v = b[18 + r]; if (v === p) s += 3; else if (v) s -= 3; }
+    return s;
+  }
+  function search(b, h, p, d, alpha, beta) {
+    let any = false;
+    for (const c of ORD) if (h[c] < 6) { any = true; const i = c * 6 + h[c]; b[i] = p; const w = line(b, i, p); b[i] = 0; if (w) return 1000 + d; }
+    if (!any) return 0;
+    if (d === 0) return evalB(b, p);
+    for (const c of ORD) {
+      if (h[c] >= 6) continue;
+      const i = c * 6 + h[c]; b[i] = p; h[c]++;
+      const v = -search(b, h, -p, d - 1, -beta, -alpha);
+      h[c]--; b[i] = 0;
+      if (v >= beta) return v;
+      if (v > alpha) alpha = v;
+    }
+    return alpha;
+  }
+  function best(b, h, p, lvl) {
+    const depth = lvl === 1 ? 2 : lvl === 2 ? 5 : 8;
+    const free = ORD.filter(c => h[c] < 6);
+    if (lvl === 1 && Math.random() < .3) return pick(free);
+    let bc = free[0], bv = -1e9;
+    for (const c of free) {
+      const i = c * 6 + h[c]; b[i] = p; h[c]++;
+      let v = line(b, i, p) ? 5000 : -search(b, h, -p, depth - 1, -1e9, 1e9);
+      h[c]--; b[i] = 0;
+      v += Math.random() * (lvl === 3 ? .5 : 3);
+      if (v > bv) { bv = v; bc = c; }
+    }
+    return bc;
+  }
+  return { line, best };
+})();
+
+function makeConnect4(def, cfg) {
+  const seat = cfg.seats, COL = def.seatCols;
+  const b = new Int8Array(42), h = new Int8Array(7), discs = [];
+  let dead = false, turn = 1, waitCol = null;
+  const sIdx = p => p > 0 ? 0 : 1, name = p => dot(COL[sIdx(p)]) + ' <b>' + seatLabel(def, cfg, sIdx(p)) + '</b>';
+  const Y = r => r + .75;
+
+  Eng.bg(0x0d1630); Eng.shadow(7);
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(14, .2, 7), Eng.mat(0x24304d, { roughness: .9 }), 0, -.1, 0, 2));
+  const shape = new THREE.Shape();
+  shape.moveTo(-3.7, .2); shape.lineTo(3.7, .2); shape.lineTo(3.7, 6.3); shape.lineTo(-3.7, 6.3); shape.lineTo(-3.7, .2);
+  for (let c = 0; c < 7; c++) for (let r = 0; r < 6; r++) { const hp = new THREE.Path(); hp.absarc(c - 3, Y(r), .4, 0, Math.PI * 2, true); shape.holes.push(hp); }
+  const pg = new THREE.ExtrudeGeometry(shape, { depth: .5, bevelEnabled: false, curveSegments: 18 });
+  pg.translate(0, 0, -.25);
+  const blue = Eng.mat(0x1f5fe0, { roughness: .35, metalness: .1 });
+  Eng.add(Eng.mesh(pg, blue));
+  for (const s of [-1, 1]) {
+    Eng.add(Eng.mesh(new THREE.BoxGeometry(.3, 6.9, .7), blue, s * 3.85, 3.25, 0));
+    Eng.add(Eng.mesh(new THREE.BoxGeometry(.5, .25, 2.4), blue, s * 3.85, .1, 0));
+  }
+  const dG = new THREE.CylinderGeometry(.37, .37, .3, 28); dG.rotateX(Math.PI / 2);
+  const dM = [Eng.mat(COL[0], { roughness: .35 }), Eng.mat(COL[1], { roughness: .35 })];
+  const hitM = Eng.hitMat(), colG = new THREE.BoxGeometry(1, 7.4, 1.4);
+  for (let c = 0; c < 7; c++) { const m = Eng.add(new THREE.Mesh(colG, hitM)); m.position.set(c - 3, 3.6, 0); m.userData.pick = { col: c }; Eng.pickables.push(m); }
+  const narrow = innerWidth / innerHeight < 1;
+  Eng.view({ az: 0, el: .32, dist: narrow ? 14 : 12.5, tx: 0, ty: 3.3, tz: 0, min: 6, max: 24 }, true);
+
+  async function drop(c, p) {
+    const r = h[c]; h[c]++; b[c * 6 + r] = p;
+    const d = new THREE.Mesh(dG, dM[sIdx(p)]); d.castShadow = true; d.position.set(c - 3, 7.3, 0); Eng.add(d); discs[c * 6 + r] = d;
+    const y0 = 7.3, y1 = Y(r), dur = .18 + .06 * (6 - r);
+    await Eng.tw(dur, k => { d.position.y = y0 + (y1 - y0) * k * k; }, Eng.lin);
+    Snd.tone(220 + r * 40, .08, 'triangle', .08);
+    await Eng.tw(.12, k => { d.position.y = y1 + Math.sin(k * Math.PI) * .12; }, Eng.lin);
+    d.position.y = y1;
+    return c * 6 + r;
+  }
+  Eng.onPick = info => { if (info && info.col != null && waitCol && h[info.col] < 6) { const f = waitCol; waitCol = null; f(info.col); } };
+
+  async function loop() {
+    let n = 0;
+    while (!dead) {
+      const s = seat[sIdx(turn)]; let c;
+      if (s.type === 'h') { UI.status(name(turn) + ' – tippe auf eine Spalte'); c = await new Promise(r => { waitCol = r; }); }
+      else { UI.status(name(turn) + ' denkt …'); await Eng.wait(.4); if (dead) return; c = C4.best(b, h, turn, s.lvl || 2); }
+      if (dead) return;
+      const i = await drop(c, turn); n++; if (dead) return;
+      const w = C4.line(b, i, turn);
+      if (w) {
+        for (const j of w) { discs[j].material = discs[j].material.clone(); discs[j].material.emissive = new THREE.Color(0xffffff); discs[j].material.emissiveIntensity = .35; }
+        Eng.kick(); Snd.win();
+        gameOver('🎉 ' + seatLabel(def, cfg, sIdx(turn)) + ' gewinnt!', 'Vier in einer Reihe.'); return;
+      }
+      if (n === 42) { Snd.lose(); gameOver('🤝 Unentschieden', 'Das Brett ist voll.'); return; }
+      turn = -turn;
+    }
+  }
+  return { start: loop, dispose() { dead = true; } };
+}
+</script>
+<script>
+/* ================= Dame ================= */
+const DM = (() => {
+  const DIRS = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+  const inB = (r, f) => r >= 0 && r < 8 && f >= 0 && f < 8;
+  function init() {
+    const b = new Int8Array(64);
+    for (let s = 0; s < 64; s++) { const r = s >> 3, f = s & 7; if ((r + f) % 2 === 0) { if (r < 3) b[s] = 1; else if (r > 4) b[s] = -1; } }
+    return b;
+  }
+  function caps(b, s0) {
+    const p = b[s0], col = Math.sign(p), king = Math.abs(p) === 2, out = [];
+    const free = s => b[s] === 0 || s === s0;
+    const dfs = (s, path, capd) => {
+      let ext = false; const r = s >> 3, f = s & 7;
+      for (const [dr, df] of DIRS) {
+        let rr = r + dr, ff = f + df;
+        if (king) while (inB(rr, ff) && free(rr * 8 + ff)) { rr += dr; ff += df; }
+        if (!inB(rr, ff)) continue;
+        const m = rr * 8 + ff;
+        if (Math.sign(b[m]) !== -col || capd.includes(m)) continue;
+        rr += dr; ff += df;
+        while (inB(rr, ff) && free(rr * 8 + ff)) {
+          const l = rr * 8 + ff; ext = true;
+          dfs(l, path.concat(l), capd.concat(m));
+          if (!king) break;
+          rr += dr; ff += df;
+        }
+      }
+      if (!ext && path.length) out.push({ f: s0, path, caps: capd });
+    };
+    dfs(s0, [], []);
+    return out;
+  }
+  function moves(b, col) {
+    let out = [];
+    for (let s = 0; s < 64; s++) if (Math.sign(b[s]) === col) out = out.concat(caps(b, s));
+    if (out.length) return out;
+    for (let s = 0; s < 64; s++) {
+      if (Math.sign(b[s]) !== col) continue;
+      const king = Math.abs(b[s]) === 2, r = s >> 3, f = s & 7;
+      for (const [dr, df] of DIRS) {
+        if (!king && dr !== col) continue;
+        let rr = r + dr, ff = f + df;
+        while (inB(rr, ff) && b[rr * 8 + ff] === 0) { out.push({ f: s, path: [rr * 8 + ff], caps: [] }); if (!king) break; rr += dr; ff += df; }
+      }
+    }
+    return out;
+  }
+  function apply(b, m) {
+    const n = Int8Array.from(b), p = n[m.f], col = Math.sign(p), to = m.path[m.path.length - 1];
+    n[m.f] = 0; for (const c of m.caps) n[c] = 0;
+    n[to] = Math.abs(p) === 1 && (to >> 3) === (col > 0 ? 7 : 0) ? 2 * col : p;
+    return n;
+  }
+  function evalB(b, col) {
+    let s = 0;
+    for (let q = 0; q < 64; q++) {
+      const p = b[q]; if (!p) continue;
+      const c = Math.sign(p), r = q >> 3, f = q & 7;
+      let v = Math.abs(p) === 2 ? 330 : 100 + (c > 0 ? r : 7 - r) * 4;
+      if (f === 0 || f === 7) v += 4;
+      if ((c > 0 ? r : 7 - r) === 0 && Math.abs(p) === 1) v += 6; // Grundreihe halten
+      s += c * v;
+    }
+    return s * col;
+  }
+  function search(b, col, d, alpha, beta, ply) {
+    const ms = moves(b, col);
+    if (!ms.length) return -10000 + ply;
+    if (d <= 0 && !ms[0].caps.length) return evalB(b, col);
+    if (d <= -6) return evalB(b, col);
+    for (const m of ms) {
+      const v = -search(apply(b, m), -col, d - 1, -beta, -alpha, ply + 1);
+      if (v >= beta) return v;
+      if (v > alpha) alpha = v;
+    }
+    return alpha;
+  }
+  function best(b, col, lvl) {
+    const ms = moves(b, col);
+    if (ms.length === 1) return ms[0];
+    if (lvl === 1 && Math.random() < .35) return pick(ms);
+    const depth = lvl === 1 ? 2 : lvl === 2 ? 4 : 7;
+    let bm = ms[0], bv = -1e9;
+    for (const m of ms) {
+      const v = -search(apply(b, m), -col, depth - 1, -1e9, -bv + 5, 1) + Math.random() * 4;
+      if (v > bv) { bv = v; bm = m; }
+    }
+    return bm;
+  }
+  return { init, moves, apply, best };
+})();
+
+function makeDame(def, cfg) {
+  const seat = cfg.seats, sIdx = c => c > 0 ? 0 : 1, human = c => seat[sIdx(c)].type === 'h';
+  const both = human(1) && human(-1);
+  const B = makeBoard8(false);
+  let b = DM.init(), turn = 1, dead = false, waitMove = null, sel = -1, legalNow = [], quiet = 0;
+  const pm = new Array(64).fill(null);
+  const discG = new THREE.CylinderGeometry(.38, .38, .16, 32), crownG = new THREE.TorusGeometry(.24, .05, 8, 24);
+  const mats = { 1: Eng.mat(0xf1e6cf, { roughness: .4 }), '-1': Eng.mat(0x7a1f2b, { roughness: .4 }) }, gold = Eng.mat(0xffc83d, { metalness: .6, roughness: .3 });
+  const hitG = new THREE.CylinderGeometry(.45, .45, .5, 8), hitM = Eng.hitMat();
+  const nm = c => (c > 0 ? '⚪ ' : '🔴 ') + '<b>' + seatLabel(def, cfg, sIdx(c)) + '</b>';
+  function crown(g) {
+    if (g.userData.king) return; g.userData.king = 1;
+    const top = new THREE.Mesh(discG, g.children[0].material); top.position.y = .24; top.castShadow = true;
+    const c = new THREE.Mesh(crownG, gold); c.rotation.x = -Math.PI / 2; c.position.y = .33;
+    g.add(top, c);
+  }
+  for (let s = 0; s < 64; s++) if (b[s]) {
+    const g = new THREE.Group(), d = new THREE.Mesh(discG, mats[Math.sign(b[s])]); d.position.y = .08; d.castShadow = true;
+    const hh = new THREE.Mesh(hitG, hitM); hh.position.y = .25; g.add(d, hh);
+    g.position.copy(B.P(s)); g.userData.pick = { sq: s }; pm[s] = g; Eng.add(g); Eng.pickables.push(g);
+  }
+  Eng.view({ az: human(1) || !human(-1) ? 0 : Math.PI, el: 1.0, dist: 13, tx: 0, ty: 0, tz: 0, min: 6, max: 22 }, true);
+
+  function showSel() {
+    const l = [];
+    if (sel >= 0) { l.push([sel, 'sel']); for (const m of legalNow) if (m.f === sel) l.push([m.path[m.path.length - 1], m.caps.length ? 'cap' : 'dot']); }
+    else if (legalNow.length && legalNow[0].caps.length) for (const m of legalNow) l.push([m.f, 'last']);
+    B.mark(l);
+  }
+  Eng.onPick = info => {
+    if (!waitMove || !info || info.sq == null) return;
+    const s = info.sq;
+    if (sel >= 0) { const m = legalNow.find(x => x.f === sel && x.path[x.path.length - 1] === s); if (m) { const f = waitMove; waitMove = null; sel = -1; f(m); return; } }
+    if (legalNow.some(m => m.f === s)) { sel = s; Snd.click(); } else sel = -1;
+    showSel();
+  };
+  async function animate(m) {
+    const g = pm[m.f]; pm[m.f] = null;
+    for (let i = 0; i < m.path.length; i++) {
+      await slide(g, B.P(m.path[i]), m.caps.length ? .7 : .35, .32);
+      if (m.caps[i] != null) { const v = pm[m.caps[i]]; pm[m.caps[i]] = null; Snd.hit(); if (v) vanish(v); }
+      if (dead) return;
+    }
+    const to = m.path[m.path.length - 1]; pm[to] = g; g.userData.pick.sq = to;
+  }
+  async function loop() {
+    while (!dead) {
+      legalNow = DM.moves(b, turn);
+      if (!legalNow.length) { Snd.win(); gameOver('🏆 ' + seatLabel(def, cfg, sIdx(-turn)) + ' gewinnt!', nm(turn) + ' kann nicht mehr ziehen.'); return; }
+      if (quiet >= 50) { Snd.lose(); gameOver('🤝 Remis', '25 Züge je Spieler ohne Schlagen oder Steinzug.'); return; }
+      let m;
+      const must = legalNow[0].caps.length ? ' – <b style="color:#ff7a9a">Schlagpflicht!</b>' : '';
+      if (both) Eng.view({ az: turn > 0 ? 0 : Math.PI });
+      if (human(turn)) { sel = -1; showSel(); UI.status(nm(turn) + must + ' – Stein antippen, dann Zielfeld'); m = await new Promise(r => { waitMove = r; }); }
+      else { UI.status(nm(turn) + ' denkt …'); B.mark([]); await Eng.wait(.35); if (dead) return; m = DM.best(b, turn, seat[sIdx(turn)].lvl || 2); }
+      if (dead) return;
+      B.mark([[m.f, 'last'], [m.path[m.path.length - 1], 'last']]);
+      const wasMan = Math.abs(b[m.f]) === 1;
+      await animate(m); if (dead) return;
+      b = DM.apply(b, m);
+      const to = m.path[m.path.length - 1];
+      if (wasMan && Math.abs(b[to]) === 2) { crown(pm[to]); Snd.ok(); Eng.kick(); }
+      quiet = m.caps.length || wasMan ? 0 : quiet + 1;
+      turn = -turn;
+    }
+  }
+  return { start: loop, dispose() { dead = true; } };
+}
+</script>
+<script>
+/* ================= Mühle ================= */
+const ML = (() => {
+  const ADJ = [], MILLS = [];
+  for (let k = 0; k < 3; k++) for (let j = 0; j < 8; j++) {
+    const a = [k * 8 + (j + 1) % 8, k * 8 + (j + 7) % 8];
+    if (j % 2) { if (k > 0) a.push((k - 1) * 8 + j); if (k < 2) a.push((k + 1) * 8 + j); }
+    ADJ.push(a);
+  }
+  for (let k = 0; k < 3; k++) for (const j of [0, 2, 4, 6]) MILLS.push([k * 8 + j, k * 8 + j + 1, k * 8 + (j + 2) % 8]);
+  for (const j of [1, 3, 5, 7]) MILLS.push([j, 8 + j, 16 + j]);
+  const BYP = Array.from({ length: 24 }, (_, i) => MILLS.filter(m => m.includes(i)));
+  const si = p => p > 0 ? 0 : 1;
+  const isMill = (pts, i, p) => BYP[i].some(m => m.every(q => pts[q] === p));
+  const count = (pts, p) => { let n = 0; for (let i = 0; i < 24; i++) if (pts[i] === p) n++; return n; };
+  const init = () => ({ pts: new Int8Array(24), hand: [9, 9], turn: 1, quiet: 0 });
+  function removable(pts, opp) {
+    const all = [], free = [];
+    for (let i = 0; i < 24; i++) if (pts[i] === opp) { all.push(i); if (!isMill(pts, i, opp)) free.push(i); }
+    return free.length ? free : all;
+  }
+  function targets(st, from) {
+    const p = st.turn, out = [];
+    if (count(st.pts, p) === 3 && st.hand[si(p)] === 0) { for (let i = 0; i < 24; i++) if (!st.pts[i]) out.push(i); }
+    else for (const q of ADJ[from]) if (!st.pts[q]) out.push(q);
+    return out;
+  }
+  function moves(st) {
+    const p = st.turn, base = [], out = [];
+    if (st.hand[si(p)] > 0) { for (let i = 0; i < 24; i++) if (!st.pts[i]) base.push([-1, i]); }
+    else for (let i = 0; i < 24; i++) if (st.pts[i] === p) for (const t of targets(st, i)) base.push([i, t]);
+    for (const [f, t] of base) {
+      const pts = Int8Array.from(st.pts); if (f >= 0) pts[f] = 0; pts[t] = p;
+      if (isMill(pts, t, p)) for (const r of removable(pts, -p)) out.push({ f, t, r });
+      else out.push({ f, t, r: -1 });
+    }
+    return out;
+  }
+  function apply(st, m) {
+    const pts = Int8Array.from(st.pts), hand = st.hand.slice(), p = st.turn;
+    if (m.f >= 0) pts[m.f] = 0; else hand[si(p)]--;
+    pts[m.t] = p; if (m.r >= 0) pts[m.r] = 0;
+    return { pts, hand, turn: -p, quiet: m.r >= 0 ? 0 : st.quiet + 1 };
+  }
+  const total = (st, p) => count(st.pts, p) + st.hand[si(p)];
+  // Ergebnis aus Sicht des Spielers am Zug: -1 verloren, 0 offen
+  function lost(st) {
+    const p = st.turn;
+    if (total(st, p) < 3) return true;
+    if (st.hand[si(p)] === 0 && !moves(st).length) return true;
+    return false;
+  }
+  function evalS(st) {
+    const p = st.turn; let s = (total(st, p) - total(st, -p)) * 40;
+    for (const m of MILLS) {
+      let a = 0, b = 0, e = 0;
+      for (const q of m) { if (st.pts[q] === p) a++; else if (st.pts[q]) b++; else e++; }
+      if (a === 3) s += 6; else if (b === 3) s -= 6;
+      if (a === 2 && e === 1) s += 9; else if (b === 2 && e === 1) s -= 11;
+    }
+    if (!st.hand[0] && !st.hand[1]) {
+      let mob = 0;
+      for (let i = 0; i < 24; i++) if (st.pts[i]) for (const q of ADJ[i]) if (!st.pts[q]) mob += st.pts[i] === p ? 1 : -1;
+      s += mob * 2;
+    }
+    return s;
+  }
+  function search(st, d, alpha, beta, ply) {
+    if (lost(st)) return -10000 + ply;
+    if (d <= 0) return evalS(st);
+    const ms = moves(st); ms.sort((a, b) => b.r - a.r);
+    for (const m of ms) {
+      const v = -search(apply(st, m), d - 1, -beta, -alpha, ply + 1);
+      if (v >= beta) return v;
+      if (v > alpha) alpha = v;
+    }
+    return alpha;
+  }
+  function best(st, lvl) {
+    const ms = moves(st);
+    if (lvl === 1 && Math.random() < .3) return pick(ms);
+    const n = ms.length;
+    let depth = lvl === 1 ? 1 : lvl === 2 ? 2 : (n > 60 ? 2 : n > 20 ? 3 : 4);
+    let bm = ms[0], bv = -1e9;
+    for (const m of ms) {
+      const v = -search(apply(st, m), depth - 1, -1e9, -bv + 4, 1) + Math.random() * 3;
+      if (v > bv) { bv = v; bm = m; }
+    }
+    return bm;
+  }
+  return { init, moves, apply, targets, removable, isMill, lost, best, count, si };
+})();
+
+function makeMuehle(def, cfg) {
+  const seat = cfg.seats, human = c => seat[ML.si(c)].type === 'h', both = human(1) && human(-1);
+  const H = [4.5, 3, 1.5], CO = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]];
+  const P = i => { const h = H[i >> 3], c = CO[i & 7]; return new THREE.Vector3(c[0] * h, .02, c[1] * h); };
+  let st = ML.init(), dead = false, waitPt = null, allowed = new Set();
+  const nm = c => (c > 0 ? '⚪ ' : '⚫ ') + '<b>' + seatLabel(def, cfg, ML.si(c)) + '</b>';
+
+  Eng.bg(0x101828); Eng.shadow(8);
+  const S = 10.8, px = 1024 / S;
+  const tex = Eng.tex(1024, 1024, (g, w) => {
+    const gr = g.createLinearGradient(0, 0, w, w); gr.addColorStop(0, '#e2b77c'); gr.addColorStop(1, '#c9955a');
+    g.fillStyle = gr; g.fillRect(0, 0, w, w);
+    const X = v => w / 2 + v * px;
+    g.strokeStyle = '#3b2412'; g.lineWidth = 9; g.lineCap = 'round';
+    for (const h of H) g.strokeRect(X(-h), X(-h), 2 * h * px, 2 * h * px);
+    g.beginPath();
+    g.moveTo(X(0), X(-4.5)); g.lineTo(X(0), X(-1.5)); g.moveTo(X(0), X(1.5)); g.lineTo(X(0), X(4.5));
+    g.moveTo(X(-4.5), X(0)); g.lineTo(X(-1.5), X(0)); g.moveTo(X(1.5), X(0)); g.lineTo(X(4.5), X(0)); g.stroke();
+    g.fillStyle = '#3b2412';
+    for (let i = 0; i < 24; i++) { const p = P(i); g.beginPath(); g.arc(X(p.x), X(p.z), 15, 0, 7); g.fill(); }
+  });
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(S, .4, S), [Eng.mat(0x7a4a26), Eng.mat(0x7a4a26), Eng.mat(0xffffff, { map: tex, roughness: .7 }), Eng.mat(0x7a4a26), Eng.mat(0x7a4a26), Eng.mat(0x7a4a26)], 0, -.2, 0, 2));
+  Eng.add(Eng.mesh(new THREE.BoxGeometry(16.5, .2, 12), Eng.mat(0x1d2740, { roughness: .9 }), 0, -.5, 0, 2));
+  const stoneG = Eng.lathe([[0, 0], [.34, 0], [.39, .05], [.39, .14], [.33, .2], [0, .22]], 28);
+  const SM = { 1: Eng.mat(0xf2ead8, { roughness: .35 }), '-1': Eng.mat(0x24242c, { roughness: .3, metalness: .2 }) };
+  const hitG = new THREE.CylinderGeometry(.6, .6, .5, 10), hitM = Eng.hitMat();
+  const pm = new Array(24).fill(null), hand = { 1: [], '-1': [] };
+  for (let i = 0; i < 24; i++) { const h = Eng.add(new THREE.Mesh(hitG, hitM)); h.position.copy(P(i)).setY(.2); h.userData.pick = { pt: i }; Eng.pickables.push(h); }
+  for (const c of [1, -1]) for (let k = 0; k < 9; k++) {
+    const s = Eng.add(Eng.mesh(stoneG, SM[c], c * (6.5 + (k % 2) * .85), -.4 + .02, -3.4 + Math.floor(k / 2) * .85 + (k % 2) * .4));
+    hand[c].push(s);
+  }
+  const marks = new THREE.Group(); Eng.add(marks);
+  const ringG = new THREE.RingGeometry(.42, .55, 28);
+  const MM = { dot: new THREE.MeshBasicMaterial({ color: 0x00e5a0 }), cap: new THREE.MeshBasicMaterial({ color: 0xff3d6e }), sel: new THREE.MeshBasicMaterial({ color: 0x00e5ff }) };
+  function mark(list) {
+    marks.clear();
+    for (const [i, k] of list) { const o = new THREE.Mesh(ringG, MM[k]); o.rotation.x = -Math.PI / 2; o.position.copy(P(i)).setY(.03); marks.add(o); }
+    Eng.kick();
+  }
+  const narrow = innerWidth / innerHeight < 1;
+  Eng.view({ az: human(1) || !human(-1) ? 0 : Math.PI, el: 1.05, dist: narrow ? 21 : 15, tx: 0, ty: 0, tz: 0, min: 7, max: 26 }, true);
+
+  function clickPt(set) { allowed = set; return new Promise(r => { waitPt = r; }); }
+  Eng.onPick = info => {
+    if (!waitPt || !info || info.pt == null || !allowed.has(info.pt)) return;
+    const f = waitPt; waitPt = null; Snd.click(); f(info.pt);
+  };
+  async function humanMove() {
+    const p = st.turn, placing = st.hand[ML.si(p)] > 0;
+    let f = -1, t;
+    if (placing) {
+      UI.status(nm(p) + ` – setze einen Stein (noch ${st.hand[ML.si(p)]})`); mark([]);
+      const free = new Set(); for (let i = 0; i < 24; i++) if (!st.pts[i]) free.add(i);
+      t = await clickPt(free);
+    } else {
+      const fly = ML.count(st.pts, p) === 3;
+      const mov = []; for (let i = 0; i < 24; i++) if (st.pts[i] === p && ML.targets(st, i).length) mov.push(i);
+      UI.status(nm(p) + (fly ? ' – du darfst springen!' : '') + ' – Stein antippen, dann Ziel');
+      for (;;) {
+        const tg = f >= 0 ? ML.targets(st, f) : [];
+        mark(f >= 0 ? [[f, 'sel'], ...tg.map(i => [i, 'dot'])] : []);
+        const c = await clickPt(new Set([...mov, ...tg]));
+        if (f >= 0 && tg.includes(c)) { t = c; break; }
+        f = c;
+      }
+    }
+    if (dead) return null;
+    const pts = Int8Array.from(st.pts); if (f >= 0) pts[f] = 0; pts[t] = p;
+    let r = -1;
+    if (ML.isMill(pts, t, p)) {
+      const rem = ML.removable(pts, -p);
+      await place({ f, t, r: -1 }, true);
+      UI.status(nm(p) + ' – <b style="color:#ff7a9a">Mühle!</b> Nimm einen Stein des Gegners'); Snd.ok();
+      mark(rem.map(i => [i, 'cap']));
+      r = await clickPt(new Set(rem));
+      return { f, t, r, placed: true };
+    }
+    return { f, t, r };
+  }
+  async function place(m, only) {
+    const p = st.turn;
+    if (m.f < 0) {
+      const s = hand[p].pop(); pm[m.t] = s; s.userData.pick = { pt: m.t }; Eng.pickables.push(s);
+      await slide(s, P(m.t), 1, .45);
+    } else { const s = pm[m.f]; pm[m.f] = null; pm[m.t] = s; s.userData.pick.pt = m.t; await slide(s, P(m.t), .5, .35); }
+    if (only) return;
+    if (m.r >= 0) { const v = pm[m.r]; pm[m.r] = null; Snd.hit(); await vanish(v); }
+  }
+  async function loop() {
+    while (!dead) {
+      const p = st.turn; let m;
+      if (both) Eng.view({ az: p > 0 ? 0 : Math.PI });
+      if (human(p)) m = await humanMove();
+      else { UI.status(nm(p) + ' denkt …'); mark([]); await Eng.wait(.35); if (dead) return; m = ML.best(st, seat[ML.si(p)].lvl || 2); }
+      if (dead || !m) return;
+      mark([]);
+      if (m.placed) { if (m.r >= 0) { const v = pm[m.r]; pm[m.r] = null; Snd.hit(); await vanish(v); } }
+      else await place(m);
+      if (dead) return;
+      if (m.r >= 0 && !human(p)) Snd.ok();
+      st = ML.apply(st, m);
+      if (ML.lost(st)) { Snd.win(); gameOver('🏆 ' + seatLabel(def, cfg, ML.si(p)) + ' gewinnt!', ML.count(st.pts, st.turn) + st.hand[ML.si(st.turn)] < 3 ? 'Der Gegner hat nur noch zwei Steine.' : 'Der Gegner kann nicht mehr ziehen.'); return; }
+      if (st.quiet >= 80) { Snd.lose(); gameOver('🤝 Remis', '40 Züge je Spieler ohne Mühle.'); return; }
+    }
+  }
+  return { start: loop, dispose() { dead = true; } };
+}
+</script>
+<script>
+/* ================= Menü, Einstellungen, Start ================= */
+const C4COL = [0xe8374a, 0xf5c518], WB = ['Weiß', 'Schwarz'];
+const GAMES = [
+  { id: 'rennen', name: 'Rausschmeißer', icon: '🎲', grad: 'linear-gradient(145deg,#ff2d95,#ff9a1f)', desc: 'Der Klassiker: raus mit der 6, rauswerfen, ab ins Ziel.',
+    n: [2, 4], seatNames: ['Rot', 'Gelb', 'Grün', 'Blau'], seatCols: [0xe8374a, 0xf5b82e, 0x2fc46b, 0x2f8cff], def: ['h', 'c2', 'c2', 'c2'], make: makeLudo,
+    rules: `<p>Jeder hat vier Figuren. Wer eine <b>6</b> würfelt, muss eine Figur auf sein Startfeld setzen und darf nochmal würfeln. Solange noch Figuren im Haus stehen, muss das Startfeld frei gemacht werden.</p>
+      <p>Landest du auf einer gegnerischen Figur, fliegt sie zurück ins Haus. Eigene Figuren kann man nicht schlagen. Ohne Figur auf dem Feld hast du <b>drei Versuche</b> für eine 6.</p>
+      <p>Ins Ziel geht es nur mit passender Augenzahl. Wer zuerst alle vier Figuren im Ziel hat, gewinnt.</p>` },
+  { id: 'wuerfel', name: 'Würfelfieber', icon: '🎯', grad: 'linear-gradient(145deg,#00c9a7,#2a6cff)', desc: '5 Würfel, 3 Würfe, 13 Felder – wer holt die meisten Punkte?',
+    n: [1, 4], seatNames: ['Spieler 1', 'Spieler 2', 'Spieler 3', 'Spieler 4'], seatCols: [0xff2d95, 0x00e5ff, 0xffc83d, 0x8b5cf6], def: ['h', 'c2', 'off', 'off'], make: makeDiceGame,
+    rules: `<p>Pro Zug darfst du bis zu <b>dreimal</b> würfeln. Tippe Würfel an, um sie zu halten (sie wandern nach hinten). Danach trägst du das Ergebnis in ein freies Feld des Zettels ein – passt nichts, streichst du ein Feld mit 0.</p>
+      <ul><li>Einer bis Sechser: Summe dieser Augen. Ab 63 Punkten oben gibt es <b>35 Bonus</b>.</li>
+      <li>Dreier-/Viererpasch: Summe aller Augen · Full House: 25 · Kleine Straße (4 in Folge): 30 · Große Straße (5 in Folge): 40 · Fünferpasch (5 gleiche): 50 · Chance: Summe.</li></ul>
+      <p>Nach 13 Runden gewinnt die höchste Gesamtsumme.</p>` },
+  { id: 'schach', name: 'Schach', icon: '♞', grad: 'linear-gradient(145deg,#3a3f58,#8b5cf6)', desc: 'Vollständige Regeln mit Rochade, en passant und Umwandlung.',
+    n: [2, 2], seatNames: WB, seatCols: [0xf3ead6, 0x2b2b33], def: ['h', 'c2'], make: makeChess,
+    rules: `<p>Weiß beginnt. Tippe eine Figur an – mögliche Züge leuchten grün (Schlagen rot). Es gelten alle Regeln: Rochade, en passant, Bauernumwandlung (du wählst die Figur), Schach und Matt.</p>
+      <p>Remis bei Patt, dreifacher Stellungswiederholung, 50 Zügen ohne Schlagen/Bauernzug oder zu wenig Material.</p>` },
+  { id: 'leiter', name: 'Leiterspiel', icon: '🪜', grad: 'linear-gradient(145deg,#2fc46b,#ffc83d)', desc: 'Leitern rauf, Schlangen runter – wer erreicht zuerst die 100?',
+    n: [2, 4], seatNames: ['Rot', 'Gelb', 'Grün', 'Blau'], seatCols: [0xe8374a, 0xf5b82e, 0x2fc46b, 0x2f8cff], def: ['h', 'c', 'off', 'off'], noLevel: true, make: makeLadder,
+    rules: `<p>Würfle und ziehe so viele Felder weiter. Am Fuß einer <b>Leiter</b> kletterst du hoch, auf dem Kopf einer <b>Schlange</b> rutschst du runter.</p>
+      <p>Mit einer 6 darfst du nochmal würfeln. Feld 100 muss genau erreicht werden – würfelst du zu viel, bleibst du stehen.</p>` },
+  { id: 'reihe', name: 'Vier in einer Reihe', icon: '🔴', grad: 'linear-gradient(145deg,#1f5fe0,#e8374a)', desc: 'Steine einwerfen und vier in eine Reihe bringen.',
+    n: [2, 2], seatNames: ['Rot', 'Gelb'], seatCols: C4COL, def: ['h', 'c2'], make: makeConnect4,
+    rules: `<p>Tippe auf eine Spalte, um deinen Stein einzuwerfen. Wer zuerst vier Steine waagrecht, senkrecht oder diagonal in einer Reihe hat, gewinnt. Ist das Brett voll, endet das Spiel unentschieden.</p>` },
+  { id: 'dame', name: 'Dame', icon: '⚪', grad: 'linear-gradient(145deg,#7a1f2b,#ff9a1f)', desc: 'Diagonal ziehen, überspringen, zur Dame werden.',
+    n: [2, 2], seatNames: ['Weiß', 'Rot'], seatCols: [0xf1e6cf, 0x7a1f2b], def: ['h', 'c2'], make: makeDame,
+    rules: `<p>Steine ziehen ein Feld diagonal nach vorn. Geschlagen wird durch Überspringen – auch rückwärts. Es herrscht <b>Schlagpflicht</b>, Mehrfachsprünge werden bis zum Ende ausgeführt (tippe direkt das letzte Zielfeld an).</p>
+      <p>Wer die gegnerische Grundreihe erreicht, wird zur <b>Dame</b>: Sie zieht und schlägt beliebig weit diagonal. Wer nicht mehr ziehen kann, verliert.</p>` },
+  { id: 'muehle', name: 'Mühle', icon: '⚫', grad: 'linear-gradient(145deg,#c9955a,#3b2412)', desc: 'Steine setzen, ziehen, springen – und Mühlen bauen.',
+    n: [2, 2], seatNames: WB, seatCols: [0xf2ead8, 0x24242c], def: ['h', 'c2'], make: makeMuehle,
+    rules: `<p>Zuerst setzt jeder abwechselnd seine 9 Steine. Danach werden Steine entlang der Linien auf ein freies Nachbarfeld gezogen. Wer nur noch 3 Steine hat, darf <b>springen</b>.</p>
+      <p>Drei eigene Steine in einer Linie sind eine <b>Mühle</b> – dann darfst du einen gegnerischen Stein nehmen (Steine in Mühlen nur, wenn es keine anderen gibt). Wer weniger als 3 Steine hat oder nicht mehr ziehen kann, verliert.</p>` }
+];
+const LV = { h: 'Mensch', c1: 'Computer leicht', c2: 'Computer mittel', c3: 'Computer schwer', c: 'Computer', off: '— nicht dabei —' };
+let curDef = null, curCfg = null, curGame = null, threeP = null;
+
+function loadThree() {
+  if (window.THREE) return Promise.resolve();
+  if (!threeP) threeP = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    s.onload = () => window.THREE ? res() : rej(); s.onerror = () => { threeP = null; s.remove(); rej(); };
+    document.head.appendChild(s);
+  });
+  return threeP;
+}
+function buildMenu() {
+  const g = $('grid'); g.innerHTML = '';
+  for (const d of GAMES) {
+    const c = mk('button', 'card', `<span class="ic">${d.icon}</span><b>${d.name}</b><small>${d.desc}</small><i>${d.n[0] === d.n[1] ? d.n[0] : d.n[0] + '–' + d.n[1]} SPIELER · 3D</i>`);
+    c.style.background = d.grad;
+    c.onclick = () => { Snd.init(); Snd.click(); openSetup(d); };
+    g.appendChild(c);
+  }
+}
+function openSetup(d) {
+  curDef = d;
+  $('suIc').textContent = d.icon; $('suName').textContent = d.name;
+  const saved = store.get('seats-' + d.id, null), box = $('seats'); box.innerHTML = '';
+  const max = d.n[1];
+  for (let i = 0; i < max; i++) {
+    const row = mk('label', 'seat', `${dot(d.seatCols[i])}<span>${d.seatNames[i]}</span>`), s = mk('select');
+    const opts = d.noLevel ? ['h', 'c'] : ['h', 'c1', 'c2', 'c3'];
+    if (i >= d.n[0]) opts.push('off');
+    for (const o of opts) s.appendChild(new Option(LV[o], o));
+    let v = (saved && saved[i]) || d.def[i];
+    if (!opts.includes(v)) v = opts.includes(d.def[i]) ? d.def[i] : opts[0];
+    s.value = v; s.id = 'seat' + i; row.appendChild(s); box.appendChild(row);
+  }
+  $('menu').hidden = true; $('setup').hidden = false;
+}
+function readSeats() {
+  const d = curDef, vals = [];
+  for (let i = 0; i < d.n[1]; i++) vals.push($('seat' + i).value);
+  store.set('seats-' + d.id, vals);
+  return vals.map(v => v === 'off' ? null : v === 'h' ? { type: 'h' } : { type: 'c', lvl: v === 'c' ? 2 : +v[1] });
+}
+function gameOver(title, text) {
+  UI.bar(null);
+  UI.status(title);
+  const g = curGame;
+  setTimeout(() => {
+    if (!g || curGame !== g) return;
+    UI.modal(`<h2>${title}</h2><div class="rules glass" style="text-align:center">${text}</div>`,
+      [{ label: 'Nochmal', fn: () => { UI.close(); startGame(curDef, curCfg); } }, { label: 'Zum Menü', alt: 1, fn: () => { UI.close(); toMenu(); } }]);
+  }, Math.max(50, 900 * Eng.speed));
+}
+function stopGame() {
+  if (curGame) { curGame.dispose(); curGame = null; }
+  if (Eng.ready) Eng.clear();
+  UI.bar(null);
+}
+async function startGame(d, cfg) {
+  stopGame();
+  curDef = d; curCfg = cfg;
+  $('load').hidden = false;
+  try { await loadThree(); }
+  catch (e) {
+    $('load').hidden = true;
+    UI.modal('<h2>Keine Verbindung</h2><div class="rules glass">Die 3D-Grafik (three.js) konnte nicht geladen werden. Bitte Internetverbindung prüfen und nochmal versuchen.</div>', [{ label: 'OK', fn: UI.close }]);
+    return;
+  }
+  $('load').hidden = true;
+  Eng.init(); Eng.speed = cfg.speed || 1;
+  $('menu').hidden = true; $('setup').hidden = true; $('hud').hidden = false;
+  UI.status(d.icon + ' ' + d.name);
+  curGame = d.make(d, cfg);
+  curGame.start().catch(err => { console.error(err); UI.status('Fehler: ' + err.message); });
+}
+function toMenu() {
+  stopGame();
+  $('hud').hidden = true; $('setup').hidden = true; $('menu').hidden = false;
+  if (Eng.ready) Eng.kick();
+}
+function showRules(d) { UI.modal(`<h2>${d.icon} ${d.name}</h2><div class="rules glass">${d.rules}<p style="color:var(--mut);font-size:13px">Bedienung: Wischen dreht die Ansicht, zwei Finger oder Mausrad zoomen.</p></div>`, [{ label: 'Alles klar', fn: UI.close }]); }
+
+$('suBack').onclick = () => { Snd.click(); $('setup').hidden = true; $('menu').hidden = false; };
+$('suRules').onclick = () => { Snd.click(); showRules(curDef); };
+$('suGo').onclick = () => { Snd.init(); Snd.click(); startGame(curDef, { seats: readSeats() }); };
+$('bRules').onclick = () => { Snd.click(); if (curDef) showRules(curDef); };
+$('bView').onclick = () => { Snd.click(); Eng.view({ az: Eng.cam.g.az + Math.PI / 2 }); };
+const sndIcon = () => { $('bSnd').textContent = Snd.on ? '🔊' : '🔇'; };
+$('bSnd').onclick = () => { Snd.on = !Snd.on; store.set('snd', Snd.on); sndIcon(); Snd.init(); Snd.click(); };
+$('bMenu').onclick = () => {
+  Snd.click();
+  UI.modal(`<h2>${curDef.icon} ${curDef.name}</h2>`, [
+    { label: 'Weiterspielen', fn: UI.close },
+    { label: 'Neu starten', alt: 1, fn: () => { UI.close(); startGame(curDef, curCfg); } },
+    { label: 'Zum Menü', alt: 1, fn: () => { UI.close(); toMenu(); } }]);
+};
+sndIcon(); buildMenu();
+// Für automatische Tests (Computer gegen Computer)
+window.__sg = { GAMES, startGame, toMenu, get game() { return curGame; } };
+</script>
+</body>
+</html>
