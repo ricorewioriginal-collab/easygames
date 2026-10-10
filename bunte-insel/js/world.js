@@ -423,6 +423,31 @@ BI.buildWorld = function (scene) {
     W.addBox(cx - 3.7, cz - 13.5, cx + 3.7, cz + 12, false, 1.4); W.addBox(cx - 3.7, cz + 6, cx + 3.7, cz + 11, false, 4.4); W.addCircle(cx, cz - 3, .55, false, 12); W.addCircle(cx - 2.3, cz - 7, .75, false, 3.2);
     W.spots.ship = { x: cx, z: cz };
   }
+  { // Schießbude: eingezäunte Bahn, Fangwand, Theke mit Spielzeug-Blastern – nur Attrappen als Ziele
+    const X = -105, FZ = -66, WZ = -100, WOOD = 0xc8803c, DW = 0x8a5a33, RED = 0xe0382b;
+    W.pads.push([-115, WZ - 8, -95, FZ + 6]);
+    st.rect(X - 8, WZ, X + 8, -70, .035, 0xe6d3a3); st.rect(X - 8, FZ + .6, X + 8, FZ + 1.0, .06, 0xffffff);          // Bahn + Linie
+    st.rect(X - 9, -70, X + 9, FZ + 6, .035, 0xd9cfb8);                                                                   // Standfläche
+    // Theke + Dach (rot-weiß gestreift)
+    st.box(X, 0, -70, 16, 1.1, 1.0, WOOD); st.box(X, 1.1, -70, 16.4, .1, 1.4, DW); W.addBox(X - 8, -70.6, X + 8, -69.4, false, 1.5);
+    for (const x of [-8.6, 8.6]) for (const z of [-71.2, -61.5]) st.box(X + x, 0, z, .3, 3.6, .3, DW);
+    for (let k = 0; k < 10; k++) st.box(X - 9 + k * 1.8 + .9, 3.6, FZ - .6, 1.8, .3, 10.2, k % 2 ? 0xffffff : RED);
+    for (let k = 0; k < 10; k++) st.box(X - 9 + k * 1.8 + .9, 3.2, -71.25, 1.8, .45, .1, k % 2 ? 0xffffff : RED);
+    st.box(X, 4.0, FZ - .6, 5.6, 1.9, .3, 0x3f8cff); for (let r = 0; r < 4; r++) st.cyl(X, 4.2, FZ - .8 + r * .05, 1.1 - r * .25, 1.1 - r * .25, .1, [0xffffff, RED, 0xffffff, 0xffd23f][r], 20, Math.PI / 2);
+    // Zaun links/rechts + Fangwand + Erdwall
+    for (const sx of [-8, 8]) { st.box(X + sx, 0, (-70 + WZ) / 2, .25, 1.7, 30, DW); for (let z = -70; z >= WZ; z -= 5) st.box(X + sx, 0, z, .4, 2.0, .4, 0x6b4a2a); W.addBox(X + sx - .3, WZ, X + sx + .3, -70, false, 2.0); }
+    st.box(X, 0, WZ - .6, 17, 6, 1.2, DW); W.addBox(X - 8.5, WZ - 1.2, X + 8.5, WZ, false, 6); st.box(X, 0, WZ - 2.4, 19, 4.4, 2.4, 0x7ab85a, 0);
+    for (let k = 0; k < 9; k++) st.sph(X - 8 + k * 2, 0, WZ - .7, 1.0, 0xc2a876, 0, 1, 1.1, .8);                    // Sandsäcke
+    // Schilder: Regeln (nur auf Zielscheiben!) – grün mit Zielscheibe, durchgestrichener Mensch gibt es nicht, nur freundliche Symbole
+    for (const sx of [-6, 6]) { st.box(X + sx, 0, -69.2, .2, 2.4, .2, DW); st.box(X + sx, 2.4, -69.2, 2.4, 1.5, .15, 0x2f9a4c); st.cyl(X + sx, 2.7, -69.1, .45, .45, .1, 0xffffff, 16, Math.PI / 2); st.cyl(X + sx, 2.75, -69.05, .22, .22, .1, RED, 12, Math.PI / 2); st.box(X + sx - .9, 2.1, -69.1, .6, .12, .05, 0xffffff); st.box(X + sx + .5, 2.1, -69.1, .9, .12, .05, 0xffffff); }
+    // Schienen für die Holzenten + Pfosten
+    st.box(X, 2.6, -77, 18, .12, .12, 0x6b4a2a); for (const sx of [-8.4, 8.4]) st.box(X + sx, 0, -77, .25, 2.7, .25, DW);
+    // Spielzeug-Blaster auf der Theke (Schaumstoff-Blaster, Wasserpistole, Saugnapf-Bogen)
+    st.box(X - 5.5, 1.2, -70, .45, .18, .8, 0xff8a1f); st.cyl(X - 5.5, 1.2, -69.4, .1, .1, .5, 0x4da3ff, 8, Math.PI / 2); st.box(X - 5.5, 1.0, -70.2, .14, .3, .16, 0x23262d);
+    st.box(X - 4.2, 1.2, -70, .4, .18, .7, 0x4da3ff); st.sph(X - 4.2, 1.45, -70.2, .2, 0xff5ab0, 1); st.cyl(X - 4.2, 1.2, -69.5, .07, .07, .45, 0xffffff, 8, Math.PI / 2);
+    st.box(X - 3.0, 1.2, -70, .1, .9, .1, 0x8a5a33, 0, 0, .3); st.box(X - 3.0, 1.2, -70.1, .03, .9, .03, 0xffffff);
+    W.spots.range = { x: X, z: FZ, sup: { x: X - 4.6, z: FZ - 1.4 }, lane: { x0: X - 8, x1: X + 8, zNear: -70, zFar: WZ } };
+  }
 
   /* ---------- Bäume, Büsche, Blumen, Steine ---------- */
   /* Bäume: Stamm/Krone/Kegel als Instanzen (je 1 Draw-Call), damit sie einzeln wackeln können */
@@ -597,7 +622,7 @@ BI.buildWorld = function (scene) {
     ctx.fillStyle = '#e8d6c0'; for (const b of W.boxes) if (b.x1 - b.x0 > 5 && b.z1 - b.z0 > 5) ctx.fillRect(X(b.x0), Y(b.z0), (b.x1 - b.x0) * k, (b.z1 - b.z0) * k);
     ctx.fillStyle = '#ffb45a'; ctx.fillRect(X(-34), Y(20), 14 * k, 14 * k);
     const mark = (x, z, e) => { ctx.font = Math.round(S * .075) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, X(x), Y(z)); };
-    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
+    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
   };
   return W;
 };

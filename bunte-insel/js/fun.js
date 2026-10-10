@@ -130,7 +130,7 @@ BI.createFun = function (G) {
   function updateDance(dt, t) {
     if (!F.dancing) return; const P = G.P; danceT += dt; styleT += dt; if (styleT > 4) { styleT = 0; F.style++; }
     A.dance(dt);
-    const list = G.npcs.filter(n => Math.hypot(n.x - P.x, n.z - P.z) < 60).sort((a, b) => Math.hypot(a.x - P.x, a.z - P.z) - Math.hypot(b.x - P.x, b.z - P.z));
+    const list = G.npcs.filter(n => Math.hypot(n.x - P.x, n.z - P.z) < 60).sort((a, b) => Math.hypot(a.x - P.x, a.z - P.z) - Math.hypot(b.x - P.x, b.z - P.z)).slice(0, 14);
     list.forEach((n, i) => { const a = i / list.length * TAU + t * .35; n.tx = P.x + Math.sin(a) * 3.2; n.tz = P.z + Math.cos(a) * 3.2; n.wait = 0; n.dancer = 1.2; n.spd = 4.2; n.style = (F.style + i) % 3; });
     if (Math.random() < dt * 2) fx.burst(P.x, 2.6, P.z, 3, [BI.C.pink, BI.C.gold, BI.C.blue, BI.C.green], 2.5, 1.1, 30, -1);
     const close = list.filter(n => Math.hypot(n.x - P.x, n.z - P.z) < 4.5).length;
