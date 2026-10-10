@@ -21,9 +21,11 @@ async function plan(p) { for (let k = 0; k < 3; k++) { await p.click(`#ctl .ab >
 await Promise.all(phones.map(plan)); log(true, 'Beide Handys geben ihren Plan ab');
 await host.waitForFunction(() => window.__fh.G.day >= 1, null, { timeout: 60000 }); log(true, 'Der Tag läuft, sobald beide abgegeben haben');
 // weiter bis zur Nominierung am Handy
+const kind = () => ['reflex', 'memory', 'guess'][0];
+async function task(p, k) { k = await host.evaluate(() => ['reflex', 'memory', 'guess'][(window.__fh.G.week - 1) % 3]); if (k === 'reflex') { for (let i = 0; i < 5; i++) { await p.waitForSelector('#ctl .sig.go', { timeout: 8000 }); await p.click('#ctl #sig'); await p.waitForTimeout(80); } } else if (k === 'memory') { await p.waitForFunction(() => /Jetzt du/.test(document.getElementById('tkInfo').textContent), null, { timeout: 15000 }); for (let i = 0; i < 4; i++) await p.click('#ctl .pad >> nth=0', { timeout: 1500 }).catch(() => {}); } else { await p.waitForSelector('#ctl #gv', { state: 'visible', timeout: 10000 }); await p.fill('#ctl #gv', '70'); await p.click('#ctl #gok'); } }
 const t0 = Date.now(); let nom = false; while (Date.now() - t0 < 280000 && !nom) {
   if (await host.isVisible('#dlg:not([hidden])')) { const ids = await host.$$eval('#dlgBox button[id]', b => b.map(x => x.id)); if (ids.includes('bNext')) await host.click('#bNext'); else if (ids.includes('dClose')) await host.click('#dClose'); }
-  for (const p of phones) { if (await p.isVisible('#ctl .agrid')) await plan(p); if (await p.isVisible('#ctl #tGo')) { await p.click('#ctl #tGo'); } if (await p.isVisible('#ctl .ph.red')) nom = true; }
+  for (const p of phones) { if (await p.isVisible('#ctl .agrid')) await plan(p); if (await p.isVisible('#ctl #tGo')) { await p.click('#ctl #tGo'); await task(p, kind()); } if (await p.isVisible('#ctl .ph.red')) nom = true; }
   await host.waitForTimeout(80);
 }
 log(nom, 'Nominierung erscheint privat auf den Handys (Beichtstuhl)');
