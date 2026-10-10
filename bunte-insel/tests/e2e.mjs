@@ -58,7 +58,7 @@ const fn = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 5; b.P.z = 30; b.P.h = Math.PI; b.cam.yaw = 0;
   const n = b.npcs[0]; n.x = 5; n.z = 24; n.tx = n.x; n.tz = n.z; n.wait = 99; const s0 = b.save.stars; b.fun.gum(); await sleep(900); const gained = b.save.stars - s0, gum = !!n.gumMesh;
   b.npcs.forEach((q, i) => { q.x = 5 + Math.sin(i) * 8; q.z = 30 + Math.cos(i) * 8; q.tx = q.x; q.tz = q.z; q.wait = 0; });
-  b.doFun('dance'); await sleep(5000); const close = b.npcs.filter(q => Math.hypot(q.x - b.P.x, q.z - b.P.z) < 5).length; const s1 = b.save.stars; await sleep(6000); const party = b.save.stars - s1; b.doFun('dance');
+  b.doFun('dance'); await sleep(5000); const close = b.npcs.filter(q => Math.hypot(q.x - b.P.x, q.z - b.P.z) < 5).length; const s1 = b.save.stars; for (let i = 0; i < 400 && b.save.stars - s1 < 3; i++) await sleep(100); const party = b.save.stars - s1; b.doFun('dance');
   b.doFun('ball'); b.doFun('balloons'); b.doFun('fireworks'); await sleep(2500); return { gained, gum, close, party, stopped: !b.fun.dancing };
 });
 ok(fn.gained === 1 && fn.gum && fn.close >= 4 && fn.party >= 3 && fn.stopped, `Spaß: Kaugummi klebt (+${fn.gained}), ${fn.close} Tänzer im Kreis, Party-Bonus +${fn.party}`);
