@@ -13,13 +13,13 @@ const Sim = (() => {
   function emptyDay() { return { rev: 0, cogs: 0, items: 0, served: 0, lost: 0, happy: 0, recipes: 0, stolen: 0, spawned: 0, units: {}, revBy: {}, miss: 0 }; }
   function create() {
     const S = { v: 1, day: 1, t: 0, simT: 0, phase: 'prep', money: 200000, xp: 0, level: 1, rep: 55, W: 18, H: 12, exp: 0, nid: 1, objs: [], ramp: [], backlog: [], orders: [], price: {}, mkt: {}, cf: {}, riv: {}, lic: {}, up: {}, staff: [], customers: [], police: [], fx: [], messes: [], regs: [], inv: [], loan: 0,
-      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, assist: true, hints: true, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
+      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, assist: true, hints: true, promo: {}, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
     Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
     Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
     add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7); add(S, 'radio', 15, 5);
     const set = (o, p, q) => { o.p = p; o.qty = q; o.age = 0; }, ob = byKind(S, 'obst'), rg = byKind(S, 'regal'); set(ob[0], 'apfel', 14); set(ob[1], 'broetchen', 18); set(rg[0], 'wasser', 12); set(byKind(S, 'kuehl')[0], 'milch', 8);
     ['banane', 'limo', 'wasser', 'milch', 'broetchen', 'apfel'].forEach(p => S.ramp.push({ p, n: P[p].box, age: 0 }));
-    S.heat = new Array(S.W * S.H).fill(0); rebuild(S); newQuests(S); S.forecast = rollWeather(); S.weather = 'sonne'; note(S, 'Willkommen in der Markthalle 24! Bestelle Ware im Markt und fülle die Regale.', 'info');
+    S.heat = new Array(S.W * S.H).fill(0); rebuild(S); newQuests(S); S.forecast = rollWeather(0); S.weather = 'sonne'; note(S, 'Willkommen in der Markthalle 24! Bestelle Ware im Markt und fülle die Regale.', 'info');
     return S;
   }
   function add(S, k, x, y) { const t = D.OBJ[k]; const o = { id: S.nid++, k, x, y, w: t.w, h: t.h, p: null, qty: 0, age: 0, disc: false, q: [], svc: 0 }; S.objs.push(o); return o; }
@@ -45,22 +45,25 @@ const Sim = (() => {
   const ref = (S, p) => Math.max(5, Math.round(P[p].ref * S.mkt[p]));
   const wholesale = (S, p) => Math.max(5, Math.round(P[p].cost * S.cf[p]));
   const rival = (S, p) => Math.round(ref(S, p) * S.riv[p] * (S.rivalSale && S.rivalSale === P[p].cat ? .82 : 1));
-  const effPrice = (S, o) => Math.max(1, Math.round(S.price[o.p] * (o.disc ? .7 : 1)));
+  const effPrice = (S, o) => Math.max(1, Math.round(S.price[o.p] * (o.disc ? .7 : 1) * (S.promo[o.p] ? .8 : 1)));
   const offered = S => { const m = {}; S.objs.forEach(o => { if (isShelf(o) && o.p && o.qty > 0) m[o.p] = (m[o.p] || 0) + o.qty; }); return m; };
 
   // ---------- Wetter, Märkte, Tageswechsel ----------
-  function rollWeather() { return wpick(['sonne', 'wolke', 'regen', 'heiss', 'kalt'], w => ({ sonne: .3, wolke: .25, regen: .2, heiss: .13, kalt: .12 })[w]); }
+  function season(S, day) {
+    const dd = (day == null ? S.day : day) - 1, i = Math.floor((dd % 112) / 28), d = dd % 28 + 1, sn = D.SEASONS[i], h = sn.hol && d >= sn.hol.from && d <= sn.hol.to ? sn.hol : null; return { i, d, n: sn.n, e: sn.e, hol: h, prod: sn.prod };
+  }
+  function rollWeather(si) { const w = D.SEASONS[si || 0].w; return wpick(['sonne', 'wolke', 'regen', 'heiss', 'kalt'], x => w[x]); }
   function newQuests(S) { S.quests = []; const ids = D.QUESTS.slice().sort(() => R() - .5).slice(0, 3); ids.forEach(q => { const n = ri(q.n[0], q.n[1]); S.quests.push({ id: q.id, n: q.div ? Math.round(n / 10) * 10 : n, done: false }); }); }
   function questVal(S, q) { const d = D.QUESTS.find(x => x.id === q.id), v = S.today[d.key] || 0; return d.div ? Math.floor(v / d.div) : v; }
   function nextDay(S) {
-    S.police = []; S.fx = []; S.day++; S.t = 0; S.phase = 'prep'; S.summary = null; S.customers = []; S.closeT = 0; S.spawnAcc = 0; S.today = emptyDay(); S.weather = S.forecast; S.forecast = rollWeather(); S.rivalSale = null; S.ev = []; S.blackout = false; S.radio.ads = {};
+    S.police = []; S.fx = []; S.day++; S.t = 0; S.phase = 'prep'; S.summary = null; S.customers = []; S.closeT = 0; S.spawnAcc = 0; S.today = emptyDay(); S.weather = S.forecast; S.forecast = rollWeather(season(S, S.day + 1).i); S.promo = {}; S.rivalSale = null; S.ev = []; S.blackout = false; S.radio.ads = {};
     Object.keys(P).forEach(p => { S.mkt[p] = clamp(S.mkt[p] + (R() - .5) * .08 + (1 - S.mkt[p]) * .25, .88, 1.18); S.cf[p] = clamp(S.cf[p] + (R() - .5) * .06 + (1 - S.cf[p]) * .3, .9, 1.12); S.riv[p] = clamp(.9 + R() * .12 + (S.level > 4 ? -.02 : 0), .86, 1.04); });
     if (R() < .22) S.ev.push({ k: 'ausflug', t0: 150, t1: 260 }); if (R() < .15) S.ev.push({ k: 'stromausfall', t0: 200, t1: 320 }); if (R() < .15) S.ev.push({ k: 'promi', t0: 220, t1: 221 });
     if (R() < .15) S.ev.push({ k: 'inspektion', t0: 580, t1: 600 }); if (R() < .15) { S.rivalSale = pick(Object.keys(D.CATS).filter(c => S.lic[c])); S.ev.push({ k: 'rivalsale', t0: 0, t1: 600 }); }
     if (S.strike) { S.strike = false; note(S, 'Lieferstreik! Heute kam nichts an – die Bestellung kommt morgen.', 'bad'); } else deliver(S, 'day');
     if (R() < .1 && S.level > 2) { S.strike = true; S.ev.push({ k: 'streik', t0: 0, t1: 0 }); }
     bake(S); flush(S); newQuests(S); if (S.up.auto) autoOrder(S); S.buzz *= .85; S.player.carry.forEach(b => b.age = (b.age || 0)); S.heat = S.heat.map(h => h * .5);
-    note(S, `Tag ${S.day} (${DOW[(S.day - 1) % 7]}): ${D.WEATHER[S.weather].name}.`, 'info');
+    const sz = season(S); note(S, `Tag ${S.day} (${DOW[(S.day - 1) % 7]}) · ${sz.e} ${sz.n}: ${D.WEATHER[S.weather].name}.`, 'info'); if (sz.hol && (sz.d === sz.hol.from)) note(S, `${sz.hol.e} ${sz.hol.n} beginnt! Die Kunden wollen besondere Ware – stock rechtzeitig auf.`, 'good'); else if (season(S, S.day + 1).hol && !sz.hol) note(S, `${season(S, S.day + 1).hol.e} Morgen beginnt die ${season(S, S.day + 1).hol.n}.`, 'info');
   }
   function bake(S) {
     S.objs.forEach(o => { if (D.OBJ[o.k].bake && o.p) { const n = cap(S, o) - o.qty, cost = Math.round(wholesale(S, o.p) * .5) * n; if (n > 0 && S.money >= cost) { S.money -= cost; o.age = (o.age * o.qty) / Math.max(1, o.qty + n); o.qty += n; if (!S.today.baked) S.today.baked = 0; S.today.baked += cost; } } });
@@ -78,7 +81,7 @@ const Sim = (() => {
     const T = S.today, bills = [], waste = []; let wasteVal = 0;
     S.objs.forEach(o => { if (!isShelf(o) || !o.p) return; const pr = P[o.p]; o.age += 1; if (pr.life && o.age > pr.life && o.qty > 0) { wasteVal += o.qty * wholesale(S, o.p); waste.push(pr.name + ' ×' + o.qty); o.qty = 0; o.age = 0; } });
     S.ramp = S.ramp.filter(b => { b.age++; const l = P[b.p].life; if (l && b.age > l) { wasteVal += b.n * wholesale(S, b.p); waste.push(P[b.p].name + ' ×' + b.n); return false; } return true; });
-    bills.push(['Miete', rent(S)], ['Strom', power(S)]); const wages = S.staff.reduce((a, s) => a + D.STAFF[s.k].wage, 0); if (wages) bills.push(['Löhne', wages]); if (S.loan) bills.push(['Zinsen', Math.round(S.loan * .03)]);
+    bills.push(['Miete', rent(S)], ['Strom', power(S)]); const wages = S.staff.reduce((a, s) => a + wageOf(s), 0); if (wages) bills.push(['Löhne', wages]); if (S.loan) bills.push(['Zinsen', Math.round(S.loan * .03)]);
     const ins = S.ev.find(e => e.k === 'inspektion'); if (ins && S.messes.length > 2) bills.push(['Hygiene-Strafe', 5000 * (S.messes.length - 2)]);
     const tot = bills.reduce((a, b) => a + b[1], 0); S.money -= tot; const profit = T.rev - T.cogs - tot - wasteVal - T.stolen;
     const done = []; S.quests.forEach(q => { const d = D.QUESTS.find(x => x.id === q.id), v = questVal(S, q); q.ok = d.max ? (v <= q.n && T.served >= 10) : v >= q.n; if (q.ok) { S.money += d.r; S.xp += 40; done.push(d.t.replace('{n}', q.n) + ' (+' + D.fmt(d.r) + ')'); } });
@@ -96,13 +99,13 @@ const Sim = (() => {
   // ---------- Spawnen & Kunden ----------
   const curve = t => .55 + .45 * (Math.exp(-(((t - 230) / 110) ** 2)) + Math.exp(-(((t - 440) / 90) ** 2)));
   function demandMul(S, p) {
-    const pr = P[p], w = D.WEATHER[S.weather]; let m = pr.pop * (w.cat[pr.cat] || 1) * ((w.prod && w.prod[p]) || 1); if (S.radio.on && S.up.radio && S.radio.ads[p]) m *= 2.6; return m;
+    const pr = P[p], w = D.WEATHER[S.weather], sz = season(S); let m = pr.pop * (w.cat[pr.cat] || 1) * ((w.prod && w.prod[p]) || 1) * (sz.prod[p] || 1) * (sz.hol && sz.hol.prod[p] || 1) * (S.promo[p] ? 1.8 : 1); if (S.radio.on && S.up.radio && S.radio.ads[p]) m *= 2.6; return m;
   }
   function spawnRate(S) {
     const off = offered(S), n = Object.keys(off).length; if (!n) return 0; let sum = 0, cnt = 0; Object.keys(off).forEach(p => { sum += S.price[p] / ref(S, p); cnt++; }); const idx = sum / cnt;
     const ap = clamp(1 + (1.05 - idx) * 1.5, .5, 1.35), as = clamp(.45 + .07 * n, .45, 1.5), dow = [1, 1, 1, 1.05, 1.15, 1.4, .85][(S.day - 1) % 7], deko = 1 + Math.min(10, byKind(S, 'deko').length) * .02, size = .85 + S.W * S.H / 216 * .15;
     const ev = S.ev.find(e => e.k === 'ausflug' && S.t >= e.t0 && S.t <= e.t1) ? 1.5 : 1; const clean = 1 - Math.min(.3, S.messes.length * .04);
-    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * (1 + clamp(S.buzz, -.25, .5)) * (1 + Math.min(.12, byKind(S, 'ofen').filter(o => o.qty > 0).length * .06)) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
+    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * (1 + clamp(S.buzz, -.25, .5)) * (1 + .03 * Object.keys(S.promo).length) * (season(S).hol ? 1.1 : 1) * (1 + Math.min(.12, byKind(S, 'ofen').filter(o => o.qty > 0).length * .06)) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
   }
   function makeList(S, type) {
     const T = D.TYPES[type], unl = Object.values(P).filter(p => S.lic[p.cat]), n = ri(T.n[0], T.n[1]), list = [], off = offered(S); let recipe = null;
@@ -206,8 +209,11 @@ const Sim = (() => {
   function hire(S, k) {
     const t = D.STAFF[k]; if (S.level < t.lvl) return false; const price = t.buy || 0; if (S.money < price) { note(S, 'Nicht genug Geld.', 'bad'); return false; } S.money -= price;
     const trait = k === 'robo' ? 'fleissig' : pick(D.TRAITS)[0], s = { id: S.nid++, k, name: k === 'robo' ? 'Bot-' + ri(10, 99) : pick(D.FIRST), trait, x: 2.5, y: S.H - 1.5, path: [], pi: 0, carry: null, task: null, reg: null, rate: 1 * (trait === 'flink' ? 1.25 : 1), spd: 2.4 * (trait === 'flink' ? 1.25 : 1) * (k === 'robo' ? .9 : 1), idle: 0 };
-    S.staff.push(s); return s;
+    s.lv = 1; s.bspd = s.spd; S.staff.push(s); return s;
   }
+  const wageOf = s => Math.round(D.STAFF[s.k].wage * (1 + .12 * ((s.lv || 1) - 1)));
+  function train(S, id) { const s = S.staff.find(x => x.id === id); if (!s) return false; const lv = s.lv || 1, cost = 15000 * lv; if (lv >= 5 || S.money < cost) return false; S.money -= cost; s.lv = lv + 1; const f = (s.trait === 'flink' ? 1.25 : 1); s.rate = f * (1 + .12 * (s.lv - 1)); s.spd = (s.k === 'robo' ? 2.4 * .9 : 2.4) * f * (1 + .1 * (s.lv - 1)); s.bspd = s.spd; note(S, `🎓 ${s.name} ist jetzt Stufe ${s.lv}.`, 'good'); return true; }
+  function togglePromo(S, p) { if (S.promo[p]) { delete S.promo[p]; return true; } if (Object.keys(S.promo).length >= 2) { note(S, 'Höchstens 2 Tagesangebote gleichzeitig.', 'bad'); return false; } S.promo[p] = true; return true; }
   function fire(S, id) { const s = S.staff.find(x => x.id === id); if (!s) return; if (s.carry) S.ramp.push(s.carry); S.staff = S.staff.filter(x => x !== s); }
   function sfollow(s, d) { if (s.pi >= s.path.length) return true; const tx = s.path[s.pi][0] + .5, ty = s.path[s.pi][1] + .5, dx = tx - s.x, dy = ty - s.y, dist = Math.hypot(dx, dy), step = s.spd * d; if (dist <= step) { s.x = tx; s.y = ty; s.pi++; return s.pi >= s.path.length; } s.x += dx / dist * step; s.y += dy / dist * step; return false; }
   function tickStaff(S, s, d) {
@@ -328,7 +334,7 @@ const Sim = (() => {
   function step(S, dt) { if (S.phase === 'summary') return; const n = Math.max(1, Math.ceil(dt / .1)), d = dt / n; for (let i = 0; i < n; i++) { tick(S, d); if (S.phase === 'summary') break; } }
   const clock = S => { const m = Math.floor(8 * 60 + Math.min(S.t, DAYLEN) * MIN_PER_SEC); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   const save = S => JSON.stringify(S, (k, v) => k[0] === '_' ? undefined : v);
-  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; if (S.assist == null) S.assist = true; if (S.hints == null) S.hints = true; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; S.police = S.police || []; S.fx = []; S.customers.forEach(c => { if (c.st === 'arrest' || c.st === 'held') { c.dead = true; } }); S.police = []; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; return S; };
-  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, nextStep, shelfFor, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
+  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; if (S.assist == null) S.assist = true; if (S.hints == null) S.hints = true; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; S.promo = S.promo || {}; S.staff.forEach(s => { if (!s.lv) s.lv = 1; }); S.police = S.police || []; S.fx = []; S.customers.forEach(c => { if (c.st === 'arrest' || c.st === 'held') { c.dead = true; } }); S.police = []; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; return S; };
+  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, season, train, togglePromo, wageOf, nextStep, shelfFor, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
 })();
 if (typeof module !== 'undefined') module.exports = Sim;
