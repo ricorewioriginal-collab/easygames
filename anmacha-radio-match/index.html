@@ -251,19 +251,30 @@ const Logic=(()=>{
     return {falls,news};
   }
 
+  // Messwerte (Zufallsspieler, 20 Züge): Punkte und Power-ups pro Zug je Rastergröße-Bauteilarten
+  const BASE={'6-4':204,'7-4':304,'7-5':117,'8-5':143,'9-6':93,'10-6':106,'11-6':115};
+  const PW={'6-4':.39,'7-4':.55,'7-5':.2,'8-5':.24,'9-6':.14,'10-6':.16,'11-6':.17};
+  const MC={'6-4':5.6,'7-4':6.5,'7-5':4.3,'8-5':4.7,'9-6':3.8,'10-6':4.1,'11-6':4.2};
+  const KINDS=['score','collect','noise','time','power','combo'];
+  const MAXLEVEL=100;
   function levelDef(n){
-    const size=Math.min(11,6+((n-1)>>1));
-    const types=Math.min(6,4+Math.floor((n-1)/3));
-    const kind=['score','collect','noise','time'][(n-1)%4];
-    const d={n,size,types,kind,moves:0,time:0,target:0,ct:0,count:0,noiseN:0};
-    if(kind==='score'){d.moves=Math.max(15,22-(n>>2));d.target=400+n*70}
-    else if(kind==='collect'){d.moves=22+(types-4)*3;d.ct=(n*2)%types;d.count=Math.min(20,8+n)}
-    else if(kind==='noise'){d.moves=12+size*2;d.noiseN=Math.round(size*size*0.25)}
-    else{d.time=60+(size-6)*5;d.target=400+n*80}
-    return d;
+    n=Math.max(1,Math.min(MAXLEVEL,n|0));
+    const size=Math.min(11,6+((n-1)>>3));
+    const types=Math.min(6,4+Math.floor((n-1)/12));
+    const kind=KINDS[(n-1)%6];
+    const d=(n-1)/(MAXLEVEL-1),hard=n%10===0?1.12:1;
+    const key=size+'-'+types,base=BASE[key],pw=PW[key],m=(0.4+1.0*d)*hard,mc=MC[key];
+    const o={n,size,types,kind,hard:hard>1,moves:0,time:0,target:0,ct:0,count:0,noiseN:0};
+    if(kind==='score'){o.moves=Math.round(24-6*d);o.target=Math.round(o.moves*base*m/10)*10}
+    else if(kind==='collect'){o.moves=Math.round(26-5*d);o.ct=(n*2)%types;o.count=Math.max(6,Math.min(45,Math.round(o.moves*base/95*m*.9)))}
+    else if(kind==='noise'){o.moves=Math.round(8+size*3.6);o.noiseN=Math.round(size*size*Math.min(.2,(.1+.08*d)*hard))}
+    else if(kind==='time'){o.time=60;o.target=Math.round(27*base*m*.8/10)*10}
+    else if(kind==='power'){o.moves=Math.round(22-3*d);o.count=Math.max(2,Math.min(14,Math.round(o.moves*pw*m*.9)))}
+    else{o.moves=Math.round(20-3*d);o.count=Math.max(3,Math.round(mc*(.45+.7*d)*hard))}
+    return o;
   }
 
-  return {SH,SV,BOMB,COLOR,findRuns,plan,moves,fill,reshuffle,gravity,levelDef,isSpecial,mostCommon};
+  return {SH,SV,BOMB,COLOR,MAXLEVEL,findRuns,plan,moves,fill,reshuffle,gravity,levelDef,isSpecial,mostCommon};
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -395,7 +406,7 @@ function tick(now){
 
 // ---------- Zustand ----------
 let L=null,W=0,H=0,g=[],noise=[],noiseMeshes=new Map(),tiles=null,frame3=null;
-let score=0,moves=0,timeLeft=0,collected=0,noiseLeft=0,noiseTotal=0;
+let score=0,moves=0,timeLeft=0,collected=0,noiseLeft=0,noiseTotal=0,powerMade=0,bestCombo=0;
 let busy=true,started=false,ended=false,overlayOpen=true;
 let sel=null,down=null,hint=null,idle=0;
 const P=(x,y)=>new THREE.Vector3(x-(W-1)/2,0,(H-1)/2-y);
@@ -449,7 +460,7 @@ function build(n){
       boardGroup.add(t);noiseMeshes.set(y*W+x,t);
     }
   }
-  score=0;collected=0;moves=L.moves;timeLeft=L.time;started=false;ended=false;sel=null;hint=null;idle=0;
+  score=0;collected=0;powerMade=0;bestCombo=0;moves=L.moves;timeLeft=L.time;started=false;ended=false;sel=null;hint=null;idle=0;
   fit();updateHud();
   // Einblenden
   const cells=[];
@@ -481,10 +492,12 @@ addEventListener('resize',fit);
 function goalMet(){
   if(L.kind==='score'||L.kind==='time')return score>=L.target;
   if(L.kind==='collect')return collected>=L.count;
+  if(L.kind==='power')return powerMade>=L.count;
+  if(L.kind==='combo')return bestCombo>=L.count;
   return noiseLeft<=0;
 }
 function updateHud(){
-  $('lvl').textContent='Level '+L.n;
+  $('lvl').textContent='Level '+L.n+' / '+Logic.MAXLEVEL+(L.hard?' ★':'');
   $('sc').textContent='Punkte '+score;
   let goal,prog;
   if(L.kind==='score'){goal='Ziel: '+L.target+' Punkte';prog=score/L.target}
@@ -492,7 +505,9 @@ function updateHud(){
   else if(L.kind==='collect'){
     goal='Sammle '+Math.max(0,L.count-collected)+' × <span style="color:'+HEX[L.ct]+'">'+NAMES[L.ct]+'</span>';
     prog=collected/L.count;
-  }else{goal='Entstöre '+noiseLeft+' Rausch-Felder';prog=noiseTotal?1-noiseLeft/noiseTotal:1}
+  }else if(L.kind==='power'){goal='Erzeuge '+Math.max(0,L.count-powerMade)+' Power-ups';prog=powerMade/L.count}
+  else if(L.kind==='combo'){goal='Kette ×'+L.count+' (bisher ×'+bestCombo+')';prog=bestCombo/L.count}
+  else{goal='Entstöre '+noiseLeft+' Rausch-Felder';prog=noiseTotal?1-noiseLeft/noiseTotal:1}
   $('goal').innerHTML=goal;
   $('mv').textContent=L.kind==='time'?'⏱ '+Math.max(0,Math.ceil(timeLeft))+' s':'Züge '+moves;
   $('pb').firstElementChild.style.width=Math.min(100,Math.round(prog*100))+'%';
@@ -538,6 +553,7 @@ async function doClear(pl,combo){
     g[y][x]=null;
   });
   score+=list.length*10*(combo+1)+pl.spawns.length*25;
+  powerMade+=pl.spawns.length;bestCombo=Math.max(bestCombo,combo+1);
   updateHud();
   const r0=list.map(c=>c.m.rotation.y);
   await tween(230,k=>{list.forEach((c,i)=>{c.m.scale.setScalar(Math.max(.001,1-k));c.m.rotation.y=r0[i]+k*Math.PI;c.m.position.y=k*.4})},eLin);
@@ -652,7 +668,7 @@ async function finish(win){
     const r=L.kind==='time'?timeLeft/L.time:moves/L.moves;
     stars=1+(r>=.2?1:0)+(r>=.45?1:0);
     save.stars[L.n]=Math.max(save.stars[L.n]||0,stars);
-    save.unlocked=Math.max(save.unlocked,L.n+1);
+    save.unlocked=Math.min(Logic.MAXLEVEL,Math.max(save.unlocked,L.n+1));
     persist();sfx.win();
   }else sfx.lose();
   showResult(win,stars);
@@ -707,7 +723,7 @@ function showHint(){
 }
 
 // ---------- Menüs ----------
-let selLevel=1;
+let selLevel=Math.min(save.unlocked,Logic.MAXLEVEL);
 function openOverlay(html){
   $('card').innerHTML=html;$('overlay').classList.remove('hidden');overlayOpen=true;
 }
@@ -718,8 +734,10 @@ function levelInfo(n){
   const txt={score:'Erreiche '+d.target+' Punkte in '+d.moves+' Zügen.',
     collect:'Sammle '+d.count+' × '+NAMES[d.ct]+' in '+d.moves+' Zügen.',
     noise:'Entstöre alle '+d.noiseN+' Rausch-Felder in '+d.moves+' Zügen.',
-    time:'Erreiche '+d.target+' Punkte in '+d.time+' Sekunden.'}[d.kind];
-  return '<b>'+d.size+'×'+d.size+'-Raster, '+d.types+' Bauteile</b><br>'+txt;
+    time:'Erreiche '+d.target+' Punkte in '+d.time+' Sekunden.',
+    power:'Erzeuge '+d.count+' Power-ups in '+d.moves+' Zügen.',
+    combo:'Schaffe eine Kette von '+d.count+' Kombos in '+d.moves+' Zügen.'}[d.kind];
+  return '<b>'+d.size+'×'+d.size+'-Raster, '+d.types+' Bauteile'+(d.hard?' · Prüfung ★':'')+'</b><br>'+txt;
 }
 function showMenu(){
   selLevel=Math.min(selLevel,save.unlocked);
@@ -729,8 +747,8 @@ function showMenu(){
     '<div class="help"><b>4er</b><span>Wellen-Teil: räumt eine ganze Reihe oder Spalte</span>'+
     '<b>L / T</b><span>Funkenbombe: räumt 3×3</span>'+
     '<b>5er</b><span>Frequenzkugel: tausche sie mit einem Teil und alle davon verschwinden</span></div>'+
-    '<div class="pick"><button id="pm" '+(selLevel<=1?'disabled':'')+'>‹</button><span>Level '+selLevel+'</span>'+
-    '<button id="pp" '+(selLevel>=save.unlocked?'disabled':'')+'>›</button></div>'+
+    '<div class="pick"><button id="pm10" '+(selLevel<=1?'disabled':'')+'>«</button><button id="pm" '+(selLevel<=1?'disabled':'')+'>‹</button><span>Level '+selLevel+'</span>'+
+    '<button id="pp" '+(selLevel>=save.unlocked?'disabled':'')+'>›</button><button id="pp10" '+(selLevel>=save.unlocked?'disabled':'')+'>»</button></div>'+
     '<div class="stars" style="font-size:24px">'+'★'.repeat(s)+'<span style="opacity:.25">'+'★'.repeat(3-s)+'</span></div>'+
     '<p>'+levelInfo(selLevel)+'</p>'+
     '<button class="btn" id="go">'+(ended||!L?'Spielen':'Neu starten')+'</button>'+
@@ -738,22 +756,25 @@ function showMenu(){
   $('go').onclick=()=>start(selLevel);
   $('pm').onclick=()=>{selLevel--;showMenu()};
   $('pp').onclick=()=>{selLevel++;showMenu()};
+  $('pm10').onclick=()=>{selLevel=Math.max(1,selLevel-10);showMenu()};
+  $('pp10').onclick=()=>{selLevel=Math.min(save.unlocked,selLevel+10);showMenu()};
   if($('back'))$('back').onclick=closeOverlay;
 }
 function showResult(win,stars){
   openOverlay(win?
     '<h1>Level geschafft!</h1><div class="stars">'+'★'.repeat(stars)+'<span style="opacity:.25">'+'★'.repeat(3-stars)+'</span></div>'+
     '<p>Punkte: <b>'+score+'</b></p>'+
-    '<button class="btn" id="nx">Nächstes Level</button><button class="btn alt" id="mn">Menü</button>':
+    (L.n>=Logic.MAXLEVEL?'<p><b>Du hast alle 100 Level geschafft – Radio-Meister!</b></p><button class="btn" id="mn">Menü</button>':
+    '<button class="btn" id="nx">Nächstes Level</button><button class="btn alt" id="mn">Menü</button>'):
     '<h1>Kein Empfang…</h1><p>'+(L.kind==='time'?'Die Zeit ist abgelaufen.':'Die Züge sind aufgebraucht.')+' Punkte: <b>'+score+'</b></p>'+
     '<button class="btn" id="rt">Nochmal</button><button class="btn alt" id="mn">Menü</button>');
   if($('nx'))$('nx').onclick=()=>start(L.n+1);
   if($('rt'))$('rt').onclick=()=>start(L.n);
-  $('mn').onclick=()=>{selLevel=Math.min(save.unlocked,L.n+(win?1:0));showMenu()};
+  $('mn').onclick=()=>{selLevel=Math.min(save.unlocked,Logic.MAXLEVEL,L.n+(win?1:0));showMenu()};
 }
 async function start(n){
   audio();
-  selLevel=n;closeOverlay();
+  n=Math.max(1,Math.min(Logic.MAXLEVEL,n));selLevel=n;closeOverlay();
   await build(n);
   say('Level '+n);
 }
