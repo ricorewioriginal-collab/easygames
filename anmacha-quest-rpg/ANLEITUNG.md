@@ -6,16 +6,18 @@ Ein 16-Bit-Rollenspiel für PC und Handy. Spielzeit: ca. 1,5–2,5 Stunden. Der 
 
 | Aktion | PC | Handy |
 |---|---|---|
-| Laufen | Pfeiltasten oder `W` `A` `S` `D` | Steuerkreuz unten links |
+| Laufen | Pfeiltasten oder `W` `A` `S` `D` | Steuerkreuz unten links: Finger aufsetzen und in die Richtung schieben, auch gleitend wechseln; Loslassen stoppt |
 | Bestätigen / Weiterlesen | `Leertaste`, `Enter` oder `Z` (Mausklick auf Textfeld) | Textfeld antippen |
 | Zurück / Abbrechen | `Esc`, `X` oder `Backspace` | – (Menüpunkt „Zurück“) |
 | Menü öffnen | `Esc`, `M` oder `Tab` | Taste **MENÜ** oben rechts |
 | Menüpunkte wählen | Pfeiltasten + Bestätigen | Antippen |
+| Ansicht 3D/2D | MENÜ → Ansicht | MENÜ → Ansicht |
 
 **Ansprechen / Öffnen:** Läufst du gegen eine Person, eine Truhe, ein Tor oder einen Boss, wird die Aktion sofort ausgelöst. Eine extra Taste ist nicht nötig.
 
 ## 2. Der Bildschirm
 
+- **Ansicht:** Standard ist eine **3D-Ansicht** (gekippte Kamera, stehende Figuren, Bäume und Häuser). Über MENÜ → „Ansicht“ lässt sich auf die klassische **2D-Ansicht** umschalten. Die Einstellung wird gespeichert. Kämpfe werden immer als 2D-Szene gezeigt.
 - **Oben links:** Name des Ortes und deine Münzen (M).
 - **Weltkarte:** Städte, Höhlen und der Turm sind beschriftet. Rot gefärbte Eingänge sind noch versiegelt.
 - **Sichtbare Monster:** Auf Weltkarte und in Dungeons laufen Gegner herum. Kommen sie nahe, jagen sie dich. Bei Berührung beginnt ein Kampf.
@@ -101,6 +103,8 @@ Vorgehen pro Reich: erst die Schlüssel-Truhe holen → Tor öffnen (gegen das T
 | **Frost-Moderator** | „Eiszeit-Jingle“ trifft alle | Ausrüstung kaufen; Rico (schnell) für Doppelschuss |
 | **Riff-Titan** | „Feedback-Sturm“ trifft alle, sehr zäh | Andys Bollwerk vor dem Sturm, IP-Spezialangriffe sammeln |
 | **Das Große Rauschen** | „Weißes Rauschen“, stärkster Gegner | Ausrüstung voll ausbauen (mind. Stufe 4), Ätherchips und Weckrufe mitnehmen, IP für Segenssong aufheben |
+
+Einstieg: Die ersten Gegner sind absichtlich schwach, damit Andrew und Marco schnell Stufen sammeln. Bei niedrigen Stufen greifen höchstens zwei Gegner gleichzeitig an.
 
 Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegner besiegt, ist automatisch stark genug.
 

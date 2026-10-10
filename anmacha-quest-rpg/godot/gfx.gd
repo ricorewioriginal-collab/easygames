@@ -551,3 +551,68 @@ static func tint(src: Image, hue: float, sat: float, val: float) -> ImageTexture
 				c.v = clampf(c.v * val, 0.0, 1.0)
 				i.set_pixel(x, y, c)
 	return tex(i)
+
+# ---------------------------------------------------------------- Zusatz-Sprites für die 3D-Ansicht
+static func fountain_tex() -> ImageTexture:
+	var i := img(16, 16)
+	disc(i, 8, 9, 7.2, Color("#8a90a8"))
+	disc(i, 8, 9, 5.6, Color("#3a70d0"))
+	disc(i, 8, 9, 4.2, Color("#5aa0f0"))
+	rect(i, 7, 3, 2, 6, Color("#cfe8ff"))
+	px(i, 6, 4, Color("#cfe8ff"))
+	px(i, 9, 4, Color("#cfe8ff"))
+	px(i, 5, 8, Color(1, 1, 1))
+	return tex(outline(i, Color(0.06, 0.05, 0.12)))
+
+static func shadow_tex() -> ImageTexture:
+	var i := img(16, 16)
+	for y in 16:
+		for x in 16:
+			var dx := (x + 0.5 - 8.0) / 7.0
+			var dy := (y + 0.5 - 8.0) / 4.0
+			if dx * dx + dy * dy <= 1.0:
+				i.set_pixel(x, y, Color(0, 0, 0, 0.38))
+	return tex(i)
+
+static func portal_tex(kind: String, open: bool) -> ImageTexture:
+	var i: Image
+	match kind:
+		"town":
+			i = img(16, 16)
+			rect(i, 1, 7, 14, 9, Color("#efe6d0"))
+			for y in 7:
+				rect(i, 1 + y, y, 14 - y * 2, 1, Color("#c0443a") if y % 2 == 0 else Color("#a83a30"))
+			rect(i, 6, 10, 4, 6, Color("#5a3820"))
+			rect(i, 2, 9, 3, 3, Color("#6ac0ff"))
+			rect(i, 11, 9, 3, 3, Color("#6ac0ff"))
+		"cave":
+			i = img(16, 16)
+			var rc := Color("#6a647a") if open else Color("#7a3a3a")
+			disc(i, 8, 10, 7.4, rc)
+			rect(i, 1, 10, 14, 6, rc)
+			disc(i, 8, 11, 4.4, Color(0.02, 0.0, 0.05))
+			rect(i, 4, 11, 8, 5, Color(0.02, 0.0, 0.05))
+			disc(i, 5, 5, 2.0, rc.lightened(0.25))
+			if not open:
+				rect(i, 5, 8, 6, 8, Color("#8a2a2a"))
+				rect(i, 7, 8, 1, 8, Color("#3a1010"))
+		"tower":
+			i = img(16, 32)
+			var tc := Color("#8a90a8") if open else Color("#7a5a5a")
+			rect(i, 4, 8, 8, 24, tc)
+			rect(i, 4, 8, 3, 24, tc.lightened(0.2))
+			for y in 8:
+				rect(i, 3 + y / 2, y, 10 - y, 1, Color("#40485e"))
+			rect(i, 7, 22, 3, 10, Color("#1a1a2a"))
+			rect(i, 6, 13, 4, 4, Color("#ffe27a") if open else Color("#802020"))
+			rect(i, 7, 0, 2, 3, Color("#ff6a6a"))
+		_:
+			i = img(16, 16)
+			for y in 16:
+				for x in 16:
+					var d := Vector2(x + 0.5 - 8.0, y + 0.5 - 8.0).length()
+					if d > 4.6 and d < 6.8:
+						i.set_pixel(x, y, Color(0.4, 0.9, 1.0) if open else Color(0.7, 0.35, 0.35))
+					elif d <= 4.6:
+						i.set_pixel(x, y, Color(0.4, 0.9, 1.0, 0.25) if open else Color(0.7, 0.35, 0.35, 0.2))
+	return tex(outline(i, Color(0.06, 0.05, 0.12)) if kind != "exit" else i)

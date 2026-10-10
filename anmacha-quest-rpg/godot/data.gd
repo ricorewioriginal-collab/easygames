@@ -51,12 +51,12 @@ const ITEMS := {
 const KEYNAMES := {"key_rap": "Bass-Schlüssel", "key_schlager": "Glitzer-Schlüssel", "key_xmas": "Frost-Schlüssel", "key_rock": "Riff-Schlüssel", "key_tower": "Rausch-Schlüssel"}
 # Gegner: lv bestimmt die Werte, *m = Multiplikatoren. spr = Sprite-Nr. (Kenney Tiny Dungeon, CC0), hue/sat/val = Farbvariante. Bosse: eigene große Pixel-Monster (shape 0 Blob, 1 Geist, 2 Golem, 3 Biest)
 const ENEMIES := {
-	"beatbandit": {"name": "Beat-Bandit", "lv": 2, "hpm": 1.0, "atkm": 1.0, "defm": 1.0, "spr": 86, "hue": 0, "sat": 1, "val": 1, "size": 16},
-	"reimruepel": {"name": "Reim-Rüpel", "lv": 3, "hpm": 1.0, "atkm": 1.1, "defm": 0.9, "spr": 88, "hue": 0, "sat": 1, "val": 1, "size": 16},
-	"bassgolem": {"name": "Bass-Golem", "lv": 4, "hpm": 1.5, "atkm": 1.0, "defm": 1.4, "spr": 109, "hue": 0.75, "sat": 1, "val": 0.9, "size": 16},
-	"boombox": {"name": "Boombox-Mimik", "lv": 2, "hpm": 1.2, "atkm": 1.1, "defm": 1.0, "spr": 92, "hue": 0.55, "sat": 1, "val": 1, "size": 16},
-	"graffiti": {"name": "Graffiti-Geist", "lv": 3, "hpm": 0.8, "atkm": 1.2, "defm": 0.8, "spr": 121, "hue": 0.85, "sat": 1, "val": 1, "size": 16},
-	"mikspin": {"name": "Mikrofon-Spinne", "lv": 4, "hpm": 1.0, "atkm": 1.1, "defm": 1.0, "spr": 122, "hue": 0.8, "sat": 1, "val": 1, "size": 16},
+	"beatbandit": {"name": "Beat-Bandit", "lv": 1, "hpm": 1.0, "atkm": 1.0, "defm": 1.0, "spr": 86, "hue": 0, "sat": 1, "val": 1, "size": 16},
+	"reimruepel": {"name": "Reim-Rüpel", "lv": 2, "hpm": 1.0, "atkm": 1.1, "defm": 0.9, "spr": 88, "hue": 0, "sat": 1, "val": 1, "size": 16},
+	"bassgolem": {"name": "Bass-Golem", "lv": 3, "hpm": 1.5, "atkm": 1.0, "defm": 1.4, "spr": 109, "hue": 0.75, "sat": 1, "val": 0.9, "size": 16},
+	"boombox": {"name": "Boombox-Mimik", "lv": 1, "hpm": 1.2, "atkm": 1.1, "defm": 1.0, "spr": 92, "hue": 0.55, "sat": 1, "val": 1, "size": 16},
+	"graffiti": {"name": "Graffiti-Geist", "lv": 2, "hpm": 0.8, "atkm": 1.2, "defm": 0.8, "spr": 121, "hue": 0.85, "sat": 1, "val": 1, "size": 16},
+	"mikspin": {"name": "Mikrofon-Spinne", "lv": 3, "hpm": 1.0, "atkm": 1.1, "defm": 1.0, "spr": 122, "hue": 0.8, "sat": 1, "val": 1, "size": 16},
 	"gecko": {"name": "Glitzer-Schnecke", "lv": 7, "hpm": 1.1, "atkm": 1.0, "defm": 1.1, "spr": 123, "hue": 0.9, "sat": 1, "val": 1.05, "size": 16},
 	"schleim": {"name": "Schunkel-Schleim", "lv": 8, "hpm": 1.3, "atkm": 0.9, "defm": 1.1, "spr": 108, "hue": 0.14, "sat": 1, "val": 1.1, "size": 16},
 	"aal": {"name": "Akkordeon-Mönch", "lv": 9, "hpm": 1.1, "atkm": 1.2, "defm": 1.0, "spr": 111, "hue": 0, "sat": 1, "val": 1, "size": 16},
