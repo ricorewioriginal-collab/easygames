@@ -151,6 +151,8 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 
 - **Modi:** *Leiter* – 15 Fragen von leicht bis schwer, Gewinnleiter von 50 € bis 1.000.000 € mit Sicherheitsstufen (500 € / 16.000 €), „Ist das Ihre endgültige Antwort?“ und Aussteigen. *Quiznight* – Kategorie wählen (10 Kategorien), je 10 Fragen mit Zeitlimit und Zeitbonus; Länge der Show 1 / 3 / 5 / 10 Kategorien.
 - **Joker (Leiter):** 50:50, Publikum, Telefon, Fragentausch.
+- **Zeit-Modus:** Im Menü „Zeit pro Frage“ → 60 Sekunden pro Frage (Leiter und Quiznight); bei Zeitablauf zählt die Frage als falsch. Standard: Leiter ohne Zeit, Quiznight 20–25 s.
+- **Ton:** Buzzer (heller Gong bei richtig, tiefer Summer bei falsch), Jubel mit Applaus, Johlen und Pfiff, Aww-Enttäuschung, Nachdenk-Melodie (Moll-Arpeggio, die mit der Fragenstufe spannender wird) – alles per WebAudio erzeugt.
 - **Spielformen:** Solo, Reihum (2–4 Spieler an einem Gerät), Duell 1 gegen 1, Teams (Rot gegen Blau mit mehreren Mitspielern pro Team).
 - **Handys koppeln:** „📱 Handys koppeln“ zeigt Code + QR-Code, Mitspieler öffnen den Link, geben Namen und Sender-Logo ein und antworten am eigenen Handy (PeerJS, bis 4 Spieler, Host-Gerät bleibt der Fernseher). Optional `?ph=host:port` für einen eigenen PeerServer.
 - **Studio:** 3D-TV-Studio mit LED-Wand, Scheinwerfern, Publikum, Werbeträgern mit allen Sender-Logos (`anmacha-quiz/logos/01..13`) und Avataren mit Sender-Logo auf dem Shirt; Sounds, Musik und Applaus werden im Browser erzeugt, optional Moderator-Stimme (Sprachausgabe des Browsers).

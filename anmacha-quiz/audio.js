@@ -46,6 +46,19 @@ const AUD = (() => {
     drum: d => { const n = Math.max(6, Math.round(d * 14)); for (let i = 0; i < n; i++) noise(0.07, 0.03 + 0.05 * (i / n), (i / n) * d, { f: 260 + i * 25, q: 0.7 }); note(60, 0.3, 'sine', 0.12, d, { to: 38 }); },
     intro: () => { SFX.whoosh(); [55, 62, 67, 71, 74].forEach((n, i) => note(hz(n), 0.8, 'sawtooth', 0.04, 0.1 + i * 0.14, { lp: 2400 })); chord([60, 67, 72, 76, 79], 1.6, 'sawtooth', 0.045, 0.9, 3000); SFX.applause(3, 0.7); },
     applause: (d, v) => { const n = Math.round(d * 38); for (let i = 0; i < n; i++) noise(0.04 + Math.random() * 0.05, (v || 0.6) * 0.03 * (0.6 + Math.random() * 0.8), Math.random() * d, { f: 1500 + Math.random() * 3500, q: 0.6 }); },
+    // Buzzer: richtig = heller Doppel-Gong, falsch = tiefer Summer
+    buzzRight: () => { [1318, 1760].forEach((f, i) => { note(f, 0.55, 'sine', 0.07, i * 0.16); note(f * 2, 0.4, 'sine', 0.025, i * 0.16); }); note(880, 0.5, 'triangle', 0.04, 0.32); },
+    buzzWrong: () => { note(118, 0.95, 'square', 0.07, 0, { lp: 520, atk: 0.01 }); note(124, 0.95, 'sawtooth', 0.05, 0, { lp: 600, atk: 0.01 }); noise(0.45, 0.05, 0, { f: 260, q: 0.6 }); },
+    // Jubel: Applaus + Johlen + Pfiff
+    cheer: (d, v) => {
+      d = d || 2.5; v = v || 1; SFX.applause(d, 0.8 * v);
+      [250, 310, 390, 470].forEach((f, i) => note(f, 0.5 + Math.random() * 0.25, 'sawtooth', 0.016 * v, 0.05 + i * 0.07 + Math.random() * 0.15, { to: f * (1.5 + Math.random() * 0.4), lp: 1500, atk: 0.06 }));
+      note(1800, 0.32, 'sine', 0.035 * v, 0.35, { to: 2700 }); note(2000, 0.28, 'sine', 0.03 * v, 0.75, { to: 2900 });
+      if (d > 3) { [330, 420, 520].forEach((f, i) => note(f, 0.6, 'sawtooth', 0.016 * v, 1.2 + i * 0.1, { to: f * 1.8, lp: 1500, atk: 0.06 })); }
+    },
+    aww: () => { [330, 300, 270].forEach((f, i) => note(f, 0.7, 'sawtooth', 0.02, i * 0.06, { to: f * 0.55, lp: 800, atk: 0.1 })); noise(0.6, 0.012, 0.05, { f: 700, q: 0.5 }); },
+    right: () => { SFX.buzzRight(); SFX.cheer(2.4, 1); setTimeout(() => chord([60, 64, 67, 72], 0.9, 'sawtooth', 0.03, 0, 2200), 520); },
+    wrongAll: () => { SFX.buzzWrong(); setTimeout(SFX.aww, 450); },
     lose: () => { [64, 60, 57, 52].forEach((n, i) => note(hz(n), 0.5, 'triangle', 0.07, i * 0.22, { lp: 1200 })); },
     win: () => SFX.million()
   };
@@ -62,12 +75,14 @@ const AUD = (() => {
         if (s % 8 === 0) note(55, 0.18, 'sine', 0.09, t, { to: 38 });
         if (s % 4 === 2) noise(0.03, 0.015, t, { f: 6500, q: 1.2 });
         nextT += st;
-      } else {   // tension
-        const bpm = 62 + tension * 30, st = 60 / bpm / 2, s = step % 8;
-        if (s % 2 === 0) { note(52, 0.22, 'sine', 0.09, t, { to: 36 }); }
-        if (s === 1 || s === 5) note(48, 0.12, 'sine', 0.04, t + 0.01, { to: 34 });
-        if (s === 0) { note(hz(40), st * 7.5, 'sawtooth', 0.02, t, { lp: 260, atk: 0.6 }); note(hz(41), st * 7.5, 'sawtooth', 0.012, t, { lp: 240, atk: 0.8 }); }
-        if (s === 4 && tension > 0.5) note(hz(76 + (tension > 0.8 ? 1 : 0)), st * 2, 'sine', 0.012, t, { atk: 0.3 });
+      } else {   // tension = Nachdenk-Melodie (Moll-Arpeggio, steigende Spannung)
+        const bpm = 70 + tension * 26, st = 60 / bpm / 2, s = step % 32, ch = s >> 3, ps = s & 7;
+        const CH = [[50, 57, 62, 65, 69, 65, 62, 57], [46, 58, 62, 65, 70, 65, 62, 58], [43, 55, 58, 62, 67, 62, 58, 55], [45, 57, 61, 64, 69, 64, 61, 57]][ch];
+        note(hz(CH[ps] + 12), st * 1.7, 'triangle', 0.03, t, { lp: 1900, atk: 0.004 });
+        if (ps % 2 === 0) note(hz(CH[0] - 12), st * 2.2, 'sine', 0.07, t, { atk: 0.01 });
+        if (ps === 0 || ps === 4) note(52, 0.2, 'sine', 0.06 + tension * 0.04, t, { to: 36 });
+        if (ps === 0) note(hz(CH[0] + 24), st * 6, 'sine', 0.012, t, { atk: 0.4 });
+        if (ps === 6 && tension > 0.45) note(hz(CH[4] + 12), st * 1.4, 'sine', 0.02, t + st * 0.5, { atk: 0.01 });
         nextT += st;
       }
       step++;
