@@ -7,7 +7,7 @@ service cloud.firestore {
       allow create, update: if request.auth != null && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['d', 't'])
         && request.resource.data.d is string
-        && request.resource.data.d.size() < 100000;
+        && request.resource.data.d.size() < 950000;
       allow delete: if false;
     }
   }
