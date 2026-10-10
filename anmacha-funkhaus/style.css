@@ -70,3 +70,4 @@ body.ctrl #app,body.ctrl .screen:not(#ctl),body.ctrl .dialog{display:none!import
 @media (max-height:620px){#panel{max-height:62vh}}
 
 #menu,#setup{background:rgba(5,6,20,.62);z-index:20}
+.wk b,.wk small,.viewers{white-space:nowrap}.wk b{font-size:15px}

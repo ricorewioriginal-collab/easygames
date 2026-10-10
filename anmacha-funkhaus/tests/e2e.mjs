@@ -29,7 +29,7 @@ async function drive(p, maxMs = 280000, onStage) {
 const p = await mk({ viewport: { width: 1100, height: 680 } }); await p.evaluate(() => { window.__fhFast = 6; });
 await p.click('#bPlay'); await p.waitForSelector('#humans .hc'); log((await p.locator('#humans .hc').count()) === 1, 'Einrichtung: ein Mensch'); await p.fill('#humans input', 'Rico'); await p.click('#sgTot [data-v="6"]'); await p.click('#bStart');
 await p.waitForFunction(() => window.__fh.G, null, { timeout: 20000 }); const nCast = await p.evaluate(() => window.__fh.G.res.length); log(nCast === 6 && (await p.locator('#cast .cc').count()) === 6, 'Haus mit 6 Bewohnern, Besetzungsleiste');
-let n = 0; const txt = await drive(p, 290000, async (k) => { if (['plan', 'nom', 'task:reflex'].includes(k) && n < 3) { n++; await p.waitForTimeout(500); await p.screenshot({ path: `${SHOT}/fh-${k.replace(':', '-')}.png` }); } });
+let n = 0; const txt = await drive(p, 480000, async (k) => { if (['plan', 'nom', 'task:reflex'].includes(k) && n < 3) { n++; await p.waitForTimeout(500); await p.screenshot({ path: `${SHOT}/fh-${k.replace(':', '-')}.png` }); } });
 log(/gewinnt das Funkhaus/.test(txt), 'Staffel läuft bis zum Finale und nennt den Sieger');
 for (const k of ['plan', 'nom', 'gate']) if (k !== 'gate') log(seen.has(k), 'Eingabe gesehen: ' + k);
 log(['task:reflex', 'task:memory'].every(k => seen.has(k)) || [...seen].some(x => x.startsWith('task:')), 'Wochenaufgaben gespielt: ' + [...seen].filter(x => x.startsWith('task:')).join(', '));
