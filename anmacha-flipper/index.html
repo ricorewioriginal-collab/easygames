@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#080B12">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<title>AnMaCha Flipper</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#080B12;color:#fff;overscroll-behavior:none;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;touch-action:none}
+  canvas#gl{display:block;position:fixed;inset:0;width:100%;height:100%}
+  button{font:inherit;color:#fff;cursor:pointer;touch-action:none}
+  .hidden{display:none!important}
+  body.menu #hud,body.menu #touch,body.menu #hint,body.menu #meter,body.menu #pops{display:none!important}
+
+  #hud{position:fixed;top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+    padding:calc(8px + env(safe-area-inset-top)) 12px 0;pointer-events:none;text-shadow:0 0 10px rgba(0,229,255,.7)}
+  #hud .col{display:flex;flex-direction:column;gap:2px}
+  #score{font:800 clamp(24px,6vw,40px)/1 'Trebuchet MS',system-ui,sans-serif;letter-spacing:.02em}
+  #best{font-size:clamp(11px,2.8vw,13px);color:#9fb4c8}
+  #tname{font-size:clamp(11px,2.8vw,13px);color:#00E5FF}
+  #balls{display:flex;gap:6px;justify-content:center;margin-top:6px}
+  #balls i{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9fb4c8 60%,#4a5a6c);box-shadow:0 0 8px #00E5FF}
+  #balls i.off{background:transparent;box-shadow:none;border:2px solid #3a4a5c}
+  #mult{font:800 clamp(16px,4.2vw,24px)/1 'Trebuchet MS',sans-serif;color:#FF2D95;text-shadow:0 0 12px #FF2D95;text-align:right;min-height:1em}
+  #btns{display:flex;gap:8px;pointer-events:auto;margin-top:4px}
+  .ib{width:42px;height:42px;border-radius:12px;border:1px solid rgba(0,229,255,.5);background:rgba(8,11,18,.65);font-size:18px;padding:0}
+  .ib:active{background:rgba(0,229,255,.25)}
+  #meter{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(60vw,260px);height:10px;
+    border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;opacity:0;transition:opacity .15s}
+  #meter.on{opacity:1}
+  #meter b{display:block;height:100%;width:0;background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95)}
+  #msg{position:fixed;left:0;right:0;top:30%;text-align:center;font:800 clamp(22px,6vw,44px)/1.1 'Trebuchet MS',sans-serif;
+    text-shadow:0 0 18px #FF2D95;opacity:0;pointer-events:none;padding:0 12px}
+  #msg.show{animation:msg 1.6s ease forwards}
+  @keyframes msg{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0}}
+  #pops{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .pop{position:absolute;color:#fff;font:800 18px 'Trebuchet MS',sans-serif;text-shadow:0 0 10px var(--c),0 0 3px var(--c);animation:pop .9s ease-out forwards;white-space:nowrap}
+  @keyframes pop{0%{opacity:1;transform:translate(-50%,0) scale(.8)}100%{opacity:0;transform:translate(-50%,-46px) scale(1.2)}}
+  #hint{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:#7d90a6;pointer-events:none}
+  body.touch #hint{display:none}
+
+  #touch{position:fixed;left:0;right:0;bottom:0;display:none;gap:10px;justify-content:space-between;align-items:flex-end;
+    padding:0 12px calc(14px + env(safe-area-inset-bottom))}
+  body.touch #touch{display:flex}
+  #touch button{border-radius:22px;border:2px solid rgba(0,229,255,.6);background:rgba(8,11,18,.55);font:800 clamp(14px,4vw,18px) 'Trebuchet MS',sans-serif;
+    letter-spacing:.06em;box-shadow:0 0 16px rgba(0,229,255,.25) inset}
+  #touch button.down{background:rgba(0,229,255,.3)}
+  #tL,#tR{flex:1;height:clamp(92px,17vh,130px)}
+  #tR{border-color:rgba(255,45,149,.65);box-shadow:0 0 16px rgba(255,45,149,.25) inset}
+  #tR.down{background:rgba(255,45,149,.3)}
+  #tLaunch{width:26%;min-width:84px;height:clamp(70px,12vh,96px);border-color:rgba(139,92,246,.8)!important}
+  #tLaunch.down{background:rgba(139,92,246,.4)!important}
+
+  .ov{position:fixed;inset:0;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at center,rgba(8,11,18,.55),rgba(8,11,18,.94))}
+  .card{margin:auto;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  h1{margin:0;line-height:.95;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(44px,13vw,86px);background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,229,255,.5))}
+  h1 small{display:block;font-size:clamp(18px,5.5vw,32px);letter-spacing:.4em;text-shadow:0 0 14px #FF2D95;margin-top:4px}
+  h2{margin:0;font-size:clamp(24px,6vw,36px);text-shadow:0 0 14px #FF2D95}
+  .sub{margin:0;color:#9fb4c8;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.1em;color:#080B12;border:0;border-radius:999px;padding:14px 52px;min-height:56px;
+    background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);box-shadow:0 0 26px rgba(139,92,246,.6)}
+  .big:active{transform:scale(.96)}
+  .big:disabled{opacity:.6;cursor:wait}
+  .ghost{border:1px solid #00E5FF;background:transparent;border-radius:999px;padding:10px 22px;min-height:44px;font-weight:700;color:#00E5FF}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .picker{display:flex;align-items:center;gap:10px;width:100%;justify-content:center}
+  .arrow{width:48px;height:48px;border-radius:50%;border:1px solid #00E5FF;background:rgba(8,11,18,.6);font-size:22px;padding:0;flex:none}
+  .tcard{width:min(60vw,230px);padding:12px;border-radius:16px;border:1px solid var(--c,#00E5FF);background:rgba(15,20,32,.85);
+    box-shadow:0 0 22px var(--c,#00E5FF);display:flex;flex-direction:column;gap:6px;align-items:center}
+  .tcard canvas{width:100%;aspect-ratio:1;border-radius:10px;background:#0b1018}
+  .tcard b{font-size:16px}.tcard span{font-size:12.5px;color:#9fb4c8}
+  .help{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;text-align:left;font-size:clamp(12px,3.2vw,14px);line-height:1.5}
+  .box{background:rgba(15,20,32,.8);border:1px solid rgba(0,229,255,.3);border-radius:12px;padding:8px 12px}
+  .box b{display:block;color:#00E5FF}
+  kbd{background:#0f1c2c;border:1px solid #00E5FF55;border-radius:5px;padding:0 6px;font:inherit}
+  #status{margin:0;font-size:12px;color:#6c8097;min-height:1.2em}
+  #back{font-size:13px;color:#00E5FF;text-decoration:none}
+  /* Handy quer: Tasten links/rechts neben dem Tisch statt darunter */
+  @media (orientation:landscape) and (max-height:600px){
+    body.touch #touch{display:block;pointer-events:none;padding:0}
+    body.touch #touch button{position:fixed;pointer-events:auto}
+    #tL{left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));width:30vw;height:38vh}
+    #tR{right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));width:30vw;height:38vh}
+    #tLaunch{right:calc(10px + env(safe-area-inset-right));bottom:calc(20px + 38vh + env(safe-area-inset-bottom));width:22vw;height:20vh;min-width:0}
+    #meter{display:none}
+  }
+  @media (max-width:420px){.help{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="menu">
+<canvas id="gl"></canvas>
+
+<div id="hud">
+  <div class="col"><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div></div>
+  <div class="col"><div id="balls"></div></div>
+  <div class="col" style="align-items:flex-end">
+    <div id="mult"></div>
+    <div id="btns">
+      <button class="ib" id="bPause" aria-label="Pause">⏸</button>
+      <button class="ib" id="bSound" aria-label="Ton">🔊</button>
+      <button class="ib" id="bRestart" aria-label="Neustart">↻</button>
+    </div>
+  </div>
+</div>
+<div id="meter"><b id="meterB"></b></div>
+<div id="msg"></div>
+<div id="pops"></div>
+<div id="hint"><kbd>←</kbd>/<kbd>A</kbd> links · <kbd>→</kbd>/<kbd>D</kbd> rechts · <kbd>Leertaste</kbd> halten &amp; loslassen = Start · <kbd>P</kbd> Pause · <kbd>R</kbd> Neustart · <kbd>M</kbd> Ton</div>
+<div id="touch">
+  <button id="tL">LINKS</button>
+  <button id="tLaunch">START<br>halten</button>
+  <button id="tR">RECHTS</button>
+</div>
+
+<div id="menu" class="ov">
+  <div class="card">
+    <h1><span>AnMaCha</span><small>FLIPPER</small></h1>
+    <p class="sub">Wähle deinen Tisch – jeder hat sein eigenes Logo und Layout. 5 Kugeln, so viele Punkte wie möglich!</p>
+    <div class="picker">
+      <button class="arrow" id="tPrev" aria-label="Voriger Tisch">◀</button>
+      <div class="tcard" id="tcard"><canvas id="tprev" width="256" height="256"></canvas><b id="tTitle"></b><span id="tSub"></span></div>
+      <button class="arrow" id="tNext" aria-label="Nächster Tisch">▶</button>
+    </div>
+    <button class="big" id="bPlay" disabled>LADE …</button>
+    <div class="help">
+      <div class="box"><b>💻 Am PC</b><kbd>←</kbd> <kbd>A</kbd> / <kbd>→</kbd> <kbd>D</kbd> Flipper<br><kbd>Leertaste</kbd> halten, loslassen = Kugel starten<br><kbd>P</kbd> Pause · <kbd>R</kbd> Neustart · <kbd>M</kbd> Ton</div>
+      <div class="box"><b>📱 Am Handy</b>LINKS / RECHTS = Flipper<br>START halten, loslassen = Kugel starten<br>Oben: ⏸ Pause, 🔊 Ton, ↻ Neustart</div>
+    </div>
+    <p id="status"></p>
+    <a id="back" href="../">← Alle Spiele</a>
+  </div>
+</div>
+
+<div id="pauseOv" class="ov hidden">
+  <div class="card"><h2>PAUSE</h2>
+    <button class="big" id="pResume">WEITER</button>
+    <div class="row"><button class="ghost" id="pRestart">Neustart</button><button class="ghost" id="pMenu">Tischwahl</button></div>
+  </div>
+</div>
+<div id="overOv" class="ov hidden">
+  <div class="card"><h2>GAME OVER</h2>
+    <p class="sub" id="oText"></p>
+    <button class="big" id="oAgain">PLAY AGAIN</button>
+    <button class="ghost" id="oMenu">Anderer Tisch</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+if (typeof THREE === 'undefined') {
+  $('status').textContent = 'three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen.';
+  $('bPlay').textContent = 'OFFLINE';
+  throw new Error('THREE missing');
+}
+const TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+if (TOUCH) document.body.classList.add('touch');
+if (window.self !== window.top) $('back').style.display = 'none';
+
+/* ================= Konfiguration ================= */
+// Logos: logos/01.png|jpg|jpeg ... 13 (jedes Logo = ein eigener Tisch; ohne Logos gibt es 3 Platzhalter-Tische)
+const LOGO_DIR = 'logos/', LOGO_MAX = 13, MIN_TABLES = 3, BALLS = 5;
+
+// Logo-Bilder sofort im Hintergrund laden (Endungen parallel prüfen)
+const rawLogos = [], t0 = performance.now();
+let probesLeft = LOGO_MAX;
+for (let i = 0; i < LOGO_MAX; i++) {
+  const name = `${LOGO_DIR}${String(i + 1).padStart(2, '0')}`;
+  Promise.all(['png', 'jpg', 'jpeg'].map(ext => new Promise(res => {
+    const im = new Image();
+    im.decoding = 'async'; im.onload = () => res(im); im.onerror = () => res(null); im.src = `${name}.${ext}`;
+  }))).then(l => { const im = l.find(Boolean); if (im) rawLogos[i] = im; probesLeft--; });
+}
+
+/* ================= Physik-Konstanten (logische Einheiten, y nach unten) ================= */
+const W = 620, H = 1000, S = 1 / 50;                 // Tischgröße, Welt-Skalierung
+const G = 1500, BALL_R = 11, VMAX = 2400, DT = 1 / 480;
+const A_REST = 0.52, A_ON = -0.5, FLIP_UP = 17, FLIP_DOWN = 10, FL_LEN = 100;
+const LANE_X = 560, LANE_L = 535, DRAIN_Y = 1020;
+const CX = 277.5;                                    // Spielfeld-Mitte (ohne Startbahn)
+const mx = x => 2 * CX - x;                          // Spiegelung links/rechts
+
+const PALETTE = [0x00E5FF, 0xFF2D95, 0x8B5CF6, 0x9DFF00, 0xFFB020, 0x3D8BFF, 0xFF4D4D, 0x00FFC8];
+const BUMPER = {   // Punkte laut Spiel: ON AIR 100, HIT ZONE 250, BASS BOOST 500, Lautsprecher 50
+  onair: { pts: 100, label: 'ON AIR', kick: 620 },
+  hit:   { pts: 250, label: 'HIT ZONE', kick: 700 },
+  bass:  { pts: 500, label: 'BASS\nBOOST', kick: 820 },
+  spk:   { pts: 50, label: '', kick: 560 }
+};
+const LAYOUTS = [
+  { name: 'Studio', bumpers: [['onair', 190, 330, 30], ['hit', 365, 330, 30], ['bass', CX, 450, 34], ['spk', 130, 520, 20], ['spk', 425, 520, 20]], rails: [] },
+  { name: 'Mixer', bumpers: [['bass', CX, 255, 34], ['onair', 180, 400, 28], ['hit', 375, 400, 28], ['spk', CX, 525, 22], ['spk', 100, 330, 18], ['spk', 455, 330, 18]],
+    rails: [[45, 560, 110, 604], [510, 560, 445, 604]] },
+  { name: 'Antenne', bumpers: [['hit', CX, 235, 26], ['onair', CX, 350, 30], ['bass', CX, 480, 34], ['spk', 150, 420, 20], ['spk', 405, 420, 20], ['spk', 110, 560, 18], ['spk', 445, 560, 18]],
+    rails: [[70, 250, 140, 200], [485, 250, 415, 200]] },
+  { name: 'Equalizer', bumpers: [['onair', 200, 255, 28], ['hit', 355, 255, 28], ['bass', CX, 330, 30], ['spk', 120, 430, 18], ['spk', 200, 430, 18], ['spk', CX, 430, 18], ['spk', 355, 430, 18], ['spk', 435, 430, 18]],
+    rails: [[60, 520, 120, 560], [495, 520, 435, 560]] },
+  { name: 'Satellit', bumpers: [['bass', CX, 380, 36], ['onair', CX, 185, 26], ['hit', 120, 520, 24], ['hit', 435, 520, 24],
+    ...[0, 1, 2, 3, 4].map(i => ['spk', CX + 125 * Math.cos(i * 1.2566 - 1.5708), 380 + 125 * Math.sin(i * 1.2566 - 1.5708), 16])],
+    rails: [] }
+];
+const SLING_KICK = 430;
+const GATE = { x: 548, y0: 120, y1: 340 };
+const ROLLOVERS = [[200, 130], [CX, 112], [355, 130]];
+
+/* ================= Tische ================= */
+const tables = [];           // {theme, layout, name, logo(canvas|null), idx}
+let tableIdx = 0;
+try { tableIdx = +localStorage.getItem('anmachaFlipperTable') || 0; } catch (e) {}
+
+function logoCanvas(img, label, color) {
+  const S2 = 384, c = document.createElement('canvas'); c.width = c.height = S2;
+  const g = c.getContext('2d');
+  g.fillStyle = '#eef5f1'; g.fillRect(0, 0, S2, S2);
+  if (img) {
+    const sc = Math.min((S2 - 48) / img.width, (S2 - 48) / img.height);
+    g.drawImage(img, (S2 - img.width * sc) / 2, (S2 - img.height * sc) / 2, img.width * sc, img.height * sc);
+    try { g.getImageData(0, 0, 1, 1); } catch (e) { return null; }       // file:// blockiert Bilder
+  } else {
+    g.fillStyle = '#' + color.toString(16).padStart(6, '0'); g.textAlign = 'center';
+    g.font = 'bold 70px sans-serif'; g.fillText('LOGO', S2 / 2, 190);
+    g.font = 'bold 90px sans-serif'; g.fillText(label, S2 / 2, 290);
+  }
+  return c;
+}
+function makeTable(i, logo) {
+  const col = PALETTE[i % PALETTE.length], col2 = PALETTE[(i + 3) % PALETTE.length], lay = LAYOUTS[i % LAYOUTS.length];
+  let c = logoCanvas(logo, String(i + 1), col);
+  const ok = !!(logo && c);
+  if (!c) c = logoCanvas(null, String(i + 1), col);          // Bild blockiert (file://) -> Platzhalter
+  return { idx: i, color: col, color2: col2, layout: lay, name: `Tisch ${i + 1} · ${lay.name}`, logo: c, hasLogo: ok };
+}
+let loaded = 0;
+function syncTables() {                     // Tische passend zu den gefundenen Logos aufbauen
+  const found = rawLogos.filter(Boolean);
+  const n = Math.max(MIN_TABLES, found.length);
+  if (tables.length === n && loaded === found.length) return false;
+  loaded = found.length;
+  tables.length = 0;
+  for (let i = 0; i < n; i++) tables.push(makeTable(i, found[i] || null));
+  tableIdx = Math.min(tableIdx, tables.length - 1);
+  return true;
+}
+
+/* ================= Audio (erzeugte Töne) ================= */
+let ac = null, muted = false;
+try { muted = localStorage.getItem('anmachaFlipperMuted') === '1'; } catch (e) {}
+function audioInit() {
+  if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+  if (ac && ac.state === 'suspended') ac.resume();
+}
+function tone(f, d, type = 'sine', vol = 0.14, f2 = 0, delay = 0) {
+  if (!ac || muted) return;
+  const t = ac.currentTime + delay, o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + 0.02);
+}
+const SFX = {
+  launch: () => tone(180, 0.35, 'sawtooth', 0.12, 700),
+  flip: () => tone(140, 0.05, 'square', 0.08, 70),
+  onair: () => tone(660, 0.12, 'triangle', 0.16, 880),
+  hit: () => tone(880, 0.1, 'square', 0.1, 1175),
+  bass: () => { tone(110, 0.3, 'sawtooth', 0.18, 55); tone(55, 0.35, 'sine', 0.22); },
+  spk: () => tone(520, 0.07, 'triangle', 0.12, 640),
+  sling: () => tone(300, 0.08, 'square', 0.1, 420),
+  wall: () => tone(90, 0.04, 'sine', 0.05),
+  combo: () => [523, 659, 784].forEach((f, i) => tone(f, 0.12, 'triangle', 0.13, 0, i * 0.07)),
+  bonus: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, 'square', 0.09, 0, i * 0.08)),
+  lost: () => tone(300, 0.5, 'sawtooth', 0.14, 70),
+  over: () => [440, 370, 311, 220].forEach((f, i) => tone(f, 0.3, 'triangle', 0.15, 0, i * 0.2))
+};
+function setMuted(m) {
+  muted = m; $('bSound').textContent = m ? '🔇' : '🔊';
+  try { localStorage.setItem('anmachaFlipperMuted', m ? '1' : '0'); } catch (e) {}
+}
+
+/* ================= Physik ================= */
+const ball = { x: LANE_X, y: 960, vx: 0, vy: 0 };
+let walls = [], bumpers = [], slings = [], rolls = [], flippers = [];
+
+function buildPhysics(t) {
+  walls = []; bumpers = []; slings = []; rolls = [];
+  const wall = (ax, ay, bx, by, rad = 3.5, e = 0.5) => walls.push({ ax, ay, bx, by, rad, e, vis: true });
+  // Bogen oben
+  const R = 282.5, cx = 302.5, cy = 292.5;
+  let px = cx - R, py = cy;
+  for (let i = 1; i <= 28; i++) {
+    const a = Math.PI + (i / 28) * Math.PI, x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+    wall(px, py, x, y, 3.5, 0.45); px = x; py = y;
+  }
+  wall(20, cy, 20, 770);                    // links
+  wall(585, cy, 585, 980);                  // rechts außen
+  wall(LANE_L, 200, LANE_L, 980);           // Trennwand zur Startbahn
+  wall(LANE_L, 980, 585, 980);              // Boden der Startbahn
+  wall(20, 770, 150, 872, 3.5, 0.4);        // Führung links
+  wall(LANE_L, 770, 405, 872, 3.5, 0.4);    // Führung rechts
+  // Schleudern (Slingshots): Kickfläche + feste Kanten
+  [[62, 640, 122, 730, 62, 730], [mx(62), 640, mx(122), 730, mx(62), 730]].forEach(([ax, ay, bx, by, cx2, cy2]) => {
+    slings.push({ ax, ay, bx, by, cx: cx2, cy: cy2, nx: 0, ny: 0, flash: 0 });
+    walls.push({ ax: ax, ay: ay, bx: cx2, by: cy2, rad: 3.5, e: 0.5, vis: false });
+    walls.push({ ax: cx2, ay: cy2, bx: bx, by: by, rad: 3.5, e: 0.5, vis: false });
+  });
+  // Normalen der Schleudern sauber berechnen (zeigen ins Spielfeld)
+  slings.forEach(s => {
+    let nx = -(s.by - s.ay), ny = s.bx - s.ax; const l = Math.hypot(nx, ny); nx /= l; ny /= l;
+    const mxp = (s.ax + s.bx) / 2, myp = (s.ay + s.by) / 2;
+    if ((CX - mxp) * nx + (500 - myp) * ny < 0) { nx = -nx; ny = -ny; }   // Richtung Spielfeld-Mitte
+    s.nx = nx; s.ny = ny;
+  });
+  t.layout.rails.forEach(r => wall(r[0], r[1], r[2], r[3], 3.5, 0.5));
+  t.layout.bumpers.forEach(([type, x, y, r]) => bumpers.push({ type, x, y, r, flash: 0, cd: 0 }));
+  ROLLOVERS.forEach(([x, y]) => rolls.push({ x, y, r: 18, lit: false }));
+  flippers = [
+    { px: 160, py: 880, side: 1, a: A_REST, w: 0, on: false, rp: 13, rt: 7 },
+    { px: mx(160), py: 880, side: -1, a: A_REST, w: 0, on: false, rp: 13, rt: 7 }
+  ];
+}
+
+function closest(ax, ay, bx, by, x, y) {
+  const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+  const t = l2 ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / l2)) : 0;
+  return [ax + dx * t, ay + dy * t, t];
+}
+// Kreis (Kugel) gegen Punkt mit Radius: schiebt die Kugel raus, reflektiert; surfaceVel = Geschwindigkeit der Fläche
+function bounce(cx, cy, rad, e, kick, svx = 0, svy = 0) {
+  let nx = ball.x - cx, ny = ball.y - cy, d = Math.hypot(nx, ny);
+  const min = BALL_R + rad;
+  if (d >= min) return null;
+  if (d < 1e-6) { nx = 0; ny = -1; d = 1; } else { nx /= d; ny /= d; }
+  ball.x = cx + nx * min; ball.y = cy + ny * min;
+  const vn = (ball.vx - svx) * nx + (ball.vy - svy) * ny;
+  if (vn < 0) {
+    const imp = -(1 + e) * vn;
+    ball.vx += imp * nx; ball.vy += imp * ny;
+  }
+  if (kick) {
+    const v2 = (ball.vx - svx) * nx + (ball.vy - svy) * ny;
+    if (v2 < kick) { ball.vx += (kick - v2) * nx; ball.vy += (kick - v2) * ny; }
+  }
+  return [nx, ny, -vn];
+}
+
+const events = [];
+let touchedFlip = false, idleT = 0;   // idleT: Sekunden seit dem letzten Flipper-Kontakt            // Ereignisse der Physik (Treffer etc.), werden pro Frame ausgewertet
+
+function stepPhysics(dt) {
+  // Flipper bewegen (Winkelgeschwindigkeit merken, damit die Kugel Schwung bekommt)
+  for (const f of flippers) {
+    const tgt = f.on ? A_ON : A_REST, sp = f.on ? FLIP_UP : FLIP_DOWN;
+    let da = tgt - f.a; const m = sp * dt;
+    if (Math.abs(da) > m) da = Math.sign(da) * m;
+    f.w = da / dt; f.a += da;
+  }
+  ball.vy += G * dt;
+  ball.vx *= 1 - 0.02 * dt; ball.vy *= 1 - 0.02 * dt;
+  const sp = Math.hypot(ball.vx, ball.vy);
+  if (sp > VMAX) { ball.vx *= VMAX / sp; ball.vy *= VMAX / sp; }
+  ball.x += ball.vx * dt; ball.y += ball.vy * dt;
+
+  for (const w of walls) {
+    const [cx, cy] = closest(w.ax, w.ay, w.bx, w.by, ball.x, ball.y);
+    const r = bounce(cx, cy, w.rad, w.e, 0);
+    if (r && r[2] > 250) events.push({ k: 'wall', v: r[2] });
+  }
+  // Einweg-Tor: die Kugel darf aus der Startbahn nach links ins Spielfeld, aber nicht zurück
+  if (ball.vx > 0 && ball.y > GATE.y0 && ball.y < GATE.y1 && ball.x < GATE.x && ball.x + BALL_R > GATE.x) {
+    ball.x = GATE.x - BALL_R; ball.vx = -Math.abs(ball.vx) * 0.35; events.push({ k: 'wall', v: 300 });
+  }
+  for (const s of slings) {
+    const [cx, cy] = closest(s.ax, s.ay, s.bx, s.by, ball.x, ball.y);
+    const r = bounce(cx, cy, 5, 0.5, 0);
+    if (r && r[2] > 120) {                               // nur bei echtem Aufprall kicken
+      const v2 = ball.vx * s.nx + ball.vy * s.ny;
+      if (v2 < SLING_KICK) { ball.vx += (SLING_KICK - v2) * s.nx; ball.vy += (SLING_KICK - v2) * s.ny; }   // schwache Kugeln bekommen Schwung, schnelle werden eher gebremst
+      events.push({ k: 'sling', o: s });
+    }
+  }
+  for (const b of bumpers) {
+    if (b.cd > 0) b.cd -= dt;
+    const r = bounce(b.x, b.y, b.r, 1, BUMPER[b.type].kick);
+    if (r && b.cd <= 0) { b.cd = 0.08; events.push({ k: 'bumper', o: b }); }
+  }
+  for (const f of flippers) {
+    const dx = f.side * Math.cos(f.a), dy = Math.sin(f.a);
+    const tx = (ball.x - f.px) * dx + (ball.y - f.py) * dy, t = Math.max(0, Math.min(1, tx / FL_LEN));
+    const cx = f.px + dx * FL_LEN * t, cy = f.py + dy * FL_LEN * t, fr = f.rp + (f.rt - f.rp) * t;
+    const sx = cx - f.px, sy = cy - f.py;
+    const r = bounce(cx, cy, fr, 0.35, 0, -f.side * f.w * sy, f.side * f.w * sx);   // Flächengeschwindigkeit v = side*w*(-sy, sx)
+    if (r) { touchedFlip = true; if (Math.abs(f.w) > 1) events.push({ k: 'flip' }); }
+  }
+  const sp2 = Math.hypot(ball.vx, ball.vy);
+  if (sp2 > VMAX) { ball.vx *= VMAX / sp2; ball.vy *= VMAX / sp2; }     // auch nach Stößen begrenzen
+  for (const r of rolls) if (!r.lit && Math.hypot(ball.x - r.x, ball.y - r.y) < r.r) { r.lit = true; events.push({ k: 'roll', o: r }); }
+}
+
+/* ================= Spielzustand ================= */
+let state = 'menu';          // menu | ready | play | drain | paused | over
+let prevState = 'play';
+let score = 0, best = 0, balls = BALLS, combo = 0, comboT = 0, zoneT = 0, waitT = 0, power = 0, charging = false, stuckT = 0, flipPlayed = [false, false];
+try { best = +localStorage.getItem('anmachaFlipperBest') || 0; } catch (e) {}
+const curMult = () => Math.min(8, 1 + Math.floor(combo / 4) + (zoneT > 0 ? 1 : 0));
+
+function setBallsUI() {
+  const el = $('balls');
+  if (el.children.length !== BALLS) { el.textContent = ''; for (let i = 0; i < BALLS; i++) el.appendChild(document.createElement('i')); }
+  [...el.children].forEach((c, i) => c.classList.toggle('off', i >= balls));
+}
+function message(t, color = '#FF2D95') {
+  const m = $('msg'); m.textContent = t; m.style.textShadow = `0 0 18px ${color}`;
+  m.classList.remove('show'); void m.offsetWidth; m.classList.add('show');
+}
+function resetBall() {
+  ball.x = LANE_X; ball.y = 960; ball.vx = 0; ball.vy = 0;
+  power = 0; charging = false; stuckT = 0; idleT = 0;
+  state = 'ready';
+}
+function newGame() {
+  score = 0; balls = BALLS; combo = 0; comboT = 0; zoneT = 0;
+  rolls.forEach(r => r.lit = false);
+  flippers.forEach(f => { f.on = false; f.a = A_REST; f.w = 0; });
+  setBallsUI(); resetBall();
+  $('menu').classList.add('hidden'); $('pauseOv').classList.add('hidden'); $('overOv').classList.add('hidden');
+  document.body.classList.remove('menu');
+  message('PLAY!', '#00E5FF');
+}
+function loseBall() {
+  balls--; combo = 0; comboT = 0; zoneT = 0; setBallsUI(); SFX.lost();
+  if (balls <= 0) { gameOver(); return; }
+  message(balls === 1 ? 'LETZTE KUGEL!' : `KUGEL VERLOREN · noch ${balls}`);
+  state = 'drain'; waitT = 1.0;
+}
+function gameOver() {
+  state = 'over'; SFX.over();
+  const fin = Math.floor(score), nb = fin > best;
+  if (nb) { best = fin; try { localStorage.setItem('anmachaFlipperBest', best); } catch (e) {} }
+  $('oText').innerHTML = `Score: <b>${fin}</b> · Best: <b>${best}</b>${nb ? '<br>🏆 Neuer Bestwert!' : ''}`;
+  $('overOv').classList.remove('hidden');
+}
+function pauseGame() { if (state === 'play' || state === 'ready' || state === 'drain') { prevState = state; state = 'paused'; $('pauseOv').classList.remove('hidden'); } }
+function resumeGame() { if (state === 'paused') { state = prevState; $('pauseOv').classList.add('hidden'); } }
+function toMenu() {
+  state = 'menu'; ['pauseOv', 'overOv'].forEach(i => $(i).classList.add('hidden')); $('menu').classList.remove('hidden');
+  document.body.classList.add('menu'); flippers.forEach((f, i) => setFlip(i, false)); charging = false;
+  loadTable(tableIdx); drawPreview();
+}
+function restartGame() { if (state !== 'menu') newGame(); }
+
+function addScore(base, x, y, color, label) {
+  comboT = 3; combo++;
+  const prev = curMult(), pts = base * prev;
+  score += pts;
+  popup(`+${pts}`, x, y, color);
+  if (combo % 4 === 0) { SFX.combo(); message(`COMBO x${curMult()}`, '#00E5FF'); }
+}
+
+function handleEvents() {
+  for (const e of events) {
+    if (e.k === 'bumper') {
+      const b = e.o, def = BUMPER[b.type];
+      b.flash = 1;
+      if (b.type === 'hit') { zoneT = 12; }
+      addScore(def.pts, b.x, b.y, '#' + T.color.toString(16).padStart(6, '0'));
+      SFX[b.type === 'spk' ? 'spk' : b.type](); burst(b.x, b.y, b.type === 'bass' ? 0xFF2D95 : T.color, b.type === 'bass' ? 22 : 12);
+      shake = Math.max(shake, b.type === 'bass' ? 0.12 : 0.05);
+    } else if (e.k === 'sling') {
+      e.o.flash = 1; addScore(20, ball.x, ball.y, '#8B5CF6'); SFX.sling(); burst(ball.x, ball.y, 0x8B5CF6, 6);
+    } else if (e.k === 'roll') {
+      score += 100 * curMult(); popup(`+${100 * curMult()}`, e.o.x, e.o.y, '#00FFC8'); SFX.spk();
+      if (rolls.every(r => r.lit)) {
+        score += 1000; SFX.bonus(); message('ON AIR BONUS +1000', '#FF2D95'); burst(CX, 140, 0xFF2D95, 30);
+        popup('+1000', CX, 160, '#FF2D95'); setTimeout(() => rolls.forEach(r => r.lit = false), 700);
+      }
+    } else if (e.k === 'flip') { /* Flipper-Treffer: kein Extra-Ton */ }
+    else if (e.k === 'wall' && e.v > 500) SFX.wall();
+  }
+  events.length = 0;
+}
+
+function simulate(dt) {
+  if (state === 'ready' && charging) { power = Math.min(1, power + dt / 1.0); }
+  if (state === 'drain') { waitT -= dt; if (waitT <= 0) resetBall(); return; }
+  if (state !== 'play' && state !== 'ready') return;
+  if (comboT > 0 && (comboT -= dt) <= 0) combo = 0;
+  if (zoneT > 0) zoneT -= dt;
+  const n = Math.max(1, Math.ceil(dt / DT));
+  for (let i = 0; i < n; i++) stepPhysics(dt / n);
+  handleEvents();
+  // Sicherung gegen Endlosschleifen (z. B. Kugel pendelt ewig zwischen Schleudern): nach langer Zeit ohne Flipper-Kontakt langsam abbremsen
+  if (touchedFlip) { idleT = 0; touchedFlip = false; } else idleT += dt;
+  if (idleT > 20) { const k = Math.max(0, 1 - Math.min(1, (idleT - 20) / 20) * 0.35 * dt); ball.vx *= k; ball.vy *= k; }
+  const sp = Math.hypot(ball.vx, ball.vy), inLane = ball.x > LANE_L && ball.y > 930;
+  if (state === 'play') {
+    if (inLane && sp < 40) { state = 'ready'; power = 0; }
+    else if (ball.y > DRAIN_Y) loseBall();
+    // Notfall: Kugel bleibt ewig liegen -> kleiner Stoß
+    if (sp < 14 && !inLane) { stuckT += dt; if (stuckT > 3) { ball.vx += (Math.random() - 0.5) * 500; ball.vy -= 350; stuckT = 0; } } else stuckT = 0;
+  }
+  if (!isFinite(ball.x) || !isFinite(ball.y)) resetBall();   // Sicherheitsnetz
+}
+
+function launch() {
+  if (state !== 'ready' || !charging) { charging = false; return; }
+  charging = false;
+  const p = Math.max(power, 0.3);
+  ball.vy = -(1750 + 650 * p); ball.vx = 0;
+  state = 'play'; power = 0; SFX.launch(); plungerKick = 1;
+}
+function startCharge() { if (state === 'ready') { charging = true; power = 0; } }
+function setFlip(i, on) {
+  const f = flippers[i]; if (!f) return;
+  if (state === 'paused' || state === 'menu' || state === 'over') on = false;
+  if (on && !f.on) SFX.flip();
+  f.on = on;
+}
+
+/* ================= Eingabe ================= */
+const keys = {};
+addEventListener('keydown', e => {
+  audioInit();
+  const k = e.code;
+  if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(k)) e.preventDefault();
+  if (k === 'KeyM') { setMuted(!muted); return; }
+  if (k === 'Escape' || k === 'KeyP') { if (state === 'paused') resumeGame(); else pauseGame(); return; }
+  if (k === 'KeyR') { if (state !== 'menu') newGame(); return; }
+  if (state === 'menu') { if ((k === 'Enter' || k === 'Space') && !$('bPlay').disabled) newGame(); return; }
+  if (state === 'over') { if (k === 'Enter' || k === 'Space') newGame(); return; }
+  if (state === 'paused') { if (k === 'Enter' || k === 'Space') resumeGame(); return; }
+  if (e.repeat) return;
+  if (k === 'ArrowLeft' || k === 'KeyA') setFlip(0, true);
+  else if (k === 'ArrowRight' || k === 'KeyD') setFlip(1, true);
+  else if (k === 'Space') startCharge();
+});
+addEventListener('keyup', e => {
+  const k = e.code;
+  if (k === 'ArrowLeft' || k === 'KeyA') setFlip(0, false);
+  else if (k === 'ArrowRight' || k === 'KeyD') setFlip(1, false);
+  else if (k === 'Space') launch();
+});
+// Touch-/Maus-Tasten (pro Taste eigener Pointer -> Multitouch)
+function bindHold(id, down, up) {
+  const el = $(id);
+  el.addEventListener('pointerdown', e => { e.preventDefault(); audioInit(); try { el.setPointerCapture(e.pointerId); } catch (x) {} el.classList.add('down'); down(); });
+  const rel = e => { el.classList.remove('down'); up(); };
+  el.addEventListener('pointerup', rel); el.addEventListener('pointercancel', rel); el.addEventListener('lostpointercapture', rel);
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+bindHold('tL', () => setFlip(0, true), () => setFlip(0, false));
+bindHold('tR', () => setFlip(1, true), () => setFlip(1, false));
+bindHold('tLaunch', startCharge, launch);
+// Kein Scrollen/Zoomen/Kontextmenü beim Spielen (touch-action:none steht im CSS)
+document.addEventListener('gesturestart', e => e.preventDefault());
+addEventListener('contextmenu', e => e.preventDefault());
+
+$('bPause').addEventListener('click', () => { audioInit(); if (state === 'paused') resumeGame(); else pauseGame(); });
+$('bSound').addEventListener('click', () => { audioInit(); setMuted(!muted); });
+$('bRestart').addEventListener('click', () => { audioInit(); restartGame(); });
+$('pResume').addEventListener('click', resumeGame);
+$('pRestart').addEventListener('click', () => { audioInit(); newGame(); });
+$('pMenu').addEventListener('click', toMenu);
+$('oAgain').addEventListener('click', () => { audioInit(); newGame(); });
+$('oMenu').addEventListener('click', toMenu);
+$('bPlay').addEventListener('click', () => { audioInit(); newGame(); });
+$('tPrev').addEventListener('click', () => selectTable(tableIdx - 1));
+$('tNext').addEventListener('click', () => selectTable(tableIdx + 1));
+document.addEventListener('visibilitychange', () => { if (document.hidden) { pauseGame(); flippers.forEach((f, i) => setFlip(i, false)); charging = false; } });
+addEventListener('blur', () => { flippers.forEach((f, i) => setFlip(i, false)); });
+setMuted(muted);
+
+/* ================= 3D-Darstellung ================= */
+const renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x080B12);
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x080B12, 28, 70);
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+const amb = new THREE.AmbientLight(0x8fa0c8, 0.75), sun = new THREE.DirectionalLight(0xffffff, 0.85), ballLight = new THREE.PointLight(0x00E5FF, 1.4, 7);
+sun.position.set(-4, 14, 10);
+scene.add(amb, sun, ballLight);
+const wx = x => (x - W / 2) * S, wz = y => (y - H / 2) * S;
+const hex = c => '#' + c.toString(16).padStart(6, '0');
+const memo = {}; const cached = (k, f) => memo[k] || (memo[k] = f());
+const boxGeo = () => cached('box', () => new THREE.BoxGeometry(1, 1, 1));
+const edgeGeo = () => cached('edge', () => new THREE.EdgesGeometry(boxGeo()));
+
+let tableGroup = null, T = tables[0], shake = 0, plungerKick = 0;
+let ballMesh, shadowMesh, plunger, needle, eqBars = [], bumperMeshes = [], slingMeshes = [], rollMeshes = [], flipMeshes = [], ownTex = [];
+
+function canvasTex(w, h, draw) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), c);
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 4; ownTex.push(t); return t;
+}
+function disposeGroup(g) {
+  g.traverse(o => {
+    if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose();
+    if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose());
+  });
+  ownTex.forEach(t => t.dispose()); ownTex = [];
+}
+
+function playfieldTexture(t) {
+  const sc = 512 / W;
+  return canvasTex(512, 826, (g) => {
+    const grd = g.createLinearGradient(0, 0, 0, 826);
+    grd.addColorStop(0, '#0d1424'); grd.addColorStop(1, '#080B12');
+    g.fillStyle = grd; g.fillRect(0, 0, 512, 826);
+    const col = hex(t.color), col2 = hex(t.color2);
+    g.globalAlpha = 0.12; g.strokeStyle = col; g.lineWidth = 1;
+    for (let x = 0; x < 512; x += 32) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, 826); g.stroke(); }
+    for (let y = 0; y < 826; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(512, y); g.stroke(); }
+    g.globalAlpha = 1;
+    // Frequenz-Skala (Dial)
+    const dx = CX * sc, dy = 600 * sc, dr = 58 * sc;
+    g.strokeStyle = col; g.lineWidth = 3; g.shadowColor = col; g.shadowBlur = 12;
+    g.beginPath(); g.arc(dx, dy, dr, Math.PI * 0.8, Math.PI * 2.2); g.stroke();
+    g.lineWidth = 2;
+    for (let i = 0; i <= 20; i++) {
+      const a = Math.PI * 0.8 + (i / 20) * Math.PI * 1.4, l = i % 5 === 0 ? 14 : 7;
+      g.beginPath(); g.moveTo(dx + Math.cos(a) * (dr - 4), dy + Math.sin(a) * (dr - 4)); g.lineTo(dx + Math.cos(a) * (dr - 4 - l), dy + Math.sin(a) * (dr - 4 - l)); g.stroke();
+    }
+    g.shadowBlur = 0;
+    g.fillStyle = col2; g.font = 'bold 15px sans-serif'; g.textAlign = 'center'; g.fillText('FM', dx, dy + dr + 20); g.fillText('88 · 98 · 108', dx, dy + 40);
+    // Wellenlinien
+    g.strokeStyle = col2; g.globalAlpha = 0.5; g.lineWidth = 3; g.shadowColor = col2; g.shadowBlur = 8;
+    for (let k = 0; k < 2; k++) {
+      g.beginPath();
+      for (let x = 0; x <= 512; x += 4) { const y = (k ? 700 : 735) * sc + Math.sin(x * 0.045 + k) * 14 * (0.6 + 0.4 * Math.sin(x * 0.012)); x ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+    }
+    g.globalAlpha = 1; g.shadowBlur = 0;
+    // Startbahn-Pfeile
+    g.fillStyle = col; g.globalAlpha = 0.6;
+    for (let y = 700; y > 300; y -= 80) { const x = LANE_X * sc, yy = y * sc; g.beginPath(); g.moveTo(x, yy - 14); g.lineTo(x + 12, yy + 8); g.lineTo(x - 12, yy + 8); g.fill(); }
+    g.globalAlpha = 1;
+    // ON AIR Plakette
+    g.fillStyle = '#FF2D95'; g.shadowColor = '#FF2D95'; g.shadowBlur = 14;
+    g.font = 'bold 20px sans-serif'; g.fillText('ON AIR', CX * sc, 190 * sc);
+    g.shadowBlur = 0;
+    // Abfluss
+    g.fillStyle = '#04060a'; g.fillRect(0, 960 * sc, 512, 70);
+  });
+}
+function backglassTexture(t) {
+  return canvasTex(1024, 496, (g) => {
+    const col = hex(t.color), col2 = hex(t.color2);
+    const grd = g.createLinearGradient(0, 0, 1024, 496);
+    grd.addColorStop(0, '#0d1424'); grd.addColorStop(1, '#161030');
+    g.fillStyle = grd; g.fillRect(0, 0, 1024, 496);
+    g.strokeStyle = col; g.lineWidth = 8; g.shadowColor = col; g.shadowBlur = 18; g.strokeRect(10, 10, 1004, 476); g.shadowBlur = 0;
+    // Logo-Platte (hier erscheint das eigene Logo)
+    g.fillStyle = '#eef5f1'; g.fillRect(40, 40, 300, 300);
+    if (t.logo) g.drawImage(t.logo, 40, 40, 300, 300);
+    g.strokeStyle = col2; g.lineWidth = 6; g.strokeRect(40, 40, 300, 300);
+    g.textAlign = 'left';
+    const tg = g.createLinearGradient(380, 0, 1000, 0); tg.addColorStop(0, col); tg.addColorStop(1, '#FF2D95');
+    g.fillStyle = tg; g.font = 'italic 900 128px "Trebuchet MS",sans-serif'; g.shadowColor = col; g.shadowBlur = 20; g.fillText('AnMaCha', 372, 160);
+    g.shadowBlur = 0; g.fillStyle = '#fff'; g.font = 'italic 900 70px "Trebuchet MS",sans-serif'; g.fillText('FLIPPER', 380, 240);
+    g.fillStyle = col2; g.font = 'bold 34px sans-serif'; g.fillText(t.name, 380, 300);
+    g.fillStyle = '#9fb4c8'; g.font = '26px sans-serif'; g.fillText(t.hasLogo ? 'Radio · Pinball · 5 Kugeln' : 'Eigenes Logo: logos/' + String(t.idx + 1).padStart(2, '0') + '.png', 380, 340);
+    // Wellen
+    g.strokeStyle = col; g.lineWidth = 3; g.globalAlpha = .6;
+    g.beginPath(); for (let x = 30; x <= 994; x += 4) { const y = 410 + Math.sin(x * 0.04) * 22 * Math.sin(x * 0.011); x === 30 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke();
+  });
+}
+function bumperLabelTexture(type, color) {
+  return canvasTex(128, 128, (g) => {
+    const col = hex(color);
+    g.fillStyle = '#0b1018'; g.fillRect(0, 0, 128, 128);
+    g.strokeStyle = type === 'bass' ? '#FF2D95' : col; g.lineWidth = 8; g.beginPath(); g.arc(64, 64, 56, 0, 7); g.stroke();
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.shadowColor = col; g.shadowBlur = 10;
+    if (type === 'spk') {
+      g.strokeStyle = col; g.lineWidth = 5;
+      for (let r = 14; r <= 40; r += 13) { g.beginPath(); g.arc(64, 64, r, 0, 7); g.stroke(); }
+      g.fillStyle = col; g.beginPath(); g.arc(64, 64, 7, 0, 7); g.fill();
+    } else {
+      const lines = BUMPER[type].label.split('\n');
+      g.font = `bold ${type === 'hit' ? 26 : 30}px sans-serif`;
+      lines.forEach((l, i) => g.fillText(l, 64, 64 + (i - (lines.length - 1) / 2) * 30 + 10));
+    }
+  });
+}
+
+function wallMesh(ax, ay, bx, by, thick, h, color, glow) {
+  const len = Math.hypot(bx - ax, by - ay) * S;
+  const m = new THREE.Mesh(boxGeo(), new THREE.MeshLambertMaterial({ color: 0x141b2b, emissive: color, emissiveIntensity: glow }));
+  m.scale.set(len, h, thick * S * 2);
+  m.position.set(wx((ax + bx) / 2), h / 2, wz((ay + by) / 2));
+  m.rotation.y = -Math.atan2(by - ay, bx - ax);
+  const e = new THREE.LineSegments(edgeGeo(), new THREE.LineBasicMaterial({ color }));
+  m.add(e);
+  return m;
+}
+
+function loadTable(i) {
+  if (!tables.length) return;
+  tableIdx = Math.max(0, Math.min(tables.length - 1, i));
+  T = tables[tableIdx];
+  try { localStorage.setItem('anmachaFlipperTable', tableIdx); } catch (e) {}
+  buildPhysics(T);
+  if (tableGroup) { scene.remove(tableGroup); disposeGroup(tableGroup); }
+  tableGroup = new THREE.Group(); scene.add(tableGroup);
+  bumperMeshes = []; slingMeshes = []; rollMeshes = []; flipMeshes = []; eqBars = [];
+  const col = T.color, col2 = T.color2;
+  const dark = new THREE.Color(col).multiplyScalar(0.12).getHex();
+
+  // Spielfläche
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W * S, H * S).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: playfieldTexture(T) }));
+  floor.position.set(0, 0, 0); tableGroup.add(floor);
+  const base = new THREE.Mesh(boxGeo(), new THREE.MeshLambertMaterial({ color: dark }));
+  base.scale.set(W * S + 0.6, 0.4, H * S + 0.6); base.position.y = -0.22; tableGroup.add(base);
+
+  // Wände
+  walls.filter(w => w.vis).forEach(w => tableGroup.add(wallMesh(w.ax, w.ay, w.bx, w.by, w.rad, 0.55, col, 0.55)));
+
+  // Schleudern (Prisma + leuchtende Kickfläche)
+  slings.forEach(s => {
+    const shape = new THREE.Shape([new THREE.Vector2(wx(s.ax), wz(s.ay)), new THREE.Vector2(wx(s.bx), wz(s.by)), new THREE.Vector2(wx(s.cx), wz(s.cy))]);
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.4, bevelEnabled: false }).rotateX(Math.PI / 2);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: 0x1a1030, emissive: 0x8B5CF6, emissiveIntensity: 0.25 }));
+    mesh.position.y = 0.4;
+    const face = wallMesh(s.ax, s.ay, s.bx, s.by, 5, 0.5, 0x8B5CF6, 1); face.position.y = 0.25;
+    tableGroup.add(mesh, face); slingMeshes.push({ face, mesh });
+  });
+
+  // Bumper
+  bumpers.forEach(b => {
+    const g = new THREE.Group(), rr = b.r * S, c = b.type === 'bass' ? 0xFF2D95 : b.type === 'onair' ? 0xFF4D4D : b.type === 'hit' ? col2 : col;
+    const body = new THREE.Mesh(cached(`cyl${rr}`, () => { const x = new THREE.CylinderGeometry(rr, rr * 1.08, 0.55, 28); x.userData.shared = true; return x; }),
+      new THREE.MeshLambertMaterial({ color: 0x1a2033, emissive: c, emissiveIntensity: 0.35 }));
+    body.position.y = 0.275;
+    const cap = new THREE.Mesh(cached(`cap${rr}`, () => { const x = new THREE.CircleGeometry(rr * 0.86, 28).rotateX(-Math.PI / 2); x.userData.shared = true; return x; }),
+      new THREE.MeshBasicMaterial({ map: bumperLabelTexture(b.type, c) }));
+    cap.position.y = 0.56;
+    const ring = new THREE.Mesh(cached(`tor${rr}`, () => { const x = new THREE.TorusGeometry(rr, 0.045, 8, 32).rotateX(Math.PI / 2); x.userData.shared = true; return x; }),
+      new THREE.MeshBasicMaterial({ color: c }));
+    ring.position.y = 0.58;
+    g.add(body, cap, ring); g.position.set(wx(b.x), 0, wz(b.y)); tableGroup.add(g);
+    bumperMeshes.push({ g, body, ring, c });
+  });
+
+  const gate = wallMesh(GATE.x, GATE.y0, GATE.x, GATE.y1, 1.5, 0.35, 0xFF2D95, 0.9); gate.material.transparent = true; gate.material.opacity = 0.55;
+  tableGroup.add(gate);
+  // Rollover-Lichter
+  rolls.forEach(r => {
+    const m = new THREE.Mesh(cached('roll', () => { const x = new THREE.CircleGeometry(0.3, 20).rotateX(-Math.PI / 2); x.userData.shared = true; return x; }),
+      new THREE.MeshBasicMaterial({ color: col2, transparent: true, opacity: 0.25 }));
+    m.position.set(wx(r.x), 0.03, wz(r.y)); tableGroup.add(m); rollMeshes.push(m);
+  });
+
+  // Frequenz-Dial Nadel
+  needle = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: 0xFF2D95 }));
+  needle.scale.set(0.9, 0.05, 0.05);
+  const nb = new THREE.Group(); nb.add(needle); needle.position.x = 0.45; nb.position.set(wx(CX), 0.06, wz(600)); tableGroup.add(nb); needle = nb;
+
+  // Flipper (3D, abgeschrägt)
+  flippers.forEach(f => {
+    const L = FL_LEN * S, r1 = f.rp * S, r2 = f.rt * S;
+    const sh = new THREE.Shape();
+    sh.moveTo(0, r1); sh.lineTo(L, r2); sh.absarc(L, 0, r2, Math.PI / 2, -Math.PI / 2, true); sh.lineTo(0, -r1); sh.absarc(0, 0, r1, -Math.PI / 2, Math.PI / 2, true);
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: 0.4, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 2 }).rotateX(-Math.PI / 2);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color: 0xe8f4ff, emissive: f.side > 0 ? col : 0xFF2D95, emissiveIntensity: 0.35, shininess: 80, specular: 0xffffff }));
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), new THREE.LineBasicMaterial({ color: f.side > 0 ? col : 0xFF2D95 })));
+    const g = new THREE.Group(); g.add(mesh); g.position.set(wx(f.px), 0.05, wz(f.py)); tableGroup.add(g); flipMeshes.push(g);
+  });
+
+  // Plunger
+  plunger = new THREE.Mesh(boxGeo(), new THREE.MeshPhongMaterial({ color: 0xb0b8c8, emissive: col2, emissiveIntensity: 0.4 }));
+  plunger.scale.set(0.5, 0.3, 0.5); plunger.position.set(wx(LANE_X), 0.15, wz(985)); tableGroup.add(plunger);
+
+  // Backglass mit Logo + Equalizer-Balken
+  const glass = new THREE.Mesh(new THREE.PlaneGeometry(W * S, 6.0), new THREE.MeshBasicMaterial({ map: backglassTexture(T) }));
+  glass.position.set(0, 3.2, wz(0) - 0.15); tableGroup.add(glass);
+  for (let i = 0; i < 24; i++) {
+    const b = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: i % 3 ? col : col2 }));
+    b.scale.set(0.22, 1, 0.1); b.position.set(-5.6 + i * 0.487, 0.1, wz(0) - 0.05); tableGroup.add(b); eqBars.push(b);
+  }
+  // Kugel
+  ballMesh = new THREE.Mesh(new THREE.SphereGeometry(BALL_R * S, 20, 16), new THREE.MeshPhongMaterial({ color: 0xdfe9ff, emissive: 0x223355, specular: 0xffffff, shininess: 150 }));
+  shadowMesh = new THREE.Mesh(new THREE.CircleGeometry(BALL_R * S * 1.2, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45 }));
+  tableGroup.add(ballMesh, shadowMesh);
+  ballLight.color.setHex(col);
+  $('tname').textContent = T.name;
+  fitCamera();
+}
+
+function fitCamera() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h;
+  camera.fov = camera.aspect < 0.8 ? 46 : 38; camera.updateProjectionMatrix();
+  const elev = 62 * Math.PI / 180, dir = new THREE.Vector3(0, Math.sin(elev), Math.cos(elev));
+  const target = new THREE.Vector3(0, 0.5, -0.4);
+  const pts = [], hx = W * S / 2 + 0.3, hz = H * S / 2 + 0.3;
+  [[-hx, 0, -hz], [hx, 0, -hz], [-hx, 0, hz], [hx, 0, hz], [-hx, 6.3, -hz], [hx, 6.3, -hz]].forEach(p => pts.push(new THREE.Vector3(...p)));
+  const landscapeTouch = TOUCH && w > h && h < 600;
+  const topPad = 0.9, botPad = TOUCH && !landscapeTouch ? 0.82 : 0.95;      // Platz für Anzeige / Touch-Tasten (quer: Tasten stehen seitlich)
+  let d = 14;
+  for (; d < 90; d += 0.4) {
+    camera.position.copy(target).addScaledVector(dir, d); camera.lookAt(target); camera.updateMatrixWorld(true);
+    let ok = true;
+    for (const p of pts) { const q = p.clone().project(camera); if (Math.abs(q.x) > 0.94 || q.y > topPad || q.y < -botPad) { ok = false; break; } }
+    if (ok) break;
+  }
+}
+addEventListener('resize', () => { if (tables.length) fitCamera(); });
+
+/* ----- Effekte ----- */
+const PN = 160, pPos = new Float32Array(PN * 3), pVel = new Float32Array(PN * 3), pLife = new Float32Array(PN), pCol = new Float32Array(PN * 3);
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+for (let i = 0; i < PN; i++) pPos[i * 3 + 1] = -50;
+const pPoints = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.16, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending }));
+pPoints.frustumCulled = false; scene.add(pPoints);
+let pNext = 0;
+function burst(lx, ly, color, n) {
+  const c = new THREE.Color(color);
+  for (let k = 0; k < n; k++) {
+    const i = pNext = (pNext + 1) % PN, a = Math.random() * 6.283, s = 2 + Math.random() * 4;
+    pPos[i * 3] = wx(lx); pPos[i * 3 + 1] = 0.6; pPos[i * 3 + 2] = wz(ly);
+    pVel[i * 3] = Math.cos(a) * s; pVel[i * 3 + 1] = 1.5 + Math.random() * 3; pVel[i * 3 + 2] = Math.sin(a) * s;
+    pLife[i] = 0.6 + Math.random() * 0.4; pCol[i * 3] = c.r; pCol[i * 3 + 1] = c.g; pCol[i * 3 + 2] = c.b;
+  }
+}
+function updateParticles(dt) {
+  for (let i = 0; i < PN; i++) {
+    if (pLife[i] <= 0) { pPos[i * 3 + 1] = -50; continue; }
+    pLife[i] -= dt; pVel[i * 3 + 1] -= 9 * dt;
+    pPos[i * 3] += pVel[i * 3] * dt; pPos[i * 3 + 1] += pVel[i * 3 + 1] * dt; pPos[i * 3 + 2] += pVel[i * 3 + 2] * dt;
+    if (pPos[i * 3 + 1] < 0.05) { pPos[i * 3 + 1] = 0.05; pVel[i * 3 + 1] *= -0.3; }
+  }
+  pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
+}
+const _v = new THREE.Vector3();
+function popup(text, lx, ly, color) {
+  const pops = $('pops'); if (pops.children.length > 14) return;
+  _v.set(wx(lx), 0.8, wz(ly)).project(camera);
+  const el = document.createElement('div'); el.className = 'pop'; el.textContent = text; el.style.setProperty('--c', color);
+  el.style.left = ((_v.x + 1) / 2 * innerWidth) + 'px'; el.style.top = ((1 - _v.y) / 2 * innerHeight) + 'px';
+  el.addEventListener('animationend', () => el.remove()); pops.appendChild(el);
+}
+
+function drawPreview() {
+  const c = $('tprev'), g = c.getContext('2d');
+  g.fillStyle = '#0b1018'; g.fillRect(0, 0, 256, 256);
+  if (T && T.logo) g.drawImage(T.logo, 0, 0, 256, 256);
+  $('tTitle').textContent = T ? T.name : ''; $('tSub').textContent = T ? (T.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(T.idx + 1).padStart(2, '0')}.png`) : '';
+  $('tcard').style.setProperty('--c', T ? hex(T.color) : '#00E5FF');
+}
+function selectTable(i) {
+  if (!tables.length) return;
+  tableIdx = (i + tables.length) % tables.length;
+  loadTable(tableIdx); drawPreview();
+}
+
+/* ================= Hauptschleife ================= */
+let last = performance.now(), time = 0, ready = false, tablesBuilt = false;
+function animate(dt) {
+  time += dt;
+  // Kugel
+  ballMesh.position.set(wx(ball.x), BALL_R * S, wz(ball.y));
+  shadowMesh.position.set(wx(ball.x) + 0.05, 0.02, wz(ball.y) + 0.05);
+  ballLight.position.set(wx(ball.x), 1.6, wz(ball.y));
+  // Flipper
+  flippers.forEach((f, i) => { flipMeshes[i].rotation.y = f.side > 0 ? -f.a : -(Math.PI - f.a); });
+  // Bumper / Schleudern / Rollover
+  bumperMeshes.forEach((m, i) => {
+    const b = bumpers[i]; b.flash = Math.max(0, b.flash - dt * 4);
+    const s = 1 + b.flash * 0.18; m.g.scale.set(s, 1 + b.flash * 0.25, s);
+    m.body.material.emissiveIntensity = 0.35 + b.flash * 1.4;
+  });
+  slingMeshes.forEach((m, i) => { const s = slings[i]; s.flash = Math.max(0, s.flash - dt * 5); m.face.material.emissiveIntensity = 1 + s.flash * 2; });
+  rollMeshes.forEach((m, i) => { m.material.opacity = rolls[i].lit ? 1 : 0.25 + 0.15 * Math.sin(time * 4 + i); });
+  // Dial-Nadel: folgt Multiplikator + Geschwindigkeit
+  const target = -2.5 + (curMult() - 1) * 0.45 + Math.min(1, Math.hypot(ball.vx, ball.vy) / 2000) * 0.8;
+  needle.rotation.y += (-target - needle.rotation.y) * Math.min(1, dt * 6) + Math.sin(time * 9) * 0.004;
+  // Equalizer
+  eqBars.forEach((b, i) => { const h = 0.25 + (0.5 + 0.5 * Math.sin(time * 5 + i * 0.7)) * 0.5 + Math.min(1.2, combo * 0.1) * (0.5 + 0.5 * Math.sin(time * 9 + i)); b.scale.y = h; b.position.y = h / 2; });
+  // Plunger
+  plungerKick = Math.max(0, plungerKick - dt * 6);
+  plunger.position.z = wz(985) + (charging ? power * 0.7 : 0) - 0.0;
+  plunger.position.y = 0.15;
+  $('meter').classList.toggle('on', charging); $('meterB').style.width = (power * 100) + '%';
+  // Kamera-Wackeln
+  shake = Math.max(0, shake - dt * 0.6);
+  scene.position.set((Math.random() - 0.5) * shake, 0, (Math.random() - 0.5) * shake);
+  updateParticles(dt);
+  // HUD
+  const sc = String(Math.floor(score)); if ($('score').textContent !== sc) $('score').textContent = sc;
+  const bs = 'BEST ' + Math.max(best, Math.floor(score)); if ($('best').textContent !== bs) $('best').textContent = bs;
+  const m = curMult(), ms = m > 1 ? `x${m}` : ''; if ($('mult').textContent !== ms) $('mult').textContent = ms;
+}
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.max(0, Math.min(0.033, (now - last) / 1000)); last = now;
+  // Logos einlesen / Tische anlegen
+  if (!ready) {
+    const done = probesLeft === 0;
+    if (done || performance.now() - t0 > 3000) {
+      if (syncTables() || !tablesBuilt) { tablesBuilt = true; loadTable(tableIdx); drawPreview(); setBallsUI(); }
+      if (done) {
+        ready = true; $('bPlay').disabled = false; $('bPlay').textContent = 'PLAY';
+        const n = rawLogos.filter(Boolean).length;
+        $('status').textContent = n ? `${n} Logo${n > 1 ? 's' : ''} geladen – ${tables.length} Tische` : 'Platzhalter-Tische – eigene Logos in „logos/“ ablegen (01.png … 13.png).';
+      }
+    }
+    if (!tablesBuilt) return;
+  }
+  if (state !== 'paused') simulate(dt);
+  animate(dt);
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

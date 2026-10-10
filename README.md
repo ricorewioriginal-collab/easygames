@@ -6,6 +6,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Spiel | Verzeichnis |
 |---|---|
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
+| AnMaCha Flipper – 3D-Flipper mit eigenen Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Einbetten
@@ -71,3 +72,10 @@ function doPost(e) {
 ```
 
 Hinweis: Ohne Server-Prüfung können Spieler ihren Score manipulieren – für ein Hobby-Ranking meist ausreichend.
+
+## AnMaCha Flipper: eigene Tische und Logos
+
+Jedes Logo ergibt einen eigenen Tisch (anderes Layout und andere Farben, das Logo erscheint oben auf der Backglass).
+Bilder als `anmacha-flipper/logos/01.jpg` bis `13.jpg` ablegen (auch `.jpeg` oder `.png`, ca. 400 × 400 px, unter 200 KB).
+Ohne Logos gibt es 3 Platzhalter-Tische. Steuerung: `←`/`A` und `→`/`D` Flipper, `Leertaste` halten und loslassen startet die Kugel,
+`P` Pause, `R` Neustart, `M` Ton. Am Handy: LINKS / RECHTS / START halten. Bei 5 verlorenen Kugeln ist das Spiel vorbei; der Bestwert wird im Browser gespeichert.
