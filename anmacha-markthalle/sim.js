@@ -2,7 +2,7 @@
 /* Spielkern von AnMaCha Markthalle 24 (ohne Grafik, testbar): Laden, Kunden, Personal, Wirtschaft, Tagesablauf. */
 const Sim = (() => {
   const D = typeof Data !== 'undefined' ? Data : require('./data.js');
-  const DAYLEN = 600, MIN_PER_SEC = 1.2, DOW = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'], RAMP_MAX = 18;
+  const DAYLEN = 600, MIN_PER_SEC = 1.2, DOW = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'], RAMP_MAX = 18, rampMax = S => RAMP_MAX + 10 * S.objs.filter(o => o.k === 'lager').length;
   let R = Math.random;
   const ri = (a, b) => a + Math.floor(R() * (b - a + 1)), pick = a => a[Math.floor(R() * a.length)], clamp = (v, a, b) => v < a ? a : v > b ? b : v;
   const wpick = (items, wf) => { let t = 0; const w = items.map(i => { const x = Math.max(0, wf(i)); t += x; return x; }); if (t <= 0) return null; let x = R() * t; for (let i = 0; i < items.length; i++) { x -= w[i]; if (x <= 0) return items[i]; } return items[items.length - 1]; };
@@ -13,7 +13,7 @@ const Sim = (() => {
   function emptyDay() { return { rev: 0, cogs: 0, items: 0, served: 0, lost: 0, happy: 0, recipes: 0, stolen: 0, spawned: 0, units: {}, revBy: {}, miss: 0 }; }
   function create() {
     const S = { v: 1, day: 1, t: 0, simT: 0, phase: 'prep', money: 200000, xp: 0, level: 1, rep: 55, W: 18, H: 12, exp: 0, nid: 1, objs: [], ramp: [], backlog: [], orders: [], price: {}, mkt: {}, cf: {}, riv: {}, lic: {}, up: {}, staff: [], customers: [], messes: [], regs: [], inv: [], loan: 0,
-      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [] }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0 };
+      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [] }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
     Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
     Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
     add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7);
@@ -59,11 +59,14 @@ const Sim = (() => {
     if (R() < .15) S.ev.push({ k: 'inspektion', t0: 580, t1: 600 }); if (R() < .15) { S.rivalSale = pick(Object.keys(D.CATS).filter(c => S.lic[c])); S.ev.push({ k: 'rivalsale', t0: 0, t1: 600 }); }
     if (S.strike) { S.strike = false; note(S, 'Lieferstreik! Heute kam nichts an – die Bestellung kommt morgen.', 'bad'); } else deliver(S, 'day');
     if (R() < .1 && S.level > 2) { S.strike = true; S.ev.push({ k: 'streik', t0: 0, t1: 0 }); }
-    flush(S); newQuests(S); if (S.up.auto) autoOrder(S); S.player.carry.forEach(b => b.age = (b.age || 0)); S.heat = S.heat.map(h => h * .5);
+    bake(S); flush(S); newQuests(S); if (S.up.auto) autoOrder(S); S.buzz *= .85; S.player.carry.forEach(b => b.age = (b.age || 0)); S.heat = S.heat.map(h => h * .5);
     note(S, `Tag ${S.day} (${DOW[(S.day - 1) % 7]}): ${D.WEATHER[S.weather].name}.`, 'info');
   }
+  function bake(S) {
+    S.objs.forEach(o => { if (D.OBJ[o.k].bake && o.p) { const n = cap(S, o) - o.qty, cost = Math.round(wholesale(S, o.p) * .5) * n; if (n > 0 && S.money >= cost) { S.money -= cost; o.age = (o.age * o.qty) / Math.max(1, o.qty + n); o.qty += n; if (!S.today.baked) S.today.baked = 0; S.today.baked += cost; } } });
+  }
   function deliver(S, when) { S.orders = S.orders.filter(o => { if (o.when !== when && !(when === 'express' && o.when === 'express' && S.simT >= o.eta)) return true; if (when === 'express' && S.simT < o.eta) return true; for (let i = 0; i < o.boxes; i++) S.backlog.push({ p: o.p, n: P[o.p].box, age: 0 }); return false; }); }
-  function flush(S) { while (S.backlog.length && S.ramp.length < RAMP_MAX) S.ramp.push(S.backlog.shift()); }
+  function flush(S) { while (S.backlog.length && S.ramp.length < rampMax(S)) S.ramp.push(S.backlog.shift()); }
   function autoOrder(S) { const have = offered(S); S.objs.forEach(o => { if (!isShelf(o) || !o.p) return; const inRamp = S.ramp.concat(S.backlog).some(b => b.p === o.p), ord = S.orders.some(x => x.p === o.p); if (o.qty < cap(S, o) * .3 && !inRamp && !ord) order(S, o.p, 1, false, true); }); }
   function order(S, p, boxes, express, quiet) {
     if (!S.lic[P[p].cat] || boxes < 1) return false; const cost = Math.round(wholesale(S, p) * P[p].box * boxes * (express ? 1.25 : 1)); if (S.money < cost) { if (!quiet) note(S, 'Nicht genug Geld für die Bestellung.', 'bad'); return false; }
@@ -82,10 +85,13 @@ const Sim = (() => {
     S.xp += Math.max(0, Math.round(profit / 120)); let lv = 0; while (S.xp >= lvlNeed(S.level) && S.level < 20) { S.level++; lv++; }
     S.hist.push({ d: S.day, rev: T.rev, profit, cust: T.served }); if (S.hist.length > 14) S.hist.shift(); S.totalRev += T.rev; S.bestRev = Math.max(S.bestRev, T.rev);
     const top = Object.keys(T.units).sort((a, b) => T.units[b] - T.units[a]).slice(0, 3).map(p => P[p].e + ' ' + P[p].name + ' ×' + T.units[p]);
-    S.summary = { day: S.day, rev: T.rev, cogs: T.cogs, bills, waste, wasteVal, stolen: T.stolen, profit, served: T.served, lost: T.lost, items: T.items, top, done, lv, level: S.level, stars: stars(S) }; S.phase = 'summary';
+    const ach = checkAch(S); S.summary = { ach, day: S.day, rev: T.rev, cogs: T.cogs, bills, waste, wasteVal, stolen: T.stolen, profit, served: T.served, lost: T.lost, items: T.items, top, done, lv, level: S.level, stars: stars(S) }; S.phase = 'summary';
     S.customers = []; S.messes = S.messes.slice(0, 2);
   }
   const stars = S => Math.round(S.rep / 20 * 10) / 10;
+  const ACHK = { tag1: S => S.day >= 1 && S.hist.length >= 1, stufe5: S => S.level >= 5, stufe10: S => S.level >= 10, umsatz500: S => S.bestRev >= 50000, umsatz2000: S => S.bestRev >= 200000, team3: S => S.staff.length >= 3, ruf4: S => S.rep >= 80, rezept10: S => S.tot.recipes >= 10, dieb5: S => S.tot.caught >= 5, anbau2: S => S.exp >= 2, radio: S => !!S.up.radio, stamm25: S => S.regs.length >= 25, buzz: S => S.buzz >= .2, kunden1000: S => S.tot.served >= 1000, reich: S => S.money >= 1000000 };
+  function checkAch(S) { const out = []; D.ACH.forEach(a => { if (!S.ach[a[0]] && ACHK[a[0]](S)) { S.ach[a[0]] = true; S.money += a[4]; out.push(a[2] + ' ' + a[1] + ' (+' + D.fmt(a[4]) + ')'); } }); return out; }
+  const achDone = S => D.ACH.filter(a => S.ach[a[0]]).length;
 
   // ---------- Spawnen & Kunden ----------
   const curve = t => .55 + .45 * (Math.exp(-(((t - 230) / 110) ** 2)) + Math.exp(-(((t - 440) / 90) ** 2)));
@@ -96,7 +102,7 @@ const Sim = (() => {
     const off = offered(S), n = Object.keys(off).length; if (!n) return 0; let sum = 0, cnt = 0; Object.keys(off).forEach(p => { sum += S.price[p] / ref(S, p); cnt++; }); const idx = sum / cnt;
     const ap = clamp(1 + (1.05 - idx) * 1.5, .5, 1.35), as = clamp(.45 + .07 * n, .45, 1.5), dow = [1, 1, 1, 1.05, 1.15, 1.4, .85][(S.day - 1) % 7], deko = 1 + Math.min(10, byKind(S, 'deko').length) * .02, size = .85 + S.W * S.H / 216 * .15;
     const ev = S.ev.find(e => e.k === 'ausflug' && S.t >= e.t0 && S.t <= e.t1) ? 1.5 : 1; const clean = 1 - Math.min(.3, S.messes.length * .04);
-    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
+    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * (1 + clamp(S.buzz, -.25, .5)) * (1 + Math.min(.12, byKind(S, 'ofen').filter(o => o.qty > 0).length * .06)) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
   }
   function makeList(S, type) {
     const T = D.TYPES[type], unl = Object.values(P).filter(p => S.lic[p.cat]), n = ri(T.n[0], T.n[1]), list = [], off = offered(S); let recipe = null;
@@ -137,6 +143,15 @@ const Sim = (() => {
   }
   const operated = (S, r) => opRate(S, r) > 0;
   function leaveFor(S, c, why) { c.st = 'leave'; const d = doorTile(S); setPath(c, path(S, c.x, c.y, d[0], d[1]) || []); if (why) bub(c, why); }
+  function review(S, c, sat, abandoned) {
+    if (c.type !== 'infl' && c.type !== 'krit' && R() > .3) return; const stars = clamp(Math.round(sat * 4 + 1), 1, 5), miss = c.list.find(l => l.got === 0); let t;
+    if (stars >= 4) t = pick(['Alles da, nette Preise, gerne wieder!', 'Frische Ware und schnelle Kasse.', 'Mein neuer Lieblingsladen!', 'Sauber, übersichtlich und fair.']);
+    else if (miss && c.miss) t = pick([`Schon wieder kein ${P[miss.p].name}!`, `Regal leer: ${P[miss.p].name} fehlte.`, `Ohne ${P[miss.p].name} kein Einkauf.`]);
+    else if (c.hits) t = pick(['Viel zu teuer, Billigo ist günstiger.', 'Die Preise sind frech.', 'Für das Geld erwarte ich mehr.']);
+    else if (c.wait > D.TYPES[c.type].pat * .6) t = pick(['Ewig an der Kasse gestanden.', 'Nur eine Kasse offen? Wirklich?', 'Die Schlange wollte nicht enden.']);
+    else if (S.messes.length >= 2) t = pick(['Überall Pfützen, eklig.', 'Bitte mal wischen!']); else t = 'Ganz okay, nichts Besonderes.';
+    S.reviews.push({ n: c.name, s: stars, t: (c.type === 'infl' ? '🤳 ' : '') + t, d: S.day }); if (S.reviews.length > 30) S.reviews.shift(); S.buzz = clamp(S.buzz + (stars - 3) * .004 * (c.type === 'infl' ? 12 : 1), -.25, .5);
+  }
   function giveBack(S, c) { c.basket.forEach(b => { const sh = S.objs.find(o => isShelf(o) && o.p === b.p && o.qty + b.q <= cap(S, o)); if (sh) sh.qty += b.q; }); c.basket = []; }
   function finish(S, c, abandoned) {
     if (abandoned) giveBack(S, c);
@@ -146,10 +161,10 @@ const Sim = (() => {
     let sat = clamp(.45 * found + .2 * qs + .15 * ps + .1 * clean + .1 * clamp(c.mood / 100, 0, 1), 0, 1); if (S.staff.some(s => s.trait === 'freundlich')) sat = Math.min(1, sat + .04); if (abandoned || !units) sat = Math.min(sat, .3);
     const w = c.type === 'krit' ? 4 : 1; S.rep = clamp(S.rep + (sat * 100 - S.rep) * .045 * w, 5, 100); if (sat > .8) { T.happy++; if (c.reg >= 0) S.regs[c.reg].loy = Math.min(100, S.regs[c.reg].loy + 6); else if (S.regs.length < 120 && R() < .35) S.regs.push({ n: c.name, t: c.type, loy: 10 }); } if (sat < .45 && c.reg >= 0) S.regs[c.reg].loy = Math.max(0, S.regs[c.reg].loy - 8);
     if (abandoned || !units) T.lost++; if (c.recipe && !abandoned && c.recipe.need.every(i => c.list.some(l => l.p === i && l.got > 0))) { const bonus = Math.round(total * .12); S.money += bonus; T.rev += bonus; T.recipes++; S.xp += 6; bub(c, '🎉'); }
-    c.sat = sat;
+    c.sat = sat; S.tot.served += abandoned || !units ? 0 : 1; if (c.recipe && !abandoned && c.recipe.need.every(i => c.list.some(l => l.p === i && l.got > 0))) S.tot.recipes++; review(S, c, sat, abandoned);
   }
   function doneShopping(S, c) {
-    if (c.stole) { const near = S.staff.some(s => s.k === 'wache' && Math.hypot(s.x - c.x, s.y - c.y) < 9), catchP = near ? .75 : S.up.kamera ? .4 : .08; if (R() < catchP) { bub(c, '🚔'); S.xp += 4; giveBack(S, c); leaveFor(S, c); return; } S.today.stolen += wholesale(S, c.stole); bub(c, '🤫'); const bi = c.basket.findIndex(b => b.p === c.stole); if (bi >= 0) { c.basket[bi].q--; if (c.basket[bi].q <= 0) c.basket.splice(bi, 1); } c.stole = 0; }
+    if (c.stole) { const near = S.staff.some(s => s.k === 'wache' && Math.hypot(s.x - c.x, s.y - c.y) < 9), catchP = near ? .75 : S.up.kamera ? .4 : .08; if (R() < catchP) { bub(c, '🚔'); S.xp += 4; S.tot.caught++; giveBack(S, c); leaveFor(S, c); return; } S.today.stolen += wholesale(S, c.stole); bub(c, '🤫'); const bi = c.basket.findIndex(b => b.p === c.stole); if (bi >= 0) { c.basket[bi].q--; if (c.basket[bi].q <= 0) c.basket.splice(bi, 1); } c.stole = 0; }
     if (!c.basket.length) { finish(S, c, true); leaveFor(S, c, c.miss ? '😞' : null); } else heading(S, c);
   }
   function tickCustomer(S, c, d) {
@@ -263,7 +278,7 @@ const Sim = (() => {
   function step(S, dt) { if (S.phase === 'summary') return; const n = Math.max(1, Math.ceil(dt / .1)), d = dt / n; for (let i = 0; i < n; i++) { tick(S, d); if (S.phase === 'summary') break; } }
   const clock = S => { const m = Math.floor(8 * 60 + Math.min(S.t, DAYLEN) * MIN_PER_SEC); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   const save = S => JSON.stringify(S, (k, v) => k[0] === '_' ? undefined : v);
-  const load = js => { const S = JSON.parse(js); rebuild(S); return S; };
-  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, DAYLEN, RAMP_MAX, DOW, endDay, note, addStock };
+  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; rebuild(S); return S; };
+  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
 })();
 if (typeof module !== 'undefined') module.exports = Sim;

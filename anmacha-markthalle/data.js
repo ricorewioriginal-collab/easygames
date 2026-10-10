@@ -48,6 +48,8 @@ const Data = (() => {
     kasse: { name: 'Kasse', e: '💶', w: 1, h: 1, st: [], cap: 0, price: 30000, lvl: 1, col: '#444c60' },
     sco: { name: 'Selbstbedienungskasse', e: '🖥️', w: 1, h: 1, st: [], cap: 0, price: 90000, lvl: 6, col: '#3a4a7a', power: 400 },
     deko: { name: 'Zimmerpflanze', e: '🪴', w: 1, h: 1, st: [], cap: 0, price: 2500, lvl: 1, col: '#2f6a3a' },
+    ofen: { name: 'Backstation', e: '🥐', w: 2, h: 1, st: ['prod'], cap: 24, price: 80000, lvl: 3, col: '#c27a2a', power: 900, only: ['brot'], bake: 1 },
+    lager: { name: 'Lager-Regal', e: '🏗️', w: 2, h: 1, st: [], cap: 0, price: 40000, lvl: 2, col: '#6a5a4a', store: 10 },
     ramp: { name: 'Rampe', e: '📦', w: 3, h: 1, st: [], cap: 0, price: 0, lvl: 1, col: '#8a6a30', fixed: 1 }
   };
   const TYPES = {
@@ -56,6 +58,7 @@ const Data = (() => {
     sen: { name: 'Senior', e: '👵', w: 20, n: [3, 5], q: [1, 2], tol: .1, pat: 140, spd: 1.2, likes: { brot: 1.8, milch: 1.5, obst: 1.4, fleisch: 1.2 }, music: 'schlager', recipe: .3 },
     job: { name: 'Berufstätige', e: '💼', w: 20, n: [1, 3], q: [1, 2], tol: .25, pat: 38, spd: 2.5, likes: { getr: 1.6, snack: 1.3, brot: 1.5 }, music: 'chill', recipe: .1 },
     spar: { name: 'Sparfuchs', e: '🏷️', w: 8, n: [5, 9], q: [1, 3], tol: 0, pat: 120, spd: 1.9, likes: {}, music: 'pop', recipe: .2, hunt: 1 },
+    infl: { name: 'Influencerin', e: '🤳', w: 1.2, n: [2, 3], q: [1, 1], tol: .3, pat: 70, spd: 2, likes: {}, music: 'pop', recipe: .1, minLvl: 6 },
     krit: { name: 'Testerin', e: '🧐', w: 1.5, n: [3, 4], q: [1, 1], tol: .2, pat: 80, spd: 1.8, likes: {}, music: 'chill', recipe: .2, minLvl: 4 }
   };
   const GENRES = { pop: { name: 'Pop', e: '🎤', notes: [0, 4, 7, 9, 7, 4], bpm: 118 }, rock: { name: 'Rock', e: '🎸', notes: [0, 0, 7, 5, 0, 10], bpm: 136 }, schlager: { name: 'Schlager', e: '🪗', notes: [0, 4, 7, 12, 9, 7], bpm: 104 }, chill: { name: 'Chillout', e: '🌴', notes: [0, 3, 7, 10, 7, 3], bpm: 84 } };
@@ -88,7 +91,15 @@ const Data = (() => {
     { id: 'rev', t: 'Erziele {n} € Umsatz', n: [250, 700], key: 'rev', r: 5000, div: 100 }, { id: 'happy', t: 'Bringe {n} Kunden richtig glücklich nach Hause', n: [8, 20], key: 'happy', r: 5000 },
     { id: 'rec', t: 'Erfülle {n} Rezept-Einkäufe', n: [2, 5], key: 'recipes', r: 6000 }, { id: 'nolost', t: 'Verliere höchstens {n} Kunden', n: [3, 6], key: 'lost', r: 6000, max: 1 }
   ];
+  // Erfolge: id, Name, Emoji, Beschreibung, Belohnung (Cent)
+  const ACH = [
+    ['tag1', 'Erster Feierabend', '🌅', 'Schließe deinen ersten Tag ab.', 5000], ['stufe5', 'Aufsteiger', '⭐', 'Erreiche Stufe 5.', 20000], ['stufe10', 'Marktleiter', '🏅', 'Erreiche Stufe 10.', 60000],
+    ['umsatz500', 'Guter Tag', '💶', 'Mache an einem Tag 500 € Umsatz.', 15000], ['umsatz2000', 'Rekordtag', '💰', 'Mache an einem Tag 2.000 € Umsatz.', 80000], ['team3', 'Kleines Team', '👥', 'Beschäftige 3 Mitarbeiter.', 15000],
+    ['ruf4', 'Beliebter Laden', '😍', 'Erreiche 4 Sterne Ruf.', 30000], ['rezept10', 'Hobbykoch-Dealer', '🍝', 'Erfülle 10 Rezept-Einkäufe.', 25000], ['dieb5', 'Scharfe Augen', '🚔', 'Erwische 5 Ladendiebe.', 20000],
+    ['anbau2', 'Platz da!', '🏗️', 'Baue den Laden zweimal aus.', 40000], ['radio', 'Auf Sendung', '📻', 'Kaufe das Radiostudio.', 10000], ['stamm25', 'Familienbetrieb', '❤️', 'Gewinne 25 Stammkunden.', 30000],
+    ['buzz', 'Gesprächsthema', '🔥', 'Erreiche einen Online-Hype von +20 %.', 40000], ['kunden1000', 'Tausendsassa', '🧑‍🤝‍🧑', 'Bediene insgesamt 1.000 Kunden.', 50000], ['reich', 'Kleiner Millionär', '💎', 'Habe 10.000 € auf dem Konto.', 50000]
+  ];
   const fmt = c => (c < 0 ? '−' : '') + (Math.abs(c) / 100).toFixed(2).replace('.', ',') + ' €';
-  return { CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WEATHER, QUESTS, fmt };
+  return { ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WEATHER, QUESTS, fmt };
 })();
 if (typeof module !== 'undefined') module.exports = Data;
