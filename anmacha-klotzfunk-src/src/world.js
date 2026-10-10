@@ -7,16 +7,26 @@ export const B = { AIR: 0, GRASS: 1, DIRT: 2, STONE: 3, SAND: 4, WOOD: 5, LEAVES
 // Namen und Eigenschaften je Block-Typ
 // Funk-Logos sind Blöcke mit den Ids 11..26
 export const LOGO0 = 11, LOGO_COUNT = 16;
+export const isLogo = t => t >= 11 && t < 27;
 export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
   'RockRadio 24', 'ChristmasRadio', 'KultRadio 24', 'Zocker-FM', 'Special-Radio', 'AnMaChaCast', 'SenderWelt', 'RadioPortal'];
-export const NAMES = ['Luft', 'Gras', 'Erde', 'Stein', 'Sand', 'Holz', 'Blätter', 'Bretter', 'Glas', 'Leuchtblock', 'Wasser', ...LOGO_NAMES];
-export const SOLID = new Uint8Array(32);   // begehbar blockierend
-export const OPAQUE = new Uint8Array(32);  // verdeckt Nachbarflächen
-export const SKYBLOCK = new Uint8Array(32); // wirft Schatten (Sonnenlicht)
+// Spezial-Blöcke mit eigenen Funktionen (Ids 27..37)
+B.FEDER = 27; B.TURBO = 28; B.WIND = 29; B.RADIO = 30; B.RAINBOW = 31;
+B.NEON_R = 32; B.NEON_B = 33; B.NEON_G = 34; B.NEON_P = 35; B.BRICK = 36; B.MARBLE = 37;
+export const SPECIAL0 = 27, SPECIAL_COUNT = 11;
+export const SPECIAL_NAMES = ['Federblock', 'Turbo-Block', 'Aufwind-Block', 'Radio-Block', 'Regenbogen-Block', 'Neonrot', 'Neonblau', 'Neongrün', 'Neonlila', 'Ziegel', 'Marmor'];
+export const NAMES = ['Luft', 'Gras', 'Erde', 'Stein', 'Sand', 'Holz', 'Blätter', 'Bretter', 'Glas', 'Leuchtblock', 'Wasser', ...LOGO_NAMES, ...SPECIAL_NAMES];
+export const SOLID = new Uint8Array(48);   // begehbar blockierend
+export const OPAQUE = new Uint8Array(48);  // verdeckt Nachbarflächen
+export const SKYBLOCK = new Uint8Array(48); // wirft Schatten (Sonnenlicht)
+export const EMIT = new Float32Array(48);  // Eigenleuchten (2 = Regenbogen-Animation)
 for (const t of [1, 2, 3, 4, 5, 6, 7, 8, 9]) SOLID[t] = 1;
 for (const t of [1, 2, 3, 4, 5, 7, 9]) OPAQUE[t] = 1;
 for (let i = 0; i < LOGO_COUNT; i++) { SOLID[LOGO0 + i] = 1; OPAQUE[LOGO0 + i] = 1; }
-for (let t = 1; t < 32; t++) if (OPAQUE[t] || t === 6) SKYBLOCK[t] = 1;
+for (let i = 0; i < SPECIAL_COUNT; i++) { SOLID[SPECIAL0 + i] = 1; OPAQUE[SPECIAL0 + i] = 1; }
+for (let t = 1; t < 48; t++) if (OPAQUE[t] || t === 6) SKYBLOCK[t] = 1;
+EMIT[B.LAMP] = 1; EMIT[B.RAINBOW] = 2;
+for (const t of [B.NEON_R, B.NEON_B, B.NEON_G, B.NEON_P]) EMIT[t] = 1;
 
 function hash(x, z, s) {
   let h = Math.imul(x | 0, 0x27d4eb2d) ^ Math.imul(z | 0, 0x165667b1) ^ Math.imul(s | 0, 0x9e3779b1);
@@ -51,6 +61,7 @@ export class World {
     this.chunks = new Map();
     this.edits = edits || new Map(); // key -> Map(index -> type)
     this.dirty = new Set();
+    this.radios = new Map(); // Radio-Blöcke: 'x,y,z' -> [x, y, z]
   }
 
   getChunk(cx, cz) { return this.chunks.get(chunkKey(cx, cz)); }
@@ -110,6 +121,7 @@ export class World {
       data[i] = t;
       const y = (i / (CS * CS)) | 0;
       if (y > maxY) maxY = y;
+      if (t === B.RADIO) this.radios.set(`${cx * CS + (i & 15)},${y},${cz * CS + ((i >> 4) & 15)}`, [cx * CS + (i & 15), y, cz * CS + ((i >> 4) & 15)]);
     }
     return { cx, cz, key, data, maxY, hm: null, opaque: null, trans: null, logo: null, meshed: false };
   }
@@ -134,8 +146,11 @@ export class World {
     const cx = x >> 4, cz = z >> 4, c = this.chunks.get(chunkKey(cx, cz));
     if (!c) return false;
     const lx = x & 15, lz = z & 15, i = lx + lz * CS + y * CS * CS;
-    if (c.data[i] === t) return false;
+    const old = c.data[i];
+    if (old === t) return false;
     c.data[i] = t;
+    if (old === B.RADIO) this.radios.delete(`${x},${y},${z}`);
+    if (t === B.RADIO) this.radios.set(`${x},${y},${z}`, [x, y, z]);
     if (y > c.maxY) c.maxY = y;
     c.hm = null;
     let ed = this.edits.get(c.key);

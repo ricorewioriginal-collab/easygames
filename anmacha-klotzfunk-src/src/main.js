@@ -1,7 +1,7 @@
 // Oberfläche, Eingabe (Tastatur/Maus/Touch), Menüs, Speichern.
 import './style.css';
 import { Game } from './game.js';
-import { B, NAMES, LOGO0, LOGO_COUNT } from './world.js';
+import { B, NAMES, LOGO0, LOGO_COUNT, SPECIAL0, SPECIAL_COUNT, H, isLogo } from './world.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld } from './storage.js';
 import { unlockAudio, sfx } from './audio.js';
 
@@ -18,9 +18,10 @@ const keys = new Set();
 
 // ---------- Icons / Atlas ----------
 document.documentElement.style.setProperty('--atlas', `url(${game.atlasCanvas.toDataURL()})`);
-const ICON_TILE = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 7, 7: 8, 8: 9, 9: 10 };
+const ICON_TILE = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 7, 7: 8, 8: 9, 9: 10, 27: 12, 28: 14, 29: 16, 30: 18, 31: 20, 32: 21, 33: 22, 34: 23, 35: 24, 36: 25, 37: 26 };
 const icon = t => {
-  if (t >= LOGO0) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
+  if (isLogo(t)) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
+  if (t === B.RAINBOW) return '<i class="ic rb"></i>';
   const k = ICON_TILE[t] ?? 0;
   return `<i class="ic" style="background-position:${(k % 8) * 100 / 7}% ${Math.floor(k / 8) * 100 / 7}%"></i>`;
 };
@@ -58,7 +59,18 @@ function renderHotbar() {
 const RECIPES = [
   { give: [B.PLANKS, 4], need: [[B.WOOD, 1]] },
   { give: [B.GLASS, 1], need: [[B.SAND, 2]] },
-  { give: [B.LAMP, 2], need: [[B.GLASS, 2], [B.WOOD, 1]] }
+  { give: [B.LAMP, 2], need: [[B.GLASS, 2], [B.WOOD, 1]] },
+  { give: [B.FEDER, 2], need: [[B.LEAVES, 4], [B.PLANKS, 1]] },
+  { give: [B.TURBO, 2], need: [[B.STONE, 2], [B.LAMP, 1]] },
+  { give: [B.WIND, 2], need: [[B.GLASS, 2], [B.LEAVES, 2]] },
+  { give: [B.RADIO, 1], need: [[B.PLANKS, 4], [B.LAMP, 1]] },
+  { give: [B.RAINBOW, 2], need: [[B.GLASS, 2], [B.LAMP, 1]] },
+  { give: [B.NEON_R, 3], need: [[B.LAMP, 1], [B.SAND, 1]] },
+  { give: [B.NEON_B, 3], need: [[B.LAMP, 1], [B.GLASS, 1]] },
+  { give: [B.NEON_G, 3], need: [[B.LAMP, 1], [B.LEAVES, 1]] },
+  { give: [B.NEON_P, 3], need: [[B.LAMP, 1], [B.DIRT, 1]] },
+  { give: [B.BRICK, 4], need: [[B.DIRT, 2], [B.SAND, 1]] },
+  { give: [B.MARBLE, 2], need: [[B.STONE, 2], [B.SAND, 1]] }
 ];
 function renderInventory() {
   const creative = game.mode === 'creative';
@@ -76,6 +88,12 @@ function renderInventory() {
     lg += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b>${creative ? '' : `<i class="plus" data-craft="${t}" title="1 Bretter → 2 Logo-Blöcke">＋</i>`}</button>`;
   }
   $('logoGrid').innerHTML = lg;
+  let sp = '';
+  for (let i = 0; i < SPECIAL_COUNT; i++) {
+    const t = SPECIAL0 + i, n = creative ? '∞' : (game.inv[t] || 0);
+    sp += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b></button>`;
+  }
+  $('specialGrid').innerHTML = sp;
   $('recipes').innerHTML = creative ? '<small>Herstellen ist im Kreativmodus nicht nötig.</small>' : RECIPES.map((r, i) => {
     const ok = r.need.every(([t, n]) => (game.inv[t] || 0) >= n);
     const need = r.need.map(([t, n]) => `${n}× ${NAMES[t]}`).join(' + ');
@@ -98,6 +116,7 @@ function onInvClick(e) {
 }
 $('invGrid').addEventListener('click', onInvClick);
 $('logoGrid').addEventListener('click', onInvClick);
+$('specialGrid').addEventListener('click', onInvClick);
 $('recipes').addEventListener('click', e => {
   const b = e.target.closest('[data-r]'); if (!b) return;
   const r = RECIPES[Number(b.dataset.r)];
@@ -131,6 +150,7 @@ function pause() {
   game.stop(); releaseInput(); saveNow();
   setState('paused');
   $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist;
+  $('td').value = Math.round(game.time * 100); $('tdVal').textContent = game.clockText();
   if (locked()) document.exitPointerLock();
 }
 function resume() {
@@ -231,6 +251,10 @@ $('pMenu').onclick = () => { saveNow(false); game.stop(); game.clearWorld(); slo
 $('vd').oninput = e => { game.setViewDist(Number(e.target.value)); $('vdVal').textContent = e.target.value; };
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
+$('bWp').onclick = () => game.toggleWaypoint();
+$('bMap').onclick = toggleMap;
+$('td').oninput = e => { game.time = Number(e.target.value) / 100; $('tdVal').textContent = game.clockText(); game.updateSky(); game.render(); };
+$('pFreeze').onclick = () => { game.timeFrozen = !game.timeFrozen; $('pFreeze').textContent = game.timeFrozen ? '⏸ Zeit steht still' : '⏱ Zeit läuft'; };
 $('bPause').onclick = pause;
 
 // ---------- Tastatur ----------
@@ -241,7 +265,7 @@ function syncKeys() {
   inp.r = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
   const fly = game.player.flying;
   inp.sprint = keys.has('ControlLeft') || (!fly && keys.has('ShiftLeft'));
-  inp.down = fly && (keys.has('ShiftLeft') || keys.has('KeyQ')) || touchActive.down;
+  inp.down = fly && keys.has('ShiftLeft') || touchActive.down;
   inp.jump = keys.has('Space') || touchActive.jump;
 }
 const touchActive = { joy: false, jump: false, down: false };
@@ -261,6 +285,9 @@ window.addEventListener('keydown', e => {
   if (/^Digit[1-9]$/.test(e.code)) { game.selectSlot(Number(e.code[5]) - 1); return; }
   if (e.code === 'KeyE') { e.preventDefault(); openInventory(); return; }
   if (e.code === 'KeyF') { toggleFly(); return; }
+  if (e.code === 'KeyQ') { game.fireHook(); return; }
+  if (e.code === 'KeyB') { game.toggleWaypoint(); return; }
+  if (e.code === 'KeyM') { toggleMap(); return; }
   if (e.code === 'Space') { const n = performance.now(); if (n - lastSpace < 280) toggleFly(); lastSpace = n; }
   keys.add(e.code); syncKeys();
 });
@@ -344,15 +371,53 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
   hold('bJump', () => { touchActive.jump = true; game.input.jump = true; }, () => { touchActive.jump = false; game.input.jump = keys.has('Space'); });
   hold('bDown', () => { touchActive.down = true; game.input.down = true; }, () => { touchActive.down = false; game.input.down = false; });
   $('bFly').addEventListener('click', toggleFly);
+  $('bHook').addEventListener('pointerdown', e => { e.preventDefault(); unlockAudio(); game.fireHook(); });
 })();
 
 // ---------- Fenster ----------
 window.addEventListener('resize', () => game.resize());
+// ---------- Minikarte (Blick von oben, Norden oben) ----------
+const MAP_COLOR = { 1: [88, 160, 60], 2: [134, 96, 63], 3: [124, 124, 128], 4: [219, 203, 142], 5: [104, 80, 46], 6: [46, 120, 44], 7: [172, 134, 82], 8: [200, 230, 240], 9: [255, 214, 120], 10: [44, 100, 200],
+  27: [255, 100, 160], 28: [255, 214, 40], 29: [80, 200, 235], 30: [60, 64, 76], 31: [220, 100, 255], 32: [255, 40, 70], 33: [40, 140, 255], 34: [50, 255, 120], 35: [190, 70, 255], 36: [154, 74, 56], 37: [232, 232, 240] };
+let mapOn = true;
+function toggleMap() { mapOn = !mapOn; $('mm').classList.toggle('off', !mapOn); }
+const mmCtx = $('mm').getContext('2d'), mmImg = mmCtx.createImageData(56, 56);
+function drawMap() {
+  const w = game.world, p = game.player, d = mmImg.data, ox = Math.floor(p.x) - 28, oz = Math.floor(p.z) - 28, py = p.y;
+  for (let j = 0; j < 56; j++) for (let i = 0; i < 56; i++) {
+    const wx = ox + i, wz = oz + j, c = w.getChunk(wx >> 4, wz >> 4), o = (j * 56 + i) * 4;
+    let r = 14, g = 18, b = 32;
+    if (c) {
+      const idx = (wx & 15) + (wz & 15) * 16;
+      let y = Math.min(H - 1, c.maxY);
+      while (y > 0 && c.data[idx + y * 256] === 0) y--;
+      const t = c.data[idx + y * 256], col = MAP_COLOR[t] || [200, 200, 210], k = t === 10 ? 1 : Math.max(0.55, Math.min(1.25, 1 + (y - py) * 0.025));
+      r = col[0] * k; g = col[1] * k; b = col[2] * k;
+    }
+    d[o] = r; d[o + 1] = g; d[o + 2] = b; d[o + 3] = 255;
+  }
+  mmCtx.putImageData(mmImg, 0, 0);
+  if (game.wp) { // Wegpunkt (am Rand angedockt, wenn weiter weg)
+    let dx = game.wp.x - p.x, dz = game.wp.z - p.z; const m = Math.max(Math.abs(dx), Math.abs(dz)), s = m > 25 ? 25 / m : 1;
+    dx *= s; dz *= s;
+    mmCtx.fillStyle = '#ff2d95'; mmCtx.fillRect(28 + dx - 2, 28 + dz - 2, 5, 5);
+    mmCtx.strokeStyle = '#fff'; mmCtx.strokeRect(28 + dx - 2.5, 28 + dz - 2.5, 6, 6);
+  }
+  mmCtx.save(); mmCtx.translate(28, 28); mmCtx.rotate(-game.yaw); // Pfeil zeigt Blickrichtung
+  mmCtx.fillStyle = '#fff'; mmCtx.strokeStyle = '#000'; mmCtx.beginPath(); mmCtx.moveTo(0, -5); mmCtx.lineTo(3.5, 4); mmCtx.lineTo(0, 2); mmCtx.lineTo(-3.5, 4); mmCtx.closePath(); mmCtx.fill(); mmCtx.stroke();
+  mmCtx.restore();
+}
+let mapTick = 0;
 setInterval(() => {
   if (state !== 'playing') return;
   const p = game.player;
-  $('info').textContent = `${game.clockText()} ${game.time < 0.5 ? '☀' : '☾'} · X ${p.x.toFixed(0)} Y ${p.y.toFixed(0)} Z ${p.z.toFixed(0)}${p.flying ? ' · fliegt' : ''}`;
+  let extra = '';
+  if (p.flying) extra += ' · fliegt'; if (p.gliding) extra += ' · gleitet'; if (game.hookT > 0) extra += ' · Haken';
+  if (game.wp) extra += ` · 📍 ${Math.round(Math.hypot(game.wp.x - p.x, game.wp.z - p.z))} m`;
+  if (game.radioDist < 24) extra += ' · ♪';
+  $('info').textContent = `${game.clockText()} ${game.time < 0.5 ? '☀' : '☾'} · X ${p.x.toFixed(0)} Y ${p.y.toFixed(0)} Z ${p.z.toFixed(0)}${extra}`;
   $('uw').classList.toggle('on', !!game.underwater);
+  if (mapOn && (mapTick++ & 1) === 0) drawMap();
 }, 250);
 
 renderSlots();

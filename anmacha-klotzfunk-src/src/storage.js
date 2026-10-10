@@ -1,6 +1,6 @@
 // Lokales Speichern (localStorage) – 3 Weltplätze.
 export const SLOTS = 3;
-const W = i => 'blockverse.world.' + i, M = i => 'blockverse.meta.' + i;
+const W = i => 'klotzfunk.world.' + i, M = i => 'klotzfunk.meta.' + i;
 
 export function readMeta(i) {
   try { const s = localStorage.getItem(M(i)); return s ? JSON.parse(s) : null; } catch (e) { return null; }

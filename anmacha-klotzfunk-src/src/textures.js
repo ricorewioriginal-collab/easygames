@@ -110,10 +110,83 @@ const PAINT = [
     const n = fbm(u, v, 4, 3, 15), r = fbm(u + n * 0.2, v, 8, 2, 16);
     const hi = r > 0.62 ? 26 : 0;
     return [...add(mix([34, 92, 190], [62, 134, 220], n), hi), 172];
+  },
+  // 12 Federblock oben
+  (u, v, x, y) => {
+    const r = Math.hypot(u - 0.5, v - 0.5), e = Math.min(x, y, TILE - 1 - x, TILE - 1 - y);
+    let c = mix([255, 120, 170], [255, 70, 130], Math.min(1, r * 1.6));
+    if (Math.sin(r * Math.PI * 14) > 0.7) c = add(c, 22);
+    if (e < 4) c = mix(c, [150, 30, 80], 0.6);
+    return [...c, 255];
+  },
+  // 13 Federblock Seite: Spiralfeder zwischen rosa Kappen
+  (u, v, x, y) => {
+    if (v < 0.17 || v > 0.83) { const e = Math.min(v, 1 - v); return [...mix([255, 80, 140], [190, 40, 100], e < 0.04 ? 0.6 : 0), 255]; }
+    const w = Math.sin((v * 7 + Math.abs(u - 0.5) * 0.8) * Math.PI * 2);
+    return w > -0.1 ? [...add([176, 182, 194], w * 24), 255] : [52, 54, 64, 255];
+  },
+  // 14 Turbo oben: gelb-schwarze Pfeile
+  (u, v) => {
+    const t = ((v + Math.abs(u - 0.5)) * 3) % 1, e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.04) return [30, 30, 36, 255];
+    return t < 0.5 ? [255, 214, 40, 255] : [38, 38, 46, 255];
+  },
+  // 15 Turbo Seite
+  (u, v) => (v > 0.35 && v < 0.65) ? [255, 214, 40, 255] : [40, 40, 50, 255],
+  // 16 Aufwind oben: Pfeile nach oben
+  (u, v, x, y) => {
+    const du = Math.abs(((u * 2) % 1) - 0.5), vv = (v * 2) % 1;
+    const shaft = du < 0.07 && vv > 0.4 && vv < 0.88, head = vv > 0.12 && vv < 0.44 && du < (vv - 0.12) * 0.75;
+    const base = mix([40, 170, 215], [96, 220, 245], fbm(u, v, 4, 2, 71));
+    return shaft || head ? [255, 255, 255, 255] : [...add(base, grain(x, y, 12, 8)), 255];
+  },
+  // 17 Aufwind Seite
+  (u, v, x, y) => {
+    const w = Math.sin((v * 5 - u * 0.6) * Math.PI * 2 + Math.sin(u * 9) * 1.2);
+    return [...(w > 0.82 ? [235, 250, 255] : mix([40, 160, 205], [80, 205, 235], v)), 255];
+  },
+  // 18 Radio Seite: Lautsprecher
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v), r = Math.hypot(u - 0.5, v - 0.5);
+    if (e < 0.05) return [28, 30, 38, 255];
+    if (r < 0.34) { const dot = (x % 6 < 3 && y % 6 < 3); return dot ? [18, 20, 26, 255] : [96, 102, 116, 255]; }
+    if (v < 0.14 && u > 0.7 && u < 0.84) return [255, 150, 40, 255];
+    return [...add([58, 62, 74], grain(x, y, 13, 8)), 255];
+  },
+  // 19 Radio oben
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.05) return [28, 30, 38, 255];
+    if (Math.hypot(u - 0.3, v - 0.5) < 0.16) return [255, 150, 40, 255];
+    if (v > 0.42 && v < 0.58 && u > 0.55 && u < 0.9) return [0, 229, 255, 255];
+    return [...add([58, 62, 74], grain(x, y, 14, 8)), 255];
+  },
+  // 20 Regenbogen (Graumuster, wird im Shader eingefärbt)
+  (u, v, x, y) => { const g = 0.5 + 0.5 * Math.sin((u + v) * Math.PI * 6 + fbm(u, v, 4, 2, 81) * 5); const e = Math.min(u, v, 1 - u, 1 - v); const k = e < 0.04 ? 0.45 : 0.7 + 0.3 * g; return [k * 255, k * 255, k * 255, 255]; },
+  // 21..24 Neon
+  ...[[255, 40, 70], [40, 140, 255], [50, 255, 120], [190, 70, 255]].map(col => (u, v) => {
+    const fx = (u * 2) % 1, fy = (v * 2) % 1, e = Math.min(fx, 1 - fx, fy, 1 - fy);
+    if (e < 0.06) return [col[0] * 0.3, col[1] * 0.3, col[2] * 0.3, 255];
+    const g = Math.max(0, 1 - Math.hypot(fx - 0.5, fy - 0.5) * 1.3);
+    return [...mix(col, [255, 255, 255], g * g * 0.65), 255];
+  }),
+  // 25 Ziegel
+  (u, v, x, y) => {
+    const row = Math.floor(v * 8), fy = (v * 8) % 1, off = row % 2 ? 0.125 : 0, fx = ((u * 4 + off * 4) % 1);
+    if (fy < 0.1 || fx < 0.05) return [...add([176, 170, 160], grain(x, y, 15, 10)), 255];
+    const n = fbm(u, v, 8, 2, 91 + row);
+    return [...add(mix([150, 62, 46], [186, 92, 66], n), grain(x, y, 16, 12)), 255];
+  },
+  // 26 Marmor
+  (u, v, x, y) => {
+    const n = fbm(u, v, 3, 4, 95), vein = Math.abs(fbm(u + n * 0.3, v, 3, 3, 96) - 0.5);
+    let c = mix([236, 236, 242], [214, 216, 226], n);
+    if (vein < 0.03) c = add(c, -52); else if (vein < 0.05) c = add(c, -22);
+    return [...add(c, grain(x, y, 17, 5)), 255];
   }
 ];
 // Kachel-Rand: leichte Kante, die jeden Block als Körper lesbar macht
-const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8]);
+const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26]);
 
 export function drawAtlas() {
   const cv = document.createElement('canvas');

@@ -1,6 +1,6 @@
 // Chunk-Mesher: Flächen-Culling, weiche Ecken-Beleuchtung (Ambient Occlusion + Himmelslicht),
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
-import { CS, H, B, OPAQUE, LOGO0 } from './world.js';
+import { CS, H, B, OPAQUE, LOGO0, EMIT, isLogo as isLogoId } from './world.js';
 
 // n = Normale, o = Ursprungsecke, a/b = Kantenvektoren (a × b = n, also gegen den Uhrzeigersinn von außen)
 // Reihenfolge = Flächen-Index im Shader: +X, -X, +Z, -Z, +Y, -Y
@@ -29,7 +29,9 @@ for (const f of FACES) {
 export const TILES = {
   [B.GRASS]: [0, 1, 2], [B.DIRT]: [2, 2, 2], [B.STONE]: [3, 3, 3], [B.SAND]: [4, 4, 4],
   [B.WOOD]: [6, 5, 6], [B.LEAVES]: [7, 7, 7], [B.PLANKS]: [8, 8, 8], [B.GLASS]: [9, 9, 9],
-  [B.LAMP]: [10, 10, 10], [B.WATER]: [11, 11, 11]
+  [B.LAMP]: [10, 10, 10], [B.WATER]: [11, 11, 11],
+  [B.FEDER]: [12, 13, 13], [B.TURBO]: [14, 15, 15], [B.WIND]: [16, 17, 17], [B.RADIO]: [19, 18, 19], [B.RAINBOW]: [20, 20, 20],
+  [B.NEON_R]: [21, 21, 21], [B.NEON_B]: [22, 22, 22], [B.NEON_G]: [23, 23, 23], [B.NEON_P]: [24, 24, 24], [B.BRICK]: [25, 25, 25], [B.MARBLE]: [26, 26, 26]
 };
 const AO = [0.45, 0.66, 0.84, 1.0];
 const SKY_D = [1, 0.62, 0.38, 0.18]; // Himmelslicht nach Tiefe unter der Oberfläche
@@ -81,12 +83,12 @@ export function buildMesh(world, chunk) {
       for (let x = 0; x < CS; x++) {
         const t = data[x + (z << 4) + (y << 8)];
         if (t === B.AIR) continue;
-        const isLogo = t >= LOGO0;
+        const isLogo = isLogoId(t);
         const part = isLogo ? L : (t === B.GLASS || t === B.WATER) ? T : O;
-        const lamp = t === B.LAMP ? 1 : 0;
+        const lamp = EMIT[t];
         const lower = t === B.WATER && get(x, y + 1, z) !== B.WATER;
         const tiles = TILES[t];
-        const useAo = !lamp && t !== B.WATER && t !== B.GLASS;
+        const useAo = lamp === 0 && t !== B.WATER && t !== B.GLASS;
         for (let fi = 0; fi < 6; fi++) {
           const f = FACES[fi];
           if (!visible(t, get(x + f.n[0], y + f.n[1], z + f.n[2]))) continue;
@@ -120,12 +122,12 @@ export function buildMesh(world, chunk) {
 
 // Einheitswürfel (für Hand-Block): gleiche Vertex-Daten wie der Welt-Mesher
 export function cubeData(type) {
-  const isLogo = type >= LOGO0, tiles = TILES[type], P = new Part();
+  const isLogo = isLogoId(type), tiles = TILES[type], P = new Part();
   for (let fi = 0; fi < 6; fi++) {
     const f = FACES[fi], [u0, v0, du] = tileUv(isLogo ? type - LOGO0 : tiles[f.k], isLogo);
     for (let k = 0; k < 4; k++) {
       const c = f.c[k];
-      P.pos.push(c.p[0] - 0.5, c.p[1] - 0.5, c.p[2] - 0.5); P.uv.push(u0 + c.i * du, v0 + c.j * du); P.col.push(1, 1, type === B.LAMP ? 1 : 0, fi);
+      P.pos.push(c.p[0] - 0.5, c.p[1] - 0.5, c.p[2] - 0.5); P.uv.push(u0 + c.i * du, v0 + c.j * du); P.col.push(1, 1, EMIT[type], fi);
     }
     const b = P.n * 4; P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3); P.n++;
   }

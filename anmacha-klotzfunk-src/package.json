@@ -1,9 +1,9 @@
 {
-  "name": "anmacha-blockverse",
+  "name": "anmacha-klotzfunk",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "BLOCKVERSE 3D – Voxel-Sandbox im Browser (Three.js + Vite)",
+  "description": "KLOTZFUNK 3D – Voxel-Sandbox im Browser (Three.js + Vite)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

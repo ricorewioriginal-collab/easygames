@@ -1,10 +1,10 @@
 // Spielkern: Rendering, Chunk-Streaming, Physik-Schleife, Bauen/Abbauen, Tag-Nacht, Speicherstand.
 import * as THREE from 'three';
-import { World, B, CS, H, NAMES, LOGO0 } from './world.js';
+import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo } from './world.js';
 import { buildMesh, cubeData } from './mesher.js';
 import { drawAtlas, createLogoAtlas, cloudCanvas } from './textures.js';
 import { Player, raycast, EYE } from './physics.js';
-import { playBreak, playPlace, playDeny } from './audio.js';
+import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
@@ -12,7 +12,7 @@ const MAX_STACK = 999;
 
 // Block-Shader: Beleuchtung pro Vertex aus Flächenrichtung, Sonne/Mond, Himmelslicht und Ambient Occlusion
 const VERT = `
-attribute vec4 aCol; varying vec2 vUv; varying vec3 vLight; varying float vDist;
+attribute vec4 aCol; varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb;
 uniform vec3 uAmb; uniform vec3 uSunCol; uniform vec3 uSunDir;
 void main(){
   float f = aCol.a;
@@ -20,19 +20,25 @@ void main(){
   float sky = aCol.g;
   vec3 amb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky);
   vec3 dir = uSunCol * max(dot(n, uSunDir), 0.0) * sky;
-  vLight = max((amb + dir) * aCol.r, vec3(aCol.b));
+  vLight = max((amb + dir) * aCol.r, vec3(min(aCol.b, 1.0)));
+  vRb = aCol.b > 1.5 ? 1.0 : 0.0;
   vUv = uv;
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
   vDist = length(mv.xyz);
   gl_Position = projectionMatrix * mv;
 }`;
 const FRAG = `
-uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut;
-varying vec2 vUv; varying vec3 vLight; varying float vDist;
+uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut; uniform float uTime;
+varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb;
 void main(){
   vec4 t = texture2D(uMap, vUv);
   if (t.a < uCut) discard;
   vec3 c = t.rgb * vLight;
+  if (vRb > 0.5) { // Regenbogen-Block: wandernde Farben
+    float hue = fract((vUv.x + vUv.y) * 14.0 + uTime * 0.25 + t.r * 0.35);
+    vec3 rb = clamp(abs(fract(hue + vec3(0.0, 0.6667, 0.3333)) * 6.0 - 3.0) - 1.0, 0.0, 1.0);
+    c = rb * (0.55 + 0.6 * t.r);
+  }
   gl_FragColor = vec4(mix(c, uFog, smoothstep(uFogRange.x, uFogRange.y, vDist)), t.a);
 }`;
 const DOME_VERT = `varying vec3 vDir; void main(){ vDir = normalize(position); vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }`;
@@ -52,7 +58,8 @@ uniform sampler2D uTex; uniform vec3 uCol; varying vec2 vUv; varying float vD;
 void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; gl_FragColor = vec4(uCol, a); }`;
 
 // mittlere Blockfarben für Bruchstücke
-const BLOCK_COLOR = { 1: 0x58a03c, 2: 0x86603f, 3: 0x7c7c80, 4: 0xdbcb8e, 5: 0x68502e, 6: 0x3a8030, 7: 0xac8652, 8: 0xcfe8f0, 9: 0xffd87a };
+const BLOCK_COLOR = { 1: 0x58a03c, 2: 0x86603f, 3: 0x7c7c80, 4: 0xdbcb8e, 5: 0x68502e, 6: 0x3a8030, 7: 0xac8652, 8: 0xcfe8f0, 9: 0xffd87a,
+  27: 0xff6aa0, 28: 0xffd628, 29: 0x50c8ee, 30: 0x3a3e4a, 31: 0xdd66ff, 32: 0xff2846, 33: 0x288cff, 34: 0x32ff78, 35: 0xbe46ff, 36: 0x9a4a38, 37: 0xe6e6ee };
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
@@ -89,7 +96,7 @@ export class Game {
     this.uni = {
       uAmb: { value: new THREE.Vector3(0.44, 0.5, 0.62) }, uSunCol: { value: new THREE.Vector3(0.6, 0.57, 0.5) },
       uSunDir: { value: new THREE.Vector3(0, 1, 0.25).normalize() }, uFog: { value: new THREE.Vector3(0.68, 0.84, 0.95) },
-      uFogRange: { value: new THREE.Vector2(40, 90) }
+      uFogRange: { value: new THREE.Vector2(40, 90) }, uTime: { value: 0 }
     };
     const mk = (map, cut, trans, uni) => new THREE.ShaderMaterial({
       vertexShader: VERT, fragmentShader: FRAG, transparent: trans, depthWrite: !trans, side: trans ? THREE.DoubleSide : THREE.FrontSide,
@@ -144,7 +151,7 @@ export class Game {
     // Block in der Hand
     const handUni = {
       uAmb: { value: new THREE.Vector3(0.62, 0.64, 0.7) }, uSunCol: { value: new THREE.Vector3(0.5, 0.46, 0.38) },
-      uSunDir: { value: new THREE.Vector3(0.35, 0.8, 0.5).normalize() }, uFog: { value: new THREE.Vector3() }, uFogRange: { value: new THREE.Vector2(1e5, 2e5) }
+      uSunDir: { value: new THREE.Vector3(0.35, 0.8, 0.5).normalize() }, uFog: { value: new THREE.Vector3() }, uFogRange: { value: new THREE.Vector2(1e5, 2e5) }, uTime: this.uni.uTime
     };
     const hm = map => { const m = mk(map, 0.5, false, handUni); m.depthTest = false; return m; };
     this.handMatO = hm(this.atlasTex); this.handMatL = hm(this.logoTex);
@@ -154,6 +161,11 @@ export class Game {
     this.handType = -1; this.swing = 0; this.bob = 0;
 
     this.parts = []; this.partCount = 0;
+
+    // Seilhaken-Seil
+    this.rope = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xffe08a }));
+    this.rope.frustumCulled = false; this.rope.visible = false; this.scene.add(this.rope);
+    this.hookT = 0; this.hookTarget = new THREE.Vector3(); this.wp = null; this.timeFrozen = false; this.radioT = 0;
 
     this.player = new Player();
     this.input = { f: 0, r: 0, jump: false, down: false, sprint: false };
@@ -205,7 +217,11 @@ export class Game {
     this.hotbar = (save.hotbar && save.hotbar.length === 9) ? save.hotbar.slice() : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
-    if (!save.inv) for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
+    if (!save.inv) {
+      for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
+      for (let i = 0; i < SPECIAL_COUNT; i++) this.inv[SPECIAL0 + i] = 8;
+    }
+    this.wp = save.wp || null; this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
     this.handType = -1;
     this.spawn = this.world.findSpawn();
     const p = this.player;
@@ -240,7 +256,7 @@ export class Game {
     const p = this.player;
     return {
       v: 1, name: this.name, seed: this.seed, mode: this.mode, time: this.time, savedAt: Date.now(),
-      px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, edits
+      px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, edits
     };
   }
 
@@ -260,7 +276,7 @@ export class Game {
     this.running = true; this.last = performance.now();
     this.raf = requestAnimationFrame(t => this.frame(t));
   }
-  stop() { this.running = false; cancelAnimationFrame(this.raf); }
+  stop() { this.running = false; cancelAnimationFrame(this.raf); setRadio(0, 0); }
 
   frame(now) {
     if (!this.running) return;
@@ -273,7 +289,9 @@ export class Game {
 
   step(dt) {
     const w = this.world, p = this.player;
-    this.time = (this.time + dt / DAY_LENGTH) % 1;
+    if (!this.timeFrozen) this.time = (this.time + dt / DAY_LENGTH) % 1;
+    this.uni.uTime.value = performance.now() / 1000;
+    this.updateHook(dt);
     p.update(w, dt, this.input, this.yaw);
     this.applyCamera();
     this.stream();
@@ -290,8 +308,57 @@ export class Game {
     this.flushDirty();
     this.updateSky();
     this.cloudU.uOff.value.x += dt * 2.5;
+    this.radioT -= dt;
+    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
+  }
+
+  // ---------- Seilhaken, Wegpunkt, Radio ----------
+  fireHook() {
+    if (!this.running) return;
+    const c = this.camera, d = new THREE.Vector3(0, 0, -1).applyEuler(c.rotation);
+    const r = raycast(this.world, c.position.x, c.position.y, c.position.z, d.x, d.y, d.z, 40);
+    if (!r) { playDeny(); this.onToast('Seilhaken: kein Ziel in Reichweite'); return; }
+    this.hookTarget.set(r.x + 0.5 + r.nx * 0.9, r.y + 0.5 + r.ny * 0.9, r.z + 0.5 + r.nz * 0.9);
+    this.hookT = 1.6; playPlace();
+  }
+
+  updateHook(dt) {
+    const p = this.player;
+    p.hook = false;
+    if (this.hookT <= 0) { this.rope.visible = false; return; }
+    this.hookT -= dt;
+    const t = this.hookTarget, dx = t.x - p.x, dy = t.y - (p.y + EYE), dz = t.z - p.z, dist = Math.hypot(dx, dy, dz);
+    if (dist < 2 || this.hookT <= 0) {
+      this.hookT = 0; this.rope.visible = false;
+      p.vx *= 0.6; p.vz *= 0.6; p.vy = Math.max(p.vy * 0.6, 3);
+      return;
+    }
+    const k = 24 / dist;
+    p.vx = dx * k; p.vy = dy * k; p.vz = dz * k; p.hook = true;
+    const pos = this.rope.geometry.attributes.position;
+    pos.setXYZ(0, p.x + 0.3, p.y + EYE - 0.35, p.z); pos.setXYZ(1, t.x, t.y, t.z); pos.needsUpdate = true;
+    this.rope.visible = true;
+  }
+
+  toggleWaypoint() {
+    const p = this.player;
+    if (this.wp && Math.hypot(this.wp.x - p.x, this.wp.z - p.z) < 4) { this.wp = null; this.onToast('Wegpunkt entfernt'); }
+    else { this.wp = { x: Math.round(p.x), y: Math.round(p.y), z: Math.round(p.z) }; this.onToast('Wegpunkt gesetzt'); }
+    this.unsaved = true;
+  }
+
+  // Musik des nächsten Radio-Blocks, leiser mit Abstand
+  updateRadio() {
+    const p = this.player;
+    let best = 1e9, seed = 0;
+    for (const r of this.world.radios.values()) {
+      const d = Math.hypot(r[0] + 0.5 - p.x, r[1] + 0.5 - (p.y + 1), r[2] + 0.5 - p.z);
+      if (d < best) { best = d; seed = (r[0] * 7 + r[2] * 13 + r[1]) >>> 0; }
+    }
+    this.radioDist = best;
+    setRadio(best < 24 ? Math.pow(1 - best / 24, 1.5) : 0, seed);
   }
 
   // ---------- Hand-Block und Bruchstücke ----------
@@ -305,7 +372,7 @@ export class Game {
         g.setAttribute('position', new THREE.BufferAttribute(d.pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(d.uv, 2));
         g.setAttribute('aCol', new THREE.BufferAttribute(d.col, 4)); g.setIndex(new THREE.BufferAttribute(d.idx, 1));
         this.hand.geometry.dispose(); this.hand.geometry = g;
-        this.hand.material = t >= LOGO0 ? this.handMatL : this.handMatO;
+        this.hand.material = isLogo(t) ? this.handMatL : this.handMatO;
       }
     }
     const p = this.player, moving = Math.hypot(p.vx, p.vz) > 0.5 && p.onGround;
