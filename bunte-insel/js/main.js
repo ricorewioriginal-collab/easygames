@@ -11,9 +11,9 @@
   /* ---------- Renderer, Szene, Himmel ---------- */
   const canvas = $('cv'), dpr = window.devicePixelRatio || 1;
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 1.6, powerPreference: 'high-performance' }); }
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 2.2, powerPreference: 'high-performance' }); }
   catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
-  let quality = coarse && dpr > 2 ? 1 : 0;
+  let quality = save.gfx === 'eco' ? 2 : 0; // standardmäßig scharf; wird bei Ruckeln automatisch gesenkt
   const QUAL = [Math.min(dpr, 2), Math.min(dpr, 1.5), 1, .75];
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .8, 800);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
@@ -86,10 +86,10 @@
   }
   /* Aussehen aus Held + Schrank (gekaufte Sachen gewinnen gegenüber dem Helden-Kostüm) */
   function charOpts(l, name) {
-    const E = l.eq || {}, cu = l.cu || {}, H = BI.heroById(l.hero), po = H.o || {}, ac = k => !!E[k] || !!po[k], accs = { glasses: ac('glasses'), pack: ac('pack'), teddy: ac('teddy'), patch: ac('patch'), cape: ac('cape'), wings: ac('wings') };
+    const E = l.eq || {}, cu = l.cu || {}, H = BI.heroById(l.hero), po = H.o || {}, ac = k => !!E[k] || !!po[k], accs = { glasses: ac('glasses'), pack: ac('pack'), teddy: ac('teddy'), patch: ac('patch'), cape: ac('cape'), wings: ac('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') };
     if (H.id === 'custom') { const acc = cu.acc || {}, a2 = k => ac(k) || !!acc[k]; return Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name,
       eye: BI.EYES[cu.eye | 0], mouth: BI.MOUTHS[cu.mouth == null ? 1 : cu.mouth | 0], freckles: !!cu.fr, shoe: BI.SHOES[cu.shoe | 0], scale: BI.SIZES[cu.size == null ? 1 : cu.size | 0], dress: cu.top === 1, overall: cu.top === 2, stripe: !!cu.stripe, logo: BI.LOGOS[cu.logo | 0] || undefined },
-      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings') }); }
+      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); }
     return Object.assign({}, po, { hat: E.hat && E.hat !== 'none' ? E.hat : po.hat || 'none', name }, accs);
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
@@ -508,9 +508,15 @@
     { id: 'glasses', icon: '🕶️', name: 'Sonnenbrille', price: 2, slot: 'glasses', tab: 1 }, { id: 'patch', icon: '🏴‍☠️', name: 'Augenklappe', price: 2, slot: 'patch', tab: 1 },
     { id: 'pack', icon: '🎒', name: 'Rucksack', price: 3, slot: 'pack', tab: 1 }, { id: 'teddy', icon: '🧸', name: 'Teddy', price: 3, slot: 'teddy', tab: 1 },
     { id: 'cape', icon: '🦸', name: 'Umhang', price: 3, slot: 'cape', tab: 1 }, { id: 'wings', icon: '🧚', name: 'Feenflügel', price: 3, slot: 'wings', tab: 1 },
-    { id: 'kite', icon: '🪁', name: 'Drachen', price: 4, slot: 'kite', tab: 2 }, { id: 'rcheli', icon: '🚁', name: 'RC-Hubschrauber', price: 6, slot: 'rcheli', tab: 2 }
+    { id: 'kite', icon: '🪁', name: 'Drachen', price: 4, slot: 'kite', tab: 2 }, { id: 'rcheli', icon: '🚁', name: 'RC-Hubschrauber', price: 6, slot: 'rcheli', tab: 2 },
+    { id: 'skate', icon: '🛹', name: 'Skateboard', price: 5, slot: 'skate', tab: 2 },
+    { id: 'deco_piano', icon: '🎹', name: 'Zimmer: Keyboard', price: 4, slot: 'deco', tab: 3 }, { id: 'deco_rocket', icon: '🚀', name: 'Zimmer: Rakete', price: 5, slot: 'deco', tab: 3 }, { id: 'deco_dino', icon: '🦖', name: 'Zimmer: Dino', price: 5, slot: 'deco', tab: 3 },
+    { id: 'deco_castle', icon: '🏰', name: 'Zimmer: Ritterburg', price: 6, slot: 'deco', tab: 3 }, { id: 'deco_racecar', icon: '🏎️', name: 'Zimmer: Rennauto', price: 4, slot: 'deco', tab: 3 }, { id: 'deco_rainbow', icon: '🌈', name: 'Wand: Regenbogen', price: 3, slot: 'deco', tab: 3 }, { id: 'deco_stars', icon: '🌟', name: 'Wand: Sternenhimmel', price: 3, slot: 'deco', tab: 3 },
+    { id: 'hat_viking', icon: '🪓', name: 'Wikingerhelm', price: 4, slot: 'hat', val: 'viking', tab: 4 }, { id: 'hat_tophat', icon: '🎩', name: 'Zylinder', price: 4, slot: 'hat', val: 'tophat', tab: 4 }, { id: 'hat_flowers', icon: '🌸', name: 'Blumenkranz', price: 3, slot: 'hat', val: 'flowers', tab: 4 },
+    { id: 'hat_headphones', icon: '🎧', name: 'Kopfhörer', price: 4, slot: 'hat', val: 'headphones', tab: 4 }, { id: 'hat_santa', icon: '🎅', name: 'Weihnachtsmütze', price: 3, slot: 'hat', val: 'santa', tab: 4 }, { id: 'hat_ninja', icon: '🥷', name: 'Ninja-Stirnband', price: 4, slot: 'hat', val: 'ninja', tab: 4 },
+    { id: 'scarf', icon: '🧣', name: 'Schal', price: 3, slot: 'scarf', tab: 4 }, { id: 'bowtie', icon: '🎀', name: 'Fliege', price: 2, slot: 'bowtie', tab: 4 }, { id: 'medal', icon: '🏅', name: 'Medaille', price: 3, slot: 'medal', tab: 4 }
   ];
-  const SHOP_TABS = ['👒 Mützen', '🎒 Zubehör', '🧸 Spielzeug']; let shopTab = 0;
+  const SHOP_TABS = ['👒 Mützen', '🎒 Zubehör', '🧸 Spielzeug', '🏠 Zimmer']; let shopTab = 0;
   let shopOpen = false, wasInShop = false;
   const shopPanel = $('shopPanel');
   const inShop = () => !P.veh && Math.abs(P.x - SH.x) < SH.half && Math.abs(P.z - SH.z) < SH.half;
@@ -520,7 +526,7 @@
   function spawnRC(quiet, type) {
     type = type || 'rc'; const out = inShop(), sd = type === 'rcheli' ? 2.2 : 0, hx = (out ? SH.x : P.x + Math.sin(P.h) * 2.4) + Math.cos(P.h) * sd, hz = (out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4) - Math.sin(P.h) * sd; let v = vehicles.find(q => q.type === type);
     if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } } else addVeh(type, hx, hz, P.h);
-    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : '🏎️ Dein rotes RC-Auto steht bereit!', 1800);
+    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : type === 'skate' ? '🛹 Dein Skateboard steht bereit!' : '🏎️ Dein rotes RC-Auto steht bereit!', 1800);
   }
   function renderShop() {
     $('shopStars').textContent = '⭐ ' + save.stars; const tabs = $('shopTabs'); tabs.innerHTML = '';
@@ -530,7 +536,8 @@
       const owned = save.owned.includes(it.id), c = document.createElement('div'), b = document.createElement('button'); c.className = 'sc' + (owned ? ' own' : '');
       c.innerHTML = '<div class="si">' + it.icon + '</div><div class="sn">' + it.name + '</div><div class="sp">' + (owned ? '✔ gehört dir' : it.price + ' ⭐') + '</div>';
       if (!owned) { b.textContent = 'Kaufen'; b.disabled = save.stars < it.price; b.onclick = () => buyItem(it); }
-      else if (it.slot === 'rcheli') { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, 'rcheli'); closeShop(); }; }
+      else if (it.slot === 'rcheli' || it.slot === 'skate') { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, it.slot); closeShop(); }; }
+      else if (it.slot === 'deco') { b.textContent = '✔ In „Mein Zimmer“'; b.disabled = true; }
       else { b.textContent = isEq(it) ? 'Ablegen' : 'Anziehen'; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderShop(); }; }
       c.appendChild(b); grid.appendChild(c);
     }
@@ -538,7 +545,7 @@
   function buyItem(it) {
     if (save.owned.includes(it.id) || save.stars < it.price) return;
     save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
-    if (it.slot === 'rcheli') spawnRC(true, 'rcheli'); else setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '!', 1800); renderShop();
+    if (it.slot === 'rcheli' || it.slot === 'skate') spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '!', 1800); renderShop();
   }
   function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; renderShop(); say('Frau Bunt: „Viel Spaß mit dem Spielzeug!“', 2200); }
   function closeShop() { shopOpen = false; shopPanel.hidden = true; updateButtons(true); }
@@ -930,7 +937,7 @@
   function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); say('Such dir etwas Schönes aus! 👕', 1800); }
   function closeWard() { wardOpen = false; wardPanel.hidden = true; updateButtons(true); }
   function renderWard() {
-    refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli');
+    refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'deco');
     { const pb = document.createElement('button'); pb.className = 'pill' + (save.papOff ? '' : ' sel'); pb.textContent = '🎈 Pappnase'; pb.onclick = () => { togglePap(); renderWard(); }; box.appendChild(pb); }
     if (!mine.length) { const h = document.createElement('div'); h.textContent = 'Im Spielzeugladen kannst du neue Sachen kaufen 🧸'; box.appendChild(h); return; }
     for (const it of mine) { const b = document.createElement('button'); b.className = 'pill' + (isEq(it) ? ' sel' : ''); b.textContent = it.icon + ' ' + it.name; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderWard(); }; box.appendChild(b); }
@@ -954,7 +961,12 @@
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
-  const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state });
+  const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state, inv: () => garden.inv() });
+  const beauty = BI.createBeauty({ scene, camera, W, save, renderer });
+  const town = BI.createTown({ scene, W, A, P, fx, save, persist, say, addStars: n => addStars(n), inv: () => garden.inv(), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), openMusic: () => kids.show('music'), modeItems: () => SHOP.filter(i => i.tab === 4), sleep: (q, it) => startSleep({ bed: { x: it.x, z: it.z } }) });
+  for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
+  { const g = W.spots.cityGate; if (g) { const sp = textSprite('🏙️ Willkommen in der Stadt!', 6.4, 1.1, 54); sp.position.set(g.x, g.y + 1.6, g.z + .4); scene.add(sp); } }
+  { const C = W.city; for (let i = 0; i < 16; i++) { const a = Math.random() * TAU, d = 8 + Math.random() * 36; mkNpc(C.x + Math.sin(a) * d, -266 + (Math.random() < .5 ? -3 : 4) + Math.cos(a) * 3, { kid: i % 5 === 0 }); } for (let f = 0; f < 3; f++) { const x = -30 + f * 30, lead = mkNpc(x, -262, {}); lead.spd = 1.3; for (let k = 0; k < 2; k++) mkNpc(x + 1, -262, { kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * .8 }); } }
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
   function nearStation() { if (P.veh) return -1; for (let i = 0; i < W.stations.length; i++) { const p = W.stations[i].plat; if (P.x > p[0] - 1.5 && P.x < p[2] + 1.5 && P.z > p[1] - 1.5 && P.z < p[3] + 1.5) return i; } return -1; }
   /* Am Bahnsteig: „Zug fahren“ – der Zug wird an diesen Bahnhof gezaubert und man steigt als Lokführer ein */
@@ -963,16 +975,18 @@
     if (d > 7 || train.v > 1.5) { fx.burst(trainVeh.x, 2, trainVeh.z, 20, [BI.C.white, BI.C.blue], 5, 1, 30, 2); train.s = st.s; train.v = 0; train.mode = 'wait'; train.timer = 40; train.stationIdx = i; train.update(0, null, fx); fx.burst(st.x, 2, st.z, 24, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 30, 4); A.fanfare(); say('🚂 Der Zug fährt für dich vor! Alles einsteigen!', 3000); }
     enter(trainVeh);
   }
-  function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
+  function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs.concat(town.folk)) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
   function talkNpc(n) {
     const p = n.p, line = p.lines[p.i++ % p.lines.length]; n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
     say('💬 ' + p.name + ': „' + line + '“', 5200); if (A.speak) A.speak(p.name.split(' ')[0] + ' sagt: ' + line);
+    { const iv = garden.inv(); if ((iv.bouquet || 0) > 0) { iv.bouquet--; addStars(3); A.fanfare(); fx.burst(n.x, 2, n.z, 16, [BI.C.pink, BI.C.red, BI.C.white], 4, 1.2, 28, 4); say('💐 ' + p.name + ': „Oh, danke für die Blumen!“ +3 ⭐', 3200); kids.earn('gift'); } }
     const T = save.talked || (save.talked = []); if (!T.includes(p.name)) { T.push(p.name); persist(); if (T.length >= 5) kids.earn('chat'); }
   }
   function placeNear() {
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
     const g = garden.near(); if (g) return { src: 'garden', n: g };
     if (combat.nearKai()) return { src: 'arena' };
+    { const tn = town.near(); if (tn) return { src: 'furn', n: tn }; }
     { const si = nearStation(); if (si >= 0) return { src: 'station', i: si }; }
     if (kitchen.near()) return { src: 'kitchen' };
     if (camp.near()) return { src: 'camp' };
@@ -983,9 +997,9 @@
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'] };
-  function placeLabel(n) { if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -998,6 +1012,7 @@
     { id: 'home', icon: '🏠', name: 'Meine Wohnung', at: () => flats[mySlot()].door }, { id: 'garden', icon: '🌻', name: 'Mein Garten', at: () => { const c = SPOT.gardens[mySlot()].cells[0]; return { x: c.x + 3.2, z: c.z - 1 }; } },
     { id: 'shop', icon: '🧸', name: 'Spielzeugladen', at: () => ({ x: SPOT.shop.x, z: SPOT.shop.z + 8 }) }, { id: 'range', icon: '🎯', name: 'Schießbude', at: () => ({ x: SPOT.range.x, z: SPOT.range.z }) },
     { id: 'hof', icon: '🥕', name: 'Hofladen', at: () => SPOT.farm.customer }, { id: 'fields', icon: '🌾', name: 'Felder & Maschinen', at: () => ({ x: -100, z: 56 }) },
+    { id: 'city', icon: '🏙️', name: 'Stadt', at: () => ({ x: 0, z: -236 }) }, { id: 'shops', icon: '🛒', name: 'Einkaufsstraße', at: () => ({ x: 0, z: -265 }) },
     { id: 'arena', icon: '🥊', name: 'Kampfarena', at: () => ({ x: SPOT.arena.kai.x, z: SPOT.arena.kai.z + 3 }) }, { id: 'forest', icon: '🌲', name: 'Verbotener Wald', at: () => ({ x: SPOT.forest.gate.x, z: SPOT.forest.gate.z }) },
     { id: 'camp', icon: '⛺', name: 'Camp', at: () => ({ x: SPOT.camp.x, z: SPOT.camp.z + 5 }) },
     { id: 'zoo', icon: '🐮', name: 'Streichelzoo', at: () => ({ x: SPOT.pens[0].gate.x + 3, z: SPOT.pens[0].gate.z + 3 }) }, { id: 'pool', icon: '🏊', name: 'Freibad', at: () => ({ x: SPOT.pool.gate.x, z: SPOT.pool.gate.z - 4 }) },
@@ -1026,6 +1041,7 @@
   function renderParent() {
     $('parVol').value = Math.round((save.vol == null ? 1 : save.vol) * 100); $('parMp').classList.toggle('sel', !save.mpOff); $('parMp').textContent = save.mpOff ? '👥 Mitspielen gesperrt' : '👥 Mitspielen erlaubt'; $('parEco').classList.toggle('sel', ecoOn()); $('parVoice').classList.toggle('sel', A.voiceOn);
     const sb = $('parSeason'); sb.innerHTML = ''; SEASONS.forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.season || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.season = k; persist(); if (typeof applySeason === 'function') applySeason(); renderParent(); }; sb.appendChild(b); });
+    const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = k === 'eco' ? 2 : 0; resize(); renderParent(); }; gb.appendChild(b); });
     const bb = $('parBreak'); bb.innerHTML = ''; kids.breakOpts.forEach(m => { const b = document.createElement('button'); b.className = 'pill' + ((save.breakMin || 0) === m ? ' sel' : ''); b.textContent = m ? m + ' Min' : 'Aus'; b.onclick = () => { save.breakMin = m; persist(); kids.refreshBreak(); renderParent(); }; bb.appendChild(b); });
   }
   function openParent() { parentOpen = true; setStick(0, 0); renderParent(); par.hidden = false; }
@@ -1183,7 +1199,7 @@
       row(p, '👟 Schuhe', BI.SHOES.length, sw(BI.SHOES), () => cu().shoe | 0, i => cu().shoe = i); }
     // Reiter 4: Extras
     { const p = panel();
-      row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i);
+      row(p, '🎩 Mütze / Hut', 12, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i);
       lab(p, '🕶️ Zubehör (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['glasses', '🕶️'], ['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
       for (const [k, e] of AC) { const b = document.createElement('button'); b.className = 'hat'; b.textContent = e; b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
       syncs.push(() => bs.forEach(([k, b]) => b.classList.toggle('sel', save.hero === 'custom' && !!(cu().acc && cu().acc[k])))); }
@@ -1259,7 +1275,7 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || combat.panelOpen || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || town.open || combat.panelOpen || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
@@ -1523,14 +1539,14 @@
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > .1) dt = .1; if (dt <= 0) return;
     fpsAcc += dt; fpsN++;
-    if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
+    if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
     if (state === 'pause') { renderer.render(scene, camera); return; }
     t += dt;
     if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1541,9 +1557,9 @@
     if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
     renderer.render(scene, camera);
   }
-  spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli');
+  spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate');
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { W, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

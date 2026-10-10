@@ -132,7 +132,7 @@ BI.createFarm = function (G) {
     const b = book(); if (b[k]) return; b[k] = true; const s = SP[k]; addStars(1); persist(); A.star(); say('📖 Neu im Tierbuch: ' + s.icon + ' ' + s.name + '! ' + s.fact, 5200); if (A.speak) A.speak(s.name + '. ' + s.fact);
     if (ORDER.every(x => b[x])) { addStars(10); say('🏆 Alle Tiere entdeckt! +10 ⭐', 4200); G.earn('zoo'); } if (K.bookOpen) renderBook();
   }
-  const NOFEED = ['egg', 'milk', 'jam', 'cake', 'soup', 'popcorn'];
+  const NOFEED = ['egg', 'milk', 'jam', 'cake', 'soup', 'popcorn', 'bread', 'cheese', 'flour', 'juice', 'choc', 'croissant', 'cookie', 'bouquet', 'potion_hp', 'potion_ep', 'cocoa', 'cakeslice', 'icecream', 'pancake', 'pizza', 'fruitsalad', 'sandwich'];
   K.milk = function (cow) {
     const a = cow || K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
     if (now - (K.milkT == null ? -1e9 : K.milkT) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
