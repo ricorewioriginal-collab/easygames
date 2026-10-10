@@ -180,6 +180,12 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 .slot .sn{font-size:30px;font-weight:700;width:34px;text-align:center;color:#ff7a1f}.slot .sb{flex:1;min-width:0}.slot .sb b{display:block;font-size:17px}.slot .sb small{font-size:12px;opacity:.7;font-weight:600}
 .slot .sa{display:flex;gap:4px}.slot .sa button{width:38px;height:38px;border-radius:12px;background:#eef3fb;font-size:18px}.slot .sa button.go{background:linear-gradient(180deg,#ffb23f,#ff7a1f);color:#fff}.slot .sa button.arm{background:#ffd0d0}
 .mst{min-height:18px;font-size:13px;font-weight:700;margin:2px 0}
+#farmBar{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(10px,env(safe-area-inset-top)) + 100px);z-index:3;padding:5px 14px;font-size:16px;font-weight:700;white-space:nowrap;background:#e9ffd9}
+@media (max-width:620px){#farmBar{top:calc(max(10px,env(safe-area-inset-top)) + 138px);font-size:14px}}
+#seedPanel{position:fixed;left:0;right:0;bottom:0;z-index:11;padding:8px 10px max(10px,env(safe-area-inset-bottom));background:var(--glass);backdrop-filter:blur(8px);border-radius:24px 24px 0 0;box-shadow:0 -8px 24px rgba(20,50,100,.3);text-align:center}.mh2{font-size:20px;font-weight:700;margin:2px 0 6px}
+#seedGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}#seedGrid button{background:#fff;border-radius:16px;padding:8px 2px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:13px}#seedGrid button b{font-size:34px}#seedGrid button small{opacity:.6;font-size:11px}#seedGrid button:active{background:#d9ffd9}
+#bookGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}@media (min-width:640px){#bookGrid{grid-template-columns:repeat(5,1fr)}}#bookGrid .stk{cursor:pointer}
+@media (max-height:520px){#seedGrid button b{font-size:26px}#seedGrid{gap:5px}}
 </style>
 </head>
 <body>
@@ -279,6 +285,20 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
     <div class="sub">Mama sagt: Zeit für eine Pause. Trink etwas und beweg dich ein bisschen!</div>
     <button class="big" id="breakStop" style="font-size:22px;padding:10px 30px">✔ Pause machen</button>
     <div class="row"><button class="pill" id="breakMore" style="position:relative;overflow:hidden">⏱ Eltern: Noch 5 Min (gedrückt halten)</button></div>
+  </div>
+</section>
+<div id="farmBar" class="chip" hidden></div>
+<section id="seedPanel" hidden>
+  <div class="mh2">🌱 Was soll wachsen?</div>
+  <div id="seedGrid"></div>
+  <div class="row"><button class="pill" id="seedClose">✖ Abbrechen</button></div>
+</section>
+<section id="bookPanel" class="screen" hidden>
+  <div class="card shop">
+    <div class="logo" style="font-size:30px">📖 Tierbuch</div>
+    <div class="sub" style="margin:4px 0 8px" id="bookCount"></div>
+    <div id="bookGrid"></div>
+    <button class="big" id="bookClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✔ Fertig</button>
   </div>
 </section>
 <div id="toast"></div>
@@ -407,6 +427,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/util.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/world.js"></script>
+<script src="js/places.js"></script>
 <script src="js/vehicles.js"></script>
 <script src="js/fun.js"></script>
 <script src="js/build.js"></script>
@@ -414,6 +435,9 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/net.js"></script>
 <script src="js/mini.js"></script>
 <script src="js/kids.js"></script>
+<script src="js/garden.js"></script>
+<script src="js/farm.js"></script>
+<script src="js/pool.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

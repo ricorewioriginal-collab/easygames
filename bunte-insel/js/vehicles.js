@@ -7,7 +7,9 @@ BI.VEH = {
   ambulance: { name: 'Krankenwagen', icon: '🚑', max: 24, rev: 6, acc: 10, brake: 22, drag: 5, turn: 1.7, kind: 'car', horn: 'truck', siren: 'ambulance', cols: [-1.5, 1.5], r: 1.2, cam: 10.5 },
   fire:      { name: 'Feuerwehr', icon: '🚒', max: 19, rev: 5, acc: 8, brake: 20, drag: 5, turn: 1.4, kind: 'car', horn: 'truck', siren: 'fire', water: true, cols: [-2.2, 0, 2.2], r: 1.4, cam: 12 },
   bus:       { name: 'Bus', icon: '🚌', max: 16, rev: 5, acc: 6, brake: 18, drag: 4, turn: 1.3, kind: 'car', horn: 'bus', cols: [-2.8, 0, 2.8], r: 1.45, cam: 13 },
-  tractor:   { name: 'Traktor', icon: '🚜', max: 10, rev: 4, acc: 5, brake: 14, drag: 4, turn: 1.5, kind: 'tractor', horn: 'tractor', open: true, offroad: 1, cols: [-.8, 1], r: 1.2, cam: 8 },
+  tractor:   { name: 'Traktor', icon: '🚜', max: 10, rev: 4, acc: 5, brake: 14, drag: 4, turn: 1.5, kind: 'tractor', horn: 'tractor', open: true, offroad: 1, cols: [-.8, 1], r: 1.2, cam: 8, mow: 2.2 },
+  combine:   { name: 'Mähdrescher', icon: '🌾', max: 8, rev: 3, acc: 4, brake: 12, drag: 4, turn: 1.2, kind: 'tractor', horn: 'tractor', offroad: 1, cols: [-1.8, 0, 1.8], r: 1.8, cam: 12, mow: 3.4 },
+  mower:     { name: 'Aufsitzmäher', icon: '🌿', max: 9, rev: 4, acc: 6, brake: 14, drag: 4, turn: 2.1, kind: 'bike', horn: 'bike', open: true, offroad: 1, cols: [-.5, .5], r: .8, cam: 6, mow: 1.5 },
   rc:        { name: 'RC-Auto', icon: '🏎️', max: 15, rev: 5, acc: 16, brake: 24, drag: 6, turn: 2.8, kind: 'bike', horn: 'bike', cols: [-.42, .42], r: .42, cam: 4.2, scale: .36, remote: true },
   boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', boat: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
   rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
@@ -112,6 +114,21 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     b.box(0, 2.55, -.7, 1.8, .1, 2.0, Y); b.box(0, 1.05, -1.35, .7, .18, .6, 0x23262d); b.box(0, 1.2, -1.6, .7, .5, .12, 0x23262d);
     b.cyl(.4, 1.5, 1.4, .07, .07, 1.2, 0x555b66, 6); b.box(0, .25, 2.05, 1.0, .25, .15, DARK);
     return { wheels: [[1.15, .95, -1.1, .95, .55, 0], [-1.15, .95, -1.1, .95, .55, 0], [.85, .5, 1.5, .5, .3, 1], [-.85, .5, 1.5, .5, .3, 1]], head: [[-.4, .8, 2.02], [.4, .8, 2.02]], tail: [[-.7, 1.0, -1.7], [.7, 1.0, -1.7]], seat: [0, 1.0, -.7] };
+  };
+  MODELS.combine = function (b) { // Mähdrescher: breites Schneidwerk vorn, Kabine, Korntank mit Rohr
+    const G = 0x3fa84e, Y = 0xffd23f, W = 0xf5f5f5;
+    b.box(0, .95, -.4, 2.4, 1.3, 3.6, G); b.box(0, 2.2, -1.5, 2.2, 1.3, 1.8, 0xe9f4ff); b.box(0, 2.9, -1.5, 2.5, .14, 2.1, Y); b.box(0, 1.85, 1.2, 2.0, .9, 1.7, G);
+    b.box(0, 2.0, -.2, 2.1, 1.0, 2.4, Y); b.box(.9, 3.1, -.2, .22, .22, 2.6, 0x555b66, 0, 0, .5); b.cyl(1.3, 3.3, .8, .12, .12, 1.5, 0x555b66, 8, Math.PI / 2);
+    b.box(0, .5, 2.7, 4.6, .7, .9, 0xd8283a); b.box(0, 1.1, 2.7, 4.6, .12, 1.0, 0xb02020); for (let i = 0; i < 6; i++) b.box(-2.0 + i * .8, .95, 3.2, .18, .5, .1, W);
+    b.cyl(0, .8, 3.0, .45, .45, 4.2, 0xffd23f, 8, 0, 0, Math.PI / 2);
+    return { wheels: [[1.5, .95, .6, .95, .6, 0], [-1.5, .95, .6, .95, .6, 0], [1.2, .5, -1.6, .5, .4, 1], [-1.2, .5, -1.6, .5, .4, 1]], head: [[-.8, .9, 3.2], [.8, .9, 3.2]], tail: [[-.9, 1.0, -2.3], [.9, 1.0, -2.3]] };
+  };
+  MODELS.mower = function (b) { // Aufsitzmäher: rot, Sitz, Lenkrad, breites Mähdeck vorn
+    const R = 0xe2362a;
+    b.box(0, .45, -.1, .9, .5, 1.5, R); b.box(0, .8, -.5, .8, .5, .5, 0x23262d); b.box(0, .95, -.3, .7, .18, .6, 0x23262d); b.box(0, .85, .5, .8, .55, .15, R);
+    b.cyl(0, 1.1, .35, .22, .22, .06, 0x555b66, 8, .6); b.box(0, 1.0, .35, .06, .5, .06, 0x555b66);
+    b.box(0, .2, 1.1, 1.5, .25, .8, 0xffd23f); b.box(0, .34, 1.1, 1.55, .05, .85, 0xc9a000); b.cyl(0, .3, -.9, .09, .09, .5, 0x555b66, 6);
+    return { wheels: [[.55, .3, -.6, .3, .22, 0], [-.55, .3, -.6, .3, .22, 0], [.55, .22, 1.1, .22, .16, 1], [-.55, .22, 1.1, .22, .16, 1]], head: [[-.3, .5, 1.4], [.3, .5, 1.4]], tail: [[-.3, .6, -.9], [.3, .6, -.9]], seat: [0, .75, -.45] };
   };
   const PAINT = [0xe8453c, 0x3f8cff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xff8a1f];
   BI.PAINT = PAINT;

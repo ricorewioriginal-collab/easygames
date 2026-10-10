@@ -65,7 +65,7 @@ ok(fn.gained === 1 && fn.gum && fn.close >= 4 && fn.party >= 3 && fn.stopped, `S
 // Bauen: Haus bauen, Wand/Tür/Trampolin, Löschen, Speichern, Neustart
 const bd = await page.evaluate(async () => {
   const b = window.__bi, B = b.build, W = b.W, sleep = ms => new Promise(r => setTimeout(r, ms)); let base = null;
-  for (let gx = -30; gx < 30 && !base; gx++) for (let gz = 5; gz < 30 && !base; gz++) { let all = true; for (let i = -1; i <= 3 && all; i++) for (let j = -1; j <= 3 && all; j++) if (!B.canPlace('floor', gx + i, gz + j, 0)) all = false; if (all && Math.hypot(gx * 4, gz * 4) < 100) base = [gx, gz]; }
+  for (let gx = -34; gx < 34 && !base; gx++) for (let gz = -34; gz < 34 && !base; gz++) { let all = true; for (let i = -1; i <= 3 && all; i++) for (let j = -1; j <= 3 && all; j++) if (!B.canPlace('floor', gx + i, gz + j, 0)) all = false; if (all && Math.hypot(gx * 4, gz * 4) < 140 && Math.hypot(gx * 4, gz * 4) > 20) base = [gx, gz]; }
   const out = { roadBlocked: !B.canPlace('floor', 0, 0, 0) }; b.P.x = base[0] * 4 + 6; b.P.z = base[1] * 4 + 14; b.toggleBuild(); out.active = B.active; const [gx, gz] = base;
   const put = (t, x, z, r) => { B.setType(t); B.gx = x; B.gz = z; B.rot = r; B.valid = B.canPlace(t, x, z, r); return B.place(); };
   for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { put('floor', gx + i, gz + j, 0); put('roof', gx + i, gz + j, 0); }
@@ -295,6 +295,39 @@ async function quizPlay(kind) {
 }
 const qz = [await quizPlay('count'), await quizPlay('colors'), await quizPlay('animals')];
 ok(qz.every(q => q.shown && q.gained >= 2 && /1[0-9] Punkte/.test(q.txt)), `Lern-Spiele (Zahlen-Zauber, Farben-Quiz, Tierstimmen): 8 Fragen richtig beantwortet (${qz.map(q => q.txt).join(' | ')})`);
+// Garten, Bauernhof (Felder mähen, Tiere, Tierbuch, Aufgaben), Freibad
+const gd = await page.evaluate(async () => {
+  const b = window.__bi, G = b.garden, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const g = b.W.spots.gardens[b.mySlot()], c0 = g.cells[0], out = {};
+  b.P.x = c0.x; b.P.z = c0.z; b.P.y = 0; await sleep(300); let n = b.placeNear(); out.plantLabel = n && n.src === 'garden' && n.n.k === 'plant'; b.placeAct(n); out.seedOpen = G.open && !document.getElementById('seedPanel').hidden && document.querySelectorAll('#seedGrid button').length === 8;
+  G.plant('carrot'); await sleep(300); out.planted = !G.open && G.count() === 1; n = b.placeNear(); out.water = n && n.n.k === 'water'; b.placeAct(n); out.watered = b.save.farm.garden[0].w === 1;
+  b.save.farm.garden[0].t -= 90000; await sleep(1200); n = b.placeNear(); out.ripe = n && n.n.k === 'harvest' && G.stage(0) === 3; const s0 = b.save.stars; b.placeAct(n); out.harvest = b.save.stars - s0 >= 1 && b.save.farm.inv.carrot === 1 && G.count() === 0;
+  return out;
+});
+ok(Object.values(gd).every(Boolean), `Garten: pflanzen → gießen → wachsen → ernten (${JSON.stringify(gd)})`);
+const fm = await page.evaluate(async () => {
+  const b = window.__bi, F = b.farm, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const out = {};
+  const types = ['tractor', 'combine', 'mower'], got = types.map(t => b.vehicles.find(v => v.type === t && !v.ai)); out.vehicles = got.every(Boolean);
+  const v = got[1]; b.P.x = v.x + 3; b.P.z = v.z; b.enter(v); out.entered = b.P.veh === v;
+  const s0 = b.save.stars; for (const f of F.fields) { v.h = 0; for (let z = f.z0; z <= f.z1; z += 2.5) for (let x = f.x0; x <= f.x1; x += 2.5) { v.x = x; v.z = z; F.mow(v, .1); } }
+  await sleep(600); out.mowed = F.fields.every(f => f.done) && b.save.stars - s0 >= 6; b.leave();
+  const pigs = F.animals.filter(a => a.k === 'pig'); out.animals = F.animals.length >= 25 && pigs.length === 4; const a = pigs[0]; b.P.x = a.x + 1; b.P.z = a.z; b.P.y = 0; await sleep(500); const n = b.placeNear(); out.petLabel = n && n.src === 'animal'; const st1 = b.save.stars;
+  out.book = !!b.save.farm.book.pig; b.placeAct(n); out.pet = (b.save.farm.pets || 0) >= 1; F.openBook(); out.bookOpen = F.bookOpen && document.querySelectorAll('#bookGrid .stk').length === 9; F.closeBook();
+  const hof = b.W.spots.farm; b.P.x = hof.farmer.x; b.P.z = hof.farmer.z - 1.5; await sleep(300); out.farmerNear = F.nearFarmer(); F.talk(); out.questOn = b.save.farm.q.on === true;
+  for (let i = 0; i < 6; i++) F.layEgg(); for (const e of [...F.eggs]) { b.P.x = e.x; b.P.z = e.z; await sleep(220); } out.eggs = (b.save.farm.inv.egg || 0) >= 5; b.P.x = hof.farmer.x; b.P.z = hof.farmer.z - 1.5; const s1 = b.save.stars; F.talk(); out.reward = b.save.stars - s1 >= 4 && b.save.farm.q.i === 1;
+  return out;
+});
+ok(Object.values(fm).every(Boolean), `Bauernhof: Traktor/Mähdrescher/Mäher, Felder mähen (+⭐), Tiere entdecken & streicheln, Tierbuch, Bauer Heinz + Eier-Aufgabe (${JSON.stringify(fm)})`);
+const pl = await page.evaluate(async () => {
+  const b = window.__bi, Po = b.pool, F = b.W.spots.pool, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const out = {};
+  b.P.x = F.slides[0].x; b.P.z = F.slides[0].z; b.P.y = 0; await sleep(300); let n = b.placeNear(); out.slide = n && n.src === 'pool' && n.n.k === 'slide'; b.placeAct(n); out.riding = Po.busy(); for (let i = 0; i < 200 && Po.busy(); i++) await sleep(100); out.slid = !Po.busy() && Po.inWater(b.P.x, b.P.z) === 2;
+  b.P.x = (F.main.x0 + F.main.x1) / 2; b.P.z = (F.main.z0 + F.main.z1) / 2; await sleep(600); out.swim = Po.inWater(b.P.x, b.P.z) === 2 && b.P.swimming !== false; out.low = true;
+  b.P.x = F.board.x; b.P.z = F.board.z; await sleep(300); n = b.placeNear(); out.dive = n && n.n.k === 'dive'; b.placeAct(n); for (let i = 0; i < 300 && Po.busy(); i++) await sleep(100); out.dived = !Po.busy() && Po.inWater(b.P.x, b.P.z) === 2;
+  b.P.x = F.kiosk.x; b.P.z = F.kiosk.z; await sleep(300); n = b.placeNear(); const s0 = b.save.stars; out.ice = n && n.n.k === 'ice'; b.placeAct(n); out.iceStar = b.save.stars - s0 >= 1;
+  b.P.x = F.cabins[0].x; b.P.z = F.cabins[0].z; await sleep(300); n = b.placeNear(); out.cabin = n && n.n.k === 'cabin'; out.stk = b.save.stk.includes('slide') && b.save.stk.includes('swim');
+  const gt = b.pool.waters.length === 2; out.water = gt;
+  return out;
+});
+ok(Object.values(pl).every(Boolean), `Freibad: Rutsche, Schwimmen, Sprungturm, Eis-Kiosk, Umkleide, Sticker (${JSON.stringify(pl)})`);
 // Spielstände: 3 Plätze, Sichern/Laden per Datei, Wechseln lädt den richtigen Stand
 const sv = await page.evaluate(() => { const b = window.__bi; b.save.stars += 7; b.saveNow(); const S = window.BI.store, o = S.exportSlot(1); const ok3 = S.importSlot(3, o); return { stars: b.save.stars, i1: S.info(1), i3: S.info(3), i2: S.info(2), ok3, hasBuild: !!o.data.build, keys: Object.keys(o.data).join(',') }; });
 ok(sv.ok3 && sv.i1.stars === sv.stars && sv.i3.stars === sv.stars && !sv.i2.has && sv.hasBuild, `Spielstand sichern/laden: Platz 1 → Platz 3 kopiert (${sv.stars} Sterne, Platz 2 leer, ${sv.keys})`);
