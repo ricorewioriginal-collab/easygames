@@ -22,6 +22,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Frequenzrad – Buchstaben-Rätsel mit Glücksrad, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 150 Rätsel) | [`anmacha-frequenzrad/`](anmacha-frequenzrad/) |
 | AnMaCha Preisradar – Preis-Schätzspiel mit 5 Spielarten, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 208 Produkte) | [`anmacha-preisradar/`](anmacha-preisradar/) |
 | AnMaCha Funkparcours – 3D-Hindernis-Zeitspiel (Einzelläufe, Zeiten werden verglichen), 3 Parcours, Geist, bis zu 4 Läufer, Handys als Pads (Three.js, Sounds im Browser erzeugt) | [`anmacha-funkparcours/`](anmacha-funkparcours/) |
+| Funkhaus Reality – Live-WG-Simulation im Radiostudio (3D-Haus, Allianzen, Nominierung, Hörervotum, bis zu 4 Menschen mit Handy-Pads + KI-Mitbewohner) | [`FunkhausReality/`](FunkhausReality/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
@@ -305,3 +306,14 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy wird das Steuer-Pad eines Läufers (◀ ▶ ✊ ⤒) und sagt „Bereit".
 - **Technik:** `engine.js` (feste Physik mit 60 Schritten/s, Parcours-Bauer, Wertung – rein), `bot.js` (Planer-Bot: simuliert kurze Zukünfte mit der echten Physik, beweist dass jeder Parcours machbar ist), `scene.js` (Three.js r128), `main.js`, `pair.js`/`controller.js`, `audio.js` (WebAudio).
 - **Tests:** `node anmacha-funkparcours/tests/engine-tests.js` (Physik, Hindernisse, Wertung, Machbarkeit aller Parcours per Bot), Browser-Tests `tests/e2e.mjs` (Show mit 2 Läufern, Training, Geist, Touch) und `tests/e2e-pair.mjs` (2 Handys).
+
+## Funkhaus Reality – Die Live-WG
+
+- **Prinzip:** Eine Wohngemeinschaft im Radiostudio, die Hörer schauen zu und entscheiden (eigenes Format mit eigenem Namen, kein Klon). **Präsentiert vom RicoReWi Radioportal.**
+- **Ablauf je Woche:** 3 Tage mit je **3 Aktionen** (plaudern, kochen, Allianz, sticheln, Geheimnis, Gerücht, Studio-Auftritt, entspannen) → **Wochenaufgabe** (Funk-Reflex, Merk-Melodie, Schätz-Radar; der Sieger ist immun) → **Beichtstuhl** (geheim zwei Mitbewohner nominieren, danach wird offengelegt, wer wen gewählt hat) → **Hörervotum** (Balken, Auszug durchs Publikum) → nächste Woche. Bei den letzten Drei entscheiden die Hörer über den Liebling der Staffel.
+- **Mitbewohner:** 6 (kurz) oder 8 (lang) Bewohner; 1–4 Menschen (eigener Name, Geschlecht, zwei Eigenschaften), der Rest sind KI-Bewohner mit je zwei Eigenschaften (ehrgeizig, herzlich, intrigant, lustig, ruhig, chaotisch, ehrlich, eitel), Sympathien zwischen allen, Allianzen, Stimmung und Hörer-Beliebtheit. Zufallsereignisse (Küchenparty, Streit, Geburtstag, Stromausfall …).
+- **3D-Haus:** aufgeschnittenes Haus mit sechs Räumen (Schlafzimmer, Küche, Wohnzimmer, Studio mit ON-AIR-Lampe, Beichtstuhl, Garten), Figuren mit Laufwegen und Posen, Tag/Nacht, Überwachungskameras, Publikum vor der Tür; die Kamera folgt den Szenen. Qualität passt sich selbst an.
+- **Bedienung:** Mobil (Panel unten) und am PC (Panel rechts). **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy ist das **private** Pad eines Menschen (Tagesplan, Nominierung, Aufgabe). Ohne Handy wird das Gerät herumgereicht („Bereit?“-Schirm). Optional Sprecher-Stimme per Sprachausgabe (🗣️).
+- **Inhalte:** `content.js` (24 Charaktere, Ticker-Texte, Ereignisse, Sprecher-Texte) – prüfen mit `node FunkhausReality/tests/check-content.js`.
+- **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `views.js`, `panel.js`/`games.js` (Eingaben und Mini-Spiele, gleich am Gastgeber und Handy), `house.js` (Three.js), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
+- **Tests:** `node FunkhausReality/tests/engine-tests.js` (Regeln, Determinismus, 160 komplette KI-Staffeln, Balance), Browser-Tests `tests/e2e.mjs` (ganze Staffel mit allen Eingabearten) und `tests/e2e-pair.mjs` (2 Handys mit privaten Plänen und Nominierung).

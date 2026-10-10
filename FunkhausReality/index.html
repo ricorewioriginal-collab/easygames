@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0c24">
+<title>Funkhaus Reality – Die Live-WG</title>
+<meta name="description" content="Funkhaus – die Live-WG im Radiostudio: Allianzen schmieden, nominieren, Hörer entscheiden. 1–4 Menschen mit Handy-Pads gegen KI-Mitbewohner. Präsentiert vom RicoReWi Radioportal.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="hud">
+      <div class="live"><i></i>LIVE</div>
+      <div class="wk glass"><b id="hWeek">Woche 1</b><small id="hSub">Tag 1/3</small></div>
+      <div class="viewers glass" title="Hörer online">👁 <b id="hView">12.4k</b></div>
+      <button class="ib" id="bLog" aria-label="Ticker">📜</button>
+      <button class="ib" id="bVoice" aria-label="Stimme" title="Sprachausgabe">🗣️</button>
+      <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+      <button class="ib" id="bMenu" aria-label="Menü">☰</button>
+    </div>
+    <div id="voice" hidden><span>🎙</span><p id="voiceTxt"></p></div>
+    <div id="ticker"></div>
+    <div id="banner" hidden></div>
+    <div id="bars" hidden></div>
+    <div class="rec"><i></i>REC <span id="recT">00:00</span></div>
+  </div>
+  <aside id="panel">
+    <div id="cast"></div>
+    <div id="act"><div class="info">Willkommen im Funkhaus!</div></div>
+  </aside>
+</div>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Funkhaus" hidden>
+  <div class="wordmark" id="brandText">FUNK<span>HAUS</span></div>
+  <div class="tag">Die Live-WG · Die Hörer entscheiden</div>
+  <div class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="64" height="64"></div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Neue Staffel</button>
+    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
+    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+  </div>
+  <div class="tipline" id="tip"></div>
+  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+</section>
+
+<section id="setup" class="screen" hidden>
+  <div class="panel glass">
+    <h2>Neue Staffel</h2>
+    <div class="fld">Menschen im Haus<div class="seg" id="sgPl"><button data-v="1" class="on">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+    <div class="fld">Bewohner insgesamt<div class="seg" id="sgTot"><button data-v="6" class="on">6 · kurz</button><button data-v="8">8 · lang</button></div></div>
+    <div id="humans" class="humans"></div>
+    <div class="info">Die übrigen Plätze besetzen KI-Mitbewohner mit eigenem Charakter. Mit „📱 Koppeln“ bekommt jeder Mensch ein privates Handy-Pad.</div>
+    <div class="row"><button class="btn green" id="bStart">Einzug!</button><button class="btn blue" id="bPairSetup">📱 Koppeln</button><button class="btn ghost" id="bSetBack">Zurück</button></div>
+  </div>
+</section>
+
+<div id="dlg" class="dialog" hidden><div class="panel glass wide" id="dlgBox"></div></div>
+
+<div id="pair" class="dialog" hidden><div class="panel glass">
+  <h2>📱 Handys koppeln</h2>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das <b>private Pad eines Menschen</b> (bis zu 4): Tagesplan, Nominierung im Beichtstuhl und Wochenaufgabe bleiben geheim.</p>
+  <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
+  <button class="btn green" id="bPairOk">Fertig</button>
+</div></div>
+<section id="ctl" class="screen" aria-live="polite"></section>
+
+<div id="rules" class="dialog" hidden><div class="panel glass">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>Einzug:</b> Du ziehst mit 5–7 Mitbewohnern ins Funkhaus – eine Live-WG im Radiostudio. Die Hörer schauen 24 Stunden zu.</li>
+    <li><b>Jede Woche, drei Tage:</b> Pro Tag planst du <b>3 Aktionen</b>: plaudern, kochen, Allianz schmieden, sticheln, Geheimnisse anvertrauen, Gerüchte streuen, Studio-Auftritt oder entspannen. Sympathie und Beliebtheit verändern sich – und die Hörer merken alles.</li>
+    <li><b>Wochenaufgabe:</b> Ein Mini-Spiel. Der Sieger ist diese Woche <b>immun</b>.</li>
+    <li><b>Beichtstuhl:</b> Alle nominieren geheim zwei Mitbewohner (2 und 1 Punkt). Die meisten Punkte = nominiert. Danach wird offengelegt, wer wen gewählt hat!</li>
+    <li><b>Hörervotum:</b> Die Hörer entscheiden, wer das Haus verlassen muss. Wer beliebt ist, bleibt.</li>
+    <li><b>Finale:</b> Bei den letzten Drei wählen die Hörer den Liebling der Staffel.</li>
+    <li><b>Handys:</b> Über „📱 Handys koppeln“ bekommt jeder Mensch ein privates Pad. Ohne Handy wird das Gerät herumgereicht (mit „Bereit?“-Schirm).</li>
+  </ul>
+  <button class="btn" id="rulesOk">Verstanden</button>
+</div></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
