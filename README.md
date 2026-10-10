@@ -13,6 +13,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
 | AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
+| AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -146,6 +147,14 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Karten & Schwierigkeit:** Funkhafen, Frequenz-Spirale, Zickzack-Studio; Leicht / Normal / Schwer. Welle früh starten bringt Bonus-Geld.
 - **Steuerung:** Turm unten wählen, Feld klicken (am Handy: erstes Tippen = Vorschau, zweites = bauen), Turm antippen = Ausbau/Ziel/Verkauf. Tasten: `1–8` Turm, `Leertaste` Welle, `U` Ausbau, `S` Verkauf, `F` Tempo ×2, `P` Pause, `M` Ton, `Esc` abwählen. Im Hochformat wird das Spielfeld automatisch gedreht.
 - **Logos:** `anmacha-tower-defense/logos/01..13` (`.png|.jpg|.jpeg`), `anmacha-tower-defense/logo.png` ersetzt den Titel. Bestenliste (Top 10) lokal im Browser.
+
+## AnMaCha Koffer DEALER
+
+- **Spiel:** 13 Flightcases, jeder trägt eines der 13 Sender-Logos und versteckt einen Betrag von 1 € bis 1.000.000 €. Wähle deinen eigenen Koffer, öffne reihum die anderen – nach jeder Runde macht der **Dealer** per „Funkspruch“ (ON AIR) ein Angebot: **Deal** (Geld nehmen, dein Koffer bleibt bis zum Finale zu) oder **Weiter**. Im Solo-Spiel gibt es am Ende die Tauschoption.
+- **Eigene Zutat – Handeln:** Pro Angebot einmal +10 / +25 / +50 % fordern; der Dealer geht darauf ein oder zieht das Angebot zurück. Dealer-Typ: Freundlich, Normal, Gnadenlos.
+- **Spielformen:** Solo, Reihum (2–4 Spieler, jeder mit eigenem Koffer, jeder entscheidet selbst über seinen Deal), Duell; Handys koppeln per Code/QR (PeerJS) – dort wählt jeder seine Koffer und entscheidet über Deal/Handeln.
+- **Studio:** 3D-Funkhaus mit Koffer-Bühne, Dealer-Kanzel mit „ON AIR“, Frequenzskala als Wertetafel (rote Nadel zeigt das Angebot), LED-Wand, Publikum, Werbeträgern mit allen Logos (`anmacha-koffer-dealer/logos/01..13`) und Avataren mit Logo-Shirt. Töne (Latch, Funkgeräusch, Kasse, Jubel, Aww, Nachdenk-Musik) entstehen im Browser; optional Moderator-Stimme.
+- **Steuerung:** Koffer unten antippen oder im Studio anklicken; Tasten `D` Deal, `W` Weiter, `T` Tauschen, `B` Behalten, `P` Pause, `M` Ton. Eigenes Titel-Logo: `anmacha-koffer-dealer/logo.png`.
 
 ## Machst du mich an? – Das Quiz!
 
