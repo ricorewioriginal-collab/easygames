@@ -10,7 +10,7 @@ import fs from 'fs';
 const arg = process.argv[2], maxStates = +(process.env.MAX_STATES || 2500000);
 let list;
 if (arg) list = (await import(pathToFileURL(path.resolve(arg)).href)).default;
-else { const { default: all } = await import('../js/game/levels/index.js'); list = all; }
+else { const { ALL_LEVELS } = await import('../js/game/levels/index.js'); list = ALL_LEVELS; }
 let bad = 0; const t00 = Date.now(); const out = [];
 list.forEach((def, idx) => {
   const label = `#${idx + 1} ${def.name || ''}`.padEnd(34), errs = [], rows = def.map;

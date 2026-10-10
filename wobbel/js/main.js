@@ -11,8 +11,6 @@ const $ = id => document.getElementById(id);
 const err = m => { $('err').hidden = false; $('errTxt').textContent = m; };
 if (!window.THREE) { err('Three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen.'); throw new Error('three'); }
 if (window.self !== window.top) $('backLink').hidden = true;
-const PAR = (await import('./game/levels/par.js').then(m => m.default).catch(() => []));
-LEVELS.forEach((l, i) => { l.par = PAR[i] || 0; });
 if (!LEVELS.length) { err('Keine Level gefunden.'); throw new Error('levels'); }
 const coarse = matchMedia('(pointer:coarse)').matches;
 if (Save.settings.dpad == null) Save.setSetting('dpad', coarse);
