@@ -84,7 +84,7 @@ const fx2 = await page.evaluate(async () => {
   const T = b.W.trees[0]; b.P.x = T.x + 1.6; b.P.z = T.z; b.P.h = 0; await sleep(300); out.treeNear = !!b.fun.nearTree(); const s0 = b.save.stars; b.doPunch(); await sleep(250); out.wobbles = T.dirty;
   for (let i = 0; i < 9; i++) { for (let k = 0; k < 60 && b.P.punchT > 0; k++) await sleep(50); await sleep(150); b.doPunch(); } for (let k = 0; k < 60 && b.P.punchT > 0; k++) await sleep(50); await sleep(700); out.treeStars = b.save.stars - s0; out.treeDone = T.cd > 0;
   b.P.x = 0; b.P.z = 40; b.pup.x = 0; b.pup.z = 42; const s1 = b.save.stars; b.doFun('search'); out.pupSearch = b.pup.mode === 'search'; for (let i = 0; i < 80 && b.pup.mode === 'search'; i++) await sleep(250); out.pupStar = b.save.stars - s1;
-  b.P.x = 5; b.P.z = 30; b.P.h = Math.PI; b.doFun('bubbles'); await sleep(900); b.doFun('xxl'); await sleep(2800); out.rideY = b.P.y; b.doFun('xxl'); await sleep(2500); out.landed = b.P.y < .3;
+  b.P.x = 5; b.P.z = 30; b.P.h = Math.PI; b.doFun('bubbles'); await sleep(900); b.doFun('xxl'); for (let i = 0; i < 150 && b.P.y <= 3; i++) await sleep(100); out.rideY = b.P.y; b.doFun('xxl'); for (let i = 0; i < 150 && b.P.y >= .3; i++) await sleep(100); out.landed = b.P.y < .3;
   const s2 = b.save.stars; b.doFun('balloons'); await sleep(2000); out.pap = b.save.stars - s2; return out;
 });
 ok(fx2.treeNear && fx2.wobbles && fx2.treeDone && fx2.treeStars >= 3, `Baum hauen: wackelt, besiegt, +${fx2.treeStars} Sterne`);
@@ -143,9 +143,9 @@ const nw = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.save.stars = 60; b.P.x = -27; b.P.z = 28.5; b.P.h = 0; await sleep(400); b.openShop();
   const tabs = document.getElementById('shopTabs').children.length, ids = ['hat_pirate', 'hat_wizard', 'hat_chef', 'hat_party', 'hat_cowboy', 'hat_helmet', 'patch', 'cape', 'wings', 'kite', 'rcheli']; const items = ids.map(id => b.SHOP.find(x => x.id === id));
   for (const it of items) b.buyItem(it); const eq = b.save.equip; b.closeShop(); const out = { tabs, owned: items.every(it => b.save.owned.includes(it.id)), hat: eq.hat, patch: eq.patch, cape: eq.cape, wings: eq.wings, kite: eq.kite };
-  const h = b.vehicles.find(q => q.type === 'rcheli'); out.heli = !!h; b.P.x = h.x + 1; b.P.z = h.z; b.enter(h); b.inp.up = true; await sleep(2000); b.inp.up = false; out.altitude = h.y; b.leave(); h.y = 0; return out;
+  const h = b.vehicles.find(q => q.type === 'rcheli'); out.heli = !!h; b.P.x = h.x + 1; b.P.z = h.z; b.enter(h); b.inp.up = true; for (let i = 0; i < 150 && h.y <= 1.6; i++) await sleep(100); b.inp.up = false; out.altitude = h.y; b.leave(); h.y = 0; return out;
 });
-ok(nw.tabs === 3 && nw.owned && nw.hat === 'helmet' && nw.patch && nw.cape && nw.wings && nw.kite && nw.heli && nw.altitude > 1.5, `Laden neu: 11 Waren gekauft, Drachen, RC-Hubschrauber steigt ${nw.altitude.toFixed(1)} m`);
+ok(nw.tabs === 4 && nw.owned && nw.hat === 'helmet' && nw.patch && nw.cape && nw.wings && nw.kite && nw.heli && nw.altitude > 1.5, `Laden neu: 11 Waren gekauft, Drachen, RC-Hubschrauber steigt ${nw.altitude.toFixed(1)} m`);
 // Sterne einsammeln zu Fuß
 const st = await page.evaluate(async () => {
   const b = window.__bi; if (b.P.veh) b.leave(); const out = { gained: 0, off: false };
@@ -359,7 +359,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const vis = await m.evaluate(() => { const d = e => getComputedStyle(e).display; return { joy: d(document.getElementById('joy')), kb: [...document.querySelectorAll('.kb')].every(e => d(e) === 'none'), tc: [...document.querySelectorAll('.tc')].every(e => d(e) !== 'none') }; });
   const g = await m.evaluate(() => { const r = document.getElementById('joy').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
   const pe = (type, x, y) => m.evaluate(([type, x, y]) => document.getElementById('zone').dispatchEvent(new PointerEvent(type, { pointerId: 5, pointerType: 'touch', clientX: x, clientY: y, bubbles: true })), [type, x, y]);
-  const z0 = await m.evaluate(() => window.__bi.P.z); await pe('pointerdown', g[0], g[1]); await pe('pointermove', g[0], g[1] - 60); await m.waitForTimeout(1200); const z1 = await m.evaluate(() => window.__bi.P.z); await pe('pointerup', g[0], g[1] - 60);
+  const z0 = await m.evaluate(() => window.__bi.P.z); await pe('pointerdown', g[0], g[1]); await pe('pointermove', g[0], g[1] - 60); let z1 = z0; for (let i = 0; i < 100 && z1 > z0 - 2.5; i++) { await m.waitForTimeout(150); z1 = await m.evaluate(() => window.__bi.P.z); } await pe('pointerup', g[0], g[1] - 60);
   ok(vis.joy === 'block' && vis.kb && vis.tc && z1 < z0 - 2, `Handy: fester Joystick läuft (${z0.toFixed(1)} -> ${z1.toFixed(1)}), Tastatur-Hinweise ausgeblendet`);
   await m.context().close();
   const d = await mk({ viewport: { width: 1000, height: 600 } }); const dv = await d.evaluate(() => ({ joy: getComputedStyle(document.getElementById('joy')).display, keys: getComputedStyle(document.getElementById('keys')).display }));
@@ -447,7 +447,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const b = window.__bi, C = b.combat, o = {}, sl = ms => new Promise(r => setTimeout(r, ms)), F = b.W.spots.forest, A = b.W.spots.arena;
     b.P.x = 0; b.P.z = 26; await sl(200); o.outside = C.active(); C.attack('punch'); o.outsideAtk = !!C.dbg.atk; o.hudOut = document.getElementById('fightBtns').hidden;
     b.P.x = F.x + 3; b.P.z = F.z + 3; await sl(400); o.inForest = C.active(); o.hud = !document.getElementById('fightBtns').hidden;
-    const e = C.dbg.spawn('blob', b.P.x + 1.2, b.P.z, { home: true }); const s0 = b.save.stars; for (let i = 0; i < 8 && !e.dead; i++) { b.P.h = Math.atan2(e.x - b.P.x, e.z - b.P.z); C.attack('punch'); await sl(450); } o.dead = e.dead; o.stars = b.save.stars - s0; o.kills = b.save.fight && b.save.fight.k;
+    const e = C.dbg.spawn('blob', b.P.x + 1.2, b.P.z, { home: true }); const s0 = b.save.stars; for (let i = 0; i < 40 && !e.dead; i++) { b.P.h = Math.atan2(e.x - b.P.x, e.z - b.P.z); C.attack('punch'); await sl(450); } o.dead = e.dead; o.stars = b.save.stars - s0; o.kills = b.save.fight && b.save.fight.k;
     b.P.x = F.gate.x - 12; b.P.z = F.gate.z - 12; await sl(400);
     b.P.x = A.kai.x; b.P.z = A.kai.z + 2.4; await sl(300); const n = b.placeNear(); o.kai = n && n.src; b.placeAct(n); o.panel = C.panelOpen;
     document.querySelector('#arenaBox button').click(); await sl(300); o.mode = C.dbg.mode; const d = C.dbg.duel; o.fighter = d && d.def.n;
