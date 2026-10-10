@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0c24">
+<title>AnMaCha Frequenzrad – Das Buchstaben-Rätsel</title>
+<meta name="description" content="Frequenzrad – drehe das Rad, rate Buchstaben, löse das Rätsel! Bis zu 4 Spieler, auch mit Handys als Pads. Von AnMaCha.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Frequenzrad" hidden>
+  <div class="wordmark" id="brandText">FREQUENZ<span>RAD</span></div>
+  <div class="tag">Das Buchstaben-Rätsel</div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Spielen</button>
+    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
+    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+  </div>
+  <div class="logos" id="logoRow"></div>
+  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+</section>
+
+<section id="setup" class="screen" hidden>
+  <div class="panel glass">
+    <h2>Neues Spiel</h2>
+    <div class="fld">Menschen<div class="seg" id="sgHum"><button data-v="1">1</button><button data-v="2" class="on">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+    <div class="fld">Computer-Gegner<div class="seg" id="sgCpu"><button data-v="0" class="on">0</button><button data-v="1">1</button><button data-v="2">2</button></div></div>
+    <div class="fld" id="fldDiff">Stufe der Computer<div class="seg" id="sgDiff"><button data-v="easy">leicht</button><button data-v="normal" class="on">normal</button><button data-v="hard">schwer</button></div></div>
+    <div id="names" class="names"></div>
+    <div class="fld">Runden (Rätsel)<div class="seg" id="sgRounds"><button data-v="3" class="on">3</button><button data-v="4">4</button><button data-v="5">5</button></div></div>
+    <div class="info">Handys koppeln: Jedes verbundene Handy übernimmt einen Spielerplatz.</div>
+    <div class="row"><button class="btn green" id="bStart">Los geht's!</button><button class="btn blue" id="bPairSetup">📱 Koppeln</button><button class="btn ghost" id="bSetBack">Zurück</button></div>
+  </div>
+</section>
+
+<section id="game" class="screen" hidden>
+  <div class="top">
+    <button class="ib" id="bMenu" aria-label="Menü">☰</button>
+    <div class="rinfo glass" id="rinfo">Runde 1</div>
+    <button class="ib" id="bPairTop" aria-label="Handys koppeln" title="Handys koppeln">📱</button>
+    <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+  </div>
+  <div class="players" id="players"></div>
+  <div class="mid">
+    <div class="wheelbox"><canvas id="wheel" aria-label="Glücksrad"></canvas><div class="wval glass" id="wval">Dreh das Rad!</div></div>
+    <div class="boardwrap"><div class="cat" id="cat"></div><div class="tboard" id="tboard" aria-live="polite"></div></div>
+  </div>
+  <div class="host glass" id="host" aria-live="polite"><span>🎙</span><p id="hostTxt">Willkommen beim Frequenzrad!</p></div>
+  <div class="act" id="act"></div>
+  <div id="flash" hidden></div>
+</section>
+
+<section id="end" class="screen" hidden>
+  <div class="panel glass">
+    <h2 id="endTitle">Spielende</h2>
+    <div class="trophy" id="trophy">🏆</div>
+    <div id="endScores" class="endscores"></div>
+    <div class="row"><button class="btn green" id="bAgain">Nochmal</button><button class="btn ghost" id="bEndMenu">Menü</button></div>
+  </div>
+</section>
+
+<div id="pair" class="dialog" hidden><div class="panel glass">
+  <h2>📱 Handys koppeln</h2>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Pad <b>eines Spielers</b> (bis zu 4) – drehen, Buchstaben wählen, Vokale kaufen und lösen geht dann auf dem Handy.</p>
+  <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
+  <button class="btn green" id="bPairOk">Fertig</button>
+</div></div>
+<section id="ctl" class="screen" aria-live="polite"></section>
+<div id="rules" class="dialog" hidden><div class="panel glass">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>Rätsel:</b> Auf der Tafel steckt ein Satz oder Begriff. Wer an der Reihe ist, <b>dreht das Rad</b>.</li>
+    <li><b>Zahl:</b> Nenne einen <b>Konsonanten</b>. Kommt er vor, gibt es die Zahl für jedes Vorkommen – und du bist weiter dran. Kommt er nicht vor, ist der nächste Spieler dran.</li>
+    <li><b>Vokale</b> kosten 250 Punkte (aus deinen Rundenpunkten). <b>🎁 Gratis-Vokal</b> ist kostenlos.</li>
+    <li><b>💣 Bankrott</b> löscht deine Rundenpunkte, <b>⏸ Aussetzen</b> gibt den Zug weiter.</li>
+    <li><b>Lösen:</b> Weißt du es, tippe die Lösung (Tippfehler sind okay). Falsch = Zug weg. Richtig = Rundenpunkte + 500 Bonus; die anderen verlieren ihre Rundenpunkte.</li>
+    <li><b>Handys:</b> Über „📱 Handys koppeln" wird jedes Handy zum Pad eines Spielers.</li>
+  </ul>
+  <button class="btn" id="rulesOk">Verstanden</button>
+</div></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>

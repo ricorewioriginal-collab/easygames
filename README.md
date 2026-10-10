@@ -19,6 +19,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Gold Reels – moderner Video-Slot mit Spielgeld, 5 Walzen, 20 Linien, Freispielen (reines JavaScript/Canvas) | [`anmacha-gold-reels/`](anmacha-gold-reels/) |
 | AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
+| AnMaCha Frequenzrad – Buchstaben-Rätsel mit Glücksrad, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 150 Rätsel) | [`anmacha-frequenzrad/`](anmacha-frequenzrad/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
@@ -270,3 +271,13 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Fragen:** `questions-a/b/c.js` – 120 Fragen in 15 Kategorien (Radio & Musik, Alltag, Essen, Urlaub, Schule & Arbeit, Tiere & Natur, Freizeit & Sport, Technik & Handy, Familie & Freunde, Feste, Film & Fernsehen, Kleidung, Zuhause & Garten, Gesundheit, Peinlich & Lustig), je 5–8 Antworten mit Punkten (Summe 60–100). Eigene Fragen: gleiche Struktur, prüfen mit `node anmacha-hoererwahl/tests/check-questions.js`.
 - **Technik:** keine Bibliothek, Studio-Hintergrund (Scheinwerfer, Publikum, Konfetti) per Canvas 2D, Ton per WebAudio, nur Einstellungen in `localStorage`. Dateien: `engine.js` (Spielablauf, rein), `matcher.js`, `audio.js`, `studio.js`, `main.js`, `style.css`.
 - **Tests:** `node anmacha-hoererwahl/tests/matcher-tests.js`, `tests/engine-tests.js`, `tests/check-questions.js`; Browser-Tests `tests/e2e.mjs` (Partien solo/zu zweit) und `tests/e2e-pair.mjs` (Spiel + 2 Handys über lokalen PeerServer).
+
+## AnMaCha Frequenzrad – Das Buchstaben-Rätsel
+
+- **Prinzip:** Auf der Tafel steckt ein Satz oder Begriff. Wer dran ist, dreht das Rad (24 Felder: Punktwerte 100–900, 💣 Bankrott, ⏸ Aussetzen, 🎁 Gratis-Vokal), nennt einen **Konsonanten** (Punktwert × Anzahl), kauft **Vokale** für 250 Punkte oder **löst**. Falsch/kein Treffer = nächster Spieler. Gelöst: Rundenpunkte + 500 Bonus, die anderen verlieren ihre Rundenpunkte. Eigenes Design, eigene Rätsel (kein Klon einer bestimmten Show).
+- **Spieler:** 1–4 Menschen am selben Gerät, bis zu 2 Computer-Gegner (leicht/normal/schwer), 3–5 Runden.
+- **Handy-Kopplung 📱:** QR-Code/Code am großen Bildschirm (PeerJS/WebRTC); jedes Handy wird das Pad **eines Spielers**: Drehen, Buchstaben auf der Handy-Tastatur wählen, Vokal kaufen, Lösung tippen, „Weiter". Ohne Handy wird am Gerät gespielt (Tastatur oder Tippen); fällt ein Handy aus, übernimmt der Gastgeber. Lokale Tests: eigener PeerServer über `?ph=host:9000`.
+- **Lösung eintippen:** Umlaute/ß, Groß-/Kleinschreibung und Satzzeichen sind egal, bei längeren Sätzen werden 1–2 Tippfehler verziehen.
+- **150 Rätsel** in 15 Kategorien (`puzzles-a/b/c.js`, Format `{cat, t}`); eigene Rätsel: Großbuchstaben, Wörter ≤ 13 Zeichen, max. 4 Zeilen – prüfen mit `node anmacha-frequenzrad/tests/check-puzzles.js`.
+- **Technik:** Rad und Studio per Canvas 2D, Ton per WebAudio, keine Bibliothek. Dateien: `engine.js` (Spielablauf, rein), `wheel.js`, `pair.js`/`controller.js`, `audio.js`, `studio.js`, `main.js`.
+- **Tests:** `tests/engine-tests.js` (Regeln, Computergegner, Rätsel-Daten), `tests/check-puzzles.js`, Browser-Tests `tests/e2e.mjs` (Partien mit Computergegnern/zu zweit) und `tests/e2e-pair.mjs` (Spiel + 2 Handys).
