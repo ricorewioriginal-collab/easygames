@@ -9,28 +9,34 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Flipper – 3D-Flipper mit eigenen Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
-## Einbetten
+## Spieleliste, Vollbild und Teilen
 
-Pro Spiel: In der Spieleliste auf **</> Einbetten** klicken und den Code kopieren. Beispiel:
+Die Seite zeigt alle Spiele als App-Kacheln. Ein Klick öffnet das Spiel in einem App-Fenster, oben gibt es
+◀ ▶ (nächstes/voriges Spiel), **⛶ Vollbild** (echtes Browser-Vollbild; wo das nicht geht, z. B. iPhone, öffnet sich das Spiel als ganze Seite)
+und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **iframe-Code** zum Kopieren (bzw. das Teilen-Menü des Handys).
+
+- Direktlink zu einem Spiel: `https://ricorewioriginal-collab.github.io/easygames/anmacha-flipper/`
+- Spieleliste mit sofort geöffnetem Spiel: `https://ricorewioriginal-collab.github.io/easygames/#anmacha-flipper`
+- Spiel einbetten:
 
 ```html
 <iframe src="https://ricorewioriginal-collab.github.io/easygames/anmacha-radio-surfer/" title="AnMaCha Radio Surfer"
-  allow="fullscreen" loading="lazy"
+  allow="fullscreen; autoplay" loading="lazy"
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
-Komplette Bibliothek (Spieleliste zum Einbetten):
+- Komplette Bibliothek einbetten (Kacheln zum Einbetten, auch über den Knopf „Alle Spiele einbetten“ erreichbar):
 
 ```html
 <iframe src="https://ricorewioriginal-collab.github.io/easygames/?embed=1" title="easygames"
-  allow="fullscreen" loading="lazy"
+  allow="fullscreen; autoplay" loading="lazy"
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
 ## Neues Spiel hinzufügen
 
 1. Eigenes Verzeichnis anlegen (`mein-spiel/index.html`).
-2. In `index.html` im Array `GAMES` einen Eintrag ergänzen (Titel, Icon, `path`, Beschreibung).
+2. In `index.html` im Array `GAMES` einen Eintrag ergänzen (`id`, Titel, Icon, Farbverlauf, `path`, Kurzbeschreibung). Die Kachel erscheint automatisch.
 
 ## AnMaCha Radio Surfer: eigene Hindernisse
 

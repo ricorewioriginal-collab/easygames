@@ -8,81 +8,81 @@
 <title>AnMaCha Flipper</title>
 <style>
   *{box-sizing:border-box}
+  :root{--c:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6}
   html,body{margin:0;height:100%;overflow:hidden;background:#080B12;color:#fff;overscroll-behavior:none;
     font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;user-select:none;-webkit-user-select:none;
     -webkit-tap-highlight-color:transparent;touch-action:none}
   canvas#gl{display:block;position:fixed;inset:0;width:100%;height:100%}
   button{font:inherit;color:#fff;cursor:pointer;touch-action:none}
   .hidden{display:none!important}
+  .glass{background:rgba(12,17,32,.58);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 8px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
+  .lbl{font-size:10.5px;letter-spacing:.22em;color:#8da2bb;font-weight:700}
   body.menu #hud,body.menu #touch,body.menu #hint,body.menu #meter,body.menu #pops{display:none!important}
 
+  /* Anzeige (HUD) */
   #hud{position:fixed;top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
-    padding:calc(8px + env(safe-area-inset-top)) 12px 0;pointer-events:none;text-shadow:0 0 10px rgba(0,229,255,.7)}
-  #hud .col{display:flex;flex-direction:column;gap:2px}
-  #score{font:800 clamp(24px,6vw,40px)/1 'Trebuchet MS',system-ui,sans-serif;letter-spacing:.02em}
-  #best{font-size:clamp(11px,2.8vw,13px);color:#9fb4c8}
-  #tname{font-size:clamp(11px,2.8vw,13px);color:#00E5FF}
-  #balls{display:flex;gap:6px;justify-content:center;margin-top:6px}
-  #balls i{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9fb4c8 60%,#4a5a6c);box-shadow:0 0 8px #00E5FF}
-  #balls i.off{background:transparent;box-shadow:none;border:2px solid #3a4a5c}
-  #mult{font:800 clamp(16px,4.2vw,24px)/1 'Trebuchet MS',sans-serif;color:#FF2D95;text-shadow:0 0 12px #FF2D95;text-align:right;min-height:1em}
-  #btns{display:flex;gap:8px;pointer-events:auto;margin-top:4px}
-  .ib{width:42px;height:42px;border-radius:12px;border:1px solid rgba(0,229,255,.5);background:rgba(8,11,18,.65);font-size:18px;padding:0}
-  .ib:active{background:rgba(0,229,255,.25)}
+    padding:calc(8px + env(safe-area-inset-top)) 10px 0;pointer-events:none}
+  #hL,#hC{padding:8px 14px;display:flex;flex-direction:column;gap:1px}
+  #hL{min-width:104px}
+  #sideLogo{display:none;width:100%;aspect-ratio:1;border-radius:12px;margin-bottom:8px;background:#0b1018;box-shadow:0 0 28px var(--c)}
+  #score{font:900 clamp(26px,6.6vw,40px)/1.05 'Trebuchet MS',system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--c));
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px var(--c));font-variant-numeric:tabular-nums}
+  #best{font-size:11px;color:#9fb4c8}
+  #tname{font-size:11px;color:var(--c);font-weight:700}
+  #hC{align-items:center}
+  #balls{display:flex;gap:6px;margin-top:3px}
+  #balls i{width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,#b8c6dc 45%,#4a5a74);box-shadow:0 0 9px var(--c)}
+  #balls i.off{background:transparent;box-shadow:none;border:2px solid #34445c}
+  #mult{font:900 clamp(15px,3.6vw,20px)/1 'Trebuchet MS',sans-serif;color:var(--ma);text-shadow:0 0 14px var(--ma);min-height:1em;margin-top:4px}
+  #btns{display:flex;gap:8px;pointer-events:auto}
+  .ib{width:44px;height:44px;border-radius:14px;font-size:18px;padding:0}
+  .ib:active{background:rgba(0,229,255,.28)}
+  /* Querformat am PC: Logo-Karte links, Kugeln/Multiplikator rechts */
+  @media (max-width:430px){
+    .ib{width:38px;height:38px;font-size:16px;border-radius:12px} #btns{gap:5px} #hud{gap:5px;padding-left:6px;padding-right:6px}
+    #hC{padding:6px 9px} #balls i{width:12px;height:12px} #balls{gap:4px} #hL{min-width:0;padding:6px 10px} .lbl{letter-spacing:.14em}
+  }
+  @media (min-aspect-ratio:13/10) and (min-width:880px) and (min-height:601px){
+    #hud{display:block;padding:0}
+    #hL{position:fixed;left:clamp(16px,3vw,48px);top:50%;transform:translateY(-50%);width:clamp(200px,19vw,290px);padding:14px}
+    #sideLogo{display:block}
+    #hC{position:fixed;right:clamp(16px,3vw,48px);top:50%;transform:translateY(-50%);width:clamp(150px,13vw,200px);padding:14px}
+    #hC #balls{gap:8px}
+    #hR{position:fixed;top:16px;right:16px}
+    #score{font-size:clamp(34px,3.6vw,52px)}
+  }
   #meter{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(60vw,260px);height:10px;
     border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;opacity:0;transition:opacity .15s}
   #meter.on{opacity:1}
   #meter b{display:block;height:100%;width:0;background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95)}
-  #msg{position:fixed;left:0;right:0;top:30%;text-align:center;font:800 clamp(22px,6vw,44px)/1.1 'Trebuchet MS',sans-serif;
-    text-shadow:0 0 18px #FF2D95;opacity:0;pointer-events:none;padding:0 12px}
+  #msg{position:fixed;left:0;right:0;top:34%;text-align:center;font:900 clamp(22px,6vw,44px)/1.1 'Trebuchet MS',sans-serif;
+    text-shadow:0 0 18px var(--ma);opacity:0;pointer-events:none;padding:0 12px}
   #msg.show{animation:msg 1.6s ease forwards}
   @keyframes msg{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0}}
   #pops{position:fixed;inset:0;pointer-events:none;overflow:hidden}
-  .pop{position:absolute;color:#fff;font:800 18px 'Trebuchet MS',sans-serif;text-shadow:0 0 10px var(--c),0 0 3px var(--c);animation:pop .9s ease-out forwards;white-space:nowrap}
+  .pop{position:absolute;color:#fff;font:900 20px 'Trebuchet MS',sans-serif;text-shadow:0 0 10px var(--c),0 0 3px var(--c);animation:pop .9s ease-out forwards;white-space:nowrap}
   @keyframes pop{0%{opacity:1;transform:translate(-50%,0) scale(.8)}100%{opacity:0;transform:translate(-50%,-46px) scale(1.2)}}
   #hint{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:#7d90a6;pointer-events:none}
   body.touch #hint{display:none}
 
+  /* Touch-Tasten */
   #touch{position:fixed;left:0;right:0;bottom:0;display:none;gap:10px;justify-content:space-between;align-items:flex-end;
     padding:0 12px calc(14px + env(safe-area-inset-bottom))}
   body.touch #touch{display:flex}
-  #touch button{border-radius:22px;border:2px solid rgba(0,229,255,.6);background:rgba(8,11,18,.55);font:800 clamp(14px,4vw,18px) 'Trebuchet MS',sans-serif;
-    letter-spacing:.06em;box-shadow:0 0 16px rgba(0,229,255,.25) inset}
-  #touch button.down{background:rgba(0,229,255,.3)}
+  #touch button{border-radius:26px;border:1.5px solid rgba(0,229,255,.55);background:linear-gradient(180deg,rgba(0,229,255,.16),rgba(8,11,18,.5));
+    font:900 clamp(15px,4.2vw,20px) 'Trebuchet MS',sans-serif;letter-spacing:.08em;box-shadow:0 0 18px rgba(0,229,255,.25),inset 0 1px 0 rgba(255,255,255,.2)}
+  #touch button.down{background:rgba(0,229,255,.38)}
   #tL,#tR{flex:1;height:clamp(92px,17vh,130px)}
-  #tR{border-color:rgba(255,45,149,.65);box-shadow:0 0 16px rgba(255,45,149,.25) inset}
-  #tR.down{background:rgba(255,45,149,.3)}
-  #tLaunch{width:26%;min-width:84px;height:clamp(70px,12vh,96px);border-color:rgba(139,92,246,.8)!important}
-  #tLaunch.down{background:rgba(139,92,246,.4)!important}
-
-  .ov{position:fixed;inset:0;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at center,rgba(8,11,18,.55),rgba(8,11,18,.94))}
-  .card{margin:auto;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-  h1{margin:0;line-height:.95;font-style:italic;font-weight:900}
-  h1 span{display:block;font-size:clamp(44px,13vw,86px);background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);
-    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,229,255,.5))}
-  h1 small{display:block;font-size:clamp(18px,5.5vw,32px);letter-spacing:.4em;text-shadow:0 0 14px #FF2D95;margin-top:4px}
-  h2{margin:0;font-size:clamp(24px,6vw,36px);text-shadow:0 0 14px #FF2D95}
-  .sub{margin:0;color:#9fb4c8;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
-  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.1em;color:#080B12;border:0;border-radius:999px;padding:14px 52px;min-height:56px;
-    background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);box-shadow:0 0 26px rgba(139,92,246,.6)}
-  .big:active{transform:scale(.96)}
-  .big:disabled{opacity:.6;cursor:wait}
-  .ghost{border:1px solid #00E5FF;background:transparent;border-radius:999px;padding:10px 22px;min-height:44px;font-weight:700;color:#00E5FF}
-  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .picker{display:flex;align-items:center;gap:10px;width:100%;justify-content:center}
-  .arrow{width:48px;height:48px;border-radius:50%;border:1px solid #00E5FF;background:rgba(8,11,18,.6);font-size:22px;padding:0;flex:none}
-  .tcard{width:min(60vw,230px);padding:12px;border-radius:16px;border:1px solid var(--c,#00E5FF);background:rgba(15,20,32,.85);
-    box-shadow:0 0 22px var(--c,#00E5FF);display:flex;flex-direction:column;gap:6px;align-items:center}
-  .tcard canvas{width:100%;aspect-ratio:1;border-radius:10px;background:#0b1018}
-  .tcard b{font-size:16px}.tcard span{font-size:12.5px;color:#9fb4c8}
-  .help{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;text-align:left;font-size:clamp(12px,3.2vw,14px);line-height:1.5}
-  .box{background:rgba(15,20,32,.8);border:1px solid rgba(0,229,255,.3);border-radius:12px;padding:8px 12px}
-  .box b{display:block;color:#00E5FF}
-  kbd{background:#0f1c2c;border:1px solid #00E5FF55;border-radius:5px;padding:0 6px;font:inherit}
-  #status{margin:0;font-size:12px;color:#6c8097;min-height:1.2em}
-  #back{font-size:13px;color:#00E5FF;text-decoration:none}
-  /* Handy quer: Tasten links/rechts neben dem Tisch statt darunter */
+  #tR{border-color:rgba(255,45,149,.65)!important;background:linear-gradient(180deg,rgba(255,45,149,.16),rgba(8,11,18,.5))!important;box-shadow:0 0 18px rgba(255,45,149,.25),inset 0 1px 0 rgba(255,255,255,.2)}
+  #tR.down{background:rgba(255,45,149,.4)!important}
+  #tLaunch{width:26%;min-width:84px;height:clamp(72px,12vh,98px);border-color:rgba(139,92,246,.85)!important;
+    background:linear-gradient(180deg,rgba(139,92,246,.22),rgba(8,11,18,.5))!important}
+  #tLaunch.down{background:rgba(139,92,246,.45)!important}
   @media (orientation:landscape) and (max-height:600px){
+    #hud{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:6px}
+    #hR{position:fixed;top:calc(8px + env(safe-area-inset-top));right:10px}
+    #hC{flex-direction:row;align-items:center;gap:10px;padding:6px 10px} #hC .lbl{display:none} #balls{margin-top:0} #mult{margin-top:0}
     body.touch #touch{display:block;pointer-events:none;padding:0}
     body.touch #touch button{position:fixed;pointer-events:auto}
     #tL{left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));width:30vw;height:38vh}
@@ -90,47 +90,82 @@
     #tLaunch{right:calc(10px + env(safe-area-inset-right));bottom:calc(20px + 38vh + env(safe-area-inset-bottom));width:22vw;height:20vh;min-width:0}
     #meter{display:none}
   }
-  @media (max-width:420px){.help{grid-template-columns:1fr}}
+
+  /* Menü / Overlays */
+  .ov{position:fixed;inset:0;overflow:auto;display:flex;padding:16px;
+    background:radial-gradient(ellipse at 50% 30%,rgba(8,11,18,.45),rgba(8,11,18,.93) 75%)}
+  .ov::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background:radial-gradient(500px 300px at 15% 10%,var(--c),transparent 70%),radial-gradient(500px 300px at 90% 90%,var(--ma),transparent 70%);mix-blend-mode:soft-light}
+  .card{position:relative;margin:auto;width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  h1{margin:0;line-height:.92;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(46px,13vw,88px);background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(0,229,255,.55))}
+  h1 small{display:block;font-size:clamp(17px,5.4vw,30px);letter-spacing:.5em;text-shadow:0 0 14px #FF2D95;margin-top:6px;padding-left:.5em}
+  h2{margin:0;font-size:clamp(26px,6.5vw,40px);font-style:italic;text-shadow:0 0 16px var(--ma)}
+  .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.12em;color:#080B12;border:0;border-radius:999px;padding:15px 58px;min-height:58px;
+    background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);box-shadow:0 0 30px rgba(139,92,246,.65),inset 0 2px 0 rgba(255,255,255,.4)}
+  .big:active{transform:scale(.96)}
+  .big:disabled{opacity:.6;cursor:wait}
+  .ghost{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.05);border-radius:999px;padding:10px 22px;min-height:46px;font-weight:700}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .picker{display:flex;align-items:center;gap:10px;width:100%;justify-content:center}
+  .arrow{width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(12,17,32,.7);font-size:22px;padding:0;flex:none}
+  .arrow:active{background:rgba(0,229,255,.25)}
+  .tcard{width:min(66vw,400px);padding:10px;border-radius:20px;border:1.5px solid var(--c);background:rgba(10,14,26,.8);
+    box-shadow:0 0 34px var(--c),inset 0 1px 0 rgba(255,255,255,.12);display:flex;flex-direction:column;gap:7px;align-items:center}
+  .tcard canvas{width:100%;aspect-ratio:1024/560;border-radius:12px;background:#0b1018}
+  .tmeta{display:flex;flex-direction:column;gap:1px}
+  .tmeta b{font-size:17px}.tmeta span{font-size:12.5px;color:#9fb4c8}
+  #dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  #dots i{width:8px;height:8px;border-radius:50%;background:#33425a}
+  #dots i.on{background:var(--c);box-shadow:0 0 8px var(--c);transform:scale(1.25)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:clamp(11.5px,3.1vw,13px);color:#b6c5d8}
+  .chips span{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}
+  kbd{background:#0f1c2c;border:1px solid rgba(0,229,255,.35);border-radius:5px;padding:0 6px;font:inherit}
+  #status{margin:0;font-size:12px;color:#6c8097;min-height:1.2em}
+  #back{font-size:13px;color:#00E5FF;text-decoration:none}
+  .score-big{font:900 clamp(40px,10vw,64px)/1 'Trebuchet MS',sans-serif;background:linear-gradient(90deg,#fff,#00E5FF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px var(--c))}
 </style>
 </head>
 <body class="menu">
 <canvas id="gl"></canvas>
 
 <div id="hud">
-  <div class="col"><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div></div>
-  <div class="col"><div id="balls"></div></div>
-  <div class="col" style="align-items:flex-end">
-    <div id="mult"></div>
-    <div id="btns">
-      <button class="ib" id="bPause" aria-label="Pause">⏸</button>
-      <button class="ib" id="bSound" aria-label="Ton">🔊</button>
-      <button class="ib" id="bRestart" aria-label="Neustart">↻</button>
-    </div>
-  </div>
+  <div id="hL" class="glass"><canvas id="sideLogo" width="256" height="256"></canvas><div class="lbl">SCORE</div><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div></div>
+  <div id="hC" class="glass"><div class="lbl">KUGELN</div><div id="balls"></div><div id="mult"></div></div>
+  <div id="hR"><div id="btns">
+    <button class="ib glass" id="bPause" aria-label="Pause">⏸</button>
+    <button class="ib glass" id="bSound" aria-label="Ton">🔊</button>
+    <button class="ib glass" id="bRestart" aria-label="Neustart">↻</button>
+  </div></div>
 </div>
 <div id="meter"><b id="meterB"></b></div>
 <div id="msg"></div>
 <div id="pops"></div>
 <div id="hint"><kbd>←</kbd>/<kbd>A</kbd> links · <kbd>→</kbd>/<kbd>D</kbd> rechts · <kbd>Leertaste</kbd> halten &amp; loslassen = Start · <kbd>P</kbd> Pause · <kbd>R</kbd> Neustart · <kbd>M</kbd> Ton</div>
 <div id="touch">
-  <button id="tL">LINKS</button>
+  <button id="tL">◀ LINKS</button>
   <button id="tLaunch">START<br>halten</button>
-  <button id="tR">RECHTS</button>
+  <button id="tR">RECHTS ▶</button>
 </div>
 
 <div id="menu" class="ov">
   <div class="card">
     <h1><span>AnMaCha</span><small>FLIPPER</small></h1>
-    <p class="sub">Wähle deinen Tisch – jeder hat sein eigenes Logo und Layout. 5 Kugeln, so viele Punkte wie möglich!</p>
+    <p class="sub">Such dir einen Tisch aus – jeder hat sein eigenes Logo, Layout und Design.<br>5 Kugeln, so viele Punkte wie möglich!</p>
     <div class="picker">
       <button class="arrow" id="tPrev" aria-label="Voriger Tisch">◀</button>
-      <div class="tcard" id="tcard"><canvas id="tprev" width="256" height="256"></canvas><b id="tTitle"></b><span id="tSub"></span></div>
+      <div class="tcard" id="tcard"><canvas id="tprev" width="512" height="280"></canvas>
+        <div class="tmeta"><b id="tTitle"></b><span id="tSub"></span></div><div id="dots"></div></div>
       <button class="arrow" id="tNext" aria-label="Nächster Tisch">▶</button>
     </div>
     <button class="big" id="bPlay" disabled>LADE …</button>
-    <div class="help">
-      <div class="box"><b>💻 Am PC</b><kbd>←</kbd> <kbd>A</kbd> / <kbd>→</kbd> <kbd>D</kbd> Flipper<br><kbd>Leertaste</kbd> halten, loslassen = Kugel starten<br><kbd>P</kbd> Pause · <kbd>R</kbd> Neustart · <kbd>M</kbd> Ton</div>
-      <div class="box"><b>📱 Am Handy</b>LINKS / RECHTS = Flipper<br>START halten, loslassen = Kugel starten<br>Oben: ⏸ Pause, 🔊 Ton, ↻ Neustart</div>
+    <div class="chips">
+      <span>💻 <kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd> Flipper</span>
+      <span><kbd>Leertaste</kbd> halten &amp; loslassen = Start</span>
+      <span><kbd>P</kbd> Pause · <kbd>R</kbd> Neustart · <kbd>M</kbd> Ton</span>
+      <span>📱 LINKS / RECHTS / START halten</span>
     </div>
     <p id="status"></p>
     <a id="back" href="../">← Alle Spiele</a>
@@ -140,11 +175,12 @@
 <div id="pauseOv" class="ov hidden">
   <div class="card"><h2>PAUSE</h2>
     <button class="big" id="pResume">WEITER</button>
-    <div class="row"><button class="ghost" id="pRestart">Neustart</button><button class="ghost" id="pMenu">Tischwahl</button></div>
+    <div class="row"><button class="ghost" id="pRestart">↻ Neustart</button><button class="ghost" id="pMenu">Tischwahl</button></div>
   </div>
 </div>
 <div id="overOv" class="ov hidden">
   <div class="card"><h2>GAME OVER</h2>
+    <div class="score-big" id="oScore">0</div>
     <p class="sub" id="oText"></p>
     <button class="big" id="oAgain">PLAY AGAIN</button>
     <button class="ghost" id="oMenu">Anderer Tisch</button>
@@ -181,11 +217,12 @@ for (let i = 0; i < LOGO_MAX; i++) {
 
 /* ================= Physik-Konstanten (logische Einheiten, y nach unten) ================= */
 const W = 620, H = 1000, S = 1 / 50;                 // Tischgröße, Welt-Skalierung
-const G = 1500, BALL_R = 11, VMAX = 2400, DT = 1 / 480;
+const G = 1500, BALL_R = 13, VMAX = 2400, DT = 1 / 480;
 const A_REST = 0.52, A_ON = -0.5, FLIP_UP = 17, FLIP_DOWN = 10, FL_LEN = 100;
 const LANE_X = 560, LANE_L = 535, DRAIN_Y = 1020;
 const CX = 277.5;                                    // Spielfeld-Mitte (ohne Startbahn)
-const mx = x => 2 * CX - x;                          // Spiegelung links/rechts
+const mx = x => 2 * CX - x;
+const seeded = sd => () => (sd = sd * 16807 % 2147483647) / 2147483647;   // kleiner Zufallsgenerator (gleiche Kunst bei jedem Start)                          // Spiegelung links/rechts
 
 const PALETTE = [0x00E5FF, 0xFF2D95, 0x8B5CF6, 0x9DFF00, 0xFFB020, 0x3D8BFF, 0xFF4D4D, 0x00FFC8];
 const BUMPER = {   // Punkte laut Spiel: ON AIR 100, HIT ZONE 250, BASS BOOST 500, Lautsprecher 50
@@ -202,12 +239,13 @@ const LAYOUTS = [
     rails: [[70, 250, 140, 200], [485, 250, 415, 200]] },
   { name: 'Equalizer', bumpers: [['onair', 200, 255, 28], ['hit', 355, 255, 28], ['bass', CX, 330, 30], ['spk', 120, 430, 18], ['spk', 200, 430, 18], ['spk', CX, 430, 18], ['spk', 355, 430, 18], ['spk', 435, 430, 18]],
     rails: [[60, 520, 120, 560], [495, 520, 435, 560]] },
-  { name: 'Satellit', bumpers: [['bass', CX, 380, 36], ['onair', CX, 185, 26], ['hit', 120, 520, 24], ['hit', 435, 520, 24],
+  { name: 'Satellit', bumpers: [['bass', CX, 380, 36], ['onair', CX, 172, 26], ['hit', 120, 520, 24], ['hit', 435, 520, 24],
     ...[0, 1, 2, 3, 4].map(i => ['spk', CX + 125 * Math.cos(i * 1.2566 - 1.5708), 380 + 125 * Math.sin(i * 1.2566 - 1.5708), 16])],
     rails: [] }
 ];
 const SLING_KICK = 430;
 const GATE = { x: 548, y0: 120, y1: 340 };
+LAYOUTS.forEach((l, i) => l.style = i);              // Spielfeld-Kunst je Layout
 const ROLLOVERS = [[200, 130], [CX, 112], [355, 130]];
 
 /* ================= Tische ================= */
@@ -299,7 +337,7 @@ function buildPhysics(t) {
   }
   wall(20, cy, 20, 770);                    // links
   wall(585, cy, 585, 980);                  // rechts außen
-  wall(LANE_L, 200, LANE_L, 980);           // Trennwand zur Startbahn
+  wall(LANE_L, 250, LANE_L, 980);           // Trennwand zur Startbahn
   wall(LANE_L, 980, 585, 980);              // Boden der Startbahn
   wall(20, 770, 150, 872, 3.5, 0.4);        // Führung links
   wall(LANE_L, 770, 405, 872, 3.5, 0.4);    // Führung rechts
@@ -442,7 +480,8 @@ function gameOver() {
   state = 'over'; SFX.over();
   const fin = Math.floor(score), nb = fin > best;
   if (nb) { best = fin; try { localStorage.setItem('anmachaFlipperBest', best); } catch (e) {} }
-  $('oText').innerHTML = `Score: <b>${fin}</b> · Best: <b>${best}</b>${nb ? '<br>🏆 Neuer Bestwert!' : ''}`;
+  $('oScore').textContent = fin;
+  $('oText').innerHTML = `Best: <b>${best}</b>${nb ? ' · 🏆 Neuer Bestwert!' : ''}`;
   $('overOv').classList.remove('hidden');
 }
 function pauseGame() { if (state === 'play' || state === 'ready' || state === 'drain') { prevState = state; state = 'paused'; $('pauseOv').classList.remove('hidden'); } }
@@ -580,9 +619,9 @@ const renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setClearColor(0x080B12);
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x080B12, 28, 70);
+scene.fog = new THREE.Fog(0x080B12, 34, 80);
 const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
-const amb = new THREE.AmbientLight(0x8fa0c8, 0.75), sun = new THREE.DirectionalLight(0xffffff, 0.85), ballLight = new THREE.PointLight(0x00E5FF, 1.4, 7);
+const amb = new THREE.AmbientLight(0x9fb0d8, 0.62), sun = new THREE.DirectionalLight(0xffffff, 0.9), ballLight = new THREE.PointLight(0x00E5FF, 1.6, 8);
 sun.position.set(-4, 14, 10);
 scene.add(amb, sun, ballLight);
 const wx = x => (x - W / 2) * S, wz = y => (y - H / 2) * S;
@@ -606,70 +645,117 @@ function disposeGroup(g) {
   ownTex.forEach(t => t.dispose()); ownTex = [];
 }
 
+const tint = (c, k) => `rgb(${(c >> 16 & 255) * k | 0},${(c >> 8 & 255) * k | 0},${(c & 255) * k | 0})`;
+const haloTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+})();
+function envTexture(c1, c2) {                 // künstliche Studio-Umgebung für Chrom-Reflexe
+  const faces = [];
+  for (let f = 0; f < 6; f++) {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+    const gr = g.createLinearGradient(0, 0, 0, 128);
+    if (f === 2) { gr.addColorStop(0, '#dbe9ff'); gr.addColorStop(1, '#6f86b4'); }
+    else if (f === 3) { gr.addColorStop(0, '#06080f'); gr.addColorStop(1, '#06080f'); }
+    else { gr.addColorStop(0, '#3a4a70'); gr.addColorStop(0.5, '#0e1526'); gr.addColorStop(1, '#05070d'); }
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+    g.globalAlpha = 0.95; g.fillStyle = f % 2 ? hex(c1) : hex(c2); g.fillRect(14, 36 + (f * 11) % 30, 100, 12);
+    if (f === 2) { g.fillStyle = '#fff'; g.fillRect(32, 32, 64, 64); }
+    faces.push(c);
+  }
+  const t = new THREE.CubeTexture(faces); t.needsUpdate = true; ownTex.push(t); return t;
+}
+
 function playfieldTexture(t) {
-  const sc = 512 / W;
+  const sc = 512 / W, style = t.layout.style;
   return canvasTex(512, 826, (g) => {
+    const col = hex(t.color), col2 = hex(t.color2), rnd = seeded(31 + t.idx * 17);
     const grd = g.createLinearGradient(0, 0, 0, 826);
-    grd.addColorStop(0, '#0d1424'); grd.addColorStop(1, '#080B12');
+    grd.addColorStop(0, tint(t.color, 0.3)); grd.addColorStop(0.55, tint(t.color2, 0.14)); grd.addColorStop(1, '#070a14');
     g.fillStyle = grd; g.fillRect(0, 0, 512, 826);
-    const col = hex(t.color), col2 = hex(t.color2);
-    g.globalAlpha = 0.12; g.strokeStyle = col; g.lineWidth = 1;
+    g.lineCap = 'round'; g.shadowColor = col; g.shadowBlur = 10;
+    // eigene Spielfeld-Kunst je Layout
+    if (style === 0) {                                        // Studio: Ringe + Strahlen
+      for (let r = 50; r < 330; r += 38) { g.strokeStyle = r % 76 ? col2 : col; g.globalAlpha = 0.42; g.lineWidth = 3; g.beginPath(); g.arc(CX * sc, 430 * sc, r * sc, 0, 7); g.stroke(); }
+      g.globalAlpha = 0.2; g.lineWidth = 2; for (let a = 0; a < 24; a++) { g.beginPath(); g.moveTo(CX * sc, 430 * sc); g.lineTo(CX * sc + Math.cos(a * 0.2618) * 420, 430 * sc + Math.sin(a * 0.2618) * 420); g.stroke(); }
+    } else if (style === 1) {                                 // Mixer: Fader
+      for (let i = 0; i < 6; i++) { const x = (70 + i * 80) * sc; g.globalAlpha = 0.4; g.strokeStyle = col; g.lineWidth = 6; g.beginPath(); g.moveTo(x, 120 * sc); g.lineTo(x, 790 * sc); g.stroke();
+        g.globalAlpha = 0.9; g.fillStyle = i % 2 ? col : col2; const y = (260 + rnd() * 400) * sc; g.fillRect(x - 17, y, 34, 22);
+        g.globalAlpha = 0.3; g.lineWidth = 2; for (let k = 0; k < 14; k++) { g.beginPath(); g.moveTo(x - 20, (140 + k * 46) * sc); g.lineTo(x - 11, (140 + k * 46) * sc); g.stroke(); } }
+    } else if (style === 2) {                                 // Antenne: Funkwellen
+      for (let r = 90; r < 760; r += 46) { g.globalAlpha = Math.max(0.1, 0.55 - r / 1500); g.strokeStyle = r % 92 ? col2 : col; g.lineWidth = 4; g.beginPath(); g.arc(CX * sc, 40 * sc, r * sc, 0.25 * Math.PI, 0.75 * Math.PI); g.stroke(); }
+      g.globalAlpha = 0.5; g.strokeStyle = col; g.lineWidth = 6; g.beginPath(); g.moveTo(CX * sc, 40 * sc); g.lineTo(CX * sc, 560 * sc); g.stroke();
+    } else if (style === 3) {                                 // Equalizer: Balken
+      for (let i = 0; i < 16; i++) { const h = (150 + rnd() * 380) * sc, x = (38 + i * 30) * sc, gg = g.createLinearGradient(0, 780 * sc - h, 0, 780 * sc);
+        gg.addColorStop(0, col); gg.addColorStop(1, col2); g.fillStyle = gg; g.globalAlpha = 0.4; g.fillRect(x, 780 * sc - h, 20 * sc, h); }
+    } else {                                                  // Satellit: Sterne + Umlaufbahnen
+      g.globalAlpha = 0.9; g.fillStyle = '#fff'; g.shadowBlur = 6; for (let i = 0; i < 90; i++) g.fillRect(rnd() * 512, rnd() * 800, 1 + rnd() * 2, 1 + rnd() * 2);
+      g.shadowBlur = 10; g.lineWidth = 3; for (let i = 0; i < 3; i++) { g.globalAlpha = 0.45; g.strokeStyle = i % 2 ? col2 : col; g.beginPath(); g.ellipse(CX * sc, 380 * sc, (200 + i * 60) * sc, (110 + i * 55) * sc, -0.4 + i * 0.3, 0, 7); g.stroke(); }
+    }
+    g.globalAlpha = 0.14; g.strokeStyle = col; g.lineWidth = 1; g.shadowBlur = 0;
     for (let x = 0; x < 512; x += 32) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, 826); g.stroke(); }
     for (let y = 0; y < 826; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(512, y); g.stroke(); }
     g.globalAlpha = 1;
+    // leuchtende Inserts unter den Bumpern
+    t.layout.bumpers.forEach(([type, x, y, r]) => {
+      const gr = g.createRadialGradient(x * sc, y * sc, r * sc * 0.6, x * sc, y * sc, (r + 34) * sc);
+      gr.addColorStop(0, type === 'bass' ? 'rgba(255,45,149,.55)' : hex(t.color) + '88'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr; g.beginPath(); g.arc(x * sc, y * sc, (r + 34) * sc, 0, 7); g.fill();
+    });
     // Frequenz-Skala (Dial)
     const dx = CX * sc, dy = 600 * sc, dr = 58 * sc;
-    g.strokeStyle = col; g.lineWidth = 3; g.shadowColor = col; g.shadowBlur = 12;
+    g.strokeStyle = col; g.lineWidth = 3; g.shadowColor = col; g.shadowBlur = 14;
     g.beginPath(); g.arc(dx, dy, dr, Math.PI * 0.8, Math.PI * 2.2); g.stroke();
     g.lineWidth = 2;
-    for (let i = 0; i <= 20; i++) {
-      const a = Math.PI * 0.8 + (i / 20) * Math.PI * 1.4, l = i % 5 === 0 ? 14 : 7;
-      g.beginPath(); g.moveTo(dx + Math.cos(a) * (dr - 4), dy + Math.sin(a) * (dr - 4)); g.lineTo(dx + Math.cos(a) * (dr - 4 - l), dy + Math.sin(a) * (dr - 4 - l)); g.stroke();
-    }
-    g.shadowBlur = 0;
-    g.fillStyle = col2; g.font = 'bold 15px sans-serif'; g.textAlign = 'center'; g.fillText('FM', dx, dy + dr + 20); g.fillText('88 · 98 · 108', dx, dy + 40);
+    for (let i = 0; i <= 20; i++) { const a = Math.PI * 0.8 + (i / 20) * Math.PI * 1.4, l = i % 5 === 0 ? 14 : 7;
+      g.beginPath(); g.moveTo(dx + Math.cos(a) * (dr - 4), dy + Math.sin(a) * (dr - 4)); g.lineTo(dx + Math.cos(a) * (dr - 4 - l), dy + Math.sin(a) * (dr - 4 - l)); g.stroke(); }
+    g.shadowBlur = 0; g.fillStyle = col2; g.font = 'bold 15px sans-serif'; g.textAlign = 'center'; g.fillText('FM', dx, dy + dr + 20); g.fillText('88 · 98 · 108', dx, dy + 40);
     // Wellenlinien
-    g.strokeStyle = col2; g.globalAlpha = 0.5; g.lineWidth = 3; g.shadowColor = col2; g.shadowBlur = 8;
-    for (let k = 0; k < 2; k++) {
-      g.beginPath();
+    g.strokeStyle = col2; g.globalAlpha = 0.55; g.lineWidth = 3; g.shadowColor = col2; g.shadowBlur = 8;
+    for (let k = 0; k < 2; k++) { g.beginPath();
       for (let x = 0; x <= 512; x += 4) { const y = (k ? 700 : 735) * sc + Math.sin(x * 0.045 + k) * 14 * (0.6 + 0.4 * Math.sin(x * 0.012)); x ? g.lineTo(x, y) : g.moveTo(x, y); }
-      g.stroke();
-    }
+      g.stroke(); }
     g.globalAlpha = 1; g.shadowBlur = 0;
-    // Startbahn-Pfeile
-    g.fillStyle = col; g.globalAlpha = 0.6;
+    // Logo-Aufdruck unten in der Mitte
+    if (t.logo) {
+      const lx = CX * sc, ly = 790 * sc, ls = 140 * sc;
+      g.shadowColor = col; g.shadowBlur = 22; g.fillStyle = '#c9d3e2'; g.globalAlpha = 0.8;
+      g.fillRect(lx - ls / 2 - 6, ly - ls / 2 - 6, ls + 12, ls + 12); g.shadowBlur = 0; g.globalAlpha = 0.8;
+      g.drawImage(t.logo, lx - ls / 2, ly - ls / 2, ls, ls); g.globalAlpha = 1;
+      g.strokeStyle = col2; g.lineWidth = 3; g.strokeRect(lx - ls / 2 - 6, ly - ls / 2 - 6, ls + 12, ls + 12);
+    }
+    // Startbahn-Pfeile + ON AIR
+    g.fillStyle = col; g.globalAlpha = 0.65;
     for (let y = 700; y > 300; y -= 80) { const x = LANE_X * sc, yy = y * sc; g.beginPath(); g.moveTo(x, yy - 14); g.lineTo(x + 12, yy + 8); g.lineTo(x - 12, yy + 8); g.fill(); }
-    g.globalAlpha = 1;
-    // ON AIR Plakette
-    g.fillStyle = '#FF2D95'; g.shadowColor = '#FF2D95'; g.shadowBlur = 14;
-    g.font = 'bold 20px sans-serif'; g.fillText('ON AIR', CX * sc, 190 * sc);
-    g.shadowBlur = 0;
-    // Abfluss
+    g.globalAlpha = 1; g.fillStyle = '#FF2D95'; g.shadowColor = '#FF2D95'; g.shadowBlur = 16; g.font = 'bold 22px sans-serif'; g.fillText('ON AIR', CX * sc, 190 * sc); g.shadowBlur = 0;
     g.fillStyle = '#04060a'; g.fillRect(0, 960 * sc, 512, 70);
   });
 }
-function backglassTexture(t) {
-  return canvasTex(1024, 496, (g) => {
-    const col = hex(t.color), col2 = hex(t.color2);
-    const grd = g.createLinearGradient(0, 0, 1024, 496);
-    grd.addColorStop(0, '#0d1424'); grd.addColorStop(1, '#161030');
-    g.fillStyle = grd; g.fillRect(0, 0, 1024, 496);
-    g.strokeStyle = col; g.lineWidth = 8; g.shadowColor = col; g.shadowBlur = 18; g.strokeRect(10, 10, 1004, 476); g.shadowBlur = 0;
-    // Logo-Platte (hier erscheint das eigene Logo)
-    g.fillStyle = '#eef5f1'; g.fillRect(40, 40, 300, 300);
-    if (t.logo) g.drawImage(t.logo, 40, 40, 300, 300);
-    g.strokeStyle = col2; g.lineWidth = 6; g.strokeRect(40, 40, 300, 300);
-    g.textAlign = 'left';
-    const tg = g.createLinearGradient(380, 0, 1000, 0); tg.addColorStop(0, col); tg.addColorStop(1, '#FF2D95');
-    g.fillStyle = tg; g.font = 'italic 900 128px "Trebuchet MS",sans-serif'; g.shadowColor = col; g.shadowBlur = 20; g.fillText('AnMaCha', 372, 160);
-    g.shadowBlur = 0; g.fillStyle = '#fff'; g.font = 'italic 900 70px "Trebuchet MS",sans-serif'; g.fillText('FLIPPER', 380, 240);
-    g.fillStyle = col2; g.font = 'bold 34px sans-serif'; g.fillText(t.name, 380, 300);
-    g.fillStyle = '#9fb4c8'; g.font = '26px sans-serif'; g.fillText(t.hasLogo ? 'Radio · Pinball · 5 Kugeln' : 'Eigenes Logo: logos/' + String(t.idx + 1).padStart(2, '0') + '.png', 380, 340);
-    // Wellen
-    g.strokeStyle = col; g.lineWidth = 3; g.globalAlpha = .6;
-    g.beginPath(); for (let x = 30; x <= 994; x += 4) { const y = 410 + Math.sin(x * 0.04) * 22 * Math.sin(x * 0.011); x === 30 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke();
-  });
+function backglassCanvas(t) {
+  if (t.bg) return t.bg;
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 560; const g = c.getContext('2d');
+  const col = hex(t.color), col2 = hex(t.color2);
+  const grd = g.createLinearGradient(0, 0, 1024, 560); grd.addColorStop(0, tint(t.color, 0.35)); grd.addColorStop(0.6, '#0b1020'); grd.addColorStop(1, tint(t.color2, 0.35));
+  g.fillStyle = grd; g.fillRect(0, 0, 1024, 560);
+  const rnd = seeded(77 + t.idx); g.fillStyle = '#fff'; g.globalAlpha = 0.5; for (let i = 0; i < 60; i++) g.fillRect(rnd() * 1024, rnd() * 560, 2, 2); g.globalAlpha = 1;
+  g.strokeStyle = col; g.lineWidth = 10; g.shadowColor = col; g.shadowBlur = 26; g.strokeRect(12, 12, 1000, 536); g.shadowBlur = 0;
+  // große Logo-Platte
+  g.shadowColor = col2; g.shadowBlur = 40; g.fillStyle = '#eef5f1'; g.fillRect(40, 40, 480, 480); g.shadowBlur = 0;
+  if (t.logo) g.drawImage(t.logo, 40, 40, 480, 480);
+  g.strokeStyle = col2; g.lineWidth = 8; g.strokeRect(40, 40, 480, 480);
+  g.textAlign = 'left';
+  const tg = g.createLinearGradient(560, 0, 1000, 0); tg.addColorStop(0, '#fff'); tg.addColorStop(1, col);
+  g.fillStyle = tg; g.font = 'italic 900 94px "Trebuchet MS",sans-serif'; g.shadowColor = col; g.shadowBlur = 26; g.fillText('AnMaCha', 552, 176);
+  g.shadowBlur = 0; g.fillStyle = '#fff'; g.font = 'italic 900 82px "Trebuchet MS",sans-serif'; g.fillText('FLIPPER', 556, 282);
+  g.fillStyle = col2; g.font = 'bold 36px sans-serif'; g.fillText(t.name, 556, 350);
+  g.fillStyle = '#b0c2d8'; g.font = '26px sans-serif'; g.fillText(t.hasLogo ? 'Radio · Pinball · 5 Kugeln' : 'Eigenes Logo: logos/' + String(t.idx + 1).padStart(2, '0') + '.jpg', 556, 394);
+  g.strokeStyle = col; g.lineWidth = 4; g.globalAlpha = 0.8; g.shadowColor = col; g.shadowBlur = 12;
+  g.beginPath(); for (let x = 556; x <= 990; x += 4) { const y = 470 + Math.sin(x * 0.05) * 24 * Math.sin(x * 0.013); x === 556 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke();
+  t.bg = c; return c;
 }
+const backglassTexture = t => { const x = new THREE.CanvasTexture(backglassCanvas(t)); x.anisotropy = 4; ownTex.push(x); return x; };
 function bumperLabelTexture(type, color) {
   return canvasTex(128, 128, (g) => {
     const col = hex(color);
@@ -708,104 +794,149 @@ function loadTable(i) {
   if (tableGroup) { scene.remove(tableGroup); disposeGroup(tableGroup); }
   tableGroup = new THREE.Group(); scene.add(tableGroup);
   bumperMeshes = []; slingMeshes = []; rollMeshes = []; flipMeshes = []; eqBars = [];
-  const col = T.color, col2 = T.color2;
-  const dark = new THREE.Color(col).multiplyScalar(0.12).getHex();
+  const col = T.color, col2 = T.color2, root = document.documentElement.style;
+  root.setProperty('--c', hex(col)); root.setProperty('--ma', hex(col2));
+  const dark = new THREE.Color(col).multiplyScalar(0.1).getHex(), env = envTexture(col, col2);
+  const HW = W * S / 2, HH = H * S / 2;
+  const glowPlane = (w, h, x, y, z, c, op, rotY = 0) => {
+    const m = new THREE.Mesh(cached(`gp${w.toFixed(2)},${h.toFixed(2)}`, () => { const q = new THREE.PlaneGeometry(w, h).rotateX(-Math.PI / 2); q.userData.shared = true; return q; }),
+      new THREE.MeshBasicMaterial({ map: haloTex, color: c, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+    m.position.set(x, y, z); m.rotation.y = rotY; tableGroup.add(m); return m;
+  };
 
-  // Spielfläche
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W * S, H * S).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: playfieldTexture(T) }));
-  floor.position.set(0, 0, 0); tableGroup.add(floor);
+  // Umgebung: Boden mit Lichtschein, Seitenwände, Frontblende
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x05070d }));
+  ground.position.y = -0.6; tableGroup.add(ground);
+  glowPlane(34, 44, 0, -0.55, 0, col, 0.35); glowPlane(22, 28, 0, -0.5, 0, col2, 0.25);
+  [-1, 1].forEach(sd => {
+    const rail = new THREE.Mesh(boxGeo(), new THREE.MeshStandardMaterial({ color: 0x1a2236, metalness: 0.6, roughness: 0.35, envMap: env }));
+    rail.scale.set(0.9, 1.1, H * S + 1.2); rail.position.set(sd * (HW + 0.55), 0.0, 0); tableGroup.add(rail);
+    const strip = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: sd > 0 ? col2 : col }));
+    strip.scale.set(0.1, 0.06, H * S + 1.2); strip.position.set(sd * (HW + 0.2), 0.58, 0); tableGroup.add(strip);
+  });
+  const apron = new THREE.Mesh(boxGeo(), new THREE.MeshStandardMaterial({ color: 0x141b2e, metalness: 0.5, roughness: 0.4, envMap: env }));
+  apron.scale.set(W * S + 2.5, 1.1, 1.2); apron.position.set(0, 0.0, HH + 0.6); tableGroup.add(apron);
+  const aStrip = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: col }));
+  aStrip.scale.set(W * S + 2.5, 0.06, 0.08); aStrip.position.set(0, 0.56, HH + 0.02); tableGroup.add(aStrip);
+  [-3.4, 3.4].forEach((x, k) => { const btn = new THREE.Mesh(cached('btn', () => { const q = new THREE.CylinderGeometry(0.36, 0.4, 0.08, 20); q.userData.shared = true; return q; }), new THREE.MeshBasicMaterial({ color: k ? col2 : col })); btn.position.set(x, 0.58, HH + 0.7); tableGroup.add(btn); });
+
+  // Rim-Lichter in den Tischfarben
+  const l1 = new THREE.PointLight(col, 0.55, 26), l2 = new THREE.PointLight(col2, 0.45, 26);
+  l1.position.set(-6, 7, -4); l2.position.set(6, 7, 3); tableGroup.add(l1, l2);
+
+  // Spielfläche (glänzend)
+  const ptex = playfieldTexture(T);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W * S, H * S).rotateX(-Math.PI / 2),
+    new THREE.MeshPhongMaterial({ map: ptex, emissive: 0xffffff, emissiveMap: ptex, emissiveIntensity: 0.42, specular: 0x253552, shininess: 38 }));
+  tableGroup.add(floor);
   const base = new THREE.Mesh(boxGeo(), new THREE.MeshLambertMaterial({ color: dark }));
   base.scale.set(W * S + 0.6, 0.4, H * S + 0.6); base.position.y = -0.22; tableGroup.add(base);
 
-  // Wände
-  walls.filter(w => w.vis).forEach(w => tableGroup.add(wallMesh(w.ax, w.ay, w.bx, w.by, w.rad, 0.55, col, 0.55)));
+  // Wände mit Neon-Schein
+  walls.filter(w => w.vis).forEach(w => {
+    tableGroup.add(wallMesh(w.ax, w.ay, w.bx, w.by, w.rad, 0.6, col, 0.9));
+    const len = Math.hypot(w.bx - w.ax, w.by - w.ay) * S + 0.3;
+    glowPlane(len, 0.95, wx((w.ax + w.bx) / 2), 0.03, wz((w.ay + w.by) / 2), col, 0.2, -Math.atan2(w.by - w.ay, w.bx - w.ax));
+  });
+  const gate = wallMesh(GATE.x, GATE.y0, GATE.x, GATE.y1, 1.5, 0.35, 0xFF2D95, 0.9); gate.material.transparent = true; gate.material.opacity = 0.55;
+  tableGroup.add(gate);
 
-  // Schleudern (Prisma + leuchtende Kickfläche)
+  // Schleudern
   slings.forEach(s => {
     const shape = new THREE.Shape([new THREE.Vector2(wx(s.ax), wz(s.ay)), new THREE.Vector2(wx(s.bx), wz(s.by)), new THREE.Vector2(wx(s.cx), wz(s.cy))]);
-    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.4, bevelEnabled: false }).rotateX(Math.PI / 2);
-    const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: 0x1a1030, emissive: 0x8B5CF6, emissiveIntensity: 0.25 }));
-    mesh.position.y = 0.4;
-    const face = wallMesh(s.ax, s.ay, s.bx, s.by, 5, 0.5, 0x8B5CF6, 1); face.position.y = 0.25;
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.45, bevelEnabled: false }).rotateX(Math.PI / 2);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x241447, emissive: 0x8B5CF6, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.4, envMap: env }));
+    mesh.position.y = 0.45;
+    const face = wallMesh(s.ax, s.ay, s.bx, s.by, 5, 0.5, 0xb28cff, 1); face.position.y = 0.28;
     tableGroup.add(mesh, face); slingMeshes.push({ face, mesh });
   });
 
-  // Bumper
+  // Bumper (Pilz-Form mit Schein)
   bumpers.forEach(b => {
     const g = new THREE.Group(), rr = b.r * S, c = b.type === 'bass' ? 0xFF2D95 : b.type === 'onair' ? 0xFF4D4D : b.type === 'hit' ? col2 : col;
-    const body = new THREE.Mesh(cached(`cyl${rr}`, () => { const x = new THREE.CylinderGeometry(rr, rr * 1.08, 0.55, 28); x.userData.shared = true; return x; }),
-      new THREE.MeshLambertMaterial({ color: 0x1a2033, emissive: c, emissiveIntensity: 0.35 }));
-    body.position.y = 0.275;
-    const cap = new THREE.Mesh(cached(`cap${rr}`, () => { const x = new THREE.CircleGeometry(rr * 0.86, 28).rotateX(-Math.PI / 2); x.userData.shared = true; return x; }),
+    const skirt = new THREE.Mesh(cached(`sk${rr}`, () => { const x = new THREE.CylinderGeometry(rr * 0.95, rr * 1.18, 0.26, 28); x.userData.shared = true; return x; }),
+      new THREE.MeshStandardMaterial({ color: 0x20283f, metalness: 0.7, roughness: 0.3, envMap: env, emissive: c, emissiveIntensity: 0.18 }));
+    skirt.position.y = 0.13;
+    const body = new THREE.Mesh(cached(`cyl${rr}`, () => { const x = new THREE.CylinderGeometry(rr * 0.9, rr * 0.95, 0.42, 28); x.userData.shared = true; return x; }),
+      new THREE.MeshStandardMaterial({ color: 0x1b2238, metalness: 0.5, roughness: 0.35, envMap: env, emissive: c, emissiveIntensity: 0.4 }));
+    body.position.y = 0.47;
+    const cap = new THREE.Mesh(cached(`cap${rr}`, () => { const x = new THREE.CircleGeometry(rr * 0.84, 28).rotateX(-Math.PI / 2); x.userData.shared = true; return x; }),
       new THREE.MeshBasicMaterial({ map: bumperLabelTexture(b.type, c) }));
-    cap.position.y = 0.56;
-    const ring = new THREE.Mesh(cached(`tor${rr}`, () => { const x = new THREE.TorusGeometry(rr, 0.045, 8, 32).rotateX(Math.PI / 2); x.userData.shared = true; return x; }),
+    cap.position.y = 0.69;
+    const ring = new THREE.Mesh(cached(`tor${rr}`, () => { const x = new THREE.TorusGeometry(rr * 0.92, 0.055, 8, 32).rotateX(Math.PI / 2); x.userData.shared = true; return x; }),
       new THREE.MeshBasicMaterial({ color: c }));
-    ring.position.y = 0.58;
-    g.add(body, cap, ring); g.position.set(wx(b.x), 0, wz(b.y)); tableGroup.add(g);
-    bumperMeshes.push({ g, body, ring, c });
+    ring.position.y = 0.7;
+    g.add(skirt, body, cap, ring); g.position.set(wx(b.x), 0, wz(b.y)); tableGroup.add(g);
+    const halo = glowPlane(rr * 4.6, rr * 4.6, wx(b.x), 0.06, wz(b.y), c, 0.3);
+    bumperMeshes.push({ g, body, ring, halo, c });
   });
 
-  const gate = wallMesh(GATE.x, GATE.y0, GATE.x, GATE.y1, 1.5, 0.35, 0xFF2D95, 0.9); gate.material.transparent = true; gate.material.opacity = 0.55;
-  tableGroup.add(gate);
   // Rollover-Lichter
   rolls.forEach(r => {
-    const m = new THREE.Mesh(cached('roll', () => { const x = new THREE.CircleGeometry(0.3, 20).rotateX(-Math.PI / 2); x.userData.shared = true; return x; }),
+    const m = new THREE.Mesh(cached('roll', () => { const x = new THREE.CircleGeometry(0.34, 20).rotateX(-Math.PI / 2); x.userData.shared = true; return x; }),
       new THREE.MeshBasicMaterial({ color: col2, transparent: true, opacity: 0.25 }));
-    m.position.set(wx(r.x), 0.03, wz(r.y)); tableGroup.add(m); rollMeshes.push(m);
+    m.position.set(wx(r.x), 0.04, wz(r.y)); tableGroup.add(m); rollMeshes.push(m);
   });
 
   // Frequenz-Dial Nadel
   needle = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: 0xFF2D95 }));
   needle.scale.set(0.9, 0.05, 0.05);
-  const nb = new THREE.Group(); nb.add(needle); needle.position.x = 0.45; nb.position.set(wx(CX), 0.06, wz(600)); tableGroup.add(nb); needle = nb;
+  const nb = new THREE.Group(); nb.add(needle); needle.position.x = 0.45; nb.position.set(wx(CX), 0.07, wz(600)); tableGroup.add(nb); needle = nb;
 
-  // Flipper (3D, abgeschrägt)
+  // Flipper (glänzend, abgeschrägt)
   flippers.forEach(f => {
-    const L = FL_LEN * S, r1 = f.rp * S, r2 = f.rt * S;
+    const L = FL_LEN * S, r1 = f.rp * S, r2 = f.rt * S, ac = f.side > 0 ? col : col2;
     const sh = new THREE.Shape();
     sh.moveTo(0, r1); sh.lineTo(L, r2); sh.absarc(L, 0, r2, Math.PI / 2, -Math.PI / 2, true); sh.lineTo(0, -r1); sh.absarc(0, 0, r1, -Math.PI / 2, Math.PI / 2, true);
-    const geo = new THREE.ExtrudeGeometry(sh, { depth: 0.4, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 2 }).rotateX(-Math.PI / 2);
-    const mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color: 0xe8f4ff, emissive: f.side > 0 ? col : 0xFF2D95, emissiveIntensity: 0.35, shininess: 80, specular: 0xffffff }));
-    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), new THREE.LineBasicMaterial({ color: f.side > 0 ? col : 0xFF2D95 })));
-    const g = new THREE.Group(); g.add(mesh); g.position.set(wx(f.px), 0.05, wz(f.py)); tableGroup.add(g); flipMeshes.push(g);
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: 0.42, bevelEnabled: true, bevelThickness: 0.07, bevelSize: 0.06, bevelSegments: 3 }).rotateX(-Math.PI / 2);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xf2f7ff, metalness: 0.85, roughness: 0.2, envMap: env, emissive: ac, emissiveIntensity: 0.28 }));
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), new THREE.LineBasicMaterial({ color: ac })));
+    const g = new THREE.Group(); g.add(mesh); g.position.set(wx(f.px), 0.06, wz(f.py)); tableGroup.add(g); flipMeshes.push(g);
+    const pin = new THREE.Mesh(cached('pin', () => { const q = new THREE.CylinderGeometry(0.2, 0.2, 0.12, 16); q.userData.shared = true; return q; }), new THREE.MeshBasicMaterial({ color: ac }));
+    pin.position.y = 0.58; g.add(pin);
   });
 
   // Plunger
-  plunger = new THREE.Mesh(boxGeo(), new THREE.MeshPhongMaterial({ color: 0xb0b8c8, emissive: col2, emissiveIntensity: 0.4 }));
+  plunger = new THREE.Mesh(boxGeo(), new THREE.MeshStandardMaterial({ color: 0xc8d2e4, metalness: 0.9, roughness: 0.25, envMap: env, emissive: col2, emissiveIntensity: 0.3 }));
   plunger.scale.set(0.5, 0.3, 0.5); plunger.position.set(wx(LANE_X), 0.15, wz(985)); tableGroup.add(plunger);
 
-  // Backglass mit Logo + Equalizer-Balken
-  const glass = new THREE.Mesh(new THREE.PlaneGeometry(W * S, 6.0), new THREE.MeshBasicMaterial({ map: backglassTexture(T) }));
-  glass.position.set(0, 3.2, wz(0) - 0.15); tableGroup.add(glass);
-  for (let i = 0; i < 24; i++) {
+  // Backbox mit großem Logo-Display + Equalizer
+  const bb = new THREE.Mesh(boxGeo(), new THREE.MeshStandardMaterial({ color: 0x131a2d, metalness: 0.6, roughness: 0.4, envMap: env }));
+  bb.scale.set(W * S + 2.5, 7.3, 0.9); bb.position.set(0, 3.5, -HH - 0.55); tableGroup.add(bb);
+  const bbE = new THREE.LineSegments(edgeGeo(), new THREE.LineBasicMaterial({ color: col })); bbE.scale.copy(bb.scale); bbE.position.copy(bb.position); tableGroup.add(bbE);
+  const glass = new THREE.Mesh(new THREE.PlaneGeometry(W * S + 0.2, (W * S + 0.2) * 560 / 1024), new THREE.MeshBasicMaterial({ map: backglassTexture(T) }));
+  glass.position.set(0, 0.45 + ((W * S + 0.2) * 560 / 1024) / 2, -HH - 0.04); tableGroup.add(glass);
+  glowPlane(W * S + 3, 3, 0, 0.02, -HH - 0.6, col, 0.5);
+  for (let i = 0; i < 26; i++) {
     const b = new THREE.Mesh(boxGeo(), new THREE.MeshBasicMaterial({ color: i % 3 ? col : col2 }));
-    b.scale.set(0.22, 1, 0.1); b.position.set(-5.6 + i * 0.487, 0.1, wz(0) - 0.05); tableGroup.add(b); eqBars.push(b);
+    b.scale.set(0.2, 1, 0.1); b.position.set(-5.9 + i * 0.472, 0.1, -HH - 0.05); tableGroup.add(b); eqBars.push(b);
   }
-  // Kugel
-  ballMesh = new THREE.Mesh(new THREE.SphereGeometry(BALL_R * S, 20, 16), new THREE.MeshPhongMaterial({ color: 0xdfe9ff, emissive: 0x223355, specular: 0xffffff, shininess: 150 }));
-  shadowMesh = new THREE.Mesh(new THREE.CircleGeometry(BALL_R * S * 1.2, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45 }));
+
+  // Kugel: Chrom
+  ballMesh = new THREE.Mesh(new THREE.SphereGeometry(BALL_R * S, 28, 20), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0.08, envMap: env, envMapIntensity: 1.3 }));
+  shadowMesh = new THREE.Mesh(new THREE.CircleGeometry(BALL_R * S * 1.25, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.5 }));
   tableGroup.add(ballMesh, shadowMesh);
   ballLight.color.setHex(col);
   $('tname').textContent = T.name;
+  const sl = $('sideLogo').getContext('2d'); sl.fillStyle = '#0b1018'; sl.fillRect(0, 0, 256, 256); if (T.logo) sl.drawImage(T.logo, 0, 0, 256, 256);
   fitCamera();
 }
 
+const camBase = new THREE.Vector3(), camTarget = new THREE.Vector3(0, 1.0, 0.2);
 function fitCamera() {
   const w = innerWidth, h = innerHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h;
-  camera.fov = camera.aspect < 0.8 ? 46 : 38; camera.updateProjectionMatrix();
-  const elev = 62 * Math.PI / 180, dir = new THREE.Vector3(0, Math.sin(elev), Math.cos(elev));
-  const target = new THREE.Vector3(0, 0.5, -0.4);
-  const pts = [], hx = W * S / 2 + 0.3, hz = H * S / 2 + 0.3;
-  [[-hx, 0, -hz], [hx, 0, -hz], [-hx, 0, hz], [hx, 0, hz], [-hx, 6.3, -hz], [hx, 6.3, -hz]].forEach(p => pts.push(new THREE.Vector3(...p)));
+  camera.fov = camera.aspect < 0.8 ? 46 : 36; camera.updateProjectionMatrix();
+  const elev = 57 * Math.PI / 180, dir = new THREE.Vector3(0, Math.sin(elev), Math.cos(elev));
+  const hx = W * S / 2 + 1.4, hz = H * S / 2 + 1.2, pts = [];
+  [[-hx, 0, -hz], [hx, 0, -hz], [-hx, 0, hz], [hx, 0, hz], [-hx + 0.3, 7.6, -hz], [hx - 0.3, 7.6, -hz]].forEach(p => pts.push(new THREE.Vector3(...p)));
   const landscapeTouch = TOUCH && w > h && h < 600;
-  const topPad = 0.9, botPad = TOUCH && !landscapeTouch ? 0.82 : 0.95;      // Platz für Anzeige / Touch-Tasten (quer: Tasten stehen seitlich)
+  const topPad = 0.9, botPad = TOUCH && !landscapeTouch ? 0.8 : 0.96;      // Platz für Anzeige / Touch-Tasten (quer: Tasten stehen seitlich)
   let d = 14;
-  for (; d < 90; d += 0.4) {
-    camera.position.copy(target).addScaledVector(dir, d); camera.lookAt(target); camera.updateMatrixWorld(true);
+  for (; d < 100; d += 0.4) {
+    camBase.copy(camTarget).addScaledVector(dir, d); camera.position.copy(camBase); camera.lookAt(camTarget); camera.updateMatrixWorld(true);
     let ok = true;
-    for (const p of pts) { const q = p.clone().project(camera); if (Math.abs(q.x) > 0.94 || q.y > topPad || q.y < -botPad) { ok = false; break; } }
+    for (const p of pts) { const q = p.clone().project(camera); if (Math.abs(q.x) > 0.96 || q.y > topPad || q.y < -botPad) { ok = false; break; } }
     if (ok) break;
   }
 }
@@ -847,11 +978,13 @@ function popup(text, lx, ly, color) {
 }
 
 function drawPreview() {
+  if (!T) return;
   const c = $('tprev'), g = c.getContext('2d');
-  g.fillStyle = '#0b1018'; g.fillRect(0, 0, 256, 256);
-  if (T && T.logo) g.drawImage(T.logo, 0, 0, 256, 256);
-  $('tTitle').textContent = T ? T.name : ''; $('tSub').textContent = T ? (T.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(T.idx + 1).padStart(2, '0')}.png`) : '';
-  $('tcard').style.setProperty('--c', T ? hex(T.color) : '#00E5FF');
+  g.drawImage(backglassCanvas(T), 0, 0, 512, 280);
+  $('tTitle').textContent = T.name;
+  $('tSub').textContent = T.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(T.idx + 1).padStart(2, '0')}.jpg`;
+  const dots = $('dots'); if (dots.children.length !== tables.length) { dots.textContent = ''; tables.forEach(() => dots.appendChild(document.createElement('i'))); }
+  [...dots.children].forEach((d, i) => d.classList.toggle('on', i === tableIdx));
 }
 function selectTable(i) {
   if (!tables.length) return;
@@ -866,14 +999,16 @@ function animate(dt) {
   // Kugel
   ballMesh.position.set(wx(ball.x), BALL_R * S, wz(ball.y));
   shadowMesh.position.set(wx(ball.x) + 0.05, 0.02, wz(ball.y) + 0.05);
-  ballLight.position.set(wx(ball.x), 1.6, wz(ball.y));
+  ballLight.position.set(wx(ball.x), 1.7, wz(ball.y));
+  ballMesh.rotation.z -= ball.vx * S * dt / (BALL_R * S); ballMesh.rotation.x += ball.vy * S * dt / (BALL_R * S);
+  camera.position.set(camBase.x + (ball.x - CX) * 0.004, camBase.y, camBase.z); camera.lookAt(camTarget);
   // Flipper
   flippers.forEach((f, i) => { flipMeshes[i].rotation.y = f.side > 0 ? -f.a : -(Math.PI - f.a); });
   // Bumper / Schleudern / Rollover
   bumperMeshes.forEach((m, i) => {
     const b = bumpers[i]; b.flash = Math.max(0, b.flash - dt * 4);
     const s = 1 + b.flash * 0.18; m.g.scale.set(s, 1 + b.flash * 0.25, s);
-    m.body.material.emissiveIntensity = 0.35 + b.flash * 1.4;
+    m.body.material.emissiveIntensity = 0.4 + b.flash * 1.6; m.halo.material.opacity = 0.3 + b.flash * 0.6;
   });
   slingMeshes.forEach((m, i) => { const s = slings[i]; s.flash = Math.max(0, s.flash - dt * 5); m.face.material.emissiveIntensity = 1 + s.flash * 2; });
   rollMeshes.forEach((m, i) => { m.material.opacity = rolls[i].lit ? 1 : 0.25 + 0.15 * Math.sin(time * 4 + i); });
@@ -907,7 +1042,7 @@ function frame(now) {
       if (done) {
         ready = true; $('bPlay').disabled = false; $('bPlay').textContent = 'PLAY';
         const n = rawLogos.filter(Boolean).length;
-        $('status').textContent = n ? `${n} Logo${n > 1 ? 's' : ''} geladen – ${tables.length} Tische` : 'Platzhalter-Tische – eigene Logos in „logos/“ ablegen (01.png … 13.png).';
+        $('status').textContent = n ? `${n} Logo${n > 1 ? 's' : ''} geladen – ${tables.length} Tische` : 'Platzhalter-Tische – eigene Logos in „logos/“ ablegen (01.jpg … 13.jpg).';
       }
     }
     if (!tablesBuilt) return;
