@@ -118,6 +118,34 @@ body.building #joy{display:none!important}
 body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #mission,body.ranging #keys,body.ranging #gauge,body.ranging #mini,body.ranging #toast{display:none!important}
 .rules{text-align:left;margin:6px auto 10px;padding:8px 14px;border-radius:16px;background:#fff6dd;font-weight:700;font-size:15px;line-height:1.5}
 #rangeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}@media (max-width:420px){#rangeGrid{grid-template-columns:1fr}}
+
+#menu{grid-template-columns:minmax(0,1fr)}
+#menu .mwrap{display:flex;min-width:0;flex-direction:column;align-items:center;gap:8px;width:min(460px,100%)}
+.ttl{display:flex;justify-content:center;flex-wrap:wrap;column-gap:2px;font-size:clamp(46px,13vw,80px);font-weight:700;line-height:1.02;filter:drop-shadow(0 4px 0 #fff) drop-shadow(0 10px 14px rgba(20,50,100,.35))}
+.ttl span{-webkit-text-stroke:7px #fff;paint-order:stroke fill;display:inline-block;animation:bob 2.6s ease-in-out infinite;animation-delay:calc(var(--i)*.13s)}.ttl i{display:inline-block;width:.32em}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-9px) rotate(2.5deg)}}
+.tag{font-weight:700;font-size:clamp(15px,4vw,19px);color:#fff;text-shadow:0 2px 0 rgba(22,51,94,.55),0 0 12px rgba(22,51,94,.35);letter-spacing:.5px}
+.fleet{overflow:hidden;white-space:nowrap;width:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+.fleet div{display:inline-block;font-size:32px;animation:drive 22s linear infinite}@keyframes drive{to{transform:translateX(-50%)}}
+.menucard{padding:16px 16px 18px;display:flex;flex-direction:column}.menucard .lab{margin:0 0 8px;font-size:17px}
+.mbtn{display:flex;align-items:center;gap:14px;width:100%;margin-top:10px;padding:12px 18px;border-radius:24px;font-size:23px;font-weight:700;text-align:left;background:#fff;box-shadow:0 5px 0 rgba(22,51,94,.16),var(--shadow);transition:transform .12s}
+.mbtn b{font-size:32px;width:40px;text-align:center}.mbtn small{display:block;font-size:13px;font-weight:600;opacity:.62;margin-top:1px}
+.mbtn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(22,51,94,.16)}.mbtn:hover{filter:brightness(1.04)}
+.mbtn.main{color:#fff;background:linear-gradient(180deg,#ffb23f,#ff7a1f);box-shadow:0 7px 0 #c25400,0 12px 22px rgba(0,0,0,.25);font-size:27px;padding:15px 18px}.mbtn.main small{opacity:.9}
+.mbtn.back{justify-content:center;margin-top:12px;gap:8px}
+.ver{font-size:12px;font-weight:600;color:#fff;opacity:.85;text-shadow:0 1px 0 rgba(22,51,94,.5);margin-top:2px}
+.card.mp{width:min(460px,100%)}.card.mp .mbtn{margin-top:8px}
+.codebig{font-size:clamp(44px,13vw,64px);font-weight:700;letter-spacing:.14em;padding:4px 12px 4px 20px;border-radius:20px;background:#fff6dd;box-shadow:inset 0 0 0 3px #ffd23f;display:inline-block;font-variant-numeric:tabular-nums;color:#16335e}.codebig:empty{display:none}.codebig.small{font-size:30px;margin-top:6px}
+.qr{margin:10px auto 4px;width:176px;height:176px;background:#fff;border-radius:16px;padding:8px;box-shadow:var(--shadow)}.qr svg,.qr img{width:100%;height:100%;display:block}
+.pad{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-top:10px}.pad button{padding:9px 0;border-radius:12px;background:#fff;font-weight:700;font-size:19px;box-shadow:var(--shadow)}.pad button:active{background:#ffd23f}.pad .wide{grid-column:span 2;background:#ffe3e3}.pad .go{grid-column:span 3;color:#fff;background:linear-gradient(180deg,#4cd07d,#2aa85a)}
+.mpst{min-height:22px;margin:8px 0 2px;font-weight:700;font-size:16px}.mpst.err{color:#d2342a}
+.mpp{padding:6px 14px;border-radius:999px;background:#fff;font-weight:700;font-size:18px;box-shadow:var(--shadow)}
+#mpIcons .pill{font-size:26px;padding:6px 12px}
+#mpPanel{z-index:12}
+#friends{position:absolute;left:max(10px,env(safe-area-inset-left));top:calc(max(10px,env(safe-area-inset-top)) + 50px);padding:5px 14px;font-weight:700;font-size:20px;z-index:2}
+@media (max-width:620px){#friends{top:calc(max(10px,env(safe-area-inset-top)) + 46px)}}
+@media (max-height:640px){.ttl{font-size:clamp(34px,10vw,52px)}.fleet{display:none}.mbtn{padding:8px 14px;margin-top:6px;font-size:19px}.mbtn.main{font-size:22px;padding:10px 14px}.mbtn small{display:none}.menucard{padding:10px 12px}.qr{width:130px;height:130px}.codebig{font-size:40px}}
+@media (prefers-reduced-motion:reduce){.ttl span,.fleet div{animation:none}}
 </style>
 </head>
 <body>
@@ -126,6 +154,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 
 <div id="hud" hidden>
   <div id="stars" class="chip"><span class="ic">⭐</span><span id="starN">0</span></div>
+  <button id="friends" class="chip" hidden aria-label="Mitspieler">👥 <span id="friendsN">1</span></button>
   <div id="mission" class="chip" hidden>
     <div id="mIcon">🚗</div>
     <div id="mBody"><div id="mTitle"></div><div id="mText"></div></div>
@@ -163,14 +192,56 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 <div id="toast"></div>
 
 <section id="menu" class="screen" hidden>
-  <div class="card">
-    <div class="logo">Bunte Insel</div>
-    <div class="sub">Laufen, fahren, entdecken!</div>
-    <div class="vehicles">🚗 🏍️ 🚓 🚑 🚒 🚌 🚜 🍦 🚂</div>
-    <div class="lab" id="hello">Hallo Jannis! ♥</div>
-    <div class="row"><button class="pill sel" id="bJannis">👦 Jannis</button><button class="pill" id="bCustom">🎨 Eigener Held</button></div>
-    <div id="custom" hidden><div class="row" id="swatches"></div><div class="row" id="hats"></div></div>
-    <button class="big" id="bStart">▶ Los geht's!</button>
+  <div class="mwrap">
+    <div class="ttl" id="ttl" role="img" aria-label="Bunte Insel"></div>
+    <div class="tag">Laufen · Fahren · Entdecken</div>
+    <div class="fleet" aria-hidden="true"><div>🚗 🏍️ 🚓 🚑 🚒 🚌 🚜 🍦 🚂 🚁 ⛵ 🚗 🏍️ 🚓 🚑 🚒 🚌 🚜 🍦 🚂 🚁 ⛵ </div></div>
+    <div class="card menucard">
+      <div data-v="home">
+        <div class="lab" id="hello">Hallo Jannis! ♥</div>
+        <button class="mbtn main" id="bStart"><b>▶</b><span>Spielen<small>Los geht's auf die Insel</small></span></button>
+        <button class="mbtn" id="bMulti"><b>👥</b><span>Mitspielen<small>Mit Freunden in einer Welt</small></span></button>
+        <button class="mbtn" id="bHero"><b>🎨</b><span>Mein Held<small>Jannis oder eigener Held</small></span></button>
+      </div>
+      <div data-v="hero" hidden>
+        <div class="lab">Wer spielt mit?</div>
+        <div class="row"><button class="pill sel" id="bJannis">👦 Jannis</button><button class="pill" id="bCustom">🎨 Eigener Held</button></div>
+        <div id="custom" hidden><div class="row" id="swatches"></div><div class="row" id="hats"></div></div>
+        <button class="mbtn back" id="bHeroBack"><b>✔</b><span>Fertig</span></button>
+      </div>
+    </div>
+    <div class="ver">Mit ♥ gemacht · läuft im Browser, ganz ohne Download</div>
+  </div>
+</section>
+
+<section id="mpPanel" class="screen" hidden>
+  <div class="card mp">
+    <div class="logo" style="font-size:32px">👥 Mitspielen</div>
+    <div data-m="choose">
+      <div class="sub">Wer bist du?</div>
+      <div class="row" id="mpIcons"></div>
+      <button class="mbtn main" id="mpHost"><b>🏠</b><span>Neues Spiel eröffnen<small>Du bekommst einen Code zum Teilen</small></span></button>
+      <button class="mbtn" id="mpJoin"><b>🔑</b><span>Spiel beitreten<small>Code eintippen oder QR scannen</small></span></button>
+    </div>
+    <div data-m="host" hidden>
+      <div class="sub">Dein Code – zeig ihn deinen Freunden:</div>
+      <div id="mpCode" class="codebig" aria-live="polite">····</div>
+      <div id="mpQr" class="qr"></div>
+      <div class="sub" style="font-size:15px;margin:6px 0">📱 Handy-Kamera auf den QR-Code halten – oder den Code auf dem anderen Gerät eintippen.</div>
+      <button class="pill" id="mpCopy">🔗 Link kopieren</button>
+    </div>
+    <div data-m="join" hidden>
+      <div class="sub">Code vom Freund eintippen:</div>
+      <div id="mpJoinCode" class="codebig">····</div>
+      <div id="mpPad" class="pad"></div>
+    </div>
+    <div data-m="on" hidden>
+      <div class="sub" id="mpOnTxt">Verbunden!</div>
+      <div id="mpPlayers" class="row"></div>
+      <div id="mpOnCode" class="codebig small"></div>
+    </div>
+    <div id="mpStatus" class="mpst"></div>
+    <div class="row"><button class="pill" id="mpStop" hidden>⛔ Trennen</button><button class="big" id="mpBack" style="margin-top:6px;font-size:20px;padding:10px 28px">‹ Zurück</button></div>
   </div>
 </section>
 
@@ -211,7 +282,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
     <div class="logo" style="font-size:40px">Pause</div>
     <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Einsteigen</b> E · <b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
     <p class="help tc"><b>Laufen/Fahren</b> Joystick links (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Einsteigen</b> Knopf 🚪<br><b>Hupe, Sirene, Turbo</b> Knöpfe rechts<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
-    <button class="big" id="bResume">▶ Weiter spielen</button>
+    <button class="pill" id="bFriendsP" style="margin-top:10px">👥 Mitspielen</button><br><button class="big" id="bResume">▶ Weiter spielen</button>
   </div>
 </section>
 
@@ -227,6 +298,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 <script src="js/fun.js"></script>
 <script src="js/build.js"></script>
 <script src="js/range.js"></script>
+<script src="js/net.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

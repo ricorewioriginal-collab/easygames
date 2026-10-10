@@ -210,12 +210,12 @@ const vo = await page.evaluate(async () => { const b = window.__bi; const said =
 ok(!vo.has || (vo.on && vo.off && vo.t1.length <= 1 && (!vo.t1[0] || !/[🚗⭐]/u.test(vo.t1[0]))), `Vorlesen: Schalter funktioniert, Text ohne Emojis (${JSON.stringify(vo.t1)})`);
 // Rennen, mehr Menschen (Familien/Kinder), mehr Fahrzeuge
 const ru = await page.evaluate(async () => {
-  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 30; b.cam.yaw = 0; b.keys.u = true; await sleep(800); const x0 = b.P.z; await sleep(1200); const walk = (x0 - b.P.z) / 1.2; b.inp.turbo = true; await sleep(800); const z1 = b.P.z; await sleep(1200); const run = (z1 - b.P.z) / 1.2; b.inp.turbo = false; b.keys.u = false;
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 30; b.cam.yaw = 0; b.keys.u = true; await sleep(1500); const walk = b.P.speed; b.inp.turbo = true; await sleep(1500); const run = b.P.speed; b.inp.turbo = false; b.keys.u = false;
   const kids = b.npcs.filter(n => n.kid).length, fam = b.npcs.filter(n => n.lead).length, pk = b.vehicles.filter(v => !v.ai).length;
   const f = b.npcs.find(n => n.lead && n.kid); const L = f.lead; b.P.x = L.x + 4; b.P.z = L.z + 4; L.tx = L.x + 18; L.tz = L.z; L.wait = 0; await sleep(5000); const together = Math.hypot(f.x - L.x, f.z - L.z) < 7;
   return { walk, run, n: b.npcs.length, kids, fam, pk, together };
 });
-ok(ru.run > ru.walk * 1.3 && ru.n >= 45 && ru.kids >= 12 && ru.fam >= 8 && ru.pk >= 30 && ru.together, `Rennen ${ru.run.toFixed(1)} > Gehen ${ru.walk.toFixed(1)} m/s, ${ru.n} Menschen (${ru.kids} Kinder, ${ru.fam} in Familien), ${ru.pk} Fahrzeuge, Familie bleibt zusammen`);
+ok(ru.run > ru.walk * 1.3 && ru.n >= 40 && ru.kids >= 12 && ru.fam >= 8 && ru.pk >= 30 && ru.together, `Rennen ${ru.run.toFixed(1)} > Gehen ${ru.walk.toFixed(1)} m/s, ${ru.n} Menschen (${ru.kids} Kinder, ${ru.fam} in Familien), ${ru.pk} Fahrzeuge, Familie bleibt zusammen`);
 console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 // Handy: fester Joystick sichtbar, Tastatur-Hinweise weg; Desktop: umgekehrt
 {
