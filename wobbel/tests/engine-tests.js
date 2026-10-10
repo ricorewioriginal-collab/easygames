@@ -33,4 +33,5 @@ const at = (l, x, y) => y * l.w + x;
 { const l = L(['######', '#@$<.#', '######']), s = createState(l); ok(step(l, s, R) === null, 'Kiste darf nicht gegen die Pfeilrichtung auf ein Pfeilfeld'); }
 { const l = L(['#########', '#@$>ii..#', '#########']), s = createState(l); const r = step(l, s, R); ok(r && s.crate[at(l, 3, 1)] === 1, 'Kiste landet auf dem Pfeilfeld und rutscht nicht weiter (Pfeilfeld ist kein Eis)'); }
 { const l = L(['#####', '#@  #', '#^  #', '# $.#', '#####']), p = findPath(l, createState(l), l.start, at(l, 1, 2)); ok(p === null || p.length > 1, 'Klick-Laufen respektiert Pfeile (kein direkter Weg gegen die Richtung)'); }
+{ const l = L(['########', '#@ $  .#', '#      #', '########']), s = createState(l); step(l, s, D); const r = solve(l, { from: s, maxMs: 4000 }); ok(r.solvable === true && r.pushes >= 1 && r.moves >= 1, 'Löser kann von einer Zwischenstellung aus lösen (Tipp-Knopf)'); const t = cloneState(s); for (const d of r.path) step(l, t, d); ok(isSolved(l, t), 'Tipp-Lösung ab Zwischenstellung löst das Level'); }
 console.log(fails ? `\n${fails} Tests fehlgeschlagen` : '\nAlle Regeltests bestanden'); process.exit(fails ? 1 : 0);

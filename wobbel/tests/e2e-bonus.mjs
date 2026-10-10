@@ -35,7 +35,7 @@ await page.evaluate(() => window.__wobbel.toMenu());
 // Tipp, Zeit, Tageslevel, Erfolge, Community
 await page.evaluate(() => window.__wobbel.startLevel(3)); await page.waitForTimeout(500); let cTip = (await save()).coins; await page.click('#bTip'); await page.waitForFunction(() => /Tipp:/.test(document.getElementById('toast').textContent), null, { timeout: 30000 }); sv = await save();
 log(sv.coins === cTip - 5 && await page.evaluate(() => !!window.__wobbel.view.tip), 'Tipp: 5 Muscheln, Pfeil erscheint in der Szene');
-await page.evaluate(() => [0, 1, 2, 3].forEach(d => window.__wobbel.session.push(d))); await page.waitForTimeout(900); log(await page.evaluate(() => !window.__wobbel.view.tip) && /⏱ \d+:\d\d\.\d/.test(await page.textContent('#cTime')), 'Tipp verschwindet nach dem Zug, Zeitanzeige läuft');
+await page.evaluate(() => { window.__ffwd = 8; }); for (const d of [0, 1, 2, 3]) { await page.evaluate(d => window.__wobbel.session.push(d), d); await page.waitForTimeout(500); } await page.waitForTimeout(800); await page.evaluate(() => { window.__ffwd = 1; }); log(await page.evaluate(() => !window.__wobbel.view.tip) && /⏱ \d+:\d\d\.\d/.test(await page.textContent('#cTime')), 'Tipp verschwindet nach dem Zug, Zeitanzeige läuft');
 await page.evaluate(() => window.__wobbel.toMenu()); await page.click('#bDaily'); await page.waitForTimeout(500); log((await page.textContent('#tWorld')).includes('Tageslevel'), 'Tageslevel startet mit Kennzeichnung');
 await page.evaluate(() => window.__wobbel.toMenu());
 await page.click('#bLevels'); await page.click('#bComm'); await page.waitForSelector('#cmList .my-row'); log((await page.locator('#cmList .my-row').count()) === 5, 'Community-Liste zeigt 5 Level');

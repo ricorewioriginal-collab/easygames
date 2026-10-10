@@ -13,7 +13,7 @@ export function solve(L, opt = {}) {
     for (let d = 0; d < 4; d++) {
       const n = cloneState(cur), r = step(L, n, d); if (!r) continue; const k = enc(n); if (seen.has(k)) continue;
       seen.set(k, keys.length); keys.push(k); par.push(head); mv.push(d);
-      if (isSolved(L, n)) { const path = []; for (let i = keys.length - 1; i > 0; i = par[i]) path.push(mv[i]); path.reverse(); let pushes = 0; const t = createState(L); for (const dd of path) { if (step(L, t, dd).push) pushes++; } return { solvable: true, moves: path.length, pushes, states: seen.size, path }; }
+      if (isSolved(L, n)) { const path = []; for (let i = keys.length - 1; i > 0; i = par[i]) path.push(mv[i]); path.reverse(); let pushes = 0; const t = opt.from ? cloneState(opt.from) : createState(L); for (const dd of path) { if (step(L, t, dd).push) pushes++; } return { solvable: true, moves: path.length, pushes, states: seen.size, path }; }
       if (seen.size > maxStates) return { solvable: null, states: seen.size, reason: 'Zustandslimit erreicht' };
     }
     head++; if (head % 200000 === 0) keys[head - 200000] = null; if ((head & 1023) === 0 && Date.now() - t0 > maxMs) return { solvable: null, states: seen.size, reason: 'Zeitlimit erreicht' };

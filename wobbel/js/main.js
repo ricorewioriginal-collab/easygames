@@ -66,7 +66,7 @@ function solved(s) {
     $('wInfo').innerHTML = `👣 ${st.moves} Züge · 📦 ${st.pushes} Schübe${secs ? ' · ⏱ ' + fmtT(secs) : ''}${def.par ? `<br>Bestmarke ${def.par} Züge` : ''}${!custom && res.newBest && Save.level(def.index).plays > 1 ? '<br>🏆 Neuer persönlicher Rekord!' : ''}${!custom && res.newTime && old && old.time ? '<br>⏱ Neue Bestzeit!' : ''}`;
     const coin = reward + (dly ? dly.reward : 0); $('wCoins').hidden = !coin; $('wCoins').innerHTML = `+${coin} 🐚${dly ? `<br><small>📅 Tageslevel geschafft · 🔥 Serie ${dly.streak} (+${dly.reward})</small>` : ''}`;
     $('wAch').hidden = !got.length; $('wAch').innerHTML = got.map(a => `🏅 ${a.name} (+${a.reward} 🐚)`).join('<br>');
-    $('wNext').textContent = custom ? '✏️ Zurück' : curIdx + 1 < LEVELS.length ? 'Nächstes Level ▶' : 'Zum Menü'; $('wMenu').hidden = !!custom; dlg('win', true); [1, 2, 3].forEach(k => k <= stars && setTimeout(() => SFX.star(k), 250 * k));
+    $('wNext').textContent = custom ? '✏️ Zurück zum Editor' : curIdx + 1 < LEVELS.length ? 'Nächstes Level ▶' : 'Zum Menü'; $('wMenu').hidden = !!custom; dlg('win', true); [1, 2, 3].forEach(k => k <= stars && setTimeout(() => SFX.star(k), 250 * k));
   }, 900);
 }
 $('wShare').onclick = async () => { SFX.click(); const url = location.origin + location.pathname; try { if (navigator.share) { await navigator.share({ text: shareText, url }); return; } await navigator.clipboard.writeText(shareText + ' ' + url); toast('Ergebnis kopiert ✓', 1800); } catch (e) { /* abgebrochen */ } };
