@@ -28,7 +28,7 @@ BI.createPool = function (G) {
     if (!n) return;
     if (n.k === 'slide') { K.ride = { kind: 'slide', t: 0, dur: 3.2, path: n.s.path.map(p => [p[0], p[1] + .15, p[2]]), up: 0 }; A.whoosh && A.whoosh(); say('🛝 Wiiiii!', 1400); G.earn('slide'); }
     else if (n.k === 'dive') { K.ride = { kind: 'dive', t: 0, dur: 9 }; say('🤿 Achtung – Kopfsprung!', 1600); G.earn('swim'); }
-    else if (n.k === 'ice') { const now = performance.now(); if (now - (K.iceT || 0) < 25000) { say('🍦 Du hattest gerade erst ein Eis – gleich wieder!', 2200); return; } K.iceT = now; addStars(1); A.buy && A.buy(); say('🍦 Lecker Eis vom Kiosk! +1 ⭐', 2600); fx.burst(P.x, 2, P.z, 12, [BI.C.pink, BI.C.white, BI.C.gold], 3, 1, 26, 4); }
+    else if (n.k === 'ice') { const now = performance.now(); if (now - (K.iceT == null ? -1e9 : K.iceT) < 25000) { say('🍦 Du hattest gerade erst ein Eis – gleich wieder!', 2200); return; } K.iceT = now; addStars(1); A.buy && A.buy(); say('🍦 Lecker Eis vom Kiosk! +1 ⭐', 2600); fx.burst(P.x, 2, P.z, 12, [BI.C.pink, BI.C.white, BI.C.gold], 3, 1, 26, 4); }
     else if (n.k === 'cabin') G.openWard();
   };
   K.update = function (dt, t) {

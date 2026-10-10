@@ -133,9 +133,9 @@ BI.createFarm = function (G) {
     if (ORDER.every(x => b[x])) { addStars(10); say('🏆 Alle Tiere entdeckt! +10 ⭐', 4200); G.earn('zoo'); } if (K.bookOpen) renderBook();
   }
   const NOFEED = ['egg', 'milk', 'jam', 'cake', 'soup', 'popcorn'];
-  K.milk = function () {
-    const a = K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
-    if (now - (K.milkT || 0) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
+  K.milk = function (cow) {
+    const a = cow || K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
+    if (now - (K.milkT == null ? -1e9 : K.milkT) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
     K.milkT = now; const inv = K.inv(); inv.milk = (inv.milk || 0) + 1; A.moo && A.moo(); a.hop = .6; fx.burst(a.x, 1.3, a.z, 10, [BI.C.white, BI.C.blue], 3, 1.2, 26, 3); persist(); say('🥛 Frische Milch gemolken! (' + inv.milk + ') – daraus kocht man Leckeres', 2800); G.earn('animal'); return true;
   };
   K.care = function (kind) {

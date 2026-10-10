@@ -985,7 +985,7 @@
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'] };
   function placeLabel(n) { if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk()) farm.care('stroke'); }
+    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {

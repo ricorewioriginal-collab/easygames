@@ -10,7 +10,7 @@ BI.createCamp = function (G) {
   ];
   const flames = [0xff4a1f, 0xff9a2e, 0xffe14a].map((c, i) => { const m = new THREE.Mesh(new THREE.ConeGeometry(.55 - i * .14, 1.5 - i * .3, 6), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .92 })); m.position.set(C.x, .8 + i * .05, C.z); scene.add(m); return m; });
   K.near = () => !G.P.veh && Math.hypot(P.x - C.x, P.z - C.z) < 4.2;
-  let sel = -1, page = 0, marshT = 0;
+  let sel = -1, page = 0, marshT = -1e9;
   function show() { const l = $('storyList'); l.innerHTML = ''; STORIES.forEach((s, i) => { const b = document.createElement('button'); b.className = 'pill' + (i === sel ? ' sel' : ''); b.textContent = s[0] + ' ' + s[1]; b.onclick = () => { sel = i; page = 0; read(); A.pop(); show(); }; l.appendChild(b); }); }
   function read() { const s = STORIES[sel]; if (!s) { $('storyText').textContent = 'Setz dich ans Feuer und such dir eine Geschichte aus 🔥'; return; } const t = s[2][page]; $('storyText').textContent = s[0] + ' ' + t; if (A.speak) A.speak(t); if (page === s[2].length - 1) G.earn && G.earn('story'); }
   $('storyNext').addEventListener('click', () => { const s = STORIES[sel]; if (!s) return; page = (page + 1) % s[2].length; read(); });
