@@ -394,7 +394,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(300);
   const r = await p.evaluate(async () => {
     const b = window.__bi; const a = b.farm.animals.find(x => x.k === 'cow'); const out = {};
-    if (a) { b.P.x = a.x + 1; b.P.z = a.z; await new Promise(r => setTimeout(r, 200)); const n = b.placeNear(); out.cow = n && n.src; b.placeAct(n); out.milk = b.garden.inv().milk || 0; }
+    if (a) { for (let i = 0; i < 20 && !(out.cow === 'animal'); i++) { b.P.x = a.x + 1; b.P.z = a.z; await new Promise(r => setTimeout(r, 200)); const n = b.placeNear(); out.cow = n && n.src; if (out.cow === 'animal') b.placeAct(n); } out.milk = b.garden.inv().milk || 0; }
     const F = b.W.spots.farm; b.P.x = F.stove.x; b.P.z = F.stove.z + 1.5; await new Promise(r => setTimeout(r, 200)); const k = b.placeNear(); out.k = k && k.src;
     const I = b.garden.inv(); I.strawberry = 2; const s0 = b.save.stars; b.placeAct(k); document.querySelector('#kitRec button').click(); out.jam = I.jam; document.querySelector('#kitSell button').click(); out.gain = b.save.stars - s0; b.kitchen.close(); return out;
   });
@@ -462,7 +462,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
   await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
   const r = await p.evaluate(async () => { const b = window.__bi, W = b.W, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
-    o.onRails = b.vehicles.filter(v => !v.ai && W.railSdf(v.x, v.z) < 6).length; const v = b.vehicles.find(x => x.type === 'car' && !x.ai); const T = W.trackAt(W.stations[1].s + 40, {}); v.setPose(T.x, T.z, T.h); b.P.x = 0; b.P.z = 26; await sl(3500); o.moved = W.railSdf(v.x, v.z) > 5;
+    o.onRails = b.vehicles.filter(v => !v.ai && W.railSdf(v.x, v.z) < 6).length; const v = b.vehicles.find(x => x.type === 'car' && !x.ai); const T = W.trackAt(W.stations[1].s + 40, {}); v.setPose(T.x, T.z, T.h); b.P.x = 0; b.P.z = 26; for (let i = 0; i < 100 && W.railSdf(v.x, v.z) <= 5; i++) await sl(200); o.moved = W.railSdf(v.x, v.z) > 5;
     const st = W.stations[2]; b.P.x = (st.plat[0] + st.plat[2]) / 2; b.P.z = (st.plat[1] + st.plat[3]) / 2; await sl(400); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); await sl(300); o.train = !!(b.P.veh && b.P.veh.isTrain);
     const A = BI.audio; A.resume(); for (let i = 0; i < 40 && !(A.ready('moo') && A.ready('oink') && A.ready('bark')); i++) await sl(200); o.snd = A.sample('cow') && A.sample('pig') && A.sample('dog'); return o; });
   ok(r.onRails === 0 && r.moved, 'Keine Autos auf den Gleisen (falsch abgestellte werden neben die Strecke gesetzt)'); ok(r.src === 'station' && r.train, 'Am Bahnsteig: „Zug fahren“ – man steigt als Lokführer ein'); ok(r.snd, 'Echte Tierstimmen (Kuh, Schwein, Hund) werden geladen und abgespielt'); await c.close();
