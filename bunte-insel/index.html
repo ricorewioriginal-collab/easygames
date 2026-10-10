@@ -46,9 +46,6 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 #bHorn{right:calc(max(16px,env(safe-area-inset-right)) + 108px);bottom:max(18px,env(safe-area-inset-bottom));width:80px;height:80px;background:linear-gradient(160deg,#9fd2ff,#3f9bff)}
 #bJump{right:max(22px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 108px);width:76px;height:76px;background:linear-gradient(160deg,#bff2c4,#4cd07d)}
 #bAux{right:calc(max(16px,env(safe-area-inset-right)) + 100px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 96px);width:68px;height:68px;background:linear-gradient(160deg,#ffb0b0,#ff4a4a)}
-#stickBase{position:fixed;z-index:3;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:rgba(255,255,255,.28);border:3px solid rgba(255,255,255,.7);pointer-events:none;display:none}
-#stickBase.on{display:block}
-#stickKnob{position:absolute;left:34px;top:34px;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:var(--shadow)}
 #toast{position:fixed;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 124px);transform:translate(-50%,16px);opacity:0;z-index:4;background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:18px;font-weight:600;pointer-events:none;transition:.3s;max-width:calc(100% - 28px);text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #keys{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));font-size:13px;font-weight:600;opacity:.8;background:var(--glass);padding:6px 12px;border-radius:12px}
@@ -72,12 +69,53 @@ body.touch #keys{display:none}
 #loading{position:fixed;inset:0;z-index:20;display:grid;place-items:center;text-align:center;background:#7fd2ff;font-size:22px;font-weight:600;padding:20px}
 @media (max-width:620px){#mission{top:calc(max(10px,env(safe-area-inset-top)) + 52px);left:max(10px,env(safe-area-inset-left));transform:none;width:calc(100% - 140px)}#mIcon{font-size:28px}#mText{font-size:16px}#mini{width:92px;height:92px}.tb{width:38px;height:38px;font-size:18px}}
 @media (max-height:430px){#mission{left:calc(max(10px,env(safe-area-inset-left)) + 96px);transform:none;width:calc(100% - 350px);padding:5px 10px}#mTitle{font-size:12px}#mText{font-size:15px}#mIcon{font-size:26px}#mini{width:84px;height:84px}#stars{font-size:20px;padding:4px 12px 4px 8px}.abtn{transform-origin:bottom right}#bAct{width:78px;height:78px}#bHorn{width:66px;height:66px;right:calc(max(16px,env(safe-area-inset-right)) + 90px)}#bJump{width:62px;height:62px;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 88px)}#bAux{width:56px;height:56px;right:calc(max(16px,env(safe-area-inset-right)) + 84px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 78px)}.card{padding:12px 18px}.vehicles{display:none}.logo{font-size:36px}.sub{margin:4px 0 6px}.big{margin-top:8px;padding:10px 30px;font-size:22px}}
+
+#leftTools{position:absolute;left:max(10px,env(safe-area-inset-left));top:calc(max(10px,env(safe-area-inset-top)) + 54px);display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+#leftTools .tb.on{outline:3px solid var(--pri)}
+#funBar{position:absolute;left:52px;top:18px;display:flex;flex-wrap:wrap;gap:6px;max-width:440px}
+.fb{position:relative;width:66px;height:72px;border-radius:20px;background:var(--glass);box-shadow:var(--shadow);font-size:30px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center}.fb.more{background:#e6efff}.fb .kbd{position:absolute;top:3px;right:6px;font-size:10px;font-style:normal;font-weight:700;opacity:.55}
+.fb small{font-size:10px;font-weight:700;margin-top:2px;opacity:.75}
+.fb.on{background:linear-gradient(160deg,#ffd45a,#ff9a1f)}
+#gauge{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:calc(max(10px,env(safe-area-inset-bottom)) + 46px);width:118px;padding:8px 6px;text-align:center;border-radius:26px;line-height:1.05}
+#gVal{font-size:44px;font-weight:700}#gUnit{font-size:13px;font-weight:700;opacity:.7}#gSub{font-size:12px;font-weight:700;margin-top:4px}
+#gauge.warn{background:rgba(255,90,90,.9);color:#fff;animation:pulse .5s infinite}
+#buildPanel{position:fixed;z-index:6;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);padding:10px 12px max(10px,env(safe-area-inset-bottom));background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:24px 24px 0 0;box-shadow:0 -8px 30px rgba(20,50,100,.3);display:grid;grid-template-columns:1fr auto;gap:8px 12px}
+#bTop{grid-column:1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+#bTabs{display:flex;gap:6px}.bt{padding:7px 12px;border-radius:999px;background:#fff;font-weight:700;font-size:14px;box-shadow:var(--shadow)}.bt.sel{background:linear-gradient(180deg,#ffb23f,#ff7a1f);color:#fff}
+#bColors{display:flex;gap:6px}.sw.sm{width:28px;height:28px;border-width:3px}
+#bItems{grid-column:1;display:flex;gap:8px;overflow-x:auto;padding:4px 2px 6px;-webkit-overflow-scrolling:touch;touch-action:pan-x}
+.bi{flex:none;width:68px;height:68px;border-radius:16px;background:#fff;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center}.bi b{font-size:28px;font-weight:600}.bi small{font-size:11px;font-weight:700;opacity:.75}.bi.sel{outline:4px solid var(--pri);outline-offset:1px}
+#bActs{grid-column:2;grid-row:1/3;display:grid;grid-template-columns:repeat(2,58px);gap:6px;align-content:center}
+#bActs button{height:58px;border-radius:16px;background:#fff;box-shadow:var(--shadow);font-size:22px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center}#bActs small{font-size:10px;font-weight:700;opacity:.75;margin-top:2px}
+#bActs .go{background:linear-gradient(160deg,#9be09a,#3fb85c);color:#fff;grid-column:1/3;height:64px}
+body.building #bAct,body.building #bHorn,body.building #bJump,body.building #bAux,body.building #keys,body.building #gauge{display:none!important}
+body.building #toast{bottom:calc(env(safe-area-inset-bottom) + 215px)}
+body.building #leftTools{top:calc(max(10px,env(safe-area-inset-top)) + 54px)}
+.pill{padding:9px 18px;border-radius:999px;background:#fff;font-weight:700;font-size:17px;box-shadow:var(--shadow)}.pill.sel{background:linear-gradient(180deg,#ffb23f,#ff7a1f);color:#fff}
+@media (max-width:620px){#leftTools{top:calc(max(10px,env(safe-area-inset-top)) + 170px)}body.building #toast{bottom:calc(env(safe-area-inset-bottom) + 270px)}#funBar{left:0;top:auto;flex-direction:row;position:static;flex-wrap:wrap;max-width:300px}.fb{width:52px;height:52px;font-size:22px}#buildPanel{grid-template-columns:1fr}#bActs{grid-column:1;grid-row:auto;grid-template-columns:repeat(5,1fr)}#bActs .go{grid-column:auto;height:58px}#bColors{width:100%}}
+@media (max-height:430px){#leftTools{top:calc(max(10px,env(safe-area-inset-top)) + 46px)}#buildPanel{padding:5px 10px max(5px,env(safe-area-inset-bottom));gap:4px 10px;grid-template-columns:1fr auto;border-radius:18px 18px 0 0}#bTop{flex-wrap:nowrap}.bt{padding:4px 9px;font-size:12px}.sw.sm{width:22px;height:22px;border-width:2px}#bColors{width:auto;gap:4px}.bi{width:50px;height:50px;border-radius:12px}.bi b{font-size:20px}.bi small{font-size:9px}#bActs{grid-column:2;grid-row:1/3;grid-template-columns:repeat(3,42px);gap:4px}#bActs button{height:38px;font-size:17px;border-radius:12px}#bActs small{display:none}#bActs .go{height:42px;grid-column:1/4}body.building #toast{bottom:120px}}
+
+#joy{position:absolute;left:max(22px,env(safe-area-inset-left));bottom:max(22px,env(safe-area-inset-bottom));width:144px;height:144px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.42) 0,rgba(255,255,255,.2) 62%,rgba(255,255,255,.34) 100%);border:3px solid rgba(255,255,255,.8);box-shadow:inset 0 0 24px rgba(30,70,140,.3),0 8px 22px rgba(20,50,100,.3);display:none;pointer-events:none}
+body.touch #joy{display:block}
+#joy .ja{position:absolute;font-size:13px;color:rgba(22,51,94,.55);line-height:1}#joy .u{left:50%;top:7px;transform:translateX(-50%)}#joy .d{left:50%;bottom:7px;transform:translateX(-50%)}#joy .l{top:50%;left:8px;transform:translateY(-50%)}#joy .r{top:50%;right:8px;transform:translateY(-50%)}
+#joyKnob{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d8e8ff 55%,#9cc2ff);border:3px solid rgba(255,255,255,.9);box-shadow:0 6px 14px rgba(20,50,100,.45)}
+body.touch .kb{display:none!important}.tc{display:none}body.touch .tc{display:block}
+body.touch #gauge{bottom:calc(max(22px,env(safe-area-inset-bottom)) + 160px)}
+body.building #joy{display:none!important}
+@media (max-height:430px){#joy{width:116px;height:116px;bottom:max(14px,env(safe-area-inset-bottom))}#joyKnob{width:54px;height:54px;margin:-27px 0 0 -27px}body.touch #gauge{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 130px)}body.touch.building #joy{display:block!important}#buildPanel{left:auto;right:0;transform:none;width:calc(100% - 150px)}}
+
+.card.shop{width:min(560px,100%)}.shop-h{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}#shopStars{padding:6px 14px;font-weight:700;font-size:20px}
+#shopGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc{background:#fff;border-radius:18px;padding:10px 6px 8px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px}.sc.own{background:#eaffef}
+.si{font-size:34px;line-height:1.1}.sn{font-weight:700;font-size:14px}.sp{font-size:13px;font-weight:700;opacity:.75;margin-bottom:4px}
+.sc button{padding:6px 14px;border-radius:999px;font-weight:700;font-size:14px;background:linear-gradient(180deg,#ffb23f,#ff7a1f);color:#fff}.sc button:disabled{background:#c9ced6;color:#fff}
+@media (max-width:420px){#shopGrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-height:620px) and (min-width:520px){.card.shop{width:min(780px,100%);padding:12px 16px}#shopGrid{grid-template-columns:repeat(5,1fr);gap:7px}.si{font-size:26px}.sn{font-size:12px}.sc{padding:6px 4px}.sc button{padding:4px 10px;font-size:12px}.card.shop .sub{margin:2px 0 6px}}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
 <div id="zone"></div>
-<div id="stickBase"><div id="stickKnob"></div></div>
 
 <div id="hud" hidden>
   <div id="stars" class="chip"><span class="ic">⭐</span><span id="starN">0</span></div>
@@ -95,11 +133,24 @@ body.touch #keys{display:none}
     </div>
     <canvas id="mini" width="300" height="300"></canvas>
   </div>
+  <div id="joy" aria-hidden="true"><span class="ja u">▲</span><span class="ja d">▼</span><span class="ja l">◀</span><span class="ja r">▶</span><div id="joyKnob"></div></div>
+  <div id="leftTools">
+    <button class="tb" id="bFun" aria-label="Spaß-Aktionen">🎉</button>
+    <button class="tb" id="bBuild" aria-label="Bauen">🏗️</button>
+    <button class="tb" id="bCam" aria-label="Ego-Kamera">📷</button>
+    <div id="funBar" hidden></div>
+  </div>
+  <div id="gauge" class="chip" hidden><div id="gVal">0</div><div id="gUnit">km/h</div><div id="gSub"></div></div>
   <button class="abtn" id="bAux" hidden><b>🚨</b><small>Sirene</small></button>
   <button class="abtn" id="bJump"><b>⤒</b><small>Springen</small></button>
   <button class="abtn" id="bHorn"><b>👋</b><small>Hallo!</small></button>
   <button class="abtn" id="bAct" hidden><b>🚗</b><small>Einsteigen</small></button>
-  <div id="keys">WASD/Pfeile fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Turbo · F Sirene · N Nacht</div>
+  <div id="keys" class="kb">WASD/Pfeile laufen & fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Turbo · F Sirene/Hauen · 1–8 Spaß · B Bauen · V Ego-Kamera</div>
+</div>
+<div id="buildPanel" hidden>
+  <div id="bTop"><div id="bTabs"></div><div id="bColors"></div></div>
+  <div id="bItems"></div>
+  <div id="bActs"><button id="bRot">⟳<small>Drehen</small></button><button id="bPlace" class="go">✔<small>Bauen</small></button><button id="bDel">🗑️<small>Weg</small></button><button id="bClear">🧹<small>Alles</small></button><button id="bClose">✖<small>Fertig</small></button></div>
 </div>
 <div id="toast"></div>
 
@@ -108,17 +159,27 @@ body.touch #keys{display:none}
     <div class="logo">Bunte Insel</div>
     <div class="sub">Laufen, fahren, entdecken!</div>
     <div class="vehicles">🚗 🏍️ 🚓 🚑 🚒 🚌 🚜 🍦 🚂</div>
-    <div class="lab">Wie sieht dein Held aus?</div>
-    <div class="row" id="swatches"></div>
-    <div class="row" id="hats"></div>
+    <div class="lab" id="hello">Hallo Jannis! ♥</div>
+    <div class="row"><button class="pill sel" id="bJannis">👦 Jannis</button><button class="pill" id="bCustom">🎨 Eigener Held</button></div>
+    <div id="custom" hidden><div class="row" id="swatches"></div><div class="row" id="hats"></div></div>
     <button class="big" id="bStart">▶ Los geht's!</button>
+  </div>
+</section>
+
+<section id="shopPanel" class="screen" hidden>
+  <div class="card shop">
+    <div class="shop-h"><div class="logo" style="font-size:30px">🧸 Spielzeugladen</div><div class="chip" id="shopStars">⭐ 0</div></div>
+    <div class="sub" style="margin:4px 0 10px">Frau Bunt: „Alles gegen Sterne – viel Spaß!“</div>
+    <div id="shopGrid"></div>
+    <button class="big" id="shopClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✖ Fertig</button>
   </div>
 </section>
 
 <section id="pause" class="screen" hidden>
   <div class="card">
     <div class="logo" style="font-size:40px">Pause</div>
-    <p class="help"><b>Laufen</b> Joystick links / WASD<br><b>Kamera</b> rechts wischen / Maus ziehen<br><b>Einsteigen</b> Knopf <span>🚪</span> / E<br><b>Hupe</b> 📣 / Leertaste<br><b>Sirene</b> 🚨 / F (Polizei, Krankenwagen, Feuerwehr)<br><b>Turbo</b> 🚀 / Shift<br><b>Tag/Nacht</b> 🌙 / N</p>
+    <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Einsteigen</b> E · <b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
+    <p class="help tc"><b>Laufen/Fahren</b> Joystick links<br><b>Kamera</b> rechts wischen<br><b>Einsteigen</b> Knopf 🚪<br><b>Hupe, Sirene, Turbo</b> Knöpfe rechts<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
     <button class="big" id="bResume">▶ Weiter spielen</button>
   </div>
 </section>
@@ -126,12 +187,14 @@ body.touch #keys{display:none}
 <div id="loading">Bunte Insel lädt …</div>
 <noscript>Bitte JavaScript aktivieren.</noscript>
 
-<script>if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)document.body.classList.add('touch')</script>
+<script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="js/util.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/world.js"></script>
 <script src="js/vehicles.js"></script>
+<script src="js/fun.js"></script>
+<script src="js/build.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

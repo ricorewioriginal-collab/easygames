@@ -41,19 +41,44 @@ BI.audio = (function () {
     moo() { tone(150, .6, 'sawtooth', .07, 110); },
     baa() { tone(380, .35, 'sawtooth', .05, 300); },
     pop() { tone(700, .08, 'sine', .12, 1100); },
+    blow() { tone(900, .25, 'sine', .05, 1500); tone(1300, .2, 'sine', .03, 700, .08); },
+    bubblePop() { tone(1500, .05, 'sine', .06, 600); },
+    bigpop() { tone(220, .22, 'sawtooth', .1, 70); tone(1300, .12, 'sine', .08, 400); },
+    inflate() { tone(300, .9, 'sine', .07, 900); },
+    buy() { tone(784, .1, 'triangle', .14); tone(1046, .12, 'triangle', .14, 0, .09); tone(1568, .25, 'triangle', .12, 0, .18); },
+        giggle() { [0, .1, .2, .3].forEach((d, i) => tone(700 + i * 90 + (i % 2) * 140, .09, 'triangle', .1, 0, d)); },
+        bark() { tone(330, .11, 'sawtooth', .13, 210); tone(270, .1, 'square', .07, 160, .14); },
+        bonk() { tone(140, .2, 'square', .2, 55); tone(520, .06, 'triangle', .08, 220); },
+        splat() { tone(260, .14, 'sawtooth', .09, 80); tone(900, .05, 'square', .04, 300); },
+    kick() { tone(190, .12, 'sine', .22, 60); },
+    boing() { tone(180, .35, 'sine', .2, 760); },
+    whoosh() { tone(250, .7, 'sawtooth', .04, 1700); },
+    boom() { tone(90, .6, 'sine', .3, 30); tone(1500, .35, 'triangle', .05, 200); tone(2400, .2, 'square', .02, 400, .05); },
+    ding() { tone(1046, .35, 'sine', .18); tone(784, .45, 'sine', .14, 0, .12); },
+    place() { tone(330, .08, 'square', .08); tone(520, .1, 'triangle', .1, 0, .06); },
+    /* Tanz-Beat (vom Spiel pro Frame aufgerufen, solange getanzt wird) */
+    dance(dt) {
+      if (!ctx) return; A._dt = (A._dt || 0) + dt; if (A._dt < .24) return; A._dt -= .24; const n = (A._dn = (A._dn || 0) + 1) % 16;
+      if (n % 4 === 0) tone(190, .15, 'sine', .26, 55);
+      if (n % 2 === 1) tone(6500, .04, 'square', .03);
+      if (n === 4 || n === 12) tone(330, .1, 'square', .06, 120);
+      const bass = [98, 98, 0, 131, 98, 0, 147, 0, 110, 110, 0, 147, 110, 0, 165, 131][n]; if (bass) tone(bass, .2, 'sawtooth', .07);
+      if (n % 2 === 0) tone(PENT[(n * 3 + 2) % PENT.length] * 2, .16, 'triangle', .05);
+    },
     /* Motor: Typ bestimmt Klang, speed 0..1 */
     engine(kind, speed, on) {
       if (!ctx) return;
-      if (!on) { if (eng) { eng.g.gain.setTargetAtTime(0, ctx.currentTime, .1); const e = eng; eng = null; setTimeout(() => { try { e.o.stop(); e.o2.stop(); } catch (x) { } }, 400); } return; }
+      if (!on) { if (eng) { eng.g.gain.setTargetAtTime(0, ctx.currentTime, .1); const e = eng; eng = null; setTimeout(() => { try { e.o.stop(); e.o2.stop(); if (e.lfo) e.lfo.stop(); } catch (x) { } }, 400); } return; }
       if (!eng || eng.kind !== kind) {
-        if (eng) { try { eng.o.stop(); eng.o2.stop(); } catch (x) { } }
+        if (eng) { try { eng.o.stop(); eng.o2.stop(); if (eng.lfo) eng.lfo.stop(); } catch (x) { } }
         const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500; const g = ctx.createGain(); g.gain.value = 0;
         const o = ctx.createOscillator(), o2 = ctx.createOscillator();
         o.type = kind === 'bike' ? 'sawtooth' : 'triangle'; o2.type = 'square';
         o.connect(f); o2.connect(f); f.connect(g); g.connect(sfxBus); o.start(); o2.start();
         eng = { kind, o, o2, f, g };
+        if (kind === 'heli') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 13; lg.gain.value = .05; lfo.connect(lg); lg.connect(g.gain); lfo.start(); eng.lfo = lfo; o.type = 'sawtooth'; }
       }
-      const base = { bike: 70, car: 50, tractor: 36, train: 30 }[kind] || 50, k = { bike: 2.8, car: 2.2, tractor: 1.3, train: 1.0 }[kind] || 2;
+      const base = { bike: 70, car: 50, tractor: 36, train: 30, heli: 52 }[kind] || 50, k = { bike: 2.8, car: 2.2, tractor: 1.3, train: 1.0, heli: .5 }[kind] || 2;
       const fr = base * (1 + speed * k), t = ctx.currentTime;
       eng.o.frequency.setTargetAtTime(fr, t, .08); eng.o2.frequency.setTargetAtTime(fr * .5, t, .08);
       eng.f.frequency.setTargetAtTime(350 + speed * 700, t, .1);

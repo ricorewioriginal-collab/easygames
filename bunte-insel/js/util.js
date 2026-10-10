@@ -106,36 +106,99 @@ BI.HATS = ['none', 'bear', 'cat', 'bunny', 'cap', 'crown'];
 BI.HAT_ICONS = { none: '🙂', bear: '🐻', cat: '🐱', bunny: '🐰', cap: '🧢', crown: '👑' };
 BI.makeChar = function (o) {
   o = o || {};
+  const J = o.preset === 'jannis'; // Jannis: blonder Pilzkopf, dunkles Marvel-Shirt, braune Hose, Fernsteuerung
+  if (J) o = Object.assign({ shirt: 0x1d2342, pants: 0x7a5230, skin: 0xffd6b3, hair: 0xf3d98a, hat: 'none', shoe: 0x1d2a44 }, o);
   const shirt = o.shirt != null ? o.shirt : 0xff5a5a, pants = o.pants != null ? o.pants : 0x3d4a7a, skin = o.skin != null ? o.skin : 0xffd2a8, hair = o.hair != null ? o.hair : 0x6b4423, hat = o.hat || 'none';
   const root = new THREE.Group(), body = new BI.Batch();
   body.box(0, .5, 0, .46, .22, .28, pants);
   body.box(0, .66, 0, .5, .5, .3, shirt);
+  if (J) { // bunter Aufdruck wie beim Marvel-Shirt
+    body.box(0, 1.05, .155, .38, .07, .02, 0xffffff); body.box(0, .93, .155, .22, .11, .02, 0x3fd18a); body.sph(0, .84, .16, .1, 0x9a5be0, 0, 1, 1, .12); body.sph(0, .84, .17, .045, 0xe8eaff, 0, 1, 1, .1); body.box(0, .73, .155, .28, .1, .02, 0xff5fa8);
+  }
   body.sph(0, 1.42, 0, .27, skin, 1, 1, 1.05, 1);
-  body.box(-.09, 1.44, .24, .06, .08, .04, 0x222233); body.box(.09, 1.44, .24, .06, .08, .04, 0x222233);
+  if (J) { for (const x of [-.09, .09]) { body.box(x, 1.44, .24, .09, .08, .04, 0xffffff); body.box(x + .035, 1.44, .26, .045, .07, .03, 0x4a5568); } body.box(.04, 1.29, .25, .12, .025, .03, 0xe58c8c); } // schelmischer Seitenblick
+  else { body.box(-.09, 1.44, .24, .06, .08, .04, 0x222233); body.box(.09, 1.44, .24, .06, .08, .04, 0x222233); }
   body.box(-.15, 1.34, .23, .07, .05, .04, 0xff9aa8); body.box(.15, 1.34, .23, .07, .05, .04, 0xff9aa8);
-  if (hat === 'none' || hat === 'crown') body.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02);
+  if (J) { body.sph(0, 1.57, -.04, .3, hair, 1, 1.02, .66, 1.05); body.box(0, 1.53, .2, .5, .14, .1, hair); body.box(-.27, 1.44, -.02, .07, .2, .36, hair); body.box(.27, 1.44, -.02, .07, .2, .36, hair); }
+  else if (hat === 'none' || hat === 'crown') body.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02);
   if (hat === 'bear') { body.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); body.sph(-.2, 1.68, 0, .1, 0x8a5a33, 1); body.sph(.2, 1.68, 0, .1, 0x8a5a33, 1); body.sph(-.2, 1.68, .04, .05, 0xffc9a0, 0); body.sph(.2, 1.68, .04, .05, 0xffc9a0, 0); }
   if (hat === 'cat') { body.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); body.cone(-.16, 1.62, 0, .1, .22, 0x555566, 4); body.cone(.16, 1.62, 0, .1, .22, 0x555566, 4); }
   if (hat === 'bunny') { body.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); body.box(-.11, 1.65, 0, .1, .42, .06, 0xffffff, 0, 0, .12); body.box(.11, 1.65, 0, .1, .42, .06, 0xffffff, 0, 0, -.12); body.box(-.11, 1.7, .03, .05, .3, .03, 0xffb0c8, 0, 0, .12); body.box(.11, 1.7, .03, .05, .3, .03, 0xffb0c8, 0, 0, -.12); }
   if (hat === 'cap') { body.sph(0, 1.55, -.02, .29, 0xe83c3c, 1, 1, .62, 1.02); body.box(0, 1.5, .27, .3, .04, .22, 0xe83c3c); }
   if (hat === 'crown') { body.box(0, 1.66, 0, .32, .1, .32, 0xffcf2e); for (let i = 0; i < 4; i++) body.cone(Math.cos(i * 1.5708) * .13, 1.74, Math.sin(i * 1.5708) * .13, .06, .14, 0xffcf2e, 4); }
+  if (o.glasses) { body.box(0, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(.0, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(-.1, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(.1, 1.4, .27, .17, .12, .03, 0x1b1b25); body.box(0, 1.46, .27, .08, .03, .03, 0x1b1b25); body.box(-.19, 1.46, .22, .03, .03, .1, 0x1b1b25); body.box(.19, 1.46, .22, .03, .03, .1, 0x1b1b25); }
+  if (o.pack) { body.box(0, .52, -.23, .42, .55, .16, 0x3fa8e8); body.box(0, .98, -.23, .32, .12, .13, 0x2d80c0); body.box(-.15, .55, .155, .05, .5, .02, 0x2d80c0); body.box(.15, .55, .155, .05, .5, .02, 0x2d80c0); }
+  if (o.teddy) { body.sph(-.34, 1.3, .03, .11, 0xc8a27a, 1); body.sph(-.34, 1.46, .03, .08, 0xc8a27a, 1); body.sph(-.4, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.28, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.34, 1.44, .1, .035, 0xe8d0b0, 0); }
   const mat = BI.mat(); root.add(body.mesh(mat));
   function limb(w, h, d, color, tip, x, y) {
     const g = new THREE.Group(), b = new BI.Batch(); b.box(0, -h, 0, w, h, d, color); b.box(0, -h - .06, 0, w * 1.05, .1, d * 1.15, tip);
     g.add(b.mesh(mat)); g.position.set(x, y, 0); root.add(g); return g;
   }
-  const legL = limb(.18, .5, .2, pants, 0x2a2a3a, -.13, .52), legR = limb(.18, .5, .2, pants, 0x2a2a3a, .13, .52);
+  const shoe = o.shoe != null ? o.shoe : 0x2a2a3a, legL = limb(.18, .5, .2, pants, shoe, -.13, .52), legR = limb(.18, .5, .2, pants, shoe, .13, .52);
   const armL = limb(.13, .42, .14, shirt, skin, -.34, 1.12), armR = limb(.13, .42, .14, shirt, skin, .34, 1.12);
+  if (J || o.name) {
+    const cv0 = document.createElement('canvas'); cv0.width = 256; cv0.height = 64; const cx0 = cv0.getContext('2d'); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name || 'Jannis', 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name || 'Jannis', 128, 34);
+    const sp0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv0), transparent: true, depthWrite: false })); sp0.scale.set(1.5, .38, 1); sp0.position.y = 2.15; root.add(sp0);
+  }
+  if (J) { // Fernsteuerung mit Lenkrad und Antenne in der rechten Hand
+    const rb = new BI.Batch(); rb.cyl(0, -.04, 0, .15, .15, .06, 0x23262d, 12, Math.PI / 2); rb.cyl(0, -.03, .02, .09, .09, .07, 0x3a3f4a, 10, Math.PI / 2); rb.box(.02, 0, 0, .025, .6, .025, 0xffffff, 0, 0, -.12); rb.box(.09, .58, 0, .035, .08, .035, 0xff5a3a, 0, 0, -.12);
+    const rm = rb.mesh(mat); rm.position.set(0, -.55, .13); armR.add(rm);
+  }
   root.scale.setScalar(.95);
   return {
     group: root, legL, legR, armL, armR,
     pose(phase, amp, wave) {
       const s = Math.sin(phase) * amp;
       legL.rotation.x = s; legR.rotation.x = -s; armL.rotation.x = -s * .9; armR.rotation.x = s * .9;
-      armR.rotation.z = wave ? -2.6 + Math.sin(phase * 2) * .4 : 0;
+      armL.rotation.z = 0; armR.rotation.z = wave ? -2.6 + Math.sin(phase * 2) * .4 : 0;
+    },
+    /* Hauen: Arm schlägt nach vorn (k 0..1) */
+    punch(k) { const w = Math.sin(Math.min(1, Math.max(0, k)) * Math.PI); armR.rotation.set(-1.75 * w, 0, -.15 * w); armL.rotation.set(.7 * w, 0, .2 * w); legL.rotation.x = .35 * w; legR.rotation.x = -.35 * w; },
+    /* Tanzen: 3 Stile (Arme hoch, Disco, Hüpfer) */
+    dance(t, style) {
+      const s = Math.sin(t * 8), st = style % 3;
+      if (st === 0) { armL.rotation.set(0, 0, 2.4 + s * .35); armR.rotation.set(0, 0, -2.4 - s * .35); legL.rotation.x = s * .55; legR.rotation.x = -s * .55; }
+      else if (st === 1) { armR.rotation.set(0, 0, -2.6 + s * .25); armL.rotation.set(s * .7, 0, .15); legL.rotation.x = s * .7; legR.rotation.x = 0; }
+      else { armL.rotation.set(-1.5 + s * .5, 0, 0); armR.rotation.set(-1.5 - s * .5, 0, 0); legL.rotation.x = Math.abs(s) * .5; legR.rotation.x = Math.abs(s) * .5; }
     },
     sit() { legL.rotation.x = legR.rotation.x = -1.35; armL.rotation.x = armR.rotation.x = -1.0; armR.rotation.z = 0; }
   };
+};
+
+/* ---- Pappnase: orangefarbener Ballon mit aufgemaltem Gesicht (Filzstift-Look) ---- */
+BI.makePappnase = function () {
+  const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 512; const c = cv.getContext('2d');
+  const g = c.createRadialGradient(400, 150, 20, 512, 256, 420); g.addColorStop(0, '#ffb04a'); g.addColorStop(.6, '#f39a1e'); g.addColorStop(1, '#d97f0c'); c.fillStyle = g; c.fillRect(0, 0, 1024, 512);
+  c.translate(512, 262); c.strokeStyle = '#17121f'; c.fillStyle = '#17121f'; c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 11;
+  [[-118, -170, -104, -132], [-56, -180, -50, -140], [8, -184, 8, -146], [70, -176, 60, -140], [124, -162, 108, -128]].forEach(h => { c.beginPath(); c.moveTo(h[0], h[1]); c.quadraticCurveTo((h[0] + h[2]) / 2 - 10, (h[1] + h[3]) / 2, h[2], h[3]); c.stroke(); });
+  const eye = (x, y, r, px, py) => { c.lineWidth = 11; c.beginPath(); c.arc(x, y, r, 0, BI.TAU); c.stroke(); c.beginPath(); c.ellipse(px, py, r * .42, r * .48, 0, 0, BI.TAU); c.fill(); };
+  eye(-86, -42, 48, -78, -34); eye(72, -60, 50, 64, -48);
+  c.lineWidth = 10; c.beginPath(); c.moveTo(20, 20); c.lineTo(0, 30); c.lineTo(-20, 62); c.lineTo(34, 68); c.stroke();
+  c.lineWidth = 9; c.beginPath(); c.moveTo(-132, 92); c.quadraticCurveTo(-30, 168, 150, 100); c.stroke();
+  c.lineWidth = 8; c.beginPath(); c.moveTo(-140, 86); c.lineTo(-124, 100); c.moveTo(150, 100); c.quadraticCurveTo(170, 90, 190, 96); c.stroke();
+  [[40, 138, 70, 152], [70, 130, 100, 148], [100, 120, 128, 140], [10, 140, 36, 156]].forEach(h => { c.beginPath(); c.moveTo(h[0], h[1]); c.lineTo(h[2], h[3]); c.stroke(); });
+  const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 4;
+  const mat = new THREE.MeshPhongMaterial({ map: tex, shininess: 90, specular: 0x886644 }), root = new THREE.Group();
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(.55, 28, 20), mat); ball.scale.set(1, 1.1, 1); ball.rotation.y = -Math.PI / 2; ball.position.y = .62; root.add(ball);
+  const knot = new THREE.Mesh(new THREE.ConeGeometry(.07, .13, 8), new THREE.MeshPhongMaterial({ color: 0xe88a14, shininess: 60 })); knot.rotation.x = Math.PI; knot.position.y = -.02; root.add(knot);
+  return { group: root, ball };
+};
+
+/* ---- Blitz: Polizeihund-Helfer (eigener Entwurf, Schäferhund-Look mit blauer Mütze) ---- */
+BI.makeDog = function (o) {
+  o = o || {}; const root = new THREE.Group(), b = new BI.Batch(), TAN = 0xc9944f, BLK = 0x2a2a33, BLUE = 0x2d6be0, GOLD = 0xffd23f, mat = BI.mat();
+  b.box(0, .42, 0, .44, .4, .95, TAN); b.box(0, .6, -.05, .46, .14, .6, BLK); b.box(0, .5, .52, .36, .42, .34, TAN); b.box(0, .5, .52, .42, .22, .36, BLUE); b.box(0, .52, .71, .1, .1, .03, GOLD);
+  b.box(0, .8, .84, .32, .3, .3, TAN); b.box(0, .76, 1.04, .2, .15, .22, BLK); b.box(0, .84, 1.16, .09, .06, .05, 0x111111);
+  b.box(-.15, .98, .78, .09, .24, .09, BLK, 0, 0, .25); b.box(.15, .98, .78, .09, .24, .09, BLK, 0, 0, -.25);
+  b.box(-.08, .88, 1.0, .06, .06, .03, 0x111111); b.box(.08, .88, 1.0, .06, .06, .03, 0x111111);
+  b.box(0, 1.08, .84, .36, .1, .36, BLUE); b.box(0, 1.17, .82, .24, .07, .24, BLUE); b.box(0, 1.07, 1.03, .32, .04, .13, 0x1c3f9e); b.box(0, 1.2, 1.0, .07, .06, .03, GOLD);
+  root.add(b.mesh(mat));
+  function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.box(0, -.36, 0, .13, .36, .13, TAN); l.box(0, -.4, .03, .15, .08, .19, BLK); g.add(l.mesh(mat)); g.position.set(x, .38, z); root.add(g); return g; }
+  const fl = leg(-.15, .5), fr = leg(.15, .5), bl = leg(-.15, -.36), br = leg(.15, -.36);
+  const tg = new THREE.Group(), t = new BI.Batch(); t.box(0, 0, -.2, .1, .1, .42, TAN, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, BLK, 0, -.5); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); root.add(tg);
+  const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(o.name || 'Blitz', 96, 30); cx.fillStyle = '#fff'; cx.fillText(o.name || 'Blitz', 96, 30);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); root.add(sp);
+  return { group: root, pose(phase, amp, wag) { const s = Math.sin(phase) * amp; fl.rotation.x = s; br.rotation.x = s; fr.rotation.x = -s; bl.rotation.x = -s; tg.rotation.y = Math.sin(phase * (wag ? 3.2 : 1.4)) * (wag ? .7 : .25); } };
 };
 
 /* ---- Partikel (Staub, Konfetti, Funken, Wasser) – ein Draw-Call ---- */
