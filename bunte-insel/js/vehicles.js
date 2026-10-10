@@ -8,6 +8,8 @@ BI.VEH = {
   fire:      { name: 'Feuerwehr', icon: '🚒', max: 19, rev: 5, acc: 8, brake: 20, drag: 5, turn: 1.4, kind: 'car', horn: 'truck', siren: 'fire', water: true, cols: [-2.2, 0, 2.2], r: 1.4, cam: 12 },
   bus:       { name: 'Bus', icon: '🚌', max: 16, rev: 5, acc: 6, brake: 18, drag: 4, turn: 1.3, kind: 'car', horn: 'bus', cols: [-2.8, 0, 2.8], r: 1.45, cam: 13 },
   tractor:   { name: 'Traktor', icon: '🚜', max: 10, rev: 4, acc: 5, brake: 14, drag: 4, turn: 1.5, kind: 'tractor', horn: 'tractor', open: true, offroad: 1, cols: [-.8, 1], r: 1.2, cam: 8 },
+  rc:        { name: 'RC-Auto', icon: '🏎️', max: 15, rev: 5, acc: 16, brake: 24, drag: 6, turn: 2.8, kind: 'bike', horn: 'bike', cols: [-.42, .42], r: .42, cam: 4.2, scale: .36, remote: true },
+  heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -67,6 +69,14 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(0, .25, 2.45, 1.9, .3, .2, DARK); b.box(0, .25, -2.45, 1.9, .3, .2, DARK);
       return { wheels: [[.95, .42, 1.5, .42, .28, 1], [-.95, .42, 1.5, .42, .28, 1], [.95, .42, -1.5, .42, .28, 0], [-.95, .42, -1.5, .42, .28, 0]], head: [[-.65, .65, 2.42], [.65, .65, 2.42]], tail: [[-.7, .65, -2.42], [.7, .65, -2.42]] };
     },
+    heli(b) {
+      const Wh = 0xfafafa, R = 0xe0382b;
+      b.sph(0, 1.25, .3, 1, Wh, 1, 1, .95, 1.55); b.sph(0, 1.35, 1.35, .8, GLASS, 1, .92, .8, .95);
+      b.box(0, 1.0, -2.6, .34, .42, 3.6, Wh); b.box(0, 1.5, -4.0, .12, 1.1, .7, R); b.box(0, .95, .3, 2.12, .16, 2.6, R);
+      for (const x of [-.85, .85]) { b.box(x, .02, .2, .1, .1, 3.2, DARK); b.box(x, .1, 1.0, .08, .75, .08, DARK); b.box(x, .1, -.7, .08, .75, .08, DARK); }
+      b.box(0, 2.15, .1, .45, .5, .45, DARK);
+      return { wheels: [], head: [[0, .6, 2.2]], tail: [[0, 1.2, -4.3]], rotor: { main: [0, 2.7, .1], tail: [.1, 1.8, -4.1] } };
+    },
     bike(b, o) {
       const c = o.color || 0xff8a1f;
       b.box(0, .3, 0, .3, .4, 1.1, DARK); b.sph(0, .95, .3, .3, c, 1, .9, .8, 1.5); b.box(0, .78, -.5, .32, .12, .9, 0x23262d);
@@ -74,6 +84,14 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(.28, .22, -.5, .14, .14, 1.0, SILVER); b.box(0, .62, -1.05, .34, .08, .5, c); b.box(0, .62, 1.12, .24, .06, .5, c);
       return { wheels: [[0, .4, 1.0, .4, .2, 1], [0, .4, -.95, .4, .24, 0]], head: [[0, .98, 1.1]], tail: [[0, .72, -1.3]], seat: [0, .85, -.45], lean: 1 };
     }
+  };
+  MODELS.rc = b => { // Jannis' rotes Rennauto: tiefer Keil, dunkle Scheiben, graue Felgen, Heckflügel, Aufkleber 38
+    const R = 0xe2362a, DK = 0x1c1c24;
+    b.box(0, .2, 0, 1.9, .42, 4.2, R); b.box(0, .62, -.3, 1.62, .38, 2.1, DK); b.box(0, .98, -.3, 1.5, .1, 1.5, R); b.box(0, .45, 1.45, 1.7, .1, 1.3, R);
+    for (const x of [-.78, .78]) b.box(x, .62, -.3, .1, .4, 2.1, R); b.box(0, .62, .8, 1.6, .06, .12, R);
+    b.box(0, .85, -2.0, 1.9, .08, .5, DK); for (const x of [-.7, .7]) b.box(x, .4, -1.95, .1, .5, .14, DK);
+    for (let i = 0; i < 4; i++) b.box(-.3 + i * .2, .44, 1.75, .1, .02, .5, i % 2 ? 0xffffff : DK);
+    return { wheels: [[.95, .38, 1.35, .38, .26, 1], [-.95, .38, 1.35, .38, .26, 1], [.95, .38, -1.3, .38, .26, 0], [-.95, .38, -1.3, .38, .26, 0]], head: [[-.65, .38, 2.12], [.65, .38, 2.12]], tail: [[-.7, .4, -2.12], [.7, .4, -2.12]], decal: '38' };
   };
   MODELS.tractor = function (b) {
     const G = 0x3fa84e, Y = 0xffd23f;
@@ -88,7 +106,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
 
   BI.Vehicle = class Vehicle {
     constructor(type, x, z, h, opts) {
-      opts = opts || {}; this.type = type; this.spec = BI.VEH[type]; this.x = x; this.z = z; this.h = h || 0; this.v = 0; this.steerCur = 0; this.acc = 0; this.siren = false; this.beat = 0; this.driver = null; this.ai = !!opts.ai; this.yawIdle = 0;
+      opts = opts || {}; this.type = type; this.spec = BI.VEH[type]; this.x = x; this.z = z; this.h = h || 0; this.v = 0; this.steerCur = 0; this.acc = 0; this.siren = false; this.beat = 0; this.driver = null; this.ai = !!opts.ai; this.yawIdle = 0; this.y = 0; this.vy = 0; this.rotorW = 0;
       const b = new BI.Batch(), model = (MODELS[type] || MODELS.car)(b, { color: opts.color }) || {};
       this.model = model; this.root = new THREE.Group(); this.tilt = new THREE.Group(); this.root.add(this.tilt);
       const body = b.mesh(BI.mat()); body.frustumCulled = false; this.tilt.add(body);
@@ -98,12 +116,37 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       for (const p of model.head || []) addBox(this.tilt, p[0], p[1], p[2], .4, .2, .1, BI.headMat);
       for (const p of model.tail || []) addBox(this.tilt, p[0], p[1], p[2], .4, .18, .1, BI.tailMat);
       this.beacons = (model.beacons || []).map(p => { const mat = new THREE.MeshBasicMaterial({ color: p[3] }); const m = addBox(this.tilt, p[0], p[1], p[2], .4, .22, .3, mat); return { mat, base: p[3], m }; });
+      if (model.rotor) {
+        const mk = (bt, pos, ax) => { const g = new THREE.Group(); g.position.set(pos[0], pos[1], pos[2]); g.add(bt.mesh(BI.mat())); this.tilt.add(g); return g; };
+        const mb = new BI.Batch(); mb.box(0, 0, 0, .4, .05, 7.4, 0x2b2f3a); mb.box(0, 0, 0, 7.4, .05, .4, 0x2b2f3a); this.rotorMain = mk(mb, model.rotor.main);
+        const tb = new BI.Batch(); tb.box(0, -.6, 0, .06, 1.2, .16, 0x2b2f3a); this.rotorTail = mk(tb, model.rotor.tail);
+        this.shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
+      }
+      if (model.decal) { // Aufkleber mit Startnummer auf beiden Türen
+        const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, 128, 128); c.fillStyle = '#111'; c.fillRect(10, 10, 108, 108);
+        c.font = 'bold 84px Arial Black, Arial, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 7; c.strokeStyle = '#fff'; c.strokeText(model.decal, 64, 68); c.fillStyle = '#e2362a'; c.fillText(model.decal, 64, 68);
+        const tx = new THREE.CanvasTexture(cv), dm = new THREE.MeshBasicMaterial({ map: tx });
+        for (const sd of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(.75, .75), dm); pl.position.set(sd * .96, .3, .15); pl.rotation.y = sd * Math.PI / 2; pl.position.y = .45; this.tilt.add(pl); }
+      }
       this.seat = model.seat || null; this.lean = model.lean || 0;
       this.cols = this.spec.cols; this.r = this.spec.r;
+      if (this.spec.scale) this.root.scale.setScalar(this.spec.scale);
       this.root.position.set(x, 0, z); this.root.rotation.y = this.h;
     }
     setPose(x, z, h) { this.x = x; this.z = z; this.h = h; }
+    stepFly(dt, inp, W) {
+      const sp = this.spec; this.steerCur = BI.damp(this.steerCur, inp.steer, 6, dt);
+      const climb = this.driver ? (inp.climb || 0) : -1;
+      this.vy = BI.damp(this.vy, climb * (inp.turbo ? 9 : 6), 2.5, dt); this.y = BI.clamp(this.y + this.vy * dt, 0, 70); if (this.y <= 0 && this.vy < 0) this.vy = 0;
+      const air = this.y > 1.0, want = air && this.driver ? (inp.thr > 0 ? inp.thr * sp.max * (inp.turbo ? 1.3 : 1) : inp.thr * sp.rev) : 0, v0 = this.v;
+      this.v = BI.damp(this.v, want, air ? 1.5 : 6, dt); this.acc = (this.v - v0) / dt;
+      this.h -= this.steerCur * sp.turn * (air ? 1 : .35) * dt;
+      this.x += Math.sin(this.h) * this.v * dt; this.z += Math.cos(this.h) * this.v * dt;
+      const p = {}; W.resolve(this.x, this.z, this.r, p, this.y); if (p.hit) { this.x = p.x; this.z = p.z; this.v *= .6; }
+      return 0;
+    }
     step(dt, inp, W, fx) {
+      if (this.spec.fly) return this.stepFly(dt, inp, W);
       const sp = this.spec, onRoad = W.onRoad(this.x, this.z); this.offroad = !onRoad;
       let max = sp.max * (inp.turbo ? 1.4 : 1) * (onRoad || sp.offroad ? 1 : .72);
       const thr = inp.thr, want = thr > 0 ? thr * max : thr * sp.rev;
@@ -133,7 +176,16 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     }
     /* Optik: Räder, Neigung, Blaulicht */
     visual(dt, t, fx) {
-      const sp = this.spec; this.root.position.set(this.x, 0, this.z); this.root.rotation.y = this.h;
+      const sp = this.spec; this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      if (sp.fly) {
+        const air = this.y > .3, on = this.driver || air; this.rotorW = BI.damp(this.rotorW, on ? 32 : 0, on ? 1.2 : .5, dt);
+        this.rotorMain.rotation.y += this.rotorW * dt; this.rotorTail.rotation.x += this.rotorW * 1.6 * dt;
+        this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(this.v / sp.max, -.5, 1.4) * .2, 4, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, air ? this.steerCur * .28 : 0, 4, dt);
+        this.tilt.position.y = air ? Math.sin(t * 3) * .08 : 0;
+        this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .02); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .005);
+        if (fx && this.y < 9 && this.rotorW > 18 && Math.random() < dt * 30) { const a = Math.random() * Math.PI * 2; fx.emit(this.x + Math.cos(a) * 2, .25 - 0, this.z + Math.sin(a) * 2, Math.cos(a) * 5, .6, Math.sin(a) * 5, .8, 34, .85, .8, .7, 0, .5); }
+        return;
+      }
       const ratio = BI.clamp(this.v / sp.max, -1, 1.4), lean = this.steerCur * Math.abs(ratio);
       this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, this.lean ? lean * .5 : -lean * .06, 8, dt);
       this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .004, -.07, .07), 6, dt);
@@ -168,7 +220,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
   }
   BI.Train = class Train {
     constructor(scene, W) {
-      this.W = W; this.s = W.STATION_S; this.v = 0; this.mode = 'wait'; this.timer = 2; this.cruise = 13; this.skip = false; this.driven = false; this.dist = 0; this.puff = 0;
+      this.W = W; this.s = W.stations[0].s; this.v = 0; this.mode = 'wait'; this.timer = 2; this.cruise = 13; this.leaveIdx = -1; this.leaveDist = 0; this.stationIdx = 0; this.driven = false; this.dist = 0; this.puff = 0;
       this.cars = []; const lens = [8, 7, 7, 7], cols = [0, 0xffc933, 0x4cd07d, 0x3f8cff]; let off = 0;
       lens.forEach((len, i) => {
         const g = new THREE.Group(), body = trainBody(i ? 'wagon' : 'loco', cols[i]); body.frustumCulled = false; g.add(body);
@@ -179,27 +231,32 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       this.total = off; this.update(0, null);
     }
     get front() { return this.cars[0]; }
-    distToStop() { const L = this.W.track.L; return (((this.W.STATION_S - this.s) % L) + L) % L; }
+    /* vorzeichenbehafteter Abstand der Lok-Front zum Halt i (positiv = noch davor, negativ = drüber hinaus) */
+    offsetTo(i) { const L = this.W.track.L, d = (((this.W.stations[i].s - this.s + 15) % L) + L) % L - 15; return d; }
+    nextStop() {
+      let bi = -1, bd = 1e9; for (let i = 0; i < this.W.stations.length; i++) { if (i === this.leaveIdx) continue; const d = this.offsetTo(i); if (d < bd) { bd = d; bi = i; } }
+      return { i: bi, d: bd, st: this.W.stations[bi] };
+    }
+    distToStop() { return this.nextStop().d; }
     update(dt, inp, fx) {
       const L = this.W.track.L;
       if (inp) {
         this.driven = true; const thr = inp.thr, maxV = 24 * (inp.turbo ? 1.2 : 1);
         const target = thr > .05 ? thr * maxV : 0, rate = thr < -.05 ? 14 : thr > .05 ? 4.5 : 2.2;
-        this.v += BI.clamp(target - this.v, -rate * dt, rate * dt); this.mode = 'drive';
+        this.v += BI.clamp(target - this.v, -rate * dt, rate * dt); this.mode = 'drive'; this.leaveIdx = -1;
       } else {
-        if (this.driven) { this.driven = false; this.mode = 'run'; this.skip = true; }
+        if (this.driven) { this.driven = false; this.mode = 'run'; }
         if (this.mode === 'drive') this.mode = 'run';
-        if (this.mode === 'wait') { this.v = 0; this.timer -= dt; if (this.timer <= 0) { this.mode = 'run'; this.skip = true; } }
+        if (this.mode === 'wait') { this.v = 0; this.timer -= dt; if (this.timer <= 0) { this.mode = 'run'; this.leaveIdx = this.stationIdx; this.leaveDist = 0; } }
         else {
-          const d = this.distToStop();
-          if (this.skip && d > 40 && d < L - 60) this.skip = false;
-          let target = this.cruise;
-          if (!this.skip) target = Math.min(target, Math.sqrt(2 * 2.2 * Math.max(d - 1.5, 0)) + 1.2);
+          const ns = this.nextStop(), d = Math.max(ns.d, 0);
+          let target = Math.min(this.cruise, Math.sqrt(2 * 2.2 * Math.max(d - 1.5, 0)) + 1.2);
           this.v += BI.clamp(target - this.v, -3 * dt, 2 * dt);
-          if (!this.skip && d < 2.5 && this.v < 1.6) { this.mode = 'wait'; this.timer = 8; this.v = 0; this.s = this.W.STATION_S; }
+          if (ns.d < 2.5 && this.v < 1.6) { this.mode = 'wait'; this.timer = 8; this.v = 0; this.s = ns.st.s; this.stationIdx = ns.i; }
         }
       }
       this.s = ((this.s + this.v * dt) % L + L) % L; this.dist += this.v * dt;
+      if (this.leaveIdx >= 0) { this.leaveDist += this.v * dt; if (this.leaveDist > 20) this.leaveIdx = -1; }
       const a = {}, b = {};
       for (const c of this.cars) {
         this.W.trackAt(this.s - c.off + c.len * .33, a); this.W.trackAt(this.s - c.off - c.len * .33, b);
@@ -209,9 +266,8 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       }
       if (fx && this.v > .5) { this.puff -= dt; if (this.puff <= 0) { this.puff = .14; const c = this.cars[0]; fx.emit(c.x + Math.sin(c.h) * 2.6, 3.9, c.z + Math.cos(c.h) * 2.6, (Math.random() - .5) * .8, 3 + this.v * .1, (Math.random() - .5) * .8, 1.4, 40, .95, .95, .95, -.4, .7); } }
     }
-    /* nächster Wagen innerhalb von r */
+    /* Abstand zum nächsten Wagen */
     nearest(px, pz) { let best = 1e9; for (const c of this.cars) { const d = Math.hypot(px - c.x, pz - c.z) - c.len * .5; if (d < best) best = d; } return best; }
-    sync() { const c = this.cars[0]; return c; }
   };
   const tw = {};
   BI.trainWheel = r => tw[r] || (tw[r] = (() => { const b = new BI.Batch(); b.cyl(0, -.12, 0, r, r, .24, 0x23262d, 12, 0, 0, Math.PI / 2); b.cyl(0, -.15, 0, r * .55, r * .55, .3, 0xe0382b, 8, 0, 0, Math.PI / 2); return b.mesh(BI.mat()).geometry; })());

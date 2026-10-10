@@ -11,15 +11,22 @@ BI.buildWorld = function (scene) {
   /* ---------- Kollision (Raster) ---------- */
   const CELL = 12, grid = new Map(), cellKey = (ix, iz) => (ix + 40) * 100 + (iz + 40);
   function put(it, x0, z0, x1, z1) {
+    it.cells = [];
     for (let ix = Math.floor(x0 / CELL); ix <= Math.floor(x1 / CELL); ix++) for (let iz = Math.floor(z0 / CELL); iz <= Math.floor(z1 / CELL); iz++) {
-      const k = cellKey(ix, iz); let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(it);
+      const k = cellKey(ix, iz); let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(it); it.cells.push(k);
     }
   }
-  W.addCircle = (x, z, r) => { const it = { c: 1, x, z, r }; W.circles.push(it); put(it, x - r, z - r, x + r, z + r); return it; };
-  W.addBox = (x0, z0, x1, z1) => { const it = { c: 0, x0, z0, x1, z1 }; W.boxes.push(it); put(it, x0, z0, x1, z1); return it; };
+  /* u = vom Spieler gebaut (darf wieder entfernt werden) */
+  W.addCircle = (x, z, r, u, h) => { const it = { c: 1, x, z, r, u: !!u, h: h || 7 }; W.circles.push(it); put(it, x - r, z - r, x + r, z + r); return it; };
+  W.addBox = (x0, z0, x1, z1, u, h) => { const it = { c: 0, x0, z0, x1, z1, u: !!u, h: h || 12 }; W.boxes.push(it); put(it, x0, z0, x1, z1); return it; };
+  W.removeCollider = it => {
+    for (const k of it.cells || []) { const a = grid.get(k); if (a) { const i = a.indexOf(it); if (i >= 0) a.splice(i, 1); } }
+    const arr = it.c ? W.circles : W.boxes, j = arr.indexOf(it); if (j >= 0) arr.splice(j, 1);
+  };
   const seen = new Set();
   /* schiebt einen Kreis (px,pz,r) aus allen Hindernissen; liefert Verschiebung zurück */
-  W.resolve = function (px, pz, r, out) {
+  /* alt = Flughöhe (Hubschrauber): überfliegt Hindernisse, die niedriger sind */
+  W.resolve = function (px, pz, r, out, alt) {
     out = out || {}; let hit = false;
     for (let pass = 0; pass < 2; pass++) {
       seen.clear();
@@ -28,9 +35,11 @@ BI.buildWorld = function (scene) {
         for (let i = 0; i < a.length; i++) {
           const it = a[i]; if (seen.has(it)) continue; seen.add(it);
           if (it.c) {
+            if (alt != null && alt > it.h) continue;
             const dx = px - it.x, dz = pz - it.z, d = Math.hypot(dx, dz), m = r + it.r;
             if (d < m) { const k = d > 1e-6 ? (m - d) / d : 0; if (d > 1e-6) { px += dx * k; pz += dz * k; } else px += m; hit = true; }
           } else {
+            if (alt != null && alt > it.h) continue;
             const cx = BI.clamp(px, it.x0, it.x1), cz = BI.clamp(pz, it.z0, it.z1), dx = px - cx, dz = pz - cz, d2 = dx * dx + dz * dz;
             if (d2 > 1e-9) { if (d2 < r * r) { const d = Math.sqrt(d2), k = (r - d) / d; px += dx * k; pz += dz * k; hit = true; } }
             else { // Mittelpunkt im Kasten: kürzeste Seite hinaus
@@ -68,15 +77,17 @@ BI.buildWorld = function (scene) {
     if (r < 160 && (ax < h || az < h)) return true;
     return Math.abs(r - K.RA) < h || Math.abs(r - K.RB) < h || r < K.RR + RW + pad || W.pads.some(p => x > p[0] - pad && x < p[2] + pad && z > p[1] - pad && z < p[3] + pad);
   }
-  function blockedAt(x, z, pad) {
+  function blockedAt(x, z, pad, skipUser) {
     if (nearRoad(x, z, pad)) return true;
     if (W.railSdf(x, z) < 5 + pad) return true;
     if (Math.hypot(x - LAKE.x, z - LAKE.z) < LAKE.r + 3 + pad) return true;
-    for (const b of W.boxes) if (x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return true;
-    for (const c of W.circles) if (Math.hypot(x - c.x, z - c.z) < c.r + pad) return true;
+    for (const b of W.boxes) if (!(skipUser && b.u) && x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return true;
+    for (const c of W.circles) if (!(skipUser && c.u) && Math.hypot(x - c.x, z - c.z) < c.r + pad) return true;
     return false;
   }
   W.blockedAt = blockedAt;
+  /* Bauplatz frei? (ohne die vom Spieler gebauten Teile) */
+  W.canBuild = (x, z, pad) => Math.hypot(x, z) < K.LIMIT - 8 && !blockedAt(x, z, pad == null ? 2 : pad, true);
 
   /* Schienentabelle (gleichmäßig 1 m) */
   (function () {
@@ -106,7 +117,6 @@ BI.buildWorld = function (scene) {
     out = out || _tr; const T = W.track; s = ((s % T.L) + T.L) % T.L; const f = s / T.ds, i = Math.floor(f) % T.N, j = (i + 1) % T.N, t = f - Math.floor(f);
     out.x = T.X[i] + (T.X[j] - T.X[i]) * t; out.z = T.Z[i] + (T.Z[j] - T.Z[i]) * t; out.h = Math.atan2(T.X[j] - T.X[i], T.Z[j] - T.Z[i]); return out;
   };
-  W.STATION_S = 176; // Lok-Front steht bei x=76 am Bahnsteig
 
   /* ---------- Boden ---------- */
   const GRASS = 0x86d36a, SAND = 0xf3dfa2, ASPH = 0x59606c, STONE = 0xd9d3c4;
@@ -163,7 +173,7 @@ BI.buildWorld = function (scene) {
     }
   }
   function box(cx, cz, w, d, h, color, y0 = 0) { st.box(cx, y0, cz, w, h, d, color); }
-  function solid(cx, cz, w, d) { W.addBox(cx - w / 2, cz - d / 2, cx + w / 2, cz + d / 2); }
+  function solid(cx, cz, w, d, h) { W.addBox(cx - w / 2, cz - d / 2, cx + w / 2, cz + d / 2, false, h); }
   function house(cx, cz, w, d, h, wall, roof, doorSide, ridgeX) {
     box(cx, cz, w, d, h, wall);
     const rh = Math.min(w, d) * .45;
@@ -171,7 +181,7 @@ BI.buildWorld = function (scene) {
     st.box(cx + w * .25, h + rh * .3, cz + d * .2, .9, rh + .6, .9, 0x9a5a48);
     windows(cx, cz, w, d, 1.4, h > 5.5 ? 2 : 1, h > 5.5 ? 2.8 : 3.4, doorSide);
     if (doorSide) { st.box(cx, 0, cz + doorSide * (d / 2 + .05), 1.3, 2.3, .12, 0x8a5a33); st.box(cx, 0, cz + doorSide * (d / 2 + 1.2), 2.2, .12, 1.6, 0xcfc7b8); }
-    solid(cx, cz, w, d);
+    solid(cx, cz, w, d, h + rh + 1.5);
     W.houses.push({ x: cx, z: cz, w, d });
   }
   function houseOnX(cx, cz, side) { // Tür zeigt zur Straße (z=0)
@@ -195,7 +205,7 @@ BI.buildWorld = function (scene) {
     st.box(cx, 0, cz + d / 2 + .1, 3.4, 3, .2, 0x7dc4ff); st.box(cx, 3, cz + d / 2 + 1.6, 6, .4, 3.4, 0xe53b3b);
     st.box(cx, 5.5, cz + d / 2 + 1.02, 1.6, 5, .2, 0xe53b3b); st.box(cx, 7.2, cz + d / 2 + 1.02, 5, 1.6, .2, 0xe53b3b);
     st.disc(cx + 8, cz, 4.6, h + .65, 0x444a55, 16); st.strip(cx + 8, cz - 1.8, .6, 3.6, 0, h + .7, 0xffd23f); st.strip(cx + 8, cz + 1.8, .6, 3.6, 0, h + .7, 0xffd23f); st.strip(cx + 8, cz, 3.6, .6, 0, h + .7, 0xffd23f);
-    solid(cx, cz, w, d); pad(cx - 13, cz + d / 2 + .2, cx + 13, cz + d / 2 + 12.2);
+    solid(cx, cz, w, d, 13); pad(cx - 13, cz + d / 2 + .2, cx + 13, cz + d / 2 + 12.2);
     W.spots.hospital = { x: cx, z: cz + d / 2 + 6 };
     W.vehicleSpawns.push({ type: 'ambulance', x: cx - 6, z: cz + d / 2 + 7, h: 0 }, { type: 'ambulance', x: cx + 6, z: cz + d / 2 + 7, h: 0 });
   }
@@ -205,7 +215,7 @@ BI.buildWorld = function (scene) {
     st.box(cx, h + .7, cz, 5, 1.2, 5, 0x2f5fd0); st.cyl(cx, h + 1.9, cz, .08, .08, 5, 0x888, 5);
     windows(cx, cz, w, d, 1.6, 2, 3.2, 1);
     st.box(cx, 0, cz + d / 2 + .1, 3, 2.6, .15, 0x2a3f7a); st.cyl(cx, 3.8, cz + d / 2 + .15, 1.1, 1.1, .2, 0xffcf2e, 8, Math.PI / 2);
-    solid(cx, cz, w, d); pad(cx - 11, cz + d / 2 + .2, cx + 11, cz + d / 2 + 11.2);
+    solid(cx, cz, w, d, 10); pad(cx - 11, cz + d / 2 + .2, cx + 11, cz + d / 2 + 11.2);
     W.vehicleSpawns.push({ type: 'police', x: cx - 5, z: cz + d / 2 + 6, h: 0 }, { type: 'police', x: cx + 5, z: cz + d / 2 + 6, h: 0 });
   }
   { // Feuerwehr (SE) – Eingang nach Norden
@@ -213,19 +223,35 @@ BI.buildWorld = function (scene) {
     box(cx, cz, w, d, h, 0xe04b3c); box(cx, cz, w + .6, d + .6, .6, 0xfafafa, h);
     for (const x of [-6, 6]) { st.box(cx + x, 0, cz - d / 2 - .1, 7, 5.2, .15, 0xd7dde6); for (let k = 0; k < 5; k++) st.box(cx + x, 1 + k, cz - d / 2 - .2, 7, .08, .05, 0x9aa3b0); }
     st.box(cx + 9.5, h + .6, cz + 4, 3.5, 7, 3.5, 0xd2392c); st.cone(cx + 9.5, h + 7.6, cz + 4, 2.8, 2.6, 0x333c4a, 4);
-    windows(cx, cz, w, d, 1.8, 1, 5, 0); solid(cx, cz, w, d); pad(cx - 12, cz - d / 2 - 12.2, cx + 12, cz - d / 2 - .2);
+    windows(cx, cz, w, d, 1.8, 1, 5, 0); solid(cx, cz, w, d, 16); pad(cx - 12, cz - d / 2 - 12.2, cx + 12, cz - d / 2 - .2);
     W.vehicleSpawns.push({ type: 'fire', x: cx - 6, z: cz - d / 2 - 7, h: Math.PI }, { type: 'fire', x: cx + 6, z: cz - d / 2 - 7, h: Math.PI });
   }
-  { // Bahnhof (oben an der Strecke)
-    const px0 = 38, px1 = 82, tz = -K.AZ;
-    st.box((px0 + px1) / 2, 0, tz + 5.4, px1 - px0, .2, 4, 0xcfc7b8);
-    box(60, -106.5, 24, 8, 5.5, 0xffe3a6); st.prism(60, 5.5, -106.5, 9, 2.6, 25, 0xc2453d, Math.PI / 2);
-    windows(60, -106.5, 24, 8, 1.4, 1, 3, 0);
-    st.box(60, 0, -110.4, 4, 2.6, .12, 0x8a5a33);
-    for (const x of [42, 51, 69, 78]) st.box(x, .5, tz + 5.9, .3, 3.5, .3, 0x6b6f78); st.box(60, 4, tz + 5.4, 42, .4, 5, 0xc2453d);
-    st.cyl(60, 5.8, -102.4, 1, 1, .5, 0xffffff, 16, Math.PI / 2); st.box(60, 6.5, -102.55, .1, .8, .1, 0x222222);
-    W.addBox(48, -110.5, 72, -102.5);
-    W.spots.station = { x: 60, z: tz + 5.4 };
+  /* Vier Bahnhöfe auf dem Schienenring (Zug fährt im Uhrzeigersinn) */
+  W.stations = [];
+  function station(o) {
+    const T = W.track, [px0, pz0, px1, pz1] = o.plat, pw = px1 - px0, pd = pz1 - pz0, pcx = (px0 + px1) / 2, pcz = (pz0 + pz1) / 2, [bx, bz, bw, bd] = o.bld;
+    st.box(pcx, 0, pcz, pw, .2, pd, 0xcfc7b8);
+    box(bx, bz, bw, bd, 5.5, 0xffe3a6);
+    if (o.ridgeX) st.prism(bx, 5.5, bz, bd + 1, 2.6, bw + 1, o.roof, Math.PI / 2); else st.prism(bx, 5.5, bz, bw + 1, 2.6, bd + 1, o.roof, 0);
+    windows(bx, bz, bw, bd, 1.4, 1, 3, 0);
+    const [dx, dz] = o.door;
+    if (o.ridgeX) { st.box(dx, 0, dz, 4, 2.6, .14, 0x8a5a33); st.box(dx, 3.0, dz, 5, .9, .16, o.sign); for (let i = 0; i < 4; i++) st.box(px0 + 4 + i * (pw - 8) / 3, .2, o.post, .3, 3.5, .3, 0x6b6f78); st.box(pcx, 3.7, pcz, pw - 2, .4, pd + 1, o.roof); }
+    else { st.box(dx, 0, dz, .14, 2.6, 4, 0x8a5a33); st.box(dx, 3.0, dz, .16, .9, 5, o.sign); for (let i = 0; i < 4; i++) st.box(o.post, .2, pz0 + 4 + i * (pd - 8) / 3, .3, 3.5, .3, 0x6b6f78); st.box(pcx, 3.7, pcz, pw + 1, .4, pd - 2, o.roof); }
+    W.addBox(bx - bw / 2, bz - bd / 2, bx + bw / 2, bz + bd / 2, false, 9);
+    let bi = 0, bdst = 1e9; for (let i = 0; i < T.N; i++) { const d = Math.hypot(T.X[i] - o.stop[0], T.Z[i] - o.stop[1]); if (d < bdst) { bdst = d; bi = i; } }
+    W.stations.push({ name: o.name, icon: o.icon, x: o.stop[0], z: o.stop[1], s: bi * T.ds, px: pcx, pz: pcz, plat: o.plat, ridgeX: o.ridgeX });
+  }
+  station({ name: 'Hauptbahnhof', icon: '🚉', plat: [38, -114.6, 82, -110.6], bld: [60, -106.5, 24, 8], ridgeX: true, roof: 0xc2453d, sign: 0xe0382b, door: [60, -110.55], post: -112.6, stop: [76, -118] });
+  station({ name: 'Strand', icon: '🏖️', plat: [132.6, 20, 136.6, 60], bld: [128.55, 40, 8, 24], ridgeX: false, roof: 0x3f7fd9, sign: 0x2d8cff, door: [132.62, 40], post: 134.6, stop: [140, 58] });
+  station({ name: 'Südhalt', icon: '🌲', plat: [-82, 110.6, -38, 114.6], bld: [-60, 106.5, 24, 8], ridgeX: true, roof: 0x3fa860, sign: 0x4cd07d, door: [-60, 110.54], post: 112.6, stop: [-76, 118] });
+  station({ name: 'Leuchtturm', icon: '🗼', plat: [-136.6, -60, -132.6, -20], bld: [-128.55, -40, 8, 24], ridgeX: false, roof: 0xe0a020, sign: 0xffc933, door: [-132.62, -40], post: -134.6, stop: [-140, -56] });
+  st.cyl(60, 5.8, -102.4, 1, 1, .5, 0xffffff, 16, Math.PI / 2); st.box(60, 6.5, -102.55, .1, .8, .1, 0x222222);
+  W.STATION_S = W.stations[0].s; W.spots.station = { x: 60, z: -112.6 };
+  { // Landeplatz für den Hubschrauber
+    const hx = 100, hz = -62; W.pads.push([hx - 7, hz - 7, hx + 7, hz + 7]); W.spots.helipad = { x: hx, z: hz };
+    st.disc(hx, hz, 7.2, ROADY + .01, 0x5d6470, 28); st.ring(hx, hz, 6.2, 6.8, ROADY + .03, 0xffd23f, 32);
+    st.strip(hx - 1.7, hz, .7, 5, 0, ROADY + .04, 0xffffff); st.strip(hx + 1.7, hz, .7, 5, 0, ROADY + .04, 0xffffff); st.strip(hx, hz, 3.4, .7, 0, ROADY + .04, 0xffffff);
+    W.vehicleSpawns.push({ type: 'heli', x: hx, z: hz, h: Math.PI });
   }
   // innere Gebäude
   { // Rathaus mit Uhrturm (NE-innen)
@@ -233,12 +259,12 @@ BI.buildWorld = function (scene) {
     box(cx, cz, 14, 14, 7, 0xf1e6cf); st.prism(cx, 7, cz, 15, 3, 15, 0x7c8aa0, 0); box(cx, cz, 5, 5, 16, 0xe5d6b8, 0);
     st.cone(cx, 16, cz, 3.8, 5, 0x3f7fd9, 4); st.cyl(cx, 12, cz + 2.55, 1.2, 1.2, .2, 0xffffff, 16, Math.PI / 2); st.box(cx, 12.8, cz + 2.7, .12, .9, .08, 0x222);
     for (let k = -2; k <= 2; k++) st.cyl(cx + k * 2.4, 0, cz + 7.5, .4, .4, 5, 0xfafafa, 8);
-    windows(cx, cz, 14, 14, 1.4, 1, 3.5, 1); st.cyl(cx + 9, 0, cz + 8, .08, .08, 9, 0xaaaaaa, 5); st.box(cx + 9.8, 6.5, cz + 8, 1.5, 1, .05, 0xff5a5a); solid(cx, cz, 14, 14);
+    windows(cx, cz, 14, 14, 1.4, 1, 3.5, 1); st.cyl(cx + 9, 0, cz + 8, .08, .08, 9, 0xaaaaaa, 5); st.box(cx + 9.8, 6.5, cz + 8, 1.5, 1, .05, 0xff5a5a); solid(cx, cz, 14, 14, 22);
   }
   { // Schule (NW-innen)
     const cx = -27, cz = -27;
     box(cx, cz, 14, 14, 6, 0xffd75a); st.box(cx, 6, cz, 14.6, .5, 14.6, 0xc2453d); box(cx - 4, cz + 4, 4, 4, 9, 0xffd75a); st.cone(cx - 4, 9, cz + 4, 3.1, 3, 0xc2453d, 4);
-    windows(cx, cz, 14, 14, 1.4, 2, 2.4, 1); st.box(cx + 3, 0, cz + 7.1, 2.2, 2.4, .12, 0x2d6a4f); solid(cx, cz, 14, 14);
+    windows(cx, cz, 14, 14, 1.4, 2, 2.4, 1); st.box(cx + 3, 0, cz + 7.1, 2.2, 2.4, .12, 0x2d6a4f); solid(cx, cz, 14, 14, 13);
     st.sph(cx + 3, 2.2, cz + 12, 1.2, 0xff5a5a, 1); st.sph(cx - 1, 2.2, cz + 12, 1.2, 0x4da3ff, 1);
   }
   { // Eisdiele (SE-innen)
@@ -247,17 +273,66 @@ BI.buildWorld = function (scene) {
     for (let k = -3; k <= 3; k++) st.box(cx + k * 1.9, 3.2, cz - 8.5, 1.9, .5, 3, k % 2 ? 0xffffff : 0xff5a8f);
     st.sph(cx, 11, cz, 1.9, 0xff8fb8, 1); st.sph(cx, 12.8, cz, 1.5, 0xfff1b8, 1); st.sph(cx, 14.3, cz, 1.1, 0x9be0c8, 1); st.sph(cx, 15.6, cz, .35, 0xe53b3b, 0);
     st.cyl(cx, 5.4, cz, 1.9, 0.05, 5, 0xe0a458, 6);
-    windows(cx, cz, 14, 14, 1.4, 1, 3.2, -1); st.box(cx, 0, cz - 7.1, 2.2, 2.4, .12, 0x8a5a33); solid(cx, cz, 14, 14);
+    windows(cx, cz, 14, 14, 1.4, 1, 3.2, -1); st.box(cx, 0, cz - 7.1, 2.2, 2.4, .12, 0x8a5a33); solid(cx, cz, 14, 14, 17);
   }
-  { // Spielzeugladen (SW-innen)
-    const cx = -27, cz = 27;
-    box(cx, cz, 14, 14, 5, 0xffb45a); st.box(cx, 5, cz, 14.6, .5, 14.6, 0x7a5ce0);
+  { // Spielzeugladen (SW-innen) – begehbar, mit Regalen voller Spielzeug und Verkäuferin
+    const cx = -27, cz = 27, WALL = 0xffb45a, WOOD = 0xc8803c, DW = 0x8a5a33, P = [0xff5a5a, 0x4da3ff, 0xffd23f, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xff9a3a];
+    const wallBox = (x0, z0, x1, z1, y0, h) => { st.box((x0 + x1) / 2, y0, (z0 + z1) / 2, x1 - x0, h, z1 - z0, WALL); if (!y0) W.addBox(x0, z0, x1, z1, false, 6); };
+    wallBox(cx - 7, cz - 7, cx - 6.5, cz + 7, 0, 5); wallBox(cx + 6.5, cz - 7, cx + 7, cz + 7, 0, 5); wallBox(cx - 7, cz + 6.5, cx + 7, cz + 7, 0, 5);
+    wallBox(cx - 7, cz - 7, cx - 1.5, cz - 6.5, 0, 5); wallBox(cx + 1.5, cz - 7, cx + 7, cz - 6.5, 0, 5); wallBox(cx - 1.5, cz - 7, cx + 1.5, cz - 6.5, 3.2, 1.8);
+    st.box(cx, 5, cz, 14.6, .5, 14.6, 0x7a5ce0);
     const cs = [0xff5a5a, 0x4da3ff, 0xffd23f, 0x4cd07d];
     for (let k = 0; k < 4; k++) st.box(cx - 4.5 + k * 3, 5.5, cz + (k % 2) * 2 - 1, 2.6, 2.6, 2.6, cs[k], k * .3);
-    st.sph(cx, 10, cz, 1.2, 0xff5a5a, 1); windows(cx, cz, 14, 14, 1.4, 1, 3.2, -1); st.box(cx, 0, cz - 7.1, 2.2, 2.4, .12, 0x8a5a33); solid(cx, cz, 14, 14);
+    st.sph(cx, 10, cz, 1.2, 0xff5a5a, 1);
+    for (let k = 0; k < 5; k++) st.box(cx - 2.1 + k * 1.05, 3.45, cz - 7.2, .8, .8, .16, P[k]);
+    windows(cx, cz, 14, 14, 1.4, 1, 3.2, -1);
+    // Boden mit Schachbrett + Fußmatte
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) st.rect(cx - 6.5 + i * 13 / 6, cz - 6.5 + j * 13 / 6, cx - 6.5 + (i + 1) * 13 / 6, cz - 6.5 + (j + 1) * 13 / 6, ROADY - .0, (i + j) % 2 ? 0xfff1d6 : 0xffd9a0);
+    st.rect(cx - 1.3, cz - 8.4, cx + 1.3, cz - 6.9, ROADY + .01, 0x7a5ce0);
+    // Spielzeug
+    const tint = (c, k) => { const f = v => Math.max(0, Math.min(255, Math.round(v * k))); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); };
+    const toy = {
+      bear(x, y, z, c) { st.sph(x, y + .2, z, .2, c, 1); st.sph(x, y + .48, z, .14, c, 1); st.sph(x - .1, y + .6, z, .05, c, 0); st.sph(x + .1, y + .6, z, .05, c, 0); st.sph(x, y + .46, z + .1, .06, tint(c, 1.3), 0); },
+      block(x, y, z, c) { st.box(x, y, z, .3, .3, .3, c, Math.random()); },
+      stack(x, y, z, c) { st.box(x, y, z, .32, .3, .32, c); st.box(x, y + .3, z, .28, .28, .28, tint(c, .8), .4); st.box(x, y + .58, z, .24, .24, .24, tint(c, 1.2), .8); },
+      ball(x, y, z, c) { st.sph(x, y + .18, z, .18, c, 1); },
+      car(x, y, z, c, ry) { st.box(x, y + .06, z, .5, .12, .25, c, ry); st.box(x, y + .18, z, .26, .1, .2, tint(c, .8), ry); for (const sx of [-.15, .15]) for (const sz of [-.12, .12]) { const o = [sx * Math.cos(ry || 0) + sz * Math.sin(ry || 0), -sx * Math.sin(ry || 0) + sz * Math.cos(ry || 0)]; st.sph(x + o[0], y + .05, z + o[1], .06, 0x23262d, 0); } },
+      robot(x, y, z, c) { st.box(x, y, z, .26, .34, .2, c); st.box(x, y + .34, z, .2, .18, .18, tint(c, 1.2)); st.box(x, y + .52, z, .03, .1, .03, 0xffffff); st.box(x - .17, y + .1, z, .06, .26, .06, tint(c, .8)); st.box(x + .17, y + .1, z, .06, .26, .06, tint(c, .8)); },
+      duck(x, y, z, c) { st.sph(x, y + .15, z, .17, 0xffe14a, 1); st.sph(x, y + .36, z + .08, .1, 0xffe14a, 1); st.box(x, y + .34, z + .18, .08, .04, .1, 0xff8a1f); },
+      doll(x, y, z, c) { st.cyl(x, y, z, .06, .14, .32, c, 8); st.sph(x, y + .42, z, .1, 0xffd6b3, 1); st.sph(x, y + .47, z - .02, .11, [0x6b4423, 0xf3d98a, 0x222222][(c >> 3) % 3], 1, 1, .7, 1); },
+      puzzle(x, y, z, c) { st.box(x, y, z, .4, .05, .3, c); st.box(x + .08, y + .05, z, .2, .03, .18, tint(c, 1.3)); },
+      kite(x, y, z, c) { st.box(x, y, z, .55, .55, .04, c, 0, 0, .785); st.box(x, y - .45, z, .03, .4, .03, 0x6b4a2a); }
+    };
+    const kinds = ['bear', 'block', 'stack', 'ball', 'car', 'robot', 'duck', 'doll', 'puzzle'];
+    function shelf(x, z, len, alongX, face) { // face: Richtung, in die die Regalfront zeigt (+1/-1)
+      const w = alongX ? len : .8, d = alongX ? .8 : len;
+      st.box(x, 0, z, w, .1, d, DW); for (const y of [1.0, 1.9, 2.8]) st.box(x, y, z, w, .1, d, WOOD);
+      if (alongX) { st.box(x - len / 2, 0, z, .1, 3, .8, DW); st.box(x + len / 2, 0, z, .1, 3, .8, DW); st.box(x, 0, z - face * .38, len, 3, .06, 0x6b4a2a); W.addBox(x - len / 2, z - .4, x + len / 2, z + .4, false, 3.2); }
+      else { st.box(x, 0, z - len / 2, .8, 3, .1, DW); st.box(x, 0, z + len / 2, .8, 3, .1, DW); st.box(x - face * .38, 0, z, .06, 3, len, 0x6b4a2a); W.addBox(x - .4, z - len / 2, x + .4, z + len / 2, false, 3.2); }
+      for (const y of [.1, 1.1, 2.0, 2.9]) {
+        const n = Math.floor(len / .55); for (let i = 0; i < n; i++) {
+          const t = -len / 2 + .35 + i * (len - .7) / Math.max(1, n - 1), px = alongX ? x + t : x + face * .05, pz = alongX ? z + face * .05 : z + t, k = kinds[(Math.abs(Math.floor(x * 3 + z * 7 + y * 11 + i * 5)) % kinds.length)];
+          toy[k](px, y, pz, P[(i * 3 + Math.floor(y * 2) + Math.abs(Math.floor(x))) % P.length], 0);
+        }
+      }
+    }
+    shelf(cx - 6.05, cz - 2.5, 4.2, false, 1); shelf(cx - 6.05, cz + 2.4, 4.2, false, 1); shelf(cx + 6.05, cz - 2.5, 4.2, false, -1); shelf(cx + 6.05, cz + 2.4, 4.2, false, -1);
+    shelf(cx - 4.4, cz + 6.05, 3.6, true, -1); shelf(cx + 4.4, cz + 6.05, 3.6, true, -1);
+    // Theke + Kasse
+    st.box(cx, 0, cz + 3.6, 5, 1.1, 1.2, WOOD); st.box(cx, 1.1, cz + 3.6, 5.2, .1, 1.4, DW); st.box(cx - 1.6, 1.2, cz + 3.6, .5, .4, .4, 0x2b2f3a); st.box(cx + 1.4, 1.2, cz + 3.5, .3, .3, .3, 0xff5a8f); st.sph(cx + 1.4, 1.65, cz + 3.5, .12, 0xffd23f, 0);
+    W.addBox(cx - 2.5, cz + 3, cx + 2.5, cz + 4.2, false, 1.3);
+    // Tisch mit Spielzeug-Eisenbahn in der Mitte
+    st.cyl(cx, 0, cz - .5, 2.2, 2.2, .5, WOOD, 16); st.ring(cx, cz - .5, 1.5, 1.8, .55, 0x4a4a55, 24); for (let k = 0; k < 4; k++) { const a = k * .5 + .2; st.box(cx + Math.sin(a) * 1.65, .55, cz - .5 + Math.cos(a) * 1.65, .55, .3, .3, P[k], a + 1.57); }
+    toy.bear(cx, .5, cz - .5, 0xc8a27a); W.addCircle(cx, cz - .5, 2.3, false, 1.2);
+    // großer Teddy + Schaukelpferd
+    st.sph(cx - 4.6, 1.0, cz + 1.2, .9, 0xc8a27a, 1); st.sph(cx - 4.6, 2.2, cz + 1.2, .6, 0xc8a27a, 1); st.sph(cx - 5.05, 2.75, cz + 1.2, .22, 0xc8a27a, 1); st.sph(cx - 4.15, 2.75, cz + 1.2, .22, 0xc8a27a, 1); st.sph(cx - 4.6, 2.1, cz + 1.7, .24, 0xe8d0b0, 1); st.cyl(cx - 4.6, 2.9, cz + 1.2, .5, .5, .1, 0xff5a5a, 10); W.addCircle(cx - 4.6, cz + 1.2, 1.0, false, 3);
+    st.box(cx + 3.6, .5, cz - 1.8, .5, .6, 1.3, 0xb87a3a); st.box(cx + 3.6, 1.05, cz - 1.3, .4, .5, .4, 0xb87a3a); st.box(cx + 3.6, 0, cz - 2.2, .1, .25, 1.4, DW, 0, 0, 0); W.addBox(cx + 3.2, cz - 2.6, cx + 4.0, cz - 1.0, false, 1.6);
+    // Luftballons unter der Decke
+    for (let k = 0; k < 9; k++) { const bx = cx - 4 + (k % 3) * 4 + Math.sin(k) * .6, bz = cz - 4 + Math.floor(k / 3) * 3.6 + Math.cos(k * 2) * .5, by = 3.9 + (k % 2) * .5; st.sph(bx, by, bz, .34, P[k % P.length], 1, 1, 1.2, 1); st.cyl(bx, by - 1.4, bz, .012, .012, 1.1, 0xffffff, 3); }
+    W.spots.shop = { x: cx, z: cz, half: 6.4, keeper: { x: cx, z: cz + 5.0 } };
   }
   // Brunnen
-  { st.cyl(0, 0, 0, 5.8, 6.2, 1.1, 0xcfd6e2, 20); st.cyl(0, 1.0, 0, 5.2, 5.2, .15, 0x57c4ff, 20); st.cyl(0, .6, 0, 1, 1.3, 2.6, 0xcfd6e2, 10); st.cyl(0, 3.1, 0, 2.2, .6, .5, 0xcfd6e2, 12); st.cyl(0, 3.5, 0, 1.6, 1.6, .1, 0x57c4ff, 12); W.addCircle(0, 0, 6.2); W.spots.fountain = { x: 0, z: 0, y: 4 }; }
+  { st.cyl(0, 0, 0, 5.8, 6.2, 1.1, 0xcfd6e2, 20); st.cyl(0, 1.0, 0, 5.2, 5.2, .15, 0x57c4ff, 20); st.cyl(0, .6, 0, 1, 1.3, 2.6, 0xcfd6e2, 10); st.cyl(0, 3.1, 0, 2.2, .6, .5, 0xcfd6e2, 12); st.cyl(0, 3.5, 0, 1.6, 1.6, .1, 0x57c4ff, 12); W.addCircle(0, 0, 6.2, false, 5); W.spots.fountain = { x: 0, z: 0, y: 4 }; }
 
   // Wohnhäuser an den Hauptstraßen
   for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
@@ -291,19 +366,19 @@ BI.buildWorld = function (scene) {
   { const fx0 = -126, fx1 = -98, fz0 = 72, fz1 = 98, gate0 = -116, gate1 = -108;
     st.rect(fx0, fz0, fx1, fz1, .03, 0xa9e07c);
     const post = (x, z) => st.box(x, 0, z, .25, 1.3, .25, 0x8a5a33);
-    const fenceX = (xa, xb, z, g0, g1) => { for (let x = xa; x <= xb; x += 3) { if (g0 != null && x > g0 && x < g1) continue; post(x, z); } let a = xa; const seg = (u, v) => { if (v > u) { st.box((u + v) / 2, .4, z, v - u, .12, .14, 0xb07a44); st.box((u + v) / 2, .9, z, v - u, .12, .14, 0xb07a44); W.addBox(u, z - .15, v, z + .15); } }; if (g0 != null) { seg(xa, g0); seg(g1, xb); } else seg(xa, xb); };
-    const fenceZ = (x, za, zb) => { for (let z = za; z <= zb; z += 3) post(x, z); st.box(x, .4, (za + zb) / 2, .14, .12, zb - za, 0xb07a44); st.box(x, .9, (za + zb) / 2, .14, .12, zb - za, 0xb07a44); W.addBox(x - .15, za, x + .15, zb); };
+    const fenceX = (xa, xb, z, g0, g1) => { for (let x = xa; x <= xb; x += 3) { if (g0 != null && x > g0 && x < g1) continue; post(x, z); } let a = xa; const seg = (u, v) => { if (v > u) { st.box((u + v) / 2, .4, z, v - u, .12, .14, 0xb07a44); st.box((u + v) / 2, .9, z, v - u, .12, .14, 0xb07a44); W.addBox(u, z - .15, v, z + .15, false, 1.6); } }; if (g0 != null) { seg(xa, g0); seg(g1, xb); } else seg(xa, xb); };
+    const fenceZ = (x, za, zb) => { for (let z = za; z <= zb; z += 3) post(x, z); st.box(x, .4, (za + zb) / 2, .14, .12, zb - za, 0xb07a44); st.box(x, .9, (za + zb) / 2, .14, .12, zb - za, 0xb07a44); W.addBox(x - .15, za, x + .15, zb, false, 1.6); };
     fenceX(fx0, fx1, fz0, gate0, gate1); fenceX(fx0, fx1, fz1); fenceZ(fx0, fz0, fz1); fenceZ(fx1, fz0, fz1);
     W.farm = { x0: fx0 + 2, x1: fx1 - 2, z0: fz0 + 2, z1: fz1 - 2 };
     // Scheune
     const bx = -112, bz = 62;
     box(bx, bz, 16, 12, 6, 0xc83d34); st.prism(bx, 6, bz, 17, 4.6, 12.6, 0x8a2b2b, Math.PI / 2 * 0); st.box(bx, 0, bz + 6.05, 5, 4.4, .15, 0xf5ecd8); st.box(bx, 0, bz + 6.1, .3, 4.4, .12, 0xc83d34, 0, 0, 0);
     st.box(bx - 2.5, 0, bz + 6.12, .3, 4.4, .1, 0xc83d34, 0, 0, .0); st.box(bx, 1, bz + 6.14, 5, .25, .1, 0xc83d34, 0, 0, .75); st.box(bx, 1, bz + 6.14, 5, .25, .1, 0xc83d34, 0, 0, -.75);
-    solid(bx, bz, 16, 12);
+    solid(bx, bz, 16, 12, 11);
     // Silo
-    st.cyl(-96, 0, 60, 2.4, 2.4, 11, 0xdfe6ee, 12); st.sph(-96, 11, 60, 2.4, 0xc83d34, 1, 1, .6, 1); W.addCircle(-96, 60, 2.5);
+    st.cyl(-96, 0, 60, 2.4, 2.4, 11, 0xdfe6ee, 12); st.sph(-96, 11, 60, 2.4, 0xc83d34, 1, 1, .6, 1); W.addCircle(-96, 60, 2.5, false, 14);
     // Windmühle
-    st.cyl(-84, 0, 66, 1.4, 2.2, 9, 0xf3e9d2, 8); st.cone(-84, 9, 66, 2.6, 2.4, 0xc83d34, 8); W.addCircle(-84, 66, 2.3);
+    st.cyl(-84, 0, 66, 1.4, 2.2, 9, 0xf3e9d2, 8); st.cone(-84, 9, 66, 2.6, 2.4, 0xc83d34, 8); W.addCircle(-84, 66, 2.3, false, 12);
     W.mill = new THREE.Group(); W.mill.position.set(-84, 8.5, 68.4); const mb = new BI.Batch();
     mb.box(0, -2.7, 0, .7, 5.4, .12, 0xfafafa); mb.box(-2.7, -.35, 0, 5.4, .7, .12, 0xfafafa); mb.sph(0, 0, .1, .5, 0xc83d34, 1);
     W.mill.add(mb.mesh(BI.mat())); scene.add(W.mill);
@@ -319,7 +394,7 @@ BI.buildWorld = function (scene) {
     st.sph(163, .5, 6, .5, 0xff5a5a, 1);
     // Leuchtturm
     st.cyl(-160, 0, -36, 2.6, 3.4, 9, 0xffffff, 12); st.cyl(-160, 3, -36, 2.9, 2.9, 2, 0xe53b3b, 12); st.cyl(-160, 6, -36, 2.6, 2.7, 2, 0xe53b3b, 12);
-    st.cyl(-160, 9, -36, 3.3, 3.3, .5, 0x333c4a, 12); st.cyl(-160, 9.5, -36, 2, 2, 1.8, 0xfff7c0, 10); st.cone(-160, 11.3, -36, 2.6, 2, 0xe53b3b, 10); W.addCircle(-160, -36, 3.5);
+    st.cyl(-160, 9, -36, 3.3, 3.3, .5, 0x333c4a, 12); st.cyl(-160, 9.5, -36, 2, 2, 1.8, 0xfff7c0, 10); st.cone(-160, 11.3, -36, 2.6, 2, 0xe53b3b, 10); W.addCircle(-160, -36, 3.5, false, 14);
     W.spots.lighthouse = { x: -160, z: -36, y: 10.4 };
     // Steg + Boot
     st.box(0, .35, 168, 5, .3, 24, 0xb98650); for (let k = 0; k < 9; k++) st.box(-2.4, 0, 158 + k * 2.6, .3, .5, .3, 0x7a5a33), st.box(2.4, 0, 158 + k * 2.6, .3, .5, .3, 0x7a5a33);
@@ -327,6 +402,13 @@ BI.buildWorld = function (scene) {
   }
 
   /* ---------- Bäume, Büsche, Blumen, Steine ---------- */
+  /* Bäume: Stamm/Krone/Kegel als Instanzen (je 1 Draw-Call), damit sie einzeln wackeln können */
+  W.trees = [];
+  const IL = { trunk: [], crown: [], cone: [] }, _im = new THREE.Matrix4(), _iq = new THREE.Quaternion(), _ip = new THREE.Vector3(), _is = new THREE.Vector3();
+  function inst(kind, T, x, y, z, sx, sy, sz, color, jit) {
+    _im.compose(_ip.set(x, y, z), _iq.identity(), _is.set(sx, sy, sz)); const c = new THREE.Color(color); if (jit) c.multiplyScalar(1 + (rnd() - .5) * jit);
+    const e = { m: _im.clone(), c, kind, mesh: null, i: IL[kind].length }; IL[kind].push(e); T.parts.push(e);
+  }
   function tree(x, z, kind) {
     const s = rr(.85, 1.3);
     if (kind === 'palm') {
@@ -335,17 +417,45 @@ BI.buildWorld = function (scene) {
       const tx = x + lean * 3.4, tz = z + lean * 3.4, ty = tl * .95;
       for (let k = 0; k < 6; k++) { const a = k * 1.047; st.box(tx + Math.sin(a) * 1.5, ty - .2, tz + Math.cos(a) * 1.5, .5, .1, 3.2, pick([0x3fae4a, 0x2f9a3c]), a, .3); }
       st.sph(tx, ty - .2, tz, .45, 0x7a4a2a, 0); W.addCircle(x, z, .5);
-    } else if (kind === 'pine') {
-      st.cyl(x, 0, z, .25 * s, .35 * s, 1.6 * s, 0x7a5233, 6);
-      for (let k = 0; k < 3; k++) st.cone(x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, pick([0x2f8f4a, 0x3aa055, 0x2a8044]), 7, .1);
+      return;
+    }
+    const T = { x, z, kind, parts: [], hp: 8, cd: 0, wob: 0, wx: 0, wz: 1, tilt: 0, top: kind === 'pine' ? 5 * s : 4 * s, dirty: false };
+    if (kind === 'pine') {
+      inst('trunk', T, x, 0, z, .85 * s, 1.6 * s, .85 * s, 0x7a5233, 0);
+      for (let k = 0; k < 3; k++) inst('cone', T, x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, (2.1 - k * .5) * s, pick([0x2f8f4a, 0x3aa055, 0x2a8044]), .1);
       W.addCircle(x, z, .6);
     } else {
-      st.cyl(x, 0, z, .3 * s, .42 * s, 2.2 * s, 0x8a5a33, 6);
-      st.sph(x, 3.2 * s, z, 1.9 * s, pick([0x4cb85a, 0x5ac966, 0x3fa84e, 0x8ad24f]), 1, 1, .9, 1, .12); st.sph(x + .8 * s, 4 * s, z - .5 * s, 1.2 * s, pick([0x5ac966, 0x6bd677]), 1, 1, .9, 1, .12);
-      if (rnd() < .25) for (let k = 0; k < 5; k++) st.sph(x + rr(-1.5, 1.5) * s, rr(2.2, 4) * s, z + rr(-1.5, 1.5) * s, .17, pick([0xff4a4a, 0xffd23f]), 0);
+      inst('trunk', T, x, 0, z, s, 2.2 * s, s, 0x8a5a33, 0);
+      inst('crown', T, x, 3.2 * s, z, 1.9 * s, 1.9 * s * .9, 1.9 * s, pick([0x4cb85a, 0x5ac966, 0x3fa84e, 0x8ad24f]), .12);
+      inst('crown', T, x + .8 * s, 4 * s, z - .5 * s, 1.2 * s, 1.2 * s * .9, 1.2 * s, pick([0x5ac966, 0x6bd677]), .12);
       W.addCircle(x, z, .65);
     }
+    W.trees.push(T);
   }
+  function finalizeTrees() {
+    const flat = g => { const n = g.toNonIndexed(); n.computeVertexNormals(); return n; };
+    const geos = { trunk: flat(new THREE.CylinderGeometry(.3, .42, 1, 6).translate(0, .5, 0)), crown: flat(new THREE.IcosahedronGeometry(1, 1)), cone: flat(new THREE.ConeGeometry(1, 1, 7).translate(0, .5, 0)) };
+    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    for (const k of ['trunk', 'crown', 'cone']) {
+      const list = IL[k]; if (!list.length) continue; const m = new THREE.InstancedMesh(geos[k], mat, list.length); m.frustumCulled = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      list.forEach((e, i) => { m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m);
+    }
+  }
+  const _a = new THREE.Matrix4(), _r = new THREE.Matrix4(), _b = new THREE.Matrix4(), _ax = new THREE.Vector3(), _touch = new Set();
+  /* Baum um den Fuß kippen (ang) – Kipprichtung ist die Schlagrichtung (wx,wz) */
+  function poseTree(T, ang) {
+    _ax.set(T.wz, 0, -T.wx).normalize(); _r.makeRotationAxis(_ax, ang); _a.makeTranslation(T.x, 0, T.z).multiply(_r).multiply(_b.makeTranslation(-T.x, 0, -T.z));
+    for (const e of T.parts) { e.mesh.setMatrixAt(e.i, _im.multiplyMatrices(_a, e.m)); _touch.add(e.mesh); }
+  }
+  W.updateTrees = function (dt, t) {
+    for (const T of W.trees) {
+      if (T.cd > 0) T.cd -= dt;
+      const target = T.cd > 0 ? .35 : 0, dtl = target - T.tilt;
+      if (T.wob <= 0 && Math.abs(dtl) < .002) { if (T.dirty) { T.tilt = target; poseTree(T, T.tilt); T.dirty = false; } continue; }
+      T.dirty = true; T.wob = Math.max(0, T.wob - dt * 1.1); T.tilt += dtl * Math.min(1, dt * 3); poseTree(T, T.tilt + T.wob * .25 * Math.sin(t * 22));
+    }
+    for (const m of _touch) m.instanceMatrix.needsUpdate = true; _touch.clear();
+  };
   let nT = 0;
   for (let tries = 0; nT < 190 && tries < 2500; tries++) {
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 160, x = Math.sin(a) * d, z = Math.cos(a) * d;
@@ -359,6 +469,7 @@ BI.buildWorld = function (scene) {
     const a = rnd() * BI.TAU, d = rr(158, 172), x = Math.sin(a) * d, z = Math.cos(a) * d;
     if (blockedAt(x, z, 4)) continue; tree(x, z, 'palm'); i++;
   }
+  finalizeTrees();
   for (let i = 0, tries = 0; i < 90 && tries < 900; tries++) { // Büsche
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 165, x = Math.sin(a) * d, z = Math.cos(a) * d;
     if (blockedAt(x, z, 1.5)) continue; st.sph(x, .55, z, rr(.6, 1.1), pick([0x3fa84e, 0x57c264, 0x6fd16e]), 1, 1, .75, 1, .1); i++; // Büsche sind weich: man fährt hindurch
@@ -433,7 +544,7 @@ BI.buildWorld = function (scene) {
       return { x, z };
     } return { x: 0, z: 30 };
   };
-  W.groundY = (x, z) => (x > 38 && x < 82 && z > -114.6 && z < -110.6) ? .2 : 0;
+  W.groundY = (x, z) => { for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2; return 0; };
   W.update = function (t, dt, night) {
     W.clouds.rotation.y += dt * .006; W.foam.scale.setScalar(1 + Math.sin(t * .8) * .012); W.foam.material.opacity = .35 + Math.sin(t * .8) * .1;
     if (W.mill) W.mill.rotation.z += dt * .9;
@@ -455,8 +566,9 @@ BI.buildWorld = function (scene) {
     ctx.beginPath(); ctx.moveTo(X(-156), Y(0)); ctx.lineTo(X(156), Y(0)); ctx.moveTo(X(0), Y(-156)); ctx.lineTo(X(0), Y(156)); ctx.stroke();
     ctx.strokeStyle = '#3b3f48'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 2]); ctx.beginPath(); const T = W.track; for (let i = 0; i <= T.N; i += 4) { const j = i % T.N; i ? ctx.lineTo(X(T.X[j]), Y(T.Z[j])) : ctx.moveTo(X(T.X[j]), Y(T.Z[j])); } ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = '#e8d6c0'; for (const b of W.boxes) if (b.x1 - b.x0 > 5 && b.z1 - b.z0 > 5) ctx.fillRect(X(b.x0), Y(b.z0), (b.x1 - b.x0) * k, (b.z1 - b.z0) * k);
+    ctx.fillStyle = '#ffb45a'; ctx.fillRect(X(-34), Y(20), 14 * k, 14 * k);
     const mark = (x, z, e) => { ctx.font = Math.round(S * .075) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, X(x), Y(z)); };
-    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); mark(60, -108, '🚉'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲');
+    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸');
   };
   return W;
 };

@@ -2,9 +2,10 @@
 /* Bunte Insel – Spielschleife, Steuerung, Kamera, Missionen, Figuren, Tiere, Verkehr, Tag/Nacht */
 (function () {
   const $ = id => document.getElementById(id), K = BI.WORLD, A = BI.audio, clamp = BI.clamp, TAU = BI.TAU;
-  const save = Object.assign({ stars: 0, shirt: 0, hat: 0, sound: true, music: true, night: false, intro: false }, BI.store.get('save', {}));
+  const save = Object.assign({ stars: 0, shirt: 0, hat: 0, sound: true, music: true, night: false, intro: false, hero: 'jannis', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
   const persist = () => BI.store.set('save', save);
   const coarse = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+  const isTouch = () => document.body.classList.contains('touch');
   A.setMuted(!save.sound); A.setMusic(save.music);
 
   /* ---------- Renderer, Szene, Himmel ---------- */
@@ -66,7 +67,8 @@
   let char = null;
   function buildChar() {
     if (char) { if (char.group.parent) char.group.parent.remove(char.group); }
-    char = BI.makeChar({ shirt: BI.SHIRTS[save.shirt], hat: BI.HATS[save.hat], pants: 0x3d4a7a }); scene.add(char.group); return char;
+    const E = save.equip || {}, acc = { glasses: !!E.glasses, pack: !!E.pack, teddy: !!E.teddy };
+    char = save.hero === 'custom' ? BI.makeChar(Object.assign({ shirt: BI.SHIRTS[save.shirt], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[save.hat], pants: 0x3d4a7a }, acc)) : BI.makeChar(Object.assign({ preset: 'jannis', name: 'Jannis', hat: E.hat || 'none' }, acc)); scene.add(char.group); return char; scene.add(char.group); return char;
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
   buildChar(); char.group.position.set(P.x, 0, P.z);
@@ -77,6 +79,7 @@
     const ox = 6.5 * (Math.random() < .5 ? -1 : 1), n = { c, x: p.x + (Math.abs(p.x) < 5 ? ox : 0), z: p.z + (Math.abs(p.z) < 5 ? ox : 0), h: Math.random() * TAU, tx: 0, tz: 0, wait: Math.random() * 3, phase: Math.random() * 6, hop: 0, spd: 1.5 + Math.random() };
     const q = W.resolve(n.x, n.z, .6, {}); n.x = q.x; n.z = q.z; n.tx = n.x; n.tz = n.z; scene.add(c.group); npcs.push(n);
   }
+  for (const n of npcs) { n.spd0 = n.spd; n.style = 0; n.dancer = 0; }
   function animalMesh(kind) {
     const b = new BI.Batch(), g = new THREE.Group();
     if (kind === 'cow') { b.box(0, .75, 0, .9, .8, 1.7, 0xffffff); b.box(-.46, 1.1, .2, .06, .4, .5, 0x23262d); b.box(.46, 1.0, -.3, .06, .35, .5, 0x23262d); b.box(0, 1.55, .25, .5, .06, .6, 0x23262d); b.box(0, 1.05, .98, .5, .5, .5, 0xffffff); b.box(0, 1.05, 1.22, .36, .26, .08, 0xffb0b8); b.box(-.17, 1.5, .98, .08, .2, .08, 0xf3e9d2); b.box(.17, 1.5, .98, .08, .2, .08, 0xf3e9d2); for (const x of [-.3, .3]) for (const z of [-.6, .6]) b.box(x, 0, z, .2, .75, .2, 0xe8e8e8); }
@@ -90,6 +93,15 @@
     const m = animalMesh(k), a = { k, m, x: FR.x0 + Math.random() * (FR.x1 - FR.x0), z: FR.z0 + Math.random() * (FR.z1 - FR.z0), h: Math.random() * TAU, tx: 0, tz: 0, wait: Math.random() * 3, hop: 0, ph: Math.random() * 6 };
     a.tx = a.x; a.tz = a.z; scene.add(m); animals.push(a);
   }
+  /* Pappnase: Jannis' Luftballon (an der Schnur), dazu eine große im Spielzeugladen */
+  const pap = BI.makePappnase(); pap.group.scale.setScalar(.8); scene.add(pap.group); pap.wiggle = 0; pap.k = null;
+  const strGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), str = new THREE.Line(strGeo, new THREE.LineBasicMaterial({ color: 0xffffff })); str.frustumCulled = false; scene.add(str);
+  const shopPap = BI.makePappnase(), SH = W.spots.shop; shopPap.group.scale.setScalar(1.6); shopPap.group.position.set(SH.x + 2.3, 2.6, SH.z + 1.0); scene.add(shopPap.group);
+  const shopStr = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(SH.x + 2.3, 2.6, SH.z + 1.0), new THREE.Vector3(SH.x + 1.4, 1.2, SH.z + 3.5)]), new THREE.LineBasicMaterial({ color: 0xffffff })); scene.add(shopStr);
+  const keeper = BI.makeChar({ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0xa14a2b, skin: 0xf3c9a0, name: 'Frau Bunt' }); keeper.group.position.set(SH.keeper.x, 0, SH.keeper.z); keeper.group.rotation.y = Math.PI; scene.add(keeper.group);
+  /* Blitz, der Polizeihund-Helfer: folgt, bellt, spürt Sterne auf */
+  const pup = { d: BI.makeDog({ name: 'Blitz' }), x: P.x + 2.5, z: P.z + 1.5, h: 0, mode: 'follow', star: null, bark: 0, cd: 0, phase: 0, speed: 0 };
+  scene.add(pup.d.group);
   const ducks = []; for (let i = 0; i < 3; i++) { const m = animalMesh('duck'); scene.add(m); ducks.push({ m, a: i * 2.1, r: 5 + i * 2 }); }
 
   /* ---------- Sterne ---------- */
@@ -108,11 +120,23 @@
 
   /* ---------- Zustand ---------- */
   let state = 'menu', t = 0, toastT = 0, mission = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
-  const cam = { yaw: 0, pitch: .42, zoom: 1, off: 0, idle: 0, x: 0, y: 8, z: 40, dist: 8 };
-  const inp = { kx: 0, ky: 0, sx: 0, sy: 0, horn: false, turbo: false, act: false, aux: false, jump: false, hornEdge: false };
+  const cam = { yaw: 0, pitch: .42, zoom: 1, off: 0, idle: 0, x: 0, y: 8, z: 40, dist: 8, ego: false, egoOff: 0 };
+  const inp = { kx: 0, ky: 0, sx: 0, sy: 0, horn: false, turbo: false, act: false, aux: false, jump: false, hornEdge: false, up: false, down: false };
   const keys = {};
 
   function say(txt, ms) { const el = $('toast'); el.textContent = txt; el.classList.add('show'); toastT = ms || 2600; }
+  const G = { makePappnase: BI.makePappnase, scene, camera, fx, W, A, P, vehicles, npcs, animals, say, addStars: n => addStars(n), userTrees: () => { const out = []; for (const it of build.items) if (it.t === 'tree') { if (!it.tr) it.tr = { x: it.gx * 4, z: it.gz * 4, top: 4, hp: 8, cd: 0, wob: 0 }; out.push(it.tr); } return out; } };
+  const fun = BI.createFun(G), build = BI.createBuild(G);
+  let pax = 0, lastWarn = -9;
+  const platPeople = W.stations.map(stn => {
+    const arr = [], a = {};
+    for (let i = 0; i < 3; i++) {
+      W.trackAt(stn.s - 6 - i * 9, a); const px = Math.cos(a.h), pz = -Math.sin(a.h), q1 = [a.x + px * 5.4, a.z + pz * 5.4], q2 = [a.x - px * 5.4, a.z - pz * 5.4], q = Math.hypot(q1[0], q1[1]) < Math.hypot(q2[0], q2[1]) ? q1 : q2;
+      const c = BI.makeChar({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], pants: [0x3d4a7a, 0x5a3d2b, 0x2d6a4f][i % 3], hat: i === 1 ? 'cap' : 'none', hair: [0x6b4423, 0x222222, 0xd9a441][i % 3] });
+      c.group.position.set(q[0], .2, q[1]); c.group.rotation.y = Math.atan2(a.x - q[0], a.z - q[1]); scene.add(c.group); arr.push({ c, x: q[0], z: q[1], leaveAt: 0, vis: true, ph: Math.random() * 6 });
+    }
+    return arr;
+  });
 
   /* ---------- Einsteigen / Aussteigen ---------- */
   function nearVehicle() {
@@ -120,11 +144,14 @@
     if (!P.veh) {
       for (const v of vehicles) { if (v.ai) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
       const dt_ = train.nearest(P.x, P.z); if (dt_ < 4.2 && dt_ < bd) best = trainVeh;
+      if (!best) { const rc = vehicles.find(q => q.spec.remote); if (rc && Math.hypot(P.x - rc.x, P.z - rc.z) < 25) best = rc; }
     }
     return best;
   }
   function enter(v) {
-    P.veh = v; everDrove = true; A.enter();
+    if (build.active) return;
+    fun.setDance(false); P.veh = v; everDrove = true; A.enter();
+    if (v.spec.remote) { v.driver = true; startMission(true); updateButtons(true); say('🎮 Jannis steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
     else {
       v.driver = true; v.v = v.v || 0;
@@ -135,7 +162,9 @@
   }
   function leave() {
     const v = P.veh; if (!v) return;
+    if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
     if (v.isTrain && train.v > 3) { say('Halte den Zug an zum Aussteigen 🚂', 2200); return; }
+    if (v.spec && v.spec.fly && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
     A.leave(); A.horn('car', false); A.siren('police', false); A.water(false);
     const lx = Math.cos(v.h), lz = -Math.sin(v.h), rad = v.isTrain ? 5.5 : v.r + 1.3;
     let px = v.x + lx * rad, pz = v.z + lz * rad;
@@ -147,8 +176,8 @@
   }
 
   /* ---------- Missionen ---------- */
-  const MISSION_BY = { police: 'patrol', ambulance: 'rescue', fire: 'fire', bus: 'bus', ice: 'ice', car: 'taxi', bike: 'courier', tractor: 'hay', train: 'train' };
-  const MTITLE = { patrol: ['🚓', 'Streife fahren'], rescue: ['🚑', 'Notruf!'], fire: ['🚒', 'Feuerwehr-Einsatz'], bus: ['🚌', 'Bus-Linie'], ice: ['🍦', 'Eis-Lieferung'], taxi: ['🚕', 'Taxi-Fahrt'], courier: ['📦', 'Paket-Kurier'], hay: ['🌾', 'Heu einsammeln'], train: ['🚂', 'Zug-Fahrt'] };
+  const MISSION_BY = { police: 'patrol', ambulance: 'rescue', fire: 'fire', bus: 'bus', ice: 'ice', car: 'taxi', bike: 'courier', tractor: 'hay', train: 'train', heli: 'fly' };
+  const MTITLE = { patrol: ['🚓', 'Streife fahren'], rescue: ['🚑', 'Notruf!'], fire: ['🚒', 'Feuerwehr-Einsatz'], bus: ['🚌', 'Bus-Linie'], ice: ['🍦', 'Eis-Lieferung'], taxi: ['🚕', 'Taxi-Fahrt'], courier: ['📦', 'Paket-Kurier'], hay: ['🌾', 'Heu einsammeln'], train: ['🚂', 'Zug-Fahrt'], fly: ['🚁', 'Rundflug'] };
   const beacon = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 38, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .32, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
   beacon.position.y = 19; beacon.visible = false; scene.add(beacon);
   const beaconRing = new THREE.Mesh(new THREE.RingGeometry(2.6, 3.5, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .7, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
@@ -170,25 +199,32 @@
     else if (kind === 'taxi') { p = road(null, 50); M.steps.push(reach(p, 'Fahrgast abholen 🙋', true, 7)); const q = road(p, 90); M.steps.push(reach(q, 'Fahrgast zum Ziel bringen 📍', false, 8)); }
     else if (kind === 'courier') for (let i = 0; i < 4; i++) { p = road(p, 45); M.steps.push(reach(p, 'Päckchen ' + (i + 1) + ' von 4', false, 7)); }
     else if (kind === 'hay') for (let i = 0; i < 5; i++) { let q = null; for (let k = 0; k < 40 && !q; k++) { const x = -130 + Math.random() * 70, z = 30 + Math.random() * 90; if (W.free(x, z, 2.2) && Math.hypot(x - W.lake.x, z - W.lake.z) > 20) q = { x, z }; } M.steps.push(reach(q || { x: -80, z: 100 }, 'Heuballen ' + (i + 1) + ' von 5 🌾', false, 4.5)); }
-    else if (kind === 'train') { M.steps.push({ x: 0, z: 0, label: 'Fahre eine ganze Runde 🚂', type: 'lap', start: train.dist, prog: 0 }); M.steps.push({ x: 60, z: -118, label: 'Halte am Bahnhof 🚉', type: 'stop' }); }
+    else if (kind === 'train') {
+      const ns = train.nextStop(); let i0 = ns.i; if (Math.abs(train.offsetTo(i0)) < 4 && train.v < 1) i0 = (i0 + 1) % W.stations.length;
+      for (let k = 0; k < 3; k++) { const idx = (i0 + k) % W.stations.length, stn = W.stations[idx]; M.steps.push({ type: 'tstop', idx, x: stn.x, z: stn.z, label: 'Halt: ' + stn.name + ' ' + stn.icon, phase: 'drive', timer: 0, prec: 0, speeding: false, shown: '' }); }
+    }
+    else if (kind === 'fly') {
+      for (let i = 0; i < 4; i++) { const a = Math.random() * TAU, d = 30 + Math.random() * 100; M.steps.push({ x: Math.sin(a) * d, z: Math.cos(a) * d, y: 16 + Math.random() * 22, label: 'Fliege durch den Ring ' + (i + 1) + ' von 4 ⭕', type: 'reach', r: 9, air: true }); }
+      M.steps.push({ x: W.spots.helipad.x, z: W.spots.helipad.z, label: 'Lande auf dem Landeplatz 🅷', type: 'land' });
+    }
     mission = M; showStep(); updateHud();
     if (first && !save.intro) { save.intro = true; persist(); }
   }
   function showStep() {
     const M = mission; if (!M) return; const s = M.steps[M.i];
     if (mNpc) { scene.remove(mNpc.c.group); mNpc = null; }
-    const col = { patrol: 0x3f8cff, rescue: 0xff4a4a, fire: 0xff7a1f, bus: 0xffc933, ice: 0xff8fc8, taxi: 0xffd23f, courier: 0x4cd07d, hay: 0xe8c85a, train: 0x7a5ce0 }[M.kind];
+    const col = { patrol: 0x3f8cff, rescue: 0xff4a4a, fire: 0xff7a1f, bus: 0xffc933, ice: 0xff8fc8, taxi: 0xffd23f, courier: 0x4cd07d, hay: 0xe8c85a, train: 0x7a5ce0, fly: 0x4da3ff }[M.kind];
     beacon.material.color.setHex(col); beaconRing.material.color.setHex(col);
-    const hasPos = s.type === 'reach' || s.type === 'spray' || s.type === 'stop';
+    const hasPos = s.type === 'reach' || s.type === 'spray' || s.type === 'tstop' || s.type === 'land';
     beacon.visible = beaconRing.visible = hasPos && s.type !== 'spray'; flame.visible = s.type === 'spray';
-    if (hasPos) { beacon.position.x = beaconRing.position.x = s.x; beacon.position.z = beaconRing.position.z = s.z; }
+    if (hasPos) { beacon.position.x = beaconRing.position.x = s.x; beacon.position.z = beaconRing.position.z = s.z; beaconRing.position.y = s.air ? s.y : .2; beaconRing.userData.k = s.air ? 2.6 : 1; beacon.position.y = s.air ? s.y + 19 : 19; }
     if (s.type === 'spray') { flame.position.set(s.x + (Math.abs(s.x) > Math.abs(s.z) ? 0 : 5), 0, s.z + (Math.abs(s.x) > Math.abs(s.z) ? 5 : 0)); flame.scale.setScalar(1); s.fx = flame.position.x; s.fz = flame.position.z; }
     if (s.npc) { const c = BI.makeChar({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], hat: Math.random() < .5 ? 'none' : 'cap' }); c.group.position.set(s.x + 3.2, 0, s.z + 1); c.group.rotation.y = -1.2; scene.add(c.group); mNpc = { c, x: s.x + 3.2, z: s.z + 1 }; }
   }
   function stepDone() {
     const M = mission, s = M.steps[M.i]; A.star(); addStars(1);
     const px = s.type === 'spray' ? s.fx : s.type === 'lap' ? P.veh.x : s.x, pz = s.type === 'spray' ? s.fz : s.type === 'lap' ? P.veh.z : s.z;
-    fx.burst(px, 2, pz, 26, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green], 8, 1.4, 26, 9);
+    fx.burst(px, s.air ? s.y : 2, pz, 26, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green], 8, 1.4, 26, 9);
     if (mNpc) { fx.burst(mNpc.x, 2.2, mNpc.z, 8, [BI.C.pink], 3, 1.2, 40, -1); }
     M.i++;
     if (M.i >= M.steps.length) {
@@ -200,16 +236,49 @@
     if (!P.veh) return;
     if (!mission) { if (missionDelay > 0) { missionDelay -= dt; if (missionDelay <= 0) startMission(); } return; }
     const M = mission, s = M.steps[M.i], v = P.veh;
-    if (s.type === 'reach') { if (Math.hypot(v.x - s.x, v.z - s.z) < s.r) stepDone(); }
+    if (s.type === 'reach') { if (Math.hypot(v.x - s.x, v.z - s.z) < s.r && (!s.air || Math.abs((v.y || 0) - s.y) < 7)) stepDone(); }
+    else if (s.type === 'land') { if (Math.hypot(v.x - s.x, v.z - s.z) < 9 && (v.y || 0) < 1.6 && Math.abs(v.v) < 2.5) stepDone(); }
+    else if (s.type === 'tstop') {
+      const off = train.offsetTo(s.idx); let ph = s.phase;
+      if (ph === 'drive') { if (Math.abs(off) < 6 && train.v < .6) { s.prec = Math.abs(off); setPhase(s, 'arrived'); A.ding(); say('🚉 Angekommen! Drücke 🚪 Türen', 2600); } else { const missed = off < -12; if (missed !== !!s.missed) { s.missed = missed; updateHud(); } } }
+      else if (ph === 'arrived') { if (train.v > 1) setPhase(s, 'drive'); }
+      else if (ph === 'doors') { s.timer -= dt; if (s.timer <= 0) { setPhase(s, 'open'); A.ding(); say('Alle sind drin! Türen schließen 🚪', 2400); } }
+    }
     else if (s.type === 'spray') {
       const d = Math.hypot(v.x - s.fx, v.z - s.fz);
       if (d < s.r && inp.horn && v.spec.water) { s.prog += dt / 3; flame.scale.setScalar(Math.max(.05, 1 - s.prog)); fx.emit(s.fx + (Math.random() - .5) * 2, 1 + Math.random() * 3, s.fz + (Math.random() - .5) * 2, 0, 2, 0, 1, 70, .6, .6, .6, -1, .6); if (s.prog >= 1) { flame.visible = false; stepDone(); } }
       else if (flame.visible) { flame.scale.y = 1 - s.prog * .9 + Math.sin(t * 14) * .08; if (Math.random() < dt * 12) fx.emit(s.fx + (Math.random() - .5) * 1.5, 3, s.fz + (Math.random() - .5) * 1.5, 0, 3, 0, 1.1, 60, .3, .3, .3, -1, .5); }
     }
-    else if (s.type === 'lap') { s.prog = (train.dist - s.start) / W.track.L; if (s.prog >= .98) stepDone(); }
-    else if (s.type === 'stop') { if (train.distToStop() < 9 && train.v < .8) stepDone(); }
     if (mNpc) { mNpc.c.pose(t * 6, .2, true); mNpc.c.group.position.y = Math.abs(Math.sin(t * 5)) * .25; }
-    beacon.material.opacity = .26 + Math.sin(t * 4) * .08; beaconRing.scale.setScalar(1 + (t * 1.3 % 1) * .6); beaconRing.material.opacity = .7 * (1 - (t * 1.3 % 1));
+    beacon.material.opacity = .26 + Math.sin(t * 4) * .08; beaconRing.scale.setScalar((beaconRing.userData.k || 1) * (1 + (t * 1.3 % 1) * .6)); beaconRing.material.opacity = .7 * (1 - (t * 1.3 % 1));
+  }
+  function setPhase(s, p) { s.phase = p; updateHud(); }
+  function phaseText(s) {
+    if (s.phase === 'arrived') return 'Angekommen! Türen öffnen 🚪';
+    if (s.phase === 'doors') return 'Fahrgäste steigen ein … 👥';
+    if (s.phase === 'open') return 'Türen schließen 🚪';
+    return s.missed ? 'Verpasst! Fahre eine Runde weiter 🔄' : s.label + ' – langsam heranfahren';
+  }
+  function trainDoors() {
+    const M = mission, s = M && M.steps[M.i];
+    if (!s || s.type !== 'tstop') { A.pop(); say('🚂 Fahre zum nächsten Bahnhof und halte am Schild', 2000); return; }
+    if (s.phase === 'arrived') { setPhase(s, 'doors'); s.timer = 3.4; A.ding(); platPeople[s.idx].forEach((p, i) => { p.leaveAt = t + .5 + i * .9; }); pax = Math.max(0, pax - ((Math.random() * 3) | 0)); }
+    else if (s.phase === 'open') {
+      A.ding(); const bonus = (s.prec < 1.5 ? 2 : s.prec < 3.5 ? 1 : 0) + (s.speeding ? 0 : 1);
+      if (bonus) { addStars(bonus); say('🚉 Super Halt! +' + (bonus + 1) + ' ⭐ (genau & nicht zu schnell)', 2600); }
+      stepDone();
+    } else if (s.phase === 'doors') say('Moment, Fahrgäste steigen ein …', 1300);
+    else say('Erst am Bahnsteig anhalten 🚉', 1500);
+  }
+  function trainLimit() { const ns = train.nextStop(); return ns.d < 90 && ns.d > -12 ? 10 : 22; }
+  const gauge = $('gauge');
+  function updateGauge() {
+    const v = P.veh; if (!v || !(v.isTrain || v.spec.fly) || state !== 'play') { gauge.hidden = true; return; }
+    gauge.hidden = false;
+    if (v.isTrain) {
+      const lim = trainLimit(), over = train.v > lim + 1.5; $('gVal').textContent = Math.round(train.v * 3.6); $('gUnit').textContent = 'km/h'; $('gSub').textContent = 'Limit ' + Math.round(lim * 3.6) + ' · 👥 ' + pax; gauge.classList.toggle('warn', over);
+      if (over) { const s = mission && mission.steps[mission.i]; if (s && s.type === 'tstop') s.speeding = true; if (t - lastWarn > 5) { lastWarn = t; say('🐌 Zu schnell! Langsamer fahren', 1600); } }
+    } else { $('gVal').textContent = Math.round(v.y); $('gUnit').textContent = 'm Höhe'; $('gSub').textContent = Math.round(Math.abs(v.v) * 3.6) + ' km/h'; gauge.classList.remove('warn'); }
   }
   function addStars(n) { save.stars += n; $('starN').textContent = save.stars; $('stars').classList.remove('pop'); void $('stars').offsetWidth; $('stars').classList.add('pop'); saveT = 1.5; }
 
@@ -219,7 +288,7 @@
     const M = mission;
     if (M) {
       const s = M.steps[M.i], [ic, ti] = MTITLE[M.kind];
-      $('mIcon').textContent = ic; $('mTitle').textContent = ti + (M.steps.length > 1 ? ' · ' + (M.i + 1) + '/' + M.steps.length : ''); $('mText').textContent = s.label; mCard.hidden = false;
+      $('mIcon').textContent = ic; $('mTitle').textContent = ti + (M.steps.length > 1 ? ' · ' + (M.i + 1) + '/' + M.steps.length : ''); $('mText').textContent = s.type === 'tstop' ? phaseText(s) : s.label; mCard.hidden = false;
     } else if (!P.veh && state === 'play') {
       $('mIcon').textContent = everDrove ? '⭐' : '🚗'; $('mTitle').textContent = everDrove ? 'Sterne sammeln' : 'Los geht\'s!'; $('mText').textContent = everDrove ? 'Lauf oder fahre zu den Sternen' : 'Geh zu einem Fahrzeug und steige ein'; mCard.hidden = false;
     } else mCard.hidden = true;
@@ -227,17 +296,23 @@
   }
   let btnSig = '';
   function updateButtons(force) {
-    const v = P.veh, near = state === 'play' && !v ? nearVehicle() : null, spec = v ? v.spec : null;
-    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && (spec.siren || spec.water || spec.horn)].join('|');
+    const v = P.veh, near = state === 'play' && !v && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
+    const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter();
+    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, build.active, !!tree, shopNear].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
     if (v) {
-      act.hidden = false; act.innerHTML = '<b>🚪</b><small>Aussteigen</small>'; jump.hidden = false; jump.innerHTML = '<b>🚀</b><small>Turbo</small>';
-      horn.hidden = false; horn.innerHTML = spec.water ? '<b>💦</b><small>Wasser</small>' : spec.horn === 'melody' ? '<b>🎵</b><small>Eis-Lied</small>' : '<b>📣</b><small>Hupe</small>';
-      aux.hidden = !spec.siren; aux.innerHTML = '<b>🚨</b><small>Sirene</small>';
+      act.hidden = false; act.innerHTML = spec.remote ? '<b>🎮</b><small>Zurück</small>' : '<b>🚪</b><small>Aussteigen</small>'; act.classList.remove('pulse');
+      if (spec.fly) { jump.innerHTML = '<b>⬆</b><small>Steigen</small>'; horn.innerHTML = '<b>🔔</b><small>Klingel</small>'; aux.innerHTML = '<b>⬇</b><small>Sinken</small>'; aux.hidden = false; }
+      else {
+        jump.innerHTML = '<b>🚀</b><small>Turbo</small>';
+        horn.innerHTML = spec.water ? '<b>💦</b><small>Wasser</small>' : spec.horn === 'melody' ? '<b>🎵</b><small>Eis-Lied</small>' : '<b>📣</b><small>' + (v.isTrain ? 'Pfeife' : 'Hupe') + '</small>';
+        aux.hidden = !(spec.siren || v.isTrain); aux.innerHTML = v.isTrain ? '<b>🚪</b><small>Türen</small>' : '<b>🚨</b><small>Sirene</small>';
+      }
+      jump.hidden = false; horn.hidden = false;
     } else {
-      act.hidden = !near; if (near) act.innerHTML = '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; act.classList.toggle('pulse', !!near);
-      jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = true;
+      act.hidden = !(near || shopNear); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; act.classList.toggle('pulse', !!(near || shopNear));
+      jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
   function drawMini() {
@@ -263,30 +338,41 @@
 
   /* ---------- Eingabe ---------- */
   function setStick(x, y) { inp.sx = x; inp.sy = y; }
-  const zone = $('zone'), sBase = $('stickBase'), sKnob = $('stickKnob'); const stick = { id: null, ox: 0, oy: 0 }, drag = { id: null, x: 0, y: 0 };
+  const zone = $('zone'), joy = $('joy'), sKnob = $('joyKnob'); const stick = { id: null, cx: 0, cy: 0, R: 48, hit: 100 }, drag = { id: null, x: 0, y: 0 };
+  function joyGeom() { const r = joy.getBoundingClientRect(); stick.cx = r.left + r.width / 2; stick.cy = r.top + r.height / 2; stick.R = r.width * .34; stick.hit = r.width * .85; return r.width > 0; }
+  function moveStick(e) { let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; setStick(dx / R, -dy / R); }
   zone.addEventListener('pointerdown', e => {
-    A.resume(); if (state !== 'play') return;
-    if (e.pointerType === 'touch' && e.clientX < innerWidth * .5 && stick.id == null) { stick.id = e.pointerId; stick.ox = e.clientX; stick.oy = e.clientY; sBase.style.left = e.clientX + 'px'; sBase.style.top = e.clientY + 'px'; sBase.classList.add('on'); sKnob.style.transform = 'translate(0,0)'; }
-    else if (drag.id == null) { drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY; }
+    A.resume(); if (state !== 'play') return; if (!$('funBar').hidden) closeQuick();
+    if (stick.id == null && joyGeom() && Math.hypot(e.clientX - stick.cx, e.clientY - stick.cy) < stick.hit) { stick.id = e.pointerId; moveStick(e); }
+    else if (drag.id == null) { drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY; drag.t0 = performance.now(); drag.moved = 0; }
     try { zone.setPointerCapture(e.pointerId); } catch (x) { }
   });
   zone.addEventListener('pointermove', e => {
-    if (e.pointerId === stick.id) { let dx = e.clientX - stick.ox, dy = e.clientY - stick.oy; const R = 58, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; setStick(dx / R, -dy / R); }
-    else if (e.pointerId === drag.id) { cam.yaw -= (e.clientX - drag.x) * .006; cam.pitch = clamp(cam.pitch + (e.clientY - drag.y) * .004, .12, 1.1); drag.x = e.clientX; drag.y = e.clientY; cam.idle = 0; if (P.veh) cam.off = BI.angDiff(0, cam.off); }
+    if (e.pointerId === stick.id) moveStick(e);
+    else if (e.pointerId === drag.id) {
+      const ddx = e.clientX - drag.x, ddy = e.clientY - drag.y; drag.moved += Math.abs(ddx) + Math.abs(ddy);
+      if (cam.ego && P.veh) cam.egoOff = clamp(cam.egoOff - ddx * .006, -1.7, 1.7); else { cam.yaw -= ddx * .006; cam.pitch = clamp(cam.pitch + ddy * .004, .12, 1.3); }
+      drag.x = e.clientX; drag.y = e.clientY; cam.idle = 0;
+    }
   });
-  const endPtr = e => { if (e.pointerId === stick.id) { stick.id = null; setStick(0, 0); sBase.classList.remove('on'); } if (e.pointerId === drag.id) drag.id = null; };
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
+  const endPtr = e => { if (e.pointerId === drag.id && build.active && drag.moved < 12 && performance.now() - drag.t0 < 500) tapGround(e.clientX, e.clientY);
+    if (e.pointerId === stick.id) { stick.id = null; setStick(0, 0); sKnob.style.transform = 'translate(0,0)'; } if (e.pointerId === drag.id) drag.id = null; };
   zone.addEventListener('pointerup', endPtr); zone.addEventListener('pointercancel', endPtr);
   zone.addEventListener('wheel', e => { cam.zoom = clamp(cam.zoom * (e.deltaY > 0 ? 1.1 : .9), .6, 2.2); e.preventDefault(); }, { passive: false });
   zone.addEventListener('contextmenu', e => e.preventDefault());
   function hold(btn, key) {
-    const on = e => { e.preventDefault(); e.stopPropagation(); A.resume(); inp[key] = true; if (key === 'horn') inp.hornEdge = true; btn.classList.add('down'); };
-    const off = e => { inp[key] = false; btn.classList.remove('down'); };
+    const ks = Array.isArray(key) ? key : [key];
+    const on = e => { e.preventDefault(); e.stopPropagation(); A.resume(); for (const k of ks) inp[k] = true; if (ks[0] === 'horn') inp.hornEdge = true; btn.classList.add('down'); };
+    const off = e => { for (const k of ks) inp[k] = false; btn.classList.remove('down'); };
     btn.addEventListener('pointerdown', on); btn.addEventListener('pointerup', off); btn.addEventListener('pointerleave', off); btn.addEventListener('pointercancel', off);
   }
-  hold($('bHorn'), 'horn'); hold($('bJump'), 'turbo');
+  hold($('bHorn'), 'horn'); hold($('bJump'), ['turbo', 'up']); hold($('bAux'), 'down');
   $('bJump').addEventListener('pointerdown', () => { if (!P.veh) inp.jump = true; });
   const tap = (el, fn) => el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); A.resume(); fn(); });
-  tap($('bAct'), () => { inp.act = true; }); tap($('bAux'), () => { inp.aux = true; });
+  tap($('bAct'), () => { inp.act = true; });
+  $('bAux').addEventListener('pointerdown', () => { inp.aux = true; });
   const KMAP = { ArrowUp: 'u', KeyW: 'u', ArrowDown: 'd', KeyS: 'd', ArrowLeft: 'l', KeyA: 'l', ArrowRight: 'r', KeyD: 'r' };
   addEventListener('keydown', e => {
     if (e.repeat) { if (KMAP[e.code] || e.code === 'Space') e.preventDefault(); return; }
@@ -295,7 +381,24 @@
     if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu') { startPlay(); e.preventDefault(); } return; }
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
     switch (e.code) {
-      case 'Space': e.preventDefault(); if (P.veh) { inp.horn = true; inp.hornEdge = true; } else inp.jump = true; break;
+      case 'Space': e.preventDefault(); if (P.veh) { if (P.veh.spec.fly) inp.up = true; else { inp.horn = true; inp.hornEdge = true; } } else inp.jump = true; break;
+      case 'KeyX': inp.down = true; break;
+      case 'KeyV': toggleEgo(); break;
+      case 'KeyB': toggleBuild(); break;
+      case 'KeyG': if (build.active) build.place(); break;
+      case 'KeyO': if (build.active) build.rotate(); break;
+      case 'KeyK': if (build.active) build.nextColor(); break;
+      case 'Delete': case 'Backspace': if (build.active) build.remove(); break;
+      case 'Digit1': doFun('dance'); break;
+      case 'Digit2': doFun('gum'); break;
+      case 'Digit3': doFun('ball'); break;
+      case 'Digit4': doFun('fireworks'); break;
+      case 'Digit5': doFun('balloons'); break;
+      case 'Digit6': doFun('punch'); break;
+      case 'Digit7': doFun('bark'); break;
+      case 'Digit8': doFun('search'); break;
+      case 'Digit9': doFun('bubbles'); break;
+      case 'Digit0': doFun('xxl'); break;
       case 'ShiftLeft': case 'ShiftRight': inp.turbo = true; break;
       case 'KeyE': case 'Enter': inp.act = true; break;
       case 'KeyF': inp.aux = true; break;
@@ -310,20 +413,22 @@
   addEventListener('keyup', e => {
     if (KMAP[e.code]) keys[KMAP[e.code]] = false;
     if (e.code === 'Space' || e.code === 'KeyH') inp.horn = false;
+    if (e.code === 'Space') inp.up = false; if (e.code === 'KeyX') inp.down = false;
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') inp.turbo = false;
     if (e.code === 'KeyQ') keys.q = false; if (e.code === 'KeyR') keys.r = false;
   });
-  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = false; if (state === 'play') pause(true); });
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = inp.up = inp.down = false; if (state === 'play') pause(true); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') pause(true); });
 
   /* ---------- Menüs ---------- */
   function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('bNight').textContent = save.night ? '☀️' : '🌙'; }
   function toggleSound() { save.sound = !save.sound; A.setMuted(!save.sound); persist(); $('bSound').textContent = save.sound ? '🔊' : '🔇'; }
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
-  function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } setStick(0, 0); stick.id = drag.id = null; sBase.classList.remove('on'); }
+  function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } setStick(0, 0); stick.id = drag.id = null; sKnob.style.transform = 'translate(0,0)'; }
   function startPlay() {
     A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true);
-    if (!save.intro) say(coarse ? 'Links wischen = laufen · rechts wischen = Kamera drehen' : 'WASD/Pfeile = laufen · E = einsteigen · Maus ziehen = Kamera', 5200);
+    if (!save.intro) say(isTouch() ? 'Links wischen = laufen · rechts wischen = Kamera drehen' : 'WASD/Pfeile = laufen · E = einsteigen · Maus ziehen = Kamera', 5200);
+    else if (save.hero !== 'custom') say('Hallo Jannis! Los geht\'s ♥', 2400);
   }
   $('bStart').addEventListener('click', startPlay);
   $('bResume').addEventListener('click', () => pause(false)); $('bPause').addEventListener('click', () => pause(true));
@@ -333,6 +438,127 @@
   BI.SHIRTS.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw' + (i === save.shirt ? ' sel' : ''); b.style.background = '#' + c.toString(16).padStart(6, '0'); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { save.shirt = i; persist(); [...sw.children].forEach((x, j) => x.classList.toggle('sel', j === i)); buildChar(); }; sw.appendChild(b); });
   BI.HATS.forEach((h, i) => { const b = document.createElement('button'); b.className = 'hat' + (i === save.hat ? ' sel' : ''); b.textContent = BI.HAT_ICONS[h]; b.setAttribute('aria-label', 'Mütze ' + h); b.onclick = () => { save.hat = i; persist(); [...hp.children].forEach((x, j) => x.classList.toggle('sel', j === i)); buildChar(); }; hp.appendChild(b); });
   $('starN').textContent = save.stars;
+
+  /* ---------- Spielzeugladen: einkaufen mit Sternen ---------- */
+  const SHOP = [
+    { id: 'hat_crown', icon: '👑', name: 'Krone', price: 2, slot: 'hat', val: 'crown' }, { id: 'hat_bunny', icon: '🐰', name: 'Hasenohren', price: 2, slot: 'hat', val: 'bunny' },
+    { id: 'hat_bear', icon: '🐻', name: 'Bärenohren', price: 2, slot: 'hat', val: 'bear' }, { id: 'hat_cat', icon: '🐱', name: 'Katzenohren', price: 2, slot: 'hat', val: 'cat' },
+    { id: 'hat_cap', icon: '🧢', name: 'Cap', price: 2, slot: 'hat', val: 'cap' }, { id: 'glasses', icon: '🕶️', name: 'Sonnenbrille', price: 2, slot: 'glasses' },
+    { id: 'pack', icon: '🎒', name: 'Rucksack', price: 3, slot: 'pack' }, { id: 'teddy', icon: '🧸', name: 'Teddy', price: 3, slot: 'teddy' }
+  ];
+  let shopOpen = false, wasInShop = false;
+  const shopPanel = $('shopPanel');
+  const inShop = () => !P.veh && Math.abs(P.x - SH.x) < SH.half && Math.abs(P.z - SH.z) < SH.half;
+  const nearCounter = () => inShop() && Math.hypot(P.x - SH.keeper.x, P.z - (SH.keeper.z - 1.8)) < 5.2;
+  const isEq = it => it.slot === 'hat' ? save.equip.hat === it.val : !!save.equip[it.slot];
+  function setEq(it, on) { if (it.slot === 'hat') save.equip.hat = on ? it.val : 'none'; else save.equip[it.slot] = on; persist(); buildChar(); }
+  function spawnRC(quiet) {
+    const out = inShop(), hx = out ? SH.x : P.x + Math.sin(P.h) * 2.4, hz = out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4; let v = vehicles.find(q => q.type === 'rc');
+    if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; } else addVeh('rc', hx, hz, P.h);
+    if (!quiet) say('🏎️ Dein rotes RC-Auto steht bereit!', 1800);
+  }
+  function renderShop() {
+    $('shopStars').textContent = '⭐ ' + save.stars; const grid = $('shopGrid'); grid.innerHTML = '';
+    for (const it of SHOP) {
+      const owned = save.owned.includes(it.id), c = document.createElement('div'), b = document.createElement('button'); c.className = 'sc' + (owned ? ' own' : '');
+      c.innerHTML = '<div class="si">' + it.icon + '</div><div class="sn">' + it.name + '</div><div class="sp">' + (owned ? '✔ gehört dir' : it.price + ' ⭐') + '</div>';
+      if (!owned) { b.textContent = 'Kaufen'; b.disabled = save.stars < it.price; b.onclick = () => buyItem(it); }
+      else { b.textContent = isEq(it) ? 'Ablegen' : 'Anziehen'; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderShop(); }; }
+      c.appendChild(b); grid.appendChild(c);
+    }
+  }
+  function buyItem(it) {
+    if (save.owned.includes(it.id) || save.stars < it.price) return;
+    save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
+    setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '!', 1800); renderShop();
+  }
+  function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; renderShop(); say('Frau Bunt: „Viel Spaß mit dem Spielzeug!“', 2200); }
+  function closeShop() { shopOpen = false; shopPanel.hidden = true; updateButtons(true); }
+  $('shopClose').addEventListener('click', closeShop);
+
+  /* ---------- Spaß, Bauen, Ego-Kamera, Held ---------- */
+  function doPunch() {
+    if (state !== 'play' || P.veh || build.active || shopOpen || P.punchT > 0) return;
+    fun.setDance(false); const T = fun.nearTree(); if (T) P.h = Math.atan2(T.x - P.x, T.z - P.z); P.punchT = .4; P.punchHit = false;
+  }
+  function toggleEgo() {
+    if (!P.veh) { say('📷 Ego-Kamera gibt es im Fahrzeug', 1600); return; }
+    cam.ego = !cam.ego; cam.egoOff = 0; $('bCam').classList.toggle('on', cam.ego); if (!cam.ego && P.veh.spec.open) char.group.visible = true;
+  }
+  function doFun(k) {
+    if (state !== 'play') return;
+    save.use = save.use || {}; save.use[k] = (save.use[k] || 0) + 1; saveT = 1.5;
+    if (k === 'rcfetch') spawnRC();
+    else if (k === 'dance') { if (P.veh) { say('🕺 Zum Tanzen erst aussteigen', 1600); return; } if (build.active) return; fun.setDance(!fun.dancing); }
+    else if (k === 'punch') doPunch();
+    else if (k === 'bubbles') fun.bubbles();
+    else if (k === 'xxl') fun.xxl();
+    else if (k === 'bark') { pup.bark = .6; A.bark(); say('🐶 Wuff!', 900); fx.burst(pup.x, 1.4, pup.z, 5, [BI.C.pink, BI.C.gold], 2, 1, 32, -1); for (const n of npcs) if (Math.hypot(n.x - pup.x, n.z - pup.z) < 12) { n.hop = .6; n.wave = 2; } }
+    else if (k === 'search') {
+      if (pup.cd > 0) { say('🐶 Blitz verschnauft kurz …', 1200); return; }
+      const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; let best = null, bd = 1e9; for (const s of stars) if (s.on) { const d = Math.hypot(s.x - px, s.z - pz); if (d < bd) { bd = d; best = s; } }
+      if (best) { pup.star = best; pup.mode = 'search'; A.bark(); pup.bark = .3; say('🐶 Blitz, such den Stern! 🔎', 1800); }
+    }
+    else if (k === 'gum') fun.gum(); else if (k === 'ball') fun.ball(); else if (k === 'fireworks') fun.fireworks(); else if (k === 'balloons') fun.balloons();
+    $('bDance').classList.toggle('on', fun.dancing);
+  }
+  /* Schnellmenü: zeigt nur die 6 passendsten Aktionen (je nach Lage + was oft benutzt wird), „Mehr“ zeigt alle */
+  const ACTIONS = [
+    { k: 'punch', icon: '👊', name: 'Baum hauen', key: '6' }, { k: 'rcfetch', icon: '🏎️', name: 'RC-Auto holen', key: '' }, { k: 'dance', icon: '🕺', name: 'Tanzen', key: '1' },
+    { k: 'bubbles', icon: '🫧', name: 'Blasen', key: '9' }, { k: 'balloons', icon: '🎈', name: 'Ballons', key: '5' }, { k: 'gum', icon: '🍬', name: 'Kaugummi', key: '2' },
+    { k: 'fireworks', icon: '🎆', name: 'Feuerwerk', key: '4' }, { k: 'ball', icon: '⚽', name: 'Ball', key: '3' }, { k: 'search', icon: '🔎', name: 'Blitz such!', key: '8' },
+    { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' }
+  ];
+  let quickAll = false;
+  const onFoot = () => !P.veh || P.veh.spec.remote;
+  function avail(a) {
+    if (a.k === 'punch') return onFoot() && !!fun.nearTree();
+    if (a.k === 'dance' || a.k === 'xxl') return onFoot();
+    if (a.k === 'rcfetch') { const rc = vehicles.find(q => q.spec.remote); return !!rc && !(P.veh && P.veh.spec.remote) && Math.hypot(P.x - rc.x, P.z - rc.z) > 12; }
+    return true;
+  }
+  function score(a) {
+    const base = { punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10 };
+    return (base[a.k] || 0) + (a.k === 'punch' ? 200 : 0) + Math.min((save.use || {})[a.k] || 0, 15) * 1.5;
+  }
+  function renderQuick() {
+    const bar = $('funBar'); bar.innerHTML = ''; const list = ACTIONS.filter(avail).sort((a, b) => score(b) - score(a)), shown = quickAll ? list : list.slice(0, 6);
+    for (const a of shown) { const b = document.createElement('button'); b.className = 'fb'; b.dataset.k = a.k; b.innerHTML = a.icon + '<small>' + a.name + '</small>' + (a.key ? '<i class="kbd kb">' + a.key + '</i>' : ''); b.onclick = () => { doFun(a.k); closeQuick(); }; bar.appendChild(b); }
+    if (list.length > 6) { const m = document.createElement('button'); m.className = 'fb more'; m.innerHTML = (quickAll ? '▴' : '⋯') + '<small>' + (quickAll ? 'Weniger' : 'Mehr') + '</small>'; m.onclick = () => { quickAll = !quickAll; renderQuick(); }; bar.appendChild(m); }
+  }
+  function closeQuick() { $('funBar').hidden = true; $('bFun').classList.remove('on'); }
+  $('bFun').addEventListener('click', () => { const f = $('funBar'); if (!f.hidden) { closeQuick(); return; } quickAll = false; renderQuick(); f.hidden = false; $('bFun').classList.add('on'); });
+  $('bCam').addEventListener('click', toggleEgo);
+  let preBuild = null, tab = 0, clearT = 0;
+  function renderBuild() {
+    const tabs = $('bTabs'); tabs.innerHTML = '';
+    build.TABS.forEach((tb, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === tab ? ' sel' : ''); b.textContent = tb.icon + ' ' + tb.name; b.onclick = () => { tab = i; renderBuild(); }; tabs.appendChild(b); });
+    const items = $('bItems'); items.innerHTML = '';
+    Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== tab) return; const b = document.createElement('button'); b.className = 'bi' + (id === build.sel ? ' sel' : ''); b.innerHTML = '<b>' + c.icon + '</b><small>' + c.name + '</small>'; b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
+    const cols = $('bColors'); cols.innerHTML = '';
+    build.PAL.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw sm' + (i === build.color ? ' sel' : ''); b.style.background = '#' + c.toString(16).padStart(6, '0'); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { build.color = i; renderBuild(); }; cols.appendChild(b); });
+  }
+  function toggleBuild() {
+    if (state !== 'play') return;
+    if (build.active) { exitBuild(); return; }
+    if (P.veh) { say('🏗️ Zum Bauen erst aussteigen', 1600); return; }
+    fun.setDance(false); $('bDance').classList.remove('on'); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8;
+    document.body.classList.add('building'); $('buildPanel').hidden = false; $('bBuild').classList.add('on'); renderBuild(); updateButtons(true);
+    say(isTouch() ? '🏗️ Tippe auf den Boden, wähle ein Teil und drücke ✔ Bauen' : '🏗️ Klicke auf den Boden, wähle ein Teil und drücke G oder ✔ Bauen', 4200);
+  }
+  function exitBuild() {
+    build.exit(); document.body.classList.remove('building'); $('buildPanel').hidden = true; $('bBuild').classList.remove('on');
+    if (preBuild) { cam.pitch = preBuild.pitch; cam.zoom = preBuild.zoom; } updateButtons(true);
+  }
+  $('bBuild').addEventListener('click', toggleBuild); $('bClose').addEventListener('click', exitBuild);
+  $('bRot').addEventListener('click', () => { build.rotate(); A.pop(); }); $('bPlace').addEventListener('click', () => build.place()); $('bDel').addEventListener('click', () => build.remove());
+  $('bClear').addEventListener('click', () => { if (performance.now() - clearT < 3000) { build.clearAll(); clearT = 0; say('🧹 Alles weggeräumt', 1600); } else { clearT = performance.now(); say('Nochmal drücken: ALLES wegräumen?', 2800); } });
+  function applyHero() {
+    const c = save.hero === 'custom'; $('bJannis').classList.toggle('sel', !c); $('bCustom').classList.toggle('sel', c); $('custom').hidden = !c; $('hello').textContent = c ? 'Wie sieht dein Held aus?' : 'Hallo Jannis! ♥';
+  }
+  $('bJannis').addEventListener('click', () => { save.hero = 'jannis'; persist(); applyHero(); buildChar(); });
+  $('bCustom').addEventListener('click', () => { save.hero = 'custom'; persist(); applyHero(); buildChar(); });
+  applyHero();
 
   /* ---------- Aktualisierung ---------- */
   const _p = {};
@@ -350,19 +576,21 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
+    if (shopOpen) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
   function updatePlayer(dt) {
     const [jx, jy] = axes();
-    if (inp.act) { inp.act = false; if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); } }
-    if (inp.aux) { inp.aux = false; const v = P.veh; if (v && !v.isTrain && v.spec.siren) { v.siren = !v.siren; A.pop(); } }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (shopOpen) closeShop(); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); } }
+    if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
+    if (fun.dancing && (jx || jy || inp.jump || P.veh)) fun.setDance(false);
     if (P.veh) {
       const v = P.veh;
       if (v.isTrain) { train.update(dt, { thr: jy, turbo: inp.turbo }, fx); }
       else {
-        const sp = v.step(dt, { steer: jx, thr: jy, turbo: inp.turbo }, W, fx);
-        const o = vehicleObstacles(v.x, v.z, v.r * .9, v); if (o.hit) { const d = Math.hypot(o.x - v.x, o.z - v.z); v.x = o.x; v.z = o.z; v.v *= .7; if (d > .1 && hitCool <= 0) { hitCool = .4; A.bump(); } }
+        const sp = v.step(dt, { steer: jx, thr: jy, turbo: inp.turbo, climb: (inp.up ? 1 : 0) - (inp.down ? 1 : 0) }, W, fx);
+        const o = v.spec.fly && v.y > 3 ? { hit: false } : vehicleObstacles(v.x, v.z, v.r * .9, v); if (o.hit) { const d = Math.hypot(o.x - v.x, o.z - v.z); v.x = o.x; v.z = o.z; v.v *= .7; if (d > .1 && hitCool <= 0) { hitCool = .4; A.bump(); } }
         if (sp > 6 && hitCool <= 0) { hitCool = .4; A.bump(); cam.shake = .4; }
       }
       // Hupe
@@ -370,9 +598,12 @@
       if (inp.horn && sp.water && !v.isTrain) { v.spray(dt, fx); A.water(true); } else A.water(false);
       if (inp.horn && !(sp.water)) { if (sp.horn === 'melody') { A.melody(); } else A.horn(sp.horn, true); hornActive = true; } else if (hornActive) { A.horn('car', false); hornActive = false; }
       if (inp.hornEdge) { inp.hornEdge = false; if (sp.horn !== 'melody' && !sp.water) fx.burst(v.x, 2.4, v.z, 4, [BI.C.white], 2, .5, 18, 0); }
-      A.engine(sp.kind, clamp(Math.abs(v.v) / sp.max, 0, 1.2), true);
+      A.engine(sp.kind, clamp(Math.abs(v.v) / sp.max + (sp.fly && v.y > .5 ? .25 : 0), 0, 1.2), true);
       if (!v.isTrain && sp.siren) A.siren(sp.siren, v.siren); else A.siren('police', false);
-      P.x = v.x; P.z = v.z; P.h = v.h;
+      if (v.spec.remote) { // Jannis bleibt stehen und lenkt mit der Fernsteuerung
+        P.speed = 0; P.h += BI.angDiff(P.h, Math.atan2(v.x - P.x, v.z - P.z)) * Math.min(1, dt * 6); const g = char.group; g.position.set(P.x, P.y, P.z); g.rotation.set(0, P.h, 0);
+        char.pose(t * 1.5, 0, false); char.armR.rotation.x = -1.2 + Math.sin(t * 3) * .05; char.armR.rotation.z = -.1;
+      } else { P.x = v.x; P.z = v.z; P.h = v.h; }
     } else {
       A.engine('car', 0, false); A.siren('police', false); A.water(false); if (hornActive) { A.horn('car', false); hornActive = false; }
       const run = inp.turbo ? 1.6 : 1, spd = 5.4 * run;
@@ -387,19 +618,69 @@
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
       const gy = W.groundY(P.x, P.z);
       if (inp.jump) { inp.jump = false; if (P.y <= gy + .05) { P.vy = 7; A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); } }
-      P.vy -= 20 * dt; P.y += P.vy * dt; if (P.y < gy) { P.y = gy; P.vy = 0; }
+      if (fun.ride) P.vy = P.y < 6 ? 2.2 : 0; else P.vy = Math.max(P.vy - 20 * dt, P.softFall > 0 ? -5 : -14);
+      if (P.softFall > 0) P.softFall -= dt;
+      P.y += P.vy * dt;
+      if (P.y < gy) { P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
+      if (P.y <= gy + .02 && P.speed > .5 && Math.random() < dt * 10 && build.nearType(P.x, P.z, 'pool', 1.9)) { fx.burst(P.x, .3, P.z, 3, [BI.C.water], 2, .5, 24, 6); if (Math.random() < .2) A.splash(); }
       P.phase += dt * (6 + P.speed * 1.2); P.wave = Math.max(0, P.wave - dt);
       if (inp.hornEdge) {
-        inp.hornEdge = false; P.wave = 1.4; A.hello(); fx.burst(P.x, 2.6, P.z, 6, [BI.C.pink, BI.C.gold], 2.2, 1.2, 36, -1.5);
+        inp.hornEdge = false; P.wave = 1.4; A.hello(); pap.wiggle = 1; A.giggle(); fx.burst(P.x, 2.6, P.z, 6, [BI.C.pink, BI.C.gold], 2.2, 1.2, 36, -1.5);
         for (const n of npcs) if (Math.hypot(n.x - P.x, n.z - P.z) < 12) { n.hop = .6; n.wave = 2; }
         for (const a of animals) if (Math.hypot(a.x - P.x, a.z - P.z) < 12) { a.hop = .6; (a.k === 'cow' ? A.moo : A.baa)(); }
       }
       const g = char.group; g.position.set(P.x, P.y, P.z); g.rotation.y = P.h; g.rotation.x = 0;
-      char.pose(P.phase, P.speed > .3 && P.y < .1 ? Math.min(.9, P.speed * .18) : (P.y > .1 ? .6 : 0), P.wave > 0);
+      if (P.punchT > 0) {
+        P.punchT -= dt; const k = 1 - P.punchT / .4; if (!P.punchHit && k > .45) { P.punchHit = true; const T = fun.nearTree(); if (T) fun.hitTree(T, P.x, P.z); else A.whoosh(); }
+        char.punch(k); g.rotation.x = .25 * Math.sin(Math.min(1, k) * Math.PI);
+      } else if (fun.dancing) { char.dance(t, fun.style); g.position.y += Math.abs(Math.sin(t * 8)) * .18; g.rotation.y = P.h + Math.sin(t * 2) * .7; }
+      else char.pose(P.phase, P.speed > .3 && P.y < .1 ? Math.min(.9, P.speed * .18) : (P.y > .1 ? .6 : 0), P.wave > 0);
     }
     hitCool -= dt;
   }
+  function updatePup(dt) {
+    const dv = P.veh && !P.veh.spec.remote ? P.veh : null;
+    const px = dv ? dv.x : P.x, pz = dv ? dv.z : P.z, ph = dv ? dv.h : P.h; let tx, tz, sp = 0;
+    pup.cd = Math.max(0, pup.cd - dt); pup.bark = Math.max(0, pup.bark - dt);
+    if (pup.mode === 'search') {
+      const s = pup.star; if (!s || !s.on) { pup.mode = 'follow'; }
+      else {
+        tx = s.x; tz = s.z; const d = Math.hypot(tx - pup.x, tz - pup.z);
+        if (d < 1.3) { s.on = false; s.t = 45; A.star(); addStars(1); A.bark(); pup.bark = .5; pup.mode = 'follow'; pup.cd = 4; say('🐾 Blitz hat einen Stern gefunden! +1 ⭐', 2200); fx.burst(s.x, 1.2, s.z, 18, [BI.C.gold, BI.C.white, BI.C.dust], 5, .9, 26, 8); }
+        else sp = 9.5;
+      }
+    }
+    if (pup.mode === 'follow') {
+      const bx = -Math.sin(ph) * 2.4 + Math.cos(ph) * 1.0, bz = -Math.cos(ph) * 2.4 - Math.sin(ph) * 1.0; tx = px + bx; tz = pz + bz;
+      const d = Math.hypot(tx - pup.x, tz - pup.z);
+      if (d > 45) { pup.x = tx; pup.z = tz; fx.burst(pup.x, .6, pup.z, 8, [BI.C.white, BI.C.dust], 3, .6, 30, 2); }
+      else sp = d > 1.0 ? Math.min(dv ? 14 : 8.5, 1.5 + d * 2.4) : 0;
+    }
+    if (sp > 0) { const dx = tx - pup.x, dz = tz - pup.z; pup.h += BI.angDiff(pup.h, Math.atan2(dx, dz)) * Math.min(1, dt * 10); pup.x += Math.sin(pup.h) * sp * dt; pup.z += Math.cos(pup.h) * sp * dt; }
+    else pup.h += BI.angDiff(pup.h, Math.atan2(px - pup.x, pz - pup.z)) * Math.min(1, dt * 4);
+    const q = W.resolve(pup.x, pup.z, .35, {}); pup.x = q.x; pup.z = q.z; pup.speed = sp; pup.phase += dt * (sp > .3 ? 6 + sp * 1.2 : 2);
+    const g = pup.d.group; let y = W.groundY(pup.x, pup.z);
+    if (pup.bark > 0) y += Math.abs(Math.sin(pup.bark * 14)) * .18; if (fun.dancing) y += Math.abs(Math.sin(t * 8)) * .2;
+    g.position.set(pup.x, y, pup.z); g.rotation.y = pup.h + (fun.dancing ? Math.sin(t * 3) * 1.2 : 0); pup.d.pose(pup.phase, sp > .3 ? Math.min(.85, sp * .12) : 0, pup.bark > 0 || fun.dancing || sp === 0);
+  }
+  function updatePap(dt) {
+    const dv = P.veh && !P.veh.spec.remote ? P.veh : null;
+    const v = dv; let hx, hy, hz;
+    if (v) { hx = v.x; hy = (v.y || 0) + (v.isTrain ? 3.4 : 1.7); hz = v.z; }
+    else { const ph = P.h; hx = P.x + Math.cos(ph) * .42 + Math.sin(ph) * .1; hy = P.y + .75; hz = P.z - Math.sin(ph) * .42 + Math.cos(ph) * .1; }
+    const bob = Math.sin(t * 1.6) * .08 + (fun.dancing ? Math.abs(Math.sin(t * 8)) * .25 : 0), side = v ? 0 : .5, tx = hx + Math.cos(P.h) * side + Math.sin(t * .9) * .18, ty = hy + 1.0 + bob, tz = hz - Math.sin(P.h) * side + Math.cos(t * .7) * .15;
+    if (pap.k == null) pap.k = { x: tx, y: ty, z: tz };
+    pap.k.x = BI.damp(pap.k.x, tx, 6, dt); pap.k.y = BI.damp(pap.k.y, ty, 6, dt); pap.k.z = BI.damp(pap.k.z, tz, 6, dt);
+    if (Math.hypot(pap.k.x - tx, pap.k.z - tz) > 25) { pap.k.x = tx; pap.k.y = ty; pap.k.z = tz; }
+    pap.wiggle = Math.max(0, pap.wiggle - dt * 1.2); const g = pap.group; g.position.set(pap.k.x, pap.k.y, pap.k.z);
+    g.rotation.y = Math.atan2(camera.position.x - g.position.x, camera.position.z - g.position.z); g.rotation.z = Math.sin(t * 1.1) * .07 + Math.sin(t * 28) * .35 * pap.wiggle;
+    const a = strGeo.attributes.position; a.setXYZ(0, hx, hy, hz); a.setXYZ(1, pap.k.x, pap.k.y, pap.k.z); a.needsUpdate = true;
+    const sg = shopPap.group; sg.position.y = 2.6 + Math.sin(t * 1.3) * .12; sg.rotation.y = Math.atan2(camera.position.x - sg.position.x, camera.position.z - sg.position.z); sg.rotation.z = Math.sin(t * .9) * .06;
+    keeper.pose(t * 1.5, 0, Math.sin(t * .6) > .5);
+  }
   function updateWorldActors(dt) {
+    updatePup(dt); updatePap(dt);
+    { const ins = inShop(); if (ins && !wasInShop && state === 'play') say('🧸 Willkommen im Spielzeugladen! An der Theke 🛒 drücken', 3500); wasInShop = ins; }
     // Parkende Fahrzeuge rollen aus
     for (const v of vehicles) if (!v.driver && !v.ai && Math.abs(v.v) > .05) { v.step(dt, { steer: 0, thr: 0 }, W, fx); }
     for (const v of vehicles) if (v.driver) v.visual(dt, t, fx); else v.visual(dt, t, null);
@@ -415,17 +696,30 @@
     if (P.veh !== trainVeh) train.update(dt, null, fx);
     // Menschen
     for (const n of npcs) {
-      n.wait -= dt; n.hop = Math.max(0, n.hop - dt); let moving = false;
+      n.wait -= dt; n.hop = Math.max(0, n.hop - dt); let moving = false, dancing = false;
       const fl = P.veh && Math.abs(P.veh.v) > 3 && Math.hypot(n.x - P.veh.x, n.z - P.veh.z) < 7;
       if (fl) { const d = Math.hypot(n.x - P.veh.x, n.z - P.veh.z) || 1; n.x += (n.x - P.veh.x) / d * 5 * dt; n.z += (n.z - P.veh.z) / d * 5 * dt; n.h = Math.atan2(n.x - P.veh.x, n.z - P.veh.z); moving = true; }
       else if (n.wait <= 0) {
         const dx = n.tx - n.x, dz = n.tz - n.z, d = Math.hypot(dx, dz);
-        if (d < .6) { n.wait = 1 + Math.random() * 4; const a = Math.random() * TAU, r = 6 + Math.random() * 16; n.tx = clamp(n.x + Math.sin(a) * r, -150, 150); n.tz = clamp(n.z + Math.cos(a) * r, -150, 150); }
+        if (d < .6 && n.dancer > 0) { dancing = true; n.h += BI.angDiff(n.h, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 6); }
+        else if (d < .6) { n.wait = 1 + Math.random() * 4; const a = Math.random() * TAU, r = 6 + Math.random() * 16; n.tx = clamp(n.x + Math.sin(a) * r, -150, 150); n.tz = clamp(n.z + Math.cos(a) * r, -150, 150); }
         else { n.h += BI.angDiff(n.h, Math.atan2(dx, dz)) * Math.min(1, dt * 8); n.x += Math.sin(n.h) * n.spd * dt; n.z += Math.cos(n.h) * n.spd * dt; moving = true; }
       }
       const q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) n.wait = 0, n.tx = n.x, n.tz = n.z; n.x = q.x; n.z = q.z;
-      n.phase += dt * (moving ? 7 : 0); const g = n.c.group; g.position.set(n.x, n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0, n.z); g.rotation.y = n.h; n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);
+      n.phase += dt * (moving ? 7 : 0); const g = n.c.group; g.position.set(n.x, n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0, n.z); g.rotation.y = n.h;
+      if (dancing) { n.c.dance(t + n.phase, n.style); g.position.y += Math.abs(Math.sin((t + n.phase) * 8)) * .15; } else n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);
     }
+    // Bahnsteig-Leute: steigen ein, kommen wieder, wenn der Zug weg ist
+    platPeople.forEach((arr, idx) => {
+      const stn = W.stations[idx], far = Math.hypot(train.cars[0].x - stn.x, train.cars[0].z - stn.z) > 90;
+      for (const p of arr) {
+        if (p.vis && p.leaveAt && t >= p.leaveAt) { p.vis = false; p.c.group.visible = false; pax++; A.pop(); fx.burst(p.x, 1.8, p.z, 5, [BI.C.pink], 2, 1, 30, -1); }
+        else if (!p.vis && far) { p.vis = true; p.leaveAt = 0; p.c.group.visible = true; }
+        if (p.vis) p.c.pose(t * 2 + p.ph, 0, Math.sin(t * .7 + p.ph) > .2);
+      }
+    });
+    // Brunnen und Pools aus eigenen Bauten
+    for (const it of build.items) if (build.CAT[it.t].fountain && Math.random() < dt * 25 && Math.hypot(it.gx * 4 - P.x, it.gz * 4 - P.z) < 70) { const a = Math.random() * TAU; fx.emit(it.gx * 4 + Math.sin(a) * .3, 2.6, it.gz * 4 + Math.cos(a) * .3, Math.sin(a) * 1.2, 4.5 + Math.random(), Math.cos(a) * 1.2, 1.2, 22, .6, .85, 1, 9, .85); }
     // Tiere
     for (const a of animals) {
       a.wait -= dt; a.hop = Math.max(0, a.hop - dt); let moving = false;
@@ -440,12 +734,12 @@
     // Fontäne
     if (Math.random() < dt * 40) { const a = Math.random() * TAU; fx.emit(Math.sin(a) * .4, 3.6, Math.cos(a) * .4, Math.sin(a) * 1.4, 5 + Math.random() * 2, Math.cos(a) * 1.4, 1.5, 24, .6, .85, 1, 9, .85); }
     // Sterne
-    const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z, R = P.veh ? 3.6 : 2.3;
+    const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z, R = P.veh ? 3.6 : 2.3, low = !P.veh || (P.veh.y || 0) < 5;
     for (let i = 0; i < NSTAR; i++) {
       const s = stars[i];
       if (!s.on) { s.t -= dt; if (s.t <= 0) { const p = starSpot(false); s.x = p.x; s.z = p.z; s.on = true; } dummy.scale.setScalar(0); }
       else {
-        if (Math.abs(s.x - px) < R && Math.abs(s.z - pz) < R && Math.hypot(s.x - px, s.z - pz) < R && state === 'play') { s.on = false; s.t = 45; A.star(); addStars(1); fx.burst(s.x, 1.8, s.z, 14, [BI.C.gold, BI.C.white], 5, .9, 24, 8); }
+        if (Math.abs(s.x - px) < R && Math.abs(s.z - pz) < R && Math.hypot(s.x - px, s.z - pz) < R && low && state === 'play') { s.on = false; s.t = 45; A.star(); addStars(1); fx.burst(s.x, 1.8, s.z, 14, [BI.C.gold, BI.C.white], 5, .9, 24, 8); }
         dummy.position.set(s.x, 1.9 + Math.sin(t * 2 + s.ph) * .25, s.z); dummy.rotation.set(0, t * 1.8 + s.ph, 0); dummy.scale.setScalar(1.1);
       }
       dummy.updateMatrix(); starMesh.setMatrixAt(i, dummy.matrix);
@@ -455,25 +749,32 @@
 
   /* ---------- Kamera ---------- */
   const camT = new THREE.Vector3();
-  function blockedByBuilding(x, z) { for (const b of W.boxes) if (x > b.x0 - .6 && x < b.x1 + .6 && z > b.z0 - .6 && z < b.z1 + .6) return true; return false; }
+  function blockedByBuilding(x, z, y) { for (const b of W.boxes) if (y < b.h && x > b.x0 - .6 && x < b.x1 + .6 && z > b.z0 - .6 && z < b.z1 + .6) return true; return false; }
+  const EYE = { rc: [0, .45, .2], car: [0, 1.2, .3], police: [0, 1.2, .3], ambulance: [0, 1.9, 1.7], fire: [0, 2.5, 2.9], bus: [0, 2.4, 3.4], tractor: [0, 2.3, -.6], ice: [0, 1.5, 1.0], bike: [0, 1.8, -.1], heli: [0, 1.9, 1.2], train: [0, 3.0, -1.7] };
   function updateCamera(dt) {
     const v = P.veh; let tx, ty, tz, dist, pitch = cam.pitch;
     if (state === 'menu') { cam.yaw += dt * .25; tx = P.x; ty = 1.1; tz = P.z; dist = 4.8; pitch = .22; }
     else if (v) {
-      tx = v.x; tz = v.z; ty = v.isTrain ? 3 : 1.3; dist = (v.spec.cam || 9) * cam.zoom; if (v.isTrain) pitch = Math.max(pitch, .4);
+      if (cam.ego && state === 'play') {
+        const e = EYE[v.isTrain ? 'train' : v.type] || [0, 1.4, .4], ex = v.x + Math.sin(v.h) * e[2], ez = v.z + Math.cos(v.h) * e[2], ey = (v.y || 0) + e[1], yaw = v.h + cam.egoOff;
+        if (drag.id == null) cam.egoOff = BI.damp(cam.egoOff, 0, 2.5, dt); if (v.spec.open) char.group.visible = false;
+        camera.position.set(ex, ey, ez); camera.lookAt(ex + Math.sin(yaw) * 10, ey - .9 + (v.isTrain ? 0 : 0), ez + Math.cos(yaw) * 10); cam.x = ex; cam.y = ey; cam.z = ez; cam.dist = 3; sun.position.set(ex + 60, 100, ez + 40); sun.target.position.set(ex, 0, ez); sky.position.set(ex, 0, ez); return;
+      }
+      if (v.spec.open) char.group.visible = true;
+      tx = v.x; tz = v.z; ty = (v.y || 0) + (v.isTrain ? 3 : 1.3); dist = (v.spec.cam || 9) * cam.zoom; if (v.isTrain) pitch = Math.max(pitch, .4);
       if (drag.id == null) { cam.idle += dt; const want = v.h + Math.PI, speed = Math.abs(v.v) > .5 ? 3.2 : 1.2; cam.yaw += BI.angDiff(cam.yaw, want) * Math.min(1, dt * speed); }
       pitch = BI.lerp(pitch, Math.abs(v.v) > 12 ? .3 : .42, .02);
     } else { tx = P.x; ty = P.y + 1.3; tz = P.z; dist = 7.2 * cam.zoom; }
     if (keys.q) cam.yaw += dt * 1.6; if (keys.r) cam.yaw -= dt * 1.6;
     // Gebäude zwischen Kamera und Ziel -> näher heranholen
     let d = dist; const cp = Math.cos(pitch), sx = Math.sin(cam.yaw) * cp, sz = Math.cos(cam.yaw) * cp;
-    for (let i = 1; i <= 6; i++) { const f = i / 6; if (blockedByBuilding(tx + sx * dist * f, tz + sz * dist * f) && Math.sin(pitch) * dist * f + ty < 12) { d = Math.max(2.8, dist * (f - 1 / 6)); break; } }
+    for (let i = 1; i <= 6; i++) { const f = i / 6; if (blockedByBuilding(tx + sx * dist * f, tz + sz * dist * f, Math.sin(pitch) * dist * f + ty)) { d = Math.max(2.8, dist * (f - 1 / 6)); break; } }
     cam.dist = BI.damp(cam.dist, d, d < cam.dist ? 12 : 3, dt);
     const gx = tx + sx * cam.dist, gz = tz + sz * cam.dist, gy = ty + Math.sin(pitch) * cam.dist;
     cam.x = BI.damp(cam.x, gx, 14, dt); cam.y = BI.damp(cam.y, gy, 14, dt); cam.z = BI.damp(cam.z, gz, 14, dt);
     camera.position.set(cam.x, Math.max(.8, cam.y), cam.z);
     if (cam.shake > 0) { cam.shake -= dt; camera.position.x += (Math.random() - .5) * .25; camera.position.y += (Math.random() - .5) * .25; }
-    camera.lookAt(tx, ty + .4, tz);
+    if (state === 'menu' && innerWidth > 860) camera.lookAt(tx + Math.cos(cam.yaw) * 1.5, ty + .2, tz - Math.sin(cam.yaw) * 1.5); else camera.lookAt(tx, ty + .4, tz);
     sun.position.set(tx + 60, 100, tz + 40); sun.target.position.set(tx, 0, tz);
     sky.position.set(tx, 0, tz);
   }
@@ -496,17 +797,19 @@
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
     updateWorldActors(dt);
+    if (state === 'play') fun.update(dt, t); build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
-    if (state === 'play') { updateButtons(false); updateArrow(); }
+    if (state === 'play') { updateButtons(false); updateArrow(); updateGauge(); }
     if (state !== 'menu') A.music(dt, night > .5);
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
     if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
     renderer.render(scene, camera);
   }
+  spawnRC(true);
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
