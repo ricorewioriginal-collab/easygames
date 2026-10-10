@@ -113,11 +113,11 @@ for (const p of ps) await p.evaluate(() => document.getElementById('grOk').click
 await B.evaluate(() => window.__bi.net.close()); await A.waitForTimeout(800);
 const left = await Promise.all([A, C].map(p => p.evaluate(() => window.__bi.remote.size)));
 ok(left.every(n => n === 1), `Nach dem Verlassen bleibt 1 Mitspieler (${left.join(',')})`);
-// Geburtstagsparty (A feiert, B ist in der Nähe) und Besuch in der Wohnung des Freundes
-{ const sb = await B.evaluate(() => window.__bi.save.stars); await A.evaluate(() => window.__bi.sendParty()); await B.waitForTimeout(800);
-  const r = await B.evaluate(() => ({ n: window.__bi.parties.length, stars: window.__bi.save.stars }));
+// Geburtstagsparty (A feiert, C ist in der Nähe) und Besuch in der Wohnung des Freundes
+{ const sb = await C.evaluate(() => window.__bi.save.stars); await A.evaluate(() => window.__bi.sendParty()); await C.waitForTimeout(800);
+  const r = await C.evaluate(() => ({ n: window.__bi.parties.length, stars: window.__bi.save.stars }));
   ok(r.n === 1 && r.stars >= sb + 2, `Party: Freund sieht den Kuchen und bekommt Sterne (${r.n}, +${r.stars - sb})`);
-  const v = await B.evaluate(() => { const b = window.__bi, a = [...b.remote.values()][0]; b.visitFlat(a.id); const f = b.flats[0], g = b.flats[1]; return Math.min(Math.hypot(b.P.x - f.door.x, b.P.z - f.door.z), Math.hypot(b.P.x - g.door.x, b.P.z - g.door.z)); });
+  const v = await C.evaluate(() => { const b = window.__bi, a = [...b.remote.values()][0]; b.visitFlat(a.id); const f = b.flats[0], g = b.flats[1]; return Math.min(Math.hypot(b.P.x - f.door.x, b.P.z - f.door.z), Math.hypot(b.P.x - g.door.x, b.P.z - g.door.z)); });
   ok(v < 3, `Besuchen: Gast steht vor einer Wohnungstür (${v.toFixed(1)} m)`); }
 // falscher Code
 const bad = await B.evaluate(async () => { try { await window.__bi.net.join('ZZZZ'); return 'joined'; } catch (e) { return e.message; } });
