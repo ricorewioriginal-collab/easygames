@@ -70,6 +70,26 @@ BI.addPlaces = function (W, st) {
     for (const [dx, dz, c] of [[-5.2, -3.4, 0xe0382b], [5.4, -2.6, 0x3fa0ff]]) { st.prism(cx + dx, 0, cz + dz, 3.6, 2.6, 3.4, c, 0); st.box(cx + dx, 0, cz + dz + 1.7, 1.0, 1.7, .08, 0x2b2f3a); W.addBox(cx + dx - 1.8, cz + dz - 1.7, cx + dx + 1.8, cz + dz + 1.7, false, 2.4); }
     st.box(cx - 5.5, 0, cz + 4.6, .12, 2.6, .12, 0x6b4a2a); st.sph(cx - 5.5, 2.7, cz + 4.6, .22, 0xffe27a, 1); st.box(cx + 5.5, 0, cz + 4.6, .12, 2.6, .12, 0x6b4a2a); st.sph(cx + 5.5, 2.7, cz + 4.6, .22, 0xffe27a, 1);
     st.box(cx + 6.8, 0, cz - 6.6, .1, 3.4, .1, 0x8a5a33); st.box(cx + 7.4, 3.0, cz - 6.6, 1.2, .8, .05, 0xff8a1f); }
+  /* ---------- Kampfarena (Nordosten): Boxring mit Seilen, Tribüne, Fahnen ---------- */
+  { const ax = 100, az = -88, R = 14, H = 8; W.pads.push([ax - R - 2, az - R - 2, ax + R + 2, az + R + 2]); W.spots.arena = { x: ax, z: az, R, half: H, kai: { x: ax, z: az + H + 3.6 } };
+    st.disc(ax, az, R, .03, 0xe6d8a8, 32); st.rect(ax - H - 1, az - H - 1, ax + H + 1, az + H + 1, .05, 0xffffff); st.rect(ax - H, az - H, ax + H, az + H, .06, 0x3f7bd8); st.disc(ax, az, 3.2, .07, 0xffd23f, 20); st.ring(ax, az, 3.2, 3.7, .08, 0xe0382b, 20);
+    const rope = (x0, z0, x1, z1) => { const mx = (x0 + x1) / 2, mz = (z0 + z1) / 2, w = Math.abs(x1 - x0) || .08, d = Math.abs(z1 - z0) || .08; for (const [y, c] of [[.55, 0xe0382b], [.95, 0xffffff], [1.35, 0x3fa0ff]]) st.box(mx, y, mz, w, .08, d, c); };
+    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { st.box(ax + sx * (H + .3), 0, az + sz * (H + .3), .35, 1.7, .35, sx * sz > 0 ? 0xe0382b : 0x3f7bd8); W.addCircle(ax + sx * (H + .3), az + sz * (H + .3), .4, false, 1.7); }
+    rope(ax - H - .3, az - H, ax + H + .3, az - H); W.addBox(ax - H, az - H - .2, ax + H, az - H + .2, false, 1.5); rope(ax - H, az - H - .3, ax - H, az + H + .3); W.addBox(ax - H - .2, az - H, ax - H + .2, az + H, false, 1.5); rope(ax + H, az - H - .3, ax + H, az + H + .3); W.addBox(ax + H - .2, az - H, ax + H + .2, az + H, false, 1.5);
+    rope(ax - H - .3, az + H, ax - 2.6, az + H); W.addBox(ax - H, az + H - .2, ax - 2.6, az + H + .2, false, 1.5); rope(ax + 2.6, az + H, ax + H + .3, az + H); W.addBox(ax + 2.6, az + H - .2, ax + H, az + H + .2, false, 1.5);
+    for (let k = 0; k < 3; k++) st.box(ax, k * .5, az - H - 3 - k * 1.2, 16 - k * 1.5, .5, 1.4, [0xb98650, 0xc8803c, 0xa8703a][k]); W.addBox(ax - 8, az - H - 5.4, ax + 8, az - H - 2.2, false, 1.5);
+    for (let k = 0; k < 6; k++) { const bx = ax - 7 + k * 2.8; st.box(bx, 1.5, az - H - 3.6, .5, .5, .5, [0xff5a8a, 0xffd23f, 0x4da3ff][k % 3]); }
+    for (const sx of [-1, 1]) { st.box(ax + sx * (H + 3.2), 0, az - 2, .15, 4.2, .15, 0x6b4a2a); st.cone(ax + sx * (H + 3.2) + sx * .5, 3.9, az - 2, .55, .25, sx > 0 ? 0xff5a8a : 0x4da3ff, 3); }
+    st.box(ax, 0, az + H + 3.4, 3.6, .9, .5, 0xc8803c); W.addBox(ax - 1.8, az + H + 3.1, ax + 1.8, az + H + 3.7, false, .9); }
+  /* ---------- Verbotener Wald (Nordwesten): dunkler Wald mit Zaun, hier – und nur hier – wird gekämpft ---------- */
+  { const fx0 = 40, fz0 = -148, R = 16, rnd = BI.rng(77), gd = Math.atan2(-fx0, -fz0), gx = fx0 + Math.sin(gd) * R, gz = fz0 + Math.cos(gd) * R; W.pads.push([fx0 - R - 2, fz0 - R - 2, fx0 + R + 2, fz0 + R + 2]);
+    W.spots.forest = { x: fx0, z: fz0, R, gate: { x: gx - Math.sin(gd) * 4, z: gz - Math.cos(gd) * 4 }, gx, gz, ang: gd };
+    st.disc(fx0, fz0, R, .03, 0x33432e, 36); st.disc(fx0, fz0, R * .55, .04, 0x2a3a2a, 28); st.disc(fx0, fz0, 4, .05, 0x4a3a52, 20); st.ring(fx0, fz0, 4, 4.4, .06, 0xb36bff, 20);
+    for (let i = 0; i < 30; i++) { const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * (R - 2.2), x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; if (d < 5.5) continue; const ga = Math.abs(BI.angDiff(a, gd)); if (ga < .4 && d > R * .3) continue;
+      const h = 3 + rnd() * 2.4; st.cyl(x, 0, z, .22, .34, h * .5, 0x4a3426, 6); st.cone(x, h * .35, z, 1.5 + rnd() * .5, h * .7, [0x1f4a3a, 0x2a5a46, 0x24433f][i % 3], 7); st.cone(x, h * .75, z, 1.1, h * .55, [0x2a5a46, 0x1f4a3a][i % 2], 7); W.addCircle(x, z, .75, false, 3); }
+    for (let i = 0; i < 10; i++) { const a = rnd() * BI.TAU, d = 5 + rnd() * (R - 7), x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; st.cyl(x, 0, z, .05, .08, .3, 0xe8e0d0, 5); st.sph(x, .35, z, .22, [0xb36bff, 0x3fe0c0, 0xff8fc8][i % 3], 1, 1, .6, 1); }
+    for (let k = 0; k < 30; k++) { const a = k / 30 * BI.TAU; if (Math.abs(BI.angDiff(a, gd)) < .2) continue; const x = fx0 + Math.sin(a) * R, z = fz0 + Math.cos(a) * R; st.box(x, 0, z, .3, 1.5, .3, k % 2 ? 0xe0382b : 0xffffff); W.addCircle(x, z, .34, false, 1.5); if (k % 2) st.box(fx0 + Math.sin(a + .105) * R, .9, fz0 + Math.cos(a + .105) * R, 2.4, .1, .1, 0xe0382b, a + Math.PI / 2); }
+    for (const s of [-1, 1]) { const x = gx + Math.cos(gd) * 2.6 * s, z = gz - Math.sin(gd) * 2.6 * s; st.box(x, 0, z, .3, 2.6, .3, 0x4a3426); st.sph(x, 2.8, z, .24, 0xe0382b, 1); } }
   W.spots.pens = []; W.pads.push([-172, -38, -144, 46]);
   { const defs = [['pig', -36, -26.5, 4, 0xb9d98a], ['goat', -26, -16.5, 5, 0xb5e08a], ['horse', -16, -6.5, 2, 0xa9e07c], ['chicken', -6, 3.5, 8, 0xc9e89a], ['rabbit', 4, 13.5, 5, 0xb5e08a], ['donkey', 14, 23.5, 2, 0xa9e07c], ['cow', 24, 33.5, 3, 0xa9e07c], ['sheep', 34, 43.5, 5, 0xb5e08a]];
     const x0 = -168, x1 = -146;

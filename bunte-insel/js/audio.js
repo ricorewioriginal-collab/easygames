@@ -58,6 +58,7 @@ BI.audio = (function () {
     swish() { noise(.08, .05, 1500); },
     moo() { tone(150, .6, 'sawtooth', .07, 110); },
     baa() { tone(380, .35, 'sawtooth', .05, 300); },
+    hit() { tone(200, .09, 'square', .1, 80); tone(520, .05, 'triangle', .08, 260, .02); },
     pop() { tone(700, .08, 'sine', .12, 1100); },
     blow() { tone(900, .25, 'sine', .05, 1500); tone(1300, .2, 'sine', .03, 700, .08); },
     bubblePop() { tone(1500, .05, 'sine', .06, 600); },

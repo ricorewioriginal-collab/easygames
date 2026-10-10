@@ -405,7 +405,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const b = window.__bi, k = b.kids, out = {}, s0 = b.save.stars; out.d1 = k.daily(); out.d2 = k.daily(); out.g = b.save.stars - s0;
     b.save.daily = { d: (() => { const d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); })(), s: 2 }; k.daily(); out.streak = b.save.daily.s;
     const t = k.task(); const a = b.farm.animals.find(x => x.k === t[0]); out.t = t[0];
-    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = 0; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
+    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = b.P.h + Math.PI; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
     for (const id of ['ride', 'heli', 'train', 'boat']) k.earn(id); out.owned = b.save.owned.includes('hat_party'); return out;
   });
   ok(r.d1 === true && r.d2 === false && r.g >= 2, 'Tagesgeschenk gibt es einmal pro Tag'); ok(r.streak === 3, 'Serie zählt Tage in Folge'); ok(r.pt === 1, 'Foto-Aufgabe (' + r.t + ') wird erkannt'); ok(r.owned, 'Sticker-Belohnung: Partyhut freigeschaltet'); await c.close();
@@ -437,6 +437,23 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const n = b.npcs[2]; b.P.x = n.x + 1; b.P.z = n.z; await new Promise(r => setTimeout(r, 300)); const pn = b.placeNear(); o.src = pn && pn.src; if (pn) b.placeAct(pn); o.say = document.getElementById('toast').textContent.length > 10;
     const f = b.flats[1]; b.P.x = f.mama.x + 1; b.P.z = f.mama.z; await new Promise(r => setTimeout(r, 300)); const fn = b.flatNear(); b.flatAct(fn); o.mama = document.getElementById('toast').textContent; return o; });
   ok(r.min && r.open, 'Aufgaben-Kachel ist klein und lässt sich aufklappen'); ok(r.src === 'npc' && r.say, 'Leute auf der Insel erzählen etwas'); ok(/Mama Lena/.test(r.mama), 'Eltern haben eigene Namen (' + r.mama.slice(0, 20) + ')'); await c.close();
+}
+{ // Kampf: nur in Arena und Verbotenem Wald
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, C = b.combat, o = {}, sl = ms => new Promise(r => setTimeout(r, ms)), F = b.W.spots.forest, A = b.W.spots.arena;
+    b.P.x = 0; b.P.z = 26; await sl(200); o.outside = C.active(); C.attack('punch'); o.outsideAtk = !!C.dbg.atk; o.hudOut = document.getElementById('fightBtns').hidden;
+    b.P.x = F.x + 3; b.P.z = F.z + 3; await sl(400); o.inForest = C.active(); o.hud = !document.getElementById('fightBtns').hidden;
+    const e = C.dbg.spawn('blob', b.P.x + 1.2, b.P.z, { home: true }); const s0 = b.save.stars; for (let i = 0; i < 8 && !e.dead; i++) { b.P.h = Math.atan2(e.x - b.P.x, e.z - b.P.z); C.attack('punch'); await sl(450); } o.dead = e.dead; o.stars = b.save.stars - s0; o.kills = b.save.fight && b.save.fight.k;
+    b.P.x = F.gate.x - 12; b.P.z = F.gate.z - 12; await sl(400);
+    b.P.x = A.kai.x; b.P.z = A.kai.z + 2.4; await sl(300); const n = b.placeNear(); o.kai = n && n.src; b.placeAct(n); o.panel = C.panelOpen;
+    document.querySelector('#arenaBox button').click(); await sl(300); o.mode = C.dbg.mode; const d = C.dbg.duel; o.fighter = d && d.def.n;
+    await sl(3000); C.dbg.damage(d.f, 999, 1, 0); await sl(2400); C.dbg.damage(C.dbg.duel.f, 999, 1, 0); await sl(3600); o.after = C.dbg.mode; o.duelWins = b.save.fight.d;
+    C.dbg.startWave(); await sl(300); o.wave = C.dbg.mode; o.waveEnemies = C.dbg.enemies.length; for (const e2 of [...C.dbg.enemies]) C.dbg.damage(e2, 999, 1, 0); await sl(2500); o.wave2 = C.dbg.enemies.filter(x => !x.dead).length > 0; C.exit();
+    return o; });
+  ok(!r.outside && !r.outsideAtk && r.hudOut, 'Außerhalb von Arena und Wald kann nicht gekämpft werden'); ok(r.inForest && r.hud, 'Verbotener Wald: Kampf-Anzeige und Knöpfe da'); ok(r.dead && r.stars >= 1 && r.kills >= 1, `Waldmonster besiegt (+${r.stars} ⭐)`);
+  ok(r.kai === 'arena' && r.panel && r.mode === 'duel', 'Arena: Kampfmeister Kai öffnet das Menü, Duell startet (' + r.fighter + ')'); ok(r.after === null && r.duelWins >= 1, 'Duell: nach 2 gewonnenen Runden Sieg + Belohnung'); ok(r.wave === 'wave' && r.waveEnemies >= 2 && r.wave2, 'Monster-Welle startet und die nächste Welle kommt'); await c.close();
 }
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
