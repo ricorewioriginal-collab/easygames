@@ -16,7 +16,7 @@ const Sim = (() => {
       player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
     Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
     Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
-    add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7);
+    add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7); add(S, 'radio', 15, 5);
     const set = (o, p, q) => { o.p = p; o.qty = q; o.age = 0; }, ob = byKind(S, 'obst'), rg = byKind(S, 'regal'); set(ob[0], 'apfel', 14); set(ob[1], 'broetchen', 18); set(rg[0], 'wasser', 12); set(byKind(S, 'kuehl')[0], 'milch', 8);
     ['banane', 'limo', 'wasser', 'milch', 'broetchen', 'apfel'].forEach(p => S.ramp.push({ p, n: P[p].box, age: 0 }));
     S.heat = new Array(S.W * S.H).fill(0); rebuild(S); newQuests(S); S.forecast = rollWeather(); S.weather = 'sonne'; note(S, 'Willkommen in der Markthalle 24! Bestelle Ware im Markt und fülle die Regale.', 'info');
@@ -222,6 +222,7 @@ const Sim = (() => {
     if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
     const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: '🧽 Pfütze wischen' };
     const rp = near.find(o => o.k === 'ramp'); if (rp) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.length) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
+    const rd = near.find(o => o.k === 'radio'); if (rd) return { a: 'radio', o: rd, label: '📻 Radio an/aus' };
     return null;
   }
   function act(S, focus) {
@@ -280,7 +281,7 @@ const Sim = (() => {
   function step(S, dt) { if (S.phase === 'summary') return; const n = Math.max(1, Math.ceil(dt / .1)), d = dt / n; for (let i = 0; i < n; i++) { tick(S, d); if (S.phase === 'summary') break; } }
   const clock = S => { const m = Math.floor(8 * 60 + Math.min(S.t, DAYLEN) * MIN_PER_SEC); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   const save = S => JSON.stringify(S, (k, v) => k[0] === '_' ? undefined : v);
-  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; rebuild(S); return S; };
+  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; return S; };
   return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
 })();
 if (typeof module !== 'undefined') module.exports = Sim;

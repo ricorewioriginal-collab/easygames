@@ -50,6 +50,7 @@ const Data = (() => {
     deko: { name: 'Zimmerpflanze', e: '🪴', w: 1, h: 1, st: [], cap: 0, price: 2500, lvl: 1, col: '#2f6a3a' },
     ofen: { name: 'Backstation', e: '🥐', w: 2, h: 1, st: ['prod'], cap: 24, price: 80000, lvl: 3, col: '#c27a2a', power: 900, only: ['brot'], bake: 1 },
     lager: { name: 'Lager-Regal', e: '🏗️', w: 2, h: 1, st: [], cap: 0, price: 40000, lvl: 2, col: '#6a5a4a', store: 10 },
+    radio: { name: 'Marktradio', e: '📻', w: 1, h: 1, st: [], cap: 0, price: 15000, lvl: 1, col: '#3a3a4a', radio: 1 },
     ramp: { name: 'Rampe', e: '📦', w: 3, h: 1, st: [], cap: 0, price: 0, lvl: 1, col: '#8a6a30', fixed: 1 }
   };
   const TYPES = {

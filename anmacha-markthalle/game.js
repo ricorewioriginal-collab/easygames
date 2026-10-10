@@ -14,11 +14,36 @@
   function save() { try { localStorage.setItem(KEY, Sim.save(S)); } catch (e) {} }
   function load() { try { const j = localStorage.getItem(KEY); if (j) { S = Sim.load(j); prevMoney = S.money; return true; } } catch (e) {} return false; }
   if (!load()) { newGame(); setTimeout(() => openPanel('hilfe'), 300); }
+  // ---------- Marktradio (Live-Stream von laut.fm) ----------
+  const RAD = { on: true, name: 'ricorewi', vol: .6, list: [{ n: 'ricorewi', d: 'RicoReWi' }], el: null, cur: '', gest: false, err: '', song: '', songT: 0, busy: false };
+  try { const j = JSON.parse(localStorage.getItem('amh_radio') || 'null'); if (j) { RAD.on = j.on !== false; RAD.name = j.name || RAD.name; RAD.vol = typeof j.vol === 'number' ? j.vol : RAD.vol; if (Array.isArray(j.list) && j.list.length) RAD.list = j.list.filter(x => x && x.n).slice(0, 12); } } catch (e) {}
+  const radSave = () => { try { localStorage.setItem('amh_radio', JSON.stringify({ on: RAD.on, name: RAD.name, vol: RAD.vol, list: RAD.list })); } catch (e) {} };
+  const slug = s => { s = String(s || '').trim().toLowerCase(); const m = s.match(/laut\.fm\/([a-z0-9_-]+)/); if (m) s = m[1]; return s.replace(/^https?:\/\//, '').replace(/[^a-z0-9_-]/g, '').slice(0, 40); };
+  const radName = () => (RAD.list.find(x => x.n === RAD.name) || { d: RAD.name }).d;
+  function radioSync() {
+    if (!S) return; const rads = S.objs.filter(o => o.k === 'radio'), want = RAD.on && rads.length > 0 && !document.hidden; let el = RAD.el;
+    if (typeof View3D !== 'undefined' && View3D) View3D.st.radioOn = !!(el && !el.paused && want);
+    if (want) {
+      if (!el) { el = RAD.el = new Audio(); el.preload = 'none'; el.addEventListener('error', () => { if (el.getAttribute('src')) { RAD.err = 'Stream nicht erreichbar – Sendername oder Internet prüfen.'; } }); el.addEventListener('playing', () => { RAD.err = ''; }); }
+      if (RAD.cur !== RAD.name) { el.src = 'https://stream.laut.fm/' + encodeURIComponent(RAD.name); RAD.cur = RAD.name; RAD.err = ''; RAD.song = ''; RAD.songT = 0; }
+      const p = S.player; let d = 99; rads.forEach(o => { d = Math.min(d, Math.hypot(o.x + .5 - p.x, o.y + .5 - p.y)); }); el.volume = Math.max(0, Math.min(1, RAD.vol * Math.max(.1, Math.min(1, 1.2 - d / 15))));
+      if (el.paused && RAD.gest && !RAD.busy) { RAD.busy = true; const pr = el.play(); if (pr && pr.then) pr.then(() => { RAD.busy = false; }).catch(() => { RAD.busy = false; RAD.err = 'Abspielen blockiert – klicke ins Spiel oder drücke „Radio an“.'; }); else RAD.busy = false; }
+      radioSong();
+    } else if (el && RAD.cur) { el.pause(); el.removeAttribute('src'); el.load(); RAD.cur = ''; RAD.busy = false; }
+  }
+  function radioSong() { const t = performance.now(); if (t - RAD.songT < 25000) return; RAD.songT = t; const n = RAD.name; fetch('https://api.laut.fm/station/' + encodeURIComponent(n) + '/current_song').then(r => r.ok ? r.json() : null).then(j => { if (j && n === RAD.name) { RAD.song = (j.artist && j.artist.name ? j.artist.name + ' – ' : '') + (j.title || ''); if (panel === 'radio' || cardId != null) { refresh(); } } }).catch(() => {}); }
+  function radioToggle(on) { RAD.on = on == null ? !RAD.on : on; RAD.gest = true; radSave(); radioSync(); }
+  ['pointerdown', 'keydown'].forEach(n => addEventListener(n, () => { if (!RAD.gest) { RAD.gest = true; radioSync(); } }, { capture: true }));
+  async function radioAdd(raw) {
+    const n = slug(raw); if (!n) return 'Bitte einen Sendernamen eingeben, z. B. ricorewi.'; if (RAD.list.some(x => x.n === n)) { RAD.name = n; radSave(); radioSync(); return ''; }
+    try { const c = new AbortController(), to = setTimeout(() => c.abort(), 7000), r = await fetch('https://api.laut.fm/station/' + encodeURIComponent(n), { signal: c.signal }); clearTimeout(to); if (!r.ok) return 'Den Sender „' + n + '“ gibt es bei laut.fm nicht.'; const j = await r.json(); RAD.list.push({ n, d: j.display_name || n }); if (RAD.list.length > 12) RAD.list.shift(); RAD.name = n; RAD.on = true; RAD.gest = true; radSave(); radioSync(); return ''; }
+    catch (e) { return 'Sender konnte nicht geprüft werden (Internet?).'; }
+  }
   // ---------- Ton ----------
   let AC = null, radioT = 0;
   const tone = (f, dur, type, vol, delay) => { if (!snd) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const t = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(vol || .08, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur + .02); } catch (e) {} };
   const sfx = { scan() { tone(1760, .07, 'square', .05); tone(2217, .06, 'square', .04, .05); }, coin() { tone(1175, .12, 'square', .04); tone(1568, .18, 'square', .04, .07); }, ok() { tone(660, .1, 'triangle', .08); }, bad() { tone(150, .2, 'sawtooth', .06); }, lvl() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .3, 'triangle', .1, i * .1)); } };
-  function radioLoop() { clearInterval(radioT); const gn = D.GENRES[S.radio.genre]; let i = 0; radioT = setInterval(() => { if (!snd || !S || !S.up.radio || !S.radio.on || S.phase === 'summary' || document.hidden || spd === 0 || panel) return; const n = gn.notes[i++ % gn.notes.length]; tone(220 * Math.pow(2, n / 12), .35, 'triangle', .025); if (i % 3 === 0) tone(110 * Math.pow(2, gn.notes[0] / 12), .3, 'sine', .03); }, 60000 / gn.bpm); }
+  function radioLoop() { clearInterval(radioT); const gn = D.GENRES[S.radio.genre]; let i = 0; radioT = setInterval(() => { if (RAD.on && RAD.el && !RAD.el.paused) return; if (!snd || !S || !S.up.radio || !S.radio.on || S.phase === 'summary' || document.hidden || spd === 0 || panel) return; const n = gn.notes[i++ % gn.notes.length]; tone(220 * Math.pow(2, n / 12), .35, 'triangle', .025); if (i % 3 === 0) tone(110 * Math.pow(2, gn.notes[0] / 12), .3, 'sine', .03); }, 60000 / gn.bpm); }
   // ---------- Größe / Boden ----------
   function resize() {
     if (!S) return; dpr = Math.min(2, devicePixelRatio || 1); const r = $('stage').getBoundingClientRect(); cw = r.width; ch = r.height; if (use3d) { View3D.resize(cw, ch); return; } cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
@@ -52,7 +77,7 @@
     if (o.k === 'ramp') { em(g, '📦', x + w / 2, y + h / 2, T * .6); g.fillStyle = '#fff'; g.font = `900 ${T * .34}px Inter,sans-serif`; g.textAlign = 'center'; g.fillText(S.ramp.length + (S.backlog.length ? '+' + S.backlog.length : '') + ' Kart.', x + w / 2, y + h - T * .1); for (let i = 0; i < Math.min(6, S.ramp.length); i++) em(g, P[S.ramp[i].p].e, x + (i % 3 + .5) * T, y - T * .22 - ((i / 3) | 0) * T * .3, T * .38); return; }
     if (o.k === 'kasse' || o.k === 'sco') { em(g, t.e, x + w / 2, y + h / 2, T * .55); const st = Sim.serviceTile(o), op = S.staff.some(s => s.reg === o.id) || Math.hypot(S.player.x - st[0] - .5, S.player.y - st[1] - .5) < 1.25 || o.k === 'sco'; g.fillStyle = op ? '#43e08a' : '#ff6b7a'; g.beginPath(); g.arc(x + w - T * .18, y + T * .18, T * .09, 0, 7); g.fill(); if (!op && S.phase === 'open') em(g, '⚠️', x + w / 2, y - T * .3, T * .4); return; }
     if (o.k === 'lager') { em(g, t.e, x + w / 2, y + h / 2 - T * .08, T * .55); g.fillStyle = '#fff'; g.font = `800 ${T * .26}px Inter,sans-serif`; g.textAlign = 'center'; g.fillText('+10 Platz', x + w / 2, y + h - T * .12); return; }
-    if (o.k === 'deko') { em(g, t.e, x + w / 2, y + h / 2, T * .7); return; }
+    if (o.k === 'deko' || o.k === 'radio') { em(g, t.e, x + w / 2, y + h / 2, T * .7); return; }
     const c = Sim.cap(S, o); if (!o.p) { em(g, '➕', x + w / 2, y + h / 2, T * .45); return; }
     const pr = P[o.p], n = o.w * o.h, per = Math.max(1, Math.ceil(Math.min(o.qty, c) / c * 2)); g.globalAlpha = o.qty ? 1 : .3; for (let i = 0; i < n; i++) { const cx = x + (o.w > o.h ? (i + .5) * T : w / 2), cy = y + (o.h > o.w ? (i + .5) * T : h / 2); em(g, pr.e, cx, cy - T * .06, T * (per > 1 ? .5 : .42)); } g.globalAlpha = 1;
     const f = Math.min(1, o.qty / c); g.fillStyle = 'rgba(0,0,0,.45)'; g.fillRect(x + 4, y + h - T * .2, w - 8, T * .1); g.fillStyle = f > .5 ? '#43e08a' : f > .2 ? '#ffd24a' : '#ff6b7a'; g.fillRect(x + 4, y + h - T * .2, (w - 8) * f, T * .1);
@@ -69,7 +94,7 @@
   const keys = {}; let joy = { x: 0, y: 0 }, touch = false;
   addEventListener('keydown', e => { if (panel || !S) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if (k === 'e' || k === ' ' || k === 'enter') doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'v') toggleView(); if (k === 'f') inspect(cw / 2, ch / 2); if (k === 'escape') { mode = null; showCard(null); } if (k === 'p') setSpd(spd ? 0 : 1); });
   addEventListener('keyup', e => { delete keys[e.key.toLowerCase()]; });
-  function doAct() { const c = Sim.act(S, focus); if (c && c.a === 'scan') sfx.scan(); else if (c) sfx.ok(); else sfx.bad(); }
+  function doAct() { const c = Sim.act(S, focus); if (c && c.a === 'scan') sfx.scan(); else if (c && c.a === 'radio') { radioToggle(); toast(RAD.on ? '📻 ' + radName() + ' läuft' : '📻 Radio aus'); } else if (c) sfx.ok(); else sfx.bad(); }
   $('act').addEventListener('pointerdown', e => { e.preventDefault(); doAct(); });
   const stick = $('stick'), knob = $('knob'); let sid = null;
   const mv = e => { const r = stick.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; let dx = (e.clientX - cx) / (r.width / 2), dy = (e.clientY - cy) / (r.height / 2); const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; } joy.x = Math.abs(dx) < .15 ? 0 : dx; joy.y = Math.abs(dy) < .15 ? 0 : dy; knob.style.transform = `translate(${dx * r.width * .3}px,${dy * r.height * .3}px)`; };
@@ -113,6 +138,7 @@
     if (S.money > prevMoney + 20) sfx.coin(); prevMoney = S.money; if (S.log.length && S.log[S.log.length - 1] !== lastLog) { lastLog = S.log[S.log.length - 1]; toast(lastLog.t); }
     if (S.phase === 'open' && now() - hintT > 25000 && S.customers.some(c => c.st === 'pay' && c.wait > 6)) { const r = S.objs.find(o => o.k === 'kasse'); if (r && !S.staff.some(x => x.k === 'kasse') && Math.hypot(S.player.x - r.x - .5, S.player.y - r.y + .5) > 1.3) { hintT = now(); toast('Kunden warten! Stell dich auf das Feld über der Kasse 💶'); } }
     if (use3d) { const hh = View3D.st.top ? null : View3D.pick(cw / 2, ch / 2, 3.6); focus = hh ? Sim.obj(S, hh.id) : null; const tp = $('tip'), tt = focus && !mode ? tipText(focus) : ''; tp.hidden = !tt; if (tt) tp.textContent = tt; }
+    radioSync();
     const c = Sim.context(S, focus), a = $('act'); a.textContent = c ? c.label : '✋ Aktion'; a.classList.toggle('idle', !c);
   }
   function tipText(o) { const t = D.OBJ[o.k]; if (o.k === 'ramp') return `📦 Rampe · ${S.ramp.length} Kartons`; if (o.k === 'kasse' || o.k === 'sco') return `${t.e} ${t.name} · Schlange ${o.q.length}`; if (D.OBJ[o.k].cap > 0) return o.p ? `${P[o.p].e} ${P[o.p].name} · ${o.qty}/${Sim.cap(S, o)} · ${fmt(Sim.effPrice(S, o))}` : `${t.e} ${t.name} · frei – Klick: Ware wählen`; return `${t.e} ${t.name}`; }
@@ -123,6 +149,7 @@
     const el = $('card'); if (mode) { el.hidden = false; el.innerHTML = `<h3>🔧 Baumodus: ${mode.t === 'place' ? D.OBJ[mode.k].name + ' platzieren' : mode.t === 'sell' ? 'Verkaufen (60 %)' : 'Aufheben'}</h3><small class="warn">Tippe auf das Spielfeld.${mode.t === 'place' ? ' Mit „Drehen“ wechselst du die Ausrichtung.' : ''}</small><div class="row">${mode.t === 'place' ? '<button class="btn sm" data-a="rot">🔄 Drehen</button>' : ''}<button class="btn sm go" data-a="modeoff">✔ Fertig</button></div>`; return; }
     const o = cardId != null ? Sim.obj(S, cardId) : null; if (!o) { el.hidden = true; return; } el.hidden = false; const t = D.OBJ[o.k];
     if (o.k === 'ramp') { el.innerHTML = `<h3>📦 Rampe</h3><small>${S.ramp.length} Kartons bereit${S.backlog.length ? `, ${S.backlog.length} warten draußen` : ''}. Geh heran und drücke die Aktionstaste.</small><div class="row">${S.ramp.slice(0, 10).map(b => `<span title="${esc(P[b.p].name)}">${P[b.p].e}×${b.n}</span>`).join(' ')}</div><div class="row"><button class="btn sm" data-a="cx">Schließen</button></div>`; return; }
+    if (o.k === 'radio') { el.innerHTML = `<h3>📻 Marktradio · ${esc(radName())}</h3><small>${RAD.on ? (RAD.el && !RAD.el.paused ? '▶ läuft' : '⏳ startet …') : '⏸ aus'}${RAD.song ? ' · ' + esc(RAD.song) : ''}${RAD.err ? '<br><span class="bad">' + esc(RAD.err) + '</span>' : ''}</small><div class="row"><button class="btn sm ${RAD.on ? 'stop' : 'go'}" data-a="rplay">${RAD.on ? '⏸ Aus' : '▶ An'}</button><button class="btn sm" data-a="rpanel">📻 Sender &amp; Lautstärke</button><button class="btn sm" data-a="cx">✕</button></div>`; return; }
     if (o.k === 'kasse' || o.k === 'sco') { el.innerHTML = `<h3>${t.e} ${t.name}</h3><small>Schlange: ${o.q.length} Kunde(n). ${o.k === 'kasse' ? 'Stell dich oberhalb an die Kasse oder stell Kassenkräfte ein.' : 'Arbeitet allein, aber langsam.'}</small><div class="row"><button class="btn sm" data-a="cx">Schließen</button></div>`; return; }
     const pr = o.p ? P[o.p] : null, c = Sim.cap(S, o);
     if (chooser || !pr) { const opts = Object.values(P).filter(p => S.lic[p.cat] && Sim.fits(o, p.id)); el.innerHTML = `<h3>${t.e} ${t.name}: Ware wählen</h3><div class="row" style="max-height:34vh;overflow:auto">${opts.map(p => `<button class="btn sm" data-a="as" data-p="${p.id}">${p.e} ${esc(p.name)}</button>`).join('') || '<small>Keine passende Ware freigeschaltet.</small>'}</div><div class="row"><button class="btn sm" data-a="cx">Schließen</button></div>`; return; }
@@ -133,7 +160,7 @@
   }
   $('card').addEventListener('click', e => {
     const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a, o = cardId != null ? Sim.obj(S, cardId) : null;
-    if (a === 'cx') showCard(null); else if (a === 'modeoff') { mode = null; renderCard(); } else if (a === 'rot') { mode.rot = mode.rot ? 0 : 1; }
+    if (a === 'rplay') { radioToggle(); renderCard(); } else if (a === 'rpanel') openPanel('radio'); else if (a === 'cx') showCard(null); else if (a === 'modeoff') { mode = null; renderCard(); } else if (a === 'rot') { mode.rot = mode.rot ? 0 : 1; }
     else if (o && a === 'pm') { Sim.setPrice(S, o.p, S.price[o.p] + +b.dataset.v); renderCard(); } else if (o && a === 'pfair') { Sim.setPrice(S, o.p, Math.round(Sim.ref(S, o.p) * 1.08 / 5) * 5); renderCard(); }
     else if (o && a === 'disc') { o.disc = !o.disc; renderCard(); } else if (o && a === 'chg') { chooser = true; renderCard(); } else if (o && a === 'clr') { Sim.assign(S, o.id, null); renderCard(); }
     else if (o && a === 'as') { if (Sim.assign(S, o.id, b.dataset.p)) { chooser = false; sfx.ok(); } renderCard(); }
@@ -168,8 +195,12 @@
       h += '<div class="grid">' + Object.keys(D.STAFF).map(k => { const t = D.STAFF[k]; return `<div class="glass it"><b>${t.e} ${t.name}</b><small>${t.desc}<br>${t.buy ? 'Kauf ' + fmt(t.buy) + ' · kein Lohn' : 'Lohn ' + fmt(t.wage) + '/Tag'}${S.level < t.lvl ? '<br>Ab Stufe ' + t.lvl : ''}</small><div class="row"><button class="btn sm go" data-a="hire" data-v="${k}" ${S.level < t.lvl || S.money < (t.buy || 0) ? 'disabled' : ''}>${t.buy ? 'Kaufen' : 'Einstellen'}</button></div></div>`; }).join('') + '</div>'; return h;
     },
     radio() {
-      if (!S.up.radio) return '<div class="glass it"><b>📻 Radiostudio „Markt-Funk 24“</b><small>Dein eigener Sender im Laden: Der Musikstil lockt bestimmte Kunden, Werbespots machen eine Ware zum Tageshit (×2,6 Nachfrage). Kaufbar unter „Ausbau“ ab Stufe 3.</small></div>';
-      let h = `<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn glass ${S.radio.on ? 'on' : ''}" data-a="ron" style="${S.radio.on ? 'background:linear-gradient(180deg,#43e08a,#0f9a54);color:#04170d' : ''}">${S.radio.on ? '📻 Sender läuft' : '📻 Sender aus'}</button></div><h3>Musikstil</h3><div class="grid">` + Object.keys(D.GENRES).map(g => { const t = D.GENRES[g], fans = Object.keys(D.TYPES).filter(k => D.TYPES[k].music === g).map(k => D.TYPES[k].e + ' ' + D.TYPES[k].name).join(', '); return `<div class="glass it"><b>${t.e} ${t.name}</b><small>Mehr: ${fans}</small><div class="row"><button class="btn sm ${S.radio.genre === g ? 'go' : ''}" data-a="rg" data-v="${g}">${S.radio.genre === g ? 'Läuft' : 'Spielen'}</button></div></div>`; }).join('') + '</div>';
+      const has = S.objs.some(o => o.k === 'radio'), playing = RAD.el && !RAD.el.paused;
+      let h = `<div class="glass it"><b>📻 Marktradio – Live-Stream</b><small>Sender: <b>${esc(radName())}</b> (laut.fm/${esc(RAD.name)}) · ${RAD.on ? (playing ? '▶ läuft' : '⏳ startet …') : '⏸ aus'}${RAD.song ? '<br>Jetzt läuft: <b>' + esc(RAD.song) + '</b>' : ''}${RAD.err ? '<br><span class="bad">' + esc(RAD.err) + '</span>' : ''}${has ? '' : '<br><span class="warn">Du hast noch kein Marktradio im Laden – stelle eins unter „Bauen“ auf.</span>'}<br>Die Lautstärke hängt davon ab, wie nah du am Radio stehst.</small><div class="row"><button class="btn sm ${RAD.on ? 'stop' : 'go'}" data-a="rplay">${RAD.on ? '⏸ Radio aus' : '▶ Radio an'}</button><label style="display:flex;gap:6px;align-items:center;font-size:13px">🔊 <input type="range" min="0" max="100" value="${Math.round(RAD.vol * 100)}" data-a="rvol" style="width:130px"></label></div>
+        <div class="row">${RAD.list.map(x => `<button class="btn sm ${x.n === RAD.name ? 'go' : ''}" data-a="rst" data-v="${esc(x.n)}">${esc(x.d)}</button>`).join('')}</div>
+        <div class="row"><input id="rname" placeholder="Sendername, z. B. ricorewi" maxlength="60" style="padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font:600 14px Inter,sans-serif;min-width:200px"><button class="btn sm go" data-a="radd">Sender hinzufügen</button></div><small id="rmsg" class="bad"></small><small>Alle Sender von laut.fm gehen: Der Name steht hinten im Link (stream.laut.fm/<b>name</b>).</small></div><h3 style="margin-top:12px">Markt-Funk 24 (Spielfunktion)</h3>`;
+      if (!S.up.radio) return h + '<div class="glass it"><b>📻 Radiostudio „Markt-Funk 24“</b><small>Dein eigener Sender im Laden: Der Musikstil lockt bestimmte Kunden, Werbespots machen eine Ware zum Tageshit (×2,6 Nachfrage). Kaufbar unter „Ausbau“ ab Stufe 3.</small></div>';
+      h += `<div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn glass ${S.radio.on ? 'on' : ''}" data-a="ron" style="${S.radio.on ? 'background:linear-gradient(180deg,#43e08a,#0f9a54);color:#04170d' : ''}">${S.radio.on ? '📻 Sender läuft' : '📻 Sender aus'}</button></div><h3>Musikstil</h3><div class="grid">` + Object.keys(D.GENRES).map(g => { const t = D.GENRES[g], fans = Object.keys(D.TYPES).filter(k => D.TYPES[k].music === g).map(k => D.TYPES[k].e + ' ' + D.TYPES[k].name).join(', '); return `<div class="glass it"><b>${t.e} ${t.name}</b><small>Mehr: ${fans}</small><div class="row"><button class="btn sm ${S.radio.genre === g ? 'go' : ''}" data-a="rg" data-v="${g}">${S.radio.genre === g ? 'Läuft' : 'Spielen'}</button></div></div>`; }).join('') + '</div>';
       const ads = Object.keys(S.radio.ads).length; h += `<h3>Werbespots für heute (${ads}/3) · 40 € pro Spot</h3><div class="grid">` + Object.keys(P).filter(p => S.objs.some(o => o.p === p)).map(p => `<div class="glass it"><b>${P[p].e} ${esc(P[p].name)}</b><div class="row"><button class="btn sm ${S.radio.ads[p] ? 'go' : ''}" data-a="rad" data-p="${p}" ${!S.radio.ads[p] && (ads >= 3 || S.money < 4000) ? 'disabled' : ''}>${S.radio.ads[p] ? '✔ gebucht' : 'Spot buchen'}</button></div></div>`).join('') + '</div>'; return h;
     },
     up() {
@@ -191,14 +222,15 @@
     },
     menu() { return `<div class="grid"><div class="glass it"><b>💾 Speichern</b><small>Es wird auch automatisch am Tagesende gespeichert.</small><div class="row"><button class="btn sm go" data-a="save">Jetzt speichern</button></div></div><div class="glass it"><b>🔊 Ton</b><div class="row"><button class="btn sm" data-a="snd">${snd ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>❓ Hilfe</b><div class="row"><button class="btn sm" data-a="hilfe">Anleitung</button></div></div><div class="glass it"><b>🗑️ Neues Spiel</b><small>Löscht deinen Spielstand.</small><div class="row"><button class="btn sm stop" data-a="reset">Neu beginnen</button></div></div></div>`; }
   };
-  const TITLES = { hilfe: '❓ Anleitung', markt: '🛒 Großhandel', bauen: '🔧 Bauen', preise: '🏷️ Preise', staff: '👥 Personal', radio: '📻 Markt-Funk 24', up: '⭐ Ausbau', stat: '📊 Zahlen', ziele: '🎯 Ziele', menu: '☰ Menü' };
+  const TITLES = { hilfe: '❓ Anleitung', markt: '🛒 Großhandel', bauen: '🔧 Bauen', preise: '🏷️ Preise', staff: '👥 Personal', radio: '📻 Marktradio', up: '⭐ Ausbau', stat: '📊 Zahlen', ziele: '🎯 Ziele', menu: '☰ Menü' };
   function openPanel(n) { try { document.exitPointerLock && document.exitPointerLock(); } catch (e) { } panel = n; mode = null; showCard(null); $('pt').textContent = TITLES[n]; $('pb').innerHTML = R[n](); $('panel').hidden = false; }
   function refresh() { if (panel) { const y = $('panel').scrollTop; $('pb').innerHTML = R[panel](); $('panel').scrollTop = y; } }
   function closePanel() { panel = null; $('panel').hidden = true; }
   $('px').onclick = closePanel; document.querySelectorAll('#dock [data-p]').forEach(b => b.onclick = () => openPanel(b.dataset.p));
   $('pb').addEventListener('click', e => {
     const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a, v = b.dataset.v, p = b.dataset.p; let ok = true;
-    if (a === 'cat') tabCat = v; else if (a === 'buy') ok = Sim.order(S, p, +b.dataset.n); else if (a === 'buyx') ok = Sim.order(S, p, 1, true); else if (a === 'lic') ok = Sim.buyLic(S, v);
+    if (a === 'rplay') radioToggle(); else if (a === 'rst') { RAD.name = slug(v); RAD.on = true; RAD.gest = true; radSave(); radioSync(); } else if (a === 'rvol') return; else if (a === 'radd') { radioAdd($('rname').value).then(msg => { if (msg) { const m = $('rmsg'); if (m) m.textContent = msg; } else refresh(); }); return; }
+    else if (a === 'cat') tabCat = v; else if (a === 'buy') ok = Sim.order(S, p, +b.dataset.n); else if (a === 'buyx') ok = Sim.order(S, p, 1, true); else if (a === 'lic') ok = Sim.buyLic(S, v);
     else if (a === 'bset') { mode = { t: 'place', k: v, rot: 0 }; closePanel(); renderCard(); return; } else if (a === 'binv') { mode = { t: 'place', k: S.inv[+v].k, rot: 0, inv: +v }; closePanel(); renderCard(); return; } else if (a === 'bpick') { mode = { t: 'pick' }; closePanel(); renderCard(); return; } else if (a === 'bsell') { mode = { t: 'sell' }; closePanel(); renderCard(); return; }
     else if (a === 'exp') { ok = Sim.expand(S); resize(); } else if (a === 'pp') Sim.setPrice(S, p, S.price[p] + +v); else if (a === 'pall') Object.keys(P).forEach(q => { if (S.lic[P[q].cat]) Sim.setPrice(S, q, Math.round(Sim.ref(S, q) * +v / 5) * 5); });
     else if (a === 'hire') ok = !!Sim.hire(S, v); else if (a === 'fire') Sim.fire(S, +v); else if (a === 'ron') S.radio.on = !S.radio.on; else if (a === 'rg') { S.radio.genre = v; radioLoop(); }
@@ -208,6 +240,7 @@
     else if (a === 'reset') { if (confirm('Wirklich neu beginnen? Der Spielstand geht verloren.')) { try { localStorage.removeItem(KEY); } catch (e) {} newGame(); closePanel(); } return; }
     if (ok === false) { sfx.bad(); if (S.log.length) toast(S.log[S.log.length - 1].t); } else if (['buy', 'buyx', 'lic', 'hire', 'up', 'exp'].includes(a)) sfx.ok(); refresh();
   });
+  $('pb').addEventListener('input', e => { const t = e.target; if (t && t.dataset && t.dataset.a === 'rvol') { RAD.vol = Math.max(0, Math.min(1, +t.value / 100)); radSave(); radioSync(); } });
   // ---------- Tagesabschluss ----------
   function showSummary() {
     const m = S.summary; save(); $('sum').hidden = false; closePanel();
