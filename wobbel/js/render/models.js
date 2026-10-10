@@ -90,6 +90,9 @@ export function makeWall(style, x, y) {
   } else if (style === 'rock') {
     const a = mesh(G.ico(), toon('#a09a92'), 0, 0.4, 0, 0.5, 0.42, 0.46, g); a.rotation.set(h, h * 5, 0); outline(a, 1.07); const b = mesh(G.ico(), toon('#8a847e'), 0.2, 0.28, 0.18, 0.28, 0.24, 0.26, g); b.rotation.y = h * 3; outline(b, 1.09);
     mesh(G.sphere(), toon('#6fbf5a'), -0.2, 0.62, 0.0, 0.14, 0.06, 0.14, g);
+  } else if (style === 'ruin') {
+    const c = ['#d9b97a', '#cba768', '#e2c68c'][Math.floor(h * 3) % 3], b = mesh(G.box(), toon(c), 0, 0.42, 0, 0.9, 0.84 - h * 0.18, 0.9, g); outline(b, 1.045);
+    mesh(G.box(), toon('#a98a50'), 0, 0.2, 0.455, 0.9, 0.05, 0.02, g); mesh(G.box(), toon('#a98a50'), 0.455, 0.5, 0, 0.02, 0.05, 0.9, g); if (h > 0.5) mesh(G.sphere(), toon('#6fbf5a'), 0.2, 0.84 - h * 0.18, -0.15, 0.18, 0.05, 0.14, g);
   } else if (style === 'brick') {
     const pal = ['#ff7aa8', '#ffd24a', '#6ad8ff', '#9aef6a', '#c08aff'], c = pal[Math.floor(h * 5) % 5];
     const b = mesh(G.box(), toon(c), 0, 0.48, 0, 0.92, 0.96, 0.92, g); outline(b, 1.04); mesh(G.box(), toon(new T.Color(c).offsetHSL(0, 0, 0.14).getStyle()), 0, 0.97, 0, 0.8, 0.06, 0.8, g);
@@ -129,3 +132,17 @@ export function makeDecor(kind) {
   else { const t = mesh(G.cyl(), toon('#c4b4e8'), 0, 0.9, 0, 0.35, 1.8, 0.35, g); outline(t, 1.05); const r = mesh(G.cone(), toon('#ff6ac8'), 0, 2.2, 0, 0.48, 0.8, 0.48, g); outline(r, 1.06); }
   return g;
 }
+
+// Pfeilfeld (zeigt nach unten = +z; wird je nach Richtung gedreht) und brüchiger Boden
+const ROT = [Math.PI, -Math.PI / 2, 0, Math.PI / 2];   // Richtung 0 hoch, 1 rechts, 2 runter, 3 links (Pfeil zeigt +z, rechts = +x)
+export function makeArrow(dir) {
+  const g = new T.Group(), m = new T.MeshBasicMaterial({ color: '#ff8a3d' }), d = new T.MeshBasicMaterial({ color: '#7a3a10' });
+  const shaft = mesh(G.box(), m, 0, 0.03, -0.1, 0.2, 0.03, 0.36, g), head = mesh(G.cone(), m, 0, 0.03, 0.22, 0.3, 0.03, 0.26, g); head.rotation.x = Math.PI / 2; head.scale.set(0.3, 0.26, 0.03);
+  const sh2 = mesh(G.box(), d, 0, 0.012, -0.1, 0.27, 0.01, 0.43, g); g.rotation.y = ROT[dir]; return g;
+}
+export function makeCrack() {
+  const g = new T.Group(), d = new T.MeshBasicMaterial({ color: '#5a4020' });
+  [[-0.3, -0.3, 0.1, 0.1, 0.7], [0.1, -0.1, 0.4, -0.35, 0.5], [-0.1, 0.2, 0.3, 0.42, 0.65], [0, 0, -0.35, 0.3, 0.4]].forEach(([x1, z1, x2, z2]) => { const len = Math.hypot(x2 - x1, z2 - z1), b = mesh(G.box(), d, (x1 + x2) / 2, 0.012, (z1 + z2) / 2, 0.05, 0.01, len, g); b.rotation.y = Math.atan2(x2 - x1, z2 - z1); });
+  return g;
+}
+export function makeHole(color) { return mesh(G.box(), new T.MeshPhongMaterial({ color, emissive: new T.Color(color).multiplyScalar(0.35), shininess: 90 }), 0, 0.012, 0, 0.99, 0.05, 0.99); }

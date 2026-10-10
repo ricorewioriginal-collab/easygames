@@ -1,5 +1,5 @@
 /* Wobbel – 3D-Ansicht: isometrische Kamera, Insel, Figuren, Animationen, Partikel. */
-import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, COLORS } from './models.js';
+import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, makeArrow, makeCrack, makeHole, COLORS } from './models.js';
 import { T as TT, DIRS, keyAt, isTargetDone } from '../game/engine.js';
 const T = window.THREE, PI = Math.PI;
 const ease = { out: u => 1 - Math.pow(1 - u, 3), inOut: u => u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2, back: u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); } };
@@ -22,7 +22,7 @@ export class GameView {
   cpos(i) { const L = this.L; return { x: (i % L.w) - L.w / 2 + 0.5, z: ((i / L.w) | 0) - L.h / 2 + 0.5 }; }
   clear(g) { while (g.children.length) g.remove(g.children[0]); }
   loadLevel(L, state, world) {
-    this.L = L; this.world = world; this.clear(this.root); this.clear(this.dyn); this.anims.length = 0; this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.waters.clear(); this.targetsG = [];
+    this.L = L; this.world = world; this.clear(this.root); this.clear(this.dyn); this.anims.length = 0; this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.waters.clear(); this.crackG = new Map(); this.holes = new Map(); this.targetsG = [];
     this.hemi.color.set(world.sky[1]); this.sun.color.set('#fff8ee');
     const w = L.w, h = L.h, ox = -w / 2 + 0.5, oz = -h / 2 + 0.5, cells = []; for (let i = 0; i < L.n; i++) if (L.terrain[i] !== TT.VOID) cells.push(i);
     // Meer
@@ -39,11 +39,13 @@ export class GameView {
       if (t === TT.WALL) { const wl = makeWall(world.wall, x, y); wl.position.set(p.x, 0, p.z); wl.scale.y = 0.66; wl.traverse(o => { if (o.isMesh) o.castShadow = true; }); this.root.add(wl); }
       else if (t === TT.WATER) { const wm = new T.Mesh(G.box(), new T.MeshPhongMaterial({ color: world.water, emissive: new T.Color(world.water).multiplyScalar(0.4), shininess: 90, specular: 0xffffff })); wm.scale.set(0.99, 0.2, 0.99); wm.position.set(p.x, -0.2, p.z); wm.userData.ph = Math.random() * 6; this.root.add(wm); this.waters.set(i, wm); }
       else if (t === TT.ICE) { const gl = new T.Mesh(G.box(), new T.MeshPhongMaterial({ color: '#d8f4ff', transparent: true, opacity: 0.55, shininess: 120, specular: 0xffffff })); gl.scale.set(0.99, 0.03, 0.99); gl.position.set(p.x, 0.005, p.z); this.root.add(gl); [[-0.25, -0.2], [0.2, 0.25]].forEach(s => { const sp = mesh(G.oct(), new T.MeshBasicMaterial({ color: '#ffffff' }), p.x + s[0], 0.02, p.z + s[1], 0.05, 0.01, 0.05, this.root); sp.rotation.y = 0.7; }); }
+      if (L.arrow[i]) { const ar = makeArrow(L.arrow[i] - 1); ar.position.set(p.x, 0.005, p.z); this.root.add(ar); }
+      if (L.crack[i]) { const cg = makeCrack(); cg.position.set(p.x, 0.005, p.z); this.root.add(cg); this.crackG.set(i, cg); }
       if (L.paint[i]) { const pm = makePaint(L.paint[i]); pm.position.set(p.x, 0.02, p.z); this.root.add(pm); }
       if (L.target[i]) { const tg = makeTarget(L.target[i]); tg.position.set(p.x, 0, p.z); this.root.add(tg); this.targetsG.push({ g: tg, i }); }
     });
     // Dekoration rund um die Insel
-    const kinds = { wiese: ['tree'], strand: ['palm', 'palm', 'berg'], farbe: ['paint', 'tower'], eis: ['berg'], schloss: ['tower'] }[world.id] || ['tree'], rnd = (a, b) => a + Math.random() * (b - a);
+    const kinds = { wiese: ['tree'], strand: ['palm', 'palm', 'berg'], farbe: ['paint', 'tower'], eis: ['berg'], schloss: ['tower'], ruinen: ['palm', 'berg'] }[world.id] || ['tree'], rnd = (a, b) => a + Math.random() * (b - a);
     for (let j = 0; j < 12; j++) { const a = j / 12 * PI * 2 + rnd(-0.2, 0.2), rx = w / 2 + rnd(2.2, 5), rz = h / 2 + rnd(2.2, 5), d = makeDecor(kinds[j % kinds.length]); d.position.set(Math.cos(a) * rx, -0.5, Math.sin(a) * rz); d.scale.setScalar(rnd(0.8, 1.15)); d.userData.ph = Math.random() * 6; d.traverse(o => { if (o.isMesh) o.castShadow = true; }); this.root.add(d); const base = mesh(G.cyl(), toon(world.floor[0]), d.position.x, -0.62, d.position.z, 0.7, 0.3, 0.7, this.root); base.scale.set(0.8 * d.scale.x, 0.5, 0.8 * d.scale.x); }
     // Licht + Schatten
     const e = Math.max(w, h) / 2 + 3; Object.assign(this.sun.shadow.camera, { left: -e, right: e, top: e, bottom: -e, near: 1, far: 40 }); this.sun.shadow.camera.updateProjectionMatrix(); this.sun.position.set(6, 14, 7); this.sun.target.position.set(0, 0, 0);
@@ -53,13 +55,14 @@ export class GameView {
   seaTex(col) { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = col; x.fillRect(0, 0, 128, 128); x.strokeStyle = 'rgba(255,255,255,.28)'; x.lineWidth = 3; x.lineCap = 'round'; for (let i = 0; i < 7; i++) { const px = Math.random() * 128, py = Math.random() * 128; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + 12, py - 6, px + 26, py); x.stroke(); } const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(34, 34); return t; }
   // Veränderliche Objekte (Kisten, Schlüssel, Türen, Brücken, Spieler)
   buildDynamic(s, pop) {
-    const L = this.L, keep = this.blob.g; [...this.dyn.children].forEach(o => { if (o !== keep) this.dyn.remove(o); }); this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear();
+    const L = this.L, keep = this.blob.g; [...this.dyn.children].forEach(o => { if (o !== keep) this.dyn.remove(o); }); this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.holes = new Map();
     const p = this.cpos(s.p); this.blob.g.position.set(p.x, 0, p.z); this.blob.g.rotation.y = this.blob.g.rotation.y || 0; this.blob.g.scale.setScalar(1); this.blob.body.scale.set(1, 1, 1);
     for (let i = 0; i < L.n; i++) {
       const q = this.cpos(i);
       if (s.crate[i]) { const cr = this.addCrate(i, s.crate[i] - 1); if (pop) this.popIn(cr.g); }
       if (L.terrain[i] === TT.WATER && s.filled[i]) { const pl = makePlank(); pl.position.set(q.x, 0, q.z); this.dyn.add(pl); this.planks.set(i, pl); const w = this.waters.get(i); if (w) w.visible = false; }
       else if (L.terrain[i] === TT.WATER) { const w = this.waters.get(i); if (w) w.visible = true; }
+      if (L.crack[i]) { const dec = this.crackG.get(i); if (dec) dec.visible = !s.broken[i]; if (s.broken[i]) { const ho = makeHole(this.world.water); ho.position.set(q.x, 0, q.z); this.dyn.add(ho); this.holes.set(i, ho); } }
       if (L.terrain[i] === TT.DOOR) { const d = makeDoor(); d.position.set(q.x, 0, q.z); const open = s.open[i]; if (open) d.visible = false; this.dyn.add(d); this.doors.set(i, d); }
     }
     L.keys.forEach((ki, k) => { if (s.keyTaken[k]) return; const kk = makeKey(), q = this.cpos(ki); kk.position.set(q.x, 0, q.z); kk.userData.k = k; this.dyn.add(kk); this.keys.push({ g: kk, k, i: ki }); });
@@ -93,6 +96,7 @@ export class GameView {
     }
     for (const e of evs) {
       if (e.t === 'key') { const k = this.keys.find(q => q.i === e.cell); if (k) { this.keys = this.keys.filter(q => q !== k); this.cb.sfx('key'); const p = this.cpos(e.cell); this.burst(p.x, 0.6, p.z, '#ffd24a', 16, 1.5, 2.5, 4); this.add(0.3, u => { k.g.position.y = u * 1.2; k.g.scale.setScalar(1 - u); }, () => this.dyn.remove(k.g)); } }
+      if (e.t === 'crack') { const p = this.cpos(e.cell), dec = this.crackG.get(e.cell); this.cb.sfx('crack'); this.burst(p.x, 0.15, p.z, '#cba768', 16, 1.2, 2.2, 5); this.add(0.3, u => { if (dec) dec.scale.setScalar(1 + u * 0.1); }, () => { if (dec) dec.visible = false; const ho = makeHole(this.world.water); ho.position.set(p.x, 0, p.z); this.dyn.add(ho); this.holes.set(e.cell, ho); this.popIn(ho); }); }
       if (e.t === 'door') { const d = this.doors.get(e.cell); if (d) { this.cb.sfx('door'); const p = this.cpos(e.cell); this.burst(p.x, 0.6, p.z, '#c98a48', 14, 1.4, 2.2, 5); this.add(0.4, u => { d.userData.planks.position.y = u * 1.1; d.userData.planks.scale.y = 1 - u * 0.7; }, () => { d.visible = false; }); } }
     }
     if (!cr) this.refreshDone(s, false);

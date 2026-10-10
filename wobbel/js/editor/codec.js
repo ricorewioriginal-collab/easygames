@@ -2,7 +2,7 @@
 import { parseLevel, createState, isSolved, T } from '../game/engine.js';
 
 export const MAX_W = 16, MAX_H = 14, MIN_W = 5, MIN_H = 5, PREFIX = 'WOBBEL1-';
-export const VALID = new Set([...'# @$rgb.RGB~i123kD']);
+export const VALID = new Set([...'# @$rgb.RGB~i123kD^>v<x']);
 
 /* rows: Array von Strings gleicher Länge. Gibt {errors, warnings, info} zurück. errors verhindern Test/Prüfen. */
 export function validate(rows) {
