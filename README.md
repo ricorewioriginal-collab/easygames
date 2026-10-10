@@ -212,6 +212,12 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Mehrspieler (2–4):** Der große Bildschirm zeigt das Rennen im Splitscreen, die Handys koppeln per Code/QR (PeerJS) und sind Lenkrad (inkl. Figur- und Kartwahl). Am Host zusätzlich Tastatur- und Gamepad-Spieler. Bots füllen auf 8 Karts auf (3 Stärken, Gummiband).
 - **Technik:** Simulation (`sim.js`) und Strecken (`track.js`) ohne Grafik-Abhängigkeit, Sounds per WebAudio, Logos `anmacha-kart/logos/01..13`, Titel-Logo `anmacha-kart/logo.png`.
 
+## Wobbel – Das Schiebe-Puzzle (RicoReWi)
+
+- **Spiel:** Eigenständiges 3D-Puzzle im Sokoban-Prinzip (ohne AnMaCha-Branding): Wobbel schiebt Kisten auf Zielfelder. Fünf Welten mit neuen Elementen – Wasser (Brücken bauen), Farben und Kleckse, Eis, Schlüssel und Türen.
+- **Level:** handentworfen und von einem Löser (Breitensuche) auf Lösbarkeit geprüft; nur bestätigte Level kommen ins Spiel (aktuell 30, weitere folgen). Sterne nach Zügen im Vergleich zur kürzesten Lösung.
+- **Steuerung:** Pfeile/WASD, Wischen oder Tippen auf ein Feld (läuft hin), Rückgängig, Neustart, Kamera drehen; Fortschritt wird gespeichert.
+- Ausführliche Doku, Projektstruktur und Tests: [`wobbel/README.md`](wobbel/README.md).
 ## AnMaCha Gold Reels
 
 - **Spiel:** Video-Slot mit 5 Walzen × 3 Reihen und 20 Gewinnlinien. **Nur Spielgeld** (Start 10.000, Neustart bei leerem Konto), kein echtes Glücksspiel.
