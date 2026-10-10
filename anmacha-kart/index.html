@@ -77,6 +77,20 @@
   .tc .steer .hint{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));padding:16px 26px;border-radius:999px;border:3px dashed rgba(255,255,255,.4);background:rgba(10,14,40,.35);font:900 clamp(14px,3.6vmin,22px) 'Trebuchet MS',sans-serif;color:rgba(255,255,255,.8);pointer-events:none}
   .tc .ring{position:absolute;width:clamp(120px,34vmin,200px);height:clamp(120px,34vmin,200px);margin:calc(clamp(120px,34vmin,200px) / -2) 0 0 calc(clamp(120px,34vmin,200px) / -2);border-radius:50%;border:4px solid rgba(255,255,255,.45);background:rgba(10,14,40,.3);display:none;pointer-events:none}
   .tc .knob{position:absolute;width:clamp(54px,15vmin,84px);height:clamp(54px,15vmin,84px);margin:calc(clamp(54px,15vmin,84px) / -2) 0 0 calc(clamp(54px,15vmin,84px) / -2);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8);box-shadow:0 0 18px #00e5ff;display:none;pointer-events:none}
+  .kcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:560px}
+  .kcards button{padding:8px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);text-align:left;font-weight:800;font-size:13px}
+  .kcards button b{font-size:22px;margin-right:4px}
+  .kcards button.on{border-color:var(--ma);box-shadow:0 0 12px rgba(255,45,149,.55);background:rgba(255,45,149,.16)}
+  .kcards .bar{height:5px;border-radius:3px;background:rgba(255,255,255,.14);margin-top:3px;overflow:hidden}.kcards .bar i{display:block;height:100%;background:linear-gradient(90deg,#00e5ff,#ff2d95)}
+  .kcards .st{font-size:9.5px;color:var(--mut);font-weight:600;margin-top:3px}
+  @media (max-width:420px){.kcards{grid-template-columns:repeat(2,1fr)}}
+  #fxFlash{position:fixed;inset:0;z-index:7;background:#fff;pointer-events:none;opacity:0}
+  #fxFlash.on{animation:flash .9s ease-out}
+  @keyframes flash{0%{opacity:.95}30%{opacity:.7}100%{opacity:0}}
+  .vp .fog{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(235,246,255,.96),rgba(235,246,255,.82) 60%,rgba(220,235,255,.7));opacity:0;pointer-events:none;transition:opacity .25s}
+  .vp .fog.on{opacity:1}
+  .vp .item small.cnt{position:absolute;right:-6px;bottom:-6px;background:#ff2d95;color:#fff;border-radius:999px;padding:1px 6px;font:900 .42em 'Trebuchet MS',sans-serif;border:2px solid #fff}
+  .vp .item{position:absolute}
   .chars{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%;max-width:560px}
   .chars button{padding:6px 2px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);font-size:12px;font-weight:800;line-height:1.15}
   .chars button b{display:block;font-size:26px;line-height:1.1}
@@ -98,6 +112,7 @@
 <canvas id="cv"></canvas>
 <div id="hud" hidden></div>
 <div id="banner" hidden></div>
+<div id="fxFlash"></div>
 <div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button></div>
 <div class="tc solo" id="tcSolo"></div>
 
@@ -112,6 +127,7 @@
   <h3>STRECKE</h3>
   <div class="row" id="tracks"></div>
   <h3>FIGUR</h3><div class="chars" id="chars"></div>
+  <h3>KART</h3><div class="kcards" id="kcards"></div>
   <h3>RUNDEN</h3><div class="row" id="laps"></div>
   <h3>GEGNER</h3><div class="row" id="skill"></div>
   <h3>LENKHILFE</h3><div class="row" id="assist"></div>

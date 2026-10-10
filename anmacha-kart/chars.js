@@ -13,4 +13,14 @@ const CHARS = [
   { id: 'panda', name: 'Bao', emoji: '🐼', kind: 'Tier', acc: '#ffd24a', skin: '#fafafa', body: '#2a2a32' },
   { id: 'hase', name: 'Hoppel', emoji: '🐰', kind: 'Tier', acc: '#ffa0c8', skin: '#fff0f6', body: '#ffd0e4' }
 ];
-if (typeof module !== 'undefined') module.exports = CHARS;
+
+/* Kart-Typen (Werte als Faktoren): mv Tempo, ma Beschleunigung, mt Lenken, mr Gelände (Tempo neben der Strecke), md Drift-Aufladung, mw Gewicht */
+const KARTS = [
+  { id: 'allrounder', name: 'Allrounder', emoji: '🏎️', mv: 1, ma: 1, mt: 1, mr: 0.55, md: 1, mw: 1, desc: 'Ausgewogen – gut für den Einstieg' },
+  { id: 'flitzer', name: 'Flitzer', emoji: '⚡', mv: 1.07, ma: 0.92, mt: 0.9, mr: 0.5, md: 1, mw: 0.9, desc: 'Höchstes Tempo, träge in Kurven' },
+  { id: 'buggy', name: 'Buggy', emoji: '🚙', mv: 0.97, ma: 1.02, mt: 1.08, mr: 0.82, md: 1, mw: 1, desc: 'Fährt auch neben der Strecke fast voll' },
+  { id: 'cruiser', name: 'Cruiser', emoji: '🚛', mv: 1, ma: 0.88, mt: 0.94, mr: 0.55, md: 1, mw: 1.4, desc: 'Schwer – rammt Gegner einfach weg' },
+  { id: 'dragster', name: 'Dragster', emoji: '🚀', mv: 1.03, ma: 1.22, mt: 0.84, mr: 0.5, md: 0.9, mw: 1, desc: 'Brutale Beschleunigung' },
+  { id: 'wolke', name: 'Wolkenflitzer', emoji: '☁️', mv: 0.94, ma: 1.05, mt: 1.16, mr: 0.6, md: 1.3, mw: 0.8, desc: 'Wendig, lädt Drift-Turbos schnell auf' }
+];
+if (typeof module !== 'undefined') module.exports = { CHARS, KARTS };
