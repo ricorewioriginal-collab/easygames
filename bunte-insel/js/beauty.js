@@ -2,7 +2,10 @@
 /* Bunte Insel – Optik-Extras, die fast nichts kosten: weiche eingebrannte Schatten (1 Zeichenaufruf), glitzerndes Wasser, Sonne am Himmel,
    Wiesenflecken, Blumen & Grasbüschel (Instanzen), Büsche an Häusern, Vögel und Schmetterlinge. Im Sparmodus weniger davon. */
 BI.createBeauty = function (G) {
-  const { scene, camera, W, save } = G, K = {}, TAU = BI.TAU, rnd = BI.rng(2024), mat = BI.mat(), eco = !!save.eco;
+  const { scene, camera, W, save, renderer } = G, K = {}, TAU = BI.TAU, rnd = BI.rng(2024), mat = BI.mat();
+  /* Sparmodus oder reines Software-Rendering (kein Grafikchip): weniger Zierde */
+  let soft = false; try { const gl = renderer.getContext(), ex = gl.getExtension('WEBGL_debug_renderer_info'); soft = !!ex && /swiftshader|llvmpipe|software/i.test(String(gl.getParameter(ex.UNMASKED_RENDERER_WEBGL))); } catch (e) { }
+  const eco = !!save.eco || soft;
   const ok = (x, z, r) => Math.hypot(x, z) < 152 && W.free(x, z, r) && !W.onRoad(x, z) && Math.hypot(x - W.lake.x, z - W.lake.z) > W.lake.r + 3;
 
   /* ---------- weiche Schatten (Bäume + große Gebäude), eine Mesh, halbtransparent ---------- */
@@ -14,27 +17,27 @@ BI.createBeauty = function (G) {
 
   /* ---------- Wasser: zwei langsam laufende Wellen-Schichten ---------- */
   const waves = [];
-  { const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'); c.clearRect(0, 0, 128, 128); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 3; c.lineCap = 'round';
+  if (!soft) { const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'); c.clearRect(0, 0, 128, 128); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 3; c.lineCap = 'round';
     for (let i = 0; i < 9; i++) { const y0 = 8 + i * 14, ph = i * 1.3; c.beginPath(); for (let x = 0; x <= 128; x += 6) c.lineTo(x, y0 + Math.sin(x / 128 * TAU * 2 + ph) * 3); c.stroke(); }
     const tex = new THREE.CanvasTexture(cv); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(46, 46);
-    for (const [r, op, sp] of [[300, .24, [.012, .006]], [300, .16, [-.008, .01]]]) { const t2 = tex.clone(); t2.needsUpdate = true; t2.repeat.set(r / 6.5, r / 6.5); const m = new THREE.Mesh(new THREE.CircleGeometry(r, 36), new THREE.MeshBasicMaterial({ map: t2, transparent: true, opacity: op, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = -.3 + waves.length * .01; scene.add(m); waves.push({ m, sp }); } }
+    for (const [r, op, sp] of (eco ? [[300, .22, [.012, .006]]] : [[300, .24, [.012, .006]], [300, .16, [-.008, .01]]])) { const t2 = tex.clone(); t2.needsUpdate = true; t2.repeat.set(r / 6.5, r / 6.5); const m = new THREE.Mesh(new THREE.CircleGeometry(r, 36), new THREE.MeshBasicMaterial({ map: t2, transparent: true, opacity: op, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = -.3 + waves.length * .01; scene.add(m); waves.push({ m, sp }); } }
 
   /* ---------- Sonne am Himmel (Glühen) ---------- */
-  const sunSp = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'), g = c.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,230,1)'); g.addColorStop(.18, 'rgba(255,240,170,.9)'); g.addColorStop(.5, 'rgba(255,220,120,.25)'); g.addColorStop(1, 'rgba(255,200,100,0)'); c.fillStyle = g; c.fillRect(0, 0, 128, 128);
+  const sunSp = soft ? { position: new THREE.Vector3(), material: { opacity: 0 }, visible: false } : (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'), g = c.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,230,1)'); g.addColorStop(.18, 'rgba(255,240,170,.9)'); g.addColorStop(.5, 'rgba(255,220,120,.25)'); g.addColorStop(1, 'rgba(255,200,100,0)'); c.fillStyle = g; c.fillRect(0, 0, 128, 128);
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending })); s.scale.set(190, 190, 1); s.renderOrder = -1; scene.add(s); return s; })();
   const sunDir = new THREE.Vector3(60, 100, 40).normalize();
 
   /* ---------- Wiesenflecken (zwei zusätzliche Grüntöne) ---------- */
-  { const b = new BI.Batch(), cols = [0x7fcb62, 0x95dc78, 0x6dbd57, 0x88d46c, 0xa6e585];
+  if (!soft) { const b = new BI.Batch(), cols = [0x7fcb62, 0x95dc78, 0x6dbd57, 0x88d46c, 0xa6e585];
     for (let i = 0, n = 0; i < 400 && n < (eco ? 40 : 95); i++) { const a = rnd() * TAU, d = Math.sqrt(rnd()) * 150, x = Math.sin(a) * d, z = Math.cos(a) * d, r = 4 + rnd() * 10; if (![[0, 0], [r * .8, 0], [-r * .8, 0], [0, r * .8], [0, -r * .8]].every(([ox, oz]) => !W.onRoad(x + ox, z + oz) && Math.hypot(x + ox, z + oz) < 158 && Math.hypot(x + ox - W.lake.x, z + oz - W.lake.z) > W.lake.r + 2)) continue; b.disc(x, z, r, .026 + (n % 3) * .001, cols[n % cols.length], 14); n++; }
     const m = b.mesh(mat); m.frustumCulled = false; scene.add(m); }
 
   /* ---------- Blumen und Grasbüschel (Instanzen) ---------- */
   const flowerPos = [];
-  { const stem = new BI.Batch(), head = new BI.Batch(), tuft = new BI.Batch();
+  if (!soft) { const stem = new BI.Batch(), head = new BI.Batch(), tuft = new BI.Batch();
     stem.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); head.sph(0, .38, 0, .13, 0xffffff, 0, 1, .75, 1); head.sph(0, .39, 0, .05, 0xffd23f, 0);
     for (let k = 0; k < 3; k++) tuft.cone(Math.sin(k * 2.1) * .07, 0, Math.cos(k * 2.1) * .07, .09, .42 + k * .05, 0x5cc04a, 4);
-    const NF = eco ? 150 : 420, NT = eco ? 250 : 700, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat, n); im.frustumCulled = false; scene.add(im); return im; };
+    const NF = eco ? 120 : 330, NT = eco ? 200 : 520, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat, n); im.frustumCulled = false; scene.add(im); return im; };
     const iS = mk(stem, NF), iH = mk(head, NF), iT = mk(tuft, NT), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();
     const PAL = [0xff5a8a, 0xffd23f, 0xffffff, 0xb36bff, 0xff8a1f, 0x6ac0ff];
     let nf = 0, nt = 0;

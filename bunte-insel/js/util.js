@@ -257,11 +257,11 @@ BI.makeChar = function (o) {
   if (o.teddy) { body.sph(-.34, 1.3, .03, .11, 0xc8a27a, 1); body.sph(-.34, 1.46, .03, .08, 0xc8a27a, 1); body.sph(-.4, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.28, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.34, 1.44, .1, .035, 0xe8d0b0, 0); }
   const mat = BI.mat(), bm = body.mesh(mat); bm.position.y = .1; root.add(bm); // Oberkörper etwas höher = längere Beine, natürlichere Proportionen
   function arm(sleeve, hand, x, y) { // Ärmel bis zum Ellbogen, dann Unterarm in Hautfarbe, runde Hand
-    const g = new THREE.Group(), b = new BI.Batch(); b.cyl(0, -.25, 0, .082, .07, .25, sleeve, 8); b.sph(0, -.25, 0, .07, hand, 0); b.cyl(0, -.44, 0, .062, .052, .2, hand, 8); b.sph(0, -.47, .01, .072, hand, 0, 1, 1.1, 1);
+    const g = new THREE.Group(), b = new BI.Batch(); b.cyl(0, -.25, 0, .082, .07, .25, sleeve, 6); b.sph(0, -.25, 0, .07, hand, 0); b.cyl(0, -.44, 0, .062, .052, .2, hand, 6); b.sph(0, -.47, .01, .072, hand, 0, 1, 1.1, 1);
     g.add(b.mesh(mat)); g.position.set(x, y, 0); root.add(g); return g;
   }
   function leg(pant, shoeC, x, y) { // Oberschenkel, Wade, Schuh mit Kappe
-    const g = new THREE.Group(), b = new BI.Batch(); b.cyl(0, -.34, 0, .105, .088, .34, pant, 8); b.sph(0, -.34, 0, .088, pant, 0); b.cyl(0, -.58, 0, .088, .07, .26, pant, 8);
+    const g = new THREE.Group(), b = new BI.Batch(); b.cyl(0, -.34, 0, .105, .088, .34, pant, 6); b.sph(0, -.34, 0, .088, pant, 0); b.cyl(0, -.58, 0, .088, .07, .26, pant, 6);
     b.box(0, -.62, .045, .17, .09, .3, shoeC); b.sph(0, -.6, .17, .087, shoeC, 0, 1, .75, 1.1); b.box(0, -.55, -.02, .15, .03, .12, 0xffffff);
     g.add(b.mesh(mat)); g.position.set(x, y, 0); root.add(g); return g;
   }
