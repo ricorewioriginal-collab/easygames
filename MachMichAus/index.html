@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0c24">
+<title>Mach mich aus! – Die Funk-Dating-Show</title>
+<meta name="description" content="Mach mich aus! – 20 Funk-Pulte, 20 Lampen: Wer passt zum Kandidaten? Als Kandidat oder am Pult spielen, mit privaten Handy-Pads. Präsentiert vom RicoReWi Radioportal.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="hud">
+      <div class="live"><i></i>LIVE</div>
+      <div class="wk glass"><b id="hRound">Runde 1</b><small id="hSub">Kandidat</small></div>
+      <div class="lamps glass" title="Lampen an"><span>💡</span><b id="hLamps">20</b><small>/20</small></div>
+      <button class="ib" id="bLog" aria-label="Ticker">📜</button>
+      <button class="ib" id="bVoice" aria-label="Stimme" title="Sprachausgabe">🗣️</button>
+      <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+      <button class="ib" id="bMenu" aria-label="Menü">☰</button>
+    </div>
+    <div id="clip" hidden></div>
+    <div id="voice" hidden><span>🎙</span><p id="voiceTxt"></p></div>
+    <div id="ticker"></div>
+    <div id="banner" hidden></div>
+  </div>
+  <aside id="panel">
+    <div id="cardc"></div>
+    <div id="act"><div class="info">Willkommen bei „Mach mich aus!“</div></div>
+  </aside>
+</div>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Mach mich aus!" hidden>
+  <div class="wordmark" id="brandText">MACH MICH <span>AUS!</span></div>
+  <div class="tag">Die Funk-Dating-Show</div>
+  <div class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="64" height="64"></div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Neue Show</button>
+    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
+    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+  </div>
+  <div class="tipline" id="tip"></div>
+  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+</section>
+
+<section id="setup" class="screen" hidden>
+  <div class="panel glass wide">
+    <h2>Neue Show</h2>
+    <div class="fld">Menschen<div class="seg" id="sgPl"><button data-v="1" class="on">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+    <div id="humans" class="humans"></div>
+    <div class="info">Jeder Mensch ist einmal Kandidat und sitzt sonst an einem Pult. Die ersten zwei Neigungen verrät dein Steckbrief – die dritte kommt erst im Quiz heraus.</div>
+    <div class="row"><button class="btn green" id="bStart">Bühne frei!</button><button class="btn blue" id="bPairSetup">📱 Koppeln</button><button class="btn ghost" id="bSetBack">Zurück</button></div>
+  </div>
+</section>
+
+<div id="dlg" class="dialog" hidden><div class="panel glass wide" id="dlgBox"></div></div>
+
+<div id="pair" class="dialog" hidden><div class="panel glass">
+  <h2>📱 Handys koppeln</h2>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das <b>private Pad eines Menschen</b> (bis zu 4): Lampe entscheiden, Quiz, Talent und Wahl bleiben privat.</p>
+  <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
+  <button class="btn green" id="bPairOk">Fertig</button>
+</div></div>
+<section id="ctl" class="screen" aria-live="polite"></section>
+
+<div id="rules" class="dialog" hidden><div class="panel glass">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>Die Show:</b> 20 Funk-Pulte, 20 Lampen. Ein Kandidat betritt die Bühne – jedes Pult macht seine Lampe <b>aus</b>, wenn es nicht passt. Am Ende wählt der Kandidat ein Pult, dessen Lampe noch brennt.</li>
+    <li><b>Vier Enthüllungen:</b> 1. Stil und erster Eindruck · 2. Steckbrief-Einspieler (zwei Neigungen) · 3. Talent · 4. Quiz (dritte Neigung, ein Nogo). Nach jeder Phase entscheiden die Pulte neu.</li>
+    <li><b>Am Pult:</b> Du hast einen Typ (Stil, drei Neigungen, zwei Nogos). Passt der Kandidat? Lampe an lassen oder ausmachen – richtige Entscheidungen bringen Punkte, die Wahl am Ende einen Bonus.</li>
+    <li><b>Als Kandidat:</b> Zeig dein Talent im Takt, beantworte Fragen (Flunkern hilft kurz, schadet beim Date) und nutze den <b>Anmach-Joker</b>, um eine Lampe wieder einzuschalten. Dann wählst du dein Date: je höher die Passgenauigkeit, desto mehr Punkte.</li>
+    <li><b>Blackout:</b> Gehen alle Lampen aus, bleibt der Kandidat allein.</li>
+    <li><b>Handys:</b> Über „📱 Handys koppeln“ bekommt jeder Mensch ein privates Pad. Ohne Handy wird das Gerät herumgereicht.</li>
+  </ul>
+  <button class="btn" id="rulesOk">Verstanden</button>
+</div></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
