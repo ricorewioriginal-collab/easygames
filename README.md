@@ -228,8 +228,9 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 
 ## AnMaCha Markthalle 24
 
-- **Spiel:** Supermarkt-Simulator in der Draufsicht. Du bestellst Ware im Großhandel (Lieferung am nächsten Morgen), räumst Kartons von der Rampe in Regale, kassierst und baust den Laden aus. Alle Marken, Waren und Namen sind selbst erfunden.
+- **Spiel:** Supermarkt-Simulator in 3D (Ego-Ansicht mit Three.js, Vogelperspektive zum Bauen; ohne WebGL gibt es eine 2D-Notansicht). Du bestellst Ware im Großhandel (Lieferung am nächsten Morgen), räumst Kartons von der Rampe in Regale, kassierst und baust den Laden aus. Alle Marken, Waren und Namen sind selbst erfunden.
 - **Umfang:** 55 Waren in 12 Warengruppen (Lizenzen), Regale, Kühlung, Tiefkühltruhen, Quengelzone, Kassen & Selbstbedienungskassen, freies Layout mit Anbau (4 Ladengrößen), Personal (Kasse, Regalauffüller, Reinigung, Wachmann, Regalbot), 10 Ausbauten, Kredit, Tagesziele, 20 Stufen, Haltbarkeit & Reduzieren, Diebe, Pfützen, Stromausfälle, Hygiene-Kontrolle.
 - **Besonderheiten:** eigener Radiosender „Markt-Funk 24“ (Musikstil lockt Kundentypen, Werbespots machen Waren zum Tageshit), Preis-Duell mit dem Konkurrenten „Billigo“ (Preisradar), Kunden mit Rezept-Einkäufen (Bonus bei vollständigem Set), Stammkunden mit Namen und Treue, Laufweg-Heatmap, Wetter-Vorhersage, Wunschzettel der Kunden.
-- **Steuerung:** WASD/Pfeile + E/Leertaste (PC), Joystick + Aktionsknopf (Handy). Regale, Rampe und Kassen antippen für Preise & Infos. Zeit pausiert, solange ein Fenster offen ist.
-- **Technik:** Spielkern `sim.js` (ohne Grafik, per Skript getestet), Daten `data.js`, Darstellung `game.js` (Canvas), Spielstand lokal im Browser.
+- **Steuerung:** PC: ins Bild klicken, Maus = umsehen, WASD laufen, E = Karton nehmen/Regal füllen, F oder Klick = Preise & Infos, V = Vogelperspektive. Handy: Joystick, rechts ziehen = umsehen, antippen = Info, Aktionsknopf. Zeit pausiert, solange ein Fenster offen ist.
+- **Erweiterung:** Backstation (backt jeden Morgen frische Backwaren, lockt mit Duft), Lager-Regale (mehr Platz für Kartons), Online-Bewertungen mit Hype-Effekt und Influencerinnen, 15 Erfolge mit Belohnung.
+- **Technik:** Spielkern `sim.js` (ohne Grafik, per Skript getestet), Daten `data.js`, 3D-Ansicht `view3d.js` (selbstgebaute Menschen, Regale, Kassen), Oberfläche `game.js`, Spielstand lokal im Browser.
