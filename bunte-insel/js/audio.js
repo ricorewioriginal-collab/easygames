@@ -158,7 +158,11 @@ BI.audio = (function () {
       try { ss.cancel(); const u = new SpeechSynthesisUtterance(clean); u.lang = 'de-DE'; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1; A._said = clean; ss.speak(u); } catch (e) { }
     },
     setVoice(on) { A.voiceOn = on; if (!on && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } },
-    stopAll() { A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
+    rain(on) { // leises Regenrauschen (Schleife aus gefiltertem Rauschen)
+      if (!ctx) return; if (on && !A._rain) { const len = ctx.sampleRate * 2, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1; const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3200; f.Q.value = .5; const g = ctx.createGain(); g.gain.value = .0001; g.gain.linearRampToValueAtTime(.09, ctx.currentTime + 1.5); s.connect(f); f.connect(g); g.connect(sfxBus); s.start(); A._rain = { s, g }; }
+      else if (!on && A._rain) { const r = A._rain; A._rain = null; r.g.gain.linearRampToValueAtTime(.0001, ctx.currentTime + 1); setTimeout(() => { try { r.s.stop(); } catch (e) { } }, 1200); }
+    },
+    stopAll() { A.rain(false); A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
   };
   return A;
 })();

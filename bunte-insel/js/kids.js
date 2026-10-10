@@ -13,7 +13,7 @@ BI.createKids = function (G) {
     ['photo', '📸', 'Fotograf', 'Mach ein Foto'], ['music', '🎹', 'Musikant', 'Spiel auf dem Klavier'], ['paint', '🎨', 'Maler', 'Mal ein Bild'], ['quiz', '🧠', 'Schlaukopf', 'Spiel ein Lernspiel'],
     ['pet', '🐾', 'Haustierfreund', 'Füttere dein Haustier'], ['treasure', '🗺️', 'Schatzsucher', 'Finde einen Schatz'], ['friend', '👥', 'Freunde', 'Spiel mit einem Freund'], ['mini', '🎮', 'Spielprofi', 'Spiel ein Mini-Spiel'],
     ['bubble', '🫧', 'Seifenblasen', 'Puste Seifenblasen'], ['dance', '🕺', 'Tänzer', 'Tanz mit dem Dorf'],
-    ['garden', '🌻', 'Gärtner', 'Ernte etwas im Garten'], ['farm', '🚜', 'Landwirt', 'Mäh ein Feld'], ['farmer', '👨‍🌾', 'Hofmeister', 'Schaff alle Aufgaben vom Bauern'], ['animal', '🐄', 'Tierfreund', 'Streichle ein Tier auf dem Hof'], ['guide', '🧭', 'Entdecker', 'Lass dir den Weg zeigen'],
+    ['garden', '🌻', 'Gärtner', 'Ernte etwas im Garten'], ['farm', '🚜', 'Landwirt', 'Mäh ein Feld'], ['farmer', '👨‍🌾', 'Hofmeister', 'Schaff alle Aufgaben vom Bauern'], ['animal', '🐄', 'Tierfreund', 'Streichle ein Tier auf dem Hof'], ['guide', '🧭', 'Entdecker', 'Lass dir den Weg zeigen'], ['cook', '🍳', 'Hobbykoch', 'Koche etwas in der Hofküche'],
     ['zoo', '📖', 'Tierforscher', 'Entdecke alle Tiere'], ['swim', '🏊', 'Schwimmer', 'Spring ins Freibad'], ['slide', '🛝', 'Rutschmeister', 'Rutsch die Wasserrutsche']
   ];
   K.stickers = ST;

@@ -59,7 +59,8 @@ BI.addPlaces = function (W, st) {
     for (const dx of [-4.2, 4.2]) st.box(sx + dx, 0, sz + 1.5, .2, 2.9, .2, WD);
     for (const [dx, c] of [[-2.4, 0xff8a1f], [.2, 0xe0382b], [2.8, 0x3fa84e]]) { st.box(sx + dx, 0, sz - 2.6, 1.0, .6, 1.3, 0xb98650); st.sph(sx + dx, .85, sz - 2.6, .5, c, 1); W.addBox(sx + dx - .6, sz - 3.3, sx + dx + .6, sz - 1.9, false, 1); }
     st.box(sx, 1.1, sz + .9, 3.2, .7, .05, 0xfff0c0);
-    W.spots.farm = { shop: { x: sx, z: sz }, customer: { x: sx, z: sz - 1.9 }, farmer: { x: sx, z: sz + 1.2 } }; }
+    st.box(sx + 6.4, 0, sz - 2, 1.6, 1.0, 1.2, 0x8a8f99); st.box(sx + 6.4, 1.0, sz - 2, 1.7, .1, 1.3, 0x3a3d45); st.cyl(sx + 6.4, 1.1, sz - 2, .4, .45, .45, 0xc9ccd4, 10); st.cyl(sx + 7.2, 1.0, sz - 2.4, .12, .12, 1.8, 0x5a5f69, 6); st.sph(sx + 6.4, 1.7, sz - 2, .15, 0xff8a1f, 0); W.addBox(sx + 5.5, sz - 2.7, sx + 7.3, sz - 1.3, false, 1.2);
+    W.spots.farm = { stove: { x: sx + 6.4, z: sz - 2 }, shop: { x: sx, z: sz }, customer: { x: sx, z: sz - 1.9 }, farmer: { x: sx, z: sz + 1.2 } }; }
 
   /* ---------- Streichelzoo (Westseite außerhalb der Bahn): 6 Gehege mit Tor nach Osten ---------- */
   W.spots.pens = []; W.pads.push([-172, -31, -144, 57]);

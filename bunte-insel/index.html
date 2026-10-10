@@ -148,6 +148,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 @media (max-height:640px){.ttl{font-size:clamp(34px,10vw,52px)}.fleet{display:none}.mbtn{padding:8px 14px;margin-top:6px;font-size:19px}.mbtn.main{font-size:22px;padding:10px 14px}.mbtn small{display:none}.menucard{padding:10px 12px}.qr{width:130px;height:130px}.codebig{font-size:40px}}
 @media (prefers-reduced-motion:reduce){.ttl span,.fleet div{animation:none}}
 .hgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:6px 0}.hc{border-radius:16px;background:#fff;padding:6px 2px;font-size:12px;font-weight:700;line-height:1.15;box-shadow:var(--shadow)}.hc b{display:block;font-size:28px}.hc.sel{outline:4px solid var(--pri);outline-offset:1px}
+#kitRec{display:grid;gap:6px;margin:4px 0}#kitRec button,#kitSell button{background:#fff;border-radius:14px;padding:8px 10px;font:600 15px Fredoka,system-ui,sans-serif;box-shadow:var(--shadow);text-align:left}#kitRec button:disabled{opacity:.45}#kitSell button{text-align:center}
 .pn{width:100%;box-sizing:border-box;font:700 18px Fredoka,system-ui,sans-serif;padding:9px 12px;border-radius:14px;border:3px solid #fff;box-shadow:var(--shadow);margin:2px 0 6px;text-align:center}.cust .row{margin:4px 0}
 .pets .pill{font-size:15px;padding:6px 12px}.cust{margin:2px 0}
 @media (max-width:420px){.hgrid{grid-template-columns:repeat(3,1fr)}}
@@ -298,6 +299,9 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
   <div class="mh2">🌱 Was soll wachsen?</div>
   <div id="seedGrid"></div>
   <div class="row"><button class="pill" id="seedClose">✖ Abbrechen</button></div>
+</section>
+<section id="kitchenPanel" class="screen" hidden>
+  <div class="card"><div class="logo" style="font-size:30px">🍳 Hofküche</div><div id="kitInv" class="help"></div><div class="lab">Kochen</div><div id="kitRec"></div><div class="lab">Verkaufen an Bauer Heinz</div><div id="kitSell" class="row"></div><button class="big" id="kitClose">✔ Fertig</button></div>
 </section>
 <section id="bookPanel" class="screen" hidden>
   <div class="card shop">
@@ -464,6 +468,8 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/garden.js"></script>
 <script src="js/farm.js"></script>
 <script src="js/pool.js"></script>
+<script src="js/kitchen.js"></script>
+<script src="js/weather.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -378,5 +378,25 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   await Promise.all([p.waitForNavigation(), p.click('#bToMenu')]); await p.waitForFunction(() => window.__bi);
   ok(await p.evaluate(() => !document.getElementById('menu').hidden && document.getElementById('hello').textContent === 'Hallo Lisa! ♥'), 'Zurück zum Hauptmenü, Stand bleibt'); await p.context().close();
 }
+{ // Wetter, Jahreszeiten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart');
+  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'rain'; w.set('rain'); window.__bi.save.season = 'autumn'; w.applySeason(); }); await p.waitForTimeout(7000);
+  const r = await p.evaluate(() => { const w = window.__bi.weather(); return [w.kind, w.rainy, w.season()]; });
+  ok(r[0] === 'rain' && r[1] > .3 && r[2] === 'autumn', `Wetter: Regen setzt ein (${r[1].toFixed(2)}), Herbst`);
+  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'clear'; w.set('clear'); }); await p.waitForTimeout(6000);
+  ok(await p.evaluate(() => window.__bi.weather().rainy < .15), 'Wetter: Regen hört auf'); await c.close();
+}
+{ // Küche: melken, kochen, verkaufen
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(300);
+  const r = await p.evaluate(async () => {
+    const b = window.__bi; const a = b.farm.animals.find(x => x.k === 'cow'); const out = {};
+    if (a) { b.P.x = a.x + 1; b.P.z = a.z; await new Promise(r => setTimeout(r, 200)); const n = b.placeNear(); out.cow = n && n.src; b.placeAct(n); out.milk = b.garden.inv().milk || 0; }
+    const F = b.W.spots.farm; b.P.x = F.stove.x; b.P.z = F.stove.z + 1.5; await new Promise(r => setTimeout(r, 200)); const k = b.placeNear(); out.k = k && k.src;
+    const I = b.garden.inv(); I.strawberry = 2; const s0 = b.save.stars; b.placeAct(k); document.querySelector('#kitRec button').click(); out.jam = I.jam; document.querySelector('#kitSell button').click(); out.gain = b.save.stars - s0; b.kitchen.close(); return out;
+  });
+  ok(r.cow === 'animal' && r.milk >= 1, 'Kuh melken gibt Milch'); ok(r.k === 'kitchen' && r.jam === 1 && r.gain >= 1, `Hofküche: Marmelade gekocht & verkauft (+${r.gain} ⭐)`); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

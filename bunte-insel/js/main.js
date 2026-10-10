@@ -27,6 +27,13 @@
   const NIGHT = { top: new THREE.Color(0x070d2a), hor: new THREE.Color(0x2a3a6a), fog: new THREE.Color(0x1a2548), hs: new THREE.Color(0x7f93d8), hg: new THREE.Color(0x3a4468), sun: new THREE.Color(0xa9bbff), wat: new THREE.Color(0x14407a) };
   const tmpC = new THREE.Color(), tmpD = new THREE.Color();
   let night = save.night ? 1 : 0, nightT = night;
+  let wxK = 0; const GREY = new THREE.Color(0x9aa6b4);
+  /* Wetter-Dämpfung: Himmel, Nebel und Licht werden grauer (billig, ohne den Himmel neu zu färben) */
+  function applyWx() {
+    sky.material.color.setScalar(1 - .38 * wxK); mix2(DAY.fog, NIGHT.fog, scene.fog.color); scene.fog.color.lerp(tmpC.copy(GREY).multiplyScalar(1 - night * .8), wxK * .6); scene.background = scene.fog.color;
+    hemi.intensity = BI.lerp(.85, .62, night) * (1 - .22 * wxK); sun.intensity = BI.lerp(.75, .4, night) * (1 - .6 * wxK);
+  }
+  const mix2 = (a, b, out) => out.copy(a).lerp(b, night);
   function applyNight() {
     const n = night, mix = (a, b, out) => out.copy(a).lerp(b, n);
     const pos = skyGeo.attributes.position;
@@ -36,7 +43,7 @@
     mix(DAY.hs, NIGHT.hs, hemi.color); mix(DAY.hg, NIGHT.hg, hemi.groundColor); hemi.intensity = BI.lerp(.85, .62, n);
     mix(DAY.sun, NIGHT.sun, sun.color); sun.intensity = BI.lerp(.75, .4, n);
     if (world) { world.water.material.color.copy(DAY.wat).lerp(NIGHT.wat, n); world.setNight(n); }
-    starPts.material.opacity = n; BI.headMat.color.setHex(0xfff6d0).lerp(tmpC.setHex(0xffff9a), n); BI.tailMat.color.setHex(0xa02020).lerp(tmpC.setHex(0xff2a2a), n);
+    applyWx(); starPts.material.opacity = n; BI.headMat.color.setHex(0xfff6d0).lerp(tmpC.setHex(0xffff9a), n); BI.tailMat.color.setHex(0xa02020).lerp(tmpC.setHex(0xff2a2a), n);
   }
 
   /* ---------- Welt, Effekte ---------- */
@@ -904,19 +911,24 @@
   /* ---------- Garten, Bauernhof, Freibad ---------- */
   const garden = BI.createGarden({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), mySlot: () => mySlot(), earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f) });
   const farm = BI.createFarm({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), animals, inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, showEmoji: (e, a) => showEmoji(e, a), earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f) });
+  let weather = null;
+  function applySeason() { if (weather) weather.applySeason(); }
   const pool = BI.createPool({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), earn: id => kids.earn(id), char: () => char, openWard: () => openWard() });
+  const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
+  weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
   function placeNear() {
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
     const g = garden.near(); if (g) return { src: 'garden', n: g };
+    if (kitchen.near()) return { src: 'kitchen' };
     if (farm.nearFarmer()) return { src: 'farmer' };
     const pn = pool.near(); if (pn) return { src: 'pool', n: pn };
     const an = farm.animalNear(); if (an) return { src: 'animal', a: an };
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'] };
-  function placeLabel(n) { if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'animal') farm.care('stroke');
+    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'animal') { if (!farm.milk()) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1152,7 +1164,7 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
@@ -1417,7 +1429,7 @@
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); if (Math.abs(weather.wx - wxK) > .004) { wxK = weather.wx; applyWx(); } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') fun.update(dt, t); build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1432,5 +1444,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { weather: () => weather, kitchen, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

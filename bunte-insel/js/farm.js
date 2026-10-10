@@ -130,12 +130,18 @@ BI.createFarm = function (G) {
     const b = book(); if (b[k]) return; b[k] = true; const s = SP[k]; addStars(1); persist(); A.star(); say('📖 Neu im Tierbuch: ' + s.icon + ' ' + s.name + '! ' + s.fact, 5200); if (A.speak) A.speak(s.name + '. ' + s.fact);
     if (ORDER.every(x => b[x])) { addStars(10); say('🏆 Alle Tiere entdeckt! +10 ⭐', 4200); G.earn('zoo'); } if (K.bookOpen) renderBook();
   }
+  const NOFEED = ['egg', 'milk', 'jam', 'cake', 'soup', 'popcorn'];
+  K.milk = function () {
+    const a = K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
+    if (now - (K.milkT || 0) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
+    K.milkT = now; const inv = K.inv(); inv.milk = (inv.milk || 0) + 1; A.moo && A.moo(); a.hop = .6; fx.burst(a.x, 1.3, a.z, 10, [BI.C.white, BI.C.blue], 3, 1.2, 26, 3); persist(); say('🥛 Frische Milch gemolken! (' + inv.milk + ') – daraus kocht man Leckeres', 2800); G.earn('animal'); return true;
+  };
   K.care = function (kind) {
     const a = K.animalNear(); if (!a) return false; const s = SP[a.k], q = Q(), inv = K.inv();
     if (A[s.snd]) A[s.snd](); a.hop = .6; const pos = a; fx.burst(pos.x, 1.4, pos.z, 12, [BI.C.pink, BI.C.red, BI.C.white], 3, 1.2, 28, -1); G.showEmoji(kind === 'feed' ? (FAVI[FAV[a.k]] || '🌾') : '🤗', { x: pos.x, y: 0, z: pos.z, up: 0 });
     G.earn('animal');
     if (kind === 'stroke') { say('🤗 ' + s.icon + ' ' + s.name + ' mag das! 💕', 2000); S().pets = (S().pets || 0) + 1; persist(); return true; }
-    let used = null; const fav = FAV[a.k]; if ((inv[fav] || 0) > 0) used = fav; else { const any = Object.keys(inv).find(k => k !== 'egg' && (inv[k] || 0) > 0); if (any) used = any; }
+    let used = null; const fav = FAV[a.k]; if ((inv[fav] || 0) > 0) used = fav; else { const any = Object.keys(inv).find(k => !NOFEED.includes(k) && (inv[k] || 0) > 0); if (any) used = any; }
     if (used) { inv[used]--; addStars(used === fav ? 2 : 1); say('😋 ' + s.icon + ' ' + s.name + ' frisst ' + (G.cropIcon(used) || '') + ' gern! +' + (used === fav ? 2 : 1) + ' ⭐', 2600); } else say('🌾 ' + s.icon + ' ' + s.name + ' mampft Heu. (Ernte im Garten Gemüse – das mögen sie noch lieber!)', 3200);
     q.fed = q.fed || {}; if (!q.fed[a.k]) { q.fed[a.k] = true; } persist(); return true;
   };

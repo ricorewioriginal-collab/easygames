@@ -79,6 +79,7 @@ BI.createGarden = function (G) {
     tick -= dt; if (tick <= 0) { tick = .5; refresh(false); }
     for (let i = 0; i < 6; i++) if (spark[i].visible) { spark[i].position.y = 1.9 + Math.sin(t * 3 + i) * .15; }
   };
+  K.rain = dt => { for (const c of cells()) if (c) c.t -= dt * 500; }; // Regen: Pflanzen wachsen 50 % schneller
   K.refresh = refresh; K.count = () => cells().filter(Boolean).length;
   return K;
 };

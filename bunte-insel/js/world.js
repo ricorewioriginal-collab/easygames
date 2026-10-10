@@ -524,7 +524,7 @@ BI.buildWorld = function (scene) {
   function finalizeTrees() {
     const flat = g => { const n = g.toNonIndexed(); n.computeVertexNormals(); return n; };
     const geos = { trunk: flat(new THREE.CylinderGeometry(.3, .42, 1, 6).translate(0, .5, 0)), crown: flat(new THREE.IcosahedronGeometry(1, 1)), cone: flat(new THREE.ConeGeometry(1, 1, 7).translate(0, .5, 0)) };
-    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff }); W.treeMat = mat;
     for (const k of ['trunk', 'crown', 'cone']) {
       const list = IL[k]; if (!list.length) continue; const m = new THREE.InstancedMesh(geos[k], mat, list.length); m.frustumCulled = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       list.forEach((e, i) => { m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m);
