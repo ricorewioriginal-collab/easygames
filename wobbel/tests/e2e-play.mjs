@@ -11,7 +11,8 @@ await page.goto(BASE + '/index.html?unlock=1'); await page.waitForFunction(() =>
 await page.evaluate(() => { document.getElementById('how').hidden = true; window.__ffwd = 6; });
 const n = await page.evaluate(() => window.__wobbel.LEVELS.length); let ok = 0; const fail = [];
 for (let i = 0; i < n; i++) {
-  const key = await page.evaluate(i => window.__wobbel.LEVELS[i].key, i), path = [...sols[key]].map(c => 'URDL'.indexOf(c));
+  const key = await page.evaluate(i => window.__wobbel.LEVELS[i].key, i); if (process.env.WORLD && !key.startsWith(process.env.WORLD + '-')) continue;
+  const path = [...sols[key]].map(c => 'URDL'.indexOf(c));
   await page.evaluate(i => window.__wobbel.startLevel(i), i); await page.waitForTimeout(200);
   let pos = 0, solved = false; const t0 = Date.now();
   while (Date.now() - t0 < 120000) { const r = await page.evaluate(([path, pos]) => { const s = window.__wobbel.session; let q = pos; while (q < path.length && s.queue.length < 4) s.push(path[q++]); return { q, win: !document.getElementById('win').hidden }; }, [path, pos]); pos = r.q; if (r.win) { solved = true; break; } await page.waitForTimeout(60); }
