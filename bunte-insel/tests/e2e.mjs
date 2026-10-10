@@ -48,8 +48,8 @@ ok(hel.y1 > 4 && hel.stayed && hel.g >= hel.n + 5 && hel.out, `Hubschrauber: Hö
 // Zug-Simulation: 3 Halte mit Türen öffnen/schließen, Fahrgäste, Bonus
 const tr = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const c = b.train.cars[0]; b.P.x = c.x + 3; b.P.z = c.z + 2; b.enter(b.trainVeh);
-  const M = b.mission, n = M.steps.length, s0 = b.save.stars, res = [];
-  for (let k = 0; k < n; k++) { const s = b.mission.steps[b.mission.i]; b.train.v = 0; b.train.s = b.W.stations[s.idx].s - 1.5; b.train.mode = 'drive'; await sleep(400); res.push(s.phase); b.trainDoors(); await sleep(4300); res.push(s.phase); b.trainDoors(); await sleep(400); }
+  const M = b.mission, n = M.steps.length, s0 = b.save.stars, res = []; const gs = async sec => { const t0 = b.t; while (b.t - t0 < sec) await sleep(40); };
+  for (let k = 0; k < n; k++) { const s = b.mission.steps[b.mission.i]; b.train.v = 0; b.train.s = b.W.stations[s.idx].s - 1.5; b.train.mode = 'drive'; await gs(.4); res.push(s.phase); b.trainDoors(); await gs(4.3); res.push(s.phase); b.trainDoors(); await gs(.4); }
   const out = { kind: M.kind, n, res, gained: b.save.stars - s0, pax: b.pax, done: !b.mission }; b.train.v = 0; b.leave(); return out;
 });
 ok(tr.kind === 'train' && tr.res.filter(x => x === 'arrived').length === tr.n && tr.res.filter(x => x === 'open').length === tr.n && tr.done, `Zug-Simulation: ${tr.n} Halte (${tr.res.join(',')}), +${tr.gained} Sterne, ${tr.pax} Fahrgäste`);
@@ -191,7 +191,7 @@ const rg = await page.evaluate(async () => {
   // Fadenkreuz-Schuss auf Dose, Ente (Zufallsziele) – nichts bricht
   for (const k of ['duck', 'can', 'ghost', 'balloon']) { const g = R.targets.find(q => q.kind === k); const m = R.ndcOf(g); R.cd = 0; R.fire(m.x, m.y); await sleep(1500); }
   // Munition leer -> Runde endet von selbst, Sterne gutgeschrieben
-  const st0 = b.save.stars; R.ammo = 0; await sleep(1800); const shots = R.shots, ended = !R.running && !!R.result && b.rs.ui === 'result' && b.save.stars - st0 === R.result.stars;
+  const st0 = b.save.stars; R.ammo = 0; { const t0 = b.t; while (b.t - t0 < 1.8) await sleep(40); } const shots = R.shots, ended = !R.running && !!R.result && b.rs.ui === 'result' && b.save.stars - st0 >= R.result.stars;
   const ignored = !R.fire(0, 0);
   b.exitRange(); const left = b.rs.ui === '' && !document.body.classList.contains('ranging');
   // Wasserpistole & Bogen starten, vorzeitiges Verlassen räumt auf
@@ -252,7 +252,7 @@ const mg = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.openGames(); const cards = document.querySelectorAll('#gamesGrid .gc').length, soloBtn = document.querySelectorAll('#gamesGrid .gb button').length; b.closeGames();
   return { cards, soloBtn };
 });
-ok(mg.cards === 8 && mg.soloBtn >= 12, `Spiele-Menü: ${mg.cards} Spiele (${mg.soloBtn} Knöpfe)`);
+ok(mg.cards === 11 && mg.soloBtn >= 17, `Spiele-Menü: ${mg.cards} Spiele (${mg.soloBtn} Knöpfe)`);
 const cvBox = async () => page.evaluate(() => { const r = document.getElementById('mgCanvas').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
 async function playMini(kind, driver) {
   const s0 = await page.evaluate(k => { const b = window.__bi; b.startGame(k, true); b.mini.dur = 6; return b.save.stars; }, kind); await page.waitForTimeout(500);
@@ -274,6 +274,42 @@ const tr2 = await page.evaluate(async () => {
   b.P.x = g.spot.x + .5; b.P.z = g.spot.z; await sleep(1500); const done = !b.gm && !document.getElementById('gameRes').hidden; const gained = b.save.stars - s0; document.getElementById('grOk').click(); return { far, bar0, done, gained };
 });
 ok(tr2.far && /Eiskalt|Kalt|Lau|Warm|Heiß|Kochend/.test(tr2.bar0) && tr2.done && tr2.gained >= 3, `Schatzsuche allein: Hinweis „${tr2.bar0}“, Schatz gefunden, +${tr2.gained} ⭐`);
+// Kinder-Extras: Sammelalbum, Foto, Musik, Mal-Block, Haustier-Pflege, Pausen-Erinnerung, Lern-Spiele
+const kx = await page.evaluate(async () => {
+  const b = window.__bi, k = b.kids, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 30; const out = {};
+  const s0 = b.save.stars; out.earn = k.earn('quiz') && !k.earn('quiz') && b.save.stars - s0 === 2; k.show('album'); out.album = document.querySelectorAll('#albumGrid .stk').length === k.stickers.length && document.querySelectorAll('#albumGrid .stk.got').length >= 1; k.close();
+  const p0 = k.photoCount(); k.photo(); for (let i = 0; i < 120 && k.photoCount() === p0; i++) await sleep(100); out.photo = k.photoCount() === p0 + 1 && document.getElementById('polaroid').classList.contains('show'); await sleep(300); k.show('photos'); out.photos = document.querySelectorAll('#photoGrid img').length >= 1; k.close();
+  k.show('music'); out.musicOpen = k.open === 'music' && document.querySelectorAll('#musicKeys button').length === 8; k.play(0, 3); k.play(3, 1); out.key = k.keydown('KeyA') === true; out.stk = b.save.stk.includes('music'); k.close();
+  k.show('paint'); const cv = document.getElementById('paintCv'), r = cv.getBoundingClientRect(); const ev = (t, x, y) => cv.dispatchEvent(new PointerEvent(t, { clientX: r.left + x, clientY: r.top + y, pointerId: 1, bubbles: true })); ev('pointerdown', 40, 40); ev('pointermove', 120, 100); ev('pointermove', 200, 60); ev('pointerup', 200, 60);
+  document.getElementById('paintDone').click(); await sleep(600); out.art = typeof k.art === 'string' && k.art.startsWith('data:image/jpeg') && k.open === '' && b.save.stk.includes('paint');
+  const b0 = b.save.bond || 0; k.care('feed'); await sleep(200); out.care = (b.save.bond || 0) > b0 && !!b.pup.trick && b.save.stk.includes('pet');
+  b.save.breakMin = 15; k.showBreak(); out.brk = !document.getElementById('breakPanel').hidden && k.busy(); document.getElementById('breakStop').click(); await sleep(200); out.paused = b.state === 'pause'; b.pause(false); b.save.breakMin = 0; k.refreshBreak();
+  return out;
+});
+ok(kx.earn && kx.album && kx.photo && kx.photos && kx.musicOpen && kx.key && kx.stk && kx.art && kx.care && kx.brk && kx.paused, `Kinder-Extras: Sticker +2 ⭐, Album, Foto (Selfie-Countdown), Fotoalbum, Musik, Mal-Block (Bild gespeichert), Haustier füttern, Pausen-Erinnerung (${JSON.stringify(kx)})`);
+async function quizPlay(kind) {
+  const s0 = await page.evaluate(k => { const b = window.__bi; b.startGame(k, true); return b.save.stars; }, kind); await page.waitForTimeout(500); const bx = await cvBox(); const t0 = Date.now();
+  while (Date.now() - t0 < 40000) { const act = await page.evaluate(() => { const g = window.__bi.mini.cur(); if (!g) return 'done'; if (!g.ans || g.wait > 0 || window.__bi.mini.over) return null; const i = g.ans.findIndex(a => a.ok), b = g.lay()[i]; return [[b.x + b.w / 2, b.y + b.h / 2]]; }); if (act === 'done') break; if (act) await page.mouse.click(bx.x + act[0][0], bx.y + act[0][1]); await page.waitForTimeout(150); }
+  await page.waitForFunction(() => !document.getElementById('gameRes').hidden, null, { timeout: 15000 }).catch(() => { });
+  return page.evaluate(s0 => { const b = window.__bi, r = { shown: !document.getElementById('gameRes').hidden, gained: b.save.stars - s0, txt: document.getElementById('grText').textContent }; document.getElementById('grOk').click(); return r; }, s0);
+}
+const qz = [await quizPlay('count'), await quizPlay('colors'), await quizPlay('animals')];
+ok(qz.every(q => q.shown && q.gained >= 2 && /1[0-9] Punkte/.test(q.txt)), `Lern-Spiele (Zahlen-Zauber, Farben-Quiz, Tierstimmen): 8 Fragen richtig beantwortet (${qz.map(q => q.txt).join(' | ')})`);
+// Spielstände: 3 Plätze, Sichern/Laden per Datei, Wechseln lädt den richtigen Stand
+const sv = await page.evaluate(() => { const b = window.__bi; b.save.stars += 7; b.saveNow(); const S = window.BI.store, o = S.exportSlot(1); const ok3 = S.importSlot(3, o); return { stars: b.save.stars, i1: S.info(1), i3: S.info(3), i2: S.info(2), ok3, hasBuild: !!o.data.build, keys: Object.keys(o.data).join(',') }; });
+ok(sv.ok3 && sv.i1.stars === sv.stars && sv.i3.stars === sv.stars && !sv.i2.has && sv.hasBuild, `Spielstand sichern/laden: Platz 1 → Platz 3 kopiert (${sv.stars} Sterne, Platz 2 leer, ${sv.keys})`);
+await page.evaluate(() => window.__bi.switchSlot(3)); await page.waitForFunction(() => window.__bi && window.__bi.SLOT === 3, null, { timeout: 30000 }); await page.waitForTimeout(500);
+const s3 = await page.evaluate(() => ({ stars: window.__bi.save.stars, bar: document.getElementById('slotBar').textContent }));
+await page.click('#slotBar'); const cards = await page.evaluate(() => ({ n: document.querySelectorAll('#slotList .slot').length, cur: document.querySelector('#slotList .slot.cur .sn').textContent }));
+const [fc] = await Promise.all([page.waitForEvent('filechooser'), page.evaluate(() => document.querySelectorAll('#slotList .slot')[1].querySelector('button[aria-label="Aus Datei laden"]').click())]);
+await fc.setFiles({ name: 'x.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(await page.evaluate(() => window.BI.store.exportSlot(3)))) }); await page.waitForTimeout(500);
+const imp = await page.evaluate(() => ({ i2: window.BI.store.info(2), msg: document.getElementById('slotMsg').textContent }));
+await page.evaluate(() => window.__bi.switchSlot(2)); await page.waitForFunction(() => window.__bi && window.__bi.SLOT === 2, null, { timeout: 30000 }); await page.waitForTimeout(400);
+const s2 = await page.evaluate(() => window.__bi.save.stars);
+await page.evaluate(() => window.__bi.switchSlot(1)); await page.waitForFunction(() => window.__bi && window.__bi.SLOT === 1, null, { timeout: 30000 }); await page.waitForTimeout(400);
+const s1 = await page.evaluate(() => window.__bi.save.stars);
+ok(s3.stars === sv.stars && /Spielstand 3/.test(s3.bar) && cards.n === 3 && cards.cur === '3' && imp.i2.has && imp.i2.stars === sv.stars && s2 === sv.stars && s1 === sv.stars, `Spielstände: Wechsel auf 3 (${s3.stars} ⭐), Datei in Platz 2 geladen (${imp.msg}), Platz 2 → ${s2} ⭐, zurück auf 1 → ${s1} ⭐`);
+const del = await page.evaluate(() => { const S = window.BI.store; S.clear(3); return S.info(3).has; }); ok(del === false, 'Spielstand löschen leert den Platz');
 console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 // Handy: fester Joystick sichtbar, Tastatur-Hinweise weg; Desktop: umgekehrt
 {

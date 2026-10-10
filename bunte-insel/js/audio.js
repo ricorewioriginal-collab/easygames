@@ -21,6 +21,11 @@ BI.audio = (function () {
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g); g.connect(bus || sfxBus); o.start(t); o.stop(t + dur + 0.05);
   }
+  function noise(dur, vol, hp) {
+    if (!ctx) return; const len = Math.ceil(ctx.sampleRate * dur), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const s = ctx.createBufferSource(); s.buffer = buf; const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp || 800; const g = ctx.createGain(); g.gain.setValueAtTime(vol, ctx.currentTime); g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + dur);
+    s.connect(f); f.connect(g); g.connect(sfxBus); s.start();
+  }
   function osc(type, f, vol, dest) { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; g.gain.value = vol; o.connect(g); g.connect(dest || sfxBus); o.start(); return { o, g }; }
 
   const A = {
@@ -38,6 +43,13 @@ BI.audio = (function () {
     leave() { tone(330, .08, 'square', .08); tone(220, .1, 'square', .08, 0, .07); },
     bump() { tone(110, .16, 'sawtooth', .16, 55); },
     splash() { tone(500, .25, 'sine', .1, 150); },
+    /* Musik machen: Klavier, Xylophon, Trompete + Trommeln */
+    note(f, inst, vol) { vol = vol || 1; if (inst === 1) { tone(f * 2, .45, 'sine', .22 * vol); tone(f * 4, .12, 'sine', .06 * vol); } else if (inst === 2) { tone(f, .55, 'sawtooth', .1 * vol); tone(f * 2, .5, 'square', .03 * vol); } else { tone(f, .7, 'triangle', .26 * vol); tone(f * 2, .45, 'sine', .08 * vol); } },
+    drum(k, vol) { vol = vol || 1; if (k === 0) { tone(150, .22, 'sine', .45 * vol, 40); } else if (k === 1) { noise(.16, .3 * vol, 1200); tone(220, .1, 'triangle', .15 * vol, 120); } else if (k === 2) { noise(.06, .18 * vol, 6000); } else { tone(200, .3, 'sine', .35 * vol, 90); } },
+    shutter() { noise(.05, .35, 2500); tone(1800, .04, 'square', .08); tone(900, .06, 'square', .08, 0, .07); },
+    meow() { tone(620, .3, 'triangle', .12, 960); tone(900, .3, 'triangle', .1, 520, .28); },
+    oink() { tone(190, .1, 'sawtooth', .12, 140); tone(170, .12, 'sawtooth', .12, 120, .14); },
+    ribbit() { tone(190, .07, 'square', .09, 320); tone(230, .09, 'square', .09, 360, .1); },
     moo() { tone(150, .6, 'sawtooth', .07, 110); },
     baa() { tone(380, .35, 'sawtooth', .05, 300); },
     pop() { tone(700, .08, 'sine', .12, 1100); },

@@ -3,7 +3,7 @@
 (function () {
   const $ = id => document.getElementById(id), K = BI.WORLD, A = BI.audio, clamp = BI.clamp, TAU = BI.TAU;
   const save = Object.assign({ stars: 0, shirt: 0, hat: 0, sound: true, music: true, mpIcon: '🐶', night: false, intro: false, hero: 'jannis', pet: 'blitz', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
-  const persist = () => BI.store.set('save', save);
+  let saveOk = true; const persist = () => { save.ts = Date.now(); saveOk = BI.store.set('save', save); };
   const coarse = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
   const isTouch = () => document.body.classList.contains('touch');
   A.setMuted(!save.sound); A.setMusic(save.music);
@@ -172,7 +172,7 @@
   }
   function enter(v) {
     if (build.active) return;
-    fun.setDance(false); P.veh = v; everDrove = true; A.enter();
+    fun.setDance(false); P.veh = v; everDrove = true; A.enter(); kids.earn(v.isTrain ? 'train' : v.spec.boat ? 'boat' : v.type === 'heli' || v.type === 'rcheli' ? 'heli' : 'ride');
     if (v.spec.remote) { v.driver = true; startMission(true); updateButtons(true); say('🎮 Jannis steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
     else {
@@ -408,6 +408,7 @@
     if (e.repeat) { if (KMAP[e.code] || e.code === 'Space') e.preventDefault(); return; }
     A.resume();
     if (mini.active) { if (e.code === 'Escape') $('mgExit').click(); return; }
+    if (kids.open && state === 'play') { if (e.code === 'Escape' && kids.open !== 'break') { kids.close(); e.preventDefault(); } else kids.keydown(e.code) && e.preventDefault(); return; }
     if (gamesOpen && e.code === 'Escape') { closeGames(); e.preventDefault(); return; }
     if (wardOpen && e.code === 'Escape') { closeWard(); e.preventDefault(); return; }
     if (mpOpen) { if (e.code === 'Escape') { mpBack(); e.preventDefault(); } else if (mpView === 'join') { if (e.code === 'Backspace') { joinCode = joinCode.slice(0, -1); renderJoin(); } else if (e.code === 'Enter') mpJoinGo(); else { const ch = net.normCode(e.key); if (ch && e.key.length === 1 && joinCode.length < 4) { joinCode += ch; renderJoin(); } } } return; }
@@ -560,6 +561,7 @@
     if (k === 'start') hannesSay('Los geht\'s! Nur auf die Attrappen!', 2200);
     else if (k === 'hit' && range.hits % 6 === 0) { hannesSay(['Super Treffer!', 'Ins Schwarze!', 'Toll gezielt!'][(range.hits / 6) % 3 | 0], 1500); A.pop(); }
     else if (k === 'end') {
+      kids.earn('shoot');
       setWeaponMesh(null); addStars(d.stars); save.rangeBest = save.rangeBest || {}; if (d.score > (save.rangeBest[d.weapon] || 0)) save.rangeBest[d.weapon] = d.score; persist();
       document.body.classList.remove('ranging'); $('cross').hidden = true; $('rangeHud').hidden = true; resize(); char.armR.rotation.set(0, 0, 0); char.armL.rotation.set(0, 0, 0);
       rs.ui = 'result'; rs.w = d.weapon; $('rrTitle').textContent = d.stars >= 3 ? '🏆 Super!' : 'Geschafft!'; $('rrText').textContent = d.score + ' Punkte · ' + RTXT[Math.min(4, d.stars)] + (d.stars ? ' +' + d.stars + ' ⭐' : '');
@@ -642,6 +644,7 @@
       if (d.t === 'full') { net.close(true); mpShow('choose'); mpErr('Das Spiel ist leider voll 😅'); return; }
       if (d.t === 'bye') { const a = remote.get(d.id); if (a) { dropAvatar(a); remote.delete(d.id); say(a.name + ' ist gegangen 👋', 2200); updateFriends(); renderMp(); } return; }
       if (d.t === 'e') { const a = remote.get(d.id); if (a && EMOJIS.includes(d.e)) { showEmoji(d.e, a); A.pop(); if (d.e === '🙌') { a.hf = performance.now(); if (a.hf - lastHF < 2600 && Math.hypot(a.x - P.x, a.z - P.z) < 6) highFive(a); } } return; }
+      if (d.t === 'n') { const a = remote.get(d.id); if (a) kids.play(d.i | 0, (d.k | 0) & 7, a); return; }
       if (d.t === 'b') { build.applyRemote(d.o || d.id, d); return; }
       if (d.t === 'g') { applyGame(d.op === 'cnt' ? Object.assign({}, d) : d); return; }
       if (d.t !== 's') return;
@@ -650,7 +653,7 @@
         a = { id: d.id, char: null, gv: null, x: d.x, z: d.z, y: d.y || 0, h: d.h || 0, tx: d.x, tz: d.z, ty: d.y || 0, th: d.h || 0, sp: 0, a: 0, v: '', phase: Math.random() * 6, look: '', name: 'Freund' }; remote.set(d.id, a);
         if (net.role === 'guest' && !P.veh) { const q = W.resolve(d.x + 2, d.z + 2, .5, {}); P.x = q.x; P.z = q.z; }
       }
-      if (d.l && JSON.stringify(d.l) !== a.look) { a.look = JSON.stringify(d.l); const pk = d.l.pk || 'blitz'; if (a.pet && a.pet.k !== pk) { freeObj(a.pet.d.group); a.pet = null; } if (!a.pet) { a.pet = { k: pk, d: BI.makePet(pk), x: a.x - 1.5, z: a.z - 1, h: 0, ph: 0 }; scene.add(a.pet.d.group); } if (a.char) freeObj(a.char.group); a.char = charFor(d.l); a.char.group.position.set(a.x, a.y, a.z); scene.add(a.char.group); const first = a.name === 'Freund'; a.name = d.l.n || 'Freund'; if (first) { say(a.name + ' ist dabei! 🎉', 2600); fx.burst(a.x, 2, a.z, 20, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6); A.fanfare(); } updateFriends(); renderMp(); }
+      if (d.l && JSON.stringify(d.l) !== a.look) { a.look = JSON.stringify(d.l); const pk = d.l.pk || 'blitz'; if (a.pet && a.pet.k !== pk) { freeObj(a.pet.d.group); a.pet = null; } if (!a.pet) { a.pet = { k: pk, d: BI.makePet(pk), x: a.x - 1.5, z: a.z - 1, h: 0, ph: 0 }; scene.add(a.pet.d.group); } if (a.char) freeObj(a.char.group); a.char = charFor(d.l); a.char.group.position.set(a.x, a.y, a.z); scene.add(a.char.group); const first = a.name === 'Freund'; a.name = d.l.n || 'Freund'; if (first) { kids.earn('friend'); say(a.name + ' ist dabei! 🎉', 2600); fx.burst(a.x, 2, a.z, 20, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6); A.fanfare(); } updateFriends(); renderMp(); }
       a.tx = d.x; a.tz = d.z; a.ty = d.y || 0; a.th = d.h || 0; a.sp = d.sp || 0; a.a = d.a || 0; a.v = d.v || ''; a.vy = d.vy || 0;
     },
     onJoin: id => { lookSig = ''; netT = 0; updateFriends(); shareBuild(id); if (mpOpen && net.role === 'host' && mpView === 'host') mpShow('on'); if (net.role === 'guest') { say('Verbunden! 🎉', 2000); } },
@@ -696,7 +699,7 @@
   }
   function showEmoji(e, av) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: emoSprite(e), transparent: true, depthWrite: false })); sp.scale.set(1.3, 1.3, 1); scene.add(sp); emos.push({ sp, av, t: 0 }); }
   function updateEmojis(dt) {
-    for (let i = emos.length - 1; i >= 0; i--) { const q = emos[i]; q.t += dt; const a = q.av, x = a ? a.x : P.veh ? P.veh.x : P.x, z = a ? a.z : P.veh ? P.veh.z : P.z, y = (a ? a.y : P.veh ? 0 : P.y) + 2.9 + q.t * .5; q.sp.position.set(x, y, z); q.sp.material.opacity = Math.min(1, (2.4 - q.t) * 2); q.sp.scale.setScalar(1.1 + Math.sin(Math.min(q.t, .4) / .4 * Math.PI) * .5); if (q.t > 2.4) { scene.remove(q.sp); q.sp.material.dispose(); emos.splice(i, 1); } }
+    for (let i = emos.length - 1; i >= 0; i--) { const q = emos[i]; q.t += dt; const a = q.av, x = a ? a.x : P.veh ? P.veh.x : P.x, z = a ? a.z : P.veh ? P.veh.z : P.z, y = (a ? (a.y || 0) + (a.up || 0) : P.veh ? 0 : P.y) + 2.9 + q.t * .5; q.sp.position.set(x, y, z); q.sp.material.opacity = Math.min(1, (2.4 - q.t) * 2); q.sp.scale.setScalar(1.1 + Math.sin(Math.min(q.t, .4) / .4 * Math.PI) * .5); if (q.t > 2.4) { scene.remove(q.sp); q.sp.material.dispose(); emos.splice(i, 1); } }
   }
   function highFive(a) {
     const now = performance.now(); if (now - (a.hfDone || 0) < 6000) return; a.hfDone = now; addStars(1); A.star(); A.fanfare(); const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;
@@ -709,13 +712,13 @@
   { const row = $('emoRow'); EMOJIS.forEach(e => { const b = document.createElement('button'); b.textContent = e; b.onclick = () => { sendEmoji(e); }; row.appendChild(b); }); const g = document.createElement('button'); g.textContent = '🎮'; g.setAttribute('aria-label', 'Spiele'); g.onclick = () => { row.hidden = true; openGames(); }; row.appendChild(g);
     $('emoBtn').addEventListener('click', ev => { ev.stopPropagation(); A.resume(); row.hidden = !row.hidden; }); $('emo').addEventListener('pointerdown', ev => ev.stopPropagation()); }
   /* ---- gemeinsames Bauen ---- */
-  build.onOp = op => { if (net.connected()) net.send(Object.assign({ t: 'b' }, op)); };
+  build.onOp = op => { if (op.op === 'a') kids.earn('build'); if (net.connected()) net.send(Object.assign({ t: 'b' }, op)); };
   function shareBuild(toId) {
     const mine = { t: 'b', op: 'l', o: selfId(), l: build.exportMine() };
     if (net.role === 'host') { if (toId) { net.sendTo(toId, mine); for (const o of build.owners()) net.sendTo(toId, { t: 'b', op: 'l', o, l: build.exportOwner(o) }); } } else net.send(mine);
   }
   /* ---- Spiele (Mini-Spiele 2D, Schatzsuche, Verstecken, Fangen, Sterne-Wettlauf) ---- */
-  const mini = BI.createMini({ A }), MG = mini.GAMES, TAUV = Math.PI * 2;
+  const mini = BI.createMini({ A }), MG = mini.GAMES, TAUV = Math.PI * 2, QUIZ = ['count', 'colors', 'animals'];
   const GDEF = Object.keys(MG).map(k => Object.assign({ k, solo: true, multi: true, mini: true }, MG[k])).concat([
     { k: 'treasure', icon: '🗺️', name: 'Schatzsuche', help: 'Irgendwo ist ein Schatz vergraben. „Heiß“ heißt nah dran, „kalt“ heißt weit weg!', solo: true, multi: true, dur: 240 },
     { k: 'hide', icon: '🙈', name: 'Verstecken', help: 'Einer sucht, die anderen verstecken sich. Wer nicht gefunden wird, gewinnt!', solo: false, multi: true, dur: 150 },
@@ -751,7 +754,7 @@
   }
   $('mgExit').addEventListener('click', () => { if (!mini.active) return; const r = { score: mini.score }; if (gm && gm.solo) { mini.stop(); gm = null; $('mgExit').hidden = true; updateButtons(true); } else endMini(r); });
   function soloResult(k, score) {
-    const d = gdef(k); save.mini = save.mini || {}; const rec = score > (save.mini[k] || 0); if (rec) save.mini[k] = score; const stars = Math.min(5, 1 + Math.floor(score / (d.goal || 20))); addStars(stars); persist(); A.fanfare();
+    kids.earn('mini'); if (QUIZ.includes(k)) kids.earn('quiz'); const d = gdef(k); save.mini = save.mini || {}; const rec = score > (save.mini[k] || 0); if (rec) save.mini[k] = score; const stars = Math.min(5, 1 + Math.floor(score / (d.goal || 20))); addStars(stars); persist(); A.fanfare();
     $('grTitle').textContent = rec ? '🏆 Neuer Rekord!' : 'Geschafft!'; $('grText').textContent = d.name + ': ' + score + ' Punkte  +' + stars + ' ⭐'; $('grList').innerHTML = ''; $('gameRes').hidden = false; mpOpen = true;
   }
   function startGame(k, solo) {
@@ -779,7 +782,7 @@
   }
   function finishGame() {
     const g = gm; gm = null; $('gameBar').hidden = true; if (chestM) chestM.visible = false; fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; const now = performance.now(), me = selfId(), def = gdef(g.k);
-    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null;
+    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
     if (g.k === 'tag') { g.itTime[g.it] = (g.itTime[g.it] || 0) + now - g.since; rows = ids.map(id => ({ id, v: (g.itTime[id] || 0) / 1000, s: ((g.itTime[id] || 0) / 1000).toFixed(1) + ' s' })).sort((a, b) => a.v - b.v); sub = 'Fangen – wer war am kürzesten dran?'; }
     else if (g.k === 'treasure') { if (g.winner) { const w = g.winner; rows = [{ id: w, s: '🗺️ Schatz gefunden!' }].concat(ids.filter(id => id !== w).map(id => ({ id, s: '' }))); sub = (w === me ? 'Du hast' : gmNames(w) + ' hat') + ' den Schatz gefunden!'; } else { rows = ids.map(id => ({ id, s: '' })); sub = 'Der Schatz wurde nicht gefunden – nächstes Mal klappt es!'; } }
     else if (g.k === 'hide') { const hiders = ids.filter(id => id !== g.it), nf = hiders.filter(id => g.found[id]).length, seekStart = g.ph0, surv = id => ((g.found[id] || now) - seekStart) / 1000; rows = [{ id: g.it, s: '🔍 Sucher: ' + nf + ' von ' + hiders.length + ' gefunden', v: nf === hiders.length ? 1e9 : -1 }].concat(hiders.map(id => ({ id, s: g.found[id] ? '🙈 gefunden nach ' + surv(id).toFixed(0) + ' s' : '🏆 nicht gefunden!', v: g.found[id] ? surv(id) : 1e8 }))).sort((a, b) => b.v - a.v); sub = 'Verstecken'; }
@@ -821,6 +824,17 @@
     bar.hidden = false; bar.classList.toggle('it', gm.k === 'tag' && gm.it === me);
     bar.textContent = (gm.k === 'tag' ? (gm.it === me ? '🔴 DU bist dran! ' : '🏃 ' + gmNames(gm.it) + ' ist dran · ') : gm.k === 'stars' ? '⭐ Du ' + (gm.cnt[me] || 0) + [...remote.keys()].map(id => ' · ' + gmNames(id).split(' ')[0] + ' ' + (gm.cnt[id] || 0)).join('') + ' · ' : hint + ' · ') + ' ⏱ ' + Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
   }
+  const kids = BI.createKids({ scene, camera, renderer, A, fx, P, save, persist, say, addStars: n => addStars(n), cam, setStick, updateButtons: f => updateButtons(f), state: () => state, pause: o => pause(o), showEmoji: (e, a) => showEmoji(e, a), send: d => { if (net.connected()) net.send(d); }, pup: () => pup });
+  let poster = null;
+  function drawPoster(img) { const cv = document.createElement('canvas'); cv.width = 320; cv.height = 240; const c = cv.getContext('2d'); if (img) c.drawImage(img, 0, 0, 320, 240); else { c.fillStyle = '#fffdf5'; c.fillRect(0, 0, 320, 240); c.font = '64px system-ui, sans-serif'; c.textAlign = 'center'; c.fillText('🖼️', 160, 100); c.fillStyle = '#16335e'; c.font = 'bold 26px system-ui, sans-serif'; c.fillText('Mal ein Bild!', 160, 170); } return cv; }
+  function setPoster(img) {
+    const tex = new THREE.CanvasTexture(drawPoster(img));
+    if (!poster) { poster = new THREE.Group(); const fr = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, .06), new THREE.MeshLambertMaterial({ color: 0x8a5a33 })), pl = new THREE.Mesh(new THREE.PlaneGeometry(1.45, 1.08), new THREE.MeshBasicMaterial({ map: tex })); pl.position.z = .04; poster.add(fr, pl); poster.userData.pl = pl; scene.add(poster); }
+    else { const m = poster.userData.pl.material; if (m.map) m.map.dispose(); m.map = tex; m.needsUpdate = true; }
+    placePoster();
+  }
+  function placePoster() { if (!poster) return; const f = flats[mySlot()]; poster.position.set(f.cx - .6, 1.9, f.zB + .25); }
+  kids.onArt = () => kids.loadArt(setPoster); kids.loadArt(setPoster);
   function gameStar() { if (gm && gm.k === 'stars') { const me = selfId(); gm.cnt[me] = (gm.cnt[me] || 0) + 1; net.send({ t: 'g', op: 'cnt', k: 'stars', n: gm.cnt[me] }); } }
 
   /* ---------- Wohnungen: Zimmer, Eltern, Bett zum Schlafen, Kleiderschrank zum Umziehen ---------- */
@@ -839,6 +853,7 @@
   function slotOf(id) { const ids = [selfId()].concat([...remote.keys()]).sort(); return Math.max(0, ids.indexOf(id)) % flats.length; }
   const mySlot = () => slotOf(selfId());
   function updateFlats() {
+    placePoster();
     const names = flats.map(() => ''); const ids = [selfId()].concat([...remote.keys()]).sort();
     ids.forEach((id, k) => { names[k % flats.length] = id === selfId() ? myName() : remote.get(id).name; });
     flats.forEach((f, i) => { const txt = names[i] ? '🏠 ' + names[i] : 'Frei'; if (txt !== f.signTxt) { f.signTxt = txt; const old = f.sign; f.sign = textSprite(txt, 4.6, 1.0, 62); f.sign.position.copy(old.position); freeObj(old); scene.add(f.sign); } });
@@ -858,7 +873,7 @@
   function updateSleep(dt) {
     if (sl.t < 0) return; sl.t += dt; const f = sl.f, g = char.group;
     if (sl.t > 1.1 && sl.t < 3.6) { P.x = f.bed.x; P.z = f.bed.z - .2; P.y = .78; P.h = Math.PI; g.position.set(P.x, P.y, P.z); g.rotation.set(-Math.PI / 2, 0, 0); char.pose(0, 0, false); if (!sl.said) { sl.said = true; nightT = 0; say('💤 Gute Nacht … Zzz', 1800); } if (Math.random() < dt * 3) fx.emit(P.x, 1.7, P.z - .2, .2, .7, 0, 2, 26, .6, .7, 1, 4, .8); }
-    if (sl.t >= 3.6 && sl.t < 3.7) { fadeEl.classList.remove('on'); sl.t = 3.7; P.x = f.bed.x + 2.3; P.z = f.bed.z + 1.2; P.y = 0; g.rotation.set(0, 0, 0); g.position.set(P.x, 0, P.z); say('Guten Morgen, ' + BI.heroById(save.hero).name + '! ☀️', 2600); A.fanfare(); }
+    if (sl.t >= 3.6 && sl.t < 3.7) { fadeEl.classList.remove('on'); sl.t = 3.7; P.x = f.bed.x + 2.3; P.z = f.bed.z + 1.2; P.y = 0; g.rotation.set(0, 0, 0); g.position.set(P.x, 0, P.z); say('Guten Morgen, ' + BI.heroById(save.hero).name + '! ☀️', 2600); A.fanfare(); kids.earn('sleep'); }
     if (sl.t > 4.6) sl.t = -1;
   }
   function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); say('Such dir etwas Schönes aus! 👕', 1800); }
@@ -896,10 +911,11 @@
     cam.ego = !cam.ego; cam.egoOff = 0; $('bCam').classList.toggle('on', cam.ego); if (!cam.ego && P.veh.spec.open) char.group.visible = true;
   }
   function doFun(k) {
-    if (state !== 'play' || rs.ui || sl.t >= 0 || wardOpen) return;
+    if (state !== 'play' || rs.ui || sl.t >= 0 || wardOpen || kids.busy()) return;
     if (k === 'home') { goHome(); return; }
     if (k === 'games') { openGames(); return; }
-    save.use = save.use || {}; save.use[k] = (save.use[k] || 0) + 1; saveT = 1.5;
+    if (k === 'photo') { kids.photo(); return; } if (k === 'music' || k === 'paint') { kids.show(k); return; } if (k === 'album') { kids.show('album'); return; } if (k === 'fotos') { kids.show('photos'); return; } if (k === 'feed' || k === 'stroke') { kids.care(k); return; }
+    save.use = save.use || {}; save.use[k] = (save.use[k] || 0) + 1; saveT = 1.5; { const SK = { dance: 'dance', bubbles: 'bubble', xxl: 'bubble' }; if (SK[k]) kids.earn(SK[k]); }
     if (k === 'rcfetch') { for (const q of vehicles) if (q.spec.remote && Math.hypot(P.x - q.x, P.z - q.z) > 12) spawnRC(false, q.type); }
     else if (k === 'cannon') { if (onDeck()) { SHIP.cannons.forEach((c, i) => fun.cannon(c, i * .18)); say('💥 Feuer frei!', 1200); } }
     else if (k === 'ahoi') { A.arr(); P.wave = 1.6; pap.wiggle = 1; say('🏴‍☠️ Ahoi, Käpt\'n Jannis!', 1800); fx.burst(P.x, 2.6, P.z, 10, [BI.C.gold, BI.C.white, BI.C.red], 3, 1.2, 30, -1); }
@@ -930,7 +946,7 @@
     { k: 'bubbles', icon: '🫧', name: 'Blasen', key: '9' }, { k: 'balloons', icon: '🎈', name: 'Ballons', key: '5' }, { k: 'gum', icon: '🍬', name: 'Kaugummi', key: '2' },
     { k: 'fireworks', icon: '🎆', name: 'Feuerwerk', key: '4' }, { k: 'ball', icon: '⚽', name: 'Ball', key: '3' }, { k: 'search', icon: '🔎', name: 'Such!', key: '8' },
     { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' },
-    { k: 'home', icon: '🏠', name: 'Nach Hause', key: '' }, { k: 'games', icon: '🎮', name: 'Spiele', key: '' }, { k: 'cannon', icon: '💥', name: 'Kanone', key: '' }, { k: 'ahoi', icon: '🏴‍☠️', name: 'Ahoi!', key: '' }, { k: 'trick', icon: '🐾', name: 'Trick', key: '' }, { k: 'fetch', icon: '🎾', name: 'Apport', key: '' }
+    { k: 'home', icon: '🏠', name: 'Nach Hause', key: '' }, { k: 'games', icon: '🎮', name: 'Spiele', key: '' }, { k: 'photo', icon: '📸', name: 'Foto', key: '' }, { k: 'music', icon: '🎹', name: 'Musik', key: '' }, { k: 'paint', icon: '🎨', name: 'Malen', key: '' }, { k: 'feed', icon: '🦴', name: 'Füttern', key: '' }, { k: 'stroke', icon: '🤗', name: 'Streicheln', key: '' }, { k: 'album', icon: '🏅', name: 'Album', key: '' }, { k: 'fotos', icon: '🖼️', name: 'Fotoalbum', key: '' }, { k: 'cannon', icon: '💥', name: 'Kanone', key: '' }, { k: 'ahoi', icon: '🏴‍☠️', name: 'Ahoi!', key: '' }, { k: 'trick', icon: '🐾', name: 'Trick', key: '' }, { k: 'fetch', icon: '🎾', name: 'Apport', key: '' }
   ];
   let quickAll = false;
   const onFoot = () => !P.veh || P.veh.spec.remote;
@@ -941,11 +957,12 @@
     if (a.k === 'cannon') return onFoot() && onDeck();
     if (a.k === 'ahoi' || a.k === 'fetch') return onFoot();
     if (a.k === 'home') return !P.veh;
+    if (a.k === 'music' || a.k === 'paint' || a.k === 'feed' || a.k === 'stroke') return onFoot();
     return true;
   }
   const Hm = () => (Math.hypot(P.x - (FB.x0 + FB.x1) / 2, P.z - FB.zB) > 40 ? 9 : 0) + (night > .6 ? 30 : 0);
   function score(a) {
-    const base = { punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10, home: Hm(), games: 24, cannon: 160, ahoi: 11 + (onDeck() ? 90 : 0), trick: 15, fetch: 13 + (fun.balls.length ? 25 : 0) };
+    const base = { punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10, home: Hm(), games: 24, photo: 17, music: 15, paint: 12, feed: 13, stroke: 9, album: 6, fotos: 5, cannon: 160, ahoi: 11 + (onDeck() ? 90 : 0), trick: 15, fetch: 13 + (fun.balls.length ? 25 : 0) };
     return (base[a.k] || 0) + (a.k === 'punch' ? 200 : 0) + Math.min((save.use || {})[a.k] || 0, 15) * 1.5;
   }
   function renderQuick() {
@@ -1000,7 +1017,41 @@
   buildHeroPicker($('heroPick')); buildHeroPicker($('wardPick'));
   { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = [...'Bunte Insel'].map((ch, i) => ch === ' ' ? '<i></i>' : '<span style="--i:' + i + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join(''); }
   const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; };
-  $('bHero').addEventListener('click', () => menuView('hero')); $('bHeroBack').addEventListener('click', () => menuView('home'));
+  /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
+  const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? BI.heroById(i.hero).name : 'Neu'; };
+  function slotBarRefresh() { const i = BI.store.info(SLOT); $('slotBar').innerHTML = '<span>💾 Spielstand ' + SLOT + ' · ' + (i.has ? BI.heroById(save.hero).name + ' · ⭐ ' + save.stars : 'Neu') + '</span><span>Wechseln ›</span>'; $('slotLab').textContent = '💾 Spielstand ' + SLOT + (saveOk ? '' : ' ⚠️ Speicher voll'); }
+  function flushAll() { persist(); try { build.saveNow(); } catch (e) { } }
+  function saveNow(quiet) { flushAll(); slotBarRefresh(); if (!quiet) say(saveOk ? '💾 Gespeichert ✔ (Spielstand ' + SLOT + ')' : '⚠️ Speicher voll – lösche Fotos oder sichere in eine Datei', 2600); }
+  function download(name, obj) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj)], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+  function exportSlot(s) { if (s === SLOT) flushAll(); const d = BI.store.exportSlot(s); if (!d.data.save) return false; download('bunte-insel-spielstand-' + s + '.json', d); return true; }
+  function switchSlot(n) { const m = BI.store.meta(); m.last = n; BI.store.setMeta(m); try { sessionStorage.setItem('bi_slot', String(n)); } catch (e) { } flushAll(); location.reload(); }
+  let importTo = 0, armDel = 0; const slotMsg = t => { $('slotMsg').textContent = t || ''; };
+  function renderSlots() {
+    const box = $('slotList'); box.innerHTML = ''; if (SLOT) { /* aktuellen Stand erst sichern, damit die Karten stimmen */ flushAll(); }
+    for (let s = 1; s <= 3; s++) {
+      const i = BI.store.info(s), h = i.has ? BI.heroById(i.hero) : null, d = document.createElement('div'); d.className = 'slot' + (s === SLOT ? ' cur' : '');
+      const when = i.ts ? new Date(i.ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) : '';
+      d.innerHTML = '<div class="sn">' + s + '</div><div class="sb"><b>' + (i.has ? h.icon + ' ' + h.name : '🆕 Neues Abenteuer') + '</b><small>' + (i.has ? '⭐ ' + i.stars + ' · 🏅 ' + i.stk + (when ? ' · ' + when : '') : 'Leer – hier startest du neu') + (s === SLOT ? ' · aktiv' : '') + '</small></div><div class="sa"></div>';
+      const sa = d.querySelector('.sa'), mk = (t, cls, tt, fn) => { const b = document.createElement('button'); b.textContent = t; if (cls) b.className = cls; b.title = tt; b.setAttribute('aria-label', tt); b.onclick = fn; sa.appendChild(b); return b; };
+      mk('▶', 'go', 'Spielen', () => { if (s === SLOT) menuView('home'); else switchSlot(s); });
+      if (i.has) mk('📤', '', 'Sichern (Datei)', () => { slotMsg(exportSlot(s) ? '📤 Datei „bunte-insel-spielstand-' + s + '.json“ gespeichert' : 'Nichts zu sichern'); });
+      mk('📥', '', 'Aus Datei laden', () => { importTo = s; $('slotFile').value = ''; $('slotFile').click(); });
+      if (i.has) { const del = mk('🗑️', '', 'Löschen', () => { if (armDel === s) { armDel = 0; BI.store.clear(s); if (s === SLOT) { try { sessionStorage.setItem('bi_slot', String(s)); } catch (e) { } location.reload(); return; } slotMsg('🗑️ Spielstand ' + s + ' gelöscht'); renderSlots(); } else { armDel = s; del.classList.add('arm'); del.textContent = '❓'; slotMsg('Nochmal 🗑️ drücken zum Löschen'); setTimeout(() => { if (armDel === s) { armDel = 0; del.classList.remove('arm'); del.textContent = '🗑️'; } }, 3000); } }); }
+      box.appendChild(d);
+    }
+  }
+  $('slotFile').addEventListener('change', () => {
+    const f = $('slotFile').files[0]; if (!f || !importTo) return; const s = importTo; importTo = 0; const rd = new FileReader();
+    rd.onload = () => { let o = null; try { o = JSON.parse(rd.result); } catch (e) { } if (o && BI.store.importSlot(s, o)) { slotMsg('📥 Spielstand ' + s + ' geladen ✔'); if (s === SLOT) { try { sessionStorage.setItem('bi_slot', String(s)); } catch (e) { } setTimeout(() => location.reload(), 600); } else renderSlots(); } else slotMsg('⚠️ Das ist keine Bunte-Insel-Datei'); };
+    rd.onerror = () => slotMsg('⚠️ Datei konnte nicht gelesen werden'); rd.readAsText(f);
+  });
+  $('slotBar').addEventListener('click', () => { slotMsg(''); renderSlots(); menuView('slots'); }); $('slotBack').addEventListener('click', () => menuView('home'));
+  $('bSaveNow').addEventListener('click', () => saveNow()); $('bExport').addEventListener('click', () => { say(exportSlot(SLOT) ? '📤 Sicherungsdatei gespeichert' : 'Nichts zu sichern', 2200); });
+  setInterval(() => { if (state !== 'menu') flushAll(); }, 20000);
+  addEventListener('pagehide', flushAll); document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
+  slotBarRefresh();
+
+  $('bHero').addEventListener('click', () => menuView('hero')); $('bHeroBack').addEventListener('click', () => { menuView('home'); slotBarRefresh(); });
   refreshPickers();
 
   /* ---------- Aktualisierung ---------- */
@@ -1019,7 +1070,7 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || kids.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
@@ -1076,7 +1127,7 @@
       }
       const g = char.group; g.position.set(P.x, P.y, P.z); g.rotation.y = P.h; g.rotation.x = running && P.y < .1 ? .14 : 0;
       if (P.punchT > 0) {
-        P.punchT -= dt; const k = 1 - P.punchT / .4; if (!P.punchHit && k > .45) { P.punchHit = true; const T = fun.nearTree(); if (T) fun.hitTree(T, P.x, P.z); else A.whoosh(); }
+        P.punchT -= dt; const k = 1 - P.punchT / .4; if (!P.punchHit && k > .45) { P.punchHit = true; const T = fun.nearTree(); if (T) { fun.hitTree(T, P.x, P.z); kids.earn('tree'); } else A.whoosh(); }
         char.punch(k); g.rotation.x = .25 * Math.sin(Math.min(1, k) * Math.PI);
       } else if (fun.dancing) { char.dance(t, fun.style); g.position.y += Math.abs(Math.sin(t * 8)) * .18; g.rotation.y = P.h + Math.sin(t * 2) * .7; }
       else char.pose(P.phase, P.speed > .3 && P.y < .1 ? Math.min(1.1, P.speed * .17 + (running ? .2 : 0)) : (P.y > .1 ? .6 : 0), P.wave > 0);
@@ -1277,11 +1328,11 @@
     if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
     if (state === 'pause') { renderer.render(scene, camera); return; }
     t += dt;
-    if (mini.active) { mini.update(dt); updateGame(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
+    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') fun.update(dt, t); build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1296,5 +1347,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

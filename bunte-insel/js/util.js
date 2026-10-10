@@ -7,10 +7,25 @@ BI.lerp = (a, b, t) => a + (b - a) * t;
 BI.damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
 BI.angDiff = (a, b) => { let d = (b - a) % BI.TAU; if (d > Math.PI) d -= BI.TAU; if (d < -Math.PI) d += BI.TAU; return d; };
 BI.rng = function (seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+/* Speicher: 3 Spielstände im Browser (localStorage). Spielstand 1 nutzt die alten Namen (bunteInsel.save …), 2 und 3 eigene Namen. */
 BI.store = {
-  get(k, d) { try { const v = localStorage.getItem('bunteInsel.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('bunteInsel.' + k, JSON.stringify(v)); } catch (e) { /* ohne Speicher spielen */ } }
+  KEYS: ['save', 'build', 'photos', 'art'], slot: 1,
+  key(k, s) { s = s || this.slot; return 'bunteInsel.' + (s === 1 ? '' : 's' + s + '.') + k; },
+  get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); return true; } catch (e) { return false; /* ohne Speicher spielen */ } },
+  meta() { try { return JSON.parse(localStorage.getItem('bunteInsel.meta')) || {}; } catch (e) { return {}; } },
+  setMeta(m) { try { localStorage.setItem('bunteInsel.meta', JSON.stringify(m)); } catch (e) { } },
+  /* Kurzinfo für die Spielstand-Karten */
+  info(s) { try { const v = JSON.parse(localStorage.getItem(this.key('save', s))); if (!v || typeof v !== 'object') return { has: false }; return { has: true, stars: v.stars | 0, hero: v.hero || 'jannis', pet: v.pet || 'blitz', stk: Array.isArray(v.stk) ? v.stk.length : 0, ts: v.ts || 0 }; } catch (e) { return { has: false }; } },
+  clear(s) { for (const k of this.KEYS) { try { localStorage.removeItem(this.key(k, s)); } catch (e) { } } },
+  /* Sicherungsdatei: alles eines Spielstands als JSON */
+  exportSlot(s) { const data = {}; for (const k of this.KEYS) { try { const v = localStorage.getItem(this.key(k, s)); if (v != null) data[k] = JSON.parse(v); } catch (e) { } } return { game: 'bunte-insel', v: 1, slot: s, saved: Date.now(), data }; },
+  importSlot(s, o) {
+    if (!o || o.game !== 'bunte-insel' || !o.data || typeof o.data.save !== 'object' || o.data.save === null) return false;
+    this.clear(s); try { for (const k of this.KEYS) if (o.data[k] != null) localStorage.setItem(this.key(k, s), JSON.stringify(o.data[k])); } catch (e) { return false; } return true;
+  }
 };
+(function () { let s = 0; try { s = parseInt(sessionStorage.getItem('bi_slot'), 10); } catch (e) { } if (!(s >= 1 && s <= 3)) s = (BI.store.meta().last | 0); BI.store.slot = s >= 1 && s <= 3 ? s : 1; })();
 
 /* ---- Batch: viele einfache Körper zu EINEM Mesh bündeln (Vertexfarben, flache Schattierung) ---- */
 (function () {
