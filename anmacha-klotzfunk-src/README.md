@@ -32,7 +32,7 @@ Nach Änderungen am Quelltext immer `npm run build` ausführen und den Ordner `a
 | Wegpunkt / Minikarte | B / M | 📍 / 🗺 |
 | Pause / Speichern | Esc | ⏸ |
 
-Modi: **Überleben** (abgebaute Blöcke landen im Inventar, Herstellen: Holz → Bretter, Sand → Glas, Glas + Holz → Leuchtblock) und **Kreativ** (unbegrenzte Blöcke, Fliegen).
+Modi: **Überleben** (abgebaute Blöcke landen im Inventar, Herstellen: Holz → Bretter, Sand → Glas, Glas + Holz → Leuchtblock) **Kreativ** (unbegrenzte Blöcke, Fliegen) und **Story** (15 feste Aufträge der Funkzentrale, feste Welt, Start ohne Material; Auftragsbuch mit J oder im Pausemenü; Belohnungen als Items).
 **Spezial-Blöcke** (Inventar → Spezial-Blöcke, im Überleben herstellbar): Federblock (hohe Sprünge), Turbo-Block (2,4-faches Tempo), Aufwind-Block (hebt bis 11 Blöcke hoch), Radio-Block (spielt einen erzeugten Beat, leiser mit Abstand), Regenbogen-Block (wandernde Farben), vier Neon-Blöcke (leuchten), Ziegel, Marmor.
 
 Die Welt wird alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite automatisch gespeichert. Nur geänderte Blöcke werden abgelegt.

@@ -5,6 +5,7 @@ import { buildMesh, cubeData } from './mesher.js';
 import { drawAtlas, createLogoAtlas, cloudCanvas } from './textures.js';
 import { Player, raycast, EYE } from './physics.js';
 import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
+import { QUESTS, questProgress } from './quests.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
@@ -176,6 +177,7 @@ export class Game {
     this.setViewDist(this.viewDist);
     this.onChange = () => {};   // UI-Hinweis (Hotbar/Inventar geändert)
     this.onToast = () => {};
+    this.story = null; this.onQuest = () => {}; this.onQuestDone = () => {};
     this.resize();
   }
 
@@ -205,6 +207,7 @@ export class Game {
   start(save) {
     this.stop();
     this.clearWorld();
+    this.leaveMenu();
     const edits = new Map();
     if (save.edits) for (const k of Object.keys(save.edits)) {
       const arr = save.edits[k], m = new Map();
@@ -217,13 +220,15 @@ export class Game {
     this.hotbar = (save.hotbar && save.hotbar.length === 9) ? save.hotbar.slice() : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
-    if (!save.inv) {
+    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false }) : null;
+    if (!save.inv && save.mode === 'survival') {
       for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
       for (let i = 0; i < SPECIAL_COUNT; i++) this.inv[SPECIAL0 + i] = 8;
     }
     this.wp = save.wp || null; this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
     this.handType = -1;
     this.spawn = this.world.findSpawn();
+    this.spawnY = this.spawn.y;
     const p = this.player;
     if (save.px !== undefined) { p.x = save.px; p.y = save.py; p.z = save.pz; this.yaw = save.yaw || 0; this.pitch = save.pitch || 0; }
     else { p.x = this.spawn.x; p.y = this.spawn.y; p.z = this.spawn.z; this.yaw = 0; this.pitch = -0.1; }
@@ -236,6 +241,60 @@ export class Game {
     this.applyCamera();
     this.updateSky();
     this.resume();
+  }
+
+  // ---------- Menü-Kulisse: kreisende Kamera über einer kleinen Schaubühne ----------
+  startMenu() {
+    this.stop();
+    this.clearWorld();
+    this.menuMode = true;
+    this.savedView = this.savedView ?? this.viewDist;
+    this.setViewDist(Math.min(this.viewDist, 4));
+    this.world = new World(20241, new Map());
+    this.mode = 'creative'; this.time = 0.06; this.menuT = 0; this.hotbar = new Array(9).fill(0); this.sel = 0; this.inv = {};
+    const sp = this.world.findSpawn(), p = this.player, w = this.world;
+    p.x = sp.x; p.z = sp.z; p.y = sp.y; p.flying = false; p.vx = p.vy = p.vz = 0; p.hook = false;
+    this.loadAround(3, 2);
+    // Bühne: ebene Fläche mit Logo-Podest, Neon-Säulen, Regenbogen-Spitzen und Radio
+    const cx = Math.floor(sp.x), cz = Math.floor(sp.z), gy = Math.floor(sp.y) - 1;
+    for (let x = cx - 5; x <= cx + 5; x++) for (let z = cz - 5; z <= cz + 5; z++) {
+      for (let y = gy + 1; y <= gy + 9; y++) w.setBlock(x, y, z, B.AIR);
+      w.setBlock(x, gy, z, (x + z) & 1 ? B.MARBLE : B.STONE);
+    }
+    for (let i = 0; i < 16; i++) w.setBlock(cx - 2 + (i % 4), gy + 1, cz - 2 + (i >> 2), LOGO0 + i);
+    const neon = [B.NEON_R, B.NEON_B, B.NEON_G, B.NEON_P];
+    [[-3, -3], [3, -3], [3, 3], [-3, 3]].forEach(([dx, dz], k) => {
+      for (let y = 1; y <= 4; y++) w.setBlock(cx + dx, gy + y, cz + dz, neon[k]);
+      w.setBlock(cx + dx, gy + 5, cz + dz, B.RAINBOW);
+    });
+    w.setBlock(cx, gy + 2, cz, B.RADIO);
+    for (let y = 3; y <= 5; y++) w.setBlock(cx, gy + y, cz, B.FEDER);
+    w.setBlock(cx, gy + 6, cz, B.RAINBOW);
+    this.menuC = { x: cx + 0.5, y: gy + 3, z: cz + 0.5 };
+    this.flushDirty();
+    this.hand.visible = false; this.hl.visible = false; this.rope.visible = false;
+    this.scanDirty = true; this.lastPC = null;
+    this.menuStep(0);
+    this.resume();
+  }
+
+  leaveMenu() {
+    if (!this.menuMode) return;
+    this.menuMode = false;
+    if (this.savedView != null) { this.setViewDist(this.savedView); this.savedView = null; }
+  }
+
+  menuStep(dt) {
+    this.menuT += dt;
+    this.time = (this.time + dt / 150) % 1;
+    const c = this.menuC, a = this.menuT * 0.07, r = 15 + Math.sin(this.menuT * 0.05) * 2.5, h = 4.5 + Math.sin(this.menuT * 0.11) * 1.5;
+    this.camera.position.set(c.x + Math.cos(a) * r, c.y + h, c.z + Math.sin(a) * r);
+    this.camera.lookAt(c.x, c.y - 3.2, c.z); // Bühne rückt im Bild nach oben, hinter den Titel
+    this.stream();
+    this.flushDirty();
+    this.uni.uTime.value = performance.now() / 1000;
+    this.updateSky();
+    this.cloudU.uOff.value.x += dt * 2.5;
   }
 
   clearWorld() {
@@ -256,7 +315,7 @@ export class Game {
     const p = this.player;
     return {
       v: 1, name: this.name, seed: this.seed, mode: this.mode, time: this.time, savedAt: Date.now(),
-      px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, edits
+      px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, story: this.story, edits
     };
   }
 
@@ -281,9 +340,10 @@ export class Game {
   frame(now) {
     if (!this.running) return;
     this.raf = requestAnimationFrame(t => this.frame(t));
+    if (this.menuMode && now - this.last < 32) return; // Menü-Kulisse: ca. 30 Bilder/s genügen
     const dt = Math.min(0.05, (now - this.last) / 1000);
     this.last = now;
-    this.step(dt);
+    if (this.menuMode) this.menuStep(dt); else this.step(dt);
     this.render();
   }
 
@@ -293,6 +353,8 @@ export class Game {
     this.uni.uTime.value = performance.now() / 1000;
     this.updateHook(dt);
     p.update(w, dt, this.input, this.yaw);
+    if (p.bounces) { this.questEvent('bounce', 0, p.bounces); p.bounces = 0; }
+    if (this.story && p.gliding) this.glideAcc = (this.glideAcc || 0) + dt;
     this.applyCamera();
     this.stream();
     // Zielblock und Aktionen
@@ -309,7 +371,7 @@ export class Game {
     this.updateSky();
     this.cloudU.uOff.value.x += dt * 2.5;
     this.radioT -= dt;
-    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); }
+    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
   }
@@ -322,6 +384,7 @@ export class Game {
     if (!r) { playDeny(); this.onToast('Seilhaken: kein Ziel in Reichweite'); return; }
     this.hookTarget.set(r.x + 0.5 + r.nx * 0.9, r.y + 0.5 + r.ny * 0.9, r.z + 0.5 + r.nz * 0.9);
     this.hookT = 1.6; playPlace();
+    this.questEvent('hook', 0);
   }
 
   updateHook(dt) {
@@ -359,6 +422,42 @@ export class Game {
     }
     this.radioDist = best;
     setRadio(best < 24 ? Math.pow(1 - best / 24, 1.5) : 0, seed);
+  }
+
+  // ---------- Story: feste Aufträge ----------
+  questTick() {
+    const s = this.story;
+    if (!s || s.done) return;
+    const q = QUESTS[s.i];
+    if (q.k === 'height') s.max = Math.max(s.max, this.player.y - this.spawnY);
+    if (q.k === 'glide' && this.glideAcc) { s.p += this.glideAcc; }
+    this.glideAcc = 0;
+    this.questCheck();
+  }
+
+  questEvent(kind, type, n = 1) {
+    const s = this.story;
+    if (!s || s.done) return;
+    const q = QUESTS[s.i];
+    if (q.k === 'have') { this.questCheck(); return; }
+    if (q.k !== kind || (q.a && !q.a.includes(type))) return;
+    s.p += n;
+    this.questCheck();
+  }
+
+  questCheck() {
+    const s = this.story;
+    for (let guard = 0; s && !s.done && guard < QUESTS.length; guard++) {
+      const q = QUESTS[s.i], [cur, n] = questProgress(this, q);
+      if (cur < n) break;
+      for (const [t, c] of Object.entries(q.r || {})) this.inv[t] = Math.min(MAX_STACK, (this.inv[t] || 0) + c);
+      s.i++; s.p = 0; s.max = 0;
+      if (s.i >= QUESTS.length) s.done = true;
+      this.unsaved = true; playPlace();
+      this.onQuestDone(q, s.done);
+      this.onChange();
+    }
+    this.onQuest();
   }
 
   // ---------- Hand-Block und Bruchstücke ----------
@@ -425,6 +524,7 @@ export class Game {
     if (this.world.setBlock(t.x, t.y, t.z, B.AIR)) {
       if (this.mode !== 'creative') this.inv[t.type] = Math.min(MAX_STACK, (this.inv[t.type] || 0) + 1);
       this.unsaved = true; this.swing = 1; this.spawnBreak(t.x, t.y, t.z, t.type); playBreak(); this.onChange();
+      this.questEvent('break', t.type);
       return true;
     }
     return false;
@@ -444,6 +544,7 @@ export class Game {
     if (!this.world.setBlock(x, y, z, type)) return false;
     if (this.mode !== 'creative') this.inv[type]--;
     this.unsaved = true; this.swing = 1; playPlace(); this.onChange();
+    this.questEvent('place', type);
     return true;
   }
 

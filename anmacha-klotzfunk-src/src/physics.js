@@ -9,7 +9,7 @@ export class Player {
     this.x = 0; this.y = 0; this.z = 0;
     this.vx = 0; this.vy = 0; this.vz = 0;
     this.onGround = false; this.inWater = false; this.flying = false; this.coyote = 0;
-    this.fallT = 0; this.gliding = false; this.hook = false; this.lifted = false;
+    this.fallT = 0; this.gliding = false; this.hook = false; this.lifted = false; this.bounces = 0;
   }
 
   collides(world, x, y, z) {
@@ -106,7 +106,7 @@ export class Player {
     this.move(world, 'y', this.vy * dt);
     // Federblock: Aufprall wird zurückgeworfen
     if (this.onGround && pvy < -2 && world.getBlock(fx, Math.floor(this.y - 0.05), fz) === B.FEDER) {
-      this.vy = Math.min(26, Math.max(10, -pvy * 0.92)); this.onGround = false;
+      this.vy = Math.min(26, Math.max(10, -pvy * 0.92)); this.onGround = false; this.bounces++;
     }
     this.coyote = this.onGround ? 0.1 : this.coyote - dt;
   }
