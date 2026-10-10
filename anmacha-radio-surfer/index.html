@@ -42,6 +42,7 @@
   h1 span{display:block;font-size:clamp(46px,13vw,92px);background:linear-gradient(90deg,#00ff66,#19f0ff);
     -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,255,102,.55))}
   [hidden]{display:none!important}
+  .brand.full{max-width:min(88vw,540px);max-height:clamp(150px,48vw,250px);-webkit-mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000 70%,transparent 100%)}
   .brand{display:block;margin:0 auto;max-width:min(78vw,420px);max-height:clamp(64px,15vw,112px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.28))}
   h1 small{display:block;font-size:clamp(18px,5.5vw,34px);letter-spacing:.35em;color:#fff;text-shadow:0 0 14px #19f0ff;margin-top:4px}
   .tag{margin:0;color:#9dd9c4;font-size:clamp(14px,3.8vw,18px)}
@@ -84,7 +85,7 @@
 <div id="overlay">
   <div class="card">
     <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
-    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small>RADIO SURFER</small></h1>
+    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small id="brandSub">RADIO SURFER</small></h1>
     <p class="tag">Surf durchs Internet – und weiche den Sendern aus!</p>
     <h2 id="ovTitle"></h2>
     <p id="ovText"></p>
@@ -126,6 +127,7 @@ if (window.self !== window.top) $('back').style.display = 'none';
     .then(list => {
       const src = list.find(Boolean); if (!src) return;
       const img = $('brandImg'); img.src = src; img.hidden = false; $('brandText').hidden = true;
+      if (!src.startsWith('../')) { img.classList.add('full'); $('brandSub').hidden = true; }   // Logo aus dem Spielordner = kompletter Titel (inkl. Spielname)
     });
 })();
    // eingebettet: Navigation übernimmt die Spieleliste

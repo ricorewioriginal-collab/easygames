@@ -93,5 +93,7 @@ Ein normales Logo (PNG mit Transparenz am besten, auch JPG, SVG oder WebP) als *
 - im **Hauptordner** (neben `index.html`): erscheint auf der Startseite und im Hauptmenü aller Spiele
 - oder in einem **Spielordner** (z. B. `anmacha-flipper/logo.png`): gilt nur für dieses Spiel und hat Vorrang
 
-Das Logo ersetzt im Hauptmenü der Spiele das Wort „AnMaCha“ (der Zusatz „FLIPPER“ bzw. „RADIO SURFER“ bleibt darunter).
+Ein Logo im **Hauptordner** ersetzt im Hauptmenü der Spiele das Wort „AnMaCha“ (der Zusatz „FLIPPER“ bzw. „RADIO SURFER“ bleibt darunter).
+Ein Logo im **Spielordner** gilt als kompletter Titel (z. B. „AnMaCha Radio Surfer“) und ersetzt den ganzen Text-Titel; es wird größer dargestellt und am Rand weich ausgeblendet.
+Tipp: Logos auf ca. 800 px Breite verkleinern (unter ca. 500 KB), dann lädt das Menü schnell.
 Auf dem dunklen Hintergrund passen helle oder farbige Logos am besten. Ohne Logo-Datei bleibt der Text-Titel.
