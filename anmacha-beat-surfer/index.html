@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#080B12">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<title>AnMaCha Beat Surfer</title>
+<style>
+  *{box-sizing:border-box}
+  :root{--c:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6}
+  html,body{margin:0;height:100%;overflow:hidden;background:#080B12;color:#fff;overscroll-behavior:none;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;touch-action:none}
+  canvas#gl{display:block;position:fixed;inset:0;width:100%;height:100%}
+  button{font:inherit;color:#fff;cursor:pointer;touch-action:none}
+  .hidden,[hidden]{display:none!important}
+  .glass{background:rgba(12,17,32,.58);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 8px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
+  .lbl{font-size:10.5px;letter-spacing:.22em;color:#8da2bb;font-weight:700}
+  body.menu #hud,body.menu #pads,body.menu #hint,body.menu #combo,body.menu #judge,body.menu #count,body.menu #prog{display:none!important}
+
+  #prog{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--c),var(--ma));box-shadow:0 0 10px var(--c);pointer-events:none}
+  #hud{position:fixed;top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+    padding:calc(10px + env(safe-area-inset-top)) 10px 0;pointer-events:none}
+  #hL,#hC{padding:8px 14px;display:flex;flex-direction:column;gap:1px}
+  #hL{min-width:104px}
+  #score{font:900 clamp(26px,6.6vw,40px)/1.05 'Trebuchet MS',system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--c));
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px var(--c));font-variant-numeric:tabular-nums}
+  #best{font-size:11px;color:#9fb4c8}
+  #tname{font-size:11px;color:var(--c);font-weight:700}
+  #hC{align-items:center;min-width:130px}
+  #hp{width:clamp(110px,26vw,190px);height:12px;border-radius:7px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:4px}
+  #hp b{display:block;height:100%;width:70%;background:linear-gradient(90deg,#ff2d4d,#ffb020,#00ff9a);transition:width .15s}
+  #acc{font-size:11px;color:#9fb4c8;margin-top:3px}
+  #btns{display:flex;gap:8px;pointer-events:auto}
+  .ib{width:44px;height:44px;border-radius:14px;font-size:18px;padding:0}
+  .ib:active{background:rgba(0,229,255,.28)}
+  @media (max-width:430px){
+    .ib{width:38px;height:38px;font-size:16px;border-radius:12px} #btns{gap:5px} #hud{gap:5px;padding-left:6px;padding-right:6px}
+    #hC{padding:6px 9px;min-width:0} #hL{min-width:0;padding:6px 10px} .lbl{letter-spacing:.14em}
+  }
+  #combo{position:fixed;left:0;right:0;top:25%;text-align:center;pointer-events:none}
+  #comboN{display:block;font:900 clamp(36px,10vw,72px)/1 'Trebuchet MS',sans-serif;text-shadow:0 0 22px var(--c);font-variant-numeric:tabular-nums}
+  #comboM{font-size:clamp(12px,3.4vw,16px);letter-spacing:.3em;color:#9fb4c8;font-weight:700}
+  #judge{position:fixed;left:0;right:0;top:41%;text-align:center;font:900 clamp(22px,6vw,38px)/1 'Trebuchet MS',sans-serif;pointer-events:none;opacity:0}
+  #judge.show{animation:jd .5s ease-out forwards}
+  @keyframes jd{0%{opacity:0;transform:scale(.7)}15%{opacity:1;transform:scale(1.08)}70%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+  #count{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+    font:900 clamp(90px,26vw,200px)/1 'Trebuchet MS',sans-serif;text-shadow:0 0 40px var(--ma);opacity:0}
+  #count.show{animation:cd 1s ease-out forwards}
+  @keyframes cd{0%{opacity:0;transform:scale(1.6)}20%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.8)}}
+  #hint{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:#7d90a6;pointer-events:none}
+  body.touch #hint{display:none}
+
+  #pads{position:fixed;left:0;right:0;bottom:0;display:none;gap:8px;padding:0 10px calc(12px + env(safe-area-inset-bottom))}
+  body.touch #pads{display:flex}
+  #pads button{flex:1;height:clamp(96px,19vh,150px);border-radius:22px;border:2px solid var(--lc);background:linear-gradient(180deg,color-mix(in srgb,var(--lc) 28%,transparent),rgba(8,11,18,.55));
+    box-shadow:0 0 16px color-mix(in srgb,var(--lc) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.2);font:900 18px 'Trebuchet MS',sans-serif;color:var(--lc)}
+  #pads button.down{background:color-mix(in srgb,var(--lc) 55%,transparent);color:#fff}
+  @media (orientation:landscape) and (max-height:600px){ #pads button{height:clamp(70px,24vh,110px)} #combo{top:12%} }
+
+  .ov{position:fixed;inset:0;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at 50% 30%,rgba(8,11,18,.45),rgba(8,11,18,.93) 75%)}
+  .ov::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background:radial-gradient(500px 300px at 15% 10%,var(--c),transparent 70%),radial-gradient(500px 300px at 90% 90%,var(--ma),transparent 70%);mix-blend-mode:soft-light}
+  .card{position:relative;margin:auto;width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  h1{margin:0;line-height:.92;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(46px,13vw,88px);background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(0,229,255,.55))}
+  h1 small{display:block;font-size:clamp(17px,5.4vw,30px);letter-spacing:.42em;text-shadow:0 0 14px #FF2D95;margin-top:6px;padding-left:.42em}
+  .brand{display:block;margin:0 auto;max-width:min(78vw,420px);max-height:clamp(64px,15vw,112px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.28))}
+  .brand.full{max-width:min(88vw,540px);max-height:clamp(150px,48vw,250px);-webkit-mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000 70%,transparent 100%)}
+  h2{margin:0;font-size:clamp(26px,6.5vw,40px);font-style:italic;text-shadow:0 0 16px var(--ma)}
+  .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.12em;color:#080B12;border:0;border-radius:999px;padding:15px 58px;min-height:58px;
+    background:linear-gradient(90deg,#00E5FF,#8B5CF6,#FF2D95);box-shadow:0 0 30px rgba(139,92,246,.65),inset 0 2px 0 rgba(255,255,255,.4)}
+  .big:active{transform:scale(.96)}
+  .big:disabled{opacity:.6;cursor:wait}
+  .ghost{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.05);border-radius:999px;padding:10px 22px;min-height:46px;font-weight:700}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+  .seg{display:flex;gap:6px;padding:5px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+  .seg button{border:0;background:transparent;border-radius:999px;padding:10px 18px;font-weight:800;font-size:clamp(13px,3.6vw,16px);color:#b6c5d8;min-height:44px}
+  .seg button.on{background:linear-gradient(90deg,#00E5FF,#8B5CF6);color:#06101a;box-shadow:0 0 16px rgba(0,229,255,.5)}
+  #path{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:420px}
+  #path i{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font:800 12px system-ui,sans-serif;font-style:normal;color:#9fb4c8}
+  #path i.done{background:var(--c);border-color:var(--c);color:#06101a;box-shadow:0 0 10px var(--c)}
+  #path i.next{border-color:var(--ma);color:#fff;box-shadow:0 0 10px var(--ma)}
+  .picker{display:flex;align-items:center;gap:10px;width:100%;justify-content:center}
+  .arrow{width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(12,17,32,.7);font-size:22px;padding:0;flex:none}
+  .arrow:active{background:rgba(0,229,255,.25)}
+  .tcard{width:min(66vw,400px);padding:10px;border-radius:20px;border:1.5px solid var(--c);background:rgba(10,14,26,.8);
+    box-shadow:0 0 34px var(--c),inset 0 1px 0 rgba(255,255,255,.12);display:flex;flex-direction:column;gap:7px;align-items:center}
+  .tcard canvas{width:100%;aspect-ratio:1024/560;border-radius:12px;background:#0b1018}
+  .tmeta{display:flex;flex-direction:column;gap:1px}
+  .tmeta b{font-size:17px}.tmeta span{font-size:12.5px;color:#9fb4c8}
+  #dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  #dots i{width:8px;height:8px;border-radius:50%;background:#33425a}
+  #dots i.on{background:var(--c);box-shadow:0 0 8px var(--c);transform:scale(1.25)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:clamp(11.5px,3.1vw,13px);color:#b6c5d8}
+  .chips span{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}
+  kbd{background:#0f1c2c;border:1px solid rgba(0,229,255,.35);border-radius:5px;padding:0 6px;font:inherit}
+  #status{margin:0;font-size:12px;color:#6c8097;min-height:1.2em}
+  #back{font-size:13px;color:#00E5FF;text-decoration:none}
+  .score-big{font:900 clamp(40px,10vw,64px)/1 'Trebuchet MS',sans-serif;background:linear-gradient(90deg,#fff,#00E5FF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px var(--c))}
+  #stars{font-size:clamp(34px,9vw,52px);letter-spacing:.1em;text-shadow:0 0 16px #ffb020;color:#ffb020}
+  #stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px}
+  #stats div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:8px 4px;font-size:12px;color:#9fb4c8}
+  #stats b{display:block;font-size:20px;color:#fff}
+  .off{display:flex;align-items:center;gap:8px;font-size:13px;color:#9fb4c8}
+  .off button{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);padding:0;font-size:18px}
+</style>
+</head>
+<body class="menu">
+<canvas id="gl"></canvas>
+<div id="prog"></div>
+
+<div id="hud">
+  <div id="hL" class="glass"><div class="lbl">SCORE</div><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div></div>
+  <div id="hC" class="glass"><div class="lbl">WELLE</div><div id="hp"><b id="hpB"></b></div><div id="acc">100 %</div></div>
+  <div id="hR"><div id="btns">
+    <button class="ib glass" id="bPause" aria-label="Pause">⏸</button>
+    <button class="ib glass" id="bSound" aria-label="Ton">🔊</button>
+    <button class="ib glass" id="bRestart" aria-label="Neustart">↻</button>
+  </div></div>
+</div>
+<div id="combo"><span id="comboN"></span><small id="comboM"></small></div>
+<div id="judge"></div>
+<div id="count"></div>
+<div id="hint"><kbd>D</kbd><kbd>F</kbd><kbd>J</kbd><kbd>K</kbd> oder <kbd>←</kbd><kbd>↓</kbd><kbd>↑</kbd><kbd>→</kbd> = Spuren treffen · <kbd>P</kbd> Pause · <kbd>R</kbd> Neustart · <kbd>M</kbd> Ton</div>
+<div id="pads">
+  <button id="p0" style="--lc:#00E5FF">◀</button><button id="p1" style="--lc:#FF2D95">▼</button>
+  <button id="p2" style="--lc:#9DFF00">▲</button><button id="p3" style="--lc:#FFB020">▶</button>
+</div>
+
+<div id="menu" class="ov">
+  <div class="card">
+    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small id="brandSub">BEAT SURFER</small></h1>
+    <div class="seg"><button id="mCamp" class="on">🏁 Kampagne</button><button id="mFree">🎯 Freies Spiel</button></div>
+    <p class="sub" id="modeInfo"></p>
+    <div id="campBox"><div id="path"></div></div>
+    <div class="picker hidden" id="pickBox">
+      <button class="arrow" id="tPrev" aria-label="Voriger Song">◀</button>
+      <div class="tcard" id="tcard"><canvas id="tprev" width="512" height="280"></canvas>
+        <div class="tmeta"><b id="tTitle"></b><span id="tSub"></span></div><div id="dots"></div></div>
+      <button class="arrow" id="tNext" aria-label="Nächster Song">▶</button>
+    </div>
+    <button class="big" id="bPlay" disabled>LADE …</button>
+    <button class="ghost hidden" id="bReset">↺ Kampagne von vorn</button>
+    <div class="chips">
+      <span>💻 <kbd>D</kbd><kbd>F</kbd><kbd>J</kbd><kbd>K</kbd> oder <kbd>←</kbd><kbd>↓</kbd><kbd>↑</kbd><kbd>→</kbd></span>
+      <span>📱 4 große Tasten unten antippen</span>
+      <span>Treffe die Noten im Takt der Musik!</span>
+    </div>
+    <p id="status"></p>
+    <a id="back" href="../">← Alle Spiele</a>
+  </div>
+</div>
+
+<div id="pauseOv" class="ov hidden">
+  <div class="card"><h2>PAUSE</h2>
+    <button class="big" id="pResume">WEITER</button>
+    <div class="row"><button class="ghost" id="pRestart">↻ Neustart</button><button class="ghost" id="pMenu">Songwahl</button></div>
+    <div class="off">Audio-Versatz <button id="offM">−</button><b id="offV">0 ms</b><button id="offP">+</button></div>
+    <p class="sub" style="font-size:12px;max-width:340px">Treffer wirken zu früh oder zu spät (z. B. mit Bluetooth-Kopfhörern)? Hier den Versatz anpassen.</p>
+  </div>
+</div>
+<div id="resOv" class="ov hidden">
+  <div class="card"><h2 id="rTitle">GESCHAFFT!</h2>
+    <div id="stars">★★★</div>
+    <div class="score-big" id="rScore">0</div>
+    <div id="stats"><div><b id="rAcc">0 %</b>Genauigkeit</div><div><b id="rCombo">0</b>Max. Combo</div><div><b id="rPerf">0</b>Perfekt</div></div>
+    <p class="sub" id="rText"></p>
+    <button class="big" id="rNext">WEITER</button>
+    <div class="row"><button class="ghost" id="rAgain">Nochmal</button><button class="ghost" id="rMenu">Songwahl</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+if (typeof THREE === 'undefined') {
+  $('status').textContent = 'three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen.';
+  $('bPlay').textContent = 'OFFLINE';
+  throw new Error('THREE missing');
+}
+const TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+if (TOUCH) document.body.classList.add('touch');
+if (window.self !== window.top) $('back').style.display = 'none';
+
+/* ================= Konfiguration ================= */
+// Song-Logos: logos/01.png|jpg|jpeg … 13 (Song n = Logo n). Haupt-Logo: logo.png im Spielordner (oder im Hauptordner).
+const LOGO_DIR = 'logos/', TRACKS = 13;
+
+let brandTitle = null;
+(function loadBrandLogo() {
+  const exts = ['png', 'jpg', 'jpeg', 'svg', 'webp'], cands = [];
+  ['', '../'].forEach(d => exts.forEach(e => cands.push(`${d}logo.${e}`)));
+  Promise.all(cands.map(src => new Promise(res => { const im = new Image(); im.onload = () => res(src); im.onerror = () => res(null); im.src = src; })))
+    .then(list => {
+      const src = list.find(Boolean); if (!src) return;
+      const img = $('brandImg'); img.src = src; img.hidden = false; $('brandText').hidden = true;
+      if (!src.startsWith('../')) { img.classList.add('full'); $('brandSub').hidden = true; }   // Logo aus dem Spielordner = kompletter Titel
+    });
+})();
+
+// Song-Logos sofort im Hintergrund laden
+const rawLogos = [], t0 = performance.now();
+let probesLeft = TRACKS;
+for (let i = 0; i < TRACKS; i++) {
+  const base = LOGO_DIR + String(i + 1).padStart(2, '0');
+  Promise.all(['png', 'jpg', 'jpeg'].map(ext => new Promise(res => {
+    const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = () => res(null); im.src = `${base}.${ext}`;
+  }))).then(l => { const im = l.find(Boolean); if (im) rawLogos[i] = im; probesLeft--; });
+}
+
+/* ================= Hilfsfunktionen ================= */
+const hex = c => '#' + c.toString(16).padStart(6, '0');
+const seeded = s => () => (s = s * 16807 % 2147483647) / 2147483647;
+const tint = (c, k) => `rgb(${(c >> 16 & 255) * k | 0},${(c >> 8 & 255) * k | 0},${(c & 255) * k | 0})`;
+const canvasEl = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
+const PALETTE = [0x00E5FF, 0xFF2D95, 0x8B5CF6, 0x9DFF00, 0xFFB020, 0x3D8BFF, 0xFF4D4D, 0x00FFC8];
+const LANE_COL = [0x00E5FF, 0xFF2D95, 0x9DFF00, 0xFFB020], LANE_KEYS = ['D', 'F', 'J', 'K'];
+
+/* ================= Songs: ein Genre pro Sender ================= */
+// Namen/Genres der Sender (Song n = Logo n). Beim Austauschen der Logos hier die Namen anpassen.
+const MAJ = [0, 2, 4, 7, 9], MIN = [0, 3, 5, 7, 10];
+const P_MAJ = [0, 5, 7, 5], P_MIN = [0, 8, 3, 10], P_CHILL = [0, 5, 9, 7];
+const STATIONS = [
+  { n: 'RicoReWi Music & Media', g: 'Synthwave', bpm: 118, root: 45, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'gate', hat: 'closed', bass: 'pump', lead: 'supersaw',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 2, 4, 6, 8, 10, 12, 14], lp: [0, 6, 10] },
+  { n: 'YourTime-FM', g: 'Chill & Tropical', bpm: 104, root: 48, prog: P_CHILL, scale: MAJ, kick: 'soft', snare: 'clap', hat: 'shaker', bass: 'sub', lead: 'pluck',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 3, 6, 10], lp: [0, 3, 6, 10, 12] },
+  { n: 'RapRadio 24', g: 'Rap', bpm: 92, root: 43, prog: P_MIN, scale: MIN, kick: '808', snare: 'crack', hat: 'closed', bass: 'sub', lead: 'piano', roll: true,
+    kp: [0, 7, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 7, 10], lp: [2, 6, 9, 13] },
+  { n: 'SchlagerPop 24', g: 'Schlager', bpm: 124, root: 48, prog: P_MAJ, scale: MAJ, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'oct', lead: 'accordion',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 4, 8, 12], lp: [0, 4, 6, 8, 12, 14] },
+  { n: 'ChartRadio 24', g: 'Pop & Charts', bpm: 120, root: 45, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'saw', lead: 'pluck',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [2, 6, 10, 14], lp: [0, 3, 6, 8, 11, 14] },
+  { n: 'ClubRadio 24', g: 'Club / EDM', bpm: 148, root: 46, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'pump', lead: 'supersaw',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15], lp: [0, 2, 3, 5, 7, 8, 10, 11, 13, 15] },
+  { n: 'AnMaCha 24', g: 'Pop-Rock Mix', bpm: 126, root: 45, prog: P_MAJ, scale: MAJ, kick: 'punch', snare: 'crack', hat: 'closed', bass: 'saw', lead: 'stab',
+    kp: [0, 6, 8, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 6, 8, 10], lp: [0, 3, 6, 8, 11, 14] },
+  { n: 'RadioFloh!', g: 'Kindermusik', bpm: 100, root: 48, prog: P_MAJ, scale: MAJ, kick: 'soft', snare: 'clap', hat: 'shaker', bass: 'tri', lead: 'xylo', oomph: true,
+    kp: [0, 8], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 4, 8, 12], lp: [0, 4, 6, 8, 12, 14] },
+  { n: 'RockRadio 24', g: 'Rock', bpm: 132, root: 40, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'crack', hat: 'closed', bass: 'saw', lead: 'stab',
+    kp: [0, 8, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 2, 4, 8, 10, 12], lp: [0, 6, 8, 14] },
+  { n: 'ChristmasRadio 24', g: 'Weihnachten', bpm: 112, root: 48, prog: P_MAJ, scale: MAJ, kick: 'soft', snare: 'brush', hat: 'bell', bass: 'tri', lead: 'bell',
+    kp: [0, 8], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 8], lp: [0, 3, 6, 8, 11, 14] },
+  { n: 'KultRadio 24', g: 'Disco & Kult-Hits', bpm: 116, root: 45, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'oct', lead: 'stab',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 2, 4, 6, 8, 10, 12, 14], lp: [1, 3, 6, 9, 11, 14] },
+  { n: 'Zocker-FM', g: 'Gaming / Chiptune', bpm: 140, root: 45, prog: P_MIN, scale: MIN, kick: 'chip', snare: 'chip', hat: 'chip', bass: 'tri', lead: 'pulse',
+    kp: [0, 6, 8, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 2, 4, 6, 8, 10, 12, 14], lp: [0, 2, 3, 5, 7, 8, 10, 11, 13, 15] },
+  { n: 'Special-Radio', g: 'Entspannung', bpm: 74, root: 47, prog: P_CHILL, scale: MAJ, kick: 'soft', snare: 'brush', hat: 'shaker', bass: 'sub', lead: 'pad',
+    kp: [0, 10], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 8], lp: [0, 6, 10] }
+];
+// Reihenfolge in der Kampagne (leicht -> schwer), unabhängig von der Logo-Nummer: Entspannung, Kinder, Chill, Schlager, Weihnachten, Kult, Charts, AnMaCha 24, RicoReWi, Zocker, Rock, Rap, Club
+const ORDER = [12, 7, 1, 3, 9, 10, 4, 6, 0, 11, 8, 2, 5];
+const rankOf = i => ORDER.indexOf(i);
+const trackInfo = i => {
+  const st = STATIONS[i], r = rankOf(i);
+  return { idx: i, st, rank: r, bpm: st.bpm, ntb: 0.9 + 0.1 * r, approach: 1.7 - 0.04 * r, loss: 7 + 0.6 * r, stars: 1 + Math.round(r / 3), root: st.root };
+};
+
+function buildSong(i) {
+  const tr = trackInfo(i), st = tr.st, rnd = seeded(1000 + i * 77);
+  const beat = 60 / tr.bpm, step = beat / 4, countIn = beat * 4, bars = Math.round(64 * tr.bpm / 240);
+  const events = [], notes = [], lastTime = [-9, -9, -9, -9];
+  for (let b = 0; b < bars; b++) {
+    const off = st.prog[b % 4], cand = [];
+    for (let s = 0; s < 16; s++) {
+      const e = { t: countIn + (b * 16 + s) * step, kick: st.kp.includes(s), snare: st.sp.includes(s), hat: st.hp.includes(s) || (st.roll && b % 4 === 3 && s >= 12), open: false, bass: null, lead: null };
+      if (st.bp.includes(s)) { e.bass = tr.root - 12 + off + (st.oomph && s % 8 === 4 ? 7 : 0); if (st.bass === 'oct' && s % 8 === 4) e.bass += 7; }
+      if (st.lp.includes(s) && rnd() < 0.88) { const k = rnd() * st.scale.length | 0; e.lead = tr.root + 24 + off + st.scale[k] + (rnd() < 0.2 ? 12 : 0); e.leadIdx = k; }
+      events.push(e);
+      if (e.kick) cand.push({ s, lane: 0, pri: (s % 8 === 0 ? 9 : 6) + rnd() });
+      if (e.snare) cand.push({ s, lane: 1, pri: 8 + rnd() });
+      if (e.lead != null) cand.push({ s, lane: e.leadIdx < 3 ? 2 : 3, pri: 4 + rnd() * 2 });
+      else if (e.hat && s % 4 !== 0) cand.push({ s, lane: rnd() < 0.5 ? 2 : 3, pri: 1.5 + rnd() });
+    }
+    const K = Math.max(3, Math.round(tr.ntb * 4 + (rnd() - 0.5) * 1.6));
+    // Mindestens ein paar Melodie-Noten pro Takt, damit alle 4 Spuren vorkommen
+    const leads = cand.filter(c => c.lane >= 2).sort((a, c) => c.pri - a.pri), rest = cand.filter(c => c.lane < 2).sort((a, c) => c.pri - a.pri);
+    const nl = Math.min(leads.length, Math.max(1, Math.round(K * (0.3 + 0.015 * tr.rank))));
+    const picked = leads.slice(0, nl).concat(rest.slice(0, K - nl)).sort((a, c) => a.s - c.s || a.lane - c.lane);
+    const perStep = {};
+    for (const c of picked) {
+      const t = countIn + (b * 16 + c.s) * step;
+      if ((perStep[c.s] || 0) >= 2 || t - lastTime[c.lane] < 0.17) continue;     // höchstens 2 gleichzeitig, pro Spur nicht zu schnell
+      perStep[c.s] = (perStep[c.s] || 0) + 1; lastTime[c.lane] = t;
+      notes.push({ t, lane: c.lane, judged: false, hit: false, mesh: null });
+    }
+  }
+  const duration = countIn + bars * 16 * step;
+  return { tr, beat, step, countIn, bars, events, notes, duration, end: (notes.length ? notes[notes.length - 1].t : duration) + 1.6 };
+}
+
+/* ================= Audio (erzeugte Musik, keine Dateien) ================= */
+let ac = null, master = null, fx = null, muted = false, userOff = 0, noiseBuf = null;
+try { muted = localStorage.getItem('anmachaBeatMuted') === '1'; userOff = +localStorage.getItem('anmachaBeatOffset') || 0; } catch (e) {}
+function audioInit() {
+  if (!ac) {
+    try {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      const comp = ac.createDynamicsCompressor(); master = ac.createGain(); master.gain.value = muted ? 0 : 0.8;
+      master.connect(comp); comp.connect(ac.destination);
+      // einfacher Hall/Echo für ruhige Klänge
+      fx = ac.createGain(); const dl = ac.createDelay(1), fb = ac.createGain(), lp = ac.createBiquadFilter(); dl.delayTime.value = 0.32; fb.gain.value = 0.38; lp.type = 'lowpass'; lp.frequency.value = 2600;
+      fx.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(master); fx.connect(master);
+      noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    } catch (e) { ac = null; }
+  }
+  if (ac && ac.state === 'suspended' && state !== 'paused') ac.resume();
+}
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function env(g, t, a, peak, dur) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); }
+function osc(type, f, t, dur, peak, dest, f2) {
+  const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur * 0.5);
+  env(g, t, 0.005, peak, dur); o.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.05);
+}
+function noise(t, dur, peak, ftype, freq) {
+  const s = ac.createBufferSource(); s.buffer = noiseBuf; const f = ac.createBiquadFilter(), g = ac.createGain(); f.type = ftype; f.frequency.value = freq;
+  env(g, t, 0.002, peak, dur); s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.05);
+}
+function voice(type, f, at, dur, peak, dest, f2) { osc(type, f, at, dur, peak, dest, f2); }
+function playEvent(e, at) {
+  if (!ac) return;
+  const st = song.tr.st, sd = song.step;
+  if (e.kick) {
+    if (st.kick === '808') voice('sine', 95, at, 0.6, 0.95, null, 40);
+    else if (st.kick === 'soft') voice('sine', 115, at, 0.24, 0.6, null, 48);
+    else if (st.kick === 'chip') voice('square', 190, at, 0.1, 0.28, null, 55);
+    else voice('sine', 160, at, 0.3, 0.95, null, 42);
+  }
+  if (e.snare) {
+    if (st.snare === 'clap') { for (let k = 0; k < 3; k++) noise(at + k * 0.012, 0.07, 0.22, 'bandpass', 1300); noise(at + 0.036, 0.15, 0.2, 'bandpass', 1300); }
+    else if (st.snare === 'brush') noise(at, 0.22, 0.12, 'bandpass', 3200);
+    else if (st.snare === 'gate') { noise(at, 0.34, 0.3, 'highpass', 900); voice('triangle', 200, at, 0.1, 0.22); }
+    else if (st.snare === 'chip') { noise(at, 0.08, 0.16, 'highpass', 2200); voice('square', 230, at, 0.07, 0.1); }
+    else { noise(at, 0.18, 0.35, 'bandpass', 1900); voice('triangle', 190, at, 0.1, 0.25); }
+  }
+  if (e.hat) {
+    if (st.hat === 'shaker') noise(at, 0.06, 0.07, 'bandpass', 6000);
+    else if (st.hat === 'bell') { noise(at, 0.1, 0.08, 'highpass', 5600); voice('sine', 2637, at, 0.18, 0.025, fx); voice('sine', 3322, at, 0.14, 0.02, fx); }
+    else if (st.hat === 'chip') noise(at, 0.035, 0.08, 'highpass', 9000);
+    else noise(at, 0.04, 0.07, 'highpass', 7500);
+  }
+  if (e.bass != null) {
+    const f0 = mtof(e.bass);
+    if (st.bass === 'sub') { voice('sine', f0, at, sd * 3, 0.38); voice('triangle', f0 * 2, at, sd * 1.5, 0.06); }
+    else if (st.bass === 'tri') voice('triangle', f0 * 2, at, sd * 1.7, 0.3);
+    else {
+      const o = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain(); o.type = 'sawtooth'; o.frequency.value = f0; f.type = 'lowpass'; f.frequency.value = st.bass === 'pump' ? 700 : 420;
+      env(g, at, 0.01, st.bass === 'pump' ? 0.26 : 0.3, sd * (st.bass === 'pump' ? 1.2 : 1.8)); o.connect(f); f.connect(g); g.connect(master); o.start(at); o.stop(at + sd * 2 + 0.05);
+    }
+  }
+  if (e.lead != null) {
+    const f0 = mtof(e.lead);
+    switch (st.lead) {
+      case 'xylo': voice('triangle', f0 * 2, at, 0.28, 0.1); voice('sine', f0 * 4, at, 0.12, 0.04); break;
+      case 'pluck': voice('triangle', f0, at, 0.45, 0.09, fx); voice('sine', f0 * 2, at, 0.2, 0.03, fx); break;
+      case 'accordion': voice('sawtooth', f0 * 1.003, at, sd * 2.4, 0.04); voice('sawtooth', f0 * 0.997, at, sd * 2.4, 0.04); voice('square', f0 * 2, at, sd * 2.4, 0.02); break;
+      case 'bell': { const o = ac.createOscillator(), m = ac.createOscillator(), mg = ac.createGain(), g = ac.createGain(); o.frequency.value = f0 * 2; m.frequency.value = f0 * 7; mg.gain.setValueAtTime(f0 * 3, at); mg.gain.exponentialRampToValueAtTime(1, at + 0.6);
+        m.connect(mg); mg.connect(o.frequency); env(g, at, 0.003, 0.09, 0.9); o.connect(g); g.connect(fx); o.start(at); m.start(at); o.stop(at + 1); m.stop(at + 1); break; }
+      case 'stab': voice('sawtooth', f0, at, sd * 1.4, 0.06); voice('sawtooth', f0 * 1.498, at, sd * 1.4, 0.04); break;
+      case 'supersaw': [-12, 0, 12].forEach(c => voice('sawtooth', f0 * Math.pow(2, c / 1200), at, sd * 2.6, 0.04)); break;
+      case 'pulse': voice('square', f0, at, sd * 1.15, 0.07); break;
+      case 'piano': voice('triangle', f0, at, 0.4, 0.12); voice('sine', f0 * 2, at, 0.2, 0.05); break;
+      case 'pad': voice('sine', f0, at, sd * 8, 0.06, fx); voice('sine', f0 * 1.004, at, sd * 8, 0.05, fx); break;
+      default: voice('square', f0, at, sd * 2.2, 0.07);
+    }
+  }
+}
+const SFX = {
+  tick: () => { if (ac && !muted) osc('sine', 1320, ac.currentTime, 0.05, 0.08); },
+  miss: () => { if (ac && !muted) noise(ac.currentTime, 0.12, 0.12, 'lowpass', 400); },
+  count: hi => { if (ac) osc('square', hi ? 1320 : 880, ac.currentTime, 0.1, 0.12); },
+  win: () => { if (ac) [523, 659, 784, 1047].forEach((f, i) => osc('triangle', f, ac.currentTime + i * 0.1, 0.35, 0.18)); },
+  fail: () => { if (ac) [392, 330, 262, 196].forEach((f, i) => osc('sawtooth', f, ac.currentTime + i * 0.16, 0.3, 0.12)); }
+};
+function setMuted(m) {
+  muted = m; $('bSound').textContent = m ? '🔇' : '🔊';
+  if (master) master.gain.value = m ? 0 : 0.8;
+  try { localStorage.setItem('anmachaBeatMuted', m ? '1' : '0'); } catch (e) {}
+}
+
+/* ================= Spielzustand ================= */
+let state = 'menu';        // menu | play | paused | result
+let mode = 'campaign', progress = 0, trackIdx = 0, song = null, A0 = 0, perf0 = 0, testClock = null, nextEv = 0, countShown = -1, pausedAt = 0;
+let score = 0, combo = 0, maxCombo = 0, health = 70, perfect = 0, good = 0, miss = 0, ended = false;
+let bests = [];
+try { progress = +localStorage.getItem('anmachaBeatProgress') || 0; mode = localStorage.getItem('anmachaBeatMode') === 'free' ? 'free' : 'campaign';
+  bests = JSON.parse(localStorage.getItem('anmachaBeatBest') || '[]'); trackIdx = +localStorage.getItem('anmachaBeatTrack') || 0; } catch (e) {}
+const audioLat = () => (ac ? (ac.outputLatency || ac.baseLatency || 0) : 0) + userOff / 1000;
+function songTime() {
+  if (testClock !== null) return testClock;
+  if (!ac) return (performance.now() - perf0) / 1000 - userOff / 1000;
+  return ac.currentTime - A0 - audioLat();
+}
+const mult = () => Math.min(4, 1 + Math.floor(combo / 10));
+const accuracy = () => { const n = perfect + good + miss; return n ? (perfect + 0.6 * good) / n : 1; };
+
+function startSong(i) {
+  trackIdx = i; try { localStorage.setItem('anmachaBeatTrack', i); } catch (e) {}
+  song = buildSong(i); ended = false; $('count').dataset.k = '';
+  score = 0; combo = 0; maxCombo = 0; health = 70; perfect = good = miss = 0; nextEv = 0; countShown = -1;
+  notePool.forEach(m => { m.visible = false; m.userData.used = false; });
+  applyTheme(i);
+  if (ac && testClock === null) { A0 = ac.currentTime + 0.25; master.gain.cancelScheduledValues(ac.currentTime); master.gain.value = muted ? 0 : 0.8; if (ac.state === 'suspended') ac.resume(); }
+  else perf0 = performance.now() + 250;
+  state = 'play';
+  ['menu', 'pauseOv', 'resOv'].forEach(id => $(id).classList.add('hidden')); document.body.classList.remove('menu');
+  $('combo').style.visibility = 'hidden';
+}
+function finish(cleared) {
+  if (state === 'result') return;
+  state = 'result'; ended = true;
+  if (ac) { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setTargetAtTime(0, ac.currentTime, 0.12); }
+  const acc = accuracy(), stars = cleared ? (acc >= 0.9 ? 3 : acc >= 0.75 ? 2 : 1) : 0;
+  const bonus = cleared ? stars * 1000 : 0; score += bonus;
+  const stepNow = rankOf(trackIdx);
+  if (cleared) { SFX.win(); if (mode === 'campaign') { progress = Math.max(progress, stepNow + 1); try { localStorage.setItem('anmachaBeatProgress', progress); } catch (e) {} } }
+  else SFX.fail();
+  const prevBest = bests[trackIdx] || 0, nb = Math.floor(score) > prevBest;
+  if (cleared && nb) { bests[trackIdx] = Math.floor(score); try { localStorage.setItem('anmachaBeatBest', JSON.stringify(bests)); } catch (e) {} }
+  $('rTitle').textContent = cleared ? (stars === 3 ? 'PERFEKT! 🏆' : 'GESCHAFFT!') : 'DIE WELLE IST WEG …';
+  $('stars').textContent = cleared ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : '✕';
+  $('rScore').textContent = Math.floor(score); $('rAcc').textContent = Math.round(acc * 100) + ' %'; $('rCombo').textContent = maxCombo; $('rPerf').textContent = perfect;
+  const last = mode === 'campaign' && stepNow >= TRACKS - 1, stn = STATIONS[trackIdx];
+  $('rText').textContent = cleared ? `${stn.n} · ${stn.g}${nb ? ' · 🏆 Neuer Bestwert!' : ''}${bonus ? ' · +' + bonus + ' Sternbonus' : ''}${last ? ' · KAMPAGNE KOMPLETT!' : ''}` : 'Versuch es nochmal – achte auf den Takt!';
+  $('rNext').textContent = cleared ? (last ? 'FERTIG' : 'NÄCHSTER SONG') : 'NOCHMAL';
+  $('rNext').dataset.act = cleared ? (last ? 'menu' : 'next') : 'again';
+  $('resOv').classList.remove('hidden');
+}
+function pauseGame() {
+  if (state !== 'play') return;
+  state = 'paused'; pausedAt = performance.now(); if (ac && testClock === null) ac.suspend(); $('pauseOv').classList.remove('hidden');
+  $('offV').textContent = (userOff > 0 ? '+' : '') + userOff + ' ms';
+}
+function resumeGame() {
+  if (state !== 'paused') return;
+  if (testClock === null && !ac) perf0 += performance.now() - pausedAt;
+  state = 'play'; if (ac && testClock === null) ac.resume(); $('pauseOv').classList.add('hidden');
+}
+function toMenu() {
+  if (ac) { master.gain.setTargetAtTime(0, ac.currentTime, 0.05); }
+  state = 'menu'; ['pauseOv', 'resOv'].forEach(i => $(i).classList.add('hidden')); $('menu').classList.remove('hidden'); document.body.classList.add('menu');
+  applyTheme(trackIdx); drawPreview(); setMode(mode);
+}
+function nextTrackForCampaign() { return ORDER[progress >= TRACKS ? 0 : progress]; }
+
+/* ================= Treffer ================= */
+const WIN_PERFECT = 0.055, WIN_GOOD = 0.115, WIN_MISS = 0.13;
+function press(lane) {
+  if (state !== 'play' || ended) return;
+  flash[lane] = 1;
+  const t = songTime();
+  let best = null, bd = 1e9;
+  for (const n of song.notes) {
+    if (n.t > t + WIN_GOOD + 0.02) break;
+    if (n.lane !== lane || n.judged) continue;
+    const d = Math.abs(n.t - t); if (d < bd) { bd = d; best = n; }
+  }
+  if (!best || bd > WIN_GOOD) return;                    // Ghost-Tap: kein Abzug
+  judge(best, bd <= WIN_PERFECT ? 2 : 1, bd);
+}
+function judge(n, q, d) {                                 // q: 2 perfekt, 1 gut, 0 verpasst
+  n.judged = true; n.hit = q > 0;
+  if (n.mesh) { n.mesh.visible = false; n.mesh.userData.used = false; n.mesh = null; }
+  const tr = song.tr;
+  if (q === 0) { miss++; combo = 0; health -= tr.loss; showJudge('VERPASST', '#ff4d6a'); SFX.miss(); }
+  else {
+    const m = mult(); score += (q === 2 ? 300 : 100) * m; combo++; maxCombo = Math.max(maxCombo, combo);
+    health = Math.min(100, health + (q === 2 ? 1.6 : 0.6));
+    if (q === 2) { perfect++; showJudge('PERFEKT', '#00ffd0'); } else { good++; showJudge('GUT', '#ffd84a'); }
+    SFX.tick(); burst(n.lane, q === 2 ? 0xffffff : LANE_COL[n.lane], q === 2 ? 16 : 8); surferLane = n.lane;
+    if (combo > 0 && combo % 10 === 0) pulse2 = 1;
+  }
+  if (health <= 0 && !ended) { health = 0; finish(false); }
+}
+function showJudge(text, color) {
+  const j = $('judge'); j.textContent = text; j.style.color = color; j.style.textShadow = `0 0 16px ${color}`;
+  j.classList.remove('show'); void j.offsetWidth; j.classList.add('show');
+}
+
+/* ================= Eingabe ================= */
+const KEYMAP = { KeyD: 0, KeyF: 1, KeyJ: 2, KeyK: 3, ArrowLeft: 0, ArrowDown: 1, ArrowUp: 2, ArrowRight: 3 };
+addEventListener('keydown', e => {
+  audioInit();
+  const k = e.code;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(k)) e.preventDefault();
+  if (k === 'KeyM') { setMuted(!muted); return; }
+  if (k === 'Escape' || k === 'KeyP') { if (state === 'play') pauseGame(); else if (state === 'paused') resumeGame(); return; }
+  if (k === 'KeyR') { if (state === 'play' || state === 'paused' || state === 'result') startSong(trackIdx); return; }
+  if (state === 'menu') { if ((k === 'Enter' || k === 'Space') && !$('bPlay').disabled) playPressed(); return; }
+  if (state === 'result') { if (k === 'Enter' || k === 'Space') $('rNext').click(); return; }
+  if (state === 'paused') { if (k === 'Enter' || k === 'Space') resumeGame(); return; }
+  if (e.repeat) return;
+  if (k in KEYMAP) press(KEYMAP[k]);
+});
+for (let i = 0; i < 4; i++) {
+  const el = $('p' + i);
+  el.addEventListener('pointerdown', e => { e.preventDefault(); audioInit(); try { el.setPointerCapture(e.pointerId); } catch (x) {} el.classList.add('down'); press(i); });
+  const up = () => el.classList.remove('down');
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('lostpointercapture', up);
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+document.addEventListener('gesturestart', e => e.preventDefault());
+addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+
+function playPressed() { audioInit(); startSong(mode === 'campaign' ? nextTrackForCampaign() : trackIdx); }
+$('bPlay').addEventListener('click', playPressed);
+$('bPause').addEventListener('click', () => { audioInit(); if (state === 'paused') resumeGame(); else pauseGame(); });
+$('bSound').addEventListener('click', () => { audioInit(); setMuted(!muted); });
+$('bRestart').addEventListener('click', () => { audioInit(); if (state === 'play' || state === 'paused') startSong(trackIdx); });
+$('pResume').addEventListener('click', resumeGame);
+$('pRestart').addEventListener('click', () => { audioInit(); startSong(trackIdx); });
+$('pMenu').addEventListener('click', toMenu);
+$('rAgain').addEventListener('click', () => { audioInit(); startSong(trackIdx); });
+$('rMenu').addEventListener('click', toMenu);
+$('rNext').addEventListener('click', () => {
+  audioInit(); const a = $('rNext').dataset.act;
+  if (a === 'next') startSong(mode === 'campaign' ? ORDER[Math.min(TRACKS - 1, rankOf(trackIdx) + 1)] : (trackIdx + 1) % TRACKS); else if (a === 'again') startSong(trackIdx); else toMenu();
+});
+const setOff = v => { userOff = Math.max(-300, Math.min(300, v)); $('offV').textContent = (userOff > 0 ? '+' : '') + userOff + ' ms'; try { localStorage.setItem('anmachaBeatOffset', userOff); } catch (e) {} };
+$('offM').addEventListener('click', () => setOff(userOff - 20)); $('offP').addEventListener('click', () => setOff(userOff + 20));
+$('tPrev').addEventListener('click', () => selectTrack(trackIdx - 1)); $('tNext').addEventListener('click', () => selectTrack(trackIdx + 1));
+$('bReset').addEventListener('click', () => { progress = 0; try { localStorage.setItem('anmachaBeatProgress', 0); } catch (e) {} setMode(mode); });
+$('mCamp').addEventListener('click', () => setMode('campaign')); $('mFree').addEventListener('click', () => setMode('free'));
+setMuted(muted);
+
+/* ================= 3D-Szene ================= */
+const renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x080B12);
+scene.fog = new THREE.Fog(0x080B12, 40, 110);
+const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 300);
+const LW = 2.1, LEN = 70;                                  // Spurbreite, Länge
+const laneX = l => (l - 1.5) * LW;
+const haloTex = (() => {
+  const [c, g] = canvasEl(128, 128), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+})();
+const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+const mats = {};
+const bm = (k, f) => mats[k] || (mats[k] = f());
+
+let theme = { color: 0x00E5FF, color2: 0xFF2D95 };
+const dyn = { sun: null, logo: null, logoMat: null, floorTex: null, edges: [], speakers: [], hitLine: null, waterMat: null, halo: [] };
+
+// Wasser (Wellen) + Lane
+(function buildStatic() {
+  const [wc, wg] = canvasEl(256, 256);
+  wg.fillStyle = '#071427'; wg.fillRect(0, 0, 256, 256); wg.strokeStyle = 'rgba(80,200,255,.55)'; wg.lineWidth = 2;
+  for (let k = 0; k < 8; k++) { wg.beginPath(); for (let x = 0; x <= 256; x += 8) { const y = k * 32 + 16 + Math.sin(x * 0.05 + k) * 7; x ? wg.lineTo(x, y) : wg.moveTo(x, y); } wg.stroke(); }
+  const wtex = new THREE.CanvasTexture(wc); wtex.wrapS = wtex.wrapT = THREE.RepeatWrapping; wtex.repeat.set(10, 22); dyn.floorTex = wtex;
+  dyn.waterMat = new THREE.MeshBasicMaterial({ map: wtex, color: 0x9fd4ff });
+  const water = new THREE.Mesh(new THREE.PlaneGeometry(160, 300).rotateX(-Math.PI / 2), dyn.waterMat); water.position.set(0, -0.5, -90); scene.add(water);
+  const plate = new THREE.Mesh(new THREE.PlaneGeometry(LW * 4 + 0.4, LEN + 10).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x0a1226, transparent: true, opacity: 0.9 }));
+  plate.position.set(0, 0, -LEN / 2 + 5); scene.add(plate);
+  for (let l = 0; l < 4; l++) {
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(LW - 0.12, LEN + 10).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: LANE_COL[l], transparent: true, opacity: 0.1 }));
+    strip.position.set(laneX(l), 0.01, -LEN / 2 + 5); scene.add(strip);
+  }
+  for (let k = 0; k <= 4; k++) { const ln = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0xffffff })); ln.scale.set(k % 4 ? 0.04 : 0.12, 0.03, LEN + 10); ln.position.set((k - 2) * LW, 0.03, -LEN / 2 + 5); scene.add(ln); if (k % 4 === 0) dyn.edges.push(ln); }
+  dyn.hitLine = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0xffffff })); dyn.hitLine.scale.set(LW * 4, 0.05, 0.12); dyn.hitLine.position.set(0, 0.06, 0); scene.add(dyn.hitLine);
+  // Lautsprecher-Säulen
+  for (let s = 0; s < 2; s++) for (let k = 0; k < 7; k++) {
+    const sp = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0x141b2e })); sp.scale.set(1.6, 3, 1.6); sp.position.set((s ? 1 : -1) * 7.2, 1.5 - 0.5, -k * 10 - 2);
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0x00E5FF })); sp.add(e); scene.add(sp); dyn.speakers.push({ m: sp, e });
+  }
+  // Sonne + Logo-Tafel
+  dyn.sun = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshBasicMaterial({ map: haloTex, color: 0x00E5FF, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  dyn.sun.position.set(0, 14, -120); scene.add(dyn.sun);
+})();
+
+// Empfänger (Hit-Zonen) mit Buchstaben
+const receptors = [];
+for (let l = 0; l < 4; l++) {
+  const tex = (() => { const [c, g] = canvasEl(128, 128); g.fillStyle = 'rgba(8,11,18,.85)'; g.beginPath(); g.arc(64, 64, 58, 0, 7); g.fill();
+    g.strokeStyle = hex(LANE_COL[l]); g.lineWidth = 8; g.beginPath(); g.arc(64, 64, 56, 0, 7); g.stroke();
+    g.fillStyle = hex(LANE_COL[l]); g.font = 'bold 56px sans-serif'; g.textAlign = 'center'; g.fillText(LANE_KEYS[l], 64, 84); return new THREE.CanvasTexture(c); })();
+  const m = new THREE.Mesh(new THREE.CircleGeometry(0.9, 28).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+  m.position.set(laneX(l), 0.08, 0); scene.add(m);
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: haloTex, color: LANE_COL[l], transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+  halo.position.set(laneX(l), 0.1, 0); scene.add(halo);
+  receptors.push({ m, halo });
+}
+const flash = [0, 0, 0, 0];
+
+// Noten (Pool)
+const notePool = [];
+function acquireNote(lane) {
+  let m = notePool.find(x => !x.userData.used);
+  if (!m) {
+    m = new THREE.Group();
+    const body = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0xffffff })); body.scale.set(LW - 0.4, 0.34, 0.9);
+    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0xffffff })); edge.scale.copy(body.scale);
+    const halo = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 3.4).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: haloTex, color: 0xffffff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
+    halo.position.y = -0.1; m.add(halo, body, edge); m.userData = { body, edge, halo }; scene.add(m); notePool.push(m);
+  }
+  m.userData.used = true; m.visible = true;
+  m.userData.body.material.color.setHex(LANE_COL[lane]); m.userData.edge.material.color.setHex(0xffffff); m.userData.halo.material.color.setHex(LANE_COL[lane]);
+  return m;
+}
+
+// Surfer-Figur
+const surfer = new THREE.Group(); scene.add(surfer);
+const sBoard = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0x063a4a })); sBoard.scale.set(0.9, 0.08, 2.2); sBoard.add(new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0x00E5FF }))); surfer.add(sBoard);
+const sBody = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0x042a14 })); sBody.scale.set(0.5, 0.8, 0.3); sBody.position.y = 1.0; sBody.add(new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0x00ff66 }))); surfer.add(sBody);
+const sHead = new THREE.Mesh(boxGeo, new THREE.MeshBasicMaterial({ color: 0x0a3d20 })); sHead.scale.set(0.34, 0.34, 0.34); sHead.position.y = 1.65; sHead.add(new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0xb6ffd0 }))); surfer.add(sHead);
+surfer.position.set(0, 0.1, 3.6); surfer.scale.setScalar(0.8);
+let surferLane = 1.5, surferX = 0;
+
+// Partikel
+const PN = 160, pPos = new Float32Array(PN * 3), pVel = new Float32Array(PN * 3), pLife = new Float32Array(PN), pCol = new Float32Array(PN * 3);
+const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+for (let i = 0; i < PN; i++) pPos[i * 3 + 1] = -50;
+const pts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.22, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending })); pts.frustumCulled = false; scene.add(pts);
+let pNext = 0;
+function burst(lane, color, n) {
+  const c = new THREE.Color(color);
+  for (let k = 0; k < n; k++) { const i = pNext = (pNext + 1) % PN, a = Math.random() * 6.283, s = 1.5 + Math.random() * 3;
+    pPos[i * 3] = laneX(lane); pPos[i * 3 + 1] = 0.3; pPos[i * 3 + 2] = 0;
+    pVel[i * 3] = Math.cos(a) * s; pVel[i * 3 + 1] = 2 + Math.random() * 4; pVel[i * 3 + 2] = Math.sin(a) * s - 1;
+    pLife[i] = 0.5 + Math.random() * 0.4; pCol[i * 3] = c.r; pCol[i * 3 + 1] = c.g; pCol[i * 3 + 2] = c.b; }
+}
+function updateParticles(dt) {
+  for (let i = 0; i < PN; i++) { if (pLife[i] <= 0) { pPos[i * 3 + 1] = -50; continue; }
+    pLife[i] -= dt; pVel[i * 3 + 1] -= 11 * dt; pPos[i * 3] += pVel[i * 3] * dt; pPos[i * 3 + 1] += pVel[i * 3 + 1] * dt; pPos[i * 3 + 2] += pVel[i * 3 + 2] * dt; }
+  pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
+}
+
+/* ----- Song-Thema: Farben + Logo-Tafel ----- */
+const tracks = [];
+function logoCanvas(img, label, color) {
+  const S = 384, [c, g] = canvasEl(S, S);
+  g.fillStyle = '#eef5f1'; g.fillRect(0, 0, S, S);
+  if (img) {
+    const sc = Math.min((S - 40) / img.width, (S - 40) / img.height);
+    g.drawImage(img, (S - img.width * sc) / 2, (S - img.height * sc) / 2, img.width * sc, img.height * sc);
+    try { g.getImageData(0, 0, 1, 1); } catch (e) { return null; }
+  } else { g.fillStyle = hex(color); g.textAlign = 'center'; g.font = 'bold 70px sans-serif'; g.fillText('LOGO', S / 2, 190); g.font = 'bold 90px sans-serif'; g.fillText(label, S / 2, 290); }
+  return c;
+}
+function makeTrack(i, img) {
+  const col = PALETTE[i % 8], col2 = PALETTE[(i + 3) % 8], info = trackInfo(i);
+  let c = logoCanvas(img, String(i + 1), col); const ok = !!(img && c); if (!c) c = logoCanvas(null, String(i + 1), col);
+  return { idx: i, color: col, color2: col2, info, logo: c, hasLogo: ok, name: info.st.n, genre: info.st.g };
+}
+let loadedCount = 0;
+function syncTracks() {
+  const found = rawLogos.filter(Boolean).length;
+  if (tracks.length === TRACKS && loadedCount === found) return false;
+  loadedCount = found; tracks.length = 0;
+  for (let i = 0; i < TRACKS; i++) tracks.push(makeTrack(i, rawLogos[i] || null));
+  return true;
+}
+let logoPanel = null, logoTex = null, logoFrame = null;
+function applyTheme(i) {
+  const t = tracks[i]; if (!t) return;
+  theme = t; const col = t.color, col2 = t.color2, root = document.documentElement.style;
+  root.setProperty('--c', hex(col)); root.setProperty('--ma', hex(col2));
+  dyn.sun.material.color.setHex(col); dyn.edges.forEach(e => e.material.color.setHex(col)); dyn.hitLine.material.color.setHex(col2);
+  dyn.speakers.forEach(s => s.e.material.color.setHex(col)); scene.background.set(tint(col, 0.06)); scene.fog.color.set(tint(col, 0.06));
+  if (logoPanel) { scene.remove(logoPanel); logoPanel.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); }
+  if (logoTex) logoTex.dispose();
+  logoTex = new THREE.CanvasTexture(t.logo); logoTex.anisotropy = 4;
+  logoPanel = new THREE.Group();
+  const pl = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshBasicMaterial({ map: logoTex, fog: false }));
+  const fr = new THREE.Mesh(new THREE.PlaneGeometry(17.2, 17.2), new THREE.MeshBasicMaterial({ color: col, fog: false })); fr.position.z = -0.05;
+  const gl = new THREE.Mesh(new THREE.PlaneGeometry(34, 34), new THREE.MeshBasicMaterial({ map: haloTex, color: col, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); gl.position.z = -0.1;
+  logoPanel.add(gl, fr, pl); logoPanel.position.set(0, 19, -100); scene.add(logoPanel);
+  $('tname').textContent = `${t.name} · ${t.genre}`;
+}
+
+/* ----- Kamera ----- */
+function fitCamera() {
+  const w = innerWidth, h = innerHeight, a = w / h, portrait = a < 0.85;
+  renderer.setSize(w, h, false); camera.aspect = a; camera.fov = portrait ? 84 : 56; camera.updateProjectionMatrix();
+  camera.position.set(0, portrait ? 6.4 : 5.4, portrait ? 10.8 : 9.6); camera.lookAt(0, 0.6, -9);
+}
+addEventListener('resize', fitCamera); fitCamera();
+
+/* ================= Menü ================= */
+function drawPreview() {
+  const t = tracks[trackIdx]; if (!t) return;
+  const c = $('tprev'), g = c.getContext('2d'), col = hex(t.color), col2 = hex(t.color2);
+  const grd = g.createLinearGradient(0, 0, 512, 280); grd.addColorStop(0, tint(t.color, 0.4)); grd.addColorStop(0.6, '#0b1020'); grd.addColorStop(1, tint(t.color2, 0.4));
+  g.fillStyle = grd; g.fillRect(0, 0, 512, 280);
+  g.strokeStyle = col; g.lineWidth = 5; g.shadowColor = col; g.shadowBlur = 14; g.strokeRect(6, 6, 500, 268); g.shadowBlur = 0;
+  g.fillStyle = '#eef5f1'; g.fillRect(20, 20, 240, 240); if (t.logo) g.drawImage(t.logo, 20, 20, 240, 240); g.strokeStyle = col2; g.lineWidth = 4; g.strokeRect(20, 20, 240, 240);
+  g.textAlign = 'left'; g.fillStyle = '#fff'; let fs = 30; g.font = `bold ${fs}px sans-serif`; while (g.measureText(t.name).width > 215 && fs > 14) { fs--; g.font = `bold ${fs}px sans-serif`; }
+  g.fillText(t.name, 280, 70);
+  g.fillStyle = col2; g.font = 'bold 26px sans-serif'; g.fillText(t.genre, 280, 108);
+  g.fillStyle = '#b0c2d8'; g.font = '24px sans-serif'; g.fillText(`${t.info.bpm} BPM`, 280, 148);
+  g.fillStyle = '#ffb020'; g.font = '28px sans-serif'; g.fillText('★'.repeat(t.info.stars) + '☆'.repeat(5 - t.info.stars), 280, 190);
+  g.fillStyle = '#9fb4c8'; g.font = '20px sans-serif'; g.fillText(bests[t.idx] ? `Best: ${bests[t.idx]}` : 'Noch kein Bestwert', 280, 232);
+  $('tTitle').textContent = `${t.idx + 1}. ${t.name}`; $('tSub').textContent = `${t.genre} · ${t.info.bpm} BPM` + (t.hasLogo ? '' : ` · Platzhalter (logos/${String(t.idx + 1).padStart(2, '0')})`);
+  const dots = $('dots'); if (dots.children.length !== TRACKS) { dots.textContent = ''; for (let i = 0; i < TRACKS; i++) dots.appendChild(document.createElement('i')); }
+  [...dots.children].forEach((d, i) => d.classList.toggle('on', i === trackIdx));
+}
+function selectTrack(i) { trackIdx = (i + TRACKS) % TRACKS; try { localStorage.setItem('anmachaBeatTrack', trackIdx); } catch (e) {} applyTheme(trackIdx); drawPreview(); }
+function setMode(m) {
+  mode = m; try { localStorage.setItem('anmachaBeatMode', m); } catch (e) {}
+  $('mCamp').classList.toggle('on', m === 'campaign'); $('mFree').classList.toggle('on', m === 'free');
+  $('campBox').classList.toggle('hidden', m !== 'campaign'); $('pickBox').classList.toggle('hidden', m !== 'free');
+  const nx = nextTrackForCampaign();
+  $('modeInfo').innerHTML = m === 'campaign'
+    ? `13 Sender, 13 Genres: Triff die Noten im Takt und halte die Welle am Leben. Es geht von entspannt bis richtig schwer – ${progress >= TRACKS ? 'du hast alle geschafft! Starte neu mit PLAY.' : progress > 0 ? `weiter bei <b>${STATIONS[nx].n}</b> (${STATIONS[nx].g}).` : `los geht’s mit <b>${STATIONS[nx].n}</b> (${STATIONS[nx].g}).`}`
+    : 'Such dir einen beliebigen Sender aus – jeder hat sein eigenes Genre, Tempo und Logo.';
+  $('bPlay').textContent = m === 'campaign' ? (progress > 0 && progress < TRACKS ? 'WEITER' : 'PLAY') : 'PLAY';
+  $('bReset').classList.toggle('hidden', !(m === 'campaign' && progress > 0));
+  const path = $('path'); path.textContent = '';
+  for (let i = 0; i < TRACKS; i++) { const d = document.createElement('i'); d.textContent = i + 1; d.classList.toggle('done', i < progress); d.classList.toggle('next', i === progress && progress < TRACKS); path.appendChild(d); }
+  if (m === 'free') drawPreview(); else applyTheme(nx);
+}
+
+/* ================= Hauptschleife ================= */
+let time = 0, last = performance.now(), ready = false, tracksBuilt = false, pulse = 0, pulse2 = 0;
+function update(dt) {
+  time += dt;
+  const t = state === 'menu' ? time * 0.6 : songTime();
+  const beat = song ? song.beat : 0.5;
+  // Audio vorplanen
+  if (state === 'play' && song && ac && testClock === null) {
+    const now = ac.currentTime;
+    while (nextEv < song.events.length && A0 + song.events[nextEv].t < now + 0.3) { playEvent(song.events[nextEv], A0 + song.events[nextEv].t); nextEv++; }
+    for (let i = 0; i < 4; i++) { if (countShown < i && now >= A0 + i * beat - 0.3) { const at = A0 + i * beat; if (at >= now - 0.05) { osc('square', i === 3 ? 1320 : 880, Math.max(at, now), 0.08, 0.12); } countShown = i; } }
+  }
+  if (state === 'play' && song) {
+    // Countdown-Anzeige
+    if (t < song.countIn) {
+      const k = Math.floor(t / beat);
+      if (k >= 0 && k <= 3 && $('count').dataset.k !== String(k)) { $('count').dataset.k = String(k); $('count').textContent = 4 - k - 1 > 0 ? 4 - k - 1 : 'GO'; $('count').classList.remove('show'); void $('count').offsetWidth; $('count').classList.add('show'); }
+    }
+    // Verpasste Noten
+    for (const n of song.notes) { if (state !== 'play') break; if (n.judged) continue; if (n.t + WIN_MISS < t) judge(n, 0); else if (n.t > t) break; }
+    if (state === 'play' && t > song.end) finish(health > 0);
+  }
+  // Takt-Puls
+  const ph = song && state !== 'menu' ? (((t - song.countIn) / beat) % 1 + 1) % 1 : (time * 1.6) % 1;
+  pulse = Math.exp(-ph * 5); pulse2 = Math.max(0, pulse2 - dt * 2);
+  // Noten
+  if (song && state !== 'menu') {
+    const approach = song.tr.approach, spd = LEN * 0.55 / approach;
+    for (const n of song.notes) {
+      const d = n.t - t;
+      if (d > approach + 0.1) break;
+      if (n.judged) continue;
+      if (d < -0.3) { if (n.mesh) { n.mesh.visible = false; n.mesh.userData.used = false; n.mesh = null; } continue; }
+      if (!n.mesh) n.mesh = acquireNote(n.lane);
+      n.mesh.position.set(laneX(n.lane), 0.2, -d * spd);
+    }
+  }
+  // Empfänger
+  for (let l = 0; l < 4; l++) { flash[l] = Math.max(0, flash[l] - dt * 5); receptors[l].halo.material.opacity = flash[l] * 0.9; receptors[l].m.scale.setScalar(1 + flash[l] * 0.18); }
+  // Kulisse
+  dyn.floorTex.offset.y = -time * 0.9 - (song ? Math.max(0, t) * 0.1 : 0); dyn.floorTex.offset.x = Math.sin(time * 0.4) * 0.05;
+  dyn.sun.scale.setScalar(1 + pulse * 0.08 + pulse2 * 0.15); dyn.sun.material.opacity = 0.45 + pulse * 0.2 + pulse2 * 0.3;
+  if (logoPanel) { logoPanel.scale.setScalar(1 + pulse * 0.04 + pulse2 * 0.08); logoPanel.position.y = 19 + Math.sin(time * 0.8) * 0.4; }
+  dyn.speakers.forEach((s, i) => { const k = 1 + pulse * 0.18 * (1 + (i % 3) * 0.2); s.m.scale.set(1.6, 3 * k, 1.6); s.m.position.y = 1 * k; });
+  dyn.hitLine.scale.y = 0.05 + pulse * 0.05;
+  // Surfer
+  const tx = surferLane === 1.5 ? 0 : laneX(surferLane); surferX += (tx - surferX) * Math.min(1, dt * 10);
+  surfer.position.x = surferX; surfer.rotation.z = (tx - surferX) * -0.12; surfer.position.y = 0.1 + Math.abs(Math.sin(time * 4)) * 0.08;
+  updateParticles(dt);
+  // HUD
+  const sc = String(Math.floor(score)); if ($('score').textContent !== sc) $('score').textContent = sc;
+  const bs = 'BEST ' + Math.max(bests[trackIdx] || 0, Math.floor(score)); if ($('best').textContent !== bs) $('best').textContent = bs;
+  $('hpB').style.width = Math.max(0, Math.min(100, health)) + '%';
+  const as = Math.round(accuracy() * 100) + ' %'; if ($('acc').textContent !== as) $('acc').textContent = as;
+  if (song && state !== 'menu') { $('prog').style.width = Math.max(0, Math.min(100, t / song.end * 100)) + '%'; }
+  const cn = combo >= 3 ? String(combo) : ''; if ($('comboN').textContent !== cn) { $('comboN').textContent = cn; $('comboM').textContent = cn ? `COMBO · x${mult()}` : ''; $('combo').style.visibility = cn ? 'visible' : 'hidden'; }
+  else if (cn) $('comboM').textContent = `COMBO · x${mult()}`;
+  // Kamera: leichtes Wiegen im Takt
+  camera.position.x = Math.sin(time * 0.5) * 0.25; camera.lookAt(0, 0.6, -9);
+}
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+  if (!ready) {
+    const done = probesLeft === 0;
+    if (done || performance.now() - t0 > 3000) {
+      if (syncTracks() || !tracksBuilt) { tracksBuilt = true; applyTheme(trackIdx); drawPreview(); setMode(mode); }
+      if (done) {
+        ready = true; $('bPlay').disabled = false; setMode(mode);
+        const n = rawLogos.filter(Boolean).length;
+        $('status').textContent = n ? `${n} Logos geladen – ${TRACKS} Songs` : 'Platzhalter – Logos in „logos/“ ablegen (01 … 13, png oder jpg).';
+      }
+    }
+    if (!tracksBuilt) return;
+  }
+  if (state !== 'paused') update(dt);
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
