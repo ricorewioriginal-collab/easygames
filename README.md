@@ -8,6 +8,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
 | AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
+| AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -113,3 +114,14 @@ die Noten ergeben sich aus der Musik (Bass-Drum, Snare, Melodie).
 - **Kampagne:** 13 Songs von leicht nach schwer (Entspannung → … → Club/EDM, 74 → 148 BPM); Fortschritt wird gespeichert. **Freies Spiel:** beliebigen Song wählen.
 - **Logos:** Song *n* nutzt `anmacha-beat-surfer/logos/NN.png|jpg|jpeg` (`01` … `13`); es erscheint als große Tafel hinter der Bahn. Das Titel-Logo (`logo.png`) im Spielordner (oder im Hauptordner) ersetzt den Text-Titel im Menü.
 - **Audio-Versatz:** im Pause-Menü einstellbar (z. B. für Bluetooth-Kopfhörer).
+
+## AnMaCha Memory: Logo-Memory mit Mischer und Duell
+
+Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt und RicoReWi Radioportal (16 Paare). Reines HTML/CSS ohne Bibliothek, sehr ressourcenschonend, für PC und Handy.
+
+- **Kampagne:** 10 Level (4 → 16 Paare). Ab Level 4 gibt es den **Mischer** (verdeckte Karten tauschen nach Fehlzügen die Plätze), ab Level 6 zusätzlich ein **Zeitlimit**. 1–3 Sterne nach Zügen, Fortschritt wird gespeichert.
+- **Freies Spiel:** Paare (4–16), Mischer-Stufe und **Duell** für 2 Spieler an einem Gerät frei wählbar.
+- **Wertung:** Combo-Multiplikator (bis x5), Zeitbonus, 3 Blicke auf alle Karten (kosten Punkte). Bestwerte lokal pro Gerät.
+- **Logos:** `anmacha-memory/logos/01.png|jpg|jpeg|webp`, `02` … lückenlos nummeriert, beliebig viele – jedes weitere Logo erzeugt automatisch ein weiteres Paar. `01`–`13` sind die Sender, `14` AnMaChaCast, `15` SenderWelt, `16` RicoReWi Radioportal. Die Namen stehen im Array `NAMES` in `index.html`.
+- **Titel-Logo:** `anmacha-memory/logo.png` ersetzt den Text-Titel im Menü.
+- **Steuerung:** Tippen/Klicken, `P` Pause, `M` Ton.
