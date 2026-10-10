@@ -8,6 +8,8 @@
     "serve": "python3 -m http.server 8080",
     "par": "node --max-old-space-size=4096 tests/build-par.js",
     "e2e": "node tests/e2e-play.mjs",
-    "test:engine": "node tests/engine-tests.js"
+    "test:engine": "node tests/engine-tests.js",
+    "test:editor": "node tests/editor-tests.js",
+    "e2e:editor": "node tests/e2e-editor.mjs"
   }
 }
