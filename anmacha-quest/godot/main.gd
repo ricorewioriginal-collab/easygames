@@ -70,6 +70,14 @@ var win_tex: ImageTexture
 var chest_t: ImageTexture
 var gate_t: ImageTexture
 var mount_t: ImageTexture
+var ht := {}
+var icons := {}
+var banner_t: ImageTexture
+var banner_panel: PanelContainer
+var banner_label: Label
+var cross: Control
+var cross_lbl: Label
+var cross_btns: Array = []
 
 # Kampf
 var enemies: Array = []
@@ -96,6 +104,8 @@ var choosing := false
 var cancelable := false
 var talking := false
 var title_has_save := false
+var autoplay := false
+var auto_n := 0
 
 # ------------------------------------------------------------------ Start
 func _ready() -> void:
@@ -128,6 +138,10 @@ func make_art() -> void:
 	chest_t = Gfx.chest_tile(false)
 	gate_t = Gfx.gate_tile(Color("#ff4a4a"))
 	mount_t = Gfx.mountain_tile()
+	banner_t = Gfx.banner_tex()
+	ht = {"p0": Gfx.cobble_tile(0), "p1": Gfx.cobble_tile(1), "h0": Gfx.roof_tile(0), "h1": Gfx.roof_tile(1), "H": Gfx.house_tile("win"), "D": Gfx.house_tile("door"), "S": Gfx.house_tile("shop"), "M": Gfx.house_tile("plain")}
+	for k in ["sword", "staff", "bag", "shield", "flame", "run"]:
+		icons[k] = Gfx.icon(k)
 	for id in Dat.HEROES:
 		var hdat: Dictionary = Dat.HEROES[id]
 		var pal := {"hair": Color(hdat["hair"]), "skin": Color("#f4cfa8"), "cloth": Color(hdat["col"]), "cloth2": Color(hdat["col"]).darkened(0.4), "boots": Color("#4a3426"), "acc": Color(hdat["acc"])}
@@ -246,6 +260,73 @@ func _build_ui() -> void:
 	msg_panel.add_child(msg_label)
 	root.add_child(msg_panel)
 
+	banner_panel = PanelContainer.new()
+	var bs := StyleBoxTexture.new()
+	bs.texture = banner_t
+	bs.texture_margin_left = 4
+	bs.texture_margin_right = 4
+	bs.texture_margin_top = 4
+	bs.texture_margin_bottom = 4
+	bs.content_margin_left = 14
+	bs.content_margin_right = 14
+	bs.content_margin_top = 6
+	bs.content_margin_bottom = 6
+	banner_panel.add_theme_stylebox_override("panel", bs)
+	banner_panel.position = Vector2(150, 40)
+	banner_panel.visible = false
+	banner_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner_label = Label.new()
+	banner_label.add_theme_font_size_override("font_size", 20)
+	banner_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	banner_panel.add_child(banner_label)
+	root.add_child(banner_panel)
+
+	cross = Control.new()
+	cross.visible = false
+	cross.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(cross)
+	cross_lbl = Label.new()
+	cross_lbl.position = Vector2(330, 172)
+	cross_lbl.size = Vector2(170, 14)
+	cross_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cross.add_child(cross_lbl)
+	# Kreuzmenü: 0 Angriff (Mitte), 1 Fertigkeit (oben), 2 Spezial (unten), 3 Item (links), 4 Wache (rechts), 5 Flucht (Ecke)
+	var cpos := [Vector2(374, 212), Vector2(374, 188), Vector2(374, 236), Vector2(350, 212), Vector2(398, 212), Vector2(424, 236)]
+	var ckeys := ["sword", "staff", "flame", "bag", "shield", "run"]
+	for k in 6:
+		var b := Button.new()
+		b.icon = icons[ckeys[k]]
+		b.position = cpos[k]
+		b.custom_minimum_size = Vector2(22, 22)
+		b.size = Vector2(22, 22)
+		b.focus_mode = Control.FOCUS_ALL
+		b.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+		b.add_theme_stylebox_override("disabled", StyleBoxEmpty.new())
+		var fs := StyleBoxFlat.new()
+		fs.bg_color = Color(1, 1, 1, 0.12)
+		fs.set_border_width_all(2)
+		fs.border_color = Color(1, 0.95, 0.4)
+		b.add_theme_stylebox_override("focus", fs)
+		b.add_theme_stylebox_override("hover", fs)
+		b.add_theme_stylebox_override("pressed", fs)
+		var idx: int = k
+		b.pressed.connect(func() -> void: picked.emit(idx))
+		b.focus_entered.connect(func() -> void: cross_lbl.text = ["Angriff", "Fertigkeit", "Spezial", "Item", "Wache", "Flucht"][idx])
+		cross.add_child(b)
+		cross_btns.append(b)
+	cross_btns[0].focus_neighbor_top = cross_btns[0].get_path_to(cross_btns[1])
+	cross_btns[0].focus_neighbor_bottom = cross_btns[0].get_path_to(cross_btns[2])
+	cross_btns[0].focus_neighbor_left = cross_btns[0].get_path_to(cross_btns[3])
+	cross_btns[0].focus_neighbor_right = cross_btns[0].get_path_to(cross_btns[4])
+	cross_btns[1].focus_neighbor_bottom = cross_btns[1].get_path_to(cross_btns[0])
+	cross_btns[2].focus_neighbor_top = cross_btns[2].get_path_to(cross_btns[0])
+	cross_btns[3].focus_neighbor_right = cross_btns[3].get_path_to(cross_btns[0])
+	cross_btns[4].focus_neighbor_left = cross_btns[4].get_path_to(cross_btns[0])
+	cross_btns[2].focus_neighbor_right = cross_btns[2].get_path_to(cross_btns[5])
+	cross_btns[5].focus_neighbor_left = cross_btns[5].get_path_to(cross_btns[2])
+	cross_btns[5].focus_neighbor_top = cross_btns[5].get_path_to(cross_btns[4])
+	cross_btns[4].focus_neighbor_bottom = cross_btns[4].get_path_to(cross_btns[5])
+
 	menu_panel = PanelContainer.new()
 	menu_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	menu_panel.visible = false
@@ -297,8 +378,8 @@ func place_menu() -> void:
 	menu_panel.offset_top = 0
 	if mode == M.BATTLE:
 		menu_panel.offset_left = 8
-		menu_panel.offset_right = 140
-		menu_panel.offset_bottom = -84
+		menu_panel.offset_right = 150
+		menu_panel.offset_bottom = -100
 	elif mode == M.TITLE:
 		menu_panel.anchor_left = 0.5
 		menu_panel.anchor_right = 0.5
@@ -325,6 +406,8 @@ func _input(e: InputEvent) -> void:
 
 # ------------------------------------------------------------------ UI-Helfer
 func say(lines: Array) -> void:
+	if autoplay:
+		return
 	talking = true
 	dlg_panel.visible = true
 	touch_box.visible = false
@@ -336,6 +419,12 @@ func say(lines: Array) -> void:
 	touch_box.visible = mode == M.WORLD and not busy
 
 func choose(opts: Array, can_cancel := false, disabled: Array = []) -> int:
+	if autoplay:
+		await get_tree().process_frame
+		for k in opts.size():
+			if not (k < disabled.size() and disabled[k]):
+				return k
+		return 0
 	for c in menu_box.get_children():
 		menu_box.remove_child(c)
 		c.queue_free()
@@ -365,16 +454,53 @@ func choose(opts: Array, can_cancel := false, disabled: Array = []) -> int:
 		c.queue_free()
 	return r
 
+func choose_cross(disabled: Array) -> int:
+	if autoplay:
+		await get_tree().process_frame
+		auto_n += 1
+		var c: int = [0, 1, 2, 0, 3, 4, 0, 2][auto_n % 8]
+		if c < disabled.size() and disabled[c]:
+			c = 0
+		return c
+	for k in 6:
+		cross_btns[k].disabled = k < disabled.size() and disabled[k]
+	cross.visible = true
+	choosing = true
+	cancelable = false
+	cross_btns[0].grab_focus.call_deferred()
+	var r: int = await picked
+	choosing = false
+	cross.visible = false
+	return r
+
+func banner(t: String, hold := 1.3) -> void:
+	if autoplay:
+		return
+	banner_label.text = t
+	banner_panel.visible = true
+	banner_panel.reset_size()
+	banner_panel.position = Vector2((VW - banner_panel.size.x) / 2.0, 36)
+	await wait(hold)
+	banner_panel.visible = false
+
 func wait(t: float) -> void:
+	if autoplay:
+		await get_tree().process_frame
+		return
 	await get_tree().create_timer(t).timeout
 
 func bmsg(t: String, hold := 0.7) -> void:
+	if autoplay:
+		return
 	msg_label.text = t
 	msg_panel.visible = t != ""
 	if hold > 0:
 		await wait(hold)
 
 func do_fade(to: float, t := 0.22) -> void:
+	if autoplay:
+		fade.color.a = to
+		return
 	var tw := create_tween()
 	tw.tween_property(fade, "color:a", to, t)
 	await tw.finished
@@ -546,7 +672,7 @@ func tile(x: int, y: int) -> String:
 	return map["rows"][y][x]
 
 func blocked(t: Vector2i) -> bool:
-	return tile(t.x, t.y) in "#T~^"
+	return tile(t.x, t.y) in "#T~^hHDSM"
 
 func obj_at(t: Vector2i) -> Dictionary:
 	for o in objs:
@@ -618,10 +744,8 @@ func use_portal(p: Dictionary) -> void:
 			if flags.get(j[0], false) and not has_hero(j[1]):
 				await say([j[2], "%s schließt sich euch an." % Dat.HEROES[j[1]]["name"]])
 				party.append(new_hero(j[1], max(1, int(avg_lv()))))
-	elif not map.get("world", false):
-		busy = true
-		await bmsg("%s  (Empf. Stufe %d)" % [map["name"], map["lv"]], 1.2)
-		msg_panel.visible = false
+	busy = true
+	await banner(map["name"] if map.get("world", false) or to == "hub" else "%s  (Stufe %d)" % [map["name"], map["lv"]])
 	busy = false
 	touch_box.visible = true
 
@@ -886,7 +1010,7 @@ func start_encounter() -> void:
 	var bg: String = map["theme"]
 	if map.get("world", false):
 		pool = STAGE_POOL[stage()]
-		bg = ["rap", "schlager", "xmas", "rock", "static"][stage()]
+		bg = reg[gp.y][gp.x]
 	var n := 1 + int(rng.randf() < 0.7) + int(rng.randf() < 0.3)
 	var ids: Array = []
 	for i in n:
@@ -973,7 +1097,7 @@ func run_battle(ids: Array, bg: String) -> String:
 func pick_command(h: Dictionary, boss: bool) -> Dictionary:
 	var ip: Dictionary = Dat.IPSKILLS[hd(h)["ip"]]
 	while true:
-		var r: int = await choose(["Angriff", "Fertigkeit", "Spezial %d/%d" % [h["ip"], ip["ip"]], "Item", "Wache", "Flucht"], false, [false, false, h["ip"] < ip["ip"], false, false, false])
+		var r: int = await choose_cross([false, false, h["ip"] < ip["ip"], false, false, false])
 		match r:
 			0:
 				var t: int = await pick_enemy()
@@ -1052,7 +1176,7 @@ func pick_enemy() -> int:
 	return idx[r]
 
 func hero_ui_pos(i: int) -> Vector2:
-	return Vector2(8 + i * 94 + 47, 196)
+	return Vector2(5 + (i % 3) * 158 + 76, 170 + (i / 3) * 49)
 
 func add_float(pos: Vector2, text: String, col: Color) -> void:
 	floats.append({"p": pos, "t": text, "c": col, "a": 0.0})
@@ -1296,7 +1420,14 @@ func draw_world() -> void:
 			elif ch == "~":
 				draw_texture(ts["l1"] if wave == 1 else ts["l0"], p)
 			else:
-				draw_texture(ts["f0"] if (tx + ty) % 2 == 0 else ts["f1"], p)
+				if ch == "p":
+					draw_texture(ht["p0"] if (tx + ty) % 2 == 0 else ht["p1"], p)
+				elif ch == "h":
+					draw_texture(ht["h0"] if tx % 2 == 0 else ht["h1"], p)
+				elif ch in "HDSM":
+					draw_texture(ht[ch], p)
+				else:
+					draw_texture(ts["f0"] if (tx + ty) % 2 == 0 else ts["f1"], p)
 				if ch == ",":
 					draw_texture(ts["deco"], p)
 				elif ch == "T":
@@ -1336,9 +1467,9 @@ func draw_hero(id: String, pos: Vector2, dir: Vector2i, frame: int) -> void:
 		flip = dir.x < 0
 	var t: Texture2D = set[d][frame]
 	if flip:
-		draw_texture_rect(t, Rect2(pos + Vector2(16, 0), Vector2(-16, 16)), false)
+		draw_texture_rect(t, Rect2(pos + Vector2(16, -8), Vector2(-16, 24)), false)
 	else:
-		draw_texture(t, pos)
+		draw_texture(t, pos + Vector2(0, -8))
 
 func draw_portal(p: Dictionary) -> void:
 	var pos := Vector2(p["x"], p["y"]) * TS
@@ -1386,35 +1517,53 @@ func draw_npc(pos: Vector2, n: Dictionary) -> void:
 		return
 	var set: Array = chars[k]
 	var t: Texture2D = set[0][int(anim * 1.5) % 2]
-	draw_texture(t, pos)
-	if k == "shop":
-		draw_rect(Rect2(pos + Vector2(-2, 14), Vector2(20, 3)), Color(0.6, 0.4, 0.2))
+	draw_texture(t, pos + Vector2(0, -8))
+
+func battle_outdoor() -> bool:
+	return bg_theme.begins_with("ow_") or bg_theme in ["town", "schlager", "xmas"]
 
 func draw_battle() -> void:
 	var off := Vector2.ZERO
 	if shake > 0:
 		off = Vector2(rng.randf_range(-3, 3), rng.randf_range(-2, 2))
 	draw_set_transform(off, 0.0, Vector2.ONE)
-	var th: Array = Dat.THEMES[bg_theme]
-	var base := Color(th[0])
-	var acc := Color(th[4])
-	var top := base.darkened(0.7)
-	for i in 12:
-		draw_rect(Rect2(-6, i * 10.0, VW + 12, 11), top.lerp(base.darkened(0.2), i / 11.0))
-	var r2 := RandomNumberGenerator.new()
-	r2.seed = hash(bg_theme)
-	var pts := PackedVector2Array([Vector2(-6, 118)])
-	for i in 13:
-		pts.append(Vector2(i * 40.0, 118 - r2.randf_range(10, 60) * (1.0 if bg_theme in ["rock", "xmas", "rap"] else 0.5)))
-	pts.append(Vector2(VW + 6, 118))
-	draw_colored_polygon(pts, base.darkened(0.55))
-	draw_rect(Rect2(-6, 118, VW + 12, 80), base.darkened(0.25))
-	draw_rect(Rect2(-6, 117, VW + 12, 2), acc)
-	for i in range(-8, 9):
-		draw_line(Vector2(240 + i * 14.0, 119), Vector2(240 + i * 90.0, 200), Color(acc, 0.22), 1.0)
-	for j in 5:
-		var yy := 119.0 + pow(float(j) / 4.0, 1.8) * 80.0
-		draw_line(Vector2(-6, yy), Vector2(VW + 6, yy), Color(acc, 0.16), 1.0)
+	var ts: Dictionary = get_tset(bg_theme)
+	var th: Array = OW[bg_theme] if bg_theme.begins_with("ow_") else Dat.THEMES[bg_theme]
+	var out := battle_outdoor()
+	var hz := 104.0
+	if out:
+		for i in 11:
+			draw_rect(Rect2(-6, i * 10.0, VW + 12, 11), Color("#4a98e0").lerp(Color("#c8ecff"), i / 10.0))
+		var r3 := RandomNumberGenerator.new()
+		r3.seed = 11
+		for k in 5:
+			var cx := r3.randf() * VW
+			var cy := 14.0 + r3.randf() * 40.0
+			for q in 4:
+				draw_circle(Vector2(cx + q * 14.0 + fmod(anim * 2.0, 40.0), cy + (q % 2) * 3.0), 9.0 - q, Color(1, 1, 1, 0.85))
+		var mp := PackedVector2Array([Vector2(-6, hz)])
+		for i in 9:
+			mp.append(Vector2(i * 60.0 + 20.0, hz - 14 - r3.randf_range(4, 34)))
+			mp.append(Vector2(i * 60.0 + 50.0, hz - 6))
+		mp.append(Vector2(VW + 6, hz))
+		draw_colored_polygon(mp, Color("#b08c98"))
+		for i in 14:
+			var tx2 := i * 36.0 + 6.0
+			draw_circle(Vector2(tx2, hz - 4), 15, Color("#1e5a2a"))
+			draw_circle(Vector2(tx2 - 4, hz - 8), 8, Color("#2e7a3a"))
+	else:
+		for i in 11:
+			draw_rect(Rect2(-6, i * 11.0, VW + 12, 12), Color("#1a1c22").lerp(Color("#3a3a44"), i / 10.0))
+		var r3 := RandomNumberGenerator.new()
+		r3.seed = hash(bg_theme)
+		for i in 40:
+			var w := r3.randf_range(8, 18)
+			draw_rect(Rect2(i * 13.0 - 6, r3.randf_range(0, 20), w, 130), Color(0, 0, 0, r3.randf_range(0.1, 0.3)))
+		draw_rect(Rect2(-6, hz + 6, VW + 12, 4), Color(0, 0, 0, 0.35))
+	draw_set_transform(off, 0.0, Vector2(2, 2))
+	draw_texture_rect(ts["f0"], Rect2(-3, hz / 2.0, VW / 2.0 + 6, 84), true)
+	draw_set_transform(off, 0.0, Vector2.ONE)
+	draw_rect(Rect2(-6, hz, VW + 12, 170), Color(0, 0, 0, 0.12))
 	for e in enemies:
 		if e["hp"] <= 0:
 			continue
@@ -1444,27 +1593,34 @@ func draw_battle() -> void:
 		var a: float = f["a"]
 		txt(f["p"] + Vector2(-20, -a * 26.0), f["t"], 15, Color(f["c"], 1.0 - a * a), HORIZONTAL_ALIGNMENT_CENTER, 40)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	# Party-Fenster: 3 Spalten x 2 Reihen
+	var wsb := sbt()
 	for i in party.size():
 		var h: Dictionary = party[i]
-		var x := 8.0 + i * 94.0
+		var x := 5.0 + (i % 3) * 158.0
+		var y := 170.0 + (i / 3) * 49.0
 		var hot := i == cur_hero
-		draw_rect(Rect2(x, 190, 90, 76), Color(0.05, 0.08, 0.32 if not hot else 0.5, 0.96))
-		draw_rect(Rect2(x, 190, 90, 76), Color(1, 0.9, 0.4) if hot else Color(0.75, 0.82, 1.0), false, 2.0 if hot else 1.0)
+		draw_style_box(wsb, Rect2(x, y, 154, 46))
+		if hot:
+			draw_rect(Rect2(x, y, 154, 46), Color(1, 0.9, 0.4), false, 2.0)
 		var t: Texture2D = chars[h["id"]][0][0]
-		draw_texture_rect(t, Rect2(x + 4, 194, 24, 24), false, Color(0.4, 0.4, 0.4) if h["hp"] <= 0 else Color.WHITE)
-		txt(Vector2(x + 31, 204), h["name"], 11, Color(1, 0.92, 0.4) if hot else Color.WHITE)
-		txt(Vector2(x + 31, 216), "Lv %d" % h["lv"], 9, Color(0.7, 0.85, 1))
+		draw_texture_rect(t, Rect2(x + 126, y + 6, 20, 30), false, Color(0.4, 0.4, 0.4) if h["hp"] <= 0 else Color.WHITE)
+		txt(Vector2(x + 7, y + 13), h["name"], 12, Color(1, 0.95, 0.5) if hot else Color(0.95, 0.97, 1))
+		txt(Vector2(x + 72, y + 13), "Lv:%d" % h["lv"], 10, Color(1, 0.9, 0.3))
 		var hpf: float = float(h["hp"]) / mhp(h)
-		txt(Vector2(x + 5, 232), "LP %d" % h["hp"], 10)
-		draw_rect(Rect2(x + 5, 235, 80, 4), Color(0, 0, 0, 0.8))
-		draw_rect(Rect2(x + 5, 235, 80.0 * hpf, 4), Color(0.3, 0.9, 0.4) if hpf > 0.3 else Color(0.95, 0.3, 0.3))
-		txt(Vector2(x + 5, 250), "SP %d" % h["sp"], 10, Color(0.6, 0.8, 1))
-		draw_rect(Rect2(x + 5, 253, 80, 3), Color(0, 0, 0, 0.8))
-		draw_rect(Rect2(x + 5, 253, 80.0 * h["sp"] / max(1, msp(h)), 3), Color(0.35, 0.6, 1.0))
+		txt(Vector2(x + 7, y + 25), "Hp:", 10, Color(0.4, 0.7, 1))
+		txt(Vector2(x + 26, y + 25), "%d" % h["hp"], 10)
+		draw_rect(Rect2(x + 58, y + 19, 60, 5), Color(0, 0, 0, 0.8))
+		draw_rect(Rect2(x + 58, y + 19, 60.0 * hpf, 5), Color(0.55, 0.85, 1.0) if hpf > 0.3 else Color(1, 0.4, 0.4))
+		txt(Vector2(x + 7, y + 34), "Mp:", 10, Color(0.4, 0.95, 0.5))
+		txt(Vector2(x + 26, y + 34), "%d" % h["sp"], 10)
+		draw_rect(Rect2(x + 58, y + 28, 60, 5), Color(0, 0, 0, 0.8))
+		draw_rect(Rect2(x + 58, y + 28, 60.0 * h["sp"] / max(1, msp(h)), 5), Color(0.5, 1.0, 0.6))
 		var ipc: int = Dat.IPSKILLS[hd(h)["ip"]]["ip"]
-		draw_rect(Rect2(x + 5, 259, 80, 4), Color(0, 0, 0, 0.8))
-		draw_rect(Rect2(x + 5, 259, 80.0 * h["ip"] / 100.0, 4), Color(1, 0.85, 0.2) if h["ip"] < ipc else Color(1, 0.55 + 0.4 * absf(sin(anim * 6.0)), 0.2))
-		draw_rect(Rect2(x + 5 + 80.0 * ipc / 100.0, 258, 1, 6), Color(1, 1, 1, 0.8))
+		txt(Vector2(x + 7, y + 43), "Ip:", 10, Color(1, 0.8, 0.2))
+		draw_rect(Rect2(x + 58, y + 37, 60, 5), Color(0, 0, 0, 0.8))
+		draw_rect(Rect2(x + 58, y + 37, 60.0 * h["ip"] / 100.0, 5), Color(1, 0.85, 0.2) if h["ip"] < ipc else Color(1, 0.55 + 0.4 * absf(sin(anim * 6.0)), 0.2))
+		draw_rect(Rect2(x + 58 + 60.0 * ipc / 100.0, 36, 1, 7), Color(1, 1, 1, 0.8))
 
 # ------------------------------------------------------------------ Selbsttest (godot --headless -- --autotest)
 func _autotest() -> void:
@@ -1494,7 +1650,7 @@ func _autotest() -> void:
 			targets.append(Vector2i(p["x"], p["y"]))
 			var dest: Dictionary = Dat.MAPS[p["to"]]
 			var at := Vector2i(p["ax"], p["ay"])
-			if at.y >= dest["rows"].size() or str(dest["rows"][at.y][at.x]) in "#T~^":
+			if at.y >= dest["rows"].size() or str(dest["rows"][at.y][at.x]) in "#T~^hHDSM":
 				print("FEHLER Ankunft blockiert ", id, " -> ", p["to"], " ", at)
 				fails += 1
 		for c in m["chests"]:
@@ -1524,7 +1680,7 @@ func _autotest() -> void:
 					var n: Vector2i = c + d
 					if n.x < 0 or n.y < 0 or n.x >= mw or n.y >= mh or seen2.has(n):
 						continue
-					if str(rows[n.y][n.x]) in "#T~^":
+					if str(rows[n.y][n.x]) in "#T~^hHDSM":
 						continue
 					seen2[n] = true
 					q2.append(n)
@@ -1575,6 +1731,43 @@ func _autotest() -> void:
 				losses += 1
 			lp += r[1]
 		print("   3 Gegner: Niederlagen ", losses, "/60, LP-Rest ", snappedf(lp / 60.0, 0.01))
+	# Spielablauf-Test: komplette Coroutinen (Kampf, Truhen, Tor, Boss, Game Over) ohne Anzeige durchspielen
+	autoplay = true
+	for stage_i in 5:
+		var mid2: String = ["rap", "schlager", "xmas", "rock", "tower"][stage_i]
+		party = []
+		for hid in ["andrew", "marco", "teresa", "rico", "andy"].slice(0, 2 + mini(stage_i, 3)):
+			party.append(new_hero(hid, STAGE_LV[stage_i] + 2))
+		inv = {"trank": 5, "aether": 3, "weck": 2}
+		gear = stage_i
+		flags = {}
+		mode = M.WORLD
+		load_map(mid2, Vector2i(2, 14))
+		for k in 3:
+			var pl2: Array = Dat.MAPS[mid2]["enc"]
+			var r2: String = await run_battle([pl2[0], pl2[1], pl2[2]], Dat.MAPS[mid2]["theme"])
+			print("Auto-Kampf ", mid2, ": ", r2, " Lv ", party[0]["lv"], " LP ", party[0]["hp"])
+			if r2 == "lose":
+				await game_over()
+				load_map(mid2, Vector2i(2, 14))
+		for o in objs.duplicate():
+			if o["t"] == "chest" or o["t"] == "gate":
+				if o["t"] == "gate":
+					flags[o["d"]["key"]] = true
+				await interact(o)
+		for h in party:
+			h["lv"] += 14
+			h["hp"] = mhp(h)
+			h["sp"] = msp(h)
+		for o in objs.duplicate():
+			if o["t"] == "boss":
+				await interact(o)
+		print("Auto ", mid2, " Boss-Flag: ", flags.get("boss_" + mid2, false), " Truhen offen: ", flags.get(mid2 + "_key", false))
+	for n in Dat.MAPS["hub"]["npcs"]:
+		if n["kind"] != "shop":
+			await talk_npc(n)
+	print("Auto-Durchlauf fertig")
+	autoplay = false
 	var sheet := Image.create(512, 200, false, Image.FORMAT_RGBA8)
 	sheet.fill(Color(0.3, 0.55, 0.3))
 	var x := 0
