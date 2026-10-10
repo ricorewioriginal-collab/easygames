@@ -88,7 +88,7 @@
   function wanted() { try { return LS.getItem(ON_KEY) === '1'; } catch (e) { return false; } }
   // ---- App-Modus (Android/Windows-App): Google sperrt die Anmeldung im App-Fenster. Die Anmeldung läuft deshalb im Browser
   // (Link mit Kopplungscode auf ricorewi-radio.de), die App holt sich danach das Aktualisierungs-Token und nutzt es per REST. ----
-  var APP = location.hostname === 'appassets.local', RT = 'anmacha-cloud-rt', PAIR = null;
+  var APP = location.hostname === 'appassets.local' || /RicoReWiApp\//.test(navigator.userAgent), RT = 'anmacha-cloud-rt', PAIR = null;
   var PORTAL = 'https://www.ricorewi-radio.de/';
   var FS = 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/';
   function post(u, body, form) {
