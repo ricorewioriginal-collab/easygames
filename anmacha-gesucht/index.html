@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#05060f">
+<title>AnMaCha Gesucht &amp; Gefunden</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<style>
+  :root{--c:#00E5FF;--ma:#FF2D95;--v:#8B5CF6;--o:#FF9A1F;--g:#00FF88;--y:#FFD24A;--bg:#05060f;--tx:#EAF2FF;--mut:#8FA3BD}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:#05060f;color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+  button{font-family:inherit;color:inherit;cursor:pointer}
+  #cv{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .glass{background:rgba(8,10,34,.78);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px}
+  .ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:17px;border:1px solid rgba(255,255,255,.2);background:rgba(8,10,34,.78)}
+  #ui{position:fixed;inset:0;pointer-events:none;z-index:3}
+  #ui>*{pointer-events:auto}
+  #tbar{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 0;display:flex;gap:8px;align-items:center;pointer-events:none}
+  #tbar>*{pointer-events:auto}
+  #tbar .sp{flex:1}
+  #rnd{padding:7px 14px;font-weight:800;font-size:13px;text-align:center;line-height:1.25;min-width:0}
+  #rnd small{display:block;color:var(--y);font-weight:700;font-size:11px;letter-spacing:.06em}
+  #race{position:absolute;left:50%;transform:translateX(-50%);top:calc(58px + env(safe-area-inset-top));width:min(760px,96vw);padding:6px 8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+  .pchip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 5px;border-radius:999px;border:2px solid transparent;background:rgba(255,255,255,.07);font-weight:800;font-size:13px;min-width:0}
+  .pchip img{width:26px;height:26px;border-radius:7px;object-fit:cover;background:#05070d;flex:none}
+  .pchip span{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pchip b{color:var(--sc);font-size:16px;font-variant-numeric:tabular-nums}
+  .pchip.act{border-color:var(--sc);box-shadow:0 0 12px var(--sc)}
+  .pchip.out{opacity:.4;text-decoration:line-through}
+  .rrow{display:flex;align-items:center;gap:8px}
+  .rrow img{width:26px;height:26px;border-radius:7px;object-fit:cover;background:#05070d;flex:none}
+  .rrow .nm{width:clamp(70px,14vw,130px);font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pips{flex:1;display:grid;grid-template-columns:repeat(15,1fr);gap:3px}
+  .pips i{height:14px;border-radius:4px;background:rgba(255,255,255,.1);transition:.4s}
+  .pips i.on{background:var(--sc);box-shadow:0 0 8px var(--sc)}
+  .pips i.win{outline:2px solid #fff}
+  .rrow b{width:28px;text-align:right;font-size:17px;color:var(--sc);font-variant-numeric:tabular-nums}
+  #bubble{position:absolute;left:50%;top:calc(150px + env(safe-area-inset-top));transform:translateX(-50%);max-width:min(560px,92vw);padding:9px 16px;font-size:clamp(13px,3.4vw,17px);font-weight:700;text-align:center;border-color:rgba(255,45,149,.5);animation:pop .3s}
+  @keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.85)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+  #banner{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;font:900 clamp(26px,7vw,66px)/1 'Trebuchet MS',sans-serif;font-style:italic;text-shadow:0 0 24px var(--ma),0 4px 0 #000;white-space:nowrap;animation:banner 2.4s ease-out forwards}
+  #banner small{display:block;font-size:.36em;font-style:normal;font-weight:800;letter-spacing:.1em;color:var(--y);margin-top:6px;text-shadow:0 2px 0 #000}
+  #banner.good{color:#7CFF9A;text-shadow:0 0 28px #00ff88,0 4px 0 #000}#banner.bad{color:#ff7a8a;text-shadow:0 0 28px #ff2a3a,0 4px 0 #000}#banner.gold{color:#ffd24a;text-shadow:0 0 28px #ff9a1f,0 4px 0 #000}
+  @keyframes banner{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}20%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1)}}
+  #gp{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(760px,96vw);min-height:220px;max-height:58vh;overflow:auto;padding:14px 16px 12px;text-align:center;animation:rise .45s cubic-bezier(.2,.9,.3,1)}
+  @keyframes rise{from{opacity:0;transform:translate(-50%,50px)}to{opacity:1;transform:translate(-50%,0)}}
+  .gtitle{font:900 clamp(20px,5vw,28px) 'Trebuchet MS',sans-serif;font-style:italic;color:var(--y);text-shadow:0 0 14px rgba(255,150,30,.5)}
+  .gsub{font-size:clamp(13px,3.2vw,15px);color:#c4d2ea;margin:4px 0 10px;line-height:1.45}
+  .gbody{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .gres{margin-top:8px;font-weight:800;font-size:14px;min-height:20px;color:#9fe8ff}
+  .pill{border-radius:999px;padding:11px 24px;font-weight:900;font-size:16px;border:1px solid rgba(255,255,255,.3);background:rgba(8,16,40,.85);min-height:46px}
+  .pill.go{background:linear-gradient(90deg,#ffd24a,#ff9a1f 60%,#ff2d95);color:#111;border:0;box-shadow:0 0 18px rgba(255,150,30,.45)}
+  .rbtn{width:min(240px,60vw);aspect-ratio:1;border-radius:50%;border:6px solid rgba(255,255,255,.35);background:#2a3050;font:900 22px 'Trebuchet MS',sans-serif;touch-action:manipulation}
+  .rbtn.red{background:radial-gradient(circle,#ff6a6a,#a00a1e)}.rbtn.green{background:radial-gradient(circle,#7CFF9A,#05883a);box-shadow:0 0 40px #00ff88}
+  .ginp{font:800 24px inherit;font-family:inherit;text-align:center;color:var(--tx);background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);border-radius:14px;padding:12px;width:min(360px,86vw)}
+  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(360px,90vw)}
+  .mgrid.lock{pointer-events:none}
+  .mcell{aspect-ratio:1;border-radius:14px;border:3px solid rgba(255,255,255,.25);background:#0a1030;padding:6px;transition:.12s}
+  .mcell img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+  .mcell.lit{border-color:#fff;background:#fff;transform:scale(1.06);box-shadow:0 0 28px #00e5ff}
+  .tbtn{width:min(260px,64vw);aspect-ratio:1.4;border-radius:22px;border:4px solid #ffd24a;background:linear-gradient(#ff2d95,#8b5cf6);font:900 30px 'Trebuchet MS',sans-serif;touch-action:manipulation;transition:transform .05s}
+  .tbtn.hit{transform:scale(.94)}
+  .tcount{font:900 44px 'Trebuchet MS',sans-serif;color:var(--y)}
+  .tcv{width:min(300px,70vw);height:auto;border-radius:50%;background:#05060f;touch-action:manipulation}
+  .sword{font:900 clamp(40px,12vw,64px) 'Trebuchet MS',sans-serif;letter-spacing:.06em;min-height:70px}
+  .sword.calc{color:#fff;letter-spacing:.02em}
+  .sbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(420px,92vw)}
+  .sbtn{aspect-ratio:1.1;border-radius:16px;border:3px solid rgba(255,255,255,.5);touch-action:manipulation}
+  .cbtns{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:min(420px,92vw)}
+  .cbtn{padding:16px;border-radius:14px;border:2px solid var(--y);background:linear-gradient(#16277a,#0a1244);font:900 24px 'Trebuchet MS',sans-serif}
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(420px,92vw)}
+  .tile{padding:18px 6px;border-radius:14px;border:2px solid var(--c);background:linear-gradient(#16277a,#0a1244);font:900 26px 'Trebuchet MS',sans-serif}
+  .tile.done{opacity:.25}.tile.shake{animation:shake .3s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .dots::after{content:"";animation:dots 1.2s infinite}
+  @keyframes dots{0%{content:"."}33%{content:".."}66%{content:"..."}}
+  .ov{position:fixed;inset:0;z-index:10;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at 50% 20%,rgba(34,10,50,.62),rgba(5,6,15,.95) 75%)}
+  .box{margin:auto;width:100%;max-width:700px;display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center}
+  h1{margin:0;line-height:.95;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(34px,9.5vw,70px);background:linear-gradient(90deg,#fff,var(--ma) 45%,var(--y));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(255,45,149,.45))}
+  h1 small{display:block;font-size:clamp(18px,5vw,30px);letter-spacing:.14em;margin-top:6px;color:var(--c);-webkit-text-fill-color:var(--c);text-shadow:0 0 16px var(--c)}
+  .brand{display:block;margin:0 auto;max-width:min(92vw,620px);max-height:clamp(170px,44vw,340px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.25))}
+  h2{margin:0;font-size:clamp(24px,6.5vw,38px);font-style:italic;text-shadow:0 0 16px var(--ma)}
+  h3{margin:0;font-size:12px;letter-spacing:.16em;color:var(--mut)}
+  .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.4vw,15px);line-height:1.5}
+  .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;width:100%}
+  .chip{min-width:46px;min-height:44px;padding:6px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);font-weight:800;font-size:14px;line-height:1.2}
+  .chip small{display:block;font-weight:600;font-size:10.5px;color:var(--mut)}
+  .chip.on{border-color:var(--ma);box-shadow:0 0 0 2px rgba(255,45,149,.4),0 0 14px rgba(255,45,149,.4);background:rgba(255,45,149,.14)}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.1em;color:#111;border:0;border-radius:999px;padding:15px 52px;min-height:58px;background:linear-gradient(90deg,#ffd24a,#ff9a1f 55%,#ff2d95);box-shadow:0 0 28px rgba(255,154,31,.5)}
+  .big:active{transform:scale(.96)}.big[disabled]{opacity:.5;cursor:wait}
+  .ghost{font:700 14px inherit;font-family:inherit;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);border-radius:999px;padding:11px 22px;min-height:44px}
+  .info{font-size:12px;color:var(--mut);line-height:1.5}
+  a.back{color:var(--c);font-size:13px;text-decoration:none}
+  #plist{display:flex;flex-direction:column;gap:8px;width:100%;max-width:520px}
+  .pc{display:flex;align-items:center;gap:10px;padding:7px 10px;text-align:left}
+  .pc .lg{width:44px;height:44px;border-radius:11px;object-fit:cover;border:2px solid var(--sc);background:#05070d;cursor:pointer;flex:none}
+  .pc input{flex:1;min-width:0;font:700 15px inherit;font-family:inherit;color:var(--tx);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 11px}
+  .pc .col{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+  #games{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:620px}
+  #games span{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+  #rankList{width:100%;max-width:460px;text-align:left}
+  .brow{display:flex;justify-content:space-between;gap:8px;padding:8px 11px;border-radius:9px;font-weight:800;font-size:16px;border-left:4px solid var(--sc);background:rgba(255,255,255,.07);margin-bottom:6px}
+  .brow b{color:var(--sc)}
+  #pause{background:rgba(5,6,15,.97)}
+  #end{background:radial-gradient(ellipse at 50% 35%,rgba(5,6,15,.4),rgba(5,6,15,.84) 80%)}
+  #err{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:24px;background:#05060f}
+  @media (max-width:820px),(max-aspect-ratio:1/1){
+    #race{top:calc(56px + env(safe-area-inset-top))}
+    #bubble{top:calc(112px + env(safe-area-inset-top))}
+    #gp{max-height:62vh}
+  }
+
+  .modes{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:560px}
+  .mode{padding:10px 8px;border-radius:14px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);text-align:center;font-weight:900;font-size:15px;line-height:1.2}
+  .mode small{display:block;font-weight:600;font-size:11px;color:var(--mut);margin-top:3px}
+  .mode.on{border-color:var(--ma);box-shadow:0 0 14px rgba(255,45,149,.5);background:rgba(255,45,149,.14)}
+  .clues{display:flex;flex-direction:column;gap:5px;width:100%;text-align:left;margin-bottom:6px}
+  .clue{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.08);border-left:4px solid var(--y);font-size:clamp(13px,3.3vw,15px);font-weight:700;animation:pop2 .35s}
+  .clue b{color:var(--y);margin-right:6px}
+  @keyframes pop2{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%}
+  .opt{padding:12px 8px;border-radius:12px;border:2px solid var(--c);background:linear-gradient(#16277a,#0a1244);font-weight:800;font-size:clamp(13px,3.4vw,16px);min-height:46px}
+  .opt:disabled{opacity:.35}
+  .opt.ok{background:#05883a;border-color:#7CFF9A}.opt.no{background:#8a0a1e;border-color:#ff6a7a}
+  .qlist{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%}
+  .qb{padding:8px 6px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);font-weight:700;font-size:12.5px;line-height:1.2;min-height:40px}
+  .qb:disabled{opacity:.3}
+  .qlog{width:100%;text-align:left;font-size:12.5px;max-height:84px;overflow:auto;color:#c4d2ea;display:flex;flex-direction:column;gap:2px}
+  .qlog b.y{color:#7CFF9A}.qlog b.n{color:#ff8a98}
+  #gp.tall{max-height:80vh}
+  .board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:min(420px,96%)}
+  .fc{position:relative;border-radius:10px;border:2px solid rgba(255,255,255,.25);background:#0a1030;padding:2px;transition:.2s}
+  .fc img{width:100%;display:block;border-radius:7px}
+  .fc span{display:block;font-size:10px;font-weight:800;margin-top:1px}
+  .fc.off{opacity:.18;filter:grayscale(1)}
+  .fc.sel{border-color:#ffd24a;box-shadow:0 0 14px #ffd24a}
+  .fcrow{display:flex;gap:10px;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  .fcrow img{width:44px;border-radius:8px;border:2px solid var(--y)}
+  #band{position:fixed;inset:0;z-index:12;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 30%,#3a0a6a,#0a0620 80%);text-align:center}
+  #band .bw{flex:1;display:grid;place-items:center;font:900 clamp(34px,11vw,110px)/1.05 'Trebuchet MS',sans-serif;text-shadow:0 0 30px var(--ma),0 4px 0 #000;word-break:break-word;max-width:96vw}
+  #band .bt{width:100%;max-width:700px;height:14px;border-radius:7px;background:rgba(255,255,255,.12);overflow:hidden}
+  #band .bt i{display:block;height:100%;background:linear-gradient(90deg,#00ff88,#ffd24a,#ff2a3a);transform-origin:left}
+  #band .bs{font:900 22px 'Trebuchet MS',sans-serif;color:var(--y);margin:6px 0}
+  #band .bb{display:flex;gap:12px;width:100%;max-width:700px}
+  #band .bb button{flex:1;padding:20px 8px;border-radius:18px;border:3px solid rgba(255,255,255,.4);font:900 clamp(18px,5vw,28px) 'Trebuchet MS',sans-serif}
+  .okb{background:linear-gradient(#2fe27a,#05883a)}.skb{background:linear-gradient(#6a7090,#2a3050)}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="ui" hidden>
+  <div id="tbar">
+    <button class="ib" id="bEnd" title="Menü" aria-label="Menü">☰</button>
+    <div id="rnd" class="glass">Runde 1<small>…</small></div>
+    <span class="sp"></span>
+    <button class="ib" id="bVoice" title="Moderator-Stimme" aria-label="Stimme">🎙</button>
+    <button class="ib" id="bSnd" title="Ton" aria-label="Ton">🔊</button>
+  </div>
+  <div id="race" class="glass"></div>
+  <div id="bubble" class="glass" hidden></div>
+  <div id="banner" hidden></div>
+  <div id="gp" class="glass" hidden><div id="gpIn"></div></div>
+</div>
+
+<div id="menu" class="ov"><div class="box">
+  <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha Gesucht &amp; Gefunden" hidden><small id="brandSub">GESUCHT &amp; GEFUNDEN</small></h1>
+  <p class="sub">Das Ratestudio: vier Spielarten zum Erraten, Befragen, Kombinieren und Mitraten – allein oder mit bis zu 4 Spielern an einem Gerät.</p>
+  <h3>SPIELART</h3>
+  <div class="modes" id="modes"></div>
+  <h3>THEMEN</h3>
+  <div class="row" id="cats"></div>
+  <h3 id="rh">RUNDEN</h3>
+  <div class="row" id="rounds"></div>
+  <h3 id="plh">SPIELER</h3>
+  <div class="row" id="pcount"></div>
+  <div id="plist"></div>
+  <button class="big" id="bPlay" disabled>LADEN …</button>
+  <div class="row"><button class="ghost" id="bTop">🏆 Bestenliste</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bMenuVoice">🎙 Stimme</button></div>
+  <div class="info" id="loadInfo">Studio wird aufgebaut …</div>
+  <a class="back" id="backLink" href="../">← Alle Spiele</a>
+</div></div>
+
+<div id="top" class="ov" hidden><div class="box">
+  <h2>🏆 BESTENLISTE</h2><div class="tabs" id="topTabs"></div><div id="topList" style="width:100%;max-width:460px;text-align:left"></div>
+  <button class="ghost" id="bTopClose">Schließen</button>
+</div></div>
+
+<div id="band" hidden>
+  <div><div class="bs" id="bandSc"></div><div class="bt"><i id="bandBar"></i></div></div>
+  <div class="bw" id="bandWord"></div>
+  <div class="bb"><button class="skb" id="bandSkip">⏭ WEITER</button><button class="okb" id="bandOk">✅ RICHTIG</button></div>
+</div>
+
+<div id="pause" class="ov" hidden><div class="box">
+  <h2>PAUSE</h2>
+  <button class="big" id="bResume">WEITER</button>
+  <button class="ghost" id="bQuit">Spiel beenden</button>
+</div></div>
+
+<div id="end" class="ov" hidden><div class="box">
+  <h2 id="endTitle">Ergebnis</h2><p class="sub" id="endSub"></p>
+  <div id="rankList"></div>
+  <button class="big" id="bAgain">NOCH EINMAL</button>
+  <button class="ghost" id="bBack">Hauptmenü</button>
+</div></div>
+
+<div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
+
+<script src="audio.js"></script>
+<script src="data.js"></script>
+<script src="faces.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

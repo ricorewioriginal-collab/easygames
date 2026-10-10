@@ -14,6 +14,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
+| AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
@@ -188,3 +189,11 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Monster:** 30 animierte 3D-Gegner (je 6 pro Reich, passend zu Rap, Schlager, Weihnachten, Rock und Rausch-Turm) plus 5 große Bosse. Gegner laufen **sichtbar auf der Karte** herum, jagen dich bei Nähe und lösen bei Berührung den Kampf aus (zusätzlich seltene Zufallskämpfe). Flüchten ist möglich, besiegte Gegner verschwinden bis zum nächsten Betreten.
 - Credits (alle CC0): 3D-Modelle von Quaternius (RPG Characters, Cute Animated Monsters, Animated Monster Pack, Ultimate Textured Building Pack) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit, Tiny Dungeon); Schrift Pixelify Sans (SIL OFL). Details: `anmacha-quest-rpg/godot/assets/LIZENZEN.md`.
 
+## AnMaCha Gesucht & Gefunden
+
+- **Spiel:** Ratestudio mit vier Spielarten, 1–4 Spieler an einem Gerät. Hinter dem Vorhang wartet die Geheimnis-Karte; wer richtig liegt, öffnet ihn (Konfetti, LED-Wand, Jubel).
+- **Hinweis-Raten:** 5 Hinweise nacheinander; wer früher richtig antwortet (Auswahl aus 4), bekommt mehr Punkte (5…1). Falsch = raus für die Runde.
+- **Fragen-Raten:** Ja/Nein-Fragen aus einem Menü (bis 15), Lösung aus der Liste raten; Punkte = 15 − Fragen, falscher Tipp −3.
+- **Gesichter-Radar:** 20 selbst gezeichnete Gesichter mit Merkmalen; allein gegen den Moderator (3 Stärken) – wer das geheime Gesicht des anderen zuerst findet, gewinnt.
+- **Stirnband-Party:** Gerät an die Stirn, die Gruppe erklärt das Wort – 60 s, ✅ Richtig / ⏭ Weiter, Runden pro Spieler/Team.
+- **Daten:** 174 Begriffe in 6 Themen (Tiere, Berufe, Länder, Persönlichkeiten, Gegenstände, Radio & Musik) in `anmacha-gesucht/data.js`. Sender-Logos: `anmacha-gesucht/logos/01..13`, Titel-Logo `logo.png`. Bestenliste (Top 10 je Spielart) lokal im Browser. Tasten: `M` Ton, `←/→` im Stirnband-Modus.
