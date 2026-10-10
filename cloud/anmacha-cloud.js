@@ -3,34 +3,47 @@
  * data-game   = Spielname (eigener Speicherplatz pro Spiel)
  * data-prefix = kommagetrennte localStorage-Schlüsselanfänge, die synchronisiert werden
  * data-ui="off" blendet den Cloud-Knopf aus.
- * Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
+ * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer. Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
 (function () {
   'use strict';
-  var CONFIG = { projectId: '', apiKey: '' }; // <- aus der Firebase-Konsole eintragen (siehe cloud/README.md)
+  // <- aus der Firebase-Konsole eintragen (siehe cloud/README.md); authDomain leer = <projectId>.firebaseapp.com
+  var CONFIG = { projectId: '', apiKey: '', authDomain: '' };
+  var SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
 
   var s = document.currentScript;
-  if (!s || !CONFIG.projectId || !window.crypto || !crypto.subtle || !window.fetch) return;
+  if (!s || !CONFIG.projectId || !window.fetch || !window.Promise) return;
   var game = (s.dataset.game || 'spiel').replace(/[^\w-]/g, '').slice(0, 40);
   var prefixes = (s.dataset.prefix || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
   if (!prefixes.length) return;
 
   var LS = window.localStorage, P = Storage.prototype;
   var rawSet = P.setItem, rawRemove = P.removeItem;
-  var CODE_KEY = 'anmacha-cloud-code', META_KEY = 'anmacha-cloud-meta:' + game, RL = 'anmacha-cloud-rl';
-  var ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var ON_KEY = 'anmacha-cloud-on', META_KEY = 'anmacha-cloud-meta:' + game, RL = 'anmacha-cloud-rl';
   var meta = {}, timer = 0, busy = false, again = false, first = true, lastErr = '';
   try { meta = JSON.parse(LS.getItem(META_KEY)) || {}; } catch (e) {}
 
   function match(k) { return prefixes.some(function (p) { return k.indexOf(p) === 0; }); }
   function saveMeta() { try { rawSet.call(LS, META_KEY, JSON.stringify(meta)); } catch (e) {} }
-  function getCode() { try { return LS.getItem(CODE_KEY) || ''; } catch (e) { return ''; } }
-  function normCode(c) { return String(c || '').toUpperCase().replace(/[^A-Z2-9]/g, '').replace(/[IO]/g, ''); }
-  function newCode() {
-    var b = crypto.getRandomValues(new Uint8Array(12)), c = '';
-    for (var i = 0; i < 12; i++) c += ALPHA[b[i] & 31];
-    return c;
+  var auth = null, user = null, fb = null, sdkP = null;
+  function wanted() { try { return LS.getItem(ON_KEY) === '1'; } catch (e) { return false; } }
+  function loadSdk() {
+    return sdkP || (sdkP = Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js')]).then(function (m) {
+      fb = m[1];
+      auth = fb.getAuth(m[0].initializeApp({ apiKey: CONFIG.apiKey, authDomain: CONFIG.authDomain || CONFIG.projectId + '.firebaseapp.com', projectId: CONFIG.projectId }));
+      return new Promise(function (res) {
+        var off = fb.onAuthStateChanged(auth, function (u) { user = u; off(); res(u); render(); });
+      });
+    }));
   }
-  function fmt(c) { return c.replace(/(.{4})(?=.)/g, '$1-'); }
+  function signIn() {
+    return loadSdk().then(function () { return fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }).then(function (r) {
+      user = r.user; rawSet.call(LS, ON_KEY, '1'); first = true; return sync();
+    }).catch(function (e) { lastErr = e.code === 'auth/popup-closed-by-user' ? '' : (e.message || 'Anmeldung fehlgeschlagen'); render(); });
+  }
+  function signOut() {
+    rawRemove.call(LS, ON_KEY);
+    return (auth ? fb.signOut(auth) : Promise.resolve()).then(function () { user = null; render(); });
+  }
 
   // Zeitstempel pro Schlüssel mitführen
   P.setItem = function (k, v) {
@@ -52,37 +65,32 @@
     return o;
   }
 
-  function docId(code) {
-    var data = new TextEncoder().encode('anmacha:' + game + ':' + code);
-    return crypto.subtle.digest('SHA-256', data).then(function (h) {
-      return Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
-    });
+  function url() {
+    return 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/users/' + user.uid + '/saves/' + game;
   }
-  function url(id) {
-    return 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/saves/' + id +
-      '?key=' + CONFIG.apiKey;
-  }
-  function pull(id) {
-    return fetch(url(id)).then(function (r) {
+  function pull(tok) {
+    return fetch(url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
       if (r.status === 404) return {};
       if (!r.ok) throw new Error('Laden ' + r.status);
       return r.json().then(function (j) { try { return JSON.parse(j.fields.d.stringValue); } catch (e) { return {}; } });
     });
   }
-  function push(id, state, keep) {
+  function push(tok, state, keep) {
     var body = JSON.stringify({ fields: { d: { stringValue: JSON.stringify(state) }, t: { integerValue: String(Date.now()) } } });
-    return fetch(url(id) + '&updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: !!keep && body.length < 60000
+    return fetch(url() + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
     }).then(function (r) { if (!r.ok) throw new Error('Speichern ' + r.status); });
   }
 
   function sync(keep) {
-    var code = getCode();
-    if (!code) return Promise.resolve();
+    if (!wanted()) return Promise.resolve();
     if (busy) { again = true; return Promise.resolve(); }
     busy = true;
-    return docId(code).then(function (id) {
-      return pull(id).then(function (remote) {
+    return loadSdk().then(function () {
+      if (!user) throw new Error('Bitte neu anmelden');
+      return user.getIdToken();
+    }).then(function (tok) {
+      return pull(tok).then(function (remote) {
         var local = localState(), merged = {}, changed = false, dirty = false, k;
         for (k in remote) merged[k] = remote[k];
         for (k in local) {
@@ -96,7 +104,7 @@
         }
         saveMeta();
         lastErr = '';
-        var p = dirty ? push(id, merged, keep) : Promise.resolve();
+        var p = dirty ? push(tok, merged, keep) : Promise.resolve();
         return p.then(function () {
           if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
         });
@@ -119,31 +127,19 @@
   function el(t, css, txt) { var e = document.createElement(t); if (css) e.style.cssText = css; if (txt) e.textContent = txt; return e; }
   function render() {
     if (!panel || s.dataset.ui === 'off') return;
-    var code = getCode();
+    var on = wanted() && user;
     panel.textContent = '';
-    var bs = 'margin:4px 4px 0 0;padding:7px 10px;border:0;border-radius:8px;background:#3a7bd5;color:#fff;font:inherit;cursor:pointer';
+    var bs = 'margin:8px 4px 0 0;padding:8px 12px;border:0;border-radius:8px;background:#3a7bd5;color:#fff;font:inherit;cursor:pointer';
     panel.appendChild(el('b', '', '☁ Cloud-Speicher'));
-    if (code) {
-      panel.appendChild(el('div', 'margin:8px 0 2px;opacity:.8', 'Dein Code (geheim halten):'));
-      panel.appendChild(el('div', 'font:700 18px monospace;letter-spacing:1px;user-select:all', fmt(code)));
-      panel.appendChild(el('div', 'margin:6px 0;opacity:.8', lastErr ? '⚠ ' + lastErr : '✓ Fortschritt wird gesichert. Auf anderen Geräten: „Mit Code verbinden“.'));
+    if (on) {
+      panel.appendChild(el('div', 'margin:8px 0 2px', '✓ Angemeldet als ' + (user.displayName || user.email || 'Spieler')));
+      panel.appendChild(el('div', 'opacity:.8', lastErr ? '⚠ ' + lastErr : 'Dein Fortschritt wird auf jedem Gerät geladen, auf dem du dich anmeldest.'));
+      var b2 = el('button', bs.replace('#3a7bd5', '#666'), 'Abmelden');
+      b2.onclick = signOut; panel.appendChild(b2);
     } else {
-      panel.appendChild(el('div', 'margin:8px 0;opacity:.8', 'Sichere deinen Fortschritt und spiele auf jedem Gerät weiter. Kein Konto nötig.'));
-      var b0 = el('button', bs, 'Speicher erstellen');
-      b0.onclick = function () { rawSet.call(LS, CODE_KEY, newCode()); sync(); render(); };
-      panel.appendChild(b0);
-    }
-    var b1 = el('button', bs, 'Mit Code verbinden');
-    b1.onclick = function () {
-      var c = normCode(prompt('Code eingeben (z.B. ABCD-EFGH-JKLM):'));
-      if (c.length !== 12) { if (c) alert('Der Code muss 12 Zeichen haben.'); return; }
-      rawSet.call(LS, CODE_KEY, c); first = true; sync(); render();
-    };
-    panel.appendChild(b1);
-    if (code) {
-      var b2 = el('button', bs.replace('#3a7bd5', '#666'), 'Trennen');
-      b2.onclick = function () { if (confirm('Dieses Gerät vom Cloud-Speicher trennen? Lokale Daten bleiben erhalten.')) { rawRemove.call(LS, CODE_KEY); render(); } };
-      panel.appendChild(b2);
+      panel.appendChild(el('div', 'margin:8px 0;opacity:.8', lastErr ? '⚠ ' + lastErr : 'Melde dich an und spiele auf jedem Gerät mit deinem Fortschritt weiter.'));
+      var b0 = el('button', bs, 'Mit Google anmelden');
+      b0.onclick = signIn; panel.appendChild(b0);
     }
   }
   function ui() {
@@ -155,6 +151,6 @@
     document.body.appendChild(panel); document.body.appendChild(btn); render();
   }
   if (document.body) ui(); else document.addEventListener('DOMContentLoaded', ui);
-  sync();
-  window.AnMaChaCloud = { sync: sync, code: getCode };
+  if (wanted()) sync();
+  window.AnMaChaCloud = { sync: sync };
 })();
