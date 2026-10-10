@@ -622,7 +622,8 @@
   }
   function renderMp() {
     if (mpView !== 'on' && mpView !== 'host') return; const list = $('mpPlayers'); list.innerHTML = '';
-    for (const nm of [myName() + ' (du)'].concat([...remote.values()].map(a => a.name))) { const s = document.createElement('span'); s.className = 'mpp'; s.textContent = nm; list.appendChild(s); }
+    { const s = document.createElement('span'); s.className = 'mpp'; s.textContent = myName() + ' (du)'; list.appendChild(s); }
+    for (const a of remote.values()) { const s = document.createElement('span'); s.className = 'mpp'; s.textContent = a.name + ' '; const b = document.createElement('button'); b.className = 'pill'; b.textContent = '🏠 Besuchen'; b.style.cssText = 'padding:2px 10px;font-size:13px'; b.onclick = () => visitFlat(a.id); s.appendChild(b); list.appendChild(s); }
     $('mpOnTxt').textContent = net.role === 'host' ? 'Dein Spiel läuft – Freunde können jederzeit beitreten:' : 'Du spielst in der Welt deines Freundes:'; $('mpOnCode').textContent = net.role === 'host' ? 'Code ' + net.code : '';
   }
   function renderJoin() { $('mpJoinCode').textContent = (joinCode + '····').slice(0, 4).split('').join(''); }
@@ -660,6 +661,7 @@
       if (d.t === 'full') { net.close(true); mpShow('choose'); mpErr('Das Spiel ist leider voll 😅'); return; }
       if (d.t === 'bye') { const a = remote.get(d.id); if (a) { dropAvatar(a); remote.delete(d.id); say(a.name + ' ist gegangen 👋', 2200); updateFriends(); renderMp(); } return; }
       if (d.t === 'e') { const a = remote.get(d.id); if (a && EMOJIS.includes(d.e)) { showEmoji(d.e, a); A.pop(); if (d.e === '🙌') { a.hf = performance.now(); if (a.hf - lastHF < 2600 && Math.hypot(a.x - P.x, a.z - P.z) < 6) highFive(a); } } return; }
+      if (d.t === 'p') { const a = remote.get(d.id); if (a && typeof d.x === 'number' && typeof d.z === 'number') startParty(d.x, d.z, a.name, false); return; }
       if (d.t === 'n') { const a = remote.get(d.id); if (a) kids.play(d.i | 0, (d.k | 0) & 7, a); return; }
       if (d.t === 'b') { build.applyRemote(d.o || d.id, d); return; }
       if (d.t === 'g') { applyGame(d.op === 'cnt' ? Object.assign({}, d) : d); return; }
@@ -721,11 +723,32 @@
     const now = performance.now(); if (now - (a.hfDone || 0) < 6000) return; a.hfDone = now; addStars(1); A.star(); A.fanfare(); const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;
     fx.burst((px + a.x) / 2, 2.3, (pz + a.z) / 2, 24, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 30, 6); say('🙌 Abklatschen mit ' + a.name + '! +1 ⭐', 2600);
   }
+  /* ---- Besuch in der Wohnung eines Freundes + Geburtstagsparty ---- */
+  function visitFlat(id) {
+    if (P.veh || sl.t >= 0) { say('Steig erst aus 🙂', 1800); return; } const f = flats[slotOf(id)], a = remote.get(id); closeMp(); fx.burst(P.x, 1.2, P.z, 14, [BI.C.white, BI.C.blue], 4, 1, 28, 4);
+    P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.h = Math.PI; cam.yaw = 0; A.fanfare(); say('🏠 Zu Besuch bei ' + (a ? a.name : 'deinem Freund') + '!', 2600); kids.earn('visit');
+  }
+  const parties = []; let partyCd = 0;
+  function startParty(x, z, who, mine) {
+    const b = new BI.Batch(); b.cyl(0, 0, 0, .7, .7, .5, 0xffc4dc, 14); b.cyl(0, .5, 0, .5, .5, .4, 0xfff0b0, 14); b.sph(0, .98, 0, .12, 0xff5a5a, 1); for (let k = 0; k < 3; k++) { const a = k * 2.1; b.box(Math.sin(a) * .25, .9, Math.cos(a) * .25, .05, .3, .05, 0x4da3ff); b.sph(Math.sin(a) * .25, 1.25, Math.cos(a) * .25, .06, 0xffd23f, 0); }
+    const g = new THREE.Group(), me = b.mesh(BI.mat()); g.add(me); g.position.set(x + 1.2, .6, z); scene.add(g);
+    const near = !P.veh && Math.hypot(P.x - x, P.z - z) < 14; parties.push({ g, x, z, t: 14, c: 0, near, own: !!mine });
+    A.fanfare(); say('🎂 ' + (mine ? 'Du feierst Geburtstag! Alle kommen zur Party!' : who + ' feiert Geburtstag! Komm zur Party!'), 3600);
+    if (near) { addStars(2); kids.earn('party'); fun.setDance(true); }
+  }
+  function updateParties(dt) {
+    partyCd = Math.max(0, partyCd - dt);
+    for (let i = parties.length - 1; i >= 0; i--) { const p = parties[i]; p.t -= dt; p.c -= dt; p.g.rotation.y += dt; if (p.c <= 0) { p.c = .7; fx.burst(p.x, 2.6, p.z, 14, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.white], 4, 1.5, 34, 5); }
+      if (p.t <= 0) { scene.remove(p.g); freeObj(p.g); if (p.near && !P.veh) fun.setDance(false); parties.splice(i, 1); } }
+  }
+  function sendParty() {
+    if (!net.connected()) return; if (partyCd > 0) { say('🎂 Die nächste Party gibt es gleich wieder!', 2000); return; } partyCd = 30; const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; startParty(px, pz, '', true); net.send({ t: 'p', x: px, z: pz });
+  }
   function sendEmoji(e) {
     if (!net.connected()) return; A.pop(); showEmoji(e, null); net.send({ t: 'e', e });
     if (e === '🙌') { lastHF = performance.now(); for (const a of remote.values()) if (a.hf && lastHF - a.hf < 2600 && Math.hypot(a.x - P.x, a.z - P.z) < 6) highFive(a); }
   }
-  { const row = $('emoRow'); EMOJIS.forEach(e => { const b = document.createElement('button'); b.textContent = e; b.onclick = () => { sendEmoji(e); }; row.appendChild(b); }); const g = document.createElement('button'); g.textContent = '🎮'; g.setAttribute('aria-label', 'Spiele'); g.onclick = () => { row.hidden = true; openGames(); }; row.appendChild(g);
+  { const row = $('emoRow'); EMOJIS.forEach(e => { const b = document.createElement('button'); b.textContent = e; b.onclick = () => { sendEmoji(e); }; row.appendChild(b); }); const pb = document.createElement('button'); pb.textContent = '🎂'; pb.setAttribute('aria-label', 'Geburtstagsparty'); pb.onclick = () => { row.hidden = true; sendParty(); }; row.appendChild(pb); const g = document.createElement('button'); g.textContent = '🎮'; g.setAttribute('aria-label', 'Spiele'); g.onclick = () => { row.hidden = true; openGames(); }; row.appendChild(g);
     $('emoBtn').addEventListener('click', ev => { ev.stopPropagation(); A.resume(); row.hidden = !row.hidden; }); $('emo').addEventListener('pointerdown', ev => ev.stopPropagation()); }
   /* ---- gemeinsames Bauen ---- */
   build.onOp = op => { if (op.op === 'a') kids.earn('build'); if (net.connected()) net.send(Object.assign({ t: 'b' }, op)); };
@@ -1438,7 +1461,7 @@
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); camp.update(dt, t, night); if (Math.abs(weather.wx - wxK) > .004) { wxK = weather.wx; applyWx(); } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); updateParties(dt); camp.update(dt, t, night); if (Math.abs(weather.wx - wxK) > .004) { wxK = weather.wx; applyWx(); } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') fun.update(dt, t); build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1453,5 +1476,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { W, weather: () => weather, kitchen, camp, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { W, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
