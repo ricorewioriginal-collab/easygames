@@ -19,7 +19,7 @@ async function drive(p, maxMs = 280000, onStage) {
     if (await vis(p, '#act .pgrid') && await vis(p, '#act .ph.red')) { seen.add('nom'); if (onStage) await onStage('nom'); await p.click('#act .pp >> nth=0'); await p.click('#act .pp >> nth=1'); await p.click('#nOk'); continue; }
     if (await vis(p, '#act #tGo')) { await p.click('#tGo'); const kind = await p.evaluate(() => ['reflex', 'memory', 'guess'][(window.__fh.G.week - 1) % 3]); seen.add('task:' + kind); if (onStage) await onStage('task:' + kind);
       if (kind === 'reflex') { for (let i = 0; i < 5; i++) { await p.waitForSelector('#act .sig.go', { timeout: 8000 }); await p.click('#sig'); await p.waitForTimeout(80); } }
-      else if (kind === 'memory') { await p.waitForFunction(() => /Jetzt du/.test(document.getElementById('tkInfo').textContent), null, { timeout: 15000 }); await p.click('#act .pad >> nth=0'); await p.click('#act .pad >> nth=0'); await p.click('#act .pad >> nth=0'); await p.click('#act .pad >> nth=0'); }
+      else if (kind === 'memory') { await p.waitForFunction(() => /Jetzt du/.test(document.getElementById('tkInfo').textContent), null, { timeout: 15000 }); for (let i = 0; i < 4; i++) await p.click('#act .pad >> nth=0', { timeout: 1500 }).catch(() => {}); }
       else { await p.waitForSelector('#act #gv', { state: 'visible', timeout: 10000 }); await p.fill('#gv', '70'); await p.click('#gok'); }
       continue; }
     await p.waitForTimeout(60);
