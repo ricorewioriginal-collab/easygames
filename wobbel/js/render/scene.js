@@ -1,5 +1,5 @@
 /* Wobbel – 3D-Ansicht: isometrische Kamera, Insel, Figuren, Animationen, Partikel. */
-import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, makeArrow, makeCrack, makeHole, COLORS } from './models.js';
+import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, makeArrow, makeTipArrow, setCrateSkin, makeCrack, makeHole, COLORS } from './models.js';
 import { T as TT, DIRS, keyAt, isTargetDone } from '../game/engine.js';
 const T = window.THREE, PI = Math.PI;
 const ease = { out: u => 1 - Math.pow(1 - u, 3), inOut: u => u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2, back: u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); } };
@@ -22,7 +22,7 @@ export class GameView {
   cpos(i) { const L = this.L; return { x: (i % L.w) - L.w / 2 + 0.5, z: ((i / L.w) | 0) - L.h / 2 + 0.5 }; }
   clear(g) { while (g.children.length) g.remove(g.children[0]); }
   loadLevel(L, state, world) {
-    this.L = L; this.world = world; this.clear(this.root); this.clear(this.dyn); this.anims.length = 0; this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.waters.clear(); this.crackG = new Map(); this.holes = new Map(); this.targetsG = [];
+    this.L = L; this.world = world; this.clear(this.root); this.clear(this.dyn); this.hideTip(); this.anims.length = 0; this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.waters.clear(); this.crackG = new Map(); this.holes = new Map(); this.targetsG = [];
     this.hemi.color.set(world.sky[1]); this.sun.color.set('#fff8ee');
     const w = L.w, h = L.h, ox = -w / 2 + 0.5, oz = -h / 2 + 0.5, cells = []; for (let i = 0; i < L.n; i++) if (L.terrain[i] !== TT.VOID) cells.push(i);
     // Meer
@@ -75,12 +75,16 @@ export class GameView {
   // ------------------------------------------------------------------ Animation
   add(dur, fn, done, block) { this.anims.push({ t: 0, dur, fn, done, block: !!block }); }
   get busy() { return this.anims.some(a => a.block); }
-  setLook(look) { this.look = Object.assign({}, look); if (this.blob) applyLook(this.blob, this.look); }
+  // Tipp-Pfeil: schwebt über dem nächsten Feld in Zugrichtung
+  showTip(dirs) { this.hideTip(); if (!dirs.length) return; const s = this.cb.state && this.cb.state(); const L = this.L; let c = s ? s.p : 0; this.tip = { g: new T.Group(), t: 0 }; const seen = []; dirs.slice(0, 3).forEach((d, k) => { const nx = (c % L.w) + DIRS[d][0], ny = ((c / L.w) | 0) + DIRS[d][1]; c = ny * L.w + nx; const a = makeTipArrow(d), p = this.cpos(c); a.position.set(p.x, 0.9, p.z); a.scale.multiplyScalar(k ? 0.7 : 1); a.userData.k = k; this.tip.g.add(a); }); this.scene.add(this.tip.g); }
+  hideTip() { if (this.tip) { this.scene.remove(this.tip.g); this.tip = null; } }
+  setLook(look) { this.look = Object.assign({}, look); setCrateSkin(this.look.crate); if (this.blob) applyLook(this.blob, this.look); }
   faceDir(dir) { const [dx, dy] = DIRS[dir]; this.blob.g.rotation.y = Math.atan2(dx, dy); }
   move(dir, res, s) {
+    this.hideTip();
     const L = this.L, [dx, dy] = DIRS[dir], b = this.blob, from = b.g.position.clone(), to = this.cpos(s.p); this.faceDir(dir); const push = res.push;
     this.add(0.15, u => { const e = ease.inOut(u); b.g.position.set(lerp(from.x, to.x, e), Math.sin(u * PI) * 0.2, lerp(from.z, to.z, e)); const sq = Math.sin(u * PI); b.body.scale.set(1 + 0.08 * sq, 1 - 0.14 * sq, 1 + 0.08 * sq); if (push) b.body.rotation.x = 0.22 * sq; }, () => { b.g.position.set(to.x, 0, to.z); b.body.scale.set(1, 1, 1); b.body.rotation.x = 0; }, true);
-    this.cb.sfx(push ? 'push' : 'step'); if (!push) this.burst(from.x, 0.05, from.z, '#ffffff', 2, 0.5, 0.4, 2);
+    this.cb.sfx(push ? 'push' : 'step'); if (!push) { const tr = ({ bubbles: ['#9ae0ff', 4, 0.9], stars: ['#ffe066', 5, 1.1], hearts: ['#ff6fa8', 4, 1.0] })[(this.look || {}).trail]; if (tr) this.burst(from.x, 0.2, from.z, tr[0], tr[1], 0.7, tr[2], 4); else this.burst(from.x, 0.05, from.z, '#ffffff', 2, 0.5, 0.4, 2); }
     let landDelay = 0;
     const evs = res.events; let cr = null, path = [], color = 0, sunk = null;
     for (const e of evs) { if (e.t === 'push') { cr = this.crates.get(e.from); if (cr) { this.crates.delete(e.from); path = [e.from, e.to]; color = e.color; } } else if (e.t === 'slide') path.push(e.to); else if (e.t === 'paint') color = e.color; else if (e.t === 'fill') sunk = e.cell; }
@@ -125,6 +129,8 @@ export class GameView {
   pickCell(cx, cy) { if (!this.L) return null; const rect = this.canvas.getBoundingClientRect(), nx = (cx - rect.left) / rect.width * 2 - 1, ny = -((cy - rect.top) / rect.height) * 2 + 1, ray = new T.Raycaster(); ray.setFromCamera({ x: nx, y: ny }, this.cam); const pl = new T.Plane(new T.Vector3(0, 1, 0), -0.0), pt = new T.Vector3(); if (!ray.ray.intersectPlane(pl, pt)) return null; const x = Math.floor(pt.x + this.L.w / 2), y = Math.floor(pt.z + this.L.h / 2); if (x < 0 || y < 0 || x >= this.L.w || y >= this.L.h) return null; return y * this.L.w + x; }
   // ------------------------------------------------------------------ Frame
   tick(dt) {
+    if (this.tip) { this.tip.t += dt; this.tip.g.children.forEach(a => { a.position.y = 0.9 + Math.sin(this.tip.t * 6 + a.userData.k) * 0.08; }); if (this.tip.t > 6) this.hideTip(); }
+    if (this.blob && this.blob.rainbow) { const h = (this.time * 0.25) % 1; this.blob.rainbow[0].color.setHSL(h, 0.85, 0.64); this.blob.rainbow[1].color.setHSL(h, 0.8, 0.5); }
     if (this.blob && this.blob.hat && this.blob.hat.userData.spin) this.blob.hat.userData.spin.rotation.y += dt * 14;
     this.time += dt; const t = this.time;
     for (let i = this.anims.length - 1; i >= 0; i--) { const a = this.anims[i]; a.t += dt; const u = Math.min(1, a.t / a.dur); a.fn(u); if (u >= 1) { this.anims.splice(i, 1); if (a.done) a.done(); } }

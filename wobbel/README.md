@@ -18,7 +18,7 @@ Auf GitHub Pages läuft es unverändert unter `…/easygames/wobbel/`. Zum Auspr
 
 - Wobbel kann Kisten nur **schieben** (nicht ziehen, nicht zwei auf einmal).
 - Ein Level ist geschafft, wenn **jedes Zielfeld** eine passende Kiste trägt.
-- Fünf Welten führen neue Elemente ein:
+- Sechs Welten führen neue Elemente ein:
 
 | Welt | Neues Element |
 |---|---|
@@ -27,6 +27,7 @@ Auf GitHub Pages läuft es unverändert unter `…/easygames/wobbel/`. Zum Auspr
 | 🎨 Farbfabrik | **Farben** – rote/grüne/blaue Kisten gehören auf Felder derselben Farbe; **Kleckse** färben Kisten um |
 | ❄️ Eishöhle | **Eis** – Kisten rutschen weiter, bis sie anstoßen |
 | 🏰 Zauberschloss | **Schlüssel & Türen** – und alles zusammen |
+| 🏛️ Alte Ruinen | **Pfeilfelder** (nur in Pfeilrichtung) und **brüchiger Boden** (bricht hinter dir weg) |
 
 - Sterne gibt es nach der Zahl der Züge im Vergleich zur kürzesten Lösung (Par). Der Fortschritt (Level, Bestzüge, Sterne, Einstellungen) wird im Browser gespeichert (`localStorage`). Das nächste Level wird nach dem Abschluss des vorherigen freigeschaltet.
 
@@ -54,14 +55,16 @@ wobbel/
 │   ├── input.js            Tastatur, Wischen, Tippen, Steuerkreuz
 │   ├── audio.js            Soundeffekte + Musik (WebAudio, keine Audiodateien)
 │   ├── storage.js          Fortschritt & Einstellungen
-│   ├── bonus/              Bonusspiele (games.js), Laden + Muscheln (shop.js), Oberfläche (ui.js), gemeinsames Figur-Zeichnen (draw.js)
+│   ├── bonus/              Bonusspiele (games.js), Laden (shop.js), Erfolge (achievements.js), Tageslevel (daily.js), Oberfläche (ui.js), Figur-Zeichnen (draw.js)
+│   ├── community.js        Community-Level laden/spielen
+│   ├── game/tip.js         Tipp-Knopf (Löser im Worker ab aktueller Stellung)
 │   ├── editor/             Level-Editor: editor.js (Raster-Editor), codec.js (Prüfung, Teilen-Codes), custom-levels.js (Speicher), solve-worker.js (Löser im Worker)
 │   ├── game/
 │   │   ├── engine.js       Spielregeln (rein, ohne Grafik) – auch vom Test benutzt
 │   │   ├── solver.js       Breitensuche, findet die kürzeste Lösung
 │   │   ├── session.js      Zustand, Rückgängig, Neustart, Eingabepuffer
 │   │   ├── worlds.js       Welten/Themen
-│   │   └── levels/         world1.js … world5.js (je 11 Level), index.js, par.js (kürzeste Lösungen)
+│   │   └── levels/         world1.js … world6.js (je 10–11 Level), index.js, par.js (kürzeste Lösungen)
 │   └── render/
 │       ├── models.js       prozedurale Cartoon-Modelle (Figur, Kisten, Wände, Deko …)
 │       └── scene.js        Three.js-Szene, Kamera, Animationen, Partikel
@@ -69,8 +72,8 @@ wobbel/
     ├── engine-tests.js     Regeltests der Spiellogik
     ├── check-levels.js     prüft Aufbau + Lösbarkeit aller Level (Breitensuche, spielt die Lösung nach)
     ├── build-par.js        berechnet Par-Werte und tests/solutions.json
-    ├── bonus-tests.js      Tests für Muscheln, Laden, Belohnungen, Überspringen
-    ├── e2e-bonus.mjs       Browser-Test: Bonusspiele, Laden, Überspringen (läuft in Echtzeit, ~2 Min.)
+    ├── bonus-tests.js      Tests für Muscheln, Laden, Erfolge, Tageslevel, Bestzeit
+    ├── e2e-bonus.mjs       Browser-Test: Bonusspiele, Laden, Tipp, Tageslevel, Community, Erfolge (Echtzeit, ~3 Min.)
     ├── editor-tests.js     Tests für Editor-Prüfung, Codes und Speicher (alle 55 Level laufen durch Kodierung)
     ├── e2e-editor.mjs      Browser-Test des Editors (malen, prüfen, testen, speichern, teilen)
     ├── e2e-play.mjs        Browser-Test (Playwright): spielt jedes Level mit der Löser-Lösung durch
@@ -91,15 +94,30 @@ Der Browser-Test `tests/e2e-play.mjs` (`npm i -D playwright`, Server starten, `n
 
 `check-levels.js` löst jedes Level per Breitensuche über sämtliche Spielzüge, **spielt die gefundene Lösung mit der echten Spiellogik nach** und meldet jedes unlösbare oder zu große Level.
 
-## Bonusspiele & Wobbel-Laden
+## Bonus, Laden, Erfolge, Tageslevel
 
-Im Menü: **🎁 Bonus & Laden**. Muscheln 🐚 gibt es für gelöste Level (erstes Lösen 5, dazu 3 je neu erreichtem Stern) und für drei kurze Bonusspiele (höchstens 15 pro Runde):
+Im Menü: **🎁 Bonus & Laden** (Tabs *Bonusspiele*, *Wobbel-Laden*, *Erfolge*). Muscheln 🐚 gibt es für gelöste Level (erstes Lösen 5, dazu 3 je neu erreichtem Stern), das **📅 Tageslevel** (10 + 2 je Serientag, bis +20; jeden Tag ein anderes Level), Erfolge und die vier Bonusspiele (höchstens 15 pro Runde):
 
 - 🫧 **Perlenfang** – Perlen fangen, Seeigeln ausweichen (Maus, Finger oder ← →).
 - 🎵 **Melodie-Memory** – Farbfolge merken und nachtippen, jede Runde länger.
 - 🔨 **Wobbel-Huschen** – auftauchende Wobbel antippen, goldene zählen 3, Kisten kosten Punkte.
+- 📦 **Kisten-Sortierer** – Fach in der Farbe der fallenden Kiste tippen (Tasten 1 2 3 / ← ↓ →), es wird immer schneller.
 
-Einlösen: im **Wobbel-Laden** gibt es Farben und Hüte (auch in 3D im Spiel sichtbar, Propeller dreht sich); im Spiel überspringt **⏭** ein Level für 25 🐚 (ohne Sterne). Alles wird im Browser gespeichert; „Fortschritt zurücksetzen" löscht auch die Muscheln.
+**Einlösen:** Im **Wobbel-Laden** gibt es Farben (inkl. Regenbogen), Kopfschmuck (Krone, Zylinder, Piratenhut, Sonnenbrille, Katzenohren, Propeller …), Spuren (Blasen, Sternchen, Herzchen) und Kisten-Looks – alles auch in 3D im Spiel sichtbar. Im Spiel: **💡 Tipp** (5 🐚: der Löser sucht von deiner aktuellen Stellung die kürzeste Lösung und zeigt die nächsten Züge als grüne Pfeile) und **⏭ Überspringen** (25 🐚, ohne Sterne).
+
+**Zeit & Teilen:** Jedes Level zeigt eine Stoppuhr, die Bestzeit wird gespeichert; „📤 Teilen" im Gewinn-Dialog teilt dein Ergebnis. **🏅 Erfolge:** 25 Stück (Level, Sterne, Welten, Bonusspiele, Editor, Serien, Tempo …), jeder gibt Muscheln. Alles liegt im Browser; „Fortschritt zurücksetzen" löscht auch Muscheln und Erfolge.
+
+## Welt 6 – Alte Ruinen
+
+Zwei neue Mechaniken: **Pfeilfelder** `^ > v <` (Wobbel und Kisten dürfen sie nur in Pfeilrichtung betreten *und* verlassen) und **brüchiger Boden** `x` (bricht weg, sobald Wobbel ihn verlässt; danach ist das Feld für alle unpassierbar). Engine, Löser, Editor und Darstellung unterstützen beides; Regeltests in `tests/engine-tests.js`.
+
+## Community-Level
+
+In der Levelauswahl: **🌍 Community-Level** – Level aus `community/levels.json` (Name, Autor, Teilen-Code) spielen oder im Editor öffnen. **Eigenes Level einreichen:** im Editor „Teilen" → „Als Community-Level einreichen" öffnet ein vorausgefülltes GitHub-Issue; nach Prüfung (Löser) kommt es per `node tests/tools/make-community.mjs`-Eintrag oder direkt als JSON-Eintrag (`{id, name, author, code}`) in die Datei.
+
+## App & Offline
+
+Wobbel ist als **PWA** installierbar (Manifest + Service Worker, „Zum Startbildschirm hinzufügen") und läuft nach dem ersten Besuch offline. Three.js r128 liegt unter `vendor/three.min.js` (CDN nur noch als Reserve), das spart Ladezeit und Fremdabhängigkeit. Bei Änderungen an Dateien `CACHE` in `sw.js` hochzählen.
 
 ## Level-Editor
 

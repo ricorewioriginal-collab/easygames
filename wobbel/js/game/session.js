@@ -6,7 +6,7 @@ export class Session {
   constructor(view, hooks) { this.view = view; this.hooks = hooks; this.queue = []; this.L = null; this.state = null; this.history = []; this.index = -1; this.def = null; this.pendingWin = false; this.solved = false; this.undos = 0; }
   start(def) {
     this.def = def; this.index = def.index; this.L = parseLevel(def); this.state = createState(this.L); this.history = []; this.queue = []; this.pendingWin = false; this.solved = false; this.undos = 0; this.world = WORLDS[def.world] || WORLDS[0];
-    this.view.loadLevel(this.L, this.state, this.world); this.hooks.onChange(this); this.hooks.onStart && this.hooks.onStart(this);
+    this.view.cb.state = () => this.state; this.view.loadLevel(this.L, this.state, this.world); this.hooks.onChange(this); this.hooks.onStart && this.hooks.onStart(this);
   }
   get stats() { return { moves: this.state.moves, pushes: this.state.pushes, done: targetsDone(this.L, this.state), total: this.L.targets.length, canUndo: this.history.length > 0, keys: this.state.keysHeld }; }
   push(dir) { if (this.solved) return; if (this.queue.length < 4) this.queue.push(dir); }

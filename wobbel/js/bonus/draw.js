@@ -1,6 +1,6 @@
 /* Wobbel – gemeinsames 2D-Zeichnen der Figur (Bonusspiele, Laden-Vorschau). */
 export function drawWobbel(g, cx, cy, r, look, blink) {
-  look = look || {}; const c = look.color || '#ff6fb0', ink = '#1b2748';
+  look = look || {}; let c = look.color || '#ff6fb0'; const ink = '#1b2748'; if (c === 'rainbow') { const gr = g.createLinearGradient(cx - r, cy - r, cx + r, cy + r); ['#ff5a6a', '#ffd24a', '#4cd964', '#4aa8ff', '#a97bff'].forEach((k, i) => gr.addColorStop(i / 4, k)); c = gr; }
   g.save(); g.lineWidth = Math.max(1.5, r / 9); g.strokeStyle = ink;
   g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(cx, cy + r * .66, r * .55, r * .17, 0, 0, 7); g.fill();
   g.fillStyle = c; g.beginPath(); g.ellipse(cx, cy + r * .08, r * .74, r * .66, 0, 0, 7); g.fill(); g.stroke();
@@ -11,6 +11,10 @@ export function drawWobbel(g, cx, cy, r, look, blink) {
   else if (hat === 'top') { g.fillStyle = '#2a2a3a'; g.fillRect(cx - r * .27, top - r * .6, r * .54, r * .6); g.strokeRect(cx - r * .27, top - r * .6, r * .54, r * .6); g.fillRect(cx - r * .45, top - r * .02, r * .9, r * .12); g.fillStyle = '#ff5a6a'; g.fillRect(cx - r * .27, top - r * .16, r * .54, r * .12); }
   else if (hat === 'bow') { g.fillStyle = '#ff4f7a'; [-1, 1].forEach(k => { g.beginPath(); g.moveTo(cx + r * .35, top + r * .05); g.lineTo(cx + r * .35 + k * r * .3, top - r * .15); g.lineTo(cx + r * .35 + k * r * .3, top + r * .25); g.closePath(); g.fill(); g.stroke(); }); g.beginPath(); g.arc(cx + r * .35, top + r * .05, r * .07, 0, 7); g.fillStyle = '#d63a64'; g.fill(); g.stroke(); }
   else if (hat === 'party') { g.fillStyle = '#4aa8ff'; g.beginPath(); g.moveTo(cx - r * .28, top + r * .08); g.lineTo(cx, top - r * .6); g.lineTo(cx + r * .28, top + r * .08); g.closePath(); g.fill(); g.stroke(); g.fillStyle = '#ff5a6a'; g.beginPath(); g.arc(cx, top - r * .6, r * .08, 0, 7); g.fill(); }
+  else if (hat === 'shades') { g.fillStyle = ink; g.fillRect(cx - r * .5, cy - r * .22, r * .4, r * .26); g.fillRect(cx + r * .1, cy - r * .22, r * .4, r * .26); g.fillRect(cx - r * .12, cy - r * .16, r * .24, r * .06); }
+  else if (hat === 'pirate') { g.fillStyle = '#2a2a3a'; g.beginPath(); g.moveTo(cx - r * .62, top + r * .12); g.quadraticCurveTo(cx, top - r * .75, cx + r * .62, top + r * .12); g.closePath(); g.fill(); g.stroke(); g.fillStyle = '#fff'; g.beginPath(); g.arc(cx, top - r * .15, r * .1, 0, 7); g.fill(); }
+  else if (hat === 'cat') { g.fillStyle = '#4a4a68'; [-1, 1].forEach(k => { g.beginPath(); g.moveTo(cx + k * r * .12, top + r * .1); g.lineTo(cx + k * r * .32, top - r * .42); g.lineTo(cx + k * r * .6, top + r * .1); g.closePath(); g.fill(); g.stroke(); }); }
+  else if (hat === 'flower') { g.fillStyle = '#ff7ab8'; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; g.beginPath(); g.arc(cx + Math.cos(a) * r * .15, top - r * .1 + Math.sin(a) * r * .15, r * .12, 0, 7); g.fill(); g.stroke(); } g.fillStyle = '#ffd24a'; g.beginPath(); g.arc(cx, top - r * .1, r * .1, 0, 7); g.fill(); g.stroke(); }
   else if (hat === 'prop') { g.fillStyle = '#4aa8ff'; g.beginPath(); g.ellipse(cx, top + r * .02, r * .25, r * .12, 0, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#ff5a6a'; g.beginPath(); g.ellipse(cx, top - r * .2, r * .42, r * .07, 0, 0, 7); g.fill(); g.stroke(); g.beginPath(); g.moveTo(cx, top - r * .12); g.lineTo(cx, top); g.stroke(); }
   else { g.strokeStyle = '#2fa84a'; g.beginPath(); g.moveTo(cx, top + r * .1); g.lineTo(cx + r * .06, top - r * .2); g.stroke(); g.fillStyle = '#7bf06a'; g.strokeStyle = ink; g.beginPath(); g.ellipse(cx + r * .2, top - r * .22, r * .16, r * .08, -.4, 0, 7); g.fill(); g.stroke(); }
   g.restore();

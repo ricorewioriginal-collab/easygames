@@ -30,8 +30,9 @@ export function makeBlob() {
 }
 // Aussehen (Farbe + Hut) – verändert die vorhandene Figur, baut nichts neu auf
 export function applyLook(blob, look) {
-  look = look || {}; const c = look.color || '#ff6fb0', d = new T.Color(c).offsetHSL(0, 0.02, -0.14).getStyle();
-  blob.skinMesh.material = toon(c); blob.feet.forEach(f => { f.material = toon(d); });
+  look = look || {}; const c = look.color || '#ff6fb0'; blob.rainbow = null;
+  if (c === 'rainbow') { const bm = new T.MeshToonMaterial({ color: '#ff6fb0', gradientMap: gradTex }), fm = new T.MeshToonMaterial({ color: '#d84a90', gradientMap: gradTex }); blob.skinMesh.material = bm; blob.feet.forEach(f => { f.material = fm; }); blob.rainbow = [bm, fm]; }
+  else { const d = new T.Color(c).offsetHSL(0, 0.02, -0.14).getStyle(); blob.skinMesh.material = toon(c); blob.feet.forEach(f => { f.material = toon(d); }); }
   if (blob.hat) { blob.body.remove(blob.hat); blob.hat = null; }
   const h = look.hat ? makeHat(look.hat) : null; blob.sprout.forEach(o => { o.visible = !h; });
   if (h) { blob.body.add(h); blob.hat = h; }
@@ -42,6 +43,10 @@ function makeHat(id) {
   else if (id === 'top') { const k = toon('#2a2a3a'); outline(mesh(G.cyl(), k, 0, 0.02, 0, 0.3, 0.04, 0.3, g), 1.1); outline(mesh(G.cyl(), k, 0, 0.2, 0, 0.19, 0.34, 0.19, g), 1.07); mesh(G.cyl(), toon('#ff5a6a'), 0, 0.08, 0, 0.2, 0.07, 0.2, g); }
   else if (id === 'bow') { g.position.set(0.16, 0.7, 0.05); g.rotation.z = -0.5; const r = toon('#ff4f7a'); [-1, 1].forEach(s => { const w = mesh(G.cone(), r, s * 0.11, 0, 0, 0.1, 0.16, 0.06, g); w.rotation.z = -s * Math.PI / 2; outline(w, 1.1); }); outline(mesh(G.sphere(), toon('#d63a64'), 0, 0, 0, 0.06, 0.06, 0.06, g), 1.12); }
   else if (id === 'party') { const cn = mesh(G.cone(), toon('#4aa8ff'), 0, 0.2, 0, 0.17, 0.42, 0.17, g); outline(cn, 1.08); [0.08, 0.2].forEach((y, i) => mesh(G.cyl(), toon('#ffd24a'), 0, y, 0, 0.14 - i * 0.05, 0.04, 0.14 - i * 0.05, g)); mesh(G.sphere(), toon('#ff5a6a'), 0, 0.43, 0, 0.05, 0.05, 0.05, g); }
+  else if (id === 'shades') { g.position.set(0, 0.55, 0.36); const k = toon('#1b2748'); [-1, 1].forEach(s => outline(mesh(G.box(), k, s * 0.15, 0, 0.06, 0.2, 0.15, 0.05, g), 1.12)); mesh(G.box(), k, 0, 0.03, 0.06, 0.1, 0.03, 0.04, g); }
+  else if (id === 'pirate') { g.position.y = 0.72; const k = toon('#2a2a3a'); const h = mesh(G.cone(), k, 0, 0.12, 0, 0.46, 0.26, 0.2, g); h.rotation.z = Math.PI; h.scale.set(0.46, 0.2, 0.2); outline(mesh(G.cyl(), k, 0, 0.06, 0, 0.3, 0.1, 0.17, g), 1.08); mesh(G.sphere(), toon('#ffffff'), 0, 0.09, 0.17, 0.06, 0.06, 0.03, g); mesh(G.box(), toon('#ff5a6a'), 0, 0.02, 0.11, 0.3, 0.03, 0.02, g); }
+  else if (id === 'cat') { g.position.y = 0.66; const k = toon('#4a4a68'); [-1, 1].forEach(s => { const e = mesh(G.cone(), k, s * 0.22, 0.14, 0, 0.11, 0.24, 0.07, g); e.rotation.z = -s * 0.28; outline(e, 1.1); mesh(G.cone(), toon('#ff9ad0'), s * 0.22, 0.1, 0.03, 0.06, 0.14, 0.03, g).rotation.z = -s * 0.28; }); }
+  else if (id === 'flower') { g.position.y = 0.82; const pc = toon('#ff7ab8'); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; outline(mesh(G.sphere(), pc, Math.cos(a) * 0.1, 0.06, Math.sin(a) * 0.1, 0.07, 0.04, 0.07, g), 1.1); } outline(mesh(G.sphere(), toon('#ffd24a'), 0, 0.08, 0, 0.06, 0.05, 0.06, g), 1.1); }
   else if (id === 'prop') { const b = toon('#ffd24a'); outline(mesh(G.cyl(), toon('#4aa8ff'), 0, 0.04, 0, 0.17, 0.08, 0.17, g), 1.1); mesh(G.cyl(), b, 0, 0.1, 0, 0.03, 0.08, 0.03, g); const bl = new T.Group(); bl.position.y = 0.15; g.add(bl); [0, Math.PI / 2].forEach(a => { const w = mesh(G.box(), toon('#ff5a6a'), 0, 0, 0, 0.5, 0.02, 0.09, bl); w.rotation.y = a; }); g.userData.spin = bl; }
   return g;
 }
@@ -51,10 +56,12 @@ function emblem(color, parent, y) {
   const m = toon('#ffffff'); let e;
   if (color === 1) e = mesh(G.sphere(), m, 0, y, 0, 0.11, 0.11, 0.11, parent); else if (color === 2) e = mesh(G.cone(), m, 0, y, 0, 0.13, 0.2, 0.13, parent); else e = mesh(G.box(), m, 0, y, 0, 0.16, 0.16, 0.16, parent); e.rotation.y = 0.5; return e;
 }
+const CRATE_SKINS = { '': ['#e8b062', '#a8683a', '#c98a48'], ice: ['#cdeeff', '#6fb0d8', '#9ad4f0'], berry: ['#ff9ad0', '#c2508a', '#ff6fb0'], dark: ['#8a8aa8', '#3a3a52', '#6a6a88'], gold: ['#ffd24a', '#c28500', '#ffe27a'] };
+let crateSkin = ''; export const setCrateSkin = id => { crateSkin = CRATE_SKINS[id] ? id : ''; };
 export function makeCrate(color) {
   const g = new T.Group(), s = 0.82;
   if (!color) {
-    const wood = toon('#e8b062'), dark = toon('#a8683a'), mid = toon('#c98a48');
+    const sk = CRATE_SKINS[crateSkin], wood = toon(sk[0]), dark = toon(sk[1]), mid = toon(sk[2]);
     const b = mesh(G.box(), wood, 0, s / 2 + 0.02, 0, s, s, s, g); outline(b, 1.045);
     const e = 0.07, h = s + 0.01;
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, c]) => mesh(G.box(), dark, a * (s / 2), s / 2 + 0.02, c * (s / 2), e, h + 0.02, e, g));
@@ -140,6 +147,7 @@ export function makeArrow(dir) {
   const shaft = mesh(G.box(), m, 0, 0.03, -0.1, 0.2, 0.03, 0.36, g), head = mesh(G.cone(), m, 0, 0.03, 0.22, 0.3, 0.03, 0.26, g); head.rotation.x = Math.PI / 2; head.scale.set(0.3, 0.26, 0.03);
   const sh2 = mesh(G.box(), d, 0, 0.012, -0.1, 0.27, 0.01, 0.43, g); g.rotation.y = ROT[dir]; return g;
 }
+export function makeTipArrow(dir) { const g = makeArrow(dir), m = new T.MeshBasicMaterial({ color: '#2fe07a', depthTest: false, transparent: true }); g.traverse(o => { if (o.isMesh) { o.material = m; o.renderOrder = 20; } }); g.scale.setScalar(1.7); return g; }
 export function makeCrack() {
   const g = new T.Group(), d = new T.MeshBasicMaterial({ color: '#5a4020' });
   [[-0.3, -0.3, 0.1, 0.1, 0.7], [0.1, -0.1, 0.4, -0.35, 0.5], [-0.1, 0.2, 0.3, 0.42, 0.65], [0, 0, -0.35, 0.3, 0.4]].forEach(([x1, z1, x2, z2]) => { const len = Math.hypot(x2 - x1, z2 - z1), b = mesh(G.box(), d, (x1 + x2) / 2, 0.012, (z1 + z2) / 2, 0.05, 0.01, len, g); b.rotation.y = Math.atan2(x2 - x1, z2 - z1); });
