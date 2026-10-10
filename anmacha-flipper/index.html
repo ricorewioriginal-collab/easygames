@@ -102,6 +102,7 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(0,229,255,.55))}
   h1 small{display:block;font-size:clamp(17px,5.4vw,30px);letter-spacing:.5em;text-shadow:0 0 14px #FF2D95;margin-top:6px;padding-left:.5em}
   [hidden]{display:none!important}
+  .brand.full{max-width:min(88vw,540px);max-height:clamp(150px,48vw,250px);-webkit-mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000 70%,transparent 100%)}
   .brand{display:block;margin:0 auto;max-width:min(78vw,420px);max-height:clamp(64px,15vw,112px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.28))}
   h2{margin:0;font-size:clamp(26px,6.5vw,40px);font-style:italic;text-shadow:0 0 16px var(--ma)}
   .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
@@ -154,7 +155,7 @@
 
 <div id="menu" class="ov">
   <div class="card">
-    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small>FLIPPER</small></h1>
+    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small id="brandSub">FLIPPER</small></h1>
     <p class="sub">Such dir einen Tisch aus – jeder hat sein eigenes Logo, Layout und Design.<br>5 Kugeln, so viele Punkte wie möglich!</p>
     <div class="picker">
       <button class="arrow" id="tPrev" aria-label="Voriger Tisch">◀</button>
@@ -210,6 +211,7 @@ if (window.self !== window.top) $('back').style.display = 'none';
     .then(list => {
       const src = list.find(Boolean); if (!src) return;
       const img = $('brandImg'); img.src = src; img.hidden = false; $('brandText').hidden = true;
+      if (!src.startsWith('../')) { img.classList.add('full'); $('brandSub').hidden = true; }   // Logo aus dem Spielordner = kompletter Titel (inkl. Spielname)
     });
 })();
 
