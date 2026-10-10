@@ -11,17 +11,16 @@ Ein 16-Bit-Rollenspiel für PC und Handy. Spielzeit: ca. 1,5–2,5 Stunden. Der 
 | Zurück / Abbrechen | `Esc`, `X` oder `Backspace` | – (Menüpunkt „Zurück“) |
 | Menü öffnen | `Esc`, `M` oder `Tab` | Taste **MENÜ** oben rechts |
 | Menüpunkte wählen | Pfeiltasten + Bestätigen | Antippen |
-| Ansicht 3D/2D | MENÜ → Ansicht | MENÜ → Ansicht |
 
 **Ansprechen / Öffnen:** Läufst du gegen eine Person, eine Truhe, ein Tor oder einen Boss, wird die Aktion sofort ausgelöst. Eine extra Taste ist nicht nötig.
 
 ## 2. Der Bildschirm
 
-- **Ansicht:** Standard ist eine **3D-Ansicht** (gekippte Kamera, stehende Figuren, Bäume und Häuser). Über MENÜ → „Ansicht“ lässt sich auf die klassische **2D-Ansicht** umschalten. Die Einstellung wird gespeichert. Kämpfe werden immer als 2D-Szene gezeigt.
+- **Ansicht:** Die Welt und die Kämpfe werden in 3D mit echten Low-Poly-Modellen gezeigt (animierte Helden und Monster, Häuser, Bäume, Berge). Die Kamera folgt dir von schräg oben. Die Bedienung bleibt wie bei klassischen Rollenspielen Feld für Feld.
 - **Oben links:** Name des Ortes und deine Münzen (M).
 - **Weltkarte:** Städte, Höhlen und der Turm sind beschriftet. Rot gefärbte Eingänge sind noch versiegelt.
 - **Sichtbare Monster:** Auf Weltkarte und in Dungeons laufen Gegner herum. Kommen sie nahe, jagen sie dich. Bei Berührung beginnt ein Kampf.
-- **Kampfbildschirm:** Oben die Gegner mit rotem Lebensbalken. Unten ein Fenster pro Held:
+- **Kampfbildschirm:** Oben die 3D-Gegner mit rotem Lebensbalken, davor deine Helden von hinten. Unten ein Fenster pro Held:
   - **Hp** Lebenspunkte (blau/rot, wenn kritisch)
   - **Mp** Spielpunkte für Fertigkeiten (grün, im Spiel „SP“)
   - **Ip** Spezial-Leiste (gelb; blinkt orange, sobald der Spezialangriff bereit ist; der weiße Strich zeigt die nötige Menge)
@@ -136,4 +135,4 @@ Faustregel: Die empfohlene Stufe sollte erreicht sein. Wer unterwegs viele Gegne
 
 ---
 
-*Credits: Monster-Sprites aus „Tiny Dungeon“ von Kenney (CC0, kenney.nl), Schrift Pixelify Sans (SIL OFL), Engine Godot 4.*
+*Credits (alle CC0): 3D-Modelle von Quaternius (Helden „RPG Characters“, „Cute Animated Monsters“, „Animated Monster Pack“, „Ultimate Textured Building Pack“) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit). Schrift Pixelify Sans (SIL OFL). Engine Godot 4.*

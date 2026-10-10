@@ -1,0 +1,7 @@
+res://assets/heroes/FBX/Warrior.fbx
+res://assets/cute/FBX/Pig.fbx
+res://assets/monsters4/Skeleton.fbx
+res://assets/town/wall-block.glb
+res://assets/town/wall-block-half.glb
+res://assets/buildings/1Story_Mat.fbx
+res://assets/town/tree.glb
