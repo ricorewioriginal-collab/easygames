@@ -12,7 +12,7 @@ BI.store = {
   KEYS: ['save', 'build', 'photos', 'art'], slot: 1,
   key(k, s) { s = s || this.slot; return 'bunteInsel.' + (s === 1 ? '' : 's' + s + '.') + k; },
   get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); return true; } catch (e) { return false; /* ohne Speicher spielen */ } },
+  set(k, v) { if (this.frozen) return true; try { localStorage.setItem(this.key(k), JSON.stringify(v)); return true; } catch (e) { return false; /* ohne Speicher spielen */ } },
   meta() { try { return JSON.parse(localStorage.getItem('bunteInsel.meta')) || {}; } catch (e) { return {}; } },
   setMeta(m) { try { localStorage.setItem('bunteInsel.meta', JSON.stringify(m)); } catch (e) { } },
   /* Kurzinfo für die Spielstand-Karten */
@@ -116,10 +116,17 @@ BI.store = {
 })();
 
 /* ---- Spielfigur ---- */
-BI.SHIRTS = [0xff5a5a, 0x3fa0ff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8];
+BI.SHIRTS = [0xff5a5a, 0x3fa0ff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xffffff, 0x23262d, 0xff8a1f, 0x7de0d0]; // die ersten 6 nutzen auch die Passanten
 BI.SKINS = [0xffd2a8, 0xf3c9a0, 0xe0a979, 0xc68a5a, 0x8d5a3b, 0x5a3a28];
 BI.HAIRS = [0x222222, 0x6b4423, 0xa14a2b, 0xd0642a, 0xd9a441, 0xf3d98a, 0xb36bff, 0x3fa0ff];
-BI.STYLES = ['none', 'spiky', 'curly', 'long', 'pig', 'bun', 'ponytail'];
+BI.STYLES = ['none', 'spiky', 'curly', 'long', 'pig', 'bun', 'ponytail', 'bob', 'mohawk', 'afro', 'braids'];
+BI.STYLE_ICONS = ['🙂', '⚡', '🌀', '💇', '🎀', '🍥', '🐴', '🧒', '🦔', '☁️', '🪢'];
+BI.EYES = [0x222233, 0x3b6fe0, 0x2e9e5b, 0x7a4a1e, 0x9b4de0];
+BI.MOUTHS = ['none', 'smile', 'open', 'grin'];
+BI.MOUTH_ICONS = ['😐', '🙂', '😮', '😁'];
+BI.SHOES = [0x2a2a3a, 0xffffff, 0xe0382b, 0xffd23f, 0x3fa0ff, 0x4cd07d];
+BI.SIZES = [.88, 1, 1.12];
+BI.LOGOS = [null, 0xffffff, 0xffd23f, 0xff5a8a, 0x3fa0ff];
 BI.PANTS = [0x3d4a7a, 0x23262d, 0x5a3d2b, 0x2d6a4f, 0x7a3d6a, 0xffffff];
 BI.HATS = ['none', 'bear', 'cat', 'bunny', 'cap', 'crown', 'pirate', 'wizard', 'chef', 'party', 'cowboy', 'helmet'];
 BI.HAT_ICONS = { none: '🙂', bear: '🐻', cat: '🐱', bunny: '🐰', cap: '🧢', crown: '👑', pirate: '🏴‍☠️', wizard: '🧙', chef: '🧑‍🍳', party: '🥳', cowboy: '🤠', helmet: '⛑️' };
@@ -201,8 +208,12 @@ BI.makeChar = function (o) {
   }
   body.sph(0, 1.42, 0, .27, skin, 1, 1, 1.05, 1);
   if (J) { for (const x of [-.09, .09]) { body.box(x, 1.44, .24, .09, .08, .04, 0xffffff); body.box(x + .035, 1.44, .26, .045, .07, .03, 0x4a5568); } body.box(.04, 1.29, .25, .12, .025, .03, 0xe58c8c); } // schelmischer Seitenblick
-  else { body.box(-.09, 1.44, .24, .06, .08, .04, 0x222233); body.box(.09, 1.44, .24, .06, .08, .04, 0x222233); }
+  else { const ey = o.eye != null ? o.eye : 0x222233; body.box(-.09, 1.44, .24, .06, .08, .04, ey); body.box(.09, 1.44, .24, .06, .08, .04, ey); }
   body.box(-.15, 1.34, .23, .07, .05, .04, 0xff9aa8); body.box(.15, 1.34, .23, .07, .05, .04, 0xff9aa8);
+  if (!J && o.mouth === 'smile') { body.box(0, 1.3, .255, .1, .025, .03, 0xc2453d); body.box(-.06, 1.318, .255, .03, .03, .03, 0xc2453d); body.box(.06, 1.318, .255, .03, .03, .03, 0xc2453d); }
+  else if (!J && o.mouth === 'open') { body.box(0, 1.29, .255, .09, .08, .03, 0x7a1f2b); body.box(0, 1.275, .262, .05, .025, .02, 0xff8fa0); }
+  else if (!J && o.mouth === 'grin') { body.box(0, 1.3, .255, .17, .05, .03, 0xffffff); body.box(0, 1.325, .256, .19, .02, .03, 0x7a1f2b); }
+  if (o.freckles) for (const [x, y] of [[-.12, 1.38], [-.18, 1.4], [.12, 1.38], [.18, 1.4]]) body.box(x, y, .262, .02, .02, .02, 0xa0603a);
   if (J) { body.sph(0, 1.57, -.04, .3, hair, 1, 1.02, .66, 1.05); body.box(0, 1.53, .2, .5, .14, .1, hair); body.box(-.27, 1.44, -.02, .07, .2, .36, hair); body.box(.27, 1.44, -.02, .07, .2, .36, hair); }
   else if (hat === 'none' || hat === 'crown') body.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02);
   if (hat === 'bear') { body.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); body.sph(-.2, 1.68, 0, .1, 0x8a5a33, 1); body.sph(.2, 1.68, 0, .1, 0x8a5a33, 1); body.sph(-.2, 1.68, .04, .05, 0xffc9a0, 0); body.sph(.2, 1.68, .04, .05, 0xffc9a0, 0); }
@@ -222,9 +233,15 @@ BI.makeChar = function (o) {
     else if (st === 'spiky') for (let i = 0; i < 6; i++) { const a = i * 1.047; body.cone(Math.sin(a) * .17, 1.7, Math.cos(a) * .15 - .03, .08, .2, hair, 4); }
     else if (st === 'curly') for (let i = 0; i < 8; i++) { const a = i * .785; body.sph(Math.sin(a) * .26, 1.5 + (i % 2) * .06, Math.cos(a) * .24 - .03, .11, hair, 1); }
     else if (st === 'bun') { body.sph(0, 1.74, -.1, .13, hair, 1); body.box(0, 1.66, -.1, .1, .06, .1, 0xff5a5a); }
+    else if (st === 'bob') { body.box(0, 1.46, -.04, .62, .3, .52, hair); body.box(0, 1.6, .06, .5, .1, .3, hair); }
+    else if (st === 'mohawk') for (let i = 0; i < 5; i++) body.cone(0, 1.62 + (i % 2) * .02, .16 - i * .1, .07, .3 - Math.abs(i - 2) * .04, hair, 4);
+    else if (st === 'afro') body.sph(0, 1.56, -.04, .4, hair, 1, 1, .9, 1);
+    else if (st === 'braids') for (const sd of [-1, 1]) { body.box(sd * .28, 1.2, -.06, .08, .5, .08, hair); body.sph(sd * .28, .92, -.06, .06, 0xff5a5a, 0); }
     else if (st === 'ponytail') { body.box(0, 1.46, -.3, .1, .3, .1, hair, 0, .15); body.sph(0, 1.62, -.26, .06, 0xff5a5a, 0); }
   }
   if (o.dress) { body.box(0, .42, 0, .64, .26, .42, shirt); body.box(0, .3, 0, .7, .08, .46, pants); }
+  if (o.overall) { body.box(0, .66, .156, .34, .36, .02, pants); for (const sd of [-1, 1]) body.box(sd * .13, .98, .156, .06, .26, .02, pants); body.sph(-.13, .86, .165, .035, 0xffd23f, 0); body.sph(.13, .86, .165, .035, 0xffd23f, 0); }
+  if (o.stripe) for (let i = 0; i < 3; i++) body.box(0, .52 + i * .2, 0, .52, .07, .32, 0xffffff);
   if (o.logo != null) { body.box(0, .86, .156, .17, .17, .02, o.logo); body.box(0, .86, .16, .07, .07, .02, shirt); }
   if (o.patch) { body.box(-.09, 1.4, .275, .13, .13, .03, 0x111111); body.box(0, 1.47, .265, .58, .03, .02, 0x111111, 0, 0, .18); }
   if (o.cape) { body.box(0, .45, -.2, .54, .8, .05, 0xd8283a); body.box(0, 1.08, -.12, .42, .12, .2, 0xd8283a); body.sph(0, 1.08, .0, .05, 0xffd23f, 0); }

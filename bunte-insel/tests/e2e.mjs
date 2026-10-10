@@ -365,13 +365,15 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const d = await mk({ viewport: { width: 1000, height: 600 } }); const dv = await d.evaluate(() => ({ joy: getComputedStyle(document.getElementById('joy')).display, keys: getComputedStyle(document.getElementById('keys')).display }));
   ok(dv.joy === 'none' && dv.keys !== 'none', 'Desktop: kein Joystick, Tastatur-Hinweis sichtbar'); await d.context().close();
 }
-{ // Name, Charakter-Editor, Meldung über Pause, Hauptmenü
-  const mk = async () => { const c = await browser.newContext({ viewport: { width: 800, height: 500 }, acceptDownloads: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); return p; };
-  const p = await mk(); await p.click('#bHero'); await p.fill('#heroPick .pn', 'Lisa'); await p.evaluate(() => document.querySelector('#heroPick .pn').dispatchEvent(new Event('change')));
-  await p.click('#heroPick .hc:last-child'); await p.click('#heroPick .skn .sw:nth-child(5)'); await p.click('#heroPick .sts .hat:nth-child(4)');
-  const r1 = await p.evaluate(() => [document.getElementById('hello').textContent, window.__bi.save.cu.skin, window.__bi.save.cu.style]);
-  ok(r1[0] === 'Hallo Lisa! ♥' && r1[1] === 4 && r1[2] === 3, 'Eigener Name + Charakter-Editor wirken');
-  await p.click('#bHeroBack'); await p.click('#bStart'); await p.waitForTimeout(400); await p.click('#bPause'); await p.click('#bSaveNow'); await p.waitForTimeout(300);
+{ // Neues Abenteuer: Charakter-Editor vor dem Start, Name, Meldung über Pause, Hauptmenü
+  const mk = async () => { const c = await browser.newContext({ viewport: { width: 800, height: 500 }, acceptDownloads: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html?creator=1'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); return p; };
+  const p = await mk(); await p.click('#bStart'); const inCreator = await p.evaluate(() => !document.querySelector('[data-v=hero]').hidden && document.getElementById('menu').classList.contains('creating'));
+  await p.fill('#heroPick .pn', 'Lisa'); await p.evaluate(() => document.querySelector('#heroPick .pn').dispatchEvent(new Event('change')));
+  await p.evaluate(() => { const t = [...document.querySelectorAll('#heroPick .ctab')]; t[1].click(); const rs = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); rs[0].children[4].click(); rs[2].children[3].click(); t[2].click(); document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .hat')[3].click(); t[3].click(); const r3 = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); r3[2].children[2].click(); });
+  const r1 = await p.evaluate(() => [window.__bi.save.hero, window.__bi.save.cu.skin, window.__bi.save.cu.style, window.__bi.save.cu.mouth, window.__bi.save.cu.top, window.__bi.save.pname]);
+  ok(inCreator && r1[0] === 'custom' && r1[1] === 4 && r1[2] === 3 && r1[3] === 3 && r1[4] === 2 && r1[5] === 'Lisa', 'Vor dem ersten Start: Charakter-Editor (Name, Gesicht, Haare, Kleidung) wirkt');
+  await p.click('#bHeroBack'); await p.waitForTimeout(500); ok(await p.evaluate(() => document.getElementById('menu').hidden && window.__bi.save.created === true), 'Nach dem Gestalten geht das Spiel direkt los');
+  await p.click('#bPause'); await p.click('#bSaveNow'); await p.waitForTimeout(300);
   const z = await p.evaluate(() => [+getComputedStyle(document.getElementById('toast')).zIndex, document.getElementById('toast').textContent]);
   ok(z[0] > 10 && /Gespeichert/.test(z[1]), 'Speichern-Meldung liegt über der Pause');
   const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 4000 }).catch(() => null), p.click('#bExport')]); ok(!!dl, 'Export lädt Datei');
@@ -392,7 +394,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(300);
   const r = await p.evaluate(async () => {
     const b = window.__bi; const a = b.farm.animals.find(x => x.k === 'cow'); const out = {};
-    if (a) { b.P.x = a.x + 1; b.P.z = a.z; await new Promise(r => setTimeout(r, 200)); const n = b.placeNear(); out.cow = n && n.src; b.placeAct(n); out.milk = b.garden.inv().milk || 0; }
+    if (a) { for (let i = 0; i < 20 && !(out.cow === 'animal'); i++) { b.P.x = a.x + 1; b.P.z = a.z; await new Promise(r => setTimeout(r, 200)); const n = b.placeNear(); out.cow = n && n.src; if (out.cow === 'animal') b.placeAct(n); } out.milk = b.garden.inv().milk || 0; }
     const F = b.W.spots.farm; b.P.x = F.stove.x; b.P.z = F.stove.z + 1.5; await new Promise(r => setTimeout(r, 200)); const k = b.placeNear(); out.k = k && k.src;
     const I = b.garden.inv(); I.strawberry = 2; const s0 = b.save.stars; b.placeAct(k); document.querySelector('#kitRec button').click(); out.jam = I.jam; document.querySelector('#kitSell button').click(); out.gain = b.save.stars - s0; b.kitchen.close(); return out;
   });
@@ -405,7 +407,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const b = window.__bi, k = b.kids, out = {}, s0 = b.save.stars; out.d1 = k.daily(); out.d2 = k.daily(); out.g = b.save.stars - s0;
     b.save.daily = { d: (() => { const d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); })(), s: 2 }; k.daily(); out.streak = b.save.daily.s;
     const t = k.task(); const a = b.farm.animals.find(x => x.k === t[0]); out.t = t[0];
-    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = 0; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
+    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = b.P.h + Math.PI; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
     for (const id of ['ride', 'heli', 'train', 'boat']) k.earn(id); out.owned = b.save.owned.includes('hat_party'); return out;
   });
   ok(r.d1 === true && r.d2 === false && r.g >= 2, 'Tagesgeschenk gibt es einmal pro Tag'); ok(r.streak === 3, 'Serie zählt Tage in Folge'); ok(r.pt === 1, 'Foto-Aufgabe (' + r.t + ') wird erkannt'); ok(r.owned, 'Sticker-Belohnung: Partyhut freigeschaltet'); await c.close();
@@ -422,6 +424,48 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const r = await p.evaluate(async () => { const b = window.__bi, o = {}; const v = b.vehicles.find(x => x.type === 'bicycle'); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); await new Promise(r => setTimeout(r, 200)); o.in = !!b.P.veh; b.leave();
     const cp = b.W.spots.camp; b.P.x = cp.x; b.P.z = cp.z + 3.4; await new Promise(r => setTimeout(r, 300)); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); o.open = b.camp.open; document.querySelector('#storyList button').click(); o.txt = document.getElementById('storyText').textContent.length > 20; b.camp.close(); return o; });
   ok(r.in, 'Fahrrad: einsteigen klappt'); ok(r.src === 'camp' && r.open && r.txt, 'Camp: Geschichte am Lagerfeuer'); await c.close();
+}
+{ // Spielstand löschen, Aufgaben-Kachel, Leute erzählen, Elternnamen, Titel
+  const c = await browser.newContext({ viewport: { width: 340, height: 700 }, hasTouch: true, isMobile: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 });
+  const ttl = await p.evaluate(() => [...document.querySelectorAll('#ttl .w')].map(w => w.getBoundingClientRect().height).every(h => h < 120) && document.querySelectorAll('#ttl .w').length === 2);
+  ok(ttl, 'Titel bricht auf schmalen Handys nicht mitten im Wort um');
+  await p.evaluate(() => { window.__bi.save.stars = 9; window.__bi.saveNow(true); }); await p.tap('#slotBar'); await p.waitForTimeout(200);
+  await p.evaluate(() => { const b = [...document.querySelectorAll('#slotList .slot.cur .sa button')].find(x => x.title === 'Löschen'); b.click(); b.click(); });
+  await p.waitForNavigation({ timeout: 8000 }).catch(() => { }); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 });
+  ok(await p.evaluate(() => window.__bi.save.stars === 0), 'Aktuellen Spielstand löschen klappt (bleibt nicht erhalten)');
+  await p.tap('#bStart'); await p.waitForTimeout(500);
+  const r = await p.evaluate(async () => { const b = window.__bi, o = {}, mc = document.getElementById('mission'); o.min = mc.classList.contains('min'); mc.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); o.open = !mc.classList.contains('min');
+    const n = b.npcs[2]; b.P.x = n.x + 1; b.P.z = n.z; await new Promise(r => setTimeout(r, 300)); const pn = b.placeNear(); o.src = pn && pn.src; if (pn) b.placeAct(pn); o.say = document.getElementById('toast').textContent.length > 10;
+    const f = b.flats[1]; b.P.x = f.mama.x + 1; b.P.z = f.mama.z; await new Promise(r => setTimeout(r, 300)); const fn = b.flatNear(); b.flatAct(fn); o.mama = document.getElementById('toast').textContent; return o; });
+  ok(r.min && r.open, 'Aufgaben-Kachel ist klein und lässt sich aufklappen'); ok(r.src === 'npc' && r.say, 'Leute auf der Insel erzählen etwas'); ok(/Mama Lena/.test(r.mama), 'Eltern haben eigene Namen (' + r.mama.slice(0, 20) + ')'); await c.close();
+}
+{ // Kampf: nur in Arena und Verbotenem Wald
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, C = b.combat, o = {}, sl = ms => new Promise(r => setTimeout(r, ms)), F = b.W.spots.forest, A = b.W.spots.arena;
+    b.P.x = 0; b.P.z = 26; await sl(200); o.outside = C.active(); C.attack('punch'); o.outsideAtk = !!C.dbg.atk; o.hudOut = document.getElementById('fightBtns').hidden;
+    b.P.x = F.x + 3; b.P.z = F.z + 3; await sl(400); o.inForest = C.active(); o.hud = !document.getElementById('fightBtns').hidden;
+    const e = C.dbg.spawn('blob', b.P.x + 1.2, b.P.z, { home: true }); const s0 = b.save.stars; for (let i = 0; i < 8 && !e.dead; i++) { b.P.h = Math.atan2(e.x - b.P.x, e.z - b.P.z); C.attack('punch'); await sl(450); } o.dead = e.dead; o.stars = b.save.stars - s0; o.kills = b.save.fight && b.save.fight.k;
+    b.P.x = F.gate.x - 12; b.P.z = F.gate.z - 12; await sl(400);
+    b.P.x = A.kai.x; b.P.z = A.kai.z + 2.4; await sl(300); const n = b.placeNear(); o.kai = n && n.src; b.placeAct(n); o.panel = C.panelOpen;
+    document.querySelector('#arenaBox button').click(); await sl(300); o.mode = C.dbg.mode; const d = C.dbg.duel; o.fighter = d && d.def.n;
+    const until = async (f, ms = 30000) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await sl(100); return f(); };
+    await until(() => d.cd <= 0 && !d.endT); C.dbg.damage(d.f, 999, 1, 0); await until(() => C.dbg.duel && C.dbg.duel.round === 2 && C.dbg.duel.cd <= 0 && !C.dbg.duel.endT); C.dbg.damage(C.dbg.duel.f, 999, 1, 0); await until(() => C.dbg.mode === null); o.after = C.dbg.mode; o.duelWins = b.save.fight.d;
+    C.dbg.startWave(); await sl(300); o.wave = C.dbg.mode; o.waveEnemies = C.dbg.enemies.length; for (const e2 of [...C.dbg.enemies]) C.dbg.damage(e2, 999, 1, 0); o.wave2 = await until(() => C.dbg.enemies.some(x => !x.dead)); C.exit();
+    return o; });
+  ok(!r.outside && !r.outsideAtk && r.hudOut, 'Außerhalb von Arena und Wald kann nicht gekämpft werden'); ok(r.inForest && r.hud, 'Verbotener Wald: Kampf-Anzeige und Knöpfe da'); ok(r.dead && r.stars >= 1 && r.kills >= 1, `Waldmonster besiegt (+${r.stars} ⭐)`);
+  ok(r.kai === 'arena' && r.panel && r.mode === 'duel', 'Arena: Kampfmeister Kai öffnet das Menü, Duell startet (' + r.fighter + ')'); ok(r.after === null && r.duelWins >= 1, 'Duell: nach 2 gewonnenen Runden Sieg + Belohnung'); ok(r.wave === 'wave' && r.waveEnemies >= 2 && r.wave2, 'Monster-Welle startet und die nächste Welle kommt'); await c.close();
+}
+{ // Gleise frei, Zug fahren am Bahnsteig, echte Tierstimmen
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, W = b.W, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+    o.onRails = b.vehicles.filter(v => !v.ai && W.railSdf(v.x, v.z) < 6).length; const v = b.vehicles.find(x => x.type === 'car' && !x.ai); const T = W.trackAt(W.stations[1].s + 40, {}); v.setPose(T.x, T.z, T.h); b.P.x = 0; b.P.z = 26; for (let i = 0; i < 100 && W.railSdf(v.x, v.z) <= 5; i++) await sl(200); o.moved = W.railSdf(v.x, v.z) > 5;
+    const st = W.stations[2]; b.P.x = (st.plat[0] + st.plat[2]) / 2; b.P.z = (st.plat[1] + st.plat[3]) / 2; await sl(400); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); await sl(300); o.train = !!(b.P.veh && b.P.veh.isTrain);
+    const A = BI.audio; A.resume(); for (let i = 0; i < 40 && !(A.ready('moo') && A.ready('oink') && A.ready('bark')); i++) await sl(200); o.snd = A.sample('cow') && A.sample('pig') && A.sample('dog'); return o; });
+  ok(r.onRails === 0 && r.moved, 'Keine Autos auf den Gleisen (falsch abgestellte werden neben die Strecke gesetzt)'); ok(r.src === 'station' && r.train, 'Am Bahnsteig: „Zug fahren“ – man steigt als Lokführer ein'); ok(r.snd, 'Echte Tierstimmen (Kuh, Schwein, Hund) werden geladen und abgespielt'); await c.close();
 }
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

@@ -8,7 +8,7 @@ BI.createFarm = function (G) {
   /* ---------- Tierarten ---------- */
   const SP = {
     cow: { icon: '🐮', name: 'Kuh', snd: 'moo', fact: 'Kühe fressen den ganzen Tag Gras und geben Milch.' }, sheep: { icon: '🐑', name: 'Schaf', snd: 'baa', fact: 'Schafe haben ein dickes, warmes Fell aus Wolle.' },
-    goat: { icon: '🐐', name: 'Ziege', snd: 'baa', fact: 'Ziegen können ganz toll klettern, sogar auf Felsen!' }, pig: { icon: '🐷', name: 'Schwein', snd: 'oink', fact: 'Schweine sind sehr schlau und baden gern im Matsch.' },
+    goat: { icon: '🐐', name: 'Ziege', snd: 'goat', fact: 'Ziegen können ganz toll klettern, sogar auf Felsen!' }, pig: { icon: '🐷', name: 'Schwein', snd: 'oink', fact: 'Schweine sind sehr schlau und baden gern im Matsch.' },
     chicken: { icon: '🐔', name: 'Huhn', snd: 'cluck', fact: 'Hühner legen Eier – fast jeden Tag eins!' }, horse: { icon: '🐴', name: 'Pferd', snd: 'neigh', fact: 'Pferde können sogar im Stehen schlafen.' },
     rabbit: { icon: '🐰', name: 'Hase', snd: 'giggle', fact: 'Hasen hoppeln schnell und knabbern am liebsten Karotten.' }, donkey: { icon: '🫏', name: 'Esel', snd: 'ia', fact: 'Esel rufen laut „I-A“ und sind sehr treu.' },
     duck: { icon: '🦆', name: 'Ente', snd: 'quack', fact: 'Enten haben wasserdichte Federn – der Regen perlt ab.' }
@@ -133,9 +133,9 @@ BI.createFarm = function (G) {
     if (ORDER.every(x => b[x])) { addStars(10); say('🏆 Alle Tiere entdeckt! +10 ⭐', 4200); G.earn('zoo'); } if (K.bookOpen) renderBook();
   }
   const NOFEED = ['egg', 'milk', 'jam', 'cake', 'soup', 'popcorn'];
-  K.milk = function () {
-    const a = K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
-    if (now - (K.milkT || 0) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
+  K.milk = function (cow) {
+    const a = cow || K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
+    if (now - (K.milkT == null ? -1e9 : K.milkT) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
     K.milkT = now; const inv = K.inv(); inv.milk = (inv.milk || 0) + 1; A.moo && A.moo(); a.hop = .6; fx.burst(a.x, 1.3, a.z, 10, [BI.C.white, BI.C.blue], 3, 1.2, 26, 3); persist(); say('🥛 Frische Milch gemolken! (' + inv.milk + ') – daraus kocht man Leckeres', 2800); G.earn('animal'); return true;
   };
   K.care = function (kind) {
