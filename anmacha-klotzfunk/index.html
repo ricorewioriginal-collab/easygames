@@ -7,8 +7,8 @@
 <meta name="description" content="KLOTZFUNK 3D – Voxel-Sandbox im Browser: bauen, abbauen, entdecken. Für PC und Smartphone.">
 <title>KLOTZFUNK 3D</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%234c9a3a%27/%3E%3Crect y=%275%27 width=%2716%27 height=%2711%27 fill=%27%23865f43%27/%3E%3C/svg%3E">
-  <script type="module" crossorigin src="./assets/index-CypeMjqd.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CCIewaYO.css">
+  <script type="module" crossorigin src="./assets/index-CaUCjFIn.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-C6Rev5ri.css">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -17,6 +17,8 @@
   <div id="cross"></div>
   <div id="info"></div>
   <canvas id="mm" width="56" height="56" aria-label="Minikarte"></canvas>
+  <div id="quest" hidden></div>
+  <div id="banner"></div>
   <div id="hotbar"></div>
   <div id="toast"></div>
   <div id="uw"></div>
@@ -45,7 +47,7 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>🌈 Neon &amp; Regenbogen</li><li>🗺 Minikarte</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>🌈 Neon &amp; Regenbogen</li><li>🗺 Minikarte</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
     <details class="help">
@@ -53,6 +55,7 @@
       <div class="cols">
         <div><b>PC</b><br>WASD laufen · Maus blicken · Leertaste springen · Strg/Shift rennen<br>Linksklick abbauen · Rechtsklick setzen · 1–9 / Mausrad Block wählen<br>E Inventar · F fliegen (Kreativ) · Esc Pause</div>
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Minikarte</div>
+        <div><b>Story-Modus</b><br>Die Funkzentrale gibt dir 15 feste Aufträge: Holz, Bretter, Fundament, Licht, Funkmast, Federn, Seilhaken, Gleiten, Neon bis zum Regenbogen-Finale. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen</div>
       </div>
     </details>
@@ -69,6 +72,7 @@
     <label class="rng">Sichtweite: <b id="vdVal"></b><input id="vd" type="range" min="2" max="10" step="1"></label>
     <label class="rng">Tageszeit: <b id="tdVal"></b><input id="td" type="range" min="0" max="100" step="1"></label>
     <button id="pFreeze">⏱ Zeit läuft</button>
+    <button id="pQuests" hidden>📜 Aufträge</button>
     <button id="pSound">🔊 Ton: an</button>
     <button id="pFull">⛶ Vollbild</button>
     <button id="pMenu">⌂ Hauptmenü</button>
@@ -86,6 +90,13 @@
     <div id="logoGrid" class="grid"></div>
     <h3>Herstellen</h3>
     <div id="recipes"></div>
+  </div>
+</section>
+
+<section id="qlog" class="screen" hidden>
+  <div class="panel wide">
+    <h2>Aufträge der Funkzentrale <button id="qlogClose" class="x" aria-label="Schließen">✕</button></h2>
+    <div id="qlist"></div>
   </div>
 </section>
 

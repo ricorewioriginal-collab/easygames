@@ -4,6 +4,7 @@ import { Game } from './game.js';
 import { B, NAMES, LOGO0, LOGO_COUNT, SPECIAL0, SPECIAL_COUNT, H, isLogo } from './world.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld } from './storage.js';
 import { unlockAudio, sfx } from './audio.js';
+import { QUESTS, questProgress } from './quests.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
@@ -124,8 +125,39 @@ $('recipes').addEventListener('click', e => {
   for (const [t, n] of r.need) game.inv[t] -= n;
   game.inv[r.give[0]] = Math.min(999, (game.inv[r.give[0]] || 0) + r.give[1]);
   game.unsaved = true; game.onChange();
+  game.questEvent('craft', r.give[0], r.give[1]);
 });
 game.onChange = () => { renderHotbar(); if (state === 'inventory') renderInventory(); };
+
+// ---------- Story: Auftragsanzeige, Banner, Liste ----------
+let questMin = false, bannerTimer = 0;
+function renderQuest() {
+  const el = $('quest'), s = game.story;
+  if (!s || game.menuMode) { el.hidden = true; return; }
+  el.hidden = false; el.classList.toggle('min', questMin);
+  if (s.done) { el.innerHTML = '<b>🎉 Story abgeschlossen</b><small class="txt">Alle Aufträge erledigt. Baue frei weiter!</small>'; return; }
+  const q = QUESTS[s.i], [cur, n] = questProgress(game, q), pct = Math.min(100, Math.round(cur / n * 100));
+  el.innerHTML = `<b>Auftrag ${s.i + 1}/${QUESTS.length} · ${q.t}</b><div class="bar"><i style="width:${pct}%"></i></div><small>${Math.min(cur, n)} / ${n}</small><small class="txt">${q.d}</small>`;
+}
+function showBanner(html) {
+  const b = $('banner'); b.innerHTML = html; b.classList.add('on');
+  clearTimeout(bannerTimer); bannerTimer = setTimeout(() => b.classList.remove('on'), 4200);
+}
+game.onQuest = renderQuest;
+game.onQuestDone = (q, last) => {
+  const rw = Object.entries(q.r || {}).map(([t, c]) => `+${c} ${NAMES[t]}`).join(' · ');
+  showBanner(last ? `🎉 Story abgeschlossen!<small>${q.t} geschafft. Die Funkzentrale sendet wieder. Baue frei weiter.</small>` : `✔ Auftrag erledigt: ${q.t}<small>${rw}</small>`);
+};
+function renderQuestLog() {
+  const s = game.story; if (!s) return;
+  $('qlist').innerHTML = QUESTS.map((q, i) => {
+    const done = s.done || i < s.i, cur = !s.done && i === s.i;
+    return `<div class="qi ${done ? 'done' : cur ? 'cur' : ''}"><span class="st">${done ? '✔' : cur ? '➜' : i + 1}</span><div><b>${q.t}</b>${done || cur ? `<small>${q.d}</small>` : ''}</div></div>`;
+  }).join('');
+}
+$('quest').addEventListener('click', () => { questMin = !questMin; renderQuest(); });
+$('pQuests').onclick = () => { renderQuestLog(); show('qlog', true); };
+$('qlogClose').onclick = () => show('qlog', false);
 
 // ---------- Zustände ----------
 const show = (id, on) => { $(id).hidden = !on; };
@@ -134,6 +166,7 @@ function setState(s) {
   document.body.classList.toggle('playing', s === 'playing');
   show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading');
   show('hud', s === 'playing' || s === 'paused' || s === 'inventory');
+  if (s !== 'paused') show('qlog', false);
 }
 const locked = () => document.pointerLockElement === canvas;
 function lockPointer() {
@@ -150,6 +183,7 @@ function pause() {
   game.stop(); releaseInput(); saveNow();
   setState('paused');
   $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist;
+  $('pQuests').hidden = !game.story;
   $('td').value = Math.round(game.time * 100); $('tdVal').textContent = game.clockText();
   if (locked()) document.exitPointerLock();
 }
@@ -198,14 +232,15 @@ function renderSlots() {
   for (let i = 0; i < SLOTS; i++) {
     const meta = readMeta(i);
     if (meta) {
-      const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative';
-      h += `<div class="card"><div class="top"><div class="ico">${cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b><span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span></div></div>
-        <small>Startwert ${esc(meta.seed)} · zuletzt ${d}</small>
+      const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative', st = meta.mode === 'story';
+      const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : 'Auftrag ' + ((meta.q ?? 0) + 1) + '/' + QUESTS.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
+      h += `<div class="card"><div class="top"><div class="ico">${st ? '📜' : cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b>${pill}</div></div>
+        <small>${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)} · zuletzt ${d}</small>
         <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
     } else {
       h += `<div class="card new"><div class="top"><div class="ico">✨</div><div class="ttl"><b>Neue Welt ${i + 1}</b><span class="pill">frei</span></div></div>
         <div class="seed"><input id="seed${i}" placeholder="Startwert (leer = Zufall)" maxlength="24" autocomplete="off"><button data-act="dice" data-i="${i}" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div>
-        <div class="seg" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben</button><button data-mode="creative">🕊 Kreativ</button></div>
+        <div class="seg three" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben</button><button data-mode="creative">🕊 Kreativ</button><button data-mode="story">📜 Story</button></div>
         <button class="go" data-act="new" data-i="${i}">Welt erzeugen</button></div>`;
     }
   }
@@ -213,7 +248,12 @@ function renderSlots() {
 }
 $('slots').addEventListener('click', e => {
   const sg = e.target.closest('.seg [data-mode]');
-  if (sg) { for (const x of sg.parentNode.children) x.classList.toggle('on', x === sg); return; }
+  if (sg) {
+    for (const x of sg.parentNode.children) x.classList.toggle('on', x === sg);
+    const card = sg.closest('.card'), story = sg.dataset.mode === 'story', inp = card.querySelector('input');
+    inp.disabled = story; inp.placeholder = story ? 'feste Story-Welt' : 'Startwert (leer = Zufall)'; card.querySelector('[data-act=dice]').disabled = story;
+    return;
+  }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const i = Number(b.dataset.i);
   if (b.dataset.act === 'dice') {
@@ -225,7 +265,8 @@ $('slots').addEventListener('click', e => {
     if (!s) { toast('Speicherstand nicht lesbar'); renderSlots(); return; }
     launch(i, s);
   } else {
-    launch(i, { name: 'Welt ' + (i + 1), seed: parseSeed($('seed' + i).value), mode: $('mode' + i).querySelector('.on').dataset.mode });
+    const mode = $('mode' + i).querySelector('.on').dataset.mode;
+    launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode });
   }
 });
 
@@ -239,7 +280,8 @@ function launch(i, save) {
       game.start(save);
       if (save.mode === 'creative') game.player.flying = false;
       $('bFly').hidden = !(touchMode && game.mode === 'creative');
-      renderHotbar(); setState('playing'); lockPointer();
+      renderHotbar(); renderQuest(); setState('playing'); lockPointer();
+      if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner('📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
       if (!game.unsaved && save.px === undefined) saveNow(false);
     } catch (err) {
       console.error(err); setState('menu'); renderSlots(); alert('Die Welt konnte nicht gestartet werden.');
@@ -252,7 +294,7 @@ $('pSave').onclick = () => saveNow(true);
 $('pRespawn').onclick = () => { game.respawn(); resume(); };
 $('pSound').onclick = () => { sfx.enabled = !sfx.enabled; $('pSound').textContent = sfx.enabled ? '🔊 Ton: an' : '🔇 Ton: aus'; };
 $('pFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()); } catch (e) { /* ignorieren */ } };
-$('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); };
+$('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); };
 $('vd').oninput = e => { game.setViewDist(Number(e.target.value)); $('vdVal').textContent = e.target.value; };
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
@@ -293,6 +335,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyQ') { game.fireHook(); return; }
   if (e.code === 'KeyB') { game.toggleWaypoint(); return; }
   if (e.code === 'KeyM') { toggleMap(); return; }
+  if (e.code === 'KeyJ') { questMin = !questMin; renderQuest(); return; }
   if (e.code === 'Space') { const n = performance.now(); if (n - lastSpace < 280) toggleFly(); lastSpace = n; }
   keys.add(e.code); syncKeys();
 });
@@ -423,6 +466,7 @@ setInterval(() => {
   $('info').textContent = `${game.clockText()} ${game.time < 0.5 ? '☀' : '☾'} · X ${p.x.toFixed(0)} Y ${p.y.toFixed(0)} Z ${p.z.toFixed(0)}${extra}`;
   $('uw').classList.toggle('on', !!game.underwater);
   if (mapOn && (mapTick++ & 1) === 0) drawMap();
+  if (game.story) renderQuest();
 }, 250);
 
 renderSlots();

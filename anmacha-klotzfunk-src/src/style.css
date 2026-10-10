@@ -122,3 +122,24 @@ body.touch #mm{top:calc(8px + var(--sat))}
 @media (prefers-reduced-motion:reduce){#menu .card{transition:none}}
 .card .row button[data-act=del]{flex:none;width:48px}
 #menu #slots{align-items:start}
+
+/* ---- Story: Auftragsanzeige, Banner, Liste ---- */
+#quest{position:absolute;left:calc(10px + var(--sal));top:calc(156px + var(--sat));width:min(270px,64vw);padding:9px 11px;border-radius:12px;background:rgba(8,12,26,.74);border:1px solid rgba(255,255,255,.22);font-size:12.5px;line-height:1.4;pointer-events:auto}
+body.touch #quest{top:calc(112px + var(--sat))}
+#quest b{display:block;font-size:13px;color:#7df3ff}
+#quest .bar{height:7px;margin:5px 0 4px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden}
+#quest .bar i{display:block;height:100%;background:linear-gradient(90deg,#00e5ff,#8b5cf6,#ff2d95);border-radius:99px;transition:width .3s}
+#quest small{display:block;opacity:.9}
+#quest.min small.txt{display:none}
+#banner{position:absolute;left:50%;top:calc(70px + var(--sat));transform:translate(-50%,-20px);max-width:92vw;padding:12px 20px;border-radius:16px;text-align:center;font-weight:700;background:linear-gradient(135deg,rgba(0,229,255,.9),rgba(139,92,246,.92));color:#04101c;box-shadow:0 10px 30px rgba(0,0,0,.45);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none}
+#banner.on{opacity:1;transform:translate(-50%,0)}
+#banner small{display:block;font-weight:600;opacity:.85;margin-top:2px}
+#qlist{display:grid;gap:8px;max-height:70vh;overflow:auto}
+.qi{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05)}
+.qi .st{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(255,255,255,.12)}
+.qi.done{opacity:.6}.qi.done .st{background:#2fbf71;color:#04101c}
+.qi.cur{border-color:var(--cy);background:rgba(0,229,255,.1)}.qi.cur .st{background:var(--cy);color:#04101c}
+.qi b{display:block;font-size:14px}.qi small{opacity:.85;font-size:12.5px}
+.seg.three{grid-template-columns:1fr 1fr 1fr}.seg.three button{font-size:12px;padding:9px 2px}
+.pill.st{background:rgba(255,210,59,.16);color:#ffe08a;border-color:rgba(255,210,59,.45)}
+@media (max-height:480px){#quest{width:min(230px,46vw);font-size:11.5px}#quest small.txt{display:none}}

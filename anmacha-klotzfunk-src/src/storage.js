@@ -12,7 +12,7 @@ export function readWorld(i) {
 export function writeWorld(i, save) {
   try {
     localStorage.setItem(W(i), JSON.stringify(save));
-    localStorage.setItem(M(i), JSON.stringify({ name: save.name, mode: save.mode, seed: save.seed, savedAt: save.savedAt }));
+    localStorage.setItem(M(i), JSON.stringify({ name: save.name, mode: save.mode, seed: save.seed, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined }));
     return true;
   } catch (e) { return false; }
 }
