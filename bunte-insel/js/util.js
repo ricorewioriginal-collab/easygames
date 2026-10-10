@@ -149,13 +149,14 @@ BI.makeChar = function (o) {
     const cv0 = document.createElement('canvas'); cv0.width = 256; cv0.height = 64; const cx0 = cv0.getContext('2d'); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name || 'Jannis', 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name || 'Jannis', 128, 34);
     const sp0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv0), transparent: true, depthWrite: false })); sp0.scale.set(1.5, .38, 1); sp0.position.y = 2.15; root.add(sp0);
   }
+  let remoteMesh = null;
   if (J) { // Fernsteuerung mit Lenkrad und Antenne in der rechten Hand
     const rb = new BI.Batch(); rb.cyl(0, -.04, 0, .15, .15, .06, 0x23262d, 12, Math.PI / 2); rb.cyl(0, -.03, .02, .09, .09, .07, 0x3a3f4a, 10, Math.PI / 2); rb.box(.02, 0, 0, .025, .6, .025, 0xffffff, 0, 0, -.12); rb.box(.09, .58, 0, .035, .08, .035, 0xff5a3a, 0, 0, -.12);
-    const rm = rb.mesh(mat); rm.position.set(0, -.55, .13); armR.add(rm);
+    const rm = remoteMesh = rb.mesh(mat); rm.position.set(0, -.55, .13); armR.add(rm);
   }
-  root.scale.setScalar(.95);
+  root.scale.setScalar(o.scale || .95);
   return {
-    group: root, legL, legR, armL, armR,
+    group: root, legL, legR, armL, armR, remote: remoteMesh,
     pose(phase, amp, wave) {
       const s = Math.sin(phase) * amp;
       legL.rotation.x = s; legR.rotation.x = -s; armL.rotation.x = -s * .9; armR.rotation.x = s * .9;

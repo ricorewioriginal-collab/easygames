@@ -177,6 +177,45 @@ const cur = await page.evaluate(() => window.__bi.save.stars); ok(stored === cur
 // Pause / Nacht / Ton
 await page.keyboard.press('Escape'); ok(await ev(() => window.__bi.state === 'pause'), 'Pause an'); await page.keyboard.press('Escape'); ok(await ev(() => window.__bi.state === 'play'), 'Pause aus');
 console.log('mission? ', await ev(() => window.__bi.mission && window.__bi.mission.kind));
+// Schießbude: Spielzeug-Blaster, nur Attrappen, Herr Hannes, Bahn bleibt sicher
+const rg = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const R = b.range, G = b.RG;
+  b.P.x = G.x; b.P.z = G.z + 1.5; await sleep(300); const near = b.nearRange(); b.openRange(); const pick = b.rs.ui === 'pick';
+  const x0 = b.P.x; b.beginRange('foam'); await sleep(300); const play = b.rs.ui === 'play' && R.running && document.body.classList.contains('ranging');
+  // Zielscheibe mittig anvisieren
+  const board = R.targets.find(q => q.kind === 'board' && q.pts === 5), n = R.ndcOf(board); b.rs.ax = n.x; b.rs.ay = n.y; const s0 = R.score; const fired = b.rangeShoot(); await sleep(3000);
+  const hit = R.score > s0 && R.hits === 1;
+  // extreme Schüsse landen immer in der Bahn (kein Ziel -> kein Treffer, kein Fehler)
+  const lane = []; for (const [ax, ay] of [[.95, .95], [-.95, -.95], [.95, -.95], [-.95, .95]]) { R.cd = 0; R.fire(ax, ay); }
+  await sleep(2500); const okLane = R.shots === 5;
+  // Fadenkreuz-Schuss auf Dose, Ente (Zufallsziele) – nichts bricht
+  for (const k of ['duck', 'can', 'ghost', 'balloon']) { const g = R.targets.find(q => q.kind === k); const m = R.ndcOf(g); R.cd = 0; R.fire(m.x, m.y); await sleep(1500); }
+  // Munition leer -> Runde endet von selbst, Sterne gutgeschrieben
+  const st0 = b.save.stars; R.ammo = 0; await sleep(1800); const shots = R.shots, ended = !R.running && !!R.result && b.rs.ui === 'result' && b.save.stars - st0 === R.result.stars;
+  const ignored = !R.fire(0, 0);
+  b.exitRange(); const left = b.rs.ui === '' && !document.body.classList.contains('ranging');
+  // Wasserpistole & Bogen starten, vorzeitiges Verlassen räumt auf
+  b.P.x = G.x; b.P.z = G.z; b.beginRange('water'); await sleep(200); R.cd = 0; R.fire(0, 0); b.exitRange(); b.beginRange('bow'); await sleep(200); b.exitRange();
+  return { near, pick, play, fired, hit, okLane, ended, ignored, left, nan: !isFinite(b.P.x + b.P.z + b.cam.x), shots };
+});
+ok(rg.near && rg.pick && rg.play && rg.fired && rg.hit && rg.okLane && rg.ended && rg.ignored && rg.left && rg.nan === false, `Schießbude: Panel, Zielscheibe getroffen, Extremschüsse in der Bahn, Runde endet, Sterne, verlassen (${JSON.stringify(rg)})`);
+// Blitz wartet, wenn Jannis fährt, und kommt beim Aussteigen wieder
+const pw = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'car' && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.pup.x = b.P.x + 2; b.pup.z = b.P.z; b.pup.mode = 'follow'; b.enter(v);
+  const px = b.pup.x, pz = b.pup.z; v.x += 12; await sleep(1500); const stayed = Math.hypot(b.pup.x - px, b.pup.z - pz) < 1.5; b.leave(); await sleep(4000); return { stayed, back: Math.hypot(b.pup.x - b.P.x, b.pup.z - b.P.z) < 6 };
+});
+ok(pw.stayed && pw.back, `Blitz wartet im Fahrzeug-Betrieb und kommt beim Aussteigen zurück (${JSON.stringify(pw)})`);
+// Vorlesen: Schalter, Sprechtext ohne Emojis, kein Fehler
+const vo = await page.evaluate(async () => { const b = window.__bi; const said = []; const ss = window.speechSynthesis; const orig = ss && ss.speak; if (ss) ss.speak = u => said.push(u.text); const bv = document.getElementById('bVoice'); bv.click(); const off = b.save.voice === false; bv.click(); const on = b.save.voice === true; const n0 = 0; said.length = 0; b.say('🚗 Fahre zur Tankstelle ⭐', 100); const t1 = said.slice(); if (ss) ss.speak = orig; return { has: !!ss, on, off, t1, n0 }; });
+ok(!vo.has || (vo.on && vo.off && vo.t1.length <= 1 && (!vo.t1[0] || !/[🚗⭐]/u.test(vo.t1[0]))), `Vorlesen: Schalter funktioniert, Text ohne Emojis (${JSON.stringify(vo.t1)})`);
+// Rennen, mehr Menschen (Familien/Kinder), mehr Fahrzeuge
+const ru = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 30; b.cam.yaw = 0; b.keys.u = true; await sleep(800); const x0 = b.P.z; await sleep(1200); const walk = (x0 - b.P.z) / 1.2; b.inp.turbo = true; await sleep(800); const z1 = b.P.z; await sleep(1200); const run = (z1 - b.P.z) / 1.2; b.inp.turbo = false; b.keys.u = false;
+  const kids = b.npcs.filter(n => n.kid).length, fam = b.npcs.filter(n => n.lead).length, pk = b.vehicles.filter(v => !v.ai).length;
+  const f = b.npcs.find(n => n.lead && n.kid); const L = f.lead; b.P.x = L.x + 4; b.P.z = L.z + 4; L.tx = L.x + 18; L.tz = L.z; L.wait = 0; await sleep(5000); const together = Math.hypot(f.x - L.x, f.z - L.z) < 7;
+  return { walk, run, n: b.npcs.length, kids, fam, pk, together };
+});
+ok(ru.run > ru.walk * 1.3 && ru.n >= 45 && ru.kids >= 12 && ru.fam >= 8 && ru.pk >= 30 && ru.together, `Rennen ${ru.run.toFixed(1)} > Gehen ${ru.walk.toFixed(1)} m/s, ${ru.n} Menschen (${ru.kids} Kinder, ${ru.fam} in Familien), ${ru.pk} Fahrzeuge, Familie bleibt zusammen`);
 console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 // Handy: fester Joystick sichtbar, Tastatur-Hinweise weg; Desktop: umgekehrt
 {

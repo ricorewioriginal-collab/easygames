@@ -111,6 +111,13 @@ body.building #joy{display:none!important}
 .sc button{padding:6px 14px;border-radius:999px;font-weight:700;font-size:14px;background:linear-gradient(180deg,#ffb23f,#ff7a1f);color:#fff}.sc button:disabled{background:#c9ced6;color:#fff}
 @media (max-width:420px){#shopGrid{grid-template-columns:repeat(2,1fr)}}
 @media (max-height:620px) and (min-width:520px){.card.shop{width:min(780px,100%);padding:12px 16px}#shopGrid{grid-template-columns:repeat(5,1fr);gap:7px}.si{font-size:26px}.sn{font-size:12px}.sc{padding:6px 4px}.sc button{padding:4px 10px;font-size:12px}.card.shop .sub{margin:2px 0 6px}}
+
+#cross{position:fixed;left:0;top:0;width:54px;height:54px;margin:-27px 0 0 -27px;z-index:3;pointer-events:none;border:4px solid rgba(255,255,255,.95);border-radius:50%;box-shadow:0 0 0 2px rgba(22,51,94,.6),inset 0 0 0 2px rgba(22,51,94,.5)}
+#cross:before,#cross:after{content:"";position:absolute;background:#e0382b}#cross:before{left:50%;top:-10px;bottom:-10px;width:4px;margin-left:-2px}#cross:after{top:50%;left:-10px;right:-10px;height:4px;margin-top:-2px}
+#rangeHud{position:fixed;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);z-index:3;display:flex;gap:10px;align-items:center;padding:6px 8px 6px 18px;font-size:22px;font-weight:700;white-space:nowrap}#rangeHud button{width:42px;height:42px;border-radius:50%;background:#fff;font-size:20px;box-shadow:var(--shadow)}
+body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #mission,body.ranging #keys,body.ranging #gauge,body.ranging #mini,body.ranging #toast{display:none!important}
+.rules{text-align:left;margin:6px auto 10px;padding:8px 14px;border-radius:16px;background:#fff6dd;font-weight:700;font-size:15px;line-height:1.5}
+#rangeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}@media (max-width:420px){#rangeGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -127,6 +134,7 @@ body.building #joy{display:none!important}
   <div id="topR">
     <div id="tools">
       <button class="tb" id="bNight" aria-label="Tag und Nacht">🌙</button>
+      <button class="tb" id="bVoice" aria-label="Vorlesen">🗣️</button>
       <button class="tb" id="bMusic" aria-label="Musik">🎵</button>
       <button class="tb" id="bSound" aria-label="Ton">🔊</button>
       <button class="tb" id="bPause" aria-label="Pause und Hilfe">❚❚</button>
@@ -145,7 +153,7 @@ body.building #joy{display:none!important}
   <button class="abtn" id="bJump"><b>⤒</b><small>Springen</small></button>
   <button class="abtn" id="bHorn"><b>👋</b><small>Hallo!</small></button>
   <button class="abtn" id="bAct" hidden><b>🚗</b><small>Einsteigen</small></button>
-  <div id="keys" class="kb">WASD/Pfeile laufen & fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Turbo · F Sirene/Hauen · 1–8 Spaß · B Bauen · V Ego-Kamera</div>
+  <div id="keys" class="kb">WASD/Pfeile laufen & fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Rennen & Turbo · F Sirene/Hauen · 1–8 Spaß · B Bauen · V Ego-Kamera</div>
 </div>
 <div id="buildPanel" hidden>
   <div id="bTop"><div id="bTabs"></div><div id="bColors"></div></div>
@@ -176,11 +184,33 @@ body.building #joy{display:none!important}
   </div>
 </section>
 
+
+<div id="cross" hidden></div>
+<div id="rangeHud" class="chip" hidden><span id="rangeTxt"></span><button id="rangeExit" aria-label="Schießstand verlassen">✖</button></div>
+<section id="rangePanel" class="screen" hidden>
+  <div class="card shop">
+    <div class="logo" style="font-size:30px">🎯 Schießbude</div>
+    <div class="sub" style="margin:4px 0 8px">Herr Hannes passt auf!</div>
+    <div class="rules">1️⃣ Nur auf Zielscheiben und Attrappen!<br>2️⃣ Nie auf Menschen oder Tiere!<br>3️⃣ Immer hinter der Linie bleiben.</div>
+    <div id="rangeGrid"></div>
+    <button class="big" id="rangeClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✖ Zurück</button>
+  </div>
+</section>
+<section id="rangeResult" class="screen" hidden>
+  <div class="card">
+    <div class="logo" style="font-size:34px" id="rrTitle">Geschafft!</div>
+    <div class="sub" id="rrText"></div>
+    <div style="font-size:44px" id="rrStars"></div>
+    <div class="row"><button class="pill" id="rrAgain">🔁 Nochmal</button><button class="pill" id="rrWeapon">🔫 Andere Waffe</button></div>
+    <button class="big" id="rrDone" style="font-size:22px;padding:10px 30px">✔ Fertig</button>
+  </div>
+</section>
+
 <section id="pause" class="screen" hidden>
   <div class="card">
     <div class="logo" style="font-size:40px">Pause</div>
     <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Einsteigen</b> E · <b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
-    <p class="help tc"><b>Laufen/Fahren</b> Joystick links<br><b>Kamera</b> rechts wischen<br><b>Einsteigen</b> Knopf 🚪<br><b>Hupe, Sirene, Turbo</b> Knöpfe rechts<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
+    <p class="help tc"><b>Laufen/Fahren</b> Joystick links (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Einsteigen</b> Knopf 🚪<br><b>Hupe, Sirene, Turbo</b> Knöpfe rechts<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
     <button class="big" id="bResume">▶ Weiter spielen</button>
   </div>
 </section>
@@ -196,6 +226,7 @@ body.building #joy{display:none!important}
 <script src="js/vehicles.js"></script>
 <script src="js/fun.js"></script>
 <script src="js/build.js"></script>
+<script src="js/range.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

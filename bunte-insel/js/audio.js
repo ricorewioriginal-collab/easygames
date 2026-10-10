@@ -58,6 +58,11 @@ BI.audio = (function () {
     whoosh() { tone(250, .7, 'sawtooth', .04, 1700); },
     boom() { tone(90, .6, 'sine', .3, 30); tone(1500, .35, 'triangle', .05, 200); tone(2400, .2, 'square', .02, 400, .05); },
     ding() { tone(1046, .35, 'sine', .18); tone(784, .45, 'sine', .14, 0, .12); },
+    pew() { tone(900, .12, 'square', .09, 300); tone(180, .08, 'triangle', .1); },
+    squirt() { tone(2400, .09, 'sine', .05, 1200); tone(1500, .06, 'triangle', .04, 800, .03); },
+    thwack() { tone(140, .14, 'triangle', .2, 60); tone(1200, .05, 'square', .05); },
+    quack() { tone(520, .1, 'sawtooth', .09, 380); tone(470, .12, 'sawtooth', .08, 340, .1); },
+    tin() { tone(1800, .12, 'square', .06, 1500); tone(2400, .18, 'sine', .06, 0, .03); },
     place() { tone(330, .08, 'square', .08); tone(520, .1, 'triangle', .1, 0, .06); },
     /* Tanz-Beat (vom Spiel pro Frame aufgerufen, solange getanzt wird) */
     dance(dt) {
@@ -126,7 +131,16 @@ BI.audio = (function () {
       if (beat % 8 === 0) { const root = [130.8, 146.8, 164.8, 196][(beat >> 3) % 4]; tone(root, 2.2, 'sine', .07, 0, 0, musBus); tone(root * 1.5, 2.2, 'sine', .035, 0, 0, musBus); }
       if (Math.random() < .62) { const f = PENT[(Math.random() * PENT.length) | 0]; tone(f, .5, 'triangle', .05, 0, 0, musBus); if (Math.random() < .2) tone(f * 2, .3, 'sine', .02, 0, .12, musBus); }
     },
-    stopAll() { A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); }
+    /* Vorlesen: eingebaute Browser-Stimme (kostenlos, offline, kein Laden). Beste deutsche Stimme wird automatisch gewählt. */
+    voiceOn: true,
+    speak(txt) {
+      const ss = window.speechSynthesis; if (!A.voiceOn || muted || !ss || !txt || typeof SpeechSynthesisUtterance === 'undefined') return;
+      const clean = String(txt).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}→➤✔✖]/gu, ' ').replace(/[„“"]/g, '').replace(/\s+/g, ' ').trim(); if (clean.length < 4 || clean === A._said && ss.speaking) return;
+      if (!A._v || !A._vs) { const vs = ss.getVoices().filter(v => /^de/i.test(v.lang)); if (vs.length) { const sc = v => (/natural|neural|online/i.test(v.name) ? 6 : 0) + (/google|anna|petra|katja|marlene|vicki|amala|seraphina|yannick/i.test(v.name) ? 3 : 0) + (v.lang === 'de-DE' ? 2 : 0) + (v.localService ? 0 : 1); A._v = vs.sort((a, b) => sc(b) - sc(a))[0]; A._vs = true; } }
+      try { ss.cancel(); const u = new SpeechSynthesisUtterance(clean); u.lang = 'de-DE'; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1; A._said = clean; ss.speak(u); } catch (e) { }
+    },
+    setVoice(on) { A.voiceOn = on; if (!on && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } },
+    stopAll() { A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
   };
   return A;
 })();
