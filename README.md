@@ -10,6 +10,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
 | AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
+| AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -126,6 +127,15 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Logos:** `anmacha-memory/logos/01.png|jpg|jpeg|webp`, `02` … lückenlos nummeriert, beliebig viele – jedes weitere Logo erzeugt automatisch ein weiteres Paar. `01`–`13` sind die Sender, `14` AnMaChaCast, `15` SenderWelt, `16` RicoReWi Radioportal. Die Namen stehen im Array `NAMES` in `index.html`.
 - **Titel-Logo:** `anmacha-memory/logo.png` ersetzt den Text-Titel im Menü.
 - **Steuerung:** Tippen/Klicken, `P` Pause, `M` Ton.
+
+## AnMaCha Snake 3D
+
+- **Spiel:** Snake auf einem Neon-Brett in 3D. Gefressen werden die Sender-Logos (`logos/01..13`, `.png|.jpg|.jpeg`); alle 5 Logos gibt es ein neues Level mit eigener Farbwelt (13 Sender), schnellerem Tempo und ab Level 3 Hindernissen.
+- **Modi:** Klassisch (Wand = Game Over) und Portal (Wände führen auf die Gegenseite).
+- **Kameras:** Schräg 3D (feste Richtungen) und Verfolger (links/rechts relativ zur Schlange).
+- **Power-ups:** Turbo, Chill (langsamer), Geist (durch Wände/Körper), Punkte ×3, Kürzer. Kombo bis ×6 bei schnell aufeinanderfolgenden Logos.
+- **Steuerung:** Pfeile/WASD (Verfolger: links/rechts), Wischen oder Tippen am Handy, `P` Pause, `M` Ton, `C` Kamera.
+- **Eigenes Logo:** `anmacha-snake/logo.png` ersetzt den Titel. Bestenliste (Top 10) lokal im Browser.
 
 ## AnMaCha Quest RPG: Das Große Rauschen (Godot 4, Web-Export)
 
