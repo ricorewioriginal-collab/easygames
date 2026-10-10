@@ -19,6 +19,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Gold Reels – moderner Video-Slot mit Spielgeld, 5 Walzen, 20 Linien, Freispielen (reines JavaScript/Canvas) | [`anmacha-gold-reels/`](anmacha-gold-reels/) |
 | AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
+| AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
 | Bunte Insel – Kinderspiel mit offener Welt: laufen, 10 Fahrzeuge inkl. Hubschrauber, Boot & Zug-Simulation, Piratenschiff, Schießbude (nur Attrappen), Mitspielen per Code/QR, Vorlesen, Spielzeugladen, Bauen wie bei den Sims, Spaß-Aktionen (Three.js, Touch mit festem Joystick & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
@@ -258,3 +259,13 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Steuerung:** PC: ins Bild klicken, Maus = umsehen, WASD laufen, E = Karton nehmen/Regal füllen, F oder Klick = Preise & Infos, V = Vogelperspektive. Handy: Joystick, rechts ziehen = umsehen, antippen = Info, Aktionsknopf. Zeit pausiert, solange ein Fenster offen ist.
 - **Erweiterung:** Backstation (backt jeden Morgen frische Backwaren, lockt mit Duft), Lager-Regale (mehr Platz für Kartons), Online-Bewertungen mit Hype-Effekt und Influencerinnen, 15 Erfolge mit Belohnung.
 - **Technik:** Spielkern `sim.js` (ohne Grafik, per Skript getestet), Daten `data.js`, 3D-Ansicht `view3d.js` (selbstgebaute Menschen, Regale, Kassen), Oberfläche `game.js`, Spielstand lokal im Browser.
+
+## AnMaCha Hörerwahl – Das große Umfrage-Duell
+
+- **Prinzip:** 100 Hörer wurden befragt – an der Tafel stehen die häufigsten Antworten mit Punkten. Eigenes Design und eigene Fragen (keine Kopie einer bestimmten Fernsehshow).
+- **Ablauf:** *Duell* (beide Teams nennen eine Antwort, die höhere gewinnt die Kontrolle: spielen oder weitergeben) → *Runde* (Antworten nennen, Treffer füllen die Bank, 3 Fehler ✕) → *Klauen* (der Gegner hat eine Antwort für die ganze Bank). Spätere Runden zählen ×2 bzw. ×3. Das Siegerteam spielt das **Hörer-Finale** (5 Schnellfragen in 45 s, 100 Punkte nötig).
+- **Spielarten:** 2 Teams am selben Gerät oder **gegen das Funkhaus-Team** (Computergegner in drei Stufen), 3–5 Runden, optional Antwortzeit (25 s/15 s).
+- **Antworten eintippen:** Die Erkennung (`matcher.js`) ignoriert Groß-/Kleinschreibung, Umlaute, Artikel, Mehrzahl und verzeiht Tippfehler; jede Antwort hat zusätzlich Synonyme.
+- **Fragen:** `questions-a/b/c.js` – 120 Fragen in 15 Kategorien (Radio & Musik, Alltag, Essen, Urlaub, Schule & Arbeit, Tiere & Natur, Freizeit & Sport, Technik & Handy, Familie & Freunde, Feste, Film & Fernsehen, Kleidung, Zuhause & Garten, Gesundheit, Peinlich & Lustig), je 5–8 Antworten mit Punkten (Summe 60–100). Eigene Fragen: gleiche Struktur, prüfen mit `node anmacha-hoererwahl/tests/check-questions.js`.
+- **Technik:** keine Bibliothek, Studio-Hintergrund (Scheinwerfer, Publikum, Konfetti) per Canvas 2D, Ton per WebAudio, Spielstand-unabhängig (nur Einstellungen in `localStorage`). Dateien: `engine.js` (Spielablauf, rein), `matcher.js`, `audio.js`, `studio.js`, `main.js`, `style.css`.
+- **Tests:** `node anmacha-hoererwahl/tests/matcher-tests.js`, `tests/engine-tests.js`, `tests/check-questions.js`; Browser-Test `tests/e2e.mjs` (Playwright).

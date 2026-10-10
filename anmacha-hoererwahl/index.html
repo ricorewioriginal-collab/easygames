@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0c24">
+<title>AnMaCha Hörerwahl – Das Umfrage-Duell</title>
+<meta name="description" content="Hörerwahl – das große Umfrage-Duell: Was haben 100 Hörer geantwortet? Zwei Teams, Strikes, Klauen und ein Finale. Von AnMaCha.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Hörerwahl" hidden>
+  <div class="wordmark" id="brandText">HÖRER<span>WAHL</span></div>
+  <div class="tag">Das große Umfrage-Duell</div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Spielen</button>
+    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+  </div>
+  <div class="logos" id="logoRow"></div>
+  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+</section>
+
+<section id="setup" class="screen" hidden>
+  <div class="panel glass">
+    <h2>Neues Spiel</h2>
+    <div class="seg" id="sgMode"><button data-v="duell" class="on">👥 2 Teams</button><button data-v="solo">🤖 Gegen das Funkhaus-Team</button></div>
+    <label class="fld">Team 1<input id="tn1" maxlength="16" value="Team Antenne" autocomplete="off"></label>
+    <label class="fld" id="fld2">Team 2<input id="tn2" maxlength="16" value="Team Frequenz" autocomplete="off"></label>
+    <div class="fld">Runden<div class="seg" id="sgRounds"><button data-v="3">3</button><button data-v="4" class="on">4</button><button data-v="5">5</button></div></div>
+    <div class="fld" id="fldDiff">Gegner-Stufe<div class="seg" id="sgDiff"><button data-v="easy">leicht</button><button data-v="normal" class="on">normal</button><button data-v="hard">schwer</button></div></div>
+    <div class="fld">Antwortzeit<div class="seg" id="sgTime"><button data-v="0" class="on">ohne</button><button data-v="25">25 s</button><button data-v="15">15 s</button></div></div>
+    <div class="fld">Hörer-Finale<div class="seg" id="sgFinale"><button data-v="1" class="on">an</button><button data-v="0">aus</button></div></div>
+    <div class="row"><button class="btn green" id="bStart">Los geht's!</button><button class="btn ghost" id="bSetBack">Zurück</button></div>
+  </div>
+</section>
+
+<section id="game" class="screen" hidden>
+  <div class="top">
+    <button class="ib" id="bMenu" aria-label="Menü">☰</button>
+    <div class="rinfo glass" id="rinfo">Runde 1</div>
+    <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+  </div>
+  <div class="teams">
+    <div class="team glass" id="tm0"><small>Team 1</small><b id="tn0">–</b><i id="sc0">0</i></div>
+    <div class="bank glass"><small id="bankLbl">Bank</small><b id="bank">0</b><div class="strikes" id="strikes"><span>✕</span><span>✕</span><span>✕</span></div></div>
+    <div class="team glass" id="tm1"><small>Team 2</small><b id="tn1b">–</b><i id="sc1">0</i></div>
+  </div>
+  <div class="qbox glass"><span class="cat" id="cat"></span><div id="question">…</div></div>
+  <div class="board" id="board"></div>
+  <div class="host glass" id="host" aria-live="polite"><span>🎙</span><p id="hostTxt">Willkommen zur Hörerwahl!</p></div>
+  <div class="timer" id="timer" hidden><i id="timerBar"></i></div>
+  <form class="ask" id="ask" autocomplete="off">
+    <div class="who" id="who">Team Antenne ist dran</div>
+    <div class="askrow"><input id="inp" type="text" maxlength="40" placeholder="Deine Antwort …" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="Deine Antwort"><button class="btn small" id="bSend" type="submit">Antworten</button><button class="btn ghost small" id="bPass" type="button" title="Weiß nicht (zählt als Fehler)">🤷</button></div>
+    <div class="choose" id="choose" hidden><button class="btn green" id="bPlayRound" type="button">▶ Wir spielen</button><button class="btn blue" id="bGive" type="button">↪ Weitergeben</button></div>
+    <div class="choose" id="nextRow" hidden><button class="btn" id="bNext" type="button">Weiter ▶</button></div>
+  </form>
+  <div id="bigx" hidden>✕</div>
+  <div id="flash" hidden></div>
+</section>
+
+<section id="finale" class="screen" hidden>
+  <div class="panel glass wide">
+    <h2>⭐ Hörer-Finale</h2>
+    <p id="finIntro">5 Fragen, je eine Antwort – erreiche <b>100 Punkte</b>!</p>
+    <div class="fin-top"><div class="fin-timer"><i id="finBar"></i></div><b id="finPts">0 / 100</b></div>
+    <div class="fin-q" id="finQ"></div>
+    <form id="finForm" autocomplete="off"><div class="askrow"><input id="finInp" type="text" maxlength="40" placeholder="Schnell – deine Antwort!" enterkeyhint="send" autocomplete="off" spellcheck="false" aria-label="Finale-Antwort"><button class="btn small" type="submit">OK</button></div></form>
+    <div class="fin-list" id="finList"></div>
+    <button class="btn" id="finGo">Los!</button>
+  </div>
+</section>
+
+<section id="end" class="screen" hidden>
+  <div class="panel glass">
+    <h2 id="endTitle">Spielende</h2>
+    <div class="trophy" id="trophy">🏆</div>
+    <div id="endScores" class="endscores"></div>
+    <div id="endNote" class="note"></div>
+    <div class="row"><button class="btn green" id="bAgain">Nochmal</button><button class="btn ghost" id="bEndMenu">Menü</button></div>
+  </div>
+</section>
+
+<div id="rules" class="dialog" hidden><div class="panel glass">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>100 Hörer wurden befragt.</b> An der Tafel stehen die häufigsten Antworten – je öfter genannt, desto mehr Punkte.</li>
+    <li><b>Duell:</b> Beide Teams nennen eine Antwort. Wer die höhere trifft, gewinnt die Runde-Kontrolle: <i>spielen</i> oder <i>weitergeben</i>.</li>
+    <li><b>Runde:</b> Das Team nennt der Reihe nach Antworten. Treffer wandern in die Bank. Drei Fehler (✕) – dann darf der Gegner mit <b>einer</b> Antwort die ganze Bank <b>klauen</b>!</li>
+    <li><b>Punkte:</b> In späteren Runden zählt die Bank doppelt oder dreifach.</li>
+    <li><b>Finale:</b> Das Siegerteam spielt das Hörer-Finale: 5 Schnellfragen, 100 Punkte nötig.</li>
+    <li>Tippe die Antwort einfach ein – Tippfehler, Artikel und Mehrzahl sind egal.</li>
+  </ul>
+  <button class="btn" id="rulesOk">Verstanden</button>
+</div></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
