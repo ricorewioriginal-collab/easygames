@@ -500,7 +500,6 @@
       if (best) { pup.star = best; pup.mode = 'search'; A.bark(); pup.bark = .3; say('🐶 Blitz, such den Stern! 🔎', 1800); }
     }
     else if (k === 'gum') fun.gum(); else if (k === 'ball') fun.ball(); else if (k === 'fireworks') fun.fireworks(); else if (k === 'balloons') fun.balloons();
-    $('bDance').classList.toggle('on', fun.dancing);
   }
   /* Schnellmenü: zeigt nur die 6 passendsten Aktionen (je nach Lage + was oft benutzt wird), „Mehr“ zeigt alle */
   const ACTIONS = [
@@ -542,7 +541,7 @@
     if (state !== 'play') return;
     if (build.active) { exitBuild(); return; }
     if (P.veh) { say('🏗️ Zum Bauen erst aussteigen', 1600); return; }
-    fun.setDance(false); $('bDance').classList.remove('on'); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8;
+    fun.setDance(false); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8;
     document.body.classList.add('building'); $('buildPanel').hidden = false; $('bBuild').classList.add('on'); renderBuild(); updateButtons(true);
     say(isTouch() ? '🏗️ Tippe auf den Boden, wähle ein Teil und drücke ✔ Bauen' : '🏗️ Klicke auf den Boden, wähle ein Teil und drücke G oder ✔ Bauen', 4200);
   }
