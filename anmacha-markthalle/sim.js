@@ -138,7 +138,7 @@ const Sim = (() => {
   const slotPos = (S, r, i) => { let y = r.y + 1 + i; while (y > r.y + 1 && solid(S, r.x, y)) y--; return [r.x, y]; };
   function serviceTile(r) { return [r.x, r.y - 1]; }
   function opRate(S, r) {
-    const pl = S.player; const st = serviceTile(r); if (Math.hypot(pl.x - (st[0] + .5), pl.y - (st[1] + .5)) < 1.25) return 1.6;
+    const pl = S.player; const st = serviceTile(r); if (Math.hypot(pl.x - (st[0] + .5), pl.y - (st[1] + .5)) < 1.25) return .45;
     if (r.k === 'sco') return .55; const s = S.staff.find(x => x.k === 'kasse' && x.reg === r.id && Math.hypot(x.x - (st[0] + .5), x.y - (st[1] + .5)) < .6); return s ? s.rate : 0;
   }
   const operated = (S, r) => opRate(S, r) > 0;
@@ -179,7 +179,7 @@ const Sim = (() => {
     } else if (c.st === 'queue') {
       const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c, '😡'); return; } const idx = r.q.indexOf(c.id); c.wait += d; c.mood -= d * (S.up.klima ? .12 : .2); if (idx !== c.slot) { c.slot = idx; const sp = slotPos(S, r, idx); setPath(c, path(S, c.x, c.y, sp[0], sp[1])); }
       follow(c, d); if (c.wait > D.TYPES[c.type].pat * (S.staff.some(s => s.trait === 'freundlich') ? 1.1 : 1)) { r.q.splice(r.q.indexOf(c.id), 1); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; }
-      if (idx === 0 && c.pi >= c.path.length) { c.st = 'pay'; c.svc = (1.1 + c.basket.reduce((a, b) => a + b.q, 0) * .75); }
+      if (idx === 0 && c.pi >= c.path.length) { c.st = 'pay'; c.units = c.basket.reduce((a, b) => a + b.q, 0); c.svc = 1.1 + c.units * .75; }
     } else if (c.st === 'pay') {
       const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c); return; } const rate = opRate(S, r); c.wait += rate > 0 ? d * .3 : d; if (c.wait > D.TYPES[c.type].pat * 1.4) { r.q.shift(); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; } c.svc -= d * rate; if (c.svc <= 0) { r.q.shift(); finish(S, c, false); leaveFor(S, c, c.sat > .8 ? '😊' : null); }
     } else if (c.st === 'leave') { if (follow(c, d)) c.dead = true; }
@@ -217,7 +217,8 @@ const Sim = (() => {
   const rectDist = (px, py, o) => { const dx = Math.max(o.x - px, 0, px - (o.x + o.w)), dy = Math.max(o.y - py, 0, py - (o.y + o.h)); return Math.hypot(dx, dy); };
   const carryCap = S => S.up.wagen ? 3 : 1;
   function context(S, focus) {
-    const pl = S.player, near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.2), fd = o => rectDist(pl.x, pl.y, o) - (focus && o.id === focus.id ? 5 : 0);
+    const pl = S.player; for (const r of S.objs) { if (r.k !== 'kasse') continue; const st = serviceTile(r); if (Math.hypot(pl.x - (st[0] + .5), pl.y - (st[1] + .5)) > 1.25) continue; const c = S.customers.find(x => x.st === 'pay' && x.reg_q === r.id); if (c) { const left = Math.ceil((c.svc - 1.1) / .75 - 1e-6); return { a: 'scan', c, label: left > 0 ? `📟 Scannen (${left} Artikel)` : '💶 Kassieren' }; } }
+    const near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.2), fd = o => rectDist(pl.x, pl.y, o) - (focus && o.id === focus.id ? 5 : 0);
     if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
     const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: '🧽 Pfütze wischen' };
     const rp = near.find(o => o.k === 'ramp'); if (rp) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.length) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
@@ -225,7 +226,8 @@ const Sim = (() => {
   }
   function act(S, focus) {
     const c = context(S, focus); if (!c) return null; const pl = S.player;
-    if (c.a === 'stock') { const b = pl.carry[0]; if (!c.o.p || (c.o.qty === 0 && c.o.p !== b.p)) { c.o.p = b.p; c.o.age = 0; c.o.disc = false; } addStock(S, c.o, b); if (b.n <= 0) pl.carry.shift(); }
+    if (c.a === 'scan') { c.c.svc = Math.max(0, c.c.svc - .78); S.xp += .05; }
+    else if (c.a === 'stock') { const b = pl.carry[0]; if (!c.o.p || (c.o.qty === 0 && c.o.p !== b.p)) { c.o.p = b.p; c.o.age = 0; c.o.disc = false; } addStock(S, c.o, b); if (b.n <= 0) pl.carry.shift(); }
     else if (c.a === 'clean') { S.messes = S.messes.filter(m => m !== c.m); S.xp += 1; }
     else if (c.a === 'pick') { let bi = 0, bs = 9; S.ramp.forEach((b, i) => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p).sort((a, cc) => a.qty / cap(S, a) - cc.qty / cap(S, cc))[0]; const r = o ? o.qty / cap(S, o) : 1.5; if (r < bs) { bs = r; bi = i; } }); const b = S.ramp.splice(bi, 1)[0]; if (b) pl.carry.push(b); flush(S); }
     else if (c.a === 'back') { S.ramp.push(pl.carry.pop()); }
