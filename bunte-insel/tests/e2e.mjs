@@ -155,7 +155,7 @@ ok(st.gained === 1 && st.off, 'Stern zu Fuß eingesammelt');
 // Aussteigen/Einsteigen-Zyklus: Spieler nie in Hindernis, nie NaN
 const cyc = await page.evaluate(async () => {
   const b = window.__bi; const sleep = ms => new Promise(r => setTimeout(r, ms)); let bad = 0;
-  for (const v of b.vehicles.filter(v => !v.ai)) { b.P.x = v.x + 3; b.P.z = v.z; if (b.P.veh) b.leave(); await sleep(60); const nv = b.nearVehicle(); if (!nv) { bad++; continue; } b.enter(nv); await sleep(60); b.leave(); await sleep(40); if (!isFinite(b.P.x + b.P.z) || !b.W.free(b.P.x, b.P.z, .4)) bad++; }
+  for (const v of b.vehicles.filter(v => !v.ai)) { b.P.x = v.x + (v.type === 'boat' ? -3 : 3); b.P.z = v.z; if (b.P.veh) b.leave(); await sleep(60); const nv = b.nearVehicle(); if (!nv) { bad++; continue; } b.enter(nv); await sleep(60); b.leave(); await sleep(40); if (!isFinite(b.P.x + b.P.z) || !b.W.free(b.P.x, b.P.z, .4)) bad++; }
   return { bad, n: b.vehicles.filter(v => !v.ai).length };
 });
 ok(cyc.bad === 0, `Ein-/Aussteigen bei ${cyc.n} Fahrzeugen ohne Fehler (${cyc.bad} Fehler)`);

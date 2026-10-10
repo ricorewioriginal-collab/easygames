@@ -9,7 +9,7 @@ BI.VEH = {
   bus:       { name: 'Bus', icon: '🚌', max: 16, rev: 5, acc: 6, brake: 18, drag: 4, turn: 1.3, kind: 'car', horn: 'bus', cols: [-2.8, 0, 2.8], r: 1.45, cam: 13 },
   tractor:   { name: 'Traktor', icon: '🚜', max: 10, rev: 4, acc: 5, brake: 14, drag: 4, turn: 1.5, kind: 'tractor', horn: 'tractor', open: true, offroad: 1, cols: [-.8, 1], r: 1.2, cam: 8 },
   rc:        { name: 'RC-Auto', icon: '🏎️', max: 15, rev: 5, acc: 16, brake: 24, drag: 6, turn: 2.8, kind: 'bike', horn: 'bike', cols: [-.42, .42], r: .42, cam: 4.2, scale: .36, remote: true },
-  boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', water: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
+  boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', boat: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
   rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
@@ -170,7 +170,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       if (hit) this.v *= .6; return 0;
     }
     step(dt, inp, W, fx) {
-      if (this.spec.water) return this.stepBoat(dt, inp, W);
+      if (this.spec.boat) return this.stepBoat(dt, inp, W);
       if (this.spec.fly) return this.stepFly(dt, inp, W);
       const sp = this.spec, onRoad = W.onRoad(this.x, this.z); this.offroad = !onRoad;
       let max = sp.max * (inp.turbo ? 1.4 : 1) * (onRoad || sp.offroad ? 1 : .72);
@@ -201,8 +201,8 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     }
     /* Optik: Räder, Neigung, Blaulicht */
     visual(dt, t, fx) {
-      const sp = this.spec; if (sp.water) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
-      if (sp.water) {
+      const sp = this.spec; if (sp.boat) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      if (sp.boat) {
         this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, -this.steerCur * Math.abs(this.v) / sp.max * .22 + Math.sin(t * 1.3) * .03, 5, dt); this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .01, -.08, .08) + Math.sin(t * 1.1) * .02, 4, dt);
         if (fx && Math.abs(this.v) > 1.5 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 2.2 + (Math.random() - .5), -.1, this.z - Math.cos(this.h) * 2.2 + (Math.random() - .5), (Math.random() - .5) * 1.4, .8, (Math.random() - .5) * 1.4, 1.1, 40, .95, .98, 1, 1, .8);
         return;

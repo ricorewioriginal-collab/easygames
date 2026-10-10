@@ -167,13 +167,13 @@
     const v = P.veh; if (!v) return;
     if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
     if (v.isTrain && train.v > 3) { say('Halte den Zug an zum Aussteigen 🚂', 2200); return; }
-    if (v.spec.water && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
+    if (v.spec.boat && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
     if (v.spec && v.spec.fly && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
     A.leave(); A.horn('car', false); A.siren('police', false); A.water(false);
     const lx = Math.cos(v.h), lz = -Math.sin(v.h), rad = v.isTrain ? 5.5 : v.r + 1.3;
     let px = v.x + lx * rad, pz = v.z + lz * rad;
     if (v.isTrain) { const L = Math.hypot(v.x, v.z) || 1; px = v.x - v.x / L * 6; pz = v.z - v.z / L * 6; }
-    if (v.spec.water) { px = .2; pz = 205.5; }
+    if (v.spec.boat) { px = .2; pz = 205.5; }
     if (!v.isTrain) { v.driver = null; v.siren = false; if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
     P.veh = null; char.group.visible = true;
     const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
