@@ -19,6 +19,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
+| AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
 | Bunte Insel – Kinderspiel mit offener Welt: laufen, 10 Fahrzeuge inkl. Hubschrauber, Boot & Zug-Simulation, Piratenschiff, Schießbude (nur Attrappen), Vorlesen, Spielzeugladen, Bauen wie bei den Sims, Spaß-Aktionen (Three.js, Touch mit festem Joystick & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
@@ -226,6 +227,13 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Symbole:** Selbst gezeichnete Casino-Klassiker (Sieben, Diamant, Krone, Glocke, Kirschen, Kleeblatt, Hufeisen) plus zwei Sender-Logos, Wild und Bonus-Stern. Keine fremden Marken oder Namen.
 - **Features:** Wild ersetzt alle außer Bonus, 3+ Bonus-Sterne geben 10 Freispiele mit doppeltem Gewinn (Retrigger +5), Big/Mega/Super-Mega-Win-Anzeige, Auto-Spin, Turbo, 7 Einsatzstufen, Gewinntabelle, Sounds per WebAudio.
 - **Technik:** Logik in `slot.js` (ohne Grafik, Auszahlungsquote ca. 95 % simuliert), Darstellung per Canvas in `index.html`, Guthaben lokal gespeichert.
+
+## AnMaCha Spielesammlung 3D
+
+- **Spiele:** Rausschmeißer (Laufspiel, 2–4), Würfelfieber (5 Würfel, 1–4), Schach, Leiterspiel (2–4), Vier in einer Reihe, Dame, Mühle – alles in einer Datei, three.js wird erst beim Start eines Spiels geladen.
+- **Gegner:** Jeder Platz ist Mensch oder Computer (leicht/mittel/schwer); mehrere Menschen spielen abwechselnd am selben Gerät, bei Brettspielen dreht sich die Ansicht automatisch zum Spieler am Zug.
+- **Regeln:** Schach komplett (Rochade, en passant, Umwandlung, Patt/Remis), Dame mit Schlagpflicht und fliegenden Damen, Mühle mit Springen ab 3 Steinen.
+- **Bedienung:** Antippen/Klicken; Wischen dreht die Ansicht, zwei Finger oder Mausrad zoomen. Es wird nur gerendert, wenn sich etwas bewegt (spart Akku).
 
 ## AnMaCha Markthalle 24
 
