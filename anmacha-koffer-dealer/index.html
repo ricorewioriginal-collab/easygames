@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#05060f">
+<title>AnMaCha Koffer DEALER</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<style>
+  :root{--c:#00E5FF;--ma:#FF2D95;--v:#8B5CF6;--o:#FF9A1F;--g:#00FFC8;--y:#FFD24A;--am:#ffb21f;--bg:#05060f;--tx:#EAF2FF;--mut:#8FA3BD}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:#05060f;color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;user-select:none;-webkit-user-select:none}
+  button{font-family:inherit;color:inherit;cursor:pointer}
+  #cv{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .glass{background:rgba(6,14,32,.74);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px}
+  .ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:17px;border:1px solid rgba(255,255,255,.2);background:rgba(6,14,32,.74)}
+  .ib:active{transform:scale(.93)}
+  #ui{position:fixed;inset:0;pointer-events:none;z-index:3}
+  #ui>*{pointer-events:auto}
+  #tbar{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 0;display:flex;gap:8px;align-items:center;pointer-events:none}
+  #tbar>*{pointer-events:auto}
+  #tbar .sp{flex:1}
+  #who{display:flex;align-items:center;gap:9px;padding:4px 14px 4px 5px;min-width:0}
+  #who img{width:38px;height:38px;border-radius:10px;object-fit:cover;background:#05070d}
+  #who b{display:block;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+  #who i{display:block;font-style:normal;font-size:11px;color:var(--mut);white-space:nowrap}
+  /* Frequenzskala (Wertetafel als Radio-Dial) */
+  #dial{position:absolute;left:50%;transform:translateX(-50%);top:calc(60px + env(safe-area-inset-top));width:min(940px,96vw);padding:8px 12px 6px;background:linear-gradient(180deg,#2a1608,#120a04);border:1px solid #6a3a10;border-radius:12px;box-shadow:0 0 22px rgba(255,150,30,.25),inset 0 0 18px rgba(0,0,0,.6)}
+  #dial .scale{position:relative;display:flex;justify-content:space-between;gap:4px}
+  #dial .scale::before{content:"";position:absolute;left:0;right:0;bottom:-3px;height:5px;background:repeating-linear-gradient(90deg,#ffb21f 0 1px,transparent 1px 8px);opacity:.5}
+  .dv .c{display:none}
+  .dv{flex:1;text-align:center;font-weight:900;font-size:clamp(9.5px,1.5vw,15px);color:var(--am);font-variant-numeric:tabular-nums;padding:3px 0;border-radius:6px;letter-spacing:-.02em;text-shadow:0 0 8px rgba(255,170,40,.6);transition:.4s;white-space:nowrap}
+  .dv.hi{color:#ff5ad0;text-shadow:0 0 10px rgba(255,60,200,.8)}
+  .dv.gone{color:#5a3a1a;text-shadow:none;text-decoration:line-through;opacity:.5}
+  #needle{position:absolute;top:2px;bottom:-2px;width:3px;background:linear-gradient(#ff4a3a,#ff1a1a);border-radius:2px;box-shadow:0 0 10px #ff2a2a;left:0;transition:left .9s cubic-bezier(.3,1.4,.4,1);pointer-events:none;opacity:0}
+  #dialInfo{font-size:10px;letter-spacing:.14em;color:#a8743a;text-align:center;margin-top:5px}
+  #bubble{position:absolute;left:50%;top:calc(130px + env(safe-area-inset-top));transform:translateX(-50%);max-width:min(560px,92vw);padding:9px 16px;font-size:clamp(13px,3.4vw,17px);font-weight:700;text-align:center;border-color:rgba(0,255,200,.5);animation:pop .3s}
+  #bubble b{color:var(--g);letter-spacing:.1em;font-size:.8em;display:block;margin-bottom:2px}
+  @keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.85)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+  #banner{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;font:900 clamp(26px,7vw,66px)/1 'Trebuchet MS',sans-serif;font-style:italic;text-shadow:0 0 24px var(--ma),0 4px 0 #000;white-space:nowrap;animation:banner 2.4s ease-out forwards}
+  #banner small{display:block;font-size:.36em;font-style:normal;font-weight:800;letter-spacing:.1em;color:var(--y);margin-top:6px;text-shadow:0 2px 0 #000}
+  #banner.good{color:#7CFF9A;text-shadow:0 0 28px #00ff88,0 4px 0 #000}#banner.bad{color:#ff7a8a;text-shadow:0 0 28px #ff2a3a,0 4px 0 #000}#banner.gold{color:#ffd24a;text-shadow:0 0 28px #ff9a1f,0 4px 0 #000}
+  @keyframes banner{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}20%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1)}}
+  #bot{position:absolute;left:0;right:0;bottom:0;padding:0 8px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+  #bot>*{pointer-events:auto}
+  #hint{font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;background:rgba(6,14,32,.78);border:1px solid rgba(0,255,200,.4);color:#b9fff0;text-align:center;max-width:94vw}
+  #cards{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;max-width:min(1120px,98vw)}
+  .kc{position:relative;width:clamp(52px,6.8vw,76px);padding:5px 3px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.2);background:linear-gradient(180deg,#1c2542,#0b1124);display:flex;flex-direction:column;align-items:center;gap:2px;transition:.2s;font-weight:900}
+  .kc img{width:70%;aspect-ratio:1;border-radius:8px;object-fit:cover;background:#05070d}
+  .kc b{font-size:clamp(15px,2.6vw,22px);color:var(--y);line-height:1}
+  .kc small{font-size:9px;font-weight:800;color:var(--mut);min-height:11px;letter-spacing:.02em;white-space:nowrap}
+  .kc.sel:not([disabled]){border-color:var(--g);box-shadow:0 0 14px rgba(0,255,200,.6);animation:kp 1s infinite alternate}
+  @keyframes kp{to{transform:translateY(-3px)}}
+  .kc.mine{border-color:var(--y);box-shadow:0 0 16px rgba(255,210,74,.7);background:linear-gradient(180deg,#4a3a10,#1c1404)}
+  .kc.open{opacity:.4;filter:grayscale(.6);border-color:rgba(255,255,255,.1)}
+  .kc.open b{font-size:10px}
+  .kc[disabled]{cursor:default}
+  @media (min-width:821px) and (min-aspect-ratio:1/1){#offer{position:fixed;right:16px;top:calc(150px + env(safe-area-inset-top));width:320px}}
+  #offer{width:min(560px,96vw);padding:12px 14px 12px;text-align:center;border-color:rgba(255,178,31,.6);box-shadow:0 0 30px rgba(255,150,30,.35);animation:rise .4s cubic-bezier(.2,.9,.3,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+  #offer .od{font-size:11px;letter-spacing:.2em;color:var(--g);font-weight:800}
+  #offerAmt{font:900 clamp(34px,9vw,64px)/1.05 'Trebuchet MS',sans-serif;color:var(--am);text-shadow:0 0 22px rgba(255,150,30,.7),0 3px 0 #000;font-variant-numeric:tabular-nums}
+  #offerSub{font-size:12px;color:#c7b08a;margin:2px 0 8px}
+  .obtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .pill{border-radius:999px;padding:11px 22px;font-weight:900;font-size:15px;border:1px solid rgba(255,255,255,.3);background:rgba(8,16,40,.85);min-height:46px}
+  .pill.deal{background:linear-gradient(90deg,#00ffc8,#00e5ff);color:#04201a;border:0;font-size:18px;padding:11px 34px;box-shadow:0 0 20px rgba(0,255,200,.5)}
+  .pill.go{background:linear-gradient(90deg,#ffb21f,#ff7a00);color:#201000;border:0;box-shadow:0 0 18px rgba(255,150,30,.45)}
+  .pill.mag{background:linear-gradient(90deg,#ff2d95,#8b5cf6);border:0}
+  #haggle{display:flex;gap:6px;justify-content:center;margin-top:8px;align-items:center;flex-wrap:wrap}
+  #haggle span{font-size:12px;color:var(--mut);font-weight:700}
+  #haggle button{padding:7px 14px;font-size:13px;min-height:36px}
+  .ov{position:fixed;inset:0;z-index:10;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at 50% 20%,rgba(8,26,40,.62),rgba(5,6,15,.95) 75%)}
+  .box{margin:auto;width:100%;max-width:700px;display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center}
+  h1{margin:0;line-height:.95;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(34px,9.5vw,70px);background:linear-gradient(90deg,#fff,var(--g) 40%,var(--y));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(0,255,200,.45))}
+  h1 small{display:block;font-size:clamp(18px,5vw,30px);letter-spacing:.14em;margin-top:6px;color:var(--ma);-webkit-text-fill-color:var(--ma);text-shadow:0 0 16px var(--ma)}
+  .brand{display:block;margin:0 auto;max-width:min(92vw,620px);max-height:clamp(170px,44vw,340px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.25))}
+  h2{margin:0;font-size:clamp(24px,6.5vw,38px);font-style:italic;text-shadow:0 0 16px var(--ma)}
+  h3{margin:0;font-size:12px;letter-spacing:.16em;color:var(--mut)}
+  .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.4vw,15px);line-height:1.5}
+  .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;width:100%}
+  .chip{min-width:46px;min-height:44px;padding:6px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);font-weight:800;font-size:14px;line-height:1.2}
+  .chip small{display:block;font-weight:600;font-size:10.5px;color:var(--mut)}
+  .chip.on{border-color:var(--g);box-shadow:0 0 0 2px rgba(0,255,200,.4),0 0 14px rgba(0,255,200,.4);background:rgba(0,255,200,.12)}
+  .chip[disabled]{opacity:.4}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.1em;color:#04201a;border:0;border-radius:999px;padding:15px 52px;min-height:58px;background:linear-gradient(90deg,#00ffc8,#00e5ff 55%,#ffd24a);box-shadow:0 0 28px rgba(0,255,200,.5)}
+  .big:active{transform:scale(.96)}.big[disabled]{opacity:.5;cursor:wait}
+  .ghost{font:700 14px inherit;font-family:inherit;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);border-radius:999px;padding:11px 22px;min-height:44px}
+  .info{font-size:12px;color:var(--mut);line-height:1.5}
+  a.back{color:var(--c);font-size:13px;text-decoration:none}
+  #plist{display:flex;flex-direction:column;gap:8px;width:100%;max-width:520px}
+  .pc{display:flex;align-items:center;gap:10px;padding:7px 10px;text-align:left}
+  .pc .lg{width:44px;height:44px;border-radius:11px;object-fit:cover;border:2px solid var(--sc);background:#05070d;cursor:pointer;flex:none}
+  .pc input{flex:1;min-width:0;font:700 15px inherit;font-family:inherit;color:var(--tx);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 11px}
+  .pc .col{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+  .pc .rm{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);flex:none}
+  .pc .tag{font-size:10px;font-weight:800;color:var(--g);letter-spacing:.08em}
+  .hof{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;width:100%}
+  .hof>div{flex:1;min-width:210px;max-width:340px;text-align:left;padding:8px 10px;font-size:13px}
+  .hof h4{margin:0 0 4px;font-size:11px;letter-spacing:.14em;color:var(--mut);text-align:center}
+  .hof p{margin:0;display:flex;justify-content:space-between;padding:2px 4px}
+  .hof p b{color:var(--y)}
+  #rankList{width:100%;max-width:460px;text-align:left}
+  .brow{display:flex;justify-content:space-between;gap:8px;padding:8px 11px;border-radius:9px;font-weight:800;font-size:16px;border-left:4px solid var(--sc);background:rgba(255,255,255,.07);margin-bottom:6px}
+  .brow b{color:var(--sc);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .brow small{display:block;font-weight:600;color:var(--mut);font-size:11px}
+  #qr{background:#fff;padding:10px;border-radius:14px;width:min(240px,64vw)}
+  #qr svg{display:block;width:100%;height:auto}
+  #code{font:900 clamp(40px,12vw,64px) 'Trebuchet MS',sans-serif;letter-spacing:.2em;color:var(--y);text-shadow:0 0 18px #ff9a1f;padding-left:.2em}
+  #pair,#pause{background:rgba(5,6,15,.97)}
+  #end{background:radial-gradient(ellipse at 50% 35%,rgba(5,6,15,.4),rgba(5,6,15,.84) 80%)}
+  #err{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:24px;background:#05060f}
+  /* Handy-Controller */
+  body.ctrl #cv,body.ctrl #ui,body.ctrl #menu{display:none!important}
+  #ctl{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 0,#0f3a40,#05060f 70%);overflow:auto}
+  body.ctrl #ctl{display:flex}
+  #ctl h2{font-size:22px;text-align:center}
+  #ctl .st{text-align:center;color:var(--y);font-weight:800;font-size:14px;min-height:20px}
+  #ctl .dialc{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;padding:8px;border-radius:12px;background:linear-gradient(#2a1608,#120a04);border:1px solid #6a3a10}
+  #ctl .dialc span{font-weight:900;font-size:12px;color:var(--am);padding:1px 5px}
+  #ctl .dialc span.gone{color:#5a3a1a;text-decoration:line-through}
+  #ctl .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #ctl .kgrid button{padding:8px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.2);background:linear-gradient(#1c2542,#0b1124);color:var(--y);font-weight:900;font-size:22px;display:flex;flex-direction:column;align-items:center;gap:2px}
+  #ctl .kgrid button img{width:52%;aspect-ratio:1;border-radius:8px;object-fit:cover}
+  #ctl .kgrid button small{font-size:10px;color:var(--mut)}
+  #ctl .kgrid button.mine{border-color:var(--y);background:linear-gradient(#4a3a10,#1c1404)}
+  #ctl .kgrid button.open{opacity:.35}
+  #ctl .kgrid button.sel{border-color:var(--g);box-shadow:0 0 12px rgba(0,255,200,.6)}
+  #ctl .oamt{font:900 46px/1.1 'Trebuchet MS',sans-serif;color:var(--am);text-align:center;text-shadow:0 0 18px rgba(255,150,30,.6)}
+  #ctl .row2{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  #ctl input{font:700 18px inherit;font-family:inherit;text-align:center;color:var(--tx);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:13px}
+  #ctl .info{text-align:center}
+  @media (max-width:820px),(max-aspect-ratio:1/1){
+    #cards{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;width:min(96vw,420px)}
+    .kc{width:auto}
+    #dial{top:calc(58px + env(safe-area-inset-top));padding:6px 6px 4px}
+    .dv{font-size:9.5px;letter-spacing:-.04em}
+    .dv .f{display:none}.dv .c{display:inline}
+    #dialInfo{display:none}
+    #bubble{top:calc(100px + env(safe-area-inset-top))}
+    #who b{max-width:30vw}
+  }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="ui" hidden>
+  <div id="tbar">
+    <button class="ib" id="bEnd" title="Menü" aria-label="Menü">☰</button>
+    <div id="who" class="glass"><img id="whoImg" alt=""><div><b id="whoName"></b><i id="whoSub"></i></div></div>
+    <span class="sp"></span>
+    <button class="ib" id="bVoice" title="Moderator-Stimme" aria-label="Stimme">🎙</button>
+    <button class="ib" id="bSnd" title="Ton" aria-label="Ton">🔊</button>
+  </div>
+  <div id="dial"><div class="scale" id="dialScale"></div><div id="needle"></div><div id="dialInfo">FREQUENZSKALA · NOCH IM SPIEL</div></div>
+  <div id="bubble" class="glass" hidden></div>
+  <div id="banner" hidden></div>
+  <div id="bot">
+    <div id="hint"></div>
+    <div id="offer" class="glass" hidden>
+      <div class="od" id="offerWho">📞 FUNKSPRUCH VOM DEALER</div>
+      <div id="offerAmt">0 €</div>
+      <div id="offerSub"></div>
+      <div class="obtns" id="offerBtns"></div>
+      <div id="haggle" hidden><span>Handeln:</span><button class="pill mag" data-h="10">+10 %</button><button class="pill mag" data-h="25">+25 %</button><button class="pill mag" data-h="50">+50 %</button></div>
+    </div>
+    <div id="cards"></div>
+  </div>
+</div>
+
+<div id="menu" class="ov"><div class="box">
+  <h1><span id="brandText">Koffer DEALER</span><img id="brandImg" class="brand" alt="AnMaCha Koffer DEALER" hidden><small id="brandSub">DEAL ODER FUNKSTILLE?</small></h1>
+  <p class="sub">13 Flightcases mit euren Sender-Logos, 13 Beträge von 1 € bis 1.000.000 € – und ein Dealer, der per Funkspruch Angebote macht. Nimm die Kohle oder pokere weiter. Du kannst sogar handeln!</p>
+  <h3>SPIELFORM</h3>
+  <div class="row"><button class="chip" data-form="solo">Solo<small>mit Tauschoption am Ende</small></button><button class="chip" data-form="reihum">Reihum<small>2–4 Spieler, ein Koffer pro Kopf</small></button><button class="chip" data-form="duell">Duell<small>1 gegen 1</small></button></div>
+  <h3>DER DEALER</h3>
+  <div class="row"><button class="chip" data-dealer="0">Freundlich<small>großzügige Angebote</small></button><button class="chip" data-dealer="1">Normal</button><button class="chip" data-dealer="2">Gnadenlos<small>knallhart, aber fairer Boden</small></button></div>
+  <h3>SPIELER</h3>
+  <div id="plist"></div>
+  <div class="row"><button class="ghost" id="bAdd">+ Spieler</button><button class="ghost" id="bPair">📱 Handys koppeln</button></div>
+  <button class="big" id="bPlay" disabled>LADEN …</button>
+  <div class="row"><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bMenuVoice">🎙 Stimme</button></div>
+  <div class="info" id="loadInfo">Studio wird aufgebaut …</div>
+  <div class="hof" id="hof"></div>
+  <a class="back" id="backLink" href="../">← Alle Spiele</a>
+</div></div>
+
+<div id="pair" class="ov" hidden><div class="box">
+  <h2>Handys koppeln</h2>
+  <p class="sub">QR-Code scannen oder die Seite öffnen und den Code eingeben. Bis zu 4 Spieler – jeder mit Namen und Sender-Logo.</p>
+  <div id="qr"></div><div id="code">….</div>
+  <div class="info" id="pairUrl"></div><div class="info" id="pairList"></div>
+  <button class="big" id="bPairOk">FERTIG</button>
+</div></div>
+
+<div id="pause" class="ov" hidden><div class="box">
+  <h2>PAUSE</h2>
+  <button class="big" id="bResume">WEITER</button>
+  <button class="ghost" id="bQuit">Spiel beenden</button>
+</div></div>
+
+<div id="end" class="ov" hidden><div class="box">
+  <h2 id="endTitle">Ergebnis</h2><p class="sub" id="endSub"></p>
+  <div id="rankList"></div>
+  <button class="big" id="bAgain">NOCHMAL</button>
+  <button class="ghost" id="bBack">Hauptmenü</button>
+</div></div>
+
+<div id="ctl"></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
+
+<script src="audio.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
