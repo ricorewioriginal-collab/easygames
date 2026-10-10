@@ -246,7 +246,7 @@ function makeFood() {
   const grp = new THREE.Group();
   const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0x00ffc8, transparent: true, opacity: 0.85, side: THREE.DoubleSide }));
   ring.rotation.x = -Math.PI / 2; ring.position.y = -0.44; grp.add(ring);
-  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false }));
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, fog: false }));
   spr.scale.set(1.5, 1.5, 1); spr.position.y = 0.55; grp.add(spr);
   grp.userData = { ring, spr }; grp.visible = false; scene.add(grp); return grp;
 }
@@ -328,7 +328,7 @@ function newGame() {
   dir = DIRS.right; dirQ = []; heading = Math.PI / 2; obstacles = []; food = null; powFood = null; powObj.visible = false;
   setTheme(0, true); frameMat.color.set(mode === 'portal' ? 0x00ffc8 : 0xff2d95); frameMat.emissive.set(mode === 'portal' ? 0x00ffc8 : 0xff2d95);
   spawnFood(); updateObstacles(); applyColors(); hud(); setBadge();
-  state = 'play'; $('hud').hidden = false; $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true; $('hint').hidden = false;
+  state = 'play'; $('hud').hidden = false; resize(); $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true; $('hint').hidden = false;
   $('tapL').hidden = $('tapR').hidden = camMode !== 'chase';
   $('hint').textContent = camMode === 'chase' ? 'Links / rechts tippen oder ←/→ zum Abbiegen' : 'Wischen oder Pfeiltasten';
   setTimeout(() => { if ($('hint')) $('hint').hidden = true; }, 4500);
@@ -392,7 +392,7 @@ addEventListener('touchend', e => {
   if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
   turn(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? DIRS.left : DIRS.right) : (dy < 0 ? DIRS.up : DIRS.down));
 }, { passive: true });
-function toggleCam() { camMode = camMode === 'tilt' ? 'chase' : 'tilt'; save.cam = camMode; persist(); $('tapL').hidden = $('tapR').hidden = !(state === 'play' && camMode === 'chase'); toast(camMode === 'chase' ? 'Kamera: Verfolger' : 'Kamera: Schräg 3D'); refreshMenu(); }
+function toggleCam() { camMode = camMode === 'tilt' ? 'chase' : 'tilt'; save.cam = camMode; persist(); $('tapL').hidden = $('tapR').hidden = !(state === 'play' && camMode === 'chase'); toast(camMode === 'chase' ? 'Kamera: Verfolger' : 'Kamera: Schräg 3D'); applyFog(); refreshMenu(); }
 
 // ------------------------------------------------------------------ Spiel-Tick
 function tick() {
@@ -478,7 +478,7 @@ function refreshMenu() {
   $('bPlay').disabled = !logosDone; $('bPlay').textContent = logosDone ? 'SPIELEN' : 'LADEN …'; renderRank();
 }
 document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { mode = b.dataset.mode; save.mode = mode; persist(); refreshMenu(); });
-document.querySelectorAll('[data-cam]').forEach(b => b.onclick = () => { camMode = b.dataset.cam; save.cam = camMode; persist(); refreshMenu(); });
+document.querySelectorAll('[data-cam]').forEach(b => b.onclick = () => { camMode = b.dataset.cam; save.cam = camMode; persist(); applyFog(); refreshMenu(); });
 $('bPlay').onclick = () => { tone(440, 0.04, 'sine', 0.001); newGame(); };
 $('bAgain').onclick = () => newGame();
 $('bRestart').onclick = () => newGame();
@@ -490,9 +490,21 @@ function pause(on) { if (on && state === 'play') { state = 'paused'; $('pause').
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
 
 // ------------------------------------------------------------------ Render-Schleife
-function resize() {
-  const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+let tiltDist = 24;
+function fitTilt() {   // kleinste Entfernung, bei der das ganze Brett (alle Ränder) zwischen HUD und Unterkante sichtbar ist
+  const w = innerWidth, h = innerHeight, top = $('hud').hidden ? 0 : $('hud').offsetHeight + 6, yTop = 1 - 2 * top / h;
+  const r = half + 0.9, pts = [[-r, 0, -r], [r, 0, -r], [-r, 0, r], [r, 0, r], [-r, 0.8, -r], [r, 0.8, -r]], v = new THREE.Vector3();
+  for (let d = 12; d < 140; d *= 1.03) {
+    camera.position.set(0, d * 0.82, d * 0.62); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+    let ok = true; for (const q of pts) { v.set(q[0], q[1], q[2]).project(camera); if (Math.abs(v.x) > 0.95 || v.y > yTop || v.y < -0.95) { ok = false; break; } }
+    if (ok) return d;
+  }
+  return 140;
 }
+function resize() {
+  const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); tiltDist = fitTilt(); applyFog();
+}
+function applyFog() { const k = camMode === 'tilt' ? Math.min(1.7, Math.max(1, tiltDist / 26)) : 1; foodObj.scale.setScalar(k); powObj.scale.setScalar(k); if (camMode === 'chase') { scene.fog.near = 28; scene.fog.far = 70; } else { scene.fog.near = tiltDist * 1.7; scene.fog.far = tiltDist * 3.6; } }
 addEventListener('resize', resize); resize();
 const vF = new THREE.Vector3(), vWant = new THREE.Vector3(), vLook = new THREE.Vector3(); const camPos = new THREE.Vector3(0, 24, 17), camLook = new THREE.Vector3(); const tmpV = new THREE.Vector3(), tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(1, 1, 1);
 let sceneTime = 0;
@@ -543,7 +555,7 @@ function render(dt) {
       vWant.set(hx - vF.x * 7.5 * cf, 7.2 * cf, hz - vF.z * 7.5 * cf); vLook.set(hx + vF.x * 4.5, 0, hz + vF.z * 4.5);
       camPos.lerp(vWant, Math.min(1, dt * 5)); camLook.lerp(vLook, Math.min(1, dt * 7));
     } else {
-      const fit = Math.max(1, 1.05 / Math.min(1.9, camera.aspect)); const dist = 19 * fit;
+      const dist = tiltDist * 1.02;
       vWant.set(hx * 0.12, dist * 0.82, dist * 0.62 + hz * 0.12);
       camPos.lerp(vWant, Math.min(1, dt * 3)); camLook.lerp(vLook.set(hx * 0.1, 0, hz * 0.1), Math.min(1, dt * 4));
     }
