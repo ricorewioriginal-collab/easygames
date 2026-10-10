@@ -61,8 +61,9 @@ if (JOIN) {
     const hs = S0.humans.slice(0, S0.n).map(h => ({ n: (h.name || 'Spieler').slice(0, 9), g: h.g, age: 26, style: h.style, likes: h.likes.slice(), nogos: h.nogos.slice() }));
     S = newShow({ content: { CANDIDATES, PULTE, QUIZ }, humans: hs, seed: (Math.random() * 1e9) | 0 }); logHist = []; asks = {}; pend = {}; show(null);
     studio.addHost(look({ n: 'Moderator', g: 'd' }, 5)); studio.focus('all');
+    startRound(S);
     while (!S.done) {
-      const R = startRound(S), c = R.cand, hc = R.humanCand, rd = S.round + 1; candLook = look(c, 2 + S.round); humanSeatOn = {};
+      const R = S.R, c = R.cand, hc = R.humanCand, rd = S.round + 1; candLook = look(c, 2 + S.round); humanSeatOn = {};
       studio.setSeats(R.seats.map(s => ({ p: s.p, look: look(s.p, s.k), human: s.human >= 0 }))); studio.setCandidate(candLook); studio.focus('all'); setLamps(20); showCard();
       $('hRound').textContent = `Runde ${rd}/${S.rounds}`; $('hSub').textContent = hc >= 0 ? `Kandidat: ${c.n} 🙋` : `Kandidat: ${c.n}`; $('act').innerHTML = `<div class="info">🎬 Runde ${rd}: <b>${esc(c.n)}</b> betritt die Bühne.</div>`; push();
       banner('RUNDE ' + rd, c.n); SFX.fanfare(); voice('intro', { a: c.n }); await A(sleep(2200));
