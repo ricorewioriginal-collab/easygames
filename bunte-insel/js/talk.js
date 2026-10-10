@@ -30,3 +30,16 @@ BI.TALK = {
     ['Jonas', ['Was ist das Lieblingsessen von Autos? Reifen-Pommes! 🚗', 'Ich fahre am liebsten mit dem Roller.', 'Pssst – im Park liegt noch ein Stern!']]
   ]
 };
+/* Märchen zum Vorlesen (Bücherregale), kurze Witze fürs Fernsehen, Ladenplaudereien */
+BI.TALK.tales = [
+  ['Der Mond und die Katze', 'Eine kleine Katze wollte den Mond fangen. Sie sprang auf das Dach, aber der Mond war immer noch weit weg. Da setzte sie sich hin und schnurrte ihm ein Lied. Der Mond lächelte und leuchtete extra hell für sie.'],
+  ['Das Gespenst Fridolin', 'Fridolin war ein freundliches Gespenst. Er wollte niemanden erschrecken, sondern Freunde finden. Als er den Kindern beim Suchen eines verlorenen Balls half, luden sie ihn zum Eisessen ein.'],
+  ['Der kleine Traktor', 'Der kleine Traktor Toni fuhr jeden Morgen aufs Feld. Er war nicht der größte, aber er gab immer sein Bestes. Und als der große Mähdrescher stecken blieb, zog Toni ihn heraus.'],
+  ['Die Regenbogen-Reise', 'Lia und ihr Hund wollten das Ende des Regenbogens finden. Sie liefen über Wiesen und Brücken. Am Ende fanden sie keinen Schatz, aber einen Spielplatz voller neuer Freunde.']
+];
+BI.TALK.jokes = ['Was machen Fernseher im Winter? – Sie sehen sich ein Heizungsprogramm an! 😂', 'Der Wetterbericht sagt: Heute Sonne, morgen Eis – und übermorgen Eis mit Sonne! 🍦', 'Warum hat der Roboter keinen Hunger? – Er hat schon einen Byte gegessen! 🤖', 'Kasperle fragt das Krokodil: Hast du schon gegessen? – Ja, aber du siehst lecker aus! 🐊😄'];
+BI.TALK.shops = {
+  supermarkt: ['Frau Kasse', 'Heute gibt es besonders frische Äpfel! 🍎'], baeckerei: ['Bäcker Benno', 'Frisch aus dem Ofen – Vorsicht, heiß! 🥐'], blumen: ['Floristin Flora', 'Schenk jemandem einen Blumenstrauß – das macht beide froh! 💐'],
+  apotheke: ['Apothekerin Anna', 'Meine Tränke helfen im Verbotenen Wald – aber bleib vorsichtig! ⚕️'], cafe: ['Kellner Karl', 'Eine heiße Schokolade gefällig? ☕'], buecherei: ['Bibliothekarin Berta', 'Psst! Such dir ein schönes Buch aus. 📚'],
+  tiere: ['Tierpfleger Timo', 'Hast du Futter für die Tiere im Zoo? 🐾'], mode: ['Schneiderin Sina', 'Probier doch etwas Neues an! 👒']
+};

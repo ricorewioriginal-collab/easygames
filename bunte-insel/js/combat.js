@@ -199,6 +199,12 @@ BI.createCombat = function (G) {
     $('arenaPanel').hidden = false; }
   function closePanel() { K.panelOpen = false; $('arenaPanel').hidden = true; G.updateButtons && G.updateButtons(true); }
   K.openPanel = openPanel; K.closePanel = closePanel; $('arenaClose').addEventListener('click', closePanel);
+  /* Tränke & Snacks aus dem Rucksack (kaufbar in Apotheke/Supermarkt) */
+  K.useItem = function (kind) {
+    if (!K.active() || hp <= 0 || !G.inv) return; const iv = G.inv(); const ids = kind === 'hp' ? [['potion_hp', 50], ['apple', 20]] : [['potion_ep', 30], ['juice', 20]];
+    for (const [id, v] of ids) if ((iv[id] || 0) > 0) { iv[id]--; if (kind === 'hp') hp = Math.min(HPM, hp + v); else ep = Math.min(EPM, ep + v); persist(); A.star && A.star(); fx.burst(P.x, 1.6, P.z, 10, [kind === 'hp' ? BI.C.pink : BI.C.blue, BI.C.white], 3, 1, 26, 2); say((kind === 'hp' ? '❤️ +' : '⚡ +') + v, 900); return; }
+  };
+  $('fbPotHp').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.useItem('hp'); }); $('fbPotEp').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.useItem('ep'); });
   K.exit = function () { if (!mode && !inForest()) return; clearEnemies(); const was = mode; mode = null; resetStats(); K.dim = 0; if (was) { P.x = AR.kai.x; P.z = AR.kai.z + 2.5; } else { P.x = FO.gate.x; P.z = FO.gate.z; } };
   $('fbExit').addEventListener('click', K.exit);
   for (const [id, kind] of [['fbPunch', 'punch'], ['fbKick', 'kick'], ['fbSpecial', 'special']]) $(id).addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); K.attack(kind); });
@@ -229,7 +235,7 @@ BI.createCombat = function (G) {
       const tg = duel && !duel.over ? duel.f : (target && !target.dead && enemies.includes(target) ? target : null); $('fbEnemy').hidden = !tg;
       if (tg) { $('fbEName').textContent = (tg.T && tg.T.n) || ''; $('fbEHp').style.width = Math.max(0, tg.hp / tg.max * 100) + '%'; }
       $('fbInfo').textContent = duel && !duel.over ? 'Runde ' + duel.round + ' · Du ' + duel.rounds[0] + ' : ' + duel.rounds[1] + ' ' + duel.def.n : mode === 'wave' ? 'Welle ' + wave.n + '/5' : '🌲 Waldmonster besiegt: ' + K.kills;
-      $('fbExit').hidden = false;
+      $('fbExit').hidden = false; if (G.inv) { const iv = G.inv(), nh = (iv.potion_hp || 0) + (iv.apple || 0), ne = (iv.potion_ep || 0) + (iv.juice || 0); $('fbPotHp').hidden = !nh; $('fbPotEp').hidden = !ne; $('fbPotHp').textContent = '❤️' + nh; $('fbPotEp').textContent = '⚡' + ne; }
     }
     if (!act && enemies.length && !mode && !fz) { clearEnemies(); }
   };
