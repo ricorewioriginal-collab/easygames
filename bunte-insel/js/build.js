@@ -99,6 +99,7 @@ BI.createBuild = function (G) {
   };
   let saveT = 0;
   function save() { saveT = .8; }
+  B.saveNow = () => { saveT = 0; flushSave(); };
   function flushSave() { BI.store.set('build', B.exportMine()); }
 
   /* ---------- Mesh ---------- */

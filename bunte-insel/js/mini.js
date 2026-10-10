@@ -112,8 +112,49 @@ BI.createMini = function (G) {
     keydown(c) { if (c === 'ArrowLeft' || c === 'KeyA') this.key = -1; else if (c === 'ArrowRight' || c === 'KeyD') this.key = 1; },
     keyup(c) { if ((c === 'ArrowLeft' || c === 'KeyA') && this.key < 0 || (c === 'ArrowRight' || c === 'KeyD') && this.key > 0) this.key = 0; }
   };
-  const GAMES = { pop: POP, mole: MOLE, memory: MEM, catch: CATCH };
-  M.GAMES = { pop: { icon: '🎈', name: 'Ballon-Pop', help: 'Tippe die Ballons an – gelbe Gesichter und Sterne geben extra Punkte!', dur: 45, goal: 25 }, mole: { icon: '🧸', name: 'Wackel-Wichtel', help: 'Tippe die Wichtel an, bevor sie sich verstecken – Kronen zählen dreifach!', dur: 40, goal: 22 }, memory: { icon: '🧩', name: 'Memory', help: 'Finde alle Paare – schnell und mit wenig Fehlern gibt es mehr Punkte.', dur: 120, goal: 70 }, catch: { icon: '🧺', name: 'Sternenfänger', help: 'Zieh den Korb hin und her und fang alles, was fällt: Sterne, Äpfel, Bonbons, Diamanten!', dur: 45, goal: 25 } };
+
+  /* ---------- Lern-Spiele mit Sprachausgabe: Zahlen-Zauber, Farben-Quiz, Tierstimmen (8 Fragen, 3 Antworten) ---------- */
+  const NUMW = ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn'];
+  const THINGS = [['🍎', 'Äpfel'], ['⭐', 'Sterne'], ['🎈', 'Ballons'], ['🐟', 'Fische'], ['🚗', 'Autos'], ['🌸', 'Blumen'], ['🐥', 'Küken']];
+  const COLN = [['rot', '#e0382b'], ['blau', '#2d6be0'], ['gelb', '#ffd23f'], ['grün', '#2fae5a'], ['orange', '#ff8a1f'], ['lila', '#9b4fd8'], ['rosa', '#ff8fc8'], ['braun', '#8a5a33'], ['schwarz', '#23262d'], ['weiß', '#ffffff']];
+  const ANI = [['Kuh', '🐮', 'moo'], ['Schaf', '🐑', 'baa'], ['Hund', '🐶', 'bark'], ['Ente', '🦆', 'quack'], ['Katze', '🐱', 'meow'], ['Frosch', '🐸', 'ribbit'], ['Schwein', '🐷', 'oink']];
+  const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = (rnd() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const QUIZ = {
+    init(kind) { this.kind = kind; this.r = 0; this.tries = 0; this.wait = 0; this.shake = [0, 0, 0]; this.pulse = 0; this.next(); },
+    resize() { },
+    lay() { const bw = Math.min(W * .29, 230), gap = W * .025, x0 = (W - 3 * bw - 2 * gap) / 2, h = Math.min(H * .27, 190); return [0, 1, 2].map(i => ({ x: x0 + i * (bw + gap), y: H * .66, w: bw, h })); },
+    next() {
+      this.r++; if (this.r > 8) { M.over = true; return; } this.tries = 0; this.wait = 0; this.pulse = 0; const k = this.kind; let ans;
+      if (k === 'count') { const n = 1 + ((rnd() * Math.min(10, 3 + this.r)) | 0), th = THINGS[(rnd() * THINGS.length) | 0], pts = []; for (let t = 0; t < 300 && pts.length < n; t++) { const p = [.12 + rnd() * .76, .2 + rnd() * .34]; if (pts.every(q => Math.hypot((q[0] - p[0]) * W, (q[1] - p[1]) * H) > Math.min(W, H) * .11)) pts.push(p); } this.n = pts.length; this.pts = pts; this.th = th; const d = new Set([this.n]); while (d.size < 3) { const c = Math.max(1, Math.min(10, this.n + ((rnd() * 5) | 0) - 2)); d.add(c); } ans = shuf([...d]); this.ans = ans.map(v => ({ v, ok: v === this.n })); this.say = 'Wie viele ' + th[1] + ' siehst du?'; }
+      else if (k === 'colors') { const pool = COLN.slice(0, Math.min(10, 4 + this.r)), c = pool[(rnd() * pool.length) | 0], d = new Set([c]); while (d.size < 3) d.add(pool[(rnd() * pool.length) | 0]); this.c = c; this.ans = shuf([...d]).map(v => ({ v, ok: v === c })); this.say = 'Wo ist ' + c[0] + '?'; }
+      else { const a = ANI[(rnd() * ANI.length) | 0], d = new Set([a]); while (d.size < 3) d.add(ANI[(rnd() * ANI.length) | 0]); this.a = a; this.ans = shuf([...d]).map(v => ({ v, ok: v === a })); this.say = 'Wer macht so?'; }
+      this.ask();
+    },
+    ask() { if (this.kind === 'animals') { A[this.a[2]] && A[this.a[2]](); setTimeout(() => { if (M.active && game === this) A[this.a[2]] && A[this.a[2]](); }, 700); setTimeout(() => { if (M.active && game === this) A.speak && A.speak(this.say); }, 1500); } else A.speak && A.speak(this.say); },
+    update(dt) { for (let i = 0; i < 3; i++) this.shake[i] = Math.max(0, this.shake[i] - dt * 3); if (this.wait > 0) { this.wait -= dt; if (this.wait <= 0) this.next(); } if (this.tries >= 2) this.pulse += dt; },
+    draw() {
+      bg(this.kind === 'colors' ? '#fff3c4' : this.kind === 'animals' ? '#c9f0c2' : '#cfe9ff', '#ffffff'); const k = this.kind;
+      text('Frage ' + Math.min(8, this.r) + ' / 8', W - 20, 34, 24, '#fff', 'right');
+      if (k === 'count') { text('Wie viele ' + this.th[0] + '?', W / 2, H * .12, Math.min(44, W / 12), '#fff'); this.pts.forEach(p => emoji(this.th[0], p[0] * W, p[1] * H, Math.min(W, H) * .1)); }
+      else if (k === 'colors') { text('Wo ist ' + this.c[0].toUpperCase() + '?', W / 2, H * .2, Math.min(64, W / 8), this.c[1] === '#ffffff' ? '#cfd8e8' : this.c[1]); emoji('🔊', W / 2, H * .42, Math.min(W, H) * .16); }
+      else { text('Wer macht so?', W / 2, H * .16, Math.min(48, W / 10), '#fff'); emoji('🔊', W / 2, H * .4, Math.min(W, H) * .2); }
+      this.lay().forEach((b, i) => {
+        const a = this.ans[i], sh = Math.sin(this.shake[i] * 30) * this.shake[i] * 14, hl = this.tries >= 2 && a.ok ? 1 + Math.sin(this.pulse * 8) * .06 : 1, good = this.wait > 0 && a.ok;
+        ctx.save(); ctx.translate(b.x + b.w / 2 + sh, b.y + b.h / 2); ctx.scale(hl, hl); ctx.fillStyle = good ? '#d9ffd9' : '#fff'; ctx.strokeStyle = good ? '#2fae5a' : '#16335e'; ctx.lineWidth = 5; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-b.w / 2, -b.h / 2, b.w, b.h, 24) : ctx.rect(-b.w / 2, -b.h / 2, b.w, b.h); ctx.fill(); ctx.stroke();
+        if (k === 'count') text(String(a.v), 0, 6, b.h * .62, '#ff7a1f'); else if (k === 'colors') { ctx.fillStyle = a.v[1]; ctx.strokeStyle = '#16335e'; ctx.beginPath(); ctx.arc(0, 0, Math.min(b.w, b.h) * .34, 0, 6.283); ctx.fill(); ctx.stroke(); } else emoji(a.v[1], 0, 0, b.h * .6);
+        ctx.restore();
+      });
+    },
+    tap(x, y) {
+      if (this.wait > 0) return; if (y < H * .6) { this.ask(); return; }
+      const i = this.lay().findIndex(b => x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h); if (i < 0) return; const a = this.ans[i], b = this.lay()[i];
+      if (a.ok) { add(this.tries === 0 ? 2 : 1, b.x + b.w / 2, b.y); burst(b.x + b.w / 2, b.y + b.h / 2, 14, ['#ffe27a', '#fff', '#8fd8ff', '#ff8fc8']); A.ding(); this.wait = 1.1; const w = this.kind === 'count' ? 'Richtig! ' + NUMW[this.n] : this.kind === 'colors' ? 'Richtig! ' + this.c[0] : 'Richtig! ' + this.a[0]; A.speak && A.speak(w); }
+      else { this.tries++; this.shake[i] = 1; A.bonk(); if (this.tries === 1) A.speak && A.speak('Fast! Probier es nochmal.'); }
+    }
+  };
+  const mkQuiz = kind => Object.assign(Object.create(QUIZ), { init() { QUIZ.init.call(this, kind); } });
+  const GAMES = { pop: POP, mole: MOLE, memory: MEM, catch: CATCH, count: mkQuiz('count'), colors: mkQuiz('colors'), animals: mkQuiz('animals') };
+  M.GAMES = { pop: { icon: '🎈', name: 'Ballon-Pop', help: 'Tippe die Ballons an – gelbe Gesichter und Sterne geben extra Punkte!', dur: 45, goal: 25 }, mole: { icon: '🧸', name: 'Wackel-Wichtel', help: 'Tippe die Wichtel an, bevor sie sich verstecken – Kronen zählen dreifach!', dur: 40, goal: 22 }, memory: { icon: '🧩', name: 'Memory', help: 'Finde alle Paare – schnell und mit wenig Fehlern gibt es mehr Punkte.', dur: 120, goal: 70 }, count: { icon: '🔢', name: 'Zahlen-Zauber', help: 'Zähl die Dinge und tippe die richtige Zahl – du hörst die Frage!', dur: 150, goal: 8 }, colors: { icon: '🌈', name: 'Farben-Quiz', help: 'Wo ist ROT? Tippe die richtige Farbe an – mit Sprachausgabe.', dur: 150, goal: 8 }, animals: { icon: '🐮', name: 'Tierstimmen', help: 'Hör gut zu: Welches Tier macht dieses Geräusch?', dur: 150, goal: 8 }, catch: { icon: '🧺', name: 'Sternenfänger', help: 'Zieh den Korb hin und her und fang alles, was fällt: Sterne, Äpfel, Bonbons, Diamanten!', dur: 45, goal: 25 } };
 
   /* ---------- Steuerung ---------- */
   const px = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * (W / r.width), (e.clientY - r.top) * (H / r.height)]; };
