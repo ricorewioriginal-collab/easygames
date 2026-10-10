@@ -86,7 +86,96 @@
   function saveMeta() { try { rawSet.call(LS, META_KEY, JSON.stringify(meta)); } catch (e) {} }
   var auth = null, user = null, fb = null, sdkP = null;
   function wanted() { try { return LS.getItem(ON_KEY) === '1'; } catch (e) { return false; } }
+  // ---- App-Modus (Android/Windows-App): Google sperrt die Anmeldung im App-Fenster. Die Anmeldung läuft deshalb im Browser
+  // (Link mit Kopplungscode auf ricorewi-radio.de), die App holt sich danach das Aktualisierungs-Token und nutzt es per REST. ----
+  var APP = location.hostname === 'appassets.local', RT = 'anmacha-cloud-rt', PAIR = null;
+  var PORTAL = 'https://www.ricorewi-radio.de/';
+  var FS = 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/';
+  function post(u, body, form) {
+    return fetch(u, { method: 'POST', headers: { 'Content-Type': form ? 'application/x-www-form-urlencoded' : 'application/json' }, body: body }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error(r.status === 400 ? 'Bitte neu koppeln (Anmeldung abgelaufen)' : 'Fehler ' + r.status);
+        return j;
+      });
+    });
+  }
+  function appUser(rt) {
+    var tok = '', exp = 0, u = { uid: '', displayName: '', email: '', photoURL: '' };
+    u.getIdToken = function () {
+      if (tok && Date.now() < exp - 60000) return Promise.resolve(tok);
+      return post('https://securetoken.googleapis.com/v1/token?key=' + CONFIG.apiKey, 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt), true).then(function (j) {
+        tok = j.id_token; exp = Date.now() + (+j.expires_in || 3600) * 1000; u.uid = j.user_id;
+        if (j.refresh_token && j.refresh_token !== rt) { rt = j.refresh_token; rawSet.call(LS, RT, rt); }
+        return tok;
+      });
+    };
+    u.load = function () {
+      return u.getIdToken().then(function (t) { return post('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + CONFIG.apiKey, JSON.stringify({ idToken: t })); }).then(function (j) {
+        var p = (j.users || [])[0] || {};
+        u.displayName = p.displayName || ''; u.email = p.email || ''; u.photoURL = p.photoUrl || '';
+        return u;
+      });
+    };
+    return u;
+  }
+  function startPair() {
+    var a = new Uint8Array(16), id;
+    crypto.getRandomValues(a);
+    id = Array.prototype.map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    PAIR = { id: id, until: Date.now() + 15 * 60000 }; lastErr = ''; render();
+    (function poll() {
+      if (!PAIR || PAIR.id !== id) return;
+      if (Date.now() > PAIR.until) { PAIR = null; lastErr = 'Kopplung abgelaufen, bitte neu starten.'; render(); return; }
+      fetch(FS + 'pair/' + id).then(function (r) {
+        if (r.status === 404) return null;
+        if (r.status === 403) { PAIR = null; lastErr = 'Kopplung ist noch nicht freigeschaltet.'; render(); return null; }
+        if (!r.ok) throw new Error('x');
+        return r.json();
+      }).then(function (j) {
+        if (!PAIR || PAIR.id !== id) return;
+        if (!j) { setTimeout(poll, 3000); return; }
+        var rt = j.fields && j.fields.rt && j.fields.rt.stringValue;
+        fetch(FS + 'pair/' + id, { method: 'DELETE' }).catch(function () {});
+        if (!rt) throw new Error('x');
+        rawSet.call(LS, RT, rt); rawSet.call(LS, ON_KEY, '1'); PAIR = null; user = appUser(rt);
+        return user.load().catch(function () {}).then(function () { first = true; render(); return sync(); });
+      }).catch(function () { setTimeout(poll, 5000); });
+    })();
+  }
+  // Browserseite: Kopplung bestätigen (Link aus der App, #koppeln=<Code>)
+  function pairPage(id) {
+    var o = el('div', 'position:fixed;inset:0;z-index:2147483600;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box');
+    var b = el('div', 'max-width:360px;width:100%;padding:20px;border-radius:14px;background:#14141e;color:#fff;font:15px/1.45 system-ui,sans-serif;text-align:center');
+    var msg = el('div', 'margin:0 0 14px', 'Melde dich mit Google an, um deine Spielstände in der App zu nutzen.');
+    b.appendChild(el('b', 'display:block;font-size:17px;margin-bottom:8px', 'App koppeln')); b.appendChild(msg);
+    var go = el('button', 'display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px 12px;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font:500 14px system-ui,sans-serif;cursor:pointer');
+    go.innerHTML = G + '<span>Mit Google anmelden</span>';
+    var x = el('button', 'margin-top:10px;background:none;border:0;color:#aaa;font:13px system-ui,sans-serif;cursor:pointer', 'Schließen');
+    x.onclick = function () { o.remove(); };
+    go.onclick = function () {
+      go.disabled = true; msg.textContent = 'Einen Moment …';
+      loadSdk().then(function (u) { return u ? { user: u } : fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }).then(function (r) {
+        user = r.user; rawSet.call(LS, ON_KEY, '1');
+        return user.getIdToken().then(function (tok) {
+          return fetch(FS + 'pair/' + id + '?currentDocument.exists=false', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
+            body: JSON.stringify({ fields: { rt: { stringValue: user.refreshToken }, t: { integerValue: String(Date.now()) } } })
+          });
+        });
+      }).then(function (r) {
+        if (!r.ok) throw new Error('Kopplung fehlgeschlagen (' + r.status + ')');
+        go.remove(); msg.textContent = 'Fertig! Du kannst jetzt zur App zurückkehren.';
+        try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+      }).catch(function (e) { go.disabled = false; msg.textContent = e.code === 'auth/popup-closed-by-user' ? 'Anmeldung abgebrochen.' : (e.message || 'Anmeldung fehlgeschlagen'); });
+    };
+    b.appendChild(go); b.appendChild(x); o.appendChild(b); document.body.appendChild(o);
+  }
   function loadSdk() {
+    if (APP) {
+      var r0 = ''; try { r0 = LS.getItem(RT) || ''; } catch (e) {}
+      if (!user && r0) { user = appUser(r0); user.load().then(render, render); }
+      return Promise.resolve(user);
+    }
     return sdkP || (sdkP = Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js')]).then(function (m) {
       fb = m[1];
       auth = fb.getAuth(m[0].initializeApp({ apiKey: CONFIG.apiKey, authDomain: CONFIG.authDomain || CONFIG.projectId + '.firebaseapp.com', projectId: CONFIG.projectId }));
@@ -96,12 +185,14 @@
     }));
   }
   function signIn() {
+    if (APP) return startPair();
     return loadSdk().then(function () { return fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }).then(function (r) {
       user = r.user; rawSet.call(LS, ON_KEY, '1'); first = true; return sync();
     }).catch(function (e) { lastErr = e.code === 'auth/popup-closed-by-user' ? '' : (e.message || 'Anmeldung fehlgeschlagen'); render(); });
   }
   function signOut() {
     rawRemove.call(LS, ON_KEY);
+    if (APP) { rawRemove.call(LS, RT); PAIR = null; user = null; render(); return Promise.resolve(); }
     return (auth ? fb.signOut(auth) : Promise.resolve()).then(function () { user = null; render(); });
   }
 
@@ -271,6 +362,14 @@
       row('Jetzt in Google speichern', function () { first = false; sync(); }, G);
       row('Spielstand mit Google wiederherstellen', restore, G);
       row('Abmelden', signOut);
+    } else if (PAIR) {
+      var lk = PORTAL + '#koppeln=' + PAIR.id;
+      panel.appendChild(el('b', '', 'App mit Google koppeln'));
+      panel.appendChild(el('div', 'margin:6px 0 0;opacity:.85', 'Öffne diesen Link im Browser (auch auf einem anderen Gerät), melde dich mit Google an und komm hierher zurück. Das Fenster erkennt die Kopplung automatisch.'));
+      var a = el('a', 'display:block;margin:8px 0 0;padding:9px 12px;border-radius:8px;background:#4285F4;color:#fff;text-align:center;text-decoration:none;font:500 14px system-ui,sans-serif', 'Link im Browser öffnen');
+      a.href = lk; a.target = '_blank'; a.rel = 'noopener'; panel.appendChild(a);
+      row('Link kopieren', function () { try { navigator.clipboard.writeText(lk); } catch (e) {} });
+      row('Abbrechen', function () { PAIR = null; render(); });
     } else {
       panel.appendChild(el('b', '', 'Spielstand sichern'));
       panel.appendChild(el('div', 'margin:6px 0 0;opacity:.8', lastErr ? '⚠ ' + lastErr : (s.dataset.hint || 'Speichere deinen Fortschritt mit Google und spiele auf jedem Gerät weiter.')));
@@ -297,7 +396,11 @@
     btn.onclick = function () { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
     document.body.appendChild(panel); document.body.appendChild(btn); render();
   }
-  function boot() { ui(); enhance(); }
+  function boot() {
+    ui(); enhance();
+    var pm = !APP && /[#&]koppeln=([0-9a-f]{32})\b/.exec(location.hash);
+    if (pm) pairPage(pm[1]);
+  }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   if (wanted()) sync();
   window.AnMaChaCloud = { sync: sync };

@@ -10,5 +10,15 @@ service cloud.firestore {
         && request.resource.data.d.size() < 950000;
       allow delete: if false;
     }
+    // Kopplung der Apps (Android/Windows): Die Browserseite legt nach der Google-Anmeldung einen Eintrag unter einem
+    // 128-Bit-Zufallscode an, die App liest ihn genau einmal (Code kennt nur die App) und löscht ihn wieder. Kein Auflisten.
+    match /pair/{code} {
+      allow get, delete: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['rt', 't'])
+        && request.resource.data.rt is string
+        && request.resource.data.rt.size() < 2000;
+      allow list, update: if false;
+    }
   }
 }
