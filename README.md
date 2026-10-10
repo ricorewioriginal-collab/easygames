@@ -12,6 +12,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
 | AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
 | AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
+| Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -145,6 +146,15 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Karten & Schwierigkeit:** Funkhafen, Frequenz-Spirale, Zickzack-Studio; Leicht / Normal / Schwer. Welle früh starten bringt Bonus-Geld.
 - **Steuerung:** Turm unten wählen, Feld klicken (am Handy: erstes Tippen = Vorschau, zweites = bauen), Turm antippen = Ausbau/Ziel/Verkauf. Tasten: `1–8` Turm, `Leertaste` Welle, `U` Ausbau, `S` Verkauf, `F` Tempo ×2, `P` Pause, `M` Ton, `Esc` abwählen. Im Hochformat wird das Spielfeld automatisch gedreht.
 - **Logos:** `anmacha-tower-defense/logos/01..13` (`.png|.jpg|.jpeg`), `anmacha-tower-defense/logo.png` ersetzt den Titel. Bestenliste (Top 10) lokal im Browser.
+
+## Machst du mich an? – Das Quiz!
+
+- **Modi:** *Leiter* – 15 Fragen von leicht bis schwer, Gewinnleiter von 50 € bis 1.000.000 € mit Sicherheitsstufen (500 € / 16.000 €), „Ist das Ihre endgültige Antwort?“ und Aussteigen. *Quiznight* – Kategorie wählen (10 Kategorien), je 10 Fragen mit Zeitlimit und Zeitbonus; Länge der Show 1 / 3 / 5 / 10 Kategorien.
+- **Joker (Leiter):** 50:50, Publikum, Telefon, Fragentausch.
+- **Spielformen:** Solo, Reihum (2–4 Spieler an einem Gerät), Duell 1 gegen 1, Teams (Rot gegen Blau mit mehreren Mitspielern pro Team).
+- **Handys koppeln:** „📱 Handys koppeln“ zeigt Code + QR-Code, Mitspieler öffnen den Link, geben Namen und Sender-Logo ein und antworten am eigenen Handy (PeerJS, bis 4 Spieler, Host-Gerät bleibt der Fernseher). Optional `?ph=host:port` für einen eigenen PeerServer.
+- **Studio:** 3D-TV-Studio mit LED-Wand, Scheinwerfern, Publikum, Werbeträgern mit allen Sender-Logos (`anmacha-quiz/logos/01..13`) und Avataren mit Sender-Logo auf dem Shirt; Sounds, Musik und Applaus werden im Browser erzeugt, optional Moderator-Stimme (Sprachausgabe des Browsers).
+- **Fragen:** `anmacha-quiz/questions.js` – ca. 600 Fragen in 10 Kategorien (Musik, TV & Film, Social Media, Wissen & Technik, Sport, Politik, Geschichte, Geografie, Natur & Tiere, Essen & Genuss), je Kategorie 5 Schwierigkeitsstufen; neue Fragen einfach eintragen. Eigenes Titel-Logo: `anmacha-quiz/logo.png`.
 
 ## AnMaCha Quest RPG: Das Große Rauschen (Godot 4, Web-Export)
 
