@@ -76,6 +76,20 @@ export default [
  },
  {
   "name": "Hasenpfad",
+  "hint": "Denk daran, welche Kiste zuerst weg muss.",
+  "map": [
+  "#####     ",
+  "#.  ###   ",
+  "#. $  ####",
+  "## @$ #  #",
+  " ###   . #",
+  "   ##$ ###",
+  "    #  #  ",
+  "    ####  "
+  ]
+ },
+ {
+  "name": "Blumenbeet",
   "hint": "",
   "map": [
   "  ########  ",
@@ -89,7 +103,21 @@ export default [
   ]
  },
  {
-  "name": "Blumenbeet",
+  "name": "Eichhörnchen",
+  "hint": "Nicht jede Kiste darf überall landen – Ecken sind Sackgassen!",
+  "map": [
+  "##########",
+  "#..      #",
+  "#$## $## #",
+  "# .#  #  #",
+  "##  @##  #",
+  " # $##   #",
+  " ##     ##",
+  "  ####### "
+  ]
+ },
+ {
+  "name": "Windmühle",
   "hint": "",
   "map": [
   "#######   ",
@@ -100,6 +128,20 @@ export default [
   "   #. .$ #",
   "   #  ##.#",
   "   #######"
+  ]
+ },
+ {
+  "name": "Wiesenhain",
+  "hint": "Räum zuerst den Weg frei.",
+  "map": [
+  "   #######",
+  "   #    .#",
+  " ###  #$$#",
+  "# @# $   #",
+  "# $# .####",
+  "# .   #   ",
+  "#.##  #   ",
+  "#######   "
   ]
  }
 ];

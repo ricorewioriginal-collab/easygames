@@ -216,7 +216,7 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 ## Wobbel – Das Schiebe-Puzzle (RicoReWi)
 
 - **Spiel:** Eigenständiges 3D-Puzzle im Sokoban-Prinzip (ohne AnMaCha-Branding): Wobbel schiebt Kisten auf Zielfelder. Fünf Welten mit neuen Elementen – Wasser (Brücken bauen), Farben und Kleckse, Eis, Schlüssel und Türen.
-- **Level:** handentworfen und von einem Löser (Breitensuche) auf Lösbarkeit geprüft; nur bestätigte Level kommen ins Spiel (aktuell 30, weitere folgen). Sterne nach Zügen im Vergleich zur kürzesten Lösung.
+- **Level:** handentworfen und von einem Löser (Breitensuche) auf Lösbarkeit geprüft; 55 Level in 5 Welten, nur bestätigte Level kommen ins Spiel. Sterne nach Zügen im Vergleich zur kürzesten Lösung.
 - **Steuerung:** Pfeile/WASD, Wischen oder Tippen auf ein Feld (läuft hin), Rückgängig, Neustart, Kamera drehen; Fortschritt wird gespeichert.
 - Ausführliche Doku, Projektstruktur und Tests: [`wobbel/README.md`](wobbel/README.md).
 ## AnMaCha Gold Reels
