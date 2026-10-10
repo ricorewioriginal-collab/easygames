@@ -9,7 +9,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
 | AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
-| AnMaCha Quest RPG – 16-Bit-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
+| AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -134,8 +134,10 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Helden:** Andrew (Held), Marco (Magier), Teresa (Heilerin, ab Bass-Keller-Sieg), Rico (Schütze, ab Glitzerwiese-Sieg), Andy (Wächter, ab Frosthöhlen-Sieg).
 - **Spielablauf:** Funkhafen (Stadt mit Händlerin, Heilbrunnen) → Oberwelt „Frequenzia“ → 4 Reiche (Bass-Keller/Rap, Glitzerwiese/Schlager, Frosthöhle/Weihnachten, Vulkanbühne/Rock) → Rauschen-Turm. Jedes Reich hat Zufallskämpfe, Truhen, einen Schlüssel für das Tor zum Bossraum und einen Boss.
 - **Kampf:** rundenbasiert in Ich-Ansicht; Angriff, Fertigkeit (SP), **Spezial (IP-Leiste füllt sich, wenn Helden Schaden nehmen)**, Item, Wache, Flucht. Ausrüstung beim Händler, Stufenaufstieg, Speichern (Brunnen/Menü).
+- **Anleitung & Wegweiser:** [`ANLEITUNG.md`](anmacha-quest-rpg/ANLEITUNG.md) bzw. im Browser `anmacha-quest-rpg/anleitung.html` (Steuerung, Kampf, Helden, Ablauf, Wegweiser pro Reich, Boss-Tipps, Handlungen).
+- **Ansicht:** komplett in 3D mit echten Low-Poly-Modellen (CC0): animierte Helden/Monster, Häuser, Bäume, Berge; Kampf als 3D-Szene mit Kreuzmenü. Touch-Steuerkreuz als gleitender Stick.
 - **Steuerung:** Pfeiltasten/WASD, `Leertaste`/`Enter` bestätigen, `Esc`/`M` Menü, am Handy Touch-Steuerkreuz und Tippen.
 - **Quellcode:** `anmacha-quest-rpg/godot/` ist ein normales Godot-4.3-Projekt (`main.gd` Spiel, `gfx.gd` Pixel-Grafik, `data.gd` Karten/Gegner/Werte). Neu exportieren: `godot --headless --path anmacha-quest-rpg/godot --export-release Web ../index.html` (Vorlage „Web“, ohne Threads, Renderer Compatibility). Selbsttest (Karten + Balance): `godot --headless --path anmacha-quest-rpg/godot -- --autotest`.
-- **Monster:** 30 Gegner in Farbvarianten (je 6 pro Reich, passend zu Rap, Schlager, Weihnachten, Rock und Rausch-Turm) plus 5 große Bosse. Gegner laufen **sichtbar auf der Karte** herum, jagen dich bei Nähe und lösen bei Berührung den Kampf aus (zusätzlich seltene Zufallskämpfe). Flüchten ist möglich, besiegte Gegner verschwinden bis zum nächsten Betreten.
-- Credits: Monster-Sprites aus „Tiny Dungeon“ von Kenney (CC0, kenney.nl), Schrift Pixelify Sans (SIL Open Font License).
+- **Monster:** 30 animierte 3D-Gegner (je 6 pro Reich, passend zu Rap, Schlager, Weihnachten, Rock und Rausch-Turm) plus 5 große Bosse. Gegner laufen **sichtbar auf der Karte** herum, jagen dich bei Nähe und lösen bei Berührung den Kampf aus (zusätzlich seltene Zufallskämpfe). Flüchten ist möglich, besiegte Gegner verschwinden bis zum nächsten Betreten.
+- Credits (alle CC0): 3D-Modelle von Quaternius (RPG Characters, Cute Animated Monsters, Animated Monster Pack, Ultimate Textured Building Pack) und Kenney (Fantasy Town Kit, Mini Dungeon, Mini Forest, Graveyard Kit, Tiny Dungeon); Schrift Pixelify Sans (SIL OFL). Details: `anmacha-quest-rpg/godot/assets/LIZENZEN.md`.
 

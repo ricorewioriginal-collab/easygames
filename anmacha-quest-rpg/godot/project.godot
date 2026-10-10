@@ -2,7 +2,10 @@ config_version=5
 
 [application]
 config/name="AnMaCha Quest RPG"
+config/icon="res://icon.png"
 run/main_scene="res://main.tscn"
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0.02, 0.02, 0.06, 1)
 config/features=PackedStringArray("4.3", "GL Compatibility")
 
 [display]

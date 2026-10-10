@@ -60,6 +60,9 @@ var dpad := Vector2i.ZERO
 var anim := 0.0
 var busy := false
 var redraw_t := 0.0
+var dir_stack: Array = []
+var joy_idx := -1
+const STEP_T := 0.13
 var stepflip := 0
 var roamers: Array = []
 
@@ -98,6 +101,7 @@ var menu_box: VBoxContainer
 var msg_panel: PanelContainer
 var msg_label: Label
 var touch_box: Control
+var pad_btns := {}
 var fade: ColorRect
 signal advanced
 signal picked(i)
@@ -106,10 +110,16 @@ var cancelable := false
 var talking := false
 var title_has_save := false
 var autoplay := false
+var logo_tex: Texture2D
+var view3d := true
+var v3: View3D
+var v3_active := false
+var uid_n := 0
 var auto_n := 0
 
 # ------------------------------------------------------------------ Start
 func _ready() -> void:
+	logo_tex = load("res://logo.png") as Texture2D
 	font = load("res://font.ttf") as Font
 	if font == null:
 		font = ThemeDB.fallback_font
@@ -117,6 +127,10 @@ func _ready() -> void:
 	_actions()
 	make_art()
 	_build_ui()
+	load_settings()
+	v3 = View3D.new(self)
+	add_child(v3)
+	get_viewport().disable_3d = true
 	if "--autotest" in OS.get_cmdline_user_args():
 		_autotest()
 		return
@@ -358,9 +372,8 @@ func _build_ui() -> void:
 		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
 		b.add_theme_stylebox_override("normal", sbt())
 		b.modulate = Color(1, 1, 1, 0.5)
-		var d: Vector2i = pad[k][1]
-		b.button_down.connect(func() -> void: dpad = d)
-		b.button_up.connect(func() -> void: dpad = Vector2i.ZERO)
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pad_btns[pad[k][1]] = b
 		touch_box.add_child(b)
 	var mb := Button.new()
 	mb.text = "MENÜ"
@@ -402,7 +415,44 @@ func place_menu() -> void:
 		menu_panel.offset_bottom = -8
 	menu_panel.size = Vector2(menu_panel.offset_right - menu_panel.offset_left, 10)
 
+func debug_on() -> bool:
+	if not OS.has_feature("web"):
+		return false
+	return bool(JavaScriptBridge.eval("new URLSearchParams(location.search).has('debug')"))
+
+func joy_update(pos: Vector2) -> void:
+	var v := pos - Vector2(52, 212)
+	var d := Vector2i.ZERO
+	if v.length() >= 8.0:
+		d = Vector2i(int(signf(v.x)), 0) if absf(v.x) > absf(v.y) else Vector2i(0, int(signf(v.y)))
+	dpad = d
+	for k in pad_btns:
+		(pad_btns[k] as Button).modulate = Color(1, 1, 0.5, 0.95) if k == d else Color(1, 1, 1, 0.5)
+
+func joy_release() -> void:
+	joy_idx = -1
+	dpad = Vector2i.ZERO
+	for k in pad_btns:
+		(pad_btns[k] as Button).modulate = Color(1, 1, 1, 0.5)
+
 func _input(e: InputEvent) -> void:
+	# Touch-Steuerkreuz: Finger darf zwischen den Richtungen gleiten, Loslassen stoppt immer
+	if e is InputEventScreenTouch:
+		if e.pressed:
+			if touch_box.visible and joy_idx < 0 and Rect2(0, 140, 135, 130).has_point(e.position):
+				joy_idx = e.index
+				joy_update(e.position)
+		elif e.index == joy_idx:
+			joy_release()
+	elif e is InputEventScreenDrag and e.index == joy_idx:
+		joy_update(e.position)
+	for a in ["up", "down", "left", "right"]:
+		var dv: Vector2i = {"up": Vector2i(0, -1), "down": Vector2i(0, 1), "left": Vector2i(-1, 0), "right": Vector2i(1, 0)}[a]
+		if e.is_action_pressed(a) and not e.is_echo():
+			dir_stack.erase(dv)
+			dir_stack.append(dv)
+		elif e.is_action_released(a):
+			dir_stack.erase(dv)
 	if talking and (e.is_action_pressed("ok") or e.is_action_pressed("cancel")):
 		advanced.emit()
 		get_viewport().set_input_as_handled()
@@ -411,6 +461,13 @@ func _input(e: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif mode == M.WORLD and not busy and not choosing and e.is_action_pressed("menu"):
 		open_menu()
+	elif mode == M.WORLD and not busy and not choosing and e is InputEventKey and e.pressed and (e.keycode == KEY_F9 or e.keycode == KEY_F8) and debug_on():
+		if e.keycode == KEY_F9:
+			start_encounter()   # Debug (nur mit ?debug in der URL): Kampf auslösen
+		else:
+			var ids := ["hub", "welt", "rap", "schlager", "xmas", "rock", "tower"]
+			var nx: String = ids[(ids.find(map_id) + 1) % ids.size()]
+			load_map(nx, Vector2i(12, 12) if nx == "hub" else (Vector2i(20, 22) if nx == "welt" else Vector2i(2, 14)))
 
 # ------------------------------------------------------------------ UI-Helfer
 func say(lines: Array) -> void:
@@ -544,14 +601,33 @@ func avg_lv() -> float:
 		s += h["lv"]
 	return s / max(1, party.size())
 
+func next_uid() -> int:
+	uid_n += 1
+	return uid_n
+
+func load_settings() -> void:
+	var f := FileAccess.open("user://anmacha_quest2.cfg", FileAccess.READ)
+	if f:
+		var d = f.get_var()
+		f.close()
+		if typeof(d) == TYPE_DICTIONARY:
+			view3d = d.get("view3d", true)
+
+func save_settings() -> void:
+	var f := FileAccess.open("user://anmacha_quest2.cfg", FileAccess.WRITE)
+	if f:
+		f.store_var({"view3d": view3d})
+		f.close()
+
 func make_enemy(id: String) -> Dictionary:
 	var d: Dictionary = Dat.ENEMIES[id]
 	var lv: int = d["lv"]
 	var psize := 0.62 + 0.13 * party.size()
-	var hp := int((18.0 + 14.0 * lv) * 1.4 * d["hpm"] * psize)
+	var ease_f := clampf(0.5 + 0.1 * avg_lv(), 0.6, 1.0)   # sanfter Einstieg: Gegner sind bei niedrigen Stufen schwächer
+	var hp := int((18.0 + 14.0 * lv) * 1.4 * d["hpm"] * psize * ease_f)
 	var boss: bool = d.get("boss", false)
-	return {"id": id, "name": d["name"], "lv": lv, "hp": hp, "mhp": hp, "atk": (6.0 + 2.6 * lv) * d["atkm"], "def": (2.0 + 1.5 * lv) * d["defm"],
-		"spd": 5.0 + 0.5 * lv, "size": d["size"], "boss": boss, "spec": d.get("spec", []),
+	return {"id": id, "name": d["name"], "lv": lv, "hp": hp, "mhp": hp, "atk": (6.0 + 2.6 * lv) * d["atkm"] * ease_f, "def": (2.0 + 1.5 * lv) * d["defm"],
+		"spd": 5.0 + 0.5 * lv, "size": d.get("size", 16), "boss": boss, "spec": d.get("spec", []),
 		"exp": int((4 + 3 * lv) * (5 if boss else 1) * (1.0 + (d["hpm"] - 1.0) * 0.3)), "gold": int((3 + 2 * lv) * (6 if boss else 1)), "flash": 0.0, "x": 0.0, "y": 0.0, "turn": 0}
 
 func dmg_phys(atk: float, def: float, mult := 1.0) -> int:
@@ -589,8 +665,8 @@ func show_title() -> void:
 
 func new_game() -> void:
 	party = [new_hero("andrew"), new_hero("marco")]
-	inv = {"trank": 3, "aether": 1, "weck": 0}
-	gold = 50
+	inv = {"trank": 5, "aether": 2, "weck": 0}
+	gold = 100
 	gear = 0
 	flags = {}
 	play_time = 0.0
@@ -644,15 +720,15 @@ func load_map(id: String, at: Vector2i) -> void:
 	mw = map["rows"][0].length()
 	objs = []
 	for n in map["npcs"]:
-		objs.append({"t": "npc", "x": n["x"], "y": n["y"], "d": n})
+		objs.append({"t": "npc", "x": n["x"], "y": n["y"], "d": n, "uid": next_uid()})
 	for c in map["chests"]:
 		if not flags.get(c["id"], false):
-			objs.append({"t": "chest", "x": c["x"], "y": c["y"], "d": c})
+			objs.append({"t": "chest", "x": c["x"], "y": c["y"], "d": c, "uid": next_uid()})
 	var b: Dictionary = map["boss"]
 	if not b.is_empty() and not flags.get(b["flag"], false):
-		objs.append({"t": "boss", "x": b["x"], "y": b["y"], "d": b})
+		objs.append({"t": "boss", "x": b["x"], "y": b["y"], "d": b, "uid": next_uid()})
 	if map.has("gate") and not flags.get(map["gate"]["flag"], false):
-		objs.append({"t": "gate", "x": map["gate"]["x"], "y": map["gate"]["y"], "d": map["gate"]})
+		objs.append({"t": "gate", "x": map["gate"]["x"], "y": map["gate"]["y"], "d": map["gate"], "uid": next_uid()})
 	reg = []
 	if map.get("world", false):
 		for y in mh:
@@ -711,7 +787,7 @@ func spawn_roamers() -> void:
 	for i in mini(count, cells.size()):
 		var c: Vector2i = cells[i]
 		var p := Vector2(c) * TS
-		roamers.append({"id": pool[rng.randi() % pool.size()], "g": c, "pos": p, "from": p, "to": p, "t": 1.0, "wait": rng.randf() * 0.8, "stun": 0.0})
+		roamers.append({"uid": next_uid(), "id": pool[rng.randi() % pool.size()], "g": c, "pos": p, "from": p, "to": p, "t": 1.0, "wait": rng.randf() * 0.8, "stun": 0.0})
 
 func roamer_free(n: Vector2i, me: Dictionary) -> bool:
 	if blocked(n) or not obj_at(n).is_empty() or is_portal(n):
@@ -774,7 +850,12 @@ func start_roamer_fight(r: Dictionary) -> void:
 		pool = STAGE_POOL[stage()]
 		bg = reg[gp.y][gp.x]
 	var ids: Array = [r["id"]]
-	for i in int(rng.randf() < 0.5) + int(rng.randf() < 0.2):
+	var extra := int(rng.randf() < 0.5) + int(rng.randf() < 0.2)
+	if avg_lv() < 3.0:
+		extra = 0
+	elif avg_lv() < 5.0:
+		extra = mini(extra, 1)
+	for i in extra:
 		ids.append(pool[rng.randi() % pool.size()])
 	await bmsg("Ein Monster stellt sich euch in den Weg!", 0.6)
 	var res: String = await run_battle(ids, bg)
@@ -805,15 +886,10 @@ func obj_at(t: Vector2i) -> Dictionary:
 func read_dir() -> Vector2i:
 	if dpad != Vector2i.ZERO:
 		return dpad
-	if Input.is_action_pressed("up"):
-		return Vector2i(0, -1)
-	if Input.is_action_pressed("down"):
-		return Vector2i(0, 1)
-	if Input.is_action_pressed("left"):
-		return Vector2i(-1, 0)
-	if Input.is_action_pressed("right"):
-		return Vector2i(1, 0)
-	return Vector2i.ZERO
+	var names := {Vector2i(0, -1): "up", Vector2i(0, 1): "down", Vector2i(-1, 0): "left", Vector2i(1, 0): "right"}
+	while not dir_stack.is_empty() and not Input.is_action_pressed(names[dir_stack[-1]]):
+		dir_stack.pop_back()
+	return dir_stack[-1] if not dir_stack.is_empty() else Vector2i.ZERO
 
 func try_step(d: Vector2i) -> void:
 	face = d
@@ -1133,7 +1209,13 @@ func start_encounter() -> void:
 	if map.get("world", false):
 		pool = STAGE_POOL[stage()]
 		bg = reg[gp.y][gp.x]
+	if pool.is_empty():
+		busy = false
+		touch_box.visible = true
+		return
 	var n := 1 + int(rng.randf() < 0.7) + int(rng.randf() < 0.3)
+	if avg_lv() < 3.0:
+		n = mini(n, 2)
 	var ids: Array = []
 	for i in n:
 		ids.append(pool[rng.randi() % pool.size()])
@@ -1158,6 +1240,8 @@ func run_battle(ids: Array, bg: String) -> String:
 		enemies.append(e)
 	for h in party:
 		h["ip"] = 0
+		h["down"] = h["hp"] <= 0
+	v3.battle_begin(bg, enemies, party)
 	touch_box.visible = false
 	await do_fade(0.0, 0.1)
 	var boss: bool = enemies[0]["boss"]
@@ -1210,6 +1294,7 @@ func run_battle(ids: Array, bg: String) -> String:
 		await bmsg("Das Team ist besiegt ...", 1.2)
 	msg_panel.visible = false
 	await do_fade(1.0, 0.18)
+	v3.battle_end()
 	mode = M.WORLD
 	enemies = []
 	await do_fade(0.0, 0.18)
@@ -1303,16 +1388,22 @@ func hero_ui_pos(i: int) -> Vector2:
 func add_float(pos: Vector2, text: String, col: Color) -> void:
 	floats.append({"p": pos, "t": text, "c": col, "a": 0.0})
 
+func enemy_pos(e: Dictionary, lift: float) -> Vector2:
+	return v3.battle_screen_pos("enemy", enemies.find(e), lift)
+
 func hit_enemy(e: Dictionary, dmg: int, fx := "slash") -> void:
 	e["hp"] = max(0, e["hp"] - dmg)
 	e["flash"] = 0.25
-	add_float(Vector2(e["x"], e["y"] - e["size"] * 2.0), str(dmg), Color(1, 1, 1))
-	slashes.append({"p": Vector2(e["x"], e["y"] - e["size"]), "a": 0.0, "k": fx})
+	var idx := enemies.find(e)
+	v3.battle_enemy(idx, "hurt")
+	add_float(enemy_pos(e, float(Dat.ENEMIES[e["id"]]["h"]) * 1.3), str(dmg), Color(1, 1, 1))
+	slashes.append({"p": enemy_pos(e, float(Dat.ENEMIES[e["id"]]["h"]) * 0.6), "a": 0.0, "k": fx})
 
 func hurt_hero(h: Dictionary, dmg: int, heavy := false) -> void:
 	h["hp"] = max(0, h["hp"] - dmg)
 	h["ip"] = min(100, h["ip"] + (22 if heavy else 12))
 	add_float(hero_ui_pos(party.find(h)) + Vector2(0, -6), str(dmg), Color(1, 0.45, 0.45))
+	v3.battle_hero(party.find(h), "hurt")
 	shake = 0.22
 
 func hero_act(c: Dictionary, guard: Array) -> void:
@@ -1320,6 +1411,7 @@ func hero_act(c: Dictionary, guard: Array) -> void:
 	match c["type"]:
 		"guard":
 			guard.append(h)
+			v3.battle_hero(party.find(h), "guard")
 			await bmsg("%s geht in Deckung." % h["name"], 0.45)
 		"atk":
 			var t: Dictionary = c["t"]
@@ -1329,8 +1421,10 @@ func hero_act(c: Dictionary, guard: Array) -> void:
 					return
 				t = al[0]
 			await bmsg("%s greift %s an!" % [h["name"], t["name"]], 0.35)
+			v3.battle_hero(party.find(h), "attack")
+			await wait(0.28)
 			hit_enemy(t, dmg_phys(stat(h, "atk"), t["def"]))
-			await wait(0.4)
+			await wait(0.5)
 		"item":
 			var t: Dictionary = c["t"]
 			if inv.get(c["i"], 0) > 0 and apply_item(c["i"], t):
@@ -1351,7 +1445,9 @@ func hero_act(c: Dictionary, guard: Array) -> void:
 					await bmsg("Zu wenig SP!", 0.5)
 					return
 				h["sp"] -= d["sp"]
-			await bmsg("%s: %s!" % [h["name"], d["name"]], 0.65)
+			await bmsg("%s: %s!" % [h["name"], d["name"]], 0.5)
+			v3.battle_hero(party.find(h), "attack" if d["kind"] == "phys" else "cast")
+			await wait(0.3)
 			if d["kind"] == "heal":
 				var tg: Array = alive_heroes() if d["all"] else [c["t"]]
 				if is_ip:
@@ -1386,7 +1482,8 @@ func hero_act(c: Dictionary, guard: Array) -> void:
 	for e in enemies:
 		if e["hp"] <= 0 and not e.get("dead", false):
 			e["dead"] = true
-			await bmsg("%s wird zu Rauschen!" % e["name"], 0.45)
+			v3.battle_enemy_down(enemies.find(e))
+			await bmsg("%s wird zu Rauschen!" % e["name"], 0.6)
 
 func enemy_act(e: Dictionary, guard: Array) -> void:
 	var al := alive_heroes()
@@ -1395,6 +1492,7 @@ func enemy_act(e: Dictionary, guard: Array) -> void:
 	e["turn"] += 1
 	var spec: Array = e["spec"]
 	var use_spec: bool = not spec.is_empty() and (e["turn"] % 3 == 0)
+	v3.battle_enemy(enemies.find(e), "attack")
 	if use_spec:
 		await bmsg("%s: %s!" % [e["name"], spec[0]], 0.7)
 		for h in al:
@@ -1415,9 +1513,11 @@ func enemy_act(e: Dictionary, guard: Array) -> void:
 	for h in party:
 		if h["hp"] <= 0 and not h.get("down", false):
 			h["down"] = true
+			v3.battle_hero(party.find(h), "death")
 			await bmsg("%s geht zu Boden!" % h["name"], 0.5)
-		elif h["hp"] > 0:
+		elif h["hp"] > 0 and h.get("down", false):
 			h["down"] = false
+			v3.battle_hero(party.find(h), "idle")
 
 func victory() -> void:
 	var xp := 0
@@ -1451,14 +1551,24 @@ func _process(delta: float) -> void:
 	anim += delta
 	if mode == M.WORLD:
 		play_time += delta
+		if not touch_box.visible and (dpad != Vector2i.ZERO or joy_idx >= 0):
+			joy_release()
 		if moving:
-			mt += delta / 0.13
-			if mt >= 1.0:
+			mt += delta / STEP_T
+			while moving and mt >= 1.0:
+				var over := mt - 1.0
 				moving = false
 				ppos = mto
 				gp = gtarget
 				on_step()
-			else:
+				if busy or choosing or talking:
+					break
+				var nd := read_dir()
+				if nd != Vector2i.ZERO:
+					try_step(nd)
+					if moving:
+						mt = over
+			if moving:
 				ppos = mfrom.lerp(mto, mt)
 		elif not busy and not choosing and not talking:
 			var d := read_dir()
@@ -1474,6 +1584,15 @@ func _process(delta: float) -> void:
 			cam.x = -(VW - pw) / 2.0
 		if ph < VH:
 			cam.y = -(VH - ph) / 2.0
+		cam = cam.round()
+	var vm := 0 if mode == M.TITLE else (1 if mode == M.WORLD else 2)
+	v3_active = vm != 0
+	v3.set_mode(vm)
+	get_viewport().disable_3d = vm == 0
+	if mode == M.WORLD:
+		v3.update_world(delta)
+	elif mode == M.BATTLE:
+		v3.update_battle(delta)
 	for f in floats:
 		f["a"] += delta
 	floats = floats.filter(func(f: Dictionary) -> bool: return f["a"] < 0.9)
@@ -1519,9 +1638,11 @@ func draw_title() -> void:
 	draw_line(Vector2(380, 110), Vector2(392, 178), Color("#2a1a4a"), 2.0)
 	for k in 3:
 		draw_arc(Vector2(380, 108), 8.0 + k * 8.0 + fmod(anim * 10.0, 8.0), -PI * 0.8, -PI * 0.2, 10, Color(0.5, 0.9, 1.0, 0.7 - k * 0.2), 1.5)
-	txt(Vector2(0, 92), "ANMACHA", 54, Color(1, 0.78, 0.25), HORIZONTAL_ALIGNMENT_CENTER, VW)
-	txt(Vector2(0, 130), "QUEST RPG", 30, Color(0.5, 0.88, 1.0), HORIZONTAL_ALIGNMENT_CENTER, VW)
-	txt(Vector2(0, 154), "Das Große Rauschen", 15, Color(1, 0.55, 0.8), HORIZONTAL_ALIGNMENT_CENTER, VW)
+	if logo_tex:
+		draw_texture_rect(logo_tex, Rect2((VW - 360.0) / 2.0, 14, 360, 360.0 * 460.0 / 1000.0), false)
+	else:
+		txt(Vector2(0, 92), "ANMACHA", 54, Color(1, 0.78, 0.25), HORIZONTAL_ALIGNMENT_CENTER, VW)
+		txt(Vector2(0, 130), "QUEST RPG", 30, Color(0.5, 0.88, 1.0), HORIZONTAL_ALIGNMENT_CENTER, VW)
 
 func theme_key_at(tx: int, ty: int) -> String:
 	if map.get("world", false):
@@ -1529,6 +1650,11 @@ func theme_key_at(tx: int, ty: int) -> String:
 	return map["theme"]
 
 func draw_world() -> void:
+	if v3_active:
+		draw_rect(Rect2(4, 4, 168, 18), Color(0.04, 0.06, 0.2, 0.85))
+		draw_rect(Rect2(4, 4, 168, 18), Color(0.7, 0.8, 1.0), false, 1.0)
+		txt(Vector2(9, 17), "%s   %d M" % [map["name"], gold], 11, Color(1, 0.92, 0.55))
+		return
 	draw_rect(Rect2(0, 0, VW, VH), Color(0.02, 0.03, 0.06))
 	draw_set_transform(-cam, 0.0, Vector2.ONE)
 	var x0 := int(floor(cam.x / TS))
@@ -1573,13 +1699,13 @@ func draw_world() -> void:
 				draw_circle(pos + Vector2(8, 8), 14 + sin(anim * 4.0) * 1.5, Color(1, 0.2, 0.2, 0.25))
 				draw_texture_rect(mon_tex(o["d"]["id"]), Rect2(pos + Vector2(-8, -10), Vector2(32, 32)), false)
 	for r in roamers:
-		var rp: Vector2 = r["pos"]
+		var rp: Vector2 = (r["pos"] as Vector2).round()
 		var rb := sin(anim * 5.0 + rp.x * 0.1) * 1.0
 		draw_circle(rp + Vector2(8, 14), 6, Color(0, 0, 0, 0.3))
 		draw_texture_rect(mon_tex(r["id"]), Rect2(rp + Vector2(0, -2 + rb), Vector2(16, 16)), false, Color(1, 1, 1, 0.55 if r["stun"] > 0.0 else 1.0))
 	var lead: Dictionary = party[0] if not party.is_empty() else {"id": "andrew"}
 	var bob := absf(sin(mt * PI)) * 1.0 if moving else 0.0
-	draw_hero(str(lead["id"]), ppos + Vector2(0, -bob), face, stepflip if moving else 0)
+	draw_hero(str(lead["id"]), (ppos + Vector2(0, -bob)).round(), face, stepflip if moving else 0)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	draw_rect(Rect2(4, 4, 168, 18), Color(0.04, 0.06, 0.2, 0.85))
 	draw_rect(Rect2(4, 4, 168, 18), Color(0.7, 0.8, 1.0), false, 1.0)
@@ -1656,56 +1782,15 @@ func draw_battle() -> void:
 	if shake > 0:
 		off = Vector2(rng.randf_range(-3, 3), rng.randf_range(-2, 2))
 	draw_set_transform(off, 0.0, Vector2.ONE)
-	var ts: Dictionary = get_tset(bg_theme)
-	var th: Array = OW[bg_theme] if bg_theme.begins_with("ow_") else Dat.THEMES[bg_theme]
-	var out := battle_outdoor()
-	var hz := 104.0
-	if out:
-		for i in 11:
-			draw_rect(Rect2(-6, i * 10.0, VW + 12, 11), Color("#4a98e0").lerp(Color("#c8ecff"), i / 10.0))
-		var r3 := RandomNumberGenerator.new()
-		r3.seed = 11
-		for k in 5:
-			var cx := r3.randf() * VW
-			var cy := 14.0 + r3.randf() * 40.0
-			for q in 4:
-				draw_circle(Vector2(cx + q * 14.0 + fmod(anim * 2.0, 40.0), cy + (q % 2) * 3.0), 9.0 - q, Color(1, 1, 1, 0.85))
-		var mp := PackedVector2Array([Vector2(-6, hz)])
-		for i in 9:
-			mp.append(Vector2(i * 60.0 + 20.0, hz - 14 - r3.randf_range(4, 34)))
-			mp.append(Vector2(i * 60.0 + 50.0, hz - 6))
-		mp.append(Vector2(VW + 6, hz))
-		draw_colored_polygon(mp, Color("#b08c98"))
-		for i in 14:
-			var tx2 := i * 36.0 + 6.0
-			draw_circle(Vector2(tx2, hz - 4), 15, Color("#1e5a2a"))
-			draw_circle(Vector2(tx2 - 4, hz - 8), 8, Color("#2e7a3a"))
-	else:
-		for i in 11:
-			draw_rect(Rect2(-6, i * 11.0, VW + 12, 12), Color("#1a1c22").lerp(Color("#3a3a44"), i / 10.0))
-		var r3 := RandomNumberGenerator.new()
-		r3.seed = hash(bg_theme)
-		for i in 40:
-			var w := r3.randf_range(8, 18)
-			draw_rect(Rect2(i * 13.0 - 6, r3.randf_range(0, 20), w, 130), Color(0, 0, 0, r3.randf_range(0.1, 0.3)))
-		draw_rect(Rect2(-6, hz + 6, VW + 12, 4), Color(0, 0, 0, 0.35))
-	draw_set_transform(off, 0.0, Vector2(2, 2))
-	draw_texture_rect(ts["f0"], Rect2(-3, hz / 2.0, VW / 2.0 + 6, 84), true)
-	draw_set_transform(off, 0.0, Vector2.ONE)
-	draw_rect(Rect2(-6, hz, VW + 12, 170), Color(0, 0, 0, 0.12))
-	for e in enemies:
+	for i in enemies.size():
+		var e: Dictionary = enemies[i]
 		if e["hp"] <= 0:
 			continue
-		var tx := mon_tex(e["id"])
-		var sc := 4.0 if e["boss"] else 5.0
-		var sz := Vector2(tx.get_width(), tx.get_height()) * sc
-		var bobv := sin(anim * 2.2 + e["x"] * 0.03) * 3.0
-		var p := Vector2(e["x"], e["y"]) - Vector2(sz.x / 2.0, sz.y - 6.0) + Vector2(0, bobv)
-		draw_circle(Vector2(e["x"], e["y"] + 4), sz.x * 0.38, Color(0, 0, 0, 0.3))
-		draw_texture_rect(tx, Rect2(p, sz), false, Color(3, 3, 3) if e["flash"] > 0 else Color.WHITE)
-		var w := 46.0
-		draw_rect(Rect2(e["x"] - w / 2, e["y"] + 12, w, 4), Color(0, 0, 0, 0.75))
-		draw_rect(Rect2(e["x"] - w / 2 + 1, e["y"] + 13, (w - 2) * e["hp"] / e["mhp"], 2), Color(0.9, 0.3, 0.3))
+		var p := v3.battle_screen_pos("enemy", i, float(Dat.ENEMIES[e["id"]]["h"]) * 1.45 + 0.25)
+		var w := 52.0 if e["boss"] else 40.0
+		draw_rect(Rect2(p.x - w / 2, p.y, w, 5), Color(0, 0, 0, 0.75))
+		draw_rect(Rect2(p.x - w / 2 + 1, p.y + 1, (w - 2) * e["hp"] / e["mhp"], 3), Color(0.9, 0.3, 0.3))
+		txt(p + Vector2(-60, -3), e["name"], 10, Color(1, 1, 1), HORIZONTAL_ALIGNMENT_CENTER, 120)
 	for s in slashes:
 		var a: float = s["a"] / 0.35
 		var p: Vector2 = s["p"]
@@ -1722,7 +1807,6 @@ func draw_battle() -> void:
 		var a: float = f["a"]
 		txt(f["p"] + Vector2(-20, -a * 26.0), f["t"], 15, Color(f["c"], 1.0 - a * a), HORIZONTAL_ALIGNMENT_CENTER, 40)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	# Party-Fenster: 3 Spalten x 2 Reihen
 	var wsb := sbt()
 	for i in party.size():
 		var h: Dictionary = party[i]
@@ -1732,8 +1816,10 @@ func draw_battle() -> void:
 		draw_style_box(wsb, Rect2(x, y, 154, 46))
 		if hot:
 			draw_rect(Rect2(x, y, 154, 46), Color(1, 0.9, 0.4), false, 2.0)
-		var t: Texture2D = chars[h["id"]][0][0]
-		draw_texture_rect(t, Rect2(x + 126, y + 6, 20, 30), false, Color(0.4, 0.4, 0.4) if h["hp"] <= 0 else Color.WHITE)
+		var hc := Color(hd(h)["col"])
+		draw_circle(Vector2(x + 136, y + 22), 14, hc.darkened(0.45) if h["hp"] > 0 else Color(0.25, 0.25, 0.25))
+		draw_circle(Vector2(x + 136, y + 22), 11, hc if h["hp"] > 0 else Color(0.4, 0.4, 0.4))
+		txt(Vector2(x + 124, y + 28), String(h["name"]).substr(0, 1), 18, Color(1, 1, 1), HORIZONTAL_ALIGNMENT_CENTER, 24)
 		txt(Vector2(x + 7, y + 13), h["name"], 12, Color(1, 0.95, 0.5) if hot else Color(0.95, 0.97, 1))
 		txt(Vector2(x + 72, y + 13), "Lv:%d" % h["lv"], 10, Color(1, 0.9, 0.3))
 		var hpf: float = float(h["hp"]) / mhp(h)
@@ -1860,6 +1946,28 @@ func _autotest() -> void:
 				losses += 1
 			lp += r[1]
 		print("   3 Gegner: Niederlagen ", losses, "/60, LP-Rest ", snappedf(lp / 60.0, 0.01))
+	# Einstieg: Andrew + Marco auf Stufe 1-3 gegen normale Gegner (max. 2) ohne Items
+	for lv0 in [1, 2, 3]:
+		var wins0 := 0
+		for t in 40:
+			gear = 0
+			party = [new_hero("andrew", lv0), new_hero("marco", lv0)]
+			inv = {"trank": 0, "aether": 0, "weck": 0}
+			var pool0: Array = Dat.MAPS["rap"]["enc"]
+			var ids0: Array = [pool0[rng.randi() % 3], pool0[rng.randi() % 3]]
+			if sim_battle(ids0)[0]:
+				wins0 += 1
+		print("Einstieg Stufe ", lv0, ": Siege ", wins0, "/40 gegen 2 Gegner ohne Items")
+	# 3D-Aufbau jeder Karte
+	party = [new_hero("andrew"), new_hero("marco")]
+	flags = {}
+	mode = M.WORLD
+	for id3 in Dat.MAPS:
+		load_map(id3, Vector2i(12, 12) if id3 == "hub" else (Vector2i(20, 22) if id3 == "welt" else Vector2i(2, 14)))
+		v3.build_world()
+		v3.update_world(0.016)
+		v3.update_world(0.016)
+		print("3D ", id3, ": ", v3.world_h.get_child_count(), " Knoten, dyn ", v3.dyn.size())
 	# Spielablauf-Test: komplette Coroutinen (Kampf, Truhen, Tor, Boss, Game Over) ohne Anzeige durchspielen
 	autoplay = true
 	for stage_i in 5:

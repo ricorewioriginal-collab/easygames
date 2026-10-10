@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, viewport-fit=cover">
+<title>$GODOT_PROJECT_NAME</title>
+<style>
+@font-face{font-family:Pix;src:url(pixelify.ttf);font-display:swap}
+html,body,#canvas{margin:0;padding:0;border:0}
+body{color:#fff;background:#05060f;overflow:hidden;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;font-family:Pix,monospace}
+#canvas{display:block}#canvas:focus{outline:none}
+#load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vmin;background:linear-gradient(#05082a,#2a1450 70%,#3a1860);transition:opacity .5s;z-index:5;text-align:center;padding:16px}
+#load.out{opacity:0;pointer-events:none}
+#stars{position:absolute;inset:0;width:100%;height:100%}
+#logo{position:relative;width:min(86vw,560px);height:auto;filter:drop-shadow(0 0 14px rgba(255,170,40,.3))}
+#load h1{margin:0;position:relative;font-size:clamp(34px,11vmin,84px);letter-spacing:.06em;color:#ffc840;text-shadow:0 .08em 0 #8a4a10,0 0 .5em rgba(255,160,40,.5);font-weight:700}
+#load h2{margin:0;position:relative;font-size:clamp(20px,6vmin,44px);letter-spacing:.14em;color:#7fe0ff;text-shadow:0 .1em 0 #1a5a8a;font-weight:700}
+#load p{margin:0;position:relative;color:#ff8ccc;font-size:clamp(12px,3.2vmin,20px)}
+#lane{position:relative;width:min(70vw,460px);height:60px;margin-top:1vmin}
+#bar{position:absolute;left:0;right:0;bottom:6px;height:16px;border:2px solid #9fd0ff;background:#0a1226;border-radius:4px;overflow:hidden}
+#fill{height:100%;width:0%;background:repeating-linear-gradient(90deg,#ffd24a 0 8px,#ff9a1f 8px 12px);transition:width .2s}
+#hero{position:absolute;bottom:26px;left:0;width:48px;height:72px;margin-left:-24px;background:url(loader.png) 0 0/192px 72px;image-rendering:pixelated;animation:walk .45s steps(1) infinite;transition:left .2s}
+@keyframes walk{0%{background-position:0 0}50%{background-position:-48px 0}}
+#hero.m{background-position-y:0}
+#pct{position:relative;font-size:clamp(12px,3vmin,18px);color:#cfe6ff}
+#tip{position:relative;color:#9fb2cc;font-size:clamp(11px,2.8vmin,16px);min-height:1.4em;max-width:90vw}
+#rot{display:none;position:fixed;left:8px;right:8px;top:calc(8px + env(safe-area-inset-top));z-index:6;background:rgba(20,32,60,.92);border:2px solid #9fd0ff;border-radius:8px;padding:8px 12px;font-size:14px;text-align:center}
+@media (orientation:portrait) and (max-width:760px){#rot.show{display:block}}
+#err{display:none;position:relative;background:#5b2030;border:1px solid #ff6a80;border-radius:8px;padding:12px;max-width:90vw;font-family:system-ui,sans-serif}
+</style>
+$GODOT_HEAD_INCLUDE
+</head>
+<body>
+<canvas id="canvas">Dein Browser unterstützt kein Canvas.</canvas>
+<noscript>Bitte JavaScript aktivieren.</noscript>
+<div id="rot" class="show" onclick="this.remove()">📱 Für das beste Bild das Handy quer halten (Tippen zum Schließen)</div>
+<div id="load">
+  <canvas id="stars"></canvas>
+  <img id="logo" src="logo.png" alt="AnMaCha Quest RPG">
+  <div id="lane"><div id="hero"></div><div id="bar"><div id="fill"></div></div></div>
+  <div id="pct">Lade Spielwelt …</div>
+  <div id="tip"></div>
+  <div id="err"></div>
+</div>
+<script src="$GODOT_URL"></script>
+<script>
+const GODOT_CONFIG = $GODOT_CONFIG;
+const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
+const engine = new Engine(GODOT_CONFIG);
+(function () {
+  const load = document.getElementById('load'), fill = document.getElementById('fill'), pct = document.getElementById('pct'),
+        hero = document.getElementById('hero'), tip = document.getElementById('tip'), err = document.getElementById('err');
+  // Sternenhimmel (kurz animiert, stoppt nach dem Laden)
+  const sc = document.getElementById('stars'), sx = sc.getContext('2d'); let alive = true, st = [];
+  function fit(){ sc.width = innerWidth; sc.height = innerHeight; st = Array.from({length:70}, () => [Math.random()*sc.width, Math.random()*sc.height*0.8, Math.random()*6]); }
+  fit(); addEventListener('resize', fit);
+  (function tick(t){ if(!alive) return; sx.clearRect(0,0,sc.width,sc.height); for(const s of st){ sx.fillStyle = 'rgba(255,255,255,'+(0.35+0.6*Math.abs(Math.sin(t/700+s[2])))+')'; sx.fillRect(s[0],s[1],2,2); } requestAnimationFrame(tick); })(0);
+  const tips = ['Tipp: Mit „Wache“ halbierst du den Schaden.', 'Tipp: Wenn Helden Schaden nehmen, füllt sich die IP-Leiste.', 'Tipp: Monster auf der Karte sind langsamer als du.', 'Tipp: Der Heilbrunnen in Funkhafen heilt und speichert.', 'Tipp: Jedes Reich hat einen Schlüssel für das Boss-Tor.'];
+  let ti = Math.floor(Math.random()*tips.length); tip.textContent = tips[ti];
+  const tipTimer = setInterval(() => { ti = (ti+1) % tips.length; tip.textContent = tips[ti]; }, 3500);
+  function fail(e){ console.error(e); alive = false; err.style.display = 'block'; err.textContent = (e && e.message) ? e.message : String(e); pct.textContent = 'Fehler beim Laden'; }
+  const missing = Engine.getMissingFeatures({ threads: GODOT_THREADS_ENABLED });
+  if (missing.length) { fail('Dein Browser unterstützt benötigte Funktionen nicht:\n' + missing.join(', ')); return; }
+  engine.startGame({ onProgress: function (cur, total) {
+    if (cur > 0 && total > 0) { const p = Math.min(100, Math.round(cur / total * 100)); fill.style.width = p + '%'; hero.style.left = p + '%'; pct.textContent = 'Lade Spielwelt … ' + p + ' %  (' + (cur/1048576).toFixed(1) + ' / ' + (total/1048576).toFixed(1) + ' MB)'; }
+  } }).then(() => {
+    alive = false; clearInterval(tipTimer); load.classList.add('out'); setTimeout(() => load.remove(), 600);
+    setTimeout(() => { const r = document.getElementById('rot'); if (r) r.remove(); }, 8000);
+  }, fail);
+  // Mobil: Kontextmenü/Doppeltipp-Zoom verhindern
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('gesturestart', e => e.preventDefault());
+})();
+</script>
+</body>
+</html>
