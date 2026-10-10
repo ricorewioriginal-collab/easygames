@@ -9,7 +9,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   const mesh = (g, m, x, y, z, sx, sy, sz) => { const o = new T3.Mesh(g, m); o.position.set(x || 0, y || 0, z || 0); o.scale.set(sx == null ? 1 : sx, sy == null ? 1 : sy, sz == null ? 1 : sz); return o; };
   const bx = (c, w, h, d, x, y, z, o) => mesh(geo.box, mat(c, o), x, y, z, w, h, d);
   // ---------- Texturen ----------
-  const texCache = {}, CATCOL = { obst: '#2f9e44', brot: '#c98a3a', getr: '#1c7ed6', milch: '#e8f1ff', grund: '#e8590c', snack: '#d6336c', haus: '#7048e8', frost: '#3bc9db', fleisch: '#c92a2a', drog: '#12b886', tier: '#a9742f', saison: '#f59f00' };
+  const texCache = {}, CATCOL = { obst: '#2f9e44', brot: '#c98a3a', getr: '#1c7ed6', milch: '#e8f1ff', grund: '#e8590c', snack: '#d6336c', haus: '#7048e8', frost: '#3bc9db', fleisch: '#c92a2a', drog: '#12b886', tier: '#a9742f', saison: '#f59f00', presse: '#4a5a8a', konserv: '#c0392b', bio: '#5a8f3a', spiel: '#e67e22', elektro: '#2c3e50', garten: '#27ae60' };
   function ctex(w, h, fn) { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); const t = new T3.CanvasTexture(c); t.anisotropy = 2; return t; }
   const fitText = (g, s, w, px, wt) => { g.font = `${wt || 800} ${px}px Inter,Arial,sans-serif`; while (g.measureText(s).width > w && px > 8) { px -= 2; g.font = `${wt || 800} ${px}px Inter,Arial,sans-serif`; } };
   function labelTex(pid) {
@@ -49,6 +49,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     const carry = mesh(geo.box, mat('#b98a4a'), 0, 1.0, .32, .4, .32, .32); carry.visible = false; body.add(carry);
     root.scale.setScalar(S0 * (o.h || 1)); root.userData = Object.assign(root.userData, { body, legL, legR, armL, armR, head, bub, carry, ph: Math.random() * 6, lx: 0, lz: 0, yaw: 0, spd: 0 }); return root;
   }
+  let pcT = null; const pcTex = () => pcT || (pcT = ctex(256, 160, (g, w, h) => { g.fillStyle = '#0d2a4a'; g.fillRect(0, 0, w, h); g.fillStyle = '#1c7ed6'; g.fillRect(0, 0, w, 26); g.fillStyle = '#fff'; g.font = '800 16px Inter,Arial,sans-serif'; g.textAlign = 'left'; g.fillText('🛒 Großhandel', 8, 19); [['🍎', '#d6336c'], ['🥛', '#1c7ed6'], ['🥖', '#f59f00'], ['🧻', '#7048e8']].forEach(([e, c], i) => { g.fillStyle = c; g.fillRect(10 + i * 60, 42, 52, 52); g.font = '30px "Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.fillStyle = '#fff'; g.fillText(e, 36 + i * 60, 78); }); g.fillStyle = '#43e08a'; g.fillRect(10, 112, 236, 30); g.fillStyle = '#04170d'; g.font = '800 16px Inter,Arial,sans-serif'; g.fillText('BESTELLEN', 128, 133); }));
   function makeCart() {
     const g = new T3.Group(), cm = '#b9c1ce'; g.add(bx(cm, .52, .04, .8, 0, .3, 0)); [-1, 1].forEach(s => g.add(bx(cm, .03, .3, .8, s * .26, .53, 0))); g.add(bx(cm, .52, .3, .03, 0, .53, .4)); g.add(bx(cm, .52, .3, .03, 0, .53, -.4)); g.add(bx('#e03131', .56, .04, .06, 0, .98, -.43)); [-1, 1].forEach(s => g.add(bx(cm, .03, .6, .03, s * .26, .7, -.41)));
     [-1, 1].forEach(a => [-.3, .3].forEach(b => { const w = mesh(geo.cyl, mat('#222'), a * .22, .08, b, .1, .04, .1); w.rotation.z = Math.PI / 2; g.add(w); }));
@@ -64,7 +65,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   function staffLook(s) {
     const h = hash(s.id * 13 + 5), pick = (a, k) => a[(h >> k) % a.length], b = { skin: pick(SKIN, 1), hair: pick(HAIR, 4), hs: pick(['short', 'long', 'pony', 'bun'], 7), bottom: '#2b3a55', shoe: '#222', h: 1, glasses: (h >> 9) % 5 === 0 };
-    b.tag = true; if (s.k === 'kasse') Object.assign(b, { top: '#e03131', vest: null, short: true, collar: true }); else if (s.k === 'regal') Object.assign(b, { top: '#495057', vest: '#ff922b', cap: '#ff922b', short: true }); else if (s.k === 'putz') Object.assign(b, { top: '#ffffff', bottom: '#1c7ed6', vest: '#1c7ed6', short: false }); else if (s.k === 'wache') Object.assign(b, { top: '#1b1f2a', bottom: '#1b1f2a', cap: '#1b1f2a', shoe: '#000', stout: 1.1, collar: true }); return b;
+    b.tag = true; if (s.k === 'kasse') Object.assign(b, { top: '#e03131', vest: null, short: true, collar: true }); else if (s.k === 'regal') Object.assign(b, { top: '#495057', vest: '#ff922b', cap: '#ff922b', short: true }); else if (s.k === 'putz') Object.assign(b, { top: '#ffffff', bottom: '#1c7ed6', vest: '#1c7ed6', short: false }); else if (s.k === 'baecker') Object.assign(b, { top: '#ffffff', bottom: '#3a3f4a', vest: '#f1f3f5', cap: '#ffffff', short: true, shoe: '#fff' }); else if (s.k === 'wache') Object.assign(b, { top: '#1b1f2a', bottom: '#1b1f2a', cap: '#1b1f2a', shoe: '#000', stout: 1.1, collar: true }); return b;
   }
   function makeRobot() {
     const root = new T3.Group(), body = new T3.Group(); root.add(body); body.add(mesh(geo.box, mat('#e9ecef'), 0, .75, 0, .5, .8, .4)); body.add(mesh(geo.box, mat('#1c7ed6'), 0, .95, .205, .34, .22, .01)); body.add(mesh(geo.box, mat('#343a40'), 0, .3, 0, .56, .25, .46));
@@ -90,7 +91,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   function disposeGroup(g) { g.traverse(o => { if (o.geometry && !Object.values(geo).includes(o.geometry)) o.geometry.dispose(); }); }
   function buildWorld(S) {
     if (world) { scene.remove(world); disposeGroup(world); } world = new T3.Group(); scene.add(world); lights = []; const W = S.W, Hh = S.H, wallH = 2.1;
-    const floorTex = ctex(256, 256, (g, w, h) => { for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#aab3c4' : '#bcc4d3'; g.fillRect(x * 128, y * 128, 128, 128); g.strokeStyle = 'rgba(0,0,0,.12)'; g.lineWidth = 2; g.strokeRect(x * 128, y * 128, 128, 128); } }); floorTex.wrapS = floorTex.wrapT = T3.RepeatWrapping; floorTex.repeat.set((W - 2) / 2, (Hh - 2) / 2);
+    const fk = S.floor || 'fliese', floorTex = ctex(256, 256, (g, w, h) => { if (fk === 'parkett') { for (let i = 0; i < 8; i++) { const c = ['#a9743f', '#b98150', '#9a6a38', '#b27a46'][i % 4]; g.fillStyle = c; g.fillRect(0, i * 32, 256, 32); g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(0, i * 32, 256, 2); g.fillRect(((i * 97) % 200) + 20, i * 32, 2, 32); } } else if (fk === 'marmor') { g.fillStyle = '#e8e4dc'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(120,120,130,.35)'; g.lineWidth = 1.5; for (let i = 0; i < 7; i++) { g.beginPath(); g.moveTo(Math.random() * 256, 0); g.bezierCurveTo(Math.random() * 256, 80, Math.random() * 256, 160, Math.random() * 256, 256); g.stroke(); } g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = 2; g.strokeRect(0, 0, 256, 256); g.strokeRect(0, 0, 128, 128); g.strokeRect(128, 128, 128, 128); } else for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#aab3c4' : '#bcc4d3'; g.fillRect(x * 128, y * 128, 128, 128); g.strokeStyle = 'rgba(0,0,0,.12)'; g.lineWidth = 2; g.strokeRect(x * 128, y * 128, 128, 128); } }); floorTex.wrapS = floorTex.wrapT = T3.RepeatWrapping; floorTex.repeat.set((W - 2) / 2, (Hh - 2) / 2);
     const fl = mesh(geo.plane, new T3.MeshLambertMaterial({ map: floorTex }), W / 2, 0, Hh / 2, W - 2, Hh - 2, 1); fl.rotation.x = -Math.PI / 2; world.add(fl);
     // Außenwelt
     const gr = mesh(geo.plane, mat('#3b4a3a'), W / 2, -.02, Hh / 2, 220, 220, 1); gr.rotation.x = -Math.PI / 2; world.add(gr); world.userData.ground = gr; seasonKey = ''; const sw = mesh(geo.plane, mat('#b8bcc6'), W / 2, -.01, Hh + 2.5, W + 40, 5, 1); sw.rotation.x = -Math.PI / 2; world.add(sw); const rd = mesh(geo.plane, mat('#3a3d46'), W / 2, -.005, Hh + 8.5, 220, 7, 1); rd.rotation.x = -Math.PI / 2; world.add(rd);
@@ -100,15 +101,15 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     [[-5, Hh + 5], [W + 5, Hh + 5], [W / 2 + 12, Hh + 5]].forEach(([x, z]) => { world.add(mesh(geo.cyl, mat('#6b4a2a'), x, 1, z, .3, 2, .3)); world.add(mesh(geo.sph, mat('#2f7d3a'), x, 2.6, z, 2, 2, 2)); });
     const cars = [['#d94a3a', 4], ['#2b6cb0', 12], ['#eee', 20]]; cars.forEach(([c, x]) => { const g = new T3.Group(); g.position.set(x, 0, Hh + 11.3); g.add(bx(c, 2.6, .55, 1.2, 0, .45, 0)); g.add(bx('#99c', 1.4, .5, 1.1, -.1, .98, 0)); [-.8, .8].forEach(a => [-.55, .55].forEach(b => g.add(mesh(geo.cyl, mat('#111'), a, .22, b, .42, .2, .42)))); g.children.forEach(ch => { }); world.add(g); });
     // Wände: West, Ost, Nord (innen), Süd mit Tür (x 2..3) und Fensterband
-    const wcol = '#e9e2d2', stripe = '#2b6cb0'; const wall = (x, z, w, d, h0, h1, col) => world.add(bx(col || wcol, w, h1 - h0, d, x, (h0 + h1) / 2, z)); const t = .16;
+    const wcol = (D.WALLS[S.wall] || D.WALLS.beige).c, stripe = '#2b6cb0'; const wall = (x, z, w, d, h0, h1, col) => world.add(bx(col || wcol, w, h1 - h0, d, x, (h0 + h1) / 2, z)); const t = .16;
     wall(1 - t / 2, Hh / 2, t, Hh - 2, 0, wallH); wall(W - 1 + t / 2, Hh / 2, t, Hh - 2, 0, wallH); wall(W / 2, 1 - t / 2, W - 2 + t * 2, t, 0, wallH);
     wall(1 - t / 2, Hh / 2, t + .02, Hh - 2, .55, .75, stripe); wall(W - 1 + t / 2, Hh / 2, t + .02, Hh - 2, .55, .75, stripe); wall(W / 2, 1 - t / 2, W - 2, t + .02, .55, .75, stripe);
     const zS = Hh - 1; wall((1 + 2) / 2, zS + t / 2, 1, t, 0, .6, '#555c6e'); wall((3 + W - 1) / 2, zS + t / 2, W - 4, t, 0, .6, '#555c6e');
     const glass = new T3.MeshLambertMaterial({ color: '#a8d4f5', transparent: true, opacity: .22 }); world.add(mesh(geo.box, glass, (3 + W - 1) / 2, (.6 + wallH) / 2, zS + t / 2, W - 4, wallH - .6, .03)); world.add(mesh(geo.box, glass, 1.5, (.6 + wallH) / 2, zS + t / 2, 1, wallH - .6, .03));
     for (let x = 3; x <= W - 1; x += 3) world.add(bx('#444b5c', .06, wallH, .06, x, wallH / 2, zS + t / 2)); world.add(bx('#444b5c', W - 2, .08, .08, W / 2, wallH, zS + t / 2)); world.add(bx('#444b5c', 1.1, .08, .08, 2.5, 1.95, zS + t / 2));
     world.add(mesh(geo.box, new T3.MeshLambertMaterial({ color: '#8ec5ee', transparent: true, opacity: .25 }), 2.5, 1.0, zS + t / 2, .92, 1.9, .03));
-    const sg = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex('MARKTHALLE 24', 'Frisch · Fair · Freundlich', '#0f2b5a') }), W / 2, wallH + .35, zS + .1, 5, 1.55, 1); world.add(sg);
-    const sgi = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex('MARKTHALLE 24', '', '#0f2b5a') }), W / 2, 1.78, 1.02, 4.2, 1.05, 1); world.add(sgi);
+    const sg = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex((S.shopName || 'MARKTHALLE 24').toUpperCase(), S.slogan || '', S.signCol || '#0f2b5a') }), W / 2, wallH + .35, zS + .1, 5, 1.55, 1); world.add(sg);
+    const sgi = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex((S.shopName || 'MARKTHALLE 24').toUpperCase(), '', S.signCol || '#0f2b5a') }), W / 2, 1.78, 1.02, 4.2, 1.05, 1); world.add(sgi);
     const mat1 = mesh(geo.plane, mat('#7a1f1f'), 2.5, .01, zS + .35, .9, 1.2, 1); mat1.rotation.x = -Math.PI / 2; world.add(mat1);
     // Poster
     [['Frische Backwaren', 'täglich neu', 4], ['Radio Markt-Funk 24', 'Hits & Angebote', 9], ['Billigo? Nicht bei uns!', 'Faire Preise', 14]].forEach(([a, b, x]) => { if (x < W - 2) { const p = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex(a, b, '#7a2f8a') }), x + .5, 1.35, 1.02, 1.6, .5, 1); world.add(p); } });
@@ -119,8 +120,11 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     outdoor = { peds: [], cars: [] };
     for (let i = 0; i < 4; i++) { const h = makeHuman({ skin: SKIN[i % 5], hair: HAIR[(i * 3) % 7], hs: ['short', 'long', 'bun', 'pony'][i], top: ['#e8590c', '#364fc7', '#2f9e44', '#c2255c'][i], bottom: '#2b3a55', shoe: '#222', h: .95 + i * .03 }), dir = i % 2 ? 1 : -1; h.position.set(-6 + i * 9, 0, Hh + 1.9 + i * .4); h.userData.dir = dir; h.userData.v = .9 + i * .18; h.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2; world.add(h); outdoor.peds.push(h); }
     [['#d94a3a', 4, 1, 5], ['#2b6cb0', 20, 1, 6.5], ['#e9ecef', 30, -1, 5.5], ['#f2b705', -6, -1, 7]].forEach(([c, x, dir, v]) => { const car = makeCar(c); car.position.set(x, 0, dir > 0 ? Hh + 7.1 : Hh + 9.9); car.rotation.y = dir > 0 ? 0 : Math.PI; car.userData = { dir, v }; world.add(car); outdoor.cars.push(car); });
-    worldKey = W + 'x' + Hh;
+    world.userData.door = null; if (S.up.tuer) { const dg = new T3.Group(), gm = new T3.MeshLambertMaterial({ color: '#a8d4f5', transparent: true, opacity: .35 }), l = mesh(geo.box, gm, 2.25, 1.0, zS + t / 2 + .02, .5, 1.9, .03), r = mesh(geo.box, gm, 2.75, 1.0, zS + t / 2 + .02, .5, 1.9, .03); dg.add(l, r); dg.add(bx('#444b5c', 1.0, .08, .1, 2.5, 2.0, zS + t / 2 + .02)); dg.add(bx('#222', .3, .1, .12, 2.5, 2.09, zS + t / 2 + .02)); world.add(dg); world.userData.door = { l, r, o: 0 }; }
+    if (S.up.park) { const lot = mesh(geo.plane, mat('#34373f'), W / 2 + 1, .004, Hh + 2.8, W - 8, 3.8, 1); lot.rotation.x = -Math.PI / 2; world.add(lot); const n = Math.floor((W - 8) / 2.4); for (let i = 0; i <= n; i++) { const ln = mesh(geo.plane, mat('#e8e8e8'), 5 + i * 2.4, .008, Hh + 2.8, .08, 3.0, 1); ln.rotation.x = -Math.PI / 2; world.add(ln); } ['#2b6cb0', '#e9ecef', '#d94a3a', '#2f9e44', '#f2b705'].forEach((c, i) => { if (i >= n || (i * 7 + Hh) % 3 === 0) return; const car = makeCar(c); car.position.set(6.2 + i * 2.4, 0, Hh + 2.8); car.rotation.y = Math.PI / 2; car.scale.setScalar(.8); world.add(car); }); }
+    worldKey = wkey(S);
   }
+  const wkey = S => [S.W, S.H, S.floor, S.wall, S.shopName, S.slogan, S.signCol, S.up.tuer ? 1 : 0, S.up.park ? 1 : 0].join('|');
   let outdoor = { peds: [], cars: [] }, seasonG = null, seasonKey = '', precip = null;
   function syncSeason(S) {
     const sz = Sim.season(S), key = sz.i + '|' + (sz.hol ? sz.hol.n : ''); if (key === seasonKey) return; seasonKey = key; if (seasonG) world.remove(seasonG); seasonG = new T3.Group(); world.add(seasonG);
@@ -144,34 +148,38 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   // ---------- Objekte ----------
   function shelfSpec(o) {
-    const k = o.k; return { regal: { tiers: [.14, .46, .78], d: .5, col: '#8a6a4a', glass: 0, sides: 2 }, kuehl: { tiers: [.18, .5, .82], d: .5, col: '#cfe3f5', glass: 1, sides: 2 }, frost: { tiers: [.45], d: .8, col: '#eaf6fb', glass: 2, sides: 1 }, obst: { tiers: [.28, .52], d: .62, col: '#9a7040', glass: 0, sides: 1, crate: 1 }, quengel: { tiers: [.22, .5, .78], d: .5, col: '#d6336c', glass: 0, sides: 2 }, ofen: { tiers: [.3, .58], d: .62, col: '#c27a2a', glass: 3, sides: 1, crate: 1 } }[k];
+    const k = o.k; return { regal: { tiers: [.14, .46, .78], d: .5, col: '#8a6a4a', glass: 0, sides: 2 }, kuehl: { tiers: [.18, .5, .82], d: .5, col: '#cfe3f5', glass: 1, sides: 2 }, frost: { tiers: [.45], d: .8, col: '#eaf6fb', glass: 2, sides: 1 }, obst: { tiers: [.28, .52], d: .62, col: '#9a7040', glass: 0, sides: 1, crate: 1 }, quengel: { tiers: [.22, .5, .78], d: .5, col: '#d6336c', glass: 0, sides: 2 }, ofen: { tiers: [.3, .58], d: .62, col: '#c27a2a', glass: 3, sides: 1, crate: 1 },
+      mini: { tiers: [.14, .46, .78], d: .5, col: '#8a6a4a', glass: 0, sides: 2, max: 20 }, regal3: { tiers: [.14, .46, .78], d: .5, col: '#8a6a4a', glass: 0, sides: 2, max: 60 }, wand: { tiers: [.12, .4, .68, .96], d: .45, col: '#6a5a4a', glass: 0, sides: 1, h: 1.35, max: 50, lanes: [-.12, .12] },
+      palette: { tiers: [.22, .5, .78], d: 1.4, col: '#a67c52', glass: 0, sides: 1, crate: 1, h: .95, max: 80, lanes: [-.55, -.2, .2, .55] }, kuehl3: { tiers: [.18, .5, .82], d: .5, col: '#cfe3f5', glass: 1, sides: 2, max: 50 }, frost3: { tiers: [.45], d: .8, col: '#eaf6fb', glass: 2, sides: 1, max: 50 },
+      backtheke: { tiers: [.3, .56], d: .62, col: '#b8803a', glass: 4, sides: 1, crate: 1 }, presse: { tiers: [.3, .55, .8], d: .4, col: '#4a5a8a', glass: 0, sides: 2, max: 30 } }[k];
   }
   function buildShelf(o) {
     const sp = shelfSpec(o), g = new T3.Group(), long = Math.max(o.w, o.h), vert = o.h > o.w, L = long - .12, d = sp.d; g.position.set(o.x + o.w / 2, 0, o.y + o.h / 2); const inner = new T3.Group(); if (vert) inner.rotation.y = Math.PI / 2; g.add(inner);
-    const hgt = o.k === 'frost' ? .55 : 1.05;
+    const hgt = sp.h || (sp.glass === 2 ? .55 : 1.05);
     inner.add(bx('#3a4254', L, .08, d, 0, .04, 0));
-    if (o.k === 'frost') { inner.add(bx(sp.col, L, .36, d, 0, .26, 0)); }
+    if (sp.glass === 2) { inner.add(bx(sp.col, L, .36, d, 0, .26, 0)); }
     else { [-1, 1].forEach(s => inner.add(bx(sp.col, .05, hgt, d, s * (L / 2 - .02), hgt / 2, 0))); if (!sp.crate) inner.add(bx('#aeb6c4', L, hgt, .03, 0, hgt / 2, 0)); sp.tiers.forEach(y => inner.add(bx(sp.crate ? '#b08650' : '#cbd2de', L, sp.crate ? .22 : .03, d, 0, sp.crate ? y - .12 : y - .02, 0))); inner.add(bx(sp.col, L, .05, d, 0, hgt, 0)); }
     if (o.k === 'ofen') { inner.add(bx('#6b4a22', L, .5, .22, 0, .75, -.24)); inner.add(mesh(geo.box, new T3.MeshBasicMaterial({ color: '#ff8a2a' }), 0, .62, -.12, L * .5, .22, .02)); }
     if (sp.glass === 1) [-1, 1].forEach(s => inner.add(mesh(geo.box, new T3.MeshLambertMaterial({ color: '#bfe3ff', transparent: true, opacity: .16 }), 0, .5, s * (d / 2 + .01), L - .1, .95, .02)));
     if (sp.glass === 1) inner.add(bx('#6ec1ff', L, .03, .03, 0, hgt + .02, 0, { emissive: '#6ec1ff' }));
+    if (sp.glass === 4) { inner.add(mesh(geo.box, new T3.MeshLambertMaterial({ color: '#d8f0ff', transparent: true, opacity: .2 }), 0, .45, d / 2 + .01, L - .1, .6, .02)); inner.add(bx('#ff8a2a', L * .6, .03, .05, 0, .98, .1, { emissive: '#ff8a2a' })); }
     if (sp.glass === 2) inner.add(mesh(geo.box, new T3.MeshLambertMaterial({ color: '#d8f3ff', transparent: true, opacity: .3 }), 0, .8, 0, L - .06, .03, d - .06));
     const items = new T3.Group(), sign = new T3.Group(); inner.add(items); inner.add(sign);
     [-1, 1].forEach(s => sign.add(bx('#556', .02, .6, .02, s * (L / 2 - .1), hgt + .3, 0))); const tags = new T3.Group(); inner.add(tags);
     const hit = mesh(geo.box, new T3.MeshBasicMaterial({ visible: false }), 0, .7, 0, vert ? d + .1 : L, 1.7, vert ? L : d + .1); hit.rotation.y = 0; hit.userData.oid = o.id; hit.scale.set(L + .1, 1.7, d + .2); inner.add(hit); hits.push(hit);
     return { g, inner, items, sign, tags, sp, L, d, hgt, hit, key: '', im: null, signMat: null, tagMat: null };
   }
-  function itemGeo(pid) { const p = P[pid]; if (p.cat === 'obst' && FRUIT[pid]) return 'sph'; if (p.cat === 'getr' || pid === 'sauce') return 'cyl'; return 'box'; }
+  function itemGeo(pid) { const p = P[pid]; if (p.cat === 'obst' && FRUIT[pid]) return 'sph'; if (p.cat === 'getr' || pid === 'sauce' || ['bohnen', 'mais', 'suppe', 'thun', 'hafer', 'biosaft', 'blasen'].includes(pid)) return 'cyl'; return 'box'; }
   function updateShelf(S, o, e) {
-    const cap = Sim.cap(S, o), qty = o.qty, pid = o.p, price = pid ? Sim.effPrice(S, o) : 0, promo = pid && S.promo[pid] ? 1 : 0, key = [promo, pid, qty > 0 ? Math.max(1, Math.round(30 * qty / Math.max(1, cap))) : 0, price, o.disc ? 1 : 0, qty === 0 ? 0 : 1, S.phase === 'open' ? 1 : 0].join('|'); if (key === e.key) return; e.key = key;
+    const cap = Sim.cap(S, o), qty = o.qty, pid = o.p, price = pid ? Sim.effPrice(S, o) : 0, promo = pid && S.promo[pid] ? 1 : 0, mxv = e.sp.max || 30, key = [promo, pid, qty > 0 ? Math.max(1, Math.round(mxv * qty / Math.max(1, cap))) : 0, price, o.disc ? 1 : 0, qty === 0 ? 0 : 1, S.phase === 'open' ? 1 : 0].join('|'); if (key === e.key) return; e.key = key;
     if (e.im) { e.items.remove(e.im); e.im.dispose(); e.im = null; } e.sign.children.slice(2).forEach(c => { if (c.material && c.material.map) c.material.map.dispose(); e.sign.remove(c); }); e.tags.children.slice().forEach(c => { if (c.material.map) c.material.map.dispose(); e.tags.remove(c); });
     const sp = e.sp, L = e.L; const signT = pid ? signTex(P[pid].e + ' ' + P[pid].name.split(' ').slice(0, 2).join(' '), qty === 0 ? '▲ LEER' : promo ? '🔥 ANGEBOT −20 %' : '', qty === 0 ? '#7a1f1f' : promo ? '#a8123a' : '#13203f') : signTex('Frei', 'Ware zuweisen', '#444b5c');
     const smat = new T3.MeshBasicMaterial({ map: signT }), sm = mesh(geo.plane, smat, 0, e.hgt + .5, .01, Math.min(L, 1.3), .4, 1), sm2 = mesh(geo.plane, smat, 0, e.hgt + .5, -.01, Math.min(L, 1.3), .4, 1); sm2.rotation.y = Math.PI; e.sign.add(sm); e.sign.add(sm2);
-    if (!pid) return; const n = qty > 0 ? Math.max(1, Math.round(30 * qty / Math.max(1, cap))) : 0, kind = itemGeo(pid), sz = P[pid].size, fruit = kind === 'sph';
+    if (!pid) return; const n = qty > 0 ? Math.max(1, Math.round(mxv * qty / Math.max(1, cap))) : 0, kind = itemGeo(pid), sz = P[pid].size, fruit = kind === 'sph';
     const iw = fruit ? .16 : kind === 'cyl' ? .12 : .2 + sz * .02, ih = fruit ? .16 : kind === 'cyl' ? .3 : .24 + sz * .03, id = fruit ? .16 : kind === 'cyl' ? .12 : .16, per = Math.max(2, Math.floor((L - .16) / (iw + .035)));
     if (n > 0) {
-      const m = fruit ? new T3.MeshLambertMaterial({ color: FRUIT[pid] }) : itemMat(pid), im = new T3.InstancedMesh(geo[kind], m, 40); let i = 0; const lanes = sp.sides === 2 ? [-(.06 + id / 2 + .03), .06 + id / 2 + .03] : sp.crate ? [-.1, .12] : [-.2, .2];
-      outer: for (const y of sp.tiers) for (let k2 = 0; k2 < per; k2++) for (const z of lanes) { if (i >= 40) break outer; const x = -((per - 1) * (iw + .035)) / 2 + k2 * (iw + .035), yy = y + ih / 2 + (sp.crate ? -.02 : 0); dummy.position.set(x, yy, z); dummy.rotation.set(0, z < 0 ? Math.PI : 0, 0); dummy.scale.set(iw, ih, id); dummy.updateMatrix(); im.setMatrixAt(i++, dummy.matrix); }
+      const m = fruit ? new T3.MeshLambertMaterial({ color: FRUIT[pid] }) : itemMat(pid), im = new T3.InstancedMesh(geo[kind], m, mxv + 10); let i = 0; const lanes = sp.sides === 2 ? [-(.06 + id / 2 + .03), .06 + id / 2 + .03] : sp.lanes ? sp.lanes : sp.crate ? [-.1, .12] : [-.2, .2];
+      outer: for (const y of sp.tiers) for (let k2 = 0; k2 < per; k2++) for (const z of lanes) { if (i >= mxv + 10) break outer; const x = -((per - 1) * (iw + .035)) / 2 + k2 * (iw + .035), yy = y + ih / 2 + (sp.crate ? -.02 : 0); dummy.position.set(x, yy, z); dummy.rotation.set(0, z < 0 ? Math.PI : 0, 0); dummy.scale.set(iw, ih, id); dummy.updateMatrix(); im.setMatrixAt(i++, dummy.matrix); }
       im.count = Math.min(n, i); im.instanceMatrix.needsUpdate = true; e.items.add(im); e.im = im;
     }
     const tt = ctex(128, 48, (g, w, h) => { g.fillStyle = o.disc || promo ? '#d6336c' : '#fff3bf'; g.fillRect(0, 0, w, h); g.strokeStyle = '#333'; g.lineWidth = 3; g.strokeRect(1, 1, w - 2, h - 2); g.fillStyle = o.disc || promo ? '#fff' : '#111'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '800 30px Inter,Arial,sans-serif'; g.fillText(D.fmt(price).replace(' €', '') + '€', w / 2, h / 2 + 2); });
@@ -181,6 +189,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     const g = new T3.Group(); g.position.set(o.x + o.w / 2, 0, o.y + o.h / 2); const hit = mesh(geo.box, new T3.MeshBasicMaterial({ visible: false }), 0, .6, 0, o.w, 1.2, o.h); hit.userData.oid = o.id; g.add(hit); hits.push(hit);
     if (o.k === 'kasse') { g.add(bx('#3b4256', .82, .78, .92, 0, .39, 0)); g.add(bx('#1b1f2a', .7, .03, .85, 0, .795, .0)); g.add(bx('#222', .5, .02, .8, 0, .81, .06)); g.add(bx('#aeb6c4', .8, .04, .16, 0, .8, -.4)); g.add(bx('#111', .34, .22, .05, 0, 1.05, -.34)); g.add(mesh(geo.box, new T3.MeshBasicMaterial({ color: '#43e08a' }), 0, 1.05, -.375, .3, .18, .01)); g.add(bx('#222', .06, .2, .06, 0, .9, -.34)); const n = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex('KASSE', '', '#c92a2a'), side: T3.DoubleSide }), 0, 1.45, .4, .55, .17, 1); g.add(n); g.add(bx('#555', .02, .55, .02, 0, 1.18, .4)); g.add(bx('#d9e2ec', .12, .12, .12, .3, .86, .3)); }
     else if (o.k === 'sco') { g.add(bx('#e9ecef', .6, .95, .5, 0, .48, 0)); g.add(bx('#212529', .46, .3, .06, 0, 1.0, .2, {})); g.add(mesh(geo.box, new T3.MeshBasicMaterial({ color: '#4dabf7' }), 0, 1.0, .235, .4, .24, .01)); g.add(bx('#888', .5, .03, .6, 0, .96, .35)); g.add(bx('#c9a46a', .1, .22, .02, .28, .6, .26)); }
+    else if (o.k === 'pc') { g.add(bx('#8a8f9c', .86, .7, .6, 0, .35, 0)); g.add(bx('#c9cfdb', .9, .04, .66, 0, .72, 0)); g.add(bx('#111', .42, .3, .04, 0, 1.02, -.12)); const sc = mesh(geo.box, new T3.MeshBasicMaterial({ map: pcTex() }), 0, 1.02, -.095, .4, .26, .01); g.add(sc); g.add(bx('#222', .06, .2, .06, 0, .82, -.12)); g.add(bx('#2b2f3a', .36, .03, .14, 0, .75, .12)); g.add(bx('#4a4f5e', .26, .5, .3, .36, .6, -.14)); const led = mesh(geo.sph, new T3.MeshBasicMaterial({ color: '#00ffc8' }), .36, .78, -.0, .03, .03, .03); g.add(led); radioLeds.push(led); g.add(bx('#3a3f4a', .34, .45, .34, -.05, .26, .62, {})); }
     else if (o.k === 'radio') { g.add(bx('#6b4a2a', .56, .55, .4, 0, .275, 0)); g.add(bx('#2b2f3a', .5, .26, .2, 0, .68, 0)); [-1, 1].forEach(s => { const c1 = mesh(geo.cyl, mat('#15171d'), s * .15, .68, .105, .18, .02, .18), c2 = mesh(geo.cyl, mat('#4a4f5e'), s * .15, .68, .115, .08, .02, .08); c1.rotation.x = c2.rotation.x = Math.PI / 2; g.add(c1); g.add(c2); }); g.add(bx('#aeb6c4', .12, .04, .02, 0, .73, .105)); g.add(bx('#c9d1e0', .015, .35, .015, .2, .95, -.05)); const led = mesh(geo.sph, new T3.MeshBasicMaterial({ color: '#00ffc8' }), 0, .63, .11, .035, .035, .03); led.userData.led = 1; g.add(led); radioLeds.push(led); }
     else if (o.k === 'deko') { g.add(mesh(geo.cyl, mat('#8b5a2b'), 0, .18, 0, .5, .36, .5)); for (let i = 0; i < 7; i++) { const a = i * 2.4; g.add(mesh(geo.sph, mat(i % 2 ? '#2f9e44' : '#51cf66'), Math.cos(a) * .18, .55 + i * .08, Math.sin(a) * .18, .3, .3, .3)); } }
     else if (o.k === 'lager') { const vert = o.h > o.w, inn = new T3.Group(); if (vert) inn.rotation.y = Math.PI / 2; g.add(inn); const L = Math.max(o.w, o.h) - .1; [-1, 1].forEach(s => inn.add(bx('#e8590c', .06, 1.9, .5, s * L / 2, .95, 0))); [.25, .8, 1.35, 1.9].forEach(y => inn.add(bx('#1c7ed6', L, .06, .5, 0, y, 0))); for (let y = 0; y < 3; y++) for (let i = 0; i < 4; i++) if ((i + y) % 3 !== 2) inn.add(bx(i % 2 ? '#c99a5a' : '#b98a4a', .36, .36, .4, -L / 2 + .3 + i * .42, .46 + y * .55, 0)); }
@@ -194,6 +203,14 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   function removeObj(id) { const e = objs.get(id); if (!e) return; world.remove(e.g); const i = hits.indexOf(e.hit); if (i >= 0) hits.splice(i, 1); e.g.traverse(o => { if (o.isInstancedMesh) o.dispose(); }); objs.delete(id); }
   function cartonMesh(pid) { const g = new T3.Group(); const m = [mat('#b98a4a'), mat('#b98a4a'), mat('#c99a5a'), mat('#a67a3a'), new T3.MeshLambertMaterial({ map: labelTex(pid) }), new T3.MeshLambertMaterial({ map: labelTex(pid) })]; const b = new T3.Mesh(geo.box, m); b.scale.set(.42, .32, .34); g.add(b); return g; }
   let beaconG = null;
+  function syncDoor(S, dt) {
+    const d = world && world.userData.door; if (!d) return; const dx = 2.5, dz = S.H - .5, near = (x, y) => Math.hypot(x - dx, y - dz) < 2.4; let on = near(S.player.x, S.player.y) || S.customers.some(c => near(c.x, c.y)) || S.staff.some(s => near(s.x, s.y)) || S.police.some(p => near(p.x, p.y)); d.o += ((on ? 1 : 0) - d.o) * Math.min(1, dt * 6); d.l.position.x = 2.25 - d.o * .45; d.r.position.x = 2.75 + d.o * .45;
+  }
+  const flyers = [];
+  function addFly(S, pid, oid) {
+    const e = objs.get(oid); if (!e || !pid) return; const m = new T3.Mesh(geo.box, itemMat(pid)); m.scale.set(.14, .16, .12); const from = new T3.Vector3(); cam.getWorldPosition(from); const f = new T3.Vector3(0, 0, -1).applyEuler(cam.rotation); from.addScaledVector(f, .55); from.y -= .32; const to = new T3.Vector3(e.g.position.x, .72, e.g.position.z); scene.add(m); flyers.push({ m, from, to, t: 0 });
+  }
+  function updateFly(dt) { for (let i = flyers.length - 1; i >= 0; i--) { const f = flyers[i]; f.t += dt / .22; if (f.t >= 1) { scene.remove(f.m); flyers.splice(i, 1); continue; } const k = f.t; f.m.position.lerpVectors(f.from, f.to, k); f.m.position.y += Math.sin(k * Math.PI) * .25; f.m.rotation.y += dt * 12; } }
   function syncBeacon(opt, now) {
     if (!opt.beacon) { if (beaconG) beaconG.visible = false; return; }
     if (!beaconG) { beaconG = new T3.Group(); const m = c => new T3.MeshBasicMaterial({ color: c, depthTest: false, transparent: true, opacity: .95 }); const arrow = new T3.Mesh(new T3.ConeGeometry(.26, .5, 18), m('#ffd24a')); arrow.rotation.x = Math.PI; arrow.renderOrder = 20; const ring = new T3.Mesh(new T3.RingGeometry(.4, .55, 36), new T3.MeshBasicMaterial({ color: '#ffd24a', depthTest: false, transparent: true, opacity: .8, side: T3.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = .03; ring.renderOrder = 20; const beam = new T3.Mesh(new T3.CylinderGeometry(.05, .05, 1.6, 8), new T3.MeshBasicMaterial({ color: '#ffe58a', transparent: true, opacity: .35, depthTest: false })); beam.position.y = .8; beam.renderOrder = 19; beaconG.add(arrow, ring, beam); beaconG.userData = { arrow, ring }; scene.add(beaconG); }
@@ -242,8 +259,8 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   function floorAt(cx, cy) { v2.set(cx / W * 2 - 1, -(cy / H) * 2 + 1); ray.setFromCamera(v2, st.top ? topCam : cam); const o = ray.ray.origin, d = ray.ray.direction; if (Math.abs(d.y) < 1e-4) return null; const t = -o.y / d.y; if (t < 0) return null; return [Math.floor(o.x + d.x * t), Math.floor(o.z + d.z * t)]; }
   function render(S, dt, now, opt) {
-    if (!R) return; const key = S.W + 'x' + S.H; if (key !== worldKey || (world && S !== world.userData.S)) { for (const id of Array.from(objs.keys())) removeObj(id); people.forEach(h => scene.remove(h)); people.clear(); rampKey = messKey = ''; rampG = messG = null; buildWorld(S); world.userData.S = S; setTop(st.top); }
-    syncSeason(S); syncObjs(S); syncBelts(S); syncPoliceCar(S, now); syncPrecip(S, dt); animateOutdoor(dt, S); syncRamp(S); syncMess(S); syncPeople(S, dt);
+    if (!R) return; const key = wkey(S); if (key !== worldKey || (world && S !== world.userData.S)) { for (const id of Array.from(objs.keys())) removeObj(id); people.forEach(h => scene.remove(h)); people.clear(); rampKey = messKey = ''; rampG = messG = null; buildWorld(S); world.userData.S = S; setTop(st.top); }
+    syncDoor(S, dt); syncSeason(S); syncObjs(S); syncBelts(S); syncPoliceCar(S, now); syncPrecip(S, dt); animateOutdoor(dt, S); syncRamp(S); syncMess(S); syncPeople(S, dt);
     // Himmel nach Tageszeit & Wetter
     const tt = S.phase === 'open' ? S.t / Sim.DAYLEN : S.phase === 'prep' ? 0 : 1, wx = S.weather, day = new T3.Color(wx === 'regen' ? '#7f8ea3' : wx === 'wolke' ? '#a9bdd3' : wx === 'kalt' ? '#b9d4ea' : wx === 'heiss' ? '#8fc8f5' : '#8fc5f2'), dusk = new T3.Color('#f0a068'); scene.background.copy(day).lerp(dusk, Math.max(0, (tt - .8) / .2) * .8);
     const dim = S.blackout ? .35 : 1; hemi.intensity = (wx === 'regen' ? .55 : .62) * dim; sun.intensity = (wx === 'regen' || wx === 'wolke' ? .25 : .45) * dim; lights.forEach(l => l.material.color.set(S.blackout ? '#444' : '#fffbe8'));
@@ -259,8 +276,8 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     // Spieler-Figur in der Vogelperspektive
     if (!st.top) { const m = people.get('player'); if (m) m.visible = false; } else { let m = people.get('player'); if (!m) { m = makeHuman({ skin: '#e8b98f', hair: '#4a2f17', hs: 'short', top: '#00b8d9', bottom: '#2b3a55', shoe: '#fff', vest: '#00e5ff' }); people.set('player', m); scene.add(m); } m.visible = true; m.position.set(p.x, 0, p.y); m.rotation.y = Math.PI + st.yaw; m.userData.lx = p.x; }
     radioLeds = radioLeds.filter(l => l.parent); radioLeds.forEach(l => { l.material.color.set(st.radioOn ? (Math.sin(now / 160) > 0 ? '#00ffc8' : '#ff2d95') : '#555'); });
-    syncBeacon(opt, now);
+    syncBeacon(opt, now); updateFly(dt);
     R.render(scene, st.top ? topCam : cam);
   }
-  return { setQuality, init, resize, render, look, move, setTop, pick, floorAt, st, people, get ready() { return !!R; } };
+  return { addFly, setQuality, init, resize, render, look, move, setTop, pick, floorAt, st, people, get ready() { return !!R; } };
 })();

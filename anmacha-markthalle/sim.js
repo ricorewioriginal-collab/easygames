@@ -13,10 +13,10 @@ const Sim = (() => {
   function emptyDay() { return { rev: 0, cogs: 0, items: 0, served: 0, lost: 0, happy: 0, recipes: 0, stolen: 0, spawned: 0, units: {}, revBy: {}, miss: 0 }; }
   function create() {
     const S = { v: 1, day: 1, t: 0, simT: 0, phase: 'prep', money: 200000, xp: 0, level: 1, rep: 55, W: 18, H: 12, exp: 0, nid: 1, objs: [], ramp: [], backlog: [], orders: [], price: {}, mkt: {}, cf: {}, riv: {}, lic: {}, up: {}, staff: [], customers: [], police: [], fx: [], messes: [], regs: [], inv: [], loan: 0,
-      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, assist: true, hints: true, promo: {}, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
+      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, shopName: 'Markthalle 24', slogan: 'Frisch · Fair · Freundlich', signCol: '#0f2b5a', named: false, buzz: 0, assist: true, hints: true, promo: {}, cart: {}, rules: {}, floor: 'fliese', wall: 'beige', own: { floor: { fliese: true }, wall: { beige: true } }, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
     Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
     Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
-    add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7); add(S, 'radio', 15, 5);
+    add(S, 'ramp', 1, 1); add(S, 'pc', 2, 4); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7); add(S, 'radio', 15, 5);
     const set = (o, p, q) => { o.p = p; o.qty = q; o.age = 0; }, ob = byKind(S, 'obst'), rg = byKind(S, 'regal'); set(ob[0], 'apfel', 14); set(ob[1], 'broetchen', 18); set(rg[0], 'wasser', 12); set(byKind(S, 'kuehl')[0], 'milch', 8);
     ['banane', 'limo', 'wasser', 'milch', 'broetchen', 'apfel'].forEach(p => S.ramp.push({ p, n: P[p].box, age: 0 }));
     S.heat = new Array(S.W * S.H).fill(0); rebuild(S); newQuests(S); S.forecast = rollWeather(0); S.weather = 'sonne'; note(S, 'Willkommen in der Markthalle 24! Bestelle Ware im Markt und fülle die Regale.', 'info');
@@ -70,7 +70,21 @@ const Sim = (() => {
   }
   function deliver(S, when) { S.orders = S.orders.filter(o => { if (o.when !== when && !(when === 'express' && o.when === 'express' && S.simT >= o.eta)) return true; if (when === 'express' && S.simT < o.eta) return true; for (let i = 0; i < o.boxes; i++) S.backlog.push({ p: o.p, n: P[o.p].box, age: 0 }); return false; }); }
   function flush(S) { while (S.backlog.length && S.ramp.length < rampMax(S)) S.ramp.push(S.backlog.shift()); }
-  function autoOrder(S) { const have = offered(S); S.objs.forEach(o => { if (!isShelf(o) || !o.p) return; const inRamp = S.ramp.concat(S.backlog).some(b => b.p === o.p), ord = S.orders.some(x => x.p === o.p); if (o.qty < cap(S, o) * .3 && !inRamp && !ord) order(S, o.p, 1, false, true); }); }
+  // ---------- Bestell-PC: Warenkorb, Lagerübersicht, Nachbestell-Regeln ----------
+  const unitsOf = (S, p) => S.objs.filter(o => isShelf(o) && o.p === p).reduce((a, o) => a + o.qty, 0) + S.ramp.concat(S.backlog, S.player.carry).filter(b => b.p === p).reduce((a, b) => a + b.n, 0) + S.orders.filter(o => o.p === p).reduce((a, o) => a + o.boxes * P[p].box, 0);
+  const capOf = (S, p) => S.objs.filter(o => isShelf(o) && o.p === p).reduce((a, o) => a + cap(S, o), 0);
+  function rule(S, p) { return S.rules[p] || { on: true, min: .3, boxes: 1 }; }
+  function setRule(S, p, patch) { const r = Object.assign({}, rule(S, p), patch); r.min = clamp(r.min, .05, .9); r.boxes = clamp(Math.round(r.boxes), 1, 10); S.rules[p] = r; }
+  function autoOrder(S) { if (!S.up.auto) return; const seen = {}; S.objs.forEach(o => { if (!isShelf(o) || !o.p || seen[o.p]) return; seen[o.p] = 1; const r = rule(S, o.p); if (r.on === false) return; const cp = capOf(S, o.p); if (cp && unitsOf(S, o.p) < cp * r.min) order(S, o.p, r.boxes, false, true); }); }
+  function cartSet(S, p, n) { n = clamp(Math.round(n), 0, 60); if (!P[p] || !S.lic[P[p].cat]) return false; if (n <= 0) delete S.cart[p]; else S.cart[p] = n; return true; }
+  const cartCost = (S, express) => Object.keys(S.cart).reduce((a, p) => a + Math.round(wholesale(S, p) * P[p].box * S.cart[p] * (express ? 1.25 : 1)), 0);
+  function cartOrder(S, express) { const ps = Object.keys(S.cart); if (!ps.length) return false; if (S.money < cartCost(S, express)) { note(S, 'Nicht genug Geld für den Warenkorb.', 'bad'); return false; } ps.forEach(p => order(S, p, S.cart[p], express, true)); S.cart = {}; return true; }
+  function suggest(S) { const out = {}, seen = {}; S.objs.forEach(o => { if (!isShelf(o) || !o.p || seen[o.p]) return; seen[o.p] = 1; const need = capOf(S, o.p) - unitsOf(S, o.p); if (need >= P[o.p].box * .5) out[o.p] = Math.max(1, Math.round(need / P[o.p].box)); }); return out; }
+  const nearPC = S => S.objs.some(o => o.k === 'pc' && rectDist(S.player.x, S.player.y, o) < 2.0);
+  function bakeOne(S, o) { const n = cap(S, o) - o.qty, c = Math.round(wholesale(S, o.p) * .5) * n; if (n <= 0 || S.money < c) return 0; S.money -= c; o.age = (o.age * o.qty) / Math.max(1, o.qty + n); o.qty += n; S.today.baked = (S.today.baked || 0) + c; return n; }
+  // ---------- Umbau: Boden, Wände ----------
+  function buyFloor(S, id) { const f = D.FLOORS[id]; if (!f) return false; if (S.own.floor[id]) { S.floor = id; return true; } if (S.level < f.lvl || S.money < f.price) return false; S.money -= f.price; S.own.floor[id] = true; S.floor = id; return true; }
+  function buyWall(S, id) { const w = D.WALLS[id]; if (!w) return false; if (S.own.wall[id]) { S.wall = id; return true; } if (S.money < 30000) return false; S.money -= 30000; S.own.wall[id] = true; S.wall = id; return true; }
   function order(S, p, boxes, express, quiet) {
     if (!S.lic[P[p].cat] || boxes < 1) return false; const cost = Math.round(wholesale(S, p) * P[p].box * boxes * (express ? 1.25 : 1)); if (S.money < cost) { if (!quiet) note(S, 'Nicht genug Geld für die Bestellung.', 'bad'); return false; }
     S.money -= cost; if (express && S.up.drohne) { S.orders.push({ p, boxes, when: 'express', eta: S.simT + 40 }); } else S.orders.push({ p, boxes, when: 'day' }); return true;
@@ -103,9 +117,9 @@ const Sim = (() => {
   }
   function spawnRate(S) {
     const off = offered(S), n = Object.keys(off).length; if (!n) return 0; let sum = 0, cnt = 0; Object.keys(off).forEach(p => { sum += S.price[p] / ref(S, p); cnt++; }); const idx = sum / cnt;
-    const ap = clamp(1 + (1.05 - idx) * 1.5, .5, 1.35), as = clamp(.45 + .07 * n, .45, 1.5), dow = [1, 1, 1, 1.05, 1.15, 1.4, .85][(S.day - 1) % 7], deko = 1 + Math.min(10, byKind(S, 'deko').length) * .02, size = .85 + S.W * S.H / 216 * .15;
+    const ap = clamp(1 + (1.05 - idx) * 1.5, .5, 1.35), as = clamp(.45 + .05 * n, .45, 1.9), dow = [1, 1, 1, 1.05, 1.15, 1.4, .85][(S.day - 1) % 7], deko = 1 + Math.min(10, byKind(S, 'deko').length) * .02, size = .85 + S.W * S.H / 216 * .15;
     const ev = S.ev.find(e => e.k === 'ausflug' && S.t >= e.t0 && S.t <= e.t1) ? 1.5 : 1; const clean = 1 - Math.min(.3, S.messes.length * .04);
-    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * (1 + clamp(S.buzz, -.25, .5)) * (1 + .03 * Object.keys(S.promo).length) * (season(S).hol ? 1.1 : 1) * (1 + Math.min(.12, byKind(S, 'ofen').filter(o => o.qty > 0).length * .06)) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
+    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * (1 + (D.FLOORS[S.floor || 'fliese'].appeal || 0)) * (S.up.tuer ? 1.03 : 1) * (S.up.park ? 1.06 : 1) * (1 + clamp(S.buzz, -.25, .5)) * (1 + .03 * Object.keys(S.promo).length) * (season(S).hol ? 1.1 : 1) * (1 + Math.min(.12, byKind(S, 'ofen').filter(o => o.qty > 0).length * .06)) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
   }
   function makeList(S, type) {
     const T = D.TYPES[type], unl = Object.values(P).filter(p => S.lic[p.cat]), n = ri(T.n[0], T.n[1]), list = [], off = offered(S); let recipe = null;
@@ -166,7 +180,7 @@ const Sim = (() => {
     if (abandoned || !units) T.lost++; if (c.recipe && !abandoned && c.recipe.need.every(i => c.list.some(l => l.p === i && l.got > 0))) { const bonus = Math.round(total * .12); S.money += bonus; T.rev += bonus; T.recipes++; S.xp += 6; bub(c, '🎉'); }
     c.sat = sat; S.tot.served += abandoned || !units ? 0 : 1; if (c.recipe && !abandoned && c.recipe.need.every(i => c.list.some(l => l.p === i && l.got > 0))) S.tot.recipes++; review(S, c, sat, abandoned);
   }
-  const WANTED = ['flee', 'stun', 'held', 'arrest', 'flee2'], cost = (S, list) => list.reduce((a, b) => a + wholesale(S, b.p) * b.q, 0);
+  const WANTED = ['flee', 'stun', 'held', 'arrest', 'flee2', 'change'], cost = (S, list) => list.reduce((a, b) => a + wholesale(S, b.p) * b.q, 0);
   function startFlee(S, c) { c.loot = true; leaveFor(S, c); c.st = 'flee'; c.spd *= 1.5; c.stole = 0; bub(c, S.up.kamera ? '🚨' : '🏃'); c.bt = 3; S.fx.push({ t: 'flee' }); note(S, '🚨 Ladendieb! Schnapp ihn dir – schubsen mit E, oder der Wachmann jagt ihn!', 'bad'); }
   function hold(S, c, by) { giveBack(S, c); c.loot = false; c.st = 'held'; c.held = 0; c.stun = 0; c.stars = 1; bub(c, '🚔'); c.bt = 4; S.xp += by === 'player' ? 10 : 6; S.tot.caught++; S.money += by === 'player' ? 1500 : 800; S.fx.push({ t: 'cuff' }); note(S, by === 'player' ? '🚔 Dieb festgehalten! Fangprämie +' + D.fmt(1500) : '💂 Der Wachmann hat den Dieb! Fangprämie +' + D.fmt(800), 'good'); callPolice(S, c); }
   function callPolice(S, c) { const d = doorTile(S); S.police.push({ id: S.nid++, x: d[0] + .5, y: d[1] + .6, path: [], pi: 0, tgt: c.id, st: 'in', t: 0 }); S.fx.push({ t: 'police' }); }
@@ -180,11 +194,22 @@ const Sim = (() => {
     if (c.thief && c.basket.length && (c.stole || R() < .6)) { startFlee(S, c); return; }
     if (!c.basket.length) { finish(S, c, true); leaveFor(S, c, c.miss ? '😞' : null); } else heading(S, c);
   }
+  const pending = S => S.customers.find(c => c.st === 'change') || null;
+  function giveChange(S, amt, auto) {   // Wechselgeld in Cent; auto = zu langsam, wird korrekt ausgezahlt
+    const c = pending(S); if (!c) return null; const due = c.given - c.total, diff = Math.round(amt) - due, r = obj(S, c.reg_q); if (r) r.q = r.q.filter(i => i !== c.id);
+    finish(S, c, false); let msg; if (auto) { c.sat = Math.min(c.sat, .55); S.rep = clamp(S.rep - .3, 5, 100); msg = '⏱️ Zu lange gebraucht – Kunde ist genervt.'; }
+    else if (diff === 0) { const tip = Math.round(c.total * .03); S.money += tip; S.today.rev += tip; msg = '✔ Passt! Trinkgeld ' + D.fmt(tip); S.xp += .3; }
+    else if (diff > 0) { S.money -= diff; msg = '😬 Zu viel Rückgeld: ' + D.fmt(diff) + ' verloren.'; }
+    else { S.money -= diff; c.sat = Math.min(c.sat, .35); S.rep = clamp(S.rep - 1.2, 5, 100); msg = '😠 Zu wenig Rückgeld – Kunde beschwert sich (' + D.fmt(-diff) + ' einbehalten).'; }
+    leaveFor(S, c, diff === 0 && !auto ? '😊' : diff ? '😠' : null); S.fx.push({ t: diff === 0 && !auto ? 'cash' : 'bad' }); note(S, msg, diff === 0 && !auto ? 'good' : 'bad'); return { diff, msg };
+  }
+  function setIdentity(S, o) { const cl = s => String(s || '').replace(/[<>&"]/g, '').trim(); if (o.name != null) S.shopName = cl(o.name).slice(0, 22) || 'Markthalle 24'; if (o.slogan != null) S.slogan = cl(o.slogan).slice(0, 36); if (o.col && D.SIGNCOLS.some(x => x[0] === o.col)) S.signCol = o.col; S.named = true; }
   function tickCustomer(S, c, d) {
     c.bt = Math.max(0, c.bt - d); if (!c.bt) c.bub = null;
     if (WANTED.includes(c.st)) {
       if (c.st === 'flee') { if (S.up.kamera) { c.bub = '🚨'; c.bt = 1; } if (follow(c, d)) { const lost = cost(S, c.basket); S.today.stolen += lost; S.rep = clamp(S.rep - .8, 5, 100); c.basket = []; c.dead = true; note(S, '😠 Ein Dieb ist mit Ware im Wert von ' + D.fmt(lost) + ' entkommen!', 'bad'); } }
       else if (c.st === 'flee2') { if (follow(c, d)) c.dead = true; }
+      else if (c.st === 'change') { c.wait += d * .5; c.chW += d; if (c.chW > 28) giveChange(S, c.given - c.total, true); }
       else if (c.st === 'stun') { c.stun -= d; c.stars = 1; if (c.stun <= 0) { c.stars = 0; c.st = 'flee2'; c.spd *= 1.1; leaveFor(S, c); c.st = 'flee2'; bub(c, '😖'); } }
       else if (c.st === 'held') { c.held += d; if (c.held > 25 && !S.police.some(p => p.tgt === c.id)) { c.stars = 0; c.st = 'flee2'; leaveFor(S, c); c.st = 'flee2'; } }
       return;
@@ -199,9 +224,9 @@ const Sim = (() => {
     } else if (c.st === 'queue') {
       const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c, '😡'); return; } const idx = r.q.indexOf(c.id); c.wait += d; c.mood -= d * (S.up.klima ? .12 : .2); if (idx !== c.slot) { c.slot = idx; const sp = slotPos(S, r, idx); setPath(c, path(S, c.x, c.y, sp[0], sp[1])); }
       follow(c, d); if (c.wait > D.TYPES[c.type].pat * (S.staff.some(s => s.trait === 'freundlich') ? 1.1 : 1)) { r.q.splice(r.q.indexOf(c.id), 1); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; }
-      if (idx === 0 && c.pi >= c.path.length) { c.st = 'pay'; c.units = c.basket.reduce((a, b) => a + b.q, 0); c.svc = 1.1 + c.units * .75; }
+      if (idx === 0 && c.pi >= c.path.length) { c.st = 'pay'; c.units = c.basket.reduce((a, b) => a + b.q, 0); c.svc = 1.1 + c.units * .75; c.total = c.basket.reduce((a, b) => a + b.q * b.price, 0); c.cash = R() < (c.type === 'sen' ? .75 : c.type === 'stud' ? .3 : .5); const notes = [500, 1000, 2000, 5000, 10000], ex = R() < .25; c.given = c.cash ? (ex ? c.total : (notes.find(n => n >= c.total) || Math.ceil(c.total / 1000) * 1000)) : c.total; }
     } else if (c.st === 'pay') {
-      const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c); return; } const rate = opRate(S, r); c.wait += rate > 0 ? d * .3 : d; if (c.wait > D.TYPES[c.type].pat * 1.4) { r.q.shift(); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; } c.svc -= d * rate; if (c.svc <= 0) { r.q.shift(); finish(S, c, false); leaveFor(S, c, c.sat > .8 ? '😊' : null); }
+      const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c); return; } const rate = opRate(S, r); c.wait += rate > 0 ? d * .3 : d; if (c.wait > D.TYPES[c.type].pat * 1.4) { r.q.shift(); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; } c.svc -= d * rate; if (c.svc <= 0) { const manual = c.cash && c.given > c.total && !S.up.kassensys && r.k === 'kasse' && !S.staff.some(x => x.k === 'kasse' && x.reg === r.id); if (manual) { c.st = 'change'; c.chW = 0; } else { r.q.shift(); finish(S, c, false); leaveFor(S, c, c.sat > .8 ? '😊' : null); } }
     } else if (c.st === 'leave') { if (follow(c, d)) c.dead = true; }
   }
 
@@ -219,6 +244,7 @@ const Sim = (() => {
   function tickStaff(S, s, d) {
     if (s.k === 'kasse') { const mine = S.objs.filter(o => o.k === 'kasse'); if (!obj(S, s.reg)) s.reg = null; if (!s.reg) { const free = mine.find(r => !S.staff.some(x => x.reg === r.id)); if (free) s.reg = free.id; } if (s.reg) { const r = obj(S, s.reg), st = serviceTile(r); if (!s.path.length && Math.hypot(s.x - (st[0] + .5), s.y - (st[1] + .5)) > .4) setPath(s, path(S, s.x, s.y, st[0], st[1]) || []); sfollow(s, d); } return; }
     if (s.k === 'putz') { if (!s.path.length || s.pi >= s.path.length) { const m = S.messes.slice().sort((a, b) => Math.hypot(a.x - s.x, a.y - s.y) - Math.hypot(b.x - s.x, b.y - s.y))[0]; if (m && !s.task) { const p = path(S, s.x, s.y, m.x, m.y); if (p) { setPath(s, p); s.task = m; } } else if (s.task && s.pi >= s.path.length) { S.messes = S.messes.filter(x => x !== s.task && x.id !== s.task.id); s.task = null; s.path = []; } } sfollow(s, d); if (s.trait === 'schusselig' && R() < .0008 && S.messes.length < 12) S.messes.push({ x: Math.floor(s.x), y: Math.floor(s.y), id: S.nid++ }); return; }
+    if (s.k === 'baecker') { const ov = S.objs.filter(o => D.OBJ[o.k].bake && o.p).sort((a, b) => ratio(S, a) - ratio(S, b))[0]; if (!ov) return; const tg = accessTiles(S, ov)[0]; if (!tg) return; const dist = Math.hypot(s.x - tg[0] - .5, s.y - tg[1] - .5); if (dist > .6 && (!s.path.length || s.pi >= s.path.length)) setPath(s, path(S, s.x, s.y, tg[0], tg[1]) || []); sfollow(s, d); if (dist <= .9 && ratio(S, ov) < .5) { s.bk = (s.bk || 0) + d * (s.rate || 1); if (s.bk > 6) { s.bk = 0; bakeOne(S, ov); } } return; }
     if (s.k === 'wache') { if (!s.bspd) s.bspd = s.spd; const th = S.customers.find(c => c.st === 'flee' && Math.hypot(s.x - c.x, s.y - c.y) < (S.up.kamera ? 16 : 9)); if (th) { s.spd = 3.5; s.cd = (s.cd || 0) - d; if (s.cd <= 0 || !s.path.length) { s.cd = .3; setPath(s, path(S, s.x, s.y, Math.floor(th.x), Math.floor(th.y)) || []); } if (Math.hypot(s.x - th.x, s.y - th.y) < 1.05) { hold(S, th, 'guard'); s.path = []; } sfollow(s, d); return; } s.spd = s.bspd; const door = doorTile(S); if (!s.path.length && Math.hypot(s.x - 3.5, s.y - (S.H - 2.5)) > .6) setPath(s, path(S, s.x, s.y, 3, S.H - 2) || []); sfollow(s, d); return; }
     // Regalauffüller / Bot
     if (s.path.length && s.pi < s.path.length) { sfollow(s, d); return; } s.path = []; s.pi = 0;
@@ -229,7 +255,7 @@ const Sim = (() => {
     const ramp = byKind(S, 'ramp')[0]; if (!ramp || !S.ramp.length) return; let best = null, bs = 9; S.ramp.forEach(b => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p && x.qty < cap(S, x)).sort((a, c) => a.qty / cap(S, a) - c.qty / cap(S, c))[0]; if (o) { const r = o.qty / cap(S, o); if (r < bs && r < .85) { bs = r; best = b; } } });
     if (best) { const p = pathToObj(S, s.x, s.y, ramp); if (p) { setPath(s, p); s.task = { t: 'pick', box: best }; } }
   }
-  function addStock(S, o, box) { const room = cap(S, o) - o.qty; if (room <= 0) return 0; const mv = Math.min(room, box.n); o.age = (o.age * o.qty + (box.age || 0) * mv) / (o.qty + mv); o.qty += mv; box.n -= mv; return mv; }
+  function addStock(S, o, box, n) { const room = cap(S, o) - o.qty; if (room <= 0) return 0; const mv = Math.min(room, box.n, n == null ? 1e9 : n); o.age = (o.age * o.qty + (box.age || 0) * mv) / (o.qty + mv); o.qty += mv; box.n -= mv; return mv; }
 
   // ---------- Spieler ----------
   const pl_run = S => !!S.player.run;
@@ -244,9 +270,10 @@ const Sim = (() => {
     const pl = S.player; for (const c of S.customers) { if ((c.st === 'flee' || c.st === 'stun') && Math.hypot(pl.x - c.x, pl.y - c.y) < 1.6) return { a: 'stop', c, label: c.st === 'flee' ? '👊 Dieb schubsen!' : '🚔 Festhalten & Polizei rufen' }; }
     for (const r of S.objs) { if (r.k !== 'kasse') continue; const st = serviceTile(r); if (Math.hypot(pl.x - (st[0] + .5), pl.y - (st[1] + .5)) > 1.25) continue; const c = S.customers.find(x => x.st === 'pay' && x.reg_q === r.id); if (c) { const left = Math.ceil((c.svc - 1.1) / .75 - 1e-6); return { a: 'scan', c, label: left > 0 ? `📟 Scannen (${left} Artikel)` : '💶 Kassieren' }; } }
     const near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.5), fd = o => rectDist(pl.x, pl.y, o) - (focus && o.id === focus.id ? 5 : 0);
-    if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
+    if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} einräumen (${b.n} im Karton)` }; }
     const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: '🧽 Pfütze wischen' };
     const rp = near.find(o => o.k === 'ramp'); if (rp) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.length) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
+    const pcn = near.find(o => o.k === 'pc'); if (pcn) return { a: 'pc', o: pcn, label: '💻 Bestell-PC benutzen' };
     const rd = near.find(o => o.k === 'radio'); if (rd) return { a: 'radio', o: rd, label: '📻 Radio an/aus' };
     return null;
   }
@@ -258,11 +285,16 @@ const Sim = (() => {
   }
   const freeFor = (S, p) => S.objs.some(o => isShelf(o) && !o.p && fits(o, p)), isNew = (S, b) => !S.objs.some(o => isShelf(o) && o.p === b.p) && freeFor(S, b.p);
   function boxIdx(S) { let bi = 0, bs = 9; S.ramp.forEach((b, i) => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p).sort((a, c) => ratio(S, a) - ratio(S, c))[0], r = o ? ratio(S, o) : isNew(S, b) ? .6 : 1.5; if (r < bs) { bs = r; bi = i; } }); return bi; }
-  function stockInto(S, o, b) { const pl = S.player; if (!o.p || (o.qty === 0 && o.p !== b.p)) { o.p = b.p; o.age = 0; o.disc = false; } const n = addStock(S, o, b); if (b.n <= 0) { const i = pl.carry.indexOf(b); if (i >= 0) pl.carry.splice(i, 1); } S.fx.push({ t: 'stock', n, p: b.p }); if (b.n > 0 && !shelfFor(S, b)) { const i = pl.carry.indexOf(b); if (i >= 0) { pl.carry.splice(i, 1); S.ramp.push(b); S.fx.push({ t: 'back', p: b.p }); } } return n; }
+  function stockInto(S, o, b, n) {   // legt n Stück (Standard: 1) aus dem Karton ins Regal
+    const pl = S.player; if (!o.p || (o.qty === 0 && o.p !== b.p)) { o.p = b.p; o.age = 0; o.disc = false; } const k = addStock(S, o, b, n == null ? 1 : n); b.put = (b.put || 0) + k; if (k > 0) S.fx.push({ t: 'put', p: b.p, o: o.id });
+    if (b.n <= 0) { const i = pl.carry.indexOf(b); if (i >= 0) pl.carry.splice(i, 1); S.fx.push({ t: 'boxdone', p: b.p, n: b.put }); }
+    else if (k === 0 || cap(S, o) - o.qty <= 0) { S.fx.push({ t: 'full', p: b.p, n: b.put }); b.put = 0; if (!shelfFor(S, b)) { const i = pl.carry.indexOf(b); if (i >= 0) { pl.carry.splice(i, 1); S.ramp.push(b); S.fx.push({ t: 'back', p: b.p }); } } }
+    return k;
+  }
   function pickBox(S) { const b = S.ramp.splice(boxIdx(S), 1)[0]; if (b) { S.player.carry.push(b); S.fx.push({ t: 'pick', p: b.p }); } flush(S); return b; }
   function assistTick(S, d) {
     if (S.assist === false || S.phase === 'summary') return; const pl = S.player; let busy = false;
-    if (pl.carry.length) { const b = pl.carry[0], sh = shelfFor(S, b); if (sh && rectDist(pl.x, pl.y, sh) < 1.4) { busy = true; pl.dw = (pl.dw || 0) + d; if (pl.dw > .3) { stockInto(S, sh, b); pl.dw = 0; } } }
+    if (pl.carry.length) { const b = pl.carry[0], sh = shelfFor(S, b); if (sh && rectDist(pl.x, pl.y, sh) < 1.4) { busy = true; pl.dw = (pl.dw || 0) + d; if (pl.dw > .3) { pl.acc = (pl.acc || 0) + d * 7; while (pl.acc >= 1) { pl.acc -= 1; if (!stockInto(S, sh, b, 1) || pl.carry.indexOf(b) < 0) { pl.acc = 0; break; } } } } }
     else { const rp = S.objs.find(o => o.k === 'ramp'); if (rp && S.ramp.length && rectDist(pl.x, pl.y, rp) < 1.4 && S.ramp.some(b => isNew(S, b) || S.objs.some(o => isShelf(o) && o.p === b.p && ratio(S, o) < .75))) { busy = true; pl.dw = (pl.dw || 0) + d; if (pl.dw > .3) { pickBox(S); pl.dw = 0; } } }
     if (!busy) pl.dw = 0;
   }
@@ -272,7 +304,7 @@ const Sim = (() => {
     if (S.phase === 'open' || S.phase === 'closing') { const r = S.objs.find(o => o.k === 'kasse' && S.customers.some(c => (c.st === 'pay' || c.st === 'queue') && c.reg_q === o.id)); if (r && !S.staff.some(s => s.k === 'kasse' && s.reg === r.id)) { const st = serviceTile(r); if (Math.hypot(pl.x - st[0] - .5, pl.y - st[1] - .5) > 1.2) return { txt: '💶 Kunden warten! Geh hinter die Kasse – dort scannst du mit E', x: st[0] + .5, y: st[1] + .5, e: '💶' }; } }
     if (pl.carry.length) { const b = pl.carry[0], sh = shelfFor(S, b); if (sh) { const t = ctr(sh); return { txt: `${P[b.p].e} Bring den Karton zum markierten Regal – einfach hinlaufen, es räumt sich von selbst ein`, x: t.x, y: t.y, e: P[b.p].e }; } return { txt: '🔧 Kein Regal dafür frei – baue ein passendes Regal (Bauen) oder stell den Karton zurück', x: null, y: null }; }
     const low = S.objs.filter(o => isShelf(o) && o.p && ratio(S, o) < (S.phase === 'prep' ? .7 : .45));
-    if (low.length) { const rp = S.objs.find(o => o.k === 'ramp'); if (S.ramp.some(b => low.some(o => o.p === b.p)) && rp) { const t = ctr(rp); return { txt: '📦 Hol einen Karton an der Warenannahme (markiert) – einfach hinlaufen', x: t.x, y: t.y, e: '📦' }; } if (S.ramp.length && rp) { const t = ctr(rp); return { txt: '📦 Hol einen Karton an der Warenannahme (markiert)', x: t.x, y: t.y, e: '📦' }; } return { txt: `🛒 ${P[low[0].p].name} wird knapp – bestelle im Markt (Lieferung morgen früh)`, x: null, y: null }; }
+    if (low.length) { const rp = S.objs.find(o => o.k === 'ramp'); if (S.ramp.some(b => low.some(o => o.p === b.p)) && rp) { const t = ctr(rp); return { txt: '📦 Hol einen Karton an der Warenannahme (markiert) – einfach hinlaufen', x: t.x, y: t.y, e: '📦' }; } if (S.ramp.length && rp) { const t = ctr(rp); return { txt: '📦 Hol einen Karton an der Warenannahme (markiert)', x: t.x, y: t.y, e: '📦' }; } const pcx = S.objs.find(o => o.k === 'pc'), pt = pcx ? ctr(pcx) : { x: null, y: null }; return { txt: `💻 ${P[low[0].p].name} wird knapp – bestelle am Bestell-PC (Lieferung morgen früh)`, x: pt.x, y: pt.y, e: '💻' }; }
     const fresh = S.ramp.find(b => isNew(S, b)), rp2 = S.objs.find(o => o.k === 'ramp'); if (fresh && rp2) { const t = ctr(rp2); return { txt: `📦 Neue Ware an der Warenannahme (${P[fresh.p].name}) – hol den Karton, er kommt ins freie Regal`, x: t.x, y: t.y, e: '📦' }; }
     if (S.phase === 'prep') return { txt: '▶ Alles bereit! Oben auf „Laden öffnen“ tippen.', x: null, y: null };
     return null;
@@ -281,7 +313,8 @@ const Sim = (() => {
     const c = context(S, focus); if (!c) return null; const pl = S.player;
     if (c.a === 'stop') { const t = c.c; if (t.st === 'flee') { giveBack(S, t); t.loot = false; t.st = 'stun'; t.stun = 4.5; t.stars = 1; bub(t, '💥'); t.bt = 1.3; S.xp += 3; S.fx.push({ t: 'smack' }); } else if (t.st === 'stun') hold(S, t, 'player'); }
     else if (c.a === 'scan') { c.c.svc = Math.max(0, c.c.svc - .78); S.xp += .05; }
-    else if (c.a === 'stock') stockInto(S, c.o, pl.carry[0]);
+    else if (c.a === 'stock') stockInto(S, c.o, pl.carry[0], 1);
+    else if (c.a === 'pc') S.fx.push({ t: 'pc' });
     else if (c.a === 'clean') { S.messes = S.messes.filter(m => m !== c.m); S.xp += 1; }
     else if (c.a === 'pick') pickBox(S);
     else if (c.a === 'back') { S.ramp.push(pl.carry.pop()); }
@@ -334,7 +367,7 @@ const Sim = (() => {
   function step(S, dt) { if (S.phase === 'summary') return; const n = Math.max(1, Math.ceil(dt / .1)), d = dt / n; for (let i = 0; i < n; i++) { tick(S, d); if (S.phase === 'summary') break; } }
   const clock = S => { const m = Math.floor(8 * 60 + Math.min(S.t, DAYLEN) * MIN_PER_SEC); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   const save = S => JSON.stringify(S, (k, v) => k[0] === '_' ? undefined : v);
-  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; if (S.assist == null) S.assist = true; if (S.hints == null) S.hints = true; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; S.promo = S.promo || {}; S.staff.forEach(s => { if (!s.lv) s.lv = 1; }); S.police = S.police || []; S.fx = []; S.customers.forEach(c => { if (c.st === 'arrest' || c.st === 'held') { c.dead = true; } }); S.police = []; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; return S; };
-  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, season, train, togglePromo, wageOf, nextStep, shelfFor, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
+  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; if (!S.shopName) { S.shopName = 'Markthalle 24'; S.slogan = 'Frisch · Fair · Freundlich'; S.signCol = '#0f2b5a'; S.named = true; } S.cart = S.cart || {}; S.rules = S.rules || {}; if (!S.floor) { S.floor = 'fliese'; S.wall = 'beige'; S.own = { floor: { fliese: true }, wall: { beige: true } }; } if (S.assist == null) S.assist = true; if (S.hints == null) S.hints = true; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; S.promo = S.promo || {}; S.staff.forEach(s => { if (!s.lv) s.lv = 1; }); S.police = S.police || []; S.fx = []; S.customers.forEach(c => { if (c.st === 'arrest' || c.st === 'held') { c.dead = true; } }); S.police = []; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; if (!S.objs.some(o => o.k === 'pc')) for (const [x, y] of [[2, 4], [3, 6], [2, 8], [4, 9], [13, 9], [15, 9]]) if (place(S, 'pc', x, y, false, {})) break; return S; };
+  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, pending, giveChange, setIdentity, cartSet, cartCost, cartOrder, suggest, unitsOf, capOf, rule, setRule, nearPC, buyFloor, buyWall, stockInto, season, train, togglePromo, wageOf, nextStep, shelfFor, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
 })();
 if (typeof module !== 'undefined') module.exports = Sim;
