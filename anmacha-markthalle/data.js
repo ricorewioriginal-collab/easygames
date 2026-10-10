@@ -50,6 +50,7 @@ const Data = (() => {
     deko: { name: 'Zimmerpflanze', e: '🪴', w: 1, h: 1, st: [], cap: 0, price: 2500, lvl: 1, col: '#2f6a3a' },
     ofen: { name: 'Backstation', e: '🥐', w: 2, h: 1, st: ['prod'], cap: 24, price: 80000, lvl: 3, col: '#c27a2a', power: 900, only: ['brot'], bake: 1 },
     lager: { name: 'Lager-Regal', e: '🏗️', w: 2, h: 1, st: [], cap: 0, price: 40000, lvl: 2, col: '#6a5a4a', store: 10 },
+    radio: { name: 'Marktradio', e: '📻', w: 1, h: 1, st: [], cap: 0, price: 15000, lvl: 1, col: '#3a3a4a', radio: 1 },
     ramp: { name: 'Rampe', e: '📦', w: 3, h: 1, st: [], cap: 0, price: 0, lvl: 1, col: '#8a6a30', fixed: 1 }
   };
   const TYPES = {
@@ -78,7 +79,7 @@ const Data = (() => {
   const LAST = ['Brandt', 'Kuhn', 'Vogel', 'Sommer', 'Lindner', 'Wolter', 'Ebert', 'Pohl', 'Funk', 'Jäger', 'Haas', 'Krause', 'Neumann', 'Albers', 'Roth'];
   const UPGRADES = [
     { id: 'wagen', name: 'Rollwagen', e: '🛒', price: 35000, lvl: 2, desc: 'Du trägst 3 Kartons statt 1.' }, { id: 'neon', name: 'Neon-Reklame', e: '💡', price: 60000, lvl: 3, desc: '+15 % Laufkundschaft.' },
-    { id: 'klima', name: 'Klimaanlage', e: '🌬️', price: 90000, lvl: 4, desc: 'Kunden bleiben länger zufrieden, Strom +€3/Tag.' }, { id: 'kamera', name: 'Kameras', e: '📹', price: 80000, lvl: 4, desc: 'Diebe werden öfter erwischt.' },
+    { id: 'klima', name: 'Klimaanlage', e: '🌬️', price: 90000, lvl: 4, desc: 'Kunden bleiben länger zufrieden, Strom +€3/Tag.' }, { id: 'kamera', name: 'Kameras', e: '📹', price: 80000, lvl: 4, desc: 'Diebe werden mit 🚨 markiert, Wachmänner sehen sie schon aus 16 Feldern.' },
     { id: 'radio', name: 'Radiostudio „Markt-Funk 24“', e: '📻', price: 80000, lvl: 3, desc: 'Eigener Sender: Musikstil & Werbespots lenken die Nachfrage.' }, { id: 'scanner', name: 'Marktforschung', e: '📈', price: 70000, lvl: 3, desc: 'Zeigt Nachfrage, Wunschzettel & Preisradar.' },
     { id: 'drohne', name: 'Express-Drohne', e: '🚁', price: 100000, lvl: 5, desc: 'Bestellungen kommen in 40 Sekunden (+25 % Gebühr).' }, { id: 'regalpl', name: 'Regal-Plus', e: '📚', price: 120000, lvl: 5, desc: '+25 % Fassungsvermögen aller Regale.' },
     { id: 'notstrom', name: 'Notstrom', e: '🔋', price: 110000, lvl: 6, desc: 'Stromausfälle verderben nichts mehr.' }, { id: 'auto', name: 'Nachbestell-Automat', e: '🔁', price: 140000, lvl: 8, desc: 'Bestellt leere Regalwaren automatisch nach.' }
