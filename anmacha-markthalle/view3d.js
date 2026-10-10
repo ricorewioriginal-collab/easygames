@@ -3,7 +3,7 @@
 const View3D = typeof THREE === 'undefined' ? null : (() => {
   const T3 = THREE, D = Data, P = D.PRODUCTS, S0 = 1 / 1.6;
   let radioLeds = [], R, scene, cam, topCam, cv, W = 0, H = 0, aspect = 1, world = null, worldKey = '', ceil = null, heat = null, heatT = 0, sun, hemi, ghost = null, carryG = null, carryKey = '', rampG = null, rampKey = '', messG = null, messKey = '', skyOut = null, lights = [];
-  const st = { yaw: 0, pitch: 0, top: false, bob: 0, radioOn: false }, objs = new Map(), people = new Map(), hits = [], ray = new T3.Raycaster(), dummy = new T3.Object3D(), v2 = new T3.Vector2();
+  const st = { yaw: 0, pitch: 0, top: false, bob: 0, radioOn: false, q: 1 }, objs = new Map(), people = new Map(), hits = [], ray = new T3.Raycaster(), dummy = new T3.Object3D(), v2 = new T3.Vector2();
   const geo = { box: new T3.BoxGeometry(1, 1, 1), sph: new T3.SphereGeometry(.5, 14, 10), cyl: new T3.CylinderGeometry(.5, .5, 1, 14), plane: new T3.PlaneGeometry(1, 1), cone: new T3.ConeGeometry(.5, 1, 12) };
   const mats = {}, mat = (c, o) => { const k = c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T3.MeshLambertMaterial(Object.assign({ color: c }, o || {}))); };
   const mesh = (g, m, x, y, z, sx, sy, sz) => { const o = new T3.Mesh(g, m); o.position.set(x || 0, y || 0, z || 0); o.scale.set(sx == null ? 1 : sx, sy == null ? 1 : sy, sz == null ? 1 : sz); return o; };
@@ -44,13 +44,20 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     const legL = limb(body, -.105 * sx, .84, .8, .17, bot, shoe), legR = limb(body, .105 * sx, .84, .8, .17, bot, shoe);
     const armL = limb(body, -.265 * sx, 1.42, .56, .11, o.short ? sk : top, null, sk), armR = limb(body, .265 * sx, 1.42, .56, .11, o.short ? sk : top, null, sk);
     if (o.basket) { const b = new T3.Group(); b.position.set(0, -.62, .08); b.add(mesh(geo.box, mat('#d9302b'), 0, 0, 0, .3, .16, .22)); b.add(mesh(geo.box, mat('#f0c040'), 0, .1, 0, .24, .1, .16)); b.visible = false; armR.add(b); root.userData.basket = b; }
+    if (o.cart) { const ct = makeCart(); ct.position.set(0, 0, .78); body.add(ct); root.userData.cart = ct; }
     const bub = new T3.Sprite(new T3.SpriteMaterial({ map: bubTex('❓'), transparent: true, depthTest: false })); bub.scale.set(.5, .5, .5); bub.position.set(0, 2.25, 0); bub.visible = false; bub.renderOrder = 10; root.add(bub);
     const carry = mesh(geo.box, mat('#b98a4a'), 0, 1.0, .32, .4, .32, .32); carry.visible = false; body.add(carry);
     root.scale.setScalar(S0 * (o.h || 1)); root.userData = Object.assign(root.userData, { body, legL, legR, armL, armR, head, bub, carry, ph: Math.random() * 6, lx: 0, lz: 0, yaw: 0, spd: 0 }); return root;
   }
+  function makeCart() {
+    const g = new T3.Group(), cm = '#b9c1ce'; g.add(bx(cm, .52, .04, .8, 0, .3, 0)); [-1, 1].forEach(s => g.add(bx(cm, .03, .3, .8, s * .26, .53, 0))); g.add(bx(cm, .52, .3, .03, 0, .53, .4)); g.add(bx(cm, .52, .3, .03, 0, .53, -.4)); g.add(bx('#e03131', .56, .04, .06, 0, .98, -.43)); [-1, 1].forEach(s => g.add(bx(cm, .03, .6, .03, s * .26, .7, -.41)));
+    [-1, 1].forEach(a => [-.3, .3].forEach(b => { const w = mesh(geo.cyl, mat('#222'), a * .22, .08, b, .1, .04, .1); w.rotation.z = Math.PI / 2; g.add(w); }));
+    const it = new T3.Group(); ['#ff9a1f', '#43e08a', '#4dabf7', '#ffd43b', '#e03131'].forEach((c, i) => it.add(bx(c, .2, .18, .2, -.15 + (i % 2) * .3, .52 + Math.floor(i / 2) * .1, -.22 + Math.floor(i / 2) * .22))); it.visible = false; g.add(it); g.userData.items = it; return g;
+  }
+  function makeCar(col) { const g = new T3.Group(); g.add(bx(col, 3.0, .55, 1.35, 0, .5, 0)); g.add(bx('#c9d6e8', 1.6, .5, 1.25, -.2, 1.0, 0)); [-1, 1].forEach(a => [-.62, .62].forEach(b => g.add(mesh(geo.cyl, mat('#111'), a * .95, .26, b, .5, .22, .5)).children.forEach(() => { }))); g.children.slice(2).forEach(w => { w.rotation.x = Math.PI / 2; }); return g; }
   function customerLook(c) {
     const h = hash(c.id * 7 + 3), pick = (a, k) => a[(h >> k) % a.length], tp = TOPS[c.type] || TOPS.fam, female = c.type === 'sen' ? (h & 1) : (h >> 3) & 1;
-    return { skin: pick(SKIN, 2), hair: c.type === 'sen' ? pick(['#a0a0a0', '#d8d8d8', '#6a6a6a'], 5) : pick(HAIR, 5), top: pick(tp, 6), bottom: pick(['#2b3a55', '#3a3a3a', '#5a4632', '#1f2a44', '#6b5b4a'], 8), shoe: pick(['#222', '#fff', '#8a3b2a'], 10), hs: female ? pick(['long', 'bun', 'pony', 'short'], 11) : pick(['short', 'short', 'bald', 'cap'], 11), cap: c.type === 'stud' && !female && (h >> 14) % 2 ? pick(['#d6336c', '#1c7ed6', '#212529'], 15) : null, glasses: (h >> 17) % 4 === 0, skirt: female && (h >> 19) % 3 === 0 && c.type !== 'job', short: (h >> 21) % 3 === 0, stout: c.type === 'fam' || c.type === 'sen' ? 1.12 : 1, h: c.type === 'sen' ? .96 : .94 + ((h >> 23) % 12) / 100, basket: true, beard: !female && (h >> 25) % 4 === 0 && c.type !== 'stud', pack: c.type === 'stud' && (h >> 26) % 2 ? pick(['#d6336c', '#1c7ed6', '#212529'], 27) : null, collar: c.type === 'job' || c.type === 'krit' };
+    return { skin: pick(SKIN, 2), hair: c.type === 'sen' ? pick(['#a0a0a0', '#d8d8d8', '#6a6a6a'], 5) : pick(HAIR, 5), top: pick(tp, 6), bottom: pick(['#2b3a55', '#3a3a3a', '#5a4632', '#1f2a44', '#6b5b4a'], 8), shoe: pick(['#222', '#fff', '#8a3b2a'], 10), hs: female ? pick(['long', 'bun', 'pony', 'short'], 11) : pick(['short', 'short', 'bald', 'cap'], 11), cap: c.type === 'stud' && !female && (h >> 14) % 2 ? pick(['#d6336c', '#1c7ed6', '#212529'], 15) : null, glasses: (h >> 17) % 4 === 0, skirt: female && (h >> 19) % 3 === 0 && c.type !== 'job', short: (h >> 21) % 3 === 0, stout: c.type === 'fam' || c.type === 'sen' ? 1.12 : 1, h: c.type === 'sen' ? .96 : .94 + ((h >> 23) % 12) / 100, cart: c.type === 'fam' || (h >> 29) % 4 === 0, basket: !(c.type === 'fam' || (h >> 29) % 4 === 0), beard: !female && (h >> 25) % 4 === 0 && c.type !== 'stud', pack: c.type === 'stud' && (h >> 26) % 2 ? pick(['#d6336c', '#1c7ed6', '#212529'], 27) : null, collar: c.type === 'job' || c.type === 'krit' };
   }
   function kidLook(c) {
     const h = hash(c.id * 31 + 9), pick = (a, k) => a[(h >> k) % a.length]; return { skin: pick(SKIN, 2), hair: pick(HAIR, 5), top: pick(['#ff6b6b', '#4dabf7', '#ffd43b', '#69db7c'], 6), bottom: pick(['#364fc7', '#495057', '#862e9c'], 8), shoe: pick(['#d6336c', '#fff', '#fab005'], 10), hs: pick(['short', 'pony', 'short'], 11), short: true, h: .6, pack: (h >> 14) % 2 ? '#ff922b' : null };
@@ -71,7 +78,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   function animate(h, dt, moving, spd, act) {
     const u = h.userData; u.ph += dt * (4 + spd * 2.2); const sw = moving ? Math.sin(u.ph) * Math.min(.7, .3 + spd * .12) : 0, k = Math.min(1, dt * 10);
     if (u.legL) { u.legL.rotation.x += (sw - u.legL.rotation.x) * k; u.legR.rotation.x += (-sw - u.legR.rotation.x) * k; }
-    let al = -sw * .8, ar = sw * .8; if (act === 'cuffed') { al = ar = .6; } else if (act === 'stun') { al = ar = -.4 + Math.sin(u.ph * 3) * .5; } else if (act === 'reach') { ar = -1.35 + Math.sin(u.ph * .7) * .12; al = -.2; } else if (act === 'carry') { al = ar = -1.1; } else if (act === 'pay') { ar = -.9 + Math.sin(u.ph * 1.5) * .15; } 
+    let al = -sw * .8, ar = sw * .8; if (act === 'cart') { al = ar = -.95; } else if (act === 'cuffed') { al = ar = .6; } else if (act === 'stun') { al = ar = -.4 + Math.sin(u.ph * 3) * .5; } else if (act === 'reach') { ar = -1.35 + Math.sin(u.ph * .7) * .12; al = -.2; } else if (act === 'carry') { al = ar = -1.1; } else if (act === 'pay') { ar = -.9 + Math.sin(u.ph * 1.5) * .15; } 
     u.armL.rotation.x += (al - u.armL.rotation.x) * k; u.armR.rotation.x += (ar - u.armR.rotation.x) * k; u.body.position.y = moving ? Math.abs(Math.sin(u.ph)) * .025 : Math.sin(u.ph * .3) * .004;
   }
   // ---------- Welt ----------
@@ -86,7 +93,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     const floorTex = ctex(256, 256, (g, w, h) => { for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#aab3c4' : '#bcc4d3'; g.fillRect(x * 128, y * 128, 128, 128); g.strokeStyle = 'rgba(0,0,0,.12)'; g.lineWidth = 2; g.strokeRect(x * 128, y * 128, 128, 128); } }); floorTex.wrapS = floorTex.wrapT = T3.RepeatWrapping; floorTex.repeat.set((W - 2) / 2, (Hh - 2) / 2);
     const fl = mesh(geo.plane, new T3.MeshLambertMaterial({ map: floorTex }), W / 2, 0, Hh / 2, W - 2, Hh - 2, 1); fl.rotation.x = -Math.PI / 2; world.add(fl);
     // Außenwelt
-    const gr = mesh(geo.plane, mat('#3b4a3a'), W / 2, -.02, Hh / 2, 220, 220, 1); gr.rotation.x = -Math.PI / 2; world.add(gr); const sw = mesh(geo.plane, mat('#b8bcc6'), W / 2, -.01, Hh + 2.5, W + 40, 5, 1); sw.rotation.x = -Math.PI / 2; world.add(sw); const rd = mesh(geo.plane, mat('#3a3d46'), W / 2, -.005, Hh + 8.5, 220, 7, 1); rd.rotation.x = -Math.PI / 2; world.add(rd);
+    const gr = mesh(geo.plane, mat('#3b4a3a'), W / 2, -.02, Hh / 2, 220, 220, 1); gr.rotation.x = -Math.PI / 2; world.add(gr); world.userData.ground = gr; seasonKey = ''; const sw = mesh(geo.plane, mat('#b8bcc6'), W / 2, -.01, Hh + 2.5, W + 40, 5, 1); sw.rotation.x = -Math.PI / 2; world.add(sw); const rd = mesh(geo.plane, mat('#3a3d46'), W / 2, -.005, Hh + 8.5, 220, 7, 1); rd.rotation.x = -Math.PI / 2; world.add(rd);
     for (let i = -8; i < 12; i++) { const m = mesh(geo.plane, mat('#e8e8e8'), W / 2 + i * 6, 0, Hh + 8.5, 2.2, .18, 1); m.rotation.x = -Math.PI / 2; world.add(m); }
     const bil = new T3.Group(); bil.position.set(W / 2 + 2, 0, Hh + 22); bil.add(bx('#b02a37', 22, 7, 8, 0, 3.5, 0)); bil.add(mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex('BILLIGO', 'Immer billiger!', '#b02a37') }), 0, 5.4, -4.05, 14, 4.4, 1)); bil.children[1].rotation.y = Math.PI; bil.add(bx('#ffd24a', 20, 2.2, .1, 0, 1.2, -4.05)); bil.rotation.y = 0; world.add(bil);
     [[-12, 15], [W + 10, 16], [W + 24, 24], [-22, 28]].forEach(([x, z]) => { const b = bx('#6b7488', 10, 6 + (x * 3 % 5), 9, x, 4, z); world.add(b); });
@@ -108,7 +115,32 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     // Decke + Lampen
     ceil = new T3.Group(); ceil.add(mesh(geo.plane, new T3.MeshBasicMaterial({ color: '#e9ecf3' }), W / 2, wallH, Hh / 2, W - 2, Hh - 2, 1)); ceil.children[0].rotation.x = Math.PI / 2; const lm = new T3.MeshBasicMaterial({ color: '#fffbe8' });
     for (let x = 2.5; x < W - 1.5; x += 3) for (let z = 2.5; z < Hh - 1.5; z += 3) { const l = mesh(geo.box, lm, x, wallH - .03, z, 1.6, .04, .4); ceil.add(l); lights.push(l); } world.add(ceil);
+    for (let i = 0; i < 3; i++) { const c = makeCart(); c.scale.setScalar(S0); c.position.set(4.35 + i * .24, 0, Hh - 1.3); c.rotation.y = Math.PI / 2; world.add(c); }
+    outdoor = { peds: [], cars: [] };
+    for (let i = 0; i < 4; i++) { const h = makeHuman({ skin: SKIN[i % 5], hair: HAIR[(i * 3) % 7], hs: ['short', 'long', 'bun', 'pony'][i], top: ['#e8590c', '#364fc7', '#2f9e44', '#c2255c'][i], bottom: '#2b3a55', shoe: '#222', h: .95 + i * .03 }), dir = i % 2 ? 1 : -1; h.position.set(-6 + i * 9, 0, Hh + 1.9 + i * .4); h.userData.dir = dir; h.userData.v = .9 + i * .18; h.rotation.y = dir > 0 ? Math.PI / 2 : -Math.PI / 2; world.add(h); outdoor.peds.push(h); }
+    [['#d94a3a', 4, 1, 5], ['#2b6cb0', 20, 1, 6.5], ['#e9ecef', 30, -1, 5.5], ['#f2b705', -6, -1, 7]].forEach(([c, x, dir, v]) => { const car = makeCar(c); car.position.set(x, 0, dir > 0 ? Hh + 7.1 : Hh + 9.9); car.rotation.y = dir > 0 ? 0 : Math.PI; car.userData = { dir, v }; world.add(car); outdoor.cars.push(car); });
     worldKey = W + 'x' + Hh;
+  }
+  let outdoor = { peds: [], cars: [] }, seasonG = null, seasonKey = '', precip = null;
+  function syncSeason(S) {
+    const sz = Sim.season(S), key = sz.i + '|' + (sz.hol ? sz.hol.n : ''); if (key === seasonKey) return; seasonKey = key; if (seasonG) world.remove(seasonG); seasonG = new T3.Group(); world.add(seasonG);
+    world.userData.ground.material = mat(['#4a6b3a', '#66803a', '#6a5a3a', '#dde6ef'][sz.i]); const W = S.W, H = S.H, lamp = (c, x, y, z, r) => mesh(geo.sph, new T3.MeshBasicMaterial({ color: c }), x, y, z, r || .07, r || .07, r || .07), garland = cols => { for (let i = 0; i < Math.floor(W * 1.6); i++) { const x = 1.2 + i * (W - 2.4) / Math.floor(W * 1.6); seasonG.add(lamp(cols[i % cols.length], x, 1.9 - Math.sin(i * .6) * .04 - .06 * Math.abs(Math.sin(i / 5)), 1.04)); } };
+    if (!sz.hol) return; const h = sz.hol, cols = { 'Weihnachtszeit': '#7a1f1f', 'Halloween': '#5a2a00', 'Osterwoche': '#5a2f8a', 'Grillfest': '#8a3a10' }[h.n] || '#444';
+    const ban = mesh(geo.plane, new T3.MeshBasicMaterial({ map: signTex(h.e + ' ' + h.n, 'Besondere Preise – nur jetzt!', cols) }), W - 1.04, 1.5, H / 2, 3.4, .56, 1); ban.rotation.y = -Math.PI / 2; seasonG.add(ban);
+    if (h.n === 'Weihnachtszeit') { garland(['#ff3b30', '#34c759', '#ffd60a', '#0a84ff']); const t = new T3.Group(); t.position.set(W - 2.3, 0, H - 2.3); t.add(mesh(geo.cyl, mat('#6b4a2a'), 0, .15, 0, .16, .3, .16)); [[.62, .55, .55], [.5, .95, .5], [.36, 1.3, .42]].forEach(([r, y, hh]) => t.add(mesh(geo.cone, mat('#1f7a3a'), 0, y, 0, r * 2, hh, r * 2))); for (let i = 0; i < 16; i++) { const a = i * 2.4, yy = .45 + (i % 8) * .13, rr = .5 - yy * .24; t.add(lamp(['#ff3b30', '#ffd60a', '#0a84ff', '#ff2d95'][i % 4], Math.cos(a) * rr, yy, Math.sin(a) * rr, .045)); } t.add(mesh(geo.cone, new T3.MeshBasicMaterial({ color: '#ffe066' }), 0, 1.62, 0, .16, .2, .16)); [[.5, .05, '#e03131'], [-.5, .2, '#4dabf7'], [.1, .62, '#ffd43b']].forEach(([x, z, c]) => t.add(bx(c, .26, .2, .26, x, .1, z))); seasonG.add(t); }
+    else if (h.n === 'Halloween') { garland(['#ff9a1f', '#8b5cf6']); [[W - 2, H - 1.6], [W - 3, H - 1.7], [6.8, H - 1.5], [1.7, 2.2], [W - 1.7, 2.2]].forEach(([x, z]) => { const p = new T3.Group(); p.position.set(x, 0, z); p.add(mesh(geo.sph, mat('#ff8a1f'), 0, .2, 0, .42, .34, .42)); p.add(mesh(geo.cyl, mat('#2f7d3a'), 0, .4, 0, .06, .1, .06)); [-1, 1].forEach(s => p.add(bx('#222', .07, .07, .03, s * .1, .24, .2))); p.add(bx('#222', .16, .04, .03, 0, .12, .2)); seasonG.add(p); }); }
+    else if (h.n === 'Osterwoche') { garland(['#ff9ad0', '#9ad7ff', '#ffe28a', '#b4f0a8']); for (let i = 0; i < 14; i++) { const x = 4.4 + i * .52; if (x > W - 1.5) break; seasonG.add(mesh(geo.sph, mat(['#ff9ad0', '#9ad7ff', '#ffe28a', '#b4f0a8', '#d0a8ff'][i % 5]), x, .72, H - 1.12, .2, .26, .2)); } }
+    else if (h.n === 'Grillfest') { garland(['#ff6b35', '#ffd24a']); const g = new T3.Group(); g.position.set(W - 4.5, 0, H + 2.4); g.add(mesh(geo.cyl, mat('#555'), 0, .55, 0, .05, 1.1, .05)); g.add(mesh(geo.cone, mat('#e03131'), 0, 1.15, 0, 1.6, .3, 1.6)); g.add(mesh(geo.cyl, mat('#d0d0d0'), 0, .3, .0, .8, .04, .8)); const gr = new T3.Group(); gr.position.set(1.2, 0, 0); gr.add(bx('#222', .6, .4, .4, 0, .55, 0)); gr.add(mesh(geo.cyl, mat('#555'), -.2, .2, 0, .05, .4, .05)); gr.add(mesh(geo.cyl, mat('#555'), .2, .2, 0, .05, .4, .05)); gr.add(bx('#ff7a1a', .5, .03, .3, 0, .76, 0, { emissive: '#ff7a1a' })); g.add(gr); seasonG.add(g); }
+  }
+  function syncPrecip(S, dt) {
+    if (!precip) { const n = 450, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = (Math.random() - .3) * 50; a[i * 3 + 1] = Math.random() * 14; a[i * 3 + 2] = Math.random() * 14; } const g = new T3.BufferGeometry(); g.setAttribute('position', new T3.BufferAttribute(a, 3)); precip = new T3.Points(g, new T3.PointsMaterial({ color: '#ffffff', size: .12, transparent: true, opacity: .9 })); precip.frustumCulled = false; scene.add(precip); }
+    const sz = Sim.season(S), kind = S.weather === 'regen' ? 'rain' : (sz.i === 3 && S.weather !== 'heiss') || S.weather === 'kalt' && sz.i !== 1 ? 'snow' : null; precip.visible = !!kind && st.q > 0; if (!precip.visible) return;
+    precip.material.color.set(kind === 'rain' ? '#9fc4f2' : '#ffffff'); precip.material.size = kind === 'rain' ? .07 : .13; const a = precip.geometry.attributes.position, v = kind === 'rain' ? 12 : 1.6, n = a.count; precip.position.set(0, 0, S.H - 1);
+    for (let i = 0; i < n; i++) { let y = a.getY(i) - v * dt; if (y < 0) { y = 14; a.setX(i, (Math.random() - .3) * 50); a.setZ(i, Math.random() * 14); } a.setY(i, y); if (kind === 'snow') a.setX(i, a.getX(i) + Math.sin(y * 2 + i) * dt * .3); } a.needsUpdate = true;
+  }
+  function animateOutdoor(dt, S) {
+    const vis = st.q > 0; outdoor.peds.forEach(h => { h.visible = vis; if (!vis) return; const u = h.userData; h.position.x += u.dir * u.v * dt; if (h.position.x > S.W + 12) h.position.x = -10; if (h.position.x < -10) h.position.x = S.W + 12; animate(h, dt, true, u.v, null); });
+    outdoor.cars.forEach(c => { c.visible = vis; if (!vis) return; c.position.x += c.userData.dir * c.userData.v * dt; if (c.position.x > S.W + 35) c.position.x = -25; if (c.position.x < -25) c.position.x = S.W + 35; });
   }
   // ---------- Objekte ----------
   function shelfSpec(o) {
@@ -131,9 +163,9 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   function itemGeo(pid) { const p = P[pid]; if (p.cat === 'obst' && FRUIT[pid]) return 'sph'; if (p.cat === 'getr' || pid === 'sauce') return 'cyl'; return 'box'; }
   function updateShelf(S, o, e) {
-    const cap = Sim.cap(S, o), qty = o.qty, pid = o.p, price = pid ? Sim.effPrice(S, o) : 0, key = [pid, qty > 0 ? Math.max(1, Math.round(30 * qty / Math.max(1, cap))) : 0, price, o.disc ? 1 : 0, qty === 0 ? 0 : 1, S.phase === 'open' ? 1 : 0].join('|'); if (key === e.key) return; e.key = key;
+    const cap = Sim.cap(S, o), qty = o.qty, pid = o.p, price = pid ? Sim.effPrice(S, o) : 0, promo = pid && S.promo[pid] ? 1 : 0, key = [promo, pid, qty > 0 ? Math.max(1, Math.round(30 * qty / Math.max(1, cap))) : 0, price, o.disc ? 1 : 0, qty === 0 ? 0 : 1, S.phase === 'open' ? 1 : 0].join('|'); if (key === e.key) return; e.key = key;
     if (e.im) { e.items.remove(e.im); e.im.dispose(); e.im = null; } e.sign.children.slice(2).forEach(c => { if (c.material && c.material.map) c.material.map.dispose(); e.sign.remove(c); }); e.tags.children.slice().forEach(c => { if (c.material.map) c.material.map.dispose(); e.tags.remove(c); });
-    const sp = e.sp, L = e.L; const signT = pid ? signTex(P[pid].e + ' ' + P[pid].name.split(' ').slice(0, 2).join(' '), qty === 0 ? '▲ LEER' : '', qty === 0 ? '#7a1f1f' : '#13203f') : signTex('Frei', 'Ware zuweisen', '#444b5c');
+    const sp = e.sp, L = e.L; const signT = pid ? signTex(P[pid].e + ' ' + P[pid].name.split(' ').slice(0, 2).join(' '), qty === 0 ? '▲ LEER' : promo ? '🔥 ANGEBOT −20 %' : '', qty === 0 ? '#7a1f1f' : promo ? '#a8123a' : '#13203f') : signTex('Frei', 'Ware zuweisen', '#444b5c');
     const smat = new T3.MeshBasicMaterial({ map: signT }), sm = mesh(geo.plane, smat, 0, e.hgt + .5, .01, Math.min(L, 1.3), .4, 1), sm2 = mesh(geo.plane, smat, 0, e.hgt + .5, -.01, Math.min(L, 1.3), .4, 1); sm2.rotation.y = Math.PI; e.sign.add(sm); e.sign.add(sm2);
     if (!pid) return; const n = qty > 0 ? Math.max(1, Math.round(30 * qty / Math.max(1, cap))) : 0, kind = itemGeo(pid), sz = P[pid].size, fruit = kind === 'sph';
     const iw = fruit ? .16 : kind === 'cyl' ? .12 : .2 + sz * .02, ih = fruit ? .16 : kind === 'cyl' ? .3 : .24 + sz * .03, id = fruit ? .16 : kind === 'cyl' ? .12 : .16, per = Math.max(2, Math.floor((L - .16) / (iw + .035)));
@@ -142,7 +174,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
       outer: for (const y of sp.tiers) for (let k2 = 0; k2 < per; k2++) for (const z of lanes) { if (i >= 40) break outer; const x = -((per - 1) * (iw + .035)) / 2 + k2 * (iw + .035), yy = y + ih / 2 + (sp.crate ? -.02 : 0); dummy.position.set(x, yy, z); dummy.rotation.set(0, z < 0 ? Math.PI : 0, 0); dummy.scale.set(iw, ih, id); dummy.updateMatrix(); im.setMatrixAt(i++, dummy.matrix); }
       im.count = Math.min(n, i); im.instanceMatrix.needsUpdate = true; e.items.add(im); e.im = im;
     }
-    const tt = ctex(128, 48, (g, w, h) => { g.fillStyle = o.disc ? '#d6336c' : '#fff3bf'; g.fillRect(0, 0, w, h); g.strokeStyle = '#333'; g.lineWidth = 3; g.strokeRect(1, 1, w - 2, h - 2); g.fillStyle = o.disc ? '#fff' : '#111'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '800 30px Inter,Arial,sans-serif'; g.fillText(D.fmt(price).replace(' €', '') + '€', w / 2, h / 2 + 2); });
+    const tt = ctex(128, 48, (g, w, h) => { g.fillStyle = o.disc || promo ? '#d6336c' : '#fff3bf'; g.fillRect(0, 0, w, h); g.strokeStyle = '#333'; g.lineWidth = 3; g.strokeRect(1, 1, w - 2, h - 2); g.fillStyle = o.disc || promo ? '#fff' : '#111'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '800 30px Inter,Arial,sans-serif'; g.fillText(D.fmt(price).replace(' €', '') + '€', w / 2, h / 2 + 2); });
     (sp.sides === 2 ? [-1, 1] : [1]).forEach(s => { const t = mesh(geo.plane, new T3.MeshBasicMaterial({ map: tt }), 0, sp.tiers[0] - .08, s * (e.d / 2 + .005), .34, .13, 1); if (s < 0) t.rotation.y = Math.PI; e.tags.add(t); });
   }
   function buildSimple(o) {
@@ -190,7 +222,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
       const u = h.userData, dx = src.x - u.lx, dz = src.y - u.lz, sp = Math.hypot(dx, dz) / Math.max(dt, .001); u.lx = src.x; u.lz = src.y; h.position.set(src.x, 0, src.y); const moving = sp > .15; if (moving) { const ty = Math.atan2(dx, dz); let d = ty - u.yaw; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; u.yaw += d * Math.min(1, dt * 10); }
       let act = null;
       if (isCust) { const c = src; if (c.st === 'arrest') act = 'cuffed'; else if (c.st === 'stun' || c.st === 'held') act = 'stun'; h.userData.body.rotation.z = c.st === 'stun' || c.st === 'held' ? Math.sin(performance.now() / 130) * .14 : 0; if (c.stars) { let sg = u.stars; if (!sg) { sg = u.stars = new T3.Group(); sg.position.set(0, 2.08, 0); for (let i = 0; i < 3; i++) { const m = mesh(geo.sph, new T3.MeshBasicMaterial({ color: '#ffe066' }), Math.cos(i * 2.09) * .22, 0, Math.sin(i * 2.09) * .22, .09, .09, .09); sg.add(m); } h.add(sg); } sg.visible = true; sg.rotation.y += dt * 7; } else if (u.stars) u.stars.visible = false; if (!moving) { if (c.st === 'queue' || c.st === 'pay') { u.yaw += (Math.PI - u.yaw - 0) * 0; const ty = Math.PI; let d = ty - u.yaw; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; u.yaw += d * Math.min(1, dt * 8); } else if (c.st === 'shop' && c.shelf != null) { const o = Sim.obj(S, c.shelf); if (o) { const ty = Math.atan2(o.x + o.w / 2 - c.x, o.y + o.h / 2 - c.y); let d = ty - u.yaw; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; u.yaw += d * Math.min(1, dt * 8); act = 'reach'; } } } if (c.st === 'pay') act = 'pay';
-        if (u.basket) u.basket.visible = c.basket.length > 0; if (c.bub) { u.bub.visible = true; if (u.bubE !== c.bub) { u.bubE = c.bub; u.bub.material.map = bubTex(c.bub); u.bub.material.needsUpdate = true; } } else u.bub.visible = false; }
+        if (u.cart) { u.cart.userData.items.visible = c.basket.length > 0; if (!act && !moving || !act) act = 'cart'; } if (u.basket) u.basket.visible = c.basket.length > 0; if (c.bub) { u.bub.visible = true; if (u.bubE !== c.bub) { u.bubE = c.bub; u.bub.material.map = bubTex(c.bub); u.bub.material.needsUpdate = true; } } else u.bub.visible = false; }
       else { const s = src; u.carry.visible = !!s.carry; if (s.carry) { act = 'carry'; } if (s.k === 'kasse' && !moving) { let d = 0 - u.yaw; u.yaw += d * Math.min(1, dt * 8); } u.bub.visible = false; }
       h.rotation.y = u.yaw; animate(h, dt, moving, Math.min(3, sp), act);
     };
@@ -200,6 +232,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     for (const k of Array.from(people.keys())) if (k !== 'player' && !seen.has(k)) { const h = people.get(k); scene.remove(h); people.delete(k); }
   }
   // ---------- Kamera, Eingabe ----------
+  function setQuality(q) { st.q = q; if (R) { R.setPixelRatio([.7, Math.min(devicePixelRatio || 1, 1.25), Math.min(devicePixelRatio || 1, 2)][q] || 1); if (W) R.setSize(W, H, false); } }
   function resize(w, h) { W = w; H = h; aspect = w / Math.max(1, h); if (!R) return; R.setSize(w, h, false); cam.aspect = aspect; cam.updateProjectionMatrix(); topCam.aspect = aspect; topCam.updateProjectionMatrix(); }
   function look(dx, dy) { st.yaw -= dx; st.pitch = Math.max(-1.25, Math.min(1.1, st.pitch - dy)); }
   const move = (fwd, side) => { const f = [-Math.sin(st.yaw), -Math.cos(st.yaw)], r = [Math.cos(st.yaw), -Math.sin(st.yaw)]; return [f[0] * fwd + r[0] * side, f[1] * fwd + r[1] * side]; };
@@ -210,7 +243,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   function floorAt(cx, cy) { v2.set(cx / W * 2 - 1, -(cy / H) * 2 + 1); ray.setFromCamera(v2, st.top ? topCam : cam); const o = ray.ray.origin, d = ray.ray.direction; if (Math.abs(d.y) < 1e-4) return null; const t = -o.y / d.y; if (t < 0) return null; return [Math.floor(o.x + d.x * t), Math.floor(o.z + d.z * t)]; }
   function render(S, dt, now, opt) {
     if (!R) return; const key = S.W + 'x' + S.H; if (key !== worldKey || (world && S !== world.userData.S)) { for (const id of Array.from(objs.keys())) removeObj(id); people.forEach(h => scene.remove(h)); people.clear(); rampKey = messKey = ''; rampG = messG = null; buildWorld(S); world.userData.S = S; setTop(st.top); }
-    syncObjs(S); syncBelts(S); syncPoliceCar(S, now); syncRamp(S); syncMess(S); syncPeople(S, dt);
+    syncSeason(S); syncObjs(S); syncBelts(S); syncPoliceCar(S, now); syncPrecip(S, dt); animateOutdoor(dt, S); syncRamp(S); syncMess(S); syncPeople(S, dt);
     // Himmel nach Tageszeit & Wetter
     const tt = S.phase === 'open' ? S.t / Sim.DAYLEN : S.phase === 'prep' ? 0 : 1, wx = S.weather, day = new T3.Color(wx === 'regen' ? '#7f8ea3' : wx === 'wolke' ? '#a9bdd3' : wx === 'kalt' ? '#b9d4ea' : wx === 'heiss' ? '#8fc8f5' : '#8fc5f2'), dusk = new T3.Color('#f0a068'); scene.background.copy(day).lerp(dusk, Math.max(0, (tt - .8) / .2) * .8);
     const dim = S.blackout ? .35 : 1; hemi.intensity = (wx === 'regen' ? .55 : .62) * dim; sun.intensity = (wx === 'regen' || wx === 'wolke' ? .25 : .45) * dim; lights.forEach(l => l.material.color.set(S.blackout ? '#444' : '#fffbe8'));
@@ -229,5 +262,5 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     syncBeacon(opt, now);
     R.render(scene, st.top ? topCam : cam);
   }
-  return { init, resize, render, look, move, setTop, pick, floorAt, st, people, get ready() { return !!R; } };
+  return { setQuality, init, resize, render, look, move, setTop, pick, floorAt, st, people, get ready() { return !!R; } };
 })();
