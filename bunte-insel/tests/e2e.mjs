@@ -365,13 +365,15 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const d = await mk({ viewport: { width: 1000, height: 600 } }); const dv = await d.evaluate(() => ({ joy: getComputedStyle(document.getElementById('joy')).display, keys: getComputedStyle(document.getElementById('keys')).display }));
   ok(dv.joy === 'none' && dv.keys !== 'none', 'Desktop: kein Joystick, Tastatur-Hinweis sichtbar'); await d.context().close();
 }
-{ // Name, Charakter-Editor, Meldung über Pause, Hauptmenü
-  const mk = async () => { const c = await browser.newContext({ viewport: { width: 800, height: 500 }, acceptDownloads: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); return p; };
-  const p = await mk(); await p.click('#bHero'); await p.fill('#heroPick .pn', 'Lisa'); await p.evaluate(() => document.querySelector('#heroPick .pn').dispatchEvent(new Event('change')));
-  await p.click('#heroPick .hc:last-child'); await p.click('#heroPick .skn .sw:nth-child(5)'); await p.click('#heroPick .sts .hat:nth-child(4)');
-  const r1 = await p.evaluate(() => [document.getElementById('hello').textContent, window.__bi.save.cu.skin, window.__bi.save.cu.style]);
-  ok(r1[0] === 'Hallo Lisa! ♥' && r1[1] === 4 && r1[2] === 3, 'Eigener Name + Charakter-Editor wirken');
-  await p.click('#bHeroBack'); await p.click('#bStart'); await p.waitForTimeout(400); await p.click('#bPause'); await p.click('#bSaveNow'); await p.waitForTimeout(300);
+{ // Neues Abenteuer: Charakter-Editor vor dem Start, Name, Meldung über Pause, Hauptmenü
+  const mk = async () => { const c = await browser.newContext({ viewport: { width: 800, height: 500 }, acceptDownloads: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html?creator=1'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); return p; };
+  const p = await mk(); await p.click('#bStart'); const inCreator = await p.evaluate(() => !document.querySelector('[data-v=hero]').hidden && document.getElementById('menu').classList.contains('creating'));
+  await p.fill('#heroPick .pn', 'Lisa'); await p.evaluate(() => document.querySelector('#heroPick .pn').dispatchEvent(new Event('change')));
+  await p.evaluate(() => { const t = [...document.querySelectorAll('#heroPick .ctab')]; t[1].click(); const rs = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); rs[0].children[4].click(); rs[2].children[3].click(); t[2].click(); document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .hat')[3].click(); t[3].click(); const r3 = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); r3[2].children[2].click(); });
+  const r1 = await p.evaluate(() => [window.__bi.save.hero, window.__bi.save.cu.skin, window.__bi.save.cu.style, window.__bi.save.cu.mouth, window.__bi.save.cu.top, window.__bi.save.pname]);
+  ok(inCreator && r1[0] === 'custom' && r1[1] === 4 && r1[2] === 3 && r1[3] === 3 && r1[4] === 2 && r1[5] === 'Lisa', 'Vor dem ersten Start: Charakter-Editor (Name, Gesicht, Haare, Kleidung) wirkt');
+  await p.click('#bHeroBack'); await p.waitForTimeout(500); ok(await p.evaluate(() => document.getElementById('menu').hidden && window.__bi.save.created === true), 'Nach dem Gestalten geht das Spiel direkt los');
+  await p.click('#bPause'); await p.click('#bSaveNow'); await p.waitForTimeout(300);
   const z = await p.evaluate(() => [+getComputedStyle(document.getElementById('toast')).zIndex, document.getElementById('toast').textContent]);
   ok(z[0] > 10 && /Gespeichert/.test(z[1]), 'Speichern-Meldung liegt über der Pause');
   const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 4000 }).catch(() => null), p.click('#bExport')]); ok(!!dl, 'Export lädt Datei');

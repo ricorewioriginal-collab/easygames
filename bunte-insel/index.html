@@ -124,6 +124,8 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 #rangeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}@media (max-width:420px){#rangeGrid{grid-template-columns:1fr}}
 
 #menu{grid-template-columns:minmax(0,1fr)}
+#menu.creating{place-items:end center;padding:8px 8px max(8px,env(safe-area-inset-bottom))}#menu.creating .ttl,#menu.creating .tag,#menu.creating .fleet,#menu.creating .ver{display:none}#menu.creating .mwrap{width:min(560px,100%)}#menu.creating .menucard{max-height:47vh;overflow:auto;overscroll-behavior:contain}#menu.creating #bHeroBack{position:sticky;bottom:0;z-index:2}@media (min-width:860px){#menu.creating{place-items:center end}#menu.creating .menucard{max-height:86vh}}
+.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.ctab{padding:7px 11px;border-radius:14px;background:#fff;font-weight:700;font-size:14px;box-shadow:var(--shadow)}.ctab.sel{background:var(--pri);color:#fff}.cbody .lab{margin:8px 0 4px}.cbody .row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 #menu .mwrap{display:flex;min-width:0;flex-direction:column;align-items:center;gap:8px;width:min(460px,100%)}
 .ttl{display:flex;justify-content:center;flex-wrap:wrap;column-gap:2px;font-size:clamp(46px,13vw,80px);font-weight:700;line-height:1.02;filter:drop-shadow(0 4px 0 #fff) drop-shadow(0 10px 14px rgba(20,50,100,.35))}
 .ttl .w{display:inline-flex;flex-wrap:nowrap}.ttl{row-gap:0}

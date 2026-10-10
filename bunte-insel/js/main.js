@@ -87,7 +87,9 @@
   /* Aussehen aus Held + Schrank (gekaufte Sachen gewinnen gegenüber dem Helden-Kostüm) */
   function charOpts(l, name) {
     const E = l.eq || {}, cu = l.cu || {}, H = BI.heroById(l.hero), po = H.o || {}, ac = k => !!E[k] || !!po[k], accs = { glasses: ac('glasses'), pack: ac('pack'), teddy: ac('teddy'), patch: ac('patch'), cape: ac('cape'), wings: ac('wings') };
-    if (H.id === 'custom') return Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name }, accs);
+    if (H.id === 'custom') { const acc = cu.acc || {}, a2 = k => ac(k) || !!acc[k]; return Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name,
+      eye: BI.EYES[cu.eye | 0], mouth: BI.MOUTHS[cu.mouth == null ? 1 : cu.mouth | 0], freckles: !!cu.fr, shoe: BI.SHOES[cu.shoe | 0], scale: BI.SIZES[cu.size == null ? 1 : cu.size | 0], dress: cu.top === 1, overall: cu.top === 2, stripe: !!cu.stripe, logo: BI.LOGOS[cu.logo | 0] || undefined },
+      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings') }); }
     return Object.assign({}, po, { hat: E.hat && E.hat !== 'none' ? E.hat : po.hat || 'none', name }, accs);
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
@@ -150,7 +152,7 @@
   const dummy = new THREE.Object3D();
 
   /* ---------- Zustand ---------- */
-  let state = 'menu', t = 0, toastT = 0, mission = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
+  let creating = false, creatorFirst = false, state = 'menu', t = 0, toastT = 0, mission = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
   const cam = { yaw: 0, pitch: .42, zoom: 1, off: 0, idle: 0, x: 0, y: 8, z: 40, dist: 8, ego: false, egoOff: 0 };
   const inp = { kx: 0, ky: 0, sx: 0, sy: 0, horn: false, turbo: false, act: false, aux: false, jump: false, hornEdge: false, up: false, down: false };
   const keys = {};
@@ -489,7 +491,9 @@
     if (!save.intro) say(isTouch() ? 'Links wischen = laufen · rechts wischen = Kamera drehen' : 'WASD/Pfeile = laufen · E = einsteigen · Maus ziehen = Kamera', 5200);
     else say('Hallo ' + heroName() + '! Los geht\'s ♥', 2400);
   }
-  $('bStart').addEventListener('click', startPlay);
+  /* Neues Abenteuer: erst den eigenen Helden gestalten, dann geht es los */
+  const needsCreate = () => (!navigator.webdriver || /creator/.test(location.search)) && !save.created && !save.intro && !save.stars && !(save.stk && save.stk.length) && !(save.owned && save.owned.length);
+  $('bStart').addEventListener('click', () => { if (needsCreate()) { creatorFirst = true; $('bHeroBack').innerHTML = '<b>▶</b><span>Los geht\'s!</span>'; menuView('hero'); } else startPlay(); });
   $('bToMenu').addEventListener('click', () => { persist(); try { if (typeof net !== 'undefined' && net.close) net.close(); } catch (e) { } location.reload(); });
   $('bResume').addEventListener('click', () => pause(false)); $('bPause').addEventListener('click', () => pause(true));
   $('bNight').addEventListener('click', toggleNight); $('bSound').addEventListener('click', toggleSound); $('bMusic').addEventListener('click', toggleMusic);
@@ -1144,24 +1148,60 @@
     save.pet = def.id; persist();
   }
   function buildHeroPicker(box) {
-    box.innerHTML = '<div class="lab">Wie heißt du?</div><input class="pn" maxlength="12" placeholder="Dein Name" autocomplete="off"><div class="lab">Wer spielt mit?</div><div class="hgrid"></div><div class="cust" hidden><div class="row sws"></div><div class="row skn"></div><div class="row hrs"></div><div class="row sts"></div><div class="row pns"></div><div class="row hts"></div></div><div class="lab">Mein Haustier</div><div class="row pets"></div>';
-    const hg = box.querySelector('.hgrid'), cust = box.querySelector('.cust'), sws = box.querySelector('.sws'), hts = box.querySelector('.hts'), skn = box.querySelector('.skn'), hrs = box.querySelector('.hrs'), sts = box.querySelector('.sts'), pns = box.querySelector('.pns'), pnI = box.querySelector('.pn'), pts = box.querySelector('.pets');
-    BI.HEROES.forEach(h => { const b = document.createElement('button'); b.className = 'hc'; b.innerHTML = '<b>' + h.icon + '</b>' + h.name; b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); }; hg.appendChild(b); });
-    BI.SHIRTS.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw'; b.style.background = '#' + c.toString(16).padStart(6, '0'); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { save.shirt = i; persist(); buildChar(); refreshPickers(); }; sws.appendChild(b); });
+    box.innerHTML = '<div class="lab">Wie heißt du?</div><input class="pn" maxlength="12" placeholder="Dein Name" autocomplete="off"><div class="ctabs"></div><div class="cbody"></div>';
+    const pnI = box.querySelector('.pn'), tabsEl = box.querySelector('.ctabs'), body = box.querySelector('.cbody'), syncs = [], panels = [];
     pnI.value = save.pname || ''; pnI.addEventListener('change', () => { save.pname = pnI.value.replace(/[<>&]/g, '').trim().slice(0, 12); persist(); buildChar(); refreshPickers(); A.pop(); });
-    const sw = (row, arr, key) => arr.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw'; b.style.background = '#' + c.toString(16).padStart(6, '0'); b.setAttribute('aria-label', key + ' ' + (i + 1)); b.onclick = () => { save.cu[key] = i; persist(); buildChar(); refreshPickers(); }; row.appendChild(b); });
-    sw(skn, BI.SKINS, 'skin'); sw(hrs, BI.HAIRS, 'hair'); sw(pns, BI.PANTS, 'pants');
-    BI.STYLES.forEach((s, i) => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['👤', '⚡', '🌀', '💇', '🎀', '🍥', '🐴'][i]; b.setAttribute('aria-label', 'Frisur ' + s); b.onclick = () => { save.cu.style = i; persist(); buildChar(); refreshPickers(); }; sts.appendChild(b); });
-    BI.HATS.forEach((h, i) => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[h]; b.setAttribute('aria-label', 'Mütze ' + h); b.onclick = () => { save.hat = i; persist(); buildChar(); refreshPickers(); }; hts.appendChild(b); });
-    BI.PETS.forEach(p => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = p.icon + ' ' + p.name; b.onclick = () => { setPet(p.id); refreshPickers(); A.pop(); }; pts.appendChild(b); });
-    pickers.push(() => {
-      [...hg.children].forEach((b, i) => b.classList.toggle('sel', BI.HEROES[i].id === save.hero)); cust.hidden = save.hero !== 'custom';
-      [...sws.children].forEach((b, i) => b.classList.toggle('sel', i === save.shirt)); [...hts.children].forEach((b, i) => b.classList.toggle('sel', i === save.hat)); [[skn, 'skin'], [hrs, 'hair'], [sts, 'style'], [pns, 'pants']].forEach(([r, k]) => [...r.children].forEach((b, i) => b.classList.toggle('sel', i === (save.cu[k] | 0)))); [...pts.children].forEach((b, i) => b.classList.toggle('sel', BI.PETS[i].id === save.pet));
-    });
+    const hex = c => '#' + c.toString(16).padStart(6, '0'), cu = () => save.cu || (save.cu = {});
+    const edit = fn => { if (save.hero !== 'custom') save.hero = 'custom'; fn(); persist(); buildChar(); refreshPickers(); A.pop(); };
+    const panel = () => { const d = document.createElement('div'); d.hidden = true; body.appendChild(d); panels.push(d); return d; };
+    const lab = (p, t) => { const d = document.createElement('div'); d.className = 'lab'; d.textContent = t; p.appendChild(d); };
+    /* eine Reihe Knöpfe: n Stück, mk(i) baut den Knopf, get() = aktuelle Wahl, set(i) ändert */
+    const row = (p, title, n, mk, get, set) => { lab(p, title); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const bs = []; for (let i = 0; i < n; i++) { const b = mk(i); b.onclick = () => edit(() => set(i)); r.appendChild(b); bs.push(b); } syncs.push(() => bs.forEach((b, i) => b.classList.toggle('sel', save.hero === 'custom' && i === get()))); };
+    const sw = arr => i => { const b = document.createElement('button'); b.className = 'sw'; if (arr[i] == null) { b.style.background = '#fff'; b.textContent = '✖'; } else b.style.background = hex(arr[i]); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); return b; };
+    const ic = arr => i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = arr[i]; return b; };
+    // Reiter 0: Vorlagen (Helden)
+    { const p = panel(); lab(p, 'Such dir einen Helden aus – oder gestalte alles selbst:'); const g = document.createElement('div'); g.className = 'hgrid'; p.appendChild(g);
+      BI.HEROES.forEach(h => { const b = document.createElement('button'); b.className = 'hc'; b.innerHTML = '<b>' + h.icon + '</b>' + (h.id === 'custom' ? 'Selbst gestalten' : h.name); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if (h.id === 'custom') showTab(1); }; g.appendChild(b); });
+      syncs.push(() => [...g.children].forEach((b, i) => b.classList.toggle('sel', BI.HEROES[i].id === save.hero))); }
+    // Reiter 1: Gesicht
+    { const p = panel();
+      row(p, '🎨 Hautfarbe', BI.SKINS.length, sw(BI.SKINS), () => cu().skin | 0, i => cu().skin = i);
+      row(p, '👀 Augenfarbe', BI.EYES.length, sw(BI.EYES), () => cu().eye | 0, i => cu().eye = i);
+      row(p, '😊 Mund', BI.MOUTHS.length, ic(BI.MOUTH_ICONS), () => cu().mouth == null ? 1 : cu().mouth | 0, i => cu().mouth = i);
+      row(p, '✨ Sommersprossen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '🌟' : '🚫'; return b; }, () => cu().fr | 0, i => cu().fr = i); }
+    // Reiter 2: Haare
+    { const p = panel();
+      row(p, '💇 Frisur', BI.STYLES.length, ic(BI.STYLE_ICONS), () => cu().style | 0, i => cu().style = i);
+      row(p, '🌈 Haarfarbe', BI.HAIRS.length, sw(BI.HAIRS), () => cu().hair | 0, i => cu().hair = i); }
+    // Reiter 3: Kleidung
+    { const p = panel();
+      row(p, '👕 Oberteil', BI.SHIRTS.length, sw(BI.SHIRTS), () => save.shirt | 0, i => save.shirt = i);
+      row(p, '👖 Hose / Rock', BI.PANTS.length, sw(BI.PANTS), () => cu().pants | 0, i => cu().pants = i);
+      row(p, '🧥 Stil', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['👕', '👗', '🧑‍🌾'][i]; return b; }, () => cu().top | 0, i => cu().top = i);
+      row(p, '🦓 Streifen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '〰️' : '🚫'; return b; }, () => cu().stripe | 0, i => cu().stripe = i);
+      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), () => cu().logo | 0, i => cu().logo = i);
+      row(p, '👟 Schuhe', BI.SHOES.length, sw(BI.SHOES), () => cu().shoe | 0, i => cu().shoe = i); }
+    // Reiter 4: Extras
+    { const p = panel();
+      row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i);
+      lab(p, '🕶️ Zubehör (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['glasses', '🕶️'], ['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
+      for (const [k, e] of AC) { const b = document.createElement('button'); b.className = 'hat'; b.textContent = e; b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
+      syncs.push(() => bs.forEach(([k, b]) => b.classList.toggle('sel', save.hero === 'custom' && !!(cu().acc && cu().acc[k])))); }
+    // Reiter 5: Größe & Haustier
+    { const p = panel();
+      row(p, '📏 Größe', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['🐣', '🙂', '🦒'][i]; return b; }, () => cu().size == null ? 1 : cu().size | 0, i => cu().size = i);
+      lab(p, '🐾 Mein Haustier'); const r = document.createElement('div'); r.className = 'row pets'; p.appendChild(r); const bs = [];
+      BI.PETS.forEach(pt => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = pt.icon + ' ' + pt.name; b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
+      syncs.push(() => bs.forEach((b, i) => b.classList.toggle('sel', BI.PETS[i].id === save.pet))); }
+    const TABS = ['⭐ Helden', '😀 Gesicht', '💇 Haare', '👕 Kleidung', '🎩 Extras', '🐾 Größe'], tbs = []; let cur = 0;
+    function showTab(i) { cur = i; panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); }
+    TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; b.textContent = t; b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
+    showTab(save.hero === 'custom' ? 1 : 0);
+    pickers.push(() => { syncs.forEach(f => f()); });
   }
   buildHeroPicker($('heroPick')); buildHeroPicker($('wardPick'));
   { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = 'Bunte Insel'.split(' ').map((w, wi) => '<div class="w">' + [...w].map((ch, i) => '<span style="--i:' + (i + wi * 6) + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join('') + '</div>').join('<i></i>'); }
-  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; };
+  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); };
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
   const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? (i.pn || BI.heroById(i.hero).name) : 'Neu'; };
   function slotBarRefresh() { const i = BI.store.info(SLOT); $('slotBar').innerHTML = '<span>💾 Spielstand ' + SLOT + ' · ' + (i.has ? heroName() + ' · ⭐ ' + save.stars : 'Neu') + '</span><span>Wechseln ›</span>'; $('slotLab').textContent = '💾 Spielstand ' + SLOT + (saveOk ? '' : ' ⚠️ Speicher voll'); }
@@ -1200,7 +1240,7 @@
   addEventListener('pagehide', flushAll); document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
   slotBarRefresh();
 
-  $('bHero').addEventListener('click', () => menuView('hero')); $('bHeroBack').addEventListener('click', () => { menuView('home'); slotBarRefresh(); });
+  $('bHero').addEventListener('click', () => menuView('hero')); $('bHeroBack').addEventListener('click', () => { save.created = true; persist(); if (creatorFirst) { creatorFirst = false; $('bHeroBack').innerHTML = '<b>✔</b><span>Fertig</span>'; menuView('home'); startPlay(); return; } menuView('home'); slotBarRefresh(); });
   refreshPickers();
 
   /* ---------- Aktualisierung ---------- */
@@ -1445,7 +1485,7 @@
   function updateCamera(dt) {
     const v = P.veh; let tx, ty, tz, dist, pitch = cam.pitch;
     if (rs.ui === 'play' && state === 'play') { camera.position.set(RG.x + .9, 2.25, RG.z + 2.7); camera.lookAt(RG.x, 1.75, -88); cam.x = RG.x; cam.y = 2.25; cam.z = RG.z + 2.7; sun.position.set(RG.x + 60, 100, RG.z + 40); sun.target.position.set(RG.x, 0, RG.z); sky.position.set(RG.x, 0, RG.z); return; }
-    if (state === 'menu') { cam.yaw += dt * .25; tx = P.x; ty = 1.1; tz = P.z; dist = 4.8; pitch = .22; }
+    if (state === 'menu') { cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -.55 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
     else if (v) {
       if (cam.ego && state === 'play') {
         const e = EYE[v.isTrain ? 'train' : v.type] || [0, 1.4, .4], ex = v.x + Math.sin(v.h) * e[2], ez = v.z + Math.cos(v.h) * e[2], ey = (v.y || 0) + e[1], yaw = v.h + cam.egoOff;
