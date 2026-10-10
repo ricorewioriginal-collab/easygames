@@ -53,10 +53,13 @@ BI.buildWorld = function (scene) {
     const rad = Math.hypot(px, pz);
     if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      else if (W.city && cityWalk(px, pz, r)) { /* Brücke / Stadtinsel */ }
+      else if (W.city && pz < -170 && Math.hypot(px - W.city.x, pz - W.city.z) < Math.hypot(px, pz) + 20 && Math.hypot(px - W.city.x, pz - W.city.z) < W.city.R + 40) { const dd = Math.hypot(px - W.city.x, pz - W.city.z) || 1, k = (W.city.R - r) / dd; px = W.city.x + (px - W.city.x) * k; pz = W.city.z + (pz - W.city.z) * k; hit = true; }
       else { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
     }
     out.x = px; out.z = pz; out.hit = hit; return out;
   };
+  const cityWalk = (px, pz, r) => { const C = W.city, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - .2 && px < b.x1 + .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const _o = {};
   W.free = (x, z, r) => { const p = W.resolve(x, z, r, _o); return !p.hit; };
 
@@ -187,6 +190,8 @@ BI.buildWorld = function (scene) {
     solid(cx, cz, w, d, h + rh + 1.5);
     W.houses.push({ x: cx, z: cz, w, d });
   }
+  W.interiors = []; // begehbare Gebäude (nur im Stadtviertel)
+  const TC = { W, st, win, ROADY, windows, rr, pick };
   function houseOnX(cx, cz, side) { // Tür zeigt zur Straße (z=0)
     const w = rr(8, 10), d = rr(7.5, 9), h = rr(4.6, 6.4), wall = pick(WALLS), roof = pick(ROOFS);
     const dz = -Math.sign(cz); // nach Norden/Süden
@@ -347,6 +352,8 @@ BI.buildWorld = function (scene) {
     }
   }
 
+  BI.buildCity({ W, st, win, lamp, ROADY, windows, GRASS, SAND });
+
   /* ---------- Park mit Spielplatz (SW) ---------- */
   { const x0 = -72, x1 = -46, z0 = 46, z1 = 66;
     st.rect(x0, z0, x1, z1, .03, 0x9be07c); st.rect(x0 + 2, z0 + 2, x1 - 2, z0 + 3.2, .045, 0xe3d3a8);
@@ -462,7 +469,7 @@ BI.buildWorld = function (scene) {
     W.spots.flatBlock = { x0: X0, x1: X0 + FW * N, zB: ZB, zF: ZF };
     BI.addPlaces(W, st);
     function shadeC(c) { const f = v => Math.max(0, Math.round(v * .8)); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); }
-    W.shelter = (x, z) => { const q = W.spots.flatBlock; return x > q.x0 && x < q.x1 && z > q.zB - .5 && z < q.zF + .2 ? 2 : 0; };
+    W.shelter = (x, z) => { const q = W.spots.flatBlock; if (x > q.x0 && x < q.x1 && z > q.zB - .5 && z < q.zF + .2) return 2; for (const r of W.interiors) if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return 2; return 0; };
   }
   { // Schießbude: eingezäunte Bahn, Fangwand, Theke mit Spielzeug-Blastern – nur Attrappen als Ziele
     const X = -105, FZ = -66, WZ = -100, WOOD = 0xc8803c, DW = 0x8a5a33, RED = 0xe0382b;
@@ -601,7 +608,7 @@ BI.buildWorld = function (scene) {
 
   /* ---------- Berge, Wolken, Wasser ---------- */
   const far = new BI.Batch();
-  for (let i = 0; i < 26; i++) { const a = i / 26 * BI.TAU + rnd() * .1, d = rr(300, 360), h = rr(40, 95); far.cone(Math.sin(a) * d, -2, Math.cos(a) * d, rr(40, 70), h, pick([0x8fa6c4, 0x7f97b8, 0x9db3cf]), 6); far.cone(Math.sin(a) * d, h * .72, Math.cos(a) * d, rr(10, 18), h * .3, 0xffffff, 6); }
+  for (let i = 0; i < 26; i++) { const a = i / 26 * BI.TAU + rnd() * .1, d = rr(300, 360), h = rr(40, 95), rw = rr(40, 70), col = pick([0x8fa6c4, 0x7f97b8, 0x9db3cf]), rc = rr(10, 18); if (Math.hypot(Math.sin(a) * d, Math.cos(a) * d + 290) < 120) continue; far.cone(Math.sin(a) * d, -2, Math.cos(a) * d, rw, h, col, 6); far.cone(Math.sin(a) * d, h * .72, Math.cos(a) * d, rc, h * .3, 0xffffff, 6); }
   for (let i = 0; i < 5; i++) { const a = rnd() * BI.TAU, d = rr(235, 275); far.sph(Math.sin(a) * d, -2, Math.cos(a) * d, rr(10, 22), pick([0x86d36a, 0xf3dfa2]), 1, 1, .35, 1); }
   const farMesh = far.mesh(BI.mat()); scene.add(farMesh);
   const clouds = new THREE.Group(), cb = new BI.Batch();
@@ -612,8 +619,10 @@ BI.buildWorld = function (scene) {
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water;
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam;
+  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); }
 
   /* ---------- Meshes ---------- */
+  for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }
   W.flatRoof = roofB.mesh(BI.mat()); W.flatRoof.frustumCulled = false; scene.add(W.flatRoof);
   const stMesh = st.mesh(BI.mat()); stMesh.frustumCulled = false; scene.add(stMesh);
   W.winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff }); W.lampMat = new THREE.MeshBasicMaterial({ color: 0xdcdcdc });
@@ -664,7 +673,7 @@ BI.buildWorld = function (scene) {
     ctx.fillStyle = '#e8d6c0'; for (const b of W.boxes) if (b.x1 - b.x0 > 5 && b.z1 - b.z0 > 5) ctx.fillRect(X(b.x0), Y(b.z0), (b.x1 - b.x0) * k, (b.z1 - b.z0) * k);
     ctx.fillStyle = '#ffb45a'; ctx.fillRect(X(-34), Y(20), 14 * k, 14 * k);
     const mark = (x, z, e) => { ctx.font = Math.round(S * .075) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, X(x), Y(z)); };
-    mark(70, 30, '⛺'); mark(100, -88, '🥊'); mark(40, -148, '🌲'); mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(-36, -133, '🏠'); mark(-157, 12, '🐮'); mark(-124, 35, '🌾'); mark(53, 138, '🏊'); mark(-112, 106, '🥕'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
+    mark(0, -226, '🏙️'); mark(70, 30, '⛺'); mark(100, -88, '🥊'); mark(40, -148, '🌲'); mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(-36, -133, '🏠'); mark(-157, 12, '🐮'); mark(-124, 35, '🌾'); mark(53, 138, '🏊'); mark(-112, 106, '🥕'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
   };
   return W;
 };

@@ -473,5 +473,17 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const r = await p.evaluate(() => { const b = window.__bi; b.openParent(); const bs = [...document.querySelectorAll('#parGfx button')]; const n = bs.length; bs[1].click(); const sharp = b.save.gfx; bs[0].click(); const au = b.save.gfx; b.closeParent(); return { n, sharp, au, inst: b.scene.children.filter(o => o.isInstancedMesh).length }; });
   ok(r.n === 3 && r.sharp === 'sharp' && r.au === 'auto', 'Eltern-Bereich: Grafik Automatisch/Scharf/Sparsam'); ok(r.inst >= 3, 'Blumen und Grasbüschel sind da (' + r.inst + ' Instanz-Gruppen)'); await c.close();
 }
+{ // Stadtviertel: Brücke, begehbare Häuser, Möbel, Läden, Kleiderladen, Spielzeugladen-Zimmer
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}; b.save.stars = 60;
+    const bd = b.W.city.bridge; b.P.x = 0; b.P.z = bd.z1 + 4; await sl(200); for (const z of [-200, -225, -262]) { b.P.z = z; await sl(250); } o.city = b.P.z < -250 && Math.abs(b.P.x) < 5;
+    const q = b.W.interiors.find(i => i.shop === 'supermarkt'), it = q.items.find(i => i.k === 'store'); b.P.x = it.x; b.P.z = it.z; await sl(400); const n = b.placeNear(); o.store = n && n.src; b.placeAct(n); document.querySelector('#storeGrid button').click(); o.apple = b.garden.inv().apple; b.town.closeStore();
+    const m = b.W.interiors.find(i => i.shop === 'mode'), mi = m.items.find(i => i.k === 'store'); b.P.x = mi.x; b.P.z = mi.z; await sl(400); b.placeAct(b.placeNear()); const mb = [...document.querySelectorAll('#storeGrid button')].find(x => /Wikinger/.test(x.textContent)); mb && mb.click(); o.hat = b.save.owned.includes('hat_viking'); b.town.closeStore();
+    const h = b.W.interiors.find(i => i.kind === 'house'); o.rooms = b.W.interiors.filter(i => i.kind === 'house').length; const got = []; for (const k of ['fridge', 'tv', 'books', 'bed', 'plant']) { const f = h.items.find(i => i.k === k); if (!f) continue; b.P.x = f.x; b.P.z = f.z; await sl(250); const mm = b.placeNear(); if (mm && mm.src === 'furn' && mm.n.it.k === k) got.push(k); } o.furn = got.length;
+    o.roofHidden = (() => { b.P.x = h.cx; b.P.z = h.cz; return null; })(); await sl(500); o.roof = h.roof.visible === false; b.P.x = 0; b.P.z = -240; await sl(500); o.roofBack = h.roof.visible === true;
+    return o; });
+  ok(r.city, 'Stadtviertel: über die Brücke zu Fuß erreichbar'); ok(r.store === 'furn' && r.apple === 1, 'Supermarkt: an der Theke einkaufen'); ok(r.hat, 'Kleiderladen: neuer Hut gekauft'); ok(r.rooms >= 8 && r.furn >= 4, `Häuser sind begehbar (${r.rooms} Häuser, ${r.furn}/5 Möbel zum Ausprobieren)`); ok(r.roof && r.roofBack, 'Dach verschwindet im Haus und kommt draußen wieder'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
