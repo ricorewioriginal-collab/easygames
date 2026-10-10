@@ -456,5 +456,14 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   ok(!r.outside && !r.outsideAtk && r.hudOut, 'Außerhalb von Arena und Wald kann nicht gekämpft werden'); ok(r.inForest && r.hud, 'Verbotener Wald: Kampf-Anzeige und Knöpfe da'); ok(r.dead && r.stars >= 1 && r.kills >= 1, `Waldmonster besiegt (+${r.stars} ⭐)`);
   ok(r.kai === 'arena' && r.panel && r.mode === 'duel', 'Arena: Kampfmeister Kai öffnet das Menü, Duell startet (' + r.fighter + ')'); ok(r.after === null && r.duelWins >= 1, 'Duell: nach 2 gewonnenen Runden Sieg + Belohnung'); ok(r.wave === 'wave' && r.waveEnemies >= 2 && r.wave2, 'Monster-Welle startet und die nächste Welle kommt'); await c.close();
 }
+{ // Gleise frei, Zug fahren am Bahnsteig, echte Tierstimmen
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, W = b.W, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+    o.onRails = b.vehicles.filter(v => !v.ai && W.railSdf(v.x, v.z) < 6).length; const v = b.vehicles.find(x => x.type === 'car' && !x.ai); const T = W.trackAt(W.stations[1].s + 40, {}); v.setPose(T.x, T.z, T.h); b.P.x = 0; b.P.z = 26; await sl(3500); o.moved = W.railSdf(v.x, v.z) > 5;
+    const st = W.stations[2]; b.P.x = (st.plat[0] + st.plat[2]) / 2; b.P.z = (st.plat[1] + st.plat[3]) / 2; await sl(400); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); await sl(300); o.train = !!(b.P.veh && b.P.veh.isTrain);
+    const A = BI.audio; A.resume(); for (let i = 0; i < 40 && !(A.ready('moo') && A.ready('oink') && A.ready('bark')); i++) await sl(200); o.snd = A.sample('cow') && A.sample('pig') && A.sample('dog'); return o; });
+  ok(r.onRails === 0 && r.moved, 'Keine Autos auf den Gleisen (falsch abgestellte werden neben die Strecke gesetzt)'); ok(r.src === 'station' && r.train, 'Am Bahnsteig: „Zug fahren“ – man steigt als Lokführer ein'); ok(r.snd, 'Echte Tierstimmen (Kuh, Schwein, Hund) werden geladen und abgespielt'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

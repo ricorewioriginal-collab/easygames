@@ -117,7 +117,7 @@ BI.createMini = function (G) {
   const NUMW = ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn'];
   const THINGS = [['🍎', 'Äpfel'], ['⭐', 'Sterne'], ['🎈', 'Ballons'], ['🐟', 'Fische'], ['🚗', 'Autos'], ['🌸', 'Blumen'], ['🐥', 'Küken']];
   const COLN = [['rot', '#e0382b'], ['blau', '#2d6be0'], ['gelb', '#ffd23f'], ['grün', '#2fae5a'], ['orange', '#ff8a1f'], ['lila', '#9b4fd8'], ['rosa', '#ff8fc8'], ['braun', '#8a5a33'], ['schwarz', '#23262d'], ['weiß', '#ffffff']];
-  const ANI = [['Kuh', '🐮', 'moo'], ['Schaf', '🐑', 'baa'], ['Hund', '🐶', 'bark'], ['Ente', '🦆', 'quack'], ['Katze', '🐱', 'meow'], ['Frosch', '🐸', 'ribbit'], ['Schwein', '🐷', 'oink']];
+  const ANI = [['Kuh', '🐮', 'moo'], ['Schaf', '🐑', 'baa'], ['Hund', '🐶', 'bark'], ['Ente', '🦆', 'quack'], ['Katze', '🐱', 'meow'], ['Pferd', '🐴', 'neigh'], ['Schwein', '🐷', 'oink'], ['Huhn', '🐔', 'cluck'], ['Ziege', '🐐', 'goat']];
   const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = (rnd() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const QUIZ = {
     init(kind) { this.kind = kind; this.r = 0; this.tries = 0; this.wait = 0; this.shake = [0, 0, 0]; this.pulse = 0; this.next(); },
@@ -130,7 +130,10 @@ BI.createMini = function (G) {
       else { const a = ANI[(rnd() * ANI.length) | 0], d = new Set([a]); while (d.size < 3) d.add(ANI[(rnd() * ANI.length) | 0]); this.a = a; this.ans = shuf([...d]).map(v => ({ v, ok: v === a })); this.say = 'Wer macht so?'; }
       this.ask();
     },
-    ask() { if (this.kind === 'animals') { A[this.a[2]] && A[this.a[2]](); setTimeout(() => { if (M.active && game === this) A[this.a[2]] && A[this.a[2]](); }, 700); setTimeout(() => { if (M.active && game === this) A.speak && A.speak(this.say); }, 1500); } else A.speak && A.speak(this.say); },
+    ask() {
+      if (this.kind === 'animals') { const g = this, snd = this.a[2], play = () => { if (M.active && game === g && A[snd]) A[snd](); }, wait = n => { if (A.ready && !A.ready(snd) && n < 15) setTimeout(() => wait(n + 1), 100); else { play(); setTimeout(play, 1300); setTimeout(() => { if (M.active && game === g) A.speak && A.speak(g.say); }, 2700); } }; wait(0); }
+      else A.speak && A.speak(this.say);
+    },
     update(dt) { for (let i = 0; i < 3; i++) this.shake[i] = Math.max(0, this.shake[i] - dt * 3); if (this.wait > 0) { this.wait -= dt; if (this.wait <= 0) this.next(); } if (this.tries >= 2) this.pulse += dt; },
     draw() {
       bg(this.kind === 'colors' ? '#fff3c4' : this.kind === 'animals' ? '#c9f0c2' : '#cfe9ff', '#ffffff'); const k = this.kind;

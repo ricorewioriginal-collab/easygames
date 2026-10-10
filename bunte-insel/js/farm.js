@@ -8,7 +8,7 @@ BI.createFarm = function (G) {
   /* ---------- Tierarten ---------- */
   const SP = {
     cow: { icon: '🐮', name: 'Kuh', snd: 'moo', fact: 'Kühe fressen den ganzen Tag Gras und geben Milch.' }, sheep: { icon: '🐑', name: 'Schaf', snd: 'baa', fact: 'Schafe haben ein dickes, warmes Fell aus Wolle.' },
-    goat: { icon: '🐐', name: 'Ziege', snd: 'baa', fact: 'Ziegen können ganz toll klettern, sogar auf Felsen!' }, pig: { icon: '🐷', name: 'Schwein', snd: 'oink', fact: 'Schweine sind sehr schlau und baden gern im Matsch.' },
+    goat: { icon: '🐐', name: 'Ziege', snd: 'goat', fact: 'Ziegen können ganz toll klettern, sogar auf Felsen!' }, pig: { icon: '🐷', name: 'Schwein', snd: 'oink', fact: 'Schweine sind sehr schlau und baden gern im Matsch.' },
     chicken: { icon: '🐔', name: 'Huhn', snd: 'cluck', fact: 'Hühner legen Eier – fast jeden Tag eins!' }, horse: { icon: '🐴', name: 'Pferd', snd: 'neigh', fact: 'Pferde können sogar im Stehen schlafen.' },
     rabbit: { icon: '🐰', name: 'Hase', snd: 'giggle', fact: 'Hasen hoppeln schnell und knabbern am liebsten Karotten.' }, donkey: { icon: '🫏', name: 'Esel', snd: 'ia', fact: 'Esel rufen laut „I-A“ und sind sehr treu.' },
     duck: { icon: '🦆', name: 'Ente', snd: 'quack', fact: 'Enten haben wasserdichte Federn – der Regen perlt ab.' }

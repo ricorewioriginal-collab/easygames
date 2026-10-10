@@ -71,7 +71,7 @@
   /* mehr Fahrzeuge: am Straßenrand geparkt (nicht auf der Ringstraße, damit der Verkehr nicht blockiert) */
   for (let i = 0, made = 0; i < 160 && made < 14; i++) {
     const dir = (Math.random() * 4) | 0, d = 24 + Math.random() * 120, off = (Math.random() < .5 ? -1 : 1) * (6.4 + Math.random() * 1.2), x = [d, -d, off, off][dir], z = [off, off, d, -d][dir], r = Math.hypot(x, z);
-    if (Math.abs(r - K.RA) < 8 || Math.abs(r - K.RB) < 8 || !W.free(x, z, 2.6)) continue;
+    if (Math.abs(r - K.RA) < 8 || Math.abs(r - K.RB) < 8 || W.railSdf(x, z) < 9 || !W.free(x, z, 2.6)) continue;
     const type = ['car', 'car', 'car', 'car', 'bike', 'bike', 'bus', 'ice'][made % 8]; addVeh(type, x, z, dir < 2 ? (Math.random() < .5 ? Math.PI / 2 : -Math.PI / 2) : (Math.random() < .5 ? 0 : Math.PI), { color: BI.PAINT[(Math.random() * BI.PAINT.length) | 0] }); made++;
   }
   const train = new BI.Train(scene, W);
@@ -952,6 +952,13 @@
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state });
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
+  function nearStation() { if (P.veh) return -1; for (let i = 0; i < W.stations.length; i++) { const p = W.stations[i].plat; if (P.x > p[0] - 1.5 && P.x < p[2] + 1.5 && P.z > p[1] - 1.5 && P.z < p[3] + 1.5) return i; } return -1; }
+  /* Am Bahnsteig: „Zug fahren“ – der Zug wird an diesen Bahnhof gezaubert und man steigt als Lokführer ein */
+  function boardTrain(i) {
+    if (P.veh) return; const st = W.stations[i], d = Math.hypot(trainVeh.x - st.x, trainVeh.z - st.z);
+    if (d > 7 || train.v > 1.5) { fx.burst(trainVeh.x, 2, trainVeh.z, 20, [BI.C.white, BI.C.blue], 5, 1, 30, 2); train.s = st.s; train.v = 0; train.mode = 'wait'; train.timer = 40; train.stationIdx = i; train.update(0, null, fx); fx.burst(st.x, 2, st.z, 24, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 30, 4); A.fanfare(); say('🚂 Der Zug fährt für dich vor! Alles einsteigen!', 3000); }
+    enter(trainVeh);
+  }
   function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
   function talkNpc(n) {
     const p = n.p, line = p.lines[p.i++ % p.lines.length]; n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
@@ -962,6 +969,7 @@
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
     const g = garden.near(); if (g) return { src: 'garden', n: g };
     if (combat.nearKai()) return { src: 'arena' };
+    { const si = nearStation(); if (si >= 0) return { src: 'station', i: si }; }
     if (kitchen.near()) return { src: 'kitchen' };
     if (camp.near()) return { src: 'camp' };
     if (farm.nearFarmer()) return { src: 'farmer' };
@@ -971,9 +979,9 @@
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'] };
-  function placeLabel(n) { if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'animal') { if (!farm.milk()) farm.care('stroke'); }
+    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk()) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1346,11 +1354,14 @@
     const g = kiteC.group; g.position.set(kiteC.k.x, kiteC.k.y, kiteC.k.z); g.rotation.y = Math.atan2(camera.position.x - g.position.x, camera.position.z - g.position.z); g.rotation.z = Math.sin(t * 1.7) * .25;
     const a = kiteLine.geometry.attributes.position; a.setXYZ(0, hx, by, hz); a.setXYZ(1, kiteC.k.x, kiteC.k.y - .3, kiteC.k.z); a.needsUpdate = true;
   }
+  let railT = 3;
   function updateWorldActors(dt) {
     updatePup(dt); updatePap(dt); updateKite(dt); chestCd = Math.max(0, chestCd - dt);
     { const od = onDeck(); if (od && !wasOnDeck && state === 'play') say('🏴‍☠️ Ahoi! Kanone 💥 im Schnellmenü, Schatztruhe vorn', 3600); wasOnDeck = od; }
     { const ins = inShop(); if (ins && !wasInShop && state === 'play') say('🧸 Willkommen im Spielzeugladen! An der Theke 🛒 drücken', 3500); wasInShop = ins; }
     const qx = P.veh ? P.veh.x : P.x, qz = P.veh ? P.veh.z : P.z;
+    // Fahrzeuge, die auf den Gleisen stehen bleiben, werden freundlich neben die Strecke gesetzt (nie auf den Schienen parken)
+    railT -= dt; if (railT <= 0) { railT = 1.5; for (const v of vehicles) { if (v.ai || v.driver || v === P.veh || v.spec.fly || v.spec.boat) continue; const d = W.railSdf(v.x, v.z); if (d < 3.2 && Math.hypot(v.x - qx, v.z - qz) > 8) { const e = 1.5, gx = W.railSdf(v.x + e, v.z) - W.railSdf(v.x - e, v.z), gz = W.railSdf(v.x, v.z + e) - W.railSdf(v.x, v.z - e), gl = Math.hypot(gx, gz) || 1, s = 8; const nx = v.x + gx / gl * s, nz = v.z + gz / gl * s; if (W.railSdf(nx, nz) > 5.5 && W.free(nx, nz, 1.5)) v.setPose(nx, nz, v.h); else v.setPose(v.x - gx / gl * s, v.z - gz / gl * s, v.h); v.v = 0; } } }
     // Parkende Fahrzeuge rollen aus
     for (const v of vehicles) if (!v.driver && !v.ai && Math.abs(v.v) > .05) { v.step(dt, { steer: 0, thr: 0 }, W, fx); }
     for (const v of vehicles) {
@@ -1494,5 +1505,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { W, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, combat, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { W, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

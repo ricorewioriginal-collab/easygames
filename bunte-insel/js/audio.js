@@ -1,7 +1,8 @@
 'use strict';
-/* Bunte Insel – Sounds & Musik, alles im Browser erzeugt (WebAudio), nichts zum Laden */
+/* Bunte Insel – Sounds & Musik: echte lizenzfreie Tierstimmen/Effekte (kleine MP3 in sounds/, siehe LICENSES.txt, CC0/Public Domain, kein API-Schlüssel),
+   alles andere und der Notfall-Ersatz (wenn eine Datei fehlt/offline) wird im Browser erzeugt (WebAudio). */
 BI.audio = (function () {
-  let ctx = null, master = null, sfxBus = null, musBus = null, muted = false, musicOn = true;
+  let wet = null, ctx = null, master = null, sfxBus = null, musBus = null, muted = false, musicOn = true;
   let eng = null, hornNodes = null, sirenNodes = null, trainNodes = null, melodyTimer = 0, mt = 0, beat = 0, last = 0;
   const PENT = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25, 784.0];
 
@@ -11,6 +12,8 @@ BI.audio = (function () {
     master = ctx.createGain(); master.gain.value = muted ? 0 : 0.8 * (A._vol == null ? 1 : A._vol); master.connect(ctx.destination);
     sfxBus = ctx.createGain(); sfxBus.gain.value = 0.9; sfxBus.connect(master);
     musBus = ctx.createGain(); musBus.gain.value = musicOn ? 0.5 : 0; musBus.connect(master);
+    /* kleines Echo/Hall für helle Klänge (macht Sterne, Glocken & Fanfaren schöner) */
+    wet = ctx.createGain(); wet.gain.value = .22; const dl = ctx.createDelay(.5), fb = ctx.createGain(), lp = ctx.createBiquadFilter(); dl.delayTime.value = .17; fb.gain.value = .32; lp.type = 'lowpass'; lp.frequency.value = 3200; wet.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(master);
   }
   function resume() { init(); if (ctx && ctx.state === 'suspended') ctx.resume(); }
   function tone(f, dur, type, vol, slideTo, delay, bus) {
@@ -19,7 +22,7 @@ BI.audio = (function () {
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
     if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(bus || sfxBus); o.start(t); o.stop(t + dur + 0.05);
+    o.connect(g); g.connect(bus || sfxBus); if (wet && !bus && f >= 600 && type !== 'square' && type !== 'sawtooth') g.connect(wet); o.start(t); o.stop(t + dur + 0.05);
   }
   function noise(dur, vol, hp) {
     if (!ctx) return; const len = Math.ceil(ctx.sampleRate * dur), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
@@ -165,5 +168,24 @@ BI.audio = (function () {
     },
     stopAll() { A.rain(false); A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
   };
+  /* ---------- Echte Töne (Samples): lazy laden, bei Fehler bleibt der erzeugte Ton ---------- */
+  const bank = {}; let sfxBase = '';
+  try { const s = document.currentScript && document.currentScript.src; if (s) sfxBase = s.replace(/js\/audio\.js.*$/, 'sounds/'); } catch (e) { }
+  function loadSample(name) {
+    if (bank[name] !== undefined || !ctx) return; bank[name] = 'loading';
+    fetch((sfxBase || 'sounds/') + name + '.mp3').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(ab => new Promise((res, rej) => { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.catch) p.catch(rej); }))
+      .then(buf => { bank[name] = buf; }).catch(() => { bank[name] = 'fail'; });
+  }
+  function sample(name, vol, rate) {
+    if (!ctx) return false; const b = bank[name]; if (b === undefined) { loadSample(name); return false; } if (!b || typeof b === 'string') return false;
+    const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = b; s.playbackRate.value = (rate || 1) * (.96 + Math.random() * .08); g.gain.value = vol || 1; s.connect(g); g.connect(sfxBus); s.start(); return true;
+  }
+  A.sample = sample; A.ready = fn => { const m = MAP[fn]; if (!m) return true; loadSample(m[0]); const b = bank[m[0]]; return b !== undefined && b !== 'loading'; };
+  const MAP = { moo: ['cow', 1], baa: ['sheep', 1], goat: ['goat', 1], oink: ['pig', 1], cluck: ['chicken', 1], neigh: ['horse', .9], ia: ['donkey', 1], bark: ['dog', 1], meow: ['cat', 1], quack: ['duck', 1], hit: ['hit', .9], kick: ['kick', .9], thwack: ['thwack', .9], bonk: ['bonk', .9], bump: ['bump', .9], coins: ['coins', .8], buy: ['buy', .8], enter: ['enter', .8], leave: ['leave', .8] };
+  for (const k in MAP) { const orig = A[k], [nm, v] = MAP[k]; A[k] = function () { if (!sample(nm, v)) { if (orig) orig.apply(A, arguments); } }; }
+  A.goat = A.goat || A.baa;
+  /* Beim ersten Tippen die Tierstimmen schon mal im Hintergrund laden */
+  const _res = A.resume; A.resume = function () { _res(); if (ctx && !A._pre) { A._pre = true; setTimeout(() => ['cow', 'sheep', 'goat', 'pig', 'chicken', 'horse', 'donkey', 'dog', 'cat', 'duck', 'hit', 'coins', 'enter'].forEach(loadSample), 1500); } };
   return A;
 })();
