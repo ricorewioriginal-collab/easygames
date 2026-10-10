@@ -457,7 +457,7 @@ BI.buildWorld = function (scene) {
       // Dach (eigenes Mesh, wird innen ausgeblendet)
       roofB.prism(cx, WH, (ZB + ZF) / 2, FW + .8, 2.3, ZF - ZB + 1.6, RC[i], 0); roofB.box(cx, WH - .05, (ZB + ZF) / 2, FW + .6, .12, ZF - ZB + 1.4, shadeC(RC[i]));
       const dz = ZF + 2.6;
-      W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
+      W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, chest: { x: cx + 1.2, z: ZB + 1.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
     }
     W.spots.flatBlock = { x0: X0, x1: X0 + FW * N, zB: ZB, zF: ZF };
     BI.addPlaces(W, st);

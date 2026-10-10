@@ -349,7 +349,7 @@
       }
       jump.hidden = false; horn.hidden = false;
     } else {
-      act.hidden = !(near || shopNear || chestNear || rangeNear || flatN || placeN); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + (flatN.k === 'mama' ? 'Mama' : 'Papa') + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', !!(near || shopNear || chestNear || rangeNear || flatN || placeN));
+      act.hidden = !(near || shopNear || chestNear || rangeNear || flatN || placeN); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + (flatN.k === 'mama' ? 'Mama' : 'Papa') + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', !!(near || shopNear || chestNear || rangeNear || flatN || placeN));
       jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
@@ -873,7 +873,7 @@
   function slotOf(id) { const ids = [selfId()].concat([...remote.keys()]).sort(); return Math.max(0, ids.indexOf(id)) % flats.length; }
   const mySlot = () => slotOf(selfId());
   function updateFlats() {
-    placePoster();
+    placePoster(); room.place(flats[mySlot()]);
     const names = flats.map(() => ''); const ids = [selfId()].concat([...remote.keys()]).sort();
     ids.forEach((id, k) => { names[k % flats.length] = id === selfId() ? myName() : remote.get(id).name; });
     flats.forEach((f, i) => { const txt = names[i] ? '🏠 ' + names[i] : 'Frei'; if (txt !== f.signTxt) { f.signTxt = txt; const old = f.sign; f.sign = textSprite(txt, 4.6, 1.0, 62); f.sign.position.copy(old.position); freeObj(old); scene.add(f.sign); } });
@@ -883,10 +883,10 @@
   function flatNear() {
     if (P.veh || P.y > 1 || sl.t >= 0) return null; const x = P.x, z = P.z; if (!(x > FB.x0 && x < FB.x1 && z > FB.zB && z < FB.zF)) return null;
     const f = flats[clamp(((x - FB.x0) / 12) | 0, 0, flats.length - 1)], d = p => Math.hypot(x - p.x, z - p.z);
-    if (d(f.bed) < 2.7) return { k: 'bed', f }; if (d(f.ward) < 2.9) return { k: 'ward', f }; if (d(f.mama) < 2.6) return { k: 'mama', f }; if (d(f.papa) < 2.6) return { k: 'papa', f }; return null;
+    if (d(f.chest) < 1.9) return { k: 'room', f }; if (d(f.bed) < 2.7) return { k: 'bed', f }; if (d(f.ward) < 2.9) return { k: 'ward', f }; if (d(f.mama) < 2.6) return { k: 'mama', f }; if (d(f.papa) < 2.6) return { k: 'papa', f }; return null;
   }
   function flatAct(n) {
-    if (n.k === 'bed') startSleep(n.f); else if (n.k === 'ward') openWard();
+    if (n.k === 'room') { if (n.f.i === mySlot()) room.show(); else say('🛋️ Das ist nicht dein Zimmer – deins ist in deiner Wohnung!', 2600); } else if (n.k === 'bed') startSleep(n.f); else if (n.k === 'ward') openWard();
     else { const l = PLINES[n.k]; say((n.k === 'mama' ? 'Mama' : 'Papa') + ': „' + l[(Math.random() * l.length) | 0] + '“', 3200); (n.k === 'mama' ? n.f.mom : n.f.dad).group.rotation.y = Math.atan2(P.x - (n.k === 'mama' ? n.f.mama.x : n.f.papa.x), P.z - (n.k === 'mama' ? n.f.mama.z : n.f.papa.z)); if (kissCd <= 0 && n.f.i === mySlot()) { kissCd = 45; addStars(1); A.star(); fx.burst(P.x, 2.2, P.z, 10, [BI.C.pink, BI.C.red], 3, 1.2, 28, -1); say('❤️ ' + (n.k === 'mama' ? 'Mama' : 'Papa') + ' drückt dich fest! +1 ⭐', 2400); } }
   }
   function startSleep(f) { sl.t = 0; sl.f = f; sl.said = false; setStick(0, 0); fun.setDance(false); fadeEl.classList.add('on'); A.stopAll(); }
@@ -920,6 +920,7 @@
   function applySeason() { if (weather) weather.applySeason(); }
   const pool = BI.createPool({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), earn: id => kids.earn(id), char: () => char, openWard: () => openWard() });
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
+  const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
   function placeNear() {
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
@@ -1169,7 +1170,7 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
@@ -1449,5 +1450,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { weather: () => weather, kitchen, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { weather: () => weather, kitchen, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

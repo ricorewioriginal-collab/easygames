@@ -410,5 +410,11 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   });
   ok(r.d1 === true && r.d2 === false && r.g >= 2, 'Tagesgeschenk gibt es einmal pro Tag'); ok(r.streak === 3, 'Serie zählt Tage in Folge'); ok(r.pt === 1, 'Foto-Aufgabe (' + r.t + ') wird erkannt'); ok(r.owned, 'Sticker-Belohnung: Partyhut freigeschaltet'); await c.close();
 }
+{ // Zimmer einrichten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, f = b.flats[0]; b.P.x = f.chest.x; b.P.z = f.chest.z + 1.3; await new Promise(r => setTimeout(r, 300)); const n = b.flatNear(); b.flatAct(n); const o = { k: n && n.k, open: b.room.open }; document.querySelector('#roomBox .sw:nth-child(1)'); document.querySelectorAll('#roomBox .row')[0].children[2].click(); o.wall = b.save.room.wall; b.room.close(); return o; });
+  ok(r.k === 'room' && r.open && r.wall === 2, 'Zimmer einrichten: Tapete wählbar, wird gespeichert'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
