@@ -1,6 +1,6 @@
 // Welt 4 – Eishöhle
 export default [
-  { name: "Erstes Eis", hint: "Eis ist glatt: Die Kiste rutscht von allein weiter.", map: [
+  { name: "Erstes Eis", hint: "Eis ist glatt: Eine Kiste rutscht von allein, bis etwas im Weg ist.", map: [
     "  #######  ",
     " ##     ## ",
     "##       ##",
@@ -9,7 +9,7 @@ export default [
     " ##     ## ",
     "  #######  ",
   ] },
-  { name: "Zwei Bahnen", hint: "", map: [
+  { name: "Zwei Bahnen", hint: "Auf der Eisbahn kannst du die Kiste nicht anhalten.", map: [
     "  ########  ",
     " ##      ## ",
     " #  @     # ",
@@ -20,7 +20,7 @@ export default [
     " ##      ## ",
     "  ########  ",
   ] },
-  { name: "Um die Ecke", hint: "Manchmal braucht die Kiste zwei Schübe.", map: [
+  { name: "Um die Ecke", hint: "Manchmal braucht eine Kiste zwei Schübe.", map: [
     " ########## ",
     " ##      ## ",
     " #        # ",
@@ -31,7 +31,7 @@ export default [
     " #       .# ",
     " ########## ",
   ] },
-  { name: "Schneetor", hint: "", map: [
+  { name: "Schneetor", hint: "Auf festem Boden bleibt die Kiste sofort liegen.", map: [
     " ########## ",
     " #        # ",
     " #        # ",
@@ -41,7 +41,7 @@ export default [
     " #        # ",
     " ########## ",
   ] },
-  { name: "Schneewehe", hint: "", map: [
+  { name: "Schneewehe", hint: "Plane, wo jede Kiste anstoßen soll.", map: [
     "  ########  ",
     " ##i ii  ## ",
     " # i# ###  #",
@@ -51,7 +51,7 @@ export default [
     " ##i    i## ",
     "  ########  ",
   ] },
-  { name: "Eisbrücke", hint: "Rutscht eine Kiste ins Wasser, wird sie zur Brücke.", map: [
+  { name: "Eisbrücke", hint: "Eine Kiste, die ins Wasser rutscht, wird zur Brücke.", map: [
     "  ########  ",
     " ##i ii#i ##",
     " ## i i# # #",
@@ -97,6 +97,15 @@ export default [
     " # ii$$ #   ",
     " #..#i~i#   ",
     " ##.  @##   ",
+    "  ######    ",
+  ] },
+  { name: "Eispalast", hint: "", map: [
+    "  ######    ",
+    " ##$   ##   ",
+    " #  i$ii#   ",
+    " #$.i$$@#   ",
+    " #..# ~ #   ",
+    " ##.i  ##   ",
     "  ######    ",
   ] },
 ];

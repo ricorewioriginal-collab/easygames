@@ -50,7 +50,7 @@ export default [
   ' ##@.  #    ',
   '  ######    ',
 ]},
-{ name: "Drei Becken", hint: "Erst die Brücke bauen, dann kannst du die Kisten von der anderen Seite holen.", map: [
+{ name: "Drei Becken", hint: "", map: [
   ' ########## ',
   ' #    #    #',
   ' #    ##   #',
@@ -85,17 +85,6 @@ export default [
   ' ##  ~~   ##',
   '  ########  ',
 ]},
-{ name: "Piratenbucht", hint: "", map: [
-  '##########  ',
-  '#.##.###@#  ',
-  '# ##~###$#  ',
-  '#~## ### #  ',
-  '#    $ $  # ',
-  '#     $   # ',
-  '#  ##    $# ',
-  '#      #  # ',
-  '########### ',
-]},
 { name: "Korallenriff", hint: "", map: [
   ' ########  ',
   '##      ## ',
@@ -107,6 +96,19 @@ export default [
   '#   #$   # ',
   '#  .    ## ',
   ' ########  ',
+]},
+{ name: "Piratenbucht", hint: "Drei Ziele, zwei Gräben – plane die Reihenfolge, bevor du schiebst.", map: [
+  '   ######   ',
+  '  ##    ##  ',
+  '  ## . ###  ',
+  '#####~######',
+  '#  #@$  #  #',
+  '# .~$   # $#',
+  '# $#    ~ .#',
+  '#  # ## #$ #',
+  '#  # $  #  #',
+  ' ###    ### ',
+  '  ########  ',
 ]},
 { name: "Zwei Inseln", hint: "", map: [
   '            ',
