@@ -14,6 +14,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
+| AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -147,6 +148,12 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Karten & Schwierigkeit:** Funkhafen, Frequenz-Spirale, Zickzack-Studio; Leicht / Normal / Schwer. Welle früh starten bringt Bonus-Geld.
 - **Steuerung:** Turm unten wählen, Feld klicken (am Handy: erstes Tippen = Vorschau, zweites = bauen), Turm antippen = Ausbau/Ziel/Verkauf. Tasten: `1–8` Turm, `Leertaste` Welle, `U` Ausbau, `S` Verkauf, `F` Tempo ×2, `P` Pause, `M` Ton, `Esc` abwählen. Im Hochformat wird das Spielfeld automatisch gedreht.
 - **Logos:** `anmacha-tower-defense/logos/01..13` (`.png|.jpg|.jpeg`), `anmacha-tower-defense/logo.png` ersetzt den Titel. Bestenliste (Top 10) lokal im Browser.
+
+## AnMaCha Showdown – Das Mikro-Duell
+
+- **Spiel:** Duell über 7 Mini-Spiele, das erste zählt 1 Punkt, das letzte 7. Wer zuerst 15 Punkte hat, gewinnt; bei Gleichstand entscheidet ein Stechen (Tipp-Fieber, 6 s). Gegner: der Moderator (Stärke Anfänger / Normal / Profi, mit Bilanz) oder ein zweiter Spieler am selben Gerät (abwechselnd).
+- **Mini-Spiele (7 von 8 zufällig):** Reaktionstest, Schätzduell (näher dran gewinnt), Logo-Gedächtnis (Simon-Folge mit Sender-Logos), Tipp-Fieber, Zielscheibe, Farb-Verwirrung, Kopfrechnen, Sortier-Blitz – alle per Touch, Maus oder Tastatur.
+- **Studio:** 3D-Showdown-Bühne mit Avataren (Logo-Shirts), Publikum, Werbeträgern mit allen Sender-Logos (`anmacha-showdown/logos/01..13`), Punkte-Leiste mit 15 Feldern, Jubel/Buzzer/Musik per WebAudio, optional Moderator-Stimme. Eigenes Titel-Logo: `anmacha-showdown/logo.png`.
 
 ## AnMaCha Koffer DEALER
 
