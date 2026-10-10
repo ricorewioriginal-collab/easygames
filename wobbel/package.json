@@ -1,0 +1,1 @@
+{ "name": "wobbel", "version": "1.0.0", "type": "module", "private": true, "scripts": { "test": "node --max-old-space-size=4096 tests/check-levels.js", "serve": "python3 -m http.server 8080" } }

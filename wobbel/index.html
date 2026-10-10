@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7fd2ff">
+<title>Wobbel – Das Schiebe-Puzzle</title>
+<meta name="description" content="Wobbel – 3D-Schiebe-Puzzle mit 55 Levels in 5 Welten. Ein Spiel von RicoReWi.">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="hud" hidden>
+  <div id="top">
+    <button class="ib" id="bMenu" aria-label="Menü" title="Menü (Esc)">☰</button>
+    <div id="title"><small id="tWorld">Welt 1</small><b id="tName">Level</b></div>
+    <button class="ib" id="bSound" aria-label="Ton" title="Ton an/aus">🔊</button>
+    <div class="chips"><span class="chip" id="cMoves">👣 0</span><span class="chip" id="cPush">📦 0</span><span class="chip" id="cGoal">🎯 0/0</span><span class="chip" id="cKey" hidden>🔑 0</span></div>
+  </div>
+  <div id="side">
+    <button class="ib" id="bUndo" aria-label="Zug zurück" title="Rückgängig (Z)">↶</button>
+    <button class="ib" id="bRestart" aria-label="Neustart" title="Neustart (R)">⟲</button>
+    <button class="ib" id="bRot" aria-label="Kamera drehen" title="Kamera drehen (Q/E)">⟳</button>
+  </div>
+  <div id="dpad"><button data-d="up" aria-label="hoch">▲</button><button data-d="left" aria-label="links">◀</button><button data-d="right" aria-label="rechts">▶</button><button data-d="down" aria-label="runter">▼</button></div>
+  <div id="toast" hidden></div>
+</div>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Wobbel" hidden>
+  <div class="wordmark" id="brandText">WOBBEL</div>
+  <div class="stat" id="menuStat"></div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Spielen</button>
+    <button class="btn blue" id="bLevels">🗺 Levelauswahl</button>
+    <button class="btn ghost" id="bHow">❓ So wird gespielt</button>
+    <button class="btn ghost" id="bSet">⚙ Einstellungen</button>
+  </div>
+  <div class="by">Ein Spiel von <b>RicoReWi</b> · <a href="../" id="backLink">← Alle Spiele</a></div>
+</section>
+
+<section id="levels" class="screen" hidden>
+  <h2>Levelauswahl</h2>
+  <div class="tabs" id="tabs"></div>
+  <div class="card worldhead" id="wHead"></div>
+  <div class="lgrid" id="lgrid"></div>
+  <button class="btn ghost small" id="bLvBack">← Zurück</button>
+</section>
+
+<div id="win" class="dialog" hidden><div class="card panel">
+  <h2 id="wTitle">Geschafft!</h2>
+  <div class="stars" id="wStars"></div>
+  <div id="wInfo" style="font-size:19px;font-weight:600"></div>
+  <div class="row"><button class="btn green" id="wNext">Weiter ▶</button></div>
+  <div class="row"><button class="btn ghost small" id="wAgain">⟲ Nochmal</button><button class="btn ghost small" id="wMenu">🗺 Levels</button></div>
+</div></div>
+
+<div id="how" class="dialog" hidden><div class="card panel">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>Ziel:</b> Schiebe alle Kisten auf die leuchtenden Zielfelder. Wobbel kann Kisten nur <b>schieben</b> – nicht ziehen, nicht zwei auf einmal.</li>
+    <li><b>Steuerung:</b> Pfeiltasten / WASD, Wischen oder Ziehen auf dem Bildschirm, oder tippe/klicke auf ein Feld, um dorthin zu laufen.</li>
+    <li><b>Fehler passiert:</b> ↶ (Z) nimmt Züge zurück, ⟲ (R) startet neu, ⟳ (Q/E) dreht die Kamera.</li>
+  </ul>
+  <div class="legend">
+    <div>💧 <b>Wasser</b>: Eine Kiste hinein schieben baut eine Brücke.</div>
+    <div>🎨 <b>Farben</b>: Farbige Kisten gehören auf Felder derselben Farbe. Kleckse färben Kisten um.</div>
+    <div>🧊 <b>Eis</b>: Kisten rutschen weiter, bis sie anstoßen.</div>
+    <div>🔑 <b>Schlüssel</b> öffnen Türen – jeder Schlüssel nur einmal.</div>
+  </div>
+  <button class="btn" id="howOk">Los geht's!</button>
+</div></div>
+
+<div id="set" class="dialog" hidden><div class="card panel">
+  <h2>Einstellungen</h2>
+  <button class="setrow" id="sSound"><span>🔊 Soundeffekte</span><span class="sw" id="swSound"></span></button>
+  <button class="setrow" id="sMusic"><span>🎵 Musik</span><span class="sw" id="swMusic"></span></button>
+  <button class="setrow" id="sDpad"><span>🕹 Steuerkreuz anzeigen</span><span class="sw" id="swDpad"></span></button>
+  <button class="btn ghost small" id="sReset">Fortschritt zurücksetzen</button>
+  <button class="btn" id="setOk">Fertig</button>
+</div></div>
+
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
