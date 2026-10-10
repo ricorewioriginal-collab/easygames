@@ -196,31 +196,36 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 function renderSlots() {
   let h = '';
   for (let i = 0; i < SLOTS; i++) {
-    const m = readMeta(i);
-    if (m) {
-      const d = new Date(m.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
-      h += `<div class="card"><b>${esc(m.name)}</b><small>${m.mode === 'creative' ? 'Kreativ' : 'Überleben'} · Startwert ${esc(m.seed)} · ${d}</small>
-        <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="del" data-i="${i}" aria-label="Löschen">🗑</button></div></div>`;
+    const meta = readMeta(i);
+    if (meta) {
+      const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative';
+      h += `<div class="card"><div class="top"><div class="ico">${cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b><span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span></div></div>
+        <small>Startwert ${esc(meta.seed)} · zuletzt ${d}</small>
+        <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
     } else {
-      h += `<div class="card"><b>Neue Welt</b>
-        <input id="seed${i}" placeholder="Startwert (leer = zufällig)" maxlength="24" autocomplete="off">
-        <select id="mode${i}"><option value="survival">Überleben</option><option value="creative">Kreativ (fliegen)</option></select>
-        <button class="go" data-act="new" data-i="${i}">✨ Welt erzeugen</button></div>`;
+      h += `<div class="card new"><div class="top"><div class="ico">✨</div><div class="ttl"><b>Neue Welt ${i + 1}</b><span class="pill">frei</span></div></div>
+        <div class="seed"><input id="seed${i}" placeholder="Startwert (leer = Zufall)" maxlength="24" autocomplete="off"><button data-act="dice" data-i="${i}" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div>
+        <div class="seg" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben</button><button data-mode="creative">🕊 Kreativ</button></div>
+        <button class="go" data-act="new" data-i="${i}">Welt erzeugen</button></div>`;
     }
   }
   $('slots').innerHTML = h;
 }
 $('slots').addEventListener('click', e => {
+  const sg = e.target.closest('.seg [data-mode]');
+  if (sg) { for (const x of sg.parentNode.children) x.classList.toggle('on', x === sg); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const i = Number(b.dataset.i);
-  if (b.dataset.act === 'del') {
+  if (b.dataset.act === 'dice') {
+    $('seed' + i).value = String(Math.floor(Math.random() * 900000) + 100000);
+  } else if (b.dataset.act === 'del') {
     if (confirm('Diese Welt wirklich löschen?')) { deleteWorld(i); renderSlots(); }
   } else if (b.dataset.act === 'load') {
     const s = readWorld(i);
     if (!s) { toast('Speicherstand nicht lesbar'); renderSlots(); return; }
     launch(i, s);
   } else {
-    launch(i, { name: 'Welt ' + (i + 1), seed: parseSeed($('seed' + i).value), mode: $('mode' + i).value });
+    launch(i, { name: 'Welt ' + (i + 1), seed: parseSeed($('seed' + i).value), mode: $('mode' + i).querySelector('.on').dataset.mode });
   }
 });
 
@@ -247,7 +252,7 @@ $('pSave').onclick = () => saveNow(true);
 $('pRespawn').onclick = () => { game.respawn(); resume(); };
 $('pSound').onclick = () => { sfx.enabled = !sfx.enabled; $('pSound').textContent = sfx.enabled ? '🔊 Ton: an' : '🔇 Ton: aus'; };
 $('pFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()); } catch (e) { /* ignorieren */ } };
-$('pMenu').onclick = () => { saveNow(false); game.stop(); game.clearWorld(); slot = -1; renderSlots(); setState('menu'); };
+$('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); };
 $('vd').oninput = e => { game.setViewDist(Number(e.target.value)); $('vdVal').textContent = e.target.value; };
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
@@ -422,3 +427,4 @@ setInterval(() => {
 
 renderSlots();
 setState('menu');
+game.startMenu();

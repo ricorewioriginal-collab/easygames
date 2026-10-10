@@ -205,6 +205,7 @@ export class Game {
   start(save) {
     this.stop();
     this.clearWorld();
+    this.leaveMenu();
     const edits = new Map();
     if (save.edits) for (const k of Object.keys(save.edits)) {
       const arr = save.edits[k], m = new Map();
@@ -236,6 +237,60 @@ export class Game {
     this.applyCamera();
     this.updateSky();
     this.resume();
+  }
+
+  // ---------- Menü-Kulisse: kreisende Kamera über einer kleinen Schaubühne ----------
+  startMenu() {
+    this.stop();
+    this.clearWorld();
+    this.menuMode = true;
+    this.savedView = this.savedView ?? this.viewDist;
+    this.setViewDist(Math.min(this.viewDist, 4));
+    this.world = new World(20241, new Map());
+    this.mode = 'creative'; this.time = 0.06; this.menuT = 0; this.hotbar = new Array(9).fill(0); this.sel = 0; this.inv = {};
+    const sp = this.world.findSpawn(), p = this.player, w = this.world;
+    p.x = sp.x; p.z = sp.z; p.y = sp.y; p.flying = false; p.vx = p.vy = p.vz = 0; p.hook = false;
+    this.loadAround(3, 2);
+    // Bühne: ebene Fläche mit Logo-Podest, Neon-Säulen, Regenbogen-Spitzen und Radio
+    const cx = Math.floor(sp.x), cz = Math.floor(sp.z), gy = Math.floor(sp.y) - 1;
+    for (let x = cx - 5; x <= cx + 5; x++) for (let z = cz - 5; z <= cz + 5; z++) {
+      for (let y = gy + 1; y <= gy + 9; y++) w.setBlock(x, y, z, B.AIR);
+      w.setBlock(x, gy, z, (x + z) & 1 ? B.MARBLE : B.STONE);
+    }
+    for (let i = 0; i < 16; i++) w.setBlock(cx - 2 + (i % 4), gy + 1, cz - 2 + (i >> 2), LOGO0 + i);
+    const neon = [B.NEON_R, B.NEON_B, B.NEON_G, B.NEON_P];
+    [[-3, -3], [3, -3], [3, 3], [-3, 3]].forEach(([dx, dz], k) => {
+      for (let y = 1; y <= 4; y++) w.setBlock(cx + dx, gy + y, cz + dz, neon[k]);
+      w.setBlock(cx + dx, gy + 5, cz + dz, B.RAINBOW);
+    });
+    w.setBlock(cx, gy + 2, cz, B.RADIO);
+    for (let y = 3; y <= 5; y++) w.setBlock(cx, gy + y, cz, B.FEDER);
+    w.setBlock(cx, gy + 6, cz, B.RAINBOW);
+    this.menuC = { x: cx + 0.5, y: gy + 3, z: cz + 0.5 };
+    this.flushDirty();
+    this.hand.visible = false; this.hl.visible = false; this.rope.visible = false;
+    this.scanDirty = true; this.lastPC = null;
+    this.menuStep(0);
+    this.resume();
+  }
+
+  leaveMenu() {
+    if (!this.menuMode) return;
+    this.menuMode = false;
+    if (this.savedView != null) { this.setViewDist(this.savedView); this.savedView = null; }
+  }
+
+  menuStep(dt) {
+    this.menuT += dt;
+    this.time = (this.time + dt / 150) % 1;
+    const c = this.menuC, a = this.menuT * 0.07, r = 15 + Math.sin(this.menuT * 0.05) * 2.5, h = 4.5 + Math.sin(this.menuT * 0.11) * 1.5;
+    this.camera.position.set(c.x + Math.cos(a) * r, c.y + h, c.z + Math.sin(a) * r);
+    this.camera.lookAt(c.x, c.y - 3.2, c.z); // Bühne rückt im Bild nach oben, hinter den Titel
+    this.stream();
+    this.flushDirty();
+    this.uni.uTime.value = performance.now() / 1000;
+    this.updateSky();
+    this.cloudU.uOff.value.x += dt * 2.5;
   }
 
   clearWorld() {
@@ -281,9 +336,10 @@ export class Game {
   frame(now) {
     if (!this.running) return;
     this.raf = requestAnimationFrame(t => this.frame(t));
+    if (this.menuMode && now - this.last < 32) return; // Menü-Kulisse: ca. 30 Bilder/s genügen
     const dt = Math.min(0.05, (now - this.last) / 1000);
     this.last = now;
-    this.step(dt);
+    if (this.menuMode) this.menuStep(dt); else this.step(dt);
     this.render();
   }
 
