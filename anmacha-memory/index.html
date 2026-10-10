@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080B12">
+<title>AnMaCha Memory</title>
+<style>
+  :root{--c:#00E5FF;--ma:#FF2D95;--v:#8B5CF6;--o:#FF9A1F;--g:#00FFC8;--bg:#080B12;--tx:#EAF2FF;--mut:#8FA3BD}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  body::before,body::after{content:'';position:fixed;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.28;pointer-events:none;will-change:transform;animation:drift 26s ease-in-out infinite alternate}
+  body::before{background:var(--v);left:-25vmax;top:-30vmax}
+  body::after{background:var(--ma);right:-30vmax;bottom:-35vmax;animation-delay:-13s}
+  @keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+  @media (prefers-reduced-motion:reduce){body::before,body::after{animation:none}}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+
+  #hud{display:flex;align-items:center;gap:8px;padding:8px 10px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2}
+  .glass{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:14px}
+  .st{padding:5px 12px;text-align:center;min-width:64px}
+  .st b{display:block;font-size:clamp(16px,4.6vw,22px);font-variant-numeric:tabular-nums;line-height:1.1}
+  .st i{display:block;font-style:normal;font-size:9.5px;letter-spacing:.14em;color:var(--mut);font-weight:700}
+  #lv{padding:6px 12px;font-weight:800;font-size:13px;letter-spacing:.06em;color:var(--c);white-space:nowrap}
+  .ib{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:18px;color:var(--tx);cursor:pointer;text-decoration:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07)}
+  .ib:active{transform:scale(.93)}
+  .ib[disabled]{opacity:.35}
+  #combo{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%) scale(.6);opacity:0;padding:3px 14px;border-radius:999px;font-weight:900;font-size:13px;letter-spacing:.1em;color:#080B12;background:linear-gradient(90deg,var(--o),var(--ma));box-shadow:0 0 18px rgba(255,45,149,.6);transition:.18s;pointer-events:none;white-space:nowrap}
+  #combo.on{opacity:1;transform:translateX(-50%) scale(1)}
+  #duel{display:flex;gap:8px;justify-content:center;padding:0 10px 4px}
+  .pl{padding:5px 16px;border-radius:12px;font-weight:800;font-size:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--mut);transition:.2s}
+  .pl.act{color:#080B12;background:linear-gradient(90deg,var(--c),var(--v));box-shadow:0 0 16px rgba(0,229,255,.5)}
+  .pl.act.p2{background:linear-gradient(90deg,var(--ma),var(--o));box-shadow:0 0 16px rgba(255,45,149,.5)}
+
+  #board{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;padding:6px}
+  #grid{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap,8px);--s:80px}
+  .cd{width:var(--s);height:var(--s);padding:0;border:0;background:none;perspective:800px;cursor:pointer;position:relative;color:inherit;outline:none;transition:opacity .5s,filter .5s}
+  .in{position:absolute;inset:0;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.25,.5,1);border-radius:18%}
+  .cd.up .in{transform:rotateY(180deg)}
+  .cd:not(.up):not(.done):hover .in{transform:translateY(-3px) scale(1.04)}
+  .cd:focus-visible .in{box-shadow:0 0 0 3px var(--c)}
+  .bk,.ft{position:absolute;inset:0;border-radius:18%;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+  .bk{background:linear-gradient(145deg,#1a2140,#0b1020);border:2px solid transparent;
+    background-image:linear-gradient(145deg,#1b2347,#0b1020),linear-gradient(135deg,var(--c),var(--v) 50%,var(--ma));background-origin:border-box;background-clip:padding-box,border-box;
+    box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 0 22px rgba(139,92,246,.18)}
+  .bk::before{content:'';position:absolute;left:50%;top:50%;width:46%;height:46%;transform:translate(-50%,-50%);border-radius:50%;border:3px solid rgba(255,255,255,.22);
+    background:radial-gradient(circle,rgba(0,229,255,.28),transparent 70%)}
+  .bk::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-30%,-50%);border-style:solid;border-width:.2em 0 .2em .34em;border-color:transparent transparent transparent rgba(255,255,255,.85);font-size:calc(var(--s)*.2)}
+  .ft{transform:rotateY(180deg);background:#05070d;border:2px solid rgba(255,255,255,.25);box-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .ft img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
+  .cd.ok .ft{border-color:var(--g);box-shadow:0 0 0 2px rgba(0,255,200,.35),0 0 26px rgba(0,255,200,.7);animation:pop .5s}
+  .cd.bad .ft{border-color:var(--ma);box-shadow:0 0 22px rgba(255,45,149,.7);animation:shake .4s}
+  .cd.done{opacity:.4;filter:saturate(.6);cursor:default}
+  .cd.done .ft{box-shadow:none;border-color:rgba(0,255,200,.45)}
+  .cd.peek .in{transform:rotateY(180deg)}
+  @keyframes pop{40%{transform:rotateY(180deg) scale(1.12)}}
+  @keyframes shake{25%{transform:rotateY(180deg) translateX(-5px)}75%{transform:rotateY(180deg) translateX(5px)}}
+
+  #toast{position:absolute;top:6px;left:50%;transform:translate(-50%,-20px);opacity:0;padding:7px 18px;border-radius:999px;font-weight:800;font-size:14px;white-space:nowrap;pointer-events:none;transition:.25s;z-index:3;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+  #fx{position:fixed;inset:0;pointer-events:none;z-index:5}
+
+  .ov{position:fixed;inset:0;z-index:10;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at 50% 30%,rgba(8,11,18,.55),rgba(8,11,18,.94) 75%)}
+  .box{margin:auto;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  h1{margin:0;line-height:.95;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(44px,13vw,84px);background:linear-gradient(90deg,var(--o),var(--ma),var(--v));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(255,45,149,.5))}
+  h1 small{display:block;font-size:clamp(18px,6vw,32px);letter-spacing:.42em;margin-top:6px;padding-left:.42em;text-shadow:0 0 14px var(--c)}
+  .brand{display:block;margin:0 auto;max-width:min(90vw,520px);max-height:clamp(120px,36vw,200px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.25))}
+  h2{margin:0;font-size:clamp(26px,7vw,40px);font-style:italic;text-shadow:0 0 16px var(--ma)}
+  .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
+  .tabs{display:flex;gap:4px;padding:4px;border-radius:999px}
+  .tab{border:0;background:none;color:var(--mut);font:800 14px inherit;font-family:inherit;padding:10px 20px;border-radius:999px;cursor:pointer;min-height:42px}
+  .tab.on{color:#080B12;background:linear-gradient(90deg,var(--c),var(--v))}
+  .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+  .lab{width:100%;font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:800}
+  .chip{min-width:46px;height:46px;padding:0 12px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--tx);font:800 15px inherit;font-family:inherit;cursor:pointer;position:relative}
+  .chip.on{border-color:var(--c);box-shadow:0 0 0 2px rgba(0,229,255,.4),0 0 14px rgba(0,229,255,.4);background:rgba(0,229,255,.14)}
+  .chip[disabled]{opacity:.32;cursor:not-allowed}
+  .chip small{display:block;font-size:9px;color:#ffd25a;line-height:1;letter-spacing:.05em;font-weight:700}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.12em;color:#080B12;border:0;border-radius:999px;padding:15px 58px;min-height:58px;cursor:pointer;
+    background:linear-gradient(90deg,var(--o),var(--ma) 55%,var(--v));box-shadow:0 0 28px rgba(255,45,149,.5)}
+  .big:active{transform:scale(.96)}
+  .big[disabled]{opacity:.5;cursor:wait}
+  .ghost{font:700 14px inherit;font-family:inherit;color:var(--tx);border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);border-radius:999px;padding:12px 24px;min-height:46px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .info{font-size:12px;color:var(--mut)}
+  .stars{font-size:46px;letter-spacing:.08em;color:#ffd25a;text-shadow:0 0 18px rgba(255,210,90,.6)}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .stats .st{min-width:78px}
+  a.back{color:var(--c);font-size:13px;text-decoration:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud" hidden>
+    <button class="ib" id="bMenu" title="Menü" aria-label="Menü">☰</button>
+    <div id="lv" class="glass"></div>
+    <div class="glass st" id="sT"><b id="vT">0:00</b><i id="lT">ZEIT</i></div>
+    <div class="glass st"><b id="vM">0</b><i>ZÜGE</i></div>
+    <div class="glass st"><b id="vS">0</b><i>PUNKTE</i></div>
+    <button class="ib" id="bHint" title="Blick auf alle Karten (−150 Punkte)" aria-label="Hinweis">👁</button>
+    <button class="ib" id="bPause" title="Pause (P)" aria-label="Pause">⏸</button>
+    <button class="ib" id="bMute" title="Ton (M)" aria-label="Ton">🔊</button>
+    <div id="combo"></div>
+  </div>
+  <div id="duel" hidden><div class="pl act" id="p1">Spieler 1 · 0</div><div class="pl p2" id="p2">Spieler 2 · 0</div></div>
+  <main id="board"><div id="toast" class="glass"></div><div id="grid"></div></main>
+</div>
+<canvas id="fx"></canvas>
+
+<div id="menu" class="ov"><div class="box">
+  <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha Memory" hidden><small id="brandSub">MEMORY</small></h1>
+  <p class="sub" id="intro">Finde die Logo-Paare, baue Combos auf und lass dich vom Mischer nicht aus dem Konzept bringen.</p>
+  <div class="tabs glass"><button class="tab on" data-m="camp">🏁 Kampagne</button><button class="tab" data-m="free">🎯 Freies Spiel</button></div>
+  <div id="pCamp" class="row"><div class="lab">LEVEL</div><div class="row" id="levels"></div></div>
+  <div id="pFree" hidden>
+    <div class="row"><div class="lab">PAARE</div><div class="row" id="sizes"></div></div>
+    <div class="row" style="margin-top:12px"><div class="lab">SPIELER</div>
+      <button class="chip on" data-pl="1">1 Spieler</button><button class="chip" data-pl="2">⚔ Duell</button></div>
+    <div class="row" style="margin-top:12px"><div class="lab">MISCHER (Karten tauschen nach Fehlzügen)</div>
+      <button class="chip on" data-ch="0">Aus</button><button class="chip" data-ch="6">Leicht</button><button class="chip" data-ch="4">Mittel</button><button class="chip" data-ch="3">Schwer</button></div>
+  </div>
+  <button class="big" id="bPlay" disabled>LADEN …</button>
+  <div class="info" id="logoInfo">Logos werden geladen …</div>
+  <a class="back" id="backLink" href="../">← Alle Spiele</a>
+</div></div>
+
+<div id="pause" class="ov" hidden><div class="box">
+  <h2>PAUSE</h2><p class="sub">Die Karten sind verdeckt, solange pausiert ist.</p>
+  <button class="big" id="bResume">WEITER</button>
+  <button class="ghost" id="bRestart">↻ Neu starten</button>
+  <button class="ghost" id="bToMenu">Hauptmenü</button>
+</div></div>
+
+<div id="result" class="ov" hidden><div class="box">
+  <h2 id="rTitle"></h2><div class="stars" id="rStars"></div>
+  <div class="stats" id="rStats"></div><p class="sub" id="rText"></p>
+  <button class="big" id="rNext">WEITER</button>
+  <button class="ghost" id="rAgain">↻ Nochmal</button>
+  <button class="ghost" id="rMenu">Hauptmenü</button>
+</div></div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const NAMES = ['RicoReWi Music & Media','YourTime-FM','RapRadio 24','SchlagerPop 24','ChartRadio 24','ClubRadio 24','AnMaCha 24','RadioFloh!','RockRadio 24','ChristmasRadio 24','KultRadio 24','Zocker-FM','Special-Radio','AnMaChaCast (Podcast)','SenderWelt','RicoReWi Radioportal'];
+
+// Level: Paare, Mischer (alle N Fehlzüge), Zeitlimit in s (0 = keins)
+const LEVELS = [
+  { p: 4 }, { p: 6 }, { p: 8 }, { p: 8, ch: 6 }, { p: 10 }, { p: 10, ch: 5, t: 80 },
+  { p: 12, ch: 5 }, { p: 12, ch: 4, t: 80 }, { p: 14, ch: 4, t: 90 }, { p: 16, ch: 3, t: 100 }
+];
+
+// ---------- Speicher ----------
+let save = { prog: 0, stars: [], best: {} };
+try { const s = JSON.parse(localStorage.getItem('anmachaMemory') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
+const persist = () => { try { localStorage.setItem('anmachaMemory', JSON.stringify(save)); } catch (e) {} };
+
+// ---------- Logos: logos/01.png|jpg|jpeg|webp, 02 … (Nummer lückenlos, beliebig viele) ----------
+const logos = []; let logosDone = false;
+function probe(i) {
+  const nn = String(i).padStart(2, '0'), ex = ['png', 'jpg', 'jpeg', 'webp'];
+  return new Promise(res => {
+    let k = 0;
+    const next = () => {
+      if (k >= ex.length) return res(null);
+      const src = `logos/${nn}.${ex[k++]}`, im = new Image();
+      im.onload = () => res(src); im.onerror = next; im.src = src;
+    };
+    next();
+  });
+}
+async function loadLogos() {
+  for (let s = 1; s <= 80; s += 8) {
+    const r = await Promise.all([0, 1, 2, 3, 4, 5, 6, 7].map(k => probe(s + k)));
+    let hit = 0;
+    r.forEach((src, k) => { if (src) { hit++; logos.push({ src, name: NAMES[s + k - 1] || ('Logo ' + (s + k)) }); } });
+    refreshMenu();
+    if (!hit) break;
+  }
+  logosDone = true; refreshMenu();
+}
+
+// Haupt-Logo: logo.png im Spielordner (ersetzt den ganzen Titel) oder im Hauptordner
+(function () {
+  const cands = []; ['', '../'].forEach(d => ['png', 'jpg', 'jpeg', 'svg', 'webp'].forEach(e => cands.push(`${d}logo.${e}`)));
+  Promise.all(cands.map(src => new Promise(res => { const im = new Image(); im.onload = () => res(src); im.onerror = () => res(null); im.src = src; })))
+    .then(list => {
+      const src = list.find(Boolean); if (!src) return;
+      const img = $('brandImg'); img.src = src; img.hidden = false; $('brandText').hidden = true;
+      if (!src.startsWith('../')) $('brandSub').hidden = true;
+    });
+})();
+if (window.self !== window.top) $('backLink').hidden = true;
+
+// ---------- Ton ----------
+let ac = null, muted = false;
+try { muted = localStorage.getItem('anmachaMemoryMute') === '1'; } catch (e) {}
+function tone(f, d, type, v, at, f2) {
+  if (muted) return;
+  try {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (at || 0);
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v || 0.08, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + 0.02);
+  } catch (e) {}
+}
+const SFX = {
+  flip: () => tone(640, 0.07, 'triangle', 0.07, 0, 900),
+  match: () => { tone(660, 0.14, 'sine', 0.1); tone(990, 0.2, 'sine', 0.09, 0.08); },
+  miss: () => tone(220, 0.22, 'sawtooth', 0.05, 0, 120),
+  shuffle: () => tone(300, 0.4, 'square', 0.04, 0, 900),
+  win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.28, 'sine', 0.1, i * 0.11)),
+  lose: () => [392, 330, 262].forEach((f, i) => tone(f, 0.3, 'triangle', 0.09, i * 0.14))
+};
+function setMute(m) { muted = m; $('bMute').textContent = m ? '🔇' : '🔊'; try { localStorage.setItem('anmachaMemoryMute', m ? '1' : '0'); } catch (e) {} }
+setMute(muted);
+
+// ---------- Menü ----------
+let tab = 'camp', fPairs = 8, fPlayers = 1, fChaos = 0, selLevel = -1;
+const maxPairs = () => logos.length;
+function refreshMenu() {
+  const n = logos.length;
+  $('logoInfo').textContent = logosDone ? `${n} Logos geladen – ${n} Paare möglich` : `Logos werden geladen … (${n})`;
+  const lv = $('levels'); lv.innerHTML = '';
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement('button'); b.className = 'chip' + (i === selLevel ? ' on' : '');
+    const locked = i > save.prog;
+    b.disabled = locked || n < 4;
+    const st = save.stars[i] || 0;
+    b.innerHTML = `${i + 1}<small>${locked ? '🔒' : '★'.repeat(st) + '☆'.repeat(3 - st)}</small>`;
+    b.title = `${Math.min(L.p, n)} Paare${L.ch ? ' · Mischer' : ''}${L.t ? ' · Zeitlimit' : ''}`;
+    b.onclick = () => { selLevel = i; refreshMenu(); };
+    lv.appendChild(b);
+  });
+  const sz = $('sizes'); sz.innerHTML = '';
+  [4, 6, 8, 10, 12, 14, 16, 20, 24].filter(p => p <= n || p === 4).forEach(p => {
+    const b = document.createElement('button'); b.className = 'chip' + (p === fPairs ? ' on' : ''); b.textContent = p; b.disabled = p > n;
+    b.onclick = () => { fPairs = p; refreshMenu(); }; sz.appendChild(b);
+  });
+  if (fPairs > n && n >= 4) fPairs = [4, 6, 8, 10, 12, 14, 16, 20, 24].filter(p => p <= n).pop();
+  document.querySelectorAll('[data-pl]').forEach(b => b.classList.toggle('on', +b.dataset.pl === fPlayers));
+  document.querySelectorAll('[data-ch]').forEach(b => b.classList.toggle('on', +b.dataset.ch === fChaos));
+  const ready = n >= 4;
+  $('bPlay').disabled = !ready;
+  $('bPlay').textContent = ready ? 'SPIELEN' : (logosDone ? 'KEINE LOGOS' : 'LADEN …');
+}
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  tab = t.dataset.m; document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+  $('pCamp').hidden = tab !== 'camp'; $('pFree').hidden = tab !== 'free';
+});
+document.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { fPlayers = +b.dataset.pl; refreshMenu(); });
+document.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { fChaos = +b.dataset.ch; refreshMenu(); });
+$('bPlay').onclick = () => {
+  tone(440, 0.05, 'sine', 0.001);   // Audio beim ersten Tippen freischalten
+  if (tab === 'camp') startLevel(selLevel >= 0 ? selLevel : Math.min(save.prog, LEVELS.length - 1));
+  else startGame({ mode: 'free', pairs: Math.min(fPairs, maxPairs()), chaos: fChaos, players: fPlayers, limit: 0 });
+};
+
+// ---------- Spiel ----------
+let G = null;
+const grid = $('grid');
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function startLevel(i) {
+  const L = LEVELS[i];
+  startGame({ mode: 'camp', level: i, pairs: Math.min(L.p, maxPairs()), chaos: L.ch || 0, limit: L.t || 0, players: 1 });
+}
+function startGame(o) {
+  clearTimeout(G && G.missT); clearInterval(G && G.tick);
+  const picks = shuffle(logos.slice()).slice(0, o.pairs);
+  const cards = shuffle(picks.concat(picks).map((l, k) => ({ l, id: k })));
+  G = Object.assign({}, o, { cards, first: null, second: null, lock: false, moves: 0, matched: 0, score: 0, combo: 0, misses: 0, chaosDue: false,
+    started: false, acc: 0, t0: 0, over: false, paused: false, hints: o.mode === 'camp' || o.players === 1 ? 3 : 0, cur: 0, ps: [0, 0], pc: [0, 0], tick: 0, missT: 0 });
+  grid.innerHTML = '';
+  cards.forEach((c, k) => {
+    const b = document.createElement('button'); b.className = 'cd'; b.dataset.k = k; b.setAttribute('aria-label', 'Karte ' + (k + 1));
+    b.innerHTML = `<div class="in"><div class="bk"></div><div class="ft"><img alt="" draggable="false"></div></div>`;
+    b.querySelector('img').src = c.l.src; c.el = b; b.style.order = k; c.pos = k; grid.appendChild(b);
+  });
+  $('menu').hidden = true; $('pause').hidden = true; $('result').hidden = true;
+  $('hud').hidden = false; $('duel').hidden = o.players !== 2;
+  $('lv').textContent = o.mode === 'camp' ? `LEVEL ${o.level + 1}/${LEVELS.length}` : (o.players === 2 ? 'DUELL' : 'FREI');
+  $('lT').textContent = o.limit ? 'REST' : 'ZEIT';
+  $('bHint').hidden = !G.hints; $('bHint').disabled = false;
+  hud(); duelUI(); fit();
+  G.tick = setInterval(tickTimer, 250);
+}
+function elapsed() { return G.acc + (G.started && !G.paused && !G.over ? (performance.now() - G.t0) / 1000 : 0); }
+function hud() {
+  const e = elapsed();
+  $('vT').textContent = G.limit ? fmt(Math.max(0, G.limit - e)) : fmt(e);
+  $('vM').textContent = G.moves; $('vS').textContent = G.score;
+  const c = $('combo'); c.classList.toggle('on', G.combo >= 2); c.textContent = `🔥 x${Math.min(G.combo, 5)} COMBO`;
+  $('bHint').textContent = '👁'; $('bHint').title = `Blick auf alle Karten (−150 Punkte) · noch ${G.hints}`;
+}
+function duelUI() {
+  if (G.players !== 2) return;
+  $('p1').textContent = `Spieler 1 · ${G.pc[0]}`; $('p2').textContent = `Spieler 2 · ${G.pc[1]}`;
+  $('p1').classList.toggle('act', G.cur === 0); $('p2').classList.toggle('act', G.cur === 1);
+}
+function tickTimer() {
+  if (!G || G.over || G.paused) return;
+  hud();
+  if (G.limit && elapsed() >= G.limit) finish(false);
+}
+function fit() {
+  if (!G) return;
+  const n = G.cards.length, b = $('board'), W = b.clientWidth - 14, H = b.clientHeight - 14, gap = Math.max(6, Math.min(14, W / 55));
+  let best = 0, bc = 1;
+  const opt = [];
+  for (let c = 2; c <= n; c++) { const r = Math.ceil(n / c), s = Math.min((W - gap * (c - 1)) / c, (H - gap * (r - 1)) / r); opt.push([c, s, n % c === 0]); if (s > best) best = s; }
+  const pick = opt.filter(o => o[2] && o[1] >= best * 0.86).sort((a, b) => b[1] - a[1])[0] || opt.sort((a, b) => b[1] - a[1])[0];   // volle Reihen bevorzugen
+  bc = pick[0]; best = pick[1];
+  const s = Math.max(30, Math.floor(Math.min(best, 170)));
+  grid.style.setProperty('--s', s + 'px'); grid.style.setProperty('--gap', gap + 'px');
+  grid.style.width = (bc * s + (bc - 1) * gap + 2) + 'px';
+}
+window.addEventListener('resize', fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe($('board'));
+
+function toast(txt, color) {
+  const t = $('toast'); t.textContent = txt; t.style.color = color || ''; t.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 1500);
+}
+grid.addEventListener('click', e => {
+  const b = e.target.closest('.cd'); if (!b || !G) return;
+  pick(G.cards[+b.dataset.k]);
+});
+function pick(c) {
+  if (G.over || G.paused || G.peeking || c.up || c.done) return;
+  if (G.lock) { resolveMiss(); }                       // schneller weiter: Fehlzug sofort zudecken
+  if (!G.started) { G.started = true; G.t0 = performance.now(); }
+  c.up = true; c.el.classList.add('up'); SFX.flip();
+  if (!G.first) { G.first = c; return; }
+  G.second = c; G.moves++;
+  const a = G.first, b = c;
+  if (a.l === b.l) {                                   // Treffer
+    G.first = G.second = null; G.combo++; G.matched++;
+    const pts = 100 * Math.min(G.combo, 5); G.score += pts;
+    if (G.players === 2) { G.pc[G.cur]++; }
+    [a, b].forEach(x => { x.done = true; x.el.classList.add('ok'); });
+    setTimeout(() => [a, b].forEach(x => x.el.classList.remove('ok')), 600);
+    setTimeout(() => [a, b].forEach(x => x.el.classList.add('done')), 900);
+    SFX.match(); try { navigator.vibrate && navigator.vibrate(25); } catch (e) {}
+    toast(`✔ ${a.l.name}  +${pts}`, '#00FFC8');
+    hud(); duelUI();
+    if (G.matched === G.pairs) setTimeout(() => finish(true), 700);
+  } else {                                             // Fehlzug
+    G.lock = true; G.combo = 0; G.misses++;
+    a.el.classList.add('bad'); b.el.classList.add('bad'); SFX.miss();
+    if (G.chaos && G.misses % G.chaos === 0) G.chaosDue = true;
+    hud();
+    G.missT = setTimeout(resolveMiss, 950);
+  }
+}
+function resolveMiss() {
+  if (!G.lock) return;
+  clearTimeout(G.missT);
+  [G.first, G.second].forEach(x => { if (x) { x.up = false; x.el.classList.remove('up', 'bad'); } });
+  G.first = G.second = null; G.lock = false;
+  if (G.players === 2) { G.cur ^= 1; duelUI(); }
+  if (G.chaosDue) { G.chaosDue = false; mix(); }
+}
+// Mischer: verdeckte Karten tauschen ihre Plätze (FLIP-Animation)
+function mix() {
+  const free = G.cards.filter(c => !c.done && !c.up);
+  if (free.length < 3) return;
+  const old = new Map(free.map(c => [c, c.el.getBoundingClientRect()]));
+  const pos = shuffle(free.map(c => c.pos));
+  free.forEach((c, i) => { c.pos = pos[i]; c.el.style.order = c.pos; });
+  free.forEach(c => {
+    const o = old.get(c), n = c.el.getBoundingClientRect(), dx = o.left - n.left, dy = o.top - n.top;
+    if (!dx && !dy) return;
+    c.el.style.transition = 'none'; c.el.style.transform = `translate(${dx}px,${dy}px)`;
+    requestAnimationFrame(() => requestAnimationFrame(() => { c.el.style.transition = 'transform .55s cubic-bezier(.3,.9,.3,1),opacity .5s,filter .5s'; c.el.style.transform = ''; }));
+    setTimeout(() => { c.el.style.transition = ''; }, 700);
+  });
+  SFX.shuffle(); toast('🔀 MISCHER! Die Karten wechseln die Plätze', '#FF9A1F');
+}
+$('bHint').onclick = () => {
+  if (!G || G.over || G.paused || G.peeking || G.lock || G.first || G.hints <= 0) return;
+  G.hints--; G.score = Math.max(0, G.score - 150); G.peeking = true;
+  const show = G.cards.filter(c => !c.done);
+  show.forEach(c => c.el.classList.add('peek'));
+  if (!G.started) { G.started = true; G.t0 = performance.now(); }
+  hud(); if (!G.hints) $('bHint').disabled = true;
+  setTimeout(() => { show.forEach(c => c.el.classList.remove('peek')); G.peeking = false; }, 1300);
+};
+
+function stars() { const r = G.moves / G.pairs; return r <= 1.6 ? 3 : r <= 2.4 ? 2 : 1; }
+function finish(win) {
+  if (G.over) return; G.over = true; clearInterval(G.tick); clearTimeout(G.missT);
+  const e = elapsed();
+  let title, st = '', text = '', next = 'NOCHMAL';
+  const stats = [];
+  if (win && G.players === 2) {
+    const [a, b] = G.pc; title = a === b ? 'UNENTSCHIEDEN!' : `SPIELER ${a > b ? 1 : 2} GEWINNT! 🏆`; st = '⚔';
+    stats.push(['Spieler 1', a], ['Spieler 2', b], ['Züge', G.moves]);
+  } else if (win) {
+    G.score += Math.max(0, Math.round((G.pairs * 8 - e)) * 5);
+    const s = stars(); title = s === 3 ? 'PERFEKT! 🏆' : 'GESCHAFFT!'; st = '★'.repeat(s) + '☆'.repeat(3 - s);
+    const key = G.mode === 'camp' ? 'L' + G.level : 'F' + G.pairs;
+    const nb = G.score > (save.best[key] || 0);
+    if (nb) save.best[key] = G.score;
+    if (G.mode === 'camp') {
+      save.stars[G.level] = Math.max(save.stars[G.level] || 0, s); save.prog = Math.max(save.prog, Math.min(G.level + 1, LEVELS.length));
+      next = G.level + 1 < LEVELS.length ? 'NÄCHSTES LEVEL' : 'NOCHMAL';
+      text = G.level + 1 >= LEVELS.length ? 'Alle 10 Level geschafft – du bist Memory-Champion!' : '';
+    }
+    if (nb) text += (text ? ' ' : '') + '🏆 Neuer Bestwert!';
+    persist();
+    stats.push(['Zeit', fmt(e)], ['Züge', G.moves], ['Punkte', G.score]);
+  } else {
+    title = 'ZEIT ABGELAUFEN'; st = '✕'; text = `${G.matched} von ${G.pairs} Paaren gefunden.`; stats.push(['Züge', G.moves], ['Punkte', G.score]);
+  }
+  win ? SFX.win() : SFX.lose();
+  if (win) burst();
+  $('rTitle').textContent = title; $('rStars').textContent = st; $('rText').textContent = text; $('rNext').textContent = next;
+  $('rStats').innerHTML = stats.map(s => `<div class="glass st"><b>${s[1]}</b><i>${s[0].toUpperCase()}</i></div>`).join('');
+  $('rNext').dataset.act = next === 'NÄCHSTES LEVEL' ? 'next' : 'again';
+  hud();
+  setTimeout(() => { $('result').hidden = false; }, win ? 500 : 200);
+}
+$('rNext').onclick = () => { stopFx(); $('rNext').dataset.act === 'next' ? startLevel(G.level + 1) : again(); };
+$('rAgain').onclick = () => { stopFx(); again(); };
+$('rMenu').onclick = () => { stopFx(); toMenu(); };
+function again() { G.mode === 'camp' ? startLevel(G.level) : startGame({ mode: 'free', pairs: G.pairs, chaos: G.chaos, players: G.players, limit: 0 }); }
+function toMenu() {
+  if (G) { clearInterval(G.tick); clearTimeout(G.missT); G.over = true; }
+  $('hud').hidden = true; $('duel').hidden = true; $('pause').hidden = true; $('result').hidden = true; $('menu').hidden = false;
+  grid.innerHTML = ''; selLevel = Math.min(save.prog, LEVELS.length - 1); refreshMenu();
+}
+function pause(on) {
+  if (!G || G.over || $('menu').hidden === false) return;
+  if (on === G.paused) return;
+  if (on) { G.acc = elapsed(); G.paused = true; } else { G.paused = false; G.t0 = performance.now(); }
+  $('pause').hidden = !on; grid.style.visibility = on ? 'hidden' : '';
+}
+$('bPause').onclick = () => pause(true); $('bResume').onclick = () => pause(false);
+$('bRestart').onclick = () => { pause(false); again(); };
+$('bToMenu').onclick = () => { pause(false); toMenu(); };
+$('bMenu').onclick = () => pause(true);
+$('bMute').onclick = () => setMute(!muted);
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { if (G && !G.over && $('menu').hidden) pause(!G.paused); }
+  else if (e.key === 'm' || e.key === 'M') setMute(!muted);
+});
+
+// ---------- Konfetti (nur kurz aktiv) ----------
+const fx = $('fx'), fc = fx.getContext('2d'); let fxRun = false, parts = [];
+function burst() {
+  fx.width = innerWidth; fx.height = innerHeight; const cols = ['#00E5FF', '#FF2D95', '#FF9A1F', '#8B5CF6', '#00FFC8', '#fff'];
+  parts = Array.from({ length: 110 }, () => ({ x: innerWidth / 2, y: innerHeight * 0.4, vx: (Math.random() - 0.5) * 16, vy: -Math.random() * 15 - 3, r: 3 + Math.random() * 5, c: cols[Math.random() * cols.length | 0], l: 1 }));
+  if (!fxRun) { fxRun = true; requestAnimationFrame(fxStep); }
+}
+function fxStep() {
+  fc.clearRect(0, 0, fx.width, fx.height);
+  parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.4; p.vx *= 0.99; p.l -= 0.012; fc.globalAlpha = Math.max(0, p.l); fc.fillStyle = p.c; fc.fillRect(p.x, p.y, p.r, p.r * 1.6); });
+  parts = parts.filter(p => p.l > 0 && p.y < fx.height + 20);
+  if (parts.length && fxRun) requestAnimationFrame(fxStep); else { fxRun = false; fc.clearRect(0, 0, fx.width, fx.height); }
+}
+function stopFx() { fxRun = false; parts = []; fc.clearRect(0, 0, fx.width, fx.height); }
+
+selLevel = Math.min(save.prog, LEVELS.length - 1);
+refreshMenu(); loadLogos();
+</script>
+</body>
+</html>
