@@ -1,5 +1,5 @@
 /* Wobbel – 3D-Ansicht: isometrische Kamera, Insel, Figuren, Animationen, Partikel. */
-import { toon, mesh, G, outline, makeBlob, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, COLORS } from './models.js';
+import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, COLORS } from './models.js';
 import { T as TT, DIRS, keyAt, isTargetDone } from '../game/engine.js';
 const T = window.THREE, PI = Math.PI;
 const ease = { out: u => 1 - Math.pow(1 - u, 3), inOut: u => u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2, back: u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); } };
@@ -47,7 +47,7 @@ export class GameView {
     for (let j = 0; j < 12; j++) { const a = j / 12 * PI * 2 + rnd(-0.2, 0.2), rx = w / 2 + rnd(2.2, 5), rz = h / 2 + rnd(2.2, 5), d = makeDecor(kinds[j % kinds.length]); d.position.set(Math.cos(a) * rx, -0.5, Math.sin(a) * rz); d.scale.setScalar(rnd(0.8, 1.15)); d.userData.ph = Math.random() * 6; d.traverse(o => { if (o.isMesh) o.castShadow = true; }); this.root.add(d); const base = mesh(G.cyl(), toon(world.floor[0]), d.position.x, -0.62, d.position.z, 0.7, 0.3, 0.7, this.root); base.scale.set(0.8 * d.scale.x, 0.5, 0.8 * d.scale.x); }
     // Licht + Schatten
     const e = Math.max(w, h) / 2 + 3; Object.assign(this.sun.shadow.camera, { left: -e, right: e, top: e, bottom: -e, near: 1, far: 40 }); this.sun.shadow.camera.updateProjectionMatrix(); this.sun.position.set(6, 14, 7); this.sun.target.position.set(0, 0, 0);
-    this.blob = makeBlob(); this.blob.g.traverse(o => { if (o.isMesh && !o.material.side) o.castShadow = true; }); this.dyn.add(this.blob.g);
+    this.blob = makeBlob(); if (this.look) applyLook(this.blob, this.look); this.blob.g.traverse(o => { if (o.isMesh && !o.material.side) o.castShadow = true; }); this.dyn.add(this.blob.g);
     this.buildDynamic(state, false); this.camAng = this.camAngWant; this.fit();
   }
   seaTex(col) { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = col; x.fillRect(0, 0, 128, 128); x.strokeStyle = 'rgba(255,255,255,.28)'; x.lineWidth = 3; x.lineCap = 'round'; for (let i = 0; i < 7; i++) { const px = Math.random() * 128, py = Math.random() * 128; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + 12, py - 6, px + 26, py); x.stroke(); } const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(34, 34); return t; }
@@ -72,6 +72,7 @@ export class GameView {
   // ------------------------------------------------------------------ Animation
   add(dur, fn, done, block) { this.anims.push({ t: 0, dur, fn, done, block: !!block }); }
   get busy() { return this.anims.some(a => a.block); }
+  setLook(look) { this.look = Object.assign({}, look); if (this.blob) applyLook(this.blob, this.look); }
   faceDir(dir) { const [dx, dy] = DIRS[dir]; this.blob.g.rotation.y = Math.atan2(dx, dy); }
   move(dir, res, s) {
     const L = this.L, [dx, dy] = DIRS[dir], b = this.blob, from = b.g.position.clone(), to = this.cpos(s.p); this.faceDir(dir); const push = res.push;
@@ -120,6 +121,7 @@ export class GameView {
   pickCell(cx, cy) { if (!this.L) return null; const rect = this.canvas.getBoundingClientRect(), nx = (cx - rect.left) / rect.width * 2 - 1, ny = -((cy - rect.top) / rect.height) * 2 + 1, ray = new T.Raycaster(); ray.setFromCamera({ x: nx, y: ny }, this.cam); const pl = new T.Plane(new T.Vector3(0, 1, 0), -0.0), pt = new T.Vector3(); if (!ray.ray.intersectPlane(pl, pt)) return null; const x = Math.floor(pt.x + this.L.w / 2), y = Math.floor(pt.z + this.L.h / 2); if (x < 0 || y < 0 || x >= this.L.w || y >= this.L.h) return null; return y * this.L.w + x; }
   // ------------------------------------------------------------------ Frame
   tick(dt) {
+    if (this.blob && this.blob.hat && this.blob.hat.userData.spin) this.blob.hat.userData.spin.rotation.y += dt * 14;
     this.time += dt; const t = this.time;
     for (let i = this.anims.length - 1; i >= 0; i--) { const a = this.anims[i]; a.t += dt; const u = Math.min(1, a.t / a.dur); a.fn(u); if (u >= 1) { this.anims.splice(i, 1); if (a.done) a.done(); } }
     if (this.blob && !this.busy) { const b = this.blob, idle = Math.sin(t * 2.6); b.body.scale.set(1 - 0.018 * idle, 1 + 0.035 * idle, 1 - 0.018 * idle); const bl = (t % 3.6) > 3.45 ? 0.15 : 1; b.eyes.forEach(e => { e.scale.y = 0.15 * bl; }); b.leaves[0].rotation.z = 0.5 + Math.sin(t * 3) * 0.12; b.leaves[1].rotation.z = -0.4 - Math.sin(t * 3 + 1) * 0.12; }

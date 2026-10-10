@@ -18,14 +18,32 @@ export function makeBlob() {
   const g = new T.Group(), body = new T.Group(); g.add(body);
   const skin = toon('#ff6fb0'), dark = toon('#e0458f');
   const b = mesh(G.sphere(), skin, 0, 0.42, 0, 0.44, 0.4, 0.44, body); outline(b, 1.08);
-  [-1, 1].forEach(s => { const f = mesh(G.sphere(), dark, s * 0.18, 0.07, 0.1, 0.14, 0.08, 0.2, body); outline(f, 1.12); mesh(G.sphere(), toon('#ffd0e4'), s * 0.27, 0.36, 0.33, 0.07, 0.05, 0.03, body); });
+  const feet = [];
+  [-1, 1].forEach(s => { const f = mesh(G.sphere(), dark, s * 0.18, 0.07, 0.1, 0.14, 0.08, 0.2, body); feet.push(f); outline(f, 1.12); mesh(G.sphere(), toon('#ffd0e4'), s * 0.27, 0.36, 0.33, 0.07, 0.05, 0.03, body); });
   const eyes = [], pupils = [];
   [-1, 1].forEach(s => { const e = mesh(G.sphere(), toon('#ffffff'), s * 0.15, 0.55, 0.33, 0.13, 0.15, 0.1, body); outline(e, 1.1); const p = mesh(G.sphere(), toon('#1b2748'), s * 0.15, 0.55, 0.42, 0.065, 0.085, 0.04, body); mesh(G.sphere(), toon('#ffffff'), s * 0.15 + 0.02, 0.59, 0.455, 0.022, 0.022, 0.02, body); eyes.push(e); pupils.push(p); });
   const mouth = mesh(geo('smile', () => new T.TorusGeometry(1, 0.2, 6, 12, Math.PI)), toon('#1b2748'), 0, 0.42, 0.41, 0.07, 0.05, 0.05, body); mouth.rotation.z = Math.PI;
   const stem = mesh(G.cyl(), toon('#2fa84a'), 0, 0.84, 0, 0.018, 0.14, 0.018, body); stem.rotation.z = 0.2;
   const leaf1 = mesh(G.sphere(), toon('#7bf06a'), 0.07, 0.94, 0, 0.1, 0.04, 0.06, body), leaf2 = mesh(G.sphere(), toon('#52d655'), -0.05, 0.92, 0, 0.09, 0.035, 0.055, body); leaf1.rotation.z = 0.5; leaf2.rotation.z = -0.4;
   const shadow = new T.Mesh(geo('circ', () => new T.CircleGeometry(1, 20)), new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.012; shadow.scale.set(0.42, 0.42, 1); g.add(shadow);
-  return { g, body, eyes, pupils, shadow, leaves: [leaf1, leaf2] };
+  return { g, body, eyes, pupils, shadow, leaves: [leaf1, leaf2], skinMesh: b, feet, sprout: [stem, leaf1, leaf2], hat: null };
+}
+// Aussehen (Farbe + Hut) – verändert die vorhandene Figur, baut nichts neu auf
+export function applyLook(blob, look) {
+  look = look || {}; const c = look.color || '#ff6fb0', d = new T.Color(c).offsetHSL(0, 0.02, -0.14).getStyle();
+  blob.skinMesh.material = toon(c); blob.feet.forEach(f => { f.material = toon(d); });
+  if (blob.hat) { blob.body.remove(blob.hat); blob.hat = null; }
+  const h = look.hat ? makeHat(look.hat) : null; blob.sprout.forEach(o => { o.visible = !h; });
+  if (h) { blob.body.add(h); blob.hat = h; }
+}
+function makeHat(id) {
+  const g = new T.Group(); g.position.y = 0.76;
+  if (id === 'crown') { const gold = toon('#ffd24a'); outline(mesh(G.cyl(), gold, 0, 0.06, 0, 0.2, 0.1, 0.2, g), 1.1); for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; outline(mesh(G.cone(), gold, Math.cos(a) * 0.17, 0.2, Math.sin(a) * 0.17, 0.06, 0.16, 0.06, g), 1.12); } mesh(G.sphere(), toon('#ff5a6a'), 0, 0.07, 0.2, 0.04, 0.04, 0.03, g); }
+  else if (id === 'top') { const k = toon('#2a2a3a'); outline(mesh(G.cyl(), k, 0, 0.02, 0, 0.3, 0.04, 0.3, g), 1.1); outline(mesh(G.cyl(), k, 0, 0.2, 0, 0.19, 0.34, 0.19, g), 1.07); mesh(G.cyl(), toon('#ff5a6a'), 0, 0.08, 0, 0.2, 0.07, 0.2, g); }
+  else if (id === 'bow') { g.position.set(0.16, 0.7, 0.05); g.rotation.z = -0.5; const r = toon('#ff4f7a'); [-1, 1].forEach(s => { const w = mesh(G.cone(), r, s * 0.11, 0, 0, 0.1, 0.16, 0.06, g); w.rotation.z = -s * Math.PI / 2; outline(w, 1.1); }); outline(mesh(G.sphere(), toon('#d63a64'), 0, 0, 0, 0.06, 0.06, 0.06, g), 1.12); }
+  else if (id === 'party') { const cn = mesh(G.cone(), toon('#4aa8ff'), 0, 0.2, 0, 0.17, 0.42, 0.17, g); outline(cn, 1.08); [0.08, 0.2].forEach((y, i) => mesh(G.cyl(), toon('#ffd24a'), 0, y, 0, 0.14 - i * 0.05, 0.04, 0.14 - i * 0.05, g)); mesh(G.sphere(), toon('#ff5a6a'), 0, 0.43, 0, 0.05, 0.05, 0.05, g); }
+  else if (id === 'prop') { const b = toon('#ffd24a'); outline(mesh(G.cyl(), toon('#4aa8ff'), 0, 0.04, 0, 0.17, 0.08, 0.17, g), 1.1); mesh(G.cyl(), b, 0, 0.1, 0, 0.03, 0.08, 0.03, g); const bl = new T.Group(); bl.position.y = 0.15; g.add(bl); [0, Math.PI / 2].forEach(a => { const w = mesh(G.box(), toon('#ff5a6a'), 0, 0, 0, 0.5, 0.02, 0.09, bl); w.rotation.y = a; }); g.userData.spin = bl; }
+  return g;
 }
 
 // ---------------------------------------------------------------- Kisten

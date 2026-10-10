@@ -1,0 +1,26 @@
+/* Tests für Muscheln, Laden und Belohnungen (node tests/bonus-tests.js) */
+import { Save } from '../js/storage.js';
+import { Shop, levelReward, bonusReward, BONUS_CAP, SKIP_PRICE, HATS, SKIN_COLORS } from '../js/bonus/shop.js';
+let fails = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (!c) fails++; };
+ok(Save.coins === 0 && Save.look.color === '#ff6fb0' && Save.look.hat === '', 'Start: 0 Muscheln, Standard-Look');
+ok(levelReward(null, 3) === 14 && levelReward(null, 1) === 8, 'Erstes Lösen: 5 + 3 pro Stern');
+ok(levelReward({ stars: 1, plays: 1 }, 3) === 6 && levelReward({ stars: 3, plays: 2 }, 3) === 0, 'Wiederholen zahlt nur neue Sterne');
+ok(levelReward({ skipped: true, stars: 0, plays: 0 }, 2) === 9, 'Übersprungenes Level später lösen: 3 + Sterne');
+ok(bonusReward(0, 2) === 0 && bonusReward(9, 2) === 4 && bonusReward(999, 2) === BONUS_CAP && bonusReward(-5, 2) === 0, 'Bonus-Belohnung gedeckelt, nie negativ');
+ok(Shop.buy('hat', 'crown').reason === 'zu wenig Muscheln' && !Shop.owned('hat', 'crown'), 'Ohne Muscheln nichts kaufbar');
+Save.addCoins(100); ok(Save.coins === 100, '100 Muscheln gutgeschrieben');
+ok(Shop.buy('hat', 'crown').ok && Save.coins === 40 && Shop.owned('hat', 'crown'), 'Krone gekauft (−60)');
+ok(Shop.buy('hat', 'crown').reason === 'schon gekauft' && Save.coins === 40, 'Doppelkauf wird abgelehnt, nichts abgebucht');
+ok(Shop.equip('hat', 'crown') && Save.look.hat === 'crown' && Shop.equipped('hat', 'crown'), 'Hut anlegen');
+ok(!Shop.equip('hat', 'top') && Save.look.hat === 'crown', 'Nicht gekaufter Hut lässt sich nicht anlegen');
+ok(Shop.equip('hat', '') && Save.look.hat === '', 'Hut ablegen ist gratis');
+ok(Shop.buy('color', 'c-sky').ok && Shop.equip('color', 'c-sky') && Save.look.color === '#5ab8ff', 'Farbe kaufen + anlegen');
+ok(Shop.equip('color', 'c-pink') && Save.look.color === '#ff6fb0', 'Standardfarbe immer verfügbar');
+ok(!Shop.buy('hat', 'gibtsnicht').ok, 'Unbekannter Artikel');
+ok(SKIN_COLORS.every(c => /^#[0-9a-f]{6}$/i.test(c.value)) && new Set(HATS.map(h => h.id)).size === HATS.length, 'Katalog konsistent');
+const before = Save.coins; ok(Shop.skip(7).ok && Save.coins === before - SKIP_PRICE && Save.level(7).skipped && Save.level(7).stars === 0, 'Level überspringen kostet Muscheln und schaltet frei');
+ok(Shop.skip(7).reason === 'schon gelöst', 'Gelöstes/übersprungenes Level nicht erneut überspringbar');
+Save.addCoins(-1e6); ok(Save.coins === 0 && Shop.skip(9).reason === 'zu wenig Muscheln' && !Save.level(9), 'Zu wenig Muscheln: kein Überspringen, keine negativen Muscheln');
+ok(Save.bonusPlayed('perlen', 12).best === 12 && Save.bonusPlayed('perlen', 5).best === 12 && Save.bonus('perlen').plays === 2, 'Rekord bleibt, Spielzähler steigt');
+ok(Save.bonus('unbekannt').best === 0, 'Unbekanntes Bonusspiel → Nullwerte');
+console.log(fails ? `\n${fails} Fehler` : '\nAlle Bonus-Tests bestanden'); process.exit(fails ? 1 : 0);

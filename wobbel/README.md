@@ -54,6 +54,7 @@ wobbel/
 │   ├── input.js            Tastatur, Wischen, Tippen, Steuerkreuz
 │   ├── audio.js            Soundeffekte + Musik (WebAudio, keine Audiodateien)
 │   ├── storage.js          Fortschritt & Einstellungen
+│   ├── bonus/              Bonusspiele (games.js), Laden + Muscheln (shop.js), Oberfläche (ui.js), gemeinsames Figur-Zeichnen (draw.js)
 │   ├── editor/             Level-Editor: editor.js (Raster-Editor), codec.js (Prüfung, Teilen-Codes), custom-levels.js (Speicher), solve-worker.js (Löser im Worker)
 │   ├── game/
 │   │   ├── engine.js       Spielregeln (rein, ohne Grafik) – auch vom Test benutzt
@@ -68,6 +69,8 @@ wobbel/
     ├── engine-tests.js     Regeltests der Spiellogik
     ├── check-levels.js     prüft Aufbau + Lösbarkeit aller Level (Breitensuche, spielt die Lösung nach)
     ├── build-par.js        berechnet Par-Werte und tests/solutions.json
+    ├── bonus-tests.js      Tests für Muscheln, Laden, Belohnungen, Überspringen
+    ├── e2e-bonus.mjs       Browser-Test: Bonusspiele, Laden, Überspringen (läuft in Echtzeit, ~2 Min.)
     ├── editor-tests.js     Tests für Editor-Prüfung, Codes und Speicher (alle 55 Level laufen durch Kodierung)
     ├── e2e-editor.mjs      Browser-Test des Editors (malen, prüfen, testen, speichern, teilen)
     ├── e2e-play.mjs        Browser-Test (Playwright): spielt jedes Level mit der Löser-Lösung durch
@@ -78,6 +81,7 @@ wobbel/
 
 ```bash
 cd wobbel
+node tests/bonus-tests.js                                    # Muscheln, Laden, Belohnungen
 node tests/engine-tests.js                                   # Regeln (Schieben, Wasser, Eis, Farben, Schlüssel …)
 node --max-old-space-size=4096 tests/check-levels.js         # alle Level: Aufbau, Lösbarkeit, Züge/Schübe/Zustände
 node --max-old-space-size=4096 tests/build-par.js            # Level verifizieren, Par-Werte + Freigabe neu berechnen (js/game/levels/par.js)
@@ -86,6 +90,16 @@ node --max-old-space-size=4096 tests/build-par.js            # Level verifiziere
 Der Browser-Test `tests/e2e-play.mjs` (`npm i -D playwright`, Server starten, `npm run e2e`) spielt jedes Level mit der Lösung des Lösers im echten Spiel bis zum Level-Abschluss durch.
 
 `check-levels.js` löst jedes Level per Breitensuche über sämtliche Spielzüge, **spielt die gefundene Lösung mit der echten Spiellogik nach** und meldet jedes unlösbare oder zu große Level.
+
+## Bonusspiele & Wobbel-Laden
+
+Im Menü: **🎁 Bonus & Laden**. Muscheln 🐚 gibt es für gelöste Level (erstes Lösen 5, dazu 3 je neu erreichtem Stern) und für drei kurze Bonusspiele (höchstens 15 pro Runde):
+
+- 🫧 **Perlenfang** – Perlen fangen, Seeigeln ausweichen (Maus, Finger oder ← →).
+- 🎵 **Melodie-Memory** – Farbfolge merken und nachtippen, jede Runde länger.
+- 🔨 **Wobbel-Huschen** – auftauchende Wobbel antippen, goldene zählen 3, Kisten kosten Punkte.
+
+Einlösen: im **Wobbel-Laden** gibt es Farben und Hüte (auch in 3D im Spiel sichtbar, Propeller dreht sich); im Spiel überspringt **⏭** ein Level für 25 🐚 (ohne Sterne). Alles wird im Browser gespeichert; „Fortschritt zurücksetzen" löscht auch die Muscheln.
 
 ## Level-Editor
 

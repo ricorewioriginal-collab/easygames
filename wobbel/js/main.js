@@ -8,6 +8,8 @@ import { Save } from './storage.js';
 import { SFX, Music, Audio_ } from './audio.js';
 import { initEditor } from './editor/editor.js';
 import { decode } from './editor/codec.js';
+import { initBonus } from './bonus/ui.js';
+import { Shop, levelReward, SKIP_PRICE } from './bonus/shop.js';
 
 const $ = id => document.getElementById(id);
 const err = m => { $('err').hidden = false; $('errTxt').textContent = m; };
@@ -21,7 +23,7 @@ const view = new GameView($('cv'));
 view.cb.sfx = n => SFX[n] && SFX[n]();
 let playing = false, custom = null, editorOn = false, autoTimer = 0, session = null, lastToast = 0, worldTab = 0, curIdx = 0;
 const setSky = w => { document.documentElement.style.setProperty('--sky1', w.sky[0]); document.documentElement.style.setProperty('--sky2', w.sky[1]); document.querySelector('meta[name=theme-color]').content = w.sky[0]; };
-const show = id => ['menu', 'levels', 'editor'].forEach(s => { $(s).hidden = s !== id; });
+const show = id => ['menu', 'levels', 'editor', 'bonus'].forEach(s => { $(s).hidden = s !== id; });
 const dlg = (id, on) => { $(id).hidden = !on; };
 
 // Logo (optional logo.png im Spielordner)
@@ -29,7 +31,7 @@ const dlg = (id, on) => { $(id).hidden = !on; };
 
 // ---------------------------------------------------------------- Sitzung
 session = new Session(view, {
-  onChange: s => renderHud(s), onStart: s => { $('tWorld').textContent = `${s.world.emoji} ${s.world.name} · ${custom ? 'Eigenes Level' : 'Level ' + (s.def.indexInWorld + 1)}`; $('tName').textContent = s.def.name; if (s.def.hint) toast(s.def.hint, 5200); },
+  onChange: s => renderHud(s), onStart: s => { $('tWorld').textContent = `${s.world.emoji} ${s.world.name} · ${custom ? 'Eigenes Level' : 'Level ' + (s.def.indexInWorld + 1)}`; $('tName').textContent = s.def.name; $('bSkip').hidden = !!custom || !!Save.level(s.def.index); if (s.def.hint) toast(s.def.hint, 5200); },
   onSolved: s => solved(s)
 });
 function renderHud(s) {
@@ -43,12 +45,12 @@ function startLevel(i) {
 }
 function applyPad() { const dp = document.body.classList.contains('dpad'), small = innerWidth < 600, portrait = innerHeight > innerWidth; view.setPad(small ? 118 : 100, dp ? (portrait ? 210 : 26) : 24, dp && !portrait ? 200 : 10, 66); }
 function solved(s) {
-  const st = s.stats, def = s.def, stars = starsFor(st.moves, def.par), res = custom ? { newBest: false } : Save.complete(def.index, st.moves, st.pushes, stars); view.celebrate(); SFX.win();
+  const st = s.stats, def = s.def, stars = starsFor(st.moves, def.par), reward = custom ? 0 : levelReward(Save.level(def.index), stars), res = custom ? { newBest: false } : Save.complete(def.index, st.moves, st.pushes, stars); if (reward) Save.addCoins(reward); view.celebrate(); SFX.win();
   if (custom) { if (custom.auto) { stopAuto(); } else if (custom.opts.onSolved) custom.opts.onSolved({ moves: st.moves, pushes: st.pushes }); }
   setTimeout(() => {
     $('wTitle').textContent = ['', 'Geschafft!', 'Super!', 'Perfekt!'][stars]; $('wStars').innerHTML = [1, 2, 3].map(k => `<span class="${k <= stars ? '' : 'off'}">★</span>`).join('');
     $('wInfo').innerHTML = `👣 ${st.moves} Züge · 📦 ${st.pushes} Schübe${def.par ? ` · Bestmarke ${def.par}` : ''}<br>${res.newBest && !custom && Save.level(def.index).plays > 1 ? '🏆 Neuer persönlicher Rekord!' : ''}`;
-    $('wNext').textContent = custom ? '✏️ Zurück zum Editor' : curIdx + 1 < LEVELS.length ? 'Nächstes Level ▶' : 'Zum Menü'; $('wMenu').hidden = !!custom; dlg('win', true); [1, 2, 3].forEach(k => k <= stars && setTimeout(() => SFX.star(k), 250 * k));
+    $('wCoins').hidden = !reward; $('wCoins').textContent = `+${reward} 🐚`; $('wNext').textContent = custom ? '✏️ Zurück zum Editor' : curIdx + 1 < LEVELS.length ? 'Nächstes Level ▶' : 'Zum Menü'; $('wMenu').hidden = !!custom; dlg('win', true); [1, 2, 3].forEach(k => k <= stars && setTimeout(() => SFX.star(k), 250 * k));
   }, 900);
 }
 const actions = { playing: () => playing && $('win').hidden && $('how').hidden && $('set').hidden, session: () => session, undo: () => session.undo(), restart: () => session.restart(), rotate: d => view.rotate(d), back: () => toMenu(), next: () => {} };
@@ -70,7 +72,7 @@ function startCustom(def, opts) {
 }
 function exitCustom() { const c = custom; custom = null; stopAuto(); dlg('win', false); playing = false; $('hud').hidden = true; if (c && c.opts.onExit) c.opts.onExit(); else toMenu(); }
 function toMenu() { if (custom) { exitCustom(); return; } dlg('win', false); setEditorOn(false); playing = false; show('menu'); $('hud').hidden = true; renderMenuStat(); demo(); Music.play('menu'); }
-function renderMenuStat() { const unlocked = Save.unlockedUpTo(LEVELS.length) + 1, total = LEVELS.length * 3; $('menuStat').textContent = `★ ${Save.totalStars()} / ${total} · Level ${Math.min(unlocked, LEVELS.length)} / ${LEVELS.length}`; $('bPlay').textContent = Save.level(0) ? '▶ Weiterspielen' : '▶ Spielen'; }
+function renderMenuStat() { const unlocked = Save.unlockedUpTo(LEVELS.length) + 1, total = LEVELS.length * 3; $('menuStat').textContent = `★ ${Save.totalStars()} / ${total} · 🐚 ${Save.coins} · Level ${Math.min(unlocked, LEVELS.length)} / ${LEVELS.length}`; $('bPlay').textContent = Save.level(0) ? '▶ Weiterspielen' : '▶ Spielen'; }
 $('bPlay').onclick = () => { SFX.click(); const n = Math.min(Save.unlockedUpTo(LEVELS.length), LEVELS.length - 1); startLevel(n); };
 $('bLevels').onclick = () => { SFX.click(); openLevels(); }; $('bLvBack').onclick = () => { SFX.click(); toMenu(); };
 $('bHow').onclick = () => { SFX.click(); dlg('how', true); }; $('howOk').onclick = () => { SFX.click(); dlg('how', false); };
@@ -83,6 +85,14 @@ function renderLevels() {
   $('lgrid').innerHTML = ls.map(l => { const sv = Save.level(l.index), lock = l.index > unlocked; return `<button class="lv ${lock ? 'lock' : ''} ${l.index === unlocked ? 'cur' : ''}" data-i="${l.index}" title="${l.name}">${l.indexInWorld + 1}<span class="st">${sv ? '★'.repeat(sv.stars) + '☆'.repeat(3 - sv.stars) : ''}</span></button>`; }).join('');
   $('lgrid').querySelectorAll('[data-i]').forEach(b => b.onclick = () => { SFX.click(); startLevel(+b.dataset.i); });
 }
+// Bonus & Laden
+const bonus = initBonus({ toast, sfx: (n, ...a) => SFX[n] && SFX[n](...a), back: () => toMenu(), onLook: l => view.setLook(l), onShow: v => setEditorOn(v) });
+view.setLook(Save.look);
+$('bBonus').onclick = () => { SFX.click(); show(null); setEditorOn(true); bonus.open('games'); };
+$('bSkip').onclick = () => {
+  if (custom || Save.level(curIdx)) return; if (Save.coins < SKIP_PRICE) { SFX.blocked(); toast(`Zum Überspringen brauchst du ${SKIP_PRICE} 🐚 – hol dir welche in den Bonusspielen!`, 3800); return; }
+  if (!confirm(`Level für ${SKIP_PRICE} 🐚 überspringen? (ohne Sterne)`)) return; Shop.skip(curIdx); SFX.place(); if (curIdx + 1 < LEVELS.length) startLevel(curIdx + 1); else toMenu();
+};
 // Editor
 const ed = initEditor({ toast, sfx: n => SFX[n] && SFX[n](), playTest: startCustom, back: () => toMenu() });
 function openEditor(keep) { dlg('win', false); show('editor'); $('hud').hidden = true; playing = false; setEditorOn(true); Music.play('menu'); ed.open(keep); }
