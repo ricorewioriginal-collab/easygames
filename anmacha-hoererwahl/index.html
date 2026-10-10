@@ -17,6 +17,7 @@
   <div class="tag">Das große Umfrage-Duell</div>
   <div class="menu-buttons">
     <button class="btn" id="bPlay">▶ Spielen</button>
+    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
     <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
   </div>
   <div class="logos" id="logoRow"></div>
@@ -41,6 +42,7 @@
   <div class="top">
     <button class="ib" id="bMenu" aria-label="Menü">☰</button>
     <div class="rinfo glass" id="rinfo">Runde 1</div>
+    <button class="ib" id="bPairTop" aria-label="Handys koppeln" title="Handys koppeln">📱</button>
     <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
   </div>
   <div class="teams">
@@ -84,6 +86,15 @@
   </div>
 </section>
 
+<div id="pair" class="dialog" hidden><div class="panel glass">
+  <h2>📱 Handys koppeln</h2>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird zum Antwort-Pad für <b>Team 1</b> oder <b>Team 2</b> – bis zu 3 Handys pro Team. Wer an der Reihe ist, tippt die Antwort auf dem Handy ein.</p>
+  <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
+  <button class="btn green" id="bPairOk">Fertig</button>
+</div></div>
+
+<section id="ctl" class="screen" aria-live="polite"></section>
+
 <div id="rules" class="dialog" hidden><div class="panel glass">
   <h2>So wird gespielt</h2>
   <ul class="how">
@@ -92,6 +103,7 @@
     <li><b>Runde:</b> Das Team nennt der Reihe nach Antworten. Treffer wandern in die Bank. Drei Fehler (✕) – dann darf der Gegner mit <b>einer</b> Antwort die ganze Bank <b>klauen</b>!</li>
     <li><b>Punkte:</b> In späteren Runden zählt die Bank doppelt oder dreifach.</li>
     <li><b>Finale:</b> Das Siegerteam spielt das Hörer-Finale: 5 Schnellfragen, 100 Punkte nötig.</li>
+    <li><b>Handys:</b> Über „📱 Handys koppeln" werden Handys zum Antwort-Pad für ein Team – ideal, wenn der Bildschirm im Wohnzimmer steht.</li>
     <li>Tippe die Antwort einfach ein – Tippfehler, Artikel und Mehrzahl sind egal.</li>
   </ul>
   <button class="btn" id="rulesOk">Verstanden</button>
