@@ -23,7 +23,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
-| Bunte Insel – Kinderspiel mit offener Welt: laufen, 10 Fahrzeuge inkl. Hubschrauber, Boot & Zug-Simulation, Piratenschiff, Schießbude (nur Attrappen), Mitspielen per Code/QR, Vorlesen, Spielzeugladen, Bauen wie bei den Sims, Spaß-Aktionen (Three.js, Touch mit festem Joystick & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
+| Bunte Insel – Kinderspiel mit offener Welt: laufen, 10 Fahrzeuge inkl. Hubschrauber, Boot & Zug-Simulation, Piratenschiff, Schießbude (nur Attrappen), Mitspielen per Code/QR, 8 Mini-Spiele, Vorlesen, Spielzeugladen, Bauen wie bei den Sims, Spaß-Aktionen (Three.js, Touch mit festem Joystick & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen

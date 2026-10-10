@@ -73,7 +73,7 @@ const bd = await page.evaluate(async () => {
   out.count = B.count; await sleep(500);
   out.wallBlocks = W.resolve(gx * 4, gz * 4 - 2, .45, {}).hit; out.doorOpen = !W.resolve((gx + 1) * 4, (gz + 1) * 4 + 2, .45, {}).hit; out.postBlocked = W.resolve((gx + 1) * 4 + 1.6, (gz + 1) * 4 + 2, .45, {}).hit;
   B.exit(); document.body.classList.remove('building'); b.P.x = (gx + 3) * 4; b.P.z = (gz + 2) * 4; b.P.y = .05; b.P.vy = -3; let peak = 0; for (let i = 0; i < 12; i++) { await sleep(80); peak = Math.max(peak, b.P.y); } out.peak = peak;
-  B.active = true; B.gx = gx; B.gz = gz; const n0 = B.count; B.remove(); B.active = false; out.removed = n0 - B.count; await sleep(1200); out.stored = JSON.parse(localStorage.getItem('bunteInsel.build')).length; out.left = B.count; return out;
+  B.active = true; B.gx = gx; B.gz = gz; const n0 = B.count; B.remove(); B.active = false; out.removed = n0 - B.count; for (let k = 0; k < 40; k++) { await sleep(200); if (JSON.parse(localStorage.getItem('bunteInsel.build')).length === B.count) break; } out.stored = JSON.parse(localStorage.getItem('bunteInsel.build')).length; out.left = B.count; return out;
 });
 ok(bd.roadBlocked && bd.active && bd.count >= 18 && bd.wallBlocks && bd.doorOpen && bd.postBlocked && bd.peak > 1.5 && bd.removed >= 3 && bd.stored === bd.left, `Bauen: ${bd.count} Teile, Wand blockiert, Türlücke offen, Trampolin-Sprung ${bd.peak.toFixed(1)} m, ${bd.removed} entfernt, ${bd.stored} gespeichert`);
 await page.reload(); await page.waitForFunction(() => window.__bi); const again = await page.evaluate(() => window.__bi.build.count);
@@ -216,6 +216,64 @@ const ru = await page.evaluate(async () => {
   return { walk, run, n: b.npcs.length, kids, fam, pk, together };
 });
 ok(ru.run > ru.walk * 1.3 && ru.n >= 40 && ru.kids >= 12 && ru.fam >= 8 && ru.pk >= 30 && ru.together, `Rennen ${ru.run.toFixed(1)} > Gehen ${ru.walk.toFixed(1)} m/s, ${ru.n} Menschen (${ru.kids} Kinder, ${ru.fam} in Familien), ${ru.pk} Fahrzeuge, Familie bleibt zusammen`);
+// Helden, Haustiere, Wohnung (Zimmer, Eltern, Schlafen, Umziehen), Dach/Kamera beim selbstgebauten Haus
+const hp = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave();
+  const heroes = [...document.querySelectorAll('#heroPick .hc')]; for (const h of heroes) { h.click(); await sleep(60); } const nh = heroes.length;
+  document.querySelector('#heroPick .hc').click(); const pets = [...document.querySelectorAll('#heroPick .pets .pill')]; const names = []; for (const p of pets) { p.click(); await sleep(60); names.push(b.pup.name); }
+  pets[0].click();
+  return { nh, names, save: b.save.pet };
+});
+ok(hp.nh >= 11 && hp.names.length >= 6 && new Set(hp.names).size === hp.names.length, `Helden (${hp.nh}) und Haustiere (${hp.names.join(', ')}) wechselbar`);
+const wo = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const slot = b.mySlot(), f = b.flats[slot];
+  b.goHome(); await sleep(300); const dd = Math.hypot(b.P.x - f.door.x, b.P.z - f.door.z);
+  b.P.x = f.cx; b.P.z = f.zF - 4; await sleep(2500); const inside = b.W.shelter(b.P.x, b.P.z) === 2, roofHid = !b.W.flatRoof.visible, camUp = b.cam.sp > 1;
+  b.P.x = f.mama.x + 1.2; b.P.z = f.mama.z + 1.2; const nm = b.flatNear() && b.flatNear().k; const s0 = b.save.stars; b.flatAct(b.flatNear()); const kiss = b.save.stars - s0;
+  b.P.x = f.ward.x - 1; b.P.z = f.ward.z; const nw = b.flatNear() && b.flatNear().k; b.flatAct(b.flatNear()); await sleep(300); const wardOn = b.wardOpen && !document.getElementById('wardPanel').hidden; b.closeWard();
+  b.P.x = f.bed.x + 1.2; b.P.z = f.bed.z + .5; const nb = b.flatNear() && b.flatNear().k; b.setNight(1); await sleep(300); b.flatAct(b.flatNear()); let lying = false; for (let i = 0; i < 400 && b.sl.t >= 0; i++) { await sleep(50); if (b.sl.t > 1.5 && b.sl.t < 3) lying = true; }
+  const woke = b.sl.t < 0, day = true; await sleep(300);
+  b.P.x = 0; b.P.z = 30; await sleep(200); const out = b.W.shelter(b.P.x, b.P.z) === 0; b.doFun('home'); await sleep(200); const home2 = Math.hypot(b.P.x - f.door.x, b.P.z - (f.door.z + 1.2)) < 2;
+  return { dd, inside, roofHid, camUp, nm, kiss, nw, wardOn, nb, lying, woke, out, home2 };
+});
+ok(wo.dd < 3 && wo.inside && wo.roofHid && wo.camUp && wo.nm === 'mama' && wo.kiss === 1 && wo.nw === 'ward' && wo.wardOn && wo.nb === 'bed' && wo.lying && wo.woke && wo.out && wo.home2, `Wohnung: Tür, Dach weg + steile Kamera, Mama (+1 ⭐), Kleiderschrank, Schlafen, Nach-Hause-Knopf (${JSON.stringify(wo)})`);
+const hb = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.toggleBuild(); await sleep(200);
+  let gx = 0, gz = 0, found = false; for (let a = 5; a < 30 && !found; a++) for (let c = -30; c < 30 && !found; c++) if (['floor', 'roof', 'wall'].every(t => b.build.canPlace(t, c, a, 0)) && b.build.canPlace('floor', c, a + 1, 0)) { gx = c; gz = a; found = true; }
+  const put = async (t, x, z, r) => { b.build.setType(t); b.build.setCursor(x * 4, z * 4); b.build.rot = r || 0; await sleep(250); return b.build.place(); };
+  const a1 = await put('floor', gx, gz); const a2 = await put('roof', gx, gz); b.toggleBuild(); b.P.x = gx * 4; b.P.z = gz * 4; b.P.y = 0; b.cam.pitch = .3; await sleep(2500);
+  const under = b.build.shelter(b.P.x, b.P.z) === 2, hid = !b.build.roofVisible(), steep = b.cam.sp > 1;
+  b.P.x = gx * 4 + 14; await sleep(1500); const back = b.build.roofVisible();
+  b.build.clearAll(); return { found, a1, a2, under, hid, steep, back };
+});
+ok(hb.found && hb.a1 && hb.a2 && hb.under && hb.hid && hb.steep && hb.back, `Selbstgebautes Haus: Dach verschwindet innen, Kamera steiler, Dach kommt draußen wieder (${JSON.stringify(hb)})`);
+// Mini-Spiele allein: Hub, 4 Spiele spielbar mit echten Klicks, Sterne, Rekord; Schatzsuche
+const mg = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.openGames(); const cards = document.querySelectorAll('#gamesGrid .gc').length, soloBtn = document.querySelectorAll('#gamesGrid .gb button').length; b.closeGames();
+  return { cards, soloBtn };
+});
+ok(mg.cards === 8 && mg.soloBtn >= 12, `Spiele-Menü: ${mg.cards} Spiele (${mg.soloBtn} Knöpfe)`);
+const cvBox = async () => page.evaluate(() => { const r = document.getElementById('mgCanvas').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+async function playMini(kind, driver) {
+  const s0 = await page.evaluate(k => { const b = window.__bi; b.startGame(k, true); b.mini.dur = 6; return b.save.stars; }, kind); await page.waitForTimeout(500);
+  const bx = await cvBox(); const t0 = Date.now(); let n = 0;
+  while (Date.now() - t0 < 9000) { const act = await page.evaluate(driver); if (act === 'done') break; if (act) { for (const q of [].concat(act)) { await page.mouse.click(bx.x + q[0], bx.y + q[1]); n++; } } await page.waitForTimeout(120); }
+  await page.waitForFunction(() => !document.getElementById('gameRes').hidden, null, { timeout: 15000 }).catch(() => { });
+  return page.evaluate(s0 => { const b = window.__bi; const r = { shown: !document.getElementById('gameRes').hidden, gained: b.save.stars - s0, active: b.mini.active, txt: document.getElementById('grText').textContent }; document.getElementById('grOk').click(); return r; }, s0);
+}
+const popR = await playMini('pop', () => { const g = window.__bi.mini.cur(); const b = g && g.b && g.b.filter(q => q.y > 40 && q.y < innerHeight - 20)[0]; return b ? [[b.x + Math.sin(b.ph) * 8, b.y]] : null; });
+const moleR = await playMini('mole', () => { const g = window.__bi.mini.cur(); if (!g || !g.h) return null; const out = []; g.h.forEach((q, i) => { if (q.up > .15 && !q.hit) out.push(g.pos(i).map((v, j) => v + (j ? 0 : 0))); }); return out.length ? out : null; });
+const catchR = await playMini('catch', () => { const g = window.__bi.mini.cur(); if (!g || !g.f) return null; const f = g.f.filter(q => q.y > 0)[0]; if (f) g.tx = f.x; return null; });
+const memR = await playMini('memory', () => { const g = window.__bi.mini.cur(); if (!g || !g.c) return 'done'; if (g.wait > 0 || g.sel.length >= 2) return null; const open = g.sel.length ? g.sel[0].e : null, idx = g.c.findIndex(c => !c.m && !g.sel.includes(c) && (open ? c.e === open : true)); if (idx < 0) return null; const i2 = open ? idx : idx; return [[g.ox + (i2 % g.cols) * g.s + g.s / 2, g.oy + ((i2 / g.cols) | 0) * g.s + g.s / 2]]; });
+ok(popR.shown && popR.gained >= 1 && !popR.active, `Ballon-Pop: gespielt, Ergebnis + Sterne (${popR.txt})`);
+ok(moleR.shown && moleR.gained >= 1, `Wackel-Wichtel: gespielt (${moleR.txt})`);
+ok(catchR.shown && catchR.gained >= 1, `Sternenfänger: gespielt (${catchR.txt})`);
+ok(memR.shown && memR.gained >= 1, `Memory: gespielt (${memR.txt})`);
+const tr2 = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 30; b.startGame('treasure', true); await sleep(300); const g = b.gm, far = Math.hypot(g.spot.x - b.P.x, g.spot.z - b.P.z) > 25; const bar0 = document.getElementById('gameBar').textContent; const s0 = b.save.stars;
+  b.P.x = g.spot.x + .5; b.P.z = g.spot.z; await sleep(1500); const done = !b.gm && !document.getElementById('gameRes').hidden; const gained = b.save.stars - s0; document.getElementById('grOk').click(); return { far, bar0, done, gained };
+});
+ok(tr2.far && /Eiskalt|Kalt|Lau|Warm|Heiß|Kochend/.test(tr2.bar0) && tr2.done && tr2.gained >= 3, `Schatzsuche allein: Hinweis „${tr2.bar0}“, Schatz gefunden, +${tr2.gained} ⭐`);
 console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
 // Handy: fester Joystick sichtbar, Tastatur-Hinweise weg; Desktop: umgekehrt
 {

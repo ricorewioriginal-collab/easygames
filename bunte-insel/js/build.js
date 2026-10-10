@@ -68,36 +68,51 @@ BI.createBuild = function (G) {
     for (const q of c.circ || []) { const p = rotPt(q[0], q[1], ry); out.push(W.addCircle(cx + p[0], cz + p[1], q[2], true, q[3])); }
     return out;
   }
-  function addItem(t, gx, gz, r, c, quiet) {
+  function addItem(t, gx, gz, r, c, quiet, owner) {
     const slot = slotOf(t, r);
-    for (let i = B.items.length - 1; i >= 0; i--) { const o = B.items[i]; if (o.gx === gx && o.gz === gz && slotOf(o.t, o.r) === slot) dropItem(i); }
-    const it = { t, gx, gz, r, c, cols: [] }; it.cols = mkColliders(it); B.items.push(it); dirty = true; if (!quiet) save();
+    for (let i = B.items.length - 1; i >= 0; i--) { const o = B.items[i]; if (o.gx === gx && o.gz === gz && slotOf(o.t, o.r) === slot) { if (owner && o.o !== owner) return null; dropItem(i); } }
+    const it = { t, gx, gz, r, c, cols: [], o: owner }; it.cols = mkColliders(it); B.items.push(it); dirty = true; if (!quiet && !owner) save();
     return it;
   }
   function dropItem(i) { const it = B.items[i]; for (const k of it.cols) W.removeCollider(k); B.items.splice(i, 1); dirty = true; }
   B.place = function () {
     if (!B.valid) { G.say('Hier kann man nicht bauen 🚫', 1400); return false; }
-    addItem(B.sel, B.gx, B.gz, B.rot, B.color); A.place();
+    addItem(B.sel, B.gx, B.gz, B.rot, B.color); A.place(); if (B.onOp) B.onOp({ op: 'a', i: [B.sel, B.gx, B.gz, B.rot, B.color] });
     const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 10, [BI.C.gold, BI.C.white, BI.C.pink], 3, .7, 26, 6); return true;
   };
   B.remove = function () {
     let n = 0; for (let i = B.items.length - 1; i >= 0; i--) if (B.items[i].gx === B.gx && B.items[i].gz === B.gz) { dropItem(i); n++; }
-    if (n) { save(); A.pop(); const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 8, [BI.C.dust, BI.C.white], 3, .6, 30, 6); } else G.say('Hier ist nichts zum Wegräumen', 1400);
+    if (n) { save(); if (B.onOp) B.onOp({ op: 'd', gx: B.gx, gz: B.gz }); A.pop(); const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 8, [BI.C.dust, BI.C.white], 3, .6, 30, 6); } else G.say('Hier ist nichts zum Wegräumen', 1400);
     return n;
   };
-  B.clearAll = function () { for (let i = B.items.length - 1; i >= 0; i--) dropItem(i); save(); };
+  B.clearAll = function () { for (let i = B.items.length - 1; i >= 0; i--) if (!B.items[i].o) dropItem(i); save(); if (B.onOp) B.onOp({ op: 'l', l: [] }); };
+  /* Gemeinsames Bauen: Teile von Freunden sind nur für diese Sitzung da (nicht gespeichert) */
+  B.exportMine = () => B.items.filter(i => !i.o).map(i => [i.t, i.gx, i.gz, i.r, i.c]);
+  B.exportOwner = o => B.items.filter(i => i.o === o).map(i => [i.t, i.gx, i.gz, i.r, i.c]);
+  B.owners = () => [...new Set(B.items.filter(i => i.o).map(i => i.o))];
+  B.dropOwner = o => { let n = 0; for (let i = B.items.length - 1; i >= 0; i--) if (o == null ? !!B.items[i].o : B.items[i].o === o) { dropItem(i); n++; } return n; };
+  B.applyRemote = function (owner, d) {
+    const ok = r => Array.isArray(r) && CAT[r[0]] && B.canPlace(r[0], r[1] | 0, r[2] | 0, r[3] | 0);
+    if (d.op === 'a') { const r = d.i; if (ok(r)) addItem(r[0], r[1] | 0, r[2] | 0, (r[3] | 0) & 3, (r[4] | 0) % PAL.length, true, owner); }
+    else if (d.op === 'd') { for (let i = B.items.length - 1; i >= 0; i--) if (B.items[i].o === owner && B.items[i].gx === (d.gx | 0) && B.items[i].gz === (d.gz | 0)) dropItem(i); }
+    else if (d.op === 'l') { B.dropOwner(owner); for (const r of (Array.isArray(d.l) ? d.l : []).slice(0, MAXP)) if (ok(r)) addItem(r[0], r[1] | 0, r[2] | 0, (r[3] | 0) & 3, (r[4] | 0) % PAL.length, true, owner); }
+  };
   let saveT = 0;
   function save() { saveT = .8; }
-  function flushSave() { BI.store.set('build', B.items.map(i => [i.t, i.gx, i.gz, i.r, i.c])); }
+  function flushSave() { BI.store.set('build', B.exportMine()); }
 
   /* ---------- Mesh ---------- */
-  let dirty = true, mesh = null, rebuildT = 0;
+  let dirty = true, mesh = null, roofMesh = null, rebuildT = 0; const roofKeys = new Set(), wallKeys = new Set();
   const mat = BI.mat();
   function rebuild() {
-    const dst = new BI.Batch();
-    for (const it of B.items) { const [cx, cz] = center(it.gx, it.gz); append(dst, local(it.t, it.c), cx, cz, it.r * Math.PI / 2); }
-    if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh = null; }
+    const dst = new BI.Batch(), rf = new BI.Batch(); roofKeys.clear(); wallKeys.clear();
+    for (const it of B.items) {
+      const [cx, cz] = center(it.gx, it.gz); append(it.t === 'roof' ? rf : dst, local(it.t, it.c), cx, cz, it.r * Math.PI / 2);
+      if (it.t === 'roof') roofKeys.add(it.gx + ',' + it.gz); else if (CAT[it.t].edge && it.t !== 'fence') wallKeys.add(it.gx + ',' + it.gz);
+    }
+    if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh = null; } if (roofMesh) { scene.remove(roofMesh); roofMesh.geometry.dispose(); roofMesh = null; }
     if (!dst.empty) { mesh = dst.mesh(mat); mesh.frustumCulled = false; scene.add(mesh); }
+    if (!rf.empty) { roofMesh = rf.mesh(mat); roofMesh.frustumCulled = false; scene.add(roofMesh); }
     dirty = false;
   }
 
@@ -130,6 +145,13 @@ BI.createBuild = function (G) {
     if (dirty) { rebuildT -= dt; if (rebuildT <= 0) { rebuild(); rebuildT = .08; } }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) flushSave(); }
     if (B.active) updateGhost();
+    if (roofMesh) { const P = G.P, hide = B.active || (!P.veh && B.shelter(P.x, P.z) === 2); if (roofMesh.visible === hide) roofMesh.visible = !hide; }
+  };
+  /* 2 = unter einem Dach (Dach wird ausgeblendet, Kamera steiler), 1 = nahe an Wänden, 0 = draußen */
+  B.roofVisible = () => !!roofMesh && roofMesh.visible;
+  B.shelter = (x, z) => {
+    const gx = Math.round(x / CELL), gz = Math.round(z / CELL); if (roofKeys.has(gx + ',' + gz)) return 2;
+    for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) if (wallKeys.has((gx + i) + ',' + (gz + j))) return 1; return 0;
   };
   B.nearType = (x, z, key, r) => { for (const it of B.items) if (CAT[it.t][key] && Math.hypot(x - it.gx * CELL, z - it.gz * CELL) < r) return it; return null; };
   Object.defineProperty(B, 'count', { get: () => B.items.length });
