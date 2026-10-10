@@ -11,9 +11,9 @@
   /* ---------- Renderer, Szene, Himmel ---------- */
   const canvas = $('cv'), dpr = window.devicePixelRatio || 1;
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 1.6, powerPreference: 'high-performance' }); }
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 2.2, powerPreference: 'high-performance' }); }
   catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
-  let quality = coarse && dpr > 2 ? 1 : 0;
+  let quality = save.gfx === 'eco' ? 2 : 0; // standardmäßig scharf; wird bei Ruckeln automatisch gesenkt
   const QUAL = [Math.min(dpr, 2), Math.min(dpr, 1.5), 1, .75];
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .8, 800);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
@@ -955,6 +955,7 @@
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state });
+  const beauty = BI.createBeauty({ scene, camera, W, save });
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
   function nearStation() { if (P.veh) return -1; for (let i = 0; i < W.stations.length; i++) { const p = W.stations[i].plat; if (P.x > p[0] - 1.5 && P.x < p[2] + 1.5 && P.z > p[1] - 1.5 && P.z < p[3] + 1.5) return i; } return -1; }
   /* Am Bahnsteig: „Zug fahren“ – der Zug wird an diesen Bahnhof gezaubert und man steigt als Lokführer ein */
@@ -1026,6 +1027,7 @@
   function renderParent() {
     $('parVol').value = Math.round((save.vol == null ? 1 : save.vol) * 100); $('parMp').classList.toggle('sel', !save.mpOff); $('parMp').textContent = save.mpOff ? '👥 Mitspielen gesperrt' : '👥 Mitspielen erlaubt'; $('parEco').classList.toggle('sel', ecoOn()); $('parVoice').classList.toggle('sel', A.voiceOn);
     const sb = $('parSeason'); sb.innerHTML = ''; SEASONS.forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.season || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.season = k; persist(); if (typeof applySeason === 'function') applySeason(); renderParent(); }; sb.appendChild(b); });
+    const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = k === 'eco' ? 2 : 0; resize(); renderParent(); }; gb.appendChild(b); });
     const bb = $('parBreak'); bb.innerHTML = ''; kids.breakOpts.forEach(m => { const b = document.createElement('button'); b.className = 'pill' + ((save.breakMin || 0) === m ? ' sel' : ''); b.textContent = m ? m + ' Min' : 'Aus'; b.onclick = () => { save.breakMin = m; persist(); kids.refreshBreak(); renderParent(); }; bb.appendChild(b); });
   }
   function openParent() { parentOpen = true; setStick(0, 0); renderParent(); par.hidden = false; }
@@ -1523,14 +1525,14 @@
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > .1) dt = .1; if (dt <= 0) return;
     fpsAcc += dt; fpsN++;
-    if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
+    if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
     if (state === 'pause') { renderer.render(scene, camera); return; }
     t += dt;
     if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1545,5 +1547,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { W, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { W, scene, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

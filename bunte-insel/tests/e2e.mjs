@@ -467,5 +467,11 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const A = BI.audio; A.resume(); for (let i = 0; i < 40 && !(A.ready('moo') && A.ready('oink') && A.ready('bark')); i++) await sl(200); o.snd = A.sample('cow') && A.sample('pig') && A.sample('dog'); return o; });
   ok(r.onRails === 0 && r.moved, 'Keine Autos auf den Gleisen (falsch abgestellte werden neben die Strecke gesetzt)'); ok(r.src === 'station' && r.train, 'Am Bahnsteig: „Zug fahren“ – man steigt als Lokführer ein'); ok(r.snd, 'Echte Tierstimmen (Kuh, Schwein, Hund) werden geladen und abgespielt'); await c.close();
 }
+{ // Optik-Extras: Schatten, Blumen, Wasser, Grafik-Einstellung
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(1500);
+  const r = await p.evaluate(() => { const b = window.__bi; b.openParent(); const bs = [...document.querySelectorAll('#parGfx button')]; const n = bs.length; bs[1].click(); const sharp = b.save.gfx; bs[0].click(); const au = b.save.gfx; b.closeParent(); return { n, sharp, au, inst: b.scene.children.filter(o => o.isInstancedMesh).length }; });
+  ok(r.n === 3 && r.sharp === 'sharp' && r.au === 'auto', 'Eltern-Bereich: Grafik Automatisch/Scharf/Sparsam'); ok(r.inst >= 3, 'Blumen und Grasbüschel sind da (' + r.inst + ' Instanz-Gruppen)'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
