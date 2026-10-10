@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#060912">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<title>AnMaCha Stapelrausch 3D</title>
+<style>
+  *{box-sizing:border-box}
+  :root{--c:#00E5FF;--m:#FF2D95;--v:#8B5CF6;--g:#ffd426}
+  html,body{margin:0;height:100%;overflow:hidden;color:#e6f1ff;background:#060912;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+  button{font:inherit;color:inherit;cursor:pointer}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;
+    background:radial-gradient(900px 500px at 10% -10%,rgba(0,229,255,.14),transparent 60%),radial-gradient(800px 500px at 100% 0,rgba(255,45,149,.12),transparent 60%),#060912}
+  #top{display:flex;align-items:center;gap:8px;padding:calc(6px + env(safe-area-inset-top)) 10px 6px}
+  .ib{height:38px;min-width:38px;padding:0 10px;border-radius:12px;border:1px solid rgba(0,229,255,.45);background:rgba(255,255,255,.05);font-weight:800;font-size:16px}
+  .ib:active{background:rgba(0,229,255,.2)}
+  #status{flex:1;min-width:0;text-align:center;font-weight:800;font-size:clamp(14px,3.8vw,18px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #status.me{color:var(--c);text-shadow:0 0 12px rgba(0,229,255,.7)}
+  #opp{display:flex;gap:6px;padding:0 8px;justify-content:center;flex-wrap:wrap}
+  .chip{flex:1 1 0;min-width:108px;max-width:230px;border-radius:12px;padding:5px 7px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05)}
+  .chip.turn{border-color:var(--m);box-shadow:0 0 14px rgba(255,45,149,.55)}
+  .chip .nm{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chip .r{display:flex;align-items:center;gap:6px;margin-top:3px}
+  .chip small{color:#9fb4c8;font-size:11px;line-height:1.1}
+  .tile{display:inline-flex;align-items:center;justify-content:center;width:22px;height:30px;border-radius:5px;font-weight:900;font-size:13px;color:#fff;border:1px solid rgba(255,255,255,.55);background:#222}
+  .tile.big{width:30px;height:42px;font-size:18px}
+  .tile.e{background:transparent;border:1px dashed rgba(255,255,255,.25);color:transparent}
+  .tile.c1{background:linear-gradient(#18d9ff,#2563eb)}.tile.c2{background:linear-gradient(#a78bfa,#6d28d9)}
+  .tile.c3{background:linear-gradient(#ff5fb0,#be185d)}.tile.c0{background:linear-gradient(#ffe27a,#ff9d2e);color:#3a2400}
+  #stage{position:relative;flex:1;min-height:0}
+  @media (orientation:landscape) and (max-height:520px){
+    #app{display:grid;grid-template-columns:minmax(120px,170px) 1fr;grid-template-rows:auto 1fr auto}
+    #top{grid-column:1/3}#opp{grid-column:1;grid-row:2;flex-direction:column;justify-content:flex-start;flex-wrap:nowrap;overflow:auto}
+    .chip{flex:0 0 auto;max-width:none}#stage{grid-column:2;grid-row:2}#foot{grid-column:1/3;min-height:0;padding-top:2px}#foot .l2{display:inline;margin-left:14px}
+  }
+  #cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  #foot{padding:4px 12px calc(8px + env(safe-area-inset-bottom));text-align:center;color:#9fb4c8;font-size:clamp(12px,3.4vw,14px);min-height:44px}
+  #foot b{color:#fff}#foot .l2{display:block}
+  #toast{position:absolute;left:0;right:0;top:12%;text-align:center;font-weight:900;font-size:clamp(22px,7vw,40px);pointer-events:none;opacity:0;text-shadow:0 0 18px var(--m);padding:0 12px}
+  #toast.go{animation:say 1.2s ease forwards}
+  @keyframes say{0%{opacity:0;transform:scale(.7)}15%{opacity:1;transform:scale(1.05)}70%{opacity:1}100%{opacity:0}}
+
+  #ov{position:fixed;inset:0;z-index:10;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at center,rgba(6,9,18,.6),rgba(6,9,18,.95))}
+  #ov.hidden,.scr{display:none}
+  .scr.on{display:flex}
+  .scr{margin:auto;width:100%;max-width:460px;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  .brand{margin:0;font:900 italic clamp(40px,12vw,72px)/.95 'Trebuchet MS',sans-serif;letter-spacing:.04em;
+    background:linear-gradient(90deg,var(--c),var(--v) 50%,var(--m));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{margin:0;font-size:clamp(22px,6vw,30px);font-style:italic;font-weight:900;color:var(--c)}
+  .sub{color:#9fb4c8;font-size:clamp(13px,3.6vw,15px);line-height:1.45}
+  .sub b{color:#fff}
+  .btn{min-height:50px;width:100%;padding:0 22px;border-radius:999px;border:0;font-weight:800;font-size:18px;color:#04141a;
+    background:linear-gradient(90deg,var(--c),var(--v),var(--m));box-shadow:0 0 18px rgba(139,92,246,.5)}
+  .btn.alt{background:rgba(255,255,255,.05);color:var(--c);border:1px solid var(--c);box-shadow:none}
+  .btn:disabled{opacity:.4}
+  .btn small{display:block;font-weight:600;font-size:12px;opacity:.8}
+  .seg{display:flex;gap:6px;width:100%;align-items:center}
+  .seg>span{flex:0 0 auto;color:#9fb4c8;font-size:14px;margin-right:4px}
+  .seg button{flex:1;height:42px;border-radius:12px;border:1px solid rgba(0,229,255,.4);background:rgba(255,255,255,.04);font-weight:800}
+  .seg button.on{background:linear-gradient(90deg,var(--c),var(--v));color:#04141a;border-color:transparent}
+  input{width:100%;height:46px;border-radius:12px;border:1px solid rgba(0,229,255,.45);background:#04070d;color:#fff;font:700 18px system-ui;text-align:center;padding:0 12px;user-select:text;-webkit-user-select:text}
+  input.code{letter-spacing:.35em;text-transform:uppercase;font-size:26px}
+  .codebig{font:900 clamp(40px,13vw,64px) 'Courier New',monospace;letter-spacing:.2em;color:#fff;text-shadow:0 0 18px var(--c)}
+  .qr{width:176px;height:176px;background:#fff;border-radius:16px;padding:8px;margin:2px auto}.qr:empty{display:none}.qr img{width:100%;height:100%;display:block;image-rendering:pixelated}
+  .list{width:100%;display:flex;flex-direction:column;gap:6px}
+  .list div{padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font-weight:700;text-align:left}
+  .rules{text-align:left;font-size:14px;line-height:1.5;color:#c8d8ea;background:rgba(255,255,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:14px;padding:12px 14px}
+  .rules b{color:var(--c)}.rules p{margin:0 0 6px}
+  .by{color:#6f87a3;font-size:12px}.by b{color:#9fb4c8}
+  .err{color:#ff7aa8;font-weight:700;min-height:1.2em;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <button class="ib" id="bMenu" aria-label="Menü">☰</button>
+    <div id="status"></div>
+    <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+    <button class="ib" id="bHelp" aria-label="Regeln">?</button>
+  </div>
+  <div id="opp"></div>
+  <div id="stage"><canvas id="cv"></canvas><div id="toast"></div></div>
+  <div id="foot"></div>
+</div>
+
+<div id="ov">
+  <div class="scr on" id="sMain">
+    <h1 class="brand">ANMACHA</h1>
+    <h2>Stapelrausch 3D</h2>
+    <div class="sub">Werde deinen Zielstapel als Erste:r los – baue Zahlentürme von <b>1 bis 12</b>.</div>
+    <button class="btn" data-go="sSolo">🤖 Gegen den Computer</button>
+    <button class="btn" data-go="sLocal">👥 Zusammen an einem Gerät</button>
+    <button class="btn" data-go="sOnline">🌐 Online mit Code oder QR<small>Geräte koppeln, bis 4 Spieler</small></button>
+    <button class="btn alt" data-go="sRules">📖 Regeln</button>
+    <div class="by">by <b>ricorewi</b></div>
+  </div>
+
+  <div class="scr" id="sSolo">
+    <h2>Gegen den Computer</h2>
+    <div class="seg" data-opt="opp"><span>Gegner</span><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div>
+    <div class="seg" data-opt="stock"><span>Zielstapel</span><button data-v="15">Kurz 15</button><button data-v="30">Normal 30</button></div>
+    <button class="btn" id="goSolo">Los geht's</button>
+    <button class="btn alt" data-go="sMain">Zurück</button>
+  </div>
+
+  <div class="scr" id="sLocal">
+    <h2>An einem Gerät</h2>
+    <div class="sub">Das Gerät wird nach jedem Zug weitergegeben – die Hand bleibt bis zum Aufdecken verborgen.</div>
+    <div class="seg" data-opt="loc"><span>Spieler</span><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div>
+    <div class="seg" data-opt="stock"><span>Zielstapel</span><button data-v="15">Kurz 15</button><button data-v="30">Normal 30</button></div>
+    <button class="btn" id="goLocal">Los geht's</button>
+    <button class="btn alt" data-go="sMain">Zurück</button>
+  </div>
+
+  <div class="scr" id="sOnline">
+    <h2>Online spielen</h2>
+    <input id="name" maxlength="12" placeholder="Dein Name" autocomplete="off">
+    <div class="seg" data-opt="stock"><span>Zielstapel</span><button data-v="15">Kurz 15</button><button data-v="30">Normal 30</button></div>
+    <button class="btn" id="goHost">🏠 Raum erstellen</button>
+    <div class="sub">oder einem Raum beitreten:</div>
+    <input id="joinCode" class="code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters">
+    <button class="btn alt" id="goJoin">🔑 Beitreten</button>
+    <div class="err" id="onErr"></div>
+    <button class="btn alt" data-go="sMain">Zurück</button>
+  </div>
+
+  <div class="scr" id="sLobby">
+    <h2 id="lobTitle">Raum</h2>
+    <div id="lobHost">
+      <div class="codebig" id="lobCode">····</div>
+      <div class="qr" id="lobQr"></div>
+      <div class="sub">📱 Kamera auf den QR-Code halten oder den <b>Code</b> auf dem anderen Gerät eintippen.</div>
+    </div>
+    <div class="list" id="lobList"></div>
+    <div class="sub" id="lobMsg"></div>
+    <button class="btn" id="lobStart">Spiel starten</button>
+    <button class="btn alt" id="lobLeave">Raum verlassen</button>
+  </div>
+
+  <div class="scr" id="sRules">
+    <h2>Regeln</h2>
+    <div class="rules">
+      <p><b>Ziel:</b> Wer zuerst den eigenen <b>Zielstapel</b> leert, gewinnt.</p>
+      <p><b>Türme:</b> In der Mitte stehen 4 Türme. Jeder Turm wird der Reihe nach gebaut: 1, 2, 3 … bis 12. Ein voller Turm wird abgeräumt.</p>
+      <p><b>Dein Zug:</b> Du ziehst auf 5 Handkarten auf. Dann darfst du beliebig viele Karten auf Türme spielen – von der Hand, vom Zielstapel (oberste Karte) oder von deinen Ablagestapeln (jeweils oberste Karte).</p>
+      <p><b>Sterne ★</b> sind Joker und zählen als jede Zahl.</p>
+      <p><b>Zug beenden:</b> Lege eine Handkarte auf einen deiner 4 Ablagestapel. Sind alle Handkarten gespielt, ziehst du sofort 5 neue.</p>
+      <p><b>Bedienung:</b> Karte antippen, dann Ziel antippen – einen Turm in der Mitte oder (Handkarte) einen eigenen Ablagestapel.</p>
+    </div>
+    <button class="btn alt" id="rulesBack">Zurück</button>
+  </div>
+
+  <div class="scr" id="sPause">
+    <h2>Pause</h2>
+    <button class="btn" id="pResume">Weiterspielen</button>
+    <button class="btn alt" id="pQuit">Spiel beenden</button>
+  </div>
+
+  <div class="scr" id="sPass">
+    <h2 id="passName"></h2>
+    <div class="sub">Gerät übergeben – die Karten sind verdeckt.</div>
+    <button class="btn" id="passGo">Aufdecken</button>
+  </div>
+
+  <div class="scr" id="sEnd">
+    <h1 class="brand" id="endTitle" style="font-size:clamp(30px,9vw,52px)"></h1>
+    <div class="sub" id="endSub"></div>
+    <button class="btn" id="endAgain">Nochmal</button>
+    <button class="btn alt" id="endMenu">Zum Menü</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+/* AnMaCha Stapelrausch 3D – Einzeldatei, kein Build. Spiellogik oben (testbar), danach 3D-Darstellung, Netzwerk (PeerJS, erst bei Bedarf geladen) und Menüs. */
+//#LOGIC
+let RND = Math.random;
+const mkDeck = () => { const d = []; for (let v = 1; v <= 12; v++) for (let i = 0; i < 12; i++) d.push(v); for (let i = 0; i < 18; i++) d.push(0); return d; };
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = (RND() * (i + 1)) | 0; const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+const sortHand = h => h.sort((a, b) => (a || 99) - (b || 99));
+function draw(G, P, k) {
+  while (k-- > 0) {
+    if (!G.deck.length) { if (!G.recycle.length) break; G.deck = shuffle(G.recycle); G.recycle = []; }
+    P.hand.push(G.deck.pop());
+  }
+  sortHand(P.hand);
+}
+const fill = (G, P) => draw(G, P, 5 - P.hand.length);
+const playable = (G, c, p) => c === 0 || c === G.build[p].length + 1;
+function canAct(G) {
+  const P = G.players[G.turn]; if (P.hand.length) return true;
+  const tops = [P.stock[P.stock.length - 1]].concat(P.disc.map(d => d[d.length - 1]));
+  return tops.some(c => c !== undefined && [0, 1, 2, 3].some(p => playable(G, c, p)));
+}
+function endByCount(G) { let b = 0; G.players.forEach((p, i) => { if (p.stock.length < G.players[b].stock.length) b = i; }); G.winner = b; }
+function nextTurn(G) { G.turn = (G.turn + 1) % G.players.length; G.turns++; fill(G, G.players[G.turn]); }
+function settle(G) {
+  let g = 0;
+  while (G.winner < 0 && !canAct(G)) { if (++g > G.players.length) { endByCount(G); break; } nextTurn(G); }
+  if (G.winner < 0 && G.turns > 800) endByCount(G);
+}
+function newGame(names, bots, stockN) {
+  const G = { deck: shuffle(mkDeck()), recycle: [], build: [[], [], [], []], turn: 0, winner: -1, turns: 0, seq: 0, fx: null, players: [] };
+  names.forEach((name, i) => G.players.push({ name, bot: !!bots[i], stock: G.deck.splice(0, stockN), hand: [], disc: [[], [], [], []] }));
+  G.players.forEach(P => fill(G, P)); settle(G); return G;
+}
+function cardAt(G, a) {
+  const P = G.players[G.turn];
+  if (a.k === 'hand') return a.i >= 0 && a.i < P.hand.length ? P.hand[a.i] : undefined;
+  if (a.k === 'stock') return P.stock.length ? P.stock[P.stock.length - 1] : undefined;
+  if (a.k === 'disc') { const d = P.disc[a.i]; return d && d.length ? d[d.length - 1] : undefined; }
+}
+function apply(G, a) {
+  if (G.winner >= 0 || !a) return false;
+  const P = G.players[G.turn];
+  if (a.t === 'play') {
+    const p = a.p; if (!(p >= 0 && p < 4)) return false;
+    const c = cardAt(G, a); if (c === undefined || !playable(G, c, p)) return false;
+    const i = a.i | 0;
+    if (a.k === 'hand') P.hand.splice(i, 1); else if (a.k === 'stock') P.stock.pop(); else P.disc[i].pop();
+    const B = G.build[p]; B.push(c); const clr = B.length === 12; if (clr) { G.recycle.push(...B); G.build[p] = []; }
+    G.fx = { seq: ++G.seq, pl: G.turn, t: 'play', k: a.k, i, p, c, clr };
+    if (a.k === 'stock' && !P.stock.length) { G.winner = G.turn; return true; }
+    if (!P.hand.length) draw(G, P, 5);
+    settle(G); return true;
+  }
+  if (a.t === 'discard') {
+    const i = a.i | 0, d = a.d | 0; if (!(i >= 0 && i < P.hand.length && d >= 0 && d < 4)) return false;
+    const c = P.hand.splice(i, 1)[0]; P.disc[d].push(c);
+    G.fx = { seq: ++G.seq, pl: G.turn, t: 'disc', k: 'hand', i, d, c };
+    nextTurn(G); settle(G); return true;
+  }
+  return false;
+}
+function botAct(G) {
+  const P = G.players[G.turn], B = G.build, need = p => B[p].length + 1;
+  const s = P.stock.length ? P.stock[P.stock.length - 1] : -1;
+  if (s > 0) for (let p = 0; p < 4; p++) if (s === need(p)) return { t: 'play', k: 'stock', i: 0, p };
+  if (s === 0) { let b = 0; for (let p = 1; p < 4; p++) if (B[p].length > B[b].length) b = p; return { t: 'play', k: 'stock', i: 0, p: b }; }
+  const srcs = [];
+  P.disc.forEach((d, i) => { if (d.length) srcs.push({ k: 'disc', i, c: d[d.length - 1] }); });
+  P.hand.forEach((c, i) => srcs.push({ k: 'hand', i, c }));
+  let best = null, bs = -1e9;
+  for (const x of srcs) for (let p = 0; p < 4; p++) {
+    if (!playable(G, x.c, p)) continue;
+    const opens = s > 0 && s === need(p) + 1;
+    if (x.c === 0 && !opens && P.hand.length > 1 && P.hand.length !== 0) continue;
+    const sc = (opens ? 100 : 0) + (x.k === 'disc' ? 5 : 0) + (x.c === 0 ? -20 : x.c * 0.1);
+    if (sc > bs) { bs = sc; best = { t: 'play', k: x.k, i: x.i, p }; }
+  }
+  if (best) return best;
+  if (!P.hand.length) { for (const x of srcs) for (let p = 0; p < 4; p++) if (playable(G, x.c, p)) return { t: 'play', k: x.k, i: x.i, p }; }
+  let bi = 0, bd = 0; bs = -1e9;
+  P.hand.forEach((c, i) => P.disc.forEach((d, k) => {
+    const top = d.length ? d[d.length - 1] : -1;
+    let sc = c === 0 ? -50 : c * 0.3;
+    sc += top < 0 ? 5 : top === 0 ? 0 : top >= c ? 8 - (top - c) : -5 - (c - top);
+    if (sc > bs) { bs = sc; bi = i; bd = k; }
+  }));
+  return { t: 'discard', i: bi, d: bd };
+}
+function mkView(G, me) {
+  return {
+    n: G.players.length, me, turn: G.turn, winner: G.winner, deckN: G.deck.length, build: G.build, fx: G.fx,
+    players: G.players.map((p, i) => ({
+      name: p.name, bot: p.bot, stockN: p.stock.length, stockTop: p.stock.length ? p.stock[p.stock.length - 1] : -1,
+      handN: p.hand.length, hand: i === me ? p.hand.slice() : null, disc: p.disc
+    }))
+  };
+}
+//#ENDLOGIC
+
+const $ = id => document.getElementById(id);
+const S = { mode: '', G: null, V: null, sel: null, hide: false, pend: false, lastSeq: 0, lastTurn: -1, snd: true, timer: 0, names: [], bots: [], opt: { opp: 2, stock: 30, loc: 2 }, cfg: null, peerIdx: new Map() };
+
+/* ---------- Ton (im Browser erzeugt) ---------- */
+let AC = null;
+function audio() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } } if (AC && AC.state === 'suspended') AC.resume(); }
+function beep(f, d, t, v, delay) {
+  if (!S.snd || !AC) return; const o = AC.createOscillator(), g = AC.createGain(), t0 = AC.currentTime + (delay || 0);
+  o.type = t || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(v || .08, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d);
+  o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + d + .02);
+}
+const sfx = {
+  play: () => { beep(520, .1, 'triangle'); beep(780, .12, 'triangle', .07, .06); },
+  disc: () => beep(240, .12, 'square', .05),
+  clr: () => [523, 659, 784, 1047].forEach((f, i) => beep(f, .2, 'triangle', .08, i * .08)),
+  my: () => { beep(660, .1, 'sine', .07); beep(880, .14, 'sine', .07, .09); },
+  win: () => [523, 659, 784, 1047, 1319].forEach((f, i) => beep(f, .28, 'triangle', .09, i * .11)),
+  bad: () => beep(150, .15, 'sawtooth', .05)
+};
+
+/* ---------- 3D ---------- */
+let T, renderer, scene, camera, ray, running = false, lastT = 0;
+const slots = {}, tmpV = {};
+const texCache = {};
+const SIDE = { color: 0xe9eefb };
+function drawFace(v, w) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 358; const x = c.getContext('2d');
+  const star = v === 0, gold = star || w;
+  const cols = gold ? ['#ffe27a', '#ff9d2e'] : v <= 4 ? ['#18d9ff', '#2563eb'] : v <= 8 ? ['#a78bfa', '#6d28d9'] : ['#ff5fb0', '#be185d'];
+  const g = x.createLinearGradient(0, 0, 256, 358); g.addColorStop(0, cols[0]); g.addColorStop(1, cols[1]); x.fillStyle = g; x.fillRect(0, 0, 256, 358);
+  x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 7; x.strokeRect(12, 12, 232, 334);
+  x.fillStyle = 'rgba(255,255,255,.12)'; x.beginPath(); x.ellipse(128, 179, 92, 120, 0, 0, 7); x.fill();
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = gold && !star ? '#fff' : '#fff'; x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 14; x.shadowOffsetY = 5;
+  x.font = '900 ' + (star ? 190 : v >= 10 ? 150 : 190) + 'px "Trebuchet MS",system-ui,sans-serif'; x.fillText(star ? '★' : String(v), 128, star ? 186 : 192);
+  x.shadowBlur = 0; x.shadowOffsetY = 0; x.font = '900 34px system-ui,sans-serif'; x.fillStyle = 'rgba(255,255,255,.95)';
+  if (!star) { x.fillText(String(v), 40, 44); x.save(); x.translate(216, 314); x.rotate(Math.PI); x.fillText(String(v), 0, 0); x.restore(); }
+  else { x.fillText('★', 40, 44); x.fillText('★', 216, 314); }
+  if (w && !star) { x.font = '900 30px system-ui,sans-serif'; x.fillText('★', 128, 40); }
+  return c;
+}
+function drawBack() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 358; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 256, 358); g.addColorStop(0, '#101a33'); g.addColorStop(1, '#2a1250'); x.fillStyle = g; x.fillRect(0, 0, 256, 358);
+  x.strokeStyle = 'rgba(0,229,255,.18)'; x.lineWidth = 2;
+  for (let i = -360; i < 360; i += 28) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + 358, 358); x.stroke(); x.beginPath(); x.moveTo(i + 358, 0); x.lineTo(i, 358); x.stroke(); }
+  x.strokeStyle = 'rgba(255,45,149,.9)'; x.lineWidth = 6; x.strokeRect(12, 12, 232, 334);
+  x.lineWidth = 8; const rg = x.createLinearGradient(60, 100, 200, 260); rg.addColorStop(0, '#00E5FF'); rg.addColorStop(.5, '#8B5CF6'); rg.addColorStop(1, '#FF2D95');
+  x.strokeStyle = rg; x.beginPath(); x.arc(128, 179, 66, 0, 7); x.stroke();
+  x.fillStyle = rg; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '900 italic 74px "Trebuchet MS",sans-serif'; x.fillText('A', 128, 184);
+  x.fillStyle = 'rgba(255,255,255,.7)'; x.font = '800 22px system-ui,sans-serif'; x.fillText('ANMACHA', 128, 300);
+  return c;
+}
+function tex(v, w) {
+  const k = v < 0 ? 'b' : v + (w ? 'w' : '');
+  if (!texCache[k]) { const t = new T.CanvasTexture(v < 0 ? drawBack() : drawFace(v, w)); t.anisotropy = 4; texCache[k] = t; }
+  return texCache[k];
+}
+function bedTex() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 176; const x = c.getContext('2d');
+  x.strokeStyle = 'rgba(0,229,255,.55)'; x.lineWidth = 4; x.setLineDash([10, 8]); x.strokeRect(6, 6, 116, 164);
+  x.fillStyle = 'rgba(0,229,255,.06)'; x.fillRect(6, 6, 116, 164);
+  return new T.CanvasTexture(c);
+}
+function tableTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 1024; const x = c.getContext('2d'), U = 1024 / 24;
+  const g = x.createRadialGradient(512, 512, 40, 512, 512, 560); g.addColorStop(0, '#13264a'); g.addColorStop(.55, '#0a1126'); g.addColorStop(1, '#060912'); x.fillStyle = g; x.fillRect(0, 0, 1024, 1024);
+  const X = v => 512 + v * U;
+  const lg = x.createLinearGradient(X(-4), 0, X(4), 0); lg.addColorStop(0, '#00E5FF'); lg.addColorStop(.5, '#8B5CF6'); lg.addColorStop(1, '#FF2D95');
+  x.strokeStyle = lg; x.lineWidth = 5; x.shadowColor = '#8B5CF6'; x.shadowBlur = 18; x.beginPath();
+  if (x.roundRect) x.roundRect(X(-3.95), X(-4.45), 7.9 * U, 9.15 * U, 30); else x.rect(X(-3.95), X(-4.45), 7.9 * U, 9.15 * U); x.stroke();
+  x.shadowBlur = 0; x.strokeStyle = 'rgba(0,229,255,.2)'; x.lineWidth = 2; x.beginPath(); x.moveTo(X(-3.6), X(-.6)); x.lineTo(X(3.6), X(-.6)); x.moveTo(X(-3.6), X(2.0)); x.lineTo(X(3.6), X(2.0)); x.stroke();
+  x.fillStyle = 'rgba(255,255,255,.1)'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '900 italic ' + (0.3 * U | 0) + 'px "Trebuchet MS",sans-serif'; x.fillText('ANMACHA · ricorewi', X(0), X(-.3));
+  const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
+}
+function mkSlot(key, x, z, o) {
+  o = o || {};
+  const g = new T.Group(); g.position.set(x, 0, z); scene.add(g);
+  const bed = new T.Mesh(new T.PlaneGeometry(1.16, 1.56), new T.MeshBasicMaterial({ map: slots._bed, transparent: true, depthWrite: false, color: o.tint || 0xffffff }));
+  bed.rotation.x = -Math.PI / 2; bed.position.y = .003; bed.visible = !o.nobed; g.add(bed);
+  const thick = new T.Mesh(slots._box, slots._sideMat); thick.visible = false; g.add(thick);
+  const topMat = new T.MeshBasicMaterial({ map: tex(-1) });
+  const card = new T.Mesh(slots._card, [slots._sideMat, slots._sideMat, topMat, slots._backMat, slots._sideMat, slots._sideMat]); card.visible = false; g.add(card);
+  const glow = new T.Mesh(new T.PlaneGeometry(1.22, 1.62), new T.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending }));
+  glow.rotation.x = -Math.PI / 2; glow.position.y = .006; g.add(glow);
+  const hit = new T.Mesh(slots._hit, new T.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })); hit.rotation.x = -Math.PI / 2; hit.position.y = .6; hit.userData.key = key; g.add(hit);
+  const s = { key, g, bed, thick, card, topMat, glow, hit, h: 0, lift: 0, liftT: 0, hl: 0, flash: 0, tx: x, shake: 0, hasCard: false };
+  slots[key] = s; return s;
+}
+function setSlot(s, v, w, n) {
+  s.hasCard = v !== -2; s.card.visible = s.hasCard;
+  if (s.hasCard) { s.topMat.map = tex(v, w); }
+  s.h = s.hasCard ? Math.min(n, 40) * .011 : 0; s.thick.visible = s.h > .004; s.thick.scale.set(1, s.h, 1); s.thick.position.y = s.h / 2;
+  s.card.position.y = s.h + .022; need();
+}
+function initScene() {
+  T = THREE;
+  renderer = new T.WebGLRenderer({ canvas: $('cv'), antialias: true, powerPreference: 'low-power' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setClearColor(0x060912);
+  scene = new T.Scene(); camera = new T.PerspectiveCamera(36, 1, .1, 100); ray = new T.Raycaster();
+  const table = new T.Mesh(new T.PlaneGeometry(24, 24), new T.MeshBasicMaterial({ map: tableTex() })); table.rotation.x = -Math.PI / 2; table.position.y = -.01; scene.add(table);
+  slots._bed = bedTex(); slots._card = new T.BoxGeometry(1, .04, 1.4); slots._box = new T.BoxGeometry(1, 1, 1.4); slots._hit = new T.PlaneGeometry(1.3, 1.7);
+  slots._sideMat = new T.MeshBasicMaterial({ color: 0xaab6d6 }); slots._backMat = new T.MeshBasicMaterial({ map: tex(-1) });
+  [-2.4, -.8, .8, 2.4].forEach((x, p) => mkSlot('b' + p, x, -1.55));
+  mkSlot('deck', 0, -3.3, { tint: 0xff2d95 });
+  mkSlot('st', -2.8, 1.0, { tint: 0xffd426 });
+  [0, 1, 2, 3].forEach(d => mkSlot('d' + d, -1.4 + d * 1.4, 1.0, { tint: 0xff2d95 }));
+  for (let i = 0; i < 5; i++) mkSlot('h' + i, (i - 2) * 1.4, 3.2, { nobed: true });
+  const gc = new T.Mesh(slots._card, [slots._sideMat, slots._sideMat, new T.MeshBasicMaterial({ map: tex(-1) }), slots._backMat, slots._sideMat, slots._sideMat]);
+  gc.visible = false; scene.add(gc); slots._ghost = { m: gc, t: 1, a: null, b: null };
+  new ResizeObserver(resize).observe($('stage')); resize();
+  const cv = $('cv'); cv.addEventListener('pointerdown', e => {
+    const r = cv.getBoundingClientRect(); const nx = ((e.clientX - r.left) / r.width) * 2 - 1, ny = -((e.clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera({ x: nx, y: ny }, camera);
+    const hits = ray.intersectObjects(Object.values(slots).filter(s => s.hit).map(s => s.hit), false);
+    if (hits.length) tap(hits[0].object.userData.key);
+  });
+}
+function resize() {
+  if (!renderer) return; const st = $('stage'), w = Math.max(st.clientWidth, 50), h = Math.max(st.clientHeight, 50);
+  renderer.setSize(w, h, false); camera.aspect = w / h;
+  const el = 60 * Math.PI / 180, cx = 0, cz = .15, pts = [];
+  for (const x of [-3.5, 3.5]) for (const z of [-3.95, 4.15]) for (const y of [0, .5]) pts.push(new T.Vector3(x, y, z));
+  let d = 5;
+  for (let i = 0; i < 80; i++) {
+    camera.position.set(cx, Math.sin(el) * d, cz + Math.cos(el) * d); camera.lookAt(cx, 0, cz); camera.updateProjectionMatrix(); camera.updateMatrixWorld(true);
+    if (pts.every(p => { const q = p.clone().project(camera); return Math.abs(q.x) < .98 && Math.abs(q.y) < .98; })) break; d *= 1.04;
+  }
+  need();
+}
+function need() { if (!running && renderer) { running = true; lastT = performance.now(); requestAnimationFrame(frame); } }
+function frame(t) {
+  const dt = Math.min((t - lastT) / 1000, .05); lastT = t; let more = false;
+  for (const k in slots) {
+    const s = slots[k]; if (!s.g) continue;
+    const dl = s.liftT - s.lift; if (Math.abs(dl) > .002) { s.lift += dl * Math.min(1, dt * 14); more = true; } else s.lift = s.liftT;
+    s.card.position.y = s.h + .022 + s.lift; s.card.rotation.x = -s.lift * .5;
+    const dx = s.tx - s.g.position.x; if (Math.abs(dx) > .002) { s.g.position.x += dx * Math.min(1, dt * 14); more = true; } else s.g.position.x = s.tx;
+    if (s.shake > 0) { s.shake = Math.max(0, s.shake - dt * 3); s.card.position.x = Math.sin(s.shake * 40) * .08 * s.shake; more = true; } else s.card.position.x = 0;
+    let o = 0; if (s.hl) { o = .3 + .25 * Math.sin(t / 160); more = true; }
+    if (s.flash > 0) { s.flash = Math.max(0, s.flash - dt * 1.4); o = Math.max(o, s.flash); more = true; }
+    s.glow.material.opacity = o; s.glow.material.color.setHex(s.flash > 0 ? 0xffd426 : s.hl === 2 ? 0xff2d95 : 0x00e5ff);
+  }
+  const gh = slots._ghost;
+  if (gh.t < 1) {
+    gh.t = Math.min(1, gh.t + dt / .4); const e = gh.t * gh.t * (3 - 2 * gh.t);
+    gh.m.position.set(gh.a.x + (gh.b.x - gh.a.x) * e, .25 + Math.sin(e * Math.PI) * .9, gh.a.z + (gh.b.z - gh.a.z) * e);
+    gh.m.rotation.x = -Math.sin(e * Math.PI) * .4; if (gh.t >= 1) gh.m.visible = false; more = true;
+  }
+  renderer.render(scene, camera);
+  if (more) requestAnimationFrame(frame); else running = false;
+}
+function slotPos(key) { const s = slots[key]; return { x: s.tx, z: s.g.position.z }; }
+function fly(fx, me) {
+  const gh = slots._ghost; let a, b;
+  const mine = fx.pl === me;
+  if (fx.t === 'play') {
+    a = mine ? slotPos(fx.k === 'hand' ? 'h' + fx.i : fx.k === 'stock' ? 'st' : 'd' + fx.i) : { x: 0, z: -6.5 };
+    b = slotPos('b' + fx.p);
+  } else { a = mine ? slotPos('h' + fx.i) : { x: 0, z: -6.5 }; b = mine ? slotPos('d' + fx.d) : { x: 0, z: -6.5 }; }
+  gh.m.material[2].map = tex(fx.c, false); gh.a = a; gh.b = b; gh.t = 0; gh.m.visible = true; gh.m.position.set(a.x, .25, a.z);
+  if (fx.clr) slots['b' + fx.p].flash = 1;
+}
+function shakeSlot(k) { slots[k].shake = 1; need(); }
+
+/* ---------- Anzeige ---------- */
+const grp = v => v === 0 ? 0 : v <= 4 ? 1 : v <= 8 ? 2 : 3;
+const tileH = (v, big) => '<span class="tile ' + (big ? 'big ' : '') + (v < 0 ? 'e' : 'c' + grp(v)) + '">' + (v < 0 ? '·' : v === 0 ? '★' : v) + '</span>';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function showScr(id) { document.querySelectorAll('.scr').forEach(e => e.classList.toggle('on', e.id === id)); $('ov').classList.remove('hidden'); }
+function hideOv() { $('ov').classList.add('hidden'); }
+function toast(t) { const e = $('toast'); e.textContent = t; e.classList.remove('go'); void e.offsetWidth; e.classList.add('go'); }
+
+function selCard() {
+  const v = S.V, s = S.sel; if (!v || !s) return undefined; const me = v.players[v.me];
+  if (s.k === 'hand') return me.hand[s.i]; if (s.k === 'stock') return me.stockTop >= 0 ? me.stockTop : undefined;
+  const d = me.disc[s.i]; return d && d.length ? d[d.length - 1] : undefined;
+}
+function refreshSel() {
+  const v = S.V; if (!v) return; const mine = v.turn === v.me && v.winner < 0 && !S.hide;
+  if (S.sel && (!mine || selCard() === undefined)) S.sel = null;
+  const sel = S.sel, c = selCard();
+  for (const k in slots) { const s = slots[k]; if (!s.g) continue; s.hl = 0; s.liftT = 0; }
+  if (sel) {
+    const key = sel.k === 'hand' ? 'h' + sel.i : sel.k === 'stock' ? 'st' : 'd' + sel.i; slots[key].liftT = sel.k === 'hand' ? .55 : .4;
+    for (let p = 0; p < 4; p++) if (c === 0 || c === v.build[p].length + 1) slots['b' + p].hl = 1;
+    if (sel.k === 'hand') for (let d = 0; d < 4; d++) slots['d' + d].hl = 2;
+  }
+  const me = v.players[v.me]; let h;
+  if (v.winner >= 0) h = '';
+  else if (S.hide) h = 'Gerät an <b>' + esc(me.name) + '</b> übergeben …';
+  else if (!mine) h = esc(v.players[v.turn].name) + ' überlegt …';
+  else if (!sel) h = 'Karte antippen: <b>Hand</b>, <b>Zielstapel</b> oder <b>Ablage</b>';
+  else if (sel.k === 'hand') h = 'Auf einen <b>Turm</b> spielen – oder auf einen <b>Ablagestapel</b> legen (beendet den Zug)';
+  else h = 'Auf einen <b>Turm</b> in der Mitte spielen';
+  $('foot').innerHTML = h + '<span class="l2">Dein Zielstapel: <b>' + me.stockN + '</b> · Ziehstapel: <b>' + v.deckN + '</b></span>';
+  need();
+}
+function render(v, animate) {
+  S.V = v; const me = v.players[v.me];
+  if (animate && v.fx && v.fx.seq !== S.lastSeq) {
+    S.lastSeq = v.fx.seq; fly(v.fx, v.me);
+    if (v.fx.clr) sfx.clr(); else if (v.fx.t === 'play') sfx.play(); else sfx.disc();
+  }
+  // 3D-Szene
+  v.build.forEach((b, p) => setSlot(slots['b' + p], b.length ? b.length : -2, b.length && b[b.length - 1] === 0, b.length));
+  setSlot(slots.deck, v.deckN ? -1 : -2, false, Math.ceil(v.deckN / 3));
+  setSlot(slots.st, me.stockN ? me.stockTop : -2, false, me.stockN);
+  for (let d = 0; d < 4; d++) { const a = me.disc[d]; setSlot(slots['d' + d], a.length ? a[a.length - 1] : -2, false, a.length); }
+  const hn = me.hand.length;
+  for (let i = 0; i < 5; i++) { const s = slots['h' + i]; if (i < hn) { setSlot(s, S.hide ? -1 : me.hand[i], false, 1); s.tx = (i - (hn - 1) / 2) * 1.4; } else setSlot(s, -2, false, 0); }
+  // Gegner-Chips
+  let h = '';
+  v.players.forEach((p, i) => {
+    if (i === v.me) return;
+    h += '<div class="chip' + (v.turn === i && v.winner < 0 ? ' turn' : '') + '"><div class="nm">' + esc(p.name) + '</div><div class="r">' + tileH(p.stockTop, true) +
+      '<small>Ziel<br><b style="color:#fff;font-size:14px">' + p.stockN + '</b></small><small>🃏 ' + p.handN + '</small></div><div class="r">' + p.disc.map(d => tileH(d.length ? d[d.length - 1] : -1)).join('') + '</div></div>';
+  });
+  $('opp').innerHTML = h;
+  const st = $('status'), mine = v.turn === v.me && v.winner < 0 && !S.hide;
+  st.className = mine ? 'me' : ''; st.textContent = v.winner >= 0 ? '🏆 ' + v.players[v.winner].name : mine ? 'Du bist dran' : S.hide ? '' : v.players[v.turn].name + ' ist dran';
+  if (mine && S.lastTurn !== v.turn && S.mode !== 'local') sfx.my();
+  S.lastTurn = v.turn; S.pend = false; refreshSel();
+  if (v.winner >= 0) endScreen(v); else if ($('sEnd').classList.contains('on')) hideOv();
+}
+function endScreen(v) {
+  const iw = v.winner === v.me && S.mode !== 'local'; sfx.win();
+  $('endTitle').textContent = S.mode === 'local' || v.winner !== v.me ? v.players[v.winner].name + ' gewinnt!' : 'Gewonnen! 🏆';
+  $('endSub').textContent = iw ? 'Zielstapel leer – stark gespielt.' : 'Zielstapel zuerst geleert.';
+  const again = $('endAgain'); again.style.display = S.mode === 'guest' ? 'none' : ''; if (S.mode === 'guest') $('endSub').textContent += ' Warte auf einen neuen Start vom Host …';
+  setTimeout(() => { if (S.V && S.V.winner >= 0) showScr('sEnd'); }, 900);
+}
+
+/* ---------- Eingabe ---------- */
+function tap(key) {
+  const v = S.V; if (!v || v.winner >= 0 || S.hide || v.turn !== v.me || S.pend) return; audio();
+  const me = v.players[v.me], t = key[0];
+  const tog = o => { S.sel = S.sel && S.sel.k === o.k && (S.sel.i || 0) === (o.i || 0) ? null : o; };
+  if (key === 'deck') return;
+  if (t === 'h') { const i = +key.slice(1); if (i >= me.hand.length) return; tog({ k: 'hand', i }); }
+  else if (key === 'st') { if (!me.stockN) return; tog({ k: 'stock', i: 0 }); }
+  else if (t === 'd') {
+    const d = +key.slice(1);
+    if (S.sel && S.sel.k === 'hand') { const a = { t: 'discard', i: S.sel.i, d }; S.sel = null; return act(a); }
+    if (me.disc[d].length) tog({ k: 'disc', i: d });
+  } else if (t === 'b') {
+    if (!S.sel) return; const p = +key.slice(1), c = selCard();
+    if (c === undefined) return;
+    if (!(c === 0 || c === v.build[p].length + 1)) { sfx.bad(); shakeSlot(key); toast('Passt nicht'); return; }
+    const a = { t: 'play', k: S.sel.k, i: S.sel.i || 0, p }; S.sel = null; return act(a);
+  }
+  refreshSel();
+}
+function act(a) {
+  S.pend = true;
+  if (S.mode === 'guest') { S.net.send({ t: 'act', a }); return; }
+  doApply(a);
+}
+function doApply(a) {
+  const G = S.G; if (!G || G.players[G.turn].bot && !a.bot) return;
+  if (!apply(G, a)) { S.pend = false; return; }
+  publish();
+}
+
+/* ---------- Spielablauf ---------- */
+function publish() {
+  const G = S.G; clearTimeout(S.timer);
+  if (S.mode === 'host') for (const [id, idx] of S.peerIdx) S.net.sendTo(id, { t: 'view', v: mkView(G, idx) });
+  if (S.mode === 'local') {
+    const turnChanged = S.lastTurn !== G.turn && G.winner < 0;
+    if (turnChanged) { S.hide = true; $('passName').textContent = G.players[G.turn].name + ' ist dran'; render(mkView(G, G.turn), true); showScr('sPass'); return; }
+    render(mkView(G, G.turn), true); return;
+  }
+  render(mkView(G, 0), true);
+  if (G.winner < 0 && G.players[G.turn].bot) S.timer = setTimeout(() => { if (S.G !== G || G.winner >= 0) return; apply(G, botAct(G)); publish(); }, 650 + RND() * 450);
+}
+function begin(mode, names, bots, stockN) {
+  clearTimeout(S.timer); S.mode = mode; S.names = names; S.bots = bots; S.cfg = { stockN }; S.sel = null; S.hide = false; S.lastTurn = -1; S.lastSeq = 0; S.pend = false;
+  S.G = newGame(names, bots, stockN); hideOv(); publish();
+}
+function startSolo() { const n = S.opt.opp; begin('solo', ['Du'].concat(Array.from({ length: n }, (_, i) => 'CPU ' + (i + 1))), [false].concat(Array(n).fill(true)), S.opt.stock); }
+function startLocal() { const n = S.opt.loc; begin('local', Array.from({ length: n }, (_, i) => 'Spieler ' + (i + 1)), Array(n).fill(false), S.opt.stock); }
+function restart() {
+  if (S.mode === 'solo' || S.mode === 'local') begin(S.mode, S.names, S.bots, S.cfg.stockN);
+  else if (S.mode === 'host') startHostGame();
+}
+function toMenu() {
+  clearTimeout(S.timer); if (S.net) { S.net.close(true); S.net = null; } S.mode = ''; S.G = null; S.V = null; S.sel = null; S.hide = false; S.peerIdx.clear();
+  $('opp').innerHTML = ''; $('status').textContent = ''; $('foot').textContent = '';
+  for (const k in slots) { const s = slots[k]; if (s.g) { setSlot(s, -2, false, 0); s.liftT = 0; s.hl = 0; } }
+  showScr('sMain');
+}
+
+/* ---------- Online (PeerJS, WebRTC direkt zwischen den Geräten) ---------- */
+function mkNet(cb) {
+  const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', PRE = 'stapelrausch-', MAX = 3;
+  const N = { role: '', code: '', peer: null, conns: new Map(), busy: false }; const libs = {};
+  const load = (src, ok) => libs[src] || (libs[src] = new Promise((res, rej) => { if (ok()) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { delete libs[src]; rej(new Error('lib')); }; document.head.appendChild(s); }));
+  N.loadPeer = () => load('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', () => !!window.Peer);
+  N.loadQR = () => load('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', () => !!window.qrcode);
+  N.norm = s => Array.from(String(s || '').toUpperCase()).filter(ch => ALPHA.includes(ch)).join('').slice(0, 4);
+  N.link = () => location.href.split('#')[0] + '#join=' + N.code;
+  const mkCode = () => { let c = ''; for (let i = 0; i < 4; i++) c += ALPHA[(Math.random() * ALPHA.length) | 0]; return c; };
+  function reg(conn, onOpen) {
+    conn.on('open', () => {
+      if (N.role === 'host') {
+        if (N.conns.size >= MAX) { try { conn.send({ t: 'full' }); } catch (e) { } setTimeout(() => conn.close(), 300); return; }
+        if (cb.locked && cb.locked()) { try { conn.send({ t: 'busy' }); } catch (e) { } setTimeout(() => conn.close(), 300); return; }
+      }
+      N.conns.set(conn.peer, conn); cb.onJoin && cb.onJoin(conn.peer); if (onOpen) onOpen();
+    });
+    conn.on('data', d => { if (d && typeof d === 'object') cb.onMsg(conn.peer, d); });
+    const gone = () => { if (N.conns.get(conn.peer) !== conn) return; N.conns.delete(conn.peer); cb.onLeave(conn.peer); };
+    conn.on('close', gone); conn.on('error', gone);
+  }
+  N.host = async function () {
+    if (N.busy) return; N.busy = true; N.close(true);
+    try {
+      await N.loadPeer();
+      for (let k = 0; k < 6 && !N.peer; k++) {
+        const code = mkCode();
+        const ok = await new Promise(res => {
+          const p = new Peer(PRE + code); let done = false;
+          p.on('open', () => { done = true; N.peer = p; N.code = code; N.role = 'host'; res(true); });
+          p.on('error', e => { if (!done) { done = true; try { p.destroy(); } catch (x) { } res(e && e.type === 'unavailable-id' ? false : 'err'); } else cb.onStatus && cb.onStatus('Verbindung wackelt …'); });
+        });
+        if (ok === 'err') throw new Error('broker');
+      }
+      if (!N.peer) throw new Error('code');
+      N.peer.on('connection', reg); N.peer.on('disconnected', () => { try { N.peer.reconnect(); } catch (e) { } });
+      N.busy = false; return N.code;
+    } catch (e) { N.busy = false; N.close(true); throw e; }
+  };
+  N.join = async function (code) {
+    if (N.busy) return; code = N.norm(code); if (code.length !== 4) throw new Error('code'); N.busy = true; N.close(true);
+    try {
+      await N.loadPeer();
+      await new Promise((res, rej) => {
+        const p = new Peer(); let done = false; const fail = m => { if (done) return; done = true; try { p.destroy(); } catch (x) { } rej(new Error(m)); }; setTimeout(() => fail('timeout'), 14000);
+        p.on('error', e => { if (!done) fail(e && e.type === 'peer-unavailable' ? 'nocode' : 'broker'); else cb.onStatus && cb.onStatus('Verbindung wackelt …'); });
+        p.on('open', () => { N.peer = p; N.role = 'guest'; N.code = code; reg(p.connect(PRE + code, { reliable: true }), () => { if (done) return; done = true; res(); }); });
+      });
+      N.busy = false;
+    } catch (e) { N.busy = false; N.close(true); throw e; }
+  };
+  N.sendTo = (id, d) => { const c = N.conns.get(id); if (c && c.open) { try { c.send(d); } catch (e) { } } };
+  N.send = d => { for (const [, c] of N.conns) if (c.open) { try { c.send(d); } catch (e) { } } };
+  N.close = function (quiet) {
+    for (const [, c] of N.conns) { try { c.close(); } catch (e) { } } N.conns.clear();
+    if (N.peer) { try { N.peer.destroy(); } catch (e) { } } N.peer = null; N.role = ''; N.code = '';
+  };
+  return N;
+}
+const getName = () => { let n = $('name').value.trim().slice(0, 12); if (!n) n = 'Spieler'; try { localStorage.setItem('stapelrausch-name', n); } catch (e) { } return n; };
+const errText = { code: 'Bitte den 4-stelligen Code eingeben.', nocode: 'Diesen Raum gibt es nicht (mehr).', timeout: 'Keine Verbindung – nochmal versuchen.', broker: 'Verbindungsdienst nicht erreichbar.', lib: 'Online-Bibliothek konnte nicht geladen werden (Internet?).' };
+function lobbyList(names, me) { $('lobList').innerHTML = names.map((n, i) => '<div>' + (i === 0 ? '👑 ' : '👤 ') + esc(n) + (i === me ? ' (du)' : '') + '</div>').join(''); }
+function hostLobbyUpdate() {
+  const names = [S.hostName].concat(S.lobby.map(x => x.name));
+  lobbyList(names, 0); $('lobStart').disabled = names.length < 2;
+  $('lobMsg').textContent = names.length < 2 ? 'Warte auf Mitspieler … (' + names.length + '/4)' : names.length + ' Spieler bereit.';
+  S.lobby.forEach((x, i) => S.net.sendTo(x.id, { t: 'lobby', names, you: i + 1 }));
+}
+function netMsgHost(id, d) {
+  if (d.t === 'hello') {
+    let x = S.lobby.find(l => l.id === id);
+    if (!x) { x = { id, name: '' }; S.lobby.push(x); } x.name = String(d.name || 'Gast').slice(0, 12); hostLobbyUpdate();
+  } else if (d.t === 'act') {
+    const idx = S.peerIdx.get(id), G = S.G; if (!G || idx === undefined || G.turn !== idx || G.players[idx].bot) return;
+    const a = d.a; if (!a || typeof a !== 'object') return;
+    if (!apply(G, { t: a.t, k: a.k, i: a.i, p: a.p, d: a.d })) { S.net.sendTo(id, { t: 'view', v: mkView(G, idx) }); return; }
+    publish();
+  }
+}
+function netLeaveHost(id) {
+  if (S.G && S.mode === 'host') {
+    const idx = S.peerIdx.get(id); S.peerIdx.delete(id); if (idx === undefined) return;
+    const P = S.G.players[idx]; P.bot = true; P.name += ' 🤖'; publish(); return;
+  }
+  S.lobby = S.lobby.filter(l => l.id !== id); hostLobbyUpdate();
+}
+async function goHost() {
+  audio(); $('onErr').textContent = ''; S.hostName = getName(); S.lobby = [];
+  S.net = mkNet({ onMsg: netMsgHost, onLeave: netLeaveHost, locked: () => !!S.G && S.mode === 'host' });
+  $('goHost').disabled = true;
+  try {
+    const code = await S.net.host(); S.mode = 'host-lobby'; S.cfg = { stockN: S.opt.stock };
+    $('lobTitle').textContent = 'Dein Raum'; $('lobHost').style.display = ''; $('lobCode').textContent = code; $('lobQr').innerHTML = '';
+    $('lobStart').style.display = ''; hostLobbyUpdate(); showScr('sLobby');
+    S.net.loadQR().then(() => { const q = qrcode(0, 'M'); q.addData(S.net.link()); q.make(); $('lobQr').innerHTML = '<img alt="QR-Code" src="' + q.createDataURL(5, 0) + '">'; }).catch(() => {  });
+  } catch (e) { if (S.net) S.net.close(true); S.net = null; $('onErr').textContent = errText[e.message] || errText.broker; }
+  $('goHost').disabled = false;
+}
+function startHostGame() {
+  const lob = S.lobby.filter(l => S.net.conns.has(l.id)); if (!lob.length) return;
+  S.peerIdx = new Map(lob.map((l, i) => [l.id, i + 1]));
+  begin('host', [S.hostName].concat(lob.map(l => l.name)), Array(lob.length + 1).fill(false), S.cfg.stockN);
+}
+async function goJoin(codeIn) {
+  audio(); const err = $('onErr'); err.textContent = ''; const name = getName();
+  S.net = mkNet({ onMsg: netMsgGuest, onLeave: () => { if (S.mode !== '') { alert('Verbindung zum Host beendet.'); toMenu(); } }, onStatus: m => { $('lobMsg').textContent = m; } });
+  $('goJoin').disabled = true;
+  try {
+    S.mode = 'guest'; await S.net.join(codeIn || $('joinCode').value); S.net.send({ t: 'hello', name });
+    $('lobTitle').textContent = 'Raum ' + S.net.code; $('lobHost').style.display = 'none'; $('lobStart').style.display = 'none'; lobbyList([], -1); $('lobMsg').textContent = 'Verbunden – warte auf den Start durch den Host …'; showScr('sLobby');
+  } catch (e) { S.mode = ''; if (S.net) S.net.close(true); S.net = null; err.textContent = errText[e.message] || errText.broker; showScr('sOnline'); }
+  $('goJoin').disabled = false;
+}
+function netMsgGuest(id, d) {
+  if (d.t === 'lobby') { lobbyList(d.names || [], d.you); }
+  else if (d.t === 'view' && d.v) {
+    if (S.mode !== 'guest') return; S.hide = false; hideOv(); render(d.v, true);
+  } else if (d.t === 'full' || d.t === 'busy') { const m = d.t === 'full' ? 'Der Raum ist voll.' : 'Das Spiel läuft schon.'; S.mode = ''; if (S.net) S.net.close(true); S.net = null; showScr('sOnline'); $('onErr').textContent = m; }
+}
+
+/* ---------- Menü-Verdrahtung ---------- */
+function initUI() {
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; audio();
+    if (b.dataset.go) { $('onErr').textContent = ''; showScr(b.dataset.go); return; }
+    const seg = b.closest('.seg'); if (seg && b.dataset.v) { S.opt[seg.dataset.opt] = +b.dataset.v; syncSeg(); }
+  });
+  const syncSeg = () => document.querySelectorAll('.seg').forEach(s => s.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v === S.opt[s.dataset.opt])));
+  syncSeg();
+  $('goSolo').onclick = startSolo; $('goLocal').onclick = startLocal; $('goHost').onclick = goHost; $('goJoin').onclick = () => goJoin();
+  $('joinCode').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+  $('rulesBack').onclick = () => showScr(S.G ? 'sPause' : 'sMain'); $('bHelp').onclick = () => showScr('sRules');
+  $('bMenu').onclick = () => showScr(S.G && S.V && S.V.winner < 0 ? 'sPause' : S.G ? 'sEnd' : 'sMain');
+  $('pResume').onclick = () => { if (S.hide) showScr('sPass'); else hideOv(); };
+  $('pQuit').onclick = toMenu; $('endMenu').onclick = toMenu; $('endAgain').onclick = restart;
+  $('passGo').onclick = () => { S.hide = false; hideOv(); render(mkView(S.G, S.G.turn), false); sfx.my(); };
+  $('bSnd').onclick = () => { S.snd = !S.snd; $('bSnd').textContent = S.snd ? '🔊' : '🔇'; audio(); };
+  $('lobStart').onclick = () => { hideOv(); startHostGame(); };
+  $('lobLeave').onclick = toMenu;
+  try { const n = localStorage.getItem('stapelrausch-name'); if (n) $('name').value = n; } catch (e) { }
+  const m = /[#&]join=([A-Za-z0-9]{4})/.exec(location.hash);
+  if (m) { try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { } showScr('sOnline'); $('joinCode').value = m[1].toUpperCase(); }
+}
+window.addEventListener('load', () => {
+  initUI();
+  if (typeof THREE === 'undefined') { $('foot').textContent = '3D-Bibliothek konnte nicht geladen werden – bitte Internet prüfen und neu laden.'; return; }
+  try { initScene(); } catch (e) { $('foot').textContent = 'WebGL wird auf diesem Gerät nicht unterstützt.'; }
+});
+</script>
+</body>
+</html>
