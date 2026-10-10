@@ -151,7 +151,7 @@
   }
   function reveal() {
     const c = G.leaving; c.out = true; c.outDay = G.day; G.outOrder.push(c); const you = c.id === 'you'; Snd[you ? 'lose' : 'reveal']();
-    show(`<div class="card fade cen"><h2>${you ? 'Das war’s für dich…' : esc(nm(c)) + ' verlässt das Camp'}</h2><div style="width:130px;margin:8px auto">${av(c, 'sad')}</div><p class="big"><b>${esc(c.name)}</b>${you ? '' : ' · ' + esc(c.job)}</p><p>${you ? 'Die Hörer haben entschieden: Du musst den Dschungel verlassen. Du bist auf Platz <b>' + (G.n - G.outOrder.length + 1) + '</b> gelandet.' : `Knapp dahinter: <b>${esc(nm(G.second))}</b>. ${c.stars ? esc(nm(c)) + ' hat im Camp ' + c.stars + ' Sterne geholt.' : ''}`}</p><div class="row c" style="margin-top:12px"><button class="btn go big" data-a="${you ? 'youOut' : 'day'}">${you ? 'Weiter ▶' : 'Nächster Tag ▶'}</button></div></div>`, 'center');
+    show(`<div class="card fade cen"><h2>${you ? 'Das war’s für dich…' : esc(nm(c)) + ' verlässt das Camp'}</h2><div style="width:130px;margin:8px auto">${av(c, 'sad')}</div><p class="big"><b>${esc(c.name)}</b>${you ? '' : ' · ' + esc(c.job)}</p><p>${you ? 'Die Hörer haben entschieden: Du musst den Dschungel verlassen. Du bist auf Platz <b>' + (G.n - G.outOrder.length + 1) + '</b> gelandet.' : `Knapp dahinter: <b>${esc(nm(G.second))}</b>. ${c.stars ? esc(nm(c)) + ' hat im Camp ' + c.stars + ' Sterne geholt.' : ''}`}</p><div class="row c" style="margin-top:12px"><button class="btn go big" data-a="${you ? 'youOut' : 'next'}">${you ? 'Weiter ▶' : 'Nächster Tag ▶'}</button></div></div>`, 'center');
   }
   function simulateRest() { // wenn du raus bist: Rest des Spiels im Schnelldurchlauf
     let guard = 0; while (alive().length > 3 && guard++ < 20) { alive().forEach(c => sym(c, (50 - c.sym) * .06 + rnd(-4, 4))); const list = alive().map(c => ({ c, w: Math.max(5, 100 - c.sym + rnd(0, 12)) })).sort((a, b) => b.w - a.w); list[0].c.out = true; G.outOrder.push(list[0].c); }
@@ -203,7 +203,7 @@
   // ---------- Klick-Verteiler ----------
   const H = {
     title, how, practice, setup, snd() { Snd.toggle(); title(); },
-    new() { setup(); }, start() { newGame(); }, day() { startDay(); }, event, action, vote, intro: trialIntro, play: doPlay, watch: doWatch, after: afterTrial, reveal, youOut, finale, fpart: finalPart, fplay: finalPlay, fvote: finalVote, end: finalEnd,
+    new() { setup(); }, start() { newGame(); }, day() { startDay(); }, next: nextDay, event, action, vote, intro: trialIntro, play: doPlay, watch: doWatch, after: afterTrial, reveal, youOut, finale, fpart: finalPart, fplay: finalPlay, fvote: finalVote, end: finalEnd,
     sw(d) { const k = d.k, v = k === 'len' ? d.i : +d.i; SU[k] = v; setup(); },
     choice(d) { choose(+d.i); }, act(d) { doAction(d.id); }, ptrial(d) { practiceTrial(d.id); },
     abort() { if (RUN) { const r = RUN; const s = r.g.shown; r.stop(); RUN = null; if (r.cb) r.cb(s); } }
