@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1020">
+<title>AnMaCha Markthalle 24</title>
+<style>
+  :root{--c:#00e5ff;--ma:#ff2d95;--v:#8b5cf6;--o:#ff9a1f;--g:#00ffc8;--bg:#0b1020;--tx:#eaf2ff;--mut:#8fa3bd;--y:#ffd24a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  .glass{background:rgba(20,28,56,.82);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px}
+  #hud{display:flex;gap:6px;align-items:center;padding:6px 8px;flex-wrap:wrap;position:relative;z-index:3}
+  .chip{padding:5px 10px;font-weight:800;font-size:clamp(12px,3.2vw,15px);white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .chip small{color:var(--mut);font-weight:700}
+  #xpb{width:70px;height:7px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden}#xpb i{display:block;height:100%;background:linear-gradient(90deg,var(--c),var(--ma));width:0}
+  #money{color:var(--y)} .neg{color:#ff6b7a!important}
+  .sp{display:flex;gap:4px}.sp button,.btn{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:var(--tx);font:800 14px Inter,system-ui,sans-serif;border-radius:12px;padding:8px 12px;min-height:40px;cursor:pointer}
+  .sp button.on{background:linear-gradient(180deg,var(--c),#0a7aa8);color:#04101c}
+  .btn.go{background:linear-gradient(180deg,#43e08a,#0f9a54);color:#04170d;border-color:#fff}.btn.stop{background:linear-gradient(180deg,#ff6b7a,#b01c34);border-color:#fff}
+  .btn:disabled{opacity:.4;cursor:default}.btn.sm{padding:5px 9px;min-height:32px;font-size:13px}
+  #stage{flex:1;min-height:0;position:relative}
+  #cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #dock{display:flex;gap:6px;padding:6px 8px 8px;overflow-x:auto;position:relative;z-index:3;scrollbar-width:none}
+  #dock::-webkit-scrollbar{display:none}
+  #dock .btn{flex:none}
+  #toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);max-width:92%;padding:8px 14px;font-weight:700;font-size:14px;z-index:4;text-align:center;pointer-events:none;transition:opacity .4s}
+  #stick{position:absolute;left:12px;bottom:12px;width:128px;height:128px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,16,40,.35);z-index:4;touch-action:none;display:none}
+  #knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8)}
+  #act{position:absolute;right:12px;bottom:12px;min-width:104px;height:104px;border-radius:52px;border:4px solid #fff;background:radial-gradient(circle at 35% 30%,#ffe58a,var(--o));color:#2a1700;font:900 15px Inter,system-ui,sans-serif;padding:8px;z-index:4;cursor:pointer;display:none;text-align:center;line-height:1.2}
+  #act.idle{filter:grayscale(.85) brightness(.75)}
+  body.touch #stick,body.touch #act,body.kb #act{display:block}
+  #card{position:absolute;left:50%;transform:translateX(-50%);bottom:56px;width:min(420px,94%);padding:12px;z-index:5}
+  #card h3{margin:0 0 6px;font-size:16px}#card .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  #panel,#sum{position:fixed;inset:0;z-index:20;background:rgba(5,8,20,.86);overflow:auto;padding:calc(10px + env(safe-area-inset-top)) 10px 18px;touch-action:pan-y}
+  #panel .in,#sum .in{max-width:760px;margin:0 auto}
+  .ph{display:flex;align-items:center;gap:8px;margin-bottom:8px}.ph h2{margin:0;flex:1;font:900 22px 'Trebuchet MS',sans-serif;color:var(--y)}
+  .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;padding-bottom:4px}.tabs .btn{flex:none}.tabs .btn.on{background:linear-gradient(180deg,var(--ma),#a8105f);border-color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+  .it{padding:9px 10px;display:flex;flex-direction:column;gap:4px}.it b{font-size:14px}.it .e{font-size:26px}.it small{color:var(--mut);font-size:12px;line-height:1.35}.it .row{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+  .good{color:var(--g)}.bad{color:#ff6b7a}.warn{color:var(--y)}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl td,.tbl th{padding:6px 5px;border-bottom:1px solid rgba(255,255,255,.1);text-align:left}.tbl th{color:var(--mut);font-size:11px}
+  p.h{color:var(--mut);font-size:13px;line-height:1.5;margin:6px 0}
+  .bar{height:8px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}.bar i{display:block;height:100%;background:var(--g)}
+  #big{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(5,8,20,.9);text-align:center;padding:20px}
+  #big h1{font:900 clamp(28px,7vw,54px)/1.05 'Trebuchet MS',sans-serif;margin:0 0 10px;background:linear-gradient(180deg,#fff,var(--y) 55%,var(--ma));-webkit-background-clip:text;background-clip:text;color:transparent}
+  @media (max-height:520px){#stick{width:104px;height:104px;bottom:6px}#act{height:84px;min-width:90px;bottom:6px}#toast{bottom:4px}#dock{padding-bottom:4px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <a class="btn glass sm" href="../" title="Alle Spiele" style="text-decoration:none">←</a>
+    <div class="chip glass"><span id="money">0 €</span></div>
+    <div class="chip glass"><span id="clock">Tag 1</span><span id="wx"></span></div>
+    <div class="chip glass"><span id="stars"></span><div id="xpb"><i></i></div><small id="lvl">Stufe 1</small></div>
+    <div class="sp glass" style="padding:3px"><button id="s0" title="Pause">⏸</button><button id="s1" class="on">1×</button><button id="s2">2×</button><button id="s3">4×</button></div>
+    <button class="btn go" id="bOpen">LADEN ÖFFNEN</button>
+  </div>
+  <div id="stage"><canvas id="cv"></canvas><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="dock">
+    <button class="btn glass" data-p="markt">🛒 Markt</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
+    <button class="btn glass" data-p="radio">📻 Radio</button><button class="btn glass" data-p="up">⭐ Ausbau</button><button class="btn glass" data-p="stat">📊 Zahlen</button><button class="btn glass" data-p="ziele">🎯 Ziele</button><button class="btn glass" data-p="menu">☰ Menü</button>
+  </div>
+</div>
+<div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px">✕ Schließen</button></div><div id="pb"></div></div></div>
+<div id="sum" hidden><div class="in" id="sb"></div></div>
+<script src="data.js"></script>
+<script src="sim.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

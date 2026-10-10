@@ -1,0 +1,269 @@
+'use strict';
+/* Spielkern von AnMaCha Markthalle 24 (ohne Grafik, testbar): Laden, Kunden, Personal, Wirtschaft, Tagesablauf. */
+const Sim = (() => {
+  const D = typeof Data !== 'undefined' ? Data : require('./data.js');
+  const DAYLEN = 600, MIN_PER_SEC = 1.2, DOW = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'], RAMP_MAX = 18;
+  let R = Math.random;
+  const ri = (a, b) => a + Math.floor(R() * (b - a + 1)), pick = a => a[Math.floor(R() * a.length)], clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const wpick = (items, wf) => { let t = 0; const w = items.map(i => { const x = Math.max(0, wf(i)); t += x; return x; }); if (t <= 0) return null; let x = R() * t; for (let i = 0; i < items.length; i++) { x -= w[i]; if (x <= 0) return items[i]; } return items[items.length - 1]; };
+  const P = D.PRODUCTS, lvlNeed = l => Math.round(150 * Math.pow(l, 1.7));
+  const GRIDS = new WeakMap();   // abgeleitete Laufgitter (nicht gespeichert)
+
+  // ---------- Aufbau ----------
+  function emptyDay() { return { rev: 0, cogs: 0, items: 0, served: 0, lost: 0, happy: 0, recipes: 0, stolen: 0, spawned: 0, units: {}, revBy: {}, miss: 0 }; }
+  function create() {
+    const S = { v: 1, day: 1, t: 0, simT: 0, phase: 'prep', money: 200000, xp: 0, level: 1, rep: 55, W: 18, H: 12, exp: 0, nid: 1, objs: [], ramp: [], backlog: [], orders: [], price: {}, mkt: {}, cf: {}, riv: {}, lic: {}, up: {}, staff: [], customers: [], messes: [], regs: [], inv: [], loan: 0,
+      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [] }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0 };
+    Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
+    Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
+    add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7);
+    const set = (o, p, q) => { o.p = p; o.qty = q; o.age = 0; }, ob = byKind(S, 'obst'), rg = byKind(S, 'regal'); set(ob[0], 'apfel', 14); set(ob[1], 'broetchen', 18); set(rg[0], 'wasser', 12); set(byKind(S, 'kuehl')[0], 'milch', 8);
+    ['banane', 'limo', 'wasser', 'milch', 'broetchen', 'apfel'].forEach(p => S.ramp.push({ p, n: P[p].box, age: 0 }));
+    S.heat = new Array(S.W * S.H).fill(0); rebuild(S); newQuests(S); S.forecast = rollWeather(); S.weather = 'sonne'; note(S, 'Willkommen in der Markthalle 24! Bestelle Ware im Markt und fülle die Regale.', 'info');
+    return S;
+  }
+  function add(S, k, x, y) { const t = D.OBJ[k]; const o = { id: S.nid++, k, x, y, w: t.w, h: t.h, p: null, qty: 0, age: 0, disc: false, q: [], svc: 0 }; S.objs.push(o); return o; }
+  const byKind = (S, k) => S.objs.filter(o => o.k === k), isShelf = o => D.OBJ[o.k].cap > 0, obj = (S, id) => S.objs.find(o => o.id === id);
+  const note = (S, t, kind) => { S.log.push({ t, kind: kind || 'info', day: S.day }); if (S.log.length > 40) S.log.shift(); };
+  function rebuild(S) {
+    const g = new Uint8Array(S.W * S.H); for (let x = 0; x < S.W; x++) { g[x] = 1; g[(S.H - 1) * S.W + x] = 1; } for (let y = 0; y < S.H; y++) { g[y * S.W] = 1; g[y * S.W + S.W - 1] = 1; }
+    g[(S.H - 1) * S.W + 2] = 0; S.objs.forEach(o => { for (let y = o.y; y < o.y + o.h; y++) for (let x = o.x; x < o.x + o.w; x++) g[y * S.W + x] = 1; }); GRIDS.set(S, g);
+  }
+  const grid = S => GRIDS.get(S) || (rebuild(S), GRIDS.get(S));
+  const solid = (S, x, y) => x < 0 || y < 0 || x >= S.W || y >= S.H || grid(S)[y * S.W + x] === 1;
+  const doorTile = S => [2, S.H - 1];
+  function path(S, sx, sy, tx, ty) {
+    sx |= 0; sy |= 0; if (sx === tx && sy === ty) return []; const W = S.W, H = S.H, g = grid(S), par = new Int32Array(W * H).fill(-2), q = new Int32Array(W * H); let h = 0, t = 0; q[t++] = sy * W + sx; par[sy * W + sx] = -1; const goal = ty * W + tx;
+    if (g[goal] && !(tx === 2 && ty === H - 1)) return null;
+    while (h < t) { const c = q[h++]; if (c === goal) break; const cx = c % W, cy = (c / W) | 0; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, ny = cy + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const n = ny * W + nx; if (par[n] !== -2 || g[n]) continue; par[n] = c; q[t++] = n; } }
+    if (par[goal] === -2) return null; const out = []; for (let c = goal; c !== -1; c = par[c]) out.push([c % W, (c / W) | 0]); out.pop(); return out.reverse();
+  }
+  function accessTiles(S, o) { const out = []; for (let y = o.y - 1; y <= o.y + o.h; y++) for (let x = o.x - 1; x <= o.x + o.w; x++) { const inx = x >= o.x && x < o.x + o.w, iny = y >= o.y && y < o.y + o.h; if (inx === iny) continue; if (!solid(S, x, y)) out.push([x, y]); } return out; }
+  function pathToObj(S, sx, sy, o) { let best = null; accessTiles(S, o).sort((a, b) => Math.abs(a[0] - sx) + Math.abs(a[1] - sy) - Math.abs(b[0] - sx) - Math.abs(b[1] - sy)).slice(0, 3).forEach(a => { const p = path(S, sx, sy, a[0], a[1]); if (p && (!best || p.length < best.length)) best = p; }); return best; }
+  const cap = (S, o) => { const t = D.OBJ[o.k]; if (!t.cap) return 0; const sz = o.p ? P[o.p].size : 1; return Math.max(2, Math.floor(t.cap * (S.up.regalpl ? 1.25 : 1) / sz)); };
+  const fits = (o, p) => { const t = D.OBJ[o.k]; if (!t.cap) return false; if (!t.st.includes(P[p].st)) return false; if (t.only && !t.only.includes(P[p].cat)) return false; return true; };
+  const ref = (S, p) => Math.max(5, Math.round(P[p].ref * S.mkt[p]));
+  const wholesale = (S, p) => Math.max(5, Math.round(P[p].cost * S.cf[p]));
+  const rival = (S, p) => Math.round(ref(S, p) * S.riv[p] * (S.rivalSale && S.rivalSale === P[p].cat ? .82 : 1));
+  const effPrice = (S, o) => Math.max(1, Math.round(S.price[o.p] * (o.disc ? .7 : 1)));
+  const offered = S => { const m = {}; S.objs.forEach(o => { if (isShelf(o) && o.p && o.qty > 0) m[o.p] = (m[o.p] || 0) + o.qty; }); return m; };
+
+  // ---------- Wetter, Märkte, Tageswechsel ----------
+  function rollWeather() { return wpick(['sonne', 'wolke', 'regen', 'heiss', 'kalt'], w => ({ sonne: .3, wolke: .25, regen: .2, heiss: .13, kalt: .12 })[w]); }
+  function newQuests(S) { S.quests = []; const ids = D.QUESTS.slice().sort(() => R() - .5).slice(0, 3); ids.forEach(q => { const n = ri(q.n[0], q.n[1]); S.quests.push({ id: q.id, n: q.div ? Math.round(n / 10) * 10 : n, done: false }); }); }
+  function questVal(S, q) { const d = D.QUESTS.find(x => x.id === q.id), v = S.today[d.key] || 0; return d.div ? Math.floor(v / d.div) : v; }
+  function nextDay(S) {
+    S.day++; S.t = 0; S.phase = 'prep'; S.summary = null; S.customers = []; S.closeT = 0; S.spawnAcc = 0; S.today = emptyDay(); S.weather = S.forecast; S.forecast = rollWeather(); S.rivalSale = null; S.ev = []; S.blackout = false; S.radio.ads = {};
+    Object.keys(P).forEach(p => { S.mkt[p] = clamp(S.mkt[p] + (R() - .5) * .08 + (1 - S.mkt[p]) * .25, .88, 1.18); S.cf[p] = clamp(S.cf[p] + (R() - .5) * .06 + (1 - S.cf[p]) * .3, .9, 1.12); S.riv[p] = clamp(.9 + R() * .12 + (S.level > 4 ? -.02 : 0), .86, 1.04); });
+    if (R() < .22) S.ev.push({ k: 'ausflug', t0: 150, t1: 260 }); if (R() < .15) S.ev.push({ k: 'stromausfall', t0: 200, t1: 320 }); if (R() < .15) S.ev.push({ k: 'promi', t0: 220, t1: 221 });
+    if (R() < .15) S.ev.push({ k: 'inspektion', t0: 580, t1: 600 }); if (R() < .15) { S.rivalSale = pick(Object.keys(D.CATS).filter(c => S.lic[c])); S.ev.push({ k: 'rivalsale', t0: 0, t1: 600 }); }
+    if (S.strike) { S.strike = false; note(S, 'Lieferstreik! Heute kam nichts an – die Bestellung kommt morgen.', 'bad'); } else deliver(S, 'day');
+    if (R() < .1 && S.level > 2) { S.strike = true; S.ev.push({ k: 'streik', t0: 0, t1: 0 }); }
+    flush(S); newQuests(S); if (S.up.auto) autoOrder(S); S.player.carry.forEach(b => b.age = (b.age || 0)); S.heat = S.heat.map(h => h * .5);
+    note(S, `Tag ${S.day} (${DOW[(S.day - 1) % 7]}): ${D.WEATHER[S.weather].name}.`, 'info');
+  }
+  function deliver(S, when) { S.orders = S.orders.filter(o => { if (o.when !== when && !(when === 'express' && o.when === 'express' && S.simT >= o.eta)) return true; if (when === 'express' && S.simT < o.eta) return true; for (let i = 0; i < o.boxes; i++) S.backlog.push({ p: o.p, n: P[o.p].box, age: 0 }); return false; }); }
+  function flush(S) { while (S.backlog.length && S.ramp.length < RAMP_MAX) S.ramp.push(S.backlog.shift()); }
+  function autoOrder(S) { const have = offered(S); S.objs.forEach(o => { if (!isShelf(o) || !o.p) return; const inRamp = S.ramp.concat(S.backlog).some(b => b.p === o.p), ord = S.orders.some(x => x.p === o.p); if (o.qty < cap(S, o) * .3 && !inRamp && !ord) order(S, o.p, 1, false, true); }); }
+  function order(S, p, boxes, express, quiet) {
+    if (!S.lic[P[p].cat] || boxes < 1) return false; const cost = Math.round(wholesale(S, p) * P[p].box * boxes * (express ? 1.25 : 1)); if (S.money < cost) { if (!quiet) note(S, 'Nicht genug Geld für die Bestellung.', 'bad'); return false; }
+    S.money -= cost; if (express && S.up.drohne) { S.orders.push({ p, boxes, when: 'express', eta: S.simT + 40 }); } else S.orders.push({ p, boxes, when: 'day' }); return true;
+  }
+  const power = S => 400 + S.objs.reduce((a, o) => a + (D.OBJ[o.k].power || 0), 0) + (S.up.klima ? 300 : 0) + S.staff.filter(s => s.k === 'robo').length * 600 + (S.up.neon ? 150 : 0);
+  const rent = S => (S.day < 3 ? 1000 : 2500 + 200 * S.level) + 150 * S.exp * S.level;
+  function endDay(S) {
+    const T = S.today, bills = [], waste = []; let wasteVal = 0;
+    S.objs.forEach(o => { if (!isShelf(o) || !o.p) return; const pr = P[o.p]; o.age += 1; if (pr.life && o.age > pr.life && o.qty > 0) { wasteVal += o.qty * wholesale(S, o.p); waste.push(pr.name + ' ×' + o.qty); o.qty = 0; o.age = 0; } });
+    S.ramp = S.ramp.filter(b => { b.age++; const l = P[b.p].life; if (l && b.age > l) { wasteVal += b.n * wholesale(S, b.p); waste.push(P[b.p].name + ' ×' + b.n); return false; } return true; });
+    bills.push(['Miete', rent(S)], ['Strom', power(S)]); const wages = S.staff.reduce((a, s) => a + D.STAFF[s.k].wage, 0); if (wages) bills.push(['Löhne', wages]); if (S.loan) bills.push(['Zinsen', Math.round(S.loan * .03)]);
+    const ins = S.ev.find(e => e.k === 'inspektion'); if (ins && S.messes.length > 2) bills.push(['Hygiene-Strafe', 5000 * (S.messes.length - 2)]);
+    const tot = bills.reduce((a, b) => a + b[1], 0); S.money -= tot; const profit = T.rev - T.cogs - tot - wasteVal - T.stolen;
+    const done = []; S.quests.forEach(q => { const d = D.QUESTS.find(x => x.id === q.id), v = questVal(S, q); q.ok = d.max ? (v <= q.n && T.served >= 10) : v >= q.n; if (q.ok) { S.money += d.r; S.xp += 40; done.push(d.t.replace('{n}', q.n) + ' (+' + D.fmt(d.r) + ')'); } });
+    S.xp += Math.max(0, Math.round(profit / 120)); let lv = 0; while (S.xp >= lvlNeed(S.level) && S.level < 20) { S.level++; lv++; }
+    S.hist.push({ d: S.day, rev: T.rev, profit, cust: T.served }); if (S.hist.length > 14) S.hist.shift(); S.totalRev += T.rev; S.bestRev = Math.max(S.bestRev, T.rev);
+    const top = Object.keys(T.units).sort((a, b) => T.units[b] - T.units[a]).slice(0, 3).map(p => P[p].e + ' ' + P[p].name + ' ×' + T.units[p]);
+    S.summary = { day: S.day, rev: T.rev, cogs: T.cogs, bills, waste, wasteVal, stolen: T.stolen, profit, served: T.served, lost: T.lost, items: T.items, top, done, lv, level: S.level, stars: stars(S) }; S.phase = 'summary';
+    S.customers = []; S.messes = S.messes.slice(0, 2);
+  }
+  const stars = S => Math.round(S.rep / 20 * 10) / 10;
+
+  // ---------- Spawnen & Kunden ----------
+  const curve = t => .55 + .45 * (Math.exp(-(((t - 230) / 110) ** 2)) + Math.exp(-(((t - 440) / 90) ** 2)));
+  function demandMul(S, p) {
+    const pr = P[p], w = D.WEATHER[S.weather]; let m = pr.pop * (w.cat[pr.cat] || 1) * ((w.prod && w.prod[p]) || 1); if (S.radio.on && S.up.radio && S.radio.ads[p]) m *= 2.6; return m;
+  }
+  function spawnRate(S) {
+    const off = offered(S), n = Object.keys(off).length; if (!n) return 0; let sum = 0, cnt = 0; Object.keys(off).forEach(p => { sum += S.price[p] / ref(S, p); cnt++; }); const idx = sum / cnt;
+    const ap = clamp(1 + (1.05 - idx) * 1.5, .5, 1.35), as = clamp(.45 + .07 * n, .45, 1.5), dow = [1, 1, 1, 1.05, 1.15, 1.4, .85][(S.day - 1) % 7], deko = 1 + Math.min(10, byKind(S, 'deko').length) * .02, size = .85 + S.W * S.H / 216 * .15;
+    const ev = S.ev.find(e => e.k === 'ausflug' && S.t >= e.t0 && S.t <= e.t1) ? 1.5 : 1; const clean = 1 - Math.min(.3, S.messes.length * .04);
+    return (.16 + .016 * S.level) * curve(S.t) * (.55 + S.rep / 100 * .9) * ap * as * dow * deko * size * D.WEATHER[S.weather].spawn * (S.up.neon ? 1.15 : 1) * ev * clean * (S.radio.on && S.up.radio ? 1.05 : 1);
+  }
+  function makeList(S, type) {
+    const T = D.TYPES[type], unl = Object.values(P).filter(p => S.lic[p.cat]), n = ri(T.n[0], T.n[1]), list = [], off = offered(S); let recipe = null;
+    if (R() < T.recipe && S.level >= 2) { const rs = D.RECIPES.filter(r => r.items.filter(i => S.lic[P[i].cat]).length >= 3); if (rs.length) { const r = pick(rs); recipe = { id: r.id, need: r.items.filter(i => S.lic[P[i].cat]) }; recipe.need.forEach(i => list.push({ p: i, q: 1, got: 0 })); } }
+    while (list.length < n && list.length < unl.length) { const p = wpick(unl, x => demandMul(S, x.id) * (T.likes[x.cat] || 1) * (off[x.id] ? 1 : .2) * (list.some(l => l.p === x.id) ? 0 : 1)); if (!p) break; list.push({ p: p.id, q: ri(T.q[0], T.q[1]), got: 0 }); }
+    return { list, recipe };
+  }
+  function spawn(S, forceType) {
+    const music = S.radio.on && S.up.radio ? S.radio.genre : null; const types = Object.keys(D.TYPES).filter(t => !D.TYPES[t].minLvl || S.level >= D.TYPES[t].minLvl);
+    const ausflug = S.ev.some(e => e.k === 'ausflug' && S.t >= e.t0 && S.t <= e.t1), type = forceType || wpick(types, t => D.TYPES[t].w * (music && D.TYPES[t].music === music ? 1.35 : 1) * (ausflug && t === 'stud' ? 4 : 1)); if (!type) return null;
+    let reg = -1; if (S.regs.length && R() < .4) { const cand = S.regs.map((r, i) => i).filter(i => S.regs[i].t === type); const i = wpick(cand, i => 1 + S.regs[i].loy); if (i != null) reg = i; }
+    const name = reg >= 0 ? S.regs[reg].n : pick(D.FIRST) + ' ' + pick(D.LAST)[0] + '.', L = makeList(S, type), door = doorTile(S);
+    const c = { id: S.ccount++, type, name, reg, x: door[0] + .5, y: door[1] + .5, path: [], pi: 0, spd: D.TYPES[type].spd * (.9 + R() * .2), st: 'shop', list: L.list, li: 0, recipe: L.recipe, basket: [], mood: 80, wait: 0, tim: 0, shelf: null, thief: R() < .03 + .002 * S.level && type !== 'krit' && type !== 'sen', stole: 0, hits: 0, miss: 0, reg_q: null, slot: -1, bub: null, bt: 0, svc: 0, pay: 0, found: 0, want: 0 };
+    c.list.forEach(l => { c.want += l.q; }); S.customers.push(c); S.today.spawned++; return c;
+  }
+  function follow(c, d) { if (c.pi >= c.path.length) return true; const tx = c.path[c.pi][0] + .5, ty = c.path[c.pi][1] + .5, dx = tx - c.x, dy = ty - c.y, dist = Math.hypot(dx, dy), step = c.spd * d; if (dist <= step) { c.x = tx; c.y = ty; c.pi++; return c.pi >= c.path.length; } c.x += dx / dist * step; c.y += dy / dist * step; return false; }
+  const bub = (c, e) => { c.bub = e; c.bt = 2.2; };
+  const setPath = (c, p) => { c.path = p || []; c.pi = 0; };
+  function nextItem(S, c) {
+    while (c.li < c.list.length) { const it = c.list[c.li]; const shelves = S.objs.filter(o => isShelf(o) && o.p === it.p && o.qty > 0).sort((a, b) => Math.hypot(a.x - c.x, a.y - c.y) - Math.hypot(b.x - c.x, b.y - c.y)); const o = shelves.find(s => pathToObj(S, c.x, c.y, s)); if (!o) { c.miss += it.q; S.wish[it.p] = (S.wish[it.p] || 0) + 1; bub(c, '❓'); c.mood -= 8; S.today.miss++; c.li++; continue; } c.shelf = o.id; const pth = pathToObj(S, c.x, c.y, o); setPath(c, pth); c.tim = .5 + R() * .8; return true; }
+    return false;
+  }
+  function priceCheck(S, c, o) {
+    const T = D.TYPES[c.type], r = ref(S, o.p), pr = effPrice(S, o), ratio = pr / r, tol = T.tol + (c.reg >= 0 ? S.regs[c.reg].loy * .0006 : 0), riv = rival(S, o.p);
+    if (T.hunt || R() < .3) { if (pr > riv * 1.06 && R() < clamp((pr / riv - 1.06) * 3 + .15, 0, .85)) return { ok: false, why: '🏪' }; }
+    if (ratio > 1 + tol) { if (R() < clamp((ratio - 1 - tol) * 4, 0, 1)) return { ok: false, why: '💸' }; return { ok: true, mul: .6 }; }
+    return { ok: true, mul: ratio < .9 ? 1.5 : 1 };
+  }
+  function heading(S, c) {
+    const regs = S.objs.filter(o => o.k === 'kasse' || o.k === 'sco'); if (!regs.length) { c.st = 'leave'; return; }
+    const best = regs.map(r => ({ r, s: r.q.length * 2.2 + Math.hypot(r.x - c.x, r.y - c.y) * .15 - (operated(S, r) ? 3 : 0) })).sort((a, b) => a.s - b.s)[0].r; best.q.push(c.id); c.reg_q = best.id; c.st = 'queue'; c.slot = -1;
+  }
+  const slotPos = (S, r, i) => { let y = r.y + 1 + i; while (y > r.y + 1 && solid(S, r.x, y)) y--; return [r.x, y]; };
+  function serviceTile(r) { return [r.x, r.y - 1]; }
+  function opRate(S, r) {
+    const pl = S.player; const st = serviceTile(r); if (Math.hypot(pl.x - (st[0] + .5), pl.y - (st[1] + .5)) < 1.25) return 1.6;
+    if (r.k === 'sco') return .55; const s = S.staff.find(x => x.k === 'kasse' && x.reg === r.id && Math.hypot(x.x - (st[0] + .5), x.y - (st[1] + .5)) < .6); return s ? s.rate : 0;
+  }
+  const operated = (S, r) => opRate(S, r) > 0;
+  function leaveFor(S, c, why) { c.st = 'leave'; const d = doorTile(S); setPath(c, path(S, c.x, c.y, d[0], d[1]) || []); if (why) bub(c, why); }
+  function giveBack(S, c) { c.basket.forEach(b => { const sh = S.objs.find(o => isShelf(o) && o.p === b.p && o.qty + b.q <= cap(S, o)); if (sh) sh.qty += b.q; }); c.basket = []; }
+  function finish(S, c, abandoned) {
+    if (abandoned) giveBack(S, c);
+    const T = S.today, T0 = D.TYPES[c.type]; let total = 0, units = 0; c.basket.forEach(b => { total += b.q * b.price; units += b.q; });
+    if (!abandoned && units) { S.money += total; T.rev += total; T.items += units; T.served++; c.basket.forEach(b => { const cg = wholesale(S, b.p) * b.q; T.cogs += cg; T.units[b.p] = (T.units[b.p] || 0) + b.q; T.revBy[b.p] = (T.revBy[b.p] || 0) + b.q * b.price; }); S.xp += 2; }
+    const done = c.list.reduce((a, l) => a + l.got, 0), found = c.want ? done / c.want : 1, qs = 1 - clamp(c.wait / T0.pat, 0, 1), ps = 1 - clamp(c.hits / Math.max(1, c.list.length), 0, 1), clean = 1 - Math.min(1, S.messes.length * .12);
+    let sat = clamp(.45 * found + .2 * qs + .15 * ps + .1 * clean + .1 * clamp(c.mood / 100, 0, 1), 0, 1); if (S.staff.some(s => s.trait === 'freundlich')) sat = Math.min(1, sat + .04); if (abandoned || !units) sat = Math.min(sat, .3);
+    const w = c.type === 'krit' ? 4 : 1; S.rep = clamp(S.rep + (sat * 100 - S.rep) * .045 * w, 5, 100); if (sat > .8) { T.happy++; if (c.reg >= 0) S.regs[c.reg].loy = Math.min(100, S.regs[c.reg].loy + 6); else if (S.regs.length < 120 && R() < .35) S.regs.push({ n: c.name, t: c.type, loy: 10 }); } if (sat < .45 && c.reg >= 0) S.regs[c.reg].loy = Math.max(0, S.regs[c.reg].loy - 8);
+    if (abandoned || !units) T.lost++; if (c.recipe && !abandoned && c.recipe.need.every(i => c.list.some(l => l.p === i && l.got > 0))) { const bonus = Math.round(total * .12); S.money += bonus; T.rev += bonus; T.recipes++; S.xp += 6; bub(c, '🎉'); }
+    c.sat = sat;
+  }
+  function doneShopping(S, c) {
+    if (c.stole) { const near = S.staff.some(s => s.k === 'wache' && Math.hypot(s.x - c.x, s.y - c.y) < 9), catchP = near ? .75 : S.up.kamera ? .4 : .08; if (R() < catchP) { bub(c, '🚔'); S.xp += 4; giveBack(S, c); leaveFor(S, c); return; } S.today.stolen += wholesale(S, c.stole); bub(c, '🤫'); const bi = c.basket.findIndex(b => b.p === c.stole); if (bi >= 0) { c.basket[bi].q--; if (c.basket[bi].q <= 0) c.basket.splice(bi, 1); } c.stole = 0; }
+    if (!c.basket.length) { finish(S, c, true); leaveFor(S, c, c.miss ? '😞' : null); } else heading(S, c);
+  }
+  function tickCustomer(S, c, d) {
+    c.bt = Math.max(0, c.bt - d); if (!c.bt) c.bub = null; const hx = Math.floor(c.x), hy = Math.floor(c.y); if (S.heat[hy * S.W + hx] != null) S.heat[hy * S.W + hx] += d;
+    if (c.st === 'shop') {
+      if (c.shelf == null) { if (c.li < c.list.length && !nextItem(S, c)) c.li = c.list.length; if (c.li >= c.list.length) { doneShopping(S, c); return; } }
+      if (c.shelf != null) {
+        if (!follow(c, d)) return; c.tim -= d; if (c.tim > 0) return; const o = obj(S, c.shelf), it = c.list[c.li]; c.shelf = null;
+        if (o && o.p === it.p && o.qty > 0) { const pc = priceCheck(S, c, o); if (pc.ok) { const q = Math.min(o.qty, Math.max(1, Math.round(it.q * pc.mul))); o.qty -= q; it.got += q; c.basket.push({ p: it.p, q, price: effPrice(S, o) }); if (c.thief && !c.stole && R() < .5) c.stole = it.p; } else { c.hits++; c.mood -= 12; bub(c, pc.why); S.today.miss++; } } else { c.miss += it.q; bub(c, '❓'); c.mood -= 8; S.wish[it.p] = (S.wish[it.p] || 0) + 1; }
+        c.li++; if (R() < .012 * (D.WEATHER[S.weather].mess || 1) && S.messes.length < 12) S.messes.push({ x: Math.floor(c.x), y: Math.floor(c.y), id: S.nid++ });
+      }
+    } else if (c.st === 'queue') {
+      const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c, '😡'); return; } const idx = r.q.indexOf(c.id); c.wait += d; c.mood -= d * (S.up.klima ? .12 : .2); if (idx !== c.slot) { c.slot = idx; const sp = slotPos(S, r, idx); setPath(c, path(S, c.x, c.y, sp[0], sp[1])); }
+      follow(c, d); if (c.wait > D.TYPES[c.type].pat * (S.staff.some(s => s.trait === 'freundlich') ? 1.1 : 1)) { r.q.splice(r.q.indexOf(c.id), 1); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; }
+      if (idx === 0 && c.pi >= c.path.length) { c.st = 'pay'; c.svc = (1.1 + c.basket.reduce((a, b) => a + b.q, 0) * .75); }
+    } else if (c.st === 'pay') {
+      const r = obj(S, c.reg_q); if (!r) { leaveFor(S, c); return; } const rate = opRate(S, r); c.wait += rate > 0 ? d * .3 : d; if (c.wait > D.TYPES[c.type].pat * 1.4) { r.q.shift(); bub(c, '😡'); finish(S, c, true); leaveFor(S, c); return; } c.svc -= d * rate; if (c.svc <= 0) { r.q.shift(); finish(S, c, false); leaveFor(S, c, c.sat > .8 ? '😊' : null); }
+    } else if (c.st === 'leave') { if (follow(c, d)) c.dead = true; }
+  }
+
+  // ---------- Personal ----------
+  function hire(S, k) {
+    const t = D.STAFF[k]; if (S.level < t.lvl) return false; const price = t.buy || 0; if (S.money < price) { note(S, 'Nicht genug Geld.', 'bad'); return false; } S.money -= price;
+    const trait = k === 'robo' ? 'fleissig' : pick(D.TRAITS)[0], s = { id: S.nid++, k, name: k === 'robo' ? 'Bot-' + ri(10, 99) : pick(D.FIRST), trait, x: 2.5, y: S.H - 1.5, path: [], pi: 0, carry: null, task: null, reg: null, rate: 1 * (trait === 'flink' ? 1.25 : 1), spd: 2.4 * (trait === 'flink' ? 1.25 : 1) * (k === 'robo' ? .9 : 1), idle: 0 };
+    S.staff.push(s); return s;
+  }
+  function fire(S, id) { const s = S.staff.find(x => x.id === id); if (!s) return; if (s.carry) S.ramp.push(s.carry); S.staff = S.staff.filter(x => x !== s); }
+  function sfollow(s, d) { if (s.pi >= s.path.length) return true; const tx = s.path[s.pi][0] + .5, ty = s.path[s.pi][1] + .5, dx = tx - s.x, dy = ty - s.y, dist = Math.hypot(dx, dy), step = s.spd * d; if (dist <= step) { s.x = tx; s.y = ty; s.pi++; return s.pi >= s.path.length; } s.x += dx / dist * step; s.y += dy / dist * step; return false; }
+  function tickStaff(S, s, d) {
+    if (s.k === 'kasse') { const mine = S.objs.filter(o => o.k === 'kasse'); if (!obj(S, s.reg)) s.reg = null; if (!s.reg) { const free = mine.find(r => !S.staff.some(x => x.reg === r.id)); if (free) s.reg = free.id; } if (s.reg) { const r = obj(S, s.reg), st = serviceTile(r); if (!s.path.length && Math.hypot(s.x - (st[0] + .5), s.y - (st[1] + .5)) > .4) setPath(s, path(S, s.x, s.y, st[0], st[1]) || []); sfollow(s, d); } return; }
+    if (s.k === 'putz') { if (!s.path.length || s.pi >= s.path.length) { const m = S.messes.slice().sort((a, b) => Math.hypot(a.x - s.x, a.y - s.y) - Math.hypot(b.x - s.x, b.y - s.y))[0]; if (m && !s.task) { const p = path(S, s.x, s.y, m.x, m.y); if (p) { setPath(s, p); s.task = m; } } else if (s.task && s.pi >= s.path.length) { S.messes = S.messes.filter(x => x !== s.task && x.id !== s.task.id); s.task = null; s.path = []; } } sfollow(s, d); if (s.trait === 'schusselig' && R() < .0008 && S.messes.length < 12) S.messes.push({ x: Math.floor(s.x), y: Math.floor(s.y), id: S.nid++ }); return; }
+    if (s.k === 'wache') { const door = doorTile(S); if (!s.path.length && Math.hypot(s.x - 3.5, s.y - (S.H - 2.5)) > .6) setPath(s, path(S, s.x, s.y, 3, S.H - 2) || []); sfollow(s, d); return; }
+    // Regalauffüller / Bot
+    if (s.path.length && s.pi < s.path.length) { sfollow(s, d); return; } s.path = []; s.pi = 0;
+    if (s.task && s.task.t === 'pick') { const b = s.task.box, i = S.ramp.indexOf(b); if (i >= 0) { S.ramp.splice(i, 1); s.carry = b; flush(S); } s.task = null; }
+    else if (s.task && s.task.t === 'drop') { const o = obj(S, s.task.shelf); if (o && s.carry && o.p === s.carry.p) addStock(S, o, s.carry); if (s.carry && s.carry.n <= 0) s.carry = null; s.task = null; }
+    if (s.task) return; s.idle += d; if (s.idle < .4) return; s.idle = 0;
+    if (s.carry) { const o = S.objs.filter(x => isShelf(x) && x.p === s.carry.p && x.qty < cap(S, x)).sort((a, b) => a.qty / cap(S, a) - b.qty / cap(S, b))[0]; if (o) { const p = pathToObj(S, s.x, s.y, o); if (p) { setPath(s, p); s.task = { t: 'drop', shelf: o.id }; return; } } S.ramp.push(s.carry); s.carry = null; return; }
+    const ramp = byKind(S, 'ramp')[0]; if (!ramp || !S.ramp.length) return; let best = null, bs = 9; S.ramp.forEach(b => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p && x.qty < cap(S, x)).sort((a, c) => a.qty / cap(S, a) - c.qty / cap(S, c))[0]; if (o) { const r = o.qty / cap(S, o); if (r < bs && r < .85) { bs = r; best = b; } } });
+    if (best) { const p = pathToObj(S, s.x, s.y, ramp); if (p) { setPath(s, p); s.task = { t: 'pick', box: best }; } }
+  }
+  function addStock(S, o, box) { const room = cap(S, o) - o.qty; if (room <= 0) return 0; const mv = Math.min(room, box.n); o.age = (o.age * o.qty + (box.age || 0) * mv) / (o.qty + mv); o.qty += mv; box.n -= mv; return mv; }
+
+  // ---------- Spieler ----------
+  function movePlayer(S, d) {
+    const pl = S.player, sp = 4.2; let vx = pl.vx, vy = pl.vy; const l = Math.hypot(vx, vy); if (l > 1) { vx /= l; vy /= l; }
+    const mv = (dx, dy) => { const nx = pl.x + dx, ny = pl.y + dy, r = .28; for (const [cx, cy] of [[nx - r, ny - r], [nx + r, ny - r], [nx - r, ny + r], [nx + r, ny + r]]) if (solid(S, Math.floor(cx), Math.floor(cy))) return false; pl.x = nx; pl.y = ny; return true; };
+    mv(vx * sp * d, 0); mv(0, vy * sp * d);
+  }
+  const rectDist = (px, py, o) => { const dx = Math.max(o.x - px, 0, px - (o.x + o.w)), dy = Math.max(o.y - py, 0, py - (o.y + o.h)); return Math.hypot(dx, dy); };
+  const carryCap = S => S.up.wagen ? 3 : 1;
+  function context(S) {
+    const pl = S.player, near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.2);
+    if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => rectDist(pl.x, pl.y, a) - rectDist(pl.x, pl.y, c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
+    const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: '🧽 Pfütze wischen' };
+    const rp = near.find(o => o.k === 'ramp'); if (rp) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.length) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
+    return null;
+  }
+  function act(S) {
+    const c = context(S); if (!c) return null; const pl = S.player;
+    if (c.a === 'stock') { const b = pl.carry[0]; if (!c.o.p || (c.o.qty === 0 && c.o.p !== b.p)) { c.o.p = b.p; c.o.age = 0; c.o.disc = false; } addStock(S, c.o, b); if (b.n <= 0) pl.carry.shift(); }
+    else if (c.a === 'clean') { S.messes = S.messes.filter(m => m !== c.m); S.xp += 1; }
+    else if (c.a === 'pick') { let bi = 0, bs = 9; S.ramp.forEach((b, i) => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p).sort((a, cc) => a.qty / cap(S, a) - cc.qty / cap(S, cc))[0]; const r = o ? o.qty / cap(S, o) : 1.5; if (r < bs) { bs = r; bi = i; } }); const b = S.ramp.splice(bi, 1)[0]; if (b) pl.carry.push(b); flush(S); }
+    else if (c.a === 'back') { S.ramp.push(pl.carry.pop()); }
+    return c;
+  }
+
+  // ---------- Bauen, Preise, Geld ----------
+  function layoutOK(S) {
+    rebuild(S); const door = doorTile(S), start = [door[0], door[1] - 1]; if (solid(S, start[0], start[1])) return false; const W = S.W, H = S.H, seen = new Uint8Array(W * H), st = [start[1] * W + start[0]]; seen[st[0]] = 1;
+    while (st.length) { const c = st.pop(), cx = c % W, cy = (c / W) | 0; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, ny = cy + dy; if (solid(S, nx, ny) || seen[ny * W + nx]) continue; seen[ny * W + nx] = 1; st.push(ny * W + nx); } }
+    return S.objs.every(o => accessTiles(S, o).some(a => seen[a[1] * W + a[0]])) && S.objs.filter(o => o.k === 'kasse' || o.k === 'sco').every(r => { const st2 = serviceTile(r); return !solid(S, r.x, r.y + 1) && (r.k === 'sco' || (!solid(S, st2[0], st2[1]) && seen[st2[1] * W + st2[0]])); });
+  }
+  function place(S, k, x, y, rot, fromInv) {
+    const t = D.OBJ[k]; if (!t || t.fixed) return null; if (!fromInv && (S.level < t.lvl || S.money < t.price)) return null; const w = rot ? t.h : t.w, h = rot ? t.w : t.h;
+    if (x < 1 || y < 1 || x + w > S.W - 1 || y + h > S.H - 1) return null; if (y + h > S.H - 2 && x <= 3 && x + w > 1) return null;
+    for (const o of S.objs) if (x < o.x + o.w && x + w > o.x && y < o.y + o.h && y + h > o.y) return null; if (S.messes.some(m => m.x >= x && m.x < x + w && m.y >= y && m.y < y + h)) S.messes = S.messes.filter(m => !(m.x >= x && m.x < x + w && m.y >= y && m.y < y + h));
+    const pl = S.player; if (pl.x > x - .3 && pl.x < x + w + .3 && pl.y > y - .3 && pl.y < y + h + .3) return null;
+    const o = { id: S.nid++, k, x, y, w, h, p: null, qty: 0, age: 0, disc: false, q: [], svc: 0 }; S.objs.push(o); if (!layoutOK(S)) { S.objs.pop(); rebuild(S); return null; }
+    if (fromInv) { const it = fromInv; if (it.p && fits(o, it.p)) { o.p = it.p; o.qty = Math.min(it.qty, cap(S, o)); o.age = it.age; } } else S.money -= t.price; return o;
+  }
+  function pickUp(S, id) {
+    const o = obj(S, id); if (!o || D.OBJ[o.k].fixed) return false; if ((o.k === 'kasse' || o.k === 'sco') && (o.q.length || S.customers.some(c => c.reg_q === o.id))) return false; S.objs = S.objs.filter(x => x !== o); S.staff.forEach(s => { if (s.reg === id) s.reg = null; });
+    S.inv.push({ k: o.k, p: o.p, qty: o.qty, age: o.age }); rebuild(S); return true;
+  }
+  function sell(S, id) { const o = obj(S, id); if (!o || D.OBJ[o.k].fixed || !pickUp(S, id)) return false; S.inv.pop(); S.money += Math.round(D.OBJ[o.k].price * .6); if (o.qty) S.ramp.push({ p: o.p, n: o.qty, age: o.age }); return true; }
+  function setPrice(S, p, c) { S.price[p] = clamp(Math.round(c), Math.max(5, Math.round(wholesale(S, p) * .5)), P[p].ref * 4); }
+  function assign(S, id, p) { const o = obj(S, id); if (!o || !isShelf(o) || (p && !fits(o, p)) || (p && !S.lic[P[p].cat])) return false; if (o.qty > 0 && o.p !== p) { S.ramp.push({ p: o.p, n: o.qty, age: o.age }); o.qty = 0; } o.p = p; o.age = 0; o.disc = false; return true; }
+  function buyLic(S, cat) { const c = D.CATS[cat]; if (S.lic[cat] || S.level < c.lvl || S.money < c.cost) return false; S.money -= c.cost; S.lic[cat] = true; return true; }
+  function buyUp(S, id) { const u = D.UPGRADES.find(x => x.id === id); if (!u || S.up[id] || S.level < u.lvl || S.money < u.price) return false; S.money -= u.price; S.up[id] = true; return true; }
+  function expand(S) { const n = D.EXPAND[S.exp + 1]; if (!n || S.level < n.lvl || S.money < n.price) return false; S.money -= n.price; S.exp++; const oh = S.H, ow = S.W; S.W = n.W; S.H = n.H; const heat = new Array(S.W * S.H).fill(0); S.heat = heat; rebuild(S); S.player.y = Math.min(S.player.y, S.H - 2); return true; }
+  const loanMax = S => 300000 + 50000 * S.level;
+  function borrow(S, a) { if (S.loan + a > loanMax(S)) return false; S.loan += a; S.money += a; return true; }
+  function repay(S, a) { a = Math.min(a, S.loan, S.money); if (a <= 0) return false; S.loan -= a; S.money -= a; return true; }
+
+  // ---------- Hauptschritt ----------
+  function openShop(S) { if (S.phase !== 'prep') return false; if (!S.objs.some(o => o.k === 'kasse' || o.k === 'sco')) { note(S, 'Ohne Kasse kein Geschäft!', 'bad'); return false; } if (!Object.keys(offered(S)).length) { note(S, 'Fülle erst ein Regal mit Ware.', 'bad'); return false; } S.phase = 'open'; S.t = 0; S.spawnAcc = 0; return true; }
+  function tick(S, d) {
+    S.simT += d; movePlayer(S, d);
+    if (S.phase === 'open') {
+      S.t += d; S.spawnAcc += spawnRate(S) * d; const cap0 = 10 + 2 * S.level; while (S.spawnAcc >= 1) { S.spawnAcc -= 1; if (S.customers.length < cap0) spawn(S); }
+      S.ev.forEach(e => { if (e.k === 'promi' && !e.done && S.t >= e.t0) { e.done = 1; const c = spawn(S, 'krit'); if (c) note(S, '🧐 Eine Testerin ist im Laden – gib dein Bestes!', 'info'); } if (e.k === 'stromausfall') { const on = S.t >= e.t0 && S.t <= e.t1; if (on && !S.blackout) { S.blackout = true; note(S, '⚡ Stromausfall! Kühlung ist aus.', 'bad'); } if (!on && S.blackout && S.t > e.t1) { S.blackout = false; if (!S.up.notstrom) { S.objs.forEach(o => { if (isShelf(o) && o.p && (o.k === 'kuehl' || o.k === 'frost')) { const l = Math.round(o.qty * .4); o.qty -= l; S.today.stolen += l * wholesale(S, o.p); } }); note(S, 'Kühlware ist teilweise verdorben.', 'bad'); } else note(S, 'Notstrom hat alles gerettet.', 'good'); } } });
+      if (S.t >= DAYLEN) { S.phase = 'closing'; S.closeT = 0; note(S, 'Feierabend! Letzte Kunden werden bedient.', 'info'); }
+    }
+    if (S.phase === 'closing') { S.closeT += d; if (S.closeT > 40) S.customers.forEach(c => { if (c.st !== 'leave' && c.st !== 'pay') { const r = obj(S, c.reg_q); if (r) r.q = r.q.filter(i => i !== c.id); finish(S, c, true); leaveFor(S, c); } }); }
+    S.orders.some(o => o.when === 'express') && deliver(S, 'express'); if (S.backlog.length) flush(S);
+    while (S.xp >= lvlNeed(S.level) && S.level < 20) { S.level++; note(S, `⭐ Stufe ${S.level} erreicht! Neue Möglichkeiten im Menü.`, 'good'); }
+    S.customers.forEach(c => tickCustomer(S, c, d)); S.customers = S.customers.filter(c => !c.dead); S.staff.forEach(s => tickStaff(S, s, d));
+    if (S.phase === 'closing' && !S.customers.length) endDay(S);
+  }
+  function step(S, dt) { if (S.phase === 'summary') return; const n = Math.max(1, Math.ceil(dt / .1)), d = dt / n; for (let i = 0; i < n; i++) { tick(S, d); if (S.phase === 'summary') break; } }
+  const clock = S => { const m = Math.floor(8 * 60 + Math.min(S.t, DAYLEN) * MIN_PER_SEC); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  const save = S => JSON.stringify(S, (k, v) => k[0] === '_' ? undefined : v);
+  const load = js => { const S = JSON.parse(js); rebuild(S); return S; };
+  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, DAYLEN, RAMP_MAX, DOW, endDay, note, addStock };
+})();
+if (typeof module !== 'undefined') module.exports = Sim;
