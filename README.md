@@ -19,7 +19,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
-| AnMaCha Bunte Insel – Kinderspiel mit offener Welt: laufen, Auto, Motorrad, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Eiswagen & Zug (Three.js, Touch & Tastatur, Sounds werden im Browser erzeugt) | [`anmacha-bunte-insel/`](anmacha-bunte-insel/) |
+| Bunte Insel – Kinderspiel mit offener Welt: laufen, Auto, Motorrad, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Eiswagen & Zug (Three.js, Touch & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen

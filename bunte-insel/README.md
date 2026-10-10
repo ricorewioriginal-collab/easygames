@@ -1,4 +1,4 @@
-# AnMaCha Bunte Insel
+# Bunte Insel
 
 Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine Bibliothek, keine Bilder/Sounds zum Laden – Sounds und Musik werden im Browser erzeugt).
 
@@ -13,8 +13,8 @@ Die ganze statische Welt ist ein einziges gebündeltes Mesh mit Vertexfarben (ca
 ## Starten / Testen
 ```bash
 python3 -m http.server 8080            # im Repo-Hauptordner
-# http://localhost:8080/anmacha-bunte-insel/
+# http://localhost:8080/bunte-insel/
 npm i -D playwright                    # einmalig, nur für den Test
-BASE=http://localhost:8080 node anmacha-bunte-insel/tests/e2e.mjs   # optional THREE=/pfad/three.min.js für Offline
+BASE=http://localhost:8080 node bunte-insel/tests/e2e.mjs   # optional THREE=/pfad/three.min.js für Offline
 ```
 Dateien: `js/util.js` (Geometrie-Bündelung, Figur, Partikel), `js/audio.js`, `js/world.js` (Insel, Straßen, Schienen, Kollision), `js/vehicles.js` (Fahrzeuge, Zug), `js/main.js` (Steuerung, Kamera, Missionen, Figuren, Tiere, Verkehr).

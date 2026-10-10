@@ -1,6 +1,6 @@
 /* Browser-Test der Bunten Insel: alle Missionen, Zug, Löschen, Sterne, Ein-/Aussteigen, Stabilität.
    Voraussetzung: laufender Webserver im Repo-Hauptordner und Playwright (npm i -D playwright).
-   Aufruf: BASE=http://localhost:8080 node anmacha-bunte-insel/tests/e2e.mjs   (optional THREE=/pfad/zu/three.min.js für Offline-Betrieb) */
+   Aufruf: BASE=http://localhost:8080 node bunte-insel/tests/e2e.mjs   (optional THREE=/pfad/zu/three.min.js für Offline-Betrieb) */
 import { chromium } from 'playwright';
 const BASE = process.env.BASE || 'http://localhost:8080';
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
@@ -10,7 +10,7 @@ page.on('pageerror', e => errs.push('PAGEERR ' + e.message + '\n' + (e.stack||''
 page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED/.test(m.text())) errs.push(m.type()+': ' + m.text()); });
 if (process.env.THREE) await page.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
 await page.route('**/fonts.googleapis.com/**', r => r.abort());
-await page.goto(BASE + '/anmacha-bunte-insel/index.html');
+await page.goto(BASE + '/bunte-insel/index.html');
 await page.waitForFunction(() => window.__bi, null, { timeout: 30000 });
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 await page.click('#bStart'); await page.waitForTimeout(400);
