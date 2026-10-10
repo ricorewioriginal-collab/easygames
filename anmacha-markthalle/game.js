@@ -4,7 +4,8 @@
   const D = Data, P = D.PRODUCTS, $ = id => document.getElementById(id), fmt = D.fmt, KEY = 'amh_save_v1';
   const now = () => performance.now(); let hintT = 0, S = null, spd = 1, mode = null, cardId = null, chooser = false, panel = null, tabCat = 'obst', heatOn = false, snd = true, last = performance.now(), hudT = 0, prevMoney = 0, saveT = 0, ghost = null, tick = 0;
   try { snd = localStorage.getItem('amh_snd') !== '0'; } catch (e) {}
-  const cv = $('cv'), ctx = cv.getContext('2d'); let cw = 0, ch = 0, dpr = 1, T = 32, ox = 0, oy = 0, floor = null, floorKey = '';
+  const cv = $('cv'), cv3 = $('cv3'), ctx = cv.getContext('2d'); let use3d = false, topView = false, lastDt = .016, focus = null;
+  try { if (typeof View3D !== 'undefined' && View3D && View3D.init(cv3)) { use3d = true; document.body.classList.add('v3', 'fps'); } } catch (e) { use3d = false; } let cw = 0, ch = 0, dpr = 1, T = 32, ox = 0, oy = 0, floor = null, floorKey = '';
   const TC = { fam: '#ff9a1f', stud: '#8b5cf6', sen: '#ffb3c7', job: '#3ba0ff', spar: '#43e08a', krit: '#ff2d95' };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -20,7 +21,7 @@
   function radioLoop() { clearInterval(radioT); const gn = D.GENRES[S.radio.genre]; let i = 0; radioT = setInterval(() => { if (!snd || !S || !S.up.radio || !S.radio.on || S.phase === 'summary' || document.hidden || spd === 0 || panel) return; const n = gn.notes[i++ % gn.notes.length]; tone(220 * Math.pow(2, n / 12), .35, 'triangle', .025); if (i % 3 === 0) tone(110 * Math.pow(2, gn.notes[0] / 12), .3, 'sine', .03); }, 60000 / gn.bpm); }
   // ---------- Größe / Boden ----------
   function resize() {
-    if (!S) return; dpr = Math.min(2, devicePixelRatio || 1); const r = cv.getBoundingClientRect(); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+    if (!S) return; dpr = Math.min(2, devicePixelRatio || 1); const r = $('stage').getBoundingClientRect(); cw = r.width; ch = r.height; if (use3d) { View3D.resize(cw, ch); return; } cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
     T = Math.max(14, Math.min(cw / (S.W + .4), ch / (S.H + 1.1))); ox = (cw - T * S.W) / 2; oy = (ch - T * (S.H + .9)) / 2 + 2; floorKey = '';
   }
   addEventListener('resize', resize); new ResizeObserver(resize).observe($('stage'));
@@ -34,6 +35,7 @@
   const rr = (g, x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
   const em = (g, e, x, y, s) => { g.font = `${s}px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(e, x, y); };
   function draw(now) {
+    if (use3d) { if (S && cw && ch) View3D.render(S, lastDt, now, { heat: heatOn, ghost, place: mode && mode.t === 'place' ? mode : null }); return; }
     const g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, cw, ch); if (!S || !cw || !ch) return; const key = S.W + 'x' + S.H + '@' + T.toFixed(1) + cw; if (key !== floorKey) buildFloor(); g.drawImage(floor, 0, 0, cw, ch);
     if (heatOn) { let mx = 1; S.heat.forEach(h => { if (h > mx) mx = h; }); for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++) { const h = S.heat[y * S.W + x]; if (h > 0.2) { g.fillStyle = `rgba(255,${Math.round(160 - 140 * h / mx)},30,${Math.min(.75, .15 + .6 * h / mx)})`; g.fillRect(ox + x * T, oy + y * T, T, T); } } }
     S.objs.forEach(o => drawObj(g, o)); S.messes.forEach(m => em(g, '💧', ox + (m.x + .5) * T, oy + (m.y + .5) * T, T * .6));
@@ -65,28 +67,38 @@
   }
   // ---------- Eingabe ----------
   const keys = {}; let joy = { x: 0, y: 0 }, touch = false;
-  addEventListener('keydown', e => { if (panel || !S) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if (k === 'e' || k === ' ' || k === 'enter') doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'escape') { mode = null; showCard(null); } if (k === 'p') setSpd(spd ? 0 : 1); });
+  addEventListener('keydown', e => { if (panel || !S) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if (k === 'e' || k === ' ' || k === 'enter') doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'v') toggleView(); if (k === 'f') inspect(cw / 2, ch / 2); if (k === 'escape') { mode = null; showCard(null); } if (k === 'p') setSpd(spd ? 0 : 1); });
   addEventListener('keyup', e => { delete keys[e.key.toLowerCase()]; });
-  function doAct() { const c = Sim.act(S); if (c) sfx.ok(); else sfx.bad(); }
+  function doAct() { const c = Sim.act(S, focus); if (c) sfx.ok(); else sfx.bad(); }
   $('act').addEventListener('pointerdown', e => { e.preventDefault(); doAct(); });
   const stick = $('stick'), knob = $('knob'); let sid = null;
   const mv = e => { const r = stick.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; let dx = (e.clientX - cx) / (r.width / 2), dy = (e.clientY - cy) / (r.height / 2); const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; } joy.x = Math.abs(dx) < .15 ? 0 : dx; joy.y = Math.abs(dy) < .15 ? 0 : dy; knob.style.transform = `translate(${dx * r.width * .3}px,${dy * r.height * .3}px)`; };
-  stick.addEventListener('pointerdown', e => { sid = e.pointerId; stick.setPointerCapture(e.pointerId); mv(e); e.preventDefault(); });
+  stick.addEventListener('pointerdown', e => { sid = e.pointerId; try { stick.setPointerCapture(e.pointerId); } catch (x) {} mv(e); e.preventDefault(); });
   stick.addEventListener('pointermove', e => { if (e.pointerId === sid) mv(e); });
   ['pointerup', 'pointercancel'].forEach(n => stick.addEventListener(n, e => { if (e.pointerId === sid) { sid = null; joy.x = joy.y = 0; knob.style.transform = ''; } }));
   addEventListener('touchstart', () => { if (!touch) { touch = true; document.body.classList.add('touch'); } }, { passive: true });
   const tileAt = e => { const r = cv.getBoundingClientRect(); return [Math.floor((e.clientX - r.left - ox) / T), Math.floor((e.clientY - r.top - oy) / T)]; };
   const objAt = (x, y) => S.objs.find(o => x >= o.x && x < o.x + o.w && y >= o.y && y < o.y + o.h);
-  cv.addEventListener('pointermove', e => { if (mode && mode.t === 'place') { const [x, y] = tileAt(e); ghost = { x, y }; } });
-  cv.addEventListener('pointerdown', e => {
-    if (!S || panel) return; const [x, y] = tileAt(e); ghost = { x, y };
-    if (mode) {
+  function buildAt(x, y) {
+    {
       if (mode.t === 'place') { const inv = mode.inv != null ? S.inv[mode.inv] : null; const o = Sim.place(S, mode.k, x, y, mode.rot, inv); if (o) { if (inv) { S.inv.splice(mode.inv, 1); mode = null; } sfx.ok(); if (!inv && (S.money < D.OBJ[mode.k].price)) mode = null; } else { sfx.bad(); toast('Hier geht das nicht (Platz, Wege oder Geld?).'); } showModeCard(); }
       else { const o = objAt(x, y); if (o) { const ok = mode.t === 'sell' ? Sim.sell(S, o.id) : Sim.pickUp(S, o.id); if (ok) { sfx.ok(); if (mode.t === 'pick') { mode = null; toast('Aufgehoben – unter „Bauen“ wieder platzieren.'); } } else { sfx.bad(); toast('Das lässt sich nicht aufheben.'); } showModeCard(); } }
-      return;
     }
+  }
+  cv.addEventListener('pointermove', e => { if (mode && mode.t === 'place') { const [x, y] = tileAt(e); ghost = { x, y }; } });
+  cv.addEventListener('pointerdown', e => {
+    if (!S || panel) return; const [x, y] = tileAt(e); ghost = { x, y }; if (mode) { buildAt(x, y); return; }
     const o = objAt(x, y); showCard(o && o.k !== 'deko' ? o.id : null);
   });
+  // ---- 3D: Blick, Antippen, Ansicht ----
+  const inspect = (px, py) => { if (!use3d || !S || panel) return; if (mode) { return; } const h = View3D.pick(px, py, topView ? 200 : 7), o = h ? Sim.obj(S, h.id) : null; showCard(o && o.k !== 'deko' ? o.id : null); };
+  function toggleView() { topView = !topView; $('bView').textContent = topView ? '🚶 Ego-Ansicht' : '👁️ Vogelperspektive'; syncView(); }
+  function syncView() { if (!use3d) return; const top = topView || !!mode; View3D.setTop(top); document.body.classList.toggle('fps', !top); if (top && document.pointerLockElement) document.exitPointerLock(); }
+  let drag = null;
+  cv3.addEventListener('pointerdown', e => { if (!S || panel) return; if (e.pointerType === 'mouse') { if (View3D.st.top) { if (mode) { const t = View3D.floorAt(e.clientX - cv3.getBoundingClientRect().left, e.clientY - cv3.getBoundingClientRect().top); if (t) buildAt(t[0], t[1]); } else inspect(e.clientX - cv3.getBoundingClientRect().left, e.clientY - cv3.getBoundingClientRect().top); } else if (document.pointerLockElement !== cv3) { try { cv3.requestPointerLock(); } catch (x) {} } else inspect(cw / 2, ch / 2); return; } drag = { id: e.pointerId, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now() }; try { cv3.setPointerCapture(e.pointerId); } catch (x) {} });
+  cv3.addEventListener('pointermove', e => { const r = cv3.getBoundingClientRect(); if (mode && mode.t === 'place' && View3D.st.top) { const t = View3D.floorAt(e.clientX - r.left, e.clientY - r.top); if (t) ghost = { x: t[0], y: t[1] }; } if (e.pointerType === 'mouse') { if (document.pointerLockElement === cv3) View3D.look(e.movementX * .0024, e.movementY * .0024); return; } if (drag && e.pointerId === drag.id && !View3D.st.top) { View3D.look((e.clientX - drag.x) * .006, (e.clientY - drag.y) * .006); drag.x = e.clientX; drag.y = e.clientY; } });
+  ['pointerup', 'pointercancel'].forEach(n => cv3.addEventListener(n, e => { if (!drag || e.pointerId !== drag.id) return; const r = cv3.getBoundingClientRect(), moved = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy); if (n === 'pointerup' && moved < 10 && performance.now() - drag.t < 350) { const px = e.clientX - r.left, py = e.clientY - r.top; if (mode && View3D.st.top) { const t = View3D.floorAt(px, py); if (t) { ghost = { x: t[0], y: t[1] }; buildAt(t[0], t[1]); } } else inspect(px, py); } drag = null; }));
+  $('bView').onclick = () => toggleView();
   // ---------- HUD ----------
   function setSpd(v) { spd = v; ['s0', 's1', 's2', 's3'].forEach((id, i) => $(id).classList.toggle('on', [0, 1, 2, 4][i] === v)); }
   $('s0').onclick = () => setSpd(0); $('s1').onclick = () => setSpd(1); $('s2').onclick = () => setSpd(2); $('s3').onclick = () => setSpd(4);
@@ -100,8 +112,10 @@
     const b = $('bOpen'); if (S.phase === 'prep') { b.textContent = 'LADEN ÖFFNEN'; b.className = 'btn go'; b.disabled = false; } else if (S.phase === 'open') { b.textContent = 'FEIERABEND'; b.className = 'btn stop'; b.disabled = false; } else { b.textContent = 'Schluss …'; b.disabled = true; }
     if (S.money > prevMoney + 20) sfx.coin(); prevMoney = S.money; if (S.log.length && S.log[S.log.length - 1] !== lastLog) { lastLog = S.log[S.log.length - 1]; toast(lastLog.t); }
     if (S.phase === 'open' && now() - hintT > 25000 && S.customers.some(c => c.st === 'pay' && c.wait > 6)) { const r = S.objs.find(o => o.k === 'kasse'); if (r && !S.staff.some(x => x.k === 'kasse') && Math.hypot(S.player.x - r.x - .5, S.player.y - r.y + .5) > 1.3) { hintT = now(); toast('Kunden warten! Stell dich auf das Feld über der Kasse 💶'); } }
-    const c = Sim.context(S), a = $('act'); a.textContent = c ? c.label : '✋ Aktion'; a.classList.toggle('idle', !c);
+    if (use3d) { const hh = View3D.st.top ? null : View3D.pick(cw / 2, ch / 2, 3.6); focus = hh ? Sim.obj(S, hh.id) : null; const tp = $('tip'), tt = focus && !mode ? tipText(focus) : ''; tp.hidden = !tt; if (tt) tp.textContent = tt; }
+    const c = Sim.context(S, focus), a = $('act'); a.textContent = c ? c.label : '✋ Aktion'; a.classList.toggle('idle', !c);
   }
+  function tipText(o) { const t = D.OBJ[o.k]; if (o.k === 'ramp') return `📦 Rampe · ${S.ramp.length} Kartons`; if (o.k === 'kasse' || o.k === 'sco') return `${t.e} ${t.name} · Schlange ${o.q.length}`; if (D.OBJ[o.k].cap > 0) return o.p ? `${P[o.p].e} ${P[o.p].name} · ${o.qty}/${Sim.cap(S, o)} · ${fmt(Sim.effPrice(S, o))}` : `${t.e} ${t.name} · frei – Klick: Ware wählen`; return `${t.e} ${t.name}`; }
   // ---------- Karte (Regal/Kasse antippen) ----------
   function showCard(id) { cardId = id; chooser = false; renderCard(); }
   function showModeCard() { renderCard(); }
@@ -128,7 +142,7 @@
   const tabs = (items, cur, act) => `<div class="tabs">${items.map(([k, n]) => `<button class="btn glass ${k === cur ? 'on' : ''}" data-a="${act}" data-v="${k}">${n}</button>`).join('')}</div>`;
   const stock = p => { let q = 0; S.objs.forEach(o => { if (o.p === p) q += o.qty; }); const bx = S.ramp.concat(S.backlog).filter(b => b.p === p).length, ord = S.orders.filter(o => o.p === p).reduce((a, o) => a + o.boxes, 0); return { q, bx, ord }; };
   const R = {
-    hilfe() { return `<div class="glass it"><b>So spielst du</b><small>1. <b>Bewegen:</b> WASD/Pfeile oder Joystick. 2. <b>Kartons:</b> Geh zur 📦 Rampe oben links, drücke die Aktionstaste (E / Knopf), laufe zu einem Regal und drücke sie wieder – so füllst du es. 3. <b>Kasse:</b> Stell dich auf das Feld über der 💶 Kasse, dann kassierst du doppelt so schnell. 4. <b>Bestellen:</b> Im 🛒 Markt – Lieferung morgen früh. 5. <b>Preise:</b> Tippe ein Regal an oder nutze 🏷️ Preise. Marktpreis +8 % ist fair, teurer vertreibt Kunden, Billigo gegenüber lockt Schnäppchenjäger. 6. <b>Öffnen:</b> Mit „Laden öffnen“ startet der Tag (12 Minuten Ladenzeit).</small></div>
+    hilfe() { return `<div class="glass it"><b>So spielst du</b><small>1. <b>Bewegen &amp; Umsehen (Ego-Ansicht):</b> PC: ins Bild klicken, dann Maus = umsehen, WASD = laufen, Esc = Maus freigeben. Handy: Joystick links, rechts ins Bild ziehen = umsehen, antippen = Info. 2. <b>Kartons:</b> Geh zur 📦 Warenannahme (Rampe) hinten links, drücke E (Handy: Aktionsknopf), schau auf ein Regal und drücke E erneut – so füllst du es. F oder Klick auf ein Regal öffnet Preise &amp; Infos. V wechselt zur Vogelperspektive. 3. <b>Kasse:</b> Stell dich auf das Feld über der 💶 Kasse, dann kassierst du doppelt so schnell. 4. <b>Bestellen:</b> Im 🛒 Markt – Lieferung morgen früh. 5. <b>Preise:</b> Tippe ein Regal an oder nutze 🏷️ Preise. Marktpreis +8 % ist fair, teurer vertreibt Kunden, Billigo gegenüber lockt Schnäppchenjäger. 6. <b>Öffnen:</b> Mit „Laden öffnen“ startet der Tag (12 Minuten Ladenzeit).</small></div>
       <div class="glass it" style="margin-top:8px"><b>Das ist neu</b><small>📻 Eigener Radiosender (Musik &amp; Werbung lenken Kunden) · 🏪 Preis-Duell mit dem Konkurrenten „Billigo“ · 🧑‍🍳 Kunden mit Rezept-Einkäufen (Bonus bei vollständigem Set) · ⭐ Stammkunden mit Namen &amp; Treue · 🔥 Laufweg-Heatmap für dein Layout · 🌦️ Wetter-Vorhersage &amp; Ereignisse · 🏷️ Reduzieren statt wegwerfen · 🤖 Regalbot-Mitarbeiter mit Eigenarten · 🥐 Backstation (frische Backwaren jeden Morgen, lockt mit Duft) · 🏗️ Lager-Regale · 🤳 Online-Bewertungen &amp; Influencerinnen · 🏆 Erfolge.</small></div>`; },
     markt() {
       const cat = D.CATS[tabCat], lock = !S.lic[tabCat]; let h = tabs(Object.keys(D.CATS).map(c => [c, D.CATS[c].e + ' ' + D.CATS[c].name + (S.lic[c] ? '' : ' 🔒')]), tabCat, 'cat');
@@ -178,7 +192,7 @@
     menu() { return `<div class="grid"><div class="glass it"><b>💾 Speichern</b><small>Es wird auch automatisch am Tagesende gespeichert.</small><div class="row"><button class="btn sm go" data-a="save">Jetzt speichern</button></div></div><div class="glass it"><b>🔊 Ton</b><div class="row"><button class="btn sm" data-a="snd">${snd ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>❓ Hilfe</b><div class="row"><button class="btn sm" data-a="hilfe">Anleitung</button></div></div><div class="glass it"><b>🗑️ Neues Spiel</b><small>Löscht deinen Spielstand.</small><div class="row"><button class="btn sm stop" data-a="reset">Neu beginnen</button></div></div></div>`; }
   };
   const TITLES = { hilfe: '❓ Anleitung', markt: '🛒 Großhandel', bauen: '🔧 Bauen', preise: '🏷️ Preise', staff: '👥 Personal', radio: '📻 Markt-Funk 24', up: '⭐ Ausbau', stat: '📊 Zahlen', ziele: '🎯 Ziele', menu: '☰ Menü' };
-  function openPanel(n) { panel = n; mode = null; showCard(null); $('pt').textContent = TITLES[n]; $('pb').innerHTML = R[n](); $('panel').hidden = false; }
+  function openPanel(n) { try { document.exitPointerLock && document.exitPointerLock(); } catch (e) { } panel = n; mode = null; showCard(null); $('pt').textContent = TITLES[n]; $('pb').innerHTML = R[n](); $('panel').hidden = false; }
   function refresh() { if (panel) { const y = $('panel').scrollTop; $('pb').innerHTML = R[panel](); $('panel').scrollTop = y; } }
   function closePanel() { panel = null; $('panel').hidden = true; }
   $('px').onclick = closePanel; document.querySelectorAll('#dock [data-p]').forEach(b => b.onclick = () => openPanel(b.dataset.p));
@@ -209,14 +223,17 @@
   }
   // ---------- Hauptschleife ----------
   function frame(now) {
-    requestAnimationFrame(frame); const dt = Math.min(.1, (now - last) / 1000); last = now; if (!S) return; tick++;
+    requestAnimationFrame(frame); const dt = Math.min(.1, (now - last) / 1000); last = now; lastDt = dt; if (!S) return; tick++;
     const pause = panel || !$('sum').hidden;
-    if (!pause) { let vx = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0), vy = (keys.s || keys.arrowdown ? 1 : 0) - (keys.w || keys.arrowup ? 1 : 0); S.player.vx = vx || joy.x; S.player.vy = vy || joy.y; if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
+    if (!pause && use3d) { const fw = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y, sd = (keys.d ? 1 : 0) - (keys.a ? 1 : 0) + joy.x; if (keys.arrowleft) View3D.look(-dt * 2.2, 0); if (keys.arrowright) View3D.look(dt * 2.2, 0); const [vx, vy] = View3D.move(Math.max(-1, Math.min(1, fw)), Math.max(-1, Math.min(1, sd))); S.player.vx = vx; S.player.vy = vy; if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
+    else if (!pause) { let vx = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0), vy = (keys.s || keys.arrowdown ? 1 : 0) - (keys.w || keys.arrowup ? 1 : 0); S.player.vx = vx || joy.x; S.player.vy = vy || joy.y; if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
     if (S.phase === 'summary' && $('sum').hidden) showSummary();
+    if (use3d && (topView || !!mode) !== View3D.st.top) syncView();
     hudT -= dt; if (hudT <= 0) { hudT = .2; hud(); if (cardId != null && tick % 6 === 0 && !chooser && !mode) renderCard(); } saveT += dt; if (saveT > 45 && S.phase !== 'summary') { saveT = 0; save(); } draw(now);
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden && S && S.phase !== 'summary') save(); });
   addEventListener('beforeunload', () => { if (S && S.phase !== 'summary') save(); });
+  if (use3d && matchMedia('(pointer:fine)').matches) setTimeout(() => toast('Tipp: Klicke ins Bild, um dich mit der Maus umzusehen (Esc gibt sie frei).'), 1500);
   if (S.up.radio) radioLoop(); resize(); requestAnimationFrame(frame);
   window.__amh = { get S() { return S; }, Sim };
 })();

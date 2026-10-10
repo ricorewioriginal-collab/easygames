@@ -13,7 +13,7 @@ const Sim = (() => {
   function emptyDay() { return { rev: 0, cogs: 0, items: 0, served: 0, lost: 0, happy: 0, recipes: 0, stolen: 0, spawned: 0, units: {}, revBy: {}, miss: 0 }; }
   function create() {
     const S = { v: 1, day: 1, t: 0, simT: 0, phase: 'prep', money: 200000, xp: 0, level: 1, rep: 55, W: 18, H: 12, exp: 0, nid: 1, objs: [], ramp: [], backlog: [], orders: [], price: {}, mkt: {}, cf: {}, riv: {}, lic: {}, up: {}, staff: [], customers: [], messes: [], regs: [], inv: [], loan: 0,
-      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [] }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
+      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
     Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
     Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
     add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7);
@@ -210,21 +210,21 @@ const Sim = (() => {
 
   // ---------- Spieler ----------
   function movePlayer(S, d) {
-    const pl = S.player, sp = 4.2; let vx = pl.vx, vy = pl.vy; const l = Math.hypot(vx, vy); if (l > 1) { vx /= l; vy /= l; }
+    const pl = S.player, sp = 3.4; let vx = pl.vx, vy = pl.vy; const l = Math.hypot(vx, vy); if (l > 1) { vx /= l; vy /= l; }
     const mv = (dx, dy) => { const nx = pl.x + dx, ny = pl.y + dy, r = .28; for (const [cx, cy] of [[nx - r, ny - r], [nx + r, ny - r], [nx - r, ny + r], [nx + r, ny + r]]) if (solid(S, Math.floor(cx), Math.floor(cy))) return false; pl.x = nx; pl.y = ny; return true; };
     mv(vx * sp * d, 0); mv(0, vy * sp * d);
   }
   const rectDist = (px, py, o) => { const dx = Math.max(o.x - px, 0, px - (o.x + o.w)), dy = Math.max(o.y - py, 0, py - (o.y + o.h)); return Math.hypot(dx, dy); };
   const carryCap = S => S.up.wagen ? 3 : 1;
-  function context(S) {
-    const pl = S.player, near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.2);
-    if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => rectDist(pl.x, pl.y, a) - rectDist(pl.x, pl.y, c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
+  function context(S, focus) {
+    const pl = S.player, near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.2), fd = o => rectDist(pl.x, pl.y, o) - (focus && o.id === focus.id ? 5 : 0);
+    if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
     const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: '🧽 Pfütze wischen' };
     const rp = near.find(o => o.k === 'ramp'); if (rp) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.length) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
     return null;
   }
-  function act(S) {
-    const c = context(S); if (!c) return null; const pl = S.player;
+  function act(S, focus) {
+    const c = context(S, focus); if (!c) return null; const pl = S.player;
     if (c.a === 'stock') { const b = pl.carry[0]; if (!c.o.p || (c.o.qty === 0 && c.o.p !== b.p)) { c.o.p = b.p; c.o.age = 0; c.o.disc = false; } addStock(S, c.o, b); if (b.n <= 0) pl.carry.shift(); }
     else if (c.a === 'clean') { S.messes = S.messes.filter(m => m !== c.m); S.xp += 1; }
     else if (c.a === 'pick') { let bi = 0, bs = 9; S.ramp.forEach((b, i) => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p).sort((a, cc) => a.qty / cap(S, a) - cc.qty / cap(S, cc))[0]; const r = o ? o.qty / cap(S, o) : 1.5; if (r < bs) { bs = r; bi = i; } }); const b = S.ramp.splice(bi, 1)[0]; if (b) pl.carry.push(b); flush(S); }

@@ -22,7 +22,12 @@
   .btn.go{background:linear-gradient(180deg,#43e08a,#0f9a54);color:#04170d;border-color:#fff}.btn.stop{background:linear-gradient(180deg,#ff6b7a,#b01c34);border-color:#fff}
   .btn:disabled{opacity:.4;cursor:default}.btn.sm{padding:5px 9px;min-height:32px;font-size:13px}
   #stage{flex:1;min-height:0;position:relative}
-  #cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #cv,#cv3{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  body.v3 #cv,body:not(.v3) #cv3{display:none}
+  #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;z-index:3;pointer-events:none;display:none}
+  #cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.9);box-shadow:0 0 3px #000}#cross::before{left:8px;top:0;width:2px;height:18px}#cross::after{top:8px;left:0;height:2px;width:18px}
+  body.v3.fps #cross{display:block}
+  #tip{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);padding:6px 12px;font-weight:700;font-size:13px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
   #dock{display:flex;gap:6px;padding:6px 8px 8px;overflow-x:auto;position:relative;z-index:3;scrollbar-width:none}
   #dock::-webkit-scrollbar{display:none}
   #dock .btn{flex:none}
@@ -59,16 +64,18 @@
     <div class="sp glass" style="padding:3px"><button id="s0" title="Pause">⏸</button><button id="s1" class="on">1×</button><button id="s2">2×</button><button id="s3">4×</button></div>
     <button class="btn go" id="bOpen">LADEN ÖFFNEN</button>
   </div>
-  <div id="stage"><canvas id="cv"></canvas><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tip" class="glass" hidden></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
-    <button class="btn glass" data-p="markt">🛒 Markt</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
+    <button class="btn glass" id="bView" title="Ansicht wechseln (V)">👁️ Vogelperspektive</button><button class="btn glass" data-p="markt">🛒 Markt</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
     <button class="btn glass" data-p="radio">📻 Radio</button><button class="btn glass" data-p="up">⭐ Ausbau</button><button class="btn glass" data-p="stat">📊 Zahlen</button><button class="btn glass" data-p="ziele">🎯 Ziele</button><button class="btn glass" data-p="menu">☰ Menü</button>
   </div>
 </div>
 <div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px">✕ Schließen</button></div><div id="pb"></div></div></div>
 <div id="sum" hidden><div class="in" id="sb"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="data.js"></script>
 <script src="sim.js"></script>
+<script src="view3d.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
