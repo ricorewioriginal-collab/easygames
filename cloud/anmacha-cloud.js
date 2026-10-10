@@ -165,7 +165,7 @@
           }
         }
         saveMeta();
-        lastErr = '';
+        lastErr = ''; lastOk = Date.now();
         var p = Promise.all(writes).then(function () { return dirty ? push(tok, merged, keep) : null; });
         return p.then(function () {
           if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
@@ -196,30 +196,62 @@
   }
 
   // ---- kleine Oberfläche ----
-  var btn, panel;
+  var btn, panel, lastOk = 0;
+  var G = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
   function el(t, css, txt) { var e = document.createElement(t); if (css) e.style.cssText = css; if (txt) e.textContent = txt; return e; }
+  function restore() {
+    if (!confirm('Spielstand aus der Cloud wiederherstellen?\nDer Stand auf diesem Gerät wird durch den Cloud-Stand ersetzt.')) return;
+    loadSdk().then(function () { return user.getIdToken(); }).then(pull).then(function (remote) {
+      var k, n = 0, w = [];
+      for (k in remote) {
+        if (k.slice(0, 4) === 'idb:') w.push(idbWrite(k.slice(4), remote[k]));
+        else { if (remote[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, remote[k].v); meta[k] = remote[k].t; }
+        n++;
+      }
+      if (!n) { lastErr = 'In der Cloud liegt noch kein Spielstand.'; render(); return; }
+      saveMeta();
+      return Promise.all(w).then(function () { location.reload(); });
+    }).catch(function (e) { lastErr = e.message || 'Wiederherstellen fehlgeschlagen'; render(); });
+  }
   function render() {
     if (!panel || s.dataset.ui === 'off') return;
-    var on = wanted() && user;
+    var on = wanted() && user, k;
     panel.textContent = '';
-    var bs = 'margin:8px 4px 0 0;padding:8px 12px;border:0;border-radius:8px;background:#3a7bd5;color:#fff;font:inherit;cursor:pointer';
-    panel.appendChild(el('b', '', '☁ Cloud-Speicher'));
+    var bs = 'display:flex;align-items:center;gap:8px;width:100%;margin:8px 0 0;padding:9px 12px;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font:500 14px system-ui,sans-serif;cursor:pointer;box-sizing:border-box';
+    function row(label, fn, icon) {
+      var b = el('button', bs); if (icon) { var i = el('span', 'display:flex'); i.innerHTML = icon; b.appendChild(i); }
+      b.appendChild(el('span', '', label)); b.onclick = fn; panel.appendChild(b); return b;
+    }
     if (on) {
-      panel.appendChild(el('div', 'margin:8px 0 2px', '✓ Angemeldet als ' + (user.displayName || user.email || 'Spieler')));
-      panel.appendChild(el('div', 'opacity:.8', lastErr ? '⚠ ' + lastErr : 'Dein Fortschritt wird auf jedem Gerät geladen, auf dem du dich anmeldest.'));
-      var b2 = el('button', bs.replace('#3a7bd5', '#666'), 'Abmelden');
-      b2.onclick = signOut; panel.appendChild(b2);
+      var head = el('div', 'display:flex;align-items:center;gap:10px');
+      if (user.photoURL) { var im = el('img', 'width:40px;height:40px;border-radius:50%;flex:none'); im.src = user.photoURL; im.referrerPolicy = 'no-referrer'; im.alt = ''; head.appendChild(im); }
+      var who = el('div', 'min-width:0');
+      who.appendChild(el('div', 'font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap', user.displayName || 'Spieler'));
+      who.appendChild(el('div', 'opacity:.7;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap', user.email || ''));
+      head.appendChild(who); panel.appendChild(head);
+      panel.appendChild(el('div', 'margin:8px 0 0;font-size:13px;color:' + (lastErr ? '#f28b82' : '#81c995'),
+        lastErr ? '⚠ ' + lastErr : '● Mit Google verbunden' + (lastOk ? ' · zuletzt gesichert ' + new Date(lastOk).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '')));
+      row('Jetzt in Google speichern', function () { first = false; sync(); }, G);
+      row('Spielstand mit Google wiederherstellen', restore, G);
+      row('Abmelden', signOut);
     } else {
-      panel.appendChild(el('div', 'margin:8px 0;opacity:.8', lastErr ? '⚠ ' + lastErr : 'Melde dich an und spiele auf jedem Gerät mit deinem Fortschritt weiter.'));
-      var b0 = el('button', bs, 'Mit Google anmelden');
-      b0.onclick = signIn; panel.appendChild(b0);
+      panel.appendChild(el('b', '', 'Spielstand sichern'));
+      panel.appendChild(el('div', 'margin:6px 0 0;opacity:.8', lastErr ? '⚠ ' + lastErr : 'Speichere deinen Fortschritt mit Google und spiele auf jedem Gerät weiter.'));
+      row('Mit Google speichern', signIn, G);
+      row('Spielstand mit Google wiederherstellen', signIn, G);
+    }
+    if (btn) {
+      btn.textContent = '';
+      if (on && user.photoURL) { var av = el('img', 'width:100%;height:100%;border-radius:50%;display:block'); av.src = user.photoURL; av.referrerPolicy = 'no-referrer'; av.alt = ''; btn.appendChild(av); }
+      else btn.innerHTML = G;
+      btn.style.borderColor = on ? '#34A853' : '#dadce0';
     }
   }
   function ui() {
     if (s.dataset.ui === 'off') return;
-    btn = el('button', 'position:fixed;left:8px;bottom:8px;z-index:2147483000;width:34px;height:34px;border:0;border-radius:50%;background:rgba(20,20,30,.6);color:#fff;font-size:17px;cursor:pointer;opacity:.55', '☁');
-    btn.setAttribute('aria-label', 'Cloud-Speicher');
-    panel = el('div', 'position:fixed;left:8px;bottom:48px;z-index:2147483000;max-width:min(300px,calc(100vw - 16px));padding:12px;border-radius:12px;background:rgba(20,20,30,.95);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none');
+    btn = el('button', 'position:fixed;left:8px;bottom:8px;z-index:2147483000;width:40px;height:40px;padding:0;border:2px solid #dadce0;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.4)');
+    btn.setAttribute('aria-label', 'Mit Google speichern');
+    panel = el('div', 'position:fixed;left:8px;bottom:56px;z-index:2147483000;width:min(290px,calc(100vw - 16px));padding:14px;border-radius:12px;background:rgba(20,20,30,.96);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none;box-sizing:border-box');
     btn.onclick = function () { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
     document.body.appendChild(panel); document.body.appendChild(btn); render();
   }
