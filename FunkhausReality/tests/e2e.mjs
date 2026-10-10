@@ -1,7 +1,7 @@
 /* Browser-Test (Playwright): komplette Staffel mit 1 Menschen + KI (Hot-Seat), alle Eingabearten (Plan, Nominierung, Reflex/Memory/Schätzen), Vote, Auszug, Finale.
-   Aufruf:  BASE=http://localhost:8080/anmacha-funkhaus [THREE=/pfad/three.min.js] [SHOT=/tmp] node tests/e2e.mjs */
+   Aufruf:  BASE=http://localhost:8080/FunkhausReality [THREE=/pfad/three.min.js] [SHOT=/tmp] node tests/e2e.mjs */
 import { chromium } from 'playwright';
-const BASE = process.env.BASE || 'http://localhost:8080/anmacha-funkhaus', SHOT = process.env.SHOT || '/tmp'; let fails = 0; const errs = [], log = (ok, m) => { console.log((ok ? '✓ ' : '✗ ') + m); if (!ok) fails++; };
+const BASE = process.env.BASE || 'http://localhost:8080/FunkhausReality', SHOT = process.env.SHOT || '/tmp'; let fails = 0; const errs = [], log = (ok, m) => { console.log((ok ? '✓ ' : '✗ ') + m); if (!ok) fails++; };
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 async function mk(o) { const ctx = await browser.newContext(o), p = await ctx.newPage(); p.on('pageerror', e => { errs.push(e.message); console.log('PAGEERR', e.message); }); p.on('dialog', d => d.accept()); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.goto(BASE + '/index.html'); await p.waitForFunction(() => window.__fh, null, { timeout: 40000 }); return p; }
 const vis = (p, s) => p.isVisible(s).catch(() => false);

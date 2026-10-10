@@ -1,8 +1,8 @@
 /* Browser-Test der Handy-Kopplung: 2 Menschen mit je einem Handy (privater Tagesplan, Nominierung, Aufgabe) + KI.
    Voraussetzung: PeerServer auf :9000 (npm i peer; node -e "require('peer').PeerServer({port:9000,path:'/',host:'0.0.0.0'})"); optional THREE=/pfad/three.min.js PEERJS=/pfad/peerjs.min.js QRLIB=/pfad/qrcode.js für Offline-Betrieb.
-   Aufruf:  BASE=http://localhost:8080/anmacha-funkhaus node tests/e2e-pair.mjs */
+   Aufruf:  BASE=http://localhost:8080/FunkhausReality node tests/e2e-pair.mjs */
 import { chromium } from 'playwright';
-const BASE = process.env.BASE || 'http://localhost:8080/anmacha-funkhaus', PH = 'localhost:9000'; let fails = 0; const errs = [], log = (ok, m) => { console.log((ok ? '✓ ' : '✗ ') + m); if (!ok) fails++; };
+const BASE = process.env.BASE || 'http://localhost:8080/FunkhausReality', PH = 'localhost:9000'; let fails = 0; const errs = [], log = (ok, m) => { console.log((ok ? '✓ ' : '✗ ') + m); if (!ok) fails++; };
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 async function mk(vw, three) { const c = await browser.newContext({ viewport: vw }), p = await c.newPage(); p.on('pageerror', e => { errs.push(e.message); console.log('PAGEERR', e.message); }); p.on('dialog', d => d.accept());
   if (three && process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
