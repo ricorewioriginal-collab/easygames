@@ -8,7 +8,7 @@ BI.audio = (function () {
   function init() {
     if (ctx) return;
     try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; return; }
-    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.8; master.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.8 * (A._vol == null ? 1 : A._vol); master.connect(ctx.destination);
     sfxBus = ctx.createGain(); sfxBus.gain.value = 0.9; sfxBus.connect(master);
     musBus = ctx.createGain(); musBus.gain.value = musicOn ? 0.5 : 0; musBus.connect(master);
   }
@@ -32,7 +32,8 @@ BI.audio = (function () {
     resume,
     get muted() { return muted; },
     get musicOn() { return musicOn; },
-    setMuted(m) { muted = m; if (master) master.gain.value = m ? 0 : 0.8; },
+    setMuted(m) { muted = m; if (master) master.gain.value = m ? 0 : 0.8 * A._vol; },
+    _vol: 1, setVolume(v) { A._vol = BI.clamp(v, 0, 1); if (master) master.gain.value = muted ? 0 : 0.8 * A._vol; },
     setMusic(m) { musicOn = m; if (musBus) musBus.gain.value = m ? 0.5 : 0; },
     star() { tone(880, .12, 'triangle', .18); tone(1318, .18, 'triangle', .16, 0, .07); },
     fanfare() { [523, 659, 784, 1046].forEach((f, i) => tone(f, .22, 'triangle', .2, 0, i * .1)); tone(1318, .5, 'sine', .15, 0, .4); },

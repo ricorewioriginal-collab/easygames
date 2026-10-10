@@ -154,7 +154,7 @@ BI.createFarm = function (G) {
     const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;
     {
       for (const a of animals) {
-        const far = Math.hypot(a.x - px, a.z - pz) > 85; if (far !== !a.vis) { a.vis = !far; a.m.visible = !far; } if (far) continue;
+        const far = Math.hypot(a.x - px, a.z - pz) > (save.eco ? 45 : 85); if (far !== !a.vis) { a.vis = !far; a.m.visible = !far; } if (far) continue;
         a.hop = Math.max(0, a.hop - dt); let moving = false;
         if (a.pond) { a.ang += dt * .5; a.x = a.pond.x + Math.cos(a.ang) * a.pond.r; a.z = a.pond.z + Math.sin(a.ang) * a.pond.r; a.h = -a.ang + Math.PI; moving = true; }
         else { a.wait -= dt; if (a.wait <= 0) { const dx = a.tx - a.x, dz = a.tz - a.z, d = Math.hypot(dx, dz); if (d < .5) { a.wait = 1 + Math.random() * 4; a.tx = a.pen.x0 + Math.random() * (a.pen.x1 - a.pen.x0); a.tz = a.pen.z0 + Math.random() * (a.pen.z1 - a.pen.z0); } else { a.h += BI.angDiff(a.h, Math.atan2(dx, dz)) * Math.min(1, dt * 4); a.x += Math.sin(a.h) * a.spd * dt; a.z += Math.cos(a.h) * a.spd * dt; moving = true; } } }

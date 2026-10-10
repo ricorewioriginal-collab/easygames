@@ -16,7 +16,7 @@ BI.store = {
   meta() { try { return JSON.parse(localStorage.getItem('bunteInsel.meta')) || {}; } catch (e) { return {}; } },
   setMeta(m) { try { localStorage.setItem('bunteInsel.meta', JSON.stringify(m)); } catch (e) { } },
   /* Kurzinfo für die Spielstand-Karten */
-  info(s) { try { const v = JSON.parse(localStorage.getItem(this.key('save', s))); if (!v || typeof v !== 'object') return { has: false }; return { has: true, stars: v.stars | 0, hero: v.hero || 'jannis', pet: v.pet || 'blitz', stk: Array.isArray(v.stk) ? v.stk.length : 0, ts: v.ts || 0 }; } catch (e) { return { has: false }; } },
+  info(s) { try { const v = JSON.parse(localStorage.getItem(this.key('save', s))); if (!v || typeof v !== 'object') return { has: false }; return { has: true, stars: v.stars | 0, hero: v.hero || 'jannis', pn: v.pname || '', pet: v.pet || 'blitz', stk: Array.isArray(v.stk) ? v.stk.length : 0, ts: v.ts || 0 }; } catch (e) { return { has: false }; } },
   clear(s) { for (const k of this.KEYS) { try { localStorage.removeItem(this.key(k, s)); } catch (e) { } } },
   /* Sicherungsdatei: alles eines Spielstands als JSON */
   exportSlot(s) { const data = {}; for (const k of this.KEYS) { try { const v = localStorage.getItem(this.key(k, s)); if (v != null) data[k] = JSON.parse(v); } catch (e) { } } return { game: 'bunte-insel', v: 1, slot: s, saved: Date.now(), data }; },
@@ -117,6 +117,10 @@ BI.store = {
 
 /* ---- Spielfigur ---- */
 BI.SHIRTS = [0xff5a5a, 0x3fa0ff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8];
+BI.SKINS = [0xffd2a8, 0xf3c9a0, 0xe0a979, 0xc68a5a, 0x8d5a3b, 0x5a3a28];
+BI.HAIRS = [0x222222, 0x6b4423, 0xa14a2b, 0xd0642a, 0xd9a441, 0xf3d98a, 0xb36bff, 0x3fa0ff];
+BI.STYLES = ['none', 'spiky', 'curly', 'long', 'pig', 'bun', 'ponytail'];
+BI.PANTS = [0x3d4a7a, 0x23262d, 0x5a3d2b, 0x2d6a4f, 0x7a3d6a, 0xffffff];
 BI.HATS = ['none', 'bear', 'cat', 'bunny', 'cap', 'crown', 'pirate', 'wizard', 'chef', 'party', 'cowboy', 'helmet'];
 BI.HAT_ICONS = { none: '🙂', bear: '🐻', cat: '🐱', bunny: '🐰', cap: '🧢', crown: '👑', pirate: '🏴‍☠️', wizard: '🧙', chef: '🧑‍🍳', party: '🥳', cowboy: '🤠', helmet: '⛑️' };
 /* Spielbare Helden (Jannis hat sein eigenes Aussehen); „custom“ = selbst gestalten */
@@ -235,8 +239,8 @@ BI.makeChar = function (o) {
   }
   const shoe = o.shoe != null ? o.shoe : 0x2a2a3a, legL = limb(.18, .5, .2, pants, shoe, -.13, .52), legR = limb(.18, .5, .2, pants, shoe, .13, .52);
   const armL = limb(.13, .42, .14, shirt, skin, -.34, 1.12), armR = limb(.13, .42, .14, shirt, skin, .34, 1.12);
-  if (J || o.name) {
-    const cv0 = document.createElement('canvas'); cv0.width = 256; cv0.height = 64; const cx0 = cv0.getContext('2d'); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name || 'Jannis', 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name || 'Jannis', 128, 34);
+  if (o.name) {
+    const cv0 = document.createElement('canvas'); cv0.width = 256; cv0.height = 64; const cx0 = cv0.getContext('2d'); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name, 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name, 128, 34);
     const sp0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv0), transparent: true, depthWrite: false })); sp0.scale.set(1.5, .38, 1); sp0.position.y = 2.15; root.add(sp0);
   }
   let remoteMesh = null;
