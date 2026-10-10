@@ -1,8 +1,9 @@
 /* Wobbel – Level-Editor: Kodierung (Teilen per Code/Link) und Prüfung der Karten. Rein, ohne DOM (auch im Node-Test nutzbar). */
 import { parseLevel, createState, isSolved, T } from '../game/engine.js';
+import { WORLDS } from '../game/worlds.js';
 
 export const MAX_W = 16, MAX_H = 14, MIN_W = 5, MIN_H = 5, PREFIX = 'WOBBEL1-';
-export const VALID = new Set([...'# @$rgb.RGB~i123kD']);
+export const VALID = new Set([...'# @$rgb.RGB~i123kD^>v<x']);
 
 /* rows: Array von Strings gleicher Länge. Gibt {errors, warnings, info} zurück. errors verhindern Test/Prüfen. */
 export function validate(rows) {
@@ -43,5 +44,5 @@ export function decode(text) {
   if (!o || o.v !== 1 || typeof o.m !== 'string') throw new Error('Der Code stammt aus einer unbekannten Version.');
   const rows = o.m.split('/').map(r => r.replace(/_/g, ' ')); if (rows.length > MAX_H || rows.length < 3 || rows.some(r => r.length > MAX_W || r.length !== rows[0].length)) throw new Error('Das Level hat ungültige Maße.');
   const v = validate(rows); if (v.errors.length) throw new Error('Das Level ist ungültig: ' + v.errors[0]);
-  return { name: String(o.n || 'Geteiltes Level').slice(0, 24), world: Math.max(0, Math.min(4, o.w | 0)), map: rows };
+  return { name: String(o.n || 'Geteiltes Level').slice(0, 24), world: Math.max(0, Math.min(WORLDS.length - 1, o.w | 0)), map: rows };
 }

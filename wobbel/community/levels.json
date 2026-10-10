@@ -1,0 +1,32 @@
+[
+  {
+    "id": "start-1",
+    "name": "Kleine Runde",
+    "author": "Wobbel-Team",
+    "code": "WOBBEL1-eyJ2IjoxLCJuIjoiS2xlaW5lIFJ1bmRlIiwidyI6MCwibSI6IiMjIyMjIyMjIy8jX19fI19fXyMvI19AXyRfLl8jLyNfX18jX19fIy8jIyMjIyMjIyMifQ"
+  },
+  {
+    "id": "start-2",
+    "name": "Die Brücke",
+    "author": "Wobbel-Team",
+    "code": "WOBBEL1-eyJ2IjoxLCJuIjoiRGllIEJyw7xja2UiLCJ3IjoxLCJtIjoiIyMjIyMjIyMjIyMvI0BfXyRffl8uXyMvI19fXyRfX19fXyMvI19fX19fX19fXyMvIyMjIyMjIyMjIyMifQ"
+  },
+  {
+    "id": "start-3",
+    "name": "Rutschpartie",
+    "author": "Wobbel-Team",
+    "code": "WOBBEL1-eyJ2IjoxLCJuIjoiUnV0c2NocGFydGllIiwidyI6MywibSI6IiMjIyMjIyMjIyMjLyNAXyRpaWlfLl8jLyNfXyMjX18jI18jLyNfJF9paWlfLl8jLyMjIyMjIyMjIyMjIn0"
+  },
+  {
+    "id": "start-4",
+    "name": "Schlüsselwechsel",
+    "author": "Wobbel-Team",
+    "code": "WOBBEL1-eyJ2IjoxLCJuIjoiU2NobMO8c3NlbHdlY2hzZWwiLCJ3Ijo0LCJtIjoiIyMjIyMjIyMjIyMvI0BfX2sjX18uXyMvI19fJF9EXyRfXyMvI19fX18jXy5fXyMvIyMjIyMjIyMjIyMifQ"
+  },
+  {
+    "id": "start-5",
+    "name": "Tor mit Pfeil",
+    "author": "Wobbel-Team",
+    "code": "WOBBEL1-eyJ2IjoxLCJuIjoiVG9yIG1pdCBQZmVpbCIsInciOjUsIm0iOiIjIyMjIyMjIyMjIy8jQF9fI19fLl9fIy8jXyRfPl9fJF9fIy8jX19fI19fLl9fIy8jIyMjIyMjIyMjIyJ9"
+  }
+]

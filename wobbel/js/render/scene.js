@@ -1,5 +1,5 @@
 /* Wobbel – 3D-Ansicht: isometrische Kamera, Insel, Figuren, Animationen, Partikel. */
-import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, COLORS } from './models.js';
+import { toon, mesh, G, outline, makeBlob, applyLook, makeCrate, makeTarget, makeWall, makePaint, makePlank, makeKey, makeDoor, makeDecor, makeArrow, makeTipArrow, setCrateSkin, makeCrack, makeHole, COLORS } from './models.js';
 import { T as TT, DIRS, keyAt, isTargetDone } from '../game/engine.js';
 const T = window.THREE, PI = Math.PI;
 const ease = { out: u => 1 - Math.pow(1 - u, 3), inOut: u => u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2, back: u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); } };
@@ -22,7 +22,7 @@ export class GameView {
   cpos(i) { const L = this.L; return { x: (i % L.w) - L.w / 2 + 0.5, z: ((i / L.w) | 0) - L.h / 2 + 0.5 }; }
   clear(g) { while (g.children.length) g.remove(g.children[0]); }
   loadLevel(L, state, world) {
-    this.L = L; this.world = world; this.clear(this.root); this.clear(this.dyn); this.anims.length = 0; this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.waters.clear(); this.targetsG = [];
+    this.L = L; this.world = world; this.clear(this.root); this.clear(this.dyn); this.hideTip(); this.anims.length = 0; this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.waters.clear(); this.crackG = new Map(); this.holes = new Map(); this.targetsG = [];
     this.hemi.color.set(world.sky[1]); this.sun.color.set('#fff8ee');
     const w = L.w, h = L.h, ox = -w / 2 + 0.5, oz = -h / 2 + 0.5, cells = []; for (let i = 0; i < L.n; i++) if (L.terrain[i] !== TT.VOID) cells.push(i);
     // Meer
@@ -39,11 +39,13 @@ export class GameView {
       if (t === TT.WALL) { const wl = makeWall(world.wall, x, y); wl.position.set(p.x, 0, p.z); wl.scale.y = 0.66; wl.traverse(o => { if (o.isMesh) o.castShadow = true; }); this.root.add(wl); }
       else if (t === TT.WATER) { const wm = new T.Mesh(G.box(), new T.MeshPhongMaterial({ color: world.water, emissive: new T.Color(world.water).multiplyScalar(0.4), shininess: 90, specular: 0xffffff })); wm.scale.set(0.99, 0.2, 0.99); wm.position.set(p.x, -0.2, p.z); wm.userData.ph = Math.random() * 6; this.root.add(wm); this.waters.set(i, wm); }
       else if (t === TT.ICE) { const gl = new T.Mesh(G.box(), new T.MeshPhongMaterial({ color: '#d8f4ff', transparent: true, opacity: 0.55, shininess: 120, specular: 0xffffff })); gl.scale.set(0.99, 0.03, 0.99); gl.position.set(p.x, 0.005, p.z); this.root.add(gl); [[-0.25, -0.2], [0.2, 0.25]].forEach(s => { const sp = mesh(G.oct(), new T.MeshBasicMaterial({ color: '#ffffff' }), p.x + s[0], 0.02, p.z + s[1], 0.05, 0.01, 0.05, this.root); sp.rotation.y = 0.7; }); }
+      if (L.arrow[i]) { const ar = makeArrow(L.arrow[i] - 1); ar.position.set(p.x, 0.005, p.z); this.root.add(ar); }
+      if (L.crack[i]) { const cg = makeCrack(); cg.position.set(p.x, 0.005, p.z); this.root.add(cg); this.crackG.set(i, cg); }
       if (L.paint[i]) { const pm = makePaint(L.paint[i]); pm.position.set(p.x, 0.02, p.z); this.root.add(pm); }
       if (L.target[i]) { const tg = makeTarget(L.target[i]); tg.position.set(p.x, 0, p.z); this.root.add(tg); this.targetsG.push({ g: tg, i }); }
     });
     // Dekoration rund um die Insel
-    const kinds = { wiese: ['tree'], strand: ['palm', 'palm', 'berg'], farbe: ['paint', 'tower'], eis: ['berg'], schloss: ['tower'] }[world.id] || ['tree'], rnd = (a, b) => a + Math.random() * (b - a);
+    const kinds = { wiese: ['tree'], strand: ['palm', 'palm', 'berg'], farbe: ['paint', 'tower'], eis: ['berg'], schloss: ['tower'], ruinen: ['palm', 'berg'] }[world.id] || ['tree'], rnd = (a, b) => a + Math.random() * (b - a);
     for (let j = 0; j < 12; j++) { const a = j / 12 * PI * 2 + rnd(-0.2, 0.2), rx = w / 2 + rnd(2.2, 5), rz = h / 2 + rnd(2.2, 5), d = makeDecor(kinds[j % kinds.length]); d.position.set(Math.cos(a) * rx, -0.5, Math.sin(a) * rz); d.scale.setScalar(rnd(0.8, 1.15)); d.userData.ph = Math.random() * 6; d.traverse(o => { if (o.isMesh) o.castShadow = true; }); this.root.add(d); const base = mesh(G.cyl(), toon(world.floor[0]), d.position.x, -0.62, d.position.z, 0.7, 0.3, 0.7, this.root); base.scale.set(0.8 * d.scale.x, 0.5, 0.8 * d.scale.x); }
     // Licht + Schatten
     const e = Math.max(w, h) / 2 + 3; Object.assign(this.sun.shadow.camera, { left: -e, right: e, top: e, bottom: -e, near: 1, far: 40 }); this.sun.shadow.camera.updateProjectionMatrix(); this.sun.position.set(6, 14, 7); this.sun.target.position.set(0, 0, 0);
@@ -53,13 +55,14 @@ export class GameView {
   seaTex(col) { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = col; x.fillRect(0, 0, 128, 128); x.strokeStyle = 'rgba(255,255,255,.28)'; x.lineWidth = 3; x.lineCap = 'round'; for (let i = 0; i < 7; i++) { const px = Math.random() * 128, py = Math.random() * 128; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + 12, py - 6, px + 26, py); x.stroke(); } const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(34, 34); return t; }
   // Veränderliche Objekte (Kisten, Schlüssel, Türen, Brücken, Spieler)
   buildDynamic(s, pop) {
-    const L = this.L, keep = this.blob.g; [...this.dyn.children].forEach(o => { if (o !== keep) this.dyn.remove(o); }); this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear();
+    const L = this.L, keep = this.blob.g; [...this.dyn.children].forEach(o => { if (o !== keep) this.dyn.remove(o); }); this.crates.clear(); this.doors.clear(); this.keys = []; this.planks.clear(); this.holes = new Map();
     const p = this.cpos(s.p); this.blob.g.position.set(p.x, 0, p.z); this.blob.g.rotation.y = this.blob.g.rotation.y || 0; this.blob.g.scale.setScalar(1); this.blob.body.scale.set(1, 1, 1);
     for (let i = 0; i < L.n; i++) {
       const q = this.cpos(i);
       if (s.crate[i]) { const cr = this.addCrate(i, s.crate[i] - 1); if (pop) this.popIn(cr.g); }
       if (L.terrain[i] === TT.WATER && s.filled[i]) { const pl = makePlank(); pl.position.set(q.x, 0, q.z); this.dyn.add(pl); this.planks.set(i, pl); const w = this.waters.get(i); if (w) w.visible = false; }
       else if (L.terrain[i] === TT.WATER) { const w = this.waters.get(i); if (w) w.visible = true; }
+      if (L.crack[i]) { const dec = this.crackG.get(i); if (dec) dec.visible = !s.broken[i]; if (s.broken[i]) { const ho = makeHole(this.world.water); ho.position.set(q.x, 0, q.z); this.dyn.add(ho); this.holes.set(i, ho); } }
       if (L.terrain[i] === TT.DOOR) { const d = makeDoor(); d.position.set(q.x, 0, q.z); const open = s.open[i]; if (open) d.visible = false; this.dyn.add(d); this.doors.set(i, d); }
     }
     L.keys.forEach((ki, k) => { if (s.keyTaken[k]) return; const kk = makeKey(), q = this.cpos(ki); kk.position.set(q.x, 0, q.z); kk.userData.k = k; this.dyn.add(kk); this.keys.push({ g: kk, k, i: ki }); });
@@ -72,12 +75,16 @@ export class GameView {
   // ------------------------------------------------------------------ Animation
   add(dur, fn, done, block) { this.anims.push({ t: 0, dur, fn, done, block: !!block }); }
   get busy() { return this.anims.some(a => a.block); }
-  setLook(look) { this.look = Object.assign({}, look); if (this.blob) applyLook(this.blob, this.look); }
+  // Tipp-Pfeil: schwebt über dem nächsten Feld in Zugrichtung
+  showTip(dirs) { this.hideTip(); if (!dirs.length) return; const s = this.cb.state && this.cb.state(); const L = this.L; let c = s ? s.p : 0; this.tip = { g: new T.Group(), t: 0 }; const seen = []; dirs.slice(0, 3).forEach((d, k) => { const nx = (c % L.w) + DIRS[d][0], ny = ((c / L.w) | 0) + DIRS[d][1]; c = ny * L.w + nx; const a = makeTipArrow(d), p = this.cpos(c); a.position.set(p.x, 0.9, p.z); a.scale.multiplyScalar(k ? 0.7 : 1); a.userData.k = k; this.tip.g.add(a); }); this.scene.add(this.tip.g); }
+  hideTip() { if (this.tip) { this.scene.remove(this.tip.g); this.tip = null; } }
+  setLook(look) { this.look = Object.assign({}, look); setCrateSkin(this.look.crate); if (this.blob) applyLook(this.blob, this.look); }
   faceDir(dir) { const [dx, dy] = DIRS[dir]; this.blob.g.rotation.y = Math.atan2(dx, dy); }
   move(dir, res, s) {
+    this.hideTip();
     const L = this.L, [dx, dy] = DIRS[dir], b = this.blob, from = b.g.position.clone(), to = this.cpos(s.p); this.faceDir(dir); const push = res.push;
     this.add(0.15, u => { const e = ease.inOut(u); b.g.position.set(lerp(from.x, to.x, e), Math.sin(u * PI) * 0.2, lerp(from.z, to.z, e)); const sq = Math.sin(u * PI); b.body.scale.set(1 + 0.08 * sq, 1 - 0.14 * sq, 1 + 0.08 * sq); if (push) b.body.rotation.x = 0.22 * sq; }, () => { b.g.position.set(to.x, 0, to.z); b.body.scale.set(1, 1, 1); b.body.rotation.x = 0; }, true);
-    this.cb.sfx(push ? 'push' : 'step'); if (!push) this.burst(from.x, 0.05, from.z, '#ffffff', 2, 0.5, 0.4, 2);
+    this.cb.sfx(push ? 'push' : 'step'); if (!push) { const tr = ({ bubbles: ['#9ae0ff', 4, 0.9], stars: ['#ffe066', 5, 1.1], hearts: ['#ff6fa8', 4, 1.0] })[(this.look || {}).trail]; if (tr) this.burst(from.x, 0.2, from.z, tr[0], tr[1], 0.7, tr[2], 4); else this.burst(from.x, 0.05, from.z, '#ffffff', 2, 0.5, 0.4, 2); }
     let landDelay = 0;
     const evs = res.events; let cr = null, path = [], color = 0, sunk = null;
     for (const e of evs) { if (e.t === 'push') { cr = this.crates.get(e.from); if (cr) { this.crates.delete(e.from); path = [e.from, e.to]; color = e.color; } } else if (e.t === 'slide') path.push(e.to); else if (e.t === 'paint') color = e.color; else if (e.t === 'fill') sunk = e.cell; }
@@ -93,6 +100,7 @@ export class GameView {
     }
     for (const e of evs) {
       if (e.t === 'key') { const k = this.keys.find(q => q.i === e.cell); if (k) { this.keys = this.keys.filter(q => q !== k); this.cb.sfx('key'); const p = this.cpos(e.cell); this.burst(p.x, 0.6, p.z, '#ffd24a', 16, 1.5, 2.5, 4); this.add(0.3, u => { k.g.position.y = u * 1.2; k.g.scale.setScalar(1 - u); }, () => this.dyn.remove(k.g)); } }
+      if (e.t === 'crack') { const p = this.cpos(e.cell), dec = this.crackG.get(e.cell); this.cb.sfx('crack'); this.burst(p.x, 0.15, p.z, '#cba768', 16, 1.2, 2.2, 5); this.add(0.3, u => { if (dec) dec.scale.setScalar(1 + u * 0.1); }, () => { if (dec) dec.visible = false; const ho = makeHole(this.world.water); ho.position.set(p.x, 0, p.z); this.dyn.add(ho); this.holes.set(e.cell, ho); this.popIn(ho); }); }
       if (e.t === 'door') { const d = this.doors.get(e.cell); if (d) { this.cb.sfx('door'); const p = this.cpos(e.cell); this.burst(p.x, 0.6, p.z, '#c98a48', 14, 1.4, 2.2, 5); this.add(0.4, u => { d.userData.planks.position.y = u * 1.1; d.userData.planks.scale.y = 1 - u * 0.7; }, () => { d.visible = false; }); } }
     }
     if (!cr) this.refreshDone(s, false);
@@ -121,6 +129,8 @@ export class GameView {
   pickCell(cx, cy) { if (!this.L) return null; const rect = this.canvas.getBoundingClientRect(), nx = (cx - rect.left) / rect.width * 2 - 1, ny = -((cy - rect.top) / rect.height) * 2 + 1, ray = new T.Raycaster(); ray.setFromCamera({ x: nx, y: ny }, this.cam); const pl = new T.Plane(new T.Vector3(0, 1, 0), -0.0), pt = new T.Vector3(); if (!ray.ray.intersectPlane(pl, pt)) return null; const x = Math.floor(pt.x + this.L.w / 2), y = Math.floor(pt.z + this.L.h / 2); if (x < 0 || y < 0 || x >= this.L.w || y >= this.L.h) return null; return y * this.L.w + x; }
   // ------------------------------------------------------------------ Frame
   tick(dt) {
+    if (this.tip) { this.tip.t += dt; this.tip.g.children.forEach(a => { a.position.y = 0.9 + Math.sin(this.tip.t * 6 + a.userData.k) * 0.08; }); if (this.tip.t > 6) this.hideTip(); }
+    if (this.blob && this.blob.rainbow) { const h = (this.time * 0.25) % 1; this.blob.rainbow[0].color.setHSL(h, 0.85, 0.64); this.blob.rainbow[1].color.setHSL(h, 0.8, 0.5); }
     if (this.blob && this.blob.hat && this.blob.hat.userData.spin) this.blob.hat.userData.spin.rotation.y += dt * 14;
     this.time += dt; const t = this.time;
     for (let i = this.anims.length - 1; i >= 0; i--) { const a = this.anims[i]; a.t += dt; const u = Math.min(1, a.t / a.dur); a.fn(u); if (u >= 1) { this.anims.splice(i, 1); if (a.done) a.done(); } }

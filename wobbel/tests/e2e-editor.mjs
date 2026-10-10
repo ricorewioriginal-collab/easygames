@@ -7,7 +7,7 @@ page.on('pageerror', e => errs.push(e.message)); page.on('dialog', d => d.accept
 if (process.env.THREE) await page.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
 await page.route('**/fonts.googleapis.com/**', r => r.abort());
 await page.goto(BASE + '/index.html'); await page.waitForFunction(() => window.__wobbel, null, { timeout: 30000 });
-await page.evaluate(() => { document.getElementById('how').hidden = true; window.__ffwd = 6; });
+await page.waitForSelector('#how:not([hidden])', { timeout: 4000 }).catch(() => {}); await page.evaluate(() => { document.getElementById('how').hidden = true; window.__ffwd = 6; });
 await page.click('#bEditor'); await page.waitForSelector('#editor:not([hidden])');
 const st = () => page.evaluate(() => window.__wobbel.ed.state());
 const cell = async (x, y) => { const b = await page.locator('#edCv').boundingBox(), w = +(await page.textContent('#edW')), h = +(await page.textContent('#edH')); return { x: b.x + (x + .5) * b.width / w, y: b.y + (y + .5) * b.height / h }; };

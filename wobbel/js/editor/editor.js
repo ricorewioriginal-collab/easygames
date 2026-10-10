@@ -7,13 +7,14 @@ import { Custom } from './custom-levels.js';
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const PAINT = { 1: '#ff5a6a', 2: '#4cd964', 3: '#4aa8ff' }, CRATE_COL = { r: '#ff5a6a', g: '#4cd964', b: '#4aa8ff' }, TARGET_COL = { '.': '#ffd24a', R: '#ff5a6a', G: '#4cd964', B: '#4aa8ff' };
-const WALL_COL = { bush: ['#3fb04a', '#2a8a38'], rock: ['#a09a92', '#7e7870'], brick: ['#ff7aa8', '#d85a88'], ice: ['#b8ecff', '#7ed0f0'], castle: ['#a89ac8', '#8274a8'] };
+const WALL_COL = { bush: ['#3fb04a', '#2a8a38'], rock: ['#a09a92', '#7e7870'], ruin: ['#d9b97a', '#a98a50'], brick: ['#ff7aa8', '#d85a88'], ice: ['#b8ecff', '#7ed0f0'], castle: ['#a89ac8', '#8274a8'] };
 const TOOLS = [
   { id: '#', name: 'Wand', grp: 'Gelände' }, { id: ' ', name: 'Boden / Radierer', grp: 'Gelände' }, { id: '~', name: 'Wasser', grp: 'Gelände' }, { id: 'i', name: 'Eis', grp: 'Gelände' },
   { id: '@', name: 'Wobbel', grp: 'Figuren' }, { id: '$', name: 'Kiste', grp: 'Figuren' }, { id: 'r', name: 'Rote Kiste', grp: 'Figuren' }, { id: 'g', name: 'Grüne Kiste', grp: 'Figuren' }, { id: 'b', name: 'Blaue Kiste', grp: 'Figuren' },
   { id: '.', name: 'Zielfeld', grp: 'Ziele' }, { id: 'R', name: 'Rotes Ziel', grp: 'Ziele' }, { id: 'G', name: 'Grünes Ziel', grp: 'Ziele' }, { id: 'B', name: 'Blaues Ziel', grp: 'Ziele' },
   { id: '1', name: 'Roter Klecks', grp: 'Farbe' }, { id: '2', name: 'Grüner Klecks', grp: 'Farbe' }, { id: '3', name: 'Blauer Klecks', grp: 'Farbe' },
-  { id: 'k', name: 'Schlüssel', grp: 'Schloss' }, { id: 'D', name: 'Tür', grp: 'Schloss' }
+  { id: 'k', name: 'Schlüssel', grp: 'Schloss' }, { id: 'D', name: 'Tür', grp: 'Schloss' },
+  { id: '^', name: 'Pfeil hoch', grp: 'Ruinen' }, { id: '>', name: 'Pfeil rechts', grp: 'Ruinen' }, { id: 'v', name: 'Pfeil runter', grp: 'Ruinen' }, { id: '<', name: 'Pfeil links', grp: 'Ruinen' }, { id: 'x', name: 'Brüchiger Boden', grp: 'Ruinen' }
 ];
 
 // ---------------------------------------------------------------- Zeichnen einer Zelle (Raster-Ansicht)
@@ -31,6 +32,8 @@ function drawCell(g, ch, x, y, s, world, outside, dark) {
     case '.': case 'R': case 'G': case 'B': g.strokeStyle = TARGET_COL[ch]; g.lineWidth = Math.max(2, s / 9); g.beginPath(); g.arc(cx, cy, r * 0.58, 0, 7); g.stroke(); g.fillStyle = TARGET_COL[ch] + '66'; g.beginPath(); g.arc(cx, cy, r * 0.58, 0, 7); g.fill(); if (ch !== '.') { g.fillStyle = '#fff'; g.font = `900 ${s * 0.3}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'R' ? '●' : ch === 'G' ? '▲' : '■', cx, cy + 1); } break;
     case '$': g.fillStyle = '#7a4a28'; rr(x + s * .12, y + s * .12, s * .76, s * .76, s * .1); g.fill(); g.fillStyle = '#e8b062'; rr(x + s * .17, y + s * .17, s * .66, s * .66, s * .07); g.fill(); g.strokeStyle = '#a8683a'; g.lineWidth = Math.max(1.5, s / 14); g.beginPath(); g.moveTo(x + s * .2, y + s * .2); g.lineTo(x + s * .8, y + s * .8); g.moveTo(x + s * .8, y + s * .2); g.lineTo(x + s * .2, y + s * .8); g.stroke(); break;
     case 'r': case 'g': case 'b': g.fillStyle = '#1b2748'; rr(x + s * .12, y + s * .12, s * .76, s * .76, s * .1); g.fill(); g.fillStyle = CRATE_COL[ch]; rr(x + s * .17, y + s * .17, s * .66, s * .66, s * .07); g.fill(); g.fillStyle = '#fff7e0'; g.fillRect(cx - s * .06, y + s * .17, s * .12, s * .66); g.fillRect(x + s * .17, cy - s * .06, s * .66, s * .12); g.fillStyle = '#fff'; g.font = `900 ${s * 0.26}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'r' ? '●' : ch === 'g' ? '▲' : '■', cx, cy + 1); break;
+    case '^': case '>': case 'v': case '<': { const a = { '^': 0, '>': 1, v: 2, '<': 3 }[ch] * Math.PI / 2; g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#ff8a3d'; g.strokeStyle = '#7a3a10'; g.lineWidth = Math.max(1.5, s / 16); g.beginPath(); g.moveTo(0, -r * .62); g.lineTo(r * .5, -r * .02); g.lineTo(r * .18, -r * .02); g.lineTo(r * .18, r * .6); g.lineTo(-r * .18, r * .6); g.lineTo(-r * .18, -r * .02); g.lineTo(-r * .5, -r * .02); g.closePath(); g.fill(); g.stroke(); g.restore(); break; }
+    case 'x': g.strokeStyle = '#5a4020'; g.lineWidth = Math.max(1.5, s / 14); g.beginPath(); g.moveTo(x + s * .15, y + s * .2); g.lineTo(x + s * .45, y + s * .5); g.lineTo(x + s * .35, y + s * .85); g.moveTo(x + s * .45, y + s * .5); g.lineTo(x + s * .85, y + s * .4); g.moveTo(x + s * .6, y + s * .15); g.lineTo(x + s * .55, y + s * .45); g.stroke(); break;
     case 'k': g.font = `${s * 0.62}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('🔑', cx, cy + 1); break;
     case 'D': g.fillStyle = '#7a4a28'; rr(x + s * .14, y + s * .06, s * .72, s * .88, s * .12); g.fill(); g.fillStyle = '#c4824a'; rr(x + s * .2, y + s * .12, s * .6, s * .76, s * .08); g.fill(); g.strokeStyle = '#a8683a'; g.lineWidth = Math.max(1, s / 18); for (let i = 1; i < 3; i++) { g.beginPath(); g.moveTo(x + s * (0.2 + i * 0.2), y + s * .14); g.lineTo(x + s * (0.2 + i * 0.2), y + s * .86); g.stroke(); } g.fillStyle = '#ffd24a'; g.beginPath(); g.arc(cx + s * .12, cy, s * .06, 0, 7); g.fill(); break;
     case '@': g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(cx, cy + r * .62, r * .5, r * .16, 0, 0, 7); g.fill(); g.fillStyle = '#ff6fb0'; g.strokeStyle = '#1b2748'; g.lineWidth = Math.max(1.5, s / 14); g.beginPath(); g.ellipse(cx, cy + r * .08, r * .7, r * .62, 0, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#fff'; [-1, 1].forEach(k => { g.beginPath(); g.ellipse(cx + k * r * .26, cy - r * .08, r * .17, r * .2, 0, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#1b2748'; g.beginPath(); g.arc(cx + k * r * .26, cy - r * .04, r * .08, 0, 7); g.fill(); g.fillStyle = '#fff'; }); g.strokeStyle = '#1b2748'; g.beginPath(); g.arc(cx, cy + r * .22, r * .18, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); break;
@@ -105,18 +108,19 @@ export function initEditor(ctx) {   // ctx: {toast, sfx, playTest(def, opts), ba
   $('edSolve').onclick = () => { ctx.sfx('click'); solveNow(); };
   // ---------------------------------------------------------------- Testen / Lösung ansehen
   const defNow = () => ({ name: name.trim() || 'Mein Level', world, map: rows(), hint: '', par: verified ? verified.moves : 0 });
-  function test(opts) { const v = validate(rows()); if (v.errors.length) return; stopSolve(); ctx.sfx('click'); ctx.playTest(defNow(), Object.assign({ onSolved: r => { if (!verified || r.moves < verified.moves) verified = { moves: r.moves, pushes: r.pushes, by: 'spieler' }; }, onExit: () => { open(true); } }, opts || {})); }
+  function test(opts) { const v = validate(rows()); if (v.errors.length) return; stopSolve(); ctx.sfx('click'); ctx.playTest(defNow(), Object.assign({ onSolved: r => { if (!verified || r.moves < verified.moves) verified = { moves: r.moves, pushes: r.pushes, by: 'spieler' }; ctx.event && ctx.event('solved'); }, onExit: () => { open(true); } }, opts || {})); }
   $('edTest').onclick = () => test();
   function showSolution() { if (verified && verified.path) test({ autoplay: verified.path }); }
   // ---------------------------------------------------------------- Speichern / Teilen / Meine Level
   const nm = () => (name.trim() || 'Mein Level');
-  function save() { const e = Custom.save({ id, name: nm(), world, map: rows(), verified }); id = e.id; ctx.toast('Gespeichert in „Meine Level".'); ctx.sfx('place'); renderList(); return e; }
+  function save() { const e = Custom.save({ id, name: nm(), world, map: rows(), verified }); id = e.id; ctx.toast('Gespeichert in „Meine Level".'); ctx.sfx('place'); renderList(); ctx.event && ctx.event('save'); return e; }
   $('edSave').onclick = () => { if (validate(rows()).info.w) save(); };
   function shareLink(code) { return location.origin + location.pathname.replace(/index\.html$/, '') + '?code=' + code.slice(8); }
   function openShare(def) { const code = encode(def); $('shCode').value = code; $('shLink').value = shareLink(code); $('shDlg').hidden = false; $('shMsg').textContent = ''; $('shNative').hidden = !navigator.share; }
   $('edShare').onclick = () => { const v = validate(rows()); if (v.errors.length) { ctx.toast('Das Level hat noch Fehler – siehe Statusfeld.'); return; } if (!verified && !confirm('Das Level ist noch nicht als lösbar bestätigt. Trotzdem teilen?\n\n(Tipp: erst „Prüfen" oder „Testen")')) return; openShare(defNow()); };
   const copy = async (el, label) => { try { await navigator.clipboard.writeText(el.value); } catch (e) { el.select(); document.execCommand('copy'); } $('shMsg').textContent = label + ' kopiert ✓'; ctx.sfx('place'); };
   $('shCopyCode').onclick = () => copy($('shCode'), 'Code'); $('shCopyLink').onclick = () => copy($('shLink'), 'Link'); $('shClose').onclick = () => { $('shDlg').hidden = true; };
+  $('shIssue').onclick = () => { const code = $('shCode').value, url = 'https://github.com/ricorewioriginal-collab/easygames/issues/new?title=' + encodeURIComponent('Community-Level: ' + nm()) + '&body=' + encodeURIComponent('Name: ' + nm() + '\nAutor: \n\nCode:\n```\n' + code + '\n```\n'); window.open(url, '_blank', 'noopener'); };
   $('shNative').onclick = () => { navigator.share({ title: 'Wobbel-Level: ' + nm(), text: 'Schaffst du mein Wobbel-Level „' + nm() + '"?', url: $('shLink').value }).catch(() => {}); };
   function renderList() {
     const l = Custom.all(), box = $('myList'); if (!box) return;

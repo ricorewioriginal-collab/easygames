@@ -57,7 +57,7 @@ function melodie(cv, api) {
 // ---------------------------------------------------------------- 3. Wobbel-Huschen
 function huschen(cv, api) {
   const g = cv.getContext('2d'); const HOLE = Array.from({ length: 9 }, (_, i) => ({ x: 70 + (i % 3) * 110, y: 150 + ((i / 3) | 0) * 105 }));
-  let t, score, pops, spawn, over, fx;
+  let t, score, pops, spawn, over = true, fx;
   const reset = () => { t = 35; score = 0; pops = HOLE.map(() => null); spawn = .5; over = false; fx = []; };
   const L = loop(dt => {
     t -= dt; spawn -= dt; const lvl = 1 + (35 - t) / 12;
@@ -76,12 +76,39 @@ function huschen(cv, api) {
     api.hud(`⏱ ${Math.max(0, Math.ceil(t))} · ⭐ ${score}`);
   }
   cv.addEventListener('pointerdown', e => { if (over) return; const p = pos(cv, e); HOLE.forEach((h, i) => { const o = pops[i]; if (!o || Math.abs(p.x - h.x) > 46 || p.y < h.y - 50 || p.y > h.y + 40) return; pops[i] = null; const d = o.kind === 'crate' ? -2 : o.kind === 'gold' ? 3 : 1; score += d; api.sfx(d < 0 ? 'bad' : 'coin'); fx.push({ x: h.x, y: h.y - 20, t: 0, s: (d > 0 ? '+' : '') + d, c: d > 0 ? '#fff' : '#ff4a4a' }); }); });
-  return { start() { reset(); L.start(); }, stop() { L.stop(); } };
+  return { start() { reset(); L.start(); }, stop() { over = true; L.stop(); } };
+}
+
+// ---------------------------------------------------------------- 4. Kisten-Sortierer
+function sortier(cv, api) {
+  const g = cv.getContext('2d'), COL = ['#ff5a6a', '#4cd964', '#4aa8ff'], SYM = ['●', '▲', '■'], BIN = [[20, 372], [130, 372], [240, 372]];
+  let t, score, lives, cur, queue, over = true, fx, wob, keys = {};
+  const newCrate = () => ({ c: Math.floor(Math.random() * 3), y: 70, v: 0 });
+  const reset = () => { t = 40; score = 0; lives = 3; over = false; fx = []; wob = 0; cur = newCrate(); cur.v = 90; queue = [newCrate(), newCrate()]; };
+  const speed = () => 90 + (40 - t) * 4.5;
+  function answer(i) { if (over || !cur) return; if (i === cur.c) { score++; api.sfx('coin'); fx.push({ x: BIN[i][0] + 45, y: 360, t: 0, s: '+1', c: '#fff' }); wob = 1; } else { lives--; api.sfx('bad'); fx.push({ x: BIN[i][0] + 45, y: 360, t: 0, s: '✗', c: '#ff4a4a' }); } cur = queue.shift(); cur.v = speed(); cur.y = 70; queue.push(newCrate()); }
+  const L = loop(dt => {
+    t -= dt; wob = Math.max(0, wob - dt * 4); cur.y += cur.v * dt; fx.forEach(f => { f.t += dt; }); fx = fx.filter(f => f.t < .6);
+    if (cur.y > 340) { lives--; api.sfx('bad'); fx.push({ x: W / 2, y: 330, t: 0, s: 'zu spät!', c: '#ff4a4a' }); cur = queue.shift(); cur.v = speed(); cur.y = 70; queue.push(newCrate()); }
+    draw(); if (!over && (t <= 0 || lives <= 0)) { over = true; L.stop(); api.end(score); }
+  });
+  function crate(x, y, c, s) { g.fillStyle = '#1b2748'; g.beginPath(); g.roundRect(x - s / 2 - 3, y - s / 2 - 3, s + 6, s + 6, 10); g.fill(); g.fillStyle = COL[c]; g.beginPath(); g.roundRect(x - s / 2, y - s / 2, s, s, 8); g.fill(); g.fillStyle = '#fff7e0'; g.fillRect(x - 5, y - s / 2, 10, s); g.fillRect(x - s / 2, y - 5, s, 10); g.fillStyle = '#fff'; g.font = `700 ${s * .5}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(SYM[c], x, y + 2); }
+  function draw() {
+    bg(g, '#cfe9ff', '#8fb8e8'); g.fillStyle = '#6a7aa8'; g.fillRect(100, 40, 160, 300); g.fillStyle = '#4a5888'; g.fillRect(100, 336, 160, 8);
+    crate(W / 2, cur.y, cur.c, 54); queue.forEach((q, i) => crate(300 + 0, 100 + i * 50, q.c, 26));
+    BIN.forEach(([x, y], i) => { g.fillStyle = '#1b2748'; g.beginPath(); g.roundRect(x - 3, y - 3, 96, 96, 18); g.fill(); g.fillStyle = COL[i]; g.beginPath(); g.roundRect(x, y, 90, 90, 16); g.fill(); g.fillStyle = 'rgba(255,255,255,.9)'; g.font = '700 44px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(SYM[i], x + 45, y + 48); });
+    drawWobbel(g, 58, 440 - wob * 6, 22, api.look, false); fx.forEach(f => { g.globalAlpha = 1 - f.t / .6; g.fillStyle = f.c; g.font = '700 24px sans-serif'; g.textAlign = 'center'; g.fillText(f.s, f.x, f.y - f.t * 50); g.globalAlpha = 1; });
+    api.hud(`⏱ ${Math.max(0, Math.ceil(t))} · 📦 ${score}`); for (let i = 0; i < 3; i++) heart(g, W - 24 - i * 28, 22, i < lives);
+  }
+  cv.addEventListener('pointerdown', e => { const p = pos(cv, e); const i = BIN.findIndex(([x, y]) => p.x >= x - 4 && p.x <= x + 94 && p.y >= y - 10); if (i >= 0) answer(i); });
+  const kd = e => { const m = { 1: 0, 2: 1, 3: 2, ArrowLeft: 0, ArrowDown: 1, ArrowRight: 2, a: 0, s: 1, d: 2 }[e.key]; if (m !== undefined && !keys[e.key]) { keys[e.key] = true; answer(m); } }; addEventListener('keydown', kd); addEventListener('keyup', e => { keys[e.key] = false; });
+  return { start() { reset(); L.start(); }, stop() { over = true; L.stop(); } };
 }
 
 // per: Punkte je Muschel
 export const GAMES = [
   { id: 'perlen', name: 'Perlenfang', emoji: '🫧', desc: 'Fange Perlen, weiche Seeigeln aus. Bewege Wobbel mit Maus, Finger oder ← →.', per: 2, create: perlenfang, unit: 'Perlen' },
   { id: 'melodie', name: 'Melodie-Memory', emoji: '🎵', desc: 'Merk dir die Farbfolge und tippe sie nach – sie wird jede Runde länger.', per: 0.5, create: melodie, unit: 'Runden' },
+  { id: 'sortier', name: 'Kisten-Sortierer', emoji: '📦', desc: 'Tippe das Fach in der Farbe der fallenden Kiste (oder Tasten 1 2 3 / ← ↓ →). Es wird immer schneller.', per: 2, create: sortier, unit: 'Kisten' },
   { id: 'huschen', name: 'Wobbel-Huschen', emoji: '🔨', desc: 'Tippe die auftauchenden Wobbel. Goldene geben 3, Kisten kosten Punkte.', per: 2, create: huschen, unit: 'Punkte' }
 ];
