@@ -80,13 +80,13 @@ BI.createFun = function (G) {
   balloons.instanceColor.needsUpdate = true; let nbl = 0;
   /* freie Pappnase: steigt auf – wer sie fängt, bekommt einen Stern */
   const paps = []; for (let i = 0; i < 3; i++) { const q = G.makePappnase(); q.group.visible = false; scene.add(q.group); paps.push({ q, on: false, x: 0, y: 0, z: 0, vy: 0, caught: false, ph: i * 3 }); }
-  function spawnPap(o) { const a = paps.find(c => !c.on) || paps[0]; a.on = true; a.caught = false; a.q.group.visible = true; a.x = o.x + Math.sin(o.h) * 2.2 + (Math.random() - .5) * 1.4; a.z = o.z + Math.cos(o.h) * 2.2 + (Math.random() - .5) * 1.4; a.y = .8; a.vy = 1.0; }
+  function spawnPap(o) { const a = paps.find(c => !c.on) || paps[0]; a.on = true; a.caught = false; a.q.group.visible = true; a.x = o.x + Math.sin(o.h) * 2.0 + (Math.random() - .5) * .8; a.z = o.z + Math.cos(o.h) * 2.0 + (Math.random() - .5) * .8; a.y = .8; a.vy = 1.0; }
   function updatePaps(dt, t) {
     const P = G.P, px = P.veh ? P.veh.x : P.x, py = (P.veh ? (P.veh.y || 0) : P.y) + 1.2, pz = P.veh ? P.veh.z : P.z;
     for (const a of paps) {
       if (!a.on) continue; a.y += a.vy * dt; a.x += Math.sin(t * 1.2 + a.ph) * .6 * dt; const g = a.q.group; g.position.set(a.x, a.y, a.z);
       g.rotation.y = Math.atan2(G.camera.position.x - a.x, G.camera.position.z - a.z); g.rotation.z = Math.sin(t * 2 + a.ph) * .12;
-      if (!a.caught && Math.hypot(a.x - px, a.z - pz) < 2.7 && Math.abs(a.y + .6 - py) < 3) { a.caught = true; a.vy = 6; A.giggle(); G.addStars(1); G.say('🎈 Pappnase gefangen! 😂 +1 ⭐', 2400); fx.burst(a.x, a.y + .6, a.z, 14, [BI.C.pink, BI.C.gold, BI.C.white], 4, 1, 28, -1); }
+      if (!a.caught && Math.hypot(a.x - px, a.z - pz) < 3.2 && Math.abs(a.y + .6 - py) < 3) { a.caught = true; a.vy = 6; A.giggle(); G.addStars(1); G.say('🎈 Pappnase gefangen! 😂 +1 ⭐', 2400); fx.burst(a.x, a.y + .6, a.z, 14, [BI.C.pink, BI.C.gold, BI.C.white], 4, 1, 28, -1); }
       if (a.y > 70) { a.on = false; g.visible = false; }
     }
   }
