@@ -328,6 +328,14 @@ const pl = await page.evaluate(async () => {
   return out;
 });
 ok(Object.values(pl).every(Boolean), `Freibad: Rutsche, Schwimmen, Sprungturm, Eis-Kiosk, Umkleide, Sticker (${JSON.stringify(pl)})`);
+// Bauen: alle neuen Sims-Teile (Bauernhof + Sommer) lassen sich setzen
+const bi = await page.evaluate(async () => {
+  const b = window.__bi, B = b.build, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.toggleBuild(); await sleep(200);
+  const types = Object.keys(B.CAT).filter(k => B.CAT[k].tab >= 3); let placed = 0, tried = 0, gz = -30, gx = -30;
+  outer: for (let a = -30; a < 30 && placed < types.length; a++) for (let c = -30; c < 30; c++) { if (placed >= types.length) break outer; const t = types[placed]; if (B.canPlace(t, c, a, 0) && B.canPlace('floor', c + 1, a, 0)) { B.setType(t); B.setCursor(c * 4, a * 4); await sleep(30); tried++; if (B.place()) placed++; c += 1; } }
+  await sleep(500); const n = B.count; B.toggleBuild ? 0 : 0; b.toggleBuild(); B.clearAll(); return { types: types.length, placed, n, tabs: B.TABS.length };
+});
+ok(bi.types >= 20 && bi.placed === bi.types && bi.tabs === 5, `Sims-Teile Bauernhof & Sommer: ${bi.placed} von ${bi.types} neuen Teilen gebaut, ${bi.tabs} Reiter`);
 // Spielstände: 3 Plätze, Sichern/Laden per Datei, Wechseln lädt den richtigen Stand
 const sv = await page.evaluate(() => { const b = window.__bi; b.save.stars += 7; b.saveNow(); const S = window.BI.store, o = S.exportSlot(1); const ok3 = S.importSlot(3, o); return { stars: b.save.stars, i1: S.info(1), i3: S.info(3), i2: S.info(2), ok3, hasBuild: !!o.data.build, keys: Object.keys(o.data).join(',') }; });
 ok(sv.ok3 && sv.i1.stars === sv.stars && sv.i3.stars === sv.stars && !sv.i2.has && sv.hasBuild, `Spielstand sichern/laden: Platz 1 → Platz 3 kopiert (${sv.stars} Sterne, Platz 2 leer, ${sv.keys})`);
