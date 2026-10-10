@@ -16,6 +16,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
 | AnMaCha Kart Rush – 3D-Arcade-Kartrennen, Splitscreen mit Handys als Lenkrad (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-kart/`](anmacha-kart/) |
 | AnMaCha Gold Reels – moderner Video-Slot mit Spielgeld, 5 Walzen, 20 Linien, Freispielen (reines JavaScript/Canvas) | [`anmacha-gold-reels/`](anmacha-gold-reels/) |
+| AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
@@ -218,3 +219,11 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Symbole:** Selbst gezeichnete Casino-Klassiker (Sieben, Diamant, Krone, Glocke, Kirschen, Kleeblatt, Hufeisen) plus zwei Sender-Logos, Wild und Bonus-Stern. Keine fremden Marken oder Namen.
 - **Features:** Wild ersetzt alle außer Bonus, 3+ Bonus-Sterne geben 10 Freispiele mit doppeltem Gewinn (Retrigger +5), Big/Mega/Super-Mega-Win-Anzeige, Auto-Spin, Turbo, 7 Einsatzstufen, Gewinntabelle, Sounds per WebAudio.
 - **Technik:** Logik in `slot.js` (ohne Grafik, Auszahlungsquote ca. 95 % simuliert), Darstellung per Canvas in `index.html`, Guthaben lokal gespeichert.
+
+## AnMaCha Markthalle 24
+
+- **Spiel:** Supermarkt-Simulator in der Draufsicht. Du bestellst Ware im Großhandel (Lieferung am nächsten Morgen), räumst Kartons von der Rampe in Regale, kassierst und baust den Laden aus. Alle Marken, Waren und Namen sind selbst erfunden.
+- **Umfang:** 55 Waren in 12 Warengruppen (Lizenzen), Regale, Kühlung, Tiefkühltruhen, Quengelzone, Kassen & Selbstbedienungskassen, freies Layout mit Anbau (4 Ladengrößen), Personal (Kasse, Regalauffüller, Reinigung, Wachmann, Regalbot), 10 Ausbauten, Kredit, Tagesziele, 20 Stufen, Haltbarkeit & Reduzieren, Diebe, Pfützen, Stromausfälle, Hygiene-Kontrolle.
+- **Besonderheiten:** eigener Radiosender „Markt-Funk 24“ (Musikstil lockt Kundentypen, Werbespots machen Waren zum Tageshit), Preis-Duell mit dem Konkurrenten „Billigo“ (Preisradar), Kunden mit Rezept-Einkäufen (Bonus bei vollständigem Set), Stammkunden mit Namen und Treue, Laufweg-Heatmap, Wetter-Vorhersage, Wunschzettel der Kunden.
+- **Steuerung:** WASD/Pfeile + E/Leertaste (PC), Joystick + Aktionsknopf (Handy). Regale, Rampe und Kassen antippen für Preise & Infos. Zeit pausiert, solange ein Fenster offen ist.
+- **Technik:** Spielkern `sim.js` (ohne Grafik, per Skript getestet), Daten `data.js`, Darstellung `game.js` (Canvas), Spielstand lokal im Browser.
