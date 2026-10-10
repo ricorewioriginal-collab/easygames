@@ -24,6 +24,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0}
 #stars span.ic{font-size:26px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
 #stars.pop{animation:pop .45s ease}
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+#mMin{pointer-events:auto;width:26px;height:26px;border-radius:50%;background:rgba(20,50,100,.12);font-size:18px;line-height:1;font-weight:700;color:var(--ink);flex:none}#mission.min{width:auto!important;padding:5px 12px 5px 8px;gap:6px}#mission.min #mBody,#mission.min #mMin{display:none}#mission.min #mDist{font-size:13px}
 #mission{position:absolute;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);width:min(440px,calc(100% - 330px));display:flex;align-items:center;gap:10px;padding:8px 14px 8px 10px;border-radius:22px}
 #mIcon{font-size:34px;flex:none}
 #mBody{flex:1;min-width:0;line-height:1.15}
@@ -123,6 +124,7 @@ body.ranging #joy,body.ranging .abtn,body.ranging #leftTools,body.ranging #missi
 #menu{grid-template-columns:minmax(0,1fr)}
 #menu .mwrap{display:flex;min-width:0;flex-direction:column;align-items:center;gap:8px;width:min(460px,100%)}
 .ttl{display:flex;justify-content:center;flex-wrap:wrap;column-gap:2px;font-size:clamp(46px,13vw,80px);font-weight:700;line-height:1.02;filter:drop-shadow(0 4px 0 #fff) drop-shadow(0 10px 14px rgba(20,50,100,.35))}
+.ttl .w{display:inline-flex;flex-wrap:nowrap}.ttl{row-gap:0}
 .ttl span{-webkit-text-stroke:7px #fff;paint-order:stroke fill;display:inline-block;animation:bob 2.6s ease-in-out infinite;animation-delay:calc(var(--i)*.13s)}.ttl i{display:inline-block;width:.32em}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-9px) rotate(2.5deg)}}
 .tag{font-weight:700;font-size:clamp(15px,4vw,19px);color:#fff;text-shadow:0 2px 0 rgba(22,51,94,.55),0 0 12px rgba(22,51,94,.35);letter-spacing:.5px}
@@ -189,8 +191,8 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 #seedGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}#seedGrid button{background:#fff;border-radius:16px;padding:8px 2px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;font-weight:700;font-size:13px}#seedGrid button b{font-size:34px}#seedGrid button small{opacity:.6;font-size:11px}#seedGrid button:active{background:#d9ffd9}
 #bookGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}@media (min-width:640px){#bookGrid{grid-template-columns:repeat(5,1fr)}}#bookGrid .stk{cursor:pointer}
 @media (max-height:520px){#seedGrid button b{font-size:26px}#seedGrid{gap:5px}}
-.gc2{background:#fff;border-radius:16px;padding:8px 6px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:13px}.gc2 b{font-size:30px}.gc2 .gb button{padding:4px 6px;font-size:12px}
-#guideGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}@media (min-width:700px){#guideGrid{grid-template-columns:repeat(5,1fr)}}#guidePanel{z-index:11}#parentPanel{z-index:16}
+.gc2{min-width:0;word-break:break-word;text-align:center;background:#fff;border-radius:16px;padding:8px 6px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:13px}.gc2 b{font-size:30px}.gc2 .gb button{padding:4px 6px;font-size:12px}
+#guideGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media (min-width:520px){#guideGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (min-width:760px){#guideGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}#guidePanel .card{max-width:min(760px,100%);box-sizing:border-box}#guidePanel .logo .em{-webkit-text-fill-color:initial;background:none}#guidePanel{z-index:11}#parentPanel{z-index:16}
 .parent{text-align:left;font-weight:700}.parent label{display:flex;gap:10px;align-items:center;margin:8px 0}.parent input[type=range]{flex:1}#bParent{background:linear-gradient(90deg,#ffd23f var(--p,0%),#fff var(--p,0%))}
 </style>
 </head>
@@ -205,6 +207,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
     <div id="mIcon">🚗</div>
     <div id="mBody"><div id="mTitle"></div><div id="mText"></div></div>
     <div id="mNav"><span id="mArrow">➤</span><div id="mDist"></div></div>
+    <button id="mMin" aria-label="Aufgaben-Kachel ein-/ausklappen">–</button>
   </div>
   <div id="topR">
     <div id="tools">
@@ -319,7 +322,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 </section>
 <section id="guidePanel" class="screen" hidden>
   <div class="card shop">
-    <div class="logo" style="font-size:30px">🧭 Wohin möchtest du?</div>
+    <div style="font-size:34px;line-height:1">🧭</div><div class="logo" style="font-size:28px">Wohin möchtest du?</div>
     <div class="sub" style="margin:4px 0 8px">Ich zeige dir den Weg – oder zaubere dich hin ✨</div>
     <div id="guideGrid"></div>
     <button class="big" id="guideClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✖ Zurück</button>
@@ -478,6 +481,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/room.js"></script>
 <script src="js/camp.js"></script>
 <script src="js/weather.js"></script>
+<script src="js/talk.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

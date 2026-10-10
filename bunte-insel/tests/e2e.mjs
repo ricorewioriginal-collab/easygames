@@ -423,5 +423,20 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const cp = b.W.spots.camp; b.P.x = cp.x; b.P.z = cp.z + 3.4; await new Promise(r => setTimeout(r, 300)); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); o.open = b.camp.open; document.querySelector('#storyList button').click(); o.txt = document.getElementById('storyText').textContent.length > 20; b.camp.close(); return o; });
   ok(r.in, 'Fahrrad: einsteigen klappt'); ok(r.src === 'camp' && r.open && r.txt, 'Camp: Geschichte am Lagerfeuer'); await c.close();
 }
+{ // Spielstand löschen, Aufgaben-Kachel, Leute erzählen, Elternnamen, Titel
+  const c = await browser.newContext({ viewport: { width: 340, height: 700 }, hasTouch: true, isMobile: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 });
+  const ttl = await p.evaluate(() => [...document.querySelectorAll('#ttl .w')].map(w => w.getBoundingClientRect().height).every(h => h < 120) && document.querySelectorAll('#ttl .w').length === 2);
+  ok(ttl, 'Titel bricht auf schmalen Handys nicht mitten im Wort um');
+  await p.evaluate(() => { window.__bi.save.stars = 9; window.__bi.saveNow(true); }); await p.tap('#slotBar'); await p.waitForTimeout(200);
+  await p.evaluate(() => { const b = [...document.querySelectorAll('#slotList .slot.cur .sa button')].find(x => x.title === 'Löschen'); b.click(); b.click(); });
+  await p.waitForNavigation({ timeout: 8000 }).catch(() => { }); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 });
+  ok(await p.evaluate(() => window.__bi.save.stars === 0), 'Aktuellen Spielstand löschen klappt (bleibt nicht erhalten)');
+  await p.tap('#bStart'); await p.waitForTimeout(500);
+  const r = await p.evaluate(async () => { const b = window.__bi, o = {}, mc = document.getElementById('mission'); o.min = mc.classList.contains('min'); mc.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); o.open = !mc.classList.contains('min');
+    const n = b.npcs[2]; b.P.x = n.x + 1; b.P.z = n.z; await new Promise(r => setTimeout(r, 300)); const pn = b.placeNear(); o.src = pn && pn.src; if (pn) b.placeAct(pn); o.say = document.getElementById('toast').textContent.length > 10;
+    const f = b.flats[1]; b.P.x = f.mama.x + 1; b.P.z = f.mama.z; await new Promise(r => setTimeout(r, 300)); const fn = b.flatNear(); b.flatAct(fn); o.mama = document.getElementById('toast').textContent; return o; });
+  ok(r.min && r.open, 'Aufgaben-Kachel ist klein und lässt sich aufklappen'); ok(r.src === 'npc' && r.say, 'Leute auf der Insel erzählen etwas'); ok(/Mama Lena/.test(r.mama), 'Eltern haben eigene Namen (' + r.mama.slice(0, 20) + ')'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

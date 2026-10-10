@@ -97,6 +97,7 @@
   function mkNpc(x, z, o) {
     o = o || {}; const kid = !!o.kid, c = BI.makeChar({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], pants: rnd(PN), hair: rnd(HR), skin: o.skin || rnd(SK), hat: !kid && Math.random() < .15 ? 'cap' : kid && Math.random() < .3 ? 'party' : 'none', scale: kid ? .58 + Math.random() * .14 : .9 + Math.random() * .1 });
     const q = W.resolve(x, z, .6, {}), n = { c, x: q.x, z: q.z, h: Math.random() * TAU, tx: q.x, tz: q.z, wait: Math.random() * 3, phase: Math.random() * 6, hop: 0, spd: kid ? 2.4 + Math.random() * .9 : 1.4 + Math.random() * .9, kid, lead: o.lead || null, fd: o.fd || 0, fs: o.fs || 0 };
+    { const pool = kid ? BI.TALK.kids : BI.TALK.adults, L = kid ? (mkNpc.kc = (mkNpc.kc || 0) + 1) : (mkNpc.ac = (mkNpc.ac || 0) + 1), pe = pool[(L - 1) % pool.length]; n.p = { name: kid && L > pool.length ? pe[0] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : kid ? pe[0] : L > pool.length ? pe[0].split(' ')[1] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : pe[0], lines: pe[1], i: 0 }; }
     scene.add(c.group); npcs.push(n); return n;
   }
   const spot = () => W.randRoadPoint(Math.random, 0, 0, 0);
@@ -336,7 +337,7 @@
   function updateButtons(force) {
     const v = P.veh, near = state === 'play' && !v && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
     const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), rangeNear = state === 'play' && !rs.ui && nearRange(), flatN = state === 'play' && !rs.ui && !wardOpen ? flatNear() : null, placeN = state === 'play' ? placeNear() : null, chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
-    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : ''))].join('|');
+    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : ''))].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
     if (v) {
@@ -349,7 +350,7 @@
       }
       jump.hidden = false; horn.hidden = false;
     } else {
-      act.hidden = !(near || shopNear || chestNear || rangeNear || flatN || placeN); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + (flatN.k === 'mama' ? 'Mama' : 'Papa') + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', !!(near || shopNear || chestNear || rangeNear || flatN || placeN));
+      act.hidden = !(near || shopNear || chestNear || rangeNear || flatN || placeN); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', !!(near || shopNear || chestNear || rangeNear || flatN || placeN));
       jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
@@ -476,7 +477,8 @@
   function toggleVoice() { save.voice = save.voice === false; A.setVoice(save.voice); persist(); $('bVoice').classList.toggle('off', !save.voice); if (save.voice) A.speak('Ich lese dir alles vor!'); }
   A.voiceOn = save.voice !== false; $('bVoice').classList.toggle('off', !A.voiceOn); $('bVoice').addEventListener('click', toggleVoice);
   let spoke = ''; const readMission = () => { const M = mission; A.speak(M ? M.steps[M.i].type === 'tstop' ? phaseText(M.steps[M.i]) : M.steps[M.i].label : $('mText').textContent); };
-  $('mission').addEventListener('pointerdown', e => { e.stopPropagation(); A.resume(); readMission(); });
+  { const mc = $('mission'); mc.classList.toggle('min', save.mmin !== false);
+    mc.addEventListener('pointerdown', e => { e.stopPropagation(); A.resume(); if (mc.classList.contains('min')) { mc.classList.remove('min'); save.mmin = false; persist(); } else if (e.target.id === 'mMin') { mc.classList.add('min'); save.mmin = true; persist(); } else readMission(); }); }
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
   function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } setStick(0, 0); stick.id = drag.id = null; sKnob.style.transform = 'translate(0,0)'; }
   function startPlay() {
@@ -886,7 +888,7 @@
     const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * h / w); const c = cv.getContext('2d'); c.font = 'bold ' + fs + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 12; c.strokeStyle = '#16335e'; c.strokeText(txt, 256, cv.height / 2 + 3); c.fillStyle = '#fff'; c.fillText(txt, 256, cv.height / 2 + 3);
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, h, 1); return sp;
   }
-  const PARENT = [[{ shirt: 0xff6fae, pants: 0x7a5ce0, hair: 0x6b4423, style: 'ponytail', dress: true, name: 'Mama' }, { shirt: 0x4da3ff, pants: 0x3d4a7a, hair: 0x222222, name: 'Papa', hat: 'none' }], [{ shirt: 0xffd23f, pants: 0x3d4a7a, hair: 0xd9a441, style: 'long', dress: true, name: 'Mama', skin: 0xf3c9a0 }, { shirt: 0x4cd07d, pants: 0x5a3d2b, hair: 0x6b4423, name: 'Papa', skin: 0xf3c9a0 }], [{ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0x222222, style: 'bun', dress: true, name: 'Mama', skin: 0x8d5a3b }, { shirt: 0xff8a1f, pants: 0x2d6a4f, hair: 0x222222, name: 'Papa', skin: 0x8d5a3b }], [{ shirt: 0x2fae5a, pants: 0x7a3d6a, hair: 0xa14a2b, style: 'curly', dress: true, name: 'Mama' }, { shirt: 0xe8453c, pants: 0x3d4a7a, hair: 0x6b4423, name: 'Papa' }]];
+  const PARENT = [[{ shirt: 0xff6fae, pants: 0x7a5ce0, hair: 0x6b4423, style: 'ponytail', dress: true, name: 'Mama Anna' }, { shirt: 0x4da3ff, pants: 0x3d4a7a, hair: 0x222222, name: 'Papa Tom', hat: 'none' }], [{ shirt: 0xffd23f, pants: 0x3d4a7a, hair: 0xd9a441, style: 'long', dress: true, name: 'Mama Lena', skin: 0xf3c9a0 }, { shirt: 0x4cd07d, pants: 0x5a3d2b, hair: 0x6b4423, name: 'Papa Jonas', skin: 0xf3c9a0 }], [{ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0x222222, style: 'bun', dress: true, name: 'Mama Amara', skin: 0x8d5a3b }, { shirt: 0xff8a1f, pants: 0x2d6a4f, hair: 0x222222, name: 'Papa Kofi', skin: 0x8d5a3b }], [{ shirt: 0x2fae5a, pants: 0x7a3d6a, hair: 0xa14a2b, style: 'curly', dress: true, name: 'Mama Sophie' }, { shirt: 0xe8453c, pants: 0x3d4a7a, hair: 0x6b4423, name: 'Papa Max' }]];
   for (const f of flats) {
     f.mom = BI.makeChar(Object.assign({ scale: .92, skin: f.i === 2 ? 0x8d5a3b : f.i === 1 ? 0xf3c9a0 : 0xffd2a8 }, PARENT[f.i][0])); f.dad = BI.makeChar(Object.assign({ scale: 1 }, PARENT[f.i][1]));
     f.mom.group.position.set(f.mama.x, 0, f.mama.z); f.dad.group.position.set(f.papa.x, 0, f.papa.z); f.mom.group.rotation.y = 2.2; f.dad.group.rotation.y = -2.4; scene.add(f.mom.group, f.dad.group);
@@ -910,7 +912,7 @@
   }
   function flatAct(n) {
     if (n.k === 'room') { if (n.f.i === mySlot()) room.show(); else say('🛋️ Das ist nicht dein Zimmer – deins ist in deiner Wohnung!', 2600); } else if (n.k === 'bed') startSleep(n.f); else if (n.k === 'ward') openWard();
-    else { const l = PLINES[n.k]; say((n.k === 'mama' ? 'Mama' : 'Papa') + ': „' + l[(Math.random() * l.length) | 0] + '“', 3200); (n.k === 'mama' ? n.f.mom : n.f.dad).group.rotation.y = Math.atan2(P.x - (n.k === 'mama' ? n.f.mama.x : n.f.papa.x), P.z - (n.k === 'mama' ? n.f.mama.z : n.f.papa.z)); if (kissCd <= 0 && n.f.i === mySlot()) { kissCd = 45; addStars(1); A.star(); fx.burst(P.x, 2.2, P.z, 10, [BI.C.pink, BI.C.red], 3, 1.2, 28, -1); say('❤️ ' + (n.k === 'mama' ? 'Mama' : 'Papa') + ' drückt dich fest! +1 ⭐', 2400); } }
+    else { const l = PLINES[n.k]; say(PARENT[n.f.i][n.k === 'mama' ? 0 : 1].name + ': „' + l[(Math.random() * l.length) | 0] + '“', 3200); (n.k === 'mama' ? n.f.mom : n.f.dad).group.rotation.y = Math.atan2(P.x - (n.k === 'mama' ? n.f.mama.x : n.f.papa.x), P.z - (n.k === 'mama' ? n.f.mama.z : n.f.papa.z)); if (kissCd <= 0 && n.f.i === mySlot()) { kissCd = 45; addStars(1); A.star(); fx.burst(P.x, 2.2, P.z, 10, [BI.C.pink, BI.C.red], 3, 1.2, 28, -1); say('❤️ ' + PARENT[n.f.i][n.k === 'mama' ? 0 : 1].name + ' drückt dich fest! +1 ⭐', 2400); } }
   }
   function startSleep(f) { sl.t = 0; sl.f = f; sl.said = false; setStick(0, 0); fun.setDance(false); fadeEl.classList.add('on'); A.stopAll(); }
   function updateSleep(dt) {
@@ -946,6 +948,12 @@
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
+  function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
+  function talkNpc(n) {
+    const p = n.p, line = p.lines[p.i++ % p.lines.length]; n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
+    say('💬 ' + p.name + ': „' + line + '“', 5200); if (A.speak) A.speak(p.name.split(' ')[0] + ' sagt: ' + line);
+    const T = save.talked || (save.talked = []); if (!T.includes(p.name)) { T.push(p.name); persist(); if (T.length >= 5) kids.earn('chat'); }
+  }
   function placeNear() {
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
     const g = garden.near(); if (g) return { src: 'garden', n: g };
@@ -953,13 +961,14 @@
     if (camp.near()) return { src: 'camp' };
     if (farm.nearFarmer()) return { src: 'farmer' };
     const pn = pool.near(); if (pn) return { src: 'pool', n: pn };
+    { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
     const an = farm.animalNear(); if (an) return { src: 'animal', a: an };
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'] };
-  function placeLabel(n) { if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'animal') { if (!farm.milk()) farm.care('stroke'); }
+    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'animal') { if (!farm.milk()) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1137,7 +1146,7 @@
     });
   }
   buildHeroPicker($('heroPick')); buildHeroPicker($('wardPick'));
-  { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = [...'Bunte Insel'].map((ch, i) => ch === ' ' ? '<i></i>' : '<span style="--i:' + i + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join(''); }
+  { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = 'Bunte Insel'.split(' ').map((w, wi) => '<div class="w">' + [...w].map((ch, i) => '<span style="--i:' + (i + wi * 6) + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join('') + '</div>').join('<i></i>'); }
   const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; };
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
   const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? (i.pn || BI.heroById(i.hero).name) : 'Neu'; };
@@ -1162,7 +1171,7 @@
       mk('▶', 'go', 'Spielen', () => { if (s === SLOT) menuView('home'); else switchSlot(s); });
       if (i.has) mk('📤', '', 'Sichern (Datei)', () => { slotMsg(exportSlot(s) ? '📤 Datei „bunte-insel-spielstand-' + s + '.json“ gespeichert' : 'Nichts zu sichern'); });
       mk('📥', '', 'Aus Datei laden', () => { importTo = s; $('slotFile').value = ''; $('slotFile').click(); });
-      if (i.has) { const del = mk('🗑️', '', 'Löschen', () => { if (armDel === s) { armDel = 0; BI.store.clear(s); if (s === SLOT) { try { sessionStorage.setItem('bi_slot', String(s)); } catch (e) { } location.reload(); return; } slotMsg('🗑️ Spielstand ' + s + ' gelöscht'); renderSlots(); } else { armDel = s; del.classList.add('arm'); del.textContent = '❓'; slotMsg('Nochmal 🗑️ drücken zum Löschen'); setTimeout(() => { if (armDel === s) { armDel = 0; del.classList.remove('arm'); del.textContent = '🗑️'; } }, 3000); } }); }
+      if (i.has) { const del = mk('🗑️', '', 'Löschen', () => { if (armDel === s) { armDel = 0; if (s === SLOT) BI.store.frozen = true; BI.store.clear(s); if (s === SLOT) { try { sessionStorage.setItem('bi_slot', String(s)); } catch (e) { } location.reload(); return; } slotMsg('🗑️ Spielstand ' + s + ' gelöscht'); renderSlots(); } else { armDel = s; del.classList.add('arm'); del.textContent = '❓'; slotMsg('Nochmal 🗑️ drücken zum Löschen'); setTimeout(() => { if (armDel === s) { armDel = 0; del.classList.remove('arm'); del.textContent = '🗑️'; } }, 3000); } }); }
       box.appendChild(d);
     }
   }
@@ -1476,5 +1485,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { W, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { W, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, camp, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

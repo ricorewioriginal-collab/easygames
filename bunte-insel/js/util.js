@@ -12,7 +12,7 @@ BI.store = {
   KEYS: ['save', 'build', 'photos', 'art'], slot: 1,
   key(k, s) { s = s || this.slot; return 'bunteInsel.' + (s === 1 ? '' : 's' + s + '.') + k; },
   get(k, d) { try { const v = localStorage.getItem(this.key(k)); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); return true; } catch (e) { return false; /* ohne Speicher spielen */ } },
+  set(k, v) { if (this.frozen) return true; try { localStorage.setItem(this.key(k), JSON.stringify(v)); return true; } catch (e) { return false; /* ohne Speicher spielen */ } },
   meta() { try { return JSON.parse(localStorage.getItem('bunteInsel.meta')) || {}; } catch (e) { return {}; } },
   setMeta(m) { try { localStorage.setItem('bunteInsel.meta', JSON.stringify(m)); } catch (e) { } },
   /* Kurzinfo für die Spielstand-Karten */
