@@ -9,6 +9,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
 | AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
+| AnMaCha Quest – 16-Bit-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest/`](anmacha-quest/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -125,3 +126,15 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Logos:** `anmacha-memory/logos/01.png|jpg|jpeg|webp`, `02` … lückenlos nummeriert, beliebig viele – jedes weitere Logo erzeugt automatisch ein weiteres Paar. `01`–`13` sind die Sender, `14` AnMaChaCast, `15` SenderWelt, `16` RicoReWi Radioportal. Die Namen stehen im Array `NAMES` in `index.html`.
 - **Titel-Logo:** `anmacha-memory/logo.png` ersetzt den Text-Titel im Menü.
 - **Steuerung:** Tippen/Klicken, `P` Pause, `M` Ton.
+
+## AnMaCha Quest: Das Große Rauschen (Godot 4, Web-Export)
+
+Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster, alle Grafiken werden beim Start per Code erzeugt (keine Bilddateien).
+
+- **Helden:** Andrew (Held), Marco (Magier), Teresa (Heilerin, ab Bass-Keller-Sieg), Rico (Schütze, ab Glitzerwiese-Sieg), Andy (Wächter, ab Frosthöhlen-Sieg).
+- **Spielablauf:** Funkhafen (Stadt mit Händlerin, Heilbrunnen) → Oberwelt „Frequenzia“ → 4 Reiche (Bass-Keller/Rap, Glitzerwiese/Schlager, Frosthöhle/Weihnachten, Vulkanbühne/Rock) → Rauschen-Turm. Jedes Reich hat Zufallskämpfe, Truhen, einen Schlüssel für das Tor zum Bossraum und einen Boss.
+- **Kampf:** rundenbasiert in Ich-Ansicht; Angriff, Fertigkeit (SP), **Spezial (IP-Leiste füllt sich, wenn Helden Schaden nehmen)**, Item, Wache, Flucht. Ausrüstung beim Händler, Stufenaufstieg, Speichern (Brunnen/Menü).
+- **Steuerung:** Pfeiltasten/WASD, `Leertaste`/`Enter` bestätigen, `Esc`/`M` Menü, am Handy Touch-Steuerkreuz und Tippen.
+- **Quellcode:** `anmacha-quest/godot/` ist ein normales Godot-4.3-Projekt (`main.gd` Spiel, `gfx.gd` Pixel-Grafik, `data.gd` Karten/Gegner/Werte). Neu exportieren: `godot --headless --path anmacha-quest/godot --export-release Web ../index.html` (Vorlage „Web“, ohne Threads, Renderer Compatibility). Selbsttest (Karten + Balance): `godot --headless --path anmacha-quest/godot -- --autotest`.
+- Schrift: Pixelify Sans (SIL Open Font License).
+
