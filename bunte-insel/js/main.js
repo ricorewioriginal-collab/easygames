@@ -2,7 +2,7 @@
 /* Bunte Insel – Spielschleife, Steuerung, Kamera, Missionen, Figuren, Tiere, Verkehr, Tag/Nacht */
 (function () {
   const $ = id => document.getElementById(id), K = BI.WORLD, A = BI.audio, clamp = BI.clamp, TAU = BI.TAU;
-  const save = Object.assign({ stars: 0, shirt: 0, hat: 0, sound: true, music: true, night: false, intro: false, hero: 'jannis', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
+  const save = Object.assign({ stars: 0, shirt: 0, hat: 0, sound: true, music: true, mpIcon: '🐶', night: false, intro: false, hero: 'jannis', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
   const persist = () => BI.store.set('save', save);
   const coarse = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
   const isTouch = () => document.body.classList.contains('touch');
@@ -342,6 +342,7 @@
     const c = miniC.getContext('2d'); c.clearRect(0, 0, miniC.width, miniC.height); c.drawImage(miniBase, 0, 0);
     const S = miniS * 2, k = S / (2 * K.MAP), X = x => S / 2 + x * k, Y = z => S / 2 + z * k;
     if (mission) { const s = mission.steps[mission.i]; const tx = s.type === 'spray' ? s.fx : s.x, tz = s.type === 'spray' ? s.fz : s.z; if (s.type !== 'lap') { c.fillStyle = '#ff2d55'; c.beginPath(); c.arc(X(tx), Y(tz), 7, 0, TAU); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.stroke(); } }
+    c.fillStyle = '#ff4f9a'; for (const a of remote.values()) { c.beginPath(); c.arc(X(a.x), Y(a.z), 5, 0, TAU); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); }
     c.fillStyle = '#7a5ce0'; for (const cr of train.cars) c.fillRect(X(cr.x) - 2, Y(cr.z) - 2, 4, 4);
     const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z, ph = P.veh ? P.veh.h : P.h;
     c.save(); c.translate(X(px), Y(pz)); c.rotate(Math.PI - ph); c.fillStyle = '#fff'; c.strokeStyle = '#1b2a4a'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0, -9); c.lineTo(6.5, 7); c.lineTo(0, 3.5); c.lineTo(-6.5, 7); c.closePath(); c.fill(); c.stroke(); c.restore();
@@ -401,6 +402,7 @@
   addEventListener('keydown', e => {
     if (e.repeat) { if (KMAP[e.code] || e.code === 'Space') e.preventDefault(); return; }
     A.resume();
+    if (mpOpen) { if (e.code === 'Escape') { mpBack(); e.preventDefault(); } else if (mpView === 'join') { if (e.code === 'Backspace') { joinCode = joinCode.slice(0, -1); renderJoin(); } else if (e.code === 'Enter') mpJoinGo(); else { const ch = net.normCode(e.key); if (ch && e.key.length === 1 && joinCode.length < 4) { joinCode += ch; renderJoin(); } } } return; }
     if (e.code === 'Escape' && rs.ui && state === 'play') { if (rs.ui === 'play' || rs.ui === 'result') exitRange(); else closeRangeUi(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
     if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu') { startPlay(); e.preventDefault(); } return; }
@@ -456,7 +458,7 @@
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
   function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } setStick(0, 0); stick.id = drag.id = null; sKnob.style.transform = 'translate(0,0)'; }
   function startPlay() {
-    A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true);
+    A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     if (!save.intro) say(isTouch() ? 'Links wischen = laufen · rechts wischen = Kamera drehen' : 'WASD/Pfeile = laufen · E = einsteigen · Maus ziehen = Kamera', 5200);
     else if (save.hero !== 'custom') say('Hallo Jannis! Los geht\'s ♥', 2400);
   }
@@ -580,6 +582,101 @@
     }
   }
 
+  /* ---------- Mitspielen (WebRTC): Freunde in derselben Welt ---------- */
+  const ICONS = ['🐶', '🐱', '🦁', '🐼', '🦄', '🐸', '🐯', '🐵'], remote = new Map(), mpEl = $('mpPanel');
+  let mpOpen = false, mpFrom = 'menu', mpView = 'choose', joinCode = '', netT = 0, lookSig = '', lookN = 0;
+  const myName = () => (save.mpIcon || '🐶') + ' ' + (save.hero === 'custom' ? 'Held' : 'Jannis');
+  const myLook = () => ({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, n: myName() });
+  function charFor(l) {
+    const E = l.eq || {}, acc = { glasses: !!E.glasses, pack: !!E.pack, teddy: !!E.teddy, patch: !!E.patch, cape: !!E.cape, wings: !!E.wings };
+    return l.hero === 'custom' ? BI.makeChar(Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', pants: 0x3d4a7a, name: l.n }, acc)) : BI.makeChar(Object.assign({ preset: 'jannis', name: l.n, hat: E.hat || 'none' }, acc));
+  }
+  const freeObj = o => { o.traverse(m => { if (m.geometry) m.geometry.dispose(); if (m.isSprite && m.material.map) m.material.map.dispose(); }); if (o.parent) o.parent.remove(o); };
+  function dropAvatar(av) { if (av.char) freeObj(av.char.group); if (av.gv) freeObj(av.gv.root); }
+  function updateFriends() { const n = net.count(), on = net.connected(); $('friends').hidden = !(on && state === 'play'); $('friendsN').textContent = n; }
+  const mpSay = m => { const el = $('mpStatus'); el.textContent = m || ''; el.classList.remove('err'); };
+  const mpErr = m => { const el = $('mpStatus'); el.textContent = m; el.classList.add('err'); };
+  function mpShow(v) {
+    mpView = v; for (const e of mpEl.querySelectorAll('[data-m]')) e.hidden = e.dataset.m !== v;
+    $('mpStop').hidden = !net.role; $('mpBack').textContent = v === 'on' || (v === 'host' && net.role) ? '▶ Weiter spielen' : '‹ Zurück';
+    if (v === 'on') renderMp(); if (v === 'join') renderJoin();
+  }
+  function renderMp() {
+    if (mpView !== 'on' && mpView !== 'host') return; const list = $('mpPlayers'); list.innerHTML = '';
+    for (const nm of [myName() + ' (du)'].concat([...remote.values()].map(a => a.name))) { const s = document.createElement('span'); s.className = 'mpp'; s.textContent = nm; list.appendChild(s); }
+    $('mpOnTxt').textContent = net.role === 'host' ? 'Dein Spiel läuft – Freunde können jederzeit beitreten:' : 'Du spielst in der Welt deines Freundes:'; $('mpOnCode').textContent = net.role === 'host' ? 'Code ' + net.code : '';
+  }
+  function renderJoin() { $('mpJoinCode').textContent = (joinCode + '····').slice(0, 4).split('').join(''); }
+  function openMp(from, view) {
+    mpFrom = from; mpOpen = true; setStick(0, 0); mpEl.hidden = false; mpSay(''); if (from === 'menu') $('menu').hidden = true;
+    const ic = $('mpIcons'); ic.innerHTML = ''; ICONS.forEach(i => { const b = document.createElement('button'); b.className = 'pill' + (save.mpIcon === i ? ' sel' : ''); b.textContent = i; b.setAttribute('aria-label', 'Tier ' + i); b.onclick = () => { save.mpIcon = i; persist(); [...ic.children].forEach(x => x.classList.toggle('sel', x === b)); }; ic.appendChild(b); });
+    mpShow(view || (net.role ? 'on' : 'choose'));
+  }
+  function closeMp() { mpOpen = false; mpEl.hidden = true; if (mpFrom === 'menu' && state === 'menu') $('menu').hidden = false; updateFriends(); updateButtons(true); }
+  function mpBack() { if (mpView === 'on' || mpView === 'choose' || (mpView === 'host' && net.role)) closeMp(); else if (net.role && net.connected()) mpShow('on'); else { if (net.role) net.close(true); mpShow('choose'); mpSay(''); } }
+  async function mpHost() {
+    mpShow('host'); mpSay('Einen Moment … 🌐'); $('mpCode').textContent = '····'; $('mpQr').innerHTML = '';
+    try {
+      const code = await net.host(); $('mpCode').textContent = code.split('').join(''); mpSay('Warte auf Freunde … 👀'); $('mpStop').hidden = false; $('mpBack').textContent = '▶ Weiter spielen';
+      net.loadQR().then(() => { const q = qrcode(0, 'M'); q.addData(net.link()); q.make(); $('mpQr').innerHTML = '<img alt="QR-Code" src="' + q.createDataURL(5, 0) + '" style="image-rendering:pixelated">'; }).catch(() => { });
+    } catch (e) { mpShow('choose'); mpErr('Keine Verbindung möglich – ist das Internet an? 🌐'); }
+  }
+  async function mpJoinGo() {
+    if (joinCode.length !== 4) { mpErr('Der Code hat 4 Zeichen 🙂'); return; }
+    mpSay('Verbinde … 🔌');
+    try { await net.join(joinCode); mpShow('on'); mpSay(''); }
+    catch (e) { mpErr(e.message === 'nocode' ? 'Diesen Code gibt es nicht 🤔' : e.message === 'timeout' ? 'Das hat zu lange gedauert. Nochmal versuchen?' : 'Keine Verbindung möglich 🌐'); }
+  }
+  const PAD = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'.split('');
+  { const pad = $('mpPad'); for (const ch of PAD) { const b = document.createElement('button'); b.textContent = ch; b.onclick = () => { if (joinCode.length < 4) { joinCode += ch; renderJoin(); } }; pad.appendChild(b); }
+    const del = document.createElement('button'); del.className = 'wide'; del.textContent = '⌫'; del.onclick = () => { joinCode = joinCode.slice(0, -1); renderJoin(); }; pad.appendChild(del);
+    const go = document.createElement('button'); go.className = 'go'; go.textContent = 'Los! ▶'; go.onclick = mpJoinGo; pad.appendChild(go); }
+  $('mpHost').addEventListener('click', mpHost); $('mpJoin').addEventListener('click', () => { joinCode = ''; mpSay(''); mpShow('join'); });
+  $('mpBack').addEventListener('click', mpBack); $('mpStop').addEventListener('click', () => { net.close(); mpShow('choose'); mpSay('Verbindung beendet.'); });
+  $('mpCopy').addEventListener('click', () => { try { navigator.clipboard.writeText(net.link()); mpSay('Link kopiert! 📋'); } catch (e) { mpSay(net.link()); } });
+  $('bMulti').addEventListener('click', () => openMp('menu')); $('bFriendsP').addEventListener('click', () => openMp('pause')); $('friends').addEventListener('click', () => openMp('play'));
+  const net = BI.createNet({
+    onMsg: d => {
+      if (d.t === 'full') { net.close(true); mpShow('choose'); mpErr('Das Spiel ist leider voll 😅'); return; }
+      if (d.t === 'bye') { const a = remote.get(d.id); if (a) { dropAvatar(a); remote.delete(d.id); say(a.name + ' ist gegangen 👋', 2200); updateFriends(); renderMp(); } return; }
+      if (d.t !== 's') return;
+      let a = remote.get(d.id);
+      if (!a) {
+        a = { id: d.id, char: null, gv: null, x: d.x, z: d.z, y: d.y || 0, h: d.h || 0, tx: d.x, tz: d.z, ty: d.y || 0, th: d.h || 0, sp: 0, a: 0, v: '', phase: Math.random() * 6, look: '', name: 'Freund' }; remote.set(d.id, a);
+        if (net.role === 'guest' && !P.veh) { const q = W.resolve(d.x + 2, d.z + 2, .5, {}); P.x = q.x; P.z = q.z; }
+      }
+      if (d.l && JSON.stringify(d.l) !== a.look) { a.look = JSON.stringify(d.l); if (a.char) freeObj(a.char.group); a.char = charFor(d.l); a.char.group.position.set(a.x, a.y, a.z); scene.add(a.char.group); const first = a.name === 'Freund'; a.name = d.l.n || 'Freund'; if (first) { say(a.name + ' ist dabei! 🎉', 2600); fx.burst(a.x, 2, a.z, 20, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6); A.fanfare(); } updateFriends(); renderMp(); }
+      a.tx = d.x; a.tz = d.z; a.ty = d.y || 0; a.th = d.h || 0; a.sp = d.sp || 0; a.a = d.a || 0; a.v = d.v || ''; a.vy = d.vy || 0;
+    },
+    onJoin: () => { lookSig = ''; netT = 0; updateFriends(); if (mpOpen && net.role === 'host' && mpView === 'host') mpShow('on'); if (net.role === 'guest') { say('Verbunden! 🎉', 2000); } },
+    onLeave: id => { const a = remote.get(id); if (a) { dropAvatar(a); remote.delete(id); say(a.name + ' ist gegangen 👋', 2200); } updateFriends(); renderMp(); },
+    onClosed: () => { for (const a of remote.values()) dropAvatar(a); remote.clear(); updateFriends(); if (mpOpen && mpView === 'on') { mpShow('choose'); mpSay('Verbindung beendet.'); } },
+    onStatus: m => mpSay(m)
+  });
+  { const m = /join=([A-Za-z0-9]{4})/.exec(location.hash || ''); if (m) { joinCode = net.normCode(m[1]); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } setTimeout(() => { openMp('menu', 'join'); mpJoinGo(); }, 400); } }
+  function sendNet(dt) {
+    if (!net.connected() || state !== 'play') return; const nw = performance.now(); if (nw - netT < 100) return; netT = nw;
+    const v = P.veh && !P.veh.spec.remote ? P.veh : null, tr = v && v.isTrain, o = v && !tr ? v : null, r1 = n => Math.round(n * 100) / 100;
+    const d = { t: 's', x: r1(o ? o.x : tr ? train.cars[0].x : P.x), z: r1(o ? o.z : tr ? train.cars[0].z : P.z), y: r1(o ? o.y || 0 : tr ? .6 : P.y), h: r1(o ? o.h : tr ? train.cars[0].h : P.h), sp: r1(o ? o.v : P.speed), v: o ? o.type : '', a: rs.ui === 'play' ? 3 : fun.dancing ? 1 : P.wave > 0 ? 2 : P.punchT > 0 ? 4 : 0 };
+    const sg = JSON.stringify(myLook()); if (sg !== lookSig || ++lookN > 40) { lookSig = sg; lookN = 0; d.l = myLook(); }
+    net.send(d);
+  }
+  function updateRemote(dt) {
+    for (const a of remote.values()) {
+      if (Math.hypot(a.tx - a.x, a.tz - a.z) > 25) { a.x = a.tx; a.z = a.tz; }
+      a.x = BI.damp(a.x, a.tx, 12, dt); a.z = BI.damp(a.z, a.tz, 12, dt); a.y = BI.damp(a.y, a.ty, 12, dt); a.h += BI.angDiff(a.h, a.th) * Math.min(1, dt * 10);
+      if (a.gv && a.gv.type !== a.v) { freeObj(a.gv.root); a.gv = null; }
+      if (a.v && !a.gv) { const v = new BI.Vehicle(a.v, a.x, a.z, a.h, {}); v.type = a.v; scene.add(v.root); a.gv = v; }
+      const inV = !!a.v && !!a.gv; if (a.char) a.char.group.visible = !inV;
+      if (inV) { a.gv.root.visible = true; a.gv.setPose(a.x, a.z, a.h); a.gv.y = a.y; a.gv.v = a.sp; a.gv.visual(dt, t, null); }
+      else if (a.char) {
+        const c = a.char, g = c.group; g.position.set(a.x, a.y, a.z); g.rotation.set(0, a.h, 0); a.phase += dt * (6 + a.sp * 1.2);
+        if (a.a === 1) { c.dance(t, 0); g.position.y += Math.abs(Math.sin(t * 8)) * .18; } else if (a.a === 4) c.punch((t * 2.5) % 1);
+        else if (a.a === 3) { c.pose(0, 0, false); c.armR.rotation.set(-1.45, 0, 0); } else c.pose(a.phase, a.sp > .3 ? Math.min(1.1, a.sp * .17) : 0, a.a === 2);
+      }
+    }
+  }
+
   /* ---------- Spaß, Bauen, Ego-Kamera, Held ---------- */
   const SHIP = W.ship; let chestCd = 0, wasOnDeck = false;
   const onDeck = () => !P.veh && P.y > 1.5 && W.onDeck(P.x, P.z);
@@ -681,6 +778,9 @@
   function applyHero() {
     const c = save.hero === 'custom'; $('bJannis').classList.toggle('sel', !c); $('bCustom').classList.toggle('sel', c); $('custom').hidden = !c; $('hello').textContent = c ? 'Wie sieht dein Held aus?' : 'Hallo Jannis! ♥';
   }
+  { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = [...'Bunte Insel'].map((ch, i) => ch === ' ' ? '<i></i>' : '<span style="--i:' + i + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join(''); }
+  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; };
+  $('bHero').addEventListener('click', () => menuView('hero')); $('bHeroBack').addEventListener('click', () => menuView('home'));
   $('bJannis').addEventListener('click', () => { save.hero = 'jannis'; persist(); applyHero(); buildChar(); });
   $('bCustom').addEventListener('click', () => { save.hero = 'custom'; persist(); applyHero(); buildChar(); });
   applyHero();
@@ -701,7 +801,7 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
@@ -962,7 +1062,7 @@
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); sendNet(dt);
     if (state === 'play') fun.update(dt, t); build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -977,5 +1077,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
