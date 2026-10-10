@@ -426,7 +426,7 @@ BI.buildWorld = function (scene) {
   { // Wohnblock „Haus Sonnenschein“: 4 Wohnungen (Wohnzimmer mit Eltern vorn, Kinderzimmer mit Bett + Kleiderschrank hinten)
     const X0 = -60, FW = 12, N = 4, ZF = -124, ZB = -140, ZI = -132, WH = 3.2, TT = .4, GL = 0xa8dcff, WD = 0x8a5a33, LT = 0xd9b88a;
     const WC = [0xffd6a8, 0xbfe8ff, 0xd8f5c4, 0xffc8e6], RC = [0xe8453c, 0x3f8cff, 0x4cd07d, 0xff8a1f], CAR = [0xff9a9a, 0x9ad0ff, 0xa8e6a8, 0xffc78a], BEDC = [0xff6b6b, 0x4da3ff, 0x6bd67e, 0xb36bff];
-    W.pads.push([X0 - 4, ZB - 4, X0 + FW * N + 4, ZF + 6]); W.spots.flats = [];
+    W.pads.push([X0 - 4, ZB - 14, X0 + FW * N + 4, ZF + 6]); W.spots.flats = [];
     st.rect(X0 - 2, ZF, X0 + FW * N + 2, ZF + 5, .035, 0xd9cfb8); // Vorplatz + Weg
     const wall = (x0, x1, z, c, gapA, gapB) => { // Wand entlang x von x0..x1 bei z, optional mit Türlücke gapA..gapB
       const seg = (a, b) => { if (b - a < .05) return; st.box((a + b) / 2, 0, z, b - a, WH, TT, c); W.addBox(a, z - TT / 2, b, z + TT / 2, false, WH); };
@@ -435,13 +435,13 @@ BI.buildWorld = function (scene) {
     for (let i = 0; i < N; i++) {
       const x0 = X0 + FW * i, x1 = x0 + FW, cx = x0 + FW / 2, c = WC[i], dk = 0xb08a64;
       st.rect(x0, ZI, x1, ZF, .05, LT); st.rect(x0, ZB, x1, ZI, .05, CAR[i]);                                  // Böden
-      wall(x0, x1, ZB, c); wall(x0, x1, ZF, c, cx - 1.3, cx + 1.3); wall(x0, x1, ZI, c, cx + 1.4, cx + 3.8);
+      wall(x0, x1, ZB, c, cx + 2.3, cx + 4.1); wall(x0, x1, ZF, c, cx - 1.3, cx + 1.3); wall(x0, x1, ZI, c, cx + 1.4, cx + 3.8);
       st.box(x0, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x0 - TT / 2, ZB, x0 + TT / 2, ZF, false, WH);
       if (i === N - 1) { st.box(x1, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x1 - TT / 2, ZB, x1 + TT / 2, ZF, false, WH); }
       // Haustür, Fenster, Fußmatte, Blumenkasten
       st.box(cx - 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx + 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx, 2.35, ZF + .1, 2.9, .16, .5, WD); st.box(cx, 0, ZF + 1, 2, .04, 1.2, RC[i]);
       for (const sx of [-4, 4]) { st.box(cx + sx, 1.0, ZF + .2, 2.3, 1.4, .08, GL); st.box(cx + sx, .95, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.65, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.0, ZF + .24, .1, 1.4, .1, 0xffffff); st.box(cx + sx, .55, ZF + .6, 2.3, .35, .4, 0x8a5a33); for (let k = 0; k < 5; k++) st.sph(cx + sx - 1 + k * .5, .85, ZF + .6, .16, [0xff5a8a, 0xffd23f, 0xff8a1f][k % 3], 0); }
-      st.box(cx + 2, 1.0, ZB + .22, 2.4, 1.3, .08, GL); st.box(cx + 2, 1.0, ZB + .25, .1, 1.3, .1, 0xffffff);                    // Fenster hinten
+      st.box(cx - 3.6, 1.5, ZB + .22, 1.8, 1.1, .08, GL); st.box(cx - 3.6, 1.5, ZB + .25, .1, 1.1, .1, 0xffffff);                    // Fenster hinten (über dem Bett)
       // Wohnzimmer: Teppich, Sofa, Fernseher, Esstisch, Pflanze
       st.rect(cx - 3.4, ZF - 6.2, cx + 1.4, ZF - 2.4, .062, 0xff8a8a);
       st.box(cx - 2.6, 0, ZI + 1.0, 3.2, .5, 1.1, 0x4da3ff); st.box(cx - 2.6, .5, ZI + .6, 3.2, .8, .3, 0x3d86e0); st.box(cx - 4.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); st.box(cx - 1.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); W.addBox(cx - 4.3, ZI + .2, cx - .9, ZI + 1.6, false, 1.2);
@@ -460,6 +460,7 @@ BI.buildWorld = function (scene) {
       W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
     }
     W.spots.flatBlock = { x0: X0, x1: X0 + FW * N, zB: ZB, zF: ZF };
+    BI.addPlaces(W, st);
     function shadeC(c) { const f = v => Math.max(0, Math.round(v * .8)); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); }
     W.shelter = (x, z) => { const q = W.spots.flatBlock; return x > q.x0 && x < q.x1 && z > q.zB - .5 && z < q.zF + .2 ? 2 : 0; };
   }

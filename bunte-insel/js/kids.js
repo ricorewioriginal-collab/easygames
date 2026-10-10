@@ -11,8 +11,10 @@ BI.createKids = function (G) {
     ['ride', '🚗', 'Erste Fahrt', 'Steig in ein Fahrzeug'], ['heli', '🚁', 'Hubschrauber-Pilot', 'Flieg mit dem Hubschrauber'], ['train', '🚂', 'Lokführer', 'Fahr den Zug'], ['boat', '⛵', 'Kapitän', 'Segle mit dem Boot'],
     ['shoot', '🎯', 'Zielschütze', 'Spiel in der Schießbude'], ['tree', '🌳', 'Baumhauer', 'Hau einen Baum'], ['build', '🏠', 'Baumeister', 'Bau ein Teil'], ['sleep', '😴', 'Gut geschlafen', 'Schlaf in deinem Bett'],
     ['photo', '📸', 'Fotograf', 'Mach ein Foto'], ['music', '🎹', 'Musikant', 'Spiel auf dem Klavier'], ['paint', '🎨', 'Maler', 'Mal ein Bild'], ['quiz', '🧠', 'Schlaukopf', 'Spiel ein Lernspiel'],
-    ['pet', '🐾', 'Tierfreund', 'Füttere dein Haustier'], ['treasure', '🗺️', 'Schatzsucher', 'Finde einen Schatz'], ['friend', '👥', 'Freunde', 'Spiel mit einem Freund'], ['mini', '🎮', 'Spielprofi', 'Spiel ein Mini-Spiel'],
-    ['bubble', '🫧', 'Seifenblasen', 'Puste Seifenblasen'], ['dance', '🕺', 'Tänzer', 'Tanz mit dem Dorf']
+    ['pet', '🐾', 'Haustierfreund', 'Füttere dein Haustier'], ['treasure', '🗺️', 'Schatzsucher', 'Finde einen Schatz'], ['friend', '👥', 'Freunde', 'Spiel mit einem Freund'], ['mini', '🎮', 'Spielprofi', 'Spiel ein Mini-Spiel'],
+    ['bubble', '🫧', 'Seifenblasen', 'Puste Seifenblasen'], ['dance', '🕺', 'Tänzer', 'Tanz mit dem Dorf'],
+    ['garden', '🌻', 'Gärtner', 'Ernte etwas im Garten'], ['farm', '🚜', 'Landwirt', 'Mäh ein Feld'], ['farmer', '👨‍🌾', 'Hofmeister', 'Schaff alle Aufgaben vom Bauern'], ['animal', '🐄', 'Tierfreund', 'Streichle ein Tier auf dem Hof'],
+    ['zoo', '📖', 'Tierforscher', 'Entdecke alle Tiere'], ['swim', '🏊', 'Schwimmer', 'Spring ins Freibad'], ['slide', '🛝', 'Rutschmeister', 'Rutsch die Wasserrutsche']
   ];
   K.stickers = ST;
   K.earn = function (id) {
