@@ -1187,7 +1187,7 @@ function frame(now) {
       if (done) {
         ready = true; $('bPlay').disabled = false; $('bPlay').textContent = 'PLAY';
         const n = rawLogos.filter(Boolean).length;
-        $('status').textContent = n ? `${n} Logo${n > 1 ? 's' : ''} geladen – ${tables.length} Tische` : 'Platzhalter-Tische – eigene Logos in „logos/“ ablegen (01.jpg … 13.jpg).';
+        $('status').textContent = n ? `${n} Logo${n > 1 ? 's' : ''} geladen – ${tables.length} Tische` : 'Platzhalter-Tische – Logos in „logos/“ ablegen (01 … 13, png oder jpg).';
       }
     }
     if (!tablesBuilt) return;
