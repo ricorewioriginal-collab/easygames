@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7fd2ff">
+<title>Bunte Insel</title>
+<meta name="description" content="Bunte Insel – Kinderspiel mit offener Welt: laufen, Auto, Motorrad, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Eiswagen und Zug fahren.">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16335e;--glass:rgba(255,255,255,.82);--pri:#ff8a1f;--blue:#2d8cff;--pink:#ff4f9a;--shadow:0 6px 18px rgba(20,50,100,.28)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#7fd2ff;font-family:'Fredoka',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none}
+canvas#cv{position:fixed;inset:0;width:100%;height:100%;display:block}
+#zone{position:fixed;inset:0;z-index:1;touch-action:none}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+#hud{position:fixed;inset:0;z-index:2;pointer-events:none;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+#hud button,#hud #mini{pointer-events:auto}
+.chip{background:var(--glass);border-radius:999px;box-shadow:var(--shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#stars{position:absolute;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));display:flex;align-items:center;gap:6px;padding:6px 16px 6px 10px;font-size:24px;font-weight:700}
+#stars span.ic{font-size:26px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+#stars.pop{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+#mission{position:absolute;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);width:min(440px,calc(100% - 330px));display:flex;align-items:center;gap:10px;padding:8px 14px 8px 10px;border-radius:22px}
+#mIcon{font-size:34px;flex:none}
+#mBody{flex:1;min-width:0;line-height:1.15}
+#mTitle{font-weight:700;font-size:15px;opacity:.7}
+#mText{font-weight:600;font-size:18px}
+#mNav{flex:none;text-align:center;width:54px}
+#mArrow{display:block;width:36px;height:36px;margin:0 auto;font-size:30px;line-height:36px;transition:transform .08s linear;color:var(--pink);text-shadow:0 2px 0 #fff}
+#mDist{font-size:13px;font-weight:700;opacity:.75}
+#topR{position:absolute;right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+#tools{display:flex;gap:6px}
+.tb{width:42px;height:42px;border-radius:50%;background:var(--glass);box-shadow:var(--shadow);font-size:20px;display:grid;place-items:center}
+.tb.off{opacity:.45}
+#mini{width:112px;height:112px;border-radius:50%;border:4px solid #fff;box-shadow:var(--shadow);background:#3aa8e8}
+.abtn{position:absolute;border-radius:50%;background:linear-gradient(160deg,#fff,#e6f1ff);box-shadow:0 6px 0 rgba(30,70,140,.28),var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;transition:transform .06s}
+.abtn b{font-size:30px;font-weight:600}.abtn small{font-size:11.5px;font-weight:700;margin-top:3px;opacity:.75}
+.abtn.down{transform:translateY(4px) scale(.96);box-shadow:0 2px 0 rgba(30,70,140,.28)}
+#bAct{right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));width:96px;height:96px;background:linear-gradient(160deg,#ffd45a,#ff9a1f)}
+#bAct.pulse{animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.1)}}
+#bHorn{right:calc(max(16px,env(safe-area-inset-right)) + 108px);bottom:max(18px,env(safe-area-inset-bottom));width:80px;height:80px;background:linear-gradient(160deg,#9fd2ff,#3f9bff)}
+#bJump{right:max(22px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 108px);width:76px;height:76px;background:linear-gradient(160deg,#bff2c4,#4cd07d)}
+#bAux{right:calc(max(16px,env(safe-area-inset-right)) + 100px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 96px);width:68px;height:68px;background:linear-gradient(160deg,#ffb0b0,#ff4a4a)}
+#stickBase{position:fixed;z-index:3;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:rgba(255,255,255,.28);border:3px solid rgba(255,255,255,.7);pointer-events:none;display:none}
+#stickBase.on{display:block}
+#stickKnob{position:absolute;left:34px;top:34px;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:var(--shadow)}
+#toast{position:fixed;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 124px);transform:translate(-50%,16px);opacity:0;z-index:4;background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:18px;font-weight:600;pointer-events:none;transition:.3s;max-width:calc(100% - 28px);text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#keys{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));font-size:13px;font-weight:600;opacity:.8;background:var(--glass);padding:6px 12px;border-radius:12px}
+body.touch #keys{display:none}
+.screen{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;overflow:auto}
+#menu{background:linear-gradient(180deg,rgba(90,190,255,.15),rgba(255,255,255,0) 40%,rgba(20,60,120,.35))}
+@media (min-width:860px){#menu{place-items:center end;padding-right:7vw}}
+.card{background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:32px;padding:22px 26px;text-align:center;box-shadow:0 14px 40px rgba(20,50,100,.35);width:min(480px,100%)}
+.logo{font-size:clamp(38px,9vw,58px);font-weight:700;line-height:1;letter-spacing:.5px;background:linear-gradient(90deg,#ff4f9a,#ff8a1f,#ffd23f,#4cd07d,#2d8cff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #fff)}
+.sub{margin:8px 0 14px;font-size:18px;font-weight:600;opacity:.8}
+.row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.sw{width:42px;height:42px;border-radius:50%;border:4px solid #fff;box-shadow:var(--shadow)}
+.sw.sel,.hat.sel{outline:4px solid var(--pri);outline-offset:2px}
+.hat{width:46px;height:46px;border-radius:14px;background:#fff;font-size:26px;box-shadow:var(--shadow)}
+.lab{font-size:15px;font-weight:700;opacity:.7;margin-top:8px}
+.big{margin-top:14px;font-size:26px;font-weight:700;color:#fff;padding:14px 38px;border-radius:999px;background:linear-gradient(180deg,#ffb23f,#ff7a1f);box-shadow:0 7px 0 #c25400,0 12px 22px rgba(0,0,0,.25)}
+.big:active{transform:translateY(4px);box-shadow:0 3px 0 #c25400}
+.vehicles{font-size:30px;margin-top:12px;letter-spacing:4px}
+.help{margin:12px 0 0;text-align:left;font-size:15px;line-height:1.5}
+.help b{display:inline-block;min-width:92px}
+#loading{position:fixed;inset:0;z-index:20;display:grid;place-items:center;text-align:center;background:#7fd2ff;font-size:22px;font-weight:600;padding:20px}
+@media (max-width:620px){#mission{top:calc(max(10px,env(safe-area-inset-top)) + 52px);left:max(10px,env(safe-area-inset-left));transform:none;width:calc(100% - 140px)}#mIcon{font-size:28px}#mText{font-size:16px}#mini{width:92px;height:92px}.tb{width:38px;height:38px;font-size:18px}}
+@media (max-height:430px){#mission{left:calc(max(10px,env(safe-area-inset-left)) + 96px);transform:none;width:calc(100% - 350px);padding:5px 10px}#mTitle{font-size:12px}#mText{font-size:15px}#mIcon{font-size:26px}#mini{width:84px;height:84px}#stars{font-size:20px;padding:4px 12px 4px 8px}.abtn{transform-origin:bottom right}#bAct{width:78px;height:78px}#bHorn{width:66px;height:66px;right:calc(max(16px,env(safe-area-inset-right)) + 90px)}#bJump{width:62px;height:62px;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 88px)}#bAux{width:56px;height:56px;right:calc(max(16px,env(safe-area-inset-right)) + 84px);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 78px)}.card{padding:12px 18px}.vehicles{display:none}.logo{font-size:36px}.sub{margin:4px 0 6px}.big{margin-top:8px;padding:10px 30px;font-size:22px}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="zone"></div>
+<div id="stickBase"><div id="stickKnob"></div></div>
+
+<div id="hud" hidden>
+  <div id="stars" class="chip"><span class="ic">⭐</span><span id="starN">0</span></div>
+  <div id="mission" class="chip" hidden>
+    <div id="mIcon">🚗</div>
+    <div id="mBody"><div id="mTitle"></div><div id="mText"></div></div>
+    <div id="mNav"><span id="mArrow">➤</span><div id="mDist"></div></div>
+  </div>
+  <div id="topR">
+    <div id="tools">
+      <button class="tb" id="bNight" aria-label="Tag und Nacht">🌙</button>
+      <button class="tb" id="bMusic" aria-label="Musik">🎵</button>
+      <button class="tb" id="bSound" aria-label="Ton">🔊</button>
+      <button class="tb" id="bPause" aria-label="Pause und Hilfe">❚❚</button>
+    </div>
+    <canvas id="mini" width="300" height="300"></canvas>
+  </div>
+  <button class="abtn" id="bAux" hidden><b>🚨</b><small>Sirene</small></button>
+  <button class="abtn" id="bJump"><b>⤒</b><small>Springen</small></button>
+  <button class="abtn" id="bHorn"><b>👋</b><small>Hallo!</small></button>
+  <button class="abtn" id="bAct" hidden><b>🚗</b><small>Einsteigen</small></button>
+  <div id="keys">WASD/Pfeile fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Turbo · F Sirene · N Nacht</div>
+</div>
+<div id="toast"></div>
+
+<section id="menu" class="screen" hidden>
+  <div class="card">
+    <div class="logo">Bunte Insel</div>
+    <div class="sub">Laufen, fahren, entdecken!</div>
+    <div class="vehicles">🚗 🏍️ 🚓 🚑 🚒 🚌 🚜 🍦 🚂</div>
+    <div class="lab">Wie sieht dein Held aus?</div>
+    <div class="row" id="swatches"></div>
+    <div class="row" id="hats"></div>
+    <button class="big" id="bStart">▶ Los geht's!</button>
+  </div>
+</section>
+
+<section id="pause" class="screen" hidden>
+  <div class="card">
+    <div class="logo" style="font-size:40px">Pause</div>
+    <p class="help"><b>Laufen</b> Joystick links / WASD<br><b>Kamera</b> rechts wischen / Maus ziehen<br><b>Einsteigen</b> Knopf <span>🚪</span> / E<br><b>Hupe</b> 📣 / Leertaste<br><b>Sirene</b> 🚨 / F (Polizei, Krankenwagen, Feuerwehr)<br><b>Turbo</b> 🚀 / Shift<br><b>Tag/Nacht</b> 🌙 / N</p>
+    <button class="big" id="bResume">▶ Weiter spielen</button>
+  </div>
+</section>
+
+<div id="loading">Bunte Insel lädt …</div>
+<noscript>Bitte JavaScript aktivieren.</noscript>
+
+<script>if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)document.body.classList.add('touch')</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/vehicles.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

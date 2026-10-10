@@ -28,6 +28,14 @@
   #cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.9);box-shadow:0 0 3px #000}#cross::before{left:8px;top:0;width:2px;height:18px}#cross::after{top:8px;left:0;height:2px;width:18px}
   body.v3.fps #cross{display:block}
   #goal{position:absolute;left:50%;top:8px;transform:translateX(-50%);padding:7px 16px;font-weight:800;font-size:clamp(12px,3.4vw,15px);z-index:3;pointer-events:none;text-align:center;max-width:94%;background:rgba(255,210,74,.92);color:#2a1700;border-color:#fff}
+  #carry{position:absolute;left:10px;top:8px;padding:6px 12px;font-weight:800;font-size:14px;z-index:3;pointer-events:none}
+  #namebox,#payov,#idov{position:fixed;inset:0;z-index:25;background:rgba(5,8,20,.9);display:grid;place-items:center;padding:14px;overflow:auto}
+  #namebox .in,#payov .in,#idov .in{width:min(460px,100%);padding:18px}
+  #namebox h2,#payov h2,#idov h2{margin:0 0 8px;font:900 22px 'Trebuchet MS',sans-serif;color:var(--y)}
+  .fld{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font:700 16px Inter,sans-serif;margin:4px 0 10px}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}.sw{width:38px;height:38px;border-radius:10px;border:3px solid transparent;cursor:pointer}.sw.on{border-color:#fff}
+  .money{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.money button{padding:12px 4px;font-size:15px}
+  .big{font:900 28px 'Trebuchet MS',sans-serif;color:var(--g);text-align:center;margin:6px 0}
   #tip{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);padding:6px 12px;font-weight:700;font-size:13px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
   #dock{display:flex;gap:6px;padding:6px 8px 8px;overflow-x:auto;position:relative;z-index:3;scrollbar-width:none}
   #dock::-webkit-scrollbar{display:none}
@@ -60,19 +68,22 @@
   <div id="hud">
     <a class="btn glass sm" href="../" title="Alle Spiele" style="text-decoration:none">←</a>
     <div class="chip glass"><span id="money">0 €</span></div>
-    <div class="chip glass"><span id="clock">Tag 1</span><span id="wx"></span></div>
+    <div class="chip glass" id="sname" style="max-width:34vw;overflow:hidden;text-overflow:ellipsis"></div><div class="chip glass"><span id="clock">Tag 1</span><span id="wx"></span></div>
     <div class="chip glass"><span id="stars"></span><div id="xpb"><i></i></div><small id="lvl">Stufe 1</small></div>
     <div class="sp glass" style="padding:3px"><button id="s0" title="Pause">⏸</button><button id="s1" class="on">1×</button><button id="s2">2×</button><button id="s3">4×</button></div>
     <button class="btn go" id="bOpen">LADEN ÖFFNEN</button>
   </div>
-  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="goal" class="glass" hidden></div><div id="tip" class="glass" hidden></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="goal" class="glass" hidden></div><div id="carry" class="glass" hidden></div><div id="tip" class="glass" hidden></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
-    <button class="btn glass" id="bView" title="Ansicht wechseln (V)">👁️ Vogelperspektive</button><button class="btn glass" data-p="markt">🛒 Markt</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
+    <button class="btn glass" id="bView" title="Ansicht wechseln (V)">👁️ Vogelperspektive</button><button class="btn glass" data-p="markt">💻 Bestell-PC</button><button class="btn glass" data-p="laden">🏪 Laden</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
     <button class="btn glass" data-p="radio">📻 Radio</button><button class="btn glass" data-p="up">⭐ Ausbau</button><button class="btn glass" data-p="stat">📊 Zahlen</button><button class="btn glass" data-p="ziele">🎯 Ziele</button><button class="btn glass" data-p="menu">☰ Menü</button>
   </div>
 </div>
 <div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px">✕ Schließen</button></div><div id="pb"></div></div></div>
 <div id="sum" hidden><div class="in" id="sb"></div></div>
+<div id="namebox" hidden><div class="in glass" id="nb"></div></div>
+<div id="idov" hidden><div class="in glass" id="io"></div></div>
+<div id="payov" hidden><div class="in glass" id="po"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="data.js"></script>
 <script src="sim.js"></script>
