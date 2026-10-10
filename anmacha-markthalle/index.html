@@ -27,6 +27,7 @@
   #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;z-index:3;pointer-events:none;display:none}
   #cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.9);box-shadow:0 0 3px #000}#cross::before{left:8px;top:0;width:2px;height:18px}#cross::after{top:8px;left:0;height:2px;width:18px}
   body.v3.fps #cross{display:block}
+  #goal{position:absolute;left:50%;top:8px;transform:translateX(-50%);padding:7px 16px;font-weight:800;font-size:clamp(12px,3.4vw,15px);z-index:3;pointer-events:none;text-align:center;max-width:94%;background:rgba(255,210,74,.92);color:#2a1700;border-color:#fff}
   #tip{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);padding:6px 12px;font-weight:700;font-size:13px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
   #dock{display:flex;gap:6px;padding:6px 8px 8px;overflow-x:auto;position:relative;z-index:3;scrollbar-width:none}
   #dock::-webkit-scrollbar{display:none}
@@ -64,7 +65,7 @@
     <div class="sp glass" style="padding:3px"><button id="s0" title="Pause">⏸</button><button id="s1" class="on">1×</button><button id="s2">2×</button><button id="s3">4×</button></div>
     <button class="btn go" id="bOpen">LADEN ÖFFNEN</button>
   </div>
-  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tip" class="glass" hidden></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="goal" class="glass" hidden></div><div id="tip" class="glass" hidden></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
     <button class="btn glass" id="bView" title="Ansicht wechseln (V)">👁️ Vogelperspektive</button><button class="btn glass" data-p="markt">🛒 Markt</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
     <button class="btn glass" data-p="radio">📻 Radio</button><button class="btn glass" data-p="up">⭐ Ausbau</button><button class="btn glass" data-p="stat">📊 Zahlen</button><button class="btn glass" data-p="ziele">🎯 Ziele</button><button class="btn glass" data-p="menu">☰ Menü</button>

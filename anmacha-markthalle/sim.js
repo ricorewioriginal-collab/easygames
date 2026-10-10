@@ -13,7 +13,7 @@ const Sim = (() => {
   function emptyDay() { return { rev: 0, cogs: 0, items: 0, served: 0, lost: 0, happy: 0, recipes: 0, stolen: 0, spawned: 0, units: {}, revBy: {}, miss: 0 }; }
   function create() {
     const S = { v: 1, day: 1, t: 0, simT: 0, phase: 'prep', money: 200000, xp: 0, level: 1, rep: 55, W: 18, H: 12, exp: 0, nid: 1, objs: [], ramp: [], backlog: [], orders: [], price: {}, mkt: {}, cf: {}, riv: {}, lic: {}, up: {}, staff: [], customers: [], police: [], fx: [], messes: [], regs: [], inv: [], loan: 0,
-      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
+      player: { x: 3.5, y: 9.5, vx: 0, vy: 0, carry: [], yaw: 0 }, weather: 'sonne', forecast: 'sonne', rivalSale: null, ev: [], radio: { on: true, genre: 'pop', ads: {} }, quests: [], today: emptyDay(), hist: [], summary: null, wish: {}, heat: [], spawnAcc: 0, closeT: 0, ccount: 0, log: [], autoOpen: false, strike: false, blackout: false, bestRev: 0, totalRev: 0, stars: 0, buzz: 0, assist: true, hints: true, reviews: [], ach: {}, tot: { recipes: 0, caught: 0, served: 0 } };
     Object.keys(D.CATS).forEach(c => { if (D.CATS[c].cost === 0) S.lic[c] = true; });
     Object.values(P).forEach(p => { S.mkt[p.id] = 1; S.cf[p.id] = 1; S.riv[p.id] = .97; S.price[p.id] = Math.round(p.ref * 1.12 / 5) * 5; });
     add(S, 'ramp', 1, 1); add(S, 'obst', 5, 2); add(S, 'obst', 8, 2); add(S, 'regal', 11, 2); add(S, 'kuehl', 14, 2); add(S, 'regal', 5, 6); add(S, 'kasse', 11, 7); add(S, 'radio', 15, 5);
@@ -226,8 +226,9 @@ const Sim = (() => {
   function addStock(S, o, box) { const room = cap(S, o) - o.qty; if (room <= 0) return 0; const mv = Math.min(room, box.n); o.age = (o.age * o.qty + (box.age || 0) * mv) / (o.qty + mv); o.qty += mv; box.n -= mv; return mv; }
 
   // ---------- Spieler ----------
+  const pl_run = S => !!S.player.run;
   function movePlayer(S, d) {
-    const pl = S.player, sp = 3.4; let vx = pl.vx, vy = pl.vy; const l = Math.hypot(vx, vy); if (l > 1) { vx /= l; vy /= l; }
+    const pl = S.player, sp = 3.4 * (pl_run(S) ? 1.55 : 1); let vx = pl.vx, vy = pl.vy; const l = Math.hypot(vx, vy); if (l > 1) { vx /= l; vy /= l; }
     const mv = (dx, dy) => { const nx = pl.x + dx, ny = pl.y + dy, r = .28; for (const [cx, cy] of [[nx - r, ny - r], [nx + r, ny - r], [nx - r, ny + r], [nx + r, ny + r]]) if (solid(S, Math.floor(cx), Math.floor(cy))) return false; pl.x = nx; pl.y = ny; return true; };
     mv(vx * sp * d, 0); mv(0, vy * sp * d);
   }
@@ -236,20 +237,47 @@ const Sim = (() => {
   function context(S, focus) {
     const pl = S.player; for (const c of S.customers) { if ((c.st === 'flee' || c.st === 'stun') && Math.hypot(pl.x - c.x, pl.y - c.y) < 1.6) return { a: 'stop', c, label: c.st === 'flee' ? '👊 Dieb schubsen!' : '🚔 Festhalten & Polizei rufen' }; }
     for (const r of S.objs) { if (r.k !== 'kasse') continue; const st = serviceTile(r); if (Math.hypot(pl.x - (st[0] + .5), pl.y - (st[1] + .5)) > 1.25) continue; const c = S.customers.find(x => x.st === 'pay' && x.reg_q === r.id); if (c) { const left = Math.ceil((c.svc - 1.1) / .75 - 1e-6); return { a: 'scan', c, label: left > 0 ? `📟 Scannen (${left} Artikel)` : '💶 Kassieren' }; } }
-    const near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.2), fd = o => rectDist(pl.x, pl.y, o) - (focus && o.id === focus.id ? 5 : 0);
+    const near = S.objs.filter(o => rectDist(pl.x, pl.y, o) < 1.5), fd = o => rectDist(pl.x, pl.y, o) - (focus && o.id === focus.id ? 5 : 0);
     if (pl.carry.length) { const b = pl.carry[0], sh = near.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} ins Regal räumen` }; }
     const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: '🧽 Pfütze wischen' };
     const rp = near.find(o => o.k === 'ramp'); if (rp) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.length) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
     const rd = near.find(o => o.k === 'radio'); if (rd) return { a: 'radio', o: rd, label: '📻 Radio an/aus' };
     return null;
   }
+  // ---------- Einräumen: Hilfsfunktionen, Einräum-Hilfe, Wegweiser ----------
+  const ratio = (S, o) => o.qty / Math.max(1, cap(S, o));
+  function shelfFor(S, b) {
+    const c = S.objs.filter(o => isShelf(o) && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && o.p !== b.p && fits(o, b.p))));
+    c.sort((a, d) => (d.p === b.p ? 1 : 0) - (a.p === b.p ? 1 : 0) || ratio(S, a) - ratio(S, d)); return c[0] || null;
+  }
+  const freeFor = (S, p) => S.objs.some(o => isShelf(o) && !o.p && fits(o, p)), isNew = (S, b) => !S.objs.some(o => isShelf(o) && o.p === b.p) && freeFor(S, b.p);
+  function boxIdx(S) { let bi = 0, bs = 9; S.ramp.forEach((b, i) => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p).sort((a, c) => ratio(S, a) - ratio(S, c))[0], r = o ? ratio(S, o) : isNew(S, b) ? .6 : 1.5; if (r < bs) { bs = r; bi = i; } }); return bi; }
+  function stockInto(S, o, b) { const pl = S.player; if (!o.p || (o.qty === 0 && o.p !== b.p)) { o.p = b.p; o.age = 0; o.disc = false; } const n = addStock(S, o, b); if (b.n <= 0) { const i = pl.carry.indexOf(b); if (i >= 0) pl.carry.splice(i, 1); } S.fx.push({ t: 'stock', n, p: b.p }); if (b.n > 0 && !shelfFor(S, b)) { const i = pl.carry.indexOf(b); if (i >= 0) { pl.carry.splice(i, 1); S.ramp.push(b); S.fx.push({ t: 'back', p: b.p }); } } return n; }
+  function pickBox(S) { const b = S.ramp.splice(boxIdx(S), 1)[0]; if (b) { S.player.carry.push(b); S.fx.push({ t: 'pick', p: b.p }); } flush(S); return b; }
+  function assistTick(S, d) {
+    if (S.assist === false || S.phase === 'summary') return; const pl = S.player; let busy = false;
+    if (pl.carry.length) { const b = pl.carry[0], sh = shelfFor(S, b); if (sh && rectDist(pl.x, pl.y, sh) < 1.4) { busy = true; pl.dw = (pl.dw || 0) + d; if (pl.dw > .3) { stockInto(S, sh, b); pl.dw = 0; } } }
+    else { const rp = S.objs.find(o => o.k === 'ramp'); if (rp && S.ramp.length && rectDist(pl.x, pl.y, rp) < 1.4 && S.ramp.some(b => isNew(S, b) || S.objs.some(o => isShelf(o) && o.p === b.p && ratio(S, o) < .75))) { busy = true; pl.dw = (pl.dw || 0) + d; if (pl.dw > .3) { pickBox(S); pl.dw = 0; } } }
+    if (!busy) pl.dw = 0;
+  }
+  function nextStep(S) {
+    if (S.phase === 'summary' || S.hints === false) return null; const pl = S.player, ctr = o => ({ x: o.x + o.w / 2, y: o.y + o.h / 2 });
+    const th = S.customers.find(c => c.st === 'flee' || c.st === 'stun'); if (th) return { txt: th.st === 'flee' ? '🚨 Dieb! Lauf hin und schubse ihn mit E' : '🚔 Noch mal E: festhalten & Polizei rufen', x: th.x, y: th.y, e: '🚨' };
+    if (S.phase === 'open' || S.phase === 'closing') { const r = S.objs.find(o => o.k === 'kasse' && S.customers.some(c => (c.st === 'pay' || c.st === 'queue') && c.reg_q === o.id)); if (r && !S.staff.some(s => s.k === 'kasse' && s.reg === r.id)) { const st = serviceTile(r); if (Math.hypot(pl.x - st[0] - .5, pl.y - st[1] - .5) > 1.2) return { txt: '💶 Kunden warten! Geh hinter die Kasse – dort scannst du mit E', x: st[0] + .5, y: st[1] + .5, e: '💶' }; } }
+    if (pl.carry.length) { const b = pl.carry[0], sh = shelfFor(S, b); if (sh) { const t = ctr(sh); return { txt: `${P[b.p].e} Bring den Karton zum markierten Regal – einfach hinlaufen, es räumt sich von selbst ein`, x: t.x, y: t.y, e: P[b.p].e }; } return { txt: '🔧 Kein Regal dafür frei – baue ein passendes Regal (Bauen) oder stell den Karton zurück', x: null, y: null }; }
+    const low = S.objs.filter(o => isShelf(o) && o.p && ratio(S, o) < (S.phase === 'prep' ? .7 : .45));
+    if (low.length) { const rp = S.objs.find(o => o.k === 'ramp'); if (S.ramp.some(b => low.some(o => o.p === b.p)) && rp) { const t = ctr(rp); return { txt: '📦 Hol einen Karton an der Warenannahme (markiert) – einfach hinlaufen', x: t.x, y: t.y, e: '📦' }; } if (S.ramp.length && rp) { const t = ctr(rp); return { txt: '📦 Hol einen Karton an der Warenannahme (markiert)', x: t.x, y: t.y, e: '📦' }; } return { txt: `🛒 ${P[low[0].p].name} wird knapp – bestelle im Markt (Lieferung morgen früh)`, x: null, y: null }; }
+    const fresh = S.ramp.find(b => isNew(S, b)), rp2 = S.objs.find(o => o.k === 'ramp'); if (fresh && rp2) { const t = ctr(rp2); return { txt: `📦 Neue Ware an der Warenannahme (${P[fresh.p].name}) – hol den Karton, er kommt ins freie Regal`, x: t.x, y: t.y, e: '📦' }; }
+    if (S.phase === 'prep') return { txt: '▶ Alles bereit! Oben auf „Laden öffnen“ tippen.', x: null, y: null };
+    return null;
+  }
   function act(S, focus) {
     const c = context(S, focus); if (!c) return null; const pl = S.player;
     if (c.a === 'stop') { const t = c.c; if (t.st === 'flee') { giveBack(S, t); t.loot = false; t.st = 'stun'; t.stun = 4.5; t.stars = 1; bub(t, '💥'); t.bt = 1.3; S.xp += 3; S.fx.push({ t: 'smack' }); } else if (t.st === 'stun') hold(S, t, 'player'); }
     else if (c.a === 'scan') { c.c.svc = Math.max(0, c.c.svc - .78); S.xp += .05; }
-    else if (c.a === 'stock') { const b = pl.carry[0]; if (!c.o.p || (c.o.qty === 0 && c.o.p !== b.p)) { c.o.p = b.p; c.o.age = 0; c.o.disc = false; } addStock(S, c.o, b); if (b.n <= 0) pl.carry.shift(); }
+    else if (c.a === 'stock') stockInto(S, c.o, pl.carry[0]);
     else if (c.a === 'clean') { S.messes = S.messes.filter(m => m !== c.m); S.xp += 1; }
-    else if (c.a === 'pick') { let bi = 0, bs = 9; S.ramp.forEach((b, i) => { const o = S.objs.filter(x => isShelf(x) && x.p === b.p).sort((a, cc) => a.qty / cap(S, a) - cc.qty / cap(S, cc))[0]; const r = o ? o.qty / cap(S, o) : 1.5; if (r < bs) { bs = r; bi = i; } }); const b = S.ramp.splice(bi, 1)[0]; if (b) pl.carry.push(b); flush(S); }
+    else if (c.a === 'pick') pickBox(S);
     else if (c.a === 'back') { S.ramp.push(pl.carry.pop()); }
     return c;
   }
@@ -294,13 +322,13 @@ const Sim = (() => {
     if (S.phase === 'closing') { S.closeT += d; if (S.closeT > 40) S.customers.forEach(c => { if (c.st !== 'leave' && c.st !== 'pay' && !WANTED.includes(c.st)) { const r = obj(S, c.reg_q); if (r) r.q = r.q.filter(i => i !== c.id); finish(S, c, true); leaveFor(S, c); } }); }
     S.orders.some(o => o.when === 'express') && deliver(S, 'express'); if (S.backlog.length) flush(S);
     while (S.xp >= lvlNeed(S.level) && S.level < 20) { S.level++; note(S, `⭐ Stufe ${S.level} erreicht! Neue Möglichkeiten im Menü.`, 'good'); }
-    S.customers.forEach(c => tickCustomer(S, c, d)); S.customers = S.customers.filter(c => !c.dead); S.police.forEach(p => tickPolice(S, p, d)); S.police = S.police.filter(p => !p.dead); S.staff.forEach(s => tickStaff(S, s, d));
+    assistTick(S, d); S.customers.forEach(c => tickCustomer(S, c, d)); S.customers = S.customers.filter(c => !c.dead); S.police.forEach(p => tickPolice(S, p, d)); S.police = S.police.filter(p => !p.dead); S.staff.forEach(s => tickStaff(S, s, d));
     if (S.phase === 'closing' && !S.customers.length) endDay(S);
   }
   function step(S, dt) { if (S.phase === 'summary') return; const n = Math.max(1, Math.ceil(dt / .1)), d = dt / n; for (let i = 0; i < n; i++) { tick(S, d); if (S.phase === 'summary') break; } }
   const clock = S => { const m = Math.floor(8 * 60 + Math.min(S.t, DAYLEN) * MIN_PER_SEC); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   const save = S => JSON.stringify(S, (k, v) => k[0] === '_' ? undefined : v);
-  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; S.police = S.police || []; S.fx = []; S.customers.forEach(c => { if (c.st === 'arrest' || c.st === 'held') { c.dead = true; } }); S.police = []; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; return S; };
-  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
+  const load = js => { const S = JSON.parse(js); if (S.buzz == null) S.buzz = 0; if (S.assist == null) S.assist = true; if (S.hints == null) S.hints = true; S.reviews = S.reviews || []; S.ach = S.ach || {}; S.tot = S.tot || { recipes: 0, caught: 0, served: 0 }; S.police = S.police || []; S.fx = []; S.customers.forEach(c => { if (c.st === 'arrest' || c.st === 'held') { c.dead = true; } }); S.police = []; rebuild(S); if (!S.objs.some(o => o.k === 'radio')) for (const [x, y] of [[15, 5], [15, 8], [3, 8], [9, 9], [6, 9], [4, 4], [16, 9]]) if (place(S, 'radio', x, y, false, {})) break; return S; };
+  return { create, step, openShop, nextDay, order, hire, fire, place, pickUp, sell, setPrice, assign, buyLic, buyUp, expand, borrow, repay, act, context, layoutOK, rebuild, spawn, path, cap, fits, ref, rival, wholesale, effPrice, offered, isShelf, byKind, obj, clock, stars, save, load, rent, power, lvlNeed, loanMax, solid, doorTile, serviceTile, questVal, spawnRate, setRng: f => { R = f; }, nextStep, shelfFor, DAYLEN, RAMP_MAX, rampMax, achDone, DOW, endDay, note, addStock };
 })();
 if (typeof module !== 'undefined') module.exports = Sim;

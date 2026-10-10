@@ -161,6 +161,12 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   function removeObj(id) { const e = objs.get(id); if (!e) return; world.remove(e.g); const i = hits.indexOf(e.hit); if (i >= 0) hits.splice(i, 1); e.g.traverse(o => { if (o.isInstancedMesh) o.dispose(); }); objs.delete(id); }
   function cartonMesh(pid) { const g = new T3.Group(); const m = [mat('#b98a4a'), mat('#b98a4a'), mat('#c99a5a'), mat('#a67a3a'), new T3.MeshLambertMaterial({ map: labelTex(pid) }), new T3.MeshLambertMaterial({ map: labelTex(pid) })]; const b = new T3.Mesh(geo.box, m); b.scale.set(.42, .32, .34); g.add(b); return g; }
+  let beaconG = null;
+  function syncBeacon(opt, now) {
+    if (!opt.beacon) { if (beaconG) beaconG.visible = false; return; }
+    if (!beaconG) { beaconG = new T3.Group(); const m = c => new T3.MeshBasicMaterial({ color: c, depthTest: false, transparent: true, opacity: .95 }); const arrow = new T3.Mesh(new T3.ConeGeometry(.26, .5, 18), m('#ffd24a')); arrow.rotation.x = Math.PI; arrow.renderOrder = 20; const ring = new T3.Mesh(new T3.RingGeometry(.4, .55, 36), new T3.MeshBasicMaterial({ color: '#ffd24a', depthTest: false, transparent: true, opacity: .8, side: T3.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = .03; ring.renderOrder = 20; const beam = new T3.Mesh(new T3.CylinderGeometry(.05, .05, 1.6, 8), new T3.MeshBasicMaterial({ color: '#ffe58a', transparent: true, opacity: .35, depthTest: false })); beam.position.y = .8; beam.renderOrder = 19; beaconG.add(arrow, ring, beam); beaconG.userData = { arrow, ring }; scene.add(beaconG); }
+    beaconG.visible = true; beaconG.position.set(opt.beacon.x, 0, opt.beacon.y); const u = beaconG.userData, pu = .5 + .5 * Math.sin(now / 240); u.arrow.position.y = 1.95 + pu * .18; u.ring.scale.setScalar(.9 + pu * .35); u.ring.material.opacity = .45 + pu * .45;
+  }
   let pcar = null;
   function syncPoliceCar(S, now) {
     if (!pcar) { pcar = new T3.Group(); pcar.add(bx('#f1f3f5', 3.2, .55, 1.4, 0, .5, 0)); pcar.add(bx('#2b5fb4', 3.22, .18, 1.42, 0, .5, 0)); pcar.add(bx('#c9d6e8', 1.7, .5, 1.3, -.2, 1.0, 0)); [-1, 1].forEach(a => [-.65, .65].forEach(b => pcar.add(mesh(geo.cyl, mat('#111'), a * 1.0, .26, b, .5, .22, .5)).children.forEach(() => { }))); pcar.userData.l1 = bx('#ff2020', .3, .14, .3, -.2, 1.34, -.4); pcar.userData.l2 = bx('#2060ff', .3, .14, .3, -.2, 1.34, .4); pcar.add(pcar.userData.l1); pcar.add(pcar.userData.l2); pcar.visible = false; scene.add(pcar); }
@@ -220,6 +226,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     // Spieler-Figur in der Vogelperspektive
     if (!st.top) { const m = people.get('player'); if (m) m.visible = false; } else { let m = people.get('player'); if (!m) { m = makeHuman({ skin: '#e8b98f', hair: '#4a2f17', hs: 'short', top: '#00b8d9', bottom: '#2b3a55', shoe: '#fff', vest: '#00e5ff' }); people.set('player', m); scene.add(m); } m.visible = true; m.position.set(p.x, 0, p.y); m.rotation.y = Math.PI + st.yaw; m.userData.lx = p.x; }
     radioLeds = radioLeds.filter(l => l.parent); radioLeds.forEach(l => { l.material.color.set(st.radioOn ? (Math.sin(now / 160) > 0 ? '#00ffc8' : '#ff2d95') : '#555'); });
+    syncBeacon(opt, now);
     R.render(scene, st.top ? topCam : cam);
   }
   return { init, resize, render, look, move, setTop, pick, floorAt, st, people, get ready() { return !!R; } };

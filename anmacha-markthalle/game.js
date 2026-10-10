@@ -42,7 +42,7 @@
   // ---------- Ton ----------
   let AC = null, radioT = 0;
   const tone = (f, dur, type, vol, delay) => { if (!snd) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const t = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(vol || .08, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur + .02); } catch (e) {} };
-  const sfx = { smack() { tone(300, .09, 'square', .1); tone(120, .14, 'sawtooth', .1, .03); }, siren() { [0, 1, 2, 3].forEach(i => tone(i % 2 ? 640 : 880, .18, 'sawtooth', .045, i * .2)); }, cuff() { tone(1400, .04, 'square', .06); tone(900, .05, 'square', .06, .06); }, scan() { tone(1760, .07, 'square', .05); tone(2217, .06, 'square', .04, .05); }, coin() { tone(1175, .12, 'square', .04); tone(1568, .18, 'square', .04, .07); }, ok() { tone(660, .1, 'triangle', .08); }, bad() { tone(150, .2, 'sawtooth', .06); }, lvl() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .3, 'triangle', .1, i * .1)); } };
+  const sfx = { pick() { tone(520, .07, 'triangle', .09); tone(700, .08, 'triangle', .08, .05); }, stock() { tone(440, .06, 'triangle', .1); tone(660, .07, 'triangle', .1, .05); tone(880, .1, 'triangle', .09, .1); }, smack() { tone(300, .09, 'square', .1); tone(120, .14, 'sawtooth', .1, .03); }, siren() { [0, 1, 2, 3].forEach(i => tone(i % 2 ? 640 : 880, .18, 'sawtooth', .045, i * .2)); }, cuff() { tone(1400, .04, 'square', .06); tone(900, .05, 'square', .06, .06); }, scan() { tone(1760, .07, 'square', .05); tone(2217, .06, 'square', .04, .05); }, coin() { tone(1175, .12, 'square', .04); tone(1568, .18, 'square', .04, .07); }, ok() { tone(660, .1, 'triangle', .08); }, bad() { tone(150, .2, 'sawtooth', .06); }, lvl() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .3, 'triangle', .1, i * .1)); } };
   function radioLoop() { clearInterval(radioT); const gn = D.GENRES[S.radio.genre]; let i = 0; radioT = setInterval(() => { if (RAD.on && RAD.el && !RAD.el.paused) return; if (!snd || !S || !S.up.radio || !S.radio.on || S.phase === 'summary' || document.hidden || spd === 0 || panel) return; const n = gn.notes[i++ % gn.notes.length]; tone(220 * Math.pow(2, n / 12), .35, 'triangle', .025); if (i % 3 === 0) tone(110 * Math.pow(2, gn.notes[0] / 12), .3, 'sine', .03); }, 60000 / gn.bpm); }
   // ---------- Größe / Boden ----------
   function resize() {
@@ -60,12 +60,13 @@
   const rr = (g, x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
   const em = (g, e, x, y, s) => { g.font = `${s}px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(e, x, y); };
   function draw(now) {
-    if (use3d) { if (S && cw && ch) View3D.render(S, lastDt, now, { heat: heatOn, ghost, place: mode && mode.t === 'place' ? mode : null }); return; }
+    if (use3d) { if (S && cw && ch) View3D.render(S, lastDt, now, { heat: heatOn, ghost, beacon, place: mode && mode.t === 'place' ? mode : null }); return; }
     const g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, cw, ch); if (!S || !cw || !ch) return; const key = S.W + 'x' + S.H + '@' + T.toFixed(1) + cw; if (key !== floorKey) buildFloor(); g.drawImage(floor, 0, 0, cw, ch);
     if (heatOn) { let mx = 1; S.heat.forEach(h => { if (h > mx) mx = h; }); for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++) { const h = S.heat[y * S.W + x]; if (h > 0.2) { g.fillStyle = `rgba(255,${Math.round(160 - 140 * h / mx)},30,${Math.min(.75, .15 + .6 * h / mx)})`; g.fillRect(ox + x * T, oy + y * T, T, T); } } }
     S.objs.forEach(o => drawObj(g, o)); S.messes.forEach(m => em(g, '💧', ox + (m.x + .5) * T, oy + (m.y + .5) * T, T * .6));
     S.staff.forEach(s => { g.fillStyle = '#fff'; g.beginPath(); g.arc(ox + s.x * T, oy + s.y * T, T * .3, 0, 7); g.fill(); em(g, D.STAFF[s.k].e, ox + s.x * T, oy + s.y * T, T * .5); if (s.carry) em(g, '📦', ox + s.x * T, oy + (s.y - .5) * T, T * .4); });
     S.customers.slice().sort((a, b) => a.y - b.y).forEach(c => { drawCust(g, c); if (c.stars) em(g, '💫', ox + c.x * T, oy + (c.y - .75) * T, T * .5); });
+    if (beacon) { const bx0 = ox + beacon.x * T, by0 = oy + beacon.y * T, pu = .5 + .5 * Math.sin(now / 220); g.strokeStyle = '#ffd24a'; g.lineWidth = 4; g.beginPath(); g.arc(bx0, by0, T * (.5 + pu * .25), 0, 7); g.stroke(); em(g, '⬇️', bx0, by0 - T * (1 + pu * .3), T * .7); }
     S.police.forEach(p => { g.fillStyle = '#2b5fb4'; g.beginPath(); g.arc(ox + p.x * T, oy + p.y * T, T * .3, 0, 7); g.fill(); em(g, '👮', ox + p.x * T, oy + p.y * T, T * .5); });
     const p = S.player; g.fillStyle = '#00e5ff'; g.beginPath(); g.arc(ox + p.x * T, oy + p.y * T, T * .34, 0, 7); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke(); em(g, '🧑‍💼', ox + p.x * T, oy + p.y * T, T * .52); p.carry.forEach((b, i) => { em(g, P[b.p].e, ox + p.x * T, oy + (p.y - .55 - i * .35) * T, T * .45); });
     if (mode && mode.t === 'place' && ghost) { const t = D.OBJ[mode.k], w = mode.rot ? t.h : t.w, h = mode.rot ? t.w : t.h; g.fillStyle = 'rgba(0,255,200,.35)'; g.strokeStyle = '#00ffc8'; g.lineWidth = 3; rr(g, ox + ghost.x * T, oy + ghost.y * T, w * T, h * T, 6); g.fill(); g.stroke(); em(g, t.e, ox + (ghost.x + w / 2) * T, oy + (ghost.y + h / 2) * T, T * .6); }
@@ -93,7 +94,7 @@
   }
   // ---------- Eingabe ----------
   const keys = {}; let joy = { x: 0, y: 0 }, touch = false;
-  addEventListener('keydown', e => { if (panel || !S) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if (k === 'e' || k === ' ' || k === 'enter') doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'v') toggleView(); if (k === 'f') inspect(cw / 2, ch / 2); if (k === 'escape') { mode = null; showCard(null); } if (k === 'p') setSpd(spd ? 0 : 1); });
+  addEventListener('keydown', e => { if (panel || !S) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if (k === 'e' || k === ' ' || k === 'enter') doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'v') toggleView(); if (k === 'q' && use3d) { if (document.pointerLockElement === cv3) document.exitPointerLock(); else { try { cv3.requestPointerLock(); toast('Maus gefangen – Esc oder Q gibt sie frei.'); } catch (x) {} } } if (k === 'f') inspect(cw / 2, ch / 2); if (k === 'escape') { mode = null; showCard(null); } if (k === 'p') setSpd(spd ? 0 : 1); });
   addEventListener('keyup', e => { delete keys[e.key.toLowerCase()]; });
   function doAct() { const c = Sim.act(S, focus); if (c && c.a === 'scan') sfx.scan(); else if (c && c.a === 'radio') { radioToggle(); toast(RAD.on ? '📻 ' + radName() + ' läuft' : '📻 Radio aus'); } else if (c) sfx.ok(); else sfx.bad(); }
   $('act').addEventListener('pointerdown', e => { e.preventDefault(); doAct(); });
@@ -120,10 +121,34 @@
   const inspect = (px, py) => { if (!use3d || !S || panel) return; if (mode) { return; } const h = View3D.pick(px, py, topView ? 200 : 7), o = h ? Sim.obj(S, h.id) : null; showCard(o && o.k !== 'deko' ? o.id : null); };
   function toggleView() { topView = !topView; $('bView').textContent = topView ? '🚶 Ego-Ansicht' : '👁️ Vogelperspektive'; syncView(); }
   function syncView() { if (!use3d) return; const top = topView || !!mode; View3D.setTop(top); document.body.classList.toggle('fps', !top); if (top && document.pointerLockElement) document.exitPointerLock(); }
-  let drag = null;
-  cv3.addEventListener('pointerdown', e => { if (!S || panel) return; if (e.pointerType === 'mouse') { if (View3D.st.top) { if (mode) { const t = View3D.floorAt(e.clientX - cv3.getBoundingClientRect().left, e.clientY - cv3.getBoundingClientRect().top); if (t) buildAt(t[0], t[1]); } else inspect(e.clientX - cv3.getBoundingClientRect().left, e.clientY - cv3.getBoundingClientRect().top); } else if (document.pointerLockElement !== cv3) { try { cv3.requestPointerLock(); } catch (x) {} } else inspect(cw / 2, ch / 2); return; } drag = { id: e.pointerId, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now() }; try { cv3.setPointerCapture(e.pointerId); } catch (x) {} });
-  cv3.addEventListener('pointermove', e => { const r = cv3.getBoundingClientRect(); if (mode && mode.t === 'place' && View3D.st.top) { const t = View3D.floorAt(e.clientX - r.left, e.clientY - r.top); if (t) ghost = { x: t[0], y: t[1] }; } if (e.pointerType === 'mouse') { if (document.pointerLockElement === cv3) View3D.look(e.movementX * .0024, e.movementY * .0024); return; } if (drag && e.pointerId === drag.id && !View3D.st.top) { View3D.look((e.clientX - drag.x) * .006, (e.clientY - drag.y) * .006); drag.x = e.clientX; drag.y = e.clientY; } });
-  ['pointerup', 'pointercancel'].forEach(n => cv3.addEventListener(n, e => { if (!drag || e.pointerId !== drag.id) return; const r = cv3.getBoundingClientRect(), moved = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy); if (n === 'pointerup' && moved < 10 && performance.now() - drag.t < 350) { const px = e.clientX - r.left, py = e.clientY - r.top; if (mode && View3D.st.top) { const t = View3D.floorAt(px, py); if (t) { ghost = { x: t[0], y: t[1] }; buildAt(t[0], t[1]); } } else inspect(px, py); } drag = null; }));
+  let drag = null, dj = null; const pend = { x: 0, y: 0 }, sm = { x: 0, y: 0 }; let beacon = null;
+  const localXY = e => { const r = cv3.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  const stickShow = (x, y) => { stick.style.cssText = `display:block;position:fixed;left:${x - 64}px;top:${y - 64}px;bottom:auto`; knob.style.transform = ''; };
+  const stickHide = () => { stick.style.cssText = ''; knob.style.transform = ''; };
+  function tap(px, py) {
+    if (!use3d || !S || panel || mode) return; const h = View3D.pick(px, py, topView ? 200 : 7), o = h ? Sim.obj(S, h.id) : null;
+    if (o && !View3D.st.top) { const c = Sim.context(S, o); if (c && (((c.a === 'stock' || c.a === 'radio') && c.o === o) || (o.k === 'ramp' && (c.a === 'pick' || c.a === 'back')) || (o.k === 'kasse' && c.a === 'scan'))) { focus = o; doAct(); return; } }
+    showCard(o && o.k !== 'deko' ? o.id : null);
+  }
+  function worldClick(px, py) { if (mode && View3D.st.top) { const t = View3D.floorAt(px, py); if (t) { ghost = { x: t[0], y: t[1] }; buildAt(t[0], t[1]); } } else tap(px, py); }
+  cv3.addEventListener('pointerdown', e => {
+    if (!S || panel) return; const [px, py] = localXY(e);
+    if (e.pointerType === 'mouse') { if (document.pointerLockElement === cv3) { tap(cw / 2, ch / 2); return; } drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, t: performance.now(), mouse: true }; try { cv3.setPointerCapture(e.pointerId); } catch (x) {} return; }
+    if (!View3D.st.top && px < cw * .45) { dj = { id: e.pointerId, ox: e.clientX, oy: e.clientY }; stickShow(e.clientX, e.clientY); try { cv3.setPointerCapture(e.pointerId); } catch (x) {} return; }
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now() }; try { cv3.setPointerCapture(e.pointerId); } catch (x) {}
+  });
+  cv3.addEventListener('pointermove', e => {
+    if (e.pointerType === 'mouse' && document.pointerLockElement === cv3) { View3D.look(e.movementX * .0024, e.movementY * .0024); return; }
+    const [px, py] = localXY(e); if (mode && mode.t === 'place' && View3D.st.top) { const t = View3D.floorAt(px, py); if (t) ghost = { x: t[0], y: t[1] }; }
+    if (dj && e.pointerId === dj.id) { let dx = (e.clientX - dj.ox) / 60, dy = (e.clientY - dj.oy) / 60; const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; } joy.x = Math.abs(dx) < .12 ? 0 : dx; joy.y = Math.abs(dy) < .12 ? 0 : dy; knob.style.transform = `translate(${dx * 38}px,${dy * 38}px)`; return; }
+    if (!drag || e.pointerId !== drag.id) return;
+    if (drag.mouse) { if (!View3D.st.top && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 4) { pend.x += (e.movementX || 0) * .0034; pend.y += (e.movementY || 0) * .0034; } return; }
+    if (!View3D.st.top) { pend.x += (e.clientX - drag.x) * .0062; pend.y += (e.clientY - drag.y) * .0062; } drag.x = e.clientX; drag.y = e.clientY;
+  });
+  ['pointerup', 'pointercancel'].forEach(n => cv3.addEventListener(n, e => {
+    if (dj && e.pointerId === dj.id) { dj = null; joy.x = joy.y = 0; stickHide(); return; }
+    if (!drag || e.pointerId !== drag.id) return; const [px, py] = localXY(e), moved = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy); if (n === 'pointerup' && moved < 8 && performance.now() - drag.t < 450) worldClick(px, py); drag = null;
+  }));
   $('bView').onclick = () => toggleView();
   // ---------- HUD ----------
   function setSpd(v) { spd = v; ['s0', 's1', 's2', 's3'].forEach((id, i) => $(id).classList.toggle('on', [0, 1, 2, 4][i] === v)); }
@@ -139,7 +164,8 @@
     if (S.money > prevMoney + 20) sfx.coin(); prevMoney = S.money; if (S.log.length && S.log[S.log.length - 1] !== lastLog) { lastLog = S.log[S.log.length - 1]; toast(lastLog.t); }
     if (S.phase === 'open' && now() - hintT > 25000 && S.customers.some(c => c.st === 'pay' && c.wait > 6)) { const r = S.objs.find(o => o.k === 'kasse'); if (r && !S.staff.some(x => x.k === 'kasse') && Math.hypot(S.player.x - r.x - .5, S.player.y - r.y + .5) > 1.3) { hintT = now(); toast('Kunden warten! Stell dich auf das Feld über der Kasse 💶'); } }
     if (use3d) { const hh = View3D.st.top ? null : View3D.pick(cw / 2, ch / 2, 3.6); focus = hh ? Sim.obj(S, hh.id) : null; const tp = $('tip'), tt = focus && !mode ? tipText(focus) : ''; tp.hidden = !tt; if (tt) tp.textContent = tt; }
-    radioSync(); while (S.fx && S.fx.length) { const f = S.fx.shift(); if (f.t === 'flee' || f.t === 'police') sfx.siren(); else if (f.t === 'smack') sfx.smack(); else if (f.t === 'cuff') sfx.cuff(); }
+    radioSync(); while (S.fx && S.fx.length) { const f = S.fx.shift(); if (f.t === 'flee' || f.t === 'police') sfx.siren(); else if (f.t === 'smack') sfx.smack(); else if (f.t === 'cuff') sfx.cuff(); else if (f.t === 'pick') { sfx.pick(); toast(P[f.p].e + ' Karton genommen – jetzt zum markierten Regal'); } else if (f.t === 'back') toast('↩️ Rest ist zu viel fürs Regal – zurück an die Warenannahme gelegt'); else if (f.t === 'stock') { if (f.n > 0) { sfx.stock(); toast(P[f.p].e + ' +' + f.n + ' ins Regal geräumt'); } else { sfx.bad(); toast('Dieses Regal ist schon voll.'); } } }
+    const ns = Sim.nextStep(S), gl = $('goal'); beacon = ns && ns.x != null ? { x: ns.x, y: ns.y } : null; if (ns && !panel) { gl.hidden = false; if (gl.dataset.t !== ns.txt) { gl.textContent = ns.txt; gl.dataset.t = ns.txt; } } else gl.hidden = true;
     const c = Sim.context(S, focus), a = $('act'); a.textContent = c ? c.label : '✋ Aktion'; a.classList.toggle('idle', !c);
   }
   function tipText(o) { const t = D.OBJ[o.k]; if (o.k === 'ramp') return `📦 Rampe · ${S.ramp.length} Kartons`; if (o.k === 'kasse' || o.k === 'sco') return `${t.e} ${t.name} · Schlange ${o.q.length}`; if (D.OBJ[o.k].cap > 0) return o.p ? `${P[o.p].e} ${P[o.p].name} · ${o.qty}/${Sim.cap(S, o)} · ${fmt(Sim.effPrice(S, o))}` : `${t.e} ${t.name} · frei – Klick: Ware wählen`; return `${t.e} ${t.name}`; }
@@ -221,7 +247,7 @@
       h += S.quests.map(q => { const d = D.QUESTS.find(x => x.id === q.id), v = Sim.questVal(S, q); return `<div class="glass it"><b>${d.t.replace('{n}', q.n)}</b><div class="bar"><i style="width:${d.max ? 100 : Math.min(100, v / q.n * 100)}%"></i></div><small>${d.max ? 'bisher ' + v : v + ' / ' + q.n} · Belohnung ${fmt(d.r)}</small></div>`; }).join('') + '</div>';
       h += `<h3>🏆 Erfolge (${Sim.achDone(S)}/${D.ACH.length})</h3><div class="grid">` + D.ACH.map(a => `<div class="glass it" style="opacity:${S.ach[a[0]] ? 1 : .55}"><b>${a[2]} ${a[1]} ${S.ach[a[0]] ? '✔' : '🔒'}</b><small>${a[3]}<br>Belohnung ${fmt(a[4])}</small></div>`).join('') + '</div>'; return h;
     },
-    menu() { return `<div class="grid"><div class="glass it"><b>💾 Speichern</b><small>Es wird auch automatisch am Tagesende gespeichert.</small><div class="row"><button class="btn sm go" data-a="save">Jetzt speichern</button></div></div><div class="glass it"><b>🔊 Ton</b><div class="row"><button class="btn sm" data-a="snd">${snd ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>❓ Hilfe</b><div class="row"><button class="btn sm" data-a="hilfe">Anleitung</button></div></div><div class="glass it"><b>🗑️ Neues Spiel</b><small>Löscht deinen Spielstand.</small><div class="row"><button class="btn sm stop" data-a="reset">Neu beginnen</button></div></div></div>`; }
+    menu() { return `<div class="grid"><div class="glass it"><b>💾 Speichern</b><small>Es wird auch automatisch am Tagesende gespeichert.</small><div class="row"><button class="btn sm go" data-a="save">Jetzt speichern</button></div></div><div class="glass it"><b>🔊 Ton</b><div class="row"><button class="btn sm" data-a="snd">${snd ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>🤝 Einräum-Hilfe</b><small>Räumt Kartons automatisch ein und holt sie, sobald du am Regal bzw. an der Warenannahme stehst.</small><div class="row"><button class="btn sm ${S.assist !== false ? 'go' : ''}" data-a="assist">${S.assist !== false ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>🧭 Wegweiser</b><small>Zeigt oben den nächsten Schritt und markiert das Ziel im Laden.</small><div class="row"><button class="btn sm ${S.hints !== false ? 'go' : ''}" data-a="hints">${S.hints !== false ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>❓ Hilfe</b><div class="row"><button class="btn sm" data-a="hilfe">Anleitung</button></div></div><div class="glass it"><b>🗑️ Neues Spiel</b><small>Löscht deinen Spielstand.</small><div class="row"><button class="btn sm stop" data-a="reset">Neu beginnen</button></div></div></div>`; }
   };
   const TITLES = { hilfe: '❓ Anleitung', markt: '🛒 Großhandel', bauen: '🔧 Bauen', preise: '🏷️ Preise', staff: '👥 Personal', radio: '📻 Marktradio', up: '⭐ Ausbau', stat: '📊 Zahlen', ziele: '🎯 Ziele', menu: '☰ Menü' };
   function openPanel(n) { try { document.exitPointerLock && document.exitPointerLock(); } catch (e) { } panel = n; mode = null; showCard(null); $('pt').textContent = TITLES[n]; $('pb').innerHTML = R[n](); $('panel').hidden = false; }
@@ -237,7 +263,7 @@
     else if (a === 'hire') ok = !!Sim.hire(S, v); else if (a === 'fire') Sim.fire(S, +v); else if (a === 'ron') S.radio.on = !S.radio.on; else if (a === 'rg') { S.radio.genre = v; radioLoop(); }
     else if (a === 'rad') { if (S.radio.ads[p]) { delete S.radio.ads[p]; S.money += 4000; } else if (S.money >= 4000 && Object.keys(S.radio.ads).length < 3) { S.money -= 4000; S.radio.ads[p] = 1; } }
     else if (a === 'up') { ok = Sim.buyUp(S, v); if (ok && v === 'radio') radioLoop(); } else if (a === 'loan') ok = +v > 0 ? Sim.borrow(S, +v) : Sim.repay(S, -v); else if (a === 'heat') heatOn = !heatOn;
-    else if (a === 'save') { save(); toast('Gespeichert.'); } else if (a === 'snd') { snd = !snd; try { localStorage.setItem('amh_snd', snd ? '1' : '0'); } catch (e) {} } else if (a === 'hilfe') { openPanel('hilfe'); return; }
+    else if (a === 'save') { save(); toast('Gespeichert.'); } else if (a === 'assist') S.assist = S.assist === false; else if (a === 'hints') S.hints = S.hints === false; else if (a === 'snd') { snd = !snd; try { localStorage.setItem('amh_snd', snd ? '1' : '0'); } catch (e) {} } else if (a === 'hilfe') { openPanel('hilfe'); return; }
     else if (a === 'reset') { if (confirm('Wirklich neu beginnen? Der Spielstand geht verloren.')) { try { localStorage.removeItem(KEY); } catch (e) {} newGame(); closePanel(); } return; }
     if (ok === false) { sfx.bad(); if (S.log.length) toast(S.log[S.log.length - 1].t); } else if (['buy', 'buyx', 'lic', 'hire', 'up', 'exp'].includes(a)) sfx.ok(); refresh();
   });
@@ -258,8 +284,8 @@
   // ---------- Hauptschleife ----------
   function frame(now) {
     requestAnimationFrame(frame); const dt = Math.min(.1, (now - last) / 1000); last = now; lastDt = dt; if (!S) return; tick++;
-    const pause = panel || !$('sum').hidden;
-    if (!pause && use3d) { const fw = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y, sd = (keys.d ? 1 : 0) - (keys.a ? 1 : 0) + joy.x; if (keys.arrowleft) View3D.look(-dt * 2.2, 0); if (keys.arrowright) View3D.look(dt * 2.2, 0); const [vx, vy] = View3D.move(Math.max(-1, Math.min(1, fw)), Math.max(-1, Math.min(1, sd))); S.player.vx = vx; S.player.vy = vy; if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
+    const pause = panel || !$('sum').hidden; if (pause) { sm.x = sm.y = 0; }
+    if (!pause && use3d) { const fw = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y, sd = (keys.d ? 1 : 0) - (keys.a ? 1 : 0) + joy.x; if (keys.arrowleft) View3D.look(-dt * 2.2, 0); if (keys.arrowright) View3D.look(dt * 2.2, 0); const [vx, vy] = View3D.move(Math.max(-1, Math.min(1, fw)), Math.max(-1, Math.min(1, sd))), kk = 1 - Math.exp(-dt * 16); sm.x += (vx - sm.x) * kk; sm.y += (vy - sm.y) * kk; S.player.vx = sm.x; S.player.vy = sm.y; S.player.run = keys.shift ? 1 : 0; const la = 1 - Math.exp(-dt * 22); if (Math.abs(pend.x) + Math.abs(pend.y) > 1e-4) { View3D.look(pend.x * la, pend.y * la); pend.x *= 1 - la; pend.y *= 1 - la; } if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
     else if (!pause) { let vx = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0), vy = (keys.s || keys.arrowdown ? 1 : 0) - (keys.w || keys.arrowup ? 1 : 0); S.player.vx = vx || joy.x; S.player.vy = vy || joy.y; if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
     if (S.phase === 'summary' && $('sum').hidden) showSummary();
     if (use3d && (topView || !!mode) !== View3D.st.top) syncView();
@@ -267,7 +293,7 @@
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden && S && S.phase !== 'summary') save(); });
   addEventListener('beforeunload', () => { if (S && S.phase !== 'summary') save(); });
-  if (use3d && matchMedia('(pointer:fine)').matches) setTimeout(() => toast('Tipp: Klicke ins Bild, um dich mit der Maus umzusehen (Esc gibt sie frei).'), 1500);
+  if (use3d && matchMedia('(pointer:fine)').matches) setTimeout(() => toast('Steuerung: WASD laufen (Shift = rennen) · Maus ziehen = umsehen · E oder Klick = Aktion · Q = Maus fangen'), 1500);
   if (S.up.radio) radioLoop(); resize(); requestAnimationFrame(frame);
   window.__amh = { get S() { return S; }, Sim };
 })();
