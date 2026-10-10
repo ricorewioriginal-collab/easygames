@@ -3,6 +3,7 @@
  * data-game   = Spielname (eigener Speicherplatz pro Spiel)
  * data-prefix = kommagetrennte localStorage-Schlüsselanfänge, die synchronisiert werden
  * data-idb / data-idb-files = optional für Godot-Exporte: IndexedDB-Pfad (z.B. /userfs) und Dateinamen-Anfang der Speicherdateien
+ * data-save-btn = CSS-Selektor(en) der spieleigenen Speichern-Knöpfe: daneben erscheint „Mit Google speichern“ samt Hinweis, dass sonst nur lokal gespeichert wird
  * data-ui="off" blendet den Cloud-Knopf aus.
  * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer (gzip ab 20 KB). Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
 (function () {
@@ -213,7 +214,42 @@
       return Promise.all(w).then(function () { location.reload(); });
     }).catch(function (e) { lastErr = e.message || 'Wiederherstellen fehlgeschlagen'; render(); });
   }
+  function openPanel() { if (panel) { panel.style.display = 'block'; render(); } }
+  // Spieleigene Speichern-Knöpfe: Google-Knopf und Hinweis daneben, Original bleibt unverändert
+  function labels() {
+    var on = wanted() && user, i, l = document.querySelectorAll('.anmacha-gbtn-t'), h = document.querySelectorAll('.anmacha-gbtn-h');
+    var lt = on ? 'Mit Google verbunden' : 'Mit Google speichern', ht = on ? 'Wird zusätzlich in deinem Google-Konto gesichert.' : 'Ohne Google wird nur lokal auf diesem Gerät gespeichert.';
+    for (i = 0; i < l.length; i++) if (l[i].textContent !== lt) l[i].textContent = lt; // nur bei Änderung (sonst Endlosschleife mit dem Observer)
+    for (i = 0; i < h.length; i++) if (h[i].textContent !== ht) h[i].textContent = ht;
+  }
+  function enhance() {
+    var sel = s.dataset.saveBtn;
+    if (!sel || s.dataset.ui === 'off' || !window.MutationObserver) return;
+    function run() {
+      var list = document.querySelectorAll(sel), i, t, b, ic, n;
+      for (i = 0; i < list.length; i++) {
+        t = list[i];
+        if (t.dataset.cloudDone) continue;
+        t.dataset.cloudDone = '1';
+        b = t.cloneNode(false); b.removeAttribute('id'); b.removeAttribute('data-a'); b.removeAttribute('disabled');
+        b.type = 'button'; b.textContent = ''; b.classList.add('anmacha-gbtn');
+        ic = el('span', 'display:inline-flex;vertical-align:middle;margin-right:6px'); ic.innerHTML = G;
+        b.appendChild(ic); b.appendChild(el('span', '', '')).className = 'anmacha-gbtn-t';
+        n = el('small', 'display:block;opacity:.75;font-size:12px;margin-top:4px;color:inherit;font-weight:400'); n.className = 'anmacha-gbtn-h';
+        t.insertAdjacentElement('afterend', b); b.insertAdjacentElement('afterend', n);
+      }
+      if (list.length) labels();
+    }
+    // Klicks per Delegation (überlebt, wenn ein Spiel sein Menü neu aufbaut)
+    document.addEventListener('click', function (e) {
+      var g = e.target.closest && e.target.closest('.anmacha-gbtn');
+      if (g) { e.stopPropagation(); e.preventDefault(); openPanel(); return; }
+      if (e.target.closest && e.target.closest(sel)) setTimeout(function () { if (wanted()) sync(); }, 800);
+    }, true);
+    run(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true });
+  }
   function render() {
+    labels();
     if (!panel || s.dataset.ui === 'off') return;
     var on = wanted() && user, k;
     panel.textContent = '';
@@ -255,7 +291,8 @@
     btn.onclick = function () { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; };
     document.body.appendChild(panel); document.body.appendChild(btn); render();
   }
-  if (document.body) ui(); else document.addEventListener('DOMContentLoaded', ui);
+  function boot() { ui(); enhance(); }
+  if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   if (wanted()) sync();
   window.AnMaChaCloud = { sync: sync };
 })();
