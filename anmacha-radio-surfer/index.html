@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#03090c">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <title>AnMaCha Radio Surfer</title>
 <style>
   *{box-sizing:border-box}
@@ -14,6 +15,8 @@
   #hud{position:fixed;top:8px;left:0;right:0;padding:6px 14px;display:flex;justify-content:space-between;gap:8px;
     pointer-events:none;font:bold clamp(13px,3.4vw,20px) 'Courier New',monospace;text-shadow:0 0 8px #00ff66;color:#00ff66}
   #hLives{color:#ff2e88;text-shadow:0 0 8px #ff2e88;letter-spacing:.1em}
+  #pauseBtn{display:none;position:fixed;top:44px;right:12px;width:44px;height:44px;min-height:0;padding:0;border-radius:50%;
+    font-size:18px;letter-spacing:0;background:rgba(3,14,20,.7);color:#19f0ff;border:1px solid #19f0ff;box-shadow:none}
   #bar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,#00ff66,#19f0ff);
     box-shadow:0 0 10px #00ff66;pointer-events:none}
   #banner{white-space:pre-line;position:fixed;top:24%;left:0;right:0;text-align:center;font-weight:800;opacity:0;
@@ -73,6 +76,7 @@
 <body>
 <div id="bar"></div>
 <div id="hud"><span id="hScore">SCORE 0</span><span id="hLives">♥♥♥</span><span id="hLevel">LEVEL 1/10</span><span id="hBest">BEST 0</span></div>
+<button id="pauseBtn" aria-label="Pause">⏸</button>
 <div id="banner"></div>
 <div id="toast"></div>
 <div id="overlay">
@@ -83,8 +87,8 @@
     <h2 id="ovTitle"></h2>
     <p id="ovText"></p>
     <div id="help">
-      <div class="box"><b>📱 Am Handy</b>Wischen ←&nbsp;→ = Spur wechseln<br>Wischen ↑ oder Tippen = springen<br>Wischen ↓ = rutschen</div>
-      <div class="box"><b>💻 Am PC</b><kbd>←</kbd> <kbd>→</kbd> oder <kbd>A</kbd> <kbd>D</kbd> = Spur<br><kbd>↑</kbd> <kbd>W</kbd> <kbd>Leertaste</kbd> = springen<br><kbd>↓</kbd> <kbd>S</kbd> = rutschen</div>
+      <div class="box"><b>📱 Am Handy</b>Wischen ←&nbsp;→ = Spur wechseln<br>Wischen ↑ oder Tippen = springen<br>Wischen ↓ = rutschen<br>⏸-Knopf oben rechts = Pause</div>
+      <div class="box"><b>💻 Am PC</b><kbd>←</kbd> <kbd>→</kbd> oder <kbd>A</kbd> <kbd>D</kbd> = Spur<br><kbd>↑</kbd> <kbd>W</kbd> <kbd>Leertaste</kbd> = springen<br><kbd>↓</kbd> <kbd>S</kbd> = rutschen<br><kbd>P</kbd> oder <kbd>Esc</kbd> = Pause</div>
       <div class="box wide"><b>Hindernisse</b>
         <span class="dot" style="background:#ffb020"></span>Niedrig (Rahmen gelb): <b style="display:inline;color:#ffb020">springen</b> &nbsp;
         <span class="dot" style="background:#ff2e88"></span>Hängt oben (pink): <b style="display:inline;color:#ff2e88">rutschen</b> &nbsp;
@@ -115,6 +119,17 @@ if (window.self !== window.top) $('back').style.display = 'none';   // eingebett
 /* ================= Konfiguration ================= */
 // Hindernis-Bilder: hindernisse/01.png|jpg|jpeg ... 20 (nur vorhandene Dateien werden verwendet)
 const OBSTACLE_DIR = 'hindernisse/', OBSTACLE_MAX = 20;
+
+// Bilder sofort im Hintergrund laden (parallel zum Szenenaufbau); die Endungen werden gleichzeitig geprüft
+const rawImgs = [], loadStart = performance.now();
+let probesLeft = OBSTACLE_MAX;
+for (let i = 0; i < OBSTACLE_MAX; i++) {
+  const name = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}`;
+  Promise.all(['png', 'jpg', 'jpeg'].map(ext => new Promise(res => {
+    const im = new Image();
+    im.decoding = 'async'; im.onload = () => res(im); im.onerror = () => res(null); im.src = `${name}.${ext}`;
+  }))).then(list => { const im = list.find(Boolean); if (im) rawImgs.push(im); probesLeft--; });
+}
 
 const LEVELS = 10, LEVEL_LEN = 600;            // Weltmeter pro Level
 const BASE_SPEED = 18, SPEED_STEP = 3.2;       // ab Level 4: +SPEED_STEP pro Level
@@ -375,28 +390,27 @@ const ring = circle(0.55, CYAN); ring.rotation.x = Math.PI / 2; ring.position.y 
 // --- A) Eigene Bilder (hindernisse/01.png ...). Jedes Bild kann niedrig, hoch oder hängend erscheinen.
 let images = [], imgBag = [];
 function panelTexture(img) {
-  const S = 256, [c, g] = canvas(S, S), pad = 18, sc = Math.min((S - 2 * pad) / img.width, (S - 2 * pad) / img.height);
+  const S = 384, [c, g] = canvas(S, S), pad = 24, sc = Math.min((S - 2 * pad) / img.width, (S - 2 * pad) / img.height);
   g.fillStyle = '#eef5f1'; g.fillRect(0, 0, S, S);
   g.drawImage(img, (S - img.width * sc) / 2, (S - img.height * sc) / 2, img.width * sc, img.height * sc);
   try { g.getImageData(0, 0, 1, 1); } catch (e) { return null; }       // z. B. file:// -> Browser blockiert Bilder
   const t = new THREE.CanvasTexture(c); t.anisotropy = ANISO; return t;
 }
-function loadObstacleImages() {
-  const jobs = Array.from({ length: OBSTACLE_MAX }, (_, i) => new Promise(res => {
-    const name = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}`, exts = ['png', 'jpg', 'jpeg'];
-    const tryNext = k => {                                   // erste vorhandene Endung gewinnt
-      if (k >= exts.length) return res(null);
-      const img = new Image();
-      img.onload = () => res(img); img.onerror = () => tryNext(k + 1);
-      img.src = `${name}.${exts[k]}`;
-    };
-    tryNext(0);
-  }));
-  return Promise.all(jobs).then(list => {
-    list = list.filter(Boolean);
-    const tex = list.map(panelTexture).filter(Boolean);
-    return { tex, blocked: list.length > 0 && tex.length === 0 };
-  });
+// Pro Frame höchstens ein Bild zu einer Textur machen (kein Ruckeln); Start wird früh freigegeben
+let blockedCount = 0, ready = false;
+function ingestImages() {
+  if (rawImgs.length) {
+    const t = panelTexture(rawImgs.shift());
+    if (t) { images.push(t); imgBag = []; if (images.length === 1) setupKinds(); if (ready) buildPosters(); } else blockedCount++;
+  }
+  const done = probesLeft === 0 && !rawImgs.length;
+  if (!ready && (images.length >= 4 || done || performance.now() - loadStart > 3000)) {
+    ready = true; buildPosters(); btn.disabled = false; btn.textContent = 'START';
+  }
+  setText($('status'), done && !images.length
+    ? (blockedCount ? 'Eigene Bilder werden bei file:// vom Browser blockiert – bitte über einen Webserver / GitHub Pages öffnen.'
+      : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.jpg … 20.jpg oder .png).')
+    : images.length ? `${images.length} Sender-Elemente geladen${done ? '' : ' …'}` : 'Lade Sender …');
 }
 const nextImg = () => {
   if (!imgBag.length) imgBag = images.map((_, i) => i).sort(() => rnd() - 0.5);
@@ -410,7 +424,7 @@ const panel = (tex, w, h, x, y, z) => {
 // Poster an den Rack-Wänden: zeigen die hochgeladenen Bilder (nur wenn Bilder vorhanden sind)
 const posters = [], POSTER_GAP = 16;
 function buildPosters() {
-  if (!images.length) return;
+  if (posters.length || !images.length) return;
   for (let i = 0; i < 14; i++) {
     const side = i % 2 ? 1 : -1, g = new THREE.Group();
     g.add(neonBox(2.8, 2.8, 0.1, CYAN, 0x061218));
@@ -729,7 +743,7 @@ function startGame() {
   applyTheme(1, 1);
   $('overlay').classList.add('hidden');
   retrigger($('banner'), 'flash', `LEVEL 1 · ${LEVEL_NAMES[0]}`);
-  retrigger($('toast'), 'show', TOUCH ? '👆 Wischen: ← → Spur · ↑ Sprung · ↓ Rutschen' : '⌨️ ← → Spur · ↑ Sprung · ↓ Rutschen (auch WASD)');
+  retrigger($('toast'), 'show', TOUCH ? '👆 Wischen: ← → Spur · ↑ Sprung · ↓ Rutschen' : '⌨️ ← → Spur · ↑ Sprung · ↓ Rutschen · P = Pause');
 }
 function endGame(won) {
   const s = Math.floor(score);
@@ -777,12 +791,26 @@ function slide() {
   if (py > 0) { vy = -24; wantSlide = true; }               // in der Luft: schnell fallen, dann rutschen
   else slideT = SLIDE_TIME;
 }
+function pauseGame() {
+  if (state !== 'play') return;
+  state = 'paused';
+  showOverlay('PAUSE', 'Drücke <b>P</b> / <b>Esc</b> oder tippe auf WEITER.', 'WEITER', false);
+}
+function resumeGame() {
+  if (state !== 'paused') return;
+  state = 'play'; invuln = Math.max(invuln, 1);              // kurzer Schutz nach der Pause
+  $('overlay').classList.add('hidden');
+}
+$('pauseBtn').addEventListener('click', e => { pauseGame(); e.currentTarget.blur(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 const canRestart = () => (state === 'menu' && !btn.disabled) || ((state === 'over' || state === 'win') && performance.now() - endAt > 400);
 
 addEventListener('keydown', e => {
   const k = e.code;
   if (e.target.tagName === 'INPUT') { if (k === 'Enter') saveName(); return; }   // Tippen im Namensfeld
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(k)) e.preventDefault();
+  if (k === 'KeyP' || k === 'Escape') { if (state === 'play') pauseGame(); else resumeGame(); return; }
+  if (state === 'paused') { if (k === 'Enter' || k === 'Space') resumeGame(); return; }
   if (state !== 'play') { if ((k === 'Enter' || k === 'Space') && canRestart()) startGame(); return; }
   if (e.repeat) return;
   if (k === 'ArrowLeft' || k === 'KeyA') moveLane(-1);
@@ -790,7 +818,7 @@ addEventListener('keydown', e => {
   else if (k === 'ArrowUp' || k === 'KeyW' || k === 'Space') jump();
   else if (k === 'ArrowDown' || k === 'KeyS') slide();
 });
-btn.addEventListener('click', () => { if (canRestart()) startGame(); });
+btn.addEventListener('click', () => { if (state === 'paused') resumeGame(); else if (canRestart()) startGame(); });
 
 // Touch: wischen = Spur/Sprung/Rutschen, tippen = Sprung
 let tx = 0, ty = 0, swiped = false;
@@ -921,30 +949,25 @@ function update(dt) {
   setText(hLives, '♥'.repeat(Math.max(0, lives)) + '♡'.repeat(MAX_LIVES - Math.max(0, lives)));
   setText(hLevel, `LEVEL ${level}/${LEVELS}`);
   setText(hBest, 'BEST ' + best);
+  const pb = state === 'play' ? 'block' : 'none';
+  if ($('pauseBtn').style.display !== pb) $('pauseBtn').style.display = pb;
   bar.style.width = (state === 'play' ? (dist % LEVEL_LEN) / LEVEL_LEN * 100 : 0) + '%';
 }
 
 let last = performance.now();
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min(0.05, (now - last) / 1000);
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
   last = now;
-  update(dt);
+  if (rawImgs.length || !ready) ingestImages();
+  if (state !== 'paused') update(dt);
   renderer.render(scene, camera);
 }
 
 /* ================= Start ================= */
 showOverlay('', '', 'LADE …', true);
+setupKinds();
 requestAnimationFrame(frame);
-loadObstacleImages().then(({ tex, blocked }) => {
-  images = tex;
-  setupKinds();
-  buildPosters();
-  $('status').textContent = tex.length ? `${tex.length} Sender-Elemente geladen`
-    : blocked ? 'Eigene Bilder werden bei file:// vom Browser blockiert – bitte über einen Webserver / GitHub Pages öffnen.'
-    : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.jpg … 20.jpg oder .png).';
-  btn.disabled = false; btn.textContent = 'START';
-});
 </script>
 </body>
 </html>
