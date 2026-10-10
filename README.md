@@ -11,6 +11,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
 | AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
 | AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
+| AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -136,6 +137,14 @@ Gesucht werden Logo-Paare – die 13 Sender-Logos plus AnMaChaCast, SenderWelt u
 - **Power-ups:** Turbo, Chill (langsamer), Geist (durch Wände/Körper), Punkte ×3, Kürzer. Kombo bis ×6 bei schnell aufeinanderfolgenden Logos.
 - **Steuerung:** Pfeile/WASD (Verfolger: links/rechts), Wischen oder Tippen am Handy, `P` Pause, `M` Ton, `C` Kamera.
 - **Eigenes Logo:** `anmacha-snake/logo.png` ersetzt den Titel. Bestenliste (Top 10) lokal im Browser.
+
+## AnMaCha Tower Defense
+
+- **Spiel:** Das Große Rauschen marschiert über den Weg zu deinem Senderturm. Stelle Türme neben den Weg, baue sie bis Stufe 3 aus oder verkaufe sie. 25 Wellen mit Rauschen, Zippern, Brummern, Knistern und Boss-Wellen (10, 20, 25).
+- **Türme (Sender-Logos):** YourTime-FM Allrounder, RapRadio Bass-Bombe (Fläche), SchlagerPop Frost-Pop (verlangsamt), ChartRadio Hit-Blitz (Kette), ClubRadio Club-Laser (durchschlägt), RockRadio Sniper (Reichweite), AnMaCha 24 Werbe-Einnahmen (Geld pro Welle), RicoReWi Verstärker (Schaden für Nachbartürme). Ziel pro Turm: Erster / Stärkster / Nächster.
+- **Karten & Schwierigkeit:** Funkhafen, Frequenz-Spirale, Zickzack-Studio; Leicht / Normal / Schwer. Welle früh starten bringt Bonus-Geld.
+- **Steuerung:** Turm unten wählen, Feld klicken (am Handy: erstes Tippen = Vorschau, zweites = bauen), Turm antippen = Ausbau/Ziel/Verkauf. Tasten: `1–8` Turm, `Leertaste` Welle, `U` Ausbau, `S` Verkauf, `F` Tempo ×2, `P` Pause, `M` Ton, `Esc` abwählen. Im Hochformat wird das Spielfeld automatisch gedreht.
+- **Logos:** `anmacha-tower-defense/logos/01..13` (`.png|.jpg|.jpeg`), `anmacha-tower-defense/logo.png` ersetzt den Titel. Bestenliste (Top 10) lokal im Browser.
 
 ## AnMaCha Quest RPG: Das Große Rauschen (Godot 4, Web-Export)
 
