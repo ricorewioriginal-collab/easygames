@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0c24">
+<title>AnMaCha Funkparcours – Das Hindernis-Zeitspiel</title>
+<meta name="description" content="Funkparcours – Hindernis-Zeitspiel in 3D: springen, hangeln, Wand erklimmen und ins Ziel funken. Einzelläufe, Zeiten werden verglichen. Bis zu 4 Läufer, Handys als Pads. Präsentiert vom RicoReWi Radioportal.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Funkparcours" hidden>
+  <div class="wordmark" id="brandText">FUNK<span>PARCOURS</span></div>
+  <div class="tag">Das Hindernis-Zeitspiel</div>
+  <div class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="64" height="64"></div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Show starten</button>
+    <button class="btn green" id="bTrain">⏱ Training</button>
+    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
+    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+  </div>
+  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+</section>
+
+<section id="setup" class="screen" hidden>
+  <div class="panel glass">
+    <h2 id="setTitle">Neue Show</h2>
+    <div class="fld" id="fldPl">Läufer<div class="seg" id="sgPl"><button data-v="1">1</button><button data-v="2" class="on">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+    <div id="names" class="names"></div>
+    <div class="fld" id="fldCourse">Parcours<div class="seg" id="sgCourse"></div></div>
+    <div class="info" id="setInfo">Drei Parcours, jeder Läufer allein auf der Strecke. Die Zeiten werden verglichen – Sieger ist, wer am Ende die meisten Punkte hat.</div>
+    <div class="row"><button class="btn green" id="bStart">Los geht's!</button><button class="btn blue" id="bPairSetup">📱 Koppeln</button><button class="btn ghost" id="bSetBack">Zurück</button></div>
+  </div>
+</section>
+
+<section id="game" class="screen" hidden>
+  <div class="top">
+    <button class="ib" id="bGMenu" aria-label="Menü">☰</button>
+    <div class="rinfo glass"><small id="rCourse">Vorrunde</small><b id="rName">Läufer</b></div>
+    <div class="clock glass" id="clock">0:00.00</div>
+    <img class="spons" src="logos/16.png" alt="RicoReWi Radioportal" width="40" height="40">
+    <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="pad" id="pad" hidden>
+    <div class="pg"><button data-k="l" aria-label="links">◀</button><button data-k="r" aria-label="rechts">▶</button></div>
+    <div class="pg"><button data-k="g" aria-label="greifen">✊</button><button data-k="j" class="big" aria-label="springen">⤒</button></div>
+  </div>
+</section>
+
+<div id="big" hidden></div>
+
+<div id="card" class="dialog" hidden><div class="panel glass wide" id="cardBox"></div></div>
+
+<div id="pair" class="dialog" hidden><div class="panel glass">
+  <h2>📱 Handys koppeln</h2>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Steuer-Pad <b>eines Läufers</b> (bis zu 4): links, rechts, springen, greifen.</p>
+  <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
+  <button class="btn green" id="bPairOk">Fertig</button>
+</div></div>
+<section id="ctl" class="screen" aria-live="polite"></section>
+
+<div id="rules" class="dialog" hidden><div class="panel glass">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>Einzellauf:</b> Jeder Läufer ist allein auf dem Parcours. Es zählt die Zeit – wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke).</li>
+    <li><b>Steuerung:</b> ◀ ▶ oder A/D = laufen · Leertaste / ↑ / W = springen (länger halten = höher) · ↓ / S / Shift = Stangen greifen.</li>
+    <li><b>Hindernisse:</b> Stufen mit Lücken, schwingende Plattformen, wegbrechende Felder, Pendel, Hangelstangen und die Steilwand (mit Tempo anlaufen!).</li>
+    <li><b>Show:</b> Vorrunde, Halbfinale, Finale. Platz 1 bekommt die meisten Punkte. Ein Geist zeigt den bisher Schnellsten.</li>
+    <li><b>Training:</b> Ein Parcours, deine Bestzeit wird gespeichert – und als Geist mitgeschickt.</li>
+    <li><b>Handys:</b> Über „📱 Handys koppeln" wird jedes Handy zum Pad eines Läufers und sagt „Bereit".</li>
+  </ul>
+  <button class="btn" id="rulesOk">Verstanden</button>
+</div></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -21,6 +21,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Frequenzrad – Buchstaben-Rätsel mit Glücksrad, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 150 Rätsel) | [`anmacha-frequenzrad/`](anmacha-frequenzrad/) |
 | AnMaCha Preisradar – Preis-Schätzspiel mit 5 Spielarten, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 208 Produkte) | [`anmacha-preisradar/`](anmacha-preisradar/) |
+| AnMaCha Funkparcours – 3D-Hindernis-Zeitspiel (Einzelläufe, Zeiten werden verglichen), 3 Parcours, Geist, bis zu 4 Läufer, Handys als Pads (Three.js, Sounds im Browser erzeugt) | [`anmacha-funkparcours/`](anmacha-funkparcours/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
@@ -293,3 +294,14 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Produkte:** `products-a/b/c.js` (208 handelsübliche Durchschnittspreise in 15 Kategorien, ohne Markennamen; Format `{n, e, c, p, u?}`) – prüfen mit `node anmacha-preisradar/tests/check-products.js`. Alle Preise ohne Gewähr 😉
 - **Technik:** keine Bibliothek; Studio und Skala per Canvas 2D, Ton per WebAudio. Dateien: `engine.js` (Wertung und Ablauf, rein), `inputs.js` (Eingabe-Elemente für Gastgeber und Handy), `gauge.js`, `pair.js`/`controller.js`, `audio.js`, `studio.js`, `main.js`.
 - **Tests:** `tests/engine-tests.js` (Wertung, Rundenbau, Computer-Shows, Daten), `tests/check-products.js`, Browser-Tests `tests/e2e.mjs` (Hot-Seat + Computer) und `tests/e2e-pair.mjs` (Show + 2 Handys, inkl. abgelehnter 3. Mensch, Geheimhaltung und Fallback).
+
+## AnMaCha Funkparcours – Das Hindernis-Zeitspiel
+
+- **Prinzip:** Hindernis-Show im Studio-Look (eigener Name, eigene Hindernisse, kein Klon). Jeder Läufer geht **allein** auf den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke). Die Zeiten werden verglichen. **Präsentiert vom RicoReWi Radioportal**, die Sender-Logos hängen als Banner über der Tribüne und auf den Trikots.
+- **Hindernisse:** Stufen mit Lücken, schwingende und wegbrechende Plattformen, Pendel, Hangelstangen und die Steilwand (mit Tempo anlaufen, oben Buzzer). **3 Parcours:** Vorrunde, Halbfinale, Finale.
+- **Show:** 1–4 Läufer nacheinander („Bereit?" → 3-2-1-LOS), nach jedem Parcours Wertung (Platz 1 bekommt die meisten Punkte), am Ende Gesamtsieger (Punkte, bei Gleichstand die Gesamtzeit). Ein **Geist** zeigt den bisher Schnellsten.
+- **Training:** ein Parcours, Bestzeit und Geist werden im Browser gespeichert.
+- **Steuerung:** ◀ ▶ / A D laufen, Leertaste / ↑ / W springen (länger halten = höher), ↓ / S / Shift Stangen greifen; auf dem Handy Touch-Tasten.
+- **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy wird das Steuer-Pad eines Läufers (◀ ▶ ✊ ⤒) und sagt „Bereit".
+- **Technik:** `engine.js` (feste Physik mit 60 Schritten/s, Parcours-Bauer, Wertung – rein), `bot.js` (Planer-Bot: simuliert kurze Zukünfte mit der echten Physik, beweist dass jeder Parcours machbar ist), `scene.js` (Three.js r128), `main.js`, `pair.js`/`controller.js`, `audio.js` (WebAudio).
+- **Tests:** `node anmacha-funkparcours/tests/engine-tests.js` (Physik, Hindernisse, Wertung, Machbarkeit aller Parcours per Bot), Browser-Tests `tests/e2e.mjs` (Show mit 2 Läufern, Training, Geist, Touch) und `tests/e2e-pair.mjs` (2 Handys).
