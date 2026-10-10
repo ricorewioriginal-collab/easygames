@@ -54,6 +54,7 @@ wobbel/
 │   ├── input.js            Tastatur, Wischen, Tippen, Steuerkreuz
 │   ├── audio.js            Soundeffekte + Musik (WebAudio, keine Audiodateien)
 │   ├── storage.js          Fortschritt & Einstellungen
+│   ├── editor/             Level-Editor: editor.js (Raster-Editor), codec.js (Prüfung, Teilen-Codes), custom-levels.js (Speicher), solve-worker.js (Löser im Worker)
 │   ├── game/
 │   │   ├── engine.js       Spielregeln (rein, ohne Grafik) – auch vom Test benutzt
 │   │   ├── solver.js       Breitensuche, findet die kürzeste Lösung
@@ -67,6 +68,8 @@ wobbel/
     ├── engine-tests.js     Regeltests der Spiellogik
     ├── check-levels.js     prüft Aufbau + Lösbarkeit aller Level (Breitensuche, spielt die Lösung nach)
     ├── build-par.js        berechnet Par-Werte und tests/solutions.json
+    ├── editor-tests.js     Tests für Editor-Prüfung, Codes und Speicher (alle 55 Level laufen durch Kodierung)
+    ├── e2e-editor.mjs      Browser-Test des Editors (malen, prüfen, testen, speichern, teilen)
     ├── e2e-play.mjs        Browser-Test (Playwright): spielt jedes Level mit der Löser-Lösung durch
     └── solutions.json      kürzeste Lösung je Level (von build-par.js erzeugt)
 ```
@@ -83,6 +86,16 @@ node --max-old-space-size=4096 tests/build-par.js            # Level verifiziere
 Der Browser-Test `tests/e2e-play.mjs` (`npm i -D playwright`, Server starten, `npm run e2e`) spielt jedes Level mit der Lösung des Lösers im echten Spiel bis zum Level-Abschluss durch.
 
 `check-levels.js` löst jedes Level per Breitensuche über sämtliche Spielzüge, **spielt die gefundene Lösung mit der echten Spiellogik nach** und meldet jedes unlösbare oder zu große Level.
+
+## Level-Editor
+
+Im Menü: **🛠 Level-Editor**. Eigene Level werden auf einem Raster gezeichnet (bis 16×14 Felder):
+
+- **Malen:** Werkzeug wählen, klicken oder ziehen; Rechtsklick radiert. Meer außerhalb der Mauern wird live angezeigt. Strg+Z / Strg+Y, Größe ändern, „Rand mauern", Welt-Thema wählen.
+- **Prüfen:** Das Statusfeld meldet Fehler (kein Wobbel, kein Ziel, mehr Ziele als Kisten …). „🔍 Prüfen" lässt den Löser (Web Worker, UI bleibt flüssig) die kürzeste Lösung suchen; „▶ Lösung ansehen" spielt sie vor.
+- **Testen:** „▶ Testen" öffnet das Level im 3D-Spiel; wer es löst, bestätigt es damit als lösbar.
+- **Speichern:** „Meine Level" (📁) liegt im Browser (`localStorage`) – spielen, bearbeiten, teilen, löschen.
+- **Teilen:** Code `WOBBEL1-…` oder Link `…/wobbel/?code=…`. Wer den Link öffnet, spielt das Level direkt; „📥 Code einfügen" lädt einen Code in den Editor. Der Fortschritt der 55 Hauptlevel bleibt davon unberührt.
 
 ## Wie die Level entstanden sind
 

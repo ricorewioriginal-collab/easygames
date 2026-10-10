@@ -37,6 +37,7 @@
   <div class="menu-buttons">
     <button class="btn" id="bPlay">▶ Spielen</button>
     <button class="btn blue" id="bLevels">🗺 Levelauswahl</button>
+    <button class="btn pink" id="bEditor">🛠 Level-Editor</button>
     <button class="btn ghost" id="bHow">❓ So wird gespielt</button>
     <button class="btn ghost" id="bSet">⚙ Einstellungen</button>
   </div>
@@ -50,6 +51,51 @@
   <div class="lgrid" id="lgrid"></div>
   <button class="btn ghost small" id="bLvBack">← Zurück</button>
 </section>
+
+<section id="editor" class="screen" hidden>
+  <div class="ed-top">
+    <button class="ib" id="edBack" aria-label="Zurück" title="Zurück zum Menü">☰</button>
+    <input id="edName" type="text" maxlength="30" placeholder="Name des Levels" autocomplete="off" aria-label="Levelname">
+    <div class="ed-worlds" id="edWorlds"></div>
+    <button class="ib" id="edUndo" aria-label="Rückgängig" title="Rückgängig (Strg+Z)">↶</button>
+    <button class="ib" id="edRedo" aria-label="Wiederholen" title="Wiederholen (Strg+Y)">↷</button>
+    <button class="ib" id="edMy" aria-label="Meine Level" title="Meine Level">📁</button>
+  </div>
+  <div class="ed-main">
+    <div class="ed-wrap" id="edWrap"><canvas id="edCv"></canvas></div>
+    <div class="ed-side card">
+      <div class="ed-pal" id="edPal"></div>
+      <div class="ed-size"><span>Breite <button id="edWm" aria-label="schmaler">−</button><b id="edW">10</b><button id="edWp" aria-label="breiter">+</button></span><span>Höhe <button id="edHm" aria-label="niedriger">−</button><b id="edH">8</b><button id="edHp" aria-label="höher">+</button></span></div>
+      <div class="ed-size"><button class="btn ghost small" id="edBorder">Rand mauern</button><button class="btn ghost small" id="edClear">Leeren</button></div>
+      <div class="ed-status" id="edStatus"></div>
+      <div class="ed-act"><button class="btn green small" id="edTest">▶ Testen</button><button class="btn blue small" id="edSolve">🔍 Prüfen</button><button class="btn small" id="edSave">💾 Speichern</button><button class="btn ghost small" id="edShare">🔗 Teilen</button></div>
+    </div>
+  </div>
+</section>
+
+<div id="myDlg" class="dialog" hidden><div class="card panel">
+  <h2>Meine Level</h2>
+  <div class="my-list" id="myList"></div>
+  <div class="row"><button class="btn green small" id="myNew">＋ Neues Level</button><button class="btn blue small" id="myImport">📥 Code einfügen</button></div>
+  <button class="btn ghost small" id="myClose">Schließen</button>
+</div></div>
+
+<div id="shDlg" class="dialog" hidden><div class="card panel">
+  <h2>Level teilen</h2>
+  <label class="fld">Code<textarea id="shCode" readonly rows="3"></textarea></label>
+  <div class="row"><button class="btn small" id="shCopyCode">Code kopieren</button></div>
+  <label class="fld">Link<textarea id="shLink" readonly rows="3"></textarea></label>
+  <div class="row"><button class="btn small" id="shCopyLink">Link kopieren</button><button class="btn blue small" id="shNative" hidden>Teilen …</button></div>
+  <div class="info" id="shMsg" role="status"></div>
+  <button class="btn ghost small" id="shClose">Schließen</button>
+</div></div>
+
+<div id="imDlg" class="dialog" hidden><div class="card panel">
+  <h2>Code einfügen</h2>
+  <label class="fld">Level-Code oder Link<textarea id="imTxt" rows="4" placeholder="WOBBEL1-…"></textarea></label>
+  <div class="info bad" id="imMsg" role="alert"></div>
+  <div class="row"><button class="btn green small" id="imOk">Laden</button><button class="btn ghost small" id="imClose">Abbrechen</button></div>
+</div></div>
 
 <div id="win" class="dialog" hidden><div class="card panel">
   <h2 id="wTitle">Geschafft!</h2>
