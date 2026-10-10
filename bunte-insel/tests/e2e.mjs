@@ -116,7 +116,7 @@ ok(qm.first === 'punch' && qm.n === 6 && qm.more && qm.all > 6 && qm.closed && q
 // Boot am Steg: einsteigen, aufs Meer, Segeltörn-Mission, nur am Steg aussteigen
 const bt = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.boat; b.P.x = 0; b.P.z = 205.5; b.P.y = .65; await sleep(300);
-  const out = { near: b.nearVehicle() === v }; b.enter(v); out.mission = b.mission && b.mission.kind; v.h = Math.PI * .5; b.keys.u = true; for (let i = 0; i < 300 && Math.hypot(v.x, v.z) < 207; i++) await sleep(100); b.keys.u = false; out.speed = v.v; out.rad = Math.hypot(v.x, v.z); out.farLeave = (b.leave(), !!b.P.veh);
+  const out = { near: b.nearVehicle() === v }; b.enter(v); out.mission = b.mission && b.mission.kind; v.h = Math.PI * .5; b.keys.u = true; for (let i = 0; i < 300 && v.x < 40; i++) await sleep(100); b.keys.u = false; out.speed = v.v; out.rad = Math.hypot(v.x, v.z); out.farLeave = (b.leave(), !!b.P.veh);
   const s0 = b.save.stars; const n = b.mission.steps.length; for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const st = m.steps[m.i]; v.x = st.x; v.z = st.z; v.v = 0; await sleep(250); } await sleep(400); out.gained = b.save.stars - s0;
   v.x = b.W.dock.x; v.z = b.W.dock.z + 2; v.v = 0; await sleep(200); b.leave(); out.back = !b.P.veh && Math.abs(b.P.z - 205.5) < 1 && b.P.y > .5; out.insideShore = Math.hypot(v.x, v.z) >= 205; return out;
 });
