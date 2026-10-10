@@ -24,3 +24,7 @@ Ohne Eintrag in `CONFIG` tut das Skript nichts.
 
 ## Apps (Android/Windows)
 Google sperrt die Anmeldung in App-Fenstern. Deshalb koppelt sich die App über den Browser: Sie zeigt einen Link `…/#koppeln=<Code>`, auf der Seite (ricorewi-radio.de, Skript eingebunden) meldet man sich mit Google an, die App erkennt die Kopplung automatisch und nutzt danach denselben Cloud-Speicher wie im Web. Dafür muss der Block `match /pair/{code}` aus `firestore.rules` veröffentlicht sein.
+
+## Ältere Sicherung (genau eine je Nutzer und Spiel)
+
+Ersetzt beim ersten Abgleich einer Sitzung (Start oder Anmeldung) der neuere Stand einen abweichenden älteren (egal ob lokal oder in der Cloud), wird der ersetzte Eintrag im Dokument `users/<uid>/saves/<spiel>__alt` aufgehoben und überschreibt dabei die vorherige Sicherung. Im Cloud-Fenster stellt „Älteren Stand wiederherstellen“ sie zurück und tauscht sie mit dem aktuellen Stand, es bleibt also immer genau eine ältere Sicherung. Die Firestore-Regeln decken das Dokument bereits ab (`{game}` ist ein Platzhalter), es ist nichts neu zu veröffentlichen. Apps mit eigenem Abgleich (Favoriten in Android/Windows, ZOTIK-Apps) haben das noch nicht.
