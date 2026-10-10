@@ -39,6 +39,8 @@
     font-size:clamp(46px,9vw,64px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 28px var(--g,rgba(0,229,255,.35)),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -10px 22px rgba(0,0,0,.25);overflow:hidden}
   .icon::after{content:'';position:absolute;inset:0 0 55% 0;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0))}
   .icon span{filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));position:relative;z-index:1}
+  .icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+  .icon.has-img::after{opacity:.22}
   .tile b{font-size:16px}
   .tile small{color:#9fb4c8;font-size:12.5px;line-height:1.35;max-width:170px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .ext{position:absolute;top:8px;right:8px;z-index:2;font-size:11px;background:rgba(0,0,0,.45);border-radius:8px;padding:1px 6px}
@@ -133,7 +135,7 @@ const GAMES = [
     path: 'anmacha-snake/', desc: '3D-Snake: friss Sender-Logos, 13 Welten, Power-ups, Portal-Modus, zwei Kameras.' },
   { id: 'anmacha-tower-defense', title: 'AnMaCha Tower Defense', icon: '🗼', bg: 'linear-gradient(145deg,#8B5CF6,#2a6cff 50%,#00FFC8)', glow: 'rgba(139,92,246,.55)',
     path: 'anmacha-tower-defense/', desc: '3D-Tower-Defense: 8 Sender-Logo-Türme, 25 Wellen Rauschen, 3 Karten, Ausbau & Boss-Wellen.' },
-  { id: 'anmacha-quiz', title: 'Machst du mich an? – Das Quiz!', icon: '🎤', bg: 'linear-gradient(145deg,#1b2fb3,#8B5CF6 50%,#FF9A1F)', glow: 'rgba(255,154,31,.55)',
+  { id: 'anmacha-quiz', title: 'Machst du mich an? – Das Quiz!', icon: '🎤', img: 'anmacha-quiz/card.png', bg: 'linear-gradient(145deg,#1b2fb3,#8B5CF6 50%,#FF9A1F)', glow: 'rgba(255,154,31,.55)',
     path: 'anmacha-quiz/', desc: 'TV-Quizshow im 3D-Studio: Leiter bis 1 Mio €, Quiznight, ~600 Fragen, Joker, bis 4 Spieler (auch per Handy gekoppelt).' },
   { id: 'zotik', title: 'ZOTIK', icon: '💠', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)', external: true,
     path: 'https://ricorewioriginal-collab.github.io/zotik/', desc: 'Die Splitter der Welten – Browser-Spiel.' }
@@ -157,7 +159,7 @@ if (embedMode) document.body.classList.add('embed-mode');
 GAMES.forEach((g, i) => {
   const b = document.createElement('button');
   b.className = 'tile'; b.dataset.i = i;
-  b.innerHTML = `<div class="icon" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}<span>${g.icon}</span></div><b></b><small></small>`;
+  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><b></b><small></small>`;
   b.querySelector('b').textContent = g.title; b.querySelector('small').textContent = g.desc;
   b.addEventListener('click', () => openGame(i));
   $('grid').appendChild(b);
