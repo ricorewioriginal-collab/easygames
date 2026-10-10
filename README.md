@@ -14,6 +14,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
+| AnMaCha Kart Rush – 3D-Arcade-Kartrennen, Splitscreen mit Handys als Lenkrad (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-kart/`](anmacha-kart/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
@@ -197,3 +198,11 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Gesichter-Radar:** 20 selbst gezeichnete Gesichter mit Merkmalen; allein gegen den Moderator (3 Stärken) – wer das geheime Gesicht des anderen zuerst findet, gewinnt.
 - **Stirnband-Party:** Gerät an die Stirn, die Gruppe erklärt das Wort – 60 s, ✅ Richtig / ⏭ Weiter, Runden pro Spieler/Team.
 - **Daten:** 174 Begriffe in 6 Themen (Tiere, Berufe, Länder, Persönlichkeiten, Gegenstände, Radio & Musik) in `anmacha-gesucht/data.js`. Sender-Logos: `anmacha-gesucht/logos/01..13`, Titel-Logo `logo.png`. Bestenliste (Top 10 je Spielart) lokal im Browser. Tasten: `M` Ton, `←/→` im Stirnband-Modus.
+
+## AnMaCha Kart Rush
+
+- **Spiel:** Eigenes Arcade-Kartrennen (keine fremden Figuren/Strecken): 8 Karts mit Sender-Logos, 3 Strecken (Funkturm-Wiese, Sonnen-Küste, Neon-City), 2/3/5 Runden. Modi: Einzelrennen, Grand Prix (3 Strecken, Punkte 15–1), Zeitfahren (allein, Bestrunde wird lokal gespeichert).
+- **Fahren:** Gas automatisch, lenken, bremsen, **Driften** mit Mini-/Super-/Ultra-Turbo, Boost-Felder, Item-Boxen mit Radio-Items: Bass-Boost, Störsignal (Falle), Jingle-Rakete (zielsuchend), Frequenz-Schild. Items hängen vom Platz ab (hinten bessere).
+- **Solo:** direkt am Handy (Pfeil-Flächen, optional Kippen zum Lenken) oder am PC (←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, `M` Ton, `Esc` Pause).
+- **Mehrspieler (2–4):** Der große Bildschirm zeigt das Rennen im Splitscreen, die Handys koppeln per Code/QR (PeerJS) und sind Lenkrad (Handy quer halten). Optional ein Tastatur-Spieler am Host. Bots füllen auf 8 Karts auf (3 Stärken, Gummiband).
+- **Technik:** Simulation (`sim.js`) und Strecken (`track.js`) ohne Grafik-Abhängigkeit, Sounds per WebAudio, Logos `anmacha-kart/logos/01..13`, Titel-Logo `anmacha-kart/logo.png`.
