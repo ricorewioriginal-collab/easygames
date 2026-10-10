@@ -7,7 +7,7 @@
 (function () {
   'use strict';
   // <- aus der Firebase-Konsole eintragen (siehe cloud/README.md); authDomain leer = <projectId>.firebaseapp.com
-  var CONFIG = { projectId: '', apiKey: '', authDomain: '' };
+  var CONFIG = { projectId: 'ricorewi-games-save', apiKey: 'AIzaSyB-4IuC85PsOrvsY0GkBGsCIXdW_i1SrnM', authDomain: 'ricorewi-games-save.firebaseapp.com' };
   var SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
 
   var s = document.currentScript;
