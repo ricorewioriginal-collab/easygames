@@ -84,3 +84,4 @@ body.ctrl #app,body.ctrl .screen:not(#ctl),body.ctrl .dialog{display:none!import
 .seg.s2 button{font-size:13px;padding:8px 4px}
 .cc2{display:flex;gap:6px;overflow-x:auto}
 #ctl .tl{margin-top:4px}body.ctrl .cand{margin:0}
+@media (max-width:480px){.live{padding:6px 7px;font-size:11px}#hud .ib{width:34px;height:34px}#bLog,#bVoice{display:none}.wk{padding:4px 8px}.lamps{padding:4px 8px}}

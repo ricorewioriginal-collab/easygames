@@ -23,6 +23,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Preisradar – Preis-Schätzspiel mit 5 Spielarten, bis zu 4 Spieler + Computer, Handy-Kopplung (reines HTML/CSS/JS, Sounds im Browser erzeugt, 208 Produkte) | [`anmacha-preisradar/`](anmacha-preisradar/) |
 | AnMaCha Funkparcours – 3D-Hindernis-Zeitspiel (Einzelläufe, Zeiten werden verglichen), 3 Parcours, Geist, bis zu 4 Läufer, Handys als Pads (Three.js, Sounds im Browser erzeugt) | [`anmacha-funkparcours/`](anmacha-funkparcours/) |
 | Funkhaus Reality – Live-WG-Simulation im Radiostudio (3D-Haus, Allianzen, Nominierung, Hörervotum, bis zu 4 Menschen mit Handy-Pads + KI-Mitbewohner) | [`FunkhausReality/`](FunkhausReality/) |
+| Mach mich aus! – Funk-Dating-Show mit 20 Pulten und Lampen (3D-Studio, Kandidat oder Pult, Quiz, Talent, Joker, bis zu 4 Menschen mit Handy-Pads) | [`MachMichAus/`](MachMichAus/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
 | AnMaCha Spielesammlung 3D – Rausschmeißer (Laufspiel), Würfelfieber (5-Würfel-Spiel), Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-spielesammlung/`](anmacha-spielesammlung/) |
@@ -317,3 +318,14 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Inhalte:** `content.js` (24 Charaktere, Ticker-Texte, Ereignisse, Sprecher-Texte) – prüfen mit `node FunkhausReality/tests/check-content.js`.
 - **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `views.js`, `panel.js`/`games.js` (Eingaben und Mini-Spiele, gleich am Gastgeber und Handy), `house.js` (Three.js), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
 - **Tests:** `node FunkhausReality/tests/engine-tests.js` (Regeln, Determinismus, 160 komplette KI-Staffeln, Balance), Browser-Tests `tests/e2e.mjs` (ganze Staffel mit allen Eingabearten) und `tests/e2e-pair.mjs` (2 Handys mit privaten Plänen und Nominierung).
+
+## Mach mich aus! – Die Funk-Dating-Show
+
+- **Prinzip:** 20 Funk-Pulte mit je einer Lampe, ein Kandidat auf der Bühne. Das Wortspiel: Anmachen und Ausmachen – jedes Pult macht seine Lampe **aus**, wenn es nicht passt; am Ende wählt der Kandidat ein Pult mit brennender Lampe (eigenes Format mit eigenem Namen, kein Klon). **Präsentiert vom RicoReWi Radioportal.**
+- **Eine Runde:** vier Enthüllungen – 1. erster Eindruck (Stil), 2. Steckbrief-Einspieler (zwei Neigungen), 3. Talent, 4. Quiz (dritte Neigung, ein Nogo). Nach jeder Phase entscheiden alle Pulte neu; Lampen bleiben aus. Dann optional der **Anmach-Joker** (eine Lampe wieder an), die Wahl und das **Date** mit Passgenauigkeit in Prozent. Gehen alle Lampen aus: **Blackout**.
+- **Profile:** Jede Person hat einen Stil, drei Neigungen und zwei Nogos aus 12 Themen. Die Passgenauigkeit ergibt sich aus gemeinsamen Neigungen, Nogo-Treffern und Stil. KI-Pulte entscheiden nur mit dem, was bisher enthüllt wurde.
+- **Menschen:** 1–4, jeder ist einmal Kandidat (🎤 Talent im Takt, Quiz – Flunkern hilft kurz, schadet beim Date) und sitzt sonst an einem Pult (💡 Typ prüfen, Lampe an lassen oder ausmachen, Beobachtungspunkte und Bonus bei der Wahl). Rangliste nach Gesamtpunkten.
+- **3D-Studio:** zwei Ränge mit 20 Pulten, Bühne, LED-Wand, Scheinwerfer, Moderator, Kamerafahrten; mobil (Panel unten) und am PC (Panel rechts). **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy ist das private Pad eines Menschen. Optional Sprecher-Stimme (🗣️).
+- **Inhalte:** `content.js` (18 Kandidaten, 40 Pult-Besetzungen, 14 Quizfragen, Moderator- und Date-Texte) – prüfen mit `node MachMichAus/tests/check-content.js`.
+- **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `studio.js` (Three.js), `panel.js`/`games.js` (Eingaben und Talent-Spiel, gleich am Gastgeber und Handy), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
+- **Tests:** `node MachMichAus/tests/engine-tests.js` (Passgenauigkeit, Phasen, Joker, Blackout, 400 KI-Runden mit Balance), Browser-Tests `tests/e2e.mjs` (ganze Show) und `tests/e2e-pair.mjs` (2 Handys).
