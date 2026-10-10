@@ -67,7 +67,8 @@ wobbel/
     ├── engine-tests.js     Regeltests der Spiellogik
     ├── check-levels.js     prüft Aufbau + Lösbarkeit aller Level (Breitensuche, spielt die Lösung nach)
     ├── build-par.js        berechnet Par-Werte und tests/solutions.json
-    └── e2e …               Browser-Test (Playwright), siehe unten
+    ├── e2e-play.mjs        Browser-Test (Playwright): spielt jedes Level mit der Löser-Lösung durch
+    └── solutions.json      kürzeste Lösung je Level (von build-par.js erzeugt)
 ```
 
 ## Tests
@@ -78,6 +79,8 @@ node tests/engine-tests.js                                   # Regeln (Schieben,
 node --max-old-space-size=4096 tests/check-levels.js         # alle Level: Aufbau, Lösbarkeit, Züge/Schübe/Zustände
 node --max-old-space-size=4096 tests/build-par.js            # Level verifizieren, Par-Werte + Freigabe neu berechnen (js/game/levels/par.js)
 ```
+
+Der Browser-Test `tests/e2e-play.mjs` (`npm i -D playwright`, Server starten, `npm run e2e`) spielt jedes Level mit der Lösung des Lösers im echten Spiel bis zum Level-Abschluss durch.
 
 `check-levels.js` löst jedes Level per Breitensuche über sämtliche Spielzüge, **spielt die gefundene Lösung mit der echten Spiellogik nach** und meldet jedes unlösbare oder zu große Level.
 
