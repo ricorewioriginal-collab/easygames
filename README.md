@@ -7,6 +7,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 |---|---|
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
+| AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
@@ -100,3 +101,14 @@ Ein Logo im **Hauptordner** ersetzt im Hauptmenü der Spiele das Wort „AnMaCha
 Ein Logo im **Spielordner** gilt als kompletter Titel (z. B. „AnMaCha Radio Surfer“) und ersetzt den ganzen Text-Titel; es wird größer dargestellt und am Rand weich ausgeblendet.
 Tipp: Logos auf ca. 800 px Breite verkleinern (unter ca. 500 KB), dann lädt das Menü schnell.
 Auf dem dunklen Hintergrund passen helle oder farbige Logos am besten. Ohne Logo-Datei bleibt der Text-Titel.
+
+## AnMaCha Beat Surfer: Rhythmusspiel mit 13 Songs
+
+Noten laufen in 4 Spuren auf dich zu – triff sie im Takt der Musik. Die Musik wird komplett im Browser erzeugt (keine Audio-Dateien),
+die Noten ergeben sich aus der Musik (Bass-Drum, Snare, Melodie).
+
+- **Steuerung:** `D` `F` `J` `K` oder die Pfeiltasten (`←` `↓` `↑` `→`), `P` Pause, `R` Neustart, `M` Ton. Am Handy: 4 große Tasten unten.
+- **Wertung:** Perfekt / Gut / Verpasst, Combo-Multiplikator bis x4, „Welle“ (Lebensanzeige) – wird sie leer, ist der Song verloren. Am Ende gibt es 1–3 Sterne nach Genauigkeit.
+- **Kampagne:** Song 1 bis 13, jeder Song schneller und dichter (92 → 170 BPM, 1,3 → 5,9 Noten pro Sekunde); Fortschritt wird gespeichert. **Freies Spiel:** beliebigen Song wählen.
+- **Logos:** Song *n* nutzt `anmacha-beat-surfer/logos/NN.png|jpg|jpeg` (`01` … `13`); es erscheint als große Tafel hinter der Bahn. Das Titel-Logo (`logo.png`) im Spielordner (oder im Hauptordner) ersetzt den Text-Titel im Menü.
+- **Audio-Versatz:** im Pause-Menü einstellbar (z. B. für Bluetooth-Kopfhörer).
