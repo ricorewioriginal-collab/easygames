@@ -1,7 +1,7 @@
 // Oberfläche, Eingabe (Tastatur/Maus/Touch), Menüs, Speichern.
 import './style.css';
 import { Game } from './game.js';
-import { B, NAMES } from './world.js';
+import { B, NAMES, LOGO0, LOGO_COUNT } from './world.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld } from './storage.js';
 import { unlockAudio, sfx } from './audio.js';
 
@@ -19,7 +19,13 @@ const keys = new Set();
 // ---------- Icons / Atlas ----------
 document.documentElement.style.setProperty('--atlas', `url(${game.atlasCanvas.toDataURL()})`);
 const ICON_TILE = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 7, 7: 8, 8: 9, 9: 10 };
-const icon = t => { const k = ICON_TILE[t] ?? 0; return `<i class="ic" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; };
+const icon = t => {
+  if (t >= LOGO0) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
+  const k = ICON_TILE[t] ?? 0;
+  return `<i class="ic" style="background-position:${(k % 8) * 100 / 7}% ${Math.floor(k / 8) * 100 / 7}%"></i>`;
+};
+// Logo-Atlas als Bild für Hotbar/Inventar, sobald alle Logos geladen sind
+game.onLogos = () => { document.documentElement.style.setProperty('--logos', `url(${game.logoCanvas.toDataURL('image/png')})`); };
 
 // ---------- Hinweise ----------
 let toastTimer = 0;
@@ -64,19 +70,34 @@ function renderInventory() {
     h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b></button>`;
   }
   $('invGrid').innerHTML = h;
+  let lg = '';
+  for (let i = 0; i < LOGO_COUNT; i++) {
+    const t = LOGO0 + i, n = creative ? '∞' : (game.inv[t] || 0);
+    lg += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b>${creative ? '' : `<i class="plus" data-craft="${t}" title="1 Bretter → 2 Logo-Blöcke">＋</i>`}</button>`;
+  }
+  $('logoGrid').innerHTML = lg;
   $('recipes').innerHTML = creative ? '<small>Herstellen ist im Kreativmodus nicht nötig.</small>' : RECIPES.map((r, i) => {
     const ok = r.need.every(([t, n]) => (game.inv[t] || 0) >= n);
     const need = r.need.map(([t, n]) => `${n}× ${NAMES[t]}`).join(' + ');
     return `<button data-r="${i}" ${ok ? '' : 'disabled'}>${icon(r.give[0])}<span><b>${r.give[1]}× ${NAMES[r.give[0]]}</b> aus ${need}</span></button>`;
   }).join('');
 }
-$('invGrid').addEventListener('click', e => {
+function onInvClick(e) {
+  const pl = e.target.closest('[data-craft]');
+  if (pl) {
+    if ((game.inv[B.PLANKS] || 0) < 1) { toast('Dafür brauchst du 1 Bretter'); return; }
+    const t = Number(pl.dataset.craft);
+    game.inv[B.PLANKS]--; game.inv[t] = Math.min(999, (game.inv[t] || 0) + 2);
+    game.unsaved = true; game.onChange(); return;
+  }
   const b = e.target.closest('[data-t]'); if (!b) return;
   const t = Number(b.dataset.t), i = game.hotbar.indexOf(t);
   if (i >= 0) game.hotbar[i] = game.hotbar[game.sel];
   game.hotbar[game.sel] = t;
   game.onChange();
-});
+}
+$('invGrid').addEventListener('click', onInvClick);
+$('logoGrid').addEventListener('click', onInvClick);
 $('recipes').addEventListener('click', e => {
   const b = e.target.closest('[data-r]'); if (!b) return;
   const r = RECIPES[Number(b.dataset.r)];

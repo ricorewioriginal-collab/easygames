@@ -1,8 +1,8 @@
 // Spielkern: Rendering, Chunk-Streaming, Physik-Schleife, Bauen/Abbauen, Tag-Nacht, Speicherstand.
 import * as THREE from 'three';
-import { World, B, CS, H, NAMES, chunkKey } from './world.js';
-import { buildMesh } from './mesher.js';
-import { drawAtlas } from './textures.js';
+import { World, B, CS, H, NAMES, LOGO0 } from './world.js';
+import { buildMesh, cubeData } from './mesher.js';
+import { drawAtlas, createLogoAtlas, cloudCanvas } from './textures.js';
 import { Player, raycast, EYE } from './physics.js';
 import { playBreak, playPlace, playDeny } from './audio.js';
 
@@ -10,19 +10,49 @@ export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
 const MAX_STACK = 999;
 
+// Block-Shader: Beleuchtung pro Vertex aus Flächenrichtung, Sonne/Mond, Himmelslicht und Ambient Occlusion
 const VERT = `
-attribute vec4 aCol; varying vec2 vUv; varying vec4 vCol; varying float vDist;
-void main(){ vUv = uv; vCol = aCol; vec4 mv = modelViewMatrix * vec4(position, 1.0); vDist = length(mv.xyz); gl_Position = projectionMatrix * mv; }`;
+attribute vec4 aCol; varying vec2 vUv; varying vec3 vLight; varying float vDist;
+uniform vec3 uAmb; uniform vec3 uSunCol; uniform vec3 uSunDir;
+void main(){
+  float f = aCol.a;
+  vec3 n = f < 0.5 ? vec3(1.,0.,0.) : f < 1.5 ? vec3(-1.,0.,0.) : f < 2.5 ? vec3(0.,0.,1.) : f < 3.5 ? vec3(0.,0.,-1.) : f < 4.5 ? vec3(0.,1.,0.) : vec3(0.,-1.,0.);
+  float sky = aCol.g;
+  vec3 amb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky);
+  vec3 dir = uSunCol * max(dot(n, uSunDir), 0.0) * sky;
+  vLight = max((amb + dir) * aCol.r, vec3(aCol.b));
+  vUv = uv;
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  vDist = length(mv.xyz);
+  gl_Position = projectionMatrix * mv;
+}`;
 const FRAG = `
-uniform sampler2D uMap; uniform vec3 uLight; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut;
-varying vec2 vUv; varying vec4 vCol; varying float vDist;
+uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut;
+varying vec2 vUv; varying vec3 vLight; varying float vDist;
 void main(){
   vec4 t = texture2D(uMap, vUv);
   if (t.a < uCut) discard;
-  vec3 c = t.rgb * mix(vCol.rgb * uLight, vec3(1.0), vCol.a);
-  float f = smoothstep(uFogRange.x, uFogRange.y, vDist);
-  gl_FragColor = vec4(mix(c, uFog, f), t.a);
+  vec3 c = t.rgb * vLight;
+  gl_FragColor = vec4(mix(c, uFog, smoothstep(uFogRange.x, uFogRange.y, vDist)), t.a);
 }`;
+const DOME_VERT = `varying vec3 vDir; void main(){ vDir = normalize(position); vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }`;
+const DOME_FRAG = `
+uniform vec3 uHor; uniform vec3 uZen; uniform vec3 uSunN; uniform vec3 uGlow; varying vec3 vDir;
+void main(){
+  float h = clamp(vDir.y, 0.0, 1.0);
+  vec3 c = mix(uHor, uZen, pow(h, 0.5));
+  c += uGlow * pow(max(dot(normalize(vDir), uSunN), 0.0), 6.0);
+  gl_FragColor = vec4(c, 1.0);
+}`;
+const CLOUD_VERT = `
+uniform vec2 uOff; varying vec2 vUv; varying float vD;
+void main(){ vec4 wp = modelMatrix * vec4(position, 1.0); vUv = (wp.xz + uOff) / 520.0; vD = length(position.xy) / 1200.0; gl_Position = projectionMatrix * viewMatrix * wp; }`;
+const CLOUD_FRAG = `
+uniform sampler2D uTex; uniform vec3 uCol; varying vec2 vUv; varying float vD;
+void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; gl_FragColor = vec4(uCol, a); }`;
+
+// mittlere Blockfarben für Bruchstücke
+const BLOCK_COLOR = { 1: 0x58a03c, 2: 0x86603f, 3: 0x7c7c80, 4: 0xdbcb8e, 5: 0x68502e, 6: 0x3a8030, 7: 0xac8652, 8: 0xcfe8f0, 9: 0xffd87a };
 
 const lerp = (a, b, t) => a + (b - a) * t;
 const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
@@ -31,56 +61,99 @@ const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a
 export class Game {
   constructor(canvas, coarse) {
     this.coarse = coarse;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: 'high-performance' });
-    this.maxDpr = coarse ? 1.5 : 2;
+    const dpr = window.devicePixelRatio || 1;
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !(coarse && dpr >= 2.5), powerPreference: 'high-performance' });
+    this.maxDpr = coarse ? 1.75 : 2;
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(coarse ? 70 : 75, 1, 0.08, 1000);
+    this.camera = new THREE.PerspectiveCamera(coarse ? 70 : 75, 1, 0.08, 1500);
     this.camera.rotation.order = 'YXZ';
+    this.scene.add(this.camera);
     this.group = new THREE.Group();
     this.scene.add(this.group);
 
-    // Textur-Atlas
+    // Texturen: weich gefiltert (Mipmaps + anisotrop) statt harter Pixel
+    const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+    const mkTex = cv => {
+      const t = new THREE.CanvasTexture(cv);
+      t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = aniso; t.generateMipmaps = true;
+      return t;
+    };
     this.atlasCanvas = drawAtlas();
-    const tex = new THREE.CanvasTexture(this.atlasCanvas);
-    tex.magFilter = THREE.NearestFilter;
-    tex.minFilter = THREE.NearestMipmapLinearFilter;
-    tex.generateMipmaps = true;
-    this.uniforms = {
-      uMap: { value: tex }, uLight: { value: new THREE.Vector3(1, 1, 1) }, uFog: { value: new THREE.Vector3(0.5, 0.8, 0.9) },
+    this.atlasTex = new THREE.DataTexture(this.atlasCanvas.raw, this.atlasCanvas.width, this.atlasCanvas.height, THREE.RGBAFormat);
+    this.atlasTex.magFilter = THREE.LinearFilter; this.atlasTex.minFilter = THREE.LinearMipmapLinearFilter;
+    this.atlasTex.anisotropy = aniso; this.atlasTex.generateMipmaps = true; this.atlasTex.needsUpdate = true;
+    this.logoCanvas = createLogoAtlas(() => { this.logoTex.needsUpdate = true; if (!this.running && this.world) this.render(); }, () => this.onLogos());
+    this.logoTex = mkTex(this.logoCanvas);
+    this.onLogos = () => {};
+
+    this.uni = {
+      uAmb: { value: new THREE.Vector3(0.44, 0.5, 0.62) }, uSunCol: { value: new THREE.Vector3(0.6, 0.57, 0.5) },
+      uSunDir: { value: new THREE.Vector3(0, 1, 0.25).normalize() }, uFog: { value: new THREE.Vector3(0.68, 0.84, 0.95) },
       uFogRange: { value: new THREE.Vector2(40, 90) }
     };
-    const mk = (cut, trans) => new THREE.ShaderMaterial({
+    const mk = (map, cut, trans, uni) => new THREE.ShaderMaterial({
       vertexShader: VERT, fragmentShader: FRAG, transparent: trans, depthWrite: !trans, side: trans ? THREE.DoubleSide : THREE.FrontSide,
-      uniforms: { ...this.uniforms, uCut: { value: cut } }
+      uniforms: { ...uni, uMap: { value: map }, uCut: { value: cut } }
     });
-    this.matO = mk(0.5, false);
-    this.matT = mk(0.02, true);
+    this.matO = mk(this.atlasTex, 0.5, false, this.uni);
+    this.matT = mk(this.atlasTex, 0.02, true, this.uni);
+    this.matL = mk(this.logoTex, 0.5, false, this.uni);
 
-    // Himmel: Sonne, Mond, Sterne (blockig passend zum Stil)
+    // Himmelskuppel mit Farbverlauf, Sonnenschein-Glühen, Sonne/Mond (blockig), Sterne, Wolken
     this.sky = new THREE.Group();
     this.scene.add(this.sky);
+    this.domeU = { uHor: { value: new THREE.Vector3() }, uZen: { value: new THREE.Vector3() }, uSunN: { value: new THREE.Vector3(1, 0, 0) }, uGlow: { value: new THREE.Vector3() } };
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(700, 20, 12), new THREE.ShaderMaterial({
+      vertexShader: DOME_VERT, fragmentShader: DOME_FRAG, uniforms: this.domeU, side: THREE.BackSide, depthWrite: false, depthTest: false
+    }));
+    dome.renderOrder = -20; dome.frustumCulled = false;
+    this.sky.add(dome);
     const quad = (size, color) => {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ color, fog: false }));
-      this.sky.add(m); return m;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ color, fog: false, depthWrite: false }));
+      m.renderOrder = -10; this.sky.add(m); return m;
     };
-    this.sun = quad(70, 0xfff2b0);
-    this.moon = quad(46, 0xdfe8ff);
-    const sp = new Float32Array(240 * 3);
-    for (let i = 0; i < 240; i++) {
+    this.sun = quad(80, 0xfff2b0);
+    this.moon = quad(52, 0xdfe8ff);
+    const sp = new Float32Array(300 * 3);
+    for (let i = 0; i < 300; i++) {
       const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = Math.sqrt(1 - u * u);
-      sp[i * 3] = Math.cos(a) * r * 500; sp[i * 3 + 1] = u * 500; sp[i * 3 + 2] = Math.sin(a) * r * 500;
+      sp[i * 3] = Math.cos(a) * r * 600; sp[i * 3 + 1] = u * 600; sp[i * 3 + 2] = Math.sin(a) * r * 600;
     }
     const sg = new THREE.BufferGeometry();
     sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-    this.starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 2, sizeAttenuation: false, transparent: true, opacity: 0, fog: false });
+    this.starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 2, sizeAttenuation: false, transparent: true, opacity: 0, fog: false, depthWrite: false });
     this.stars = new THREE.Points(sg, this.starMat);
+    this.stars.renderOrder = -15;
     this.sky.add(this.stars);
+
+    const ct = new THREE.CanvasTexture(cloudCanvas());
+    ct.wrapS = ct.wrapT = THREE.RepeatWrapping; ct.minFilter = THREE.LinearMipmapLinearFilter; ct.magFilter = THREE.LinearFilter;
+    this.cloudU = { uTex: { value: ct }, uCol: { value: new THREE.Vector3(1, 1, 1) }, uOff: { value: new THREE.Vector2() } };
+    this.clouds = new THREE.Mesh(new THREE.PlaneGeometry(2400, 2400), new THREE.ShaderMaterial({
+      vertexShader: CLOUD_VERT, fragmentShader: CLOUD_FRAG, uniforms: this.cloudU, transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }));
+    this.clouds.rotation.x = -Math.PI / 2; this.clouds.frustumCulled = false;
+    this.scene.add(this.clouds);
 
     // Zielmarkierung
     const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.004, 1.004, 1.004));
     this.hl = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.75 }));
     this.hl.visible = false;
     this.scene.add(this.hl);
+
+    // Block in der Hand
+    const handUni = {
+      uAmb: { value: new THREE.Vector3(0.62, 0.64, 0.7) }, uSunCol: { value: new THREE.Vector3(0.5, 0.46, 0.38) },
+      uSunDir: { value: new THREE.Vector3(0.35, 0.8, 0.5).normalize() }, uFog: { value: new THREE.Vector3() }, uFogRange: { value: new THREE.Vector2(1e5, 2e5) }
+    };
+    const hm = map => { const m = mk(map, 0.5, false, handUni); m.depthTest = false; return m; };
+    this.handMatO = hm(this.atlasTex); this.handMatL = hm(this.logoTex);
+    this.hand = new THREE.Mesh(new THREE.BufferGeometry(), this.handMatO);
+    this.hand.frustumCulled = false; this.hand.renderOrder = 50; this.hand.visible = false;
+    this.camera.add(this.hand);
+    this.handType = -1; this.swing = 0; this.bob = 0;
+
+    this.parts = []; this.partCount = 0;
 
     this.player = new Player();
     this.input = { f: 0, r: 0, jump: false, down: false, sprint: false };
@@ -132,6 +205,8 @@ export class Game {
     this.hotbar = (save.hotbar && save.hotbar.length === 9) ? save.hotbar.slice() : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
+    if (!save.inv) for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
+    this.handType = -1;
     this.spawn = this.world.findSpawn();
     const p = this.player;
     if (save.px !== undefined) { p.x = save.px; p.y = save.py; p.z = save.pz; this.yaw = save.yaw || 0; this.pitch = save.pitch || 0; }
@@ -214,6 +289,60 @@ export class Game {
     }
     this.flushDirty();
     this.updateSky();
+    this.cloudU.uOff.value.x += dt * 2.5;
+    this.updateHand(dt);
+    if (this.partCount) this.updateParticles(dt);
+  }
+
+  // ---------- Hand-Block und Bruchstücke ----------
+  updateHand(dt) {
+    const t = this.hotbar[this.sel];
+    if (t !== this.handType) {
+      this.handType = t;
+      this.hand.visible = t > 0;
+      if (t > 0) {
+        const d = cubeData(t), g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.BufferAttribute(d.pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(d.uv, 2));
+        g.setAttribute('aCol', new THREE.BufferAttribute(d.col, 4)); g.setIndex(new THREE.BufferAttribute(d.idx, 1));
+        this.hand.geometry.dispose(); this.hand.geometry = g;
+        this.hand.material = t >= LOGO0 ? this.handMatL : this.handMatO;
+      }
+    }
+    const p = this.player, moving = Math.hypot(p.vx, p.vz) > 0.5 && p.onGround;
+    if (moving) this.bob += dt * 9;
+    this.swing = Math.max(0, this.swing - dt * 4.5);
+    const sw = Math.sin(this.swing * Math.PI);
+    this.hand.scale.setScalar(0.12);
+    this.hand.position.set(0.34 - sw * 0.06, -0.27 + Math.sin(this.bob) * 0.008 - sw * 0.06, -0.55 - sw * 0.04);
+    this.hand.rotation.set(0.25 - sw * 0.7, -0.62, 0.06);
+  }
+
+  spawnBreak(x, y, z, type) {
+    const color = BLOCK_COLOR[type] ?? 0xdddddd;
+    for (let i = 0; i < 10; i++) {
+      this.partIdx = ((this.partIdx || 0) + 1) % 24;
+      let m = this.parts[this.partIdx];
+      if (!m) {
+        m = new THREE.Mesh(this.partGeo || (this.partGeo = new THREE.BoxGeometry(1, 1, 1)), new THREE.MeshBasicMaterial({ color }));
+        m.userData = { life: 0 };
+        this.scene.add(m); this.parts[this.partIdx] = m;
+      }
+      if (!m.userData.life) this.partCount++;
+      m.material.color.setHex(color);
+      m.position.set(x + 0.2 + Math.random() * 0.6, y + 0.2 + Math.random() * 0.6, z + 0.2 + Math.random() * 0.6);
+      m.userData = { life: 0.55 + Math.random() * 0.3, v: new THREE.Vector3((Math.random() - 0.5) * 3, Math.random() * 3 + 1, (Math.random() - 0.5) * 3) };
+      m.scale.setScalar(0.1 + Math.random() * 0.08); m.visible = true;
+    }
+  }
+
+  updateParticles(dt) {
+    for (const m of this.parts) {
+      if (!m || !m.userData.life) continue;
+      const u = m.userData;
+      u.life -= dt; u.v.y -= 14 * dt;
+      m.position.addScaledVector(u.v, dt);
+      if (u.life <= 0) { u.life = 0; m.visible = false; this.partCount--; }
+    }
   }
 
   applyCamera() {
@@ -228,7 +357,7 @@ export class Game {
     if (!t || t.y === 0) return false;
     if (this.world.setBlock(t.x, t.y, t.z, B.AIR)) {
       if (this.mode !== 'creative') this.inv[t.type] = Math.min(MAX_STACK, (this.inv[t.type] || 0) + 1);
-      this.unsaved = true; playBreak(); this.onChange();
+      this.unsaved = true; this.swing = 1; this.spawnBreak(t.x, t.y, t.z, t.type); playBreak(); this.onChange();
       return true;
     }
     return false;
@@ -247,7 +376,7 @@ export class Game {
     if (p.x + hw > x && p.x - hw < x + 1 && p.z + hw > z && p.z - hw < z + 1 && p.y + 1.8 > y && p.y < y + 1) return false;
     if (!this.world.setBlock(x, y, z, type)) return false;
     if (this.mode !== 'creative') this.inv[type]--;
-    this.unsaved = true; playPlace(); this.onChange();
+    this.unsaved = true; this.swing = 1; playPlace(); this.onChange();
     return true;
   }
 
@@ -290,7 +419,7 @@ export class Game {
   }
 
   dropMesh(c) {
-    for (const k of ['opaque', 'trans']) {
+    for (const k of ['opaque', 'trans', 'logo']) {
       if (c[k]) { this.group.remove(c[k]); c[k].geometry.dispose(); c[k] = null; }
     }
   }
@@ -300,6 +429,7 @@ export class Game {
     if (!res) return false;
     this.setPart(c, 'opaque', res.opaque, this.matO);
     this.setPart(c, 'trans', res.trans, this.matT);
+    this.setPart(c, 'logo', res.logo, this.matL);
     c.meshed = true;
     return true;
   }
@@ -323,38 +453,55 @@ export class Game {
 
   // ---------- Tag und Nacht ----------
   updateSky() {
-    const a = this.time * Math.PI * 2, s = Math.sin(a);
-    const day = smooth(-0.12, 0.28, s);
-    const night = [0.03, 0.05, 0.13], dayC = [0.53, 0.8, 0.93], dusk = [0.92, 0.48, 0.3];
-    let sky = mix3(night, dayC, day);
-    const dw = Math.max(0, 1 - Math.abs(s) / 0.3) * 0.55;
-    sky = mix3(sky, dusk, dw);
-    const light = mix3([0.3, 0.34, 0.56], [1, 1, 1], day);
-    const warm = dw * 0.5;
-    this.uniforms.uLight.value.set(light[0], light[1] * (1 - warm * 0.15), light[2] * (1 - warm * 0.4));
-    // Wasser-Tauchsicht
+    const a = this.time * Math.PI * 2, s = Math.sin(a), co = Math.cos(a);
+    const day = smooth(-0.12, 0.28, s), dw = Math.max(0, 1 - Math.abs(s) / 0.3);
+    let hor = mix3([0.04, 0.06, 0.14], [0.68, 0.84, 0.95], day);
+    hor = mix3(hor, [0.97, 0.56, 0.36], dw * 0.55);
+    let zen = mix3([0.012, 0.02, 0.07], [0.24, 0.5, 0.88], day);
+    zen = mix3(zen, [0.34, 0.3, 0.52], dw * 0.4);
+
+    // Licht: Sonne am Tag, schwaches Mondlicht in der Nacht
+    const sunUp = s >= 0, I = sunUp ? smooth(-0.02, 0.3, s) : smooth(-0.02, 0.3, -s) * 0.3;
+    const dir = this.uni.uSunDir.value;
+    if (sunUp) dir.set(co, s, 0.25); else dir.set(-co, -s, 0.25);
+    dir.normalize();
+    const sc = sunUp ? mix3([1.0, 0.6, 0.36], [1.0, 0.96, 0.86], smooth(0, 0.4, s)).map(v => v * 0.62 * I) : [0.42 * I, 0.52 * I, 0.85 * I];
+    this.uni.uSunCol.value.set(sc[0], sc[1], sc[2]);
+    const amb = mix3([0.17, 0.21, 0.36], [0.44, 0.5, 0.62], day);
+    this.uni.uAmb.value.set(amb[0] + dw * 0.12, amb[1] + dw * 0.06, amb[2] + dw * 0.02);
+
+    // Tauchsicht
     const c = this.camera.position;
     const under = this.world.getBlock(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z)) === B.WATER;
     this.underwater = under;
     const far = this.viewDist * CS - 6;
     if (under) {
-      const f = mix3([0.05, 0.16, 0.32], [0.14, 0.4, 0.7], day);
-      this.uniforms.uFog.value.set(f[0], f[1], f[2]);
-      this.uniforms.uFogRange.value.set(0.5, 22);
-      this.renderer.setClearColor(new THREE.Color().setRGB(f[0], f[1], f[2], THREE.SRGBColorSpace));
+      const f = mix3([0.04, 0.12, 0.26], [0.12, 0.38, 0.66], day);
+      this.uni.uFog.value.set(f[0], f[1], f[2]);
+      this.uni.uFogRange.value.set(0.5, 24);
+      this.domeU.uHor.value.set(f[0], f[1], f[2]); this.domeU.uZen.value.set(f[0], f[1], f[2]);
+      this.domeU.uGlow.value.set(0, 0, 0);
     } else {
-      this.uniforms.uFog.value.set(sky[0], sky[1], sky[2]);
-      this.uniforms.uFogRange.value.set(far * 0.45, far);
-      this.renderer.setClearColor(new THREE.Color().setRGB(sky[0], sky[1], sky[2], THREE.SRGBColorSpace));
+      this.uni.uFog.value.set(hor[0], hor[1], hor[2]);
+      this.uni.uFogRange.value.set(far * 0.4, far);
+      this.domeU.uHor.value.set(hor[0], hor[1], hor[2]); this.domeU.uZen.value.set(zen[0], zen[1], zen[2]);
+      const g = 0.9 * dw + 0.1 * day;
+      this.domeU.uGlow.value.set(0.95 * g, 0.62 * g, 0.4 * g);
     }
-    // Sonne/Mond/Sterne um den Spieler
-    this.sky.position.copy(this.camera.position);
-    const sd = new THREE.Vector3(Math.cos(a), Math.sin(a), 0.25).normalize();
-    this.sun.position.copy(sd).multiplyScalar(420); this.sun.lookAt(this.camera.position);
-    this.moon.position.copy(sd).multiplyScalar(-420); this.moon.lookAt(this.camera.position);
-    this.sun.visible = s > -0.2; this.moon.visible = s < 0.2;
-    this.starMat.opacity = Math.max(0, Math.min(1, (0.15 - s) * 3)) * (under ? 0 : 1);
+    this.domeU.uSunN.value.set(co, s, 0.25).normalize();
+
+    // Sonne/Mond/Sterne/Wolken um den Spieler
+    this.sky.position.copy(c);
+    const sd = this.domeU.uSunN.value;
+    this.sun.position.copy(sd).multiplyScalar(500); this.sun.lookAt(c);
+    this.moon.position.copy(sd).multiplyScalar(-500); this.moon.lookAt(c);
+    this.sun.visible = s > -0.25 && !under; this.moon.visible = s < 0.25 && !under;
+    this.starMat.opacity = Math.max(0, Math.min(1, (0.12 - s) * 3)) * (under ? 0 : 1);
     this.stars.rotation.z = a;
+    this.clouds.position.set(c.x, 105, c.z);
+    this.clouds.visible = !under;
+    const cl = mix3([0.2, 0.23, 0.36], [1, 1, 1], day);
+    this.cloudU.uCol.value.set(cl[0] + dw * 0.0, cl[1] - dw * 0.18, cl[2] - dw * 0.3);
   }
 
   render() { this.renderer.render(this.scene, this.camera); }

@@ -5,11 +5,18 @@ export const SEA = 24;       // Meeresspiegel
 export const B = { AIR: 0, GRASS: 1, DIRT: 2, STONE: 3, SAND: 4, WOOD: 5, LEAVES: 6, PLANKS: 7, GLASS: 8, LAMP: 9, WATER: 10 };
 
 // Namen und Eigenschaften je Block-Typ
-export const NAMES = ['Luft', 'Gras', 'Erde', 'Stein', 'Sand', 'Holz', 'Blätter', 'Bretter', 'Glas', 'Leuchtblock', 'Wasser'];
-export const SOLID = new Uint8Array(16);   // begehbar blockierend
-export const OPAQUE = new Uint8Array(16);  // verdeckt Nachbarflächen
+// Funk-Logos sind Blöcke mit den Ids 11..26
+export const LOGO0 = 11, LOGO_COUNT = 16;
+export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
+  'RockRadio 24', 'ChristmasRadio', 'KultRadio 24', 'Zocker-FM', 'Special-Radio', 'AnMaChaCast', 'SenderWelt', 'RadioPortal'];
+export const NAMES = ['Luft', 'Gras', 'Erde', 'Stein', 'Sand', 'Holz', 'Blätter', 'Bretter', 'Glas', 'Leuchtblock', 'Wasser', ...LOGO_NAMES];
+export const SOLID = new Uint8Array(32);   // begehbar blockierend
+export const OPAQUE = new Uint8Array(32);  // verdeckt Nachbarflächen
+export const SKYBLOCK = new Uint8Array(32); // wirft Schatten (Sonnenlicht)
 for (const t of [1, 2, 3, 4, 5, 6, 7, 8, 9]) SOLID[t] = 1;
 for (const t of [1, 2, 3, 4, 5, 7, 9]) OPAQUE[t] = 1;
+for (let i = 0; i < LOGO_COUNT; i++) { SOLID[LOGO0 + i] = 1; OPAQUE[LOGO0 + i] = 1; }
+for (let t = 1; t < 32; t++) if (OPAQUE[t] || t === 6) SKYBLOCK[t] = 1;
 
 function hash(x, z, s) {
   let h = Math.imul(x | 0, 0x27d4eb2d) ^ Math.imul(z | 0, 0x165667b1) ^ Math.imul(s | 0, 0x9e3779b1);
@@ -104,7 +111,7 @@ export class World {
       const y = (i / (CS * CS)) | 0;
       if (y > maxY) maxY = y;
     }
-    return { cx, cz, key, data, maxY, opaque: null, trans: null, meshed: false };
+    return { cx, cz, key, data, maxY, hm: null, opaque: null, trans: null, logo: null, meshed: false };
   }
 
   getBlock(x, y, z) {
@@ -130,6 +137,7 @@ export class World {
     if (c.data[i] === t) return false;
     c.data[i] = t;
     if (y > c.maxY) c.maxY = y;
+    c.hm = null;
     let ed = this.edits.get(c.key);
     if (!ed) { ed = new Map(); this.edits.set(c.key, ed); }
     ed.set(i, t);
@@ -141,6 +149,16 @@ export class World {
       }
     }
     return true;
+  }
+
+  // Höhenkarte (oberster lichtblockierender Block + 1, 0 = keiner) für Licht
+  heightmap(c) {
+    if (c.hm) return c.hm;
+    const hm = new Uint8Array(CS * CS), d = c.data;
+    for (let i = 0; i < CS * CS; i++) {
+      for (let y = Math.min(H - 1, c.maxY); y >= 0; y--) if (SKYBLOCK[d[i + y * CS * CS]]) { hm[i] = y + 1; break; }
+    }
+    return (c.hm = hm);
   }
 
   // 3x3-Nachbarschaft (Daten) eines Chunks; null wenn nicht vollständig

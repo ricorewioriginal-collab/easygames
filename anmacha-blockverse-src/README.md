@@ -2,7 +2,7 @@
 
 Voxel-Sandbox im Browser (Three.js + Vite). Prozedurale Welt mit Gras, Erde, Stein, Sand, Holz, Blättern, Wasser und Bäumen,
 Tag-Nacht-Wechsel, Chunk-System, Abbauen/Setzen, Hotbar, Inventar mit Herstellen, 3 Speicherplätze (localStorage).
-Für PC (Maus + Tastatur) und Smartphone (Touch-Steuerung). Alle Texturen und Geräusche werden im Browser erzeugt – keine Assets.
+Dazu 16 Blöcke mit den AnMaCha-Senderlogos (Inventar → Funk-Logos; Quelle `public/logos/`, 128 px). Für PC (Maus + Tastatur) und Smartphone (Touch-Steuerung). Alle Texturen und Geräusche werden im Browser erzeugt – keine Assets.
 
 ## Spielen
 - **Online:** `anmacha-blockverse/` (fertig gebautes Ergebnis, wird mit GitHub Pages ausgeliefert, in der Spieleliste verlinkt).
@@ -34,7 +34,8 @@ Die Welt wird alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite auto
 
 ## Aufbau
 - `src/world.js` – Block-Typen, Terrain (Value-Noise), Bäume, Chunk-Speicher, Änderungen
-- `src/mesher.js` – Flächen-Culling + Ambient Occlusion, ein Mesh pro Chunk
+- `src/mesher.js` – Flächen-Culling, weiche Beleuchtung (Ambient Occlusion + Himmelslicht), je Chunk bis zu drei Meshes
+- `src/textures.js` – prozedurale Texturen (64 px, nahtlos), Logo-Atlas, Wolken
 - `src/physics.js` – Spieler-Kollision, Wasser, Raycast
 - `src/game.js` – Rendering, Streaming, Tag/Nacht, Bauen/Abbauen, Speicherstand
 - `src/main.js` – Menüs, HUD, Tastatur/Maus/Touch
