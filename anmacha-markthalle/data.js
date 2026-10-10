@@ -100,7 +100,14 @@ const Data = (() => {
     ['anbau2', 'Platz da!', '🏗️', 'Baue den Laden zweimal aus.', 40000], ['radio', 'Auf Sendung', '📻', 'Kaufe das Radiostudio.', 10000], ['stamm25', 'Familienbetrieb', '❤️', 'Gewinne 25 Stammkunden.', 30000],
     ['buzz', 'Gesprächsthema', '🔥', 'Erreiche einen Online-Hype von +20 %.', 40000], ['kunden1000', 'Tausendsassa', '🧑‍🤝‍🧑', 'Bediene insgesamt 1.000 Kunden.', 50000], ['reich', 'Kleiner Millionär', '💎', 'Habe 10.000 € auf dem Konto.', 50000]
   ];
+  // Jahreszeiten (je 28 Tage) mit Feiertagswochen: w = Wetter-Gewichte, prod = Nachfrage-Faktor je Ware
+  const SEASONS = [
+    { n: 'Frühling', e: '🌷', w: { sonne: .25, wolke: .3, regen: .3, heiss: .05, kalt: .1 }, prod: { eier: 1.3, schoko: 1.1, apfel: 1.1 }, hol: { from: 20, to: 24, n: 'Osterwoche', e: '🐰', prod: { eier: 2.2, schoko: 2, kuchen: 1.8, broetchen: 1.3, honig: 1.5, butter: 1.4 } } },
+    { n: 'Sommer', e: '☀️', w: { sonne: .4, wolke: .15, regen: .15, heiss: .28, kalt: .02 }, prod: { eis: 1.4, wasser: 1.3, limo: 1.3, ananas: 1.4 }, hol: { from: 12, to: 16, n: 'Grillfest', e: '🍖', prod: { wurst: 2.4, kohle: 3, broetchen: 1.6, limo: 1.6, hack: 1.8, haehnchen: 1.6, chips: 1.4 } } },
+    { n: 'Herbst', e: '🍂', w: { sonne: .2, wolke: .3, regen: .35, heiss: .02, kalt: .13 }, prod: { tee: 1.4, kerze: 1.4, schirm: 1.3 }, hol: { from: 22, to: 26, n: 'Halloween', e: '🎃', prod: { schoko: 2.4, gummi: 2.4, kekse: 1.8, kerze: 2.5, chips: 1.5 } } },
+    { n: 'Winter', e: '❄️', w: { sonne: .15, wolke: .3, regen: .1, heiss: 0, kalt: .45 }, prod: { tee: 1.6, kaffee: 1.4, kratzer: 1.6, kerze: 1.4 }, hol: { from: 18, to: 24, n: 'Weihnachtszeit', e: '🎄', prod: { nuesse: 2.3, kekse: 2.4, schoko: 2, honig: 2, kaffee: 1.6, kerze: 2.4, mehl: 1.6, butter: 1.6, eier: 1.5, haehnchen: 1.8 } } }
+  ];
   const fmt = c => (c < 0 ? '−' : '') + (Math.abs(c) / 100).toFixed(2).replace('.', ',') + ' €';
-  return { ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WEATHER, QUESTS, fmt };
+  return { SEASONS, ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WEATHER, QUESTS, fmt };
 })();
 if (typeof module !== 'undefined') module.exports = Data;
