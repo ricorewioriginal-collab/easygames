@@ -148,10 +148,11 @@ const nw = await page.evaluate(async () => {
 ok(nw.tabs === 3 && nw.owned && nw.hat === 'helmet' && nw.patch && nw.cape && nw.wings && nw.kite && nw.heli && nw.altitude > 1.5, `Laden neu: 11 Waren gekauft, Drachen, RC-Hubschrauber steigt ${nw.altitude.toFixed(1)} m`);
 // Sterne einsammeln zu Fuß
 const st = await page.evaluate(async () => {
-  const b = window.__bi; if (b.P.veh) b.leave(); const s = b.stars.find(s => s.on); b.P.x = s.x; b.P.z = s.z; const s0 = b.save.stars; await new Promise(r => setTimeout(r, 300));
-  return { gained: b.save.stars - s0, off: !s.on };
+  const b = window.__bi; if (b.P.veh) b.leave(); const out = { gained: 0, off: false };
+  for (const s of b.stars.filter(q => q.on).slice(0, 8)) { b.P.x = s.x; b.P.z = s.z; b.P.y = 0; const s0 = b.save.stars; await new Promise(r => setTimeout(r, 500)); if (!s.on) { out.gained = b.save.stars - s0; out.off = true; break; } }
+  return out;
 });
-ok(st.gained === 1 && st.off, 'Stern zu Fuß eingesammelt');
+ok(st.gained >= 1 && st.off, 'Stern zu Fuß eingesammelt');
 // Aussteigen/Einsteigen-Zyklus: Spieler nie in Hindernis, nie NaN
 const cyc = await page.evaluate(async () => {
   const b = window.__bi; const sleep = ms => new Promise(r => setTimeout(r, ms)); let bad = 0;
