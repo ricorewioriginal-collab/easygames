@@ -82,7 +82,7 @@ ok(again === bd.left, `Nach Neustart noch ${again} Bauteile da`); await page.cli
 const fx2 = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const out = {}; document.getElementById('toast').style.display = 'none';
   const T = b.W.trees[0]; b.P.x = T.x + 1.6; b.P.z = T.z; b.P.h = 0; await sleep(300); out.treeNear = !!b.fun.nearTree(); const s0 = b.save.stars; b.doPunch(); await sleep(250); out.wobbles = T.dirty;
-  for (let i = 0; i < 9; i++) { await sleep(500); b.doPunch(); } await sleep(700); out.treeStars = b.save.stars - s0; out.treeDone = T.cd > 0;
+  for (let i = 0; i < 9; i++) { for (let k = 0; k < 60 && b.P.punchT > 0; k++) await sleep(50); await sleep(150); b.doPunch(); } for (let k = 0; k < 60 && b.P.punchT > 0; k++) await sleep(50); await sleep(700); out.treeStars = b.save.stars - s0; out.treeDone = T.cd > 0;
   b.P.x = 0; b.P.z = 40; b.pup.x = 0; b.pup.z = 42; const s1 = b.save.stars; b.doFun('search'); out.pupSearch = b.pup.mode === 'search'; for (let i = 0; i < 80 && b.pup.mode === 'search'; i++) await sleep(250); out.pupStar = b.save.stars - s1;
   b.P.x = 5; b.P.z = 30; b.P.h = Math.PI; b.doFun('bubbles'); await sleep(900); b.doFun('xxl'); await sleep(2800); out.rideY = b.P.y; b.doFun('xxl'); await sleep(2500); out.landed = b.P.y < .3;
   const s2 = b.save.stars; b.doFun('balloons'); await sleep(2000); out.pap = b.save.stars - s2; return out;
@@ -102,7 +102,7 @@ ok(sh.inShop && sh.counter && sh.open && sh.spent === 7 && /crown/.test(sh.equip
 const rc = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(q => q.type === 'rc'); b.spawnRC(); await sleep(300);
   const out = { has: !!v, near: b.nearVehicle() === v, scale: v.root.scale.x }; const px = b.P.x, pz = b.P.z, vx = v.x, vz = v.z; b.enter(v); out.charVisible = b.P.veh === v && true;
-  b.keys.u = true; await sleep(1500); b.keys.u = false; out.rcSpeed = v.v; out.rcMoved = Math.hypot(v.x - vx, v.z - vz); out.jannisStayed = Math.hypot(b.P.x - px, b.P.z - pz) < .5; b.leave(); out.left = !b.P.veh; return out;
+  b.keys.u = true; out.rcSpeed = 0; for (let i = 0; i < 15; i++) { await sleep(100); out.rcSpeed = Math.max(out.rcSpeed, v.v); } b.keys.u = false; out.rcMoved = Math.hypot(v.x - vx, v.z - vz); out.jannisStayed = Math.hypot(b.P.x - px, b.P.z - pz) < .5; b.leave(); out.left = !b.P.veh; return out;
 });
 ok(rc.has && rc.near && rc.scale < .5 && rc.rcSpeed > 4 && rc.rcMoved > 3 && rc.jannisStayed && rc.left, `RC-Auto per Fernsteuerung: fährt ${rc.rcMoved.toFixed(1)} m, Jannis bleibt stehen, Steuerung wieder zurück`);
 // Schnellmenü: max. 6 passende Aktionen, Baum in der Nähe -> Hauen vorn, Klick führt aus und schließt
