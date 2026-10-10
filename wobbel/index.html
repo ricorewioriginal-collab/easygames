@@ -24,6 +24,7 @@
   <div id="side">
     <button class="ib" id="bUndo" aria-label="Zug zurück" title="Rückgängig (Z)">↶</button>
     <button class="ib" id="bRestart" aria-label="Neustart" title="Neustart (R)">⟲</button>
+    <button class="ib" id="bSkip" aria-label="Level überspringen" title="Level überspringen (25 Muscheln)">⏭</button>
     <button class="ib" id="bRot" aria-label="Kamera drehen" title="Kamera drehen (Q/E)">⟳</button>
   </div>
   <div id="dpad"><button data-d="up" aria-label="hoch">▲</button><button data-d="left" aria-label="links">◀</button><button data-d="right" aria-label="rechts">▶</button><button data-d="down" aria-label="runter">▼</button></div>
@@ -37,6 +38,7 @@
   <div class="menu-buttons">
     <button class="btn" id="bPlay">▶ Spielen</button>
     <button class="btn blue" id="bLevels">🗺 Levelauswahl</button>
+    <button class="btn yellow" id="bBonus">🎁 Bonus &amp; Laden</button>
     <button class="btn pink" id="bEditor">🛠 Level-Editor</button>
     <button class="btn ghost" id="bHow">❓ So wird gespielt</button>
     <button class="btn ghost" id="bSet">⚙ Einstellungen</button>
@@ -73,6 +75,21 @@
   </div>
 </section>
 
+<section id="bonus" class="screen" hidden>
+  <div class="bn-head"><h2>Bonus &amp; Laden</h2><span class="chip" id="bnCoins">🐚 0</span></div>
+  <div class="tabs" id="bnTabs"><button class="tab on" data-t="games">🎮 Bonusspiele</button><button class="tab" data-t="shop">🛍 Wobbel-Laden</button></div>
+  <div class="bn-body card" id="bnBody"></div>
+  <button class="btn ghost small" id="bnBack">← Zurück</button>
+</section>
+
+<section id="mg" class="screen" hidden>
+  <div class="mg-top"><button class="ib" id="mgBack" aria-label="Zurück">✕</button><b id="mgTitle"></b><span class="chip" id="mgHud"></span><span class="chip" id="mgCoins">🐚 0</span></div>
+  <div class="mg-stage"><canvas id="mgCv" width="720" height="960"></canvas>
+    <div class="mg-over card panel" id="mgIntro"><h2 id="mgTitle2">Bereit?</h2><p id="mgDesc"></p><button class="btn green" id="mgGo">Los geht's!</button></div>
+    <div class="mg-over card panel" id="mgRes" hidden><h2>Geschafft!</h2><div id="mgScore" class="mg-score"></div><div id="mgReward" class="coinline"></div><div class="row"><button class="btn green small" id="mgAgain">▶ Nochmal</button><button class="btn ghost small" id="mgBack2">Zurück</button></div></div>
+  </div>
+</section>
+
 <div id="myDlg" class="dialog" hidden><div class="card panel">
   <h2>Meine Level</h2>
   <div class="my-list" id="myList"></div>
@@ -101,6 +118,7 @@
   <h2 id="wTitle">Geschafft!</h2>
   <div class="stars" id="wStars"></div>
   <div id="wInfo" style="font-size:19px;font-weight:600"></div>
+  <div id="wCoins" class="coinline" hidden></div>
   <div class="row"><button class="btn green" id="wNext">Weiter ▶</button></div>
   <div class="row"><button class="btn ghost small" id="wAgain">⟲ Nochmal</button><button class="btn ghost small" id="wMenu">🗺 Levels</button></div>
 </div></div>

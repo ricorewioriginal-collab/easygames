@@ -17,6 +17,9 @@ function noise(d, v, at, o) {
 const on = f => (...a) => { if (sfxOn) f(...a); };
 export const SFX = {
   click: on(() => note(1300, 0.05, 'square', 0.03)),
+  tone: on((i, len) => note(hz([60, 64, 67, 72][i] + 12), len || 0.28, 'triangle', 0.09)),
+  coin: on(() => { note(hz(88), 0.07, 'square', 0.04); note(hz(95), 0.16, 'square', 0.04, 0.06); }),
+  bad: on(() => note(150, 0.22, 'sawtooth', 0.05, 0, { to: 70, lp: 700 })),
   step: on(() => { note(420 + Math.random() * 60, 0.07, 'sine', 0.05, 0, { to: 300 }); }),
   push: on(() => { note(130, 0.14, 'triangle', 0.1, 0, { to: 80 }); noise(0.1, 0.04, 0, { f: 500 }); }),
   slide: on(() => noise(0.25, 0.05, 0, { type: 'highpass', f: 3000, q: 0.5 })),

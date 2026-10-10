@@ -9,6 +9,8 @@
     "par": "node --max-old-space-size=4096 tests/build-par.js",
     "e2e": "node tests/e2e-play.mjs",
     "test:engine": "node tests/engine-tests.js",
+    "test:bonus": "node tests/bonus-tests.js",
+    "e2e:bonus": "node tests/e2e-bonus.mjs",
     "test:editor": "node tests/editor-tests.js",
     "e2e:editor": "node tests/e2e-editor.mjs"
   }
