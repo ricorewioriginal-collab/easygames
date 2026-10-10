@@ -52,7 +52,7 @@ BI.buildWorld = function (scene) {
     }
     const rad = Math.hypot(px, pz);
     if (rad > K.LIMIT - r) {
-      if (alt == null && pz > 150 && Math.abs(px) < 3.3) { px = BI.clamp(px, -2.1, 2.1); pz = Math.min(pz, 207.5); hit = true; } // Steg
+      if (alt == null && pz > 150 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
       else { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
     }
     out.x = px; out.z = pz; out.hit = hit; return out;
