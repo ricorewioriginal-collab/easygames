@@ -6,30 +6,37 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Spiel | Verzeichnis |
 |---|---|
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
+| AnMaCha Flipper – 3D-Flipper mit eigenen Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) |
 | ZOTIK – Die Splitter der Welten (eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
-## Einbetten
+## Spieleliste, Vollbild und Teilen
 
-Pro Spiel: In der Spieleliste auf **</> Einbetten** klicken und den Code kopieren. Beispiel:
+Die Seite zeigt alle Spiele als App-Kacheln. Ein Klick öffnet das Spiel in einem App-Fenster, oben gibt es
+◀ ▶ (nächstes/voriges Spiel), **⛶ Vollbild** (echtes Browser-Vollbild; wo das nicht geht, z. B. iPhone, öffnet sich das Spiel als ganze Seite)
+und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **iframe-Code** zum Kopieren (bzw. das Teilen-Menü des Handys).
+
+- Direktlink zu einem Spiel: `https://ricorewioriginal-collab.github.io/easygames/anmacha-flipper/`
+- Spieleliste mit sofort geöffnetem Spiel: `https://ricorewioriginal-collab.github.io/easygames/#anmacha-flipper`
+- Spiel einbetten:
 
 ```html
 <iframe src="https://ricorewioriginal-collab.github.io/easygames/anmacha-radio-surfer/" title="AnMaCha Radio Surfer"
-  allow="fullscreen" loading="lazy"
+  allow="fullscreen; autoplay" loading="lazy"
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
-Komplette Bibliothek (Spieleliste zum Einbetten):
+- Komplette Bibliothek einbetten (Kacheln zum Einbetten, auch über den Knopf „Alle Spiele einbetten“ erreichbar):
 
 ```html
 <iframe src="https://ricorewioriginal-collab.github.io/easygames/?embed=1" title="easygames"
-  allow="fullscreen" loading="lazy"
+  allow="fullscreen; autoplay" loading="lazy"
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
 ## Neues Spiel hinzufügen
 
 1. Eigenes Verzeichnis anlegen (`mein-spiel/index.html`).
-2. In `index.html` im Array `GAMES` einen Eintrag ergänzen (Titel, Icon, `path`, Beschreibung).
+2. In `index.html` im Array `GAMES` einen Eintrag ergänzen (`id`, Titel, Icon, Farbverlauf, `path`, Kurzbeschreibung). Die Kachel erscheint automatisch.
 
 ## AnMaCha Radio Surfer: eigene Hindernisse
 
@@ -71,3 +78,20 @@ function doPost(e) {
 ```
 
 Hinweis: Ohne Server-Prüfung können Spieler ihren Score manipulieren – für ein Hobby-Ranking meist ausreichend.
+
+## AnMaCha Flipper: eigene Tische und Logos
+
+Jedes Logo ergibt einen eigenen Tisch (anderes Layout und andere Farben, das Logo erscheint oben auf der Backglass).
+Bilder als `anmacha-flipper/logos/01.jpg` bis `13.jpg` ablegen (auch `.jpeg` oder `.png`, ca. 400 × 400 px, unter 200 KB).
+Ohne Logos gibt es 3 Platzhalter-Tische. Steuerung: `←`/`A` und `→`/`D` Flipper, `Leertaste` halten und loslassen startet die Kugel,
+`P` Pause, `R` Neustart, `M` Ton. Am Handy: LINKS / RECHTS / START halten. Bei 5 verlorenen Kugeln ist das Spiel vorbei; der Bestwert wird im Browser gespeichert.
+
+## Haupt-Logo
+
+Ein normales Logo (PNG mit Transparenz am besten, auch JPG, SVG oder WebP) als **`logo.png`** (bzw. `logo.jpg` / `logo.svg` …) ablegen:
+
+- im **Hauptordner** (neben `index.html`): erscheint auf der Startseite und im Hauptmenü aller Spiele
+- oder in einem **Spielordner** (z. B. `anmacha-flipper/logo.png`): gilt nur für dieses Spiel und hat Vorrang
+
+Das Logo ersetzt im Hauptmenü der Spiele das Wort „AnMaCha“ (der Zusatz „FLIPPER“ bzw. „RADIO SURFER“ bleibt darunter).
+Auf dem dunklen Hintergrund passen helle oder farbige Logos am besten. Ohne Logo-Datei bleibt der Text-Titel.

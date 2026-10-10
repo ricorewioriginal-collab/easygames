@@ -41,6 +41,8 @@
   h1{margin:0;line-height:.95;font-style:italic;font-weight:900;letter-spacing:.02em}
   h1 span{display:block;font-size:clamp(46px,13vw,92px);background:linear-gradient(90deg,#00ff66,#19f0ff);
     -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,255,102,.55))}
+  [hidden]{display:none!important}
+  .brand{display:block;margin:0 auto;max-width:min(78vw,420px);max-height:clamp(64px,15vw,112px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.28))}
   h1 small{display:block;font-size:clamp(18px,5.5vw,34px);letter-spacing:.35em;color:#fff;text-shadow:0 0 14px #19f0ff;margin-top:4px}
   .tag{margin:0;color:#9dd9c4;font-size:clamp(14px,3.8vw,18px)}
   #ovTitle{margin:4px 0 0;font-size:clamp(22px,6vw,34px);color:#fff;text-shadow:0 0 14px #ff2e88}
@@ -82,7 +84,7 @@
 <div id="overlay">
   <div class="card">
     <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
-    <h1><span>AnMaCha</span><small>RADIO SURFER</small></h1>
+    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha" hidden><small>RADIO SURFER</small></h1>
     <p class="tag">Surf durchs Internet – und weiche den Sendern aus!</p>
     <h2 id="ovTitle"></h2>
     <p id="ovText"></p>
@@ -114,7 +116,19 @@ if (typeof THREE === 'undefined') {
   $('btn').textContent = 'OFFLINE';
   throw new Error('THREE missing');
 }
-if (window.self !== window.top) $('back').style.display = 'none';   // eingebettet: Navigation übernimmt die Spieleliste
+if (window.self !== window.top) $('back').style.display = 'none';
+
+// Haupt-Logo (optional): logo.png / .jpg / .jpeg / .svg / .webp im Spielordner, sonst im Hauptordner (../). Ersetzt das Wort „AnMaCha“ im Menü.
+(function loadBrandLogo() {
+  const exts = ['png', 'jpg', 'jpeg', 'svg', 'webp'], cands = [];
+  ['', '../'].forEach(d => exts.forEach(e => cands.push(`${d}logo.${e}`)));
+  Promise.all(cands.map(src => new Promise(res => { const im = new Image(); im.onload = () => res(src); im.onerror = () => res(null); im.src = src; })))
+    .then(list => {
+      const src = list.find(Boolean); if (!src) return;
+      const img = $('brandImg'); img.src = src; img.hidden = false; $('brandText').hidden = true;
+    });
+})();
+   // eingebettet: Navigation übernimmt die Spieleliste
 
 /* ================= Konfiguration ================= */
 // Hindernis-Bilder: hindernisse/01.png|jpg|jpeg ... 20 (nur vorhandene Dateien werden verwendet)
