@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0c24">
+<title>AnMaCha Preisradar – Das Preis-Schätzspiel</title>
+<meta name="description" content="Preisradar – schätze die Preise! Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale. Bis zu 4 Spieler, auch mit Handys. Präsentiert vom RicoReWi Radioportal.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<section id="menu" class="screen">
+  <img class="brand" id="brandImg" alt="Preisradar" hidden>
+  <div class="wordmark" id="brandText">PREIS<span>RADAR</span></div>
+  <div class="tag">Das Preis-Schätzspiel</div>
+  <div class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="64" height="64"></div>
+  <div class="menu-buttons">
+    <button class="btn" id="bPlay">▶ Spielen</button>
+    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
+    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+  </div>
+  <div class="logos" id="logoRow"></div>
+  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+</section>
+
+<section id="setup" class="screen" hidden>
+  <div class="panel glass">
+    <h2>Neue Show</h2>
+    <div class="fld">Menschen<div class="seg" id="sgHum"><button data-v="1">1</button><button data-v="2" class="on">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+    <div class="fld">Computer-Gegner<div class="seg" id="sgCpu"><button data-v="0" class="on">0</button><button data-v="1">1</button><button data-v="2">2</button></div></div>
+    <div class="fld" id="fldDiff">Stufe der Computer<div class="seg" id="sgDiff"><button data-v="easy">leicht</button><button data-v="normal" class="on">normal</button><button data-v="hard">schwer</button></div></div>
+    <div id="names" class="names"></div>
+    <div class="fld">Länge der Show<div class="seg" id="sgLen"><button data-v="4" class="on">4 Spiele + Finale</button><button data-v="6">6 + Finale</button><button data-v="8">8 + Finale</button></div></div>
+    <div class="info">Handys koppeln: Jedes Handy übernimmt einen Spielerplatz – so bleiben die Tipps wirklich geheim.</div>
+    <div class="row"><button class="btn green" id="bStart">Los geht's!</button><button class="btn blue" id="bPairSetup">📱 Koppeln</button><button class="btn ghost" id="bSetBack">Zurück</button></div>
+  </div>
+</section>
+
+<section id="game" class="screen" hidden>
+  <div class="top">
+    <button class="ib" id="bMenu" aria-label="Menü">☰</button>
+    <div class="rinfo glass" id="rinfo">Spiel 1</div>
+    <img class="spons" src="logos/16.png" alt="RicoReWi Radioportal" width="40" height="40">
+    <button class="ib" id="bPairTop" aria-label="Handys koppeln" title="Handys koppeln">📱</button>
+    <button class="ib" id="bSnd" aria-label="Ton">🔊</button>
+  </div>
+  <div class="players" id="players"></div>
+  <div class="stagebox glass"><div id="stage"></div><div id="reveal" class="reveal" hidden></div></div>
+  <div class="host glass" id="host" aria-live="polite"><span>🎙</span><p id="hostTxt">Willkommen beim Preisradar!</p></div>
+  <div class="act" id="act"></div>
+</section>
+
+<div id="inDlg" class="dialog" hidden><div class="panel glass wide"><div id="inBox"></div></div></div>
+
+<section id="end" class="screen" hidden>
+  <div class="panel glass">
+    <h2 id="endTitle">Spielende</h2>
+    <div class="trophy" id="trophy">🏆</div>
+    <div id="endScores" class="endscores"></div>
+    <div class="prize"><img src="logos/16.png" alt="RicoReWi Radioportal" width="72" height="72"><div><b>Hauptgewinn: Ruhm &amp; Ehre</b><small>gestiftet vom RicoReWi Radioportal 😉</small></div></div>
+    <div class="row"><button class="btn green" id="bAgain">Nochmal</button><button class="btn ghost" id="bEndMenu">Menü</button></div>
+  </div>
+</section>
+
+<div id="pair" class="dialog" hidden><div class="panel glass">
+  <h2>📱 Handys koppeln</h2>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Pad <b>eines Spielers</b> (bis zu 4) – Gebote, Skala, Einkaufswagen und Co. gibst du dann geheim am Handy ein.</p>
+  <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
+  <button class="btn green" id="bPairOk">Fertig</button>
+</div></div>
+<section id="ctl" class="screen" aria-live="polite"></section>
+<div id="rules" class="dialog" hidden><div class="panel glass">
+  <h2>So wird gespielt</h2>
+  <ul class="how">
+    <li><b>💶 Gebotsduell:</b> Ein Produkt wird gezeigt. Jeder bietet geheim – wer am nächsten dran ist, <b>ohne drüber zu liegen</b>, gewinnt (3 Punkte).</li>
+    <li><b>📻 Frequenz-Skala:</b> Stelle die Nadel auf den Preis ein – je näher, desto mehr Punkte (bis 5).</li>
+    <li><b>⚖️ Teurer oder billiger?</b> Drei Vergleiche in Folge. Jeder richtige zählt, alle drei richtig geben einen Bonus.</li>
+    <li><b>🛒 Einkaufswagen:</b> Packe 8 Artikel so zusammen, dass die Summe möglichst genau das Ziel trifft – nicht drüber! 45 Sekunden.</li>
+    <li><b>🏆 Preisfinale:</b> Ein Paket aus drei Produkten – der Gesamtpreis zählt 5 Punkte, ohne drüber zu liegen.</li>
+    <li><b>Handys:</b> Über „📱 Handys koppeln" bekommt jeder Spieler sein eigenes Pad – die Tipps bleiben geheim. Ohne Handy wird das Gerät herumgereicht („Bereit?").</li>
+    <li>Alle Preise sind handelsübliche Durchschnittswerte – ohne Gewähr 😉</li>
+  </ul>
+  <button class="btn" id="rulesOk">Verstanden</button>
+</div></div>
+<div id="err" hidden><div><h2>Oh nein</h2><p id="errTxt"></p></div></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
