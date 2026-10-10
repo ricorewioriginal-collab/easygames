@@ -33,7 +33,41 @@ Komplette Bibliothek (Spieleliste zum Einbetten):
 
 ## AnMaCha Radio Surfer: eigene Hindernisse
 
-Bilder (PNG, quadratisch oder quer, mind. 256 px, transparenter Hintergrund möglich) als
-`anmacha-radio-surfer/hindernisse/01.png` bis `20.png` ablegen. Es werden nur vorhandene Dateien
+Bilder (JPG, JPEG oder PNG, quadratisch oder quer; Größe wird automatisch angepasst) als
+`anmacha-radio-surfer/hindernisse/01.jpg` bis `20.jpg` (auch `.jpeg` oder `.png`) ablegen. Es werden nur vorhandene Dateien
 verwendet; ohne Bilder läuft das Spiel mit Platzhaltern. Jedes Bild erscheint mal niedrig (springen),
 mal hoch (ausweichen), mal hängend (rutschen).
+
+Die hochgeladenen Bilder erscheinen außerdem als **Poster an den Rack-Wänden** (nur wenn Bilder vorhanden sind).
+
+### Level, Räume und neue Hindernisse
+
+Jedes Level hat einen eigenen Raum (Licht, Nebel, Akzentfarbe) und ab Level 2 kommen neue Hindernisse dazu:
+Kabelsalat (L2), Firewall (L3), Pop-up (L4), Server-Rack + Funkmast (L5), Glasfaser-Laser (L6), Datenwolke (L7),
+Computer-Virus (L8), Satellitenschüssel (L9), Paketflut + Mikrofon (L10). Die Form verrät die Aktion:
+gelber Rahmen = springen, pinker Rahmen = rutschen, blauer Rahmen = ausweichen.
+
+### Bestenliste (Top 10)
+
+Wer es in die Top 10 schafft, kann nach dem Spiel seinen Namen eingeben (max. 12 Zeichen). Standardmäßig wird die Liste
+**im Browser des Spielers** gespeichert (localStorage), sie gilt also pro Gerät.
+
+Für eine **gemeinsame Liste aller Spieler** braucht es einen kleinen Online-Speicher, GitHub Pages allein kann keine Daten speichern.
+Im Spiel (`anmacha-radio-surfer/index.html`) die URL bei `LEADERBOARD_URL` eintragen. Erwartet wird:
+`GET` liefert `[{"n":"Name","s":123}, …]`, `POST` (Body als Text-JSON `{"n":"Name","s":123}`) speichert einen Eintrag.
+Beispiel mit Google Apps Script (Tabelle mit den Spalten Name und Score, als Web-App mit Zugriff „Jeder“ bereitstellen):
+
+```js
+function doGet() {
+  const rows = SpreadsheetApp.getActiveSheet().getDataRange().getValues().slice(1)
+    .map(r => ({ n: String(r[0]), s: +r[1] })).sort((a, b) => b.s - a.s).slice(0, 10);
+  return ContentService.createTextOutput(JSON.stringify(rows)).setMimeType(ContentService.MimeType.JSON);
+}
+function doPost(e) {
+  const d = JSON.parse(e.postData.contents);
+  SpreadsheetApp.getActiveSheet().appendRow([String(d.n).slice(0, 12), Math.floor(+d.s) || 0]);
+  return ContentService.createTextOutput('ok');
+}
+```
+
+Hinweis: Ohne Server-Prüfung können Spieler ihren Score manipulieren – für ein Hobby-Ranking meist ausreichend.

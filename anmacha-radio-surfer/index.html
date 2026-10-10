@@ -55,6 +55,18 @@
   button:disabled{opacity:.6;cursor:wait}
   #status{margin:0;font-size:12.5px;color:#6fa593;min-height:1.2em}
   #back{font-size:13px;color:#6fd6c0;text-decoration:none}
+  .small{font-size:16px;padding:8px 20px;min-height:44px;letter-spacing:.02em}
+  .ghost{background:transparent;color:#19f0ff;border:1px solid #19f0ff;box-shadow:none;font-size:15px;min-height:40px;padding:8px 22px;letter-spacing:.02em}
+  #entry{display:none;width:100%;max-width:420px;flex-direction:column;gap:6px;text-align:left;font-size:14px;color:#9dd9c4}
+  #entry .row{display:flex;gap:8px}
+  #nameIn{flex:1;min-width:0;font:inherit;font-size:18px;padding:10px 14px;border-radius:999px;border:1px solid #19f0ff;background:#04141a;color:#fff;
+    user-select:text;-webkit-user-select:text}
+  #board{display:none;width:100%;max-width:420px;text-align:left}
+  #board ol{margin:6px 0 0;padding:0;list-style:none;counter-reset:r}
+  #board li{counter-increment:r;display:flex;gap:8px;padding:3px 0;border-bottom:1px solid rgba(25,240,255,.12)}
+  #board li::before{content:counter(r) '.';width:1.8em;color:#6fa593}
+  #board li span:first-child{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #board li.me{color:#00ff66;font-weight:700}
   @media (max-width:420px){#help{grid-template-columns:1fr}}
 </style>
 </head>
@@ -79,7 +91,11 @@
         <span class="dot" style="background:#19f0ff"></span>Hoch (blau): <b style="display:inline;color:#19f0ff">ausweichen</b><br>
         Du hast 3 Leben ♥. Schaffe alle 10 Level – ab Level 4 wird es schneller!</div>
     </div>
+    <div id="entry"><label for="nameIn">Du bist in den Top 10! Dein Name:</label>
+      <div class="row"><input id="nameIn" maxlength="12" placeholder="Name" autocomplete="off"><button id="saveBtn" class="small">Speichern</button></div></div>
+    <div id="board" class="box"><b>🏆 Top 10</b><ol id="boardList"></ol></div>
     <button id="btn" disabled>LADE …</button>
+    <button id="boardBtn" class="ghost">🏆 Bestenliste</button>
     <p id="status"></p>
     <a id="back" href="../">← Alle Spiele</a>
   </div>
@@ -97,7 +113,7 @@ if (typeof THREE === 'undefined') {
 if (window.self !== window.top) $('back').style.display = 'none';   // eingebettet: Navigation übernimmt die Spieleliste
 
 /* ================= Konfiguration ================= */
-// Hindernis-Bilder: hindernisse/01.png ... hindernisse/20.png (nur vorhandene Dateien werden verwendet)
+// Hindernis-Bilder: hindernisse/01.png|jpg|jpeg ... 20 (nur vorhandene Dateien werden verwendet)
 const OBSTACLE_DIR = 'hindernisse/', OBSTACLE_MAX = 20;
 
 const LEVELS = 10, LEVEL_LEN = 600;            // Weltmeter pro Level
@@ -165,6 +181,35 @@ scene.background = new THREE.Color(FOG);
 scene.fog = new THREE.Fog(FOG, 38, 118);
 const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.1, 200);
 
+// Raum-Themen: pro Level ändern sich Licht, Nebel und Akzentfarben
+const THEMES = [
+  { fog: 0x03090c, acc: 0x19f0ff, acc2: 0x0e7a8a, light: 0xcfeaff, wall: 0xb4c6ce, far: 118 },  // 1 Einwahl
+  { fog: 0x030a14, acc: 0x3d8bff, acc2: 0x1b4a9a, light: 0xd0e2ff, wall: 0xa8bcd8, far: 122 },  // 2 Router
+  { fog: 0x0a0618, acc: 0xa05cff, acc2: 0x4b2a8a, light: 0xe6d8ff, wall: 0xbcaed8, far: 112 },  // 3 Switch
+  { fog: 0x120a03, acc: 0xffa020, acc2: 0x8a5410, light: 0xffe6c0, wall: 0xd8c4a8, far: 115 },  // 4 DNS
+  { fog: 0x14040f, acc: 0xff3d9a, acc2: 0x8a1f55, light: 0xffd0e8, wall: 0xd8aec4, far: 112 },  // 5 Backbone
+  { fog: 0x04121a, acc: 0x7ffcff, acc2: 0x2a8a96, light: 0xffffff, wall: 0xc8e4ec, far: 130 },  // 6 Glasfaser
+  { fog: 0x0b1a2e, acc: 0xcfe8ff, acc2: 0x6a8ab0, light: 0xffffff, wall: 0xd8e4f0, far: 135 },  // 7 Cloud
+  { fog: 0x180505, acc: 0xff3a3a, acc2: 0x8a1f1f, light: 0xffd0d0, wall: 0xd8aaaa, far: 105 },  // 8 Rechenzentrum
+  { fog: 0x02030c, acc: 0x66ffd0, acc2: 0x1f8a6a, light: 0xdaf5ff, wall: 0x98a8c8, far: 140 },  // 9 Satellit
+  { fog: 0x120e02, acc: 0xffd700, acc2: 0x8a7410, light: 0xfff4c0, wall: 0xe0d4a8, far: 120 }   // 10 Livestream
+];
+const accentMat = new THREE.MeshBasicMaterial({ color: THEMES[0].acc });
+const accent2Mat = new THREE.MeshBasicMaterial({ color: THEMES[0].acc2 });
+const panelMat = new THREE.MeshBasicMaterial({ color: THEMES[0].light });
+const themeNow = { fog: new THREE.Color(THEMES[0].fog), acc: new THREE.Color(THEMES[0].acc), acc2: new THREE.Color(THEMES[0].acc2),
+  light: new THREE.Color(THEMES[0].light), wall: new THREE.Color(THEMES[0].wall), far: THEMES[0].far };
+const _c = new THREE.Color();
+function applyTheme(level, k) {      // k = 1: sofort, sonst weich überblenden
+  const t = THEMES[level - 1];
+  ['fog', 'acc', 'acc2', 'light', 'wall'].forEach(n => themeNow[n].lerp(_c.setHex(t[n]), k));
+  themeNow.far += (t.far - themeNow.far) * k;
+  scene.fog.color.copy(themeNow.fog); scene.background.copy(themeNow.fog); scene.fog.far = themeNow.far;
+  accentMat.color.copy(themeNow.acc); accent2Mat.color.copy(themeNow.acc2); panelMat.color.copy(themeNow.light);
+  wallL.material.color.copy(themeNow.wall); wallR.material.color.copy(themeNow.wall);
+  glow.material.color.copy(themeNow.acc);
+}
+
 // Boden: Metallplatten mit Lochblech
 const floorTex = (() => {
   const [c, g] = canvas(128, 128);
@@ -179,8 +224,8 @@ const floorTex = (() => {
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(8.6, 260).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: floorTex, color: 0xa8c4cc }));
 floor.position.z = -100;
 scene.add(floor);
-[[-3.6, CYAN, 0.12], [-1.2, 0x0e7a8a, 0.05], [1.2, 0x0e7a8a, 0.05], [3.6, CYAN, 0.12]].forEach(([x, c, w]) => {
-  const l = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, 260), solidMat(c));
+[[-3.6, accentMat, 0.12], [-1.2, accent2Mat, 0.05], [1.2, accent2Mat, 0.05], [3.6, accentMat, 0.12]].forEach(([x, m, w]) => {
+  const l = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, 260), m);
   l.position.set(x, 0.02, -100); scene.add(l);
 });
 
@@ -226,7 +271,7 @@ scene.add(wallL, wallR);
 // Decke, Leuchtpanele, Tragbögen
 const ceil = new THREE.Mesh(new THREE.PlaneGeometry(18.4, 260).rotateX(Math.PI / 2), solidMat(0x070d10));
 ceil.position.set(0, 12, -100); scene.add(ceil);
-const panelGeo = new THREE.BoxGeometry(2.4, 0.05, 1.4), panelMat = solidMat(0xcfeaff);
+const panelGeo = new THREE.BoxGeometry(2.4, 0.05, 1.4);
 const lightsL = [], lightsR = [];
 for (let i = 0; i < 16; i++) [[lightsL, -2.6], [lightsR, 2.6]].forEach(([arr, x]) => {
   const m = new THREE.Mesh(panelGeo, panelMat); m.position.set(x, 11.9, 0); scene.add(m); arr.push(m);
@@ -235,9 +280,9 @@ const arches = [];
 for (let i = 0; i < 12; i++) {
   const a = new THREE.Group();
   const beam = new THREE.Mesh(new THREE.BoxGeometry(18.2, 0.5, 0.7), solidMat(0x101c22)); beam.position.y = 11.6;
-  const edge = new THREE.Mesh(new THREE.BoxGeometry(18, 0.07, 0.12), solidMat(CYAN)); edge.position.y = 11.3;
+  const edge = new THREE.Mesh(new THREE.BoxGeometry(18, 0.07, 0.12), accentMat); edge.position.y = 11.3;
   a.add(beam, edge);
-  [-8.5, 8.5].forEach(x => { const v = new THREE.Mesh(new THREE.BoxGeometry(0.1, 11.3, 0.12), solidMat(CYAN)); v.position.set(x, 5.65, 0); a.add(v); });
+  [-8.5, 8.5].forEach(x => { const v = new THREE.Mesh(new THREE.BoxGeometry(0.1, 11.3, 0.12), accentMat); v.position.set(x, 5.65, 0); a.add(v); });
   scene.add(a); arches.push(a);
 }
 
@@ -338,9 +383,14 @@ function panelTexture(img) {
 }
 function loadObstacleImages() {
   const jobs = Array.from({ length: OBSTACLE_MAX }, (_, i) => new Promise(res => {
-    const img = new Image();
-    img.onload = () => res(img); img.onerror = () => res(null);
-    img.src = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}.png`;
+    const name = `${OBSTACLE_DIR}${String(i + 1).padStart(2, '0')}`, exts = ['png', 'jpg', 'jpeg'];
+    const tryNext = k => {                                   // erste vorhandene Endung gewinnt
+      if (k >= exts.length) return res(null);
+      const img = new Image();
+      img.onload = () => res(img); img.onerror = () => tryNext(k + 1);
+      img.src = `${name}.${exts[k]}`;
+    };
+    tryNext(0);
   }));
   return Promise.all(jobs).then(list => {
     list = list.filter(Boolean);
@@ -352,10 +402,33 @@ const nextImg = () => {
   if (!imgBag.length) imgBag = images.map((_, i) => i).sort(() => rnd() - 0.5);
   return images[imgBag.pop()];
 };
+const panelMatFor = tex => memo('pm' + tex.uuid, () => new THREE.MeshBasicMaterial({ map: tex }));
 const panel = (tex, w, h, x, y, z) => {
-  const m = new THREE.Mesh(memo(`pl${w},${h}`, () => new THREE.PlaneGeometry(w, h)), memo('pm' + tex.uuid, () => new THREE.MeshBasicMaterial({ map: tex })));
+  const m = new THREE.Mesh(memo(`pl${w},${h}`, () => new THREE.PlaneGeometry(w, h)), panelMatFor(tex));
   m.position.set(x, y, z); return m;
 };
+// Poster an den Rack-Wänden: zeigen die hochgeladenen Bilder (nur wenn Bilder vorhanden sind)
+const posters = [], POSTER_GAP = 16;
+function buildPosters() {
+  if (!images.length) return;
+  for (let i = 0; i < 14; i++) {
+    const side = i % 2 ? 1 : -1, g = new THREE.Group();
+    g.add(neonBox(2.8, 2.8, 0.1, CYAN, 0x061218));
+    const m = new THREE.Mesh(memo('posterGeo', () => new THREE.PlaneGeometry(2.55, 2.55)), panelMatFor(nextImg()));
+    m.position.z = 0.06; g.add(m); g.userData.img = m;
+    g.position.set(side * 8.85, 2.6 + (i % 3) * 0.5, 0);
+    g.rotation.y = -side * Math.PI / 2;
+    scene.add(g); posters.push(g);
+  }
+}
+function recyclePosters() {
+  const span = posters.length * POSTER_GAP;
+  posters.forEach((g, i) => {
+    const z = -span + 10 + ((i * POSTER_GAP + scroll) % span);
+    if (z < g.position.z - 50) g.userData.img.material = panelMatFor(nextImg());   // Umbruch: neues Bild
+    g.position.z = z;
+  });
+}
 const IMGB = {
   low(tex) {   // niedriger Aufsteller -> springen
     const g = new THREE.Group(), b = neonBox(1.7, 0.9, 0.5, AMBER, 0x1a1203);
@@ -453,6 +526,106 @@ const BUILD = {
   }
 };
 
+// --- C) Neue Hindernisse passend zum Internet: ab dem genannten Level dabei (1-2 pro Level)
+const gate = (edge, fill) => {                               // Torrahmen für hängende Hindernisse (rutschen)
+  const g = new THREE.Group();
+  [-1, 1].forEach(sd => { const p = neonBox(0.12, 2.4, 0.12, edge, fill); p.position.set(sd * 1.05, 1.2, 0); g.add(p); });
+  const top = neonBox(2.2, 0.12, 0.12, edge, fill); top.position.y = 2.4; g.add(top);
+  return g;
+};
+const wireMat = c => memo('w' + c, () => new THREE.MeshBasicMaterial({ color: c, wireframe: true }));
+const EXTRAS = {
+  cable: { from: 2, shape: 'low', label: 'Kabelsalat', build() {
+    const g = new THREE.Group(), c = neonCyl(0.32, 0.32, 1.9, 12, AMBER, 0x1a1203);
+    c.rotation.z = Math.PI / 2; c.position.y = 0.34; g.add(c);
+    [-0.6, 0, 0.6].forEach(x => { const r = neonCyl(0.36, 0.36, 0.1, 12, GREEN, GREEN); r.rotation.z = Math.PI / 2; r.position.set(x, 0.34, 0); g.add(r); });
+    return { mesh: g, hw: 1.0, hd: 0.35, y0: 0, y1: 0.7 };
+  } },
+  firewall: { from: 3, shape: 'block', label: 'Firewall', build() {
+    const g = new THREE.Group(), b = neonBox(1.9, 2.4, 0.3, CYAN, 0x2a0c00);
+    b.position.y = 1.2; g.add(b);
+    for (let i = 0; i < 5; i++) { const bar = neonBox(1.6, 0.12, 0.05, 0xff6a00, 0xff6a00); bar.position.set(0, 0.4 + i * 0.42, 0.18); g.add(bar); }
+    return { mesh: g, hw: 0.95, hd: 0.2, y0: 0, y1: 2.4, update: t => g.children.forEach((c, i) => { if (i) c.visible = Math.sin(t * 9 + i * 2) > -0.6; }) };
+  } },
+  popup: { from: 4, shape: 'high', label: 'Pop-up', build() {
+    const g = gate(PINK, 0x2a0414), b = neonBox(2.0, 1.1, 0.12, PINK, 0x10181c);
+    b.position.y = 1.7;
+    const tex = memo('popupTex', () => {
+      const [c, x] = canvas(320, 170);
+      x.fillStyle = '#10181c'; x.fillRect(0, 0, 320, 170); x.fillStyle = '#ff2e88'; x.fillRect(0, 0, 320, 34);
+      x.fillStyle = '#fff'; x.font = 'bold 20px sans-serif'; x.fillText('Pop-up', 12, 24); x.fillText('✕', 294, 24);
+      x.font = 'bold 30px sans-serif'; x.textAlign = 'center'; x.fillText('GEWONNEN!', 160, 96);
+      x.fillStyle = '#19f0ff'; x.fillRect(110, 118, 100, 34); x.fillStyle = '#000'; x.font = 'bold 20px sans-serif'; x.fillText('OK', 160, 142);
+      return new THREE.CanvasTexture(c);
+    });
+    g.add(b, panel(tex, 1.9, 1.0, 0, 1.7, 0.07));
+    return { mesh: g, hw: 1.05, hd: 0.2, y0: 1.15, y1: 2.5 };
+  } },
+  rack: { from: 5, shape: 'block', label: 'Server-Rack', build() {
+    const g = new THREE.Group(), b = neonBox(1.5, 2.6, 0.8, CYAN, 0x0a1115);
+    b.position.y = 1.3;
+    const tex = memo('rackFront', () => {
+      const [c, x] = canvas(128, 256), r = seeded(5);
+      x.fillStyle = '#10181c'; x.fillRect(0, 0, 128, 256);
+      for (let u = 0; u < 12; u++) {
+        x.fillStyle = '#1b2830'; x.fillRect(4, u * 21 + 2, 120, 19);
+        for (let l = 0; l < 6; l++) { x.fillStyle = ['#00ff66', '#ffb020', '#19f0ff'][r() * 3 | 0]; x.fillRect(10 + l * 10, u * 21 + 9, 5, 5); }
+      }
+      return new THREE.CanvasTexture(c);
+    });
+    g.add(b, panel(tex, 1.3, 2.4, 0, 1.3, 0.41));
+    return { mesh: g, hw: 0.8, hd: 0.45, y0: 0, y1: 2.6 };
+  } },
+  mast: { from: 5, shape: 'block', label: 'Funkmast', build() {
+    const g = new THREE.Group(), pole = neonCyl(0.12, 0.2, 3.2, 8, CYAN, CYAN);
+    pole.position.y = 1.6; g.add(pole);
+    [1.2, 2.0, 2.7].forEach((y, i) => { const bar = neonBox(1.0 - i * 0.25, 0.06, 0.06, CYAN, CYAN); bar.position.y = y; g.add(bar); });
+    const lamp = new THREE.Mesh(memo('lamp', () => new THREE.SphereGeometry(0.14, 8, 6)), solidMat(0xff2030));
+    lamp.position.y = 3.3; g.add(lamp);
+    return { mesh: g, hw: 0.5, hd: 0.3, y0: 0, y1: 3.2, update: t => { lamp.visible = Math.sin(t * 8) > 0; } };
+  } },
+  laser: { from: 6, shape: 'high', label: 'Glasfaser-Laser', build() {
+    const g = gate(0xff2030, 0x2a0408);
+    [1.3, 1.5].forEach(y => { const beam = neonBox(2.0, 0.08, 0.08, 0xff2030, 0xff2030); beam.position.y = y; g.add(beam); });
+    return { mesh: g, hw: 1.05, hd: 0.15, y0: 1.15, y1: 1.7 };
+  } },
+  cloud: { from: 7, shape: 'low', label: 'Datenwolke', build() {
+    const g = new THREE.Group(), geo = memo('cloudGeo', () => new THREE.SphereGeometry(0.45, 10, 8));
+    [[-0.55, 0.4, 1], [0.05, 0.55, 1.3], [0.6, 0.4, 1]].forEach(([x, y, sc]) => {
+      const m = new THREE.Mesh(geo, wireMat(0xbfe6ff)); m.position.set(x, y, 0); m.scale.setScalar(sc); g.add(m);
+    });
+    return { mesh: g, hw: 1.0, hd: 0.5, y0: 0, y1: 0.95 };
+  } },
+  bug: { from: 8, shape: 'block', label: 'Computer-Virus', build() {
+    const g = new THREE.Group(), v = new THREE.Mesh(memo('virus', () => new THREE.IcosahedronGeometry(0.85, 1)), wireMat(0x7aff3a));
+    v.position.y = 1.2; g.add(v);
+    const core = new THREE.Mesh(memo('virusCore', () => new THREE.SphereGeometry(0.5, 8, 6)), solidMat(0x1a3a0a));
+    core.position.y = 1.2; g.add(core);
+    return { mesh: g, hw: 0.85, hd: 0.6, y0: 0, y1: 2.1, update: t => { v.rotation.y = t * 2; v.rotation.x = t * 1.3; } };
+  } },
+  satellite: { from: 9, shape: 'high', label: 'Satellitenschüssel', build() {
+    const g = gate(PINK, 0x2a0414);
+    const dish = neon(memo('dishGeo', () => new THREE.ConeGeometry(0.75, 0.5, 16, 1, true)), 'dish', PINK, 0x2a0414, 30);
+    dish.rotation.x = -Math.PI / 2; dish.position.y = 1.7; g.add(dish);
+    const feed = new THREE.Mesh(memo('feedGeo', () => new THREE.SphereGeometry(0.1, 8, 6)), solidMat(0xffffff));
+    feed.position.set(0, 1.7, 0.45); g.add(feed);
+    return { mesh: g, hw: 1.05, hd: 0.3, y0: 1.15, y1: 2.5 };
+  } },
+  packets: { from: 10, shape: 'low', label: 'Paketflut', build() {
+    const g = new THREE.Group(), boxes = [];
+    [-0.65, 0, 0.65].forEach(x => { const b = neonBox(0.5, 0.5, 0.5, GREEN, 0x042a14); b.position.set(x, 0.38, 0); g.add(b); boxes.push(b); });
+    return { mesh: g, hw: 1.0, hd: 0.3, y0: 0, y1: 0.8, update: t => boxes.forEach((b, i) => { b.rotation.y = t * 3 + i; b.position.y = 0.38 + Math.abs(Math.sin(t * 5 + i)) * 0.12; }) };
+  } },
+  mic: { from: 10, shape: 'block', label: 'Mikrofon', build: () => BUILD.mic() }
+};
+const isExtra = t => t in EXTRAS;
+const isPass = t => isExtra(t) ? EXTRAS[t].shape !== 'block' : PASSABLE.includes(t);
+// Extras erscheinen häufig genug, aber die eigenen Bilder bleiben im Vordergrund
+const pickKind = list => {
+  const ex = list.filter(isExtra), bs = list.filter(t => !isExtra(t));
+  return ex.length && (!bs.length || rnd() < 0.4) ? pick(ex) : pick(bs);
+};
+
 // Welche Hindernis-Arten gibt es und wann werden sie freigeschaltet (Level 1/2/3+)?
 let KINDS = [], PASSABLE = [], UNLOCK = [];
 function setupKinds() {
@@ -469,6 +642,57 @@ const MAX_LIVES = 3;
 let lives = MAX_LIVES, invuln = 0, hitShake = 0;
 let obstacles = [], best = 0;
 const BEST_KEY = 'anmachaRadioSurferBest';
+
+/* ---------- Bestenliste (Top 10) ---------- */
+// Standard: Top 10 im Browser des Spielers. Für eine gemeinsame Liste aller Spieler hier eine URL eintragen (siehe README).
+const LEADERBOARD_URL = '';
+const BOARD_KEY = 'anmachaRadioSurferTop10', NAME_KEY = 'anmachaRadioSurferName';
+let ranking = [], pendingScore = null;
+const cleanName = n => String(n).replace(/[<>&"'`]/g, '').trim().slice(0, 12);
+const cleanBoard = a => (Array.isArray(a) ? a : []).filter(e => e && Number.isFinite(+e.s))
+  .map(e => ({ n: cleanName(e.n) || '???', s: Math.floor(+e.s) })).sort((a, b) => b.s - a.s).slice(0, 10);
+function loadLocal() { try { return cleanBoard(JSON.parse(localStorage.getItem(BOARD_KEY) || '[]')); } catch (e) { return []; } }
+function saveLocal() { try { localStorage.setItem(BOARD_KEY, JSON.stringify(ranking)); } catch (e) {} }
+async function refreshBoard() {
+  ranking = loadLocal();
+  if (!LEADERBOARD_URL) return;
+  try { ranking = cleanBoard(await (await fetch(LEADERBOARD_URL, { cache: 'no-store' })).json()); } catch (e) {}
+}
+function renderBoard(me) {
+  const ol = $('boardList'); ol.textContent = '';
+  if (!ranking.length) { const li = document.createElement('li'); li.textContent = 'Noch keine Einträge – sei der Erste!'; ol.appendChild(li); }
+  ranking.forEach(e => {
+    const li = document.createElement('li'), a = document.createElement('span'), b = document.createElement('span');
+    a.textContent = e.n; b.textContent = e.s; li.append(a, b);
+    if (e === me) li.className = 'me';
+    ol.appendChild(li);
+  });
+}
+const qualifies = s => s > 0 && (ranking.length < 10 || s > ranking[ranking.length - 1].s);
+function saveName() {
+  const name = cleanName($('nameIn').value);
+  if (pendingScore == null || !name) return;
+  const entry = { n: name, s: pendingScore };
+  pendingScore = null;
+  try { localStorage.setItem(NAME_KEY, name); } catch (e) {}
+  ranking = cleanBoard(ranking.concat(entry));
+  saveLocal();
+  if (LEADERBOARD_URL) fetch(LEADERBOARD_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(entry) }).catch(() => {});
+  $('entry').style.display = 'none';
+  renderBoard(ranking.find(e => e.n === entry.n && e.s === entry.s));
+}
+async function showBoard(withEntry) {
+  $('board').style.display = 'block';
+  renderBoard();
+  await refreshBoard();
+  if (withEntry && pendingScore != null && qualifies(pendingScore)) {
+    $('entry').style.display = 'flex';
+    try { $('nameIn').value = localStorage.getItem(NAME_KEY) || ''; } catch (e) {}
+  } else pendingScore = null;
+  renderBoard();
+}
+$('saveBtn').addEventListener('click', saveName);
+$('boardBtn').addEventListener('click', () => { const open = $('board').style.display === 'block'; if (open) $('board').style.display = 'none'; else showBoard(false); });
 try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
 
 const hLives = $('hLives'), hScore = $('hScore'), hLevel = $('hLevel'), hBest = $('hBest'), bar = $('bar'), btn = $('btn');
@@ -487,17 +711,22 @@ function showOverlay(title, html, label, help) {
   $('ovText').style.display = html ? '' : 'none'; $('ovText').innerHTML = html;
   $('help').style.display = help ? '' : 'none';
   $('status').style.display = help ? '' : 'none';
+  $('boardBtn').style.display = help ? '' : 'none';
+  $('entry').style.display = 'none'; $('board').style.display = 'none';
   btn.textContent = label;
   $('overlay').classList.remove('hidden');
 }
 function clearObstacles() { obstacles.forEach(o => scene.remove(o.mesh)); obstacles = []; }
 
 function startGame() {
+  saveName();                                               // Name im Eingabefeld nicht verlieren
+  pendingScore = null;
   clearObstacles();
   state = 'play'; dist = 0; score = 0; level = 1; speed = BASE_SPEED;
   lane = 1; px = 0; py = 0; vy = 0; slideT = 0; wantSlide = false;
   spawnIn = 1.6; tipT = 7; deadT = 0;
   lives = MAX_LIVES; invuln = 0; hitShake = 0; player.visible = true;
+  applyTheme(1, 1);
   $('overlay').classList.add('hidden');
   retrigger($('banner'), 'flash', `LEVEL 1 · ${LEVEL_NAMES[0]}`);
   retrigger($('toast'), 'show', TOUCH ? '👆 Wischen: ← → Spur · ↑ Sprung · ↓ Rutschen' : '⌨️ ← → Spur · ↑ Sprung · ↓ Rutschen (auch WASD)');
@@ -513,29 +742,31 @@ function finishOverlay(won) {
   showOverlay(won ? 'GESCHAFFT! 🏆' : 'GAME OVER',
     `${won ? 'Alle 10 Level – du bist der beste Radio Surfer!<br>' : `Level ${level} · ${LEVEL_NAMES[level - 1]}<br>`}Score: <b>${Math.floor(score)}</b> &nbsp;·&nbsp; Best: <b>${best}</b>`,
     won ? 'NOCHMAL' : 'NEUSTART', false);
+  pendingScore = Math.floor(score);
+  showBoard(true);
 }
 
 /* ================= Spawning ================= */
 function addObstacle(type, laneIdx) {
-  const o = images.length ? IMGB[type](nextImg()) : BUILD[type]();
+  const o = isExtra(type) ? EXTRAS[type].build() : images.length ? IMGB[type](nextImg()) : BUILD[type]();
   o.x = LANES[laneIdx]; o.z = SPAWN_Z;
   o.mesh.position.set(o.x, 0, o.z);
   scene.add(o.mesh); obstacles.push(o);
 }
 function spawnRow() {
   const d = Math.max(0, level - 3);                         // Schwierigkeit steigt erst nach Level 3
-  const av = KINDS.slice(0, UNLOCK[Math.min(level, 3) - 1]);
-  const act = av.filter(t => PASSABLE.includes(t));
+  const av = KINDS.slice(0, UNLOCK[Math.min(level, 3) - 1]).concat(Object.keys(EXTRAS).filter(k => EXTRAS[k].from <= level));
+  const act = av.filter(isPass);
   const pAct = level < 2 ? 0 : level <= 3 ? 0.15 : Math.min(0.4, 0.15 + 0.03 * d);
   const free = rnd() * 3 | 0;
   if (act.length && rnd() < pAct) {                         // Sprung-/Rutsch-Wand
-    const t = pick(act), skip = d >= 3 && rnd() < 0.3 ? free : -1;
+    const t = pickKind(act), skip = d >= 3 && rnd() < 0.3 ? free : -1;
     for (let i = 0; i < 3; i++) if (i !== skip) addObstacle(t, i);
     return;
   }
   const p = Math.min(0.92, 0.6 + 0.05 * d);                 // Spur-Reihe: mindestens eine Spur bleibt frei
-  for (let i = 0; i < 3; i++) if (i !== free && rnd() < p) addObstacle(pick(av), i);
-  if (act.length && d >= 2 && rnd() < Math.min(0.5, 0.1 * (d - 1))) addObstacle(pick(act), free);
+  for (let i = 0; i < 3; i++) if (i !== free && rnd() < p) addObstacle(pickKind(av), i);
+  if (act.length && d >= 2 && rnd() < Math.min(0.5, 0.1 * (d - 1))) addObstacle(pickKind(act), free);
 }
 const gapTime = () => (level <= 3 ? 1.5 : Math.max(0.9, 1.5 - 0.085 * (level - 3))) + rnd() * 0.25;
 
@@ -550,6 +781,7 @@ const canRestart = () => (state === 'menu' && !btn.disabled) || ((state === 'ove
 
 addEventListener('keydown', e => {
   const k = e.code;
+  if (e.target.tagName === 'INPUT') { if (k === 'Enter') saveName(); return; }   // Tippen im Namensfeld
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(k)) e.preventDefault();
   if (state !== 'play') { if ((k === 'Enter' || k === 'Space') && canRestart()) startGame(); return; }
   if (e.repeat) return;
@@ -602,7 +834,8 @@ function update(dt) {
   const k = (time * 4 | 0) % 3;
   rackL[k].offset.x = scroll / 4; rackR[k].offset.x = -scroll / 4;
   wallL.material.map = rackL[k]; wallR.material.map = rackR[k];
-  recycle(lightsL, 12); recycle(lightsR, 12); recycle(arches, 16); recycle(wins, 26);
+  recycle(lightsL, 12); recycle(lightsR, 12); recycle(arches, 16); recycle(wins, 26); recyclePosters();
+  applyTheme(level, Math.min(1, dt * 1.5));
   const pp = pGeo.attributes.position.array;
   for (let i = 0; i < PN; i++) { if ((pp[i * 3 + 2] += move * 1.3) > 10) pp[i * 3 + 2] -= 140; }
   pGeo.attributes.position.needsUpdate = true;
@@ -615,7 +848,8 @@ function update(dt) {
     const lv = Math.min(LEVELS, Math.floor(dist / LEVEL_LEN) + 1);
     if (lv > level) {
       level = lv;
-      retrigger($('banner'), 'flash', `LEVEL ${level} · ${LEVEL_NAMES[level - 1]}${level > 3 ? '\n⚡ Tempo steigt' : ''}`);
+      const fresh = Object.values(EXTRAS).filter(e => e.from === level).map(e => e.label);
+      retrigger($('banner'), 'flash', `LEVEL ${level} · ${LEVEL_NAMES[level - 1]}${fresh.length ? '\nNeu: ' + fresh.join(' + ') : ''}${level > 3 ? '\n⚡ Tempo steigt' : ''}`);
     }
     if (dist >= LEVELS * LEVEL_LEN) endGame(true);
 
@@ -705,9 +939,10 @@ requestAnimationFrame(frame);
 loadObstacleImages().then(({ tex, blocked }) => {
   images = tex;
   setupKinds();
+  buildPosters();
   $('status').textContent = tex.length ? `${tex.length} Sender-Elemente geladen`
     : blocked ? 'Eigene Bilder werden bei file:// vom Browser blockiert – bitte über einen Webserver / GitHub Pages öffnen.'
-    : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.png … 20.png).';
+    : 'Platzhalter-Modus – eigene Bilder in „hindernisse/“ ablegen (01.jpg … 20.jpg oder .png).';
   btn.disabled = false; btn.textContent = 'START';
 });
 </script>
