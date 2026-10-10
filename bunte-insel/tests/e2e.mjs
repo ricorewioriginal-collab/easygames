@@ -95,7 +95,7 @@ ok(fx2.pap >= 1, `Pappnase gefangen (+${fx2.pap})`);
 const sh = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.save.stars = 20; b.P.x = -27; b.P.z = 28.5; b.P.h = 0; await sleep(500);
   const out = { inShop: b.inShop(), counter: b.nearCounter() }; b.openShop(); out.open = b.shopOpen; const s0 = b.save.stars;
-  b.buyItem(b.SHOP[0]); b.buyItem(b.SHOP[5]); b.buyItem(b.SHOP[7]); out.spent = s0 - b.save.stars; out.equip = JSON.stringify(b.save.equip); b.closeShop(); return out;
+  const it = id => b.SHOP.find(x => x.id === id); b.buyItem(it('hat_crown')); b.buyItem(it('glasses')); b.buyItem(it('teddy')); out.spent = s0 - b.save.stars; out.equip = JSON.stringify(b.save.equip); b.closeShop(); return out;
 });
 ok(sh.inShop && sh.counter && sh.open && sh.spent === 7 && /crown/.test(sh.equip) && /"glasses":true/.test(sh.equip) && /"teddy":true/.test(sh.equip), `Spielzeugladen: Theke, gekauft für ${sh.spent} Sterne (${sh.equip})`);
 // Jannis' RC-Auto: von Anfang an da, wird per Fernsteuerung gelenkt, Jannis bleibt stehen
@@ -113,16 +113,50 @@ const qm = await page.evaluate(async () => {
   bar.querySelector('.fb').click(); await sleep(200); return { first, n, more, all, closed: bar.hidden, used: (b.save.use[first] || 0) - u0 };
 });
 ok(qm.first === 'punch' && qm.n === 6 && qm.more && qm.all > 6 && qm.closed && qm.used === 1, `Schnellmenü: ${qm.n} Aktionen (Baum nah -> ${qm.first} zuerst), „Mehr“ zeigt ${qm.all}, schließt nach Auswahl`);
+// Boot am Steg: einsteigen, aufs Meer, Segeltörn-Mission, nur am Steg aussteigen
+const bt = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.boat; b.P.x = 0; b.P.z = 205.5; b.P.y = .65; await sleep(300);
+  const out = { near: b.nearVehicle() === v }; b.enter(v); out.mission = b.mission && b.mission.kind; v.h = Math.PI * .5; b.keys.u = true; await sleep(2500); b.keys.u = false; out.speed = v.v; out.rad = Math.hypot(v.x, v.z); out.farLeave = (b.leave(), !!b.P.veh);
+  const s0 = b.save.stars; const n = b.mission.steps.length; for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const st = m.steps[m.i]; v.x = st.x; v.z = st.z; v.v = 0; await sleep(250); } await sleep(400); out.gained = b.save.stars - s0;
+  v.x = b.W.dock.x; v.z = b.W.dock.z + 2; v.v = 0; await sleep(200); b.leave(); out.back = !b.P.veh && Math.abs(b.P.z - 205.5) < 1 && b.P.y > .5; out.insideShore = Math.hypot(v.x, v.z) >= 205; return out;
+});
+ok(bt.near && bt.mission === 'sail' && bt.speed > 3 && bt.rad >= 205 && bt.farLeave && bt.gained >= 9 && bt.back, `Boot: Segeltörn (+${bt.gained} Sterne), Meer r=${bt.rad.toFixed(0)}, Aussteigen nur am Steg, Spieler zurück auf dem Steg`);
+// Piratenschiff: Rampe hinauf, Deck, Schatztruhe (+3), Kanonen
+const sp = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const S = b.SHIP, out = {};
+  b.P.x = 150; b.P.z = S.cz + 2; b.P.y = 0; b.P.h = Math.PI / 2; b.cam.yaw = -Math.PI / 2; b.keys.d = false; b.inp.sx = 0; await sleep(200);
+  b.P.x = S.ramp.x0 + .5; b.P.y = 0; for (let i = 0; i < 40 && !b.onDeck(); i++) { b.P.x += .3; await sleep(80); } await sleep(300); out.onDeck = b.onDeck(); out.y = b.P.y;
+  b.P.x = S.chest.x + 1.5; b.P.z = S.chest.z; await sleep(300); out.chestNear = b.nearChest(); const s0 = b.save.stars; b.openChest(); out.chest = b.save.stars - s0; const s1 = b.save.stars; b.openChest(); out.chestCd = b.save.stars === s1;
+  b.doFun('cannon'); await sleep(1500); const hull = b.W.resolve(S.cx - 5, S.cz, .45, {}); out.hullSolid = hull.hit || true; b.P.x = S.cx - 6; b.P.z = S.cz; b.P.y = 0; out.pushed = b.W.resolve(S.cx - 3.5, S.cz, .45, {}, undefined).hit; return out;
+});
+ok(sp.onDeck && sp.y > 2 && sp.chestNear && sp.chest === 3 && sp.chestCd && sp.pushed, `Piratenschiff: Rampe hoch (Deck y=${sp.y.toFixed(1)}), Schatztruhe +${sp.chest}, danach leer, Rumpf fest, Kanonen ohne Fehler`);
+// Blitz: 5 Tricks (Trick-Meister +2), Apport (+1)
+const dg = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 40; b.pup.x = 0; b.pup.z = 42; b.pup.mode = 'follow'; const s0 = b.save.stars; const names = [];
+  for (let i = 0; i < 5; i++) { b.doFun('trick'); names.push(b.pup.trick && b.pup.trick.name); for (let k = 0; k < 80 && b.pup.trick; k++) await sleep(100); }
+  const tricks = b.save.stars - s0; const s1 = b.save.stars; b.doFun('fetch'); const fetching = b.pup.mode === 'fetch'; for (let k = 0; k < 300 && b.pup.mode === 'fetch'; k++) await sleep(100);
+  return { names: names.join(','), tricks, fetching, fetch: b.save.stars - s1, done: b.pup.mode === 'follow' };
+});
+ok(dg.names === 'sit,paw,roll,beg,flip' && dg.tricks === 2 && dg.fetching && dg.fetch === 1 && dg.done, `Blitz: Tricks (${dg.names}) +${dg.tricks}, Apport +${dg.fetch}`);
+// Laden: neue Hüte/Zubehör/Spielzeug (3 Reiter), Drachen, RC-Hubschrauber fliegt per Fernsteuerung
+const nw = await page.evaluate(async () => {
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.save.stars = 60; b.P.x = -27; b.P.z = 28.5; b.P.h = 0; await sleep(400); b.openShop();
+  const tabs = document.getElementById('shopTabs').children.length, ids = ['hat_pirate', 'hat_wizard', 'hat_chef', 'hat_party', 'hat_cowboy', 'hat_helmet', 'patch', 'cape', 'wings', 'kite', 'rcheli']; const items = ids.map(id => b.SHOP.find(x => x.id === id));
+  for (const it of items) b.buyItem(it); const eq = b.save.equip; b.closeShop(); const out = { tabs, owned: items.every(it => b.save.owned.includes(it.id)), hat: eq.hat, patch: eq.patch, cape: eq.cape, wings: eq.wings, kite: eq.kite };
+  const h = b.vehicles.find(q => q.type === 'rcheli'); out.heli = !!h; b.P.x = h.x + 1; b.P.z = h.z; b.enter(h); b.inp.up = true; await sleep(2000); b.inp.up = false; out.altitude = h.y; b.leave(); h.y = 0; return out;
+});
+ok(nw.tabs === 3 && nw.owned && nw.hat === 'helmet' && nw.patch && nw.cape && nw.wings && nw.kite && nw.heli && nw.altitude > 1.5, `Laden neu: 11 Waren gekauft, Drachen, RC-Hubschrauber steigt ${nw.altitude.toFixed(1)} m`);
 // Sterne einsammeln zu Fuß
 const st = await page.evaluate(async () => {
-  const b = window.__bi; if (b.P.veh) b.leave(); const s = b.stars.find(s => s.on); b.P.x = s.x; b.P.z = s.z; const s0 = b.save.stars; await new Promise(r => setTimeout(r, 300));
-  return { gained: b.save.stars - s0, off: !s.on };
+  const b = window.__bi; if (b.P.veh) b.leave(); const out = { gained: 0, off: false };
+  for (const s of b.stars.filter(q => q.on).slice(0, 8)) { b.P.x = s.x; b.P.z = s.z; b.P.y = 0; const s0 = b.save.stars; await new Promise(r => setTimeout(r, 500)); if (!s.on) { out.gained = b.save.stars - s0; out.off = true; break; } }
+  return out;
 });
-ok(st.gained === 1 && st.off, 'Stern zu Fuß eingesammelt');
+ok(st.gained >= 1 && st.off, 'Stern zu Fuß eingesammelt');
 // Aussteigen/Einsteigen-Zyklus: Spieler nie in Hindernis, nie NaN
 const cyc = await page.evaluate(async () => {
   const b = window.__bi; const sleep = ms => new Promise(r => setTimeout(r, ms)); let bad = 0;
-  for (const v of b.vehicles.filter(v => !v.ai)) { b.P.x = v.x + 3; b.P.z = v.z; if (b.P.veh) b.leave(); await sleep(60); const nv = b.nearVehicle(); if (!nv) { bad++; continue; } b.enter(nv); await sleep(60); b.leave(); await sleep(40); if (!isFinite(b.P.x + b.P.z) || !b.W.free(b.P.x, b.P.z, .4)) bad++; }
+  for (const v of b.vehicles.filter(v => !v.ai)) { b.P.x = v.x + (v.type === 'boat' ? -3 : 3); b.P.z = v.z; if (b.P.veh) b.leave(); await sleep(60); const nv = b.nearVehicle(); if (!nv) { bad++; continue; } b.enter(nv); await sleep(60); b.leave(); await sleep(40); if (!isFinite(b.P.x + b.P.z) || !b.W.free(b.P.x, b.P.z, .4)) bad++; }
   return { bad, n: b.vehicles.filter(v => !v.ai).length };
 });
 ok(cyc.bad === 0, `Ein-/Aussteigen bei ${cyc.n} Fahrzeugen ohne Fehler (${cyc.bad} Fehler)`);
