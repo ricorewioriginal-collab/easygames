@@ -203,6 +203,7 @@ const TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window
 if (TOUCH) document.body.classList.add('touch');
 if (window.self !== window.top) $('back').style.display = 'none';
 
+let brandTitle = null;       // komplettes Titel-Logo des Spiels (falls vorhanden), wird auch auf der Backbox gezeigt
 // Haupt-Logo (optional): logo.png / .jpg / .jpeg / .svg / .webp im Spielordner, sonst im Hauptordner (../). Ersetzt das Wort „AnMaCha“ im Menü.
 (function loadBrandLogo() {
   const exts = ['png', 'jpg', 'jpeg', 'svg', 'webp'], cands = [];
@@ -211,7 +212,11 @@ if (window.self !== window.top) $('back').style.display = 'none';
     .then(list => {
       const src = list.find(Boolean); if (!src) return;
       const img = $('brandImg'); img.src = src; img.hidden = false; $('brandText').hidden = true;
-      if (!src.startsWith('../')) { img.classList.add('full'); $('brandSub').hidden = true; }   // Logo aus dem Spielordner = kompletter Titel (inkl. Spielname)
+      if (!src.startsWith('../')) {                      // Logo aus dem Spielordner = kompletter Titel (inkl. Spielname)
+        img.classList.add('full'); $('brandSub').hidden = true;
+        img.addEventListener('load', () => { brandTitle = img; if (typeof refreshBrand === 'function') refreshBrand(); }, { once: true });
+        if (img.complete && img.naturalWidth) { brandTitle = img; }
+      }
     });
 })();
 
@@ -762,6 +767,19 @@ function backglassCanvas(t) {
   if (t.logo) g.drawImage(t.logo, 40, 40, 480, 480);
   g.strokeStyle = col2; g.lineWidth = 8; g.strokeRect(40, 40, 480, 480);
   g.textAlign = 'left';
+  let logoOk = false;
+  if (brandTitle) {                                        // Spiel-Logo statt Text-Titel (nur wenn der Browser das Bild nutzen lässt)
+    try { const t1 = document.createElement('canvas').getContext('2d'); t1.drawImage(brandTitle, 0, 0, 1, 1); t1.getImageData(0, 0, 1, 1);
+      const sc = Math.min(470 / brandTitle.naturalWidth, 310 / brandTitle.naturalHeight), lw = brandTitle.naturalWidth * sc, lh = brandTitle.naturalHeight * sc;
+      g.drawImage(brandTitle, 548 + (470 - lw) / 2, 36 + (310 - lh) / 2, lw, lh); logoOk = true; } catch (e) {}
+  }
+  if (logoOk) {
+    g.fillStyle = col2; g.font = 'bold 36px sans-serif'; g.fillText(t.name, 556, 392);
+    g.fillStyle = '#b0c2d8'; g.font = '26px sans-serif'; g.fillText(t.hasLogo ? '5 Kugeln · viel Erfolg!' : 'Eigenes Logo: logos/' + String(t.idx + 1).padStart(2, '0') + '.jpg', 556, 432);
+    g.strokeStyle = col; g.lineWidth = 4; g.globalAlpha = 0.8; g.shadowColor = col; g.shadowBlur = 12;
+    g.beginPath(); for (let x = 556; x <= 990; x += 4) { const y = 490 + Math.sin(x * 0.05) * 20 * Math.sin(x * 0.013); x === 556 ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke();
+    t.bg = c; return c;
+  }
   const tg = g.createLinearGradient(560, 0, 1000, 0); tg.addColorStop(0, '#fff'); tg.addColorStop(1, col);
   g.fillStyle = tg; g.font = 'italic 900 94px "Trebuchet MS",sans-serif'; g.shadowColor = col; g.shadowBlur = 26; g.fillText('AnMaCha', 552, 176);
   g.shadowBlur = 0; g.fillStyle = '#fff'; g.font = 'italic 900 82px "Trebuchet MS",sans-serif'; g.fillText('FLIPPER', 556, 282);
@@ -1001,6 +1019,10 @@ function drawPreview() {
   $('tSub').textContent = T.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(T.idx + 1).padStart(2, '0')}.jpg`;
   const dots = $('dots'); if (dots.children.length !== tables.length) { dots.textContent = ''; tables.forEach(() => dots.appendChild(document.createElement('i'))); }
   [...dots.children].forEach((d, i) => d.classList.toggle('on', i === tableIdx));
+}
+function refreshBrand() {                    // Titel-Logo ist geladen: Backbox-Grafiken neu zeichnen (nur im Menü, damit kein laufendes Spiel gestört wird)
+  tables.forEach(t => { t.bg = null; });
+  if (state === 'menu' && tables.length && tablesBuilt) { loadTable(tableIdx); drawPreview(); }
 }
 function selectTable(i) {
   if (!tables.length) return;
