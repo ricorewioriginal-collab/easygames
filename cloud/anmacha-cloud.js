@@ -2,8 +2,9 @@
  * Einbinden:  <script src="../cloud/anmacha-cloud.js" data-game="snake" data-prefix="anmachaSnake,anmachaMemory" defer></script>
  * data-game   = Spielname (eigener Speicherplatz pro Spiel)
  * data-prefix = kommagetrennte localStorage-Schlüsselanfänge, die synchronisiert werden
+ * data-idb / data-idb-files = optional für Godot-Exporte: IndexedDB-Pfad (z.B. /userfs) und Dateinamen-Anfang der Speicherdateien
  * data-ui="off" blendet den Cloud-Knopf aus.
- * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer. Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
+ * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer (gzip ab 20 KB). Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
 (function () {
   'use strict';
   // <- aus der Firebase-Konsole eintragen (siehe cloud/README.md); authDomain leer = <projectId>.firebaseapp.com
@@ -14,7 +15,8 @@
   if (!s || !CONFIG.projectId || !window.fetch || !window.Promise) return;
   var game = (s.dataset.game || 'spiel').replace(/[^\w-]/g, '').slice(0, 40);
   var prefixes = (s.dataset.prefix || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
-  if (!prefixes.length) return;
+  var idbPath = s.dataset.idb || '', idbFiles = (s.dataset.idbFiles || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+  if (!prefixes.length && !(idbPath && idbFiles.length)) return;
 
   var LS = window.localStorage, P = Storage.prototype;
   var rawSet = P.setItem, rawRemove = P.removeItem;
@@ -23,6 +25,62 @@
   try { meta = JSON.parse(LS.getItem(META_KEY)) || {}; } catch (e) {}
 
   function match(k) { return prefixes.some(function (p) { return k.indexOf(p) === 0; }); }
+
+  // Kompression (gzip, nativ) für größere Spielstände
+  function b64(u) { var t = '', i; for (i = 0; i < u.length; i += 8192) t += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return btoa(t); }
+  function unb64(t) { var a = atob(t), u = new Uint8Array(a.length), i; for (i = 0; i < a.length; i++) u[i] = a.charCodeAt(i); return u; }
+  function gz(text) {
+    if (text.length < 20000 || !window.CompressionStream) return Promise.resolve(text);
+    var cs = new CompressionStream('gzip'), w = cs.writable.getWriter();
+    w.write(new TextEncoder().encode(text)); w.close();
+    return new Response(cs.readable).arrayBuffer().then(function (b) { return 'z:' + b64(new Uint8Array(b)); });
+  }
+  function ungz(t) {
+    if (t.slice(0, 2) !== 'z:') return Promise.resolve(t);
+    var ds = new DecompressionStream('gzip'), w = ds.writable.getWriter();
+    w.write(unb64(t.slice(2))); w.close();
+    return new Response(ds.readable).text();
+  }
+
+  // IndexedDB (Emscripten/Godot IDBFS): Dateien /userfs/<name> als Einträge "idb:<pfad>"
+  function idbOpen() {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open(idbPath, 21);
+      r.onupgradeneeded = function () {
+        var db = r.result;
+        if (!db.objectStoreNames.contains('FILE_DATA')) db.createObjectStore('FILE_DATA').createIndex('timestamp', 'timestamp', { unique: false });
+      };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+    });
+  }
+  function idbMatch(k) { return idbFiles.some(function (p) { return k.indexOf(idbPath + '/' + p) === 0; }); }
+  function idbRead() {
+    if (!idbPath || !idbFiles.length || !window.indexedDB) return Promise.resolve({});
+    return idbOpen().then(function (db) {
+      return new Promise(function (res) {
+        var o = {}, c = db.transaction('FILE_DATA', 'readonly').objectStore('FILE_DATA').openCursor();
+        c.onsuccess = function () {
+          var cur = c.result;
+          if (!cur) { db.close(); return res(o); }
+          var v = cur.value;
+          if (typeof cur.key === 'string' && idbMatch(cur.key) && v && v.contents) o['idb:' + cur.key] = { v: b64(new Uint8Array(v.contents)), t: +new Date(v.timestamp) || 1 };
+          cur.continue();
+        };
+        c.onerror = function () { db.close(); res(o); };
+      });
+    }).catch(function () { return {}; });
+  }
+  function idbWrite(key, item) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction('FILE_DATA', 'readwrite'), st = tx.objectStore('FILE_DATA');
+        if (item.v === null) st.delete(key); else st.put({ timestamp: new Date(item.t), mode: 33206, contents: unb64(item.v) }, key);
+        tx.oncomplete = function () { db.close(); res(); };
+        tx.onerror = function () { db.close(); rej(tx.error); };
+      });
+    });
+  }
   function saveMeta() { try { rawSet.call(LS, META_KEY, JSON.stringify(meta)); } catch (e) {} }
   var auth = null, user = null, fb = null, sdkP = null;
   function wanted() { try { return LS.getItem(ON_KEY) === '1'; } catch (e) { return false; } }
@@ -62,7 +120,7 @@
       if (match(k)) o[k] = { v: LS.getItem(k), t: meta[k] || 1 };
     }
     for (k in meta) if (match(k) && !(k in o)) o[k] = { v: null, t: meta[k] }; // gelöscht
-    return o;
+    return idbRead().then(function (x) { for (k in x) o[k] = x[k]; return o; });
   }
 
   function url() {
@@ -72,14 +130,17 @@
     return fetch(url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
       if (r.status === 404) return {};
       if (!r.ok) throw new Error('Laden ' + r.status);
-      return r.json().then(function (j) { try { return JSON.parse(j.fields.d.stringValue); } catch (e) { return {}; } });
+      return r.json().then(function (j) { return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
     });
   }
   function push(tok, state, keep) {
-    var body = JSON.stringify({ fields: { d: { stringValue: JSON.stringify(state) }, t: { integerValue: String(Date.now()) } } });
-    return fetch(url() + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
-    }).then(function (r) { if (!r.ok) throw new Error('Speichern ' + r.status); });
+    return gz(JSON.stringify(state)).then(function (d) {
+      if (d.length > 900000) throw new Error('Spielstand zu groß für die Cloud');
+      var body = JSON.stringify({ fields: { d: { stringValue: d }, t: { integerValue: String(Date.now()) } } });
+      return fetch(url() + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
+      }).then(function (r) { if (!r.ok) throw new Error('Speichern ' + r.status); });
+    });
   }
 
   function sync(keep) {
@@ -90,21 +151,22 @@
       if (!user) throw new Error('Bitte neu anmelden');
       return user.getIdToken();
     }).then(function (tok) {
-      return pull(tok).then(function (remote) {
-        var local = localState(), merged = {}, changed = false, dirty = false, k;
+      return Promise.all([pull(tok), localState()]).then(function (rl) {
+        var remote = rl[0], local = rl[1], merged = {}, changed = false, dirty = false, k, writes = [];
         for (k in remote) merged[k] = remote[k];
         for (k in local) {
           if (!remote[k] || local[k].t > remote[k].t) { merged[k] = local[k]; if (!remote[k] || remote[k].v !== local[k].v) dirty = true; }
         }
         for (k in merged) {
           if (merged[k] !== local[k] && (!local[k] || merged[k].t > local[k].t) && (!local[k] || merged[k].v !== local[k].v)) {
-            if (merged[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, merged[k].v);
-            meta[k] = merged[k].t; changed = true;
+            if (k.slice(0, 4) === 'idb:') writes.push(idbWrite(k.slice(4), merged[k]));
+            else { if (merged[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, merged[k].v); meta[k] = merged[k].t; }
+            changed = true;
           }
         }
         saveMeta();
         lastErr = '';
-        var p = dirty ? push(tok, merged, keep) : Promise.resolve();
+        var p = Promise.all(writes).then(function () { return dirty ? push(tok, merged, keep) : null; });
         return p.then(function () {
           if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
         });
@@ -121,6 +183,17 @@
     if (document.visibilityState === 'hidden') sync(true); else sync();
   });
   window.addEventListener('pagehide', function () { sync(true); });
+  if (idbPath && idbFiles.length) { // Godot schreibt ohne localStorage: alle 20 s auf geänderte Dateien prüfen
+    var seen = null;
+    setInterval(function () {
+      if (document.visibilityState !== 'visible' || !wanted()) return;
+      idbRead().then(function (x) {
+        var sig = Object.keys(x).sort().map(function (k) { return k + x[k].t; }).join('|');
+        if (seen !== null && sig !== seen) queue();
+        seen = sig;
+      });
+    }, 20000);
+  }
 
   // ---- kleine Oberfläche ----
   var btn, panel;
