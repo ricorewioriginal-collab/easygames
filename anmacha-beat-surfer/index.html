@@ -222,31 +222,56 @@ const canvasEl = (w, h) => { const c = document.createElement('canvas'); c.width
 const PALETTE = [0x00E5FF, 0xFF2D95, 0x8B5CF6, 0x9DFF00, 0xFFB020, 0x3D8BFF, 0xFF4D4D, 0x00FFC8];
 const LANE_COL = [0x00E5FF, 0xFF2D95, 0x9DFF00, 0xFFB020], LANE_KEYS = ['D', 'F', 'J', 'K'];
 
-/* ================= Songs: Stil, Tempo, Schwierigkeit ================= */
-const STYLES = [
-  { name: 'House',  kick: [0, 4, 8, 12], snare: [4, 12], hat: [2, 6, 10, 14], bass: [2, 6, 10, 14], lead: [0, 3, 6, 8, 11, 14] },
-  { name: 'HipHop', kick: [0, 7, 10], snare: [4, 12], hat: [0, 2, 4, 6, 8, 10, 12, 14], bass: [0, 7, 10], lead: [2, 6, 9, 13] },
-  { name: 'Rock',   kick: [0, 8, 10], snare: [4, 12], hat: [0, 2, 4, 6, 8, 10, 12, 14], bass: [0, 2, 4, 8, 10, 12], lead: [0, 6, 8, 14] },
-  { name: 'Disco',  kick: [0, 4, 8, 12], snare: [4, 12], hat: [2, 6, 10, 14], bass: [0, 2, 4, 6, 8, 10, 12, 14], lead: [1, 3, 6, 9, 11, 14] },
-  { name: 'Trance', kick: [0, 4, 8, 12], snare: [4, 12], hat: [2, 6, 10, 14], bass: [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15], lead: [0, 2, 3, 5, 7, 8, 10, 11, 13, 15] }
+/* ================= Songs: ein Genre pro Sender ================= */
+// Namen/Genres der Sender (Song n = Logo n). Beim Austauschen der Logos hier die Namen anpassen.
+const MAJ = [0, 2, 4, 7, 9], MIN = [0, 3, 5, 7, 10];
+const P_MAJ = [0, 5, 7, 5], P_MIN = [0, 8, 3, 10], P_CHILL = [0, 5, 9, 7];
+const STATIONS = [
+  { n: 'RicoReWi Music & Media', g: 'Synthwave', bpm: 118, root: 45, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'gate', hat: 'closed', bass: 'pump', lead: 'supersaw',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 2, 4, 6, 8, 10, 12, 14], lp: [0, 6, 10] },
+  { n: 'YourTime-FM', g: 'Chill & Tropical', bpm: 104, root: 48, prog: P_CHILL, scale: MAJ, kick: 'soft', snare: 'clap', hat: 'shaker', bass: 'sub', lead: 'pluck',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 3, 6, 10], lp: [0, 3, 6, 10, 12] },
+  { n: 'RapRadio 24', g: 'Rap', bpm: 92, root: 43, prog: P_MIN, scale: MIN, kick: '808', snare: 'crack', hat: 'closed', bass: 'sub', lead: 'piano', roll: true,
+    kp: [0, 7, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 7, 10], lp: [2, 6, 9, 13] },
+  { n: 'SchlagerPop 24', g: 'Schlager', bpm: 124, root: 48, prog: P_MAJ, scale: MAJ, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'oct', lead: 'accordion',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 4, 8, 12], lp: [0, 4, 6, 8, 12, 14] },
+  { n: 'ChartRadio 24', g: 'Pop & Charts', bpm: 120, root: 45, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'saw', lead: 'pluck',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [2, 6, 10, 14], lp: [0, 3, 6, 8, 11, 14] },
+  { n: 'ClubRadio 24', g: 'Club / EDM', bpm: 148, root: 46, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'pump', lead: 'supersaw',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15], lp: [0, 2, 3, 5, 7, 8, 10, 11, 13, 15] },
+  { n: 'AnMaCha 24', g: 'Pop-Rock Mix', bpm: 126, root: 45, prog: P_MAJ, scale: MAJ, kick: 'punch', snare: 'crack', hat: 'closed', bass: 'saw', lead: 'stab',
+    kp: [0, 6, 8, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 6, 8, 10], lp: [0, 3, 6, 8, 11, 14] },
+  { n: 'RadioFloh!', g: 'Kindermusik', bpm: 100, root: 48, prog: P_MAJ, scale: MAJ, kick: 'soft', snare: 'clap', hat: 'shaker', bass: 'tri', lead: 'xylo', oomph: true,
+    kp: [0, 8], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 4, 8, 12], lp: [0, 4, 6, 8, 12, 14] },
+  { n: 'RockRadio 24', g: 'Rock', bpm: 132, root: 40, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'crack', hat: 'closed', bass: 'saw', lead: 'stab',
+    kp: [0, 8, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 2, 4, 8, 10, 12], lp: [0, 6, 8, 14] },
+  { n: 'ChristmasRadio 24', g: 'Weihnachten', bpm: 112, root: 48, prog: P_MAJ, scale: MAJ, kick: 'soft', snare: 'brush', hat: 'bell', bass: 'tri', lead: 'bell',
+    kp: [0, 8], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 8], lp: [0, 3, 6, 8, 11, 14] },
+  { n: 'KultRadio 24', g: 'Disco & Kult-Hits', bpm: 116, root: 45, prog: P_MIN, scale: MIN, kick: 'punch', snare: 'clap', hat: 'closed', bass: 'oct', lead: 'stab',
+    kp: [0, 4, 8, 12], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 2, 4, 6, 8, 10, 12, 14], lp: [1, 3, 6, 9, 11, 14] },
+  { n: 'Zocker-FM', g: 'Gaming / Chiptune', bpm: 140, root: 45, prog: P_MIN, scale: MIN, kick: 'chip', snare: 'chip', hat: 'chip', bass: 'tri', lead: 'pulse',
+    kp: [0, 6, 8, 10], sp: [4, 12], hp: [0, 2, 4, 6, 8, 10, 12, 14], bp: [0, 2, 4, 6, 8, 10, 12, 14], lp: [0, 2, 3, 5, 7, 8, 10, 11, 13, 15] },
+  { n: 'Special-Radio', g: 'Entspannung', bpm: 74, root: 47, prog: P_CHILL, scale: MAJ, kick: 'soft', snare: 'brush', hat: 'shaker', bass: 'sub', lead: 'pad',
+    kp: [0, 10], sp: [4, 12], hp: [2, 6, 10, 14], bp: [0, 8], lp: [0, 6, 10] }
 ];
-const KEY_SHIFT = [0, 2, 3, 5, 7, -2, -4, -5, 0, 2, 3, 5, 7];
-const SCALE = [0, 3, 5, 7, 10], PROG = [0, 8, 3, 10];
-const trackInfo = i => ({
-  idx: i, style: STYLES[i % 5], bpm: Math.round(92 + 6.5 * i), ntb: 0.9 + 0.1 * i,        // Noten pro Schlag
-  approach: 1.7 - 0.04 * i, loss: 7 + 0.6 * i, stars: 1 + Math.round(i / 3), root: 45 + KEY_SHIFT[i]
-});
+// Reihenfolge in der Kampagne (leicht -> schwer), unabhängig von der Logo-Nummer: Entspannung, Kinder, Chill, Schlager, Weihnachten, Kult, Charts, AnMaCha 24, RicoReWi, Zocker, Rock, Rap, Club
+const ORDER = [12, 7, 1, 3, 9, 10, 4, 6, 0, 11, 8, 2, 5];
+const rankOf = i => ORDER.indexOf(i);
+const trackInfo = i => {
+  const st = STATIONS[i], r = rankOf(i);
+  return { idx: i, st, rank: r, bpm: st.bpm, ntb: 0.9 + 0.1 * r, approach: 1.7 - 0.04 * r, loss: 7 + 0.6 * r, stars: 1 + Math.round(r / 3), root: st.root };
+};
 
 function buildSong(i) {
-  const tr = trackInfo(i), st = tr.style, rnd = seeded(1000 + i * 77);
+  const tr = trackInfo(i), st = tr.st, rnd = seeded(1000 + i * 77);
   const beat = 60 / tr.bpm, step = beat / 4, countIn = beat * 4, bars = Math.round(64 * tr.bpm / 240);
   const events = [], notes = [], lastTime = [-9, -9, -9, -9];
   for (let b = 0; b < bars; b++) {
-    const off = PROG[b % 4], cand = [];
+    const off = st.prog[b % 4], cand = [];
     for (let s = 0; s < 16; s++) {
-      const e = { t: countIn + (b * 16 + s) * step, kick: st.kick.includes(s), snare: st.snare.includes(s), hat: st.hat.includes(s), open: st.hat.includes(s) && s % 4 === 2, bass: null, lead: null };
-      if (st.bass.includes(s)) e.bass = tr.root - 12 + off;
-      if (st.lead.includes(s) && rnd() < 0.85) { const k = rnd() * SCALE.length | 0; e.lead = tr.root + 24 + off + SCALE[k] + (rnd() < 0.2 ? 12 : 0); e.leadIdx = k; }
+      const e = { t: countIn + (b * 16 + s) * step, kick: st.kp.includes(s), snare: st.sp.includes(s), hat: st.hp.includes(s) || (st.roll && b % 4 === 3 && s >= 12), open: false, bass: null, lead: null };
+      if (st.bp.includes(s)) { e.bass = tr.root - 12 + off + (st.oomph && s % 8 === 4 ? 7 : 0); if (st.bass === 'oct' && s % 8 === 4) e.bass += 7; }
+      if (st.lp.includes(s) && rnd() < 0.88) { const k = rnd() * st.scale.length | 0; e.lead = tr.root + 24 + off + st.scale[k] + (rnd() < 0.2 ? 12 : 0); e.leadIdx = k; }
       events.push(e);
       if (e.kick) cand.push({ s, lane: 0, pri: (s % 8 === 0 ? 9 : 6) + rnd() });
       if (e.snare) cand.push({ s, lane: 1, pri: 8 + rnd() });
@@ -256,7 +281,7 @@ function buildSong(i) {
     const K = Math.max(3, Math.round(tr.ntb * 4 + (rnd() - 0.5) * 1.6));
     // Mindestens ein paar Melodie-Noten pro Takt, damit alle 4 Spuren vorkommen
     const leads = cand.filter(c => c.lane >= 2).sort((a, c) => c.pri - a.pri), rest = cand.filter(c => c.lane < 2).sort((a, c) => c.pri - a.pri);
-    const nl = Math.min(leads.length, Math.max(1, Math.round(K * (0.3 + 0.015 * i))));
+    const nl = Math.min(leads.length, Math.max(1, Math.round(K * (0.3 + 0.015 * tr.rank))));
     const picked = leads.slice(0, nl).concat(rest.slice(0, K - nl)).sort((a, c) => a.s - c.s || a.lane - c.lane);
     const perStep = {};
     for (const c of picked) {
@@ -271,7 +296,7 @@ function buildSong(i) {
 }
 
 /* ================= Audio (erzeugte Musik, keine Dateien) ================= */
-let ac = null, master = null, muted = false, userOff = 0, noiseBuf = null;
+let ac = null, master = null, fx = null, muted = false, userOff = 0, noiseBuf = null;
 try { muted = localStorage.getItem('anmachaBeatMuted') === '1'; userOff = +localStorage.getItem('anmachaBeatOffset') || 0; } catch (e) {}
 function audioInit() {
   if (!ac) {
@@ -279,6 +304,9 @@ function audioInit() {
       ac = new (window.AudioContext || window.webkitAudioContext)();
       const comp = ac.createDynamicsCompressor(); master = ac.createGain(); master.gain.value = muted ? 0 : 0.8;
       master.connect(comp); comp.connect(ac.destination);
+      // einfacher Hall/Echo für ruhige Klänge
+      fx = ac.createGain(); const dl = ac.createDelay(1), fb = ac.createGain(), lp = ac.createBiquadFilter(); dl.delayTime.value = 0.32; fb.gain.value = 0.38; lp.type = 'lowpass'; lp.frequency.value = 2600;
+      fx.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(master); fx.connect(master);
       noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     } catch (e) { ac = null; }
   }
@@ -295,16 +323,54 @@ function noise(t, dur, peak, ftype, freq) {
   const s = ac.createBufferSource(); s.buffer = noiseBuf; const f = ac.createBiquadFilter(), g = ac.createGain(); f.type = ftype; f.frequency.value = freq;
   env(g, t, 0.002, peak, dur); s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.05);
 }
+function voice(type, f, at, dur, peak, dest, f2) { osc(type, f, at, dur, peak, dest, f2); }
 function playEvent(e, at) {
   if (!ac) return;
-  if (e.kick) osc('sine', 160, at, 0.3, 0.95, null, 42);
-  if (e.snare) { noise(at, 0.18, 0.35, 'bandpass', 1900); osc('triangle', 190, at, 0.1, 0.25); }
-  if (e.hat) noise(at, e.open ? 0.12 : 0.04, e.open ? 0.1 : 0.07, 'highpass', 7500);
-  if (e.bass != null) {
-    const o = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain(); o.type = 'sawtooth'; o.frequency.value = mtof(e.bass); f.type = 'lowpass'; f.frequency.value = 420;
-    env(g, at, 0.01, 0.3, song.step * 1.8); o.connect(f); f.connect(g); g.connect(master); o.start(at); o.stop(at + song.step * 1.9 + 0.05);
+  const st = song.tr.st, sd = song.step;
+  if (e.kick) {
+    if (st.kick === '808') voice('sine', 95, at, 0.6, 0.95, null, 40);
+    else if (st.kick === 'soft') voice('sine', 115, at, 0.24, 0.6, null, 48);
+    else if (st.kick === 'chip') voice('square', 190, at, 0.1, 0.28, null, 55);
+    else voice('sine', 160, at, 0.3, 0.95, null, 42);
   }
-  if (e.lead != null) { osc('square', mtof(e.lead), at, song.step * 2.2, 0.07); osc('triangle', mtof(e.lead + 12), at, song.step * 1.5, 0.05); }
+  if (e.snare) {
+    if (st.snare === 'clap') { for (let k = 0; k < 3; k++) noise(at + k * 0.012, 0.07, 0.22, 'bandpass', 1300); noise(at + 0.036, 0.15, 0.2, 'bandpass', 1300); }
+    else if (st.snare === 'brush') noise(at, 0.22, 0.12, 'bandpass', 3200);
+    else if (st.snare === 'gate') { noise(at, 0.34, 0.3, 'highpass', 900); voice('triangle', 200, at, 0.1, 0.22); }
+    else if (st.snare === 'chip') { noise(at, 0.08, 0.16, 'highpass', 2200); voice('square', 230, at, 0.07, 0.1); }
+    else { noise(at, 0.18, 0.35, 'bandpass', 1900); voice('triangle', 190, at, 0.1, 0.25); }
+  }
+  if (e.hat) {
+    if (st.hat === 'shaker') noise(at, 0.06, 0.07, 'bandpass', 6000);
+    else if (st.hat === 'bell') { noise(at, 0.1, 0.08, 'highpass', 5600); voice('sine', 2637, at, 0.18, 0.025, fx); voice('sine', 3322, at, 0.14, 0.02, fx); }
+    else if (st.hat === 'chip') noise(at, 0.035, 0.08, 'highpass', 9000);
+    else noise(at, 0.04, 0.07, 'highpass', 7500);
+  }
+  if (e.bass != null) {
+    const f0 = mtof(e.bass);
+    if (st.bass === 'sub') { voice('sine', f0, at, sd * 3, 0.38); voice('triangle', f0 * 2, at, sd * 1.5, 0.06); }
+    else if (st.bass === 'tri') voice('triangle', f0 * 2, at, sd * 1.7, 0.3);
+    else {
+      const o = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain(); o.type = 'sawtooth'; o.frequency.value = f0; f.type = 'lowpass'; f.frequency.value = st.bass === 'pump' ? 700 : 420;
+      env(g, at, 0.01, st.bass === 'pump' ? 0.26 : 0.3, sd * (st.bass === 'pump' ? 1.2 : 1.8)); o.connect(f); f.connect(g); g.connect(master); o.start(at); o.stop(at + sd * 2 + 0.05);
+    }
+  }
+  if (e.lead != null) {
+    const f0 = mtof(e.lead);
+    switch (st.lead) {
+      case 'xylo': voice('triangle', f0 * 2, at, 0.28, 0.1); voice('sine', f0 * 4, at, 0.12, 0.04); break;
+      case 'pluck': voice('triangle', f0, at, 0.45, 0.09, fx); voice('sine', f0 * 2, at, 0.2, 0.03, fx); break;
+      case 'accordion': voice('sawtooth', f0 * 1.003, at, sd * 2.4, 0.04); voice('sawtooth', f0 * 0.997, at, sd * 2.4, 0.04); voice('square', f0 * 2, at, sd * 2.4, 0.02); break;
+      case 'bell': { const o = ac.createOscillator(), m = ac.createOscillator(), mg = ac.createGain(), g = ac.createGain(); o.frequency.value = f0 * 2; m.frequency.value = f0 * 7; mg.gain.setValueAtTime(f0 * 3, at); mg.gain.exponentialRampToValueAtTime(1, at + 0.6);
+        m.connect(mg); mg.connect(o.frequency); env(g, at, 0.003, 0.09, 0.9); o.connect(g); g.connect(fx); o.start(at); m.start(at); o.stop(at + 1); m.stop(at + 1); break; }
+      case 'stab': voice('sawtooth', f0, at, sd * 1.4, 0.06); voice('sawtooth', f0 * 1.498, at, sd * 1.4, 0.04); break;
+      case 'supersaw': [-12, 0, 12].forEach(c => voice('sawtooth', f0 * Math.pow(2, c / 1200), at, sd * 2.6, 0.04)); break;
+      case 'pulse': voice('square', f0, at, sd * 1.15, 0.07); break;
+      case 'piano': voice('triangle', f0, at, 0.4, 0.12); voice('sine', f0 * 2, at, 0.2, 0.05); break;
+      case 'pad': voice('sine', f0, at, sd * 8, 0.06, fx); voice('sine', f0 * 1.004, at, sd * 8, 0.05, fx); break;
+      default: voice('square', f0, at, sd * 2.2, 0.07);
+    }
+  }
 }
 const SFX = {
   tick: () => { if (ac && !muted) osc('sine', 1320, ac.currentTime, 0.05, 0.08); },
@@ -353,15 +419,16 @@ function finish(cleared) {
   if (ac) { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setTargetAtTime(0, ac.currentTime, 0.12); }
   const acc = accuracy(), stars = cleared ? (acc >= 0.9 ? 3 : acc >= 0.75 ? 2 : 1) : 0;
   const bonus = cleared ? stars * 1000 : 0; score += bonus;
-  if (cleared) { SFX.win(); progress = Math.max(progress, trackIdx + 1); try { localStorage.setItem('anmachaBeatProgress', progress); } catch (e) {} }
+  const stepNow = rankOf(trackIdx);
+  if (cleared) { SFX.win(); if (mode === 'campaign') { progress = Math.max(progress, stepNow + 1); try { localStorage.setItem('anmachaBeatProgress', progress); } catch (e) {} } }
   else SFX.fail();
   const prevBest = bests[trackIdx] || 0, nb = Math.floor(score) > prevBest;
   if (cleared && nb) { bests[trackIdx] = Math.floor(score); try { localStorage.setItem('anmachaBeatBest', JSON.stringify(bests)); } catch (e) {} }
   $('rTitle').textContent = cleared ? (stars === 3 ? 'PERFEKT! 🏆' : 'GESCHAFFT!') : 'DIE WELLE IST WEG …';
   $('stars').textContent = cleared ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : '✕';
   $('rScore').textContent = Math.floor(score); $('rAcc').textContent = Math.round(acc * 100) + ' %'; $('rCombo').textContent = maxCombo; $('rPerf').textContent = perfect;
-  const last = trackIdx >= TRACKS - 1;
-  $('rText').textContent = cleared ? `Song ${trackIdx + 1}${nb ? ' · 🏆 Neuer Bestwert!' : ''}${bonus ? ' · +' + bonus + ' Sternbonus' : ''}${mode === 'campaign' && last ? ' · KAMPAGNE KOMPLETT!' : ''}` : 'Versuch es nochmal – achte auf den Takt!';
+  const last = mode === 'campaign' && stepNow >= TRACKS - 1, stn = STATIONS[trackIdx];
+  $('rText').textContent = cleared ? `${stn.n} · ${stn.g}${nb ? ' · 🏆 Neuer Bestwert!' : ''}${bonus ? ' · +' + bonus + ' Sternbonus' : ''}${last ? ' · KAMPAGNE KOMPLETT!' : ''}` : 'Versuch es nochmal – achte auf den Takt!';
   $('rNext').textContent = cleared ? (last ? 'FERTIG' : 'NÄCHSTER SONG') : 'NOCHMAL';
   $('rNext').dataset.act = cleared ? (last ? 'menu' : 'next') : 'again';
   $('resOv').classList.remove('hidden');
@@ -381,7 +448,7 @@ function toMenu() {
   state = 'menu'; ['pauseOv', 'resOv'].forEach(i => $(i).classList.add('hidden')); $('menu').classList.remove('hidden'); document.body.classList.add('menu');
   applyTheme(trackIdx); drawPreview(); setMode(mode);
 }
-function nextTrackForCampaign() { return Math.min(progress, TRACKS - 1); }
+function nextTrackForCampaign() { return ORDER[progress >= TRACKS ? 0 : progress]; }
 
 /* ================= Treffer ================= */
 const WIN_PERFECT = 0.055, WIN_GOOD = 0.115, WIN_MISS = 0.13;
@@ -455,7 +522,7 @@ $('rAgain').addEventListener('click', () => { audioInit(); startSong(trackIdx); 
 $('rMenu').addEventListener('click', toMenu);
 $('rNext').addEventListener('click', () => {
   audioInit(); const a = $('rNext').dataset.act;
-  if (a === 'next') startSong(trackIdx + 1); else if (a === 'again') startSong(trackIdx); else toMenu();
+  if (a === 'next') startSong(mode === 'campaign' ? ORDER[Math.min(TRACKS - 1, rankOf(trackIdx) + 1)] : (trackIdx + 1) % TRACKS); else if (a === 'again') startSong(trackIdx); else toMenu();
 });
 const setOff = v => { userOff = Math.max(-300, Math.min(300, v)); $('offV').textContent = (userOff > 0 ? '+' : '') + userOff + ' ms'; try { localStorage.setItem('anmachaBeatOffset', userOff); } catch (e) {} };
 $('offM').addEventListener('click', () => setOff(userOff - 20)); $('offP').addEventListener('click', () => setOff(userOff + 20));
@@ -583,7 +650,7 @@ function logoCanvas(img, label, color) {
 function makeTrack(i, img) {
   const col = PALETTE[i % 8], col2 = PALETTE[(i + 3) % 8], info = trackInfo(i);
   let c = logoCanvas(img, String(i + 1), col); const ok = !!(img && c); if (!c) c = logoCanvas(null, String(i + 1), col);
-  return { idx: i, color: col, color2: col2, info, logo: c, hasLogo: ok, name: `Song ${i + 1} · ${info.style.name}` };
+  return { idx: i, color: col, color2: col2, info, logo: c, hasLogo: ok, name: info.st.n, genre: info.st.g };
 }
 let loadedCount = 0;
 function syncTracks() {
@@ -608,7 +675,7 @@ function applyTheme(i) {
   const fr = new THREE.Mesh(new THREE.PlaneGeometry(17.2, 17.2), new THREE.MeshBasicMaterial({ color: col, fog: false })); fr.position.z = -0.05;
   const gl = new THREE.Mesh(new THREE.PlaneGeometry(34, 34), new THREE.MeshBasicMaterial({ map: haloTex, color: col, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); gl.position.z = -0.1;
   logoPanel.add(gl, fr, pl); logoPanel.position.set(0, 19, -100); scene.add(logoPanel);
-  $('tname').textContent = t.name;
+  $('tname').textContent = `${t.name} · ${t.genre}`;
 }
 
 /* ----- Kamera ----- */
@@ -627,12 +694,13 @@ function drawPreview() {
   g.fillStyle = grd; g.fillRect(0, 0, 512, 280);
   g.strokeStyle = col; g.lineWidth = 5; g.shadowColor = col; g.shadowBlur = 14; g.strokeRect(6, 6, 500, 268); g.shadowBlur = 0;
   g.fillStyle = '#eef5f1'; g.fillRect(20, 20, 240, 240); if (t.logo) g.drawImage(t.logo, 20, 20, 240, 240); g.strokeStyle = col2; g.lineWidth = 4; g.strokeRect(20, 20, 240, 240);
-  g.textAlign = 'left'; g.fillStyle = '#fff'; g.font = 'bold 30px sans-serif'; g.fillText(`Song ${t.idx + 1}`, 280, 70);
-  g.fillStyle = col2; g.font = 'bold 26px sans-serif'; g.fillText(t.info.style.name, 280, 108);
+  g.textAlign = 'left'; g.fillStyle = '#fff'; let fs = 30; g.font = `bold ${fs}px sans-serif`; while (g.measureText(t.name).width > 215 && fs > 14) { fs--; g.font = `bold ${fs}px sans-serif`; }
+  g.fillText(t.name, 280, 70);
+  g.fillStyle = col2; g.font = 'bold 26px sans-serif'; g.fillText(t.genre, 280, 108);
   g.fillStyle = '#b0c2d8'; g.font = '24px sans-serif'; g.fillText(`${t.info.bpm} BPM`, 280, 148);
   g.fillStyle = '#ffb020'; g.font = '28px sans-serif'; g.fillText('★'.repeat(t.info.stars) + '☆'.repeat(5 - t.info.stars), 280, 190);
   g.fillStyle = '#9fb4c8'; g.font = '20px sans-serif'; g.fillText(bests[t.idx] ? `Best: ${bests[t.idx]}` : 'Noch kein Bestwert', 280, 232);
-  $('tTitle').textContent = t.name; $('tSub').textContent = `${t.info.bpm} BPM · ` + (t.hasLogo ? 'Eigenes Logo' : `Platzhalter · logos/${String(t.idx + 1).padStart(2, '0')}`);
+  $('tTitle').textContent = `${t.idx + 1}. ${t.name}`; $('tSub').textContent = `${t.genre} · ${t.info.bpm} BPM` + (t.hasLogo ? '' : ` · Platzhalter (logos/${String(t.idx + 1).padStart(2, '0')})`);
   const dots = $('dots'); if (dots.children.length !== TRACKS) { dots.textContent = ''; for (let i = 0; i < TRACKS; i++) dots.appendChild(document.createElement('i')); }
   [...dots.children].forEach((d, i) => d.classList.toggle('on', i === trackIdx));
 }
@@ -643,8 +711,8 @@ function setMode(m) {
   $('campBox').classList.toggle('hidden', m !== 'campaign'); $('pickBox').classList.toggle('hidden', m !== 'free');
   const nx = nextTrackForCampaign();
   $('modeInfo').innerHTML = m === 'campaign'
-    ? `Song 1 bis ${TRACKS}: Triff die Noten im Takt und halte die Welle am Leben. Jeder Song ist schneller und dichter – ${progress >= TRACKS ? 'du hast alle geschafft!' : progress > 0 ? `weiter bei <b>Song ${nx + 1}</b>.` : 'los geht’s bei <b>Song 1</b>.'}`
-    : 'Such dir einen beliebigen Song aus – jeder hat sein eigenes Logo, Tempo und Schwierigkeit.';
+    ? `13 Sender, 13 Genres: Triff die Noten im Takt und halte die Welle am Leben. Es geht von entspannt bis richtig schwer – ${progress >= TRACKS ? 'du hast alle geschafft! Starte neu mit PLAY.' : progress > 0 ? `weiter bei <b>${STATIONS[nx].n}</b> (${STATIONS[nx].g}).` : `los geht’s mit <b>${STATIONS[nx].n}</b> (${STATIONS[nx].g}).`}`
+    : 'Such dir einen beliebigen Sender aus – jeder hat sein eigenes Genre, Tempo und Logo.';
   $('bPlay').textContent = m === 'campaign' ? (progress > 0 && progress < TRACKS ? 'WEITER' : 'PLAY') : 'PLAY';
   $('bReset').classList.toggle('hidden', !(m === 'campaign' && progress > 0));
   const path = $('path'); path.textContent = '';

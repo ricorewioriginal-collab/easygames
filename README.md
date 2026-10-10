@@ -109,6 +109,7 @@ die Noten ergeben sich aus der Musik (Bass-Drum, Snare, Melodie).
 
 - **Steuerung:** `D` `F` `J` `K` oder die Pfeiltasten (`←` `↓` `↑` `→`), `P` Pause, `R` Neustart, `M` Ton. Am Handy: 4 große Tasten unten.
 - **Wertung:** Perfekt / Gut / Verpasst, Combo-Multiplikator bis x4, „Welle“ (Lebensanzeige) – wird sie leer, ist der Song verloren. Am Ende gibt es 1–3 Sterne nach Genauigkeit.
-- **Kampagne:** Song 1 bis 13, jeder Song schneller und dichter (92 → 170 BPM, 1,3 → 5,9 Noten pro Sekunde); Fortschritt wird gespeichert. **Freies Spiel:** beliebigen Song wählen.
+- **Genre pro Sender:** jeder Sender hat einen eigenen Song im passenden Stil (RapRadio 24 Rap, SchlagerPop 24 Schlager, ChristmasRadio 24 Weihnachten, Special-Radio Entspannung, RadioFloh! Kindermusik, Zocker-FM Chiptune usw.). Namen, Genres und Tempo stehen im Array `STATIONS` in `anmacha-beat-surfer/index.html`.
+- **Kampagne:** 13 Songs von leicht nach schwer (Entspannung → … → Club/EDM, 74 → 148 BPM); Fortschritt wird gespeichert. **Freies Spiel:** beliebigen Song wählen.
 - **Logos:** Song *n* nutzt `anmacha-beat-surfer/logos/NN.png|jpg|jpeg` (`01` … `13`); es erscheint als große Tafel hinter der Bahn. Das Titel-Logo (`logo.png`) im Spielordner (oder im Hauptordner) ersetzt den Text-Titel im Menü.
 - **Audio-Versatz:** im Pause-Menü einstellbar (z. B. für Bluetooth-Kopfhörer).
