@@ -80,7 +80,7 @@ syncSet();
 
 // ---------------------------------------------------------------- Schleife
 function resize() { view.resize(innerWidth, innerHeight); if (playing) applyPad(); } addEventListener('resize', resize); resize();
-let last = performance.now(); (function loop(n) { requestAnimationFrame(loop); const dt = Math.min(0.05, (n - last) / 1000); last = n; session.update(); view.tick(dt); })(last);
+let last = performance.now(); (function loop(n) { requestAnimationFrame(loop); const dt = Math.min(0.05, (n - last) / 1000) * (window.__ffwd || 1); last = n; session.update(); view.tick(dt); })(last);
 document.addEventListener('pointerdown', () => { Audio_.unlock(); if (!playing) Music.play('menu'); }, { once: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) Music.setOn(false); else Music.setOn(Save.settings.music); });
 window.__wobbel = { view, get session() { return session; }, LEVELS, Save, startLevel, toMenu };

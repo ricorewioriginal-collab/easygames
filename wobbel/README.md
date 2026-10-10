@@ -1,6 +1,6 @@
 # Wobbel – Das Schiebe-Puzzle
 
-Ein modernes 3D-Browser-Puzzlespiel im Sokoban-Prinzip von **RicoReWi**: Wobbel, ein kleiner rosa Blob, schiebt Kisten auf Zielfelder – durch fünf bunte Welten mit **55 handentworfenen Leveln**, die alle automatisch auf Lösbarkeit geprüft sind.
+Ein modernes 3D-Browser-Puzzlespiel im Sokoban-Prinzip von **RicoReWi**: Wobbel, ein kleiner rosa Blob, schiebt Kisten auf Zielfelder – durch fünf bunte Welten. Alle Level sind handentworfen und werden automatisch auf Lösbarkeit geprüft – **nur vom Löser bestätigte Level kommen ins Spiel** (aktuell 30, weitere folgen laufend).
 
 ## Starten
 
@@ -75,8 +75,8 @@ wobbel/
 ```bash
 cd wobbel
 node tests/engine-tests.js                                   # Regeln (Schieben, Wasser, Eis, Farben, Schlüssel …)
-node --max-old-space-size=4096 tests/check-levels.js         # alle 55 Level: Aufbau, Lösbarkeit, Züge/Schübe/Zustände
-node --max-old-space-size=4096 tests/build-par.js            # Par-Werte neu berechnen
+node --max-old-space-size=4096 tests/check-levels.js         # alle Level: Aufbau, Lösbarkeit, Züge/Schübe/Zustände
+node --max-old-space-size=4096 tests/build-par.js            # Level verifizieren, Par-Werte + Freigabe neu berechnen (js/game/levels/par.js)
 ```
 
 `check-levels.js` löst jedes Level per Breitensuche über sämtliche Spielzüge, **spielt die gefundene Lösung mit der echten Spiellogik nach** und meldet jedes unlösbare oder zu große Level.
