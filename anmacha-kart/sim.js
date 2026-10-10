@@ -11,10 +11,11 @@ const Sim = (() => {
 
   function create(opt) {                                   // opt: {track, laps, racers:[{name,logo,char,kart,human,skill,assist}], items:bool}
     const tr = opt.track, N = tr.N, S = { tr, laps: opt.laps || 3, items: opt.items !== false, t: 0, state: 'grid', count: 3.2, karts: [], boxes: [], hazards: [], proj: [], pads: [], events: [], finishedHumans: 0, humans: 0 };
+    const slot = opt.racers.map((_, k) => k); if (opt.shuffle) for (let a = slot.length - 1; a > 0; a--) { const b = Math.floor(Math.random() * (a + 1)), t = slot[a]; slot[a] = slot[b]; slot[b] = t; }
     opt.racers.forEach((r, k) => {
-      const row = k >> 1, side = k % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5, tp); const kd = kartDef(r.kart || 0);
+      const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5, tp); const kd = kartDef(r.kart || 0);
       const kt = { k, name: r.name, logo: r.logo, char: r.char, kart: r.kart || 0, assist: r.assist || 0, human: !!r.human, skill: r.skill == null ? 1 : r.skill, color: r.color, mv: kd.mv, ma: kd.ma, mt: kd.mt, mr: kd.mr, md: kd.md, mw: kd.mw,
-        x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: k + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
+        x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
       if (kt.human) S.humans++; S.karts.push(kt);
     });
     if (S.items) for (let s = 0; s < 6; s++) for (let o = -1; o <= 1; o++) { const f = N * (s + 0.5) / 6; tr.at(f, o * 5.5, tp); S.boxes.push({ x: tp.x, z: tp.z, cd: 0, f }); }
@@ -71,13 +72,13 @@ const Sim = (() => {
     k.pulse = Math.max(0, k.pulse - dt); k.hitT = Math.max(0, k.hitT - dt); k.blindT = Math.max(0, k.blindT - dt); k.slowT = Math.max(0, k.slowT - dt);
     if (k.itemT > 0) k.itemT -= dt;
     k.inv = Math.max(0, k.inv - dt); k.shieldT = Math.max(0, k.shieldT - dt); k.boostT = Math.max(0, k.boostT - dt);
-    if (S.state === 'grid') inp = { s: 0, b: 0, d: false, i: false, gas: 0 };
+    if (S.state === 'grid') inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 };
     if (k.spinT > 0) { k.spinT -= dt; inp = { s: 0, b: 0, d: false, i: false, gas: 0 }; k.th += dt * 11; }
     const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (boost ? 1.38 : 1) * (k.rough ? k.mr : 1);
     const fx = Math.sin(k.th), fz = Math.cos(k.th), rx = -Math.cos(k.th), rz = Math.sin(k.th);
     let vf = k.vx * fx + k.vz * fz, vl = k.vx * rx + k.vz * rz;
-    const gas = k.human ? 1 : (inp.gas == null ? 1 : inp.gas);
-    if (inp.b > 0.1) vf -= (vf > 0 ? BRAKE : 14) * dt * inp.b; else if (gas > 0.05) { if (vf < cap) vf += ACC * k.ma * (boost ? 2.4 : 1) * gas * Math.max(0.12, 1 - Math.max(0, vf) / cap) * dt * (vf < 0 ? 3 : 1); } else vf -= 6 * dt;
+    const gas = k.human ? (inp.g ? 1 : 0) : (inp.gas == null ? 1 : inp.gas);
+    if (inp.b > 0.1) vf -= (vf > 0 ? BRAKE : 14) * dt * inp.b; else if (gas > 0.05) { if (vf < cap) vf += ACC * k.ma * (boost ? 2.4 : 1) * gas * Math.max(0.12, 1 - Math.max(0, vf) / cap) * dt * (vf < 0 ? 3 : 1); } else vf = vf > 0 ? Math.max(0, vf - 6 * dt) : Math.min(0, vf + 6 * dt);
     if (vf > cap) vf -= (boost ? 22 : 34) * dt; vf = clamp(vf, -9, 60);
     const steer = clamp(inp.s, -1, 1), sp = Math.abs(vf) / VMAX;
     if (inp.d && !k.drift && Math.abs(steer) > 0.3 && vf > VMAX * 0.5 && !k.rough) { k.drift = steer > 0 ? -1 : 1; k.driftT = 0; }
@@ -117,7 +118,7 @@ const Sim = (() => {
     if (S.state === 'grid') { S.count -= dt; if (S.count <= 0) { S.state = 'race'; S.t = 0; S.karts.forEach(k => { k.lapStart = 0; }); emit(S, { t: 'go' }); } }
     const order = S.karts.slice().sort((a, b) => (a.finished && b.finished) ? a.finT - b.finT : a.finished ? -1 : b.finished ? 1 : b.rp - a.rp); order.forEach((k, i) => k.rank = i + 1); S.order = order;
     S.karts.forEach((k, i) => {
-      let inp = k.auto ? botInput(S, k) : (inputs && inputs[i]) || { s: 0, b: 0, d: false, i: false };
+      let inp = k.auto ? botInput(S, k) : (inputs && inputs[i]) || { s: 0, g: 0, b: 0, d: false, i: false };
       if (!k.auto && k.assist > 0 && !k.drift && S.state === 'race' && k.spinT <= 0 && !k.finished) { const bs = botInput(S, k).s; inp = Object.assign({}, inp, { s: clamp((inp.s || 0) + k.assist * bs * (1 - Math.min(1, Math.abs(inp.s || 0) * 1.3)), -1, 1) }); }
       if (k.auto && S.state === 'race' && !k.finished) rubber(S, k, inp); stepKart(S, k, inp, dt);
     });

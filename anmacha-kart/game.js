@@ -27,9 +27,9 @@ const TILT = {
 const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
 // Analoge Touch-Steuerung: links Daumen ziehen = lenken (Ring folgt dem Finger), rechts Drift / Item / Bremse
 function buildTouch(root, st) {
-  root.innerHTML = '<div class="steer"><span class="hint">◀ ZIEHEN ZUM LENKEN ▶</span><div class="ring"></div><div class="knob"></div></div><div class="tbtn tb-b" data-k="b">BREMSE</div><div class="tbtn tb-i" data-k="i">ITEM</div><div class="tbtn tb-d" data-k="d">DRIFT</div>';
+  root.innerHTML = '<div class="steer"><span class="hint">◀ ZIEHEN ZUM LENKEN ▶</span><div class="ring"></div><div class="knob"></div></div><div class="tbtn tb-g" data-k="g">GAS</div><div class="tbtn tb-b" data-k="b">BREMSE</div><div class="tbtn tb-i" data-k="i">ITEM</div><div class="tbtn tb-d" data-k="d">DRIFT</div>';
   const ring = root.querySelector('.ring'), knob = root.querySelector('.knob'), hint = root.querySelector('.hint'), btns = new Map(); let sid = null, ox = 0, oy = 0;
-  const R = () => Math.max(50, Math.min(100, Math.min(innerWidth, innerHeight) * 0.16)), upd = () => { st.b = st.d = st.i = 0; btns.forEach(k => { st[k] = 1; }); root.querySelectorAll('.tbtn').forEach(el => el.classList.toggle('on', !!st[el.dataset.k])); };
+  const R = () => Math.max(50, Math.min(100, Math.min(innerWidth, innerHeight) * 0.16)), upd = () => { st.g = st.b = st.d = st.i = 0; btns.forEach(k => { st[k] = 1; }); root.querySelectorAll('.tbtn').forEach(el => el.classList.toggle('on', !!st[el.dataset.k])); };
   root.addEventListener('pointerdown', e => {
     const bt = e.target.closest('[data-k]'); try { root.setPointerCapture(e.pointerId); } catch (x) {}
     if (bt) { btns.set(e.pointerId, bt.dataset.k); upd(); }
@@ -40,15 +40,15 @@ function buildTouch(root, st) {
   const end = e => { if (e.pointerId === sid) { sid = null; st.s = 0; ring.style.display = knob.style.display = 'none'; hint.style.display = ''; } if (btns.delete(e.pointerId)) upd(); };
   ['pointerup', 'pointercancel'].forEach(ev => root.addEventListener(ev, end)); root.addEventListener('contextmenu', e => e.preventDefault());
 }
-// Gamepad (Standard-Belegung): Stick/Steuerkreuz lenken, A/X/RB/RT driften, Y/LB Item, B/LT bremsen
+// Gamepad (Standard-Belegung): Stick/Steuerkreuz lenken, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen
 const Pads = {
   list() { try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []).filter(Boolean); } catch (e) { return []; } },
   read(pad) {
-    if (!pad) return { s: 0, b: 0, d: 0, i: 0 }; const a = pad.axes || [], bt = pad.buttons || [], pr = i => bt[i] && (bt[i].pressed || bt[i].value > 0.5); let s = a[0] || 0;
+    if (!pad) return { s: 0, g: 0, b: 0, d: 0, i: 0 }; const a = pad.axes || [], bt = pad.buttons || [], pr = i => bt[i] && (bt[i].pressed || bt[i].value > 0.5); let s = a[0] || 0;
     s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * (Math.abs(s) - 0.14) / 0.86; if (pr(14)) s = -1; else if (pr(15)) s = 1;
-    return { s, b: pr(6) || pr(1) || pr(13) ? 1 : 0, d: pr(7) || pr(5) || pr(0) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
+    return { s, g: pr(0) || pr(7) || pr(12) ? 1 : 0, b: pr(6) || pr(1) || pr(13) ? 1 : 0, d: pr(5) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
   },
-  any() { const m = { s: 0, b: 0, d: 0, i: 0 }; Pads.list().forEach(p => { const r = Pads.read(p); if (Math.abs(r.s) > Math.abs(m.s)) m.s = r.s; m.b |= r.b; m.d |= r.d; m.i |= r.i; }); return m; }
+  any() { const m = { s: 0, g: 0, b: 0, d: 0, i: 0 }; Pads.list().forEach(p => { const r = Pads.read(p); if (Math.abs(r.s) > Math.abs(m.s)) m.s = r.s; m.g |= r.g; m.b |= r.b; m.d |= r.d; m.i |= r.i; }); return m; }
 };
 
 if (JOIN) { document.body.classList.add('ctrl'); loadScript('controller.js').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
@@ -62,7 +62,7 @@ function initHost() {
   const persist = () => { try { localStorage.setItem('akSave', JSON.stringify(save)); } catch (e) {} };
   const TR = Track.DEFS; let trCache = {}; const getTrack = i => trCache[i] || (trCache[i] = Track.build(TR[i]));
   let logos = [], ready = false, R = null, lobbyOpen = false, peer = null, room = '', players = [], loopOn = false, lastT = 0, paused = false, curTrackIdx = -1, GP = null, nVp = 1;
-  const kb = { l: 0, r: 0, b: 0, d: 0, i: 0 }, tc = { s: 0, b: 0, d: 0, i: 0 };
+  const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0 };
   const assistLvl = () => save.assist == null ? (coarse ? 1 : 0) : save.assist, ASSIST = [0, 0.4, 0.75];
 
   // ------------------------------------------------------------------ Logos / Marke
@@ -111,7 +111,7 @@ function initHost() {
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); } });
   buildTouch($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('tiltBtn').classList.toggle('on', TILT.on); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; $('tiltInv').classList.toggle('on', TILT.inv); }; }
-  $('bSolo').onclick = () => { players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
+  $('bSolo').onclick = () => { players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
   $('bMulti').onclick = openLobby;
 
   // ------------------------------------------------------------------ Koppeln (PeerJS)
@@ -135,7 +135,7 @@ function initHost() {
   const pairUrl = () => location.href.split('#')[0].split('?')[0] + '?join=' + room + (PH ? '&ph=' + encodeURIComponent(PH) : '');
   function showPair() { $('code').textContent = room; const url = pairUrl(); $('pairUrl').textContent = url; try { const q = qrcode(0, 'M'); q.addData(url); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { $('qr').innerHTML = ''; } }
   const send = (c, m) => { try { if (c && c.open) c.send(m); } catch (e) {} };
-  function addKbPlayer() { if (!players.some(p => p.kbp)) players.push({ name: (save.name || '').trim() || 'Tastatur', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
+  function addKbPlayer() { if (!players.some(p => p.kbp)) players.push({ name: (save.name || '').trim() || 'Tastatur', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
   function onRemote(c, m) {
     if (!m || typeof m !== 'object') return;
     if (m.t === 'join') {
@@ -143,15 +143,15 @@ function initHost() {
       if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; return updateLobby(); }
       if (R && R.S.state !== 'done') return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
-      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, conn: c, input: { s: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
-    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; } }
+      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
+    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; } }
   }
   function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else players.splice(i, 1); updateLobby(); }
   function updateLobby() {
     $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji}${KARTS[(p.kart || 0) % KARTS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? '📱 gekoppelt' : p.pad != null ? '🎮 Gamepad' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
     $('bGo').disabled = !players.length; $('kbToggle').classList.toggle('on', players.some(p => p.kbp));
   }
-  $('padAdd').onclick = () => { const used = new Set(players.filter(p => p.pad != null).map(p => p.pad)), pad = Pads.list().find(p => !used.has(p.index)); if (!pad) { $('padAdd').textContent = '🎮 Kein Gamepad – Taste am Gamepad drücken'; setTimeout(() => { $('padAdd').textContent = '🎮 Gamepad-Spieler hinzufügen'; }, 2500); return; } if (players.length < 4) players.push({ name: 'Gamepad ' + (used.size + 1), logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, b: 0, d: 0, i: 0 }, pad: pad.index }); updateLobby(); };
+  $('padAdd').onclick = () => { const used = new Set(players.filter(p => p.pad != null).map(p => p.pad)), pad = Pads.list().find(p => !used.has(p.index)); if (!pad) { $('padAdd').textContent = '🎮 Kein Gamepad – Taste am Gamepad drücken'; setTimeout(() => { $('padAdd').textContent = '🎮 Gamepad-Spieler hinzufügen'; }, 2500); return; } if (players.length < 4) players.push({ name: 'Gamepad ' + (used.size + 1), logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, pad: pad.index }); updateLobby(); };
   addEventListener('gamepadconnected', () => { renderMenu(); });
   $('kbToggle').onclick = () => { if (players.some(p => p.kbp)) players = players.filter(p => !p.kbp); else if (players.length < 4) addKbPlayer(); save.kb = players.some(p => p.kbp); persist(); updateLobby(); };
   $('bLobBack').onclick = () => { $('lobby').hidden = true; $('menu').hidden = false; lobbyOpen = false; };
@@ -169,7 +169,7 @@ function initHost() {
   function startRace() {
     const tIdx = GP.order[GP.race], tr = getTrack(tIdx); if (curTrackIdx !== tIdx) { View.setTrack(tr); curTrackIdx = tIdx; }
     const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
-    const S = Sim.create({ track: tr, laps: save.laps, racers, items: !GP.tt }), humans = players.slice();
+    const S = Sim.create({ track: tr, laps: save.laps, racers, items: !GP.tt, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; });
@@ -235,7 +235,7 @@ function initHost() {
       if (p.conn) return p.input;
       if (p.pad != null) return Pads.read(pads.find(x => x.index === p.pad));
       const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v;
-      return { s: clampN(s, -1, 1), b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
+      return { s: clampN(s, -1, 1), g: kb.g || tc.g || (p.local && pa.g) ? 1 : 0, b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
     });
   }
   function finishRace() {
@@ -273,7 +273,7 @@ function initHost() {
     View.renderRace(R.S, paused ? 0 : dt, tAll, nVp);
   }
   // Tastatur
-  const KEYS = { ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowDown: 'b', s: 'b', S: 'b', Shift: 'd', z: 'd', Z: 'd', ' ': 'i', Enter: 'i', x: 'i', X: 'i' };
+  const KEYS = { ArrowUp: 'g', w: 'g', W: 'g', ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowDown: 'b', s: 'b', S: 'b', Shift: 'd', z: 'd', Z: 'd', ' ': 'i', Enter: 'i', x: 'i', X: 'i' };
   addEventListener('keydown', e => { if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key]; if (k) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click(); });
   addEventListener('keyup', e => { const k = KEYS[e.key]; if (k) kb[k] = 0; });
   addEventListener('blur', () => { Object.keys(kb).forEach(k => kb[k] = 0); });
