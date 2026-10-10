@@ -657,5 +657,6 @@ window.__td = {
   setMoney: m => { money = m; }, cellScreen: (x, z) => { root.updateMatrixWorld(); camera.updateMatrixWorld(); const v = new THREE.Vector3(cx2w(x), 0, cz2w(z)).applyMatrix4(root.matrixWorld).project(camera); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; }, rot: () => rot, sim: s => { testClock = 0; for (let i = 0; i < s / STEP && state === 'play'; i++) update(STEP); if (state === 'play') hud(); }, live: () => { testClock = 1; }
 };
 </script>
+<script src="../cloud/anmacha-cloud.js" data-game="tower-defense" data-prefix="anmachaTD" defer></script>
 </body>
 </html>
