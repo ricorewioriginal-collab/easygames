@@ -10,7 +10,7 @@ const Data = (() => {
     fleisch: { name: 'Fleisch & Wurst', e: '🥩', lvl: 5, cost: 120000 }, drog: { name: 'Drogerie', e: '🧼', lvl: 6, cost: 150000 },
     tier: { name: 'Tierbedarf', e: '🐾', lvl: 7, cost: 160000 }, saison: { name: 'Saison & Wetter', e: '☂️', lvl: 8, cost: 200000 },
     presse: { name: 'Presse & Hefte', e: '📰', lvl: 2, cost: 30000 }, konserv: { name: 'Konserven & Gewürze', e: '🥫', lvl: 3, cost: 50000 }, bio: { name: 'Bio & Regional', e: '🌱', lvl: 6, cost: 140000 },
-    spiel: { name: 'Spielzeug & Hobby', e: '🧸', lvl: 7, cost: 180000 }, elektro: { name: 'Elektro & Technik', e: '🔌', lvl: 8, cost: 250000 }, garten: { name: 'Garten & Heimwerken', e: '🌻', lvl: 9, cost: 220000 }
+    spiel: { name: 'Spielzeug & Hobby', e: '🧸', lvl: 7, cost: 180000 }, elektro: { name: 'Elektro & Technik', e: '🔌', lvl: 8, cost: 250000 }, garten: { name: 'Garten & Heimwerken', e: '🌻', lvl: 9, cost: 220000 }, alk: { name: 'Bier, Wein & Spirituosen (ab 16/18)', e: '🍷', lvl: 5, cost: 180000 }
   };
   // [id, Name, Emoji, Gruppe, Lager, Einkauf, Marktpreis, Karton, Größe, Haltbarkeit(Tage,0=ewig), Beliebtheit]
   const RAW = [
@@ -51,9 +51,11 @@ const Data = (() => {
     ['teddy', 'Knuddelbär Teddy', '🧸', 'spiel', 'dry', 500, 999, 8, 2, 0, .6], ['bausteine', 'Klickstein Bausteine', '🧱', 'spiel', 'dry', 900, 1799, 6, 2, 0, .5], ['ball', 'Hüpfer Ball', '⚽', 'spiel', 'dry', 400, 799, 8, 2, 0, .6], ['brettspiel', 'Würfelspaß Brettspiel', '🎲', 'spiel', 'dry', 1000, 1999, 6, 2, 0, .4],
     ['stifte', 'Farbenfroh Buntstifte', '🖍️', 'spiel', 'dry', 250, 499, 16, 1, 0, .8], ['blasen', 'Blubberspaß Seifenblasen', '🫧', 'spiel', 'dry', 100, 199, 20, 1, 0, .8],
     ['erde', 'Krümelbeet Blumenerde', '🌱', 'garten', 'dry', 200, 399, 10, 3, 0, .6], ['samen', 'Sprießfix Samen', '🌻', 'garten', 'dry', 90, 199, 24, 1, 0, .7], ['hammer', 'Haudrauf Hammer', '🔨', 'garten', 'dry', 600, 1199, 6, 1, 0, .3], ['schrauben', 'Dreh & Halt Schrauben', '🔩', 'garten', 'dry', 250, 499, 16, 1, 0, .4],
-    ['eimer', 'Plätscher Gießeimer', '🪣', 'garten', 'dry', 350, 699, 8, 2, 0, .5], ['farbe', 'Buntwand Wandfarbe', '🎨', 'garten', 'dry', 800, 1499, 6, 2, 0, .3]
+    ['eimer', 'Plätscher Gießeimer', '🪣', 'garten', 'dry', 350, 699, 8, 2, 0, .5], ['farbe', 'Buntwand Wandfarbe', '🎨', 'garten', 'dry', 800, 1499, 6, 2, 0, .3],
+    ['bier', 'Hopfenglück Pils', '🍺', 'alk', 'dry', 70, 129, 24, 2, 0, 1.3, 16], ['radler', 'Zitronenglück Radler', '🍋', 'alk', 'dry', 60, 119, 24, 2, 0, 1.0, 16], ['wein', 'Sonnenhang Rotwein', '🍷', 'alk', 'dry', 350, 699, 6, 2, 0, .8, 16],
+    ['sekt', 'Perlenreif Sekt', '🍾', 'alk', 'dry', 480, 899, 6, 2, 0, .6, 18], ['likoer', 'Zuckerkirsche Likör', '🍸', 'alk', 'dry', 600, 1199, 6, 2, 0, .4, 18], ['korn', 'Klarer Fritz Korn', '🥃', 'alk', 'dry', 550, 1099, 6, 2, 0, .4, 18]
   ];
-  const PRODUCTS = {}; RAW.forEach(r => { PRODUCTS[r[0]] = { id: r[0], name: r[1], e: r[2], cat: r[3], st: r[4], cost: r[5], ref: r[6], box: r[7], size: r[8], life: r[9], pop: r[10] }; });
+  const PRODUCTS = {}; RAW.forEach(r => { PRODUCTS[r[0]] = { id: r[0], name: r[1], e: r[2], cat: r[3], st: r[4], cost: r[5], ref: r[6], box: r[7], size: r[8], life: r[9], pop: r[10], age: r[11] || 0 }; });
   // Einrichtung: Lager-Klassen, die ein Regal aufnimmt, Grundkapazität, Preis, ab Stufe
   const OBJ = {
     regal: { name: 'Regal', e: '🗄️', w: 2, h: 1, st: ['dry'], cap: 24, price: 12000, lvl: 1, col: '#7a5a3a' },
@@ -75,17 +77,18 @@ const Data = (() => {
     backtheke: { name: 'Backwaren-Theke', e: '🥨', w: 2, h: 1, st: ['prod'], cap: 22, price: 52000, lvl: 2, col: '#b8803a', power: 300, only: ['brot'] },
     presse: { name: 'Zeitschriftenständer', e: '📰', w: 1, h: 1, st: ['dry'], cap: 14, price: 8000, lvl: 2, col: '#4a5a8a', only: ['presse'] },
     pc: { name: 'Bestell-PC', e: '💻', w: 1, h: 1, st: [], cap: 0, price: 25000, lvl: 1, col: '#3a4a7a', pc: 1 },
+    container: { name: 'Altpapier-Container', e: '🗑️', w: 1, h: 1, st: [], cap: 0, price: 12000, lvl: 1, col: '#2f6a3a', bin: 1 },
     radio: { name: 'Marktradio', e: '📻', w: 1, h: 1, st: [], cap: 0, price: 15000, lvl: 1, col: '#3a3a4a', radio: 1 },
     ramp: { name: 'Rampe', e: '📦', w: 3, h: 1, st: [], cap: 0, price: 0, lvl: 1, col: '#8a6a30', fixed: 1 }
   };
   const TYPES = {
-    fam: { name: 'Familie', e: '👨‍👩‍👧', w: 24, n: [4, 7], q: [1, 3], tol: .12, pat: 95, spd: 1.7, likes: { obst: 1.5, milch: 1.5, grund: 1.4, haus: 1.3, getr: 1.1, spiel: 1.5, garten: 1.2, konserv: 1.2, bio: 1.1 }, music: 'pop', recipe: .45 },
-    stud: { name: 'Student', e: '🎒', w: 24, n: [2, 4], q: [1, 2], tol: .05, pat: 60, spd: 2.2, likes: { snack: 1.8, getr: 1.6, frost: 1.5, grund: 1.1, elektro: 1.5, presse: 1.2, spiel: 1.1 }, music: 'rock', recipe: .15 },
-    sen: { name: 'Senior', e: '👵', w: 20, n: [3, 5], q: [1, 2], tol: .1, pat: 140, spd: 1.2, likes: { brot: 1.8, milch: 1.5, obst: 1.4, fleisch: 1.2, presse: 1.7, garten: 1.4, konserv: 1.3, bio: 1.2 }, music: 'schlager', recipe: .3 },
-    job: { name: 'Berufstätige', e: '💼', w: 20, n: [1, 3], q: [1, 2], tol: .25, pat: 38, spd: 2.5, likes: { getr: 1.6, snack: 1.3, brot: 1.5, elektro: 1.3, presse: 1.4, bio: 1.3 }, music: 'chill', recipe: .1 },
-    spar: { name: 'Sparfuchs', e: '🏷️', w: 8, n: [5, 9], q: [1, 3], tol: 0, pat: 120, spd: 1.9, likes: {}, music: 'pop', recipe: .2, hunt: 1 },
-    infl: { name: 'Influencerin', e: '🤳', w: 1.2, n: [2, 3], q: [1, 1], tol: .3, pat: 70, spd: 2, likes: {}, music: 'pop', recipe: .1, minLvl: 6 },
-    krit: { name: 'Testerin', e: '🧐', w: 1.5, n: [3, 4], q: [1, 1], tol: .2, pat: 80, spd: 1.8, likes: {}, music: 'chill', recipe: .2, minLvl: 4 }
+    fam: { name: 'Familie', e: '👨‍👩‍👧', age: [28, 55], w: 24, n: [4, 7], q: [1, 3], tol: .12, pat: 95, spd: 1.7, likes: { obst: 1.5, milch: 1.5, grund: 1.4, haus: 1.3, getr: 1.1, spiel: 1.5, garten: 1.2, konserv: 1.2, bio: 1.1 }, music: 'pop', recipe: .45 },
+    stud: { name: 'Student', e: '🎒', age: [15, 30], w: 24, n: [2, 4], q: [1, 2], tol: .05, pat: 60, spd: 2.2, likes: { snack: 1.8, getr: 1.6, frost: 1.5, grund: 1.1, elektro: 1.5, presse: 1.2, spiel: 1.1, alk: 1.5 }, music: 'rock', recipe: .15 },
+    sen: { name: 'Senior', e: '👵', age: [60, 85], w: 20, n: [3, 5], q: [1, 2], tol: .1, pat: 140, spd: 1.2, likes: { brot: 1.8, milch: 1.5, obst: 1.4, fleisch: 1.2, presse: 1.7, garten: 1.4, konserv: 1.3, bio: 1.2 }, music: 'schlager', recipe: .3 },
+    job: { name: 'Berufstätige', e: '💼', age: [24, 60], w: 20, n: [1, 3], q: [1, 2], tol: .25, pat: 38, spd: 2.5, likes: { getr: 1.6, snack: 1.3, brot: 1.5, elektro: 1.3, presse: 1.4, bio: 1.3, alk: 1.2 }, music: 'chill', recipe: .1 },
+    spar: { name: 'Sparfuchs', e: '🏷️', age: [22, 70], w: 8, n: [5, 9], q: [1, 3], tol: 0, pat: 120, spd: 1.9, likes: {}, music: 'pop', recipe: .2, hunt: 1 },
+    infl: { name: 'Influencerin', e: '🤳', age: [18, 32], w: 1.2, n: [2, 3], q: [1, 1], tol: .3, pat: 70, spd: 2, likes: {}, music: 'pop', recipe: .1, minLvl: 6 },
+    krit: { name: 'Testerin', e: '🧐', age: [30, 50], w: 1.5, n: [3, 4], q: [1, 1], tol: .2, pat: 80, spd: 1.8, likes: {}, music: 'chill', recipe: .2, minLvl: 4 }
   };
   const GENRES = { pop: { name: 'Pop', e: '🎤', notes: [0, 4, 7, 9, 7, 4], bpm: 118 }, rock: { name: 'Rock', e: '🎸', notes: [0, 0, 7, 5, 0, 10], bpm: 136 }, schlager: { name: 'Schlager', e: '🪗', notes: [0, 4, 7, 12, 9, 7], bpm: 104 }, chill: { name: 'Chillout', e: '🌴', notes: [0, 3, 7, 10, 7, 3], bpm: 84 } };
   const RECIPES = [
@@ -110,7 +113,7 @@ const Data = (() => {
     { id: 'drohne', name: 'Express-Drohne', e: '🚁', price: 100000, lvl: 5, desc: 'Bestellungen kommen in 40 Sekunden (+25 % Gebühr).' }, { id: 'regalpl', name: 'Regal-Plus', e: '📚', price: 120000, lvl: 5, desc: '+25 % Fassungsvermögen aller Regale.' },
     { id: 'notstrom', name: 'Notstrom', e: '🔋', price: 110000, lvl: 6, desc: 'Stromausfälle verderben nichts mehr.' }, { id: 'auto', name: 'Nachbestell-Regeln', e: '🔁', price: 140000, lvl: 8, desc: 'Schaltet am Bestell-PC Regeln frei: Der PC bestellt Waren automatisch nach.' },
     { id: 'app', name: 'Bestell-App', e: '📱', price: 80000, lvl: 3, desc: 'Du bestellst von überall im Laden, ohne zum Bestell-PC zu gehen.' }, { id: 'tuer', name: 'Automatik-Schiebetür', e: '🚪', price: 250000, lvl: 5, desc: 'Die Tür öffnet von selbst. +3 % Kundschaft.' },
-    { id: 'kassensys', name: 'Kassensystem', e: '🧾', price: 180000, lvl: 4, desc: 'Berechnet das Wechselgeld automatisch – kein Kopfrechnen an der Kasse.' }, { id: 'park', name: 'Parkplatz', e: '🅿️', price: 500000, lvl: 7, desc: 'Parkplätze vor dem Laden. +6 % Kundschaft.' }
+    { id: 'idscan', name: 'Alterscheck-Scanner', e: '🪪', price: 120000, lvl: 5, desc: 'Prüft Ausweise automatisch: erkennt Fälschungen, Jugendschutz ohne Kopfrechnen.' }, { id: 'kassensys', name: 'Kassensystem', e: '🧾', price: 180000, lvl: 4, desc: 'Berechnet das Wechselgeld automatisch – kein Kopfrechnen an der Kasse.' }, { id: 'park', name: 'Parkplatz', e: '🅿️', price: 500000, lvl: 7, desc: 'Parkplätze vor dem Laden. +6 % Kundschaft.' }
   ];
   const EXPAND = [{ n: 'Kiosk', W: 18, H: 12, price: 0 }, { n: 'Laden', W: 22, H: 14, price: 150000, lvl: 3 }, { n: 'Markt', W: 26, H: 16, price: 400000, lvl: 6 }, { n: 'Supermarkt', W: 30, H: 18, price: 900000, lvl: 10 }, { n: 'Großmarkt', W: 36, H: 20, price: 2000000, lvl: 14 }, { n: 'Hypermarkt', W: 42, H: 22, price: 4500000, lvl: 18 }];
   const SIGNCOLS = [['#0f2b5a', 'Marine'], ['#7a1f1f', 'Rot'], ['#1f5a2f', 'Grün'], ['#5a2f8a', 'Violett'], ['#8a4a0f', 'Orange'], ['#222831', 'Schwarz']];
@@ -129,7 +132,7 @@ const Data = (() => {
     ['umsatz500', 'Guter Tag', '💶', 'Mache an einem Tag 500 € Umsatz.', 15000], ['umsatz2000', 'Rekordtag', '💰', 'Mache an einem Tag 2.000 € Umsatz.', 80000], ['team3', 'Kleines Team', '👥', 'Beschäftige 3 Mitarbeiter.', 15000],
     ['ruf4', 'Beliebter Laden', '😍', 'Erreiche 4 Sterne Ruf.', 30000], ['rezept10', 'Hobbykoch-Dealer', '🍝', 'Erfülle 10 Rezept-Einkäufe.', 25000], ['dieb5', 'Scharfe Augen', '🚔', 'Erwische 5 Ladendiebe.', 20000],
     ['anbau2', 'Platz da!', '🏗️', 'Baue den Laden zweimal aus.', 40000], ['radio', 'Auf Sendung', '📻', 'Kaufe das Radiostudio.', 10000], ['stamm25', 'Familienbetrieb', '❤️', 'Gewinne 25 Stammkunden.', 30000],
-    ['buzz', 'Gesprächsthema', '🔥', 'Erreiche einen Online-Hype von +20 %.', 40000], ['kunden1000', 'Tausendsassa', '🧑‍🤝‍🧑', 'Bediene insgesamt 1.000 Kunden.', 50000], ['reich', 'Kleiner Millionär', '💎', 'Habe 10.000 € auf dem Konto.', 50000]
+    ['buzz', 'Gesprächsthema', '🔥', 'Erreiche einen Online-Hype von +20 %.', 40000], ['kunden1000', 'Tausendsassa', '🧑‍🤝‍🧑', 'Bediene insgesamt 1.000 Kunden.', 50000], ['jugend5', 'Jugendschützer', '🪪', 'Lehne 5 Verkäufe an Minderjährige ab.', 20000], ['recycling', 'Recycling-Profi', '♻️', 'Entsorge 50 leere Kartons im Container.', 20000], ['reich', 'Kleiner Millionär', '💎', 'Habe 10.000 € auf dem Konto.', 50000]
   ];
   // Jahreszeiten (je 28 Tage) mit Feiertagswochen: w = Wetter-Gewichte, prod = Nachfrage-Faktor je Ware
   const SEASONS = [
