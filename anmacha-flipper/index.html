@@ -138,7 +138,6 @@
   #goalTxt{font-size:10.5px;letter-spacing:.12em;color:#9fb4c8;font-weight:700}
   #goalBar{height:6px;border-radius:4px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:3px}
   #goalBar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c),var(--ma))}
-  #saver{font-size:10.5px;letter-spacing:.1em;color:#00FFC8;font-weight:800;min-height:1em;margin-top:2px}
   #msg{white-space:pre-line}
   .score-big{font:900 clamp(40px,10vw,64px)/1 'Trebuchet MS',sans-serif;background:linear-gradient(90deg,#fff,#00E5FF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px var(--c))}
 </style>
@@ -148,7 +147,7 @@
 
 <div id="hud">
   <div id="hL" class="glass"><canvas id="sideLogo" width="256" height="256"></canvas><div class="lbl">SCORE</div><div id="score">0</div><div id="best">BEST 0</div><div id="tname"></div><div id="goalWrap" class="hidden"><div id="goalTxt"></div><div id="goalBar"><b id="goalFill"></b></div></div></div>
-  <div id="hC" class="glass"><div class="lbl">KUGELN</div><div id="balls"></div><div id="mult"></div><div id="saver"></div></div>
+  <div id="hC" class="glass"><div class="lbl">KUGELN</div><div id="balls"></div><div id="mult"></div></div>
   <div id="hR"><div id="btns">
     <button class="ib glass" id="bPause" aria-label="Pause">⏸</button>
     <button class="ib glass" id="bSound" aria-label="Ton">🔊</button>
@@ -283,10 +282,9 @@ const LAYOUTS = [
 const SLING_KICK = 430;
 const GATE = { x: 548, y0: 120, y1: 340 };
 LAYOUTS.forEach((l, i) => l.style = i);              // Spielfeld-Kunst je Layout
-// Schwierigkeit pro Tisch (i = 0..12): stärkere Schwerkraft, kürzere Flipper, weniger Kugelrettung, mehr Störsender, höheres Punkteziel
+// Schwierigkeit pro Tisch (i = 0..12): stärkere Schwerkraft, kürzere Flipper, mehr Störsender, höheres Punkteziel
 const difficulty = i => ({
   g: 1350 + 38 * i, fl: 104 - i,
-  saver: i < 3 ? 15 : i < 6 ? 10 : i < 9 ? 6 : i < 12 ? 3 : 0,
   jam: [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3][i],
   goal: 1500 + 700 * (i + 1), stars: 1 + Math.round(i / 3)
 });
@@ -499,7 +497,7 @@ function stepPhysics(dt) {
 /* ================= Spielzustand ================= */
 let state = 'menu';          // menu | ready | play | drain | paused | over
 let prevState = 'play';
-let mode = 'campaign', tableScore = 0, pendingLoad = null, loadedIdx = -1, saverT = 0, progress = 0;
+let mode = 'campaign', tableScore = 0, pendingLoad = null, loadedIdx = -1, progress = 0;
 let score = 0, best = 0, balls = BALLS, combo = 0, comboT = 0, zoneT = 0, waitT = 0, power = 0, charging = false, stuckT = 0, flipPlayed = [false, false];
 try { best = +localStorage.getItem('anmachaFlipperBest') || 0; progress = +localStorage.getItem('anmachaPinballProgress') || 0;
   mode = localStorage.getItem('anmachaPinballMode') === 'free' ? 'free' : 'campaign'; } catch (e) {}
@@ -523,7 +521,7 @@ function resetBall() {
 function newGame() {
   if (mode === 'campaign') tableIdx = 0;                       // Kampagne startet immer bei Tisch 1
   if (loadedIdx !== tableIdx) loadTable(tableIdx);
-  score = 0; tableScore = 0; balls = BALLS; combo = 0; comboT = 0; zoneT = 0; pendingLoad = null; saverT = 0;
+  score = 0; tableScore = 0; balls = BALLS; combo = 0; comboT = 0; zoneT = 0; pendingLoad = null;
   rolls.forEach(r => r.lit = false);
   flippers.forEach(f => { f.on = false; f.a = A_REST; f.w = 0; });
   setBallsUI(); resetBall();
@@ -546,10 +544,6 @@ function gameOver(win) {
   const where = mode === 'campaign' && !win ? `Erreicht: Tisch ${tableIdx + 1} von ${TABLE_COUNT} · ` : '';
   $('oText').innerHTML = `${where}Best: <b>${best}</b>${nb ? ' · 🏆 Neuer Bestwert!' : ''}`;
   $('overOv').classList.remove('hidden');
-}
-function saveBall() {                                           // Kugelrettung: ohne Verlust neu starten
-  message('KUGEL GERETTET!', '#00FFC8'); SFX.bonus(); saverT = 0; combo = 0; comboT = 0;
-  state = 'drain'; waitT = 0.8;
 }
 function gain(pts) {                                            // Punkte für Gesamtscore und Tisch-Ziel
   score += pts; tableScore += pts;
@@ -620,7 +614,6 @@ function simulate(dt) {
   if (state !== 'play' && state !== 'ready') return;
   if (comboT > 0 && (comboT -= dt) <= 0) combo = 0;
   if (zoneT > 0) zoneT -= dt;
-  if (saverT > 0 && state === 'play') saverT -= dt;
   const n = Math.max(1, Math.ceil(dt / DT));
   for (let i = 0; i < n; i++) stepPhysics(dt / n);
   handleEvents();
@@ -630,7 +623,7 @@ function simulate(dt) {
   const sp = Math.hypot(ball.vx, ball.vy), inLane = ball.x > LANE_L && ball.y > 930;
   if (state === 'play') {
     if (inLane && sp < 40) { state = 'ready'; power = 0; }
-    else if (ball.y > DRAIN_Y) { if (saverT > 0) saveBall(); else loseBall(); }
+    else if (ball.y > DRAIN_Y) loseBall();
     // Notfall: Kugel bleibt ewig liegen -> kleiner Stoß
     if (sp < 14 && !inLane) { stuckT += dt; if (stuckT > 3) { ball.vx += (Math.random() - 0.5) * 500; ball.vy -= 350; stuckT = 0; } } else stuckT = 0;
   }
@@ -642,7 +635,7 @@ function launch() {
   charging = false;
   const p = Math.max(power, 0.3);
   ball.vy = -(1750 + 650 * p) * launchScale; ball.vx = 0;
-  state = 'play'; power = 0; saverT = T.diff.saver; SFX.launch(); plungerKick = 1;
+  state = 'play'; power = 0; SFX.launch(); plungerKick = 1;
 }
 function startCharge() { if (state === 'ready') { charging = true; power = 0; } }
 function setFlip(i, on) {
@@ -1174,7 +1167,6 @@ function animate(dt) {
   if ($('tname').textContent !== tn) $('tname').textContent = tn;
   $('goalWrap').classList.toggle('hidden', !camp);
   if (camp) { const gt = `ZIEL ${Math.min(tableScore, T.diff.goal)} / ${T.diff.goal}`; if ($('goalTxt').textContent !== gt) $('goalTxt').textContent = gt; $('goalFill').style.width = Math.min(100, tableScore / T.diff.goal * 100) + '%'; }
-  const sv = saverT > 0 && state === 'play' ? `SAVER ${Math.ceil(saverT)}s` : ''; if ($('saver').textContent !== sv) $('saver').textContent = sv;
 }
 function frame(now) {
   requestAnimationFrame(frame);

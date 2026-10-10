@@ -87,7 +87,7 @@ Fehlt ein Logo, zeigt der Tisch einen Platzhalter. Jeder Tisch hat ein eigenes L
 
 - **Kampagne:** startet bei Tisch 1. Pro Tisch gibt es ein Punkteziel (1500 + 700 × Tischnummer); wer es erreicht, kommt zum nächsten Tisch. Alle 3 Tische gibt es eine Extra-Kugel. Wer Tisch 13 schafft, hat gewonnen.
 - **Freies Spiel:** beliebigen Tisch wählen, 5 Kugeln, so viele Punkte wie möglich.
-- **Steigende Schwierigkeit:** pro Tisch stärkere Schwerkraft, kürzere Flipper, kürzere Kugelrettung (Tisch 1–3: 15 s nach dem Start, ab Tisch 13: keine) und ab Tisch 5 pendelnde „Störsender“ vor den Flippern (bis zu 3).
+- **Steigende Schwierigkeit:** pro Tisch stärkere Schwerkraft, kürzere Flipper und ab Tisch 5 pendelnde „Störsender“ vor den Flippern (bis zu 3).
 - Steuerung: `←`/`A`, `→`/`D` Flipper, `Leertaste` halten und loslassen startet die Kugel, `P` Pause, `R` Neustart, `M` Ton. Am Handy: LINKS / RECHTS / START halten. Bei 0 Kugeln ist das Spiel vorbei; Bestwert und Kampagnen-Fortschritt werden im Browser gespeichert.
 
 ## Haupt-Logo
