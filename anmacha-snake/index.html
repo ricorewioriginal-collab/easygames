@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080B12">
+<title>AnMaCha Snake 3D</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<style>
+  :root{--c:#00E5FF;--ma:#FF2D95;--v:#8B5CF6;--o:#FF9A1F;--g:#00FFC8;--bg:#080B12;--tx:#EAF2FF;--mut:#8FA3BD}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#14204a,#080B12 70%);color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+  #cv{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .glass{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:14px}
+  #hud{position:fixed;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 0;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;pointer-events:none;z-index:3}
+  #hud>*{pointer-events:auto}
+  .st{padding:5px 12px;text-align:center;min-width:66px}
+  .st b{display:block;font-size:clamp(17px,4.8vw,24px);font-variant-numeric:tabular-nums;line-height:1.1}
+  .st i{display:block;font-style:normal;font-size:9.5px;letter-spacing:.14em;color:var(--mut);font-weight:700}
+  #badge{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;font-weight:800;font-size:13px;max-width:46vw}
+  #badge img{width:34px;height:34px;border-radius:10px;object-fit:cover;background:#05070d}
+  #badge span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ib{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:18px;color:var(--tx);cursor:pointer;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08)}
+  .ib:active{transform:scale(.93)}
+  #combo{position:fixed;left:50%;top:calc(98px + env(safe-area-inset-top));transform:translateX(-50%) scale(.7);opacity:0;padding:4px 16px;border-radius:999px;font-weight:900;font-size:15px;letter-spacing:.08em;color:#080B12;background:linear-gradient(90deg,var(--o),var(--ma));box-shadow:0 0 22px rgba(255,45,149,.6);transition:.18s;pointer-events:none;z-index:3;white-space:nowrap}
+  #combo.on{opacity:1;transform:translateX(-50%) scale(1)}
+  #fx{position:fixed;left:50%;top:calc(132px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;gap:6px;pointer-events:none;z-index:3}
+  .fxp{padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;color:#080B12}
+  #toast{position:fixed;left:50%;top:38%;transform:translate(-50%,-10px);opacity:0;font:900 clamp(22px,6vw,40px) 'Trebuchet MS',sans-serif;font-style:italic;text-shadow:0 0 18px var(--ma);pointer-events:none;z-index:4;transition:.25s;text-align:center;padding:0 12px}
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+  .ov{position:fixed;inset:0;z-index:10;overflow:auto;display:flex;padding:16px;background:radial-gradient(ellipse at 50% 30%,rgba(8,11,18,.5),rgba(8,11,18,.94) 75%)}
+  .box{margin:auto;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center}
+  h1{margin:0;line-height:.95;font-style:italic;font-weight:900}
+  h1 span{display:block;font-size:clamp(44px,13vw,84px);background:linear-gradient(90deg,var(--g),var(--c),var(--v));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 16px rgba(0,229,255,.5))}
+  h1 small{display:block;font-size:clamp(18px,6vw,32px);letter-spacing:.34em;margin-top:6px;padding-left:.34em;text-shadow:0 0 14px var(--g)}
+  .brand{display:block;margin:0 auto;max-width:min(90vw,520px);max-height:clamp(120px,36vw,210px);width:auto;height:auto;filter:drop-shadow(0 0 14px rgba(255,255,255,.25))}
+  h2{margin:0;font-size:clamp(26px,7vw,40px);font-style:italic;text-shadow:0 0 16px var(--ma)}
+  .sub{margin:0;color:#a8bbd0;font-size:clamp(13px,3.6vw,16px);line-height:1.5}
+  .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+  .lab{width:100%;font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:800}
+  .chip{min-width:46px;height:44px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--tx);font:800 14px inherit;font-family:inherit;cursor:pointer}
+  .chip.on{border-color:var(--c);box-shadow:0 0 0 2px rgba(0,229,255,.4),0 0 14px rgba(0,229,255,.4);background:rgba(0,229,255,.14)}
+  .big{font:900 clamp(20px,5vw,26px) 'Trebuchet MS',sans-serif;letter-spacing:.12em;color:#080B12;border:0;border-radius:999px;padding:15px 58px;min-height:58px;cursor:pointer;background:linear-gradient(90deg,var(--g),var(--c) 55%,var(--v));box-shadow:0 0 28px rgba(0,229,255,.5)}
+  .big:active{transform:scale(.96)}
+  .big[disabled]{opacity:.5;cursor:wait}
+  .ghost{font:700 14px inherit;font-family:inherit;color:var(--tx);border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);border-radius:999px;padding:12px 24px;min-height:46px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .info{font-size:12px;color:var(--mut)}
+  #rank{width:100%;max-width:360px;text-align:left;font-size:14px}
+  #rank div{display:flex;justify-content:space-between;padding:4px 10px;border-radius:8px}
+  #rank div:nth-child(odd){background:rgba(255,255,255,.05)}
+  #rank b{color:var(--g)}
+  #nm{font:700 17px inherit;font-family:inherit;color:var(--tx);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:11px 14px;text-align:center;width:min(280px,80vw)}
+  a.back{color:var(--c);font-size:13px;text-decoration:none}
+  #tapL,#tapR{position:fixed;top:120px;bottom:0;width:50%;z-index:2}
+  #tapL{left:0}#tapR{right:0}
+  #hint{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--mut);pointer-events:none;z-index:3}
+  #err{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:24px;background:#080B12}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud" hidden>
+  <button class="ib" id="bMenu" title="Menü" aria-label="Menü">☰</button>
+  <div class="glass" id="badge"><img id="bImg" alt=""><span id="bTxt"></span></div>
+  <div class="glass st"><b id="vS">0</b><i>PUNKTE</i></div>
+  <div class="glass st"><b id="vL">1</b><i>LEVEL</i></div>
+  <div class="glass st"><b id="vN">3</b><i>LÄNGE</i></div>
+  <button class="ib" id="bCam" title="Kamera (C)" aria-label="Kamera">🎥</button>
+  <button class="ib" id="bPause" title="Pause (P)" aria-label="Pause">⏸</button>
+  <button class="ib" id="bMute" title="Ton (M)" aria-label="Ton">🔊</button>
+</div>
+<div id="combo"></div><div id="fx"></div><div id="toast"></div>
+<div id="tapL" hidden></div><div id="tapR" hidden></div>
+<div id="hint" hidden></div>
+
+<div id="menu" class="ov"><div class="box">
+  <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha Snake 3D" hidden><small id="brandSub">SNAKE 3D</small></h1>
+  <p class="sub">Sammle die Sender-Logos, werde länger und überlebe die Rauschen-Blöcke. Jedes Level bringt einen neuen Sender, mehr Tempo und neue Hindernisse.</p>
+  <div class="row"><div class="lab">MODUS</div><button class="chip on" data-mode="classic">Klassisch</button><button class="chip" data-mode="portal">Portal (Wände wrappen)</button></div>
+  <div class="row"><div class="lab">KAMERA</div><button class="chip on" data-cam="tilt">Schräg 3D</button><button class="chip" data-cam="chase">Verfolger</button></div>
+  <button class="big" id="bPlay" disabled>LADEN …</button>
+  <div class="info" id="logoInfo">Logos werden geladen …</div>
+  <div id="rank" class="glass" hidden></div>
+  <div class="info">⌨ Pfeile / WASD · 👆 Wischen · Verfolger: links/rechts tippen · C Kamera · P Pause · M Ton</div>
+  <a class="back" id="backLink" href="../">← Alle Spiele</a>
+</div></div>
+
+<div id="pause" class="ov" hidden><div class="box">
+  <h2>PAUSE</h2>
+  <button class="big" id="bResume">WEITER</button>
+  <button class="ghost" id="bRestart">↻ Neu starten</button>
+  <button class="ghost" id="bToMenu">Hauptmenü</button>
+</div></div>
+
+<div id="over" class="ov" hidden><div class="box">
+  <h2 id="oTitle">GAME OVER</h2>
+  <div class="row" style="gap:18px"><div class="glass st"><b id="oS">0</b><i>PUNKTE</i></div><div class="glass st"><b id="oL">1</b><i>LEVEL</i></div><div class="glass st"><b id="oN">3</b><i>LÄNGE</i></div></div>
+  <p class="sub" id="oText"></p>
+  <div id="nameBox"><input id="nm" maxlength="14" placeholder="Dein Name" autocomplete="off"> <button class="ghost" id="bSave">Speichern</button></div>
+  <div id="rank2" class="glass" style="width:100%;max-width:360px;text-align:left;font-size:14px" hidden></div>
+  <button class="big" id="bAgain">NOCHMAL</button>
+  <button class="ghost" id="oMenu">Hauptmenü</button>
+</div></div>
+
+<div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+if (typeof THREE === 'undefined') { $('err').hidden = false; $('errTxt').textContent = 'three.js konnte nicht geladen werden. Bitte Internetverbindung prüfen.'; throw new Error('three missing'); }
+if (window.self !== window.top) $('backLink').hidden = true;
+
+// ------------------------------------------------------------------ Konfiguration
+const N = 21;                                  // Spielfeld N x N
+const NAMES = ['RicoReWi Music & Media','YourTime-FM','RapRadio 24','SchlagerPop 24','ChartRadio 24','ClubRadio 24','AnMaCha 24','RadioFloh!','RockRadio 24','ChristmasRadio 24','KultRadio 24','Zocker-FM','Special-Radio'];
+const THEMES = [   // Boden, Linien, Schlange (Kopf), Akzent
+  ['#101a38','#2a4a9a','#00E5FF','#FF2D95'], ['#0e2a2a','#1f8a7a','#00FFC8','#FFD24A'], ['#1e1038','#6a3aba','#FF2D95','#00E5FF'], ['#381028','#ba3a8a','#FF9A1F','#8B5CF6'],
+  ['#102838','#2a8aba','#8B5CF6','#00FFC8'], ['#0a1a40','#3a5aff','#00E5FF','#FF2D95'], ['#2a1a08','#ba7a1a','#FFD24A','#FF5A1F'], ['#0e3018','#2aba5a','#7CFF6A','#FF9A1F'],
+  ['#2a0e0e','#ba2a2a','#FF5A3A','#FFD24A'], ['#0e2038','#5aaaff','#EAF6FF','#FF3A3A'], ['#2a1038','#9a3aff','#FF2D95','#FFD24A'], ['#10201a','#3aff9a','#00FFC8','#8B5CF6'], ['#101830','#5a7aba','#A8D8FF','#FF9A1F']
+];
+const POWERS = [   // spezielle Logos (zeitlich begrenzt)
+  { id: 'turbo',  txt: 'TURBO',  col: '#FF9A1F', dur: 6,  msg: '⚡ TURBO – Tempo hoch, Punkte x2' },
+  { id: 'chill',  txt: 'CHILL',  col: '#00E5FF', dur: 7,  msg: '❄ CHILL – Zeitlupe' },
+  { id: 'ghost',  txt: 'GEIST',  col: '#C9B8FF', dur: 6,  msg: '👻 GEIST – durch alles hindurch' },
+  { id: 'x2',     txt: 'x3',     col: '#FF2D95', dur: 9,  msg: '★ PUNKTE x3' },
+  { id: 'cut',    txt: 'KÜRZER', col: '#00FFC8', dur: 0,  msg: '✂ Schlange wird kürzer' }
+];
+const DIRS = { up: { x: 0, z: -1 }, down: { x: 0, z: 1 }, left: { x: -1, z: 0 }, right: { x: 1, z: 0 } };
+
+// ------------------------------------------------------------------ Speicher
+let save = { best: 0, rank: [], name: '', cam: 'tilt', mode: 'classic' };
+try { const s = JSON.parse(localStorage.getItem('anmachaSnake3d') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
+const persist = () => { try { localStorage.setItem('anmachaSnake3d', JSON.stringify(save)); } catch (e) {} };
+
+// ------------------------------------------------------------------ Logos (logos/01.png|jpg|jpeg … 13)
+const logos = []; let logosDone = false;
+function probe(i) {
+  const nn = String(i).padStart(2, '0'), ex = ['png', 'jpg', 'jpeg'];
+  return new Promise(res => { let k = 0; const nx = () => { if (k >= ex.length) return res(null); const src = `logos/${nn}.${ex[k++]}`, im = new Image(); im.onload = () => res({ src, im }); im.onerror = nx; im.src = src; }; nx(); });
+}
+function loadLogos() {
+  let left = 13;
+  for (let i = 1; i <= 13; i++) probe(i).then(r => {
+    if (r) logos.push({ idx: i - 1, src: r.src, name: NAMES[i - 1], im: r.im });
+    if (--left === 0) { logos.sort((a, b) => a.idx - b.idx); logosDone = true; makeTextures(); refreshMenu(); }
+  });
+}
+(function brand() {
+  const c = []; ['', '../'].forEach(d => ['png', 'jpg', 'jpeg', 'svg', 'webp'].forEach(e => c.push(`${d}logo.${e}`)));
+  Promise.all(c.map(src => new Promise(res => { const im = new Image(); im.onload = () => res(src); im.onerror = () => res(null); im.src = src; })))
+    .then(l => { const s = l.find(Boolean); if (!s) return; const im = $('brandImg'); im.src = s; im.hidden = false; $('brandText').hidden = true; if (!s.startsWith('../')) $('brandSub').hidden = true; });
+})();
+
+// ------------------------------------------------------------------ Ton
+let ac = null, muted = false; try { muted = localStorage.getItem('anmachaSnakeMute') === '1'; } catch (e) {}
+function tone(f, d, type, v, at, f2) {
+  if (muted) return;
+  try {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (at || 0);
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v || 0.07, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + 0.02);
+  } catch (e) {}
+}
+const SCALE = [0, 3, 5, 7, 10, 12, 15, 17];
+const SFX = {
+  eat: c => tone(440 * Math.pow(2, SCALE[Math.min(c, 7)] / 12), 0.14, 'triangle', 0.1),
+  power: () => { tone(660, 0.12, 'square', 0.06); tone(990, 0.2, 'square', 0.06, 0.1); },
+  level: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.22, 'sine', 0.09, i * 0.09)),
+  die: () => { tone(300, 0.5, 'sawtooth', 0.08, 0, 60); tone(150, 0.6, 'square', 0.05, 0.1, 40); },
+  turn: () => tone(900, 0.03, 'square', 0.015),
+  beat: (n, lvl) => { if (n % 4 === 0) tone(62, 0.16, 'sine', 0.07, 0, 40); if (n % 8 === 4) tone(110 * Math.pow(2, SCALE[(lvl * 2 + (n >> 3)) % 8] / 12) / 2, 0.22, 'triangle', 0.035); }
+};
+function setMute(m) { muted = m; $('bMute').textContent = m ? '🔇' : '🔊'; try { localStorage.setItem('anmachaSnakeMute', m ? '1' : '0'); } catch (e) {} }
+setMute(muted);
+
+// ------------------------------------------------------------------ Three.js Szene
+const cv = $('cv');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x080b12, 28, 70);
+const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 150);
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const sun = new THREE.DirectionalLight(0xffffff, 0.85); sun.position.set(6, 14, 8); scene.add(sun);
+const headLight = new THREE.PointLight(0x00e5ff, 1.2, 9); scene.add(headLight);
+
+const half = (N - 1) / 2;
+const W = (x, z) => new THREE.Vector3(x - half, 0, z - half);
+const colFloor = new THREE.Color(), colLine = new THREE.Color(), colHead = new THREE.Color(), colAcc = new THREE.Color();
+const tgtFloor = new THREE.Color(), tgtLine = new THREE.Color(), tgtHead = new THREE.Color(), tgtAcc = new THREE.Color();
+
+// Boden mit Raster
+const floorCv = document.createElement('canvas'); floorCv.width = floorCv.height = 512;
+const floorTex = new THREE.CanvasTexture(floorCv); floorTex.anisotropy = 4; floorTex.encoding = THREE.sRGBEncoding;
+function paintFloor() {
+  const g = floorCv.getContext('2d'), s = 512 / N;
+  g.fillStyle = '#' + colFloor.getHexString(); g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if ((i + j) % 2) { g.fillStyle = 'rgba(255,255,255,.035)'; g.fillRect(i * s, j * s, s, s); }
+  g.strokeStyle = '#' + colLine.getHexString(); g.globalAlpha = 0.55; g.lineWidth = 1.5;
+  for (let i = 0; i <= N; i++) { g.beginPath(); g.moveTo(i * s, 0); g.lineTo(i * s, 512); g.stroke(); g.beginPath(); g.moveTo(0, i * s); g.lineTo(512, i * s); g.stroke(); }
+  g.globalAlpha = 1; floorTex.needsUpdate = true;
+}
+const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(N, N), new THREE.MeshBasicMaterial({ map: floorTex }));
+floorMesh.rotation.x = -Math.PI / 2; floorMesh.position.y = -0.5; scene.add(floorMesh);
+const under = new THREE.Mesh(new THREE.PlaneGeometry(N + 60, N + 60), new THREE.MeshBasicMaterial({ color: 0x05070d }));
+under.rotation.x = -Math.PI / 2; under.position.y = -0.75; scene.add(under);
+
+// Rahmen (rot im klassischen Modus, grün im Portal-Modus)
+const frameMat = new THREE.MeshStandardMaterial({ color: 0xff2d95, emissive: 0xff2d95, emissiveIntensity: 0.8 });
+const frameG = new THREE.Group();
+[[N + 0.6, 0.18, 0.3, 0, -half - 0.65], [N + 0.6, 0.18, 0.3, 0, half + 0.65], [0.3, 0.18, N + 0.6, -half - 0.65, 0], [0.3, 0.18, N + 0.6, half + 0.65, 0]].forEach(b => {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(b[0], b[1], b[2]), frameMat); m.position.set(b[3], -0.4, b[4]); frameG.add(m);
+});
+scene.add(frameG);
+
+// Schlange
+const bodyGeo = new THREE.BoxGeometry(0.86, 0.72, 0.86);
+const bodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.1, emissive: 0x000000, emissiveIntensity: 0 });
+const bodyMesh = new THREE.InstancedMesh(bodyGeo, bodyMat, N * N);
+bodyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); bodyMesh.frustumCulled = false; bodyMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(N * N * 3), 3); bodyMesh.count = 0; scene.add(bodyMesh);
+const headMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 0.55, roughness: 0.35 });
+const head = new THREE.Group();
+const headBox = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.84, 0.98), headMat); head.add(headBox);
+[-0.24, 0.24].forEach(x => {
+  const e = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), new THREE.MeshBasicMaterial({ color: 0xffffff })); e.position.set(x, 0.18, -0.42); head.add(e);
+  const p = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), new THREE.MeshBasicMaterial({ color: 0x080b12 })); p.position.set(x, 0.18, -0.55); head.add(p);
+});
+scene.add(head);
+
+// Hindernisse
+const obsMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 1.0, 0.9), new THREE.MeshStandardMaterial({ color: 0x2a2f45, emissive: 0x3a3f6a, emissiveIntensity: 0.5, roughness: 0.6 }), 40);
+obsMesh.count = 0; obsMesh.frustumCulled = false; scene.add(obsMesh);
+
+// Futter: Logo-Sprites
+const texLoader = new THREE.TextureLoader();
+function makeTextures() { logos.forEach(l => { l.tex = new THREE.Texture(l.im); l.tex.encoding = THREE.sRGBEncoding; l.tex.needsUpdate = true; }); }
+const ringGeo = new THREE.RingGeometry(0.5, 0.66, 28);
+function makeFood() {
+  const grp = new THREE.Group();
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0x00ffc8, transparent: true, opacity: 0.85, side: THREE.DoubleSide }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = -0.44; grp.add(ring);
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false }));
+  spr.scale.set(1.5, 1.5, 1); spr.position.y = 0.55; grp.add(spr);
+  grp.userData = { ring, spr }; grp.visible = false; scene.add(grp); return grp;
+}
+const foodObj = makeFood(), powObj = makeFood();
+function labelTex(txt, col) {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  g.fillStyle = '#0b1020'; g.beginPath(); g.arc(64, 64, 60, 0, 7); g.fill(); g.lineWidth = 8; g.strokeStyle = col; g.stroke();
+  g.fillStyle = col; g.font = '900 ' + (txt.length > 4 ? 26 : 38) + 'px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 64, 66);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+}
+const powTex = {}; POWERS.forEach(p => powTex[p.id] = labelTex(p.txt, p.col));
+
+// Partikel
+const PN = 90; const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(PN * 3), pCol = new Float32Array(PN * 3), pVel = new Float32Array(PN * 3), pLife = new Float32Array(PN);
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+const pPts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.28, vertexColors: true, transparent: true, depthWrite: false })); pPts.frustumCulled = false; scene.add(pPts);
+let pAlive = 0;
+function burst(x, z, color, n) {
+  const c = new THREE.Color(color); let k = 0;
+  for (let i = 0; i < PN && k < n; i++) if (pLife[i] <= 0) {
+    pPos.set([x, 0.2, z], i * 3); pVel.set([(Math.random() - 0.5) * 6, Math.random() * 5 + 1, (Math.random() - 0.5) * 6], i * 3);
+    pCol.set([c.r, c.g, c.b], i * 3); pLife[i] = 0.7 + Math.random() * 0.4; k++; pAlive++;
+  }
+}
+function stepParticles(dt) {
+  if (!pAlive) return; let alive = 0;
+  for (let i = 0; i < PN; i++) if (pLife[i] > 0) {
+    pLife[i] -= dt; if (pLife[i] <= 0) { pPos[i * 3 + 1] = -50; continue; }
+    pVel[i * 3 + 1] -= 11 * dt; pPos[i * 3] += pVel[i * 3] * dt; pPos[i * 3 + 1] += pVel[i * 3 + 1] * dt; pPos[i * 3 + 2] += pVel[i * 3 + 2] * dt; alive++;
+  }
+  pAlive = alive; pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
+}
+for (let i = 0; i < PN; i++) pPos[i * 3 + 1] = -50;
+
+// ------------------------------------------------------------------ Spielzustand
+let state = 'menu';                                  // menu | play | paused | over
+let mode = save.mode === 'portal' ? 'portal' : 'classic', camMode = save.cam === 'chase' ? 'chase' : 'tilt';
+let snake = [], prevSnake = [], dir = DIRS.right, dirQ = [], heading = 0;
+let food = null, powFood = null, obstacles = [], score = 0, level = 1, eaten = 0, combo = 0, comboT = 0, tickT = 0, tickInt = 0.16, beatN = 0, spawnT = 0;
+const fx = {};                                       // aktive Power-Ups: id -> Restzeit
+let theme = 0, lastTickAt = 0, over = false, testClock = null;
+
+const key = (x, z) => x * 64 + z;
+function occupied(x, z, skipTail) {
+  for (let i = 0; i < snake.length - (skipTail ? 1 : 0); i++) if (snake[i].x === x && snake[i].z === z) return true;
+  for (const o of obstacles) if (o.x === x && o.z === z) return true;
+  return false;
+}
+function freeCell(minDist) {
+  for (let t = 0; t < 400; t++) {
+    const x = Math.floor(Math.random() * N), z = Math.floor(Math.random() * N);
+    if (occupied(x, z)) continue; if (food && food.x === x && food.z === z) continue; if (powFood && powFood.x === x && powFood.z === z) continue;
+    if (minDist && Math.abs(x - snake[0].x) + Math.abs(z - snake[0].z) < minDist) continue;
+    return { x, z };
+  }
+  return null;
+}
+function setTheme(i, instant) {
+  theme = i % THEMES.length; const t = THEMES[theme];
+  tgtFloor.set(t[0]); tgtLine.set(t[1]); tgtHead.set(t[2]); tgtAcc.set(t[3]);
+  if (instant) { colFloor.copy(tgtFloor); colLine.copy(tgtLine); colHead.copy(tgtHead); colAcc.copy(tgtAcc); paintFloor(); applyColors(); }
+}
+let themeBlend = 1;
+function applyColors() {
+  headMat.color.copy(colHead); headMat.emissive.copy(colHead); headLight.color.copy(colHead);
+  const body = new THREE.Color(), tail = new THREE.Color().copy(colAcc).lerp(colHead, 0.2);
+  const len = Math.max(1, snake.length - 1);
+  for (let i = 0; i < len; i++) { body.copy(colHead).lerp(tail, Math.pow(i / len, 0.8)); bodyMesh.setColorAt(i, body); }
+  if (bodyMesh.instanceColor) { bodyMesh.instanceColor.needsUpdate = true; if (!bodyMat.userData.ic) { bodyMat.userData.ic = 1; bodyMat.needsUpdate = true; } }
+  scene.fog.color.copy(colFloor).multiplyScalar(0.35);
+}
+
+function newGame() {
+  over = false; score = 0; level = 1; eaten = 0; combo = 0; comboT = 0; beatN = 0; tickInt = 0.16; tickT = -1.3; spawnT = 0;
+  Object.keys(fx).forEach(k => delete fx[k]); renderFx();
+  const cx = Math.floor(N / 2), cz = Math.floor(N / 2);
+  snake = [{ x: cx, z: cz }, { x: cx - 1, z: cz }, { x: cx - 2, z: cz }]; prevSnake = snake.map(s => ({ x: s.x, z: s.z }));
+  dir = DIRS.right; dirQ = []; heading = Math.PI / 2; obstacles = []; food = null; powFood = null; powObj.visible = false;
+  setTheme(0, true); frameMat.color.set(mode === 'portal' ? 0x00ffc8 : 0xff2d95); frameMat.emissive.set(mode === 'portal' ? 0x00ffc8 : 0xff2d95);
+  spawnFood(); updateObstacles(); applyColors(); hud(); setBadge();
+  state = 'play'; $('hud').hidden = false; $('menu').hidden = true; $('over').hidden = true; $('pause').hidden = true; $('hint').hidden = false;
+  $('tapL').hidden = $('tapR').hidden = camMode !== 'chase';
+  $('hint').textContent = camMode === 'chase' ? 'Links / rechts tippen oder ←/→ zum Abbiegen' : 'Wischen oder Pfeiltasten';
+  setTimeout(() => { if ($('hint')) $('hint').hidden = true; }, 4500);
+  toast('Level 1 – ' + NAMES[0]);
+}
+function setBadge() { const l = logos[(level - 1) % Math.max(1, logos.length)]; if (l) { $('bImg').src = l.src; $('bTxt').textContent = l.name; } $('bImg').hidden = !l; }
+function spawnFood() {
+  const c = freeCell(0); if (!c) return win();
+  const l = logos.length ? logos[Math.floor(Math.random() * logos.length)] : null;
+  food = { x: c.x, z: c.z, logo: l }; const o = foodObj; o.visible = true;
+  o.userData.spr.material.map = l ? l.tex : null; o.userData.spr.material.color.set(l ? 0xffffff : 0x00ffc8); o.userData.spr.material.needsUpdate = true;
+  o.userData.ring.material.color.copy(colAcc);
+  const p = W(c.x, c.z); o.position.set(p.x, 0, p.z);
+}
+function spawnPower() {
+  if (powFood || over) return; const c = freeCell(4); if (!c) return;
+  const pw = POWERS[Math.floor(Math.random() * POWERS.length)]; powFood = { x: c.x, z: c.z, pw, ttl: 9 };
+  const o = powObj; o.visible = true; o.userData.spr.material.map = powTex[pw.id]; o.userData.spr.material.color.set(0xffffff); o.userData.spr.material.needsUpdate = true;
+  o.userData.ring.material.color.set(pw.col); const p = W(c.x, c.z); o.position.set(p.x, 0, p.z);
+}
+function updateObstacles() {
+  const want = mode === 'classic' ? Math.min(30, Math.max(0, (level - 2) * 3)) : Math.min(24, Math.max(0, (level - 2) * 2));
+  let guard = 0;
+  while (obstacles.length < want && guard++ < 200) {
+    const c = freeCell(6); if (!c) break; if ((c.x === (food && food.x) && c.z === (food && food.z))) continue;
+    // keine Hindernisse direkt vor der Schlange
+    obstacles.push({ x: c.x, z: c.z });
+  }
+  obstacles.forEach((o, i) => { const p = W(o.x, o.z); const m = new THREE.Matrix4().makeTranslation(p.x, 0, p.z); obsMesh.setMatrixAt(i, m); });
+  obsMesh.count = obstacles.length; obsMesh.instanceMatrix.needsUpdate = true;
+}
+function win() { die(true); }
+
+// ------------------------------------------------------------------ Eingabe
+function turn(d) {
+  if (state !== 'play') return; const last = dirQ.length ? dirQ[dirQ.length - 1] : dir;
+  if (d === last || (d.x === -last.x && d.z === -last.z)) return;
+  if (dirQ.length < 2) { dirQ.push(d); SFX.turn(); }
+}
+function relTurn(side) {          // -1 links, +1 rechts (Verfolger-Kamera)
+  const last = dirQ.length ? dirQ[dirQ.length - 1] : dir;
+  turn(side < 0 ? { x: last.z, z: -last.x } : { x: -last.z, z: last.x });
+}
+addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') { if (e.key === 'Enter' && e.target.id === 'nm') $('bSave').click(); return; }
+  const k = e.key.toLowerCase();
+  if (k === 'p' || k === 'escape') { if (state === 'play') pause(true); else if (state === 'paused') pause(false); return; }
+  if (k === 'm') { setMute(!muted); return; }
+  if (k === 'c') { toggleCam(); return; }
+  if (state !== 'play') { if ((k === 'enter' || k === ' ') && state === 'menu' && !$('bPlay').disabled) { e.preventDefault(); newGame(); } return; }
+  const map = { arrowup: 'up', w: 'up', arrowdown: 'down', s: 'down', arrowleft: 'left', a: 'left', arrowright: 'right', d: 'right' };
+  if (!map[k]) return; e.preventDefault();
+  if (camMode === 'chase') { if (map[k] === 'left') relTurn(-1); else if (map[k] === 'right') relTurn(1); } else turn(DIRS[map[k]]);
+});
+let tx0 = 0, ty0 = 0, tId = null;
+addEventListener('touchstart', e => { if (state !== 'play' || e.target.closest('.ib,.ov')) return; const t = e.changedTouches[0]; tx0 = t.clientX; ty0 = t.clientY; tId = t.identifier; }, { passive: true });
+addEventListener('touchend', e => {
+  if (state !== 'play' || tId === null) return; const t = [...e.changedTouches].find(x => x.identifier === tId); if (!t) return; tId = null;
+  const dx = t.clientX - tx0, dy = t.clientY - ty0;
+  if (camMode === 'chase') { if (Math.abs(dx) > 18 && Math.abs(dx) > Math.abs(dy)) relTurn(dx < 0 ? -1 : 1); else if (Math.abs(dx) < 14 && Math.abs(dy) < 14) relTurn(t.clientX < innerWidth / 2 ? -1 : 1); return; }
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+  turn(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? DIRS.left : DIRS.right) : (dy < 0 ? DIRS.up : DIRS.down));
+}, { passive: true });
+function toggleCam() { camMode = camMode === 'tilt' ? 'chase' : 'tilt'; save.cam = camMode; persist(); $('tapL').hidden = $('tapR').hidden = !(state === 'play' && camMode === 'chase'); toast(camMode === 'chase' ? 'Kamera: Verfolger' : 'Kamera: Schräg 3D'); refreshMenu(); }
+
+// ------------------------------------------------------------------ Spiel-Tick
+function tick() {
+  if (dirQ.length) dir = dirQ.shift();
+  const h = snake[0]; let nx = h.x + dir.x, nz = h.z + dir.z;
+  const ghost = fx.ghost > 0;
+  if (nx < 0 || nz < 0 || nx >= N || nz >= N) {
+    if (mode === 'portal' || ghost) { nx = (nx + N) % N; nz = (nz + N) % N; } else return die();
+  }
+  const ate = food && food.x === nx && food.z === nz, ateP = powFood && powFood.x === nx && powFood.z === nz;
+  if (!ghost) {
+    const tailFree = !ate;   // Schwanzspitze wird frei, wenn nicht gewachsen wird
+    for (let i = 0; i < snake.length - (tailFree ? 1 : 0); i++) if (snake[i].x === nx && snake[i].z === nz) return die();
+    for (const o of obstacles) if (o.x === nx && o.z === nz) return die();
+  }
+  prevSnake = snake.map(s => ({ x: s.x, z: s.z }));
+  snake.unshift({ x: nx, z: nz });
+  if (!ate) snake.pop();
+  beatN++; SFX.beat(beatN, level);
+  if (ate) {
+    combo = comboT > 0 ? Math.min(combo + 1, 6) : 1; comboT = 3.2; eaten++;
+    const mult = (fx.turbo > 0 ? 2 : 1) * (fx.x2 > 0 ? 3 : 1);
+    const pts = 10 * combo * mult; score += pts; SFX.eat(combo);
+    const p = W(nx, nz); burst(p.x, p.z, '#' + colAcc.getHexString(), 22); popCombo(combo, pts);
+    spawnFood();
+    if (eaten % 5 === 0) levelUp(); else if (Math.random() < 0.34) spawnPower();
+    if (snake.length >= N * N - 4) return win();
+    applyColors();
+  }
+  if (ateP) takePower(powFood.pw);
+  hud();
+}
+function takePower(pw) {
+  SFX.power(); const p = W(powFood.x, powFood.z); burst(p.x, p.z, pw.col, 26); toast(pw.msg);
+  powFood = null; powObj.visible = false; score += 25;
+  if (pw.id === 'cut') { const cut = Math.min(4, snake.length - 3); for (let i = 0; i < cut; i++) snake.pop(); prevSnake = snake.map(s => ({ x: s.x, z: s.z })); applyColors(); }
+  else { fx[pw.id] = pw.dur; if (pw.id === 'chill') delete fx.turbo; if (pw.id === 'turbo') delete fx.chill; renderFx(); }
+}
+function levelUp() {
+  level++; tickInt = Math.max(0.065, 0.16 - (level - 1) * 0.008); setTheme(level - 1); themeBlend = 0; SFX.level();
+  updateObstacles(); setBadge(); const l = logos[(level - 1) % Math.max(1, logos.length)];
+  toast('Level ' + level + (l ? ' – ' + l.name : '')); score += 50 * level;
+}
+function curInt() { return tickInt * (fx.turbo > 0 ? 0.62 : 1) * (fx.chill > 0 ? 1.7 : 1); }
+function popCombo(c, pts) { const e = $('combo'); e.textContent = (c > 1 ? '🔥 x' + c + ' COMBO  ' : '') + '+' + pts; e.classList.add('on'); clearTimeout(popCombo.t); popCombo.t = setTimeout(() => e.classList.remove('on'), 900); }
+let toastT; function toast(t) { const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => e.classList.remove('on'), 1700); }
+function renderFx() {
+  const box = $('fx'); box.innerHTML = '';
+  POWERS.forEach(p => { if (fx[p.id] > 0) { const s = document.createElement('span'); s.className = 'fxp'; s.style.background = p.col; s.textContent = p.txt + ' ' + Math.ceil(fx[p.id]) + 's'; box.appendChild(s); } });
+}
+function hud() { $('vS').textContent = score; $('vL').textContent = level; $('vN').textContent = snake.length; }
+
+// ------------------------------------------------------------------ Ende / Bestenliste
+function die(won) {
+  if (state !== 'play') return; over = true; state = 'over'; SFX.die();
+  const p = W(snake[0].x, snake[0].z); burst(p.x, p.z, '#ff2d95', 60);
+  setTimeout(() => showOver(won), 650);
+}
+function qualifies() { return score > 0 && (save.rank.length < 10 || score > save.rank[save.rank.length - 1].s); }
+function showOver(won) {
+  $('hud').hidden = true; $('combo').classList.remove('on'); $('toast').classList.remove('on'); $('fx').innerHTML = ''; $('tapL').hidden = $('tapR').hidden = true;
+  const nb = score > save.best; if (nb) save.best = score; persist();
+  $('oTitle').textContent = won ? 'FELD VOLL! 🏆' : 'GAME OVER';
+  $('oS').textContent = score; $('oL').textContent = level; $('oN').textContent = snake.length;
+  $('oText').textContent = nb ? '🏆 Neuer Bestwert!' : 'Bestwert: ' + save.best;
+  const q = qualifies(); $('nameBox').hidden = !q; $('nm').value = save.name || ''; $('rank2').hidden = true;
+  $('over').hidden = false; renderRank(); if (!q) { $('rank2').hidden = false; $('rank2').innerHTML = rankHtml(); }
+}
+function rankHtml() { return save.rank.length ? save.rank.map((r, i) => `<div><span>${i + 1}. ${r.n.replace(/[<>&]/g, '')}</span><b>${r.s}</b></div>`).join('') : ''; }
+function renderRank() { const r = $('rank'); r.hidden = !save.rank.length; r.innerHTML = '<div style="justify-content:center;color:var(--mut);font-size:11px;letter-spacing:.14em">TOP 10 (LOKAL)</div>' + rankHtml(); }
+$('bSave').onclick = () => {
+  const n = ($('nm').value || 'Anonym').trim().slice(0, 14) || 'Anonym'; save.name = n;
+  save.rank.push({ n, s: score }); save.rank.sort((a, b) => b.s - a.s); save.rank = save.rank.slice(0, 10); persist();
+  $('nameBox').hidden = true; $('rank2').hidden = false; $('rank2').innerHTML = rankHtml(); renderRank();
+};
+
+// ------------------------------------------------------------------ Menü / UI
+function refreshMenu() {
+  const n = logos.length;
+  $('logoInfo').textContent = logosDone ? `${n} Logos geladen` : 'Logos werden geladen …';
+  document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+  document.querySelectorAll('[data-cam]').forEach(b => b.classList.toggle('on', b.dataset.cam === camMode));
+  $('bPlay').disabled = !logosDone; $('bPlay').textContent = logosDone ? 'SPIELEN' : 'LADEN …'; renderRank();
+}
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { mode = b.dataset.mode; save.mode = mode; persist(); refreshMenu(); });
+document.querySelectorAll('[data-cam]').forEach(b => b.onclick = () => { camMode = b.dataset.cam; save.cam = camMode; persist(); refreshMenu(); });
+$('bPlay').onclick = () => { tone(440, 0.04, 'sine', 0.001); newGame(); };
+$('bAgain').onclick = () => newGame();
+$('bRestart').onclick = () => newGame();
+function toMenu() { state = 'menu'; $('hud').hidden = true; $('pause').hidden = true; $('over').hidden = true; $('menu').hidden = false; $('tapL').hidden = $('tapR').hidden = true; refreshMenu(); }
+$('bToMenu').onclick = toMenu; $('oMenu').onclick = toMenu; $('bMenu').onclick = () => pause(true);
+$('bCam').onclick = toggleCam; $('bMute').onclick = () => setMute(!muted);
+$('bPause').onclick = () => pause(state === 'play'); $('bResume').onclick = () => pause(false);
+function pause(on) { if (on && state === 'play') { state = 'paused'; $('pause').hidden = false; } else if (!on && state === 'paused') { state = 'play'; $('pause').hidden = true; lastTickAt = performance.now(); } }
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
+
+// ------------------------------------------------------------------ Render-Schleife
+function resize() {
+  const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+const vF = new THREE.Vector3(), vWant = new THREE.Vector3(), vLook = new THREE.Vector3(); const camPos = new THREE.Vector3(0, 24, 17), camLook = new THREE.Vector3(); const tmpV = new THREE.Vector3(), tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(1, 1, 1);
+let sceneTime = 0;
+function frame(dtIn) {
+  const dt = Math.min(0.05, dtIn); sceneTime += dt;
+  if (state === 'play') {
+    for (const k in fx) if (fx[k] > 0) { fx[k] -= dt; if (fx[k] <= 0) { delete fx[k]; renderFx(); } }
+    if (Object.keys(fx).length && ((sceneTime * 4) | 0) !== (((sceneTime - dt) * 4) | 0)) renderFx();
+    if (comboT > 0) comboT -= dt;
+    if (powFood) { powFood.ttl -= dt; if (powFood.ttl <= 0) { powFood = null; powObj.visible = false; } }
+    tickT += dt; const ci = curInt(); let guard = 0;
+    while (tickT >= ci && state === 'play' && guard++ < 4) { tickT -= ci; tick(); }
+  }
+  stepParticles(dt);
+  if (themeBlend < 1) {
+    themeBlend = Math.min(1, themeBlend + dt * 1.1); const k = Math.min(1, dt * 3);
+    colFloor.lerp(tgtFloor, k); colLine.lerp(tgtLine, k); colHead.lerp(tgtHead, k); colAcc.lerp(tgtAcc, k);
+    if (themeBlend >= 1) { colFloor.copy(tgtFloor); colLine.copy(tgtLine); colHead.copy(tgtHead); colAcc.copy(tgtAcc); paintFloor(); applyColors(); }
+    else if (((sceneTime * 10) | 0) !== (((sceneTime - dt) * 10) | 0)) { paintFloor(); applyColors(); }
+  }
+  render(dt);
+}
+function render(dt) {
+  const ci = curInt(), alpha = state === 'play' ? Math.max(0, Math.min(1, tickT / ci)) : 1;
+  if (snake.length) {
+    // Körper interpolieren
+    let n = 0;
+    for (let i = 1; i < snake.length; i++) {
+      const c = snake[i], pr = prevSnake[i] || prevSnake[prevSnake.length - 1] || c;
+      let px = pr.x, pz = pr.z; if (Math.abs(px - c.x) > 2 || Math.abs(pz - c.z) > 2) { px = c.x; pz = c.z; }
+      const x = px + (c.x - px) * alpha - half, z = pz + (c.z - pz) * alpha - half;
+      const sc = 1 - Math.min(0.28, i * 0.006);
+      tmpV.set(x, 0, z); tmpS.set(sc, sc, sc); tmpM.compose(tmpV, tmpQ.identity(), tmpS); bodyMesh.setMatrixAt(n++, tmpM);
+    }
+    bodyMesh.count = n; bodyMesh.instanceMatrix.needsUpdate = true;
+    // Kopf
+    const c = snake[0], pr = prevSnake[0] || c; let px = pr.x, pz = pr.z; if (Math.abs(px - c.x) > 2 || Math.abs(pz - c.z) > 2) { px = c.x; pz = c.z; }
+    const hx = px + (c.x - px) * alpha - half, hz = pz + (c.z - pz) * alpha - half;
+    head.position.set(hx, 0.03, hz); headLight.position.set(hx, 1.6, hz);
+    const target = Math.atan2(-dir.x, -dir.z);     // Blickrichtung (-z ist Vorwärts im Kopfmodell)
+    let da = target - heading; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+    heading += da * Math.min(1, dt * 14); head.rotation.y = heading;
+    const gh = fx.ghost > 0; headMat.opacity = gh ? 0.55 : 1; headMat.transparent = gh; bodyMat.opacity = gh ? 0.55 : 1; bodyMat.transparent = gh;
+    // Kamera
+    if (camMode === 'chase') {
+      vF.set(Math.sin(heading + Math.PI), 0, Math.cos(heading + Math.PI));
+      const cf = Math.max(1, 0.9 / Math.min(1.5, camera.aspect));
+      vWant.set(hx - vF.x * 7.5 * cf, 7.2 * cf, hz - vF.z * 7.5 * cf); vLook.set(hx + vF.x * 4.5, 0, hz + vF.z * 4.5);
+      camPos.lerp(vWant, Math.min(1, dt * 5)); camLook.lerp(vLook, Math.min(1, dt * 7));
+    } else {
+      const fit = Math.max(1, 1.05 / Math.min(1.9, camera.aspect)); const dist = 19 * fit;
+      vWant.set(hx * 0.12, dist * 0.82, dist * 0.62 + hz * 0.12);
+      camPos.lerp(vWant, Math.min(1, dt * 3)); camLook.lerp(vLook.set(hx * 0.1, 0, hz * 0.1), Math.min(1, dt * 4));
+    }
+    camera.position.copy(camPos); camera.lookAt(camLook);
+  }
+  // Futter animieren
+  [[foodObj, food], [powObj, powFood]].forEach(([o, f]) => { if (!f) { o.visible = false; return; } o.visible = true; o.userData.spr.position.y = 0.62 + Math.sin(sceneTime * 3 + (f.x + f.z)) * 0.14; const s = 1 + Math.sin(sceneTime * 4) * 0.06; o.userData.ring.scale.set(s, s, s); if (f === powFood && f.ttl < 3) o.visible = ((sceneTime * 6) | 0) % 2 === 0; });
+  renderer.render(scene, camera);
+}
+let last = performance.now();
+renderer.setAnimationLoop(() => { const now = performance.now(); const dt = testClock !== null ? 0 : (now - last) / 1000; last = now; if (testClock === null) frame(dt); else render(0.016); });
+
+// Testzugriff (nur für automatische Tests)
+window.__snake = { get state() { return state; }, get score() { return score; }, get level() { return level; }, get len() { return snake.length; }, snake: () => snake, food: () => food, dir: () => dir, step: n => { testClock = 0; for (let i = 0; i < n; i++) { tick(); } }, newGame, turn, DIRS, obstacles: () => obstacles, fx, setMode: m => { mode = m; }, N };
+
+setTheme(0, true); loadLogos(); refreshMenu();
+</script>
+</body>
+</html>
