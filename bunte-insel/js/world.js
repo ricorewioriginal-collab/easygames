@@ -457,7 +457,7 @@ BI.buildWorld = function (scene) {
       // Dach (eigenes Mesh, wird innen ausgeblendet)
       roofB.prism(cx, WH, (ZB + ZF) / 2, FW + .8, 2.3, ZF - ZB + 1.6, RC[i], 0); roofB.box(cx, WH - .05, (ZB + ZF) / 2, FW + .6, .12, ZF - ZB + 1.4, shadeC(RC[i]));
       const dz = ZF + 2.6;
-      W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
+      W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, chest: { x: cx + 1.2, z: ZB + 1.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
     }
     W.spots.flatBlock = { x0: X0, x1: X0 + FW * N, zB: ZB, zF: ZF };
     BI.addPlaces(W, st);
@@ -524,7 +524,7 @@ BI.buildWorld = function (scene) {
   function finalizeTrees() {
     const flat = g => { const n = g.toNonIndexed(); n.computeVertexNormals(); return n; };
     const geos = { trunk: flat(new THREE.CylinderGeometry(.3, .42, 1, 6).translate(0, .5, 0)), crown: flat(new THREE.IcosahedronGeometry(1, 1)), cone: flat(new THREE.ConeGeometry(1, 1, 7).translate(0, .5, 0)) };
-    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    const mat = new THREE.MeshLambertMaterial({ color: 0xffffff }); W.treeMat = mat;
     for (const k of ['trunk', 'crown', 'cone']) {
       const list = IL[k]; if (!list.length) continue; const m = new THREE.InstancedMesh(geos[k], mat, list.length); m.frustumCulled = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       list.forEach((e, i) => { m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m);
@@ -664,7 +664,7 @@ BI.buildWorld = function (scene) {
     ctx.fillStyle = '#e8d6c0'; for (const b of W.boxes) if (b.x1 - b.x0 > 5 && b.z1 - b.z0 > 5) ctx.fillRect(X(b.x0), Y(b.z0), (b.x1 - b.x0) * k, (b.z1 - b.z0) * k);
     ctx.fillStyle = '#ffb45a'; ctx.fillRect(X(-34), Y(20), 14 * k, 14 * k);
     const mark = (x, z, e) => { ctx.font = Math.round(S * .075) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, X(x), Y(z)); };
-    mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(-36, -133, '🏠'); mark(-157, 12, '🐮'); mark(-124, 35, '🌾'); mark(53, 138, '🏊'); mark(-112, 106, '🥕'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
+    mark(70, 30, '⛺'); mark(56, -50, '🏥'); mark(-56, -50, '🚓'); mark(56, 50, '🚒'); for (const t of W.stations) mark(t.px, t.pz, t.icon); mark(100, -62, '🚁'); mark(-112, 62, '🚜'); mark(-59, 56, '🛝'); mark(27, 27, '🍦'); mark(0, 0, '⛲'); mark(-27, 27, '🧸'); mark(162, -37, '🏴‍☠️'); mark(-105, -84, '🎯'); mark(-36, -133, '🏠'); mark(-157, 12, '🐮'); mark(-124, 35, '🌾'); mark(53, 138, '🏊'); mark(-112, 106, '🥕'); mark(4.5, 214, '⛵'); ctx.fillStyle = '#b98650'; ctx.fillRect(X(-2.5), Y(156), 5 * k, 52 * k);
   };
   return W;
 };

@@ -9,6 +9,8 @@ BI.VEH = {
   bus:       { name: 'Bus', icon: '🚌', max: 16, rev: 5, acc: 6, brake: 18, drag: 4, turn: 1.3, kind: 'car', horn: 'bus', cols: [-2.8, 0, 2.8], r: 1.45, cam: 13 },
   tractor:   { name: 'Traktor', icon: '🚜', max: 10, rev: 4, acc: 5, brake: 14, drag: 4, turn: 1.5, kind: 'tractor', horn: 'tractor', open: true, offroad: 1, cols: [-.8, 1], r: 1.2, cam: 8, mow: 2.2 },
   combine:   { name: 'Mähdrescher', icon: '🌾', max: 8, rev: 3, acc: 4, brake: 12, drag: 4, turn: 1.2, kind: 'tractor', horn: 'tractor', offroad: 1, cols: [-1.8, 0, 1.8], r: 1.8, cam: 12, mow: 3.4 },
+  bicycle:   { name: 'Fahrrad', icon: '🚲', max: 9, rev: 2.5, acc: 6, brake: 14, drag: 4, turn: 2.4, kind: 'cycle', horn: 'bell', cols: [-.35, .35], r: .45, open: true, cam: 6 },
+  scooter:   { name: 'Tretroller', icon: '🛴', max: 7, rev: 2, acc: 7, brake: 14, drag: 4, turn: 2.6, kind: 'cycle', horn: 'bell', cols: [-.3, .3], r: .4, open: true, cam: 5.5 },
   mower:     { name: 'Aufsitzmäher', icon: '🌿', max: 9, rev: 4, acc: 6, brake: 14, drag: 4, turn: 2.1, kind: 'bike', horn: 'bike', open: true, offroad: 1, cols: [-.5, .5], r: .8, cam: 6, mow: 1.5 },
   rc:        { name: 'RC-Auto', icon: '🏎️', max: 15, rev: 5, acc: 16, brake: 24, drag: 6, turn: 2.8, kind: 'bike', horn: 'bike', cols: [-.42, .42], r: .42, cam: 4.2, scale: .36, remote: true },
   boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', boat: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
@@ -88,6 +90,17 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(.28, .22, -.5, .14, .14, 1.0, SILVER); b.box(0, .62, -1.05, .34, .08, .5, c); b.box(0, .62, 1.12, .24, .06, .5, c);
       return { wheels: [[0, .4, 1.0, .4, .2, 1], [0, .4, -.95, .4, .24, 0]], head: [[0, .98, 1.1]], tail: [[0, .72, -1.3]], seat: [0, .85, -.45], lean: 1 };
     }
+  };
+  MODELS.bicycle = (b, o) => { // Fahrrad: Rahmen, Lenker, Sattel, Korb
+    const c = o.color || 0x3f8cff;
+    b.box(0, .62, .1, .06, .06, 1.0, c, 0, .0); b.box(0, .5, .45, .06, .6, .06, c, .5); b.box(0, .5, -.35, .06, .6, .06, c, -.5); b.box(0, .85, -.5, .1, .06, .36, 0x23262d); b.box(0, 1.05, .78, .8, .05, .05, DARK);
+    b.box(0, .6, .85, .05, .85, .05, SILVER, .25); b.box(0, .3, -.1, .1, .1, .4, SILVER); b.box(0, 1.0, 1.0, .35, .25, .25, 0xffd23f);
+    return { wheels: [[0, .42, .95, .42, .07, 1], [0, .42, -.95, .42, .07, 0]], head: [[0, .98, 1.02]], tail: [[0, .62, -1.2]], seat: [0, .85, -.5], lean: 1 };
+  };
+  MODELS.scooter = (b, o) => { // Tretroller: Trittbrett, Lenkstange
+    const c = o.color || 0xff5a9a;
+    b.box(0, .22, -.1, .3, .06, 1.0, c); b.box(0, .8, .65, .05, 1.2, .05, SILVER, .12); b.box(0, 1.4, .76, .7, .05, .05, DARK); b.box(0, .4, .62, .06, .4, .06, SILVER);
+    return { wheels: [[0, .2, .75, .2, .06, 1], [0, .2, -.7, .2, .07, 0]], head: [[0, .5, .85]], tail: [[0, .3, -.75]], seat: [0, .3, -.1], lean: 1 };
   };
   MODELS.boat = b => { // Segelboot: weißer Rumpf, blauer Streifen, Kajüte, Mast mit Segel und Wimpel
     const W0 = 0xf5f5f5;

@@ -378,5 +378,50 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   await Promise.all([p.waitForNavigation(), p.click('#bToMenu')]); await p.waitForFunction(() => window.__bi);
   ok(await p.evaluate(() => !document.getElementById('menu').hidden && document.getElementById('hello').textContent === 'Hallo Lisa! ♥'), 'Zurück zum Hauptmenü, Stand bleibt'); await p.context().close();
 }
+{ // Wetter, Jahreszeiten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart');
+  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'rain'; w.set('rain'); window.__bi.save.season = 'autumn'; w.applySeason(); }); await p.waitForFunction(() => window.__bi.weather().rainy > .3, null, { timeout: 40000 }).catch(() => { });
+  const r = await p.evaluate(() => { const w = window.__bi.weather(); return [w.kind, w.rainy, w.season()]; });
+  ok(r[0] === 'rain' && r[1] > .3 && r[2] === 'autumn', `Wetter: Regen setzt ein (${r[1].toFixed(2)}), Herbst`);
+  await p.evaluate(() => { const w = window.__bi.weather(); w.forced = 'clear'; w.set('clear'); }); await p.waitForFunction(() => window.__bi.weather().rainy < .15, null, { timeout: 40000 }).catch(() => { });
+  ok(await p.evaluate(() => window.__bi.weather().rainy < .15), 'Wetter: Regen hört auf'); await c.close();
+}
+{ // Küche: melken, kochen, verkaufen
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(300);
+  const r = await p.evaluate(async () => {
+    const b = window.__bi; const a = b.farm.animals.find(x => x.k === 'cow'); const out = {};
+    if (a) { b.P.x = a.x + 1; b.P.z = a.z; await new Promise(r => setTimeout(r, 200)); const n = b.placeNear(); out.cow = n && n.src; b.placeAct(n); out.milk = b.garden.inv().milk || 0; }
+    const F = b.W.spots.farm; b.P.x = F.stove.x; b.P.z = F.stove.z + 1.5; await new Promise(r => setTimeout(r, 200)); const k = b.placeNear(); out.k = k && k.src;
+    const I = b.garden.inv(); I.strawberry = 2; const s0 = b.save.stars; b.placeAct(k); document.querySelector('#kitRec button').click(); out.jam = I.jam; document.querySelector('#kitSell button').click(); out.gain = b.save.stars - s0; b.kitchen.close(); return out;
+  });
+  ok(r.cow === 'animal' && r.milk >= 1, 'Kuh melken gibt Milch'); ok(r.k === 'kitchen' && r.jam === 1 && r.gain >= 1, `Hofküche: Marmelade gekocht & verkauft (+${r.gain} ⭐)`); await c.close();
+}
+{ // Tagesgeschenk, Foto-Aufgabe, Sticker-Belohnung
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(300);
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, k = b.kids, out = {}, s0 = b.save.stars; out.d1 = k.daily(); out.d2 = k.daily(); out.g = b.save.stars - s0;
+    b.save.daily = { d: (() => { const d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); })(), s: 2 }; k.daily(); out.streak = b.save.daily.s;
+    const t = k.task(); const a = b.farm.animals.find(x => x.k === t[0]); out.t = t[0];
+    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = 0; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
+    for (const id of ['ride', 'heli', 'train', 'boat']) k.earn(id); out.owned = b.save.owned.includes('hat_party'); return out;
+  });
+  ok(r.d1 === true && r.d2 === false && r.g >= 2, 'Tagesgeschenk gibt es einmal pro Tag'); ok(r.streak === 3, 'Serie zählt Tage in Folge'); ok(r.pt === 1, 'Foto-Aufgabe (' + r.t + ') wird erkannt'); ok(r.owned, 'Sticker-Belohnung: Partyhut freigeschaltet'); await c.close();
+}
+{ // Zimmer einrichten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, f = b.flats[0]; b.P.x = f.chest.x; b.P.z = f.chest.z + 1.3; await new Promise(r => setTimeout(r, 300)); const n = b.flatNear(); b.flatAct(n); const o = { k: n && n.k, open: b.room.open }; document.querySelector('#roomBox .sw:nth-child(1)'); document.querySelectorAll('#roomBox .row')[0].children[2].click(); o.wall = b.save.room.wall; b.room.close(); return o; });
+  ok(r.k === 'room' && r.open && r.wall === 2, 'Zimmer einrichten: Tapete wählbar, wird gespeichert'); await c.close();
+}
+{ // Fahrrad, Roller, Camp mit Geschichten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(400);
+  const r = await p.evaluate(async () => { const b = window.__bi, o = {}; const v = b.vehicles.find(x => x.type === 'bicycle'); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); await new Promise(r => setTimeout(r, 200)); o.in = !!b.P.veh; b.leave();
+    const cp = b.W.spots.camp; b.P.x = cp.x; b.P.z = cp.z + 3.4; await new Promise(r => setTimeout(r, 300)); const n = b.placeNear(); o.src = n && n.src; b.placeAct(n); o.open = b.camp.open; document.querySelector('#storyList button').click(); o.txt = document.getElementById('storyText').textContent.length > 20; b.camp.close(); return o; });
+  ok(r.in, 'Fahrrad: einsteigen klappt'); ok(r.src === 'camp' && r.open && r.txt, 'Camp: Geschichte am Lagerfeuer'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

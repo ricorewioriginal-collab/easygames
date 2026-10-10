@@ -21,6 +21,8 @@ BI.createFarm = function (G) {
   function mk(fn, scale) { const b = new BI.Batch(); fn(b); const g = new THREE.Group(), m = b.mesh(mat); m.frustumCulled = false; g.add(m); g.scale.setScalar(scale || 1); return g; }
   const legs = (b, c, x, z, h, w) => { for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box(sx * x, 0, sz * z, w, h, w, c); };
   const MODEL = {
+    cow: () => mk(b => { const C = 0xffffff; b.box(0, .95, 0, .8, .8, 1.7, C); b.box(-.41, 1.0, .1, .04, .4, .5, 0x2b2b30); b.box(.41, 1.15, -.3, .04, .35, .45, 0x2b2b30); legs(b, 0xf2f2f2, .27, .65, .75, .2); b.box(0, 1.2, .95, .5, .55, .5, C); b.box(0, 1.05, 1.28, .38, .28, .2, 0xffb0c0); b.box(-.15, 1.4, 1.0, .06, .06, .04, 0x222222); b.box(.15, 1.4, 1.0, .06, .06, .04, 0x222222); b.cone(-.22, 1.6, .9, .05, .2, 0xf0e0b0, 5); b.cone(.22, 1.6, .9, .05, .2, 0xf0e0b0, 5); b.box(-.32, 1.5, .85, .12, .08, .22, 0x2b2b30); b.box(.32, 1.5, .85, .12, .08, .22, 0x2b2b30); b.box(0, .95, -.95, .08, .7, .08, 0x2b2b30, 0, .15); b.box(0, .5, -.2, .35, .14, .5, 0xffb0c0); }, 1),
+    sheep: () => mk(b => { b.sph(0, .65, 0, .5, 0xfdfbf2, 1, .95, .9, 1.25); b.sph(-.25, .85, .1, .28, 0xf4f1e6, 1); b.sph(.25, .85, -.1, .28, 0xf4f1e6, 1); legs(b, 0x4a4a52, .2, .32, .38, .1); b.sph(0, .8, .62, .22, 0x4a4a52, 1); b.cone(-.17, .95, .62, .06, .16, 0x4a4a52, 4); b.cone(.17, .95, .62, .06, .16, 0x4a4a52, 4); b.box(-.08, .85, .8, .04, .04, .03, 0xffffff); b.box(.08, .85, .8, .04, .04, .03, 0xffffff); }, 1),
     goat: () => mk(b => { const W_ = 0xf2eee2; b.box(0, .5, 0, .5, .5, 1.0, W_); legs(b, 0x9a8f80, .18, .38, .5, .12); b.box(0, .85, .6, .34, .4, .4, W_); b.box(0, .9, .85, .2, .2, .18, 0xe8dcc8); b.box(0, .6, .86, .1, .18, .08, 0xe8dcc8); b.cone(-.1, 1.15, .55, .05, .28, 0x8a7a60, 5); b.cone(.1, 1.15, .55, .05, .28, 0x8a7a60, 5); b.box(0, .6, -.55, .1, .22, .12, W_); b.box(-.1, .9, .78, .05, .05, .04, 0x222222); b.box(.1, .9, .78, .05, .05, .04, 0x222222); }, 1),
     pig: () => mk(b => { b.sph(0, .5, 0, .5, 0xffa8c0, 1, .9, .8, 1.3); legs(b, 0xff8fb0, .24, .45, .3, .16); b.sph(0, .62, .62, .3, 0xffa8c0, 1); b.box(0, .55, .9, .22, .17, .1, 0xff7aa2); b.cone(-.16, .95, .6, .1, .2, 0xff8fb0, 4); b.cone(.16, .95, .6, .1, .2, 0xff8fb0, 4); b.sph(0, .7, -.62, .08, 0xff7aa2, 0); b.box(-.1, .7, .86, .05, .05, .04, 0x222222); b.box(.1, .7, .86, .05, .05, .04, 0x222222); }, .95),
     chicken: () => mk(b => { b.sph(0, .35, 0, .3, 0xffffff, 1, .9, .9, 1.1); b.sph(0, .62, .25, .17, 0xffffff, 1); b.cone(0, .72, .25, .06, .15, 0xe0382b, 4); b.cone(0, .62, .42, .05, .14, 0xffa31a, 4); b.box(0, .5, -.3, .1, .3, .3, 0xffffff, 0, -.4); b.box(-.05, 0, .02, .04, .22, .04, 0xffa31a); b.box(.05, 0, .02, .04, .22, .04, 0xffa31a); b.box(-.08, .66, .36, .04, .04, .03, 0x222222); b.box(.08, .66, .36, .04, .04, .03, 0x222222); }, 1),
@@ -130,12 +132,18 @@ BI.createFarm = function (G) {
     const b = book(); if (b[k]) return; b[k] = true; const s = SP[k]; addStars(1); persist(); A.star(); say('📖 Neu im Tierbuch: ' + s.icon + ' ' + s.name + '! ' + s.fact, 5200); if (A.speak) A.speak(s.name + '. ' + s.fact);
     if (ORDER.every(x => b[x])) { addStars(10); say('🏆 Alle Tiere entdeckt! +10 ⭐', 4200); G.earn('zoo'); } if (K.bookOpen) renderBook();
   }
+  const NOFEED = ['egg', 'milk', 'jam', 'cake', 'soup', 'popcorn'];
+  K.milk = function () {
+    const a = K.animalNear(); if (!a || a.k !== 'cow') return false; const now = performance.now();
+    if (now - (K.milkT || 0) < 12000) { K.care('stroke'); say('🥛 Die Kuh braucht kurz Zeit für neue Milch …', 2200); return true; }
+    K.milkT = now; const inv = K.inv(); inv.milk = (inv.milk || 0) + 1; A.moo && A.moo(); a.hop = .6; fx.burst(a.x, 1.3, a.z, 10, [BI.C.white, BI.C.blue], 3, 1.2, 26, 3); persist(); say('🥛 Frische Milch gemolken! (' + inv.milk + ') – daraus kocht man Leckeres', 2800); G.earn('animal'); return true;
+  };
   K.care = function (kind) {
     const a = K.animalNear(); if (!a) return false; const s = SP[a.k], q = Q(), inv = K.inv();
     if (A[s.snd]) A[s.snd](); a.hop = .6; const pos = a; fx.burst(pos.x, 1.4, pos.z, 12, [BI.C.pink, BI.C.red, BI.C.white], 3, 1.2, 28, -1); G.showEmoji(kind === 'feed' ? (FAVI[FAV[a.k]] || '🌾') : '🤗', { x: pos.x, y: 0, z: pos.z, up: 0 });
     G.earn('animal');
     if (kind === 'stroke') { say('🤗 ' + s.icon + ' ' + s.name + ' mag das! 💕', 2000); S().pets = (S().pets || 0) + 1; persist(); return true; }
-    let used = null; const fav = FAV[a.k]; if ((inv[fav] || 0) > 0) used = fav; else { const any = Object.keys(inv).find(k => k !== 'egg' && (inv[k] || 0) > 0); if (any) used = any; }
+    let used = null; const fav = FAV[a.k]; if ((inv[fav] || 0) > 0) used = fav; else { const any = Object.keys(inv).find(k => !NOFEED.includes(k) && (inv[k] || 0) > 0); if (any) used = any; }
     if (used) { inv[used]--; addStars(used === fav ? 2 : 1); say('😋 ' + s.icon + ' ' + s.name + ' frisst ' + (G.cropIcon(used) || '') + ' gern! +' + (used === fav ? 2 : 1) + ' ⭐', 2600); } else say('🌾 ' + s.icon + ' ' + s.name + ' mampft Heu. (Ernte im Garten Gemüse – das mögen sie noch lieber!)', 3200);
     q.fed = q.fed || {}; if (!q.fed[a.k]) { q.fed[a.k] = true; } persist(); return true;
   };

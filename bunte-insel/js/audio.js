@@ -104,19 +104,19 @@ BI.audio = (function () {
         eng = { kind, o, o2, f, g };
         if (kind === 'heli') { const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 13; lg.gain.value = .05; lfo.connect(lg); lg.connect(g.gain); lfo.start(); eng.lfo = lfo; o.type = 'sawtooth'; }
       }
-      const base = { bike: 70, car: 50, tractor: 36, train: 30, heli: 52 }[kind] || 50, k = { bike: 2.8, car: 2.2, tractor: 1.3, train: 1.0, heli: .5 }[kind] || 2;
+      const base = { cycle: 40, bike: 70, car: 50, tractor: 36, train: 30, heli: 52 }[kind] || 50, k = { cycle: 1.2, bike: 2.8, car: 2.2, tractor: 1.3, train: 1.0, heli: .5 }[kind] || 2;
       const fr = base * (1 + speed * k), t = ctx.currentTime;
       eng.o.frequency.setTargetAtTime(fr, t, .08); eng.o2.frequency.setTargetAtTime(fr * .5, t, .08);
       eng.f.frequency.setTargetAtTime(350 + speed * 700, t, .1);
-      eng.g.gain.setTargetAtTime(.07 + speed * .06, t, .1);
+      eng.g.gain.setTargetAtTime(kind === 'cycle' ? .015 + speed * .015 : .07 + speed * .06, t, .1);
     },
     horn(kind, on) {
       if (!ctx) return;
       if (!on) { if (hornNodes) { const h = hornNodes; hornNodes = null; h.g.gain.setTargetAtTime(0, ctx.currentTime, .03); setTimeout(() => { try { h.a.o.stop(); h.b.o.stop(); } catch (x) { } }, 200); } return; }
       if (hornNodes) return;
-      const fr = { car: [392, 494], bus: [196, 247], bike: [700, 700], tractor: [165, 208], train: [440, 587], truck: [262, 330] }[kind] || [392, 494];
+      const fr = { bell: [1760, 2349], car: [392, 494], bus: [196, 247], bike: [700, 700], tractor: [165, 208], train: [440, 587], truck: [262, 330] }[kind] || [392, 494];
       const g = ctx.createGain(); g.gain.value = .0001; g.connect(sfxBus); g.gain.setTargetAtTime(.14, ctx.currentTime, .01);
-      const a = osc(kind === 'train' ? 'sawtooth' : 'square', fr[0], .5, g), b = osc(kind === 'train' ? 'sine' : 'square', fr[1], .5, g);
+      const a = osc(kind === 'train' ? 'sawtooth' : kind === 'bell' ? 'sine' : 'square', fr[0], .5, g), b = osc(kind === 'train' || kind === 'bell' ? 'sine' : 'square', fr[1], .5, g);
       hornNodes = { a, b, g };
     },
     melody() { // Eiswagen-Lied
@@ -158,7 +158,11 @@ BI.audio = (function () {
       try { ss.cancel(); const u = new SpeechSynthesisUtterance(clean); u.lang = 'de-DE'; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1; A._said = clean; ss.speak(u); } catch (e) { }
     },
     setVoice(on) { A.voiceOn = on; if (!on && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } },
-    stopAll() { A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
+    rain(on) { // leises Regenrauschen (Schleife aus gefiltertem Rauschen)
+      if (!ctx) return; if (on && !A._rain) { const len = ctx.sampleRate * 2, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1; const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3200; f.Q.value = .5; const g = ctx.createGain(); g.gain.value = .0001; g.gain.linearRampToValueAtTime(.09, ctx.currentTime + 1.5); s.connect(f); f.connect(g); g.connect(sfxBus); s.start(); A._rain = { s, g }; }
+      else if (!on && A._rain) { const r = A._rain; A._rain = null; r.g.gain.linearRampToValueAtTime(.0001, ctx.currentTime + 1); setTimeout(() => { try { r.s.stop(); } catch (e) { } }, 1200); }
+    },
+    stopAll() { A.rain(false); A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
   };
   return A;
 })();
