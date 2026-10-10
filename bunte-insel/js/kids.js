@@ -13,14 +13,33 @@ BI.createKids = function (G) {
     ['photo', '📸', 'Fotograf', 'Mach ein Foto'], ['music', '🎹', 'Musikant', 'Spiel auf dem Klavier'], ['paint', '🎨', 'Maler', 'Mal ein Bild'], ['quiz', '🧠', 'Schlaukopf', 'Spiel ein Lernspiel'],
     ['pet', '🐾', 'Haustierfreund', 'Füttere dein Haustier'], ['treasure', '🗺️', 'Schatzsucher', 'Finde einen Schatz'], ['friend', '👥', 'Freunde', 'Spiel mit einem Freund'], ['mini', '🎮', 'Spielprofi', 'Spiel ein Mini-Spiel'],
     ['bubble', '🫧', 'Seifenblasen', 'Puste Seifenblasen'], ['dance', '🕺', 'Tänzer', 'Tanz mit dem Dorf'],
-    ['garden', '🌻', 'Gärtner', 'Ernte etwas im Garten'], ['farm', '🚜', 'Landwirt', 'Mäh ein Feld'], ['farmer', '👨‍🌾', 'Hofmeister', 'Schaff alle Aufgaben vom Bauern'], ['animal', '🐄', 'Tierfreund', 'Streichle ein Tier auf dem Hof'], ['guide', '🧭', 'Entdecker', 'Lass dir den Weg zeigen'], ['cook', '🍳', 'Hobbykoch', 'Koche etwas in der Hofküche'],
+    ['garden', '🌻', 'Gärtner', 'Ernte etwas im Garten'], ['farm', '🚜', 'Landwirt', 'Mäh ein Feld'], ['farmer', '👨‍🌾', 'Hofmeister', 'Schaff alle Aufgaben vom Bauern'], ['animal', '🐄', 'Tierfreund', 'Streichle ein Tier auf dem Hof'], ['guide', '🧭', 'Entdecker', 'Lass dir den Weg zeigen'], ['cook', '🍳', 'Hobbykoch', 'Koche etwas in der Hofküche'], ['ptask', '🎯', 'Fotoreporter', 'Löse 5 Foto-Aufgaben'], ['streak', '📅', 'Stammgast', 'Komm 3 Tage hintereinander'],
     ['zoo', '📖', 'Tierforscher', 'Entdecke alle Tiere'], ['swim', '🏊', 'Schwimmer', 'Spring ins Freibad'], ['slide', '🛝', 'Rutschmeister', 'Rutsch die Wasserrutsche']
   ];
   K.stickers = ST;
+  /* Freischaltungen: mit mehr Stickern gibt es neue Sachen für den Schrank */
+  const UNL = [[4, 'hat_party', '🥳 Partyhut'], [8, 'hat_wizard', '🧙 Zauberhut'], [12, 'hat_crown', '👑 Krone'], [16, 'cape', '🦸 Umhang'], [20, 'wings', '🧚 Feenflügel']];
+  function unlocks() { const n = (save.stk || []).length; for (const [c, id, nm] of UNL) if (n >= c && !save.owned.includes(id)) { save.owned.push(id); persist(); setTimeout(() => say('🎁 Neu im Schrank: ' + nm + '! (Sticker-Belohnung)', 4200), 1800); } }
+  /* Tagesgeschenk mit Serie */
+  K.daily = function () {
+    const dk = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), now = new Date(), key = dk(now), D = save.daily || { d: '', s: 0 }; if (D.d === key) return false;
+    D.s = D.d === dk(new Date(now - 864e5)) ? D.s + 1 : 1; D.d = key; save.daily = D; const r = 2 + Math.min(5, D.s - 1); addStars(r); persist(); A.fanfare(); fx.burst(P.x, 2.4, P.z, 24, [BI.C.gold, BI.C.pink, BI.C.white], 5, 1.2, 30, 6);
+    say('🎁 Tagesgeschenk! +' + r + ' ⭐' + (D.s > 1 ? ' · ' + D.s + ' Tage in Folge 🔥' : ''), 4600); if (D.s >= 3) K.earn('streak'); return true;
+  };
+  /* Foto-Aufgaben */
+  const PT = [['horse', '🐴', 'ein Pferd'], ['cow', '🐮', 'eine Kuh'], ['fountain', '⛲', 'den Brunnen'], ['sheep', '🐑', 'ein Schaf'], ['heli', '🚁', 'einen Hubschrauber'], ['pig', '🐷', 'ein Schwein'], ['train', '🚂', 'den Zug'], ['chicken', '🐔', 'ein Huhn'], ['police', '🚓', 'ein Polizeiauto'], ['donkey', '🫏', 'einen Esel']];
+  let taskHit = false;
+  K.task = () => PT[(save.pt | 0) % PT.length];
+  const frustum = new THREE.Frustum(), pm = new THREE.Matrix4(), pv = new THREE.Vector3();
+  function checkTask() {
+    const t = K.task(); camera.updateMatrixWorld(); pm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); frustum.setFromProjectionMatrix(pm);
+    for (const o of G.targets(t[0])) { pv.set(o.x, o.y == null ? 1.2 : o.y, o.z); if (camera.position.distanceTo(pv) < 45 && frustum.containsPoint(pv)) { save.pt = (save.pt | 0) + 1; addStars(2); A.fanfare(); persist(); say('🎯 Foto-Aufgabe geschafft: ' + t[1] + ' ' + t[2] + '! +2 ⭐', 3600); if (save.pt >= 5) K.earn('ptask'); return true; } }
+    return false;
+  }
   K.earn = function (id) {
     if (!save.stk) save.stk = []; if (save.stk.includes(id)) return false; const s = ST.find(q => q[0] === id); if (!s) return false;
     save.stk.push(id); persist(); addStars(2); A.fanfare(); say('🏅 Neuer Sticker: ' + s[1] + ' ' + s[2] + '! +2 ⭐', 3400); fx.burst(P.x, 2.4, P.z, 22, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 28, 6);
-    if (save.stk.length === ST.length) { addStars(10); say('🏆 Alle Sticker gesammelt! +10 ⭐', 4200); } if (K.open === 'album') renderAlbum(); return true;
+    unlocks(); if (save.stk.length === ST.length) { addStars(10); say('🏆 Alle Sticker gesammelt! +10 ⭐', 4200); } if (K.open === 'album') renderAlbum(); return true;
   };
   function renderAlbum() {
     const g = $('albumGrid'); g.innerHTML = ''; const have = save.stk || []; $('albumCount').textContent = have.length + ' von ' + ST.length;
@@ -35,10 +54,10 @@ BI.createKids = function (G) {
     renderer.render(scene, camera); const src = renderer.domElement, w = 360, h = Math.round(w * src.height / src.width), c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(src, 0, 0, w, h);
     let url = ''; try { url = c.toDataURL('image/jpeg', .78); } catch (e) { say('📸 Das Foto hat nicht geklappt', 1800); return; }
     photos.unshift(url); if (photos.length > 12) photos.length = 12; try { BI.store.set('photos', photos); } catch (e) { photos.length = Math.max(1, photos.length >> 1); }
-    const po = $('polaroid'); po.querySelector('img').src = url; po.classList.remove('show'); void po.offsetWidth; po.classList.add('show'); K.earn('photo'); say('📸 Foto gemacht! Im Fotoalbum ansehen', 2400);
+    const po = $('polaroid'); po.querySelector('img').src = url; po.classList.remove('show'); void po.offsetWidth; po.classList.add('show'); K.earn('photo'); if (!taskHit) say('📸 Foto gemacht! Im Fotoalbum ansehen', 2400); taskHit = false;
   }
   K.photo = function () {
-    if (selfieT > 0 || K.open) return; if (P.veh) { shoot(); return; }
+    if (selfieT > 0 || K.open) return; taskHit = checkTask(); if (!taskHit) { const t = K.task(); say('🎯 Foto-Aufgabe: fotografiere ' + t[2] + ' ' + t[1], 2400); } if (P.veh) { shoot(); return; }
     camYaw = G.cam.yaw; G.cam.yaw = P.h; selfieT = 3.2; selfieN = 4; G.setStick(0, 0);
   };
   function renderPhotos() {

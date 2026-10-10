@@ -398,5 +398,17 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   });
   ok(r.cow === 'animal' && r.milk >= 1, 'Kuh melken gibt Milch'); ok(r.k === 'kitchen' && r.jam === 1 && r.gain >= 1, `Hofküche: Marmelade gekocht & verkauft (+${r.gain} ⭐)`); await c.close();
 }
+{ // Tagesgeschenk, Foto-Aufgabe, Sticker-Belohnung
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(300);
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, k = b.kids, out = {}, s0 = b.save.stars; out.d1 = k.daily(); out.d2 = k.daily(); out.g = b.save.stars - s0;
+    b.save.daily = { d: (() => { const d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); })(), s: 2 }; k.daily(); out.streak = b.save.daily.s;
+    const t = k.task(); const a = b.farm.animals.find(x => x.k === t[0]); out.t = t[0];
+    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = 0; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
+    for (const id of ['ride', 'heli', 'train', 'boat']) k.earn(id); out.owned = b.save.owned.includes('hat_party'); return out;
+  });
+  ok(r.d1 === true && r.d2 === false && r.g >= 2, 'Tagesgeschenk gibt es einmal pro Tag'); ok(r.streak === 3, 'Serie zählt Tage in Folge'); ok(r.pt === 1, 'Foto-Aufgabe (' + r.t + ') wird erkannt'); ok(r.owned, 'Sticker-Belohnung: Partyhut freigeschaltet'); await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

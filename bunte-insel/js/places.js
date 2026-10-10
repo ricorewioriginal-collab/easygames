@@ -63,8 +63,8 @@ BI.addPlaces = function (W, st) {
     W.spots.farm = { stove: { x: sx + 6.4, z: sz - 2 }, shop: { x: sx, z: sz }, customer: { x: sx, z: sz - 1.9 }, farmer: { x: sx, z: sz + 1.2 } }; }
 
   /* ---------- Streichelzoo (Westseite außerhalb der Bahn): 6 Gehege mit Tor nach Osten ---------- */
-  W.spots.pens = []; W.pads.push([-172, -31, -144, 57]);
-  { const defs = [['pig', -29, -18, 4, 0xb9d98a], ['goat', -16.5, -6, 5, 0xb5e08a], ['horse', 6.5, 18, 2, 0xa9e07c], ['chicken', 19.5, 31, 8, 0xc9e89a], ['rabbit', 32.5, 43, 5, 0xb5e08a], ['donkey', 44.5, 55, 2, 0xa9e07c]];
+  W.spots.pens = []; W.pads.push([-172, -38, -144, 46]);
+  { const defs = [['pig', -36, -26.5, 4, 0xb9d98a], ['goat', -26, -16.5, 5, 0xb5e08a], ['horse', -16, -6.5, 2, 0xa9e07c], ['chicken', -6, 3.5, 8, 0xc9e89a], ['rabbit', 4, 13.5, 5, 0xb5e08a], ['donkey', 14, 23.5, 2, 0xa9e07c], ['cow', 24, 33.5, 3, 0xa9e07c], ['sheep', 34, 43.5, 5, 0xb5e08a]];
     const x0 = -168, x1 = -146;
     for (const [id, z0, z1, n, col] of defs) {
       const gz = (z0 + z1) / 2; st.rect(x0, z0, x1, z1, .03, col); fenceX(x0, x1, z0); fenceX(x0, x1, z1); fenceZ(x0, z0, z1); fenceZ(x1, z0, z1, [gz - 1.6, gz + 1.6]);
@@ -72,6 +72,8 @@ BI.addPlaces = function (W, st) {
     }
     const P = Object.fromEntries(W.spots.pens.map(p => [p.id, p]));
     { const p = P.pig; st.rect(p.x1 - 7, p.cz - 2.5, p.x1 - 3, p.cz + 2, .05, 0x6b4a2a); st.box(p.x0 + 2, 0, p.z0 + 1.8, 3, 1.6, 2.4, 0xc2453d); st.prism(p.x0 + 2, 1.6, p.z0 + 1.8, 3.6, 1.0, 2.8, 0x8a2b2b, 0); W.addBox(p.x0 + .5, p.z0 + .6, p.x0 + 3.5, p.z0 + 3, false, 2.2); st.box(p.x0 + 2, 0, p.z1 - 1, 2.2, .45, .7, WD); }
+    { const p = P.cow; st.box(p.x0 + 3, 0, p.z0 + 2, 3.6, 1.8, 2.6, 0xc2453d); st.prism(p.x0 + 3, 1.8, p.z0 + 2, 4.2, 1.0, 3.2, 0x8a2b2b, 0); st.box(p.x1 - 3, 0, p.cz, 3, .5, 1.1, 0x9aa0a8); st.rect(p.x1 - 4.4, p.cz - .5, p.x1 - 1.6, p.cz + .5, .06, 0x57c4ff); W.addBox(p.x0 + 1, p.z0 + .6, p.x0 + 5, p.z0 + 3.4, false, 1.8); }
+    { const p = P.sheep; st.box(p.x0 + 2.4, 0, p.cz, 3, 1.4, 2.6, 0xe8c85a); st.prism(p.x0 + 2.4, 1.4, p.cz, 3.6, .9, 3.0, 0xc2453d, 0); W.addBox(p.x0 + .8, p.cz - 1.4, p.x0 + 4, p.cz + 1.4, false, 1.4); }
     { const p = P.goat; st.box(p.x0 + 3, 0, p.cz, 3.4, 1.0, 2.6, 0x9aa0a8); st.box(p.x0 + 3.4, 1.0, p.cz, 2.2, .9, 1.8, 0xb0b6be); st.box(p.x0 + 3.6, 1.9, p.cz, 1.2, .7, 1.0, 0xc6ccd4); W.addBox(p.x0 + 1.3, p.cz - 1.3, p.x0 + 4.7, p.cz + 1.3, false, 1.6); }
     { const p = P.horse; st.box(p.x0 + 2.4, 0, p.cz, 4, 2.6, 6, 0xc8803c); st.prism(p.x0 + 2.4, 2.6, p.cz, 4.8, 1.4, 6.8, 0x8a2b2b, Math.PI / 2); st.box(p.x0 + 4.45, 0, p.cz, .1, 2.1, 2.4, 0x2b2f3a); W.addBox(p.x0 + .4, p.cz - 3, p.x0 + 4.4, p.cz + 3, false, 3.4); st.box(p.x1 - 2.5, 0, p.z0 + 1.2, 2.6, .5, .8, WD); st.box(p.x1 - 2.5, .45, p.z0 + 1.2, 2.4, .06, .6, 0x57c4ff); }
     { const p = P.chicken; st.box(p.x0 + 2, 0, p.z0 + 2.2, 3.2, 1.5, 2.6, 0xe8c85a); st.prism(p.x0 + 2, 1.5, p.z0 + 2.2, 3.8, .9, 3.0, 0xc2453d, 0); st.box(p.x0 + 2, 0, p.z0 + 3.55, .9, .9, .1, 0x2b2f3a); st.box(p.x0 + 2, 0, p.z0 + 4.3, 2.4, .16, 1.2, 0x8a5a33); W.addBox(p.x0 + .4, p.z0 + .8, p.x0 + 3.6, p.z0 + 3.6, false, 2.4); for (let k = 0; k < 3; k++) { st.box(p.x0 + 2 + k * 1.1, 0, p.z1 - 1.3, .8, .3, .7, 0xb98650); st.sph(p.x0 + 2 + k * 1.1, .38, p.z1 - 1.3, .2, 0xf5efe0, 0); } }
