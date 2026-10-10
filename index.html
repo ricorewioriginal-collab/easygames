@@ -21,6 +21,9 @@
   header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
   h1{margin:0;font-size:clamp(28px,6vw,44px);font-weight:900;font-style:italic;letter-spacing:.01em;
     background:linear-gradient(90deg,var(--cy),var(--pu),var(--ma));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .brandrow{display:flex;align-items:center;gap:16px}
+  [hidden]{display:none!important}
+  .brand{max-height:64px;max-width:200px;width:auto;height:auto;filter:drop-shadow(0 0 12px rgba(255,255,255,.25))}
   .sub{margin:2px 0 0;color:#9fb4c8;font-size:15px}
   .pill{border:1px solid rgba(0,229,255,.45);background:rgba(255,255,255,.04);border-radius:999px;padding:9px 18px;font-weight:700;font-size:14px;color:var(--cy)}
   .pill:hover{background:rgba(0,229,255,.12)}
@@ -73,7 +76,7 @@
 <body>
 <main>
   <header class="hide-embed">
-    <div><h1>easygames</h1><p class="sub">Kleine Spiele für Browser und Handy – antippen und loslegen.</p></div>
+    <div class="brandrow"><img id="brandImg" class="brand" alt="Logo" hidden><div><h1>easygames</h1><p class="sub">Kleine Spiele für Browser und Handy – antippen und loslegen.</p></div></div>
     <button class="pill" id="libBtn">&lt;/&gt; Alle Spiele einbetten</button>
   </header>
 
@@ -125,6 +128,12 @@ const GAMES = [
 ];
 
 const $ = id => document.getElementById(id);
+// Haupt-Logo (optional): logo.png / .jpg / .jpeg / .svg / .webp im Hauptordner
+(function () {
+  const exts = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
+  Promise.all(exts.map(e => new Promise(res => { const im = new Image(); im.onload = () => res(im.src); im.onerror = () => res(null); im.src = 'logo.' + e; })))
+    .then(l => { const src = l.find(Boolean); if (src) { $('brandImg').src = src; $('brandImg').hidden = false; } });
+})();
 const base = new URL('.', location.href).href;
 const abs = p => new URL(p, base).href;
 const iframeCode = (url, title) =>

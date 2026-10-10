@@ -85,3 +85,13 @@ Jedes Logo ergibt einen eigenen Tisch (anderes Layout und andere Farben, das Log
 Bilder als `anmacha-flipper/logos/01.jpg` bis `13.jpg` ablegen (auch `.jpeg` oder `.png`, ca. 400 × 400 px, unter 200 KB).
 Ohne Logos gibt es 3 Platzhalter-Tische. Steuerung: `←`/`A` und `→`/`D` Flipper, `Leertaste` halten und loslassen startet die Kugel,
 `P` Pause, `R` Neustart, `M` Ton. Am Handy: LINKS / RECHTS / START halten. Bei 5 verlorenen Kugeln ist das Spiel vorbei; der Bestwert wird im Browser gespeichert.
+
+## Haupt-Logo
+
+Ein normales Logo (PNG mit Transparenz am besten, auch JPG, SVG oder WebP) als **`logo.png`** (bzw. `logo.jpg` / `logo.svg` …) ablegen:
+
+- im **Hauptordner** (neben `index.html`): erscheint auf der Startseite und im Hauptmenü aller Spiele
+- oder in einem **Spielordner** (z. B. `anmacha-flipper/logo.png`): gilt nur für dieses Spiel und hat Vorrang
+
+Das Logo ersetzt im Hauptmenü der Spiele das Wort „AnMaCha“ (der Zusatz „FLIPPER“ bzw. „RADIO SURFER“ bleibt darunter).
+Auf dem dunklen Hintergrund passen helle oder farbige Logos am besten. Ohne Logo-Datei bleibt der Text-Titel.
