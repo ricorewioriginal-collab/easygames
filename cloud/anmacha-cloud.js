@@ -4,6 +4,7 @@
  * data-prefix = kommagetrennte localStorage-Schlüsselanfänge, die synchronisiert werden
  * data-idb / data-idb-files = optional für Godot-Exporte: IndexedDB-Pfad (z.B. /userfs) und Dateinamen-Anfang der Speicherdateien
  * data-save-btn = CSS-Selektor(en) der spieleigenen Speichern-Knöpfe: daneben erscheint „Mit Google speichern“ samt Hinweis, dass sonst nur lokal gespeichert wird
+ * data-mount  = CSS-Selektor: Anmelde-Bereich dort einbetten statt schwebendem Knopf; data-hint = Einleitungstext dazu
  * data-ui="off" blendet den Cloud-Knopf aus.
  * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer (gzip ab 20 KB). Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
 (function () {
@@ -272,7 +273,7 @@
       row('Abmelden', signOut);
     } else {
       panel.appendChild(el('b', '', 'Spielstand sichern'));
-      panel.appendChild(el('div', 'margin:6px 0 0;opacity:.8', lastErr ? '⚠ ' + lastErr : 'Speichere deinen Fortschritt mit Google und spiele auf jedem Gerät weiter.'));
+      panel.appendChild(el('div', 'margin:6px 0 0;opacity:.8', lastErr ? '⚠ ' + lastErr : (s.dataset.hint || 'Speichere deinen Fortschritt mit Google und spiele auf jedem Gerät weiter.')));
       row('Mit Google speichern', signIn, G);
       row('Spielstand mit Google wiederherstellen', signIn, G);
     }
@@ -285,6 +286,11 @@
   }
   function ui() {
     if (s.dataset.ui === 'off') return;
+    var mt = s.dataset.mount && document.querySelector(s.dataset.mount);
+    if (mt) {
+      panel = el('div', 'margin:10px 0 0;padding:12px;border-radius:12px;background:rgba(127,127,127,.14);color:inherit;font:14px/1.4 system-ui,sans-serif;box-sizing:border-box');
+      mt.appendChild(panel); render(); return;
+    }
     btn = el('button', 'position:fixed;left:8px;bottom:8px;z-index:2147483000;width:40px;height:40px;padding:0;border:2px solid #dadce0;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.4)');
     btn.setAttribute('aria-label', 'Mit Google speichern');
     panel = el('div', 'position:fixed;left:8px;bottom:56px;z-index:2147483000;width:min(290px,calc(100vw - 16px));padding:14px;border-radius:12px;background:rgba(20,20,30,.96);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none;box-sizing:border-box');
