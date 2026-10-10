@@ -1,8 +1,8 @@
-/* Handy-Controller: koppelt per Code/QR und lenkt das Kart auf dem Host-Bildschirm. Gas ist automatisch. */
+/* Handy-Controller: koppelt per Code/QR und lenkt das Kart auf dem Host-Bildschirm. Gas per Knopf. */
 window.startController = function () {
   const root = $('ctl'); let peer = null, conn = null, ph = 'lobby', tries = 0, sendT = 0, last = '', wake = null;
   let name = '', logo = 6, ch = 1, kt = 0; try { name = localStorage.getItem('akName') || ''; logo = +localStorage.getItem('akLogo'); if (!(logo >= 0 && logo < 13)) logo = 6; ch = +localStorage.getItem('akChar'); if (!(ch >= 0 && ch < CHARS.length)) ch = 1; kt = +localStorage.getItem('akKart'); if (!(kt >= 0 && kt < KARTS.length)) kt = 0; } catch (e) {}
-  const logoSrc = i => `logos/${String(i + 1).padStart(2, '0')}.png`, put = html => { root.classList.remove('play'); root.innerHTML = html; }, st = { s: 0, b: 0, d: 0, i: 0 };
+  const logoSrc = i => `logos/${String(i + 1).padStart(2, '0')}.png`, put = html => { root.classList.remove('play'); root.innerHTML = html; }, st = { s: 0, g: 0, b: 0, d: 0, i: 0 };
   const tx = m => { try { conn && conn.open && conn.send(m); } catch (e) {} };
   function screenJoin(msg) {
     stopPlay();
@@ -14,7 +14,7 @@ window.startController = function () {
       <div class="row" style="justify-content:center"><button class="chip" id="cl" style="display:flex;gap:10px;align-items:center"><img id="cli" src="${logoSrc(logo)}" alt="" style="width:44px;height:44px;border-radius:10px;object-fit:cover"><span id="cln">${esc(NAMES[logo])}</span></button></div>
       <div class="row" style="justify-content:center"><button class="chip ${TILT.on ? 'on' : ''}" id="ct">📱 Kippen zum Lenken</button><button class="chip ${TILT.inv ? 'on' : ''}" id="ci">⇄ Richtung tauschen</button></div>
       <button class="big" id="cj">BEITRETEN</button>
-      <div class="info">Tipp: Handy quer halten. Gas gibt das Kart automatisch.</div>`);
+      <div class="info">Tipp: Handy quer halten. Rechts unten ist GAS – ohne Gas rollst du nur.</div>`);
     $('cch').querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { ch = +b.dataset.ch; $('cch').querySelectorAll('button').forEach(x => x.classList.toggle('on', +x.dataset.ch === ch)); });
     $('ckt').querySelectorAll('[data-kt]').forEach(b => b.onclick = () => { kt = +b.dataset.kt; $('ckt').querySelectorAll('button').forEach(x => x.classList.toggle('on', +x.dataset.kt === kt)); });
     $('cl').onclick = () => { logo = (logo + 1) % 13; $('cli').src = logoSrc(logo); $('cln').textContent = NAMES[logo]; };
@@ -54,7 +54,7 @@ window.startController = function () {
   function startPlay() {
     root.classList.add('play'); root.innerHTML = '<div class="hudline"></div><div class="tc" id="cz" style="display:block"></div>'; buildTouch($('cz'), st);
     try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { wake = w; }).catch(() => {}); } catch (e) {}
-    clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const msg = { t: 'in', s: Math.round(s * 100) / 100, b: st.b | pa.b, d: st.d | pa.d, i: st.i | pa.i }, k = msg.s + '|' + msg.b + msg.d + msg.i; if (k !== last || (Date.now() % 400) < 40) { last = k; tx(msg); } }, 33);
+    clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const msg = { t: 'in', s: Math.round(s * 100) / 100, g: st.g | pa.g, b: st.b | pa.b, d: st.d | pa.d, i: st.i | pa.i }, k = msg.s + '|' + msg.g + msg.b + msg.d + msg.i; if (k !== last || (Date.now() % 400) < 40) { last = k; tx(msg); } }, 33);
     try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {}
   }
   function stopPlay() { clearInterval(sendT); sendT = 0; ph = 'lobby'; try { wake && wake.release(); } catch (e) {} wake = null; }
