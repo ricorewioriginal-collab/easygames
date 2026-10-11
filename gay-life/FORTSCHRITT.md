@@ -2,6 +2,23 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 8 (11.10.2026): 3D-Charaktereditor (M9)
+
+### Neu umgesetzt
+
+- **3D-Vorschau** im Editor („Dein Look“): drehbare Figur (Ziehen mit Maus/Finger, sonst langsame Drehung) auf eigener Zeichenfläche; wird beim Schließen freigegeben. Ohne WebGL bleibt die 2D-Vorschau. Die Welt pausiert, solange der Editor offen ist (spart Rechenzeit).
+- **Körperbau** (schlank, normal, kräftig), **Größe** (klein, mittel, groß) und **Tattoos** (Armband, Regenbogen-Armband, Herz, Stern) als neue Look-Felder `build`, `h`, `tat`; wirken auch auf NPC-gleiche Figuren, Mehrspieler-Mitspieler und die Wohnung (alle nutzen `makePerson`). Alte Spielstände bekommen die Standardwerte (normal, mittel, kein Tattoo).
+- **Outfits speichern**: 3 Plätze (Frisur, Haarfarbe, Bart, Extra, Oberteil, Farbe, Tattoo); Anziehen prüft, ob die Teile gekauft sind. Spielstand: `outfits`.
+- Mehrspieler-Prüfung (`cleanLook`) kennt die neuen Felder; fehlende Werte werden zu „normal“.
+
+### Tests Durchgang 8
+
+- e2e: Vorschau-Zeichenfläche, Standardwerte, Auswahl, Outfit speichern/anziehen, Freigabe der Vorschau; Gesamtlauf 225 Prüfungen grün. Ein Bildschirmfoto der Vorschau wurde angesehen (Software-WebGL). Nicht von Menschen getestet.
+
+### Offen
+
+- Kein Gesichts-Feinschliff (Nase, Mund), keine Schuhe/Hosen zur Wahl, Tattoos nur an Arm und Gesicht.
+
 ## Stand nach Durchgang 7 (11.10.2026): Mehrspieler per PIN und QR-Code (M8)
 
 ### Neu umgesetzt
