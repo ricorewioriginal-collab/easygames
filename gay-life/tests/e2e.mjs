@@ -128,6 +128,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   ok(Math.abs(s - .5) < .05, 'Gespieltes Quiz zählt als Aktivität (+30 Min.)');
 
   // Kontakte
+  await ev(page, () => { GL.S.world.t = 4 / 24; GL.emit('enterWorld', GL.W); }); await page.waitForTimeout(1400);
   s = await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'gerda'); GL.W.player.x = n.x + 1; GL.W.player.z = n.z; n.wait = 9; return n.d.id; });
   await page.waitForTimeout(300); await act(page);
   s = await ev(page, () => ({ r: GL.S.rel.gerda, dlg: !!GL.W.dlg }));
@@ -209,6 +210,180 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   const hp = await ev(page, () => ({ x: GL.W.pois.home.x, z: GL.W.pois.home.z })); await goTo(page, hp.x, hp.z);
   await page.tap('#act'); await waitFade(page);
   ok(await ev(page, () => GL.W.inside === 1), 'Aktionsknopf per Touch: Wohnung betreten');
+  await ctx.close();
+}
+
+
+/* ---------- 4. Tagesabläufe, Dating, Nachrichten, Kalender ---------- */
+{
+  const { ctx, page } = await newPage();
+  await boot(page);
+  const setTime = async (h, day) => { await ev(page, ([h, day]) => { GL.S.world.t = ((h - 6 + 24) % 24) / 24; if (day) GL.S.life.day = day; GL.emit('enterWorld', GL.W); }, [h, day]); await page.waitForTimeout(1300); };
+  const dlg = async () => { for (let i = 0; i < 14; i++) { if (!(await ev(page, () => !!GL.W.dlg))) break; await page.click('#dn'); await page.waitForTimeout(50); } await page.waitForTimeout(260); };
+  const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
+  const menuItem = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  const rel = id => ev(page, id => JSON.parse(JSON.stringify(GL.dating.rel(id))), id);
+  const openMenu = async id => { await ev(page, id => { const n = GL.W.npcs.find(n => n.d.id === id); GL.W.player.x = n.x + 1.2; GL.W.player.z = n.z; GL.dating.menu(n); }, id); await page.waitForTimeout(80); };
+  const days = n => ev(page, n => { for (let i = 0; i < n; i++) GL.life.advance(1440); }, n);
+
+  // --- Tagesabläufe
+  ok(await ev(page, () => GL.people.placeAt('jonas', 9, false) === 'cafe' && GL.people.placeAt('jonas', 3, false) === 'home' && GL.people.placeAt('jonas', 21, true) === 'club' && GL.people.placeAt('torsten', 12, false) === 'pool'), 'Tagesplan: Jonas 9 Uhr im Café, 3 Uhr zu Hause, Wochenende abends im Club, Torsten im Strandbad');
+  await setTime(10); // Montag 10 Uhr
+  let s = await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'jonas'), p = GL.W.pois.cafe; return { hidden: !!n.hidden, d: Math.hypot(n.x - p.x, n.z - p.z), vis: n.g.visible }; });
+  ok(!s.hidden && s.vis && s.d < 9, `Montag 10 Uhr: Jonas ist beim Café Sonntag (${s.d.toFixed(1)} m)`);
+  s = await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'torsten'), p = GL.W.pois.pool; return Math.hypot(n.x - p.x, n.z - p.z); });
+  ok(s < 9, 'Montag 10 Uhr: Torsten ist im Strandbad');
+  await setTime(3);
+  s = await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'jonas'); const it = GL.W.inter.find(i => i.npc === n); return { hidden: !!n.hidden, vis: n.g.visible, on: it.on }; });
+  ok(s.hidden && !s.vis && s.on === false, 'Nachts um 3: Jonas schläft (unsichtbar, nicht ansprechbar)');
+  await setTime(15, 6); // Samstag
+  ok(await ev(page, () => GL.people.isWeekend() && GL.people.place('chantal') === 'plaza'), 'Samstag nachmittags: Chantal auf dem Platz (anderer Plan als werktags)');
+
+  // --- Dating-App: Profil, Nachricht, Antwort, Treffen, Kalender
+  await ev(page, () => { GL.S.life.day = 1; GL.S.world.t = 4 / 24; GL.S.life.needs = { energy: 90, hunger: 90, hygiene: 90, social: 90, stress: 5 }; GL.S.life.boost = 10; });
+  await ev(page, () => GL.phone.open('dating'));
+  ok(/Interessen/.test(await ev(page, () => document.querySelector('#phone .pbody').textContent)), 'Dating-App fragt zuerst nach deinen Interessen');
+  for (const t of ['Pflanzen und Natur', 'Essen und Kochen', 'Kino, Bücher und Theater']) await page.click(`#phone [data-in]:has-text("${t}")`);
+  await page.click('#dsave');
+  s = await ev(page, () => ({ ints: GL.S.dating.ints.slice(), cards: document.querySelectorAll('#phone .pcard').length, txt: document.querySelector('#phone .pbody').textContent }));
+  ok(s.ints.join() === 'natur,essen,kultur' && s.cards >= 6 && /Jonas, 29/.test(s.txt) && /Dennis, 40/.test(s.txt), 'Profil gespeichert, fünf Profile mit Alter und Beruf sichtbar');
+  const cj = await ev(page, () => Math.round(GL.dating.compat('jonas') * 100)), cm = await ev(page, () => Math.round(GL.dating.compat('mehmet') * 100)), cl = await ev(page, () => Math.round(GL.dating.compat('luca') * 100));
+  ok(cj === 100 && cm < cj && cl === 0, `Passung aus Interessen: Jonas ${cj} %, Mehmet ${cm} %, Luca ${cl} %`);
+  await page.click('[data-op="jonas"]'); await page.click('#phone [data-ot="0"]');
+  s = await rel('jonas');
+  ok(s.f >= 8 && s.mem.some(m => /Dating-App/.test(m.t)), `Nachricht an Jonas: Kontakt angelegt, Freundschaft ${s.f}`);
+  ok((await ev(page, () => GL.S.msgs.length)) === 0, 'Antwort kommt nicht sofort');
+  await ev(page, () => { GL.life.advance(60); GL.msg.flush(); });
+  s = await ev(page, () => ({ n: GL.S.msgs.length, t: GL.S.msgs[0] && GL.S.msgs[0].t, u: GL.msg.unread(), b: GL.phone.badge('msgs') }));
+  ok(s.n === 1 && /Natur|Pflanzen/.test(s.t) && s.u === 1 && s.b === 1, 'Jonas antwortet nach einer Stunde (Abzeichen am Handy): ' + (s.t || '').slice(0, 40));
+  await ev(page, () => GL.phone.open('msgs'));
+  ok((await ev(page, () => GL.msg.unread())) === 0, 'Nachrichten-App öffnen markiert als gelesen');
+  await ev(page, () => { GL.phone.close(); const r = GL.dating.rel('jonas'); r.f = 32; });
+  await ev(page, () => GL.phone.open('dating')); await page.click('[data-mt="jonas"]'); await page.click('[data-mp="park"]');
+  await page.click('#phone [data-ms="0"]');
+  s = await ev(page, () => GL.S.cal.slice());
+  ok(s.length === 1 && s[0].npc === 'jonas' && s[0].place === 'park' && s[0].st === 'open', `Treffen vereinbart: ${s[0] && D_text(s[0])}`);
+  function D_text(a) { return `Tag ${a.d}, ${a.h} Uhr, ${a.place}`; }
+  await ev(page, () => GL.phone.open('cal'));
+  ok(/Jonas/.test(await ev(page, () => document.querySelector('#phone .pbody').textContent)), 'Kalender zeigt den Termin');
+  ok(/Date mit Jonas/.test(await ev(page, () => { GL.phone.open('tasks'); return document.querySelector('#phone .pbody').textContent; })), 'Aufgaben zeigen das nächste Date');
+  await ev(page, () => GL.phone.close());
+
+  // Termin: Jonas wartet zur Zeit am Ort
+  const ap = s[0];
+  await setTime(ap.h - 0.5, ap.d);
+  s = await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'jonas'); return { hidden: !!n.hidden, x: n.x, z: n.z, place: GL.people.place('jonas') }; });
+  ok(s.place === 'park' && !s.hidden && Math.hypot(s.x - 86, s.z - 24) < 8, 'Zur Terminzeit wartet Jonas im Park');
+
+  // --- Gespräch über das Menü (Taste E)
+  await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'jonas'); GL.W.player.x = n.x + 1.2; GL.W.player.z = n.z; n.wait = 99; });
+  await page.waitForTimeout(400); await act(page);
+  ok(await ev(page, () => /Jonas/.test(document.querySelector('#maps .gh h2').textContent) && /Date beginnen/.test(document.getElementById('maps').textContent)), 'Jonas ansprechen: Menü mit „Date beginnen“');
+  // Date: drei Szenen
+  await menuItem('Date beginnen');
+  for (let i = 0; i < 3; i++) { await page.waitForSelector('#maps .row2'); await page.click('#maps .row2 >> nth=0'); await page.waitForTimeout(60); await dlg0(); }
+  async function dlg0() { for (let i = 0; i < 4; i++) { if (!(await ev(page, () => !!GL.W.dlg))) break; await page.click('#dn'); await page.waitForTimeout(60); } await page.waitForTimeout(150); }
+  await dlg0();
+  s = await ev(page, () => ({ t: document.querySelector('#maps .gh h2') && document.querySelector('#maps .gh h2').textContent, st: GL.S.cal[0].st, dates: GL.dating.rel('jonas').dates }));
+  ok(s.st === 'done' && s.dates === 1 && /Wie endet/.test(s.t), 'Date durchgespielt: Termin erledigt, „Wie endet der Abend?“');
+  await ev(page, () => { GL.dating.rel('jonas').r = 50; });
+  const r0 = (await rel('jonas')).r; await menuItem('Küssen'); await dlg0(); await page.waitForTimeout(300);
+  s = await rel('jonas'); ok(s.r > r0 && s.mem.some(m => /Kuss/.test(m.t)), 'Kuss bei genug Romantik wird erwidert');
+  await closeMenu();
+  ok((await ev(page, () => { GL.msg.flush(); GL.life.advance(120); GL.msg.flush(); return GL.S.msgs.some(m => m.n === 'jonas' && /Abend|heute/i.test(m.t)); })), 'Nach dem Date schreibt Jonas');
+
+  // --- Smalltalk: Vorlieben wirken
+  await ev(page, () => { const r = GL.dating.rel('mehmet'); r.f = 0; r.cd = 0; });
+  await openMenu('mehmet'); await menuItem('Quatschen');
+  ok(await ev(page, () => document.querySelectorAll('#maps .row2').length >= 6 && /Pflanzen/.test(document.getElementById('maps').textContent)), 'Themenwahl enthält deine Interessen');
+  await closeMenu();
+  const f0 = await ev(page, () => { const r = GL.dating.rel('mehmet'); r.f = 0; r.cd = 0; return r.f; });
+  await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'mehmet'); GL.W.player.x = n.x + 1; GL.W.player.z = n.z; });
+  // Thema, das Mehmet mag (Essen): über Menü
+  await openMenu('mehmet'); await menuItem('Quatschen'); await page.click('#maps .row2:has-text("Essen und Kochen")'); await dlg();
+  s = await rel('mehmet'); ok(s.f === 6, `Mag Mehmet das Thema (Essen), steigt die Freundschaft um 6 (jetzt ${s.f})`); await closeMenu();
+  await ev(page, () => { const r = GL.dating.rel('mehmet'); r.f = 0; r.cd = 0; });
+  await openMenu('mehmet'); await menuItem('Quatschen'); await page.click('#maps .row2:has-text("Pflanzen")'); await dlg();
+  s = await rel('mehmet'); ok(s.f === 3, `Neutrales Thema (Natur): +3 (jetzt ${s.f})`); await closeMenu();
+  await ev(page, () => { const r = GL.dating.rel('mehmet'); r.f = 0; r.cd = 0; GL.S.dating.ints = ['mode']; });
+  await openMenu('mehmet'); await menuItem('Quatschen'); await page.click('#maps .row2:has-text("Mode und Stil")'); await dlg();
+  s = await rel('mehmet'); ok(s.f === 0, 'Ungeliebtes Thema (Mode): keine Freundschaft'); await closeMenu();
+  await ev(page, () => { GL.S.dating.ints = ['natur', 'essen', 'kultur']; });
+
+  // --- Tiefes Gespräch: Geschichte in Kapiteln
+  await ev(page, () => { const r = GL.dating.rel('kai'); r.f = 25; });
+  await openMenu('kai'); await menuItem('Tiefes Gespräch');
+  ok(await ev(page, () => !!GL.W.dlg && /allein/.test(GL.W.dlg.lines.join(' '))), 'Kai erzählt Kapitel 1 seiner Geschichte (ab Freundschaft 20)');
+  await dlg(); await closeMenu();
+  s = await rel('kai'); ok(s.story === 1, 'Kapitel 1 gemerkt');
+  await openMenu('kai'); await menuItem('Tiefes Gespräch'); await dlg(); await closeMenu();
+  s = await rel('kai'); ok(s.story === 1, 'Kapitel 2 braucht Freundschaft 45: noch nicht freigeschaltet');
+
+  // --- Flirten: Entscheidung der Figur, Grenzen werden respektiert
+  await ev(page, () => { GL.life.change({ energy: 100, social: 100, stress: -100, hunger: 100, hygiene: 100 }, 20); GL.S.dating.ints = ['natur', 'essen', 'kultur']; const r = GL.dating.rel('luca'); r.f = 20; r.r = 0; });
+  await openMenu('luca'); await menuItem('Flirten'); await dlg(); await closeMenu();
+  s = await rel('luca'); ok(s.rej === 0 && s.lock === 0, 'Zu wenig Freundschaft: „Wir kennen uns kaum“, keine Zurückweisung');
+  await ev(page, () => { const r = GL.dating.rel('luca'); r.f = 40; r.r = 0; r.fd = 0; r.lock = 0; GL.life.change({}, 0); });
+  const sc = await ev(page, () => GL.dating.flirtScore('luca'));
+  await openMenu('luca'); await menuItem('Flirten'); await dlg(); await closeMenu();
+  s = await rel('luca');
+  ok(sc < 55 ? (s.rej === 1 && s.r === 0 && s.lock > 1) : s.r === 10, `Flirt mit Luca (Punkte ${sc.toFixed(0)}): ${sc < 55 ? 'höflich abgelehnt, Abstand von 2 Tagen' : 'erwidert'}`);
+  await openMenu('luca'); await menuItem('Flirten'); await dlg(); await closeMenu();
+  s = await rel('luca'); ok(s.rej <= 1, 'Am selben Tag erneut flirten wird abgeblockt (keine Zermürbung)');
+  // dreimal abgelehnt: bleibt zu
+  await ev(page, () => { const r = GL.dating.rel('luca'); r.f = 40; r.r = 0; r.rej = 2; r.fd = 0; r.lock = 0; GL.life.change({ stress: 100 }, -30); GL.S.dating.ints = ['natur']; });
+  await openMenu('luca'); await menuItem('Flirten'); await dlg(); await closeMenu();
+  s = await rel('luca'); ok(s.st === 'closed', 'Nach drei Zurückweisungen sagt Luca klar Nein: Flirten gesperrt');
+  ok(await ev(page, () => { GL.dating.menu(GL.W.npcs.find(n => n.d.id === 'luca')); const b = [...document.querySelectorAll('#maps .row2')].find(x => /Flirten/.test(x.textContent)); const r = b.disabled; document.getElementById('mx').click(); return r; }), 'Flirt-Knopf ist gesperrt');
+  await ev(page, () => { GL.S.dating.ints = ['natur', 'essen', 'kultur']; GL.life.change({}, 0); });
+  // Dennis ist (noch) nicht auf der Suche
+  await ev(page, () => { const r = GL.dating.rel('dennis'); r.f = 50; r.r = 0; });
+  await openMenu('dennis'); await menuItem('Flirten'); await dlg(); await closeMenu();
+  s = await rel('dennis'); ok(s.lock > (await ev(page, () => GL.S.life.day)) && s.rej === 0 && s.st === '', 'Dennis lehnt sanft ab (nicht bereit), ohne dass er „gesperrt“ wird');
+  ok(await ev(page, () => { GL.dating.rel('dennis').story = 3; return GL.dating.isInto('dennis'); }), 'Nach seiner Geschichte (Kapitel 3) ist Dennis offen für mehr');
+
+  // --- Einladung, Verspätung, Beziehung, Streit, Trennung
+  await ev(page, () => { GL.S.life.money = 200; GL.S.life.day = 20; const r = GL.dating.rel('mehmet'); r.f = 50; r.r = 40; r.lock = 0; r.dates = 0; GL.S.cal = []; GL.S.msgs = []; GL.S.world.t = 4 / 24; });
+  await openMenu('mehmet'); await menuItem('Zum Date einladen'); await menuItem('Café Sonntag'); await page.click('#maps .row2 >> nth=0'); await dlg();
+  s = await ev(page, () => GL.S.cal.slice()); ok(s.length === 1 && s[0].place === 'cafe', 'Einladung: Mehmet sagt zu, Termin im Kalender'); await closeMenu();
+  await ev(page, a => { GL.S.life.day = a.d; GL.S.world.t = ((a.h + 4 - 6 + 24) % 24) / 24; GL.life.advance(60); }, s[0]); // 4 Stunden nach Terminbeginn
+  await page.waitForTimeout(4600);
+  s = await ev(page, () => ({ st: GL.S.cal[0].st, m: GL.S.msgs[0] && GL.S.msgs[0].t, r: GL.dating.rel('mehmet').r }));
+  ok(s.st === 'missed' && /gewartet/.test(s.m || '') && s.r < 40, 'Verpasstes Date: Termin „verpasst“, Mehmet schreibt enttäuscht, Romantik sinkt');
+  const mid = await ev(page, () => GL.S.msgs[0].id); await ev(page, () => GL.phone.open('msgs')); await page.click('#phone [data-mr] >> nth=0');
+  ok(await ev(page, id => GL.S.msgs.find(m => m.id === id).done === 1, mid), 'Antwort auf Nachricht wird gewertet');
+  await ev(page, () => GL.phone.close());
+  await ev(page, () => { const r = GL.dating.rel('mehmet'); r.r = 70; r.dates = 3; r.f = 60; r.st = ''; r.lock = 0; });
+  await openMenu('mehmet'); await menuItem('Beziehung ansprechen'); await dlg(); await closeMenu();
+  s = await rel('mehmet'); ok(s.st === 'partner', 'Beziehung: Mehmet sagt ja (genug Romantik, mehrere Dates)');
+  await ev(page, () => { const r = GL.dating.rel('luca'); r.r = 70; r.dates = 3; });
+  ok(await ev(page, () => GL.life.NEED.length === 5), 'Bedürfnisse unverändert');
+  // ohne Kontakt: Streit nach 5 Tagen, Trennung nach 4 weiteren
+  await ev(page, () => { GL.dating.rel('mehmet').last = GL.S.life.day; GL.S.msgs = []; });
+  await days(5);
+  s = await rel('mehmet'); ok(s.conflict > 0 && /egal|lange/.test(await ev(page, () => GL.S.msgs.map(m => m.t).join(' '))), 'Fünf Tage kein Kontakt: Streit und Nachricht');
+  await openMenu('mehmet'); await menuItem('Blumen schenken'); await dlg(); await closeMenu();
+  s = await rel('mehmet'); ok(s.conflict === 0 && s.st === 'partner', 'Mit Blumen versöhnt: Streit beendet, Beziehung bleibt');
+  await ev(page, () => { GL.dating.rel('mehmet').last = GL.S.life.day; });
+  await days(5); await days(4);
+  s = await rel('mehmet'); ok(s.st === 'ex' && /getrennte Wege/.test(await ev(page, () => GL.S.msgs.map(m => m.t).join(' '))), 'Ohne Versöhnung beendet Mehmet die Beziehung');
+  // freiwillig Schluss machen
+  await ev(page, () => { const r = GL.dating.rel('jonas'); r.st = 'partner'; r.conflict = 0; r.last = GL.S.life.day; });
+  await openMenu('jonas'); await menuItem('Beziehung beenden'); await menuItem('Ja, Schluss'); await dlg(); await closeMenu();
+  s = await rel('jonas'); ok(s.st === 'ex' && s.r <= 20, 'Schluss machen funktioniert');
+  // Kalender absagen
+  await ev(page, () => { GL.S.cal = [{ npc: 'kai', place: 'park', d: GL.S.life.day + 1, h: 11, st: 'open' }]; GL.phone.open('cal'); });
+  await page.click('#phone [data-cc]');
+  ok(await ev(page, () => GL.S.cal[0].st === 'cancel'), 'Termin im Kalender absagen');
+  await ev(page, () => GL.phone.close());
+  // Altes Menü bleibt für Aufträge erreichbar (Kai/Dennis haben Quests)
+  await openMenu('dennis'); await menuItem('Anliegen und Aufträge');
+  ok(await ev(page, () => !!GL.W.dlg && /Gerd/.test(GL.W.dlg.lines.join(' '))), 'Aufträge (Gerd suchen) bleiben über „Anliegen und Aufträge“ erreichbar');
+  await dlg(); await closeMenu();
+  // Speichern und Laden der Beziehungsdaten
+  await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
+  s = await ev(page, () => ({ rel: GL.S.rel.mehmet && GL.S.rel.mehmet.st, ints: GL.S.dating.ints.join(), msgs: GL.S.msgs.length }));
+  ok(s.rel === 'ex' && s.ints === 'natur,essen,kultur' && s.msgs > 0, 'Beziehungsstatus, Interessen und Nachrichten bleiben nach Neuladen erhalten');
   await ctx.close();
 }
 

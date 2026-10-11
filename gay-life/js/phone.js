@@ -3,7 +3,11 @@
 (function () {
   'use strict';
   var S = GL.S, L = S.life;
-  var ph = GL.phone = {}, cur = 'home';
+  var ph = GL.phone = {}, cur = 'home', BIND = {};
+  /* Weitere Apps anmelden: id, Titel, Symbol, view() -> HTML, bind(Wurzel) nach dem Zeichnen */
+  ph.register = function (id, title, icon, view, bind) { APPS.splice(APPS.length - 2, 0, [id, title, icon]); VIEWS[id] = view; if (bind) BIND[id] = bind; };
+  ph.go = function (app) { cur = app; render(); };
+  ph.refresh = function () { if (ph.isOpen()) render(); };
   var APPS = [
     ['status', 'Status', '💗'], ['tasks', 'Aufgaben', '📋'], ['map', 'Karte', '🗺️'],
     ['contacts', 'Kontakte', '👥'], ['money', 'Finanzen', '💶'], ['settings', 'Einstellungen', '⚙️']
@@ -22,7 +26,7 @@
 
   var VIEWS = {
     home: function () {
-      return '<div class="pgrid">' + APPS.map(function (a) { return '<button class="papp" data-app="' + a[0] + '"><span>' + a[2] + '</span>' + a[1] + '</button>'; }).join('') + '</div>' +
+      return '<div class="pgrid">' + APPS.map(function (a) { return '<button class="papp" data-app="' + a[0] + '"><span>' + a[2] + (ph.badge && ph.badge(a[0]) ? '<i class="bdg">' + ph.badge(a[0]) + '</i>' : '') + '</span>' + a[1] + '</button>'; }).join('') + '</div>' +
         '<p class="sub" style="text-align:center;margin-top:18px">' + esc(GL.life.weekday()) + ', Tag ' + L.day + ' · ' + GL.life.clock() + ' Uhr<br>' + (GL.home.inside() ? 'Zu Hause' : 'Regenbogenkiez, Rainbow City') + '</p>';
     },
     status: function () {
@@ -49,6 +53,7 @@
       var low = GL.life.NEED.filter(function (x) { return x[0] !== 'stress'; }).sort(function (a, b) { return L.needs[a[0]] - L.needs[b[0]]; })[0];
       if (L.needs[low[0]] < 45) h += '<div class="pcard"><b>Alltag: ' + low[2] + ' ' + low[1] + '</b><br><small class="sub">' + low[3] + '</small></div>';
       if (L.needs.stress > 60) h += '<div class="pcard"><b>Alltag: 🌀 Stress abbauen</b><br><small class="sub">Fernsehen zu Hause, Sauna oder eine Runde schlafen.</small></div>';
+      h += GL.emit('phoneTasks') || '';
       h += '<div class="pcard"><small class="sub">Regenbogen-Sterne: ' + w.stars.length + ' / ' + C().STARS.length + '</small></div>';
       return h;
     },
@@ -71,9 +76,9 @@
       var ids = Object.keys(S.rel).filter(function (id) { return GL.social.npc(id); }).sort(function (a, b) { return S.rel[b].f - S.rel[a].f; }), all = C().NPCDEF.length;
       var h = '<p class="sub">' + ids.length + ' von ' + all + ' Leuten im Kiez kennengelernt. Ein Gespräch pro Tag stärkt eure Freundschaft.</p>';
       ids.forEach(function (id) {
-        var r = S.rel[id], n = GL.social.npc(id);
-        h += '<div class="pcard prow"><div class="pav">' + C().avatar(n.look, ['#6a3cc8', '#ff5fa8']) + '</div><div style="flex:1;min-width:0"><b>' + esc(n.n) + '</b> <span class="sub">' + GL.social.level(r.f) + '</span>' + bar(r.f, '#ff4f9a') +
-          '<small class="sub">Kennengelernt an Tag ' + r.met + ' · ' + r.talks + ' Gespräche' + (r.last === L.day ? ' · heute gesprochen' : '') + '</small></div></div>';
+        var r = GL.dating.rel(id), n = GL.social.npc(id), dt = GL.dating.PROF[id], mem = r.mem.slice(0, 2).map(function (m) { return 'Tag ' + m.d + ': ' + m.t; }).join(' · ');
+        h += '<div class="pcard prow"><div class="pav">' + C().avatar(n.look, ['#6a3cc8', '#ff5fa8']) + '</div><div style="flex:1;min-width:0"><b>' + esc(n.n) + '</b> <span class="sub">' + esc(dt ? GL.dating.stage(id) : GL.social.level(r.f)) + '</span>' + bar(r.f, '#ff4f9a') +
+          '<small class="sub">' + (dt ? esc(dt.job) + ' · ' : '') + 'Jetzt: ' + esc(GL.people.where(id)) + '<br>' + r.talks + ' Gespräche' + (r.last === L.day ? ' · heute gesprochen' : '') + (r.st === 'partner' ? ' · ❤ ' + r.r : '') + (r.conflict ? ' · ⚠ Streit' : '') + (mem ? '<br>' + esc(mem) : '') + '</small></div></div>';
       });
       if (!ids.length) h += '<div class="pcard"><small class="sub">Noch niemand. Sprich Leute in der Stadt an (E oder Knopf unten).</small></div>';
       return h;
@@ -106,6 +111,7 @@
     [].forEach.call(p.querySelectorAll('[data-app]'), function (x) { x.onclick = function () { cur = x.dataset.app; render(); }; });
     [].forEach.call(p.querySelectorAll('[data-p]'), function (x) { x.onclick = function () { travel(x.dataset.p); }; });
     [].forEach.call(p.querySelectorAll('[data-q]'), function (x) { x.onclick = function () { S.settings.q = +x.dataset.q; GL.save(); ph.applyQuality(); render(); }; });
+    if (BIND[cur]) BIND[cur](p);
     var e;
     if ((e = document.getElementById('psnd'))) e.onclick = function () { S.sound = !S.sound; GL.save(); var w = document.getElementById('wSnd'); if (w) w.textContent = S.sound ? '🔊' : '🔇'; render(); };
     if ((e = document.getElementById('pfs'))) e.onclick = GL.ui.fullscreen;

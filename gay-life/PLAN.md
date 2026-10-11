@@ -23,7 +23,11 @@ Klassische Skripte ohne Build-Schritt, genau ein globaler Namensraum `window.GL`
 | `js/life.js` | Uhrzeit, Wochentag, Tage, Bedürfnisse, Stimmung, Warnungen, Auswirkungen der Minispiele, Status-Anzeige |
 | `js/economy.js` | Euro-Konto mit Buchungen, Späti Lecker, Barkeeper-Schichten |
 | `js/home.js` | Betretbare Wohnung mit benutzbaren Möbeln |
-| `js/social.js` | Kontakte und Freundschaftswerte (Grundlage für Beziehungen/Dating) |
+| `js/social.js` | Kontakte und Freundschaftswerte |
+| `js/people.js` | NPC-Tagesabläufe nach Uhrzeit/Wochenende, Termine überschreiben den Plan |
+| `js/dating.js` | Dating-Figuren, Gesprächsmenü, Flirt/Ablehnung, Dates, Beziehung, Streit, Trennung |
+| `js/messages.js` | Nachrichten mit Antworten und Verzögerung |
+| `js/datingapp.js` | Handy-Apps Nachrichten, Dating, Kalender |
 | `js/phone.js` | Handy mit Apps, Grafikqualität |
 | `js/main.js` | Start |
 
@@ -37,6 +41,8 @@ Neue Systeme ändern sich nicht gegenseitig direkt, sondern über Ereignisse. De
 | `sky (W)` | vor der Himmelsberechnung; `true` = übernommen | Innenraum-Licht |
 | `poi (id)` | Gebäude betreten; `true` = übernommen | Wohnung, Türsteher-Prüfung |
 | `talk (npcId)` | NPC angesprochen | Kontakte, Bedürfnis „Kontakte“ |
+| `talkMenu (npc, talkBase)` | vor dem alten Gespräch; `true` = übernommen | Dating-Menü |
+| `phoneTasks` | Aufgaben-App; Rückgabe = HTML | Termine |
 | `activity (gameId)` | Minispiel gespielt und verlassen | Zeit und Bedürfnisse |
 | `clubShift ({tips, served, lost})` | Schicht im Club beendet; Rückgabe = HTML-Zeile | Lohn |
 | `openMap`, `blocked`, `newDay` | Karte öffnen / Eingaben gesperrt? / neuer Tag | Handy, Overlays |
@@ -67,7 +73,7 @@ settings: { q }   // -1 automatisch, 0 niedrig, 1 mittel, 2 hoch
 | M0 | Analyse, Aufteilung in Module, Migration, Browser-Testgerüst | erledigt |
 | M1 | Alltag: Uhr, Bedürfnisse, Geld, Späti, Barjob, eigene Wohnung, Handy, Kontakte | erledigt (Grundstufe) |
 | M2 | Rainbow City: Viertel Downtown, Pride District (heutiger Regenbogenkiez), Neon Nights, Rainbow Beach, Love Gardens, Fashion Boulevard, Rainbow Heights, Crystal Coast; Weltabschnitte laden/entladen, Tram zwischen Vierteln, Wetter, Instancing für Bäume/Lampen | offen |
-| M3 | Menschen: NPC-Tagesabläufe nach Uhrzeit/Wochentag; Dating-Kern mit Persönlichkeit, Vorlieben, Gesprächsarten (Smalltalk, tief, Flirt, Kompliment), Zustimmung und Ablehnung, Beziehungsstufen bis Partnerschaft, Erinnerungen; Nachrichten, Dating-App, Kalender mit Terminen | offen |
+| M3 | Menschen: NPC-Tagesabläufe nach Uhrzeit/Wochentag; Dating-Kern mit Persönlichkeit, Vorlieben, Gesprächsarten (Smalltalk, tief, Flirt, Kompliment), Zustimmung und Ablehnung, Beziehungsstufen bis Partnerschaft, Erinnerungen; Nachrichten, Dating-App, Kalender mit Terminen | erledigt (Durchgang 2; Konflikte/Zusammenziehen ohne Wohnung, Zusammenziehen folgt in M6) |
 | M4 | Nachtleben: Club-Innenräume mit eigenen Musikstilen (selbst erzeugt), Tanzen mit Emotes, Bar-Bestellungen, Karaoke/Tanzwettbewerb in der Welt, Themenpartys, Pride-Events | offen |
 | M5 | Karriere: weitere Jobs mit eigenen Abläufen (DJ, Verkäufer, Fitnesstrainer, Fotograf, Stylist, Eventmanager, Performer), Beförderungen | offen |
 | M6 | Wohnen: Möbel kaufen und platzieren, größere Wohnungen, Miete, Gäste und Dates zu Hause, Zusammenziehen | offen |
