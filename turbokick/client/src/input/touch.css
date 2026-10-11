@@ -1,0 +1,166 @@
+/* Touch-Oberfläche von TURBOKICK: schwebender Stick links, Knöpfe rechts, kleine Schalter oben */
+.tk-touch {
+  --tk-safe-l: env(safe-area-inset-left, 0px);
+  --tk-safe-r: env(safe-area-inset-right, 0px);
+  --tk-safe-t: env(safe-area-inset-top, 0px);
+  --tk-safe-b: env(safe-area-inset-bottom, 0px);
+  --tk-btn: 96px;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tk-touch * {
+  box-sizing: border-box;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Fangbereich für den Stick: linke Hälfte, untere zwei Drittel */
+.tk-stick-zone {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  height: 66%;
+  pointer-events: auto;
+}
+
+.tk-stick-base {
+  position: absolute;
+  left: calc(var(--tk-safe-l) + 84px);
+  top: calc(100% - var(--tk-safe-b) - 96px);
+  width: 128px;
+  height: 128px;
+  margin: -64px 0 0 -64px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  opacity: 0.6;
+}
+
+.tk-stick-base.active {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.tk-stick-knob {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.tk-top {
+  position: absolute;
+  top: calc(var(--tk-safe-t) + 10px);
+  right: calc(var(--tk-safe-r) + 12px);
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.tk-mini {
+  min-width: 52px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  background: rgba(10, 14, 40, 0.55);
+  color: #fff;
+  font:
+    800 13px/1 system-ui,
+    sans-serif;
+  letter-spacing: 0.04em;
+  pointer-events: auto;
+}
+
+.tk-mini.on {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.tk-btns {
+  position: absolute;
+  right: calc(var(--tk-safe-r) + 20px);
+  bottom: calc(var(--tk-safe-b) + 20px);
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.tk-btn {
+  width: var(--tk-btn);
+  height: var(--tk-btn);
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.55);
+  background: rgba(70, 120, 255, 0.55);
+  color: #fff;
+  font:
+    900 17px/1 system-ui,
+    sans-serif;
+  letter-spacing: 0.03em;
+  pointer-events: auto;
+  padding: 0;
+}
+
+.tk-btn.tk-boost {
+  background: rgba(255, 140, 30, 0.6);
+}
+
+.tk-btn.tk-drift {
+  width: 68px;
+  height: 68px;
+  font-size: 13px;
+  background: rgba(190, 80, 255, 0.55);
+}
+
+.tk-btn.on {
+  transform: scale(0.93);
+  filter: brightness(1.35);
+}
+
+/* Hochformat: Knöpfe höher, damit sie nicht an der Systemleiste liegen; Stick etwas größer erreichbar */
+@media (orientation: portrait) {
+  .tk-touch {
+    --tk-btn: 88px;
+  }
+  .tk-stick-zone {
+    height: 50%;
+  }
+  .tk-btns {
+    right: calc(var(--tk-safe-r) + 14px);
+    bottom: calc(var(--tk-safe-b) + 40px);
+    gap: 10px;
+  }
+  .tk-stick-base {
+    left: calc(var(--tk-safe-l) + 80px);
+    top: calc(100% - var(--tk-safe-b) - 110px);
+  }
+}
+
+/* Sehr niedrige Querformat-Fenster */
+@media (max-height: 420px) and (orientation: landscape) {
+  .tk-touch {
+    --tk-btn: 78px;
+  }
+  .tk-stick-base {
+    width: 108px;
+    height: 108px;
+    margin: -54px 0 0 -54px;
+    top: calc(100% - var(--tk-safe-b) - 70px);
+  }
+}

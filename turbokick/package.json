@@ -1,0 +1,36 @@
+{
+  "name": "turbokick",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TURBOKICK – 3D-Auto-Fußball im Browser (Solo gegen Bots, lokal zu zweit, online ohne Server per QR-Code)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.ts",
+    "build": "npm run typecheck && vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "check": "npm run typecheck && npm run lint && npm test"
+  },
+  "dependencies": {
+    "jsqr": "1.4.0",
+    "qrcode-generator": "1.4.4",
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "22.10.2",
+    "@types/three": "0.170.0",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "9.1.0",
+    "globals": "15.14.0",
+    "prettier": "3.4.2",
+    "tsx": "4.19.2",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.18.2",
+    "vite": "5.4.21",
+    "vitest": "2.1.9"
+  }
+}
