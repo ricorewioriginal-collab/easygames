@@ -115,6 +115,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 #dlg{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom));display:none;gap:12px;align-items:center;background:rgba(20,10,40,.88);border:1px solid var(--line);border-radius:20px;padding:12px;max-width:640px;margin:0 auto;z-index:8}
 #dlg .dav{width:84px;height:100px;border-radius:14px;overflow:hidden;flex:none}#dlg .dav svg{width:100%;height:100%;display:block}
 #dlg p{margin:4px 0 8px;font-size:15px}
+#maps{position:absolute;inset:0;background:rgba(10,5,25,.92);display:none;overflow:auto;padding:16px;z-index:9}#maps .box{max-width:560px;margin:0 auto}#maps .row2{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin-top:8px;border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:16px;padding:10px}#maps .row2 span.e{font-size:30px}
 #ban{position:absolute;left:0;right:0;top:32%;text-align:center;display:none;pointer-events:none;font-weight:900;font-size:clamp(26px,6vw,48px);text-shadow:0 3px 12px #000;color:#fff}
 #ban small{display:block;font-size:.4em;font-weight:600;opacity:.9}
 #ban.in{animation:bn 3.6s ease-out both}@keyframes bn{0%{transform:scale(.6);opacity:0}10%{transform:scale(1.06);opacity:1}85%{opacity:1}100%{opacity:0}}
@@ -124,7 +125,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <body>
 <div class="wrap" id="hub"></div>
 <div class="wrap" id="game"></div>
-<div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wchip" id="wq"></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wLook" title="Look">👤</button><button id="wSnd">🔊</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="joy"><i></i></div><button id="act"></button><div id="dlg"></div><div id="ban"></div></div>
+<div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wchip" id="wq"></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wLook" title="Look">👤</button><button id="wMap" title="Orte">🗺️</button><button id="wSnd">🔊</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="joy"><i></i></div><button id="act"></button><div id="dlg"></div><div id="ban"></div><div id="maps"></div></div>
 <div class="modal" id="modal"><div class="box" id="mbox"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="gay-life" data-prefix="anmachaGayLife" data-save-btn="#glSave" defer></script>
@@ -627,7 +628,7 @@ function rebuild(W) {
   if (W.player.g) W.scene.remove(W.player.g);
   W.player.g = makePerson(S.look); W.player.g.position.set(W.player.x, 0, W.player.z); W.player.g.rotation.y = W.yaw; W.scene.add(W.player.g);
 }
-function resize() { var W = WD, w = window.innerWidth, h = window.innerHeight; W.R.setSize(w, h, false); W.cam.aspect = w / h; W.cam.updateProjectionMatrix(); }
+function resize() { var W = WD, w = window.innerWidth, h = window.innerHeight; W.R.setSize(w, h, false); W.cam.aspect = w / h; W.cam.fov = w < h ? 74 : 58; W.cam.updateProjectionMatrix(); }
 
 /* --- Steuerung --- */
 function controls(W) {
@@ -646,7 +647,17 @@ function controls(W) {
   function up(e) { if (e.pointerId === jid) { jid = -1; W.jx = W.jz = 0; jz.style.display = 'none'; } if (e.pointerId === cid) cid = -1; }
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   $('#act').onclick = function () { act(); };
-  $('#wLook').onclick = editor; $('#wSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; };
+  $('#wLook').onclick = editor;
+  $('#wMap').onclick = function () {
+    var m = $('#maps'), p = W.player, h = '<div class="box"><div class="gh"><h2>Orte in Regenbogenkiez</h2><button class="btn sm" id="mx">Schließen</button></div><p class="sub">Tippe einen Ort an, dann bist du direkt vor der Tür.</p>';
+    POIS.forEach(function (o) {
+      var g = GAMES.filter(function (x) { return x.id === o.g; })[0], d = W.pois[o.id], best = g ? bestOf(g) : '';
+      h += '<button class="row2" data-p="' + o.id + '"><span class="e">' + o.e + '</span><span style="flex:1"><b>' + o.n + '</b><br><small class="sub">' + (g ? g.d : 'Look ändern und Spielstand sichern') + '</small>' + (best ? '<br><small class="chip">' + esc(best) + '</small>' : '') + '</span><small class="sub">' + Math.round(Math.hypot(d.x - p.x, d.z - p.z)) + ' m</small></button>';
+    });
+    m.innerHTML = h + '</div>'; m.style.display = 'block';
+    $('#mx').onclick = function () { m.style.display = 'none'; };
+    [].forEach.call(m.querySelectorAll('[data-p]'), function (b) { b.onclick = function () { var d = W.pois[b.dataset.p]; p.x = d.x; p.z = d.z; W.camYaw = d.p.f > 0 ? 0 : Math.PI; m.style.display = 'none'; sfx('ok'); }; });
+  }; $('#wSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; };
 }
 function curInter() {
   var W = WD, p = W.player, best = null, bd = 1e9;
@@ -759,7 +770,7 @@ function frame(ts) {
     var qi = S.world.q, q = QUESTS[qi], tg2 = null, txt;
     if (q) { var tgp = q.poi === 'plaza' ? { x: 0, z: 0 } : W.pois[q.poi]; tg2 = tgp; txt = '<b>' + q.t + '</b><br>' + q.d; } else txt = '<b>Alles geschafft!</b><br>Sterne: ' + S.world.stars.length + '/' + STARS.length + ' · ' + (S.world.dog >= 3 ? 'Gerd ist zuhause' : 'Dennis braucht Hilfe');
     $('#wq').innerHTML = txt;
-    for (k in W.pois) W.pois[k].beam.visible = !!(q && q.poi === k); W.plazaBeam.visible = !!(q && q.poi === 'plaza');
+    for (k in W.pois) { W.pois[k].beam.visible = true; W.pois[k].beam.material.opacity = q && q.poi === k ? .34 : .12; W.pois[k].beam.material.color.setHex(W.pois[k].p.c); } W.plazaBeam.visible = !!(q && q.poi === 'plaza');
     var ar = $('#arr'); if (tg2) { var ddx = tg2.x - p.x, ddz = tg2.z - p.z, fx = -Math.sin(W.camYaw), fz = -Math.cos(W.camYaw), rx = Math.cos(W.camYaw), rz = -Math.sin(W.camYaw); ar.style.display = 'block'; ar.style.transform = 'rotate(' + Math.atan2(ddx * rx + ddz * rz, ddx * fx + ddz * fz) + 'rad)'; $('#adist').textContent = Math.round(Math.hypot(ddx, ddz)) + ' m'; } else { ar.style.display = 'none'; $('#adist').textContent = ''; }
     checkQuests();
     if (S.world.q === QUESTS.length - 1 && Math.hypot(p.x, p.z) < 6 && !W.dlg) startParade();
