@@ -47,6 +47,17 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(0, .25, 0, 1.9, .55, 4.2, c); b.box(0, .8, -.15, 1.62, .62, 2.3, c); b.box(0, .86, -.15, 1.66, .42, 2.1, GLASS);
       for (const z of [-1.15, .85]) for (const x of [-.82, .82]) b.box(x, .8, z, .1, .62, .12, c);
       b.box(0, 1.38, -.15, 1.5, .08, 2.2, c); b.box(0, .2, 2.05, 1.8, .3, .2, DARK); b.box(0, .2, -2.05, 1.8, .3, .2, DARK);
+      // Kontur, Scheibenrahmen, Türgriffe und Rücklichter.
+      for (const side of [-1, 1]) {
+        b.box(side * .965, .55, 0, .035, .045, 3.75, 0xe3e8e5);
+        b.box(side * .85, .81, 1.38, .15, .2, .3, 0x374754);
+        b.box(side * .835, 1.08, -.15, .035, .37, .065, c);
+        for (const z of [-.8, .7]) b.box(side * .99, .7, z, .045, .06, .26, 0xe8edf2);
+        b.box(side * .67, .53, -2.12, .4, .2, .07, 0xe64b50);
+        b.box(side * .67, .56, 2.12, .35, .17, .07, 0xffe8ae);
+      }
+      b.box(0, .32, 2.12, .88, .09, .05, 0xd3dedc);
+      b.box(0, .32, -2.12, .72, .09, .05, 0xd3dedc);
       return { wheels: [[.95, .38, 1.3, .38, .26, 1], [-.95, .38, 1.3, .38, .26, 1], [.95, .38, -1.3, .38, .26, 0], [-.95, .38, -1.3, .38, .26, 0]], head: [[-.65, .55, 2.1], [.65, .55, 2.1]], tail: [[-.65, .6, -2.1], [.65, .6, -2.1]] };
     },
     limo(b, o) { /* Stretch-Limousine: lang, glänzend, getönte Scheiben, Chromleisten, Tür-Linien */

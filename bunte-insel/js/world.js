@@ -601,19 +601,22 @@ BI.buildWorld = function (scene) {
       const lean = rr(-.25, .25), tl = 6 * s;
       st.cyl(x, 0, z, .22 * s, .35 * s, tl * .5, 0xb9824a, 6, lean * .5, 0, lean * .5); st.cyl(x + lean * 1.6, tl * .48, z + lean * 1.6, .17 * s, .22 * s, tl * .55, 0xb9824a, 6, lean, 0, lean);
       const tx = x + lean * 3.4, tz = z + lean * 3.4, ty = tl * .95;
-      for (let k = 0; k < 6; k++) { const a = k * 1.047; st.box(tx + Math.sin(a) * 1.5, ty - .2, tz + Math.cos(a) * 1.5, .5, .1, 3.2, pick([0x3fae4a, 0x2f9a3c]), a, .3); }
+      for (let k = 0; k < 6; k++) { const a = k * 1.047; st.box(tx + Math.sin(a) * 1.5, ty - .2, tz + Math.cos(a) * 1.5, .5, .1, 3.2, pick([0x429f58, 0x318c4b, 0x64b96c]), a, .3); }
+      for (let k = 0; k < 6; k++) { const a = k * BI.TAU / 6; st.box(tx + Math.sin(a) * 1.05, ty + .08, tz + Math.cos(a) * 1.05, .38, .08, 2.4, 0x79c079, a, .45); }
       st.sph(tx, ty - .2, tz, .45, 0x7a4a2a, 0); W.addCircle(x, z, .5);
       return;
     }
     const T = { x, z, kind, parts: [], hp: 5, cd: 0, wob: 0, wx: 0, wz: 1, tilt: 0, top: kind === 'pine' ? 5 * s : 4 * s, dirty: false };
     if (kind === 'pine') {
       inst('trunk', T, x, 0, z, .85 * s, 1.6 * s, .85 * s, 0x7a5233, 0);
-      for (let k = 0; k < 3; k++) inst('cone', T, x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, (2.1 - k * .5) * s, pick([0x2f8f4a, 0x3aa055, 0x2a8044]), .1);
+      for (let k = 0; k < 3; k++) inst('cone', T, x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, (2.1 - k * .5) * s, pick([0x377f50, 0x40925b, 0x296d47]), .1);
       W.addCircle(x, z, .6);
     } else {
       inst('trunk', T, x, 0, z, s, 2.2 * s, s, 0x8a5a33, 0);
-      inst('crown', T, x, 3.2 * s, z, 1.9 * s, 1.9 * s * .9, 1.9 * s, pick([0x4cb85a, 0x5ac966, 0x3fa84e, 0x8ad24f]), .12);
-      inst('crown', T, x + .8 * s, 4 * s, z - .5 * s, 1.2 * s, 1.2 * s * .9, 1.2 * s, pick([0x5ac966, 0x6bd677]), .12);
+      inst('crown', T, x, 3.2 * s, z, 1.9 * s, 1.9 * s * .9, 1.9 * s, pick([0x5ba66a, 0x67ae72, 0x4c9c61, 0x7cb982]), .12);
+      inst('crown', T, x + .8 * s, 4 * s, z - .5 * s, 1.2 * s, 1.2 * s * .9, 1.2 * s, pick([0x75ba7c, 0x8ac78e]), .12);
+      inst('crown', T, x - .8 * s, 3.65 * s, z + .55 * s, 1.06 * s, .94 * s, 1.06 * s, 0x78bd80, 0);
+      inst('crown', T, x + .28 * s, 4.45 * s, z + .2 * s, .82 * s, .72 * s, .82 * s, 0x94cd93, 0);
       W.addCircle(x, z, .65);
     }
     W.trees.push(T);
@@ -660,7 +663,7 @@ BI.buildWorld = function (scene) {
   finalizeTrees();
   for (let i = 0, tries = 0; i < 90 && tries < 900; tries++) { // Büsche
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 165, x = Math.sin(a) * d, z = Math.cos(a) * d;
-    if (blockedAt(x, z, 1.5)) continue; st.sph(x, .55, z, rr(.6, 1.1), pick([0x3fa84e, 0x57c264, 0x6fd16e]), 1, 1, .75, 1, .1); i++; // Büsche sind weich: man fährt hindurch
+    if (blockedAt(x, z, 1.5)) continue; st.sph(x, .55, z, rr(.6, 1.1), pick([0x4c9d61, 0x66ae73, 0x7abd80]), 1, 1, .75, 1, .1); i++; // Büsche sind weich: man fährt hindurch
   }
   for (let i = 0, tries = 0; i < 260 && tries < 1500; tries++) { // Blumen
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 160, x = Math.sin(a) * d, z = Math.cos(a) * d;
