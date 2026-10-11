@@ -24,6 +24,8 @@ Klassische Skripte ohne Build-Schritt, genau ein globaler Namensraum `window.GL`
 | `js/economy.js` | Euro-Konto mit Buchungen, Späti Lecker, Barkeeper-Schichten |
 | `js/home.js` | Betretbare Wohnung mit benutzbaren Möbeln |
 | `js/furniture.js` | Möbelkauf und -platzierung, Miete, Gäste/Partner in der Wohnung |
+| `js/jobs.js` | Jobs Verkäufer, Fitnesstrainer, Fotograf, DJ mit Schichten und Stufen |
+| `js/nightlife.js` | Club-Abend: Themen, Eintritt, Tanzen, Getränke |
 | `js/social.js` | Kontakte und Freundschaftswerte |
 | `js/people.js` | NPC-Tagesabläufe nach Uhrzeit/Wochenende, Termine überschreiben den Plan |
 | `js/dating.js` | Dating-Figuren, Gesprächsmenü, Flirt/Ablehnung, Dates, Beziehung, Streit, Trennung |
@@ -75,8 +77,8 @@ settings: { q }   // -1 automatisch, 0 niedrig, 1 mittel, 2 hoch
 | M1 | Alltag: Uhr, Bedürfnisse, Geld, Späti, Barjob, eigene Wohnung, Handy, Kontakte | erledigt (Grundstufe) |
 | M2 | Rainbow City: Viertel Downtown, Pride District (heutiger Regenbogenkiez), Neon Nights, Rainbow Beach, Love Gardens, Fashion Boulevard, Rainbow Heights, Crystal Coast; Weltabschnitte laden/entladen, Tram zwischen Vierteln, Wetter, Instancing für Bäume/Lampen | offen |
 | M3 | Menschen: NPC-Tagesabläufe nach Uhrzeit/Wochentag; Dating-Kern mit Persönlichkeit, Vorlieben, Gesprächsarten (Smalltalk, tief, Flirt, Kompliment), Zustimmung und Ablehnung, Beziehungsstufen bis Partnerschaft, Erinnerungen; Nachrichten, Dating-App, Kalender mit Terminen | erledigt (Durchgang 2; Konflikte/Zusammenziehen ohne Wohnung, Zusammenziehen folgt in M6) |
-| M4 | Nachtleben: Club-Innenräume mit eigenen Musikstilen (selbst erzeugt), Tanzen mit Emotes, Bar-Bestellungen, Karaoke/Tanzwettbewerb in der Welt, Themenpartys, Pride-Events | offen |
-| M5 | Karriere: weitere Jobs mit eigenen Abläufen (DJ, Verkäufer, Fitnesstrainer, Fotograf, Stylist, Eventmanager, Performer), Beförderungen | offen |
+| M4 | Nachtleben: Club-Innenräume mit eigenen Musikstilen (selbst erzeugt), Tanzen mit Emotes, Bar-Bestellungen, Karaoke/Tanzwettbewerb in der Welt, Themenpartys, Pride-Events | teilweise (Durchgang 4: Themenabende, Tanzen, Getränke; Innenräume, Musik, Events offen) |
+| M5 | Karriere: weitere Jobs mit eigenen Abläufen (DJ, Verkäufer, Fitnesstrainer, Fotograf, Stylist, Eventmanager, Performer), Beförderungen | teilweise (Durchgang 4: Verkäufer, Fitnesstrainer, Fotograf, DJ mit Stufen) |
 | M6 | Wohnen: Möbel kaufen und platzieren, Miete, Gäste und Dates zu Hause, Zusammenziehen | erledigt (Durchgang 3; größere Wohnungen offen) |
 | M7 | Hauptgeschichte „Ein Leben in allen Farben“: Community-Zentrum in Gefahr, mehrere Kapitel, Entscheidungen mit Folgen, mehrere Enden, freies Weiterspielen | offen |
 | M8 | Mehrspieler-Ausbau: gemeinsame Clubbesuche, Tanzen, Besuche in der Wohnung, Gruppenfotos (bestehende Prüfungen beibehalten) | offen |

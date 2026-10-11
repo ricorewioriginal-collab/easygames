@@ -120,7 +120,7 @@
     }
   });
   GL.on('phoneMoney', function () {
-    return '<div class="pcard"><b>🏠 Wohnung</b><br><small class="sub">Miete ' + F.rent() + ' € pro Woche' + (H.partner ? ' (geteilt)' : '') + ', nächste Abbuchung Tag ' + F.nextRentDay() + (H.debt ? '.<br><b>Offene Miete: ' + H.debt + ' €</b>, zahlbar am Laptop zu Hause' : '') + '</small></div>';
+    return '<div class="pcard"><b>🏠 Wohnung</b><br><small class="sub">Miete ' + F.rent() + ' € pro Woche' + (H.partner ? ' (geteilt)' : '') + ', nächste Abbuchung Tag ' + F.nextRentDay() + (H.debt ? '.<br><b>Offene Miete: ' + H.debt + ' €</b>, zahlbar am Laptop zu Hause' : '') + '</small></div>' + (GL.jobs ? GL.jobs.card() : '');
   });
 
   /* ---------- Möbel benutzen ---------- */

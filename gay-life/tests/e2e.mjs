@@ -465,6 +465,57 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ctx.close();
 }
 
+/* ---------- 6. Jobs und Nachtleben ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
+  const menuItem = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  const first = async () => { await page.click('#maps .row2 >> nth=0'); await page.waitForTimeout(80); };
+  const setTime = h => ev(page, h => { GL.S.world.t = ((h - 6 + 24) % 24) / 24; }, h);
+  await ev(page, () => { GL.S.life.money = 100; GL.S.life.needs.energy = 90; GL.S.life.day = 3; }); await setTime(12);
+  ok(await ev(page, () => GL.emit('poi', 'shop') === true && /Arbeiten: Verkäufer/.test(document.getElementById('maps').textContent) && /Minispiel/.test(document.getElementById('maps').textContent)), 'Boutique bietet Arbeiten und Minispiel');
+  const m0 = await ev(page, () => ({ m: GL.S.life.money, h: GL.life.hour() }));
+  await menuItem('Arbeiten: Verkäufer'); await first(); await first(); await first(); await waitFade(page);
+  ok(await ev(page, () => /Schicht beendet/.test(document.getElementById('maps').textContent)), 'Schicht in drei Situationen endet mit Abrechnung');
+  s = await ev(page, () => ({ m: GL.S.life.money, h: GL.life.hour(), j: GL.S.jobs.shop }));
+  ok(s.m - m0.m >= 36 && s.m - m0.m <= 80 && Math.abs(((s.h - m0.h + 24) % 24) - 4) < .1 && s.j.shifts === 1 && s.j.xp >= 10, `Verkäufer: Lohn +${s.m - m0.m} €, 4 Std., Erfahrung`);
+  await closeMenu();
+  ok(await ev(page, () => /Weitere Jobs/.test(GL.emit('phoneMoney') || '')), 'Finanz-App listet den neuen Job');
+  ok(await ev(page, () => { GL.S.jobs.day = { d: GL.S.life.day, n: 2 }; return /zwei Schichten/.test(GL.jobs.why('shop')); }), 'Höchstens zwei Schichten pro Tag');
+  await setTime(23); await ev(page, () => { GL.S.jobs.day = null; });
+  ok(await ev(page, () => /Geöffnet 10–20/.test(GL.jobs.why('shop'))), 'Boutique nachts geschlossen');
+  ok(await ev(page, () => { GL.S.life.needs.energy = 10; const r = GL.jobs.why('gym'); GL.S.life.needs.energy = 90; return r !== ''; }), 'Zu müde: keine Schicht');
+  ok(await ev(page, () => /Bruno/.test(GL.jobs.why('stage'))), 'DJ-Job braucht Barkeeper-Stufe 2');
+  ok(await ev(page, () => { GL.S.jobs.bar.xp = 100; return GL.jobs.why('stage') === ''; }), 'Mit Stufe 2 ist die Bühne nachts offen');
+  ok(await ev(page, () => { GL.S.jobs.shop.xp = 300; return GL.jobs.level('shop') >= 4 && GL.jobs.title('shop') !== 'Aushilfe'; }), 'Erfahrung bringt Stufe und Titel');
+  // DJ-Schicht
+  await ev(page, () => { GL.emit('poi', 'stage'); }); await menuItem('Arbeiten: DJ'); await first(); await first(); await first(); await waitFade(page); await closeMenu();
+  ok(await ev(page, () => GL.S.jobs.stage.shifts === 1 && GL.S.jobs.stage.earned >= 48), 'DJ-Schicht bezahlt');
+  // Club: Freitag 22 Uhr (Tag 5)
+  await ev(page, () => { GL.S.life.day = 5; GL.S.jobs.night = null; GL.S.jobs.day = null; GL.S.life.money = 100; GL.S.life.needs.energy = 90; GL.S.life.needs.social = 30; }); await setTime(22);
+  ok(await ev(page, () => GL.emit('poi', 'club') === true && /Rainbow Night/.test(document.getElementById('maps').textContent)), 'Club: Freitag ist Rainbow Night');
+  await menuItem('Tanzen'); await first(); await first(); await first();
+  ok(await ev(page, () => /Was für ein Abend/.test(document.getElementById('maps').textContent)), 'Tanzen: drei Songs, Auswertung');
+  s = await ev(page, () => ({ m: GL.S.life.money, so: GL.S.life.needs.social, e: GL.S.life.needs.energy, d: GL.night.state().danced }));
+  ok(s.m === 85 && s.d === 1 && s.e < 80, `Tanzen: Eintritt 15 € bezahlt, Kontakte ${s.so.toFixed(0)}, Energie ${s.e.toFixed(0)}`);
+  await menuItem('Weiter'); await menuItem('Tanzen'); await first(); await first(); await first();
+  ok(await ev(page, () => GL.S.life.money === 85), 'Eintritt nur einmal pro Nacht');
+  await closeMenu();
+  await ev(page, () => { GL.S.life.money = 100; GL.S.life.needs.energy = 90; GL.emit('poi', 'club'); }); await menuItem('Etwas bestellen');
+  for (let i = 0; i < 3; i++) await menuItem('Cocktail');
+  ok(await ev(page, () => GL.night.state().drinks === 3 && GL.S.life.money === 76), 'Drei Cocktails bestellt (je 8 €)');
+  ok(await page.evaluate(() => [...document.querySelectorAll('#maps .row2')].some(r => /Cocktail/.test(r.textContent) && /Genug für heute/.test(r.textContent))), 'Vierter Cocktail: Bruno sagt „Genug für heute“');
+  await closeMenu();
+  await setTime(12);
+  ok(await ev(page, () => !GL.night.isOpen()), 'Club tagsüber geschlossen');
+  await ev(page, () => { GL.S.life.needs.energy = 8; });
+  ok(await ev(page, () => { const r = GL.emit('poi', 'club'); const d = !!GL.W.dlg; GL.W.dlg = null; document.getElementById('dlg').style.display = 'none'; return r === true && d; }), 'Erschöpft: Türsteher hält weiter ab');
+  await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
+  ok(await ev(page, () => GL.S.jobs.shop.shifts === 1 && GL.S.jobs.stage.shifts === 1 && GL.S.jobs.night.drinks === 3), 'Jobs und Clubnacht bleiben nach Neuladen erhalten');
+  await ctx.close();
+}
+
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));
 await browser.close();
 console.log(fails ? `\n${fails} Prüfung(en) fehlgeschlagen` : '\nAlle Prüfungen bestanden');
