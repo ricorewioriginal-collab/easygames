@@ -44,6 +44,15 @@ const HOE_MAT = [B.PLANKS, B.STONE];
 ['WOOD', 'STONE'].forEach((k, i) => RECIPES.push({ id: 'tool' + I[k + '_HOE'], give: [I[k + '_HOE'], 1], need: [[HOE_MAT[i], 2], [I.STICK, 2]], st: 'werkbank' }));
 TIERS.forEach((t, ti) => RECIPES.push({ id: 'tool' + I[t.key + '_SWORD'], give: [I[t.key + '_SWORD'], 1], need: [[TOOL_MAT[ti], 2], [I.STICK, 1]], st: 'werkbank' }));
 RECIPES.push({ id: 'bread', give: [I.BREAD, 1], need: [[I.WHEAT, 3]] });
+// Rüstung (Werkbank) und Dorf-Baustoffe
+RECIPES.push(
+  { id: 'copperHelmet', give: [I.COPPER_HELMET, 1], need: [[I.COPPER_INGOT, 5]], st: 'werkbank' },
+  { id: 'copperChest', give: [I.COPPER_CHEST, 1], need: [[I.COPPER_INGOT, 8]], st: 'werkbank' },
+  { id: 'ironHelmet', give: [I.IRON_HELMET, 1], need: [[I.IRON_INGOT, 5]], st: 'werkbank' },
+  { id: 'ironChest', give: [I.IRON_CHEST, 1], need: [[I.IRON_INGOT, 8]], st: 'werkbank' },
+  { id: 'cobble', give: [B.COBBLE, 2], need: [[B.STONE, 2]] },
+  { id: 'path', give: [B.PATH, 2], need: [[B.GRAVEL, 1], [B.DIRT, 1]] }
+);
 RECIPES.push(
   { id: 'ingotCopper', give: [I.COPPER_INGOT, 1], need: [[B.COPPER, 1], [B.COAL, 1]], st: 'ofen' },
   { id: 'ingotIron', give: [I.IRON_INGOT, 1], need: [[B.IRON, 1], [B.COAL, 1]], st: 'ofen' },

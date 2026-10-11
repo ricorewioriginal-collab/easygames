@@ -83,6 +83,24 @@ Legende: ✅ fertig und getestet · 🟡 teilweise · ⬜ offen
 
 ---
 
+## 2d. Etappe 3b – Dörfer und Bauen ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Generator 3 | neue Welten: Generator 2 plus Strukturen; Generator 2 bleibt Bit für Bit gleich (Test). Regionen von 160×160 Blöcken mit höchstens einem Dorf und einer Mine, beide ganz in ihrer Region, also prüft jeder Chunk nur seine eigene Region. Startpunkt am Dorfplatz des nächsten Dorfes. | `src/structures.js`, `src/world.js` |
+| Dörfer | nur in Ebene, Wald, Wiese, Nadelwald, Schnee, Wüste und nur bei höchstens 9 Blöcken Höhenunterschied; Platz mit Radius 20 eben, 4 Blöcke weicher Übergang, Bäume darüber entfernt, Höhleneingänge zugeschüttet. Brunnen, Laternen, Wege, 3–4 Häuser (Tür zum Platz, Fenster, Pyramidendach, Lampe), Weizenfeld mit Wasserrinne, Funkmast mit spielendem Radio. Baustoffe je Biom (Bretter/Ziegel, Fichte, Sandstein). | `src/structures.js` |
+| Minen | zwei kreuzende Stollen (3 breit, 3 hoch, Länge 37–59) auf Höhe 10–17, Stützbalken alle 5 Blöcke, vereinzelt Lampen, Brücken über Höhlen, Erze an den Wänden, Kammer mit altem Ofen und Werkbank; nie unter Meer oder flachem Gelände | `src/structures.js` |
+| Dorfbewohner | Bäuerin, Schmied, Funkerin, Hirte (ein Bewohner je Haus); Tagesablauf zu Hause → Arbeit → Dorfplatz → Arbeit → abends nach Hause, Häuser nur durch die Tür (Wegpunkte); hängt einer 5 s fest, wird er zum Wegpunkt versetzt. Sie entstehen aus den Dorfdaten, wenn der Dorfplatz geladen ist, und werden nicht gespeichert (kein neues Spielstandfeld). Nicht angreifbar; im Dorf erscheinen keine Gegner. | `src/mobs.js`, `src/mobview.js` |
+| Handel | Setzen-Taste auf einen Bewohner öffnet den Tausch; je Beruf 3–4 Angebote (Weizen, Kohle, Barren, Kristalle gegen Äpfel, Werkzeug, Rüstung, Radio, Lampen, Schalter); gleiche Prüfung wie Rezepte | `src/trades.js`, `src/main.js` |
+| Bau-Werkzeuge | Bauform mit G bzw. ▦: Einzeln, Linie, Fläche, Wand, Säule (zwei Ecken setzen), Kreativ zusätzlich Kopieren (bis 32 768 Blöcke) und Einfügen. Vorschau als weißer Rahmen (abschaltbar). Formen füllen nur freie Zellen; Überleben: höchstens 512 Blöcke und nur aus dem Vorrat. Eine Form = ein Rückgängig-Schritt. | `src/build.js`, `src/game.js` |
+| Gegner | Höhlenwesen (nur tief in Höhlen, 12 Leben, 1½ Herzen Schaden, Kohle/Eisen) und Störsender-Drohne (nachts, fliegt, hält Abstand, Störimpuls auf 7 Blöcke alle 2 s, Kupferbarren/Kristall) | `src/mobs.js`, `src/mobview.js` |
+| Rüstung | Kupfer- und Eisenhelm, Kupfer- und Eisenharnisch (Werkbank); Setzen-Taste legt an; je Schutzpunkt 5 % weniger Schaden durch Gegner (höchstens 40 %); nutzt sich je Treffer ab; Schilde über den Herzen; `arm` im Spielstand | `src/items.js`, `src/game.js`, `src/main.js` |
+| Technik | Block-Atlas auf 8×16 Kacheln erweitert (vorher 8×8 voll); neue Blöcke 66–78 (Dorfweg, Bruchstein und die Funktechnik für Etappe 4); `drop` im Blockregister | `src/consts.js`, `src/textures.js`, `src/mesher.js`, `src/blocks.js` |
+| Fehler behoben | Erstbesiedlung konnte seit Etappe 3 Rauschlinge als Tierherde erzeugen (Typ-Auswahl über alle Arten statt nur Tiere) | `src/mobs.js` |
+| Tests | 71 Tests (neu: `structures.test.js`, `build.test.js`, Dorfbewohner/Drohne in `mobs.test.js`) | `tests/` |
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
@@ -92,12 +110,12 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 4 | Voxel-Engine | 🟡 | 1 ✅ / 4 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
-| 7 | Bauen | 🟡 | 3 ✅ / 3b | Rückgängig/Wiederholen ✅; Platzierungsvorschau, Linie/Fläche/Wand/Säule, Kopieren/Einfügen, Bauvorlagen |
+| 7 | Bauen | ✅ | 3b | Vorschau, Formen, Kopieren/Einfügen ✅; später Drehen beim Einfügen, Bauvorlagen |
 | 8 | Crafting, Werkzeuge, Stationen | ✅ | 2 | später: Kochstelle, Schmelzen mit Zeitablauf, Werkzeug-Haltbarkeit je Stück statt je Stapel |
 | 9 | Survival | ✅ | 2 | Betten/eigener Startpunkt, Rüstung (mit Gegnern, Etappe 3) |
 | 10 | Tiere | ✅ | 2 | Biom-Tiere (z. B. Ziege, Pinguin), Züchten mit Futter, Beine animieren |
-| 11 | Gegner, Kampf | 🟡 | 3 ✅ / 3b | Höhlenwesen und Störsender-Drohnen als eigene Arten, Rüstung, Bogen |
-| 12 | Dörfer, NPCs | ⬜ | 3b | Strukturgenerator mit Flächenausgleich (neue Generator-Version), NPC-Tagesablauf mit festem Aufenthaltsort, Handel |
+| 11 | Gegner, Kampf | ✅ | 3b | später Bogen, Bosse in Story-Kapitel 5 |
+| 12 | Dörfer, NPCs | ✅ | 3b | später mehr Berufe, Gespräche mit Story-Bezug |
 | 13 | Landwirtschaft | 🟡 | 3 ✅ | weitere Pflanzen (Karotte, Kartoffel), Bewässerung, Tierzucht |
 | 14 | Fahrzeuge | 🟡 | 4 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
 | 15 | Story „Das große Rauschen“ | 🟡 | 4 | 6 Kapitel, alte 15 Aufträge werden Kapitel 1–2; Migration: alter Fortschritt `story.i` → neues Kapitel/Schritt |
@@ -111,7 +129,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
 | 25/26 | Performance | 🟡 | 1 ✅ / 4 | echte Handymessungen, Worker-Meshing |
-| 27 | Entities | 🟡 | 2 ✅ / 3 | Gegner und NPCs auf dem Tier-Grundgerüst (`src/mobs.js`) |
+| 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
 | 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
 | 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
 | 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, TESTING, PROGRESS |
@@ -135,7 +153,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 ```bash
 cd anmacha-klotzfunk-src
 npm install
-npm test          # 60 Tests, ~2 s
+npm test          # alle Tests, ~2 s
 npm run bench     # Chunk-Erzeugung/Meshing messen (Seed 12345, Radius 6, Generator 2)
 npm run docs      # BLOCKS.md und CRAFTING.md aus dem Code erzeugen
 npm run build     # schreibt ../anmacha-klotzfunk/ (mit committen!)

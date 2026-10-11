@@ -23,7 +23,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .slot .n{position:absolute;right:3px;bottom:0;font:700 11px/1.2 system-ui;text-shadow:0 1px 2px #000}
 .slot .k{position:absolute;left:3px;top:0;font:600 9px/1.3 system-ui;opacity:.6}
 .slot.empty .ic{opacity:.35}
-.ic{display:block;width:70%;height:70%;background-image:var(--atlas);background-size:800% 800%;border-radius:4px}
+.ic{display:block;width:70%;height:70%;background-image:var(--atlas);background-size:800% 1600%;border-radius:4px}
 .ic.lg{background-image:var(--logos);background-size:400% 400%;background-color:#0e1224}
 .plus{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:7px;background:rgba(0,229,255,.25);border:1px solid var(--cy);font-style:normal;font-size:14px;line-height:20px;text-align:center}
 h3 small{font-weight:400;opacity:.7}
@@ -77,10 +77,10 @@ footer a{color:var(--cy);text-decoration:none}
 .cell{position:relative;padding:8px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px}
 .cell .ic{width:40px;height:40px}.cell.has{border-color:rgba(0,229,255,.55)}.cell.dim .ic{opacity:.4}
 .cell b{font-size:13px}
-#recipes{display:grid;gap:8px}
-#recipes button{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);text-align:left;font-size:14px}
-#recipes button:disabled{opacity:.4;cursor:not-allowed}
-#recipes .ic{width:26px;height:26px;flex:none}
+.rec{display:grid;gap:8px}
+.rec button{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);text-align:left;font-size:14px}
+.rec button:disabled{opacity:.4;cursor:not-allowed}
+.rec .ic{width:26px;height:26px;flex:none}
 
 @media (max-height:480px){.panel{padding:14px}.sub{margin-bottom:8px}}
 
@@ -163,11 +163,11 @@ body.lefty #bHook{left:auto;right:calc(22px + var(--tb) + var(--sar))}
 .tabs button.on{background:linear-gradient(90deg,rgba(0,229,255,.3),rgba(139,92,246,.32));border-color:var(--cy)}
 #inv .panel{max-height:calc(100dvh - 24px);overflow:auto}
 #invGrid{max-height:min(38vh,340px);overflow:auto;padding:2px}
-#recipes{max-height:min(34vh,320px);overflow:auto;padding:2px}
-#recipes button span{flex:1;min-width:0}
-#recipes small{display:block;opacity:.8;font-size:12px}
-#recipes small i{font-style:normal;color:#ff9b9b}
-#recipes .cnt{flex:none;font-size:12px;opacity:.8}
+.rec{max-height:min(34vh,320px);overflow:auto;padding:2px}
+.rec button span{flex:1;min-width:0}
+.rec small{display:block;opacity:.8;font-size:12px}
+.rec small i{font-style:normal;color:#ff9b9b}
+.rec .cnt{flex:none;font-size:12px;opacity:.8}
 .empty-note{opacity:.7;font-size:13px;padding:6px 2px}
 
 /* ---- Einstellungen ---- */
@@ -188,6 +188,11 @@ body.lefty #bHook{left:auto;right:calc(22px + var(--tb) + var(--sar))}
 #dead{background:rgba(90,0,0,.55)}
 .ic.it{background-image:var(--items);background-size:800% var(--itemRows);image-rendering:pixelated;border-radius:0}
 #inv .st{color:#ffd27a;font-weight:600;margin:0 0 6px}
-#recipes .badge{font-size:11px;padding:1px 6px;border-radius:999px;background:rgba(255,210,122,.18);color:#ffd27a;margin-left:6px;white-space:nowrap}
+.rec .badge{font-size:11px;padding:1px 6px;border-radius:999px;background:rgba(255,210,122,.18);color:#ffd27a;margin-left:6px;white-space:nowrap}
 #vit[hidden]{display:none}
 body.touch #vit{bottom:auto;top:calc(118px + var(--sat))}
+#bmode{position:absolute;left:50%;bottom:calc(74px + var(--sab));transform:translateX(-50%);padding:3px 10px;border-radius:999px;background:rgba(8,12,26,.7);border:1px solid rgba(0,229,255,.5);color:#bff6ff;font-size:13px;white-space:nowrap}
+#bmode[hidden]{display:none}
+body.touch #bmode{bottom:auto;top:calc(150px + var(--sat))}
+#trade .say{font-style:italic;opacity:.9}
+@media (max-width:420px){#topbtns{gap:5px}.tbtn{width:36px;height:36px;font-size:17px;border-radius:10px}}

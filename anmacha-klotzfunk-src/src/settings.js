@@ -22,7 +22,8 @@ export const DEFAULTS = {
   musicVol: 0.8,
   showFps: false,
   deathLoss: 'keep',    // keep | grave (Vorrat bleibt am Todesort liegen)
-  enemies: true         // Gegner im Überlebensmodus (aus = friedlich)
+  enemies: true,        // Gegner im Überlebensmodus (aus = friedlich)
+  preview: true         // Platzierungsvorschau (weißer Rahmen)
 };
 
 export function loadSettings() {

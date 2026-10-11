@@ -5,6 +5,7 @@ import { B, SOLID } from './blocks.js';
 import { CS, H, SEA } from './consts.js';
 import { hash } from './noise.js';
 import { I } from './items.js';
+import { workSpot } from './structures.js';
 
 // drops: [Id, min, max]
 export const MOB_TYPES = [
@@ -12,8 +13,21 @@ export const MOB_TYPES = [
   { key: 'schaf', name: 'Schaf', hp: 5, half: 0.42, h: 1.2, speed: 1.2, drops: [[I.MEAT_RAW, 1, 2], [B.WOOL, 1, 2]] },
   { key: 'kuh', name: 'Kuh', hp: 6, half: 0.45, h: 1.4, speed: 1.1, drops: [[I.MEAT_RAW, 2, 3]] },
   // Gegner: nachts an der Oberfläche, jederzeit in tiefen Höhlen; werden nicht gespeichert
-  { key: 'rauschling', name: 'Rauschling', hp: 8, half: 0.3, h: 1.7, speed: 2.4, hostile: true, dmg: 2, drops: [[B.CRYSTAL, 0, 1]] }
+  { key: 'rauschling', name: 'Rauschling', hp: 8, half: 0.3, h: 1.7, speed: 2.4, hostile: true, dmg: 2, drops: [[B.CRYSTAL, 0, 1]] },
+  { key: 'hoehlenwesen', name: 'Höhlenwesen', hp: 12, half: 0.45, h: 0.9, speed: 1.9, hostile: true, dmg: 3, drops: [[B.COAL, 1, 2], [B.IRON, 0, 1]] },
+  // fliegt, hält Abstand und trifft mit Störimpulsen auf bis zu 7 Blöcke
+  { key: 'drohne', name: 'Störsender-Drohne', hp: 6, half: 0.35, h: 0.6, speed: 3, hostile: true, fly: true, range: 7, dmg: 2, drops: [[I.COPPER_INGOT, 0, 1], [B.CRYSTAL, 0, 1]] },
+  // Dorfbewohner: fester Tagesablauf, Handel, nicht angreifbar; entstehen aus den Dorfdaten und werden nicht gespeichert
+  { key: 'dorfbewohner', name: 'Dorfbewohner', hp: 20, half: 0.3, h: 1.8, speed: 1.5, npc: true, drops: [] }
 ];
+export const ANIMALS = 3;         // die ersten Typen sind Tiere (Erstbesiedlung)
+export const T_RAUSCHLING = 3, T_HOEHLE = 4, T_DROHNE = 5, T_NPC = 6;
+// Tagesablauf (Tageszeit 0..1, Nacht ab 0,52): zu Hause, Arbeit, Dorfplatz
+export function npcPhase(t) {
+  if (t < 0.03 || t >= 0.5) return 'home';
+  if (t < 0.22 || (t >= 0.32 && t < 0.47)) return 'work';
+  return 'plaza';
+}
 export const HOSTILE_MAX = 4;     // gleichzeitig höchstens
 const SIGHT = 18;                  // Sichtweite der Gegner (Blöcke)
 
@@ -39,6 +53,14 @@ export class Mob {
     this.vx = 0; this.vy = 0; this.vz = 0; this.yaw = 0; this.onGround = false;
     this.walk = 0; this.timer = 0; this.flee = 0; this.hurtT = 0; this.acc = 0; this.moving = false;
     this.hostile = !!T.hostile; this.sees = false; this.seeT = 0; this.atkT = 0; this.attack = false;
+    this.npc = !!T.npc; this.path = null; this.stuck = 0; this.phase = null;
+  }
+
+  // nach (x, z) versetzen, auf die nächste freie Stelle ab der eigenen Höhe (erst abwärts, dann aufwärts; nie aufs Dach)
+  warp(w, x, z) {
+    const y0 = Math.floor(this.y), ok = y => y > 1 && y < H - 2 && SOLID[w.getBlock(Math.floor(x), y - 1, Math.floor(z))] && !this.collides(w, x, y, z);
+    for (let k = 0; k <= 8; k++) for (const y of [y0 - k, y0 + k]) if (ok(y)) { this.x = x; this.y = y; this.z = z; this.vy = 0; return true; }
+    return false;
   }
 
   collides(w, x, y, z) {
@@ -70,9 +92,24 @@ export class Mob {
       const d = Math.hypot(px - this.x, pz - this.z);
       if (this.seeT <= 0) { this.seeT = 0.5; this.sees = d < SIGHT && lineOfSight(w, this.x, this.y + 1.5, this.z, px, py + 1.6, pz); }
       if (this.sees && d > 0.8) { this.walk = 1; this.yaw = Math.atan2(-(px - this.x), -(pz - this.z)); this.timer = 0.5; }
-      if (this.sees && d < 1.5 && Math.abs(py - this.y) < 1.8 && this.atkT <= 0) { this.atkT = 1; this.attack = true; }
+      if (T.range) { // Fernangriff: Abstand halten, mit Sicht feuern
+        if (this.sees && d < 4) this.walk = 0;
+        if (this.sees && Math.hypot(d, py + 1 - this.y) < T.range && this.atkT <= 0) { this.atkT = 2; this.attack = true; }
+      } else if (this.sees && d < 1.5 && Math.abs(py - this.y) < 1.8 && this.atkT <= 0) { this.atkT = 1; this.attack = true; }
     }
-    if (this.hostile && this.sees) { /* Verfolgung hat Vorrang */ } else if (this.flee > 0) {
+    if (this.npc && this.path && this.path.length) { // Dorfbewohner: Wegpunkte abgehen
+      const g = this.path[0], gd = Math.hypot(g.x - this.x, g.z - this.z);
+      if (gd < 0.6) { this.path.shift(); this.walk = 0; this.stuck = 0; this.bestD = Infinity; this.timer = 1 + rnd() * 2; }
+      else {
+        this.walk = 1; this.yaw = Math.atan2(-(g.x - this.x), -(g.z - this.z)); this.timer = 0.3;
+        // kein Fortschritt (Hindernis): nach 5 s zum Wegpunkt versetzen
+        if (gd < (this.bestD ?? Infinity) - 0.3) { this.bestD = gd; this.stuck = 0; }
+        else if ((this.stuck += dt) > 5) { this.path.shift(); this.warp(w, g.x, g.z); this.stuck = 0; this.bestD = Infinity; }
+      }
+    }
+    if ((this.hostile && this.sees) || (this.npc && this.path && this.path.length)) { /* Verfolgung bzw. Weg hat Vorrang */ } else if (this.npc) {
+      if (this.timer <= 0) { this.walk = 0; this.yaw += (rnd() - 0.5) * 1.5; this.timer = 2 + rnd() * 3; } // am Ziel: stehen und umschauen
+    } else if (this.flee > 0) {
       this.flee -= dt; this.walk = 1;
       this.yaw = Math.atan2(-(this.x - px), -(this.z - pz)); // vom Spieler weg
     } else if (this.timer <= 0) { // neue Absicht: laufen oder stehen
@@ -84,7 +121,7 @@ export class Mob {
     let sp = this.walk ? T.speed * (this.flee > 0 ? 2.2 : 1) : 0;
     let dx = -Math.sin(this.yaw), dz = -Math.cos(this.yaw);
     // nicht über Kanten (> 3 Blöcke) oder ins tiefe Wasser laufen
-    if (sp && this.onGround && !this.sees) {
+    if (sp && this.onGround && !this.sees && !T.fly) {
       const ax = Math.floor(this.x + dx * (T.half + 0.6)), az = Math.floor(this.z + dz * (T.half + 0.6));
       let drop = 0;
       for (let y = Math.floor(this.y) - 1; drop < 4 && y > 0 && !SOLID[w.getBlock(ax, y, az)]; y--) { drop++; if (w.getBlock(ax, y, az) === B.WATER && !this.flee) { drop = 9; break; } }
@@ -92,15 +129,18 @@ export class Mob {
     }
     if (this.hostile && this.sees && Math.hypot(px - this.x, pz - this.z) < 0.9) sp = 0; // nicht in den Spieler laufen
     this.vx = dx * sp; this.vz = dz * sp;
-    if (inWater) { this.vy = Math.min(2, this.vy + 20 * dt); }
+    if (T.fly) { // schweben: über dem Spieler, sonst auf Höhe bleiben
+      const ty = this.sees ? py + 2.5 : this.y + Math.sin(this.timer * 3) * 0.3;
+      this.vy = Math.max(-3, Math.min(3, (ty - this.y) * 2));
+    } else if (inWater) { this.vy = Math.min(2, this.vy + 20 * dt); }
     else this.vy = Math.max(-40, this.vy - 28 * dt);
     const bx = this.move(w, 'x', this.vx * dt), bz = this.move(w, 'z', this.vz * dt);
     this.onGround = false;
     this.move(w, 'y', this.vy * dt);
     // Hindernis: einen Block hochspringen, sonst umdrehen
-    if ((bx || bz) && sp) {
+    if ((bx || bz) && sp && !T.fly) {
       if (this.onGround && !this.collides(w, this.x, this.y + 1.05, this.z)) this.vy = 7.2;
-      else if (this.onGround) { this.yaw += Math.PI * (0.5 + rnd()); this.timer = 0.5; }
+      else if (this.npc && this.path && this.path.length) { /* weiter auf den Wegpunkt zu, Fortschritt wird oben geprüft */ } else if (this.onGround) { this.yaw += Math.PI * (0.5 + rnd()); this.timer = 0.5; }
     }
     if (this.y < -10) this.y = H; // Sicherheitsnetz
     this.moving = sp > 0 && (Math.abs(this.vx) + Math.abs(this.vz)) > 0.1;
@@ -108,6 +148,7 @@ export class Mob {
 
   // Treffer: Rückgabe true = erlegt
   hit(dmg, px, pz) {
+    if (this.npc) return false;
     this.hp -= dmg; this.hurtT = 0.35; if (!this.hostile) this.flee = 3.5;
     const d = Math.hypot(this.x - px, this.z - pz) || 1;
     this.x += (this.x - px) / d * 0.15; this.z += (this.z - pz) / d * 0.15; this.vy = 4.5;
@@ -139,11 +180,14 @@ export class Mobs {
     if (store && typeof store === 'object') for (const k of Object.keys(store)) {
       const v = store[k], key = Number(k);
       if (!Array.isArray(v) || !Number.isFinite(key)) continue;
-      this.store.set(key, v.filter(r => Array.isArray(r) && MOB_TYPES[r[0]] && !MOB_TYPES[r[0]].hostile && r.slice(1, 5).every(Number.isFinite)));
+      this.store.set(key, v.filter(r => Array.isArray(r) && Number.isInteger(r[0]) && r[0] >= 0 && r[0] < ANIMALS && r.slice(1, 5).every(Number.isFinite)));
     }
     this.list = []; this.active = new Set(); this.lastPC = null; this.rnd = Math.random;
     this.onAdd = () => {}; this.onRemove = () => {}; this.onAttack = () => {}; this.onPoof = () => {};
     this.day = true; this.spawnT = 3;
+    this.villages = new Map(); // Dorf-Id -> { v, list } (Dorfbewohner in der Nähe)
+    this.findVillages = null;  // (px, pz) -> Dörfer in der Nähe (Generator 3)
+    this.time = 0.2;
   }
 
   // einmalige, feste Erstbesiedlung eines Chunks (gleicher Startwert = gleiche Tiere)
@@ -152,7 +196,7 @@ export class Mobs {
     if (hash(cx, cz, s) > 0.2) return null;
     const c = this.world.getChunk(cx, cz);
     if (!c) return null;
-    const type = Math.floor(hash(cx, cz, s + 1) * MOB_TYPES.length), n = 2 + Math.floor(hash(cx, cz, s + 2) * 3), out = [];
+    const type = Math.floor(hash(cx, cz, s + 1) * ANIMALS), n = 2 + Math.floor(hash(cx, cz, s + 2) * 3), out = [];
     for (let i = 0; i < n * 3 && out.length < n; i++) {
       const x = Math.floor(hash(cx * 31 + i, cz, s + 3) * CS), z = Math.floor(hash(cx, cz * 31 + i, s + 4) * CS);
       const idx = x + z * CS;
@@ -191,7 +235,7 @@ export class Mobs {
     const i = this.list.indexOf(m);
     if (i < 0) return;
     this.list.splice(i, 1); this.onRemove(m);
-    if (this.hostile(m)) return; // Gegner werden nicht gespeichert
+    if (m.hostile || m.npc) return; // Gegner und Dorfbewohner werden nicht gespeichert
     if (keep) this.stash(m.record());
     else { // Chunk bleibt markiert, damit dort nicht neu besiedelt wird
       const key = keyOf(Math.floor(m.x / CS), Math.floor(m.z / CS));
@@ -217,7 +261,9 @@ export class Mobs {
         if (this.world.getBlock(x, y, z) !== B.AIR || this.world.getBlock(x, y + 1, z) !== B.AIR) continue;
         const open = y >= hm, deep = !open && y < SEA - 4;
         if ((open && night) || deep) {
-          const m = new Mob(3, x + 0.5, y, z + 0.5);
+          for (const { v } of this.villages.values()) if (Math.hypot(v.x - x, v.z - z) < 30) return null; // Dörfer sind sicher
+          const type = deep ? (rnd() < 0.5 ? T_HOEHLE : T_RAUSCHLING) : (rnd() < 0.3 ? T_DROHNE : T_RAUSCHLING);
+          const m = new Mob(type, x + 0.5, type === T_DROHNE ? y + 3 : y, z + 0.5);
           m.yaw = rnd() * 6.28; this.list.push(m); this.onAdd(m);
           return m;
         }
@@ -250,15 +296,53 @@ export class Mobs {
         const c = this.world.getChunk(Math.floor(m.x) >> 4, Math.floor(m.z) >> 4);
         const open = c && Math.floor(m.y) >= this.world.heightmap(c)[(Math.floor(m.x) & 15) + (Math.floor(m.z) & 15) * CS];
         if (far || (this.day && open)) { this.onPoof(m); this.remove(m, false); }
-      } else if (!this.active.has(key)) this.remove(m, true);
+      } else if (!m.npc && !this.active.has(key)) this.remove(m, true);
     }
+    this.refreshVillages(px, pz);
+  }
+
+  // Dorfbewohner: erscheinen, wenn der Dorfplatz geladen ist, verschwinden weit weg (nicht gespeichert)
+  refreshVillages(px, pz) {
+    for (const [id, e] of this.villages) {
+      if (Math.hypot(e.v.x - px, e.v.z - pz) < 112) continue;
+      for (const m of e.list) this.remove(m, false);
+      this.villages.delete(id);
+    }
+    if (!this.findVillages) return;
+    for (const v of this.findVillages(px, pz)) {
+      if (this.villages.has(v.id) || Math.hypot(v.x - px, v.z - pz) > 96 || !this.world.getChunk(v.x >> 4, v.z >> 4)) continue;
+      this.villages.set(v.id, { v, list: this.spawnVillagers(v) });
+    }
+  }
+
+  spawnVillagers(v) {
+    const out = [];
+    v.houses.forEach((h, i) => {
+      const m = new Mob(T_NPC, h.x + 0.5, v.y + 1, h.z + 0.5);
+      m.name = h.role.name; m.role = h.role.key; m.vid = v.id;
+      m.home = { x: h.x + 0.5, z: h.z + 0.5 }; m.front = { x: h.front.x + 0.5, z: h.front.z + 0.5 };
+      m.work = workSpot(v, h); m.plaza = { x: v.x + 0.5 + (i & 1 ? 2.2 : -2.2), z: v.z + 0.5 + (i < 2 ? -2.2 : 2.2) };
+      const ph = npcPhase(this.time), at = ph === 'home' ? m.home : ph === 'work' ? m.work : m.plaza;
+      m.phase = ph; m.warp(this.world, at.x, at.z); // ab Platzhöhe suchen
+      this.list.push(m); this.onAdd(m); out.push(m);
+    });
+    return out;
+  }
+
+  // Weg zum Ziel der Tagesphase: Häuser nur durch die Tür betreten und verlassen
+  route(m, ph) {
+    const inside = Math.abs(m.x - m.home.x) < 2.6 && Math.abs(m.z - m.home.z) < 2.6;
+    if (ph === 'home') return inside ? [m.home] : [m.front, m.home];
+    const to = ph === 'work' ? m.work : m.plaza;
+    return inside ? [m.front, to] : [to];
   }
 
   // env: { py, night, hostiles } – Spielerhöhe, Nacht, Gegner erlaubt
   update(dt, px, pz, env = {}) {
     if (!this.enabled) return;
     const py = env.py ?? 0;
-    this.day = !env.night;
+    this.day = !env.night; this.time = env.time ?? 0.2;
+    const ph = npcPhase(this.time);
     if (env.hostiles) { this.spawnT -= dt; if (this.spawnT <= 0) { this.spawnT = 3; this.spawnHostile(px, py, pz, !!env.night); } }
     else if (this.hostileCount()) for (const m of this.list.slice()) if (m.hostile) this.remove(m, false);
     const pcx = Math.floor(px / CS), pcz = Math.floor(pz / CS);
@@ -266,6 +350,7 @@ export class Mobs {
       this.lastPC = [pcx, pcz]; this.refreshT = 1; this.refresh(px, pz);
     }
     for (const m of this.list) {
+      if (m.npc && m.phase !== ph) { m.phase = ph; m.path = this.route(m, ph); m.bestD = Infinity; m.stuck = 0; }
       const d = Math.hypot(m.x - px, m.z - pz);
       if (d < NEAR || m.flee > 0 || m.hostile) m.update(this.world, dt, this.rnd, px, pz, py);
       else { m.acc += dt; if (m.acc >= 0.25) { m.update(this.world, Math.min(m.acc, 0.25), this.rnd, px, pz, py); m.acc = 0; } }
@@ -290,7 +375,7 @@ export class Mobs {
     for (const [k, a] of this.store) out[k] = a.slice();
     for (const key of this.active) if (!out[key]) out[key] = []; // besiedelte aktive Chunks markieren
     for (const m of this.list) {
-      if (m.hostile) continue;
+      if (m.hostile || m.npc) continue;
       const key = keyOf(Math.floor(m.x / CS), Math.floor(m.z / CS));
       (out[key] || (out[key] = [])).push(m.record());
     }
@@ -303,7 +388,7 @@ export class Mobs {
     return out;
   }
 
-  clear() { for (const m of this.list) this.onRemove(m); this.list = []; this.active.clear(); }
+  clear() { for (const m of this.list) this.onRemove(m); this.list = []; this.active.clear(); this.villages.clear(); }
 }
 
 // Beute eines Tieres (rnd für Tests austauschbar)

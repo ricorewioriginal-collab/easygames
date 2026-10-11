@@ -65,6 +65,12 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 1× Kupferschwert | 2× Kupferbarren + 1× Stock | Werkbank | Werkzeuge & Essen |
 | 1× Eisenschwert | 2× Eisenbarren + 1× Stock | Werkbank | Werkzeuge & Essen |
 | 1× Brot | 3× Weizen | – | Werkzeuge & Essen |
+| 1× Kupferhelm | 5× Kupferbarren | Werkbank | Werkzeuge & Essen |
+| 1× Kupferharnisch | 8× Kupferbarren | Werkbank | Werkzeuge & Essen |
+| 1× Eisenhelm | 5× Eisenbarren | Werkbank | Werkzeuge & Essen |
+| 1× Eisenharnisch | 8× Eisenbarren | Werkbank | Werkzeuge & Essen |
+| 2× Bruchstein | 2× Stein | – | Bauen |
+| 2× Dorfweg | 1× Kies + 1× Erde | – | Bauen |
 | 1× Kupferbarren | 1× Kupfererz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Eisenbarren | 1× Eisenerz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Braten | 1× Rohes Fleisch + 1× Bretter | Schmelzofen | Werkzeuge & Essen |

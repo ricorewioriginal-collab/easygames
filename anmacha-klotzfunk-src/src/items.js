@@ -44,7 +44,16 @@ add(1025, 'WHEAT', 'Weizen', { draw: 'wheat' });
 add(1026, 'BREAD', 'Brot', { draw: 'bread', food: 6 });
 TIERS.forEach((t, ti) => add(1027 + ti, t.key + '_SWORD', t.name + 'schwert', { draw: 'schwert', col: t.col, tool: { kind: 'schwert', tier: ti + 1, speed: 1, dur: t.dur, dmg: 3 + ti } }));
 
+// ab 1031: Rüstung (slot: kopf | brust, pts: Schutzpunkte, je Punkt 5 % weniger Schaden durch Gegner, dur: Treffer)
+add(1031, 'COPPER_HELMET', 'Kupferhelm', { draw: 'helm', col: TIERS[2].col, armor: { slot: 'kopf', pts: 2, dur: 60 } });
+add(1032, 'COPPER_CHEST', 'Kupferharnisch', { draw: 'harnisch', col: TIERS[2].col, armor: { slot: 'brust', pts: 3, dur: 80 } });
+add(1033, 'IRON_HELMET', 'Eisenhelm', { draw: 'helm', col: TIERS[3].col, armor: { slot: 'kopf', pts: 3, dur: 110 } });
+add(1034, 'IRON_CHEST', 'Eisenharnisch', { draw: 'harnisch', col: TIERS[3].col, armor: { slot: 'brust', pts: 5, dur: 150 } });
+
 export const isItem = id => id >= ITEM0;
+export const armorOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].armor || null : null);
+// Schadensfaktor bei Schutzpunkten (höchstens 40 % weniger)
+export const armorFactor = pts => 1 - Math.min(0.4, Math.max(0, pts) * 0.05);
 export const plantOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].plant || 0 : 0);
 export const nameOf = id => (id >= ITEM0 ? (ITEMS[id] ? ITEMS[id].name : '?') : NAMES[id] || '?');
 export const toolOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].tool : null);

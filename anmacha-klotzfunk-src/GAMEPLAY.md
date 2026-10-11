@@ -14,6 +14,7 @@
 | Seilhaken | Q | Taste „Haken“ |
 | Gleiten | Sprungtaste im Fall halten | Sprungtaste im Fall halten |
 | Wegpunkt / Minikarte | B / M | 📍 / 🗺 |
+| Bauform wechseln | G (Umschalt+G zurück) | ▦ |
 | Aufträge (Story) | J | Auftragskarte antippen |
 | Pause / Speichern | Esc | ⏸ |
 
@@ -47,11 +48,26 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Schwerter** (Werkbank: 2 Bretter, Stein, Kupfer- oder Eisenbarren + 1 Stock) treffen härter als Hand und Werkzeuge.
 - In den Einstellungen lassen sich Gegner abschalten (friedlich).
 
-## Kreativ: Rückgängig
-Strg+Z oder der ↶-Knopf macht die letzten 100 Bau-Schritte rückgängig, Strg+Y wiederholt sie.
+- **Höhlenwesen** leben nur tief in Höhlen: langsam, aber zäh, sie treffen mit 1½ Herzen. Beute: Kohle, manchmal Eisenerz.
+- **Störsender-Drohnen** fliegen nachts, halten Abstand und treffen mit Störimpulsen aus bis zu 7 Blöcken. Beute: Kupferbarren oder Funkkristall.
+- **Rüstung** (Werkbank: Helm aus 5, Harnisch aus 8 Kupfer- oder Eisenbarren) wählen und Setzen drücken = anlegen. Jeder Schild über den Herzen mindert Gegner-Schaden um 5 % (Eisen komplett: 40 %). Rüstung nutzt sich je Treffer ab.
+
+## Dörfer
+- Neue Welten haben Dörfer: Brunnen, Wege, Häuser, ein Weizenfeld und einen Funkmast. Neue Überlebens- und Kreativwelten beginnen am Dorfplatz.
+- In jedem Haus wohnt jemand: **Bäuerin Frieda**, **Schmied Kalle**, **Funkerin Lotte**, **Hirte Mats**. Morgens gehen sie zur Arbeit, mittags auf den Dorfplatz, abends nach Hause.
+- **Handeln:** Setzen-Taste auf einen Bewohner. Jeder hat eigene Angebote, z. B. Äpfel oder Kupferbarren für Weizen, Werkzeug für Kohle und Kristalle, Radio-Blöcke für Kupfer.
+- Dorfbewohner lassen sich nicht angreifen, und im Dorf erscheinen keine Gegner.
+- Tief unter der Erde liegen **verlassene Minen** mit Stollen, Stützbalken, Erzen an den Wänden und einer Kammer mit altem Ofen.
+
+## Bauen
+- **Bauform** mit G oder ▦ wechseln: Einzeln, Linie, Fläche, Wand, Säule. Bei Formen setzt der erste Druck auf Setzen die erste Ecke, der zweite baut die Form mit dem gewählten Block. Gefüllt werden nur freie Stellen.
+- Im Überleben höchstens 512 Blöcke auf einmal, und nur so viele, wie im Vorrat sind.
+- **Kreativ:** zusätzlich **Kopieren** (zwei Ecken, bis 32 768 Blöcke) und **Einfügen** (Setzen fügt an der Vorschau ein).
+- Der weiße Rahmen zeigt, wo der Block oder die Form landet (in den Einstellungen abschaltbar).
+- **Rückgängig (Kreativ):** Strg+Z oder ↶ macht die letzten 100 Schritte rückgängig, eine ganze Form zählt als ein Schritt; Strg+Y wiederholt.
 
 ## Inventar
-- **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funk-Logos, Werkzeuge & Essen) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
+- **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funktechnik, Funk-Logos, Werkzeuge & Essen) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
 - **„nur Vorrat“** blendet Blöcke aus, die du nicht hast.
 - Block antippen = in den gewählten Hotbar-Platz legen.
 - Bei Rezepten sind fehlende Zutaten rot mit deinem Vorrat in Klammern; die Zahl rechts sagt, wie oft du es herstellen kannst. Umschalt-Klick stellt 5× her.

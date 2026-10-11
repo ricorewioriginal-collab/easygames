@@ -71,6 +71,19 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 63 | Weizen (jung) | – | – | – | – | – | 0 | – |
 | 64 | Weizen (grün) | – | – | – | – | – | 0 | – |
 | 65 | Weizen (reif) | – | – | – | – | – | 0 | – |
+| 66 | Dorfweg | Bauen | ja | ja | – | – | 0.5 | schaufel |
+| 67 | Bruchstein | Bauen | ja | ja | – | – | 1.6 | spitzhacke |
+| 68 | Schalter | Funktechnik | ja | ja | – | – | 0.5 | – |
+| 69 | Schalter (an) | – | ja | ja | – | – | 0.5 | – |
+| 70 | Signalleitung | Funktechnik | ja | ja | – | – | 0.5 | – |
+| 71 | Funksender | Funktechnik | ja | ja | – | – | 0.8 | – |
+| 72 | Funkrelais | Funktechnik | ja | ja | – | – | 0.8 | – |
+| 73 | Empfänger | Funktechnik | ja | ja | – | – | 0.8 | – |
+| 74 | Empfänger (an) | – | ja | ja | – | ja | 0.8 | – |
+| 75 | Signallampe | Funktechnik | ja | ja | – | – | 0.3 | – |
+| 76 | Signallampe (an) | – | ja | ja | – | ja | 0.3 | – |
+| 77 | Funktor | Funktechnik | ja | ja | – | – | 2 | spitzhacke |
+| 78 | Funktor (offen) | – | – | – | – | – | 2 | spitzhacke |
 
 **Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
 
@@ -105,3 +118,7 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 1028 | Steinschwert | schwert Stufe 2 | 1× | 140 Blöcke | – |
 | 1029 | Kupferschwert | schwert Stufe 3 | 1× | 220 Blöcke | – |
 | 1030 | Eisenschwert | schwert Stufe 4 | 1× | 360 Blöcke | – |
+| 1031 | Kupferhelm | – | – | – | – |
+| 1032 | Kupferharnisch | – | – | – | – |
+| 1033 | Eisenhelm | – | – | – | – |
+| 1034 | Eisenharnisch | – | – | – | – |

@@ -1,11 +1,13 @@
-// Welt: Terrain-Generierung (Generator 1 = Originalwelt, Generator 2 = Biome/Höhlen/Erze), Chunk-Speicher.
+// Welt: Terrain-Generierung (Generator 1 = Originalwelt, 2 = Biome/Höhlen/Erze, 3 = wie 2 plus Dörfer und Minen), Chunk-Speicher.
 import { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo } from './blocks.js';
 import { biomeColumn, decorateChunk, BIOME, GEN2_SPAWN_BIOMES } from './worldgen.js';
+import { placeStructures, nearestVillage, villageIn, regionOf, VR } from './structures.js';
 export { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo };
 import { CS, H, SEA } from './consts.js';
 import { hash, fbm } from './noise.js';
 export { CS, H, SEA };
-export const GEN_LATEST = 2; // Generator für neue Welten
+export const GEN_LATEST = 3; // Generator für neue Welten
+export const normGen = g => (g === 2 || g === 3 ? g : 1); // fehlt/unbekannt = Originalwelt
 const H1_MAX = 52;           // Höhengrenze der Originalwelt (Generator 1), nie ändern
 
 export function terrainHeight(seed, wx, wz) {
@@ -20,7 +22,7 @@ export function chunkKey(cx, cz) { return (cx + 32768) * 65536 + (cz + 32768); }
 export class World {
   constructor(seed, edits, gen = 1) {
     this.seed = seed | 0;
-    this.gen = gen === 2 ? 2 : 1;
+    this.gen = normGen(gen);
     this.chunks = new Map();
     this.edits = edits || new Map(); // key -> Map(index -> type)
     this.dirty = new Set();
@@ -38,7 +40,8 @@ export class World {
 
   generate(cx, cz, key) {
     const data = new Uint8Array(CS * CS * H);
-    const maxY = this.gen === 2 ? decorateChunk(this.seed, cx, cz, data) : this.generate1(cx, cz, data);
+    let maxY = this.gen >= 2 ? decorateChunk(this.seed, cx, cz, data) : this.generate1(cx, cz, data);
+    if (this.gen === 3) maxY = placeStructures(this.seed, cx, cz, data, maxY, (x, y, z) => this.radios.set(`${x},${y},${z}`, [x, y, z]));
     return this.finish(cx, cz, key, data, maxY);
   }
 
@@ -91,8 +94,9 @@ export class World {
     // gespeicherte Änderungen
     const ed = this.edits.get(key);
     if (ed) for (const [i, t] of ed) {
-      data[i] = t;
       const y = (i / (CS * CS)) | 0;
+      if (data[i] === B.RADIO && t !== B.RADIO) this.radios.delete(`${cx * CS + (i & 15)},${y},${cz * CS + ((i >> 4) & 15)}`); // erzeugtes Radio abgebaut
+      data[i] = t;
       if (y > maxY) maxY = y;
       if (t === B.RADIO) this.radios.set(`${cx * CS + (i & 15)},${y},${cz * CS + ((i >> 4) & 15)}`, [cx * CS + (i & 15), y, cz * CS + ((i >> 4) & 15)]);
     }
@@ -163,8 +167,13 @@ export class World {
   }
 
   // Sicherer Startpunkt: erste Landfläche ohne Baum (Generator 2: in Ebene, Wald oder Blumenwiese)
-  findSpawn() {
-    if (this.gen === 2) {
+  // village = false: nicht im Dorf starten (Story: das Dorf ist ein Auftrag)
+  findSpawn(village = true) {
+    if (this.gen === 3 && village) { // am Dorfplatz des nächsten Dorfes, sonst wie Generator 2
+      const v = nearestVillage(this.seed);
+      if (v) { this.ensure(v.x >> 4, (v.z + 3) >> 4); return { x: v.x + 0.5, y: v.y + 1.01, z: v.z + 3.5 }; }
+    }
+    if (this.gen >= 2) {
       const s = this.findSpawn2();
       if (s) return s;
     }
@@ -208,8 +217,14 @@ export class World {
 
   // Biom an einer Weltposition (Generator 1 kennt keine Biome)
   biomeAt(x, z) {
-    if (this.gen !== 2) return -1;
+    if (this.gen < 2) return -1;
     return biomeColumn(this.seed, Math.floor(x), Math.floor(z), {}).biome;
+  }
+  // Dorf, in dessen Bereich (x, z) liegt (nur Generator 3), sonst null
+  villageAt(x, z) {
+    if (this.gen !== 3) return null;
+    const v = villageIn(this.seed, regionOf(Math.floor(x)), regionOf(Math.floor(z)));
+    return v && Math.hypot(v.x + 0.5 - x, v.z + 0.5 - z) <= VR + 4 ? v : null;
   }
 }
 export { BIOME };
