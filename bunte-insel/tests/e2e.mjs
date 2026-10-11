@@ -541,6 +541,15 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const x = b.express; x.show(); out.open = x.open && !document.getElementById('expPanel').hidden; x.close(); x.emote('flip'); out.cur = !!x.cur; out.end = await till(() => !x.cur, 100); x.chat(0); await sl(200); out.bub = b.bubbles.length > 0; out.n = x.EMOTES.length;
     return out; });
   ok(r.src === 'obby:start' && r.run && r.noVeh && r.stone && r.respawn && r.done && r.top === 1 && r.back, 'Himmels-Parcours: Start am Boden, Plattformen tragen, Sturz → Checkpoint, Ziel mit Sternen + Bestenliste, zurück am Boden'); ok(r.open && r.cur && r.end && r.bub && r.n >= 8, `Emotes (${r.n}) und Schnell-Chat (Sprechblase) funktionieren`);
+  { // Parcours spielbar: Sprung beim Rennen, Doppelsprung für alle, flache Treppe
+    const r2 = await p.evaluate(async () => { const b = window.__bi, o = b.obby, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const till = async (f, n = 60) => { for (let i = 0; i < n && !f(); i++) await sl(100); return f(); };
+      b.P.x = o.pad.x; b.P.z = o.pad.z; await sl(300); b.placeAct(b.placeNear()); await till(() => o.run && Math.abs(b.P.y - 14) < .3); await sl(400);
+      const y0 = b.P.y; b.inp.jump = true; await till(() => b.P.y > y0 + .3, 40); out.air = b.P.y > y0 + .3; b.P.vy = -3; b.inp.jump = true; out.dbl = await till(() => b.P.dj, 20); await till(() => b.P.y <= y0 + .06, 60); await sl(200);
+      b.inp.jump = true; await till(() => b.P.y > y0 + .3, 40); b.P.vy = -3; b.inp.jump = true; await sl(30); b.P.vy = -3; out.dbl2 = !!(await till(() => b.P.dj, 20)); await till(() => b.P.y <= y0 + .06, 60); await sl(200); // zweiter Doppelsprung erst nach der Landung wieder
+      b.keys.u = true; b.inp.turbo = true; await sl(250); const x0 = b.P.x, z0 = b.P.z; b.inp.jump = true; let m2 = y0, md = 0, sp = 0; for (let i = 0; i < 12; i++) { await sl(40); m2 = Math.max(m2, b.P.y); md = Math.max(md, Math.hypot(b.P.x - x0, b.P.z - z0)); sp = Math.max(sp, b.P.speed); } out.run = m2 - y0; out.moved = md; out.sp = sp; b.keys.u = false; b.inp.turbo = false;
+      o.stop(); return out; });
+    ok(r2.run > .8 && r2.sp > 8, 'Parcours: Springen beim Rennen klappt (Höhe ' + r2.run.toFixed(2) + ', Tempo ' + r2.sp.toFixed(1) + ')'); ok(r2.air && r2.dbl, 'Parcours: Doppelsprung ohne Gadget');
+  }
   await c.close();
 }
 { // Gadgets und eigener Parcours

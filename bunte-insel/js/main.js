@@ -415,7 +415,7 @@
   zone.addEventListener('contextmenu', e => e.preventDefault());
   function hold(btn, key) {
     const ks = Array.isArray(key) ? key : [key];
-    const on = e => { e.preventDefault(); e.stopPropagation(); A.resume(); for (const k of ks) inp[k] = true; if (ks[0] === 'horn') inp.hornEdge = true; btn.classList.add('down'); };
+    const on = e => { e.preventDefault(); e.stopPropagation(); A.resume(); for (const k of ks) if (k !== 'turbo' || P.veh) inp[k] = true; if (ks[0] === 'horn') inp.hornEdge = true; btn.classList.add('down'); };
     const off = e => { for (const k of ks) inp[k] = false; btn.classList.remove('down'); };
     btn.addEventListener('pointerdown', on); btn.addEventListener('pointerup', off); btn.addEventListener('pointerleave', off); btn.addEventListener('pointercancel', off);
   }
@@ -1433,8 +1433,13 @@
       const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
       const gy = Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y));
-      if (P.y <= gy + .05) P.dj = false;
-      if (inp.jump) { inp.jump = false; if (P.y <= gy + .05) { P.vy = 7; A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); } else if (gadgets.canDouble() && !P.dj) { P.dj = true; gadgets.doubleJump(); } }
+      if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung
+      if (P.jbuf > 0) P.jbuf -= dt;
+      if (inp.jump) { inp.jump = false; P.jbuf = .14; }
+      if (P.jbuf > 0) {
+        if (P.coy > 0) { P.jbuf = P.coy = 0; P.vy = 7; A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); }
+        else if ((gadgets.canDouble() || obby.run) && !P.dj && P.y > gy + .05) { P.jbuf = 0; P.dj = true; gadgets.doubleJump(); } // im Himmels-Parcours gibt es den Doppelsprung für alle
+      }
       if (fun.ride) P.vy = P.y < 6 ? 2.2 : 0; else P.vy = Math.max(P.vy - 20 * dt, P.softFall > 0 ? -5 : -14);
       gadgets.thrust(dt, inp.held || inp.up, gy);
       if (P.softFall > 0) P.softFall -= dt;
