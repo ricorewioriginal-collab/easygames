@@ -46,6 +46,8 @@ BI.THEMES = {
     drums: { k: 'x.......x.......', kv: .09, s: '....x.......x...', sv: .04, h: 'x.x.x.x.x.x.x.x.', hv: .013 }, lead: { type: 'triangle', vol: .065, len: 2.2, bell: true, notes: 'A4 . D5 . F5 . A5 . . G5 . F5 . D5 . .  D5 . F5 . Bb4 . D5 . F5 . . D5 . Bb4 . .  E5 . G5 . C6 . G5 . E5 . D5 . C5 . . .  E5 . A5 . C6 . B5 . A5 . . G5 . E5 . .  D5 . . F5 . . A5 . . D6 . A5 . F5 . .  Bb4 . . D5 . . F5 . . Bb5 . F5 . D5 . .  C5 . . E5 . . G5 . . C6 . G5 . E5 . .  A4 . . C5 . . E5 . . A5 . E5 . C5 . .' } },
   bauland: { name: 'Bau-Spaß', bpm: 120, chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'Am', 'F'], pad: { type: 'sine', vol: .045 }, arp: { pat: '1.3.2.3.1.3.2.3.', type: 'square', vol: .018, len: 1.2 }, bass: { pat: 'x...x...x...x.5.', type: 'triangle', vol: .08, len: 2 },
     drums: { k: 'x...x...x...x...', kv: .09, s: '....x.......x...', sv: .04, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'triangle', vol: .06, len: 2, notes: 'C5 . E5 . G5 . E5 . C5 . E5 . G5 . C6 .  B4 . D5 . G5 . D5 . B4 . D5 . G5 . B5 .  A4 . C5 . E5 . C5 . A4 . C5 . E5 . A5 .  A4 . C5 . F5 . C5 . A4 . C5 . F5 . A5 .  E5 . . G5 . . C6 . . G5 . E5 . . . .  D5 . . G5 . . B5 . . G5 . D5 . . . .  C5 . . E5 . . A5 . . E5 . C5 . . . .  F5 . A5 . C6 . A5 . F5 . . . C5 . . .' } },
+  atlantis: { name: 'Tiefen-Stadt', bpm: 84, chords: ['Em', 'C', 'G', 'D', 'Em', 'C', 'Am', 'B7'], pad: { type: 'sine', vol: .05 }, arp: { pat: '1.2.3.2.1.2.3.2.', type: 'triangle', vol: .028, len: 1.8 }, bass: { pat: 'x.......x.......', type: 'sine', vol: .08, len: 4 },
+    drums: { h: '..x...x...x...x.', hv: .008 }, lead: { type: 'sine', vol: .06, len: 3, bell: true, notes: 'E5 . . G5 . . B5 . . G5 . E5 . . . .  C5 . . E5 . . G5 . . E5 . C5 . . . .  B4 . . D5 . . G5 . . D5 . B4 . . . .  A4 . . D5 . . F#5 . . D5 . A4 . . . .  G5 . B5 . E6 . B5 . G5 . . . E5 . . .  E5 . G5 . C6 . G5 . E5 . . . C5 . . .  A4 . C5 . E5 . A5 . E5 . C5 . A4 . . .  B4 . D#5 . F#5 . B5 . F#5 . D#5 . B4 . . .' } },
   /* Himmels-Parcours: Chiptune */
   obby: { name: 'Himmels-Sprung', bpm: 142, chords: ['C', 'F', 'G', 'C'], bass: { pat: 'x.x.5.x.x.x.5.x.', type: 'triangle', vol: .08, len: 1.2 },
     drums: { k: 'x...x...x...x...', kv: .07, s: '....x.......x...', sv: .035, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'square', vol: .03, len: 1.4, notes: 'C5 E5 G5 E5 C5 E5 G5 E5 C5 E5 G5 C6 . . . .  A4 C5 F5 C5 A4 C5 F5 C5 A4 C5 F5 A5 . . . .  B4 D5 G5 D5 B4 D5 G5 D5 B4 D5 G5 B5 . . . .  C5 E5 G5 E5 C5 E5 G5 E5 G5 . E5 . C5 . . .' } },
@@ -62,6 +64,7 @@ BI.zoneAt = function (x, z, flags) {
   const f = flags || {}, d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, CI = BI.CINEMA;
   if (f.cinema) return null;
   if (f.obby) return 'obby';
+  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis';
   if (d(R.x - 27, R.z) < 20) return 'buehne';
   if (d(R.x, R.z) < R.R + 8) return 'regenbogen';
   if (d(BI.PUPS.x, BI.PUPS.z) < BI.PUPS.R + 8) return 'fellretter';
@@ -83,5 +86,5 @@ BI.zoneAt = function (x, z, flags) {
 /* In welcher Welt (Insel) ist dieser Punkt? 'insel' (Hauptinsel mit Camp, Freibad, Hof …), 'stadt', 'park', 'regenbogen', 'bucht' */
 BI.worldAt = function (x, z) {
   const d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, F = BI.PUPS, DM = BI.DAMPF, DR = BI.DRACHEN;
-  if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 12) return 'bauland'; if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(DR.x, DR.z) < DR.R + 12) return 'drachen'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
+  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 12) return 'bauland'; if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(DR.x, DR.z) < DR.R + 12) return 'drachen'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
 };

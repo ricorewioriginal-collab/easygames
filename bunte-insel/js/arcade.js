@@ -11,8 +11,8 @@ BI.ARCADES = [
 ];
 (function () { const B = BI.BAULAND, E = B.entry; BI.ARCADES.push({ kind: 'bauplan_bauland', x: E.x + B.ux * 7 + B.uz * 6, z: E.z + B.uz * 7 - B.ux * 6, yaw: Math.atan2(-B.ux, -B.uz), body: 0xff9a2e, top: 0x3fb85c }); })();
 BI.buildArcades = function (c) {
-  const { W, st, lamp } = c, RB = BI.RAINBOW_COL; W.spots.arcades = [];
-  for (const a of BI.ARCADES) {
+  const { W, st, lamp } = c, RB = BI.RAINBOW_COL; if (!c.only) W.spots.arcades = [];
+  for (const a of c.only || BI.ARCADES) {
     const L = (lx, lz) => [a.x + lx * Math.cos(a.yaw) + lz * Math.sin(a.yaw), a.z - lx * Math.sin(a.yaw) + lz * Math.cos(a.yaw)], B = (lx, y, lz, w, h, d, col, rx = 0) => { const [x, z] = L(lx, lz); st.box(x, y, z, w, h, d, col, a.yaw, rx); };
     B(0, 0, 0, 1.7, 2.3, 1.3, a.body); B(0, 0, 0, 1.76, .35, 1.36, 0x23262d);
     if (a.top === 'rainbow') for (let k = 0; k < 6; k++) B(-.75 + k * .3, 2.3, 0, .3, .75, 1.4, RB[k]); else B(0, 2.3, 0, 1.9, .75, 1.4, a.top);

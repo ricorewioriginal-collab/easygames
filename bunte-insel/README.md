@@ -215,3 +215,17 @@ Technik (sparsam): Blöcke liegen in 16×16-Stücken, nur geänderte Stücke wer
 ### 🖼️ Vorschaubilder statt Symbolen
 
 Auswahl-Knöpfe zeigen jetzt ein kleines 3D-Bild des echten Teils: Frisuren, Hüte, Kleidung, Schuhe, Gesichts- und Körperformen, Bart, Brille, Zubehör, Vorlagen/eigene Figuren, Haustiere sowie alle Bauteile und Blöcke im Baumenü. `js/thumbs.js` rendert mit einem kleinen Extra-Renderer (128×128) erst, wenn ein Reiter sichtbar ist, je ein Bild pro Takt (kein Ruckeln) und merkt sich jedes Bild für die Sitzung; fällt WebGL aus, bleibt das Emoji als Platzhalter stehen.
+
+### 🔱 Atlantis – die Stadt unter der Erde
+
+Eingang: leuchtendes Steintor am See der Hauptinsel (🧭 → Atlantis, E am Tor). Die Stadt liegt in einer eigenen Höhle (Kuppel mit Kristallsternen) und ist nach der alten **Sage von Atlantis** (Platon, gemeinfrei; ob es Atlantis gab, weiß niemand) gebaut: Ringe aus Land und Wasser mit Brücken, in der Mitte ein Stufenberg mit Tempel und dem „Herz von Atlantis“. Alles Konkrete ist eigen erfunden.
+
+Was es sonst nirgends gibt: **Aqua-Gleiter** (schwebende Fahrzeuge), **Schwerelos-Halle** (Mondschwerkraft, riesige Sprünge), **Kristall-Harfe** (8 Kristalle anschlagen, links nach rechts = Bonus), **Hologramm-Archiv** (die Sage in 5 Bildern, kindgerecht, als Sage gekennzeichnet), **Orichalcum-Splitter** (72 Stück, je 10 = 1 ⭐), **Delfin-Drohnen** und **Leuchtquallen**, Highlight-Spiel **💧 Strömungs-Rätsel** (Leitungs-Puzzle, Spielautomat im Ring). 5 Bewohner, eigene Musik, Einträge im Aufgaben-Log.
+
+Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die großen Hauptwelt-Meshes, Himmel, Wolken und Wetter ausgeblendet. Dateien: `js/atlantis.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Rätsel), `js/vehicles.js` (Gleiter).
+
+### 🎤 Popstar Kay und 🦊 Zotik (neue Vorlagen, für alle wählbar)
+
+- **Popstar Kay**: eigene Figur im Glam-Rock-Stil (helle Strubbelfrisur, dicke Brauen, Ziegenbart, Septum-Ring, Ketten, oranger Mantel) mit **Regenbogen-Pride-Shirt**. Nur der Look ist angelehnt, die Figur ist frei erfunden und trägt keinen Namen einer realen Person.
+- **Zotik**, der Weltenhörer (eigene Erfindung): Fuchs-Mensch mit spitzen Ohren, heller Schnauze, buschigem Schwanz, grünem Schal, Lederriemen, Rucksack und fingerlosen Handschuhen.
+- Beide stehen bei den Vorlagen im Charakter-Studio und sind damit für jeden Spieler (auch im Mehrspieler) auswählbar. Neu im Studio unter Zubehör: **🦊 Fuchs** (Ohren, Schnauze, Schwanz in der eigenen Hautfarbe) und **🏳️‍🌈 Regenbogen-Shirt**; neue Hautfarben Fuchs-Orange und Silber.

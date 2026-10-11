@@ -7,6 +7,7 @@
    🐉 Drachenflug (Drachenhöhen) – Ring-Flug in Pseudo-3D, ziehen/zielen
    🎬 Hafen-Kran (Dampfer-Hafen) – Kisten stapeln: im richtigen Moment loslassen
    🏗️ Pixel-Plan (Bauland) – Merkspiel: Bauplan merken, aus dem Gedächtnis nachbauen
+   💧 Strömungs-Rätsel (Atlantis) – Leitungs-Puzzle: Rohre drehen, bis das Wasser fließt
    (🐶 Fellretter-Sprint = Jump 'n' Run der Fellretter-Bucht steht in jump.js.)
    Alle starten über den Spielautomaten in der Welt (arcade.js) oder über das 🎮-Spiele-Menü; bei „Mit Freunden“ gleicher Startwert = gleiche Strecke/Pyramiden/Noten. */
 (BI.MINI_EXT = BI.MINI_EXT || []).push(function (M, h) {
@@ -297,11 +298,58 @@
     };
     return G;
   };
+
+  /* =====================  💧 STRÖMUNGS-RÄTSEL (Atlantis)  ===================== */
+  /* Leitungs-Puzzle: Kacheln antippen = um 90° drehen, bis das Wasser von der Quelle (links) bis zum Becken (rechts) fließt. Felder wachsen von 4×4 bis 6×6. */
+  const stroem = () => {
+    const G = {}; let n, T, sr, er, lv, wet, done, doneT, msg, msgT, lvT, flowT; const N = 1, E = 2, S = 4, Wd = 8, DX = [0, 1, 0, -1], DZ = [-1, 0, 1, 0], BIT = [N, E, S, Wd], OPP = [S, Wd, N, E];
+    const rot = m => ((m << 1) | (m >> 3)) & 15, geo = () => { const W = h.W(), H = h.H(), s = Math.min(W * .86 / n, H * .66 / n, 96); return { W, H, s, gx: (W - s * n) / 2, gy: H * .2 }; };
+    function gen() {
+      n = lv < 2 ? 4 : lv < 5 ? 5 : 6; T = []; for (let i = 0; i < n * n; i++) T.push(0);
+      sr = (h.rnd() * n) | 0; let x = 0, z = sr, from = 3; const seen = new Set([x + ',' + z]); er = sr; // from = Seite, von der das Wasser kommt (3 = links)
+      for (let guard = 0; guard < 100; guard++) {
+        if (x === n - 1) { T[z * n + x] = BIT[from] | E; er = z; break; }
+        const opts = [1, 1]; if (z > 0 && !seen.has(x + ',' + (z - 1))) opts.push(0); if (z < n - 1 && !seen.has(x + ',' + (z + 1))) opts.push(2);
+        const d = opts[(h.rnd() * opts.length) | 0]; T[z * n + x] = BIT[from] | BIT[d]; x += DX[d]; z += DZ[d]; from = OPP[d]; seen.add(x + ',' + z);
+      }
+      for (let i = 0; i < n * n; i++) { if (!T[i]) { const k = (h.rnd() * 5) | 0; T[i] = k === 0 ? 0 : k === 1 ? 5 : k === 2 ? 3 : k === 3 ? 7 : 15 & ~BIT[(h.rnd() * 4) | 0]; } }
+      for (let i = 0; i < n * n; i++) { const k = (h.rnd() * 4) | 0; for (let j = 0; j < k; j++) T[i] = rot(T[i]); }
+      flow(); if (done) gen();
+    }
+    function flow() {
+      wet = new Set(); done = false; const q = []; if (T[sr * n] & Wd) { wet.add(sr * n); q.push([0, sr]); }
+      while (q.length) { const [x, z] = q.shift(); for (let d = 0; d < 4; d++) if (T[z * n + x] & BIT[d]) { const nx = x + DX[d], nz = z + DZ[d]; if (nx < 0 || nz < 0 || nx >= n || nz >= n || wet.has(nz * n + nx)) continue; if (T[nz * n + nx] & OPP[d]) { wet.add(nz * n + nx); q.push([nx, nz]); } } }
+      if (wet.has(er * n + n - 1) && (T[er * n + n - 1] & E)) done = true;
+    }
+    G.init = function () { lv = 0; msg = ''; msgT = 0; lvT = 0; flowT = 0; gen(); };
+    G.resize = function () { };
+    G.tap = function (x, y) {
+      if (done) return; const g = geo(), cx = Math.floor((x - g.gx) / g.s), cz = Math.floor((y - g.gy) / g.s); if (cx < 0 || cz < 0 || cx >= n || cz >= n) return;
+      T[cz * n + cx] = rot(T[cz * n + cx]); snd('pop'); flow();
+      if (done) { const pts = 4 + Math.min(4, lv); h.add(pts, g.gx + g.s * n, g.gy + (er + .5) * g.s); snd('star'); msg = 'Das Wasser fließt! +' + pts; msgT = 1.6; doneT = 1.3; h.burst(g.gx + g.s * n, g.gy + (er + .5) * g.s, 16, ['#7fe8ff', '#fff', '#35d6e0']); }
+    };
+    G.update = function (dt) { lvT += dt; flowT += dt; msgT = Math.max(0, msgT - dt); if (done) { doneT -= dt; if (doneT <= 0) { lv++; gen(); } } };
+    G.draw = function () {
+      const c = h.ctx(), g = geo(), W = g.W, H = g.H, s = g.s; h.bg('#0e5a7a', '#02101f');
+      for (let i = 0; i < 26; i++) { const x = (i * 97.3 + flowT * (6 + i % 5)) % W, y = H - ((i * 53.7 + flowT * (10 + i % 7)) % H); c.fillStyle = 'rgba(160,240,255,.25)'; c.beginPath(); c.arc(x, y, 2 + i % 4, 0, 6.3); c.fill(); }
+      c.font = 'bold ' + Math.round(Math.min(30, W * .055)) + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#bff6ff'; c.fillText(msgT > 0 ? msg : '💧 Dreh die Rohre – leite das Wasser nach rechts!', W / 2, g.gy - 34);
+      rr(c, g.gx - 10, g.gy - 10, s * n + 20, s * n + 20, 18); c.fillStyle = 'rgba(3,30,48,.8)'; c.fill();
+      for (let z = 0; z < n; z++) for (let x = 0; x < n; x++) {
+        const m = T[z * n + x], px = g.gx + x * s, py = g.gy + z * s, w = wet.has(z * n + x); rr(c, px + 3, py + 3, s - 6, s - 6, 10); c.fillStyle = w ? 'rgba(53,214,224,.18)' : 'rgba(255,255,255,.08)'; c.fill();
+        c.lineCap = 'round'; for (const pass of [0, 1]) { c.lineWidth = pass ? s * .16 : s * .26; c.strokeStyle = pass ? (w ? '#7fe8ff' : '#6a8aa0') : (w ? '#0f6a86' : '#30485a'); c.beginPath(); const cx = px + s / 2, cy = py + s / 2; for (let d = 0; d < 4; d++) if (m & BIT[d]) { c.moveTo(cx, cy); c.lineTo(cx + DX[d] * s / 2, cy + DZ[d] * s / 2); } c.stroke(); }
+      }
+      /* Quelle links, Becken rechts */
+      c.fillStyle = '#35d6e0'; c.beginPath(); c.arc(g.gx - 6, g.gy + (sr + .5) * s, s * .22, 0, 6.3); c.fill(); c.fillStyle = done ? '#7fffd0' : '#ffd23f'; c.beginPath(); c.arc(g.gx + s * n + 6, g.gy + (er + .5) * s, s * .22, 0, 6.3); c.fill();
+      c.font = 'bold 18px Fredoka, system-ui, sans-serif'; c.textAlign = 'left'; c.fillStyle = '#bff6ff'; c.fillText('Stufe ' + (lv + 1), 16, H - 22); c.textAlign = 'center';
+    };
+    return G;
+  };
   h.register('heli_insel', heli(), { icon: '🚁', name: 'Heli-Rettung', help: 'Flieg den Rettungs-Heli durch die Felsentore: Halten = steigen. Sterne und Gerettete einsammeln!', dur: 75, goal: 40, zone: 'insel' });
   h.register('taxi_stadt', taxi(), { icon: '🚕', name: 'Taxi-Rush', help: 'Wechsle die Spur, weiche Autos aus und sammle Fahrgäste und Münzen!', dur: 70, goal: 40, zone: 'stadt' });
   h.register('cans_park', cans(), { icon: '🥫', name: 'Dosen-Knall', help: 'Ball ziehen, zielen, loslassen: Wirf die Dosenpyramiden um!', dur: 90, goal: 30, zone: 'park' });
   h.register('dance_regenbogen', dance(), { icon: '💃', name: 'Pride-Disco', help: 'Triff die Pfeile im Takt – Perfekt-Treffer und Kombos geben mehr Punkte!', dur: 62, goal: 400, zone: null });
   h.register('crane_dampfer', crane(), { icon: '🏗️', name: 'Hafen-Kran', help: 'Stapel die Kisten am Kran so genau wie möglich – Überstehendes wird abgeschnitten!', dur: 90, goal: 25, zone: 'dampfer' });
   h.register('bauplan_bauland', plan(), { icon: '🏗️', name: 'Pixel-Plan', help: 'Merke dir den Bauplan – dann Farbe wählen und die Felder aus dem Gedächtnis nachbauen. Mit jeder Stufe wird das Muster größer!', dur: 80, goal: 30, zone: 'bauland' });
+  h.register('stroemung_atlantis', stroem(), { icon: '💧', name: 'Strömungs-Rätsel', help: 'Tippe die Rohre an, um sie zu drehen – leite das Wasser von der Quelle links bis zum Becken rechts! Mit jeder Stufe wird das Feld größer.', dur: 90, goal: 30, zone: 'atlantis' });
   h.register('ringflug_drache', flug(), { icon: '🐉', name: 'Drachenflug', help: 'Flieg als Drache durch die goldenen Ringe, sammle Funkelsteine und weiche den Gewitterwolken aus!', dur: 60, goal: 40, zone: 'drachen' });
 });
