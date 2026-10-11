@@ -2,6 +2,27 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 13 (11.10.2026): Ladebildschirm, Startmenü, Konsolen-Steuerung
+
+### Neu umgesetzt
+
+- **Ladebildschirm** (`#boot`, `js/start.js`): Logo, Fortschrittsbalken mit echten Schritten (Spielstand geladen, Grafik erkannt, bereit) und wechselnden Tipps. Beim Start der Stadt erscheint er erneut, während die 3D-Welt gebaut wird.
+- **Startmenü im Konsolen-Stil**: Spielerkarte (Figur, Level, Glitzer, Tag, Geld) und Menü Spiel starten/Weiterspielen, Charakter, Minispiele, Mehrspieler, Einstellungen (Ton, Grafik, Touch-Steuerung, Vollbild, Speichern), Info & Hilfe. Bedienung per Pfeiltasten/Enter/Esc, Maus oder Touch. Gamepad ist nicht eingebaut.
+- **Pausenmenü** (Esc oder Y-Taste): Weiter, Charakter, Ton, Speichern, Startmenü. Die Stadt läuft währenddessen weiter (keine echte Pause).
+- **Smartphone-Steuerung**: fester Stick links (360 Grad, analog, Totzone), vier Tasten rechts in Rautenform: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild. Erscheint automatisch bei Fingerbedienung, in den Einstellungen erzwingbar oder abschaltbar (`settings.pad`). Der alte schwebende Joystick entfällt.
+- **Fehlerbehebung**: Die Minispiel-Übersicht (`menuHub`) stürzte wegen der Sauna-Karte (Figur Torsten) ab; behoben.
+- Überspringen des Startmenüs für Tests und Direktlinks: `window.__GL_SKIP_TITLE`, `?quick=1` oder `#join=PIN`.
+
+### Geprüft
+
+- Neuer Testabschnitt 14 (Startmenü, Einstellungen, Minispiele, Charakter, Pause, Stick in 5 Richtungen, vier Tasten, Querformat) sowie der angepasste Touch-Abschnitt 3: grün, einzeln gelaufen.
+- Gesamtlauf: beim letzten Versuch brach der Mehrspieler-Teil (Besuch, Zeitüberschreitung bei langsamem Lauf) ab, ein vollständiger grüner Gesamtlauf liegt für diesen Stand nicht vor. Die Abschnitte davor liefen grün.
+- Nicht auf echten Geräten getestet: Fingergefühl, Größe der Tasten, Safe-Area auf echten Handys.
+
+### Offen
+
+- Echter Zwei-Geräte-Test Mehrspieler, Gewitter/Schnee, LOD, Menschen-Playtest, Gamepad.
+
 ## Stand nach Durchgang 12 (11.10.2026): Club Glitzer als Innenraum
 
 ### Neu umgesetzt

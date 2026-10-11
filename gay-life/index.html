@@ -109,9 +109,49 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 .wbt button{background:rgba(20,10,40,.64);border:1px solid var(--line);border-radius:12px;padding:7px 11px;font-size:16px}
 #arrw{position:absolute;right:12px;top:calc(222px + env(safe-area-inset-top));text-align:center;pointer-events:none;color:#fff;text-shadow:0 1px 4px #000;font-size:12px}
 #arr{font-size:30px;line-height:1;color:#ffe14d;display:none}
-#joy{position:fixed;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);display:none;pointer-events:none;z-index:7}
-#joy i{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.55)}
 #act{position:absolute;right:16px;bottom:calc(28px + env(safe-area-inset-bottom));display:none;background:linear-gradient(90deg,#ff3b6b,#9b5cff);border:0;border-radius:99px;padding:16px 24px;font-size:17px;font-weight:800;box-shadow:0 6px 24px #0008;max-width:80vw}
+
+/* Touch-Steuerung (Konsolen-Layout): fester Stick links, vier Tasten in Rautenform rechts */
+#pad{display:none;position:absolute;inset:0;pointer-events:none;z-index:7}
+#world.tch #pad{display:block}#world.tch.dl #pad{visibility:hidden}
+#stk{position:absolute;left:calc(22px + env(safe-area-inset-left));bottom:calc(26px + env(safe-area-inset-bottom));width:132px;height:132px;border-radius:50%;background:rgba(20,10,40,.45);border:2px solid rgba(255,255,255,.28);pointer-events:auto;touch-action:none;box-shadow:0 0 0 6px rgba(255,255,255,.05) inset}
+#stk::before{content:"";position:absolute;inset:14px;border-radius:50%;border:1px dashed rgba(255,255,255,.2)}
+#stk i{position:absolute;left:41px;top:41px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.6);box-shadow:0 2px 10px #0008;transition:background .1s}#stk.on i{background:#fff}
+#dia{position:absolute;right:calc(14px + env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));width:176px;height:176px;pointer-events:none}
+#dia button{position:absolute;width:58px;height:58px;border-radius:50%;padding:0;pointer-events:auto;touch-action:manipulation;background:rgba(20,10,40,.62);border:2px solid rgba(255,255,255,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;line-height:1;box-shadow:0 4px 14px #0007}
+#dia button b{font-size:23px;font-weight:400}#dia button small{font-size:10px;color:var(--mu);margin-top:2px}
+#dia button:active{transform:scale(.92);background:rgba(255,255,255,.3)}
+#bA{left:59px;bottom:0;background:linear-gradient(135deg,#ff3b6b,#9b5cff)!important;border-color:#fff8!important}#bA small{color:#fff!important}
+#bB{right:0;top:59px}#bX{left:0;top:59px}#bY{left:59px;top:0}
+#world.tch #act{right:calc(14px + env(safe-area-inset-right));bottom:calc(200px + env(safe-area-inset-bottom));padding:9px 16px;font-size:14px;max-width:min(62vw,300px)}
+#world.tch #emo{bottom:auto;top:46%;right:10px}
+#world.tch #arrw{top:calc(150px + env(safe-area-inset-top))}
+@media(max-height:430px){#stk{width:104px;height:104px;bottom:14px}#stk i{left:28px;top:28px;width:48px;height:48px}#dia{width:144px;height:144px;bottom:10px}#dia button{width:48px;height:48px}#dia button small{display:none}#bA{left:48px}#bY{left:48px}#bB{top:48px}#bX{top:48px}#world.tch #act{bottom:160px}}
+
+/* Ladebildschirm und Startmenü */
+#boot,#title{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(900px 600px at 20% 0,#4a1f86 0,transparent 60%),radial-gradient(800px 600px at 100% 100%,#8a1f62 0,transparent 55%),#0d0719;transition:opacity .45s}
+#boot.off,#title.off{opacity:0;pointer-events:none}
+#boot::before,#title::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--rb)}
+#boot .bl{font-weight:900;font-size:clamp(40px,11vw,84px);letter-spacing:-2px;background:var(--rb);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05;text-align:center}
+#boot .bs{color:var(--mu);margin:6px 0 28px;text-align:center;padding:0 20px}
+#boot .bbar{width:min(300px,70vw);height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}#boot .bbar i{display:block;height:100%;width:6%;background:var(--rb);border-radius:99px;transition:width .35s}
+#boot .bt{margin-top:16px;min-height:44px;max-width:min(380px,84vw);text-align:center;font-size:14px;color:var(--mu)}
+#boot .bp{margin-top:6px;font-size:12px;color:var(--mu);opacity:.7}
+#title{justify-content:flex-start;overflow:auto;padding:calc(26px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));align-items:stretch}
+#title .tw{width:min(980px,100%);margin:auto;display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:center}
+#title .tl{font-weight:900;font-size:clamp(38px,9vw,78px);letter-spacing:-2px;line-height:1;background:var(--rb);-webkit-background-clip:text;background-clip:text;color:transparent}
+#title .tt{color:var(--mu);margin:8px 0 18px;font-size:clamp(14px,2.4vw,18px)}
+#title .pc{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:12px 16px;backdrop-filter:blur(10px)}
+#title .pc .av{width:70px;height:84px;border-radius:16px;overflow:hidden;flex:none}#title .pc b{font-size:19px}
+#title .mn{display:flex;flex-direction:column;gap:9px}
+#title .mi{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border-radius:18px;padding:13px 18px;border:2px solid var(--line);background:rgba(255,255,255,.07);transition:transform .12s,background .12s,border-color .12s}
+#title .mi .e{font-size:28px;width:36px;text-align:center}#title .mi b{font-size:19px;display:block}#title .mi small{color:var(--mu);font-size:13px}
+#title .mi.sel{border-color:#fff;background:linear-gradient(90deg,rgba(255,59,107,.5),rgba(155,92,255,.5));transform:translateX(6px)}
+#title .mi.sel::after{content:"▶";margin-left:auto;font-size:14px}
+#title .mi.big{padding:18px}#title .mi.big b{font-size:23px}
+#title .ft{position:absolute;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom));text-align:center;font-size:12px;color:var(--mu);padding:0 12px;pointer-events:none}
+#title .sv{grid-column:1/-1}#title .tx{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;font-size:14px}
+@media(max-width:720px){#title .tw{grid-template-columns:1fr;gap:14px;margin:0 auto}#title .tl{text-align:center}#title .tt{text-align:center;margin-bottom:10px}#title .ft{position:static;margin-top:14px}}
 #dlg{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom));display:none;gap:12px;align-items:center;background:rgba(20,10,40,.88);border:1px solid var(--line);border-radius:20px;padding:12px;max-width:640px;margin:0 auto;z-index:8}
 #dlg .dav{width:84px;height:100px;border-radius:14px;overflow:hidden;flex:none}#dlg .dav svg{width:100%;height:100%;display:block}
 #dlg p{margin:4px 0 8px;font-size:15px}
@@ -151,9 +191,11 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 </style>
 </head>
 <body>
+<div id="boot"><div class="bl">GayLife</div><div class="bs">Ein Leben in allen Farben</div><div class="bbar"><i id="bootBar"></i></div><div class="bt" id="bootTip"></div><div class="bp" id="bootPct">Wird geladen …</div></div>
+<div id="title" class="off" style="display:none"></div>
 <div class="wrap" id="hub"></div>
 <div class="wrap" id="game"></div>
-<div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wcol"><div class="wchip" id="wq"></div><button class="wchip" id="hud" title="Status (Handy)"></button></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wPh" title="Handy (P)">📱</button><button id="wLook" title="Look">👤</button><button id="wMp" title="Mehrspieler">👥</button><button id="wMap" title="Orte">🗺️</button><button id="wSnd">🔊</button><button id="wFs" title="Vollbild (F)">⛶</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="joy"><i></i></div><button id="act"></button><div id="dlg"></div><div id="ban"></div><div id="emo"><button>👋</button><button>💃</button><button>❤️</button><button>😂</button><button>🌈</button></div><div id="maps"></div><div id="phone"></div><div id="fade"></div></div>
+<div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wcol"><div class="wchip" id="wq"></div><button class="wchip" id="hud" title="Status (Handy)"></button></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wPh" title="Handy (P)">📱</button><button id="wLook" title="Look">👤</button><button id="wMp" title="Mehrspieler">👥</button><button id="wMap" title="Orte">🗺️</button><button id="wSnd">🔊</button><button id="wFs" title="Vollbild (F)">⛶</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="pad"><div id="stk"><i></i></div><div id="dia"><button id="bY"><b>☰</b><small>Menü</small></button><button id="bX"><b>📱</b><small>Handy</small></button><button id="bB"><b>🗺️</b><small>Orte</small></button><button id="bA"><b>✋</b><small>Aktion</small></button></div></div><button id="act"></button><div id="dlg"></div><div id="ban"></div><div id="emo"><button>👋</button><button>💃</button><button>❤️</button><button>😂</button><button>🌈</button></div><div id="maps"></div><div id="phone"></div><div id="fade"></div></div>
 <div class="modal" id="modal"><div class="box" id="mbox"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="gay-life" data-prefix="anmachaGayLife" data-save-btn="#glSave" defer></script>
@@ -181,6 +223,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <script src="js/weather.js"></script>
 <script src="js/perf.js"></script>
 <script src="js/datingapp.js"></script>
+<script src="js/start.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

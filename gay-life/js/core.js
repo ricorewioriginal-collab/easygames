@@ -289,7 +289,7 @@ function menuHub() {
     '<div class="row" style="margin-top:8px"><button class="btn sm pri" id="glEdit">Anpassen</button>' + (webgl() && S.world3d !== false ? '<button class="btn sm pri" id="glCity">Zur Stadt</button>' : '') + '<button class="btn sm" id="glSave">Speichern</button><button class="btn sm" id="glSnd">' + (S.sound ? '🔊' : '🔇') + '</button>' + '</div></div></div></div>';
   h += '<div class="grid">';
   GAMES.forEach(function (g) {
-    var c = DATES.filter(function (x) { return x.id === g.ch; })[0], b = bestOf(g);
+    var c = DATES.filter(function (x) { return x.id === g.ch; })[0] || NPCDEF.filter(function (x) { return x.id === g.ch; })[0], b = bestOf(g); c = { look: c.look, bg: c.bg || ['#6a3cc8', '#ff5fa8'] };
     h += '<button class="gcard" data-g="' + g.id + '"><div class="pic" style="background:linear-gradient(145deg,' + c.bg[0] + ',' + c.bg[1] + ')">' + avatar(c.look, c.bg, 1) + '</div>' + (b ? '<span class="best">' + esc(b) + '</span>' : '') +
       '<div class="in"><h3>' + g.n + '</h3><p>' + g.d + '</p></div></button>';
   });
@@ -588,20 +588,36 @@ function resize() { var W = WD, w = window.innerWidth, h = window.innerHeight; W
 
 /* --- Steuerung --- */
 function controls(W) {
-  var cv = $('#wc'), jz = $('#joy'), jk = jz.firstChild, jid = -1, jx0 = 0, jy0 = 0, cid = -1, cx0 = 0;
+  var cv = $('#wc'), wd = $('#world'), sk = $('#stk'), kn = sk.firstChild, sid = -1, cid = -1, cx0 = 0;
   document.addEventListener('keydown', function (e) { if (!W.on || $('#modal').style.display === 'block' || GL.emit('blocked')) return; var k = e.key.toLowerCase(); W.keys[k] = 1; if ((k === 'e' || k === 'enter' || k === ' ') && !e.repeat) { e.preventDefault(); act(); } });
   document.addEventListener('keyup', function (e) { W.keys[e.key.toLowerCase()] = 0; });
-  cv.addEventListener('pointerdown', function (e) {
-    if (W.dlg) return; try { cv.setPointerCapture(e.pointerId); } catch (x) {}
-    if (e.pointerType === 'touch' && e.clientX < window.innerWidth * .5 && jid < 0) { jid = e.pointerId; jx0 = e.clientX; jy0 = e.clientY; jz.style.display = 'block'; jz.style.left = jx0 - 55 + 'px'; jz.style.top = jy0 - 55 + 'px'; jk.style.transform = 'translate(0,0)'; }
-    else if (cid < 0) { cid = e.pointerId; cx0 = e.clientX; }
-  });
-  cv.addEventListener('pointermove', function (e) {
-    if (e.pointerId === jid) { var dx = e.clientX - jx0, dy = e.clientY - jy0, l = Math.hypot(dx, dy), m = 48; if (l > m) { dx *= m / l; dy *= m / l; } W.jx = dx / m; W.jz = -dy / m; jk.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; }
-    else if (e.pointerId === cid) { W.camYaw -= (e.clientX - cx0) * .006; cx0 = e.clientX; }
-  });
-  function up(e) { if (e.pointerId === jid) { jid = -1; W.jx = W.jz = 0; jz.style.display = 'none'; } if (e.pointerId === cid) cid = -1; }
+  /* Touch-Oberfläche: automatisch bei grobem Zeiger (Finger) oder nach der ersten Touch-Berührung; per Einstellung erzwingbar. */
+  function padOn() { var m = S.settings.pad; return m === 1 || (m !== 0 && (touched || (window.matchMedia && matchMedia('(pointer:coarse)').matches))); }
+  var touched = false;
+  function padSync() { wd.classList.toggle('tch', padOn()); }
+  GL.padSync = padSync; padSync();
+  document.addEventListener('pointerdown', function (e) { if (e.pointerType === 'touch' && !touched) { touched = true; padSync(); } }, true);
+  /* Fester Stick links: 360 Grad, analog, mit kleiner Totzone */
+  function stick(e) {
+    var r = sk.getBoundingClientRect(), m = r.width * .36, dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2), l = Math.hypot(dx, dy);
+    if (l > m) { dx *= m / l; dy *= m / l; l = m; }
+    if (l / m < .12) { W.jx = W.jz = 0; } else { W.jx = dx / m; W.jz = -dy / m; }
+    kn.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+  }
+  function stickEnd(e) { if (e.pointerId !== sid) return; sid = -1; W.jx = W.jz = 0; kn.style.transform = ''; sk.classList.remove('on'); }
+  sk.addEventListener('pointerdown', function (e) { if (sid >= 0) return; sid = e.pointerId; try { sk.setPointerCapture(e.pointerId); } catch (x) {} sk.classList.add('on'); stick(e); e.preventDefault(); });
+  sk.addEventListener('pointermove', function (e) { if (e.pointerId === sid) stick(e); });
+  sk.addEventListener('pointerup', stickEnd); sk.addEventListener('pointercancel', stickEnd);
+  /* Kamera: Ziehen irgendwo im Bild (außerhalb von Stick und Tasten) */
+  cv.addEventListener('pointerdown', function (e) { if (W.dlg || cid >= 0) return; try { cv.setPointerCapture(e.pointerId); } catch (x) {} cid = e.pointerId; cx0 = e.clientX; });
+  cv.addEventListener('pointermove', function (e) { if (e.pointerId === cid) { W.camYaw -= (e.clientX - cx0) * .006; cx0 = e.clientX; } });
+  function up(e) { if (e.pointerId === cid) cid = -1; }
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  /* Vier Tasten wie auf einer Konsole (Raute): A unten, B rechts, X links, Y oben */
+  $('#bA').onclick = function () { act(); };
+  $('#bB').onclick = function () { GL.emit('openMap'); };
+  $('#bX').onclick = function () { if (GL.phone) GL.phone.toggle(); };
+  $('#bY').onclick = function () { GL.emit('pause'); };
   $('#act').onclick = function () { act(); };
   $('#wLook').onclick = editor;
   $('#wMap').onclick = function () { GL.emit('openMap'); };
@@ -734,7 +750,7 @@ function frame(ts) {
   // HUD, Aufträge (nur ab und zu)
   W.tick += dt;
   if (W.tick > .25) {
-    W.tick = 0; var it = curInter(), ab = $('#act'); if (it && !W.dlg) { ab.style.display = 'block'; ab.textContent = it.label; } else ab.style.display = 'none';
+    W.tick = 0; $('#world').classList.toggle('dl', !!W.dlg); var it = curInter(), ab = $('#act'); if (it && !W.dlg) { ab.style.display = 'block'; ab.textContent = it.label; } else ab.style.display = 'none';
     var qi = S.world.q, q = QUESTS[qi], tg2 = null, txt;
     if (q) { var tgp = q.poi === 'plaza' ? { x: 0, z: 0 } : W.pois[q.poi]; tg2 = tgp; txt = '<b>' + q.t + '</b><br>' + q.d; } else txt = '<b>Alles geschafft!</b><br>Sterne: ' + S.world.stars.length + '/' + STARS.length + ' · ' + (S.world.dog >= 3 && S.world.cat >= 3 ? 'Gerd und Pixel sind zuhause' : 'Dennis oder Kai brauchen Hilfe');
     for (var sk in SIDE) if (S.world.side[sk] === 1) { txt += '<br><small>Nebenauftrag: ' + SIDE[sk].t + (sk === 'ilse' ? ' (' + S.world.zut.length + '/3)' : '') + '</small>'; break; }
@@ -760,6 +776,7 @@ function leaveWorld() { if (!WD) return; WD.on = false; cancelAnimationFrame(WD.
 
 function showHub() {
   stopGame(); var ses = GL.session; GL.session = null; if (ses && ses.played) GL.emit('activity', ses.id); if (MP.duel && MP.duel.joined && !MP.duel.done && mpOn()) mpScore(0);
+  if (GL.emit('showHub') === true) return;
   if (S.world3d !== false && webgl()) { $('#game').style.display = 'none'; $('#hub').style.display = 'none'; enterWorld(); } else menuHub();
 }
 
@@ -1732,7 +1749,7 @@ window.addEventListener('pagehide', save);
 
 /* ---------- Schnittstelle für die Module in js/ ---------- */
 GL.core = { ac: ac, talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
-  editor: editor, openGame: openGame, showHub: showHub, menuHub: menuHub, gameOf: gameOf, bestOf: bestOf, makePerson: makePerson, animPerson: animPerson, lmat: lmat, cvTex: cvTex, labelSprite: labelSprite, mix: mix,
+  editor: editor, leave: leaveWorld, enter: enterWorld, openGame: openGame, showHub: showHub, menuHub: menuHub, gameOf: gameOf, bestOf: bestOf, makePerson: makePerson, animPerson: animPerson, lmat: lmat, cvTex: cvTex, labelSprite: labelSprite, mix: mix,
   GAMES: GAMES, POIS: POIS, QUESTS: QUESTS, SIDE: SIDE, NPCDEF: NPCDEF, DATES: DATES, STARS: STARS, RB: RB, resize: function () { if (WD && WD.on) resize(); } };
 Object.defineProperty(GL, 'W', { get: function () { return WD; } });
 Object.defineProperty(GL, 'MP', { get: function () { return MP; } });
@@ -1742,5 +1759,5 @@ GL.mp = {
   name: function (id) { return mpNameOf(id); },
   send: function (k, d, to) { if (!mpOn()) return false; var m = { t: 'x', k: String(k), d: d || {} }; if (to) m.to = String(to); if (MP.net.role === 'host') { m.from = 'h'; if (to) { var tc = null; Object.keys(MP.ids).forEach(function (c) { if (MP.ids[c] === to) tc = c; }); if (tc) MP.net.sendTo(tc, m); return !!tc; } MP.net.send(m); return true; } MP.net.send(m); return true; }
 };
-GL.boot = function () { showHub(); setTimeout(mpAuto, 600); };
+GL.boot = function () { if (GL.start && GL.start.boot()) return; showHub(); setTimeout(mpAuto, 600); };
 })();

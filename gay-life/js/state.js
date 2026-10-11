@@ -15,7 +15,7 @@
       jobs: { bar: { xp: 0, shifts: 0, earned: 0 } },
       rel: {}, msgs: [], cal: [], dating: { ints: [] }, home: { own: {}, placed: {}, partner: '', rentDay: 0, debt: 0 },
       story: { ch: 0, don: 0, plan: '', fest: '', vis: {}, end: '', pts: {}, tea: 0 },
-      settings: { q: -1 } };
+      settings: { q: -1, pad: -1 } };
   }
   function merge(d, s) {
     if (!s || typeof s !== 'object') return d;
