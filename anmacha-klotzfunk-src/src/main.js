@@ -1,7 +1,7 @@
 // Oberfläche, Eingabe (Tastatur/Maus/Touch), Menüs, Speichern.
 import './style.css';
 import { Game } from './game.js';
-import { B, NAMES, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
+import { B, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
 import { BLOCKS, CATS, INV_BLOCKS } from './blocks.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot } from './storage.js';
 import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK, STATION_NAMES } from './crafting.js';
@@ -9,7 +9,7 @@ import { ITEMS, ITEM_LIST, isItem, nameOf } from './items.js';
 import { MAX_HP, MAX_FOOD, MAX_AIR } from './survival.js';
 import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
 import { unlockAudio, sfx } from './audio.js';
-import { QUESTS, questProgress } from './quests.js';
+import { QUESTS, RAUSCHEN, CHAPTERS, campaignOf, questProgress } from './quests.js';
 import { TRADES, GREET } from './trades.js';
 
 const $ = id => document.getElementById(id);
@@ -224,8 +224,9 @@ function renderQuest() {
   if (!s || game.menuMode) { el.hidden = true; return; }
   el.hidden = false; el.classList.toggle('min', questMin);
   if (s.done) { el.innerHTML = '<b>🎉 Story abgeschlossen</b><small class="txt">Alle Aufträge erledigt. Baue frei weiter!</small>'; return; }
-  const q = QUESTS[s.i], [cur, n] = questProgress(game, q), pct = Math.min(100, Math.round(cur / n * 100));
-  el.innerHTML = `<b>Auftrag ${s.i + 1}/${QUESTS.length} · ${q.t}</b><div class="bar"><i style="width:${pct}%"></i></div><small>${Math.min(cur, n)} / ${n}</small><small class="txt">${q.d}</small>`;
+  const list = campaignOf(s), q = list[s.i], [cur, n] = questProgress(game, q), pct = Math.min(100, Math.round(cur / n * 100));
+  const head = q.c ? `Kapitel ${q.c} · ${q.t}` : `Auftrag ${s.i + 1}/${list.length} · ${q.t}`;
+  el.innerHTML = `<b>${head}</b><div class="bar"><i style="width:${pct}%"></i></div><small>${Math.min(cur, n)} / ${n}${q.c ? ` · Auftrag ${s.i + 1}/${list.length}` : ''}</small><small class="txt">${q.d}</small>`;
 }
 function showBanner(html) {
   const b = $('banner'); b.innerHTML = html; b.classList.add('on');
@@ -233,15 +234,21 @@ function showBanner(html) {
 }
 game.onQuest = renderQuest;
 game.onQuestDone = (q, last) => {
-  const rw = Object.entries(q.r || {}).map(([t, c]) => `+${c} ${NAMES[t]}`).join(' · ');
-  showBanner(last ? `🎉 Story abgeschlossen!<small>${q.t} geschafft. Die Funkzentrale sendet wieder. Baue frei weiter.</small>` : `✔ Auftrag erledigt: ${q.t}<small>${rw}</small>`);
+  const rw = Object.entries(q.r || {}).map(([t, c]) => `+${c} ${nameOf(Number(t))}`).join(' · ');
+  const next = !last && campaignOf(game.story)[game.story.i];
+  if (last) showBanner(q.c ? '🎉 Das Rauschen ist verstummt!<small>Das Funknetz steht wieder. Die Welt gehört dir, baue frei weiter.</small>'
+    : `🎉 Story abgeschlossen!<small>${q.t} geschafft. Die Funkzentrale sendet wieder. Baue frei weiter.</small>`);
+  else if (next && next.c && next.c !== q.c) showBanner(`📻 Kapitel ${next.c}: ${CHAPTERS[next.c].t}<small>${CHAPTERS[next.c].d}</small>`);
+  else showBanner(`✔ Auftrag erledigt: ${q.t}<small>${rw}</small>`);
 };
 function renderQuestLog() {
   const s = game.story; if (!s) return;
-  $('qlist').innerHTML = QUESTS.map((q, i) => {
+  $('qlist').innerHTML = campaignOf(s).map((q, i, list) => {
     const done = s.done || i < s.i, cur = !s.done && i === s.i;
-    return `<div class="qi ${done ? 'done' : cur ? 'cur' : ''}"><span class="st">${done ? '✔' : cur ? '➜' : i + 1}</span><div><b>${q.t}</b>${done || cur ? `<small>${q.d}</small>` : ''}</div></div>`;
+    const ch = q.c && (i === 0 || list[i - 1].c !== q.c) ? `<h3 class="qch">Kapitel ${q.c} · ${CHAPTERS[q.c].t}</h3>` : '';
+    return `${ch}<div class="qi ${done ? 'done' : cur ? 'cur' : ''}"><span class="st">${done ? '✔' : cur ? '➜' : i + 1}</span><div><b>${q.t}</b>${done || cur ? `<small>${q.d}</small>` : ''}</div></div>`;
   }).join('');
+  $('qlogT').textContent = s.c === 'rauschen' ? 'Das große Rauschen' : 'Aufträge der Funkzentrale';
 }
 $('quest').addEventListener('click', () => { questMin = !questMin; renderQuest(); });
 $('pQuests').onclick = () => { renderQuestLog(); show('qlog', true); };
@@ -325,7 +332,8 @@ function renderSlots() {
     const meta = readMeta(i);
     if (meta) {
       const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative', st = meta.mode === 'story';
-      const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : 'Auftrag ' + ((meta.q ?? 0) + 1) + '/' + QUESTS.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
+      const ql = meta.qc === 'rauschen' ? RAUSCHEN : QUESTS, qn = meta.q ?? 0;
+      const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : (ql[qn] && ql[qn].c ? 'Kapitel ' + ql[qn].c + ' · ' : '') + 'Auftrag ' + (qn + 1) + '/' + ql.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
       h += `<div class="card"><div class="top"><div class="ico">${st ? '📜' : cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b>${pill}</div></div>
         <small>${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)}${(meta.gen || 1) < GEN_LATEST ? ' · klassische Welt' : ''} · zuletzt ${d}</small>
         <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="exp" data-i="${i}" aria-label="Welt exportieren" title="Welt als Datei sichern">⤓</button>${hasBackup(i) ? `<button data-act="bak" data-i="${i}" aria-label="Sicherung laden" title="Ältere Sicherung wiederherstellen">↺</button>` : ''}<button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
@@ -372,8 +380,8 @@ $('slots').addEventListener('click', e => {
   } else {
     const mode = $('mode' + i).querySelector('.on').dataset.mode;
     launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode,
-      // Story bleibt vorerst auf der erprobten Originalwelt (alle 15 Aufträge dort lösbar); neue Story-Kapitel folgen mit Generator 2
-      gen: mode === 'story' ? 1 : GEN_LATEST });
+      // neue Story-Welten: „Das große Rauschen“ auf Generator 3 mit Dorf (Startwert 777)
+      gen: GEN_LATEST });
   }
 });
 
@@ -413,7 +421,7 @@ function launch(i, save) {
       $('bUndo').hidden = game.mode !== 'creative';
       $('bmode').hidden = true;
       renderHotbar(); renderQuest(); setState('playing'); renderVitals(); lockPointer();
-      if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner('📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
+      if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner(game.story.c ? `📻 Kapitel 1: ${CHAPTERS[1].t}<small>${CHAPTERS[1].d} Dein Auftrag steht links (J blendet ihn aus).</small>` : '📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
       if (!game.unsaved && save.px === undefined) saveNow(false);
     } catch (err) {
       console.error(err); setState('menu'); renderSlots(); alert('Die Welt konnte nicht gestartet werden.');

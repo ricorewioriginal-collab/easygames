@@ -58,7 +58,7 @@ export function readWorld(i) { const s = parse(get(W(i))); return validSave(s) ?
 export function readBackup(i) { const s = parse(get(BK(i))); return validSave(s) ? s : null; }
 export function hasBackup(i) { return get(BK(i)) !== null; }
 
-const metaOf = save => ({ name: save.name, mode: save.mode, seed: save.seed, gen: save.gen || 1, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined });
+const metaOf = save => ({ name: save.name, mode: save.mode, seed: save.seed, gen: save.gen || 1, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined, qc: save.story ? save.story.c : undefined });
 
 // gibt true bei Erfolg zurück. Ein misslungener Schreibversuch lässt den alten Stand unverändert.
 export function writeWorld(i, save) {

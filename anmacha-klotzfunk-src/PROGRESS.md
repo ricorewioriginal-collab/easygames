@@ -101,13 +101,28 @@ Legende: ✅ fertig und getestet · 🟡 teilweise · ⬜ offen
 
 ---
 
+## 2e. Etappe 4 – Story „Das große Rauschen“ und Funknetz ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Story | neue Kampagne `rauschen`: 6 Kapitel, 25 Aufträge (Grundversorgung → Dorf, Gespräch, Handel → Höhle, Kupfer, Kristalle → Sender, Relais, Verbindung über 40 Blöcke → Rüstung, Drohne, Höhlenwesen, Maschinen → Turm, 3 Empfänger, Finale). Neue Auftragsarten: Ort besuchen, sprechen, tauschen, Tiefe, Gegner besiegen, Netz (Empfänger/Maschinen), Reichweite. Kapitelbanner, Liste nach Kapiteln. | `src/quests.js`, `src/game.js`, `src/main.js` |
+| Story-Regeln | neue Story-Welten: Generator 3, Seed 777, Überlebensregeln, Tiere und Gegner, Start abseits des Dorfes; Kampagne im Spielstand (`story.c`), Kampagne im Weltmenü (`meta.qc`) | `src/game.js`, `src/storage.js` |
+| Alte Story | Spielstände ohne `story.c` behalten Generator 1, die 15 Aufträge und die alten Regeln (Entscheidung statt Umrechnung, siehe STORY.md) | `src/quests.js`, `src/game.js` |
+| Funknetz | Schalter, Signalleitung, Funksender, Relais, Empfänger, Signallampe, Funktor (Blöcke 68–78, Rezepte an der Werkbank). Breitensuche über die Netz-Blöcke, Funk 24 Blöcke, Rechenlimit 4 096 Schritte; gerechnet nur nach Änderungen. Netz-Blöcke werden beim Laden der Chunks erfasst, nicht extra gespeichert. Tor schließt nicht, solange der Spieler darin steht. | `src/signal.js`, `src/world.js`, `src/game.js` |
+| Tests | 76 Tests (neu: `signal.test.js`) | `tests/` |
+
+**Bewusst verschoben auf Etappe 5:** Fahrzeuge (Boot, Lore) und Meshing im Web Worker. Beides ist eigenständig groß, die Story braucht es nicht,
+und ohne Messung auf echten Handys lässt sich der Nutzen des Workers nicht belegen.
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
 
 | # | Abschnitt | Stand | Etappe | Nächster konkreter Schritt |
 |---|---|---|---|---|
-| 4 | Voxel-Engine | 🟡 | 1 ✅ / 4 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
+| 4 | Voxel-Engine | 🟡 | 1 ✅ / 5 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
 | 7 | Bauen | ✅ | 3b | Vorschau, Formen, Kopieren/Einfügen ✅; später Drehen beim Einfügen, Bauvorlagen |
@@ -117,18 +132,18 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 11 | Gegner, Kampf | ✅ | 3b | später Bogen, Bosse in Story-Kapitel 5 |
 | 12 | Dörfer, NPCs | ✅ | 3b | später mehr Berufe, Gespräche mit Story-Bezug |
 | 13 | Landwirtschaft | 🟡 | 3 ✅ | weitere Pflanzen (Karotte, Kartoffel), Bewässerung, Tierzucht |
-| 14 | Fahrzeuge | 🟡 | 4 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
-| 15 | Story „Das große Rauschen“ | 🟡 | 4 | 6 Kapitel, alte 15 Aufträge werden Kapitel 1–2; Migration: alter Fortschritt `story.i` → neues Kapitel/Schritt |
-| 16 | Funktechnik | 🟡 | 4 | Radio-Blöcke vorhanden; Funknetz (Sender, Relais, Reichweite), Signale steuern Maschinen |
-| 17 | Automatisierung | ⬜ | 4 | Signal-Leitungen mit Warteschlange und Rechenlimit je Tick |
-| 18 | Spielmodi | 🟡 | laufend | Survival-Regeln ✅; Story zieht mit Etappe 4 auf die neuen Regeln um |
+| 14 | Fahrzeuge | 🟡 | 5 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
+| 15 | Story „Das große Rauschen“ | ✅ | 4 | später Bosskampf im „Herz des Rauschens“, Sprachzeilen der Bewohner je Kapitel |
+| 16 | Funktechnik | ✅ | 4 | später Frequenzen (getrennte Netze), Antennen mit größerer Reichweite |
+| 17 | Automatisierung | 🟡 | 4 | Signale mit Rechenlimit ✅; später Taktgeber, Verzögerung, Logik-Gatter, Förderband |
+| 18 | Spielmodi | ✅ | 4 | Story nutzt die Überlebensregeln ✅ |
 | 19 | Multiplayer | ⬜ | 5 | WebRTC (Peer-to-Peer, Host = Autorität) zuerst prüfen; GitHub Pages bleibt Einzelspieler ohne Server |
 | 20 | Smartphone | 🟡 | 1 ✅ / 3 | Tastenpositionen frei verschiebbar, optionaler Platzierungsmodus mit Vorschau |
 | 21 | Desktop | 🟡 | 3 | Tastenbelegung ändern, Gamepad |
 | 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
 | 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
-| 25/26 | Performance | 🟡 | 1 ✅ / 4 | echte Handymessungen, Worker-Meshing |
+| 25/26 | Performance | 🟡 | 1 ✅ / 5 | echte Handymessungen, Worker-Meshing |
 | 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
 | 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
 | 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
@@ -140,7 +155,8 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 
 - **Generator-Version im Spielstand (`gen`).** Alte Welten speichern nur Änderungen gegenüber der erzeugten Welt. Ein neuer Generator würde ihre Bauwerke in fremdes Gelände setzen. Darum: `gen` fehlt ⇒ Generator 1 (unverändert), neue Welten ⇒ Generator 2.
 - **Weltgröße 96 statt 64.** Die Chunk-Indizes (`x + z·16 + y·256`) bleiben gleich, alte Änderungen passen weiter. Speicher je Chunk: 24 KB statt 16 KB.
-- **Story vorerst auf Generator 1.** Die 15 Aufträge sind dort erprobt (Sand am Wasser in Startnähe). Mit der neuen Story (Etappe 4) zieht sie auf Generator 2 um.
+- **Neue Story auf Generator 3, alte Story bleibt auf Generator 1.** Die neue Kampagne braucht Dörfer, Erze und Kristalle. Alte Story-Spielstände werden nicht umgerechnet, weil ihre Welt diese Dinge nicht hat (Begründung in STORY.md).
+- **Funknetz ohne eigenes Spielstandfeld.** Netz-Blöcke sind normale Blockänderungen; ihr Zustand (an/aus) ergibt sich aus den Schaltern und wird beim Laden neu berechnet.
 - **Kein Greedy Meshing (geprüft).** Der Mesher nutzt Ecken-Ambient-Occlusion und Atlas-Kacheln. Greedy Meshing bräuchte wiederholende Kacheln im Shader und würde AO-Verläufe zusammenlegen. Gemessen: ~850–1 100 Flächen je Chunk, Meshing ~2–3 ms (Node, Desktop-CPU). Der Gewinn rechtfertigt den Umbau derzeit nicht; der größere Hebel ist Meshing im Worker.
 - **localStorage statt IndexedDB (vorerst).** Durch das kompakte Format belegen 100 000 Änderungen ~400 KB. Drei Welten plus Sicherungen passen in die üblichen 5 MB. Bei Speicher voll werden zuerst Sicherungen geopfert, der Hauptstand hat Vorrang, ein misslungenes Speichern verändert nichts. Wechsel auf IndexedDB, wenn Tiere/NPC/Maschinen viel Zustand bringen (Etappe 2/3).
 - **Sicherungen außerhalb des Cloud-Präfixes** (`klotzfunk-bak.*`), damit das optionale Google-Sync nicht doppelt so viel hochlädt.
@@ -166,21 +182,21 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 3b „Dörfer und Bauen“
-1. Strukturgenerator: Dörfer mit Flächenausgleich und verlassene Minen. Das verändert neues Gelände → als Generator 3 (`gen: 3`), Generator 2 bleibt unverändert.
-2. NPCs mit festem Tagesablauf (Haus, Arbeit, Platz) und Handel (Tausch gegen Weizen, Barren, Kristalle).
-3. Bau-Werkzeuge: Platzierungsvorschau, Linie/Fläche/Wand/Säule, Kopieren/Einfügen.
-4. Weitere Gegnerarten (Höhlenwesen, Störsender-Drohne) und Rüstung.
-5. Tests für alle neuen Systeme.
+### Nächste Sitzung: Etappe 5 „Fahrzeuge, Leistung, Mehrspieler“
+1. Boot (auf Wasser) und Lore auf Schienen (neuer Schienenblock, Formblock-Meshing nötig).
+2. Meshing im Web Worker, vorher und nachher auf einem echten Android-Handy messen.
+3. Mehrspieler prüfen: WebRTC Peer-to-Peer mit Host als Autorität; GitHub Pages bleibt ohne Server.
+4. Tests für alle neuen Systeme.
 
 ---
 
 ## 6. Bekannte Einschränkungen (ehrlich)
 
 - Gemessen wurde in Node (Desktop-CPU) und im Headless-Chromium mit Software-Grafik. **Echte Android-Geräte wurden nicht getestet.** Siehe PERFORMANCE.md und TESTING.md.
-- Die Story nutzt weiter die 15 Aufträge von Version 1.0.
+- Alte Story-Welten (vor 1.5) spielen weiter die 15 Aufträge; die neue Story gibt es nur in neuen Story-Welten.
+- Das Funknetz kennt nur an/aus, keine getrennten Frequenzen; Funk geht durch Wände.
 - Schmelzen und Kochen gehen sofort; der Ofen hat noch keinen Brennvorgang mit Zeit.
-- Rauschlinge haben nur einen Nahkampf-Angriff, keine Rüstung für den Spieler; Gegner gibt es nur im Überlebensmodus.
+- Gegner gibt es nur im Überlebensmodus und in der neuen Story.
 - Weizen wächst auch ohne Wasser in der Nähe und nur, solange gespielt wird (gespielte Zeit, nicht Echtzeit).
 - Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.

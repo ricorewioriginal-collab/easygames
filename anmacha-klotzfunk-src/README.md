@@ -1,7 +1,7 @@
 # KLOTZFUNK 3D
 
 Voxel-Sandbox im Browser (Three.js + Vite) für PC und Smartphone. Bauen, abbauen, erkunden – in 15 Biomen mit Höhlen, Erzen,
-Dörfern, verlassenen Minen und leuchtenden Funkkristallen, mit Radio-Blöcken, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken und Gleiter. Alle Texturen und Geräusche
+Dörfern, verlassenen Minen und leuchtenden Funkkristallen, mit Radio-Blöcken, einem Funknetz mit Schaltern, Sendern, Relais und Maschinen, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken und Gleiter. Alle Texturen und Geräusche
 werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Konto, keine Kosten, keine externen Dienste nötig.
 
 ## Spielen
@@ -11,7 +11,7 @@ werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Kon
 ## Spielmodi
 - **Überleben:** Abbauzeit nach Härte, Werkzeuge aus Holz, Stein, Kupfer und Eisen, Werkbank und Schmelzofen, Herzen, Hunger, Fallschaden, Ertrinken, Tiere, Weizenfelder, Dörfer mit Bewohnern und Handel, Rauschlinge, Höhlenwesen und Drohnen, Schwerter und Rüstung, Bauformen (Rezepte siehe [CRAFTING.md](CRAFTING.md) und [GAMEPLAY.md](GAMEPLAY.md)).
 - **Kreativ:** alle Blöcke unbegrenzt, Fliegen, Formen, Kopieren/Einfügen, Rückgängig.
-- **Story:** 15 Aufträge der Funkzentrale in einer festen Welt (siehe [STORY.md](STORY.md)).
+- **Story:** „Das große Rauschen“: 6 Kapitel, 25 Aufträge, Dorf, Höhlen und ein eigenes Funknetz aus Sendern, Relais, Empfängern und Maschinen (siehe [STORY.md](STORY.md)).
 
 Mehr zu Steuerung und Spielablauf: [GAMEPLAY.md](GAMEPLAY.md). Welt und Biome: [WORLD.md](WORLD.md). Alle Blöcke: [BLOCKS.md](BLOCKS.md).
 

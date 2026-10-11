@@ -53,6 +53,16 @@ RECIPES.push(
   { id: 'cobble', give: [B.COBBLE, 2], need: [[B.STONE, 2]] },
   { id: 'path', give: [B.PATH, 2], need: [[B.GRAVEL, 1], [B.DIRT, 1]] }
 );
+// Funktechnik (Werkbank)
+RECIPES.push(
+  { id: 'switch', give: [B.SWITCH, 2], need: [[B.STONE, 1], [I.STICK, 1]], st: 'werkbank' },
+  { id: 'wire', give: [B.WIRE, 8], need: [[I.COPPER_INGOT, 1], [B.STONE, 1]], st: 'werkbank' },
+  { id: 'sender', give: [B.SENDER, 1], need: [[I.COPPER_INGOT, 2], [B.CRYSTAL, 1], [B.RADIO, 1]], st: 'werkbank' },
+  { id: 'relay', give: [B.RELAY, 1], need: [[I.COPPER_INGOT, 1], [B.CRYSTAL, 1], [B.STONE, 2]], st: 'werkbank' },
+  { id: 'receiver', give: [B.RECEIVER, 1], need: [[I.COPPER_INGOT, 1], [B.GLASS, 1], [B.PLANKS, 2]], st: 'werkbank' },
+  { id: 'siglamp', give: [B.SIGLAMP, 2], need: [[B.LAMP, 1], [B.WIRE, 1]], st: 'werkbank' },
+  { id: 'gate', give: [B.GATE, 2], need: [[I.IRON_INGOT, 1], [B.PLANKS, 4]], st: 'werkbank' }
+);
 RECIPES.push(
   { id: 'ingotCopper', give: [I.COPPER_INGOT, 1], need: [[B.COPPER, 1], [B.COAL, 1]], st: 'ofen' },
   { id: 'ingotIron', give: [I.IRON_INGOT, 1], need: [[B.IRON, 1], [B.COAL, 1]], st: 'ofen' },

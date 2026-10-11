@@ -1,6 +1,7 @@
 // Welt: Terrain-Generierung (Generator 1 = Originalwelt, 2 = Biome/Höhlen/Erze, 3 = wie 2 plus Dörfer und Minen), Chunk-Speicher.
 import { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo } from './blocks.js';
 import { biomeColumn, decorateChunk, BIOME, GEN2_SPAWN_BIOMES } from './worldgen.js';
+import { SIG_BLOCKS } from './signal.js';
 import { placeStructures, nearestVillage, villageIn, regionOf, VR } from './structures.js';
 export { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo };
 import { CS, H, SEA } from './consts.js';
@@ -27,6 +28,8 @@ export class World {
     this.edits = edits || new Map(); // key -> Map(index -> type)
     this.dirty = new Set();
     this.radios = new Map(); // Radio-Blöcke: 'x,y,z' -> [x, y, z]
+    this.sig = new Map();    // Funk-/Signalblöcke: 'x,y,z' -> [x, y, z, typ] (nur gesetzte, nie erzeugte)
+    this.sigDirty = false;   // Signalnetz neu berechnen
   }
 
   getChunk(cx, cz) { return this.chunks.get(chunkKey(cx, cz)); }
@@ -98,7 +101,10 @@ export class World {
       if (data[i] === B.RADIO && t !== B.RADIO) this.radios.delete(`${cx * CS + (i & 15)},${y},${cz * CS + ((i >> 4) & 15)}`); // erzeugtes Radio abgebaut
       data[i] = t;
       if (y > maxY) maxY = y;
-      if (t === B.RADIO) this.radios.set(`${cx * CS + (i & 15)},${y},${cz * CS + ((i >> 4) & 15)}`, [cx * CS + (i & 15), y, cz * CS + ((i >> 4) & 15)]);
+      const wx = cx * CS + (i & 15), wz = cz * CS + ((i >> 4) & 15);
+      if (t === B.RADIO) this.radios.set(`${wx},${y},${wz}`, [wx, y, wz]);
+      if (SIG_BLOCKS.has(t)) { this.sig.set(`${wx},${y},${wz}`, [wx, y, wz, t]); this.sigDirty = true; }
+      else if (this.sig.delete(`${wx},${y},${wz}`)) this.sigDirty = true;
     }
     return { cx, cz, key, data, maxY, hm: null, opaque: null, trans: null, logo: null, meshed: false };
   }
@@ -130,6 +136,8 @@ export class World {
     c.data[i] = t;
     if (old === B.RADIO) this.radios.delete(`${x},${y},${z}`);
     if (t === B.RADIO) this.radios.set(`${x},${y},${z}`, [x, y, z]);
+    if (SIG_BLOCKS.has(t)) { this.sig.set(`${x},${y},${z}`, [x, y, z, t]); this.sigDirty = true; }
+    else if (SIG_BLOCKS.has(old)) { this.sig.delete(`${x},${y},${z}`); this.sigDirty = true; }
     if (y > c.maxY) c.maxY = y;
     c.hm = null;
     let ed = this.edits.get(c.key);

@@ -196,3 +196,4 @@ body.touch #vit{bottom:auto;top:calc(118px + var(--sat))}
 body.touch #bmode{bottom:auto;top:calc(150px + var(--sat))}
 #trade .say{font-style:italic;opacity:.9}
 @media (max-width:420px){#topbtns{gap:5px}.tbtn{width:36px;height:36px;font-size:17px;border-radius:10px}}
+.qch{margin:12px 0 4px;font-size:14px;color:#ffe08a}

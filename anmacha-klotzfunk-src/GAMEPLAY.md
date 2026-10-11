@@ -24,7 +24,7 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Überleben:** Abgebaute Blöcke kommen in den Vorrat (höchstens 999 je Sorte). Zum Start gibt es etwas Erde, Bretter, Glas sowie einige Logo- und Spezialblöcke.
   Im Inventar unter „Herstellen“ entstehen neue Blöcke und Gegenstände – Rezepte in [CRAFTING.md](CRAFTING.md). Dazu kommen die Überlebensregeln unten.
 - **Kreativ:** alles unbegrenzt, Fliegen erlaubt, Herstellen nicht nötig.
-- **Story:** 15 Aufträge der Funkzentrale, siehe [STORY.md](STORY.md).
+- **Story:** „Das große Rauschen“, 6 Kapitel mit 25 Aufträgen nach Überlebensregeln, siehe [STORY.md](STORY.md). Alte Story-Welten behalten ihre 15 Aufträge.
 
 ## Überleben
 - **Abbauen dauert** je nach Härte (Erde ~0,5 s, Stein ~1,4 s mit der Hand). Das passende Werkzeug ist 2× (Holz) bis 6× (Eisen) schneller und nutzt sich dabei ab. Der Balken unter dem Fadenkreuz zeigt den Fortschritt.
@@ -65,6 +65,13 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Kreativ:** zusätzlich **Kopieren** (zwei Ecken, bis 32 768 Blöcke) und **Einfügen** (Setzen fügt an der Vorschau ein).
 - Der weiße Rahmen zeigt, wo der Block oder die Form landet (in den Einstellungen abschaltbar).
 - **Rückgängig (Kreativ):** Strg+Z oder ↶ macht die letzten 100 Schritte rückgängig, eine ganze Form zählt als ein Schritt; Strg+Y wiederholt.
+
+## Funknetz
+- **Schalter:** Setzen-Taste legt ihn um. Ein eingeschalteter Schalter speist **Signalleitungen**, die ihn berühren an einer Würfelseite (nicht über Ecken); Leitungen reichen beliebig weit.
+- **Funksender** neben einem gespeisten Schalter oder einer Leitung gehen auf Sendung. Sie erreichen **Funkrelais** und **Empfänger** bis **24 Blöcke** entfernt (Luftlinie, durch Wände). Relais tragen das Signal weitere 24 Blöcke.
+- Ein erreichter **Empfänger** leuchtet und speist wieder Leitungen und Maschinen daneben.
+- **Maschinen:** **Signallampe** (leuchtet) und **Funktor** (öffnet sich, man kann hindurch). Sie schalten ein, wenn eine gespeiste Leitung, ein Schalter oder ein Empfänger sie berührt. Ein Tor schließt nicht, solange du darin stehst.
+- Alles entsteht an der Werkbank (Kupfer, Funkkristall, Stein, Radio), siehe [CRAFTING.md](CRAFTING.md). Gerechnet wird nur bei Änderungen, mit festem Rechenlimit (4 096 Netz-Schritte).
 
 ## Inventar
 - **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funktechnik, Funk-Logos, Werkzeuge & Essen) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).

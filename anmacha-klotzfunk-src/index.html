@@ -52,7 +52,7 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🏘 Dörfer, Handel &amp; Minen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge, Drohnen &amp; Rüstung</li><li>▦ Bauformen &amp; Kopieren</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🏘 Dörfer, Handel &amp; Minen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge, Drohnen &amp; Rüstung</li><li>▦ Bauformen &amp; Kopieren</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story „Das große Rauschen“</li><li>📡 Funknetz &amp; Maschinen</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
     <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
@@ -65,7 +65,8 @@
       <div class="cols">
         <div><b>PC</b><br>WASD laufen · Maus blicken · Leertaste springen · Strg/Shift rennen<br>Linksklick abbauen · Rechtsklick setzen · 1–9 / Mausrad Block wählen<br>E Inventar · F fliegen (Kreativ) · Esc Pause</div>
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Minikarte</div>
-        <div><b>Story-Modus</b><br>Die Funkzentrale gibt dir 15 feste Aufträge: Holz, Bretter, Fundament, Licht, Funkmast, Federn, Seilhaken, Gleiten, Neon bis zum Regenbogen-Finale. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste.</div>
+        <div><b>Story-Modus</b><br>„Das große Rauschen“: 6 Kapitel mit 25 Aufträgen, vom ersten Unterschlupf über das Dorf und die Höhlen bis zum großen Funknetz. Es gelten die Überlebensregeln. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste. Alte Story-Welten spielen ihre 15 Aufträge weiter.</div>
+        <div><b>Funknetz</b><br>Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben. Der Sender erreicht Relais und Empfänger bis 24 Blöcke weit, Relais tragen weiter. Empfänger und Leitungen schalten Signallampen und Funktore daneben ein. Alles an der Werkbank.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder</div>
         <div><b>Überleben</b><br>Abbauen dauert je nach Härte; Werkzeuge machen es schneller und nutzen sich ab. Erze brauchen eine Spitzhacke, Eisen und Funkkristall mindestens eine aus Stein. Bretter → Stöcke und Werkbank, an der Werkbank Werkzeuge und Schmelzofen, im Ofen Barren und Braten. Rechtsklick/Setzen auf Werkbank oder Ofen öffnet das Herstellen. Essen: Essen wählen und Setzen drücken. Stürze, Ertrinken, Magma und Hunger kosten Herzen.</div>
         <div><b>Felder &amp; Gegner</b><br>Hacke auf Gras oder Erde = Ackerboden, Samen (manchmal aus Gras) darauf setzen. Weizen wächst in etwa 4½ Minuten Spielzeit, 3 Weizen = Brot. Nachts und in tiefen Höhlen kommen Rauschlinge: sie verfolgen dich nur, wenn sie dich sehen. Schwerter treffen härter. In den Einstellungen lassen sich Gegner abschalten. Kreativ: Strg+Z / ↶ macht rückgängig, Strg+Y wiederholt.</div>
@@ -117,7 +118,7 @@
 
 <section id="qlog" class="screen" hidden>
   <div class="panel wide">
-    <h2>Aufträge der Funkzentrale <button id="qlogClose" class="x" aria-label="Schließen">✕</button></h2>
+    <h2><span id="qlogT">Aufträge der Funkzentrale</span> <button id="qlogClose" class="x" aria-label="Schließen">✕</button></h2>
     <div id="qlist"></div>
   </div>
 </section>

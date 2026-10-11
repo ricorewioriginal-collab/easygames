@@ -17,7 +17,9 @@ import { Mobs, rollDrops } from './mobs.js';
 import { MobView } from './mobview.js';
 import { Player, raycast, EYE } from './physics.js';
 import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
-import { QUESTS, questProgress } from './quests.js';
+import { campaignOf, questProgress } from './quests.js';
+import { solve, ON_ID, OFF_ID } from './signal.js';
+import { nearestVillage } from './structures.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
@@ -278,7 +280,10 @@ export class Game {
     this.hotbar = (Array.isArray(save.hotbar) && save.hotbar.length === 9) ? save.hotbar.map(t => (Number.isInteger(t) && known(t) ? t : 0)) : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
-    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false }) : null;
+    // neue Story-Welten (Generator 3) spielen „Das große Rauschen“, alte die 15 Aufträge
+    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false, c: this.gen === 3 ? 'rauschen' : undefined }) : null;
+    if (this.story && !this.story.c) delete this.story.c;
+    this.sigStats = { receivers: 0, machines: 0, reach: 0, senders: 0 }; this.sigRetry = false;
     if (!save.inv && save.mode === 'survival') {
       for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
       for (let i = 0; i < SPECIAL_COUNT; i++) this.inv[SPECIAL0 + i] = 8;
@@ -484,6 +489,7 @@ export class Game {
     this.updateSky();
     this.cloudU.uOff.value.x += dt * 2.5;
     this.radioT -= dt;
+    if (this.world.sigDirty || (this.sigRetry && this.radioT <= 0)) this.updateSignals();
     if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave(); }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
@@ -684,6 +690,23 @@ export class Game {
     return out;
   }
 
+  // ---------- Funknetz: nur bei Änderungen neu berechnen, Maschinen umschalten ----------
+  updateSignals() {
+    const w = this.world, p = this.player, r = solve(w.sig);
+    this.sigStats = r; this.sigRetry = false;
+    for (const [k, n] of w.sig) {
+      const t = n[3], base = OFF_ID[t] ?? t;
+      if (!ON_ID[base]) continue;
+      const want = r.on.has(k) ? ON_ID[base] : base;
+      if (want === t) continue;
+      // ein Tor schließt nicht, solange der Spieler darin steht
+      if (want === B.GATE && p.x + 0.3 > n[0] && p.x - 0.3 < n[0] + 1 && p.z + 0.3 > n[2] && p.z - 0.3 < n[2] + 1 && p.y + 1.8 > n[1] && p.y < n[1] + 1) { this.sigRetry = true; continue; }
+      w.setBlock(n[0], n[1], n[2], want);
+    }
+    w.sigDirty = false; // eigene Umschaltungen ändern das Ergebnis nicht
+    if (r.capped) this.onToast('Signalnetz zu groß: nicht alles wird berechnet');
+  }
+
   // ---------- Seilhaken, Wegpunkt, Radio ----------
   fireHook() {
     if (!this.running) return;
@@ -736,9 +759,11 @@ export class Game {
   questTick() {
     const s = this.story;
     if (!s || s.done) return;
-    const q = QUESTS[s.i];
+    const q = campaignOf(s)[s.i];
     if (q.k === 'height') s.max = Math.max(s.max, this.player.y - this.spawnY);
     if (q.k === 'glide' && this.glideAcc) { s.p += this.glideAcc; }
+    if (q.k === 'depth' && this.player.y < q.y) s.p = 1;
+    if (q.k === 'visit' && this.world.villageAt(this.player.x, this.player.z)) s.p = 1;
     this.glideAcc = 0;
     this.questCheck();
   }
@@ -746,7 +771,7 @@ export class Game {
   questEvent(kind, type, n = 1) {
     const s = this.story;
     if (!s || s.done) return;
-    const q = QUESTS[s.i];
+    const q = campaignOf(s)[s.i];
     if (q.k === 'have') { this.questCheck(); return; }
     if (q.k !== kind || (q.a && !q.a.includes(type))) return;
     s.p += n;
@@ -754,13 +779,17 @@ export class Game {
   }
 
   questCheck() {
-    const s = this.story;
-    for (let guard = 0; s && !s.done && guard < QUESTS.length; guard++) {
-      const q = QUESTS[s.i], [cur, n] = questProgress(this, q);
+    const s = this.story, list = campaignOf(s);
+    for (let guard = 0; s && !s.done && guard < list.length; guard++) {
+      const q = list[s.i], [cur, n] = questProgress(this, q);
       if (cur < n) break;
       for (const [t, c] of Object.entries(q.r || {})) this.inv[t] = Math.min(MAX_STACK, (this.inv[t] || 0) + c);
       s.i++; s.p = 0; s.max = 0;
-      if (s.i >= QUESTS.length) s.done = true;
+      if (s.i >= list.length) s.done = true;
+      else if (list[s.i].k === 'visit') { // Wegpunkt zum nächsten Dorf
+        const v = nearestVillage(this.seed, this.player.x, this.player.z);
+        if (v) this.wp = { x: v.x, y: v.y + 1, z: v.z };
+      }
       this.unsaved = true; playPlace();
       this.onQuestDone(q, s.done);
       this.onChange();
@@ -866,6 +895,13 @@ export class Game {
     // Dorfbewohner ansprechen (wenn er vor dem Zielblock steht)
     const c = this.camera.position, d = this.lookDir, mh = this.mobs && d ? this.mobs.raycast(c.x, c.y, c.z, d.x, d.y, d.z, REACH) : null;
     if (mh && mh.mob.npc && (!t || mh.t < t.t)) { this.onTrade(mh.mob); this.questEvent('talk', 0); this.actCool = 0.5; return false; }
+    // Schalter umlegen
+    if (t && (t.type === B.SWITCH || t.type === B.SWITCH_ON)) {
+      if (!this.placeFirst) return false;
+      const to = t.type === B.SWITCH ? B.SWITCH_ON : B.SWITCH;
+      if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playPlace(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
+      return true;
+    }
     // Werkbank/Ofen benutzen statt daneben zu bauen (Kreativ: keine Rezepte, dort wird gebaut)
     if (t && this.mode !== 'creative' && BLOCKS[t.type] && BLOCKS[t.type].station) { this.onStation(BLOCKS[t.type].station); this.actCool = 0.5; return false; }
     if (type && armorOf(type)) return this.equip(type);
