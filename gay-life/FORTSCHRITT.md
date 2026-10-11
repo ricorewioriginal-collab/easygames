@@ -2,6 +2,25 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 11 (11.10.2026): Viertel-Bewohner mit Tagesplan und Dates
+
+### Neu umgesetzt
+
+- **14 Bewohner** (`js/residents.js`, `GL.res`), zwei pro Viertel, alle erwachsen (24–62 Jahre), mit Beruf, Charakter, Interessen, Abneigungen, Lieblingssatz und zwei Geschichtskapiteln.
+- **Eigener Tagesplan** je Person, getrennt für Wochentag und Wochenende: sie gehen zwischen den vier Orten ihres Viertels, laufen sichtbar dorthin und sind nachts zu Hause (unsichtbar, nicht ansprechbar). Handy-App „Bewohner“ zeigt nach dem Kennenlernen, wo die Person gerade ist.
+- **Ansprechen**: Plaudern (Freundschaft +4 pro Tag), ein Thema pro Tag (Vorlieben wirken), gemeinsam Zeit am Ort verbringen (Ortswirkung, Kosten für beide), persönliche Geschichte ab Freundschaft 25 und 55.
+- **Dates**: Einladung ab Freundschaft 30, nur bei Interesse der Person und ohne eigene Beziehung; die Person entscheidet frei (Laune, Interessen, Freundschaft), höchstens eine Frage pro Tag, Absage sperrt zwei Tage, nach drei Absagen endet die Anfrage. Das Date besteht aus drei Entscheidungen (zuhören, Stille aushalten, ehrlich fragen) mit Auswirkung auf die Romantik; Ungefragtes Näherkommen wird schlecht bewertet. Intimes nur angedeutet (Umarmung, Kuss).
+- Spielstand: `res` (lazy).
+
+### Grenzen (ehrlich)
+
+- Die Bewohner haben **keinen** Beziehungsstatus, keinen Einzug und keine Nachrichten; die ausführlichen Beziehungen gibt es weiter nur mit den fünf Kiez-Dating-Figuren.
+- Ihre Laufwege sind gerade Linien (keine Wegfindung um Gebäude).
+
+### Tests Durchgang 11
+
+- Gesamtlauf: 262 Prüfungen grün. e2e Abschnitt 12 (Anzahl, Tagesplan, Sichtbarkeit tags/nachts, Plaudern, Thema, gemeinsam, Geschichte, Date, Absage, Beziehung, Freundschaft-nur, Handy-App).
+
 ## Stand nach Durchgang 10 (11.10.2026): Jobs und Veranstaltungen (Reste von M4/M5)
 
 ### Neu umgesetzt
