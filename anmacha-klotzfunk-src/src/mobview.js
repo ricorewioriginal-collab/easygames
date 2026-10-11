@@ -50,7 +50,7 @@ const MODELS = [
 // Helligkeit je Flächenrichtung: +X, −X, +Y, −Y, +Z, −Z
 const SHADE = [0.8, 0.8, 1.0, 0.5, 0.68, 0.68];
 
-function buildGeo(boxes) {
+export function buildGeo(boxes) {
   const pos = [], col = [], idx = [], c = new THREE.Color();
   for (const [x0, y0, z0, x1, y1, z1, hex] of boxes) {
     const g = new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0);

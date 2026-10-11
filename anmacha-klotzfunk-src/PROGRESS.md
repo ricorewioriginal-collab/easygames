@@ -116,13 +116,57 @@ und ohne Messung auf echten Handys lässt sich der Nutzen des Workers nicht bele
 
 ---
 
+## 2f. Etappe 5 – Fahrzeuge und Meshing im Worker ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Boot | schwimmt auf der Wasseroberfläche (Feder zur Oberfläche), Schub und Lenkung mit eigener Trägheit, Wasser- und Bodenreibung, Kollision achsenweise mit festen Blöcken; schaukelt, Paddel schlagen beim Fahren | `src/vehicles.js`, `src/vehview.js` |
+| Schienen und Lore | Schiene (Block 79) als flache Platte, Ausrichtung im Mesher aus den Nachbarschienen; Lore fährt von Zellmitte zu Zellmitte, geradeaus vor Kurve, Stufen ±1, Hangabtrieb, Bremsen, Umkehren in Blickrichtung, hält am Ende, entgleist ohne Schiene; Räder drehen, Neigung auf Stufen | `src/vehicles.js`, `src/mesher.js`, `src/blocks.js` |
+| Bedienung | Setzen = einsteigen/Fahrzeug setzen, Springen = aussteigen (freie Stelle wird gesucht), Abbauen = einpacken; Rezepte an der Werkbank; im Spielstand `veh` (optional, ungültige Einträge werden verworfen) | `src/game.js`, `src/crafting.js`, `src/items.js` |
+| Worker-Meshing | Nachladen im Web Worker, Bauen bleibt synchron; halbiert die Hauptthread-Zeit beim Erkunden (Messung in PERFORMANCE.md) | `src/meshworker.js`, `src/game.js` |
+| Tests | 82 Tests (neu: `vehicles.test.js`) | `tests/` |
+
+Nicht umgesetzt: Reittiere und angetriebene Schienen. Reittiere bräuchten Tier-Animationen, die es noch nicht gibt (siehe Abschnitt 6).
+
+---
+
+## 2g. Etappe 6 – Mehrspieler ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Verbindung | WebRTC-DataChannel direkt zwischen Browsern; Verbindungsaufbau über zwei Text-Codes (gepackt, ~600 Zeichen), kein Signalisierungs-Server; STUN optional (abschaltbar) | `src/rtc.js` |
+| Protokoll | Gastgeber = Autorität: Token je Sitzung, Versionsprüfung, höchstens 4 Gäste, Weltdaten in Teilen, Blockwünsche mit Zustand vorher (keine Doppel-Ernte), Reichweite, Rate, gültige Ids, Positionsprüfung; Ablehnung setzt Block und Vorrat beim Gast zurück | `src/net.js` |
+| Im Spiel | andere Spieler als Figur mit Namen; Tiere/Gegner vom Gastgeber beim Gast, Treffer und Beute über den Gastgeber; Gegner verfolgen den nächsten Spieler und treffen auch Gäste; Wachstum, Signale, Uhrzeit vom Gastgeber; Welt läuft im Pausemenü des Gastgebers weiter | `src/mp.js`, `src/avatars.js`, `src/game.js`, `src/mobs.js` |
+| Oberfläche | Pause → 👥 Mehrspieler (Einladung, Antwort einfügen, Gästeliste mit Entfernen), Hauptmenü → „Bei Freunden mitspielen“ | `index.html`, `src/main.js` |
+| Tests | 90 Tests (neu: `net.test.js`, Mehrspieler-Ziel in `mobs.test.js`) | `tests/` |
+
+Grenzen stehen in MULTIPLAYER.md (Vorrat der Gäste nur für den Besuch, Tiere nur um den Gastgeber, Fahrzeuge nicht geteilt, Story nur allein).
+
+---
+
+## 2h. Etappe 7 – Karte, Steuerung, Inventar, Klänge ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Weltkarte | entdeckte Chunks als Bitfeld je 32×32-Region (Base64, ~170 Zeichen je Region) im Spielstand `map`; Farben aus echten Blöcken oder aus dem Generator (Biomfarben), zwischengespeichert; Spieler mit Blickrichtung, Wegpunkt/Storyziel, bis 20 eigene Markierungen (umbenennen, Wegpunkt, löschen), Dörfer, Funkstationen, Unglücksort, Mitspieler; Ziehen, Zoom, Ort wählen. Zeichnet nur bei Bedarf, keine eigene Schleife | `src/worldmap.js`, `src/mapui.js`, `src/game.js` |
+| Tastatur | alle 14 Aktionen frei belegbar (Tausch bei Doppelbelegung, Esc/Tab/1–9 fest), gespeichert in den Einstellungen | `src/controls.js`, `src/main.js` |
+| Gamepad | Gamepad-API, Standard-Layout: Sticks, Springen, Abbauen/Setzen, Hotbar, Haken, Inventar, Karte, Pause; Abfrage läuft nur, solange ein Gamepad verbunden ist; ohne Mausfang kein Zwangs-Pausieren | `src/controls.js`, `src/main.js` |
+| Touch | Tasten frei verschiebbar (Verschiebemodus aus den Einstellungen, Position als Bildschirmanteil gespeichert, Zurücksetzen) | `src/main.js`, `src/style.css` |
+| Inventar | Ziehen & Ablegen auf/zwischen Hotbar-Plätzen, Platz ins Raster ziehen = leeren, Umschalt-Klick = freier Platz, Sortierung (Art/Name/Menge), Haltbarkeitsbalken | `src/main.js` |
+| Klänge | ein AudioContext, drei Lautstärken (Effekte, Radio-Musik, Umgebung); Schritte je Untergrund, Platschen, Tierstimmen und Gegnergeräusche nach Abstand, Schalter-Klick, Maschinen/Funktor, Empfänger-Piepen, Auftrags-Melodie, Treffer | `src/audio.js`, `src/game.js` |
+| Tests | 95 Tests (neu: `worldmap.test.js`, `controls.test.js`) | `tests/` |
+
+„Stapel teilen“ aus Abschnitt 22 gibt es bewusst nicht: der Vorrat zählt je Blockart, die Hotbar verweist nur darauf. Ein Teilen hätte keine Wirkung (keine Fake-Funktion).
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
 
 | # | Abschnitt | Stand | Etappe | Nächster konkreter Schritt |
 |---|---|---|---|---|
-| 4 | Voxel-Engine | 🟡 | 1 ✅ / 5 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
+| 4 | Voxel-Engine | ✅ | 1 / 5 | Meshing im Web Worker ✅; Formblöcke (Treppen, Halbblöcke) wären der nächste Schritt |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
 | 7 | Bauen | ✅ | 3b | Vorschau, Formen, Kopieren/Einfügen ✅; später Drehen beim Einfügen, Bauvorlagen |
@@ -132,22 +176,22 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 11 | Gegner, Kampf | ✅ | 3b | später Bogen, Bosse in Story-Kapitel 5 |
 | 12 | Dörfer, NPCs | ✅ | 3b | später mehr Berufe, Gespräche mit Story-Bezug |
 | 13 | Landwirtschaft | 🟡 | 3 ✅ | weitere Pflanzen (Karotte, Kartoffel), Bewässerung, Tierzucht |
-| 14 | Fahrzeuge | 🟡 | 5 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
+| 14 | Fahrzeuge | ✅ | 5 | Boot, Lore, Schienen ✅; später Reittier, angetriebene Schiene |
 | 15 | Story „Das große Rauschen“ | ✅ | 4 | später Bosskampf im „Herz des Rauschens“, Sprachzeilen der Bewohner je Kapitel |
 | 16 | Funktechnik | ✅ | 4 | später Frequenzen (getrennte Netze), Antennen mit größerer Reichweite |
 | 17 | Automatisierung | 🟡 | 4 | Signale mit Rechenlimit ✅; später Taktgeber, Verzögerung, Logik-Gatter, Förderband |
 | 18 | Spielmodi | ✅ | 4 | Story nutzt die Überlebensregeln ✅ |
-| 19 | Multiplayer | ⬜ | 5 | WebRTC (Peer-to-Peer, Host = Autorität) zuerst prüfen; GitHub Pages bleibt Einzelspieler ohne Server |
-| 20 | Smartphone | 🟡 | 1 ✅ / 3 | Tastenpositionen frei verschiebbar, optionaler Platzierungsmodus mit Vorschau |
-| 21 | Desktop | 🟡 | 3 | Tastenbelegung ändern, Gamepad |
-| 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
-| 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
+| 19 | Multiplayer | ✅ | 6 | WebRTC ohne Server ✅; später Vorrat der Gäste beim Gastgeber speichern, Fahrzeuge teilen |
+| 20 | Smartphone | ✅ | 1 / 7 | Tasten verschiebbar ✅, Vorschau ✅; fehlt: Test auf echten Geräten |
+| 21 | Desktop | ✅ | 7 | Tastenbelegung ✅, Gamepad ✅; später Gamepad-Belegung ändern, Bedienung der Menüs mit dem Gamepad |
+| 22 | Inventar/HUD | ✅ | 1 / 2 / 7 | Ziehen, Schnellverschieben, Sortieren, Haltbarkeit ✅; Stapel teilen entfällt (Vorrat je Blockart) |
+| 23 | Karten | ✅ | 7 | Weltkarte, Markierungen, Dörfer, Funkstationen ✅; später verlassene Minen eintragen |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
-| 25/26 | Performance | 🟡 | 1 ✅ / 5 | echte Handymessungen, Worker-Meshing |
+| 25/26 | Performance | 🟡 | 1 / 5 ✅ | Worker-Meshing ✅; echte Handymessungen fehlen |
 | 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
-| 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
-| 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
-| 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, TESTING, PROGRESS |
+| 28 | Audio | 🟡 | 1 / 7 | Schritte, Wasser, Tiere, Gegner, Maschinen, Story ✅; Wetter und Türen fehlen, weil es kein Wetter und keine Türen gibt |
+| 29 | Tests | ✅ | laufend | 95 Node-Tests + Browser-Durchläufe je Etappe (TESTING.md) |
+| 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, MULTIPLAYER, TESTING, PROGRESS |
 
 ---
 
@@ -182,11 +226,32 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 5 „Fahrzeuge, Leistung, Mehrspieler“
-1. Boot (auf Wasser) und Lore auf Schienen (neuer Schienenblock, Formblock-Meshing nötig).
-2. Meshing im Web Worker, vorher und nachher auf einem echten Android-Handy messen.
-3. Mehrspieler prüfen: WebRTC Peer-to-Peer mit Host als Autorität; GitHub Pages bleibt ohne Server.
-4. Tests für alle neuen Systeme.
+### Abschlussprüfung gegen Abschnitt 34 (Stand 1.8.0)
+
+| Kriterium | Stand | Beleg |
+|---|---|---|
+| Welt stabil generiert, große Bereiche erkundbar, Chunks laden/entladen | ✅ | `world.test.js` (Reihenfolge-Unabhängigkeit, Entladen), Streaming mit Zeitbudget, Worker-Meshing |
+| Bauen/Abbauen, Crafting, Inventar | ✅ | `crafting.test.js`, `build.test.js`, Browser-Durchläufe Etappe 1–7 |
+| drei Spielmodi spielbar, Story abschließbar, Welt danach frei | ✅ | `signal.test.js` (Story lösbar), STORY.md |
+| Biome, Höhlen, Rohstoffe | ✅ | 15 Biome, Höhlen, Erze (`world.test.js`) |
+| Tiere, NPCs, faire Gegner | ✅ | `mobs.test.js` (Sichtlinie, Angriffstakt, Höchstzahl, abschaltbar) |
+| Survival nachvollziehbar | ✅ | `survival.test.js` |
+| Funktechnik mit echter Funktion | ✅ | `signal.test.js`, Story-Kapitel 4–6 |
+| Spielstände zuverlässig | ✅ | `storage.test.js` (alte Formate, Sicherung, voller Speicher) |
+| Smartphones vernünftig bedienbar | 🟡 | in Headless-Chromium mit Handy-Größen geprüft; **kein Test auf echten Android-Geräten** |
+| Desktop und Web stabil | ✅ | Browser-Durchläufe ohne JavaScript-Fehler |
+| keine kritischen Blockaden bekannt | ✅ | – |
+| Build entspricht dem Quelltext | ✅ | `npm run build` vor jedem Commit, Ergebnis eingecheckt |
+| Doku beschreibt den echten Stand | ✅ | dieses Dokument, GAMEPLAY, TESTING, MULTIPLAYER, PERFORMANCE |
+
+Damit sind alle geplanten Etappen umgesetzt. Offen bleibt vor allem, was sich hier nicht prüfen lässt (echte Handys).
+
+### Wenn es weitergeht (Vorschläge, nach Nutzen sortiert)
+1. Auf echten Android-Handys und iPhones spielen und messen (Bildrate, Akku, Bedienung), danach Grafikstufen nachschärfen.
+2. Formblöcke (Treppen, Halbblöcke, Türen, Zäune) mit Nicht-Würfel-Meshing; dann auch Türgeräusche.
+3. Wetter (Regen, Gewitter) mit Klängen und Einfluss auf Felder.
+4. Ofen mit Brennzeit, Taktgeber und Logik-Gatter fürs Funknetz.
+5. Mehrspieler: Vorrat der Gäste beim Gastgeber speichern, Fahrzeuge teilen.
 
 ---
 
@@ -201,3 +266,7 @@ Regeln, die nicht gebrochen werden dürfen:
 - Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
 - Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.
+- Es gibt kein Wetter und keine Türen, darum auch keine Wetter- oder Türgeräusche. Die Klänge wurden nur auf fehlerfreien Ablauf geprüft, nicht angehört.
+- Das Gamepad wurde nur simuliert (Gamepad-API im Browser-Test), nicht mit einem echten Controller. Menüs bedient man weiter mit Maus oder Finger; das Gamepad steuert das Spiel, schließt Fenster und pausiert.
+- Ziehen & Ablegen im Inventar geht mit der Maus; am Handy legt Antippen in den gewählten Platz.
+- Die Weltkarte zeigt ein Farbfeld je 4×4 Blöcke; Bauwerke sind darauf nicht einzeln zu erkennen.

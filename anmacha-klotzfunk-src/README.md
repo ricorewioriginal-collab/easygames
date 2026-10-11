@@ -1,7 +1,7 @@
 # KLOTZFUNK 3D
 
 Voxel-Sandbox im Browser (Three.js + Vite) für PC und Smartphone. Bauen, abbauen, erkunden – in 15 Biomen mit Höhlen, Erzen,
-Dörfern, verlassenen Minen und leuchtenden Funkkristallen, mit Radio-Blöcken, einem Funknetz mit Schaltern, Sendern, Relais und Maschinen, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken und Gleiter. Alle Texturen und Geräusche
+Dörfern, verlassenen Minen und leuchtenden Funkkristallen, mit Radio-Blöcken, einem Funknetz mit Schaltern, Sendern, Relais und Maschinen, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken, Gleiter, Boot und Lore auf Schienen, Weltkarte, frei belegbaren Tasten und Gamepad. Alle Texturen und Geräusche
 werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Konto, keine Kosten, keine externen Dienste nötig.
 
 ## Spielen
@@ -13,14 +13,16 @@ werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Kon
 - **Kreativ:** alle Blöcke unbegrenzt, Fliegen, Formen, Kopieren/Einfügen, Rückgängig.
 - **Story:** „Das große Rauschen“: 6 Kapitel, 25 Aufträge, Dorf, Höhlen und ein eigenes Funknetz aus Sendern, Relais, Empfängern und Maschinen (siehe [STORY.md](STORY.md)).
 
+**Mehrspieler:** bis zu 4 Gäste direkt von Browser zu Browser, ohne Server (siehe [MULTIPLAYER.md](MULTIPLAYER.md)).
+
 Mehr zu Steuerung und Spielablauf: [GAMEPLAY.md](GAMEPLAY.md). Welt und Biome: [WORLD.md](WORLD.md). Alle Blöcke: [BLOCKS.md](BLOCKS.md).
 
 ## Speichern
 Drei Weltplätze im Browser (`localStorage`). Gespeichert wird automatisch alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite;
 abgelegt werden nur Startwert, Generator-Version und die tatsächlichen Änderungen. Zusätzlich:
-- **Sicherung:** höchstens alle 10 Minuten wird der vorige Stand als Sicherung behalten (↺ auf der Weltkarte stellt ihn wieder her).
+- **Sicherung:** höchstens alle 10 Minuten wird der vorige Stand als Sicherung behalten (↺ auf der Welt-Kachel im Hauptmenü stellt ihn wieder her).
   Ist ein Spielstand beschädigt, bietet das Spiel beim Laden die Sicherung an.
-- **Export/Import:** ⤓ auf der Weltkarte lädt die Welt als `.json`-Datei herunter, „⤒ Welt importieren“ im Hauptmenü liest sie in einen freien Platz.
+- **Export/Import:** ⤓ auf der Welt-Kachel lädt die Welt als `.json`-Datei herunter, „⤒ Welt importieren“ im Hauptmenü liest sie in einen freien Platz.
 - **Optional:** Spielstände mit Google sichern (Hauptmenü, aufklappbar). Ohne Anmeldung bleibt alles auf dem Gerät.
 - Welten aus Version 1.0 laden unverändert mit ihrer Originallandschaft.
 
@@ -56,6 +58,9 @@ Stand und Plan der Weiterentwicklung: [PROGRESS.md](PROGRESS.md). Tests: [TESTIN
 | `src/crafting.js` | Rezepte, Prüfen und Herstellen |
 | `src/storage.js` | Speichern, Format-Versionen, Sicherung, Export/Import |
 | `src/settings.js` | Einstellungen und Grafikstufen |
+| `src/worldmap.js`, `src/mapui.js` | Weltkarte: entdeckte Gebiete, Markierungen, Funkstationen; Kartenfenster |
+| `src/controls.js` | Tastenbelegung und Gamepad |
+| `src/audio.js` | ein AudioContext: Effekte, Schritte, Tiere, Technik, Radio-Musik (alles erzeugt) |
 | `src/quests.js` | Story-Aufträge |
 | `src/audio.js` | Geräusche und Radio-Beat (ein AudioContext, Lautstärke je Kategorie) |
 | `src/main.js` | Menüs, HUD, Inventar, Einstellungen, Tastatur/Maus/Touch |

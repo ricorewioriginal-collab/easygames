@@ -86,6 +86,7 @@ footer a{color:var(--cy);text-decoration:none}
 
 #mm{position:absolute;left:calc(10px + var(--sal));top:calc(34px + var(--sat));width:112px;height:112px;border-radius:12px;border:2px solid rgba(255,255,255,.35);background:#0b1020;image-rendering:pixelated;opacity:.92}
 #mm.off{display:none}
+#mm{pointer-events:auto;cursor:pointer}
 .ic.rb{background:conic-gradient(#ff3b3b,#ffd23b,#3bff6a,#3bd5ff,#a23bff,#ff3b3b)}
 #bHook{left:calc(22px + var(--tb) + var(--sal));bottom:calc(74px + var(--sab))}
 @media (max-height:480px){:root{--tb:calc(56px * var(--tbs))}.tb{font-size:21px}#mm{width:92px;height:92px}}
@@ -197,3 +198,29 @@ body.touch #bmode{bottom:auto;top:calc(150px + var(--sat))}
 #trade .say{font-style:italic;opacity:.9}
 @media (max-width:420px){#topbtns{gap:5px}.tbtn{width:36px;height:36px;font-size:17px;border-radius:10px}}
 .qch{margin:12px 0 4px;font-size:14px;color:#ffe08a}
+
+/* Mehrspieler */
+#mp textarea{width:100%;box-sizing:border-box;font:12px/1.35 ui-monospace,monospace;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px;margin:6px 0;resize:vertical;word-break:break-all}
+#mp input#mpName{display:block;width:100%;box-sizing:border-box;margin-top:4px}
+.mpl{list-style:none;padding:0;margin:8px 0}
+.mpl li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+#wm{position:static;display:block;width:100%;height:min(56vh,520px);border-radius:12px;background:#0b1020;touch-action:none;cursor:crosshair}
+.mapbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.mapbar button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);font-size:15px;font-weight:600}
+#mapMarks li input{flex:1;min-width:0;margin:0 6px}
+.slot .dur{position:absolute;left:4px;right:4px;bottom:2px;height:3px;border-radius:2px;background:rgba(0,0,0,.6);overflow:hidden}.slot .dur i{display:block;height:100%}
+.slot.drop{border-color:#ff2d95;background:rgba(255,45,149,.2)}
+#invSort{padding:7px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:#121a34;color:#fff;font:inherit;font-size:14px}
+/* Inventar: Hotbar liegt über dem Fenster, damit man Blöcke darauf ziehen kann */
+body[data-st=inventory] #hud{z-index:11}
+body[data-st=inventory] #hud>*:not(#hotbar):not(#toast){visibility:hidden}
+#inv{padding-bottom:calc(72px + var(--sab))}
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 18px;margin:6px 0 10px}
+.keys label{display:flex;justify-content:space-between;align-items:center;font-size:14px;gap:8px}
+.keys button{min-width:110px;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);font:600 13px system-ui}
+.keys button.wait{border-color:var(--cy);background:rgba(0,229,255,.25)}
+#layoutBar{position:fixed;left:50%;top:calc(10px + var(--sat));transform:translateX(-50%);z-index:12;display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--glass);border:1px solid rgba(255,255,255,.2);font-size:14px}
+#layoutBar button{padding:7px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);font-weight:600}
+body[data-st=layout] #touch{display:block!important;z-index:11}
+body[data-st=layout] .tb{border-style:dashed;border-color:var(--cy)}
+body[data-st=layout] .tz{pointer-events:none}

@@ -63,6 +63,12 @@ RECIPES.push(
   { id: 'siglamp', give: [B.SIGLAMP, 2], need: [[B.LAMP, 1], [B.WIRE, 1]], st: 'werkbank' },
   { id: 'gate', give: [B.GATE, 2], need: [[I.IRON_INGOT, 1], [B.PLANKS, 4]], st: 'werkbank' }
 );
+// Fahrzeuge (Werkbank)
+RECIPES.push(
+  { id: 'boat', give: [I.BOAT, 1], need: [[B.PLANKS, 5], [I.STICK, 1]], st: 'werkbank' },
+  { id: 'minecart', give: [I.MINECART, 1], need: [[I.IRON_INGOT, 3], [I.COPPER_INGOT, 2]], st: 'werkbank' },
+  { id: 'rail', give: [B.RAIL, 16], need: [[I.COPPER_INGOT, 3], [I.STICK, 2]], st: 'werkbank' }
+);
 RECIPES.push(
   { id: 'ingotCopper', give: [I.COPPER_INGOT, 1], need: [[B.COPPER, 1], [B.COAL, 1]], st: 'ofen' },
   { id: 'ingotIron', give: [I.IRON_INGOT, 1], need: [[B.IRON, 1], [B.COAL, 1]], st: 'ofen' },
