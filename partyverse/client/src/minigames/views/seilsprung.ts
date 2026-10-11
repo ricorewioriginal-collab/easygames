@@ -14,21 +14,21 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
   const R = 1.2; // Seilradius (Mitte unten = Boden)
 
   // ---------- Umgebung ----------
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), toon(0xe9b96e));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), glow(0xe9b96e));
   floor.rotation.x = -Math.PI / 2;
   root.add(floor);
   for (let i = -5; i <= 5; i++) {
-    const line = new THREE.Mesh(new THREE.BoxGeometry(40, 0.01, 0.06), toon(0xc8934d));
+    const line = new THREE.Mesh(new THREE.BoxGeometry(40, 0.01, 0.06), glow(0xc8934d));
     line.position.set(0, 0.006, i * 1.5);
     root.add(line);
   }
-  const grass = new THREE.Mesh(new THREE.PlaneGeometry(200, 80), toon(0x6fd36a));
+  const grass = new THREE.Mesh(new THREE.PlaneGeometry(200, 80), glow(0x6fd36a));
   grass.rotation.x = -Math.PI / 2;
   grass.position.set(0, -0.02, -45);
   root.add(grass);
-  const hillMat = toon(0x58c75a);
+  const hillMat = glow(0x58c75a);
   for (let i = 0; i < 7; i++) {
-    const h = new THREE.Mesh(sphere, i % 2 ? hillMat : toon(0x7bdc6e));
+    const h = new THREE.Mesh(sphere, i % 2 ? hillMat : glow(0x7bdc6e));
     h.scale.set(14 + (i % 3) * 4, 5 + (i % 4) * 2, 8);
     h.position.set(-48 + i * 16, -1.5, -34 - (i % 2) * 6);
     root.add(h);

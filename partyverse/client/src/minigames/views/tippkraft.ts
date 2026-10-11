@@ -11,8 +11,8 @@ export const createView: MiniGameViewFactory<TippState> = (ctx) => {
   const tmp = new THREE.Object3D();
 
   // Boden
-  const ground = new THREE.Mesh(new THREE.BoxGeometry(120, 1, 30), toon(0x6fcf6a));
-  ground.position.set(0, -0.5, -4);
+  const ground = new THREE.Mesh(new THREE.BoxGeometry(160, 1, 80), toon(0x6fcf6a));
+  ground.position.set(0, -0.5, 0);
   root.add(ground);
   const path = new THREE.Mesh(new THREE.BoxGeometry(120, 0.05, 3.2), toon(0xe9c17a));
   path.position.set(0, 0.02, 0);
