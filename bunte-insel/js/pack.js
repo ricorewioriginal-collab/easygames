@@ -23,7 +23,7 @@ BI.createPack = function (G) {
     hat: ['Eine Kopfbedeckung.', 'Anlegen: sie erscheint sofort auf deinem Kopf. Es passt immer nur ein Hut.'], glasses: ['Eine coole Brille.', 'Anlegen: du trägst sie im Gesicht.'], patch: ['Eine Piraten-Augenklappe.', 'Anlegen: Ahoi, Käpt’n!'],
     pack: ['Ein Rucksack zum Anziehen.', 'Anlegen: du trägst ihn auf dem Rücken (nur Optik).'], teddy: ['Dein Kuschel-Teddy.', 'Anlegen: du trägst ihn im Arm.'], cape: ['Ein Heldenumhang.', 'Anlegen: er weht hinter dir her.'], wings: ['Glitzernde Feenflügel.', 'Anlegen: du trägst sie auf dem Rücken.'],
     scarf: ['Ein warmer Schal.', 'Anlegen: er hängt um deinen Hals.'], bowtie: ['Eine schicke Fliege.', 'Anlegen: sie sitzt am Kragen.'], medal: ['Eine glänzende Medaille.', 'Anlegen: du trägst sie stolz auf der Brust.'],
-    kite: ['Ein bunter Drachen.', 'Anlegen: er fliegt an einer Schnur über dir. Zum Wegpacken wieder „Ablegen“.'], rcheli: ['Ein ferngesteuerter Hubschrauber.', 'Holen: er erscheint neben dir. Steig ein = Fernsteuern, mit ⬆ ⬇ fliegen.'], skate: ['Ein Skateboard.', 'Holen: es erscheint neben dir. Steig auf und fahr los!'],
+    rollator: ['Ein Rollator – zum Unfug machen!', 'Holen: er steht dann neben dir. Einsteigen, mit der Hupe klingeln und den Turbo-Knopf drücken: Wheelie mit Raketen-Flammen 🚀'], kite: ['Ein bunter Drachen.', 'Anlegen: er fliegt an einer Schnur über dir. Zum Wegpacken wieder „Ablegen“.'], rcheli: ['Ein ferngesteuerter Hubschrauber.', 'Holen: er erscheint neben dir. Steig ein = Fernsteuern, mit ⬆ ⬇ fliegen.'], skate: ['Ein Skateboard.', 'Holen: es erscheint neben dir. Steig auf und fahr los!'],
     deco: ['Deko für dein Zimmer.', 'Geh in deine Wohnung 🏠 (🧭 → „Meine Wohnung“) und stelle sie im Zimmer-Editor auf.']
   };
   const GADGET = { double: ['Der Doppelsprung.', 'Anlegen, dann in der Luft nochmal Springen drücken.'], board: ['Ein Hoverboard.', 'Anlegen: du schwebst und bist viel schneller.'], jet: ['Ein Jetpack.', 'Anlegen, springen und den Sprung-Knopf gedrückt halten = fliegen. Der Tank lädt am Boden auf.'] };
@@ -34,7 +34,7 @@ BI.createPack = function (G) {
     const out = { food: [], cloth: [], toy: [], room: [], pet: [] }; const I = inv();
     for (const k of Object.keys(I)) if (I[k] > 0 && FOOD[k]) out.food.push({ c: 'inv', k, n: I[k], icon: FOOD[k][0], name: FOOD[k][1], g: groupOf(k) });
     out.food.sort((a, b) => a.g - b.g || a.name.localeCompare(b.name));
-    for (const id of owned()) { const s = shopOf(id); if (!s) continue; const e = { c: 'owned', k: id, n: 1, icon: s.icon, name: s.name, slot: s.slot, s }; if (s.slot === 'deco') out.room.push(e); else if (s.slot === 'kite' || s.slot === 'rcheli' || s.slot === 'skate') out.toy.push(e); else out.cloth.push(e); }
+    for (const id of owned()) { const s = shopOf(id); if (!s) continue; const e = { c: 'owned', k: id, n: 1, icon: s.icon, name: s.name, slot: s.slot, s }; if (s.slot === 'deco') out.room.push(e); else if (s.slot === 'kite' || s.slot === 'rcheli' || s.slot === 'skate' || s.slot === 'rollator') out.toy.push(e); else out.cloth.push(e); }
     for (const g of (G.gadgets.LIST || [])) if ((save.gadgets || []).includes(g.k)) out.toy.push({ c: 'gadget', k: g.k, n: 1, icon: g.icon, name: g.name, slot: 'gadget' });
     for (const p of G.meta.PETS) { const n = (petsAll().own || {})[p[0]] || 0; if (n) out.pet.push({ c: 'pet', k: p[0], n, icon: p[1], name: p[2], r: p[3] }); }
     return out;
@@ -55,7 +55,7 @@ BI.createPack = function (G) {
   function actions(e) {
     const out = [];
     if (e.c === 'inv' && EAT.includes(e.k)) out.push(['😋 Essen', () => eat(e)]);
-    if (e.c === 'owned') { const sl = e.slot; if (sl === 'rcheli' || sl === 'skate') out.push(['🎮 Holen', () => { G.spawnRC(false, sl); X.close(); }]); else if (sl !== 'deco') out.push([equipped(e) ? '✋ Ablegen' : '👕 Anlegen', () => { G.setEq(e.s, !equipped(e)); A.pop && A.pop(); render(); }]); }
+    if (e.c === 'owned') { const sl = e.slot; if (sl === 'rcheli' || sl === 'skate' || sl === 'rollator') out.push(['🎮 Holen', () => { G.spawnRC(false, sl); X.close(); }]); else if (sl !== 'deco') out.push([equipped(e) ? '✋ Ablegen' : '👕 Anlegen', () => { G.setEq(e.s, !equipped(e)); A.pop && A.pop(); render(); }]); }
     if (e.c === 'gadget') out.push([equipped(e) ? '✋ Ablegen' : '🚀 Anlegen', () => { save.gadget = equipped(e) ? '' : e.k; G.persist(); A.pop && A.pop(); render(); }]);
     if (e.c === 'pet') out.push([equipped(e) ? '🏠 Wegschicken' : '🐾 Mitnehmen', () => { petsAll().eq = equipped(e) ? '' : e.k; G.persist(); A.pop && A.pop(); render(); }]);
     if (!(e.c === 'owned' && e.slot === 'deco' && false)) { out.push(['🎁 Verschenken', () => friendPick(e, 'gift')]); out.push(['🔄 Tauschen', () => friendPick(e, 'trade')]); }
@@ -79,7 +79,7 @@ BI.createPack = function (G) {
     ['⚔️ Kämpfen', 'Nur im Verbotenen Wald 🌲 und in der Arena. Heil- und Energietränke aus der Apotheke helfen dir.'], ['👥 Freunde, 🎁 Geschenke & 🔄 Tausch', 'Mit dem 👥-Knopf verbindest du dich mit Freunden. Im Rucksack kannst du Gegenstände verschenken oder tauschen.'],
     ['🏠 Meine Wohnung', 'Mit 🧭 → „Meine Wohnung“ kommst du heim: Bett, Zimmer-Editor und deine Deko.'], ['🚂 Zug & Boot', 'Am Bahnhof „Zug fahren“, am Steg das Segelboot. Beides gibt Aufträge und Sterne.']
   ];
-  const HINT = { hat: 'Kommt auf den Kopf', glasses: 'Für dein Gesicht', patch: 'Piraten-Look', pack: 'Hängt am Rücken', teddy: 'Kuschelt im Arm', cape: 'Weht hinter dir', wings: 'Auf dem Rücken', scarf: 'Um den Hals', bowtie: 'Am Kragen', medal: 'Auf der Brust', kite: 'Fliegt über dir', rcheli: 'Zum Fernsteuern', skate: 'Zum Fahren', deco: 'Für dein Zimmer' };
+  const HINT = { hat: 'Kommt auf den Kopf', glasses: 'Für dein Gesicht', patch: 'Piraten-Look', pack: 'Hängt am Rücken', teddy: 'Kuschelt im Arm', cape: 'Weht hinter dir', wings: 'Auf dem Rücken', scarf: 'Um den Hals', bowtie: 'Am Kragen', medal: 'Auf der Brust', kite: 'Fliegt über dir', rcheli: 'Zum Fernsteuern', skate: 'Zum Fahren', rollator: 'Zum Unfug machen', deco: 'Für dein Zimmer' };
   X.shopHint = it => (HINT[it.slot] || 'Zum Anziehen') + ' · liegt dann im Rucksack 🎒';
   X.show = function (tab) { if (X.open) return; G.earn && G.earn('pack'); X.open = true; if (tab != null) X.tab = tab; X.sel = null; render(); el.hidden = false; G.setStick && G.setStick(0, 0); };
   X.close = function () { X.open = false; el.hidden = true; X.pick = null; };

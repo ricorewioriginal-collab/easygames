@@ -66,6 +66,18 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Fahrten sind gratis; pro Attraktion gibt es höchstens alle 45 Sekunden +1 ⭐. Besucher (Clown, Kartenfrau …) erzählen etwas.
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
+## Charakter-Studio 🧑‍🎨 (wie bei den Sims)
+Im Titelmenü „Mein Held“ und im Kleiderschrank. Der Held dreht sich als Vorschau (⟲ ⏯ ⟳), **🎲 Zufall** würfelt eine Figur.
+- **Figuren**: bis zu 6 eigene Figuren speichern (jede mit Name, Aussehen, Kleidung), wechseln, ➕ neu, 📄 kopieren, 🗑️ löschen (mit Rückfrage). **Vorlagen** (20 Helden, z. B. Oma Gerda, Opa Otto, Ninja Kai, Prinzessin Lilly, Rockstar Rex, Zauberer Merlin, Wikinger Olaf, Clown Pippo) sind der Startpunkt – ändert man etwas, wird daraus eine eigene Figur mit allen Werten.
+- **Körper**: Alter (Kind bis Senior), Größe (5 Stufen), Körperform (schlank bis rund), 13 Hautfarben (inkl. Fantasie-Farben).
+- **Gesicht**: Gesichtsform, Nase, Mund (8), Lippenfarbe, Bäckchen, Sommersprossen, Narbe. **Augen**: Form (5), Farbe (10), Augenbrauen, Brille (Rund, Sonnenbrille, Streber, Herz) mit Farbe.
+- **Haare**: 23 Frisuren, 18 Farben, Strähnen. **Bart**: 9 Formen (Stoppeln bis langer Bart) mit Farbe.
+- **Kleidung**: Oberteil (T-Shirt, Kapuzenpulli, Rollkragen, Jacke, Anzug, Weste), Ärmel, Schnitt (Shirt/Kleid/Latzhose), Hose/Shorts/Rock, Farben, Streifen, Aufdruck. **Schuhe**: Turnschuhe, Stiefel, Sandalen, barfuß. **Zubehör**: Ohrringe, Kette, Stirnband, Haarspange, Maske, Uhr, Rucksack, Umhang … **Hüte**: 18.
+- Mitspieler sehen die Figur genau so; ungültige Werte werden abgefangen. Resourcenschonend: neue Details nur, wenn gewählt – die Passanten bleiben unverändert.
+
+## Rollator 🦽 (Gimmick)
+Im Spielzeugladen (5 ⭐) oder einfach so in der Stadt/im Park zu finden; wer „Oma Gerda“ oder „Opa Otto“ wählt, bekommt gleich einen. Man steht dahinter und schiebt. **Turbo = Wheelie mit Raketen-Flammen** und über 19 m/s – Unfug erlaubt (Passanten springen zur Seite). Hupe = Klingel.
+
 ## Rucksack 🎒 (Knopf links oben oder Taste I)
 Alles, was du hast, ordentlich sortiert: **Essen** (Ernte & Zutaten, Zum Essen, Tränke, Blumen & Geschenke), **Kleidung**, **Spielzeug & Gadgets**, **Zimmer-Deko**, **Tiere**. Tippe einen Gegenstand an: „**Was ist das?**“ und „**Wofür?**“ erklären ihn, passende Knöpfe (Anlegen, Essen, Holen, Mitnehmen …) benutzen ihn. Der Reiter **❓ Hilfe** erklärt das ganze Spiel. Im Laden steht an jedem Stück, wofür es ist.
 - **🎁 Verschenken** und **🔄 Tauschen** mit verbundenen Freunden (Mehrspieler): Geschenke kommen sofort an (auch Sterne); beim Tausch wählen beide etwas aus, beide bestätigen, dann wird getauscht. Es gehen nur feste Gegenstände aus dem Spiel (keine freie Eingabe), Fremdes wird ignoriert.
