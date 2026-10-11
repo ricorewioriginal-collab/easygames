@@ -51,6 +51,8 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 ## Wie in großen Online-Spielwelten
 - **Himmels-Parcours (Obby)** 🏁: Startkreis am Boden (🧭 → „Himmels-Parcours“). Der Knopf **Parcours** bringt dich zu schwebenden Plattformen: Trittsteine, schmaler Balken, **Drehbalken** zum Drüberspringen, Treppe, Zickzack. Fällst du, geht es zum letzten **Checkpoint 🚩**. Am Ziel gibt es Sterne und eine **Bestenliste** (Top 3 Zeiten, gespeichert). Hoch oben gibt es keine Hindernisse am Boden, daher funktioniert er überall.
 - **Emotes & Schnell-Chat** 🎭 (Schnellmenü 🎉 → „Emotes & Chat“): Winken, Jubeln, Lachen, Tanzen, Verbeugen, Salto, Schlafen, Zeigen, Muskeln – plus feste, freundliche Sätze in einer Sprechblase (keine freie Texteingabe, kindersicher). Mitspieler sehen beides.
+- **Gadgets** 🚀 (Schnellmenü 🎉 → „Gadgets“): mit Sternen kaufen und anlegen – **Doppelsprung** 🦘 (10 ⭐), **Hoverboard** 🛹 (25 ⭐, schneller), **Jetpack** 🚀 (40 ⭐, Sprung + Knopf halten = fliegen, Tank lädt am Boden). In Parcours sind sie aus.
+- **Eigener Parcours** 🏁: Bauen → Reiter 🏁: Start 🚩, Checkpoint ⛳, Lava 🌋, Hürde 🧱, Sprungpilz 🔼, Ziel 🏁. Auf den Start laufen = Zeit läuft; Lava setzt zum Checkpoint zurück; am Ziel Bestzeit (Top 3) und – mit mindestens 3 Hindernissen und etwas Länge – Sterne (höchstens alle 2 Minuten).
 - Schon vorhanden: eigener Avatar, Freunde/Mitspielen, Abzeichen (Sticker), Bauen, Haustiere, Läden, Tagesgeschenk.
 
 ## Spaß (Schnellmenü 🎉)

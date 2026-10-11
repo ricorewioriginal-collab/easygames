@@ -543,5 +543,26 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   ok(r.src === 'obby:start' && r.run && r.stone && r.respawn && r.done && r.top === 1 && r.back, 'Himmels-Parcours: Start am Boden, Plattformen tragen, Sturz → Checkpoint, Ziel mit Sternen + Bestenliste, zurück am Boden'); ok(r.open && r.cur && r.end && r.bub && r.n >= 8, `Emotes (${r.n}) und Schnell-Chat (Sprechblase) funktionieren`);
   await c.close();
 }
+{ // Gadgets und eigener Parcours
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const b = window.__bi, g = b.gadgets, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const till = async (f, n = 80) => { for (let i = 0; i < n && !f(); i++) await sl(100); return f(); };
+    b.save.stars = 200; g.show(); out.cards = document.querySelectorAll('#gadCards .gc').length; const buy = i => document.querySelectorAll('#gadCards .gc button')[i].click();
+    buy(0); out.double = g.eq() === 'double' && b.save.stars < 205 && b.save.stars >= 185; g.close();
+    // Doppelsprung: in der Luft nochmal springen
+    b.P.x = 0; b.P.z = 26; b.P.veh = null; await sl(300); b.P.y = 0; b.inp.jump = true; await sl(250); const y1 = b.P.y, vy1 = b.P.vy; b.inp.jump = true; await sl(120); out.dj = b.P.vy > vy1 + 1 || b.P.y > y1 + .3;
+    // Hoverboard schneller
+    g.show(); document.querySelectorAll('#gadCards .gc button')[1].click(); g.close(); out.board = g.eq() === 'board' && g.speedMul() > 1.4;
+    // Jetpack: Knopf halten steigt über Sprunghöhe
+    g.show(); document.querySelectorAll('#gadCards .gc button')[2].click(); g.close(); out.jet = g.eq() === 'jet'; await sl(400); b.P.y = 0; b.P.vy = 0; b.inp.jump = true; await sl(150); b.inp.held = true; let mx = 0; for (let i = 0; i < 25; i++) { await sl(100); mx = Math.max(mx, b.P.y); } b.inp.held = false; out.jetY = mx;
+    await till(() => b.P.y < .1, 100); out.safe = isFinite(b.P.y);
+    // eigener Parcours: Start, Lava, Ziel
+    b.build.items.length = 0; const mk = (t, gx, gz) => b.build.items.push({ t, gx, gz, r: 0, c: 0, cols: [] }); mk('obstart', 20, 4); mk('obcp', 22, 4); mk('oblava', 23, 4); mk('oblava', 24, 4); mk('oblava', 25, 4); mk('obfin', 28, 4);
+    b.P.x = 80; b.P.z = 30; b.P.y = 0; await sl(150); b.P.x = 80; b.P.z = 16; await sl(300); b.P.z = 16; await till(() => b.parcours.run, 30); out.run = !!b.parcours.run;
+    b.P.x = 88; b.P.z = 16; await sl(200); b.P.x = 92; b.P.z = 16; await sl(100); b.P.y = 0; const f0 = b.parcours.run && b.parcours.run.falls; out.lava = f0 >= 1 && Math.abs(b.P.x - 88) < 1.2;
+    const s0 = b.save.stars; b.P.x = 112; b.P.z = 16; b.P.y = 0; out.done = await till(() => !b.parcours.run, 40); out.top = b.save.own && b.save.own.top.length; out.stars = b.save.stars - s0; b.build.items.length = 0; return out; });
+  ok(r.cards === 3 && r.double && r.dj && r.board && r.jet && r.jetY > 3 && r.safe, `Gadgets: kaufen/anlegen, Doppelsprung, Hoverboard, Jetpack (Höhe ${(r.jetY || 0).toFixed(1)} m)`); ok(r.run && r.lava && r.done && r.top === 1, 'Eigener Parcours: Start → Lava setzt zurück → Ziel mit Bestzeit' + ' (+' + r.stars + ' ⭐)');
+  await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

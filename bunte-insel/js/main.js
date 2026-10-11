@@ -441,7 +441,7 @@
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
     if (rs.ui) { if (rs.ui === 'play' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); rangeShoot(); } else if (e.code === 'KeyE' && rs.ui !== 'play') inp.act = true; return; }
     switch (e.code) {
-      case 'Space': e.preventDefault(); if (P.veh) { if (P.veh.spec.fly) inp.up = true; else { inp.horn = true; inp.hornEdge = true; } } else inp.jump = true; break;
+      case 'Space': e.preventDefault(); inp.held = true; if (P.veh) { if (P.veh.spec.fly) inp.up = true; else { inp.horn = true; inp.hornEdge = true; } } else inp.jump = true; break;
       case 'KeyX': inp.down = true; break;
       case 'KeyV': toggleEgo(); break;
       case 'KeyB': toggleBuild(); break;
@@ -475,7 +475,7 @@
     combat.key(e.code, false);
     if (KMAP[e.code]) keys[KMAP[e.code]] = false;
     if (e.code === 'Space' || e.code === 'KeyH') inp.horn = false;
-    if (e.code === 'Space') inp.up = false; if (e.code === 'KeyX') inp.down = false;
+    if (e.code === 'Space') { inp.up = false; inp.held = false; } if (e.code === 'KeyX') inp.down = false;
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') inp.turbo = false;
     if (e.code === 'KeyQ') keys.q = false; if (e.code === 'KeyR') keys.r = false;
   });
@@ -991,6 +991,8 @@
   const play = BI.createPlay({ scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => kids.earn(id), char: () => char, items: () => build.items });
   const obby = BI.createObby({ scene, W, A, fx, P, save, say, persist, addStars: n => addStars(n), earn: id => kids.earn(id), char: () => char, cam });
   const express = BI.createExpress({ P, A, fx, say, char: () => char, showEmoji: (e, a) => showEmoji(e, a), bubble: (n, t, ms) => showBubble(n, t, ms), send: d => { if (net.connected()) net.send(d); }, setStick, earn: id => kids.earn(id) });
+  const parcours = BI.createParcours({ P, A, fx, save, say, persist, char: () => char, addStars: n => addStars(n), earn: id => kids.earn(id), items: () => build.items, active: () => !!(build.active || obby.run || play.busy() || state !== 'play') });
+  const gadgets = BI.createGadgets({ P, A, fx, save, say, persist, setStick, earn: id => kids.earn(id), char: () => char, blocked: () => !!(obby.run || parcours.run || play.busy() || build.active) });
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
@@ -1144,12 +1146,12 @@
       const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; let best = null, bd = 1e9; for (const s of stars) if (s.on) { const d = Math.hypot(s.x - px, s.z - pz); if (d < bd) { bd = d; best = s; } }
       if (best) { pup.star = best; pup.mode = 'search'; A.bark(); pup.bark = .3; say('🐶 ' + pup.name + ', such den Stern! 🔎', 1800); }
     }
-    else if (k === 'express') express.show(); else if (k === 'gum') fun.gum(); else if (k === 'ball') fun.ball(); else if (k === 'fireworks') fun.fireworks(); else if (k === 'balloons') fun.balloons();
+    else if (k === 'express') express.show(); else if (k === 'gadgets') gadgets.show(); else if (k === 'gum') fun.gum(); else if (k === 'ball') fun.ball(); else if (k === 'fireworks') fun.fireworks(); else if (k === 'balloons') fun.balloons();
   }
   /* Schnellmenü: zeigt nur die 6 passendsten Aktionen (je nach Lage + was oft benutzt wird), „Mehr“ zeigt alle */
   const ACTIONS = [
     { k: 'punch', icon: '👊', name: 'Baum hauen', key: '6' }, { k: 'rcfetch', icon: '🏎️', name: 'RC-Auto holen', key: '' }, { k: 'dance', icon: '🕺', name: 'Tanzen', key: '1' },
-    { k: 'express', icon: '🎭', name: 'Emotes & Chat', key: '' }, { k: 'bubbles', icon: '🫧', name: 'Blasen', key: '9' }, { k: 'balloons', icon: '🎈', name: 'Ballons', key: '5' }, { k: 'gum', icon: '🍬', name: 'Kaugummi', key: '2' },
+    { k: 'express', icon: '🎭', name: 'Emotes & Chat', key: '' }, { k: 'gadgets', icon: '🚀', name: 'Gadgets', key: '' }, { k: 'bubbles', icon: '🫧', name: 'Blasen', key: '9' }, { k: 'balloons', icon: '🎈', name: 'Ballons', key: '5' }, { k: 'gum', icon: '🍬', name: 'Kaugummi', key: '2' },
     { k: 'fireworks', icon: '🎆', name: 'Feuerwerk', key: '4' }, { k: 'ball', icon: '⚽', name: 'Ball', key: '3' }, { k: 'search', icon: '🔎', name: 'Such!', key: '8' },
     { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' },
     { k: 'home', icon: '🏠', name: 'Nach Hause', key: '' }, { k: 'pap', icon: '🎈', name: 'Pappnase an/aus', key: '' }, { k: 'games', icon: '🎮', name: 'Spiele', key: '' }, { k: 'photo', icon: '📸', name: 'Foto', key: '' }, { k: 'music', icon: '🎹', name: 'Musik', key: '' }, { k: 'paint', icon: '🎨', name: 'Malen', key: '' }, { k: 'feed', icon: '🦴', name: 'Füttern', key: '' }, { k: 'stroke', icon: '🤗', name: 'Streicheln', key: '' }, { k: 'album', icon: '🏅', name: 'Album', key: '' }, { k: 'guide', icon: '🧭', name: 'Wohin?', key: '' }, { k: 'tierbuch', icon: '📖', name: 'Tierbuch', key: '' }, { k: 'fotos', icon: '🖼️', name: 'Fotoalbum', key: '' }, { k: 'cannon', icon: '💥', name: 'Kanone', key: '' }, { k: 'ahoi', icon: '🏴‍☠️', name: 'Ahoi!', key: '' }, { k: 'trick', icon: '🐾', name: 'Trick', key: '' }, { k: 'fetch', icon: '🎾', name: 'Apport', key: '' }
@@ -1168,7 +1170,7 @@
   }
   const Hm = () => (Math.hypot(P.x - (FB.x0 + FB.x1) / 2, P.z - FB.zB) > 40 ? 9 : 0) + (night > .6 ? 30 : 0);
   function score(a) {
-    const base = { express: 28, punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10, home: Hm(), games: 24, photo: 17, music: 15, paint: 12, feed: 13, stroke: 9, album: 6, fotos: 5, guide: 8, tierbuch: 7, cannon: 160, ahoi: 11 + (onDeck() ? 90 : 0), trick: 15, fetch: 13 + (fun.balls.length ? 25 : 0) };
+    const base = { express: 28, gadgets: 22, punch: 0, rcfetch: 120, dance: 30, bubbles: 26, balloons: 22, gum: 20, fireworks: 20 + (night > .5 ? 25 : 0), ball: 18, search: 14 + (mission ? 0 : 25), xxl: 12, bark: 10, home: Hm(), games: 24, photo: 17, music: 15, paint: 12, feed: 13, stroke: 9, album: 6, fotos: 5, guide: 8, tierbuch: 7, cannon: 160, ahoi: 11 + (onDeck() ? 90 : 0), trick: 15, fetch: 13 + (fun.balls.length ? 25 : 0) };
     return (base[a.k] || 0) + (a.k === 'punch' ? 200 : 0) + Math.min((save.use || {})[a.k] || 0, 15) * 1.5;
   }
   function renderQuick() {
@@ -1354,7 +1356,7 @@
       } else { P.x = v.x; P.z = v.z; P.h = v.h; }
     } else {
       A.engine('car', 0, false); A.siren('police', false); A.water(false); if (hornActive) { A.horn('car', false); hornActive = false; }
-      const sw = pool.inWater(P.x, P.z), sm = Math.hypot(inp.sx, inp.sy), kbd = keys.u || keys.d || keys.l || keys.r, running = !sw && (jx || jy) && (inp.turbo || (!kbd && sm > .92)), spd = (running ? 8.8 : 4.6) * (sw === 2 ? .55 : sw === 1 ? .8 : 1);
+      const sw = pool.inWater(P.x, P.z), sm = Math.hypot(inp.sx, inp.sy), kbd = keys.u || keys.d || keys.l || keys.r, running = !sw && (jx || jy) && (inp.turbo || (!kbd && sm > .92)), spd = (running ? 8.8 : 4.6) * (sw === 2 ? .55 : sw === 1 ? .8 : 1) * gadgets.speedMul();
       let dx = 0, dz = 0;
       if (jx || jy) {
         const fx_ = -Math.sin(cam.yaw), fz_ = -Math.cos(cam.yaw), rx = -fz_, rz = fx_; // Blick- und rechte Richtung
@@ -1366,8 +1368,10 @@
       const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
       const gy = Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y));
-      if (inp.jump) { inp.jump = false; if (P.y <= gy + .05) { P.vy = 7; A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); } }
+      if (P.y <= gy + .05) P.dj = false;
+      if (inp.jump) { inp.jump = false; if (P.y <= gy + .05) { P.vy = 7; A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); } else if (gadgets.canDouble() && !P.dj) { P.dj = true; gadgets.doubleJump(); } }
       if (fun.ride) P.vy = P.y < 6 ? 2.2 : 0; else P.vy = Math.max(P.vy - 20 * dt, P.softFall > 0 ? -5 : -14);
+      gadgets.thrust(dt, inp.held || inp.up, gy);
       if (P.softFall > 0) P.softFall -= dt;
       P.y += P.vy * dt;
       if (P.y < gy) { P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7) || play.trampAt(P.x, P.z)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
@@ -1593,7 +1597,7 @@
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); express.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1608,5 +1612,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
