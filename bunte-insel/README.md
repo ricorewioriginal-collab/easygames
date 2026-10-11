@@ -243,10 +243,10 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 
 **Eingang:** Funk-Tor (Antennenring) im Nordosten der Hauptinsel (🧭 → Funkwelle). Weit weg liegt eine Nacht-Insel mit Funkturm; im Kreis darum **13 Sender-Plätze**, je mit
 - **Logo-Statue** (Logo des Senders auf schwingender Tafel, Sockel, Lichtsäule),
-- **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** als Fenster; „im neuen Tab“ als Ausweg, falls die Seite kein Einbetten erlaubt),
+- **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** – die TV-Seite aus `ricorewi-radio` (`https://ricorewi-radio.de/visual-radio-tv.html?station=<sender>&app=1`, Cover, Songtext, Musikvideo) als Fenster; der Ton kommt vom Radio der Spielwelt; „im neuen Tab“ als Ausweg),
 - **Radio**: E = Sender einschalten (Stream `https://stream.laut.fm/<sender>`), nochmal E = aus. Es läuft immer nur ein Stream; die Lautstärke hängt von der Entfernung zum Radio ab, außerhalb des Bereichs wird es leise und der Stream pausiert (spart Daten), beim Verlassen der Welt stoppt er. Die Spielmusik wird beim Radiohören leiser.
 - **Sterne:** 20 Sekunden einem Sender zuhören = +1 ⭐ (alle 13 = +10 ⭐), Visual Radio ansehen = +1 ⭐, **Noten 🎵 sammeln: 10 = 1 ⭐**. Highlight-Spiel am Automaten: **Frequenz-Dreher** (Timing: Nadel im leuchtenden Bereich stoppen).
-- **Einstellungen** in `js/radio.js` (`BI.RADIO`): Sendernamen/Stream-Namen (`stations`), Visual-Radio-Adresse (`visual`, Standard `https://laut.fm/<sender>`), laut.fm-Logo (`radio/lautfm.png`; ohne Datei steht dort die Schrift „laut.fm“). Logos liegen verkleinert in `radio/logos/` (aus `anmacha-snake/logos`).
+- **Einstellungen** in `js/radio.js` (`BI.RADIO`): Sendernamen/Stream-Namen (`stations`), Visual-Radio-Adresse (`visual`), laut.fm-Logo (`radio/lautfm.png`). Logos liegen verkleinert in `radio/logos/` (aus `anmacha-snake/logos`).
 - Sender-Namen und Logos gehören ihren Betreibern (RicoReWi Radioportal); laut.fm ist der Streaming-Betreiber.
 
 ### 🔧 Fixes: Brücken, Dampfer, Doppelsprung

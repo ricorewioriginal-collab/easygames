@@ -6,9 +6,9 @@
    Währung: Noten 🎵 (10 = 1 ⭐). Highlight-Spiel: Frequenz-Dreher (Geschick/Timing). Die Welt liegt weit weg auf einer eigenen Nacht-Insel.
    Eingang: Funk-Tor (Antennen-Ring) auf der Hauptinsel. Alle Sender-Namen und Logos gehören den jeweiligen Betreibern (hier: RicoReWi Radioportal). */
 BI.RADIO = { x: 1500, z: 1500, R: 112, ring: 76, hub: 34, portal: { x: 104, z: -64 }, lautLogo: 'radio/lautfm.png', portalLogo: 'radio/logos/16.png',
-  visual: slug => 'https://laut.fm/' + slug, /* Adresse des Visual Radios (hier ändern, falls es eine eigene Seite gibt) */
+  visual: slug => 'https://ricorewi-radio.de/visual-radio-tv.html?station=' + encodeURIComponent(slug) + '&app=1', /* Visual Radio (TV-Seite aus ricorewi-radio; app=1: ohne eigenen Ton – der Ton kommt vom Radio in der Spielwelt) */
   stations: [['RicoReWi Radio', 'ricorewi'], ['YourTime-FM', 'yourtime-fm'], ['RapRadio 24', 'rapradio24'], ['SchlagerPop 24', 'schlagerpop24'], ['ChartRadio 24', 'chartradio24'], ['ClubRadio 24', 'clubradio24'], ['AnMaCha 24', 'anmacha24'],
-    ['RadioFloh!', 'radiofloh'], ['RockRadio 24', 'rockradio24'], ['ChristmasRadio 24', 'christmasradio24'], ['KultRadio 24', 'kultradio24'], ['Zocker-FM', 'zocker-fm'], ['Special-Radio', 'special-radio']] };
+    ['RadioFloh!', 'radiofloh'], ['RockRadio 24', 'rockradio24'], ['ChristmasRadio 24', 'christmasradio24'], ['KultRadio 24', 'kultradio24'], ['Zocker-FM', 'zockerfm'], ['Special-Radio', 'special-radio']] };
 BI.RADIO.stations = BI.RADIO.stations.map(([n, slug], i) => ({ i, n, slug, logo: 'radio/logos/' + String(i + 1).padStart(2, '0') + '.png', url: 'https://stream.laut.fm/' + slug }));
 
 /* ---------- statisch: Insel, Hub mit Funkturm, 13 Plätze (Podest, Bildschirm-Rahmen, Radio), Wege, Funk-Tor an der Oberfläche ---------- */
@@ -92,13 +92,13 @@ BI.createRadio = function (G) {
   const nowPlaying = () => { const i = R.cur, t = performance.now(); if (i < 0 || t - R.songT < 25000) return; R.songT = t; fetch('https://api.laut.fm/station/' + encodeURIComponent(ST[i].slug) + '/current_song').then(r => r.ok ? r.json() : null).then(j => { if (j && R.cur === i) R.song = ((j.artist && j.artist.name) ? j.artist.name + ' – ' : '') + (j.title || ''); }).catch(() => { }); };
   /* ===== Visual Radio: Fenster mit dem Visual-Radio-Bild des Senders ===== */
   const pnl = document.createElement('div'); pnl.hidden = true; pnl.style.cssText = 'position:fixed;inset:3%;z-index:95;background:#0b1030;border:2px solid #6ad0ff;border-radius:18px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px #000a;font-family:Fredoka,system-ui,sans-serif;color:#fff';
-  pnl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#141a4a"><span id="rpLogo" style="font:700 22px Fredoka,system-ui,sans-serif;color:#fff">laut.fm</span><b id="rpName" style="flex:1;font-size:18px"></b><a id="rpOpen" target="_blank" rel="noopener noreferrer" style="color:#6ad0ff;font-size:14px">↗ im neuen Tab</a><button id="rpX" style="font:700 18px system-ui;border:0;border-radius:10px;padding:6px 12px;cursor:pointer;background:#ff5a6a;color:#fff">✖</button></div><iframe id="rpFrame" style="flex:1;border:0;background:#000" allow="autoplay; encrypted-media" referrerpolicy="no-referrer"></iframe><div style="padding:6px 12px;background:#141a4a;font-size:13px;color:#9aa6d8">Bleibt das Bild leer? Manche Seiten erlauben kein Einbetten – dann „im neuen Tab“ öffnen.</div>';
+  pnl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#141a4a"><span id="rpLogo" style="font:700 22px Fredoka,system-ui,sans-serif;color:#fff">laut.fm</span><b id="rpName" style="flex:1;font-size:18px"></b><a id="rpOpen" target="_blank" rel="noopener noreferrer" style="color:#6ad0ff;font-size:14px">↗ im neuen Tab</a><button id="rpX" style="font:700 18px system-ui;border:0;border-radius:10px;padding:6px 12px;cursor:pointer;background:#ff5a6a;color:#fff">✖</button></div><iframe id="rpFrame" style="flex:1;border:0;background:#000" allow="autoplay; encrypted-media" referrerpolicy="no-referrer"></iframe><div style="padding:6px 12px;background:#141a4a;font-size:13px;color:#9aa6d8">Der Ton kommt vom Radio in der Spielwelt. Bleibt das Bild leer? Dann „im neuen Tab“ öffnen.</div>';
   document.body.appendChild(pnl); const rp = id => pnl.querySelector('#' + id);
-  K.open = false; let resume = -1;
-  K.closeVisual = function () { if (!K.open) return; K.open = false; pnl.hidden = true; rp('rpFrame').src = 'about:blank'; if (resume >= 0) { const i = resume; resume = -1; R.on = true; R.cur = i; startStream(i); } G.updateButtons && G.updateButtons(true); };
+  K.open = false;
+  K.closeVisual = function () { if (!K.open) return; K.open = false; pnl.hidden = true; rp('rpFrame').src = 'about:blank'; G.updateButtons && G.updateButtons(true); };
   rp('rpX').onclick = K.closeVisual;
   const openVisual = i => {
-    if (K.open) return; const s = ST[i], z = S(); G.setStick && G.setStick(0, 0); resume = R.on ? R.cur : -1; if (R.on) stopRadio(); K.open = true; pnl.hidden = false; rp('rpName').textContent = '📺 Visual Radio – ' + s.n; rp('rpOpen').href = A.visual(s.slug); rp('rpFrame').src = A.visual(s.slug);
+    if (K.open) return; const s = ST[i], z = S(); G.setStick && G.setStick(0, 0); if (!R.on || R.cur !== i) toggleRadio(i); K.open = true; pnl.hidden = false; rp('rpName').textContent = '📺 Visual Radio – ' + s.n; rp('rpOpen').href = A.visual(s.slug); rp('rpFrame').src = A.visual(s.slug);
     if (ready(lautIm)) { const lg = rp('rpLogo'); if (!lg.querySelector('img')) { lg.textContent = ''; const im = document.createElement('img'); im.src = A.lautLogo; im.alt = 'laut.fm'; im.style.height = '28px'; lg.appendChild(im); } }
     if (!z.visual) { z.visual = 1; persist(); G.addStars(1); say('📺 Visual Radio geöffnet! +1 ⭐', 2600); }
   };
