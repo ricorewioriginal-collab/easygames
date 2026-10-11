@@ -195,7 +195,7 @@ BI.audio = (function () {
     },
     /* Klänge für Mini-Spiele (eigener Bus, wird von der Bereichs-Musik nicht ausgeblendet) */
     now() { return ctx ? ctx.currentTime : 0; },
-    note(f, dur, type, vol, delay) { if (!ctx || muted) return; if (!gBus) { gBus = ctx.createGain(); gBus.gain.value = 1.4; gBus.connect(musBus); } tone(f, dur, type || 'triangle', vol || .1, 0, delay || 0, gBus); },
+    note(f, dur, type, vol, delay, slide) { if (!ctx || muted) return; if (!gBus) { gBus = ctx.createGain(); gBus.gain.value = 1.4; gBus.connect(musBus); } tone(f, dur, type || 'triangle', vol || .1, slide || 0, delay || 0, gBus); },
     drum(k, delay) { if (!ctx || muted) return; if (!gBus) { gBus = ctx.createGain(); gBus.gain.value = 1.4; gBus.connect(musBus); } const d = delay || 0; if (k === 'k') tone(150, .14, 'sine', .22, 45, d, gBus); else { const zb = zBus; zBus = gBus; try { if (k === 's') noiseAt(.12, .1, 1500, d); else noiseAt(.045, .035, 6500, d); } finally { zBus = zb; } } },
     /* sanfte Hintergrundmusik: zufällige Pentatonik-Melodie */
     music(dt, night, zone) {

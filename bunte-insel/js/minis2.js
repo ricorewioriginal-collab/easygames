@@ -4,6 +4,7 @@
    🏙️ Taxi-Rush (Stadt) – Spurwechsel-Rennen: Autos ausweichen, Fahrgäste und Münzen einsammeln
    🎢 Dosen-Knall (Freizeitpark) – Wurfbude: Ball ziehen und loslassen, Dosenpyramiden umwerfen
    🌈 Pride-Disco (Regenbogenwelt) – Rhythmus-Tanzspiel: Pfeile im Takt treffen (eigener Beat, Töne im Browser erzeugt)
+   🎬 Hafen-Kran (Dampfer-Hafen) – Kisten stapeln: im richtigen Moment loslassen
    (🐶 Fellretter-Sprint = Jump 'n' Run der Fellretter-Bucht steht in jump.js.)
    Alle starten über den Spielautomaten in der Welt (arcade.js) oder über das 🎮-Spiele-Menü; bei „Mit Freunden“ gleicher Startwert = gleiche Strecke/Pyramiden/Noten. */
 (BI.MINI_EXT = BI.MINI_EXT || []).push(function (M, h) {
@@ -181,8 +182,42 @@
     return G;
   };
 
+  /* =====================  🏗️ HAFEN-KRAN (Dampfer-Hafen, Kisten stapeln)  ===================== */
+  const crane = () => {
+    const G = {}; let blocks, cur, spd, t, over, msg, msgT, fall, streak, camY, pos;
+    const geo = () => { const W = h.W(), H = h.H(); return { W, H, bh: Math.min(H * .075, 46), bw0: Math.min(W * .36, 250), base: H * .88 }; };
+    G.init = function () { const g = geo(); blocks = [{ x: g.W / 2, w: g.bw0 }]; spd = 1; t = 0; over = false; msg = ''; msgT = 0; fall = []; streak = 0; camY = 0; pos = 0; spawn(); };
+    G.resize = function () { };
+    function spawn() { const g = geo(), w = blocks[blocks.length - 1].w; cur = { w, ph: 0 }; }
+    const drop = () => {
+      if (over || !cur) return; const g = geo(), top = blocks[blocks.length - 1], x = cur.x, a0 = Math.max(x - cur.w / 2, top.x - top.w / 2), a1 = Math.min(x + cur.w / 2, top.x + top.w / 2), ov = a1 - a0;
+      if (ov <= 4) { fall.push({ x, y: 0, w: cur.w, vy: 0, i: blocks.length, a: 0 }); over = true; M.over = true; msg = '💥 Daneben! ' + (blocks.length - 1) + ' Kisten hoch'; msgT = 99; snd('bonk'); cur = null; return; }
+      const perfect = Math.abs(x - top.x) < 7; let nx = (a0 + a1) / 2, nw = ov; if (perfect) { nx = top.x; nw = Math.min(g.bw0, top.w + (top.w < g.bw0 ? 8 : 0)); streak++; } else { streak = 0; const cut = cur.w - ov; fall.push({ x: x < top.x ? a0 - cut / 2 : a1 + cut / 2, y: 0, w: cut, vy: 0, i: blocks.length, a: 0 }); }
+      blocks.push({ x: nx, w: nw }); h.add(perfect ? 2 + Math.min(3, streak - 1) : 1, nx, g.base - blocks.length * g.bh + camY); snd(perfect ? 'star' : 'ding'); if (perfect) { msg = streak > 1 ? 'Perfekt ×' + streak + '!' : 'Perfekt!'; msgT = .8; h.burst(nx, g.base - blocks.length * g.bh + camY, 10, ['#fff', '#ffe27a']); } spd = Math.min(2.6, 1 + blocks.length * .05); spawn();
+    };
+    G.tap = () => drop(); G.keydown = c => { if (c === 'Space' || c === 'ArrowDown' || c === 'Enter') drop(); };
+    G.dbg = () => ({ blocks, cur, drop, over });
+    G.update = function (dt) {
+      if (over) { for (const f of fall) { f.vy += 1500 * dt; f.y += f.vy * dt; f.a += dt * 2; } return; } const g = geo(); t += dt; msgT = Math.max(0, msgT - dt); pos += dt * spd * 1.5; const span = g.W * .5 - cur.w / 2 - 20; cur.x = g.W / 2 + Math.sin(pos * 1.4) * span * (.55 + Math.min(.45, blocks.length * .02));
+      for (const f of fall) { f.vy += 1500 * dt; f.y += f.vy * dt; f.a += dt * 2; } fall = fall.filter(f => f.y < g.H); const wantCam = Math.max(0, (blocks.length - 5) * g.bh); camY += (wantCam - camY) * Math.min(1, dt * 4);
+    };
+    const crate = (c, x, y, w, hh, k) => { c.fillStyle = k % 2 ? '#b9b9b9' : '#a8a8a8'; c.fillRect(x - w / 2, y, w, hh); c.strokeStyle = '#555'; c.lineWidth = 3; c.strokeRect(x - w / 2, y, w, hh); c.beginPath(); c.moveTo(x - w / 2, y); c.lineTo(x + w / 2, y + hh); c.moveTo(x + w / 2, y); c.lineTo(x - w / 2, y + hh); c.stroke(); c.fillStyle = '#222'; c.fillRect(x - w / 2 + 4, y + 4, 8, 8); c.fillRect(x + w / 2 - 12, y + 4, 8, 8); };
+    G.draw = function () {
+      const c = h.ctx(), g = geo(), W = g.W, H = g.H; h.bg('#e8e8e8', '#9a9a9a'); c.fillStyle = '#b4b4b4'; c.fillRect(0, H * .9, W, H); c.fillStyle = '#7a7a7a'; c.fillRect(0, g.base, W, H);
+      c.fillStyle = '#1e1e22'; for (let i = 0; i < 3; i++) { const x = (i * W * .42 + t * 14) % (W + 200) - 100, y = H * .78; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 150, y); c.lineTo(x + 125, y + 26); c.lineTo(x + 20, y + 26); c.closePath(); c.fill(); c.fillStyle = '#f4f4f4'; c.fillRect(x + 40, y - 22, 50, 22); c.fillStyle = '#1e1e22'; c.fillRect(x + 100, y - 40, 14, 40); }
+      /* Kran-Ausleger oben */ c.fillStyle = '#222'; c.fillRect(0, 26, W, 14); c.fillRect(W / 2 - 6, 26, 12, 16);
+      blocks.forEach((b, i) => crate(c, b.x, g.base - (i + 1) * g.bh + camY, b.w, g.bh, i));
+      for (const f of fall) { c.save(); c.translate(f.x, g.base - f.i * g.bh + camY + f.y); c.rotate(f.a); crate(c, 0, 0, f.w, g.bh, 1); c.restore(); }
+      if (cur && !over) { const y = g.base - (blocks.length + 1) * g.bh + camY - g.bh * 1.4; c.strokeStyle = '#444'; c.lineWidth = 3; c.beginPath(); c.moveTo(cur.x, 40); c.lineTo(cur.x, Math.max(40, y)); c.stroke(); crate(c, cur.x, Math.max(48, y), cur.w, g.bh, 3); }
+      if (msgT > 0 || over) h.text(msg, W / 2, H * .3, Math.min(38, W / 15), '#16335e'); if (t < 5 && !over) h.text('Tippen: Kiste fallen lassen – möglichst genau auf die darunter!', W / 2, H * .17, Math.min(24, W / 26), '#16335e');
+      h.text(blocks.length - 1 + ' 📦', W - 20, 70, 26, '#16335e', 'right');
+    };
+    return G;
+  };
+
   h.register('heli_insel', heli(), { icon: '🚁', name: 'Heli-Rettung', help: 'Flieg den Rettungs-Heli durch die Felsentore: Halten = steigen. Sterne und Gerettete einsammeln!', dur: 75, goal: 40, zone: 'insel' });
   h.register('taxi_stadt', taxi(), { icon: '🚕', name: 'Taxi-Rush', help: 'Wechsle die Spur, weiche Autos aus und sammle Fahrgäste und Münzen!', dur: 70, goal: 40, zone: 'stadt' });
   h.register('cans_park', cans(), { icon: '🥫', name: 'Dosen-Knall', help: 'Ball ziehen, zielen, loslassen: Wirf die Dosenpyramiden um!', dur: 90, goal: 30, zone: 'park' });
   h.register('dance_regenbogen', dance(), { icon: '💃', name: 'Pride-Disco', help: 'Triff die Pfeile im Takt – Perfekt-Treffer und Kombos geben mehr Punkte!', dur: 62, goal: 400, zone: null });
+  h.register('crane_dampfer', crane(), { icon: '🏗️', name: 'Hafen-Kran', help: 'Stapel die Kisten am Kran so genau wie möglich – Überstehendes wird abgeschnitten!', dur: 90, goal: 25, zone: 'dampfer' });
 });

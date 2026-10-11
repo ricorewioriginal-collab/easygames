@@ -6,6 +6,7 @@ BI.ARCADES = [
   { kind: 'taxi_stadt', x: 8.5, z: -258, yaw: -Math.PI / 2, body: 0x3a4a6a, top: 0x4da3ff },
   { kind: 'cans_park', x: 241, z: 29, yaw: Math.PI, body: 0x7b3fa8, top: 0xffd23f },
   { kind: 'dance_regenbogen', x: -262, z: 29.5, yaw: Math.PI * .5, body: 0xff8fc8, top: 'rainbow' },
+  { kind: 'crane_dampfer', x: -276, z: -128, yaw: Math.PI, body: 0x555a66, top: 0xdddddd },
   { kind: 'jump_bucht', x: -80, z: 276.5, yaw: Math.PI, body: 0xff7a1a, top: 0x2d6be0 }
 ];
 BI.buildArcades = function (c) {
