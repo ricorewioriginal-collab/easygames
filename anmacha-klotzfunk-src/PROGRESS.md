@@ -158,6 +158,13 @@ Grenzen stehen in MULTIPLAYER.md (Vorrat der Gäste nur für den Besuch, Tiere n
 
 „Stapel teilen“ aus Abschnitt 22 gibt es bewusst nicht: der Vorrat zählt je Blockart, die Hotbar verweist nur darauf. Ein Teilen hätte keine Wirkung (keine Fake-Funktion).
 
+## 2i. Startmenü und Ladebildschirm im Konsolenstil (1.9.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Startmenü | Hauptliste links (Weiterspielen mit letzter Welt, Welten, Mitspielen, Einstellungen, Anleitung, Speicherdaten), Seiten rechts, Fußleiste mit Tastenhinweisen (Tastatur oder Gamepad) und Version; Pfeiltasten/Enter/Esc und Gamepad (Steuerkreuz, Stick, A, B); am Handy Liste und Seiten nacheinander mit Zurück-Taste | `index.html`, `src/main.js`, `src/style.css` |
+| Ladebildschirm | Logo, Weltname, Modus, Fortschrittsbalken mit echtem Stand (Erzeugen, dann Anteil fertiger Chunks im Umkreis über `game.areaReady`), wechselnde Tipps; höchstens 10 s, dann geht es trotzdem los. Nach dem Laden wartet das Spiel am PC auf einen Klick ins Bild statt ins Pausemenü zu springen | `src/main.js`, `src/game.js` |
+
 ---
 
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)

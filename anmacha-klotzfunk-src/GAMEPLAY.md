@@ -1,5 +1,13 @@
 # Spielen: Steuerung, Modi, Einstellungen
 
+## Startmenü und Laden
+Das Startmenü ist wie bei einer Konsole aufgebaut: links die Hauptliste, rechts die gewählte Seite, unten die Tastenhinweise.
+- **▶ Weiterspielen** (sobald es einen Spielstand gibt) lädt die zuletzt gespielte Welt.
+- **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus und Startwert erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
+- **👥 Mitspielen**, **⚙ Einstellungen**, **❔ Anleitung** (Steuerung und Tipps), **☁ Speicherdaten** (Import, Google-Sicherung).
+- Bedienung: Maus/Finger, **Pfeiltasten + Enter, Esc zurück** oder **Gamepad** (Steuerkreuz/Stick, A wählt, B zurück). Am Handy hat jede Seite eine Zurück-Taste ‹.
+- Der **Ladebildschirm** zeigt Welt und Modus, einen echten Fortschritt (erst das Erzeugen, dann den Aufbau der Umgebung um dich herum) und wechselnde Tipps. Das Spiel startet, sobald die Umgebung steht.
+
 ## Steuerung
 | | PC | Smartphone |
 |---|---|---|
@@ -96,7 +104,7 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 
 ## Mehrspieler
 Bis zu 4 Freunde spielen in deiner Welt mit (Überleben oder Kreativ), ohne Konto und ohne Server: Pause → 👥 Mehrspieler → Einladung erstellen und schicken,
-der Freund antwortet über „👥 Bei Freunden mitspielen“ im Hauptmenü. Alles Weitere in [MULTIPLAYER.md](MULTIPLAYER.md).
+der Freund antwortet über „👥 Mitspielen“ im Hauptmenü. Alles Weitere in [MULTIPLAYER.md](MULTIPLAYER.md).
 
 ## Funknetz
 - **Schalter:** Setzen-Taste legt ihn um. Ein eingeschalteter Schalter speist **Signalleitungen**, die ihn berühren an einer Würfelseite (nicht über Ecken); Leitungen reichen beliebig weit.

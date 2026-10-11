@@ -7,7 +7,7 @@ austauschen (je ca. 600 Zeichen, z. B. per Messenger). Ohne Mehrspieler bleibt a
 
 ## Ablauf
 1. **Gastgeber:** Pause → 👥 Mehrspieler → „Einladung erstellen“, Code kopieren und schicken.
-2. **Gast:** Hauptmenü → „👥 Bei Freunden mitspielen“, Namen eingeben, Einladung einfügen, „Antwort erstellen“, Antwort-Code zurückschicken.
+2. **Gast:** Hauptmenü → „👥 Mitspielen“, Namen eingeben, Einladung einfügen, „Antwort erstellen“, Antwort-Code zurückschicken.
 3. **Gastgeber:** Antwort einfügen, „Verbinden“. Der Gast bekommt die Welt und steht neben dem Gastgeber.
 
 Für jeden weiteren Gast eine neue Einladung. Der Gastgeber kann Gäste in derselben Liste entfernen.

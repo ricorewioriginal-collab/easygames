@@ -53,6 +53,8 @@ Mit Playwright und Headless-Chromium (Software-Grafik, SwiftShader) gegen den Pr
 | Etappe 7, Tastenbelegung: Karte auf K gelegt, gespeichert, K öffnet und schließt die Karte; Gamepad (simuliert über die Gamepad-API): Stick läuft und dreht die Sicht, RB wechselt den Platz, Y öffnet und B schließt das Inventar | ✅ |
 | Etappe 7, Handy quer 844×390: Touch-Taste „Sprung“ verschoben (löst dabei nicht aus), Position gespeichert, Weltkarte über 🗺 | ✅ ohne JavaScript-Fehler |
 | Etappe 7, Klänge: nur ein AudioContext; Schritte, Platschen, Tierstimmen, Schalter-Klick, Maschinen und Auftrags-Melodie werden erzeugt (gehört wurde im Headless-Browser nichts, geprüft ist nur der fehlerfreie Ablauf) | 🟡 |
+| 1.9.0, Startmenü 1280×760: Fokus auf dem ersten Eintrag, Pfeiltasten wandern, Enter öffnet „Anleitung“, Esc zurück; „Welten“ → Enter erzeugt die Welt; Ladebalken 4 % → 70 % → 100 %, dann im Spiel; zurück im Menü steht „Weiterspielen“ mit Name, Modus und Zeit oben und lädt die Welt; Gamepad (simuliert): Steuerkreuz bewegt den Fokus, B schließt eine Seite | ✅ |
+| 1.9.0, Handy 390×844 und quer 844×390: Liste, Seite „Welten“ mit Zurück-Taste, Anleitung, Ladebildschirm, Kreativwelt startet | ✅ ohne JavaScript-Fehler |
 | Teleport in 8 Biome und eine Höhle (Kreativ, Seed 12345), Screenshots | ✅ Biome wie beschrieben, kein Durchfallen |
 
 **Einschränkungen:** Kein echtes Android-Gerät, kein Firefox/Edge/Safari, keine WebViews getestet. Die Bildraten aus Headless-Chromium

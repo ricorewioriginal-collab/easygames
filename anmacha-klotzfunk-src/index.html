@@ -48,26 +48,35 @@
 </div>
 
 <section id="menu" class="screen">
-  <div class="menuwrap">
-    <header class="hero">
+  <div class="mm-side">
+    <header class="mm-head">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
-      <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🏘 Dörfer, Handel &amp; Minen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge, Drohnen &amp; Rüstung</li><li>▦ Bauformen &amp; Kopieren</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>🚤 Boot &amp; Lore</li><li>📜 Story „Das große Rauschen“</li><li>📡 Funknetz &amp; Maschinen</li><li>👥 Mehrspieler</li><li>📱 PC &amp; Handy</li></ul>
+      <p class="tag">Bauen · Entdecken · Funken</p>
     </header>
+    <nav class="mm-nav" id="mmNav" aria-label="Hauptmenü">
+      <button class="mi hero-mi" id="mContinue" hidden><i>▶</i><span><b>Weiterspielen</b><small id="mContinueSub"></small></span></button>
+      <button class="mi" data-page="worlds"><i>🌍</i><span><b>Welten</b><small>Neue Welt erzeugen oder Spielstand laden</small></span></button>
+      <button class="mi" id="mJoin"><i>👥</i><span><b>Mitspielen</b><small>In der Welt von Freunden spielen</small></span></button>
+      <button class="mi" id="mSettings"><i>⚙</i><span><b>Einstellungen</b><small>Grafik, Ton, Steuerung</small></span></button>
+      <button class="mi" data-page="help"><i>❔</i><span><b>Anleitung</b><small>Steuerung, Tipps und Inhalte</small></span></button>
+      <button class="mi" data-page="data"><i>☁</i><span><b>Speicherdaten</b><small>Import und Google-Sicherung</small></span></button>
+    </nav>
+  </div>
+
+  <div class="mm-page" id="pgWorlds" hidden>
+    <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Welten</h2><span class="pg-sub">3 Speicherplätze</span></div>
     <div id="slots"></div>
-    <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mJoin">👥 Bei Freunden mitspielen</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
-    <details class="help">
-      <summary>☁ Spielstände mit Google sichern (optional)</summary>
-      <div id="cloudbox"></div>
-    </details>
-    <details class="help">
-      <summary>Steuerung &amp; Tipps</summary>
+  </div>
+  <div class="mm-page" id="pgHelp" hidden>
+    <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Anleitung</h2></div>
+    <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge &amp; Erze</li><li>🏘 Dörfer &amp; Handel</li><li>🐑 Tiere &amp; Felder</li><li>👾 Gegner &amp; Rüstung</li><li>▦ Bauformen</li><li>📜 Story</li><li>📡 Funknetz</li><li>🚤 Boot &amp; Lore</li><li>🗺 Weltkarte</li><li>👥 Mehrspieler</li><li>🎮 Gamepad</li></ul>
+    <div class="help">
       <div class="cols">
         <div><b>PC</b><br>WASD laufen · Maus blicken · Leertaste springen · Strg/Shift rennen<br>Linksklick abbauen · Rechtsklick setzen · 1–9 / Mausrad Block wählen<br>E Inventar · F fliegen (Kreativ) · Esc Pause<br>Tasten frei belegbar (⚙ Einstellungen) · Gamepad wird erkannt</div>
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Weltkarte</div>
         <div><b>Story-Modus</b><br>„Das große Rauschen“: 6 Kapitel mit 25 Aufträgen, vom ersten Unterschlupf über das Dorf und die Höhlen bis zum großen Funknetz. Es gelten die Überlebensregeln. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste. Alte Story-Welten spielen ihre 15 Aufträge weiter.</div>
         <div><b>Fahrzeuge</b><br>Boot (Werkbank: Bretter und Stock) aufs Wasser setzen, Lore (Eisen und Kupfer) auf eine Schiene. Setzen = einsteigen, Springen = aussteigen, Abbauen = einpacken. Im Boot: vor/zurück paddeln, links/rechts lenken. In der Lore: vor schiebt in Blickrichtung an, zurück bremst; sie folgt Kurven und Stufen.</div>
-        <div><b>Mehrspieler</b><br>Gastgeber: Pause → 👥 Mehrspieler → Einladung erstellen und schicken, Antwort einfügen. Gast: Hauptmenü → „Bei Freunden mitspielen“. Bis zu 4 Gäste, direkt von Browser zu Browser. Gespeichert wird beim Gastgeber.</div>
+        <div><b>Mehrspieler</b><br>Gastgeber: Pause → 👥 Mehrspieler → Einladung erstellen und schicken, Antwort einfügen. Gast: Hauptmenü → „👥 Mitspielen“. Bis zu 4 Gäste, direkt von Browser zu Browser. Gespeichert wird beim Gastgeber.</div>
         <div><b>Funknetz</b><br>Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben. Der Sender erreicht Relais und Empfänger bis 24 Blöcke weit, Relais tragen weiter. Empfänger und Leitungen schalten Signallampen und Funktore daneben ein. Alles an der Werkbank.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder, Tasten verschieben</div>
         <div><b>Weltkarte &amp; Inventar</b><br>🗺 / M öffnet die Karte der entdeckten Gebiete mit Dörfern, Funkstationen und deinen Markierungen; Ort antippen = markieren oder Wegpunkt setzen. Im Inventar: Block auf einen Hotbar-Platz ziehen, Umschalt-Klick legt ihn in einen freien Platz, Hotbar-Platz ins Raster ziehen leert ihn, Sortierung nach Art, Name oder Menge.</div>
@@ -76,9 +85,22 @@
         <div><b>Dörfer &amp; Bauen</b><br>Neue Welten beginnen im Dorf. Setzen-Taste auf einen Bewohner = handeln. G / ▦ wechselt die Bauform: Linie, Fläche, Wand, Säule (zwei Ecken setzen), Kreativ auch Kopieren und Einfügen. Rüstung wählen und Setzen = anlegen. Tief unten: Höhlenwesen und verlassene Minen; nachts Störsender-Drohnen.</div>
         <div><b>Neue Welten</b><br>Ebenen, Wälder, Nadelwald, Berge, Schnee, Wüste, Strand, Sumpf, Dschungel, Blumenwiesen, Vulkane, Pilzwälder, Kristallfelder, Küsten und Meere. Unter der Erde: Höhlen, Seen, Kohle, Kupfer, Eisen und leuchtende Funkkristalle. Bestehende Welten bleiben unverändert.</div>
       </div>
-    </details>
-    <footer><a href="../">← Alle Spiele</a><span>ein Spiel von AnMaCha · ricorewi</span></footer>
+    </div>
   </div>
+  <div class="mm-page" id="pgData" hidden>
+    <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Speicherdaten</h2></div>
+    <p class="sub">Welten liegen nur in diesem Browser. Mit ⤓ auf einer Welt sicherst du sie als Datei, hier liest du eine Datei wieder ein.</p>
+    <button id="mImport" class="mi small"><i>⤒</i><span><b>Welt importieren</b><small>.json-Datei in einen freien Platz laden</small></span></button>
+    <input id="importFile" type="file" accept=".json,application/json" hidden>
+    <h3>Google-Sicherung (optional)</h3>
+    <div id="cloudbox"></div>
+  </div>
+
+  <footer class="mm-foot">
+    <a href="../">← Alle Spiele</a>
+    <span class="hints" id="mmHints"></span>
+    <span class="ver">v<span id="mmVer"></span> · AnMaCha</span>
+  </footer>
 </section>
 
 <section id="pause" class="screen" hidden>
@@ -210,7 +232,15 @@
   </div>
 </section>
 
-<section id="loading" class="screen" hidden><div class="panel"><h2>Welt wird erzeugt …</h2></div></section>
+<section id="loading" class="screen" hidden>
+  <div class="ld">
+    <div class="logo" aria-hidden="true"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
+    <div class="ld-world"><b id="ldName"></b><span id="ldMode"></span></div>
+    <div class="ld-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="ldBar"><i id="ldFill"></i></div>
+    <p class="ld-step" id="ldStep">Welt wird erzeugt …</p>
+    <p class="ld-tip"><b>Tipp</b> <span id="ldTip"></span></p>
+  </div>
+</section>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#pSave" data-game="klotzfunk" data-prefix="klotzfunk." data-mount="#cloudbox" data-hint="Optional: Spielstände mit Google sichern und auf anderen Geräten weiterspielen. Ohne Anmeldung bleibt alles nur auf diesem Gerät." defer></script>
 </body>
 </html>
