@@ -50,7 +50,8 @@
     { id: 'park', n: 'Park im Osten', cost: 0, from: 7, to: 22, t: 'ein Spaziergang am Teich' },
     { id: 'kara', n: 'Karaoke Mikro-Mimosa', cost: 10, from: 12, to: 24, t: 'Karaoke' },
     { id: 'pool', n: 'Strandbad Sonnenbrand', cost: 8, from: 9, to: 20, t: 'ein Nachmittag am Wasser' },
-    { id: 'club', n: 'Club Glitzer', cost: 20, from: 19, to: 24, t: 'tanzen im Club' }
+    { id: 'club', n: 'Club Glitzer', cost: 20, from: 19, to: 24, t: 'tanzen im Club' },
+    { id: 'home', n: 'Bei dir zu Hause', cost: 8, from: 16, to: 24, t: 'ein Abend zu zweit zu Hause (du bist in deiner Wohnung)' }
   ];
   D.PLACES = PLACES;
 
@@ -266,13 +267,18 @@
     r.conflict = 0; r.f = clamp(r.f + 3, 0, 100); r.r = clamp(r.r + (flowers ? 4 : 1), 0, 100); r.last = S.life.day; D.mem(id, flowers ? 'Hat sich mit Blumen entschuldigt' : 'Hat sich entschuldigt'); after(id, 20, { social: 10 }); GL.core.sfx('ok');
     GL.core.say(nm(id), look(id), [flowers ? '„Blumen? Du Schuft.“ Er nimmt sie trotzdem lächelnd. „Okay. Entschuldigung angenommen.“' : '„Danke, dass du das sagst. Ich war enttäuscht, aber ich merke, dass es dir ernst ist.“'], reopen(n));
   }
+  function moveIn(n) {
+    var id = n.d.id, r = D.rel(id); GL.ui.close();
+    if (r.r >= 80) { S.home.partner = id; r.last = S.life.day; D.mem(id, 'Ist bei mir eingezogen'); GL.core.sfx('ok'); GL.core.banner(nm(id) + ' zieht bei dir ein!', 'Miete jetzt geteilt'); GL.save(); GL.core.say(nm(id), look(id), ['„Ja, das möchte ich. Ich habe schon zwei Kisten gepackt.“ Er lacht. „Aber das Bett bestimmst du.“'], reopen(n)); }
+    else GL.core.say(nm(id), look(id), ['„Ich liebe dich, aber ein gemeinsames Zuhause ist ein großer Schritt. Gib mir noch etwas Zeit.“'], reopen(n));
+  }
   function breakup(n) {
     var id = n.d.id, r = D.rel(id);
     GL.ui.menu('Beziehung beenden?', 'Das macht ' + GL.core.esc(nm(id)) + ' traurig. Es kann nicht rückgängig gemacht werden, ihr könnt aber Freunde bleiben.', [
       { e: '💔', t: 'Ja, Schluss machen', fn: function () { GL.ui.close(); endRel(id, 'Du hast die Beziehung beendet'); GL.core.say(nm(id), look(id), ['„Das tut weh. Aber danke, dass du ehrlich bist.“'], reopen(n)); } },
       { e: '↩', t: 'Doch nicht', fn: function () { menu(n); } }], 'talk');
   }
-  function endRel(id, why) { var r = D.rel(id); r.st = 'ex'; r.exDay = S.life.day; r.r = Math.min(r.r, 20); r.f = clamp(r.f - 10, 0, 100); r.conflict = 0; D.mem(id, why); GL.life.change({ stress: 15, social: -5 }, -8); GL.save(); }
+  function endRel(id, why) { if (S.home.partner === id) S.home.partner = ''; var r = D.rel(id); r.st = 'ex'; r.exDay = S.life.day; r.r = Math.min(r.r, 20); r.f = clamp(r.f - 10, 0, 100); r.conflict = 0; D.mem(id, why); GL.life.change({ stress: 15, social: -5 }, -8); GL.save(); }
   D.endRel = endRel;
 
   /* ---------- Menü ---------- */
@@ -292,6 +298,7 @@
     if (r.st !== 'partner' && r.st !== 'closed' && r.r >= 60 && r.dates >= 2) items.push({ e: '💍', t: 'Beziehung ansprechen', s: 'Du fragst, ob ihr zusammen sein wollt.', fn: function () { propose(n); } });
     if (r.conflict) { items.push({ e: '🙏', t: 'Entschuldigen', fn: function () { apologize(n, 0); } }); items.push({ e: '💐', t: 'Blumen schenken (15 €)', dis: S.life.money < 15, fn: function () { apologize(n, 1); } }); }
     if (r.st === 'partner' && !r.conflict) items.push({ e: '🥰', t: 'Zeit zusammen verbringen', s: 'Eine Stunde nur zu zweit.', fn: function () { GL.ui.close(); r.last = d; r.r = clamp(r.r + 2, 0, 100); after(id, 60, { social: 18, stress: -8 }); GL.core.say(nm(id), look(id), ['Ihr sitzt zusammen, redet und schweigt zwischendurch. Genau so soll es sein.'], reopen(n)); } });
+    if (r.st === 'partner' && !S.home.partner && r.r >= 75 && r.dates >= 3) items.push({ e: '🏠', t: 'Zusammenziehen', s: 'Er zieht bei dir ein. Die Miete wird geteilt.', fn: function () { moveIn(n); } });
     if (r.st === 'partner') items.push({ e: '💔', t: 'Beziehung beenden', fn: function () { breakup(n); } });
     items.push({ e: '🗨️', t: 'Anliegen und Aufträge', s: 'Das Übliche.', fn: function () { GL.ui.close(); GL.core.talkBase(n); } });
     GL.ui.menu(nm(id), sub, items.concat([{ e: '👋', t: 'Tschüss', fn: GL.ui.close }]), 'talk');

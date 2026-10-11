@@ -86,7 +86,7 @@
     money: function () {
       var J = S.jobs.bar, h = '<div class="pcard" style="text-align:center"><div class="sub">Kontostand</div><div class="big">' + Math.floor(L.money) + ' €</div></div>' +
         '<div class="pcard"><b>🍸 Barkeeper im Club Glitzer</b><br><small class="sub">Stufe ' + GL.eco.barLevel() + ' · ' + J.shifts + ' Schichten · ' + J.earned + ' € verdient. Eine Schicht dauert 4 Stunden: Stundenlohn plus Trinkgeldanteil, gute Laune zahlt sich aus.</small></div>';
-      h += '<div class="lab">Letzte Buchungen</div>';
+      h += (GL.emit('phoneMoney') || '') + '<div class="lab">Letzte Buchungen</div>';
       if (!L.log.length) h += '<p class="sub">Noch keine Buchungen.</p>';
       L.log.forEach(function (b) { h += '<div class="prow pline"><span style="flex:1">' + esc(b.t) + '<br><small class="sub">Tag ' + b.d + ', ' + esc(b.h) + '</small></span><b style="color:' + (b.a < 0 ? '#ff8a96' : '#3ddc84') + '">' + (b.a > 0 ? '+' : '') + b.a + ' €</b></div>'; });
       return h;

@@ -83,7 +83,7 @@
   var SPOTS = [
     { id: 'bed', x: -3.8, z: -3.2, label: function () { return 'Schlafen'; }, fn: sleep },
     { id: 'wardrobe', x: 0, z: -4.2, label: function () { return 'Kleiderschrank'; }, fn: function () { GL.core.editor(); } },
-    { id: 'laptop', x: 3.3, z: -3.8, label: function () { return 'Laptop: Spielstand speichern'; }, fn: function () { GL.save(); GL.core.sfx('ok'); GL.core.toast('Gespeichert (' + GL.life.stamp() + ').'); } },
+    { id: 'laptop', x: 3.3, z: -3.8, label: function () { return 'Laptop: Speichern, Möbel, Miete'; }, fn: function () { if (GL.furn) GL.furn.laptop(); else { GL.save(); GL.core.toast('Gespeichert.'); } } },
     { id: 'shower', x: 4.7, z: -3.6, label: function () { return 'Duschen'; }, fn: shower },
     { id: 'kitchen', x: 5.9, z: -.2, label: function () { return 'Kochen (' + L.food + ' ' + (L.food === 1 ? 'Portion' : 'Portionen') + ')'; }, fn: cook },
     { id: 'tv', x: -2.2, z: 2.2, label: function () { return 'Fernsehen'; }, fn: tv },
@@ -98,7 +98,7 @@
     if (night) { var to = 7 - h; if (to <= 0) to += 24; min = Math.round(Math.min(10, to) * 60); } else min = 120;
     var d0 = L.day;
     busy(night ? 'Du schläfst … 💤' : 'Ein kurzes Nickerchen … 💤', min, function () {
-      L.stats.sleeps++; GL.life.change({}, 6);
+      L.stats.sleeps++; GL.life.change({}, 6); if (S.home.partner) { GL.dating.rel(S.home.partner).last = L.day; GL.life.change({ social: 10 }, 4); }
       GL.core.banner(night ? 'Guten Morgen!' : 'Ausgeschlafen', GL.life.weekday() + ', ' + GL.life.clock() + (L.day > d0 ? ' · Tag ' + L.day : ''));
     }, true);
   }
@@ -147,6 +147,7 @@
     function go() { apply(W, 0); var d = W.pois.home; W.player.x = d.x; W.player.z = d.z; W.camYaw = Math.PI; W.yaw = Math.PI; snapCam(W); GL.save(); }
     if (instant) go(); else GL.ui.fade('Raus in die Stadt', go, 500);
   };
+  home.root = function () { return R && R.g; }; home.O = { x: OX, z: OZ };
   home.inside = function () { return !!(GL.W && GL.W.inside); };
 
   GL.on('poi', function (id) { if (id === 'home') { home.enter(); return true; } });

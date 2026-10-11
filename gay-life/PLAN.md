@@ -23,6 +23,7 @@ Klassische Skripte ohne Build-Schritt, genau ein globaler Namensraum `window.GL`
 | `js/life.js` | Uhrzeit, Wochentag, Tage, Bedürfnisse, Stimmung, Warnungen, Auswirkungen der Minispiele, Status-Anzeige |
 | `js/economy.js` | Euro-Konto mit Buchungen, Späti Lecker, Barkeeper-Schichten |
 | `js/home.js` | Betretbare Wohnung mit benutzbaren Möbeln |
+| `js/furniture.js` | Möbelkauf und -platzierung, Miete, Gäste/Partner in der Wohnung |
 | `js/social.js` | Kontakte und Freundschaftswerte |
 | `js/people.js` | NPC-Tagesabläufe nach Uhrzeit/Wochenende, Termine überschreiben den Plan |
 | `js/dating.js` | Dating-Figuren, Gesprächsmenü, Flirt/Ablehnung, Dates, Beziehung, Streit, Trennung |
@@ -76,7 +77,7 @@ settings: { q }   // -1 automatisch, 0 niedrig, 1 mittel, 2 hoch
 | M3 | Menschen: NPC-Tagesabläufe nach Uhrzeit/Wochentag; Dating-Kern mit Persönlichkeit, Vorlieben, Gesprächsarten (Smalltalk, tief, Flirt, Kompliment), Zustimmung und Ablehnung, Beziehungsstufen bis Partnerschaft, Erinnerungen; Nachrichten, Dating-App, Kalender mit Terminen | erledigt (Durchgang 2; Konflikte/Zusammenziehen ohne Wohnung, Zusammenziehen folgt in M6) |
 | M4 | Nachtleben: Club-Innenräume mit eigenen Musikstilen (selbst erzeugt), Tanzen mit Emotes, Bar-Bestellungen, Karaoke/Tanzwettbewerb in der Welt, Themenpartys, Pride-Events | offen |
 | M5 | Karriere: weitere Jobs mit eigenen Abläufen (DJ, Verkäufer, Fitnesstrainer, Fotograf, Stylist, Eventmanager, Performer), Beförderungen | offen |
-| M6 | Wohnen: Möbel kaufen und platzieren, größere Wohnungen, Miete, Gäste und Dates zu Hause, Zusammenziehen | offen |
+| M6 | Wohnen: Möbel kaufen und platzieren, Miete, Gäste und Dates zu Hause, Zusammenziehen | erledigt (Durchgang 3; größere Wohnungen offen) |
 | M7 | Hauptgeschichte „Ein Leben in allen Farben“: Community-Zentrum in Gefahr, mehrere Kapitel, Entscheidungen mit Folgen, mehrere Enden, freies Weiterspielen | offen |
 | M8 | Mehrspieler-Ausbau: gemeinsame Clubbesuche, Tanzen, Besuche in der Wohnung, Gruppenfotos (bestehende Prüfungen beibehalten) | offen |
 | M9 | Charaktereditor: 3D-Vorschau, Körperbau, Größe, Outfits speichern, Tattoos | offen |
