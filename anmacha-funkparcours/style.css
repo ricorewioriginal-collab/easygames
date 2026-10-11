@@ -37,10 +37,20 @@ input{font-family:inherit}
 #game{justify-content:flex-start;gap:8px;overflow:hidden;pointer-events:none}#game>*{pointer-events:auto}#game .spacer{flex:1;pointer-events:none}
 .top .rinfo{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0}.top .rinfo b{font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--pc,#fff)}
 .clock{padding:8px 12px;font-weight:900;font-size:clamp(20px,5vw,30px);font-variant-numeric:tabular-nums;color:var(--y);min-width:116px;text-align:center}
-.pad{display:none;justify-content:space-between;width:min(1000px,100%);gap:10px;padding-bottom:6px;touch-action:none;user-select:none;-webkit-user-select:none}
-body.touch #game .pad:not([hidden]){display:flex}
-.pg{display:flex;gap:10px}.pad button,.cpad button{width:clamp(70px,22vw,100px);height:clamp(70px,22vw,100px);border-radius:50%;font-size:30px;font-weight:900;background:rgba(10,12,40,.7);border:3px solid rgba(255,255,255,.35);color:#fff;touch-action:none}
-.pad button.big,.cpad button.big{background:rgba(0,196,106,.55);border-color:#5cffb0}.pad button.on,.cpad button.on{background:rgba(255,210,74,.7);border-color:var(--y)}
+.pad{display:none;justify-content:space-between;align-items:flex-end;width:min(1000px,100%);gap:10px;padding:0 4px max(6px,env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+body.touch #game .pad:not([hidden]){display:flex}body.touch #game.pl .top .ib{visibility:hidden}
+/* Analog-Stick: halbtransparenter Ring, gestrichelter Innenring, heller Knopf */
+.stick{--s:clamp(130px,36vmin,190px);position:relative;flex:none;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,rgba(20,22,50,.38) 0 58%,rgba(20,22,50,.5) 72%);border:3px solid rgba(255,255,255,.28);box-shadow:0 4px 18px rgba(0,0,0,.35),inset 0 0 0 10px rgba(255,255,255,.05);margin:0 0 18px 6px;touch-action:none}
+.stick i{position:absolute;inset:16%;border-radius:50%;border:2px dashed rgba(255,255,255,.35)}
+.stick b{position:absolute;left:50%;top:50%;width:38%;height:38%;margin:-19% 0 0 -19%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f4f4fa,#c9c9d6);box-shadow:0 4px 12px rgba(0,0,0,.4);transition:transform .12s ease-out;pointer-events:none}
+.stick.on b{transition:none}.stick.on{border-color:rgba(0,229,255,.55)}
+/* Aktionsknöpfe: rund mit Symbol und Beschriftung, Springen groß mit Verlauf */
+.acts{display:grid;grid-template-columns:auto auto;grid-template-areas:". m" "s j";align-items:center;justify-items:center;gap:2px 8px}
+.act{--s:clamp(58px,17vmin,76px);width:var(--s);height:var(--s);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0;background:rgba(22,20,48,.62);border:3px solid rgba(255,255,255,.3);color:#e9e6ff;font-family:inherit;font-weight:800;font-size:clamp(11px,3vmin,13px);line-height:1.05;box-shadow:0 4px 14px rgba(0,0,0,.35);touch-action:none;-webkit-tap-highlight-color:transparent}
+.act .ai{font-size:calc(var(--s)*.4);line-height:1.05;font-weight:900}
+#aMenu{grid-area:m}#aSnd{grid-area:s}.act.main{grid-area:j}
+.act.main{--s:clamp(84px,26vmin,116px);background:linear-gradient(135deg,#ff3d8b,#a64dff);border-color:rgba(255,190,240,.85);color:#fff;font-size:clamp(13px,3.6vmin,16px);box-shadow:0 0 18px rgba(200,80,255,.55),0 4px 14px rgba(0,0,0,.35);text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.act.on{transform:scale(.93);filter:brightness(1.2)}.act:active{filter:brightness(1.2)}
 #big{position:fixed;left:0;right:0;top:34%;z-index:12;text-align:center;font-size:clamp(60px,22vw,180px);font-weight:900;color:var(--y);text-shadow:0 0 30px rgba(255,210,74,.8),0 6px 0 #6a4a00;pointer-events:none;animation:bigp .9s ease-out}
 #big.sm{font-size:clamp(28px,8vw,60px)}#big.bad{color:#ff5a5a;text-shadow:0 0 30px rgba(255,60,60,.8),0 6px 0 #5a0000}
 @keyframes bigp{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
@@ -57,7 +67,7 @@ body.ctrl .screen:not(#ctl),body.ctrl .dialog,body.ctrl #big{display:none!import
 #ctl h2{text-align:center;margin:8px 0}#ctl h2 small{font-size:14px;color:var(--y)}#ctl input{height:52px;border-radius:14px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;padding:0 14px;font-size:19px;font-weight:700;width:100%}
 #ctl .ch{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.1);font-weight:900;border-left:6px solid var(--pc,#fff)}#ctl .ch span{color:var(--y);font-size:14px}
 #ctl .info{padding:10px}#ctl .bigt{text-align:center;font-size:48px;font-weight:900;color:var(--y);font-variant-numeric:tabular-nums}
-.cpad{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;touch-action:none;user-select:none;-webkit-user-select:none}.cpad .pg{justify-content:space-between}.cpad button{width:min(42vw,150px);height:min(42vw,150px);font-size:44px}
+.cpad{flex:1;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-bottom:max(10px,env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.cpad .stick{--s:min(46vw,46vh,220px)}.cpad .act.main{--s:min(36vw,36vh,160px)}
 @media (max-height:560px){#cv{touch-action:none}.clock{min-width:96px}}
 /* ---------- Ladebildschirm (Konsolen-Stil) ---------- */
 #boot{position:fixed;inset:0;z-index:35;display:flex;flex-direction:column;justify-content:space-between;padding:calc(18px + env(safe-area-inset-top)) 20px calc(18px + env(safe-area-inset-bottom));background:radial-gradient(120% 80% at 50% 38%,#1b1660 0%,#0a0c2e 48%,#03040f 100%);overflow:hidden;transition:opacity .45s,visibility .45s}

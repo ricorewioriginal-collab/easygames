@@ -67,8 +67,12 @@
   </div>
   <div class="spacer"></div>
   <div class="pad" id="pad" hidden>
-    <div class="pg"><button data-k="l" aria-label="links">◀</button><button data-k="r" aria-label="rechts">▶</button></div>
-    <div class="pg"><button data-k="j" class="big" aria-label="springen">⤒</button></div>
+    <div class="stick" id="stick" aria-label="Laufen: Stick nach links oder rechts ziehen"><i></i><b></b></div>
+    <div class="acts">
+      <button class="act" id="aMenu" aria-label="Menü"><span class="ai">☰</span><span>Menü</span></button>
+      <button class="act" id="aSnd" aria-label="Ton"><span class="ai">🔊</span><span>Ton</span></button>
+      <button class="act main" data-k="j" aria-label="Springen"><span class="ai">⤒</span><span>Springen</span></button>
+    </div>
   </div>
 </section>
 
@@ -78,7 +82,7 @@
 
 <div id="pair" class="dialog" hidden><div class="panel glass">
   <h2>📱 Handys koppeln</h2>
-  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Steuer-Pad <b>eines Läufers</b> (bis zu 4): links, rechts, springen.</p>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Steuer-Pad <b>eines Läufers</b> (bis zu 4): Stick zum Laufen, Knopf zum Springen.</p>
   <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
   <button class="btn green" id="bPairOk">Fertig</button>
 </div></div>
@@ -88,7 +92,7 @@
   <h2>So wird gespielt</h2>
   <ul class="how">
     <li><b>Einzellauf:</b> Jeder Läufer ist allein auf dem Parcours. Es zählt die Zeit – wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke).</li>
-    <li><b>Steuerung:</b> ◀ ▶ oder A/D = laufen · Leertaste / ↑ / W = springen (länger halten = höher). An die Hangelstangen greift dein Läufer von selbst, am Ende schwingt er ab – mit Sprung kannst du früher abspringen.</li>
+    <li><b>Steuerung:</b> Stick links ziehen oder A/D/← → = laufen · Knopf „Springen“, Leertaste / ↑ / W = springen (länger halten = höher). An die Hangelstangen greift dein Läufer von selbst, am Ende schwingt er ab – mit Sprung kannst du früher abspringen.</li>
     <li><b>Hindernisse:</b> Stufensprung, Schiebebrücke, Fahrstuhl, Bruchplatten, Abrissbirnen, Hangelstangen und die Steilwand (mit Tempo anlaufen!). Knapp verfehlte Kanten erwischt dein Läufer noch.</li>
     <li><b>Figuren:</b> Bei „Neue Show" oder „Training" wählst du für jeden Läufer eine von 8 Figuren (🧍-Knopf neben dem Namen).</li>
     <li><b>Show:</b> Vorrunde, Halbfinale, Finale. Platz 1 bekommt die meisten Punkte. Ein Geist zeigt den bisher Schnellsten.</li>

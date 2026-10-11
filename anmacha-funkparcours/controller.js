@@ -1,5 +1,6 @@
-/* Funkparcours – Handy-Pad: beitreten, „Bereit" sagen, dann links/rechts/springen (gegriffen wird automatisch). */
+/* Funkparcours – Handy-Pad: beitreten, „Bereit" sagen, dann Stick laufen, Knopf springen (gegriffen wird automatisch). */
 import { JOIN, CDN, peerCfg, loadScript } from './pair.js';
+import { STICK_HTML, JUMP_HTML, stick, hold } from './stick.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'];
 export function startController() {
@@ -34,12 +35,9 @@ export function startController() {
     if (s.phase === 'ready') { put(`${head(s)}<div class="info">Du bist dran: <b>${esc(s.cname)}</b></div><button class="btn green" id="cr" style="min-height:120px;font-size:30px">Bereit!</button>`); $('cr').onclick = () => { tx({ t: 'ready' }); $('cr').disabled = true; }; return; }
     if (s.phase === 'count') { put(`${head(s)}<div class="bigt">3 · 2 · 1</div><div class="info">Halte dich bereit …</div>`); return; }
     if (s.phase === 'run') {
-      put(`<div class="cpad"><div class="pg"><button data-b="1" aria-label="links">◀</button><button data-b="2" aria-label="rechts">▶</button></div><div class="pg"><button data-b="4" class="big" aria-label="springen">⤒</button></div></div>`);
-      const act = new Map(); root.querySelectorAll('.cpad button').forEach(b => {
-        const bit = +b.dataset.b, rel = () => { if (act.has(bit)) { act.delete(bit); b.classList.remove('on'); setMask([...act.keys()].reduce((a, x) => a | x, 0)); } };
-        b.addEventListener('pointerdown', e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (x) {} act.set(bit, 1); b.classList.add('on'); setMask([...act.keys()].reduce((a, x) => a | x, 0)); });
-        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, rel));
-      }); return;
+      put(`<div class="cpad">${STICK_HTML}${JUMP_HTML}</div>`); let sm = 0, jm = 0;
+      stick(root.querySelector('.stick'), m => { sm = m; setMask(sm | jm); });
+      hold(root.querySelector('.act.main'), () => { jm = 4; setMask(sm | jm); }, () => { jm = 0; setMask(sm | jm); }); return;
     }
     put(`${head(s)}<div class="bigt">${esc(s.say || '')}</div><div class="tbl">${board(s)}</div>`);
   }
