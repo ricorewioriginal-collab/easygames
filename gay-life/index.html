@@ -124,7 +124,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 <body>
 <div class="wrap" id="hub"></div>
 <div class="wrap" id="game"></div>
-<div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wchip" id="wq"></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wLook" title="Look">👤</button><button id="wMenu" title="Menü">☰</button><button id="wSnd">🔊</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="joy"><i></i></div><button id="act"></button><div id="dlg"></div><div id="ban"></div></div>
+<div id="world"><canvas id="wc"></canvas><div class="wt"><div class="wchip" id="wq"></div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div class="wchip" id="wgl"></div><div class="wbt"><button id="wLook" title="Look">👤</button><button id="wSnd">🔊</button></div></div></div><div id="arrw"><div id="arr">▲</div><span id="adist"></span></div><div id="joy"><i></i></div><button id="act"></button><div id="dlg"></div><div id="ban"></div></div>
 <div class="modal" id="modal"><div class="box" id="mbox"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="gay-life" data-prefix="anmachaGayLife" data-save-btn="#glSave" defer></script>
@@ -394,7 +394,7 @@ function menuHub() {
   $('#game').style.display = 'none'; $('#hub').style.display = '';
   var h = '<div class="top"><div><div class="logo">Gay Life!</div><p class="sub">Die Spielesammlung mit Herz, Humor und Glitzer.</p></div>' +
     '<div class="prof"><div class="av">' + avatar(S.look) + '</div><div style="flex:1;min-width:0"><b>' + esc(S.name) + '</b><div class="sub">Level ' + level() + ' · ✨ ' + fmt(S.glitzer) + ' Glitzer</div>' +
-    '<div class="row" style="margin-top:8px"><button class="btn sm pri" id="glEdit">Anpassen</button><button class="btn sm" id="glSave">Speichern</button><button class="btn sm" id="glSnd">' + (S.sound ? '🔊' : '🔇') + '</button>' + (webgl() ? '<button class="btn sm" id="glCity">🌆 Zur Stadt</button>' : '') + '</div></div></div></div>';
+    '<div class="row" style="margin-top:8px"><button class="btn sm pri" id="glEdit">Anpassen</button><button class="btn sm" id="glSave">Speichern</button><button class="btn sm" id="glSnd">' + (S.sound ? '🔊' : '🔇') + '</button>' + '</div></div></div></div>';
   h += '<div class="grid">';
   GAMES.forEach(function (g) {
     var c = DATES.filter(function (x) { return x.id === g.ch; })[0], b = bestOf(g);
@@ -404,7 +404,7 @@ function menuHub() {
   h += '</div><div class="chips" style="margin-top:18px">' + ACH.map(function (a) { return '<span class="chip' + (a[1]() ? ' on' : '') + '">' + (a[1]() ? '🏅 ' : '🔒 ') + a[0] + '</span>'; }).join('') + '</div>' +
     '<p class="foot">Alle Figuren sind frei erfunden. · Speicherstand läuft lokal und optional per Google-Konto. · Ein Spiel von AnMaCha</p>';
   $('#hub').innerHTML = h;
-  $('#glEdit').onclick = editor; if ($('#glCity')) $('#glCity').onclick = function () { S.world3d = true; save(); showHub(); };
+  $('#glEdit').onclick = editor;
   $('#glSave').onclick = function () { save(); toast('Gespeichert auf diesem Gerät.'); };
   $('#glSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; sfx('ok'); };
   [].forEach.call(document.querySelectorAll('.gcard'), function (b) { b.onclick = function () { var g = GAMES.filter(function (x) { return x.id === b.dataset.g; })[0]; openGame(g); }; });
@@ -647,7 +647,6 @@ function controls(W) {
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   $('#act').onclick = function () { act(); };
   $('#wLook').onclick = editor; $('#wSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; };
-  $('#wMenu').onclick = function () { leaveWorld(); menuHub(); };
 }
 function curInter() {
   var W = WD, p = W.player, best = null, bd = 1e9;
