@@ -5,7 +5,7 @@ const vp = dev === 'm' ? { viewport: { width: 740, height: 360 }, hasTouch: true
 const b = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const p = await (await b.newContext(vp)).newPage(); const errs = [];
 p.on('pageerror', e => errs.push(e.message + ' @ ' + (e.stack||'').split('\n').slice(1,3).join(' | '))); p.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text()); });
-await p.goto(`${BASE}/index.html?q=low`); await p.waitForTimeout(2500);
+await p.goto(`${BASE}/index.html?q=low&skipintro=1`); await p.waitForTimeout(2500);
 await p.evaluate(() => __ul.newGame({ seed: 99 }));
 for (let i = 0; i < 3; i++) { await p.evaluate(() => __ul.clickModal()); await p.waitForTimeout(300); }
 const ev = f => p.evaluate(f);
