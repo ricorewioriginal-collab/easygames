@@ -162,9 +162,9 @@ BI.createMini = function (G) {
   /* ---------- Steuerung ---------- */
   const px = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * (W / r.width), (e.clientY - r.top) * (H / r.height)]; };
   let down = false;
-  cv.addEventListener('pointerdown', e => { if (!M.active || M.over) return; e.preventDefault(); A.resume(); down = true; const [x, y] = px(e); game.tap && game.tap(x, y); try { cv.setPointerCapture(e.pointerId); } catch (x2) { } });
+  cv.addEventListener('pointerdown', e => { if (!M.active || M.over) return; e.preventDefault(); A.resume(); down = true; const [x, y] = px(e); game.tap && game.tap(x, y, e.pointerId); try { cv.setPointerCapture(e.pointerId); } catch (x2) { } });
   cv.addEventListener('pointermove', e => { if (!M.active || M.over) return; const [x] = px(e); if (game.move && (down || e.pointerType === 'mouse')) game.move(x); });
-  const up = () => { down = false; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  const up = e => { down = false; if (M.active && game && game.up && e) game.up(e.pointerId); }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   addEventListener('keydown', e => { if (M.active && game && game.keydown) game.keydown(e.code); }); addEventListener('keyup', e => { if (M.active && game && game.keyup) game.keyup(e.code); });
 
   /* ---------- Ablauf ---------- */
@@ -185,5 +185,7 @@ BI.createMini = function (G) {
     if (M.over) { endT += dt; text('Super!', W / 2, H / 2, 64, '#ffe27a'); if (endT > .9 && M.onEnd) { const f = M.onEnd; M.onEnd = null; f({ kind: M.kind, score: M.score }); } }
     else if (M.onScore && M.score !== lastScore) { sendT -= dt; if (sendT <= 0 || M.score > lastScore) { sendT = .3; lastScore = M.score; M.onScore(M.score); } }
   };
+  /* Jump 'n' Run (jump.js): ein eigenes Level pro Welt, nutzt die Zeichen-Helfer dieses Mini-Spiel-Rahmens */
+  if (BI.JUMP) BI.JUMP.install(M, { A, register: (k, g, meta) => { GAMES[k] = g; M.GAMES[k] = meta; }, rnd: () => rnd(), W: () => W, H: () => H, ctx: () => ctx, add, burst, bg, text, emoji });
   return M;
 };
