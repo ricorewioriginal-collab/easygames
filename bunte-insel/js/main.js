@@ -971,7 +971,7 @@
     if (sl.t >= 3.6 && sl.t < 3.7) { fadeEl.classList.remove('on'); sl.t = 3.7; P.x = f.bed.x + 2.3; P.z = f.bed.z + 1.2; P.y = 0; g.rotation.set(0, 0, 0); g.position.set(P.x, 0, P.z); say('Guten Morgen, ' + heroName() + '! ☀️', 2600); A.fanfare(); kids.earn('sleep'); }
     if (sl.t > 4.6) sl.t = -1;
   }
-  function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); wardTabs.showTab(6); say('Such dir etwas Schönes aus! 👕', 1800); }
+  function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); wardTabs.showTab(6); BI.Thumb.load($('wardPick')); say('Such dir etwas Schönes aus! 👕', 1800); }
   function closeWard() { wardOpen = false; wardPanel.hidden = true; updateButtons(true); }
   function renderWard() {
     refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'rollator' && q.slot !== 'deco');
@@ -1247,8 +1247,9 @@
     const tabs = $('bTabs'); tabs.innerHTML = '';
     L.forEach((tb, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === tab ? ' sel' : ''); b.textContent = tb.icon + ' ' + tb.name; b.onclick = () => { tab = i; renderBuild(); }; tabs.appendChild(b); });
     const items = $('bItems'); items.innerHTML = '';
-    if (voxTab) vox.TYPES.forEach((ty, i) => { if (ty.g !== voxTab) return; const b = document.createElement('button'); b.className = 'bi' + (i === vox.sel ? ' sel' : ''); const sw = document.createElement('i'); sw.className = 'vc' + (ty.glass ? ' gl' : '') + (ty.neon ? ' nn' : ''); sw.style.background = 'linear-gradient(135deg,' + hexc(ty.top) + ' 50%,' + hexc(ty.side) + ' 50%)'; sw.style.color = hexc(ty.top); const sm = document.createElement('small'); sm.textContent = ty.name; b.append(sw, sm); b.onclick = () => { vox.setType(i); A.pop(); renderBuild(); }; items.appendChild(b); });
-    else Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== cur.part) return; const b = document.createElement('button'); b.className = 'bi' + (id === build.sel ? ' sel' : ''); b.innerHTML = '<b>' + c.icon + '</b><small>' + c.name + '</small>'; b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
+    if (voxTab) vox.TYPES.forEach((ty, i) => { if (ty.g !== voxTab) return; const b = BI.Thumb.button('bi' + (i === vox.sel ? ' sel' : ''), ty.icon, ty.name); BI.Thumb.attach(b, 'v|' + i, () => BI.Thumb.render(vox.thumbMesh(i), null, .62, .4)); b.onclick = () => { vox.setType(i); A.pop(); renderBuild(); }; items.appendChild(b); });
+    else Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== cur.part) return; const b = BI.Thumb.button('bi' + (id === build.sel ? ' sel' : ''), c.icon, c.name); BI.Thumb.attach(b, 'b|' + id, () => BI.Thumb.render(build.thumbMesh(id), null, .55, .42)); b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
+    BI.Thumb.load(items);
     const cols = $('bColors'); cols.innerHTML = '';
     if (!voxTab) build.PAL.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw sm' + (i === build.color ? ' sel' : ''); b.style.background = hexc(c); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { build.color = i; renderBuild(); }; cols.appendChild(b); });
     updateBuildCount();
@@ -1295,56 +1296,64 @@
     const ic = arr => i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = arr[i]; return b; };
     const lb = arr => i => { const b = document.createElement('button'); b.className = 'hat lbl'; const e = document.createElement('b'), s = document.createElement('small'); e.textContent = arr[i][0]; s.textContent = arr[i][1]; b.append(e, s); return b; };
     const num = (k, d) => () => cu()[k] == null ? d : cu()[k] | 0;
+    /* Vorschaubilder statt Emoji: kleine 3D-Bilder (js/thumbs.js), neutrale Figur, nur das jeweilige Teil ändert sich */
+    const bustEl = ico => { const w = document.createElement('span'), im = document.createElement('img'); w.className = 'tw'; w.textContent = ico; im.alt = ''; w.appendChild(im); return w; };
+    const bustThumb = (hero, cuv, shirt, hat, eq) => () => BI.Thumb.render(BI.makeChar(charOpts({ hero, cu: cuv || {}, shirt: shirt | 0, hat: hat | 0, eq: eq || {} }, '')).group, [.95, 1.95]);
+    const TH_BASE = { skin: 1, hair: 2, style: 11, eye: 0, mouth: 1, pants: 0, hgt: 2, age: 2, build: 1, shoe: 0 }, REG = { full: [-.05, 2.0], head: [1.3, 1.95], hat: [1.3, 2.25], torso: [.55, 1.45], legs: [-.05, .98], feet: [-.05, .42] };
+    const thumb = (over, reg, extra, az) => () => { const l = Object.assign({ hero: 'custom', cu: Object.assign({}, TH_BASE, over), shirt: 4, hat: 0, eq: {} }, extra); return BI.Thumb.render(BI.makeChar(charOpts(l, '')).group, REG[reg], az); };
+    const tb = (key, arr, reg) => i => { const b = BI.Thumb.button('hat lbl', arr[i][0], arr[i][1]); BI.Thumb.attach(b, 'c|' + key + '|' + i, thumb({ [key]: i }, reg)); return b; };
+    const ti = (key, arr, reg) => i => { const b = BI.Thumb.button('hat', arr[i]); BI.Thumb.attach(b, 'c|' + key + '|' + i, thumb({ [key]: i }, reg)); return b; };
+    const t2 = (key, icons, reg) => i => { const b = BI.Thumb.button('hat', icons[i]); BI.Thumb.attach(b, 'c|' + key + '|' + i, thumb({ [key]: i }, reg)); return b; };
     // Reiter 0: Meine Figuren + Vorlagen
     const slotsPanel = panel(); let armDel = -1;
     function renderSlots() {
       slotsPanel.innerHTML = ''; const ch = ensureChars(); lab(slotsPanel, '🧑‍🤝‍🧑 Meine Figuren (bis zu ' + MAXCH + ') – tippe eine an, um mit ihr zu spielen:'); const g = document.createElement('div'); g.className = 'hgrid'; slotsPanel.appendChild(g);
-      ch.forEach((c, i) => { const h = BI.heroById(c.hero), ico = c.hero === 'custom' ? (BI.STYLE_ICONS[(c.cu && c.cu.style) | 0] || '🙂') : h.icon, b = document.createElement('button'); b.className = 'hc' + (i === save.cur ? ' sel' : ''); const e = document.createElement('b'), s = document.createElement('span'); e.textContent = ico; s.textContent = (i === save.cur ? '✔ ' : '') + (c.n || (c.hero === 'custom' ? 'Figur ' + (i + 1) : h.name)); b.append(e, s); b.onclick = () => { applyChar(i); A.pop(); renderSlots(); }; g.appendChild(b); });
+      ch.forEach((c, i) => { const h = BI.heroById(c.hero), ico = c.hero === 'custom' ? (BI.STYLE_ICONS[(c.cu && c.cu.style) | 0] || '🙂') : h.icon, b = document.createElement('button'); b.className = 'hc' + (i === save.cur ? ' sel' : ''); const e = bustEl(ico), s = document.createElement('span'); BI.Thumb.attach(b, 's|' + JSON.stringify([c.hero, c.cu, c.shirt, c.hat, c.eq]), bustThumb(c.hero, c.cu, c.shirt, c.hat, c.eq)); b.classList.add('th'); s.textContent = (i === save.cur ? '✔ ' : '') + (c.n || (c.hero === 'custom' ? 'Figur ' + (i + 1) : h.name)); b.append(e, s); b.onclick = () => { applyChar(i); A.pop(); renderSlots(); }; g.appendChild(b); });
       const bar = document.createElement('div'); bar.className = 'row'; slotsPanel.appendChild(bar); const mk = (t, fn, cls) => { const b = document.createElement('button'); b.className = 'pill' + (cls ? ' ' + cls : ''); b.textContent = t; b.onclick = fn; bar.appendChild(b); return b; };
       if (ch.length < MAXCH) { mk('➕ Neue Figur', () => { syncChar(); ch.push({ n: '', hero: 'custom', cu: Object.assign(BI.randomCu(), { acc: {} }), shirt: (Math.random() * BI.SHIRTS.length) | 0, hat: 0, eq: { hat: 'none', glasses: false, pack: false, teddy: false } }); applyChar(ch.length - 1); A.pop(); showTab(1); renderSlots(); }); mk('📄 Kopieren', () => { syncChar(); ch.push(Object.assign(clone(ch[save.cur]), { n: '' })); applyChar(ch.length - 1); A.pop(); renderSlots(); }); }
       if (ch.length > 1) mk(armDel === save.cur ? '❓ Wirklich löschen?' : '🗑️ Löschen', () => { if (armDel !== save.cur) { armDel = save.cur; renderSlots(); return; } const k = save.cur; armDel = -1; ch.splice(k, 1); applyChar(Math.max(0, k - 1)); A.pop(); renderSlots(); }, armDel === save.cur ? 'warn' : '');
       lab(slotsPanel, '⭐ Vorlagen – such dir eine aus und ändere danach alles, was du willst:'); const g2 = document.createElement('div'); g2.className = 'hgrid'; slotsPanel.appendChild(g2);
-      BI.HEROES.forEach(h => { if (h.id === 'custom') return; const b = document.createElement('button'); b.className = 'hc' + (save.hero === h.id ? ' sel' : ''); b.dataset.id = h.id; const e = document.createElement('b'), s = document.createElement('span'); e.textContent = h.icon; s.textContent = h.name; b.append(e, s); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if ((h.id === 'oma' || h.id === 'opa') && !vehicles.some(q => q.type === 'rollator' && Math.hypot(q.x - P.x, q.z - P.z) < 12)) spawnRC(true, 'rollator'); renderSlots(); }; g2.appendChild(b); });
+      BI.HEROES.forEach(h => { if (h.id === 'custom') return; const b = document.createElement('button'); b.className = 'hc' + (save.hero === h.id ? ' sel' : ''); b.dataset.id = h.id; const e = bustEl(h.icon), s = document.createElement('span'); BI.Thumb.attach(b, 'h|' + h.id, bustThumb(h.id, {}, 0, 0, {})); b.classList.add('th'); s.textContent = h.name; b.append(e, s); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if ((h.id === 'oma' || h.id === 'opa') && !vehicles.some(q => q.type === 'rollator' && Math.hypot(q.x - P.x, q.z - P.z) < 12)) spawnRC(true, 'rollator'); renderSlots(); }; g2.appendChild(b); }); BI.Thumb.load(slotsPanel);
     }
     syncs.push(() => { if (!slotsPanel.hidden) renderSlots(); });
     // Reiter 1: Körper
     { const p = panel();
-      row(p, '🎂 Alter', 4, lb(CO.age), num('age', 2), i => cu().age = i);
-      row(p, '📏 Größe', 5, lb(CO.hgt), () => cu().hgt != null ? cu().hgt | 0 : [1, 2, 3][cu().size == null ? 1 : cu().size | 0], i => cu().hgt = i);
-      row(p, '🏋️ Körperform', 4, lb(CO.build), num('build', 1), i => cu().build = i);
+      row(p, '🎂 Alter', 4, tb('age', CO.age, 'full'), num('age', 2), i => cu().age = i);
+      row(p, '📏 Größe', 5, tb('hgt', CO.hgt, 'full'), () => cu().hgt != null ? cu().hgt | 0 : [1, 2, 3][cu().size == null ? 1 : cu().size | 0], i => cu().hgt = i);
+      row(p, '🏋️ Körperform', 4, tb('build', CO.build, 'full'), num('build', 1), i => cu().build = i);
       row(p, '🎨 Hautfarbe', BI.SKINS.length, sw(BI.SKINS), num('skin', 0), i => cu().skin = i); }
     // Reiter 2: Gesicht
     { const p = panel();
-      row(p, '🔵 Gesichtsform', 4, lb(CO.face), num('face', 0), i => cu().face = i);
-      row(p, '👃 Nase', 4, lb(CO.nose), num('nose', 0), i => cu().nose = i);
-      row(p, '😊 Mund', BI.MOUTHS.length, ic(BI.MOUTH_ICONS), () => cu().mouth == null ? 1 : cu().mouth | 0, i => cu().mouth = i);
+      row(p, '🔵 Gesichtsform', 4, tb('face', CO.face, 'head'), num('face', 0), i => cu().face = i);
+      row(p, '👃 Nase', 4, tb('nose', CO.nose, 'head'), num('nose', 0), i => cu().nose = i);
+      row(p, '😊 Mund', BI.MOUTHS.length, ti('mouth', BI.MOUTH_ICONS, 'head'), () => cu().mouth == null ? 1 : cu().mouth | 0, i => cu().mouth = i);
       row(p, '💄 Lippenfarbe', CO.lip.length, sw(CO.lip), num('lip', 0), i => cu().lip = i);
       row(p, '🌸 Bäckchen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '😊' : '😐'; return b; }, () => cu().blush === 0 ? 0 : 1, i => cu().blush = i);
-      row(p, '✨ Sommersprossen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '🌟' : '🚫'; return b; }, num('fr', 0), i => cu().fr = i);
-      row(p, '⚡ Narbe', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⚡' : '🚫'; return b; }, num('scar', 0), i => cu().scar = i); }
+      row(p, '✨ Sommersprossen', 2, t2('fr', ['🚫', '🌟'], 'head'), num('fr', 0), i => cu().fr = i);
+      row(p, '⚡ Narbe', 2, t2('scar', ['🚫', '⚡'], 'head'), num('scar', 0), i => cu().scar = i); }
     // Reiter 3: Augen
     { const p = panel();
-      row(p, '👁️ Augenform', 5, lb(CO.eyeS), num('eyeS', 0), i => cu().eyeS = i);
+      row(p, '👁️ Augenform', 5, tb('eyeS', CO.eyeS, 'head'), num('eyeS', 0), i => cu().eyeS = i);
       row(p, '🌈 Augenfarbe', BI.EYES.length, sw(BI.EYES), num('eye', 0), i => cu().eye = i);
-      row(p, '🤨 Augenbrauen', 4, lb(CO.brow), num('brow', 1), i => cu().brow = i);
-      row(p, '👓 Brille', 5, lb(CO.glassT), num('glassT', 0), i => cu().glassT = i);
+      row(p, '🤨 Augenbrauen', 4, tb('brow', CO.brow, 'head'), num('brow', 1), i => cu().brow = i);
+      row(p, '👓 Brille', 5, tb('glassT', CO.glassT, 'head'), num('glassT', 0), i => cu().glassT = i);
       row(p, '🎨 Brillenfarbe', CO.glassC.length, sw(CO.glassC), num('glassC', 0), i => cu().glassC = i); }
     // Reiter 4: Haare
     { const p = panel();
-      row(p, '💇 Frisur', BI.STYLES.length, ic(BI.STYLE_ICONS), num('style', 0), i => cu().style = i);
+      row(p, '💇 Frisur', BI.STYLES.length, ti('style', BI.STYLE_ICONS, 'head'), num('style', 0), i => cu().style = i);
       row(p, '🌈 Haarfarbe', BI.HAIRS.length, sw(BI.HAIRS), num('hair', 0), i => cu().hair = i);
       row(p, '✨ Strähnen', BI.HAIRS.length + 1, i => sw([0].concat(BI.HAIRS))(i), num('hair2', 0), i => cu().hair2 = i); }
     // Reiter 5: Bart
     { const p = panel();
-      row(p, '🧔 Bartform', 9, lb(CO.beard), num('beard', 0), i => cu().beard = i);
+      row(p, '🧔 Bartform', 9, tb('beard', CO.beard, 'head'), num('beard', 0), i => cu().beard = i);
       row(p, '🎨 Bartfarbe (✖ = wie Haare)', CO.beardc.length, sw(CO.beardc), num('beardc', 0), i => cu().beardc = i); }
     // Reiter 6: Kleidung
     { const p = panel();
-      row(p, '👕 Oberteil', 6, lb(CO.ctype), num('ctype', 0), i => cu().ctype = i);
-      row(p, '💪 Ärmel', 3, lb(CO.sleeve), num('sleeve', 0), i => cu().sleeve = i);
+      row(p, '👕 Oberteil', 6, tb('ctype', CO.ctype, 'torso'), num('ctype', 0), i => cu().ctype = i);
+      row(p, '💪 Ärmel', 3, tb('sleeve', CO.sleeve, 'torso'), num('sleeve', 0), i => cu().sleeve = i);
       row(p, '🎨 Oberteil-Farbe', BI.SHIRTS.length, sw(BI.SHIRTS), () => save.shirt | 0, i => save.shirt = i);
-      row(p, '🧥 Schnitt', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['👕', '👗', '🧑‍🌾'][i]; return b; }, num('top', 0), i => cu().top = i);
-      row(p, '👖 Hose / Rock', 4, lb(CO.bot), num('bot', 0), i => cu().bot = i);
+      row(p, '🧥 Schnitt', 3, t2('top', ['👕', '👗', '🧑‍🌾'], 'torso'), num('top', 0), i => cu().top = i);
+      row(p, '👖 Hose / Rock', 4, tb('bot', CO.bot, 'legs'), num('bot', 0), i => cu().bot = i);
       row(p, '🎨 Hosen-Farbe', BI.PANTS.length, sw(BI.PANTS), num('pants', 0), i => cu().pants = i);
       row(p, '🦓 Streifen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '〰️' : '🚫'; return b; }, num('stripe', 0), i => cu().stripe = i);
       row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), num('logo', 0), i => cu().logo = i);
@@ -1360,28 +1369,28 @@
       syncs.push(renderOutfits); renderOutfits(); }
     // Reiter 7: Schuhe
     { const p = panel();
-      row(p, '👟 Schuhart', 4, lb(CO.shoeT), num('shoeT', 0), i => cu().shoeT = i);
+      row(p, '👟 Schuhart', 4, tb('shoeT', CO.shoeT, 'feet'), num('shoeT', 0), i => cu().shoeT = i);
       row(p, '🎨 Schuhfarbe', BI.SHOES.length, sw(BI.SHOES), num('shoe', 0), i => cu().shoe = i); }
     // Reiter 8: Zubehör
     { const p = panel();
-      row(p, '👂 Ohrringe', 4, lb(CO.ear), num('ear', 0), i => cu().ear = i);
+      row(p, '👂 Ohrringe', 4, tb('ear', CO.ear, 'head'), num('ear', 0), i => cu().ear = i);
       row(p, '📿 Kette', CO.neck.length, sw(CO.neck), num('neck', 0), i => cu().neck = i);
       row(p, '🎀 Stirnband', CO.band.length, sw(CO.band), num('band', 0), i => cu().band = i);
       row(p, '📎 Haarspange', CO.clip.length, sw(CO.clip), num('clip', 0), i => cu().clip = i);
       row(p, '🦸 Maske', CO.mask.length, sw(CO.mask), num('mask', 0), i => cu().mask = i);
       row(p, '⌚ Uhr', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⌚' : '🚫'; return b; }, num('watch', 0), i => cu().watch = i);
       lab(p, '🎒 Mehr (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
-      for (const [k, e] of AC) { const b = document.createElement('button'); b.className = 'hat'; b.textContent = e; b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
+      for (const [k, e] of AC) { const b = BI.Thumb.button('hat', e); BI.Thumb.attach(b, 'c|acc|' + k, thumb({ acc: { [k]: true } }, 'full', null, 2.6)); b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
       syncs.push(() => bs.forEach(([k, b]) => b.classList.toggle('sel', save.hero === 'custom' && !!(cu().acc && cu().acc[k])))); }
     // Reiter 9: Hüte
-    { const p = panel(); row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i); }
+    { const p = panel(); row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = BI.Thumb.button('hat', BI.HAT_ICONS[BI.HATS[i]]); BI.Thumb.attach(b, 'c|hat|' + i, thumb({}, 'hat', { hat: i })); return b; }, () => save.hat | 0, i => save.hat = i); }
     // Reiter 10: Haustier
     { const p = panel(); lab(p, '🐾 Mein Haustier'); const r = document.createElement('div'); r.className = 'row pets'; p.appendChild(r); const bs = [];
-      BI.PETS.forEach(pt => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = pt.icon + ' ' + pt.name; b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
+      BI.PETS.forEach(pt => { const b = BI.Thumb.button('pill', pt.icon, pt.name); BI.Thumb.attach(b, 'p|' + pt.id, () => BI.Thumb.render(BI.makePet(pt.id).group, null, .6)); b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
       const hb = document.createElement('button'); hb.className = 'pill'; hb.onclick = () => { setPetHome(pup.mode !== 'home'); refreshPickers(); }; r.appendChild(hb);
       syncs.push(() => { bs.forEach((b, i) => { const q = BI.PETS[i]; b.hidden = !!q.mascot && !(save.mascots || []).includes(q.id); b.classList.toggle('sel', q.id === save.pet); }); hb.textContent = save.petHome !== false ? '🐾 Mitnehmen' : '🏠 Zu Hause lassen'; }); }
     const TABS = ['🧑‍🤝‍🧑 Figuren', '🧍 Körper', '😀 Gesicht', '👀 Augen', '💇 Haare', '🧔 Bart', '👕 Kleidung', '👟 Schuhe', '💍 Zubehör', '🎩 Hüte', '🐾 Haustier'], tbs = []; let cur = 0;
-    function showTab(i) { cur = i; box.classList.toggle('t0', i === 0); panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); }
+    function showTab(i) { cur = i; box.classList.toggle('t0', i === 0); panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); BI.Thumb.load(panels[i]); }
     TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; { const sp = t.indexOf(' '), ti = document.createElement('span'), tl = document.createElement('span'); ti.className = 'ti'; ti.textContent = t.slice(0, sp); tl.textContent = t.slice(sp + 1); b.append(ti, tl); } b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
     { const mk = (t, fn) => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = t; b.onclick = fn; actEl.appendChild(b); };
       mk('🎲 Zufall', () => edit(() => { const r = BI.randomCu(); save.cu = Object.assign(r, { acc: (save.cu && save.cu.acc) || {} }); save.shirt = (Math.random() * BI.SHIRTS.length) | 0; }));
@@ -1392,7 +1401,7 @@
   }
   buildHeroPicker($('heroPick')); const wardTabs = buildHeroPicker($('wardPick'));
   { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = 'Bunte Insel'.split(' ').map((w, wi) => '<div class="w">' + [...w].map((ch, i) => '<span style="--i:' + (i + wi * 6) + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join('') + '</div>').join('<i></i>'); }
-  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); };
+  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); if (creating) setTimeout(() => BI.Thumb.load($('heroPick')), 60); };
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
   const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? (i.pn || BI.heroById(i.hero).name) : 'Neu'; };
   function slotBarRefresh() { const i = BI.store.info(SLOT); $('slotBar').innerHTML = '<span>💾 Spielstand ' + SLOT + ' · ' + (i.has ? heroName() + ' · ⭐ ' + save.stars : 'Neu') + '</span><span>Wechseln ›</span>'; $('slotLab').textContent = '💾 Spielstand ' + SLOT + (saveOk ? '' : ' ⚠️ Speicher voll'); }

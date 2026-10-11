@@ -122,6 +122,12 @@ BI.createVoxels = function (G) {
     }
     return false;
   };
+  /* Vorschau-Würfel (3 Seiten sichtbar) für das Baumenü (js/thumbs.js) */
+  V.thumbMesh = i => {
+    const info = TY[i], cc = rgb[i], p = [], n = [], col = [], face = (v, nr, c, k) => { for (const q of [0, 1, 2, 0, 2, 3]) { p.push(v[q][0], v[q][1], v[q][2]); n.push(nr[0], nr[1], nr[2]); col.push(c[0] * k, c[1] * k, c[2] * k); } };
+    face([[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]], [1, 0, 0], cc[1], info.neon ? 1 : .8); face([[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]], [0, 0, 1], cc[1], info.neon ? 1 : .7); face([[0, 1, 1], [1, 1, 1], [1, 1, 0], [0, 1, 0]], [0, 1, 0], cc[0], 1);
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); return new THREE.Mesh(g, mat);
+  };
   V.shift = dy => { V.cur.py = BI.clamp(V.cur.py + dy, 0, HY - 1); V.cur.hit = null; A.pop(); };
   V.setType = i => { V.sel = BI.clamp(i | 0, 0, TY.length - 1); };
   V.enter = function (x, z, h) { V.active = true; V.cur.px = Math.floor(x + Math.sin(h) * 4); V.cur.pz = Math.floor(z + Math.cos(h) * 4); V.cur.py = 0; V.cur.hit = null; };

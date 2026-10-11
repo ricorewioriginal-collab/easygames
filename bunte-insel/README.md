@@ -211,3 +211,7 @@ Neue Insel **Bauland** im Nordosten (Brücke von der Hauptinsel, 🧭 → Baulan
 - **🧊 Blöcke** (nur im Bauland): 1-m-Würfel stapeln (bis 32 m hoch, bis 12 000 Blöcke), man läuft darauf und stößt an Wände (Stufen von 1 m gehen automatisch). 30 Blocksorten: Natur, 8 Wollfarben, Gold, Glas, Neon, dazu **Sprungblock**, **Lavablock** (zurück zum Start) und **Startblock** 🚩. Tippen auf Boden oder Block zielt (der neue Block entsteht an der angetippten Seite), Meilensteine bei 25/100/300/1000/3000 Blöcken geben ⭐. Wird im Spielstand gespeichert (nicht mit Freunden geteilt).
 
 Technik (sparsam): Blöcke liegen in 16×16-Stücken, nur geänderte Stücke werden neu gebaut, verdeckte Flächen werden weggelassen; Kollision läuft direkt über den Block-Raster (kein Collider pro Block). Dateien: `js/bauland.js`, `js/voxel.js`, `js/build.js` (Zurück), `js/minis2.js` (Pixel-Plan).
+
+### 🖼️ Vorschaubilder statt Symbolen
+
+Auswahl-Knöpfe zeigen jetzt ein kleines 3D-Bild des echten Teils: Frisuren, Hüte, Kleidung, Schuhe, Gesichts- und Körperformen, Bart, Brille, Zubehör, Vorlagen/eigene Figuren, Haustiere sowie alle Bauteile und Blöcke im Baumenü. `js/thumbs.js` rendert mit einem kleinen Extra-Renderer (128×128) erst, wenn ein Reiter sichtbar ist, je ein Bild pro Takt (kein Ruckeln) und merkt sich jedes Bild für die Sitzung; fällt WebGL aus, bleibt das Emoji als Platzhalter stehen.

@@ -174,6 +174,8 @@ BI.createBuild = function (G) {
 
   /* ---------- Bedienung ---------- */
   B.setType = function (t) { if (!CAT[t]) return; B.sel = t; B.color = CAT[t].c != null ? CAT[t].c : B.color; };
+  /* Vorschau-Mesh für das Baumenü (js/thumbs.js) */
+  B.thumbMesh = t => { const d = new BI.Batch(); append(d, local(t, CAT[t].c != null ? CAT[t].c : 7), 0, 0, 0); return d.mesh(mat); };
   B.rotate = function () { B.rot = (B.rot + 1) % 4; };
   B.nextColor = function () { B.color = (B.color + 1) % PAL.length; };
   B.setCursor = function (x, z) {
