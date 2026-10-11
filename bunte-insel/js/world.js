@@ -391,6 +391,7 @@ BI.buildWorld = function (scene) {
   BI.buildParkGround({ W, st, lamp, ROADY, GRASS, SAND });
   BI.buildRainbowGround({ W, st, lamp, ROADY, GRASS, SAND });
   BI.buildPupsGround({ W, st, lamp, ROADY, GRASS, SAND });
+  BI.buildArcades({ W, st, lamp });
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
   { const x0 = -72, x1 = -46, z0 = 46, z1 = 66;

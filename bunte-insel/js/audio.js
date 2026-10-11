@@ -37,7 +37,7 @@ BI.audio = (function () {
   const noteM = t => { const m = /^([A-G])([#b]?)(\d)$/.exec(t); return m ? 12 * (+m[3] + 1) + PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) : 0; };
   const chordP = c => { const m = /^([A-G])([#b]?)(m7|maj7|m|7|dim)?$/.exec(c) || ['', 'C', '', '']; return { pc: (PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) + 12) % 12, iv: CHQ[m[3] || ''] }; };
   function parseTheme(T) { if (!T.P) T.P = { ch: T.chords.map(chordP), lead: T.lead && T.lead.notes ? T.lead.notes.split(/\s+/).map(x => x === '.' ? 0 : noteM(x)) : [] }; return T.P; }
-  let zArgs = null, zTimer = 0, zBus = null, zCur = null, zSw = 0, zStep = 0, zNext = 0, nbuf = null;
+  let gBus = null, zArgs = null, zTimer = 0, zBus = null, zCur = null, zSw = 0, zStep = 0, zNext = 0, nbuf = null;
   function noiseAt(dur, vol, hp, delay) {
     if (!nbuf) { nbuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = nbuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
     const t = ctx.currentTime + delay, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = nbuf; f.type = 'highpass'; f.frequency.value = hp;
@@ -193,6 +193,10 @@ BI.audio = (function () {
       const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1800; const g = ctx.createGain(); g.gain.value = 0;
       s.connect(f); f.connect(g); g.connect(sfxBus); s.start(); g.gain.setTargetAtTime(.12, ctx.currentTime, .05); A._w = { s, g };
     },
+    /* Klänge für Mini-Spiele (eigener Bus, wird von der Bereichs-Musik nicht ausgeblendet) */
+    now() { return ctx ? ctx.currentTime : 0; },
+    note(f, dur, type, vol, delay) { if (!ctx || muted) return; if (!gBus) { gBus = ctx.createGain(); gBus.gain.value = 1.4; gBus.connect(musBus); } tone(f, dur, type || 'triangle', vol || .1, 0, delay || 0, gBus); },
+    drum(k, delay) { if (!ctx || muted) return; if (!gBus) { gBus = ctx.createGain(); gBus.gain.value = 1.4; gBus.connect(musBus); } const d = delay || 0; if (k === 'k') tone(150, .14, 'sine', .22, 45, d, gBus); else { const zb = zBus; zBus = gBus; try { if (k === 's') noiseAt(.12, .1, 1500, d); else noiseAt(.045, .035, 6500, d); } finally { zBus = zb; } } },
     /* sanfte Hintergrundmusik: zufällige Pentatonik-Melodie */
     music(dt, night, zone) {
       if (!ctx || !musicOn || muted) return;

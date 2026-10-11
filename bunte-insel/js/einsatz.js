@@ -20,6 +20,15 @@ BI.EINSATZ = [
     steps: [{ at: 'wald', icon: '🔦', text: 'Am Verbotenen Wald den Wanderer finden', done: 'Gefunden! Der Wanderer ist müde, aber ganz unverletzt.' }, { at: 'camp', icon: '⛺', text: 'Den Wanderer zum Camp bringen', done: 'Am Lagerfeuer gibt es warmen Kakao. Alles gut!' }] },
   { id: 'schluessel', pup: 'Pia', icon: '🔑', title: 'Der Schlüssel-Flug', quote: 'Von oben habe ich einen Schlüssel blitzen sehen – vor dem Kino! Der gehört bestimmt jemandem in der Stadt.',
     steps: [{ at: 'kino', icon: '🔑', text: 'Vor dem Kino den Schlüssel finden', done: 'Da liegt er, ein goldener Schlüssel mit Herz-Anhänger!' }, { at: 'staedte3', icon: '🏛️', text: 'Am Stadttor den Schlüssel abgeben', done: 'Der Stadtwächter ist erleichtert: „Mein Schlüssel! Wie wunderbar!“' }] }
+,
+  { id: 'leuchtturm', pup: 'Welle', icon: '💡', title: 'Das flackernde Licht', quote: 'Das Licht am Leuchtturm flackert, und draußen ist es neblig. Ein Schiff könnte sich verirren!',
+    steps: [{ at: 'leuchtturm', icon: '💡', text: 'Am Leuchtturm die Glühbirne wechseln', done: 'Es werde Licht! Der Strahl leuchtet wieder weit über das Meer.' }, { at: 'steg', icon: '⛵', text: 'Am Steg das Boot festbinden', done: 'Das Boot liegt sicher am Steg. Gut gemacht!' }] },
+  { id: 'gleise', pup: 'Brumm', icon: '🪵', title: 'Baumstamm auf den Gleisen', quote: 'Ein Baumstamm liegt auf den Zuggleisen! Der Zug darf dort nicht lang fahren, bevor wir ihn wegräumen.',
+    steps: [{ at: 'bahnhof', icon: '🪵', text: 'Am Bahnhof den Baumstamm von den Gleisen räumen', done: 'Mit vereinten Kräften ist der Stamm weg. Die Gleise sind frei!' }, { at: 'staedte', icon: '📣', text: 'In der Stadt Bescheid geben: Zug fährt wieder', done: 'Die Durchsage läuft: „Der Zug fährt wieder!“ Alle sind erleichtert.' }] },
+  { id: 'kabel', pup: 'Sprudel', icon: '🧯', title: 'Heißes Kabel', quote: 'Bei der Parade ist ein Kabel heiß gelaufen und qualmt. Schnell kühlen und danach den Park prüfen!',
+    steps: [{ at: 'plaza', icon: '🧯', text: 'Auf der Regenbogen-Plaza das heiße Kabel kühlen', done: 'Psssch! Das Kabel ist kühl, niemand ist verletzt.' }, { at: 'parkeingang', icon: '🎡', text: 'Am Freizeitpark die Sicherungen prüfen', done: 'Alle Sicherungen sind in Ordnung. Das Riesenrad dreht weiter!' }] },
+  { id: 'hund', pup: 'Blitz', icon: '🐕', title: 'Ausgerissener Hund', quote: 'Wuff! Ein kleiner Hund ist von zu Hause ausgerissen. Meine Nase hat schon eine Spur!',
+    steps: [{ at: 'bauernhof', icon: '🐕', text: 'Auf dem Bauernhof der Pfotenspur folgen', done: 'Da ist er! Ein kleiner Hund, der sich im Heu versteckt hat.' }, { at: 'plaza', icon: '🏳️‍🌈', text: 'Auf der Regenbogen-Plaza den Hund abgeben', done: 'Mama Mara und Mama Lena freuen sich riesig: „Unser Hündchen!“' }] }
 ];
 
 BI.createEinsatz = function (G) {
@@ -29,7 +38,7 @@ BI.createEinsatz = function (G) {
   const WHERE = {
     karussell: [252, 38, 'Freizeitpark'], eisbude: [274, 17, 'Freizeitpark'], staedte: [0, -262, 'Stadt'], staedte2: [0, -248, 'Stadt'], staedte3: [0, -238, 'Stadt'],
     spielzeug: [SP.shop.x, SP.shop.z + 8, 'Spielzeugladen'], buehne: [RB.x - 27, RB.z + 10, 'Regenbogenwelt'], plaza: [RB.x + 16, RB.z + 6, 'Regenbogenwelt'], tierpark: [SP.tierpark.x, SP.tierpark.z, 'Tierpark'],
-    camp: [SP.camp.x, SP.camp.z + 5, 'Camp'], bad: [SP.pool.gate.x, SP.pool.gate.z - 4, 'Freibad'], hospital: [SP.hospital.x, SP.hospital.z, 'Krankenhaus'], spielplatz: [SP.park.x, SP.park.z - 4, 'Spielplatz'],
+    camp: [SP.camp.x, SP.camp.z + 5, 'Camp'], leuchtturm: [SP.lighthouse.x, SP.lighthouse.z + 5, 'Leuchtturm'], steg: [4.5, 168, 'Steg'], bahnhof: [SP.station.x, SP.station.z + 6, 'Bahnhof'], parkeingang: [PARK.bridge.x1 + 6, PARK.z, 'Freizeitpark'], bauernhof: [SP.farm.customer.x, SP.farm.customer.z, 'Bauernhof'], bad: [SP.pool.gate.x, SP.pool.gate.z - 4, 'Freibad'], hospital: [SP.hospital.x, SP.hospital.z, 'Krankenhaus'], spielplatz: [SP.park.x, SP.park.z - 4, 'Spielplatz'],
     wald: [SP.forest.gate.x, SP.forest.gate.z, 'Verbotener Wald'], kino: [CIT.door.x, CIT.door.z + 1.5, 'Kino']
   };
   const _o = {}, fit = (x, z) => { const q = W.resolve(x, z, .6, _o); return { x: q.x, z: q.z }; };
@@ -46,7 +55,7 @@ BI.createEinsatz = function (G) {
   const paint = () => { const e = E(), sig = e.done.join() + '|' + (e.cur ? e.cur.id + e.cur.step : ''); if (sig === boardSig) return; boardSig = sig;
     const g = cx.createLinearGradient(0, 0, 0, 410); g.addColorStop(0, '#1d4fa8'); g.addColorStop(1, '#14305f'); cx.fillStyle = g; cx.fillRect(0, 0, 512, 410); cx.fillStyle = '#ffd23f'; cx.fillRect(0, 0, 512, 54);
     cx.textBaseline = 'middle'; cx.textAlign = 'center'; cx.fillStyle = '#14305f'; cx.font = 'bold 34px Fredoka, system-ui, sans-serif'; cx.fillText('🚨 EINSATZ-TAFEL · ' + e.done.length + '/' + MS.length, 256, 29);
-    MS.forEach((m, i) => { const y = 82 + i * 39, done = e.done.includes(m.id), act = e.cur && e.cur.id === m.id; cx.textAlign = 'left'; cx.fillStyle = act ? '#ffd23f' : done ? '#8fe6a8' : '#fff'; cx.font = (act ? 'bold ' : '') + '25px Fredoka, system-ui, sans-serif'; cx.fillText((done ? '✅ ' : act ? '▶ ' : m.icon + ' ') + m.title, 24, y); cx.textAlign = 'right'; cx.fillStyle = '#b9cdf5'; cx.font = '21px Fredoka, system-ui, sans-serif'; cx.fillText(m.pup, 490, y); });
+    MS.forEach((m, i) => { const y = 80 + i * 27, done = e.done.includes(m.id), act = e.cur && e.cur.id === m.id; cx.textAlign = 'left'; cx.fillStyle = act ? '#ffd23f' : done ? '#8fe6a8' : '#fff'; cx.font = (act ? 'bold ' : '') + '21px Fredoka, system-ui, sans-serif'; cx.fillText((done ? '✅ ' : act ? '▶ ' : m.icon + ' ') + m.title, 24, y); cx.textAlign = 'right'; cx.fillStyle = '#b9cdf5'; cx.font = '17px Fredoka, system-ui, sans-serif'; cx.fillText(m.pup, 490, y); });
     tex.needsUpdate = true; };
   { const b = board(); if (b) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(5.8, 4.64), new THREE.MeshBasicMaterial({ map: tex })); pl.position.set(b.x, 3.9, b.z + 2.7); pl.rotation.y = Math.PI; scene.add(pl); paint(); } }
   /* ===== Leuchtsäule am Ziel ===== */
