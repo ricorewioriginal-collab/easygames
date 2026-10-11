@@ -185,3 +185,7 @@ Eine eigene Drachen-Welt mit Steinbrücke, Tor, Plaza, Berg- und Kristall-Landsc
 Urheberrecht: Die Welt ist von Drachen-Abenteuerspielen *inspiriert*, übernimmt aber nur allgemeine Ideen (Edelsteine sammeln, Feuer speien, gleiten, Freunde befreien). Figuren, Namen, Gestaltung, Musik und Spiel sind komplett eigen; keine Logos, Namen oder Originalfiguren. Keine Verbindung zu den Rechteinhabern; keine Rechtsberatung.
 
 Dateien: `js/drachen.js` (Welt, Zündel, Logik), `js/gadgets.js` (Flügel), `js/minis2.js` (Drachenflug), `js/themes.js` (Musik).
+
+### 🐕 Fellnasen-Mobil (Fellretter-Bucht)
+
+In der Fellretter-Bucht steht ein fahrbares **Fellnasen-Mobil**: ein blauer Streifenwagen, der aussieht wie Blitz (Hundegesicht mit Schnauze, Schlappohren, Wedelschwanz) und einen dreifarbigen Lichtbalken hat. Mit E einsteigen und fahren; die Sirene (🚨-Knopf) mischt Polizei, Rettungswagen und Feuerwehr, die Hupe bellt. Eigenes Design, keine Originalfahrzeuge.

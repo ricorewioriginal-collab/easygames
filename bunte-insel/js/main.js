@@ -1444,8 +1444,8 @@
       const sp = v.spec;
       if (inp.horn && sp.water && !v.isTrain) { v.spray(dt, fx); A.water(true); } else A.water(false);
       if (inp.horn && sp.drake) v.breathe(dt, fx);
-      if (inp.horn && !(sp.water)) { if (sp.horn === 'melody') { A.melody(); } else A.horn(sp.horn, true); hornActive = true; } else if (hornActive) { A.horn('car', false); hornActive = false; }
-      if (inp.hornEdge) { inp.hornEdge = false; if (sp.horn !== 'melody' && !sp.water) fx.burst(v.x, 2.4, v.z, 4, [BI.C.white], 2, .5, 18, 0); }
+      if (inp.horn && !(sp.water) && !sp.bark) { if (sp.horn === 'melody') { A.melody(); } else A.horn(sp.horn, true); hornActive = true; } else if (hornActive) { A.horn('car', false); hornActive = false; }
+      if (inp.hornEdge) { inp.hornEdge = false; if (sp.bark) A.bark(); if (sp.horn !== 'melody' && !sp.water) fx.burst(v.x, 2.4, v.z, 4, [BI.C.white], 2, .5, 18, 0); }
       A.engine(sp.kind, clamp(Math.abs(v.v) / sp.max + (sp.fly && v.y > .5 ? .25 : 0), 0, 1.2), true);
       if (!v.isTrain && sp.siren) A.siren(sp.siren, v.siren); else A.siren('police', false);
       if (v.spec.remote) { // Jannis bleibt stehen und lenkt mit der Fernsteuerung
