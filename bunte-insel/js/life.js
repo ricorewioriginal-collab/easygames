@@ -3,7 +3,9 @@
    Clowns im Freizeitpark, Einhörner in der Regenbogenwelt, Matrosen und Mäuse im Dampfer-Hafen, Hunde und Katzen in der Fellretter-Bucht, Babydrachen und Ritter
    in den Drachenhöhen, Bauarbeiter und Rehe im Bauland, Mooslinge und Irrlichter in Lunaris, DJs und Fans in der Funkwelle, Meerleute und Fische in Atlantis).
    Sparsam gebaut: Eine Welt wird erst gefüllt, wenn man ihr nahekommt; bewegt und gezeichnet werden nur Figuren in der Nähe; Tiere sind je ein einziges Mesh.
-   Menschen-Bewohner kann man ansprechen (wie die anderen Leute); sie wandern, bleiben stehen, hüpfen und tanzen. */
+   Menschen-Bewohner kann man ansprechen (wie die anderen Leute); sie wandern, bleiben stehen, hüpfen und tanzen.
+   Tag und Nacht: Nachts gehen die Bewohner nach Hause (zu ihrem Startplatz) und schlafen (💤), Tauben, Eichhörnchen, Möwen und Schmetterlinge
+   verschwinden, dafür kommen Eulen und Glühwürmchen heraus. Nachtwächter, Ritter und die Funkwelle bleiben wach. Morgens wachen alle auf. */
 BI.createLife = function (G) {
   const { scene, W, P } = G, K = { talkers: [], regions: [] }, TAU = Math.PI * 2, rng = BI.rng(20261011), mat = BI.mat(), tmp = {};
   const R_ = (a, b) => a + rng() * (b - a), pick = a => a[(rng() * a.length) | 0], ang = BI.angDiff;
@@ -26,6 +28,7 @@ BI.createLife = function (G) {
     fish: c => crit(b => { b.sph(0, 0, 0, .3, c, 1, .6, .8, 1.5); b.cone(0, 0, -.4, .25, .4, c, 4, Math.PI / 2); b.sph(0, .05, .35, .05, 0x111111, 0); b.box(0, .25, 0, .02, .2, .3, c); }, 0),
     gull: () => wingy(b => { b.sph(0, 0, 0, .16, 0xffffff, 1, .8, .8, 1.8); b.sph(0, .08, .26, .09, 0xffffff, 1); b.box(0, .07, .36, .03, .03, .1, 0xff9a2a); b.box(0, 0, -.3, .1, .02, .16, 0xdddddd); }, (b, s) => { b.box(s * .35, 0, 0, .55, .03, .28, 0xeeeeee); b.box(s * .6, 0, -.02, .25, .03, .2, 0x666b78); }, 7),
     bat: () => wingy(b => { b.sph(0, 0, 0, .1, 0x2a2438, 1, .8, .8, 1.3); b.cone(-.05, .1, .05, .03, .08, 0x2a2438, 3); b.cone(.05, .1, .05, .03, .08, 0x2a2438, 3); b.sph(0, .02, .1, .02, 0xff5a5a, 0); }, (b, s) => { b.box(s * .25, 0, 0, .4, .02, .22, 0x3a3250); }, 14),
+    owl: () => wingy(b => { b.sph(0, 0, 0, .17, 0x8a6a4a, 1, 1, 1.2, 1); b.sph(0, .1, .12, .11, 0xe8d8b8, 1, 1, 1, .5); b.sph(-.05, .12, .17, .04, 0xffd23f, 0); b.sph(.05, .12, .17, .04, 0xffd23f, 0); b.sph(-.05, .12, .2, .018, 0x222222, 0); b.sph(.05, .12, .2, .018, 0x222222, 0); b.cone(0, .06, .19, .02, .05, 0xe8a030, 3); b.cone(-.09, .22, 0, .03, .08, 0x8a6a4a, 3); b.cone(.09, .22, 0, .03, .08, 0x8a6a4a, 3); }, (b, s) => { b.box(s * .28, 0, 0, .45, .03, .24, 0x6b4f35); }, 6),
     butterfly: c => wingy(b => { b.box(0, 0, 0, .02, .02, .14, 0x333333); }, (b, s) => { b.box(s * .08, 0, .03, .14, .01, .16, c); b.box(s * .07, 0, -.08, .1, .01, .1, c); }, 20),
     wisp: c => { const root = new THREE.Group(), m = new THREE.Mesh(new THREE.SphereGeometry(.22, 8, 6), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .8, fog: false })); root.add(m); return { root, pose: () => { } }; },
     jelly: c => { const root = new THREE.Group(), g = new THREE.Group(), m = new THREE.Mesh(new THREE.SphereGeometry(.35, 8, 6, 0, TAU, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .65, fog: false })); g.add(m); for (let i = 0; i < 5; i++) { const t = mk(b => b.box(Math.sin(i * 1.26) * .2, -.5, Math.cos(i * 1.26) * .2, .03, .5, .03, c)); g.add(t); } root.add(g); return { root, pose: (ph) => { g.scale.y = 1 + Math.sin(ph) * .12; } }; },
@@ -55,7 +58,7 @@ BI.createLife = function (G) {
       ['person', 3, { names: ['Gärtner Gustav', 'Gärtnerin Greta', 'Blumen-Berta'], hats: ['cap', 'flowers'], rad: 8, lines: ['bei mir wächst alles! 🌻', 'Pflanzen brauchen Wasser, Sonne und Liebe.', 'Magst du Tomaten oder lieber Erdbeeren?'] }],
       ['pet', 4, { pet: 'bello' }], ['pet', 4, { pet: 'mieze' }], ['pet', 3, { pet: 'hoppel' }],
       ['critter', 5, { k: 'squirrel', rad: 8 }], ['critter', 4, { k: 'hedgehog', rad: 5, spd: .5 }], ['critter', 10, { k: 'pigeon', rad: 5 }], ['critter', 6, { k: 'rabbit', rad: 8 }],
-      ['float', 10, { k: 'butterfly', c: 0xffb347, alt: [1, 2.4], amp: 4 }], ['fly', 8, { k: 'gull', alt: [14, 28], w: .1 }], ['beach', 6, {}]] },
+      ['float', 10, { k: 'butterfly', c: 0xffb347, alt: [1, 2.4], amp: 4 }], ['fly', 8, { k: 'gull', alt: [14, 28], w: .1 }], ['float', 10, { k: 'owl', alt: [3, 6], amp: 5, sp: .3 }], ['beach', 6, {}]] },
     { id: 'city', x: 0, z: -290, R: 62, pad: 6, spec: [
       ['person', 8, { names: ['Herr Meier', 'Frau Schulz', 'Herr Braun', 'Frau Weiss', 'Herr Kaiser', 'Frau Lange'], shirts: [0xffffff, 0xcfe0ff, 0xf0f0f0], pants: [0x23262d, 0x3d4a7a, 0x5a5a66], hats: ['none', 'tophat'], spd: 1.7, rad: 18, lines: ['ich habe gleich einen wichtigen Termin! 💼', 'Die Stadt schläft nie – hier ist immer was los.', 'Hast du schon die Läden angeschaut?', 'Kaffee gibt es beim Bäcker, ganz frisch.'] }],
       ['person', 6, { names: ['Touristin Tina', 'Tourist Tom', 'Reisende Rita'], hats: ['cap', 'cowboy'], rad: 14, lines: ['ich mache lauter Fotos von der Stadt! 📸', 'Wo geht es zum Hafen?', 'Bei euch ist es wunderschön!'] }],
@@ -79,21 +82,21 @@ BI.createLife = function (G) {
       ['fly', 5, { k: 'gull', alt: [10, 22], w: .14 }]] },
     { id: 'drachen', x: 100, z: 275, R: 48, pad: 6, spec: [
       ['dragon', 7, {}],
-      ['person', 5, { names: ['Ritter Rolf', 'Ritterin Rike', 'Wächter Wolf', 'Ritter Rudi', 'Wächterin Wanda'], shirts: [0x9aa5b8, 0x7d8aa0], pants: [0x5a3d2b], hats: ['helmet', 'viking'], look: { cape: true }, spd: 1, rad: 12, lines: ['ich beschütze die Drachenhöhen! 🛡️', 'Die kleinen Drachen sind eigentlich ganz brav.', 'Drachen mögen Funkelsteine, wusstest du das?', 'Mut ist wichtiger als ein Schwert.'] }],
+      ['person', 5, { awake: true, names: ['Ritter Rolf', 'Ritterin Rike', 'Wächter Wolf', 'Ritter Rudi', 'Wächterin Wanda'], shirts: [0x9aa5b8, 0x7d8aa0], pants: [0x5a3d2b], hats: ['helmet', 'viking'], look: { cape: true }, spd: 1, rad: 12, lines: ['ich beschütze die Drachenhöhen! 🛡️', 'Die kleinen Drachen sind eigentlich ganz brav.', 'Drachen mögen Funkelsteine, wusstest du das?', 'Mut ist wichtiger als ein Schwert.'] }],
       ['person', 3, { names: ['Zauberer Zorbo', 'Zauberin Zita', 'Magier Merlo'], shirts: [0x6b3dc2, 0x2a2a8a], hats: ['wizard'], look: { cape: true }, hairs: [0xeeeeee, 0xcccccc], spd: .8, rad: 8, lines: ['Hokuspokus – ich lese Drachensprache! ✨', 'In den Höhlen funkelt es überall.', 'Feuer ist heiß, aber Freundschaft wärmt mehr.'] }],
-      ['fly', 6, { k: 'bat', alt: [6, 16], w: .35, fast: 14 }]] },
+      ['fly', 6, { k: 'bat', alt: [6, 16], w: .35, fast: 14 }], ['float', 4, { k: 'owl', alt: [3, 6], amp: 4, sp: .3 }]] },
     { id: 'bauland', x: 277, z: -233, R: 150, pad: 10, spec: [
       ['person', 10, { names: ['Bauarbeiter Bernd', 'Baumeisterin Bea', 'Poliere Paula', 'Maurer Max', 'Zimmerin Zoe', 'Architekt Arno'], shirts: [0xff8a1f, 0xffc933, 0x4cd07d], pants: [0x3d4a7a, 0x5a3d2b], hats: ['helmet'], rad: 22, lines: ['hier kann jeder bauen, was er will! 🏗️', 'Fang mit einem festen Fundament an.', 'Wusstest du, dass man auch Türme bauen kann?', 'Ein Haus ohne Dach wird ziemlich nass.'] }],
       ['critter', 4, { k: 'robot', rad: 16, spd: .8 }], ['critter', 6, { k: 'deer', rad: 18, spd: .8 }], ['critter', 6, { k: 'rabbit', rad: 12 }], ['critter', 6, { k: 'pigeon', rad: 8 }], ['float', 8, { k: 'butterfly', c: 0xffd23f, alt: [1, 2.4], amp: 5 }]] },
     { id: 'zotik', x: 0, z: 440, R: 112, pad: 8, spec: [
       ['moosling', 8, {}],
       ['person', 4, { names: ['Fuchs Fenn', 'Fuchs-Frida', 'Silberfuchs Sira', 'Rotfuchs Rufus'], shirts: [0x6b4a2a, 0x3a5a8a], pants: [0x3a2a1a], skins: [0xe8832a, 0xd8d8e0, 0xf0a050], hairs: [0xf08a24, 0xe0e0e8, 0xc86a1a], look: { fox: true, scarf: 0x3fa04a, ctype: 5 }, rad: 14, lines: ['die Splitter funkeln überall in Lunaris! 💠', 'Hörst du die Welten flüstern?', 'Wer Zotik kennt, hat gute Freunde.', 'Meine Ohren hören alles!'] }],
-      ['person', 4, { names: ['Wächter Wenzel', 'Wächterin Wilma', 'Hauptmann Harro', 'Wächter Wiebo'], shirts: [0x3f6fd8, 0x1d2a6a], pants: [0x2a2a3a], hats: ['helmet'], look: { cape: true }, spd: 1, rad: 14, lines: ['ich bewache den Mondkristall! 🌙', 'Der Riss an der Akademie macht mir Sorgen.', 'Lunaris ist friedlich, solange wir zusammenhalten.'] }],
+      ['person', 4, { awake: true, names: ['Wächter Wenzel', 'Wächterin Wilma', 'Hauptmann Harro', 'Wächter Wiebo'], shirts: [0x3f6fd8, 0x1d2a6a], pants: [0x2a2a3a], hats: ['helmet'], look: { cape: true }, spd: 1, rad: 14, lines: ['ich bewache den Mondkristall! 🌙', 'Der Riss an der Akademie macht mir Sorgen.', 'Lunaris ist friedlich, solange wir zusammenhalten.'] }],
       ['person', 8, { names: ['Magierin Mira', 'Gelehrter Gero', 'Händlerin Hanne', 'Bardin Bela', 'Alchemist Alo', 'Sternenguckerin Sia', 'Pilger Pit', 'Kräuterfrau Kora'], shirts: [0x7a3dc2, 0x2f9a6a, 0xd8a24a, 0x3f6fd8], hats: ['wizard', 'none', 'flowers'], look: { cape: true }, spd: 1, rad: 16, lines: ['Wissen ist Macht – Neugier der Schlüssel! 📖', 'Die Mooslinge sind die besten Freunde des Waldes.', 'Zehn Splitter ergeben einen Stern, sagt man.', 'Vom Hafen sieht man die Nautilux fliegen.'] }],
       ['float', 10, { k: 'wisp', c: 0xbfe0ff, alt: [1.2, 3.5], amp: 4 }], ['fly', 5, { k: 'gull', alt: [14, 26], w: .1 }]] },
     { id: 'radio', x: 300, z: 230, R: 112, pad: 8, spec: [
-      ['person', 4, { names: ['DJ Dante', 'DJane Dua', 'DJ Rico', 'DJane Rena'], shirts: [0x1a1f5a, 0xff5ab4, 0x35d6e0], hats: ['headphones'], rad: 12, bursts: true, lines: ['ich lege die besten Hits auf! 🎧', 'Dreh das Radio an – die Welt klingt besser.', 'Welcher Sender ist dein Lieblingssender?', 'Musik verbindet uns alle.'] }],
-      ['person', 12, { names: ['Fan Fabi', 'Hörerin Hella', 'Fan Felix', 'Hörerin Hanni', 'Fan Flo', 'Hörerin Heike'], shirts: SH, hats: ['headphones', 'cap', 'party'], rad: 18, dance: true, bursts: true, lines: ['ich höre den ganzen Tag Radio! 📻', 'Bei jedem Sender läuft was anderes Tolles.', 'Hast du schon alle dreizehn Sender gehört?', 'Lauter! Lauter! 🎶'] }],
+      ['person', 4, { awake: true, names: ['DJ Dante', 'DJane Dua', 'DJ Rico', 'DJane Rena'], shirts: [0x1a1f5a, 0xff5ab4, 0x35d6e0], hats: ['headphones'], rad: 12, bursts: true, lines: ['ich lege die besten Hits auf! 🎧', 'Dreh das Radio an – die Welt klingt besser.', 'Welcher Sender ist dein Lieblingssender?', 'Musik verbindet uns alle.'] }],
+      ['person', 12, { awake: true, names: ['Fan Fabi', 'Hörerin Hella', 'Fan Felix', 'Hörerin Hanni', 'Fan Flo', 'Hörerin Heike'], shirts: SH, hats: ['headphones', 'cap', 'party'], rad: 18, dance: true, bursts: true, lines: ['ich höre den ganzen Tag Radio! 📻', 'Bei jedem Sender läuft was anderes Tolles.', 'Hast du schon alle dreizehn Sender gehört?', 'Lauter! Lauter! 🎶'] }],
       ['critter', 3, { k: 'robot', rad: 14, spd: .7 }], ['float', 8, { k: 'note', c: '#ff5ab4', alt: [2, 5], amp: 5 }], ['fly', 6, { k: 'gull', alt: [14, 26], w: .12 }]] },
     { id: 'atlantis', x: 1200, z: 0, R: 140, pad: 12, spec: [
       ['person', 10, { names: ['Meermann Moro', 'Meerfrau Marina', 'Perlentaucher Pim', 'Muschel-Mara', 'Tangwächter Tilo', 'Korallen-Kira', 'Delfinflüsterer Dio', 'Quallen-Quin'], shirts: [0x0f5a73, 0x35d6e0, 0x7a8cff], pants: [0xe8f0f6], hairs: [0x35d6e0, 0x7a8cff, 0x6bffd0], skins: [0xa8e0e8, 0xc8f0f0, 0x9ad0e0], hats: ['none', 'flowers'], look: { cape: true }, rad: 18, lines: ['willkommen in der Stadt unter der Erde! 🔱', 'Hier unten scheint nie die Sonne, aber alles leuchtet.', 'Die Gleiter schweben auf Wasserkraft.', 'Hast du schon das Herz von Atlantis gespürt?'] }],
@@ -111,6 +114,7 @@ BI.createLife = function (G) {
         n = F[kind](reg, o || {}); if (n.mode === 'fly') { n.root.position.set(reg.x, n.alt, reg.z); n.x = reg.x; n.z = reg.z; }
         else { const s = spot(reg, n.r + .3); if (!s) { K.talkers.splice(K.talkers.indexOf(n), 1); continue; } place(n, reg, s[0], s[1]); }
       } else continue;
+      const sp = kind === 'beach' ? 'crab' : o && o.k; if (DAY[sp]) n.day = true; if (sp === 'owl') n.nite = true; if (o && o.awake) n.awake = true;
       n.reg = reg; n.root.visible = false; scene.add(n.root); reg.list.push(n);
     }
   }
@@ -123,6 +127,8 @@ BI.createLife = function (G) {
       g.rotation.y = Math.atan2(Math.cos(t * n.sp + n.ph), -Math.sin(t * n.sp * .8 + n.ph * 1.3) * .8) + (n.flutter ? 0 : 0); g.position.set(x, y, z); n.x = x; n.z = z; if (n.flap) n.flap(t + n.ph, 20); if (n.pose) n.pose(t * 2 + n.ph, 1); return;
     }
     n.wait -= dt; n.hop = Math.max(0, n.hop - dt); let moving = false, dancing = false;
+    if (n.kind === 'person' && sleepy && !n.awake) { if (sleep(n, dt, t)) return; }
+    else if (n.asleep) wake(n);
     if (n.mode === 'dance') dancing = true;
     else if (n.wait <= 0) {
       const dx = n.tx - n.x, dz = n.tz - n.z, d = Math.hypot(dx, dz);
@@ -135,14 +141,56 @@ BI.createLife = function (G) {
     g.position.set(n.x, n.y + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .5 : 0), n.z); g.rotation.y = n.h + (n.side ? Math.PI / 2 : 0);
     if (dancing && n.c && n.c.dance) { n.c.dance(t + n.ph, 0); g.position.y += Math.abs(Math.sin((t + n.ph) * 8)) * .12; } else n.pose(moving ? n.ph : t * 1.2 + n.x, moving ? .7 : 0, false);
   }
+  /* ---------- Tag und Nacht ---------- */
+  let nightOn = null, sleepy = false, zzMat = null;
+  const DAY = { pigeon: 1, squirrel: 1, butterfly: 1, gull: 1 };
+  const NIGHT_LINES = ['Psst … ich schlafe schon. 💤', 'Gähn … gute Nacht! 🌙', 'Morgen spielen wir wieder, ja? 😴', 'Ich träume gerade von Sternen … ✨', 'Schlaf auch gut – dein Bett wartet zu Hause! 🛏️'];
+  function zzSprite() {
+    if (!zzMat) { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'); x.font = 'bold 44px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#ffffff'; x.fillText('💤', 32, 34); zzMat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, fog: false }); }
+    const sp = new THREE.Sprite(zzMat); sp.scale.setScalar(.7); return sp;
+  }
+  /* Bewohner laufen zu ihrem Startplatz (ihr Zuhause) und schlafen dort; true = fertig für dieses Bild */
+  function sleep(n, dt, t) {
+    const g = n.root;
+    if (!n.asleep && Math.hypot(n.ax - n.x, n.az - n.z) > .6 && (n.homeT = (n.homeT || 0) + dt) < 25) { if (n.wait <= 0) { n.tx = n.ax; n.tz = n.az; } n.dance = 0; return false; } /* nach 25 s ohne Ankunft schläft er, wo er ist */
+    if (!n.asleep) { n.asleep = true; n.homeT = 0; if (!n.zz) { n.zz = zzSprite(); g.add(n.zz); } n.zz.visible = true; n.dayLines = n.dayLines || n.p.lines; n.p.lines = NIGHT_LINES; }
+    n.zz.position.set(.25, 2.2 + Math.sin(t * 1.5 + n.ph) * .12, 0); n.dance = 0;
+    n.y = W.groundY(n.x, n.z); g.position.set(n.x, n.y + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .5 : 0), n.z); g.rotation.y = n.h;
+    n.pose(0, 0, false); g.rotation.z = Math.sin(t * .9 + n.ph) * .04; return true;
+  }
+  function wake(n) { n.zz.visible = false; n.homeT = 0; n.asleep = false; n.root.rotation.z = 0; if (n.dayLines) n.p.lines = n.dayLines; n.hop = .6; n.wait = rng() * 1.5; }
+  /* Glühwürmchen: ein einziges Punkte-Objekt, das um die Spielfigur schwebt (nur nachts, nicht unter Wasser) */
+  let ff = null;
+  const glow = () => { const cv = document.createElement('canvas'); cv.width = cv.height = 32; const x = cv.getContext('2d'), g = x.createRadialGradient(16, 16, 0, 16, 16, 16); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.35, 'rgba(255,255,255,.6)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 32, 32); return new THREE.CanvasTexture(cv); };
+  function flies(dt, t, eco) {
+    const on = nightOn && P.x < 900 && Math.hypot(P.x, P.z) < 600; if (!on) { if (ff) ff.pts.visible = false; return; }
+    if (!ff) {
+      const N = 36, pos = new Float32Array(N * 3), col = new Float32Array(N * 3), geo = new THREE.BufferGeometry(), seed = [];
+      for (let i = 0; i < N; i++) seed.push({ x: (rng() - .5) * 32, z: (rng() - .5) * 32, y: .6 + rng() * 2.4, p: rng() * TAU, s: .4 + rng() * .6 });
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: .55, map: glow(), alphaTest: .01, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+      pts.frustumCulled = false; scene.add(pts); ff = { pts, pos, col, seed, N };
+    }
+    ff.pts.visible = true; const n = eco ? ff.N >> 1 : ff.N; ff.pts.geometry.setDrawRange(0, n);
+    for (let i = 0; i < n; i++) {
+      const f = ff.seed[i]; let rx = f.x + Math.sin(t * f.s + f.p) * 1.5, rz = f.z + Math.cos(t * f.s * .8 + f.p) * 1.5;
+      const x = P.x + (((rx - P.x) % 32) + 48) % 32 - 16, z = P.z + (((rz - P.z) % 32) + 48) % 32 - 16; /* bleiben in einem Feld um die Figur */
+      ff.pos[i * 3] = x; ff.pos[i * 3 + 1] = W.groundY(x, z) + f.y + Math.sin(t * 1.3 + f.p) * .3; ff.pos[i * 3 + 2] = z;
+      const b = .3 + .7 * Math.max(0, Math.sin(t * 2.2 * f.s + f.p * 3)); ff.col[i * 3] = .75 * b; ff.col[i * 3 + 1] = 1 * b; ff.col[i * 3 + 2] = .3 * b;
+    }
+    ff.pts.geometry.attributes.position.needsUpdate = true; ff.pts.geometry.attributes.color.needsUpdate = true;
+  }
+  K.night = () => ({ on: !!nightOn, sleeping: REG.reduce((a, r) => a + (r.list || []).filter(n => n.asleep).length, 0), flies: !!(ff && ff.pts.visible) });
   /* Eine Welt wird gefüllt, sobald man ihr nahekommt; bewegt wird nur, was in der Nähe ist */
-  K.update = function (dt, t, eco) {
-    const view = eco ? 62 : 88;
+  K.update = function (dt, t, eco, night) {
+    const view = eco ? 62 : 88, nOn = (night || 0) > (nightOn ? .4 : .6); /* kleine Hysterese, damit es beim Umschalten nicht flackert */
+    if (nOn !== nightOn) { if (nightOn != null && G.say) G.say(nOn ? '🌙 Es wird Nacht: Die Bewohner gehen schlafen, Eulen und Glühwürmchen kommen heraus.' : '☀️ Guten Morgen! Die Bewohner wachen auf.', 4200); nightOn = nOn; sleepy = nOn; }
+    flies(dt, t, eco);
     for (const reg of REG) {
       const d = dist(reg.x, reg.z), act = d < reg.R + 110; if (!act) { if (reg.on) { reg.on = false; for (const n of reg.list) n.root.visible = false; } continue; }
       if (!reg.built) { build(reg); } reg.on = true;
       for (const n of reg.list) {
-        const dd = Math.hypot(P.x - n.x, P.z - n.z), vis = dd < view; if (n.root.visible !== vis) n.root.visible = vis; if (!vis) continue; step(n, dt, t, reg);
+        const dd = Math.hypot(P.x - n.x, P.z - n.z), vis = dd < view && !(n.day && nightOn) && !(n.nite && !nightOn); if (n.root.visible !== vis) n.root.visible = vis; if (!vis) continue; step(n, dt, t, reg);
       }
     }
   };

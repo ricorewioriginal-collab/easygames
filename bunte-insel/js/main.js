@@ -1053,7 +1053,7 @@
   const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
   const atlantis = BI.createAtlantis({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, fade: cb => { fadeEl.firstElementChild.textContent = '🔱'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setAtlMood(on) }); atlantis.people(town.folk);
   const radio = BI.createRadio({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, setStick, updateButtons: f => updateButtons(f) });
-  const life = BI.createLife({ scene, W, P });
+  const life = BI.createLife({ scene, W, P, say });
   const zotik = BI.createZotik({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, takeMascot: id => takeMascot(id), start: k => startGame(k, true), go: id => { const d = DEST.find(x => x.id === id); if (d) beamTo(d); } });
   const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
@@ -1689,7 +1689,7 @@
       const x = Math.sin(tr.a) * tr.lane, z = Math.cos(tr.a) * tr.lane; v.setPose(x, z, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
     }
     if (P.veh !== trainVeh) train.update(dt, null, fx);
-    life.update(dt, t, !!save.eco);
+    life.update(dt, t, !!save.eco, night);
     // Menschen
     for (const n of npcs) {
       if (n.dancer <= 0 && Math.abs(n.x - qx) + Math.abs(n.z - qz) > (save.eco ? 70 : 95)) { if (n.c.group.visible) n.c.group.visible = false; if (n.lead && Math.abs(n.lead.x - n.x) + Math.abs(n.lead.z - n.z) > 14) { n.x = n.lead.x; n.z = n.lead.z; } continue; }

@@ -690,5 +690,16 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     b.save.stars = 20; b.save.owned = b.save.owned.filter(x => x !== 'rollator'); const it = b.SHOP ? null : null; out.shop = true; return out; });
   ok(r.has && r.near && r.in && r.stand && r.fast && r.wheelie && r.left, 'Rollator: man steht dahinter, Turbo = Wheelie + Raketen-Tempo, aussteigen'); await c.close();
 }
+{ // Tag und Nacht: nachts schlafen die Bewohner (💤, Nacht-Sätze), Tagtiere verschwinden, Eulen und Glühwürmchen kommen; morgens wachen alle auf
+  const r = await page.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); b.P.x = 0; b.P.z = 0; await sl(300);
+    const reg = b.life.regions.find(r => r.id === 'main'); for (let i = 0; i < 30 && !reg.built; i++) await sl(100); const out = {};
+    if (b.save.night) document.getElementById('bNight').click(); for (let i = 0; i < 60 && b.life.night().on; i++) await sl(200);
+    if (!b.save.night) document.getElementById('bNight').click(); for (let i = 0; i < 150 && b.life.night().sleeping < 2; i++) await sl(200);
+    const n = b.life.night(), s = reg.list.find(q => q.asleep); out.night = n.on; out.sleeping = n.sleeping; out.flies = n.flies; out.zz = !!(s && s.zz.visible); out.lines = !!(s && s.p.lines.some(l => /schlaf|Nacht/.test(l)));
+    out.dayHidden = reg.list.filter(q => q.day && q.root.visible).length === 0;
+    document.getElementById('bNight').click(); for (let i = 0; i < 60 && b.life.night().on; i++) await sl(200); await sl(300);
+    const m = b.life.night(); out.morning = !m.on && m.sleeping === 0 && !m.flies && !(s && s.zz.visible); return out; });
+  ok(r.night && r.sleeping >= 2 && r.zz && r.lines && r.flies && r.dayHidden && r.morning, `Tag und Nacht: ${r.sleeping} Bewohner schlafen (💤), Glühwürmchen, Tagtiere weg, morgens wach (${JSON.stringify(r)})`);
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
