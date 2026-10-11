@@ -24,6 +24,8 @@ BI.VEH = {
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
   nautilux:  { name: 'Nautilux (Luftschiff)', icon: '🚢', max: 20, rev: 6, turn: 1.35, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 3.2, cam: 17 },
+  limo:      { name: 'Limousine', icon: '🚘', max: 26, rev: 6, acc: 9, brake: 22, drag: 5, turn: 1.55, kind: 'car', horn: 'car', cols: [-2.7, 0, 2.7], r: 1.15, cam: 11 },
+  bobby:     { name: 'Rutschauto', icon: '🧸', max: 9, rev: 3, acc: 7, brake: 14, drag: 4, turn: 2.4, kind: 'cycle', horn: 'bell', cols: [-.55, .55], r: .62, open: true, cam: 6 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -46,6 +48,15 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       for (const z of [-1.15, .85]) for (const x of [-.82, .82]) b.box(x, .8, z, .1, .62, .12, c);
       b.box(0, 1.38, -.15, 1.5, .08, 2.2, c); b.box(0, .2, 2.05, 1.8, .3, .2, DARK); b.box(0, .2, -2.05, 1.8, .3, .2, DARK);
       return { wheels: [[.95, .38, 1.3, .38, .26, 1], [-.95, .38, 1.3, .38, .26, 1], [.95, .38, -1.3, .38, .26, 0], [-.95, .38, -1.3, .38, .26, 0]], head: [[-.65, .55, 2.1], [.65, .55, 2.1]], tail: [[-.65, .6, -2.1], [.65, .6, -2.1]] };
+    },
+    limo(b, o) { /* Stretch-Limousine: lang, glänzend, getönte Scheiben, Chromleisten, Tür-Linien */
+      const c = o.color || 0x1c1f2a, CH = 0xe8ecf4;
+      b.box(0, .3, 0, 1.95, .62, 7.6, c); b.box(0, .86, -.3, 1.7, .5, 5.8, c); b.box(0, .92, -.3, 1.74, .38, 5.6, 0x2a3550);
+      b.box(0, 1.34, -.3, 1.6, .08, 5.7, c); b.box(0, .66, 0, 2.0, .06, 7.4, CH); b.box(0, .2, 3.75, 1.85, .3, .2, DARK); b.box(0, .2, -3.75, 1.85, .3, .2, DARK);
+      for (const z of [-2.6, -.6, 1.4]) for (const sd of [-1, 1]) b.box(sd * .98, .62, z, .03, .56, .03, 0x0e0f14);
+      for (const sd of [-1, 1]) b.box(sd * .98, 1.0, .4, .04, .34, 1.2, 0x2a3550);
+      b.box(0, .42, 3.82, 1.0, .3, .06, CH); b.box(0, 1.0, 2.4, 1.5, .05, .8, 0x2a3550); b.cyl(0, 1.0, 3.4, .06, .06, .3, CH, 6); b.sph(0, 1.38, 3.4, .1, CH, 1);
+      return { wheels: [[.95, .38, 2.5, .38, .26, 1], [-.95, .38, 2.5, .38, .26, 1], [.95, .38, -2.5, .38, .26, 0], [-.95, .38, -2.5, .38, .26, 0]], head: [[-.65, .55, 3.82], [.65, .55, 3.82]], tail: [[-.65, .6, -3.82], [.65, .6, -3.82]] };
     },
     taxi(b) { /* gelb mit schwarz-weißem Schachbrett-Streifen und leuchtendem TAXI-Schild auf dem Dach – sofort erkennbar */
       const o = MODELS.car(b, { color: 0xffcc1f });
@@ -151,6 +162,13 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     b.box(0, .62, .38, .62, .05, .05, c); b.box(0, .62, -.34, .62, .05, .05, c); b.box(0, .66, -.02, .58, .06, .34, 0x3fa0ff); b.box(0, .36, .5, .5, .2, .22, 0xc8803c); b.box(0, .5, .6, .5, .04, .04, 0x8a5a33);
     return { wheels: [[.3, .17, .4, .17, .06, 1], [-.3, .17, .4, .17, .06, 1], [.3, .17, -.34, .18, .07, 0], [-.3, .17, -.34, .18, .07, 0]], head: [[0, .5, .66]], tail: [[0, .34, -.5]], seat: [0, 0, -.95], lean: 0 };
   };
+  MODELS.bobby = (b, o) => { // Rutschauto für Kinder: knallige Plastik-Karosserie, großes Lenkrad, Hupe, vier dicke Räder – ohne Motor, nur zum Flitzen
+    const c = o.color || 0xe0382b;
+    b.box(0, .2, 0, .72, .3, 1.3, c); b.box(0, .5, .46, .7, .32, .42, c); b.box(0, .5, -.46, .66, .46, .3, shadeY(c)); b.box(0, .44, -.12, .5, .12, .5, 0xffd23f);
+    b.box(0, .62, .62, .46, .14, .14, 0xffffff); b.cyl(0, .74, .26, .17, .17, .05, 0x23262d, 10, .9); b.box(0, .6, .3, .05, .22, .05, 0x555b66); b.sph(.3, .62, .6, .07, 0xfff2a8, 0); b.sph(-.3, .62, .6, .07, 0xfff2a8, 0);
+    return { wheels: [[.4, .17, .5, .17, .14, 1], [-.4, .17, .5, .17, .14, 1], [.4, .17, -.5, .17, .16, 0], [-.4, .17, -.5, .17, .16, 0]], head: [[0, .5, .8]], tail: [[0, .4, -.78]], seat: [0, .3, -.15], lean: 0 };
+  };
+  function shadeY(c) { const f = v => Math.max(0, Math.round(v * .8)); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); }
   MODELS.skate = (b, o) => { // Skateboard: buntes Brett mit Rollen
     const c = o.color || 0xff5a8a; b.box(0, .2, 0, .5, .06, 1.4, c); b.box(0, .26, .75, .5, .05, .1, c, 0, .3); b.box(0, .26, -.75, .5, .05, .1, c, 0, -.3); b.box(0, .27, 0, .3, .02, .9, 0xffffff);
     return { wheels: [[.2, .12, .5, .12, .06, 1], [-.2, .12, .5, .12, .06, 1], [.2, .12, -.5, .12, .06, 0], [-.2, .12, -.5, .12, .06, 0]], head: [[0, .22, .72]], tail: [[0, .22, -.72]], seat: [0, .26, -.1], lean: 1 };

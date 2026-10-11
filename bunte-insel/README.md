@@ -219,7 +219,7 @@ Auswahl-Knöpfe zeigen jetzt ein kleines 3D-Bild des echten Teils: Frisuren, Hü
 
 ### 🔱 Atlantis – die Stadt unter der Erde
 
-Eingang: leuchtendes Steintor am See der Hauptinsel (🧭 → Atlantis, E am Tor). Die Stadt liegt in einer eigenen Höhle (Kuppel mit Kristallsternen) und ist nach der alten **Sage von Atlantis** (Platon, gemeinfrei; ob es Atlantis gab, weiß niemand) gebaut: Ringe aus Land und Wasser mit Brücken, in der Mitte ein Stufenberg mit Tempel und dem „Herz von Atlantis“. Alles Konkrete ist eigen erfunden.
+Eingang: eine **breite Steintreppe an der Südküste der Hauptinsel** (neben dem Steg, 🧭 → Atlantis): sie führt 5,5 m nach unten in einen überdachten Gang; am Ende geht es nahtlos nach Atlantis, und zurück läuft man die Treppe in der Stadt hinauf (kein Knopfdruck nötig). Die Stadt liegt in einer eigenen Höhle (Kuppel mit Kristallsternen) und ist nach der alten **Sage von Atlantis** (Platon, gemeinfrei; ob es Atlantis gab, weiß niemand) gebaut: Ringe aus Land und Wasser mit Brücken, in der Mitte ein Stufenberg mit Tempel und dem „Herz von Atlantis“. Alles Konkrete ist eigen erfunden.
 
 Was es sonst nirgends gibt: **Aqua-Gleiter** (schwebende Fahrzeuge), **Schwerelos-Halle** (Mondschwerkraft, riesige Sprünge), **Kristall-Harfe** (8 Kristalle anschlagen, links nach rechts = Bonus), **Hologramm-Archiv** (die Sage in 5 Bildern, kindgerecht, als Sage gekennzeichnet), **Orichalcum-Splitter** (72 Stück, je 10 = 1 ⭐), **Delfin-Drohnen** und **Leuchtquallen**, Highlight-Spiel **💧 Strömungs-Rätsel** (Leitungs-Puzzle, Spielautomat im Ring). 5 Bewohner, eigene Musik, Einträge im Aufgaben-Log.
 
@@ -227,7 +227,7 @@ Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die gro
 
 ### ⭐ Zotik – Lunaris, die Hauptstadt der Splitter (eigenes Rollenspiel-Universum)
 
-Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als begehbare Welt. **Eingang:** leuchtender Kristallring „Rissportal“ im Westen der Hauptinsel (🧭 → Zotik, E am Portal). Lunaris liegt weit weg auf einer eigenen schwebenden Insel mit Abendhimmel, Mond und Sternen; die Hauptwelt wird dort ausgeblendet (spart GPU).
+Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als große Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
 
 - **Stadt:** Plaza mit Mondkristall-Brunnen, Markt „Wanderhand“ (Händler Rurik), Taverne, Akademie-Turm, **Burg Lunaris auf einem 8-stufigen Hügel**, Hafen, schwebende Nachbarinseln, leuchtende Mondbäume.
 - **Bewohner mit Dialog:** Mira (Questgeberin), Rurik, Lyra, Rovan, Nia, Professorium. **Moosling Felli** streicheln = neuer **Partner** (wie Zündel/Willi).
@@ -241,7 +241,7 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 
 ### 📻 Funkwelle – die Radio-Welt (13 Sender mit Live-Stream)
 
-**Eingang:** Funk-Tor (Antennenring) im Nordosten der Hauptinsel (🧭 → Funkwelle). Weit weg liegt eine Nacht-Insel mit Funkturm; im Kreis darum **13 Sender-Plätze**, je mit
+**Lage:** große Insel im **Südosten der Hauptinsel**, erreichbar über eine **Brücke** (oder 🧭 → Funkwelle) – wie die anderen Welten, ohne Portal, mit normalem Tag-und-Nacht-Himmel. Im Kreis um den Funkturm liegen **13 Sender-Plätze**, je mit
 - **Logo-Statue** (Logo des Senders auf schwingender Tafel, Sockel, Lichtsäule),
 - **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** – die TV-Seite aus `ricorewi-radio` (`https://ricorewi-radio.de/visual-radio-tv.html?station=<sender>&app=1`, Cover, Songtext, Musikvideo) als Fenster; der Ton kommt vom Radio der Spielwelt; „im neuen Tab“ als Ausweg),
 - **Radio**: E = Sender einschalten (Stream `https://stream.laut.fm/<sender>`), nochmal E = aus. Es läuft immer nur ein Stream; die Lautstärke hängt von der Entfernung zum Radio ab, außerhalb des Bereichs wird es leise und der Stream pausiert (spart Daten), beim Verlassen der Welt stoppt er. Die Spielmusik wird beim Radiohören leiser.
@@ -253,6 +253,28 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 - **Regenbogen-Brücke:** Der Zaun des Streichelzoos versperrte das Brückenende – das Eselgehege hat jetzt ein Tor zur Brücke.
 - **Dampfer-Hafen:** Der Dampfer ist begehbar (Gangway vom Kai, Deck, Weg um die Aufbauten).
 - **Doppelsprung für alle:** zweimal Springen drücken, auch im Lauf; keine Zubehör-Pflicht mehr.
+
+### 🐾 Mehr Leben in jeder Welt
+
+Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wird eine Welt erst, wenn man ihr nahekommt; bewegt und gezeichnet wird nur, was in der Nähe ist (Sparmodus: kürzere Sichtweite). Bewohner mit Menschengestalt kann man ansprechen.
+- 🏝️ **Hauptinsel:** Jogger, Wanderer, Gärtner, Hunde, Katzen, Hoppel-Hasen, Eichhörnchen, Igel, Tauben, Schmetterlinge, Möwen, Strandkrabben.
+- 🏙️ **Stadt:** Geschäftsleute, Touristen, Straßenmusiker, Tauben, Katzen, Hunde.
+- 🎡 **Freizeitpark:** Kinder, Clowns, Bärchen-Maskottchen, Tauben, Eichhörnchen, Schmetterlinge.
+- 🌈 **Regenbogenwelt:** bunte Feiernde, Einhörner, Schmetterlinge, Möwen.
+- 🎬 **Dampfer-Hafen:** Matrosen und Hafenarbeiter in Schwarz-Weiß, Dampfer-Mäuse, Möwen.
+- 🐶 **Fellretter-Bucht:** Hunde, Welpen, Katzen, Hasen, Fellretter und Tierärztin.
+- 🐉 **Drachenhöhen:** Babydrachen, Ritter, Zauberer, Fledermäuse.
+- 🏗️ **Bauland:** Bauarbeiter, Roboter, Rehe, Hasen, Tauben, Schmetterlinge.
+- ⭐ **Lunaris:** Mooslinge, Fuchsleute, Wächter, Gelehrte und Händler, Irrlichter.
+- 📻 **Funkwelle:** DJs, tanzende Fans, Roboter, schwebende Noten.
+- 🔱 **Atlantis:** Meerleute, Fischschwärme, Quallen, Krabben.
+- Quelltext: `js/life.js`.
+
+### 🚚 Umziehen im Baumenü + Fahrzeuge für jedes Haus
+
+- **Umziehen:** Im Baumenü (B) gibt es den Reiter **🚚 Umzug**. „🏡 Wohnung hierher“ stellt deine Wohnung an den Cursor (die Tür steht am Cursor; das Vorschaubild zeigt den Grundriss, rot = kein Platz, grün = frei). Die Wohnung hat dort dieselben Zimmer, Eltern, Bett, Kleiderschrank und Spielkiste; Zuhause (Start, 🧭 „Meine Wohnung“, Haustier, Pappnase) zieht mit. „🏢 Zurück ins Haus Sonnenschein“ stellt alles wieder zurück. Gespeichert wird nur die Lage; andere Spieler sehen weiter dein altes Zuhause. Platz gibt es auf freien Flächen der Hauptinsel und im Bauland (nicht auf Straßen, Gleisen, Wasser oder zwischen Gebäuden).
+- **Fahrzeuge:** Zu jedem Haus gehören eine **Limousine** (lang, glänzend), ein **Rutschauto** (Kinder-Flitzer) und ein **Hubschrauber**. Beim Haus Sonnenschein stehen Limousine und Rutschauto hinter den Gleisen, der Hubschrauber hinter dem Haus. Lässt du ein Fahrzeug stehen und bist über 14 m weg, rollt es nach 20 Sekunden von selbst zurück vors Haus (nach 90 Sekunden auch, wenn du näher bist). Beim Umziehen kommen deine Fahrzeuge mit.
+- Dateien: `js/home.js`, `js/world.js` (`BI.buildFlat`, `BI.homeSpawns`), `js/build.js` (Reiter Umzug), `js/vehicles.js` (Limousine, Rutschauto), `js/main.js` (Rückkehr).
 
 ### 🎤 Popstar Kay und 🦊 Zotik (neue Vorlagen, für alle wählbar)
 

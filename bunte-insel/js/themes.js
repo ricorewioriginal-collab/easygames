@@ -68,7 +68,7 @@ BI.zoneAt = function (x, z, flags) {
   const f = flags || {}, d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, CI = BI.CINEMA;
   if (f.cinema) return null;
   if (f.obby) return 'obby';
-  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < 400) return 'zotik'; if (BI.RADIO && d(BI.RADIO.x, BI.RADIO.z) < 400) return 'radio';
+  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < BI.ZOTIK.R + 12) return 'zotik'; if (BI.RADIO && d(BI.RADIO.x, BI.RADIO.z) < BI.RADIO.R + 12) return 'radio';
   if (d(R.x - 27, R.z) < 20) return 'buehne';
   if (d(R.x, R.z) < R.R + 8) return 'regenbogen';
   if (d(BI.PUPS.x, BI.PUPS.z) < BI.PUPS.R + 8) return 'fellretter';
@@ -90,5 +90,5 @@ BI.zoneAt = function (x, z, flags) {
 /* In welcher Welt (Insel) ist dieser Punkt? 'insel' (Hauptinsel mit Camp, Freibad, Hof …), 'stadt', 'park', 'regenbogen', 'bucht' */
 BI.worldAt = function (x, z) {
   const d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, F = BI.PUPS, DM = BI.DAMPF, DR = BI.DRACHEN;
-  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < 400) return 'zotik'; if (BI.RADIO && d(BI.RADIO.x, BI.RADIO.z) < 400) return 'radio'; if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 12) return 'bauland'; if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(DR.x, DR.z) < DR.R + 12) return 'drachen'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
+  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < BI.ZOTIK.R + 12) return 'zotik'; if (BI.RADIO && d(BI.RADIO.x, BI.RADIO.z) < BI.RADIO.R + 12) return 'radio'; if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 12) return 'bauland'; if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(DR.x, DR.z) < DR.R + 12) return 'drachen'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
 };

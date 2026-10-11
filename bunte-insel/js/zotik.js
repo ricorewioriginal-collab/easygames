@@ -2,10 +2,10 @@
 /* Bunte Insel – Zotik: Die Splitter der Welten (Erweiterung). Zotik ist ein eigenes 3D-Rollenspiel-Projekt von Rico (Fantasy, schwebende Inseln, Weltenreisen);
    hier steht seine Hauptstadt „Lunaris“ als begehbare Welt. Zotik (Fuchs-Mensch), Lyra, Rovan, Nia, Moosling „Felli“, Professorium, Rurik, Mira und das
    Luftschiff Nautilux sind seine eigenen Figuren. Anregungen aus Fantasy-Rollenspielen sind nur allgemeine Ideen (schwebende Inseln, Weltentore, Elemente).
-   Eingang: Rissportal auf der Hauptinsel. Die Stadt liegt weit weg auf einer eigenen schwebenden Insel mit lila Abendhimmel, Mond und Sternen.
+   Lage: große Insel südlich der Hauptinsel, erreichbar über die Brücke am Steg (wie die anderen Welten, ohne Portal).
    Inhalt: Marktplatz mit Händler Rurik, Taverne, Akademie, Burg (Stufen-Hügel), Hafen mit fliegendem Luftschiff Nautilux, Weltentor-Platz (6 Tore zu den anderen Welten),
    Splitter einsammeln (10 = 1 ⭐), Quest „Der Ruf des Kristalls“, Highlight-Spiel „Elementar-Kampf“ (rundenbasiert, Elementkreis), Moosling Felli als Partner. */
-BI.ZOTIK = { x: -1500, z: 0, R: 112, hill: { x: 0, z: -62, R: 36, tiers: 8 }, portal: { x: -84, z: -42 } };
+BI.ZOTIK = { x: 0, z: 440, R: 112, hill: { x: 50, z: -52, R: 36, tiers: 8 }, bridge: { x0: -2.5, x1: 2.5, z0: 207, z1: 328 } }; /* Insel südlich der Hauptinsel, Brücke ab dem Steg (wie die anderen Welten) */
 
 /* ---------- Moosling „Felli“: kleiner Waldgeist (eigene Figur) ---------- */
 BI.makeMoosling = function () {
@@ -25,21 +25,20 @@ BI.makeMoosling = function () {
   return D;
 };
 
-/* ---------- statisch: Plateau, Plaza, Markt, Taverne, Akademie, Burghügel, Hafen, Weltentore, Bäume (+ Rissportal an der Oberfläche) ---------- */
+/* ---------- statisch: Plateau, Plaza, Markt, Taverne, Akademie, Burghügel, Hafen, Weltentore, Bäume, Brücke ---------- */
 BI.buildZotikGround = function (c) {
   const { W, st: mainSt, lamp: mainLamp, scene } = c, A = BI.ZOTIK, TAU = Math.PI * 2, rn = BI.rng(31337), X = u => A.x + u, Z = v => A.z + v, P = (r, a) => [X(Math.sin(a) * r), Z(Math.cos(a) * r)];
   const st = new BI.Batch(), glow = new BI.Batch(), MARB = 0xe8e2f4, STONE = 0xb8b4d0, STONE2 = 0x9a96b8, GOLD = 0xd8a24a, BLUE = 0x3f6fd8, WOOD = 0x8a5a33, GL = [0x7fb8ff, 0xb48aff, 0x6bffd0, 0xff9ad5];
   const H = A.hill, hx = X(H.x), hz = Z(H.z);
-  W.zotik = { x: A.x, z: A.z, R: A.R,
-    fix(px, pz, r, out) { const lx = px - A.x, lz = pz - A.z, d = Math.hypot(lx, lz); if (d > 420) return false; let hit = false, nx = px, nz = pz; if (d > A.R - r) { const k = (A.R - r) / d; nx = A.x + lx * k; nz = A.z + lz * k; hit = true; } out.fx = nx; out.fz = nz; out.fhit = hit; return true; },
-    floor(x, z) { const lx = x - hx, lz = z - hz; if (lx < -40 || lx > 40 || lz < -40 || lz > 40) return 0; const d = Math.hypot(lx, lz); return d < H.R ? Math.min(H.tiers, 1 + Math.floor((H.R - d) / 4)) : 0; } };
-  /* Schwebende Insel: Platte, Felsunterseite, Rand */
+  const Bz = A.bridge, bh = .65; W.zotik = { x: A.x, z: A.z, R: A.R, bridge: Bz,
+    floor(x, z) { if (Math.abs(x - A.x) < 2.6 && z > Bz.z0 + 1 && z < Bz.z1) return z > Bz.z1 - 7 ? bh * (Bz.z1 - z) / 7 : bh; const lx = x - hx, lz = z - hz; if (lx < -40 || lx > 40 || lz < -40 || lz > 40) return 0; const d = Math.hypot(lx, lz); return d < H.R ? Math.min(H.tiers, 1 + Math.floor((H.R - d) / 4)) : 0; } };
+  /* Insel: Platte, Felsunterseite, Rand */
   st.disc(X(0), Z(0), A.R, 0, 0x78c868, 80); st.ring(X(0), Z(0), A.R - 4, A.R + 5, .012, STONE, 80); st.cyl(X(0), -78.08, Z(0), A.R + 4.6, 8, 78, 0x6a5a8a, 28); st.cyl(X(0), -40.2, Z(0), A.R * .7, 6, 40, 0x7a6a9a, 14);
   for (let i = 0; i < 12; i++) { const a = rn() * TAU, d = 20 + rn() * (A.R - 40), [x, z] = P(d, a); glow.cone(x, -30 - rn() * 30, z, 2 + rn() * 3, 14 + rn() * 14, GL[i % 4], 5); }
   for (let k = 0; k < 60; k++) { const a = k / 60 * TAU, [x, z] = P(A.R - 1.2, a); st.cyl(x, 0, z, .3, .34, 1.3, STONE2, 6); if (k % 5 === 0) glow.sph(x, 1.6, z, .3, 0xffe8b0, 1); }
   /* Plaza mit Kristallbrunnen und Wegen */
   st.disc(X(0), Z(0), 26, .012, 0xd8d0e8, 48); for (const [r0, r1, col] of [[8, 9, GOLD], [14, 15, BLUE], [22, 23, GOLD]]) st.ring(X(0), Z(0), r0, r1, .02, col, 48);
-  for (const [a, len] of [[Math.PI, 60], [Math.PI / 2 * 3, 70], [Math.PI / 2, 52], [0, 60], [Math.PI * .75, 62]]) { const m = 26 + len / 2, [x, z] = P(m, a); st.strip(x, z, 7, len, a, .012, 0xcfc6dc); }
+  for (const [a, len] of [[Math.PI, 86], [Math.PI / 2 * 3, 70], [Math.PI / 2, 52], [0, 60], [Math.PI * .75, 62]]) { const m = 26 + len / 2, [x, z] = P(m, a); st.strip(x, z, 7, len, a, .012, 0xcfc6dc); }
   st.cyl(X(0), 0, Z(0), 6.2, 6.6, .9, MARB, 24); st.cyl(X(0), .9, Z(0), 5.2, 5.2, .15, 0x6aa8ff, 24); st.cyl(X(0), .9, Z(0), 1.0, 1.4, 2.2, STONE, 10); W.addCircle(X(0), Z(0), 6.8, false, 3);
   /* Markt „Wanderhand“ im Westen: Stände mit Stoffdächern, Regalen, Fässern, Laternen */
   const stall = (x, z, col, big) => { const w = big ? 9 : 5.2, d = big ? 5 : 3.6; for (const sx of [-1, 1]) for (const sz of [-1, 1]) st.cyl(x + sx * w / 2, 0, z + sz * d / 2, .14, .16, 3.4, WOOD, 6); for (let i = 0; i < 6; i++) st.box(x - w / 2 + (i + .5) * w / 6, 3.4, z, w / 6, .14, d + .8, i % 2 ? col : 0xf4eede, 0, .18); st.box(x, 0, z + d / 2 - .3, w, 1, .8, 0xa8703a); st.box(x, 1.0, z + d / 2 - .3, w + .1, .1, .9, 0xc9a070); for (let i = 0; i < (big ? 9 : 5); i++) glow.sph(x - w / 2 + .7 + i * ((w - 1.4) / (big ? 8 : 4)), 1.35, z + d / 2 - .3, .22, GL[i % 4], 1, .8, 1.3, .8); st.box(x, 0, z - d / 2 + .3, w - .6, 2.2, .3, 0x6b4a2a); W.addBox(x - w / 2, z + d / 2 - .8, x + w / 2, z + d / 2 + .2, false, 1.1); };
@@ -67,14 +66,16 @@ BI.buildZotikGround = function (c) {
   { const sx = X(22), sz = Z(30); st.cyl(sx, 0, sz, 7.2, 7.8, .6, STONE, 28); st.cyl(sx, .6, sz, 6, 6.4, .5, MARB, 28); st.cyl(sx, 1.1, sz, 4.2, 4.6, 1.6, MARB, 20); st.ring(sx, sz, 6.2, 6.8, 1.12, GOLD, 40); st.ring(sx, sz, 4.7, 5, 1.14, BLUE, 40);
     for (let k = 0; k < 6; k++) { const a = k / 6 * TAU, x = sx + Math.sin(a) * 6.6, z = sz + Math.cos(a) * 6.6; st.cyl(x, .6, z, .25, .3, 2.4, MARB, 8); glow.sph(x, 3.2, z, .4, GL[k % 4], 1); }
     W.addCircle(sx, sz, 7.6, false, 3); A.statue = { x: sx, z: sz, top: 2.7 }; }
-  /* Rückkehr-Rissportal (Osten) */
-  { const [x, z] = [X(76), Z(-10)]; for (let k = 0; k < 10; k++) { const a = k / 10 * TAU; glow.cone(x + Math.sin(a) * 3.2, 0, z + Math.cos(a) * 3.2, .5, 2 + (k % 2) * 1.2, GL[k % 4], 5); } st.cyl(x, 0, z, 3.6, 3.8, .3, STONE, 20); W.addCircle(x, z, 4.2, false, 3); A.back = { x, z }; }
+  /* Brücke vom Steg der Hauptinsel (Holzdeck mit Geländer, Pfähle im Wasser, Rampe zur Insel) */
+  { const x = A.x, z0 = Bz.z0 + 3, z1 = Bz.z1 - 7, L = z1 - z0; st.box(x, .35, (z0 + z1) / 2, 5.2, .3, L, 0xb98650); for (let k = 0; k < L; k += 2.5) st.box(x, .64, z0 + k, 5.2, .02, .08, 0x7a5a33);
+    st.box(x, .22, z1 + 3.5, 5.2, .2, 7.1, 0xb98650, 0, Math.atan(.65 / 7)); for (const sd of [-1, 1]) { st.box(x + sd * 2.45, .65, (z0 + z1) / 2, .14, 1.0, L, 0x8a5a33); for (let k = 0; k <= L; k += 4) st.cyl(x + sd * 2.45, 0, z0 + k, .12, .14, 1.2, 0x6a4a2a, 5); }
+    for (let k = 4; k < L; k += 10) for (const sd of [-1, 1]) st.cyl(x + sd * 1.9, -1.6, z0 + k, .4, .45, 1.9, 0x4a4a52, 8);
+    for (const sd of [-1, 1]) W.addBox(x + sd * 2.45 - .1, z0, x + sd * 2.45 + .1, z1 + 1, false, 1.3); }
   /* eigene Meshes (nur in der Nähe sichtbar) */
   const grp = new THREE.Group(), stM = st.mesh(BI.mat()), glM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); stM.frustumCulled = glM.frustumCulled = false; grp.add(stM, glM); grp.visible = false; scene.add(grp); A.group = grp;
   /* Arcade (Elementar-Kampf) neben der Taverne – nach den Hauptwelt-Automaten gebaut */
   A.addArcade = function () { const a = { x: X(26), z: Z(-12) }, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W, st: ast, lamp: alamp, only: [{ kind: 'elementar_zotik', x: a.x, z: a.z, yaw: Math.atan2(X(0) - a.x, Z(0) - a.z), body: 0x2a2a6a, top: 0xff8a1f }] }); grp.add(ast.mesh(BI.mat())); if (!alamp.empty) grp.add(alamp.mesh(W.lampMat)); };
-  /* Rissportal an der Oberfläche (Hauptinsel): leuchtender Kristallring */
-  { const { x, z } = A.portal; mainSt.cyl(x, 0, z, 3.6, 3.9, .35, 0x9a96b8, 20); for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; mainSt.cone(x + Math.sin(a) * 3.0, .35, z + Math.cos(a) * 3.0, .45, 2.2 + (k % 3) * .6, [0x7fb8ff, 0xb48aff, 0x6bffd0][k % 3], 5); } mainSt.cyl(x, .35, z, 2.6, 2.6, .1, 0x2a1a6a, 20); mainLamp.cyl(x, .45, z, 2.3, 2.3, .05, 0xc8b8ff, 20); mainSt.cone(x, .45, z, .6, 4.5, 0x7fb8ff, 6); W.addCircle(x, z, 4.4, false, 3); W.spots.zotikPortal = { x, z }; }
+
 };
 
 /* ---------- Laufzeit ---------- */
@@ -86,19 +87,11 @@ BI.createZotik = function (G) {
   const sign = (txt, x, y, z, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#2a1a5a'; c.strokeText(txt, 256, 50); c.fillStyle = '#ffe9a8'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, fog: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(x, y, z); A.group.add(sp); return sp; };
   const grp = A.group, hx = X(A.hill.x), hz = Z(A.hill.z);
   K.floor = W.zotik.floor;
-  /* ===== Himmel, Mond, Sterne, Strahl, schwebende Inseln ===== */
-  { const g = new THREE.SphereGeometry(700, 24, 12), pos = g.attributes.position, col = new Float32Array(pos.count * 3), top = new THREE.Color(0x1a1250), mid = new THREE.Color(0x5a3ac8), hor = new THREE.Color(0xff9ac0), cc = new THREE.Color();
-    for (let i = 0; i < pos.count; i++) { const y = pos.getY(i) / 700, k = Math.max(0, y); cc.copy(hor).lerp(mid, Math.min(1, k * 2.4)).lerp(top, Math.max(0, (k - .35) * 1.5)); if (y < 0) cc.copy(hor).multiplyScalar(.5); col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b; }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); const dome = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })); dome.position.set(A.x, 0, A.z); dome.renderOrder = -1; grp.add(dome);
-    const moon = new THREE.Mesh(new THREE.SphereGeometry(70, 20, 12), new THREE.MeshBasicMaterial({ color: 0xe8f0ff, fog: false })); moon.position.set(A.x + 260, 230, A.z - 420); grp.add(moon); const halo = new THREE.Mesh(new THREE.SphereGeometry(95, 16, 10), new THREE.MeshBasicMaterial({ color: 0xaab8ff, transparent: true, opacity: .25, fog: false, depthWrite: false })); halo.position.copy(moon.position); grp.add(halo);
-    const n = 300, sp = new Float32Array(n * 3), rr = BI.rng(5); for (let i = 0; i < n; i++) { const a = rr() * TAU, e = .2 + rr() * 1.2, d = 650; sp[i * 3] = A.x + Math.sin(a) * Math.cos(e) * d; sp[i * 3 + 1] = Math.sin(e) * d; sp[i * 3 + 2] = A.z + Math.cos(a) * Math.cos(e) * d; }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3)); const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 2.5, sizeAttenuation: false, fog: false })); stars.frustumCulled = false; grp.add(stars); }
+  /* ===== Lichtstrahl (von weitem sichtbar), Kristall ===== */
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 2.2, 420, 10, 1, true), new THREE.MeshBasicMaterial({ color: 0x9fd0ff, transparent: true, opacity: .32, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide })); beam.position.set(X(0), 210, Z(0)); grp.add(beam);
   const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(1, 0), new THREE.MeshBasicMaterial({ color: 0xbfe0ff, fog: false })); crystal.scale.set(1.5, 2.6, 1.5); crystal.position.set(X(0), 5.6, Z(0)); grp.add(crystal);
-  const floats = []; { const rr = BI.rng(1212), cols = [0x78c868, 0x9be05a, 0x6bd0c0]; for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + rr(), d = 175 + rr() * 110, s = 14 + rr() * 26, b = new BI.Batch(); b.cyl(0, -s * .9, 0, s, s * .15, s * .9, 0x6a5a8a, 9); b.cyl(0, -.05, 0, s, s, .5, cols[i % 3], 12); const tr = 3 + (rr() * 4) | 0; for (let k = 0; k < tr; k++) { const ta = rr() * TAU, td = rr() * s * .7; b.cyl(Math.sin(ta) * td, .4, Math.cos(ta) * td, .3, .4, 3, 0x6a4a8a, 6); b.sph(Math.sin(ta) * td, 4.2, Math.cos(ta) * td, 1.8, [0x7fb8ff, 0xb48aff, 0x6bffd0][k % 3], 1); } if (i % 3 === 0) { b.cyl(0, .4, 0, 2, 2.4, 9, 0xe8e2f4, 8); b.cone(0, 9.4, 0, 3, 6, 0x3f6fd8, 8); } const m = b.mesh(BI.mat()); m.position.set(X(Math.sin(a) * d), 18 + rr() * 90, Z(Math.cos(a) * d)); m.frustumCulled = false; grp.add(m); floats.push({ m, y: m.position.y, ph: rr() * 6, sp: .2 + rr() * .3 }); } }
   /* ===== Schilder ===== */
-  sign('⭐ Lunaris – Hauptstadt der Splitter', X(0), 12, Z(12), 14); sign('🛒 Wanderhand – Ausrüstung, Tränke', X(-38), 7, Z(2), 11); sign('🍺 Taverne', X(40), 11.5, Z(14), 6); sign('🎓 Akademie', X(60), 33, Z(52), 7); sign('⚓ Hafen', X(0), 9, Z(106), 5); sign('🏰 Burg Lunaris', hx, 44, hz, 11); sign('🌀 Weltentore', X(-54), 8, Z(52), 8); sign('↩ Rissportal zur Bunten Insel', A.back.x, 6, A.back.z, 10); sign('🕹️ Elementar-Kampf', X(26), 6, Z(-12), 8);
-  { const q = W.spots.zotikPortal; const s = sign('🌀 Rissportal nach Lunaris', q.x, 7.4, q.z, 9); grp.remove(s); scene.add(s); K.portalSign = s; }
+  sign('⭐ Lunaris – Hauptstadt der Splitter', X(0), 12, Z(12), 14); sign('⭐ Lunaris ➜', A.x, 6, A.bridge.z0 + 10, 7); sign('🛒 Wanderhand – Ausrüstung, Tränke', X(-38), 7, Z(2), 11); sign('🍺 Taverne', X(40), 11.5, Z(14), 6); sign('🎓 Akademie', X(60), 33, Z(52), 7); sign('⚓ Hafen', X(0), 9, Z(106), 5); sign('🏰 Burg Lunaris', hx, 44, hz, 11); sign('🌀 Weltentore', X(-54), 8, Z(52), 8); sign('🕹️ Elementar-Kampf', X(26), 6, Z(-12), 8);
   const gateNames = ['🐉 Drachenhöhen', '🐶 Fellretter-Bucht', '🎬 Dampfer-Hafen', '🌈 Regenbogenwelt', '🏗️ Bauland', '🔱 Atlantis'], gateDest = ['drachen', 'pups', 'dampf', 'rainbow', 'bauland', 'atlantis'];
   A.gates.forEach((g, i) => sign(gateNames[i], g.x, 7, g.z, 5.4));
   const gateGlow = A.gates.map(g => { const m = new THREE.Mesh(new THREE.CircleGeometry(2.2, 20), new THREE.MeshBasicMaterial({ color: g.col, transparent: true, opacity: .55, side: THREE.DoubleSide, fog: false })); m.position.set(g.x, 2.6, g.z); m.rotation.y = g.a + Math.PI; grp.add(m); return m; });
@@ -128,7 +121,7 @@ BI.createZotik = function (G) {
   }
   K.near = function () {
     if (P.veh || P.y > 12) return null; const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
-    const q = W.spots.zotikPortal; if (nr(q.x, q.z, 6.4)) return { k: 'zin' }; if (!K.inside) return null; if (nr(A.back.x, A.back.z, 6)) return { k: 'zout' };
+    if (!K.inside) return null;
     for (const n of NPC) if (nr(n.x, n.z, 3)) return { k: 'zspeak', id: n.id, label: ['💬', 'Mit ' + n.name.split(' – ')[0] + ' sprechen'] };
     if (nr(A.statue.x, A.statue.z, 9.5)) return { k: 'zstatue', label: ['📸', 'Zotik-Statue bewundern'] };
     if (nr(felli.root.position.x, felli.root.position.z, 2.6)) return { k: 'zfelli', label: ['🌱', 'Felli streicheln'] };
@@ -140,8 +133,7 @@ BI.createZotik = function (G) {
   };
   K.act = function (n) {
     if (!n) return; const s = S();
-    if (n.k === 'zin') K.enter(); else if (n.k === 'zout') K.leave();
-    else if (n.k === 'zspeak') talk(NPC.find(q => q.id === n.id));
+    if (n.k === 'zspeak') talk(NPC.find(q => q.id === n.id));
     else if (n.k === 'zfelli') { felli.set('happy', 0); fx.burst(felli.root.position.x, 1.4, felli.root.position.z, 12, [[.6, 1, .4], [1, 1, .6]], 3, 1, 28, -1); say('🌱 Felli kichert und kuschelt sich an dich!', 2400); G.takeMascot('moosling'); }
     else if (n.k === 'zhint') { if (s.q === 1) { s.q = 2; persist(); G.addStars(1); say('📜 Hinweis gefunden: „Der Riss öffnet sich über der Akademie. Nur wer die Elemente kennt, kann ihn schließen.“ +1 ⭐', 7000); snd('star'); } else say('📜 Alte Notiz: „Der Riss öffnet sich über der Akademie …“', 3600); }
     else if (n.k === 'zriss') { if (s.q < 2) say('⚡ Ein flackernder Riss in der Luft … Vielleicht hat Mira mehr Hinweise? (Quest-Log: 📋)', 4200); else { say('⚡ Aus dem Riss springt ein Wesen hervor – Elementar-Kampf!', 2600); G.start('elementar_zotik'); } }
@@ -149,21 +141,17 @@ BI.createZotik = function (G) {
     else if (n.k === 'zstatue') { fx.burst(A.statue.x, A.statue.top + 4, A.statue.z, 26, [[1, .85, .4], [1, 1, 1], [.5, .8, 1]], 5, 1.4, 28, -1); [523, 659, 784, 1047].forEach((f, i) => note(f, 1.2, 'sine', .1, i * .1)); if (!s.statue) { s.statue = 1; persist(); G.addStars(1); say('🦊 Zotik, der Weltenhörer – der Held von Lunaris! +1 ⭐', 4200); } else say('🦊 Zotik, der Weltenhörer – der Held von Lunaris!', 3000); }
     else if (n.k === 'zcrystal') { fx.burst(X(0), 6, Z(0), 24, [[.5, .8, 1], [1, 1, 1], [.8, .6, 1]], 4, 1.3, 28, -1); [523, 659, 784].forEach((f, i) => note(f, 1.4, 'sine', .1, i * .12)); say('💎 Der Mondkristall summt – „Zehn Welten, ein Abenteuer.“', 3200); }
   };
-  /* ===== Ein- und Ausgang ===== */
-  K.enter = function () { G.fade(() => { P.x = X(0); P.z = Z(40); P.y = 0; P.vy = 0; P.h = Math.PI; G.cam.yaw = 0; const s = S(); if (!s.visit) { s.visit = 1; persist(); setTimeout(() => bonus(2, '⭐ Willkommen in Lunaris!'), 900); } else say('⭐ Willkommen zurück in Lunaris!', 2400); }); };
-  K.leave = function () { G.fade(() => { const q = W.spots.zotikPortal; P.x = q.x; P.z = q.z + 5.6; P.y = 0; P.vy = 0; P.h = 0; G.cam.yaw = Math.PI; say('☀️ Zurück auf der Bunten Insel', 2000); }); };
   /* ===== Splitter (Zotik-Währung): einsammeln, 10 = 1 ⭐ ===== */
   const SP = []; { const rr = BI.rng(909); for (let i = 0; SP.length < 64 && i < 900; i++) { const a = rr() * TAU, d = 8 + rr() * (A.R - 14), x = A.x + Math.sin(a) * d, z = A.z + Math.cos(a) * d; if (!W.free(x, z, .9)) continue; SP.push({ x, z, y: Math.min(A.hill.tiers, K.floor(x, z)) + 1.0, v: SP.length % 8 === 7 ? 5 : 1 }); } }
   K.shards = SP; const shardM = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.42, 0), new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false }), SP.length), dm = new THREE.Object3D(), col = new THREE.Color(); shardM.frustumCulled = false; SP.forEach((q, i) => shardM.setColorAt(i, col.setHex(q.v > 1 ? 0xffd23f : [0x7fb8ff, 0xb48aff][i % 2]))); grp.add(shardM);
   /* ===== Frame ===== */
   let was = false, shardT = 0, felT = 0;
   K.update = function (dt, t) {
-    const ins = Math.hypot(P.x - A.x, P.z - A.z) < 420; K.inside = ins; if (ins !== was) { was = ins; G.mood(ins); }
-    const near = Math.hypot(P.x - A.x, P.z - A.z) < 900; if (grp.visible !== near) grp.visible = near;
-    if (K.portalSign) K.portalSign.visible = Math.hypot(P.x - W.spots.zotikPortal.x, P.z - W.spots.zotikPortal.z) < 40;
+    const d0 = Math.hypot(P.x - A.x, P.z - A.z), ins = d0 < A.R + 25; K.inside = ins; if (ins !== was) { was = ins; if (ins) { const s0 = S(); if (!s0.visit) { s0.visit = 1; persist(); setTimeout(() => bonus(2, '⭐ Willkommen in Lunaris!'), 700); } else say('⭐ Lunaris, die Hauptstadt der Splitter', 2400); } }
+    const near = d0 < 650; if (grp.visible !== near) grp.visible = near;
     if (!ins) return; const s = S();
     halo.rotation.z = t * .5; halo.position.y = A.statue.top + 14 + Math.sin(t * 1.4) * .15;     crystal.rotation.y = t * .7; crystal.position.y = 5.6 + Math.sin(t * 1.5) * .3; beam.material.opacity = .28 + .08 * Math.sin(t * 2.2); hintM.rotation.y = t * 1.6; hintM.position.y = 1.6 + Math.sin(t * 2) * .15; riss.rotation.z = t * .8; rissIn.material.opacity = .42 + .15 * Math.sin(t * 4);
-    for (const f of floats) f.m.position.y = f.y + Math.sin(t * f.sp + f.ph) * 3; gateGlow.forEach((m, i) => { m.material.opacity = (s.q >= 4 ? .6 : .22) + .12 * Math.sin(t * 2.4 + i); });
+    gateGlow.forEach((m, i) => { m.material.opacity = (s.q >= 4 ? .6 : .22) + .12 * Math.sin(t * 2.4 + i); });
     for (const n of NPC) { if (Math.hypot(P.x - n.x, P.z - n.z) < 9) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 4); n.c.pose && n.c.pose(t * 1.3 + n.x, 0, Math.hypot(P.x - n.x, P.z - n.z) < 5); }
     felli.set('idle', t); { const px = felli.root.position.x, pz = felli.root.position.z; felli.root.rotation.y += BI.angDiff(felli.root.rotation.y, Math.atan2(P.x - px, P.z - pz)) * Math.min(1, dt * 3); }
     const pm = P.veh && P.veh.type === 'nautilux'; if (pm && !s.ship) { s.ship = 1; persist(); setTimeout(() => bonus(2, '🚢 Erster Flug mit der Nautilux!'), 600); }
@@ -173,7 +161,7 @@ BI.createZotik = function (G) {
     if (Math.random() < dt * 5 && Math.hypot(P.x - X(0), P.z - Z(0)) < 50) fx.emit(X(0) + (Math.random() - .5) * 3, 5 + Math.random() * 3, Z(0) + (Math.random() - .5) * 3, 0, 1.2, 0, 1.4, 34, .6, .8, 1, -.5, .8);
   };
   K.log = () => { const s = S(), q = s.q; return { title: '⭐ Zotik – Lunaris', count: (Math.min(4, q) + (s.visit ? 1 : 0) + (s.ship ? 1 : 0) + (s.gates ? 1 : 0) + Math.min(3, Math.floor(s.pts / 20)) + (s.fought ? 1 : 0) + (s.statue ? 1 : 0)) + ' von 12', rows: [
-    { ok: !!s.visit, icon: '🌀', text: 'Lunaris betreten (Rissportal auf der Bunten Insel)', dest: 'zotik' },
+    { ok: !!s.visit, icon: '🌀', text: 'Lunaris besuchen (Brücke am Steg im Süden der Hauptinsel)', dest: 'zotik' },
     { ok: q >= 1, icon: '💬', text: 'Quest „Der Ruf des Kristalls“: ' + QS[0], dest: 'zotik' },
     { ok: q >= 2, icon: '📜', text: QS[1], dest: 'zotik' }, { ok: q >= 3, icon: '⚡', text: QS[2] + ' (Elementar-Kampf)', dest: 'zotik' }, { ok: q >= 4, icon: '🏆', text: QS[3], dest: 'zotik' },
     { ok: !!s.ship, icon: '🚢', text: 'Mit dem Luftschiff Nautilux fliegen', dest: 'zotik' },

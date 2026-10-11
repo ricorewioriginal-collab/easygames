@@ -4,33 +4,43 @@
    (Radio einschalten: E; die Lautstärke hängt von der Entfernung zum Radio ab; verlässt man den Bereich, wird es leise und der Stream pausiert).
    Streams: https://stream.laut.fm/<Sendername> (laut.fm-Betrieb). Das laut.fm-Logo wird aus radio/lautfm.png geladen, sonst steht dort die Schrift „laut.fm“.
    Währung: Noten 🎵 (10 = 1 ⭐). Highlight-Spiel: Frequenz-Dreher (Geschick/Timing). Die Welt liegt weit weg auf einer eigenen Nacht-Insel.
-   Eingang: Funk-Tor (Antennen-Ring) auf der Hauptinsel. Alle Sender-Namen und Logos gehören den jeweiligen Betreibern (hier: RicoReWi Radioportal). */
-BI.RADIO = { x: 1500, z: 1500, R: 112, ring: 76, hub: 34, portal: { x: 104, z: -64 }, lautLogo: 'radio/lautfm.png', portalLogo: 'radio/logos/16.png',
+   Lage: große Insel im Südosten der Hauptinsel, erreichbar über eine Brücke (wie die anderen Welten, ohne Portal). Alle Sender-Namen und Logos gehören den jeweiligen Betreibern (hier: RicoReWi Radioportal). */
+BI.RADIO = { x: 300, z: 230, R: 112, ring: 76, hub: 34, lautLogo: 'radio/lautfm.png', portalLogo: 'radio/logos/16.png',
   visual: slug => 'https://ricorewi-radio.de/visual-radio-tv.html?station=' + encodeURIComponent(slug) + '&app=1', /* Visual Radio (TV-Seite aus ricorewi-radio; app=1: ohne eigenen Ton – der Ton kommt vom Radio in der Spielwelt) */
   stations: [['RicoReWi Radio', 'ricorewi'], ['YourTime-FM', 'yourtime-fm'], ['RapRadio 24', 'rapradio24'], ['SchlagerPop 24', 'schlagerpop24'], ['ChartRadio 24', 'chartradio24'], ['ClubRadio 24', 'clubradio24'], ['AnMaCha 24', 'anmacha24'],
     ['RadioFloh!', 'radiofloh'], ['RockRadio 24', 'rockradio24'], ['ChristmasRadio 24', 'christmasradio24'], ['KultRadio 24', 'kultradio24'], ['Zocker-FM', 'zockerfm'], ['Special-Radio', 'special-radio']] };
+/* Brücke: von der Hauptinsel (Südosten) geradeaus zur Insel; Endpunkte liegen etwas im Inneren der Inseln */
+{ const R = BI.RADIO, d = Math.hypot(R.x, R.z), ux = R.x / d, uz = R.z / d, ax = ux * 168, az = uz * 168, bx = R.x - ux * (R.R - 6), bz = R.z - uz * (R.R - 6), L = Math.hypot(bx - ax, bz - az); R.bridge = { ax, az, bx, bz, ux: (bx - ax) / L, uz: (bz - az) / L, L, w: 5.4 }; R.rot = Math.atan2(-ux, -uz); }
 BI.RADIO.stations = BI.RADIO.stations.map(([n, slug], i) => ({ i, n, slug, logo: 'radio/logos/' + String(i + 1).padStart(2, '0') + '.png', url: 'https://stream.laut.fm/' + slug }));
 
 /* ---------- statisch: Insel, Hub mit Funkturm, 13 Plätze (Podest, Bildschirm-Rahmen, Radio), Wege, Funk-Tor an der Oberfläche ---------- */
 BI.buildRadioGround = function (c) {
   const { W, st: mainSt, lamp: mainLamp, scene } = c, A = BI.RADIO, TAU = Math.PI * 2, X = u => A.x + u, Z = v => A.z + v, ST = A.stations, N = ST.length;
   const st = new BI.Batch(), glow = new BI.Batch(), MARB = 0xe6e8f4, DARK = 0x1a1f3a, GOLD = 0xd8a24a, STONE = 0x3a4068, tmp = new THREE.Color(), hexOf = (i, l) => tmp.setHSL(i / N, .75, l == null ? .55 : l).getHex();
-  W.radio = { x: A.x, z: A.z, R: A.R, fix(px, pz, r, out) { const lx = px - A.x, lz = pz - A.z, d = Math.hypot(lx, lz); if (d > 420) return false; let hit = false, nx = px, nz = pz; if (d > A.R - r) { const k = (A.R - r) / d; nx = A.x + lx * k; nz = A.z + lz * k; hit = true; } out.fx = nx; out.fz = nz; out.fhit = hit; return true; } };
+  const Bz = A.bridge, bh = .65, nx = -Bz.uz, nz = Bz.ux;
+  W.radio = { x: A.x, z: A.z, R: A.R, bridge: Bz,
+    /* Laufregel: auf der Insel frei; auf der Brücke seitlich begrenzt (kein Geländer-Kollider nötig); sonst auf den Inselrand gezogen */
+    fix(px, pz, r, out) {
+      const dx = px - A.x, dz = pz - A.z, d = Math.hypot(dx, dz); if (d > A.R + 200) return false; out.fx = px; out.fz = pz; out.fhit = false; if (d <= A.R - r) return true;
+      const qx = px - Bz.ax, qz = pz - Bz.az, t = qx * Bz.ux + qz * Bz.uz, sd = qx * nx + qz * nz;
+      if (t > -4 && t < Bz.L + 4 && Math.abs(sd) < Bz.w / 2 + 5) { const lim = Bz.w / 2 - r, ns = Math.max(-lim, Math.min(lim, sd)); if (ns !== sd) { out.fx = px + nx * (ns - sd); out.fz = pz + nz * (ns - sd); out.fhit = true; } return true; }
+      if (d < A.R + 40) { const k = (A.R - r) / d; out.fx = A.x + dx * k; out.fz = A.z + dz * k; out.fhit = true; return true; } return false;
+    },
+    floor(x, z) { const qx = x - Bz.ax, qz = z - Bz.az, t = qx * Bz.ux + qz * Bz.uz; if (t < 2 || t > Bz.L - 2 || Math.abs(qx * nx + qz * nz) > Bz.w / 2) return 0; return bh; } };
   /* Insel: Nacht-Bühne mit Neon-Rand, Felsunterseite */
-  st.disc(X(0), Z(0), A.R, 0, 0x232846, 72); st.ring(X(0), Z(0), A.R - 3, A.R + 4, .012, STONE, 72); glow.ring(X(0), Z(0), A.R - 1.2, A.R - .8, .03, 0x6ad0ff, 72); st.cyl(X(0), -60.08, Z(0), A.R + 3.6, 8, 60, 0x2a2f55, 28);
+  st.disc(X(0), Z(0), A.R, 0, 0x3a4272, 72); st.ring(X(0), Z(0), A.R - 3, A.R + 4, .012, STONE, 72); glow.ring(X(0), Z(0), A.R - 1.2, A.R - .8, .03, 0x6ad0ff, 72); st.cyl(X(0), -60.08, Z(0), A.R + 3.6, 8, 60, 0x2a2f55, 28);
   for (let k = 0; k < 56; k++) { const a = k / 56 * TAU, x = X(Math.sin(a) * (A.R - 1.6)), z = Z(Math.cos(a) * (A.R - 1.6)); st.cyl(x, 0, z, .25, .3, 1.2, STONE, 6); if (k % 4 === 0) glow.sph(x, 1.5, z, .3, hexOf(k / 4, .6), 1); }
   /* Hub: Platz, Ringe, Funkturm (Gitter) mit Antenne und Warnlicht, Sockel für das Portal-Logo */
-  st.disc(X(0), Z(0), A.hub, .012, 0x2e3560, 56); for (const [r0, r1, col] of [[8, 8.5, 0x6ad0ff], [20, 20.5, 0xff5ab4], [A.hub - 1, A.hub, 0xffd23f]]) glow.ring(X(0), Z(0), r0, r1, .03, col, 56);
+  st.disc(X(0), Z(0), A.hub, .012, 0x4a5388, 56); for (const [r0, r1, col] of [[8, 8.5, 0x6ad0ff], [20, 20.5, 0xff5ab4], [A.hub - 1, A.hub, 0xffd23f]]) glow.ring(X(0), Z(0), r0, r1, .03, col, 56);
   for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + Math.PI / 4; st.cyl(X(Math.sin(a) * 2.4), 0, Z(Math.cos(a) * 2.4), .15, .45, 34, 0xc9ccdc, 6); }
   for (let y = 4; y < 34; y += 5) { const r = 2.4 - y * .045; st.ring(X(0), Z(0), r, r + .2, y, 0xc9ccdc, 12); } st.cyl(X(0), 34, Z(0), .1, .3, 26, 0xc9ccdc, 6); st.cyl(X(0), 33, Z(0), 3.2, .5, .5, 0xd8d8e8, 12);
   glow.sph(X(0), 60.8, Z(0), .8, 0xff3b3b, 1); for (let k = 0; k < 3; k++) st.box(X(0), 22 + k * 4.5, Z(0), 6 - k * 1.5, .2, .2, 0xff5555 + k * 0x000010, k * 1.1); W.addCircle(X(0), Z(0), 3.6, false, 10);
   st.cyl(X(0), 0, Z(0), 5.2, 5.6, .8, MARB, 20);
-  /* Rückkehr-Tor (Hub, Süden) und Arcade (Hub, Norden-West) */
-  { const x = X(0), z = Z(24); for (let k = 0; k < 10; k++) { const a = k / 10 * TAU; glow.cone(x + Math.sin(a) * 3.3, 0, z + Math.cos(a) * 3.3, .4, 3.4 + (k % 2) * 1.2, k % 2 ? 0x6ad0ff : 0xff5ab4, 5); } st.cyl(x, 0, z, 3.8, 4, .3, STONE, 20); W.addCircle(x, z, 4.4, false, 3); A.back = { x, z }; }
+  /* Arcade (Hub, Nordwest) */
   A.addArcade = function () { const a = { x: X(-14), z: Z(-18) }, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W, st: ast, lamp: alamp, only: [{ kind: 'frequenz_radio', x: a.x, z: a.z, yaw: Math.atan2(X(0) - a.x, Z(0) - a.z), body: 0x1a1f5a, top: 0xff5ab4 }] }); A.group.add(ast.mesh(BI.mat())); if (!alamp.empty) A.group.add(alamp.mesh(W.lampMat)); };
   /* 13 Plätze */
   A.plots = ST.map(s => {
-    const a = (s.i + .5) / N * TAU, o = { x: Math.sin(a), z: Math.cos(a) }, t = { x: o.z, z: -o.x }, f = { x: -o.x, z: -o.z }, ry = Math.atan2(f.x, f.z), col = hexOf(s.i), C = { x: X(o.x * A.ring), z: Z(o.z * A.ring) };
+    const a = A.rot + (s.i + .5) / N * TAU, o = { x: Math.sin(a), z: Math.cos(a) }, t = { x: o.z, z: -o.x }, f = { x: -o.x, z: -o.z }, ry = Math.atan2(f.x, f.z), col = hexOf(s.i), C = { x: X(o.x * A.ring), z: Z(o.z * A.ring) };
     const at = (u, w) => ({ x: C.x + t.x * u + o.x * w, z: C.z + t.z * u + o.z * w });
     st.strip(X(o.x * (A.hub + A.ring - 15) / 2), Z(o.z * (A.hub + A.ring - 15) / 2), 5, A.ring - 15 - A.hub + 2, a, .015, 0x3a4170);
     st.disc(C.x, C.z, 15.5, .02, hexOf(s.i, .18), 30); glow.ring(C.x, C.z, 15, 15.5, .035, col, 40);
@@ -43,8 +53,11 @@ BI.buildRadioGround = function (c) {
     for (let k = 0; k < 4; k++) { const p = at(-9 + k * 1.6, -9); st.cyl(p.x, 0, p.z, .06, .08, 3.2, 0x555a80, 5); glow.sph(p.x, 3.4, p.z, .28, col, 1); }
     return { i: s.i, a, o, t, f, ry, col, C, sp, sc, rp, scr: at(0, 7.5), at };
   });
-  /* Funk-Tor an der Oberfläche: Antennenring */
-  { const { x, z } = A.portal; mainSt.cyl(x, 0, z, 3.6, 3.9, .35, 0x3a4068, 20); for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; mainSt.cyl(x + Math.sin(a) * 3, .35, z + Math.cos(a) * 3, .05, .1, 2.4 + (k % 3) * .9, 0xd0d4e8, 5); mainSt.sph(x + Math.sin(a) * 3, 2.9 + (k % 3) * .9, z + Math.cos(a) * 3, .22, [0xff3b3b, 0x6ad0ff, 0xff5ab4][k % 3], 1); } mainSt.cyl(x, .35, z, 2.6, 2.6, .1, 0x12152a, 20); mainLamp.cyl(x, .45, z, 2.3, 2.3, .05, 0x6ad0ff, 20); W.addCircle(x, z, 4.4, false, 3); W.spots.radioPortal = { x, z }; }
+  /* Zufahrt vom Rand zum Hub + Brücke (Holzdeck, Geländer, Pfähle) */
+  st.strip(X(Math.sin(A.rot) * (A.hub + A.R) / 2), Z(Math.cos(A.rot) * (A.hub + A.R) / 2), 5, A.R - A.hub + 6, A.rot, .015, 0x5a6296);
+  { const L = Bz.L, cx = (Bz.ax + Bz.bx) / 2, cz = (Bz.az + Bz.bz) / 2, ry = Math.atan2(Bz.ux, Bz.uz); st.box(cx, .35, cz, Bz.w, .3, L, 0xb98650, ry);
+    for (const sd of [-1, 1]) { st.box(cx + nx * sd * (Bz.w / 2 - .1), .65, cz + nz * sd * (Bz.w / 2 - .1), .14, 1.0, L, 0x8a5a33, ry); for (let k = 0; k <= L; k += 4) { const px = Bz.ax + Bz.ux * k + nx * sd * (Bz.w / 2 - .1), pz = Bz.az + Bz.uz * k + nz * sd * (Bz.w / 2 - .1); st.cyl(px, 0, pz, .12, .14, 1.2, 0x6a4a2a, 5); } }
+    for (let k = 6; k < L; k += 10) for (const sd of [-1, 1]) st.cyl(Bz.ax + Bz.ux * k + nx * sd * 1.9, -1.6, Bz.az + Bz.uz * k + nz * sd * 1.9, .4, .45, 1.9, 0x4a4a52, 8); }
   const grp = new THREE.Group(), stM = st.mesh(BI.mat()), glM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); stM.frustumCulled = glM.frustumCulled = false; grp.add(stM, glM); grp.visible = false; scene.add(grp); A.group = grp;
 };
 
@@ -59,17 +72,11 @@ BI.createRadio = function (G) {
   /* Bilder (Logos, laut.fm) erst laden, wenn man in der Nähe ist */
   const imgs = [], loadImg = src => { const im = new Image(); im.src = src; return im; };
   let lautIm = null, portalIm = null; const ready = im => im && im.complete && im.naturalWidth > 0;
-  /* ===== Himmel, Sterne, Lichtsäulen ===== */
-  { const g = new THREE.SphereGeometry(700, 24, 12), pos = g.attributes.position, col = new Float32Array(pos.count * 3), top = new THREE.Color(0x040824), hor = new THREE.Color(0x2a3fa8), cc = new THREE.Color();
-    for (let i = 0; i < pos.count; i++) { const y = Math.max(0, pos.getY(i) / 700); cc.copy(hor).lerp(top, Math.min(1, y * 1.8)); col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b; }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); const dome = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })); dome.position.set(A.x, 0, A.z); dome.renderOrder = -1; grp.add(dome);
-    const n = 260, sp = new Float32Array(n * 3), rr = BI.rng(77); for (let i = 0; i < n; i++) { const a = rr() * TAU, e = .15 + rr() * 1.3, d = 650; sp[i * 3] = A.x + Math.sin(a) * Math.cos(e) * d; sp[i * 3 + 1] = Math.sin(e) * d; sp[i * 3 + 2] = A.z + Math.cos(a) * Math.cos(e) * d; }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3)); const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, sizeAttenuation: false, fog: false })); stars.frustumCulled = false; grp.add(stars); }
+  /* ===== Lichtsäulen ===== */
   const beamGeo = new THREE.CylinderGeometry(1.1, 1.8, 90, 8, 1, true); const P0 = A.plots;
   const beams = P0.map(p => { const m = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color: p.col, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide })); m.position.set(p.sp.x, 45, p.sp.z); grp.add(m); return m; });
   /* ===== Schilder ===== */
-  const laut = sign('📡 laut.fm', X(0), 44, Z(0), 16, '#ffffff'); sign('📻 Funkwelle – 13 Sender', X(0), 11, Z(0), 16); sign('↩ Funk-Tor zur Bunten Insel', A.back.x, 6, A.back.z, 10); sign('🕹️ Frequenz-Dreher', X(-14), 6, Z(-18), 8);
-  { const q = W.spots.radioPortal, s = sign('📡 Funk-Tor zur Funkwelle', q.x, 7.4, q.z, 10); grp.remove(s); scene.add(s); K.portalSign = s; }
+  const laut = sign('📡 laut.fm', X(0), 44, Z(0), 16, '#ffffff'); sign('📻 Funkwelle – 13 Sender', X(0), 11, Z(0), 16); sign('🕹️ Frequenz-Dreher', X(-14), 6, Z(-18), 8);
   /* ===== Plätze: Logo-Tafel (schwingt), Bildschirm (Canvas), Leuchtkugel am Radio ===== */
   const plateGeo = new THREE.PlaneGeometry(6.2, 6.2), frameB = new BI.Batch(); frameB.box(0, 3.2, 0, 6.9, .3, .3, 0xd8a24a); frameB.box(0, -3.5, 0, 6.9, .3, .3, 0xd8a24a); for (const sd of [-1, 1]) frameB.box(sd * 3.3, -3.3, 0, .3, 6.6, .3, 0xd8a24a); const frameGeo = frameB.mesh(BI.mat()).geometry;
   const scrGeo = new THREE.PlaneGeometry(9.2, 5.18), ballGeo = new THREE.SphereGeometry(.45, 10, 8);
@@ -119,28 +126,24 @@ BI.createRadio = function (G) {
   const SP = []; { const rr = BI.rng(555); for (let i = 0; SP.length < 52 && i < 900; i++) { const a = rr() * TAU, d = 8 + rr() * (A.R - 14), x = A.x + Math.sin(a) * d, z = A.z + Math.cos(a) * d; if (!W.free(x, z, .9)) continue; SP.push({ x, z, y: 1.0, v: SP.length % 8 === 7 ? 5 : 1 }); } }
   K.shards = SP; const noteM = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.42, 0), new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false }), SP.length), dm = new THREE.Object3D(), cl = new THREE.Color(); noteM.frustumCulled = false; SP.forEach((q, i) => noteM.setColorAt(i, cl.setHex(q.v > 1 ? 0xffd23f : [0x6ad0ff, 0xff5ab4][i % 2]))); grp.add(noteM);
   /* ===== Ein- und Ausgang ===== */
-  K.enter = function () { G.fade(() => { P.x = X(0); P.z = Z(30); P.y = 0; P.vy = 0; P.h = Math.PI; G.cam.yaw = 0; const s = S(); if (!s.visit) { s.visit = 1; persist(); setTimeout(() => bonus(2, '📡 Willkommen in der Funkwelle!'), 900); } else say('📡 Willkommen zurück in der Funkwelle!', 2400); }); };
-  K.leave = function () { stopRadio(); G.fade(() => { const q = W.spots.radioPortal; P.x = q.x; P.z = q.z + 5.6; P.y = 0; P.vy = 0; P.h = 0; G.cam.yaw = Math.PI; say('☀️ Zurück auf der Bunten Insel', 2000); }); };
   /* ===== Nähe / Aktion ===== */
   K.near = function () {
-    if (P.veh || P.y > 12 || K.open) return null; const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r, q = W.spots.radioPortal;
-    if (nr(q.x, q.z, 6.4)) return { k: 'rin' }; if (!K.inside) return null; if (nr(A.back.x, A.back.z, 6)) return { k: 'rout' };
+    if (P.veh || P.y > 12 || K.open || !K.inside) return null; const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
     for (const p of P0) { if (!nr(p.C.x, p.C.z, 22)) continue; if (nr(p.rp.x, p.rp.z, 3.4)) return { k: 'rradio', i: p.i, label: ['📻', R.on && R.cur === p.i ? ST[p.i].n + ' ausschalten' : ST[p.i].n + ' einschalten'] }; if (nr(p.scr.x, p.scr.z, 5)) return { k: 'rvis', i: p.i, label: ['📺', 'Visual Radio ansehen'] }; if (nr(p.sp.x, p.sp.z, 6.2)) return { k: 'rstat', i: p.i, label: ['📸', ST[p.i].n + '-Statue ansehen'] }; }
     if (nr(X(0), Z(0), 8)) return { k: 'rtower', label: ['📡', 'Funkturm'] };
     return null;
   };
   K.act = function (n) {
     if (!n) return; const s = S();
-    if (n.k === 'rin') K.enter(); else if (n.k === 'rout') K.leave(); else if (n.k === 'rradio') toggleRadio(n.i); else if (n.k === 'rvis') openVisual(n.i);
+    if (n.k === 'rradio') toggleRadio(n.i); else if (n.k === 'rvis') openVisual(n.i);
     else if (n.k === 'rstat') { fx.burst(P0[n.i].sp.x, 7, P0[n.i].sp.z, 18, [[1, .9, .5], [1, 1, 1], [.5, .8, 1]], 4, 1.2, 28, -1); say('📻 ' + ST[n.i].n + ' – läuft auf laut.fm/' + ST[n.i].slug, 3400); }
     else if (n.k === 'rtower') { say('📡 Alle 13 Sender senden live über laut.fm – schalte die Radios an den Plätzen ein!', 4200); [523, 659, 784].forEach((f, i) => note(f, 1, 'sine', .1, i * .12)); }
   };
   /* ===== Frame ===== */
   let was = false, shT = 0; const posOf = i => P0[i].rp;
   K.update = function (dt, t) {
-    const d0 = Math.hypot(P.x - A.x, P.z - A.z), ins = d0 < 420; K.inside = ins; if (ins !== was) { was = ins; G.mood(ins); if (!ins && (R.on || K.open)) { K.closeVisual(); stopRadio(); } }
-    const near = d0 < 900; if (grp.visible !== near) grp.visible = near;
-    if (K.portalSign) K.portalSign.visible = Math.hypot(P.x - W.spots.radioPortal.x, P.z - W.spots.radioPortal.z) < 40;
+    const d0 = Math.hypot(P.x - A.x, P.z - A.z), ins = d0 < A.R + 25; K.inside = ins; if (ins !== was) { was = ins; if (ins) { const s0 = S(); if (!s0.visit) { s0.visit = 1; persist(); setTimeout(() => bonus(2, '📡 Willkommen in der Funkwelle!'), 700); } else say('📡 Funkwelle – 13 Sender', 2200); } else if (R.on || K.open) { K.closeVisual(); stopRadio(); } }
+    const near = d0 < 700; if (grp.visible !== near) grp.visible = near;
     if (!ins) return; const s = S();
     if (!lautIm) { lautIm = loadImg(A.lautLogo); portalIm = loadImg(A.portalLogo); }
     for (const q of PL) {
@@ -152,7 +155,7 @@ BI.createRadio = function (G) {
     }
     if (R.on) {
       const p = posOf(R.cur), d = Math.hypot(P.x - p.x, P.z - p.z), v = d < 12 ? 1 : d > 62 ? 0 : Math.pow(1 - (d - 12) / 50, 1.5); R.vol = v;
-      if (R.el) { R.el.volume = Math.max(0, Math.min(1, v * (AU.muted ? 0 : (AU._vol == null ? 1 : AU._vol)))); if (v <= .01 && !R.pausedFar && !R.el.paused) { R.el.pause(); R.pausedFar = true; } else if (v > .03 && R.pausedFar) { R.pausedFar = false; startStream(R.cur); } }
+      if (R.el) { R.el.volume = Math.max(0, Math.min(1, v * (AU.muted ? 0 : (AU._vol == null ? 1 : AU._vol)))); if (v <= .01 && !R.pausedFar && !R.el.paused) { R.el.pause(); R.pausedFar = true; } else if (v > .03 && R.pausedFar) { R.pausedFar = false; startStream(R.cur); R.el.volume = Math.max(0, Math.min(1, v * (AU.muted ? 0 : (AU._vol == null ? 1 : AU._vol)))); } }
       try { AU.duck && AU.duck(1 - .88 * v); } catch (e) { } nowPlaying();
       if (!R.pausedFar && R.el && !R.el.paused && R.el.readyState > 2 && v > .2) { R.heardT += dt; if (R.heardT >= 20 && !s.done.includes(R.cur)) { s.done.push(R.cur); persist(); G.addStars(1); say('📻 ' + ST[R.cur].n + ' gehört! +1 ⭐ (' + s.done.length + '/13)', 3200); if (s.done.length >= N && !s.all) { s.all = 1; persist(); setTimeout(() => bonus(10, '🏆 Alle 13 Sender gehört!'), 1500); } } }
     }
@@ -161,7 +164,7 @@ BI.createRadio = function (G) {
     if (Math.random() < dt * 4) fx.emit(X(0) + (Math.random() - .5) * 2, 50 + Math.random() * 8, Z(0) + (Math.random() - .5) * 2, 0, .8, 0, 1.2, 30, .6, .8, 1, -.5, .8);
   };
   K.log = () => { const s = S(); return { title: '📻 Funkwelle', count: ((s.visit ? 1 : 0) + s.done.length + (s.all ? 1 : 0) + (s.visual ? 1 : 0) + Math.min(3, Math.floor(s.pts / 20)) + (s.played ? 1 : 0)) + ' von 20', rows: [
-    { ok: !!s.visit, icon: '📡', text: 'Funkwelle betreten (Funk-Tor auf der Bunten Insel)', dest: 'radio' },
+    { ok: !!s.visit, icon: '📡', text: 'Funkwelle besuchen (Brücke im Südosten der Hauptinsel)', dest: 'radio' },
     { ok: s.done.length >= 1, icon: '📻', text: 'Sender hören: ' + s.done.length + ' von 13 (Radio am Platz einschalten, 20 Sekunden zuhören = +1 ⭐)', dest: 'radio' },
     { ok: !!s.all, icon: '🏆', text: 'Alle 13 Sender gehört (+10 ⭐)', dest: 'radio' },
     { ok: !!s.visual, icon: '📺', text: 'Das Visual Radio an einem Bildschirm ansehen', dest: 'radio' },

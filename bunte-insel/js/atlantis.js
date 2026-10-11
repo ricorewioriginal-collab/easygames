@@ -6,7 +6,11 @@
    Was es sonst nirgends gibt: Aqua-Gleiter (schwebende Fahrzeuge), Schwerelos-Halle (Mondschwerkraft), Kristall-Harfe (Spielinstrument),
    Hologramm-Archiv (die Sage in 5 Bildern), Orichalcum-Splitter (→ Sterne), Delfin-Drohnen und Leuchtquallen, Highlight-Spiel „Strömungs-Rätsel“.
    Technik: eigene Batches (nur sichtbar, wenn man in der Nähe ist), beim Hinabsteigen werden die großen Hauptwelt-Meshes ausgeblendet (spart GPU). */
-BI.ATLANTIS = { x: 1200, z: 0, R: 160, portal: { x: 105, z: 102 }, bands: [[36, 46], [80, 92]] };
+/* Abstieg an der Küste der Hauptinsel (Süden, neben dem Steg): eine breite Steintreppe führt 5,5 m nach unten in einen überdachten Gang; am Ende geht es nahtlos nach Atlantis.
+   a = Richtung (Winkel von +z aus, x = sin a), r0 = Radius des Treppenanfangs, L = Länge der Treppe, land = ebenes Stück davor, da = halbe Winkelbreite des Lochs im Boden */
+BI.ATLANTIS = { x: 1200, z: 0, R: 160, pit: { a: 6 * Math.PI / 180, r0: 154, L: 17, land: 6, depth: 5.5, da: 2 * Math.PI / 180 }, bands: [[36, 46], [80, 92]] };
+BI.ATLANTIS.pitPt = (t, l) => { const q = BI.ATLANTIS.pit, ux = Math.sin(q.a), uz = Math.cos(q.a); return [ux * (q.r0 + t) + uz * l, uz * (q.r0 + t) - ux * l]; };
+BI.ATLANTIS.portal = { x: Math.sin(BI.ATLANTIS.pit.a) * BI.ATLANTIS.pit.r0, z: Math.cos(BI.ATLANTIS.pit.a) * BI.ATLANTIS.pit.r0 };
 
 /* ---------- statisch: Höhle, Ringe, Kanäle, Brücken, Akropolis, Gebäude, Gärten (+ Eingangstor an der Oberfläche) ---------- */
 BI.buildAtlantisGround = function (c) {
@@ -72,10 +76,26 @@ BI.buildAtlantisGround = function (c) {
     A.waterMat = new THREE.MeshBasicMaterial({ color: 0x28c8e0, transparent: true, opacity: .88, side: THREE.DoubleSide, fog: false });
     for (const [a0, b0] of A.bands) { const w = new THREE.Mesh(new THREE.RingGeometry(a0, b0, 64), A.waterMat); w.rotation.x = -Math.PI / 2; w.position.set(A.x, -.3, A.z); grp.add(w); } }
   grp.visible = false; scene.add(grp); A.group = grp;
-  /* Eingang an der Oberfläche (Hauptinsel, am See): Steintor mit Leuchtfläche, Stufen nach unten */
-  { const { x, z } = A.portal, ry = Math.atan2(112 - x, 75 - z); mainSt.cyl(x, 0, z, 4.2, 4.6, .4, 0xb7bcc9, 20); mainSt.ring(x, z, 3.2, 3.8, .42, 0x35d6e0, 24);
-    for (let k = 0; k < 14; k++) { const a = k / 14 * TAU, px = x + Math.sin(a) * 3.1, pz = z + Math.cos(a) * 3.1, h = 2.2 + (k % 2) * .5; mainSt.box(px, .4, pz, .9, h, .9, k % 2 ? 0x9aa0b4 : 0xb7bcc9, a); }
-    mainSt.cyl(x, .4, z, 3.0, 3.0, .12, 0x0a3550, 24); mainLamp.cyl(x, .5, z, 2.6, 2.6, .05, 0x9fe8ff, 24); mainSt.cone(x, .5, z, .9, 3.4, 0x35d6e0, 6); W.addCircle(x, z, 4.6, false, 3); W.spots.atlPortal = { x, z, ry }; }
+  /* Abstieg an der Oberfläche (Hauptinsel, Küste): Steintreppe nach unten in einen überdachten Gang; im Boden ist dafür ein Loch (siehe world.js, polarGround) */
+  { const pa = A.pit, ux = Math.sin(pa.a), uz = Math.cos(pa.a), nx = Math.cos(pa.a), nz = -Math.sin(pa.a), L = pa.L, tl = pa.land, D = pa.depth, END = L + tl, PT = (t, l) => [ux * (pa.r0 + t) + nx * l, uz * (pa.r0 + t) + nz * l], n = Math.ceil(L / .8), run = L / n, rise = D / n;
+    for (let k = 0; k < n; k++) { const [x, z] = PT((k + .5) * run, 0), top = -(k + .5) * rise; mainSt.box(x, -D - 1, z, 10.8, top + D + 1, run + .03, k % 2 ? 0xc9cdd8 : 0xdfe3ec, pa.a); }
+
+    { const [x, z] = PT(L + tl / 2, 0); mainSt.box(x, -D - 1, z, 10.8, 1, tl + .03, 0xdfe3ec, pa.a); }
+    /* Wände (innen sichtbar), Dach über dem tieferen Teil, Endwand mit leuchtendem Durchgang */
+    const wallSeg = (t0, t1, top) => { for (const sd of [-1, 1]) { const [x, z] = PT((t0 + t1) / 2, sd * 5.75); mainSt.box(x, -D - 1.2, z, 1.5, top + D + 1.2, t1 - t0, 0x9aa2b6, pa.a); } };
+    wallSeg(-1, 8, 1.0); wallSeg(8, END + 2.4, 3.2);
+    { const [x, z] = PT((8 + END + 2.4) / 2, 0); mainSt.box(x, 3.2, z, 14.4, .5, END + 2.4 - 8 + .6, 0xb7bcc9, pa.a); }
+    { const [x, z] = PT(END + 1.2, 0); mainSt.box(x, -D - 1.2, z, 14.4, D + 1.2 + 3.2, 2.4, 0x8a92a8, pa.a); const [gx, gz] = PT(END + .02, 0); mainLamp.box(gx, -D, gz, 4.4, 3.6, .05, 0x9fe8ff, pa.a); }
+    /* Torbogen oben an der Treppe + Leuchten entlang der Wände */
+    for (const sd of [-1, 1]) { const [x, z] = PT(-1.2, sd * 6.7); mainSt.box(x, 0, z, 1.6, 5.4, 1.6, 0xd9dde8, pa.a); mainSt.box(x, 5.4, z, 2.0, .5, 2.0, 0x35d6e0, pa.a); }
+    { const [x, z] = PT(-1.2, 0); mainSt.box(x, 5.0, z, 15, .8, 1.4, 0xd9dde8, pa.a); }
+    for (let t = 4; t < END; t += 4) for (const sd of [-1, 1]) { const [x, z] = PT(t, sd * 4.95), y = -D * Math.min(1, t / L); mainLamp.sph(x, y + 2.1, z, .22, 0x9fe8ff, 1); }
+    /* Kollisionen: Wände und Endwand als Kreisreihen */
+    for (let t = -1; t <= END + 2; t += 1) for (const sd of [-1, 1]) { const [x, z] = PT(t, sd * 5.7); W.addCircle(x, z, .9, false, 8); }
+    for (let l = -5.5; l <= 5.6; l += 1) { const [x, z] = PT(END + .7, l); W.addCircle(x, z, .9, false, 8); }
+    { const c = [PT(-2, -8), PT(-2, 8), PT(END + 3, -8), PT(END + 3, 8)]; W.pads.push([Math.min(...c.map(q => q[0])), Math.min(...c.map(q => q[1])), Math.max(...c.map(q => q[0])), Math.max(...c.map(q => q[1]))]); }
+    W.atlPit = { END, floor(x, z) { const t = x * ux + z * uz - pa.r0, l = x * nx + z * nz; if (Math.abs(l) > 5.2 || t < -.3 || t > END + .5) return null; return t < 0 ? 0 : t < L ? -D * t / L : -D; }, to: (t, l) => PT(t, l), ux, uz };
+    W.spots.atlPortal = { x: PT(0, 0)[0], z: PT(0, 0)[1], ry: Math.atan2(-ux, -uz) }; }
 };
 
 /* ---------- Laufzeit ---------- */
@@ -94,10 +114,10 @@ BI.createAtlantis = function (G) {
   const inside = () => Math.hypot(P.x - A.x, P.z - A.z) < 380;
   /* ===== Eingang / Ausgang ===== */
   const ptl = W.spots.atlPortal, ext = W.spots.atlExit;
-  { sign('🔱 Eingang nach Atlantis', ptl.x, 7.2, ptl.z, 8); sign('⬆ Zurück zur Oberfläche', ext.x, ext.y + 3.4, ext.z, 8); }
-  const portalGlow = new THREE.Mesh(new THREE.CircleGeometry(2.7, 24), new THREE.MeshBasicMaterial({ color: 0x9fe8ff, transparent: true, opacity: .75 })); portalGlow.rotation.x = -Math.PI / 2; portalGlow.position.set(ptl.x, .58, ptl.z); scene.add(portalGlow);
-  K.enter = function () { G.fade(() => { P.x = X(0); P.z = Z(138); P.y = 0; P.vy = 0; P.h = Math.PI; G.cam.yaw = 0; const s = S(); if (!s.visit) { s.visit = 1; persist(); setTimeout(() => bonus(2, '🔱 Willkommen in Atlantis!'), 900); } else say('🔱 Willkommen zurück in Atlantis!', 2400); }); };
-  K.leave = function () { G.fade(() => { P.x = ptl.x + Math.sin(ptl.ry) * 6; P.z = ptl.z + Math.cos(ptl.ry) * 6; P.y = 0; P.vy = 0; P.h = ptl.ry + Math.PI; G.cam.yaw = P.h + Math.PI; say('☀️ Zurück an der Oberfläche', 2000); }); };
+  { sign('🔱 Atlantis – Treppe nach unten', ptl.x, 7.4, ptl.z, 9); sign('⬆ Zurück zur Oberfläche', ext.x, ext.y + 3.4, ext.z, 8); }
+  let enterCd = 0;
+  K.enter = function () { enterCd = 3; G.fade(() => { P.x = X(0); P.z = Z(138); P.y = 0; P.vy = 0; P.h = Math.PI; G.cam.yaw = 0; const s = S(); if (!s.visit) { s.visit = 1; persist(); setTimeout(() => bonus(2, '🔱 Willkommen in Atlantis!'), 900); } else say('🔱 Willkommen zurück in Atlantis!', 2400); }); };
+  K.leave = function () { enterCd = 3; G.fade(() => { const q = W.atlPit.to(A.pit.L - 2, 0); P.x = q[0]; P.z = q[1]; P.y = W.groundY(P.x, P.z); P.vy = 0; P.h = ptl.ry; G.cam.yaw = P.h + Math.PI; say('☀️ Zurück an der Oberfläche', 2000); }); };
   /* ===== Hologramm-Archiv (die Sage in 5 Bildern) ===== */
   const HOLO = [
     ['📜 Platons Geschichte', 'Vor etwa 2400 Jahren schrieb der griechische Denker Platon von einer mächtigen Insel namens Atlantis. Sie sei im Meer versunken. Ob das stimmt, weiß niemand – es ist eine Sage, die man weitererzählt.'],
@@ -143,7 +163,6 @@ BI.createAtlantis = function (G) {
   const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
   K.near = function () {
     if (P.veh || P.y > 8) return null;
-    if (nr(ptl.x, ptl.z, 6.4)) return { k: 'atlin' };
     if (!K.inside) return null;
     if (nr(ext.x, ext.z, 5)) return { k: 'atlout' };
     for (const q of HP) if (nr(q.x, q.z, 3)) return { k: 'aholo', i: q.i };
@@ -161,7 +180,8 @@ BI.createAtlantis = function (G) {
   K.update = function (dt, t) {
     if (!panel.hidden && !HP.some(q => Math.hypot(P.x - q.x, P.z - q.z) < 7)) panel.hidden = true;
     const ins = inside(); K.inside = ins; if (ins !== was) { was = ins; G.mood(ins); }
-    const near = Math.hypot(P.x - A.x, P.z - A.z) < 520; if (A.group.visible !== near) A.group.visible = near; portalGlow.material.opacity = .6 + .15 * Math.sin(t * 2.4);
+    enterCd -= dt; if (enterCd <= 0 && !P.veh) { if (!ins) { const pt = W.atlPit, tt = P.x * pt.ux + P.z * pt.uz - A.pit.r0; if (tt > pt.END - 1.6 && P.y < -A.pit.depth + .8) K.enter(); } else if (nr(ext.x, ext.z, 2.8)) K.leave(); }
+    const near = Math.hypot(P.x - A.x, P.z - A.z) < 520; if (A.group.visible !== near) A.group.visible = near;
     if (!ins) return;
     const s = S();
     /* Animationen */
@@ -182,7 +202,7 @@ BI.createAtlantis = function (G) {
     if (P.veh && P.veh.type === 'gleiter' && !s.glider) { s.glider = 1; persist(); setTimeout(() => bonus(1, '🛸 Erste Fahrt im Aqua-Gleiter!'), 500); }
   };
   K.log = () => { const s = S(), n = s.holo.reduce((a, b) => a + b, 0); return { title: '🔱 Atlantis', count: (n + (s.herz ? 1 : 0) + (s.harp ? 1 : 0) + (s.lowg ? 1 : 0) + (s.glider ? 1 : 0) + Math.min(3, Math.floor(s.pts / 20)) + (s.played ? 1 : 0)) + ' von 12', rows: [
-    { ok: !!s.visit, icon: '🔱', text: 'Atlantis betreten (Eingang am See der Hauptinsel)', dest: 'atlantis' },
+    { ok: !!s.visit, icon: '🔱', text: 'Atlantis betreten (Treppe nach unten an der Küste der Hauptinsel)', dest: 'atlantis' },
     { ok: n === 5, icon: '📜', text: 'Hologramm-Archiv: ' + n + '/5 Bilder ansehen', dest: 'atlantis' },
     { ok: !!s.herz, icon: '💠', text: 'Den Stufenberg besteigen und das Herz von Atlantis berühren', dest: 'atlantis' },
     { ok: !!s.harp, icon: '🎶', text: 'Kristall-Harfe von links nach rechts spielen', dest: 'atlantis' },

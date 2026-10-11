@@ -3,6 +3,50 @@
    Alles Statische steckt in EINEM Mesh (Vertexfarben), dazu je ein kleines Mesh für Fenster und Laternen (Tag/Nacht). */
 BI.WORLD = { R: 190, MAP: 236, LIMIT: 178, AX: 140, AZ: 118, CR: 40, ROAD: 9, RA: 55, RB: 105, RR: 12 };
 
+/* Eine Wohnung (Haus Sonnenschein): Wände, Möbel, Dach – o = { W, st, roofB, i, x0, ZF, right }. Wird für den Wohnblock und für den Umzug (Baumenü) benutzt. */
+BI.buildFlat = function (o) {
+  const { W, st, roofB, i, x0, ZF } = o, FW = 12, ZB = ZF - 16, ZI = ZF - 8, WH = 3.2, TT = .4, GL = 0xa8dcff, WD = 0x8a5a33, LT = 0xd9b88a;
+  const WC = [0xffd6a8, 0xbfe8ff, 0xd8f5c4, 0xffc8e6], RC = [0xe8453c, 0x3f8cff, 0x4cd07d, 0xff8a1f], CAR = [0xff9a9a, 0x9ad0ff, 0xa8e6a8, 0xffc78a], BEDC = [0xff6b6b, 0x4da3ff, 0x6bd67e, 0xb36bff];
+  const shadeC = c => { const f = v => Math.max(0, Math.round(v * .8)); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); };
+  const wall = (x0, x1, z, c, gapA, gapB) => {
+    const seg = (a, b) => { if (b - a < .05) return; st.box((a + b) / 2, 0, z, b - a, WH, TT, c); W.addBox(a, z - TT / 2, b, z + TT / 2, false, WH); };
+    if (gapA == null) seg(x0, x1); else { seg(x0, gapA); seg(gapB, x1); st.box((gapA + gapB) / 2, 2.4, z, gapB - gapA, WH - 2.4, TT, c); }
+  };
+      const x1 = x0 + FW, cx = x0 + FW / 2, c = WC[i % 4], dk = 0xb08a64;
+      st.rect(x0, ZI, x1, ZF, .05, LT); st.rect(x0, ZB, x1, ZI, .05, CAR[i % 4]);                                  // Böden
+      wall(x0, x1, ZB, c, cx + 2.3, cx + 4.1); wall(x0, x1, ZF, c, cx - 1.3, cx + 1.3); wall(x0, x1, ZI, c, cx + 1.4, cx + 3.8);
+      st.box(x0, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x0 - TT / 2, ZB, x0 + TT / 2, ZF, false, WH);
+      if (o.right) { st.box(x1, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x1 - TT / 2, ZB, x1 + TT / 2, ZF, false, WH); }
+      // Haustür, Fenster, Fußmatte, Blumenkasten
+      st.box(cx - 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx + 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx, 2.35, ZF + .1, 2.9, .16, .5, WD); st.box(cx, 0, ZF + 1, 2, .04, 1.2, RC[i % 4]);
+      for (const sx of [-4, 4]) { st.box(cx + sx, 1.0, ZF + .2, 2.3, 1.4, .08, GL); st.box(cx + sx, .95, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.65, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.0, ZF + .24, .1, 1.4, .1, 0xffffff); st.box(cx + sx, .55, ZF + .6, 2.3, .35, .4, 0x8a5a33); for (let k = 0; k < 5; k++) st.sph(cx + sx - 1 + k * .5, .85, ZF + .6, .16, [0xff5a8a, 0xffd23f, 0xff8a1f][k % 3], 0); }
+      st.box(cx - 3.6, 1.5, ZB + .22, 1.8, 1.1, .08, GL); st.box(cx - 3.6, 1.5, ZB + .25, .1, 1.1, .1, 0xffffff);                    // Fenster hinten (über dem Bett)
+      // Wohnzimmer: Teppich, Sofa, Fernseher, Esstisch, Pflanze
+      st.rect(cx - 3.4, ZF - 6.2, cx + 1.4, ZF - 2.4, .062, 0xff8a8a);
+      st.box(cx - 2.6, 0, ZI + 1.0, 3.2, .5, 1.1, 0x4da3ff); st.box(cx - 2.6, .5, ZI + .6, 3.2, .8, .3, 0x3d86e0); st.box(cx - 4.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); st.box(cx - 1.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); W.addBox(cx - 4.3, ZI + .2, cx - .9, ZI + 1.6, false, 1.2);
+      st.box(x1 - 1.0, 0, ZF - 4.2, .7, .6, 2.6, WD); st.box(x1 - 1.0, .6, ZF - 4.2, .16, 1.1, 2.1, 0x23262d); st.box(x1 - 1.1, .68, ZF - 4.2, .04, .94, 1.9, 0x6fd0ff); W.addBox(x1 - 1.4, ZF - 5.5, x1 - .5, ZF - 2.9, false, 1.7);
+      st.box(cx + 2.0, .75, ZF - 2.0, 2.2, .1, 1.3, 0xc8a27a); for (const lx of [-.95, .95]) for (const lz of [-.5, .5]) st.box(cx + 2.0 + lx, 0, ZF - 2.0 + lz, .12, .75, .12, 0x8a6a45); st.sph(cx + 2.0, .98, ZF - 2.0, .14, 0xff5a5a, 0); W.addBox(cx + .85, ZF - 2.7, cx + 3.15, ZF - 1.3, false, .9);
+      st.cyl(x0 + 1.0, 0, ZF - .9, .3, .22, .5, 0xc2453d, 8); st.sph(x0 + 1.0, 1.0, ZF - .9, .55, 0x3fa84e, 1, 1, 1.2, 1); W.addCircle(x0 + 1.0, ZF - .9, .5, false, 1.6);
+      // Kinderzimmer: Bett, Kleiderschrank, Spielkiste, Teppich
+      st.rect(cx - 2.2, ZB + 3.6, cx + 2.6, ZB + 6.6, .062, 0xffffff); st.rect(cx - 2.0, ZB + 3.8, cx + 2.4, ZB + 6.4, .066, 0xffd86b);
+      st.box(cx - 3.6, 0, ZB + 1.9, 2.1, .45, 3.3, WD); st.box(cx - 3.6, .45, ZB + 2.1, 1.95, .3, 2.9, BEDC[i % 4]); st.box(cx - 3.6, .75, ZB + 1.0, 1.1, .16, .6, 0xffffff); st.box(cx - 3.6, .45, ZB + .35, 2.1, 1.0, .12, WD); st.box(cx - 3.6, .75, ZB + 3.0, 1.9, .06, .9, shadeC(BEDC[i % 4]));
+      W.addBox(cx - 4.65, ZB + .2, cx - 2.55, ZB + 3.6, false, 1.0);
+      st.box(x1 - .95, 0, ZB + 3.6, 1.4, 2.7, 3.0, 0xb98650); st.box(x1 - 1.66, .1, ZB + 2.9, .06, 2.3, 1.3, 0x8a5a33); st.box(x1 - 1.66, .1, ZB + 4.3, .06, 2.3, 1.3, 0x8a5a33); st.sph(x1 - 1.72, 1.3, ZB + 3.5, .08, 0xffd23f, 0); st.sph(x1 - 1.72, 1.3, ZB + 3.7, .08, 0xffd23f, 0); st.box(x1 - .95, 2.7, ZB + 3.6, 1.5, .1, 3.1, 0x8a5a33); W.addBox(x1 - 1.7, ZB + 2.1, x1 - .2, ZB + 5.1, false, 2.7);
+      st.box(cx + 1.2, 0, ZB + 1.1, 1.8, .7, 1.1, 0xe0382b); st.box(cx + 1.2, .7, ZB + 1.1, 1.9, .08, 1.2, 0xc02a20); st.sph(cx + .9, .9, ZB + .9, .22, 0xffd23f, 1); st.box(cx + 1.6, .78, ZB + 1.3, .35, .35, .35, 0x4da3ff); W.addBox(cx + .3, ZB + .5, cx + 2.1, ZB + 1.7, false, .8);
+      // Dach (eigenes Mesh, wird innen ausgeblendet)
+      roofB.prism(cx, WH, (ZB + ZF) / 2, FW + .8, 2.3, ZF - ZB + 1.6, RC[i % 4], 0); roofB.box(cx, WH - .05, (ZB + ZF) / 2, FW + .6, .12, ZF - ZB + 1.4, shadeC(RC[i % 4]));
+      const dz = ZF + 2.6;
+      return { i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, chest: { x: cx + 1.2, z: ZB + 1.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } };
+
+};
+
+/* Fahrzeuge eines Hauses: Limousine, Rutschauto und Hubschrauber stehen vor der Tür; sie kehren nach der Fahrt selbstständig hierher zurück. */
+BI.homeSpawns = function (f) {
+  const LIMO = [0x1c1f2a, 0xf4f6fa, 0xb02a5a, 0x1f4aa8], BOB = [0xe0382b, 0x3fa0ff, 0xffd23f, 0x4cd07d];
+  const blk = f.zF === -124; /* Haus Sonnenschein: vor der Tür liegt die Bahnstrecke – Limousine und Rutschauto stehen dahinter, der Hubschrauber hinter dem Haus */
+  return [{ type: 'limo', x: f.cx - 3.4, z: f.zF + (blk ? 16.5 : 9.5), h: 0, color: LIMO[f.i % 4], home: f.i }, { type: 'bobby', x: f.cx + 3.8, z: f.zF + (blk ? 14.5 : 8), h: .35, color: BOB[f.i % 4], home: f.i }, { type: 'heli', x: f.cx, z: f.zF - 29, h: Math.PI, home: f.i }];
+};
+
 BI.buildWorld = function (scene) {
   const K = BI.WORLD, rnd = BI.rng(20240611), rr = (a, b) => a + rnd() * (b - a), pick = a => a[(rnd() * a.length) | 0];
   const st = new BI.Batch(), win = new BI.Batch(), lamp = new BI.Batch(), roofB = new BI.Batch();
@@ -53,7 +97,9 @@ BI.buildWorld = function (scene) {
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
     if (rad > K.LIMIT - r) {
-      if (alt == null && pz > 150 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      else if (W.zotik && zotikWalk(px, pz, r)) { /* Brücke / Zotik – Lunaris */ }
+      else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40 && Math.abs(px - W.zotik.x) < 90) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
       else if (W.city && cityWalk(px, pz, r)) { /* Brücke / Stadtinsel */ }
       else if (W.park && parkWalk(px, pz, r)) { /* Brücke / Parkinsel */ }
       else if (W.rainbow && rainbowWalk(px, pz, r)) { /* Brücke / Regenbogeninsel */ }
@@ -67,7 +113,6 @@ BI.buildWorld = function (scene) {
       else if (W.park && px > 160 && Math.hypot(px - W.park.x, pz - W.park.z) < W.park.R + 40 && Math.abs(pz - W.park.z) < 70) { const dd = Math.hypot(px - W.park.x, pz - W.park.z) || 1, k = Math.min(1, (W.park.R - r) / dd); px = W.park.x + (px - W.park.x) * k; pz = W.park.z + (pz - W.park.z) * k; hit = true; }
       else if (W.city && pz < -170 && Math.hypot(px - W.city.x, pz - W.city.z) < Math.hypot(px, pz) + 20 && Math.hypot(px - W.city.x, pz - W.city.z) < W.city.R + 40) { const dd = Math.hypot(px - W.city.x, pz - W.city.z) || 1, k = (W.city.R - r) / dd; px = W.city.x + (px - W.city.x) * k; pz = W.city.z + (pz - W.city.z) * k; hit = true; }
       else if (W.atlantis && W.atlantis.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Atlantis (unter der Erde) */ }
-      else if (W.zotik && W.zotik.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Zotik / Lunaris (schwebende Insel) */ }
       else if (W.radio && W.radio.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Funkwelle (Radio-Insel) */ }
       else if (W.bauland && baulandWalk(px, pz, r)) { /* Brücke / Bauland */ }
       else if (W.bauland && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < W.bauland.R + 60 && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < Math.hypot(px, pz)) { const dd = Math.hypot(px - W.bauland.x, pz - W.bauland.z) || 1, k = Math.min(1, (W.bauland.R - r) / dd); px = W.bauland.x + (px - W.bauland.x) * k; pz = W.bauland.z + (pz - W.bauland.z) * k; hit = true; }
@@ -78,6 +123,7 @@ BI.buildWorld = function (scene) {
   const baulandWalk = (px, pz, r) => { const C = W.bauland, b = C.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * C.ux + rz * C.uz, sd = -rx * C.uz + rz * C.ux; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3); };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const drachenWalk = (px, pz, r) => { const C = W.drachen, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
+  const zotikWalk = (px, pz, r) => { const C = W.zotik, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const dampfWalk = (px, pz, r) => { const C = W.dampf, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const pupsWalk = (px, pz, r) => { const C = W.pups, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const rainbowWalk = (px, pz, r) => { const C = W.rainbow, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
@@ -105,12 +151,12 @@ BI.buildWorld = function (scene) {
     if (r < 160 && (ax < h || az < h)) return true;
     return Math.abs(r - K.RA) < h || Math.abs(r - K.RB) < h || r < K.RR + RW + pad || W.pads.some(p => x > p[0] - pad && x < p[2] + pad && z > p[1] - pad && z < p[3] + pad);
   }
-  function blockedAt(x, z, pad, skipUser) {
+  function blockedAt(x, z, pad, skipUser, skip) {
     if (nearRoad(x, z, pad)) return true;
     if (W.railSdf(x, z) < 5 + pad) return true;
     if (Math.hypot(x - LAKE.x, z - LAKE.z) < LAKE.r + 3 + pad) return true;
-    for (const b of W.boxes) if (!(skipUser && b.u) && x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return true;
-    for (const c of W.circles) if (!(skipUser && c.u) && Math.hypot(x - c.x, z - c.z) < c.r + pad) return true;
+    for (const b of W.boxes) if (!(skipUser && b.u) && !(skip && skip.has(b)) && x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return true;
+    for (const c of W.circles) if (!(skipUser && c.u) && !(skip && skip.has(c)) && Math.hypot(x - c.x, z - c.z) < c.r + pad) return true;
     return false;
   }
   W.blockedAt = blockedAt;
@@ -148,8 +194,16 @@ BI.buildWorld = function (scene) {
 
   /* ---------- Boden ---------- */
   const GRASS = 0x89c879, SAND = 0xf2dfb5, ASPH = 0x586c7c, STONE = 0xd9d3c4;
-  st.disc(0, 0, K.R + 12, 0, GRASS, 72);
-  st.ring(0, 0, 165, K.R + 12, .012, SAND, 72);
+  { /* Boden der Hauptinsel; an der Küste (Südosten) ist ein Loch für die Atlantis-Treppe: Polarzellen, nur rund ums Loch fein */
+    const pit = BI.ATLANTIS && BI.ATLANTIS.pit, TAU2 = Math.PI * 2, D5 = Math.PI / 36, Rg = K.R + 12;
+    const polar = (r0, r1, y, color) => {
+      if (!pit) { st.ring(0, 0, r0, r1, y, color, 72); return; }
+      const f0 = Math.round(pit.a / D5) * D5 - D5, f1 = f0 + 2 * D5, d1 = Math.PI / 180;
+      st.ring(0, 0, r0, r1, y, color, Math.round(f0 / D5), 0, f0); st.ring(0, 0, r0, r1, y, color, Math.round((TAU2 - f1) / D5), f1, TAU2);
+      for (let r = r0; r < r1; r += 2) for (let a = f0; a < f1 - 1e-6; a += d1) { if (a >= pit.a - pit.da - 1e-6 && a < pit.a + pit.da - 1e-6 && r < pit.r0 + pit.L + pit.land + 1 && r + 2 > pit.r0) continue; st.ring(0, 0, r, Math.min(r + 2, r1), y, color, 1, a, a + d1); }
+    };
+    st.disc(0, 0, 142, 0, GRASS, 72); polar(140, Rg, 0, GRASS); polar(165, Rg, .012, SAND);
+  }
   for (let i = 0, tries = 0; i < 46 && tries < 400; tries++) { // Wiesenflecken
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 155, x = Math.sin(a) * d, z = Math.cos(a) * d, r = rr(6, 16);
     if (nearRoad(x, z, r) || W.railSdf(x, z) < r + 5) continue; i++;
@@ -500,37 +554,12 @@ BI.buildWorld = function (scene) {
       const seg = (a, b) => { if (b - a < .05) return; st.box((a + b) / 2, 0, z, b - a, WH, TT, c); W.addBox(a, z - TT / 2, b, z + TT / 2, false, WH); };
       if (gapA == null) seg(x0, x1); else { seg(x0, gapA); seg(gapB, x1); st.box((gapA + gapB) / 2, 2.4, z, gapB - gapA, WH - 2.4, TT, c); }
     };
-    for (let i = 0; i < N; i++) {
-      const x0 = X0 + FW * i, x1 = x0 + FW, cx = x0 + FW / 2, c = WC[i], dk = 0xb08a64;
-      st.rect(x0, ZI, x1, ZF, .05, LT); st.rect(x0, ZB, x1, ZI, .05, CAR[i]);                                  // Böden
-      wall(x0, x1, ZB, c, cx + 2.3, cx + 4.1); wall(x0, x1, ZF, c, cx - 1.3, cx + 1.3); wall(x0, x1, ZI, c, cx + 1.4, cx + 3.8);
-      st.box(x0, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x0 - TT / 2, ZB, x0 + TT / 2, ZF, false, WH);
-      if (i === N - 1) { st.box(x1, 0, (ZB + ZF) / 2, TT, WH, ZF - ZB, c); W.addBox(x1 - TT / 2, ZB, x1 + TT / 2, ZF, false, WH); }
-      // Haustür, Fenster, Fußmatte, Blumenkasten
-      st.box(cx - 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx + 1.35, 0, ZF + .1, .14, 2.4, .5, WD); st.box(cx, 2.35, ZF + .1, 2.9, .16, .5, WD); st.box(cx, 0, ZF + 1, 2, .04, 1.2, RC[i]);
-      for (const sx of [-4, 4]) { st.box(cx + sx, 1.0, ZF + .2, 2.3, 1.4, .08, GL); st.box(cx + sx, .95, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.65, ZF + .24, 2.4, .1, .1, 0xffffff); st.box(cx + sx, 1.0, ZF + .24, .1, 1.4, .1, 0xffffff); st.box(cx + sx, .55, ZF + .6, 2.3, .35, .4, 0x8a5a33); for (let k = 0; k < 5; k++) st.sph(cx + sx - 1 + k * .5, .85, ZF + .6, .16, [0xff5a8a, 0xffd23f, 0xff8a1f][k % 3], 0); }
-      st.box(cx - 3.6, 1.5, ZB + .22, 1.8, 1.1, .08, GL); st.box(cx - 3.6, 1.5, ZB + .25, .1, 1.1, .1, 0xffffff);                    // Fenster hinten (über dem Bett)
-      // Wohnzimmer: Teppich, Sofa, Fernseher, Esstisch, Pflanze
-      st.rect(cx - 3.4, ZF - 6.2, cx + 1.4, ZF - 2.4, .062, 0xff8a8a);
-      st.box(cx - 2.6, 0, ZI + 1.0, 3.2, .5, 1.1, 0x4da3ff); st.box(cx - 2.6, .5, ZI + .6, 3.2, .8, .3, 0x3d86e0); st.box(cx - 4.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); st.box(cx - 1.1, .4, ZI + 1.0, .3, .5, 1.1, 0x3d86e0); W.addBox(cx - 4.3, ZI + .2, cx - .9, ZI + 1.6, false, 1.2);
-      st.box(x1 - 1.0, 0, ZF - 4.2, .7, .6, 2.6, WD); st.box(x1 - 1.0, .6, ZF - 4.2, .16, 1.1, 2.1, 0x23262d); st.box(x1 - 1.1, .68, ZF - 4.2, .04, .94, 1.9, 0x6fd0ff); W.addBox(x1 - 1.4, ZF - 5.5, x1 - .5, ZF - 2.9, false, 1.7);
-      st.box(cx + 2.0, .75, ZF - 2.0, 2.2, .1, 1.3, 0xc8a27a); for (const lx of [-.95, .95]) for (const lz of [-.5, .5]) st.box(cx + 2.0 + lx, 0, ZF - 2.0 + lz, .12, .75, .12, 0x8a6a45); st.sph(cx + 2.0, .98, ZF - 2.0, .14, 0xff5a5a, 0); W.addBox(cx + .85, ZF - 2.7, cx + 3.15, ZF - 1.3, false, .9);
-      st.cyl(x0 + 1.0, 0, ZF - .9, .3, .22, .5, 0xc2453d, 8); st.sph(x0 + 1.0, 1.0, ZF - .9, .55, 0x3fa84e, 1, 1, 1.2, 1); W.addCircle(x0 + 1.0, ZF - .9, .5, false, 1.6);
-      // Kinderzimmer: Bett, Kleiderschrank, Spielkiste, Teppich
-      st.rect(cx - 2.2, ZB + 3.6, cx + 2.6, ZB + 6.6, .062, 0xffffff); st.rect(cx - 2.0, ZB + 3.8, cx + 2.4, ZB + 6.4, .066, 0xffd86b);
-      st.box(cx - 3.6, 0, ZB + 1.9, 2.1, .45, 3.3, WD); st.box(cx - 3.6, .45, ZB + 2.1, 1.95, .3, 2.9, BEDC[i]); st.box(cx - 3.6, .75, ZB + 1.0, 1.1, .16, .6, 0xffffff); st.box(cx - 3.6, .45, ZB + .35, 2.1, 1.0, .12, WD); st.box(cx - 3.6, .75, ZB + 3.0, 1.9, .06, .9, shadeC(BEDC[i]));
-      W.addBox(cx - 4.65, ZB + .2, cx - 2.55, ZB + 3.6, false, 1.0);
-      st.box(x1 - .95, 0, ZB + 3.6, 1.4, 2.7, 3.0, 0xb98650); st.box(x1 - 1.66, .1, ZB + 2.9, .06, 2.3, 1.3, 0x8a5a33); st.box(x1 - 1.66, .1, ZB + 4.3, .06, 2.3, 1.3, 0x8a5a33); st.sph(x1 - 1.72, 1.3, ZB + 3.5, .08, 0xffd23f, 0); st.sph(x1 - 1.72, 1.3, ZB + 3.7, .08, 0xffd23f, 0); st.box(x1 - .95, 2.7, ZB + 3.6, 1.5, .1, 3.1, 0x8a5a33); W.addBox(x1 - 1.7, ZB + 2.1, x1 - .2, ZB + 5.1, false, 2.7);
-      st.box(cx + 1.2, 0, ZB + 1.1, 1.8, .7, 1.1, 0xe0382b); st.box(cx + 1.2, .7, ZB + 1.1, 1.9, .08, 1.2, 0xc02a20); st.sph(cx + .9, .9, ZB + .9, .22, 0xffd23f, 1); st.box(cx + 1.6, .78, ZB + 1.3, .35, .35, .35, 0x4da3ff); W.addBox(cx + .3, ZB + .5, cx + 2.1, ZB + 1.7, false, .8);
-      // Dach (eigenes Mesh, wird innen ausgeblendet)
-      roofB.prism(cx, WH, (ZB + ZF) / 2, FW + .8, 2.3, ZF - ZB + 1.6, RC[i], 0); roofB.box(cx, WH - .05, (ZB + ZF) / 2, FW + .6, .12, ZF - ZB + 1.4, shadeC(RC[i]));
-      const dz = ZF + 2.6;
-      W.spots.flats.push({ i, cx, x0, x1, zF: ZF, zB: ZB, door: { x: cx, z: dz }, bed: { x: cx - 3.6, z: ZB + 2.1 }, chest: { x: cx + 1.2, z: ZB + 1.1 }, ward: { x: x1 - 2.6, z: ZB + 3.6 }, mama: { x: cx - 3.2, z: ZF - 3.2 }, papa: { x: cx + 3.6, z: ZI + 2.0 } });
-    }
+    for (let i = 0; i < N; i++) W.spots.flats.push(BI.buildFlat({ W, st, roofB, i, x0: X0 + FW * i, ZF, right: i === N - 1 }));
+    for (const f of W.spots.flats) W.vehicleSpawns.push(...BI.homeSpawns(f));
     W.spots.flatBlock = { x0: X0, x1: X0 + FW * N, zB: ZB, zF: ZF };
     BI.addPlaces(W, st);
     function shadeC(c) { const f = v => Math.max(0, Math.round(v * .8)); return (f((c >> 16) & 255) << 16) | (f((c >> 8) & 255) << 8) | f(c & 255); }
-    W.shelter = (x, z) => { const q = W.spots.flatBlock; if (x > q.x0 && x < q.x1 && z > q.zB - .5 && z < q.zF + .2) return 2; for (const r of W.interiors) if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return 2; return 0; };
+    W.shelter = (x, z) => { const q = W.spots.flatBlock; if (x > q.x0 && x < q.x1 && z > q.zB - .5 && z < q.zF + .2) return 2; const hb = W.homeBox; if (hb && x > hb.x0 && x < hb.x1 && z > hb.z0 && z < hb.z1) return 2; for (const r of W.interiors) if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return 2; return 0; };
   }
   { // Schießbude: eingezäunte Bahn, Fangwand, Theke mit Spielzeug-Blastern – nur Attrappen als Ziele
     const X = -105, FZ = -66, WZ = -100, WOOD = 0xc8803c, DW = 0x8a5a33, RED = 0xe0382b;
@@ -680,6 +709,10 @@ BI.buildWorld = function (scene) {
   const cloudMat = new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0x555a66 });
   clouds.add(cb.mesh(cloudMat)); scene.add(clouds); W.clouds = clouds; W.cloudMat = cloudMat;
   const water = new THREE.Mesh(new THREE.CircleGeometry(900, 40), new THREE.MeshLambertMaterial({ color: 0x3aa8e8 }));
+  if (BI.ATLANTIS && BI.ATLANTIS.pit) { /* Wasser mit Loch über der Atlantis-Treppe, sonst läge das Meer über den Stufen */
+    const q = BI.ATLANTIS.pit, sh = new THREE.Shape(), ho = new THREE.Path(), c = [[-.2, -6.2], [q.L + q.land + 2, -6.2], [q.L + q.land + 2, 6.2], [-.2, 6.2]].map(([t, l]) => { const r = BI.ATLANTIS.pitPt(t, l); return [r[0], -r[1]]; });
+    sh.absarc(0, 0, 900, 0, Math.PI * 2, false); ho.moveTo(c[0][0], c[0][1]); for (let i = 1; i < 4; i++) ho.lineTo(c[i][0], c[i][1]); ho.closePath(); sh.holes.push(ho); water.geometry.dispose(); water.geometry = new THREE.ShapeGeometry(sh, 40);
+  }
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water; W.bigMeshes.push(water);
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam; W.bigMeshes.push(foam);
@@ -708,8 +741,10 @@ BI.buildWorld = function (scene) {
     } return { x: 0, z: 30 };
   };
   W.groundY = (x, z) => {
+    if (W.atlPit) { const h = W.atlPit.floor(x, z); if (h !== null) return h; }
     if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
     if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
+    if (W.radio) { const h = W.radio.floor(x, z); if (h) return h; }
     { const D = W.dampfShip; if (D && z > D.z0 - 1 && z < D.z1 + 1 && x > D.x0 - 1 && x < D.r1 + 1) { if (x > D.x0 && x < D.x1 && z > D.z0 && z < D.z1) return D.y; if (x >= D.x1 && x < D.r1 && z > D.rz0 && z < D.rz1) return D.y * (D.r1 - x) / (D.r1 - D.x1 - 0); } }
     for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;
     const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
