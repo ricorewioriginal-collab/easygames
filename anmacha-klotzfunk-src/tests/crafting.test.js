@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK } from '../src/crafting.js';
 import { B, BLOCKS } from '../src/blocks.js';
+import { I, known } from '../src/items.js';
 
 const R = id => RECIPES.find(r => r.id === id);
 
@@ -10,8 +11,9 @@ test('Rezepte sind eindeutig und gültig', () => {
   const ids = new Set();
   for (const r of RECIPES) {
     assert.ok(!ids.has(r.id), 'doppelt: ' + r.id); ids.add(r.id);
-    assert.ok(BLOCKS[r.give[0]] && r.give[1] > 0);
-    for (const [t, n] of r.need) assert.ok(BLOCKS[t] && n > 0 && t !== r.give[0]);
+    assert.ok(known(r.give[0]) && r.give[1] > 0);
+    for (const [t, n] of r.need) assert.ok(known(t) && n > 0 && t !== r.give[0]);
+    assert.ok(!r.st || ['werkbank', 'ofen'].includes(r.st));
   }
 });
 
@@ -60,4 +62,24 @@ test('Suche findet Ergebnis und Zutaten', () => {
   assert.ok(recipeMatches(R('lamp'), 'GLAS'));
   assert.ok(!recipeMatches(R('lamp'), 'marmor'));
   assert.ok(RECIPES.filter(r => recipeMatches(r, 'kohle')).length >= 2);
+});
+
+test('Stationen: Rezept nur mit Werkbank/Ofen in der Nähe', () => {
+  const inv = { [B.PLANKS]: 10, [I.STICK]: 4 }, pick = RECIPES.find(r => r.give[0] === I.WOOD_PICK);
+  const res = craft(inv, pick, MAX_STACK, new Set());
+  assert.equal(res.ok, false);
+  assert.match(res.msg, /Werkbank/);
+  assert.equal(inv[B.PLANKS], 10, 'nichts verbraucht');
+  assert.equal(craftable(inv, pick, MAX_STACK, new Set()), 0);
+  assert.equal(craft(inv, pick, MAX_STACK, new Set(['werkbank'])).ok, true);
+  assert.deepEqual([inv[B.PLANKS], inv[I.STICK], inv[I.WOOD_PICK]], [7, 2, 1]);
+  // ohne Stations-Angabe (z. B. alte Aufrufe) wird nicht geprüft
+  assert.equal(checkRecipe({ [B.COPPER]: 1, [B.COAL]: 1 }, R('ingotCopper')).ok, true);
+  assert.match(craft({ [B.IRON]: 1, [B.COAL]: 1 }, R('ingotIron'), MAX_STACK, new Set(['werkbank'])).msg, /einen Schmelzofen/);
+});
+
+test('Werkzeugkette ist vollständig: Holz bis Eisen herstellbar', () => {
+  for (const key of ['WOOD', 'STONE', 'COPPER', 'IRON']) for (const k of ['PICK', 'AXE', 'SHOVEL'])
+    assert.ok(RECIPES.some(r => r.give[0] === I[key + '_' + k] && r.st === 'werkbank'), key + '_' + k);
+  assert.ok(R('sticks') && !R('sticks').st && R('workbench') && !R('workbench').st, 'Stöcke und Werkbank aus der Hand');
 });

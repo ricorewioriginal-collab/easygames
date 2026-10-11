@@ -315,11 +315,54 @@ const PAINT = [
     const c = mix([24, 100, 22], [70, 170, 40], n);
     if (hole > 0.68) return [c[0], c[1], c[2], 0];
     return [...add(c, grain(x, y, 40, 10)), 255];
+  },
+  // 51 Werkbank oben: Bretter mit Werkzeug-Raster
+  (u, v, x, y) => {
+    const board = Math.floor(v * 4), fy = (v * 4) % 1;
+    let c = mix([150, 112, 66], [182, 140, 88], fbm(u * 0.5, v, 6, 2, 140 + board));
+    if (fy < 0.05) c = add(c, -40);
+    if (Math.abs(u - 0.5) < 0.03 || Math.abs(v - 0.5) < 0.03) c = [84, 58, 34];
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.08) c = [104, 76, 44];
+    return [...add(c, grain(x, y, 41, 8)), 255];
+  },
+  // 52 Werkbank Seite: Bretter, Säge und Hammer
+  (u, v, x, y) => {
+    let c = mix([150, 112, 66], [182, 140, 88], fbm(u, v * 0.5, 6, 2, 142));
+    if ((v * 4) % 1 < 0.05) c = add(c, -36);
+    if (v < 0.14) c = [110, 80, 46];
+    if (u > 0.18 && u < 0.44 && v > 0.32 && v < 0.5) c = [186, 190, 198];          // Sägeblatt
+    if (u > 0.4 && u < 0.48 && v > 0.3 && v < 0.52) c = [90, 60, 34];             // Griff
+    if (u > 0.6 && u < 0.66 && v > 0.3 && v < 0.78) c = [96, 66, 38];             // Hammerstiel
+    if (u > 0.54 && u < 0.74 && v > 0.26 && v < 0.36) c = [120, 124, 132];        // Hammerkopf
+    return [...add(c, grain(x, y, 42, 8)), 255];
+  },
+  // 53 Schmelzofen vorne: Steinziegel mit glühender Öffnung
+  (u, v, x, y) => {
+    const row = Math.floor(v * 4), off = row & 1 ? 0.25 : 0, fx = (u * 2 + off) % 1, fy = (v * 4) % 1;
+    let c = mix([96, 96, 102], [132, 132, 138], fbm(u, v, 5, 3, 144));
+    if (fx < 0.05 || fy < 0.07) c = add(c, -38);
+    if (u > 0.26 && u < 0.74 && v > 0.52 && v < 0.86) {
+      const g = 1 - Math.abs(u - 0.5) * 3;
+      c = v > 0.68 ? mix([200, 70, 20], [255, 190, 60], g * pn(u * 8, v * 8, 8, 8, 145)) : [26, 22, 22];
+    }
+    return [...add(c, grain(x, y, 43, 8)), 255];
+  },
+  // 54 Schmelzofen oben
+  (u, v, x, y) => {
+    let c = mix([100, 100, 106], [136, 136, 142], fbm(u, v, 5, 3, 146));
+    if (Math.abs(u - 0.5) < 0.16 && Math.abs(v - 0.5) < 0.16) c = [30, 26, 26];
+    return [...add(c, grain(x, y, 44, 8)), 255];
+  },
+  // 55 Wolle
+  (u, v, x, y) => {
+    const n = fbm(u, v, 8, 3, 147), curl = pn(u * 16, v * 16, 16, 16, 148);
+    return [...add(mix([214, 210, 202], [246, 244, 238], n * 0.5 + curl * 0.5), grain(x, y, 45, 6)), 255];
   }
 ];
 export const TILE_COUNT = PAINT.length;
 // Kachel-Rand: leichte Kante, die jeden Block als Körper lesbar macht
-const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49]);
+const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49, 52, 53, 54, 55]);
 
 export function drawAtlas() {
   const cv = document.createElement('canvas');
@@ -373,5 +416,44 @@ export function cloudCanvas() {
     img.data[i] = img.data[i + 1] = img.data[i + 2] = 255; img.data[i + 3] = (t * t * (3 - 2 * t)) * 255;
   }
   g.putImageData(img, 0, 0);
+  return cv;
+}
+
+// Gegenstands-Symbole (Werkzeuge, Barren, Nahrung) im Pixel-Stil: 16×16 Raster, 32 px je Symbol, 8 Spalten
+export const ITEM_TILE = 32, ITEM_GRID = 8;
+export function drawItems(items) {
+  const cv = document.createElement('canvas');
+  cv.width = ITEM_TILE * ITEM_GRID; cv.height = ITEM_TILE * Math.max(1, Math.ceil(items.length / ITEM_GRID));
+  const g = cv.getContext('2d');
+  items.forEach((it, k) => {
+    const ox = (k % ITEM_GRID) * ITEM_TILE, oy = Math.floor(k / ITEM_GRID) * ITEM_TILE;
+    const px = (x, y, c, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(ox + x * 2, oy + y * 2, w * 2, h * 2); };
+    const stick = (from = 2) => { for (let i = from; i < 14; i++) { px(i, 15 - i, '#5a3a1e'); px(i, 14 - i, '#8a6034'); } };
+    const shade = (c, f) => { const n = parseInt(c.slice(1), 16), m = v => Math.max(0, Math.min(255, Math.round(v * f))); return `rgb(${m(n >> 16)},${m((n >> 8) & 255)},${m(n & 255)})`; };
+    const col = it.col || '#ccc', dk = shade(col, 0.62), lt = shade(col, 1.18);
+    switch (it.draw) {
+      case 'stick': stick(1); break;
+      case 'ingot':
+        for (let y = 0; y < 5; y++) px(3 + y, 6 + y, y ? col : lt, 10 - y, 1);
+        px(3, 11, dk, 10, 1); px(12, 6, dk, 1, 5); break;
+      case 'apple':
+        px(5, 5, '#c82a2a', 7, 8); px(4, 6, '#c82a2a', 9, 6); px(6, 6, '#f06a5a', 2, 2); px(5, 12, '#8a1a1a', 7, 1);
+        px(8, 2, '#5a3a1e', 1, 3); px(9, 2, '#3c8a2a', 3, 2); break;
+      case 'meat':
+        px(3, 5, col, 9, 7); px(2, 6, col, 11, 5); px(4, 6, lt, 3, 2); px(3, 11, dk, 9, 1);
+        px(12, 9, '#efe6d2', 2, 2); px(13, 8, '#efe6d2', 2, 1); px(13, 11, '#efe6d2', 2, 1); break;
+      case 'spitzhacke':
+        stick(3);
+        for (let i = 0; i < 10; i++) { const x = 3 + i, y = 2 + Math.round(Math.abs(i - 4.5) * 0.55); px(x, y, col); px(x, y + 1, dk); }
+        px(3, 4, lt); px(12, 4, lt); break;
+      case 'axt':
+        stick(3);
+        px(8, 2, col, 4, 5); px(7, 3, col, 1, 4); px(12, 3, dk, 1, 3); px(8, 2, lt, 4, 1); px(8, 6, dk, 4, 1); break;
+      case 'schaufel':
+        stick(5);
+        px(10, 2, col, 4, 4); px(9, 3, col, 1, 3); px(14, 3, dk, 1, 3); px(10, 2, lt, 4, 1); px(11, 6, dk, 2, 1); break;
+      default: px(4, 4, col, 8, 8);
+    }
+  });
   return cv;
 }

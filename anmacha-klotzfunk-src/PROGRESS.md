@@ -52,6 +52,22 @@ Legende: ✅ fertig und getestet · 🟡 teilweise · ⬜ offen
 
 ---
 
+## 2b. Etappe 2 – Überleben ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Item-Register | Gegenstände ohne Block ab Id 1000 (Block-Ids bleiben < 256): Stock, Kupfer-/Eisenbarren, Apfel, rohes Fleisch, Braten, je 4 Stufen Spitzhacke/Axt/Schaufel (Holz, Stein, Kupfer, Eisen). Pixel-Symbole werden zur Laufzeit gezeichnet, in der Hand als flaches Bild. | `src/items.js`, `src/textures.js` |
+| Abbauen | nur Überleben: Abbauzeit = Härte × 0,9 s ÷ Werkzeugtempo, Fortschrittsbalken unter dem Fadenkreuz; Erze brauchen eine Spitzhacke (Eisen/Funkkristall mindestens Stein), sonst Hinweis statt Abbau; Werkzeuge nutzen sich ab (Haltbarkeit gilt für das oberste Werkzeug des Stapels, `dur` im Spielstand) | `src/items.js`, `src/game.js` |
+| Stationen | Werkbank (aus 4 Brettern) und Schmelzofen (8 Stein, an der Werkbank) als Blöcke; Rezepte mit `st` gehen nur mit Station ≤ 4 Blöcke entfernt; Setzen-Taste auf der Station öffnet das Herstellen. Schmelzen ist sofort (kein Zeitablauf). | `src/crafting.js`, `src/blocks.js` |
+| Gesundheit/Hunger | 10 Herzen, 10 Keulen, Luftblasen unter Wasser; Fallschaden aus der Aufprallgeschwindigkeit (ab ~4 Blöcken, Feder/Wasser/Haken schützen); Ertrinken, Magma, Hunger zehrt bis ½ Herz; Erholung bei vollem Magen; Essen mit der Setzen-Taste | `src/survival.js`, `src/physics.js` |
+| Umkippen | Bildschirm mit Ursache, Aufstehen am Startpunkt, Wegpunkt am Unglücksort; Einstellung „Vorrat behalten“ (Standard) oder „Vorrat bleibt liegen“ (Abholen durch Hingehen, `grave` im Spielstand) | `src/game.js`, `src/main.js`, `src/settings.js` |
+| Tiere | Huhn, Schaf, Kuh; feste Erstbesiedlung je Chunk aus dem Startwert (~20 % der Chunks, nur auf Wiese/Schnee/Pilzboden); Laufen, Stehen, Springen über 1 Block, keine Klippen/Tiefwasser, Flucht nach Treffer; Beute direkt in den Vorrat (Fleisch, Wolle) | `src/mobs.js`, `src/mobview.js` |
+| Aktivitätsstufen | < 24 Blöcke jedes Bild, bis Aktivradius (3 Chunks) 4× je Sekunde, außerhalb im Chunk-Speicher ohne Rechenzeit, ungeladen = eingefroren; höchstens 40 aktive Tiere; Speicherung je Chunk (`mobs` im Spielstand, erlegte Tiere kommen nicht wieder) | `src/mobs.js` |
+| Modi | Überleben: alle Regeln. Kreativ: Tiere ja, sonst sofortiges Abbauen. Story: unverändert (keine Tiere, kein Hunger), damit die 15 Aufträge gleich bleiben. | `src/game.js` |
+| Tests | 51 Tests (neu: `survival.test.js`, `mobs.test.js`, Stationen/Werkzeugkette in `crafting.test.js`) | `tests/` |
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
@@ -62,9 +78,9 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
 | 7 | Bauen | 🟡 | 3 | Platzierungsvorschau, Linie/Fläche/Wand/Säule, Rückgängig/Wiederholen, Kopieren/Einfügen, Bauvorlagen (lokal + Export) |
-| 8 | Crafting, Werkzeuge, Stationen | 🟡 | 2 | Gegenstände ohne Block (Werkzeuge, Barren, Nahrung) → Item-Register; Abbauzeit nach Härte/Werkzeug; Werkbank, Schmelzofen, Kochstelle |
-| 9 | Survival | ⬜ | 2 | Gesundheit, Hunger, Fallschaden, Ertrinken, Nahrung, Respawn mit einstellbarem Inventarverlust und Rückweg-Markierung |
-| 10 | Tiere | ⬜ | 2 | Entity-System mit Aktivitätsstufen (nah/mittel/fern/entladen), Speicherung je Chunk |
+| 8 | Crafting, Werkzeuge, Stationen | ✅ | 2 | später: Kochstelle, Schmelzen mit Zeitablauf, Werkzeug-Haltbarkeit je Stück statt je Stapel |
+| 9 | Survival | ✅ | 2 | Betten/eigener Startpunkt, Rüstung (mit Gegnern, Etappe 3) |
+| 10 | Tiere | ✅ | 2 | Biom-Tiere (z. B. Ziege, Pinguin), Züchten mit Futter, Beine animieren |
 | 11 | Gegner, Kampf | ⬜ | 3 | eigene Gegner (Rauschlinge, Höhlenwesen, Störsender-Drohnen), Sichtlinien-Prüfung gegen Treffer durch Wände |
 | 12 | Dörfer, NPCs | ⬜ | 3 | Strukturgenerator mit Flächenausgleich, NPC-Tagesablauf mit festem Aufenthaltsort, Handel |
 | 13 | Landwirtschaft | ⬜ | 3 | Wachstum über Zeitstempel (kein Dauer-Simulieren), Zustand im Block-Edit gespeichert |
@@ -72,15 +88,15 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 15 | Story „Das große Rauschen“ | 🟡 | 4 | 6 Kapitel, alte 15 Aufträge werden Kapitel 1–2; Migration: alter Fortschritt `story.i` → neues Kapitel/Schritt |
 | 16 | Funktechnik | 🟡 | 4 | Radio-Blöcke vorhanden; Funknetz (Sender, Relais, Reichweite), Signale steuern Maschinen |
 | 17 | Automatisierung | ⬜ | 4 | Signal-Leitungen mit Warteschlange und Rechenlimit je Tick |
-| 18 | Spielmodi | 🟡 | laufend | gemeinsame Regeln vorhanden; Survival-Regeln kommen mit Etappe 2 |
+| 18 | Spielmodi | 🟡 | laufend | Survival-Regeln ✅; Story zieht mit Etappe 4 auf die neuen Regeln um |
 | 19 | Multiplayer | ⬜ | 5 | WebRTC (Peer-to-Peer, Host = Autorität) zuerst prüfen; GitHub Pages bleibt Einzelspieler ohne Server |
 | 20 | Smartphone | 🟡 | 1 ✅ / 3 | Tastenpositionen frei verschiebbar, optionaler Platzierungsmodus mit Vorschau |
 | 21 | Desktop | 🟡 | 3 | Tastenbelegung ändern, Gamepad |
-| 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 | Stapel/Slots kommen mit dem Item-Register; Drag & Drop |
+| 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
 | 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
 | 25/26 | Performance | 🟡 | 1 ✅ / 4 | echte Handymessungen, Worker-Meshing |
-| 27 | Entities | ⬜ | 2 | siehe Tiere |
+| 27 | Entities | 🟡 | 2 ✅ / 3 | Gegner und NPCs auf dem Tier-Grundgerüst (`src/mobs.js`) |
 | 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
 | 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
 | 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, TESTING, PROGRESS |
@@ -104,7 +120,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 ```bash
 cd anmacha-klotzfunk-src
 npm install
-npm test          # 33 Tests, < 1 s
+npm test          # 51 Tests, ~1 s
 npm run bench     # Chunk-Erzeugung/Meshing messen (Seed 12345, Radius 6, Generator 2)
 npm run docs      # BLOCKS.md und CRAFTING.md aus dem Code erzeugen
 npm run build     # schreibt ../anmacha-klotzfunk/ (mit committen!)
@@ -117,12 +133,12 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 2 „Überleben“
-1. Item-Register (Gegenstände ohne Block: Werkzeuge, Barren, Nahrung) mit eigenem Id-Bereich ab 1000 im Inventar.
-2. Abbauzeit nach Härte und Werkzeug mit Fortschrittsanzeige am Zielblock.
-3. Werkbank und Schmelzofen als Blöcke mit echtem Menü (Erz + Kohle → Barren).
-4. Gesundheit, Hunger, Fallschaden, Ertrinken, Respawn (Inventarverlust einstellbar, Rückweg-Markierung).
-5. Entity-Grundgerüst und erste Tiere (Huhn, Schaf, Kuh) mit Aktivitätsstufen und Speicherung je Chunk.
+### Nächste Sitzung: Etappe 3 „Bauen, Gegner, Dörfer“
+1. Gegner auf dem Tier-Grundgerüst: Rauschlinge (nachts), Höhlenwesen, Störsender-Drohnen; Sichtlinie gegen Treffer durch Wände; Schwerter und Rüstung.
+2. Strukturgenerator (Dörfer mit Flächenausgleich, verlassene Minen) als Generator-Feature mit eigener Version, falls sich Gelände sichtbar ändert.
+3. NPCs mit festem Tagesablauf und Handel.
+4. Landwirtschaft über Zeitstempel (Wachstum beim Laden nachrechnen, kein Dauer-Simulieren).
+5. Bau-Werkzeuge: Vorschau, Linie/Fläche/Wand, Rückgängig.
 6. Tests für alle neuen Systeme.
 
 ---
@@ -130,6 +146,8 @@ Regeln, die nicht gebrochen werden dürfen:
 ## 6. Bekannte Einschränkungen (ehrlich)
 
 - Gemessen wurde in Node (Desktop-CPU) und im Headless-Chromium mit Software-Grafik. **Echte Android-Geräte wurden nicht getestet.** Siehe PERFORMANCE.md und TESTING.md.
-- Härte und Werkzeug stehen im Register, beeinflussen das Abbauen aber noch nicht (kommt mit Werkzeugen, Etappe 2).
 - Die Story nutzt weiter die 15 Aufträge von Version 1.0.
-- Erze sind abbaubar und in Rezepten nutzbar; Schmelzen gibt es noch nicht.
+- Schmelzen und Kochen gehen sofort; der Ofen hat noch keinen Brennvorgang mit Zeit.
+- Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
+- In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
+- Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.

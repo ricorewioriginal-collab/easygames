@@ -21,12 +21,22 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 
 ## Modi
 - **Überleben:** Abgebaute Blöcke kommen in den Vorrat (höchstens 999 je Sorte). Zum Start gibt es etwas Erde, Bretter, Glas sowie einige Logo- und Spezialblöcke.
-  Im Inventar unter „Herstellen“ entstehen neue Blöcke – Rezepte in [CRAFTING.md](CRAFTING.md).
+  Im Inventar unter „Herstellen“ entstehen neue Blöcke und Gegenstände – Rezepte in [CRAFTING.md](CRAFTING.md). Dazu kommen die Überlebensregeln unten.
 - **Kreativ:** alles unbegrenzt, Fliegen erlaubt, Herstellen nicht nötig.
 - **Story:** 15 Aufträge der Funkzentrale, siehe [STORY.md](STORY.md).
 
+## Überleben
+- **Abbauen dauert** je nach Härte (Erde ~0,5 s, Stein ~1,4 s mit der Hand). Das passende Werkzeug ist 2× (Holz) bis 6× (Eisen) schneller und nutzt sich dabei ab. Der Balken unter dem Fadenkreuz zeigt den Fortschritt.
+- **Erze** brauchen eine Spitzhacke: Kohle und Kupfer jede, Eisen und Funkkristall mindestens Stein.
+- **Werkzeug-Weg:** Holz → Bretter → Stöcke und Werkbank (aus der Hand). An der Werkbank: Spitzhacke, Axt, Schaufel und der Schmelzofen. Im Schmelzofen: Kupfer- und Eisenbarren (Erz + Kohle), Braten, Glas. Rezepte mit Station gehen nur, wenn sie höchstens 4 Blöcke entfernt steht; die Setzen-Taste auf Werkbank oder Ofen öffnet das Herstellen.
+- **Herzen und Hunger** stehen über der Hotbar (am Handy oben). Hunger sinkt langsam, beim Rennen schneller. Mit vollem Magen kommen Herzen zurück, mit leerem Magen gehen sie bis auf ein halbes Herz verloren.
+- **Essen:** Apfel (manchmal aus Blättern), rohes Fleisch, Braten. Essen in die Hotbar legen und Setzen drücken.
+- **Gefahren:** Stürze ab etwa 4 Blöcken (Federblock, Wasser und Gleiten schützen), Ertrinken nach 10 s unter Wasser, Magma.
+- **Umkippen:** Du stehst am Startpunkt wieder auf, ein Wegpunkt zeigt den Unglücksort. In den Einstellungen wählst du, ob der Vorrat bleibt oder am Unglücksort liegen bleibt (dann durch Hingehen abholen).
+- **Tiere:** Hühner, Schafe und Kühe leben auf Wiesen, Schnee und Pilzboden. Abbauen-Taste auf ein Tier = schlagen; erlegte Tiere geben Fleisch (Schafe auch Wolle). Tiere gibt es in Überlebens- und Kreativwelten, nicht in der Story.
+
 ## Inventar
-- **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funk-Logos) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
+- **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funk-Logos, Werkzeuge & Essen) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
 - **„nur Vorrat“** blendet Blöcke aus, die du nicht hast.
 - Block antippen = in den gewählten Hotbar-Platz legen.
 - Bei Rezepten sind fehlende Zutaten rot mit deinem Vorrat in Klammern; die Zahl rechts sagt, wie oft du es herstellen kannst. Umschalt-Klick stellt 5× her.

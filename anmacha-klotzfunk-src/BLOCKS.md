@@ -50,10 +50,10 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 42 | Fichtenholz | Natur | ja | ja | – | – | 1 | axt |
 | 43 | Fichtennadeln | Natur | ja | – | – | – | 0.2 | – |
 | 44 | Kaktus | Natur | ja | ja | – | – | 0.4 | – |
-| 45 | Kohleerz | Erze & Steine | ja | ja | – | – | 2 | spitzhacke |
-| 46 | Kupfererz | Erze & Steine | ja | ja | – | – | 2.2 | spitzhacke |
-| 47 | Eisenerz | Erze & Steine | ja | ja | – | – | 2.6 | spitzhacke |
-| 48 | Funkkristall | Erze & Steine | ja | ja | – | ja | 2.4 | spitzhacke |
+| 45 | Kohleerz | Erze & Steine | ja | ja | – | – | 2 | spitzhacke (Stufe 1+) |
+| 46 | Kupfererz | Erze & Steine | ja | ja | – | – | 2.2 | spitzhacke (Stufe 1+) |
+| 47 | Eisenerz | Erze & Steine | ja | ja | – | – | 2.6 | spitzhacke (Stufe 2+) |
+| 48 | Funkkristall | Erze & Steine | ja | ja | – | ja | 2.4 | spitzhacke (Stufe 2+) |
 | 49 | Schlamm | Natur | ja | ja | – | – | 0.5 | schaufel |
 | 50 | Blütenwiese | Natur | ja | ja | – | – | 0.6 | schaufel |
 | 51 | Basalt | Erze & Steine | ja | ja | – | – | 1.8 | spitzhacke |
@@ -63,5 +63,31 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 55 | Sandstein | Bauen | ja | ja | – | – | 1.2 | spitzhacke |
 | 56 | Pilzstiel | Natur | ja | ja | – | – | 0.6 | axt |
 | 57 | Dschungelblätter | Natur | ja | – | – | – | 0.2 | – |
+| 58 | Werkbank | Bauen | ja | ja | – | – | 1.2 | axt |
+| 59 | Schmelzofen | Bauen | ja | ja | – | – | 2 | spitzhacke |
+| 60 | Wolle | Bauen | ja | ja | – | – | 0.4 | – |
 
-**Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte = geplante Grundabbauzeit in Sekunden (wird mit den Werkzeugen aktiv, siehe PROGRESS.md).
+**Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
+
+## Gegenstände
+
+| Id | Name | Werkzeug | Tempo | hält | Nahrung |
+|---:|---|---|---:|---:|---:|
+| 1000 | Stock | – | – | – | – |
+| 1001 | Kupferbarren | – | – | – | – |
+| 1002 | Eisenbarren | – | – | – | – |
+| 1003 | Apfel | – | – | – | +4 |
+| 1004 | Rohes Fleisch | – | – | – | +2 |
+| 1005 | Braten | – | – | – | +7 |
+| 1010 | Holzspitzhacke | spitzhacke Stufe 1 | 2× | 60 Blöcke | – |
+| 1011 | Holzaxt | axt Stufe 1 | 2× | 60 Blöcke | – |
+| 1012 | Holzschaufel | schaufel Stufe 1 | 2× | 60 Blöcke | – |
+| 1013 | Steinspitzhacke | spitzhacke Stufe 2 | 3× | 140 Blöcke | – |
+| 1014 | Steinaxt | axt Stufe 2 | 3× | 140 Blöcke | – |
+| 1015 | Steinschaufel | schaufel Stufe 2 | 3× | 140 Blöcke | – |
+| 1016 | Kupferspitzhacke | spitzhacke Stufe 3 | 4× | 220 Blöcke | – |
+| 1017 | Kupferaxt | axt Stufe 3 | 4× | 220 Blöcke | – |
+| 1018 | Kupferschaufel | schaufel Stufe 3 | 4× | 220 Blöcke | – |
+| 1019 | Eisenspitzhacke | spitzhacke Stufe 4 | 6× | 360 Blöcke | – |
+| 1020 | Eisenaxt | axt Stufe 4 | 6× | 360 Blöcke | – |
+| 1021 | Eisenschaufel | schaufel Stufe 4 | 6× | 360 Blöcke | – |
