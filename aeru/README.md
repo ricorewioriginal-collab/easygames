@@ -1,41 +1,45 @@
 # AERU – Die Sterneninseln
 
-Eigenständiges, abgeschlossenes 3D-Drachenabenteuer für Desktop- und mobile Browser. Start: `index.html`; kein Build, kein Backend, keine externen Downloads. Im Hauptverzeichnis der Spielesammlung eingetragen.
+Eigenständiges 3D-Drachenabenteuer für Desktop- und Handybrowser. Start: `index.html`; kein Build, kein Backend, keine externen Downloads. Im Hauptverzeichnis der Spielesammlung eingetragen.
 
-## Spielen
+Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln: Der Wind verstummt, eine Spur führt zur Sternenwarte, dort wartet Vesper – doch der Kampf gegen ihn ist erst die Mitte. Die Wahrheit liegt in der Kristallklamm, das Finale in den Morgenruinen. Nach dem Abspann kann frei weitergespielt werden.
 
-- WASD / Pfeiltasten: bewegen. Maus ziehen oder Q/E: Kamera drehen.
-- Leertaste: springen; in der Luft erneut drücken: Flügelschlag. Halten: gleiten.
-- G / FLUG: abheben und Flug aktivieren; erneut drücken: landen. Aufwinde laden die Flügelkraft auf.
-- Umschalt: Sprint. C: Kamera hinter Aeru ausrichten.
-- F / WIND halten: wiederholte, sichtbare Windwirbel mit sieben Metern Reichweite. R: sprechen, Dialog fortsetzen, Portal benutzen.
-- Escape / Pauseknopf: Pause, Ton, sparsame Grafik, Rettung zum Startpunkt und Auswahl bereits erreichter Inseln.
-- Menüs: Pfeiltasten oder W/S wählen, Enter bestätigt. Dialoge: R, Leertaste oder Klick/Tippen (erster Druck zeigt den ganzen Satz).
-- Handy: linker Joystick, rechts Kamera ziehen, FLUG zum Abheben/Landen, SPRUNG zum Flügelschlag, WIND und REDEN.
+## Weitere Dokumente
 
-Entzünde drei Windlaternen pro Insel durch einen gerichteten Windstoß. Sammle mindestens zwölf Splitter und sprich mit dem örtlichen Hüter, um einen Leuchtkern zu erhalten. Das Tor am Ende der Treppe führt weiter. Auf der dritten Insel wartet Vesper: seinen Sturmring überspringen und das offene Schild mit Wind treffen. Nach dem Ende können alle Inseln erneut erkundet werden.
+- [STORY.md](STORY.md) – Kapitel, Figuren, Quests und Dialogfolge
+- [GAMEPLAY.md](GAMEPLAY.md) – Steuerung, Flug, Kampf, Bosse, Sammelobjekte, Einstellungen, Grafikstufen
+- [TESTING.md](TESTING.md) – automatische Tests, Gerätetests und Messwerte
+- [PROGRESS.md](PROGRESS.md) – ehrlicher Stand: was getestet ist, was offen ist, bekannte Grenzen
 
-Sechs Gebiete (Windwiesen, Bernsteinhain, Sternenwarte, Wolkenriffe, Kristallklamm, Morgenruinen), 18 NPCs, 144 Splitter, sechs Nebenaufträge, sechs Leuchtkerne, Gegner, Boss, Epilog und freie Erkundung. Die beiden Außeninseln jeder Welt enthalten die Gegenstände für den jeweiligen Nebenauftrag.
+## Steuerung (Kurzfassung)
 
-Die drei neuen Inseln folgen auf das ursprüngliche Bossfinale. Jede verlangt zusätzlich drei durchflogene Himmelsringe; die Kristallklamm hat erhöhte Laternenplattformen. Aufwind trägt bis zu deren Höhe.
+| | Tastatur | Touch |
+|---|---|---|
+| Bewegen | WASD / Pfeile | linker Stick |
+| Kamera | Maus ziehen, Q/E, Mausrad, C = hinter Aeru | rechts wischen |
+| Springen / Flügelschlag / Gleiten | Leertaste (halten = höher, in der Luft halten = gleiten) | SPRUNG |
+| Flug ein/aus | G (im Flug Leertaste halten = steigen) | FLUG |
+| Ausweichen / im Flug sinken | Umschalt | AUSWEICHEN |
+| Windstoß | F | WIND |
+| Sprechen, Tor | R / Enter | REDEN oder Hinweis antippen |
+| Tagebuch / Pause | J / Esc oder P | ☰ / Ⅱ |
 
-Alte Spielstände werden automatisch auf sechs Inseln erweitert; Splitter, Aufgaben und Bossabschluss bleiben erhalten. Der Spielstand wird unter `aeru-save-v1` im Browser gespeichert. Inselaufgaben und Bossfortschritt bleiben erhalten; die Position beginnt beim Fortsetzen am sicheren Inselstart. „Neues Abenteuer“ startet eine neue Reise. Kein Cloud-Speicher. Audio beginnt erst nach Interaktion. Bei blockiertem Speicher bleibt die aktuelle Sitzung spielbar.
+## Aufbau
 
-## Technik und Prüfung
+| Datei | Inhalt |
+|---|---|
+| `content.js` | Inselgestalt: Plattformen, Aufwinde, Ringe, Laternen, Rastpunkte, Licht, Musik |
+| `story.js` | Figuren, Kapitel, Quests, Dialoge, Reaktionen, Belohnungen (reine Daten) |
+| `quests.js` | Quest-Engine (Zustände, Bedingungen, Fortschritt) und Spielstand-Migration, ohne DOM |
+| `game.js` | Darstellung (Three.js r128), Physik, Kampf, Bosse, Oberfläche, Audio, Speichern |
+| `tests/` | automatische Tests, siehe TESTING.md |
 
-Die Web-Seite lädt `vendor/three-compatible.min.js` (Three.js r128), weil diese Version auch mit WebGL 1 in älteren eingebetteten Browsern läuft. `vendor/three.min.js` (r186) bleibt im Repository, wird aber für Aeru nicht mehr geladen. Falls weder WebGL 1 noch WebGL 2 verfügbar ist, zeichnet Canvas 2D eine vereinfachte Karte mit Drachen, Wegen, Laternen, Splittern, Gegnern, NPCs und Flugringen. Die eigentliche Spielsimulation, Steuerung und Spielstände bleiben dabei dieselben. Wenn selbst Canvas 2D gesperrt ist, erscheint ein Hinweis zum Öffnen im Browser.
+Spielstand: `aeru-save-v1` (Format Version 3). Alte Stände (Version 1/2) werden beim Laden übernommen; das Original bleibt unter `aeru-save-backup`. Vor einem neuen Abenteuer wird der alte Stand unter `aeru-save-previous` gesichert. Einstellungen liegen unter `aeru-settings`.
 
-Feste 60-Hz-Spielsimulation, geglättete Bewegung und Kamera, instanzierte Landschaftsobjekte, prozedurale Polygonmodelle, dynamische Schatten, Partikel, Minikarte und synthetisierte Musik/Sounds. Sparsame Grafik deaktiviert Schatten und reduziert die Auflösung. Die Wahl wird unter `aeru-low` gespeichert. Ein WebGL-Renderfehler schaltet auf sparsame Grafik um; ein verlorener Kontext zeigt eine Fehlermeldung. `node aeru/tests/webview.cjs` prüft den Start und die Spielfähigkeit ohne WebGL anhand einer simulierten Canvas-2D-Umgebung.
-
-`node aeru/tests/logic.cjs` prüft die echte Spiellogik mit realen Three.js-Geometrien und einem simulierten DOM/Renderer: Bewegung, Sprung, Gleiten, begehbare Treppe, Absturz, Tod, alle Sammelobjekte/Laternen, Nebenaufträge, Portalfolge, Boss, beide Enden, alte Spielstände, Windeffektdauer, gehaltene Angriffe, tatsächlicher Hin-/Rückflug über eine Insellücke sowie gleichmäßiges Tempo bei 30/60/120 Hz. Rendering und echte Geräteperformance sind damit nicht getestet.
-
-`node aeru/tests/browser.cjs` ist ein optionaler Playwright-Smoke-Test (Playwright lokal installieren; `CHROMIUM_PATH` optional, z. B. `/opt/pw-browsers/chromium`). Er lädt die lokale HTML-Datei und erstellt Screenshots im Testordner. Die Oberfläche wurde in einer früheren Fassung mit Chromium (SwiftShader) per Screenshot geprüft. Für die aktuelle WebView-Korrektur konnte Chromium in dieser Umgebung nicht starten; echte Geräteperformance ist nicht getestet.
-
-`?test` aktiviert ausschließlich lokale Testinstrumentierung. Normale URLs enthalten keine Teststeuerung.
+`?test` aktiviert ausschließlich lokale Testinstrumentierung (`window.aeruTest`).
 
 ## Urheber und Lizenzen
 
-Figuren, Namen, Dialoge, Levelgestaltung, Polygonmodelle, SVG und Musik wurden für dieses Spiel erstellt. Keine übernommenen Spyro-/PlayStation-Assets, Namen, Geschichten oder Audiodateien. Die allgemeine Idee eines 3D-Erkundungsspiels mit einem Drachen ist die Inspiration. Eine rechtliche Markenprüfung der neuen Namen ist nicht erfolgt.
+Figuren, Namen, Dialoge, Levelgestaltung, Polygonmodelle, SVG und Musik wurden für dieses Spiel erstellt. Keine übernommenen Assets, Namen, Geschichten oder Audiodateien anderer Spiele. Eine rechtliche Markenprüfung der Namen ist nicht erfolgt.
 
 Three.js: Copyright 2010–2026 three.js authors, MIT-Lizenz, siehe `vendor/LICENSE.three.txt`. Übriger Code unter der Lizenz des übergeordneten Repositories.
-
