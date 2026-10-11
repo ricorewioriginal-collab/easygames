@@ -11,10 +11,12 @@
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   // ---------- Start / Speichern ----------
-  function newGame() { S = Sim.create(); prevMoney = S.money; resize(); setTimeout(() => { if (typeof showName === 'function') showName(); }, 300); }
+  function newGame(quiet) { S = Sim.create(); prevMoney = S.money; resize(); if (!quiet) setTimeout(() => { if (typeof showName === 'function') showName(); }, 300); }
   function save() { try { localStorage.setItem(KEY, Sim.save(S)); } catch (e) {} }
   function load() { try { const j = localStorage.getItem(KEY); if (j) { S = Sim.load(j); prevMoney = S.money; return true; } } catch (e) {} return false; }
-  if (!load()) newGame(); else if (!S.named) setTimeout(() => { if (typeof showName === 'function') showName(); }, 300);
+  if (!load()) newGame(true); // Ladenname fragt das Hauptmenü (menu.js) beim Spielstart ab
+  // Hauptmenü (menu.js): solange es offen ist, ruht das Spiel; API = Schnittstelle dorthin
+  const menuOn = () => document.body.classList.contains('mm'), API = { back: false, onBack: null, onMenu: null };
   // ---------- Marktradio (Live-Stream von laut.fm) ----------
   const RAD = { on: true, name: 'ricorewi', vol: .6, list: [{ n: 'ricorewi', d: 'RicoReWi' }], el: null, cur: '', gest: false, err: '', song: '', songT: 0, busy: false };
   try { const j = JSON.parse(localStorage.getItem('amh_radio') || 'null'); if (j) { RAD.on = j.on !== false; RAD.name = j.name || RAD.name; RAD.vol = typeof j.vol === 'number' ? j.vol : RAD.vol; if (Array.isArray(j.list) && j.list.length) RAD.list = j.list.filter(x => x && x.n).slice(0, 12); } } catch (e) {}
@@ -95,7 +97,7 @@
   }
   // ---------- Eingabe ----------
   const keys = {}; let joy = { x: 0, y: 0 }, touch = false; try { if (matchMedia('(pointer:coarse)').matches) { touch = true; document.body.classList.add('touch'); } } catch (e) {}
-  addEventListener('keydown', e => { if (panel || !S || !$('cardov').hidden || !$('more').hidden || (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA'))) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if ((k === 'e' || k === ' ' || k === 'enter') && !e.repeat) doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'v') toggleView(); if (k === 'q' && use3d) { if (document.pointerLockElement === cv3) document.exitPointerLock(); else { try { cv3.requestPointerLock(); toast('Maus gefangen – Esc oder Q gibt sie frei.'); } catch (x) {} } } if (k === 'f') inspect(cw / 2, ch / 2); if (k === 'escape') { mode = null; showCard(null); } if (k === 'p') setSpd(spd ? 0 : 1); });
+  addEventListener('keydown', e => { if (panel || !S || menuOn() || !$('cardov').hidden || !$('more').hidden || (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA'))) return; const k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault(); keys[k] = 1; document.body.classList.add('kb'); if ((k === 'e' || k === ' ' || k === 'enter') && !e.repeat) doAct(); if (k === 'r' && mode && mode.t === 'place') { mode.rot = mode.rot ? 0 : 1; } if (k === 'v') toggleView(); if (k === 'q' && use3d) { if (document.pointerLockElement === cv3) document.exitPointerLock(); else { try { cv3.requestPointerLock(); toast('Maus gefangen – Esc oder Q gibt sie frei.'); } catch (x) {} } } if (k === 'f') inspect(cw / 2, ch / 2); if (k === 'escape' && !e.repeat) { if (mode || cardId != null) { mode = null; showCard(null); } else if (!document.pointerLockElement && $('namebox').hidden && $('sum').hidden && $('payov').hidden && $('idov').hidden && API.onMenu) { delete keys[k]; API.onMenu(); } } if (k === 'p') setSpd(spd ? 0 : 1); });
   addEventListener('keyup', e => { delete keys[e.key.toLowerCase()]; });
   function doAct() { const c = Sim.act(S, focus); if (c && c.a === 'scan') sfx.scan(); else if (c && c.a === 'radio') { radioToggle(); toast(RAD.on ? '📻 ' + radName() + ' läuft' : '📻 Radio aus'); } else if (c) sfx.ok(); else sfx.bad(); }
   $('act').addEventListener('pointerdown', e => { e.preventDefault(); actHeld = true; doAct(); }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => $('act').addEventListener(n, () => { actHeld = false; }));
@@ -289,20 +291,21 @@
       h += '<h3>🎨 Wandfarbe <small style="color:var(--mut)">(neue Farbe 300 €)</small></h3><div class="swatches">' + Object.keys(D.WALLS).map(k => `<div class="sw ${S.wall === k ? 'on' : ''}" style="background:${D.WALLS[k].c}" title="${D.WALLS[k].n}${S.own.wall[k] ? '' : ' · 300 €'}" data-a="wall" data-v="${k}"></div>`).join('') + '</div>';
       h += `<h3>🚪 Außen & Eingang</h3><p class="h">Automatik-Schiebetür: ${S.up.tuer ? '✔ eingebaut' : 'nicht gekauft'} · Parkplatz: ${S.up.park ? '✔ vorhanden' : 'nicht gekauft'} · Neon-Reklame: ${S.up.neon ? '✔' : '–'}. Kaufen kannst du das unter „Ausbau“.</p>`; return h;
     },
+    save() { const st = Sim.stars(S); return `<div class="glass it"><b>🏪 ${esc(S.shopName)}</b><small>${Sim.DOW[(S.day - 1) % 7]} · Tag ${S.day} · Stufe ${S.level} · ⭐ ${st.toFixed(1)} · Kontostand <b class="${S.money < 0 ? 'bad' : 'good'}">${fmt(S.money)}</b></small><small>Der Spielstand liegt in diesem Browser und wird am Tagesende, alle 45 Sekunden und beim Verlassen automatisch gespeichert.</small><div class="row"><button class="btn sm go" data-a="save">Jetzt speichern</button><button class="btn sm stop" data-a="reset">Neu beginnen</button></div></div><p class="h">Mit der Google-Sicherung unten spielst du auf jedem Gerät mit demselben Laden weiter.</p>`; },
     menu() { return `<div class="grid"><div class="glass it"><b>💾 Speichern</b><small>Es wird auch automatisch am Tagesende gespeichert.</small><div class="row"><button class="btn sm go" data-a="save">Jetzt speichern</button></div></div><div class="glass it"><b>🔊 Ton</b><div class="row"><button class="btn sm" data-a="snd">${snd ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>🖥️ Grafik</b><small>Sparsam schont Akku und Rechner (weniger Auflösung, keine Straße & Wetter-Effekte).</small><div class="row">${['Sparsam', 'Normal', 'Schön'].map((n, i) => `<button class="btn sm ${gq === i ? 'go' : ''}" data-a="gq" data-v="${i}">${n}</button>`).join('')}</div></div><div class="glass it"><b>🤝 Einräum-Hilfe</b><small>Räumt Kartons automatisch ein und holt sie, sobald du am Regal bzw. an der Warenannahme stehst.</small><div class="row"><button class="btn sm ${S.assist !== false ? 'go' : ''}" data-a="assist">${S.assist !== false ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>🧭 Wegweiser</b><small>Zeigt oben den nächsten Schritt und markiert das Ziel im Laden.</small><div class="row"><button class="btn sm ${S.hints !== false ? 'go' : ''}" data-a="hints">${S.hints !== false ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>💳 Kartenzahlung selbst eintippen</b><small>Bei Kartenzahlung tippst du den Betrag ins Terminal (wie im echten Laden). Aus = Karte zahlt automatisch.</small><div class="row"><button class="btn sm ${S.cardManual !== false ? 'go' : ''}" data-a="cardm">${S.cardManual !== false ? 'An – ausschalten' : 'Aus – einschalten'}</button></div></div><div class="glass it"><b>❓ Hilfe</b><div class="row"><button class="btn sm" data-a="hilfe">Anleitung</button></div></div><div class="glass it"><b>🗑️ Neues Spiel</b><small>Löscht deinen Spielstand.</small><div class="row"><button class="btn sm stop" data-a="reset">Neu beginnen</button></div></div></div>`; }
   };
-  const TITLES = { hilfe: '❓ So geht’s', markt: '💻 Bestell-PC', laden: '🏪 Mein Laden', bauen: '🔧 Bauen', preise: '🏷️ Preise', staff: '👥 Personal', radio: '📻 Marktradio', up: '⭐ Ausbau', stat: '📊 Zahlen', ziele: '🎯 Ziele & Vorbestellungen', menu: '☰ Menü' };
-  function openPanel(n) { try { document.exitPointerLock && document.exitPointerLock(); } catch (e) { } if (n === 'markt' && !(Sim.nearPC(S) || S.up.app)) { pcBeaconUntil = now() + 12000; toast('💻 Zum Bestellen musst du am Bestell-PC stehen (Pfeil) – oder kaufe die Bestell-App unter „Ausbau“.'); } panel = n; mode = null; showCard(null); $('more').hidden = true; $('pt').textContent = TITLES[n]; $('pb').innerHTML = R[n](); $('pb').scrollTop = 0; $('cloudwrap').hidden = n !== 'menu'; $('panel').hidden = false; }
+  const TITLES = { hilfe: '❓ So geht’s', markt: '💻 Bestell-PC', laden: '🏪 Mein Laden', bauen: '🔧 Bauen', preise: '🏷️ Preise', staff: '👥 Personal', radio: '📻 Marktradio', up: '⭐ Ausbau', stat: '📊 Zahlen', ziele: '🎯 Ziele & Vorbestellungen', menu: '⚙️ Optionen', save: '💾 Spielstand' };
+  function openPanel(n) { try { document.exitPointerLock && document.exitPointerLock(); } catch (e) { } if (n === 'markt' && !(Sim.nearPC(S) || S.up.app)) { pcBeaconUntil = now() + 12000; toast('💻 Zum Bestellen musst du am Bestell-PC stehen (Pfeil) – oder kaufe die Bestell-App unter „Ausbau“.'); } panel = n; mode = null; showCard(null); $('more').hidden = true; $('pt').textContent = TITLES[n]; $('pb').innerHTML = R[n](); $('pb').scrollTop = 0; $('cloudwrap').hidden = n !== 'menu' && n !== 'save'; $('panel').hidden = false; }
   function refresh() { if (panel) { const y = $('panel').scrollTop; $('pb').innerHTML = R[panel](); $('panel').scrollTop = y; } }
-  function closePanel() { panel = null; $('panel').hidden = true; }
+  function closePanel() { panel = null; $('panel').hidden = true; if (API.back) { API.back = false; if (API.onBack) API.onBack(); } }
   $('px').onclick = closePanel; document.querySelectorAll('#dock [data-p]').forEach(b => b.onclick = () => openPanel(b.dataset.p));
   $('panel').addEventListener('click', e => { if (e.target === $('panel')) closePanel(); });
   $('bMore').onclick = () => { try { document.exitPointerLock && document.exitPointerLock(); } catch (e) { } showCard(null); $('more').hidden = false; };
-  $('more').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (e.target === $('more') || (b && b.dataset.m === 'x')) { $('more').hidden = true; return; } if (b) openPanel(b.dataset.m); });
+  $('more').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (e.target === $('more') || (b && (b.dataset.m === 'x' || b.dataset.m === 'mm'))) { $('more').hidden = true; if (b && b.dataset.m === 'mm' && API.onMenu) API.onMenu(); return; } if (b) openPanel(b.dataset.m); });
   // Tastenkürzel: Fenster per Ziffer, Esc schließt, H Hilfe, O öffnen/Feierabend, +/- Tempo
   const KEYP = { 1: 'markt', 2: 'laden', 3: 'bauen', 4: 'preise', 5: 'staff', 6: 'radio', 7: 'up', 8: 'stat', 9: 'ziele', 0: 'menu', h: 'hilfe' };
   addEventListener('keydown', e => {
-    if (!S || e.ctrlKey || e.metaKey || e.altKey) return; const tg = e.target, typing = tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA'); const k = e.key.toLowerCase();
+    if (!S || menuOn() || e.ctrlKey || e.metaKey || e.altKey) return; const tg = e.target, typing = tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA'); const k = e.key.toLowerCase();
     if (!$('cardov').hidden) { termKey(e); return; }
     if (k === 'escape') { if (!$('more').hidden) { $('more').hidden = true; return; } if (panel) { closePanel(); return; } }
     if (typing || !$('namebox').hidden || !$('sum').hidden || !$('payov').hidden || !$('idov').hidden) return;
@@ -321,7 +324,7 @@
     else if (a === 'rad') { if (S.radio.ads[p]) { delete S.radio.ads[p]; S.money += 4000; } else if (S.money >= 4000 && Object.keys(S.radio.ads).length < 3) { S.money -= 4000; S.radio.ads[p] = 1; } }
     else if (a === 'up') { ok = Sim.buyUp(S, v); if (ok && v === 'radio') radioLoop(); } else if (a === 'loan') ok = +v > 0 ? Sim.borrow(S, +v) : Sim.repay(S, -v); else if (a === 'heat') heatOn = !heatOn;
     else if (a === 'save') { save(); toast('Gespeichert.'); } else if (a === 'gq') { gq = +v; try { localStorage.setItem('amh_gq', String(gq)); } catch (e) {} if (use3d) View3D.setQuality(gq); } else if (a === 'assist') S.assist = S.assist === false; else if (a === 'hints') S.hints = S.hints === false; else if (a === 'snd') { snd = !snd; try { localStorage.setItem('amh_snd', snd ? '1' : '0'); } catch (e) {} } else if (a === 'hilfe') { openPanel('hilfe'); return; }
-    else if (a === 'reset') { if (confirm('Wirklich neu beginnen? Der Spielstand geht verloren.')) { try { localStorage.removeItem(KEY); } catch (e) {} newGame(); closePanel(); } return; }
+    else if (a === 'reset') { if (confirm('Wirklich neu beginnen? Der Spielstand geht verloren.')) { API.back = false; try { localStorage.removeItem(KEY); } catch (e) {} newGame(); closePanel(); } return; }
     if (ok === false) { sfx.bad(); if (S.log.length) toast(S.log[S.log.length - 1].t); } else if (['buy', 'buyx', 'lic', 'hire', 'up', 'exp'].includes(a)) sfx.ok(); refresh();
   });
   $('pb').addEventListener('input', e => { const t = e.target; if (t && t.id === 'pcq') { pcQ = t.value; const g = $('pcgrid'); if (g) g.innerHTML = pcGrid(); return; } if (t && t.dataset && t.dataset.a === 'rvol') { RAD.vol = Math.max(0, Math.min(1, +t.value / 100)); radSave(); radioSync(); } });
@@ -373,18 +376,23 @@
     if (m.lv) sfx.lvl();
   }
   // ---------- Hauptschleife ----------
+  let drawnUnder = false; addEventListener('resize', () => { drawnUnder = false; });
   function frame(now) {
     requestAnimationFrame(frame); const dt = Math.min(.1, (now - last) / 1000); last = now; lastDt = dt; if (!S) return; tick++;
-    const pause = panel || !$('sum').hidden || !$('payov').hidden || !$('idov').hidden || !$('cardov').hidden || !$('namebox').hidden || !$('more').hidden; if (pause) { sm.x = sm.y = 0; } const held = keys.e || keys[' '] || keys.enter || actHeld; if (held && !pause) { holdT += dt; if (holdT > .35) { holdAcc += dt; while (holdAcc >= .1) { holdAcc -= .1; const c0 = Sim.context(S, focus); if (c0 && (c0.a === 'stock' || c0.a === 'scan')) doAct(); else break; } } } else { holdT = 0; holdAcc = 0; }
+    const mo = menuOn(), pause = mo || panel || !$('sum').hidden || !$('payov').hidden || !$('idov').hidden || !$('cardov').hidden || !$('namebox').hidden || !$('more').hidden; if (pause) { sm.x = sm.y = 0; } const held = keys.e || keys[' '] || keys.enter || actHeld; if (held && !pause) { holdT += dt; if (holdT > .35) { holdAcc += dt; while (holdAcc >= .1) { holdAcc -= .1; const c0 = Sim.context(S, focus); if (c0 && (c0.a === 'stock' || c0.a === 'scan')) doAct(); else break; } } } else { holdT = 0; holdAcc = 0; }
     if (!pause && use3d) { const fw = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0) - joy.y, sd = (keys.d ? 1 : 0) - (keys.a ? 1 : 0) + joy.x; if (keys.arrowleft) View3D.look(-dt * 2.2, 0); if (keys.arrowright) View3D.look(dt * 2.2, 0); const [vx, vy] = View3D.move(Math.max(-1, Math.min(1, fw)), Math.max(-1, Math.min(1, sd))), kk = 1 - Math.exp(-dt * 16); sm.x += (vx - sm.x) * kk; sm.y += (vy - sm.y) * kk; S.player.vx = sm.x; S.player.vy = sm.y; S.player.run = keys.shift ? 1 : 0; const la = 1 - Math.exp(-dt * 22); if (Math.abs(pend.x) + Math.abs(pend.y) > 1e-4) { View3D.look(pend.x * la, pend.y * la); pend.x *= 1 - la; pend.y *= 1 - la; } if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
     else if (!pause) { let vx = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0), vy = (keys.s || keys.arrowdown ? 1 : 0) - (keys.w || keys.arrowup ? 1 : 0); S.player.vx = vx || joy.x; S.player.vy = vy || joy.y; if (spd > 0) Sim.step(S, dt * spd); else { S.player.vx = S.player.vy = 0; } }
     if (S.phase === 'summary' && $('sum').hidden) showSummary();
     if (use3d && (topView || !!mode) !== View3D.st.top) syncView();
-    hudT -= dt; if (hudT <= 0) { hudT = .2; hud(); if (cardId != null && tick % 6 === 0 && !chooser && !mode) renderCard(); } saveT += dt; if (saveT > 45 && S.phase !== 'summary') { saveT = 0; save(); } draw(now);
+    hudT -= dt; if (hudT <= 0) { hudT = .2; hud(); if (cardId != null && tick % 6 === 0 && !chooser && !mode) renderCard(); } saveT += dt; if (saveT > 45 && S.phase !== 'summary') { saveT = 0; save(); } if (!mo || !drawnUnder) draw(now); drawnUnder = mo; // hinter dem Menü nur einmal zeichnen
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden && S && S.phase !== 'summary') save(); });
   addEventListener('beforeunload', () => { if (S && S.phase !== 'summary') save(); });
-  if (use3d && matchMedia('(pointer:fine)').matches) setTimeout(() => toast('Steuerung: WASD laufen (Shift = rennen) · Maus ziehen = umsehen · E oder Klick = Aktion · Q = Maus fangen'), 1500);
   if (S.up.radio) radioLoop(); resize(); requestAnimationFrame(frame);
-  window.__amh = { get S() { return S; }, Sim };
+  let started = false;
+  window.__amh = { get S() { return S; }, Sim, D, API, fmt, sfx, save, openPanel,
+    hasProgress: () => !!(S && (S.named || S.day > 1 || S.hist.length)),
+    // Aus dem Menü ins Spiel: beim ersten Mal Ladenname bzw. Steuerungshinweis
+    play() { resize(); if (!S.named) { showName(); return; } if (!started && use3d && matchMedia('(pointer:fine)').matches) toast('Steuerung: WASD laufen (Shift = rennen) · Maus ziehen = umsehen · E oder Klick = Aktion · Q = Maus fangen · Esc = Menü'); started = true; },
+    fresh() { try { localStorage.removeItem(KEY); } catch (e) {} closePanel(); newGame(true); showName(); } };
 })();

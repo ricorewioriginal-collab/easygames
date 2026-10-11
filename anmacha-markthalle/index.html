@@ -146,9 +146,87 @@
     #cardov .in{width:min(720px,100%)}.tcols{grid-template-columns:1fr 1fr;align-items:start}.pad .btn{min-height:42px}.term{font-size:24px;margin:6px 0}
     #namebox .in,#payov .in,#idov .in,#cardov .in{padding:12px}
   }
+  /* ---------- Ladebildschirm, Titelbild, Hauptmenü (Konsolen-Stil) ---------- */
+  #boot{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;color:var(--tx);overflow:hidden;background:radial-gradient(120% 80% at 80% 0%,rgba(139,92,246,.35),transparent 60%),radial-gradient(90% 70% at 0% 100%,rgba(255,45,149,.25),transparent 60%),linear-gradient(160deg,#0b1020,#060914);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  body.mm.ready #boot{background:radial-gradient(110% 80% at 85% 10%,rgba(139,92,246,.28),transparent 60%),linear-gradient(90deg,rgba(6,9,20,.97) 0%,rgba(6,9,20,.9) 45%,rgba(6,9,20,.66) 100%)}
+  body.mm #hud,body.mm #dock,body.mm #tops,body.mm #toast,body.mm #tip,body.mm #card,body.mm #stick,body.mm #act,body.mm #zoom{visibility:hidden}
+  #boot::before{content:'';position:absolute;left:-10%;right:-10%;bottom:-30%;height:70%;background:repeating-linear-gradient(90deg,rgba(0,229,255,.13) 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,rgba(0,229,255,.13) 0 1px,transparent 1px 64px);transform:perspective(420px) rotateX(62deg);transform-origin:50% 0;-webkit-mask-image:linear-gradient(transparent,#000 70%);mask-image:linear-gradient(transparent,#000 70%);animation:mmGrid 6s linear infinite;pointer-events:none}
+  @keyframes mmGrid{to{background-position:0 64px,0 64px}}
+  .mm-scr{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+  .mm-logo{display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1}
+  .mm-logo small{font:800 13px Inter,system-ui,sans-serif;letter-spacing:.35em;color:var(--c);text-transform:uppercase}
+  .mm-logo b{font:900 clamp(38px,9vw,84px)/.95 'Trebuchet MS',sans-serif;letter-spacing:-.01em;background:linear-gradient(180deg,#fff 15%,var(--y) 60%,var(--o));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35))}
+  .mm-logo i{font:900 clamp(26px,6vw,56px)/1 'Trebuchet MS',sans-serif;font-style:normal;color:#fff;background:linear-gradient(180deg,var(--ma),#a8105f);border:3px solid #fff;border-radius:14px;padding:4px 12px;transform:rotate(-4deg);margin-top:6px;box-shadow:0 8px 24px rgba(255,45,149,.35)}
+  .mm-logo em{font:700 14px Inter,system-ui,sans-serif;font-style:normal;color:var(--mut);margin-top:10px}
+  #mmLoad .mm-bar{width:min(420px,80vw);height:8px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;margin:44px 0 12px}
+  #mmLoad .mm-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--c),var(--ma));transform:scaleX(.03);transform-origin:0 50%;transition:transform .35s ease-out}
+  #mmLoadT{font:700 13px Inter,system-ui,sans-serif;color:var(--mut);min-height:1.4em}
+  #mmTipBox{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(560px,90vw);font:600 14px/1.45 Inter,system-ui,sans-serif;color:var(--tx);opacity:.85}
+  #mmTipBox b{color:var(--y);margin-right:6px}
+  #mmErr{margin-top:16px}
+  #mmTitle .mm-press{margin-top:48px;font:900 16px Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#fff;animation:mmPulse 1.6s ease-in-out infinite}
+  @keyframes mmPulse{50%{opacity:.35}}
+  #mmTitle{cursor:pointer}
+  #mmMain{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);grid-template-rows:1fr auto;gap:0 48px;padding:clamp(18px,5vh,56px) clamp(18px,6vw,80px) 0}
+  #mmMain .mm-logo{align-items:flex-start;margin-bottom:clamp(14px,4vh,36px)}
+  #mmMain .mm-logo b{font-size:clamp(34px,5vw,58px)}#mmMain .mm-logo i{font-size:clamp(22px,3vw,36px);margin-top:4px;padding:2px 10px}
+  .mm-col{display:flex;flex-direction:column;min-height:0}
+  #mmTag{display:inline-block;align-self:flex-start;font:900 12px Inter,system-ui,sans-serif;letter-spacing:.2em;color:#04101c;background:var(--c);padding:3px 8px;border-radius:6px;margin-bottom:10px}
+  #mmList{display:flex;flex-direction:column;gap:6px;overflow:auto;min-height:0;padding:2px}
+  .mm-it{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;font:800 19px Inter,system-ui,sans-serif;color:var(--tx);cursor:pointer;border:2px solid transparent;transition:background .12s,transform .12s;touch-action:manipulation}
+  .mm-it .ic{width:28px;text-align:center;font-size:20px;flex:none;opacity:.8}
+  .mm-it .ar{margin-left:auto;opacity:0;font-size:16px;color:var(--y)}
+  .mm-it.on{background:linear-gradient(90deg,rgba(0,229,255,.24),rgba(139,92,246,.14));border-color:rgba(0,229,255,.75);transform:translateX(6px);box-shadow:0 0 22px rgba(0,229,255,.18)}
+  .mm-it.on .ic,.mm-it.on .ar{opacity:1}
+  .mm-it.dng.on{background:linear-gradient(90deg,rgba(255,107,122,.3),rgba(255,107,122,.08));border-color:#ff6b7a}
+  .mm-it:focus-visible{outline:none}
+  #mmInfo{align-self:center;max-width:520px;padding:22px 24px;border-radius:18px;background:rgba(18,26,56,.78);border:1px solid rgba(255,255,255,.14);text-align:left}
+  #mmInfo h3{margin:0 0 8px;font:900 24px 'Trebuchet MS',sans-serif;color:var(--y)}
+  #mmInfo p{margin:0;color:var(--mut);font-size:15px;line-height:1.5}
+  .mm-save{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mm-save div{background:rgba(255,255,255,.06);border-radius:10px;padding:8px 10px}.mm-save small{display:block;color:var(--mut);font:700 11px Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em}.mm-save b{font-size:16px}
+  .mm-save .wide{grid-column:1/-1}.mm-save .wide b{font-size:18px}
+  #mmFoot{grid-column:1/-1;display:flex;gap:18px;justify-content:flex-end;align-items:center;padding:14px 0 calc(14px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.1);margin-top:16px;font:700 13px Inter,system-ui,sans-serif;color:var(--mut)}
+  #mmFoot kbd{font:800 12px Inter,sans-serif;color:var(--tx);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-bottom-width:3px;border-radius:6px;padding:1px 7px;margin-right:6px}
+  #mmFoot .v{margin-right:auto;opacity:.6}
+  body.coarse #mmFoot span:not(.v){display:none}
+  @media (max-width:760px){
+    #mmMain{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;padding:20px 16px calc(16px + env(safe-area-inset-bottom))}
+    #mmMain .mm-logo{align-items:center;margin-bottom:14px}
+    #mmTag{align-self:center}
+    .mm-it{font-size:17px;padding:13px 14px}.mm-it.on{transform:none}
+    #mmInfo{align-self:end;padding:14px 16px;margin-top:12px;max-width:none}#mmInfo h3{display:none}#mmInfo p{font-size:13.5px}
+    .mm-save{margin-top:10px}.mm-save b{font-size:14px}
+    #mmFoot{display:none}
+    body.mm.ready #boot{background:radial-gradient(110% 60% at 85% 0%,rgba(139,92,246,.3),transparent 60%),rgba(6,9,20,.86)}
+  }
+  @media (max-height:520px){
+    #mmMain{grid-template-columns:minmax(240px,340px) minmax(0,1fr);grid-template-rows:1fr auto;padding:12px 20px 0;gap:0 24px}
+    #mmMain .mm-logo{flex-direction:row;align-items:center;gap:10px;margin-bottom:10px}#mmMain .mm-logo small,#mmMain .mm-logo em{display:none}#mmMain .mm-logo b{font-size:30px}#mmMain .mm-logo i{font-size:20px;margin:0}
+    #mmTag{display:none}
+    .mm-it{font-size:15px;padding:7px 12px;gap:10px}.mm-it .ic{font-size:16px}
+    #mmInfo{align-self:center;margin:0;padding:12px 14px}#mmInfo h3{display:block;font-size:18px;margin-bottom:4px}#mmInfo p{font-size:13px}
+    #mmFoot{display:none}
+    .mm-logo b{font-size:44px}#mmLoad .mm-bar,#mmTitle .mm-press{margin-top:22px}#mmTipBox{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){#boot::before,#mmTitle .mm-press{animation:none}.mm-it{transition:none}}
 </style>
 </head>
-<body>
+<body class="mm">
+<div id="boot" role="dialog" aria-label="AnMaCha Markthalle 24">
+  <div id="mmLoad" class="mm-scr"><div class="mm-logo"><small>AnMaCha</small><b>MARKTHALLE</b><i>24</i></div><div class="mm-bar"><i id="mmBar"></i></div><div id="mmLoadT">Laden …</div><div id="mmErr" hidden><button class="btn go" onclick="location.reload()">Neu laden</button></div><div id="mmTipBox"><b>TIPP</b><span id="mmTip">Kartons stapeln sich auf der Rampe – trag sie zu den passenden Regalen.</span></div></div>
+  <div id="mmTitle" class="mm-scr" hidden><div class="mm-logo"><small>AnMaCha</small><b>MARKTHALLE</b><i>24</i><em>Dein Supermarkt. Deine Regeln.</em></div><div class="mm-press" id="mmPress">Drücke eine beliebige Taste</div></div>
+  <div id="mmMain" hidden><div class="mm-col"><div class="mm-logo"><small>AnMaCha</small><b>MARKTHALLE</b><i>24</i></div><span id="mmTag">HAUPTMENÜ</span><div id="mmList" role="menu"></div></div><div id="mmInfo" aria-live="polite"></div><div id="mmFoot"><span class="v">Markthalle 24</span><span><kbd>↑↓</kbd>Auswählen</span><span><kbd>Enter</kbd>Bestätigen</span><span><kbd>Esc</kbd>Zurück</span></div></div>
+</div>
+<script>
+/* Ladefortschritt: zwischen den Skripten weitergezählt, damit der Balken echten Fortschritt zeigt */
+(function () { var b = document.getElementById('mmBar'), t = document.getElementById('mmLoadT');
+  window.mmStep = function (p, txt) { if (b) b.style.transform = 'scaleX(' + p + ')'; if (t && txt) t.textContent = txt; };
+  window.mmFail = function () { var e = document.getElementById('mmErr'); if (e) e.hidden = false; mmStep(1, 'Das Spiel konnte nicht geladen werden.'); };
+  window.addEventListener('error', function (e) { if (!window.__amh && e && e.filename && !/three/.test(e.filename)) mmFail(); });
+  if (matchMedia('(pointer:coarse)').matches) document.body.classList.add('coarse');
+  mmStep(.08, 'Grafik wird geladen …'); })();
+</script>
 <div id="app">
   <div id="hud">
     <a class="btn glass sm" id="back" href="../" title="Alle Spiele" style="text-decoration:none">←</a>
@@ -163,14 +241,14 @@
   </div>
   <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
-    <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass" data-p="menu" title="Menü (0)"><i>☰</i><span>Menü</span><kbd>0</kbd></button><button class="btn glass pri" id="bMore"><i>☰</i><span>Mehr</span></button>
+    <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass" id="bMenu" title="Hauptmenü (Esc)"><i>☰</i><span>Menü</span><kbd>Esc</kbd></button><button class="btn glass pri" id="bMore"><i>☰</i><span>Mehr</span></button>
   </div>
 </div>
 <div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px" title="Schließen (Esc)">✕</button></div><div id="pb"></div><div id="cloudwrap" hidden style="padding:0 14px 14px"><div id="cloudbox"></div></div></div></div>
 <div id="more" hidden><div class="in"><div class="ph" style="padding:0 0 10px;border:0;background:none"><h2>☰ Mehr</h2><button class="btn glass" data-m="x">✕</button></div><div class="mgrid">
   <button class="btn glass" data-m="laden"><i>🏪</i>Mein Laden</button><button class="btn glass" data-m="staff"><i>👥</i>Personal</button><button class="btn glass" data-m="ziele"><i>🎯</i>Ziele</button>
   <button class="btn glass" data-m="up"><i>⭐</i>Ausbau &amp; Bank</button><button class="btn glass" data-m="stat"><i>📊</i>Zahlen</button><button class="btn glass" data-m="radio"><i>📻</i>Radio</button>
-  <button class="btn glass" data-m="hilfe"><i>❓</i>Anleitung</button><button class="btn glass" data-m="menu"><i>⚙️</i>Einstellungen</button><a class="btn glass" href="../" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;font-size:13px"><i style="font-style:normal;font-size:26px">🎮</i>Alle Spiele</a>
+  <button class="btn glass" data-m="hilfe"><i>❓</i>Anleitung</button><button class="btn glass" data-m="menu"><i>⚙️</i>Einstellungen</button><button class="btn glass" data-m="mm"><i>🎮</i>Hauptmenü</button>
 </div></div></div>
 <div id="sum" hidden><div class="in"><div id="sb"></div></div></div>
 <div id="namebox" hidden><div class="in glass" id="nb"></div></div>
@@ -178,10 +256,14 @@
 <div id="payov" hidden><div class="in glass" id="po"></div></div>
 <div id="cardov" hidden><div class="in glass" id="co"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>mmStep(.55, 'Sortiment wird eingeräumt …')</script>
 <script src="data.js"></script>
 <script src="sim.js"></script>
+<script>mmStep(.7, 'Halle wird aufgebaut …')</script>
 <script src="view3d.js"></script>
 <script src="game.js"></script>
+<script>mmStep(.88, 'Kassen werden hochgefahren …')</script>
+<script src="menu.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="[data-a=&quot;save&quot;]" data-game="markthalle" data-prefix="amh_" data-mount="#cloudbox" data-hint="Sichere deinen Supermarkt mit Google und spiel auf jedem Gerät weiter." defer></script>
 </body>
 </html>
