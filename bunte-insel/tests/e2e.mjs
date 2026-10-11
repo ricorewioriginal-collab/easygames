@@ -41,7 +41,7 @@ ok(!fire.mission && fire.before === 0, 'Feuerwehr: Feuer mit Wasser gelöscht, M
 // Hubschrauber: starten, Ringe, Landen, Aussteigen nur am Boden
 const hel = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'heli'); b.P.x = v.x + 3; b.P.z = v.z; b.enter(v); b.answerOffer(true);
-  const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; for (let i = 0; i < 150 && v.y <= 3.5; i++) await sleep(100); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
+  const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; for (let i = 0; i < 150 && v.y <= 4.3; i++) await sleep(100); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
   for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const s = m.steps[m.i]; v.x = s.x; v.z = s.z; v.y = s.air ? s.y : .5; v.v = 0; v.vy = 0; await sleep(250); }
   await sleep(300); const g = b.save.stars - s0; v.y = 0; v.vy = 0; v.v = 0; b.leave(); return { y1, stayed, g, n, out: !b.P.veh };
 });
@@ -573,6 +573,25 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     m.close(); m.show(2); const btns = () => [...document.querySelectorAll('#metaBody .mrow button')]; btns()[0].click(); out.lv = b.save.fac.lv.cotton === 1; for (let i = 0; i < 300; i++) m.update(1, i); out.candy = b.save.fac.candy > 20; const s1 = b.save.stars; [...document.querySelectorAll('#metaBody .mbtn')][0].click(); out.sold = b.save.stars > s1; m.close();
     return out; });
   ok(r.q === 3 && r.qdone && r.all, 'Tagesaufgaben: 3 Aufgaben, Sterne, Serie'); ok(r.tabs === 3 && r.owned && r.after && r.bonus, 'Haustier-Ei schlüpft, Sammlung, Stern-Bonus'); ok(r.lv && r.candy && r.sold, 'Bonbon-Fabrik: Maschine kaufen, Bonbons entstehen, verkaufen');
+  await c.close();
+}
+{ // Rucksack, Geschenke, Tauschen
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const b = window.__bi, k = b.pack, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const iv = b.garden.inv(); iv.apple = 3; iv.carrot = 2; iv.potion_hp = 1; iv.bouquet = 1; b.save.stars = 100; b.save.owned.push('hat_crown', 'kite', 'deco_castle'); b.save.pets = { own: { cat: 2, fox: 1 }, eq: 'cat' }; b.save.gadgets = ['double'];
+    document.getElementById('bPack').click(); await sl(200); out.open = k.open; const tabs = [...document.querySelectorAll('#packTabs button')]; out.tabs = tabs.length;
+    const cnt = []; for (let i = 0; i < 6; i++) { tabs[i].click(); await sl(60); cnt.push(document.querySelectorAll('#packBody .pslot, #packBody .phelp').length); } out.cnt = cnt.join(',');
+    tabs[0].click(); await sl(60); const groups = [...document.querySelectorAll('#packBody .pgh')].map(x => x.textContent); out.groups = groups.length >= 3;
+    document.querySelector('#packBody .pslot').click(); await sl(60); out.detail = /Was ist das/.test(document.getElementById('packDetail').textContent) && /Wofür/.test(document.getElementById('packDetail').textContent);
+    const apple = [...document.querySelectorAll('#packBody .pslot')].find(s => /Apfel/.test(s.textContent)); apple.click(); await sl(60); [...document.querySelectorAll('#packDetail button')].find(x => /Essen/.test(x.textContent)).click(); await sl(100); out.ate = iv.apple === 2;
+    tabs[1].click(); await sl(60); document.querySelector('#packBody .pslot').click(); await sl(60); const btn = [...document.querySelectorAll('#packDetail button')].find(x => /Anlegen|Ablegen/.test(x.textContent)); btn.click(); await sl(80); out.eq = b.save.equip.hat === 'crown' || Object.values(b.save.equip).some(v => v === true);
+    // Geschenk empfangen
+    b.remote.set('f1', { id: 'f1', name: 'Fritz', icon: '🐶' }); const me = b.net.id || 'me'; const a0 = iv.apple; k.onNet({ t: 'gf', to: me, it: { c: 'inv', k: 'apple', n: 2 } }, 'f1'); out.gift = iv.apple === a0 + 2; k.onNet({ t: 'gf', to: me, it: { c: 'inv', k: 'hacker', n: 99 } }, 'f1'); out.safe = iv.hacker === undefined; k.onNet({ t: 'gf', to: 'other', it: { c: 'inv', k: 'apple', n: 5 } }, 'f1'); out.foreign = iv.apple === a0 + 2;
+    // Tausch: Anfrage annehmen, beide wählen, beide bestätigen
+    k.onNet({ t: 'tr', to: me, op: 'req', it: { c: 'inv', k: 'tomato', n: 1 } }, 'f1'); await sl(60); out.req = !document.getElementById('tradePanel').hidden; [...document.querySelectorAll('#tradePanel button')].find(x => /Ja/.test(x.textContent)).click(); await sl(60);
+    [...document.querySelectorAll('#tradePanel .pbt button.alt')][0].click(); await sl(60); const mine = JSON.parse(JSON.stringify(k.__mine || null)); out.pick = /gibt/.test(document.getElementById('tradePanel').textContent);
+    return out; });
+  ok(r.open && r.tabs === 6 && r.groups && r.detail && r.ate && r.eq, 'Rucksack: 6 Reiter, sortiert in Gruppen, Erklärung „Was ist das? / Wofür?“, Essen & Anlegen'); ok(r.gift && r.safe && r.foreign, 'Geschenke: Empfang, unbekannte Dinge und fremde Adressen werden ignoriert'); ok(r.req && r.pick, 'Tausch: Anfrage → Fenster → Auswahl'); console.log('  Rucksack-Zahlen:', r.cnt);
   await c.close();
 }
 await browser.close();

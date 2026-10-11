@@ -58,6 +58,10 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 - **Bonbon-Fabrik** 🍭: 4 Maschinen kaufen und ausbauen (Zuckerwatte, Lutscher, Schoko, Eis), Bonbons entstehen beim Spielen, Lager erweitern, 25 🍬 = 1 ⭐ verkaufen.
 - Schon vorhanden: eigener Avatar, Freunde/Mitspielen, Abzeichen (Sticker), Bauen, Haustiere, Läden, Tagesgeschenk.
 
+## Rucksack 🎒 (Knopf links oben oder Taste I)
+Alles, was du hast, ordentlich sortiert: **Essen** (Ernte & Zutaten, Zum Essen, Tränke, Blumen & Geschenke), **Kleidung**, **Spielzeug & Gadgets**, **Zimmer-Deko**, **Tiere**. Tippe einen Gegenstand an: „**Was ist das?**“ und „**Wofür?**“ erklären ihn, passende Knöpfe (Anlegen, Essen, Holen, Mitnehmen …) benutzen ihn. Der Reiter **❓ Hilfe** erklärt das ganze Spiel. Im Laden steht an jedem Stück, wofür es ist.
+- **🎁 Verschenken** und **🔄 Tauschen** mit verbundenen Freunden (Mehrspieler): Geschenke kommen sofort an (auch Sterne); beim Tausch wählen beide etwas aus, beide bestätigen, dann wird getauscht. Es gehen nur feste Gegenstände aus dem Spiel (keine freie Eingabe), Fremdes wird ignoriert.
+
 ## Spaß (Schnellmenü 🎉)
 Das Schnellmenü zeigt nur die 6 passendsten Aktionen (Baum in der Nähe → Hauen, RC-Auto weit weg → Holen, nachts → Feuerwerk, oft benutzte zuerst), „Mehr“ zeigt alle:
 Tanzen (das ganze Dorf tanzt mit), Kanone, Ahoi, Blitz-Trick, Apport, Kaugummi werfen (Kleckse bleiben, Treffer = ⭐), Ball, Luftballons, Feuerwerk, Seifenblasen und **XXL-Seifenblase** (Jannis schwebt in der Riesenblase), **Baum hauen** (wackelt, Blätter und Äpfel fallen, nach 8 Treffern gibt der Baum auf), Blitz bellen/suchen.
