@@ -32,7 +32,8 @@
     { id: 'fress', name: 'Das Delikatessen-Dinner', kind: 'Ekel', stat: 'ekel', e: '🍽️', how: 'Tippe, wenn der Schieber im grünen Bereich ist, um die Delikatesse runterzuschlucken. Drei Würgeanfälle und das Dinner ist aus.' }
   ];
   const FINAL = { id: 'marathon', name: 'Das große Finale: Wildnis-Marathon', kind: 'Alles', e: '🏆', how: 'Drei Kurz-Prüfungen hintereinander. Jeder Stern zählt für die Hörerwahl!' };
-  // Camp-Ereignisse. {A},{B} = zufällige Mitcamper. sym = deine Beliebtheit, en = Energie, food = Camp-Vorrat, bond = {A|B:+-n}
+  // Momente: ein Mitcamper ({A}) spricht dich an und du reagierst. sym = Sympathie beim (simulierten) Publikum, en = Energie, food = Vorrat, bond = Beziehung
+  // when: Tageszeit-Fenster (Stunden), wo: Treffpunkt-Art
   const EVENTS = [
     { t: 'Nachts raschelt es im Camp. {A} schwört, eine Schlange im Zelt gesehen zu haben.', ch: [
       { l: 'Mutig nachsehen', r: 'Es war nur ein Gummiband! Alle lachen – du giltst als Held.', sym: 4, en: -8, bond: { A: 8 } },
@@ -99,24 +100,113 @@
       { l: 'Sich an {A} klammern', r: '{A} ist nicht begeistert – aber hilft.', sym: 2, bond: { A: 8 } },
       { l: 'Mit der Stirnlampe voran', r: 'Es war nur ein Frosch. Ein sehr großer.', sym: 3, en: -5 } ] }
   ];
-  // tägliche Freizeitaktionen
-  const ACTIONS = [
-    { id: 'wasch', e: '🧺', l: 'Wäsche am Fluss', d: '+14 Energie', en: 14, sym: 1 },
-    { id: 'koch', e: '🍲', l: 'Fürs Camp kochen', d: '+10 Vorrat, +2 Beliebtheit', food: 10, sym: 2, en: -4 },
-    { id: 'tage', e: '🎥', l: 'Kamera-Tagebuch', d: '+4 Beliebtheit, −6 Energie', sym: 4, en: -6 },
-    { id: 'ruhe', e: '😴', l: 'Hängematte & Ausruhen', d: '+24 Energie', en: 24 },
-    { id: 'frei', e: '🙋', l: 'Freiwillig zur Prüfung!', d: 'Du bist heute dran: +4 Beliebtheit', sym: 4, volunteer: true }
-  ];
   const QUIPS = {
     intro: ['Willkommen im Urwaldlager – hier gibt es Reis, Bohnen und echte Gefühle!', 'Ihr Hörer entscheidet: Wer muss heute zur Prüfung?', 'Heute zeigt sich, wer wirklich aus dem richtigen Holz geschnitzt ist.'],
     great: ['Absolut bühnenreif! Das Camp isst heute wie Könige!', 'Sterne ohne Ende – das gab es selten!', 'Da bleibt selbst dem Dschungel der Mund offen.'],
     ok: ['Ordentlich! Das Abendessen ist zumindest gerettet.', 'Nicht schlecht, aber da war mehr drin.', 'Ein paar Sterne – der Reis wird mit Soße serviert.'],
     bad: ['Autsch. Heute gibt es nur Bohnen pur.', 'Das war… mutig. Aber nicht erfolgreich.', 'Der Magen des Camps knurrt lauter als der Jaguar.']
   };
+
+  // ---------- Neu: Persönlichkeiten, Sprechblasen, Gespräche, Lagerfeuer, Tagebuch, Moderation ----------
+  // fleiss = arbeitet fürs Camp, sozial = sucht Gesellschaft, drama = Streitlust, humor, empathie
+  const TRAITS = {
+    diva: { n: 'Diva', fleiss: .22, sozial: .55, drama: .85, humor: .35, empathie: .3, likes: ['kompliment', 'lastern'], hates: ['kritik'] },
+    kumpel: { n: 'Kumpel', fleiss: .85, sozial: .85, drama: .2, humor: .55, empathie: .7, likes: ['hilfe', 'plaudern'], hates: ['lastern'] },
+    stratege: { n: 'Stratege', fleiss: .55, sozial: .6, drama: .55, humor: .3, empathie: .4, likes: ['buendnis', 'lastern'], hates: ['witz'] },
+    clown: { n: 'Spaßvogel', fleiss: .42, sozial: .85, drama: .45, humor: .95, empathie: .5, likes: ['witz', 'plaudern'], hates: ['kritik'] },
+    sensibel: { n: 'Feingeist', fleiss: .62, sozial: .55, drama: .55, humor: .35, empathie: .92, likes: ['troesten', 'plaudern'], hates: ['witz', 'lastern'] },
+    tough: { n: 'Macher', fleiss: .92, sozial: .4, drama: .55, humor: .3, empathie: .3, likes: ['hilfe', 'kritik'], hates: ['kompliment'] },
+    you: { n: 'Du', fleiss: .6, sozial: .6, drama: .5, humor: .5, empathie: .5, likes: [], hates: [] }
+  };
+  // Verträglichkeit zwischen Typen (-1 … 1)
+  const AFF = { diva: { diva: -.5, kumpel: .2, stratege: .1, clown: .1, sensibel: -.2, tough: -.6 }, kumpel: { kumpel: .7, stratege: .1, clown: .5, sensibel: .4, tough: .5 }, stratege: { stratege: -.3, clown: -.2, sensibel: 0, tough: .1 }, clown: { clown: .3, sensibel: -.1, tough: -.2 }, sensibel: { sensibel: .4, tough: -.3 }, tough: { tough: .2 } };
+  const aff = (a, b) => (AFF[a] && AFF[a][b] != null) ? AFF[a][b] : (AFF[b] && AFF[b][a] != null) ? AFF[b][a] : 0;
+  // eigene Sprüche je Kandidat (frei erfunden)
+  const LINES = {
+    tina: ['Ich bin hier der Sturm, Leute!', 'Mein Lidstrich hält länger als dieser Reis.', 'Kamera? Wo ist die Kamera?'],
+    bernd: ['Erst die Zähne, dann die Würmer.', 'Statistisch gesehen überleben wir das.', 'Bitte zweimal täglich putzen – auch im Dschungel.'],
+    mandy: ['Das poste ich, sobald ich wieder Netz hab!', 'Hashtag Bohnenliebe.', 'Ist das Licht hier gut für mich?'],
+    kalle: ['Ich halte alles – auch die Stimmung!', 'Anpacken, nicht quatschen.', 'Früher hab ich Elfmeter gehalten, heute Holz.'],
+    gisela: ['Ein Lied geht immer!', 'Kinder, früher hatten wir gar keinen Dschungel!', 'Schalalala, Holz muss da!'],
+    ace: ['Yo, das Feuer brennt wie mein Flow.', 'Bohnen im Takt, Reis auf dem Beat.', 'Ich droppe gleich ’nen Dschungel-Track.'],
+    lilo: ['Das ist alles so … intensiv.', 'Ich spüre die Energie dieses Ortes.', 'In meiner Rolle als Camperin fühle ich viel.'],
+    dschoerg: ['Kommt ein Käfer in die Bar …', 'Ich bin nur wegen dem Buffet hier.', 'Lacht ruhig, ich hab Zeit bis Freitag.'],
+    sunny: ['Tief einatmen – und den Wurm loslassen.', 'Sonnengruß für die Bohnen!', 'Alles ist im Fluss. Besonders der Fluss.'],
+    rocco: ['Holz? Ich trag den ganzen Baum.', 'Protein ist Protein.', 'Kein Schmerz, kein Reis.'],
+    nele: ['Heute: heiter bis wolkig mit Krabbelschauern.', 'Die Luftfeuchte liegt bei Dschungel.', 'Ich hab einen Plan – und einen Plan B.'],
+    egon: ['In meinem Schloss gab es Personal für so was.', 'Man reiche mir den Reis.', 'Ein Prinz schwitzt nicht, er glänzt.']
+  };
+  const SAY = {
+    hi: ['Na, alles fit?', 'Moin, Mitcamper!', 'Hey du!', 'Gut geschlafen?', 'Schön, dich zu sehen.'],
+    work: ['Holz holen, Holz holen …', 'Einer muss es ja machen.', 'Puh, schweißtreibend!', 'Gleich geschafft!'],
+    water: ['Wasser marsch!', 'Der Eimer wiegt eine Tonne.', 'Frisch aus der Lagune!'],
+    cook: ['Heute gibt’s Reis à la Urwald!', 'Wer hat das Salz versteckt?', 'Riecht schon fast essbar.'],
+    eat: ['Mmmh … Reis.', 'Lecker! Na ja. Essbar.', 'Ich könnte drei Portionen essen.'],
+    hungry: ['Mein Magen knurrt lauter als ein Jaguar.', 'Wann gibt’s Essen?', 'Ich träume von Pommes.'],
+    tired: ['Ich bin sooo müde.', 'Kurz die Augen zu …', 'Gähn!'],
+    lazy: ['Arbeiten? Ich hab Urlaub.', 'Ich bewache die Hängematte.', 'Später vielleicht.'],
+    happy: ['Was für ein Tag!', 'Ich liebe dieses Camp!', 'Haha, herrlich!'],
+    sad: ['Ich vermisse mein Bett …', 'Heute ist nicht mein Tag.', 'Ach Mensch.'],
+    chat: ['Und dann sag ich zu ihm …', 'Echt jetzt?', 'Erzähl mehr!', 'Haha, genau!', 'Weißt du, was ich gehört hab?', 'Das bleibt unter uns.'],
+    argue: ['Du hast schon wieder nichts gemacht!', 'Lass mich in Ruhe!', 'Das sag ich den Zuschauern!', 'Unmöglich bist du!', 'Ich hab genug von dir!', 'Wer hat meinen Löffel?'],
+    rain: ['Mein Schlafsack ist nass!', 'Regen, Regen, Regen …', 'Ab unter die Plane!'],
+    cold: ['Das Feuer ist aus! Brrr!', 'Wer kümmert sich ums Feuer?'],
+    scared: ['AAAH!', 'Was war das?!', 'Hilfe! Ein Monster! … ach, Gummi.'],
+    cheer: ['Bravo!', 'Super gemacht!', 'Juhu!'],
+    trial: ['Drückt mir die Daumen!', 'Ich zittere jetzt schon.', 'Das schaff ich!'],
+    thanks: ['Danke dir!', 'Du bist ein Schatz.', 'Das vergesse ich dir nicht.'],
+    sleep: ['Gute Nacht, Camp!', 'Schlaft schön!', 'Zzz …']
+  };
+  // Gesprächsoptionen des Spielers: Antworten je nachdem, ob es ankommt (+), neutral (0) oder nicht (-)
+  const TALK = {
+    plaudern: { l: '💬 Plaudern', s: 'Ein bisschen quatschen', '+': ['Schön, mit dir zu reden!', 'Du verstehst mich.', 'Ha, genau so seh ich das auch.'], '0': ['Mhm, ja.', 'Okay …', 'Kann man so sehen.'], '-': ['Ich hab gerade keinen Kopf dafür.', 'Lass mal.', 'Später, ja?'] },
+    witz: { l: '😂 Witz erzählen', s: 'Gut fürs Publikum', '+': ['HAHAHA! Der war gut!', 'Ich kann nicht mehr! Hihi!', 'Du bist ja ein Komiker!'], '0': ['Hehe. Ganz nett.', 'Den kannte ich schon.', 'Höflichkeitslacher.'], '-': ['Wie geschmacklos.', 'Echt jetzt? Nicht lustig.', 'Ich lach später, versprochen.'] },
+    kompliment: { l: '🌸 Kompliment', s: 'Schmeicheln', '+': ['Oh, du bist süß!', 'Endlich sagt’s mal jemand!', 'Danke, das tut gut.'], '0': ['Äh, danke.', 'Nett von dir.', 'Hm, okay.'], '-': ['Spar dir das Geschleime.', 'Was willst du von mir?', 'Bisschen dick aufgetragen.'] },
+    hilfe: { l: '🤝 Hilfe anbieten', s: 'Gemeinsam anpacken', '+': ['Super, komm mit!', 'Endlich hilft mal jemand!', 'Zu zweit geht’s schneller.'], '0': ['Na gut, wenn du willst.', 'Okay.', 'Meinetwegen.'], '-': ['Ich schaff das allein.', 'Brauch ich nicht.', 'Nö.'] },
+    lastern: { l: '🤫 Über {X} lästern', s: 'Riskant – kann sich herumsprechen', '+': ['Oh ja, {X} nervt total!', 'Ich dachte, das merkt nur ich!', 'Erzähl mehr …'], '0': ['Hm, weiß nicht.', 'Na ja …', 'Kann sein.'], '-': ['Das find ich nicht fair.', 'Lästern ist echt mies.', 'Sag ihr das doch selbst.'] },
+    buendnis: { l: '🛡️ Bündnis vorschlagen', s: 'Ab Beziehung 40', '+': ['Abgemacht – wir halten zusammen!', 'Deal! Wir zwei gegen den Dschungel.', 'Ich bin dabei!'], '0': ['Ich überleg’s mir.', 'Vielleicht.', 'Noch nicht.'], '-': ['Ich spiel lieber allein.', 'Bündnisse sind nichts für mich.', 'Nein danke.'] },
+    kritik: { l: '😤 Zur Rede stellen', s: 'Faulheit ansprechen', '+': ['Okay, du hast recht. Ich pack mehr an.', 'Stimmt … sorry.', 'Fair. Ich hol gleich Holz.'], '0': ['Ja, ja.', 'Mal sehen.', 'Ist ja gut.'], '-': ['Was fällt dir ein?!', 'Kümmer dich um deinen Kram!', 'Na warte!'] },
+    troesten: { l: '🫂 Trösten', s: 'Wenn jemand traurig ist', '+': ['Danke … das hab ich gebraucht.', 'Du bist echt lieb.', 'Jetzt geht’s mir besser.'], '0': ['Danke.', 'Schon gut.', 'Geht schon.'], '-': ['Lass mich einfach.', 'Ich will allein sein.', 'Nicht jetzt.'] },
+    teilen: { l: '🍌 Essen teilen', s: 'Deine Frucht abgeben', '+': ['Für mich? Wie lieb!', 'Du rettest meinen Tag!', 'Mmmh, danke!'], '0': ['Danke.', 'Oh, okay.', 'Nett.'], '-': ['Hab keinen Hunger.', 'Iss du das mal.', 'Nein, danke.'] },
+    einladen: { l: '🔥 Zum Lagerfeuer einladen', s: 'Geheimauftrag', '+': ['Klar komm ich!', 'Ich bring gute Laune mit!', 'Bin dabei!'], '0': ['Mal sehen.', 'Vielleicht.', 'Hm.'], '-': ['Ich geh früh schlafen.', 'Ohne mich.', 'Nö.'] },
+    entschuldigen: { l: '🙏 Entschuldigen', s: 'Für das Lästern', '+': ['Okay … Schwamm drüber.', 'Danke, dass du ehrlich bist.', 'Na gut. Vergeben.'], '0': ['Mal sehen, ob ich dir glaube.', 'Hm.', 'Wir werden sehen.'], '-': ['Zu spät!', 'Das glaub ich dir nicht.', 'Pff.'] }
+  };
+  // Lagerfeuer-Runden (abends, wenn du am Feuer sitzt)
+  const CAMPFIRE = [
+    { id: 'held', t: 'Die Buschtrommel fragt: „Wer war heute die größte Hilfe im Camp?“ Alle schauen dich an.', kind: 'name', ch: [{ l: 'Den fleißigsten Camper loben', r: 'Fair und ehrlich – das kommt gut an.', fx: 'loben' }, { l: 'Mich selbst nennen', r: 'Selbstbewusst! Ob das alle so sehen?', fx: 'selbst' }, { l: 'Diplomatisch: „Wir alle!“', r: 'Harmonie am Feuer.', fx: 'alle' }] },
+    { id: 'geschichte', t: 'Gisela-Stimmung am Feuer: Jemand soll eine Geschichte erzählen. Die Runde zeigt auf dich.', kind: 'story', ch: [{ l: 'Lustige Pannengeschichte', r: 'Tränen gelacht!', fx: 'lustig' }, { l: 'Rührende Familiengeschichte', r: 'Einige wischen sich die Augen.', fx: 'ruehrend' }, { l: 'Gruselgeschichte vom Dschungelgeist', r: 'Alle rücken näher ans Feuer.', fx: 'grusel' }] },
+    { id: 'lied', t: 'Jemand summt eine Melodie. Soll das Camp gemeinsam singen?', kind: 'song', ch: [{ l: 'Laut mitsingen', r: 'Vielstimmig und herrlich schief.', fx: 'singen' }, { l: 'Den Takt auf einem Topf trommeln', r: 'Rhythmus im Urwald!', fx: 'trommeln' }, { l: 'Lieber zuhören', r: 'Du genießt die Stimmung.', fx: 'zuhoeren' }] },
+    { id: 'faul', t: 'Ein Camper beschwert sich am Feuer: „Manche hier tun gar nichts!“ Alle Blicke wandern.', kind: 'blame', ch: [{ l: 'Die faulste Person direkt ansprechen', r: 'Autsch – das sitzt. Drama am Feuer!', fx: 'anprangern' }, { l: 'Schlichten: „Morgen teilen wir uns die Arbeit auf.“', r: 'Ein Plan! Die Stimmung entspannt sich.', fx: 'plan' }, { l: 'Schweigen und ins Feuer starren', r: 'Die Glut knistert. Niemand sagt etwas.', fx: 'still' }] },
+    { id: 'geheimnis', t: 'Die Runde spielt „Wahrheit oder Wahrheit“. Du bist dran: Was war dein peinlichster Moment?', kind: 'secret', ch: [{ l: 'Ehrlich erzählen', r: 'Mutig! Alle mögen dich ein Stück mehr.', fx: 'ehrlich' }, { l: 'Maßlos übertreiben', r: 'Keiner glaubt dir, aber alle lachen.', fx: 'flunkern' }, { l: 'Ausweichen', r: 'Etwas langweilig, aber sicher.', fx: 'ausweichen' }] },
+    { id: 'strategie', t: 'Leise Frage am Feuer: „Wer, glaubst du, fliegt als Nächstes raus?“', kind: 'strat', ch: [{ l: 'Offen eine Person nennen', r: 'Diese Person hat es gehört …', fx: 'nennen' }, { l: '„Das entscheidet das Publikum.“', r: 'Souverän.', fx: 'souveraen' }, { l: 'Witz drüber machen', r: 'Lacher statt Ärger.', fx: 'witz' }] }
+  ];
+  // Plauderhöhle (Video-Tagebuch)
+  const DIARY = [
+    { l: '😌 Ehrlich über Gefühle reden', r: 'Ein ehrliches Tagebuch – das berührt.', S: 4, E: 1 },
+    { l: '🎭 Große Show mit Kochlöffel-Tanz', r: 'Kult! Die Kamera liebt dich.', S: 1, E: 5 },
+    { l: '🗡️ Über die größte Rivalin / den größten Rivalen sprechen', r: 'Spitze Worte – Drama garantiert, aber nicht jeder findet das nett.', S: -2, E: 6, rival: true },
+    { l: '🙏 Den Mitcampern danken', r: 'So viel Teamgeist!', S: 5, E: 0, team: true }
+  ];
+  // Moderation (Kiki Klack & Boris Busch – eigene Figuren)
+  const HOST = {
+    morning: ['Guten Morgen, Urwaldlager! Hier spricht eure Buschtrommel.', 'Aufwachen, Camper! Der Dschungel wartet nicht.', 'Tag {d} im Urwaldlager – die Bohnen sind schon wach.'],
+    nominate: ['Das simulierte Publikum hat entschieden: Heute muss {N} zur Prüfung!', 'Nach Auswertung der simulierten Stimmen geht heute {N} zur Prüfung.', '{N}, pack die Stirnlampe ein – du bist dran!'],
+    good: ['Absolut bühnenreif! Das Camp isst heute wie Könige!', 'Sterne ohne Ende – das gab es selten!', 'Da bleibt selbst dem Dschungel der Mund offen.'],
+    ok: ['Ordentlich! Das Abendessen ist zumindest gerettet.', 'Nicht schlecht, aber da war mehr drin.', 'Ein paar Sterne – der Reis wird mit Soße serviert.'],
+    bad: ['Autsch. Heute gibt es nur Bohnen pur.', 'Das war … mutig. Aber nicht erfolgreich.', 'Der Magen des Camps knurrt lauter als der Jaguar.'],
+    call: ['Alle Camper bitte zum Moderationsfelsen! Die Entscheidung des Tages steht an.', 'Kiki und Boris bitten zur Abendrunde am Moderationsfelsen.'],
+    safe: ['{N} – du bleibst im Camp!', '{N}, du darfst weiter Bohnen essen!', 'Ein lautes Uff von {N}: sicher!'],
+    out: ['{N}, für dich ist das Abenteuer heute vorbei.', '{N}, die Hängebrücke wartet – du verlässt das Urwaldlager.'],
+    final: ['Das große Finale! Wer wird Urwald-Champion?', 'Drei sind noch da – und nur einer bekommt die Lianenkrone.'],
+    noElim: ['Heute muss niemand gehen – genießt den Abend!', 'Durchatmen: Heute bleibt das Camp vollzählig.']
+  };
+  // Staffellängen
+  const SEASONS = { kurz: { n: 6, l: 'Kurz · 6 Camper · 5 Tage' }, normal: { n: 8, l: 'Normal · 8 Camper · 7 Tage' }, lang: { n: 12, l: 'Lang · 12 Camper · 11 Tage' } };
+  const PANTS = ['#3d4a3a', '#2b2d42', '#4a3a2a', '#556b2f', '#3a3a4a', '#6b4a2a'];
   const SKINS = ['#f6d3b4', '#e8b98f', '#d9a47a', '#c68863', '#a86f4c', '#7a4a30'];
   const HAIRS = ['#111111', '#3b2a1c', '#7a4a20', '#d9a441', '#c0392b', '#9aa0a6'];
   const TOPS = ['#e63946', '#2a9d8f', '#3a86ff', '#f4a300', '#9b5de5', '#2b2d42'];
   const HSTYLES = [['short', 'Kurz'], ['long', 'Lang'], ['bun', 'Dutt'], ['curly', 'Locken'], ['pony', 'Zopf'], ['bald', 'Glatze']];
-  root.JD = { HOSTS, CAST, TYPES, TRIALS, FINAL, EVENTS, ACTIONS, QUIPS, SKINS, HAIRS, TOPS, HSTYLES };
+  root.JD = { HOSTS, CAST, TYPES, TRIALS, FINAL, EVENTS, QUIPS, SKINS, HAIRS, TOPS, HSTYLES, TRAITS, AFF, aff, LINES, SAY, TALK, CAMPFIRE, DIARY, HOST, SEASONS, PANTS };
   if (typeof module !== 'undefined') module.exports = root.JD;
 })(typeof window !== 'undefined' ? window : globalThis);
