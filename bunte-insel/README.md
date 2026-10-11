@@ -73,6 +73,7 @@ Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreich
 - **Plaza** mit Regenbogen-Ringen und Brunnen (🌈 „Freude teilen“: Konfetti, ein Spruch über Vielfalt, alle 45 s +1 ⭐), zwei große **Regenbogen-Bögen**, **Flaggen** (Regenbogen, Trans, Bi, Pan), bunte Häuser, Tanzfläche, bunte Bäume.
 - **Bewohner** (10 Personen, zum Antippen): zwei Mamas, zwei Papas, Oma & Opa, Lehrer Leo (Auslachen ist nicht okay, Hilfe holen), Sam, Kinder … Sie erzählen kindgerecht und freundlich, dass Familien verschieden sind, jeder richtig ist, wie er ist, und dass man niemanden auslacht.
 - **Regenbogen-Bühne 🎤** im Westen: „Pride 24/7 · 365 Tage“ mit ~30 tanzenden Menschen davor, vier Künstlern auf der Bühne und einer Leinwand, auf der 5 bekannte Pride-Songs zu lesen sind (Over the Rainbow, I Will Survive, Dancing Queen, Vogue, Born This Way – nur Titel und Künstler, die Liste wandert alle 12 s weiter). Die Menge tanzt nur, wenn man in der Nähe ist.
+- **Pride-Parade 🏳️‍🌈**: Rund um den Brunnen fahren rund um die Uhr zwei Regenbogen-Trucks mit Anhängern („PRIDE“, „Liebe für alle“, „Jeder ist willkommen“), darauf tanzen Menschen; 16 Menschen laufen friedlich hinterher, viele mit Flaggen. Läuft nur, wenn man in der Nähe ist (Fahrzeuge sind je ein gebündeltes Mesh).
 - Sparsam: Boden, Bögen, Flaggen und Häuser stecken im einen Welt-Mesh; zur Laufzeit nur Schilder, Bewohner und wenige Funken (nur in der Nähe). Quelltext: `js/rainbow.js`.
 
 ## Musik für jede Welt und jeden Bereich 🎵

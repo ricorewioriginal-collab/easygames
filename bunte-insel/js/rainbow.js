@@ -102,9 +102,36 @@ BI.createRainbow = function (G) {
   sign('🎤 Regenbogen-Bühne', ST.x + 3.6, 11.4, ST.z, 8);
   /* Tanzende Menge + Künstler (eigene Animation, nur in der Nähe) */
   const crowd = [], rr = BI.rng(77), SKN = BI.SKINS.slice(0, 9), HRC = BI.HAIRS, STY = BI.STYLES.filter(q => q !== 'bald' && q !== 'none'), SH = [0xff3b3b, 0xff9a2e, 0xffe14a, 0x4cd07d, 0x3fa0ff, 0x9b4de0, 0xff8fc8, 0xffffff, 0x7de0d0], pk = a => a[(rr() * a.length) | 0];
-  const person = (x, z, y, kid, h) => { const look = { shirt: pk(SH), pants: pk([0x3d4a7a, 0x16335e, 0x7a5ce0, 0x23262d, 0xffffff]), hair: pk(HRC), skin: pk(SKN), style: pk(STY), dress: rr() < .3, hat: rr() < .2 ? 'party' : 'none', scale: kid ? .62 + rr() * .08 : .92 + rr() * .1 }; const c = BI.makeChar(look); c.group.position.set(x, y, z); c.group.rotation.y = h; scene.add(c.group); crowd.push({ c, y, ph: rr() * 6, st: (rr() * 3) | 0, x, z }); };
+  const lookOf = kid => ({ shirt: pk(SH), pants: pk([0x3d4a7a, 0x16335e, 0x7a5ce0, 0x23262d, 0xffffff]), hair: pk(HRC), skin: pk(SKN), style: pk(STY), dress: rr() < .3, hat: rr() < .2 ? 'party' : 'none', scale: kid ? .62 + rr() * .08 : .92 + rr() * .1 });
+  const person = (x, z, y, kid, h) => { const c = BI.makeChar(lookOf(kid)); c.group.position.set(x, y, z); c.group.rotation.y = h; scene.add(c.group); crowd.push({ c, y, ph: rr() * 6, st: (rr() * 3) | 0, x, z }); };
   for (let i = 0; i < 30; i++) { const x = R.x - 31 + 1.3 + (i % 5) * 2.6 + (rr() - .5) * 1.2, z = R.z - 7.8 + 1.3 + ((i / 5) | 0) * 2.6 + (rr() - .5) * 1.2; person(x, z, 0, i % 6 === 0, Math.atan2(ST.x - x, ST.z - z)); }
   for (let i = 0; i < 4; i++) person(ST.x + 1.5 - (i % 2) * 2.2, ST.z - 4.5 + i * 3, ST.y, false, Math.PI / 2);
+  /* ===== Pride-Parade: Trucks, Anhänger und Menschen, die friedlich feiern und hinterherlaufen – dreht rund um den Brunnen ===== */
+  const PR = { r: 10.5, v: 2.1 }, pmat = BI.mat(), parade = [];
+  const pAt = (d, off) => { const a = (ps + d) / PR.r, r = PR.r + (off || 0); return [R.x + Math.sin(a) * r, R.z + Math.cos(a) * r, Math.atan2(Math.cos(a), -Math.sin(a))]; };
+  let ps = 0;
+  const board = txt => { const c2 = document.createElement('canvas'); c2.width = 512; c2.height = 128; const x = c2.getContext('2d'), g = x.createLinearGradient(0, 0, 512, 0); CSS.forEach((c, k) => g.addColorStop(k / 5, c)); x.fillStyle = g; x.fillRect(0, 0, 512, 128); x.fillStyle = 'rgba(255,255,255,.88)'; x.fillRect(10, 10, 492, 108); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#4a1d6e'; x.font = 'bold 60px Fredoka, system-ui, sans-serif'; x.fillText(txt, 256, 68); return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c2), side: THREE.FrontSide }); };
+  const wheel = (b, x, z, r) => b.cyl(x, r - .2, z, r, r, .4, 0x1b1b22, 10, 0, 0, Math.PI / 2);
+  const vehicle = (kind, cab, d, txt, dancers) => { const b = new BI.Batch(), g = new THREE.Group();
+    if (kind === 'truck') { b.box(0, .5, 0, 2.4, .45, 6, 0x2a2f3a); b.box(0, .95, 2.0, 2.4, 1.9, 1.9, cab); b.box(0, 1.9, 2.97, 2.0, .7, .06, 0xbfe6ff); b.box(0, .95, -.9, 2.6, .25, 4.0, 0x6b4a2a);
+      for (let k = 0; k < 6; k++) for (const sd of [-1, 1]) b.box(sd * 1.32, .62 + k * .1, -.9, .06, .1, 4.0, RB[k]);
+      for (const z of [2, -1.2, -2.4]) for (const sd of [-1, 1]) wheel(b, sd * 1.3, z, .55);
+      for (const sd of [-1, 1]) { b.box(sd * .8, 1.2, -2.5, .8, 1.6, .7, 0x23262d); b.sph(sd * .8, 1.7, -2.14, .22, 0xdddddd, 1); }
+      b.cyl(1.2, 1.2, -2.7, .05, .05, 3.4, 0xdddddd, 6); for (let k = 0; k < 6; k++) b.box(1.2, 4.5 - .22 * (k + 1), -3.5, .04, .22, 1.6, RB[k]); }
+    else { b.box(0, .45, 0, 2.4, .2, 5, 0x2a2f3a); b.box(0, .65, 0, 2.6, .2, 5, 0x6b4a2a); b.box(0, .5, 3.1, .25, .2, 1.2, 0x555a66); for (const z of [-1.4, -2.2]) for (const sd of [-1, 1]) wheel(b, sd * 1.3, z, .45);
+      for (let k = 0; k < 6; k++) for (const sd of [-1, 1]) b.box(sd * 1.32, .85 + k * .1, 0, .05, .1, 5, RB[k]);
+      for (let k = 0; k < 4; k++) b.sph(-1.1 + k * .75, 3.3 + (k % 2) * .3, -2.2, .3, RB[(k * 2) % 6], 1); }
+    g.add(b.mesh(pmat));
+    if (txt) { const m = board(txt); for (const sd of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.1), m); pl.position.set(sd * 1.38, 2.1, 0); pl.rotation.y = sd * Math.PI / 2; g.add(pl); } }
+    const it = { g, d, dancers: [] }; dancers.forEach(([x, z], i) => { const c = BI.makeChar(lookOf(false)); c.group.position.set(x, kind === 'truck' ? 1.2 : .85, z); g.add(c.group); it.dancers.push({ c, ph: i * 1.7, st: i % 3 }); });
+    scene.add(g); parade.push(it); return it; };
+  vehicle('truck', 0xff5aa0, 0, 'PRIDE 🌈', [[-.5, -1.2], [.5, -.2]]); vehicle('trailer', 0, -6.7, 'LIEBE FÜR ALLE', [[-.5, -1.5], [.5, -.2], [0, 1.2]]);
+  vehicle('truck', 0x9b4de0, -24, '🏳️‍🌈 24/7', [[-.5, -1.2], [.5, -.2]]); vehicle('trailer', 0, -30.7, 'JEDER IST WILLKOMMEN', [[-.5, -1.5], [.5, -.2], [0, 1.2]]);
+  const walkers = []; const FLG = 6;
+  [[-11, -17], [-35, -41], [-45, -51]].forEach(([a, b2], gi) => { const n = gi === 2 ? 4 : 6; for (let i = 0; i < n; i++) { const kid = (i + gi) % 4 === 0, c = BI.makeChar(lookOf(kid)); const d = a + (b2 - a) * ((i >> 1) / Math.max(1, (n >> 1) - 1 || 1)), off = i % 2 ? 1.7 : -1.7;
+      if (i % 2 === 0) { const fb = new BI.Batch(); fb.cyl(0, .2, 0, .025, .025, 1.9, 0xdddddd, 5); for (let k = 0; k < 6; k++) fb.box(0, 1.95 - .17 * (k + 1), -.3, .03, .17, .6, RB[(k + i) % 6]); const fm = fb.mesh(pmat); fm.position.set(.45, 0, .1); c.group.add(fm); }
+      scene.add(c.group); walkers.push({ c, d, off, ph: Math.random() * 6 }); } });
+  K.parade = parade; K.walkers = walkers;
   let live = true;
   K.crowd = crowd; K.songs = SONGS;
   /* ===== Bewohner: verschiedene Menschen, bunte Haare & Kleider, erzählen kindgerecht ===== */
@@ -130,9 +157,13 @@ BI.createRainbow = function (G) {
     mk(R.x - 12 + 1.7, R.z - 3, { shirt: 0x4cd07d, pants: 0x16335e, hair: 0x222222, skin: 0x8d5a3b, style: 'short', scale: .97 }, 'Papa Jonas', ['Hallo, ich bin Jonas! 👋', 'Paul und ich haben unser Kind adoptiert – wir haben uns riesig gefreut.', 'Kinder brauchen vor allem Liebe, Zeit und ein warmes Bett.'], face(-12, -3));
   };
   /* ===== Funken über dem Brunnen und der Bühne, nur in der Nähe ===== */
-  let tk = 0, ts = 0;
+  let tk = 0, ts = 0, pLive = true;
   K.update = function (dt, t) {
     const dS = Math.hypot(P.x - ST.x, P.z - ST.z), on = dS < 80;
+    const dP = Math.hypot(P.x - R.x, P.z - R.z), onP = dP < 90;
+    if (onP !== pLive) { pLive = onP; for (const v of parade) v.g.visible = onP; for (const w of walkers) w.c.group.visible = onP; }
+    if (onP) { ps += dt * PR.v; for (const v of parade) { const [x, z, h] = pAt(v.d, 0); v.g.position.set(x, 0, z); v.g.rotation.y = h; for (const q of v.dancers) { q.c.dance(t + q.ph, q.st); q.c.group.position.y = (v.dancers.length === 3 ? .85 : 1.2) + Math.abs(Math.sin((t + q.ph) * 8)) * .1; } }
+      for (const w of walkers) { const [x, z, h] = pAt(w.d, w.off); w.c.group.position.set(x, Math.abs(Math.sin(t * 7 + w.ph)) * .05, z); w.c.group.rotation.y = h; w.c.pose(t * 7 + w.ph, .7, false); } }
     if (on !== live) { live = on; for (const q of crowd) q.c.group.visible = on; scr.visible = on; }
     if (on) { const i = ((t / 12) | 0) % SONGS.length; if (i !== song) paint(i); for (const q of crowd) { q.c.dance(t + q.ph, q.st); q.c.group.position.y = q.y + Math.abs(Math.sin((t + q.ph) * 8)) * .14; } ts -= dt; if (ts <= 0 && dS < 50) { ts = 1.1; fx.burst(ST.x + 4, 9, ST.z + (Math.random() - .5) * 12, 4, COLS, 3, 1.6, 22, 2); } }
     if (Math.hypot(P.x - R.x, P.z - R.z) > R.R + 30) return; tk -= dt; if (tk > 0) return; tk = 1.3; fx.burst(R.x, 3.6, R.z, 4, COLS, 2.4, 1.6, 22, 2); };
