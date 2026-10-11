@@ -98,8 +98,8 @@ BI.buildWorld = function (scene) {
     const rad = Math.hypot(px, pz);
     if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
-      else if (W.zotik && zotikWalk(px, pz, r)) { /* Brücke / Zotik – Lunaris */ }
-      else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40 && Math.abs(px - W.zotik.x) < 90) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
+      else if (W.zotik && zotikWalk(px, pz, r, alt)) { /* Brücke / Zotik – Lunaris */ }
+      else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
       else if (W.city && cityWalk(px, pz, r)) { /* Brücke / Stadtinsel */ }
       else if (W.park && parkWalk(px, pz, r)) { /* Brücke / Parkinsel */ }
       else if (W.rainbow && rainbowWalk(px, pz, r)) { /* Brücke / Regenbogeninsel */ }
@@ -123,7 +123,7 @@ BI.buildWorld = function (scene) {
   const baulandWalk = (px, pz, r) => { const C = W.bauland, b = C.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * C.ux + rz * C.uz, sd = -rx * C.uz + rz * C.ux; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3); };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const drachenWalk = (px, pz, r) => { const C = W.drachen, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
-  const zotikWalk = (px, pz, r) => { const C = W.zotik, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
+  const zotikWalk = (px, pz, r, alt) => { const C = W.zotik, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > (alt != null ? 150 : b.z0 - 1) && pz < b.z1 + 1); };
   const dampfWalk = (px, pz, r) => { const C = W.dampf, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const pupsWalk = (px, pz, r) => { const C = W.pups, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const rainbowWalk = (px, pz, r) => { const C = W.rainbow, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
