@@ -2,6 +2,27 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 6 (11.10.2026): Hauptgeschichte
+
+### Neu umgesetzt (M7)
+
+- **„Ein Leben in allen Farben“ (`js/story.js`, `GL.story`)**: Das Regenbogen-Zentrum von Tante Gerda soll einem Investor weichen. Ab Tag 3 spricht Gerda dich an (freiwillig). Fünf Kapitel mit messbaren Zielen: (1) drei Unterstützer (Freundschaft ab 30), (2) 200 € Spenden (bei Gerda oder Benefiz-Tanzabend im Club), (3) Auftritt vor dem Stadtrat (laut / ruhig / Medien, Wirkung hängt von deiner Lage ab), (4) vier Viertel per Tram besuchen und das Straßenfest planen (Musik, Essen oder selbstgemacht), (5) Abstimmung.
+  - **Drei Enden** (Zentrum gerettet, Kompromiss, Zentrum verloren), abhängig von Unterstützern, Spenden, Partner, Auftritt und Fest. Vor der Abstimmung zeigt Gerda deine Chancen, du kannst weiter vorbereiten. Das Ende gibt Belohnung und dauerhaft Stimmungsbonus (+4 / +2 / 0).
+  - **Freies Weiterspielen**: Nach dem Ende gibt es täglich einen Kaffee mit Gerda (Kontakte +12, Stress −8). Handy-App „Geschichte“ zeigt Kapitel, Ziele und Entscheidungen.
+- Neue Ereignisse `district` (Tram-Fahrt) und `danced` (Tanzabend). Spielstand: `story`.
+
+### Tests Durchgang 6
+
+`gay-life/tests/e2e.mjs`: **197 Prüfungen, alle bestanden**, keine Konsolenfehler. Neu: Einstieg erst ab Tag 3, alle fünf Kapitel mit Zielprüfung, Spenden, Benefiz, Entscheidungen, Tram-Besuche, Abstimmung mit Punktzahl, Ende Kompromiss, Stimmungsbonus, Kaffee-Limit, Geschichte-App, Speichern/Laden. Die Enden „gerettet“ und „verloren“ sind über die Punktzahl berechnet, aber nicht einzeln durchgespielt.
+
+Einschränkungen: Die Geschichte wird in Dialogen und Menüs erzählt, ohne Filmsequenzen oder eigene Orte; Wortlaut und Balance nicht von Menschen probegespielt. Nur eine Hauptgeschichte, keine zweite Handlungslinie.
+
+### Weiterhin offen
+
+M2-Rest (Wetter, Bewohner), M4-Rest, M5-Rest, M8, M9, M10.
+
+---
+
 ## Stand nach Durchgang 5 (11.10.2026): Rainbow City – sieben Viertel
 
 ### Neu umgesetzt (M2 weitgehend)

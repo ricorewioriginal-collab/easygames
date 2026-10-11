@@ -32,6 +32,7 @@ Klassische Skripte ohne Build-Schritt, genau ein globaler Namensraum `window.GL`
 | `js/messages.js` | Nachrichten mit Antworten und Verzögerung |
 | `js/datingapp.js` | Handy-Apps Nachrichten, Dating, Kalender |
 | `js/districts.js` | Sieben weitere Viertel, Tram, Orte mit Wirkung, Passanten |
+| `js/story.js` | Hauptgeschichte „Ein Leben in allen Farben“ mit Kapiteln und drei Enden |
 | `js/phone.js` | Handy mit Apps, Grafikqualität |
 | `js/main.js` | Start |
 
@@ -81,7 +82,7 @@ settings: { q }   // -1 automatisch, 0 niedrig, 1 mittel, 2 hoch
 | M4 | Nachtleben: Club-Innenräume mit eigenen Musikstilen (selbst erzeugt), Tanzen mit Emotes, Bar-Bestellungen, Karaoke/Tanzwettbewerb in der Welt, Themenpartys, Pride-Events | teilweise (Durchgang 4: Themenabende, Tanzen, Getränke; Innenräume, Musik, Events offen) |
 | M5 | Karriere: weitere Jobs mit eigenen Abläufen (DJ, Verkäufer, Fitnesstrainer, Fotograf, Stylist, Eventmanager, Performer), Beförderungen | teilweise (Durchgang 4: Verkäufer, Fitnesstrainer, Fotograf, DJ mit Stufen) |
 | M6 | Wohnen: Möbel kaufen und platzieren, Miete, Gäste und Dates zu Hause, Zusammenziehen | erledigt (Durchgang 3; größere Wohnungen offen) |
-| M7 | Hauptgeschichte „Ein Leben in allen Farben“: Community-Zentrum in Gefahr, mehrere Kapitel, Entscheidungen mit Folgen, mehrere Enden, freies Weiterspielen | offen |
+| M7 | Hauptgeschichte „Ein Leben in allen Farben“: Community-Zentrum in Gefahr, mehrere Kapitel, Entscheidungen mit Folgen, mehrere Enden, freies Weiterspielen | erledigt (Durchgang 6: fünf Kapitel, drei Enden, Weiterspielen) |
 | M8 | Mehrspieler-Ausbau: gemeinsame Clubbesuche, Tanzen, Besuche in der Wohnung, Gruppenfotos (bestehende Prüfungen beibehalten) | offen |
 | M9 | Charaktereditor: 3D-Vorschau, Körperbau, Größe, Outfits speichern, Tattoos | offen |
 | M10 | Politur: Animationen, Audio, Performance (LOD), Abschlussprüfung auf echten Geräten | offen |

@@ -576,6 +576,68 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ctx.close();
 }
 
+/* ---------- 8. Hauptgeschichte: Das Regenbogen-Zentrum ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const dlg = async () => { for (let i = 0; i < 16; i++) { if (!(await ev(page, () => !!GL.W.dlg))) break; await page.click('#dn'); await page.waitForTimeout(50); } await page.waitForTimeout(260); };
+  const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
+  const menuItem = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  const talk = async () => { await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'gerda'); GL.emit('talkMenu', n, GL.core.talkBase); }); await page.waitForTimeout(80); };
+  const go = async id => { const r = await ev(page, id => GL.dist.go(id), id); if (r) await waitFade(page); return r; };
+  await ev(page, () => { GL.S.life.money = 600; GL.S.life.day = 2; });
+  ok(await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'gerda'); return GL.emit('talkMenu', n, GL.core.talkBase) === undefined && GL.S.story.ch === 0; }), 'Vor Tag 3 beginnt die Geschichte nicht');
+  await ev(page, () => { GL.S.life.day = 3; });
+  ok(/beginnt, wenn/.test(await ev(page, () => { GL.phone.open('story'); return document.querySelector('#phone .pbody').textContent; })), 'Geschichte-App erklärt den Einstieg'); await ev(page, () => GL.phone.close());
+  // Kapitel 0 → 1
+  await talk(); await dlg(); await menuItem('Ja, ich helfe dir'); await dlg(); await closeMenu();
+  ok(await ev(page, () => GL.S.story.ch === 1), 'Gerda bittet um Hilfe, Kapitel 1 beginnt');
+  // Kapitel 1: drei Unterstützer
+  await talk(); await menuItem('Kapitel 1'); await dlg(); await closeMenu();
+  ok(await ev(page, () => GL.S.story.ch === 1), 'Ohne Unterstützer bleibt Kapitel 1 offen');
+  await ev(page, () => { ['jonas', 'mehmet', 'luca'].forEach(id => { GL.dating.rel(id).f = 40; }); });
+  const g0 = await ev(page, () => GL.S.glitzer);
+  await talk(); await menuItem('Kapitel 1'); await dlg(); await closeMenu();
+  ok(await ev(page, g => GL.S.story.ch === 2 && GL.S.glitzer === g + 40, g0), 'Mit drei Freunden: Kapitel 2, +40 Glitzer');
+  // Kapitel 2: Spenden und Benefiz
+  await ev(page, () => { GL.night.state().paid = 1; GL.emit('danced', 5); });
+  ok(await ev(page, () => GL.S.story.don === 40), 'Benefiz-Tanzabend: Gäste spenden (+40 €)');
+  await talk(); await page.click('#maps .row2:has(b:text-is("Spenden"))'); await page.waitForTimeout(80); await menuItem('100 € spenden'); await menuItem('100 € spenden'); await closeMenu();
+  s = await ev(page, () => ({ d: GL.S.story.don, m: GL.S.life.money }));
+  ok(s.d === 240 && s.m === 400, 'Spenden werden vom Konto abgebucht und gezählt');
+  await talk(); await menuItem('Kapitel 2'); await dlg(); await closeMenu();
+  ok(await ev(page, () => GL.S.story.ch === 3 && GL.S.life.money === 440), 'Spendenziel erreicht: Kapitel 3, Dank 40 €');
+  // Kapitel 3: Entscheidung
+  await talk(); await menuItem('Kapitel 3'); await menuItem('Laut und sichtbar'); await dlg(); await closeMenu();
+  ok(await ev(page, () => GL.S.story.ch === 4 && GL.S.story.plan === 'loud' && GL.S.story.pts.plan === 1), 'Entscheidung „laut“ (3 Unterstützer: Wirkung 1)');
+  // Kapitel 4: Viertel besuchen, Fest
+  await talk(); await menuItem('Kapitel 4'); await dlg(); await closeMenu();
+  ok(await ev(page, () => GL.S.story.ch === 4 && !GL.S.story.fest), 'Fest erst nach Besuch mehrerer Viertel');
+  for (const id of ['beach', 'down', 'love', 'coast']) await go(id);
+  await go('kiez');
+  ok(await ev(page, () => GL.story.vis() === 4), 'Besuchte Viertel werden gezählt');
+  await ev(page, () => { GL.S.life.money = 600; });
+  await talk(); await menuItem('Kapitel 4'); await menuItem('Gemeinsames Essen'); await dlg(); await waitFade(page).catch(() => {}); await closeMenu();
+  ok(await ev(page, () => GL.S.story.ch === 5 && GL.S.story.fest === 'essen' && GL.S.life.money <= 600 - 30 + 30), 'Straßenfest geplant (30 €), Kapitel 5');
+  // Kapitel 5: Abstimmung
+  await talk(); await menuItem('Kapitel 5');
+  ok(await ev(page, () => /Chancen|Stand deiner Vorbereitung/.test(document.getElementById('maps').textContent) && GL.story.score() === 8), 'Abstimmung zeigt die Chancen (Punktzahl 8)');
+  const g1 = await ev(page, () => GL.S.glitzer);
+  await menuItem('Zur Abstimmung gehen'); await waitFade(page); await dlg(); await closeMenu();
+  ok(await ev(page, g => GL.S.story.ch === 6 && GL.S.story.end === 'compromise' && GL.S.glitzer === g + 150, g1), 'Ende „Kompromiss“: Kapitel 6, +150 Glitzer');
+  ok(await ev(page, () => GL.story.bonus() === 2), 'Das Ende wirkt dauerhaft auf die Stimmung (+2)');
+  // Danach: weiterspielen
+  await talk(); await menuItem('Kaffee und Plausch'); await waitFade(page);
+  ok(await ev(page, () => GL.S.story.tea === GL.S.life.day), 'Nach dem Ende: Kaffee mit Gerda');
+  await talk(); ok(await page.evaluate(() => [...document.querySelectorAll('#maps .row2')].some(r => /Kaffee und Plausch/.test(r.textContent) && r.disabled)), 'Kaffee nur einmal pro Tag'); await closeMenu();
+  ok(await ev(page, () => { GL.phone.open('story'); return /Ende/.test(document.querySelector('#phone .pbody').textContent); }), 'Geschichte-App zeigt das Ende'); await ev(page, () => GL.phone.close());
+  // anderes Ende: wenig Vorbereitung
+  ok(await ev(page, () => { GL.S.story.pts = { plan: 1, fest: 1 }; GL.S.story.don = 0; Object.keys(GL.S.rel).forEach(k => { GL.S.rel[k].f = 0; GL.S.rel[k].st = ''; }); return GL.story.score() < 7; }), 'Ohne Vorbereitung wäre die Punktzahl zu niedrig für ein gutes Ende');
+  await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
+  ok(await ev(page, () => GL.S.story.ch === 6 && GL.S.story.end === 'compromise' && GL.S.story.plan === 'loud'), 'Geschichte bleibt nach Neuladen erhalten');
+  await ctx.close();
+}
+
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));
 await browser.close();
 console.log(fails ? `\n${fails} Prüfung(en) fehlgeschlagen` : '\nAlle Prüfungen bestanden');

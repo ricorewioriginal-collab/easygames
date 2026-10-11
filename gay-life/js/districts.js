@@ -124,7 +124,7 @@
     function sw() {
       if (GL.home.inside()) GL.home.leave(true);
       if (id === 'kiez') toKiez(W); else enter(by(id), W);
-      if (!instant) GL.life.advance(20); GL.core.sfx('ok'); GL.save();
+      if (!instant) GL.life.advance(20); GL.core.sfx('ok'); GL.save(); GL.emit('district', id);
     }
     if (instant) sw(); else GL.ui.fade('Mit der Tram unterwegs … 🚋', sw, 700);
     return true;

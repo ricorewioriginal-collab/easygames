@@ -38,7 +38,7 @@
     }
     function finish() {
       o.danced++; var soc = Math.round((8 + pts * 3) * t.mul);
-      GL.life.change({ social: soc, stress: -(4 + pts * 2), hygiene: -8 }, pts >= 5 ? 6 : pts >= 3 ? 3 : 0); GL.core.gain(pts); GL.save();
+      GL.life.change({ social: soc, stress: -(4 + pts * 2), hygiene: -8 }, pts >= 5 ? 6 : pts >= 3 ? 3 : 0); GL.core.gain(pts); GL.save(); GL.emit('danced', pts);
       GL.ui.menu('Was für ein Abend', pts >= 5 ? 'Die Tanzfläche gehört dir. Alle wollen mit dir tanzen.' : pts >= 3 ? 'Guter Groove. Du hast viel gelacht.' : 'Nicht jede Bewegung passte, aber der Spaß war da.' + '<br><small>Kontakte +' + soc + ' · Stress −' + (4 + pts * 2) + ' · Hygiene −8</small>', [{ e: '👍', t: 'Weiter', fn: menu }], 'club');
     }
     round();
