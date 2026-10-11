@@ -33,7 +33,7 @@ BI.createWeather = function (G) {
   K.update = function (dt, t) {
     timer -= dt; if (timer <= 0 && !K.forced) K.pick();
     K.wx += (target - K.wx) * Math.min(1, dt * .35);
-    const precip = (K.kind === 'rain' || K.kind === 'snow') ? K.wx : 0, prev = K.rainy; K.rainy += (precip - K.rainy) * Math.min(1, dt * .8);
+    const precip = !K.indoor && (K.kind === 'rain' || K.kind === 'snow') ? K.wx : 0, prev = K.rainy; K.rainy += (precip - K.rainy) * Math.min(1, dt * .8);
     pts.visible = K.rainy > .05; A.rain && A.rain(K.kind === 'rain' && K.rainy > .3);
     if (pts.visible) {
       const snow = K.kind === 'snow', px = camera.position.x, py = camera.position.y, pz = camera.position.z, v = snow ? 2.2 : 24; pm.size = snow ? 4 : 2.2; pm.opacity = .75 * K.rainy; pm.color.setHex(snow ? 0xffffff : 0xbfe3ff);

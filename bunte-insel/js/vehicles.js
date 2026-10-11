@@ -22,6 +22,7 @@ BI.VEH = {
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
   drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
+  gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -71,6 +72,11 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(0, 1.5, -.15, 1.3, .12, .5, DARK); b.box(-.42, 1.62, -.15, .42, .18, .42, 0xff2a2a); b.box(0, 1.62, -.15, .42, .18, .42, 0xffa31a); b.box(.42, 1.62, -.15, .42, .18, .42, 0x2a6aff);
       for (const s of [-1, 1]) b.sph(s * .98, .85, -.5, .2, 0xffe14a, 1, .3, 1, 1);
       o.beacons = [[-.42, 1.82, -.15, 0xff2020], [0, 1.82, -.15, 0xffa020], [.42, 1.82, -.15, 0x2060ff]]; return o;
+    },
+    gleiter(b) { // Aqua-Gleiter (Atlantis): schwebende Linse mit Glaskuppel, leuchtendem Schwebering und Heckflossen
+      b.sph(0, .7, 0, 1.25, 0xeaf6fb, 1, .95, .42, 1.7); b.sph(0, 1.0, .35, .8, 0x7fe8ff, 1, .85, .6, 1.1); b.box(0, .55, -1.9, .12, .9, .9, 0x35d6e0); for (const x of [-.95, .95]) b.box(x, .45, -.6, .12, .35, 1.4, 0x35d6e0, 0, 0, x > 0 ? -.25 : .25);
+      b.cyl(0, .06, 0, 1.15, 1.15, .1, 0x35e0ff, 18); b.cyl(0, .02, 0, 1.0, 1.0, .06, 0xffffff, 18);
+      return { wheels: [], head: [[-.5, .55, 2.0], [.5, .55, 2.0]], tail: [[-.4, .6, -2.05], [.4, .6, -2.05]] };
     },
     ambulance(b) {
       b.box(0, .45, 0, 2.1, 1.9, 5.0, 0xfafcff); b.box(0, .85, 0, 2.14, .26, 4.9, 0xe53b3b); b.box(0, 1.1, 2.51, 1.8, .7, .05, GLASS);
@@ -294,6 +300,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         if (fx && this.y < 9 && this.rotorW > 18 && Math.random() < dt * 30) { const a = Math.random() * Math.PI * 2; fx.emit(this.x + Math.cos(a) * 2, .25 - 0, this.z + Math.sin(a) * 2, Math.cos(a) * 5, .6, Math.sin(a) * 5, .8, 34, .85, .8, .7, 0, .5); }
         return;
       }
+      if (sp.hover) this.tilt.position.y = .3 + Math.sin(t * 3 + this.x * .2) * .07;
       const ratio = BI.clamp(this.v / sp.max, -1, 1.4), lean = this.steerCur * Math.abs(ratio);
       this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, this.lean ? lean * .5 : -lean * .06, 8, dt);
       const wh = sp.wheelie && this.driver && this.turbo && this.v > 4; /* Wheelie beim Turbo: Vorderräder hoch */
