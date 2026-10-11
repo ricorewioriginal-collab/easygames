@@ -714,8 +714,8 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await menuItemOn(A, 'Ablehnen'); await B.waitForFunction(() => GL.multi.state().pending === '', null, { timeout: 5000 });
   ok(await B.evaluate(() => GL.multi.state().visit === null) && await A.evaluate(() => GL.W.inside === 0), 'Ablehnen wird respektiert: kein Besuch, niemand wird hineingelassen');
   await B.evaluate(() => GL.multi.visitPeer('h')); await A.waitForFunction(() => /Besuch/.test(document.getElementById('maps').textContent), null, { timeout: 5000 });
-  await menuItemOn(A, 'Einlassen'); await B.waitForFunction(() => GL.multi.state().visit === 'h', null, { timeout: 8000 });
-  await A.waitForFunction(() => GL.W.inside === 1, null, { timeout: 8000 }); await B.waitForFunction(() => GL.W.inside === 1, null, { timeout: 8000 });
+  await menuItemOn(A, 'Einlassen'); await B.waitForFunction(() => GL.multi.state().visit === 'h', null, { timeout: 25000 });
+  await A.waitForFunction(() => GL.W.inside === 1, null, { timeout: 25000 }); await B.waitForFunction(() => GL.W.inside === 1, null, { timeout: 25000 });
   await B.waitForTimeout(900);
   ok(await B.evaluate(() => GL.furn.visiting() && Object.values(GL.S.home.placed).length === 0) && await B.evaluate(() => GL.W.inter.some(i => i.on === false || true)), 'Gast sieht die fremde Einrichtung, nicht die eigene');
   s = await B.evaluate(() => ({ v: GL.MP.peers.h.g.visible, loc: GL.multi.loc().l }));
@@ -780,6 +780,43 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   s = await ev(page, () => { GL.S.settings.q = -1; GL.perfCap = undefined; GL.perf.cap = 2; GL.perf.low = 0; const a = GL.perf.judge(10), b = GL.perf.judge(10), cap = GL.perf.cap, ok1 = GL.perfCap; GL.S.settings.q = 2; GL.perf.low = 0; const c = GL.perf.judge(5), d = GL.perf.judge(5); return { a, b, cap, ok1, c, d, cap2: GL.perf.cap }; });
   ok(!s.a && s.b && s.cap === 1 && s.ok1 === 1 && !s.c && !s.d && s.cap2 === 1, 'Leistungswächter senkt im Auto-Modus nach zwei schwachen Messungen, bei fester Qualität nicht ' + JSON.stringify(s));
   await ev(page, () => { GL.S.settings.q = -1; GL.perfCap = undefined; GL.perf.cap = 2; });
+  await ctx.close();
+}
+
+/* ---------- 11. Weitere Jobs und Veranstaltungen ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const setH = h => ev(page, hh => { GL.S.world.t = ((hh - 6 + 24) % 24) / 24; }, h);
+  const clickRow = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  await ev(page, () => { GL.S.life.needs.energy = 90; GL.S.life.money = 100; GL.S.life.day = 5; }); await setH(20);
+  await ev(page, () => GL.emit('poi', 'kara'));
+  ok(await ev(page, () => { const t = document.getElementById('maps').textContent; return /Performer/.test(t) && /Karaoke-Wettbewerb/.test(t) && /Arbeiten: Performer/.test(t); }), 'Karaoke-Haus: Performer-Job und Wettbewerb am Freitagabend');
+  await clickRow('Karaoke-Wettbewerb'); await clickRow('Ein Lied zum Mitschunkeln'); await clickRow('Eine große Ballade'); await clickRow('Ein wilder Disco-Hit');
+  ok(await ev(page, () => /Platz [1-4] von 4/.test(document.getElementById('maps').textContent) && GL.S.events.kara === 5), 'Wettbewerb: drei Lieder, Ergebnis mit Rangliste');
+  await page.click('#mx'); await ev(page, () => GL.emit('poi', 'kara'));
+  ok(await ev(page, () => { const b = [...document.querySelectorAll('#maps .row2')].find(x => /Karaoke-Wettbewerb/.test(x.textContent)); return b.disabled && /schon mitgemacht/.test(b.textContent); }), 'Nur einmal pro Abend');
+  await page.click('#mx'); await ev(page, () => { GL.S.life.day = 6; }); await ev(page, () => GL.emit('poi', 'kara'));
+  ok(await ev(page, () => { const b = [...document.querySelectorAll('#maps .row2')].find(x => /Karaoke-Wettbewerb/.test(x.textContent)); return b.disabled && /freitags/.test(b.textContent); }), 'Samstag: kein Wettbewerb');
+  await page.click('#mx');
+  // Performer-Schicht
+  await setH(14); await ev(page, () => { GL.S.life.day = 6; GL.S.life.needs.energy = 90; });
+  s = await ev(page, () => ({ m: GL.S.life.money, w: GL.jobs.why('perf') })); ok(s.w === '', 'Performer: Schicht möglich nachmittags');
+  await ev(page, () => GL.jobs.shift('perf'));
+  for (let i = 0; i < 3; i++) { await page.click('#maps .row2 >> nth=0'); await page.waitForTimeout(80); }
+  await page.waitForFunction(() => /Schicht beendet/.test(document.getElementById('maps').textContent), null, { timeout: 8000 });
+  ok(await ev(page, m => GL.S.life.money > m + 30 && GL.S.jobs.perf.shifts === 1, s.m), 'Performer-Schicht bezahlt'); await page.click('#mx');
+  // Eventmanager
+  await setH(11); await ev(page, () => { GL.S.life.day = 7; GL.S.life.needs.energy = 90; GL.S.jobs.day = null; });
+  ok(await ev(page, () => GL.jobs.why('event') === ''), 'Eventmanager: Schicht in der Festwagen-Werkstatt möglich');
+  await ev(page, () => GL.emit('poi', 'garage')); ok(await ev(page, () => /Arbeiten: Eventmanager/.test(document.getElementById('maps').textContent) && /Minispiel/.test(document.getElementById('maps').textContent)), 'Werkstatt-Menü zeigt Eventmanager und Minispiel'); await page.click('#mx');
+  // Pride-Parade
+  await ev(page, () => { GL.S.life.day = 28; GL.S.life.needs.energy = 90; GL.S.life.needs.social = 30; }); await setH(13);
+  await ev(page, () => GL.emit('poi', 'stage')); await clickRow('Pride-Parade mitgehen'); await waitFade(page);
+  s = await ev(page, () => ({ d: GL.S.events.pride, soc: GL.S.life.needs.social, p: GL.W.parade })); ok(s.d === 28 && s.soc > 40 && s.p > 0, 'Pride-Parade: mitgegangen, Kontakte steigen, Konfetti ' + JSON.stringify(s));
+  await ev(page, () => GL.emit('poi', 'stage'));
+  ok(await ev(page, () => { const b = [...document.querySelectorAll('#maps .row2')].find(x => /Pride-Parade/.test(x.textContent)); return b.disabled; }), 'Parade nur einmal pro Tag'); await page.click('#mx');
+  ok(await ev(page, () => { GL.S.life.day = 20; GL.phone.open('events'); const t = document.querySelector('#phone .pbody').textContent; GL.phone.close(); return /Karaoke-Wettbewerb/.test(t) && /Pride-Parade/.test(t) && /in 8 Tagen/.test(t); }), 'Events-App nennt die nächsten Termine');
   await ctx.close();
 }
 

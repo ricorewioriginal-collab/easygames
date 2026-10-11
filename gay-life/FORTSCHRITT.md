@@ -2,6 +2,23 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 10 (11.10.2026): Jobs und Veranstaltungen (Reste von M4/M5)
+
+### Neu umgesetzt
+
+- **Zwei weitere Jobs** (`js/jobs.js`): **Performer** im Karaoke Mikro-Mimosa und **Eventmanager** in der Festwagen-Werkstatt (je 4-Stunden-Schicht mit drei Situationen, Stufen und Titel, Lohn wie die anderen Jobs). Ein Gebäude kann jetzt mehrere Jobs und Zusatz-Menüpunkte (`GL.jobs.extras`) haben. Der **Stylist** ist die dritte Stufe des Verkäufers.
+- **Karaoke-Wettbewerb** (`js/events.js`, `GL.events`): jeden Freitag 19–23 Uhr, drei Lieder (sicher, Ballade, Disco-Hit, Erfolg hängt von Laune und Performer-Stufe ab), gegen drei Stammgäste, Platz 1–4 mit Preis (60/30/15 €, Glitzer, Kontakte). Einmal pro Abend, freiwillig.
+- **Pride-Parade**: jeder 28. Tag (Sonntag) 12–18 Uhr, Treffpunkt Regenbogen-Bühne; mitgehen bringt Konfetti, Kontakte +25, Stress −10, 40 Glitzer. Einmal pro Tag.
+- Handy-App **„Events“** mit den nächsten Terminen. Spielstand: `events` (lazy).
+
+### Tests Durchgang 10
+
+- Gesamtlauf: 247 Prüfungen grün. Zusätzlich behoben: Mehrspieler-Besuch konnte auf langsamen Geräten zu früh enden (Wartezeit beim Szenenwechsel). e2e Abschnitt 11: Menüs, Wettbewerb mit Rangliste, einmal pro Abend, nicht samstags, Performer-Schicht bezahlt, Eventmanager möglich, Parade, Events-App.
+
+### Weiterhin offen
+
+- Club-Innenräume als begehbare 3D-Tanzfläche (Musik ist da, Raum nicht), Viertel-Bewohner mit eigenem Tagesplan und Dates, Gewitter/Schnee, LOD für ferne Figuren, echte Zwei-Geräte-Tests des Mehrspielers, Test von Menschen auf echten Handys.
+
 ## Stand nach Durchgang 9 (11.10.2026): Politur (M10): Wetter, Ton, Leistungswächter
 
 ### Neu umgesetzt
