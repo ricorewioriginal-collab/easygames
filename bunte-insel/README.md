@@ -241,7 +241,7 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 
 ### 📻 Funkwelle – die Radio-Welt (13 Sender mit Live-Stream)
 
-**Eingang:** Funk-Tor (Antennenring) im Nordosten der Hauptinsel (🧭 → Funkwelle). Weit weg liegt eine Nacht-Insel mit Funkturm; im Kreis darum **13 Sender-Plätze**, je mit
+**Lage:** große Insel im **Südosten der Hauptinsel**, erreichbar über eine **Brücke** (oder 🧭 → Funkwelle) – wie die anderen Welten, ohne Portal, mit normalem Tag-und-Nacht-Himmel. Im Kreis um den Funkturm liegen **13 Sender-Plätze**, je mit
 - **Logo-Statue** (Logo des Senders auf schwingender Tafel, Sockel, Lichtsäule),
 - **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** – die TV-Seite aus `ricorewi-radio` (`https://ricorewi-radio.de/visual-radio-tv.html?station=<sender>&app=1`, Cover, Songtext, Musikvideo) als Fenster; der Ton kommt vom Radio der Spielwelt; „im neuen Tab“ als Ausweg),
 - **Radio**: E = Sender einschalten (Stream `https://stream.laut.fm/<sender>`), nochmal E = aus. Es läuft immer nur ein Stream; die Lautstärke hängt von der Entfernung zum Radio ab, außerhalb des Bereichs wird es leise und der Stream pausiert (spart Daten), beim Verlassen der Welt stoppt er. Die Spielmusik wird beim Radiohören leiser.
@@ -253,6 +253,12 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 - **Regenbogen-Brücke:** Der Zaun des Streichelzoos versperrte das Brückenende – das Eselgehege hat jetzt ein Tor zur Brücke.
 - **Dampfer-Hafen:** Der Dampfer ist begehbar (Gangway vom Kai, Deck, Weg um die Aufbauten).
 - **Doppelsprung für alle:** zweimal Springen drücken, auch im Lauf; keine Zubehör-Pflicht mehr.
+
+### 🚚 Umziehen im Baumenü + Fahrzeuge für jedes Haus
+
+- **Umziehen:** Im Baumenü (B) gibt es den Reiter **🚚 Umzug**. „🏡 Wohnung hierher“ stellt deine Wohnung an den Cursor (die Tür steht am Cursor; das Vorschaubild zeigt den Grundriss, rot = kein Platz, grün = frei). Die Wohnung hat dort dieselben Zimmer, Eltern, Bett, Kleiderschrank und Spielkiste; Zuhause (Start, 🧭 „Meine Wohnung“, Haustier, Pappnase) zieht mit. „🏢 Zurück ins Haus Sonnenschein“ stellt alles wieder zurück. Gespeichert wird nur die Lage; andere Spieler sehen weiter dein altes Zuhause. Platz gibt es auf freien Flächen der Hauptinsel und im Bauland (nicht auf Straßen, Gleisen, Wasser oder zwischen Gebäuden).
+- **Fahrzeuge:** Zu jedem Haus gehören eine **Limousine** (lang, glänzend), ein **Rutschauto** (Kinder-Flitzer) und ein **Hubschrauber**. Beim Haus Sonnenschein stehen Limousine und Rutschauto hinter den Gleisen, der Hubschrauber hinter dem Haus. Lässt du ein Fahrzeug stehen und bist über 14 m weg, rollt es nach 20 Sekunden von selbst zurück vors Haus (nach 90 Sekunden auch, wenn du näher bist). Beim Umziehen kommen deine Fahrzeuge mit.
+- Dateien: `js/home.js`, `js/world.js` (`BI.buildFlat`, `BI.homeSpawns`), `js/build.js` (Reiter Umzug), `js/vehicles.js` (Limousine, Rutschauto), `js/main.js` (Rückkehr).
 
 ### 🎤 Popstar Kay und 🦊 Zotik (neue Vorlagen, für alle wählbar)
 

@@ -28,18 +28,15 @@
   const tmpC = new THREE.Color(), tmpD = new THREE.Color();
   let night = save.night ? 1 : 0, nightT = night;
   let atlIn = false; /* unter der Erde (Atlantis) */
-  let radIn = false; /* Funkwelle (Radio-Insel mit Nachthimmel) */
   let wxK = 0; const GREY = new THREE.Color(0x9aa6b4);
   /* Wetter-Dämpfung: Himmel, Nebel und Licht werden grauer (billig, ohne den Himmel neu zu färben) */
   function applyWx() {
     sky.material.color.setScalar(1 - .38 * wxK); mix2(DAY.fog, NIGHT.fog, scene.fog.color); scene.fog.color.lerp(tmpC.copy(GREY).multiplyScalar(1 - night * .8), wxK * .6); scene.background = scene.fog.color;
     hemi.intensity = BI.lerp(.85, .62, night) * (1 - .22 * wxK); sun.intensity = BI.lerp(.75, .4, night) * (1 - .6 * wxK);
-    if (atlIn) applyAtl(); else if (radIn) applyRad();
+    if (atlIn) applyAtl();
   }
   /* Atlantis: Höhle statt Himmel – Hauptwelt-Meshes aus (spart GPU), Nebel/Licht bläulich, kein Wetter */
   function applyAtl() { scene.fog.color.setHex(0x06304a); scene.fog.near = 50; scene.fog.far = 380; scene.background = scene.fog.color; hemi.color.setHex(0xa6dcf0); hemi.groundColor.setHex(0x1b4a66); hemi.intensity = .68; sun.color.setHex(0x9fd8ff); sun.intensity = .3; }
-  function applyRad() { scene.fog.color.setHex(0x0c1550); scene.fog.near = 110; scene.fog.far = 600; scene.background = scene.fog.color; hemi.color.setHex(0x9fb4ff); hemi.groundColor.setHex(0x2a2f6a); hemi.intensity = .85; sun.color.setHex(0xaab8ff); sun.intensity = .45; }
-  function setRadMood(on) { radIn = on; sky.visible = starPts.visible = !on; if (W.clouds) W.clouds.visible = !on; weather.indoor = on; for (const m of W.bigMeshes) m.visible = !on; document.body.classList.toggle('underground', on); if (on) applyRad(); else { scene.fog.near = 130; scene.fog.far = 520; applyNight(); } }
   function setAtlMood(on) { atlIn = on; sky.visible = starPts.visible = !on; if (W.clouds) W.clouds.visible = !on; weather.indoor = on; for (const m of W.bigMeshes) m.visible = !on; document.body.classList.toggle('underground', on); if (on) applyAtl(); else { scene.fog.near = 130; scene.fog.far = 520; applyNight(); } }
   const mix2 = (a, b, out) => out.copy(a).lerp(b, night);
   function applyNight() {
@@ -66,7 +63,8 @@
   function addVeh(type, x, z, h, opts) {
     const v = new BI.Vehicle(type, x, z, h, opts); const p = {}; W.resolve(x, z, v.r + .3, p); v.setPose(p.x, p.z, h); v.visual(0, 0); scene.add(v.root); vehicles.push(v); return v;
   }
-  for (const s of W.vehicleSpawns) addVeh(s.type, s.x, s.z, s.h);
+  const homeVeh = []; /* Fahrzeuge der Häuser: kehren nach der Fahrt selbstständig heim */
+  for (const s of W.vehicleSpawns) { const v = addVeh(s.type, s.x, s.z, s.h, s.color ? { color: s.color } : undefined); if (s.home != null) { v.home = { x: v.x, z: v.z, h: s.h, slot: s.home }; v.idleT = 0; homeVeh.push(v); } }
   addVeh('taxi', 9, -24, Math.PI); addVeh('car', 12, -30, Math.PI, { color: 0xe8453c }); addVeh('car', -9, 24, 0, { color: 0x3f8cff });
   addVeh('ice', -9, -36, Math.PI); addVeh('bus', 31, 9, Math.PI / 2); addVeh('bike', 14, -9, .5, { color: 0xff8a1f }); addVeh('bike', 150, 14, 1.2, { color: 0xff5a9a }); addVeh('bicycle', 7, 36, .4, { color: 0x3f8cff }); addVeh('scooter', -7, 36, -.4, { color: 0xff5a9a }); addVeh('bicycle', 80, 36, 2.2, { color: 0x4cd07d });
   addVeh('car', 150, -12, 1.6, { color: 0x4cd07d }); addVeh('rollator', 11, 33, .4); addVeh('rollator', 238, 28, 1.2, { color: 0x3fa0ff });
@@ -200,6 +198,15 @@
     }
     if (v.isTrain) train.driven = true;
     offerMission(); updateButtons(true);
+  }
+  /* Fahrzeuge der Häuser (Limousine, Rutschauto, Hubschrauber): stehen sie 20 s verlassen und du bist weiter als 14 m weg, rollen sie zurück zum Haus */
+  function updateHomeVeh(dt) {
+    for (const v of homeVeh) {
+      const hm = v.home; if (!hm) continue;
+      if (P.veh === v || v.driver || Math.hypot(v.x - hm.x, v.z - hm.z) < 1.5) { v.idleT = 0; continue; }
+      v.idleT += dt; const dp = Math.hypot(P.x - v.x, P.z - v.z);
+      if ((v.idleT > 20 && dp > 14) || (v.idleT > 90 && dp > 6)) { fx.burst(v.x, 1.2, v.z, 10, [BI.C.white, BI.C.gold], 3, .8, 26, 3); v.v = 0; v.y = 0; v.vy = 0; v.setPose(hm.x, hm.z, hm.h); v.idleT = 0; fx.burst(hm.x, 1.2, hm.z, 10, [BI.C.white, BI.C.pink], 3, .8, 26, 3); }
+    }
   }
   function leave() {
     const v = P.veh; if (!v) return;
@@ -506,7 +513,7 @@
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
   function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } setStick(0, 0); stick.id = drag.id = null; sKnob.style.transform = 'translate(0,0)'; }
   function startPlay() {
-    A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; { const f = flats[mySlot()]; P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.vy = 0; } /* Start: vor der eigenen Haustür */ cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
+    A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; { const f = myFlat(); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.vy = 0; } /* Start: vor der eigenen Haustür */ cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     setTimeout(() => { if (state === 'play' && !kids.open) kids.daily(); }, 3500);
     story.start();
     if (!save.intro) say(isTouch() ? 'Links wischen = laufen · rechts wischen = Kamera drehen' : 'WASD/Pfeile = laufen · E = einsteigen · Maus ziehen = Kamera', 5200);
@@ -938,7 +945,7 @@
     else { const m = poster.userData.pl.material; if (m.map) m.map.dispose(); m.map = tex; m.needsUpdate = true; }
     placePoster();
   }
-  function placePoster() { if (!poster) return; const f = flats[mySlot()]; poster.position.set(f.cx - .6, 1.9, f.zB + .25); }
+  function placePoster() { if (!poster) return; const f = myFlat(); poster.position.set(f.cx - .6, 1.9, f.zB + .25); }
   kids.onArt = () => kids.loadArt(setPoster); kids.loadArt(setPoster);
   function gameStar() { if (gm && gm.k === 'stars') { const me = selfId(); gm.cnt[me] = (gm.cnt[me] || 0) + 1; net.send({ t: 'g', op: 'cnt', k: 'stars', n: gm.cnt[me] }); } }
 
@@ -949,30 +956,35 @@
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, h, 1); return sp;
   }
   const PARENT = [[{ shirt: 0xff6fae, pants: 0x7a5ce0, hair: 0x6b4423, style: 'ponytail', dress: true, name: 'Mama Anna' }, { shirt: 0x4da3ff, pants: 0x3d4a7a, hair: 0x222222, name: 'Papa Tom', hat: 'none' }], [{ shirt: 0xffd23f, pants: 0x3d4a7a, hair: 0xd9a441, style: 'long', dress: true, name: 'Mama Lena', skin: 0xf3c9a0 }, { shirt: 0x4cd07d, pants: 0x5a3d2b, hair: 0x6b4423, name: 'Papa Jonas', skin: 0xf3c9a0 }], [{ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0x222222, style: 'bun', dress: true, name: 'Mama Amara', skin: 0x8d5a3b }, { shirt: 0xff8a1f, pants: 0x2d6a4f, hair: 0x222222, name: 'Papa Kofi', skin: 0x8d5a3b }], [{ shirt: 0x2fae5a, pants: 0x7a3d6a, hair: 0xa14a2b, style: 'curly', dress: true, name: 'Mama Sophie' }, { shirt: 0xe8453c, pants: 0x3d4a7a, hair: 0x6b4423, name: 'Papa Max' }]];
-  for (const f of flats) {
-    f.mom = BI.makeChar(Object.assign({ scale: .92, skin: f.i === 2 ? 0x8d5a3b : f.i === 1 ? 0xf3c9a0 : 0xffd2a8 }, PARENT[f.i][0])); f.dad = BI.makeChar(Object.assign({ scale: 1 }, PARENT[f.i][1]));
-    f.mom.group.position.set(f.mama.x, 0, f.mama.z); f.dad.group.position.set(f.papa.x, 0, f.papa.z); f.mom.group.rotation.y = 2.2; f.dad.group.rotation.y = -2.4; scene.add(f.mom.group, f.dad.group);
-    f.sign = textSprite('Frei', 4.6, 1.0, 66); f.sign.position.set(f.cx, 4.5, f.zF + .8); f.signTxt = 'Frei'; scene.add(f.sign); f.visP = true;
+  function initFlat(f) {
+  f.mom = BI.makeChar(Object.assign({ scale: .92, skin: f.i === 2 ? 0x8d5a3b : f.i === 1 ? 0xf3c9a0 : 0xffd2a8 }, PARENT[f.i][0])); f.dad = BI.makeChar(Object.assign({ scale: 1 }, PARENT[f.i][1]));
+  f.mom.group.position.set(f.mama.x, 0, f.mama.z); f.dad.group.position.set(f.papa.x, 0, f.papa.z); f.mom.group.rotation.y = 2.2; f.dad.group.rotation.y = -2.4; scene.add(f.mom.group, f.dad.group);
+  f.sign = textSprite('Frei', 4.6, 1.0, 66); f.sign.position.set(f.cx, 4.5, f.zF + .8); f.signTxt = 'Frei'; scene.add(f.sign); f.visP = true;
   }
+  function dropFlat(f) { if (!f) return; scene.remove(f.mom.group, f.dad.group); if (f.sign) { scene.remove(f.sign); freeObj(f.sign); } }
+  for (const f of flats) initFlat(f);
   const selfId = () => net.id || 'me';
   function slotOf(id) { const ids = [selfId()].concat([...remote.keys()]).sort(); return Math.max(0, ids.indexOf(id)) % flats.length; }
   const mySlot = () => slotOf(selfId());
+  let homeFlat = null; /* umgezogene Wohnung (Baumenü), sonst die Wohnung im Haus Sonnenschein */
+  const myFlat = () => homeFlat || flats[mySlot()];
   function updateFlats() {
-    placePoster(); room.place(flats[mySlot()]);
+    placePoster(); room.place(myFlat());
     const names = flats.map(() => ''); const ids = [selfId()].concat([...remote.keys()]).sort();
-    ids.forEach((id, k) => { names[k % flats.length] = id === selfId() ? myName() : remote.get(id).name; });
+    ids.forEach((id, k) => { names[k % flats.length] = id === selfId() ? (homeFlat ? '' : myName()) : remote.get(id).name; });
+    if (homeFlat) { const txt = '🏠 ' + myName(); if (txt !== homeFlat.signTxt) { homeFlat.signTxt = txt; const old = homeFlat.sign; homeFlat.sign = textSprite(txt, 4.6, 1.0, 62); homeFlat.sign.position.copy(old.position); freeObj(old); scene.add(homeFlat.sign); } }
     flats.forEach((f, i) => { const txt = names[i] ? '🏠 ' + names[i] : 'Frei'; if (txt !== f.signTxt) { f.signTxt = txt; const old = f.sign; f.sign = textSprite(txt, 4.6, 1.0, 62); f.sign.position.copy(old.position); freeObj(old); scene.add(f.sign); } });
   }
   const PLINES = { mama: ['Hast du schon Hunger, mein Schatz?', 'Du bist mein Sonnenschein! ☀️', 'Räum bitte dein Zimmer auf, ja?', 'Gute Nacht, schlaf schön!', 'Spiel schön mit deinen Freunden!'], papa: ['Na, Abenteurer? Wo warst du heute?', 'Sollen wir später Ball spielen?', 'Pass beim Fahren gut auf!', 'Ich bin stolz auf dich!', 'Willst du mein Pferd… äh, Huckepack? 😄'] };
   let kissCd = 0;
   function flatNear() {
-    if (P.veh || P.y > 1 || sl.t >= 0) return null; const x = P.x, z = P.z; if (!(x > FB.x0 && x < FB.x1 && z > FB.zB && z < FB.zF)) return null;
-    const f = flats[clamp(((x - FB.x0) / 12) | 0, 0, flats.length - 1)], d = p => Math.hypot(x - p.x, z - p.z);
+    if (P.veh || P.y > 1 || sl.t >= 0) return null; const x = P.x, z = P.z, hf = homeFlat && x > homeFlat.x0 && x < homeFlat.x1 && z > homeFlat.zB && z < homeFlat.zF ? homeFlat : null; if (!hf && !(x > FB.x0 && x < FB.x1 && z > FB.zB && z < FB.zF)) return null;
+    const f = hf || flats[clamp(((x - FB.x0) / 12) | 0, 0, flats.length - 1)], d = p => Math.hypot(x - p.x, z - p.z);
     if (d(f.chest) < 1.9) return { k: 'room', f }; if (d(f.bed) < 2.7) return { k: 'bed', f }; if (d(f.ward) < 2.9) return { k: 'ward', f }; if (d(f.mama) < 2.6) return { k: 'mama', f }; if (d(f.papa) < 2.6) return { k: 'papa', f }; return null;
   }
   function flatAct(n) {
-    if (n.k === 'room') { if (n.f.i === mySlot()) room.show(); else say('🛋️ Das ist nicht dein Zimmer – deins ist in deiner Wohnung!', 2600); } else if (n.k === 'bed') startSleep(n.f); else if (n.k === 'ward') openWard();
-    else { const l = PLINES[n.k]; say(PARENT[n.f.i][n.k === 'mama' ? 0 : 1].name + ': „' + l[(Math.random() * l.length) | 0] + '“', 3200); (n.k === 'mama' ? n.f.mom : n.f.dad).group.rotation.y = Math.atan2(P.x - (n.k === 'mama' ? n.f.mama.x : n.f.papa.x), P.z - (n.k === 'mama' ? n.f.mama.z : n.f.papa.z)); if (kissCd <= 0 && n.f.i === mySlot()) { kissCd = 45; addStars(1); A.star(); fx.burst(P.x, 2.2, P.z, 10, [BI.C.pink, BI.C.red], 3, 1.2, 28, -1); say('❤️ ' + PARENT[n.f.i][n.k === 'mama' ? 0 : 1].name + ' drückt dich fest! +1 ⭐', 2400); } }
+    if (n.k === 'room') { if (n.f === myFlat()) room.show(); else say('🛋️ Das ist nicht dein Zimmer – deins ist in deiner Wohnung!', 2600); } else if (n.k === 'bed') startSleep(n.f); else if (n.k === 'ward') openWard();
+    else { const l = PLINES[n.k]; say(PARENT[n.f.i][n.k === 'mama' ? 0 : 1].name + ': „' + l[(Math.random() * l.length) | 0] + '“', 3200); (n.k === 'mama' ? n.f.mom : n.f.dad).group.rotation.y = Math.atan2(P.x - (n.k === 'mama' ? n.f.mama.x : n.f.papa.x), P.z - (n.k === 'mama' ? n.f.mama.z : n.f.papa.z)); if (kissCd <= 0 && n.f === myFlat()) { kissCd = 45; addStars(1); A.star(); fx.burst(P.x, 2.2, P.z, 10, [BI.C.pink, BI.C.red], 3, 1.2, 28, -1); say('❤️ ' + PARENT[n.f.i][n.k === 'mama' ? 0 : 1].name + ' drückt dich fest! +1 ⭐', 2400); } }
   }
   function startSleep(f) { sl.t = 0; sl.f = f; sl.said = false; setStick(0, 0); fun.setDance(false); fadeEl.classList.add('on'); A.stopAll(); }
   function updateSleep(dt) {
@@ -992,14 +1004,21 @@
   }
   $('wardClose').addEventListener('click', closeWard);
   function goHome() {
-    if (P.veh || sl.t >= 0) return; const f = flats[mySlot()]; fx.burst(P.x, 1.2, P.z, 16, [BI.C.white, BI.C.gold], 4, 1, 28, 4); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.h = Math.PI; cam.yaw = 0; A.fanfare(); fx.burst(P.x, 1.2, P.z, 16, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('🏠 Zuhause! Mama und Papa warten drinnen.', 2800);
+    if (P.veh || sl.t >= 0) return; const f = myFlat(); fx.burst(P.x, 1.2, P.z, 16, [BI.C.white, BI.C.gold], 4, 1, 28, 4); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.h = Math.PI; cam.yaw = 0; A.fanfare(); fx.burst(P.x, 1.2, P.z, 16, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('🏠 Zuhause! Mama und Papa warten drinnen.', 2800);
   }
   function updateFlatsLife(dt) {
     kissCd -= dt; const q = Math.hypot(P.x - (FB.x0 + FB.x1) / 2, P.z - (FB.zB + FB.zF) / 2) < 70;
     for (const f of flats) { if (f.visP !== q) { f.visP = q; f.mom.group.visible = f.dad.group.visible = f.sign.visible = q; } if (q) { const nm = Math.hypot(P.x - f.mama.x, P.z - f.mama.z) < 5; f.mom.pose(t * 1.3 + f.i, 0, nm); f.dad.pose(t * 1.1 + f.i * 2, 0, Math.hypot(P.x - f.papa.x, P.z - f.papa.z) < 5); } }
-    const ins = !P.veh && W.shelter(P.x, P.z) === 2; if (W.flatRoof.visible === ins) W.flatRoof.visible = !ins;
+    const inB = !P.veh && P.x > FB.x0 && P.x < FB.x1 && P.z > FB.zB - .5 && P.z < FB.zF + .2; if (W.flatRoof.visible === inB) W.flatRoof.visible = !inB;
+    if (homeFlat) { const f = homeFlat, q2 = Math.hypot(P.x - f.cx, P.z - f.zB) < 70; if (f.visP !== q2) { f.visP = q2; f.mom.group.visible = f.dad.group.visible = f.sign.visible = q2; } if (q2) { f.mom.pose(t * 1.3 + f.i, 0, Math.hypot(P.x - f.mama.x, P.z - f.mama.z) < 5); f.dad.pose(t * 1.1 + f.i * 2, 0, Math.hypot(P.x - f.papa.x, P.z - f.papa.z) < 5); }
+      const insH = !P.veh && P.x > f.x0 && P.x < f.x1 && P.z > f.zB - .5 && P.z < f.zF + .2; if (home.roof() && home.roof().visible === insH) home.roof().visible = !insH; }
   }
 
+  /* ---------- Umziehen (Baumenü): die eigene Wohnung an einen beliebigen Ort stellen; Limousine, Rutschauto und Hubschrauber ziehen mit ---------- */
+  const home = BI.createHome({ scene, W, fx, say, save, persist, A, slot: () => mySlot(), vehs: () => homeVeh, riding: () => !!P.veh, initFlat, dropFlat, setHome: f => { homeFlat = f; } });
+  G.homeValid = (x, z) => home.valid(x, z);
+  G.moveHome = (mode, x, z) => { const ok = home.move(mode, x, z); if (ok) { exitBuild(); goHome(); } return ok; };
+  home.load();
   /* ---------- Garten, Bauernhof, Freibad ---------- */
   const garden = BI.createGarden({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), mySlot: () => mySlot(), earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f) });
   const farm = BI.createFarm({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), animals, inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, showEmoji: (e, a) => showEmoji(e, a), earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f) });
@@ -1033,7 +1052,7 @@
   const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true), takeMascot: id => takeMascot(id) }); drachen.people(town.folk);
   const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
   const atlantis = BI.createAtlantis({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, fade: cb => { fadeEl.firstElementChild.textContent = '🔱'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setAtlMood(on) }); atlantis.people(town.folk);
-  const radio = BI.createRadio({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, setStick, updateButtons: f => updateButtons(f), fade: cb => { fadeEl.firstElementChild.textContent = '📻'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setRadMood(on) });
+  const radio = BI.createRadio({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, setStick, updateButtons: f => updateButtons(f) });
   const zotik = BI.createZotik({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, takeMascot: id => takeMascot(id), start: k => startGame(k, true), go: id => { const d = DEST.find(x => x.id === id); if (d) beamTo(d); } });
   const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
@@ -1095,11 +1114,11 @@
     { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
     const an = farm.animalNear(); if (an) return { src: 'animal', a: an };
     if (papHomeOn() && pap.group.visible) { const a = papAnchor(); if (Math.hypot(P.x - a.x, P.z - a.z) < 2.8) return { src: 'paphome', n: { k: 'paphome' } }; }
-    { const hd = flats[mySlot()].door; if (!save.papOff && !papHomeOn() && pup.mode === 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'paphome', n: { k: 'paphome' } }; }
-    { const hd = flats[mySlot()].door; if (pup.mode !== 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'pethome', n: { k: 'pethome' } }; }
+    { const hd = myFlat().door; if (!save.papOff && !papHomeOn() && pup.mode === 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'paphome', n: { k: 'paphome' } }; }
+    { const hd = myFlat().door; if (pup.mode !== 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'pethome', n: { k: 'pethome' } }; }
     return null;
   }
-  const PLN = { rin: ['📡', 'Durch das Funk-Tor zur Funkwelle'], rout: ['↩️', 'Zurück zur Bunten Insel'], atlin: ['🔱', 'Nach Atlantis hinabsteigen'], atlout: ['⬆️', 'Zurück zur Oberfläche'], aholo: ['📜', 'Hologramm ansehen'], aharp: ['🎶', 'Kristall anschlagen'], aherz: ['💠', 'Herz von Atlantis berühren'], bwerk: ['🏗️', 'Bauen starten'], plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
+  const PLN = { atlin: ['🔱', 'Nach Atlantis hinabsteigen'], atlout: ['⬆️', 'Zurück zur Oberfläche'], aholo: ['📜', 'Hologramm ansehen'], aharp: ['🎶', 'Kristall anschlagen'], aherz: ['💠', 'Herz von Atlantis berühren'], bwerk: ['🏗️', 'Bauen starten'], plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
   function placeLabel(n) { if ((n.src === 'zotik' || n.src === 'radio') && n.n.label) return n.n.label; if (n.src === 'paphome') return papHomeOn() ? ['🎈', 'Pappnase mitnehmen'] : ['🏠', 'Pappnase zu Hause lassen']; if (n.src === 'pethome') return pup.mode === 'home' ? ['🐾', pup.name + ' mitnehmen'] : ['🏠', pup.name + ' zu Hause lassen']; if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
     if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'bauland') bauland.act(n.n); else if (n.src === 'atlantis') atlantis.act(n.n); else if (n.src === 'zotik') zotik.act(n.n); else if (n.src === 'radio') radio.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'paphome') setPapHome(!papHomeOn()); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
@@ -1112,7 +1131,7 @@
 
   /* ---------- Orientierung (🧭 Wohin?) und Eltern-Bereich ---------- */
   const SPOT = W.spots, DEST = [
-    { id: 'home', icon: '🏠', name: 'Meine Wohnung', at: () => flats[mySlot()].door }, { id: 'garden', icon: '🌻', name: 'Mein Garten', at: () => { const c = SPOT.gardens[mySlot()].cells[0]; return { x: c.x + 3.2, z: c.z - 1 }; } },
+    { id: 'home', icon: '🏠', name: 'Meine Wohnung', at: () => myFlat().door }, { id: 'garden', icon: '🌻', name: 'Mein Garten', at: () => { const c = SPOT.gardens[mySlot()].cells[0]; return { x: c.x + 3.2, z: c.z - 1 }; } },
     { id: 'shop', icon: '🧸', name: 'Spielzeugladen', at: () => ({ x: SPOT.shop.x, z: SPOT.shop.z + 8 }) }, { id: 'range', icon: '🎯', name: 'Schießbude', at: () => ({ x: SPOT.range.x, z: SPOT.range.z }) },
     { id: 'hof', icon: '🥕', name: 'Hofladen', at: () => SPOT.farm.customer }, { id: 'fields', icon: '🌾', name: 'Felder & Maschinen', at: () => ({ x: -100, z: 56 }) },
     { id: 'city', icon: '🏙️', name: 'Stadt', at: () => ({ x: 0, z: -236 }) }, { id: 'shops', icon: '🛒', name: 'Einkaufsstraße', at: () => ({ x: 0, z: -265 }) },
@@ -1124,7 +1143,7 @@
     { id: 'drachen', icon: '🐉', name: 'Drachenhöhen', at: () => ({ x: BI.DRACHEN.x, z: BI.DRACHEN.z - 38 }) },
     { id: 'atlantis', icon: '🔱', name: 'Atlantis (Eingang am See)', at: () => { const q = W.spots.atlPortal; return { x: q.x + Math.sin(q.ry) * 5.8, z: q.z + Math.cos(q.ry) * 5.8 }; } },
     { id: 'zotik', icon: '⭐', name: 'Zotik – Lunaris (Insel im Süden)', at: () => ({ x: BI.ZOTIK.x, z: BI.ZOTIK.z - BI.ZOTIK.R + 16 }) },
-    { id: 'radio', icon: '📻', name: 'Funkwelle – 13 Radiosender (Funk-Tor)', at: () => { const q = W.spots.radioPortal; return { x: q.x, z: q.z + 5.6 }; } },
+    { id: 'radio', icon: '📻', name: 'Funkwelle – 13 Radiosender (Insel im Südosten)', at: () => { const R = BI.RADIO; return { x: R.x + Math.sin(R.rot) * (R.R - 14), z: R.z + Math.cos(R.rot) * (R.R - 14) }; } },
     { id: 'bauland', icon: '🏗️', name: 'Bauland', at: () => ({ x: BI.BAULAND.entry.x, z: BI.BAULAND.entry.z }) },
     { id: 'pups', icon: '🐶', name: 'Fellretter-Bucht', at: () => ({ x: BI.PUPS.x, z: BI.PUPS.z - 40 }) },
     { id: 'rainbow', icon: '🌈', name: 'Regenbogenwelt', at: () => ({ x: BI.RAINBOW.bridge.x0 - 6, z: BI.RAINBOW.z }) },
@@ -1142,7 +1161,7 @@
   let guideOpen = false; function closeGuide() { guideOpen = false; guideEl.hidden = true; updateButtons(true); }
   function setGuide(d) { guide = { d, t: 0 }; const p = d.at(); say('🧭 Ich zeige dir den Weg: ' + d.icon + ' ' + d.name, 2600); updateHud(); }
   /* Blickziel pro Ziel: nach dem Hinzaubern schaut man direkt auf die Welt / das Gebäude (Standard: zur Inselmitte) */
-  const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, bauland: () => BI.BAULAND, atlantis: () => W.spots.atlPortal, zotik: () => BI.ZOTIK, radio: () => W.spots.radioPortal, pups: () => BI.PUPS };
+  const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, bauland: () => BI.BAULAND, atlantis: () => W.spots.atlPortal, zotik: () => BI.ZOTIK, radio: () => BI.RADIO, pups: () => BI.PUPS };
   function beamTo(d) {
     if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; { const lk = d.id === 'home' ? null : (LOOK[d.id] && LOOK[d.id]()) || { x: 0, z: 0 }; P.h = lk && Math.hypot(lk.x - P.x, lk.z - P.z) > 3 ? Math.atan2(lk.x - P.x, lk.z - P.z) : Math.PI; cam.yaw = P.h + Math.PI; } A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
   }
@@ -1557,7 +1576,7 @@
     hitCool -= dt;
   }
   /* Haustier-Zuhause: das Tier wartet standardmäßig an der eigenen Wohnung; mitnehmen (E am Tier) ist freiwillig. Maskottchen anderer Welten lassen sich als festen Partner mitnehmen. */
-  const petHomeSpot = () => { const f = flats[mySlot()]; return { x: f.door.x + 1.8, z: f.door.z + 2.6 }; };
+  const petHomeSpot = () => { const f = myFlat(); return { x: f.door.x + 1.8, z: f.door.z + 2.6 }; };
   function setPetHome(on) {
     fx.burst(pup.x, .8, pup.z, 10, [BI.C.white, BI.C.gold], 3, .8, 30, 2); save.petHome = on; persist(); A.pop();
     if (!on) { pup.mode = 'follow'; pup.x = P.x + 1.5; pup.z = P.z + 1; fx.burst(pup.x, .8, pup.z, 10, [BI.C.white, BI.C.pink], 3, .8, 30, 2); }
@@ -1615,7 +1634,7 @@
     if (pup.trick) pup.d.trick(pup.trick.name, pup.trick.t / pup.trick.dur);
   }
   /* Pappnase-Zuhause: schwebt standardmäßig an der eigenen Wohnung; mitnehmen/dalassen wie beim Haustier, abwählen = Pappnase ablegen */
-  const papAnchor = () => { const f = flats[mySlot()]; return { x: f.door.x - 1.8, z: f.door.z + 2.6 }; };
+  const papAnchor = () => { const f = myFlat(); return { x: f.door.x - 1.8, z: f.door.z + 2.6 }; };
   const papHomeOn = () => !save.papOff && save.papHome !== false;
   function setPapHome(on) { save.papHome = on; save.papOff = false; persist(); A.pop(); const a = papAnchor(); fx.burst(on ? P.x : a.x, 1.6, on ? P.z : a.z, 10, [BI.C.red, BI.C.gold, BI.C.white], 3, .8, 30, 2); say(on ? '🏠 Pappnase schwebt zu Hause und wartet auf dich.' : '🎈 Pappnase kommt mit dir!', 2400); }
   function togglePap() { save.papOff = !save.papOff; persist(); A.pop(); say(save.papOff ? '🎈 Pappnase abgelegt' : '🎈 Pappnase ist wieder da!', 1800); }
@@ -1653,6 +1672,7 @@
     // Fahrzeuge, die auf den Gleisen stehen bleiben, werden freundlich neben die Strecke gesetzt (nie auf den Schienen parken)
     railT -= dt; if (railT <= 0) { railT = 1.5; for (const v of vehicles) { if (v.ai || v.driver || v === P.veh || v.spec.fly || v.spec.boat) continue; const d = W.railSdf(v.x, v.z); if (d < 3.2 && Math.hypot(v.x - qx, v.z - qz) > 8) { const e = 1.5, gx = W.railSdf(v.x + e, v.z) - W.railSdf(v.x - e, v.z), gz = W.railSdf(v.x, v.z + e) - W.railSdf(v.x, v.z - e), gl = Math.hypot(gx, gz) || 1, s = 8; const nx = v.x + gx / gl * s, nz = v.z + gz / gl * s; if (W.railSdf(nx, nz) > 5.5 && W.free(nx, nz, 1.5)) v.setPose(nx, nz, v.h); else v.setPose(v.x - gx / gl * s, v.z - gz / gl * s, v.h); v.v = 0; } } }
     // Parkende Fahrzeuge rollen aus
+    updateHomeVeh(dt);
     for (const v of vehicles) if (!v.driver && !v.ai && Math.abs(v.v) > .05) { v.step(dt, { steer: 0, thr: 0 }, W, fx); }
     for (const v of vehicles) {
       if (v.driver || v === P.veh) { v.root.visible = true; v.visual(dt, t, fx); continue; }
@@ -1799,6 +1819,6 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { radio, zotik, atlantis, vox, bauland, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { home, radio, zotik, atlantis, vox, bauland, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
 

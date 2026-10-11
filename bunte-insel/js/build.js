@@ -58,9 +58,12 @@ BI.createBuild = function (G) {
     oblava: { icon: '🌋', name: 'Lava', tab: 5, slot: 'item', c: 0, draw(b, c) { b.box(0, 0, 0, 3.6, .1, 3.6, 0x7a1f12); b.box(0, .1, 0, 3.2, .05, 3.2, 0xff5a1f); for (const [x, z] of [[-.8, -.6], [.7, .5], [-.2, 1.0], [.9, -1.0]]) b.sph(x, .2, z, .28, 0xffd23f, 1, 1, .6, 1); } },
     obblock:{ icon: '🧱', name: 'Hürde', tab: 5, slot: 'item', c: 1, draw(b, c) { b.box(0, 0, 0, 3.2, .7, .7, c); for (let i = 0; i < 4; i++) b.box(-1.2 + i * .8, .71, 0, .4, .02, .72, 0xffffff); }, cols: [[-1.6, -.4, 1.6, .4, .75]] },
     obpad:  { icon: '🔼', name: 'Sprungpilz', tab: 5, slot: 'item', c: 5, draw(b, c) { b.cyl(0, 0, 0, .5, .7, .3, DARK, 10); b.cyl(0, .3, 0, 1.3, 1.1, .25, c, 12); b.cyl(0, .55, 0, .8, .8, .05, 0xffffff, 12); }, tramp: true },
+    /* ----- Umzug: die eigene Wohnung an den Cursor (die Tür steht am Cursor) oder zurück ins Haus Sonnenschein ----- */
+    home:   { icon: '🏡', name: 'Wohnung hierher', tab: 6, slot: 'home', move: 'home', c: 0, draw(b, c) { const W_ = 0xfff2d8, R_ = 0xe8453c; b.box(0, 0, -10.6, 12.4, .12, 16.6, 0xffe2b0); b.box(0, 0, -2.6, 12, 3.2, .3, W_); b.box(0, 0, -18.6, 12, 3.2, .3, W_); b.box(-6, 0, -10.6, .3, 3.2, 16, W_); b.box(6, 0, -10.6, .3, 3.2, 16, W_); b.prism(0, 3.2, -10.6, 12.8, 2.3, 17.6, R_, 0); b.box(0, 0, 1.4, 3, .06, 2.6, 0xd9cfb8); b.box(0, .06, 1.4, 2, .02, 1.4, 0x6bd67e); } },
+    homeback:{ icon: '🏢', name: 'Zurück ins Haus Sonnenschein', tab: 6, slot: 'home', move: 'back', c: 1, draw(b, c) { b.box(0, 0, 0, 3.6, 3.2, 2.4, 0xffd6a8); b.prism(0, 3.2, 0, 4.0, 1.3, 2.8, 0xe8453c, 0); for (const x of [-1.1, 1.1]) b.box(x, 1.4, 1.22, .7, .8, .06, 0xa8dcff); b.box(0, 0, 1.22, .8, 1.5, .06, 0x8a5a33); } },
   };
   const SILVER = 0xc9ced6; // (für Rutsche)
-  const TABS = [{ icon: '🏠', name: 'Haus' }, { icon: '🛋️', name: 'Möbel' }, { icon: '🌳', name: 'Garten & Spaß' }, { icon: '🌾', name: 'Bauernhof' }, { icon: '🏖️', name: 'Sommer' }, { icon: '🏁', name: 'Parcours' }];
+  const TABS = [{ icon: '🏠', name: 'Haus' }, { icon: '🛋️', name: 'Möbel' }, { icon: '🌳', name: 'Garten & Spaß' }, { icon: '🌾', name: 'Bauernhof' }, { icon: '🏖️', name: 'Sommer' }, { icon: '🏁', name: 'Parcours' }, { icon: '🚚', name: 'Umzug' }];
   const B = { CAT, TABS, PAL, items: [], active: false, sel: 'floor', rot: 0, color: 7, cx: 0, cz: 0, gx: 0, gz: 0, valid: false };
 
   /* ---------- Geometrie (lokal zeichnen, gedreht anhängen) ---------- */
@@ -87,7 +90,7 @@ BI.createBuild = function (G) {
   const slotOf = (t, r) => CAT[t].edge ? 'edge' + r : CAT[t].slot;
   /* Gebautes, das vor dem Kino schon auf dessen Fläche stand, bleibt erhalten (sonst würde es beim nächsten Speichern verschwinden) */
   const legacy = (t, gx, gz, r) => { const C = BI.CINEMA; if (!C || B.items.length >= MAXP) return false; const q = checkPoint(t, gx, gz, r); return q[0] > C.x0 - 3 && q[0] < -43 && q[1] > C.z0 - 3 && q[1] < C.z1 + 3; };
-  B.canPlace = function (t, gx, gz, r) { const q = checkPoint(t, gx, gz, r); return B.items.length < MAXP + 1 && W.canBuild(q[0], q[1], CAT[t].edge ? 1.2 : 1.8); };
+  B.canPlace = function (t, gx, gz, r) { if (CAT[t].move) return CAT[t].move === 'back' || (G.homeValid ? G.homeValid(gx * CELL, gz * CELL) : false); const q = checkPoint(t, gx, gz, r); return B.items.length < MAXP + 1 && W.canBuild(q[0], q[1], CAT[t].edge ? 1.2 : 1.8); };
 
   /* ---------- Teile setzen / entfernen ---------- */
   function mkColliders(it) {
@@ -107,6 +110,7 @@ BI.createBuild = function (G) {
   }
   function dropItem(i) { const it = B.items[i]; for (const k of it.cols) W.removeCollider(k); B.items.splice(i, 1); dirty = true; }
   B.place = function () {
+    if (CAT[B.sel].move) { if (!B.valid) { G.say('Hier ist kein Platz für deine Wohnung 🚫', 1600); return false; } return G.moveHome ? G.moveHome(CAT[B.sel].move, B.gx * CELL, B.gz * CELL) : false; }
     if (!B.valid) { G.say('Hier kann man nicht bauen 🚫', 1400); return false; }
     const slot = slotOf(B.sel, B.rot), was = B.items.filter(o => !o.o && o.gx === B.gx && o.gz === B.gz && slotOf(o.t, o.r) === slot).map(o => [o.t, o.gx, o.gz, o.r, o.c]);
     addItem(B.sel, B.gx, B.gz, B.rot, B.color); hist.push({ a: 1, p: [B.sel, B.gx, B.gz, B.rot, B.color], was }); if (hist.length > 60) hist.shift(); A.place(); if (B.onOp) B.onOp({ op: 'a', i: [B.sel, B.gx, B.gz, B.rot, B.color] });
