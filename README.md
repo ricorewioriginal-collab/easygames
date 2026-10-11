@@ -5,6 +5,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 | Spiel | Verzeichnis |
 |---|---|
+| ZOTIK – Die Splitter der Welten – 3D-Action-Rollenspiel in Godot 4.7 (Web-Export, Quelltext im Repo `ricorewioriginal-collab/zotik`) | [`zotik/`](zotik/) |
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
 | AnMaCha Radio-Match 3D – Match-3 mit Radio-Bauteilen, 100 Level, wachsendes Raster, Power-ups (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-radio-match/`](anmacha-radio-match/) |
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
@@ -34,7 +35,6 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Stapelrausch 3D – Kartenspiel: Zahlentürme 1–12 bauen, Zielstapel zuerst leeren; gegen Computer, lokal oder online per Code/QR (Three.js, PeerJS, Sounds werden im Browser erzeugt) | [`anmacha-stapelrausch/`](anmacha-stapelrausch/) |
 | KLOTZFUNK 3D – Voxel-Sandbox: prozedurale Welt, Abbauen/Setzen, Hotbar, Inventar, Radio-Logo-Blöcke, Spezial-Blöcke (Feder, Turbo, Aufwind, Radio-Beats, Regenbogen, Neon), Seilhaken, Gleiten, Minikarte, Tag/Nacht, 3 Speicherplätze, Touch-Steuerung (Three.js + Vite; Quelltext in [`anmacha-klotzfunk-src/`](anmacha-klotzfunk-src/), gebautes Ergebnis eingecheckt) | [`anmacha-klotzfunk/`](anmacha-klotzfunk/) |
 | Bunte Insel – Kinderspiel mit offener Welt: laufen, 10 Fahrzeuge inkl. Hubschrauber, Boot & Zug-Simulation, Piratenschiff, Schießbude (nur Attrappen), Mitspielen per Code/QR, 11 Mini-Spiele, 3 Spielstände, Kinder-Extras (Fotos, Musik, Malen), Garten, Bauernhof, Freibad, Vorlesen, Spielzeugladen, Bauen wie bei den Sims, Spaß-Aktionen (Three.js, Touch mit festem Joystick & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
-| ZOTIK – Die Splitter der Welten (neues 3D-Spiel, eigenes Repo, eingebettet) | https://ricorewioriginal-collab.github.io/zotik/ |
 
 ## Spieleliste, Vollbild und Teilen
 
