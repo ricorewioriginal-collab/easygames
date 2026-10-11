@@ -55,7 +55,8 @@ const MAX_TICKS = 25 * 60;
 const ROW_Y = [0.55, 0.05, -0.45];
 const KEY_SPEED = 2.6 / 60;
 
-export const pointsOf = (k: TargetKind): number => ({ duck: 10, fast: 30, big: 10, bonus: 60, decoy: -40, pop: 25 })[k];
+export const pointsOf = (k: TargetKind): number =>
+  ({ duck: 10, fast: 30, big: 10, bonus: 60, decoy: -40, pop: 25 })[k];
 
 function spawn(s: ZielState): void {
   const h = s.hz;
@@ -71,7 +72,20 @@ function spawn(s: ZielState): void {
   if (kind === 'pop') {
     const y = h.float(-0.7, 0.8);
     const x = h.float(-1.35, 1.35);
-    s.targets.push({ id, kind, x, y0: y, y, vx: 0, r: 0.17, age: 0, life: Math.round(lerp(95, 62, d)), amp: 0, freq: 0, pts: pointsOf('pop') });
+    s.targets.push({
+      id,
+      kind,
+      x,
+      y0: y,
+      y,
+      vx: 0,
+      r: 0.17,
+      age: 0,
+      life: Math.round(lerp(95, 62, d)),
+      amp: 0,
+      freq: 0,
+      pts: pointsOf('pop'),
+    });
   } else {
     const row = h.int(3);
     const dir = row % 2 === 0 ? 1 : -1;
@@ -115,7 +129,10 @@ export const game: MiniGame<ZielState> = {
     'Finger weg von den schwarzen Bomben – sie kosten Punkte!',
     'Sechs Schuss pro Magazin, dann lädt die Bude nach. B lädt früher nach.',
   ],
-  controls: { desktop: 'Maus zielen + Klick, oder Pfeile/WASD + Leertaste; B lädt nach', touch: 'Finger ziehen zum Zielen, Antippen schießt' },
+  controls: {
+    desktop: 'Maus zielen + Klick, oder Pfeile/WASD + Leertaste; B lädt nach',
+    touch: 'Finger ziehen zum Zielen, Antippen schießt',
+  },
   category: 'aim',
   duration: 25,
   usesPointer: true,
@@ -247,7 +264,12 @@ export const game: MiniGame<ZielState> = {
       }
       const tol = best.r * lerp(0.95, 0.55, skill);
       const settled = Math.hypot(p.x - nx, p.y - ny) < tol * 0.8 && step < botSpeed * 0.9 + 0.02;
-      fire = settled && s.reload === 0 && s.ammo > 0 && !s.prevPd && Math.hypot(best.x + best.vx * 2 - nx, best.y - ny) < best.r * 1.1;
+      fire =
+        settled &&
+        s.reload === 0 &&
+        s.ammo > 0 &&
+        !s.prevPd &&
+        Math.hypot(best.x + best.vx * 2 - nx, best.y - ny) < best.r * 1.1;
       if (fire) {
         nx += rng.gaussian() * noise;
         ny += rng.gaussian() * noise;

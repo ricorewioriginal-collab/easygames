@@ -101,11 +101,21 @@ export function beetleGeo(): THREE.BufferGeometry {
   const line = new THREE.BoxGeometry(1.0, 0.03, 0.03);
   line.translate(-0.05, 0.62, 0);
   parts.push(paint(line, 0x2a2024));
-  const spots: [number, number][] = [[0.2, 0.28], [0.2, -0.28], [-0.2, 0.32], [-0.2, -0.32], [-0.45, 0]];
+  const spots: [number, number][] = [
+    [0.2, 0.28],
+    [0.2, -0.28],
+    [-0.2, 0.32],
+    [-0.2, -0.32],
+    [-0.45, 0],
+  ];
   for (const [x, z] of spots) {
     const s = new THREE.SphereGeometry(0.1, 6, 5);
     s.scale(1, 0.5, 1);
-    s.translate(x, 0.3 + 0.72 * 0.5 * Math.sqrt(Math.max(0, 1 - (x / 0.55) ** 2 - (z / 0.475) ** 2)) - 0.01, z);
+    s.translate(
+      x,
+      0.3 + 0.72 * 0.5 * Math.sqrt(Math.max(0, 1 - (x / 0.55) ** 2 - (z / 0.475) ** 2)) - 0.01,
+      z,
+    );
     parts.push(paint(s, 0x2a2024));
   }
   return merge(parts);

@@ -59,7 +59,16 @@ class Agent {
       if (s.minigame.stage === 'intro') a = { type: 'minigameReady' };
       else {
         const g = getMiniGame(s.minigame.gameId);
-        a = { type: 'minigameSubmit', log: runBot(g, s.minigame.seed, { playerIndex: s.order.indexOf(this.id), players: s.order.length }, 0.6, 3).log };
+        a = {
+          type: 'minigameSubmit',
+          log: runBot(
+            g,
+            s.minigame.seed,
+            { playerIndex: s.order.indexOf(this.id), players: s.order.length },
+            0.6,
+            3,
+          ).log,
+        };
       }
     } else a = decide(core, this.id, this.rng) ?? core.fallbackAction(this.id);
     if (a) send(this.room, { type: 'game:action', action: a });
@@ -104,7 +113,11 @@ describe('Online-Mehrspieler (Colyseus)', () => {
     // Host konfiguriert, Bot hinzufügen, Start erst wenn alle bereit
     send(ra, { type: 'lobby:config', layoutId: 'nova-nexus-02', rounds: 2 });
     send(ra, { type: 'lobby:addBot', difficulty: 'normal' });
-    await until(() => ra.state.slots.size === 3 && ra.state.layoutId === 'nova-nexus-02' && ra.state.rounds === 2, 3000, 'Konfiguration');
+    await until(
+      () => ra.state.slots.size === 3 && ra.state.layoutId === 'nova-nexus-02' && ra.state.rounds === 2,
+      3000,
+      'Konfiguration',
+    );
     const agA = new Agent(ra);
     send(ra, { type: 'lobby:start' });
     await until(() => errsA.length >= 1, 3000, 'Start ohne Bereitschaft abgelehnt');
@@ -120,8 +133,14 @@ describe('Online-Mehrspieler (Colyseus)', () => {
     await until(() => agA.state?.phase === 'ended' && ag.state?.phase === 'ended', 60000, 'Spielende');
     expect(agA.state!.finale!.ranking).toEqual(ag.state!.finale!.ranking);
     expect(agA.state!.round).toBe(2);
-    expect(agA.errors.filter((e) => !/Nicht alle Spieler sind bereit|Kein Minispiel|läuft kein Spiel|nicht am Zug/.test(e))).toEqual([]); // nur harmlose Wettläufe mit Server-Zeitgebern
-    expect(ag.errors.filter((e) => !/Du bist nicht am Zug|nicht|Aktion/.test(e)).length).toBeLessThanOrEqual(5);
+    expect(
+      agA.errors.filter(
+        (e) => !/Nicht alle Spieler sind bereit|Kein Minispiel|läuft kein Spiel|nicht am Zug/.test(e),
+      ),
+    ).toEqual([]); // nur harmlose Wettläufe mit Server-Zeitgebern
+    expect(ag.errors.filter((e) => !/Du bist nicht am Zug|nicht|Aktion/.test(e)).length).toBeLessThanOrEqual(
+      5,
+    );
     await until(() => ra.state.phase === 'ended', 3000, 'Lobby-Phase ended');
     ra.leave();
     rb.leave();
@@ -179,7 +198,12 @@ describe('Online-Mehrspieler (Colyseus)', () => {
     const token = rb.reconnectionToken;
     const tomId = B.id;
     (rb as unknown as { connection: { close: () => void } }).connection.close(); // Verbindungsabbruch ohne Abmelden
-    await until(() => [...(ra.state.slots as Map<string, any>).values()].find((s) => s.id === tomId)?.connected === false, 4000, 'getrennt erkannt');
+    await until(
+      () =>
+        [...(ra.state.slots as Map<string, any>).values()].find((s) => s.id === tomId)?.connected === false,
+      4000,
+      'getrennt erkannt',
+    );
     expect(A.notices.some((n) => /Verbindung verloren/.test(n))).toBe(true);
     const rb2 = await new Client(url).reconnect(token);
     const B2 = new Agent(rb2);
@@ -187,10 +211,19 @@ describe('Online-Mehrspieler (Colyseus)', () => {
     await until(() => !!B2.state && !!B2.start, 4000, 'volle Synchronisierung nach Wiederverbindung');
     expect(B2.id).toBe(tomId);
     expect(B2.state!.version).toBe(A.state!.version);
-    await until(() => [...(ra.state.slots as Map<string, any>).values()].find((s) => s.id === tomId)?.connected === true, 4000, 'wieder verbunden');
+    await until(
+      () =>
+        [...(ra.state.slots as Map<string, any>).values()].find((s) => s.id === tomId)?.connected === true,
+      4000,
+      'wieder verbunden',
+    );
     // Zweiter Abbruch ohne Rückkehr: nach Ablauf übernimmt ein Bot
     (rb2 as unknown as { connection: { close: () => void } }).connection.close();
-    await until(() => [...(ra.state.slots as Map<string, any>).values()].find((s) => s.id === tomId)?.kind === 'bot', 8000, 'Bot übernimmt');
+    await until(
+      () => [...(ra.state.slots as Map<string, any>).values()].find((s) => s.id === tomId)?.kind === 'bot',
+      8000,
+      'Bot übernimmt',
+    );
     A.autoplay = true;
     A.act();
     await until(() => A.state?.phase === 'ended', 60000, 'Spiel endet auch ohne zweiten Menschen');
@@ -202,8 +235,11 @@ describe('Online-Mehrspieler (Colyseus)', () => {
     const list = await new Client(url).getAvailableRooms('partyverse');
     expect(list.some((r: any) => r.roomId === host.roomId && r.metadata.public === true)).toBe(true);
     const joined = [host];
-    for (const n of ['B', 'C', 'D']) joined.push(await new Client(url).joinById<any>(host.roomId, { name: n }));
-    await expect(new Client(url).joinById<any>(host.roomId, { name: 'E' })).rejects.toThrow(/voll|locked|gesperrt/i);
+    for (const n of ['B', 'C', 'D'])
+      joined.push(await new Client(url).joinById<any>(host.roomId, { name: n }));
+    await expect(new Client(url).joinById<any>(host.roomId, { name: 'E' })).rejects.toThrow(
+      /voll|locked|gesperrt/i,
+    );
     await expect(new Client(url).joinById<any>('ZZZZ', { name: 'X' })).rejects.toThrow();
     const agents = joined.map((r) => new Agent(r));
     agents.forEach((a) => (a.autoplay = false));

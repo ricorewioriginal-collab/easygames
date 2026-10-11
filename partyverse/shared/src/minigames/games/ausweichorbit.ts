@@ -8,10 +8,34 @@ import { clamp, lerp } from '../util';
  * Welt: Ebene (x, z). Spieler in Polarkoordinaten (ang, rad). x > 0 bewegt nach rechts (Winkel sinkt),
  * y > 0 bewegt Richtung Mitte (Radius sinkt). Die Ansicht dreht die Kamera hinter den Spieler.
  */
-export interface Comet { a: number; r: number; v: number; warn: number }
-export interface Beam { a: number; w: number; arms: number; t: number; warn: number; dur: number }
-export interface Wave { r: number; v: number; t: number; warn: number; gap: number; gapH: number }
-export interface Coin { a: number; r: number; wait: number; life: number }
+export interface Comet {
+  a: number;
+  r: number;
+  v: number;
+  warn: number;
+}
+export interface Beam {
+  a: number;
+  w: number;
+  arms: number;
+  t: number;
+  warn: number;
+  dur: number;
+}
+export interface Wave {
+  r: number;
+  v: number;
+  t: number;
+  warn: number;
+  gap: number;
+  gapH: number;
+}
+export interface Coin {
+  a: number;
+  r: number;
+  wait: number;
+  life: number;
+}
 
 export interface OrbitState {
   hz: Rng; // Muster (unabhängig von Eingaben, für alle gleich)
@@ -60,16 +84,36 @@ function spawnPattern(s: OrbitState): void {
   let extra = 0;
   if (sec > 4 && s.beams.length === 0 && roll < 0.24) {
     const dir = h.chance(0.5) ? 1 : -1;
-    s.beams.push({ a: h.float(0, TAU), w: (dir * lerp(0.6, 1.3, d)) / 60, arms: d > 0.45 && h.chance(0.5) ? 2 : 1, t: 0, warn: 70, dur: Math.round(lerp(320, 250, d)) });
+    s.beams.push({
+      a: h.float(0, TAU),
+      w: (dir * lerp(0.6, 1.3, d)) / 60,
+      arms: d > 0.45 && h.chance(0.5) ? 2 : 1,
+      t: 0,
+      warn: 70,
+      dur: Math.round(lerp(320, 250, d)),
+    });
     extra = 35;
   } else if (sec > 2 && s.waves.length === 0 && roll < 0.5) {
-    s.waves.push({ r: WAVE_START, v: lerp(3.3, 5.6, d) / 60, t: 0, warn: 80, gap: h.float(0, TAU), gapH: lerp(0.58, 0.46, d) });
+    s.waves.push({
+      r: WAVE_START,
+      v: lerp(3.3, 5.6, d) / 60,
+      t: 0,
+      warn: 80,
+      gap: h.float(0, TAU),
+      gapH: lerp(0.58, 0.46, d),
+    });
     extra = 45;
   } else {
     let n = 1;
     if (d > 0.3 && h.chance(0.5)) n++;
     if (d > 0.65 && h.chance(0.55)) n++;
-    for (let i = 0; i < n; i++) s.comets.push({ a: h.float(0, TAU), r: COMET_START, v: (lerp(5.5, 10, d) + h.float(-0.5, 1.2)) / 60, warn: 40 + i * 12 });
+    for (let i = 0; i < n; i++)
+      s.comets.push({
+        a: h.float(0, TAU),
+        r: COMET_START,
+        v: (lerp(5.5, 10, d) + h.float(-0.5, 1.2)) / 60,
+        warn: 40 + i * 12,
+      });
   }
   s.nextSpawn = s.tick + Math.round(lerp(64, 30, d) * h.float(0.85, 1.15)) + extra;
 }
@@ -244,13 +288,25 @@ export const game: MiniGame<OrbitState> = {
           const m = movePlayer(a0, r0, mx, my);
           a0 = m.ang;
           r0 = m.rad;
-          if (coin) md0 = Math.min(md0, Math.hypot(r0 * Math.cos(a0) - coin.r * Math.cos(coin.a), r0 * Math.sin(a0) - coin.r * Math.sin(coin.a)));
+          if (coin)
+            md0 = Math.min(
+              md0,
+              Math.hypot(
+                r0 * Math.cos(a0) - coin.r * Math.cos(coin.a),
+                r0 * Math.sin(a0) - coin.r * Math.sin(coin.a),
+              ),
+            );
           if (k > s.inv && (k & 1) === 0 && hitAt(s, a0, r0, k)) {
             c0 = 1000 + ((H - k) / H) * 1000;
             break;
           }
         }
-        const md0end = coin ? Math.hypot(r0 * Math.cos(a0) - coin.r * Math.cos(coin.a), r0 * Math.sin(a0) - coin.r * Math.sin(coin.a)) : 0;
+        const md0end = coin
+          ? Math.hypot(
+              r0 * Math.cos(a0) - coin.r * Math.cos(coin.a),
+              r0 * Math.sin(a0) - coin.r * Math.sin(coin.a),
+            )
+          : 0;
         let sub = Infinity;
         for (let nx = -1; nx <= 1; nx++) {
           for (let ny = -1; ny <= 1; ny++) {
@@ -264,14 +320,29 @@ export const game: MiniGame<OrbitState> = {
                 const m = movePlayer(a, r, nx, ny);
                 a = m.ang;
                 r = m.rad;
-                if (coin) md = Math.min(md, Math.hypot(r * Math.cos(a) - coin.r * Math.cos(coin.a), r * Math.sin(a) - coin.r * Math.sin(coin.a)));
+                if (coin)
+                  md = Math.min(
+                    md,
+                    Math.hypot(
+                      r * Math.cos(a) - coin.r * Math.cos(coin.a),
+                      r * Math.sin(a) - coin.r * Math.sin(coin.a),
+                    ),
+                  );
                 if (k > s.inv && ((k & 1) === 0 || k === H) && hitAt(s, a, r, k)) {
                   cost += 1000 + ((H - k) / H) * 1000;
                   break;
                 }
               }
             }
-            if (coin) cost += 0.5 * md0end + 0.9 * md + 0.15 * Math.hypot(r * Math.cos(a) - coin.r * Math.cos(coin.a), r * Math.sin(a) - coin.r * Math.sin(coin.a));
+            if (coin)
+              cost +=
+                0.5 * md0end +
+                0.9 * md +
+                0.15 *
+                  Math.hypot(
+                    r * Math.cos(a) - coin.r * Math.cos(coin.a),
+                    r * Math.sin(a) - coin.r * Math.sin(coin.a),
+                  );
             cost += Math.abs(r - 5.6) * 0.12;
             if (cost < sub) sub = cost;
           }
@@ -286,5 +357,9 @@ export const game: MiniGame<OrbitState> = {
     }
     return { ...NEUTRAL_INPUT, x: bx, y: by };
   },
-  hud: (s) => ({ left: `Leben ${Math.max(0, s.lives)}/3`, right: `${score(s)} Pkt`, hint: s.inv > 0 && s.lives > 0 ? 'Autsch!' : `${s.coins} Münzen` }),
+  hud: (s) => ({
+    left: `Leben ${Math.max(0, s.lives)}/3`,
+    right: `${score(s)} Pkt`,
+    hint: s.inv > 0 && s.lives > 0 ? 'Autsch!' : `${s.coins} Münzen`,
+  }),
 };

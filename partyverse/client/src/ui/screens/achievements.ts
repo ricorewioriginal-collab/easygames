@@ -26,7 +26,11 @@ export function create(app: App, params?: RouteParams): ScreenView {
     if (a.unlocks?.hat) rewards.push('Hut');
     if (a.unlocks?.trail) rewards.push('Spur');
     if (a.unlocks?.dice) rewards.push('Würfel-Skin');
-    const bar = h('div', { class: 'bar', role: 'progressbar', 'aria-label': a.name }, h('i', { style: `width:${pct}%` }));
+    const bar = h(
+      'div',
+      { class: 'bar', role: 'progressbar', 'aria-label': a.name },
+      h('i', { style: `width:${pct}%` }),
+    );
     bar.setAttribute('aria-valuemin', '0');
     bar.setAttribute('aria-valuemax', String(a.goal));
     bar.setAttribute('aria-valuenow', String(Math.floor(prog)));
@@ -39,14 +43,22 @@ export function create(app: App, params?: RouteParams): ScreenView {
       h(
         'p',
         { class: 'hint' },
-        done ? `Freigeschaltet am ${new Date(stamp as number).toLocaleDateString('de-DE')}` : a.goal > 1 ? `${fmtInt(prog)} / ${fmtInt(a.goal)}` : 'Noch nicht geschafft',
+        done
+          ? `Freigeschaltet am ${new Date(stamp as number).toLocaleDateString('de-DE')}`
+          : a.goal > 1
+            ? `${fmtInt(prog)} / ${fmtInt(a.goal)}`
+            : 'Noch nicht geschafft',
         rewards.length ? ` · Belohnung: ${rewards.join(', ')}` : '',
       ),
     );
   });
 
-  const stat = (label: string, value: string): HTMLElement => h('div', { class: 'stat' }, h('span', null, label), h('b', null, value));
-  const worlds = [...WORLD_IDS.map((w) => w as string), ...Object.keys(st.perWorld).filter((k) => !(WORLD_IDS as readonly string[]).includes(k))];
+  const stat = (label: string, value: string): HTMLElement =>
+    h('div', { class: 'stat' }, h('span', null, label), h('b', null, value));
+  const worlds = [
+    ...WORLD_IDS.map((w) => w as string),
+    ...Object.keys(st.perWorld).filter((k) => !(WORLD_IDS as readonly string[]).includes(k)),
+  ];
 
   const el = h(
     'div',

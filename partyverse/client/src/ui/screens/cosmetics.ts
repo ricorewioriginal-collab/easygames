@@ -3,7 +3,14 @@ import { CHARACTERS, getCharacter, type CharacterId } from '@shared/characters';
 import { cleanName } from '@shared/net/protocol';
 import { h } from '../dom';
 import type { App, RouteParams, ScreenView } from '../../app/app';
-import { DICE_SKINS, HAT_COSMETICS, TRAILS, isUnlocked, unlockingAchievement, type CosmeticKind } from '../../app/achievements';
+import {
+  DICE_SKINS,
+  HAT_COSMETICS,
+  TRAILS,
+  isUnlocked,
+  unlockingAchievement,
+  type CosmeticKind,
+} from '../../app/achievements';
 import { createCharacter, HAT_IDS, type CharacterRig, type HatId } from '../../render/characters';
 import type { Screen } from '../../render/engine';
 import { header, section } from './common';
@@ -25,7 +32,8 @@ export function create(app: App, params?: RouteParams): ScreenView {
   // Gespeicherte Auswahl darf nichts Gesperrtes enthalten (z. B. nach einem Import)
   store.update((d) => {
     const c = d.cosmetics;
-    if (c.hat && (!(HAT_IDS as readonly string[]).includes(c.hat) || !isUnlocked(d, 'hat', c.hat))) c.hat = null;
+    if (c.hat && (!(HAT_IDS as readonly string[]).includes(c.hat) || !isUnlocked(d, 'hat', c.hat)))
+      c.hat = null;
     if (c.trail && !isUnlocked(d, 'trail', c.trail)) c.trail = null;
     if (!isUnlocked(d, 'dice', c.dice)) c.dice = 'klassisch';
   });
@@ -48,7 +56,8 @@ export function create(app: App, params?: RouteParams): ScreenView {
 
   let rig: CharacterRig | null = null;
   let t = 0;
-  const trailColor = (): number | null => TRAILS.find((x) => x.id === store.data.cosmetics.trail)?.color ?? null;
+  const trailColor = (): number | null =>
+    TRAILS.find((x) => x.id === store.data.cosmetics.trail)?.color ?? null;
   const buildRig = (): void => {
     rig?.root.removeFromParent();
     rig?.dispose();
@@ -94,8 +103,23 @@ export function create(app: App, params?: RouteParams): ScreenView {
       const ach = o.id !== null && !ok ? unlockingAchievement(o.kind, o.id) : undefined;
       const b = h(
         'button',
-        { type: 'button', class: 'card pick', disabled: !ok, onclick: () => { pick(o.id); refresh(); } },
-        h('h4', null, o.swatch !== undefined ? h('span', { class: 'swatch', style: `background:#${o.swatch.toString(16).padStart(6, '0')}` }) : null, o.label),
+        {
+          type: 'button',
+          class: 'card pick',
+          disabled: !ok,
+          onclick: () => {
+            pick(o.id);
+            refresh();
+          },
+        },
+        h(
+          'h4',
+          null,
+          o.swatch !== undefined
+            ? h('span', { class: 'swatch', style: `background:#${o.swatch.toString(16).padStart(6, '0')}` })
+            : null,
+          o.label,
+        ),
         !ok ? h('span', { class: 'lock' }, '🔒 Erfolg: ' + (ach ? ach.name : 'noch nicht verfügbar')) : null,
       );
       buttons.push({ b, o });
@@ -114,7 +138,13 @@ export function create(app: App, params?: RouteParams): ScreenView {
   }
 
   // Name
-  const nameInput = h('input', { class: 'field', type: 'text', value: store.data.profile.name, maxlength: 14, 'aria-label': 'Spielername' });
+  const nameInput = h('input', {
+    class: 'field',
+    type: 'text',
+    value: store.data.profile.name,
+    maxlength: 14,
+    'aria-label': 'Spielername',
+  });
   nameInput.addEventListener('change', () => {
     const n = cleanName(nameInput.value);
     if (n) store.update((d) => void (d.profile.name = n));
@@ -122,7 +152,12 @@ export function create(app: App, params?: RouteParams): ScreenView {
   });
 
   const charGroup = group(
-    CHARACTERS.map((c) => ({ id: c.id, label: `${c.name} – ${c.species}`, kind: 'hat' as CosmeticKind, open: true })),
+    CHARACTERS.map((c) => ({
+      id: c.id,
+      label: `${c.name} – ${c.species}`,
+      kind: 'hat' as CosmeticKind,
+      open: true,
+    })),
     () => store.data.profile.character,
     (id) => {
       if (!id) return;
@@ -133,15 +168,50 @@ export function create(app: App, params?: RouteParams): ScreenView {
   // Figuren sind nie gesperrt, deshalb Kurzbeschreibung ergänzen
   charGroup.el.querySelectorAll('button').forEach((b, i) => {
     const c = CHARACTERS[i];
-    if (c) b.append(h('small', null, c.tagline), h('small', { class: 'lock' }, getCharacter(c.id).personality));
+    if (c)
+      b.append(h('small', null, c.tagline), h('small', { class: 'lock' }, getCharacter(c.id).personality));
   });
 
-  const hatOpts: Option[] = [{ id: null, label: 'Keiner', kind: 'hat' }, ...HAT_IDS.map((id) => ({ id, label: HAT_COSMETICS.find((x) => x.id === id)?.name ?? id, kind: 'hat' as CosmeticKind }))];
-  const hatGroup = group(hatOpts, () => store.data.cosmetics.hat, (id) => { store.update((d) => void (d.cosmetics.hat = id)); applyCosmetics(); });
-  const trailOpts: Option[] = [{ id: null, label: 'Keine', kind: 'trail' }, ...TRAILS.map((x) => ({ id: x.id, label: x.name, kind: 'trail' as CosmeticKind, swatch: x.color }))];
-  const trailGroup = group(trailOpts, () => store.data.cosmetics.trail, (id) => { store.update((d) => void (d.cosmetics.trail = id)); applyCosmetics(); });
-  const diceOpts: Option[] = DICE_SKINS.map((x) => ({ id: x.id, label: x.name, kind: 'dice' as CosmeticKind }));
-  const diceGroup = group(diceOpts, () => store.data.cosmetics.dice, (id) => { if (id) store.update((d) => void (d.cosmetics.dice = id)); });
+  const hatOpts: Option[] = [
+    { id: null, label: 'Keiner', kind: 'hat' },
+    ...HAT_IDS.map((id) => ({
+      id,
+      label: HAT_COSMETICS.find((x) => x.id === id)?.name ?? id,
+      kind: 'hat' as CosmeticKind,
+    })),
+  ];
+  const hatGroup = group(
+    hatOpts,
+    () => store.data.cosmetics.hat,
+    (id) => {
+      store.update((d) => void (d.cosmetics.hat = id));
+      applyCosmetics();
+    },
+  );
+  const trailOpts: Option[] = [
+    { id: null, label: 'Keine', kind: 'trail' },
+    ...TRAILS.map((x) => ({ id: x.id, label: x.name, kind: 'trail' as CosmeticKind, swatch: x.color })),
+  ];
+  const trailGroup = group(
+    trailOpts,
+    () => store.data.cosmetics.trail,
+    (id) => {
+      store.update((d) => void (d.cosmetics.trail = id));
+      applyCosmetics();
+    },
+  );
+  const diceOpts: Option[] = DICE_SKINS.map((x) => ({
+    id: x.id,
+    label: x.name,
+    kind: 'dice' as CosmeticKind,
+  }));
+  const diceGroup = group(
+    diceOpts,
+    () => store.data.cosmetics.dice,
+    (id) => {
+      if (id) store.update((d) => void (d.cosmetics.dice = id));
+    },
+  );
 
   const el = h(
     'div',

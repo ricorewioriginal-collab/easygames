@@ -67,7 +67,16 @@ export function makeSchedule(seed: number): Crystal[] {
     const roll = r.next();
     const value = roll < 0.58 ? 1 : roll < 0.87 ? 3 : 5;
     const p = randPos(r);
-    items.push({ id: id++, kind: 'crystal', value, x: p.x, y: p.y, t0: t, t1: t + (value === 1 ? 250 : 210), taken: false });
+    items.push({
+      id: id++,
+      kind: 'crystal',
+      value,
+      x: p.x,
+      y: p.y,
+      t0: t,
+      t1: t + (value === 1 ? 250 : 210),
+      taken: false,
+    });
   }
   for (let t = 90; t < DURATION_TICKS - 60; t += Math.round(r.float(55, 95))) {
     let p = randPos(r);
@@ -77,11 +86,23 @@ export function makeSchedule(seed: number): Crystal[] {
       const c = rich.length ? r.pick(rich) : null;
       if (c) {
         const a = r.float(0, Math.PI * 2);
-        const q = { x: clamp(c.x + Math.cos(a) * 1.5, -ARENA_X + 0.7, ARENA_X - 0.7), y: clamp(c.y + Math.sin(a) * 1.5, -ARENA_Y + 0.7, ARENA_Y - 0.7) };
+        const q = {
+          x: clamp(c.x + Math.cos(a) * 1.5, -ARENA_X + 0.7, ARENA_X - 0.7),
+          y: clamp(c.y + Math.sin(a) * 1.5, -ARENA_Y + 0.7, ARENA_Y - 0.7),
+        };
         if (q.x * q.x + q.y * q.y > HOME_R * HOME_R) p = q;
       }
     }
-    items.push({ id: id++, kind: 'bomb', value: -BOMB_PENALTY, x: p.x, y: p.y, t0: t, t1: t + 420, taken: false });
+    items.push({
+      id: id++,
+      kind: 'bomb',
+      value: -BOMB_PENALTY,
+      x: p.x,
+      y: p.y,
+      t0: t,
+      t1: t + 420,
+      taken: false,
+    });
   }
   items.sort((a, b) => a.t0 - b.t0 || a.id - b.id);
   return items;
@@ -100,7 +121,10 @@ export const game: MiniGame<KristallState> = {
     'Mit A sprintest du ein Stück – aber die Ausdauerleiste leert sich schnell.',
     'Kristalle verschwinden nach einigen Sekunden wieder. Wer die meisten Punkte holt, gewinnt.',
   ],
-  controls: { desktop: 'WASD oder Pfeile = laufen, Leertaste = Sprint', touch: 'Stick = laufen, Knopf A = Sprint' },
+  controls: {
+    desktop: 'WASD oder Pfeile = laufen, Leertaste = Sprint',
+    touch: 'Stick = laufen, Knopf A = Sprint',
+  },
   category: 'collect',
   duration: 25,
   touch: { stick: true, a: true, b: false },

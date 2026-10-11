@@ -21,7 +21,10 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
   scene.fog = new THREE.Fog(0x2a2a74, 30, 80);
 
   // --- Insel -----------------------------------------------------------
-  const base = new THREE.Mesh(new THREE.BoxGeometry(ARENA_X * 2 + 0.8, 1.6, ARENA_Y * 2 + 0.8), toon(0x3b2f8f));
+  const base = new THREE.Mesh(
+    new THREE.BoxGeometry(ARENA_X * 2 + 0.8, 1.6, ARENA_Y * 2 + 0.8),
+    toon(0x3b2f8f),
+  );
   base.position.y = -1;
   root.add(base);
   const under = new THREE.Mesh(new THREE.ConeGeometry(6.2, 5, 7), toon(0x5a3d9a));
@@ -73,7 +76,11 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
   for (let i = 0; i < 9; i++) {
     const rk = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8 + (i % 3) * 0.5, 0), rockMat[i % 3]!);
     const a = (i / 9) * Math.PI * 2 + 0.4;
-    rk.position.set(Math.cos(a) * (13 + (i % 4) * 2.5), -2 + (i % 5) * 1.8, Math.sin(a) * (10 + (i % 3) * 3) - 4);
+    rk.position.set(
+      Math.cos(a) * (13 + (i % 4) * 2.5),
+      -2 + (i % 5) * 1.8,
+      Math.sin(a) * (10 + (i % 3) * 3) - 4,
+    );
     root.add(rk);
     rocks.push(rk);
   }
@@ -85,7 +92,10 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
     sp.push(Math.cos(a) * rr, 8 + ((i * 37) % 31), Math.sin(a) * rr - 20);
   }
   starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
-  const starPts = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.35, sizeAttenuation: true, fog: false }));
+  const starPts = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({ color: 0xffffff, size: 0.35, sizeAttenuation: true, fog: false }),
+  );
   root.add(starPts);
 
   // --- Spielfigur --------------------------------------------------------
@@ -172,7 +182,15 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
       const g = new THREE.Group();
       const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 12), toon(0x1c1a2a));
       g.add(sphere);
-      const dirs: Array<[number, number, number]> = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, -1], [0.7, 0.7, 0], [-0.7, 0.7, 0]];
+      const dirs: Array<[number, number, number]> = [
+        [1, 0, 0],
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+        [0, 0, -1],
+        [0.7, 0.7, 0],
+        [-0.7, 0.7, 0],
+      ];
       for (const [dx, dy, dz] of dirs) {
         const sp2 = new THREE.Mesh(spikeGeo, toon(0xff3d5a, { emissive: 0xff1a3c, emissiveIntensity: 0.6 }));
         const v = new THREE.Vector3(dx, dy, dz).normalize();
@@ -264,7 +282,9 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
       bar.quaternion.copy(camera.quaternion);
       barFg.scale.x = Math.max(0.001, s.stamina);
       barFg.position.x = -0.55 * (1 - s.stamina);
-      (barFg.material as THREE.MeshBasicMaterial).color.setHex(s.exhausted ? 0xff5a5a : s.stamina < 0.35 ? 0xffc933 : 0x7dff6a);
+      (barFg.material as THREE.MeshBasicMaterial).color.setHex(
+        s.exhausted ? 0xff5a5a : s.stamina < 0.35 ? 0xffc933 : 0x7dff6a,
+      );
 
       // Kristalle und Bomben
       for (const c of s.items) {
@@ -313,7 +333,12 @@ export const createView: MiniGameViewFactory<KristallState> = (ctx, initial) => 
         const col = CRYSTAL_COLORS[s.lastPick.value] ?? 0xffffff;
         ctx.burst(new THREE.Vector3(s.lastPick.x, 1, -s.lastPick.y), col, 8 + s.lastPick.value * 3);
         ctx.sfx(s.lastPick.value >= 5 ? 'win' : s.lastPick.value >= 3 ? 'good' : 'coin');
-        popup('+' + s.lastPick.value, s.lastPick.x, s.lastPick.y, s.lastPick.value >= 5 ? '#ffd23f' : s.lastPick.value >= 3 ? '#6dffb0' : '#8fe0ff');
+        popup(
+          '+' + s.lastPick.value,
+          s.lastPick.x,
+          s.lastPick.y,
+          s.lastPick.value >= 5 ? '#ffd23f' : s.lastPick.value >= 3 ? '#6dffb0' : '#8fe0ff',
+        );
         body.scale.y = 1.25;
       }
       if (s.bombHits !== lastHit) {

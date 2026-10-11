@@ -2,7 +2,15 @@ import { Client, Room } from 'colyseus.js';
 import { GameCore } from '@shared/core/core';
 import type { Action, GameEvent, GameState, PlayerSetup } from '@shared/core/types';
 import type { CharacterId } from '@shared/characters';
-import { ROOM_NAME, isRoomCode, type ClientMessage, type ErrorMessage, type GameStartMessage, type GameUpdateMessage, type NoticeMessage } from '@shared/net/protocol';
+import {
+  ROOM_NAME,
+  isRoomCode,
+  type ClientMessage,
+  type ErrorMessage,
+  type GameStartMessage,
+  type GameUpdateMessage,
+  type NoticeMessage,
+} from '@shared/net/protocol';
 import type { GameSession } from './session';
 
 const TOKEN_KEY = 'partyverse.reconnect';
@@ -79,7 +87,14 @@ export class OnlineClient {
       const rooms = await this.client.getAvailableRooms(ROOM_NAME);
       return rooms
         .filter((r) => r.metadata?.public === true && r.metadata?.phase === 'lobby')
-        .map((r) => ({ code: String(r.roomId), name: String(r.metadata?.name ?? r.roomId), players: Number(r.metadata?.players ?? r.clients), max: Number(r.metadata?.max ?? 4), layoutId: String(r.metadata?.layoutId ?? ''), rounds: Number(r.metadata?.rounds ?? 0) }));
+        .map((r) => ({
+          code: String(r.roomId),
+          name: String(r.metadata?.name ?? r.roomId),
+          players: Number(r.metadata?.players ?? r.clients),
+          max: Number(r.metadata?.max ?? 4),
+          layoutId: String(r.metadata?.layoutId ?? ''),
+          rounds: Number(r.metadata?.rounds ?? 0),
+        }));
     } catch (e) {
       throw new OnlineError(OnlineClient.explain(e));
     }
@@ -131,10 +146,12 @@ export class OnlineClient {
 
   static explain(e: unknown): string {
     const m = e instanceof Error ? e.message : String(e);
-    if (/not found|locked|invalid room|no rooms/i.test(m)) return 'Diesen Raum gibt es nicht (mehr). Prüfe den Code.';
+    if (/not found|locked|invalid room|no rooms/i.test(m))
+      return 'Diesen Raum gibt es nicht (mehr). Prüfe den Code.';
     if (/voll|full/i.test(m)) return 'Der Raum ist voll.';
     if (/läuft bereits|already/i.test(m)) return 'Das Spiel in diesem Raum läuft bereits.';
-    if (/fetch|network|ECONN|Failed|timeout|WebSocket|connect/i.test(m)) return 'Der Server ist nicht erreichbar. Prüfe die Server-Adresse in den Optionen und deine Verbindung.';
+    if (/fetch|network|ECONN|Failed|timeout|WebSocket|connect/i.test(m))
+      return 'Der Server ist nicht erreichbar. Prüfe die Server-Adresse in den Optionen und deine Verbindung.';
     return m || 'Unbekannter Fehler bei der Verbindung.';
   }
 
@@ -186,11 +203,31 @@ export class OnlineClient {
   }
 
   lobby(): LobbyView | null {
-    const st = this.room?.state as { phase: string; code: string; layoutId: string; rounds: number; slots: Map<string, any> } | undefined;
+    const st = this.room?.state as
+      | { phase: string; code: string; layoutId: string; rounds: number; slots: Map<string, any> }
+      | undefined;
     if (!st) return null;
     const slots: LobbySlot[] = [];
-    st.slots.forEach((s: any) => slots.push({ id: s.id, name: s.name, character: s.character, kind: s.kind, difficulty: s.difficulty, ready: s.ready, connected: s.connected, host: s.host }));
-    return { phase: st.phase as LobbyView['phase'], code: st.code, layoutId: st.layoutId, rounds: st.rounds, slots, meId: this.meId };
+    st.slots.forEach((s: any) =>
+      slots.push({
+        id: s.id,
+        name: s.name,
+        character: s.character,
+        kind: s.kind,
+        difficulty: s.difficulty,
+        ready: s.ready,
+        connected: s.connected,
+        host: s.host,
+      }),
+    );
+    return {
+      phase: st.phase as LobbyView['phase'],
+      code: st.code,
+      layoutId: st.layoutId,
+      rounds: st.rounds,
+      slots,
+      meId: this.meId,
+    };
   }
   private emitLobby(): void {
     const v = this.lobby();

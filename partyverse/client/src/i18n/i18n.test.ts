@@ -13,7 +13,7 @@ function files(dir: string): string[] {
 }
 
 describe('i18n', () => {
-  it('jeder im Code verwendete Schlüssel t(\'…\') existiert im deutschen Wörterbuch', () => {
+  it("jeder im Code verwendete Schlüssel t('…') existiert im deutschen Wörterbuch", () => {
     const missing: string[] = [];
     for (const f of files(root)) {
       const src = readFileSync(f, 'utf8');
@@ -28,8 +28,21 @@ describe('i18n', () => {
 
   it('dynamische Schlüssel (Schwierigkeit, Feldart, Kategorie, Finale-Bonus) sind vollständig', () => {
     for (const k of ['easy', 'normal', 'hard']) expect(de['diff.' + k]).toBeTruthy();
-    for (const k of ['start', 'glimmer', 'thorn', 'event', 'item', 'shop', 'portal', 'gate', 'chaos']) expect(de['kind.' + k]).toBeTruthy();
-    for (const k of ['reaction', 'race', 'platform', 'collect', 'memory', 'rhythm', 'survival', 'physics', 'aim', 'puzzle']) expect(de['mg.cat.' + k]).toBeTruthy();
+    for (const k of ['start', 'glimmer', 'thorn', 'event', 'item', 'shop', 'portal', 'gate', 'chaos'])
+      expect(de['kind.' + k]).toBeTruthy();
+    for (const k of [
+      'reaction',
+      'race',
+      'platform',
+      'collect',
+      'memory',
+      'rhythm',
+      'survival',
+      'physics',
+      'aim',
+      'puzzle',
+    ])
+      expect(de['mg.cat.' + k]).toBeTruthy();
     for (const k of ['minigame', 'coins', 'events']) expect(de['finale.bonus.' + k]).toBeTruthy();
   });
 

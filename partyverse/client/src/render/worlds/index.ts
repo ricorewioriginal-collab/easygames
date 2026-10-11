@@ -11,7 +11,13 @@ import { createDecor as infinityCarnival } from './infinity-carnival';
 
 export { BoardView, THEMES } from './common';
 
-const FACTORIES: Record<WorldId, DecorFactory> = { prismara, 'nova-nexus': novaNexus, wurzelwild, 'paradox-city': paradoxCity, 'infinity-carnival': infinityCarnival };
+const FACTORIES: Record<WorldId, DecorFactory> = {
+  prismara,
+  'nova-nexus': novaNexus,
+  wurzelwild,
+  'paradox-city': paradoxCity,
+  'infinity-carnival': infinityCarnival,
+};
 
 /** Komplette 3D-Welt eines Bretts: Szene mit Himmel, Licht, Brett und Dekoration */
 export class WorldScene {
@@ -45,7 +51,14 @@ export class WorldScene {
     cam.near = 1;
     cam.far = r * 5;
     this.scene.add(this.sun, this.sun.target, this.board.group);
-    this.decor = FACTORIES[layout.world]({ layout, theme, quality, rng: new Rng(hashString(layout.id)), center: c.clone(), radius: r });
+    this.decor = FACTORIES[layout.world]({
+      layout,
+      theme,
+      quality,
+      rng: new Rng(hashString(layout.id)),
+      center: c.clone(),
+      radius: r,
+    });
     this.scene.add(this.decor.group);
   }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BOARD_R, game, type BoardState } from './balancierbrett';
 import { NEUTRAL_INPUT } from '../types';
+import { Rng } from '../../rng';
 
 const opts = { playerIndex: 0, players: 2 };
 
@@ -45,4 +46,12 @@ describe('Balancier-Brett', () => {
     expect(s.px).toBeCloseTo(0, 1);
     expect(game.score(s)).toBeLessThan(before);
   });
+  it('Regression: auch Welten mit weniger als 7 platzierbaren Löchern lassen den Bot nie abstürzen', () => {
+    for (let seed = 1; seed <= 400; seed++) {
+      const st = game.init((seed * 7919) % 2147483647, opts);
+      const r = new Rng(seed);
+      for (let i = 0; i < 1800 && !game.done(st); i++) game.step(st, game.bot(st, 0.21, r));
+      expect(Number.isFinite(game.score(st))).toBe(true);
+    }
+  }, 60000);
 });

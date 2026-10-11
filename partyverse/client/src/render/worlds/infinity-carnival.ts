@@ -1,8 +1,26 @@
 import * as THREE from 'three';
 import { disposeTree } from '../materials';
 import type { DecorFactory } from './common';
-import { createBalloons, createConfetti, createFireworks, createFloaters, createGarlands, createNightSky, createSearchlights, type Ring } from './infinity-carnival-fx';
-import { createCarousel, createCoaster, createFerris, createPlatforms, createTents, type Part, type PlatformSpot, type TentSpot } from './infinity-carnival-rides';
+import {
+  createBalloons,
+  createConfetti,
+  createFireworks,
+  createFloaters,
+  createGarlands,
+  createNightSky,
+  createSearchlights,
+  type Ring,
+} from './infinity-carnival-fx';
+import {
+  createCarousel,
+  createCoaster,
+  createFerris,
+  createPlatforms,
+  createTents,
+  type Part,
+  type PlatformSpot,
+  type TentSpot,
+} from './infinity-carnival-rides';
 
 /**
  * INFINITY CARNIVAL: endloser Jahrmarkt im Abendhimmel.
@@ -54,11 +72,24 @@ export const createDecor: DecorFactory = (ctx) => {
       parts.push(f);
       anchors.push(f.anchor!);
     } else if (o.kind === 'carousel') {
-      const c = createCarousel(s, x, groundY, z, carouselN++ % 2 ? -1 : 1, carouselN % 2 ? [0x4ae0ff, 0xfff0d0] : [0xff4a6a, 0xfff0d0]);
+      const c = createCarousel(
+        s,
+        x,
+        groundY,
+        z,
+        carouselN++ % 2 ? -1 : 1,
+        carouselN % 2 ? [0x4ae0ff, 0xfff0d0] : [0xff4a6a, 0xfff0d0],
+      );
       parts.push(c);
       anchors.push(c.anchor!);
     } else {
-      const spot: TentSpot = { x, y: groundY, z, scale: 0.95 + rng.next() * 0.25, yaw: Math.atan2(center.x - x, center.z - z) };
+      const spot: TentSpot = {
+        x,
+        y: groundY,
+        z,
+        scale: 0.95 + rng.next() * 0.25,
+        yaw: Math.atan2(center.x - x, center.z - z),
+      };
       (tentsA.length <= tentsB.length ? tentsA : tentsB).push(spot);
       anchors.push(new THREE.Vector3(x, groundY + 6.9 * s * spot.scale, z));
     }

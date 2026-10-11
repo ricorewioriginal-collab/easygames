@@ -24,7 +24,10 @@ export const createView: MiniGameViewFactory<BlitzState> = (ctx) => {
   // Rundenlichter
   const dots: THREE.Mesh[] = [];
   for (let i = 0; i < 5; i++) {
-    const m = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 12), new THREE.MeshBasicMaterial({ color: 0x3b3366 }));
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(0.28, 16, 12),
+      new THREE.MeshBasicMaterial({ color: 0x3b3366 }),
+    );
     m.position.set(-2.4 + i * 1.2, 0.5, 3);
     root.add(m);
     dots.push(m);
@@ -43,7 +46,14 @@ export const createView: MiniGameViewFactory<BlitzState> = (ctx) => {
   return {
     update(s, dt) {
       t += dt;
-      const col = s.phase === 'go' ? 0x2cff7a : s.phase === 'lock' ? 0x8a8a98 : s.phase === 'result' ? 0xffd23f : 0xff2d55;
+      const col =
+        s.phase === 'go'
+          ? 0x2cff7a
+          : s.phase === 'lock'
+            ? 0x8a8a98
+            : s.phase === 'result'
+              ? 0xffd23f
+              : 0xff2d55;
       ballMat.color.setHex(col);
       (halo.material as THREE.MeshBasicMaterial).color.setHex(col);
       const pulse = s.phase === 'wait' ? 1 + Math.sin(t * 6) * 0.04 : s.phase === 'go' ? 1.18 : 1;
@@ -52,7 +62,9 @@ export const createView: MiniGameViewFactory<BlitzState> = (ctx) => {
       rings.forEach((r, i) => (r.rotation.z += dt * (0.6 + i * 0.4)));
       dots.forEach((d, i) => {
         const p = s.points[i];
-        (d.material as THREE.MeshBasicMaterial).color.setHex(p === undefined ? 0x3b3366 : p > 700 ? 0x2cff7a : p > 0 ? 0xffd23f : 0xff2d55);
+        (d.material as THREE.MeshBasicMaterial).color.setHex(
+          p === undefined ? 0x3b3366 : p > 700 ? 0x2cff7a : p > 0 ? 0xffd23f : 0xff2d55,
+        );
       });
       camera.position.x = Math.sin(t * 0.5) * 0.4;
       camera.lookAt(0, 3, 0);

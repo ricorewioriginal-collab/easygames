@@ -26,7 +26,13 @@ export function simulate(g: MiniGame, seed: number, opts: MiniGameInitOptions, l
 }
 
 /** Lässt die KI ein Minispiel spielen und liefert Ergebnis und Protokoll. */
-export function runBot(g: MiniGame, seed: number, opts: MiniGameInitOptions, skill: number, botSeed: number): SimResult & { log: InputLog } {
+export function runBot(
+  g: MiniGame,
+  seed: number,
+  opts: MiniGameInitOptions,
+  skill: number,
+  botSeed: number,
+): SimResult & { log: InputLog } {
   const rng = new Rng(botSeed);
   const s = g.init(seed, opts);
   const rec = new InputRecorder();
@@ -38,5 +44,10 @@ export function runBot(g: MiniGame, seed: number, opts: MiniGameInitOptions, ski
     tick++;
   }
   const score = g.score(s);
-  return { score: Number.isFinite(score) && score > 0 ? score : 0, ticks: tick, finished: g.done(s), log: rec.log };
+  return {
+    score: Number.isFinite(score) && score > 0 ? score : 0,
+    ticks: tick,
+    finished: g.done(s),
+    log: rec.log,
+  };
 }

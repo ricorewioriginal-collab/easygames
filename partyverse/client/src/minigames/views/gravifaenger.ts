@@ -20,7 +20,7 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
   const nebulaCols = [0xff3d9a, 0x2bd1c4, 0x6a4dff, 0xff8a3d];
   for (let i = 0; i < 4; i++) {
     const n = new THREE.Mesh(new THREE.CircleGeometry(9 + (i % 2) * 4, 32), glow(nebulaCols[i]!, 0.055));
-    n.position.set(-14 + i * 9.5, (i % 2 ? 5 : -5), -26);
+    n.position.set(-14 + i * 9.5, i % 2 ? 5 : -5, -26);
     root.add(n);
   }
   const SPTS = 260;
@@ -32,7 +32,10 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
   }
   const sgeo = new THREE.BufferGeometry();
   sgeo.setAttribute('position', new THREE.BufferAttribute(spos, 3));
-  const starPoints = new THREE.Points(sgeo, new THREE.PointsMaterial({ color: 0xffffff, size: 2.5, sizeAttenuation: false }));
+  const starPoints = new THREE.Points(
+    sgeo,
+    new THREE.PointsMaterial({ color: 0xffffff, size: 2.5, sizeAttenuation: false }),
+  );
   root.add(starPoints);
   // Spielfeld-Rahmen (sanft leuchtende Grenze)
   const frame = new THREE.LineSegments(
@@ -51,7 +54,10 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
     g.add(ball);
     for (let k = 0; k < 3; k++) {
       const phi0 = 0.5 + k * 0.85 + (i % 2) * 0.2;
-      const band = new THREE.Mesh(new THREE.SphereGeometry(p.r * 1.012, 32, 8, 0, Math.PI * 2, phi0, 0.26), toon(pal.band));
+      const band = new THREE.Mesh(
+        new THREE.SphereGeometry(p.r * 1.012, 32, 8, 0, Math.PI * 2, phi0, 0.26),
+        toon(pal.band),
+      );
       g.add(band);
     }
     g.rotation.x = 0.5 + i * 0.3;
@@ -67,7 +73,15 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
     root.add(atmoHolder);
     g.position.set(0, 0, 0);
     if (i % 2 === 0) {
-      const ringMesh = new THREE.Mesh(new THREE.RingGeometry(p.r * 1.5, p.r * 2.0, 40), new THREE.MeshBasicMaterial({ color: pal.ring, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
+      const ringMesh = new THREE.Mesh(
+        new THREE.RingGeometry(p.r * 1.5, p.r * 2.0, 40),
+        new THREE.MeshBasicMaterial({
+          color: pal.ring,
+          transparent: true,
+          opacity: 0.7,
+          side: THREE.DoubleSide,
+        }),
+      );
       ringMesh.rotation.x = Math.PI / 2 - 0.9;
       ringMesh.rotation.y = 0.2;
       outer.add(ringMesh);
@@ -95,7 +109,10 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
   const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.265, 0.27, 0.12, 14), toon(0xff4d5e));
   stripe.position.y = -0.2;
   model.add(stripe);
-  const win = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 10), toon(0x5ad2ff, { emissive: 0x2a9fff, emissiveIntensity: 0.6 }));
+  const win = new THREE.Mesh(
+    new THREE.SphereGeometry(0.12, 12, 10),
+    toon(0x5ad2ff, { emissive: 0x2a9fff, emissiveIntensity: 0.6 }),
+  );
   win.position.set(0, 0.12, 0.2);
   model.add(win);
   for (let k = 0; k < 3; k++) {
@@ -224,7 +241,9 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
       bar.position.set(s.x, s.y - 1.25, 0.2);
       barFg.scale.x = Math.max(0.001, s.fuel);
       barFg.position.x = -0.55 * (1 - s.fuel);
-      (barFg.material as THREE.MeshBasicMaterial).color.setHex(s.fuel < 0.2 ? 0xff5a5a : s.fuel < 0.45 ? 0xffc933 : 0x6dff9a);
+      (barFg.material as THREE.MeshBasicMaterial).color.setHex(
+        s.fuel < 0.2 ? 0xff5a5a : s.fuel < 0.45 ? 0xffc933 : 0x6dff9a,
+      );
       // Schweif aktualisieren
       trailTimer -= dt;
       if (trailTimer <= 0) {
@@ -313,7 +332,11 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
       const D = Math.max(halfAcross / (0.466 * aspect), halfAlong / 0.466, 12);
       shake = Math.max(0, shake - dt);
       camera.up.set(rolled ? 1 : 0, rolled ? 0 : 1, 0);
-      camera.position.set(Math.sin(t * 0.3) * 0.3 + Math.sin(t * 85) * shake * 0.3, -D * 0.12 + Math.cos(t * 0.23) * 0.2, D);
+      camera.position.set(
+        Math.sin(t * 0.3) * 0.3 + Math.sin(t * 85) * shake * 0.3,
+        -D * 0.12 + Math.cos(t * 0.23) * 0.2,
+        D,
+      );
       camera.lookAt(0, 0, 0);
     },
     dispose() {

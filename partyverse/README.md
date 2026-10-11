@@ -27,12 +27,12 @@ npm run check        # Typen + Lint + alle Tests
 npm run build        # Client bauen nach partyverse/app (Basis-URL ./, überall lauffähig)
 ```
 
-| Befehl | Zweck |
-| --- | --- |
-| `npm test` | Vitest: Spielkern, 50 Layouts, 22 Minispiele, Netzwerk-Nachrichten, Server-Integration, Audio, Speicher |
-| `npm run lint` / `npm run format` | ESLint / Prettier |
-| `npm run typecheck` | `tsc` für Client und Server |
-| `npm run server:build` | Server als einzelne Datei nach `server/dist/server.mjs` |
+| Befehl                            | Zweck                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `npm test`                        | Vitest: Spielkern, 50 Layouts, 22 Minispiele, Netzwerk-Nachrichten, Server-Integration, Audio, Speicher |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                                                       |
+| `npm run typecheck`               | `tsc` für Client und Server                                                                             |
+| `npm run server:build`            | Server als einzelne Datei nach `server/dist/server.mjs`                                                 |
 
 Konfiguration (alles optional, siehe `.env.example`): `VITE_BASE` (Basis-URL beim Bauen), `VITE_SERVER_URL` (Standard-Serveradresse), `PORT`, `ALLOWED_ORIGINS` (Server).
 
@@ -40,12 +40,12 @@ Entwickler-Labore: `?lab=<minispiel-id>` (Minispiel einzeln, `&bot=0.8` lässt d
 
 ## Steuerung
 
-| | Desktop | Handy/Tablet |
-| --- | --- | --- |
-| Würfeln | Knopf „Würfeln“, Leertaste oder Enter | Knopf antippen |
-| Weg wählen | Knopf oder Feld anklicken | Knopf oder Feld antippen |
-| Kamera | Ziehen = drehen, Mausrad = Zoom | Wischen = drehen, Zwei-Finger = Zoom |
-| Pause/Menü | Esc oder ☰ | ☰ |
+|            | Desktop                                                  | Handy/Tablet                                  |
+| ---------- | -------------------------------------------------------- | --------------------------------------------- |
+| Würfeln    | Knopf „Würfeln“, Leertaste oder Enter                    | Knopf antippen                                |
+| Weg wählen | Knopf oder Feld anklicken                                | Knopf oder Feld antippen                      |
+| Kamera     | Ziehen = drehen, Mausrad = Zoom                          | Wischen = drehen, Zwei-Finger = Zoom          |
+| Pause/Menü | Esc oder ☰                                              | ☰                                            |
 | Minispiele | je Spiel in der Anleitung (WASD/Pfeile, Leertaste, Maus) | virtueller Stick und Knöpfe A/B bzw. Antippen |
 
 ## Spielregeln (Kurzfassung)

@@ -53,20 +53,28 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   }
   // Spurtrenner (laufende Striche)
   const DASH = 20;
-  const dashMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.03, 2.2), glow(0xcbb8ff, 0.9), DASH * 2);
+  const dashMesh = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(0.12, 0.03, 2.2),
+    glow(0xcbb8ff, 0.9),
+    DASH * 2,
+  );
   root.add(dashMesh);
   // Seitendeko: Lollipops
   const POSTS = 16;
-  const stemMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 1, 8), toon(0xfff1d6), POSTS * 2);
+  const stemMesh = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.16, 0.2, 1, 8),
+    toon(0xfff1d6),
+    POSTS * 2,
+  );
   const topMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 14, 10), toon(0xffffff), POSTS * 2);
   root.add(stemMesh, topMesh);
   const candy = [0xff4f9a, 0x3de7ff, 0xffd23f, 0x8dff6a, 0xb18cff, 0xff7a3d].map((c) => new THREE.Color(c));
-  const hash = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 3, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+  const hash = (i: number): number =>
+    (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 3, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
   const m4 = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const sc = new THREE.Vector3();
   const pos = new THREE.Vector3();
-
 
   /** Fasst eine Gruppe aus Primitiven zu EINEM Mesh mit Vertexfarben zusammen (spart Draw Calls). */
   const vcMat = toon(0xffffff).clone();
@@ -165,7 +173,11 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   const COINS = 70;
   const coinGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.09, 16);
   coinGeo.rotateX(Math.PI / 2);
-  const coinMesh = new THREE.InstancedMesh(coinGeo, toon(0xffd23f, { emissive: 0xffa200, emissiveIntensity: 0.8 }), COINS);
+  const coinMesh = new THREE.InstancedMesh(
+    coinGeo,
+    toon(0xffd23f, { emissive: 0xffa200, emissiveIntensity: 0.8 }),
+    COINS,
+  );
   root.add(coinMesh);
 
   // ---------- Läufer ----------
@@ -226,7 +238,10 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   dizzy.position.y = 2.35;
   hero.add(dizzy);
   // Schatten
-  const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.5, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3 }));
+  const shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(0.5, 16),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3 }),
+  );
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.02;
   root.add(shadow);
@@ -300,7 +315,10 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
           pos.set(x, hgt + rr * 0.6, zw);
           m4.compose(pos, q.identity(), sc.set(rr, rr, rr));
           topMesh.setMatrixAt(j, m4);
-          topMesh.setColorAt(j, candy[Math.floor(hash(idx * 5 + k) * candy.length) % candy.length] as THREE.Color);
+          topMesh.setColorAt(
+            j,
+            candy[Math.floor(hash(idx * 5 + k) * candy.length) % candy.length] as THREE.Color,
+          );
         }
       }
       stemMesh.instanceMatrix.needsUpdate = true;
@@ -375,8 +393,8 @@ export const createView: MiniGameViewFactory<DashState> = (ctx) => {
       const hgt = aspect < 1 ? 5.6 : 3.7;
       camPX += (s.px * 0.6 - camPX) * Math.min(1, dt * 6);
       shake = Math.max(0, shake - dt * 2.5);
-      const sx = (Math.sin(t * 61) * shake) * 0.15;
-      const sy2 = (Math.cos(t * 53) * shake) * 0.12;
+      const sx = Math.sin(t * 61) * shake * 0.15;
+      const sy2 = Math.cos(t * 53) * shake * 0.12;
       camera.position.set(camPX + sx, hgt + sy2 + s.py * 0.25, back);
       camera.lookAt(camPX * 0.8, 1.1, -12);
       camera.fov = 58 + s.pace * 6;

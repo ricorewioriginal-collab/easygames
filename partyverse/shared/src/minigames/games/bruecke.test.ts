@@ -9,7 +9,8 @@ function build(s: BridgeState, length: number): void {
   let guard = 0;
   while (s.phase === 'idle' && guard++ < 50) game.step(s, { ...NEUTRAL_INPUT, a: true });
   while (s.phase === 'grow' && guard++ < 600) game.step(s, { ...NEUTRAL_INPUT, a: s.len < length });
-  while ((s.phase === 'fall' || s.phase === 'walk' || s.phase === 'drop') && guard++ < 800 && !game.done(s)) game.step(s, NEUTRAL_INPUT);
+  while ((s.phase === 'fall' || s.phase === 'walk' || s.phase === 'drop') && guard++ < 800 && !game.done(s))
+    game.step(s, NEUTRAL_INPUT);
 }
 
 describe('bruecke – Regeln', () => {

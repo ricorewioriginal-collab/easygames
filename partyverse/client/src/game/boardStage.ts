@@ -36,8 +36,37 @@ const DICE_SKINS: Record<string, { body: number; pip: string; edge: number }> = 
 /** Augenzahl je Würfelseite (+x,−x,+y,−y,+z,−z): gegenüberliegende Seiten ergeben 7 */
 const FACE_VALUES = [3, 4, 1, 6, 2, 5];
 const PIPS: Record<number, Array<[number, number]>> = {
-  1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]],
-  5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]],
+  1: [[0, 0]],
+  2: [
+    [-1, -1],
+    [1, 1],
+  ],
+  3: [
+    [-1, -1],
+    [0, 0],
+    [1, 1],
+  ],
+  4: [
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+  ],
+  5: [
+    [-1, -1],
+    [1, -1],
+    [0, 0],
+    [-1, 1],
+    [1, 1],
+  ],
+  6: [
+    [-1, -1],
+    [1, -1],
+    [-1, 0],
+    [1, 0],
+    [-1, 1],
+    [1, 1],
+  ],
 };
 const faceUp = (v: number): THREE.Quaternion => {
   const q = new THREE.Quaternion();
@@ -73,7 +102,10 @@ export class BoardStage implements Screen {
   // Kamera
   private camPos = V();
   private camLook = V();
-  private mode: { kind: 'overview' } | { kind: 'follow'; id: string } | { kind: 'focus'; p: THREE.Vector3; dist: number } = { kind: 'overview' };
+  private mode:
+    | { kind: 'overview' }
+    | { kind: 'follow'; id: string }
+    | { kind: 'focus'; p: THREE.Vector3; dist: number } = { kind: 'overview' };
   yawOffset = 0;
   zoom = 1;
   private baseYaw = 0.5;
@@ -137,14 +169,19 @@ export class BoardStage implements Screen {
       g.fillText(name.slice(0, 11), 62, 34);
     }
     const tex = new THREE.CanvasTexture(c);
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }));
+    const s = new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }),
+    );
     s.scale.set(2.8, 0.7, 1);
     s.renderOrder = 20;
     return s;
   }
 
   private buildAltar(): void {
-    const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(0.85), toon(0xffd23f, { emissive: 0xffa400, emissiveIntensity: 0.6 }));
+    const crystal = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.85),
+      toon(0xffd23f, { emissive: 0xffa400, emissiveIntensity: 0.6 }),
+    );
     crystal.position.y = 2.1;
     crystal.scale.y = 1.4;
     const base = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.8, 0.7, 6), toon(0xd9b36a));
@@ -245,7 +282,11 @@ export class BoardStage implements Screen {
     const dist = b.radius * 1.55 * this.zoom;
     const yaw = this.baseYaw + this.yawOffset;
     const pitch = 0.9;
-    return new THREE.Vector3(b.center.x + Math.sin(yaw) * Math.cos(pitch) * dist, b.center.y + Math.sin(pitch) * dist, b.center.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+    return new THREE.Vector3(
+      b.center.x + Math.sin(yaw) * Math.cos(pitch) * dist,
+      b.center.y + Math.sin(pitch) * dist,
+      b.center.z + Math.cos(yaw) * Math.cos(pitch) * dist,
+    );
   }
   viewOverview(): void {
     this.mode = { kind: 'overview' };
@@ -279,11 +320,16 @@ export class BoardStage implements Screen {
       look.copy(b.center);
       if (!this.opts.calm) want.x += Math.sin(this.t * 0.1) * 1.5;
     } else {
-      const p = this.mode.kind === 'follow' ? (this.rigs.get(this.mode.id)?.root.position ?? b.center) : this.mode.p;
+      const p =
+        this.mode.kind === 'follow' ? (this.rigs.get(this.mode.id)?.root.position ?? b.center) : this.mode.p;
       const dist = (this.mode.kind === 'focus' ? this.mode.dist : 16) * this.zoom;
       look.copy(p).y += 1;
       const pitch = 0.62;
-      want.set(look.x + Math.sin(yaw) * Math.cos(pitch) * dist, look.y + Math.sin(pitch) * dist, look.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+      want.set(
+        look.x + Math.sin(yaw) * Math.cos(pitch) * dist,
+        look.y + Math.sin(pitch) * dist,
+        look.z + Math.cos(yaw) * Math.cos(pitch) * dist,
+      );
     }
     const k = 1 - Math.exp(-dt * 3.2);
     this.camPos.lerp(want, k);
@@ -322,7 +368,7 @@ export class BoardStage implements Screen {
     const rig = this.rigs.get(id);
     if (!rig) return;
     rig.play('teleportOut');
-    this.particles.burst(rig.root.position.clone().add(new THREE.Vector3(0, 1, 0)), 0x9a7bff, 24, );
+    this.particles.burst(rig.root.position.clone().add(new THREE.Vector3(0, 1, 0)), 0x9a7bff, 24);
     await this.wait(0.7);
     this.at.set(id, toNode);
     this.arrangeAll();
@@ -352,7 +398,10 @@ export class BoardStage implements Screen {
     rb.play('idle');
   }
 
-  react(id: string, anim: 'celebrate' | 'lose' | 'cheer' | 'shock' | 'dance' | 'win' | 'point' | 'roll' | 'jump'): void {
+  react(
+    id: string,
+    anim: 'celebrate' | 'lose' | 'cheer' | 'shock' | 'dance' | 'win' | 'point' | 'roll' | 'jump',
+  ): void {
     this.rigs.get(id)?.play(anim);
   }
   burstAt(id: string, color: number, n = 14): void {
@@ -372,10 +421,23 @@ export class BoardStage implements Screen {
     this.die.visible = true;
     this.dieMeshes.forEach((m, i) => (m.visible = i < dice.length));
     const spreadX = dice.length > 1 ? 0.95 : 0;
-    const starts = dice.map(() => new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6)));
-    const spin = dice.map(() => new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize());
-    const targets = dice.map((v) => faceUp(Math.min(6, Math.max(1, v))).premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 1.2)));
-    const camRight = new THREE.Vector3().subVectors(this.camera.position, base).cross(new THREE.Vector3(0, 1, 0)).normalize();
+    const starts = dice.map(() =>
+      new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+      ),
+    );
+    const spin = dice.map(() =>
+      new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(),
+    );
+    const targets = dice.map((v) =>
+      faceUp(Math.min(6, Math.max(1, v))).premultiply(
+        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 1.2),
+      ),
+    );
+    const camRight = new THREE.Vector3()
+      .subVectors(this.camera.position, base)
+      .cross(new THREE.Vector3(0, 1, 0))
+      .normalize();
     await this.tween(1.15, (k) => {
       dice.forEach((_, i) => {
         const m = this.dieMeshes[i];
@@ -384,7 +446,10 @@ export class BoardStage implements Screen {
         m.position.copy(camRight).multiplyScalar(off).add(base);
         m.position.y += Math.abs(Math.sin(k * Math.PI * 2.5)) * (1 - k) * 1.8 + (1 - k) * 0.6;
         const spinQ = new THREE.Quaternion().setFromAxisAngle(spin[i] as THREE.Vector3, (1 - k) * 14);
-        m.quaternion.copy(starts[i] as THREE.Quaternion).slerp(targets[i] as THREE.Quaternion, Math.min(1, k * 1.6)).premultiply(spinQ);
+        m.quaternion
+          .copy(starts[i] as THREE.Quaternion)
+          .slerp(targets[i] as THREE.Quaternion, Math.min(1, k * 1.6))
+          .premultiply(spinQ);
         if (k > 0.85) m.quaternion.copy(targets[i] as THREE.Quaternion);
       });
     });
@@ -399,7 +464,11 @@ export class BoardStage implements Screen {
   /** Weltposition → Bildschirm (Pixel relativ zum Canvas) */
   project(p: THREE.Vector3, w: number, h: number): { x: number; y: number; visible: boolean } {
     const v = p.clone().project(this.camera);
-    return { x: ((v.x + 1) / 2) * w, y: ((1 - v.y) / 2) * h, visible: v.z < 1 && Math.abs(v.x) < 1.2 && Math.abs(v.y) < 1.2 };
+    return {
+      x: ((v.x + 1) / 2) * w,
+      y: ((1 - v.y) / 2) * h,
+      visible: v.z < 1 && Math.abs(v.x) < 1.2 && Math.abs(v.y) < 1.2,
+    };
   }
   tokenHead(id: string): THREE.Vector3 {
     const r = this.rigs.get(id);
@@ -459,7 +528,9 @@ export class BoardStage implements Screen {
       this.ring.position.copy(a.root.position).setY(a.root.position.y + 0.12);
       this.ring.rotation.y += dt * 2;
       const idx = this.players.findIndex((p) => p.id === this.active);
-      ((this.ring.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial).color.setHex(playerColorHex(idx));
+      ((this.ring.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial).color.setHex(
+        playerColorHex(idx),
+      );
       const pulse = 1 + Math.sin(this.t * 5) * 0.08;
       this.ring.scale.setScalar(pulse);
     }
@@ -476,7 +547,11 @@ export class BoardStage implements Screen {
     this.world.dispose();
     this.die.traverse((o) => {
       const m = o as THREE.Mesh;
-      if (m.material) (Array.isArray(m.material) ? m.material : [m.material]).forEach((x) => { (x as THREE.MeshToonMaterial).map?.dispose(); x.dispose(); });
+      if (m.material)
+        (Array.isArray(m.material) ? m.material : [m.material]).forEach((x) => {
+          (x as THREE.MeshToonMaterial).map?.dispose();
+          x.dispose();
+        });
     });
     for (const s of this.tags.values()) {
       s.material.map?.dispose();

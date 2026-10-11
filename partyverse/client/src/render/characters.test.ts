@@ -3,8 +3,33 @@ import * as THREE from 'three';
 import { CHARACTER_IDS } from '@shared/characters';
 import { HAT_IDS, createCharacter, type CharacterAnim, type CharacterRig } from './characters';
 
-const ALL_ANIMS: CharacterAnim[] = ['idle', 'walk', 'run', 'jump', 'celebrate', 'lose', 'roll', 'cheer', 'shock', 'dance', 'teleportOut', 'teleportIn', 'win', 'point'];
-const ONE_SHOT: CharacterAnim[] = ['jump', 'celebrate', 'lose', 'roll', 'cheer', 'shock', 'teleportIn', 'win', 'point'];
+const ALL_ANIMS: CharacterAnim[] = [
+  'idle',
+  'walk',
+  'run',
+  'jump',
+  'celebrate',
+  'lose',
+  'roll',
+  'cheer',
+  'shock',
+  'dance',
+  'teleportOut',
+  'teleportIn',
+  'win',
+  'point',
+];
+const ONE_SHOT: CharacterAnim[] = [
+  'jump',
+  'celebrate',
+  'lose',
+  'roll',
+  'cheer',
+  'shock',
+  'teleportIn',
+  'win',
+  'point',
+];
 
 function countMeshes(root: THREE.Object3D): number {
   let n = 0;
@@ -23,12 +48,24 @@ function allFinite(root: THREE.Object3D): string | null {
   root.updateMatrixWorld(true);
   root.traverse((o) => {
     if (bad) return;
-    const v = [o.position.x, o.position.y, o.position.z, o.rotation.x, o.rotation.y, o.rotation.z, o.scale.x, o.scale.y, o.scale.z, ...o.matrixWorld.elements];
+    const v = [
+      o.position.x,
+      o.position.y,
+      o.position.z,
+      o.rotation.x,
+      o.rotation.y,
+      o.rotation.z,
+      o.scale.x,
+      o.scale.y,
+      o.scale.z,
+      ...o.matrixWorld.elements,
+    ];
     if (v.some((x) => !Number.isFinite(x))) bad = o.name || o.type;
   });
   return bad;
 }
-const size = (root: THREE.Object3D): THREE.Vector3 => new THREE.Box3().setFromObject(root).getSize(new THREE.Vector3());
+const size = (root: THREE.Object3D): THREE.Vector3 =>
+  new THREE.Box3().setFromObject(root).getSize(new THREE.Vector3());
 const step = (rig: CharacterRig, seconds: number, dt = 1 / 60): void => {
   for (let t = 0; t < seconds; t += dt) rig.update(dt);
 };
@@ -90,7 +127,13 @@ describe('Figuren: Erzeugung und Maße', () => {
     const sig = CHARACTER_IDS.map((id) => {
       const rig = createCharacter(id);
       const s = size(rig.root);
-      const out = { id, wh: s.x / s.y, dh: s.z / s.y, meshes: countMeshes(rig.root), nodes: countAll(rig.root) };
+      const out = {
+        id,
+        wh: s.x / s.y,
+        dh: s.z / s.y,
+        meshes: countMeshes(rig.root),
+        nodes: countAll(rig.root),
+      };
       rig.dispose();
       return out;
     });
@@ -98,10 +141,17 @@ describe('Figuren: Erzeugung und Maße', () => {
       for (let j = i + 1; j < sig.length; j++) {
         const a = sig[i];
         const b = sig[j];
-        const different = Math.abs(a.wh - b.wh) > 0.02 || Math.abs(a.dh - b.dh) > 0.02 || a.meshes !== b.meshes || a.nodes !== b.nodes;
+        const different =
+          Math.abs(a.wh - b.wh) > 0.02 ||
+          Math.abs(a.dh - b.dh) > 0.02 ||
+          a.meshes !== b.meshes ||
+          a.nodes !== b.nodes;
         expect(different, `${a.id} vs ${b.id}`).toBe(true);
         // Teile-Anordnung: Verhältnis Knoten/Meshes ebenfalls nicht identisch
-        expect(a.nodes === b.nodes && a.meshes === b.meshes && Math.abs(a.wh - b.wh) < 0.02, `${a.id} vs ${b.id}`).toBe(false);
+        expect(
+          a.nodes === b.nodes && a.meshes === b.meshes && Math.abs(a.wh - b.wh) < 0.02,
+          `${a.id} vs ${b.id}`,
+        ).toBe(false);
       }
   });
 });

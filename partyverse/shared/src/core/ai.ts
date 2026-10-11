@@ -14,10 +14,11 @@ export function distancesTo(layout: Layout, target: number, phase: number): numb
   const q = [target];
   for (let i = 0; i < q.length; i++) {
     const n = q[i] as number;
-    for (const f of rev[n] ?? []) if (d[f] === Infinity) {
-      d[f] = (d[n] as number) + 1;
-      q.push(f);
-    }
+    for (const f of rev[n] ?? [])
+      if (d[f] === Infinity) {
+        d[f] = (d[n] as number) + 1;
+        q.push(f);
+      }
   }
   return d;
 }
@@ -57,7 +58,8 @@ export function decide(core: GameCore, id: string, rng: Rng): Action | null {
         return 0;
     }
   };
-  const leading = (): boolean => foes.every((f) => me.shards > f.shards || (me.shards === f.shards && me.coins >= f.coins));
+  const leading = (): boolean =>
+    foes.every((f) => me.shards > f.shards || (me.shards === f.shards && me.coins >= f.coins));
   const pass = (node: number): number => (node === s.altar && me.coins >= ALTAR_COST ? 14 : 0);
   const memo = new Map<number, number>();
   const best = (node: number, k: number): number => {
@@ -68,7 +70,9 @@ export function decide(core: GameCore, id: string, rng: Rng): Action | null {
     if (k === 0) v = landing(node) + pass(node);
     else {
       v = -Infinity;
-      for (const e of layout.edges) if (e.from === node && edgeActive(e, phase)) v = Math.max(v, (k > 1 ? pass(e.to) : 0) + best(e.to, k - 1));
+      for (const e of layout.edges)
+        if (e.from === node && edgeActive(e, phase))
+          v = Math.max(v, (k > 1 ? pass(e.to) : 0) + best(e.to, k - 1));
       if (v === -Infinity) v = landing(node);
     }
     memo.set(key, v);
@@ -98,18 +102,34 @@ export function decide(core: GameCore, id: string, rng: Rng): Action | null {
       }
       case 'gate': {
         if (pd.hasKey) return { type: 'gate', choice: 'key' };
-        if (pd.canPay && (me.coins >= 8 || level === 'easy' || rng.chance(0.4))) return { type: 'gate', choice: 'pay' };
+        if (pd.canPay && (me.coins >= 8 || level === 'easy' || rng.chance(0.4)))
+          return { type: 'gate', choice: 'pay' };
         return { type: 'gate', choice: 'back' };
       }
       case 'altar':
         return { type: 'altar', buy: true };
       case 'shop': {
-        const offers = pd.offers.map((it, i) => ({ it, i })).filter((o) => ITEMS[o.it].cost <= me.coins && me.items.length < 3);
+        const offers = pd.offers
+          .map((it, i) => ({ it, i }))
+          .filter((o) => ITEMS[o.it].cost <= me.coins && me.items.length < 3);
         if (!offers.length) return { type: 'shopLeave' };
-        const surplus = (c: number): boolean => me.coins - c >= ALTAR_COST || (me.coins < ALTAR_COST && me.coins - c >= 0 && rng.chance(level === 'hard' ? 0.5 : 0.35));
-        const prio: ItemId[] = ['zwillingswuerfel', 'schutzschild', 'praezisionswuerfel', 'taschenspiegel', 'frostuhr', 'phasenmantel', 'schluesselfragment', 'tauschkristall'];
+        const surplus = (c: number): boolean =>
+          me.coins - c >= ALTAR_COST ||
+          (me.coins < ALTAR_COST && me.coins - c >= 0 && rng.chance(level === 'hard' ? 0.5 : 0.35));
+        const prio: ItemId[] = [
+          'zwillingswuerfel',
+          'schutzschild',
+          'praezisionswuerfel',
+          'taschenspiegel',
+          'frostuhr',
+          'phasenmantel',
+          'schluesselfragment',
+          'tauschkristall',
+        ];
         if (level === 'easy' && rng.chance(0.6)) return { type: 'shopLeave' };
-        const pick = offers.filter((o) => surplus(ITEMS[o.it].cost)).sort((a, b) => prio.indexOf(a.it) - prio.indexOf(b.it))[0];
+        const pick = offers
+          .filter((o) => surplus(ITEMS[o.it].cost))
+          .sort((a, b) => prio.indexOf(a.it) - prio.indexOf(b.it))[0];
         return pick ? { type: 'shopBuy', index: pick.i } : { type: 'shopLeave' };
       }
     }
@@ -123,26 +143,46 @@ export function decide(core: GameCore, id: string, rng: Rng): Action | null {
   return null;
 }
 
-function pickItem(core: GameCore, me: PlayerState, foes: PlayerState[], toAltar: number[], rng: Rng, level: Difficulty): Action | null {
+function pickItem(
+  core: GameCore,
+  me: PlayerState,
+  foes: PlayerState[],
+  toAltar: number[],
+  rng: Rng,
+  level: Difficulty,
+): Action | null {
   if (me.items.length === 0) return null;
   if (level === 'easy' && !rng.chance(0.35)) return null;
   const has = (i: ItemId): boolean => me.items.includes(i);
   const myDist = toAltar[me.position] as number;
   const richest = foes.filter((f) => f.coins >= 5).sort((a, b) => b.coins - a.coins)[0];
-  const closest = foes.slice().sort((a, b) => (toAltar[a.position] as number) - (toAltar[b.position] as number))[0];
-  if (has('taschenspiegel') && richest) return { type: 'useItem', item: 'taschenspiegel', target: richest.id };
-  if (has('tauschkristall') && closest && me.coins >= ALTAR_COST && (toAltar[closest.position] as number) + 5 < myDist) return { type: 'useItem', item: 'tauschkristall', target: closest.id };
+  const closest = foes
+    .slice()
+    .sort((a, b) => (toAltar[a.position] as number) - (toAltar[b.position] as number))[0];
+  if (has('taschenspiegel') && richest)
+    return { type: 'useItem', item: 'taschenspiegel', target: richest.id };
+  if (
+    has('tauschkristall') &&
+    closest &&
+    me.coins >= ALTAR_COST &&
+    (toAltar[closest.position] as number) + 5 < myDist
+  )
+    return { type: 'useItem', item: 'tauschkristall', target: closest.id };
   if (has('frostuhr')) {
     const threat = foes.slice().sort((a, b) => b.shards * 10 + b.coins - (a.shards * 10 + a.coins))[0];
-    if (threat && (threat.coins >= 15 || threat.shards > me.shards)) return { type: 'useItem', item: 'frostuhr', target: threat.id };
+    if (threat && (threat.coins >= 15 || threat.shards > me.shards))
+      return { type: 'useItem', item: 'frostuhr', target: threat.id };
   }
   if (me.diceMode === 'one') {
     const goal = me.coins >= ALTAR_COST;
-    if (has('zwillingswuerfel') && ((goal && myDist >= 6 && myDist <= 12) || (!goal && rng.chance(0.25)))) return { type: 'useItem', item: 'zwillingswuerfel' };
-    if (has('praezisionswuerfel') && ((goal && myDist >= 3 && myDist <= 6) || (!goal && rng.chance(0.3)))) return { type: 'useItem', item: 'praezisionswuerfel' };
+    if (has('zwillingswuerfel') && ((goal && myDist >= 6 && myDist <= 12) || (!goal && rng.chance(0.25))))
+      return { type: 'useItem', item: 'zwillingswuerfel' };
+    if (has('praezisionswuerfel') && ((goal && myDist >= 3 && myDist <= 6) || (!goal && rng.chance(0.3))))
+      return { type: 'useItem', item: 'praezisionswuerfel' };
   }
   if (has('schutzschild') && !me.shield && me.coins >= 10) return { type: 'useItem', item: 'schutzschild' };
-  if (has('phasenmantel') && !me.mantle && me.coins >= 12 && rng.chance(0.5)) return { type: 'useItem', item: 'phasenmantel' };
+  if (has('phasenmantel') && !me.mantle && me.coins >= 12 && rng.chance(0.5))
+    return { type: 'useItem', item: 'phasenmantel' };
   void core;
   return null;
 }

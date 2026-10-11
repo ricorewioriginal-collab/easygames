@@ -29,7 +29,11 @@ export class MiniInput {
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
     });
     on(window, 'keyup', (e) => this.keys.delete(e.code));
-    on(window, 'blur', () => (this.keys.clear(), (this.pointer.pd = false), (this.btn.a = this.btn.b = false)));
+    on(
+      window,
+      'blur',
+      () => (this.keys.clear(), (this.pointer.pd = false), (this.btn.a = this.btn.b = false)),
+    );
     const move = (e: PointerEvent) => {
       const r = this.area.getBoundingClientRect();
       this.pointer.px = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1));
@@ -46,7 +50,9 @@ export class MiniInput {
     area.addEventListener('pointermove', move);
     on(window, 'pointerup', up);
     on(window, 'pointercancel', up);
-    this.cleanup.push(() => (area.removeEventListener('pointerdown', down), area.removeEventListener('pointermove', move)));
+    this.cleanup.push(
+      () => (area.removeEventListener('pointerdown', down), area.removeEventListener('pointermove', move)),
+    );
     if (showTouch) this.buildTouchUi(game);
   }
 
@@ -78,7 +84,10 @@ export class MiniInput {
         this.stick.y = Math.abs(dy) < 0.12 ? 0 : -dy;
         knob.style.transform = `translate(${dx * 38}px, ${dy * 38}px)`;
       };
-      stick.addEventListener('pointerdown', (e) => ((id = e.pointerId), stick.setPointerCapture(id), upd(e), e.preventDefault()));
+      stick.addEventListener(
+        'pointerdown',
+        (e) => ((id = e.pointerId), stick.setPointerCapture(id), upd(e), e.preventDefault()),
+      );
       stick.addEventListener('pointermove', (e) => e.pointerId === id && upd(e));
       const end = (e: PointerEvent) => {
         if (e.pointerId !== id) return;
@@ -91,7 +100,12 @@ export class MiniInput {
     }
     ui.querySelectorAll<HTMLButtonElement>('.mg-btn').forEach((b) => {
       const k = b.dataset.b as 'a' | 'b';
-      b.addEventListener('pointerdown', (e) => ((this.btn[k] = true), b.setPointerCapture(e.pointerId), b.classList.add('on'), e.preventDefault()));
+      b.addEventListener(
+        'pointerdown',
+        (e) => (
+          (this.btn[k] = true), b.setPointerCapture(e.pointerId), b.classList.add('on'), e.preventDefault()
+        ),
+      );
       const end = () => ((this.btn[k] = false), b.classList.remove('on'));
       b.addEventListener('pointerup', end);
       b.addEventListener('pointercancel', end);

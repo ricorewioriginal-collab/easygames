@@ -8,7 +8,10 @@ import { lerp } from '../util';
  * Was übersteht, wird abgeschnitten; eine perfekte Landung behält die volle Breite und gibt einen Bonus.
  * Koordinaten: x nach rechts in Einheiten (Blockhöhe = 1).
  */
-export interface TowerBlock { x: number; w: number }
+export interface TowerBlock {
+  x: number;
+  w: number;
+}
 export interface TowerState {
   rnd: Rng;
   tick: number;
@@ -52,7 +55,10 @@ export const game: MiniGame<TowerState> = {
     'Perfekt getroffen bleibt der Block breit und bringt Bonuspunkte, mehrere Perfekte hintereinander zählen mehr.',
     'Pro Stockwerk gibt es 50 Punkte. Verfehlt = Ende. Der Kran wird immer schneller.',
   ],
-  controls: { desktop: 'Leertaste, Enter oder Mausklick: Block fallen lassen', touch: 'Knopf A: Block fallen lassen' },
+  controls: {
+    desktop: 'Leertaste, Enter oder Mausklick: Block fallen lassen',
+    touch: 'Knopf A: Block fallen lassen',
+  },
   category: 'physics',
   duration: 30,
   touch: { stick: false, a: true, b: false },
@@ -151,6 +157,13 @@ export const game: MiniGame<TowerState> = {
   hud: (s) => ({
     left: `Höhe ${heightOf(s)}`,
     right: `${score(s)} Pkt`,
-    hint: s.streak >= 2 ? `Perfekt x${s.streak}!` : s.lost ? 'Verfehlt!' : s.perfects ? `${s.perfects} Perfekte` : undefined,
+    hint:
+      s.streak >= 2
+        ? `Perfekt x${s.streak}!`
+        : s.lost
+          ? 'Verfehlt!'
+          : s.perfects
+            ? `${s.perfects} Perfekte`
+            : undefined,
   }),
 };

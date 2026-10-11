@@ -56,7 +56,15 @@ describe.each(MINIGAMES.map((g) => [g.id, g] as const))('Minispiel %s', (_id, g)
     const rng = new Rng(4242);
     const s = g.init(31, opts);
     for (let t = 0; t < Math.ceil(g.duration * 60) + 5; t++) {
-      g.step(s, { x: rng.float(-1, 1), y: rng.float(-1, 1), a: rng.chance(0.3), b: rng.chance(0.3), px: rng.float(-1, 1), py: rng.float(-1, 1), pd: rng.chance(0.5) });
+      g.step(s, {
+        x: rng.float(-1, 1),
+        y: rng.float(-1, 1),
+        a: rng.chance(0.3),
+        b: rng.chance(0.3),
+        px: rng.float(-1, 1),
+        py: rng.float(-1, 1),
+        pd: rng.chance(0.5),
+      });
     }
     expect(Number.isFinite(g.score(s))).toBe(true);
     expect(g.hud(s).left).toBeTypeOf('string');

@@ -9,7 +9,8 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
   scene.background = new THREE.Color(0xffc7a1);
   scene.fog = new THREE.Fog(0xffd7bd, 30, 90);
   const sphere = new THREE.SphereGeometry(1, 14, 10);
-  const hash = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 5, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+  const hash = (i: number): number =>
+    (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 5, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
   // ---------- Himmel ----------
   const far = new THREE.Group();
@@ -43,7 +44,10 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
   const mount1 = toon(0xc98fd6, { emissive: 0xc98fd6, emissiveIntensity: 0.35 });
   const mount2 = toon(0xa774c9, { emissive: 0xa774c9, emissiveIntensity: 0.3 });
   for (let i = 0; i < 14; i++) {
-    const m = new THREE.Mesh(new THREE.ConeGeometry(9 + hash(i) * 6, 14 + hash(i + 3) * 12, 5), i % 2 ? mount1 : mount2);
+    const m = new THREE.Mesh(
+      new THREE.ConeGeometry(9 + hash(i) * 6, 14 + hash(i + 3) * 12, 5),
+      i % 2 ? mount1 : mount2,
+    );
     m.position.set(-70 + i * 12, -3 + hash(i + 9) * 3, -55 - (i % 2) * 12);
     far.add(m);
   }
@@ -194,7 +198,24 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
   mArm.position.set(0.15, 0.75, 0.38);
   const mArmB = mArm.clone();
   mArmB.position.z = -0.38;
-  inner.add(mBody, mBelly, mHead, mEarA, mEarB, mInA, mInB, mNose, mEyeA, mEyeB, mCape, mTail, mFootA, mFootB, mArm, mArmB);
+  inner.add(
+    mBody,
+    mBelly,
+    mHead,
+    mEarA,
+    mEarB,
+    mInA,
+    mInB,
+    mNose,
+    mEyeA,
+    mEyeB,
+    mCape,
+    mTail,
+    mFootA,
+    mFootB,
+    mArm,
+    mArmB,
+  );
 
   // Texte
   const perfect = textSprite('PERFEKT!', { color: '#ffffff', bg: '#ff4f7d', size: 56, width: 3.4 });
@@ -310,7 +331,8 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
       mFootB.position.x = walking ? -Math.sin(walkBob) * 0.2 : 0;
       mTail.rotation.z = Math.PI / 2.5 + Math.sin(t * 6) * 0.2;
       // Freude bei Erfolg
-      if (s.phase === 'idle' && s.last > 0 && s.last < 3 && s.timer < 18) inner.position.y += Math.abs(Math.sin(s.timer * 0.35)) * 0.35;
+      if (s.phase === 'idle' && s.last > 0 && s.last < 3 && s.timer < 18)
+        inner.position.y += Math.abs(Math.sin(s.timer * 0.35)) * 0.35;
 
       // ---------- Kamera ----------
       const aspect = camera.aspect;
@@ -325,7 +347,8 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
       camera.position.set(camX + Math.sin(t * 70) * shake * 0.12, camY + Math.cos(t * 60) * shake * 0.1, d);
       camera.lookAt(camX, camY - (aspect < 1 ? 1.2 : 0.6), 0);
       far.position.x = camX * 0.9;
-      for (let i = 0; i < puffs.length; i++) (puffs[i] as THREE.Mesh).position.x = -60 + i * 5.2 + Math.sin(t * 0.3 + i) * 0.8 - camX * 0.1;
+      for (let i = 0; i < puffs.length; i++)
+        (puffs[i] as THREE.Mesh).position.x = -60 + i * 5.2 + Math.sin(t * 0.3 + i) * 0.8 - camX * 0.1;
     },
     dispose() {
       scene.fog = null;

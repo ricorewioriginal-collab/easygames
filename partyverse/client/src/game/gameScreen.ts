@@ -15,7 +15,17 @@ import { FinaleStage, finaleOverlay } from './finale';
 import { Hud, type Shown } from './hud';
 import { MinigameFlow } from './minigameFlow';
 
-const KIND_ICON: Record<string, string> = { start: '🏁', glimmer: '✦', thorn: '☠', event: '❓', item: '🎁', shop: '🛒', portal: '🌀', gate: '🚧', chaos: '🎭' };
+const KIND_ICON: Record<string, string> = {
+  start: '🏁',
+  glimmer: '✦',
+  thorn: '☠',
+  event: '❓',
+  item: '🎁',
+  shop: '🛒',
+  portal: '🌀',
+  gate: '🚧',
+  chaos: '🎭',
+};
 const delay = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 /** Das laufende Spiel: verbindet Sitzung (lokal/online), 3D-Brett, Oberfläche, Minispiele und Siegerehrung. */
@@ -49,7 +59,15 @@ export class GameScreen {
   ) {
     const s = app.store.data;
     const mainId = session.localIds[0] ?? null;
-    this.stage = new BoardStage(this.layout, session.players, { quality: app.engine.quality, shake: s.settings.cameraShake, calm: s.settings.reducedMotion, hat: s.cosmetics.hat, trail: s.cosmetics.trail, dice: s.cosmetics.dice, cosmeticFor: mainId });
+    this.stage = new BoardStage(this.layout, session.players, {
+      quality: app.engine.quality,
+      shake: s.settings.cameraShake,
+      calm: s.settings.reducedMotion,
+      hat: s.cosmetics.hat,
+      trail: s.cosmetics.trail,
+      dice: s.cosmetics.dice,
+      cosmeticFor: mainId,
+    });
     this.hud = new Hud(session.players, () => this.openPause());
     this.flow = new MinigameFlow(app, session, this.el, () => (this.finaleStage ? null : this.stage));
     this.el.append(this.hud.el, this.flow.el, this.overlay);
@@ -62,7 +80,10 @@ export class GameScreen {
     return this.session.players.find((p) => p.id === id)?.name ?? id;
   }
   private idx(id: string): number {
-    return Math.max(0, this.session.players.findIndex((p) => p.id === id));
+    return Math.max(
+      0,
+      this.session.players.findIndex((p) => p.id === id),
+    );
   }
 
   // ------------------------------------------------------------------ Start
@@ -79,7 +100,8 @@ export class GameScreen {
     );
     this.bindInput();
     if (this.state.phase === 'ended') this.reflect();
-    else if (session.initialEvents.length && this.state.round === 1 && !this.state.lastDice) this.enqueue(session.initialEvents, false);
+    else if (session.initialEvents.length && this.state.round === 1 && !this.state.lastDice)
+      this.enqueue(session.initialEvents, false);
     else this.reflect();
     if (session instanceof LocalSession) session.start();
   }
@@ -100,9 +122,15 @@ export class GameScreen {
     }
   }
   private syncShown(): void {
-    for (const [id, p] of Object.entries(this.state.players)) this.shown[id] = { coins: p.coins, shards: p.shards, items: [...p.items], shield: p.shield };
+    for (const [id, p] of Object.entries(this.state.players))
+      this.shown[id] = { coins: p.coins, shards: p.shards, items: [...p.items], shield: p.shield };
     this.hud.setScores(this.shown, this.state.current || null);
-    this.hud.setRound(this.state.round, this.state.rounds, this.session.core.effectivePhase(), this.layout.foldPhases);
+    this.hud.setRound(
+      this.state.round,
+      this.state.rounds,
+      this.session.core.effectivePhase(),
+      this.layout.foldPhases,
+    );
   }
 
   // ------------------------------------------------------------------ Ereignisse
@@ -187,7 +215,11 @@ export class GameScreen {
         await stage.rollDice(ev.player, ev.dice);
         sfx('diceLand');
         hud.showDice(ev.total, ev.dice);
-        if (ev.bonus) hud.say(ev.bonus > 0 ? t('ev.bonusPlus', { n: ev.bonus }) : t('ev.bonusMinus', { n: -ev.bonus }), 1800);
+        if (ev.bonus)
+          hud.say(
+            ev.bonus > 0 ? t('ev.bonusPlus', { n: ev.bonus }) : t('ev.bonusMinus', { n: -ev.bonus }),
+            1800,
+          );
         await delay(850);
         stage.hideDice();
         break;
@@ -319,13 +351,26 @@ export class GameScreen {
     this.refreshScores();
   }
 
-  private showMinigameResults(ranking: string[], rewards: Record<string, number>, winners: string[]): Promise<void> {
+  private showMinigameResults(
+    ranking: string[],
+    rewards: Record<string, number>,
+    winners: string[],
+  ): Promise<void> {
     return new Promise((resolve) => {
       this.app.audio.music('results');
       const list = h('div', { class: 'rank' });
       ranking.forEach((id, i) => {
         const sc = this.scores[id];
-        list.appendChild(h('div', { class: `rrow pc${(this.idx(id) % 4) + 1}${winners.includes(id) ? ' w' : ''}` }, h('span', { class: 'pos' }, ['🥇', '🥈', '🥉', '4.'][i] ?? String(i + 1)), h('span', null, this.nameOf(id)), h('span', null, sc === undefined ? '' : String(Math.round(sc))), h('span', { class: 'coins' }, `+${rewards[id] ?? 0} ✦`)));
+        list.appendChild(
+          h(
+            'div',
+            { class: `rrow pc${(this.idx(id) % 4) + 1}${winners.includes(id) ? ' w' : ''}` },
+            h('span', { class: 'pos' }, ['🥇', '🥈', '🥉', '4.'][i] ?? String(i + 1)),
+            h('span', null, this.nameOf(id)),
+            h('span', null, sc === undefined ? '' : String(Math.round(sc))),
+            h('span', { class: 'coins' }, `+${rewards[id] ?? 0} ✦`),
+          ),
+        );
       });
       for (const id of winners) this.stage.react(id, 'celebrate');
       let done = false;
@@ -336,7 +381,19 @@ export class GameScreen {
         resolve();
       };
       clear(this.overlay);
-      this.overlay.appendChild(h('div', { class: 'cover' }, h('div', { class: 'panel' }, h('h2', null, t('mg.results')), list, h('div', { style: 'text-align:right' }, btn(t('mg.continue'), finish, 'hot')))));
+      this.overlay.appendChild(
+        h(
+          'div',
+          { class: 'cover' },
+          h(
+            'div',
+            { class: 'panel' },
+            h('h2', null, t('mg.results')),
+            list,
+            h('div', { style: 'text-align:right' }, btn(t('mg.continue'), finish, 'hot')),
+          ),
+        ),
+      );
       this.app.audio.sfx(winners.some((w) => this.session.localIds.includes(w)) ? 'win' : 'lose');
       setTimeout(finish, 12000);
     });
@@ -366,7 +423,9 @@ export class GameScreen {
       return;
     }
     const actors = this.session.core.pendingActors();
-    const mine = actors.find((id) => this.session.localIds.includes(id) && this.session.core.player(id).kind === 'human');
+    const mine = actors.find(
+      (id) => this.session.localIds.includes(id) && this.session.core.player(id).kind === 'human',
+    );
     if (!mine) {
       hud.clearActions();
       const who = actors[0];
@@ -385,7 +444,31 @@ export class GameScreen {
   private askHandover(id: string): void {
     this.hud.clearActions();
     clear(this.overlay);
-    this.overlay.appendChild(h('div', { class: 'cover' }, h('div', { class: 'panel' }, h('h2', null, t('hot.pass', { name: this.nameOf(id) })), h('p', null, t('hot.hint')), h('div', { style: 'text-align:right' }, btn(t('hot.ready'), () => { this.handover = id; clear(this.overlay); this.reflect(); }, 'hot big')))));
+    this.overlay.appendChild(
+      h(
+        'div',
+        { class: 'cover' },
+        h(
+          'div',
+          { class: 'panel' },
+          h('h2', null, t('hot.pass', { name: this.nameOf(id) })),
+          h('p', null, t('hot.hint')),
+          h(
+            'div',
+            { style: 'text-align:right' },
+            btn(
+              t('hot.ready'),
+              () => {
+                this.handover = id;
+                clear(this.overlay);
+                this.reflect();
+              },
+              'hot big',
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   private prompt(id: string, s: GameState): void {
@@ -398,7 +481,13 @@ export class GameScreen {
     this.lastPromptKey = key;
     if (s.phase === 'turn' && !s.rolled) {
       const roll = btn(t('act.roll'), () => this.act(id, { type: 'roll' }), 'hot roll');
-      const items = [...new Set(me.items)].filter((i) => ITEMS[i].active).map((i) => btn(`${ITEMS[i].icon} ${ITEMS[i].name}`, () => this.useItem(id, i), 'ghost', { title: ITEMS[i].description }));
+      const items = [...new Set(me.items)]
+        .filter((i) => ITEMS[i].active)
+        .map((i) =>
+          btn(`${ITEMS[i].icon} ${ITEMS[i].name}`, () => this.useItem(id, i), 'ghost', {
+            title: ITEMS[i].description,
+          }),
+        );
       hud.setBanner(t('hud.yourTurn', { name: this.nameOf(id) }));
       hud.setActions(...items, roll);
       return;
@@ -409,27 +498,75 @@ export class GameScreen {
       case 'branch': {
         stage.highlight(pd.options);
         hud.setBanner(t('hud.chooseWay', { n: pd.remaining }));
-        hud.setActions(...pd.options.map((n) => btn(`${KIND_ICON[this.layout.nodes[n]?.kind ?? 'glimmer'] ?? '•'} ${t('kind.' + (this.layout.nodes[n]?.kind ?? 'glimmer'))}`, () => this.act(id, { type: 'chooseBranch', node: n }), 'good')));
+        hud.setActions(
+          ...pd.options.map((n) =>
+            btn(
+              `${KIND_ICON[this.layout.nodes[n]?.kind ?? 'glimmer'] ?? '•'} ${t('kind.' + (this.layout.nodes[n]?.kind ?? 'glimmer'))}`,
+              () => this.act(id, { type: 'chooseBranch', node: n }),
+              'good',
+            ),
+          ),
+        );
         break;
       }
       case 'gate':
-        hud.showDialog(t('gate.title'), h('p', null, t('gate.text', { toll: pd.toll })), h('div', { class: 'chips' },
-          btn(t('gate.pay', { toll: pd.toll }), () => this.act(id, { type: 'gate', choice: 'pay' }), 'good', { disabled: !pd.canPay }),
-          btn(t('gate.key'), () => this.act(id, { type: 'gate', choice: 'key' }), 'hot', { disabled: !pd.hasKey }),
-          btn(t('gate.back'), () => this.act(id, { type: 'gate', choice: 'back' }), 'ghost')));
+        hud.showDialog(
+          t('gate.title'),
+          h('p', null, t('gate.text', { toll: pd.toll })),
+          h(
+            'div',
+            { class: 'chips' },
+            btn(
+              t('gate.pay', { toll: pd.toll }),
+              () => this.act(id, { type: 'gate', choice: 'pay' }),
+              'good',
+              { disabled: !pd.canPay },
+            ),
+            btn(t('gate.key'), () => this.act(id, { type: 'gate', choice: 'key' }), 'hot', {
+              disabled: !pd.hasKey,
+            }),
+            btn(t('gate.back'), () => this.act(id, { type: 'gate', choice: 'back' }), 'ghost'),
+          ),
+        );
         break;
       case 'altar':
         stage.viewFocus(s.altar, 11);
-        hud.showDialog(t('altar.title'), h('p', null, t('altar.text', { cost: pd.cost, coins: me.coins })), h('div', { class: 'chips' },
-          btn(t('altar.buy', { cost: pd.cost }), () => this.act(id, { type: 'altar', buy: true }), 'good', { disabled: me.coins < pd.cost }),
-          btn(t('altar.skip'), () => this.act(id, { type: 'altar', buy: false }), 'ghost')));
+        hud.showDialog(
+          t('altar.title'),
+          h('p', null, t('altar.text', { cost: pd.cost, coins: me.coins })),
+          h(
+            'div',
+            { class: 'chips' },
+            btn(t('altar.buy', { cost: pd.cost }), () => this.act(id, { type: 'altar', buy: true }), 'good', {
+              disabled: me.coins < pd.cost,
+            }),
+            btn(t('altar.skip'), () => this.act(id, { type: 'altar', buy: false }), 'ghost'),
+          ),
+        );
         break;
       case 'shop': {
         const offers = pd.offers.map((it, i) => {
           const d = ITEMS[it];
-          return h('div', { class: 'offer' }, h('span', null, d.icon), h('span', { class: 'lbl' }, d.name, h('small', null, d.description)), btn(`${d.cost} ✦`, () => this.act(id, { type: 'shopBuy', index: i }), 'good', { disabled: me.coins < d.cost || me.items.length >= 3 }));
+          return h(
+            'div',
+            { class: 'offer' },
+            h('span', null, d.icon),
+            h('span', { class: 'lbl' }, d.name, h('small', null, d.description)),
+            btn(`${d.cost} ✦`, () => this.act(id, { type: 'shopBuy', index: i }), 'good', {
+              disabled: me.coins < d.cost || me.items.length >= 3,
+            }),
+          );
         });
-        hud.showDialog(t('shop.title'), h('p', null, t('shop.coins', { coins: me.coins })), ...offers, h('div', { style: 'text-align:right;margin-top:8px' }, btn(t('shop.leave'), () => this.act(id, { type: 'shopLeave' }), 'hot')));
+        hud.showDialog(
+          t('shop.title'),
+          h('p', null, t('shop.coins', { coins: me.coins })),
+          ...offers,
+          h(
+            'div',
+            { style: 'text-align:right;margin-top:8px' },
+            btn(t('shop.leave'), () => this.act(id, { type: 'shopLeave' }), 'hot'),
+          ),
+        );
         break;
       }
     }
@@ -439,7 +576,25 @@ export class GameScreen {
     const def = ITEMS[item];
     if (!def.needsTarget) return void this.act(id, { type: 'useItem', item });
     const others = this.session.players.filter((p) => p.id !== id);
-    this.hud.showDialog(`${def.icon} ${def.name}`, h('p', null, def.description), h('div', { class: 'chips' }, ...others.map((p) => btn(p.name, () => { this.hud.hideDialog(); this.act(id, { type: 'useItem', item, target: p.id }); }, 'hot')), btn(t('back'), () => this.hud.hideDialog(), 'ghost')));
+    this.hud.showDialog(
+      `${def.icon} ${def.name}`,
+      h('p', null, def.description),
+      h(
+        'div',
+        { class: 'chips' },
+        ...others.map((p) =>
+          btn(
+            p.name,
+            () => {
+              this.hud.hideDialog();
+              this.act(id, { type: 'useItem', item, target: p.id });
+            },
+            'hot',
+          ),
+        ),
+        btn(t('back'), () => this.hud.hideDialog(), 'ghost'),
+      ),
+    );
   }
 
   private act(id: string, a: Parameters<GameSession['act']>[1]): void {
@@ -500,7 +655,13 @@ export class GameScreen {
         else this.openPause();
         return;
       }
-      if ((e.code === 'Space' || e.key === 'Enter') && !this.paused && !this.hud.dialogOpen && !this.overlay.firstChild && !this.flow.el.firstChild) {
+      if (
+        (e.code === 'Space' || e.key === 'Enter') &&
+        !this.paused &&
+        !this.hud.dialogOpen &&
+        !this.overlay.firstChild &&
+        !this.flow.el.firstChild
+      ) {
         const roll = this.el.querySelector<HTMLButtonElement>('.actions .roll');
         if (roll) {
           e.preventDefault();
@@ -530,7 +691,11 @@ export class GameScreen {
     if (this.paused || this.pumping || s.phase !== 'decision' || !pd || pd.kind !== 'branch') return;
     if (!this.session.localIds.includes(pd.player)) return;
     const r = this.el.getBoundingClientRect();
-    const n = this.stage.pickNode(((x - r.left) / r.width) * 2 - 1, -(((y - r.top) / r.height) * 2 - 1), pd.options);
+    const n = this.stage.pickNode(
+      ((x - r.left) / r.width) * 2 - 1,
+      -(((y - r.top) / r.height) * 2 - 1),
+      pd.options,
+    );
     if (n !== null) this.act(pd.player, { type: 'chooseBranch', node: n });
   }
 
@@ -545,16 +710,34 @@ export class GameScreen {
     }
     this.flow.setPaused(!online);
     const s = this.app.store;
-    const body = h('div', { class: 'panel' },
+    const body = h(
+      'div',
+      { class: 'panel' },
       h('h2', null, t('pause.title')),
       online ? h('p', null, t('pause.onlineNote')) : null,
-      slider(t('opt.master'), s.data.settings.master, 0, 1, 0.05, (v) => s.update((d) => { d.settings.master = v; })),
-      slider(t('opt.music'), s.data.settings.music, 0, 1, 0.05, (v) => s.update((d) => { d.settings.music = v; })),
-      toggle(t('opt.mute'), s.data.settings.muted, (v) => s.update((d) => { d.settings.muted = v; })),
-      h('div', { class: 'pausebtns' },
+      slider(t('opt.master'), s.data.settings.master, 0, 1, 0.05, (v) =>
+        s.update((d) => {
+          d.settings.master = v;
+        }),
+      ),
+      slider(t('opt.music'), s.data.settings.music, 0, 1, 0.05, (v) =>
+        s.update((d) => {
+          d.settings.music = v;
+        }),
+      ),
+      toggle(t('opt.mute'), s.data.settings.muted, (v) =>
+        s.update((d) => {
+          d.settings.muted = v;
+        }),
+      ),
+      h(
+        'div',
+        { class: 'pausebtns' },
         btn(t('pause.resume'), () => this.closePause(), 'good big'),
         btn(t('pause.rules'), () => this.showRulesBrief(), 'ghost'),
-        btn(t('pause.leave'), () => this.confirmLeave(), 'ghost')));
+        btn(t('pause.leave'), () => this.confirmLeave(), 'ghost'),
+      ),
+    );
     clear(this.overlay);
     this.overlay.appendChild(h('div', { class: 'cover' }, body));
   }
@@ -570,11 +753,60 @@ export class GameScreen {
   }
   private showRulesBrief(): void {
     clear(this.overlay);
-    this.overlay.appendChild(h('div', { class: 'cover' }, h('div', { class: 'panel' }, h('h2', null, t('pause.rules')), h('p', null, t('rules.goal', { cost: 20 })), h('p', null, t('rules.turn')), h('p', null, t('rules.fold')), h('div', { style: 'text-align:right' }, btn(t('back'), () => { this.paused = false; this.openPause(); }, 'hot')))));
+    this.overlay.appendChild(
+      h(
+        'div',
+        { class: 'cover' },
+        h(
+          'div',
+          { class: 'panel' },
+          h('h2', null, t('pause.rules')),
+          h('p', null, t('rules.goal', { cost: 20 })),
+          h('p', null, t('rules.turn')),
+          h('p', null, t('rules.fold')),
+          h(
+            'div',
+            { style: 'text-align:right' },
+            btn(
+              t('back'),
+              () => {
+                this.paused = false;
+                this.openPause();
+              },
+              'hot',
+            ),
+          ),
+        ),
+      ),
+    );
   }
   private confirmLeave(): void {
     clear(this.overlay);
-    this.overlay.appendChild(h('div', { class: 'cover' }, h('div', { class: 'panel' }, h('h2', null, t('pause.leaveAsk')), h('p', null, t('pause.leaveWarn')), h('div', { class: 'chips' }, btn(t('pause.leaveYes'), () => void this.app.toMenu(), 'hot'), btn(t('back'), () => { this.paused = false; this.openPause(); }, 'ghost')))));
+    this.overlay.appendChild(
+      h(
+        'div',
+        { class: 'cover' },
+        h(
+          'div',
+          { class: 'panel' },
+          h('h2', null, t('pause.leaveAsk')),
+          h('p', null, t('pause.leaveWarn')),
+          h(
+            'div',
+            { class: 'chips' },
+            btn(t('pause.leaveYes'), () => void this.app.toMenu(), 'hot'),
+            btn(
+              t('back'),
+              () => {
+                this.paused = false;
+                this.openPause();
+              },
+              'ghost',
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // ------------------------------------------------------------------ Verbindung (online)
@@ -618,7 +850,13 @@ export class GameScreen {
     const s = this.state;
     const ranking = s.finale?.ranking ?? s.order;
     const world = this.layout.world as WorldId;
-    const fs = new FinaleStage(ranking, this.session.players, world, this.app.engine.quality, this.app.store.data.settings.reducedMotion);
+    const fs = new FinaleStage(
+      ranking,
+      this.session.players,
+      world,
+      this.app.engine.quality,
+      this.app.store.data.settings.reducedMotion,
+    );
     this.finaleStage = fs;
     this.el.classList.add('finale-on');
     this.hud.clearActions();
@@ -628,7 +866,10 @@ export class GameScreen {
     this.app.audio.music('finale');
     clear(this.overlay);
     const again = this.session instanceof LocalSession ? (): void => void this.restartLocal() : null;
-    const ov = finaleOverlay(s, this.session.players, fs, (n) => this.app.audio.sfx(n), { again, menu: () => void this.app.toMenu() });
+    const ov = finaleOverlay(s, this.session.players, fs, (n) => this.app.audio.sfx(n), {
+      again,
+      menu: () => void this.app.toMenu(),
+    });
     this.overlay.appendChild(ov.el);
     this.cleanup.push(ov.dispose);
     this.recordStats(ranking);
@@ -646,7 +887,21 @@ export class GameScreen {
     try {
       let newly: string[] = [];
       this.app.store.update((d) => {
-        newly = recordGame(d, { layoutId: this.layout.id, world, won: rank === 0, online: this.session.kind === 'online', rounds: this.state.rounds, players: this.session.players.length, coinsEarned: p.stats.coinsEarned, steps: p.stats.steps, minigameWins: p.stats.minigameWins, minigamesPlayed: this.minigamesSeen, seconds: Math.round((Date.now() - this.startedAt) / 1000), finalShards: p.shards, rank: rank + 1 });
+        newly = recordGame(d, {
+          layoutId: this.layout.id,
+          world,
+          won: rank === 0,
+          online: this.session.kind === 'online',
+          rounds: this.state.rounds,
+          players: this.session.players.length,
+          coinsEarned: p.stats.coinsEarned,
+          steps: p.stats.steps,
+          minigameWins: p.stats.minigameWins,
+          minigamesPlayed: this.minigamesSeen,
+          seconds: Math.round((Date.now() - this.startedAt) / 1000),
+          finalShards: p.shards,
+          rank: rank + 1,
+        });
       });
       for (const id of newly) toast(t('ach.new', { id }), 'good', 4500);
     } catch (e) {

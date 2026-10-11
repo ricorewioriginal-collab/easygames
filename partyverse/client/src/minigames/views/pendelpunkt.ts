@@ -52,7 +52,10 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
   root.add(pivot);
   // Wimpel
   for (let i = 0; i < 9; i++) {
-    const f = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.6, 3), toon([0xff4d8d, 0x39d6ff, 0xffd23f, 0x7dff8a][i % 4] as number));
+    const f = new THREE.Mesh(
+      new THREE.ConeGeometry(0.26, 0.6, 3),
+      toon([0xff4d8d, 0x39d6ff, 0xffd23f, 0x7dff8a][i % 4] as number),
+    );
     f.rotation.z = Math.PI;
     f.position.set(-5 + i * 1.25, PIVOT_Y + 0.0 + Math.sin(i * 0.7) * 0.1, -1.2);
     root.add(f);
@@ -86,7 +89,10 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
   root.add(rod);
   const bob = new THREE.Group();
   root.add(bob);
-  const bobBody = new THREE.Mesh(new THREE.SphereGeometry(0.95, 28, 20), toon(0xffc72c, { emissive: 0xff9a00, emissiveIntensity: 0.25 }).clone());
+  const bobBody = new THREE.Mesh(
+    new THREE.SphereGeometry(0.95, 28, 20),
+    toon(0xffc72c, { emissive: 0xff9a00, emissiveIntensity: 0.25 }).clone(),
+  );
   (bobBody.material as THREE.Material).userData = {};
   bob.add(bobBody);
   const bobRing = new THREE.Mesh(new THREE.TorusGeometry(0.98, 0.07, 8, 28), toon(0xff7a3d));
@@ -133,7 +139,10 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
   // Rundenlaternen
   const lamps: THREE.Mesh[] = [];
   for (let i = 0; i < ROUNDS; i++) {
-    const l = new THREE.Mesh(new THREE.SphereGeometry(0.27, 12, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    const l = new THREE.Mesh(
+      new THREE.SphereGeometry(0.27, 12, 10),
+      new THREE.MeshBasicMaterial({ color: 0xffffff }),
+    );
     l.position.set((i - (ROUNDS - 1) / 2) * 0.95, 0.2, 1.85);
     root.add(l);
     lamps.push(l);
@@ -143,7 +152,10 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
   for (let i = 0; i < 6; i++) {
     const c = new THREE.Group();
     for (let k = 0; k < 4; k++) {
-      const m = new THREE.Mesh(new THREE.SphereGeometry(1.2 - Math.abs(k - 1.5) * 0.25, 10, 8), glow(0xffffff, 0.9));
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(1.2 - Math.abs(k - 1.5) * 0.25, 10, 8),
+        glow(0xffffff, 0.9),
+      );
       m.position.set((k - 1.5) * 1.3, 0, 0);
       c.add(m);
     }
@@ -151,7 +163,10 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
     root.add(c);
   }
   for (let i = 0; i < 4; i++) {
-    const h = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 10), toon([0x3fae6a, 0x2f9a78, 0x57c27a, 0x3fae6a][i] as number));
+    const h = new THREE.Mesh(
+      new THREE.SphereGeometry(6, 16, 10),
+      toon([0x3fae6a, 0x2f9a78, 0x57c27a, 0x3fae6a][i] as number),
+    );
     h.scale.set(1.6, 0.6, 1);
     h.position.set(-16 + i * 11, -1.2, -17);
     root.add(h);
@@ -202,7 +217,7 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
         if (resultSprite) resultSprite.visible = false;
       }
       const x = p * XM;
-      const y = PIVOT_Y - Math.sqrt(Math.max(1, LEN * LEN - x * x)) ;
+      const y = PIVOT_Y - Math.sqrt(Math.max(1, LEN * LEN - x * x));
       bob.position.set(x, y, 0);
       // Stab
       const px = 0;
@@ -264,7 +279,12 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
           wave.position.x = s.stopPos * XM;
           resultAge = 0;
           if (resultSprite) resultSprite.visible = false;
-          resultSprite = textSprite(s.timedOut ? 'Zu spät!' : `+${pts}`, { color: pts >= 900 ? '#fff176' : pts >= 500 ? '#ffffff' : '#ff9aa8', bg: 'rgba(30,20,60,0.75)', size: 64, width: s.timedOut ? 3.2 : 2.6 });
+          resultSprite = textSprite(s.timedOut ? 'Zu spät!' : `+${pts}`, {
+            color: pts >= 900 ? '#fff176' : pts >= 500 ? '#ffffff' : '#ff9aa8',
+            bg: 'rgba(30,20,60,0.75)',
+            size: 64,
+            width: s.timedOut ? 3.2 : 2.6,
+          });
           resultSprite.material.fog = false;
           root.add(resultSprite);
           bp.set(x, y, 0.4);
@@ -285,7 +305,11 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
       }
       resultAge += dt;
       if (resultSprite && resultSprite.visible) {
-        resultSprite.position.set(Math.max(-3.6, Math.min(3.6, s.stopPos * XM)), 6.6 + Math.min(resultAge, 0.5) * 1.0, 0.5);
+        resultSprite.position.set(
+          Math.max(-3.6, Math.min(3.6, s.stopPos * XM)),
+          6.6 + Math.min(resultAge, 0.5) * 1.0,
+          0.5,
+        );
         const k = 1 + Math.sin(Math.min(1, resultAge * 4) * Math.PI) * 0.18;
         resultSprite.scale.set(resultSprite.scale.x, resultSprite.scale.y, 1);
         resultSprite.material.opacity = Math.min(1, (1.0 - resultAge) * 4 + 0.2);
@@ -301,8 +325,22 @@ export const createView: MiniGameViewFactory<PendelState> = (ctx) => {
       for (let i = 0; i < ROUNDS; i++) {
         const lm = (lamps[i] as THREE.Mesh).material as THREE.MeshBasicMaterial;
         const pts = s.pts[i];
-        lm.color.setHex(pts === undefined ? (i === s.round && s.phase === 'swing' ? 0xffffff : 0x6a8aa8) : pts >= 900 ? 0xffe066 : pts >= 500 ? 0x39ff9a : pts > 0 ? 0xff9a3d : 0xff4d6d);
-        (lamps[i] as THREE.Mesh).scale.setScalar(i === s.round && s.phase === 'swing' ? 1.2 + Math.sin(t * 6) * 0.1 : 1);
+        lm.color.setHex(
+          pts === undefined
+            ? i === s.round && s.phase === 'swing'
+              ? 0xffffff
+              : 0x6a8aa8
+            : pts >= 900
+              ? 0xffe066
+              : pts >= 500
+                ? 0x39ff9a
+                : pts > 0
+                  ? 0xff9a3d
+                  : 0xff4d6d,
+        );
+        (lamps[i] as THREE.Mesh).scale.setScalar(
+          i === s.round && s.phase === 'swing' ? 1.2 + Math.sin(t * 6) * 0.1 : 1,
+        );
       }
       // Tempo-Gefühl: leichte Kamerabewegung
       camera.position.x = Math.sin(t * 0.4) * 0.3;

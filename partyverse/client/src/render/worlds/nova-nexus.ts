@@ -12,8 +12,22 @@ import type { Decor, DecorContext, DecorFactory } from './common';
 const TAU = Math.PI * 2;
 
 /** Eigenes Toon-Material ohne Nebel (für ferne Objekte, damit sie nicht im Dunst verschwinden). */
-function farToon(color: number, opts: { emissive?: number; emissiveIntensity?: number; vertexColors?: boolean; side?: THREE.Side; opacity?: number } = {}): THREE.MeshToonMaterial {
-  const base = toon(color, opts.emissive !== undefined ? { emissive: opts.emissive, emissiveIntensity: opts.emissiveIntensity ?? 1 } : {});
+function farToon(
+  color: number,
+  opts: {
+    emissive?: number;
+    emissiveIntensity?: number;
+    vertexColors?: boolean;
+    side?: THREE.Side;
+    opacity?: number;
+  } = {},
+): THREE.MeshToonMaterial {
+  const base = toon(
+    color,
+    opts.emissive !== undefined
+      ? { emissive: opts.emissive, emissiveIntensity: opts.emissiveIntensity ?? 1 }
+      : {},
+  );
   const m = base.clone();
   m.userData = {};
   m.fog = false;
@@ -46,7 +60,8 @@ function nebulaMaterial(color: number, color2: number, seed: number, alpha: numb
       uSeed: { value: seed },
       uA: { value: alpha },
     },
-    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    vertexShader:
+      'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
     fragmentShader: `
       uniform vec3 c1; uniform vec3 c2; uniform float uT; uniform float uSeed; uniform float uA; varying vec2 vUv;
       void main(){
@@ -74,7 +89,8 @@ function portalMaterial(): THREE.ShaderMaterial {
     side: THREE.DoubleSide,
     blending: THREE.AdditiveBlending,
     uniforms: { uT: { value: 0 } },
-    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    vertexShader:
+      'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
     fragmentShader: `
       uniform float uT; varying vec2 vUv;
       void main(){
@@ -94,7 +110,10 @@ function portalMaterial(): THREE.ShaderMaterial {
 }
 
 /** Kugel mit Streifen/Flecken per Vertexfarbe (Cartoon-Planet). */
-function planetGeometry(R: number, fn: (x: number, y: number, z: number, c: THREE.Color) => void): THREE.SphereGeometry {
+function planetGeometry(
+  R: number,
+  fn: (x: number, y: number, z: number, c: THREE.Color) => void,
+): THREE.SphereGeometry {
   const g = new THREE.SphereGeometry(R, 28, 18);
   const pos = g.attributes.position as THREE.BufferAttribute;
   const col = new Float32Array(pos.count * 3);
@@ -164,7 +183,16 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   const starGeo = new THREE.BufferGeometry();
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
   starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
-  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 3, sizeAttenuation: false, vertexColors: true, fog: false, depthWrite: false }));
+  const stars = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({
+      size: 3,
+      sizeAttenuation: false,
+      vertexColors: true,
+      fog: false,
+      depthWrite: false,
+    }),
+  );
   stars.frustumCulled = false;
   stars.renderOrder = -9;
   // Große, helle Zierstern-Funkel (wenige, größere Punkte)
@@ -180,7 +208,18 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   }
   const sparkGeo = new THREE.BufferGeometry();
   sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
-  const sparks = new THREE.Points(sparkGeo, new THREE.PointsMaterial({ size: 6, sizeAttenuation: false, color: 0xffffff, fog: false, depthWrite: false, transparent: true, opacity: 0.9 }));
+  const sparks = new THREE.Points(
+    sparkGeo,
+    new THREE.PointsMaterial({
+      size: 6,
+      sizeAttenuation: false,
+      color: 0xffffff,
+      fog: false,
+      depthWrite: false,
+      transparent: true,
+      opacity: 0.9,
+    }),
+  );
   sparks.frustumCulled = false;
   sparks.renderOrder = -9;
   const starRoot = new THREE.Group();
@@ -219,19 +258,50 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   const planets: Planet[] = [];
   const planetDist = Math.max(R * 2.7, 120);
 
-  const makePlanet = (yaw: number, elev: number, rad: number, geo: THREE.BufferGeometry, ring: [number, number, number] | null, tilt: number): void => {
+  const makePlanet = (
+    yaw: number,
+    elev: number,
+    rad: number,
+    geo: THREE.BufferGeometry,
+    ring: [number, number, number] | null,
+    tilt: number,
+  ): void => {
     const g = new THREE.Group();
     const body = new THREE.Mesh(geo, farToon(0xffffff, { vertexColors: true }));
-    const atmo = new THREE.Mesh(new THREE.SphereGeometry(rad * 1.12, 20, 12), noFog(new THREE.MeshBasicMaterial({ color: 0x6fb4ff, transparent: true, opacity: 0.16, side: THREE.BackSide, depthWrite: false })));
+    const atmo = new THREE.Mesh(
+      new THREE.SphereGeometry(rad * 1.12, 20, 12),
+      noFog(
+        new THREE.MeshBasicMaterial({
+          color: 0x6fb4ff,
+          transparent: true,
+          opacity: 0.16,
+          side: THREE.BackSide,
+          depthWrite: false,
+        }),
+      ),
+    );
     g.add(body, atmo);
-    const p: Planet = { group: g, spin: rng.float(0.01, 0.04), bob: rng.float(0.8, 1.6), ph: rng.float(0, TAU), baseY: 0 };
+    const p: Planet = {
+      group: g,
+      spin: rng.float(0.01, 0.04),
+      bob: rng.float(0.8, 1.6),
+      ph: rng.float(0, TAU),
+      baseY: 0,
+    };
     if (ring) {
-      const rg = new THREE.Mesh(new THREE.RingGeometry(rad * ring[0], rad * ring[1], 56, 1), farToon(ring[2], { side: THREE.DoubleSide, opacity: 0.85 }));
+      const rg = new THREE.Mesh(
+        new THREE.RingGeometry(rad * ring[0], rad * ring[1], 56, 1),
+        farToon(ring[2], { side: THREE.DoubleSide, opacity: 0.85 }),
+      );
       rg.rotation.x = Math.PI / 2 + tilt;
       g.add(rg);
       p.ringMesh = rg;
     }
-    g.position.set(Math.cos(yaw) * planetDist, Math.sin(elev) * planetDist * 0.7 + 8, Math.sin(yaw) * planetDist);
+    g.position.set(
+      Math.cos(yaw) * planetDist,
+      Math.sin(elev) * planetDist * 0.7 + 8,
+      Math.sin(yaw) * planetDist,
+    );
     p.baseY = g.position.y;
     group.add(g);
     planets.push(p);
@@ -245,7 +315,9 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     24,
     planetGeometry(24, (_x, y, _z, c) => {
       const b = Math.floor((y * 0.5 + 0.5) * 7 + Math.sin(y * 9) * 0.4);
-      c.setHex([0xffc46a, 0xff9a52, 0xffe0a0, 0xe87a4a, 0xffd28a, 0xf2a860, 0xffe8b8][((b % 7) + 7) % 7] ?? 0xffc46a);
+      c.setHex(
+        [0xffc46a, 0xff9a52, 0xffe0a0, 0xe87a4a, 0xffd28a, 0xf2a860, 0xffe8b8][((b % 7) + 7) % 7] ?? 0xffc46a,
+      );
     }),
     [1.45, 2.3, 0xffe2a8],
     0.35,
@@ -304,7 +376,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   const satBody = new THREE.BoxGeometry(1.6, 1.2, 1.6);
   const satPanel = new THREE.BoxGeometry(3.6, 0.08, 1.3);
   const satDish = new THREE.ConeGeometry(0.7, 0.5, 10, 1, true);
-  const satMats = [toon(0xdfe8ff), toon(0x2a5acc, { emissive: 0x1a3a99, emissiveIntensity: 0.4 }), toon(0xffd04a)];
+  const satMats = [
+    toon(0xdfe8ff),
+    toon(0x2a5acc, { emissive: 0x1a3a99, emissiveIntensity: 0.4 }),
+    toon(0xffd04a),
+  ];
   const satN = q < 0.3 ? 2 : 3;
   for (let i = 0; i < satN; i++) {
     const g = new THREE.Group();
@@ -318,7 +394,15 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     g.add(body, panels, dish);
     g.scale.setScalar(rng.float(1.3, 1.9));
     group.add(g);
-    sats.push({ g, R: R * rng.float(1.45, 1.9) + 4, ang: rng.next() * TAU, speed: rng.float(0.03, 0.06) * (i % 2 ? -1 : 1), tilt: rng.float(0.1, 0.35), yOff: rng.float(-4, 10), spin: rng.float(0.2, 0.6) });
+    sats.push({
+      g,
+      R: R * rng.float(1.45, 1.9) + 4,
+      ang: rng.next() * TAU,
+      speed: rng.float(0.03, 0.06) * (i % 2 ? -1 : 1),
+      tilt: rng.float(0.1, 0.35),
+      yOff: rng.float(-4, 10),
+      spin: rng.float(0.2, 0.6),
+    });
   }
 
   // ---------- Orbit-Ringe ----------
@@ -341,7 +425,19 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   // ---------- Energiesäulen ----------
   const beamN = Math.round(12 * q);
   const beamGeo = new THREE.CylinderGeometry(0.28, 0.28, 1, 6, 1, true);
-  const beams = new THREE.InstancedMesh(beamGeo, noFog(new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending })), Math.max(1, beamN));
+  const beams = new THREE.InstancedMesh(
+    beamGeo,
+    noFog(
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      }),
+    ),
+    Math.max(1, beamN),
+  );
   beams.count = beamN;
   beams.frustumCulled = false;
   const beamData = new Float32Array(beamN * 5); // x, z, hoehe, phase, speed
@@ -367,12 +463,22 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   gate.position.set(Math.cos(gYaw) * gateDist, gateR * 0.55 + 12, Math.sin(gYaw) * gateDist);
   gate.lookAt(0, gate.position.y * 0.3, 0);
   const gateSpin = new THREE.Group();
-  const outer = new THREE.Mesh(new THREE.TorusGeometry(gateR, gateR * 0.07, 10, 64), farToon(0x3a56b8, { emissive: 0x1a2a80, emissiveIntensity: 0.6 }));
-  const inner = new THREE.Mesh(new THREE.TorusGeometry(gateR * 0.78, gateR * 0.03, 8, 64), noFog(glow(0x59e0ff)));
+  const outer = new THREE.Mesh(
+    new THREE.TorusGeometry(gateR, gateR * 0.07, 10, 64),
+    farToon(0x3a56b8, { emissive: 0x1a2a80, emissiveIntensity: 0.6 }),
+  );
+  const inner = new THREE.Mesh(
+    new THREE.TorusGeometry(gateR * 0.78, gateR * 0.03, 8, 64),
+    noFog(glow(0x59e0ff)),
+  );
   const pDisk = new THREE.Mesh(new THREE.CircleGeometry(gateR * 0.76, 40), portalMaterial());
   pDisk.renderOrder = -7;
   const segN = 16;
-  const segs = new THREE.InstancedMesh(new THREE.BoxGeometry(gateR * 0.16, gateR * 0.22, gateR * 0.2), farToon(0xffffff, { emissive: 0x2a3a99, emissiveIntensity: 0.5 }), segN);
+  const segs = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(gateR * 0.16, gateR * 0.22, gateR * 0.2),
+    farToon(0xffffff, { emissive: 0x2a3a99, emissiveIntensity: 0.5 }),
+    segN,
+  );
   segs.frustumCulled = false;
   for (let i = 0; i < segN; i++) {
     const a = (i / segN) * TAU;

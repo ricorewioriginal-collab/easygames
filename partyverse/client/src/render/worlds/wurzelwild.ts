@@ -109,7 +109,12 @@ export const createDecor: DecorFactory = (ctx) => {
       dirV.set(Math.cos(ph), 0.25, Math.sin(ph)).normalize();
       Q.setFromUnitVectors(UP, dirV);
       const w = rt * rng.float(0.35, 0.6);
-      mossB.add(P.set(tx + Math.cos(ph) * rr, y, tz + Math.sin(ph) * rr), Q, Sc.set(w, w * 0.4, w), pick([0x4fa63e, 0x6cc04a, 0x3f8f3a]));
+      mossB.add(
+        P.set(tx + Math.cos(ph) * rr, y, tz + Math.sin(ph) * rr),
+        Q,
+        Sc.set(w, w * 0.4, w),
+        pick([0x4fa63e, 0x6cc04a, 0x3f8f3a]),
+      );
     }
     // Äste (tangential bzw. nach außen, entfernen sich also immer vom Brett)
     const nL = 2 + rng.int(2);
@@ -133,7 +138,11 @@ export const createDecor: DecorFactory = (ctx) => {
       dirV.set(Math.cos(ph) * 0.85, -0.5, Math.sin(ph) * 0.85).normalize();
       const len = S * rng.float(14, 27);
       const rad = rt * rng.float(0.28, 0.42);
-      P.set(tx + Math.cos(ph) * rt * 0.75, yCloud + rng.float(0, 9), tz + Math.sin(ph) * rt * 0.75).addScaledVector(dirV, len / 2);
+      P.set(
+        tx + Math.cos(ph) * rt * 0.75,
+        yCloud + rng.float(0, 9),
+        tz + Math.sin(ph) * rt * 0.75,
+      ).addScaledVector(dirV, len / 2);
       Q.setFromUnitVectors(UP, dirV);
       rootB.add(P, Q, Sc.set(rad, len, rad), col);
     }
@@ -162,7 +171,13 @@ export const createDecor: DecorFactory = (ctx) => {
       P.copy(l.start).addScaledVector(l.dir, l.len * u);
       P.y -= l.rad * (1 - u) * 0.5;
       const sgn = rng.chance(0.5) ? 1 : -1;
-      addLeaf(P, null, headingFor(l.ang + sgn * rng.float(0.6, 1.4)), -rng.float(0.15, 0.7), S * rng.float(7, 13));
+      addLeaf(
+        P,
+        null,
+        headingFor(l.ang + sgn * rng.float(0.6, 1.4)),
+        -rng.float(0.15, 0.7),
+        S * rng.float(7, 13),
+      );
     }
   }
   // Riesen-Ohrenblätter, die aus dem Wolkenmeer ragen
@@ -181,7 +196,14 @@ export const createDecor: DecorFactory = (ctx) => {
   const mushB = new InstBuilder();
   const islands: Island[] = [];
   const nI = 6 + Math.round(2 * q01);
-  const attach = (isl: Island, b: InstBuilder, lp: THREE.Vector3, q: THREE.Quaternion, s: THREE.Vector3, color: number): void => {
+  const attach = (
+    isl: Island,
+    b: InstBuilder,
+    lp: THREE.Vector3,
+    q: THREE.Quaternion,
+    s: THREE.Vector3,
+    color: number,
+  ): void => {
     const idx = b.add(P.copy(lp).add(isl.base), q, s, color);
     isl.parts.push({ b, idx, lp: lp.clone(), q: q.clone(), s: s.clone() });
   };
@@ -192,19 +214,37 @@ export const createDecor: DecorFactory = (ctx) => {
     const a = ((i + rng.float(-0.3, 0.3)) / nI) * TAU;
     const ri = S * rng.float(2.8, 4.6);
     const d = inner + ri + rng.float(0, R * 0.8);
-    const base = new THREE.Vector3(c.x + Math.cos(a) * d, c.y + rng.float(-12, 16) * Math.max(1, S * 0.9), c.z + Math.sin(a) * d);
+    const base = new THREE.Vector3(
+      c.x + Math.cos(a) * d,
+      c.y + rng.float(-12, 16) * Math.max(1, S * 0.9),
+      c.z + Math.sin(a) * d,
+    );
     const isl: Island = { base, ph: rng.next() * TAU, off: 0, r: ri, parts: [] };
     islands.push(isl);
     attach(isl, islTopB, lp.set(0, 0, 0), ID, Sc.set(ri, 1, ri), pick([0x5fbf4a, 0x6fd04a, 0x4fae52]));
     const hb = ri * rng.float(1.6, 2.4);
-    attach(isl, islBodyB, lp.set(0, -0.25 - hb / 2, 0), ID, Sc.set(ri * 0.95, hb, ri * 0.95), pick([0x7a5a38, 0x6b4a2e, 0x86623c]));
+    attach(
+      isl,
+      islBodyB,
+      lp.set(0, -0.25 - hb / 2, 0),
+      ID,
+      Sc.set(ri * 0.95, hb, ri * 0.95),
+      pick([0x7a5a38, 0x6b4a2e, 0x86623c]),
+    );
     const nr = 4 + rng.int(3);
     for (let k = 0; k < nr; k++) {
       const ph = rng.next() * TAU;
       const rho = ri * rng.float(0.15, 0.7);
       const f = rho / (ri * 0.95);
       const len = S * rng.float(3, 9);
-      attach(isl, islRootB, lp.set(Math.cos(ph) * rho, -0.25 - hb + f * hb - len / 2, Math.sin(ph) * rho), ID, Sc.set(S, len, S), 0x6b4a2e);
+      attach(
+        isl,
+        islRootB,
+        lp.set(Math.cos(ph) * rho, -0.25 - hb + f * hb - len / 2, Math.sin(ph) * rho),
+        ID,
+        Sc.set(S, len, S),
+        0x6b4a2e,
+      );
     }
     const nm = 1 + rng.int(3);
     for (let k = 0; k < nm; k++) {
@@ -212,7 +252,14 @@ export const createDecor: DecorFactory = (ctx) => {
       const rho = ri * rng.float(0.2, 0.78);
       const sc = S * rng.float(1.1, 2.4);
       Q.setFromAxisAngle(AY, rng.next() * TAU);
-      attach(isl, rng.chance(0.5) ? mushA : mushB, lp.set(Math.cos(ph) * rho, 0.2, Math.sin(ph) * rho), Q, Sc.set(sc * rng.float(0.9, 1.25), sc, sc * rng.float(0.9, 1.25)), pick([0xffffff, 0xfff0e0, 0xf0ffe0]));
+      attach(
+        isl,
+        rng.chance(0.5) ? mushA : mushB,
+        lp.set(Math.cos(ph) * rho, 0.2, Math.sin(ph) * rho),
+        Q,
+        Sc.set(sc * rng.float(0.9, 1.25), sc, sc * rng.float(0.9, 1.25)),
+        pick([0xffffff, 0xfff0e0, 0xf0ffe0]),
+      );
     }
     // Setzlinge
     const ns = 2 + rng.int(2);
@@ -224,7 +271,14 @@ export const createDecor: DecorFactory = (ctx) => {
     }
     if (rng.chance(0.75)) {
       const idx = beetleB.add(P.set(0, 0, 0), ID, ONE, pick([0xffffff, 0xffd0a0, 0xffa8a8, 0xffe0c0]));
-      beetleHome.push({ isl, idx, rr: ri * rng.float(0.45, 0.68), sp: rng.float(0.15, 0.3) * (rng.chance(0.5) ? 1 : -1), ph: rng.next() * TAU, sc: S * rng.float(0.8, 1.1) });
+      beetleHome.push({
+        isl,
+        idx,
+        rr: ri * rng.float(0.45, 0.68),
+        sp: rng.float(0.15, 0.3) * (rng.chance(0.5) ? 1 : -1),
+        ph: rng.next() * TAU,
+        sc: S * rng.float(0.8, 1.1),
+      });
     }
   }
   // Riesenpilze im Wolkenmeer
@@ -233,7 +287,12 @@ export const createDecor: DecorFactory = (ctx) => {
     const d = inner + rng.float(0, R * 1.8);
     const sc = S * rng.float(4, 8);
     Q.setFromAxisAngle(AY, rng.next() * TAU);
-    (k % 2 ? mushA : mushB).add(P.set(c.x + Math.cos(a) * d, yCloud + rng.float(-3, 1), c.z + Math.sin(a) * d), Q, Sc.set(sc, sc * rng.float(1, 1.6), sc), pick([0xffffff, 0xfff0e0, 0xf0ffe0]));
+    (k % 2 ? mushA : mushB).add(
+      P.set(c.x + Math.cos(a) * d, yCloud + rng.float(-3, 1), c.z + Math.sin(a) * d),
+      Q,
+      Sc.set(sc, sc * rng.float(1, 1.6), sc),
+      pick([0xffffff, 0xfff0e0, 0xf0ffe0]),
+    );
   }
   const cylGeo = new THREE.CylinderGeometry(1, 1, 0.5, 14);
   const bodyGeo = new THREE.ConeGeometry(1, 1, 10);
@@ -284,7 +343,16 @@ export const createDecor: DecorFactory = (ctx) => {
     const anchor = new THREE.Vector3().copy(l.start).addScaledVector(l.dir, l.len * u);
     anchor.y -= l.rad * (1 - u) * 0.6;
     const len = S * rng.float(14, 32);
-    lianas.push({ ax: anchor.x, ay: anchor.y, az: anchor.z, seg: len / NSEG, amp: S * rng.float(0.8, 1.7), ph: rng.next() * TAU, sp: rng.float(0.5, 0.9), rad: 0.3 * S });
+    lianas.push({
+      ax: anchor.x,
+      ay: anchor.y,
+      az: anchor.z,
+      seg: len / NSEG,
+      amp: S * rng.float(0.8, 1.7),
+      ph: rng.next() * TAU,
+      sp: rng.float(0.5, 0.9),
+      rad: 0.3 * S,
+    });
     const col = pick(lianaCols);
     for (let k = 0; k < NSEG; k++) lianaB.add(P.copy(anchor), ID, ONE, col);
     bellB.add(P.copy(anchor), ID, ONE, pick(bellCols));
@@ -362,9 +430,21 @@ export const createDecor: DecorFactory = (ctx) => {
   for (let i = 0; i < nP; i++) {
     const a = rng.next() * TAU;
     const d = R * 1.2 + 3 + rng.float(0, R * 1.8);
-    pols.push({ x: c.x + Math.cos(a) * d, z: c.z + Math.sin(a) * d, y0: rng.float(0, polH), v: rng.float(0.5, 1.6), ph: rng.next() * TAU, w: rng.float(1.2, 3) });
+    pols.push({
+      x: c.x + Math.cos(a) * d,
+      z: c.z + Math.sin(a) * d,
+      y0: rng.float(0, polH),
+      v: rng.float(0.5, 1.6),
+      ph: rng.next() * TAU,
+      w: rng.float(1.2, 3),
+    });
     Q.setFromEuler(E.set(rng.next() * 3, rng.next() * 3, 0));
-    polB.add(P.set(0, 0, 0), Q, Sc.setScalar(S * rng.float(0.5, 1.2)), pick([0xfff6a8, 0xffffff, 0xffd6f0, 0xd8ffd0]));
+    polB.add(
+      P.set(0, 0, 0),
+      Q,
+      Sc.setScalar(S * rng.float(0.5, 1.2)),
+      pick([0xfff6a8, 0xffffff, 0xffd6f0, 0xd8ffd0]),
+    );
   }
   meshes.push(polB.build(new THREE.OctahedronGeometry(0.2), glow(0xffffff), group));
 
@@ -465,14 +545,22 @@ export const createDecor: DecorFactory = (ctx) => {
       const pr = cs * rng.float(0.5, 1);
       const lift = rng.float(0, 1);
       const col = new THREE.Color(0xb4d8c6).lerp(new THREE.Color(0xffffff), lift);
-      cloudB.add(P.set(cx + rng.float(-cs, cs), yCloud + lift * 3 - 1, cz + rng.float(-cs, cs) * 0.7), ID, Sc.set(pr, pr * 0.48, pr), col.getHex());
+      cloudB.add(
+        P.set(cx + rng.float(-cs, cs), yCloud + lift * 3 - 1, cz + rng.float(-cs, cs) * 0.7),
+        ID,
+        Sc.set(pr, pr * 0.48, pr),
+        col.getHex(),
+      );
     }
   }
   const cloudMat = toon(0xffffff, { emissive: 0xcfeedd, emissiveIntensity: 0.35 });
   const cloudMesh = cloudB.build(new THREE.SphereGeometry(1, 9, 7), cloudMat, group);
   cloudMesh.frustumCulled = false;
   meshes.push(cloudMesh);
-  const sea = new THREE.Mesh(new THREE.CircleGeometry(190, 24), toon(0xcfe9c8, { emissive: 0xbfe0c0, emissiveIntensity: 0.3 }));
+  const sea = new THREE.Mesh(
+    new THREE.CircleGeometry(190, 24),
+    toon(0xcfe9c8, { emissive: 0xbfe0c0, emissiveIntensity: 0.3 }),
+  );
   sea.rotation.x = -Math.PI / 2;
   sea.position.set(c.x, yCloud - 5, c.z);
   group.add(sea);
@@ -510,7 +598,12 @@ export const createDecor: DecorFactory = (ctx) => {
     for (const lf of leaves) {
       P.copy(lf.p);
       if (lf.isl) P.y += lf.isl.off;
-      E.set(lf.pitch + Math.sin(t * 0.9 + lf.ph) * 0.06, lf.yaw, Math.sin(t * 0.7 + lf.ph * 1.3) * 0.05, 'YXZ');
+      E.set(
+        lf.pitch + Math.sin(t * 0.9 + lf.ph) * 0.06,
+        lf.yaw,
+        Math.sin(t * 0.7 + lf.ph * 1.3) * 0.05,
+        'YXZ',
+      );
       Q.setFromEuler(E);
       Sc.setScalar(lf.sc);
       setM(leafB.mesh, lf.idx);
@@ -520,7 +613,11 @@ export const createDecor: DecorFactory = (ctx) => {
     // Käfer krabbeln über die Inseln
     for (const b of beetleHome) {
       const ang = b.ph + t * b.sp;
-      P.set(b.isl.base.x + Math.cos(ang) * b.rr, b.isl.base.y + b.isl.off + 0.25, b.isl.base.z + Math.sin(ang) * b.rr);
+      P.set(
+        b.isl.base.x + Math.cos(ang) * b.rr,
+        b.isl.base.y + b.isl.off + 0.25,
+        b.isl.base.z + Math.sin(ang) * b.rr,
+      );
       const tx = -Math.sin(ang) * Math.sign(b.sp);
       const tz = Math.cos(ang) * Math.sign(b.sp);
       Q.setFromAxisAngle(AY, Math.atan2(-tz, tx) + Math.sin(t * 6 + b.ph) * 0.08);
@@ -536,7 +633,11 @@ export const createDecor: DecorFactory = (ctx) => {
       for (let i = 1; i <= NSEG; i++) {
         const f = i / NSEG;
         const sw = ln.amp * Math.pow(f, 1.4);
-        pCur.set(ln.ax + Math.sin(t * ln.sp + ln.ph + i * 0.25) * sw, ln.ay - i * ln.seg, ln.az + Math.cos(t * ln.sp * 0.8 + ln.ph * 1.3 + i * 0.2) * sw * 0.6);
+        pCur.set(
+          ln.ax + Math.sin(t * ln.sp + ln.ph + i * 0.25) * sw,
+          ln.ay - i * ln.seg,
+          ln.az + Math.cos(t * ln.sp * 0.8 + ln.ph * 1.3 + i * 0.2) * sw * 0.6,
+        );
         dirV.subVectors(pCur, pPrev);
         const len = dirV.length();
         const r = ln.rad * (1 - 0.45 * f);
@@ -568,7 +669,11 @@ export const createDecor: DecorFactory = (ctx) => {
     Q.identity();
     for (let i = 0; i < flies.length; i++) {
       const f = flies[i]!;
-      P.set(f.hx + Math.sin(t * f.f1 + f.p1) * f.amp, f.hy + Math.sin(t * f.f2 + f.p2) * f.amp * 0.6, f.hz + Math.cos(t * f.f3 + f.p3) * f.amp);
+      P.set(
+        f.hx + Math.sin(t * f.f1 + f.p1) * f.amp,
+        f.hy + Math.sin(t * f.f2 + f.p2) * f.amp * 0.6,
+        f.hz + Math.cos(t * f.f3 + f.p3) * f.amp,
+      );
       const blink = 0.45 + 0.55 * Math.max(0, Math.sin(t * f.fb + f.pb));
       Sc.setScalar(f.sz * (0.55 + 0.45 * blink));
       setM(flyB.mesh, i);
@@ -596,7 +701,11 @@ export const createDecor: DecorFactory = (ctx) => {
       const b = bflies[i]!;
       const ang = b.a0 + b.w * t;
       const rho = b.rho + Math.sin(t * 0.5 + b.ph) * R * 0.08;
-      P.set(c.x + Math.cos(ang) * rho, b.base + Math.sin(t * 0.9 + b.ph) * 1.8 + Math.sin(t * b.flap) * 0.15, c.z + Math.sin(ang) * rho);
+      P.set(
+        c.x + Math.cos(ang) * rho,
+        b.base + Math.sin(t * 0.9 + b.ph) * 1.8 + Math.sin(t * b.flap) * 0.15,
+        c.z + Math.sin(ang) * rho,
+      );
       const sg = Math.sign(b.w);
       const yaw = Math.atan2(-Math.cos(ang) * sg, -Math.sin(ang) * sg);
       qa.setFromAxisAngle(AY, yaw);

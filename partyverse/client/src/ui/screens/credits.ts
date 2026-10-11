@@ -8,7 +8,12 @@ export const LIBRARIES: ReadonlyArray<{ name: string; version: string; license: 
   { name: 'colyseus', version: '0.15.57', license: 'MIT', use: 'Spielserver (Online-Modus)' },
   { name: 'colyseus.js', version: '0.15.28', license: 'MIT', use: 'Client für den Online-Modus' },
   { name: '@colyseus/schema', version: '2.0.37', license: 'MIT', use: 'Zustandssynchronisierung' },
-  { name: '@colyseus/ws-transport', version: '0.15.3', license: 'MIT', use: 'WebSocket-Transport des Servers' },
+  {
+    name: '@colyseus/ws-transport',
+    version: '0.15.3',
+    license: 'MIT',
+    use: 'WebSocket-Transport des Servers',
+  },
   { name: 'express', version: '4.21.2', license: 'MIT', use: 'HTTP-Server' },
   { name: 'vite', version: '5.4.21', license: 'MIT', use: 'Entwicklung und Build' },
   { name: 'typescript', version: '5.6.3', license: 'Apache-2.0', use: 'Programmiersprache und Typprüfung' },
@@ -16,7 +21,16 @@ export const LIBRARIES: ReadonlyArray<{ name: string; version: string; license: 
 ];
 
 export function create(app: App, params?: RouteParams): ScreenView {
-  const rows = LIBRARIES.map((l) => h('tr', null, h('td', null, l.name), h('td', null, l.version), h('td', null, l.license), h('td', null, l.use)));
+  const rows = LIBRARIES.map((l) =>
+    h(
+      'tr',
+      null,
+      h('td', null, l.name),
+      h('td', null, l.version),
+      h('td', null, l.license),
+      h('td', null, l.use),
+    ),
+  );
   const el = h(
     'div',
     { class: 'screen sc' },
@@ -28,14 +42,45 @@ export function create(app: App, params?: RouteParams): ScreenView {
       h('p', null, 'Ein 3D-Partyspiel für zwei bis vier Spieler: am selben Gerät, gegen Bots oder online.'),
       section(
         'Alles selbst gemacht',
-        h('p', null, 'Eigene Figuren, eigene Welten, eigene Musik und eigene Klänge (prozedural im Browser erzeugt). Es werden keine fremden Assets verwendet.'),
+        h(
+          'p',
+          null,
+          'Eigene Figuren, eigene Welten, eigene Musik und eigene Klänge (prozedural im Browser erzeugt). Es werden keine fremden Assets verwendet.',
+        ),
       ),
       section(
         'Verwendete Bibliotheken',
-        h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, 'Paket'), h('th', null, 'Version'), h('th', null, 'Lizenz'), h('th', null, 'Zweck'))), h('tbody', null, ...rows)),
-        h('p', { class: 'hint' }, 'Alle Bibliotheken sind freie Software. Die vollständige Liste steht auch in THIRD_PARTY.md.'),
+        h(
+          'table',
+          { class: 'tbl' },
+          h(
+            'thead',
+            null,
+            h(
+              'tr',
+              null,
+              h('th', null, 'Paket'),
+              h('th', null, 'Version'),
+              h('th', null, 'Lizenz'),
+              h('th', null, 'Zweck'),
+            ),
+          ),
+          h('tbody', null, ...rows),
+        ),
+        h(
+          'p',
+          { class: 'hint' },
+          'Alle Bibliotheken sind freie Software. Die vollständige Liste steht auch in THIRD_PARTY.md.',
+        ),
       ),
-      section('Hinweis', h('p', null, 'Kein Nintendo-Material. PARTYVERSE ist ein unabhängiges Spiel und nicht mit Nintendo verbunden.')),
+      section(
+        'Hinweis',
+        h(
+          'p',
+          null,
+          'Kein Nintendo-Material. PARTYVERSE ist ein unabhängiges Spiel und nicht mit Nintendo verbunden.',
+        ),
+      ),
     ),
   );
   return { el };

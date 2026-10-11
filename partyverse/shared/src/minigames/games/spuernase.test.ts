@@ -15,17 +15,23 @@ describe('Spürnase', () => {
       const s = game.init(seed, OPTS);
       const odd = s.cells[s.oddIdx]!;
       const base = s.cells[(s.oddIdx + 1) % s.cells.length]!;
-      const diff = (odd.shape !== base.shape ? 1 : 0) + (odd.color !== base.color ? 1 : 0) + (odd.rot !== base.rot ? 1 : 0);
+      const diff =
+        (odd.shape !== base.shape ? 1 : 0) +
+        (odd.color !== base.color ? 1 : 0) +
+        (odd.rot !== base.rot ? 1 : 0);
       expect(diff).toBe(1);
-      expect(s.cells.filter((c) => c.shape === base.shape && c.color === base.color && c.rot === base.rot)).toHaveLength(s.cells.length - 1);
+      expect(
+        s.cells.filter((c) => c.shape === base.shape && c.color === base.color && c.rot === base.rot),
+      ).toHaveLength(s.cells.length - 1);
     }
     expect(game.init(4, OPTS).cells).toEqual(game.init(4, OPTS).cells);
   });
   it('Zeigerzellen: Mittelpunkte werden wieder auf dieselbe Zelle abgebildet, außerhalb gibt es keine', () => {
-    for (const n of [3, 4, 5, 6]) for (let i = 0; i < n * n; i++) {
-      const c = cellCenter(n, i);
-      expect(cellAt(n, c.px, c.py)).toBe(i);
-    }
+    for (const n of [3, 4, 5, 6])
+      for (let i = 0; i < n * n; i++) {
+        const c = cellCenter(n, i);
+        expect(cellAt(n, c.px, c.py)).toBe(i);
+      }
     expect(cellAt(3, BOARD.x0 - 0.05, 0)).toBe(-1);
     expect(cellAt(3, 0, BOARD.y1 + 0.2)).toBe(-1);
   });
@@ -50,11 +56,23 @@ describe('Spürnase', () => {
     const s = game.init(13, OPTS);
     const target = s.oddIdx;
     // zuerst in die obere linke Ecke, dann zum Ziel
-    for (let i = 0; i < 3; i++) { game.step(s, { ...NEUTRAL_INPUT, x: -1 }); game.step(s, NEUTRAL_INPUT); }
-    for (let i = 0; i < 3; i++) { game.step(s, { ...NEUTRAL_INPUT, y: 1 }); game.step(s, NEUTRAL_INPUT); }
+    for (let i = 0; i < 3; i++) {
+      game.step(s, { ...NEUTRAL_INPUT, x: -1 });
+      game.step(s, NEUTRAL_INPUT);
+    }
+    for (let i = 0; i < 3; i++) {
+      game.step(s, { ...NEUTRAL_INPUT, y: 1 });
+      game.step(s, NEUTRAL_INPUT);
+    }
     expect(s.curC + s.curR).toBe(0);
-    for (let i = 0; i < target % 3; i++) { game.step(s, { ...NEUTRAL_INPUT, x: 1 }); game.step(s, NEUTRAL_INPUT); }
-    for (let i = 0; i < Math.floor(target / 3); i++) { game.step(s, { ...NEUTRAL_INPUT, y: -1 }); game.step(s, NEUTRAL_INPUT); }
+    for (let i = 0; i < target % 3; i++) {
+      game.step(s, { ...NEUTRAL_INPUT, x: 1 });
+      game.step(s, NEUTRAL_INPUT);
+    }
+    for (let i = 0; i < Math.floor(target / 3); i++) {
+      game.step(s, { ...NEUTRAL_INPUT, y: -1 });
+      game.step(s, NEUTRAL_INPUT);
+    }
     game.step(s, { ...NEUTRAL_INPUT, a: true });
     expect(s.found).toBe(1);
   });

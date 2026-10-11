@@ -8,8 +8,23 @@ import { clamp, lerp } from '../util';
  * Die Schleuder steht links bei (ANCHOR_X, ANCHOR_Y). Zeiger: bei gedrückter Taste ziehen (Gegenrichtung = Abschussrichtung), loslassen = Schuss.
  * Tastatur: y stellt den Winkel, x die Stärke; A gedrückt halten (spannen) und loslassen (schießen).
  */
-export interface Island { x: number; y0: number; y: number; r: number; bobA: number; bobF: number; ph: number; pts: number; hit: boolean }
-export interface ShotProj { x: number; y: number; vx: number; vy: number }
+export interface Island {
+  x: number;
+  y0: number;
+  y: number;
+  r: number;
+  bobA: number;
+  bobF: number;
+  ph: number;
+  pts: number;
+  hit: boolean;
+}
+export interface ShotProj {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
 export interface SlingState {
   tick: number;
   phase: 'aim' | 'fly' | 'wait' | 'over';
@@ -51,7 +66,8 @@ const MIN_POW = 0.12;
 const DT = 1 / 60;
 
 export const speedOf = (pow: number): number => V_MAX * (0.25 + 0.75 * pow);
-export const islandY = (i: Island, tick: number): number => (i.bobA ? i.y0 + i.bobA * Math.sin(tick * i.bobF + i.ph) : i.y0);
+export const islandY = (i: Island, tick: number): number =>
+  i.bobA ? i.y0 + i.bobA * Math.sin(tick * i.bobF + i.ph) : i.y0;
 
 function startAim(s: SlingState): void {
   s.phase = 'aim';
@@ -74,7 +90,10 @@ export const game: MiniGame<SlingState> = {
     'Ferne Inseln bringen mehr Punkte, ein Treffer in die Mitte der Scheibe gibt Bonus.',
     'Du hast sechs Schüsse.',
   ],
-  controls: { desktop: 'Maus ziehen und loslassen, oder Pfeile + Leertaste halten/loslassen', touch: 'Finger ziehen und loslassen' },
+  controls: {
+    desktop: 'Maus ziehen und loslassen, oder Pfeile + Leertaste halten/loslassen',
+    touch: 'Finger ziehen und loslassen',
+  },
   category: 'aim',
   duration: 35,
   usesPointer: true,
@@ -90,10 +109,21 @@ export const game: MiniGame<SlingState> = {
       const slot = slots[k] as number;
       const x = lerp(0.15, 1.42, slot / (SHOTS - 1)) + r.float(-0.04, 0.04);
       let y = r.float(-0.42, 0.5);
-      for (let tries = 0; tries < 40 && islands.some((o) => Math.hypot(o.x - x, o.y0 - y) < 0.5); tries++) y = r.float(-0.42, 0.5);
+      for (let tries = 0; tries < 40 && islands.some((o) => Math.hypot(o.x - x, o.y0 - y) < 0.5); tries++)
+        y = r.float(-0.42, 0.5);
       const d = Math.hypot(x - ANCHOR_X, y - ANCHOR_Y);
       const pts = clamp(Math.round(2 + (4 * (d - 1.05)) / 1.3), 2, 6) * 10;
-      islands.push({ x, y0: y, y, r: 0.13, bobA: r.chance(0.35) ? r.float(0.03, 0.07) : 0, bobF: r.float(0.03, 0.05), ph: r.float(0, 6.28), pts, hit: false });
+      islands.push({
+        x,
+        y0: y,
+        y,
+        r: 0.13,
+        bobA: r.chance(0.35) ? r.float(0.03, 0.07) : 0,
+        bobF: r.float(0.03, 0.05),
+        ph: r.float(0, 6.28),
+        pts,
+        hit: false,
+      });
     }
     const s: SlingState = {
       tick: 0,
@@ -200,7 +230,14 @@ export const game: MiniGame<SlingState> = {
         s.timer = 0;
       } else if (p.y < -1.08 || p.x > X_MAX + 0.3 || p.x < -X_MAX - 0.3 || s.timer > 600) {
         s.seq++;
-        s.last = { hit: false, island: -1, pts: 0, bull: false, x: clamp(p.x, -X_MAX, X_MAX), y: clamp(p.y, -1.05, 1) };
+        s.last = {
+          hit: false,
+          island: -1,
+          pts: 0,
+          bull: false,
+          x: clamp(p.x, -X_MAX, X_MAX),
+          y: clamp(p.y, -1.05, 1),
+        };
         s.proj = null;
         s.phase = 'wait';
         s.timer = 0;
@@ -274,8 +311,15 @@ export const game: MiniGame<SlingState> = {
   },
   hud: (s) => {
     const w = s.wind;
-    const mag = Math.round(Math.abs(w) / 0.42 * 4);
-    const wind = mag === 0 ? 'Windstill' : `Wind ${w > 0 ? '→'.repeat(Math.min(3, Math.ceil(mag / 1.4))) : '←'.repeat(Math.min(3, Math.ceil(mag / 1.4)))} ${mag}`;
-    return { left: `Schuss ${Math.min(s.shot + 1, s.shots)}/${s.shots}`, right: `${score(s)} Pkt`, hint: wind };
+    const mag = Math.round((Math.abs(w) / 0.42) * 4);
+    const wind =
+      mag === 0
+        ? 'Windstill'
+        : `Wind ${w > 0 ? '→'.repeat(Math.min(3, Math.ceil(mag / 1.4))) : '←'.repeat(Math.min(3, Math.ceil(mag / 1.4)))} ${mag}`;
+    return {
+      left: `Schuss ${Math.min(s.shot + 1, s.shots)}/${s.shots}`,
+      right: `${score(s)} Pkt`,
+      hint: wind,
+    };
   },
 };

@@ -57,7 +57,8 @@ function genTowers(seed: number): Tower[] {
   return towers;
 }
 
-const hash01 = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 9, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+const hash01 = (i: number): number =>
+  (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 9, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
 export const game: MiniGame<BridgeState> = {
   id: 'bruecke',
@@ -181,6 +182,11 @@ export const game: MiniGame<BridgeState> = {
   hud: (s) => ({
     left: `${s.built} Türme`,
     right: `${s.built * 10 + s.bonus} Pkt`,
-    hint: s.last === 2 && s.phase === 'walk' ? 'Perfekt!' : s.last === 3 && s.phase !== 'idle' ? 'Zu kurz oder zu lang!' : undefined,
+    hint:
+      s.last === 2 && s.phase === 'walk'
+        ? 'Perfekt!'
+        : s.last === 3 && s.phase !== 'idle'
+          ? 'Zu kurz oder zu lang!'
+          : undefined,
   }),
 };

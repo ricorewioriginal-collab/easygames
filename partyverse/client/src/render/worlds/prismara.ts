@@ -109,7 +109,14 @@ export const createDecor: DecorFactory = (ctx) => {
   // --- Aurora ---
   const aurora = new THREE.Mesh(
     auroraGeometry(ctx, k),
-    new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }),
+    new THREE.MeshBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false,
+    }),
   );
   aurora.renderOrder = -5;
   aurora.frustumCulled = false;
@@ -117,7 +124,9 @@ export const createDecor: DecorFactory = (ctx) => {
 
   // --- Regenbogenbogen (instanziert, stehen mit dem Fuss tief unter dem Brett) ---
   const rbN = 3;
-  const rainbows = track(new THREE.InstancedMesh(rainbowGeometry(k), new THREE.MeshBasicMaterial({ vertexColors: true }), rbN));
+  const rainbows = track(
+    new THREE.InstancedMesh(rainbowGeometry(k), new THREE.MeshBasicMaterial({ vertexColors: true }), rbN),
+  );
   const rbData: { x: number; y: number; z: number; q: THREE.Quaternion; s: number; ph: number }[] = [];
   {
     const a0 = rng.float(0, TAU);
@@ -127,7 +136,10 @@ export const createDecor: DecorFactory = (ctx) => {
       const a = a0 + (i * TAU) / rbN + rng.float(-0.35, 0.35);
       const x = Math.cos(a) * d;
       const z = Math.sin(a) * d;
-      const face = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(-x, 0, -z).normalize());
+      const face = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1),
+        new THREE.Vector3(-x, 0, -z).normalize(),
+      );
       rbData.push({ x, y: -9 * k - rng.float(0, 6) * k, z, q: face, s, ph: rng.float(0, 6) });
     }
   }
@@ -135,28 +147,56 @@ export const createDecor: DecorFactory = (ctx) => {
   // --- Schwebende Prismen ---
   const prismN = 8 + Math.floor(34 * q);
   const prismGeo = new THREE.OctahedronGeometry(1, 0);
-  const prisms = track(new THREE.InstancedMesh(prismGeo, toon(0xffffff, { emissive: 0x5a3a88, emissiveIntensity: 0.7 }), prismN));
+  const prisms = track(
+    new THREE.InstancedMesh(prismGeo, toon(0xffffff, { emissive: 0x5a3a88, emissiveIntensity: 0.7 }), prismN),
+  );
   const prismD: { x: number; y: number; z: number; s: number; ph: number; sp: number; tx: number }[] = [];
   for (let i = 0; i < prismN; i++) {
     const s = (0.7 + rng.next() * 1.5) * k;
     const d = R * 1.12 + s * 2.2 + R * rng.float(0, 1.5);
     const a = rng.float(0, TAU);
-    prismD.push({ x: Math.cos(a) * d, y: rng.float(-9, 24) * k, z: Math.sin(a) * d, s, ph: rng.float(0, 6), sp: rng.float(0.3, 0.9) * (rng.chance(0.5) ? 1 : -1), tx: rng.float(0.1, 0.5) });
-    prisms.setColorAt(i, tmpC.setHex(PALETTE[i % PALETTE.length]!).lerp(new THREE.Color(0xffffff), rng.float(0, 0.35)));
+    prismD.push({
+      x: Math.cos(a) * d,
+      y: rng.float(-9, 24) * k,
+      z: Math.sin(a) * d,
+      s,
+      ph: rng.float(0, 6),
+      sp: rng.float(0.3, 0.9) * (rng.chance(0.5) ? 1 : -1),
+      tx: rng.float(0.1, 0.5),
+    });
+    prisms.setColorAt(
+      i,
+      tmpC.setHex(PALETTE[i % PALETTE.length]!).lerp(new THREE.Color(0xffffff), rng.float(0, 0.35)),
+    );
   }
 
   // --- Kreisende Kristallinseln ---
   const islN = 4 + Math.round(3 * q);
-  const islTop = track(new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 0.9, 0.3, 9, 1), toon(0xffffff), islN));
+  const islTop = track(
+    new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 0.9, 0.3, 9, 1), toon(0xffffff), islN),
+  );
   const islTip = track(new THREE.InstancedMesh(new THREE.ConeGeometry(0.9, 1.6, 9), toon(0xffffff), islN));
-  const islCry = track(new THREE.InstancedMesh(new THREE.OctahedronGeometry(1, 0), toon(0xffffff, { emissive: 0x6a4aa0, emissiveIntensity: 0.8 }), islN * 2));
+  const islCry = track(
+    new THREE.InstancedMesh(
+      new THREE.OctahedronGeometry(1, 0),
+      toon(0xffffff, { emissive: 0x6a4aa0, emissiveIntensity: 0.8 }),
+      islN * 2,
+    ),
+  );
   const islD: { d: number; a: number; y: number; s: number; w: number; ph: number }[] = [];
   const topCols = [0xe6c8ff, 0xc8f0ff, 0xffd6f0];
   for (let i = 0; i < islN; i++) {
     const s = (2.8 + rng.next() * 2.6) * k;
     const d = R * 1.1 + s * 1.3 + R * rng.float(0.25, 1.1);
-    const w = (0.035 + rng.next() * 0.03) / Math.max(1, d / 40) * (i % 2 ? 1 : -1);
-    islD.push({ d, a: (i / islN) * TAU + rng.float(0, 0.6), y: rng.float(-6, 16) * k, s, w, ph: rng.float(0, 6) });
+    const w = ((0.035 + rng.next() * 0.03) / Math.max(1, d / 40)) * (i % 2 ? 1 : -1);
+    islD.push({
+      d,
+      a: (i / islN) * TAU + rng.float(0, 0.6),
+      y: rng.float(-6, 16) * k,
+      s,
+      w,
+      ph: rng.float(0, 6),
+    });
     islTop.setColorAt(i, tmpC.setHex(topCols[i % 3]!));
     islTip.setColorAt(i, tmpC.setHex(0x8a77d8));
     islCry.setColorAt(i * 2, tmpC.setHex(PALETTE[(i * 2) % PALETTE.length]!));
@@ -179,7 +219,13 @@ export const createDecor: DecorFactory = (ctx) => {
 
   // --- Kristallspitzen in der Tiefe ---
   const spireN = 8 + Math.floor(10 * q);
-  const spires = track(new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 5), toon(0xffffff, { emissive: 0x3a2a70, emissiveIntensity: 0.6 }), spireN));
+  const spires = track(
+    new THREE.InstancedMesh(
+      new THREE.ConeGeometry(1, 1, 5),
+      toon(0xffffff, { emissive: 0x3a2a70, emissiveIntensity: 0.6 }),
+      spireN,
+    ),
+  );
   for (let i = 0; i < spireN; i++) {
     const a = rng.float(0, TAU);
     const d = rng.float(0.2, 2.6) * R + 8;
@@ -228,13 +274,37 @@ export const createDecor: DecorFactory = (ctx) => {
       const s = o.s;
       tmpQ.identity();
       islTop.setMatrixAt(i, tmpM.compose(tmpP.set(x, y, z), tmpQ, tmpS.set(s, s * 0.6, s)));
-      islTip.setMatrixAt(i, tmpM.compose(tmpP.set(x, y - s * 0.86, z), tmpQ.setFromAxisAngle(AXIS_X, Math.PI), tmpS.set(s, s * 0.9, s)));
+      islTip.setMatrixAt(
+        i,
+        tmpM.compose(
+          tmpP.set(x, y - s * 0.86, z),
+          tmpQ.setFromAxisAngle(AXIS_X, Math.PI),
+          tmpS.set(s, s * 0.9, s),
+        ),
+      );
       tmpQ.setFromAxisAngle(UP, t * 0.5 + o.ph);
       const cs = s * 0.34;
-      islCry.setMatrixAt(i * 2, tmpM.compose(tmpP.set(x + s * 0.25, y + cs * 1.5, z + s * 0.1), tmpQ, tmpS.set(cs * 0.55, cs * 1.5, cs * 0.55)));
-      islCry.setMatrixAt(i * 2 + 1, tmpM.compose(tmpP.set(x - s * 0.35, y + cs * 1.0, z - s * 0.2), tmpQ, tmpS.set(cs * 0.4, cs * 1.0, cs * 0.4)));
+      islCry.setMatrixAt(
+        i * 2,
+        tmpM.compose(
+          tmpP.set(x + s * 0.25, y + cs * 1.5, z + s * 0.1),
+          tmpQ,
+          tmpS.set(cs * 0.55, cs * 1.5, cs * 0.55),
+        ),
+      );
+      islCry.setMatrixAt(
+        i * 2 + 1,
+        tmpM.compose(
+          tmpP.set(x - s * 0.35, y + cs * 1.0, z - s * 0.2),
+          tmpQ,
+          tmpS.set(cs * 0.4, cs * 1.0, cs * 0.4),
+        ),
+      );
     }
-    islTop.instanceMatrix.needsUpdate = islTip.instanceMatrix.needsUpdate = islCry.instanceMatrix.needsUpdate = true;
+    islTop.instanceMatrix.needsUpdate =
+      islTip.instanceMatrix.needsUpdate =
+      islCry.instanceMatrix.needsUpdate =
+        true;
 
     tmpQ.identity();
     for (let i = 0; i < dustN; i++) {

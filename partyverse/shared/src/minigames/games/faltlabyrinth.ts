@@ -54,9 +54,11 @@ export const CHECK_POINTS = 15;
 const PAR_SECONDS = 16;
 
 export const mazeSize = (index: number): number => 7 + Math.min(2, index);
-export const deriveSeed = (seed: number, index: number): number => (Math.imul(seed ^ 0x5bd1e995, 0x9e3779b1) + Math.imul(index + 1, 0x85ebca6b)) >>> 0;
+export const deriveSeed = (seed: number, index: number): number =>
+  (Math.imul(seed ^ 0x5bd1e995, 0x9e3779b1) + Math.imul(index + 1, 0x85ebca6b)) >>> 0;
 
-export const isWall = (code: number, phase: number): boolean => code === 1 || (code === 2 && phase === 0) || (code === 3 && phase === 1);
+export const isWall = (code: number, phase: number): boolean =>
+  code === 1 || (code === 2 && phase === 0) || (code === 3 && phase === 1);
 
 interface Edge {
   a: number;
@@ -156,8 +158,10 @@ export function makeMaze(seed: number, n: number): Maze {
       const b = inB.has(k);
       let code = 1;
       if (a && b) code = 0;
-      else if (a) code = 3; // Gang in A, Wand in B
-      else if (b) code = 2; // Gang in B, Wand in A
+      else if (a)
+        code = 3; // Gang in A, Wand in B
+      else if (b)
+        code = 2; // Gang in B, Wand in A
       else if (r.chance(0.07)) code = 0; // zusätzliche Abkürzung
       if (e.line === 'v') vw[e.idx] = code;
       else hw[e.idx] = code;
@@ -232,13 +236,20 @@ export function pathCells(m: Maze, phase: number, from: number, to: number): num
 }
 
 export const STEP_TICKS = Math.round(60 / SPEED);
-const phaseAfter = (phase: number, phaseTick: number, t: number): number => (phase + Math.floor((phaseTick + t) / PHASE_TICKS)) & 1;
+const phaseAfter = (phase: number, phaseTick: number, t: number): number =>
+  (phase + Math.floor((phaseTick + t) / PHASE_TICKS)) & 1;
 
 /**
  * Zeit-erweiterte Suche: kürzeste Anzahl Zellschritte (inkl. Warten) bis zum Ziel, wenn sich das Labyrinth
  * im Takt faltet. Liefert auch die erste Bewegung (Zielzelle des ersten Schritts, kann die eigene Zelle sein).
  */
-export function timePlan(m: Maze, phase: number, phaseTick: number, from: number, maxSteps = 70): { steps: number; next: number } | null {
+export function timePlan(
+  m: Maze,
+  phase: number,
+  phaseTick: number,
+  from: number,
+  maxSteps = 70,
+): { steps: number; next: number } | null {
   const goal = m.goal.y * m.n + m.goal.x;
   if (from === goal) return { steps: 0, next: from };
   let cur = new Array<number>(m.n * m.n).fill(-1);
@@ -279,12 +290,14 @@ function resolve(s: FaltState): void {
     const rects: number[] = [];
     for (let j = cj - 1; j <= cj + 1; j++) {
       for (let i = ci - 1; i <= ci + 2; i++) {
-        if (i >= 0 && i <= n && j >= 0 && j < n && isWall(m.vw[j * (n + 1) + i]!, s.phase)) rects.push(i - HALF_WALL, j - HALF_WALL, i + HALF_WALL, j + 1 + HALF_WALL);
+        if (i >= 0 && i <= n && j >= 0 && j < n && isWall(m.vw[j * (n + 1) + i]!, s.phase))
+          rects.push(i - HALF_WALL, j - HALF_WALL, i + HALF_WALL, j + 1 + HALF_WALL);
       }
     }
     for (let j = cj - 1; j <= cj + 2; j++) {
       for (let i = ci - 1; i <= ci + 1; i++) {
-        if (j >= 0 && j <= n && i >= 0 && i < n && isWall(m.hw[j * n + i]!, s.phase)) rects.push(i - HALF_WALL, j - HALF_WALL, i + 1 + HALF_WALL, j + HALF_WALL);
+        if (j >= 0 && j <= n && i >= 0 && i < n && isWall(m.hw[j * n + i]!, s.phase))
+          rects.push(i - HALF_WALL, j - HALF_WALL, i + 1 + HALF_WALL, j + HALF_WALL);
       }
     }
     let moved = false;
@@ -469,7 +482,10 @@ export const game: MiniGame<FaltState> = {
     return {
       left: `${s.mazes} Labyrinthe`,
       right: `${Math.max(0, Math.ceil((DURATION_TICKS - s.tick) / 60))} s`,
-      hint: left <= WARN_TICKS ? 'Faltung!' : `Phase ${s.phase === 0 ? 'A' : 'B'} · Faltung in ${Math.ceil(left / 60)} s`,
+      hint:
+        left <= WARN_TICKS
+          ? 'Faltung!'
+          : `Phase ${s.phase === 0 ? 'A' : 'B'} · Faltung in ${Math.ceil(left / 60)} s`,
     };
   },
 };

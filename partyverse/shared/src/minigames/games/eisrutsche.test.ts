@@ -14,7 +14,8 @@ describe('eisrutsche', () => {
       expect(a.stars).toEqual(b.stars);
       expect(a.holes.length).toBeGreaterThanOrEqual(3);
       for (const h of a.holes) expect(Math.hypot(h.x, h.y)).toBeGreaterThan(h.r + 2);
-      for (const st of a.stars) for (const h of a.holes) expect(Math.hypot(st.x - h.x, st.y - h.y)).toBeGreaterThan(h.r);
+      for (const st of a.stars)
+        for (const h of a.holes) expect(Math.hypot(st.x - h.x, st.y - h.y)).toBeGreaterThan(h.r);
     }
     expect(game.init(1, opts).holes).not.toEqual(game.init(2, opts).holes);
   });

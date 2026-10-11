@@ -8,7 +8,13 @@ const SC = 5;
 const wx = (x: number): number => x * SC;
 const wy = (y: number): number => y * SC;
 
-interface IslandV { g: THREE.Group; board: THREE.Group; label: THREE.Sprite; fall: number; hit: boolean }
+interface IslandV {
+  g: THREE.Group;
+  board: THREE.Group;
+  label: THREE.Sprite;
+  fall: number;
+  hit: boolean;
+}
 
 /** Schleuder auf einem Hügel, Zielscheiben auf schwebenden Inseln, Windfahne und Wolken, die mit dem Wind ziehen. */
 export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
@@ -21,7 +27,10 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
   root.add(sunL);
 
   // Sonne weit hinten
-  const sunDisc = new THREE.Mesh(new THREE.CircleGeometry(4, 32), new THREE.MeshBasicMaterial({ color: 0xfff1a0, fog: false }));
+  const sunDisc = new THREE.Mesh(
+    new THREE.CircleGeometry(4, 32),
+    new THREE.MeshBasicMaterial({ color: 0xfff1a0, fog: false }),
+  );
   sunDisc.position.set(18, 14, -40);
   root.add(sunDisc);
   const sunHalo = new THREE.Mesh(new THREE.CircleGeometry(7, 32), glow(0xfff6c8, 0.35));
@@ -93,11 +102,17 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
   const sock = new THREE.Group();
   sock.position.set(wx(ANCHOR_X) - 2.4, wy(ANCHOR_Y) + 1.6, 0);
   root.add(sock);
-  const sockCone = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.8, 10, 1, true), new THREE.MeshToonMaterial({ color: 0xff7a3c, side: THREE.DoubleSide }));
+  const sockCone = new THREE.Mesh(
+    new THREE.ConeGeometry(0.35, 1.8, 10, 1, true),
+    new THREE.MeshToonMaterial({ color: 0xff7a3c, side: THREE.DoubleSide }),
+  );
   sockCone.rotation.z = -Math.PI / 2;
   sockCone.position.x = 0.9;
   sock.add(sockCone);
-  const sockStripe = new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.27, 0.4, 10, 1, true), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }));
+  const sockStripe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.31, 0.27, 0.4, 10, 1, true),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }),
+  );
   sockStripe.rotation.z = -Math.PI / 2;
   sockStripe.position.x = 0.7;
   sock.add(sockStripe);
@@ -130,7 +145,10 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
     const R = isl.r * SC;
     const radii = [1, 0.74, 0.55, 0.38];
     radii.forEach((k, i) => {
-      const d = new THREE.Mesh(new THREE.CylinderGeometry(R * k, R * k, 0.1, 28), toon(ringCols[i] as number));
+      const d = new THREE.Mesh(
+        new THREE.CylinderGeometry(R * k, R * k, 0.1, 28),
+        toon(ringCols[i] as number),
+      );
       d.rotation.x = Math.PI / 2;
       d.position.z = i * 0.03;
       board.add(d);
@@ -138,7 +156,12 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
     const rim = new THREE.Mesh(new THREE.TorusGeometry(R, 0.05, 8, 28), toon(0x6b4423));
     board.add(rim);
     g.add(board);
-    const label = textSprite(String(isl.pts), { color: '#ffffff', bg: 'rgba(40,20,90,0.75)', size: 56, width: 0.95 });
+    const label = textSprite(String(isl.pts), {
+      color: '#ffffff',
+      bg: 'rgba(40,20,90,0.75)',
+      size: 56,
+      width: 0.95,
+    });
     label.position.set(0, R + 0.7, 0.3);
     g.add(label);
     g.position.set(wx(isl.x), wy(isl.y), 0);
@@ -177,7 +200,10 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
     const eye = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), toon(0xffffff));
     eye.position.set(sx * 0.12, 0.08, 0.28);
     proj.add(eye);
-    const pup = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), new THREE.MeshBasicMaterial({ color: 0x1a1030 }));
+    const pup = new THREE.Mesh(
+      new THREE.SphereGeometry(0.05, 8, 6),
+      new THREE.MeshBasicMaterial({ color: 0x1a1030 }),
+    );
     pup.position.set(sx * 0.12, 0.08, 0.36);
     proj.add(pup);
   }
@@ -204,7 +230,10 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
   }
 
   // Textblasen
-  interface Pop { sp: THREE.Sprite; t: number }
+  interface Pop {
+    sp: THREE.Sprite;
+    t: number;
+  }
   const pops: Pop[] = [];
   const popCache = new Map<string, THREE.Sprite[]>();
   const showPop = (text: string, color: string, x: number, y: number, width = 1.9): void => {
@@ -247,7 +276,8 @@ export const createView: MiniGameViewFactory<SlingState> = (ctx, initial) => {
       const wk = wnd / 0.42; // -1..1
       sock.rotation.z = wk > 0 ? -0.5 + Math.sin(t * 7) * 0.08 * Math.abs(wk) : 0;
       sock.scale.x = wk >= 0 ? 1 : -1;
-      sock.rotation.z = (wk >= 0 ? 1 : -1) * (-0.9 + Math.min(1, Math.abs(wk)) * 0.8) + Math.sin(t * 8) * 0.06 * Math.abs(wk);
+      sock.rotation.z =
+        (wk >= 0 ? 1 : -1) * (-0.9 + Math.min(1, Math.abs(wk)) * 0.8) + Math.sin(t * 8) * 0.06 * Math.abs(wk);
       sockCone.scale.y = 0.4 + Math.min(1, Math.abs(wk)) * 0.6;
       for (let i = 0; i < clouds.length; i++) {
         const c = clouds[i] as THREE.Group;

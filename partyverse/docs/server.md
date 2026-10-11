@@ -2,9 +2,9 @@
 
 Der Online-Modus braucht einen **eigenen Colyseus-Server** (Node.js). **GitHub Pages kann keinen solchen Server hosten**: Pages liefert nur statische Dateien aus und erlaubt keine laufenden Prozesse oder WebSocket-Verbindungen. Die Webseite (Client) und der Spielserver sind deshalb getrennt:
 
-| Teil | Wo | Was |
-| --- | --- | --- |
-| Client | GitHub Pages (oder jeder statische Host) | `partyverse/app/` – das gebaute Spiel |
+| Teil   | Wo                                                                | Was                                                  |
+| ------ | ----------------------------------------------------------------- | ---------------------------------------------------- |
+| Client | GitHub Pages (oder jeder statische Host)                          | `partyverse/app/` – das gebaute Spiel                |
 | Server | Ein beliebiger Node-Host (eigener Rechner, VPS, Container-Dienst) | `server/` – Räume, Würfel, Regeln, Minispiel-Prüfung |
 
 Lokale Partien (Hot-Seat, gegen Bots) laufen komplett im Browser und brauchen **keinen** Server und keine Umgebungsvariablen.
@@ -18,7 +18,7 @@ npm run server          # Entwicklungsmodus (tsx), Port 2567
 npm run dev             # Client auf http://localhost:5173
 ```
 
-Im Spiel: *Optionen → Online-Server* `ws://localhost:2567` eintragen (oder beim Bauen `VITE_SERVER_URL=ws://localhost:2567` setzen). Ein Gesundheitstest ist unter `http://localhost:2567/health` erreichbar.
+Im Spiel: _Optionen → Online-Server_ `ws://localhost:2567` eintragen (oder beim Bauen `VITE_SERVER_URL=ws://localhost:2567` setzen). Ein Gesundheitstest ist unter `http://localhost:2567/health` erreichbar.
 
 ## Produktion
 
@@ -28,9 +28,9 @@ npm run server:build    # erzeugt server/dist/server.mjs
 PORT=2567 ALLOWED_ORIGINS=https://deinname.github.io npm run server:start
 ```
 
-| Variable | Bedeutung |
-| --- | --- |
-| `PORT` | Port des Servers (Standard 2567) |
+| Variable          | Bedeutung                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `PORT`            | Port des Servers (Standard 2567)                                                                                   |
 | `ALLOWED_ORIGINS` | Komma-getrennte Liste erlaubter Browser-Herkünfte (z. B. die Pages-Adresse). Leer = alle erlaubt (nur zum Testen!) |
 
 Es werden **keine Geheimnisse** gebraucht. Für Browser auf `https://`-Seiten muss der Server per **`wss://`** erreichbar sein (TLS über einen Reverse-Proxy wie Caddy/nginx oder die Terminierung des Hosts). Reverse-Proxy: WebSocket-Upgrade weiterreichen.

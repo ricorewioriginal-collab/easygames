@@ -48,7 +48,8 @@ const STUMBLE_LOSS = 4;
 
 /** Index der aktiven Böe zum Zeitpunkt t, -1 = keine */
 export function gustAt(gusts: readonly Gust[], t: number): number {
-  for (let i = 0; i < gusts.length; i++) if (t >= (gusts[i] as Gust).start && t < (gusts[i] as Gust).end) return i;
+  for (let i = 0; i < gusts.length; i++)
+    if (t >= (gusts[i] as Gust).start && t < (gusts[i] as Gust).end) return i;
   return -1;
 }
 /** Warnphase vor einer Böe? */
@@ -69,7 +70,10 @@ export const game: MiniGame<TippState> = {
     'Kündigt sich eine Böe an, halte eine Taste gedrückt, bis sie vorbei ist. Tippen hilft dann nicht.',
     'Je mehr Kraft, desto schneller zieht deine Figur den Felsen.',
   ],
-  controls: { desktop: 'Abwechselnd Leertaste (A) und Shift (B) tippen – oder abwechselnd links und rechts klicken', touch: 'Abwechselnd die Knöpfe A und B tippen (oder links/rechts auf den Bildschirm)' },
+  controls: {
+    desktop: 'Abwechselnd Leertaste (A) und Shift (B) tippen – oder abwechselnd links und rechts klicken',
+    touch: 'Abwechselnd die Knöpfe A und B tippen (oder links/rechts auf den Bildschirm)',
+  },
   category: 'race',
   duration: DURATION,
   usesPointer: true,
@@ -83,7 +87,24 @@ export const game: MiniGame<TippState> = {
       gusts.push({ start: t, end: t + len });
       t += len + 200 + rnd.int(110);
     }
-    return { t: 0, power: 0, dist: 0, gusts, lastSide: -1, sinceTap: 99, taps: 0, stumbles: 0, prevA: false, prevB: false, prevPd: false, tapSeq: 0, stumbleSeq: 0, bracing: false, windLost: 0, seed };
+    return {
+      t: 0,
+      power: 0,
+      dist: 0,
+      gusts,
+      lastSide: -1,
+      sinceTap: 99,
+      taps: 0,
+      stumbles: 0,
+      prevA: false,
+      prevB: false,
+      prevPd: false,
+      tapSeq: 0,
+      stumbleSeq: 0,
+      bracing: false,
+      windLost: 0,
+      seed,
+    };
   },
   step(s, input) {
     if (s.t >= TICKS) return;
@@ -135,7 +156,9 @@ export const game: MiniGame<TippState> = {
     if (gi >= 0) {
       // Reaktion auf die Böe: schlechte Spieler halten erst spät
       const react = Math.round(lerp(30, 5, skill));
-      return s.t - (s.gusts[gi] as Gust).start >= react - WARN * Math.min(1, skill * 0.7) ? { ...NEUTRAL_INPUT, a: true } : { ...NEUTRAL_INPUT };
+      return s.t - (s.gusts[gi] as Gust).start >= react - WARN * Math.min(1, skill * 0.7)
+        ? { ...NEUTRAL_INPUT, a: true }
+        : { ...NEUTRAL_INPUT };
     }
     const iv = lerp(15, 8.2, skill);
     // Zeitpunkt nächstes Tippen: iv + Streuung (aus dem Zustand abgeleitet, nicht gespeichert)
@@ -151,9 +174,15 @@ export const game: MiniGame<TippState> = {
   hud: (s) => {
     const g = gustAt(s.gusts, s.t) >= 0;
     return {
-      left: `${(s.dist).toFixed(1)} m`,
+      left: `${s.dist.toFixed(1)} m`,
       right: `Kraft ${Math.round(s.power)}`,
-      hint: g ? (s.bracing ? 'Halten! Gut so!' : 'BÖE – Taste halten!') : warnAt(s.gusts, s.t) ? 'Böe kommt – gleich halten!' : 'Abwechselnd A und B tippen',
+      hint: g
+        ? s.bracing
+          ? 'Halten! Gut so!'
+          : 'BÖE – Taste halten!'
+        : warnAt(s.gusts, s.t)
+          ? 'Böe kommt – gleich halten!'
+          : 'Abwechselnd A und B tippen',
     };
   },
 };

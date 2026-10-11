@@ -10,15 +10,50 @@ function shapeOf(kind: number): THREE.Shape {
   const sh = new THREE.Shape();
   const poly = (pts: Array<[number, number]>) => {
     sh.moveTo((pts[0] as [number, number])[0], (pts[0] as [number, number])[1]);
-    for (let i = 1; i < pts.length; i++) sh.lineTo((pts[i] as [number, number])[0], (pts[i] as [number, number])[1]);
+    for (let i = 1; i < pts.length; i++)
+      sh.lineTo((pts[i] as [number, number])[0], (pts[i] as [number, number])[1]);
     sh.closePath();
   };
   switch (kind) {
-    case 0: poly([[0, 0.5], [0.48, 0.02], [0.18, 0.02], [0.18, -0.5], [-0.18, -0.5], [-0.18, 0.02], [-0.48, 0.02]]); break;
-    case 1: poly([[0, 0.5], [0.5, -0.38], [-0.5, -0.38]]); break;
-    case 2: poly([[-0.42, -0.46], [0.46, -0.46], [0.46, -0.1], [-0.06, -0.1], [-0.06, 0.46], [-0.42, 0.46]]); break;
-    case 3: sh.absarc(0, 0, 0.48, 0, Math.PI * 2, false); break;
-    case 4: poly([[-0.4, -0.4], [0.4, -0.4], [0.4, 0.4], [-0.4, 0.4]]); break;
+    case 0:
+      poly([
+        [0, 0.5],
+        [0.48, 0.02],
+        [0.18, 0.02],
+        [0.18, -0.5],
+        [-0.18, -0.5],
+        [-0.18, 0.02],
+        [-0.48, 0.02],
+      ]);
+      break;
+    case 1:
+      poly([
+        [0, 0.5],
+        [0.5, -0.38],
+        [-0.5, -0.38],
+      ]);
+      break;
+    case 2:
+      poly([
+        [-0.42, -0.46],
+        [0.46, -0.46],
+        [0.46, -0.1],
+        [-0.06, -0.1],
+        [-0.06, 0.46],
+        [-0.42, 0.46],
+      ]);
+      break;
+    case 3:
+      sh.absarc(0, 0, 0.48, 0, Math.PI * 2, false);
+      break;
+    case 4:
+      poly([
+        [-0.4, -0.4],
+        [0.4, -0.4],
+        [0.4, 0.4],
+        [-0.4, 0.4],
+      ]);
+      break;
     case 5: {
       const pts: Array<[number, number]> = [];
       for (let i = 0; i < 10; i++) {
@@ -31,11 +66,26 @@ function shapeOf(kind: number): THREE.Shape {
     }
     case 6: {
       const pts: Array<[number, number]> = [];
-      for (let i = 0; i < 6; i++) pts.push([Math.cos((i * Math.PI) / 3) * 0.5, Math.sin((i * Math.PI) / 3) * 0.5]);
+      for (let i = 0; i < 6; i++)
+        pts.push([Math.cos((i * Math.PI) / 3) * 0.5, Math.sin((i * Math.PI) / 3) * 0.5]);
       poly(pts);
       break;
     }
-    default: poly([[-0.15, -0.5], [0.15, -0.5], [0.15, -0.15], [0.5, -0.15], [0.5, 0.15], [0.15, 0.15], [0.15, 0.5], [-0.15, 0.5], [-0.15, 0.15], [-0.5, 0.15], [-0.5, -0.15], [-0.15, -0.15]]);
+    default:
+      poly([
+        [-0.15, -0.5],
+        [0.15, -0.5],
+        [0.15, -0.15],
+        [0.5, -0.15],
+        [0.5, 0.15],
+        [0.15, 0.15],
+        [0.15, 0.5],
+        [-0.15, 0.5],
+        [-0.15, 0.15],
+        [-0.5, 0.15],
+        [-0.5, -0.15],
+        [-0.15, -0.15],
+      ]);
   }
   return sh;
 }
@@ -46,7 +96,14 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
   ctx.scene.background = new THREE.Color(0xf0d7a1);
   const D = 10;
   const symGeos = Array.from({ length: 8 }, (_, i) => {
-    const g = new THREE.ExtrudeGeometry(shapeOf(i), { depth: 0.22, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelSegments: 2, curveSegments: 14 });
+    const g = new THREE.ExtrudeGeometry(shapeOf(i), {
+      depth: 0.22,
+      bevelEnabled: true,
+      bevelThickness: 0.05,
+      bevelSize: 0.04,
+      bevelSegments: 2,
+      curveSegments: 14,
+    });
     g.translate(0, 0, -0.11);
     return g;
   });
@@ -84,7 +141,14 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
   root.add(chalkB);
 
   // Zellen
-  interface CellView { tile: THREE.Mesh; sym: THREE.Mesh; delay: number; age: number; shake: number; flash: number }
+  interface CellView {
+    tile: THREE.Mesh;
+    sym: THREE.Mesh;
+    delay: number;
+    age: number;
+    shake: number;
+    flash: number;
+  }
   const cellsV: CellView[] = [];
   for (let i = 0; i < MAXC; i++) {
     const tile = new THREE.Mesh(tileGeo, (i % 2 ? tileA : tileB).clone());
@@ -141,7 +205,10 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
   const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.85, 0.35, 16), toon(0x6c4a2a));
   hat.position.set(0, 1.05, 0);
   mascot.add(hat);
-  const hatTop = new THREE.Mesh(new THREE.SphereGeometry(0.62, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), toon(0x7d5733));
+  const hatTop = new THREE.Mesh(
+    new THREE.SphereGeometry(0.62, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+    toon(0x7d5733),
+  );
   hatTop.position.set(0, 1.15, 0);
   mascot.add(hatTop);
 
@@ -263,7 +330,8 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
         cv.shake = Math.max(0, cv.shake - dt * 2.5);
         const b = cv.tile.userData.base as { x: number; y: number; w: number; h: number };
         const k = Math.max(0, Math.min(1, (cv.age - cv.delay) / 0.38));
-        const pop = k === 0 ? 0.001 : 1 + Math.sin(k * Math.PI) * 0.18 * (1 - k) * 2 - (1 - k) * (1 - k) * 0.9;
+        const pop =
+          k === 0 ? 0.001 : 1 + Math.sin(k * Math.PI) * 0.18 * (1 - k) * 2 - (1 - k) * (1 - k) * 0.9;
         const wob = Math.sin(t * 50) * cv.shake * 0.08;
         cv.tile.position.set(b.x + sx + wob, b.y, 0);
         cv.tile.scale.set(b.w * Math.max(0.001, pop), b.h * Math.max(0.001, pop), 1);
@@ -300,7 +368,8 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
       // Maskottchen: schnüffelt, nickt bei Erfolg, schüttelt bei Fehler
       const sniff = 1 + Math.sin(t * 9) * 0.05 * (1 + Math.max(0, -mood));
       nose.scale.setScalar(sniff);
-      mascot.position.y = -geom.H * 1.0 + 0.25 + Math.max(0, mood) * 0.35 * Math.abs(Math.sin(t * 10)) + (mood < 0 ? -0.1 : 0);
+      mascot.position.y =
+        -geom.H * 1.0 + 0.25 + Math.max(0, mood) * 0.35 * Math.abs(Math.sin(t * 10)) + (mood < 0 ? -0.1 : 0);
       mascot.rotation.z = mood < 0 ? Math.sin(t * 30) * 0.12 * -mood : Math.sin(t * 1.3) * 0.05;
       const target = cellPos(s.n, s.curR * s.n + s.curC);
       const lookX = Math.max(-1, Math.min(1, (target.x - mascot.position.x) / geom.W));

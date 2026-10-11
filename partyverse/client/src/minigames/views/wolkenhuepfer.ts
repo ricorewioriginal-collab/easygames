@@ -97,7 +97,7 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
       for (const sgn of [-1, 1]) {
         const a = new THREE.Mesh(cone, arrowMat);
         a.scale.set(0.3, 0.45, 0.3);
-        a.rotation.z = -sgn * Math.PI / 2;
+        a.rotation.z = (-sgn * Math.PI) / 2;
         a.position.set(sgn * 0.5, 0.45, 0.6);
         g.add(a);
       }
@@ -117,7 +117,13 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
     else starShape.lineTo(px, py);
   }
   starShape.closePath();
-  const starGeo = new THREE.ExtrudeGeometry(starShape, { depth: 0.18, bevelEnabled: true, bevelSize: 0.05, bevelThickness: 0.05, bevelSegments: 1 });
+  const starGeo = new THREE.ExtrudeGeometry(starShape, {
+    depth: 0.18,
+    bevelEnabled: true,
+    bevelSize: 0.05,
+    bevelThickness: 0.05,
+    bevelSegments: 1,
+  });
   starGeo.translate(0, 0, -0.09);
   const starMat = toon(0xffd23f, { emissive: 0xffa000, emissiveIntensity: 0.9 });
   const stars = initial.stars.map((st) => {
@@ -177,7 +183,23 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
   footL.position.set(0, 0.1, 0.25);
   const footR = footL.clone();
   footR.position.z = -0.25;
-  inner.add(body, belly, scarf, scarfTail, earL, earR, eyeL, eyeR, shine, shine2, nose, tailBase, tail, footL, footR);
+  inner.add(
+    body,
+    belly,
+    scarf,
+    scarfTail,
+    earL,
+    earR,
+    eyeL,
+    eyeR,
+    shine,
+    shine2,
+    nose,
+    tailBase,
+    tail,
+    footL,
+    footR,
+  );
 
   // ---------- Zustand für Ereignisse ----------
   let camX = initial.x + 3.5;
@@ -238,7 +260,8 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
         cv.g.position.set(cx, top, 0);
         const bob = bump.i === i ? bump.v : 0;
         cv.g.scale.set(1, 1 - 0.14 * bob, 1);
-        if (cv.pad) cv.pad.scale.y = 1 - 0.55 * (bump.i === i ? Math.min(1, bump.v) : 0) + Math.sin(t * 6 + i) * 0.03;
+        if (cv.pad)
+          cv.pad.scale.y = 1 - 0.55 * (bump.i === i ? Math.min(1, bump.v) : 0) + Math.sin(t * 6 + i) * 0.03;
       }
       bump.v = Math.max(0, bump.v - dt * 5);
 
@@ -285,7 +308,11 @@ export const createView: MiniGameViewFactory<WolkenState> = (ctx, initial) => {
       const halfW = aspect < 1 ? 6.8 : 9.8;
       const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 11, 26);
       const tx = s.x + (aspect < 1 ? 2.2 : 3.6);
-      const ty = THREE.MathUtils.clamp(s.grounded ? s.y * 0.7 + 1.6 : camY + (s.y * 0.5 + 1.6 - camY) * 0.4, -0.6, 4.2);
+      const ty = THREE.MathUtils.clamp(
+        s.grounded ? s.y * 0.7 + 1.6 : camY + (s.y * 0.5 + 1.6 - camY) * 0.4,
+        -0.6,
+        4.2,
+      );
       const k = dt <= 0 ? 1 : Math.min(1, dt * 5);
       camX += (tx - camX) * k;
       camY += (ty - camY) * k;

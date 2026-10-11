@@ -18,7 +18,10 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
   root.add(key);
 
   // Abgrund
-  const abyss = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshBasicMaterial({ color: 0xff3d7a }));
+  const abyss = new THREE.Mesh(
+    new THREE.PlaneGeometry(120, 120),
+    new THREE.MeshBasicMaterial({ color: 0xff3d7a }),
+  );
   abyss.rotation.x = -Math.PI / 2;
   abyss.position.y = -9;
   root.add(abyss);
@@ -53,7 +56,15 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
   const symMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
   const tileGeo = new THREE.BoxGeometry(TILE - 0.12, 0.5, TILE - 0.12);
 
-  interface TileV { g: THREE.Group; body: THREE.Mesh; sym: THREE.Mesh; h: number; vy: number; color: number; rot: number }
+  interface TileV {
+    g: THREE.Group;
+    body: THREE.Mesh;
+    sym: THREE.Mesh;
+    h: number;
+    vy: number;
+    color: number;
+    rot: number;
+  }
   const tiles: TileV[] = [];
   for (let i = 0; i < GRID * GRID; i++) {
     const g = new THREE.Group();
@@ -67,7 +78,7 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
     sym.position.y = 0.26;
     g.add(sym);
     root.add(g);
-    tiles.push({ g, body, sym, h: 1, vy: 0, color: ci, rot: (i * 7) % 5 - 2 });
+    tiles.push({ g, body, sym, h: 1, vy: 0, color: ci, rot: ((i * 7) % 5) - 2 });
   }
 
   // Zielschild
@@ -123,7 +134,10 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
     const eye = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), toon(0xffffff));
     eye.position.set(sx * 0.22, 0.98, 0.5);
     lift.add(eye);
-    const pup = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), new THREE.MeshBasicMaterial({ color: 0x1a1030 }));
+    const pup = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 10, 8),
+      new THREE.MeshBasicMaterial({ color: 0x1a1030 }),
+    );
     pup.position.set(sx * 0.22, 0.98, 0.63);
     lift.add(pup);
     const foot = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), toon(0xff8a3d));
@@ -184,11 +198,13 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
           wob = Math.sin(t * 50 + i) * 0.05 * (1 - warnLeft / 50) * 2;
           flash = Math.floor(t * 12 + i) % 2 === 0 ? 1 : 0;
         }
-        tv.g.position.y = -drop + wob + (isTarget && s.phase === 'warn' ? Math.sin(t * 6 + i) * 0.03 + 0.05 : 0);
+        tv.g.position.y =
+          -drop + wob + (isTarget && s.phase === 'warn' ? Math.sin(t * 6 + i) * 0.03 + 0.05 : 0);
         tv.g.rotation.z = (1 - tv.h) * tv.rot * 0.7;
         tv.g.rotation.x = (1 - tv.h) * tv.rot * 0.4;
         tv.g.visible = tv.h > 0.02;
-        (tv.body.material as THREE.MeshToonMaterial) = flash && !present ? toon(0xffffff) : flash ? toon(DARK[ci] as number) : toon(PALETTE[ci] as number);
+        (tv.body.material as THREE.MeshToonMaterial) =
+          flash && !present ? toon(0xffffff) : flash ? toon(DARK[ci] as number) : toon(PALETTE[ci] as number);
         if (isTarget && s.phase === 'warn') tv.sym.scale.setScalar(1 + Math.sin(t * 8) * 0.12);
         else tv.sym.scale.setScalar(1);
       }
@@ -223,10 +239,16 @@ export const createView: MiniGameViewFactory<FarbState> = (ctx, initial) => {
       const hop = moving && s.dash === 0 ? Math.abs(Math.sin(t * 14)) * 0.14 : 0;
       hero.position.set(s.px, 0.28 + jumpH + hop, -s.py);
       hero.rotation.y = faceY;
-      lift.scale.set(1 + (s.dash > 0 ? -0.1 : 0), 1 + (s.dash > 0 ? 0.18 : moving ? Math.sin(t * 28) * 0.04 : Math.sin(t * 3) * 0.02), 1);
+      lift.scale.set(
+        1 + (s.dash > 0 ? -0.1 : 0),
+        1 + (s.dash > 0 ? 0.18 : moving ? Math.sin(t * 28) * 0.04 : Math.sin(t * 3) * 0.02),
+        1,
+      );
       lift.rotation.x = s.dash > 0 ? 0.35 : 0;
-      (lift.getObjectByName('armL') as THREE.Object3D).position.y = 0.7 + (moving ? Math.sin(t * 14) * 0.15 : 0) + (s.dash > 0 ? 0.35 : 0);
-      (lift.getObjectByName('armR') as THREE.Object3D).position.y = 0.7 - (moving ? Math.sin(t * 14) * 0.15 : 0) + (s.dash > 0 ? 0.35 : 0);
+      (lift.getObjectByName('armL') as THREE.Object3D).position.y =
+        0.7 + (moving ? Math.sin(t * 14) * 0.15 : 0) + (s.dash > 0 ? 0.35 : 0);
+      (lift.getObjectByName('armR') as THREE.Object3D).position.y =
+        0.7 - (moving ? Math.sin(t * 14) * 0.15 : 0) + (s.dash > 0 ? 0.35 : 0);
       hshadow.position.set(s.px, 0.3, -s.py);
       hshadow.scale.setScalar(1 - jumpH * 0.25);
       hshadow.visible = !s.dead;

@@ -77,9 +77,26 @@ export const game: MiniGame<PendelState> = {
       let c = rnd.float(-0.55, 0.55);
       if (Math.abs(c - lastC) < 0.2) c = c > 0 ? c - 0.3 : c + 0.3;
       lastC = c;
-      rounds.push({ c, h: lerp(0.3, 0.12, f), omega: (Math.PI * 2) / period, phase0: rnd.float(0, Math.PI * 2) });
+      rounds.push({
+        c,
+        h: lerp(0.3, 0.12, f),
+        omega: (Math.PI * 2) / period,
+        phase0: rnd.float(0, Math.PI * 2),
+      });
     }
-    return { rounds, round: 0, phase: 'swing', k: 0, timer: 0, stopPos: 0, pts: [], total: 0, timedOut: false, prevA: false, seed };
+    return {
+      rounds,
+      round: 0,
+      phase: 'swing',
+      k: 0,
+      timer: 0,
+      stopPos: 0,
+      pts: [],
+      total: 0,
+      timedOut: false,
+      prevA: false,
+      seed,
+    };
   },
   step(s, input) {
     if (s.phase === 'over') return;
@@ -150,7 +167,16 @@ export const game: MiniGame<PendelState> = {
     return {
       left: `Runde ${Math.min(s.round + 1, ROUNDS)}/${ROUNDS}`,
       right: `${s.total} Pkt`,
-      hint: s.phase === 'result' && last !== undefined ? (s.timedOut ? 'Zu spät – kein Stopp!' : last >= 950 ? `Mitten ins Schwarze! +${last}` : `+${last}`) : s.phase === 'swing' && s.k <= ARM ? 'Gleich geht es los …' : 'Stopp mit A',
+      hint:
+        s.phase === 'result' && last !== undefined
+          ? s.timedOut
+            ? 'Zu spät – kein Stopp!'
+            : last >= 950
+              ? `Mitten ins Schwarze! +${last}`
+              : `+${last}`
+          : s.phase === 'swing' && s.k <= ARM
+            ? 'Gleich geht es los …'
+            : 'Stopp mit A',
     };
   },
 };

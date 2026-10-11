@@ -11,7 +11,13 @@ export function create(app: App, _params?: RouteParams): ScreenView {
   app.engine.setScreen(scene);
   app.engine.start();
   app.audio.music('menu');
-  const word = h('div', { class: 'wordmark', 'aria-label': 'PARTYVERSE' }, ...'PARTYVERSE'.split('').map((c, i) => h('span', { style: `animation-delay:${i * 0.12}s`, 'aria-label': '' }, c)));
+  const word = h(
+    'div',
+    { class: 'wordmark', 'aria-label': 'PARTYVERSE' },
+    ...'PARTYVERSE'
+      .split('')
+      .map((c, i) => h('span', { style: `animation-delay:${i * 0.12}s`, 'aria-label': '' }, c)),
+  );
   const online = app.store.data.settings.serverUrl !== '';
   const el = h(
     'div',

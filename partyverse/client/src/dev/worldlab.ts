@@ -18,12 +18,15 @@ export function startWorldLab(params: URLSearchParams): void {
   el.style.cssText = 'position:relative;width:100vw;height:100vh';
   const errors: string[] = [];
   window.addEventListener('error', (e) => errors.push(String(e.message)));
-  const layout = getLayout(params.get('worldlab') === '1' ? 'prismara-01' : (params.get('worldlab') as string));
+  const layout = getLayout(
+    params.get('worldlab') === '1' ? 'prismara-01' : (params.get('worldlab') as string),
+  );
   if (!layout) {
     el.textContent = 'Unbekanntes Layout';
     return;
   }
-  const q = (params.get('q') as QualityLevel) in QUALITY_PRESETS ? (params.get('q') as QualityLevel) : 'medium';
+  const q =
+    (params.get('q') as QualityLevel) in QUALITY_PRESETS ? (params.get('q') as QualityLevel) : 'medium';
   const engine = new Engine(el, QUALITY_PRESETS[q]);
   const world = new WorldScene(layout, engine.quality);
   world.board.setPhase(Number(params.get('phase') ?? 0), true);
@@ -41,7 +44,11 @@ export function startWorldLab(params: URLSearchParams): void {
       t += dt;
       const yaw = yaw0 + (params.get('spin') === '1' ? t * 0.15 : 0);
       const c = world.board.center;
-      camera.position.set(c.x + Math.sin(yaw) * Math.cos(pitch) * dist, c.y + Math.sin(pitch) * dist, c.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+      camera.position.set(
+        c.x + Math.sin(yaw) * Math.cos(pitch) * dist,
+        c.y + Math.sin(pitch) * dist,
+        c.z + Math.cos(yaw) * Math.cos(pitch) * dist,
+      );
       camera.lookAt(c);
       world.update(dt, camera.position);
       api.frames++;

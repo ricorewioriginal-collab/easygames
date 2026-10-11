@@ -1,6 +1,12 @@
 /** Leveldaten: Ein Layout ist ein gerichteter Graph aus Feldern (Knoten) und Wegen (Kanten) mit 3D-Position. */
 export type WorldId = 'prismara' | 'nova-nexus' | 'wurzelwild' | 'paradox-city' | 'infinity-carnival';
-export const WORLD_IDS: readonly WorldId[] = ['prismara', 'nova-nexus', 'wurzelwild', 'paradox-city', 'infinity-carnival'];
+export const WORLD_IDS: readonly WorldId[] = [
+  'prismara',
+  'nova-nexus',
+  'wurzelwild',
+  'paradox-city',
+  'infinity-carnival',
+];
 
 export type NodeKind =
   | 'start' // Startfeld (kein Effekt, Runden-Bonus beim Überqueren)
@@ -13,10 +19,29 @@ export type NodeKind =
   | 'gate' // Mautbrücke: 3 Glimmer oder Schlüsselfragment
   | 'chaos'; // Tauscht die Position mit einem zufälligen anderen Spieler
 
-export const NODE_KINDS: readonly NodeKind[] = ['start', 'glimmer', 'thorn', 'event', 'item', 'shop', 'portal', 'gate', 'chaos'];
+export const NODE_KINDS: readonly NodeKind[] = [
+  'start',
+  'glimmer',
+  'thorn',
+  'event',
+  'item',
+  'shop',
+  'portal',
+  'gate',
+  'chaos',
+];
 
 export type EdgeStyle = 'path' | 'bridge' | 'light' | 'vine' | 'stairs' | 'rail' | 'rainbow' | 'beam';
-export const EDGE_STYLES: readonly EdgeStyle[] = ['path', 'bridge', 'light', 'vine', 'stairs', 'rail', 'rainbow', 'beam'];
+export const EDGE_STYLES: readonly EdgeStyle[] = [
+  'path',
+  'bridge',
+  'light',
+  'vine',
+  'stairs',
+  'rail',
+  'rainbow',
+  'beam',
+];
 
 export interface LayoutNode {
   id: number;

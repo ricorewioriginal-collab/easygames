@@ -9,7 +9,9 @@ describe('raketenflug – Regeln', () => {
   it('Höhle, Tore und Felsen hängen nur vom Seed ab', () => {
     const a = game.init(3, opts);
     const b = game.init(3, { playerIndex: 1, players: 2 });
-    expect(JSON.stringify([a.cy, a.gh, a.gates, a.rocks])).toBe(JSON.stringify([b.cy, b.gh, b.gates, b.rocks]));
+    expect(JSON.stringify([a.cy, a.gh, a.gates, a.rocks])).toBe(
+      JSON.stringify([b.cy, b.gh, b.gates, b.rocks]),
+    );
     expect(JSON.stringify(game.init(4, opts).cy)).not.toBe(JSON.stringify(a.cy));
     expect(a.gates.length).toBeGreaterThan(15);
     expect(a.gh.every((g) => g >= 2.5)).toBe(true);

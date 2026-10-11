@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_INPUT } from '../types';
-import { bpmAt, game, GOOD_WINDOW, lanesDown, multiplier, PERFECT_WINDOW, type BeatState } from './takttreffer';
+import {
+  bpmAt,
+  game,
+  GOOD_WINDOW,
+  lanesDown,
+  multiplier,
+  PERFECT_WINDOW,
+  type BeatState,
+} from './takttreffer';
 
 const OPTS = { playerIndex: 0, players: 2 };
 function advanceTo(s: BeatState, t: number): void {
@@ -14,14 +22,20 @@ describe('Takt-Treffer', () => {
     const c = game.init(4, OPTS);
     expect(a.notes).toEqual(b.notes);
     expect(a.notes).not.toEqual(c.notes);
-    for (let i = 1; i < a.notes.length; i++) expect((a.notes[i] as { t: number }).t).toBeGreaterThan((a.notes[i - 1] as { t: number }).t);
+    for (let i = 1; i < a.notes.length; i++)
+      expect((a.notes[i] as { t: number }).t).toBeGreaterThan((a.notes[i - 1] as { t: number }).t);
     expect(bpmAt(1700)).toBeGreaterThan(bpmAt(0) + 30);
     const early = a.notes.filter((n) => n.t < 600).length;
     const late = a.notes.filter((n) => n.t >= 1100 && n.t < 1700).length;
     expect(late).toBeGreaterThan(early * 0.9);
   });
   it('wertet Perfekt, Gut und Daneben nach Zeitfenster', () => {
-    const lanePress = (lane: number) => (lane === 0 ? { ...NEUTRAL_INPUT, x: -1 } : lane === 2 ? { ...NEUTRAL_INPUT, x: 1 } : { ...NEUTRAL_INPUT, a: true });
+    const lanePress = (lane: number) =>
+      lane === 0
+        ? { ...NEUTRAL_INPUT, x: -1 }
+        : lane === 2
+          ? { ...NEUTRAL_INPUT, x: 1 }
+          : { ...NEUTRAL_INPUT, a: true };
     const s = game.init(8, OPTS);
     const n = s.notes[0] as { t: number; lane: number; res: number };
     advanceTo(s, n.t); // der nächste Schritt hat genau Zeit n.t

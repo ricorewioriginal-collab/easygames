@@ -33,14 +33,93 @@ const basePads = (accent: number): Record<NodeKind, number> => ({
   gate: 0xd9b36a,
   chaos: accent,
 });
-const baseEdges = (a: number, b: number): Record<EdgeStyle, number> => ({ path: a, bridge: b, light: 0xfff2a8, vine: 0x56b84a, stairs: a, rail: 0xc9ced8, rainbow: 0xff9ad5, beam: 0x7de8ff });
+const baseEdges = (a: number, b: number): Record<EdgeStyle, number> => ({
+  path: a,
+  bridge: b,
+  light: 0xfff2a8,
+  vine: 0x56b84a,
+  stairs: a,
+  rail: 0xc9ced8,
+  rainbow: 0xff9ad5,
+  beam: 0x7de8ff,
+});
 
 export const THEMES: Record<WorldId, WorldTheme> = {
-  prismara: { name: 'PRISMARA', skyTop: 0x6a5cff, skyBottom: 0xffc6f0, fog: 0xd9c4ff, fogNear: 40, fogFar: 170, ambient: 0xcfc4ff, sun: 0xfff0d8, island: 0x8a77d8, islandTop: 0xe6c8ff, pad: 0xf4ecff, pads: basePads(0xff7be0), edges: baseEdges(0xe9dcff, 0xffd6a0) },
-  'nova-nexus': { name: 'NOVA NEXUS', skyTop: 0x050a2a, skyBottom: 0x1b3a8a, fog: 0x0b1a4a, fogNear: 50, fogFar: 200, ambient: 0x7a90ff, sun: 0x9fd6ff, island: 0x2c3f7a, islandTop: 0x3fe0ff, pad: 0xcfe6ff, pads: basePads(0x35f0c8), edges: baseEdges(0x8fb4ff, 0x59e0ff) },
-  wurzelwild: { name: 'WURZELWILD', skyTop: 0x4aa8d8, skyBottom: 0xd6f2a8, fog: 0xc4e8a0, fogNear: 35, fogFar: 150, ambient: 0xd8f0c0, sun: 0xfff2c0, island: 0x7a5a38, islandTop: 0x5fbf4a, pad: 0xe8dcae, pads: basePads(0xf2c14a), edges: baseEdges(0xcaa874, 0x9a7440) },
-  'paradox-city': { name: 'PARADOX CITY', skyTop: 0x1a1030, skyBottom: 0xff6a9a, fog: 0x4a2a6a, fogNear: 45, fogFar: 190, ambient: 0xc8a4ff, sun: 0xffb0c8, island: 0x3a3a5a, islandTop: 0x6a6aa0, pad: 0xe4e0f4, pads: basePads(0xffd04a), edges: baseEdges(0xb4b0d8, 0x7ae0ff) },
-  'infinity-carnival': { name: 'INFINITY CARNIVAL', skyTop: 0x2a1a6a, skyBottom: 0xffa84a, fog: 0xf0a8a0, fogNear: 40, fogFar: 170, ambient: 0xffd8c0, sun: 0xfff0b0, island: 0xc03a5a, islandTop: 0xffd04a, pad: 0xfff4dc, pads: basePads(0x4ae0ff), edges: baseEdges(0xffe0a0, 0xff6a8a) },
+  prismara: {
+    name: 'PRISMARA',
+    skyTop: 0x6a5cff,
+    skyBottom: 0xffc6f0,
+    fog: 0xd9c4ff,
+    fogNear: 40,
+    fogFar: 170,
+    ambient: 0xcfc4ff,
+    sun: 0xfff0d8,
+    island: 0x8a77d8,
+    islandTop: 0xe6c8ff,
+    pad: 0xf4ecff,
+    pads: basePads(0xff7be0),
+    edges: baseEdges(0xe9dcff, 0xffd6a0),
+  },
+  'nova-nexus': {
+    name: 'NOVA NEXUS',
+    skyTop: 0x050a2a,
+    skyBottom: 0x1b3a8a,
+    fog: 0x0b1a4a,
+    fogNear: 50,
+    fogFar: 200,
+    ambient: 0x7a90ff,
+    sun: 0x9fd6ff,
+    island: 0x2c3f7a,
+    islandTop: 0x3fe0ff,
+    pad: 0xcfe6ff,
+    pads: basePads(0x35f0c8),
+    edges: baseEdges(0x8fb4ff, 0x59e0ff),
+  },
+  wurzelwild: {
+    name: 'WURZELWILD',
+    skyTop: 0x4aa8d8,
+    skyBottom: 0xd6f2a8,
+    fog: 0xc4e8a0,
+    fogNear: 35,
+    fogFar: 150,
+    ambient: 0xd8f0c0,
+    sun: 0xfff2c0,
+    island: 0x7a5a38,
+    islandTop: 0x5fbf4a,
+    pad: 0xe8dcae,
+    pads: basePads(0xf2c14a),
+    edges: baseEdges(0xcaa874, 0x9a7440),
+  },
+  'paradox-city': {
+    name: 'PARADOX CITY',
+    skyTop: 0x1a1030,
+    skyBottom: 0xff6a9a,
+    fog: 0x4a2a6a,
+    fogNear: 45,
+    fogFar: 190,
+    ambient: 0xc8a4ff,
+    sun: 0xffb0c8,
+    island: 0x3a3a5a,
+    islandTop: 0x6a6aa0,
+    pad: 0xe4e0f4,
+    pads: basePads(0xffd04a),
+    edges: baseEdges(0xb4b0d8, 0x7ae0ff),
+  },
+  'infinity-carnival': {
+    name: 'INFINITY CARNIVAL',
+    skyTop: 0x2a1a6a,
+    skyBottom: 0xffa84a,
+    fog: 0xf0a8a0,
+    fogNear: 40,
+    fogFar: 170,
+    ambient: 0xffd8c0,
+    sun: 0xfff0b0,
+    island: 0xc03a5a,
+    islandTop: 0xffd04a,
+    pad: 0xfff4dc,
+    pads: basePads(0x4ae0ff),
+    edges: baseEdges(0xffe0a0, 0xff6a8a),
+  },
 };
 
 /** Welt-Dekoration (Himmel, schwebende Objekte …), von den Welt-Dateien erzeugt */
@@ -172,7 +251,10 @@ export class BoardView {
       const base = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.3, 0.3, 14), toon(t.pad));
       base.castShadow = quality.shadows;
       base.receiveShadow = true;
-      const top = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.06, 14), toon(col, { emissive: col, emissiveIntensity: 0.25 }));
+      const top = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.95, 0.95, 0.06, 14),
+        toon(col, { emissive: col, emissiveIntensity: 0.25 }),
+      );
       top.position.y = 0.17;
       const hl = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.07, 6, 28), glow(0xffffff));
       hl.rotation.x = Math.PI / 2;
@@ -194,7 +276,8 @@ export class BoardView {
   private icon(kind: NodeKind, col: number): THREE.Object3D | null {
     const m = toon(col, { emissive: col, emissiveIntensity: 0.35 });
     switch (kind) {
-      case 'glimmer': return new THREE.Mesh(new THREE.OctahedronGeometry(0.42), m);
+      case 'glimmer':
+        return new THREE.Mesh(new THREE.OctahedronGeometry(0.42), m);
       case 'thorn': {
         const g = new THREE.Group();
         for (let i = 0; i < 3; i++) {
@@ -204,7 +287,8 @@ export class BoardView {
         }
         return g;
       }
-      case 'event': return new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), m);
+      case 'event':
+        return new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), m);
       case 'item': {
         const g = new THREE.Group();
         g.add(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.5, 0.6), m));
@@ -221,7 +305,8 @@ export class BoardView {
         g.add(hut, roof);
         return g;
       }
-      case 'portal': return new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.13, 8, 22), glow(col));
+      case 'portal':
+        return new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.13, 8, 22), glow(col));
       case 'gate': {
         const g = new THREE.Group();
         for (const s of [-0.45, 0.45]) {
@@ -234,7 +319,8 @@ export class BoardView {
         g.add(top);
         return g;
       }
-      case 'chaos': return new THREE.Mesh(new THREE.DodecahedronGeometry(0.45), m);
+      case 'chaos':
+        return new THREE.Mesh(new THREE.DodecahedronGeometry(0.45), m);
       case 'start': {
         const g = new THREE.Group();
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.3, 6), toon(0xffffff));
@@ -276,14 +362,23 @@ export class BoardView {
       const pts = this.edgePoints(e, lane);
       const isGlow = e.style === 'light' || e.style === 'rainbow' || e.style === 'beam';
       const inst: EdgeInst = { edge: e, slabs: [], dots: [], arrow: insts.length, vis: 1, target: 1, pts };
-      for (let i = 0; i < pts.length - 1; i++) (isGlow ? inst.dots : inst.slabs).push(isGlow ? dotN++ : slabN++);
+      for (let i = 0; i < pts.length - 1; i++)
+        (isGlow ? inst.dots : inst.slabs).push(isGlow ? dotN++ : slabN++);
       insts.push(inst);
     }
     this.edgeInst.push(...insts);
     const slabGeo = new THREE.BoxGeometry(1, 0.1, 0.5);
     this.slabs = new THREE.InstancedMesh(slabGeo, toon(0xffffff), Math.max(1, slabN));
-    this.dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.17, 8, 6), glow(0xffffff), Math.max(1, dotN));
-    this.arrows = new THREE.InstancedMesh(new THREE.ConeGeometry(0.2, 0.45, 6), glow(0xffffff), Math.max(1, insts.length));
+    this.dots = new THREE.InstancedMesh(
+      new THREE.SphereGeometry(0.17, 8, 6),
+      glow(0xffffff),
+      Math.max(1, dotN),
+    );
+    this.arrows = new THREE.InstancedMesh(
+      new THREE.ConeGeometry(0.2, 0.45, 6),
+      glow(0xffffff),
+      Math.max(1, insts.length),
+    );
     this.slabs.count = slabN;
     this.dots.count = dotN;
     this.slabs.receiveShadow = true;
@@ -297,7 +392,8 @@ export class BoardView {
       for (const d of e.dots) this.dots.setColorAt(d, tmpC);
       this.arrows.setColorAt(e.arrow, tmpC.clone().lerp(new THREE.Color(0xffffff), 0.35));
     }
-    for (const m of [this.slabs, this.dots, this.arrows]) if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    for (const m of [this.slabs, this.dots, this.arrows])
+      if (m.instanceColor) m.instanceColor.needsUpdate = true;
   }
 
   private writeEdges(): void {
@@ -344,7 +440,10 @@ export class BoardView {
       tmpM.compose(tmpP, tmpQ, tmpS);
       this.arrows.setMatrixAt(e.arrow, tmpM);
     }
-    this.slabs.instanceMatrix.needsUpdate = this.dots.instanceMatrix.needsUpdate = this.arrows.instanceMatrix.needsUpdate = true;
+    this.slabs.instanceMatrix.needsUpdate =
+      this.dots.instanceMatrix.needsUpdate =
+      this.arrows.instanceMatrix.needsUpdate =
+        true;
   }
 
   update(dt: number): void {
@@ -382,10 +481,17 @@ export const plainDecor: DecorFactory = (ctx) => {
   const group = new THREE.Group();
   const items: THREE.Mesh[] = [];
   for (let i = 0; i < 14; i++) {
-    const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.8 + ctx.rng.next() * 1.6), toon(ctx.theme.pads.glimmer));
+    const m = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.8 + ctx.rng.next() * 1.6),
+      toon(ctx.theme.pads.glimmer),
+    );
     const a = ctx.rng.next() * Math.PI * 2;
     const r = ctx.radius * (1.2 + ctx.rng.next());
-    m.position.set(ctx.center.x + Math.cos(a) * r, ctx.center.y + ctx.rng.range(-8, 14), ctx.center.z + Math.sin(a) * r);
+    m.position.set(
+      ctx.center.x + Math.cos(a) * r,
+      ctx.center.y + ctx.rng.range(-8, 14),
+      ctx.center.z + Math.sin(a) * r,
+    );
     group.add(m);
     items.push(m);
   }
@@ -405,8 +511,10 @@ export function skyDome(top: number, bottom: number, radius = 400): THREE.Mesh {
     depthWrite: false,
     fog: false,
     uniforms: { top: { value: new THREE.Color(top) }, bottom: { value: new THREE.Color(bottom) } },
-    vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-    fragmentShader: 'uniform vec3 top; uniform vec3 bottom; varying vec3 vP; void main(){ float h = smoothstep(-0.25, 0.75, vP.y); gl_FragColor = vec4(mix(bottom, top, h), 1.0); }',
+    vertexShader:
+      'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    fragmentShader:
+      'uniform vec3 top; uniform vec3 bottom; varying vec3 vP; void main(){ float h = smoothstep(-0.25, 0.75, vP.y); gl_FragColor = vec4(mix(bottom, top, h), 1.0); }',
   });
   const m = new THREE.Mesh(new THREE.SphereGeometry(radius, 24, 14), mat);
   m.renderOrder = -10;

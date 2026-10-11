@@ -38,7 +38,10 @@ export class MinigameFlow {
     return this.session.players.find((p) => p.id === id)?.name ?? id;
   }
   private colorIdx(id: string): number {
-    return Math.max(0, this.session.players.findIndex((p) => p.id === id));
+    return Math.max(
+      0,
+      this.session.players.findIndex((p) => p.id === id),
+    );
   }
 
   /** Reagiert auf den aktuellen Spielzustand */
@@ -81,7 +84,9 @@ export class MinigameFlow {
     const touch = this.app.touch;
     const idx = who ? this.colorIdx(who) : 0;
     this.cover(
-      h('div', { class: 'panel' },
+      h(
+        'div',
+        { class: 'panel' },
         h('div', { class: 'badge' }, t('mg.cat.' + g.category)),
         h('h2', null, g.name),
         h('p', null, g.tagline),
@@ -90,7 +95,19 @@ export class MinigameFlow {
         h('p', null, touch ? g.controls.touch : g.controls.desktop),
         h('p', null, t('mg.duration', { sec: g.duration })),
         who
-          ? h('div', { style: 'text-align:right;margin-top:10px' }, btn(hot ? t('mg.readyFor', { name: this.nameOf(who) }) + ' ' + (PLAYER_SYMBOLS[idx % 4] ?? '') : t('mg.ready'), () => { this.session.act(who, { type: 'minigameReady' }); }, 'hot big'))
+          ? h(
+              'div',
+              { style: 'text-align:right;margin-top:10px' },
+              btn(
+                hot
+                  ? t('mg.readyFor', { name: this.nameOf(who) }) + ' ' + (PLAYER_SYMBOLS[idx % 4] ?? '')
+                  : t('mg.ready'),
+                () => {
+                  this.session.act(who, { type: 'minigameReady' });
+                },
+                'hot big',
+              ),
+            )
           : h('p', null, t('mg.waitOthers')),
       ),
     );
@@ -103,7 +120,16 @@ export class MinigameFlow {
 
   private begin(g: MiniGame, s: GameState, who: string, hot: boolean): void {
     const go = (): void => void this.countdown(g, s, who);
-    if (hot) this.cover(h('div', { class: 'panel' }, h('h2', null, t('mg.passDevice', { name: this.nameOf(who) })), h('p', null, t('mg.getReady')), h('div', { style: 'text-align:right' }, btn(t('mg.go'), go, 'hot big'))));
+    if (hot)
+      this.cover(
+        h(
+          'div',
+          { class: 'panel' },
+          h('h2', null, t('mg.passDevice', { name: this.nameOf(who) })),
+          h('p', null, t('mg.getReady')),
+          h('div', { style: 'text-align:right' }, btn(t('mg.go'), go, 'hot big')),
+        ),
+      );
     else go();
   }
 
@@ -121,14 +147,20 @@ export class MinigameFlow {
       this.cover(h('div', { class: 'count' }, n));
       this.app.audio.sfx(n === t('mg.start') ? 'go' : 'countdown');
       await new Promise<void>((r) => this.timers.push(setTimeout(r, n === t('mg.start') ? 450 : 700)));
-      while (this.paused && !this.disposed) await new Promise<void>((r) => this.timers.push(setTimeout(r, 120)));
+      while (this.paused && !this.disposed)
+        await new Promise<void>((r) => this.timers.push(setTimeout(r, 120)));
     }
     if (this.disposed) return;
     clear(this.el);
     this.area.classList.add('mg-on');
     this.input = new MiniInput(this.area, g, this.app.touch);
     const idx = s.order.indexOf(who);
-    const stage = new MiniStage(g, m.seed, { playerIndex: Math.max(0, idx), players: s.order.length }, { quality: this.app.engine.quality, sfx: (n) => this.app.audio.sfx(n), input: this.input });
+    const stage = new MiniStage(
+      g,
+      m.seed,
+      { playerIndex: Math.max(0, idx), players: s.order.length },
+      { quality: this.app.engine.quality, sfx: (n) => this.app.audio.sfx(n), input: this.input },
+    );
     this.stage = stage;
     this.hud = h('div', { class: 'mg-hud' }, h('span'), h('span'));
     const hint = h('div', { class: 'mg-hint' });

@@ -8,7 +8,8 @@ const DEPTH = 3.2;
 const BASE_PLATE = 9;
 const ROPE = 5.5;
 
-const blockColor = (i: number): number => new THREE.Color().setHSL(((i * 0.073 + 0.02) % 1), 0.78, 0.5).getHex();
+const blockColor = (i: number): number =>
+  new THREE.Color().setHSL((i * 0.073 + 0.02) % 1, 0.78, 0.5).getHex();
 
 /** Baustelle auf einer Wiese: Portalkran mit Laufkatze, bunte Blöcke, Wolken. Die Kamera klettert mit dem Turm. */
 export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
@@ -131,7 +132,13 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
   const faller = mkBlock(0);
 
   // Abgeschnittene Teile
-  interface Piece { g: THREE.Group; vx: number; vy: number; vr: number; t: number }
+  interface Piece {
+    g: THREE.Group;
+    vx: number;
+    vy: number;
+    vr: number;
+    t: number;
+  }
   const pieces: Piece[] = [];
   const freePieces: THREE.Group[] = [];
 
@@ -195,7 +202,9 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
         (held.getObjectByName('win') as THREE.Mesh).visible = true;
         const col = blockColor(n + 1);
         ((held.getObjectByName('body') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(col);
-        ((held.getObjectByName('trim') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(new THREE.Color(col).offsetHSL(0, -0.1, 0.15).getHex());
+        ((held.getObjectByName('trim') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(
+          new THREE.Color(col).offsetHSL(0, -0.1, 0.15).getHex(),
+        );
       }
       // Fallender Block
       faller.visible = s.phase === 'fall';
@@ -208,7 +217,9 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
         faller.rotation.z = 0;
         const col = blockColor(n + 1);
         ((faller.getObjectByName('body') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(col);
-        ((faller.getObjectByName('trim') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(new THREE.Color(col).offsetHSL(0, -0.1, 0.15).getHex());
+        ((faller.getObjectByName('trim') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(
+          new THREE.Color(col).offsetHSL(0, -0.1, 0.15).getHex(),
+        );
       }
 
       // Ereignis: Block gelandet
@@ -223,7 +234,9 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
           layout(g, L.cutW);
           const col = blockColor(idx);
           ((g.getObjectByName('body') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(col);
-          ((g.getObjectByName('trim') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(new THREE.Color(col).offsetHSL(0, -0.1, 0.15).getHex());
+          ((g.getObjectByName('trim') as THREE.Mesh).material as THREE.MeshToonMaterial) = toon(
+            new THREE.Color(col).offsetHSL(0, -0.1, 0.15).getHex(),
+          );
           (g.getObjectByName('win') as THREE.Mesh).visible = true;
           g.position.set(L.cutX, L.miss ? yBlock + 0.0 : yBlock, 0);
           g.rotation.set(0, 0, 0);
@@ -283,7 +296,8 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
         if (!s.lost) ctx.sfx('win');
       }
 
-      for (let i = 0; i < clouds.length; i++) (clouds[i] as THREE.Group).position.x += dt * (0.3 + (i % 3) * 0.15);
+      for (let i = 0; i < clouds.length; i++)
+        (clouds[i] as THREE.Group).position.x += dt * (0.3 + (i % 3) * 0.15);
       for (const c of clouds) if (c.position.x > 24) c.position.x = -24;
 
       // Kamera folgt dem Turm
@@ -299,4 +313,3 @@ export const createView: MiniGameViewFactory<TowerState> = (ctx, initial) => {
     },
   };
 };
-

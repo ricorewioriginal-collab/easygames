@@ -9,9 +9,26 @@ import { ALTAR_COST, Action, Difficulty, GameConfig, GameEvent, PlayerSetup } fr
 import { ITEMS } from './items';
 
 const setup = (n: number, kinds: Array<'human' | 'bot'> = [], diffs: Difficulty[] = []): PlayerSetup[] =>
-  Array.from({ length: n }, (_, i) => ({ id: 'p' + i, name: 'Spieler' + i, character: (['pip', 'brumm', 'lumi', 'zapp'] as const)[i % 4] as 'pip', kind: kinds[i] ?? 'bot', difficulty: diffs[i] ?? 'normal' }));
-const cfg = (n = 3, rounds = 5, kinds: Array<'human' | 'bot'> = ['human'], diffs: Difficulty[] = []): GameConfig => ({ layoutId: 'prismara-01', rounds, players: setup(n, kinds, diffs) });
-const mk = (n = 3, rounds = 5, seed = 1, kinds: Array<'human' | 'bot'> = ['human'], diffs: Difficulty[] = []) => new GameCore(cfg(n, rounds, kinds, diffs), seed, makeTestLayout());
+  Array.from({ length: n }, (_, i) => ({
+    id: 'p' + i,
+    name: 'Spieler' + i,
+    character: (['pip', 'brumm', 'lumi', 'zapp'] as const)[i % 4] as 'pip',
+    kind: kinds[i] ?? 'bot',
+    difficulty: diffs[i] ?? 'normal',
+  }));
+const cfg = (
+  n = 3,
+  rounds = 5,
+  kinds: Array<'human' | 'bot'> = ['human'],
+  diffs: Difficulty[] = [],
+): GameConfig => ({ layoutId: 'prismara-01', rounds, players: setup(n, kinds, diffs) });
+const mk = (
+  n = 3,
+  rounds = 5,
+  seed = 1,
+  kinds: Array<'human' | 'bot'> = ['human'],
+  diffs: Difficulty[] = [],
+) => new GameCore(cfg(n, rounds, kinds, diffs), seed, makeTestLayout());
 
 /** Spielt eine Partie komplett automatisch (Menschen werden wie Bots gesteuert). */
 function autoPlay(core: GameCore, seed = 9, events: GameEvent[] = []): GameEvent[] {
@@ -27,7 +44,16 @@ function autoPlay(core: GameCore, seed = 9, events: GameEvent[] = []): GameEvent
       if (m.stage === 'intro') a = { type: 'minigameReady' };
       else {
         const g = getMiniGame(m.gameId);
-        a = { type: 'minigameSubmit', log: runBot(g, m.seed, { playerIndex: core.state.order.indexOf(id), players: core.state.order.length }, 0.5, 3).log };
+        a = {
+          type: 'minigameSubmit',
+          log: runBot(
+            g,
+            m.seed,
+            { playerIndex: core.state.order.indexOf(id), players: core.state.order.length },
+            0.5,
+            3,
+          ).log,
+        };
       }
     } else a = decide(core, id, rng);
     if (!a) throw new Error('Keine Aktion für ' + id + ' in Phase ' + core.state.phase);
@@ -43,7 +69,9 @@ describe('Aufbau und Zugreihenfolge', () => {
     expect(() => new GameCore({ ...cfg(), players: setup(1) }, 1, makeTestLayout())).toThrow();
     expect(() => new GameCore({ ...cfg(), players: setup(5) }, 1, makeTestLayout())).toThrow();
     expect(() => new GameCore({ ...cfg(), rounds: 0 }, 1, makeTestLayout())).toThrow();
-    expect(() => new GameCore({ ...cfg(), players: setup(2, ['bot', 'bot']) }, 1, makeTestLayout())).toThrow(/menschlich/);
+    expect(() => new GameCore({ ...cfg(), players: setup(2, ['bot', 'bot']) }, 1, makeTestLayout())).toThrow(
+      /menschlich/,
+    );
     const dup = setup(2);
     dup[1]!.id = dup[0]!.id;
     expect(() => new GameCore({ ...cfg(), players: dup }, 1, makeTestLayout())).toThrow(/Doppelte/);
@@ -106,7 +134,9 @@ describe('Würfel', () => {
         }
         if (c.state.phase !== 'turn') continue;
         const id = c.state.current;
-        const ev = c.apply(id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<GameEvent, { t: 'dice' }> | undefined;
+        const ev = c.apply(id, { type: 'roll' }).events.find((e) => e.t === 'dice') as
+          | Extract<GameEvent, { t: 'dice' }>
+          | undefined;
         if (ev && ev.dice.length === 1) {
           counts[ev.dice[0]! - 1]!++;
           n++;
@@ -122,7 +152,10 @@ describe('Würfel', () => {
   it('Würfeln nur im eigenen Zug und nur einmal', () => {
     const c = mk(3, 3, 2, ['human', 'human', 'human']);
     const other = c.state.order[1] as string;
-    expect(c.apply(other, { type: 'roll' })).toMatchObject({ ok: false, error: expect.stringMatching(/nicht am Zug/) });
+    expect(c.apply(other, { type: 'roll' })).toMatchObject({
+      ok: false,
+      error: expect.stringMatching(/nicht am Zug/),
+    });
     const me = c.state.current;
     expect(c.apply(me, { type: 'roll' }).ok).toBe(true);
     if (c.state.phase === 'decision') {
@@ -137,7 +170,10 @@ describe('Würfel', () => {
       me.items = ['zwillingswuerfel'];
       expect(c.apply(me.id, { type: 'useItem', item: 'zwillingswuerfel' }).ok).toBe(true);
       expect(me.items).toEqual([]);
-      const ev = c.apply(me.id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<GameEvent, { t: 'dice' }>;
+      const ev = c.apply(me.id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<
+        GameEvent,
+        { t: 'dice' }
+      >;
       expect(ev.dice.length).toBe(2);
       expect(ev.total).toBe(ev.dice[0]! + ev.dice[1]!);
       two++;
@@ -145,7 +181,10 @@ describe('Würfel', () => {
       const m2 = c2.player(c2.state.current);
       m2.items = ['praezisionswuerfel'];
       c2.apply(m2.id, { type: 'useItem', item: 'praezisionswuerfel' });
-      const e2 = c2.apply(m2.id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<GameEvent, { t: 'dice' }>;
+      const e2 = c2.apply(m2.id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<
+        GameEvent,
+        { t: 'dice' }
+      >;
       expect(e2.total).toBe(Math.max(...e2.dice));
     }
     expect(two).toBeGreaterThan(30);
@@ -173,7 +212,9 @@ describe('Bewegung und Routenauswahl', () => {
     // Würfelwert erzwingen: wir bewegen direkt über enter-Kette durch Setzen einer Pending-Entscheidung
     c.player(id).position = 6;
     const phase = c.effectivePhase();
-    const opts = c.layout.edges.filter((e) => e.from === 6 && (!e.folds || e.folds.includes(phase))).map((e) => e.to);
+    const opts = c.layout.edges
+      .filter((e) => e.from === 6 && (!e.folds || e.folds.includes(phase)))
+      .map((e) => e.to);
     expect(opts.sort((a, b) => a - b)).toEqual([7, 28]);
     c.state.phase = 'decision';
     c.state.pending = { kind: 'branch', player: id, options: opts, remaining: 3 };
@@ -186,7 +227,8 @@ describe('Bewegung und Routenauswahl', () => {
   it('faltbare Wege sind nur in ihrer Phase begehbar', () => {
     const c = mk(2, 4, 3, ['human']);
     const base = c.effectivePhase();
-    const has = (ph: number) => c.layout.edges.some((e) => e.from === 10 && e.to === 16 && (!e.folds || e.folds.includes(ph)));
+    const has = (ph: number) =>
+      c.layout.edges.some((e) => e.from === 10 && e.to === 16 && (!e.folds || e.folds.includes(ph)));
     expect(has(base)).toBe(base === 0);
     expect(has(1 - base)).toBe(base === 1);
   });
@@ -234,7 +276,10 @@ describe('Bewegung und Routenauswahl', () => {
   });
   it('Überholen und Landen auf demselben Feld beeinflusst Gegner (Schild wehrt ab)', () => {
     const c = mk(2, 3, 5, ['human']);
-    const [a, b] = c.state.order.map((i) => c.player(i)) as [ReturnType<GameCore['player']>, ReturnType<GameCore['player']>];
+    const [a, b] = c.state.order.map((i) => c.player(i)) as [
+      ReturnType<GameCore['player']>,
+      ReturnType<GameCore['player']>,
+    ];
     a.position = 0;
     b.position = 2;
     b.coins = 10;
@@ -244,7 +289,10 @@ describe('Bewegung und Routenauswahl', () => {
     (c as unknown as { moveLoop(id: string, n: number): void }).moveLoop(a.id, 4);
     expect(a.coins).toBeGreaterThan(10 - 1); // wurde nicht ärmer durch Überholen
     const c2 = mk(2, 3, 5, ['human']);
-    const [a2, b2] = c2.state.order.map((i) => c2.player(i)) as [ReturnType<GameCore['player']>, ReturnType<GameCore['player']>];
+    const [a2, b2] = c2.state.order.map((i) => c2.player(i)) as [
+      ReturnType<GameCore['player']>,
+      ReturnType<GameCore['player']>,
+    ];
     a2.position = 0;
     b2.position = 2;
     b2.shield = true;
@@ -270,15 +318,23 @@ describe('Ressourcen, Felder, Altar', () => {
   };
   it('Glimmer-Feld +3, Dornenfeld −3 (nie unter 0), Phasenmantel schützt', () => {
     expect(landOn(1).p.coins).toBe(13); // Feld 1 ist glimmer
-    const t = landOn(18, (_c, id) => { _c.player(id).coins = 10; });
+    const t = landOn(18, (_c, id) => {
+      _c.player(id).coins = 10;
+    });
     expect(t.p.coins).toBe(7);
-    const z = landOn(18, (c, id) => { c.player(id).coins = 2; });
+    const z = landOn(18, (c, id) => {
+      c.player(id).coins = 2;
+    });
     expect(z.p.coins).toBe(0);
-    const m = landOn(18, (c, id) => { c.player(id).mantle = true; });
+    const m = landOn(18, (c, id) => {
+      c.player(id).mantle = true;
+    });
     expect(m.p.coins).toBe(10);
   });
   it('Laden: kaufen verbraucht Münzen, Platzlimit und Preise werden geprüft', () => {
-    const { c, id, p } = landOn(9, (cc, i) => { cc.player(i).coins = 30; });
+    const { c, id, p } = landOn(9, (cc, i) => {
+      cc.player(i).coins = 30;
+    });
     expect(c.state.pending?.kind).toBe('shop');
     const offer = (c.state.pending as { offers: string[] }).offers[0] as keyof typeof ITEMS;
     const before = p.coins;
@@ -288,7 +344,9 @@ describe('Ressourcen, Felder, Altar', () => {
     expect(c.apply(id, { type: 'shopBuy', index: 9 }).ok).toBe(false);
     if (c.state.pending) expect(c.apply(id, { type: 'shopLeave' }).ok).toBe(true);
     expect(c.state.pending).toBeNull();
-    const poor = landOn(9, (cc, i) => { cc.player(i).coins = 0; });
+    const poor = landOn(9, (cc, i) => {
+      cc.player(i).coins = 0;
+    });
     const idx = (poor.c.state.pending as { offers: string[] }).offers.length;
     expect(idx).toBe(3);
     expect(poor.c.apply(poor.id, { type: 'shopBuy', index: 0 }).ok).toBe(false);
@@ -362,7 +420,10 @@ describe('Gegenstände', () => {
     foe.frozen = true;
     c.state.current = foe.id;
     c.state.turnIndex = c.state.order.indexOf(foe.id);
-    const ev = c.apply(foe.id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<GameEvent, { t: 'dice' }>;
+    const ev = c.apply(foe.id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<
+      GameEvent,
+      { t: 'dice' }
+    >;
     expect(ev.total).toBe(Math.max(1, Math.floor(ev.dice[0]! / 2)));
     expect(foe.frozen).toBe(false);
   });
@@ -466,7 +527,9 @@ describe('Minispiel-Runden', () => {
     for (let seed = 1; seed < 25; seed++) {
       const c = mk(4, 2, seed, ['human', 'human', 'human', 'human']);
       const ev = autoPlay(c, seed);
-      const done = ev.filter((e) => e.t === 'minigameDone') as Array<Extract<GameEvent, { t: 'minigameDone' }>>;
+      const done = ev.filter((e) => e.t === 'minigameDone') as Array<
+        Extract<GameEvent, { t: 'minigameDone' }>
+      >;
       expect(done.length).toBe(2);
       for (const d of done) {
         const vals = d.ranking.map((id) => d.rewards[id] as number);
@@ -510,7 +573,11 @@ describe('Spielende und Siegbedingungen', () => {
   });
   it('Bonus-Zeitsplitter gehen an die besten Spieler der Kategorien', () => {
     const c = mk(3, 1, 3, ['human']);
-    const [a, b, d] = c.players as [ReturnType<GameCore['player']>, ReturnType<GameCore['player']>, ReturnType<GameCore['player']>];
+    const [a, b, d] = c.players as [
+      ReturnType<GameCore['player']>,
+      ReturnType<GameCore['player']>,
+      ReturnType<GameCore['player']>,
+    ];
     a.coins = 50;
     a.stats.minigameWins = 0;
     b.stats.minigameWins = 3;
@@ -542,9 +609,25 @@ describe('KI', () => {
     const c = mk(2, 3, 5, ['human', 'bot'], ['normal', 'hard']);
     const bot = c.player('p1');
     c.state.phase = 'decision';
-    c.state.pending = { kind: 'gate', player: 'p1', node: 29, toll: 3, canPay: true, hasKey: true, remaining: 3 };
+    c.state.pending = {
+      kind: 'gate',
+      player: 'p1',
+      node: 29,
+      toll: 3,
+      canPay: true,
+      hasKey: true,
+      remaining: 3,
+    };
     expect(decide(c, 'p1', new Rng(1))).toEqual({ type: 'gate', choice: 'key' });
-    c.state.pending = { kind: 'gate', player: 'p1', node: 29, toll: 3, canPay: false, hasKey: false, remaining: 3 };
+    c.state.pending = {
+      kind: 'gate',
+      player: 'p1',
+      node: 29,
+      toll: 3,
+      canPay: false,
+      hasKey: false,
+      remaining: 3,
+    };
     expect(decide(c, 'p1', new Rng(1))).toEqual({ type: 'gate', choice: 'back' });
     c.state.pending = { kind: 'altar', player: 'p1', cost: 20, remaining: 0 };
     expect(decide(c, 'p1', new Rng(1))).toEqual({ type: 'altar', buy: true });

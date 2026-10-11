@@ -21,12 +21,18 @@ export function cachedGeo<T extends THREE.BufferGeometry>(key: string, make: () 
 
 export const G = {
   sph: (r: number, w = 18, h = 12) => cachedGeo(`s${r}|${w}|${h}`, () => new THREE.SphereGeometry(r, w, h)),
-  box: (w: number, h: number, d: number) => cachedGeo(`b${w}|${h}|${d}`, () => new THREE.BoxGeometry(w, h, d)),
-  rbox: (w: number, h: number, d: number, r = 0.08, seg = 3) => cachedGeo(`r${w}|${h}|${d}|${r}|${seg}`, () => new RoundedBoxGeometry(w, h, d, seg, r)),
-  cyl: (rt: number, rb: number, h: number, seg = 14) => cachedGeo(`c${rt}|${rb}|${h}|${seg}`, () => new THREE.CylinderGeometry(rt, rb, h, seg)),
-  cone: (r: number, h: number, seg = 12) => cachedGeo(`n${r}|${h}|${seg}`, () => new THREE.ConeGeometry(r, h, seg)),
-  tor: (r: number, t: number, rs = 8, ts = 24) => cachedGeo(`t${r}|${t}|${rs}|${ts}`, () => new THREE.TorusGeometry(r, t, rs, ts)),
-  cap: (r: number, len: number, seg = 5) => cachedGeo(`p${r}|${len}|${seg}`, () => new THREE.CapsuleGeometry(r, len, seg, 10)),
+  box: (w: number, h: number, d: number) =>
+    cachedGeo(`b${w}|${h}|${d}`, () => new THREE.BoxGeometry(w, h, d)),
+  rbox: (w: number, h: number, d: number, r = 0.08, seg = 3) =>
+    cachedGeo(`r${w}|${h}|${d}|${r}|${seg}`, () => new RoundedBoxGeometry(w, h, d, seg, r)),
+  cyl: (rt: number, rb: number, h: number, seg = 14) =>
+    cachedGeo(`c${rt}|${rb}|${h}|${seg}`, () => new THREE.CylinderGeometry(rt, rb, h, seg)),
+  cone: (r: number, h: number, seg = 12) =>
+    cachedGeo(`n${r}|${h}|${seg}`, () => new THREE.ConeGeometry(r, h, seg)),
+  tor: (r: number, t: number, rs = 8, ts = 24) =>
+    cachedGeo(`t${r}|${t}|${rs}|${ts}`, () => new THREE.TorusGeometry(r, t, rs, ts)),
+  cap: (r: number, len: number, seg = 5) =>
+    cachedGeo(`p${r}|${len}|${seg}`, () => new THREE.CapsuleGeometry(r, len, seg, 10)),
   disc: (r: number, seg = 20) => cachedGeo(`d${r}|${seg}`, () => new THREE.CircleGeometry(r, seg)),
   octa: (r: number) => cachedGeo(`o${r}`, () => new THREE.OctahedronGeometry(r, 0)),
 };
@@ -184,7 +190,12 @@ export interface Env {
   /** Selbstleuchtend (eigene Instanz, wird mit der Figur freigegeben) */
   glow(color: THREE.ColorRepresentation, opacity?: number): THREE.Material;
   /** Halbtransparentes, leuchtendes Toon-Material (eigene Instanz) */
-  glass(color: THREE.ColorRepresentation, opacity: number, emissive: THREE.ColorRepresentation, intensity?: number): THREE.Material;
+  glass(
+    color: THREE.ColorRepresentation,
+    opacity: number,
+    emissive: THREE.ColorRepresentation,
+    intensity?: number,
+  ): THREE.Material;
   /** Material mit Vertexfarben (eigene Instanz) */
   vertex(): THREE.Material;
 }
@@ -208,20 +219,49 @@ export function makeEnv(def: CharacterDef, useToon: boolean): Env {
     glow: (c, o = 1) => new THREE.MeshBasicMaterial({ color: c, transparent: o < 1, opacity: o }),
     glass: (c, o, e, i = 0.7) =>
       useToon
-        ? new THREE.MeshToonMaterial({ color: c, gradientMap: gradient, transparent: true, opacity: o, emissive: e, emissiveIntensity: i, depthWrite: false })
-        : new THREE.MeshLambertMaterial({ color: c, transparent: true, opacity: o, emissive: e, emissiveIntensity: i, depthWrite: false }),
-    vertex: () => (useToon ? new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: gradient, vertexColors: true }) : new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true })),
+        ? new THREE.MeshToonMaterial({
+            color: c,
+            gradientMap: gradient,
+            transparent: true,
+            opacity: o,
+            emissive: e,
+            emissiveIntensity: i,
+            depthWrite: false,
+          })
+        : new THREE.MeshLambertMaterial({
+            color: c,
+            transparent: true,
+            opacity: o,
+            emissive: e,
+            emissiveIntensity: i,
+            depthWrite: false,
+          }),
+    vertex: () =>
+      useToon
+        ? new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: gradient, vertexColors: true })
+        : new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }),
   };
 }
 
-export const mixColor = (a: THREE.ColorRepresentation, b: THREE.ColorRepresentation, t: number): number => new THREE.Color(a).lerp(new THREE.Color(b), t).getHex();
+export const mixColor = (a: THREE.ColorRepresentation, b: THREE.ColorRepresentation, t: number): number =>
+  new THREE.Color(a).lerp(new THREE.Color(b), t).getHex();
 export const lighten = (a: THREE.ColorRepresentation, t: number): number => mixColor(a, 0xffffff, t);
 export const darken = (a: THREE.ColorRepresentation, t: number): number => mixColor(a, 0x000000, t);
 
 // ---------------------------------------------------------------------------------------------
 // Zusammenbau-Helfer
 // ---------------------------------------------------------------------------------------------
-export function mk(parent: THREE.Object3D | null, g: THREE.BufferGeometry, m: THREE.Material, x = 0, y = 0, z = 0, sx = 1, sy = sx, sz = sx): THREE.Mesh {
+export function mk(
+  parent: THREE.Object3D | null,
+  g: THREE.BufferGeometry,
+  m: THREE.Material,
+  x = 0,
+  y = 0,
+  z = 0,
+  sx = 1,
+  sy = sx,
+  sz = sx,
+): THREE.Mesh {
   const me = new THREE.Mesh(g, m);
   me.position.set(x, y, z);
   me.scale.set(sx, sy, sz);
@@ -292,7 +332,15 @@ export interface EyeOpts {
   aspect?: number;
 }
 
-export function makeEye(env: Env, parent: THREE.Object3D, x: number, y: number, z: number, r: number, o: EyeOpts = {}): EyeEntry {
+export function makeEye(
+  env: Env,
+  parent: THREE.Object3D,
+  x: number,
+  y: number,
+  z: number,
+  r: number,
+  o: EyeOpts = {},
+): EyeEntry {
   const g = grp(parent, x, y, z);
   g.rotation.set(0, o.ry ?? 0, o.rz ?? 0);
   const flat = o.flat ?? 0.5;
@@ -302,13 +350,32 @@ export function makeEye(env: Env, parent: THREE.Object3D, x: number, y: number, 
   let pupil: THREE.Mesh | null = null;
   if (o.white !== undefined || o.pupil !== undefined) {
     const pr = o.pr ?? 0.55;
-    pupil = mk(g, G.sph(r * pr, 12, 8), env.m(o.pupil ?? dark), (o.px ?? 0) * r, (o.py ?? 0) * r, r * flat * 0.78, 1, asp * 1.05, 0.55);
+    pupil = mk(
+      g,
+      G.sph(r * pr, 12, 8),
+      env.m(o.pupil ?? dark),
+      (o.px ?? 0) * r,
+      (o.py ?? 0) * r,
+      r * flat * 0.78,
+      1,
+      asp * 1.05,
+      0.55,
+    );
   }
   return { g, pupil, bx: x, by: pupil ? (o.py ?? 0) * r : y, px: (o.px ?? 0) * r, r };
 }
 
 /** Zwei Augen symmetrisch auf einer Kugelfläche (Normale zeigt nach außen) */
-export function eyePair(env: Env, face: Face, parent: THREE.Object3D, x: number, y: number, z: number, r: number, o: EyeOpts = {}): void {
+export function eyePair(
+  env: Env,
+  face: Face,
+  parent: THREE.Object3D,
+  x: number,
+  y: number,
+  z: number,
+  r: number,
+  o: EyeOpts = {},
+): void {
   const yaw = Math.atan2(x, Math.max(0.2, z)) * 0.8;
   for (const s of [1, -1]) {
     const e = makeEye(env, parent, x * s, y, z, r, { ...o, ry: yaw * s, rz: (o.rz ?? 0) * s });
@@ -316,7 +383,16 @@ export function eyePair(env: Env, face: Face, parent: THREE.Object3D, x: number,
   }
 }
 
-export function makeMouth(env: Env, parent: THREE.Object3D, x: number, y: number, z: number, w: number, h: number, color: THREE.ColorRepresentation = '#3a1830'): THREE.Mesh {
+export function makeMouth(
+  env: Env,
+  parent: THREE.Object3D,
+  x: number,
+  y: number,
+  z: number,
+  w: number,
+  h: number,
+  color: THREE.ColorRepresentation = '#3a1830',
+): THREE.Mesh {
   return mk(parent, G.sph(1, 12, 8), env.m(color), x, y, z, w, h, w * 0.4);
 }
 
@@ -332,7 +408,16 @@ export function fitModel(model: THREE.Group, height: number, ground: boolean): n
 }
 
 /** Leuchtendes Auge/Punkt ohne Pupille (z. B. Golem, Würfelgeist) */
-export function makeGlowEye(parent: THREE.Object3D, mat: THREE.Material, x: number, y: number, z: number, r: number, sx = 1, sy = 1): EyeEntry {
+export function makeGlowEye(
+  parent: THREE.Object3D,
+  mat: THREE.Material,
+  x: number,
+  y: number,
+  z: number,
+  r: number,
+  sx = 1,
+  sy = 1,
+): EyeEntry {
   const g = grp(parent, x, y, z);
   mk(g, G.sph(r, 12, 8), mat, 0, 0, 0, sx, sy, 0.5);
   return { g, pupil: null, bx: x, by: y, px: 0, r };

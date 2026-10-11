@@ -17,7 +17,15 @@ export interface InputFrame {
   pd: boolean;
 }
 
-export const NEUTRAL_INPUT: Readonly<InputFrame> = Object.freeze({ x: 0, y: 0, a: false, b: false, px: 0, py: 0, pd: false });
+export const NEUTRAL_INPUT: Readonly<InputFrame> = Object.freeze({
+  x: 0,
+  y: 0,
+  a: false,
+  b: false,
+  px: 0,
+  py: 0,
+  pd: false,
+});
 export const TICK_RATE = 60;
 export const TICK_DT = 1 / TICK_RATE;
 

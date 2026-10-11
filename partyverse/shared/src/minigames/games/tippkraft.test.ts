@@ -16,9 +16,15 @@ describe('Tippkraft', () => {
   });
   it('abwechselndes Tippen lädt Kraft, dieselbe Taste wiederholt kostet Kraft', () => {
     const alt = game.init(1, OPTS);
-    for (let i = 0; i < 6; i++) { game.step(alt, i % 2 ? B : A); game.step(alt, NEUTRAL_INPUT); }
+    for (let i = 0; i < 6; i++) {
+      game.step(alt, i % 2 ? B : A);
+      game.step(alt, NEUTRAL_INPUT);
+    }
     const same = game.init(1, OPTS);
-    for (let i = 0; i < 6; i++) { game.step(same, A); game.step(same, NEUTRAL_INPUT); }
+    for (let i = 0; i < 6; i++) {
+      game.step(same, A);
+      game.step(same, NEUTRAL_INPUT);
+    }
     expect(alt.power).toBeGreaterThan(20);
     expect(same.power).toBeLessThan(alt.power / 2);
     expect(same.stumbles).toBe(5);
@@ -44,8 +50,10 @@ describe('Tippkraft', () => {
       const s = game.init(9, OPTS);
       let side = 0;
       for (let t = 0; t < 1200; t++) {
-        if (t % iv === 0 && gustAt(s.gusts, s.t) < 0) { game.step(s, side ? B : A); side = 1 - side; }
-        else game.step(s, gustAt(s.gusts, s.t) >= 0 ? A : NEUTRAL_INPUT);
+        if (t % iv === 0 && gustAt(s.gusts, s.t) < 0) {
+          game.step(s, side ? B : A);
+          side = 1 - side;
+        } else game.step(s, gustAt(s.gusts, s.t) >= 0 ? A : NEUTRAL_INPUT);
       }
       return game.score(s);
     };

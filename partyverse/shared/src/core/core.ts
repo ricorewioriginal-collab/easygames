@@ -41,13 +41,15 @@ export function validateConfig(c: GameConfig, layout?: Layout): string | null {
     }
   }
   if (!Number.isInteger(c.rounds) || c.rounds < 1 || c.rounds > 30) return 'Rundenzahl muss 1 bis 30 sein';
-  if (!Array.isArray(c.players) || c.players.length < MIN_PLAYERS || c.players.length > MAX_PLAYERS) return `Es braucht ${MIN_PLAYERS} bis ${MAX_PLAYERS} Spieler`;
+  if (!Array.isArray(c.players) || c.players.length < MIN_PLAYERS || c.players.length > MAX_PLAYERS)
+    return `Es braucht ${MIN_PLAYERS} bis ${MAX_PLAYERS} Spieler`;
   const ids = new Set<string>();
   for (const p of c.players) {
     if (!p || typeof p.id !== 'string' || p.id.length < 1 || p.id.length > 64) return 'Ungültige Spieler-ID';
     if (ids.has(p.id)) return 'Doppelte Spieler-ID';
     ids.add(p.id);
-    if (typeof p.name !== 'string' || p.name.trim().length < 1 || p.name.length > 20) return 'Ungültiger Spielername';
+    if (typeof p.name !== 'string' || p.name.trim().length < 1 || p.name.length > 20)
+      return 'Ungültiger Spielername';
     if (p.kind !== 'human' && p.kind !== 'bot') return 'Ungültige Spielerart';
   }
   if (!c.players.some((p) => p.kind === 'human')) return 'Mindestens ein menschlicher Spieler nötig';
@@ -148,7 +150,10 @@ export class GameCore {
     if (s.phase === 'decision' && s.pending) return [s.pending.player];
     if (s.phase === 'minigame' && s.minigame) {
       const m = s.minigame;
-      return s.order.filter((id) => this.player(id).kind === 'human' && (m.stage === 'intro' ? !m.ready[id] : m.results[id] === null));
+      return s.order.filter(
+        (id) =>
+          this.player(id).kind === 'human' && (m.stage === 'intro' ? !m.ready[id] : m.results[id] === null),
+      );
     }
     return [];
   }
@@ -160,7 +165,8 @@ export class GameCore {
     const p = s.players[playerId];
     if (!p) return 'Unbekannter Spieler';
     if (s.phase === 'ended') return 'Das Spiel ist beendet';
-    if (!a || typeof a !== 'object' || typeof (a as { type?: unknown }).type !== 'string') return 'Ungültige Aktion';
+    if (!a || typeof a !== 'object' || typeof (a as { type?: unknown }).type !== 'string')
+      return 'Ungültige Aktion';
     switch (a.type) {
       case 'useItem': {
         if (s.phase !== 'turn' || s.current !== playerId) return 'Du bist nicht am Zug';
@@ -173,7 +179,8 @@ export class GameCore {
           const t = typeof a.target === 'string' ? s.players[a.target] : undefined;
           if (!t || t.id === playerId) return 'Wähle einen Mitspieler als Ziel';
         }
-        if ((a.item === 'zwillingswuerfel' || a.item === 'praezisionswuerfel') && p.diceMode !== 'one') return 'Du würfelst schon mit einem Spezialwürfel';
+        if ((a.item === 'zwillingswuerfel' || a.item === 'praezisionswuerfel') && p.diceMode !== 'one')
+          return 'Du würfelst schon mit einem Spezialwürfel';
         if (a.item === 'schutzschild' && p.shield) return 'Dein Schutzschild ist schon aktiv';
         if (a.item === 'phasenmantel' && p.mantle) return 'Dein Phasenmantel ist schon aktiv';
         return null;
@@ -184,13 +191,15 @@ export class GameCore {
         return null;
       case 'chooseBranch': {
         const pd = s.pending;
-        if (s.phase !== 'decision' || !pd || pd.kind !== 'branch' || pd.player !== playerId) return 'Keine Routenwahl offen';
+        if (s.phase !== 'decision' || !pd || pd.kind !== 'branch' || pd.player !== playerId)
+          return 'Keine Routenwahl offen';
         if (!pd.options.includes(a.node)) return 'Diese Route ist nicht begehbar';
         return null;
       }
       case 'gate': {
         const pd = s.pending;
-        if (s.phase !== 'decision' || !pd || pd.kind !== 'gate' || pd.player !== playerId) return 'Keine Mautbrücke offen';
+        if (s.phase !== 'decision' || !pd || pd.kind !== 'gate' || pd.player !== playerId)
+          return 'Keine Mautbrücke offen';
         if (a.choice === 'pay' && !pd.canPay) return 'Zu wenig Glimmer für die Maut';
         if (a.choice === 'key' && !pd.hasKey) return 'Kein Schlüsselfragment';
         if (!['pay', 'key', 'back'].includes(a.choice)) return 'Ungültige Wahl';
@@ -198,13 +207,15 @@ export class GameCore {
       }
       case 'altar': {
         const pd = s.pending;
-        if (s.phase !== 'decision' || !pd || pd.kind !== 'altar' || pd.player !== playerId) return 'Kein Altar-Angebot offen';
+        if (s.phase !== 'decision' || !pd || pd.kind !== 'altar' || pd.player !== playerId)
+          return 'Kein Altar-Angebot offen';
         if (typeof a.buy !== 'boolean') return 'Ungültige Wahl';
         return null;
       }
       case 'shopBuy': {
         const pd = s.pending;
-        if (s.phase !== 'decision' || !pd || pd.kind !== 'shop' || pd.player !== playerId) return 'Kein Laden offen';
+        if (s.phase !== 'decision' || !pd || pd.kind !== 'shop' || pd.player !== playerId)
+          return 'Kein Laden offen';
         const it = pd.offers[a.index];
         if (!Number.isInteger(a.index) || it === undefined) return 'Diesen Gegenstand gibt es nicht';
         if (p.coins < ITEMS[it].cost) return 'Zu wenig Glimmer';
@@ -213,7 +224,8 @@ export class GameCore {
       }
       case 'shopLeave': {
         const pd = s.pending;
-        if (s.phase !== 'decision' || !pd || pd.kind !== 'shop' || pd.player !== playerId) return 'Kein Laden offen';
+        if (s.phase !== 'decision' || !pd || pd.kind !== 'shop' || pd.player !== playerId)
+          return 'Kein Laden offen';
         return null;
       }
       case 'minigameReady': {
@@ -398,7 +410,11 @@ export class GameCore {
       const canPay = p.coins >= GATE_TOLL;
       const hasKey = p.items.includes('schluesselfragment');
       if (!canPay && !hasKey) {
-        this.emit({ t: 'blocked', player: id, reason: 'Die Mautbrücke bleibt verschlossen – du hast weder Glimmer noch Schlüssel.' });
+        this.emit({
+          t: 'blocked',
+          player: id,
+          reason: 'Die Mautbrücke bleibt verschlossen – du hast weder Glimmer noch Schlüssel.',
+        });
         return 'stop';
       }
       s.pending = { kind: 'gate', player: id, node: to, toll: GATE_TOLL, canPay, hasKey, remaining };
@@ -538,7 +554,8 @@ export class GameCore {
         this.addCoins(p, 3, 'Glimmer-Feld');
         break;
       case 'thorn':
-        if (p.mantle) this.emit({ t: 'blocked', player: id, reason: 'Der Phasenmantel schützt vor dem Dornenfeld.' });
+        if (p.mantle)
+          this.emit({ t: 'blocked', player: id, reason: 'Der Phasenmantel schützt vor dem Dornenfeld.' });
         else this.addCoins(p, -3, 'Dornenfeld');
         break;
       case 'item':
@@ -640,7 +657,9 @@ export class GameCore {
         p.rollBonus -= 2;
         break;
       case 'ausgleich': {
-        const last = this.players.slice().sort((a, b) => a.shards - b.shards || a.coins - b.coins)[0] as PlayerState;
+        const last = this.players
+          .slice()
+          .sort((a, b) => a.shards - b.shards || a.coins - b.coins)[0] as PlayerState;
         this.addCoins(last, 5, 'Sternschnuppe');
         break;
       }
@@ -742,11 +761,25 @@ export class GameCore {
     const shuffled = team ? this.rng.shuffle(ids) : [];
     const teams = team ? [shuffled.slice(0, 2), shuffled.slice(2)] : [];
     const seed = this.rng.int(2147483647);
-    const run: MinigameRun = { gameId: game.id, seed, mode: team ? 'team' : 'ffa', teams, ready: {}, results: {}, stage: 'intro' };
+    const run: MinigameRun = {
+      gameId: game.id,
+      seed,
+      mode: team ? 'team' : 'ffa',
+      teams,
+      ready: {},
+      results: {},
+      stage: 'intro',
+    };
     ids.forEach((id, i) => {
       const p = this.player(id);
       if (p.kind === 'bot') {
-        const r = runBot(game, seed, { playerIndex: i, players: ids.length }, BOT_SKILL[p.difficulty], this.rng.int(2147483647));
+        const r = runBot(
+          game,
+          seed,
+          { playerIndex: i, players: ids.length },
+          BOT_SKILL[p.difficulty],
+          this.rng.int(2147483647),
+        );
         run.results[id] = { score: r.score, source: 'bot' };
       } else {
         run.results[id] = null;
@@ -808,7 +841,9 @@ export class GameCore {
         for (const id of t) rewards[id] = mine > other ? 8 : mine === other ? 5 : 2;
       });
       winners = a === b ? [] : (m.teams[a > b ? 0 : 1] as string[]);
-      ranking = ids.slice().sort((x, y) => (rewards[y] as number) - (rewards[x] as number) || score(y) - score(x));
+      ranking = ids
+        .slice()
+        .sort((x, y) => (rewards[y] as number) - (rewards[x] as number) || score(y) - score(x));
     } else {
       ranking = ids.slice().sort((x, y) => score(y) - score(x) || ids.indexOf(x) - ids.indexOf(y));
       const table = FFA_REWARDS[ids.length] as number[];
@@ -852,7 +887,13 @@ export class GameCore {
     for (const b of bonuses) for (const id of b.players) this.player(id).shards++;
     const ranking = ps
       .slice()
-      .sort((a, b) => b.shards - a.shards || b.coins - a.coins || b.stats.minigameWins - a.stats.minigameWins || s.order.indexOf(a.id) - s.order.indexOf(b.id))
+      .sort(
+        (a, b) =>
+          b.shards - a.shards ||
+          b.coins - a.coins ||
+          b.stats.minigameWins - a.stats.minigameWins ||
+          s.order.indexOf(a.id) - s.order.indexOf(b.id),
+      )
       .map((p) => p.id);
     s.finale = { bonuses, ranking };
     s.phase = 'ended';
@@ -869,7 +910,8 @@ export class GameCore {
 
   /** Bestätigt für alle noch nicht bereiten Spieler (Zeitüberschreitung der Anleitung) */
   forceReady(): ApplyResult {
-    if (this.state.phase !== 'minigame' || this.state.minigame?.stage !== 'intro') return { ok: false, error: 'Keine Anleitung offen', events: [] };
+    if (this.state.phase !== 'minigame' || this.state.minigame?.stage !== 'intro')
+      return { ok: false, error: 'Keine Anleitung offen', events: [] };
     return this.run(() => {
       const m = this.state.minigame as MinigameRun;
       for (const id of Object.keys(m.ready)) m.ready[id] = true;
@@ -880,12 +922,19 @@ export class GameCore {
   /** Setzt für alle fehlenden Ergebnisse ein KI-Ergebnis (Zeitüberschreitung/Verbindungsabbruch) */
   forceResults(): ApplyResult {
     const m = this.state.minigame;
-    if (this.state.phase !== 'minigame' || !m || m.stage !== 'play') return { ok: false, error: 'Kein Minispiel läuft', events: [] };
+    if (this.state.phase !== 'minigame' || !m || m.stage !== 'play')
+      return { ok: false, error: 'Kein Minispiel läuft', events: [] };
     return this.run(() => {
       const g = getMiniGame(m.gameId);
       this.state.order.forEach((id, i) => {
         if (m.results[id] !== null) return;
-        const r = runBot(g, m.seed, { playerIndex: i, players: this.state.order.length }, BOT_SKILL.easy * 0.7, this.rng.int(2147483647));
+        const r = runBot(
+          g,
+          m.seed,
+          { playerIndex: i, players: this.state.order.length },
+          BOT_SKILL.easy * 0.7,
+          this.rng.int(2147483647),
+        );
         m.results[id] = { score: r.score, source: 'auto' };
         this.emit({ t: 'minigameResult', player: id, score: r.score });
       });

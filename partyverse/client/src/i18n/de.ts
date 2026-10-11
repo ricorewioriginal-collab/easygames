@@ -28,8 +28,10 @@ export const de: Record<string, string> = {
   'setup.needHuman': 'Mindestens ein Mensch muss mitspielen.',
   'setup.uniqueNames': 'Die Namen müssen unterschiedlich sein.',
   'online.title': 'Online spielen',
-  'online.noServer': 'Für Online-Spiele wird ein Spielserver gebraucht. Trage seine Adresse in den Optionen ein.',
-  'online.pagesNote': 'Hinweis: GitHub Pages liefert nur die Webseite aus und kann keinen Spielserver (Colyseus) betreiben. Eine Anleitung zum eigenen Server steht in docs/server.md.',
+  'online.noServer':
+    'Für Online-Spiele wird ein Spielserver gebraucht. Trage seine Adresse in den Optionen ein.',
+  'online.pagesNote':
+    'Hinweis: GitHub Pages liefert nur die Webseite aus und kann keinen Spielserver (Colyseus) betreiben. Eine Anleitung zum eigenen Server steht in docs/server.md.',
   'online.openOptions': 'Zu den Optionen',
   'online.you': 'Du',
   'online.create': 'Neuen Raum erstellen',
@@ -139,9 +141,12 @@ export const de: Record<string, string> = {
   'opt.master': 'Gesamtlautstärke',
   'opt.music': 'Musik',
   'opt.mute': 'Stumm',
-  'rules.goal': 'Sammle Glimmer und kaufe am Chrono-Altar für {cost} Glimmer Siegpunkt-Splitter. Nach der letzten Runde gewinnt, wer die meisten Splitter hat.',
-  'rules.turn': 'Du würfelst, ziehst über die Felder, wählst an Weggabelungen deinen Weg und erlebst, was das Zielfeld bietet. Nach jeder Runde wartet ein Minispiel.',
-  'rules.fold': '4D-Faltung: In manchen Brettern wechseln Wege von Runde zu Runde – nur gestrichelte Wege verschwinden und erscheinen wieder.',
+  'rules.goal':
+    'Sammle Glimmer und kaufe am Chrono-Altar für {cost} Glimmer Siegpunkt-Splitter. Nach der letzten Runde gewinnt, wer die meisten Splitter hat.',
+  'rules.turn':
+    'Du würfelst, ziehst über die Felder, wählst an Weggabelungen deinen Weg und erlebst, was das Zielfeld bietet. Nach jeder Runde wartet ein Minispiel.',
+  'rules.fold':
+    '4D-Faltung: In manchen Brettern wechseln Wege von Runde zu Runde – nur gestrichelte Wege verschwinden und erscheinen wieder.',
   'finale.title': 'Siegerehrung',
   'finale.bonus.minigame': 'Minispiel-Meister',
   'finale.bonus.coins': 'Glimmer-König',

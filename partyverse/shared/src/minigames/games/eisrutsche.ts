@@ -85,7 +85,8 @@ function makeHoles(r: Rng): Hole[] {
     };
     const reach = rad + amp;
     if (Math.hypot(h.x - START.x, h.y - START.y) < reach + 2.8) continue;
-    if (holes.some((o) => Math.hypot(o.x - h.x, o.y - h.y) < o.r + Math.hypot(o.ax, o.ay) + reach + 2.2)) continue;
+    if (holes.some((o) => Math.hypot(o.x - h.x, o.y - h.y) < o.r + Math.hypot(o.ax, o.ay) + reach + 2.2))
+      continue;
     holes.push(h);
   }
   return holes;
@@ -123,7 +124,10 @@ export const game: MiniGame<EisState> = {
     'Wer in ein Wasserloch rutscht, landet wieder am Start, verliert Zeit und Punkte.',
     'Halte A gedrückt, um zu bremsen und die Krallen ins Eis zu schlagen.',
   ],
-  controls: { desktop: 'WASD oder Pfeile = beschleunigen, Leertaste = bremsen', touch: 'Stick = beschleunigen, Knopf A = bremsen' },
+  controls: {
+    desktop: 'WASD oder Pfeile = beschleunigen, Leertaste = bremsen',
+    touch: 'Stick = beschleunigen, Knopf A = bremsen',
+  },
   category: 'physics',
   duration: 30,
   touch: { stick: true, a: true, b: false },
@@ -174,8 +178,8 @@ export const game: MiniGame<EisState> = {
     }
     s.braking = input.a;
     const k = s.braking ? 0.45 : 1;
-    s.vx += ix * ACCEL * k / 60;
-    s.vy += iy * ACCEL * k / 60;
+    s.vx += (ix * ACCEL * k) / 60;
+    s.vy += (iy * ACCEL * k) / 60;
     const f = s.braking ? BRAKE_FRICTION : FRICTION;
     s.vx *= f;
     s.vy *= f;

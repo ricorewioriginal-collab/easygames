@@ -32,7 +32,10 @@ export class Engine {
   private w = 1;
   private h = 1;
 
-  constructor(private readonly container: HTMLElement, quality: QualitySettings = QUALITY_PRESETS.medium) {
+  constructor(
+    private readonly container: HTMLElement,
+    quality: QualitySettings = QUALITY_PRESETS.medium,
+  ) {
     this.quality = { ...quality };
     this.canvas = document.createElement('canvas');
     this.canvas.className = 'pv-canvas';
@@ -55,7 +58,12 @@ export class Engine {
 
   private createRenderer(): void {
     this.renderer?.dispose();
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: this.quality.antialias, powerPreference: 'high-performance', alpha: false });
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      antialias: this.quality.antialias,
+      powerPreference: 'high-performance',
+      alpha: false,
+    });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.applyQuality();
   }

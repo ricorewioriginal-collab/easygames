@@ -2,11 +2,32 @@ import * as THREE from 'three';
 import { CHARACTERS, isCharacterId } from '@shared/characters';
 import { Engine, type Screen } from '../render/engine';
 import { toon } from '../render/materials';
-import { HAT_IDS, createCharacter, type CharacterAnim, type CharacterRig, type HatId } from '../render/characters';
+import {
+  HAT_IDS,
+  createCharacter,
+  type CharacterAnim,
+  type CharacterRig,
+  type HatId,
+} from '../render/characters';
 
 /** Figuren-Labor: ?charlab=1[&id=pip][&anim=walk][&hat=krone][&trail=ff00aa][&once=1][&look=1] */
 
-const ANIMS: readonly CharacterAnim[] = ['idle', 'walk', 'run', 'jump', 'celebrate', 'lose', 'roll', 'cheer', 'shock', 'dance', 'teleportOut', 'teleportIn', 'win', 'point'];
+const ANIMS: readonly CharacterAnim[] = [
+  'idle',
+  'walk',
+  'run',
+  'jump',
+  'celebrate',
+  'lose',
+  'roll',
+  'cheer',
+  'shock',
+  'dance',
+  'teleportOut',
+  'teleportIn',
+  'win',
+  'point',
+];
 
 interface CharLabApi {
   rigs: CharacterRig[];
@@ -25,7 +46,17 @@ function finiteTree(root: THREE.Object3D): string | null {
   let bad: string | null = null;
   root.traverse((o) => {
     if (bad) return;
-    const vals = [o.position.x, o.position.y, o.position.z, o.rotation.x, o.rotation.y, o.rotation.z, o.scale.x, o.scale.y, o.scale.z];
+    const vals = [
+      o.position.x,
+      o.position.y,
+      o.position.z,
+      o.rotation.x,
+      o.rotation.y,
+      o.rotation.z,
+      o.scale.x,
+      o.scale.y,
+      o.scale.z,
+    ];
     if (vals.some((v) => !Number.isFinite(v))) bad = `NaN in ${o.name || o.type}`;
   });
   return bad;
@@ -46,7 +77,12 @@ export function startCharLab(params: URLSearchParams): void {
   const animParam = params.get('anim') as CharacterAnim | null;
   const anim: CharacterAnim = animParam && ANIMS.includes(animParam) ? animParam : 'idle';
   const hatParam = params.get('hat');
-  const hat: HatId | null = hatParam && (HAT_IDS as readonly string[]).includes(hatParam) ? (hatParam as HatId) : hatParam === 'all' ? null : null;
+  const hat: HatId | null =
+    hatParam && (HAT_IDS as readonly string[]).includes(hatParam)
+      ? (hatParam as HatId)
+      : hatParam === 'all'
+        ? null
+        : null;
   const trailParam = params.get('trail');
   const trail = trailParam ? parseInt(trailParam.replace('#', ''), 16) : null;
   const once = params.get('once') === '1';
@@ -70,7 +106,10 @@ export function startCharLab(params: URLSearchParams): void {
   strip.rotation.x = -Math.PI / 2;
   strip.position.set(0, 0.005, 0.2);
   scene.add(strip);
-  const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(2.2, 16, 12), new THREE.MeshBasicMaterial({ color: '#fff3b0' }));
+  const sunDisc = new THREE.Mesh(
+    new THREE.SphereGeometry(2.2, 16, 12),
+    new THREE.MeshBasicMaterial({ color: '#fff3b0' }),
+  );
   sunDisc.position.set(-14, 11, -30);
   scene.add(sunDisc);
 
@@ -89,14 +128,16 @@ export function startCharLab(params: URLSearchParams): void {
     rigs.push(rig);
     const def = CHARACTERS.find((c) => c.id === id);
     const d = document.createElement('div');
-    d.style.cssText = 'position:absolute;z-index:10;transform:translate(-50%,0);font:700 14px/1.15 system-ui,sans-serif;color:#1d2a44;text-align:center;pointer-events:none;text-shadow:0 1px 0 #fff8;white-space:nowrap';
+    d.style.cssText =
+      'position:absolute;z-index:10;transform:translate(-50%,0);font:700 14px/1.15 system-ui,sans-serif;color:#1d2a44;text-align:center;pointer-events:none;text-shadow:0 1px 0 #fff8;white-space:nowrap';
     d.innerHTML = `${def?.name ?? id}<br><span style="font-weight:500;font-size:11px;opacity:.75">${def?.species ?? ''}</span>`;
     el.appendChild(d);
     labels.push(d);
   });
 
   const info = document.createElement('div');
-  info.style.cssText = 'position:absolute;z-index:10;left:10px;top:8px;font:600 13px system-ui,sans-serif;color:#1d2a44;background:#ffffffb0;padding:4px 9px;border-radius:8px;pointer-events:none';
+  info.style.cssText =
+    'position:absolute;z-index:10;left:10px;top:8px;font:600 13px system-ui,sans-serif;color:#1d2a44;background:#ffffffb0;padding:4px 9px;border-radius:8px;pointer-events:none';
   el.appendChild(info);
 
   const camera = new THREE.PerspectiveCamera(30, 2, 0.1, 100);

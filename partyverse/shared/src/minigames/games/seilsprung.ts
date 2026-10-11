@@ -38,7 +38,8 @@ export const CLEAR_H = 0.32;
 const WINDOW = 3;
 const STUMBLE_TICKS = 42;
 
-export const multiplier = (streak: number): number => 1 + Math.min(4, Math.floor(Math.max(0, streak - 1) / 3));
+export const multiplier = (streak: number): number =>
+  1 + Math.min(4, Math.floor(Math.max(0, streak - 1) / 3));
 export const crossTick = (period: number): number => Math.floor(period / 2);
 
 function genTurns(seed: number): number[] {
@@ -76,7 +77,8 @@ function genTurns(seed: number): number[] {
   return turns;
 }
 
-const hash01 = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 5, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+const hash01 = (i: number): number =>
+  (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 5, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
 export const game: MiniGame<RopeState> = {
   id: 'seilsprung',
@@ -187,7 +189,8 @@ export const game: MiniGame<RopeState> = {
       tc = (s.turns[s.turn] as number) - s.u + crossTick(s.turns[turnIdx] ?? 96);
     }
     const apex = (JUMP_V / GRAV) * 60;
-    const sig = (s.turns[9] ?? 0) * 7 + (s.turns[13] ?? 0) * 13 + (s.turns[21] ?? 0) * 31 + (s.turns[30] ?? 0) * 3;
+    const sig =
+      (s.turns[9] ?? 0) * 7 + (s.turns[13] ?? 0) * 13 + (s.turns[21] ?? 0) * 31 + (s.turns[30] ?? 0) * 3;
     const jit = (hash01(turnIdx * 17 + sig) - 0.5) * 2 * err * 14 - err * 3;
     const lead = apex + jit;
     return { ...NEUTRAL_INPUT, a: tc <= lead && tc > 0 };

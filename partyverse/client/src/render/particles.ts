@@ -44,7 +44,12 @@ export class ParticlePool {
     }
   }
 
-  burst(pos: THREE.Vector3, color: number, count = 14, opts: { speed?: number; size?: number; life?: number; gravity?: number } = {}): void {
+  burst(
+    pos: THREE.Vector3,
+    color: number,
+    count = 14,
+    opts: { speed?: number; size?: number; life?: number; gravity?: number } = {},
+  ): void {
     const n = Math.round(count * this.scale);
     for (let i = 0; i < n; i++) {
       const s = this.free.pop();
@@ -58,7 +63,13 @@ export class ParticlePool {
       (s.material as THREE.SpriteMaterial).opacity = 1;
       s.scale.setScalar((opts.size ?? 0.35) * (0.6 + Math.random() * 0.8));
       const life = (opts.life ?? 0.9) * (0.6 + Math.random() * 0.6);
-      this.live.push({ s, v: new THREE.Vector3(Math.cos(a) * sp, 1 + e * sp, Math.sin(a) * sp), life, max: life, g: opts.gravity ?? 6 });
+      this.live.push({
+        s,
+        v: new THREE.Vector3(Math.cos(a) * sp, 1 + e * sp, Math.sin(a) * sp),
+        life,
+        max: life,
+        g: opts.gravity ?? 6,
+      });
     }
   }
 

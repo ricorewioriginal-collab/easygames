@@ -67,7 +67,14 @@ export function solid(g: THREE.BufferGeometry, hex: number, x = 0, y = 0, z = 0)
 }
 
 /** Gestreifter, oben offener Kegel/Zylinder (Segment-Streifen) */
-export function striped(g: THREE.BufferGeometry, a: number, b: number, x = 0, y = 0, z = 0): THREE.BufferGeometry {
+export function striped(
+  g: THREE.BufferGeometry,
+  a: number,
+  b: number,
+  x = 0,
+  y = 0,
+  z = 0,
+): THREE.BufferGeometry {
   g.translate(x, y, z);
   return paint(g, (tri) => (((tri >> 1) & 1) === 0 ? a : b));
 }
@@ -98,12 +105,26 @@ export function createFerris(s: number, x: number, y: number, z: number, tx: num
     parts.push(solid(inner, 0xff4a6a, 0, 0, side * zz));
     for (let i = 0; i < 12; i++) {
       const a = (i / 12) * Math.PI * 2;
-      parts.push(strut(v3(0, 0, side * zz), v3(Math.cos(a) * R, Math.sin(a) * R, side * zz), 0.08 * s, i % 2 ? 0xfff0d0 : 0xffd04a));
+      parts.push(
+        strut(
+          v3(0, 0, side * zz),
+          v3(Math.cos(a) * R, Math.sin(a) * R, side * zz),
+          0.08 * s,
+          i % 2 ? 0xfff0d0 : 0xffd04a,
+        ),
+      );
     }
   }
   for (let i = 0; i < 12; i++) {
     const a = (i / 12) * Math.PI * 2;
-    parts.push(strut(v3(Math.cos(a) * R, Math.sin(a) * R, -zz), v3(Math.cos(a) * R, Math.sin(a) * R, zz), 0.1 * s, 0xff9a3a));
+    parts.push(
+      strut(
+        v3(Math.cos(a) * R, Math.sin(a) * R, -zz),
+        v3(Math.cos(a) * R, Math.sin(a) * R, zz),
+        0.1 * s,
+        0xff9a3a,
+      ),
+    );
   }
   parts.push(solid(new THREE.SphereGeometry(1.0 * s, 12, 8), 0xff4a6a, 0, 0, 0));
   const wheelGeo = mergeGeometries(parts, false)!;
@@ -150,7 +171,11 @@ export function createFerris(s: number, x: number, y: number, z: number, tx: num
 
   // Gondeln
   const N = 12;
-  const gondolas = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5 * s, 1.1 * s, 0.95 * s), toon(0xffffff), N);
+  const gondolas = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(1.5 * s, 1.1 * s, 0.95 * s),
+    toon(0xffffff),
+    N,
+  );
   for (let i = 0; i < N; i++) gondolas.setColorAt(i, _c.setHex(PALETTE[i % PALETTE.length]!));
   gondolas.frustumCulled = false;
   axle.add(gondolas);
@@ -177,7 +202,10 @@ export function createFerris(s: number, x: number, y: number, z: number, tx: num
         step = st;
         for (let i = 0; i < BULBS; i++) {
           const on = (i + st) % 3 === 0 ? 1 : 0.25;
-          bulbs.setColorAt(i, _c.setRGB(bulbCol[i * 3]! * on, bulbCol[i * 3 + 1]! * on, bulbCol[i * 3 + 2]! * on));
+          bulbs.setColorAt(
+            i,
+            _c.setRGB(bulbCol[i * 3]! * on, bulbCol[i * 3 + 1]! * on, bulbCol[i * 3 + 2]! * on),
+          );
         }
         bulbs.instanceColor.needsUpdate = true;
       }
@@ -187,7 +215,14 @@ export function createFerris(s: number, x: number, y: number, z: number, tx: num
 
 // ---------------------------------------------------------------- Karussell
 
-export function createCarousel(s: number, x: number, y: number, z: number, dir: number, colors: [number, number]): Part {
+export function createCarousel(
+  s: number,
+  x: number,
+  y: number,
+  z: number,
+  dir: number,
+  colors: [number, number],
+): Part {
   const group = new THREE.Group();
   group.position.set(x, y, z);
   const parts: THREE.BufferGeometry[] = [];
@@ -202,8 +237,12 @@ export function createCarousel(s: number, x: number, y: number, z: number, dir: 
     horse.scale(0.8, 1, 1.35);
     parts.push(solid(horse, PALETTE[i % PALETTE.length]!, px, 1.5 * s + (i % 2) * 0.25 * s, pz));
   }
-  parts.push(solid(new THREE.TorusGeometry(4.3 * s, 0.17 * s, 6, 28).rotateX(Math.PI / 2), 0xffd04a, 0, 3.7 * s, 0));
-  parts.push(striped(new THREE.ConeGeometry(4.4 * s, 2.3 * s, 16, 1, true), colors[0], colors[1], 0, 4.85 * s, 0));
+  parts.push(
+    solid(new THREE.TorusGeometry(4.3 * s, 0.17 * s, 6, 28).rotateX(Math.PI / 2), 0xffd04a, 0, 3.7 * s, 0),
+  );
+  parts.push(
+    striped(new THREE.ConeGeometry(4.4 * s, 2.3 * s, 16, 1, true), colors[0], colors[1], 0, 4.85 * s, 0),
+  );
   parts.push(solid(new THREE.SphereGeometry(0.45 * s, 8, 6), 0xffd04a, 0, 6.2 * s, 0));
   const geo = mergeGeometries(parts, false)!;
   for (const p of parts) p.dispose();
@@ -253,7 +292,15 @@ export function createTents(s: number, spots: TentSpot[], a: number, b: number):
 
 // ---------------------------------------------------------------- Achterbahn (Lemniskate)
 
-export function createCoaster(s: number, x: number, y: number, z: number, tx: number, tz: number, quality: number): Part {
+export function createCoaster(
+  s: number,
+  x: number,
+  y: number,
+  z: number,
+  tx: number,
+  tz: number,
+  quality: number,
+): Part {
   const group = new THREE.Group();
   group.position.set(x, y, z);
   faceTowards(group, tx, tz);
@@ -265,16 +312,29 @@ export function createCoaster(s: number, x: number, y: number, z: number, tx: nu
   for (let i = 0; i < N; i++) {
     const t = (i / N) * Math.PI * 2;
     const den = 1 + Math.sin(t) ** 2;
-    pts.push(new THREE.Vector3((A * Math.cos(t)) / den, lift + (B * Math.sin(t) * Math.cos(t)) / den + 1.3 * s * Math.sin(3 * t), 1.7 * s * Math.sin(t)));
+    pts.push(
+      new THREE.Vector3(
+        (A * Math.cos(t)) / den,
+        lift + (B * Math.sin(t) * Math.cos(t)) / den + 1.3 * s * Math.sin(3 * t),
+        1.7 * s * Math.sin(t),
+      ),
+    );
   }
   const curve = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.5);
   curve.arcLengthDivisions = 400;
-  const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.round(120 + 100 * quality), 0.3 * s, 6, true), toon(0xff4a6a));
+  const tube = new THREE.Mesh(
+    new THREE.TubeGeometry(curve, Math.round(120 + 100 * quality), 0.3 * s, 6, true),
+    toon(0xff4a6a),
+  );
   tube.frustumCulled = false;
 
   // Schwellen
   const TIES = Math.round(40 + 40 * quality);
-  const ties = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5 * s, 0.1 * s, 0.22 * s), toon(0xffe08a), TIES);
+  const ties = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(1.5 * s, 0.1 * s, 0.22 * s),
+    toon(0xffe08a),
+    TIES,
+  );
   const tan = new THREE.Vector3();
   const p = new THREE.Vector3();
   for (let i = 0; i < TIES; i++) {
@@ -293,7 +353,9 @@ export function createCoaster(s: number, x: number, y: number, z: number, tx: nu
   const sup: THREE.BufferGeometry[] = [];
   for (let i = 0; i < N; i += 4) {
     const q = pts[i]!;
-    sup.push(strut(v3(q.x, 0.2 * s, q.z), v3(q.x, q.y - 0.3 * s, q.z), 0.14 * s, i % 8 === 0 ? 0xfff0d0 : 0xffd04a));
+    sup.push(
+      strut(v3(q.x, 0.2 * s, q.z), v3(q.x, q.y - 0.3 * s, q.z), 0.14 * s, i % 8 === 0 ? 0xfff0d0 : 0xffd04a),
+    );
   }
   const supMesh = new THREE.Mesh(mergeGeometries(sup, false)!, vertexToon());
   for (const g of sup) g.dispose();
@@ -301,8 +363,13 @@ export function createCoaster(s: number, x: number, y: number, z: number, tx: nu
 
   // Wagenzug
   const CARTS = 7;
-  const carts = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2 * s, 0.8 * s, 1.7 * s), toon(0xffffff), CARTS);
-  for (let i = 0; i < CARTS; i++) carts.setColorAt(i, _c.setHex(i === 0 ? 0xffd04a : PALETTE[(i + 2) % PALETTE.length]!));
+  const carts = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(1.2 * s, 0.8 * s, 1.7 * s),
+    toon(0xffffff),
+    CARTS,
+  );
+  for (let i = 0; i < CARTS; i++)
+    carts.setColorAt(i, _c.setHex(i === 0 ? 0xffd04a : PALETTE[(i + 2) % PALETTE.length]!));
   carts.frustumCulled = false;
   group.add(tube, ties, supMesh, carts);
 
@@ -342,7 +409,11 @@ export function createPlatforms(spots: PlatformSpot[], top: number, body: number
     _m.compose(_a.set(sp.x, sp.y - 0.25, sp.z), _q.identity(), _s.set(sp.r, 1, sp.r));
     discs.setMatrixAt(i, _m);
     _q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI);
-    _m.compose(_a.set(sp.x, sp.y - 0.5 - sp.r * 0.45, sp.z), _q, _s.set(sp.r * 0.97, sp.r * 0.9, sp.r * 0.97));
+    _m.compose(
+      _a.set(sp.x, sp.y - 0.5 - sp.r * 0.45, sp.z),
+      _q,
+      _s.set(sp.r * 0.97, sp.r * 0.9, sp.r * 0.97),
+    );
     tips.setMatrixAt(i, _m);
   });
   discs.count = tips.count = spots.length;

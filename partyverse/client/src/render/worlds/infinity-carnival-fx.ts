@@ -28,7 +28,13 @@ export interface Ring {
   s: number;
 }
 
-function ringPoint(rg: Ring, rng: Rng, extraMin: number, extraMax: number, out: THREE.Vector3): THREE.Vector3 {
+function ringPoint(
+  rg: Ring,
+  rng: Rng,
+  extraMin: number,
+  extraMax: number,
+  out: THREE.Vector3,
+): THREE.Vector3 {
   const angle = rng.next() * TAU;
   const d = rg.min + rng.float(extraMin, extraMax) * rg.s;
   return out.set(rg.cx + Math.cos(angle) * d, 0, rg.cz + Math.sin(angle) * d);
@@ -41,7 +47,11 @@ export function createBalloons(rg: Ring, rng: Rng, quality: number): Part {
   const CLUSTERS = 7;
   const PER = Math.max(3, Math.round(4 + 4 * quality));
   const total = CLUSTERS * PER;
-  const balloons = new THREE.InstancedMesh(new THREE.SphereGeometry(0.62 * rg.s, 10, 8), toon(0xffffff), total);
+  const balloons = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.62 * rg.s, 10, 8),
+    toon(0xffffff),
+    total,
+  );
   const base = new Float32Array(total * 3);
   const phase = new Float32Array(total);
   const knot = new Float32Array(CLUSTERS * 3);
@@ -107,7 +117,9 @@ export function createBalloons(rg: Ring, rng: Rng, quality: number): Part {
 /** Verbindet die Aufhängepunkte (nach Winkel sortiert) mit durchhängenden Lichterketten auf einem Bogen um die Mitte. */
 export function createGarlands(rg: Ring, anchors: THREE.Vector3[], quality: number): Part {
   const group = new THREE.Group();
-  const list = anchors.slice().sort((a, b) => Math.atan2(a.z - rg.cz, a.x - rg.cx) - Math.atan2(b.z - rg.cz, b.x - rg.cx));
+  const list = anchors
+    .slice()
+    .sort((a, b) => Math.atan2(a.z - rg.cz, a.x - rg.cx) - Math.atan2(b.z - rg.cz, b.x - rg.cx));
   const SEG = 14;
   const BULB_EVERY = quality < 0.5 ? 3 : 2;
   const bulbPts: number[] = [];
@@ -149,7 +161,11 @@ export function createGarlands(rg: Ring, anchors: THREE.Vector3[], quality: numb
   lines.frustumCulled = false;
 
   const nb = bulbPts.length / 3;
-  const bulbs = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3 * rg.s, 8, 6), glow(0xffffff), Math.max(1, nb));
+  const bulbs = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.3 * rg.s, 8, 6),
+    glow(0xffffff),
+    Math.max(1, nb),
+  );
   const bcol = new Float32Array(Math.max(1, nb) * 3);
   for (let i = 0; i < nb; i++) {
     _m.makeTranslation(bulbPts[i * 3]!, bulbPts[i * 3 + 1]! - 0.25 * rg.s, bulbPts[i * 3 + 2]!);
@@ -164,9 +180,17 @@ export function createGarlands(rg: Ring, anchors: THREE.Vector3[], quality: numb
   bulbs.frustumCulled = false;
 
   const nf = flagPts.length / 3;
-  const flags = new THREE.InstancedMesh(new THREE.ConeGeometry(0.38 * rg.s, 0.85 * rg.s, 3).rotateX(Math.PI), toon(0xffffff), Math.max(1, nf));
+  const flags = new THREE.InstancedMesh(
+    new THREE.ConeGeometry(0.38 * rg.s, 0.85 * rg.s, 3).rotateX(Math.PI),
+    toon(0xffffff),
+    Math.max(1, nf),
+  );
   for (let i = 0; i < nf; i++) {
-    _m.compose(_a.set(flagPts[i * 3]!, flagPts[i * 3 + 1]! - 0.5 * rg.s, flagPts[i * 3 + 2]!), _q.identity(), _s.set(1, 1, 0.35));
+    _m.compose(
+      _a.set(flagPts[i * 3]!, flagPts[i * 3 + 1]! - 0.5 * rg.s, flagPts[i * 3 + 2]!),
+      _q.identity(),
+      _s.set(1, 1, 0.35),
+    );
     flags.setMatrixAt(i, _m);
     flags.setColorAt(i, _c.setHex(PALETTE[(i * 3 + 1) % PALETTE.length]!));
   }
@@ -217,7 +241,10 @@ export function createConfetti(rg: Ring, rng: Rng, quality: number): Part {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.45 * rg.s, vertexColors: true, sizeAttenuation: true }));
+  const pts = new THREE.Points(
+    g,
+    new THREE.PointsMaterial({ size: 0.45 * rg.s, vertexColors: true, sizeAttenuation: true }),
+  );
   pts.frustumCulled = false;
   group.add(pts);
   const y0 = rg.cy - 8 * rg.s;
@@ -266,7 +293,14 @@ export function createFireworks(rg: Ring, rng: Rng, quality: number): Part {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
   g.setAttribute('color', new THREE.BufferAttribute(col, 3).setUsage(THREE.DynamicDrawUsage));
-  const mat = new THREE.PointsMaterial({ size: 0.8 * rg.s, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false });
+  const mat = new THREE.PointsMaterial({
+    size: 0.8 * rg.s,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    transparent: true,
+    fog: false,
+  });
   const pts = new THREE.Points(g, mat);
   pts.frustumCulled = false;
   group.add(pts);
@@ -291,7 +325,8 @@ export function createFireworks(rg: Ring, rng: Rng, quality: number): Part {
         const oy = rg.cy + (15 + hash01(seed + 2) * 9) * rg.s;
         _c.setHex(hueA[Math.floor(hash01(seed + 3) * hueA.length)]!);
         const age = local - LAUNCH;
-        const fade = age <= 0 || age >= LIFE ? 0 : Math.pow(1 - age / LIFE, 1.4) * (0.75 + 0.25 * Math.sin(age * 40));
+        const fade =
+          age <= 0 || age >= LIFE ? 0 : Math.pow(1 - age / LIFE, 1.4) * (0.75 + 0.25 * Math.sin(age * 40));
         const ca = Math.max(0, age);
         const e = (1 - Math.exp(-2.2 * ca)) / 2.2;
         for (let i = 0; i < P; i++) {
@@ -334,10 +369,22 @@ export function createSearchlights(rg: Ring, rng: Rng): Part {
   const geo = new THREE.ConeGeometry(3.2 * rg.s, H, 14, 1, true);
   geo.rotateX(Math.PI);
   geo.translate(0, H / 2, 0);
-  const mat = new THREE.MeshBasicMaterial({ color: 0xfff2c0, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false });
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xfff2c0,
+    transparent: true,
+    opacity: 0.1,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    fog: false,
+  });
   const beams = new THREE.InstancedMesh(geo, mat, N);
   beams.frustumCulled = false;
-  const lamps = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.9 * rg.s, 1.3 * rg.s, 1.4 * rg.s, 8), toon(0x6a5a8a), N);
+  const lamps = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.9 * rg.s, 1.3 * rg.s, 1.4 * rg.s, 8),
+    toon(0x6a5a8a),
+    N,
+  );
   const ox = new Float32Array(N);
   const oy = new Float32Array(N);
   const oz = new Float32Array(N);
@@ -378,9 +425,17 @@ export function createFloaters(rg: Ring, rng: Rng, quality: number): Part {
   const group = new THREE.Group();
   const HATS = Math.round(5 + 4 * quality);
   const STARS = Math.round(7 + 6 * quality);
-  const hats = new THREE.InstancedMesh(new THREE.ConeGeometry(0.9 * rg.s, 2.0 * rg.s, 10), toon(0xffffff), HATS);
+  const hats = new THREE.InstancedMesh(
+    new THREE.ConeGeometry(0.9 * rg.s, 2.0 * rg.s, 10),
+    toon(0xffffff),
+    HATS,
+  );
   const poms = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3 * rg.s, 8, 6), toon(0xffffff), HATS);
-  const brims = new THREE.InstancedMesh(new THREE.TorusGeometry(0.9 * rg.s, 0.12 * rg.s, 5, 14).rotateX(Math.PI / 2), toon(0xfff0d0), HATS);
+  const brims = new THREE.InstancedMesh(
+    new THREE.TorusGeometry(0.9 * rg.s, 0.12 * rg.s, 5, 14).rotateX(Math.PI / 2),
+    toon(0xfff0d0),
+    HATS,
+  );
   const shape = new THREE.Shape();
   for (let i = 0; i < 10; i++) {
     const r = i % 2 ? 0.45 : 1;
@@ -389,10 +444,20 @@ export function createFloaters(rg: Ring, rng: Rng, quality: number): Part {
     else shape.lineTo(Math.cos(a) * r, Math.sin(a) * r);
   }
   shape.closePath();
-  const starGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.35, bevelEnabled: true, bevelSize: 0.08, bevelThickness: 0.08, bevelSegments: 1 });
+  const starGeo = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.35,
+    bevelEnabled: true,
+    bevelSize: 0.08,
+    bevelThickness: 0.08,
+    bevelSegments: 1,
+  });
   starGeo.center();
   starGeo.scale(1.1 * rg.s, 1.1 * rg.s, 1.1 * rg.s);
-  const stars = new THREE.InstancedMesh(starGeo, toon(0xffffff, { emissive: 0xffb020, emissiveIntensity: 0.5 }), STARS);
+  const stars = new THREE.InstancedMesh(
+    starGeo,
+    toon(0xffffff, { emissive: 0xffb020, emissiveIntensity: 0.5 }),
+    STARS,
+  );
   const hp = new Float32Array(HATS * 3);
   const hph = new Float32Array(HATS);
   const sp = new Float32Array(STARS * 3);
@@ -429,10 +494,14 @@ export function createFloaters(rg: Ring, rng: Rng, quality: number): Part {
         _a.set(hp[i * 3]!, y, hp[i * 3 + 2]!);
         _m.compose(_a, _q, _s.set(1, 1, 1));
         hats.setMatrixAt(i, _m);
-        _b.set(0, -1.0 * rg.s, 0).applyQuaternion(_q).add(_a);
+        _b.set(0, -1.0 * rg.s, 0)
+          .applyQuaternion(_q)
+          .add(_a);
         _m.compose(_b, _q, _s.set(1, 1, 1));
         brims.setMatrixAt(i, _m);
-        _b.set(0, 1.05 * rg.s, 0).applyQuaternion(_q).add(_a);
+        _b.set(0, 1.05 * rg.s, 0)
+          .applyQuaternion(_q)
+          .add(_a);
         _m.compose(_b, _q, _s.set(1, 1, 1));
         poms.setMatrixAt(i, _m);
       }
@@ -443,7 +512,11 @@ export function createFloaters(rg: Ring, rng: Rng, quality: number): Part {
         _m.compose(_a.set(sp[i * 3]!, y, sp[i * 3 + 2]!), _q, _s.set(1, 1, 1));
         stars.setMatrixAt(i, _m);
       }
-      hats.instanceMatrix.needsUpdate = poms.instanceMatrix.needsUpdate = brims.instanceMatrix.needsUpdate = stars.instanceMatrix.needsUpdate = true;
+      hats.instanceMatrix.needsUpdate =
+        poms.instanceMatrix.needsUpdate =
+        brims.instanceMatrix.needsUpdate =
+        stars.instanceMatrix.needsUpdate =
+          true;
     },
   };
 }
@@ -470,7 +543,16 @@ export function createNightSky(rg: Ring, rng: Rng, quality: number): Part {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  const stars = new THREE.Points(g, new THREE.PointsMaterial({ size: 1.8, vertexColors: true, sizeAttenuation: true, fog: false, depthWrite: false }));
+  const stars = new THREE.Points(
+    g,
+    new THREE.PointsMaterial({
+      size: 1.8,
+      vertexColors: true,
+      sizeAttenuation: true,
+      fog: false,
+      depthWrite: false,
+    }),
+  );
   stars.frustumCulled = false;
   stars.renderOrder = -9;
   const ma = rng.float(0, TAU);

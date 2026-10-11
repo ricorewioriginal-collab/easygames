@@ -78,7 +78,15 @@ export interface PlayerState {
 
 export type Pending =
   | { kind: 'branch'; player: string; options: number[]; remaining: number }
-  | { kind: 'gate'; player: string; node: number; toll: number; canPay: boolean; hasKey: boolean; remaining: number }
+  | {
+      kind: 'gate';
+      player: string;
+      node: number;
+      toll: number;
+      canPay: boolean;
+      hasKey: boolean;
+      remaining: number;
+    }
   | { kind: 'altar'; player: string; cost: number; remaining: number }
   | { kind: 'shop'; player: string; offers: ItemId[] };
 

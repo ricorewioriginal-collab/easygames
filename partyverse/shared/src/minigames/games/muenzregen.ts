@@ -56,13 +56,29 @@ export function makeDrops(seed: number): Drop[] {
   while (t < DURATION_TICKS - 70) {
     const roll = r.next();
     const kind: DropKind = roll < 0.56 ? 'coin' : roll < 0.67 ? 'star' : roll < 0.87 ? 'stone' : 'bomb';
-    drops.push({ id: id++, kind, x: r.float(-HALF_W + 0.5, HALF_W - 0.5), t0: t, y: TOP_Y, speed: r.float(0.9, 1.15), state: 0 });
+    drops.push({
+      id: id++,
+      kind,
+      x: r.float(-HALF_W + 0.5, HALF_W - 0.5),
+      t0: t,
+      y: TOP_Y,
+      speed: r.float(0.9, 1.15),
+      state: 0,
+    });
     // Die Abstände werden mit der Zeit kürzer
     const k = t / DURATION_TICKS;
     t += Math.max(8, Math.round(r.float(lerp(17, 9, k), lerp(27, 14, k))));
     if (r.chance(0.12)) {
       // kleine Gruppe (Doppel-Fall)
-      drops.push({ id: id++, kind: 'coin', x: clamp(drops[drops.length - 1]!.x + r.float(-1.4, 1.4), -HALF_W + 0.5, HALF_W - 0.5), t0: t, y: TOP_Y, speed: 1, state: 0 });
+      drops.push({
+        id: id++,
+        kind: 'coin',
+        x: clamp(drops[drops.length - 1]!.x + r.float(-1.4, 1.4), -HALF_W + 0.5, HALF_W - 0.5),
+        t0: t,
+        y: TOP_Y,
+        speed: 1,
+        state: 0,
+      });
       t += 10;
     }
   }
@@ -81,7 +97,10 @@ export const game: MiniGame<MuenzState> = {
     'Mit A löst du einen Magnet-Stoß aus, der nahe Münzen und Sterne heranzieht. Er braucht 6 Sekunden zum Aufladen.',
     'Der Regen wird mit der Zeit immer schneller.',
   ],
-  controls: { desktop: 'A/D oder Pfeile links/rechts = bewegen, Leertaste = Magnet', touch: 'Stick links/rechts = bewegen, Knopf A = Magnet' },
+  controls: {
+    desktop: 'A/D oder Pfeile links/rechts = bewegen, Leertaste = Magnet',
+    touch: 'Stick links/rechts = bewegen, Knopf A = Magnet',
+  },
   category: 'collect',
   duration: 25,
   touch: { stick: true, a: true, b: false },
@@ -124,7 +143,13 @@ export const game: MiniGame<MuenzState> = {
       if (d.state !== 0) continue;
       d.y -= (BASE_SPEED * ramp * d.speed) / 60;
       // Magnet zieht gute Dinge heran
-      if (s.magnet > 0 && (d.kind === 'coin' || d.kind === 'star') && d.y > 0.2 && d.y < 7.5 && Math.abs(d.x - s.bx) < MAGNET_RADIUS) {
+      if (
+        s.magnet > 0 &&
+        (d.kind === 'coin' || d.kind === 'star') &&
+        d.y > 0.2 &&
+        d.y < 7.5 &&
+        Math.abs(d.x - s.bx) < MAGNET_RADIUS
+      ) {
         d.x += clamp(s.bx - d.x, -0.14, 0.14) * 1.15;
       }
       if (d.y < 0.55 && d.y > -0.55 && Math.abs(d.x - s.bx) < BASKET_HW + 0.18) {
@@ -168,7 +193,8 @@ export const game: MiniGame<MuenzState> = {
           if (Math.abs(tti(b) - t) < 0.28 && Math.abs(b.x - d.x) < BASKET_HW * 1.7) conflict = true;
         }
       }
-      const val = VALUES[d.kind] / (t + 0.35 + (conflict ? 4 : 0) + (skill < 0.4 ? Math.abs(d.x - s.bx) * 0.15 : 0));
+      const val =
+        VALUES[d.kind] / (t + 0.35 + (conflict ? 4 : 0) + (skill < 0.4 ? Math.abs(d.x - s.bx) * 0.15 : 0));
       if (val > best) {
         best = val;
         target = d;
@@ -202,6 +228,11 @@ export const game: MiniGame<MuenzState> = {
   hud: (s) => ({
     left: `${s.points} Punkte`,
     right: `${Math.max(0, Math.ceil((DURATION_TICKS - s.tick) / 60))} s`,
-    hint: s.stun > 0 ? 'Bombe! Du wackelst' : s.cooldown === 0 ? 'Magnet bereit (A)' : `Magnet ${Math.ceil(s.cooldown / 60)} s`,
+    hint:
+      s.stun > 0
+        ? 'Bombe! Du wackelst'
+        : s.cooldown === 0
+          ? 'Magnet bereit (A)'
+          : `Magnet ${Math.ceil(s.cooldown / 60)} s`,
   }),
 };

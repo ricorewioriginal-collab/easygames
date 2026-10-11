@@ -47,7 +47,10 @@ export class FinaleStage implements Screen {
       const p = players.find((x) => x.id === id);
       if (!p) return;
       const idx = players.findIndex((x) => x.id === id);
-      const block = new THREE.Mesh(new THREE.BoxGeometry(2.2, heights[i] ?? 0.5, 2.2), toon(playerColorHex(idx)));
+      const block = new THREE.Mesh(
+        new THREE.BoxGeometry(2.2, heights[i] ?? 0.5, 2.2),
+        toon(playerColorHex(idx)),
+      );
       block.position.set(xs[i] ?? 0, (heights[i] ?? 0.5) / 2, 0);
       const plate = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.08, 2.3), toon(0xffffff));
       plate.position.set(xs[i] ?? 0, (heights[i] ?? 0.5) + 0.04, 0);
@@ -59,7 +62,10 @@ export class FinaleStage implements Screen {
       this.rigs[i] = rig;
     });
     for (let i = 0; i < 3; i++) {
-      const b = new THREE.Mesh(new THREE.ConeGeometry(2.2, 14, 16, 1, true), glow([0xff3e9d, 0x2de2e6, 0xffd23f][i] as number, 0.14));
+      const b = new THREE.Mesh(
+        new THREE.ConeGeometry(2.2, 14, 16, 1, true),
+        glow([0xff3e9d, 0x2de2e6, 0xffd23f][i] as number, 0.14),
+      );
       b.position.set(-6 + i * 6, 7, -3);
       b.userData.ph = i * 2;
       this.beams.push(b);
@@ -77,7 +83,11 @@ export class FinaleStage implements Screen {
     if (!rig) return;
     rig.root.visible = true;
     rig.play(first ? 'win' : i === this.rigs.length - 1 ? 'lose' : 'cheer');
-    this.particles.burst(rig.root.position.clone().setY(rig.root.position.y + 1.5), first ? 0xffd23f : 0xffffff, first ? 40 : 14);
+    this.particles.burst(
+      rig.root.position.clone().setY(rig.root.position.y + 1.5),
+      first ? 0xffd23f : 0xffffff,
+      first ? 40 : 14,
+    );
     this.reveal++;
     if (first) this.confetti = 8;
   }
@@ -89,7 +99,13 @@ export class FinaleStage implements Screen {
     if (this.confetti > 0 && !this.calm) {
       this.confetti -= dt;
       const cols = [0xff3e9d, 0x2de2e6, 0xffd23f, 0x6bff8f, 0x7c5cff];
-      for (let k = 0; k < 2; k++) this.particles.burst(new THREE.Vector3((Math.random() - 0.5) * 12, 9, (Math.random() - 0.5) * 4), cols[(Math.random() * cols.length) | 0] as number, 3, { speed: 1.5, life: 2.2, gravity: 2.5, size: 0.3 });
+      for (let k = 0; k < 2; k++)
+        this.particles.burst(
+          new THREE.Vector3((Math.random() - 0.5) * 12, 9, (Math.random() - 0.5) * 4),
+          cols[(Math.random() * cols.length) | 0] as number,
+          3,
+          { speed: 1.5, life: 2.2, gravity: 2.5, size: 0.3 },
+        );
     }
     this.beams.forEach((b) => (b.rotation.z = Math.sin(this.t * 0.8 + (b.userData.ph as number)) * 0.5));
     const shift = this.camera.aspect > 1.3 ? -3.2 : 0;
@@ -123,7 +139,10 @@ export function finaleOverlay(
   const title = h('h2', { class: 'ftitle' }, t('finale.title'));
   const bonusList = h('div', { class: 'chips' });
   const nameOf = (id: string): string => players.find((p) => p.id === id)?.name ?? id;
-  for (const b of fin?.bonuses ?? []) bonusList.appendChild(h('span', { class: 'chip on' }, `${t('finale.bonus.' + b.id)}: ${b.players.map(nameOf).join(', ')}`));
+  for (const b of fin?.bonuses ?? [])
+    bonusList.appendChild(
+      h('span', { class: 'chip on' }, `${t('finale.bonus.' + b.id)}: ${b.players.map(nameOf).join(', ')}`),
+    );
   const buttons = h('div', { class: 'chips', style: 'justify-content:flex-end;margin-top:10px' });
   el.appendChild(h('div', { class: 'panel', style: 'pointer-events:auto' }, title, list, bonusList, buttons));
   const timers: Array<ReturnType<typeof setTimeout>> = [];
@@ -134,7 +153,16 @@ export function finaleOverlay(
     const p = state.players[id];
     const idx = players.findIndex((x) => x.id === id);
     if (!p) return;
-    list.prepend(h('div', { class: `rrow pc${(idx % 4) + 1}${rank === 0 ? ' w' : ''}` }, h('span', { class: 'pos' }, medal[rank] ?? ''), h('span', null, `${PLAYER_SYMBOLS[idx % 4]} ${nameOf(id)}`), h('span', null, `◈ ${p.shards}`), h('span', null, `✦ ${p.coins}`)));
+    list.prepend(
+      h(
+        'div',
+        { class: `rrow pc${(idx % 4) + 1}${rank === 0 ? ' w' : ''}` },
+        h('span', { class: 'pos' }, medal[rank] ?? ''),
+        h('span', null, `${PLAYER_SYMBOLS[idx % 4]} ${nameOf(id)}`),
+        h('span', null, `◈ ${p.shards}`),
+        h('span', null, `✦ ${p.coins}`),
+      ),
+    );
     stage.show(rank, rank === 0);
     sfx(rank === 0 ? 'fanfare' : 'pop');
   };
@@ -149,6 +177,18 @@ export function finaleOverlay(
     timers.push(setTimeout(step, k < 0 ? 900 : 1100));
   };
   timers.push(setTimeout(step, 700));
-  buttons.appendChild(btn(t('finale.skip'), () => { timers.forEach(clearTimeout); while (k >= 0) addRow(k--); buttons.textContent = ''; if (actions.again) buttons.appendChild(btn(t('finale.again'), actions.again, 'good big')); buttons.appendChild(btn(t('finale.menu'), actions.menu, 'hot')); }, 'ghost'));
+  buttons.appendChild(
+    btn(
+      t('finale.skip'),
+      () => {
+        timers.forEach(clearTimeout);
+        while (k >= 0) addRow(k--);
+        buttons.textContent = '';
+        if (actions.again) buttons.appendChild(btn(t('finale.again'), actions.again, 'good big'));
+        buttons.appendChild(btn(t('finale.menu'), actions.menu, 'hot'));
+      },
+      'ghost',
+    ),
+  );
   return { el, dispose: () => timers.forEach(clearTimeout) };
 }

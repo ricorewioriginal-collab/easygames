@@ -67,7 +67,7 @@ function genCave(seed: number) {
   let cv = 0;
   let prevGh = 3.6;
   for (let i = 0; i < n; i++) {
-    const prog = clamp(i * CAVE_DX / 240, 0, 1);
+    const prog = clamp((i * CAVE_DX) / 240, 0, 1);
     if (i > 6) {
       cv = clamp(cv * 0.8 + r.float(-0.6, 0.6), -1.15, 1.15);
       c = clamp(c + cv, -3.2, 3.2);
@@ -92,7 +92,8 @@ function genCave(seed: number) {
   return { cy, gh, gates, rocks };
 }
 
-const hash01 = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 3, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+const hash01 = (i: number): number =>
+  (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 3, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
 export const game: MiniGame<RocketState> = {
   id: 'raketenflug',

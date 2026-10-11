@@ -1,6 +1,7 @@
 import { InputFrame, InputLog, NEUTRAL_INPUT } from './types';
 
-const q = (v: number): number => Math.max(-100, Math.min(100, Math.round((Number.isFinite(v) ? v : 0) * 100)));
+const q = (v: number): number =>
+  Math.max(-100, Math.min(100, Math.round((Number.isFinite(v) ? v : 0) * 100)));
 
 export function packFlags(i: InputFrame): number {
   return (i.a ? 1 : 0) | (i.b ? 2 : 0) | (i.pd ? 4 : 0);
@@ -8,11 +9,27 @@ export function packFlags(i: InputFrame): number {
 
 /** Quantisiert eine Eingabe auf 1/100 (so wird sie auch vom Server nachgerechnet) */
 export function quantize(i: Readonly<InputFrame>): InputFrame {
-  return { x: q(i.x) / 100, y: q(i.y) / 100, a: !!i.a, b: !!i.b, px: q(i.px) / 100, py: q(i.py) / 100, pd: !!i.pd };
+  return {
+    x: q(i.x) / 100,
+    y: q(i.y) / 100,
+    a: !!i.a,
+    b: !!i.b,
+    px: q(i.px) / 100,
+    py: q(i.py) / 100,
+    pd: !!i.pd,
+  };
 }
 
 export function sameInput(a: InputFrame, b: InputFrame): boolean {
-  return a.x === b.x && a.y === b.y && a.a === b.a && a.b === b.b && a.px === b.px && a.py === b.py && a.pd === b.pd;
+  return (
+    a.x === b.x &&
+    a.y === b.y &&
+    a.a === b.a &&
+    a.b === b.b &&
+    a.px === b.px &&
+    a.py === b.py &&
+    a.pd === b.pd
+  );
 }
 
 /** Zeichnet eine Eingabefolge kompakt auf. */
@@ -39,7 +56,8 @@ export function validateLog(log: unknown, maxTicks: number): log is InputLog {
   let prev = -1;
   for (let i = 0; i < log.length; i += 6) {
     const t = log[i];
-    if (!Number.isInteger(t) || (t as number) <= prev || (t as number) < 0 || (t as number) > maxTicks) return false;
+    if (!Number.isInteger(t) || (t as number) <= prev || (t as number) < 0 || (t as number) > maxTicks)
+      return false;
     prev = t as number;
     for (const k of [1, 2, 4, 5] as const) {
       const v = log[i + k];

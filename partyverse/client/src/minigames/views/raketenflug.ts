@@ -10,7 +10,8 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
   scene.fog = new THREE.Fog(0x120a2e, 26, 62);
   const n = initial.cy.length;
   const PAD = 14;
-  const hash = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 7, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+  const hash = (i: number): number =>
+    (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 7, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
   // ---------- Höhle aus Streifen ----------
   const colorTop = new THREE.Color(0x9a6bf0);
@@ -58,7 +59,15 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
   for (const sign of [1, -1] as const) {
     const a = new THREE.Mesh(bandGeo(sign, 'front'), caveMat);
     const b = new THREE.Mesh(bandGeo(sign, 'side'), caveMat);
-    const c = new THREE.Mesh(bandGeo(sign, 'line'), new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+    const c = new THREE.Mesh(
+      bandGeo(sign, 'line'),
+      new THREE.MeshBasicMaterial({
+        vertexColors: true,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.7,
+      }),
+    );
     a.frustumCulled = b.frustumCulled = c.frustumCulled = false;
     root.add(a, b, c);
   }
@@ -117,7 +126,10 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
   const sp: number[] = [];
   for (let i = 0; i < 220; i++) sp.push((hash(i) - 0.2) * 150, (hash(i * 3 + 1) - 0.5) * 36, -30);
   starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
-  const starPts = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xcfc2ff, size: 0.5, fog: false }));
+  const starPts = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({ color: 0xcfc2ff, size: 0.5, fog: false }),
+  );
   starPts.frustumCulled = false;
   root.add(starPts);
 
@@ -175,7 +187,10 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
   const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.355, 0.355, 0.16, 14), blue);
   stripe.rotation.z = Math.PI / 2;
   stripe.position.x = -0.1;
-  const win = new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 10), toon(0x9fe8ff, { emissive: 0x4ac8ff, emissiveIntensity: 0.7 }));
+  const win = new THREE.Mesh(
+    new THREE.SphereGeometry(0.17, 12, 10),
+    toon(0x9fe8ff, { emissive: 0x4ac8ff, emissiveIntensity: 0.7 }),
+  );
   win.position.set(0.3, 0.12, 0.3);
   const rim = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.04, 6, 14), red);
   rim.position.copy(win.position);
@@ -245,11 +260,17 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
         const col = g.st === 1 ? 0x62ff7a : g.st === 2 ? 0x7a4a6a : i === s.nextGate ? 0xffe34d : 0x46eaff;
         gv.mat.color.setHex(col);
         (gv.disc.material as THREE.MeshBasicMaterial).color.setHex(col);
-        const pulse = g.st === 0 ? 1 + Math.sin(t * 5 + i) * 0.04 : g.st === 1 ? 1 + Math.max(0, 1 - (s.x - g.x) * 0.5) * 0.25 : 0.9;
+        const pulse =
+          g.st === 0
+            ? 1 + Math.sin(t * 5 + i) * 0.04
+            : g.st === 1
+              ? 1 + Math.max(0, 1 - (s.x - g.x) * 0.5) * 0.25
+              : 0.9;
         gv.grp.scale.setScalar(pulse);
       }
       for (const r of rocks) r.g.visible = Math.abs(r.g.position.x - camX) < 30;
-      for (let i = 0; i < rocks.length; i++) (rocks[i] as (typeof rocks)[number]).body.rotation.z += dt * 0.3 * (i % 2 ? 1 : -1);
+      for (let i = 0; i < rocks.length; i++)
+        (rocks[i] as (typeof rocks)[number]).body.rotation.z += dt * 0.3 * (i % 2 ? 1 : -1);
 
       // Rakete
       rocket.position.set(s.x, s.y, 0);
@@ -270,7 +291,8 @@ export const createView: MiniGameViewFactory<RocketState> = (ctx, initial) => {
 
       // Kamera
       const aspect = camera.aspect;
-      const d = THREE.MathUtils.clamp(5.6 / (Math.tan((camera.fov * Math.PI) / 360)), 11, 14) * (aspect < 1 ? 1.45 : 1);
+      const d =
+        THREE.MathUtils.clamp(5.6 / Math.tan((camera.fov * Math.PI) / 360), 11, 14) * (aspect < 1 ? 1.45 : 1);
       const tx = s.x + (aspect < 1 ? 2.2 : 4.2);
       const ty = s.y * 0.55 + caveAt(s.cy, s.x + 4) * 0.45;
       const k = dt <= 0 ? 1 : Math.min(1, dt * 6);

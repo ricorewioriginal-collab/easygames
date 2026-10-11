@@ -17,10 +17,28 @@ export function startLab(id: string, params: URLSearchParams): void {
   hud.className = 'lab-hud';
   host.appendChild(hud);
   const input = botParam === null ? new MiniInput(host, game, params.get('touch') === '1') : null;
-  const stage = new MiniStage(game, seed, { playerIndex: 0, players: 4 }, { quality: engine.quality, sfx: () => undefined, input, botSkill: Number(botParam ?? 0.8), botSeed: seed });
+  const stage = new MiniStage(
+    game,
+    seed,
+    { playerIndex: 0, players: 4 },
+    {
+      quality: engine.quality,
+      sfx: () => undefined,
+      input,
+      botSkill: Number(botParam ?? 0.8),
+      botSeed: seed,
+    },
+  );
   engine.setScreen(stage);
   engine.start();
-  const lab: any = (window as any).__lab = { game, stage, state: stage.state, done: false, score: 0, errors: [] as string[] };
+  const lab: any = ((window as any).__lab = {
+    game,
+    stage,
+    state: stage.state,
+    done: false,
+    score: 0,
+    errors: [] as string[],
+  });
   window.addEventListener('error', (e) => lab.errors.push(String(e.message)));
   stage.onFinish = (r) => {
     lab.done = true;

@@ -40,16 +40,27 @@ export interface GameStartMessage {
   rounds: number;
   /** Mein Spieler (Spieler-ID im Spielkern) */
   you: string;
-  players: Array<{ id: string; name: string; character: CharacterId; kind: 'human' | 'bot'; difficulty: Difficulty }>;
+  players: Array<{
+    id: string;
+    name: string;
+    character: CharacterId;
+    kind: 'human' | 'bot';
+    difficulty: Difficulty;
+  }>;
 }
 
-const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const isObj = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** Bereinigt einen Anzeigenamen (Steuerzeichen entfernen, kürzen). Gibt '' zurück, wenn nichts übrig bleibt. */
 export function cleanName(v: unknown): string {
   if (typeof v !== 'string') return '';
-  // eslint-disable-next-line no-control-regex
-  return v.replace(/[\u0000-\u001f\u007f<>&"]/g, '').replace(/\s+/g, ' ').trim().slice(0, MAX_NAME);
+  return v
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\u0000-\u001f\u007f<>&"]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, MAX_NAME);
 }
 
 /** Prüft und normalisiert eine Client-Nachricht. Gibt null zurück, wenn sie ungültig ist. */
@@ -78,15 +89,25 @@ export function parseClientMessage(raw: unknown): ClientMessage | null {
         m.layoutId = raw.layoutId;
       }
       if (raw.rounds !== undefined) {
-        if (typeof raw.rounds !== 'number' || !Number.isInteger(raw.rounds) || raw.rounds < 1 || raw.rounds > 30) return null;
+        if (
+          typeof raw.rounds !== 'number' ||
+          !Number.isInteger(raw.rounds) ||
+          raw.rounds < 1 ||
+          raw.rounds > 30
+        )
+          return null;
         m.rounds = raw.rounds;
       }
       return m;
     }
     case 'lobby:addBot':
-      return raw.difficulty === 'easy' || raw.difficulty === 'normal' || raw.difficulty === 'hard' ? { type: 'lobby:addBot', difficulty: raw.difficulty } : null;
+      return raw.difficulty === 'easy' || raw.difficulty === 'normal' || raw.difficulty === 'hard'
+        ? { type: 'lobby:addBot', difficulty: raw.difficulty }
+        : null;
     case 'lobby:removeBot':
-      return typeof raw.playerId === 'string' && raw.playerId.length <= 64 ? { type: 'lobby:removeBot', playerId: raw.playerId } : null;
+      return typeof raw.playerId === 'string' && raw.playerId.length <= 64
+        ? { type: 'lobby:removeBot', playerId: raw.playerId }
+        : null;
     case 'lobby:start':
       return { type: 'lobby:start' };
     case 'game:sync':
@@ -111,18 +132,32 @@ export function parseAction(raw: unknown): Action | null {
     case 'useItem': {
       if (!isItemId(raw.item)) return null;
       if (raw.target !== undefined && (typeof raw.target !== 'string' || raw.target.length > 64)) return null;
-      return { type: 'useItem', item: raw.item, ...(raw.target !== undefined ? { target: raw.target as string } : {}) };
+      return {
+        type: 'useItem',
+        item: raw.item,
+        ...(raw.target !== undefined ? { target: raw.target as string } : {}),
+      };
     }
     case 'chooseBranch':
-      return typeof raw.node === 'number' && Number.isInteger(raw.node) && raw.node >= 0 && raw.node < 1000 ? { type: 'chooseBranch', node: raw.node } : null;
+      return typeof raw.node === 'number' && Number.isInteger(raw.node) && raw.node >= 0 && raw.node < 1000
+        ? { type: 'chooseBranch', node: raw.node }
+        : null;
     case 'gate':
-      return raw.choice === 'pay' || raw.choice === 'key' || raw.choice === 'back' ? { type: 'gate', choice: raw.choice } : null;
+      return raw.choice === 'pay' || raw.choice === 'key' || raw.choice === 'back'
+        ? { type: 'gate', choice: raw.choice }
+        : null;
     case 'altar':
       return typeof raw.buy === 'boolean' ? { type: 'altar', buy: raw.buy } : null;
     case 'shopBuy':
-      return typeof raw.index === 'number' && Number.isInteger(raw.index) && raw.index >= 0 && raw.index < 10 ? { type: 'shopBuy', index: raw.index } : null;
+      return typeof raw.index === 'number' && Number.isInteger(raw.index) && raw.index >= 0 && raw.index < 10
+        ? { type: 'shopBuy', index: raw.index }
+        : null;
     case 'minigameSubmit':
-      return Array.isArray(raw.log) && raw.log.length <= 36000 && raw.log.every((n) => typeof n === 'number' && Number.isFinite(n)) ? { type: 'minigameSubmit', log: raw.log as number[] } : null;
+      return Array.isArray(raw.log) &&
+        raw.log.length <= 36000 &&
+        raw.log.every((n) => typeof n === 'number' && Number.isFinite(n))
+        ? { type: 'minigameSubmit', log: raw.log as number[] }
+        : null;
     default:
       return null;
   }

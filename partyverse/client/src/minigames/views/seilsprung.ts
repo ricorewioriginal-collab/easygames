@@ -147,12 +147,19 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
 
   // ---------- Seil ----------
   const SEG = 30;
-  const ropeMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.055, 0.055, 1, 6), toon(0xffffff), SEG);
+  const ropeMesh = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.055, 0.055, 1, 6),
+    toon(0xffffff),
+    SEG,
+  );
   const ca = new THREE.Color(0xff3d6e);
   const cb = new THREE.Color(0xffffff);
   for (let i = 0; i < SEG; i++) ropeMesh.setColorAt(i, Math.floor(i / 2) % 2 ? ca : cb);
   root.add(ropeMesh);
-  const ropeShadow = new THREE.Mesh(new THREE.PlaneGeometry(2 * HX, 0.25), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }));
+  const ropeShadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(2 * HX, 0.25),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }),
+  );
   ropeShadow.rotation.x = -Math.PI / 2;
   ropeShadow.position.y = 0.02;
   root.add(ropeShadow);
@@ -190,7 +197,10 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
   pA.position.set(-0.19, 1.3, 0.55);
   const pB = pA.clone();
   pB.position.x = 0.19;
-  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.36, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), toon(0xff4f7d));
+  const cap = new THREE.Mesh(
+    new THREE.SphereGeometry(0.36, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+    toon(0xff4f7d),
+  );
   cap.position.y = 1.5;
   const bobble = new THREE.Mesh(sphere, belly);
   bobble.scale.setScalar(0.09);
@@ -214,7 +224,10 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
   }
   stars.position.y = 2.1;
   hero.add(stars);
-  const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.55, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 }));
+  const heroShadow = new THREE.Mesh(
+    new THREE.CircleGeometry(0.55, 16),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 }),
+  );
   heroShadow.rotation.x = -Math.PI / 2;
   heroShadow.position.y = 0.03;
   root.add(heroShadow);
@@ -222,7 +235,12 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
   // ---------- Punkte-Popups ----------
   const popups: THREE.Sprite[] = [];
   for (let m = 1; m <= 5; m++) {
-    const sp = textSprite(`+${10 * m}`, { color: '#ffffff', bg: ['#4aa8ff', '#2cc57a', '#ff9d2e', '#ff4f7d', '#9a5bff'][m - 1], size: 48, width: 1.5 });
+    const sp = textSprite(`+${10 * m}`, {
+      color: '#ffffff',
+      bg: ['#4aa8ff', '#2cc57a', '#ff9d2e', '#ff4f7d', '#9a5bff'][m - 1],
+      size: 48,
+      width: 1.5,
+    });
     sp.visible = false;
     root.add(sp);
     popups.push(sp);
@@ -249,7 +267,7 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
       for (let i = 0; i <= SEG; i++) {
         const f = i / SEG;
         const prof = Math.sin(Math.PI * f);
-        pts[i]?.set(-HX + 2 * HX * f, HY + (R * cs) * prof - 0.0, R * sn * prof);
+        pts[i]?.set(-HX + 2 * HX * f, HY + R * cs * prof - 0.0, R * sn * prof);
       }
       // Griffe schwingen leicht mit
       pts[0]?.set(-HX, HY + 0.1 * cs, 0.1 * sn);
@@ -293,7 +311,11 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
       if (s.clears !== lastClears) {
         lastClears = s.clears;
         ctx.sfx(s.streak >= 4 ? 'good' : 'tick');
-        ctx.burst(new THREE.Vector3(0, 0.9, 0.5), [0x4aa8ff, 0x2cc57a, 0xff9d2e, 0xff4f7d, 0x9a5bff][multiplier(s.streak) - 1] ?? 0xffffff, 7 + multiplier(s.streak) * 2);
+        ctx.burst(
+          new THREE.Vector3(0, 0.9, 0.5),
+          [0x4aa8ff, 0x2cc57a, 0xff9d2e, 0xff4f7d, 0x9a5bff][multiplier(s.streak) - 1] ?? 0xffffff,
+          7 + multiplier(s.streak) * 2,
+        );
         const sp = popups[multiplier(s.streak) - 1] as THREE.Sprite;
         popups.forEach((p) => (p.visible = false));
         sp.visible = true;

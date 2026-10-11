@@ -140,7 +140,12 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   const SP = 36;
   const sparks = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.09, 0), glow(0xcfc4ff, 0.8), SP);
   root.add(sparks);
-  const sparkSeed = Array.from({ length: SP }, (_, i) => ({ a: (i * 2.399) % 6.283, r: 2.5 + ((i * 37) % 50) / 7, h: ((i * 53) % 40) / 7 + 0.5, sp: 0.1 + ((i * 17) % 10) / 40 }));
+  const sparkSeed = Array.from({ length: SP }, (_, i) => ({
+    a: (i * 2.399) % 6.283,
+    r: 2.5 + ((i * 37) % 50) / 7,
+    h: ((i * 53) % 40) / 7 + 0.5,
+    sp: 0.1 + ((i * 17) % 10) / 40,
+  }));
   const tmp = new THREE.Object3D();
 
   let t = 0;
@@ -221,7 +226,8 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
       let lx = 0;
       let lz = 1;
       let lit = -1;
-      for (let i = 0; i < 6; i++) if ((s.lit[i] as number) > 0 && (lit < 0 || (s.lit[i] as number) > (s.lit[lit] as number))) lit = i;
+      for (let i = 0; i < 6; i++)
+        if ((s.lit[i] as number) > 0 && (lit < 0 || (s.lit[i] as number) > (s.lit[lit] as number))) lit = i;
       if (lit >= 0) {
         const p = pillars[lit] as Pillar;
         lx = p.x;
@@ -233,15 +239,22 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
       face.rotation.y += dy * Math.min(1, dt * 9);
       const happy = s.phase === 'ok';
       const sad = s.phase === 'over' && s.failed;
-      spirit.position.y = 1.2 + Math.sin(t * 2) * 0.12 + (happy ? Math.abs(Math.sin(t * 9)) * 0.6 : 0) - (sad ? 0.35 : 0);
+      spirit.position.y =
+        1.2 + Math.sin(t * 2) * 0.12 + (happy ? Math.abs(Math.sin(t * 9)) * 0.6 : 0) - (sad ? 0.35 : 0);
       spirit.rotation.y = face.rotation.y * 0.0;
-      body.scale.set(1 + (happy ? Math.sin(t * 18) * 0.06 : 0), 1.12 - (happy ? Math.sin(t * 18) * 0.06 : 0) - (sad ? 0.2 : 0), 1);
+      body.scale.set(
+        1 + (happy ? Math.sin(t * 18) * 0.06 : 0),
+        1.12 - (happy ? Math.sin(t * 18) * 0.06 : 0) - (sad ? 0.2 : 0),
+        1,
+      );
       mouth.rotation.z = sad ? 0 : Math.PI;
       mouth.position.y = sad ? -0.22 : -0.12;
       const orb = s.phase === 'input' ? 0x5dff9c : s.phase === 'ok' ? 0xffd23f : sad ? 0xff3355 : 0xffe36e;
       (antBall.material as THREE.MeshBasicMaterial).color.setHex(orb);
       antBall.scale.setScalar(1 + Math.sin(t * (s.phase === 'input' ? 8 : 3)) * 0.25);
-      (rune.material as THREE.MeshBasicMaterial).color.setHex(s.phase === 'input' ? 0x5dff9c : sad ? 0xff3355 : 0x8f7bff);
+      (rune.material as THREE.MeshBasicMaterial).color.setHex(
+        s.phase === 'input' ? 0x5dff9c : sad ? 0xff3355 : 0x8f7bff,
+      );
       spiritShadow.scale.setScalar(1 - (spirit.position.y - 1.2) * 0.15);
 
       // Perlen
@@ -272,7 +285,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
       // Kamera
       shake = Math.max(0, shake - dt);
       const d = Math.max(11.5, 10.8 / camera.aspect);
-      camera.position.set((Math.sin(t * 60) * shake * 0.25), d * 0.78, d * 0.64 + 0.5);
+      camera.position.set(Math.sin(t * 60) * shake * 0.25, d * 0.78, d * 0.64 + 0.5);
       camera.lookAt(0, 0.5, 0.6);
     },
     dispose() {

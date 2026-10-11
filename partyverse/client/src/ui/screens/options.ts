@@ -8,7 +8,8 @@ const LANG_NAMES: Record<string, string> = { de: 'Deutsch', en: 'English', fr: '
 
 export function create(app: App, params?: RouteParams): ScreenView {
   const store = app.store;
-  const set = <K extends keyof Settings>(key: K, value: Settings[K]): void => store.update((d) => void (d.settings[key] = value));
+  const set = <K extends keyof Settings>(key: K, value: Settings[K]): void =>
+    store.update((d) => void (d.settings[key] = value));
   const s = store.data.settings;
 
   // Hörprobe (nicht zu oft hintereinander)
@@ -22,42 +23,107 @@ export function create(app: App, params?: RouteParams): ScreenView {
 
   const audioSec = section(
     'Lautstärke',
-    slider('Gesamt', s.master, 0, 1, 0.05, (v) => { set('master', v); preview(); }),
+    slider('Gesamt', s.master, 0, 1, 0.05, (v) => {
+      set('master', v);
+      preview();
+    }),
     slider('Musik', s.music, 0, 1, 0.05, (v) => set('music', v)),
-    slider('Effekte', s.sfx, 0, 1, 0.05, (v) => { set('sfx', v); preview(); }),
+    slider('Effekte', s.sfx, 0, 1, 0.05, (v) => {
+      set('sfx', v);
+      preview();
+    }),
     toggle('Stumm', s.muted, (v) => set('muted', v)),
-    h('div', { class: 'btnrow' }, btn('🔊 Hörprobe', () => app.audio.sfx('coin'), 'ghost')),
+    h(
+      'div',
+      { class: 'btnrow' },
+      btn('🔊 Hörprobe', () => app.audio.sfx('coin'), 'ghost'),
+    ),
   );
 
   const gfxSec = section(
     'Grafik',
-    select<QualityChoice>('Grafikqualität', s.quality, [['auto', 'Automatisch'], ['low', 'Niedrig'], ['medium', 'Mittel'], ['high', 'Hoch']], (v) => set('quality', v)),
-    h('p', { class: 'hint' }, 'Bei „Automatisch“ wählt das Spiel passend zu deinem Gerät und senkt die Qualität, wenn es ruckelt.'),
+    select<QualityChoice>(
+      'Grafikqualität',
+      s.quality,
+      [
+        ['auto', 'Automatisch'],
+        ['low', 'Niedrig'],
+        ['medium', 'Mittel'],
+        ['high', 'Hoch'],
+      ],
+      (v) => set('quality', v),
+    ),
+    h(
+      'p',
+      { class: 'hint' },
+      'Bei „Automatisch“ wählt das Spiel passend zu deinem Gerät und senkt die Qualität, wenn es ruckelt.',
+    ),
   );
 
   const a11ySec = section(
     'Barrierefreiheit',
-    toggle('Weniger Bewegung', s.reducedMotion, (v) => set('reducedMotion', v), 'Schaltet Animationen in der Oberfläche ab.'),
+    toggle(
+      'Weniger Bewegung',
+      s.reducedMotion,
+      (v) => set('reducedMotion', v),
+      'Schaltet Animationen in der Oberfläche ab.',
+    ),
     toggle('Hoher Kontrast', s.highContrast, (v) => set('highContrast', v)),
     toggle('Große Schrift', s.largeText, (v) => set('largeText', v)),
-    toggle('Kamera-Wackeln', s.cameraShake, (v) => set('cameraShake', v), 'Ausschalten, wenn dir Wackeln unangenehm ist.'),
-    select<ColorMode>('Farbmodus', s.colorMode, [['standard', 'Standard'], ['protanopia', 'Protanopie (Rot-Schwäche)'], ['deuteranopia', 'Deuteranopie (Grün-Schwäche)'], ['tritanopia', 'Tritanopie (Blau-Schwäche)']], (v) => set('colorMode', v)),
-    h('p', { class: 'hint' }, 'Jeder Spieler hat zusätzlich ein eigenes Symbol (▲ ● ■ ◆), damit Farben nie die einzige Unterscheidung sind.'),
+    toggle(
+      'Kamera-Wackeln',
+      s.cameraShake,
+      (v) => set('cameraShake', v),
+      'Ausschalten, wenn dir Wackeln unangenehm ist.',
+    ),
+    select<ColorMode>(
+      'Farbmodus',
+      s.colorMode,
+      [
+        ['standard', 'Standard'],
+        ['protanopia', 'Protanopie (Rot-Schwäche)'],
+        ['deuteranopia', 'Deuteranopie (Grün-Schwäche)'],
+        ['tritanopia', 'Tritanopie (Blau-Schwäche)'],
+      ],
+      (v) => set('colorMode', v),
+    ),
+    h(
+      'p',
+      { class: 'hint' },
+      'Jeder Spieler hat zusätzlich ein eigenes Symbol (▲ ● ■ ◆), damit Farben nie die einzige Unterscheidung sind.',
+    ),
   );
 
   const touchSec = section(
     'Touch-Steuerung',
-    select<Settings['touchControls']>('Bildschirm-Steuerung', s.touchControls, [['auto', 'Automatisch'], ['on', 'Immer an'], ['off', 'Aus']], (v) => set('touchControls', v)),
+    select<Settings['touchControls']>(
+      'Bildschirm-Steuerung',
+      s.touchControls,
+      [
+        ['auto', 'Automatisch'],
+        ['on', 'Immer an'],
+        ['off', 'Aus'],
+      ],
+      (v) => set('touchControls', v),
+    ),
   );
 
   // Online-Server
-  const urlInput = h('input', { class: 'field', type: 'text', value: s.serverUrl, placeholder: 'wss://dein-server.example', 'aria-label': 'Online-Server-Adresse', maxlength: 200 });
+  const urlInput = h('input', {
+    class: 'field',
+    type: 'text',
+    value: s.serverUrl,
+    placeholder: 'wss://dein-server.example',
+    'aria-label': 'Online-Server-Adresse',
+    maxlength: 200,
+  });
   const urlMsg = h('div', { class: 'err', 'aria-live': 'polite' });
   const saveUrl = (): void => {
     const norm = normalizeServerUrl(urlInput.value);
     urlMsg.className = 'err';
     if (norm === null) {
-      urlMsg.textContent = 'Ungültige Adresse. Erlaubt sind nur ws:// oder wss:// ohne Benutzername und Passwort.';
+      urlMsg.textContent =
+        'Ungültige Adresse. Erlaubt sind nur ws:// oder wss:// ohne Benutzername und Passwort.';
       return;
     }
     set('serverUrl', norm);
@@ -69,11 +135,23 @@ export function create(app: App, params?: RouteParams): ScreenView {
     'Online-Server',
     h('div', { class: 'inline' }, urlInput, btn('Speichern', saveUrl, 'good')),
     urlMsg,
-    h('p', { class: 'hint' }, 'GitHub Pages kann nur die Webseite ausliefern, aber keinen Spielserver betreiben. Für Online-Partien brauchst du einen eigenen PARTYVERSE-Server (z. B. auf deinem Rechner oder bei einem Hoster). Wie du ihn startest, steht in docs/server.md. Ohne Adresse bleibt der Online-Modus aus; lokale Partien funktionieren immer.'),
+    h(
+      'p',
+      { class: 'hint' },
+      'GitHub Pages kann nur die Webseite ausliefern, aber keinen Spielserver betreiben. Für Online-Partien brauchst du einen eigenen PARTYVERSE-Server (z. B. auf deinem Rechner oder bei einem Hoster). Wie du ihn startest, steht in docs/server.md. Ohne Adresse bleibt der Online-Modus aus; lokale Partien funktionieren immer.',
+    ),
   );
 
   const langs = locales();
-  const langSec = section('Sprache', select<string>('Sprache', langs.includes(s.language) ? s.language : 'de', langs.map((c) => [c, LANG_NAMES[c] ?? c] as [string, string]), (v) => set('language', v)));
+  const langSec = section(
+    'Sprache',
+    select<string>(
+      'Sprache',
+      langs.includes(s.language) ? s.language : 'de',
+      langs.map((c) => [c, LANG_NAMES[c] ?? c] as [string, string]),
+      (v) => set('language', v),
+    ),
+  );
 
   // Daten
   const dataMsg = h('div', { class: 'err', 'aria-live': 'polite' });
@@ -119,11 +197,15 @@ export function create(app: App, params?: RouteParams): ScreenView {
   const showReset = (): void => {
     resetBox.replaceChildren(
       h('span', { class: 'err' }, 'Wirklich alles löschen? Das kann nicht rückgängig gemacht werden.'),
-      btn('Ja, alles zurücksetzen', () => {
-        store.reset();
-        toast('Alles zurückgesetzt.', 'good');
-        void app.go('options', params);
-      }, 'hot'),
+      btn(
+        'Ja, alles zurücksetzen',
+        () => {
+          store.reset();
+          toast('Alles zurückgesetzt.', 'good');
+          void app.go('options', params);
+        },
+        'hot',
+      ),
       btn('Abbrechen', resetIdle, 'ghost'),
     );
   };
@@ -133,12 +215,37 @@ export function create(app: App, params?: RouteParams): ScreenView {
   resetIdle();
   const dataSec = section(
     'Daten',
-    h('p', { class: 'hint' }, 'Alles liegt nur in deinem Browser (keine Konten, keine Cloud). Mit einer Sicherung kannst du deinen Spielstand auf ein anderes Gerät mitnehmen.'),
-    h('div', { class: 'btnrow' }, btn('⬇ Spielstand exportieren', exportData, 'ghost'), btn('⬆ Spielstand importieren', () => file.click(), 'ghost'), file),
+    h(
+      'p',
+      { class: 'hint' },
+      'Alles liegt nur in deinem Browser (keine Konten, keine Cloud). Mit einer Sicherung kannst du deinen Spielstand auf ein anderes Gerät mitnehmen.',
+    ),
+    h(
+      'div',
+      { class: 'btnrow' },
+      btn('⬇ Spielstand exportieren', exportData, 'ghost'),
+      btn('⬆ Spielstand importieren', () => file.click(), 'ghost'),
+      file,
+    ),
     dataMsg,
     resetBox,
   );
 
-  const el = h('div', { class: 'screen sc' }, h('div', { class: 'panel' }, header(app, params, 'Optionen'), audioSec, gfxSec, a11ySec, touchSec, serverSec, langSec, dataSec));
+  const el = h(
+    'div',
+    { class: 'screen sc' },
+    h(
+      'div',
+      { class: 'panel' },
+      header(app, params, 'Optionen'),
+      audioSec,
+      gfxSec,
+      a11ySec,
+      touchSec,
+      serverSec,
+      langSec,
+      dataSec,
+    ),
+  );
   return { el };
 }

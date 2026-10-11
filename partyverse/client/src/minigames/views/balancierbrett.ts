@@ -1,6 +1,13 @@
 import * as THREE from 'three';
 import type { BoardState } from '@shared/minigames/games/balancierbrett';
-import { BALL_R, BOARD_R, HOLE_R, MAX_HOLES, TARGET_R, activeHoles } from '@shared/minigames/games/balancierbrett';
+import {
+  BALL_R,
+  BOARD_R,
+  HOLE_R,
+  MAX_HOLES,
+  TARGET_R,
+  activeHoles,
+} from '@shared/minigames/games/balancierbrett';
 import { glow, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
 
@@ -65,11 +72,16 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
   board.add(cross);
 
   // Löcher
-  interface HoleV { g: THREE.Group }
+  interface HoleV {
+    g: THREE.Group;
+  }
   const holes: HoleV[] = [];
   for (let i = 0; i < MAX_HOLES; i++) {
     const g = new THREE.Group();
-    const hole = new THREE.Mesh(new THREE.CircleGeometry(HOLE_R, 28), new THREE.MeshBasicMaterial({ color: 0x120a24 }));
+    const hole = new THREE.Mesh(
+      new THREE.CircleGeometry(HOLE_R, 28),
+      new THREE.MeshBasicMaterial({ color: 0x120a24 }),
+    );
     hole.rotation.x = -Math.PI / 2;
     hole.position.y = 0.05;
     g.add(hole);
@@ -86,7 +98,10 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
 
   // Ziel
   const target = new THREE.Group();
-  const tDisc = new THREE.Mesh(new THREE.CylinderGeometry(TARGET_R, TARGET_R, 0.12, 28), toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.6 }));
+  const tDisc = new THREE.Mesh(
+    new THREE.CylinderGeometry(TARGET_R, TARGET_R, 0.12, 28),
+    toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.6 }),
+  );
   tDisc.position.y = 0.07;
   target.add(tDisc);
   const tRing = new THREE.Mesh(new THREE.TorusGeometry(TARGET_R + 0.15, 0.06, 8, 36), glow(0xfff6a8, 0.9));
@@ -104,7 +119,10 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
   beam.position.y = 2;
   target.add(beam);
   board.add(target);
-  const nextGhost = new THREE.Mesh(new THREE.RingGeometry(TARGET_R * 0.6, TARGET_R * 0.75, 24), glow(0xffffff, 0.5));
+  const nextGhost = new THREE.Mesh(
+    new THREE.RingGeometry(TARGET_R * 0.6, TARGET_R * 0.75, 24),
+    glow(0xffffff, 0.5),
+  );
   nextGhost.rotation.x = -Math.PI / 2;
   nextGhost.position.y = 0.05;
   board.add(nextGhost);
@@ -157,7 +175,7 @@ export const createView: MiniGameViewFactory<BoardState> = (ctx, initial) => {
         c.position.y += Math.sin(t * 0.6 + i) * dt * 0.1;
       }
 
-      const nh = activeHoles(s.cp);
+      const nh = Math.min(activeHoles(s.cp), s.holes.length);
       for (let i = 0; i < holes.length; i++) {
         const h = s.holes[i];
         const v = holes[i] as HoleV;

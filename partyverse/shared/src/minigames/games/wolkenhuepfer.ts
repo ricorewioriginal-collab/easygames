@@ -71,11 +71,12 @@ const STAR_R2 = 0.85 * 0.85;
 export function wave(u: number): number {
   const f = u - Math.floor(u);
   const tri = f < 0.5 ? f * 2 : 2 - f * 2;
-  return (tri * tri * (3 - 2 * tri)) * 2 - 1;
+  return tri * tri * (3 - 2 * tri) * 2 - 1;
 }
 export const speedAt = (t: number): number => 6.4 + Math.min(1.6, (t / TOTAL_TICKS) * 1.6);
 export const cloudOffX = (c: Cloud, t: number): number => (c.kind === 2 ? c.amp * wave(c.ph + t * c.w) : 0);
-export const cloudTop = (c: Cloud, t: number): number => c.y + (c.kind === 1 ? c.amp * wave(c.ph + t * c.w) : 0);
+export const cloudTop = (c: Cloud, t: number): number =>
+  c.y + (c.kind === 1 ? c.amp * wave(c.ph + t * c.w) : 0);
 
 interface Body {
   x: number;
@@ -186,13 +187,31 @@ function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[] } {
     }
     const x0 = x + gap + (kind === 2 ? amp : 0);
     const period = r.float(2.6, 3.8) * 60;
-    const c: Cloud = { x0, x1: x0 + len, y: ny, kind, amp, w: kind === 1 || kind === 2 ? 1 / period : 0, ph: r.float(0, 1) };
+    const c: Cloud = {
+      x0,
+      x1: x0 + len,
+      y: ny,
+      kind,
+      amp,
+      w: kind === 1 || kind === 2 ? 1 / period : 0,
+      ph: r.float(0, 1),
+    };
     // Sterne im Sprungbogen über der Lücke und manchmal auf der Wolke
     if (kind !== 3 && r.chance(0.6)) {
       const top = Math.max(y, ny + (kind === 1 ? amp : 0));
-      for (let k = 0; k < 3; k++) stars.push({ x: x + gap * (0.25 + 0.25 * k) + (kind === 2 ? amp : 0), y: top + 1.2 + (k === 1 ? 0.45 : 0), got: false });
+      for (let k = 0; k < 3; k++)
+        stars.push({
+          x: x + gap * (0.25 + 0.25 * k) + (kind === 2 ? amp : 0),
+          y: top + 1.2 + (k === 1 ? 0.45 : 0),
+          got: false,
+        });
     } else if (springNext) {
-      for (let k = 0; k < 4; k++) stars.push({ x: x + gap + len * 0.5 + 1.4 * (k + 1), y: ny + 3.2 + (k === 1 || k === 2 ? 0.4 : 0), got: false });
+      for (let k = 0; k < 4; k++)
+        stars.push({
+          x: x + gap + len * 0.5 + 1.4 * (k + 1),
+          y: ny + 3.2 + (k === 1 || k === 2 ? 0.4 : 0),
+          got: false,
+        });
     } else if (r.chance(0.3)) {
       stars.push({ x: x0 + len * 0.5, y: ny + 1.0 + (kind === 1 ? amp : 0), got: false });
     }
@@ -205,7 +224,8 @@ function genLevel(seed: number): { clouds: Cloud[]; stars: WStar[] } {
   return { clouds, stars };
 }
 
-const hash01 = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 7, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+const hash01 = (i: number): number =>
+  (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 7, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
 interface Plan {
   k: number;
@@ -217,7 +237,15 @@ function planHold(s: WolkenState, fromGround: boolean, aim: number, step: number
   let best: Plan = { k: 0, margin: -99 };
   const from = Math.max(0, s.on - 2, s.lastPlat - 2);
   for (let k = 0; k <= 48; k += step) {
-    const b: Body = { x: s.x, y: s.y, vy: s.vy, grounded: s.grounded, on: s.on, jumping: s.jumping, springing: s.springing };
+    const b: Body = {
+      x: s.x,
+      y: s.y,
+      vy: s.vy,
+      grounded: s.grounded,
+      on: s.on,
+      jumping: s.jumping,
+      springing: s.springing,
+    };
     if (fromGround) {
       b.grounded = false;
       b.jumping = true;

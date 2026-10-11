@@ -106,7 +106,11 @@ export const game: MiniGame<EchoState> = {
     'Jede Runde kommt eine Note dazu, später gibt es sechs Säulen.',
     'Ein Fehler beendet das Spiel. Wer schneller nachspielt, bekommt Bonuspunkte.',
   ],
-  controls: { desktop: 'Pfeiltasten/WASD (oben, links, rechts, unten), Shift = Säule 5, Leertaste = Säule 6, oder Mausklick auf die Säule', touch: 'Säulen direkt antippen' },
+  controls: {
+    desktop:
+      'Pfeiltasten/WASD (oben, links, rechts, unten), Shift = Säule 5, Leertaste = Säule 6, oder Mausklick auf die Säule',
+    touch: 'Säulen direkt antippen',
+  },
   category: 'memory',
   duration: 35,
   usesPointer: true,
@@ -118,12 +122,32 @@ export const game: MiniGame<EchoState> = {
       // Vor der sechsten Position gibt es nur vier Säulen; danach alle sechs
       let v = rnd.int(i < SIX_FROM - 1 ? 4 : 6);
       // Keine Dreierwiederholung derselben Säule
-      if (i >= 2 && seq[i - 1] === v && seq[i - 2] === v) v = (v + 1 + rnd.int(3)) % (i < SIX_FROM - 1 ? 4 : 6);
+      if (i >= 2 && seq[i - 1] === v && seq[i - 2] === v)
+        v = (v + 1 + rnd.int(3)) % (i < SIX_FROM - 1 ? 4 : 6);
       seq.push(v);
     }
     return {
-      seq, phase: 'intro', len: START_LEN, pillars: 4, timer: 0, t: 0, showIdx: 0, pos: 0, idle: 0, inputTicks: 0,
-      lit: [0, 0, 0, 0, 0, 0], cleared: 0, bonus: 0, partial: 0, failed: false, presses: 0, lastPress: -1, lastOk: true, wrong: -1, prevPick: -1, seed,
+      seq,
+      phase: 'intro',
+      len: START_LEN,
+      pillars: 4,
+      timer: 0,
+      t: 0,
+      showIdx: 0,
+      pos: 0,
+      idle: 0,
+      inputTicks: 0,
+      lit: [0, 0, 0, 0, 0, 0],
+      cleared: 0,
+      bonus: 0,
+      partial: 0,
+      failed: false,
+      presses: 0,
+      lastPress: -1,
+      lastOk: true,
+      wrong: -1,
+      prevPick: -1,
+      seed,
     };
   },
   step(s, input) {
@@ -210,24 +234,40 @@ export const game: MiniGame<EchoState> = {
     const want = s.seq[s.pos] as number;
     const wrongRoll = (hash(s.seed + 7, s.len * 64 + s.pos) % 10000) / 10000;
     // rng wird nur für die (gleichbleibende) Wahl genutzt, sobald wirklich gedrückt wird
-    const target = wrongRoll < pErr ? (want + 1 + Math.floor(rng.next() * (s.pillars - 1))) % s.pillars : want;
+    const target =
+      wrongRoll < pErr ? (want + 1 + Math.floor(rng.next() * (s.pillars - 1))) % s.pillars : want;
     return pillarInput(target);
   },
   hud: (s) => ({
     left: `Länge ${s.phase === 'over' ? s.cleared : s.len}`,
     right: `${Math.max(0, Math.ceil(game.duration - s.t / 60))} s`,
-    hint: s.phase === 'show' || s.phase === 'intro' ? 'Merken …' : s.phase === 'input' ? `Du bist dran (${s.pos}/${s.len})` : s.phase === 'ok' ? 'Richtig!' : s.failed ? 'Falsche Säule!' : 'Zeit um',
+    hint:
+      s.phase === 'show' || s.phase === 'intro'
+        ? 'Merken …'
+        : s.phase === 'input'
+          ? `Du bist dran (${s.pos}/${s.len})`
+          : s.phase === 'ok'
+            ? 'Richtig!'
+            : s.failed
+              ? 'Falsche Säule!'
+              : 'Zeit um',
   }),
 };
 
 function pillarInput(i: number): InputFrame {
   switch (i) {
-    case 0: return { ...NEUTRAL_INPUT, y: 1 };
-    case 1: return { ...NEUTRAL_INPUT, x: -1 };
-    case 2: return { ...NEUTRAL_INPUT, x: 1 };
-    case 3: return { ...NEUTRAL_INPUT, y: -1 };
-    case 4: return { ...NEUTRAL_INPUT, b: true };
-    default: return { ...NEUTRAL_INPUT, a: true };
+    case 0:
+      return { ...NEUTRAL_INPUT, y: 1 };
+    case 1:
+      return { ...NEUTRAL_INPUT, x: -1 };
+    case 2:
+      return { ...NEUTRAL_INPUT, x: 1 };
+    case 3:
+      return { ...NEUTRAL_INPUT, y: -1 };
+    case 4:
+      return { ...NEUTRAL_INPUT, b: true };
+    default:
+      return { ...NEUTRAL_INPUT, a: true };
   }
 }
 
@@ -238,4 +278,3 @@ export function hash(a: number, b: number): number {
   h = Math.imul(h ^ (h >>> 12), 0x297a2d39) >>> 0;
   return (h ^ (h >>> 15)) >>> 0;
 }
-

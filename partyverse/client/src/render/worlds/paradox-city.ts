@@ -38,7 +38,12 @@ interface DynItem extends Item {
   part: number;
 }
 
-function makeInstanced(geo: THREE.BufferGeometry, mat: THREE.Material, items: Item[], castShadow = false): THREE.InstancedMesh {
+function makeInstanced(
+  geo: THREE.BufferGeometry,
+  mat: THREE.Material,
+  items: Item[],
+  castShadow = false,
+): THREE.InstancedMesh {
   const mesh = new THREE.InstancedMesh(geo, mat, Math.max(1, items.length));
   mesh.count = items.length;
   items.forEach((it, i) => {
@@ -121,7 +126,18 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     else dynWin.push({ m: local.clone(), color, part });
   };
 
-  const addBuilding = (frame: THREE.Matrix4, bx: number, by: number, bz: number, flip: boolean, w: number, h: number, d: number, part: number, ci: number): void => {
+  const addBuilding = (
+    frame: THREE.Matrix4,
+    bx: number,
+    by: number,
+    bz: number,
+    flip: boolean,
+    w: number,
+    h: number,
+    d: number,
+    part: number,
+    ci: number,
+  ): void => {
     const lb = new THREE.Matrix4().makeTranslation(bx, by, bz);
     if (flip) lb.multiply(mA.makeRotationX(Math.PI));
     lb.multiply(mA.makeRotationY(rng.float(0, TAU)));
@@ -130,7 +146,10 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     addBlock(frame, new THREE.Matrix4().multiplyMatrices(lb, mB.makeScale(w, h, d)), color, part);
     // Dachkappe
     if (rng.chance(0.65)) {
-      const cap = new THREE.Matrix4().multiplyMatrices(lb, mB.makeTranslation(0, h, 0).multiply(mC.makeScale(w * 1.18, 0.35, d * 1.18)));
+      const cap = new THREE.Matrix4().multiplyMatrices(
+        lb,
+        mB.makeTranslation(0, h, 0).multiply(mC.makeScale(w * 1.18, 0.35, d * 1.18)),
+      );
       addBlock(frame, cap, PALETTE[(ci + 3) % PALETTE.length]!, part);
     }
     // Fenster
@@ -160,20 +179,46 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     if (kind === 'wall') {
       const phi = Math.atan2(-(center.z - pos.z), center.x - pos.x);
       frame.makeTranslation(pos.x, pos.y, pos.z);
-      frame.multiply(mA.makeRotationY(phi)).multiply(mA.makeRotationZ(-Math.PI / 2 + rng.float(-0.12, 0.12))).multiply(mA.makeRotationY(rng.float(-0.6, 0.6)));
+      frame
+        .multiply(mA.makeRotationY(phi))
+        .multiply(mA.makeRotationZ(-Math.PI / 2 + rng.float(-0.12, 0.12)))
+        .multiply(mA.makeRotationY(rng.float(-0.6, 0.6)));
     } else {
       frame.makeTranslation(pos.x, pos.y, pos.z);
       frame.multiply(mA.makeRotationY(rng.float(0, TAU)));
       frame.multiply(mA.makeRotationX(rng.float(-0.3, 0.3))).multiply(mA.makeRotationZ(rng.float(-0.3, 0.3)));
     }
     const slabColor = rng.chance(0.5) ? theme.islandTop : theme.island;
-    const partB = fold ? parts.push({ frame, amp: rng.pick([-1, 1]) * rng.float(0.9, 1.25), speed: rng.float(0.18, 0.3), phase: rng.float(0, TAU), angle: 0 }) - 1 : -1;
+    const partB = fold
+      ? parts.push({
+          frame,
+          amp: rng.pick([-1, 1]) * rng.float(0.9, 1.25),
+          speed: rng.float(0.18, 0.3),
+          phase: rng.float(0, TAU),
+          angle: 0,
+        }) - 1
+      : -1;
     // Platte(n)
     if (fold) {
-      addBlock(frame, new THREE.Matrix4().makeTranslation(-S / 2, -T / 2, 0).multiply(mB.makeScale(S, T, S * 2)), slabColor, -1);
-      addBlock(frame, new THREE.Matrix4().makeTranslation(S / 2, -T / 2, 0).multiply(mB.makeScale(S, T, S * 2)), slabColor, partB);
+      addBlock(
+        frame,
+        new THREE.Matrix4().makeTranslation(-S / 2, -T / 2, 0).multiply(mB.makeScale(S, T, S * 2)),
+        slabColor,
+        -1,
+      );
+      addBlock(
+        frame,
+        new THREE.Matrix4().makeTranslation(S / 2, -T / 2, 0).multiply(mB.makeScale(S, T, S * 2)),
+        slabColor,
+        partB,
+      );
     } else {
-      addBlock(frame, new THREE.Matrix4().makeTranslation(0, -T / 2, 0).multiply(mB.makeScale(S * 2, T, S * 2)), slabColor, -1);
+      addBlock(
+        frame,
+        new THREE.Matrix4().makeTranslation(0, -T / 2, 0).multiply(mB.makeScale(S * 2, T, S * 2)),
+        slabColor,
+        -1,
+      );
     }
     // Gebäude auf beiden Seiten
     const cells = 3;
@@ -185,8 +230,32 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
         if (fold && Math.abs(x) < 2) continue;
         const part = fold && x > 0 ? partB : -1;
         const ci = rng.int(PALETTE.length);
-        if (rng.chance(0.85)) addBuilding(frame, x, 0, z, false, rng.float(2, 3.6), rng.float(3, 11), rng.float(2, 3.6), part, ci);
-        if (rng.chance(0.75)) addBuilding(frame, x, -T, z, true, rng.float(2, 3.4), rng.float(3, 9), rng.float(2, 3.4), part, ci + 2);
+        if (rng.chance(0.85))
+          addBuilding(
+            frame,
+            x,
+            0,
+            z,
+            false,
+            rng.float(2, 3.6),
+            rng.float(3, 11),
+            rng.float(2, 3.6),
+            part,
+            ci,
+          );
+        if (rng.chance(0.75))
+          addBuilding(
+            frame,
+            x,
+            -T,
+            z,
+            true,
+            rng.float(2, 3.4),
+            rng.float(3, 9),
+            rng.float(2, 3.4),
+            part,
+            ci + 2,
+          );
       }
     }
   };
@@ -196,7 +265,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   for (let i = 0; i < clusterN; i++) {
     const ang = (i / clusterN) * TAU + rng.float(-0.25, 0.25);
     const d = dmin + rng.float(0, radius * 0.9) + (i % 2) * 8;
-    const pos = new THREE.Vector3(center.x + Math.cos(ang) * d, center.y + rng.float(-8, 16), center.z + Math.sin(ang) * d);
+    const pos = new THREE.Vector3(
+      center.x + Math.cos(ang) * d,
+      center.y + rng.float(-8, 16),
+      center.z + Math.sin(ang) * d,
+    );
     const kind = i % 3 === 1 ? 'wall' : 'ground';
     buildCluster(kind, pos, i % 3 === 0 && i / 3 < foldCount);
   }
@@ -205,7 +278,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   for (let i = 0; i < belowN; i++) {
     const ang = rng.float(0, TAU);
     const d = rng.float(0.2, 1.5) * radius;
-    const pos = new THREE.Vector3(center.x + Math.cos(ang) * d, minY - rng.float(24, 34), center.z + Math.sin(ang) * d);
+    const pos = new THREE.Vector3(
+      center.x + Math.cos(ang) * d,
+      minY - rng.float(24, 34),
+      center.z + Math.sin(ang) * d,
+    );
     buildCluster('below', pos, i === 0);
   }
   // Ferne Skyline (Silhouetten im Dunst)
@@ -236,22 +313,50 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   const stairItems: Item[] = [];
   const loops: { cx: number; cy: number; cz: number; L: number; n: number; rise: number; yaw: number }[] = [];
   const stepGeo = baseBox();
-  const stepAt = (x: number, y: number, z: number, yaw: number, len: number, hgt: number, wid: number, color: number): void => {
-    mA.makeTranslation(x, y, z).multiply(mB.makeRotationY(yaw)).multiply(mB.makeScale(len, hgt, wid));
+  const stepAt = (
+    x: number,
+    y: number,
+    z: number,
+    yaw: number,
+    len: number,
+    hgt: number,
+    wid: number,
+    color: number,
+  ): void => {
+    mA.makeTranslation(x, y, z)
+      .multiply(mB.makeRotationY(yaw))
+      .multiply(mB.makeScale(len, hgt, wid));
     stairItems.push({ m: mA.clone(), color });
   };
   const loopCount = p > 0.5 ? 2 : 1;
   for (let l = 0; l < loopCount; l++) {
     const ang = rng.float(0, TAU) + l * Math.PI;
     const d = dmin + radius * 0.9 + 14 + l * 8;
-    const loop = { cx: center.x + Math.cos(ang) * d, cy: center.y + rng.float(-4, 8), cz: center.z + Math.sin(ang) * d, L: 11, n: 9, rise: 0.32, yaw: rng.float(0, TAU) };
+    const loop = {
+      cx: center.x + Math.cos(ang) * d,
+      cy: center.y + rng.float(-4, 8),
+      cz: center.z + Math.sin(ang) * d,
+      L: 11,
+      n: 9,
+      rise: 0.32,
+      yaw: rng.float(0, TAU),
+    };
     loops.push(loop);
     const total = 4 * loop.n;
     const h = loop.L / 2;
     for (let i = 0; i < total; i++) {
       const pt = loopPoint(loop, i + 0.5, vA);
       const side = Math.floor(i / loop.n);
-      stepAt(pt.x, pt.y - 0.35, pt.z, loop.yaw - side * (Math.PI / 2), loop.L / loop.n * 1.02, 0.45, 2.2, i % 2 === 0 ? 0xe0d8ff : 0xb4a8f0);
+      stepAt(
+        pt.x,
+        pt.y - 0.35,
+        pt.z,
+        loop.yaw - side * (Math.PI / 2),
+        (loop.L / loop.n) * 1.02,
+        0.45,
+        2.2,
+        i % 2 === 0 ? 0xe0d8ff : 0xb4a8f0,
+      );
     }
     // Stützsäulen an den Ecken
     for (let s = 0; s < 4; s++) {
@@ -259,7 +364,16 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
       const cz = s < 2 ? -h : h;
       const cyaw = loop.yaw;
       vB.set(cx, 0, cz).applyAxisAngle(Y_AXIS, cyaw);
-      stepAt(loop.cx + vB.x, loop.cy - 14, loop.cz + vB.z, cyaw, 0.5, 14 + s * 2.2 * loop.rise * loop.n * 0.5, 0.5, 0x6a5aa8);
+      stepAt(
+        loop.cx + vB.x,
+        loop.cy - 14,
+        loop.cz + vB.z,
+        cyaw,
+        0.5,
+        14 + s * 2.2 * loop.rise * loop.n * 0.5,
+        0.5,
+        0x6a5aa8,
+      );
     }
   }
   // Endlose Wendeltreppe in den Himmel
@@ -271,7 +385,16 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     const steps = Math.round(24 + 20 * p);
     for (let i = 0; i < steps; i++) {
       const a = i * 0.5;
-      stepAt(bx + Math.cos(a) * 5, center.y - 6 + i * 0.7, bz + Math.sin(a) * 5, -a + Math.PI / 2, 3.4, 0.3, 1.5, i % 2 ? 0xffd0f0 : 0xd0c4ff);
+      stepAt(
+        bx + Math.cos(a) * 5,
+        center.y - 6 + i * 0.7,
+        bz + Math.sin(a) * 5,
+        -a + Math.PI / 2,
+        3.4,
+        0.3,
+        1.5,
+        i % 2 ? 0xffd0f0 : 0xd0c4ff,
+      );
     }
     stepAt(bx, center.y - 8, bz, 0, 0.8, steps * 0.7 + 4, 0.8, 0x7a6ab8);
   }
@@ -281,7 +404,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
 
   // Wanderer auf den Treppen
   const walkerN = loops.length * 2;
-  const walkers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.42, 8, 6), glow(0xffffff), Math.max(1, walkerN));
+  const walkers = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.42, 8, 6),
+    glow(0xffffff),
+    Math.max(1, walkerN),
+  );
   walkers.count = walkerN;
   walkers.frustumCulled = false;
   for (let i = 0; i < walkerN; i++) walkers.setColorAt(i, col.setHex(NEON[i % NEON.length]!));
@@ -291,7 +418,16 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
 
   // ------------------------------------------------------------------ Zahnräder
   const gearGeo = gearGeometry(14);
-  const gears: { x: number; y: number; z: number; yaw: number; s: number; dir: number; speed: number; phase: number }[] = [];
+  const gears: {
+    x: number;
+    y: number;
+    z: number;
+    yaw: number;
+    s: number;
+    dir: number;
+    speed: number;
+    phase: number;
+  }[] = [];
   const gearPairs = Math.round(2 + 2 * p);
   for (let i = 0; i < gearPairs; i++) {
     const ang = (i / gearPairs) * TAU + rng.float(0.2, 0.9);
@@ -305,7 +441,16 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     gears.push({ x: gx, y: gy, z: gz, yaw, s, dir: 1, speed: sp, phase: 0 });
     // Nachbar rechts davon (lokale X-Achse)
     const off = s * 1.84;
-    gears.push({ x: gx + Math.cos(yaw) * off, y: gy, z: gz - Math.sin(yaw) * off, yaw, s, dir: -1, speed: sp, phase: Math.PI / 14 });
+    gears.push({
+      x: gx + Math.cos(yaw) * off,
+      y: gy,
+      z: gz - Math.sin(yaw) * off,
+      yaw,
+      s,
+      dir: -1,
+      speed: sp,
+      phase: Math.PI / 14,
+    });
   }
   const gearMesh = new THREE.InstancedMesh(gearGeo, toon(0xffffff), gears.length);
   gearMesh.frustumCulled = false;
@@ -315,13 +460,27 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   meshes.push(gearMesh);
 
   // ------------------------------------------------------------------ Unmögliche Dreiecke (Balken)
-  interface Tri { x: number; y: number; z: number; r: number; spin: number; tilt: number }
+  interface Tri {
+    x: number;
+    y: number;
+    z: number;
+    r: number;
+    spin: number;
+    tilt: number;
+  }
   const tris: Tri[] = [];
   const triN = p > 0.5 ? 2 : 1;
   for (let i = 0; i < triN; i++) {
     const ang = rng.float(0, TAU);
     const d = dmin + radius * rng.float(1.0, 1.6) + 18;
-    tris.push({ x: center.x + Math.cos(ang) * d, y: center.y + rng.float(10, 26), z: center.z + Math.sin(ang) * d, r: rng.float(5, 7), spin: rng.float(0.1, 0.2) * (i ? -1 : 1), tilt: rng.float(-0.35, 0.35) });
+    tris.push({
+      x: center.x + Math.cos(ang) * d,
+      y: center.y + rng.float(10, 26),
+      z: center.z + Math.sin(ang) * d,
+      r: rng.float(5, 7),
+      spin: rng.float(0.1, 0.2) * (i ? -1 : 1),
+      tilt: rng.float(-0.35, 0.35),
+    });
   }
   const beamLocal: THREE.Matrix4[] = [];
   const beamLen: number[] = [];
@@ -335,7 +494,9 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
       vB.set(Math.cos(a1) * tr.r, Math.sin(a1) * tr.r, 0);
       vC.subVectors(vB, vA);
       const len = vC.length() + 1.4;
-      mA.makeTranslation((vA.x + vB.x) / 2, (vA.y + vB.y) / 2, k * 0.55 - 0.55).multiply(mB.makeRotationZ(Math.atan2(vC.y, vC.x))).multiply(mB.makeScale(len, 1.2, 1.2));
+      mA.makeTranslation((vA.x + vB.x) / 2, (vA.y + vB.y) / 2, k * 0.55 - 0.55)
+        .multiply(mB.makeRotationZ(Math.atan2(vC.y, vC.x)))
+        .multiply(mB.makeScale(len, 1.2, 1.2));
       beamLocal.push(mA.clone());
       beamLen.push(len);
       beams.setColorAt(ti * 3 + k, col.setHex([0xff7ac8, 0x6ae0ff, 0xffd84a][k]!));
@@ -346,7 +507,14 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   meshes.push(beams);
 
   // ------------------------------------------------------------------ Neon-Zeichen
-  interface Sign { x: number; y: number; z: number; yaw: number; s: number; ph: number }
+  interface Sign {
+    x: number;
+    y: number;
+    z: number;
+    yaw: number;
+    s: number;
+    ph: number;
+  }
   const signs: Sign[] = [];
   const signN = Math.round(8 + 8 * p);
   const ringL: { m: THREE.Matrix4; sign: number; color: number }[] = [];
@@ -357,19 +525,45 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     const d = dmin + rng.float(2, radius * 1.1) + 6;
     const x = center.x + Math.cos(ang) * d;
     const z = center.z + Math.sin(ang) * d;
-    signs.push({ x, y: center.y + rng.float(-10, 22), z, yaw: Math.atan2(center.x - x, center.z - z), s: rng.float(1.4, 2.6), ph: rng.float(0, TAU) });
+    signs.push({
+      x,
+      y: center.y + rng.float(-10, 22),
+      z,
+      yaw: Math.atan2(center.x - x, center.z - z),
+      s: rng.float(1.4, 2.6),
+      ph: rng.float(0, TAU),
+    });
     const color = NEON[i % NEON.length]!;
     const t = i % 3;
     if (t === 0) {
       ringL.push({ m: new THREE.Matrix4(), sign: i, color });
-      barL.push({ m: new THREE.Matrix4().makeTranslation(0, -1.5, 0).multiply(mB.makeScale(2.4, 0.18, 0.18)), sign: i, color });
+      barL.push({
+        m: new THREE.Matrix4().makeTranslation(0, -1.5, 0).multiply(mB.makeScale(2.4, 0.18, 0.18)),
+        sign: i,
+        color,
+      });
     } else if (t === 1) {
       coneL.push({ m: new THREE.Matrix4().makeTranslation(-0.8, 0, 0), sign: i, color });
-      coneL.push({ m: new THREE.Matrix4().makeTranslation(0.8, 0, 0).multiply(mB.makeRotationZ(Math.PI)), sign: i, color });
+      coneL.push({
+        m: new THREE.Matrix4().makeTranslation(0.8, 0, 0).multiply(mB.makeRotationZ(Math.PI)),
+        sign: i,
+        color,
+      });
       barL.push({ m: new THREE.Matrix4().makeScale(2.4, 0.18, 0.18), sign: i, color });
     } else {
-      for (let k = -1; k <= 1; k++) barL.push({ m: new THREE.Matrix4().makeTranslation(0, k * 0.7, 0).multiply(mB.makeScale(2.6 - Math.abs(k) * 0.6, 0.2, 0.2)), sign: i, color });
-      ringL.push({ m: new THREE.Matrix4().makeTranslation(0, 1.9, 0).multiply(mB.makeScale(0.35, 0.35, 0.35)), sign: i, color });
+      for (let k = -1; k <= 1; k++)
+        barL.push({
+          m: new THREE.Matrix4()
+            .makeTranslation(0, k * 0.7, 0)
+            .multiply(mB.makeScale(2.6 - Math.abs(k) * 0.6, 0.2, 0.2)),
+          sign: i,
+          color,
+        });
+      ringL.push({
+        m: new THREE.Matrix4().makeTranslation(0, 1.9, 0).multiply(mB.makeScale(0.35, 0.35, 0.35)),
+        sign: i,
+        color,
+      });
     }
   }
   const mkNeon = (geo: THREE.BufferGeometry, list: typeof ringL): THREE.InstancedMesh => {
@@ -387,7 +581,14 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   const coneMesh = mkNeon(new THREE.ConeGeometry(0.55, 1.2, 4), coneL);
 
   // ------------------------------------------------------------------ Schwebende Laternen
-  interface Lamp { x: number; y: number; z: number; flip: boolean; ph: number; tilt: number }
+  interface Lamp {
+    x: number;
+    y: number;
+    z: number;
+    flip: boolean;
+    ph: number;
+    tilt: number;
+  }
   const lamps: Lamp[] = [];
   const arcs = Math.round(3 + 2 * p);
   for (let a = 0; a < arcs; a++) {
@@ -398,11 +599,26 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     const cnt = 5;
     for (let k = 0; k < cnt; k++) {
       const an = a0 + (k / (cnt - 1)) * span;
-      lamps.push({ x: center.x + Math.cos(an) * d, y: y0 + Math.sin(k * 0.9) * 1.5, z: center.z + Math.sin(an) * d, flip: rng.chance(0.35), ph: rng.float(0, TAU), tilt: rng.float(-0.25, 0.25) });
+      lamps.push({
+        x: center.x + Math.cos(an) * d,
+        y: y0 + Math.sin(k * 0.9) * 1.5,
+        z: center.z + Math.sin(an) * d,
+        flip: rng.chance(0.35),
+        ph: rng.float(0, TAU),
+        tilt: rng.float(-0.25, 0.25),
+      });
     }
   }
-  const poleMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.16, 3.4, 6).translate(0, 1.7, 0), toon(0x3a2a5a), lamps.length);
-  const bulbMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.42, 10, 8), glow(0xffffff), lamps.length);
+  const poleMesh = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.1, 0.16, 3.4, 6).translate(0, 1.7, 0),
+    toon(0x3a2a5a),
+    lamps.length,
+  );
+  const bulbMesh = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.42, 10, 8),
+    glow(0xffffff),
+    lamps.length,
+  );
   const haloMat = glow(0xffe8a0, 0.2);
   haloMat.depthWrite = false;
   const haloMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 10, 8), haloMat, lamps.length);
@@ -421,15 +637,23 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   for (let i = 0; i < laneN; i++) {
     const R = radius * 1.35 + 22 + i * 7;
     const m = new THREE.Matrix4().makeTranslation(center.x, center.y + rng.float(-3, 18), center.z);
-    m.multiply(mB.makeRotationY(rng.float(0, TAU))).multiply(mB.makeRotationX(rng.float(-0.35, 0.35))).multiply(mB.makeRotationZ(rng.float(-0.35, 0.35)));
+    m.multiply(mB.makeRotationY(rng.float(0, TAU)))
+      .multiply(mB.makeRotationX(rng.float(-0.35, 0.35)))
+      .multiply(mB.makeRotationZ(rng.float(-0.35, 0.35)));
     lanes.push({ R, cy: 0, m, p: rng.pick([3, 4, 6]) });
   }
   const cars: { lane: number; u: number; speed: number }[] = [];
   const carN = Math.round(8 + 6 * p);
-  for (let i = 0; i < carN; i++) cars.push({ lane: i % laneN, u: rng.float(0, 1), speed: rng.float(0.012, 0.03) * (rng.chance(0.5) ? 1 : -1) });
+  for (let i = 0; i < carN; i++)
+    cars.push({
+      lane: i % laneN,
+      u: rng.float(0, 1),
+      speed: rng.float(0.012, 0.03) * (rng.chance(0.5) ? 1 : -1),
+    });
   const trailMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), glow(0xffffff), carN * SEG);
   trailMesh.frustumCulled = false;
-  for (let i = 0; i < carN; i++) for (let s = 0; s < SEG; s++) trailMesh.setColorAt(i * SEG + s, col.setHex(NEON[(i * 2) % NEON.length]!));
+  for (let i = 0; i < carN; i++)
+    for (let s = 0; s < SEG; s++) trailMesh.setColorAt(i * SEG + s, col.setHex(NEON[(i * 2) % NEON.length]!));
   if (trailMesh.instanceColor) trailMesh.instanceColor.needsUpdate = true;
   group.add(trailMesh);
   meshes.push(trailMesh);
@@ -448,7 +672,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     return m;
   };
   for (const md of moonDefs) {
-    const dir = new THREE.Vector3(Math.cos(md.az) * Math.cos(md.el), Math.sin(md.el), Math.sin(md.az) * Math.cos(md.el));
+    const dir = new THREE.Vector3(
+      Math.cos(md.az) * Math.cos(md.el),
+      Math.sin(md.el),
+      Math.sin(md.az) * Math.cos(md.el),
+    );
     const mp = new THREE.Vector3(center.x, center.y, center.z).addScaledVector(dir, mdist);
     const moon = new THREE.Mesh(new THREE.SphereGeometry(md.r, 20, 14), moonBasic(md.color));
     moon.position.copy(mp);
@@ -458,7 +686,10 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     moon.renderOrder = -6;
     group.add(moon, halo);
     if (md.ring) {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(md.r * 1.7, md.r * 0.07, 6, 48), moonBasic(0xffc4ec));
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(md.r * 1.7, md.r * 0.07, 6, 48),
+        moonBasic(0xffc4ec),
+      );
       ring.position.copy(mp);
       ring.rotation.set(1.1, 0.2, 0.5);
       ring.renderOrder = -6;
@@ -476,7 +707,13 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
       craterItems.push({ m: mA.clone(), color: md.ring ? 0x8aa8e0 : 0xe0c8a8 });
     }
   }
-  const craterMat = new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+  const craterMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    fog: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -4,
+    polygonOffsetUnits: -4,
+  });
   const craters = makeInstanced(new THREE.CircleGeometry(1, 10), craterMat, craterItems);
   craters.renderOrder = -4;
   group.add(craters);
@@ -486,7 +723,7 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   const starPos = new Float32Array(starN * 3);
   for (let i = 0; i < starN; i++) {
     const az = rng.float(0, TAU);
-    const el = Math.acos(rng.float(0.05, 1)) ;
+    const el = Math.acos(rng.float(0.05, 1));
     const y = Math.cos(el);
     starPos[i * 3] = center.x + Math.cos(az) * Math.sin(el) * 330;
     starPos[i * 3 + 1] = center.y + y * 330 - 20;
@@ -494,7 +731,16 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   }
   const starGeo = new THREE.BufferGeometry();
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xfff4d8, size: 2.4, sizeAttenuation: false, fog: false, depthWrite: false }));
+  const stars = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({
+      color: 0xfff4d8,
+      size: 2.4,
+      sizeAttenuation: false,
+      fog: false,
+      depthWrite: false,
+    }),
+  );
   stars.frustumCulled = false;
   stars.renderOrder = -8;
   group.add(stars);
@@ -502,7 +748,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   // ------------------------------------------------------------------ Animation
   const partM = new THREE.Matrix4();
 
-  function loopPoint(loop: { cx: number; cy: number; cz: number; L: number; n: number; rise: number; yaw: number }, s: number, out: THREE.Vector3): THREE.Vector3 {
+  function loopPoint(
+    loop: { cx: number; cy: number; cz: number; L: number; n: number; rise: number; yaw: number },
+    s: number,
+    out: THREE.Vector3,
+  ): THREE.Vector3 {
     const total = 4 * loop.n;
     const w = ((s % total) + total) % total;
     const side = Math.min(3, Math.floor(w / loop.n));
@@ -511,10 +761,19 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     const f = k / loop.n;
     let x: number;
     let z: number;
-    if (side === 0) { x = -h + f * loop.L; z = -h; }
-    else if (side === 1) { x = h; z = -h + f * loop.L; }
-    else if (side === 2) { x = h - f * loop.L; z = h; }
-    else { x = -h; z = h - f * loop.L; }
+    if (side === 0) {
+      x = -h + f * loop.L;
+      z = -h;
+    } else if (side === 1) {
+      x = h;
+      z = -h + f * loop.L;
+    } else if (side === 2) {
+      x = h - f * loop.L;
+      z = h;
+    } else {
+      x = -h;
+      z = h - f * loop.L;
+    }
     const climb = 3 * loop.n * loop.rise;
     const y = w < 3 * loop.n ? w * loop.rise : climb * (1 - (w - 3 * loop.n) / loop.n);
     out.set(x, 0, z).applyAxisAngle(Y_AXIS, loop.yaw);
@@ -525,12 +784,20 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
   }
   // Plausibilität: Treppen-Schleifenpunkte werden oben mit loopPoint gebaut (Funktionsdeklaration ist gehoistet)
 
-  function lanePos(lane: { R: number; m: THREE.Matrix4; p: number }, u: number, out: THREE.Vector3): THREE.Vector3 {
+  function lanePos(
+    lane: { R: number; m: THREE.Matrix4; p: number },
+    u: number,
+    out: THREE.Vector3,
+  ): THREE.Vector3 {
     const a = u * TAU;
     const c = Math.cos(a);
     const s = Math.sin(a);
     const e = 2 / lane.p;
-    out.set(Math.sign(c) * Math.pow(Math.abs(c), e) * lane.R, Math.sin(a * 3) * 1.2, Math.sign(s) * Math.pow(Math.abs(s), e) * lane.R);
+    out.set(
+      Math.sign(c) * Math.pow(Math.abs(c), e) * lane.R,
+      Math.sin(a * 3) * 1.2,
+      Math.sign(s) * Math.pow(Math.abs(s), e) * lane.R,
+    );
     return out.applyMatrix4(lane.m);
   }
 
@@ -588,7 +855,9 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
     // Dreiecke aus Balken
     for (let ti = 0; ti < tris.length; ti++) {
       const tr = tris[ti]!;
-      mC.makeTranslation(tr.x, tr.y, tr.z).multiply(mA.makeRotationY(t * tr.spin)).multiply(mA.makeRotationX(tr.tilt));
+      mC.makeTranslation(tr.x, tr.y, tr.z)
+        .multiply(mA.makeRotationY(t * tr.spin))
+        .multiply(mA.makeRotationX(tr.tilt));
       for (let k = 0; k < 3; k++) {
         mB.multiplyMatrices(mC, beamLocal[ti * 3 + k]!);
         beams.setMatrixAt(ti * 3 + k, mB);
@@ -601,7 +870,11 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
       const sg = signs[si]!;
       const pulse = sg.s * (1 + 0.07 * Math.sin(t * 2.2 + sg.ph));
       qA.setFromAxisAngle(Y_AXIS, sg.yaw + Math.sin(t * 0.3 + sg.ph) * 0.15);
-      return mC.compose(vP.set(sg.x, sg.y + Math.sin(t * 0.8 + sg.ph) * 0.6, sg.z), qA, vS.set(pulse, pulse, pulse));
+      return mC.compose(
+        vP.set(sg.x, sg.y + Math.sin(t * 0.8 + sg.ph) * 0.6, sg.z),
+        qA,
+        vS.set(pulse, pulse, pulse),
+      );
     };
     for (let i = 0; i < ringL.length; i++) {
       mA.multiplyMatrices(signM(ringL[i]!.sign), ringL[i]!.m);
@@ -615,7 +888,10 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
       mA.multiplyMatrices(signM(coneL[i]!.sign), coneL[i]!.m);
       coneMesh.setMatrixAt(i, mA);
     }
-    ringMesh.instanceMatrix.needsUpdate = barMesh.instanceMatrix.needsUpdate = coneMesh.instanceMatrix.needsUpdate = true;
+    ringMesh.instanceMatrix.needsUpdate =
+      barMesh.instanceMatrix.needsUpdate =
+      coneMesh.instanceMatrix.needsUpdate =
+        true;
 
     // Laternen
     for (let i = 0; i < lamps.length; i++) {
@@ -633,7 +909,10 @@ export const createDecor: DecorFactory = (ctx: DecorContext): Decor => {
       mB.makeScale(hs, hs, hs).setPosition(vP.x, vP.y, vP.z);
       haloMesh.setMatrixAt(i, mB);
     }
-    poleMesh.instanceMatrix.needsUpdate = bulbMesh.instanceMatrix.needsUpdate = haloMesh.instanceMatrix.needsUpdate = true;
+    poleMesh.instanceMatrix.needsUpdate =
+      bulbMesh.instanceMatrix.needsUpdate =
+      haloMesh.instanceMatrix.needsUpdate =
+        true;
 
     // Lichtbahnen
     const delta = 0.012;

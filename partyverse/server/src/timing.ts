@@ -27,4 +27,13 @@ export const DEFAULT_TIMING: Timing = {
   endedLinger: 120000,
 };
 
-export const FAST_TIMING: Timing = { botDelayMin: 0, botDelayMax: 10, turnTimeout: 3000, afkTimeout: 20, introTimeout: 3000, playGrace: 1000, reconnectSeconds: 2, endedLinger: 500 };
+export const FAST_TIMING: Timing = {
+  botDelayMin: 0,
+  botDelayMax: 10,
+  turnTimeout: 3000,
+  afkTimeout: 20,
+  introTimeout: 3000,
+  playGrace: 1000,
+  reconnectSeconds: 2,
+  endedLinger: 500,
+};

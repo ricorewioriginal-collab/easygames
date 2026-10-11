@@ -14,7 +14,9 @@ describe('Schleuderflug', () => {
     expect(game.init(6, opts).winds).not.toEqual(a.winds);
     expect(a.winds.length).toBe(SHOTS);
     // fernere Inseln geben mehr Punkte
-    const sorted = [...a.islands].sort((p, q) => Math.hypot(p.x - ANCHOR_X, p.y0 - ANCHOR_Y) - Math.hypot(q.x - ANCHOR_X, q.y0 - ANCHOR_Y));
+    const sorted = [...a.islands].sort(
+      (p, q) => Math.hypot(p.x - ANCHOR_X, p.y0 - ANCHOR_Y) - Math.hypot(q.x - ANCHOR_X, q.y0 - ANCHOR_Y),
+    );
     expect(sorted[sorted.length - 1]!.pts).toBeGreaterThanOrEqual(sorted[0]!.pts);
   });
 

@@ -75,7 +75,12 @@ function makePlanets(r: Rng): Planet[] {
   const out: Planet[] = [];
   for (let tries = 0; out.length < 3 && tries < 500; tries++) {
     const rad = r.float(1.0, 1.65);
-    const p = { x: r.float(-WORLD_X + 3, WORLD_X - 3), y: r.float(-WORLD_Y + 2.6, WORLD_Y - 2.6), r: rad, gm: rad * 9 };
+    const p = {
+      x: r.float(-WORLD_X + 3, WORLD_X - 3),
+      y: r.float(-WORLD_Y + 2.6, WORLD_Y - 2.6),
+      r: rad,
+      gm: rad * 9,
+    };
     if (Math.hypot(p.x - START.x, p.y - START.y) < 4.6 + rad) continue;
     if (out.some((o) => Math.hypot(o.x - p.x, o.y - p.y) < o.r + rad + 4.2)) continue;
     out.push(p);
@@ -121,7 +126,10 @@ export const game: MiniGame<GraviState> = {
     'Der Treibstoff ist begrenzt und füllt sich nur langsam wieder auf. Spare ihn!',
     'Jeder Orb bringt 100 Punkte, übrig gebliebener Treibstoff gibt einen Bonus.',
   ],
-  controls: { desktop: 'A/D oder Pfeile = drehen, Leertaste oder Pfeil hoch = Schub', touch: 'Stick = drehen (und Schub nach oben), Knopf A = Schub' },
+  controls: {
+    desktop: 'A/D oder Pfeile = drehen, Leertaste oder Pfeil hoch = Schub',
+    touch: 'Stick = drehen (und Schub nach oben), Knopf A = Schub',
+  },
   category: 'physics',
   duration: 30,
   touch: { stick: true, a: true, b: false },
@@ -221,7 +229,11 @@ export const game: MiniGame<GraviState> = {
     }
   },
   done: (s) => s.tick >= DURATION_TICKS,
-  score: (s) => Math.max(0, s.collected * ORB_POINTS + (s.collected > 0 ? Math.round(s.fuel * 60) : 0) - s.crashes * CRASH_PENALTY),
+  score: (s) =>
+    Math.max(
+      0,
+      s.collected * ORB_POINTS + (s.collected > 0 ? Math.round(s.fuel * 60) : 0) - s.crashes * CRASH_PENALTY,
+    ),
   bot(s, skill, rng): InputFrame {
     const horizon = Math.round(lerp(5, 30, skill)); // Vorausschau in Schritten à 0.05 s
     const margin = lerp(0, 0.5, skill);

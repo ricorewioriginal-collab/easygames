@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_INPUT } from '../types';
 import { runBot } from '../simulate';
-import { canMove, deriveSeed, distances, game, makeMaze, mazeSize, PHASE_TICKS, timePlan, MAZE_POINTS } from './faltlabyrinth';
+import {
+  canMove,
+  deriveSeed,
+  distances,
+  game,
+  makeMaze,
+  mazeSize,
+  PHASE_TICKS,
+  timePlan,
+  MAZE_POINTS,
+} from './faltlabyrinth';
 
 const opts = { playerIndex: 0, players: 4 };
 
@@ -44,12 +54,22 @@ describe('faltlabyrinth', () => {
     let found = -1;
     let dir = 0;
     for (let c = 0; c < n * n && found < 0; c++) {
-      for (let d = 0; d < 4; d++) if (!canMove(m, 0, c, d) && canMove(m, 1, c, d)) { found = c; dir = d; break; }
+      for (let d = 0; d < 4; d++)
+        if (!canMove(m, 0, c, d) && canMove(m, 1, c, d)) {
+          found = c;
+          dir = d;
+          break;
+        }
     }
     expect(found).toBeGreaterThanOrEqual(0);
     s.x = (found % n) + 0.5;
     s.y = Math.floor(found / n) + 0.5;
-    const mv = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }][dir]!;
+    const mv = [
+      { x: 1, y: 0 },
+      { x: -1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 0, y: -1 },
+    ][dir]!;
     for (let i = 0; i < 40; i++) game.step(s, { ...NEUTRAL_INPUT, ...mv });
     expect(Math.floor(s.x)).toBe(found % n);
     expect(Math.floor(s.y)).toBe(Math.floor(found / n));

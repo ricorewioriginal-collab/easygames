@@ -55,9 +55,16 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
   // Dekoration: schwebende Papierkristalle
   const deco: THREE.Mesh[] = [];
   for (let i = 0; i < 14; i++) {
-    const d = new THREE.Mesh(new THREE.OctahedronGeometry(0.7 + (i % 3) * 0.4, 0), toon([0xffffff, 0xffd6f0, 0xd6e6ff][i % 3]!, { emissive: 0x6a5cff, emissiveIntensity: 0.15 }));
+    const d = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.7 + (i % 3) * 0.4, 0),
+      toon([0xffffff, 0xffd6f0, 0xd6e6ff][i % 3]!, { emissive: 0x6a5cff, emissiveIntensity: 0.15 }),
+    );
     const a = (i / 14) * Math.PI * 2;
-    d.position.set(Math.cos(a) * (11 + (i % 4) * 2.2), -1 + (i % 5) * 1.6, Math.sin(a) * (9 + (i % 3) * 2) - 3);
+    d.position.set(
+      Math.cos(a) * (11 + (i % 4) * 2.2),
+      -1 + (i % 5) * 1.6,
+      Math.sin(a) * (9 + (i % 3) * 2) - 3,
+    );
     root.add(d);
     deco.push(d);
   }
@@ -97,7 +104,10 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
     // Ziel: goldenes Portal
     const goal = new THREE.Group();
     goal.position.set(m.goal.x + 0.5, 0, -(m.goal.y + 0.5));
-    const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.05, 20), toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.5 }));
+    const pad = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.4, 0.4, 0.05, 20),
+      toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.5 }),
+    );
     pad.position.y = 0.0;
     goal.add(pad);
     const ring1 = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.05, 8, 24), glow(0xfff0a0));
@@ -106,7 +116,10 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
     const ring2 = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.04, 8, 20), glow(0xffffff));
     ring2.position.y = 0.55;
     ring2.name = 'r2';
-    const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.15), toon(0xffe27a, { emissive: 0xffa800, emissiveIntensity: 0.8 }));
+    const gem = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.15),
+      toon(0xffe27a, { emissive: 0xffa800, emissiveIntensity: 0.8 }),
+    );
     gem.position.y = 0.55;
     gem.name = 'gem';
     const gh = new THREE.Mesh(new THREE.SphereGeometry(0.55, 14, 10), glow(0xffe27a, 0.18));
@@ -128,8 +141,14 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
     const T = HALF_WALL * 2;
     const staticList: Array<{ x: number; z: number; sx: number; sz: number }> = [];
     const folds: FoldWall[] = [];
-    const matA: [THREE.Material, THREE.Material] = [toon(COL_A, { emissive: COL_A, emissiveIntensity: 0.1 }), toon(COL_A, { emissive: 0x9fd0ff, emissiveIntensity: 0.9 })];
-    const matB: [THREE.Material, THREE.Material] = [toon(COL_B, { emissive: COL_B, emissiveIntensity: 0.1 }), toon(COL_B, { emissive: 0xffd09f, emissiveIntensity: 0.9 })];
+    const matA: [THREE.Material, THREE.Material] = [
+      toon(COL_A, { emissive: COL_A, emissiveIntensity: 0.1 }),
+      toon(COL_A, { emissive: 0x9fd0ff, emissiveIntensity: 0.9 }),
+    ];
+    const matB: [THREE.Material, THREE.Material] = [
+      toon(COL_B, { emissive: COL_B, emissiveIntensity: 0.1 }),
+      toon(COL_B, { emissive: 0xffd09f, emissiveIntensity: 0.9 }),
+    ];
     let foldIdx = 0;
     const addWall = (code: number, cx: number, cy: number, alongY: boolean): void => {
       if (code === 0) return;
@@ -147,9 +166,19 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
       mesh.position.y = WALL_H / 2;
       pivot.add(mesh);
       group.add(pivot);
-      folds.push({ pivot, mesh, code, axisZ: alongY, sign: foldIdx++ % 2 === 0 ? 1 : -1, fold: 0, vel: 0, mats });
+      folds.push({
+        pivot,
+        mesh,
+        code,
+        axisZ: alongY,
+        sign: foldIdx++ % 2 === 0 ? 1 : -1,
+        fold: 0,
+        vel: 0,
+        mats,
+      });
     };
-    for (let j = 0; j < n; j++) for (let i = 0; i <= n; i++) addWall(m.vw[j * (n + 1) + i]!, i, j + 0.5, true);
+    for (let j = 0; j < n; j++)
+      for (let i = 0; i <= n; i++) addWall(m.vw[j * (n + 1) + i]!, i, j + 0.5, true);
     for (let j = 0; j <= n; j++) for (let i = 0; i < n; i++) addWall(m.hw[j * n + i]!, i + 0.5, j, false);
     const statics = new THREE.InstancedMesh(boxGeo, toon(COL_STATIC), Math.max(1, staticList.length));
     statics.count = staticList.length;
@@ -167,7 +196,19 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
     }
     group.add(posts);
     mazeRoot.add(group);
-    return { index, n, group, statics, staticBase: staticList, posts, folds, goal, flag, flagCloth: cloth, grow: 0 };
+    return {
+      index,
+      n,
+      group,
+      statics,
+      staticBase: staticList,
+      posts,
+      folds,
+      goal,
+      flag,
+      flagCloth: cloth,
+      grow: 0,
+    };
   }
 
   function applyStatics(b: Built, grow: number): void {
@@ -206,7 +247,7 @@ export const createView: MiniGameViewFactory<FaltState> = (ctx, initial) => {
   hat.rotation.y = Math.PI / 4;
   body.add(hat);
   hero.scale.setScalar(1.4);
-const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), glow(0x1a1030, 0.35));
+  const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), glow(0x1a1030, 0.35));
   heroShadow.rotation.x = -Math.PI / 2;
   heroShadow.position.y = 0.03;
   mazeRoot.add(heroShadow);
@@ -241,7 +282,8 @@ const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), glow(0x1a1
           built.group.removeFromParent();
           built.group.traverse((o) => {
             const mm = o as THREE.Mesh;
-            if (mm.geometry && mm.geometry !== boxGeo && mm.geometry !== postGeo && mm.geometry !== tileGeo) mm.geometry.dispose();
+            if (mm.geometry && mm.geometry !== boxGeo && mm.geometry !== postGeo && mm.geometry !== tileGeo)
+              mm.geometry.dispose();
           });
         }
         built = build(s.maze, s.mazeIndex);
@@ -294,7 +336,7 @@ const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), glow(0x1a1
       const r2 = b.goal.getObjectByName('r2');
       if (r1) r1.rotation.set(t * 1.2, t * 0.7, 0);
       if (r2) r2.rotation.set(0, t * 1.9, t * 1.1);
-      ((b.flagCloth.material) as THREE.MeshBasicMaterial).color.setHex(s.checkHit ? 0x8a8aa8 : 0x5ad2ff);
+      (b.flagCloth.material as THREE.MeshBasicMaterial).color.setHex(s.checkHit ? 0x8a8aa8 : 0x5ad2ff);
       b.flag.rotation.z = s.checkHit ? 0.25 : 0;
       b.flagCloth.scale.y = 1 + Math.sin(t * 6) * 0.08;
 
@@ -334,10 +376,20 @@ const heroShadow = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), glow(0x1a1
         ctx.sfx('whoosh');
         // Papierflattern an den Wänden
         const w0 = b.folds[(s.folds * 7) % Math.max(1, b.folds.length)];
-        if (w0) ctx.burst(v3.set(w0.pivot.position.x - n / 2, 0.5, w0.pivot.position.z + n / 2), s.phase === 0 ? COL_A : COL_B, 8);
+        if (w0)
+          ctx.burst(
+            v3.set(w0.pivot.position.x - n / 2, 0.5, w0.pivot.position.z + n / 2),
+            s.phase === 0 ? COL_A : COL_B,
+            8,
+          );
       }
       const secLeft = Math.ceil((PHASE_TICKS - s.phaseTick) / 60);
-      if (warn && secLeft !== lastTickSfx && PHASE_TICKS - s.phaseTick <= WARN_TICKS && (PHASE_TICKS - s.phaseTick) % 15 === 0) {
+      if (
+        warn &&
+        secLeft !== lastTickSfx &&
+        PHASE_TICKS - s.phaseTick <= WARN_TICKS &&
+        (PHASE_TICKS - s.phaseTick) % 15 === 0
+      ) {
         ctx.sfx('tick');
         lastTickSfx = secLeft;
       }

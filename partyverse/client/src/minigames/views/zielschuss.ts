@@ -81,7 +81,10 @@ export const createView: MiniGameViewFactory<ZielState> = (ctx, initial) => {
   // Munition auf der Theke
   const bullets: THREE.Mesh[] = [];
   for (let i = 0; i < MAG; i++) {
-    const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.34, 4, 8), toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.5 }));
+    const b = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.14, 0.34, 4, 8),
+      toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.5 }),
+    );
     b.position.set(-5.4 + i * 0.5, 1.2, 1.0);
     root.add(b);
     bullets.push(b);
@@ -128,7 +131,10 @@ export const createView: MiniGameViewFactory<ZielState> = (ctx, initial) => {
       beak.rotation.z = -Math.PI / 2;
       beak.position.set(R * 0.65, R * 0.25, 0.14);
       inner.add(beak);
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(R * 0.05, 8, 6), new THREE.MeshBasicMaterial({ color: 0x1a1030 }));
+      const eye = new THREE.Mesh(
+        new THREE.SphereGeometry(R * 0.05, 8, 6),
+        new THREE.MeshBasicMaterial({ color: 0x1a1030 }),
+      );
       eye.position.set(R * 0.42, R * 0.34, 0.3);
       inner.add(eye);
     } else if (kind === 'fast') {
@@ -186,7 +192,12 @@ export const createView: MiniGameViewFactory<ZielState> = (ctx, initial) => {
   };
   const pool = new Map<TargetKind, TV[]>();
   const live = new Map<number, TV>();
-  interface Dying { tv: TV; t: number; hit: boolean; vx: number }
+  interface Dying {
+    tv: TV;
+    t: number;
+    hit: boolean;
+    vx: number;
+  }
   const dying: Dying[] = [];
   const acquire = (t: Target): TV => {
     const arr = pool.get(t.kind) ?? [];
@@ -223,14 +234,20 @@ export const createView: MiniGameViewFactory<ZielState> = (ctx, initial) => {
   root.add(cross);
 
   // Mündungsblitz / Einschlag
-  const flash = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.34, 20), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false }));
+  const flash = new THREE.Mesh(
+    new THREE.RingGeometry(0.2, 0.34, 20),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false }),
+  );
   flash.renderOrder = 29;
   flash.visible = false;
   root.add(flash);
   let flashT = 1;
 
   // Punkte-Texte (je Text einige wiederverwendbare Sprites)
-  interface Pop { sp: THREE.Sprite; t: number }
+  interface Pop {
+    sp: THREE.Sprite;
+    t: number;
+  }
   const pops: Pop[] = [];
   const popCache = new Map<string, THREE.Sprite[]>();
   const showPop = (text: string, color: string, x: number, y: number): void => {
@@ -367,7 +384,9 @@ export const createView: MiniGameViewFactory<ZielState> = (ctx, initial) => {
         const has = i < s.ammo;
         b.visible = true;
         b.scale.setScalar(has ? 1 : 0.55);
-        (b.material as THREE.MeshToonMaterial) = has ? toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.5 }) : toon(0x6b5a40);
+        (b.material as THREE.MeshToonMaterial) = has
+          ? toon(0xffd23f, { emissive: 0xffa800, emissiveIntensity: 0.5 })
+          : toon(0x6b5a40);
         b.position.y = 1.2 + (reloading ? Math.abs(Math.sin(t * 8 + i)) * 0.15 : 0);
       }
       awn.position.y = awnY + Math.sin(t * 1.5) * 0.02;

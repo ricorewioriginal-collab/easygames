@@ -1,6 +1,20 @@
 import type { Style } from './kit';
 
-export type CharacterAnim = 'idle' | 'walk' | 'run' | 'jump' | 'celebrate' | 'lose' | 'roll' | 'cheer' | 'shock' | 'dance' | 'teleportOut' | 'teleportIn' | 'win' | 'point';
+export type CharacterAnim =
+  | 'idle'
+  | 'walk'
+  | 'run'
+  | 'jump'
+  | 'celebrate'
+  | 'lose'
+  | 'roll'
+  | 'cheer'
+  | 'shock'
+  | 'dance'
+  | 'teleportOut'
+  | 'teleportIn'
+  | 'win'
+  | 'point';
 
 /**
  * Pose = Satz von Zahlen, aus dem die Gelenkgruppen gesetzt werden.
@@ -9,9 +23,32 @@ export type CharacterAnim = 'idle' | 'walk' | 'run' | 'jump' | 'celebrate' | 'lo
  *  llx/lrx > 0 = Bein nach vorn, lly/lry = Fuß anheben.
  */
 export const POSE_KEYS = [
-  'x', 'y', 'z', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz', 's',
-  'hx', 'hy', 'hz', 'alx', 'alz', 'arx', 'arz', 'llx', 'lrx', 'lly', 'lry',
-  'move', 'mouth', 'eyes', 'lid', 'glow',
+  'x',
+  'y',
+  'z',
+  'rx',
+  'ry',
+  'rz',
+  'sx',
+  'sy',
+  'sz',
+  's',
+  'hx',
+  'hy',
+  'hz',
+  'alx',
+  'alz',
+  'arx',
+  'arz',
+  'llx',
+  'lrx',
+  'lly',
+  'lry',
+  'move',
+  'mouth',
+  'eyes',
+  'lid',
+  'glow',
 ] as const;
 export type PoseKey = (typeof POSE_KEYS)[number];
 export type Pose = Record<PoseKey, number>;
@@ -298,10 +335,33 @@ function jump(p: Pose, u: number, st: Style): void {
   const H = st.jumpH;
   const a = Math.min(1, Math.max(0, (u - 0.22) / 0.58));
   p.y = H * 4 * a * (1 - a);
-  const sq = kf(u, [[0, 1], [0.16, 0.7], [0.26, 1.22], [0.55, 1.05], [0.78, 0.95], [0.85, 0.68], [0.96, 1.06], [1, 1]]);
+  const sq = kf(u, [
+    [0, 1],
+    [0.16, 0.7],
+    [0.26, 1.22],
+    [0.55, 1.05],
+    [0.78, 0.95],
+    [0.85, 0.68],
+    [0.96, 1.06],
+    [1, 1],
+  ]);
   squashY(p, 1 + (sq - 1) * st.squash * 1.2);
-  const air = kf(u, [[0, 0], [0.2, 0], [0.3, 1], [0.74, 1], [0.84, 0], [1, 0]]);
-  const crouch = kf(u, [[0, 0], [0.16, 1], [0.26, 0], [0.82, 0], [0.86, 1], [1, 0]]);
+  const air = kf(u, [
+    [0, 0],
+    [0.2, 0],
+    [0.3, 1],
+    [0.74, 1],
+    [0.84, 0],
+    [1, 0],
+  ]);
+  const crouch = kf(u, [
+    [0, 0],
+    [0.16, 1],
+    [0.26, 0],
+    [0.82, 0],
+    [0.86, 1],
+    [1, 0],
+  ]);
   p.alz = 0.2 + 2.2 * air - 0.15 * crouch;
   p.arz = p.alz;
   p.alx = -0.5 * crouch + 0.2 * air;
@@ -321,7 +381,12 @@ function celebrate(p: Pose, u: number, st: Style): void {
   const sg = sin(u * TAU);
   p.y = st.jumpH * 0.6 * s;
   squashY(p, 1 + (0.1 * cos(u * TAU * 2) - 0.1 * (1 - s)) * st.squash);
-  const env = kf(u, [[0, 0], [0.08, 1], [0.9, 1], [1, 0]]);
+  const env = kf(u, [
+    [0, 0],
+    [0.08, 1],
+    [0.9, 1],
+    [1, 0],
+  ]);
   p.alz = 2.5 * env + 0.3 * sin(u * 50) * env;
   p.arz = 2.5 * env + 0.3 * sin(u * 50 + 1) * env;
   p.hz = 0.15 * sg;
@@ -334,7 +399,12 @@ function celebrate(p: Pose, u: number, st: Style): void {
 }
 
 function cheer(p: Pose, u: number, st: Style): void {
-  const env = kf(u, [[0, 0], [0.1, 1], [0.88, 1], [1, 0]]);
+  const env = kf(u, [
+    [0, 0],
+    [0.1, 1],
+    [0.88, 1],
+    [1, 0],
+  ]);
   const ph = u * TAU * 3;
   p.y = abs(sin(ph)) * 0.1 * st.jumpH * 2 * env;
   squashY(p, 1 + 0.05 * cos(ph * 2) * st.squash);
@@ -352,25 +422,74 @@ function cheer(p: Pose, u: number, st: Style): void {
 function win(p: Pose, u: number, st: Style): void {
   const a = Math.min(1, Math.max(0, (u - 0.1) / 0.4));
   p.y = st.jumpH * 1.15 * 4 * a * (1 - a);
-  p.ry = TAU * kf(u, [[0.12, 0], [0.5, 1]]);
-  const crouch = kf(u, [[0, 0], [0.08, 1], [0.14, 0]]);
-  const land = kf(u, [[0.5, 0], [0.55, 1], [0.64, 0]]);
-  squashY(p, 1 - 0.25 * crouch * st.squash - 0.2 * land * st.squash + 0.14 * kf(u, [[0.14, 0], [0.22, 1], [0.4, 0]]) * st.squash);
-  const env = kf(u, [[0.06, 0], [0.18, 1], [0.9, 1], [1, 0]]);
-  const pump = sin(u * TAU * 5) * kf(u, [[0.55, 0], [0.65, 1], [0.9, 1], [1, 0]]);
+  p.ry =
+    TAU *
+    kf(u, [
+      [0.12, 0],
+      [0.5, 1],
+    ]);
+  const crouch = kf(u, [
+    [0, 0],
+    [0.08, 1],
+    [0.14, 0],
+  ]);
+  const land = kf(u, [
+    [0.5, 0],
+    [0.55, 1],
+    [0.64, 0],
+  ]);
+  squashY(
+    p,
+    1 -
+      0.25 * crouch * st.squash -
+      0.2 * land * st.squash +
+      0.14 *
+        kf(u, [
+          [0.14, 0],
+          [0.22, 1],
+          [0.4, 0],
+        ]) *
+        st.squash,
+  );
+  const env = kf(u, [
+    [0.06, 0],
+    [0.18, 1],
+    [0.9, 1],
+    [1, 0],
+  ]);
+  const pump =
+    sin(u * TAU * 5) *
+    kf(u, [
+      [0.55, 0],
+      [0.65, 1],
+      [0.9, 1],
+      [1, 0],
+    ]);
   p.alz = (2.3 + 0.2 * pump) * env;
   p.arz = (2.3 - 0.2 * pump) * env;
   p.alx = 0.3 * env;
   p.arx = 0.3 * env;
   p.hx = -0.3 * env;
-  p.rx = -0.1 * kf(u, [[0.5, 0], [0.7, 1], [0.9, 1], [1, 0]]);
+  p.rx =
+    -0.1 *
+    kf(u, [
+      [0.5, 0],
+      [0.7, 1],
+      [0.9, 1],
+      [1, 0],
+    ]);
   p.y += abs(pump) * 0.06;
   p.mouth = env;
   p.move = 1;
 }
 
 function lose(p: Pose, u: number, st: Style): void {
-  const env = kf(u, [[0, 0], [0.25, 1], [0.8, 1], [1, 0]]);
+  const env = kf(u, [
+    [0, 0],
+    [0.25, 1],
+    [0.8, 1],
+    [1, 0],
+  ]);
   squashY(p, 1 - 0.16 * env * st.squash - 0.04 * sin(u * 14) * env);
   p.hx = 0.6 * env;
   p.rx = 0.22 * env;
@@ -387,12 +506,34 @@ function lose(p: Pose, u: number, st: Style): void {
 }
 
 function shock(p: Pose, u: number, st: Style): void {
-  const env = kf(u, [[0, 0], [0.08, 1], [0.7, 1], [1, 0]]);
-  const jump = kf(u, [[0, 0], [0.1, 1], [0.3, 0.4], [0.42, 0]]);
+  const env = kf(u, [
+    [0, 0],
+    [0.08, 1],
+    [0.7, 1],
+    [1, 0],
+  ]);
+  const jump = kf(u, [
+    [0, 0],
+    [0.1, 1],
+    [0.3, 0.4],
+    [0.42, 0],
+  ]);
   p.y = 0.45 * st.jumpH * jump;
   p.z = -0.25 * env;
   p.x = 0.02 * sin(u * 90) * env;
-  squashY(p, 1 + (0.25 * kf(u, [[0, 0], [0.08, 1], [0.3, 0.3], [0.42, -0.5], [0.5, 0]])) * st.squash);
+  squashY(
+    p,
+    1 +
+      0.25 *
+        kf(u, [
+          [0, 0],
+          [0.08, 1],
+          [0.3, 0.3],
+          [0.42, -0.5],
+          [0.5, 0],
+        ]) *
+        st.squash,
+  );
   p.rx = -0.22 * env;
   p.alz = 1.1 * env;
   p.arz = 1.1 * env;
@@ -405,8 +546,18 @@ function shock(p: Pose, u: number, st: Style): void {
 }
 
 function roll(p: Pose, u: number, st: Style): void {
-  const wind = kf(u, [[0, 0], [0.34, 1], [0.4, 1], [0.48, 0]]);
-  const throwK = kf(u, [[0.34, 0], [0.42, 1], [0.6, 1], [0.85, 0]]);
+  const wind = kf(u, [
+    [0, 0],
+    [0.34, 1],
+    [0.4, 1],
+    [0.48, 0],
+  ]);
+  const throwK = kf(u, [
+    [0.34, 0],
+    [0.42, 1],
+    [0.6, 1],
+    [0.85, 0],
+  ]);
   p.arx = -1.5 * wind + 1.9 * throwK;
   p.arz = 0.6 * wind + 0.2 * throwK;
   p.alz = 0.9 * (wind + throwK * 0.6);
@@ -415,7 +566,14 @@ function roll(p: Pose, u: number, st: Style): void {
   p.ry = -0.45 * wind + 0.3 * throwK;
   p.hx = -0.1 * wind + 0.12 * throwK;
   squashY(p, 1 - 0.14 * wind * st.squash + 0.1 * throwK * st.squash);
-  p.y = 0.12 * st.jumpH * kf(u, [[0.38, 0], [0.5, 1], [0.66, 0]]);
+  p.y =
+    0.12 *
+    st.jumpH *
+    kf(u, [
+      [0.38, 0],
+      [0.5, 1],
+      [0.66, 0],
+    ]);
   p.llx = 0.3 * throwK;
   p.lrx = -0.3 * throwK;
   p.mouth = 0.5 * throwK;
@@ -423,7 +581,12 @@ function roll(p: Pose, u: number, st: Style): void {
 }
 
 function point(p: Pose, u: number, st: Style): void {
-  const env = kf(u, [[0, 0], [0.2, 1], [0.82, 1], [1, 0]]);
+  const env = kf(u, [
+    [0, 0],
+    [0.2, 1],
+    [0.82, 1],
+    [1, 0],
+  ]);
   p.arx = (1.5 + 0.06 * sin(u * 26)) * env;
   p.arz = 0.12 * env;
   p.alz = 0.7 * env;
@@ -476,11 +639,26 @@ function teleportIn(p: Pose, u: number): void {
   const k = Math.min(1, Math.max(0, u));
   const e = (1 - k) * (1 - k);
   // Überschwingen beim Erscheinen
-  const grow = kf(k, [[0, 0], [0.55, 1.18], [0.78, 0.94], [1, 1]]);
+  const grow = kf(k, [
+    [0, 0],
+    [0.55, 1.18],
+    [0.78, 0.94],
+    [1, 1],
+  ]);
   p.s = Math.max(0.0001, grow);
   p.ry = -TAU * 2 * e;
   p.y = 0.9 * e;
-  squashY(p, 1 + 0.9 * e - 0.2 * kf(k, [[0.6, 0], [0.7, 1], [0.85, 0]]));
+  squashY(
+    p,
+    1 +
+      0.9 * e -
+      0.2 *
+        kf(k, [
+          [0.6, 0],
+          [0.7, 1],
+          [0.85, 0],
+        ]),
+  );
   p.alz = 2.2 * (1 - k);
   p.arz = 2.2 * (1 - k);
   p.mouth = 0.6 * (1 - k);

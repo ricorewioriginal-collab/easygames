@@ -10,7 +10,13 @@ export * from './graph';
 export * from './validate';
 
 /** Alle 50 Layouts (5 Welten × 10) */
-export const LAYOUTS: readonly Layout[] = [...LAYOUTS_PRISMARA, ...LAYOUTS_NOVA_NEXUS, ...LAYOUTS_WURZELWILD, ...LAYOUTS_PARADOX_CITY, ...LAYOUTS_INFINITY_CARNIVAL];
+export const LAYOUTS: readonly Layout[] = [
+  ...LAYOUTS_PRISMARA,
+  ...LAYOUTS_NOVA_NEXUS,
+  ...LAYOUTS_WURZELWILD,
+  ...LAYOUTS_PARADOX_CITY,
+  ...LAYOUTS_INFINITY_CARNIVAL,
+];
 export function getLayout(id: string): Layout {
   const l = LAYOUTS.find((x) => x.id === id);
   if (!l) throw new Error('Unbekanntes Layout: ' + id);

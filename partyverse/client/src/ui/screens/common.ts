@@ -4,7 +4,12 @@ import './screens.css';
 
 /** Kopfzeile mit Titel und Zurück-Schaltfläche (Standard: Hauptmenü) */
 export function header(app: App, params: RouteParams | undefined, title: string): HTMLElement {
-  return h('div', { class: 'head' }, btn('← Zurück', () => void app.go(params?.back ?? 'menu'), 'ghost back'), h('h2', null, title));
+  return h(
+    'div',
+    { class: 'head' },
+    btn('← Zurück', () => void app.go(params?.back ?? 'menu'), 'ghost back'),
+    h('h2', null, title),
+  );
 }
 
 export function section(title: string, ...children: Array<Node | string | null>): HTMLElement {

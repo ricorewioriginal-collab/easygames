@@ -27,7 +27,11 @@ export const createView: MiniGameViewFactory<TippState> = (ctx) => {
   root.add(tufts);
   // Bäume (Mittelgrund)
   const TREES = 12;
-  const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.18, 0.25, 1.2, 6), toon(0x8a5a2b), TREES);
+  const trunks = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.18, 0.25, 1.2, 6),
+    toon(0x8a5a2b),
+    TREES,
+  );
   const crowns = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 12, 10), toon(0x2fa05a), TREES);
   root.add(trunks, crowns);
   // Berge (Hintergrund)
@@ -190,7 +194,12 @@ export const createView: MiniGameViewFactory<TippState> = (ctx) => {
   const WS = 26;
   const wind = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.14, 0.14), glow(0xffffff, 0.9), WS);
   root.add(wind);
-  const windSeed = Array.from({ length: WS }, (_, i) => ({ y: 0.4 + ((i * 37) % 60) / 10, z: -1 + ((i * 53) % 30) / 10, off: ((i * 29) % 100) / 100, sp: 0.8 + ((i * 17) % 10) / 20 }));
+  const windSeed = Array.from({ length: WS }, (_, i) => ({
+    y: 0.4 + ((i * 37) % 60) / 10,
+    z: -1 + ((i * 53) % 30) / 10,
+    off: ((i * 29) % 100) / 100,
+    sp: 0.8 + ((i * 17) % 10) / 20,
+  }));
   // Schutzschild beim Halten
   const shield = new THREE.Mesh(new THREE.SphereGeometry(2.0, 20, 14), glow(0x7dffd8, 0.18));
   shield.position.set(-3.3, 1.5, 0.2);
@@ -307,7 +316,9 @@ export const createView: MiniGameViewFactory<TippState> = (ctx) => {
       rockGroup.position.x = 0.6 + (gust && !s.bracing ? -0.3 : 0);
       rockShadow.position.x = rockGroup.position.x;
       const strain = s.power / 100;
-      rEyes.forEach((e) => e.scale.set(1, Math.max(0.2, 1 - (gust ? 0 : 0.0) - Math.sin(t * 0.7) * 0.0 + strain * 0.2), 0.5));
+      rEyes.forEach((e) =>
+        e.scale.set(1, Math.max(0.2, 1 - (gust ? 0 : 0.0) - Math.sin(t * 0.7) * 0.0 + strain * 0.2), 0.5),
+      );
       rMouth.rotation.z = s.power > 25 ? 0 : Math.PI;
       rMouth.scale.setScalar(0.6 + strain * 0.8);
 

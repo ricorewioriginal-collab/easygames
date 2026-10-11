@@ -11,7 +11,16 @@ export class SlotState extends Schema {
   connected = true;
   host = false;
 }
-defineTypes(SlotState, { id: 'string', name: 'string', character: 'string', kind: 'string', difficulty: 'string', ready: 'boolean', connected: 'boolean', host: 'boolean' });
+defineTypes(SlotState, {
+  id: 'string',
+  name: 'string',
+  character: 'string',
+  kind: 'string',
+  difficulty: 'string',
+  ready: 'boolean',
+  connected: 'boolean',
+  host: 'boolean',
+});
 
 export class LobbyState extends Schema {
   /** 'lobby' | 'playing' | 'ended' */
@@ -21,4 +30,10 @@ export class LobbyState extends Schema {
   rounds = 12;
   slots = new MapSchema<SlotState>();
 }
-defineTypes(LobbyState, { phase: 'string', code: 'string', layoutId: 'string', rounds: 'number', slots: { map: SlotState } });
+defineTypes(LobbyState, {
+  phase: 'string',
+  code: 'string',
+  layoutId: 'string',
+  rounds: 'number',
+  slots: { map: SlotState },
+});

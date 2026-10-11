@@ -54,7 +54,10 @@ export const tileIndex = (x: number, y: number): number => {
   const cy = clamp(Math.floor((y + HALF) / TILE), 0, GRID - 1);
   return cy * GRID + cx;
 };
-export const tileCenter = (i: number): { x: number; y: number } => ({ x: (i % GRID) * TILE - HALF + TILE / 2, y: Math.floor(i / GRID) * TILE - HALF + TILE / 2 });
+export const tileCenter = (i: number): { x: number; y: number } => ({
+  x: (i % GRID) * TILE - HALF + TILE / 2,
+  y: Math.floor(i / GRID) * TILE - HALF + TILE / 2,
+});
 
 const warnLength = (round: number): number => Math.round(lerp(200, 84, clamp(round / 8, 0, 1)));
 
@@ -227,13 +230,31 @@ export const game: MiniGame<FarbState> = {
     const d = Math.hypot(dx, dy);
     if (d < lerp(0.9, 0.35, skill)) return { ...NEUTRAL_INPUT };
     const needTicks = (d / SPEED) * 1.05 + 5;
-    const dash = skill > 0.3 && d > 2.8 && needTicks > s.timer && s.dashCd === 0 && s.dash === 0 && !s.prevA && Math.abs(dx / d - s.fx) + Math.abs(dy / d - s.fy) < 0.6;
+    const dash =
+      skill > 0.3 &&
+      d > 2.8 &&
+      needTicks > s.timer &&
+      s.dashCd === 0 &&
+      s.dash === 0 &&
+      !s.prevA &&
+      Math.abs(dx / d - s.fx) + Math.abs(dy / d - s.fy) < 0.6;
     const jitter = (1 - skill) * 0.25;
-    return { ...NEUTRAL_INPUT, x: clamp(dx / d + rng.float(-jitter, jitter), -1, 1), y: clamp(dy / d + rng.float(-jitter, jitter), -1, 1), a: dash };
+    return {
+      ...NEUTRAL_INPUT,
+      x: clamp(dx / d + rng.float(-jitter, jitter), -1, 1),
+      y: clamp(dy / d + rng.float(-jitter, jitter), -1, 1),
+      a: dash,
+    };
   },
   hud: (s) => ({
     left: `Runde ${s.round + 1}`,
     right: `${score(s)} Pkt`,
-    hint: s.dead ? 'Abgestürzt!' : s.phase === 'warn' ? `Ziel: ${COLOR_NAMES[s.target]}` : s.phase === 'drop' ? 'Geschafft!' : undefined,
+    hint: s.dead
+      ? 'Abgestürzt!'
+      : s.phase === 'warn'
+        ? `Ziel: ${COLOR_NAMES[s.target]}`
+        : s.phase === 'drop'
+          ? 'Geschafft!'
+          : undefined,
   }),
 };

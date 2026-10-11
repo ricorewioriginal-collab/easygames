@@ -42,7 +42,10 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
     pad.position.set(LANE_X[i] as number, -0.02, 0);
     root.add(pad);
     pads.push(pad);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.07, 8, 32), glow(LANE_COLORS[i] as number, 0.95));
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.85, 0.07, 8, 32),
+      glow(LANE_COLORS[i] as number, 0.95),
+    );
     ring.rotation.x = Math.PI / 2;
     ring.position.set(LANE_X[i] as number, 0.2, 0);
     root.add(ring);
@@ -67,7 +70,8 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
   const eqGeo = new THREE.BoxGeometry(1, 1, 1);
   const eq = new THREE.InstancedMesh(eqGeo, toon(0xffffff), EQ * 2);
   root.add(eq);
-  for (let i = 0; i < EQ * 2; i++) eq.setColorAt(i, col.setHex([0xff4d8d, 0x39d6ff, 0xffd23f, 0x7dff8a][i % 4] as number));
+  for (let i = 0; i < EQ * 2; i++)
+    eq.setColorAt(i, col.setHex([0xff4d8d, 0x39d6ff, 0xffd23f, 0x7dff8a][i % 4] as number));
 
   // DJ-Blob am Horizont
   const dj = new THREE.Group();
@@ -127,7 +131,12 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
     root.add(sp);
   }
   const multSprites = [1, 2, 3, 4].map((m) => {
-    const sp = textSprite(`x${m}`, { color: '#ffffff', bg: m === 1 ? '#3b3189' : '#ff4d8d', size: 56, width: 1.5 });
+    const sp = textSprite(`x${m}`, {
+      color: '#ffffff',
+      bg: m === 1 ? '#3b3189' : '#ff4d8d',
+      size: 56,
+      width: 1.5,
+    });
     sp.material.fog = false;
     sp.position.set(4.3, 1.4, -1);
     sp.visible = m === 1;
@@ -148,7 +157,8 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
 
   const placeCamera = () => {
     lastAspect = camera.aspect;
-    if (camera.aspect < 1) camera.position.set(0, 8.2 + (1 - camera.aspect) * 3, 10.5 + (1 - camera.aspect) * 4);
+    if (camera.aspect < 1)
+      camera.position.set(0, 8.2 + (1 - camera.aspect) * 3, 10.5 + (1 - camera.aspect) * 4);
     else camera.position.set(0, 5.2, 7.2);
     camera.lookAt(0, 0, -5.5);
   };
@@ -225,9 +235,13 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
         const vis = k === judgeKey && judgeAge < 0.7;
         sp.visible = vis;
         if (vis) {
-          sp.position.set(LANE_X[s.judgeLane] as number * 0.6, 1.6 + judgeAge * 1.4, 0.4);
+          sp.position.set((LANE_X[s.judgeLane] as number) * 0.6, 1.6 + judgeAge * 1.4, 0.4);
           const sc = 1 + Math.sin(Math.min(1, judgeAge * 5) * Math.PI) * 0.2;
-          sp.scale.set(((k === 'perfect' ? 3.6 : k === 'good' ? 2.0 : 3.0) * sc), 0.5 * sc * (k === 'perfect' ? 1.1 : 1), 1);
+          sp.scale.set(
+            (k === 'perfect' ? 3.6 : k === 'good' ? 2.0 : 3.0) * sc,
+            0.5 * sc * (k === 'perfect' ? 1.1 : 1),
+            1,
+          );
           (sp.material as THREE.SpriteMaterial).opacity = Math.min(1, (0.7 - judgeAge) * 4);
         }
       }
@@ -254,7 +268,8 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
       for (let i = 0; i < EQ * 2; i++) {
         const side = i < EQ ? -1 : 1;
         const k = i % EQ;
-        const h = 1.2 + (0.5 + 0.5 * Math.sin(beat * 6.283 * 0.5 * (1 + (k % 3)) + k * 1.3)) * 3.2 + pulse * 1.2;
+        const h =
+          1.2 + (0.5 + 0.5 * Math.sin(beat * 6.283 * 0.5 * (1 + (k % 3)) + k * 1.3)) * 3.2 + pulse * 1.2;
         tmp.position.set(side * (6 + k * 1.3), h / 2 - 0.4, -6 - k * 2.6);
         tmp.scale.set(0.9, h, 0.9);
         tmp.rotation.set(0, 0, 0);

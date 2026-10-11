@@ -23,7 +23,30 @@ import { game as g20 } from './games/spuernase';
 import { game as g21 } from './games/bruecke';
 
 /** Alle Minispiele in fester Reihenfolge */
-export const MINIGAMES: readonly MiniGame[] = [g0, g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16, g17, g18, g19, g20, g21];
+export const MINIGAMES: readonly MiniGame[] = [
+  g0,
+  g1,
+  g2,
+  g3,
+  g4,
+  g5,
+  g6,
+  g7,
+  g8,
+  g9,
+  g10,
+  g11,
+  g12,
+  g13,
+  g14,
+  g15,
+  g16,
+  g17,
+  g18,
+  g19,
+  g20,
+  g21,
+];
 export const MINIGAME_IDS: readonly string[] = MINIGAMES.map((g) => g.id);
 export function getMiniGame(id: string): MiniGame {
   const g = MINIGAMES.find((m) => m.id === id);

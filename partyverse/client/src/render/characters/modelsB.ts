@@ -1,5 +1,23 @@
 import * as THREE from 'three';
-import { Face, G, darken, eyePair, fitModel, grp, lighten, makeEye, makeGlowEye, makeMouth, mixColor, mk, shellGeo, starGeo, type Env, type Parts, type Style } from './kit';
+import {
+  Face,
+  G,
+  darken,
+  eyePair,
+  fitModel,
+  grp,
+  lighten,
+  makeEye,
+  makeGlowEye,
+  makeMouth,
+  mixColor,
+  mk,
+  shellGeo,
+  starGeo,
+  type Env,
+  type Parts,
+  type Style,
+} from './kit';
 
 const sin = Math.sin;
 
@@ -65,10 +83,32 @@ export function buildMokka(env: Env): Parts {
   const armR = mkArm(-1);
 
   const hatAnchor = grp(head, 0, 0.4, -0.02);
-  const style: Style = { gait: 'waddle', idle: 'sniff', walkF: 1.35, runMul: 1.5, jumpH: 0.7, squash: 0.9, arms: 1, dance: { bounce: 0.9, sway: 1.3, spin: 1, speed: 0.95 } };
+  const style: Style = {
+    gait: 'waddle',
+    idle: 'sniff',
+    walkF: 1.35,
+    runMul: 1.5,
+    jumpH: 0.7,
+    squash: 0.9,
+    arms: 1,
+    dance: { bounce: 0.9, sway: 1.3, spin: 1, speed: 0.95 },
+  };
   const k = fitModel(model, 1.65, true);
   return {
-    model, head, armL, armR, legL, legR, face, hatAnchor, hatScale: 0.85, headY: HY * k, shadow: 0.8, height: 1.65, ground: true, style,
+    model,
+    head,
+    armL,
+    armR,
+    legL,
+    legR,
+    face,
+    hatAnchor,
+    hatScale: 0.85,
+    headY: HY * k,
+    shadow: 0.8,
+    height: 1.65,
+    ground: true,
+    style,
     extra(c) {
       const mv = c.pose.move ?? 0;
       cog.rotation.z += c.dt * (0.8 + mv * 2.5);
@@ -87,7 +127,17 @@ export function buildQuirl(env: Env): Parts {
   mk(model, G.sph(0.5, 18, 10), fleshDark, 0, 0.14, 0.05, 0.9, 0.24, 1.35);
   const neck = mk(model, G.cap(0.27, 0.6, 5), flesh, 0, 0.75, 0.08);
   neck.rotation.x = -0.12;
-  const shell = mk(model, shellGeo(mixColor(secondary, secondary, 0), mixColor(primary, 0xffffff, 0.15)), env.vertex(), 0, 1.0, -0.5, 1.45, 1.45, 1.45);
+  const shell = mk(
+    model,
+    shellGeo(mixColor(secondary, secondary, 0), mixColor(primary, 0xffffff, 0.15)),
+    env.vertex(),
+    0,
+    1.0,
+    -0.5,
+    1.45,
+    1.45,
+    1.45,
+  );
   shell.rotation.set(0.1, Math.PI / 2, 0);
 
   const HY = 1.4;
@@ -99,7 +149,13 @@ export function buildQuirl(env: Env): Parts {
     const st = grp(head, 0.17 * s, 0.1, 0.28);
     st.rotation.set(1.0, 0, -s * 0.28);
     mk(st, G.cyl(0.035, 0.045, 0.34, 6), flesh, 0, 0.17, 0);
-    const e = makeEye(env, st, 0, 0.38, 0.0, 0.14, { white: '#ffffff', pupil: '#241b3a', pr: 0.6, py: 0.0, flat: 1.0 });
+    const e = makeEye(env, st, 0, 0.38, 0.0, 0.14, {
+      white: '#ffffff',
+      pupil: '#241b3a',
+      pr: 0.6,
+      py: 0.0,
+      flat: 1.0,
+    });
     e.g.rotation.x = -1.0;
     e.g.position.set(0, 0.38, 0.0);
     face.eyes.push(e);
@@ -131,10 +187,33 @@ export function buildQuirl(env: Env): Parts {
   const armR = mkArm(-1);
 
   const hatAnchor = grp(head, 0, 0.33, -0.02);
-  const style: Style = { gait: 'slither', idle: 'sway', walkF: 1.1, runMul: 1.6, jumpH: 0.8, squash: 1.1, arms: 1, dance: { bounce: 0.8, sway: 1.5, spin: 2, speed: 0.9 } };
+  const style: Style = {
+    gait: 'slither',
+    idle: 'sway',
+    walkF: 1.1,
+    runMul: 1.6,
+    jumpH: 0.8,
+    squash: 1.1,
+    arms: 1,
+    dance: { bounce: 0.8, sway: 1.5, spin: 2, speed: 0.9 },
+  };
   const k = fitModel(model, 2.0, true);
   return {
-    model, head, armL, armR, legL: null, legR: null, face, hatAnchor, hatScale: 0.9, hatHide: [witch], headY: HY * k, shadow: 0.85, height: 2.0, ground: true, style,
+    model,
+    head,
+    armL,
+    armR,
+    legL: null,
+    legR: null,
+    face,
+    hatAnchor,
+    hatScale: 0.9,
+    hatHide: [witch],
+    headY: HY * k,
+    shadow: 0.85,
+    height: 2.0,
+    ground: true,
+    style,
     extra(c) {
       stalks.forEach((s, i) => {
         const sg = i === 0 ? 1 : -1;
@@ -186,7 +265,12 @@ export function buildFlora(env: Env): Parts {
     petals.push(g);
   }
   const face = new Face();
-  eyePair(env, face, head, 0.135, 0.06, 0.23, 0.07, { white: '#ffffff', pupil: '#241b3a', pr: 0.62, py: 0.0 });
+  eyePair(env, face, head, 0.135, 0.06, 0.23, 0.07, {
+    white: '#ffffff',
+    pupil: '#241b3a',
+    pr: 0.62,
+    py: 0.0,
+  });
   face.setMouth(makeMouth(env, head, 0, -0.1, 0.245, 0.08, 0.035), 0.5);
   const blush = env.m('#ff8fb1');
   for (const s of [1, -1]) mk(head, G.sph(0.06, 8, 6), blush, 0.23 * s, -0.04, 0.2, 1, 0.7, 0.4);
@@ -202,10 +286,32 @@ export function buildFlora(env: Env): Parts {
   const pollen = [0, 1, 2].map(() => mk(model, G.sph(0.045, 6, 5), env.glow('#fff3a0'), 0, 2, 0));
 
   const hatAnchor = grp(head, 0, 0.58, 0.0);
-  const style: Style = { gait: 'skip', idle: 'sway', walkF: 1.55, runMul: 1.4, jumpH: 1.0, squash: 0.9, arms: 1, dance: { bounce: 1.2, sway: 1.4, spin: 1.5, speed: 1.0 } };
+  const style: Style = {
+    gait: 'skip',
+    idle: 'sway',
+    walkF: 1.55,
+    runMul: 1.4,
+    jumpH: 1.0,
+    squash: 0.9,
+    arms: 1,
+    dance: { bounce: 1.2, sway: 1.4, spin: 1.5, speed: 1.0 },
+  };
   const k = fitModel(model, 1.9, true);
   return {
-    model, head, armL, armR, legL, legR, face, hatAnchor, hatScale: 0.68, headY: HY * k, shadow: 0.7, height: 1.9, ground: true, style,
+    model,
+    head,
+    armL,
+    armR,
+    legL,
+    legR,
+    face,
+    hatAnchor,
+    hatScale: 0.68,
+    headY: HY * k,
+    shadow: 0.7,
+    height: 1.9,
+    ground: true,
+    style,
     extra(c) {
       const open = Math.max(0, c.pose.mouth ?? 0);
       petals.forEach((p, i) => {
@@ -234,7 +340,13 @@ export function buildVex(env: Env): Parts {
   for (const x of [-0.17, 0.17])
     for (const y of [0.22, 0, -0.22]) face.eyes.push(makeGlowEye(head, dotMat, x, y, 0.5, 0.075));
   const pipMat = env.m('#3a4047');
-  const pips: Array<[number, number, number]> = [[1, -0.2, 0.2], [1, 0, 0], [1, 0.2, -0.2], [-1, -0.18, 0.18], [-1, 0.18, -0.18]];
+  const pips: Array<[number, number, number]> = [
+    [1, -0.2, 0.2],
+    [1, 0, 0],
+    [1, 0.2, -0.2],
+    [-1, -0.18, 0.18],
+    [-1, 0.18, -0.18],
+  ];
   for (const [s, z, y] of pips) mk(head, G.sph(0.065, 8, 6), pipMat, 0.47 * s, y, z, 0.35, 1, 1);
   const halo = mk(head, G.tor(0.62, 0.03, 6, 36), env.glow(accent, 0.9), 0, -0.62, 0);
   halo.rotation.x = Math.PI / 2 + 0.12;
@@ -242,7 +354,9 @@ export function buildVex(env: Env): Parts {
   const cubes: THREE.Mesh[] = [];
   const cubeSizes = [0.4, 0.29, 0.2];
   const cubeMats = [env.m(secondary), env.m(darken(primary, 0.35)), env.glow(accent)];
-  cubeSizes.forEach((sz, i) => cubes.push(mk(model, G.rbox(sz, sz, sz, sz * 0.18, 2), cubeMats[i], 0, [0.56, 0.33, 0.17][i], -0.03)));
+  cubeSizes.forEach((sz, i) =>
+    cubes.push(mk(model, G.rbox(sz, sz, sz, sz * 0.18, 2), cubeMats[i], 0, [0.56, 0.33, 0.17][i], -0.03)),
+  );
 
   const mkHand = (s: number): THREE.Group => {
     const a = grp(model, 0.16 * s, 1.0, 0);
@@ -258,10 +372,32 @@ export function buildVex(env: Env): Parts {
   const dust = [0, 1, 2].map(() => mk(model, G.box(0.07, 0.07, 0.07), env.glow(accent), 0, 1, 0));
 
   const hatAnchor = grp(head, 0, 0.45, 0);
-  const style: Style = { gait: 'float', idle: 'hover', walkF: 1.0, runMul: 1.6, jumpH: 0.65, squash: 0.15, arms: 1, dance: { bounce: 0.8, sway: 0.9, spin: 1.2, speed: 1.0 } };
+  const style: Style = {
+    gait: 'float',
+    idle: 'hover',
+    walkF: 1.0,
+    runMul: 1.6,
+    jumpH: 0.65,
+    squash: 0.15,
+    arms: 1,
+    dance: { bounce: 0.8, sway: 0.9, spin: 1.2, speed: 1.0 },
+  };
   const k = fitModel(model, 1.8, false);
   return {
-    model, head, armL, armR, legL: null, legR: null, face, hatAnchor, hatScale: 0.95, headY: HY * k, shadow: 0.62, height: 1.8, ground: false, style,
+    model,
+    head,
+    armL,
+    armR,
+    legL: null,
+    legR: null,
+    face,
+    hatAnchor,
+    hatScale: 0.95,
+    headY: HY * k,
+    shadow: 0.62,
+    height: 1.8,
+    ground: false,
+    style,
     extra(c) {
       const mv = c.pose.move ?? 0;
       halo.rotation.z += c.dt * (1.2 + mv);

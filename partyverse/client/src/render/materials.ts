@@ -4,7 +4,9 @@ import * as THREE from 'three';
 let gradient: THREE.DataTexture | null = null;
 function gradientMap(): THREE.DataTexture {
   if (!gradient) {
-    const data = new Uint8Array([70, 70, 70, 255, 150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255]);
+    const data = new Uint8Array([
+      70, 70, 70, 255, 150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255,
+    ]);
     gradient = new THREE.DataTexture(data, 4, 1, THREE.RGBAFormat);
     gradient.minFilter = gradient.magFilter = THREE.NearestFilter;
     gradient.needsUpdate = true;
@@ -16,11 +18,20 @@ function gradientMap(): THREE.DataTexture {
 const cache = new Map<string, THREE.Material>();
 
 /** Toon-Material in einer Farbe (zwischengespeichert, wird beim Aufräumen NICHT freigegeben). */
-export function toon(color: number | string, opts: { emissive?: number; emissiveIntensity?: number } = {}): THREE.MeshToonMaterial {
+export function toon(
+  color: number | string,
+  opts: { emissive?: number; emissiveIntensity?: number } = {},
+): THREE.MeshToonMaterial {
   const key = `${new THREE.Color(color).getHexString()}|${opts.emissive ?? ''}|${opts.emissiveIntensity ?? ''}`;
   let m = cache.get(key) as THREE.MeshToonMaterial | undefined;
   if (!m) {
-    m = new THREE.MeshToonMaterial({ color, gradientMap: gradientMap(), ...(opts.emissive !== undefined ? { emissive: opts.emissive, emissiveIntensity: opts.emissiveIntensity ?? 1 } : {}) });
+    m = new THREE.MeshToonMaterial({
+      color,
+      gradientMap: gradientMap(),
+      ...(opts.emissive !== undefined
+        ? { emissive: opts.emissive, emissiveIntensity: opts.emissiveIntensity ?? 1 }
+        : {}),
+    });
     m.userData.shared = true;
     cache.set(key, m);
   }
@@ -54,7 +65,10 @@ export function disposeTree(root: THREE.Object3D): void {
 }
 
 /** Text als Sprite (für Beschriftungen, Zahlen, Namensschilder) */
-export function textSprite(text: string, opts: { color?: string; bg?: string; size?: number; width?: number } = {}): THREE.Sprite {
+export function textSprite(
+  text: string,
+  opts: { color?: string; bg?: string; size?: number; width?: number } = {},
+): THREE.Sprite {
   const size = opts.size ?? 64;
   const c = document.createElement('canvas');
   const g = c.getContext('2d') as CanvasRenderingContext2D;
@@ -77,7 +91,7 @@ export function textSprite(text: string, opts: { color?: string; bg?: string; si
   const tex = new THREE.CanvasTexture(c);
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
   const h = opts.width ? (opts.width * c.height) / c.width : 1;
-  sp.scale.set(opts.width ?? (c.width / c.height), h, 1);
+  sp.scale.set(opts.width ?? c.width / c.height, h, 1);
   sp.renderOrder = 20;
   return sp;
 }

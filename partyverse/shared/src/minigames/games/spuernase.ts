@@ -64,7 +64,10 @@ export const parTicks = (n: number): number => Math.round(60 * (2 + 0.6 * n));
 export function cellCenter(n: number, idx: number): { px: number; py: number } {
   const c = idx % n;
   const r = Math.floor(idx / n);
-  return { px: BOARD.x0 + ((c + 0.5) / n) * (BOARD.x1 - BOARD.x0), py: BOARD.y1 - ((r + 0.5) / n) * (BOARD.y1 - BOARD.y0) };
+  return {
+    px: BOARD.x0 + ((c + 0.5) / n) * (BOARD.x1 - BOARD.x0),
+    py: BOARD.y1 - ((r + 0.5) / n) * (BOARD.y1 - BOARD.y0),
+  };
 }
 
 /** Zelle unter einem Zeigerpunkt, -1 = außerhalb der Tafel */
@@ -114,15 +117,40 @@ export const game: MiniGame<SpuerState> = {
     'Ein falscher Treffer kostet Zeit. Schnelle Funde geben Bonuspunkte.',
     'Mit jedem Fund wird das Raster größer.',
   ],
-  controls: { desktop: 'Mausklick auf das Symbol – oder Pfeiltasten/WASD bewegen den Cursor, Leertaste wählt', touch: 'Das abweichende Symbol antippen' },
+  controls: {
+    desktop: 'Mausklick auf das Symbol – oder Pfeiltasten/WASD bewegen den Cursor, Leertaste wählt',
+    touch: 'Das abweichende Symbol antippen',
+  },
   category: 'puzzle',
   duration: 30,
   usesPointer: true,
   touch: { stick: false, a: false, b: false },
   init(seed) {
     const s: SpuerState = {
-      rnd: new Rng(seed), n: 3, cells: [], oddIdx: 0, oddKind: 'shape', found: 0, wrong: 0, total: 0, clock: 0, roundTicks: 0, curC: 1, curR: 1,
-      useCursor: false, lock: 0, prevPd: false, prevA: false, moveDirX: 0, moveDirY: 0, moveHold: 0, okSeq: 0, badSeq: 0, lastCell: -1, lastBonus: 0, seed,
+      rnd: new Rng(seed),
+      n: 3,
+      cells: [],
+      oddIdx: 0,
+      oddKind: 'shape',
+      found: 0,
+      wrong: 0,
+      total: 0,
+      clock: 0,
+      roundTicks: 0,
+      curC: 1,
+      curR: 1,
+      useCursor: false,
+      lock: 0,
+      prevPd: false,
+      prevA: false,
+      moveDirX: 0,
+      moveDirY: 0,
+      moveHold: 0,
+      okSeq: 0,
+      badSeq: 0,
+      lastCell: -1,
+      lastBonus: 0,
+      seed,
     };
     newRound(s);
     return s;

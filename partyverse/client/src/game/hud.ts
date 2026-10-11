@@ -15,7 +15,10 @@ export interface Shown {
 export class Hud {
   readonly el = h('div', { class: 'hud' });
   private sb = h('div', { class: 'sb', 'aria-label': t('hud.scores') });
-  private cards = new Map<string, { el: HTMLElement; coins: HTMLElement; shards: HTMLElement; items: HTMLElement }>();
+  private cards = new Map<
+    string,
+    { el: HTMLElement; coins: HTMLElement; shards: HTMLElement; items: HTMLElement }
+  >();
   private round = h('div', { class: 'round' });
   private banner = h('div', { class: 'banner', 'aria-live': 'polite' });
   private actions = h('div', { class: 'actions' });
@@ -34,12 +37,30 @@ export class Hud {
       const coins = h('span', { class: 'coins' });
       const shards = h('span', { class: 'shards' });
       const items = h('span', { class: 'items' });
-      const el = h('div', { class: `pcard pc${(i % 4) + 1}` }, h('span', { class: 'sym' }, PLAYER_SYMBOLS[i % 4]), h('b', { class: 'nm' }, p.kind === 'bot' ? '🤖 ' + p.name : p.name), coins, shards, items);
+      const el = h(
+        'div',
+        { class: `pcard pc${(i % 4) + 1}` },
+        h('span', { class: 'sym' }, PLAYER_SYMBOLS[i % 4]),
+        h('b', { class: 'nm' }, p.kind === 'bot' ? '🤖 ' + p.name : p.name),
+        coins,
+        shards,
+        items,
+      );
       this.cards.set(p.id, { el, coins, shards, items });
       this.sb.appendChild(el);
     });
     this.menuBtn = btn('☰', onMenu, 'ghost menubtn', { 'aria-label': t('pause.title') });
-    this.el.append(this.sb, this.round, this.menuBtn, this.banner, this.ticker, this.floats, this.bigDice, this.actions, this.dialog);
+    this.el.append(
+      this.sb,
+      this.round,
+      this.menuBtn,
+      this.banner,
+      this.ticker,
+      this.floats,
+      this.bigDice,
+      this.actions,
+      this.dialog,
+    );
   }
 
   setScores(shown: Record<string, Shown>, current: string | null): void {
@@ -53,7 +74,9 @@ export class Hud {
     }
   }
   setRound(round: number, rounds: number, phase: number, phases: number): void {
-    this.round.textContent = t('hud.round', { round, rounds }) + (phases > 1 ? ' · ' + t('hud.fold', { phase: phase + 1, phases }) : '');
+    this.round.textContent =
+      t('hud.round', { round, rounds }) +
+      (phases > 1 ? ' · ' + t('hud.fold', { phase: phase + 1, phases }) : '');
   }
   setBanner(text: string | null): void {
     this.banner.textContent = text ?? '';
@@ -91,7 +114,9 @@ export class Hud {
   /** Dialog in der Mitte (Laden, Maut, Altar …) */
   showDialog(title: string, ...body: Array<Node | null>): void {
     clear(this.dialog);
-    this.dialog.appendChild(h('div', { class: 'dialog panel', role: 'dialog', 'aria-label': title }, h('h2', null, title), ...body));
+    this.dialog.appendChild(
+      h('div', { class: 'dialog panel', role: 'dialog', 'aria-label': title }, h('h2', null, title), ...body),
+    );
     this.dialog.classList.add('on');
   }
   hideDialog(): void {

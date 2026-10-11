@@ -13,7 +13,13 @@ function starGeometry(outer: number, inner: number, depth: number): THREE.Extrud
     else sh.lineTo(Math.cos(a) * r, Math.sin(a) * r);
   }
   sh.closePath();
-  const g = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 1 });
+  const g = new THREE.ExtrudeGeometry(sh, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: 0.05,
+    bevelSize: 0.05,
+    bevelSegments: 1,
+  });
   g.translate(0, 0, -depth / 2);
   return g;
 }
@@ -34,11 +40,18 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
   for (let i = 0; i < 6; i++) {
     const w = new THREE.Mesh(wavesGeo, glow(0xffffff, 0.35));
     w.rotation.x = -Math.PI / 2;
-    w.position.set(-ARENA_X - 3 + (i % 3) * (ARENA_X + 3), -1.55, -ARENA_Y - 2.5 + Math.floor(i / 3) * (ARENA_Y * 2 + 5));
+    w.position.set(
+      -ARENA_X - 3 + (i % 3) * (ARENA_X + 3),
+      -1.55,
+      -ARENA_Y - 2.5 + Math.floor(i / 3) * (ARENA_Y * 2 + 5),
+    );
     root.add(w);
     waves.push(w);
   }
-  const floeBase = new THREE.Mesh(new THREE.BoxGeometry(ARENA_X * 2 + 1.2, 2.2, ARENA_Y * 2 + 1.2), toon(0x8ed3f0));
+  const floeBase = new THREE.Mesh(
+    new THREE.BoxGeometry(ARENA_X * 2 + 1.2, 2.2, ARENA_Y * 2 + 1.2),
+    toon(0x8ed3f0),
+  );
   floeBase.position.y = -1.15;
   root.add(floeBase);
   const ice = new THREE.Mesh(new THREE.BoxGeometry(ARENA_X * 2, 0.3, ARENA_Y * 2), toon(0xdaf7ff));
@@ -46,7 +59,10 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
   root.add(ice);
   // Eis-Glanzstreifen
   for (let i = 0; i < 7; i++) {
-    const st = new THREE.Mesh(new THREE.PlaneGeometry(0.35 + (i % 3) * 0.2, 5 + (i % 4)), glow(0xffffff, 0.35));
+    const st = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.35 + (i % 3) * 0.2, 5 + (i % 4)),
+      glow(0xffffff, 0.35),
+    );
     st.rotation.x = -Math.PI / 2;
     st.rotation.z = 0.7;
     st.position.set(-ARENA_X + 2 + i * 2.4, 0.01, ((i * 5) % 7) - 3);
@@ -68,7 +84,7 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
     const side = i % 4;
     const k = Math.floor(i / 4);
     const b = new THREE.Mesh(new THREE.SphereGeometry(0.34 + (i % 3) * 0.08, 10, 8), bankMat);
-    const x = side < 2 ? -ARENA_X + 0.6 + k * 2.6 : (side === 2 ? -ARENA_X - 0.3 : ARENA_X + 0.3);
+    const x = side < 2 ? -ARENA_X + 0.6 + k * 2.6 : side === 2 ? -ARENA_X - 0.3 : ARENA_X + 0.3;
     const z = side < 2 ? (side === 0 ? -ARENA_Y - 0.3 : ARENA_Y + 0.3) : -ARENA_Y + 0.6 + k * 1.9;
     b.position.set(x, 0.5, z);
     root.add(b);
@@ -94,7 +110,10 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
   }
   const snowGeo = new THREE.BufferGeometry();
   snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos, 3));
-  const snow = new THREE.Points(snowGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 3, sizeAttenuation: false, fog: false }));
+  const snow = new THREE.Points(
+    snowGeo,
+    new THREE.PointsMaterial({ color: 0xffffff, size: 3, sizeAttenuation: false, fog: false }),
+  );
   root.add(snow);
 
   // --- Löcher -----------------------------------------------------------------
@@ -125,14 +144,20 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
     const chips = Math.round(h.r * 9);
     for (let k = 0; k < chips; k++) {
       const a = (k / chips) * Math.PI * 2 + hi;
-      const c = new THREE.Mesh(new THREE.ConeGeometry(0.12 + (k % 3) * 0.04, 0.3 + (k % 2) * 0.12, 4), toon(0xf4fdff));
+      const c = new THREE.Mesh(
+        new THREE.ConeGeometry(0.12 + (k % 3) * 0.04, 0.3 + (k % 2) * 0.12, 4),
+        toon(0xf4fdff),
+      );
       c.position.set(Math.cos(a) * (h.r + 0.1), 0.2, Math.sin(a) * (h.r + 0.1));
       c.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
       group.add(c);
     }
     if (h.ax !== 0 || h.ay !== 0) {
       // bewegliche Löcher: Strudel-Markierung
-      const sw = new THREE.Mesh(new THREE.TorusGeometry(h.r * 0.45, 0.05, 6, 20, Math.PI * 1.5), glow(0xbfe6ff, 0.8));
+      const sw = new THREE.Mesh(
+        new THREE.TorusGeometry(h.r * 0.45, 0.05, 6, 20, Math.PI * 1.5),
+        glow(0xbfe6ff, 0.8),
+      );
       sw.rotation.x = -Math.PI / 2;
       sw.position.y = 0.12;
       group.add(sw);
@@ -208,9 +233,14 @@ export const createView: MiniGameViewFactory<EisState> = (ctx, initial) => {
     const col = golden ? 0xffb21f : 0xffe96a;
     const tilt = new THREE.Group();
     tilt.rotation.x = -0.95;
-    tilt.add(new THREE.Mesh(starGeo, toon(col, { emissive: golden ? 0xff7a00 : 0xffc400, emissiveIntensity: 0.55 })));
+    tilt.add(
+      new THREE.Mesh(starGeo, toon(col, { emissive: golden ? 0xff7a00 : 0xffc400, emissiveIntensity: 0.55 })),
+    );
     spin.add(tilt);
-    const halo = new THREE.Mesh(new THREE.CircleGeometry(golden ? 0.95 : 0.7, 20), glow(golden ? 0xffd05a : 0xfff2a0, 0.3));
+    const halo = new THREE.Mesh(
+      new THREE.CircleGeometry(golden ? 0.95 : 0.7, 20),
+      glow(golden ? 0xffd05a : 0xfff2a0, 0.3),
+    );
     halo.rotation.x = -Math.PI / 2;
     halo.position.y = -0.55;
     group.add(spin, halo);

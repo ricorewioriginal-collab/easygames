@@ -6,7 +6,15 @@ import type { ApplyResult, Difficulty, GameConfig, PlayerSetup } from '@shared/c
 import { MAX_PLAYERS, MIN_PLAYERS } from '@shared/core/types';
 import { LAYOUTS, getLayout } from '@shared/levels';
 import { getMiniGame } from '@shared/minigames/registry';
-import { GameStartMessage, GameUpdateMessage, ClientMessage, cleanName, makeRoomCode, parseClientMessage, ErrorMessage } from '@shared/net/protocol';
+import {
+  GameStartMessage,
+  GameUpdateMessage,
+  ClientMessage,
+  cleanName,
+  makeRoomCode,
+  parseClientMessage,
+  ErrorMessage,
+} from '@shared/net/protocol';
 import { Rng, randomSeed } from '@shared/rng';
 import { LobbyState, SlotState } from './schema';
 import { DEFAULT_TIMING, Timing } from './timing';
@@ -59,7 +67,16 @@ export class PartyRoom extends Room<LobbyState> {
   private updateMetadata(hostName?: string, pub?: boolean): void {
     if (hostName) this.hostName = hostName;
     if (pub !== undefined) this.isPublic = pub;
-    void this.setMetadata({ name: `${this.hostName}s Raum`, code: this.roomId, public: this.isPublic, phase: this.state.phase, players: this.state.slots.size, max: MAX_PLAYERS, layoutId: this.state.layoutId, rounds: this.state.rounds });
+    void this.setMetadata({
+      name: `${this.hostName}s Raum`,
+      code: this.roomId,
+      public: this.isPublic,
+      phase: this.state.phase,
+      players: this.state.slots.size,
+      max: MAX_PLAYERS,
+      layoutId: this.state.layoutId,
+      rounds: this.state.rounds,
+    });
   }
 
   override onAuth(_client: Client, _options: unknown): boolean {
@@ -148,7 +165,11 @@ export class PartyRoom extends Room<LobbyState> {
     this.ensureHost();
     if (this.core) {
       // Bots können das offene Minispiel nicht selbst abgeben → Ergebnis ergänzen
-      this.commit(this.core.state.phase === 'minigame' && this.core.state.minigame?.stage === 'play' ? this.core.forceResults() : { ok: true, events: [] });
+      this.commit(
+        this.core.state.phase === 'minigame' && this.core.state.minigame?.stage === 'play'
+          ? this.core.forceResults()
+          : { ok: true, events: [] },
+      );
       this.afterUpdate();
     }
   }
@@ -203,7 +224,8 @@ export class PartyRoom extends Room<LobbyState> {
         if (!lobby) return this.sendError(client, 'started', 'Das Spiel läuft schon.');
         if (msg.name) slot.name = msg.name;
         if (msg.character && msg.character !== slot.character) {
-          if ([...this.state.slots.values()].some((s) => s !== slot && s.character === msg.character)) return this.sendError(client, 'invalid', 'Diese Figur ist schon vergeben.');
+          if ([...this.state.slots.values()].some((s) => s !== slot && s.character === msg.character))
+            return this.sendError(client, 'invalid', 'Diese Figur ist schon vergeben.');
           slot.character = msg.character;
         }
         return;
@@ -215,7 +237,8 @@ export class PartyRoom extends Room<LobbyState> {
         if (!lobby) return;
         if (!slot.host) return this.sendError(client, 'forbidden', 'Nur der Host kann das ändern.');
         if (msg.layoutId !== undefined) {
-          if (!LAYOUTS.some((l) => l.id === msg.layoutId)) return this.sendError(client, 'invalid', 'Unbekanntes Brett.');
+          if (!LAYOUTS.some((l) => l.id === msg.layoutId))
+            return this.sendError(client, 'invalid', 'Unbekanntes Brett.');
           this.state.layoutId = msg.layoutId;
           const rec = getLayout(msg.layoutId).recommendedRounds;
           if (msg.rounds === undefined) this.state.rounds = rec;
@@ -226,7 +249,8 @@ export class PartyRoom extends Room<LobbyState> {
       case 'lobby:addBot': {
         if (!lobby) return;
         if (!slot.host) return this.sendError(client, 'forbidden', 'Nur der Host kann Bots hinzufügen.');
-        if (this.state.slots.size >= MAX_PLAYERS) return this.sendError(client, 'full', 'Alle Plätze sind belegt.');
+        if (this.state.slots.size >= MAX_PLAYERS)
+          return this.sendError(client, 'full', 'Alle Plätze sind belegt.');
         const bid = 'b' + ++this.counter;
         const b = new SlotState();
         b.id = bid;
@@ -254,7 +278,8 @@ export class PartyRoom extends Room<LobbyState> {
       case 'game:sync':
         return this.core ? this.sendFull(client) : undefined;
       case 'game:action': {
-        if (!this.core || this.state.phase !== 'playing') return this.sendError(client, 'state', 'Es läuft kein Spiel.');
+        if (!this.core || this.state.phase !== 'playing')
+          return this.sendError(client, 'state', 'Es läuft kein Spiel.');
         const res = this.core.apply(id, msg.action);
         if (!res.ok) return this.sendError(client, 'invalid', res.error ?? 'Aktion nicht erlaubt.');
         this.commit(res);
@@ -266,9 +291,17 @@ export class PartyRoom extends Room<LobbyState> {
   // ------------------------------------------------------------------ Spielstart und Updates
   private startGame(host: Client): void {
     const slots = [...this.state.slots.values()];
-    if (slots.length < MIN_PLAYERS) return this.sendError(host, 'invalid', `Mindestens ${MIN_PLAYERS} Spieler nötig (Bots zählen mit).`);
-    if (slots.some((s) => s.kind === 'human' && !s.host && !s.ready)) return this.sendError(host, 'invalid', 'Nicht alle Spieler sind bereit.');
-    const players: PlayerSetup[] = slots.map((s) => ({ id: s.id, name: s.name, character: s.character as CharacterId, kind: s.kind as 'human' | 'bot', difficulty: s.difficulty as Difficulty }));
+    if (slots.length < MIN_PLAYERS)
+      return this.sendError(host, 'invalid', `Mindestens ${MIN_PLAYERS} Spieler nötig (Bots zählen mit).`);
+    if (slots.some((s) => s.kind === 'human' && !s.host && !s.ready))
+      return this.sendError(host, 'invalid', 'Nicht alle Spieler sind bereit.');
+    const players: PlayerSetup[] = slots.map((s) => ({
+      id: s.id,
+      name: s.name,
+      character: s.character as CharacterId,
+      kind: s.kind as 'human' | 'bot',
+      difficulty: s.difficulty as Difficulty,
+    }));
     const config: GameConfig = { layoutId: this.state.layoutId, rounds: this.state.rounds, players };
     const err = validateConfig(config);
     if (err) return this.sendError(host, 'invalid', err);
@@ -281,7 +314,12 @@ export class PartyRoom extends Room<LobbyState> {
       if (pid) this.sendStart(c, pid);
     }
     this.seq++;
-    this.broadcast('update', { seq: this.seq, state: this.core.state, events: this.core.initialEvents, full: true } satisfies GameUpdateMessage);
+    this.broadcast('update', {
+      seq: this.seq,
+      state: this.core.state,
+      events: this.core.initialEvents,
+      full: true,
+    } satisfies GameUpdateMessage);
     this.afterUpdate();
   }
 
@@ -291,20 +329,36 @@ export class PartyRoom extends Room<LobbyState> {
       layoutId: this.core.config.layoutId,
       rounds: this.core.config.rounds,
       you,
-      players: this.core.config.players.map((p) => ({ id: p.id, name: p.name, character: p.character, kind: (this.core?.state.players[p.id]?.kind ?? p.kind) as 'human' | 'bot', difficulty: p.difficulty ?? 'normal' })),
+      players: this.core.config.players.map((p) => ({
+        id: p.id,
+        name: p.name,
+        character: p.character,
+        kind: (this.core?.state.players[p.id]?.kind ?? p.kind) as 'human' | 'bot',
+        difficulty: p.difficulty ?? 'normal',
+      })),
     };
     client.send('start', msg);
   }
 
   private sendFull(client: Client): void {
     if (!this.core) return;
-    client.send('update', { seq: this.seq, state: this.core.state, events: [], full: true } satisfies GameUpdateMessage);
+    client.send('update', {
+      seq: this.seq,
+      state: this.core.state,
+      events: [],
+      full: true,
+    } satisfies GameUpdateMessage);
   }
 
   private commit(res: ApplyResult): void {
     if (!res.ok || !this.core) return;
     this.seq++;
-    this.broadcast('update', { seq: this.seq, state: this.core.state, events: res.events, full: false } satisfies GameUpdateMessage);
+    this.broadcast('update', {
+      seq: this.seq,
+      state: this.core.state,
+      events: res.events,
+      full: false,
+    } satisfies GameUpdateMessage);
   }
 
   private broadcastNotice(text: string): void {
@@ -346,14 +400,29 @@ export class PartyRoom extends Room<LobbyState> {
     };
     if (s.phase === 'minigame' && s.minigame) {
       const m = s.minigame;
-      if (m.stage === 'intro') later(T.introTimeout, () => (this.commit((this.core as GameCore).forceReady()), this.afterUpdate()));
+      if (m.stage === 'intro')
+        later(T.introTimeout, () => (this.commit((this.core as GameCore).forceReady()), this.afterUpdate()));
       else {
         const g = getMiniGame(m.gameId);
-        later(g.duration * 1000 + T.playGrace, () => (this.commit((this.core as GameCore).forceResults()), this.afterUpdate()));
+        later(
+          g.duration * 1000 + T.playGrace,
+          () => (this.commit((this.core as GameCore).forceResults()), this.afterUpdate()),
+        );
       }
       // Getrennte Spieler: sofort automatisch bestätigen/ergänzen
       const gone = core.pendingActors().filter((id) => !core.player(id).connected);
-      if (gone.length) later(T.afkTimeout, () => (this.commit(m.stage === 'intro' ? (this.core as GameCore).forceReady() : (this.core as GameCore).forceResults()), this.afterUpdate()));
+      if (gone.length)
+        later(
+          T.afkTimeout,
+          () => (
+            this.commit(
+              m.stage === 'intro'
+                ? (this.core as GameCore).forceReady()
+                : (this.core as GameCore).forceResults(),
+            ),
+            this.afterUpdate()
+          ),
+        );
       return;
     }
     const actors = core.pendingActors();

@@ -48,7 +48,14 @@ export function createTesseracts(ctx: DecorContext, k: number): Part {
     const size = (4.2 + rng.float(0, 1.6)) * k;
     const d = R * 1.1 + size * 3.3 + R * rng.float(0.35, 0.9);
     const a = a0 + i * Math.PI * (0.8 + rng.float(0, 0.5));
-    list.push({ x: Math.cos(a) * d, z: Math.sin(a) * d, y: rng.float(8, 20) * k, size, speed: rng.float(0.7, 1.2), phase: rng.float(0, 6) });
+    list.push({
+      x: Math.cos(a) * d,
+      z: Math.sin(a) * d,
+      y: rng.float(8, 20) * k,
+      size,
+      speed: rng.float(0.7, 1.2),
+      phase: rng.float(0, 6),
+    });
   }
   const edgeGeo = new THREE.CylinderGeometry(0.5, 0.5, 1, 5, 1);
   const edges = new THREE.InstancedMesh(edgeGeo, glow(0xffffff), count * EDGES.length);
@@ -56,7 +63,8 @@ export function createTesseracts(ctx: DecorContext, k: number): Part {
   edges.frustumCulled = verts.frustumCulled = false;
   const cols = [0xff7bd8, 0x7be8ff, 0xfff0a0];
   for (let i = 0; i < count; i++) {
-    for (let e = 0; e < EDGES.length; e++) edges.setColorAt(i * EDGES.length + e, tmpC.setHex(cols[EDGES[e]!.type]!));
+    for (let e = 0; e < EDGES.length; e++)
+      edges.setColorAt(i * EDGES.length + e, tmpC.setHex(cols[EDGES[e]!.type]!));
     for (let v = 0; v < 16; v++) verts.setColorAt(i * 16 + v, tmpC.setHex(0xffffff));
   }
 
@@ -64,19 +72,31 @@ export function createTesseracts(ctx: DecorContext, k: number): Part {
     for (let i = 0; i < list.length; i++) {
       const T = list[i]!;
       const s = t * 0.28 * T.speed + T.phase;
-      const c1 = Math.cos(s), s1 = Math.sin(s);
-      const c2 = Math.cos(s * 0.77 + 1), s2 = Math.sin(s * 0.77 + 1);
-      const c3 = Math.cos(s * 0.51 + 2), s3 = Math.sin(s * 0.51 + 2);
-      const c4 = Math.cos(s * 0.33), s4 = Math.sin(s * 0.33);
+      const c1 = Math.cos(s),
+        s1 = Math.sin(s);
+      const c2 = Math.cos(s * 0.77 + 1),
+        s2 = Math.sin(s * 0.77 + 1);
+      const c3 = Math.cos(s * 0.51 + 2),
+        s3 = Math.sin(s * 0.51 + 2);
+      const c4 = Math.cos(s * 0.33),
+        s4 = Math.sin(s * 0.33);
       for (let v = 0; v < 16; v++) {
         let x = v & 1 ? 1 : -1;
         let y = v & 2 ? 1 : -1;
         let z = v & 4 ? 1 : -1;
         let w = v & 8 ? 1 : -1;
-        let q = x * c1 - w * s1; w = x * s1 + w * c1; x = q; // XW
-        q = y * c2 - w * s2; w = y * s2 + w * c2; y = q; // YW
-        q = z * c3 - w * s3; w = z * s3 + w * c3; z = q; // ZW
-        q = x * c4 - z * s4; z = x * s4 + z * c4; x = q; // XZ
+        let q = x * c1 - w * s1;
+        w = x * s1 + w * c1;
+        x = q; // XW
+        q = y * c2 - w * s2;
+        w = y * s2 + w * c2;
+        y = q; // YW
+        q = z * c3 - w * s3;
+        w = z * s3 + w * c3;
+        z = q; // ZW
+        q = x * c4 - z * s4;
+        z = x * s4 + z * c4;
+        x = q; // XZ
         const f = (2 / (3.4 - w)) * T.size;
         proj[v * 4] = x * f;
         proj[v * 4 + 1] = y * f;
@@ -87,8 +107,12 @@ export function createTesseracts(ctx: DecorContext, k: number): Part {
       const th = 0.11 * T.size;
       for (let e = 0; e < EDGES.length; e++) {
         const E = EDGES[e]!;
-        const ax = proj[E.a * 4]!, ay = proj[E.a * 4 + 1]!, az = proj[E.a * 4 + 2]!;
-        const bx = proj[E.b * 4]!, by = proj[E.b * 4 + 1]!, bz = proj[E.b * 4 + 2]!;
+        const ax = proj[E.a * 4]!,
+          ay = proj[E.a * 4 + 1]!,
+          az = proj[E.a * 4 + 2]!;
+        const bx = proj[E.b * 4]!,
+          by = proj[E.b * 4 + 1]!,
+          bz = proj[E.b * 4 + 2]!;
         tmpD.set(bx - ax, by - ay, bz - az);
         const len = Math.max(0.001, tmpD.length());
         tmpD.multiplyScalar(1 / len);
@@ -148,7 +172,8 @@ export function createPortals(ctx: DecorContext, k: number): Part {
   (cores.material as THREE.MeshBasicMaterial).side = THREE.DoubleSide;
   rings.frustumCulled = cores.frustumCulled = false;
   for (let i = 0; i < n; i++) {
-    for (let r = 0; r < RINGS; r++) rings.setColorAt(i * RINGS + r, tmpC.setHex(PALETTE[(i + r * 2) % PALETTE.length]!));
+    for (let r = 0; r < RINGS; r++)
+      rings.setColorAt(i * RINGS + r, tmpC.setHex(PALETTE[(i + r * 2) % PALETTE.length]!));
     cores.setColorAt(i, tmpC.setHex(PALETTE[(i * 2 + 1) % PALETTE.length]!));
   }
   const update = (_dt: number, t: number): void => {

@@ -1,6 +1,13 @@
 import * as THREE from 'three';
 import { Rng } from '@shared/rng';
-import { InputFrame, InputLog, MiniGame, MiniGameInitOptions, NEUTRAL_INPUT, TICK_DT } from '@shared/minigames/types';
+import {
+  InputFrame,
+  InputLog,
+  MiniGame,
+  MiniGameInitOptions,
+  NEUTRAL_INPUT,
+  TICK_DT,
+} from '@shared/minigames/types';
 import { InputRecorder, quantize } from '@shared/minigames/input';
 import type { Screen } from '../render/engine';
 import { ParticlePool } from '../render/particles';
@@ -93,7 +100,9 @@ export class MiniStage implements Screen {
   }
 
   private stepOnce(): void {
-    const raw = this.deps.input ? this.deps.input.read() : this.game.bot(this.state, this.deps.botSkill ?? 0.6, this.botRng);
+    const raw = this.deps.input
+      ? this.deps.input.read()
+      : this.game.bot(this.state, this.deps.botSkill ?? 0.6, this.botRng);
     const input = this.rec.push(this.tick, quantize(raw));
     this.lastInput = input;
     this.game.step(this.state, input);

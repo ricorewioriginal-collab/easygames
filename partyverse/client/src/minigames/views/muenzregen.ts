@@ -1,6 +1,13 @@
 import * as THREE from 'three';
 import type { Drop, MuenzState } from '@shared/minigames/games/muenzregen';
-import { BASKET_HW, HALF_W, MAGNET_COOLDOWN, MAGNET_RADIUS, MAGNET_TICKS, TOP_Y } from '@shared/minigames/games/muenzregen';
+import {
+  BASKET_HW,
+  HALF_W,
+  MAGNET_COOLDOWN,
+  MAGNET_RADIUS,
+  MAGNET_TICKS,
+  TOP_Y,
+} from '@shared/minigames/games/muenzregen';
 import { glow, textSprite, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
 
@@ -30,7 +37,13 @@ function starGeometry(outer: number, inner: number, depth: number): THREE.Extrud
     else sh.lineTo(Math.cos(a) * r, Math.sin(a) * r);
   }
   sh.closePath();
-  const g = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 1 });
+  const g = new THREE.ExtrudeGeometry(sh, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: 0.05,
+    bevelSize: 0.05,
+    bevelSegments: 1,
+  });
   g.translate(0, 0, -depth / 2);
   return g;
 }
@@ -92,7 +105,10 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
   const inner = new THREE.Group();
   basket.add(inner);
   const weave = toon(0xc98a45);
-  const wall = new THREE.Mesh(new THREE.CylinderGeometry(BASKET_HW + 0.12, BASKET_HW - 0.2, 0.95, 24, 1, true), weave);
+  const wall = new THREE.Mesh(
+    new THREE.CylinderGeometry(BASKET_HW + 0.12, BASKET_HW - 0.2, 0.95, 24, 1, true),
+    weave,
+  );
   (wall.material as THREE.MeshToonMaterial).side = THREE.DoubleSide;
   wall.position.y = 0.48;
   inner.add(wall);
@@ -105,7 +121,10 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
   rim.position.y = 0.95;
   inner.add(rim);
   for (let k = 0; k < 3; k++) {
-    const band = new THREE.Mesh(new THREE.TorusGeometry(BASKET_HW - 0.03 + (k - 1) * 0.0 + (k * 0.04), 0.035, 6, 24), toon(0x8a5a28));
+    const band = new THREE.Mesh(
+      new THREE.TorusGeometry(BASKET_HW - 0.03 + (k - 1) * 0.0 + k * 0.04, 0.035, 6, 24),
+      toon(0x8a5a28),
+    );
     band.rotation.x = Math.PI / 2;
     band.position.y = 0.2 + k * 0.28;
     band.scale.setScalar(1 + k * 0.045);
@@ -250,7 +269,9 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
       squash = Math.max(0, squash - dt * 4);
       const sq = Math.sin(squash * Math.PI) * 0.18;
       inner.scale.set(1 + sq * 0.6, 1 - sq, 1 + sq * 0.6);
-      pupils.forEach((p, i) => (p.position.x = (i === 0 ? -0.32 : 0.32) + Math.max(-0.07, Math.min(0.07, s.bvx * 0.012))));
+      pupils.forEach(
+        (p, i) => (p.position.x = (i === 0 ? -0.32 : 0.32) + Math.max(-0.07, Math.min(0.07, s.bvx * 0.012))),
+      );
       // Mund geht auf, wenn etwas Gutes nahe kommt
       let open = 0.5;
       for (const d of s.drops) {
@@ -314,7 +335,8 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
           if (v.group.visible) {
             v.group.visible = false;
             if (d.state === 2) {
-              const col = d.kind === 'coin' || d.kind === 'star' ? 0xffd23f : d.kind === 'bomb' ? 0xff8a3d : 0xaab0c0;
+              const col =
+                d.kind === 'coin' || d.kind === 'star' ? 0xffd23f : d.kind === 'bomb' ? 0xff8a3d : 0xaab0c0;
               ctx.burst(v3.set(d.x, -0.8, 0), col, 5);
             }
           }

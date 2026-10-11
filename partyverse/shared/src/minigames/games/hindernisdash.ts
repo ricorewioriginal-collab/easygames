@@ -99,7 +99,9 @@ function genRows(seed: number): { rows: DashRow[]; coins: DashCoin[] } {
       }
     }
     // Bogenmünzen über einer Hürde in der sicheren Spur
-    if (c[next + 1] === LOW) for (let k = 0; k < 3; k++) coins.push({ z: z - 0.3 + k * 0.85, lane: next, y: k === 1 ? 2.25 : 2.0, got: false });
+    if (c[next + 1] === LOW)
+      for (let k = 0; k < 3; k++)
+        coins.push({ z: z - 0.3 + k * 0.85, lane: next, y: k === 1 ? 2.25 : 2.0, got: false });
     prevZ = z;
     prevSafe = next;
     safe = next;
@@ -109,7 +111,8 @@ function genRows(seed: number): { rows: DashRow[]; coins: DashCoin[] } {
   return { rows, coins };
 }
 
-const hash01 = (i: number): number => ((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 11, 0x85ebca6b)) >>> 8 & 0xffff) / 65536;
+const hash01 = (i: number): number =>
+  (((Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(i + 11, 0x85ebca6b)) >>> 8) & 0xffff) / 65536;
 
 export const game: MiniGame<DashState> = {
   id: 'hindernisdash',
@@ -121,7 +124,10 @@ export const game: MiniGame<DashState> = {
     'Mauern musst du umlaufen. Wer anstößt, wird kurz betäubt und verliert Tempo.',
     'Sammle Münzen – Strecke und Münzen zählen.',
   ],
-  controls: { desktop: 'Pfeile/WASD: Spur, springen, rutschen (Leertaste = Sprung, Shift = Rutschen)', touch: 'Stick: Spur/hoch/runter, A = Sprung, B = Rutschen' },
+  controls: {
+    desktop: 'Pfeile/WASD: Spur, springen, rutschen (Leertaste = Sprung, Shift = Rutschen)',
+    touch: 'Stick: Spur/hoch/runter, A = Sprung, B = Rutschen',
+  },
   category: 'race',
   duration: 30,
   touch: { stick: true, a: true, b: true },
@@ -227,7 +233,8 @@ export const game: MiniGame<DashState> = {
         for (let l = -1; l <= 1; l++) {
           const cell = r.c[l + 1] as number;
           if (cell < 0 || Math.abs(s.px - l * LANE_W) >= 0.95) continue;
-          if (cell === WALL || (cell === LOW && s.py < HURDLE_H) || (cell === HIGH && s.slideT <= 0)) hit = true;
+          if (cell === WALL || (cell === LOW && s.py < HURDLE_H) || (cell === HIGH && s.slideT <= 0))
+            hit = true;
         }
         if (hit) {
           s.stun = STUN_TICKS;

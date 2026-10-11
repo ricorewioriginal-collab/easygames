@@ -2,7 +2,8 @@
 export const clamp = (v: number, a: number, b: number): number => Math.max(a, Math.min(b, v));
 export const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 export const sign = (v: number): number => (v > 0 ? 1 : v < 0 ? -1 : 0);
-export const dist2 = (ax: number, ay: number, bx: number, by: number): number => (ax - bx) ** 2 + (ay - by) ** 2;
+export const dist2 = (ax: number, ay: number, bx: number, by: number): number =>
+  (ax - bx) ** 2 + (ay - by) ** 2;
 export const approach = (v: number, target: number, maxStep: number): number =>
   v < target ? Math.min(target, v + maxStep) : Math.max(target, v - maxStep);
 /** Flankenerkennung für Tasten: true nur im Schritt, in dem die Taste neu gedrückt wurde */

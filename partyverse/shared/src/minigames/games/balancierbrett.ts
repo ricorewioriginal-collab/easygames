@@ -7,7 +7,10 @@ import { approach, clamp, lerp } from '../util';
  * Balancier-Brett: Eine Kugel rollt auf einem kippbaren, runden Brett (Koordinaten: x nach rechts, y nach OBEN auf dem Bildschirm).
  * Neigung = Eingabe (mit Verzögerung), Beschleunigung = Neigung × G plus eine leichte „Wellen“-Störung. Löcher und Rand lassen die Kugel fallen.
  */
-export interface BoardHole { x: number; y: number }
+export interface BoardHole {
+  x: number;
+  y: number;
+}
 export interface BoardState {
   tick: number;
   tx: number; // Brettneigung in [-1, 1]
@@ -45,10 +48,14 @@ export const activeHoles = (cp: number): number => Math.min(MAX_HOLES, 3 + Math.
 export function disturbance(s: BoardState, tick: number): { x: number; y: number } {
   const t = tick / 60;
   const grow = lerp(0.7, 1.6, Math.min(1, t / 30));
-  return { x: s.dist.a1 * grow * Math.sin(s.dist.w1 * t + s.dist.p1), y: s.dist.a2 * grow * Math.sin(s.dist.w2 * t + s.dist.p2) };
+  return {
+    x: s.dist.a1 * grow * Math.sin(s.dist.w1 * t + s.dist.p1),
+    y: s.dist.a2 * grow * Math.sin(s.dist.w2 * t + s.dist.p2),
+  };
 }
 
-export const score = (s: BoardState): number => Math.max(0, s.cp * 100 + Math.floor((s.onTicks * 10) / 60) - s.falls * PENALTY);
+export const score = (s: BoardState): number =>
+  Math.max(0, s.cp * 100 + Math.floor((s.onTicks * 10) / 60) - s.falls * PENALTY);
 
 export const game: MiniGame<BoardState> = {
   id: 'balancierbrett',
@@ -103,7 +110,14 @@ export const game: MiniGame<BoardState> = {
       fallY: 0,
       holes,
       targets,
-      dist: { a1: r.float(1.6, 2.4), p1: r.float(0, 6.28), w1: r.float(0.7, 1.2), a2: r.float(1.6, 2.4), p2: r.float(0, 6.28), w2: r.float(0.8, 1.4) },
+      dist: {
+        a1: r.float(1.6, 2.4),
+        p1: r.float(0, 6.28),
+        w1: r.float(0.7, 1.2),
+        a2: r.float(1.6, 2.4),
+        p2: r.float(0, 6.28),
+        w2: r.float(0.8, 1.4),
+      },
       over: false,
     };
   },
@@ -127,7 +141,7 @@ export const game: MiniGame<BoardState> = {
       const d = disturbance(s, s.tick);
       let ax = s.tx * G + d.x;
       let ay = s.ty * G + d.y;
-      const nh = activeHoles(s.cp);
+      const nh = Math.min(activeHoles(s.cp), s.holes.length);
       for (let i = 0; i < nh; i++) {
         const h = s.holes[i] as BoardHole;
         const dx = h.x - s.px;
@@ -192,7 +206,7 @@ export const game: MiniGame<BoardState> = {
       wy *= vmax / wl;
     }
     // Löcher meiden (nur geübte Spieler schauen genau hin)
-    const nh = activeHoles(s.cp);
+    const nh = Math.min(activeHoles(s.cp), s.holes.length);
     const care = lerp(0.05, 1, skill);
     for (let i = 0; i < nh; i++) {
       const h = s.holes[i] as BoardHole;
@@ -218,7 +232,15 @@ export const game: MiniGame<BoardState> = {
     const ax = (wx - s.vx) * gain - d.x;
     const ay = (wy - s.vy) * gain - d.y;
     const noise = (1 - skill) * 0.9;
-    return { ...NEUTRAL_INPUT, x: clamp(ax / G + rng.float(-noise, noise), -1, 1), y: clamp(ay / G + rng.float(-noise, noise), -1, 1) };
+    return {
+      ...NEUTRAL_INPUT,
+      x: clamp(ax / G + rng.float(-noise, noise), -1, 1),
+      y: clamp(ay / G + rng.float(-noise, noise), -1, 1),
+    };
   },
-  hud: (s) => ({ left: `Ziele ${s.cp}`, right: `${score(s)} Pkt`, hint: s.fallT > 0 ? 'Abgestürzt!' : s.falls ? `${s.falls} Abstürze` : undefined }),
+  hud: (s) => ({
+    left: `Ziele ${s.cp}`,
+    right: `${score(s)} Pkt`,
+    hint: s.fallT > 0 ? 'Abgestürzt!' : s.falls ? `${s.falls} Abstürze` : undefined,
+  }),
 };

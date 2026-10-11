@@ -39,7 +39,19 @@ export const game: MiniGame<BlitzState> = {
   touch: { stick: false, a: true, b: false },
   init(seed) {
     const rnd = new Rng(seed);
-    return { rnd, round: 0, rounds: ROUNDS, phase: 'wait', timer: 0, delay: newDelay(rnd), points: [], total: 0, prevA: false, falseStarts: 0, lastMs: 0 };
+    return {
+      rnd,
+      round: 0,
+      rounds: ROUNDS,
+      phase: 'wait',
+      timer: 0,
+      delay: newDelay(rnd),
+      points: [],
+      total: 0,
+      prevA: false,
+      falseStarts: 0,
+      lastMs: 0,
+    };
   },
   step(s, input) {
     if (s.phase === 'over') return;
@@ -95,5 +107,16 @@ export const game: MiniGame<BlitzState> = {
     }
     return { ...NEUTRAL_INPUT };
   },
-  hud: (s) => ({ left: `Runde ${Math.min(s.round + 1, s.rounds)}/${s.rounds}`, right: `${s.total} Pkt`, hint: s.phase === 'go' ? 'JETZT!' : s.phase === 'lock' ? 'Fehlstart!' : s.lastMs ? `${s.lastMs} ms` : undefined }),
+  hud: (s) => ({
+    left: `Runde ${Math.min(s.round + 1, s.rounds)}/${s.rounds}`,
+    right: `${s.total} Pkt`,
+    hint:
+      s.phase === 'go'
+        ? 'JETZT!'
+        : s.phase === 'lock'
+          ? 'Fehlstart!'
+          : s.lastMs
+            ? `${s.lastMs} ms`
+            : undefined,
+  }),
 };

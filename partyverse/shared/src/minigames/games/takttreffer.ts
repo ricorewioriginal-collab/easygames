@@ -65,7 +65,10 @@ export const game: MiniGame<BeatState> = {
     'Perfekte Treffer bringen mehr Punkte, eine Kombo erhöht den Multiplikator.',
     'Wer danebendrückt oder eine Note verpasst, verliert die Kombo. Das Tempo steigt!',
   ],
-  controls: { desktop: 'Links/Rechts-Pfeil (oder A/D) und Leertaste für die Mitte – oder Spur anklicken', touch: 'Die drei Spuren antippen' },
+  controls: {
+    desktop: 'Links/Rechts-Pfeil (oder A/D) und Leertaste für die Mitte – oder Spur anklicken',
+    touch: 'Die drei Spuren antippen',
+  },
   category: 'rhythm',
   duration: DURATION,
   usesPointer: true,
@@ -90,7 +93,24 @@ export const game: MiniGame<BeatState> = {
       t += eighth;
       step++;
     }
-    return { notes, head: 0, t: 0, points: 0, combo: 0, maxCombo: 0, perfect: 0, good: 0, miss: 0, prevLane: [false, false, false], judgeSeq: 0, judgeKind: '', judgeLane: 1, judgeTick: -999, seed, endTick: Math.round(t) };
+    return {
+      notes,
+      head: 0,
+      t: 0,
+      points: 0,
+      combo: 0,
+      maxCombo: 0,
+      perfect: 0,
+      good: 0,
+      miss: 0,
+      prevLane: [false, false, false],
+      judgeSeq: 0,
+      judgeKind: '',
+      judgeLane: 1,
+      judgeTick: -999,
+      seed,
+      endTick: Math.round(t),
+    };
   },
   step(s, input) {
     if (s.t >= DURATION * 60) return;
@@ -157,17 +177,31 @@ export const game: MiniGame<BeatState> = {
       if (n.t - s.t > 14) break;
       const u1 = ((hash(s.seed, i * 3 + 1) % 10000) + 0.5) / 10000;
       const u2 = ((hash(s.seed, i * 3 + 2) % 10000) + 0.5) / 10000;
-      const skip = ((hash(s.seed + 3, i * 3 + 3) % 10000) / 10000) < skipP;
+      const skip = (hash(s.seed + 3, i * 3 + 3) % 10000) / 10000 < skipP;
       if (skip) continue;
       const gauss = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
       const off = Math.round(gauss * sigma + bias);
-      if (s.t === n.t + off) return n.lane === 0 ? { ...NEUTRAL_INPUT, x: -1 } : n.lane === 2 ? { ...NEUTRAL_INPUT, x: 1 } : { ...NEUTRAL_INPUT, a: true };
+      if (s.t === n.t + off)
+        return n.lane === 0
+          ? { ...NEUTRAL_INPUT, x: -1 }
+          : n.lane === 2
+            ? { ...NEUTRAL_INPUT, x: 1 }
+            : { ...NEUTRAL_INPUT, a: true };
     }
     return { ...NEUTRAL_INPUT };
   },
   hud: (s) => ({
     left: `Kombo ${s.combo}  ·  x${multiplier(s.combo)}`,
     right: `${s.points} Pkt`,
-    hint: s.t - s.judgeTick > 40 ? `${Math.round(bpmAt(s.t))} BPM` : s.judgeKind === 'perfect' ? 'Perfekt!' : s.judgeKind === 'good' ? 'Gut' : s.judgeKind === 'miss' || s.judgeKind === 'stray' ? 'Daneben' : `${Math.round(bpmAt(s.t))} BPM`,
+    hint:
+      s.t - s.judgeTick > 40
+        ? `${Math.round(bpmAt(s.t))} BPM`
+        : s.judgeKind === 'perfect'
+          ? 'Perfekt!'
+          : s.judgeKind === 'good'
+            ? 'Gut'
+            : s.judgeKind === 'miss' || s.judgeKind === 'stray'
+              ? 'Daneben'
+              : `${Math.round(bpmAt(s.t))} BPM`,
   }),
 };

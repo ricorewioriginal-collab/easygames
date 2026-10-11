@@ -5,7 +5,16 @@ import { G, makeEnv, type Env, type Parts } from './characters/kit';
 import { buildBrumm, buildLumi, buildPip, buildZapp } from './characters/modelsA';
 import { buildFlora, buildMokka, buildQuirl, buildVex } from './characters/modelsB';
 import { HAT_IDS, buildHat, type HatId, type HatInstance } from './characters/hats';
-import { ANIM_DURATION, LOOPING, copyPose, lerpPose, neutralPose, samplePose, wrapAngle, type CharacterAnim } from './characters/pose';
+import {
+  ANIM_DURATION,
+  LOOPING,
+  copyPose,
+  lerpPose,
+  neutralPose,
+  samplePose,
+  wrapAngle,
+  type CharacterAnim,
+} from './characters/pose';
 
 export type { CharacterAnim } from './characters/pose';
 export type { HatId } from './characters/hats';
@@ -101,7 +110,13 @@ class Rig implements CharacterRig {
   private hat: HatInstance | null = null;
   private readonly shadow: THREE.Mesh;
   private readonly sparks: THREE.InstancedMesh;
-  private trail: { mesh: THREE.InstancedMesh; pts: THREE.Vector3[]; acc: number; sf: number; last: THREE.Vector3 } | null = null;
+  private trail: {
+    mesh: THREE.InstancedMesh;
+    pts: THREE.Vector3[];
+    acc: number;
+    sf: number;
+    last: THREE.Vector3;
+  } | null = null;
   private readonly tmpV = new THREE.Vector3();
   private readonly tmpO = new THREE.Object3D();
   private disposed = false;
@@ -118,14 +133,22 @@ class Rig implements CharacterRig {
     this.root.add(this.rigG);
     this.root.scale.setScalar(opts.scale ?? 1);
 
-    const sm = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32, depthWrite: false, alphaMap: softCircle() });
+    const sm = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.32,
+      depthWrite: false,
+      alphaMap: softCircle(),
+    });
     this.shadow = new THREE.Mesh(G.disc(1, 24), sm);
     this.shadow.rotation.x = -Math.PI / 2;
     this.shadow.position.y = 0.02;
     this.shadow.renderOrder = 1;
     this.root.add(this.shadow);
 
-    const spk = new THREE.MeshBasicMaterial({ color: new THREE.Color(def.colors.accent).lerp(new THREE.Color(0xffffff), 0.35) });
+    const spk = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(def.colors.accent).lerp(new THREE.Color(0xffffff), 0.35),
+    });
     this.sparks = new THREE.InstancedMesh(G.octa(0.08), spk, SPARK_N);
     this.sparks.frustumCulled = false;
     this.sparks.visible = false;
@@ -191,13 +214,19 @@ class Rig implements CharacterRig {
       this.trail = null;
     }
     if (color === null || this.disposed) return;
-    const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false });
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+    });
     const mesh = new THREE.InstancedMesh(G.sph(0.17, 8, 6), mat, TRAIL_N);
     mesh.frustumCulled = false;
     mesh.renderOrder = 3;
     const base = new THREE.Color(color);
     const c = new THREE.Color();
-    for (let i = 0; i < TRAIL_N; i++) mesh.setColorAt(i, c.copy(base).lerp(new THREE.Color(0xffffff), (1 - i / TRAIL_N) * 0.5));
+    for (let i = 0; i < TRAIL_N; i++)
+      mesh.setColorAt(i, c.copy(base).lerp(new THREE.Color(0xffffff), (1 - i / TRAIL_N) * 0.5));
     mesh.count = 0;
     this.root.add(mesh);
     this.root.updateWorldMatrix(true, false);
@@ -374,7 +403,13 @@ class Rig implements CharacterRig {
       if (tr.acc >= 0.03) {
         tr.acc = 0;
         const sp = this.root.scale.x;
-        tr.pts.push(new THREE.Vector3(wp.x + (Math.random() - 0.5) * 0.4 * sp, wp.y + (0.25 + Math.random() * 0.8) * sp, wp.z + (Math.random() - 0.5) * 0.4 * sp));
+        tr.pts.push(
+          new THREE.Vector3(
+            wp.x + (Math.random() - 0.5) * 0.4 * sp,
+            wp.y + (0.25 + Math.random() * 0.8) * sp,
+            wp.z + (Math.random() - 0.5) * 0.4 * sp,
+          ),
+        );
         if (tr.pts.length > TRAIL_N) tr.pts.shift();
       }
       const o = this.tmpO;
@@ -385,7 +420,12 @@ class Rig implements CharacterRig {
         this.root.worldToLocal(v);
         o.position.copy(v);
         const age = (i + 1) / TRAIL_N;
-        o.scale.setScalar(Math.max(1e-4, (0.15 + 0.85 * age) * (0.25 + 0.75 * tr.sf) * (0.8 + 0.4 * Math.sin(this.time * 9 + i))));
+        o.scale.setScalar(
+          Math.max(
+            1e-4,
+            (0.15 + 0.85 * age) * (0.25 + 0.75 * tr.sf) * (0.8 + 0.4 * Math.sin(this.time * 9 + i)),
+          ),
+        );
         o.updateMatrix();
         tr.mesh.setMatrixAt(i, o.matrix);
       }
@@ -406,6 +446,9 @@ class Rig implements CharacterRig {
 }
 
 /** Erzeugt eine der acht Figuren (prozedural, ohne Texturen oder Canvas – läuft auch in Node). */
-export function createCharacter(id: CharacterId, opts: { scale?: number; toon?: boolean } = {}): CharacterRig {
+export function createCharacter(
+  id: CharacterId,
+  opts: { scale?: number; toon?: boolean } = {},
+): CharacterRig {
   return new Rig(id, opts);
 }

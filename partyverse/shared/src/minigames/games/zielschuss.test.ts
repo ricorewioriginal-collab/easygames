@@ -3,7 +3,20 @@ import { MAG, game, type Target, type ZielState } from './zielschuss';
 import { NEUTRAL_INPUT } from '../types';
 
 const opts = { playerIndex: 0, players: 2 };
-const mk = (kind: Target['kind'], x: number, y: number, pts: number): Target => ({ id: 99, kind, x, y0: y, y, vx: 0, r: 0.15, age: 20, life: 0, amp: 0, freq: 0, pts });
+const mk = (kind: Target['kind'], x: number, y: number, pts: number): Target => ({
+  id: 99,
+  kind,
+  x,
+  y0: y,
+  y,
+  vx: 0,
+  r: 0.15,
+  age: 20,
+  life: 0,
+  amp: 0,
+  freq: 0,
+  pts,
+});
 
 describe('Zielschuss', () => {
   it('erzeugt für dasselbe Seed dieselbe Zielfolge', () => {
