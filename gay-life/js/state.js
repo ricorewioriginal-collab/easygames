@@ -14,6 +14,7 @@
       life: { day: 1, needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, stress: 20 }, boost: 0, money: 150, log: [], food: 2, flowers: 0, inside: 0, ix: 0, iz: 3, warn: {}, stats: { meals: 0, showers: 0, sleeps: 0 } },
       jobs: { bar: { xp: 0, shifts: 0, earned: 0 } },
       rel: {}, msgs: [], cal: [], dating: { ints: [] }, home: { own: {}, placed: {}, partner: '', rentDay: 0, debt: 0 },
+      story: { ch: 0, don: 0, plan: '', fest: '', vis: {}, end: '', pts: {}, tea: 0 },
       settings: { q: -1 } };
   }
   function merge(d, s) {
