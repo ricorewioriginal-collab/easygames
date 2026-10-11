@@ -20,8 +20,8 @@ BI.createObby = function (G) {
   plat(43.5, 0, 15, 1.4, H, 0xffd23f);
   const sw = plat(58, 0, 12, 12, H, 0xff8a1f); K.sweep = { x: sw.cx, z: sw.cz, y: H, len: 4.6, a: 0 };
   plat(70, 0, 6, 6, H, 0x4cd07d, true);
-  for (let i = 0; i < 5; i++) plat(77 + i * 4.5, 0, 3, 3, H + .9 * (i + 1), COLS[(i + 2) % COLS.length]);
-  const YZ = H + 4.5; for (let i = 0; i < 4; i++) plat(99.5 + i * 4.6, i % 2 ? -3 : 3, 2.6, 2.6, YZ, COLS[(i + 4) % COLS.length]);
+  for (let i = 0; i < 5; i++) plat(77 + i * 4.5, 0, 3, 3, H + .5 * (i + 1), COLS[(i + 2) % COLS.length]);
+  const YZ = H + 2.5; for (let i = 0; i < 4; i++) plat(99.5 + i * 4.6, i % 2 ? -2 : 2, 3, 3, YZ, COLS[(i + 4) % COLS.length]);
   plat(119, 0, 6, 6, YZ, 0x4cd07d, true);
   const fin = plat(130, 0, 9, 9, YZ, 0xffd23f); K.fin = { x: fin.cx, z: fin.cz, y: YZ };
   /* ---------- Aussehen (ein Mesh) ---------- */
@@ -57,7 +57,7 @@ BI.createObby = function (G) {
   function place(c, y) { P.x = c.x; P.z = c.z; P.y = y; P.vy = 0; G.char().group.position.set(P.x, P.y, P.z); }
   function start() {
     if (K.run) return; K.run = { t: 0, cp: 0, falls: 0, started: false }; const c = cps[0]; fx.burst(P.x, 1, P.z, 24, [BI.C.white, BI.C.blue, BI.C.gold], 6, 1.2, 30, -2); A.whoosh && A.whoosh(); place(c, c.y + .02); P.h = Math.PI / 2;
-    fx.burst(c.x, c.y + 1, c.z, 24, [BI.C.white, BI.C.blue, BI.C.gold], 6, 1.2, 30, -2); say('🏁 Los geht’s! Spring von Plattform zu Plattform – fällst du, geht’s zum Checkpoint 🚩', 3600);
+    fx.burst(c.x, c.y + 1, c.z, 24, [BI.C.white, BI.C.blue, BI.C.gold], 6, 1.2, 30, -2); say('🏁 Los geht’s! Spring von Plattform zu Plattform (in der Luft nochmal springen = Doppelsprung) – fällst du, geht’s zum Checkpoint 🚩', 3600);
     if (G.cam) G.cam.yaw = -Math.PI / 2;
   }
   function stop(msg, done) {
