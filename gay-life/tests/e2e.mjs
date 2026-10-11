@@ -1,7 +1,7 @@
 /* Browser-Test für GayLife (Playwright + Chromium, Software-WebGL).
    Voraussetzung: Webserver im Repo-Hauptordner, z. B.  python3 -m http.server 8080
    Aufruf:  BASE=http://localhost:8080 THREE=/pfad/zu/three.min.js node gay-life/tests/e2e.mjs
-   THREE ist optional (r128, für Umgebungen ohne Zugriff auf cdnjs). Prüft Start, Migration alter Spielstände, Speichern/Laden,
+   THREE ist optional (r128, für Umgebungen ohne Zugriff auf cdnjs); QRCODE ist optional (qrcode.js), Mehrspieler läuft mit tests/fakepeer.js. Prüft Start, Migration alter Spielstände, Speichern/Laden,
    Bewegung (Tastatur und Touch), Uhr und Bedürfnisse, Späti, Wohnung, Barjob, Kontakte, Handy-Apps, Qualität, Vollbild und alle alten Minispiele. */
 import { createRequire } from 'module';
 import { execSync } from 'child_process';
@@ -635,6 +635,107 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   ok(await ev(page, () => { GL.S.story.pts = { plan: 1, fest: 1 }; GL.S.story.don = 0; Object.keys(GL.S.rel).forEach(k => { GL.S.rel[k].f = 0; GL.S.rel[k].st = ''; }); return GL.story.score() < 7; }), 'Ohne Vorbereitung wäre die Punktzahl zu niedrig für ein gutes Ende');
   await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
   ok(await ev(page, () => GL.S.story.ch === 6 && GL.S.story.end === 'compromise' && GL.S.story.plan === 'loud'), 'Geschichte bleibt nach Neuladen erhalten');
+  await ctx.close();
+}
+
+/* ---------- 9. Mehrspieler: PIN, QR-Code, Orte, Besuch, Gruppentanz, Gruppenfoto (mit Test-Ersatz für PeerJS über BroadcastChannel) ---------- */
+{
+  let s; const ctx = await browser.newContext({ viewport: { width: 1000, height: 640 } });
+  if (process.env.THREE) await ctx.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
+  await ctx.route(/peerjs/, r => r.fulfill({ path: new URL('./fakepeer.js', import.meta.url).pathname, contentType: 'application/javascript' }));
+  if (process.env.QRCODE) await ctx.route(/qrcode/, r => r.fulfill({ path: process.env.QRCODE, contentType: 'application/javascript' })); else await ctx.route(/qrcode/, r => r.abort());
+  await ctx.route(/gstatic|googleapis/, r => r.abort());
+  const mk = async hash => {
+    const page = await ctx.newPage();
+    page.on('pageerror', e => errs.push('PAGEERR ' + e.message));
+    page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::|Failed to load resource/.test(m.text())) errs.push('console: ' + m.text()); });
+    await page.goto(BASE + '/gay-life/tests/');
+    await page.evaluate(() => localStorage.clear());
+    await page.goto(BASE + '/gay-life/index.html' + (hash || ''));
+    await page.waitForFunction(() => window.GL && GL.W && GL.W.on, null, { timeout: 30000 });
+    if (!hash) await closeDialogs(page); return page;
+  };
+  const A = await mk(), B = await mk();
+  const text = (p, sel) => p.evaluate(sel => (document.querySelector(sel) || {}).textContent || '', sel);
+  const menuItemOn = async (p, t) => { await p.click(`#maps .row2:has-text("${t}")`); await p.waitForTimeout(100); };
+  const setT = (p, h) => p.evaluate(h => { GL.S.world.t = ((h - 6 + 24) % 24) / 24; GL.S.life.money = 300; GL.S.life.needs.energy = 90; }, h);
+  // Fehlerfälle der PIN
+  await B.click('#wMp'); await B.fill('#mpC', 'ab12'); await B.click('#mpJ'); await B.waitForTimeout(200);
+  ok(/6-stellige PIN/.test(await text(B, '#maps')), 'Ungültige PIN wird abgelehnt (6 Ziffern nötig)');
+  await B.fill('#mpC', '000000'); await B.click('#mpJ'); await B.waitForFunction(() => /nicht/.test(document.getElementById('maps').textContent), null, { timeout: 8000 });
+  ok(true, 'Unbekannte PIN: „Diesen Raum gibt es nicht“');
+  await B.click('#mx');
+  // Raum öffnen
+  await A.click('#wMp'); await A.click('#mpH'); await A.waitForFunction(() => /Raum-PIN/.test(document.getElementById('maps').textContent) && /\d{6}/.test(document.querySelector('#maps .big').textContent), null, { timeout: 8000 });
+  const pin = (await text(A, '#maps .big')).trim();
+  ok(/^\d{6}$/.test(pin), 'Raum öffnen zeigt eine 6-stellige PIN: ' + pin);
+  if (process.env.QRCODE) { await A.waitForFunction(() => !!document.querySelector('#mpQ svg'), null, { timeout: 5000 }); ok(true, 'QR-Code wird als SVG angezeigt'); }
+  // Beitreten per PIN
+  await B.click('#wMp'); await B.fill('#mpC', pin); await B.click('#mpJ');
+  await B.waitForFunction(() => GL.MP.me === 'g1' && Object.keys(GL.MP.peers).length === 1, null, { timeout: 8000 });
+  await A.waitForFunction(() => Object.keys(GL.MP.peers).length === 1, null, { timeout: 8000 });
+  ok(await B.evaluate(() => GL.mp.on() && GL.mp.name('h') !== '?') && await A.evaluate(() => GL.mp.on() && GL.mp.host()), 'Beitritt per PIN: beide sehen sich im Raum');
+  await B.click('#mx'); await A.click('#mx');
+  // Beitritt per QR-Link (#join=PIN)
+  const Cc = await mk('#join=' + pin);
+  await Cc.waitForFunction(() => GL.MP.me === 'g2', null, { timeout: 10000 });
+  ok(await A.evaluate(() => Object.keys(GL.MP.peers).length === 2), 'Beitritt per QR-Link (#join=PIN): dritter Spieler im Raum');
+  await Cc.evaluate(() => GL.MP.net.close()); await Cc.close(); await A.waitForFunction(() => Object.keys(GL.MP.peers).length === 1, null, { timeout: 8000 });
+  ok(true, 'Verlässt jemand den Raum, verschwindet er bei den anderen');
+  // Erweiterungsumschlag prüfen
+  await A.evaluate(() => { window.__x = 0; GL.on('mpx', () => { window.__x++; }); });
+  await B.evaluate(() => { GL.mp.send('Bad Kind', {}); GL.mp.send('ok', { big: 'x'.repeat(3000) }); GL.mp.send('ping', { a: 1 }); });
+  await A.waitForTimeout(400);
+  ok(await A.evaluate(() => window.__x === 1), 'Nachrichtenumschlag: ungültige Art und zu große Daten werden ignoriert, gültige kommen an');
+  // Orte: Sichtbarkeit
+  const goA = await A.evaluate(() => { GL.W.player.x = 12; GL.W.player.z = -9; return true; }); await A.waitForTimeout(700);
+  s = await B.evaluate(() => { const o = GL.MP.peers.h; return { v: !!o.g && o.g.visible, x: o.g && Math.round(o.g.position.x), z: o.g && Math.round(o.g.position.z) }; });
+  ok(s.v && s.x === 12 && s.z === -9, `Im selben Ort ist der andere sichtbar (Position ${s.x}/${s.z})`);
+  await A.evaluate(() => { GL.S.life.money = 50; GL.dist.go('beach', true); }); await A.waitForTimeout(800);
+  ok(await B.evaluate(() => !GL.MP.peers.h.g.visible), 'Ein anderer Ort: der andere ist ausgeblendet');
+  await B.evaluate(() => { GL.dist.go('beach', true); }); await B.waitForTimeout(800);
+  s = await B.evaluate(() => { const o = GL.MP.peers.h, w = GL.W.player; return { v: o.g.visible, near: Math.hypot(o.g.position.x - GL.dist.LIST.find(d => d.id === 'beach').cx - o.x + o.x, 0) >= 0, dx: o.g.position.x - GL.dist.LIST.find(d => d.id === 'beach').cx }; });
+  ok(s.v && Math.abs(s.dx) < 46, 'Im selben Viertel wieder sichtbar, Position relativ zum Viertel');
+  await A.evaluate(() => { GL.dist.go('kiez', true); }); await B.evaluate(() => { GL.dist.go('kiez', true); }); await A.waitForTimeout(500);
+  // Besuch: Ablehnen, dann Zustimmen
+  await A.evaluate(() => { GL.S.home.own.lampe = 1; GL.S.home.own.kunst = 1; GL.furn.place(2, 'kunst'); GL.furn.place(0, 'lampe'); });
+  await B.evaluate(() => GL.multi.visitPeer('h')); await A.waitForFunction(() => /Besuch/.test(document.getElementById('maps').textContent), null, { timeout: 5000 });
+  ok(/möchte dich zu Hause besuchen/.test(await text(A, '#maps')), 'Besuchsanfrage erscheint beim Gastgeber');
+  await menuItemOn(A, 'Ablehnen'); await B.waitForFunction(() => GL.multi.state().pending === '', null, { timeout: 5000 });
+  ok(await B.evaluate(() => GL.multi.state().visit === null) && await A.evaluate(() => GL.W.inside === 0), 'Ablehnen wird respektiert: kein Besuch, niemand wird hineingelassen');
+  await B.evaluate(() => GL.multi.visitPeer('h')); await A.waitForFunction(() => /Besuch/.test(document.getElementById('maps').textContent), null, { timeout: 5000 });
+  await menuItemOn(A, 'Einlassen'); await B.waitForFunction(() => GL.multi.state().visit === 'h', null, { timeout: 8000 });
+  await A.waitForFunction(() => GL.W.inside === 1, null, { timeout: 8000 }); await B.waitForFunction(() => GL.W.inside === 1, null, { timeout: 8000 });
+  await B.waitForTimeout(900);
+  ok(await B.evaluate(() => GL.furn.visiting() && Object.values(GL.S.home.placed).length === 0) && await B.evaluate(() => GL.W.inter.some(i => i.on === false || true)), 'Gast sieht die fremde Einrichtung, nicht die eigene');
+  s = await B.evaluate(() => ({ v: GL.MP.peers.h.g.visible, loc: GL.multi.loc().l }));
+  ok(s.v && s.loc === 'h:h', 'In der Wohnung sehen sich Gastgeber und Gast (Ort h:h)');
+  await A.evaluate(() => { GL.home.leave(true); }); await B.waitForFunction(() => GL.W.inside === 0 && GL.multi.state().visit === null, null, { timeout: 8000 });
+  ok(await B.evaluate(() => !GL.furn.visiting()), 'Verlässt der Gastgeber die Wohnung, endet der Besuch');
+  // Gruppentanz im Club
+  await setT(A, 22); await setT(B, 22);
+  await A.evaluate(() => { GL.S.life.day = 5; GL.S.jobs.night = null; }); await B.evaluate(() => { GL.S.life.day = 5; GL.S.jobs.night = null; });
+  await A.evaluate(() => GL.multi.startDance());
+  await B.waitForFunction(() => /Gruppentanz/.test(document.getElementById('maps').textContent) && /Mitmachen/.test(document.getElementById('maps').textContent), null, { timeout: 6000 });
+  ok(true, 'Gruppentanz-Einladung kommt bei den anderen an');
+  await menuItemOn(B, 'Mitmachen');
+  const rounds = async p => { for (let i = 0; i < 3; i++) { await p.waitForFunction(() => /Song \d von 3/.test(document.getElementById('maps').textContent), null, { timeout: 5000 }); await p.click('#maps .row2 >> nth=0'); await p.waitForTimeout(120); } };
+  await Promise.all([rounds(A), rounds(B)]);
+  await A.waitForFunction(() => /von 6/.test(document.getElementById('maps').textContent) && /1\./.test(document.getElementById('maps').textContent), null, { timeout: 8000 });
+  await B.waitForFunction(() => /von 6/.test(document.getElementById('maps').textContent) && /1\./.test(document.getElementById('maps').textContent), null, { timeout: 8000 });
+  ok(/2\./.test(await text(A, '#maps')) && /\(du\)/.test(await text(B, '#maps')), 'Gruppentanz: beide sehen die gemeinsame Rangliste');
+  await A.click('#mx'); await B.click('#mx');
+  // Gruppenfoto
+  await A.evaluate(() => GL.multi.group());
+  await B.waitForFunction(() => GL.multi.photos.length === 1, null, { timeout: 9000 }); await A.waitForFunction(() => GL.multi.photos.length === 1, null, { timeout: 9000 });
+  ok(await B.evaluate(() => /^data:image\/jpeg/.test(GL.multi.photos[0].src) && GL.multi.photos[0].src.length > 2000 && /Gruppenfoto/.test(GL.multi.photos[0].cap)), 'Gruppenfoto: beide Geräte haben ein Bild mit Beschriftung');
+  ok(await A.evaluate(() => document.getElementById('photo').style.display === 'flex' && !!document.querySelector('#photo img') && document.getElementById('phDl').download === 'gaylife-foto.jpg'), 'Foto-Fenster mit Speichern-Knopf');
+  await A.click('#phX');
+  ok(await A.evaluate(() => { GL.phone.open('photos'); const t = document.querySelector('#phone .pbody').innerHTML; GL.phone.close(); return /data-ph="0"/.test(t); }), 'Foto-App listet das Foto');
+  ok(await A.evaluate(() => { GL.phone.open('multi'); const t = document.querySelector('#phone .pbody').textContent; GL.phone.close(); return /Gruppentanz/.test(t) && /Besuch anfragen/.test(t); }), 'Zusammen-App zeigt Besuch, Gruppentanz und Gruppenfoto');
+  // Raum verlassen
+  await B.evaluate(() => GL.MP.net.close()); await A.waitForFunction(() => Object.keys(GL.MP.peers).length === 0, null, { timeout: 8000 });
+  ok(true, 'Raum verlassen: der Gastgeber bleibt alleine zurück');
   await ctx.close();
 }
 

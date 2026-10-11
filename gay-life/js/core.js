@@ -1475,14 +1475,14 @@ function cleanName(n) { n = String(n == null ? '' : n).replace(/[\u0000-\u001f<>
 function cleanLook(l) { var o = {}; l = l && typeof l === 'object' ? l : {}; for (var k in LIM) o[k] = Math.floor(num(l[k], 0, LIM[k] - 1)); return o; }
 function gameOf(id) { return GAMES.filter(function (g) { return g.id === id; })[0]; }
 function mkNet(cb) {
-  var ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', PRE = 'gaylife-', MAX = 3;
+  var ALPHA = '0123456789', PRE = 'gaylife-', PIN = 6, MAX = 3;
   var N = { role: '', code: '', peer: null, conns: new Map(), busy: false }, libs = {};
   function load(src, ok) { return libs[src] || (libs[src] = new Promise(function (res, rej) { if (ok()) return res(); var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = function () { delete libs[src]; rej(new Error('lib')); }; document.head.appendChild(s); })); }
   N.loadPeer = function () { return load('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', function () { return !!window.Peer; }); };
   N.loadQR = function () { return load('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', function () { return !!window.qrcode; }); };
-  N.norm = function (s) { return Array.from(String(s || '').toUpperCase()).filter(function (ch) { return ALPHA.indexOf(ch) >= 0; }).join('').slice(0, 4); };
+  N.norm = function (s) { return Array.from(String(s || '').toUpperCase()).filter(function (ch) { return ALPHA.indexOf(ch) >= 0; }).join('').slice(0, PIN); };
   N.link = function () { return location.href.split('#')[0] + '#join=' + N.code; };
-  function mkCode() { var c = ''; for (var i = 0; i < 4; i++) c += ALPHA[(Math.random() * ALPHA.length) | 0]; return c; }
+  function mkCode() { var c = ''; for (var i = 0; i < PIN; i++) c += ALPHA[(Math.random() * ALPHA.length) | 0]; return c; }
   function reg(conn, onOpen) {
     conn.on('open', function () {
       if (N.role === 'host' && N.conns.size >= MAX) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { conn.close(); }, 300); return; }
@@ -1511,7 +1511,7 @@ function mkNet(cb) {
     } catch (e) { N.busy = false; N.close(); throw e; }
   };
   N.join = async function (code) {
-    if (N.busy) return; code = N.norm(code); if (code.length !== 4) throw new Error('code'); N.busy = true; N.close();
+    if (N.busy) return; code = N.norm(code); if (code.length !== PIN) throw new Error('code'); N.busy = true; N.close();
     try {
       await N.loadPeer();
       await new Promise(function (res, rej) {
@@ -1527,7 +1527,7 @@ function mkNet(cb) {
   N.close = function () { N.conns.forEach(function (c) { try { c.close(); } catch (e) {} }); N.conns.clear(); if (N.peer) { try { N.peer.destroy(); } catch (e) {} } N.peer = null; N.role = ''; N.code = ''; };
   return N;
 }
-var MPERR = { code: 'Bitte den 4-stelligen Code eingeben.', nocode: 'Diesen Raum gibt es nicht (mehr).', timeout: 'Keine Verbindung, nochmal versuchen.', broker: 'Verbindungsdienst nicht erreichbar.', lib: 'Online-Bibliothek konnte nicht geladen werden (Internet?).' };
+var MPERR = { code: 'Bitte die 6-stellige PIN eingeben.', nocode: 'Diesen Raum gibt es nicht (mehr).', timeout: 'Keine Verbindung, nochmal versuchen.', broker: 'Verbindungsdienst nicht erreichbar.', lib: 'Online-Bibliothek konnte nicht geladen werden (Internet?).' };
 function mpOn() { return !!(MP.net && MP.net.role && (MP.net.role === 'host' || MP.me)); }
 function mpSelfInfo() { return { name: cleanName(S.name), look: cleanLook(S.look) }; }
 function mpDispose(p) { if (!p.g) return; if (p.g.parent) p.g.parent.remove(p.g); p.g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } }); p.g = null; }
@@ -1544,6 +1544,8 @@ function mpSetPeer(id, name, look) {
   var p = MP.peers[id] || (MP.peers[id] = { g: null, em: null, x: 0, z: 0, y: 0, tx: 0, tz: 0, ty: 0, mv: 0, lk: '' });
   p.name = cleanName(name); p.look = cleanLook(look); return p;
 }
+function cleanLoc(l) { l = String(l == null ? 'k' : l); return /^[a-z0-9:_-]{1,12}$/.test(l) ? l : 'k'; }
+function mpLoc() { var o = GL.emit('mploc'); return o && typeof o === 'object' ? o : { l: 'k', ox: 0, oz: 0 }; }
 function mpPeerCount() { return Object.keys(MP.peers).length; }
 function mpMsg(cid, d) {
   var host = MP.net.role === 'host', from = host ? MP.ids[cid] : (typeof d.from === 'string' ? d.from.slice(0, 4) : '');
@@ -1561,14 +1563,19 @@ function mpMsg(cid, d) {
   if (!host && (d.t === 'full')) { MP.status = 'Der Raum ist voll.'; mpLeave(true); return; }
   var pr = MP.peers[from]; if (!pr && d.t !== 'duel') return;
   if (d.t === 'p') {
-    pr.tx = num(d.x, -100, 100); pr.tz = num(d.z, -72, 72); pr.ty = num(d.y, -7, 7); if (!pr.g) { pr.x = pr.tx; pr.z = pr.tz; }
-    if (host) MP.net.send({ t: 'p', from: from, x: pr.tx, z: pr.tz, y: pr.ty }, cid);
+    pr.tx = num(d.x, -100, 100); pr.tz = num(d.z, -72, 72); pr.ty = num(d.y, -7, 7); pr.l = cleanLoc(d.l); if (!pr.g) { pr.x = pr.tx; pr.z = pr.tz; }
+    if (host) MP.net.send({ t: 'p', from: from, x: pr.tx, z: pr.tz, y: pr.ty, l: pr.l }, cid);
   } else if (d.t === 'e') {
     var k2 = String(d.k); if (EMO.indexOf(k2) < 0) return; mpEmote(pr, k2); sfx('tap');
     if (host) MP.net.send({ t: 'e', from: from, k: k2 }, cid);
   } else if (d.t === 'duel') {
     var gid = String(d.g); if (DUELS.indexOf(gid) < 0) return;
     if (host) { if (!MP.ids[cid]) return; mpStartDuel(gid, from); } else mpApplyDuel({ g: gid, seed: d.seed >>> 0, by: from });
+  } else if (d.t === 'x') {
+    var xk = String(d.k || ''); if (!/^[a-z]{1,10}$/.test(xk)) return; var xd = d.d && typeof d.d === 'object' ? d.d : {}, to = typeof d.to === 'string' ? d.to.slice(0, 4) : '';
+    try { if (JSON.stringify(xd).length > 1800) return; } catch (e) { return; }
+    if (host) { var tcid = null; if (to && to !== 'h') MP.ids && Object.keys(MP.ids).forEach(function (c2) { if (MP.ids[c2] === to) tcid = c2; }); if (!to) MP.net.send({ t: 'x', k: xk, d: xd, from: from }, cid); else if (tcid) MP.net.sendTo(tcid, { t: 'x', k: xk, d: xd, from: from, to: to }); }
+    if (!to || to === mpMeId()) GL.emit('mpx', from, xk, xd);
   } else if (d.t === 'score') {
     if (!MP.duel || !isFinite(+d.sc)) return; MP.duel.scores[from] = num(d.sc, 0, 1e6);
     if (host) MP.net.send({ t: 'score', from: from, sc: MP.duel.scores[from] }, cid);
@@ -1616,15 +1623,15 @@ function mpDuelCheck() {
   D.fin = 1; var me = w.indexOf(mpMeId()) >= 0, g = me ? gain(30) : gain(8); glz2();
   toast(me ? 'Duell gewonnen! +' + g + ' Glitzer' : 'Duell vorbei. +' + g + ' Glitzer'); if (WD && WD.on) { D.sf = 1; mpPanel(); } else mpRefresh();
 }
-function mpRefresh() { mpHud(); var m = $('#maps'); if (m && m.style.display === 'block' && m.dataset.k === 'mp') mpPanel(); }
+function mpRefresh() { mpHud(); GL.emit('mpchange'); var m = $('#maps'); if (m && m.style.display === 'block' && m.dataset.k === 'mp') mpPanel(); }
 function mpPanel() {
   var m = $('#maps'); if (!MP.net) MP.net = mkNet({ onMsg: mpMsg, onLeave: mpLeaveMsg });
   var N = MP.net, on = mpOn(), h = '<div class="box"><div class="gh"><h2>Zusammen spielen</h2><button class="btn sm" id="mx">Schließen</button></div>';
   if (MP.status) h += '<p class="sub">' + esc(MP.status) + '</p>';
   if (!on) {
-    h += '<p class="sub">Bis zu 4 Leute laufen gemeinsam durch Regenbogenkiez, winken sich zu und duellieren sich in Minispielen. Direkt von Gerät zu Gerät, ohne Server.</p><div class="row" style="margin:10px 0"><button class="btn pri" id="mpH">Raum öffnen</button></div><div class="lab">Oder einem Raum beitreten</div><div class="row"><input type="text" id="mpC" maxlength="4" placeholder="Code" style="width:110px;text-transform:uppercase;letter-spacing:4px;text-align:center"><button class="btn" id="mpJ">Beitreten</button></div>';
+    h += '<p class="sub">Bis zu 4 Leute laufen gemeinsam durch Regenbogenkiez, winken sich zu und duellieren sich in Minispielen. Direkt von Gerät zu Gerät, ohne Server.</p><div class="row" style="margin:10px 0"><button class="btn pri" id="mpH">Raum öffnen</button></div><div class="lab">Oder einem Raum beitreten (PIN oder QR-Code scannen)</div><div class="row"><input type="text" id="mpC" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="PIN" style="width:130px;letter-spacing:4px;text-align:center"><button class="btn" id="mpJ">Beitreten</button></div>';
   } else {
-    if (N.role === 'host') h += '<div class="panel" style="text-align:center;margin:10px 0"><div class="lab">Raum-Code</div><div class="big" style="letter-spacing:6px">' + esc(N.code) + '</div><div id="mpQ" style="width:150px;margin:8px auto"></div><button class="btn sm" id="mpL">Link kopieren</button></div>';
+    if (N.role === 'host') h += '<div class="panel" style="text-align:center;margin:10px 0"><div class="lab">Raum-PIN</div><div class="big" style="letter-spacing:6px">' + esc(N.code) + '</div><div class="sub">Zweites Gerät: QR-Code scannen oder die PIN eingeben.</div><div id="mpQ" style="width:150px;margin:8px auto"></div><button class="btn sm" id="mpL">Link kopieren</button></div>';
     h += '<div class="lab">In der Stadt</div><div>👤 ' + esc(S.name) + ' (du)' + (N.role === 'host' ? ' 👑' : '') + '</div>';
     for (var id in MP.peers) h += '<div>👤 ' + esc(MP.peers[id].name) + (id === 'h' ? ' 👑' : '') + '</div>';
     var D = MP.duel;
@@ -1651,21 +1658,21 @@ function mpPanel() {
   }
 }
 function mpFrame(dt) {
-  var W = WD, p = W.player, id, o, ids = [];
+  var W = WD, p = W.player, id, o, ids = [], lo = mpLoc();
   MP.self.g = p.g;
   for (id in MP.peers) {
     o = MP.peers[id]; var lk = o.name + JSON.stringify(o.look);
     if (o.g && o.lk !== lk) mpDispose(o);
-    if (!o.g) { o.g = makePerson(o.look); o.lk = lk; var lb = labelSprite(o.name, .55); lb.position.y = 2.7; o.g.add(lb); o.g.position.set(o.x, 0, o.z); W.scene.add(o.g); o.em = null; }
+    if (!o.g) { o.g = makePerson(o.look); o.lk = lk; var lb = labelSprite(o.name, .55); lb.position.y = 2.7; o.g.add(lb); o.g.position.set(o.x + lo.ox, 0, o.z + lo.oz); W.scene.add(o.g); o.em = null; }
     var dx = o.tx - o.x, dz = o.tz - o.z, d = Math.hypot(dx, dz), k = Math.min(1, dt * 9);
     if (d > 12) { o.x = o.tx; o.z = o.tz; } else { o.x += dx * k; o.z += dz * k; }
-    o.g.position.set(o.x, 0, o.z); o.g.rotation.y = lerpA(o.g.rotation.y, o.ty, Math.min(1, dt * 10)); animPerson(o.g, d > .15 ? 1 : 0, W.t);
+    o.g.visible = (o.l || 'k') === lo.l; o.g.position.set(o.x + lo.ox, 0, o.z + lo.oz); o.g.rotation.y = lerpA(o.g.rotation.y, o.ty, Math.min(1, dt * 10)); animPerson(o.g, d > .15 ? 1 : 0, W.t);
   }
   var all = [MP.self]; for (id in MP.peers) all.push(MP.peers[id]);
   all.forEach(function (e) { if (e.em && e.g) { e.em.t -= dt; e.em.s.position.y = 3.5 + Math.sin(W.t * 4) * .08; if (e.em.t <= 0) { e.g.remove(e.em.s); if (e.em.s.material.map) e.em.s.material.map.dispose(); e.em.s.material.dispose(); e.em = null; } } });
   MP.acc += dt; if (MP.acc < .125 || !mpOn()) return; MP.acc = 0;
-  if (Math.abs(p.x - MP.lx) > .05 || Math.abs(p.z - MP.lz) > .05 || Math.abs(W.yaw - MP.ly) > .05) {
-    MP.lx = p.x; MP.lz = p.z; MP.ly = W.yaw; var msg = { t: 'p', x: +p.x.toFixed(2), z: +p.z.toFixed(2), y: +W.yaw.toFixed(2) }; if (MP.net.role === 'host') msg.from = 'h'; MP.net.send(msg);
+  if (Math.abs(p.x - MP.lx) > .05 || Math.abs(p.z - MP.lz) > .05 || Math.abs(W.yaw - MP.ly) > .05 || lo.l !== MP.ll) {
+    MP.lx = p.x; MP.lz = p.z; MP.ly = W.yaw; MP.ll = lo.l; var msg = { t: 'p', x: +(p.x - lo.ox).toFixed(2), z: +(p.z - lo.oz).toFixed(2), y: +W.yaw.toFixed(2), l: lo.l }; if (MP.net.role === 'host') msg.from = 'h'; MP.net.send(msg);
   }
   MP.chk += .125; if (MP.chk > 2) { MP.chk = 0; var si = JSON.stringify(mpSelfInfo()); if (si !== MP.sent) { MP.sent = si; if (MP.net.role === 'host') mpRoster(); else MP.net.send(Object.assign({ t: 'hi' }, mpSelfInfo())); } }
 }
@@ -1675,7 +1682,7 @@ function mpControls() {
   [].forEach.call(document.querySelectorAll('#emo button'), function (b) { b.onclick = function () { var k = b.textContent; if (!mpOn()) return; mpEmote(MP.self, k); sfx('tap'); var msg = { t: 'e', k: k }; if (MP.net.role === 'host') msg.from = 'h'; MP.net.send(msg); }; });
 }
 function mpAuto() {
-  var m = /#join=([A-Za-z0-9]{4})/.exec(location.hash); if (!m || !WD) return; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  var m = /#join=(\d{6})/.exec(location.hash); if (!m || !WD) return; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   mpPanel(); mpJoin(m[1]);
 }
 
@@ -1687,5 +1694,11 @@ GL.core = { talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toa
   GAMES: GAMES, POIS: POIS, QUESTS: QUESTS, SIDE: SIDE, NPCDEF: NPCDEF, DATES: DATES, STARS: STARS, RB: RB, resize: function () { if (WD && WD.on) resize(); } };
 Object.defineProperty(GL, 'W', { get: function () { return WD; } });
 Object.defineProperty(GL, 'MP', { get: function () { return MP; } });
+GL.mp = {
+  on: function () { return mpOn(); }, me: function () { return MP.net ? mpMeId() : ''; }, host: function () { return !!(MP.net && MP.net.role === 'host'); }, panel: function () { mpPanel(); },
+  peers: function () { var o = {}; for (var k in MP.peers) o[k] = { name: MP.peers[k].name, look: MP.peers[k].look, l: MP.peers[k].l || 'k' }; if (MP.net && MP.net.role !== 'host' && MP.peers.h == null) {} return o; },
+  name: function (id) { return mpNameOf(id); },
+  send: function (k, d, to) { if (!mpOn()) return false; var m = { t: 'x', k: String(k), d: d || {} }; if (to) m.to = String(to); if (MP.net.role === 'host') { m.from = 'h'; if (to) { var tc = null; Object.keys(MP.ids).forEach(function (c) { if (MP.ids[c] === to) tc = c; }); if (tc) MP.net.sendTo(tc, m); return !!tc; } MP.net.send(m); return true; } MP.net.send(m); return true; }
+};
 GL.boot = function () { showHub(); setTimeout(mpAuto, 600); };
 })();
