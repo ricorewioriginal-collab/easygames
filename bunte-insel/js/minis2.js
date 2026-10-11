@@ -352,4 +352,51 @@
   h.register('bauplan_bauland', plan(), { icon: '🏗️', name: 'Pixel-Plan', help: 'Merke dir den Bauplan – dann Farbe wählen und die Felder aus dem Gedächtnis nachbauen. Mit jeder Stufe wird das Muster größer!', dur: 80, goal: 30, zone: 'bauland' });
   h.register('stroemung_atlantis', stroem(), { icon: '💧', name: 'Strömungs-Rätsel', help: 'Tippe die Rohre an, um sie zu drehen – leite das Wasser von der Quelle links bis zum Becken rechts! Mit jeder Stufe wird das Feld größer.', dur: 90, goal: 30, zone: 'atlantis' });
   h.register('ringflug_drache', flug(), { icon: '🐉', name: 'Drachenflug', help: 'Flieg als Drache durch die goldenen Ringe, sammle Funkelsteine und weiche den Gewitterwolken aus!', dur: 60, goal: 40, zone: 'drachen' });
+  /* =====================  ⚔️ ELEMENTAR-KAMPF (Zotik / Lunaris)  ===================== */
+  /* Rundenkampf im Elementkreis: Feuer › Natur › Licht › Schatten › Wasser › Feuer. Wähle das Element, das den Gegner schlägt (doppelter Schaden); das falsche Element schlägt zurück. */
+  const elem = () => {
+    const G = {}, EL = [{ n: 'Feuer', e: '🔥', c: '#ff7a2e' }, { n: 'Natur', e: '🌿', c: '#4cd07d' }, { n: 'Licht', e: '✨', c: '#ffe27a' }, { n: 'Schatten', e: '🌑', c: '#9b6ae8' }, { n: 'Wasser', e: '💧', c: '#4da3ff' }];
+    const MON = [['Moosling', '🌱', 1], ['Dornenwolf', '🐺', 1], ['Frostgeist', '👻', 4], ['Lavadrache', '🐲', 0], ['Schattenwandler', '🥷', 3], ['Waldhüter', '🌳', 1], ['Pilzling', '🍄', 2], ['Abyssal', '🐙', 4]];
+    let mi, hp, hearts, cd, atk, atkT, combo, msg, msgT, shake, flash, ko, kills;
+    const spawn = () => { mi = (mi + 1) % MON.length; hp = 6; atk = Math.max(1.8, 3.6 - kills * .12); atkT = atk; };
+    const geo = () => { const W = h.W(), H = h.H(), bs = Math.min(W / 5.6, H * .15, 92); return { W, H, bs, by: H - bs * 1.05 - 14, bx: i => W / 2 + (i - 2) * bs * 1.12 }; };
+    G.init = function () { mi = -1; kills = 0; hearts = 5; cd = 0; combo = 0; msg = ''; msgT = 0; shake = 0; flash = 0; ko = 0; spawn(); };
+    G.resize = function () { };
+    const say = (s, d) => { msg = s; msgT = d || 1.2; };
+    function pick(i) {
+      if (ko > 0 || cd > 0) return; const e = MON[mi][2], g = geo(); cd = .32; const rel = (i + 1) % 5 === e ? 2 : (e + 1) % 5 === i ? 0 : 1;
+      if (rel === 0) { hearts--; combo = 0; shake = .35; flash = .25; snd('bonk'); say(EL[e].n + ' schlägt ' + EL[i].n + '! Au!', 1.1); if (hearts <= 0) { ko = 1.6; say('Erschöpft – kurze Pause …', 1.6); } return; }
+      hp -= rel === 2 ? 2 : 1; if (rel === 2) { combo++; say('Wirkungsvoll!' + (combo > 1 ? ' x' + combo : ''), .9); snd('star'); } else { combo = 0; say('Treffer', .6); snd('pop'); } h.burst(g.W / 2, g.H * .34, rel === 2 ? 14 : 6, [EL[i].c, '#fff']);
+      if (hp <= 0) { const pts = 3 + Math.min(4, combo); kills++; h.add(pts, g.W / 2, g.H * .3); h.burst(g.W / 2, g.H * .34, 22, ['#ffe27a', '#fff', EL[e].c]); snd('ding'); if (hearts < 5 && kills % 2 === 0) hearts++; spawn(); }
+    }
+    G.tap = function (x, y) { const g = geo(); for (let i = 0; i < 5; i++) if (Math.abs(x - g.bx(i)) < g.bs * .56 && Math.abs(y - g.by) < g.bs * .62) { pick(i); return; } };
+    G.keydown = c => { const k = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4 }[c]; if (k != null) pick(k); };
+    G.update = function (dt) {
+      cd = Math.max(0, cd - dt); msgT = Math.max(0, msgT - dt); shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt);
+      if (ko > 0) { ko -= dt; if (ko <= 0) { hearts = 3; combo = 0; spawn(); } return; }
+      atkT -= dt; if (atkT <= 0) { atkT = atk; hearts--; combo = 0; shake = .35; flash = .25; snd('bonk'); say(MON[mi][0] + ' greift an!', 1); if (hearts <= 0) { ko = 1.6; say('Erschöpft – kurze Pause …', 1.6); } }
+    };
+    G.dbg = () => ({ mi, hp, hearts, kills, el: MON[mi][2], pick });
+    G.draw = function () {
+      const c = h.ctx(), g = geo(), W = g.W, H = g.H, m = MON[mi], e = m[2]; h.bg('#2a1a6a', '#0a0620');
+      for (let i = 0; i < 30; i++) { c.fillStyle = 'rgba(255,255,255,' + (.25 + (i % 4) * .15) + ')'; c.fillRect((i * 83.7) % W, (i * 47.3) % (H * .6), 2, 2); }
+      c.save(); if (shake > 0) c.translate(Math.sin(shake * 90) * 6, 0);
+      c.fillStyle = EL[e].c + '33'; c.beginPath(); c.arc(W / 2, H * .34, Math.min(W, H) * .24, 0, 6.3); c.fill();
+      h.emoji(m[1], W / 2, H * .34 + Math.sin(performance.now() / 400) * 6, Math.min(W, H) * .3);
+      c.font = 'bold ' + Math.round(Math.min(26, W * .05)) + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff'; c.fillText(m[0] + '  ' + EL[e].e + ' ' + EL[e].n, W / 2, H * .12);
+      const bw = Math.min(W * .6, 320); rr(c, W / 2 - bw / 2, H * .17, bw, 14, 7); c.fillStyle = 'rgba(0,0,0,.45)'; c.fill(); rr(c, W / 2 - bw / 2, H * .17, Math.max(0, bw * hp / 6), 14, 7); c.fillStyle = '#ff5a6a'; c.fill();
+      if (ko <= 0) { rr(c, W / 2 - bw / 2, H * .17 + 20, bw, 6, 3); c.fillStyle = 'rgba(0,0,0,.35)'; c.fill(); rr(c, W / 2 - bw / 2, H * .17 + 20, bw * Math.max(0, atkT / atk), 6, 3); c.fillStyle = '#ffd23f'; c.fill(); }
+      c.restore();
+      if (msgT > 0) { c.font = 'bold ' + Math.round(Math.min(34, W * .065)) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = '#ffe9a8'; c.fillText(msg, W / 2, H * .6); }
+      for (let i = 0; i < 5; i++) {
+        const x = g.bx(i), eff = (i + 1) % 5 === e && kills < 4 && ko <= 0; rr(c, x - g.bs * .5, g.by - g.bs * .5, g.bs, g.bs, 16); c.fillStyle = cd > 0 ? 'rgba(255,255,255,.1)' : EL[i].c + 'cc'; c.fill(); c.lineWidth = eff ? 5 : 2; c.strokeStyle = eff ? '#fff' : 'rgba(255,255,255,.4)'; c.stroke();
+        h.emoji(EL[i].e, x, g.by - 4, g.bs * .5); c.font = 'bold ' + Math.round(g.bs * .17) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = '#fff'; c.fillText(EL[i].n, x, g.by + g.bs * .36);
+      }
+      for (let i = 0; i < 5; i++) h.emoji(i < hearts ? '❤️' : '🖤', 28 + i * 30, H - 16 - g.bs * 1.65, 24);
+      if (flash > 0) { c.fillStyle = 'rgba(255,60,60,' + flash * .8 + ')'; c.fillRect(0, 0, W, H); }
+      c.font = '600 ' + Math.round(Math.min(16, W * .03)) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = 'rgba(255,255,255,.75)'; c.fillText('Feuer › Natur › Licht › Schatten › Wasser › Feuer', W / 2, H - 8);
+    };
+    return G;
+  };
+  h.register('elementar_zotik', elem(), { icon: '⚔️', name: 'Elementar-Kampf', help: 'Rundenkampf im Elementkreis: Feuer schlägt Natur, Natur schlägt Licht, Licht schlägt Schatten, Schatten schlägt Wasser, Wasser schlägt Feuer. Wähle das passende Element!', dur: 75, goal: 30, zone: 'zotik' });
 });

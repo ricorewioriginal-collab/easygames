@@ -67,6 +67,7 @@ BI.buildWorld = function (scene) {
       else if (W.park && px > 160 && Math.hypot(px - W.park.x, pz - W.park.z) < W.park.R + 40 && Math.abs(pz - W.park.z) < 70) { const dd = Math.hypot(px - W.park.x, pz - W.park.z) || 1, k = Math.min(1, (W.park.R - r) / dd); px = W.park.x + (px - W.park.x) * k; pz = W.park.z + (pz - W.park.z) * k; hit = true; }
       else if (W.city && pz < -170 && Math.hypot(px - W.city.x, pz - W.city.z) < Math.hypot(px, pz) + 20 && Math.hypot(px - W.city.x, pz - W.city.z) < W.city.R + 40) { const dd = Math.hypot(px - W.city.x, pz - W.city.z) || 1, k = (W.city.R - r) / dd; px = W.city.x + (px - W.city.x) * k; pz = W.city.z + (pz - W.city.z) * k; hit = true; }
       else if (W.atlantis && W.atlantis.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Atlantis (unter der Erde) */ }
+      else if (W.zotik && W.zotik.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Zotik / Lunaris (schwebende Insel) */ }
       else if (W.bauland && baulandWalk(px, pz, r)) { /* Brücke / Bauland */ }
       else if (W.bauland && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < W.bauland.R + 60 && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < Math.hypot(px, pz)) { const dd = Math.hypot(px - W.bauland.x, pz - W.bauland.z) || 1, k = Math.min(1, (W.bauland.R - r) / dd); px = W.bauland.x + (px - W.bauland.x) * k; pz = W.bauland.z + (pz - W.bauland.z) * k; hit = true; }
       else { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
@@ -406,7 +407,8 @@ BI.buildWorld = function (scene) {
   BI.buildDrachenGround({ W, st, lamp, ROADY });
   BI.buildBaulandGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
-  BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade();
+  BI.buildZotikGround({ W, st, lamp, scene });
+  BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade(); BI.ZOTIK.addArcade();
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
   { const x0 = -72, x1 = -46, z0 = 46, z1 = 66;
@@ -705,6 +707,7 @@ BI.buildWorld = function (scene) {
   };
   W.groundY = (x, z) => {
     if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
+    if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
     for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;
     const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
     if (Math.abs(x) < 2.5 && z > 156 && z < 208) return .65;

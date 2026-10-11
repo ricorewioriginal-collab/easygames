@@ -108,6 +108,7 @@ Jede Welt hat einen **Spielautomaten** (davorstellen → „Spielen“) mit ihre
 - 🏙️ **Taxi-Rush** (Stadt) – **Spurwechsel-Rennen**: Tippen/Ziehen oder ←/→, Autos und Sperren ausweichen, Fahrgäste (+5) und Münzen sammeln, „Knapp!“-Bonus.
 - 🥫 **Dosen-Knall** (Freizeitpark) – **Wurfbude**: Ball ziehen, zielen (Flugbahn-Vorschau), loslassen; Dosenpyramiden wackeln und fallen, 5 Pyramiden, goldene Dose, Kombos.
 - 💃 **Pride-Disco** (Regenbogenwelt) – **Rhythmus-Tanzspiel**: Pfeile im Takt treffen (D F J K, ←↓↑→ oder auf die Spuren tippen), eigener Beat mit Kick, Snare, Hi-Hat und Bass, Töne im Browser erzeugt, Perfekt-Treffer und Kombo-Multiplikator.
+- ⚔️ **Elementar-Kampf** (Zotik – Lunaris) – **Rundenkampf im Elementkreis**: Feuer › Natur › Licht › Schatten › Wasser › Feuer. Das passende Element wählen = doppelter Schaden (am Anfang leuchtet der Tipp), das falsche schlägt zurück; 5 Herzen, Monster aus der Zotik-Welt (Moosling, Dornenwolf, Frostgeist, Lavadrache …), Kombos. Tippen oder Tasten 1–5.
 Quelltext: `js/minis2.js` (vier Spiele), `js/jump.js`, `js/arcade.js` (Automaten); `js/mini.js` reicht Zeiger-ID, Ziehen und Loslassen durch und lädt Erweiterungen über `BI.MINI_EXT`; `js/audio.js` hat dafür `A.note`/`A.drum`/`A.now`.
 Außerdem **vier weitere Fellretter-Einsätze** (jetzt 12; Goldmedaille nach allen zwölf).
 
@@ -223,6 +224,20 @@ Eingang: leuchtendes Steintor am See der Hauptinsel (🧭 → Atlantis, E am Tor
 Was es sonst nirgends gibt: **Aqua-Gleiter** (schwebende Fahrzeuge), **Schwerelos-Halle** (Mondschwerkraft, riesige Sprünge), **Kristall-Harfe** (8 Kristalle anschlagen, links nach rechts = Bonus), **Hologramm-Archiv** (die Sage in 5 Bildern, kindgerecht, als Sage gekennzeichnet), **Orichalcum-Splitter** (72 Stück, je 10 = 1 ⭐), **Delfin-Drohnen** und **Leuchtquallen**, Highlight-Spiel **💧 Strömungs-Rätsel** (Leitungs-Puzzle, Spielautomat im Ring). 5 Bewohner, eigene Musik, Einträge im Aufgaben-Log.
 
 Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die großen Hauptwelt-Meshes, Himmel, Wolken und Wetter ausgeblendet. Dateien: `js/atlantis.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Rätsel), `js/vehicles.js` (Gleiter).
+
+### ⭐ Zotik – Lunaris, die Hauptstadt der Splitter (eigenes Rollenspiel-Universum)
+
+Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als begehbare Welt. **Eingang:** leuchtender Kristallring „Rissportal“ im Westen der Hauptinsel (🧭 → Zotik, E am Portal). Lunaris liegt weit weg auf einer eigenen schwebenden Insel mit Abendhimmel, Mond und Sternen; die Hauptwelt wird dort ausgeblendet (spart GPU).
+
+- **Stadt:** Plaza mit Mondkristall-Brunnen, Markt „Wanderhand“ (Händler Rurik), Taverne, Akademie-Turm, **Burg Lunaris auf einem 8-stufigen Hügel**, Hafen, schwebende Nachbarinseln, leuchtende Mondbäume.
+- **Bewohner mit Dialog:** Mira (Questgeberin), Rurik, Lyra, Rovan, Nia, Professorium. **Moosling Felli** streicheln = neuer **Partner** (wie Zündel/Willi).
+- **Quest „Der Ruf des Kristalls“:** Mira → Hinweis im Hafen → Riss an der Akademie (**Elementar-Kampf**) → Mira berichten (+10 ⭐); steht im 📋 Aufgaben-Log.
+- **Luftschiff Nautilux** im Hafen: einsteigen, fliegen (Steigen/Sinken), landen, aussteigen.
+- **Weltentore (nach der Quest):** 6 Tore zu Drachenhöhen, Fellretter-Bucht, Dampfer-Hafen, Regenbogenwelt, Bauland und Atlantis – Weltenhüpfen.
+- **Währung Splitter 💠:** 64 Splitter liegen in Lunaris; **10 Splitter = 1 ⭐** (automatisch, wie die Diamanten der Drachenwelt). Goldene zählen 5.
+- **Neue Vorlagen:** Lyra, Rovan und Nia stehen neben Zotik im Charakter-Studio (für alle wählbar).
+- Dateien: `js/zotik.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Elementar-Kampf), `js/vehicles.js` (Nautilux), `js/themes.js` (Musik „Lunaris“).
+- **Rechtliches:** Zotik, seine Welt und alle Figuren sind Ricos eigene Erfindung; von Fantasy-Spielen sind nur allgemeine Ideen (schwebende Inseln, Weltentore, Elementkreis) übernommen, keine geschützten Figuren, Namen oder Bilder. Keine Rechtsberatung.
 
 ### 🎤 Popstar Kay und 🦊 Zotik (neue Vorlagen, für alle wählbar)
 

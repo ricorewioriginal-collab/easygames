@@ -166,6 +166,9 @@ BI.HEROES = [
   { id: 'kay', name: 'Popstar Kay', icon: '🎤', o: { shirt: 0xe8672a, pants: 0x8d929c, hair: 0xf3d98a, skin: 0xf3c9a0, style: 'mullet', beard: 4, beardc: 0x6b4423, brow: 3, ctype: 3, rainbow: true, earring: 1, necklace: 0xffd23f, nosering: true, lip: 0xb23c35, shoeT: 1, shoe: 0x23262d, scale: 1.03 } },
   /* Zotik, der Weltenhörer: Fuchs-Mensch (eigene Erfindung) mit grünem Schal, Lederriemen, fingerlosen Handschuhen und buschigem Schwanz */
   { id: 'zotik', name: 'Zotik', icon: '🦊', o: { shirt: 0x6b4a2a, pants: 0x3a2a1a, hair: 0xf08a24, skin: 0xe8832a, style: 'shaggy', fox: true, eye: 0x3fb04a, brow: 2, mouth: 'none', sleeve: 2, scarf: 0x3fa04a, harness: 0x5a3a1e, gloves: 0x4a2e18, shoeT: 1, shoe: 0x4a2e18, ctype: 5, blush: false } },
+  { id: 'lyra', name: 'Lyra', icon: '✨', o: { shirt: 0x1d2a6a, pants: 0x2a2a3a, hair: 0x3fa0ff, skin: 0xf3c9a0, style: 'long', cape: true } },
+  { id: 'rovan', name: 'Rovan', icon: '⚔️', o: { shirt: 0x5a3a2a, pants: 0x2a2a2a, hair: 0x222222, skin: 0xd8a070, style: 'short', beard: 5, beardc: 0x222222, ctype: 3, brow: 3, build: 2, scale: 1.04 } },
+  { id: 'nia', name: 'Nia', icon: '🏹', o: { shirt: 0x2f6a4a, pants: 0x3a2a1a, hair: 0x4a3322, skin: 0xe0a979, style: 'ponytail', glassT: 3, cape: true } },
   { id: 'custom', name: 'Eigener Held', icon: '🎨', o: {} }
 ];
 BI.heroById = id => BI.HEROES.find(h => h.id === id) || BI.HEROES[0];
@@ -201,14 +204,14 @@ BI.presetToCu = function (po) {
 BI.PETS = [
   { id: 'blitz', name: 'Blitz', icon: '🐕‍🦺' }, { id: 'bello', name: 'Bello', icon: '🐶' }, { id: 'mieze', name: 'Mieze', icon: '🐱' },
   { id: 'hoppel', name: 'Hoppel', icon: '🐰' }, { id: 'schnuffel', name: 'Schnuffel', icon: '🐷' }, { id: 'rexi', name: 'Rexi', icon: '🦖' },
-  { id: 'zuendel', name: 'Zündel', icon: '🐲', mascot: true }, { id: 'willi', name: 'Willi', icon: '🐭', mascot: true } // Maskottchen aus anderen Welten: werden dort als Partner freigeschaltet
+  { id: 'zuendel', name: 'Zündel', icon: '🐲', mascot: true }, { id: 'willi', name: 'Willi', icon: '🐭', mascot: true }, { id: 'moosling', name: 'Felli', icon: '🌱', mascot: true } // Maskottchen aus anderen Welten: werden dort als Partner freigeschaltet
 ];
 /* Maskottchen-Partner: Figur der Welt (BI.makeDrache / BI.makeWilli) mit der gleichen Haustier-Schnittstelle (pose/trick/reset) */
 BI.makeMascotPet = function (def) {
-  const dr = def.id === 'zuendel', rig = dr ? BI.makeDrache({}) : BI.makeWilli(), root = new THREE.Group(); rig.root.scale.setScalar(dr ? 1 : 1.1); root.add(rig.root);
+  const dr = def.id === 'zuendel', mo = def.id === 'moosling', rig = dr ? BI.makeDrache({}) : mo ? BI.makeMoosling() : BI.makeWilli(), root = new THREE.Group(); rig.root.scale.setScalar(dr ? 1 : 1.1); root.add(rig.root);
   return { group: root, reset() { rig.root.position.y = 0; },
-    trick(nm, k) { rig.set(dr ? 'happy' : 'dance', k * 3, 0); },
-    pose(phase, amp, wag) { const mv = amp > .05; if (dr) { rig.set(mv ? 'walk' : 'idle', phase / 8); rig.root.position.y = 0; } else { rig.set('idle', phase / 2); rig.root.position.y = mv ? Math.abs(Math.sin(phase)) * .09 : 0; } } };
+    trick(nm, k) { rig.set(dr || mo ? 'happy' : 'dance', k * 3, 0); },
+    pose(phase, amp, wag) { const mv = amp > .05; if (mo) { rig.set(mv ? 'walk' : 'idle', phase / 8); } else if (dr) { rig.set(mv ? 'walk' : 'idle', phase / 8); rig.root.position.y = 0; } else { rig.set('idle', phase / 2); rig.root.position.y = mv ? Math.abs(Math.sin(phase)) * .09 : 0; } } };
 };
 BI.makePet = function (kind, name) {
   const def = BI.PETS.find(p => p.id === kind) || BI.PETS[0]; name = name || def.name;

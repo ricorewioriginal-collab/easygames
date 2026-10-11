@@ -23,6 +23,7 @@ BI.VEH = {
   drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
+  nautilux:  { name: 'Nautilux (Luftschiff)', icon: '🚢', max: 20, rev: 6, turn: 1.35, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 3.2, cam: 17 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -77,6 +78,15 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.sph(0, .7, 0, 1.25, 0xeaf6fb, 1, .95, .42, 1.7); b.sph(0, 1.0, .35, .8, 0x7fe8ff, 1, .85, .6, 1.1); b.box(0, .55, -1.9, .12, .9, .9, 0x35d6e0); for (const x of [-.95, .95]) b.box(x, .45, -.6, .12, .35, 1.4, 0x35d6e0, 0, 0, x > 0 ? -.25 : .25);
       b.cyl(0, .06, 0, 1.15, 1.15, .1, 0x35e0ff, 18); b.cyl(0, .02, 0, 1.0, 1.0, .06, 0xffffff, 18);
       return { wheels: [], head: [[-.5, .55, 2.0], [.5, .55, 2.0]], tail: [[-.4, .6, -2.05], [.4, .6, -2.05]] };
+    },
+    nautilux(b) { // Nautilux (Zotik-Welt): blau-goldenes Luftschiff mit Messingringen, Heckflossen, Gondel und Bullaugen
+      const BL = 0x2f6fb8, GD = 0xd8a24a, DK = 0x2a3a5a;
+      b.sph(0, 3.4, 0, 1.0, BL, 1, 1.5, 1.2, 4.4); for (const z of [-3, -1.2, .6, 2.4]) b.cyl(0, 3.4, z, 1.52, 1.52, .22, GD, 16, Math.PI / 2); b.box(0, 5.35, -.8, .12, .5, 3.5, GD);
+      b.box(0, 3.4, -4.6, .12, 2.6, 1.6, DK); b.box(0, 3.4, -4.6, 2.9, .12, 1.4, DK); b.box(0, 3.4, -4.6, .12, 1.6, 1.1, GD, 0, 0, 0);
+      b.box(0, 1.5, .4, 1.8, .9, 5.2, 0x8a5a33); b.box(0, 2.0, .4, 2.0, .15, 5.4, GD); for (const x of [-.92, .92]) for (const z of [-1.4, .4, 2.2]) b.sph(x, 1.6, z, .22, 0xa8dcff, 1, .3, 1, 1);
+      for (const x of [-1, 1]) { b.box(x * .7, 2.4, -.8, .1, 1.4, .1, GD); b.box(x * .7, 2.4, 1.8, .1, 1.4, .1, GD); }
+      b.box(0, 3.4, 5.6, .5, .5, .5, GD); b.sph(0, 3.4, 5.7, .35, 0x7fe8ff, 1);
+      return { wheels: [], head: [[0, 1.2, 3.1]], tail: [[0, 3.4, -5.5]] };
     },
     ambulance(b) {
       b.box(0, .45, 0, 2.1, 1.9, 5.0, 0xfafcff); b.box(0, .85, 0, 2.14, .26, 4.9, 0xe53b3b); b.box(0, 1.1, 2.51, 1.8, .7, .05, GLASS);
@@ -208,6 +218,10 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         const tb = new BI.Batch(); tb.box(0, -.6, 0, .06, 1.2, .16, 0x2b2f3a); this.rotorTail = mk(tb, model.rotor.tail);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
       }
+      if (type === 'nautilux') { // Heckpropeller + Schatten
+        const pb = new BI.Batch(); for (let i = 0; i < 3; i++) pb.box(0, 0, 0, .14, 1.7, .08, 0xd8a24a, 0, 0, i * 2.094); this.prop = new THREE.Group(); this.prop.add(pb.mesh(BI.mat())); this.prop.position.set(0, 3.4, -5.6); this.tilt.add(this.prop);
+        this.shadow = new THREE.Mesh(new THREE.CircleGeometry(3.6, 18), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
+      }
       if (type === 'drake') { // Reit-Drache: Zündel-Figur dreifach groß, Schatten am Boden
         this.rig = BI.makeDrache({}); this.rig.root.scale.setScalar(3); this.tilt.add(this.rig.root);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.6, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
@@ -284,6 +298,11 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, -this.steerCur * Math.abs(this.v) / sp.max * .22 + Math.sin(t * 1.3) * .03, 5, dt); this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .01, -.08, .08) + Math.sin(t * 1.1) * .02, 4, dt);
         if (fx && Math.abs(this.v) > 1.5 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 2.2 + (Math.random() - .5), -.1, this.z - Math.cos(this.h) * 2.2 + (Math.random() - .5), (Math.random() - .5) * 1.4, .8, (Math.random() - .5) * 1.4, 1.1, 40, .95, .98, 1, 1, .8);
         return;
+      }
+      if (sp.airship) {
+        const air = this.y > .3; this.prop.rotation.z += dt * (air ? 22 : 3); this.tilt.position.y = air ? Math.sin(t * 1.6) * .18 : 0;
+        this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.vy * .02 + this.v / sp.max * .05, -.25, .25), 3, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, air ? this.steerCur * .2 : 0, 3, dt);
+        this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .015); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .004); return;
       }
       if (sp.drake) {
         const air = this.y > .3 || (this.driver && Math.abs(this.v) > 1); this.rig.set(air ? 'fly' : 'idle', t); this.rig.inner.position.y = 0;
