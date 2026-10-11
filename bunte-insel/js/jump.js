@@ -1,26 +1,19 @@
 'use strict';
 /* Bunte Insel – Jump 'n' Run als Mini-Spiel (2D, wird in mini.js eingehängt): in jeder Welt ein eigenes Highlight-Level.
+   Nur für die Fellretter-Bucht (Highlight-Spiel dieser Welt; jede andere Welt hat eine andere Spielart, siehe minis2.js).
    Kein Kinderkram: Lauf- und Sprungsteuerung mit Doppelsprung, Lücken, Stacheln, Gegner (draufspringen!), bewegliche Plattformen, Sprungfedern,
    Checkpoints, 3 Leben, versteckte Sterne und ein Ziel. Das Level entsteht aus dem Startwert (seed): bei „Mit Freunden“ spielen alle dasselbe.
    Steuerung: Tastatur (←/→ oder A/D, Leertaste/↑/W) oder Touch-Knöpfe (◀ ▶ links, Sprung rechts; auch mehrere Finger gleichzeitig). */
 BI.JUMP = {
   /* Pro Welt ein Thema: Farben, Emojis, Länge, Schwierigkeit (0..1) */
   THEMES: {
-    jump_insel: { name: 'Insel-Hüpfer', icon: '🏝️', hero: '🐕', help: 'Hüpf über die Insel! Gegner anspringen, Lücken überwinden, das Ziel erreichen.', len: 230, diff: .4, goal: 40,
-      sky: ['#6cc8ff', '#e9f8ff'], ground: '#c79a52', top: '#4cd07d', plat: '#ff9a3c', coin: '🍎', star: '🐚', walker: '🐌', flyer: '🦋', goal: '🏝️', bg: 'hills' },
-    jump_stadt: { name: 'Dächer-Parcours', icon: '🏙️', hero: '🐕', help: 'Über die Dächer der Stadt! Lücken, Tauben und wackelige Plattformen.', len: 280, diff: .7, goal: 50,
-      sky: ['#ff9a6c', '#ffe3c2'], ground: '#6b6f80', top: '#9aa0b4', plat: '#4da3ff', coin: '🪙', star: '💎', walker: '🐀', flyer: '🐦', goal: '🏛️', bg: 'city' },
-    jump_park: { name: 'Achterbahn-Dash', icon: '🎢', hero: '🐕', help: 'Durch den Freizeitpark flitzen: Federn, bewegte Plattformen und Ballons!', len: 260, diff: .6, goal: 50,
-      sky: ['#2a1650', '#7b3fa8'], ground: '#4a3a6a', top: '#ffd23f', plat: '#ff5a8a', coin: '🍭', star: '🎟️', walker: '🐢', flyer: '🎈', goal: '🎡', bg: 'park' },
-    jump_regenbogen: { name: 'Regenbogen-Hüpfer', icon: '🌈', hero: '🐕', help: 'Spring über bunte Wolken-Wege zur Regenbogen-Flagge!', len: 250, diff: .55, goal: 50,
-      sky: ['#b9a2ff', '#ffe3f4'], ground: '#8a7ac0', top: 'rainbow', plat: '#ff8fc8', coin: '⭐', star: '🌈', walker: '🐞', flyer: '☁️', goal: '🏳️‍🌈', bg: 'rainbow' },
     jump_bucht: { name: 'Fellretter-Sprint', icon: '🐶', hero: '🐕‍🦺', help: 'Der schwerste Einsatz: Rette das Kätzchen am Ende! Wenig Fehler erlaubt.', len: 300, diff: .85, goal: 60,
       sky: ['#46b4ff', '#d8f2ff'], ground: '#e0b46c', top: '#2d6be0', plat: '#ff7a1a', coin: '🦴', star: '⭐', walker: '🦀', flyer: '🦅', goal: '🐱', bg: 'sea' }
   },
   install(M, h) {
     const COLS = ['#ff3b3b', '#ff9a2e', '#ffe14a', '#4cd07d', '#3fa0ff', '#9b4de0'], A = h.A;
     const snd = n => { try { A[n] && A[n](); } catch (e) { } };
-    for (const kind of Object.keys(BI.JUMP.THEMES)) { const T = BI.JUMP.THEMES[kind]; h.register(kind, make(T), { icon: T.icon, name: T.name, help: T.help, dur: 150, goal: T.goal }); }
+    for (const kind of Object.keys(BI.JUMP.THEMES)) { const T = BI.JUMP.THEMES[kind]; h.register(kind, make(T), { icon: T.icon, name: T.name, help: T.help, dur: 150, goal: T.goal, zone: 'fellretter' }); }
 
     /* ---------- Level aus dem Startwert bauen ---------- */
     function build(T) {
@@ -164,3 +157,4 @@ BI.JUMP = {
     }
   }
 };
+(BI.MINI_EXT = BI.MINI_EXT || []).push(BI.JUMP.install);

@@ -1,11 +1,11 @@
 'use strict';
-/* Bunte Insel – Spielautomaten: in jeder Welt steht ein Automat mit dem Highlight-Spiel der Welt (Jump 'n' Run, siehe jump.js).
+/* Bunte Insel – Spielautomaten: in jeder Welt steht ein Automat mit dem Highlight-Spiel der Welt (jede Welt eine andere Spielart: Heli-Flug, Taxi-Rennen, Dosenwerfen, Rhythmus-Tanz, Jump 'n' Run – siehe minis2.js und jump.js).
    Davorstellen → „Spielen“ startet das Level (allein; mit Freunden über das 🎮-Spiele-Menü). Statisch im Welt-Mesh, zur Laufzeit nur ein Schild pro Automat. */
 BI.ARCADES = [
-  { kind: 'jump_insel', x: 9, z: 36, yaw: Math.PI, body: 0x2fae5a, top: 0xffd23f },
-  { kind: 'jump_stadt', x: 8.5, z: -258, yaw: -Math.PI / 2, body: 0x3a4a6a, top: 0x4da3ff },
-  { kind: 'jump_park', x: 241, z: 29, yaw: Math.PI, body: 0x7b3fa8, top: 0xffd23f },
-  { kind: 'jump_regenbogen', x: -262, z: 29.5, yaw: Math.PI * .5, body: 0xff8fc8, top: 'rainbow' },
+  { kind: 'heli_insel', x: 9, z: 36, yaw: Math.PI, body: 0x2fae5a, top: 0xffd23f },
+  { kind: 'taxi_stadt', x: 8.5, z: -258, yaw: -Math.PI / 2, body: 0x3a4a6a, top: 0x4da3ff },
+  { kind: 'cans_park', x: 241, z: 29, yaw: Math.PI, body: 0x7b3fa8, top: 0xffd23f },
+  { kind: 'dance_regenbogen', x: -262, z: 29.5, yaw: Math.PI * .5, body: 0xff8fc8, top: 'rainbow' },
   { kind: 'jump_bucht', x: -80, z: 276.5, yaw: Math.PI, body: 0xff7a1a, top: 0x2d6be0 }
 ];
 BI.buildArcades = function (c) {
@@ -22,9 +22,9 @@ BI.buildArcades = function (c) {
   }
 };
 BI.createArcade = function (G) {
-  const { scene, W, P } = G, K = {}, T = BI.JUMP.THEMES;
+  const { scene, W, P } = G, K = {};
   const sign = (txt, x, y, z, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#16335e'; c.strokeText(txt, 256, 50); c.fillStyle = '#ffe27a'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(x, y, z); scene.add(sp); };
-  for (const a of W.spots.arcades || []) sign('🕹️ ' + T[a.kind].name, a.x, 4.4, a.z, 5.4);
+  for (const a of W.spots.arcades || []) { const d = G.info(a.kind) || {}; sign('🕹️ ' + (d.name || 'Spiel'), a.x, 4.4, a.z, 5.4); }
   K.near = function () { if (P.veh || P.y > 1.5) return null; for (const a of W.spots.arcades || []) if (Math.hypot(P.x - a.fx, P.z - a.fz) < 2.4 || Math.hypot(P.x - a.x, P.z - a.z) < 2.6) return { k: 'arcade', kind: a.kind }; return null; };
   K.act = function (n) { if (n && n.k === 'arcade') G.start(n.kind); };
   return K;
