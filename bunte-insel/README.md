@@ -68,6 +68,18 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Fahrten sind gratis; pro Attraktion gibt es höchstens alle 45 Sekunden +1 ⭐. Besucher (Clown, Kartenfrau …) erzählen etwas.
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
+## Regenbogenwelt 🌈 (Erweiterung, Aufklärung für Kinder)
+Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreichbar; auch per 🧭 Wohin? → „Regenbogenwelt“.
+- **Plaza** mit Regenbogen-Ringen und Brunnen (🌈 „Freude teilen“: Konfetti, ein Spruch über Vielfalt, alle 45 s +1 ⭐), zwei große **Regenbogen-Bögen**, **Flaggen** (Regenbogen, Trans, Bi, Pan), bunte Häuser, Tanzfläche, bunte Bäume.
+- **Bewohner** (10 Personen, zum Antippen): zwei Mamas, zwei Papas, Oma & Opa, Lehrer Leo (Auslachen ist nicht okay, Hilfe holen), Sam, Kinder … Sie erzählen kindgerecht und freundlich, dass Familien verschieden sind, jeder richtig ist, wie er ist, und dass man niemanden auslacht.
+- **Regenbogen-Bühne 🎤** im Westen: „Pride 24/7 · 365 Tage“ mit ~30 tanzenden Menschen davor, vier Künstlern auf der Bühne und einer Leinwand, auf der 5 bekannte Pride-Songs zu lesen sind (Over the Rainbow, I Will Survive, Dancing Queen, Vogue, Born This Way – nur Titel und Künstler, die Liste wandert alle 12 s weiter). Die Menge tanzt nur, wenn man in der Nähe ist.
+- Sparsam: Boden, Bögen, Flaggen und Häuser stecken im einen Welt-Mesh; zur Laufzeit nur Schilder, Bewohner und wenige Funken (nur in der Nähe). Quelltext: `js/rainbow.js`.
+
+## Musik für jede Welt und jeden Bereich 🎵
+Beim Laufen wechselt die Musik sanft (Überblendung) je nach Ort. Alle Melodien sind selbst komponiert und werden im Browser erzeugt (kein Download, keine fremden Lieder); der Knopf 🎵 schaltet sie ab.
+Hauptinsel (Sonnige Wiese), Stadt (Stadt-Jazz), Freizeitpark (Jahrmarkt-Walzer), Regenbogen-Plaza (Regenbogen-Pop), Regenbogen-Bühne (Pride-Disco), Freibad (Strandparty), Bauernhof (Hof-Polka), Camp (Lagerfeuer, 3/4), Kampfarena (Arena-Rock), Verbotener Wald (düster mit Herzschlag), Himmels-Parcours (Chiptune, nur während des Laufs), Kino-Foyer (ruhig; im Film Stille) und Spielzeugladen (Spieluhr). Nachts läuft alles etwas langsamer.
+Neue Bereiche: Thema in `js/themes.js` (`BI.THEMES`) ergänzen und in `BI.zoneAt` einen Ort zuordnen. Der Sequencer in `js/audio.js` läuft über einen eigenen Timer, damit die Musik auch bei wenigen Bildern pro Sekunde rund bleibt.
+
 ## Charakter-Studio 🧑‍🎨 (wie bei den Sims)
 Im Titelmenü „Mein Held“ und im Kleiderschrank. Der Held dreht sich als Vorschau (⟲ ⏯ ⟳), **🎲 Zufall** würfelt eine Figur.
 - **Figuren**: bis zu 6 eigene Figuren speichern (jede mit Name, Aussehen, Kleidung), wechseln, ➕ neu, 📄 kopieren, 🗑️ löschen (mit Rückfrage). **Vorlagen** (20 Helden, z. B. Oma Gerda, Opa Otto, Ninja Kai, Prinzessin Lilly, Rockstar Rex, Zauberer Merlin, Wikinger Olaf, Clown Pippo) sind der Startpunkt – ändert man etwas, wird daraus eine eigene Figur mit allen Werten.

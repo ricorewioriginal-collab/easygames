@@ -31,6 +31,43 @@ BI.audio = (function () {
   }
   function osc(type, f, vol, dest) { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f; g.gain.value = vol; o.connect(g); g.connect(dest || sfxBus); o.start(); return { o, g }; }
 
+  /* ---------- Bereichs-Musik: kleiner Step-Sequencer (Themen aus themes.js), alles im Browser erzeugt ---------- */
+  const PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }, CHQ = { '': [0, 4, 7], m: [0, 3, 7], '7': [0, 4, 7, 10], m7: [0, 3, 7, 10], maj7: [0, 4, 7, 11], dim: [0, 3, 6] };
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const noteM = t => { const m = /^([A-G])([#b]?)(\d)$/.exec(t); return m ? 12 * (+m[3] + 1) + PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) : 0; };
+  const chordP = c => { const m = /^([A-G])([#b]?)(m7|maj7|m|7|dim)?$/.exec(c) || ['', 'C', '', '']; return { pc: (PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) + 12) % 12, iv: CHQ[m[3] || ''] }; };
+  function parseTheme(T) { if (!T.P) T.P = { ch: T.chords.map(chordP), lead: T.lead && T.lead.notes ? T.lead.notes.split(/\s+/).map(x => x === '.' ? 0 : noteM(x)) : [] }; return T.P; }
+  let zArgs = null, zTimer = 0, zBus = null, zCur = null, zSw = 0, zStep = 0, zNext = 0, nbuf = null;
+  function noiseAt(dur, vol, hp, delay) {
+    if (!nbuf) { nbuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = nbuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    const t = ctx.currentTime + delay, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = nbuf; f.type = 'highpass'; f.frequency.value = hp;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); s.connect(f); f.connect(g); g.connect(zBus); s.start(t, Math.random() * .5, dur + .02);
+  }
+  function playStep(T, n, delay, sd) {
+    const spb = T.spb || 16, P = parseTheme(T), s = n % spb, bar = (n / spb) | 0, ch = P.ch[bar % P.ch.length], d = delay + (T.swing && s % 4 === 2 ? T.swing * sd * 2 : 0), cn = k => 48 + ch.pc + ch.iv[k % ch.iv.length] + 12 * ((k / ch.iv.length) | 0);
+    if (s === 0 && T.pad && T.pad.vol) for (let k = 0; k < ch.iv.length; k++) tone(mtof(cn(k)), sd * spb * .98, T.pad.type || 'sine', T.pad.vol, 0, d, zBus);
+    if (T.bass) { const c = T.bass.pat[s]; if (c && c !== '.') { const b = 36 + ch.pc + (c === '5' ? 7 : c === 'o' ? 12 : 0); tone(mtof(b), sd * (T.bass.len || 2), T.bass.type || 'sine', T.bass.vol || .08, 0, d, zBus); } }
+    if (T.arp) { const c = T.arp.pat[s]; if (c === '*') for (let k = 0; k < ch.iv.length; k++) tone(mtof(cn(k) + 12), sd * (T.arp.len || 1.5), T.arp.type || 'triangle', T.arp.vol || .03, 0, d, zBus); else if (c && c !== '.') tone(mtof(cn(+c - 1) + 12), sd * (T.arp.len || 2), T.arp.type || 'triangle', T.arp.vol || .03, 0, d, zBus); }
+    if (P.lead.length) { const m = P.lead[n % P.lead.length]; if (m) { const L = T.lead; tone(mtof(m), sd * (L.len || 2), L.type || 'triangle', L.vol || .06, 0, d, zBus); if (L.bell) tone(mtof(m + 12), sd * (L.len || 2) * .8, 'sine', (L.vol || .06) * .3, 0, d, zBus); } }
+    const D = T.drums; if (D) {
+      if (D.k && D.k[s] === 'x') tone(150, .14, 'sine', D.kv || .1, 45, d, zBus);
+      if (D.s && D.s[s] === 'x') noiseAt(.12, D.sv || .06, 1500, d);
+      if (D.h && D.h[s] === 'x') noiseAt(.045, D.hv || .02, 6500, d);
+    }
+  }
+  function zoneMusic(zone, night) {
+    const now = ctx.currentTime, th = zone && BI.THEMES ? (BI.THEMES[zone] || BI.THEMES.insel) : null;
+    if (!zBus) { zBus = ctx.createGain(); zBus.gain.value = 0; zBus.connect(musBus); }
+    if (th !== zCur) {
+      if (!zCur) { zCur = th; zStep = 0; zNext = now + .1; zSw = 0; zBus.gain.setTargetAtTime(1.4, now, .3); }
+      else if (!zSw) { zSw = now + .9; zBus.gain.setTargetAtTime(0, now, .22); }
+      else if (now >= zSw) { zCur = th; zSw = 0; zStep = 0; zNext = now + .1; zBus.gain.setTargetAtTime(th ? 1.4 : 0, now, .3); }
+    } else if (zSw) { zSw = 0; zBus.gain.setTargetAtTime(zCur ? 1.4 : 0, now, .2); }
+    if (!zCur) return;
+    if (zNext < now - 1) zNext = now + .05;
+    const sd = 60 / (zCur.bpm * (night ? .85 : 1)) / 4; while (zNext < now + .6) { playStep(zCur, zStep, zNext - now, sd); zStep++; zNext += sd; }
+  }
+
   const A = {
     resume,
     get muted() { return muted; },
@@ -157,8 +194,9 @@ BI.audio = (function () {
       s.connect(f); f.connect(g); g.connect(sfxBus); s.start(); g.gain.setTargetAtTime(.12, ctx.currentTime, .05); A._w = { s, g };
     },
     /* sanfte Hintergrundmusik: zufällige Pentatonik-Melodie */
-    music(dt, night) {
+    music(dt, night, zone) {
       if (!ctx || !musicOn || muted) return;
+      if (zone !== undefined && BI.THEMES) { zArgs = [zone, night]; if (!zTimer) zTimer = setInterval(() => { if (ctx && musicOn && !muted && zArgs) zoneMusic(zArgs[0], zArgs[1]); }, 80); return; } /* eigener Timer: die Musik läuft auch bei wenig Bildern pro Sekunde rund */
       mt += dt;
       const step = night ? .75 : .55;
       if (mt < step) return; mt -= step; beat++;
