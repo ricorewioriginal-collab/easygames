@@ -392,18 +392,21 @@ BI.makePappnase = function () {
 
 /* ---- Blitz: Polizeihund-Helfer (eigener Entwurf, Schäferhund-Look mit blauer Mütze) ---- */
 BI.makeDog = function (o) {
-  o = o || {}; const root = new THREE.Group(), b = new BI.Batch(), TAN = 0xc9944f, BLK = 0x2a2a33, BLUE = 0x2d6be0, GOLD = 0xffd23f, mat = BI.mat();
+  o = o || {}; const root = new THREE.Group(), b = new BI.Batch(), TAN = o.fur != null ? o.fur : 0xc9944f, BLK = o.dark != null ? o.dark : 0x2a2a33, BLUE = o.uni != null ? o.uni : 0x2d6be0, GOLD = o.trim != null ? o.trim : 0xffd23f, mat = BI.mat(), hat = o.hat || 'cap';
   b.box(0, .42, 0, .44, .4, .95, TAN); b.box(0, .6, -.05, .46, .14, .6, BLK); b.box(0, .5, .52, .36, .42, .34, TAN); b.box(0, .5, .52, .42, .22, .36, BLUE); b.box(0, .52, .71, .1, .1, .03, GOLD);
   b.box(0, .8, .84, .32, .3, .3, TAN); b.box(0, .76, 1.04, .2, .15, .22, BLK); b.box(0, .84, 1.16, .09, .06, .05, 0x111111);
   b.box(-.15, .98, .78, .09, .24, .09, BLK, 0, 0, .25); b.box(.15, .98, .78, .09, .24, .09, BLK, 0, 0, -.25);
   b.box(-.08, .88, 1.0, .06, .06, .03, 0x111111); b.box(.08, .88, 1.0, .06, .06, .03, 0x111111);
-  b.box(0, 1.08, .84, .36, .1, .36, BLUE); b.box(0, 1.17, .82, .24, .07, .24, BLUE); b.box(0, 1.07, 1.03, .32, .04, .13, 0x1c3f9e); b.box(0, 1.2, 1.0, .07, .06, .03, GOLD);
+  if (hat === 'cap') { b.box(0, 1.08, .84, .36, .1, .36, BLUE); b.box(0, 1.17, .82, .24, .07, .24, BLUE); b.box(0, 1.07, 1.03, .32, .04, .13, 0x1c3f9e); b.box(0, 1.2, 1.0, .07, .06, .03, GOLD); }
+  else if (hat === 'helmet') { b.sph(0, 1.02, .84, .24, BLUE, 1, 1, .8, 1); b.box(0, 1.2, .84, .07, .05, .34, GOLD); b.box(0, 1.1, 1.05, .22, .04, .08, GOLD); }
+  else if (hat === 'hard') { b.sph(0, 1.04, .84, .22, BLUE, 1, 1, .75, 1); b.box(0, 1.06, 1.05, .36, .03, .2, BLUE); b.box(0, 1.2, .84, .06, .04, .3, GOLD); }
+  else if (hat === 'goggles') { b.box(0, 1.07, .84, .34, .12, .34, BLK); b.box(0, 1.03, .84, .38, .05, .38, BLUE); b.sph(-.1, 1.12, 1.0, .07, GOLD, 1); b.sph(.1, 1.12, 1.0, .07, GOLD, 1); b.box(0, 1.12, 1.0, .12, .03, .03, BLK); }
   const inner = new THREE.Group(); root.add(inner); inner.add(b.mesh(mat));
   function leg(x, z) { const g = new THREE.Group(), l = new BI.Batch(); l.box(0, -.36, 0, .13, .36, .13, TAN); l.box(0, -.4, .03, .15, .08, .19, BLK); g.add(l.mesh(mat)); g.position.set(x, .38, z); inner.add(g); return g; }
   const fl = leg(-.15, .5), fr = leg(.15, .5), bl = leg(-.15, -.36), br = leg(.15, -.36);
   const tg = new THREE.Group(), t = new BI.Batch(); t.box(0, 0, -.2, .1, .1, .42, TAN, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, BLK, 0, -.5); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
   const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(o.name || 'Blitz', 96, 30); cx.fillStyle = '#fff'; cx.fillText(o.name || 'Blitz', 96, 30);
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); root.add(sp);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); if (!o.noName) root.add(sp);
   return {
     group: root,
     /* Tricks: sit, paw (Pfötchen), roll, beg (Männchen), flip (Salto); k = 0..1 */
