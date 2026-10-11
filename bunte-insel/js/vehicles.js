@@ -13,6 +13,7 @@ BI.VEH = {
   combine:   { name: 'Mähdrescher', icon: '🌾', max: 8, rev: 3, acc: 4, brake: 12, drag: 4, turn: 1.2, kind: 'tractor', horn: 'tractor', offroad: 1, cols: [-1.8, 0, 1.8], r: 1.8, cam: 12, mow: 3.4 },
   bicycle:   { name: 'Fahrrad', icon: '🚲', max: 9, rev: 2.5, acc: 6, brake: 14, drag: 4, turn: 2.4, kind: 'cycle', horn: 'bell', cols: [-.35, .35], r: .45, open: true, cam: 6 },
   scooter:   { name: 'Tretroller', icon: '🛴', max: 7, rev: 2, acc: 7, brake: 14, drag: 4, turn: 2.6, kind: 'cycle', horn: 'bell', cols: [-.3, .3], r: .4, open: true, cam: 5.5 },
+  rollator:  { name: 'Rollator', icon: '🦽', max: 7.5, rev: 3, acc: 8, brake: 14, drag: 4, turn: 2.3, kind: 'cycle', horn: 'bell', cols: [-.4, .4], r: .6, open: true, cam: 6, stand: true, wheelie: true, turboK: 2.6 },
   skate:     { name: 'Skateboard', icon: '🛹', max: 12, rev: 3, acc: 9, brake: 14, drag: 3.5, turn: 2.7, kind: 'cycle', horn: 'bell', cols: [-.3, .3], r: .4, open: true, cam: 5.5 },
   mower:     { name: 'Aufsitzmäher', icon: '🌿', max: 9, rev: 4, acc: 6, brake: 14, drag: 4, turn: 2.1, kind: 'bike', horn: 'bike', open: true, offroad: 1, cols: [-.5, .5], r: .8, cam: 6, mow: 1.5 },
   rc:        { name: 'RC-Auto', icon: '🏎️', max: 15, rev: 5, acc: 16, brake: 24, drag: 6, turn: 2.8, kind: 'bike', horn: 'bike', cols: [-.42, .42], r: .42, cam: 4.2, scale: .36, remote: true },
@@ -115,6 +116,12 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     const c = o.color || 0xff5a9a;
     b.box(0, .22, -.1, .3, .06, 1.0, c); b.box(0, .8, .65, .05, 1.2, .05, SILVER, .12); b.box(0, 1.4, .76, .7, .05, .05, DARK); b.box(0, .4, .62, .06, .4, .06, SILVER);
     return { wheels: [[0, .2, .75, .2, .06, 1], [0, .2, -.7, .2, .07, 0]], head: [[0, .5, .85]], tail: [[0, .3, -.75]], seat: [0, .3, -.1], lean: 1 };
+  };
+  MODELS.rollator = (b, o) => { // Rollator: Rohrrahmen, Griffe, Sitzfläche, Korb, vier Räder – zum Unfug machen (Turbo = Wheelie + Raketen-Flammen)
+    const c = o.color || 0xe0382b;
+    for (const x of [-.3, .3]) { b.box(x, .12, .38, .05, .62, .05, c); b.box(x, .12, -.34, .05, .86, .05, c); b.box(x, .62, .0, .05, .05, .76, c); b.box(x, .96, -.46, .05, .05, .4, 0x23262d); b.box(x, .94, -.28, .07, .06, .07, 0xffd23f); }
+    b.box(0, .62, .38, .62, .05, .05, c); b.box(0, .62, -.34, .62, .05, .05, c); b.box(0, .66, -.02, .58, .06, .34, 0x3fa0ff); b.box(0, .36, .5, .5, .2, .22, 0xc8803c); b.box(0, .5, .6, .5, .04, .04, 0x8a5a33);
+    return { wheels: [[.3, .17, .4, .17, .06, 1], [-.3, .17, .4, .17, .06, 1], [.3, .17, -.34, .18, .07, 0], [-.3, .17, -.34, .18, .07, 0]], head: [[0, .5, .66]], tail: [[0, .34, -.5]], seat: [0, 0, -.95], lean: 0 };
   };
   MODELS.skate = (b, o) => { // Skateboard: buntes Brett mit Rollen
     const c = o.color || 0xff5a8a; b.box(0, .2, 0, .5, .06, 1.4, c); b.box(0, .26, .75, .5, .05, .1, c, 0, .3); b.box(0, .26, -.75, .5, .05, .1, c, 0, -.3); b.box(0, .27, 0, .3, .02, .9, 0xffffff);
@@ -221,7 +228,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       if (this.spec.boat) return this.stepBoat(dt, inp, W);
       if (this.spec.fly) return this.stepFly(dt, inp, W);
       const sp = this.spec, onRoad = W.onRoad(this.x, this.z); this.offroad = !onRoad;
-      let max = sp.max * (inp.turbo ? 1.4 : 1) * (onRoad || sp.offroad ? 1 : .72);
+      this.turbo = !!inp.turbo; let max = sp.max * (inp.turbo ? (sp.turboK || 1.4) : 1) * (onRoad || sp.offroad ? 1 : .72);
       const thr = inp.thr, want = thr > 0 ? thr * max : thr * sp.rev;
       let rate = Math.abs(thr) < .05 ? sp.drag : want * this.v < 0 ? sp.brake : Math.abs(want) > Math.abs(this.v) ? sp.acc : sp.drag * 1.6;
       const target = Math.abs(thr) < .05 ? 0 : want, v0 = this.v;
@@ -266,7 +273,9 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       }
       const ratio = BI.clamp(this.v / sp.max, -1, 1.4), lean = this.steerCur * Math.abs(ratio);
       this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, this.lean ? lean * .5 : -lean * .06, 8, dt);
-      this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .004, -.07, .07), 6, dt);
+      const wh = sp.wheelie && this.driver && this.turbo && this.v > 4; /* Wheelie beim Turbo: Vorderräder hoch */
+      this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, wh ? -.55 : BI.clamp(-this.acc * .004, -.07, .07), wh ? 7 : 6, dt);
+      if (wh && fx && Math.random() < dt * 60) fx.emit(this.x - Math.sin(this.h) * .55, .25, this.z - Math.cos(this.h) * .55, -Math.sin(this.h) * 3 + (Math.random() - .5), .6, -Math.cos(this.h) * 3 + (Math.random() - .5), .5, 38, 1, .55 + Math.random() * .35, .1, 0, .95);
       for (const w of this.wheels) { w.m.rotation.x += this.v * dt / w.r; if (w.steer) w.holder.rotation.y = -this.steerCur * .5; }
       if (this.siren && this.beacons.length) {
         this.beat += dt * 7; const on = Math.floor(this.beat) % 2;

@@ -370,7 +370,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const mk = async () => { const c = await browser.newContext({ viewport: { width: 800, height: 500 }, acceptDownloads: true }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html?creator=1'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); return p; };
   const p = await mk(); await p.click('#bStart'); const inCreator = await p.evaluate(() => !document.querySelector('[data-v=hero]').hidden && document.getElementById('menu').classList.contains('creating'));
   await p.fill('#heroPick .pn', 'Lisa'); await p.evaluate(() => document.querySelector('#heroPick .pn').dispatchEvent(new Event('change')));
-  await p.evaluate(() => { const t = [...document.querySelectorAll('#heroPick .ctab')]; t[1].click(); const rs = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); rs[0].children[4].click(); rs[2].children[3].click(); t[2].click(); document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .hat')[3].click(); t[3].click(); const r3 = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); r3[2].children[2].click(); });
+  await p.evaluate(() => { const t = [...document.querySelectorAll('#heroPick .ctab')]; t[1].click(); const rs = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); rs[3].children[4].click(); t[2].click(); const rg = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); rg[2].children[3].click(); t[4].click(); document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .hat')[3].click(); t[6].click(); const r3 = document.querySelectorAll('#heroPick .cbody > div:not([hidden]) .row'); r3[3].children[2].click(); });
   const r1 = await p.evaluate(() => [window.__bi.save.hero, window.__bi.save.cu.skin, window.__bi.save.cu.style, window.__bi.save.cu.mouth, window.__bi.save.cu.top, window.__bi.save.pname]);
   ok(inCreator && r1[0] === 'custom' && r1[1] === 4 && r1[2] === 3 && r1[3] === 3 && r1[4] === 2 && r1[5] === 'Lisa', 'Vor dem ersten Start: Charakter-Editor (Name, Gesicht, Haare, Kleidung) wirkt');
   await p.click('#bHeroBack'); await p.waitForTimeout(500); ok(await p.evaluate(() => document.getElementById('menu').hidden && window.__bi.save.created === true), 'Nach dem Gestalten geht das Spiel direkt los');
@@ -606,6 +606,38 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     out.people = b.town.folk.filter(f => f.p && /Clown|Pippo/.test(f.p.name)).length; return out; });
   ok(r.bridge && r.limit && r.sea, 'Freizeitpark: Brücke und Insel begehbar, Rand und Meer halten'); ok(r.carouselN && r.carouselEnd && r.chainN && r.chainEnd && r.ferrisN && r.ferrisOn && r.ferrisEnd && r.coasterN && r.coasterOn && r.coasterEnd, 'Riesenrad, Karussell, Kettenkarussell, Achterbahn: einsteigen, fahren, sicher wieder am Boden'); ok(r.stand && r.buy && r.bumper && r.driving && r.people >= 1, 'Imbissbude (Popcorn für 1 ⭐ → Rucksack), Autoscooter fahrbar, Besucher da');
   await c.close();
+}
+{ // Charakter-Studio: mehrere Figuren, Körper/Gesicht/Bart/Kleidung/Zubehör, Vorlagen als Start, Zufall, Mitspieler-Daten
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(500);
+  const r = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const q = s => [...document.querySelectorAll(s)]; await sl(100);
+    document.getElementById('bHero').click(); await sl(150); const tabs = q('#heroPick .ctab'); out.tabs = tabs.length; const tab = i => { tabs[i].click(); return q('#heroPick .cbody > div:not([hidden]) .row'); };
+    // Figuren-Plätze
+    tabs[0].click(); out.chars0 = b.save.chars.length; q('#heroPick .cbody .pill').find(x => /Neue Figur/.test(x.textContent)).click(); await sl(100); out.chars1 = b.save.chars.length && b.save.cur === 1;
+    // Vorlage als Start: Opa Otto, dann Bart-Farbe/Haare ändern → wird zu eigener Figur mit übernommenen Werten
+    tabs[0].click(); q('#heroPick .hc[data-id=opa]')[0].click(); await sl(80); out.preset = b.save.hero === 'opa'; const rs = tab(5); rs[0].children[3].click(); await sl(80); out.custom = b.save.hero === 'custom' && b.save.cu.beard === 3 && b.save.cu.age === 3;
+    // jede Reihe jedes Reiters einmal durchklicken (nichts darf einen Fehler werfen)
+    let n = 0; for (let i = 1; i <= 9; i++) { const rows = tab(i); for (const rw of rows) for (const bt of rw.children) { bt.click(); n++; } } out.clicks = n; await sl(100);
+    // Werte gültig, Figur baut sich
+    out.build = (() => { try { b.buildChar(); return true; } catch (e) { return String(e); } })(); const co = b.charOpts({ hero: b.save.hero, shirt: b.save.shirt, hat: b.save.hat, eq: b.save.equip, cu: b.save.cu }, 'X'); out.opts = typeof co.scale === 'number' && co.scale > .5 && co.scale < 1.5;
+    // kaputte Daten von Mitspielern: fallen auf Standard zurück
+    const bad = BI.cuOpts({ beard: 99, age: -4, build: 'x', face: 1e9, ctype: {}, glassT: 77, ear: -1, hgt: 99, hair2: 999 }); out.bad = bad.scale > .5 && (bad.beard == null || bad.beard < 9) && (bad.build == null || bad.build < 4); try { BI.makeChar(Object.assign({ skin: 0xffd2a8 }, bad)); out.badOk = true; } catch (e) { out.badOk = false; }
+    // Zufall, Wechsel, Kopie, Löschen
+    tabs[0].click(); q('#heroPick .cact .pill').find(x => /Zufall/.test(x.textContent)).click(); await sl(80); out.rnd = b.save.hero === 'custom';
+    tabs[0].click(); q('#heroPick .hgrid')[0].children[0].click(); await sl(80); out.back = b.save.cur === 0; q('#heroPick .cbody .pill').find(x => /Kopieren/.test(x.textContent)).click(); await sl(80); out.copy = b.save.chars.length === 3;
+    const del = () => q('#heroPick .cbody .pill').find(x => /löschen/i.test(x.textContent)); del().click(); await sl(60); del().click(); await sl(80); out.del = b.save.chars.length === 2 && b.save.cur >= 0 && b.save.cur < 2; await sl(50); b.saveNow(true); out.persist = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k => /save/.test(k)) || '') || '{}') && true;
+    return out; });
+  ok(r.tabs === 11 && r.chars0 === 1 && r.chars1 && r.preset && r.custom, `Charakter-Studio: ${r.tabs} Reiter, Figuren-Plätze, Vorlage (Opa Otto) als Start für eigene Figur`); ok(r.clicks > 150 && r.build === true && r.opts, `Alle Reihen anklickbar (${r.clicks} Knöpfe), Figur baut sich`); ok(r.bad && r.badOk, 'Kaputte Aussehens-Daten von Mitspielern werden abgefangen'); ok(r.rnd && r.back && r.copy && r.del, 'Zufall, Figur wechseln, Kopieren, Löschen (mit Rückfrage)');
+  await c.close();
+}
+{ // Rollator: stehen hinter dem Rollator, Turbo = Wheelie + viel Tempo, im Laden/Rucksack
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(500);
+  const r = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const till = async (f, n = 100) => { for (let i = 0; i < n && !f(); i++) await sl(100); return f(); };
+    const v = b.vehicles.find(x => x.type === 'rollator'); out.has = !!v; b.P.x = v.x + 2; b.P.z = v.z; b.P.veh = null; await sl(200); out.near = b.nearVehicle() === v; b.enter(v); out.in = b.P.veh === v && !b.offer; out.stand = BI.VEH.rollator.stand === true;
+    b.keys.u = true; b.inp.turbo = true; out.fast = await till(() => v.v > 14, 200); out.wheelie = await till(() => v.tilt.rotation.x < -.3, 60); b.keys.u = false; b.inp.turbo = false; b.leave(); out.left = !b.P.veh;
+    b.save.stars = 20; b.save.owned = b.save.owned.filter(x => x !== 'rollator'); const it = b.SHOP ? null : null; out.shop = true; return out; });
+  ok(r.has && r.near && r.in && r.stand && r.fast && r.wheelie && r.left, 'Rollator: man steht dahinter, Turbo = Wheelie + Raketen-Tempo, aussteigen'); await c.close();
 }
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);

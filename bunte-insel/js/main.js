@@ -3,7 +3,7 @@
 (function () {
   const $ = id => document.getElementById(id), K = BI.WORLD, A = BI.audio, clamp = BI.clamp, TAU = BI.TAU;
   const save = Object.assign({ stars: 0, shirt: 0, hat: 0, pname: '', cu: { skin: 0, hair: 1, style: 1, pants: 0 }, sound: true, music: true, mpIcon: '🐶', night: false, intro: false, hero: 'jannis', pet: 'blitz', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
-  let saveOk = true; const persist = () => { save.ts = Date.now(); saveOk = BI.store.set('save', save); };
+  let saveOk = true; const persist = () => { try { syncChar(); } catch (e) { } save.ts = Date.now(); saveOk = BI.store.set('save', save); };
   const coarse = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
   const isTouch = () => document.body.classList.contains('touch');
   A.setMuted(!save.sound); A.setMusic(save.music);
@@ -61,7 +61,7 @@
   for (const s of W.vehicleSpawns) addVeh(s.type, s.x, s.z, s.h);
   addVeh('taxi', 9, -24, Math.PI); addVeh('car', 12, -30, Math.PI, { color: 0xe8453c }); addVeh('car', -9, 24, 0, { color: 0x3f8cff });
   addVeh('ice', -9, -36, Math.PI); addVeh('bus', 31, 9, Math.PI / 2); addVeh('bike', 14, -9, .5, { color: 0xff8a1f }); addVeh('bike', 150, 14, 1.2, { color: 0xff5a9a }); addVeh('bicycle', 7, 36, .4, { color: 0x3f8cff }); addVeh('scooter', -7, 36, -.4, { color: 0xff5a9a }); addVeh('bicycle', 80, 36, 2.2, { color: 0x4cd07d });
-  addVeh('car', 150, -12, 1.6, { color: 0x4cd07d });
+  addVeh('car', 150, -12, 1.6, { color: 0x4cd07d }); addVeh('rollator', 11, 33, .4); addVeh('rollator', 238, 28, 1.2, { color: 0x3fa0ff });
   const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
   const traffic = [];
   for (let i = 0; i < 9; i++) {
@@ -87,9 +87,9 @@
   /* Aussehen aus Held + Schrank (gekaufte Sachen gewinnen gegenüber dem Helden-Kostüm) */
   function charOpts(l, name) {
     const E = l.eq || {}, cu = l.cu || {}, H = BI.heroById(l.hero), po = H.o || {}, ac = k => !!E[k] || !!po[k], accs = { glasses: ac('glasses'), pack: ac('pack'), teddy: ac('teddy'), patch: ac('patch'), cape: ac('cape'), wings: ac('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') };
-    if (H.id === 'custom') { const acc = cu.acc || {}, a2 = k => ac(k) || !!acc[k]; return Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name,
+    if (H.id === 'custom') { const acc = cu.acc || {}, a2 = k => ac(k) || !!acc[k]; const base = Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name,
       eye: BI.EYES[cu.eye | 0], mouth: BI.MOUTHS[cu.mouth == null ? 1 : cu.mouth | 0], freckles: !!cu.fr, shoe: BI.SHOES[cu.shoe | 0], scale: BI.SIZES[cu.size == null ? 1 : cu.size | 0], dress: cu.top === 1, overall: cu.top === 2, stripe: !!cu.stripe, logo: BI.LOGOS[cu.logo | 0] || undefined },
-      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); }
+      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); const ex = BI.cuOpts(cu); if (ex.glassT) base.glasses = false; return Object.assign(base, ex); }
     return Object.assign({}, po, { hat: E.hat && E.hat !== 'none' ? E.hat : po.hat || 'none', name }, accs);
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
@@ -152,7 +152,7 @@
   const dummy = new THREE.Object3D();
 
   /* ---------- Zustand ---------- */
-  let creating = false, creatorFirst = false, state = 'menu', t = 0, toastT = 0, mission = null, offer = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
+  let orbitOff = false, creating = false, creatorFirst = false, state = 'menu', t = 0, toastT = 0, mission = null, offer = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
   const cam = { yaw: 0, pitch: .42, zoom: 1, off: 0, idle: 0, x: 0, y: 8, z: 40, dist: 8, ego: false, egoOff: 0 };
   const inp = { kx: 0, ky: 0, sx: 0, sy: 0, horn: false, turbo: false, act: false, aux: false, jump: false, hornEdge: false, up: false, down: false };
   const keys = {};
@@ -188,7 +188,7 @@
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
     else {
       v.driver = true; v.v = v.v || 0;
-      if (v.spec.open && v.seat) { v.tilt.add(char.group); char.group.position.set(v.seat[0], v.seat[1] - .42, v.seat[2]); char.group.rotation.set(0, 0, 0); char.sit(); char.group.visible = true; } else char.group.visible = false;
+      if (v.spec.open && v.seat) { v.tilt.add(char.group); char.group.position.set(v.seat[0], v.seat[1] - (v.spec.stand ? 0 : .42), v.seat[2]); char.group.rotation.set(0, 0, 0); if (v.spec.stand) { char.pose(0, 0, false); char.armL.rotation.x = char.armR.rotation.x = -1.2; } else char.sit(); char.group.visible = true; } else char.group.visible = false;
     }
     if (v.isTrain) train.driven = true;
     offerMission(); updateButtons(true);
@@ -518,7 +518,7 @@
     { id: 'pack', icon: '🎒', name: 'Rucksack', price: 3, slot: 'pack', tab: 1 }, { id: 'teddy', icon: '🧸', name: 'Teddy', price: 3, slot: 'teddy', tab: 1 },
     { id: 'cape', icon: '🦸', name: 'Umhang', price: 3, slot: 'cape', tab: 1 }, { id: 'wings', icon: '🧚', name: 'Feenflügel', price: 3, slot: 'wings', tab: 1 },
     { id: 'kite', icon: '🪁', name: 'Drachen', price: 4, slot: 'kite', tab: 2 }, { id: 'rcheli', icon: '🚁', name: 'RC-Hubschrauber', price: 6, slot: 'rcheli', tab: 2 },
-    { id: 'skate', icon: '🛹', name: 'Skateboard', price: 5, slot: 'skate', tab: 2 },
+    { id: 'skate', icon: '🛹', name: 'Skateboard', price: 5, slot: 'skate', tab: 2 }, { id: 'rollator', icon: '🦽', name: 'Rollator', price: 5, slot: 'rollator', tab: 2 },
     { id: 'deco_piano', icon: '🎹', name: 'Zimmer: Keyboard', price: 4, slot: 'deco', tab: 3 }, { id: 'deco_rocket', icon: '🚀', name: 'Zimmer: Rakete', price: 5, slot: 'deco', tab: 3 }, { id: 'deco_dino', icon: '🦖', name: 'Zimmer: Dino', price: 5, slot: 'deco', tab: 3 },
     { id: 'deco_castle', icon: '🏰', name: 'Zimmer: Ritterburg', price: 6, slot: 'deco', tab: 3 }, { id: 'deco_racecar', icon: '🏎️', name: 'Zimmer: Rennauto', price: 4, slot: 'deco', tab: 3 }, { id: 'deco_rainbow', icon: '🌈', name: 'Wand: Regenbogen', price: 3, slot: 'deco', tab: 3 }, { id: 'deco_stars', icon: '🌟', name: 'Wand: Sternenhimmel', price: 3, slot: 'deco', tab: 3 },
     { id: 'hat_viking', icon: '🪓', name: 'Wikingerhelm', price: 4, slot: 'hat', val: 'viking', tab: 4 }, { id: 'hat_tophat', icon: '🎩', name: 'Zylinder', price: 4, slot: 'hat', val: 'tophat', tab: 4 }, { id: 'hat_flowers', icon: '🌸', name: 'Blumenkranz', price: 3, slot: 'hat', val: 'flowers', tab: 4 },
@@ -535,7 +535,7 @@
   function spawnRC(quiet, type) {
     type = type || 'rc'; const out = inShop(), sd = type === 'rcheli' ? 2.2 : 0, hx = (out ? SH.x : P.x + Math.sin(P.h) * 2.4) + Math.cos(P.h) * sd, hz = (out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4) - Math.sin(P.h) * sd; let v = vehicles.find(q => q.type === type);
     if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } } else addVeh(type, hx, hz, P.h);
-    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : type === 'skate' ? '🛹 Dein Skateboard steht bereit!' : '🏎️ Dein rotes RC-Auto steht bereit!', 1800);
+    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : type === 'skate' ? '🛹 Dein Skateboard steht bereit!' : type === 'rollator' ? '🦽 Dein Rollator steht bereit – Turbo für Wheelie-Unfug!' : '🏎️ Dein rotes RC-Auto steht bereit!', 1800);
   }
   function renderShop() {
     $('shopStars').textContent = '⭐ ' + save.stars; const tabs = $('shopTabs'); tabs.innerHTML = '';
@@ -545,7 +545,7 @@
       const owned = save.owned.includes(it.id), c = document.createElement('div'), b = document.createElement('button'); c.className = 'sc' + (owned ? ' own' : '');
       c.innerHTML = '<div class="si">' + it.icon + '</div><div class="sn">' + it.name + '</div><div style="font-size:10px;opacity:.7;line-height:1.1">' + pack.shopHint(it) + '</div><div class="sp">' + (owned ? '✔ gehört dir' : it.price + ' ⭐') + '</div>';
       if (!owned) { b.textContent = 'Kaufen'; b.disabled = save.stars < it.price; b.onclick = () => buyItem(it); }
-      else if (it.slot === 'rcheli' || it.slot === 'skate') { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, it.slot); closeShop(); }; }
+      else if (it.slot === 'rcheli' || it.slot === 'skate' || it.slot === 'rollator') { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, it.slot); closeShop(); }; }
       else if (it.slot === 'deco') { b.textContent = '✔ In „Mein Zimmer“'; b.disabled = true; }
       else { b.textContent = isEq(it) ? 'Ablegen' : 'Anziehen'; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderShop(); }; }
       c.appendChild(b); grid.appendChild(c);
@@ -554,7 +554,7 @@
   function buyItem(it) {
     if (save.owned.includes(it.id) || save.stars < it.price) return;
     save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
-    if (it.slot === 'rcheli' || it.slot === 'skate') spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
+    if (it.slot === 'rcheli' || it.slot === 'skate' || it.slot === 'rollator') spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
   }
   function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; renderShop(); say('Frau Bunt: „Viel Spaß mit dem Spielzeug!“', 2200); }
   function closeShop() { shopOpen = false; shopPanel.hidden = true; updateButtons(true); }
@@ -970,7 +970,7 @@
   function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); say('Such dir etwas Schönes aus! 👕', 1800); }
   function closeWard() { wardOpen = false; wardPanel.hidden = true; updateButtons(true); }
   function renderWard() {
-    refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'deco');
+    refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'rollator' && q.slot !== 'deco');
     { const pb = document.createElement('button'); pb.className = 'pill' + (save.papOff ? '' : ' sel'); pb.textContent = '🎈 Pappnase'; pb.onclick = () => { togglePap(); renderWard(); }; box.appendChild(pb); }
     if (!mine.length) { const h = document.createElement('div'); h.textContent = 'Im Spielzeugladen kannst du neue Sachen kaufen 🧸'; box.appendChild(h); return; }
     for (const it of mine) { const b = document.createElement('button'); b.className = 'pill' + (isEq(it) ? ' sel' : ''); b.textContent = it.icon + ' ' + it.name; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderWard(); }; box.appendChild(b); }
@@ -1222,56 +1222,107 @@
     const def = BI.PETS.find(q => q.id === kind) || BI.PETS[0], g = pup.d.group, was = g.parent; freeObj(g); pup.d = BI.makePet(def.id); pup.name = def.name; pup.trick = null; if (was) scene.add(pup.d.group); pup.d.group.position.set(pup.x, 0, pup.z);
     save.pet = def.id; persist();
   }
+  /* ---------- Charakter-Studio (wie bei den Sims): Figuren-Plätze, Vorlagen, Körper, Gesicht, Augen, Haare, Bart, Kleidung, Schuhe, Zubehör, Hüte ---------- */
+  const clone = o => JSON.parse(JSON.stringify(o || {})), MAXCH = 6;
+  function snapChar(n) { return { n: n != null ? n : (save.pname || ''), hero: save.hero, cu: clone(save.cu), shirt: save.shirt | 0, hat: save.hat | 0, eq: clone(save.equip) }; }
+  function ensureChars() { if (!Array.isArray(save.chars) || !save.chars.length) { save.chars = [snapChar(save.pname || '')]; save.cur = 0; } if (save.cur == null || !save.chars[save.cur]) save.cur = 0; return save.chars; }
+  function syncChar() { if (Array.isArray(save.chars) && save.chars[save.cur]) { const c = save.chars[save.cur]; c.n = save.pname || ''; c.hero = save.hero; c.cu = clone(save.cu); c.shirt = save.shirt | 0; c.hat = save.hat | 0; c.eq = clone(save.equip); } }
+  function applyChar(i) { const c = ensureChars()[i]; if (!c) return; syncChar(); save.cur = i; save.hero = c.hero || 'custom'; save.cu = clone(c.cu); save.shirt = c.shirt | 0; save.hat = c.hat | 0; save.equip = Object.assign({ hat: 'none', glasses: false, pack: false, teddy: false }, clone(c.eq)); save.pname = c.n || ''; persist(); buildChar(); refreshPickers(); }
   function buildHeroPicker(box) {
-    box.innerHTML = '<div class="lab">Wie heißt du?</div><input class="pn" maxlength="12" placeholder="Dein Name" autocomplete="off"><div class="ctabs"></div><div class="cbody"></div>';
-    const pnI = box.querySelector('.pn'), tabsEl = box.querySelector('.ctabs'), body = box.querySelector('.cbody'), syncs = [], panels = [];
+    box.innerHTML = '<div class="lab">Wie heißt du?</div><input class="pn" maxlength="12" placeholder="Dein Name" autocomplete="off"><div class="ctabs"></div><div class="cbody"></div><div class="cact"></div>';
+    const pnI = box.querySelector('.pn'), tabsEl = box.querySelector('.ctabs'), body = box.querySelector('.cbody'), actEl = box.querySelector('.cact'), syncs = [], panels = [];
     pnI.value = save.pname || ''; pnI.addEventListener('change', () => { save.pname = pnI.value.replace(/[<>&]/g, '').trim().slice(0, 12); persist(); buildChar(); refreshPickers(); A.pop(); });
-    const hex = c => '#' + c.toString(16).padStart(6, '0'), cu = () => save.cu || (save.cu = {});
-    const edit = fn => { if (save.hero !== 'custom') save.hero = 'custom'; fn(); persist(); buildChar(); refreshPickers(); A.pop(); };
+    const hex = c => '#' + c.toString(16).padStart(6, '0'), cu = () => save.cu || (save.cu = {}), CO = BI.CUO;
+    const edit = fn => { if (save.hero !== 'custom') { const r = BI.presetToCu(BI.heroById(save.hero).o); save.hero = 'custom'; save.cu = r.cu; save.shirt = r.shirt; save.hat = r.hat; } fn(); persist(); buildChar(); refreshPickers(); A.pop(); if (state === 'play') kids.earn('studio'); };
     const panel = () => { const d = document.createElement('div'); d.hidden = true; body.appendChild(d); panels.push(d); return d; };
     const lab = (p, t) => { const d = document.createElement('div'); d.className = 'lab'; d.textContent = t; p.appendChild(d); };
     /* eine Reihe Knöpfe: n Stück, mk(i) baut den Knopf, get() = aktuelle Wahl, set(i) ändert */
     const row = (p, title, n, mk, get, set) => { lab(p, title); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const bs = []; for (let i = 0; i < n; i++) { const b = mk(i); b.onclick = () => edit(() => set(i)); r.appendChild(b); bs.push(b); } syncs.push(() => bs.forEach((b, i) => b.classList.toggle('sel', save.hero === 'custom' && i === get()))); };
-    const sw = arr => i => { const b = document.createElement('button'); b.className = 'sw'; if (arr[i] == null) { b.style.background = '#fff'; b.textContent = '✖'; } else b.style.background = hex(arr[i]); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); return b; };
+    const sw = arr => i => { const b = document.createElement('button'); b.className = 'sw'; if (!arr[i]) { b.style.background = '#fff'; b.textContent = '✖'; } else b.style.background = hex(arr[i]); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); return b; };
     const ic = arr => i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = arr[i]; return b; };
-    // Reiter 0: Vorlagen (Helden)
-    { const p = panel(); lab(p, 'Such dir einen Helden aus – oder gestalte alles selbst:'); const g = document.createElement('div'); g.className = 'hgrid'; p.appendChild(g);
-      BI.HEROES.forEach(h => { const b = document.createElement('button'); b.className = 'hc'; b.innerHTML = '<b>' + h.icon + '</b>' + (h.id === 'custom' ? 'Selbst gestalten' : h.name); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if (h.id === 'custom') showTab(1); }; g.appendChild(b); });
-      syncs.push(() => [...g.children].forEach((b, i) => b.classList.toggle('sel', BI.HEROES[i].id === save.hero))); }
-    // Reiter 1: Gesicht
+    const lb = arr => i => { const b = document.createElement('button'); b.className = 'hat lbl'; const e = document.createElement('b'), s = document.createElement('small'); e.textContent = arr[i][0]; s.textContent = arr[i][1]; b.append(e, s); return b; };
+    const num = (k, d) => () => cu()[k] == null ? d : cu()[k] | 0;
+    // Reiter 0: Meine Figuren + Vorlagen
+    const slotsPanel = panel(); let armDel = -1;
+    function renderSlots() {
+      slotsPanel.innerHTML = ''; const ch = ensureChars(); lab(slotsPanel, '🧑‍🤝‍🧑 Meine Figuren (bis zu ' + MAXCH + ') – tippe eine an, um mit ihr zu spielen:'); const g = document.createElement('div'); g.className = 'hgrid'; slotsPanel.appendChild(g);
+      ch.forEach((c, i) => { const h = BI.heroById(c.hero), ico = c.hero === 'custom' ? (BI.STYLE_ICONS[(c.cu && c.cu.style) | 0] || '🙂') : h.icon, b = document.createElement('button'); b.className = 'hc' + (i === save.cur ? ' sel' : ''); const e = document.createElement('b'), s = document.createElement('span'); e.textContent = ico; s.textContent = (i === save.cur ? '✔ ' : '') + (c.n || (c.hero === 'custom' ? 'Figur ' + (i + 1) : h.name)); b.append(e, s); b.onclick = () => { applyChar(i); A.pop(); renderSlots(); }; g.appendChild(b); });
+      const bar = document.createElement('div'); bar.className = 'row'; slotsPanel.appendChild(bar); const mk = (t, fn, cls) => { const b = document.createElement('button'); b.className = 'pill' + (cls ? ' ' + cls : ''); b.textContent = t; b.onclick = fn; bar.appendChild(b); return b; };
+      if (ch.length < MAXCH) { mk('➕ Neue Figur', () => { syncChar(); ch.push({ n: '', hero: 'custom', cu: Object.assign(BI.randomCu(), { acc: {} }), shirt: (Math.random() * BI.SHIRTS.length) | 0, hat: 0, eq: { hat: 'none', glasses: false, pack: false, teddy: false } }); applyChar(ch.length - 1); A.pop(); showTab(1); renderSlots(); }); mk('📄 Kopieren', () => { syncChar(); ch.push(Object.assign(clone(ch[save.cur]), { n: '' })); applyChar(ch.length - 1); A.pop(); renderSlots(); }); }
+      if (ch.length > 1) mk(armDel === save.cur ? '❓ Wirklich löschen?' : '🗑️ Löschen', () => { if (armDel !== save.cur) { armDel = save.cur; renderSlots(); return; } const k = save.cur; armDel = -1; ch.splice(k, 1); applyChar(Math.max(0, k - 1)); A.pop(); renderSlots(); }, armDel === save.cur ? 'warn' : '');
+      lab(slotsPanel, '⭐ Vorlagen – such dir eine aus und ändere danach alles, was du willst:'); const g2 = document.createElement('div'); g2.className = 'hgrid'; slotsPanel.appendChild(g2);
+      BI.HEROES.forEach(h => { if (h.id === 'custom') return; const b = document.createElement('button'); b.className = 'hc' + (save.hero === h.id ? ' sel' : ''); b.dataset.id = h.id; const e = document.createElement('b'), s = document.createElement('span'); e.textContent = h.icon; s.textContent = h.name; b.append(e, s); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if ((h.id === 'oma' || h.id === 'opa') && !vehicles.some(q => q.type === 'rollator' && Math.hypot(q.x - P.x, q.z - P.z) < 12)) spawnRC(true, 'rollator'); renderSlots(); }; g2.appendChild(b); });
+    }
+    syncs.push(() => { if (!slotsPanel.hidden) renderSlots(); });
+    // Reiter 1: Körper
     { const p = panel();
-      row(p, '🎨 Hautfarbe', BI.SKINS.length, sw(BI.SKINS), () => cu().skin | 0, i => cu().skin = i);
-      row(p, '👀 Augenfarbe', BI.EYES.length, sw(BI.EYES), () => cu().eye | 0, i => cu().eye = i);
+      row(p, '🎂 Alter', 4, lb(CO.age), num('age', 2), i => cu().age = i);
+      row(p, '📏 Größe', 5, lb(CO.hgt), () => cu().hgt != null ? cu().hgt | 0 : [1, 2, 3][cu().size == null ? 1 : cu().size | 0], i => cu().hgt = i);
+      row(p, '🏋️ Körperform', 4, lb(CO.build), num('build', 1), i => cu().build = i);
+      row(p, '🎨 Hautfarbe', BI.SKINS.length, sw(BI.SKINS), num('skin', 0), i => cu().skin = i); }
+    // Reiter 2: Gesicht
+    { const p = panel();
+      row(p, '🔵 Gesichtsform', 4, lb(CO.face), num('face', 0), i => cu().face = i);
+      row(p, '👃 Nase', 4, lb(CO.nose), num('nose', 0), i => cu().nose = i);
       row(p, '😊 Mund', BI.MOUTHS.length, ic(BI.MOUTH_ICONS), () => cu().mouth == null ? 1 : cu().mouth | 0, i => cu().mouth = i);
-      row(p, '✨ Sommersprossen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '🌟' : '🚫'; return b; }, () => cu().fr | 0, i => cu().fr = i); }
-    // Reiter 2: Haare
+      row(p, '💄 Lippenfarbe', CO.lip.length, sw(CO.lip), num('lip', 0), i => cu().lip = i);
+      row(p, '🌸 Bäckchen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '😊' : '😐'; return b; }, () => cu().blush === 0 ? 0 : 1, i => cu().blush = i);
+      row(p, '✨ Sommersprossen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '🌟' : '🚫'; return b; }, num('fr', 0), i => cu().fr = i);
+      row(p, '⚡ Narbe', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⚡' : '🚫'; return b; }, num('scar', 0), i => cu().scar = i); }
+    // Reiter 3: Augen
     { const p = panel();
-      row(p, '💇 Frisur', BI.STYLES.length, ic(BI.STYLE_ICONS), () => cu().style | 0, i => cu().style = i);
-      row(p, '🌈 Haarfarbe', BI.HAIRS.length, sw(BI.HAIRS), () => cu().hair | 0, i => cu().hair = i); }
-    // Reiter 3: Kleidung
+      row(p, '👁️ Augenform', 5, lb(CO.eyeS), num('eyeS', 0), i => cu().eyeS = i);
+      row(p, '🌈 Augenfarbe', BI.EYES.length, sw(BI.EYES), num('eye', 0), i => cu().eye = i);
+      row(p, '🤨 Augenbrauen', 4, lb(CO.brow), num('brow', 1), i => cu().brow = i);
+      row(p, '👓 Brille', 5, lb(CO.glassT), num('glassT', 0), i => cu().glassT = i);
+      row(p, '🎨 Brillenfarbe', CO.glassC.length, sw(CO.glassC), num('glassC', 0), i => cu().glassC = i); }
+    // Reiter 4: Haare
     { const p = panel();
-      row(p, '👕 Oberteil', BI.SHIRTS.length, sw(BI.SHIRTS), () => save.shirt | 0, i => save.shirt = i);
-      row(p, '👖 Hose / Rock', BI.PANTS.length, sw(BI.PANTS), () => cu().pants | 0, i => cu().pants = i);
-      row(p, '🧥 Stil', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['👕', '👗', '🧑‍🌾'][i]; return b; }, () => cu().top | 0, i => cu().top = i);
-      row(p, '🦓 Streifen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '〰️' : '🚫'; return b; }, () => cu().stripe | 0, i => cu().stripe = i);
-      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), () => cu().logo | 0, i => cu().logo = i);
-      row(p, '👟 Schuhe', BI.SHOES.length, sw(BI.SHOES), () => cu().shoe | 0, i => cu().shoe = i); }
-    // Reiter 4: Extras
+      row(p, '💇 Frisur', BI.STYLES.length, ic(BI.STYLE_ICONS), num('style', 0), i => cu().style = i);
+      row(p, '🌈 Haarfarbe', BI.HAIRS.length, sw(BI.HAIRS), num('hair', 0), i => cu().hair = i);
+      row(p, '✨ Strähnen', BI.HAIRS.length + 1, i => sw([0].concat(BI.HAIRS))(i), num('hair2', 0), i => cu().hair2 = i); }
+    // Reiter 5: Bart
     { const p = panel();
-      row(p, '🎩 Mütze / Hut', 12, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i);
-      lab(p, '🕶️ Zubehör (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['glasses', '🕶️'], ['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
+      row(p, '🧔 Bartform', 9, lb(CO.beard), num('beard', 0), i => cu().beard = i);
+      row(p, '🎨 Bartfarbe (✖ = wie Haare)', CO.beardc.length, sw(CO.beardc), num('beardc', 0), i => cu().beardc = i); }
+    // Reiter 6: Kleidung
+    { const p = panel();
+      row(p, '👕 Oberteil', 6, lb(CO.ctype), num('ctype', 0), i => cu().ctype = i);
+      row(p, '💪 Ärmel', 3, lb(CO.sleeve), num('sleeve', 0), i => cu().sleeve = i);
+      row(p, '🎨 Oberteil-Farbe', BI.SHIRTS.length, sw(BI.SHIRTS), () => save.shirt | 0, i => save.shirt = i);
+      row(p, '🧥 Schnitt', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['👕', '👗', '🧑‍🌾'][i]; return b; }, num('top', 0), i => cu().top = i);
+      row(p, '👖 Hose / Rock', 4, lb(CO.bot), num('bot', 0), i => cu().bot = i);
+      row(p, '🎨 Hosen-Farbe', BI.PANTS.length, sw(BI.PANTS), num('pants', 0), i => cu().pants = i);
+      row(p, '🦓 Streifen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '〰️' : '🚫'; return b; }, num('stripe', 0), i => cu().stripe = i);
+      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), num('logo', 0), i => cu().logo = i); }
+    // Reiter 7: Schuhe
+    { const p = panel();
+      row(p, '👟 Schuhart', 4, lb(CO.shoeT), num('shoeT', 0), i => cu().shoeT = i);
+      row(p, '🎨 Schuhfarbe', BI.SHOES.length, sw(BI.SHOES), num('shoe', 0), i => cu().shoe = i); }
+    // Reiter 8: Zubehör
+    { const p = panel();
+      row(p, '👂 Ohrringe', 4, lb(CO.ear), num('ear', 0), i => cu().ear = i);
+      row(p, '📿 Kette', CO.neck.length, sw(CO.neck), num('neck', 0), i => cu().neck = i);
+      row(p, '🎀 Stirnband', CO.band.length, sw(CO.band), num('band', 0), i => cu().band = i);
+      row(p, '📎 Haarspange', CO.clip.length, sw(CO.clip), num('clip', 0), i => cu().clip = i);
+      row(p, '🦸 Maske', CO.mask.length, sw(CO.mask), num('mask', 0), i => cu().mask = i);
+      row(p, '⌚ Uhr', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⌚' : '🚫'; return b; }, num('watch', 0), i => cu().watch = i);
+      lab(p, '🎒 Mehr (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
       for (const [k, e] of AC) { const b = document.createElement('button'); b.className = 'hat'; b.textContent = e; b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
       syncs.push(() => bs.forEach(([k, b]) => b.classList.toggle('sel', save.hero === 'custom' && !!(cu().acc && cu().acc[k])))); }
-    // Reiter 5: Größe & Haustier
-    { const p = panel();
-      row(p, '📏 Größe', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['🐣', '🙂', '🦒'][i]; return b; }, () => cu().size == null ? 1 : cu().size | 0, i => cu().size = i);
-      lab(p, '🐾 Mein Haustier'); const r = document.createElement('div'); r.className = 'row pets'; p.appendChild(r); const bs = [];
+    // Reiter 9: Hüte
+    { const p = panel(); row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i); }
+    // Reiter 10: Haustier
+    { const p = panel(); lab(p, '🐾 Mein Haustier'); const r = document.createElement('div'); r.className = 'row pets'; p.appendChild(r); const bs = [];
       BI.PETS.forEach(pt => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = pt.icon + ' ' + pt.name; b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
       syncs.push(() => bs.forEach((b, i) => b.classList.toggle('sel', BI.PETS[i].id === save.pet))); }
-    const TABS = ['⭐ Helden', '😀 Gesicht', '💇 Haare', '👕 Kleidung', '🎩 Extras', '🐾 Größe'], tbs = []; let cur = 0;
-    function showTab(i) { cur = i; panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); }
+    const TABS = ['🧑‍🤝‍🧑 Figuren', '🧍 Körper', '😀 Gesicht', '👀 Augen', '💇 Haare', '🧔 Bart', '👕 Kleidung', '👟 Schuhe', '💍 Zubehör', '🎩 Hüte', '🐾 Haustier'], tbs = []; let cur = 0;
+    function showTab(i) { cur = i; panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); }
     TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; b.textContent = t; b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
-    showTab(save.hero === 'custom' ? 1 : 0);
+    { const mk = (t, fn) => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = t; b.onclick = fn; actEl.appendChild(b); };
+      mk('🎲 Zufall', () => edit(() => { const r = BI.randomCu(); save.cu = Object.assign(r, { acc: (save.cu && save.cu.acc) || {} }); save.shirt = (Math.random() * BI.SHIRTS.length) | 0; }));
+      mk('⟲', () => { cam.yaw -= .8; A.pop(); }); mk('⏯ Drehen', () => { orbitOff = !orbitOff; A.pop(); }); mk('⟳', () => { cam.yaw += .8; A.pop(); }); }
+    showTab(0);
     pickers.push(() => { syncs.forEach(f => f()); });
   }
   buildHeroPicker($('heroPick')); buildHeroPicker($('wardPick'));
@@ -1352,6 +1403,7 @@
       if (v.isTrain) { train.update(dt, { thr: jy, turbo: inp.turbo }, fx); }
       else {
         const sp = v.step(dt, { steer: jx, thr: jy, turbo: inp.turbo, climb: (inp.up ? 1 : 0) - (inp.down ? 1 : 0) }, W, fx);
+        if (v.spec.stand) { v.walk = (v.walk || 0) + Math.abs(v.v) * dt * 1.6; char.pose(v.walk, Math.min(.9, Math.abs(v.v) / 9), false); char.armL.rotation.x = char.armR.rotation.x = -1.2; if (inp.turbo && v.turbo && Math.abs(v.v) > 12 && v.type === 'rollator') kids.earn('rollator'); }
         const o = v.spec.fly && v.y > 3 ? { hit: false } : vehicleObstacles(v.x, v.z, v.r * .9, v); if (o.hit) { const d = Math.hypot(o.x - v.x, o.z - v.z); v.x = o.x; v.z = o.z; v.v *= .7; if (d > .1 && hitCool <= 0) { hitCool = .4; A.bump(); } }
         if (sp > 6 && hitCool <= 0) { hitCool = .4; A.bump(); cam.shake = .4; }
         if (v.spec.mow) farm.mow(v, dt);
@@ -1564,7 +1616,7 @@
   function updateCamera(dt) {
     const v = P.veh; let tx, ty, tz, dist, pitch = cam.pitch;
     if (rs.ui === 'play' && state === 'play') { camera.position.set(RG.x + .9, 2.25, RG.z + 2.7); camera.lookAt(RG.x, 1.75, -88); cam.x = RG.x; cam.y = 2.25; cam.z = RG.z + 2.7; sun.position.set(RG.x + 60, 100, RG.z + 40); sun.target.position.set(RG.x, 0, RG.z); sky.position.set(RG.x, 0, RG.z); return; }
-    if (state === 'menu') { cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -.55 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
+    if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -.55 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
     else if (v) {
       if (cam.ego && state === 'play') {
         const e = EYE[v.isTrain ? 'train' : v.type] || [0, 1.4, .4], ex = v.x + Math.sin(v.h) * e[2], ez = v.z + Math.cos(v.h) * e[2], ey = (v.y || 0) + e[1], yaw = v.h + cam.egoOff;
@@ -1621,11 +1673,11 @@
     if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
     renderer.render(scene, camera);
   }
-  spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate');
+  spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate'); if (save.owned.includes('rollator')) spawnRC(true, 'rollator');
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

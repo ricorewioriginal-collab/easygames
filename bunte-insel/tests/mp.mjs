@@ -33,7 +33,7 @@ await A.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/menu.png' :
 await A.click('#bMulti'); await A.click('#mpHost'); await A.waitForFunction(() => /^[A-Z2-9]{4}$/.test(document.getElementById('mpCode').textContent), null, { timeout: 8000 });
 const code = await A.evaluate(() => document.getElementById('mpCode').textContent);
 await A.click('#mpBack'); await A.click('#bStart'); await A.evaluate(() => { const b = window.__bi; b.P.x = 20; b.P.z = 30; });
-await B.evaluate(() => { window.__bi.setPet('mieze'); document.querySelectorAll('#heroPick .hc')[3].click(); });
+await B.evaluate(() => { window.__bi.setPet('mieze'); document.querySelector('#heroPick .hc[data-id=luna]').click(); });
 // Gast tippt den Code ein (Tastatur) und tritt bei
 await B.click('#bMulti'); await B.click('#mpJoin'); for (const ch of code) await B.keyboard.press(ch.toLowerCase()); 
 const rd = () => B.evaluate(() => document.getElementById('mpJoinCode').textContent.replace(/[\s·]/g, ''));
