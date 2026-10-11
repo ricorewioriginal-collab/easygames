@@ -274,7 +274,7 @@
     if (mNpc) { fx.burst(mNpc.x, 2.2, mNpc.z, 8, [BI.C.pink], 3, 1.2, 40, -1); }
     M.i++;
     if (M.i >= M.steps.length) {
-      A.fanfare(); addStars(5); say('🎉 Super gemacht! +5 ⭐', 2800); fx.burst(P.veh.x, 3, P.veh.z, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 11, 1.8, 26, 9);
+      A.fanfare(); addStars(5); say('🎉 Super gemacht! +5 ⭐', 2800); story.note('mission'); fx.burst(P.veh.x, 3, P.veh.z, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 11, 1.8, 26, 9);
       mission = null; clearMissionVisuals(); missionDelay = 3; updateHud();
     } else { showStep(); updateHud(); }
   }
@@ -498,6 +498,7 @@
   function startPlay() {
     A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     setTimeout(() => { if (state === 'play' && !kids.open) kids.daily(); }, 3500);
+    story.start();
     if (!save.intro) say(isTouch() ? 'Links wischen = laufen · rechts wischen = Kamera drehen' : 'WASD/Pfeile = laufen · E = einsteigen · Maus ziehen = Kamera', 5200);
     else say('Hallo ' + heroName() + '! Los geht\'s ♥', 2400);
   }
@@ -1001,6 +1002,8 @@
   const gadgets = BI.createGadgets({ P, A, fx, save, say, persist, setStick, earn: id => kids.earn(id), char: () => char, blocked: () => !!(park.busy() || obby.run || parcours.run || play.busy() || build.active) });
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
+  const story = BI.createStory({ A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); } });
+  kids.onEarn = id => story.onEarn(id); { const mn = meta.note; meta.note = (k, n) => { mn(k, n); story.note(k); }; }
   const cinema = BI.createCinema({ scene, P, say, A, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state, inv: () => garden.inv() });
@@ -1092,6 +1095,7 @@
     if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; cam.yaw = 0; A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
   }
   function updateGuide(dt) { if (!guide) return; const p = guide.d.at(), px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; if (Math.hypot(p.x - px, p.z - pz) < 7) { say('🎉 Angekommen: ' + guide.d.icon + ' ' + guide.d.name + '!', 3000); A.star(); kids.earn('guide'); guide = null; updateHud(); } }
+  $('bStory').addEventListener('click', () => { closeGuide(); if (state === 'play') story.show(); });
   $('bGuide').addEventListener('click', openGuide); $('guideClose').addEventListener('click', closeGuide);
   /* Eltern-Bereich: Lautstärke, Mitspielen, Sparmodus, Vorlesen, Jahreszeit, Pausen-Erinnerung */
   let parentOpen = false, pHold = 0, pHolding = false; const par = $('parentPanel');
@@ -1391,13 +1395,13 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || cinema.open || town.open || combat.panelOpen || pack.open || pack.tradeOpen() || park.busy() || pool.busy() || play.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || cinema.open || story.open || town.open || combat.panelOpen || pack.open || pack.tradeOpen() || park.busy() || pool.busy() || play.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
   function updatePlayer(dt) {
     const [jx, jy] = axes();
-    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (story.open) story.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
     if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
     if (rs.ui) { inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (pool.busy()) { inp.jump = inp.aux = inp.hornEdge = false; return; }
@@ -1669,11 +1673,11 @@
     if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
     if (state === 'pause') { renderer.render(scene, camera); return; }
     t += dt;
-    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); cinema.update(); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
+    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); park.update(dt, t); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); meta.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); cinema.update(); story.update(dt, state === 'play', { hud: $('mission').hidden, idle: !P.veh && !mission && !shopOpen && !guideOpen && !parentOpen && !kids.busy() && !cinema.open }); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); park.update(dt, t); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); meta.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1690,5 +1694,5 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

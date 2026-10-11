@@ -569,6 +569,16 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const c5 = await p.evaluate(async () => { const b = window.__bi; b.P.x = -75; b.P.z = 43.5; await new Promise(r => setTimeout(r, 400)); b.placeAct(b.placeNear()); const cl = document.getElementById('cineCard').className; b.cinema.close(); b.openParent(); document.getElementById('parYt').value = 'kurz'; document.getElementById('parYtSave').click(); const bad = b.cinema.hasKey(); document.getElementById('parYtDel').click(); const gone = !b.cinema.hasKey(); document.getElementById('parYt').value = 'AIzaSyDUMMYKEY_1234567890abcdefghijk'; document.getElementById('parYtSave').click(); const okk = b.cinema.hasKey(); document.getElementById('parYtDel').click(); b.closeParent(); return { cl, bad, gone, okk, end: !b.cinema.hasKey() }; });
     ok(/drive/.test(c5.cl) && c5.gone && c5.okk && c5.end, 'Autokino-Aussehen; Eltern-Bereich: Schlüssel prüfen, speichern, entfernen');
   }
+  { // Inselreise: Kapitel-Ablauf, Nachholen, Ziel abhaken, Kapitel abschließen, Fenster
+    const q = await p.evaluate(async () => { const b = window.__bi, s = b.story, ST = BI.STORY, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+      s.start(); const c0 = b.save.story.c, isDone = t => t[0] === 'stk' ? (b.save.stk || []).includes(t[1]) : !!b.save.story.ev[t[1]];
+      o.consistent = ST.slice(0, c0).every(c => c.tasks.every(isDone)) && (c0 >= ST.length || !ST[c0].tasks.every(isDone));
+      o.chip = !document.getElementById('questChip').hidden || c0 >= ST.length;
+      if (c0 < ST.length) { const s0 = b.save.stars; for (const t of ST[c0].tasks) if (!isDone(t)) { if (t[0] === 'stk') b.kids.earn(t[1]); else b.meta.note(t[1]); } await sl(200); o.next = b.save.story.c === c0 + 1; o.gain = b.save.stars - s0; } else { o.next = true; o.gain = 5; }
+      document.getElementById('bGuide').click(); await sl(100); document.getElementById('bStory').click(); o.open = s.open && !document.getElementById('questPanel').hidden && document.querySelectorAll('#questList .qch').length === ST.length; s.close();
+      return o; });
+    ok(q.consistent && q.chip && q.next && q.gain >= 5 && q.open, 'Inselreise: Kapitel-Ablauf, Geschafftes wird nachgeholt, Kapitel-Abschluss +⭐, Fenster über 🧭 (' + JSON.stringify(q) + ')');
+  }
   await c.close();
 }
 { // Gadgets und eigener Parcours
