@@ -1,5 +1,14 @@
 import { Rng } from '../rng';
-import { ARENA, BALL_RADIUS, BALL_TUNING, MAX_CARS, TICK_DT, type CarInput, type CarState, type SimState } from '../sim';
+import {
+  ARENA,
+  BALL_RADIUS,
+  BALL_TUNING,
+  MAX_CARS,
+  TICK_DT,
+  type CarInput,
+  type CarState,
+  type SimState,
+} from '../sim';
 import { BallPredictor, Basis, PRED_MAX, PRED_STEP, bestPad, clampN, wrapAngle } from './nav';
 import { M_DODGE, M_DOUBLE, M_FLIP, M_JUMP, M_NONE, Maneuver, aimAir, levelAir } from './skills';
 
@@ -224,7 +233,12 @@ export class Bot {
 
   /** Nur zur Diagnose/Tests: aktuelle Rolle, ob der Bot sich bewegen will, und das Ziel */
   get debug(): { mode: BotMode; wantsMove: boolean; target: [number, number, number]; vcap: number } {
-    return { mode: this.mode, wantsMove: this.wantsMove, target: [this.tx, this.ty, this.tz], vcap: this.vcap };
+    return {
+      mode: this.mode,
+      wantsMove: this.wantsMove,
+      target: [this.tx, this.ty, this.tz],
+      vcap: this.vcap,
+    };
   }
 
   private reset(carId: number): void {
@@ -503,8 +517,8 @@ export class Bot {
     this.wasChaser = attack;
 
     if (attack) this.attackSolve(state, car, a, mistake);
-    else if (lastMan === car.id) this.defendSolve(state, car, a);
-    else this.supportSolve(state, car, a);
+    else if (lastMan === car.id) this.defendSolve(car, a);
+    else this.supportSolve(car, a);
 
     // Boost holen (sparsam, nur wenn nötig und nahe)
     if (this.mode !== 'attack' && this.mode !== 'clear') this.maybePad(state, car, a);
@@ -515,7 +529,8 @@ export class Bot {
     }
 
     // Gezielte Demolition nur 'pro'
-    if (L.demo && car.supersonic && this.mode !== 'attack' && this.mode !== 'clear') this.maybeDemo(state, car);
+    if (L.demo && car.supersonic && this.mode !== 'attack' && this.mode !== 'clear')
+      this.maybeDemo(state, car);
 
     // Stecken-bleiben
     this.stuckCheck(state, car);
@@ -526,7 +541,9 @@ export class Bot {
     const b = this.b;
     const d = Math.hypot(car.pos[0], car.pos[2]);
     const vf = car.vel[0] * b.fx + car.vel[2] * b.fz;
-    const ang = Math.abs(Math.atan2(-car.pos[0] * b.lx - car.pos[2] * b.lz, -car.pos[0] * b.fx - car.pos[2] * b.fz));
+    const ang = Math.abs(
+      Math.atan2(-car.pos[0] * b.lx - car.pos[2] * b.lz, -car.pos[0] * b.fx - car.pos[2] * b.fz),
+    );
     if (car.wheelsOnSurface >= 3 && d >= 3.2 && d <= 6 && vf >= 10 && ang < 0.25) {
       this.dodgeSteer = 0;
       this.startManeuver(M_DODGE);
@@ -548,6 +565,8 @@ export class Bot {
       this.tx = car.pos[0] * 0.5;
       this.tz = -a * 24;
       this.ty = car.pos[1];
+      this.fx = this.bpx;
+      this.fz = this.bpz;
       this.hold = true;
     }
   }
@@ -559,7 +578,6 @@ export class Bot {
     const idx = bestPad(state.pads, car, this.tx, this.tz, 30, maxDetour, -a, this.mode === 'defend');
     if (idx >= 0) {
       const p = state.pads[idx]!;
-      // Pad nur, wenn sie ankommt, bevor sie sich wieder füllt (Timer ist öffentlich) – aktive Pads sind sofort da
       this.tx = p.pos[0];
       this.tz = p.pos[2];
       this.ty = car.pos[1];
@@ -583,7 +601,7 @@ export class Bot {
       const d = Math.hypot(dx, dz);
       if (d < 4 || d > 24) continue;
       if ((dx * fx + dz * fz) / d < 0.93) continue;
-      const lead = 0.22 * d / 14;
+      const lead = (0.22 * d) / 14;
       this.tx = ex + (this.ring[o + 3] as number) * lead;
       this.tz = ez + (this.ring[o + 5] as number) * lead;
       this.ty = car.pos[1];
@@ -725,7 +743,6 @@ export class Bot {
     }
     ax = clampN(ax, -(HALF_W - 3), HALF_W - 3);
     az = clampN(az, -(HALF_L - 2), HALF_L - 2);
-    const f = appr ? 0 : 1;
 
     this.tx = ax;
     this.tz = az;
@@ -735,7 +752,7 @@ export class Bot {
     // Darum nahe am Ball nur so schnell, dass der Ball das Tor flach erreicht (Stufen: mehr Fehler bei niedriger Stufe).
     this.vcap = MAX_V + 10;
     this.wantPower = clearing;
-    if (!clearing && f < 0.2 && d < 18) {
+    if (!clearing && appr && d < 18 && ppy <= GROUND_HIT_Y + 0.3) {
       const dg = Math.hypot(gx - ppx, gz - ppz);
       const vHit = this.L.powerAware ? clampN(shotSpeed(dg) * (1 + this.hitErr), MIN_SHOT_SPEED, 18) : 14;
       const along = (this.bvx * cx + this.bvz * cz) / (d || 1);
@@ -749,7 +766,7 @@ export class Bot {
     this.aimZ = ppz;
     this.aimValid = true;
     if (this.man.kind === M_NONE && this.maneuverCool === 0 && car.wheelsOnSurface >= 3) {
-      this.planManeuver(car, ppx, ppy, ppz, tI, d, vf, off, ux, uz);
+      this.planManeuver(car, ppx, ppy, ppz, tI, d, vf, off);
     }
   }
 
@@ -762,8 +779,6 @@ export class Bot {
     d: number,
     vf: number,
     off: number,
-    _ux: number,
-    _uz: number,
   ): void {
     const L = this.L;
     const b = this.b;
@@ -793,7 +808,7 @@ export class Bot {
   }
 
   /** Verteidigung: zwischen Ball und eigenem Tor stehen */
-  private defendSolve(state: SimState, car: CarState, a: number): void {
+  private defendSolve(car: CarState, a: number): void {
     const gz = -a * HALF_L;
     const bx = this.bpx + this.bvx * 0.3;
     const bz = this.bpz + this.bvz * 0.3;
@@ -813,12 +828,10 @@ export class Bot {
     this.fx = this.bpx;
     this.fz = this.bpz;
     this.hold = true;
-    void state;
   }
 
   /** Unterstützung (3v3): zwischen Ball und Verteidiger, quer versetzt */
-  private supportSolve(state: SimState, car: CarState, a: number): void {
-    void state;
+  private supportSolve(car: CarState, a: number): void {
     const prog = clampN(this.bpz * a - 18, -32, 22);
     this.mode = 'support';
     this.tx = clampN(-this.bpx * 0.6, -26, 26);
@@ -865,7 +878,7 @@ export class Bot {
       o.throttle = -1;
       o.steer = this.unstickSteer;
       if (this.unstickFlip) {
-        if (!grounded || b.uy < 0.5) levelOrFlip(o, b, grounded);
+        if (!grounded) levelAir(o, b);
         man.apply(o, 0);
       }
       return;
@@ -890,8 +903,7 @@ export class Bot {
     }
 
     if (man.kind !== M_NONE) {
-      const lockAxes = man.apply(o, this.dodgeSteer);
-      void lockAxes;
+      man.apply(o, this.dodgeSteer);
       if (man.kind !== M_NONE && man.t > 10 && grounded && man.kind !== M_FLIP) man.stop();
     }
   }
@@ -1013,9 +1025,4 @@ export function shotSpeed(dg: number): number {
     if (h <= 4.4) return v;
   }
   return MIN_SHOT_SPEED;
-}
-
-/** Auf dem Kopf liegend: Sprung-Pulse zum Aufrichten; Luft: abfangen */
-function levelOrFlip(o: CarInput, b: Basis, grounded: boolean): void {
-  if (!grounded) levelAir(o, b);
 }

@@ -106,3 +106,7 @@ textarea.field { min-height: 84px; resize: vertical; font: 500 0.78em/1.25 ui-mo
 .invites { display: grid; gap: 10px; margin: 8px 0; } .invite { border-color: var(--ice); }
 .scanbox { margin-top: 8px; } .scan-video { width: 100%; max-height: 52vh; background: #000; object-fit: cover; }
 @media (max-width: 760px), (max-height: 520px) { .panel { padding: 12px 14px; } .logo { margin-bottom: 8px; } .menu { gap: 6px; } .btn { min-height: 40px; padding: 0.5em 1.1em; } .boost { width: 92px; height: 92px; } .speed { right: calc(112px + var(--safe-r)); } .scorebar .team { font-size: 1.7em; min-width: 56px; } .scorebar .clock { font-size: 1.4em; min-width: 76px; } }
+
+.is-touch .menubtn { display: none; }
+.is-touch .boost { bottom: calc(215px + var(--safe-b)); right: calc(10px + var(--safe-r)); width: 76px; height: 76px; } .is-touch .boost .num { font-size: 1.5em; } .is-touch .speed { display: none; }
+@media (max-width: 600px) { .is-touch .scorebar { left: calc(6px + var(--safe-l)); transform: scale(0.78); transform-origin: left top; } .is-touch .feed { top: calc(54px + var(--safe-t)); } }

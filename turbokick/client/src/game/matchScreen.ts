@@ -65,6 +65,7 @@ export class MatchScreen implements Screen {
     this.hud = new Hud(n, () => this.openPause());
     this.hud.layout(n > 1);
     this.input = new LocalInput(this.el, defaultBindings(n as 1 | 2, app.touch), { touchLayout: s.touchControls });
+    this.el.classList.toggle('is-touch', app.touch);
     this.el.append(this.hud.el, this.overlay);
     void this.tmpState;
   }
@@ -100,7 +101,10 @@ export class MatchScreen implements Screen {
       const c = this.input.consume(p as 0 | 1);
       if (c.ballCam) this.ballCam[p] = !this.ballCam[p];
       if (c.reset && this.session.training) this.session.reset();
-      if (c.pause && p === 0) this.paused ? this.closePause() : this.openPause();
+      if (c.pause && p === 0) {
+        if (this.paused) this.closePause();
+        else this.openPause();
+      }
     }
     const frozen = this.paused && !this.session.shared;
     let events: SimEvent[] = [];

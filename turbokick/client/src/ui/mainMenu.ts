@@ -17,7 +17,7 @@ export function showroomFor(app: App): Showroom {
 /** Hauptmenü: Wortmarke, Schaukasten mit dem eigenen Auto */
 export function create(app: App, _params?: RouteParams): ScreenView {
   const r = showroomFor(app);
-  r.setShift(window.innerWidth > 900 ? 2.6 : 0);
+  r.setShift(window.innerWidth > 900 ? 4.4 : 0);
   app.engine.setScreen(r);
   app.engine.start();
   app.audio.music('menu');

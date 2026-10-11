@@ -10,7 +10,7 @@ const ACCENTS: Array<[string, string]> = [['', 'Team'], ['#b6ff3b', 'Lime'], ['#
 /** Garage: Karosserie, Aufkleber, Akzentfarbe und Namen wählen – das Auto dreht sich live im Hintergrund */
 export function create(app: App, params?: RouteParams): ScreenView {
   const room = showroomFor(app);
-  room.setShift(window.innerWidth > 900 ? 2.6 : 0);
+  room.setShift(window.innerWidth > 900 ? 4.4 : 0);
   app.engine.setScreen(room);
   app.engine.start();
   const body = h('div');

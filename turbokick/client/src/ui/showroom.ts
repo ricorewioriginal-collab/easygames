@@ -23,9 +23,9 @@ export class Showroom implements Screen {
     this.scene.add(new THREE.HemisphereLight(0x9fb4ff, 0x20102a, 0.9));
     const key = new THREE.DirectionalLight(0xffffff, 1.6);
     key.position.set(4, 6, 5);
-    const rim = new THREE.DirectionalLight(0x19c8ff, 2.2);
+    const rim = new THREE.DirectionalLight(0x19c8ff, 1.3);
     rim.position.set(-5, 3, -4);
-    const rim2 = new THREE.DirectionalLight(0xff7a1a, 1.6);
+    const rim2 = new THREE.DirectionalLight(0xff7a1a, 0.8);
     rim2.position.set(5, 2, -5);
     this.scene.add(key, rim, rim2);
     const floor = new THREE.Mesh(new THREE.CircleGeometry(40, 48), new THREE.MeshStandardMaterial({ color: 0x0b0c1c, metalness: 0.7, roughness: 0.35 }));

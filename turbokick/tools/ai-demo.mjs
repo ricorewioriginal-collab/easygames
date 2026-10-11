@@ -4,7 +4,8 @@ import { Sim } from '../shared/src/sim/index.ts';
 import { Bot, BOT_LEVELS } from '../shared/src/ai/bot.ts';
 
 // Zum Abstimmen: BOT_TUNE='{"hard":{"delay":0.3}}' überschreibt Stufenwerte
-if (process.env.BOT_TUNE) for (const [k, v] of Object.entries(JSON.parse(process.env.BOT_TUNE))) Object.assign(BOT_LEVELS[k], v);
+if (process.env.BOT_TUNE)
+  for (const [k, v] of Object.entries(JSON.parse(process.env.BOT_TUNE))) Object.assign(BOT_LEVELS[k], v);
 
 const [la = 'pro', lb = 'idle', size = '1', secs = '120', games = '2'] = process.argv.slice(2);
 const n = Number(size);

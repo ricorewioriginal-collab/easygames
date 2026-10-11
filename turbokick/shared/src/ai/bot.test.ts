@@ -65,12 +65,11 @@ describe('Bot: Determinismus und Gültigkeit', () => {
       { team: 1, level: 'normal' },
       { team: 1, level: 'pro' },
     ];
-    const run = (seed: number): string => {
+    const run = (): string => {
       const g = makeGame(slots, 5);
       let h = 2166136261;
       for (let t = 0; t < 3000; t++) {
         const { inputs } = tick(g);
-        void seed;
         for (const inp of inputs) {
           const s = JSON.stringify(inp);
           for (let k = 0; k < s.length; k++) h = Math.imul(h ^ s.charCodeAt(k), 16777619);
@@ -78,7 +77,7 @@ describe('Bot: Determinismus und Gültigkeit', () => {
       }
       return `${h >>> 0}:${g.sim.hash()}`;
     };
-    expect(run(1)).toBe(run(1));
+    expect(run()).toBe(run());
     // andere Bot-Seeds ändern (wegen Zielrauschen) mindestens eine Eingabe
     const a = new Bot('easy', 1);
     const b = new Bot('easy', 2);
@@ -117,7 +116,8 @@ describe('Bot: Determinismus und Gültigkeit', () => {
       const { inputs } = tick(g);
       for (const inp of inputs) {
         expect(clampInput(inp)).toEqual(inp);
-        for (const v of [inp.throttle, inp.steer, inp.pitch, inp.yaw, inp.roll]) expect(Number.isFinite(v)).toBe(true);
+        for (const v of [inp.throttle, inp.steer, inp.pitch, inp.yaw, inp.roll])
+          expect(Number.isFinite(v)).toBe(true);
       }
     }
   });
@@ -211,7 +211,10 @@ describe('Bot: Mannschaften', () => {
         // „unbeabsichtigt“ = der Bot will sich bewegen, kommt aber nicht vom Fleck
         if (c.demolished > 0 || speed >= 0.8 || !(g.bots[i] as Bot).debug.wantsMove) still[i] = 0;
         else still[i]++;
-        expect(still[i], `Auto ${i} steht seit ${(still[i] as number) / 60} s bei t=${t / 60}`).toBeLessThanOrEqual(300);
+        expect(
+          still[i],
+          `Auto ${i} steht seit ${(still[i] as number) / 60} s bei t=${t / 60}`,
+        ).toBeLessThanOrEqual(300);
       }
       // Alle Bots einer Mannschaft in der eigenen Hälfte hinter dem Ball ohne Bewegung?
       let allBack = true;
