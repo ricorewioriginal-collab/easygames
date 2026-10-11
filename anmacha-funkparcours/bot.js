@@ -1,12 +1,12 @@
 /* Funkparcours – Planer-Bot: simuliert kurze Zukünfte mit der echten Physik und wählt die beste Aktion.
    Wird für Tests (sind die Parcours machbar?) und als Computer-Gegner/Geist benutzt. */
 import { Sim, DT } from './engine.js';
-const CANDS = [{ r: 1 }, { r: 1, j: 1, hold: 0.4 }, { r: 1, j: 1, hold: 0.14 }, { r: 1, j: 1, hold: 0.24 }, { r: 1, j: 1, g: 1, hold: 0.4 }, { r: 1, g: 1 }, {}, { l: 1 }];
-// Fortsetzung: rennen, am Plattformrand springen, in der Luft nahe Stangen greifen
+const CANDS = [{ r: 1 }, { r: 1, j: 1, hold: 0.4 }, { r: 1, j: 1, hold: 0.14 }, { r: 1, j: 1, hold: 0.24 }, {}, { l: 1 }];
+// Fortsetzung: rennen, am Plattformrand springen (an den Stangen greift der Läufer von selbst)
 const policy = s => {
-  if (s.hang) return { r: 1, g: 1 };
+  if (s.hang) return { r: 1 };
   if (s.onGround && s.ground) return { r: 1, j: s.ground.x1 - s.x < 0.45 && !s.ground.wall ? 1 : 0 };
-  return { r: 1, j: s.vy > 0.5 ? 1 : 0, g: s.nearBar() ? 1 : 0 };
+  return { r: 1, j: s.vy > 0.5 ? 1 : 0 };
 };
 function score(sim, c0, H) {
   const s = sim.clone(); const n0 = Math.round((c0.hold || 0.12) / DT); let steps = 0;
