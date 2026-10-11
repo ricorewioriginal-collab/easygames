@@ -84,7 +84,8 @@ BI.createRadio = function (G) {
   /* ===== Radio-Wiedergabe (ein Stream gleichzeitig) ===== */
   const R = { el: null, cur: -1, on: false, vol: 0, song: '', songT: 0, err: '', pausedFar: false, heardT: 0 };
   const stopRadio = () => { if (R.el) { try { R.el.pause(); R.el.removeAttribute('src'); R.el.load(); } catch (e) { } } R.on = false; R.cur = -1; R.song = ''; R.err = ''; R.pausedFar = false; try { AU.duck && AU.duck(1); } catch (e) { } };
-  const startStream = i => { if (!R.el) { R.el = new Audio(); R.el.preload = 'none'; R.el.onerror = () => { if (R.on) { R.err = 'Der Stream ist gerade nicht erreichbar.'; say('📻 ' + ST[R.cur].n + ': ' + R.err, 3600); } }; } R.el.volume = 0; R.el.src = ST[i].url; const pr = R.el.play(); if (pr && pr.catch) pr.catch(() => { R.err = 'Wiedergabe blockiert – tippe das Radio nochmal an.'; }); };
+  const failRadio = msg => { const n = R.cur >= 0 ? ST[R.cur].n : 'Radio'; stopRadio(); R.err = msg; say('📻 ' + n + ': ' + msg, 3600); }; /* Fehler: Radio gilt als aus, die Spielmusik wird wieder normal laut */
+  const startStream = i => { if (!R.el) { R.el = new Audio(); R.el.preload = 'none'; R.el.onerror = () => { if (R.on) failRadio('Der Stream ist gerade nicht erreichbar.'); }; } R.el.volume = 0; R.el.src = ST[i].url; const pr = R.el.play(); if (pr && pr.catch) pr.catch(() => { if (R.on && R.cur === i) failRadio('Wiedergabe blockiert – tippe das Radio nochmal an.'); }); };
   const toggleRadio = i => {
     if (R.on && R.cur === i) { stopRadio(); say('📻 ' + ST[i].n + ' aus', 1800); return; }
     stopRadio(); R.on = true; R.cur = i; R.song = ''; R.songT = 0; R.heardT = 0; startStream(i); say('📻 ' + ST[i].n + ' – Stream startet …', 2600); [660, 880].forEach((f, k) => note(f, .3, 'triangle', .08, k * .1));
@@ -94,7 +95,7 @@ BI.createRadio = function (G) {
   const pnl = document.createElement('div'); pnl.hidden = true; pnl.style.cssText = 'position:fixed;inset:3%;z-index:95;background:#0b1030;border:2px solid #6ad0ff;border-radius:18px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px #000a;font-family:Fredoka,system-ui,sans-serif;color:#fff';
   pnl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#141a4a"><span id="rpLogo" style="font:700 22px Fredoka,system-ui,sans-serif;color:#fff">laut.fm</span><b id="rpName" style="flex:1;font-size:18px"></b><a id="rpOpen" target="_blank" rel="noopener noreferrer" style="color:#6ad0ff;font-size:14px">↗ im neuen Tab</a><button id="rpX" style="font:700 18px system-ui;border:0;border-radius:10px;padding:6px 12px;cursor:pointer;background:#ff5a6a;color:#fff">✖</button></div><iframe id="rpFrame" style="flex:1;border:0;background:#000" allow="autoplay; encrypted-media" referrerpolicy="no-referrer"></iframe><div style="padding:6px 12px;background:#141a4a;font-size:13px;color:#9aa6d8">Der Ton kommt vom Radio in der Spielwelt. Bleibt das Bild leer? Dann „im neuen Tab“ öffnen.</div>';
   document.body.appendChild(pnl); const rp = id => pnl.querySelector('#' + id);
-  K.open = false;
+  K.open = false; K.stop = stopRadio;
   K.closeVisual = function () { if (!K.open) return; K.open = false; pnl.hidden = true; rp('rpFrame').src = 'about:blank'; G.updateButtons && G.updateButtons(true); };
   rp('rpX').onclick = K.closeVisual;
   const openVisual = i => {
@@ -151,7 +152,7 @@ BI.createRadio = function (G) {
     }
     if (R.on) {
       const p = posOf(R.cur), d = Math.hypot(P.x - p.x, P.z - p.z), v = d < 12 ? 1 : d > 62 ? 0 : Math.pow(1 - (d - 12) / 50, 1.5); R.vol = v;
-      if (R.el) { R.el.volume = Math.max(0, Math.min(1, v)); if (v <= .01 && !R.pausedFar && !R.el.paused) { R.el.pause(); R.pausedFar = true; } else if (v > .03 && R.pausedFar) { R.pausedFar = false; startStream(R.cur); } }
+      if (R.el) { R.el.volume = Math.max(0, Math.min(1, v * (AU.muted ? 0 : (AU._vol == null ? 1 : AU._vol)))); if (v <= .01 && !R.pausedFar && !R.el.paused) { R.el.pause(); R.pausedFar = true; } else if (v > .03 && R.pausedFar) { R.pausedFar = false; startStream(R.cur); } }
       try { AU.duck && AU.duck(1 - .88 * v); } catch (e) { } nowPlaying();
       if (!R.pausedFar && R.el && !R.el.paused && R.el.readyState > 2 && v > .2) { R.heardT += dt; if (R.heardT >= 20 && !s.done.includes(R.cur)) { s.done.push(R.cur); persist(); G.addStars(1); say('📻 ' + ST[R.cur].n + ' gehört! +1 ⭐ (' + s.done.length + '/13)', 3200); if (s.done.length >= N && !s.all) { s.all = 1; persist(); setTimeout(() => bonus(10, '🏆 Alle 13 Sender gehört!'), 1500); } } }
     }

@@ -495,7 +495,7 @@
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') inp.turbo = false;
     if (e.code === 'KeyQ') keys.q = false; if (e.code === 'KeyR') keys.r = false;
   });
-  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = inp.up = inp.down = false; if (state === 'play' && !cinema.open) pause(true); }); // Klick in den Film-Player löst blur aus → dann nicht pausieren
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = inp.up = inp.down = false; if (state === 'play' && !cinema.open && !radio.open) pause(true); }); // Klick in den Film-Player löst blur aus → dann nicht pausieren
   document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') pause(true); });
 
   /* ---------- Menüs ---------- */
@@ -867,6 +867,7 @@
     applyGame(d, !!solo); if (!solo) net.send(d);
   }
   function applyGame(d, solo) {
+    if (d.op === 'start') radio.stop(); /* Radio-Stream aus, solange ein Minispiel läuft */
     const now = performance.now(), me = selfId();
     if (d.op === 'start') {
       const def = gdef(d.k); if (gm || !def) return; gm = { k: d.k, solo: !!solo, seed: d.seed, t0: now, dur: (d.dur || def.dur) * 1000, it: d.it, n: 0, since: now, itTime: {}, cnt: {}, fin: {}, imm: {}, found: {}, phase: d.k === 'hide' ? 'count' : '', ph0: now, done: false };
@@ -885,7 +886,7 @@
   }
   function finishGame() {
     const g = gm; gm = null; $('gameBar').hidden = true; if (chestM) chestM.visible = false; fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; const now = performance.now(), me = selfId(), def = gdef(g.k);
-    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (g.k === 'elementar_zotik') { (save.zotik || (save.zotik = { q: 0, shards: [], pts: 0, paid: 0, fought: 0, visit: 0, gates: 0, ship: 0, felli: 0, talk: {} })).fought = 1; persist(); } if (g.k === 'stroemung_atlantis') { (save.atlantis || (save.atlantis = { holo: [0, 0, 0, 0, 0], shards: [], pts: 0, paid: 0, harp: 0, lowg: 0, herz: 0, glider: 0, played: 0, visit: 0 })).played = 1; persist(); } if (g.k === 'bauplan_bauland') { (save.bauland || (save.bauland = { placed: 0, ms: 0 })).played = 1; persist(); } if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
+    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (g.k === 'frequenz_radio') { (save.radio || (save.radio = { visit: 0, heard: [], done: [], all: 0, visual: 0, notes: [], pts: 0, paid: 0, played: 0 })).played = 1; persist(); } if (g.k === 'elementar_zotik') { (save.zotik || (save.zotik = { q: 0, shards: [], pts: 0, paid: 0, fought: 0, visit: 0, gates: 0, ship: 0, felli: 0, talk: {} })).fought = 1; persist(); } if (g.k === 'stroemung_atlantis') { (save.atlantis || (save.atlantis = { holo: [0, 0, 0, 0, 0], shards: [], pts: 0, paid: 0, harp: 0, lowg: 0, herz: 0, glider: 0, played: 0, visit: 0 })).played = 1; persist(); } if (g.k === 'bauplan_bauland') { (save.bauland || (save.bauland = { placed: 0, ms: 0 })).played = 1; persist(); } if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
     if (g.k === 'tag') { g.itTime[g.it] = (g.itTime[g.it] || 0) + now - g.since; rows = ids.map(id => ({ id, v: (g.itTime[id] || 0) / 1000, s: ((g.itTime[id] || 0) / 1000).toFixed(1) + ' s' })).sort((a, b) => a.v - b.v); sub = 'Fangen – wer war am kürzesten dran?'; }
     else if (g.k === 'treasure') { if (g.winner) { const w = g.winner; rows = [{ id: w, s: '🗺️ Schatz gefunden!' }].concat(ids.filter(id => id !== w).map(id => ({ id, s: '' }))); sub = (w === me ? 'Du hast' : gmNames(w) + ' hat') + ' den Schatz gefunden!'; } else { rows = ids.map(id => ({ id, s: '' })); sub = 'Der Schatz wurde nicht gefunden – nächstes Mal klappt es!'; } }
     else if (g.k === 'hide') { const hiders = ids.filter(id => id !== g.it), nf = hiders.filter(id => g.found[id]).length, seekStart = g.ph0, surv = id => ((g.found[id] || now) - seekStart) / 1000; rows = [{ id: g.it, s: '🔍 Sucher: ' + nf + ' von ' + hiders.length + ' gefunden', v: nf === hiders.length ? 1e9 : -1 }].concat(hiders.map(id => ({ id, s: g.found[id] ? '🙈 gefunden nach ' + surv(id).toFixed(0) + ' s' : '🏆 nicht gefunden!', v: g.found[id] ? surv(id) : 1e8 }))).sort((a, b) => b.v - a.v); sub = 'Verstecken'; }
