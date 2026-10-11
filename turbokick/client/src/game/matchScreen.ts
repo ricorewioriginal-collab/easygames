@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { SimEvent, SimState, TeamId } from '@shared/sim/types';
+import type { CarInput, SimEvent, SimState, TeamId } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import type { App } from '../app/app';
 import { TEAM_NAMES, teamColorHex } from '../app/theme';
@@ -150,6 +150,7 @@ export class MatchScreen implements Screen {
     let events: SimEvent[] = [];
     if (!frozen && !this.ended) {
       const inputs = Array.from({ length: n }, (_, p) => this.input.read(p as 0 | 1));
+      if (this.app.store.data.settings.touchAssist) this.assistTouch(inputs);
       events = this.session.advance(dt, inputs);
     }
     const st = this.state;
@@ -161,6 +162,35 @@ export class MatchScreen implements Screen {
     this.updateAudio(st);
     this.updateDebug(dt);
     if (st.phase === 'ended' && !this.ended) this.finish(st);
+  }
+
+  /**
+   * Einfache Touch-Steuerung: Der Stick gibt die gewünschte Richtung auf dem Bildschirm vor (oben = dorthin, wohin die
+   * Kamera blickt – mit Ball-Kamera also zum Ball). Am Boden lenkt das Auto selbst dorthin und gibt Gas; in der Luft
+   * bleibt die normale Luftsteuerung.
+   */
+  private assistTouch(inputs: CarInput[]): void {
+    const stick = this.input.touchStick();
+    const inp = inputs[0];
+    const car = this.state.cars[this.session.localCars[0] as number];
+    const chase = this.chase[0];
+    if (!stick || !inp || !car || !chase) return;
+    const mag = Math.min(1, Math.hypot(stick.x, stick.y));
+    if (mag < 0.18 || car.wheelsOnSurface < 3 || car.demolished > 0) return;
+    const q = new THREE.Quaternion(car.quat[0], car.quat[1], car.quat[2], car.quat[3]);
+    const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(q);
+    if (Math.hypot(fwd.x, fwd.z) < 0.4) return; // an steilen Wänden: klassisch
+    const yaw = chase.heading;
+    // Bildschirm → Welt: vorn = Blickrichtung der Kamera, rechts = (−cos, sin)
+    const dx = Math.sin(yaw) * stick.y - Math.cos(yaw) * stick.x;
+    const dz = Math.cos(yaw) * stick.y + Math.sin(yaw) * stick.x;
+    let diff = Math.atan2(dx, dz) - Math.atan2(fwd.x, fwd.z);
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    const speed = Math.hypot(car.vel[0], car.vel[2]);
+    inp.steer = Math.max(-1, Math.min(1, -diff * 2.4));
+    inp.throttle = mag * (Math.abs(diff) > 2.2 && speed < 4 ? 0.6 : 1);
+    inp.handbrake = inp.handbrake || (Math.abs(diff) > 1.7 && speed > 9);
   }
 
   private updateCameras(dt: number, st: SimState): void {

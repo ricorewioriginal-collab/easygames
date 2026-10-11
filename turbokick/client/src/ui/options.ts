@@ -56,8 +56,8 @@ export function create(app: App, params?: RouteParams): ScreenView {
       slider(
         t('opt.fov'),
         d.fov,
-        60,
-        110,
+        70,
+        120,
         1,
         (v) => set('fov', v),
         (v) => `${Math.round(v)}°`,
@@ -88,6 +88,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
         ],
         (v) => set('colorMode', v),
       ),
+      toggle(t('opt.touchAssist'), d.touchAssist, (v) => set('touchAssist', v), t('opt.touchAssistHint')),
       select<'auto' | 'on' | 'off'>(
         t('opt.touch'),
         d.touchControls,

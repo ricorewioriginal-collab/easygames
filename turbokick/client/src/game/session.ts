@@ -8,7 +8,14 @@ import {
   type SimState,
   type TeamId,
 } from '@shared/sim/types';
-import { Sim, cloneState, createSimState, decodeSnapshot, encodeSnapshot } from '@shared/sim';
+import {
+  Sim,
+  cloneState,
+  createSimState,
+  decodeSnapshot,
+  encodeSnapshot,
+  interpolateStates,
+} from '@shared/sim';
 import {
   parseToGuest,
   parseToHost,
@@ -73,6 +80,46 @@ function simFrom(plan: {
   });
 }
 
+/**
+ * Glättet die Darstellung zwischen zwei Physik-Schritten (60 Hz). Ohne das ruckelt das Bild, sobald Bildrate und
+ * Physikrate nicht exakt zusammenpassen (z. B. 90/120-Hz-Handys oder schwankende Bildraten): mal 0, mal 2 Schritte pro Bild.
+ */
+export class RenderInterp {
+  private readonly prev: SimState;
+  private readonly out: SimState;
+  private has = false;
+  constructor(template: SimState) {
+    this.prev = cloneState(template);
+    this.out = cloneState(template);
+  }
+  /** Zustand VOR dem letzten Schritt eines Bildes merken */
+  keep(s: SimState): void {
+    interpolateStates(s, s, 0, this.prev);
+    this.has = true;
+  }
+  /** Zwischenzustand für den Bruchteil k (0 … 1) des nächsten Schritts */
+  view(cur: SimState, k: number): SimState {
+    if (!this.has || this.prev.cars.length !== cur.cars.length) return cur;
+    interpolateStates(this.prev, cur, Math.max(0, Math.min(1, k)), this.out);
+    // Große Sprünge (Anstoß, Respawn, Netz-Korrektur) nicht verschmieren
+    const far = (a: number[], b: number[]): boolean =>
+      Math.abs((a[0] as number) - (b[0] as number)) +
+        Math.abs((a[1] as number) - (b[1] as number)) +
+        Math.abs((a[2] as number) - (b[2] as number)) >
+      4;
+    if (far(this.prev.ball.pos, cur.ball.pos))
+      for (let i = 0; i < 3; i++) this.out.ball.pos[i] = cur.ball.pos[i] as number;
+    cur.cars.forEach((c, i) => {
+      const p = this.prev.cars[i];
+      const o = this.out.cars[i];
+      if (!p || !o || !far(p.pos, c.pos)) return;
+      for (let j = 0; j < 3; j++) o.pos[j] = c.pos[j] as number;
+      for (let j = 0; j < 4; j++) o.quat[j] = c.quat[j] as number;
+    });
+    return this.out;
+  }
+}
+
 /** Partie auf diesem Gerät: Bots steuern die übrigen Autos */
 export class LocalMatch implements MatchSession {
   readonly kind: 'local' | 'host' = 'local';
@@ -99,10 +146,12 @@ export class LocalMatch implements MatchSession {
         this.bots.set(i, new Bot(p.difficulty, plan.seed + i * 7919));
     });
     this.sim.resetKickoff();
+    this.interp = new RenderInterp(this.sim.state);
   }
+  protected interp: RenderInterp;
 
   get state(): SimState {
-    return this.sim.state;
+    return this.interp.view(this.sim.state, this.acc / TICK_DT);
   }
 
   protected collect(inputs: ReadonlyArray<CarInput>, overrides?: ReadonlyMap<number, CarInput>): CarInput[] {
@@ -125,6 +174,7 @@ export class LocalMatch implements MatchSession {
     const out: SimEvent[] = [];
     while (this.acc >= TICK_DT) {
       this.acc -= TICK_DT;
+      if (this.acc < TICK_DT) this.interp.keep(this.sim.state);
       const ev = this.sim.step(this.collect(inputs, this.remoteInputs()));
       if (ev.length) {
         out.push(...ev);
@@ -336,8 +386,10 @@ export class GuestMatch implements MatchSession {
     }, 1000);
   }
 
+  private interp: RenderInterp | null = null;
   get state(): SimState {
-    return this.sim.state;
+    this.interp ??= new RenderInterp(this.sim.state);
+    return this.interp.view(this.sim.state, this.acc / TICK_DT);
   }
 
   private lost(): void {
@@ -439,6 +491,10 @@ export class GuestMatch implements MatchSession {
       if (this.pending.length > 240) this.pending.shift();
       this.link.sendFast(JSON.stringify({ t: 'input', seq, i: input }));
       const all = this.sim.state.cars.map((c, i) => (i === me ? input : c.input));
+      if (this.acc < TICK_DT) {
+        this.interp ??= new RenderInterp(this.sim.state);
+        this.interp.keep(this.sim.state);
+      }
       for (const e of this.sim.step(all))
         if ('car' in e && e.car === me && (e.t === 'jump' || e.t === 'pad' || e.t === 'touch')) out.push(e);
     }

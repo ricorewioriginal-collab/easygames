@@ -15,9 +15,10 @@ describe('Speicher', () => {
     expect(st.m.get('turbokick.save.backup')).toBe('{kaputt');
   });
   it('ungültige Werte werden bereinigt', () => {
-    const d = sanitize({ settings: { master: 7, fov: 500, quality: 'ultra' }, profile: { name: '<b>Ab</b>' + 'x'.repeat(30) }, garage: { accent: 'rot' }, stats: { matches: -4, wins: NaN }, lastSetup: { teamSize: 9, minutes: 99 } });
+    const d = sanitize({ version: 2, settings: { master: 7, fov: 500, quality: 'ultra' }, profile: { name: '<b>Ab</b>' + 'x'.repeat(30) }, garage: { accent: 'rot' }, stats: { matches: -4, wins: NaN }, lastSetup: { teamSize: 9, minutes: 99 } });
     expect(d.settings.master).toBe(1);
-    expect(d.settings.fov).toBe(110);
+    expect(d.settings.fov).toBe(120);
+    expect(sanitize({ version: 1, settings: { fov: 80 } }).settings.fov).toBe(100);
     expect(d.settings.quality).toBe('auto');
     expect(d.profile.name.length).toBeLessThanOrEqual(14);
     expect(d.profile.name).not.toMatch(/[<>]/);

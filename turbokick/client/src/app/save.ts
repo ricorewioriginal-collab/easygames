@@ -1,5 +1,5 @@
 /** Lokale Speicherung: versioniert, validiert, beschädigungssicher. Es gibt KEINE Konten und keine Cloud – alles bleibt im Browser. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 const KEY = 'turbokick.save';
 const BACKUP = 'turbokick.save.backup';
 
@@ -20,12 +20,14 @@ export interface Settings {
   colorMode: ColorMode;
   cameraShake: boolean;
   touchControls: 'auto' | 'on' | 'off';
-  /** Kamera-Sichtfeld in Grad */
+  /** Horizontales Kamera-Sichtfeld in Grad (Hochformat zoomt automatisch weiter heraus) */
   fov: number;
   /** Kameraabstand 0.7 … 1.4 */
   camDistance: number;
   /** Ball-Kamera beim Start an */
   ballCam: boolean;
+  /** Einfache Touch-Steuerung: Der Stick zeigt die Richtung auf dem Bildschirm, das Auto lenkt selbst dorthin */
+  touchAssist: boolean;
   /** Öffentlichen STUN-Dienst für Verbindungen ohne Server nutzen */
   useStun: boolean;
   language: string;
@@ -64,7 +66,7 @@ export interface SaveData {
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
-    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 80, camDistance: 1, ballCam: true, useStun: true, language: 'de' },
+    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, touchAssist: true, useStun: true, language: 'de' },
     profile: { name: 'Fahrer' },
     garage: { body: 'flitzer', decal: 'keins', accent: '' },
     achievements: {},
@@ -96,9 +98,11 @@ export function sanitize(raw: unknown): SaveData {
     colorMode: oneOf(s.colorMode, ['standard', 'protanopia', 'deuteranopia', 'tritanopia'], 'standard'),
     cameraShake: bool(s.cameraShake, true),
     touchControls: oneOf(s.touchControls, ['auto', 'on', 'off'], 'auto'),
-    fov: num(s.fov, 80, 60, 110),
+    // Version 1 speicherte ein vertikales Sichtfeld (Standard 80) → auf das neue horizontale Maß heben
+    fov: (typeof raw.version === 'number' && raw.version < 2) || s.fov === undefined ? 100 : num(s.fov, 100, 70, 120),
     camDistance: num(s.camDistance, 1, 0.7, 1.4),
     ballCam: bool(s.ballCam, true),
+    touchAssist: bool(s.touchAssist, true),
     useStun: bool(s.useStun, true),
     language: str(s.language, 'de', 8),
   };

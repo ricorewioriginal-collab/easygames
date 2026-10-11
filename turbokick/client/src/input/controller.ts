@@ -301,6 +301,13 @@ export class LocalInput {
     return out;
   }
 
+  /** Roher Touch-Stick (x rechts, y oben, je −1…1) oder null, wenn kein Touch aktiv */
+  touchStick(): { x: number; y: number } | null {
+    if (!this.touch?.visible) return null;
+    const s = this.touch.read();
+    return { x: s.x, y: s.y };
+  }
+
   /** Aktuell gezählte Touch-Zeiger (Diagnose) */
   get pointerCount(): number {
     return this.touch?.pointerCount ?? 0;

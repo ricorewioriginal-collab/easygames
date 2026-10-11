@@ -737,4 +737,3 @@ export function collideCars(cars: CarState[], events: SimEvent[]): void {
     }
   }
 }
-
