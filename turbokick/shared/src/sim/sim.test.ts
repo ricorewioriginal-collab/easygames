@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { Rng } from '../rng';
 import { arenaDistance } from './arena';
-import { ARENA, BALL_RADIUS, type CarInput, type SimEvent } from './types';
+import { ARENA, BALL_RADIUS, CAR_HALF, TICK_DT, type CarInput, type SimEvent } from './types';
+import { createCarState, stepCar } from './car';
 import { Sim, createSimState } from './sim';
 import { FACE_X, makeSim, run, skipCountdown, speed } from './testkit';
 
@@ -26,6 +27,49 @@ function randomInput(rng: Rng): Partial<CarInput> {
 }
 
 describe('Auto: Fahrmodell', () => {
+  it('stabilisiert teilweisen Bodenkontakt trotz gleichzeitig gesendeter Gas-/Pitch-Eingabe', () => {
+    for (const angle of [-0.4, -0.2, -0.1, 0.1, 0.2, 0.4]) {
+      for (const throttle of [-1, 1]) {
+        const car = createCarState(0, 0);
+        car.pos = [10, CAR_HALF[1] * Math.cos(angle) + CAR_HALF[2] * Math.abs(Math.sin(angle)), -10];
+        car.quat = [Math.sin(angle / 2), 0, 0, Math.cos(angle / 2)];
+        let minUp = 1;
+        for (let i = 0; i < 120; i++) {
+          stepCar(car, { throttle, pitch: -throttle }, TICK_DT, []);
+          minUp = Math.min(minUp, 1 - 2 * (car.quat[0] ** 2 + car.quat[2] ** 2));
+        }
+        expect(minUp).toBeGreaterThan(0.9);
+        expect(car.wheelsOnSurface).toBeGreaterThanOrEqual(3);
+        expect((car.pos[2] + 10) * throttle).toBeGreaterThan(8);
+      }
+    }
+  });
+
+  it('aktiviert Luftrotation erst ohne Kontakt, auch direkt nach einem Sprung', () => {
+    for (const mode of ['contact', 'air', 'jump'] as const) {
+      const car = createCarState(0, 0);
+      if (mode === 'contact') {
+        const angle = 0.1;
+        car.quat = [Math.sin(angle / 2), 0, 0, Math.cos(angle / 2)];
+        car.pos[1] = CAR_HALF[1] * Math.cos(angle) + CAR_HALF[2] * Math.sin(angle);
+      } else if (mode === 'air') car.pos[1] = 5;
+      else {
+        stepCar(car, { jump: true }, TICK_DT, []);
+      }
+      const neutral = structuredClone(car);
+      stepCar(neutral, {}, TICK_DT, []);
+      stepCar(car, { pitch: -1, yaw: 1, roll: 1 }, TICK_DT, []);
+      if (mode === 'contact') {
+        expect(car.wheelsOnSurface).toBe(2);
+        expect(car.angVel).toEqual(neutral.angVel);
+      } else {
+        expect(car.angVel[0] - neutral.angVel[0]).toBeGreaterThan(0.1);
+        expect(car.angVel[1] - neutral.angVel[1]).toBeLessThan(-0.1);
+        expect(car.angVel[2] - neutral.angVel[2]).toBeGreaterThan(0.1);
+      }
+    }
+  });
+
   it('beschleunigt in 1,5 s auf 12–15 m/s', () => {
     const sim = makeSim();
     sim.setCar(0, { pos: [0, 0.19, -20] });
@@ -504,3 +548,4 @@ describe('Determinismus und Robustheit', () => {
     expect(ms).toBeLessThan(0.4);
   });
 });
+
