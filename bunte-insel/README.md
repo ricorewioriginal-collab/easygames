@@ -105,3 +105,13 @@ npm i -D playwright                    # einmalig, nur für den Test
 BASE=http://localhost:8080 node bunte-insel/tests/e2e.mjs   # optional THREE=/pfad/three.min.js für Offline
 ```
 Dateien: `js/util.js` (Geometrie-Bündelung, Figuren, Pappnase, Blitz, Partikel), `js/audio.js`, `js/world.js` (Insel, Straßen, Schienen, Spielzeugladen, Kollision), `js/vehicles.js` (Fahrzeuge, Hubschrauber, Zug), `js/fun.js` (Kaugummi, Tanz, Ball, Ballons, Feuerwerk, Blasen, Baum hauen), `js/build.js` (Bauen), `js/main.js` (Steuerung, Kamera, Missionen, Laden, Hund, Schnellmenü).
+
+
+
+## Figuren-Grafikupdate
+
+Das gemeinsame Figurenmodell nutzt jetzt glatte Oberflächen, abgerundete Körperformen, zusammenhängende Röcke, gebogene Brillengestelle, lesbare Augen und geschwungene Münder. Alle 23 Frisuren lassen den Augenbereich frei. Inselbewohner erhalten unterschiedliche Frisuren; Kinder größere Kopfproportionen. Namensschilder werden mit höherer Auflösung gezeichnet; Kantenglättung ist auch auf hochauflösenden Handys aktiv.
+
+`js/characters.js` ergänzt `util.js` und muss danach geladen werden. Die bekannten Optionen sowie `group`, `armL`, `armR`, `legL`, `legR`, `remote`, `pose`, `dance`, `sit` und `punch` bleiben erhalten. Beim Wechseln der Spielfigur werden die alten Geometrien und Namensschilder freigegeben. Spielstände werden unverändert gelesen.
+
+Prüfung: `node bunte-insel/tests/characters.cjs` (nutzt die bereits im Repo vorhandene Three.js-Kopie unter `aeru/vendor/`). 80 Figuren-/Kleidungsvarianten, endliche Geometrie, Animationsschnittstellen, maximal sieben gebündelte Meshes und freie Augen bei allen Frisuren. Eine separat gerenderte Modellübersicht wurde visuell geprüft; ein vollständiger WebGL-Spieltest war in der Entwicklungsumgebung nicht verfügbar. Die tatsächliche Mobilgeräte-Performance wurde nicht gemessen.

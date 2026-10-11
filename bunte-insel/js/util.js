@@ -248,60 +248,41 @@ BI.makeChar = function (o) {
   const J = o.preset === 'jannis'; // Jannis: blonder Pilzkopf, dunkles Marvel-Shirt, braune Hose, Fernsteuerung
   if (J) o = Object.assign({ shirt: 0x1d2342, pants: 0x7a5230, skin: 0xffd6b3, hair: 0xf3d98a, hat: 'none', shoe: 0x1d2a44 }, o);
   const shirt = o.shirt != null ? o.shirt : 0xff5a5a, pants = o.pants != null ? o.pants : 0x3d4a7a, skin = o.skin != null ? o.skin : 0xffd2a8, hair = o.hair != null ? o.hair : 0x6b4423, hat = o.hat || 'none';
-  const root = new THREE.Group(), body = new BI.Batch();
-  body.box(0, .5, 0, .46, .22, .28, pants);
-  body.box(0, .66, 0, .5, .5, .3, shirt);
+  const root = new THREE.Group(), body = new BI.CharacterBatch();
+  body.profile(0,.5,0,[[0,0],[.21,0],[.225,.035],[.225,.2],[.20,.22],[0,.22]],.62,pants);
+  body.profile(0,.66,0,[[0,0],[.238,0],[.25,.035],[.245,.16],[.245,.37],[.228,.47],[.15,.50],[0,.50]],.66,shirt);
   if (J) { // bunter Aufdruck wie beim Marvel-Shirt
     body.box(0, 1.05, .155, .38, .07, .02, 0xffffff); body.box(0, .93, .155, .22, .11, .02, 0x3fd18a); body.sph(0, .84, .16, .1, 0x9a5be0, 0, 1, 1, .12); body.sph(0, .84, .17, .045, 0xe8eaff, 0, 1, 1, .1); body.box(0, .73, .155, .28, .1, .02, 0xff5fa8);
   }
-  const BLD = [[.86, .9], [1, 1], [1.14, 1.1], [1.3, 1.3]][o.build != null ? Math.max(0, Math.min(3, o.build | 0)) : 1], hd = new BI.Batch();
+  body.arc(0,1.17,.15,.105,.055,.015,new THREE.Color(shirt).multiplyScalar(.72).getHex(),Math.PI,BI.TAU,10);
+  body.profile(0,.665,0,[[.242,0],[.247,.02]],.66,new THREE.Color(shirt).multiplyScalar(.86).getHex());
+  if(!J&&!o.overall&&!o.logo) { body.box(-.135,.95,.159,.115,.105,.018,new THREE.Color(shirt).lerp(new THREE.Color(0xffffff),.17).getHex()); body.box(-.135,1.025,.174,.115,.012,.012,0xfff1cf); }
+  const BLD = [[.86, .9], [1, 1], [1.14, 1.1], [1.3, 1.3]][o.build != null ? Math.max(0, Math.min(3, o.build | 0)) : 1], hd = new BI.CharacterBatch();
   const FS = [[1, 1.05, 1], [.93, 1.14, .97], [1.06, .98, 1.02], [.98, 1.08, 1]][(o.face | 0) & 3];
-  hd.sph(0, 1.42, 0, .27, skin, 1, FS[0], FS[1], FS[2]);
-  if (((o.face | 0) & 3) === 2) hd.box(0, 1.3, .01, .4, .14, .34, skin); // eckiger Kiefer
+  hd.sph(0, 1.42, 0, .285, skin, 1, FS[0], FS[1], FS[2]);
+  if (((o.face | 0) & 3) === 2) hd.sph(0, 1.325, .008, .20, skin, 1, 1.12, .65, 1.1); // eckiger Kiefer
   const mz = (o.beard | 0) >= 5 ? .285 : .255, dz = mz - .255, lip = o.lip != null ? o.lip : 0xc2453d;
   { const sk2 = new THREE.Color(skin).multiplyScalar(.86).getHex(), hc = new THREE.Color(hair).multiplyScalar(.8).getHex(), ey = o.eye != null ? o.eye : 0x3a2a1a, bc = o.beardc != null ? o.beardc : hair;
     body.cyl(0, 1.1, 0, .085, .095, .12, skin, 8); // Hals
     for (const sd of [-1, 1]) { body.sph(sd * .27, 1.1, 0, .105, shirt, 1, 1, 1, 1); hd.sph(sd * .262, 1.42, 0, .05, skin, 0, .55, 1, .9); } // Schultern + Ohren
-    { const nz = o.nose | 0; if (nz === 0) hd.sph(0, 1.385, .262, .036, sk2, 0, 1, 1, 1); else if (nz === 1) hd.sph(0, 1.38, .266, .054, sk2, 0, 1, 1, 1); else if (nz === 2) hd.cyl(0, 1.372, .266, 0, .036, .11, sk2, 5, Math.PI / 2); else hd.sph(0, 1.375, .27, .05, sk2, 0, 1.5, .95, 1.1); } // Nase
-    const es = o.eyeS | 0;
-    if (!J) for (const sd of [-1, 1]) {
-      if (es === 2) { hd.box(sd * .09, 1.45, .247, .12, .03, .03, 0xffffff); hd.box(sd * .09, 1.45, .262, .045, .03, .02, ey); hd.box(sd * .09, 1.45, .268, .02, .03, .01, 0x111116); }
-      else if (es === 1) { hd.sph(sd * .09, 1.45, .232, .062, 0xffffff, 0, 1.2, 1.1, .55); hd.sph(sd * .09, 1.45, .253, .045, ey, 0, 1, 1, .5); hd.sph(sd * .09, 1.45, .264, .026, 0x111116, 0, 1, 1, .5); hd.sph(sd * .104, 1.47, .272, .013, 0xffffff, 0, 1, 1, 1); hd.sph(sd * .078, 1.43, .272, .007, 0xffffff, 0, 1, 1, 1); }
-      else { hd.sph(sd * .09, 1.45, .232, .05, 0xffffff, 0, 1.2, 1, .55); hd.sph(sd * .09, 1.45, .252, .033, ey, 0, 1, 1, .5); hd.sph(sd * .09, 1.45, .262, .019, 0x111116, 0, 1, 1, .5); hd.sph(sd * .1, 1.462, .27, .009, 0xffffff, 0, 1, 1, 1); if (es === 3) hd.box(sd * .09, 1.472, .262, .125, .045, .04, skin); if (es === 4) { hd.sph(sd * .076, 1.436, .274, .011, 0xffffff, 0, 1, 1, 1); hd.sph(sd * .112, 1.452, .274, .007, 0xffffff, 0, 1, 1, 1); } }
-    }
-    const br = o.brow != null ? o.brow | 0 : 1;
-    if (br) for (const sd of [-1, 1]) { if (br === 2) hd.box(sd * .09, 1.515, .238, .11, .04, .03, hc, 0, 0, sd * -.1); else if (br === 3) hd.box(sd * .09, 1.51, .238, .1, .025, .025, hc, 0, 0, sd * .45); else hd.box(sd * .09, 1.515, .238, .1, .02, .025, hc, 0, 0, sd * -.12); } // Augenbrauen
-    if (J) { for (const x of [-.09, .09]) { hd.box(x, 1.44, .24, .09, .08, .04, 0xffffff); hd.box(x + .035, 1.44, .26, .045, .07, .03, 0x4a5568); } hd.box(.04, 1.29, .25, .12, .025, .03, 0xe58c8c); } // schelmischer Seitenblick
-    if (o.blush !== false) { hd.box(-.15, 1.34, .23, .07, .05, .04, 0xff9aa8); hd.box(.15, 1.34, .23, .07, .05, .04, 0xff9aa8); }
-    const m = o.mouth;
-    if (!J && (m === 'smile' || m == null)) { hd.box(0, 1.3, mz, .1, .025, .03, lip); hd.box(-.06, 1.318, mz, .03, .03, .03, lip); hd.box(.06, 1.318, mz, .03, .03, .03, lip); }
-    else if (!J && m === 'open') { hd.box(0, 1.29, mz, .09, .08, .03, 0x7a1f2b); hd.box(0, 1.275, mz + .007, .05, .025, .02, 0xff8fa0); }
-    else if (!J && m === 'grin') { hd.box(0, 1.3, mz, .17, .05, .03, 0xffffff); hd.box(0, 1.325, mz + .001, .19, .02, .03, 0x7a1f2b); }
-    else if (!J && m === 'pout') { hd.sph(0, 1.3, mz, .035, lip, 0, 1.3, .9, .6); }
-    else if (!J && m === 'tongue') { hd.box(0, 1.3, mz, .12, .03, .03, 0x7a1f2b); hd.box(.02, 1.275, mz + .004, .05, .06, .025, 0xff7a98); }
-    else if (!J && m === 'flat') { hd.box(0, 1.3, mz, .1, .02, .03, lip); }
-    else if (!J && m === 'sad') { hd.box(0, 1.29, mz, .08, .022, .03, lip); hd.box(-.055, 1.275, mz, .03, .03, .03, lip); hd.box(.055, 1.275, mz, .03, .03, .03, lip); }
-    if (o.freckles) for (const [x, y] of [[-.12, 1.38], [-.18, 1.4], [.12, 1.38], [.18, 1.4]]) hd.box(x, y, .262, .02, .02, .02, 0xa0603a);
-    if (o.scar) hd.box(.13, 1.4, .266, .02, .1, .015, 0xb04a4a, 0, 0, .4);
-    if (o.wrink) for (const sd of [-1, 1]) { hd.box(sd * .17, 1.43, .252, .05, .008, .01, sk2); hd.box(sd * .17, 1.41, .252, .05, .008, .01, sk2); hd.box(0, 1.5, .262, .12, .008, .01, sk2); }
+    BI.characterFace(hd, o, skin, hair, FS, J);
     const bd = o.beard | 0; // Bart
     if (bd === 1) hd.box(0, 1.28, .245, .27, .13, .03, new THREE.Color(skin).lerp(new THREE.Color(bc), .35).getHex());
     else if (bd >= 2 && bd <= 4 || bd === 7) { hd.box(0, 1.338, .268, .2, .04, .03, bc); if (bd === 3) for (const sd of [-1, 1]) hd.box(sd * .12, 1.355, .268, .07, .03, .03, bc, 0, 0, sd * .6); if (bd === 4) hd.box(0, 1.25, .262, .08, .1, .04, bc); }
-    if (bd === 5 || bd === 6) { hd.box(0, 1.27, .17, .5, .22, .2, bc); for (const sd of [-1, 1]) hd.box(sd * .24, 1.36, .08, .06, .22, .22, bc); hd.box(0, 1.35, .278, .22, .045, .03, bc); if (bd === 6) { hd.cone(0, .98, .17, .22, .34, bc, 6, 0); } }
+    if (bd === 5 || bd === 6) { hd.sph(0,1.25,.10,.235,bc,1,1,.72,.84); for (const sd of [-1, 1]) hd.sph(sd*.232,1.33,.08,.06,bc,0,.65,1.4,1.3); hd.box(0, 1.35, .278, .22, .045, .03, bc); if (bd === 6) { hd.cone(0, .98, .17, .22, .34, bc, 6, 0); } }
     if (bd === 7) for (const sd of [-1, 1]) hd.box(sd * .24, 1.34, .14, .05, .16, .14, bc);
     if (bd === 8) hd.box(0, 1.268, .266, .04, .04, .03, bc);
     const gt = o.glassT | 0, gc = o.glassC != null ? o.glassC : 0x1b1b25; // Brillen-Typen
-    if (gt === 1) for (const sd of [-1, 1]) for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; hd.box(sd * .09 + Math.sin(a) * .07, 1.45 + Math.cos(a) * .07, .275, .035, .035, .02, gc); }
-    else if (gt === 2) { for (const sd of [-1, 1]) hd.box(sd * .095, 1.45, .275, .15, .1, .03, gc); hd.box(0, 1.46, .275, .06, .02, .03, gc); for (const sd of [-1, 1]) hd.box(sd * .19, 1.46, .22, .03, .03, .1, gc); }
-    else if (gt === 3) { for (const sd of [-1, 1]) { hd.box(sd * .095, 1.5, .275, .16, .025, .025, gc); hd.box(sd * .095, 1.4, .275, .16, .025, .025, gc); hd.box(sd * .095 - .08, 1.45, .275, .025, .1, .025, gc); hd.box(sd * .095 + .08, 1.45, .275, .025, .1, .025, gc); } hd.box(0, 1.46, .275, .06, .025, .025, gc); }
-    else if (gt === 4) for (const sd of [-1, 1]) { hd.box(sd * .095, 1.46, .275, .15, .05, .03, 0xff5a8a); hd.box(sd * .095, 1.42, .275, .1, .05, .03, 0xff5a8a); hd.box(sd * .095, 1.485, .275, .06, .04, .03, 0xff5a8a); }
-    if (o.mask) hd.box(0, 1.45, .245, .5, .12, .04, o.mask);
-    const er = o.earring | 0; if (er) for (const sd of [-1, 1]) { if (er === 1) hd.sph(sd * .275, 1.36, 0, .03, 0xffd23f, 0); else if (er === 2) for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2; hd.sph(sd * .277, 1.33 + Math.cos(a) * .05, Math.sin(a) * .05, .014, 0xffd23f, 0); } else hd.sph(sd * .275, 1.35, 0, .05, 0xff5a8a, 0, .6, 1, 1); }
+    if (gt === 1) { for (const sd of [-1,1]) { hd.arc(sd*.105,1.458,.321,.067,.066,.009,gc,0,BI.TAU,16);hd.box(sd*.185,1.45,.23,.015,.014,.17,gc); }hd.arc(0,1.461,.319,.038,.012,.007,gc,0,Math.PI,6); }
+    else if (gt === 2) { for (const sd of [-1, 1]) hd.box(sd * .095, 1.45, .308, .15, .1, .03, gc); hd.box(0, 1.46, .308, .06, .02, .03, gc); for (const sd of [-1, 1]) hd.box(sd * .19, 1.46, .22, .03, .03, .1, gc); }
+    else if (gt === 3) { for (const sd of [-1, 1]) { hd.box(sd * .095, 1.5, .308, .16, .025, .025, gc); hd.box(sd * .095, 1.4, .308, .16, .025, .025, gc); hd.box(sd * .095 - .08, 1.45, .308, .025, .1, .025, gc); hd.box(sd * .095 + .08, 1.45, .308, .025, .1, .025, gc); } hd.box(0, 1.46, .308, .06, .025, .025, gc); }
+    else if (gt === 4) for (const sd of [-1, 1]) { hd.box(sd * .095, 1.46, .308, .15, .05, .03, 0xff5a8a); hd.box(sd * .095, 1.42, .308, .1, .05, .03, 0xff5a8a); hd.box(sd * .095, 1.485, .308, .06, .04, .03, 0xff5a8a); }
+    if (o.mask) { for (const sd of [-1,1]) hd.arc(sd*.105,1.458,.311,.067,.068,.015,o.mask,0,BI.TAU,12); hd.box(0,1.45,.31,.065,.025,.018,o.mask); }
+    const er = o.earring | 0; if (er) for (const sd of [-1, 1]) { if (er === 1) hd.sph(sd * .308, 1.36, 0, .03, 0xffd23f, 0); else if (er === 2) for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2; hd.sph(sd * .277, 1.33 + Math.cos(a) * .05, Math.sin(a) * .05, .014, 0xffd23f, 0); } else hd.sph(sd * .308, 1.35, 0, .05, 0xff5a8a, 0, .6, 1, 1); }
     if (o.headband) { hd.box(0, 1.55, 0, .6, .06, .56, o.headband); }
     if (o.clip) hd.box(.2, 1.6, .12, .12, .04, .04, o.clip, 0, 0, .4);
   }
-  if (J) { hd.sph(0, 1.57, -.04, .3, hair, 1, 1.02, .66, 1.05); hd.box(0, 1.53, .2, .5, .14, .1, hair); hd.box(-.27, 1.44, -.02, .07, .2, .36, hair); hd.box(.27, 1.44, -.02, .07, .2, .36, hair); }
-  else if ((hat === 'none' || hat === 'crown') && o.style !== 'bald') hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02);
+  BI.characterHair(hd, o, hair, J);
   if (hat === 'bear') { hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); hd.sph(-.2, 1.68, 0, .1, 0x8a5a33, 1); hd.sph(.2, 1.68, 0, .1, 0x8a5a33, 1); hd.sph(-.2, 1.68, .04, .05, 0xffc9a0, 0); hd.sph(.2, 1.68, .04, .05, 0xffc9a0, 0); }
   if (hat === 'cat') { hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); hd.cone(-.16, 1.62, 0, .1, .22, 0x555566, 4); hd.cone(.16, 1.62, 0, .1, .22, 0x555566, 4); }
   if (hat === 'bunny') { hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .6, 1.02); hd.box(-.11, 1.65, 0, .1, .42, .06, 0xffffff, 0, 0, .12); hd.box(.11, 1.65, 0, .1, .42, .06, 0xffffff, 0, 0, -.12); hd.box(-.11, 1.7, .03, .05, .3, .03, 0xffb0c8, 0, 0, .12); hd.box(.11, 1.7, .03, .05, .3, .03, 0xffb0c8, 0, 0, -.12); }
@@ -319,48 +300,23 @@ BI.makeChar = function (o) {
   if (hat === 'headphones') { hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02); hd.box(0, 1.7, 0, .56, .05, .07, 0x2b2f3a); for (const sd of [-1, 1]) hd.cyl(sd * .29, 1.34, 0, .12, .12, .1, 0xe0382b, 10, 0, 0, Math.PI / 2); }
   if (hat === 'santa') { hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02); hd.cone(-.02, 1.6, -.02, .27, .55, 0xe0382b, 8, 0, 0, .25); hd.cyl(0, 1.56, -.01, .3, .3, .1, 0xffffff, 12); hd.sph(.12, 2.05, -.06, .08, 0xffffff, 0); }
   if (hat === 'ninja') { hd.sph(0, 1.55, -.03, .27, hair, 1, 1, .62, 1.02); hd.box(0, 1.5, 0, .58, .09, .54, 0x23262d); hd.box(0, 1.5, -.3, .1, .3, .08, 0x23262d, 0, 0, .3); }
-  { const st = o.style; // Frisuren
-    if (st === 'pig') for (const sd of [-1, 1]) { hd.sph(sd * .31, 1.42, -.03, .11, hair, 1); hd.sph(sd * .33, 1.3, -.03, .09, hair, 1); hd.box(sd * .27, 1.53, -.02, .06, .06, .06, 0xff5a5a); }
-    else if (st === 'long') { hd.box(0, 1.2, -.2, .54, .6, .12, hair); for (const sd of [-1, 1]) hd.box(sd * .27, 1.28, -.05, .07, .5, .24, hair); }
-    else if (st === 'spiky') for (let i = 0; i < 6; i++) { const a = i * 1.047; hd.cone(Math.sin(a) * .17, 1.7, Math.cos(a) * .15 - .03, .08, .2, hair, 4); }
-    else if (st === 'curly') for (let i = 0; i < 8; i++) { const a = i * .785; hd.sph(Math.sin(a) * .26, 1.5 + (i % 2) * .06, Math.cos(a) * .24 - .03, .11, hair, 1); }
-    else if (st === 'bun') { hd.sph(0, 1.74, -.1, .13, hair, 1); hd.box(0, 1.66, -.1, .1, .06, .1, 0xff5a5a); }
-    else if (st === 'bob') { hd.box(0, 1.46, -.04, .62, .3, .52, hair); hd.box(0, 1.6, .06, .5, .1, .3, hair); }
-    else if (st === 'mohawk') for (let i = 0; i < 5; i++) hd.cone(0, 1.62 + (i % 2) * .02, .16 - i * .1, .07, .3 - Math.abs(i - 2) * .04, hair, 4);
-    else if (st === 'afro') hd.sph(0, 1.56, -.04, .4, hair, 1, 1, .9, 1);
-    else if (st === 'braids') for (const sd of [-1, 1]) { hd.box(sd * .28, 1.2, -.06, .08, .5, .08, hair); hd.sph(sd * .28, .92, -.06, .06, 0xff5a5a, 0); }
-    else if (st === 'ponytail') { hd.box(0, 1.46, -.3, .1, .3, .1, hair, 0, .15); hd.sph(0, 1.62, -.26, .06, 0xff5a5a, 0); }
-    else if (st === 'short') { hd.box(0, 1.6, .02, .5, .06, .44, hair); }
-    else if (st === 'side') { hd.box(.1, 1.62, .2, .36, .08, .16, hair, 0, 0, -.25); hd.box(-.2, 1.5, .1, .1, .18, .2, hair); }
-    else if (st === 'dreads') for (let i = 0; i < 9; i++) { const a = i * .7; hd.box(Math.sin(a) * .27, 1.28, Math.cos(a) * .25 - .03, .06, .42, .06, hair); }
-    else if (st === 'topknot') { hd.sph(0, 1.8, -.03, .11, hair, 1); hd.box(0, 1.7, -.03, .12, .06, .12, 0xff5a5a); }
-    else if (st === 'twinbuns') for (const sd of [-1, 1]) { hd.sph(sd * .2, 1.74, -.03, .11, hair, 1); hd.box(sd * .2, 1.66, -.03, .1, .05, .1, 0xff5a8a); }
-    else if (st === 'fringe') { hd.box(0, 1.53, .22, .52, .13, .08, hair); for (const sd of [-1, 1]) hd.box(sd * .26, 1.45, .05, .06, .24, .3, hair); }
-    else if (st === 'wavy') { hd.box(0, 1.2, -.2, .54, .6, .12, hair); for (const sd of [-1, 1]) { hd.box(sd * .27, 1.28, -.05, .07, .5, .24, hair); for (let k = 0; k < 3; k++) hd.sph(sd * .3, 1.15 - k * .16, -.12, .08, hair, 0); } }
-    else if (st === 'shaggy') for (let i = 0; i < 9; i++) { const a = i * .7; hd.sph(Math.sin(a) * .29, 1.46 - (i % 3) * .06, Math.cos(a) * .27 - .03, .09, hair, 0); }
-    else if (st === 'pixie') { hd.box(.12, 1.6, .2, .3, .06, .12, hair, 0, 0, -.3); hd.cone(-.24, 1.5, 0, .07, .16, hair, 4); hd.cone(.24, 1.5, 0, .07, .16, hair, 4); }
-    else if (st === 'curtain') { for (const sd of [-1, 1]) hd.box(sd * .17, 1.52, .2, .2, .16, .1, hair, 0, 0, sd * .3); hd.box(0, 1.62, .1, .4, .06, .3, hair); }
-    else if (st === 'mullet') { hd.box(0, 1.3, -.22, .3, .38, .1, hair); hd.box(0, 1.6, .02, .5, .06, .44, hair); }
-    if (o.hair2 != null && st && st !== 'none' && st !== 'bald') { for (const x of [-.14, 0, .14]) hd.box(x, 1.67, .1, .05, .03, .26, o.hair2); }
-    else if (o.hair2 != null && st === 'none') { for (const x of [-.14, 0, .14]) hd.box(x, 1.66, .08, .05, .03, .26, o.hair2); }
-  }
   { const ct = o.ctype | 0, shd = new THREE.Color(shirt).multiplyScalar(.8).getHex(), bot = o.bot | 0; // Kleidungs-Details
     if (ct === 1) { body.sph(0, 1.12, -.15, .2, shd, 1, 1.3, .8, .8); body.box(0, .6, .158, .3, .12, .02, shd); body.box(-.05, .93, .16, .02, .12, .02, 0xffffff); body.box(.05, .93, .16, .02, .12, .02, 0xffffff); }
     else if (ct === 2) { body.cyl(0, 1.06, 0, .15, .16, .16, shd, 10); }
     else if (ct === 3) { body.box(0, .66, .158, .03, .5, .02, 0x8a8f9a); for (const sd of [-1, 1]) { body.box(sd * .1, 1.04, .15, .12, .08, .05, shd, 0, 0, sd * .5); } body.box(0, .52, .158, .5, .04, .02, shd); }
     else if (ct === 4) { body.box(0, .9, .156, .18, .3, .02, 0xffffff); body.box(0, .86, .163, .06, .3, .02, 0xe0382b); for (const sd of [-1, 1]) body.box(sd * .15, .95, .158, .14, .26, .02, shd, 0, 0, sd * .12); }
     else if (ct === 5) { body.box(0, .66, .158, .34, .46, .02, shd); }
-    if (bot === 2) { body.box(0, .38, 0, .6, .2, .4, pants); body.box(0, .3, 0, .7, .08, .46, pants); }
-    else if (bot === 3) { body.box(0, .3, 0, .66, .3, .44, pants); body.box(0, .14, 0, .78, .2, .5, pants); }
+    if (!o.dress && bot === 2) body.profile(0,.3,0,[[0,0],[.35,0],[.35,.03],[.24,.3],[0,.3]],.7,pants);
+    else if (!o.dress && bot === 3) body.profile(0,.14,0,[[0,0],[.38,0],[.38,.035],[.24,.48],[0,.48]],.7,pants);
     if (o.necklace) { for (let k = 0; k < 9; k++) { const a = k / 9 * Math.PI * 2; body.sph(Math.sin(a) * .13, 1.04, Math.cos(a) * .12, .022, o.necklace, 0); } body.sph(0, .98, .13, .045, 0xffd23f, 0); } }
-  if (o.dress) { body.box(0, .42, 0, .64, .26, .42, shirt); body.box(0, .3, 0, .7, .08, .46, pants); }
+  if (o.dress) { body.profile(0,.32,0,[[0,0],[.345,0],[.345,.035],[.235,.37],[0,.37]],.72,shirt);body.profile(0,.32,0,[[.347,0],[.347,.028]],.72,pants); }
   if (o.overall) { body.box(0, .66, .156, .34, .36, .02, pants); for (const sd of [-1, 1]) body.box(sd * .13, .98, .156, .06, .26, .02, pants); body.sph(-.13, .86, .165, .035, 0xffd23f, 0); body.sph(.13, .86, .165, .035, 0xffd23f, 0); }
   if (o.stripe) for (let i = 0; i < 3; i++) body.box(0, .52 + i * .2, 0, .52, .07, .32, 0xffffff);
   if (o.logo != null) { body.box(0, .86, .156, .17, .17, .02, o.logo); body.box(0, .86, .16, .07, .07, .02, shirt); }
-  if (o.patch) { hd.box(-.09, 1.4, .275, .13, .13, .03, 0x111111); hd.box(0, 1.47, .265, .58, .03, .02, 0x111111, 0, 0, .18); }
+  if (o.patch) { hd.box(-.09, 1.4, .308, .13, .13, .03, 0x111111); hd.box(0, 1.47, .265, .58, .03, .02, 0x111111, 0, 0, .18); }
   if (o.cape) { body.box(0, .45, -.2, .54, .8, .05, 0xd8283a); body.box(0, 1.08, -.12, .42, .12, .2, 0xd8283a); body.sph(0, 1.08, .0, .05, 0xffd23f, 0); }
   if (o.wings) { for (const sd of [-1, 1]) { body.box(sd * .32, .85, -.22, .5, .55, .03, 0xbfe8ff, 0, 0, sd * .55); body.box(sd * .38, .55, -.22, .34, .34, .03, 0xffc8ee, 0, 0, sd * .5); } }
-  if (o.glasses) { hd.box(0, 1.4, .27, .17, .12, .03, 0x1b1b25); hd.box(.0, 1.4, .27, .17, .12, .03, 0x1b1b25); hd.box(-.1, 1.4, .27, .17, .12, .03, 0x1b1b25); hd.box(.1, 1.4, .27, .17, .12, .03, 0x1b1b25); hd.box(0, 1.46, .27, .08, .03, .03, 0x1b1b25); hd.box(-.19, 1.46, .22, .03, .03, .1, 0x1b1b25); hd.box(.19, 1.46, .22, .03, .03, .1, 0x1b1b25); }
+  if (o.glasses) { hd.box(0, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(.0, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(-.1, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(.1, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(0, 1.46, .27, .08, .03, .03, 0x1b1b25); hd.box(-.19, 1.46, .22, .03, .03, .1, 0x1b1b25); hd.box(.19, 1.46, .22, .03, .03, .1, 0x1b1b25); }
   if (o.scarf) { body.box(0, 1.1, 0, .54, .13, .34, 0xe0382b); body.box(.18, .75, .17, .12, .4, .05, 0xe0382b); body.box(.18, .85, .17, .12, .05, .05, 0xffffff); }
   if (o.bowtie) { body.box(-.07, 1.11, .17, .1, .08, .04, 0xe0382b, 0, 0, .2); body.box(.07, 1.11, .17, .1, .08, .04, 0xe0382b, 0, 0, -.2); body.sph(0, 1.11, .18, .035, 0x8a1a1a, 0); }
   if (o.medal) { body.box(0, 1.1, .16, .05, .35, .02, 0x3fa0ff, 0, 0, .1); body.cyl(.04, .85, .17, .08, .08, .03, 0xffd23f, 10, Math.PI / 2); }
@@ -371,31 +327,32 @@ BI.makeChar = function (o) {
   const mat = BI.mat(), bm = body.mesh(mat); bm.position.y = .1; bm.scale.set(BLD[0], 1, BLD[1]); root.add(bm);
   if (sepHead) { const hg = new THREE.Group(), hm = hd.mesh(mat); hg.position.set(0, 1.3, 0); hm.position.set(0, -1.2, 0); hg.scale.setScalar(hsc); hg.add(hm); root.add(hg); }
   function arm(sleeve, hand, x, y) { // Ärmel bis zum Ellbogen (lang = ganzer Arm, ohne = Haut), Unterarm in Hautfarbe, runde Hand
-    const sl = o.sleeve | 0, g = new THREE.Group(), b = new BI.Batch(); b.cyl(0, -.25, 0, .082, .07, .25, sl === 2 ? hand : sleeve, 6); b.sph(0, -.25, 0, .07, sl === 1 ? sleeve : hand, 0); b.cyl(0, -.44, 0, .062, .052, .2, sl === 1 ? sleeve : hand, 6); b.sph(0, -.47, .01, .072, hand, 0, 1, 1.1, 1);
+    const sl = o.sleeve | 0, g = new THREE.Group(), b = new BI.CharacterBatch(); b.cyl(0, -.25, 0, .082, .07, .25, sl === 2 ? hand : sleeve, 6); b.sph(0, -.25, 0, .07, sl === 1 ? sleeve : hand, 0); b.cyl(0, -.44, 0, .062, .052, .2, sl === 1 ? sleeve : hand, 6); b.sph(0, -.47, .01, .072, hand, 1, .95, 1.1, .9); b.sph(x<0?.051:-.051,-.445,.036,.027,hand,0,.8,1.1,1);
     if (o.watch && x < 0) { b.box(0, -.4, 0, .13, .055, .13, 0x23262d); b.box(0, -.4, .068, .07, .045, .012, 0xffd23f); }
     g.add(b.mesh(mat)); g.position.set(x * BLD[0], y, 0); g.scale.set(lx, 1, lx); root.add(g); return g;
   }
   function leg(pant, shoeC, x, y) { // Oberschenkel, Wade, Schuh (Turnschuh / Stiefel / Sandale / barfuß)
-    const bt = o.bot | 0, st = o.shoeT | 0, lc = bt >= 2 ? skin : pant, lo = bt === 1 || bt >= 2 ? skin : pant, g = new THREE.Group(), b = new BI.Batch();
+    const bt = o.bot | 0, st = o.shoeT | 0, lc = bt >= 2 ? skin : pant, lo = bt === 1 || bt >= 2 ? skin : pant, g = new THREE.Group(), b = new BI.CharacterBatch();
     b.cyl(0, -.34, 0, .105, .088, .34, lc, 6); b.sph(0, -.34, 0, .088, lo, 0); b.cyl(0, -.58, 0, .088, .07, .26, lo, 6);
     if (st === 2 || st === 3) { b.box(0, -.62, .045, .17, .06, .3, skin); b.sph(0, -.6, .17, .087, skin, 0, 1, .6, 1.1); if (st === 2) { b.box(0, -.56, .08, .18, .03, .05, shoeC); b.box(0, -.56, -.02, .18, .03, .05, shoeC); } }
-    else { b.box(0, -.62, .045, .17, .09, .3, shoeC); b.sph(0, -.6, .17, .087, shoeC, 0, 1, .75, 1.1); b.box(0, -.55, -.02, .15, .03, .12, 0xffffff); if (st === 1) b.cyl(0, -.52, 0, .098, .098, .2, shoeC, 6); }
+    else { b.box(0, -.62, .045, .17, .09, .3, shoeC); b.sph(0, -.6, .17, .087, shoeC, 0, 1, .75, 1.1); b.box(0,-.615,.047,.176,.032,.31,0xfff6e5); b.box(0, -.55, -.02, .15, .03, .12, 0xffffff); for(const zz of [.05,.095])b.box(0,-.54,zz,.105,.009,.012,0xfff6e5); if (st === 1) b.cyl(0, -.52, 0, .098, .098, .2, shoeC, 6); }
     g.add(b.mesh(mat)); g.position.set(x * BLD[0], y, 0); g.scale.set(lx, 1, lx); root.add(g); return g;
   }
   const shoe = o.shoe != null ? o.shoe : 0x2a2a3a, legL = leg(pants, shoe, -.13, .62), legR = leg(pants, shoe, .13, .62);
   const armL = arm(shirt, skin, -.34, 1.22), armR = arm(shirt, skin, .34, 1.22);
   if (o.name) {
-    const cv0 = document.createElement('canvas'); cv0.width = 256; cv0.height = 64; const cx0 = cv0.getContext('2d'); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name, 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name, 128, 34);
+    const cv0 = document.createElement('canvas'); cv0.width = 512; cv0.height = 128; const cx0 = cv0.getContext('2d'); cx0.scale(2,2); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name, 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name, 128, 34);
     const sp0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv0), transparent: true, depthWrite: false })); sp0.scale.set(1.5, .38, 1); sp0.position.y = 2.25; root.add(sp0);
   }
   let remoteMesh = null;
   if (J) { // Fernsteuerung mit Lenkrad und Antenne in der rechten Hand
-    const rb = new BI.Batch(); rb.cyl(0, -.04, 0, .15, .15, .06, 0x23262d, 12, Math.PI / 2); rb.cyl(0, -.03, .02, .09, .09, .07, 0x3a3f4a, 10, Math.PI / 2); rb.box(.02, 0, 0, .025, .6, .025, 0xffffff, 0, 0, -.12); rb.box(.09, .58, 0, .035, .08, .035, 0xff5a3a, 0, 0, -.12);
+    const rb = new BI.CharacterBatch(); rb.cyl(0, -.04, 0, .15, .15, .06, 0x23262d, 12, Math.PI / 2); rb.cyl(0, -.03, .02, .09, .09, .07, 0x3a3f4a, 10, Math.PI / 2); rb.box(.02, 0, 0, .025, .6, .025, 0xffffff, 0, 0, -.12); rb.box(.09, .58, 0, .035, .08, .035, 0xff5a3a, 0, 0, -.12);
     const rm = remoteMesh = rb.mesh(mat); rm.position.set(0, -.55, .13); armR.add(rm);
   }
   root.scale.setScalar(o.scale || .95);
   return {
     group: root, legL, legR, armL, armR, remote: remoteMesh,
+    dispose() { root.traverse(m => { if(m.geometry)m.geometry.dispose(); if(m.isSprite){if(m.material.map)m.material.map.dispose();m.material.dispose();} }); if(root.parent)root.parent.remove(root); },
     pose(phase, amp, wave) {
       const s = Math.sin(phase) * amp;
       legL.rotation.x = s; legR.rotation.x = -s; armL.rotation.x = -s * .9; armR.rotation.x = s * .9;
@@ -512,3 +469,4 @@ BI.Fx = class Fx {
 BI.C = { // Farben für Partikel (r,g,b 0..1)
   gold: [1, .82, .2], white: [1, 1, 1], pink: [1, .45, .7], blue: [.35, .7, 1], water: [.5, .8, 1], green: [.4, .9, .5], red: [1, .35, .35], dust: [.85, .8, .7], purple: [.7, .45, 1], orange: [1, .6, .2]
 };
+
