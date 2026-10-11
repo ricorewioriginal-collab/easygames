@@ -1002,7 +1002,10 @@
   const gadgets = BI.createGadgets({ P, A, fx, save, say, persist, setStick, earn: id => kids.earn(id), char: () => char, blocked: () => !!(park.busy() || obby.run || parcours.run || play.busy() || build.active) });
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
-  const story = BI.createStory({ A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); } });
+  const story = BI.createStory({ A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
+    farmGoal: () => farm.questText(),
+    log: () => ({ farm: farm.log(), einsatz: einsatz.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
+      daily: { today: !!(save.daily && save.daily.d === (d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())(new Date())), streak: (save.daily && save.daily.s) || 0 } }) });
   kids.onEarn = id => story.onEarn(id); { const mn = meta.note; meta.note = (k, n) => { mn(k, n); story.note(k); }; }
   const cinema = BI.createCinema({ scene, P, say, A, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
@@ -1086,13 +1089,14 @@
     { id: 'arena', icon: '🥊', name: 'Kampfarena', at: () => ({ x: SPOT.arena.kai.x, z: SPOT.arena.kai.z + 3 }) }, { id: 'forest', icon: '🌲', name: 'Verbotener Wald', at: () => ({ x: SPOT.forest.gate.x, z: SPOT.forest.gate.z }) },
     { id: 'obby', icon: '🏁', name: 'Himmels-Parcours', at: () => obby.pad },
     { id: 'park', icon: '🎡', name: 'Freizeitpark', at: () => ({ x: BI.PARK.bridge.x1 + 6, z: BI.PARK.z }) },
+    { id: 'lighthouse', icon: '💡', name: 'Leuchtturm (Hauptinsel)', at: () => ({ x: SPOT.lighthouse.x, z: SPOT.lighthouse.z + 5 }) },
     { id: 'pups', icon: '🐶', name: 'Fellretter-Bucht', at: () => ({ x: BI.PUPS.x, z: BI.PUPS.z - 40 }) },
     { id: 'rainbow', icon: '🌈', name: 'Regenbogenwelt', at: () => ({ x: BI.RAINBOW.bridge.x0 - 6, z: BI.RAINBOW.z }) },
     { id: 'camp', icon: '⛺', name: 'Camp', at: () => ({ x: SPOT.camp.x, z: SPOT.camp.z + 5 }) },
     { id: 'zoo', icon: '🐮', name: 'Streichelzoo', at: () => ({ x: SPOT.pens[0].gate.x + 3, z: SPOT.pens[0].gate.z + 3 }) }, { id: 'pool', icon: '🏊', name: 'Freibad', at: () => ({ x: SPOT.pool.gate.x, z: SPOT.pool.gate.z - 4 }) },
     { id: 'station', icon: '🚂', name: 'Bahnhof', at: () => SPOT.station }, { id: 'hospital', icon: '🏥', name: 'Krankenhaus', at: () => SPOT.hospital },
     { id: 'heli', icon: '🚁', name: 'Hubschrauber', at: () => SPOT.helipad }, { id: 'pier', icon: '⛵', name: 'Boot am Steg', at: () => ({ x: 4.5, z: 170 }) },
-    { id: 'ship', icon: '🏴‍☠️', name: 'Piratenschiff', at: () => ({ x: W.ship.cx - 6, z: W.ship.cz + 2 }) }, { id: 'park', icon: '🛝', name: 'Spielplatz', at: () => SPOT.park }, { id: 'cinema', icon: '🎬', name: 'Kino & Autokino', at: () => ({ x: BI.CINEMA.door.x, z: BI.CINEMA.door.z + 1.5 }) }
+    { id: 'ship', icon: '🏴‍☠️', name: 'Piratenschiff', at: () => ({ x: W.ship.cx - 6, z: W.ship.cz + 2 }) }, { id: 'playground', icon: '🛝', name: 'Spielplatz', at: () => SPOT.park }, { id: 'cinema', icon: '🎬', name: 'Kino & Autokino', at: () => ({ x: BI.CINEMA.door.x, z: BI.CINEMA.door.z + 1.5 }) }
   ];
   let guide = null; const guideEl = $('guidePanel');
   function openGuide() { if (state !== 'play' || mini.active || gm || kids.busy()) return; guideOpen = true; setStick(0, 0); const g = $('guideGrid'); g.innerHTML = '';
@@ -1106,6 +1110,7 @@
   }
   function updateGuide(dt) { if (!guide) return; const p = guide.d.at(), px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; if (Math.hypot(p.x - px, p.z - pz) < 7) { say('🎉 Angekommen: ' + guide.d.icon + ' ' + guide.d.name + '!', 3000); A.star(); kids.earn('guide'); guide = null; updateHud(); } }
   $('bStory').addEventListener('click', () => { closeGuide(); if (state === 'play') story.show(); });
+  $('bLog').addEventListener('click', () => { if (state === 'play' && !mini.active && !gm && !kids.busy()) story.show(); });
   $('bGuide').addEventListener('click', openGuide); $('guideClose').addEventListener('click', closeGuide);
   /* Eltern-Bereich: Lautstärke, Mitspielen, Sparmodus, Vorlesen, Jahreszeit, Pausen-Erinnerung */
   let parentOpen = false, pHold = 0, pHolding = false; const par = $('parentPanel');

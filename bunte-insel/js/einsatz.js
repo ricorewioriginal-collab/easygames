@@ -104,6 +104,6 @@ BI.createEinsatz = function (G) {
     eArr.style.visibility = eDist.style.visibility = inW ? 'visible' : 'hidden'; eArr.style.transform = 'rotate(' + (rel * 180 / Math.PI).toFixed(0) + 'deg)'; eDist.textContent = inW && d < 1000 ? Math.round(d) + ' m' : '';
   };
   if (E().cur && !byId(E().cur.id)) { E().cur = null; persist(); }
-  K.missions = MS; K.state = E; K.target = target; K.beamOn = () => beam.visible;
+  K.log = () => ({ missions: MS, state: E() }); K.missions = MS; K.state = E; K.target = target; K.beamOn = () => beam.visible;
   return K;
 };
