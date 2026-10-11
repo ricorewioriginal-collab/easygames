@@ -88,6 +88,7 @@ function createDriver(h) {
 
 if (require.main === module) {
   const h = load(), d = createDriver(h), {api, els} = h, story = h.context.AERU_STORY;
+  assert.equal(h.context.AERU_QUESTS.validate(story).join(' | '), '', 'Storydaten sind vollständig und verweisen nur auf vorhandene Quests, Figuren, Dialoge und Objekte');
   els.start.onclick(); d.finish();
   // Erwartete Dialogreihenfolge der Hauptgeschichte aus den Storydaten.
   const expected = [];

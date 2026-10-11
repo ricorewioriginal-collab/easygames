@@ -257,7 +257,7 @@ function migrate(raw, story) {
   }
   if (raw.won === true && completed >= 3) notes.push('Den Kampf gegen Vesper hattest du bereits gewonnen. In der neuen Geschichte geht es danach nahtlos weiter.');
   for (const q of story.quests.filter(q => q.kind === 'side'))
-    if (raw.side?.[q.chapter] === true && q.chapter <= Math.max(finishedChapters, completed === LEVELS ? LEVELS - 1 : finishedChapters))
+    if (raw.side?.[q.chapter] === true && q.chapter < (completed === LEVELS ? LEVELS : finishedChapters))
       save.quests[q.id] = {s: 'done', step: q.steps.length, n: 0, items: []};
   // Rätselinseln: halb entzündete Laternen müssen in neuer Reihenfolge geweckt werden.
   for (const q of mains) if (q.steps.some(s => s.goal.order) && save.quests[q.id]?.s !== 'done' && save.lit[q.level].length) {

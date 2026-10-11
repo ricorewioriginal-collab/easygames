@@ -1,7 +1,7 @@
 /* AERU – game UI. Chunky plates, keycaps and menus instead of web page styling. */
 :root{color-scheme:dark;--cream:#fff3d3;--muted:#b6c9bd;--mint:#9decc8;--teal:#2f8c84;--ink:#0b292d;--gold:#f4cc81;--gold2:#e2a24f;--plate:rgba(7,30,37,.9);--edge:#b1d8c6;--font:'Trebuchet MS','Avenir Next Rounded','Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b2a35;color:var(--cream);font-family:var(--font);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none;cursor:default}
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#0b2a35;color:var(--cream);font-family:var(--font);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none;cursor:default}
 button,a{-webkit-tap-highlight-color:transparent;font-family:inherit}
 button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
 a{text-decoration:none;color:inherit}
@@ -42,7 +42,7 @@ kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 
 #toast::before,#toast::after{content:'';position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 #toast::before{top:0}#toast::after{bottom:0}
 #toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
-#prompt{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--plate);padding:7px 18px 7px 8px;border:2px solid var(--gold);border-radius:30px;font-size:15px;font-weight:800;pointer-events:none;box-shadow:0 4px 0 #04161c80;animation:hover 1.4s ease-in-out infinite;white-space:nowrap}
+#prompt{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--plate);padding:7px 18px 7px 8px;border:2px solid var(--gold);border-radius:30px;font-size:15px;font-weight:800;pointer-events:auto;color:var(--cream);min-height:46px;box-shadow:0 4px 0 #04161c80;animation:hover 1.4s ease-in-out infinite;white-space:nowrap}
 #prompt kbd{width:30px;height:30px;border-radius:50%;font-size:14px;margin:0}
 @keyframes hover{50%{transform:translate(-50%,-4px)}}
 #desktopHelp{position:fixed;bottom:16px;left:0;right:0;display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;font-size:12px;font-weight:700;color:#fff3d3d0;pointer-events:none;text-shadow:0 1px 3px #000;animation:helpOut 1.2s 25s forwards}
@@ -125,22 +125,76 @@ body:has(#dialog:not([hidden])) :is(#touch,#flightHud,#desktopHelp,#prompt){disp
 #touch{touch-action:none;user-select:none;-webkit-user-select:none}
 #stick{position:fixed;bottom:max(35px,env(safe-area-inset-bottom));left:max(30px,env(safe-area-inset-left));width:115px;height:115px;border-radius:50%;background:radial-gradient(rgba(9,42,48,.55),rgba(9,42,48,.88));border:3px solid var(--edge);box-shadow:0 5px 0 #04161c80;touch-action:none}
 #knob{position:absolute;left:32px;top:32px;width:45px;height:45px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c8f2e2,#4f9e8a);border:2px solid #eff8d7;box-shadow:0 3px 0 #1c4c45;pointer-events:none}
-.actions{position:fixed;right:max(24px,env(safe-area-inset-right));bottom:max(30px,env(safe-area-inset-bottom));display:grid;grid-template-columns:62px 78px;grid-template-rows:62px 78px;gap:10px}
-.actions button{border-radius:50%;width:62px;height:62px;background:radial-gradient(circle at 35% 30%,#2a6b6a,#0b2f36);border:3px solid var(--edge);color:#fff3d3;font-size:26px;line-height:1;box-shadow:0 5px 0 #04161c;touch-action:none;user-select:none;transition:transform .06s}
+.actions{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(24px,env(safe-area-inset-bottom));width:204px;height:158px}
+.actions button{position:absolute;border-radius:50%;width:64px;height:64px;background:radial-gradient(circle at 35% 30%,#2a6b6a,#0b2f36);border:3px solid var(--edge);color:#fff3d3;font-size:26px;line-height:1;box-shadow:0 5px 0 #04161c;touch-action:none;user-select:none;transition:transform .06s}
 .actions button small{display:block;font-size:9px;font-weight:900;letter-spacing:0;color:#fff3d3;margin-top:2px}
-.actions button:active{transform:translateY(4px);box-shadow:0 1px 0 #04161c;filter:brightness(1.25)}
-.actions #talk{position:absolute;right:165px;bottom:0;width:52px;height:52px;font-size:19px}
-.actions #attack{grid-column:1;grid-row:2;align-self:end}
-.actions #fly{grid-column:2;grid-row:1;justify-self:end}
-.actions #jump{grid-column:2;grid-row:2;width:78px;height:78px;background:radial-gradient(circle at 35% 30%,#fff2cf,#d79a48);border-color:#fff7e0;color:#3a2408;box-shadow:0 5px 0 #7a4e17}
+.actions button:active,.actions button.held{transform:translateY(4px);box-shadow:0 1px 0 #04161c;filter:brightness(1.25)}
+.actions #talk{right:150px;bottom:80px;width:54px;height:54px;font-size:19px;opacity:.7}
+.actions #talk.ready{opacity:1;border-color:var(--gold);box-shadow:0 0 0 3px #f4cc8166,0 5px 0 #04161c}
+.actions #dodge{right:84px;bottom:84px;width:56px;height:56px;font-size:20px}
+.actions #attack{right:92px;bottom:8px}
+.actions #fly{right:8px;bottom:94px}
+.actions #jump{right:0;bottom:0;width:82px;height:82px;background:radial-gradient(circle at 35% 30%,#fff2cf,#d79a48);border-color:#fff7e0;color:#3a2408;box-shadow:0 5px 0 #7a4e17}
 .actions #jump small{color:#3a2408}
 .actions #fly.active{background:radial-gradient(circle at 35% 30%,#c6ffe9,#3fb79c);color:#062c36;border-color:#e6ffe4}
 .actions #fly.active small{color:#062c36}
 
-@media(pointer:coarse){#desktopHelp,#flightHud .keys{display:none!important}#flightHud{bottom:180px;left:24px;min-width:160px}}
+@media(pointer:coarse){#desktopHelp,#flightHud .keys{display:none!important}#flightHud{bottom:calc(max(24px,env(safe-area-inset-bottom)) + 128px);left:max(18px,env(safe-area-inset-left));min-width:150px}}
 @media(max-width:760px){.pauseGrid{grid-template-columns:1fr;gap:16px}.pauseInfo{display:none}.panel.wide{width:420px}.islandSelect{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){#hud{left:14px;right:14px;top:max(12px,env(safe-area-inset-top));gap:8px}#health{font-size:17px;letter-spacing:1px;padding:2px 8px 3px;height:30px;line-height:22px}#region{font-size:9px}.stats{gap:6px}.stats>span{padding:3px 8px 3px 5px;gap:4px}.stats i{width:20px;height:20px;font-size:11px}.stats b{font-size:16px}.stats small{font-size:9px}.square{width:38px;height:38px}#quest{left:14px;top:calc(max(12px,env(safe-area-inset-top)) + 54px);width:225px;padding:7px 10px}#quest strong{font-size:13px}#detail{font-size:11px}#map{right:14px;top:calc(max(12px,env(safe-area-inset-top)) + 50px);width:84px;height:84px}#flightHud{left:18px;min-width:145px}#flightHud small{letter-spacing:1px}.actions{right:18px;bottom:max(26px,env(safe-area-inset-bottom))}#stick{left:18px;width:105px;height:105px}#knob{left:27px;top:27px}#prompt{bottom:260px;font-size:13px;max-width:92vw}.cameraHint{display:none}#toast{top:30%;font-size:13px;padding:10px 40px}#dialog{gap:8px;bottom:14px}.portrait{width:52px;height:52px;font-size:28px;border-width:2px}.dialogBody{padding:24px 14px 12px;min-height:0}#speech{font-size:14px}#speaker{font-size:16px}#role{display:none}#bossHud{top:170px;width:220px}.panel{padding:22px 18px}.panel h2{font-size:28px}.ribbon{font-size:10px;letter-spacing:4px;padding:6px 20px}.intro{font-size:15px;max-width:280px}}
-@media(max-height:550px){h1{font-size:76px}.ribbon{font-size:10px;padding:5px 22px}.intro{display:none}.menuButtons{margin-top:16px;gap:8px}.primary,.secondary{min-height:42px;padding:8px 16px;font-size:14px}.fine{display:none}#quest{width:300px}#quest strong{font-size:14px}#pauseMenu .pauseInfo{display:none}#pauseMenu .pauseGrid{grid-template-columns:1fr}#pauseMenu .pauseButtons{display:grid;grid-template-columns:1fr 1fr}#pauseMenu .pauseButtons .primary{grid-column:1/-1}.panel.wide{width:620px}#map{width:84px;height:84px}#flightHud{bottom:155px;left:22px;min-width:145px}#prompt{bottom:28px;max-width:40vw}.actions{bottom:16px}#stick{bottom:20px}#bossHud{top:70px}.panel{padding:14px 18px}.panel.wide h2{font-size:28px;margin-bottom:10px}.panel h2{font-size:24px;margin:6px 0}.panel p{font-size:12px;margin:6px 0}.pauseButtons{gap:8px}.pauseButtons .primary,.pauseButtons .secondary{min-height:38px;padding:6px 12px;font-size:13px}.islandSelect{margin-top:10px;padding-top:8px}.islandSelect button{min-height:34px}#dialog{bottom:10px}.dialogBody{padding:22px 14px 10px;min-height:0}#speech{margin:2px 0 6px;min-height:0}.centered{place-items:start center}}
+@media(max-width:650px){#hud{left:14px;right:14px;top:max(12px,env(safe-area-inset-top));gap:8px}#health{font-size:17px;letter-spacing:1px;padding:2px 8px 3px;height:30px;line-height:22px}#region{font-size:9px}.stats{gap:6px}.stats>span{padding:3px 8px 3px 5px;gap:4px}.stats i{width:20px;height:20px;font-size:11px}.stats b{font-size:16px}.stats small{font-size:9px}.square{width:38px;height:38px}#quest{left:14px;top:calc(max(12px,env(safe-area-inset-top)) + 54px);width:calc(100vw - 128px);max-width:260px;padding:7px 10px}#quest strong{font-size:13px}#detail{font-size:11px}#map{right:14px;top:calc(max(12px,env(safe-area-inset-top)) + 50px);width:84px;height:84px}#flightHud{left:18px;min-width:145px}#flightHud small{letter-spacing:1px}.actions{right:max(14px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom))}#stick{left:max(14px,env(safe-area-inset-left));width:112px;height:112px}#knob{left:30px;top:30px}#prompt{bottom:calc(max(20px,env(safe-area-inset-bottom)) + 172px);font-size:13px;max-width:92vw}.cameraHint{display:none}#toast{top:30%;font-size:13px;padding:10px 40px}#dialog{gap:8px;bottom:14px}.portrait{width:52px;height:52px;font-size:28px;border-width:2px}.dialogBody{padding:24px 14px 12px;min-height:0}#speech{font-size:14px}#speaker{font-size:16px}#role{display:none}#bossHud{top:auto;bottom:calc(max(20px,env(safe-area-inset-bottom)) + 226px);width:230px}.panel{padding:22px 18px}.panel h2{font-size:28px}.ribbon{font-size:10px;letter-spacing:4px;padding:6px 20px}.intro{font-size:15px;max-width:280px}}
+@media(max-height:550px){h1{font-size:76px}.ribbon{font-size:10px;padding:5px 22px}.intro{display:none}.menuButtons{margin-top:16px;gap:8px}.primary,.secondary{min-height:42px;padding:8px 16px;font-size:14px}.fine{display:none}#quest{width:300px}#quest strong{font-size:14px}#pauseMenu .pauseInfo{display:none}#pauseMenu .pauseGrid{grid-template-columns:1fr}#pauseMenu .pauseButtons{display:grid;grid-template-columns:1fr 1fr}#pauseMenu .pauseButtons .primary{grid-column:1/-1}.panel.wide{width:620px}#map{width:84px;height:84px}#flightHud{bottom:calc(max(16px,env(safe-area-inset-bottom)) + 120px);left:max(22px,env(safe-area-inset-left));min-width:145px}#prompt{bottom:20px;max-width:34vw}.actions{bottom:max(12px,env(safe-area-inset-bottom))}#stick{bottom:max(16px,env(safe-area-inset-bottom))}#bossHud{top:max(8px,env(safe-area-inset-top));bottom:auto;width:210px;padding:4px 10px}#why,#sideObjective{display:none!important}.panel{padding:14px 18px}.panel.wide h2{font-size:28px;margin-bottom:10px}.panel h2{font-size:24px;margin:6px 0}.panel p{font-size:12px;margin:6px 0}.pauseButtons{gap:8px}.pauseButtons .primary,.pauseButtons .secondary{min-height:38px;padding:6px 12px;font-size:13px}.islandSelect{margin-top:10px;padding-top:8px}.islandSelect button{min-height:34px}#dialog{bottom:10px}.dialogBody{padding:22px 14px 10px;min-height:0}#speech{margin:2px 0 6px;min-height:0}.centered{place-items:start center}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 #graphicsNotice{position:fixed;left:50%;top:max(5px,env(safe-area-inset-top));transform:translateX(-50%);z-index:10;padding:4px 8px;border-radius:7px;background:#123943db;color:#e6fff1;font:10px system-ui,sans-serif;white-space:nowrap;pointer-events:none}
+
+/* ───── Questanzeige, Kompass, Tagebuch, Einstellungen, Abspann ───── */
+#quest #why{display:block;font-style:italic;font-size:11px;color:#bcd4c8;margin-top:4px;line-height:1.35}
+#quest #why:empty,#sideObjective:empty{display:none}
+#compass{display:flex;align-items:center;gap:8px;margin-top:7px;padding-top:6px;border-top:1px solid #f4cc8133;font-size:12px;font-weight:800;color:var(--gold)}
+#compassArrow{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#f4cc8126;border:1px solid var(--gold);font-size:13px;line-height:1;transition:transform .12s linear}
+#compassArrow::before{content:''}
+#sideObjective{display:block;margin-top:6px;font-size:11px;color:var(--mint);line-height:1.35}
+#journal{margin-left:8px}
+#vignette.hurt{animation:hurt .45s ease-out}
+@keyframes hurt{from{box-shadow:inset 0 0 160px #ff5a3daa}}
+#flightHud.low #flightFill{background:linear-gradient(#ffd6c4,#ef8c5e)}
+#flightHud.low #flightState::after{content:' · LANDEN ODER AUFWIND SUCHEN';color:#ffd3b4}
+#perf{position:fixed;left:50%;bottom:max(4px,env(safe-area-inset-bottom));transform:translateX(-50%);background:#071e25d8;color:#d9f6e6;font:11px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none;white-space:nowrap;z-index:5}
+.skip{float:left;font-size:12px;font-weight:800;color:#bcd4c8;padding:6px 4px;text-decoration:underline}
+.warn{color:#ffd3b4!important;max-width:320px}
+.tabs{display:flex;gap:8px;justify-content:center;margin:-6px 0 16px;flex-wrap:wrap}
+.tabs button{padding:8px 16px;border-radius:10px;border:2px solid #9decc855;background:#0b2a33;font-weight:900;font-size:13px;letter-spacing:1px;text-transform:uppercase;min-height:40px}
+.tabs button.sel{background:linear-gradient(#fff7e0,#f4cc81);color:#3a2408;border-color:#fff7e0}
+.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.journal{text-align:left;max-height:min(56vh,520px);overflow:auto;padding-right:6px;-webkit-overflow-scrolling:touch}
+.jNow{background:#0006;border:1px solid var(--gold);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.jNow small{font-size:10px;letter-spacing:2px;color:var(--gold);font-weight:800}.jNow strong{display:block;font-size:15px;margin:2px 0}.jNow span{font-size:12px;color:#c8ddd1}
+.jChapter{border-top:1px solid #f4cc8133;padding:8px 0}
+.jChapter h3{margin:0 0 6px;font-size:14px;color:var(--gold)}.jChapter h3 em{font-style:normal;color:var(--mint);font-size:12px;margin-left:6px}
+.jChapter.locked h3{color:#7f948a}
+.jSummary{margin:0 0 6px;font-size:12px!important;line-height:1.5!important;color:#d8e6dc}
+.jQuest{font-size:13px;margin:6px 0}.jQuest i{font-style:normal;font-size:11px;color:#9fb8ab;margin-left:6px}.jQuest.side b{color:var(--mint)}
+.jQuest ul,.jUpgrades{list-style:none;margin:4px 0 0;padding:0 0 0 14px;font-size:12px;line-height:1.6}
+.jQuest li.done,.jUpgrades li.done{color:#9fb8ab}.jQuest li.cur{color:#fff3d3;font-weight:700}
+.settings{display:grid;gap:8px;text-align:left;max-height:min(56vh,520px);overflow:auto;padding-right:6px}
+.setRow{display:grid;grid-template-columns:1fr minmax(120px,170px) 52px;align-items:center;gap:10px;font-size:13px;font-weight:700}
+.setRow output{font-size:12px;color:#c8ddd1;text-align:right}
+.setRow input[type=range]{width:100%;accent-color:#f4cc81;height:32px}
+.setRow input[type=range]:focus-visible{outline:2px solid var(--gold)}
+.secondary.small,.primary.small{min-height:40px;padding:6px 10px;font-size:13px;text-transform:none;border-radius:10px}
+#noticeText{text-align:left}#noticeText p{font-size:13px}
+.credits{height:180px;overflow:hidden;position:relative;margin:4px 0 8px;mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent);-webkit-mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent)}
+.credits.roll .creditsRoll{animation:roll 26s linear forwards}
+.credits:not(.roll){overflow:auto;mask-image:none;-webkit-mask-image:none}
+.creditsRoll h3{font-size:14px;color:var(--gold);margin:14px 0 4px}
+@keyframes roll{from{transform:translateY(170px)}to{transform:translateY(-100%)}}
+body.reduced *,body.reduced *::before,body.reduced *::after{animation:none!important;transition:none!important}
+body.uiLarge .actions{transform:scale(1.15);transform-origin:bottom right}
+body.uiLarge #stick{transform:scale(1.15);transform-origin:bottom left}
+body.uiLarge #quest strong{font-size:18px}body.uiLarge #detail{font-size:14px}body.uiLarge #speech{font-size:18px}
+@media(max-width:650px){.panel.wide{padding:18px 14px}.tabs button{padding:6px 10px;font-size:12px}.setRow{grid-template-columns:1fr 130px 46px;font-size:12px}#journal{display:none}}
+@media(max-height:550px){.journal,.settings{max-height:52vh}.tabs{margin:0 0 8px}.credits{height:110px}#quest #compass{margin-top:4px;padding-top:4px}}
+/* Querformat mit wenig Höhe: Flügelkraft mittig unten zwischen Stick und Aktionstasten, Hinweis darüber. */
+@media(max-height:550px){#flightHud{left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom))}#prompt{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 64px)}#desktopHelp{display:none}}
+.actions #dodge small{font-size:7.5px;letter-spacing:-.2px}
+@media(max-height:550px){.cameraHint{display:none}}

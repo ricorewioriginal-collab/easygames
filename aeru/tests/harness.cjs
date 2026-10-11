@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, '..');
 const FILES = ['content.js', 'story.js', 'quests.js', 'game.js'];
 
 function load({storage = {}, webgl = true, width = 1280, height = 800, coarse = false} = {}) {
+  const renders = {count: 0, draw2d: 0};
   // Dieselbe Three.js-Version, die index.html lädt (r128).
   const T = require(path.join(root, 'vendor/three-compatible.min.js'));
   const THREE = Object.assign({}, T);
@@ -15,12 +16,12 @@ function load({storage = {}, webgl = true, width = 1280, height = 800, coarse = 
     fire(k, e = {}) { for (const fn of this.listeners[k] || []) fn({preventDefault() {}, stopPropagation() {}, pointerId: 1, clientX: 0, clientY: 0, target: this, ...e}); }
     focus() {} blur() {} setAttribute(k, v) { this[k] = v; } setPointerCapture() {} querySelectorAll() { return []; }
     getBoundingClientRect() { return {left: 0, top: 0, width: 115, height: 115}; }
-    getContext(kind) { return webgl || kind === '2d' ? new Proxy({createLinearGradient: () => ({addColorStop() {}})}, {get: (o, k) => k in o ? o[k] : () => {}}) : null; }
+    getContext(kind) { return webgl || kind === '2d' ? new Proxy({createLinearGradient: () => ({addColorStop() {}}), createRadialGradient: () => ({addColorStop() {}})}, {get: (o, k) => k in o ? o[k] : () => { renders.draw2d++; }}) : null; }
     cloneNode() { return new Element(this.id); } replaceWith() {}
     get offsetWidth() { return 1; } get offsetParent() { return this.hidden ? null : {}; }
   }
   const els = {}, events = {}, docEvents = {}, stored = storage;
-  const renders = {count: 0};
+
   if (webgl) THREE.WebGLRenderer = class { constructor() { this.shadowMap = {}; this.info = {render: {calls: 0, triangles: 0}}; this.pr = 1; } setPixelRatio(p) { this.pr = p; } getPixelRatio() { return this.pr; } setSize() {} render() { renders.count++; } getContext() { return {isContextLost: () => false}; } };
   else THREE.WebGLRenderer = class { constructor() { throw new Error('WebGL ist deaktiviert'); } };
   let frame = null;

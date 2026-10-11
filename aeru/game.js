@@ -1058,13 +1058,13 @@ function update(dt) {
   if (time - lastSave > 15) { persist(); lastSave = time; }
 }
 const birdM = new T.Matrix4(), birdE = new T.Euler(), birdS = new T.Vector3(.18, .5, .18);
-let hudTimer = 0, perfFrames = 0, perfTime = 0, perfWorst = 0, autoWindow = [], goodWindows = 0;
+let lastPerf = null, hudTimer = 0, perfFrames = 0, perfTime = 0, perfWorst = 0, autoWindow = [], goodWindows = 0;
 function measure(dt) {
   perfFrames++; perfTime += dt; perfWorst = Math.max(perfWorst, dt);
   if (perfTime >= .5) {
-    const fps = perfFrames / perfTime, ms = perfTime / perfFrames * 1000;
+    const fps = perfFrames / perfTime, ms = perfTime / perfFrames * 1000; lastPerf = {fps, ms, worst: perfWorst * 1000};
     if (settings.perf) { const info = renderer.info?.render || {}; setText('perf', `${fps.toFixed(0)} FPS · ${ms.toFixed(1)} ms (max ${(perfWorst * 1000).toFixed(0)}) · ${info.calls ?? '–'} Draw Calls · ${((info.triangles || 0) / 1000).toFixed(1)}k Dreiecke · Auflösung ×${(renderer.getPixelRatio?.() || 1).toFixed(2)} · ${canvasMode ? '2D' : QUALITY[settings.quality === 'auto' ? autoLevel : settings.quality].label}`); }
-    if (settings.quality === 'auto' && mode === 'play' && !canvasMode) autoAdjust(ms);
+    if (settings.quality === 'auto' && (mode === 'play' || mode === 'dialog') && !canvasMode) autoAdjust(ms);
     perfFrames = 0; perfTime = 0; perfWorst = 0;
   }
 }
@@ -1156,7 +1156,7 @@ function drawCanvasFallback(c, w, h) {
 
 // ───────── Testschnittstelle (nur mit ?test) ─────────
 if (TEST) window.aeruTest = {
-  snapshot: () => ({mode, state: {...state, checkpoint: {...state.checkpoint}}, save: JSON.parse(JSON.stringify(save)), objective: (() => { const o = quests.mainObjective(); return o && {quest: o.quest.id, step: o.index, text: o.step.text, have: o.have, need: o.need}; })(),
+  snapshot: () => ({mode, camera: {x: camera.position.x, y: camera.position.y, z: camera.position.z}, state: {...state, checkpoint: {...state.checkpoint}}, save: JSON.parse(JSON.stringify(save)), objective: (() => { const o = quests.mainObjective(); return o && {quest: o.quest.id, step: o.index, text: o.step.text, have: o.have, need: o.need}; })(),
     quests: Object.fromEntries(story.quests.map(q => [q.id, quests.status(q.id)])), dialog: dialogCurrent ? {id: dialogCurrent.id, line: dialogIndex, queued: dialogQueue.map(d => d.id)} : null,
     boss: boss ? {id: boss.id, hp: boss.hp, active: boss.active, state: boss.state, phase: boss.phase, visible: boss.g.visible} : null, anchors: anchors.map(a => ({x: a.x, y: a.y, z: a.z, broken: a.broken})),
     near: near === 'portal' ? 'portal' : near?.id, target: currentTarget, npcs: [...npcs.values()].filter(n => n.present).map(n => ({id: n.id, x: n.x, y: n.y, z: n.z, marker: npcMarker(n.id)})),
@@ -1168,6 +1168,7 @@ if (TEST) window.aeruTest = {
   finishDialog: () => { let guard = 0; while (mode === 'dialog' && guard++ < 500) { typing = null; advance(); } },
   hold: (what, v) => { if (what === 'jump') jumpHeld = v; if (what === 'attack') attackHeld = v; if (what === 'dive') diveHeld = v; },
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
+  perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };
 save = readSave(); $('continue').hidden = !save;
