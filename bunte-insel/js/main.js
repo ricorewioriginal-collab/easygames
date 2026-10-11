@@ -974,7 +974,8 @@
   function closeWard() { wardOpen = false; wardPanel.hidden = true; updateButtons(true); }
   function renderWard() {
     refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'rollator' && q.slot !== 'deco');
-    { const pb = document.createElement('button'); pb.className = 'pill' + (save.papOff ? '' : ' sel'); pb.textContent = '🎈 Pappnase'; pb.onclick = () => { togglePap(); renderWard(); }; box.appendChild(pb); }
+    { const pb = document.createElement('button'); pb.className = 'pill' + (save.papOff ? '' : ' sel'); pb.textContent = '🎈 Pappnase'; pb.onclick = () => { togglePap(); renderWard(); }; box.appendChild(pb);
+      if (!save.papOff) { const hb = document.createElement('button'); hb.className = 'pill'; hb.textContent = papHomeOn() ? '🎈 Mitnehmen' : '🏠 Zu Hause lassen'; hb.onclick = () => { setPapHome(!papHomeOn()); renderWard(); }; box.appendChild(hb); } }
     if (!mine.length) { const h = document.createElement('div'); h.textContent = 'Im Spielzeugladen kannst du neue Sachen kaufen 🧸'; box.appendChild(h); return; }
     for (const it of mine) { const b = document.createElement('button'); b.className = 'pill' + (isEq(it) ? ' sel' : ''); b.textContent = it.icon + ' ' + it.name; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderWard(); }; box.appendChild(b); }
   }
@@ -1073,13 +1074,15 @@
     { const on = obby.near(); if (on) return { src: 'obby', n: on }; }
     { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
     const an = farm.animalNear(); if (an) return { src: 'animal', a: an };
+    if (papHomeOn() && pap.group.visible) { const a = papAnchor(); if (Math.hypot(P.x - a.x, P.z - a.z) < 2.8) return { src: 'paphome', n: { k: 'paphome' } }; }
+    { const hd = flats[mySlot()].door; if (!save.papOff && !papHomeOn() && pup.mode === 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'paphome', n: { k: 'paphome' } }; }
     { const hd = flats[mySlot()].door; if (pup.mode !== 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'pethome', n: { k: 'pethome' } }; }
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
-  function placeLabel(n) { if (n.src === 'pethome') return pup.mode === 'home' ? ['🐾', pup.name + ' mitnehmen'] : ['🏠', pup.name + ' zu Hause lassen']; if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'paphome') return papHomeOn() ? ['🎈', 'Pappnase mitnehmen'] : ['🏠', 'Pappnase zu Hause lassen']; if (n.src === 'pethome') return pup.mode === 'home' ? ['🐾', pup.name + ' mitnehmen'] : ['🏠', pup.name + ' zu Hause lassen']; if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'paphome') setPapHome(!papHomeOn()); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1556,14 +1559,18 @@
     g.position.set(pup.x, y, pup.z); g.rotation.y = pup.h + (fun.dancing ? Math.sin(t * 3) * 1.2 : 0); pup.d.pose(pup.phase, sp > .3 ? Math.min(.85, sp * .12) : 0, pup.bark > 0 || fun.dancing || sp === 0);
     if (pup.trick) pup.d.trick(pup.trick.name, pup.trick.t / pup.trick.dur);
   }
+  /* Pappnase-Zuhause: schwebt standardmäßig an der eigenen Wohnung; mitnehmen/dalassen wie beim Haustier, abwählen = Pappnase ablegen */
+  const papAnchor = () => { const f = flats[mySlot()]; return { x: f.door.x - 1.8, z: f.door.z + 2.6 }; };
+  const papHomeOn = () => !save.papOff && save.papHome !== false;
+  function setPapHome(on) { save.papHome = on; save.papOff = false; persist(); A.pop(); const a = papAnchor(); fx.burst(on ? P.x : a.x, 1.6, on ? P.z : a.z, 10, [BI.C.red, BI.C.gold, BI.C.white], 3, .8, 30, 2); say(on ? '🏠 Pappnase schwebt zu Hause und wartet auf dich.' : '🎈 Pappnase kommt mit dir!', 2400); }
   function togglePap() { save.papOff = !save.papOff; persist(); A.pop(); say(save.papOff ? '🎈 Pappnase abgelegt' : '🎈 Pappnase ist wieder da!', 1800); }
   function updatePap(dt) {
-    pap.group.visible = str.visible = !save.papOff;
-    const dv = P.veh && !P.veh.spec.remote ? P.veh : null;
+    const hm = papHomeOn() ? papAnchor() : null; pap.group.visible = str.visible = !save.papOff && !(hm && Math.hypot(P.x - hm.x, P.z - hm.z) > 90);
+    const dv = hm ? null : P.veh && !P.veh.spec.remote ? P.veh : null;
     const v = dv; let hx, hy, hz;
-    if (v) { hx = v.x; hy = (v.y || 0) + (v.isTrain ? 3.4 : 1.7); hz = v.z; }
+    if (hm) { hx = hm.x; hy = .3; hz = hm.z; } else if (v) { hx = v.x; hy = (v.y || 0) + (v.isTrain ? 3.4 : 1.7); hz = v.z; }
     else { const ph = P.h; hx = P.x + Math.cos(ph) * .42 + Math.sin(ph) * .1; hy = P.y + .75; hz = P.z - Math.sin(ph) * .42 + Math.cos(ph) * .1; }
-    const bob = Math.sin(t * 1.6) * .08 + (fun.dancing ? Math.abs(Math.sin(t * 8)) * .25 : 0), side = v ? 0 : .5, tx = hx + Math.cos(P.h) * side + Math.sin(t * .9) * .18, ty = hy + 1.0 + bob, tz = hz - Math.sin(P.h) * side + Math.cos(t * .7) * .15;
+    const bob = Math.sin(t * 1.6) * .08 + (fun.dancing ? Math.abs(Math.sin(t * 8)) * .25 : 0), side = v || hm ? 0 : .5, tx = hx + Math.cos(P.h) * side + Math.sin(t * .9) * .18, ty = hy + (hm ? 2.1 : 1.0) + bob, tz = hz - Math.sin(P.h) * side + Math.cos(t * .7) * .15;
     if (pap.k == null) pap.k = { x: tx, y: ty, z: tz };
     pap.k.x = BI.damp(pap.k.x, tx, 6, dt); pap.k.y = BI.damp(pap.k.y, ty, 6, dt); pap.k.z = BI.damp(pap.k.z, tz, 6, dt);
     if (Math.hypot(pap.k.x - tx, pap.k.z - tz) > 25) { pap.k.x = tx; pap.k.y = ty; pap.k.z = tz; }

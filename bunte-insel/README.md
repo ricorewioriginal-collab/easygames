@@ -193,3 +193,7 @@ In der Fellretter-Bucht steht ein fahrbares **Fellnasen-Mobil**: ein blauer Stre
 ### 🐾 Haustier-Zuhause und Maskottchen-Partner
 
 Dein Haustier wartet standardmäßig an deiner Wohnung. Mitnehmen ist freiwillig: E beim Tier (oder in der Garderobe unter „🐾 Haustier“ → „Mitnehmen“ / „Zu Hause lassen“). An der eigenen Wohnungstür kannst du es wieder dalassen. Maskottchen aus anderen Welten (Zündel in den Drachenhöhen, Willi im Dampfer-Hafen) wählst du im Gespräch mit „🎒 Als Partner mitnehmen“. Sie begleiten dich dann überall und stehen danach in der Garderobe zur Auswahl.
+
+Auch die **Pappnase** schwebt standardmäßig an der Wohnung: E an der Pappnase nimmt sie mit, an der Wohnungstür lässt du sie wieder da; in der Garderobe wählst du sie ab („🎈 Pappnase“) oder schaltest „Mitnehmen / Zu Hause lassen“.
+
+**Welt-Währungen:** Was du in einer Welt sammelst, wird in Sterne ⭐ getauscht, die überall (z. B. in den Shops) gelten. Drachenhöhen: Funkelsteine zählen Wert 1/2/5/10, je 10 Wert gibt sofort 1 ⭐.
