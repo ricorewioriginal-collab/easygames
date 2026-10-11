@@ -64,7 +64,7 @@ BI.createEinsatz = function (G) {
   beam.visible = ring.visible = false; beam.position.y = 35; ring.position.y = .15; scene.add(beam, ring);
   /* ===== Hinweis oben: Einsatz, Ziel, Entfernung, Pfeil ===== */
   const host = document.getElementById('mission'), chip = document.createElement('div'); chip.className = 'chip'; chip.hidden = true;
-  chip.style.cssText = 'position:absolute;left:50%;top:max(66px,calc(env(safe-area-inset-top) + 56px));transform:translateX(-50%);width:min(440px,calc(100% - 330px));display:flex;align-items:center;gap:10px;padding:7px 14px;border-radius:20px;pointer-events:none;font-weight:700;font-size:14px;line-height:1.25;z-index:6';
+  BI.injectHudCss(); chip.classList.add('eChip');
   chip.innerHTML = '<span style="font-size:22px">🚨</span><span style="flex:1"></span><span class="eArr" style="font-size:22px;display:inline-block">⬆️</span><b class="eDist"></b>';
   if (host && host.parentNode) host.parentNode.appendChild(chip); else document.body.appendChild(chip);
   const eTxt = chip.children[1], eArr = chip.querySelector('.eArr'), eDist = chip.querySelector('.eDist'); let hudT = 0, lastTxt = '';
