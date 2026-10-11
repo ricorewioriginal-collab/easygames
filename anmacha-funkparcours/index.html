@@ -11,18 +11,39 @@
 <body>
 <canvas id="cv"></canvas>
 
-<section id="menu" class="screen">
-  <img class="brand" id="brandImg" alt="Funkparcours" hidden>
-  <div class="wordmark" id="brandText">FUNK<span>PARCOURS</span></div>
-  <div class="tag">Das Hindernis-Zeitspiel</div>
-  <div class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="64" height="64"></div>
-  <div class="menu-buttons">
-    <button class="btn" id="bPlay">▶ Show starten</button>
-    <button class="btn green" id="bTrain">⏱ Training</button>
-    <button class="btn blue" id="bPairMenu">📱 Handys koppeln</button>
-    <div class="menu-row"><button class="btn ghost" id="bRules">❓ Regeln</button><button class="btn ghost" id="bSound">🔊 Ton</button></div>
+<section id="boot" aria-live="polite">
+  <div class="bt-glow"></div>
+  <div class="bt-center">
+    <img class="bt-logo" src="logo.png" alt="Funkparcours" width="400" height="240" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+    <div class="wordmark" hidden>FUNK<span>PARCOURS</span></div>
+    <div class="bt-start" id="bootStart" hidden>Drücke eine beliebige Taste</div>
   </div>
-  <div class="by"><a href="../" id="backLink">← Alle Spiele</a> · <b>AnMaCha</b></div>
+  <div class="bt-foot">
+    <div class="bt-row"><span id="bootMsg">Starte …</span><span id="bootPct">0 %</span></div>
+    <div class="bt-bar"><i id="bootBar"></i></div>
+    <div class="bt-tip" id="bootTip"></div>
+    <div class="bt-by"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="34" height="34"></div>
+  </div>
+</section>
+
+<section id="menu" class="screen">
+  <div class="cm">
+    <div class="cm-left">
+      <img class="cm-logo" id="brandImg" alt="Funkparcours" hidden>
+      <div class="wordmark cm-word" id="brandText">FUNK<span>PARCOURS</span></div>
+      <div class="cm-tag">Das Hindernis-Zeitspiel</div>
+      <nav class="cm-nav" id="cmNav">
+        <button class="cm-it" id="bPlay" data-m="show"><span class="ic">🏆</span><span class="lb">Show starten<small>1–4 Läufer · 3 Parcours</small></span></button>
+        <button class="cm-it" id="bTrain" data-m="train"><span class="ic">⏱</span><span class="lb">Training<small>Bestzeit jagen</small></span></button>
+        <button class="cm-it" id="bPairMenu" data-m="pair"><span class="ic">📱</span><span class="lb">Handys koppeln<small>Handys als Steuer-Pads</small></span></button>
+        <button class="cm-it" id="bRules" data-m="rules"><span class="ic">📖</span><span class="lb">So wird gespielt</span></button>
+        <button class="cm-it" id="bSound" data-m="sound"><span class="ic">🔊</span><span class="lb">Ton: an</span></button>
+        <button class="cm-it" id="bHome" data-m="home"><span class="ic">🏠</span><span class="lb">Alle Spiele</span></button>
+      </nav>
+    </div>
+    <div class="cm-panel glass" id="cmPanel"></div>
+    <div class="cm-foot"><span class="cm-keys" id="cmKeys"></span><span class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="30" height="30"></span><span class="cm-by"><b>AnMaCha</b></span></div>
+  </div>
 </section>
 
 <section id="setup" class="screen" hidden>

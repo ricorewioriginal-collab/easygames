@@ -43,7 +43,7 @@ export class Arena {
     sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); const sc = sun.shadow.camera; sc.left = -15; sc.right = 15; sc.top = 12; sc.bottom = -8; sc.near = 4; sc.far = 50; sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02;
     const rim = new T.PointLight(0x2f7bff, 0.9, 30); rim.position.set(0, 6, -6); this.s.add(rim); this.rim = rim;
     this.boom = new T.PointLight(0xff8a2a, 0, 26); this.boom.position.set(0, 6, 3); this.s.add(this.boom);
-    this.root = new T.Group(); this.s.add(this.root); this.dyn = []; this.rings = []; this.heads = []; this.pots = []; this.time = 0; this.energy = 0.3; this.ghost = null; this.ghostFrames = null; this.prevG = true; this.lastVy = 0; this.dustT = 0; this.clockT = 0;
+    this.attract = null; this.root = new T.Group(); this.s.add(this.root); this.dyn = []; this.rings = []; this.heads = []; this.pots = []; this.time = 0; this.energy = 0.3; this.ghost = null; this.ghostFrames = null; this.prevG = true; this.lastVy = 0; this.dustT = 0; this.clockT = 0;
     this.pool = []; this.live = []; this.initPool(); this.buildWater(); this.buildSet();
     this.runner = this.makeRunner(0xff6fb0, 6, 0); this.s.add(this.runner.g); this.fpsT = 0; this.fpsN = 0; this.slow = 0; this.resize();
   }
@@ -281,7 +281,7 @@ export class Arena {
     if (this.ghost && this.ghost.g.visible && ghostPos) this.pose(this.ghost, ghostPos[0], ghostPos[1], null);
     if (this.clock && (this.clockT -= dt) <= 0) { this.clockT = 0.1; this.drawClock(sim ? sim.t : 0); }
     // Kamera: leichte Vorausschau, Tempo-Zoom, Wackeln
-    const vx = sim ? sim.vx || 0 : 0, tx = x + 3.0 + vx * 0.15, ty = (sim ? Math.max(sim.y, 1) : 1.4) + 1.0; this.cx += (tx - this.cx) * Math.min(1, dt * 4.5); this.cy += (ty - this.cy) * Math.min(1, dt * 3.5);
+    const vx = sim ? sim.vx || 0 : 0, tx = (this.attract != null ? this.attract : x) + 3.0 + vx * 0.15, ty = (sim ? Math.max(sim.y, 1) : 1.4) + 1.0; this.cx += (tx - this.cx) * Math.min(1, dt * 4.5); this.cy += (ty - this.cy) * Math.min(1, dt * 3.5);
     this.shake = Math.max(0, this.shake - dt * 1.4); const sk = this.shake, sx = (Math.random() - 0.5) * sk, sy = (Math.random() - 0.5) * sk;
     this.cam.position.set(this.cx - 1.6 + sx, this.cy + 3.6 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); const fov = this.baseFov + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
     this.sun.position.set(this.cx + 8, 15, 11); this.sun.target.position.set(this.cx, 0, 0); this.rim.position.set(this.cx, 6, -6); this.wu.cx.value = this.cx; this.water.position.x = this.cx + 20; if (this.led) this.led.offset.x += dt * 0.05; if (this.ad) this.ad.offset.x += dt * 0.04;
