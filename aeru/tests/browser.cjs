@@ -45,8 +45,8 @@ async function layoutProblems(page, selectors) {
     await page.evaluate(() => { for (let i = 0; i < 20 && aeruTest.snapshot().mode === 'dialog'; i++) aeruTest.finishDialog(); }); await page.waitForTimeout(200);
     // Kurz laufen: echte Tasteneingabe bzw. Touch-Stick.
     const z0 = await page.evaluate(() => aeruTest.snapshot().state.z);
-    if (vp.mobile) { const b = await page.locator('#stick').boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.dispatchEvent('#stick', 'pointerdown', {pointerId: 3, clientX: b.x + b.width / 2, clientY: b.y + 5, isPrimary: true}); await page.waitForTimeout(1200); await page.dispatchEvent('#stick', 'pointerup', {pointerId: 3}); }
-    else { await page.keyboard.down('KeyW'); await page.waitForTimeout(1200); await page.keyboard.up('KeyW'); }
+    if (vp.mobile) { const b = await page.locator('#stick').boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.dispatchEvent('#stick', 'pointerdown', {pointerId: 3, clientX: b.x + b.width / 2, clientY: b.y + 5, isPrimary: true}); await page.waitForTimeout(2500); await page.dispatchEvent('#stick', 'pointerup', {pointerId: 3}); }
+    else { await page.keyboard.down('KeyW'); await page.waitForTimeout(2500); await page.keyboard.up('KeyW'); }
     const moved = z0 - await page.evaluate(() => aeruTest.snapshot().state.z);
     // Bildzeiten über drei Sekunden auf "Automatisch" und mit fester Stufe "Sparsam".
     await page.waitForTimeout(5000); const auto = await page.evaluate(() => aeruTest.perf());

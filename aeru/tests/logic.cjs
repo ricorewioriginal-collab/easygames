@@ -66,13 +66,34 @@ function flyTo(h, tx, ty, tz, {maxTicks = 900, land = false} = {}) {
   s = h.snap().state; assert(s.onGround && s.y === 1 && s.x > 30, `Kantenhilfe zieht auf die Insel (${s.x.toFixed(1)}, ${s.y.toFixed(2)})`);
   // Kollision folgt dem sichtbaren Felskegel: dicht unter der Insel blockiert der Fels, tief unten (schmale Spitze) nicht.
   api.teleport(28, -2.5, 2, -Math.PI / 2); h.tick(1); api.flight(); h.key('KeyD'); h.tick(20); h.up('KeyD'); assert(h.snap().state.x < 30.5, 'Fels direkt unter der Insel ist fest');
-  h.tick(400); ok('Kantenhilfe, Fels unter Inseln fest');
+  h.tick(400);
+  // Kantenschutz: Laufen bis zur Kante hält kurz an, weiter drücken lässt Aeru bewusst hinunter.
+  api.teleport(42, 1, 2, -Math.PI / 2); h.tick(30); h.key('KeyD'); h.tick(24); s = h.snap().state; assert(s.onGround && s.y === 1, 'Kantenschutz hält an der Kante');
+  h.tick(40); h.up('KeyD'); assert(h.snap().state.y < 1, 'weiter drücken: bewusst hinunter'); h.tick(400);
+  ok('Kantenhilfe, Kantenschutz, Fels unter Inseln fest');
   // Kamera bleibt über dem Boden.
   for (let i = 0; i < 30; i++) h.frame()(1000 + i * 16);
   assert(h.snap().camera.y > h.api.floorAt(h.snap().camera.x, h.snap().camera.z) + .5, 'Kamera nicht im Boden');
   // Ausweichen gibt kurze Unverwundbarkeit und Schub.
   api.teleport(0, 0, 19); h.tick(5); h.key('KeyW'); h.tick(5); h.key('ShiftLeft'); h.tick(2); h.up('ShiftLeft'); h.up('KeyW'); assert(h.snap().state.dodge > 0 || h.snap().state.z < 17, 'Ausweichen');
-  ok('Kamera und Ausweichen');
+  // Vom Startpunkt in alle Richtungen loslaufen: Aeru kommt weg, steckt nie in Baum oder Boden, die Kamera nie im Laub.
+  for (let dir = 0; dir < 8; dir++) {
+    api.teleport(0, 0, 19, dir * Math.PI / 4); h.tick(5); const s0 = h.snap().state; let clock = 5000 + dir * 10000; for (let i = 0; i < 90; i++) api.frame(clock += 1000 / 60);
+    const keys = [['KeyW'], ['KeyW', 'KeyD'], ['KeyD'], ['KeyS', 'KeyD'], ['KeyS'], ['KeyS', 'KeyA'], ['KeyA'], ['KeyW', 'KeyA']][dir];
+    keys.forEach(k => h.key(k)); let far = 0;
+    for (let i = 0; i < 150; i++) {
+      api.frame(clock += 1000 / 60); const s = h.snap(), st = s.state, cam = s.camera; far = Math.max(far, Math.hypot(st.x - s0.x, st.z - s0.z));
+      if (st.onGround) assert(st.y >= api.floorAt(st.x, st.z, st.y + .42) - .01, 'Aeru versinkt nicht im Boden');
+      for (const t of s.layout.trees) {
+        if (st.y + 1.6 > t.cy - t.ch && st.y < t.cy + t.ch) assert(Math.hypot(st.x - t.x, st.z - t.z) > t.crown, 'Aeru steckt in einer Baumkrone');
+        assert(Math.hypot(cam.x - t.x, cam.y - t.cy, cam.z - t.z) > t.crown * .9, `Kamera steckt im Laub (Richtung ${dir}, Schritt ${i}, Kamera ${[cam.x, cam.y, cam.z].map(v => v.toFixed(1))}, Baum ${t.x.toFixed(1)},${t.cy.toFixed(1)},${t.z.toFixed(1)} r${t.crown.toFixed(1)}, Aeru ${st.x.toFixed(1)},${st.y.toFixed(1)},${st.z.toFixed(1)})`);
+      }
+    }
+    keys.forEach(k => h.up(k)); const s1 = h.snap().state;
+    assert(far > 6, `vom Start in Richtung ${dir} loslaufen (${far.toFixed(1)} m, ${s1.x.toFixed(1)},${s1.y.toFixed(1)},${s1.z.toFixed(1)})`);
+    h.tick(400);
+  }
+  ok('Kamera und Ausweichen, Start in alle Richtungen ohne Versinken');
 }
 // ───────── Bildratenunabhängigkeit ─────────
 {
@@ -185,6 +206,12 @@ function flyTo(h, tx, ty, tz, {maxTicks = 900, land = false} = {}) {
     for (const g of lay.gems) assert(onGround(g.x, g.y - 1.1, g.z) || onGround(g.x, g.y - 1.1 - 1, g.z), `Splitter ${g.id} auf Insel ${level} steht auf festem Boden`);
     for (const t of lay.torches) assert(onGround(t.x, t.y, t.z), `Laterne ${t.id} auf Insel ${level} steht auf Boden`);
     for (const c of lay.checkpoints) assert(onGround(c.x, c.y, c.z), `Rastpunkt auf Insel ${level}`);
+    // Kein Ziel steckt in einem Baum: Stamm oder Krone würden es sonst unerreichbar machen.
+    const blocked = (x, y, z) => lay.trees.some(t => { const r = (y + 1.6 > t.cy - t.ch && y < t.cy + t.ch ? t.crown : y < t.trunkTop ? t.trunk : -1) + .35; return Math.hypot(x - t.x, z - t.z) < r - 1.1; });
+    for (const g of lay.gems) assert(!blocked(g.x, g.y - 1.1, g.z), `Splitter ${g.id} auf Insel ${level} steckt in einem Baum`);
+    for (const t of lay.torches) assert(!blocked(t.x, t.y, t.z), `Laterne ${t.id} auf Insel ${level} steckt in einem Baum`);
+    for (const r of lay.rings) assert(!blocked(r.x, r.y - 1, r.z), `Ring auf Insel ${level} steckt in einem Baum`);
+    for (const n of s.npcs) assert(!blocked(n.x, n.y, n.z), `Figur ${n.id} auf Insel ${level} steckt in einem Baum`);
     for (const it of story.items.filter(i => i.level === level)) assert(onGround(it.x, it.y, it.z), `Objekt ${it.id} erreichbar`);
     for (const r of lay.rings) assert(r.y < 14 && lay.solids.some(sd => Math.hypot(r.x - sd.x, r.z - sd.z) < (sd.r || 6) + 12), `Ring auf Insel ${level} in Flugreichweite`);
     for (const [id, def] of Object.entries(story.npcs)) for (const a of def.appear || []) if (a.level === level) assert(onGround(a.x, a.y, a.z), `Auftrittsort von ${id} auf Insel ${level}`);

@@ -227,3 +227,24 @@ body.uiLarge #quest strong{font-size:18px}body.uiLarge #detail{font-size:14px}bo
   #knob{left:27px;top:27px}
   #map{width:76px;height:76px;top:calc(max(8px,env(safe-area-inset-top)) + 50px)}
 }
+/* ───── Touch-Steuerung: großer Stick links, Aktionsrad rechts (Sprung groß unten, Flug oben, Wind links, Rolle rechts) ───── */
+#touch #stick{width:136px;height:136px;left:max(22px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));background:radial-gradient(rgba(14,52,58,.30),rgba(9,34,40,.55));border:3px solid rgba(236,248,215,.32);box-shadow:none}
+#touch #stick::before{content:'';position:absolute;inset:22px;border-radius:50%;border:2px dashed rgba(236,248,215,.38);pointer-events:none}
+#touch #knob{width:58px;height:58px;left:36px;top:36px;background:radial-gradient(circle at 35% 30%,rgba(236,248,226,.95),rgba(170,214,198,.85));border:2px solid rgba(255,255,255,.7);box-shadow:0 3px 8px #0006}
+#touch .actions{width:230px;height:214px;right:max(18px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));transform-origin:bottom right}
+#touch .actions button{right:auto;bottom:auto;width:66px;height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:24px;background:radial-gradient(circle at 35% 30%,rgba(42,107,106,.62),rgba(11,47,54,.72));border:3px solid rgba(236,248,215,.45);color:#fff3d3;box-shadow:0 4px 10px #0005;opacity:1}
+#touch .actions button small{font-size:10px;font-weight:800;margin:0;letter-spacing:.3px;color:#fff3d3}
+#touch .actions #fly{left:82px;top:0}
+#touch .actions #attack{left:0;top:68px}
+#touch .actions #dodge{left:164px;top:68px}
+#touch .actions #jump{left:71px;top:126px;width:88px;height:88px;font-size:30px;background:radial-gradient(circle at 35% 30%,rgba(255,242,207,.96),rgba(215,154,72,.92));border-color:#fff7e0;color:#3a2408;box-shadow:0 4px 12px #0006}
+#touch .actions #jump small{color:#3a2408;font-size:11px}
+#touch .actions #fly.active{background:radial-gradient(circle at 35% 30%,rgba(198,255,233,.95),rgba(63,183,156,.9));color:#062c36}
+#touch .actions #fly.active small{color:#062c36}
+/* Reden erscheint nur, wenn jemand in der Nähe ist. */
+#touch .actions #talk{left:2px;top:152px;width:56px;height:56px;font-size:19px;display:none}
+#touch .actions #talk.ready{display:flex;border-color:var(--gold);box-shadow:0 0 0 3px #f4cc8166,0 4px 10px #0005}
+#touch .actions button:active,#touch .actions button.held{transform:scale(.92);filter:brightness(1.25)}
+@media(max-height:430px){#touch .actions{transform:scale(.86)}#touch #stick{width:120px;height:120px}#touch #knob{left:29px;top:29px}}
+body.uiLarge #touch .actions{transform:scale(1.12)}
+@media(max-width:470px){#touch .actions{transform:scale(.8)}#touch #stick{width:116px;height:116px;left:max(14px,env(safe-area-inset-left))}#touch #knob{left:26px;top:26px}#flightHud{width:116px!important;left:max(14px,env(safe-area-inset-left))!important;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 128px)!important}#flightHud small{font-size:8px}}
