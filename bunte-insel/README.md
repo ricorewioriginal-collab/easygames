@@ -53,6 +53,9 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 - **Emotes & Schnell-Chat** 🎭 (Schnellmenü 🎉 → „Emotes & Chat“): Winken, Jubeln, Lachen, Tanzen, Verbeugen, Salto, Schlafen, Zeigen, Muskeln – plus feste, freundliche Sätze in einer Sprechblase (keine freie Texteingabe, kindersicher). Mitspieler sehen beides.
 - **Gadgets** 🚀 (Schnellmenü 🎉 → „Gadgets“): mit Sternen kaufen und anlegen – **Doppelsprung** 🦘 (10 ⭐), **Hoverboard** 🛹 (25 ⭐, schneller), **Jetpack** 🚀 (40 ⭐, Sprung + Knopf halten = fliegen, Tank lädt am Boden). In Parcours sind sie aus.
 - **Eigener Parcours** 🏁: Bauen → Reiter 🏁: Start 🚩, Checkpoint ⛳, Lava 🌋, Hürde 🧱, Sprungpilz 🔼, Ziel 🏁. Auf den Start laufen = Zeit läuft; Lava setzt zum Checkpoint zurück; am Ziel Bestzeit (Top 3) und – mit mindestens 3 Hindernissen und etwas Länge – Sterne (höchstens alle 2 Minuten).
+- **Tagesaufgaben** 📅 (Schnellmenü → „Aufgaben & Haustiere“): jeden Tag 3 neue Aufgaben (Sterne sammeln, reden, fahren, Bäume hauen, Spielgeräte, Parcours, Emotes), Sterne pro Aufgabe, Extra-Bonus für alle drei und eine 🔥 **Serie** über mehrere Tage.
+- **Haustier-Eier** 🥚: Eier mit Sternen kaufen (Ei 30 ⭐, Goldenes Ei 100 ⭐), 14 Tiere in 4 Seltenheiten (Gewöhnlich bis Legendär), Sammlung, Tier anlegen = es hüpft mit und bringt **Bonus-Sterne** beim Sammeln (10 bis 55 %).
+- **Bonbon-Fabrik** 🍭: 4 Maschinen kaufen und ausbauen (Zuckerwatte, Lutscher, Schoko, Eis), Bonbons entstehen beim Spielen, Lager erweitern, 25 🍬 = 1 ⭐ verkaufen.
 - Schon vorhanden: eigener Avatar, Freunde/Mitspielen, Abzeichen (Sticker), Bauen, Haustiere, Läden, Tagesgeschenk.
 
 ## Spaß (Schnellmenü 🎉)

@@ -564,5 +564,16 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   ok(r.cards === 3 && r.double && r.dj && r.board && r.jet && r.jetY > 3 && r.safe, `Gadgets: kaufen/anlegen, Doppelsprung, Hoverboard, Jetpack (Höhe ${(r.jetY || 0).toFixed(1)} m)`); ok(r.run && r.lava && r.done && r.top === 1, 'Eigener Parcours: Start → Lava setzt zurück → Ziel mit Bestzeit' + ' (+' + r.stars + ' ⭐)');
   await c.close();
 }
+{ // Tagesaufgaben, Haustier-Eier, Bonbon-Fabrik
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const b = window.__bi, m = b.meta, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; b.save.stars = 400;
+    const D = m.quests(); out.q = D.q.length; const q0 = D.q[0], s0 = b.save.stars; m.note(q0.k, q0.need); out.qdone = q0.done && b.save.stars >= s0 + 3; for (const q of D.q) m.note(q.k, q.need); out.all = D.all && D.streak === 1;
+    m.show(1); out.tabs = document.querySelectorAll('#metaTabs button').length; document.querySelectorAll('#metaBody .mrow button')[0].click(); out.owned = Object.keys(b.save.pets.own).length === 1 && !!b.save.pets.eq; await sl(1900); out.after = document.querySelectorAll('#metaBody .mpet').length === m.PETS.length; let bonus = 0; for (let i = 0; i < 400; i++) bonus += m.starBonus(); out.bonus = bonus > 10; m.update(.1, 1); out.sprite = true;
+    m.close(); m.show(2); const btns = () => [...document.querySelectorAll('#metaBody .mrow button')]; btns()[0].click(); out.lv = b.save.fac.lv.cotton === 1; for (let i = 0; i < 300; i++) m.update(1, i); out.candy = b.save.fac.candy > 20; const s1 = b.save.stars; [...document.querySelectorAll('#metaBody .mbtn')][0].click(); out.sold = b.save.stars > s1; m.close();
+    return out; });
+  ok(r.q === 3 && r.qdone && r.all, 'Tagesaufgaben: 3 Aufgaben, Sterne, Serie'); ok(r.tabs === 3 && r.owned && r.after && r.bonus, 'Haustier-Ei schlüpft, Sammlung, Stern-Bonus'); ok(r.lv && r.candy && r.sold, 'Bonbon-Fabrik: Maschine kaufen, Bonbons entstehen, verkaufen');
+  await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
