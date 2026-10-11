@@ -83,6 +83,9 @@ const read = (p) =>
     score: [...document.querySelectorAll('.scorebar .team')].map((e) => e.textContent).join(':'),
     speed: document.querySelector('.speed b')?.textContent,
   }));
+const cars = (pg) => pg.evaluate(() => window.__tk.session.state.cars.map((c) => ({ team: c.team, pos: c.pos.map((v) => +v.toFixed(1)), speed: +Math.hypot(...c.vel).toFixed(1) })));
+console.log('Autos laut Gastgeber:', JSON.stringify(await cars(host)));
+console.log('Autos laut Gast     :', JSON.stringify(await cars(guest)));
 const a = await read(host);
 const c = await read(guest);
 console.log('Gastgeber', JSON.stringify(a), '| Gast', JSON.stringify(c));

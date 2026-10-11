@@ -227,6 +227,13 @@ export class LocalInput {
 
   private padOf(scheme: GamepadSchemeId): PadLike | null {
     const p = getPads()[padIndexOf(scheme)];
+    // Nur Controller mit Standard-Belegung (kein Zufalls-HID-Gerät mit hängenden Achsen, wie es manche Handys/Adapter melden)
+    if (
+      p &&
+      (p as { mapping?: string }).mapping !== undefined &&
+      (p as { mapping?: string }).mapping !== 'standard'
+    )
+      return null;
     return p ?? null;
   }
 
@@ -292,6 +299,11 @@ export class LocalInput {
     const out = { ...this.pending[player] };
     this.pending[player] = noEvents();
     return out;
+  }
+
+  /** Aktuell gezählte Touch-Zeiger (Diagnose) */
+  get pointerCount(): number {
+    return this.touch?.pointerCount ?? 0;
   }
 
   /** Anzahl angeschlossener Gamepads (0, wenn die API fehlt) */

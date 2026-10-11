@@ -80,7 +80,33 @@ export class MatchScreen implements Screen {
     });
     this.el.classList.toggle('is-touch', app.touch);
     this.el.append(this.hud.el, this.overlay);
+    if (new URLSearchParams(location.search).has('debug')) this.setupDebug();
     void this.tmpState;
+  }
+
+  /** ?debug=1: kleine Anzeige mit Bildrate und Eingabewerten (zur Fehlersuche auf dem Gerät) */
+  private debugEl: HTMLElement | null = null;
+  private dbgFrames = 0;
+  private dbgT = 0;
+  private dbgFps = 0;
+  private setupDebug(): void {
+    this.debugEl = h('div', {
+      style:
+        'position:absolute;left:8px;bottom:8px;z-index:50;font:12px/1.3 monospace;background:rgba(0,0,0,.7);color:#b6ff3b;padding:4px 8px;pointer-events:none;white-space:pre',
+    });
+    this.el.append(this.debugEl);
+  }
+  private updateDebug(dt: number): void {
+    if (!this.debugEl) return;
+    this.dbgFrames++;
+    this.dbgT += dt;
+    if (this.dbgT >= 0.5) {
+      this.dbgFps = Math.round(this.dbgFrames / this.dbgT);
+      this.dbgFrames = 0;
+      this.dbgT = 0;
+    }
+    const i = this.input.read(0);
+    this.debugEl.textContent = `fps ${this.dbgFps}  tick ${this.state.tick}  phase ${this.state.phase}\ngas ${i.throttle.toFixed(2)}  lenken ${i.steer.toFixed(2)}  sprung ${i.jump ? 1 : 0}  boost ${i.boost ? 1 : 0}\ngamepads ${LocalInput.gamepadsConnected()}  zeiger ${this.input.pointerCount}`;
   }
 
   private get state(): SimState {
@@ -89,6 +115,7 @@ export class MatchScreen implements Screen {
 
   start(): void {
     const { app } = this;
+    (window as unknown as { __tk?: unknown }).__tk = { session: this.session, input: this.input };
     app.engine.setScreen(this);
     app.engine.start();
     app.audio.music(this.session.training ? 'menu' : 'match');
@@ -132,6 +159,7 @@ export class MatchScreen implements Screen {
     this.updateHud(st);
     this.updateCameras(dt, st);
     this.updateAudio(st);
+    this.updateDebug(dt);
     if (st.phase === 'ended' && !this.ended) this.finish(st);
   }
 
