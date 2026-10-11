@@ -204,6 +204,11 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 .gc2{min-width:0;word-break:break-word;text-align:center;background:#fff;border-radius:16px;padding:8px 6px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:13px}.gc2 b{font-size:30px}.gc2 .gb button{padding:4px 6px;font-size:12px}
 #storeGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}#storeGrid button{background:#fff;border-radius:16px;padding:8px 4px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:13px;line-height:1.15}#storeGrid button b{font-size:30px}#storeGrid button small{opacity:.75}#storeGrid button:disabled{opacity:.55}#storePanel{z-index:11}
 #guideGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media (min-width:520px){#guideGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (min-width:760px){#guideGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}#guidePanel .card{max-width:min(760px,100%);box-sizing:border-box}#guidePanel .logo .em{-webkit-text-fill-color:initial;background:none}#guidePanel{z-index:11}#parentPanel{z-index:16}
+.cine{width:min(760px,100%);max-height:calc(100vh - 20px);overflow:auto;color:#fff}.cine .help{color:#fff}.cine .pill{color:#222}.cine .pill.sel{color:#fff}.cine.kino{background:linear-gradient(180deg,#5b1230,#2b0a1a);box-shadow:inset 0 0 0 4px #c9a227,0 14px 40px rgba(0,0,0,.5)}.cine.drive{background:linear-gradient(180deg,#0d1b3d,#05080f);box-shadow:inset 0 0 0 4px #4da3ff,0 14px 40px rgba(0,0,0,.5)}
+.cscreen{position:relative;aspect-ratio:16/9;width:min(100%,calc(46vh * 1.778));margin:0 auto;background:#000;border-radius:10px;overflow:hidden;box-shadow:0 0 0 4px #1b1b1b,0 0 30px rgba(255,255,255,.25)}.cscreen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#cineGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}@media (min-width:560px){#cineGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ctile{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#222;color:#fff;font-weight:700;padding:0;text-align:left;box-shadow:var(--shadow)}.ctile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ctile.noimg{background:var(--tc,#6741d9)}.ctile i{position:absolute;left:8px;top:4px;font-style:normal;font-size:26px;text-shadow:0 2px 4px rgba(0,0,0,.5)}.ctile span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 5px;font-size:14px;line-height:1.15;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+#cineQ,#parYt{flex:1;min-width:0;padding:9px 14px;border-radius:999px;border:0;font:inherit;font-size:16px}
 .parent{text-align:left;font-weight:700}.parent label{display:flex;gap:10px;align-items:center;margin:8px 0}.parent input[type=range]{flex:1}#bParent{background:linear-gradient(90deg,#ffd23f var(--p,0%),#fff var(--p,0%))}
 </style>
 </head>
@@ -327,6 +332,12 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <section id="storyPanel" class="screen" hidden>
   <div class="card"><div class="logo" style="font-size:28px">🔥 Lagerfeuer</div><div id="storyList" class="row"></div><p id="storyText" class="help" style="font-size:18px;min-height:90px"></p><div class="row"><button class="pill" id="storyNext">Weiter ›</button><button class="pill" id="storyMarsh">🍡 Marshmallow</button></div><button class="big" id="storyClose">✔ Fertig</button></div>
 </section>
+<section id="cinePanel" class="screen" hidden>
+  <div class="card cine kino" id="cineCard"><div class="logo" style="font-size:28px" id="cineTitle">🎬 Kino</div><p class="help" id="cineSub" style="margin:2px 0 6px"></p>
+    <div id="cineStage" hidden><div class="cscreen"><iframe id="cineFrame" title="Film" src="about:blank" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><div class="help" style="margin:6px 0 2px">▶ <b id="cineNow"></b></div><div class="row"><button class="pill" id="cineBack">‹ Anderer Film</button><a class="pill" id="cineOpen" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit">↗ Auf YouTube öffnen</a></div></div>
+    <div id="cineList"><div class="row" id="cineTabs"></div><div id="cineSearch" hidden><div class="row"><input id="cineQ" type="search" maxlength="60" placeholder="Was möchtest du sehen?" aria-label="Suche"><button class="pill sel" id="cineGo">🔍</button></div></div><p class="help" id="cineMsg" style="font-size:14px"></p><div id="cineGrid"></div></div>
+    <button class="big" id="cineClose" style="margin-top:10px;font-size:20px;padding:10px 26px">✖ Hinausgehen</button></div>
+</section>
 <section id="arenaPanel" class="screen" hidden>
   <div class="card"><div class="logo" style="font-size:28px">🥊 Kampfarena</div><p id="arenaTxt" class="help"></p><div id="arenaBox"></div><button class="big" id="arenaClose" style="margin-top:8px">✖ Zurück</button></div>
 </section>
@@ -358,6 +369,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
       <div class="lab">🍂 Jahreszeit</div><div class="row" id="parSeason"></div>
       <div class="lab">🖼️ Grafik (Schärfe)</div><div class="row" id="parGfx"></div>
       <div class="lab">⏰ Pausen-Erinnerung</div><div class="row" id="parBreak"></div>
+      <div class="lab">🎬 Kino-Suche (YouTube-Schlüssel)</div><div class="row"><input id="parYt" type="password" autocomplete="off" spellcheck="false" maxlength="64" placeholder="API-Schlüssel einfügen" aria-label="YouTube API-Schlüssel"><button class="pill" id="parYtSave">💾 Speichern</button><button class="pill" id="parYtDel" hidden>🗑️ Entfernen</button></div><p class="help" id="parYtInfo" style="font-size:13px;margin:4px 0"></p>
     </div>
     <button class="big" id="parClose" style="margin-top:10px;font-size:20px;padding:10px 28px">✔ Fertig</button>
   </div>
@@ -508,6 +520,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/meta.js"></script>
 <script src="js/pack.js"></script>
 <script src="js/park.js"></script>
+<script src="js/cinema.js"></script>
 <script src="js/kitchen.js"></script>
 <script src="js/room.js"></script>
 <script src="js/camp.js"></script>

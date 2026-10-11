@@ -377,6 +377,7 @@ BI.buildWorld = function (scene) {
     st.box(-50, .0, 50, 2.6, .5, .8, 0x8a5a33); st.box(-50, .5, 49.6, 2.6, .6, .15, 0x8a5a33); W.addBox(-51.3, 49.5, -48.7, 50.5);
   }
   W.spots.park = { x: -59, z: 56 };
+  BI.buildCinema({ W, st, lamp, ROADY }); // Kino + Autokino (cinema.js), Fläche wird vor den Bäumen freigehalten
 
   /* ---------- Farm (SW außen) ---------- */
   { const fx0 = -126, fx1 = -98, fz0 = 72, fz1 = 98, gate0 = -116, gate1 = -108;
@@ -616,7 +617,8 @@ BI.buildWorld = function (scene) {
 
   /* ---------- Berge, Wolken, Wasser ---------- */
   const far = new BI.Batch();
-  for (let i = 0; i < 26; i++) { const a = i / 26 * BI.TAU + rnd() * .1, d = rr(300, 360), h = rr(40, 95), rw = rr(40, 70), col = pick([0x8fa6c4, 0x7f97b8, 0x9db3cf]), rc = rr(10, 18); if (Math.hypot(Math.sin(a) * d, Math.cos(a) * d + 290) < 120) continue; far.cone(Math.sin(a) * d, -2, Math.cos(a) * d, rw, h, col, 6); far.cone(Math.sin(a) * d, h * .72, Math.cos(a) * d, rc, h * .3, 0xffffff, 6); }
+  /* keine Berge am Horizont – der Blick geht frei übers Meer (der Zufallszähler bleibt gleich, damit Bäume & Co. an denselben Stellen stehen) */
+  for (let i = 0; i < 26; i++) { rnd(); rr(300, 360); rr(40, 95); rr(40, 70); pick([0, 1, 2]); rr(10, 18); }
   for (let i = 0; i < 5; i++) { const a = rnd() * BI.TAU, d = rr(235, 275); far.sph(Math.sin(a) * d, -2, Math.cos(a) * d, rr(10, 22), pick([0x86d36a, 0xf3dfa2]), 1, 1, .35, 1); }
   const farMesh = far.mesh(BI.mat()); scene.add(farMesh);
   const clouds = new THREE.Group(), cb = new BI.Batch();

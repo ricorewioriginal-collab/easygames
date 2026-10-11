@@ -18,11 +18,11 @@ BI.CINESERIES = [
 /* ---------- Gebäude, Leinwand, Parkplatz (statisch, in die Welt-Sammelgeometrie) ---------- */
 BI.buildCinema = function (c) {
   const { W, st, lamp, ROADY } = c, C = BI.CINEMA, K = C.kino, S = C.screen, COL = [0xff5a5a, 0xffd23f, 0x4da3ff, 0x4cd07d, 0xb36bff, 0xff8fc8];
-  W.pads.push([C.x0, C.z0, C.x1, C.z1], [C.x1, 34.5, -43, 39.5]);
+  W.pads.push([C.x0, C.z0, C.x1, C.z1], [C.x1, 34.5, -45.5, 39.5]);
   W.spots.cinema = { kino: { x: C.door.x, z: C.door.z }, drive: { x: C.seat.x, z: C.seat.z } };
   /* Boden: Platz vor dem Kino, Parkplatz mit Linien, Zufahrt zur Ringstraße */
-  st.rect(C.x0, C.z0, C.x1, 35, ROADY, 0xd9cfc0); st.rect(C.x0, 35, C.x1, C.z1, ROADY, 0x3d4350); st.rect(C.x1, 34.5, -43, 39.5, ROADY, 0x3d4350);
-  for (let x = C.x1 + 1; x < -44; x += 5) st.rect(x, 36.9, x + 2.4, 37.1, ROADY + .01, 0xfff3c0);
+  st.rect(C.x0, C.z0, C.x1, 35, ROADY, 0xd9cfc0); st.rect(C.x0, 35, C.x1, C.z1, ROADY, 0x3d4350); st.rect(C.x1, 34.5, -45.5, 39.5, ROADY, 0x3d4350);
+  for (let x = C.x1 + 1; x < -46; x += 5) st.rect(x, 36.9, x + 2.4, 37.1, ROADY + .01, 0xfff3c0);
   for (const z of [38.5, 43.5]) for (let i = 0; i <= 5; i++) st.rect(-86.4 + i * 4.5 - .06, z - 2.2, -86.4 + i * 4.5 + .06, z + 2.2, ROADY + .01, 0xffffff);
   st.rect(-76.9, 41, -73.1, 46, ROADY + .012, 0x4cd07d); st.rect(-76.6, 41.3, -73.4, 45.7, ROADY + .014, 0xffd23f); // Dein Platz
   /* Kino-Gebäude */
