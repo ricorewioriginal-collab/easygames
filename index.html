@@ -121,6 +121,8 @@
 <script>
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
+  { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', img: 'zotik/card.png', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)',
+    path: 'zotik/', desc: 'Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik in Lunaris, Kämpfe, Quests, Bosskampf, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.' },
   { id: 'aeru', title: 'AERU – Die Sterneninseln', icon: '🐉', img: 'aeru/card.svg', bg: 'linear-gradient(145deg,#15374f,#65bcae 55%,#efcb93)', glow: 'rgba(101,188,174,.5)',
     path: 'aeru/', desc: 'Eigenständiges 3D-Drachenabenteuer: 6 Inselwelten, 18 NPCs, steuerbarer Flug, Aufwinde, sichtbare Windwirbel, 144 Splitter und neue Flugaufgaben. Tastatur oder Touch.' },
   { id: 'anmacha-radio-surfer', title: 'AnMaCha Radio Surfer', icon: '📻', bg: 'linear-gradient(145deg,#00ff66,#19f0ff)', glow: 'rgba(0,255,150,.5)',
@@ -182,9 +184,7 @@ const GAMES = [
   { id: 'anmacha-klotzfunk', title: 'KLOTZFUNK 3D', icon: '🧱', bg: 'linear-gradient(145deg,#4c9a3a,#865f43 55%,#4aa3ff)', glow: 'rgba(76,154,58,.55)',
     path: 'anmacha-klotzfunk/', desc: 'Voxel-Sandbox in 3D: zufällige Welten, Blöcke bauen und abbauen, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy.' },
   { id: 'bunte-insel', title: 'Bunte Insel', icon: '🚓', img: 'bunte-insel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#4cd07d 55%,#ffd23f)', glow: 'rgba(76,208,125,.55)',
-    path: 'bunte-insel/', desc: 'Kinderspiel mit offener Insel-Welt: laufen, 9 Fahrzeuge (auch Hubschrauber & Zug-Simulation), Spielzeugladen, Bauen wie bei den Sims, Tanzparty, Seifenblasen, Baum hauen, Polizeihund Blitz und Pappnase. Touch mit festem Joystick und Tastatur.' },
-  { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', img: 'zotik/card.png', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)', external: true,
-    path: 'https://ricorewioriginal-collab.github.io/zotik/', desc: 'Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik in Lunaris, Kämpfe, Quests, Bosskampf, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.' }
+    path: 'bunte-insel/', desc: 'Kinderspiel mit offener Insel-Welt: laufen, 9 Fahrzeuge (auch Hubschrauber & Zug-Simulation), Spielzeugladen, Bauen wie bei den Sims, Tanzparty, Seifenblasen, Baum hauen, Polizeihund Blitz und Pappnase. Touch mit festem Joystick und Tastatur.' }
 ];
 
 const $ = id => document.getElementById(id);
