@@ -12,7 +12,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
 | AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
 | AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
-| AnMaCha Tower Defense – 3D-Tower-Defense mit Sender-Logo-Türmen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
+| AnMaCha Tower Defense – Cinematic-3D-Tower-Defense mit Sender-Logo-Türmen: Nachtstadt, Bloom, Schatten, Kamerafahrt, 8 modellierte Turm-Arten, 25 Wellen, 3 Karten (Three.js + Vite; Quelltext in [`anmacha-tower-defense-src/`](anmacha-tower-defense-src/), gebautes Ergebnis eingecheckt; Sounds & Musik im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
 | AnMaCha Kart Rush – 3D-Arcade-Kartrennen, Splitscreen mit Handys als Lenkrad (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-kart/`](anmacha-kart/) |
