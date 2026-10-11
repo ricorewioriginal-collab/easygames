@@ -78,7 +78,7 @@ BI.buildPupsGround = function (c) {
     boat: o => { o.box(0, .55, 0, 1.9, .7, 3.6, 0x1fb5b5); o.cone(0, .55, 2.2, 1.05, 1.0, 0x1fb5b5, 4); o.box(0, 1.2, .2, 1.5, .7, 1.2, 0xffffff); o.box(0, 1.8, .2, .12, 1.4, .12, 0xdddddd); o.box(.4, 2.5, .2, .8, .5, .05, 0xffd23f); o.box(0, .3, -.6, 2.3, .25, 3.8, 0x2a2f3a); wheels(o, [-1.0], 1.15, .45); },
     snow: o => { for (const sd of [-1, 1]) o.box(sd * .9, .15, .3, .3, .12, 3.6, 0xeef3ff, 0, .15); o.box(0, .45, -.2, 1.6, .8, 2.8, 0x4fc3f7); o.box(0, .95, 1.0, 1.2, .5, .06, 0xbfe6ff, 0, -.5); o.box(0, 1.0, -1.0, 1.2, .3, 1.4, 0x2a2f3a); o.box(0, .3, -1.7, 1.6, .5, .8, 0x2a2a33); o.box(0, 1.2, .6, 1.2, .1, .1, 0xdddddd); }
   };
-  TEAM.forEach((q, i) => { const x = (i - 3) * 4.4; VEH[q.veh](V(X(x), Z(9.5))); });
+  TEAM.forEach((q, i) => { const x = (i - 3) * 4.4; VEH[q.veh](V(X(x), Z(9.5))); W.addBox(X(x) - 1.3, Z(9.5) - 3, X(x) + 1.3, Z(9.5) + 3, false, 2.2); }); /* ausgestellte Einsatzfahrzeuge sind fest */
   W.spots.pupmobil = { x: X(16), z: Z(4), h: Math.PI }; W.vehicleSpawns.push({ type: 'pupmobil', x: X(16), z: Z(4), h: Math.PI }); // fahrbares Fellnasen-Mobil
   /* Einsatz-Tafel (Bild kommt zur Laufzeit aus einsatz.js): Pfosten, Rückwand, Blinklicht */
   { const bx = X(-10), bz = Z(1.3); for (const sd of [-1, 1]) st.box(bx + sd * 2.6, 0, bz, .3, 1.6, .3, 0x555a66); st.box(bx, 1.5, bz, 6.2, 4.7, .3, 0x14305f); st.box(bx, 6.2, bz, 6.6, .3, .6, 0xffd23f); lamp.sph(bx, 6.9, bz, .4, 0xff3b3b, 1);

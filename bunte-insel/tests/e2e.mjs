@@ -701,5 +701,19 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const m = b.life.night(); out.morning = !m.on && m.sleeping === 0 && !m.flies && !(s && s.zz.visible); return out; });
   ok(r.night && r.sleeping >= 2 && r.zz && r.lines && r.flies && r.dayHidden && r.morning, `Tag und Nacht: ${r.sleeping} Bewohner schlafen (💤), Glühwürmchen, Tagtiere weg, morgens wach (${JSON.stringify(r)})`);
 }
+// Fliegen: frei über dem Meer (keine Inselwand), kleine Dinge stören in der Luft nicht, über Wasser landet man nicht
+{ const r = await page.evaluate(() => {
+    const b = window.__bi, W = b.W, out = {}; if (b.P.veh) b.leave(); const v = b.vehicles.find(q => q.type === 'heli');
+    const run = (fx, fz, y, h, secs) => { v.setPose(fx, fz, h); v.y = y; v.vy = 0; v.v = 0; v.driver = true; for (let i = 0; i < secs * 30; i++) v.step(1 / 30, { steer: 0, thr: 1, turbo: false, climb: 0 }, W, null); };
+    run(0, 120, 20, 0, 0); v.v = v.spec.max; run(v.x, v.z, 20, 0, 0); v.v = v.spec.max; for (let i = 0; i < 90; i++) v.step(1 / 30, { steer: 0, thr: 1, turbo: false, climb: 0 }, W, null);
+    out.sea = Math.hypot(v.x, v.z) > W.K.LIMIT + 8; out.seaD = Math.round(Math.hypot(v.x, v.z));
+    // Sinkflug über dem Meer bleibt oben
+    v.setPose(150, 190, 0); v.y = 20; v.vy = 0; for (let i = 0; i < 200; i++) v.step(1 / 30, { steer: 0, thr: 0, turbo: false, climb: -1 }, W, null);
+    out.floor = v.y >= 8.5; out.floorY = +v.y.toFixed(1);
+    // Landen auf dem Land klappt
+    v.setPose(0, 30, 0); v.y = 12; v.vy = 0; for (let i = 0; i < 200; i++) v.step(1 / 30, { steer: 0, thr: 0, turbo: false, climb: -1 }, W, null); out.land = v.y < .2;
+    // Podest: Bühne im Dampfer-Hafen trägt (kein Einsinken)
+    const P = BI.DAMPF; out.stage = W.floorAt(P.x + 6, P.z + 33, 0.1) >= .59 && W.floorAt(P.x + 6, P.z + 33, -5) < 0; v.driver = null; return out; });
+  ok(r.sea && r.floor && r.land && r.stage, `Fliegen: frei über dem Meer (${r.seaD} m vom Zentrum), über Wasser nicht tiefer als ${r.floorY} m, Landen an Land, Podest trägt`); }
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
