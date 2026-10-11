@@ -104,7 +104,17 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   ok((await ev(page, () => GL.S.life.needs.stress)) < st0 - 15, 'Fernsehen senkt Stress');
   await goTo(page, 0, 300 - 4.2); ok(/Kleiderschrank/.test(await ev(page, () => document.getElementById('act').textContent)), 'Kleiderschrank erreichbar');
   await act(page); ok(await ev(page, () => document.getElementById('modal').style.display === 'block'), 'Kleiderschrank öffnet den Charakter-Editor');
-  await page.click('#mOk'); await page.waitForFunction(() => GL.W.on); ok(await ev(page, () => GL.W.inside === 1), 'Nach dem Umziehen weiter in der Wohnung');
+  ok(await ev(page, () => !!document.querySelector('#pv canvas') && document.querySelector('#pv canvas').width === 200), '3D-Vorschau im Editor (eigene Zeichenfläche)');
+  s = await ev(page, () => { const a = GL.S.look; return [a.build, a.h, a.tat, Array.isArray(GL.S.outfits) && GL.S.outfits.length]; });
+  ok(s[0] === 1 && s[1] === 1 && s[2] === 0 && s[3] === 3, 'Neue Look-Felder (Körperbau, Größe, Tattoo, Outfits) mit Standardwerten ' + JSON.stringify(s));
+  await page.click('.pill[data-k="build"][data-i="2"]'); await page.click('.pill[data-k="h"][data-i="2"]'); await page.click('.pill[data-k="tat"][data-i="2"]');
+  ok(await ev(page, () => GL.S.look.build === 2 && GL.S.look.h === 2 && GL.S.look.tat === 2), 'Körperbau, Größe und Tattoo wählbar');
+  await page.click('.pill[data-o="s0"]'); await page.click('.pill[data-k="tat"][data-i="0"]'); await page.click('.pill[data-k="top"][data-i="3"]');
+  ok(await ev(page, () => GL.S.outfits[0] && GL.S.outfits[0].tat === 2 && GL.S.look.tat === 0 && GL.S.look.top === 3), 'Outfit speichern, danach Look ändern');
+  await page.click('.pill[data-o="w0"]');
+  ok(await ev(page, () => GL.S.look.tat === 2 && GL.S.look.top === 0 && GL.S.look.build === 2), 'Outfit anziehen stellt Kleidung und Tattoo wieder her, Körperbau bleibt');
+  await page.click('.pill[data-k="build"][data-i="1"]'); await page.click('.pill[data-k="h"][data-i="1"]'); await page.click('.pill[data-k="tat"][data-i="0"]');
+  await page.click('#mOk'); await page.waitForFunction(() => GL.W.on); ok(await ev(page, () => GL.W.inside === 1 && !document.querySelector('#pv canvas')), 'Nach dem Umziehen weiter in der Wohnung, Vorschau freigegeben');
   await spot(3.3, -3.8, /Laptop/);
   ok(await ev(page, () => /Möbel kaufen/.test(document.getElementById('maps').textContent)), 'Laptop öffnet das Menü mit Speichern, Möbeln und Miete'); await page.click('#mx');
   await spot(0, 4.9, /verlassen/);

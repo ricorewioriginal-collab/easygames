@@ -36,6 +36,7 @@ var HAIRN = ['Kurz', 'Tolle', 'Locken', 'Buzz', 'Lang', 'Undercut', 'Glatze'];
 var BEARDN = ['Glatt', 'Dreitage', 'Vollbart', 'Ziegenbart', 'Schnauzer'];
 var ACCN = ['Nichts', 'Brille', 'Sonnenbrille', 'Cap', 'Ohrring', 'Goldkette', 'Krone', 'Kopfhörer', 'Federboa', 'Herzbrille'];
 var TOPN = ['Shirt', 'Tanktop', 'Hemd', 'Hoodie', 'Jacke', 'Pride-Shirt', 'Anzug'];
+var BUILDN = ['Schlank', 'Normal', 'Kräftig'], HGTN = ['Klein', 'Mittel', 'Groß'], TATN = ['Keins', 'Armband', 'Regenbogen-Armband', 'Herz', 'Stern'];
 var PRICE = { acc6: 150, acc7: 70, acc8: 90, acc9: 60, top5: 120, top6: 100 };
 function owned(k, i) { return !PRICE[k + i] || !!S.own[k + i]; }
 function mix(a, b, t) {
@@ -434,7 +435,12 @@ function makePerson(L) {
   if (L.acc === 4) [-1, 1].forEach(function (sd) { add(new THREE.SphereGeometry(.035, 6, 6), lmat('#f3c34a'), sd * .31, 1.84, 0); });
   if (L.acc === 5) add(new THREE.TorusGeometry(.2, .018, 6, 20), lmat('#f3c34a'), 0, 1.58, .14).rotation.x = 1.15;
   var sh = new THREE.Mesh(new THREE.CircleGeometry(.6, 14), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28 })); sh.rotation.x = -Math.PI / 2; sh.position.y = .03; g.add(sh);
-  g.userData = { legs: legs, arms: arms }; g.scale.setScalar(.95);
+  if (L.tat === 1) add(new THREE.TorusGeometry(.105, .02, 6, 14), lmat('#15151c'), 0, -.5, 0, arms[1]).rotation.x = Math.PI / 2;
+  if (L.tat === 2) for (s = 0; s < 3; s++) add(new THREE.TorusGeometry(.105, .016, 6, 14), lmat('#' + ('000000' + RB[[0, 2, 4][s]].toString(16)).slice(-6)), 0, -.44 - s * .06, 0, arms[0]).rotation.x = Math.PI / 2;
+  if (L.tat === 3) { [-1, 1].forEach(function (sd) { add(new THREE.SphereGeometry(.026, 6, 6), lmat('#ff4f9a'), .17 + sd * .026, 1.92, .26); }); add(new THREE.ConeGeometry(.052, .06, 4), lmat('#ff4f9a'), .17, 1.885, .27).rotation.x = Math.PI; }
+  if (L.tat === 4) add(new THREE.OctahedronGeometry(.04), lmat('#f3c34a'), .26, 2.06, .12);
+  var bw = [.9, 1, 1.14][L.build == null ? 1 : L.build] || 1, hs = [.9, 1, 1.08][L.h == null ? 1 : L.h] || 1;
+  g.userData = { legs: legs, arms: arms }; g.scale.set(.95 * bw, .95 * hs, .95 * bw);
   return g;
 }
 function animPerson(p, v, t) { var u = p.userData, s = Math.sin(t * 9) * .7 * v; u.legs[0].rotation.x = s; u.legs[1].rotation.x = -s; u.arms[0].rotation.x = -s * .8; u.arms[1].rotation.x = s * .8; }
@@ -757,14 +763,39 @@ function showHub() {
 }
 
 /* ---------- Editor ---------- */
+function pvStop(P) { if (!P) return; cancelAnimationFrame(P.raf); P.clear(); try { P.R.dispose(); P.R.forceContextLoss(); } catch (e) {} }
+function pvOpen(host) {
+  if (!webgl()) return null;
+  try {
+    var cv = document.createElement('canvas'), R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'low-power' }), sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(32, 200 / 240, .5, 30), P = { R: R, cv: cv, ang: .5, drag: 0, g: null };
+    R.setPixelRatio(1); R.setSize(200, 240, false); cv.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;cursor:grab;background:linear-gradient(145deg,#6a3cc8,#ff5fa8)';
+    sc.add(new THREE.HemisphereLight(0xffffff, 0x8a7aa8, 1)); var dl = new THREE.DirectionalLight(0xffffff, .8); dl.position.set(2, 4, 5); sc.add(dl); cam.position.set(0, 1.5, 5.6); cam.lookAt(0, 1.2, 0);
+    P.clear = function () { if (P.g) { P.g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); }); sc.remove(P.g); P.g = null; } };
+    P.set = function (L) { P.clear(); P.g = makePerson(L); sc.add(P.g); };
+    var lx = 0; cv.addEventListener('pointerdown', function (e) { P.drag = 1; lx = e.clientX; try { cv.setPointerCapture(e.pointerId); } catch (x) {} });
+    cv.addEventListener('pointermove', function (e) { if (P.drag) { P.ang += (e.clientX - lx) * .01; lx = e.clientX; } });
+    ['pointerup', 'pointercancel'].forEach(function (n) { cv.addEventListener(n, function () { P.drag = 0; }); });
+    var last = performance.now();
+    (function loop(t) { P.raf = requestAnimationFrame(loop); var dt = Math.min(.1, (t - last) / 1000); last = t; if (!P.drag) P.ang += dt * .5; if (P.g) P.g.rotation.y = P.ang; R.render(sc, cam); })(last);
+    return P;
+  } catch (e) { return null; }
+}
 function editor() {
-  var m = $('#modal'), L = S.look, pend = null;
+  if (WD && WD.on) leaveWorld();
+  var m = $('#modal'), L = S.look, pend = null, PV = pvOpen();
+  if (!S.outfits) S.outfits = [null, null, null];
+  function outfitRow() {
+    return S.outfits.map(function (o, i) { return '<div class="row" style="align-items:center;margin:4px 0"><b style="min-width:70px">Outfit ' + (i + 1) + '</b>' + (o ? '<button class="pill" data-o="w' + i + '">Anziehen</button>' : '<span class="sub">leer</span>') + '<button class="pill" data-o="s' + i + '">Speichern</button></div>'; }).join('');
+  }
   function sw(key, arr, names) { return arr.map(function (c, i) { return '<button class="sw' + (L[key] === i ? ' on' : '') + '" data-k="' + key + '" data-i="' + i + '" style="background:' + (Array.isArray(c) ? c[0] : c) + '" title="' + (names ? names[i] : '') + '"></button>'; }).join(' '); }
   function pills(key, names) { return names.map(function (n, i) { var ok = owned(key, i); return '<button class="pill' + (L[key] === i ? ' on' : '') + (ok ? '' : ' lock') + '" data-k="' + key + '" data-i="' + i + '">' + (ok ? '' : '🔒 ') + n + (ok ? '' : ' · ' + PRICE[key + i]) + '</button>'; }).join(' '); }
   function draw() {
-    $('#mbox').innerHTML = '<div class="gh"><h2>Dein Look</h2><span class="chip">✨ ' + fmt(S.glitzer) + '</span><button class="btn pri sm" id="mOk">Fertig</button></div><div class="edit"><div class="av">' + avatar(L) + '</div><div>' +
+    $('#mbox').innerHTML = '<div class="gh"><h2>Dein Look</h2><span class="chip">✨ ' + fmt(S.glitzer) + '</span><button class="btn pri sm" id="mOk">Fertig</button></div><div class="edit"><div class="av" id="pv">' + (PV ? '' : avatar(L)) + '</div><div>' +
       '<div class="lab">Name</div><input type="text" id="mName" maxlength="14" value="' + esc(S.name) + '">' +
       '<div class="lab">Hautton</div><div class="row">' + sw('skin', SKIN) + '</div>' +
+      '<div class="lab">Körperbau</div><div class="row">' + pills('build', BUILDN) + '</div>' +
+      '<div class="lab">Größe</div><div class="row">' + pills('h', HGTN) + '</div>' +
+      '<div class="lab">Tattoo</div><div class="row">' + pills('tat', TATN) + '</div>' +
       '<div class="lab">Frisur</div><div class="row">' + pills('hair', HAIRN) + '</div>' +
       '<div class="lab">Haarfarbe</div><div class="row">' + sw('hc', HC) + '</div>' +
       '<div class="lab">Bart</div><div class="row">' + pills('beard', BEARDN) + '</div>' +
@@ -772,6 +803,7 @@ function editor() {
       '<div class="lab">Extra</div><div class="row">' + pills('acc', ACCN) + '</div>' +
       '<div class="lab">Oberteil</div><div class="row">' + pills('top', TOPN) + '</div>' +
       '<div class="lab">Farbe</div><div class="row">' + sw('tc', TC, TCN) + '</div>' +
+      '<div class="lab">Outfits (Kleidung, Frisur, Tattoo)</div>' + outfitRow() +
       (pend ? '<div class="bubble" style="margin-top:14px">' + (S.glitzer >= PRICE[pend] ? '<b>' + (pend.slice(0, 3) === 'acc' ? ACCN : TOPN)[+pend.slice(3)] + '</b> für ' + PRICE[pend] + ' ✨ kaufen?' : 'Dafür fehlen dir noch ' + (PRICE[pend] - S.glitzer) + ' ✨. Spiele weiter oder erfülle Nebenaufträge!') + '<div class="row" style="margin-top:8px">' + (S.glitzer >= PRICE[pend] ? '<button class="btn pri sm" id="buy">Kaufen</button>' : '') + '<button class="btn sm" id="nobuy">Abbrechen</button></div></div>' : '') + '</div></div>';
     [].forEach.call(document.querySelectorAll('#mbox [data-k]'), function (b) {
       b.onclick = function () {
@@ -782,8 +814,17 @@ function editor() {
     });
     if ($('#buy')) $('#buy').onclick = function () { S.glitzer -= PRICE[pend]; S.own[pend] = 1; L[pend.slice(0, 3)] = +pend.slice(3); sfx('ok'); toast('Gekauft!'); pend = null; save(); draw(); };
     if ($('#nobuy')) $('#nobuy').onclick = function () { pend = null; draw(); };
+    if (PV) { $('#pv').appendChild(PV.cv); PV.set(L); }
+    [].forEach.call(document.querySelectorAll('#mbox [data-o]'), function (b) {
+      b.onclick = function () {
+        var i = +b.dataset.o.slice(1), K = ['hair', 'hc', 'beard', 'acc', 'top', 'tc', 'tat'];
+        if (b.dataset.o[0] === 's') { var o = {}; K.forEach(function (k) { o[k] = L[k]; }); S.outfits[i] = o; toast('Outfit ' + (i + 1) + ' gespeichert.'); }
+        else { var q = S.outfits[i]; if (!q) return; K.forEach(function (k) { var v = Math.floor(num(q[k], 0, LIM[k] - 1)); if (owned(k, v)) L[k] = v; }); toast('Outfit ' + (i + 1) + ' an.'); }
+        sfx('tap'); save(); draw();
+      };
+    });
     $('#mName').oninput = function () { S.name = this.value.trim() || 'Du'; save(); };
-    $('#mOk').onclick = function () { m.style.display = 'none'; showHub(); };
+    $('#mOk').onclick = function () { pvStop(PV); PV = null; $('#mbox').innerHTML = ''; m.style.display = 'none'; showHub(); };
   }
   draw(); m.style.display = 'block';
 }
@@ -1469,10 +1510,10 @@ function gQuiz(root) {
 
 /* ---------- Mehrspieler (PeerJS, direkt zwischen den Geräten) ---------- */
 var MP = { net: null, me: '', ids: {}, peers: {}, duel: null, acc: 0, sent: '', lx: 1e9, lz: 1e9, ly: 9, chk: 0, status: '', self: { g: null, em: null } };
-var DUELS = ['quiz', 'match', 'dance', 'pool', 'kara', 'dark', 'cast', 'sauna'], EMO = ['👋', '💃', '❤️', '😂', '🌈'], LIM = { skin: 6, hair: 7, hc: 10, beard: 5, acc: 10, top: 7, tc: 8, eye: 4 };
+var DUELS = ['quiz', 'match', 'dance', 'pool', 'kara', 'dark', 'cast', 'sauna'], EMO = ['👋', '💃', '❤️', '😂', '🌈'], LIM = { skin: 6, hair: 7, hc: 10, beard: 5, acc: 10, top: 7, tc: 8, eye: 4, build: 3, h: 3, tat: 5 };
 function num(v, lo, hi) { v = +v; return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : lo; }
 function cleanName(n) { n = String(n == null ? '' : n).replace(/[\u0000-\u001f<>&"]/g, '').trim().slice(0, 12); return n || 'Gast'; }
-function cleanLook(l) { var o = {}; l = l && typeof l === 'object' ? l : {}; for (var k in LIM) o[k] = Math.floor(num(l[k], 0, LIM[k] - 1)); return o; }
+function cleanLook(l) { var o = {}; l = l && typeof l === 'object' ? l : {}; for (var k in LIM) o[k] = l[k] == null && (k === 'build' || k === 'h') ? 1 : Math.floor(num(l[k], 0, LIM[k] - 1)); return o; }
 function gameOf(id) { return GAMES.filter(function (g) { return g.id === id; })[0]; }
 function mkNet(cb) {
   var ALPHA = '0123456789', PRE = 'gaylife-', PIN = 6, MAX = 3;
