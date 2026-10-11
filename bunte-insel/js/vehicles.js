@@ -20,6 +20,7 @@ BI.VEH = {
   boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', boat: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
   rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
+  drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -137,6 +138,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     return { wheels: [], head: [[0, .85, 3.0]], tail: [[0, .85, -2.45]], seat: [0, .85, -.4] };
   };
   MODELS.rcheli = b => MODELS.heli(b);
+  MODELS.drake = b => { b.box(0, 0, 0, .02, .02, .02, 0); return { wheels: [], seat: [0, 3.35, .2] }; }; // Körper = Zündel-Figur (BI.makeDrache), im Konstruktor angebaut
   MODELS.rc = b => { // Jannis' rotes Rennauto: tiefer Keil, dunkle Scheiben, graue Felgen, Heckflügel, Aufkleber 38
     const R = 0xe2362a, DK = 0x1c1c24;
     b.box(0, .2, 0, 1.9, .42, 4.2, R); b.box(0, .62, -.3, 1.62, .38, 2.1, DK); b.box(0, .98, -.3, 1.5, .1, 1.5, R); b.box(0, .45, 1.45, 1.7, .1, 1.3, R);
@@ -188,6 +190,10 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         const mb = new BI.Batch(); mb.box(0, 0, 0, .4, .05, 7.4, 0x2b2f3a); mb.box(0, 0, 0, 7.4, .05, .4, 0x2b2f3a); this.rotorMain = mk(mb, model.rotor.main);
         const tb = new BI.Batch(); tb.box(0, -.6, 0, .06, 1.2, .16, 0x2b2f3a); this.rotorTail = mk(tb, model.rotor.tail);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
+      }
+      if (type === 'drake') { // Reit-Drache: Zündel-Figur dreifach groß, Schatten am Boden
+        this.rig = BI.makeDrache({}); this.rig.root.scale.setScalar(3); this.tilt.add(this.rig.root);
+        this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.6, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
       }
       if (model.decal) { // Aufkleber mit Startnummer auf beiden Türen
         const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, 128, 128); c.fillStyle = '#111'; c.fillRect(10, 10, 108, 108);
@@ -262,6 +268,12 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         if (fx && Math.abs(this.v) > 1.5 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 2.2 + (Math.random() - .5), -.1, this.z - Math.cos(this.h) * 2.2 + (Math.random() - .5), (Math.random() - .5) * 1.4, .8, (Math.random() - .5) * 1.4, 1.1, 40, .95, .98, 1, 1, .8);
         return;
       }
+      if (sp.drake) {
+        const air = this.y > .3 || (this.driver && Math.abs(this.v) > 1); this.rig.set(air ? 'fly' : 'idle', t); this.rig.inner.position.y = 0;
+        this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.vy * .03 + this.v / sp.max * .12, -.4, .4), 4, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, air ? this.steerCur * .3 : 0, 4, dt);
+        this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .02); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .005);
+        return;
+      }
       if (sp.fly) {
         const air = this.y > .3, on = this.driver || air; this.rotorW = BI.damp(this.rotorW, on ? 32 : 0, on ? 1.2 : .5, dt);
         this.rotorMain.rotation.y += this.rotorW * dt; this.rotorTail.rotation.x += this.rotorW * 1.6 * dt;
@@ -282,6 +294,10 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         this.beacons.forEach((bc, i) => { const lit = (i + on) % 2 === 0; bc.mat.color.setHex(lit ? bc.base : 0x201010); bc.m.scale.setScalar(lit ? 1.25 : 1); });
       } else if (this.beacons.length) this.beacons.forEach(bc => { bc.mat.color.setHex(0x402020); bc.m.scale.setScalar(1); });
       if (fx && Math.abs(this.v) > 8 && this.offroad && Math.random() < dt * 20) fx.emit(this.x - Math.sin(this.h) * 1.5, .3, this.z - Math.cos(this.h) * 1.5, (Math.random() - .5), 1.2, (Math.random() - .5), .7, 34, .85, .78, .55, 0, .6);
+    }
+    breathe(dt, fx) { // Feuer aus dem Drachenmaul (Hupe)
+      if (!fx) return; const sx = Math.sin(this.h), sz = Math.cos(this.h), x = this.x + sx * 2.6, z = this.z + sz * 2.6, y = this.y + 2.7;
+      for (let i = 0; i < 3; i++) fx.emit(x, y, z, sx * (9 + Math.random() * 3) + (Math.random() - .5), -.3 + Math.random() * .8, sz * (9 + Math.random() * 3) + (Math.random() - .5), .7, 46, 1, .5 + Math.random() * .4, .1, 0, .9);
     }
     spray(dt, fx) {
       const n = this.model.nozzle; if (!n || !fx) return;

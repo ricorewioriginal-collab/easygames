@@ -179,6 +179,7 @@ Eine eigene Drachen-Welt mit Steinbrücke, Tor, Plaza, Berg- und Kristall-Landsc
 - **6 Fackeln** anzünden → das **Himmelstor** öffnet sich → Minispiel **🐉 Drachenflug** (Ringe durchfliegen, 💎 sammeln, Gewitterwolken ausweichen; auch im 🎮-Menü).
 - **6 Kristall-Freunde** mit Zündels Flamme befreien, **Funkelsteine** einsammeln (Wert 1/2/5/10), **4 Aufwinde** und **8 Flugringe** der Reihe nach.
 - **🪽 Drachenflügel** (Flügel-Ständer): Gadget zum Gleiten (Sprung-Knopf in der Luft halten), auch auf der ganzen Insel nutzbar.
+- **🐲 Reit-Drache**: Auf dem Landeplatz neben der Plaza steht immer ein großer Drache. Mit E aufsteigen, mit Steigen/Sinken und Lenken über die ganze Bunte Insel fliegen, Hupe = Feuer speien. Beim Aussteigen bleibst du dort, wo du bist; der Drache fliegt zurück an seinen Platz.
 - 4 sprechende Figuren, Fortschritt im 📋 Aufgaben-Log („🐉 Drachenhöhen“).
 
 Urheberrecht: Die Welt ist von Drachen-Abenteuerspielen *inspiriert*, übernimmt aber nur allgemeine Ideen (Edelsteine sammeln, Feuer speien, gleiten, Freunde befreien). Figuren, Namen, Gestaltung, Musik und Spiel sind komplett eigen; keine Logos, Namen oder Originalfiguren. Keine Verbindung zu den Rechteinhabern; keine Rechtsberatung.
