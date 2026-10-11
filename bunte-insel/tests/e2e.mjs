@@ -41,7 +41,7 @@ ok(!fire.mission && fire.before === 0, 'Feuerwehr: Feuer mit Wasser gelöscht, M
 // Hubschrauber: starten, Ringe, Landen, Aussteigen nur am Boden
 const hel = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'heli'); b.P.x = v.x + 3; b.P.z = v.z; b.enter(v); b.answerOffer(true);
-  const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; await sleep(2500); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
+  const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; for (let i = 0; i < 150 && v.y <= 3.5; i++) await sleep(100); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
   for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const s = m.steps[m.i]; v.x = s.x; v.z = s.z; v.y = s.air ? s.y : .5; v.v = 0; v.vy = 0; await sleep(250); }
   await sleep(300); const g = b.save.stars - s0; v.y = 0; v.vy = 0; v.v = 0; b.leave(); return { y1, stayed, g, n, out: !b.P.veh };
 });
