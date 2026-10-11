@@ -437,6 +437,7 @@
     if (pack.open && (e.code === 'Escape' || e.code === 'KeyI')) { pack.close(); e.preventDefault(); return; }
     if (mpOpen) { if (e.code === 'Escape') { mpBack(); e.preventDefault(); } else if (mpView === 'join') { if (e.code === 'Backspace') { joinCode = joinCode.slice(0, -1); renderJoin(); } else if (e.code === 'Enter') mpJoinGo(); else { const ch = net.normCode(e.key); if (ch && e.key.length === 1 && joinCode.length < 4) { joinCode += ch; renderJoin(); } } } return; }
     if (e.code === 'Escape' && rs.ui && state === 'play') { if (rs.ui === 'play' || rs.ui === 'result') exitRange(); else closeRangeUi(); return; }
+    if (cinema.open && e.code === 'Escape') { cinema.close(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
     if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu') { startPlay(); e.preventDefault(); } return; }
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
@@ -481,7 +482,7 @@
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') inp.turbo = false;
     if (e.code === 'KeyQ') keys.q = false; if (e.code === 'KeyR') keys.r = false;
   });
-  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = inp.up = inp.down = false; if (state === 'play') pause(true); });
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = inp.up = inp.down = false; if (state === 'play' && !cinema.open) pause(true); }); // Klick in den Film-Player löst blur aus → dann nicht pausieren
   document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') pause(true); });
 
   /* ---------- Menüs ---------- */
@@ -1000,6 +1001,7 @@
   const gadgets = BI.createGadgets({ P, A, fx, save, say, persist, setStick, earn: id => kids.earn(id), char: () => char, blocked: () => !!(park.busy() || obby.run || parcours.run || play.busy() || build.active) });
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
+  const cinema = BI.createCinema({ scene, P, say, A, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state, inv: () => garden.inv() });
   const beauty = BI.createBeauty({ scene, camera, W, save, renderer });
@@ -1043,6 +1045,7 @@
     { const si = nearStation(); if (si >= 0) return { src: 'station', i: si }; }
     if (kitchen.near()) return { src: 'kitchen' };
     if (camp.near()) return { src: 'camp' };
+    { const cn = cinema.near(); if (cn) return { src: 'cinema', n: cn }; }
     if (farm.nearFarmer()) return { src: 'farmer' };
     const pn = pool.near(); if (pn) return { src: 'pool', n: pn };
     { const ln = play.near(); if (ln) return { src: 'play', n: ln }; }
@@ -1053,9 +1056,9 @@
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
-  function placeLabel(n) { if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1076,7 +1079,7 @@
     { id: 'zoo', icon: '🐮', name: 'Streichelzoo', at: () => ({ x: SPOT.pens[0].gate.x + 3, z: SPOT.pens[0].gate.z + 3 }) }, { id: 'pool', icon: '🏊', name: 'Freibad', at: () => ({ x: SPOT.pool.gate.x, z: SPOT.pool.gate.z - 4 }) },
     { id: 'station', icon: '🚂', name: 'Bahnhof', at: () => SPOT.station }, { id: 'hospital', icon: '🏥', name: 'Krankenhaus', at: () => SPOT.hospital },
     { id: 'heli', icon: '🚁', name: 'Hubschrauber', at: () => SPOT.helipad }, { id: 'pier', icon: '⛵', name: 'Boot am Steg', at: () => ({ x: 4.5, z: 170 }) },
-    { id: 'ship', icon: '🏴‍☠️', name: 'Piratenschiff', at: () => ({ x: W.ship.cx - 6, z: W.ship.cz + 2 }) }, { id: 'park', icon: '🛝', name: 'Spielplatz', at: () => SPOT.park }
+    { id: 'ship', icon: '🏴‍☠️', name: 'Piratenschiff', at: () => ({ x: W.ship.cx - 6, z: W.ship.cz + 2 }) }, { id: 'park', icon: '🛝', name: 'Spielplatz', at: () => SPOT.park }, { id: 'cinema', icon: '🎬', name: 'Kino & Autokino', at: () => ({ x: BI.CINEMA.door.x, z: BI.CINEMA.door.z + 1.5 }) }
   ];
   let guide = null; const guideEl = $('guidePanel');
   function openGuide() { if (state !== 'play' || mini.active || gm || kids.busy()) return; guideOpen = true; setStick(0, 0); const g = $('guideGrid'); g.innerHTML = '';
@@ -1102,7 +1105,10 @@
     const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = k === 'eco' ? 2 : 0; resize(); renderParent(); }; gb.appendChild(b); });
     const bb = $('parBreak'); bb.innerHTML = ''; kids.breakOpts.forEach(m => { const b = document.createElement('button'); b.className = 'pill' + ((save.breakMin || 0) === m ? ' sel' : ''); b.textContent = m ? m + ' Min' : 'Aus'; b.onclick = () => { save.breakMin = m; persist(); kids.refreshBreak(); renderParent(); }; bb.appendChild(b); });
   }
-  function openParent() { parentOpen = true; setStick(0, 0); renderParent(); par.hidden = false; }
+  function renderYt() { $('parYtInfo').textContent = cinema.hasKey() ? '✅ Kino-Suche ist an (nur kindersichere, einbettbare Videos). Der Schlüssel bleibt nur auf diesem Gerät.' : 'Ohne Schlüssel ist die Suche im Kino aus. Einen kostenlosen Schlüssel gibt es in der Google Cloud Console („YouTube Data API v3“ aktivieren → API-Schlüssel erstellen). Pro Suche werden die Suchwörter an YouTube gesendet.'; $('parYtDel').hidden = !cinema.hasKey(); }
+  $('parYtSave').addEventListener('click', () => { const k = $('parYt').value.trim(); if (!cinema.keyOk(k)) { $('parYtInfo').textContent = '⚠️ Das sieht nicht wie ein YouTube-Schlüssel aus (20–64 Zeichen, Buchstaben/Zahlen/-/_).'; return; } cinema.setKey(k); $('parYt').value = ''; renderYt(); });
+  $('parYtDel').addEventListener('click', () => { cinema.setKey(''); renderYt(); }); for (const ev of ['keydown', 'keyup']) $('parYt').addEventListener(ev, e => e.stopPropagation());
+  function openParent() { parentOpen = true; setStick(0, 0); renderParent(); renderYt(); par.hidden = false; }
   function closeParent() { parentOpen = false; par.hidden = true; persist(); }
   $('parClose').addEventListener('click', closeParent); $('parVol').addEventListener('input', e => { save.vol = e.target.value / 100; applyVolume(); persist(); });
   $('parMp').addEventListener('click', () => { save.mpOff = !save.mpOff; if (save.mpOff && net.role) { net.close(); } persist(); renderParent(); });
@@ -1385,13 +1391,13 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || town.open || combat.panelOpen || pack.open || pack.tradeOpen() || park.busy() || pool.busy() || play.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || cinema.open || town.open || combat.panelOpen || pack.open || pack.tradeOpen() || park.busy() || pool.busy() || play.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
   function updatePlayer(dt) {
     const [jx, jy] = axes();
-    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
     if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
     if (rs.ui) { inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (pool.busy()) { inp.jump = inp.aux = inp.hornEdge = false; return; }
@@ -1663,7 +1669,7 @@
     if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
     if (state === 'pause') { renderer.render(scene, camera); return; }
     t += dt;
-    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
+    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); cinema.update(); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
@@ -1684,5 +1690,5 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

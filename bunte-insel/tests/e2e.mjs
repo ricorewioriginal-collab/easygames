@@ -550,6 +550,25 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
       o.stop(); return out; });
     ok(r2.run > .8 && r2.sp > 8, 'Parcours: Springen beim Rennen klappt (Höhe ' + r2.run.toFixed(2) + ', Tempo ' + r2.sp.toFixed(1) + ')'); ok(r2.air && r2.dbl, 'Parcours: Doppelsprung ohne Gadget');
   }
+  { // Kino & Autokino: Eingänge, Kacheln, Suche (YouTube-API gemockt), Player, Eltern-Schlüssel
+    let apiUrl = ''; await p.route('https://www.googleapis.com/youtube/v3/search**', r => { apiUrl = r.request().url(); r.fulfill({ json: { items: [{ id: { videoId: 'abcdEFG1234' }, snippet: { title: 'Traktor Film', thumbnails: { medium: { url: 'https://i.ytimg.com/vi/abcdEFG1234/mqdefault.jpg' } } } }, { id: { channelId: 'x' }, snippet: { title: 'Kanal' } }, { id: { videoId: '../evil' }, snippet: { title: 'bad' } }] } }); });
+    await p.route('https://i.ytimg.com/**', r => r.abort()); await p.route('https://www.youtube-nocookie.com/**', r => r.fulfill({ body: '<html>player</html>', contentType: 'text/html' }));
+    const at = (x, z) => p.evaluate(async ([x, z]) => { const b = window.__bi; b.P.x = x; b.P.z = z; b.P.y = 0; await new Promise(r => setTimeout(r, 450)); const n = b.placeNear(); return n && n.src + ':' + (n.n && n.n.k); }, [x, z]);
+    const k1 = await at(-77, 36), k2 = await at(-75, 43.5);
+    ok(k1 === 'cinema:kino' && k2 === 'cinema:drive', 'Kino-Eingang und Autokino-Platz bieten „Kino“/„Autokino“ an');
+    const c1 = await p.evaluate(async () => { const b = window.__bi; b.P.x = -77; b.P.z = 36; await new Promise(r => setTimeout(r, 400)); b.placeAct(b.placeNear()); const o = b.cinema.open, n1 = document.querySelectorAll('#cineGrid .ctile').length; document.querySelectorAll('#cineTabs button')[1].click(); const n2 = document.querySelectorAll('#cineGrid .ctile').length; document.querySelectorAll('#cineTabs button')[2].click(); return { o, n1, n2, off: document.getElementById('cineQ').disabled }; });
+    ok(c1.o && c1.n1 === 6 && c1.n2 === 6 && c1.off, 'Kino: 6 Filme + 6 Serien als Kacheln, Suche ohne Schlüssel aus (' + c1.n1 + '/' + c1.n2 + ')');
+    await p.evaluate(() => { window.__bi.cinema.setKey('AIzaSyDUMMYKEY_1234567890abcdefghijk'); document.querySelectorAll('#cineTabs button')[0].click(); document.querySelectorAll('#cineTabs button')[2].click(); });
+    await p.fill('#cineQ', 'Traktor p w a s'); await p.press('#cineQ', 'Enter'); await p.waitForFunction(() => document.querySelectorAll('#cineGrid .ctile').length > 0, null, { timeout: 15000 }).catch(() => { });
+    const c2 = await p.evaluate(() => ({ st: window.__bi.state, n: document.querySelectorAll('#cineGrid .ctile').length }));
+    ok(c2.st === 'play' && c2.n === 1 && /safeSearch=strict/.test(apiUrl) && /videoEmbeddable=true/.test(apiUrl) && /type=video/.test(apiUrl), 'Suche: nur Videos, safeSearch=strict, einbettbar; ungültige Treffer verworfen; Tippen pausiert nicht');
+    await p.click('#cineGrid .ctile'); const c3 = await p.evaluate(() => { window.dispatchEvent(new Event('blur')); return { src: document.getElementById('cineFrame').src, st: window.__bi.state }; });
+    ok(/youtube-nocookie\.com\/embed\/abcdEFG1234/.test(c3.src) && c3.st === 'play', 'Film startet im Player, Klick in den Player pausiert das Spiel nicht');
+    await p.keyboard.press('Escape'); const c4 = await p.evaluate(() => [window.__bi.cinema.open, document.getElementById('cineFrame').src, window.__bi.state]);
+    ok(!c4[0] && /about:blank/.test(c4[1]) && c4[2] === 'play', 'Esc schließt das Kino und stoppt den Film');
+    const c5 = await p.evaluate(async () => { const b = window.__bi; b.P.x = -75; b.P.z = 43.5; await new Promise(r => setTimeout(r, 400)); b.placeAct(b.placeNear()); const cl = document.getElementById('cineCard').className; b.cinema.close(); b.openParent(); document.getElementById('parYt').value = 'kurz'; document.getElementById('parYtSave').click(); const bad = b.cinema.hasKey(); document.getElementById('parYtDel').click(); const gone = !b.cinema.hasKey(); document.getElementById('parYt').value = 'AIzaSyDUMMYKEY_1234567890abcdefghijk'; document.getElementById('parYtSave').click(); const okk = b.cinema.hasKey(); document.getElementById('parYtDel').click(); b.closeParent(); return { cl, bad, gone, okk, end: !b.cinema.hasKey() }; });
+    ok(/drive/.test(c5.cl) && c5.gone && c5.okk && c5.end, 'Autokino-Aussehen; Eltern-Bereich: Schlüssel prüfen, speichern, entfernen');
+  }
   await c.close();
 }
 { // Gadgets und eigener Parcours

@@ -6,7 +6,7 @@ BI.createObby = function (G) {
   const { scene, W, A, fx, P, save, say } = G, K = { run: null }, TAU = Math.PI * 2, H = 14;
   /* ---------- Startpunkt am Boden: erster freier Platz aus einer Liste ---------- */
   const cands = [[-40, 32], [-36, 42], [38, 36], [44, 30], [30, -40], [-30, -42], [60, 30], [-60, -30], [70, 70], [-70, 70], [20, 84], [-20, 84], [90, -30], [-90, 30]];
-  let pad = null; for (const c of cands) if (!W.blockedAt(c[0], c[1], 3) && W.free(c[0], c[1], 2.8)) { pad = { x: c[0], z: c[1] }; break; }
+  let pad = null; for (const c of cands) if (c[0] <= 38 && !W.blockedAt(c[0], c[1], 3) && W.free(c[0], c[1], 2.8)) { pad = { x: c[0], z: c[1] }; break; }
   if (!pad) { for (let r = 30; r < 150 && !pad; r += 6) for (let a = 0; a < 12 && !pad; a++) { const x = Math.sin(a * .52) * r, z = Math.cos(a * .52) * r; if (!W.blockedAt(x, z, 3) && W.free(x, z, 2.8)) pad = { x, z }; } }
   if (!pad) pad = { x: 0, z: 60 };
   K.pad = pad;
