@@ -2,6 +2,26 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 4 (11.10.2026): Jobs und Nachtleben
+
+### Neu umgesetzt (M5 teilweise, M4 teilweise)
+
+- **Jobs (`js/jobs.js`, `GL.jobs`)**: Neben dem Barkeeper vier Jobs mit eigener Schicht: **Verkäufer** (Boutique Fabelhaft), **Fitnesstrainer** (Muckibude), **Fotograf** (Studio Klappe Auf), **DJ** (Regenbogen-Bühne, nachts, ab Barkeeper-Stufe 2). Beim Betreten des Gebäudes: „Arbeiten“ oder das alte Minispiel. Eine Schicht = 4 Stunden, drei Situationen mit je drei Antworten (0–2 Punkte, 5 Situationen pro Job zufällig gezogen). Lohn = Stundenlohn nach Stufe + Leistungsbonus × Laune; Erfahrung → Stufe 1–8 und Titel (z. B. Aushilfe → Filialleiter). Öffnungszeiten, höchstens 2 Schichten pro Tag, nicht bei Erschöpfung. Anzeige in der Finanz-App.
+- **Nachtleben (`js/nightlife.js`, `GL.night`)**: Club Glitzer ist 20–5 Uhr offen, Eintritt je nach Themenabend (Ruhige Bar … Rainbow Night/Glitzer-Nacht am Wochenende, einmal pro Nacht bezahlt). Beim Betreten: Barkeeper-Minispiel, **Tanzen** (3 Songs, passende Bewegung zum Musikstil wählen → Kontakte, Stress, Energie), **Bestellen** (Cocktail 8 €, höchstens 3 pro Nacht, Wasser gratis).
+- Spielstand: `jobs.<id>`, `jobs.day`, `jobs.night` (lazy angelegt, alte Stände unverändert).
+
+### Tests Durchgang 4
+
+`gay-life/tests/e2e.mjs`: **155 Prüfungen, alle bestanden**, keine Konsolenfehler. Neu: Job-Menü, Schicht mit Lohn und Zeit, Tageslimit, Öffnungszeiten, Erschöpfung, DJ-Voraussetzung, Stufen, Club-Themenabend, Tanzen, Eintritt einmal pro Nacht, Cocktail-Limit, Türsteher, Speichern/Laden.
+
+Einschränkungen: Keine selbst erzeugte Musik und keine Club-Innenräume (bleibt in M4 offen), keine Themenparty-Dekoration, Pride-Event, Karaoke-Wettbewerb. Weitere Jobs (Stylist, Eventmanager, Performer) und Beförderungen mit Gehaltsverhandlung fehlen. Texte und Balance nicht von Menschen probegespielt.
+
+### Weiterhin offen
+
+M2, M4-Rest, M5-Rest, M7, M8, M9, M10.
+
+---
+
 ## Stand nach Durchgang 3 (11.10.2026): Wohnen
 
 ### Neu umgesetzt (M6)
