@@ -57,9 +57,9 @@
   /* Ereignisbus: Module melden sich an, statt sich gegenseitig direkt zu ändern. */
   var ev = {};
   GL.on = function (n, fn) { (ev[n] || (ev[n] = [])).push(fn); };
-  GL.emit = function (n, a, b) {
+  GL.emit = function (n, a, b, c) {
     var l = ev[n], r; if (!l) return;
-    for (var i = 0; i < l.length; i++) { try { var x = l[i](a, b); if (x !== undefined) r = x; } catch (e) { if (window.console) console.error('[GL] ' + n, e); } }
+    for (var i = 0; i < l.length; i++) { try { var x = l[i](a, b, c); if (x !== undefined) r = x; } catch (e) { if (window.console) console.error('[GL] ' + n, e); } }
     return r;
   };
   GL.clamp = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };

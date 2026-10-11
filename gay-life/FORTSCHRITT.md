@@ -2,6 +2,27 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 7 (11.10.2026): Mehrspieler per PIN und QR-Code (M8)
+
+### Neu umgesetzt
+
+- **Beitritt nur über PIN oder QR-Code**: Raum öffnen zeigt eine 6-stellige PIN und einen QR-Code (Link `#join=PIN`); wer den Link scannt oder die PIN tippt, kommt in den Raum (bis 4 Leute, direkt von Gerät zu Gerät über PeerJS).
+- **Ort-Filter** (`GL.core`): Du siehst nur Leute am selben Ort (Pride District, Viertel, Wohnung); Positionen werden relativ zum Ort gesendet.
+- **Erweiterungs-Umschlag** `{t:'x', k, d, to}` (`GL.mp.send`): Art, Größe und Ziel werden geprüft; der Gastgeber leitet weiter.
+- **Besuch in der Wohnung** (`js/multi.js`, `GL.multi`): nur mit Zustimmung des Gastgebers; Ablehnen wird höflich respektiert; der Gast sieht dessen Einrichtung, der Besuch endet beim Verlassen.
+- **Gruppentanz im Club**: alle tanzen dieselben drei Songs (gleicher Zufallswert), gemeinsame Rangliste; Bonus (Kontakte +10, Laune +4, +5 Glitzer), wenn alle mindestens 3 Punkte haben.
+- **Gruppenfoto und Foto-App**: Countdown für alle am Ort, Bild nur lokal (Download-Knopf), nicht hochgeladen, nicht gespeichert. Handy-Apps „Zusammen“ und „Fotos“.
+- Fehler behoben: `GL.emit` gab nur zwei Argumente weiter; jetzt drei.
+
+### Tests Durchgang 7
+
+- `tests/e2e.mjs` Abschnitt 9 (Mehrspieler) mit `tests/fakepeer.js` (nachgebautes PeerJS über BroadcastChannel); QR-Bibliothek per Umgebungsvariable `QRCODE`. Gesamtlauf: 220 Prüfungen grün.
+- **Ehrlich**: Der echte PeerJS-Vermittlungsserver und echte zwei Geräte wurden **nicht** getestet (Sandbox ohne Zugang). Ein Test mit zwei echten Geräten steht aus.
+
+### Offen
+
+- M9 Charaktereditor 3D, M10 Politur/Wetter/Audio, Club-Innenräume mit eigener Musik, Stylist/Eventmanager/Performer, Viertel-Bewohner mit Dates, Pride-Event.
+
 ## Stand nach Durchgang 6 (11.10.2026): Hauptgeschichte
 
 ### Neu umgesetzt (M7)

@@ -24,14 +24,18 @@
     GL.ui.menu('Club Glitzer', 'Heute: <b>' + GL.core.esc(t.n) + '</b> · Musik ' + t.st + ' · Eintritt ' + t.fee + ' €' + (o.paid ? ' (bezahlt)' : '') + (open ? '' : '<br>' + cl), [
       { e: '🍸', t: 'Arbeiten: Barkeeper', s: 'Das Minispiel mit Schicht und Lohn.', fn: function () { GL.ui.close(); GL.core.openGame(GL.core.gameOf('club')); } },
       { e: '💃', t: 'Tanzen', s: open ? '3 Songs, Bewegung passend zur Musik wählen.' : cl, dis: !open || L.needs.energy < 15, fn: dance },
+      { e: '👯', t: 'Gruppentanz mit dem Raum', s: GL.mp && GL.mp.on() ? 'Alle im Mehrspieler-Raum tanzen die gleichen Songs. Wenn alle gut sind, gibt es einen Bonus.' : 'Dafür brauchst du einen Mehrspieler-Raum (👥).', dis: !open || !(GL.mp && GL.mp.on()) || L.needs.energy < 15, fn: function () { GL.ui.close(); GL.multi.startDance(); } },
       { e: '🥂', t: 'Etwas bestellen', s: open ? 'Cocktail 8 €, Wasser gratis. ' + o.drinks + ' von 3 Cocktails.' : cl, dis: !open, fn: drinks },
       { e: '✖', t: 'Schließen', fn: GL.ui.close }], 'club');
   }
-  function dance() {
+  /* opt: { styles:[3 Stile], seed (gemeinsame Reihenfolge der Bewegungen), onDone(pts) } für Gruppentänze */
+  function dance(opt) {
+    opt = opt && opt.styles ? opt : {};
     if (!enter()) return;
-    var o = nt(), t = N.theme(), i = 0, pts = 0, styles = [t.st, t.st === 'Lounge' ? 'Pop' : 'House', ['Pop', 'Salsa', 'Disco', 'Techno'][(L.day + o.danced) % 4]];
+    var o = nt(), t = N.theme(), i = 0, pts = 0, styles = opt.styles || [t.st, t.st === 'Lounge' ? 'Pop' : 'House', ['Pop', 'Salsa', 'Disco', 'Techno'][(L.day + o.danced) % 4]], rnd = Math.random;
+    if (opt.seed) { var a = opt.seed >>> 0; rnd = function () { a |= 0; a = a + 0x6D2B79F5 | 0; var q = Math.imul(a ^ a >>> 15, 1 | a); q = q + Math.imul(q ^ q >>> 7, 61 | q) ^ q; return ((q ^ q >>> 14) >>> 0) / 4294967296; }; }
     function round() {
-      var s = styles[i], b = STYLE[s], mv = MOVES.slice().sort(function () { return Math.random() - .5; }).filter(function (m) { return m === b[0] || m === b[1]; }).concat(MOVES.filter(function (m) { return m !== b[0] && m !== b[1]; }).sort(function () { return Math.random() - .5; }).slice(0, 2)).sort(function () { return Math.random() - .5; });
+      var s = styles[i], b = STYLE[s], sh = function () { return rnd() - .5; }, mv = MOVES.slice().sort(sh).filter(function (m) { return m === b[0] || m === b[1]; }).concat(MOVES.filter(function (m) { return m !== b[0] && m !== b[1]; }).sort(sh).slice(0, 2)).sort(sh);
       GL.ui.menu('Tanzfläche · Song ' + (i + 1) + ' von 3', 'Der DJ legt <b>' + s + '</b> auf. Was tanzt du?', mv.map(function (m) {
         return { e: '🕺', t: m, fn: function () { var p = m === b[0] ? 2 : m === b[1] ? 1 : 0; pts += p; GL.core.sfx(p === 2 ? 'ok' : p ? 'tap' : 'no'); GL.life.advance(30); GL.life.change({ energy: -7 }, 0); if (++i < 3) round(); else finish(); } };
       }), 'club');
@@ -39,6 +43,7 @@
     function finish() {
       o.danced++; var soc = Math.round((8 + pts * 3) * t.mul);
       GL.life.change({ social: soc, stress: -(4 + pts * 2), hygiene: -8 }, pts >= 5 ? 6 : pts >= 3 ? 3 : 0); GL.core.gain(pts); GL.save(); GL.emit('danced', pts);
+      if (opt.onDone) { GL.ui.close(); opt.onDone(pts, soc); return; }
       GL.ui.menu('Was für ein Abend', pts >= 5 ? 'Die Tanzfläche gehört dir. Alle wollen mit dir tanzen.' : pts >= 3 ? 'Guter Groove. Du hast viel gelacht.' : 'Nicht jede Bewegung passte, aber der Spaß war da.' + '<br><small>Kontakte +' + soc + ' · Stress −' + (4 + pts * 2) + ' · Hygiene −8</small>', [{ e: '👍', t: 'Weiter', fn: menu }], 'club');
     }
     round();
@@ -51,6 +56,7 @@
       { e: '💧', t: 'Wasser (gratis)', s: 'Energie +3', fn: function () { if (!enter()) return; GL.life.advance(5); GL.life.change({ energy: 3 }, 0); GL.save(); GL.core.toast('Schön erfrischend.'); drinks(); } },
       { e: '↩', t: 'Zurück', fn: menu }], 'club');
   }
+  N.dance = dance; N.STYLES = Object.keys(STYLE); N.enter = enter;
   GL.on('poi', function (id) {
     if (id !== 'club' || L.needs.energy < 12) return; /* bei Erschöpfung greift der Türsteher in economy.js */
     menu(); return true;

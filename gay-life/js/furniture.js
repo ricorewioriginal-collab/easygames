@@ -21,8 +21,15 @@
     yoga: { n: 'Yogamatte', e: '🧘', p: 35, c: [1, 1.8], use: ['Yoga machen', 30, { stress: -14, energy: 4 }, 5, 'Ruhig und biegsam. Stress −14'] }
   };
   F.CAT = CAT; F.SLOTS = SLOTS; F.RENT = RENT;
-  var objs = {}, cols = {}, uses = { d: 0, kaffee: 0 }, guestFig = null, guestId = '', C = function () { return GL.core; };
+  var V = null, objs = {}, cols = {}, uses = { d: 0, kaffee: 0 }, guestFig = null, guestId = '', C = function () { return GL.core; };
 
+  function lay() { return V || H.placed; }
+  /* Besuch bei jemand anderem: fremde Aufstellung anzeigen (nur Katalog-Kennungen auf gültigen Plätzen) */
+  F.setVisit = function (pl) {
+    if (!pl) V = null; else { V = {}; Object.keys(pl).forEach(function (k) { if (SLOTS[+k] !== undefined && CAT[pl[k]]) V[k] = pl[k]; }); }
+    F.refresh();
+  };
+  F.visiting = function () { return !!V; };
   function valid() { Object.keys(H.placed).forEach(function (k) { if (!CAT[H.placed[k]] || !H.own[H.placed[k]] || SLOTS[+k] === undefined) delete H.placed[k]; }); }
   F.bonus = function () { var b = 0; Object.keys(H.placed).forEach(function (k) { var c = CAT[H.placed[k]]; if (c && c.b) b += c.b; }); return Math.min(b, 6); };
   F.rent = function () { return H.partner ? RENT2 : RENT; };
@@ -50,9 +57,9 @@
     if (cols[k]) { var W = GL.W, i = W && W.colliders.indexOf(cols[k]); if (i >= 0) W.colliders.splice(i, 1); delete cols[k]; }
   }
   F.refresh = function () {
-    var W = GL.W, r = GL.home.root(); if (!W || !r) return; valid();
+    var W = GL.W, r = GL.home.root(); if (!W || !r) return; valid(); var P = lay();
     SLOTS.forEach(function (s, k) {
-      var id = H.placed[k]; clear(k); if (!id) return;
+      var id = P[k]; clear(k); if (!id) return;
       var g = model(id), x = s[0], z = s[1]; g.position.set(x, 0, z); g.rotation.y = z > 0 ? Math.PI : x < 0 && z < 0 ? Math.PI / 2 : 0; r.add(g); objs[k] = g;
       var c = CAT[id].c, o = GL.home.O; cols[k] = { x0: o.x + x - c[0] / 2, x1: o.x + x + c[0] / 2, z0: o.z + z - c[1] / 2, z1: o.z + z + c[1] / 2 }; W.colliders.push(cols[k]);
     });
@@ -125,7 +132,7 @@
 
   /* ---------- Möbel benutzen ---------- */
   function use(k) {
-    var id = H.placed[k], c = CAT[id], u = c && c.use; if (!u) return;
+    var id = lay()[k], c = CAT[id], u = c && c.use; if (!u) return;
     if (c.min) for (var n in c.min) if (L.needs[n] < c.min[n]) { C().toast('Dafür bist du gerade zu erschöpft.'); C().sfx('no'); return; }
     if (c.max && uses[id] >= c.max) { C().toast('Genug Kaffee für heute.'); return; }
     if (c.max) uses[id] = (uses[id] || 0) + 1;
@@ -156,8 +163,8 @@
     F.refresh();
     SLOTS.forEach(function (s, k) {
       W.inter.push({ x: GL.home.O.x + s[0], z: GL.home.O.z + s[1] + (s[1] > 0 ? -1.1 : 1.1), r: 1.4,
-        get on() { var c = CAT[H.placed[k]]; return !!(W.inside && c && c.use); },
-        get label() { var c = CAT[H.placed[k]]; return c && c.use ? c.use[0] + ' (' + c.n + ')' : ''; }, fn: function () { use(k); } });
+        get on() { var c = CAT[lay()[k]]; return !!(W.inside && c && c.use); },
+        get label() { var c = CAT[lay()[k]]; return c && c.use ? c.use[0] + ' (' + c.n + ')' : ''; }, fn: function () { use(k); } });
     });
     W.inter.push({ x: GL.home.O.x - 1.9, z: GL.home.O.z - .2, r: 1.6,
       get on() { return !!(W.inside && guestFig && guestFig.visible); },
