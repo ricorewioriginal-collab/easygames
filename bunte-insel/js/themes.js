@@ -35,6 +35,9 @@ BI.THEMES = {
   /* Verbotener Wald: dunkel, ein Herzschlag */
   wald: { name: 'Verbotener Wald', bpm: 62, chords: ['Am', 'Fmaj7', 'E7', 'Am'], pad: { type: 'sine', vol: .07 }, bass: { pat: 'x...............', type: 'sine', vol: .08, len: 12 },
     drums: { k: 'x.....x.........', kv: .05 }, lead: { type: 'sine', vol: .04, len: 4, notes: 'A4 . . . . . . . C5 . . . . . . .  A4 . . . . . . . E5 . . . . . . .  G#4 . . . . . . . B4 . . . . . . .  A4 . . . . . . . . . . . . . . .' } },
+  /* Fellretter-Bucht: heldenhafter Marsch mit Trompeten */
+  fellretter: { name: 'Fellretter-Marsch', bpm: 118, chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'C'], pad: { type: 'sawtooth', vol: .014 }, bass: { pat: 'x...5...x...5...', type: 'triangle', vol: .09, len: 2 },
+    drums: { k: 'x.......x.......', kv: .1, s: 'x.x.x.x.x.x.x.xx', sv: .03, h: '..x...x...x...x.', hv: .012 }, lead: { type: 'square', vol: .03, len: 2.2, bell: true, notes: 'G4 . . . C5 . . . E5 . . . G5 . . .  G5 . F5 . D5 . . . B4 . . . D5 . . .  E5 . . . A5 . . . C6 . . . A5 . . .  A5 . G5 . F5 . . . C5 . . . F5 . . .  E5 . . G5 . . C6 . . . B5 . A5 . . .  G5 . . . D5 . . . G5 . . . B5 . . .  A5 . . A5 . . G5 . . . F5 . . . . .  G5 . . . G5 . . . C6 . . . . . . .' } },
   /* Himmels-Parcours: Chiptune */
   obby: { name: 'Himmels-Sprung', bpm: 142, chords: ['C', 'F', 'G', 'C'], bass: { pat: 'x.x.5.x.x.x.5.x.', type: 'triangle', vol: .08, len: 1.2 },
     drums: { k: 'x...x...x...x...', kv: .07, s: '....x.......x...', sv: .035, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'square', vol: .03, len: 1.4, notes: 'C5 E5 G5 E5 C5 E5 G5 E5 C5 E5 G5 C6 . . . .  A4 C5 F5 C5 A4 C5 F5 C5 A4 C5 F5 A5 . . . .  B4 D5 G5 D5 B4 D5 G5 D5 B4 D5 G5 B5 . . . .  C5 E5 G5 E5 C5 E5 G5 E5 G5 . E5 . C5 . . .' } },
@@ -53,6 +56,7 @@ BI.zoneAt = function (x, z, flags) {
   if (f.obby) return 'obby';
   if (d(R.x - 27, R.z) < 20) return 'buehne';
   if (d(R.x, R.z) < R.R + 8) return 'regenbogen';
+  if (d(BI.PUPS.x, BI.PUPS.z) < BI.PUPS.R + 8) return 'fellretter';
   if (d(K.x, K.z) < K.R + 8) return 'park';
   if (d(C.x, C.z) < C.R + 8) return 'stadt';
   if (x > 30 && x < 76 && z > 124 && z < 152) return 'pool';

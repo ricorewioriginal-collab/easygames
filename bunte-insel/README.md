@@ -76,6 +76,13 @@ Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreich
 - **Pride-Parade 🏳️‍🌈**: Rund um den Brunnen fahren rund um die Uhr zwei Regenbogen-Trucks mit Anhängern („PRIDE“, „Liebe für alle“, „Jeder ist willkommen“), darauf tanzen Menschen; 16 Menschen laufen friedlich hinterher, viele mit Flaggen. Läuft nur, wenn man in der Nähe ist (Fahrzeuge sind je ein gebündeltes Mesh).
 - Sparsam: Boden, Bögen, Flaggen und Häuser stecken im einen Welt-Mesh; zur Laufzeit nur Schilder, Bewohner und wenige Funken (nur in der Nähe). Quelltext: `js/rainbow.js`.
 
+## Fellretter-Bucht 🐶 (Erweiterung, Themen-Insel im Süden)
+Rettungshund-Welt, **frei erfunden**: eigene Namen, eigene Hunde, Fahrzeuge, Farben und ein eigenes Wappen (Knochen) – keine Figuren, Namen, Orte oder Logos aus Fernsehserien. Erreichbar über die Brücke im Süden oder 🧭 „Fellretter-Bucht“.
+- **Goldene Statue „Jannis & Blitz – die ersten Fellretter“** auf der Plaza (Jannis mit hochgereckten Armen in deinem Look, Blitz sitzt daneben). Am Sockel: „Statue bewundern“ → Konfetti, Spruch, alle 60 s +1 ⭐.
+- **Bellwarte**: Zentrale mit hohem Turm, Aussichtsring und sieben bunten Hallentoren. Davor parken die Fahrzeuge der Fellretter: Rodel (Eis & Schnee, Schneemobil), Welle (Wasserrettung, Boot), Sprudel (Feuerwehr), **Blitz (Streifenwagen, Jannis' eigener Hund)**, Brumm (Bau, Bagger), Pia (Pilotin, Flugzeug) und Bella (Sani, Krankenwagen). Jeder Hund steht bei seinem Fahrzeug, wedelt und erzählt Sicherheits-Tipps.
+- **Sonnenbucht**: Café, Rathaus mit Uhrenturm, Leuchtturm, kleine Häuser, Palmen, Sonnenschirme, Bürger zum Plaudern (u. a. Bürgermeister Bommel, Käpt'n Karla, Mechaniker Max, Lotta, Ole).
+- Eigene Musik „Fellretter-Marsch“. Sparsam: alles Statische im Welt-Mesh, zur Laufzeit nur Schilder, Hunde, Bewohner und zwei Statuen-Figuren. Quelltext: `js/pups.js`; `BI.makeDog` (util.js) kann jetzt Fell-, Uniform- und Hut-Varianten.
+
 ## Musik für jede Welt und jeden Bereich 🎵
 Beim Laufen wechselt die Musik sanft (Überblendung) je nach Ort. Alle Melodien sind selbst komponiert und werden im Browser erzeugt (kein Download, keine fremden Lieder); der Knopf 🎵 schaltet sie ab.
 Hauptinsel (Sonnige Wiese), Stadt (Stadt-Jazz), Freizeitpark (Jahrmarkt-Walzer), Regenbogen-Plaza (Regenbogen-Pop), Regenbogen-Bühne (Pride-Disco), Freibad (Strandparty), Bauernhof (Hof-Polka), Camp (Lagerfeuer, 3/4), Kampfarena (Arena-Rock), Verbotener Wald (düster mit Herzschlag), Himmels-Parcours (Chiptune, nur während des Laufs), Kino-Foyer (ruhig; im Film Stille) und Spielzeugladen (Spieluhr). Nachts läuft alles etwas langsamer.
