@@ -584,9 +584,13 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
       o.consistent = ST.slice(0, c0).every(c => c.tasks.every(isDone)) && (c0 >= ST.length || !ST[c0].tasks.every(isDone));
       o.chip = !document.getElementById('questChip').hidden || c0 >= ST.length;
       if (c0 < ST.length) { const s0 = b.save.stars; for (const t of ST[c0].tasks) if (!isDone(t)) { if (t[0] === 'stk') b.kids.earn(t[1]); else b.meta.note(t[1]); } await sl(200); o.next = b.save.story.c === c0 + 1; o.gain = b.save.stars - s0; } else { o.next = true; o.gain = 5; }
+      { const bk = [b.save.stk, b.save.story, b.save.talked]; b.save.stk = []; b.save.talked = []; b.save.story = { c: 0, ev: {}, seen: true };
+        b.kids.earn('ride'); b.meta.note('talk'); b.kids.earn('pack'); b.kids.earn('guide'); await sl(100); o.c1 = b.save.story.c;
+        const s1 = b.save.stars; b.meta.note('mission'); b.kids.earn('train'); await sl(100); o.c2 = b.save.story.c; o.early = b.save.stars - s1; // 2 Ziele +1, Sticker +2, Kapitel +5, früher erledigtes „ride“ +1 = 10
+        b.save.stk = bk[0]; b.save.story = bk[1]; b.save.talked = bk[2]; s.start(); }
       document.getElementById('bGuide').click(); await sl(100); document.getElementById('bStory').click(); o.open = s.open && !document.getElementById('questPanel').hidden && document.querySelectorAll('#questList .qch').length === ST.length; s.close();
       return o; });
-    ok(q.consistent && q.chip && q.next && q.gain >= 5 && q.open, 'Inselreise: Kapitel-Ablauf, Geschafftes wird nachgeholt, Kapitel-Abschluss +⭐, Fenster über 🧭 (' + JSON.stringify(q) + ')');
+    ok(q.consistent && q.chip && q.next && q.gain >= 5 && q.open && q.c1 === 1 && q.c2 === 2 && q.early === 10, 'Inselreise: Kapitel-Ablauf, Geschafftes wird nachgeholt, Kapitel-Abschluss +⭐, Fenster über 🧭 (' + JSON.stringify(q) + ')');
   }
   await c.close();
 }

@@ -23,7 +23,8 @@ BI.STORY = [
 BI.createStory = function (G) {
   const { A, fx, P, save, say } = G, $ = id => document.getElementById(id), K = { open: false }, ST = BI.STORY;
   const S = () => save.story || (save.story = { c: 0, ev: {}, seen: false });
-  const done = t => t[0] === 'stk' ? (save.stk || []).includes(t[1]) : !!(S().ev[t[1]]);
+  const done = t => t[0] === 'stk' ? (save.stk || []).includes(t[1]) : !!(S().ev[t[1]]) || (t[1] === 'talk' && (save.talked || []).length > 0); // alte Gespräche zählen mit
+  const rw = () => S().rw || (S().rw = {}); // Ziele, für die es schon den Stern gab
   K.chapter = () => ST[S().c] || null;
   K.finished = () => S().c >= ST.length;
   const chip = $('questChip');
@@ -37,10 +38,11 @@ BI.createStory = function (G) {
     const s = S(); let moved = 0;
     while (s.c < ST.length) {
       const c = ST[s.c]; if (!c.tasks.every(done)) break;
-      s.c++; moved++; if (!quiet) { G.addStars(5); A.fanfare && A.fanfare(); fx.burst(P.x, 2.6, P.z, 50, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green], 9, 1.6, 28, 7); }
+      let extra = 0; for (const t of c.tasks) if (!rw()[t[1]]) { rw()[t[1]] = 1; if (!quiet) extra++; } /* vorher (z. B. in einem früheren Kapitel) erledigte Ziele bekommen ihren Stern jetzt */
+      s.c++; moved++; s.last = 5 + extra; if (!quiet) { G.addStars(5 + extra); A.fanfare && A.fanfare(); fx.burst(P.x, 2.6, P.z, 50, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green], 9, 1.6, 28, 7); }
       if (s.c >= ST.length) { finale(quiet); break; }
     }
-    if (moved) { G.persist(); const c = K.chapter(); if (!quiet && c) setTimeout(() => announce(c, '✅ Kapitel geschafft! +5 ⭐ · '), 900); else if (quiet && c) say('📖 Du warst schon fleißig! Weiter geht’s mit Kapitel ' + (s.c + 1) + ': ' + c.icon + ' ' + c.name, 4200); }
+    if (moved) { G.persist(); const c = K.chapter(); if (!quiet && c) { const n = s.last; setTimeout(() => announce(c, '✅ Kapitel geschafft! +' + n + ' ⭐ · '), 900); } else if (quiet && c) say('📖 Du warst schon fleißig! Weiter geht’s mit Kapitel ' + (s.c + 1) + ': ' + c.icon + ' ' + c.name, 4200); }
     renderChip(); if (K.open) render(); return moved;
   }
   function announce(c, pre) { say((pre || '') + '📖 Kapitel ' + (S().c + 1) + ': ' + c.icon + ' ' + c.name, 4200); if (A.speak) A.speak(c.intro); }
@@ -53,7 +55,7 @@ BI.createStory = function (G) {
   /* Ereignisse von außen */
   K.note = function (k) { const s = S(); if (s.ev[k]) return; const c = K.chapter(); if (!c || !c.tasks.some(t => t[0] === 'ev' && t[1] === k)) { s.ev[k] = 1; return; } s.ev[k] = 1; tick(c, k); };
   K.onEarn = function (id) { const c = K.chapter(); if (c && c.tasks.some(t => t[0] === 'stk' && t[1] === id)) tick(c, id); };
-  function tick(c, k) { const t = c.tasks.find(q => q[1] === k); G.addStars(1); A.ding && A.ding(); setTimeout(() => say('📖 ✔ ' + t[2] + ' ' + t[3].replace(/ \(.*\)$/, '') + ' +1 ⭐', 2600), 1200); G.persist(); if (!check(false)) { renderChip(); if (K.open) render(); } }
+  function tick(c, k) { const t = c.tasks.find(q => q[1] === k); if (!rw()[k]) { rw()[k] = 1; G.addStars(1); } A.ding && A.ding(); G.persist(); if (!check(false)) { setTimeout(() => say('📖 ✔ ' + t[2] + ' ' + t[3].replace(/ \(.*\)$/, '') + ' +1 ⭐', 2600), 1200); renderChip(); if (K.open) render(); } } // schließt das Ziel das Kapitel ab, spricht nur die Kapitel-Ansage (sonst würde sie abgeschnitten)
   /* ---------- Fenster ---------- */
   function render() {
     const s = S(), c = K.chapter(), box = $('questNow'), list = $('questList'); box.innerHTML = ''; list.innerHTML = '';
