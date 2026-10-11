@@ -21,6 +21,7 @@ BI.VEH = {
   rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
   drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
+  pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -60,6 +61,16 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(0, .45, 0, 1.94, .16, 4.0, 0x2f5fd0); b.box(0, .6, 1.5, 1.94, .02, .9, 0x23262d); b.box(0, 1.46, -.15, 1.1, .14, .4, DARK);
       b.box(0, 1.15, 1.18, 1.6, .02, .02, 0x2f5fd0);
       o.beacons = [[-.38, 1.62, -.15, 0xff2020], [.38, 1.62, -.15, 0x2060ff]]; return o;
+    },
+    pupmobil(b) { // Fellnasen-Mobil: blauer Streifenwagen mit Hundegesicht (Schnauze, Nase, Augen), Schlappohren, Wedelschwanz und dreifarbigem Lichtbalken (Polizei + Feuerwehr + Rettung)
+      const o = MODELS.car(b, { color: 0x2d6be0 }), FUR = 0xc89a5a, EAR = 0x5a3a20;
+      b.box(0, .47, 0, 1.94, .1, 4.0, 0xffffff); b.box(0, .5, 1.78, .96, .36, .74, 0xf3e3c3); b.box(0, .72, 1.98, .5, .22, .4, FUR); b.sph(0, .8, 2.22, .2, 0x15151a, 1, 1.1, .8, .8);
+      for (const x of [-.5, .5]) { b.sph(x, .74, 1.15, .24, 0xffffff, 1, 1, .8, .5); b.sph(x, .77, 1.3, .12, 0x1f1f26, 1); b.sph(x + (x > 0 ? .03 : -.03), .82, 1.4, .04, 0xffffff, 1); }
+      for (const x of [-.95, .95]) { b.box(x, 1.2, .55, .12, .72, .55, EAR, 0, 0, x > 0 ? -.18 : .18); b.box(x * .98, .8, .4, .06, .24, .5, 0xffffff); }
+      b.box(0, 1.0, -2.3, .22, .22, .8, EAR, 0, -.7); b.sph(0, 1.38, -2.62, .17, 0xf3e3c3, 1);
+      b.box(0, 1.5, -.15, 1.3, .12, .5, DARK); b.box(-.42, 1.62, -.15, .42, .18, .42, 0xff2a2a); b.box(0, 1.62, -.15, .42, .18, .42, 0xffa31a); b.box(.42, 1.62, -.15, .42, .18, .42, 0x2a6aff);
+      for (const s of [-1, 1]) b.sph(s * .98, .85, -.5, .2, 0xffe14a, 1, .3, 1, 1);
+      o.beacons = [[-.42, 1.82, -.15, 0xff2020], [0, 1.82, -.15, 0xffa020], [.42, 1.82, -.15, 0x2060ff]]; return o;
     },
     ambulance(b) {
       b.box(0, .45, 0, 2.1, 1.9, 5.0, 0xfafcff); b.box(0, .85, 0, 2.14, .26, 4.9, 0xe53b3b); b.box(0, 1.1, 2.51, 1.8, .7, .05, GLASS);

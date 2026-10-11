@@ -181,7 +181,8 @@ BI.audio = (function () {
       if (!ctx) return;
       if (!on) { if (sirenNodes) { const s = sirenNodes; sirenNodes = null; s.g.gain.setTargetAtTime(0, ctx.currentTime, .05); setTimeout(() => { try { s.o.stop(); } catch (x) { } }, 300); } return; }
       if (!sirenNodes) { const g = ctx.createGain(); g.gain.value = 0; g.connect(sfxBus); const o = ctx.createOscillator(); o.type = 'triangle'; o.connect(g); o.start(); g.gain.setTargetAtTime(.1, ctx.currentTime, .05); sirenNodes = { o, g, kind }; }
-      const t = performance.now() / 1000, lo = kind === 'fire' ? 560 : 650, hi = kind === 'fire' ? 840 : 960, per = kind === 'ambulance' ? .55 : kind === 'fire' ? 1.4 : .7;
+      const t = performance.now() / 1000; if (kind === 'pup') kind = ['police', 'ambulance', 'fire'][Math.floor(t / 2.4) % 3]; /* Fellnasen-Mobil: Mix aus Polizei, Rettung und Feuerwehr */
+      const lo = kind === 'fire' ? 560 : 650, hi = kind === 'fire' ? 840 : 960, per = kind === 'ambulance' ? .55 : kind === 'fire' ? 1.4 : .7;
       const f = kind === 'fire' ? lo + (hi - lo) * (.5 + .5 * Math.sin(t * BI.TAU / per)) : ((t % per) < per / 2 ? lo : hi);
       sirenNodes.o.frequency.setTargetAtTime(f, ctx.currentTime, .02);
     },

@@ -79,6 +79,7 @@ BI.buildPupsGround = function (c) {
     snow: o => { for (const sd of [-1, 1]) o.box(sd * .9, .15, .3, .3, .12, 3.6, 0xeef3ff, 0, .15); o.box(0, .45, -.2, 1.6, .8, 2.8, 0x4fc3f7); o.box(0, .95, 1.0, 1.2, .5, .06, 0xbfe6ff, 0, -.5); o.box(0, 1.0, -1.0, 1.2, .3, 1.4, 0x2a2f3a); o.box(0, .3, -1.7, 1.6, .5, .8, 0x2a2a33); o.box(0, 1.2, .6, 1.2, .1, .1, 0xdddddd); }
   };
   TEAM.forEach((q, i) => { const x = (i - 3) * 4.4; VEH[q.veh](V(X(x), Z(9.5))); });
+  W.spots.pupmobil = { x: X(16), z: Z(4), h: Math.PI }; W.vehicleSpawns.push({ type: 'pupmobil', x: X(16), z: Z(4), h: Math.PI }); // fahrbares Fellnasen-Mobil
   /* Einsatz-Tafel (Bild kommt zur Laufzeit aus einsatz.js): Pfosten, Rückwand, Blinklicht */
   { const bx = X(-10), bz = Z(1.3); for (const sd of [-1, 1]) st.box(bx + sd * 2.6, 0, bz, .3, 1.6, .3, 0x555a66); st.box(bx, 1.5, bz, 6.2, 4.7, .3, 0x14305f); st.box(bx, 6.2, bz, 6.6, .3, .6, 0xffd23f); lamp.sph(bx, 6.9, bz, .4, 0xff3b3b, 1);
     W.addBox(X(-13.2), Z(1.0), X(-6.8), Z(1.6), false, 6); W.spots.pupsBoard = { x: bx, z: Z(-1.6) }; }
@@ -111,6 +112,7 @@ BI.createPups = function (G) {
   { const g = W.spots.pupsGate; if (g) sign('🐾 Willkommen in der Fellretter-Bucht!', g.x, g.y, g.z, 11); const t = W.spots.pupsTower; if (t) sign('🔔 Bellwarte', t.x, t.y, t.z - 3, 7); const s = W.spots.pupsStatue; if (s) sign('🏆 Jannis & Blitz – die ersten Fellretter', s.x, s.y + 6.6, s.z, 9);
     const c = W.spots.pupsCafe; if (c) sign('☕ Sonnen-Café', c.x, 6.4, c.z + 1.5, 5); const h = W.spots.pupsHall; if (h) sign('🏛️ Rathaus', h.x, 7.4, h.z + 1.5, 5); const l = W.spots.pupsLight; if (l) sign('💡 Leuchtturm', l.x, 24, l.z, 5);
     sign('👮 Blitz\' Platz', PU.x, 4.2, PU.z + 9.5 - 3.6, 4); }
+  { const m = W.spots.pupmobil; if (m) sign('🐕 Fellnasen-Mobil – E zum Einsteigen', m.x, 5.2, m.z, 5.2); }
   /* Goldene Statue: Jannis (Arme hoch) und Blitz (sitzt) auf dem Sockel */
   { const s = W.spots.pupsStatue, L = G.look ? G.look() : {}; const hero = BI.makeChar(Object.assign({}, GOLD, { style: L.style, hat: L.hat && L.hat !== 'none' ? L.hat : 'cap', scale: 1.9, mouth: 'smile' })); hero.dance(0, 0); hero.group.position.set(s.x - .9, s.y, s.z); hero.group.rotation.y = Math.PI; scene.add(hero.group);
     const dog = BI.makeDog({ fur: 0xe6b422, dark: 0xc9951a, uni: 0xffd23f, trim: 0xfff3a0, noName: true }); dog.group.scale.setScalar(1.9); dog.trick('sit', .5); dog.group.position.set(s.x + 1.3, s.y, s.z + .3); dog.group.rotation.y = Math.PI * .85; scene.add(dog.group); }
