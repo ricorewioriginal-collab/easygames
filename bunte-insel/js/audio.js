@@ -74,7 +74,8 @@ BI.audio = (function () {
     get musicOn() { return musicOn; },
     setMuted(m) { muted = m; if (master) master.gain.value = m ? 0 : 0.8 * A._vol; },
     _vol: 1, setVolume(v) { A._vol = BI.clamp(v, 0, 1); if (master) master.gain.value = muted ? 0 : 0.8 * A._vol; },
-    setMusic(m) { musicOn = m; if (musBus) musBus.gain.value = m ? 0.5 : 0; },
+    setMusic(m) { musicOn = m; if (musBus) musBus.gain.value = m ? 0.5 * A._duck : 0; },
+    _duck: 1, duck(f) { A._duck = BI.clamp(f, 0, 1); if (musBus && musicOn) musBus.gain.value = 0.5 * A._duck; }, /* Spielmusik leiser (z. B. wenn ein Radio-Stream läuft) */
     star() { tone(880, .12, 'triangle', .18); tone(1318, .18, 'triangle', .16, 0, .07); },
     fanfare() { [523, 659, 784, 1046].forEach((f, i) => tone(f, .22, 'triangle', .2, 0, i * .1)); tone(1318, .5, 'sine', .15, 0, .4); },
     step() { tone(660, .1, 'triangle', .14); tone(990, .16, 'triangle', .14, 0, .08); },

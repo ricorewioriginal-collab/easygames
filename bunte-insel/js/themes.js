@@ -50,6 +50,8 @@ BI.THEMES = {
     drums: { h: '..x...x...x...x.', hv: .008 }, lead: { type: 'sine', vol: .06, len: 3, bell: true, notes: 'E5 . . G5 . . B5 . . G5 . E5 . . . .  C5 . . E5 . . G5 . . E5 . C5 . . . .  B4 . . D5 . . G5 . . D5 . B4 . . . .  A4 . . D5 . . F#5 . . D5 . A4 . . . .  G5 . B5 . E6 . B5 . G5 . . . E5 . . .  E5 . G5 . C6 . G5 . E5 . . . C5 . . .  A4 . C5 . E5 . A5 . E5 . C5 . A4 . . .  B4 . D#5 . F#5 . B5 . F#5 . D#5 . B4 . . .' } },
   zotik: { name: 'Lunaris', bpm: 96, chords: ['Am', 'F', 'C', 'G', 'Am', 'F', 'Dm', 'E'], pad: { type: 'sine', vol: .05 }, arp: { pat: '1.2.3.2.1.2.3.2.', type: 'triangle', vol: .03, len: 1.6 }, bass: { pat: 'x.......x.......', type: 'sine', vol: .08, len: 4 },
     drums: { h: '..x...x...x...x.', hv: .008 }, lead: { type: 'sine', vol: .06, len: 3, bell: true, notes: 'A4 . . C5 . . E5 . . C5 . A4 . . . .  A4 . . C5 . . F5 . . C5 . A4 . . . .  G4 . . C5 . . E5 . . C5 . G4 . . . .  G4 . . B4 . . D5 . . B4 . G4 . . . .  E5 . . A5 . . E5 . . C5 . A4 . . . .  F5 . . A5 . . F5 . . C5 . A4 . . . .  D5 . . F5 . . A5 . . F5 . D5 . . . .  E5 . . G#5 . . B5 . . G#5 . E5 . . . .' } },
+  radio: { name: 'Funkwelle', bpm: 108, chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'G'], pad: { type: 'sine', vol: .045 }, arp: { pat: '1.2.3.2.1.2.3.2.', type: 'triangle', vol: .03, len: 1.4 }, bass: { pat: 'x...x...x...x.x.', type: 'sine', vol: .08, len: 3 },
+    drums: { k: 'x...x...x...x...', kv: .06, h: '..x...x...x...x.', hv: .01 }, lead: { type: 'sine', vol: .055, len: 2, bell: true, notes: 'E5 . . G5 . . C6 . . G5 . E5 . . . .  D5 . . G5 . . B5 . . G5 . D5 . . . .  C5 . . E5 . . A5 . . E5 . C5 . . . .  A4 . . C5 . . F5 . . C5 . A4 . . . .  E5 . G5 . C6 . G5 . E5 . . . C5 . . .  D5 . G5 . B5 . G5 . D5 . . . B4 . . .  C5 . F5 . A5 . F5 . C5 . . . A4 . . .  D5 . G5 . B5 . D6 . B5 . G5 . D5 . . .' } },
   /* Himmels-Parcours: Chiptune */
   obby: { name: 'Himmels-Sprung', bpm: 142, chords: ['C', 'F', 'G', 'C'], bass: { pat: 'x.x.5.x.x.x.5.x.', type: 'triangle', vol: .08, len: 1.2 },
     drums: { k: 'x...x...x...x...', kv: .07, s: '....x.......x...', sv: .035, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'square', vol: .03, len: 1.4, notes: 'C5 E5 G5 E5 C5 E5 G5 E5 C5 E5 G5 C6 . . . .  A4 C5 F5 C5 A4 C5 F5 C5 A4 C5 F5 A5 . . . .  B4 D5 G5 D5 B4 D5 G5 D5 B4 D5 G5 B5 . . . .  C5 E5 G5 E5 C5 E5 G5 E5 G5 . E5 . C5 . . .' } },
@@ -66,7 +68,7 @@ BI.zoneAt = function (x, z, flags) {
   const f = flags || {}, d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, CI = BI.CINEMA;
   if (f.cinema) return null;
   if (f.obby) return 'obby';
-  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < 400) return 'zotik';
+  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < 400) return 'zotik'; if (BI.RADIO && d(BI.RADIO.x, BI.RADIO.z) < 400) return 'radio';
   if (d(R.x - 27, R.z) < 20) return 'buehne';
   if (d(R.x, R.z) < R.R + 8) return 'regenbogen';
   if (d(BI.PUPS.x, BI.PUPS.z) < BI.PUPS.R + 8) return 'fellretter';
@@ -88,5 +90,5 @@ BI.zoneAt = function (x, z, flags) {
 /* In welcher Welt (Insel) ist dieser Punkt? 'insel' (Hauptinsel mit Camp, Freibad, Hof …), 'stadt', 'park', 'regenbogen', 'bucht' */
 BI.worldAt = function (x, z) {
   const d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, F = BI.PUPS, DM = BI.DAMPF, DR = BI.DRACHEN;
-  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < 400) return 'zotik'; if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 12) return 'bauland'; if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(DR.x, DR.z) < DR.R + 12) return 'drachen'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
+  if (BI.ATLANTIS && d(BI.ATLANTIS.x, BI.ATLANTIS.z) < 400) return 'atlantis'; if (BI.ZOTIK && d(BI.ZOTIK.x, BI.ZOTIK.z) < 400) return 'zotik'; if (BI.RADIO && d(BI.RADIO.x, BI.RADIO.z) < 400) return 'radio'; if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 12) return 'bauland'; if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(DR.x, DR.z) < DR.R + 12) return 'drachen'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
 };

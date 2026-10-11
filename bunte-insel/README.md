@@ -239,6 +239,16 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 - Dateien: `js/zotik.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Elementar-Kampf), `js/vehicles.js` (Nautilux), `js/themes.js` (Musik „Lunaris“).
 - **Rechtliches:** Zotik, seine Welt und alle Figuren sind Ricos eigene Erfindung; von Fantasy-Spielen sind nur allgemeine Ideen (schwebende Inseln, Weltentore, Elementkreis) übernommen, keine geschützten Figuren, Namen oder Bilder. Keine Rechtsberatung.
 
+### 📻 Funkwelle – die Radio-Welt (13 Sender mit Live-Stream)
+
+**Eingang:** Funk-Tor (Antennenring) im Nordosten der Hauptinsel (🧭 → Funkwelle). Weit weg liegt eine Nacht-Insel mit Funkturm; im Kreis darum **13 Sender-Plätze**, je mit
+- **Logo-Statue** (Logo des Senders auf schwingender Tafel, Sockel, Lichtsäule),
+- **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** als Fenster; „im neuen Tab“ als Ausweg, falls die Seite kein Einbetten erlaubt),
+- **Radio**: E = Sender einschalten (Stream `https://stream.laut.fm/<sender>`), nochmal E = aus. Es läuft immer nur ein Stream; die Lautstärke hängt von der Entfernung zum Radio ab, außerhalb des Bereichs wird es leise und der Stream pausiert (spart Daten), beim Verlassen der Welt stoppt er. Die Spielmusik wird beim Radiohören leiser.
+- **Sterne:** 20 Sekunden einem Sender zuhören = +1 ⭐ (alle 13 = +10 ⭐), Visual Radio ansehen = +1 ⭐, **Noten 🎵 sammeln: 10 = 1 ⭐**. Highlight-Spiel am Automaten: **Frequenz-Dreher** (Timing: Nadel im leuchtenden Bereich stoppen).
+- **Einstellungen** in `js/radio.js` (`BI.RADIO`): Sendernamen/Stream-Namen (`stations`), Visual-Radio-Adresse (`visual`, Standard `https://laut.fm/<sender>`), laut.fm-Logo (`radio/lautfm.png`; ohne Datei steht dort die Schrift „laut.fm“). Logos liegen verkleinert in `radio/logos/` (aus `anmacha-snake/logos`).
+- Sender-Namen und Logos gehören ihren Betreibern (RicoReWi Radioportal); laut.fm ist der Streaming-Betreiber.
+
 ### 🔧 Fixes: Brücken, Dampfer, Doppelsprung
 - **Regenbogen-Brücke:** Der Zaun des Streichelzoos versperrte das Brückenende – das Eselgehege hat jetzt ein Tor zur Brücke.
 - **Dampfer-Hafen:** Der Dampfer ist begehbar (Gangway vom Kai, Deck, Weg um die Aufbauten).
