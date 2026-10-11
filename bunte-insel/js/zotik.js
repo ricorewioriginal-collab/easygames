@@ -113,7 +113,7 @@ BI.createZotik = function (G) {
   mk('prof', X(10), Z(82), { shirt: 0xe8e2d8, pants: 0x4a3a2a, hair: 0xeeeeee, skin: 0xf3c9a0, style: 'wavy', beard: 3, beardc: 0xeeeeee, glassT: 3, ctype: 4, hsc: .98, scale: 1 }, 'Professorium – Erfinder', ['Das ist die Nautilux! Sie taucht, sie fliegt, sie entdeckt überall hin. Steig ein – aber lande, bevor du aussteigst! ⚙️', 'Ich weiß mehr, als ich zeige. Zum Beispiel: Die Splitter in den Gassen sind Reste der zerbrochenen Welten.', 'Wissen ist Macht – aber Neugier ist der Schlüssel zu neuen Welten!']);
   /* Zotik-Statue in Originalfarben (Fuchs-Mensch: orange Fell, grüner Schal, Lederriemen) */
   const statue = BI.makeChar(Object.assign({}, BI.heroById('zotik').o, { scale: 1 })); statue.group.scale.setScalar(6); statue.group.position.set(A.statue.x, A.statue.top, A.statue.z); statue.group.rotation.y = Math.atan2(X(-4) - A.statue.x, Z(48) - A.statue.z); statue.pose && statue.pose(0, 0, false); grp.add(statue.group);
-  const halo = new THREE.Mesh(new THREE.TorusGeometry(5.2, .12, 6, 40), new THREE.MeshBasicMaterial({ color: 0xffe08a, fog: false })); halo.rotation.x = Math.PI / 2; halo.position.set(A.statue.x, A.statue.top + 1, A.statue.z); grp.add(halo);
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(2.2, .14, 6, 32), new THREE.MeshBasicMaterial({ color: 0xffe08a, fog: false })); halo.rotation.x = Math.PI / 2; halo.position.set(A.statue.x, A.statue.top + 14, A.statue.z); grp.add(halo);
   sign('🦊 Zotik – der Weltenhörer', A.statue.x, A.statue.top + 17.4, A.statue.z, 13);
   /* Moosling „Felli“ (Waldgeist): hüpft herum, geht als Partner mit */
   const felli = BI.makeMoosling(); felli.root.scale.setScalar(1.15); felli.root.position.set(X(-8), 0, Z(7)); grp.add(felli.root); sign('Felli – Moosling', X(-8), 2.6, Z(7), 3.6);
@@ -162,7 +162,7 @@ BI.createZotik = function (G) {
     const near = Math.hypot(P.x - A.x, P.z - A.z) < 900; if (grp.visible !== near) grp.visible = near;
     if (K.portalSign) K.portalSign.visible = Math.hypot(P.x - W.spots.zotikPortal.x, P.z - W.spots.zotikPortal.z) < 40;
     if (!ins) return; const s = S();
-    halo.rotation.z = t * .5; halo.position.y = A.statue.top + 1 + Math.sin(t * 1.4) * .15;     crystal.rotation.y = t * .7; crystal.position.y = 5.6 + Math.sin(t * 1.5) * .3; beam.material.opacity = .28 + .08 * Math.sin(t * 2.2); hintM.rotation.y = t * 1.6; hintM.position.y = 1.6 + Math.sin(t * 2) * .15; riss.rotation.z = t * .8; rissIn.material.opacity = .42 + .15 * Math.sin(t * 4);
+    halo.rotation.z = t * .5; halo.position.y = A.statue.top + 14 + Math.sin(t * 1.4) * .15;     crystal.rotation.y = t * .7; crystal.position.y = 5.6 + Math.sin(t * 1.5) * .3; beam.material.opacity = .28 + .08 * Math.sin(t * 2.2); hintM.rotation.y = t * 1.6; hintM.position.y = 1.6 + Math.sin(t * 2) * .15; riss.rotation.z = t * .8; rissIn.material.opacity = .42 + .15 * Math.sin(t * 4);
     for (const f of floats) f.m.position.y = f.y + Math.sin(t * f.sp + f.ph) * 3; gateGlow.forEach((m, i) => { m.material.opacity = (s.q >= 4 ? .6 : .22) + .12 * Math.sin(t * 2.4 + i); });
     for (const n of NPC) { if (Math.hypot(P.x - n.x, P.z - n.z) < 9) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 4); n.c.pose && n.c.pose(t * 1.3 + n.x, 0, Math.hypot(P.x - n.x, P.z - n.z) < 5); }
     felli.set('idle', t); { const px = felli.root.position.x, pz = felli.root.position.z; felli.root.rotation.y += BI.angDiff(felli.root.rotation.y, Math.atan2(P.x - px, P.z - pz)) * Math.min(1, dt * 3); }
