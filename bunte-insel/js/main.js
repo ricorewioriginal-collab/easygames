@@ -970,7 +970,7 @@
     if (sl.t >= 3.6 && sl.t < 3.7) { fadeEl.classList.remove('on'); sl.t = 3.7; P.x = f.bed.x + 2.3; P.z = f.bed.z + 1.2; P.y = 0; g.rotation.set(0, 0, 0); g.position.set(P.x, 0, P.z); say('Guten Morgen, ' + heroName() + '! ☀️', 2600); A.fanfare(); kids.earn('sleep'); }
     if (sl.t > 4.6) sl.t = -1;
   }
-  function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); say('Such dir etwas Schönes aus! 👕', 1800); }
+  function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); wardTabs.showTab(6); say('Such dir etwas Schönes aus! 👕', 1800); }
   function closeWard() { wardOpen = false; wardPanel.hidden = true; updateButtons(true); }
   function renderWard() {
     refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'rollator' && q.slot !== 'deco');
@@ -1333,7 +1333,17 @@
       row(p, '👖 Hose / Rock', 4, lb(CO.bot), num('bot', 0), i => cu().bot = i);
       row(p, '🎨 Hosen-Farbe', BI.PANTS.length, sw(BI.PANTS), num('pants', 0), i => cu().pants = i);
       row(p, '🦓 Streifen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '〰️' : '🚫'; return b; }, num('stripe', 0), i => cu().stripe = i);
-      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), num('logo', 0), i => cu().logo = i); }
+      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), num('logo', 0), i => cu().logo = i);
+      /* Outfits: Kleidung merken und per Tipp wieder anziehen (gelten für alle deine Figuren) */
+      const OK = ['ctype', 'sleeve', 'top', 'bot', 'pants', 'stripe', 'logo', 'shoeT', 'shoe', 'ear', 'neck', 'band'], oRow = document.createElement('div'); let oArm = -1;
+      lab(p, '👗 Meine Outfits (bis 6) – tippe zum Anziehen'); oRow.className = 'row'; p.appendChild(oRow);
+      const renderOutfits = () => { oRow.innerHTML = ''; const L = save.outfits || (save.outfits = []);
+        L.forEach((o, i) => { const b = document.createElement('button'); b.className = 'outf'; b.style.background = 'linear-gradient(135deg,' + hex(BI.SHIRTS[o.shirt | 0] || 0xffffff) + ' 50%,' + hex(BI.PANTS[(o.cu && o.cu.pants) | 0] || 0x444444) + ' 50%)'; b.textContent = i + 1; b.setAttribute('aria-label', 'Outfit ' + (i + 1) + ' anziehen');
+          b.onclick = () => edit(() => { for (const k of OK) cu()[k] = (o.cu || {})[k] | 0; save.shirt = o.shirt | 0; renderOutfits(); });
+          const x = document.createElement('span'); x.className = 'ox'; x.textContent = oArm === i ? '?' : '✖'; x.onclick = e => { e.stopPropagation(); if (oArm !== i) { oArm = i; renderOutfits(); return; } oArm = -1; L.splice(i, 1); persist(); A.pop(); renderOutfits(); }; b.appendChild(x); oRow.appendChild(b); });
+        if (L.length < 6) { const a = document.createElement('button'); a.className = 'pill'; a.textContent = '💾 Outfit speichern'; a.onclick = () => { const o = { cu: {}, shirt: save.shirt | 0 }; for (const k of OK) o.cu[k] = cu()[k] | 0; L.push(o); persist(); A.pop(); say('👗 Outfit ' + L.length + ' gespeichert!', 1600); renderOutfits(); }; oRow.appendChild(a); }
+        const r = document.createElement('button'); r.className = 'pill'; r.textContent = '🎲 Zufalls-Outfit'; r.onclick = () => edit(() => { const q = BI.randomCu(); for (const k of OK) cu()[k] = q[k] | 0; save.shirt = (Math.random() * BI.SHIRTS.length) | 0; }); oRow.appendChild(r); };
+      syncs.push(renderOutfits); renderOutfits(); }
     // Reiter 7: Schuhe
     { const p = panel();
       row(p, '👟 Schuhart', 4, lb(CO.shoeT), num('shoeT', 0), i => cu().shoeT = i);
@@ -1357,15 +1367,16 @@
       const hb = document.createElement('button'); hb.className = 'pill'; hb.onclick = () => { setPetHome(pup.mode !== 'home'); refreshPickers(); }; r.appendChild(hb);
       syncs.push(() => { bs.forEach((b, i) => { const q = BI.PETS[i]; b.hidden = !!q.mascot && !(save.mascots || []).includes(q.id); b.classList.toggle('sel', q.id === save.pet); }); hb.textContent = save.petHome !== false ? '🐾 Mitnehmen' : '🏠 Zu Hause lassen'; }); }
     const TABS = ['🧑‍🤝‍🧑 Figuren', '🧍 Körper', '😀 Gesicht', '👀 Augen', '💇 Haare', '🧔 Bart', '👕 Kleidung', '👟 Schuhe', '💍 Zubehör', '🎩 Hüte', '🐾 Haustier'], tbs = []; let cur = 0;
-    function showTab(i) { cur = i; panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); }
-    TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; b.textContent = t; b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
+    function showTab(i) { cur = i; box.classList.toggle('t0', i === 0); panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); }
+    TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; { const sp = t.indexOf(' '), ti = document.createElement('span'), tl = document.createElement('span'); ti.className = 'ti'; ti.textContent = t.slice(0, sp); tl.textContent = t.slice(sp + 1); b.append(ti, tl); } b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
     { const mk = (t, fn) => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = t; b.onclick = fn; actEl.appendChild(b); };
       mk('🎲 Zufall', () => edit(() => { const r = BI.randomCu(); save.cu = Object.assign(r, { acc: (save.cu && save.cu.acc) || {} }); save.shirt = (Math.random() * BI.SHIRTS.length) | 0; }));
       mk('⟲', () => { cam.yaw -= .8; A.pop(); }); mk('⏯ Drehen', () => { orbitOff = !orbitOff; A.pop(); }); mk('⟳', () => { cam.yaw += .8; A.pop(); }); }
     showTab(0);
     pickers.push(() => { syncs.forEach(f => f()); });
+    return { showTab };
   }
-  buildHeroPicker($('heroPick')); buildHeroPicker($('wardPick'));
+  buildHeroPicker($('heroPick')); const wardTabs = buildHeroPicker($('wardPick'));
   { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = 'Bunte Insel'.split(' ').map((w, wi) => '<div class="w">' + [...w].map((ch, i) => '<span style="--i:' + (i + wi * 6) + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join('') + '</div>').join('<i></i>'); }
   const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); };
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
@@ -1682,7 +1693,8 @@
   function updateCamera(dt) {
     const v = P.veh; let tx, ty, tz, dist, pitch = cam.pitch;
     if (rs.ui === 'play' && state === 'play') { camera.position.set(RG.x + .9, 2.25, RG.z + 2.7); camera.lookAt(RG.x, 1.75, -88); cam.x = RG.x; cam.y = 2.25; cam.z = RG.z + 2.7; sun.position.set(RG.x + 60, 100, RG.z + 40); sun.target.position.set(RG.x, 0, RG.z); sky.position.set(RG.x, 0, RG.z); return; }
-    if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -.55 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
+    if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -1.05 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
+    else if (wardOpen && !v) { cam.yaw += dt * (orbitOff ? 0 : .5); tx = P.x; ty = P.y + (innerHeight > innerWidth ? -1.05 : .7); tz = P.z; dist = 5.2; pitch = .1; }
     else if (v) {
       if (cam.ego && state === 'play') {
         const e = EYE[v.isTrain ? 'train' : v.type] || [0, 1.4, .4], ex = v.x + Math.sin(v.h) * e[2], ez = v.z + Math.cos(v.h) * e[2], ey = (v.y || 0) + e[1], yaw = v.h + cam.egoOff;

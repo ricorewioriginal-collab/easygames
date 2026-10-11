@@ -197,3 +197,7 @@ Dein Haustier wartet standardmäßig an deiner Wohnung. Mitnehmen ist freiwillig
 Auch die **Pappnase** schwebt standardmäßig an der Wohnung: E an der Pappnase nimmt sie mit, an der Wohnungstür lässt du sie wieder da; in der Garderobe wählst du sie ab („🎈 Pappnase“) oder schaltest „Mitnehmen / Zu Hause lassen“.
 
 **Welt-Währungen:** Was du in einer Welt sammelst, wird in Sterne ⭐ getauscht, die überall (z. B. in den Shops) gelten. Drachenhöhen: Funkelsteine zählen Wert 1/2/5/10, je 10 Wert gibt sofort 1 ⭐.
+
+### 👗 Charakter-Studio & Kleiderschrank (modernisiert)
+
+Bottom-Sheet statt Vollbild-Karte: die Figur bleibt oben sichtbar (auch im Kleiderschrank), der Fertig-Knopf überdeckt nichts mehr, Reiter mit großen Icons, Optionen in übersichtlichen Karten, größere Farbfelder. Der Name steht nur noch im Reiter „Figuren“. Der Kleiderschrank öffnet direkt bei „Kleidung“. Neu: **Outfits** (bis 6 Kleidungs-Kombis speichern, per Tipp anziehen, Zufalls-Outfit), gültig für alle deine Figuren.

@@ -215,6 +215,28 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 .card.quest{width:min(520px,100%);max-height:calc(100vh - 20px);overflow:auto;text-align:left}.card.quest .logo{text-align:center}.qbarw{height:12px;border-radius:99px;background:rgba(0,0,0,.12);overflow:hidden}#questBar{height:100%;width:0;background:linear-gradient(90deg,#4cd07d,#ffd23f)}.qhead{font-weight:800;font-size:20px;margin:4px 0}
 .qtask{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;margin:5px 0;border-radius:14px;background:rgba(255,255,255,.6);font-weight:700}.qtask.ok{opacity:.6}.qtask .pill{padding:6px 12px;font-size:14px;flex:none}#questList{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.qch{padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.55);font-size:13px;font-weight:700}.qch.ok{background:#c9f2d6}.qch.cur{background:#ffd23f}
 .parent{text-align:left;font-weight:700}.parent label{display:flex;gap:10px;align-items:center;margin:8px 0}.parent input[type=range]{flex:1}#bParent{background:linear-gradient(90deg,#ffd23f var(--p,0%),#fff var(--p,0%))}
+
+/* ---- Charakter-Studio & Kleiderschrank: modernes Bottom-Sheet (Figur bleibt oben sichtbar, Fertig-Knopf überdeckt nichts) ---- */
+#menu.creating .menucard,#wardPanel .card.shop{background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(240,248,255,.9));border-radius:28px 28px 20px 20px;padding:8px 12px 12px;display:flex;flex-direction:column;max-height:58vh;overflow:hidden;box-shadow:0 -8px 30px rgba(20,50,100,.28);width:min(560px,100%)}
+#menu.creating .menucard::before,#wardPanel .card.shop::before{content:"";display:block;width:44px;height:5px;border-radius:3px;background:rgba(40,70,120,.25);margin:0 auto 6px;flex:none}
+#menu.creating [data-v=hero]:not([hidden]){display:flex;flex-direction:column;min-height:0;flex:1}
+#heroPick,#wardPick{display:flex;flex-direction:column;min-height:0;flex:1}
+#heroPick .lab:first-child,#wardPick .lab:first-child{display:none}
+#heroPick .pn,#wardPick .pn{flex:none;width:100%;padding:9px 14px;border-radius:14px;border:2px solid rgba(45,140,255,.25);background:#fff;font-size:17px;font-weight:700;text-align:center;margin:0 0 6px}
+#heroPick .pn:focus,#wardPick .pn:focus{outline:none;border-color:var(--pri)}
+#heroPick .pn{display:none}#heroPick.t0 .pn{display:block}#wardPick .pn{display:none}
+.cact .pill{padding:6px 12px;font-size:14px}.cact{gap:5px}
+.ctabs{flex:none;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 22px),transparent);padding:2px 10px 6px;margin:0 -2px 4px}
+.ctab{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:60px;padding:6px 8px 5px;border-radius:16px;font-size:11px;scroll-snap-align:center;transition:transform .12s,background .12s}.ctab .ti{font-size:22px;line-height:1.1}.ctab.sel{background:linear-gradient(180deg,#4da3ff,#2d6be0);transform:translateY(-1px) scale(1.05)}
+#heroPick .cbody,#wardPick .cbody{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:2px 2px 8px;-webkit-overflow-scrolling:touch}
+.cbody .row{background:rgba(255,255,255,.62);border-radius:18px;padding:8px 6px}
+.cbody .lab{text-align:left;padding-left:8px;font-size:13px;opacity:.75}
+.sw{width:44px;height:44px;transition:transform .12s}.sw.sel,.hat.sel{transform:scale(1.08)}
+.cact{flex:none;margin:4px 0 0}
+#menu.creating #bHeroBack{position:static;flex:none;margin-top:6px}
+.outf{position:relative;width:54px;height:54px;border-radius:16px;border:3px solid #fff;box-shadow:var(--shadow);font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}.outf.sel{outline:4px solid var(--pri);outline-offset:2px}.outf .ox{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ff8a7a;color:#fff;font-size:12px;line-height:22px;text-shadow:none;box-shadow:var(--shadow)}
+#wardPanel{place-items:end center;padding:8px 8px max(8px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(20,60,120,.3))}@media (min-width:860px){#wardPanel{place-items:center end;padding-right:7vw}#wardPanel .card.shop{max-height:86vh}#menu.creating .menucard{max-height:86vh}}
+#wardPanel .card.shop .logo{font-size:20px;flex:none;margin-bottom:4px}#wardPanel .card.shop .sub{display:none}#wardPanel .card.shop>.lab{flex:none;margin:4px 0 2px;font-size:13px}#wardItems{flex:none;max-height:84px;overflow:auto;margin:2px 0}#wardClose{flex:none;align-self:center}
 </style>
 </head>
 <body>
