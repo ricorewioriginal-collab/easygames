@@ -30,6 +30,8 @@ export class TouchControls {
   private resetStick: () => void = () => undefined;
   private prevPosition: string | null = null;
   private prevTouchAction: string | null = null;
+  /** Alle Zeiger, die gerade wirklich auf dem Bildschirm sind (Sicherheitsnetz gegen verlorene pointerup-Ereignisse) */
+  private readonly active = new Set<number>();
 
   /** Soll die Oberfläche sichtbar sein? 'on' immer, 'auto' nur bei grobem Zeiger (Touch). */
   static shouldShow(layout: TouchLayout): boolean {
@@ -97,6 +99,7 @@ export class TouchControls {
     });
 
     this.buildStick(root);
+    this.watchWindow();
 
     // Haltetasten (Sprung, Boost, Drift): gedrückt, solange mindestens ein Finger drauf ist
     root.querySelectorAll<HTMLButtonElement>('[data-hold]').forEach((btn) => {
@@ -171,7 +174,7 @@ export class TouchControls {
     };
     this.resetStick = release;
     this.listen(zone, 'pointerdown', (e: PointerEvent) => {
-      if (this.stickId !== -1) return;
+      // Ein neuer Daumen übernimmt den Stick immer (ein verlorenes Loslassen darf ihn nie blockieren)
       e.preventDefault();
       this.stickId = e.pointerId;
       const r = zone.getBoundingClientRect();
@@ -198,6 +201,55 @@ export class TouchControls {
     this.listen(zone, 'lostpointercapture', end);
   }
 
+  /**
+   * Sicherheitsnetz: Geht ein Loslassen am Element verloren (System-Geste, Benachrichtigung, Browser-Eigenheit),
+   * bliebe der Stick sonst „hängen" und das Auto würde von allein lenken/fahren. Deshalb werden alle Zeiger zusätzlich
+   * am Fenster verfolgt: Ist ein Zeiger weg, wird alles losgelassen, was von ihm abhing.
+   */
+  private watchWindow(): void {
+    const w = window;
+    const down = (e: PointerEvent): void => void this.active.add(e.pointerId);
+    const up = (e: PointerEvent): void => {
+      this.active.delete(e.pointerId);
+      this.releaseLost();
+    };
+    const touchEnd = (e: TouchEvent): void => {
+      if (e.touches.length === 0) {
+        this.active.clear();
+        this.reset();
+      }
+    };
+    w.addEventListener('pointerdown', down, true);
+    w.addEventListener('pointerup', up, true);
+    w.addEventListener('pointercancel', up, true);
+    w.addEventListener('touchend', touchEnd, true);
+    w.addEventListener('touchcancel', touchEnd, true);
+    w.addEventListener('pagehide', () => this.reset());
+    this.cleanup.push(() => {
+      w.removeEventListener('pointerdown', down, true);
+      w.removeEventListener('pointerup', up, true);
+      w.removeEventListener('pointercancel', up, true);
+      w.removeEventListener('touchend', touchEnd, true);
+      w.removeEventListener('touchcancel', touchEnd, true);
+    });
+  }
+
+  /** Lässt alles los, was von einem nicht mehr vorhandenen Zeiger gehalten wird */
+  private releaseLost(): void {
+    if (this.stickId !== -1 && !this.active.has(this.stickId)) this.resetStick();
+    for (const [key, ids] of this.held) {
+      for (const id of [...ids]) if (!this.active.has(id)) ids.delete(id);
+      this.state[key as 'jump' | 'boost' | 'handbrake'] = ids.size > 0;
+      if (ids.size === 0)
+        this.root?.querySelectorAll(`[data-hold="${key}"]`).forEach((el) => el.classList.remove('on'));
+    }
+  }
+
+  /** Aktuell gezählte Zeiger (für die Diagnose) */
+  get pointerCount(): number {
+    return this.active.size;
+  }
+
   private listen<K extends keyof HTMLElementEventMap>(
     el: HTMLElement,
     type: K,
@@ -209,6 +261,7 @@ export class TouchControls {
 
   /** Aktueller Zustand (Kopie) */
   read(): TouchState {
+    if (this.stickId !== -1 || this.held.size) this.releaseLost();
     return { ...this.state };
   }
 
