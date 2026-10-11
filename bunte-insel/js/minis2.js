@@ -4,6 +4,7 @@
    🏙️ Taxi-Rush (Stadt) – Spurwechsel-Rennen: Autos ausweichen, Fahrgäste und Münzen einsammeln
    🎢 Dosen-Knall (Freizeitpark) – Wurfbude: Ball ziehen und loslassen, Dosenpyramiden umwerfen
    🌈 Pride-Disco (Regenbogenwelt) – Rhythmus-Tanzspiel: Pfeile im Takt treffen (eigener Beat, Töne im Browser erzeugt)
+   🐉 Drachenflug (Drachenhöhen) – Ring-Flug in Pseudo-3D, ziehen/zielen
    🎬 Hafen-Kran (Dampfer-Hafen) – Kisten stapeln: im richtigen Moment loslassen
    (🐶 Fellretter-Sprint = Jump 'n' Run der Fellretter-Bucht steht in jump.js.)
    Alle starten über den Spielautomaten in der Welt (arcade.js) oder über das 🎮-Spiele-Menü; bei „Mit Freunden“ gleicher Startwert = gleiche Strecke/Pyramiden/Noten. */
@@ -182,6 +183,42 @@
     return G;
   };
 
+  /* =====================  🐉 DRACHENFLUG (Drachenhöhen, Ring-Flug in Pseudo-3D)  ===================== */
+  const flug = () => {
+    const G = {}; let rings, items, px, py, tx, ty, t, life, over, msg, msgT, zoff, combo, inv, ph;
+    const ZMAX = 26, geo = () => { const W = h.W(), H = h.H(); return { W, H, cx: W / 2, cy: H * .46, S: Math.min(W, H) * .62 }; };
+    G.init = function () { rings = []; items = []; px = 0; py = 0; tx = 0; ty = 0; t = 0; life = 3; over = false; msg = ''; msgT = 0; zoff = 0; combo = 0; inv = 0; ph = 0; for (let i = 0; i < 6; i++) spawn(8 + i * 4); };
+    G.resize = function () { };
+    function spawn(z) { const r = h.rnd, a = r() * 6.283, d = r() * Math.min(.85, .3 + t * .01); rings.push({ z, x: Math.cos(a) * d, y: Math.sin(a) * d * .8, got: false, miss: false }); const k = r();
+      for (let j = 1; j <= 2; j++) if (k < .8) items.push({ k: 'g', z: z + j * 1.4, x: Math.cos(a) * d * (1 - j * .12), y: Math.sin(a) * d * .8, got: false }); if (r() < Math.min(.55, .12 + t * .008)) items.push({ k: 'x', z: z + 2, x: (r() - .5) * 1.7, y: (r() - .5) * 1.4, got: false }); }
+    const key = { l: 0, r: 0, u: 0, d: 0 }; G.keydown = c => { if (c === 'ArrowLeft' || c === 'KeyA') key.l = 1; else if (c === 'ArrowRight' || c === 'KeyD') key.r = 1; else if (c === 'ArrowUp' || c === 'KeyW') key.u = 1; else if (c === 'ArrowDown' || c === 'KeyS') key.d = 1; };
+    G.keyup = c => { if (c === 'ArrowLeft' || c === 'KeyA') key.l = 0; else if (c === 'ArrowRight' || c === 'KeyD') key.r = 0; else if (c === 'ArrowUp' || c === 'KeyW') key.u = 0; else if (c === 'ArrowDown' || c === 'KeyS') key.d = 0; };
+    const aim = (x, y) => { const g = geo(); tx = clamp((x - g.cx) / (g.W * .36), -1, 1); ty = clamp((y - g.cy) / (g.H * .34), -1, 1); };
+    G.tap = (x, y) => aim(x, y); G.move = (x, y) => aim(x, y);
+    G.dbg = () => ({ rings, items, px, py, life, aim: (a, b) => { tx = a; ty = b; } });
+    const say = (s, d) => { msg = s; msgT = d || 1.2; };
+    G.update = function (dt) {
+      if (over) return; t += dt; ph += dt; inv = Math.max(0, inv - dt); msgT = Math.max(0, msgT - dt); const v = 7 + Math.min(9, t * .17);
+      tx = clamp(tx + (key.r - key.l) * dt * 2.2, -1, 1); ty = clamp(ty + (key.d - key.u) * dt * 2.2, -1, 1); px += (tx - px) * Math.min(1, dt * 6); py += (ty - py) * Math.min(1, dt * 6);
+      for (const r of rings) r.z -= v * dt; for (const it of items) it.z -= v * dt;
+      for (const r of rings) if (!r.got && !r.miss && r.z <= 1) { const d = Math.hypot(r.x - px, r.y - py); if (d < .3) { r.got = true; combo++; const perfect = d < .1; h.add(3 + (perfect ? 2 : 0) + Math.min(3, combo - 1), h.W() / 2, h.H() * .4); snd(perfect ? 'star' : 'ding'); say(perfect ? 'Perfekt!' : 'Ring!', .6); h.burst(h.W() / 2, h.H() * .46, 12, ['#ffe27a', '#fff', '#8fd8ff']); } else { r.miss = true; combo = 0; } }
+      for (const it of items) if (!it.got && it.z <= 1 && it.z > -1) { const d = Math.hypot(it.x - px, it.y - py); if (d < (it.k === 'g' ? .26 : .22)) { it.got = true; if (it.k === 'g') { h.add(1, h.W() / 2, h.H() * .52); snd('ding'); } else if (inv <= 0) { life--; inv = 1.4; combo = 0; snd('bonk'); say('Autsch! Gewitterwolke!', 1); if (life <= 0) { over = true; M.over = true; say('💥 Bruchlandung!', 99); } } } }
+      rings = rings.filter(r => r.z > -1); items = items.filter(i => i.z > -1.5); let far = rings.reduce((m, r) => Math.max(m, r.z), 0); while (far < ZMAX) { far += 4 - Math.min(1.2, t * .02); spawn(far); }
+    };
+    G.draw = function () {
+      const c = h.ctx(), g = geo(), W = g.W, H = g.H; h.bg('#2a1d5a', '#ff9a6c'); c.fillStyle = '#ffe9a8'; c.beginPath(); c.arc(W * .75, H * .25, H * .09, 0, 6.283); c.fill();
+      c.fillStyle = 'rgba(40,30,90,.55)'; for (let i = 0; i < 7; i++) { const x = ((i * 190 - px * 60 - t * 12) % (W + 260) + W + 260) % (W + 260) - 130; c.beginPath(); c.moveTo(x, H * .75); c.lineTo(x + 90, H * (.5 + (i % 3) * .06)); c.lineTo(x + 180, H * .75); c.fill(); } c.fillStyle = 'rgba(255,255,255,.14)'; for (let i = 0; i < 18; i++) { const a = i / 18 * 6.283, f = ((t * 1.3 + i * .37) % 1); c.fillRect(g.cx + Math.cos(a) * f * W * .7, g.cy + Math.sin(a) * f * H * .7, 3 + f * 8, 3 + f * 8); }
+      const draw = [], proj = (x, y, z) => { const k = 1 / Math.max(.15, z); return [g.cx + (x - px) * g.S * k, g.cy + (y - py) * g.S * k, k]; };
+      for (const r of rings) draw.push({ z: r.z, r }); for (const it of items) draw.push({ z: it.z, it }); draw.sort((a, b) => b.z - a.z);
+      for (const d of draw) { if (d.r) { const r = d.r, [x, y, k] = proj(r.x, r.y, r.z); const R = g.S * .3 * k; c.lineWidth = Math.max(2, 14 * k); c.strokeStyle = r.got ? 'rgba(120,255,160,' + Math.max(0, r.z + 1) / 2 + ')' : r.miss ? 'rgba(150,150,170,.35)' : (r === rings.find(q => !q.got && !q.miss) ? '#ffd23f' : '#9ab8ff'); c.beginPath(); c.arc(x, y, R, 0, 6.283); c.stroke(); }
+        else { const it = d.it; if (it.got) continue; const [x, y, k] = proj(it.x, it.y, it.z); if (it.k === 'g') h.emoji('💎', x, y, g.S * .16 * k); else h.emoji('⛈️', x, y, g.S * .3 * k); } }
+      /* Drache (Zündel von hinten) */
+      if (!(inv > 0 && Math.floor(t * 14) % 2)) { const x = g.cx, y = g.cy + g.S * .55, f = Math.sin(ph * 12); c.save(); c.translate(x + px * 20, y + py * 14); c.rotate((tx - px) * .5); c.fillStyle = '#6cc6ff'; for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(sd * 18, -6); c.quadraticCurveTo(sd * 90, -50 - f * 22, sd * 70, 8); c.quadraticCurveTo(sd * 40, -2, sd * 18, 6); c.fill(); } c.fillStyle = '#5fd6a8'; c.beginPath(); c.ellipse(0, 0, 24, 30, 0, 0, 6.283); c.fill(); c.fillStyle = '#ffb347'; c.beginPath(); c.ellipse(0, 6, 14, 20, 0, 0, 6.283); c.fill(); c.fillStyle = '#5fd6a8'; c.beginPath(); c.arc(0, -34, 17, 0, 6.283); c.fill(); c.fillStyle = '#fff0c8'; c.beginPath(); c.moveTo(-12, -44); c.lineTo(-18, -62); c.lineTo(-5, -48); c.moveTo(12, -44); c.lineTo(18, -62); c.lineTo(5, -48); c.fill(); c.restore(); }
+      for (let i = 0; i < life; i++) h.emoji('❤️', 28 + i * 30, 76, 26); if (combo > 1) h.text('Kombo ×' + combo, W / 2, H * .17, Math.min(30, W / 22), '#ffe27a'); if (msgT > 0 || over) h.text(msg, W / 2, H * .3, Math.min(38, W / 15), '#fff'); if (t < 5 && !over) h.text('Ziehen/Tippen oder ←→↑↓: Flieg durch die Ringe, sammle 💎, weiche ⛈️ aus!', W / 2, H * .88, Math.min(22, W / 28), '#fff');
+    };
+    return G;
+  };
+
   /* =====================  🏗️ HAFEN-KRAN (Dampfer-Hafen, Kisten stapeln)  ===================== */
   const crane = () => {
     const G = {}; let blocks, cur, spd, t, over, msg, msgT, fall, streak, camY, pos;
@@ -220,4 +257,5 @@
   h.register('cans_park', cans(), { icon: '🥫', name: 'Dosen-Knall', help: 'Ball ziehen, zielen, loslassen: Wirf die Dosenpyramiden um!', dur: 90, goal: 30, zone: 'park' });
   h.register('dance_regenbogen', dance(), { icon: '💃', name: 'Pride-Disco', help: 'Triff die Pfeile im Takt – Perfekt-Treffer und Kombos geben mehr Punkte!', dur: 62, goal: 400, zone: null });
   h.register('crane_dampfer', crane(), { icon: '🏗️', name: 'Hafen-Kran', help: 'Stapel die Kisten am Kran so genau wie möglich – Überstehendes wird abgeschnitten!', dur: 90, goal: 25, zone: 'dampfer' });
+  h.register('ringflug_drache', flug(), { icon: '🐉', name: 'Drachenflug', help: 'Flieg als Drache durch die goldenen Ringe, sammle Funkelsteine und weiche den Gewitterwolken aus!', dur: 60, goal: 40, zone: 'drachen' });
 });

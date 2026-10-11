@@ -56,6 +56,8 @@ BI.buildWorld = function (scene) {
       else if (W.city && cityWalk(px, pz, r)) { /* Brücke / Stadtinsel */ }
       else if (W.park && parkWalk(px, pz, r)) { /* Brücke / Parkinsel */ }
       else if (W.rainbow && rainbowWalk(px, pz, r)) { /* Brücke / Regenbogeninsel */ }
+      else if (W.drachen && drachenWalk(px, pz, r)) { /* Brücke / Drachenhöhen */ }
+      else if (W.drachen && pz > 130 && Math.hypot(px - W.drachen.x, pz - W.drachen.z) < W.drachen.R + 40 && Math.abs(px - W.drachen.x) < 80) { const dd = Math.hypot(px - W.drachen.x, pz - W.drachen.z) || 1, k = Math.min(1, (W.drachen.R - r) / dd); px = W.drachen.x + (px - W.drachen.x) * k; pz = W.drachen.z + (pz - W.drachen.z) * k; hit = true; }
       else if (W.dampf && dampfWalk(px, pz, r)) { /* Brücke / Dampfer-Hafen */ }
       else if (W.dampf && px < -160 && Math.hypot(px - W.dampf.x, pz - W.dampf.z) < W.dampf.R + 40 && Math.abs(pz - W.dampf.z) < 70) { const dd = Math.hypot(px - W.dampf.x, pz - W.dampf.z) || 1, k = Math.min(1, (W.dampf.R - r) / dd); px = W.dampf.x + (px - W.dampf.x) * k; pz = W.dampf.z + (pz - W.dampf.z) * k; hit = true; }
       else if (W.pups && pupsWalk(px, pz, r)) { /* Brücke / Fellretter-Bucht */ }
@@ -68,6 +70,7 @@ BI.buildWorld = function (scene) {
     out.x = px; out.z = pz; out.hit = hit; return out;
   };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
+  const drachenWalk = (px, pz, r) => { const C = W.drachen, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const dampfWalk = (px, pz, r) => { const C = W.dampf, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const pupsWalk = (px, pz, r) => { const C = W.pups, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const rainbowWalk = (px, pz, r) => { const C = W.rainbow, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
@@ -395,6 +398,7 @@ BI.buildWorld = function (scene) {
   BI.buildRainbowGround({ W, st, lamp, ROADY, GRASS, SAND });
   BI.buildPupsGround({ W, st, lamp, ROADY, GRASS, SAND });
   BI.buildDampfGround({ W, st, lamp, ROADY });
+  BI.buildDrachenGround({ W, st, lamp, ROADY });
   BI.buildArcades({ W, st, lamp });
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
@@ -668,7 +672,7 @@ BI.buildWorld = function (scene) {
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water;
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam;
-  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); }
+  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); const f7 = new THREE.Mesh(new THREE.RingGeometry(W.drachen.R + 7, W.drachen.R + 13, 56), foam.material); f7.rotation.x = -Math.PI / 2; f7.position.set(W.drachen.x, -.2, W.drachen.z); scene.add(f7); }
 
   /* ---------- Meshes ---------- */
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }
