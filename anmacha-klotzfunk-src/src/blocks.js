@@ -5,7 +5,8 @@
 // solid (blockiert Bewegung), opaque (verdeckt Nachbarflächen), trans (durchsichtig, eigenes Mesh),
 // self (gleiche Nachbarn zeigen Innenflächen, z. B. Blätter), emit (Eigenleuchten, 2 = Regenbogen),
 // hard (Härte, Sekunden Grundabbauzeit), tool (passendes Werkzeug), color (Bruchstücke), map (Kartenfarbe),
-// icon (Atlas-Kachel für Hotbar/Inventar), inv (im Inventar wählbar).
+// icon (Atlas-Kachel für Hotbar/Inventar), inv (im Inventar wählbar),
+// tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen).
 
 export const LOGO0 = 11, LOGO_COUNT = 16, SPECIAL0 = 27, SPECIAL_COUNT = 11;
 export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
@@ -49,10 +50,10 @@ const DEF = [
   [42, 'SPRUCE', 'Fichtenholz', 'natur', [33, 32, 33], { hard: 1.0, tool: 'axt', color: 0x4a3420, map: [74, 52, 32], icon: 32 }],
   [43, 'NEEDLES', 'Fichtennadeln', 'natur', [34, 34, 34], { opaque: 0, self: 1, hard: 0.2, color: 0x2a5a36, map: [36, 84, 50], icon: 34 }],
   [44, 'CACTUS', 'Kaktus', 'natur', [36, 35, 36], { hard: 0.4, color: 0x3c8a3a, map: [60, 138, 58], icon: 35 }],
-  [45, 'COAL', 'Kohleerz', 'erz', [37, 37, 37], { hard: 2.0, tool: 'spitzhacke', color: 0x3a3a40, map: [70, 70, 78], icon: 37 }],
-  [46, 'COPPER', 'Kupfererz', 'erz', [38, 38, 38], { hard: 2.2, tool: 'spitzhacke', color: 0xc8743c, map: [200, 116, 60], icon: 38 }],
-  [47, 'IRON', 'Eisenerz', 'erz', [39, 39, 39], { hard: 2.6, tool: 'spitzhacke', color: 0xc8a888, map: [200, 168, 136], icon: 39 }],
-  [48, 'CRYSTAL', 'Funkkristall', 'erz', [40, 40, 40], { emit: 1, hard: 2.4, tool: 'spitzhacke', color: 0x6ae8ff, map: [106, 232, 255], icon: 40 }],
+  [45, 'COAL', 'Kohleerz', 'erz', [37, 37, 37], { hard: 2.0, tool: 'spitzhacke', color: 0x3a3a40, map: [70, 70, 78], icon: 37, tier: 1 }],
+  [46, 'COPPER', 'Kupfererz', 'erz', [38, 38, 38], { hard: 2.2, tool: 'spitzhacke', color: 0xc8743c, map: [200, 116, 60], icon: 38, tier: 1 }],
+  [47, 'IRON', 'Eisenerz', 'erz', [39, 39, 39], { hard: 2.6, tool: 'spitzhacke', color: 0xc8a888, map: [200, 168, 136], icon: 39, tier: 2 }],
+  [48, 'CRYSTAL', 'Funkkristall', 'erz', [40, 40, 40], { emit: 1, hard: 2.4, tool: 'spitzhacke', color: 0x6ae8ff, map: [106, 232, 255], icon: 40, tier: 2 }],
   [49, 'MUD', 'Schlamm', 'natur', [41, 41, 41], { hard: 0.5, tool: 'schaufel', color: 0x4e4234, map: [78, 66, 52], icon: 41 }],
   [50, 'FLOWERS', 'Blütenwiese', 'natur', [42, 1, 2], { hard: 0.6, tool: 'schaufel', color: 0x6ab04a, map: [150, 170, 90], icon: 42 }],
   [51, 'BASALT', 'Basalt', 'erz', [43, 43, 43], { hard: 1.8, tool: 'spitzhacke', color: 0x34343a, map: [52, 52, 58], icon: 43 }],
@@ -61,7 +62,11 @@ const DEF = [
   [54, 'MYCEL', 'Pilzboden', 'natur', [46, 47, 2], { hard: 0.6, tool: 'schaufel', color: 0x7a6a80, map: [122, 106, 128], icon: 46 }],
   [55, 'SANDSTONE', 'Sandstein', 'bau', [48, 48, 48], { hard: 1.2, tool: 'spitzhacke', color: 0xd8c08a, map: [216, 192, 138], icon: 48 }],
   [56, 'STEM', 'Pilzstiel', 'natur', [49, 49, 49], { hard: 0.6, tool: 'axt', color: 0xe8e0d0, map: [232, 224, 208], icon: 49 }],
-  [57, 'JLEAVES', 'Dschungelblätter', 'natur', [50, 50, 50], { opaque: 0, self: 1, hard: 0.2, color: 0x2e8a24, map: [40, 130, 34], icon: 50 }]
+  [57, 'JLEAVES', 'Dschungelblätter', 'natur', [50, 50, 50], { opaque: 0, self: 1, hard: 0.2, color: 0x2e8a24, map: [40, 130, 34], icon: 50 }],
+  // ab 58: Überleben (Stationen, Tierprodukte)
+  [58, 'WORKBENCH', 'Werkbank', 'bau', [51, 52, 8], { hard: 1.2, tool: 'axt', color: 0x9a7444, map: [150, 112, 66], icon: 51, station: 'werkbank' }],
+  [59, 'FURNACE', 'Schmelzofen', 'bau', [54, 53, 54], { hard: 2.0, tool: 'spitzhacke', color: 0x6a6a70, map: [110, 110, 116], icon: 53, station: 'ofen' }],
+  [60, 'WOOL', 'Wolle', 'bau', [55, 55, 55], { hard: 0.4, color: 0xeeeae2, map: [236, 232, 224], icon: 55 }]
 ];
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
@@ -80,7 +85,7 @@ export const TILES = {};
 
 for (const [id, key, name, cat, tiles, p] of DEF) {
   if (BLOCKS[id]) throw new Error('Block-Id doppelt: ' + id);
-  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, ...p };
+  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, ...p };
   if (b.trans) b.opaque = 0;
   BLOCKS[id] = b; B[key] = id; NAMES[id] = name;
   SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit;

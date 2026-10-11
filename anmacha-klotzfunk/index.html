@@ -7,8 +7,8 @@
 <meta name="description" content="KLOTZFUNK 3D – Voxel-Sandbox im Browser: bauen, abbauen, entdecken. Für PC und Smartphone.">
 <title>KLOTZFUNK 3D</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%234c9a3a%27/%3E%3Crect y=%275%27 width=%2716%27 height=%2711%27 fill=%27%23865f43%27/%3E%3C/svg%3E">
-  <script type="module" crossorigin src="./assets/index-Cq-GvGJy.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DBNRCEr2.css">
+  <script type="module" crossorigin src="./assets/index-C5bll_uV.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BmyPqYbU.css">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -19,9 +19,12 @@
   <canvas id="mm" width="56" height="56" aria-label="Minikarte"></canvas>
   <div id="quest" hidden></div>
   <div id="banner"></div>
+  <canvas id="vit" width="200" height="34" hidden aria-label="Gesundheit und Hunger"></canvas>
+  <div id="mine"><i></i></div>
   <div id="hotbar"></div>
   <div id="toast"></div>
   <div id="uw"></div>
+  <div id="hurt"></div>
   <div id="topbtns">
     <button id="bMap" class="tbtn" aria-label="Karte">🗺</button>
     <button id="bWp" class="tbtn" aria-label="Wegpunkt">📍</button>
@@ -47,7 +50,7 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Erze &amp; Kristalle</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🐑 Tiere</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
     <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
@@ -62,6 +65,7 @@
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Minikarte</div>
         <div><b>Story-Modus</b><br>Die Funkzentrale gibt dir 15 feste Aufträge: Holz, Bretter, Fundament, Licht, Funkmast, Federn, Seilhaken, Gleiten, Neon bis zum Regenbogen-Finale. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder</div>
+        <div><b>Überleben</b><br>Abbauen dauert je nach Härte; Werkzeuge machen es schneller und nutzen sich ab. Erze brauchen eine Spitzhacke, Eisen und Funkkristall mindestens eine aus Stein. Bretter → Stöcke und Werkbank, an der Werkbank Werkzeuge und Schmelzofen, im Ofen Barren und Braten. Rechtsklick/Setzen auf Werkbank oder Ofen öffnet das Herstellen. Essen: Essen wählen und Setzen drücken. Stürze, Ertrinken, Magma und Hunger kosten Herzen.</div>
         <div><b>Neue Welten</b><br>Ebenen, Wälder, Nadelwald, Berge, Schnee, Wüste, Strand, Sumpf, Dschungel, Blumenwiesen, Vulkane, Pilzwälder, Kristallfelder, Küsten und Meere. Unter der Erde: Höhlen, Seen, Kohle, Kupfer, Eisen und leuchtende Funkkristalle. Bestehende Welten bleiben unverändert.</div>
       </div>
     </details>
@@ -89,7 +93,8 @@
 <section id="inv" class="screen" hidden>
   <div class="panel wide">
     <h2>Inventar <button id="invClose" class="x" aria-label="Schließen">✕</button></h2>
-    <div class="invbar"><input id="invSearch" type="search" placeholder="Block oder Rezept suchen …" autocomplete="off" aria-label="Suchen"><label class="chk" id="invOwnedL"><input type="checkbox" id="invOwned"> nur Vorrat</label></div>
+ <p class="sub st" id="invSt" hidden></p>
+    <div class="invbar"><input id="invSearch" type="search" placeholder="Block, Gegenstand oder Rezept suchen …" autocomplete="off" aria-label="Suchen"><label class="chk" id="invOwnedL"><input type="checkbox" id="invOwned"> nur Vorrat</label></div>
     <div class="tabs" id="invTabs" role="tablist"></div>
     <p class="sub" id="invHint">Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.</p>
     <div id="invGrid" class="grid"></div>
@@ -117,6 +122,8 @@
       <label class="rng">Größe der Touch-Tasten: <b id="sBtnV"></b><input id="sBtn" type="range" min="0.7" max="1.5" step="0.05"></label>
       <label class="rng">Lautstärke Effekte: <b id="sSfxV"></b><input id="sSfx" type="range" min="0" max="1" step="0.05"></label>
       <label class="rng">Lautstärke Radio-Musik: <b id="sMusV"></b><input id="sMus" type="range" min="0" max="1" step="0.05"></label>
+      <label class="rng">Beim Umkippen (Überleben)
+        <select id="sDeath"><option value="keep">Vorrat behalten</option><option value="grave">Vorrat bleibt liegen – am Ort abholen</option></select></label>
       <div>
         <label class="chk"><input type="checkbox" id="sLefty"> Linkshänder (Tasten links, Laufen rechts)</label>
         <label class="chk"><input type="checkbox" id="sInvY"> Blick nach oben/unten umkehren</label>
@@ -126,6 +133,15 @@
     </div>
     <p class="sub">„Automatisch“ senkt bei ruckelndem Bild zuerst die Auflösung und dann die Sichtweite und hebt sie wieder an, wenn genug Reserve da ist. Alles wird nur auf diesem Gerät gespeichert.</p>
     <button id="sReset">↺ Standard wiederherstellen</button>
+  </div>
+</section>
+
+<section id="dead" class="screen" hidden>
+  <div class="panel">
+    <h2>Du bist umgekippt</h2>
+    <p class="sub" id="deadWhy"></p>
+    <button id="dRevive" class="big">Wieder aufstehen</button>
+    <button id="dMenu">⌂ Hauptmenü</button>
   </div>
 </section>
 

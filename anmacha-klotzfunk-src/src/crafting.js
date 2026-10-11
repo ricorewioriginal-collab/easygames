@@ -1,9 +1,10 @@
 // Zentrale Rezeptverwaltung: Prüfen und Herstellen als reine Funktionen (ohne Oberfläche, dadurch testbar).
-import { B, NAMES, LOGO0, LOGO_COUNT, BLOCKS } from './blocks.js';
+import { B, LOGO0, LOGO_COUNT, BLOCKS } from './blocks.js';
+import { I, ITEMS, TIERS, KINDS, nameOf } from './items.js';
 
 export const MAX_STACK = 999; // Höchstzahl je Blocktyp im Vorrat
 
-// give: [Typ, Anzahl], need: [[Typ, Anzahl], …]
+// give: [Typ, Anzahl], need: [[Typ, Anzahl], …], st: nötige Station in der Nähe ('werkbank' | 'ofen'), sonst aus der Hand
 export const RECIPES = [
   { id: 'planks', give: [B.PLANKS, 4], need: [[B.WOOD, 1]] },
   { id: 'planks2', give: [B.PLANKS, 4], need: [[B.SPRUCE, 1]] },
@@ -28,31 +29,55 @@ export const RECIPES = [
   { id: 'sandstone', give: [B.SANDSTONE, 2], need: [[B.SAND, 4]] }
 ];
 for (let i = 0; i < LOGO_COUNT; i++) RECIPES.push({ id: 'logo' + (i + 1), give: [LOGO0 + i, 2], need: [[B.PLANKS, 1]] });
-for (const r of RECIPES) r.cat = BLOCKS[r.give[0]].cat;
+// Überleben: Stationen, Werkzeuge, Schmelzen, Kochen
+RECIPES.push(
+  { id: 'sticks', give: [I.STICK, 4], need: [[B.PLANKS, 2]] },
+  { id: 'workbench', give: [B.WORKBENCH, 1], need: [[B.PLANKS, 4]] },
+  { id: 'furnace', give: [B.FURNACE, 1], need: [[B.STONE, 8]], st: 'werkbank' }
+);
+const TOOL_MAT = [B.PLANKS, B.STONE, I.COPPER_INGOT, I.IRON_INGOT], HEAD = [3, 3, 1];
+TIERS.forEach((t, ti) => KINDS.forEach((k, ki) => {
+  const id = I[t.key + '_' + k.key];
+  RECIPES.push({ id: 'tool' + id, give: [id, 1], need: [[TOOL_MAT[ti], HEAD[ki]], [I.STICK, 2]], st: 'werkbank' });
+}));
+RECIPES.push(
+  { id: 'ingotCopper', give: [I.COPPER_INGOT, 1], need: [[B.COPPER, 1], [B.COAL, 1]], st: 'ofen' },
+  { id: 'ingotIron', give: [I.IRON_INGOT, 1], need: [[B.IRON, 1], [B.COAL, 1]], st: 'ofen' },
+  { id: 'cook', give: [I.MEAT_COOKED, 1], need: [[I.MEAT_RAW, 1], [B.PLANKS, 1]], st: 'ofen' },
+  { id: 'cookCoal', give: [I.MEAT_COOKED, 4], need: [[I.MEAT_RAW, 4], [B.COAL, 1]], st: 'ofen' },
+  { id: 'glassOven', give: [B.GLASS, 3], need: [[B.SAND, 3], [B.COAL, 1]], st: 'ofen' }
+);
+for (const r of RECIPES) r.cat = (ITEMS[r.give[0]] || BLOCKS[r.give[0]]).cat;
+export const STATION_NAMES = { werkbank: 'Werkbank', ofen: 'Schmelzofen' };
+const STATION_ACC = { werkbank: 'eine Werkbank', ofen: 'einen Schmelzofen' };
 
 const have = (inv, t) => inv[t] || 0;
 
-// Prüft ein Rezept: ok, fehlende Zutaten, ob das Ergebnis noch in den Vorrat passt
-export function checkRecipe(inv, r, cap = MAX_STACK) {
+// Prüft ein Rezept: ok, fehlende Zutaten, ob das Ergebnis noch in den Vorrat passt, fehlende Station.
+// stations: Menge der Stationen in Reichweite; null = Stationen nicht prüfen
+export function checkRecipe(inv, r, cap = MAX_STACK, stations = null) {
   const missing = r.need.filter(([t, n]) => have(inv, t) < n).map(([t, n]) => [t, n - have(inv, t)]);
   const full = have(inv, r.give[0]) + r.give[1] > cap;
-  return { ok: !missing.length && !full, missing, full };
+  const noStation = !!(r.st && stations && !stations.has(r.st));
+  return { ok: !missing.length && !full && !noStation, missing, full, noStation };
 }
 
 // Stellt einmal her; verändert inv nur bei Erfolg. Rückgabe: { ok, msg }
-export function craft(inv, r, cap = MAX_STACK) {
-  const c = checkRecipe(inv, r, cap);
+export function craft(inv, r, cap = MAX_STACK, stations = null) {
+  const c = checkRecipe(inv, r, cap, stations);
   if (!c.ok) {
-    const msg = c.missing.length ? 'Es fehlt: ' + c.missing.map(([t, n]) => `${n}× ${NAMES[t]}`).join(', ') : `Vorrat voll: höchstens ${cap}× ${NAMES[r.give[0]]}`;
+    const msg = c.noStation ? `Braucht ${STATION_ACC[r.st]} in der Nähe`
+      : c.missing.length ? 'Es fehlt: ' + c.missing.map(([t, n]) => `${n}× ${nameOf(t)}`).join(', ') : `Vorrat voll: höchstens ${cap}× ${nameOf(r.give[0])}`;
     return { ok: false, msg };
   }
   for (const [t, n] of r.need) inv[t] = have(inv, t) - n;
   inv[r.give[0]] = have(inv, r.give[0]) + r.give[1];
-  return { ok: true, msg: `+${r.give[1]} ${NAMES[r.give[0]]}` };
+  return { ok: true, msg: `+${r.give[1]} ${nameOf(r.give[0])}` };
 }
 
 // Wie oft lässt sich das Rezept mit dem aktuellen Vorrat herstellen?
-export function craftable(inv, r, cap = MAX_STACK) {
+export function craftable(inv, r, cap = MAX_STACK, stations = null) {
+  if (r.st && stations && !stations.has(r.st)) return 0;
   let k = Math.floor((cap - have(inv, r.give[0])) / r.give[1]);
   for (const [t, n] of r.need) k = Math.min(k, Math.floor(have(inv, t) / n));
   return Math.max(0, k);
@@ -62,5 +87,5 @@ export function craftable(inv, r, cap = MAX_STACK) {
 export function recipeMatches(r, q) {
   if (!q) return true;
   q = q.toLowerCase();
-  return NAMES[r.give[0]].toLowerCase().includes(q) || r.need.some(([t]) => NAMES[t].toLowerCase().includes(q));
+  return nameOf(r.give[0]).toLowerCase().includes(q) || r.need.some(([t]) => nameOf(t).toLowerCase().includes(q));
 }

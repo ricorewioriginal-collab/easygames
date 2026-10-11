@@ -4,7 +4,9 @@ import { Game } from './game.js';
 import { B, NAMES, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
 import { BLOCKS, CATS, INV_BLOCKS } from './blocks.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot } from './storage.js';
-import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK } from './crafting.js';
+import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK, STATION_NAMES } from './crafting.js';
+import { ITEMS, ITEM_LIST, isItem, nameOf } from './items.js';
+import { MAX_HP, MAX_FOOD, MAX_AIR } from './survival.js';
 import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
 import { unlockAudio, sfx } from './audio.js';
 import { QUESTS, questProgress } from './quests.js';
@@ -24,7 +26,11 @@ const keys = new Set();
 
 // ---------- Icons / Atlas ----------
 document.documentElement.style.setProperty('--atlas', `url(${game.atlasCanvas.toDataURL()})`);
+const itemRows = game.itemCanvas.height / 32;
+document.documentElement.style.setProperty('--items', `url(${game.itemCanvas.toDataURL()})`);
+document.documentElement.style.setProperty('--itemRows', itemRows * 100 + '%');
 const icon = t => {
+  if (isItem(t)) { const k = ITEMS[t] ? ITEMS[t].icon : 0; return `<i class="ic it" style="background-position:${(k % 8) * 100 / 7}% ${itemRows > 1 ? Math.floor(k / 8) * 100 / (itemRows - 1) : 0}%"></i>`; }
   if (isLogo(t)) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
   if (t === B.RAINBOW) return '<i class="ic rb"></i>';
   const k = BLOCKS[t] ? BLOCKS[t].icon : 0;
@@ -56,38 +62,44 @@ function renderHotbar() {
     const d = hb.children[i], t = game.hotbar[i];
     const n = game.mode === 'creative' ? '∞' : (game.inv[t] || 0);
     d.className = 'slot' + (i === game.sel ? ' sel' : '') + (t && n === 0 ? ' empty' : '');
-    d.title = NAMES[t] || '';
+    d.title = t ? nameOf(t) : '';
     d.innerHTML = `<span class="k">${i + 1}</span>${t ? icon(t) : ''}<span class="n">${t ? n : ''}</span>`;
   }
 }
 
 // ---------- Inventar: Kategorien, Suche, Rezepte ----------
-let invCat = 'all', invQuery = '', invOwned = false;
+let invCat = 'all', invQuery = '', invOwned = false, invStations = new Set(), invAt = null;
+const TABS = [{ id: 'all', name: 'Alle' }, ...CATS, { id: 'items', name: 'Werkzeuge & Essen' }];
+const itemInfo = it => it.tool ? ` · ${it.tool.speed}× schneller · hält ${it.tool.dur} Blöcke` : it.food ? ` · +${it.food} Hunger` : '';
 function renderInvTabs() {
-  $('invTabs').innerHTML = [{ id: 'all', name: 'Alle' }, ...CATS].map(c => `<button role="tab" data-cat="${c.id}" class="${c.id === invCat ? 'on' : ''}" aria-selected="${c.id === invCat}">${c.name}</button>`).join('');
+  $('invTabs').innerHTML = TABS.map(c => `<button role="tab" data-cat="${c.id}" class="${c.id === invCat ? 'on' : ''}" aria-selected="${c.id === invCat}">${c.name}</button>`).join('');
 }
 function renderInventory() {
   const creative = game.mode === 'creative', q = invQuery.trim().toLowerCase();
   $('invHint').textContent = creative ? 'Kreativmodus: alle Blöcke sind unbegrenzt. Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.'
     : 'Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen. Zahl = Vorrat.';
   $('invOwnedL').hidden = creative;
+  $('invSt').hidden = creative || !invAt;
+  if (invAt) $('invSt').textContent = invAt === 'ofen' ? '🔥 Am Schmelzofen: Barren schmelzen und Essen braten' : '🪚 An der Werkbank: Werkzeuge und Schmelzofen bauen';
   let h = '';
-  for (const t of INV_BLOCKS) {
-    const b = BLOCKS[t], n = creative ? '∞' : (game.inv[t] || 0);
+  for (const t of [...INV_BLOCKS, ...ITEM_LIST]) {
+    const b = BLOCKS[t] && !isItem(t) ? BLOCKS[t] : ITEMS[t], n = creative ? '∞' : (game.inv[t] || 0);
     if (invCat !== 'all' && b.cat !== invCat) continue;
     if (q && !b.name.toLowerCase().includes(q)) continue;
     if (invOwned && !creative && !n) continue;
-    h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}" title="${b.name}${b.tool ? ' · am besten mit ' + b.tool[0].toUpperCase() + b.tool.slice(1) : ''}">${icon(t)}<span>${b.name}</span><b>${n}</b></button>`;
+    const tip = isItem(t) ? itemInfo(b) : b.tool ? ' · am besten mit ' + b.tool[0].toUpperCase() + b.tool.slice(1) : '';
+    h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}" title="${b.name}${tip}">${icon(t)}<span>${b.name}</span><b>${n}</b></button>`;
   }
   $('invGrid').innerHTML = h || '<div class="empty-note">Nichts gefunden.</div>';
   $('recH').hidden = creative;
   if (creative) { $('recipes').innerHTML = ''; return; }
   const list = RECIPES.map((r, i) => [r, i]).filter(([r]) => (invCat === 'all' || r.cat === invCat) && recipeMatches(r, q));
   $('recipes').innerHTML = list.length ? list.map(([r, i]) => {
-    const c = checkRecipe(game.inv, r), k = craftable(game.inv, r);
-    const need = r.need.map(([t, n]) => { const have = game.inv[t] || 0; return have >= n ? `${n}× ${NAMES[t]}` : `<i>${n}× ${NAMES[t]} (${have})</i>`; }).join(' + ');
-    const why = c.full ? ' · Vorrat voll' : '';
-    return `<button data-r="${i}" ${c.ok ? '' : 'disabled'}>${icon(r.give[0])}<span><b>${r.give[1]}× ${NAMES[r.give[0]]}</b><small>aus ${need}${why}</small></span><span class="cnt">${k ? k + '×' : ''}</span></button>`;
+    const c = checkRecipe(game.inv, r, MAX_STACK, invStations), k = craftable(game.inv, r, MAX_STACK, invStations);
+    const need = r.need.map(([t, n]) => { const have = game.inv[t] || 0; return have >= n ? `${n}× ${nameOf(t)}` : `<i>${n}× ${nameOf(t)} (${have})</i>`; }).join(' + ');
+    const why = c.full ? ' · Vorrat voll' : c.noStation ? ` · <i>${STATION_NAMES[r.st]} nicht in der Nähe</i>` : '';
+    const badge = r.st ? `<span class="badge">${r.st === 'ofen' ? '🔥' : '🪚'} ${STATION_NAMES[r.st]}</span>` : '';
+    return `<button data-r="${i}" ${c.ok ? '' : 'disabled'}>${icon(r.give[0])}<span><b>${r.give[1]}× ${nameOf(r.give[0])}</b>${badge}<small>aus ${need}${why}</small></span><span class="cnt">${k ? k + '×' : ''}</span></button>`;
   }).join('') : '<div class="empty-note">Kein passendes Rezept.</div>';
 }
 $('invTabs').addEventListener('click', e => {
@@ -108,13 +120,54 @@ $('recipes').addEventListener('click', e => {
   const b = e.target.closest('[data-r]'); if (!b) return;
   const r = RECIPES[Number(b.dataset.r)];
   let made = 0, res = null;
-  for (let k = e.shiftKey ? 5 : 1; k > 0; k--) { res = craft(game.inv, r, MAX_STACK); if (!res.ok) break; made++; }
+  for (let k = e.shiftKey ? 5 : 1; k > 0; k--) { res = craft(game.inv, r, MAX_STACK, invStations); if (!res.ok) break; made++; }
   if (!made) { toast(res.msg); return; }
   game.unsaved = true; game.onChange();
   game.questEvent('craft', r.give[0], r.give[1] * made);
-  toast(`+${r.give[1] * made} ${NAMES[r.give[0]]}`);
+  toast(`+${r.give[1] * made} ${nameOf(r.give[0])}`);
 });
 game.onChange = () => { renderHotbar(); if (state === 'inventory') renderInventory(); };
+
+// ---------- Überleben: Herzen, Hunger, Luft, Abbau-Fortschritt, Umkippen ----------
+const vitCtx = $('vit').getContext('2d');
+// 7×6-Pixelmuster: Herz und Keule
+const HEART = ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'];
+const LEG = ['....##.', '...####', '..#####', '.####..', '##.....', '#......'];
+const BUBBLE = ['..###..', '.#...#.', '#.....#', '#.....#', '.#...#.', '..###..'];
+function pix(pat, x, y, full, half, empty) {
+  for (let j = 0; j < 6; j++) for (let i = 0; i < 7; i++) if (pat[j][i] === '#') {
+    vitCtx.fillStyle = i < 3.5 ? (full || half ? (full ? full : half) : empty) : (full ? full : empty);
+    vitCtx.fillRect(x + i * 2, y + j * 2, 2, 2);
+  }
+}
+function renderVitals() {
+  const v = game.vitals, el = $('vit');
+  el.hidden = !v || state === 'menu';
+  if (!v) return;
+  vitCtx.clearRect(0, 0, 200, 34);
+  const hp = Math.ceil(v.hp), fd = Math.ceil(v.food);
+  for (let i = 0; i < MAX_HP / 2; i++) { const k = hp - i * 2; pix(HEART, i * 10, 18, k >= 2 ? '#ff3b4a' : null, k === 1 ? '#ff3b4a' : null, '#3a1a20'); }
+  for (let i = 0; i < MAX_FOOD / 2; i++) { const k = fd - i * 2; pix(LEG, 186 - i * 10, 18, k >= 2 ? '#d89048' : null, k === 1 ? '#d89048' : null, '#3a2a1a'); }
+  if (v.air < MAX_AIR) for (let i = 0; i < Math.ceil(v.air); i++) pix(BUBBLE, 186 - i * 10, 2, '#9ad8ff', null, '#9ad8ff');
+}
+game.onVitals = renderVitals;
+let hurtTimer = 0;
+game.onHurt = () => {
+  const h = $('hurt'); h.classList.add('on'); renderVitals();
+  clearTimeout(hurtTimer); hurtTimer = setTimeout(() => h.classList.remove('on'), 120);
+  if (navigator.vibrate && touchMode) try { navigator.vibrate(60); } catch (e) { /* ignorieren */ }
+};
+game.onMine = p => { $('mine').classList.toggle('on', p > 0); $('mine').firstChild.style.width = Math.round(p * 100) + '%'; };
+const DEATH_WHY = { Sturz: 'Zu tief gefallen.', Ertrunken: 'Unter Wasser ging die Luft aus.', Magma: 'Magma ist heiß.', Hunger: 'Vor Hunger.' };
+game.onDeath = (cause, grave) => {
+  releaseInput(); setState('dead');
+  $('deadWhy').textContent = (DEATH_WHY[cause] || '') + (grave ? ' Dein Vorrat liegt am Unglücksort, der Wegpunkt 📍 zeigt den Weg.' : ' Dein Vorrat bleibt erhalten. Der Wegpunkt 📍 markiert den Unglücksort.');
+  if (locked()) document.exitPointerLock();
+  saveNow(false);
+};
+$('dRevive').onclick = () => { game.revive(); renderHotbar(); setState('playing'); lockPointer(); };
+$('dMenu').onclick = () => { game.revive(); $('pMenu').onclick(); };
+game.onStation = st => { invAt = st; invCat = 'all'; openInventory(); };
 
 // ---------- Story: Auftragsanzeige, Banner, Liste ----------
 let questMin = false, bannerTimer = 0;
@@ -151,8 +204,9 @@ const show = (id, on) => { $(id).hidden = !on; };
 function setState(s) {
   state = s;
   document.body.classList.toggle('playing', s === 'playing');
-  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings');
-  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || (s === 'settings' && setReturn === 'paused'));
+  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings'); show('dead', s === 'dead');
+  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || (s === 'settings' && setReturn === 'paused'));
+  if (s !== 'playing') game.onMine(0);
   if (s !== 'paused') show('qlog', false);
 }
 const locked = () => document.pointerLockElement === canvas;
@@ -179,12 +233,15 @@ function resume() {
 }
 function openInventory() {
   if (state !== 'playing') return;
+  invStations = game.stationsNear();
+  if (invAt && !invStations.has(invAt)) invAt = null;
   releaseInput(); setState('inventory'); renderInvTabs(); renderInventory();
   if (locked()) document.exitPointerLock();
   game.stop(); // statisches Bild – spart Akku
 }
 function closeInventory() {
   if (state !== 'inventory') return;
+  invAt = null;
   setState('playing'); game.resume(); lockPointer();
   if (!touchMode) setTimeout(() => { if (state === 'playing' && !locked()) pause(); }, 250);
 }
@@ -305,7 +362,7 @@ function launch(i, save) {
       game.start(save);
       if (save.mode === 'creative') game.player.flying = false;
       $('bFly').hidden = !(touchMode && game.mode === 'creative');
-      renderHotbar(); renderQuest(); setState('playing'); lockPointer();
+      renderHotbar(); renderQuest(); setState('playing'); renderVitals(); lockPointer();
       if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner('📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
       if (!game.unsaved && save.px === undefined) saveNow(false);
     } catch (err) {
@@ -319,7 +376,7 @@ $('pSave').onclick = () => saveNow(true);
 $('pRespawn').onclick = () => { game.respawn(); resume(); };
 $('pSound').onclick = () => { sfx.enabled = !sfx.enabled; $('pSound').textContent = sfx.enabled ? '🔊 Ton: an' : '🔇 Ton: aus'; };
 $('pFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()); } catch (e) { /* ignorieren */ } };
-$('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); };
+$('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); renderVitals(); };
 $('vd').oninput = e => { const v = Number(e.target.value); game.maxView = v; game.setViewDist(v); $('vdVal').textContent = v; };
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
@@ -503,7 +560,7 @@ setInterval(() => {
 function applySettings() {
   const auto = settings.quality === 'auto';
   game.setQuality(auto ? autoBase(coarse) : settings.quality, auto);
-  game.placeDelay = settings.placeDelay;
+  game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss;
   sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
   document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
   document.body.classList.toggle('lefty', settings.lefty);
@@ -512,7 +569,7 @@ const SET_RANGES = [['sMouse', 'mouseSens', v => v.toFixed(1) + '×'], ['sTouch'
   ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %']];
 const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps']];
 function renderSettings() {
-  $('sQuality').value = settings.quality;
+  $('sQuality').value = settings.quality; $('sDeath').value = settings.deathLoss;
   for (const [id, k, f] of SET_RANGES) { $(id).value = settings[k]; $(id + 'V').textContent = f(settings[k]); }
   for (const [id, k] of SET_CHECKS) $(id).checked = settings[k];
 }
@@ -520,12 +577,13 @@ function changed(quality) {
   saveSettings(settings);
   if (quality) applySettings();
   else { // ohne Grafikwechsel: Sichtweite/Auflösung nicht zurücksetzen
-    game.placeDelay = settings.placeDelay; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
+    game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
     document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
     document.body.classList.toggle('lefty', settings.lefty);
   }
 }
 $('sQuality').onchange = e => { settings.quality = e.target.value; changed(true); };
+$('sDeath').onchange = e => { settings.deathLoss = e.target.value; changed(false); };
 for (const [id, k, f] of SET_RANGES) $(id).oninput = e => { settings[k] = Number(e.target.value); $(id + 'V').textContent = f(settings[k]); changed(false); };
 for (const [id, k] of SET_CHECKS) $(id).onchange = e => { settings[k] = e.target.checked; changed(false); };
 $('sReset').onclick = () => { settings = { ...DEFAULTS }; changed(true); renderSettings(); toast('Standard wiederhergestellt'); };

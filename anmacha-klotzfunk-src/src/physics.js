@@ -10,6 +10,7 @@ export class Player {
     this.vx = 0; this.vy = 0; this.vz = 0;
     this.onGround = false; this.inWater = false; this.flying = false; this.coyote = 0;
     this.fallT = 0; this.gliding = false; this.hook = false; this.lifted = false; this.bounces = 0;
+    this.eyeWater = false; this.impact = 0; // stärkster Aufprall seit dem letzten Abholen (für Fallschaden)
   }
 
   collides(world, x, y, z) {
@@ -58,7 +59,7 @@ export class Player {
 
     const fx = Math.floor(this.x), fz = Math.floor(this.z);
     this.inWater = world.getBlock(fx, Math.floor(this.y + 0.4), fz) === B.WATER;
-    const eyeWater = world.getBlock(fx, Math.floor(this.y + 1.5), fz) === B.WATER;
+    const eyeWater = this.eyeWater = world.getBlock(fx, Math.floor(this.y + 1.5), fz) === B.WATER;
     const under = this.onGround ? world.getBlock(fx, Math.floor(this.y - 0.05), fz) : B.AIR;
 
     // Aufwind: Aufwind-Block höchstens 11 Felder unter den Füßen, dazwischen nur Luft/Wasser
@@ -116,7 +117,7 @@ export class Player {
     // Federblock: Aufprall wird zurückgeworfen
     if (this.onGround && pvy < -2 && world.getBlock(fx, Math.floor(this.y - 0.05), fz) === B.FEDER) {
       this.vy = Math.min(26, Math.max(10, -pvy * 0.92)); this.onGround = false; this.bounces++;
-    }
+    } else if (this.onGround && pvy < 0 && !this.hook && !this.flying) this.impact = Math.max(this.impact, -pvy);
     this.coyote = this.onGround ? 0.1 : this.coyote - dt;
   }
 }
@@ -136,6 +137,6 @@ export function raycast(world, ox, oy, oz, dx, dy, dz, reach) {
     else { t = tz; tz += tdz; z += sz; nz = -sz; }
     if (t > reach) return null;
     const b = world.getBlock(x, y, z);
-    if (b !== B.AIR && b !== B.WATER) return { x, y, z, nx, ny, nz, type: b };
+    if (b !== B.AIR && b !== B.WATER) return { x, y, z, nx, ny, nz, type: b, t };
   }
 }

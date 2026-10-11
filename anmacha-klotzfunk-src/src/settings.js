@@ -20,7 +20,8 @@ export const DEFAULTS = {
   placeDelay: true,     // Setzen erst nach kurzem Halten wiederholen
   sfxVol: 0.8,
   musicVol: 0.8,
-  showFps: false
+  showFps: false,
+  deathLoss: 'keep'     // keep | grave (Vorrat bleibt am Todesort liegen)
 };
 
 export function loadSettings() {
@@ -29,6 +30,7 @@ export function loadSettings() {
   const out = { ...DEFAULTS };
   for (const k of Object.keys(DEFAULTS)) if (s[k] !== undefined && typeof s[k] === typeof DEFAULTS[k]) out[k] = s[k];
   if (out.quality !== 'auto' && !QUALITY[out.quality]) out.quality = 'auto';
+  if (!['keep', 'grave'].includes(out.deathLoss)) out.deathLoss = 'keep';
   return out;
 }
 export function saveSettings(s) {

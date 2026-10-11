@@ -7,7 +7,11 @@ import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
 import { QUALITY } from './settings.js';
 import { MAX_STACK } from './crafting.js';
 import { buildMesh, cubeData } from './mesher.js';
-import { drawAtlas, createLogoAtlas, cloudCanvas } from './textures.js';
+import { drawAtlas, createLogoAtlas, cloudCanvas, drawItems, ITEM_TILE, ITEM_GRID } from './textures.js';
+import { ITEMS, ITEM_LIST, I, isItem, nameOf, toolOf, foodOf, mineTime, canHarvest, toolFits, known } from './items.js';
+import { Vitals, fallDamage } from './survival.js';
+import { Mobs, rollDrops } from './mobs.js';
+import { MobView } from './mobview.js';
 import { Player, raycast, EYE } from './physics.js';
 import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
 import { QUESTS, questProgress } from './quests.js';
@@ -162,6 +166,14 @@ export class Game {
     this.hand = new THREE.Mesh(new THREE.BufferGeometry(), this.handMatO);
     this.hand.frustumCulled = false; this.hand.renderOrder = 50; this.hand.visible = false;
     this.camera.add(this.hand);
+    // Gegenstand in der Hand: flaches Symbol aus dem Item-Atlas
+    this.itemCanvas = drawItems(ITEM_LIST.map(id => ITEMS[id]));
+    const it = new THREE.CanvasTexture(this.itemCanvas);
+    it.magFilter = THREE.NearestFilter; it.minFilter = THREE.NearestFilter; it.generateMipmaps = false;
+    this.itemHand = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: it, transparent: true, alphaTest: 0.5, depthTest: false, side: THREE.DoubleSide }));
+    this.itemHand.frustumCulled = false; this.itemHand.renderOrder = 50; this.itemHand.visible = false;
+    this.camera.add(this.itemHand);
+    this.mobView = new MobView(this.scene); this.mobs = null; this.light = 1;
     this.handType = -1; this.swing = 0; this.bob = 0;
 
     this.parts = []; this.partCount = 0;
@@ -181,6 +193,9 @@ export class Game {
     this.onChange = () => {};   // UI-Hinweis (Hotbar/Inventar geändert)
     this.onToast = () => {};
     this.story = null; this.onQuest = () => {}; this.onQuestDone = () => {};
+    // Überleben: Rückmeldungen an die Oberfläche
+    this.vitals = null; this.dead = false; this.mine = null; this.deathLoss = 'keep';
+    this.onVitals = () => {}; this.onHurt = () => {}; this.onDeath = () => {}; this.onMine = () => {}; this.onStation = () => {};
     this.resize();
   }
 
@@ -246,7 +261,7 @@ export class Game {
     this.world = new World(save.seed, decodeEdits(save.edits), this.gen);
     this.name = save.name; this.seed = save.seed; this.mode = save.mode;
     this.time = save.time ?? 0.08;
-    this.hotbar = (save.hotbar && save.hotbar.length === 9) ? save.hotbar.slice() : [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    this.hotbar = (Array.isArray(save.hotbar) && save.hotbar.length === 9) ? save.hotbar.map(t => (Number.isInteger(t) && known(t) ? t : 0)) : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
     this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false }) : null;
@@ -256,6 +271,17 @@ export class Game {
     }
     this.wp = save.wp || null; this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
     this.handType = -1;
+    // Überleben (nur im Überlebensmodus): Gesundheit/Hunger, Werkzeug-Abnutzung, Grab mit verlorenen Sachen
+    this.survival = save.mode === 'survival';
+    this.vitals = this.survival ? new Vitals(save.vit || {}) : null;
+    this.dead = false; this.mine = null; this.player.impact = 0;
+    this.dur = {};
+    if (save.dur && typeof save.dur === 'object') for (const [k, v] of Object.entries(save.dur)) if (toolOf(Number(k)) && Number.isFinite(v)) this.dur[k] = v;
+    const g = save.grave;
+    this.grave = g && [g.x, g.y, g.z].every(Number.isFinite) && g.inv && typeof g.inv === 'object' ? g : null;
+    // Tiere: in Überleben und Kreativ (Story bleibt unverändert)
+    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story');
+    this.mobs.onAdd = m => this.mobView.add(m); this.mobs.onRemove = m => this.mobView.remove(m);
     this.spawn = this.world.findSpawn();
     this.spawnY = this.spawn.y;
     const p = this.player;
@@ -328,6 +354,9 @@ export class Game {
 
   clearWorld() {
     for (const c of this.group.children.slice()) { c.geometry.dispose(); this.group.remove(c); }
+    if (this.mobs) { this.mobs.clear(); this.mobs = null; }
+    this.mobView.clear();
+    this.vitals = null; this.dead = false;
     this.world = null;
   }
 
@@ -342,14 +371,16 @@ export class Game {
     const p = this.player, edits = encodeEdits(this.world.edits);
     return {
       v: SAVE_VERSION, gen: this.gen, name: this.name, seed: this.seed, mode: this.mode, time: this.time, savedAt: Date.now(),
-      px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, story: this.story, edits
+      px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, story: this.story, edits,
+      vit: this.vitals ? this.vitals.toJSON() : undefined, dur: this.dur, grave: this.grave || undefined, mobs: this.mobs ? this.mobs.serialize() : undefined
     };
   }
 
   respawn() {
     const p = this.player;
     this.world.ensure(Math.floor(this.spawn.x / CS), Math.floor(this.spawn.z / CS));
-    p.x = this.spawn.x; p.y = this.spawn.y; p.z = this.spawn.z; p.vx = p.vy = p.vz = 0; p.flying = false;
+    p.x = this.spawn.x; p.y = this.spawn.y; p.z = this.spawn.z; p.vx = p.vy = p.vz = 0; p.flying = false; p.impact = 0;
+    this.hookT = 0; this.rope.visible = false;
     this.loadAround(1, 0);
     this.scanDirty = true;
     this.applyCamera();
@@ -379,23 +410,29 @@ export class Game {
     const w = this.world, p = this.player;
     if (!this.timeFrozen) this.time = (this.time + dt / DAY_LENGTH) % 1;
     this.uni.uTime.value = performance.now() / 1000;
-    this.updateHook(dt);
-    p.update(w, dt, this.input, this.yaw);
-    if (p.bounces) { this.questEvent('bounce', 0, p.bounces); p.bounces = 0; }
-    if (this.story && p.gliding) this.glideAcc = (this.glideAcc || 0) + dt;
+    if (!this.dead) {
+      this.updateHook(dt);
+      p.update(w, dt, this.input, this.yaw);
+      if (p.bounces) { this.questEvent('bounce', 0, p.bounces); p.bounces = 0; }
+      if (this.story && p.gliding) this.glideAcc = (this.glideAcc || 0) + dt;
+      if (this.vitals && !p.waiting) this.updateVitals(dt);
+    }
     this.applyCamera();
     this.stream();
+    if (this.mobs) { this.mobs.update(dt, p.x, p.z); this.mobView.update(p.x, p.z, this.light, this.viewDist * CS, this.uni.uTime.value); }
     // Zielblock und Aktionen
-    const c = this.camera, dir = new THREE.Vector3(0, 0, -1).applyEuler(c.rotation);
-    this.target = raycast(w, c.position.x, c.position.y, c.position.z, dir.x, dir.y, dir.z, REACH);
+    const c = this.camera, dir = this.lookDir || (this.lookDir = new THREE.Vector3());
+    dir.set(0, 0, -1).applyEuler(c.rotation);
+    this.target = this.dead ? null : raycast(w, c.position.x, c.position.y, c.position.z, dir.x, dir.y, dir.z, REACH);
     if (this.target) { this.hl.position.set(this.target.x + 0.5, this.target.y + 0.5, this.target.z + 0.5); this.hl.visible = true; }
     else this.hl.visible = false;
     this.actCool -= dt;
     if (this.placeHeld && !this.prevPlace) this.placeFirst = true; // neuer Tastendruck
     this.prevPlace = this.placeHeld;
-    if (this.actCool <= 0) {
-      if (this.breakHeld && this.breakBlock()) this.actCool = 0.22;
-      else if (this.placeHeld && this.placeBlock()) {
+    if (this.breakHeld && !this.dead) this.useBreak(dt, dir);
+    else {
+      this.setMine(null);
+      if (this.actCool <= 0 && this.placeHeld && !this.dead && this.placeBlock()) {
         // erst nach kurzem Halten wiederholen: verhindert versehentliche Doppel-Blöcke (vor allem am Handy)
         this.actCool = this.placeFirst && this.placeDelay ? 0.45 : 0.25; this.placeFirst = false;
       }
@@ -404,9 +441,135 @@ export class Game {
     this.updateSky();
     this.cloudU.uOff.value.x += dt * 2.5;
     this.radioT -= dt;
-    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); }
+    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave(); }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
+  }
+
+  // ---------- Überleben ----------
+  updateVitals(dt) {
+    const v = this.vitals, p = this.player, before = [Math.ceil(v.hp), Math.ceil(v.food), Math.ceil(v.air)];
+    let dmg = 0;
+    if (p.impact) { const f = fallDamage(p.impact); p.impact = 0; if (f && !p.inWater) { v.hurt(f, 'Sturz'); dmg += f; } }
+    const onMagma = p.onGround && this.world.getBlock(Math.floor(p.x), Math.floor(p.y - 0.05), Math.floor(p.z)) === B.MAGMA;
+    dmg += v.tick(dt, { moving: Math.hypot(p.vx, p.vz) > 0.5, sprint: this.input.sprint, eyeWater: p.eyeWater, onMagma });
+    if (dmg > 0) { this.onHurt(dmg, v.cause); this.unsaved = true; }
+    if (v.dead) { this.die(v.cause); return; }
+    if (before[0] !== Math.ceil(v.hp) || before[1] !== Math.ceil(v.food) || before[2] !== Math.ceil(v.air)) this.onVitals();
+  }
+
+  die(cause) {
+    const p = this.player;
+    this.dead = true; this.breakHeld = this.placeHeld = false; this.hookT = 0; this.rope.visible = false; this.setMine(null);
+    p.vx = p.vy = p.vz = 0;
+    const at = { x: Math.round(p.x), y: Math.round(p.y), z: Math.round(p.z) };
+    let grave = false;
+    if (this.deathLoss === 'grave') { // Vorrat bleibt am Todesort liegen und lässt sich dort abholen
+      const inv = {};
+      for (const [t, n] of Object.entries(this.inv)) if (n > 0) inv[t] = n;
+      if (Object.keys(inv).length) {
+        if (this.grave) for (const [t, n] of Object.entries(this.grave.inv)) inv[t] = Math.min(MAX_STACK, (inv[t] || 0) + n);
+        this.grave = { ...at, inv }; this.inv = {}; grave = true;
+      }
+    }
+    this.wp = at; // Rückweg-Markierung
+    this.unsaved = true;
+    this.onDeath(cause, grave);
+  }
+
+  revive() {
+    if (!this.dead) return;
+    this.vitals = new Vitals(); this.dead = false; this.player.impact = 0;
+    this.respawn();
+    this.onVitals(); this.onChange();
+  }
+
+  checkGrave() {
+    const g = this.grave, p = this.player;
+    if (!g || this.dead || Math.hypot(g.x - p.x, g.y - p.y, g.z - p.z) > 2.5) return;
+    for (const [t, n] of Object.entries(g.inv)) if (known(Number(t))) this.inv[t] = Math.min(MAX_STACK, (this.inv[t] || 0) + n);
+    if (this.wp && this.wp.x === g.x && this.wp.z === g.z) this.wp = null;
+    this.grave = null; this.unsaved = true; playPlace();
+    this.onToast('Deine Sachen sind wieder da'); this.onChange();
+  }
+
+  // gehaltener Gegenstand, nur wenn auch im Vorrat (Kreativ: immer)
+  held() {
+    const t = this.hotbar[this.sel];
+    return t && (this.mode === 'creative' || this.inv[t] > 0) ? t : 0;
+  }
+
+  setMine(m) {
+    const had = !!this.mine;
+    this.mine = m;
+    if (had || m) this.onMine(m ? Math.min(1, m.t / m.need) : 0);
+  }
+
+  // Abbauen / Angreifen (gehaltene Taste)
+  useBreak(dt, dir) {
+    if (this.actCool > 0) return;
+    const c = this.camera.position, t = this.target;
+    const mh = this.mobs ? this.mobs.raycast(c.x, c.y, c.z, dir.x, dir.y, dir.z, REACH) : null;
+    if (mh && (!t || mh.t < t.t)) { this.attack(mh.mob); this.actCool = 0.45; this.setMine(null); return; }
+    if (!this.survival) { this.setMine(null); if (this.breakBlock()) this.actCool = 0.22; return; }
+    if (!t || t.y === 0) { this.setMine(null); return; }
+    const held = this.held();
+    if (!canHarvest(t.type, held)) {
+      playDeny(); this.onToast(`${NAMES[t.type]} braucht eine ${BLOCKS[t.type].tier > 1 ? 'Stein- oder bessere ' : ''}Spitzhacke`);
+      this.actCool = 0.8; this.setMine(null); return;
+    }
+    let m = this.mine;
+    if (!m || m.x !== t.x || m.y !== t.y || m.z !== t.z || m.held !== held) m = { x: t.x, y: t.y, z: t.z, held, t: 0, need: mineTime(t.type, held), sw: 0 };
+    m.t += dt; m.sw -= dt;
+    if (m.sw <= 0) { m.sw = 0.25; this.swing = 1; }
+    if (m.t >= m.need) { this.setMine(null); if (this.breakBlock()) this.actCool = 0.1; return; }
+    this.setMine(m);
+  }
+
+  attack(mob) {
+    const held = this.held(), tool = toolOf(held), p = this.player;
+    const dmg = this.mode === 'creative' ? 99 : (tool ? (tool.kind === 'axt' ? 3 : 2) + (tool.tier >= 3 ? 1 : 0) : 1);
+    this.swing = 1; playBreak();
+    if (!mob.hit(dmg, p.x, p.z)) return;
+    this.spawnBreak(mob.x - 0.5, mob.y, mob.z - 0.5, B.WOOL);
+    this.mobs.remove(mob, false);
+    this.unsaved = true;
+    if (this.mode === 'creative') return;
+    const got = rollDrops(mob.type).map(([id, n]) => { this.inv[id] = Math.min(MAX_STACK, (this.inv[id] || 0) + n); return `+${n} ${nameOf(id)}`; });
+    if (got.length) this.onToast(got.join(' · '));
+    this.onChange();
+  }
+
+  eat(type) {
+    if (!this.vitals) { this.onToast('Essen braucht man nur im Überlebensmodus'); this.actCool = 0.6; return false; }
+    if (!(this.inv[type] > 0)) { playDeny(); this.onToast(`Kein ${nameOf(type)} im Vorrat`); this.actCool = 0.4; return false; }
+    if (!this.vitals.eat(foodOf(type))) { this.onToast('Du bist satt'); this.actCool = 0.6; return false; }
+    this.inv[type]--; this.swing = 1; playPlace(); this.unsaved = true;
+    this.onChange(); this.onVitals();
+    return true;
+  }
+
+  // Werkzeug nutzt sich ab; Haltbarkeit gilt für das oberste Werkzeug des Stapels
+  wear(held) {
+    const tool = toolOf(held);
+    if (!tool || this.mode === 'creative') return;
+    const used = (this.dur[held] || 0) + 1;
+    if (used < tool.dur) { this.dur[held] = used; return; }
+    delete this.dur[held];
+    this.inv[held] = Math.max(0, (this.inv[held] || 0) - 1);
+    playDeny(); this.onToast(`${nameOf(held)} ist zerbrochen`);
+  }
+
+  // Stationen (Werkbank, Ofen) in Reichweite des Spielers
+  stationsNear(r = 4) {
+    const out = new Set(), p = this.player, w = this.world;
+    if (!w) return out;
+    const x0 = Math.floor(p.x), y0 = Math.floor(p.y), z0 = Math.floor(p.z);
+    for (let y = y0 - 2; y <= y0 + 3; y++) for (let z = z0 - r; z <= z0 + r; z++) for (let x = x0 - r; x <= x0 + r; x++) {
+      const b = BLOCKS[w.getBlock(x, y, z)];
+      if (b && b.station) out.add(b.station);
+    }
+    return out;
   }
 
   // ---------- Seilhaken, Wegpunkt, Radio ----------
@@ -498,8 +661,14 @@ export class Game {
     const t = this.hotbar[this.sel];
     if (t !== this.handType) {
       this.handType = t;
-      this.hand.visible = t > 0;
-      if (t > 0) {
+      this.hand.visible = t > 0 && !isItem(t);
+      this.itemHand.visible = isItem(t) && !!ITEMS[t];
+      if (this.itemHand.visible) { // UV auf das Symbol im Item-Atlas setzen
+        const k = ITEMS[t].icon, rows = this.itemCanvas.height / ITEM_TILE, u0 = (k % ITEM_GRID) / ITEM_GRID, u1 = u0 + 1 / ITEM_GRID;
+        const v1 = 1 - Math.floor(k / ITEM_GRID) / rows, v0 = v1 - 1 / rows, uv = this.itemHand.geometry.attributes.uv;
+        uv.setXY(0, u0, v1); uv.setXY(1, u1, v1); uv.setXY(2, u0, v0); uv.setXY(3, u1, v0); uv.needsUpdate = true;
+      }
+      if (this.hand.visible) {
         const d = cubeData(t), g = new THREE.BufferGeometry();
         g.setAttribute('position', new THREE.BufferAttribute(d.pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(d.uv, 2));
         g.setAttribute('aCol', new THREE.BufferAttribute(d.col, 4)); g.setIndex(new THREE.BufferAttribute(d.idx, 1));
@@ -514,6 +683,11 @@ export class Game {
     this.hand.scale.setScalar(0.12);
     this.hand.position.set(0.34 - sw * 0.06, -0.27 + Math.sin(this.bob) * 0.008 - sw * 0.06, -0.55 - sw * 0.04);
     this.hand.rotation.set(0.25 - sw * 0.7, -0.62, 0.06);
+    if (this.itemHand.visible) {
+      this.itemHand.scale.setScalar(0.3);
+      this.itemHand.position.set(0.36 - sw * 0.05, -0.24 + Math.sin(this.bob) * 0.008 - sw * 0.05, -0.55);
+      this.itemHand.rotation.set(-sw * 0.9, -0.35, 0.2 + sw * 0.4);
+    }
   }
 
   spawnBreak(x, y, z, type) {
@@ -556,6 +730,11 @@ export class Game {
     if (!t || t.y === 0) return false;
     if (this.world.setBlock(t.x, t.y, t.z, B.AIR)) {
       if (this.mode !== 'creative') this.inv[t.type] = Math.min(MAX_STACK, (this.inv[t.type] || 0) + 1);
+      if (this.survival) {
+        const held = this.held();
+        if (toolFits(t.type, held)) this.wear(held);
+        if ((t.type === B.LEAVES || t.type === B.JLEAVES) && Math.random() < 0.08) { this.inv[I.APPLE] = Math.min(MAX_STACK, (this.inv[I.APPLE] || 0) + 1); this.onToast('+1 Apfel'); }
+      }
       this.unsaved = true; this.swing = 1; this.spawnBreak(t.x, t.y, t.z, t.type); playBreak(); this.onChange();
       this.questEvent('break', t.type);
       return true;
@@ -565,6 +744,9 @@ export class Game {
 
   placeBlock() {
     const t = this.target, type = this.hotbar[this.sel];
+    // Werkbank/Ofen benutzen statt daneben zu bauen (Kreativ: keine Rezepte, dort wird gebaut)
+    if (t && this.mode !== 'creative' && BLOCKS[t.type] && BLOCKS[t.type].station) { this.onStation(BLOCKS[t.type].station); this.actCool = 0.5; return false; }
+    if (type && isItem(type)) return foodOf(type) ? this.eat(type) : false;
     if (!t || !type) return false;
     if (this.mode !== 'creative' && !(this.inv[type] > 0)) { playDeny(); this.onToast(`Kein ${NAMES[type]} im Vorrat`); this.actCool = 0.4; return false; }
     const x = t.x + t.nx, y = t.y + t.ny, z = t.z + t.nz;
@@ -671,6 +853,7 @@ export class Game {
     const sc = sunUp ? mix3([1.0, 0.6, 0.36], [1.0, 0.96, 0.86], smooth(0, 0.4, s)).map(v => v * 0.62 * I) : [0.42 * I, 0.52 * I, 0.85 * I];
     this.uni.uSunCol.value.set(sc[0], sc[1], sc[2]);
     const amb = mix3([0.17, 0.21, 0.36], [0.44, 0.5, 0.62], day);
+    this.light = 0.38 + 0.62 * day;
     this.uni.uAmb.value.set(amb[0] + dw * 0.12, amb[1] + dw * 0.06, amb[2] + dw * 0.02);
 
     // Tauchsicht
