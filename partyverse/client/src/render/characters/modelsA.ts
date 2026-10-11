@@ -90,17 +90,17 @@ export function buildBrumm(env: Env): Parts {
   const armL = mkArm(1);
   const armR = mkArm(-1);
   // Moos auf den Schultern
-  for (const s of [1, -1]) mk(model, G.sph(0.27, 12, 8), moss, 0.66 * s, 1.5, 0, 1.1, 0.55, 1.1);
+  for (const s of [1, -1]) mk(model, G.sph(0.22, 12, 8), moss, 0.68 * s, 1.47, 0, 1.1, 0.5, 1.1);
 
   const HY = 1.45;
   const head = grp(model, 0, HY, 0);
-  mk(head, G.rbox(0.78, 0.62, 0.66, 0.12), stoneLight, 0, 1.72 - HY, 0.05);
-  mk(head, G.rbox(0.84, 0.15, 0.24, 0.05), stone, 0, 1.92 - HY, 0.33);
+  mk(head, G.rbox(0.92, 0.74, 0.7, 0.14), stoneLight, 0, 1.78 - HY, 0.05);
+  mk(head, G.rbox(0.96, 0.12, 0.22, 0.05), stone, 0, 1.94 - HY, 0.36);
   const face = new Face();
-  for (const s of [1, -1]) face.eyes.push(makeGlowEye(head, lime, 0.19 * s, 1.74 - HY, 0.385, 0.1, 1, 1.15));
-  face.setMouth(makeMouth(env, head, 0, 1.55 - HY, 0.385, 0.13, 0.04, '#143d3b'), 0.5);
-  for (const [x, z, sc] of [[0.2, 0.0, 0.22], [-0.2, 0.02, 0.2], [0, -0.14, 0.2]] as const) mk(head, G.sph(sc, 12, 8), moss, x, 2.04 - HY, z, 1, 0.5, 1);
-  const grass = grp(head, 0, 2.06 - HY, 0);
+  for (const s of [1, -1]) face.eyes.push(makeGlowEye(head, lime, 0.22 * s, 1.78 - HY, 0.405, 0.115, 1, 1.15));
+  face.setMouth(makeMouth(env, head, 0, 1.6 - HY, 0.405, 0.16, 0.045, '#143d3b'), 0.5);
+  for (const [x, z, sc] of [[0.25, 0.0, 0.2], [-0.25, 0.02, 0.18], [0, -0.16, 0.2]] as const) mk(head, G.sph(sc, 12, 8), moss, x, 2.13 - HY, z, 1, 0.5, 1);
+  const grass = grp(head, 0, 2.15 - HY, 0);
   const tufts: Array<[number, number, number]> = [[-0.05, 0.12, 0.2], [0.1, 0.1, -0.2], [-0.18, 0.05, -0.28]];
   for (const [x, z, rz] of tufts) {
     const c = mk(grass, G.cone(0.045, 0.32, 6), moss, x, 0.14, z);
@@ -113,7 +113,7 @@ export function buildBrumm(env: Env): Parts {
   mk(flower, G.cyl(0.02, 0.025, 0.34, 6), mossDark, 0, 0.17, 0);
   mk(flower, G.sph(0.1, 10, 8), env.m('#ff8fab'), 0, 0.37, 0);
 
-  const hatAnchor = grp(head, 0, 2.0 - HY - 0.02, 0.0);
+  const hatAnchor = grp(head, 0, 2.1 - HY - 0.02, 0.0);
   const style: Style = { gait: 'stomp', idle: 'heavy', walkF: 0.95, runMul: 1.5, jumpH: 0.5, squash: 0.45, arms: 1, dance: { bounce: 0.7, sway: 0.8, spin: 0.7, speed: 0.75 } };
   const k = fitModel(model, 1.95, true);
   return {
@@ -131,11 +131,11 @@ export function buildBrumm(env: Env): Parts {
 export function buildLumi(env: Env): Parts {
   const { primary, secondary, accent } = env.def.colors;
   const model = new THREE.Group();
-  const HY = 1.25;
+  const HY = 1.45;
   const head = grp(model, 0, HY, 0);
   mk(head, G.sph(0.56, 24, 16), env.glass(primary, 0.74, secondary, 0.55), 0, 0, 0, 1, 0.92, 1).renderOrder = 2;
   const core = mk(head, G.sph(0.3, 16, 12), env.glow('#f6feff'), 0, -0.02, -0.02);
-  mk(head, G.tor(0.5, 0.055, 8, 28), env.m(lighten(primary, 0.35)), 0, -0.42, 0).rotation.x = Math.PI / 2;
+  mk(head, G.tor(0.4, 0.05, 8, 28), env.m(lighten(primary, 0.35)), 0, -0.5, 0).rotation.x = Math.PI / 2;
   mk(head, G.tor(0.16, 0.03, 8, 20), env.m('#e8c170'), 0, 0.64, 0);
   mk(head, G.cyl(0.13, 0.17, 0.1, 12), env.m('#e8c170'), 0, 0.52, 0);
 
@@ -145,26 +145,25 @@ export function buildLumi(env: Env): Parts {
   const cheek = env.m(accent);
   for (const s of [1, -1]) mk(head, G.sph(0.07, 8, 6), cheek, 0.33 * s, -0.1, 0.4, 1, 0.7, 0.4);
 
-  mk(model, G.cyl(0.4, 0.2, 0.3, 14), env.m(lighten(primary, 0.2)), 0, 0.7, 0);
-  mk(model, G.tor(0.3, 0.04, 8, 20), env.m(accent), 0, 0.86, 0).rotation.x = Math.PI / 2;
+  mk(model, G.cyl(0.38, 0.2, 0.34, 14), env.m(lighten(primary, 0.2)), 0, 0.86, 0);
 
   const tents: Array<{ a: THREE.Group; b: THREE.Group; ph: number; ang: number }> = [];
   const tm1 = env.m(lighten(primary, 0.1));
   const tm2 = env.m(accent);
   for (let i = 0; i < 5; i++) {
     const ang = (i / 5) * Math.PI * 2;
-    const a = grp(model, Math.sin(ang) * 0.24, 0.6, Math.cos(ang) * 0.24);
-    mk(a, G.cyl(0.065, 0.045, 0.3, 8), tm1, 0, -0.15, 0);
-    const b = grp(a, 0, -0.3, 0);
-    mk(b, G.cyl(0.045, 0.02, 0.27, 8), tm2, 0, -0.135, 0);
+    const a = grp(model, Math.sin(ang) * 0.24, 0.74, Math.cos(ang) * 0.24);
+    mk(a, G.cyl(0.075, 0.055, 0.46, 8), tm1, 0, -0.23, 0);
+    const b = grp(a, 0, -0.46, 0);
+    mk(b, G.cyl(0.055, 0.02, 0.42, 8), tm2, 0, -0.21, 0);
     tents.push({ a, b, ph: i * 1.3, ang });
   }
   const mkArm = (s: number): THREE.Group => {
-    const a = grp(model, 0.33 * s, 0.88, 0.05);
-    mk(a, G.cyl(0.045, 0.035, 0.3, 8), tm1, 0, -0.15, 0);
-    const b = grp(a, 0, -0.3, 0);
-    mk(b, G.cyl(0.035, 0.025, 0.24, 8), tm2, 0, -0.12, 0);
-    mk(b, G.sph(0.06, 8, 6), env.glow(accent), 0, -0.26, 0);
+    const a = grp(model, 0.38 * s, 1.04, 0.05);
+    mk(a, G.cyl(0.05, 0.04, 0.34, 8), tm1, 0, -0.17, 0);
+    const b = grp(a, 0, -0.34, 0);
+    mk(b, G.cyl(0.04, 0.03, 0.28, 8), tm1, 0, -0.14, 0);
+    mk(b, G.sph(0.075, 8, 6), env.glow('#fff6c8'), 0, -0.3, 0);
     return a;
   };
   const armL = mkArm(1);
@@ -194,7 +193,7 @@ export function buildLumi(env: Env): Parts {
       });
       motes.forEach((m, i) => {
         const a = c.t * (0.9 + i * 0.3) + i * 3.1;
-        m.position.set(Math.sin(a) * 0.82, 1.15 + 0.35 * sin(c.t * 1.3 + i * 2), Math.cos(a) * 0.82);
+        m.position.set(Math.sin(a) * 0.85, 1.35 + 0.35 * sin(c.t * 1.3 + i * 2), Math.cos(a) * 0.85);
         m.scale.setScalar(0.8 + 0.4 * sin(c.t * 4 + i));
       });
     },
@@ -218,20 +217,19 @@ export function buildZapp(env: Env): Parts {
   };
   const legL = mkLeg(1);
   const legR = mkLeg(-1);
-  mk(model, G.sph(0.5, 18, 14), orange, 0, 0.98, 0, 0.9, 1.05, 0.8);
+  mk(model, G.sph(0.5, 18, 14), orange, 0, 0.98, 0, 1.0, 1.05, 0.85);
   mk(model, G.sph(0.38, 14, 10), cream, 0, 0.92, 0.26, 0.9, 1, 0.55);
   for (const s of [1, -1]) {
     const b = mk(model, boltGeo(), blue, 0.435 * s, 1.0, 0, 0.5, 0.5, 0.3);
-    b.rotation.y = s * Math.PI / 2 + (s > 0 ? 0 : Math.PI);
     b.rotation.y = s > 0 ? Math.PI / 2 : -Math.PI / 2;
   }
 
   const HY = 1.62;
   const head = grp(model, 0, HY, 0.05);
-  mk(head, G.sph(0.46, 20, 14), orange, 0, 0, 0, 1.15, 0.9, 1);
+  mk(head, G.sph(0.46, 20, 14), orange, 0, 0, 0, 1.22, 0.95, 1.05);
   for (const s of [1, -1]) {
-    const c = mk(head, G.cone(0.14, 0.3, 8), cream, 0.5 * s, -0.08, 0.02);
-    c.rotation.z = -s * Math.PI / 2;
+    const c = mk(head, G.cone(0.17, 0.36, 8), cream, 0.5 * s, -0.12, 0.0);
+    c.rotation.set(0, 0.7 * s, -s * Math.PI / 2);
   }
   const sn = mk(head, G.cone(0.2, 0.46, 12), cream, 0, -0.1, 0.5);
   sn.rotation.x = Math.PI / 2;
@@ -265,7 +263,7 @@ export function buildZapp(env: Env): Parts {
   let parent: THREE.Group = tail;
   const tcols = [orange, env.m(secondary), orange, blue];
   for (let i = 0; i < 4; i++) {
-    const sgrp = grp(parent, 0, i === 0 ? 0 : 0.34 * Math.pow(0.88, i - 1), 0);
+    const sgrp = grp(parent, 0, i === 0 ? 0 : 0.38 * Math.pow(0.88, i - 1), 0);
     const sc = Math.pow(0.88, i);
     mk(sgrp, G.cone(0.15 * sc, 0.46 * sc, 8), tcols[i], 0, 0.2 * sc, 0);
     sgrp.userData.base = (i % 2 ? -1 : 1) * 0.75;

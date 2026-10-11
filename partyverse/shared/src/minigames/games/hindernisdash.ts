@@ -273,7 +273,7 @@ export const game: MiniGame<DashState> = {
     const first = ahead[0];
     if (first) {
       // Ausgangslage: aktuelle Spur
-      let cost = [0, 1, 2].map((k) => (k - 1 === s.lane ? 0 : 1e6));
+      let cost: number[] = [0, 1, 2].map((k) => (k - 1 === s.lane ? 0 : 1e6));
       let fs = [-1, 0, 1];
       ahead.forEach(({ r }, n) => {
         const nc = [0, 0, 0];

@@ -101,7 +101,7 @@ export function shellGeo(colA: number, colB: number): THREE.BufferGeometry {
       for (let j = 0; j < M; j++) {
         const a = i * (M + 1) + j;
         const b = a + M + 1;
-        idx.push(a, b, a + 1, b, b + 1, a + 1);
+        idx.push(a, a + 1, b, b, a + 1, b + 1);
       }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));

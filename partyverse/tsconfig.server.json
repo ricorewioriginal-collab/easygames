@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "isolatedModules": true,
+    "useDefineForClassFields": false,
     "types": ["node"],
     "baseUrl": ".",
     "paths": { "@shared/*": ["shared/src/*"] }

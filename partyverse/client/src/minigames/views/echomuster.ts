@@ -43,7 +43,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
     pop: number;
   }
   const pillars: Pillar[] = [];
-  const crystalGeo = new THREE.OctahedronGeometry(0.85, 0);
+  const crystalGeo = new THREE.OctahedronGeometry(0.62, 0);
   for (let i = 0; i < 6; i++) {
     const a = ((PILLAR_ANGLES[i] as number) * Math.PI) / 180;
     const x = Math.cos(a) * RX;
@@ -59,8 +59,8 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
     const mat = toon(COLORS[i] as number, { emissive: COLORS[i] as number, emissiveIntensity: 0.15 }).clone();
     mat.userData = {};
     const crystal = new THREE.Mesh(crystalGeo, mat);
-    crystal.scale.set(1, 1.9, 1);
-    crystal.position.y = 2.3;
+    crystal.scale.set(1, 1.8, 1);
+    crystal.position.y = 2.1;
     g.add(crystal);
     const halo = new THREE.Mesh(new THREE.SphereGeometry(1.7, 20, 14), glow(COLORS[i] as number, 0));
     halo.position.y = 2.3;
@@ -130,7 +130,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   const dots: THREE.Mesh[] = [];
   const dotGeo = new THREE.SphereGeometry(0.17, 10, 8);
   for (let i = 0; i < MAXD; i++) {
-    const m = new THREE.Mesh(dotGeo, glow(0x4a3d8f));
+    const m = new THREE.Mesh(dotGeo, glow(0x7a6ad8));
     m.position.set((i - (MAXD - 1) / 2) * 0.5, 0.2, 5.0);
     root.add(m);
     dots.push(m);
@@ -148,13 +148,10 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   let lastPhase = '';
   let shake = 0;
   let lastAspect = 0;
-  const target = new THREE.Vector3(0, 0.6, 0);
-  const look = new THREE.Vector3(0, 0.6, 0);
-  const lookAtPillar = new THREE.Vector3();
   const burstPos = new THREE.Vector3();
 
   const placeCamera = () => {
-    const d = Math.max(9.5, 11.6 / camera.aspect);
+    const d = Math.max(11.5, 12.8 / camera.aspect);
     camera.position.set(0, d * 0.78, d * 0.64 + 0.5);
     camera.lookAt(0, 0.5, -0.3);
     lastAspect = camera.aspect;
@@ -179,10 +176,10 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
         const on = Math.min(1, lit);
         const wrongFlash = s.phase === 'over' && s.wrong === i;
         p.mat.emissiveIntensity = 0.15 + on * 1.1 + (wrongFlash ? 0.8 + Math.sin(t * 30) * 0.3 : 0);
-        p.crystal.position.y = 2.3 + Math.sin(t * 1.6 + i) * 0.1 + on * 0.35;
+        p.crystal.position.y = 2.1 + Math.sin(t * 1.6 + i) * 0.1 + on * 0.35;
         p.crystal.rotation.y += dt * (0.5 + on * 5);
         const k = 1 + on * 0.28;
-        p.crystal.scale.set(k, 1.9 * k, k);
+        p.crystal.scale.set(k, 1.8 * k, k);
         p.halo.visible = on > 0.02;
         (p.halo.material as THREE.MeshBasicMaterial).opacity = on * 0.35;
         p.halo.scale.setScalar(0.8 + on * 0.5);
@@ -227,7 +224,6 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
       for (let i = 0; i < 6; i++) if ((s.lit[i] as number) > 0 && (lit < 0 || (s.lit[i] as number) > (s.lit[lit] as number))) lit = i;
       if (lit >= 0) {
         const p = pillars[lit] as Pillar;
-        lookAtPillar.set(p.x, 0, p.z);
         lx = p.x;
         lz = p.z;
       }
@@ -256,7 +252,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
         d.visible = i < shown;
         const done = s.phase === 'ok' ? true : s.phase === 'input' || s.phase === 'over' ? i < s.pos : false;
         const playing = s.phase === 'show' && i === s.showIdx;
-        m.color.setHex(done ? 0x5dff9c : playing ? 0xffe36e : 0x4a3d8f);
+        m.color.setHex(done ? 0x5dff9c : playing ? 0xffe36e : 0x7a6ad8);
         d.scale.setScalar(playing ? 1.4 : done ? 1.15 : 1);
         d.position.x = (i - (shown - 1) / 2) * Math.min(0.5, 6.4 / Math.max(1, shown));
       }
@@ -275,9 +271,8 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
 
       // Kamera
       shake = Math.max(0, shake - dt);
-      const d = Math.max(9.5, 11.6 / camera.aspect);
+      const d = Math.max(11.5, 12.8 / camera.aspect);
       camera.position.set((Math.sin(t * 60) * shake * 0.25), d * 0.78, d * 0.64 + 0.5);
-      look.lerp(target, 0.1);
       camera.lookAt(0, 0.5, -0.3);
     },
     dispose() {

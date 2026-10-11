@@ -330,7 +330,7 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
       d = Math.atan2(Math.sin(d), Math.cos(d));
       camAng += d * Math.min(1, dt * 3.5);
       const asp = camera.aspect || 1.6;
-      const f = asp < 1 ? 0.97 / asp : 1;
+      const f = asp < 1 ? 1.06 / asp : 1;
       const D = 15 * f;
       const H = 14.5 * f;
       shake = Math.max(0, shake - dt * 1.6);

@@ -375,7 +375,7 @@ describe('Gegenstände', () => {
 });
 
 describe('Ereignisse', () => {
-  const ev = (id: Parameters<GameCore['forceEvent']>[1]) => {
+  const ev = (_id: Parameters<GameCore['forceEvent']>[1]) => {
     const c = mk(3, 3, 8, ['human']);
     const me = c.player(c.state.current);
     const others = c.players.filter((p) => p.id !== me.id);

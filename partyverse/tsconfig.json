@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "isolatedModules": true,
+    "useDefineForClassFields": false,
     "resolveJsonModule": true,
     "types": ["vite/client"],
     "baseUrl": ".",
