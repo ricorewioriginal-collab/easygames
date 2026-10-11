@@ -13,6 +13,8 @@ werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Kon
 - **Kreativ:** alle Blöcke unbegrenzt, Fliegen, Formen, Kopieren/Einfügen, Rückgängig.
 - **Story:** „Das große Rauschen“: 6 Kapitel, 25 Aufträge, Dorf, Höhlen und ein eigenes Funknetz aus Sendern, Relais, Empfängern und Maschinen (siehe [STORY.md](STORY.md)).
 
+**Mehrspieler:** bis zu 4 Gäste direkt von Browser zu Browser, ohne Server (siehe [MULTIPLAYER.md](MULTIPLAYER.md)).
+
 Mehr zu Steuerung und Spielablauf: [GAMEPLAY.md](GAMEPLAY.md). Welt und Biome: [WORLD.md](WORLD.md). Alle Blöcke: [BLOCKS.md](BLOCKS.md).
 
 ## Speichern

@@ -11,6 +11,7 @@ import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
 import { unlockAudio, sfx } from './audio.js';
 import { QUESTS, RAUSCHEN, CHAPTERS, campaignOf, questProgress } from './quests.js';
 import { TRADES, GREET } from './trades.js';
+import { Multiplayer } from './mp.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
@@ -19,7 +20,7 @@ let settings = loadSettings();
 const game = new Game(canvas, coarse, settings.quality);
 window.__bv = game; // Testzugriff
 
-let state = 'menu';       // menu | loading | playing | paused | inventory | settings | trade | dead
+let state = 'menu';       // menu | loading | playing | paused | inventory | settings | trade | dead | mp
 let setReturn = 'menu';   // wohin „Einstellungen schließen“ zurückführt
 let slot = -1;
 let touchMode = coarse;
@@ -191,7 +192,7 @@ game.onTrade = m => {
   if (game.mode === 'creative') { toast(`${m.name}: „Im Kreativmodus hast du doch schon alles!“`); return; }
   trader = m; releaseInput(); setState('trade'); renderTrade();
   if (locked()) document.exitPointerLock();
-  game.stop();
+  halt();
 };
 $('trList').addEventListener('click', e => {
   const b = e.target.closest('[data-tr]'); if (!b || !trader) return;
@@ -259,8 +260,8 @@ const show = (id, on) => { $(id).hidden = !on; };
 function setState(s) {
   state = s;
   document.body.classList.toggle('playing', s === 'playing');
-  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings'); show('dead', s === 'dead'); show('trade', s === 'trade');
-  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || s === 'trade' || (s === 'settings' && setReturn === 'paused'));
+  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings'); show('dead', s === 'dead'); show('trade', s === 'trade'); show('mp', s === 'mp');
+  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || s === 'trade' || ((s === 'settings' || s === 'mp') && setReturn === 'paused'));
   if (s !== 'playing') game.onMine(0);
   if (s !== 'paused') show('qlog', false);
 }
@@ -274,9 +275,12 @@ function releaseInput() {
   Object.assign(game.input, { f: 0, r: 0, jump: false, down: false, sprint: false });
 }
 
+// Im Mehrspieler läuft die Welt weiter (die anderen spielen ja), sonst steht sie still und spart Akku
+function halt() { if (!game.mp) game.stop(); }
 function pause() {
   if (state !== 'playing') return;
-  game.stop(); releaseInput(); saveNow();
+  halt(); releaseInput(); saveNow();
+  $('pMp').hidden = !!game.story || !!(game.mp && game.mp.guest);
   setState('paused');
   $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist;
   $('pQuests').hidden = !game.story;
@@ -292,7 +296,7 @@ function openInventory() {
   if (invAt && !invStations.has(invAt)) invAt = null;
   releaseInput(); setState('inventory'); renderInvTabs(); renderInventory();
   if (locked()) document.exitPointerLock();
-  game.stop(); // statisches Bild – spart Akku
+  halt(); // statisches Bild – spart Akku
 }
 function closeInventory() {
   if (state !== 'inventory') return;
@@ -434,7 +438,7 @@ $('pSave').onclick = () => saveNow(true);
 $('pRespawn').onclick = () => { game.respawn(); resume(); };
 $('pSound').onclick = () => { sfx.enabled = !sfx.enabled; $('pSound').textContent = sfx.enabled ? '🔊 Ton: an' : '🔇 Ton: aus'; };
 $('pFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()); } catch (e) { /* ignorieren */ } };
-$('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); renderVitals(); };
+$('pMenu').onclick = () => { if (game.mp) mp.end(null); saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); renderVitals(); };
 $('vd').oninput = e => { const v = Number(e.target.value); game.maxView = v; game.setViewDist(v); $('vdVal').textContent = v; };
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
@@ -470,6 +474,7 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (state === 'settings') { if (e.code === 'Escape') closeSettings(); return; }
+  if (state === 'mp') { if (e.code === 'Escape') $('mpClose').onclick(); return; }
   if (state === 'trade') { if (e.code === 'Escape' || e.code === 'KeyE') { e.preventDefault(); closeTrade(); } return; }
   if (state === 'inventory') { if (e.code === 'KeyE' || e.code === 'Escape') { e.preventDefault(); closeInventory(); } return; }
   if (state !== 'playing') return;
@@ -658,5 +663,75 @@ $('setClose').onclick = closeSettings;
 
 applySettings();
 renderSlots();
+// ---------- Mehrspieler ----------
+const mp = new Multiplayer(game, {
+  toast: t => toast(t),
+  status: t => { $('mpStatus').textContent = t; },
+  players: list => {
+    $('mpPlayers').innerHTML = list.map(p => `<li><span>👤 ${p.name.replace(/[<>&]/g, '')}</span>${mp.host ? `<button data-kick="${p.id}">Entfernen</button>` : ''}</li>`).join('');
+  },
+  joined: info => {
+    slot = -1;
+    $('bFly').hidden = !(touchMode && game.mode === 'creative');
+    $('bUndo').hidden = game.mode !== 'creative'; $('bmode').hidden = true;
+    renderHotbar(); renderQuest(); setState('playing'); renderVitals(); lockPointer();
+    showBanner(`👥 Bei ${String(info.host).replace(/[<>&]/g, '')}<small>Du spielst in seiner Welt. Dein Vorrat gilt nur für diesen Besuch; gespeichert wird beim Gastgeber.</small>`);
+  },
+  ended: (why, wasGuest) => {
+    toast(why);
+    if (wasGuest) { slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); renderVitals(); }
+    else mp.listPlayers();
+  }
+});
+let mpInv = null, mpBack = 'menu';
+function openMp(asHost) {
+  mpBack = state; setReturn = state === 'paused' ? 'paused' : 'menu';
+  $('mpHost').hidden = !asHost; $('mpGuest').hidden = asHost;
+  $('mpStun').checked = settings.stun; $('mpName').value = settings.mpName;
+  $('mpStatus').textContent = '';
+  if (asHost) mp.listPlayers();
+  setState('mp');
+}
+$('pMp').onclick = () => openMp(true);
+$('mJoin').onclick = () => { unlockAudio(); $('mpAnswerBox').hidden = true; openMp(false); };
+$('mpClose').onclick = () => { setState(mpBack === 'paused' ? 'paused' : 'menu'); };
+$('mpStun').onchange = e => { settings.stun = e.target.checked; saveSettings(settings); };
+const copy = id => { const t = $(id); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(() => toast('Kopiert ✔'), () => { document.execCommand('copy'); toast('Kopiert'); }); };
+$('mpCopyO').onclick = () => copy('mpOffer');
+$('mpCopyA').onclick = () => copy('mpAnswer');
+$('mpInvite').onclick = async () => {
+  mp.useStun = settings.stun; mp.myName = settings.mpName || 'Gastgeber';
+  $('mpStatus').textContent = 'Einladung wird vorbereitet …'; $('mpInvite').disabled = true;
+  try {
+    mpInv = await mp.invite();
+    $('mpOffer').value = mpInv.code; $('mpAnswerIn').value = ''; $('mpOfferBox').hidden = false;
+    $('mpStatus').textContent = 'Einladung kopieren und schicken, dann die Antwort einfügen.';
+  } catch (e) { $('mpStatus').textContent = 'Einladung ging nicht: ' + (e.message || e); }
+  $('mpInvite').disabled = false;
+};
+$('mpConnect').onclick = async () => {
+  if (!mpInv) return;
+  try {
+    await mpInv.accept($('mpAnswerIn').value);
+    $('mpStatus').textContent = 'Verbinde …';
+    const pc = mpInv.pc; mpInv = null; $('mpOfferBox').hidden = true;
+    const t = setTimeout(() => { if (pc.connectionState !== 'connected') $('mpStatus').textContent = 'Keine Verbindung. Tipp: „Über das Internet verbinden“ bei beiden einschalten oder im selben WLAN spielen.'; }, 15000);
+    pc.addEventListener('connectionstatechange', () => { if (pc.connectionState === 'connected') { clearTimeout(t); $('mpStatus').textContent = 'Verbunden ✔'; } });
+  } catch (e) { $('mpStatus').textContent = e.message || 'Antwort-Code passt nicht'; }
+};
+$('mpPlayers').addEventListener('click', e => { const b = e.target.closest('[data-kick]'); if (b) mp.kick(Number(b.dataset.kick)); });
+$('mpJoin').onclick = async () => {
+  const name = $('mpName').value.trim(); settings.mpName = name; settings.stun = $('mpStun').checked; saveSettings(settings);
+  if (game.mp) mp.end(null);
+  mp.useStun = settings.stun;
+  $('mpStatus').textContent = 'Antwort wird erstellt …'; $('mpJoin').disabled = true;
+  try {
+    const code = await mp.join($('mpInviteIn').value, name || 'Gast');
+    $('mpAnswer').value = code; $('mpAnswerBox').hidden = false;
+    $('mpStatus').textContent = 'Antwort kopieren und dem Gastgeber schicken. Sobald er sie einfügt, geht es los.';
+  } catch (e) { $('mpStatus').textContent = e.message || 'Einladungs-Code passt nicht'; }
+  $('mpJoin').disabled = false;
+};
+
 setState('menu');
 game.startMenu();

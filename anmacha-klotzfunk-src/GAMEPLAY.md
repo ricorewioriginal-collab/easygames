@@ -73,6 +73,10 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Lore** (Werkbank: 3 Eisenbarren, 2 Kupferbarren) wird auf eine Schiene gesetzt. Vor schiebt in Blickrichtung an (fast stehend auch rückwärts), zurück bremst. Bergauf wird sie langsamer, bergab schneller; am Ende der Strecke hält sie. Fehlt die Schiene unter ihr, bleibt sie liegen.
 - **Springen** = aussteigen (neben oder über dem Fahrzeug), **Abbauen** auf ein Fahrzeug packt es wieder ein. Fahrzeuge bleiben im Spielstand an ihrem Platz (höchstens 64 je Welt).
 
+## Mehrspieler
+Bis zu 4 Freunde spielen in deiner Welt mit (Überleben oder Kreativ), ohne Konto und ohne Server: Pause → 👥 Mehrspieler → Einladung erstellen und schicken,
+der Freund antwortet über „👥 Bei Freunden mitspielen“ im Hauptmenü. Alles Weitere in [MULTIPLAYER.md](MULTIPLAYER.md).
+
 ## Funknetz
 - **Schalter:** Setzen-Taste legt ihn um. Ein eingeschalteter Schalter speist **Signalleitungen**, die ihn berühren an einer Würfelseite (nicht über Ecken); Leitungen reichen beliebig weit.
 - **Funksender** neben einem gespeisten Schalter oder einer Leitung gehen auf Sendung. Sie erreichen **Funkrelais** und **Empfänger** bis **24 Blöcke** entfernt (Luftlinie, durch Wände). Relais tragen das Signal weitere 24 Blöcke.

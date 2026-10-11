@@ -221,6 +221,7 @@ export class Game {
     this.farm = new Farm(); this.age = 0; this.history = []; this.redoList = [];
     this.onVitals = () => {}; this.onHurt = () => {}; this.onDeath = () => {}; this.onMine = () => {}; this.onStation = () => {};
     this.onTrade = () => {}; this.onBuildMode = () => {}; this.onRide = () => {};
+    this.mp = null; this.net = null; // Mehrspieler (mp.js): mp = Sitzung, net = Gast-Protokoll
     this.armor = { kopf: 0, brust: 0 }; this.armWear = { kopf: 0, brust: 0 };
     this.resize();
   }
@@ -482,12 +483,13 @@ export class Game {
     this.stream();
     const night = this.time > 0.52 && this.time < 0.98; // Sonne unter dem Horizont
     if (this.mobs) {
-      this.mobs.update(dt, p.x, p.z, { py: p.y, night, time: this.time, hostiles: this.survival && this.enemies && !this.dead });
+      this.mobs.update(dt, p.x, p.z, { py: p.y, night, time: this.time, hostiles: this.survival && this.enemies && !this.dead, others: this.mp ? this.mp.others() : null });
       this.mobView.update(p.x, p.z, this.light, this.viewDist * CS, this.uni.uTime.value);
     }
+    if (this.mp) this.mp.tick(dt);
     if (!this.dead) this.age += dt;
     this.farmT -= dt;
-    if (this.farmT <= 0) { this.farmT = 2; if (this.farm.update(this.world, this.age)) this.unsaved = true; }
+    if (this.farmT <= 0) { this.farmT = 2; if (!this.net && this.farm.update(this.world, this.age)) this.unsaved = true; } // Gast: Wachstum kommt vom Gastgeber
     // Zielblock und Aktionen
     const c = this.camera, dir = this.lookDir || (this.lookDir = new THREE.Vector3());
     dir.set(0, 0, -1).applyEuler(c.rotation);
@@ -606,6 +608,7 @@ export class Game {
     const dmg = this.mode === 'creative' ? 99 : !tool ? 1 : tool.kind === 'schwert' ? tool.dmg : tool.kind === 'axt' ? 3 : 2;
     this.swing = 1; playBreak();
     if (tool && tool.kind === 'schwert') this.wear(held);
+    if (this.net) { this.net.hit(mob.id, Math.min(dmg, 10)); mob.hurtT = 0.35; return; } // Gast: Gastgeber entscheidet, Beute kommt zurück
     if (!mob.hit(dmg, p.x, p.z)) return;
     this.spawnBreak(mob.x - 0.5, mob.y, mob.z - 0.5, B.WOOL);
     this.mobs.remove(mob, false);
@@ -619,6 +622,7 @@ export class Game {
 
   // Gegner trifft den Spieler (Treffer nur mit freier Sicht, siehe mobs.js)
   mobHits(m) {
+    if (m.target && this.mp) { this.mp.hurtGuest(m); return; } // Gegner trifft einen Gast
     const v = this.vitals, p = this.player;
     if (!v || this.dead) return;
     const d = Math.hypot(p.x - m.x, p.z - m.z) || 1;
@@ -634,9 +638,25 @@ export class Game {
     if (v.dead) this.die(m.T.name);
   }
 
+  // Mehrspieler-Gast: Treffer eines Gegners beim Gastgeber
+  remoteHurt(m) {
+    const v = this.vitals, p = this.player;
+    if (!v || this.dead) return;
+    const f = Array.isArray(m.from) && m.from.slice(0, 3).every(Number.isFinite) ? m.from : null;
+    if (f && f[3]) {
+      const pos = this.beam.geometry.attributes.position;
+      pos.setXYZ(0, f[0], f[1], f[2]); pos.setXYZ(1, p.x, p.y + 1.2, p.z); pos.needsUpdate = true; this.beam.visible = true; this.beamT = 0.15;
+    } else if (f) { const d = Math.hypot(p.x - f[0], p.z - f[2]) || 1; p.vx += (p.x - f[0]) / d * 6; p.vz += (p.z - f[2]) / d * 6; p.vy = Math.max(p.vy, 5); p.onGround = false; }
+    const cause = typeof m.cause === 'string' ? m.cause.slice(0, 30) : 'Gegner', dmg = Math.min(10, m.dmg) * armorFactor(this.armorPoints());
+    this.wearArmor(); v.hurt(dmg, cause); playDeny();
+    this.onHurt(dmg, cause); this.onVitals();
+    if (v.dead) this.die(cause);
+  }
+
   // ---------- Rückgängig / Wiederholen (nur Kreativ, sonst ließen sich Blöcke vermehren) ----------
   // Ein Eintrag = Liste von Änderungen [x, y, z, vorher, nachher]; Formen und Einfügen sind ein Schritt
   record(x, y, z, from, to) {
+    if (this.net) this.net.local(x, y, z, from, to); // Mehrspieler-Gast: Wunsch an den Gastgeber
     if (this.mode !== 'creative') return;
     if (this.batch) { this.batch.push([x, y, z, from, to]); return; }
     this.history.push([[x, y, z, from, to]]);
@@ -654,7 +674,7 @@ export class Game {
     const e = src.pop();
     if (!e) { this.onToast(redo ? 'Nichts zum Wiederholen' : 'Nichts zum Rückgängigmachen'); return false; }
     const list = redo ? e : e.slice().reverse();
-    for (const [x, y, z, from, to] of list) { this.world.ensure(x >> 4, z >> 4); this.world.setBlock(x, y, z, redo ? to : from); }
+    for (const [x, y, z, from, to] of list) { this.world.ensure(x >> 4, z >> 4); const a = redo ? from : to, b = redo ? to : from; if (this.world.setBlock(x, y, z, b) && this.net) this.net.local(x, y, z, a, b); }
     dst.push(e); this.unsaved = true; playPlace();
     if (!this.running) { this.flushDirty(); this.render(); }
     return true;

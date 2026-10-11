@@ -197,3 +197,9 @@ body.touch #bmode{bottom:auto;top:calc(150px + var(--sat))}
 #trade .say{font-style:italic;opacity:.9}
 @media (max-width:420px){#topbtns{gap:5px}.tbtn{width:36px;height:36px;font-size:17px;border-radius:10px}}
 .qch{margin:12px 0 4px;font-size:14px;color:#ffe08a}
+
+/* Mehrspieler */
+#mp textarea{width:100%;box-sizing:border-box;font:12px/1.35 ui-monospace,monospace;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px;margin:6px 0;resize:vertical;word-break:break-all}
+#mp input#mpName{display:block;width:100%;box-sizing:border-box;margin-top:4px}
+.mpl{list-style:none;padding:0;margin:8px 0}
+.mpl li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.12)}

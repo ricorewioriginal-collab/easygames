@@ -23,7 +23,9 @@ export const DEFAULTS = {
   showFps: false,
   deathLoss: 'keep',    // keep | grave (Vorrat bleibt am Todesort liegen)
   enemies: true,        // Gegner im Überlebensmodus (aus = friedlich)
-  preview: true         // Platzierungsvorschau (weißer Rahmen)
+  preview: true,        // Platzierungsvorschau (weißer Rahmen)
+  stun: true,           // Mehrspieler: öffentlichen STUN-Server nutzen
+  mpName: ''            // Mehrspieler: eigener Name
 };
 
 export function loadSettings() {

@@ -30,6 +30,7 @@ export class World {
     this.radios = new Map(); // Radio-Blöcke: 'x,y,z' -> [x, y, z]
     this.sig = new Map();    // Funk-/Signalblöcke: 'x,y,z' -> [x, y, z, typ] (nur gesetzte, nie erzeugte)
     this.sigDirty = false;   // Signalnetz neu berechnen
+    this.onSet = null;       // (x, y, z, typ) nach jeder Änderung (Mehrspieler-Gastgeber)
   }
 
   getChunk(cx, cz) { return this.chunks.get(chunkKey(cx, cz)); }
@@ -150,6 +151,7 @@ export class World {
         if (dx || dz) { const n = this.chunks.get(chunkKey(cx + dx, cz + dz)); if (n) this.dirty.add(n); }
       }
     }
+    if (this.onSet) this.onSet(x, y, z, t); // Mehrspieler: Änderung verteilen
     return true;
   }
 

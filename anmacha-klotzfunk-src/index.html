@@ -52,10 +52,10 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🏘 Dörfer, Handel &amp; Minen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge, Drohnen &amp; Rüstung</li><li>▦ Bauformen &amp; Kopieren</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>🚤 Boot &amp; Lore</li><li>📜 Story „Das große Rauschen“</li><li>📡 Funknetz &amp; Maschinen</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🏘 Dörfer, Handel &amp; Minen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge, Drohnen &amp; Rüstung</li><li>▦ Bauformen &amp; Kopieren</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>🚤 Boot &amp; Lore</li><li>📜 Story „Das große Rauschen“</li><li>📡 Funknetz &amp; Maschinen</li><li>👥 Mehrspieler</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
-    <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
+    <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mJoin">👥 Bei Freunden mitspielen</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
     <details class="help">
       <summary>☁ Spielstände mit Google sichern (optional)</summary>
       <div id="cloudbox"></div>
@@ -67,6 +67,7 @@
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Minikarte</div>
         <div><b>Story-Modus</b><br>„Das große Rauschen“: 6 Kapitel mit 25 Aufträgen, vom ersten Unterschlupf über das Dorf und die Höhlen bis zum großen Funknetz. Es gelten die Überlebensregeln. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste. Alte Story-Welten spielen ihre 15 Aufträge weiter.</div>
         <div><b>Fahrzeuge</b><br>Boot (Werkbank: Bretter und Stock) aufs Wasser setzen, Lore (Eisen und Kupfer) auf eine Schiene. Setzen = einsteigen, Springen = aussteigen, Abbauen = einpacken. Im Boot: vor/zurück paddeln, links/rechts lenken. In der Lore: vor schiebt in Blickrichtung an, zurück bremst; sie folgt Kurven und Stufen.</div>
+        <div><b>Mehrspieler</b><br>Gastgeber: Pause → 👥 Mehrspieler → Einladung erstellen und schicken, Antwort einfügen. Gast: Hauptmenü → „Bei Freunden mitspielen“. Bis zu 4 Gäste, direkt von Browser zu Browser. Gespeichert wird beim Gastgeber.</div>
         <div><b>Funknetz</b><br>Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben. Der Sender erreicht Relais und Empfänger bis 24 Blöcke weit, Relais tragen weiter. Empfänger und Leitungen schalten Signallampen und Funktore daneben ein. Alles an der Werkbank.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder</div>
         <div><b>Überleben</b><br>Abbauen dauert je nach Härte; Werkzeuge machen es schneller und nutzen sich ab. Erze brauchen eine Spitzhacke, Eisen und Funkkristall mindestens eine aus Stein. Bretter → Stöcke und Werkbank, an der Werkbank Werkzeuge und Schmelzofen, im Ofen Barren und Braten. Rechtsklick/Setzen auf Werkbank oder Ofen öffnet das Herstellen. Essen: Essen wählen und Setzen drücken. Stürze, Ertrinken, Magma und Hunger kosten Herzen.</div>
@@ -88,6 +89,7 @@
     <label class="rng">Sichtweite: <b id="vdVal"></b><input id="vd" type="range" min="2" max="10" step="1"></label>
     <label class="rng">Tageszeit: <b id="tdVal"></b><input id="td" type="range" min="0" max="100" step="1"></label>
     <button id="pFreeze">⏱ Zeit läuft</button>
+    <button id="pMp">👥 Mehrspieler</button>
     <button id="pSettings">⚙ Einstellungen</button>
     <button id="pQuests" hidden>📜 Aufträge</button>
     <button id="pSound">🔊 Ton: an</button>
@@ -114,6 +116,30 @@
     <h2 id="trName">Handel <button id="trClose" class="x" aria-label="Schließen">✕</button></h2>
     <p class="sub say" id="trSay"></p>
     <div id="trList" class="rec"></div>
+  </div>
+</section>
+
+<section id="mp" class="screen" hidden>
+  <div class="panel wide">
+    <h2>Mehrspieler <button id="mpClose" class="x" aria-label="Schließen">✕</button></h2>
+    <div id="mpHost">
+      <p class="sub">Bis zu 4 Freunde spielen in deiner Welt mit, ohne Konto und ohne Server. 1. „Einladung erstellen“ und den Code an deinen Freund schicken (z. B. per Messenger). 2. Seinen Antwort-Code hier einfügen und „Verbinden“ drücken. Für jeden Freund eine eigene Einladung.</p>
+      <button id="mpInvite" class="big">Einladung erstellen</button>
+      <div id="mpOfferBox" hidden>
+        <textarea id="mpOffer" readonly rows="3" aria-label="Einladungs-Code"></textarea><button id="mpCopyO">⧉ Einladung kopieren</button>
+        <textarea id="mpAnswerIn" rows="3" placeholder="Antwort-Code deines Freundes hier einfügen" aria-label="Antwort-Code"></textarea><button id="mpConnect" class="big">Verbinden</button>
+      </div>
+      <ul id="mpPlayers" class="mpl"></ul>
+    </div>
+    <div id="mpGuest">
+      <p class="sub">Dein Freund öffnet in seiner Welt Pause → 👥 Mehrspieler und schickt dir eine Einladung. Füge sie hier ein, erstelle die Antwort und schicke sie ihm zurück.</p>
+      <label class="rng">Dein Name<input id="mpName" maxlength="16" autocomplete="nickname"></label>
+      <textarea id="mpInviteIn" rows="3" placeholder="Einladungs-Code hier einfügen" aria-label="Einladungs-Code"></textarea>
+      <button id="mpJoin" class="big">Antwort erstellen</button>
+      <div id="mpAnswerBox" hidden><textarea id="mpAnswer" readonly rows="3" aria-label="Antwort-Code"></textarea><button id="mpCopyA">⧉ Antwort kopieren</button></div>
+    </div>
+    <p class="sub st" id="mpStatus"></p>
+    <label class="chk"><input type="checkbox" id="mpStun"> Über das Internet verbinden (öffentlicher STUN-Server von Google hilft durch den Router; aus = nur im selben WLAN, ganz ohne fremden Dienst)</label>
   </div>
 </section>
 

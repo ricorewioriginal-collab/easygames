@@ -6,7 +6,7 @@ cd anmacha-klotzfunk-src
 npm test
 ```
 Läuft mit dem in Node eingebauten Test-Runner (keine zusätzliche Bibliothek), braucht keinen Browser und unter einer Sekunde.
-Stand dieser Etappe: **82 Tests, alle grün.**
+Stand dieser Etappe: **90 Tests, alle grün.**
 
 | Datei | prüft |
 |---|---|
@@ -22,6 +22,7 @@ Stand dieser Etappe: **82 Tests, alle grün.**
 | `tests/build.test.js` | Linie, Fläche, Wand, Säule; Größengrenze; Weltgrenze; Kopieren/Einfügen ohne Luft und Wasser |
 | `tests/signal.test.js` | Schalter, Sender, Relais, Empfänger als Kette mit Reichweite 24; Leitungen tragen das Signal, Empfänger speisen weiter, Maschinen schalten; Rechenlimit bei riesigen Netzen; Welt merkt sich Netz-Blöcke auch nach Entladen; Story „Das große Rauschen“ hat 6 Kapitel und lösbare Aufträge |
 | `tests/vehicles.test.js` | Boot schwimmt auf der Oberfläche, fährt, lenkt, hält an Mauern, treibt ohne Fahrer aus, ist an Land langsam; Lore folgt Gerade, Kurve und Stufe, hält am Ende, fährt zurück; entgleist ohne Schiene; Speichern/Laden mit ungültigen Einträgen; Höchstzahl; Treffer-Strahl; Aussteigen |
+| `tests/net.test.js` | Beitreten mit gleicher Welt (Weltdaten in mehreren Teilen); falsche Version und volle Welt abgewiesen; Blockänderungen verteilt, gleichzeitiges Abbauen nur einmal erlaubt; Reichweite, fremdes Token, Wasser bauen, Teleport, Rate abgelehnt; Tiere im Umkreis, Treffer mit Beute, Schaden, Uhrzeit, Verlassen; Verbindungs-Codes packen/entpacken |
 | `tests/settings.test.js` | Standardwerte, Speichern, ungültige oder kaputte Einträge werden ignoriert |
 
 ## Browser-Test (manuell ausgeführt in dieser Etappe)
@@ -44,6 +45,7 @@ Mit Playwright und Headless-Chromium (Software-Grafik, SwiftShader) gegen den Pr
 | Etappe 5, Überleben (Sumpf am Wasser): Boot aus dem Vorrat aufs Wasser gesetzt, eingestiegen, 12 Blöcke gefahren und gelenkt, ausgestiegen, Boot im Spielstand und nach Neuladen da, mit Abbauen eingepackt (wieder im Vorrat) | ✅ ohne JavaScript-Fehler |
 | Etappe 5, Kreativ: Schienen-Brücke 20 gerade, Kurve, 8 weiter, Stufe hoch; Lore gesetzt, eingestiegen, bis zum Ende gefahren (Kurve und Stufe genommen, hält an) | ✅ |
 | Etappe 5, Nachladen beim Flug mit und ohne Worker (siehe PERFORMANCE.md) | ✅ gleiche Chunks, halbe Hauptthread-Zeit |
+| Etappe 6, zwei Browser (Gastgeber 1000×700, Gast Handy 412×839), ohne STUN: Einladung (567 Zeichen) und Antwort (572 Zeichen) über die Oberfläche ausgetauscht, Gast in derselben Welt (gleicher Startwert), Gäste-Liste mit Namen, beide sehen die Figur des anderen mit Namensschild, Gast sieht 13 Tiere des Gastgebers, Gast baut → Gastgeber sieht den Block, Gastgeber baut → Gast sieht ihn, Gastgeber verlässt die Welt → Gast im Hauptmenü mit Hinweis | ✅ ohne JavaScript-Fehler |
 | Teleport in 8 Biome und eine Höhle (Kreativ, Seed 12345), Screenshots | ✅ Biome wie beschrieben, kein Durchfallen |
 
 **Einschränkungen:** Kein echtes Android-Gerät, kein Firefox/Edge/Safari, keine WebViews getestet. Die Bildraten aus Headless-Chromium

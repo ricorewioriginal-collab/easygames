@@ -130,6 +130,20 @@ Nicht umgesetzt: Reittiere und angetriebene Schienen. Reittiere bräuchten Tier-
 
 ---
 
+## 2g. Etappe 6 – Mehrspieler ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Verbindung | WebRTC-DataChannel direkt zwischen Browsern; Verbindungsaufbau über zwei Text-Codes (gepackt, ~600 Zeichen), kein Signalisierungs-Server; STUN optional (abschaltbar) | `src/rtc.js` |
+| Protokoll | Gastgeber = Autorität: Token je Sitzung, Versionsprüfung, höchstens 4 Gäste, Weltdaten in Teilen, Blockwünsche mit Zustand vorher (keine Doppel-Ernte), Reichweite, Rate, gültige Ids, Positionsprüfung; Ablehnung setzt Block und Vorrat beim Gast zurück | `src/net.js` |
+| Im Spiel | andere Spieler als Figur mit Namen; Tiere/Gegner vom Gastgeber beim Gast, Treffer und Beute über den Gastgeber; Gegner verfolgen den nächsten Spieler und treffen auch Gäste; Wachstum, Signale, Uhrzeit vom Gastgeber; Welt läuft im Pausemenü des Gastgebers weiter | `src/mp.js`, `src/avatars.js`, `src/game.js`, `src/mobs.js` |
+| Oberfläche | Pause → 👥 Mehrspieler (Einladung, Antwort einfügen, Gästeliste mit Entfernen), Hauptmenü → „Bei Freunden mitspielen“ | `index.html`, `src/main.js` |
+| Tests | 90 Tests (neu: `net.test.js`, Mehrspieler-Ziel in `mobs.test.js`) | `tests/` |
+
+Grenzen stehen in MULTIPLAYER.md (Vorrat der Gäste nur für den Besuch, Tiere nur um den Gastgeber, Fahrzeuge nicht geteilt, Story nur allein).
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
@@ -151,7 +165,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 16 | Funktechnik | ✅ | 4 | später Frequenzen (getrennte Netze), Antennen mit größerer Reichweite |
 | 17 | Automatisierung | 🟡 | 4 | Signale mit Rechenlimit ✅; später Taktgeber, Verzögerung, Logik-Gatter, Förderband |
 | 18 | Spielmodi | ✅ | 4 | Story nutzt die Überlebensregeln ✅ |
-| 19 | Multiplayer | ⬜ | 5 | WebRTC (Peer-to-Peer, Host = Autorität) zuerst prüfen; GitHub Pages bleibt Einzelspieler ohne Server |
+| 19 | Multiplayer | ✅ | 6 | WebRTC ohne Server ✅; später Vorrat der Gäste beim Gastgeber speichern, Fahrzeuge teilen |
 | 20 | Smartphone | 🟡 | 1 ✅ / 3 | Tastenpositionen frei verschiebbar, optionaler Platzierungsmodus mit Vorschau |
 | 21 | Desktop | 🟡 | 3 | Tastenbelegung ändern, Gamepad |
 | 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
@@ -161,7 +175,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
 | 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
 | 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
-| 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, TESTING, PROGRESS |
+| 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, MULTIPLAYER, TESTING, PROGRESS |
 
 ---
 
@@ -196,9 +210,11 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 6 „Mehrspieler“
-1. WebRTC Peer-to-Peer mit Host als Autorität, Verbindungsaufbau ohne eigenen Server; GitHub Pages bleibt Einzelspieler-fähig.
-2. Tests für alle neuen Systeme.
+### Nächste Sitzung: Etappe 7 „Karte, Steuerung, Inventar, Klänge“
+1. Weltkarte mit aufgedeckten Gebieten, eigenen Markierungen, Dörfern und Funkstationen.
+2. Touch-Tasten verschiebbar, Tastenbelegung änderbar, Gamepad.
+3. Inventar: Hotbar-Plätze tauschen und sortieren, Haltbarkeitsbalken.
+4. Klänge: Schritte je Material, Wasser, Tiere, Maschinen.
 
 ---
 
