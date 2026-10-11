@@ -1,0 +1,173 @@
+import type { Layout } from '../types';
+import type { Styles } from '../builders';
+import {
+  buildArchipelago,
+  buildComb,
+  buildCrossBridges,
+  buildRibbon,
+  buildRing,
+  buildSpiral,
+  buildStarHub,
+  buildTerraces,
+  buildTrefoil,
+  buildTwinLoops,
+  makeLayout,
+} from '../builders';
+
+/** Lichtpfade mit Regenbogen-Brücken */
+const LIGHT: Styles = { main: 'light', link: 'rainbow', climb: 'light', short: 'rainbow' };
+/** Kristallpfade mit Lichtbrücken */
+const CRYSTAL: Styles = { main: 'path', link: 'light', climb: 'light', short: 'rainbow' };
+/** Regenbogen-Hauptweg */
+const RAINBOW: Styles = { main: 'rainbow', link: 'light', climb: 'light', short: 'light' };
+
+/** PRISMARA – schwebende Kristallinseln, Lichtbrücken, Regenbogenwege und viele Portale. */
+export const LAYOUTS_PRISMARA: Layout[] = [
+  makeLayout({
+    world: 'prismara',
+    index: 1,
+    name: 'Prismen-Archipel',
+    template: 'archipelago',
+    blurb:
+      'Vier kleine Kristallinseln schweben im Kreis und sind durch kurze Lichtbrücken verbunden. Ein einzelnes Portal-Paar spannt eine Abkürzung quer über das Archipel.',
+    styles: LIGHT,
+    build: (c) => buildArchipelago(c, { sizes: [6, 5, 6, 5], bridgeNodes: 1, spread: 3.2 }),
+    mix: { portals: 1, shops: 2, items: 2, events: 2, thorn: 0.12 },
+    features: ['Kristallinseln', 'Schwebende Inseln'],
+    difficulty: 1,
+    rounds: 10,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 2,
+    name: 'Regenbogen-Reigen',
+    template: 'ring',
+    blurb:
+      'Ein großer Regenbogenring um sieben Kristallsplitter, mit drei Lichtpfaden als Umwegen durch das Innere. Einfache Routenwahl, dafür gleich zwei Portal-Paare.',
+    styles: RAINBOW,
+    build: (c) =>
+      buildRing(c, { n: 28, wave: 1.2, detours: 3, detourLen: 2, span: 3, islands: 'sectors', sectors: 7 }),
+    shortcuts: { count: 2, style: 'rainbow' },
+    mix: { portals: 2, shops: 3, items: 3, events: 2, thorn: 0.13 },
+    features: ['Regenbogenring', 'Kristallsplitter'],
+    difficulty: 1,
+    rounds: 12,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 3,
+    name: 'Kristall-Blüte',
+    template: 'star-hub',
+    blurb:
+      'Aus einer zentralen Prismen-Nabe wachsen fünf Kristallblätter, jedes eine Schleife aus Licht und Regenbogen. Wer das Blatt wechselt, kommt immer wieder an der Mitte vorbei.',
+    styles: LIGHT,
+    build: (c) => buildStarHub(c, { petals: [3, 4, 3, 4, 3], lift: [2, -1.5, 2.5, -1.5, 2] }),
+    mix: { portals: 2, shops: 3, items: 3, events: 3, thorn: 0.14, chaos: 1 },
+    features: ['Nabe mit Blättern', 'Rundläufe um den Start'],
+    difficulty: 2,
+    rounds: 14,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 4,
+    name: 'Lichtband',
+    template: 'ribbon',
+    blurb:
+      'Ein verdrehtes Doppelband aus Kristall, das sich wie eine Möbiusschleife windet. Mit Spurwechseln und Regenbogen-Abkürzungen wechselt man zwischen Innen- und Außenspur.',
+    styles: CRYSTAL,
+    build: (c) => buildRibbon(c, { n: 14, twist: 1, switches: 3, wave: 1.5, chunk: 4 }),
+    shortcuts: { count: 2, style: 'rainbow' },
+    mix: { portals: 2, shops: 3, items: 3, events: 3, thorn: 0.15, gates: 1 },
+    features: ['Möbius-Band', 'Spurwechsel'],
+    difficulty: 2,
+    rounds: 13,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 5,
+    name: 'Zwillingsspiegel',
+    template: 'twin-loops',
+    blurb:
+      'Zwei spiegelbildliche Kristallringe auf verschiedener Höhe, verbunden durch eine kurze und eine längere Lichtbrücke. Drei Portal-Paare springen zwischen den Spiegelwelten.',
+    styles: LIGHT,
+    build: (c) => buildTwinLoops(c, { na: 14, nb: 16, bridges: [1, 2], dy: 3.5, wave: 0.8 }),
+    mix: { portals: 3, shops: 3, gates: 1, items: 3, events: 3, thorn: 0.14 },
+    features: ['Zwei Inseln', 'Spiegelringe'],
+    difficulty: 2,
+    rounds: 14,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 6,
+    name: 'Schimmerspirale',
+    template: 'spiral',
+    blurb:
+      'Ein Lichtweg windet sich nach innen auf den Kristallgipfel; zurück zum Anfang führt eine hohe Regenbogenbrücke über alle Windungen. Zwei Abkürzungen sparen Schritte.',
+    styles: LIGHT,
+    build: (c) => buildSpiral(c, { rOut: 13, pitch: 5.4, rise: 4 }),
+    shortcuts: { count: 2, style: 'rainbow' },
+    mix: { portals: 2, shops: 3, items: 3, events: 2, thorn: 0.13 },
+    features: ['Kristallgipfel', 'Hohe Rückbrücke'],
+    difficulty: 1,
+    rounds: 13,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 7,
+    name: 'Prisma-Kreuzung',
+    template: 'cross-bridges',
+    blurb:
+      'Ein Kristallring, über dem sich drei Regenbogenbrücken in verschiedenen Höhen mitten im Raum kreuzen. Drei Portal-Paare und eine Mautbrücke machen die Wahl der Route schwierig.',
+    styles: LIGHT,
+    build: (c) => buildCrossBridges(c, { n: 24, chords: 3, wave: 1, levelGap: 4.6 }),
+    mix: { portals: 3, shops: 4, gates: 1, chaos: 1, items: 3, events: 3, thorn: 0.15 },
+    features: ['Kreuzende Brücken', 'Höhenebenen'],
+    difficulty: 3,
+    rounds: 16,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 8,
+    name: 'Kaleidoskop-Knoten',
+    template: 'trefoil-knot',
+    blurb:
+      'Ein einziger Lichtweg, zum Kleeblattknoten verschlungen, dessen Stränge sich auf drei Ebenen überkreuzen. Rampen, Regenbogen-Abkürzungen und drei Portal-Paare brechen die Schleife auf.',
+    styles: CRYSTAL,
+    build: (c) => buildTrefoil(c, { n: 42 }),
+    shortcuts: { count: 3, style: 'rainbow' },
+    mix: { portals: 3, shops: 4, gates: 2, items: 3, events: 3, thorn: 0.16 },
+    features: ['Kleeblattknoten', 'Überkreuzungen'],
+    difficulty: 3,
+    rounds: 17,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 9,
+    name: 'Zinnen des Lichts',
+    template: 'comb',
+    blurb:
+      'Eine Kristallburg aus Hinreihe und Rückreihe mit Zinnen-Umwegen nach oben und unten. Jede Zinne ist eine Lichtbrücken-Schleife; zwei Portal-Paare verbinden ferne Zinnen.',
+    styles: LIGHT,
+    build: (c) => buildComb(c, { m: 12, top: [2, 3, 2, 2], bottom: [0, 2, 0, 0], lift: 1.6 }),
+    shortcuts: { count: 2, style: 'rainbow' },
+    mix: { portals: 2, shops: 4, items: 3, events: 3, thorn: 0.15 },
+    features: ['Zinnen-Umwege', 'Burg aus Licht'],
+    difficulty: 2,
+    rounds: 15,
+  }),
+  makeLayout({
+    world: 'prismara',
+    index: 10,
+    name: 'Kristallpyramide',
+    template: 'terraces',
+    blurb:
+      'Eine Stufenpyramide aus drei Lichtterrassen, durch Treppen aus Licht verbunden. Vier Portal-Paare sind das Finale: Wer sie klug nutzt, überholt jeden Gegner.',
+    styles: RAINBOW,
+    build: (c) => buildTerraces(c, { sides: [2, 4, 6], yStep: 3.2, stairs: 4 }),
+    shortcuts: { count: 3, style: 'rainbow' },
+    mix: { portals: 4, shops: 5, gates: 2, chaos: 1, items: 4, events: 4, thorn: 0.15 },
+    features: ['Stufenpyramide', 'Viele Portale'],
+    difficulty: 3,
+    rounds: 18,
+  }),
+];
