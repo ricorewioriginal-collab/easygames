@@ -120,6 +120,7 @@ input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);co
 .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mg{aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:rgba(255,255,255,.08);font-size:clamp(20px,6.5vw,34px);padding:0;line-height:1}.mg.sel{border-color:#fff;background:rgba(255,255,255,.25);transform:scale(1.06)}.mg.pop{animation:pp .26s forwards}@keyframes pp{to{transform:scale(1.3);opacity:0}}
 .weights{font-size:30px;text-align:center;min-height:40px;margin-top:6px}
 .pads{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.pad4{font-size:34px;padding:18px 0;border-radius:16px;border:2px solid var(--line);background:rgba(255,255,255,.08)}.pad4.lit{background:#ff4f9a;border-color:#fff;transform:scale(1.08)}
+.sauna{position:relative;height:30px;margin:12px 0;border-radius:15px;background:linear-gradient(90deg,#3a7bff,#3ddc84 45%,#ffd23f 62%,#ff3b6b)}.sauna .hz{position:absolute;left:45%;width:25%;top:-4px;bottom:-4px;border:2px solid #fff;border-radius:12px}.sauna .hm{position:absolute;top:-6px;font-size:28px;transform:translateX(-50%);transition:left .1s linear}
 .kbox{min-height:110px;display:flex;align-items:center;justify-content:center;margin-top:8px}.kline{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;font-size:clamp(20px,6vw,30px);font-weight:800}.sy{padding:2px 4px;border-radius:8px;opacity:.55}.sy.on{opacity:1;background:#fff3;transform:scale(1.15)}.sy.p{color:#ffe14d;opacity:1}.sy.g{color:#3ddc84;opacity:1}.sy.m{color:#ff5d6c}
 #ban{position:absolute;left:0;right:0;top:32%;text-align:center;display:none;pointer-events:none;font-weight:900;font-size:clamp(26px,6vw,48px);text-shadow:0 3px 12px #000;color:#fff}
 #ban small{display:block;font-size:.4em;font-weight:600;opacity:.9}
@@ -149,7 +150,7 @@ function fmt(n) { n = Math.floor(n); if (n < 1e4) return String(n); var u = ['k'
 /* ---------- Speicherstand ---------- */
 function def() {
   return { v: 1, name: 'Du', look: { skin: 1, hair: 1, hc: 1, beard: 1, acc: 0, top: 0, tc: 0, eye: 0 }, glitzer: 0, xp: 0,
-    club: { coins: 0, total: 0, items: {}, best: 0, shifts: 0 }, world: { x: 0, z: 14, yaw: 0, t: .3, q: 0, stars: [], dog: 0, cat: 0, qv: 3, done: 0, intro: 0, side: {}, zut: [] }, dates: {}, quiz: { best: 0, runs: 0 }, match: { best: 0 }, run: { best: 0 }, gym: { best: 0 }, rave: { best: {} }, style: { best: 0 }, sound: true, world3d: true, own: {}, dance: { best: 0 }, pool: { best: 0 }, kara: { best: 0 } };
+    club: { coins: 0, total: 0, items: {}, best: 0, shifts: 0 }, world: { x: 0, z: 14, yaw: 0, t: .3, q: 0, stars: [], dog: 0, cat: 0, qv: 4, done: 0, intro: 0, side: {}, zut: [] }, dates: {}, quiz: { best: 0, runs: 0 }, match: { best: 0 }, run: { best: 0 }, gym: { best: 0 }, rave: { best: {} }, style: { best: 0 }, sound: true, world3d: true, own: {}, dance: { best: 0 }, pool: { best: 0 }, kara: { best: 0 }, sauna: { best: 0 }, dark: { best: 0 }, cast: { best: 0 } };
 }
 function merge(d, s) {
   if (!s || typeof s !== 'object') return d;
@@ -391,6 +392,9 @@ var GAMES = [
   { id: 'dance', n: 'Tanzbattle', d: 'Chantal gibt die Schritte vor, du machst sie nach. Die Folgen werden länger und schneller.', k: 'dance', ch: 'kai', run: gDance },
   { id: 'pool', n: 'Strandbad-Sprung', d: 'Fünf Sprünge vom Brett: Kraft und Winkel treffen, möglichst nah ans Ziel plumpsen.', k: 'pool', ch: 'dennis', run: gPool },
   { id: 'kara', n: 'Karaoke', d: 'Singe im Takt mit: Tippe genau auf die Silben und werde zum Superstar.', k: 'kara', ch: 'luca', run: gKara },
+  { id: 'sauna', n: 'Sauna-Aufguss', d: 'Halte die Hitze im grünen Bereich, gieße auf, dusche kalt und rette im richtigen Moment dein Handtuch.', k: 'sauna', ch: 'torsten', run: gSauna },
+  { id: 'dark', n: 'Dunkelkammer', d: 'Stockfinstere Party: Such mit der Taschenlampe deine verlorenen Sachen und rempel niemanden an.', k: 'dark', ch: 'luca', run: gDark },
+  { id: 'cast', n: 'Casting-Tag', d: 'Regisseur Rüdiger ruft Szenen aus, du zeigst blitzschnell die passende Miene. Für die große Filmrolle.', k: 'cast', ch: 'kai', run: gCast },
   { id: 'quiz', n: 'Klischee-Quiz', d: 'Zehn Fragen zu Geschichte, Pop und Klischees. Wer bist du: Wissens-Diva oder Brunch-Statist?', k: 'quiz', ch: 'dennis', run: gQuiz }
 ];
 var stop = null;
@@ -403,6 +407,9 @@ function bestOf(g) {
   if (g.k === 'dance') return S.dance.best ? 'Best ' + S.dance.best + ' Runden' : '';
   if (g.k === 'pool') return S.pool.best ? 'Best ' + S.pool.best + '/500' : '';
   if (g.k === 'kara') return S.kara.best ? 'Best ' + fmt(S.kara.best) : '';
+  if (g.k === 'sauna') return S.sauna.best ? 'Best ' + S.sauna.best : '';
+  if (g.k === 'dark') return S.dark.best ? 'Best ' + S.dark.best : '';
+  if (g.k === 'cast') return S.cast.best ? 'Best ' + S.cast.best : '';
   if (g.k === 'gym') return S.gym.best ? 'Best ' + S.gym.best + ' Wdh.' : '';
   if (g.k === 'match') return S.match.best ? 'Best ' + fmt(S.match.best) : '';
   if (g.k === 'run') return S.run.best ? 'Best ' + fmt(S.run.best) : '';
@@ -419,6 +426,9 @@ var ACH = [
   ['Tanzbär', function () { return S.dance.best >= 10; }],
   ['Sprungbrett-Star', function () { return S.pool.best >= 400; }],
   ['Superstar', function () { return S.kara.best >= 2500; }],
+  ['Saunameister', function () { return S.sauna.best >= 450; }],
+  ['Nachtschwärmer', function () { return S.dark.best >= 550; }],
+  ['Nachwuchsstar', function () { return S.cast.best >= 800; }],
   ['Muskelprotz', function () { return S.gym.best >= 12; }],
   ['Match-Meisterin', function () { return S.match.best >= 2500; }],
   ['Paradenläufer', function () { return S.run.best >= 600; }]
@@ -465,6 +475,9 @@ var POIS = [
   { id: 'dance', n: 'Tanzschule Pirouette', g: 'dance', x: -84, z: -26, f: 1, c: 0xff4f9a, e: '💃', h: 11 },
   { id: 'pool', n: 'Strandbad Sonnenbrand', g: 'pool', x: 84, z: -54, f: 1, c: 0x2ea8ff, e: '🏖️', h: 8 },
   { id: 'kara', n: 'Karaoke Mikro-Mimosa', g: 'kara', x: -84, z: 54, f: -1, c: 0xe040fb, e: '🎤', h: 11 },
+  { id: 'sauna', n: 'Sauna Heißer Stein', g: 'sauna', x: -32, z: -54, f: 1, c: 0xff7043, e: '♨️', h: 9 },
+  { id: 'dark', n: 'Dunkelkammer Blackout', g: 'dark', x: 32, z: -54, f: 1, c: 0x7c4dff, e: '🔦', h: 12 },
+  { id: 'cast', n: 'Studio Klappe Auf', g: 'cast', x: 56, z: 54, f: -1, c: 0xffc400, e: '🎬', h: 11 },
   { id: 'home', n: 'Dein Apartment', g: 'home', x: 0, z: 58, f: -1, c: 0xff8fc0, e: '🏠', h: 14 }
 ];
 var QUESTS = [
@@ -479,6 +492,9 @@ var QUESTS = [
   { poi: 'dance', t: 'Tanzschule', d: 'Chantal wartet in der Tanzschule Pirouette: Schaffe 7 Runden im Tanzbattle.', ok: function () { return S.dance.best >= 7; }, r: 60 },
   { poi: 'pool', t: 'Sprung ins Glück', d: 'Torsten erwartet dich im Strandbad Sonnenbrand: Mindestens 300 Punkte beim Sprung.', ok: function () { return S.pool.best >= 300; }, r: 60 },
   { poi: 'kara', t: 'Karaoke-Abend', d: 'Zeig in der Karaoke-Bar, was du kannst: Mindestens 1800 Punkte.', ok: function () { return S.kara.best >= 1800; }, r: 70 },
+  { poi: 'sauna', t: 'Heiße Phase', d: 'Schwitz in der Sauna Heißer Stein: Mindestens 250 Punkte beim Aufguss.', ok: function () { return S.sauna.best >= 250; }, r: 70 },
+  { poi: 'dark', t: 'Licht aus', d: 'Finde in der Dunkelkammer Blackout deine Sachen: Mindestens 300 Punkte.', ok: function () { return S.dark.best >= 300; }, r: 70 },
+  { poi: 'cast', t: 'Klappe, die Erste', d: 'Stell dich im Studio Klappe Auf dem Regisseur vor: Mindestens 400 Punkte beim Casting.', ok: function () { return S.cast.best >= 400; }, r: 80 },
   { poi: 'plaza', t: 'Die große Parade', d: 'Geh zum Brunnen auf dem Platz. Die ganze Stadt wartet auf dich!', ok: null, r: 200 }
 ];
 function itemName(g) { return (g.slice(0, 3) === 'acc' ? ACCN : TOPN)[+g.slice(3)]; }
@@ -657,7 +673,7 @@ function buildWorld() {
       W.colliders.push({ x0: p.x - 12, x1: p.x + 12, z0: p.z - 6, z1: p.z + 6 }); W.stageG = g;
     } else house(p.x, p.z, 14, 14, p.h, p.c, p.f, 1);
   });
-  [[58, 26, 12, 12, 13, 0xffd1ec], [-84, 26, 12, 12, 9, 0xc8e6ff], [84, 54, 12, 12, 9, 0xffe9b3], [-84, -54, 12, 12, 11, 0xb8f0ec], [-32, -54, 12, 12, 9, 0xd4f5d0], [32, -54, 12, 12, 12, 0xffe9b3], [-32, 54, 12, 12, 10, 0xb8f0ec], [32, 54, 12, 12, 8, 0xffc4d8], [-56, -54, 12, 12, 10, 0xc9d4ff], [56, -54, 12, 12, 9, 0xffd6c9], [-56, 54, 12, 12, 12, 0xf5ccff], [56, 54, 12, 12, 10, 0xcdf5e8]].forEach(function (h) { house(h[0], h[1], h[2], h[3], h[4], h[5], h[1] < 0 ? 1 : -1, 0); });
+  [[58, 26, 12, 12, 13, 0xffd1ec], [-84, 26, 12, 12, 9, 0xc8e6ff], [84, 54, 12, 12, 9, 0xffe9b3], [-84, -54, 12, 12, 11, 0xb8f0ec], [-32, 54, 12, 12, 10, 0xb8f0ec], [32, 54, 12, 12, 8, 0xffc4d8], [-56, -54, 12, 12, 10, 0xc9d4ff], [56, -54, 12, 12, 9, 0xffd6c9], [-56, 54, 12, 12, 12, 0xf5ccff]].forEach(function (h) { house(h[0], h[1], h[2], h[3], h[4], h[5], h[1] < 0 ? 1 : -1, 0); });
   // Bäume, Lampen, Bänke
   var trunk = lmat(0x6a4a30), leafs = [lmat(0x6fcf7a), lmat(0xffb3d1), lmat(0x8fe0a0)];
   function tree(x, z) { var t = new THREE.Mesh(new THREE.CylinderGeometry(.22, .34, 2.4, 6), trunk); t.position.set(x, 1.2, z); scene.add(t); var l = new THREE.Mesh(new THREE.IcosahedronGeometry(1.7, 0), leafs[Math.abs(Math.round(x + z)) % 3]); l.position.set(x, 3.6, z); scene.add(l); var l2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 0), l.material); l2.position.set(x + .6, 4.6, z - .3); scene.add(l2); W.circles.push({ x: x, z: z, r: .7 }); }
@@ -792,7 +808,7 @@ function glz2() { var e = $('#wgl'); if (e) e.textContent = '✨ ' + fmt(S.glitz
 
 /* --- Aufträge --- */
 function checkQuests() {
-  var w = S.world, W = WD; if (w.qv !== 3) { if (w.qv === 2 && w.q >= 8) w.q = 8; else if (w.qv !== 2) w.q = Math.min(w.q, 5); w.qv = 3; }
+  var w = S.world, W = WD; if (w.qv !== 4) { if (w.qv === 3) { if (w.q >= 11) w.q += 3; } else if (w.qv === 2) { if (w.q >= 8) w.q = 8; } else w.q = Math.min(w.q, 5); w.qv = 4; }
   while (w.q < QUESTS.length - 1 && QUESTS[w.q].ok && QUESTS[w.q].ok()) { var q = QUESTS[w.q]; gain(q.r); w.q++; banner('Auftrag erledigt: ' + q.t, '+' + q.r + ' Glitzer'); sfx('ok'); save(); }
   glz2();
 }
@@ -1484,6 +1500,94 @@ function gStyle(root) {
 }
 
 /* ---------- Spiel 5: Klischee-Quiz ---------- */
+/* ---------- Sauna, Dunkelkammer, Casting ---------- */
+var SAUNA_GAG = ['Der Saunameister gießt auf und blickt streng.', 'Ein Gast fächelt sich mit der Speisekarte Luft zu.', 'Jemand schwört, er sitzt nur wegen der Wärme hier.', 'Das Thermometer zwinkert verdächtig.', 'Es duftet nach Eukalyptus und schlechten Entscheidungen.'];
+function gSauna(root) {
+  var heat = 50, score = 0, left = 45, towel = 0, nextT = 6, tm = 0, gagT = 8, msg = 'Halte die Hitze im grünen Bereich. Der Ofen heizt von selbst, Aufguss und Kaltdusche regeln nach.', over = false;
+  root.innerHTML = '<div class="panel"><div class="row" style="justify-content:space-between"><span class="chip" id="st">45 s</span><span class="chip" id="ss">0 Punkte</span></div><div class="sauna"><div class="hz"></div><div class="hm" id="hm">🧖</div></div><div class="bubble" id="sg">' + msg + '</div><div class="row" style="gap:8px"><button class="btn pri" id="sa" style="flex:1;padding:16px">🔥 Aufguss</button><button class="btn" id="sc" style="flex:1;padding:16px">❄️ Kaltdusche</button></div><button class="btn" id="sw" style="width:100%;margin-top:8px;padding:14px;visibility:hidden">🧖 Handtuch festhalten!</button></div>';
+  function say(t) { var e = $('#sg'); if (e) e.textContent = t; }
+  $('#sa').onclick = function () { if (!over) { heat = Math.min(110, heat + 14); sfx('tap'); } };
+  $('#sc').onclick = function () { if (!over) { heat = Math.max(-10, heat - 17); sfx('tap'); } };
+  $('#sw').onclick = function () { if (over || !towel) return; towel = 0; score += 50; sfx('ok'); this.style.visibility = 'hidden'; say('Gerade noch gerettet. Der Saal applaudiert. Dezent.'); };
+  tm = setInterval(function () {
+    if (over) return; left -= .1; heat += .075 + (heat > 60 ? .02 : 0); nextT -= .1; gagT -= .1;
+    if (heat >= 45 && heat <= 70) score += 1; else if (heat > 92) score -= 1;
+    if (nextT <= 0 && !towel && left > 4) { towel = 1.6; nextT = 7 + rnd() * 5; $('#sw').style.visibility = 'visible'; say('Dein Handtuch rutscht! Schnell festhalten!'); }
+    if (towel) { towel -= .1; if (towel <= 0) { towel = 0; score -= 40; $('#sw').style.visibility = 'hidden'; say(pick(SAUNA_GAG) + ' (Das Handtuch ist weg. -40)'); sfx('no'); } }
+    else if (gagT <= 0) { gagT = 9; say(pick(SAUNA_GAG)); }
+    var hm = $('#hm'); if (hm) hm.style.left = Math.max(0, Math.min(100, heat)) + '%'; $('#st').textContent = Math.ceil(left) + ' s'; $('#ss').textContent = Math.max(0, score) + ' Punkte';
+    if (left <= 0) end();
+  }, 100);
+  stop = function () { clearInterval(tm); };
+  function end() {
+    over = true; clearInterval(tm); var sc = Math.max(0, Math.round(score)), pb = sc > S.sauna.best; if (pb) S.sauna.best = sc; duelScore(sc); var g = gain(sc / 8); glz(); stop = null;
+    var t = sc >= 450 ? 'Saunameister! Du bist offiziell gar gedämpft.' : sc >= 300 ? 'Schön durchgeschwitzt. Der Eisbottich nickt.' : sc >= 150 ? 'Etwas schrumpelig, aber glücklich.' : 'Du bist rot wie ein Hummer. Trink Wasser.';
+    root.innerHTML = '<div class="panel" style="text-align:center"><div class="big">' + sc + '</div><p>' + t + '</p><p class="sub">' + (pb ? 'Neuer Rekord! ' : '') + '+' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button></div></div>';
+    $('#ag').onclick = function () { gSauna(root); };
+  }
+}
+var DARK_IT = ['🧥', '📱', '🔑', '👛', '🕶️', '💄'], DARK_OOPS = ['Pardon! Es ist dunkel hier.', 'Das war nicht deine Jacke, Süßer.', 'Oh, hallo. Nein, tut mir leid.', 'Ein Schatten kichert.', 'Autsch, das war ein Ellenbogen.'];
+function gDark(root) {
+  root.innerHTML = '<div class="panel"><div class="row" style="justify-content:space-between"><span class="chip" id="dt">40 s</span><span class="chip" id="di">0 / 6</span></div><canvas id="dc" style="height:340px;margin-top:8px;touch-action:none;border-radius:16px"></canvas><div class="bubble" id="dm">Wähle mit dem Finger, wo die Taschenlampe hinleuchtet. Tippe auf Fundstücke, aber rempel keine Schatten an.</div></div>';
+  var cv = $('#dc'), ctx = (cv.style.width = '100%', cv.getContext('2d')), r0 = cv.getBoundingClientRect(), W = r0.width, H = r0.height, dpr = Math.min(2, window.devicePixelRatio || 1), R = Math.min(78, W * .2);
+  cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  var items = shuffle(DARK_IT).map(function (e) { return { e: e, x: 30 + rnd() * (W - 60), y: 34 + rnd() * (H - 68), got: 0 }; }), mx = W / 2, my = H / 2, left = 40, got = 0, bumps = 0, cool = 0, over = false, raf = 0, last = performance.now(), msgT = 0;
+  var fig = []; for (var i = 0; i < 5; i++) fig.push({ x: rnd() * W, y: rnd() * H, vx: (rnd() - .5) * 60, vy: (rnd() - .5) * 60, e: pick(['🕺', '💃', '🧍', '🤵', '👯']) });
+  function say(t) { var e = $('#dm'); if (e) e.textContent = t; }
+  function move(e) { var b = cv.getBoundingClientRect(); mx = Math.max(0, Math.min(W, e.clientX - b.left)); my = Math.max(0, Math.min(H, e.clientY - b.top)); }
+  cv.onpointerdown = function (e) { move(e); try { cv.setPointerCapture(e.pointerId); } catch (x) {} if (over) return; items.forEach(function (it) { if (!it.got && Math.hypot(it.x - mx, it.y - my) < 34 && Math.hypot(it.x - mx, it.y - my) < R) { it.got = 1; got++; sfx('ok'); say('Gefunden: ' + it.e); $('#di').textContent = got + ' / 6'; if (got === 6) end(); } }); };
+  cv.onpointermove = move;
+  function draw(dt) {
+    ctx.fillStyle = '#07040f'; ctx.fillRect(0, 0, W, H); ctx.save(); ctx.beginPath(); ctx.arc(mx, my, R, 0, 7); ctx.clip();
+    var g = ctx.createRadialGradient(mx, my, 4, mx, my, R); g.addColorStop(0, '#5a3c8a'); g.addColorStop(1, '#241440'); ctx.fillStyle = g; ctx.fillRect(mx - R, my - R, R * 2, R * 2);
+    ctx.font = '26px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    items.forEach(function (it) { if (!it.got) ctx.fillText(it.e, it.x, it.y); }); fig.forEach(function (f) { ctx.fillText(f.e, f.x, f.y); }); ctx.restore();
+    ctx.strokeStyle = 'rgba(255,230,160,.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(mx, my, R, 0, 7); ctx.stroke();
+  }
+  function loop(ts) {
+    if (over) return; raf = requestAnimationFrame(loop); var dt = Math.min(.05, (ts - last) / 1000); last = ts; left -= dt; cool -= dt;
+    fig.forEach(function (f) { f.x += f.vx * dt; f.y += f.vy * dt; if (f.x < 10 || f.x > W - 10) f.vx *= -1; if (f.y < 10 || f.y > H - 10) f.vy *= -1; f.x = Math.max(10, Math.min(W - 10, f.x)); f.y = Math.max(10, Math.min(H - 10, f.y)); if (cool <= 0 && Math.hypot(f.x - mx, f.y - my) < 22) { cool = 1.5; bumps++; left -= 3; sfx('no'); say(pick(DARK_OOPS) + ' (-3 s)'); } });
+    $('#dt').textContent = Math.max(0, Math.ceil(left)) + ' s'; draw(dt); if (left <= 0) end();
+  }
+  stop = function () { over = true; cancelAnimationFrame(raf); };
+  raf = requestAnimationFrame(loop);
+  function end() {
+    over = true; cancelAnimationFrame(raf); var sc = Math.max(0, got * 100 + Math.max(0, Math.ceil(left)) * 4 - bumps * 20), pb = sc > S.dark.best; if (pb) S.dark.best = sc; duelScore(sc); var g = gain(sc / 8); glz(); stop = null;
+    var t = got === 6 ? 'Alles gefunden, und kaum jemand angerempelt. Respekt.' : got >= 3 ? 'Halb gefunden. Der Rest bleibt im Fundbüro.' : 'Du hast vor allem Schatten umarmt.';
+    root.innerHTML = '<div class="panel" style="text-align:center"><div class="big">' + sc + '</div><p>' + got + ' von 6 Dingen gefunden · ' + bumps + ' Rempler</p><p>' + t + '</p><p class="sub">' + (pb ? 'Neuer Rekord! ' : '') + '+' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button></div></div>';
+    $('#ag').onclick = function () { gDark(root); };
+  }
+}
+var CAST = [
+  ['Du siehst deinen Ex im Aufzug. Spiel Entsetzen!', '😱'], ['Der Pizzabote klingelt. Spiel pure Vorfreude!', '🤤'], ['Dein Hund frisst das Drehbuch. Spiel Verzweiflung!', '😭'], ['Du hast im Lotto gewonnen. Spiel Überraschung!', '🤯'],
+  ['Wirf einen Blick über den Rand der Sonnenbrille!', '😎'], ['Der Nachbar grüßt dich. Spiel kühle Eleganz!', '😏'], ['Dein Lieblingssong läuft. Spiel Ekstase!', '🥳'], ['Der Regisseur hat gelogen. Spiel gespielte Wut!', '😤'],
+  ['Du riechst Mamas Lasagne. Spiel Geborgenheit!', '🥰'], ['Die Drehtür klemmt dein Bein ein. Spiel Schmerz mit Würde!', '😬'], ['Ein Kollege klaut deinen Text. Spiel Fassungslosigkeit!', '😳'], ['Du hörst einen sehr schlechten Witz. Spiel Höflichkeit!', '🙂']
+];
+var CAST_ALL = ['😱', '🤤', '😭', '🤯', '😎', '😏', '🥳', '😤', '🥰', '😬', '😳', '🙂', '😴', '🤢'], CAST_BAD = ['Cut! Das war ein Wetterbericht.', 'Mein Hund hätte das besser gespielt.', 'Danke, wir melden uns. Nie.', 'Das war mutig. Leider falsch.'], CAST_OK = ['Genau so! Die Kamera liebt dich.', 'Oscar-verdächtig!', 'Das ist ein Star in Windeln.', 'Bravo, Darling!'];
+function gCast(root) {
+  var sc = shuffle(CAST).slice(0, 10), i = 0, score = 0, right = 0, streak = 0, T = 5, left = T, tm = 0, lock = false;
+  function q() {
+    var d = sc[i], opts = shuffle([d[1]].concat(shuffle(CAST_ALL.filter(function (x) { return x !== d[1]; })).slice(0, 3))); lock = false; left = T;
+    root.innerHTML = '<div class="panel"><div class="row" style="justify-content:space-between"><span class="chip">Szene ' + (i + 1) + ' / 10</span><span class="chip">' + (streak >= 2 ? '🔥 ×' + (1 + Math.min(2, streak >> 1)) + ' · ' : '') + score + ' Punkte</span></div><div class="bar" style="margin:10px 0"><i id="cb"></i></div><div class="bubble" style="font-size:17px">🎬 Regisseur Rüdiger: „' + esc(d[0]) + '“</div><div class="pads" style="grid-template-columns:repeat(2,1fr)">' + opts.map(function (e) { return '<button class="pad4" data-e="' + e + '">' + e + '</button>'; }).join('') + '</div><div id="cx"></div></div>';
+    [].forEach.call(root.querySelectorAll('.pad4'), function (b) { b.onclick = function () { ans(b.dataset.e, b); }; });
+    clearInterval(tm); tm = setInterval(function () { left -= .1; var e = $('#cb'); if (e) e.style.width = Math.max(0, left / T * 100) + '%'; if (left <= 0) ans('', null); }, 100);
+  }
+  function ans(e, b) {
+    if (lock) return; lock = true; clearInterval(tm); var d = sc[i], ok = e === d[1], gp = 0;
+    [].forEach.call(root.querySelectorAll('.pad4'), function (x) { x.disabled = true; if (x.dataset.e === d[1]) x.classList.add('lit'); });
+    if (ok) { gp = (50 + Math.ceil(Math.max(0, left) * 10)) * (1 + Math.min(2, streak >> 1)); score += gp; right++; streak++; sfx('ok'); } else { streak = 0; sfx('no'); }
+    $('#cx').innerHTML = '<div class="bubble me" style="margin-top:12px">' + (ok ? pick(CAST_OK) + ' (+' + gp + ')' : pick(CAST_BAD)) + '</div><button class="btn pri" id="nx">' + (i < 9 ? 'Nächste Szene' : 'Ergebnis') + '</button>';
+    $('#nx').onclick = function () { i++; if (i < 10) q(); else end(); };
+  }
+  function end() {
+    var pb = score > S.cast.best; if (pb) S.cast.best = score; duelScore(score); var g = gain(score / 10 + right); glz(); stop = null;
+    var t = right >= 9 ? 'Du bekommst die Hauptrolle. Und eine Wohnwagen-Garderobe.' : right >= 6 ? 'Starke Nebenrolle! Du spielst den besten Freund.' : right >= 3 ? 'Komparse mit Potenzial. Du stehst im Hintergrund, aber glitzernd.' : 'Rüdiger bietet dir einen Job an der Kaffeemaschine an.';
+    root.innerHTML = '<div class="panel" style="text-align:center"><div class="big">' + right + ' / 10</div><p>' + t + '</p><p>' + score + ' Punkte' + (pb ? ' · Neuer Rekord!' : '') + '</p><p class="sub">+' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button></div></div>';
+    $('#ag').onclick = function () { gCast(root); };
+  }
+  stop = function () { clearInterval(tm); };
+  q();
+}
 function gQuiz(root) {
   function run() {
     var qs = shuffle(QUIZ).slice(0, 10), i = 0, score = 0, right = 0, T = 14, left = T, tm = 0, locked = false, streak = 0, l50 = true, lT = true;
@@ -1522,7 +1626,7 @@ function gQuiz(root) {
 
 /* ---------- Mehrspieler (PeerJS, direkt zwischen den Geräten) ---------- */
 var MP = { net: null, me: '', ids: {}, peers: {}, duel: null, acc: 0, sent: '', lx: 1e9, lz: 1e9, ly: 9, chk: 0, status: '', self: { g: null, em: null } };
-var DUELS = ['quiz', 'match', 'dance', 'pool', 'kara'], EMO = ['👋', '💃', '❤️', '😂', '🌈'], LIM = { skin: 6, hair: 7, hc: 10, beard: 5, acc: 10, top: 7, tc: 8, eye: 4 };
+var DUELS = ['quiz', 'match', 'dance', 'pool', 'kara', 'dark', 'cast', 'sauna'], EMO = ['👋', '💃', '❤️', '😂', '🌈'], LIM = { skin: 6, hair: 7, hc: 10, beard: 5, acc: 10, top: 7, tc: 8, eye: 4 };
 function num(v, lo, hi) { v = +v; return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : lo; }
 function cleanName(n) { n = String(n == null ? '' : n).replace(/[\u0000-\u001f<>&"]/g, '').trim().slice(0, 12); return n || 'Gast'; }
 function cleanLook(l) { var o = {}; l = l && typeof l === 'object' ? l : {}; for (var k in LIM) o[k] = Math.floor(num(l[k], 0, LIM[k] - 1)); return o; }
