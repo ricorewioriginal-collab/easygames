@@ -117,7 +117,7 @@ BI.store = {
 
 /* ---- Spielfigur ---- */
 BI.SHIRTS = [0xff5a5a, 0x3fa0ff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xffffff, 0x23262d, 0xff8a1f, 0x7de0d0, 0x16335e, 0x8a5a33, 0xc2453d, 0x9aa5b8, 0xf1d98a, 0x2dc4c4]; // die ersten 6 nutzen auch die Passanten
-BI.SKINS = [0xffd2a8, 0xf3c9a0, 0xe0a979, 0xc68a5a, 0x8d5a3b, 0x5a3a28, 0xffe4d1, 0xe8b48a, 0x6f4430, 0x8fd18a, 0x8ec5ff, 0xd9a8ff, 0xffb3c9]; // die letzten vier sind Fantasie-Hautfarben
+BI.SKINS = [0xffd2a8, 0xf3c9a0, 0xe0a979, 0xc68a5a, 0x8d5a3b, 0x5a3a28, 0xffe4d1, 0xe8b48a, 0x6f4430, 0x8fd18a, 0x8ec5ff, 0xd9a8ff, 0xffb3c9, 0xe8832a, 0xc9ced6]; // die letzten sechs sind Fantasie-Hautfarben (Fuchs-Orange, Silber)
 BI.HAIRS = [0x222222, 0x6b4423, 0xa14a2b, 0xd0642a, 0xd9a441, 0xf3d98a, 0xb36bff, 0x3fa0ff, 0xffffff, 0x9aa0a8, 0xe0382b, 0xff8fc8, 0x4cd07d, 0x2dc4c4, 0x16335e, 0x8a5a33, 0xffd23f, 0x6a3fd0];
 BI.STYLES = ['none', 'spiky', 'curly', 'long', 'pig', 'bun', 'ponytail', 'bob', 'mohawk', 'afro', 'braids', 'short', 'side', 'dreads', 'topknot', 'twinbuns', 'fringe', 'wavy', 'shaggy', 'pixie', 'curtain', 'mullet', 'bald'];
 BI.STYLE_ICONS = ['🙂', '⚡', '🌀', '💇', '🎀', '🍥', '🐴', '🧒', '🦔', '☁️', '🪢', '✂️', '💈', '🧶', '🍙', '🐼', '🪮', '🌊', '🦁', '🧚', '🎭', '🎸', '🥚'];
@@ -162,6 +162,10 @@ BI.HEROES = [
   { id: 'olaf', name: 'Wikinger Olaf', icon: '🪓', o: { shirt: 0x8a5a33, pants: 0x5a3d2b, hair: 0xd0642a, skin: 0xffd2a8, hat: 'viking', beard: 5, beardc: 0xd0642a, build: 2, shoeT: 1, shoe: 0x5a3d2b, brow: 2 } },
   { id: 'bea', name: 'Bäckerin Bea', icon: '🥐', o: { shirt: 0xffffff, pants: 0xf1d98a, hair: 0x6b4423, skin: 0xf3c9a0, hat: 'chef', overall: true, blush: true, earring: 1, mouth: 'grin' } },
   { id: 'pippo', name: 'Clown Pippo', icon: '🤡', o: { shirt: 0xff5a5a, pants: 0xffd23f, hair: 0xff8a1f, skin: 0xffe4d1, style: 'curly', hat: 'party', nose: 1, mouth: 'grin', eyeS: 1, lip: 0xe0382b, stripe: true, build: 2, shoe: 0xe0382b, bot: 1 } },
+  /* Popstar Kay: eigene Figur im Glam-Rock-Stil (helle Strubbelfrisur, dicke Brauen, Ziegenbart, Septum-Ring, Ketten, oranger Mantel) mit Regenbogen-Pride-Shirt */
+  { id: 'kay', name: 'Popstar Kay', icon: '🎤', o: { shirt: 0xe8672a, pants: 0x8d929c, hair: 0xf3d98a, skin: 0xf3c9a0, style: 'mullet', beard: 4, beardc: 0x6b4423, brow: 3, ctype: 3, rainbow: true, earring: 1, necklace: 0xffd23f, nosering: true, lip: 0xb23c35, shoeT: 1, shoe: 0x23262d, scale: 1.03 } },
+  /* Zotik, der Weltenhörer: Fuchs-Mensch (eigene Erfindung) mit grünem Schal, Lederriemen, fingerlosen Handschuhen und buschigem Schwanz */
+  { id: 'zotik', name: 'Zotik', icon: '🦊', o: { shirt: 0x6b4a2a, pants: 0x3a2a1a, hair: 0xf08a24, skin: 0xe8832a, style: 'shaggy', fox: true, eye: 0x3fb04a, brow: 2, mouth: 'none', sleeve: 2, scarf: 0x3fa04a, harness: 0x5a3a1e, gloves: 0x4a2e18, shoeT: 1, shoe: 0x4a2e18, ctype: 5, blush: false } },
   { id: 'custom', name: 'Eigener Held', icon: '🎨', o: {} }
 ];
 BI.heroById = id => BI.HEROES.find(h => h.id === id) || BI.HEROES[0];
@@ -188,7 +192,7 @@ BI.randomCu = function () {
 BI.presetToCu = function (po) {
   po = po || {}; const near = (arr, c) => { if (c == null) return 0; let b = 0, bd = 1e12; arr.forEach((v, i) => { const d = ((v >> 16) - (c >> 16)) ** 2 + (((v >> 8) & 255) - ((c >> 8) & 255)) ** 2 + ((v & 255) - (c & 255)) ** 2; if (d < bd) { bd = d; b = i; } }); return b; }, C = BI.CUO;
   const cu = { skin: near(BI.SKINS, po.skin), hair: near(BI.HAIRS, po.hair), style: Math.max(0, BI.STYLES.indexOf(po.style || 'none')), eye: 0, mouth: 1, pants: near(BI.PANTS, po.pants), shoe: near(BI.SHOES, po.shoe != null ? po.shoe : 0x2a2a3a), top: po.dress ? 1 : po.overall ? 2 : 0, stripe: po.stripe ? 1 : 0, logo: po.logo ? near(BI.LOGOS.filter(x => x), po.logo) + 1 : 0, acc: {} };
-  for (const k of ['glasses', 'pack', 'cape', 'wings', 'teddy', 'patch']) if (po[k]) cu.acc[k] = true;
+  for (const k of ['glasses', 'pack', 'cape', 'wings', 'teddy', 'patch', 'fox', 'rainbow']) if (po[k]) cu.acc[k] = true;
   for (const k of ['build', 'face', 'nose', 'brow', 'eyeS', 'beard', 'ctype', 'sleeve', 'bot', 'shoeT', 'glassT']) if (po[k] != null) cu[k] = po[k]; if (po.earring) cu.ear = po.earring; if (po.wrink) cu.age = 3; if (po.beardc != null) cu.beardc = Math.max(0, C.beardc.findIndex(c => c === po.beardc)); if (po.lip != null) cu.lip = Math.max(0, C.lip.indexOf(po.lip));
   if (po.mask) cu.mask = Math.max(0, C.mask.indexOf(po.mask)); if (po.necklace) cu.neck = Math.max(0, C.neck.indexOf(po.necklace)); if (po.mouth) cu.mouth = Math.max(0, BI.MOUTHS.indexOf(po.mouth)); if (po.scale) cu.hgt = po.scale < .9 ? 1 : po.scale > 1.05 ? 3 : 2;
   return { cu, shirt: near(BI.SHIRTS, po.shirt != null ? po.shirt : 0xff5a5a), hat: Math.max(0, BI.HATS.indexOf(po.hat || 'none')) };
@@ -263,6 +267,7 @@ BI.makeChar = function (o) {
   if (J) { // bunter Aufdruck wie beim Marvel-Shirt
     body.box(0, 1.05, .155, .38, .07, .02, 0xffffff); body.box(0, .93, .155, .22, .11, .02, 0x3fd18a); body.sph(0, .84, .16, .1, 0x9a5be0, 0, 1, 1, .12); body.sph(0, .84, .17, .045, 0xe8eaff, 0, 1, 1, .1); body.box(0, .73, .155, .28, .1, .02, 0xff5fa8);
   }
+  if (o.rainbow) { const RB = [0x9b4de0, 0x3f8cff, 0x4cd07d, 0xffd23f, 0xff8a1f, 0xe8453c], coat = (o.ctype | 0) === 3; for (let k = 0; k < 6; k++) { if (coat) body.box(0, .70 + k * .052, .165, .27, .052, .02, RB[k]); else body.profile(0, .71 + k * .052, 0, [[.2535, 0], [.2535, .052]], .66, RB[k]); } } // Regenbogen-Pride-Shirt (Mantel offen: Streifen in der Mitte)
   body.arc(0,1.17,.15,.105,.055,.015,new THREE.Color(shirt).multiplyScalar(.72).getHex(),Math.PI,BI.TAU,10);
   body.profile(0,.665,0,[[.242,0],[.247,.02]],.66,new THREE.Color(shirt).multiplyScalar(.86).getHex());
   if(!J&&!o.overall&&!o.logo) { body.box(-.135,.95,.159,.115,.105,.018,new THREE.Color(shirt).lerp(new THREE.Color(0xffffff),.17).getHex()); body.box(-.135,1.025,.174,.115,.012,.012,0xfff1cf); }
@@ -288,6 +293,10 @@ BI.makeChar = function (o) {
     else if (gt === 4) for (const sd of [-1, 1]) { hd.box(sd * .095, 1.46, .308, .15, .05, .03, 0xff5a8a); hd.box(sd * .095, 1.42, .308, .1, .05, .03, 0xff5a8a); hd.box(sd * .095, 1.485, .308, .06, .04, .03, 0xff5a8a); }
     if (o.mask) { for (const sd of [-1,1]) hd.arc(sd*.105,1.458,.311,.067,.068,.015,o.mask,0,BI.TAU,12); hd.box(0,1.45,.31,.065,.025,.018,o.mask); }
     const er = o.earring | 0; if (er) for (const sd of [-1, 1]) { if (er === 1) hd.sph(sd * .308, 1.36, 0, .03, 0xffd23f, 0); else if (er === 2) for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2; hd.sph(sd * .277, 1.33 + Math.cos(a) * .05, Math.sin(a) * .05, .014, 0xffd23f, 0); } else hd.sph(sd * .308, 1.35, 0, .05, 0xff5a8a, 0, .6, 1, 1); }
+    if (o.nosering) { hd.arc(0, 1.386, .322, .024, .024, .005, 0xffd23f, Math.PI, BI.TAU, 8); hd.sph(.032, 1.322, .292, .012, 0xc9ced6, 0); hd.sph(-.032, 1.322, .292, .012, 0xc9ced6, 0); } // Septum- und Lippen-Piercing
+    if (o.fox) { const F = skin, C = 0xfff0d8; // Fuchs: spitze Ohren, helle Schnauze mit Nase, Wangenfell
+      for (const sd of [-1, 1]) { hd.cone(sd * .15, 1.6, -.02, .105, .3, F, 4); hd.cone(sd * .15, 1.6, .02, .06, .2, C, 4); hd.sph(sd * .252, 1.335, .1, .07, C, 0, .8, 1, 1.1); hd.cone(sd * .27, 1.27, .08, .055, .12, C, 4); }
+      hd.sph(0, 1.365, .3, .085, C, 1, 1, .8, 1.25); hd.sph(0, 1.39, .395, .032, 0x2a1a14, 0, 1, .8, .9); }
     if (o.headband) { hd.box(0, 1.55, 0, .6, .06, .56, o.headband); }
     if (o.clip) hd.box(.2, 1.6, .12, .12, .04, .04, o.clip, 0, 0, .4);
   }
@@ -326,9 +335,11 @@ BI.makeChar = function (o) {
   if (o.cape) { body.box(0, .45, -.2, .54, .8, .05, 0xd8283a); body.box(0, 1.08, -.12, .42, .12, .2, 0xd8283a); body.sph(0, 1.08, .0, .05, 0xffd23f, 0); }
   if (o.wings) { for (const sd of [-1, 1]) { body.box(sd * .32, .85, -.22, .5, .55, .03, 0xbfe8ff, 0, 0, sd * .55); body.box(sd * .38, .55, -.22, .34, .34, .03, 0xffc8ee, 0, 0, sd * .5); } }
   if (o.glasses) { hd.box(0, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(.0, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(-.1, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(.1, 1.4, .308, .17, .12, .03, 0x1b1b25); hd.box(0, 1.46, .27, .08, .03, .03, 0x1b1b25); hd.box(-.19, 1.46, .22, .03, .03, .1, 0x1b1b25); hd.box(.19, 1.46, .22, .03, .03, .1, 0x1b1b25); }
-  if (o.scarf) { body.box(0, 1.1, 0, .54, .13, .34, 0xe0382b); body.box(.18, .75, .17, .12, .4, .05, 0xe0382b); body.box(.18, .85, .17, .12, .05, .05, 0xffffff); }
+  if (o.scarf) { const sc = typeof o.scarf === 'number' && o.scarf > 1 ? o.scarf : 0xe0382b; body.box(0, 1.1, 0, .54, .13, .34, sc); body.box(.18, .75, .17, .12, .4, .05, sc); if (sc === 0xe0382b) body.box(.18, .85, .17, .12, .05, .05, 0xffffff); }
   if (o.bowtie) { body.box(-.07, 1.11, .17, .1, .08, .04, 0xe0382b, 0, 0, .2); body.box(.07, 1.11, .17, .1, .08, .04, 0xe0382b, 0, 0, -.2); body.sph(0, 1.11, .18, .035, 0x8a1a1a, 0); }
   if (o.medal) { body.box(0, 1.1, .16, .05, .35, .02, 0x3fa0ff, 0, 0, .1); body.cyl(.04, .85, .17, .08, .08, .03, 0xffd23f, 10, Math.PI / 2); }
+  if (o.fox) { const F = skin, C = 0xfff0d8; body.sph(0, .5, -.28, .11, F, 1, 1, 1, 1.2); body.sph(0, .56, -.46, .15, F, 1); body.sph(0, .66, -.64, .17, F, 1); body.sph(0, .78, -.78, .15, F, 1); body.sph(0, .9, -.88, .1, C, 1); body.sph(0, .92, .12, .13, C, 1, 1, 1.5, .3); } // buschiger Fuchsschwanz mit heller Spitze, helle Brust
+  if (o.harness) { const B = o.harness; body.box(0, .93, .158, .05, .56, .02, B, 0, 0, .6); body.box(0, .93, .162, .05, .56, .02, B, 0, 0, -.6); body.profile(0, .66, 0, [[.252, 0], [.252, .07]], .66, B); body.box(0, .64, .165, .08, .07, .02, 0xd8b04a); for (const sd of [-1, 1]) body.box(sd * .2, .56, .09, .1, .13, .09, B); body.sph(-.27, 1.12, 0, .12, B, 1, 1, .7, 1); body.box(0, .62, -.23, .34, .5, .13, B); body.box(0, .9, -.24, .24, .08, .11, 0x3a2410); } // Lederriemen, Gürtel, Taschen, Schulterschutz, Rucksack
   if (o.pack) { body.box(0, .52, -.23, .42, .55, .16, 0x3fa8e8); body.box(0, .98, -.23, .32, .12, .13, 0x2d80c0); body.box(-.15, .55, .155, .05, .5, .02, 0x2d80c0); body.box(.15, .55, .155, .05, .5, .02, 0x2d80c0); }
   if (o.teddy) { body.sph(-.34, 1.3, .03, .11, 0xc8a27a, 1); body.sph(-.34, 1.46, .03, .08, 0xc8a27a, 1); body.sph(-.4, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.28, 1.53, .03, .035, 0xc8a27a, 0); body.sph(-.34, 1.44, .1, .035, 0xe8d0b0, 0); }
   const hsc = o.hsc && o.hsc !== 1 ? o.hsc : 1, sepHead = hsc !== 1 || BLD[0] !== 1 || BLD[1] !== 1, lx = 1 + (BLD[0] - 1) * .9;
@@ -337,6 +348,7 @@ BI.makeChar = function (o) {
   if (sepHead) { const hg = new THREE.Group(), hm = hd.mesh(mat); hg.position.set(0, 1.3, 0); hm.position.set(0, -1.2, 0); hg.scale.setScalar(hsc); hg.add(hm); root.add(hg); }
   function arm(sleeve, hand, x, y) { // Ärmel bis zum Ellbogen (lang = ganzer Arm, ohne = Haut), Unterarm in Hautfarbe, runde Hand
     const sl = o.sleeve | 0, g = new THREE.Group(), b = new BI.CharacterBatch(); b.cyl(0, -.25, 0, .082, .07, .25, sl === 2 ? hand : sleeve, 6); b.sph(0, -.25, 0, .07, sl === 1 ? sleeve : hand, 0); b.cyl(0, -.44, 0, .062, .052, .2, sl === 1 ? sleeve : hand, 6); b.sph(0, -.47, .01, .072, hand, 1, .95, 1.1, .9); b.sph(x<0?.051:-.051,-.445,.036,.027,hand,0,.8,1.1,1);
+    if (o.gloves) { b.cyl(0, -.44, 0, .068, .064, .09, o.gloves, 8); b.cyl(0, -.5, 0, .06, .06, .035, o.gloves, 8); } // fingerlose Handschuhe
     if (o.watch && x < 0) { b.box(0, -.4, 0, .13, .055, .13, 0x23262d); b.box(0, -.4, .068, .07, .045, .012, 0xffd23f); }
     g.add(b.mesh(mat)); g.position.set(x * BLD[0], y, 0); g.scale.set(lx, 1, lx); root.add(g); return g;
   }

@@ -94,7 +94,7 @@
     const E = l.eq || {}, cu = l.cu || {}, H = BI.heroById(l.hero), po = H.o || {}, ac = k => !!E[k] || !!po[k], accs = { glasses: ac('glasses'), pack: ac('pack'), teddy: ac('teddy'), patch: ac('patch'), cape: ac('cape'), wings: ac('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') };
     if (H.id === 'custom') { const acc = cu.acc || {}, a2 = k => ac(k) || !!acc[k]; const base = Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name,
       eye: BI.EYES[cu.eye | 0], mouth: BI.MOUTHS[cu.mouth == null ? 1 : cu.mouth | 0], freckles: !!cu.fr, shoe: BI.SHOES[cu.shoe | 0], scale: BI.SIZES[cu.size == null ? 1 : cu.size | 0], dress: cu.top === 1, overall: cu.top === 2, stripe: !!cu.stripe, logo: BI.LOGOS[cu.logo | 0] || undefined },
-      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); const ex = BI.cuOpts(cu); if (ex.glassT) base.glasses = false; return Object.assign(base, ex); }
+      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), fox: a2('fox'), rainbow: a2('rainbow'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); const ex = BI.cuOpts(cu); if (ex.glassT) base.glasses = false; return Object.assign(base, ex); }
     return Object.assign({}, po, { hat: E.hat && E.hat !== 'none' ? E.hat : po.hat || 'none', name }, accs);
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
@@ -1387,7 +1387,7 @@
       row(p, '📎 Haarspange', CO.clip.length, sw(CO.clip), num('clip', 0), i => cu().clip = i);
       row(p, '🦸 Maske', CO.mask.length, sw(CO.mask), num('mask', 0), i => cu().mask = i);
       row(p, '⌚ Uhr', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⌚' : '🚫'; return b; }, num('watch', 0), i => cu().watch = i);
-      lab(p, '🎒 Mehr (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
+      lab(p, '🎒 Mehr (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️'], ['fox', '🦊'], ['rainbow', '🏳️‍🌈']], bs = [];
       for (const [k, e] of AC) { const b = BI.Thumb.button('hat', e); BI.Thumb.attach(b, 'c|acc|' + k, thumb({ acc: { [k]: true } }, 'full', null, 2.6)); b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
       syncs.push(() => bs.forEach(([k, b]) => b.classList.toggle('sel', save.hero === 'custom' && !!(cu().acc && cu().acc[k])))); }
     // Reiter 9: Hüte

@@ -83,7 +83,7 @@
       b.box(0,st==='bob'?1.30:1.06,-.24,.49,st==='bob'?.33:.57,.11,hair);
       if(st!=='mullet')for(const sign of [-1,1]){lock(sign*.262,1.37,-.035,.087,.7,st==='bob'?1.9:3.3,1.5);if(st==='wavy')for(let j=0;j<3;j++)lock(sign*(.265+j*.006),1.32-j*.10,-.06,.073,.8,1.2,1.1);}
     }
-    if(['bowl','fringe','short','bob','pixie','side','curtain','long','wavy'].includes(st)){
+    if(['bowl','fringe','short','bob','pixie','side','curtain','long','wavy','mullet'].includes(st)){
       for(let j=0;j<4;j++){const x=-.18+j*.12,y=(st==='side'||st==='pixie'?1.628-j*.015:1.605+Math.abs(x)*.05);lock(x,y,.166,.075,1.18,.6,.67);}
     }
     if(['curly','afro','shaggy'].includes(st)){const radius=st==='afro'?.325:.27;for(let j=0;j<10;j++){const a=j/10*Math.PI*2,x=Math.sin(a)*radius,z=Math.cos(a)*radius-.045;lock(x,z>.08?1.66:1.52+(j%2)*.065,z,.09,1,1,1);}if(st==='afro')for(let j=0;j<5;j++)lock((j-2)*.11,1.77,-.03,.09);}
