@@ -399,4 +399,31 @@
     return G;
   };
   h.register('elementar_zotik', elem(), { icon: '⚔️', name: 'Elementar-Kampf', help: 'Rundenkampf im Elementkreis: Feuer schlägt Natur, Natur schlägt Licht, Licht schlägt Schatten, Schatten schlägt Wasser, Wasser schlägt Feuer. Wähle das passende Element!', dur: 75, goal: 30, zone: 'zotik' });
+  /* =====================  📻 FREQUENZ-DREHER (Funkwelle)  ===================== */
+  /* Geschicklichkeit/Timing: Die Nadel wandert über die Skala – tippe genau dann, wenn sie im leuchtenden Bereich des gesuchten Senders steht. Je besser, desto mehr Punkte; der Bereich wird mit jedem Treffer schmaler. */
+  const freq = () => {
+    const G = {}; let nx, nv, band, bw, st_, combo, msg, msgT, flash, lv, nm, cl;
+    const NAMES = () => (BI.RADIO ? BI.RADIO.stations.map(s => s.n) : ['Radio']);
+    const next = () => { nm = NAMES()[(h.rnd() * NAMES().length) | 0]; cl = (h.rnd() * 360) | 0; bw = Math.max(.05, .2 - lv * .012); band = .12 + h.rnd() * (.76 - bw * .5); };
+    G.init = function () { nx = 0; nv = .55; st_ = 0; combo = 0; msg = ''; msgT = 0; flash = 0; lv = 0; next(); };
+    G.resize = function () { };
+    function lock() { const d = Math.abs(nx - band), hit = d <= bw / 2; if (hit) { combo++; const pts = 3 + (d < bw * .12 ? 3 : d < bw * .3 ? 1 : 0) + Math.min(3, combo >> 1), W = h.W(), H = h.H(); h.add(pts, W / 2, H * .4); h.burst(W * (.1 + .8 * nx), H * .5, 16, ['#6ad0ff', '#ff5ab4', '#fff']); snd('star'); msg = d < bw * .12 ? 'Perfekt eingestellt!' : 'Empfang!'; lv++; nv = Math.min(1.5, .55 + lv * .06); next(); } else { combo = 0; snd('bonk'); msg = 'Rauschen … nochmal!'; flash = .25; } msgT = .9; }
+    G.tap = function () { lock(); };
+    G.keydown = c => { if (c === 'Space' || c === 'Enter') lock(); };
+    G.update = function (dt) { st_ += dt; msgT = Math.max(0, msgT - dt); flash = Math.max(0, flash - dt); nx += nv * dt * (G.dir || 1); if (nx > 1) { nx = 1; G.dir = -1; } if (nx < 0) { nx = 0; G.dir = 1; } };
+    G.dbg = () => ({ nx, band, bw, lock });
+    G.draw = function () {
+      const c = h.ctx(), W = h.W(), H = h.H(); h.bg('#12185a', '#04061c'); const sw = W * .84, sx = (W - sw) / 2, sy = H * .5;
+      c.font = 'bold ' + Math.round(Math.min(34, W * .06)) + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff'; c.fillText('Stelle ein: ' + nm, W / 2, H * .15);
+      c.font = '600 ' + Math.round(Math.min(20, W * .035)) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = '#9aa6d8'; c.fillText('Tippe, wenn die Nadel im leuchtenden Bereich steht', W / 2, H * .24);
+      rr(c, sx - 10, sy - 40, sw + 20, 80, 18); c.fillStyle = 'rgba(255,255,255,.08)'; c.fill(); for (let k = 0; k <= 40; k++) { c.fillStyle = 'rgba(255,255,255,' + (k % 5 ? .25 : .6) + ')'; c.fillRect(sx + sw * k / 40 - 1, sy + 14, 2, k % 5 ? 10 : 20); }
+      const bx = sx + sw * (band - bw / 2); c.fillStyle = 'hsla(' + cl + ',90%,60%,' + (.45 + .2 * Math.sin(st_ * 6)) + ')'; c.fillRect(bx, sy - 34, sw * bw, 56); c.strokeStyle = 'hsl(' + cl + ',90%,70%)'; c.lineWidth = 3; c.strokeRect(bx, sy - 34, sw * bw, 56);
+      const px = sx + sw * nx; c.fillStyle = '#ff3b3b'; c.fillRect(px - 2, sy - 44, 4, 88); c.beginPath(); c.arc(px, sy - 44, 7, 0, 6.3); c.fill();
+      h.emoji('📻', W / 2, H * .78, Math.min(64, W * .12)); if (combo > 1) { c.font = 'bold 22px Fredoka, system-ui, sans-serif'; c.fillStyle = '#ffd23f'; c.fillText('Serie x' + combo, W / 2, H * .9); }
+      if (msgT > 0) { c.font = 'bold ' + Math.round(Math.min(34, W * .06)) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = '#ffe9a8'; c.fillText(msg, W / 2, H * .62); }
+      if (flash > 0) { c.fillStyle = 'rgba(255,60,60,' + flash * .6 + ')'; c.fillRect(0, 0, W, H); }
+    };
+    return G;
+  };
+  h.register('frequenz_radio', freq(), { icon: '📻', name: 'Frequenz-Dreher', help: 'Geschicklichkeit: Die Nadel wandert über die Radio-Skala – tippe genau, wenn sie im leuchtenden Bereich des gesuchten Senders steht. Der Bereich wird immer schmaler!', dur: 60, goal: 30, zone: 'radio' });
 });
