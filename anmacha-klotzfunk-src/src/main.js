@@ -5,13 +5,15 @@ import { B, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
 import { BLOCKS, CATS, INV_BLOCKS } from './blocks.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot } from './storage.js';
 import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK, STATION_NAMES } from './crafting.js';
-import { ITEMS, ITEM_LIST, isItem, nameOf } from './items.js';
+import { ITEMS, ITEM_LIST, isItem, nameOf, toolOf } from './items.js';
 import { MAX_HP, MAX_FOOD, MAX_AIR } from './survival.js';
 import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
 import { unlockAudio, sfx } from './audio.js';
 import { QUESTS, RAUSCHEN, CHAPTERS, campaignOf, questProgress } from './quests.js';
 import { TRADES, GREET } from './trades.js';
 import { Multiplayer } from './mp.js';
+import { MapScreen } from './mapui.js';
+import { ACTIONS, keyBinds, rebind, actionOf, keyName, readPad } from './controls.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
@@ -20,11 +22,12 @@ let settings = loadSettings();
 const game = new Game(canvas, coarse, settings.quality);
 window.__bv = game; // Testzugriff
 
-let state = 'menu';       // menu | loading | playing | paused | inventory | settings | trade | dead | mp
+let state = 'menu';       // menu | loading | playing | paused | inventory | settings | trade | dead | mp | map | layout
 let setReturn = 'menu';   // wohin „Einstellungen schließen“ zurückführt
 let slot = -1;
 let touchMode = coarse;
 const keys = new Set();
+let binds = keyBinds(settings.keys);
 
 // ---------- Icons / Atlas ----------
 document.documentElement.style.setProperty('--atlas', `url(${game.atlasCanvas.toDataURL()})`);
@@ -57,6 +60,11 @@ function renderHotbar() {
       const d = document.createElement('div');
       d.className = 'slot';
       d.addEventListener('pointerdown', e => { e.stopPropagation(); game.selectSlot(i); });
+      // Ziehen & Ablegen (Maus): Inventar-Feld oder anderer Hotbar-Platz auf diesen Platz
+      d.addEventListener('dragstart', e => { if (state !== 'inventory' || !game.hotbar[i]) { e.preventDefault(); return; } e.dataTransfer.setData('text/plain', 'h' + i); });
+      d.addEventListener('dragover', e => { if (state === 'inventory') { e.preventDefault(); d.classList.add('drop'); } });
+      d.addEventListener('dragleave', () => d.classList.remove('drop'));
+      d.addEventListener('drop', e => { e.preventDefault(); d.classList.remove('drop'); dropOn(i, e.dataTransfer.getData('text/plain')); });
       hb.appendChild(d);
     }
   }
@@ -65,7 +73,9 @@ function renderHotbar() {
     const n = game.mode === 'creative' ? '∞' : (game.inv[t] || 0);
     d.className = 'slot' + (i === game.sel ? ' sel' : '') + (t && n === 0 ? ' empty' : '');
     d.title = t ? nameOf(t) : '';
-    d.innerHTML = `<span class="k">${i + 1}</span>${t ? icon(t) : ''}<span class="n">${t ? n : ''}</span>`;
+    d.draggable = state === 'inventory' && !!t;
+    const tool = toolOf(t), wear = tool && game.dur[t] ? 1 - game.dur[t] / tool.dur : 0; // Haltbarkeit des Werkzeugs
+    d.innerHTML = `<span class="k">${i + 1}</span>${t ? icon(t) : ''}<span class="n">${t ? n : ''}</span>${wear ? `<span class="dur"><i style="width:${Math.round(wear * 100)}%;background:hsl(${Math.round(wear * 120)},80%,50%)"></i></span>` : ''}`;
   }
 }
 
@@ -76,6 +86,14 @@ const itemInfo = it => it.tool ? ` · ${it.tool.speed}× schneller · hält ${it
 function renderInvTabs() {
   $('invTabs').innerHTML = TABS.map(c => `<button role="tab" data-cat="${c.id}" class="${c.id === invCat ? 'on' : ''}" aria-selected="${c.id === invCat}">${c.name}</button>`).join('');
 }
+// Hotbar-Platz i belegen: 'h3' = Tausch mit Platz 3, sonst Block-/Gegenstands-Id (doppelte Plätze werden getauscht)
+function dropOn(i, what) {
+  if (!what) return;
+  if (what[0] === 'h') { const j = Number(what.slice(1)); if (j >= 0 && j < 9 && j !== i) [game.hotbar[i], game.hotbar[j]] = [game.hotbar[j], game.hotbar[i]]; }
+  else { const t = Number(what); if (!Number.isInteger(t) || !(BLOCKS[t] || ITEMS[t])) return; const k = game.hotbar.indexOf(t); if (k >= 0) game.hotbar[k] = game.hotbar[i]; game.hotbar[i] = t; }
+  game.selectSlot(i); game.unsaved = true; game.onChange();
+}
+let invSort = 'std';
 function renderInventory() {
   const creative = game.mode === 'creative', q = invQuery.trim().toLowerCase();
   $('invHint').textContent = creative ? 'Kreativmodus: alle Blöcke sind unbegrenzt. Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.'
@@ -84,13 +102,16 @@ function renderInventory() {
   $('invSt').hidden = creative || !invAt;
   if (invAt) $('invSt').textContent = invAt === 'ofen' ? '🔥 Am Schmelzofen: Barren schmelzen und Essen braten' : '🪚 An der Werkbank: Werkzeuge und Schmelzofen bauen';
   let h = '';
-  for (const t of [...INV_BLOCKS, ...ITEM_LIST]) {
+  const all = [...INV_BLOCKS, ...ITEM_LIST];
+  if (invSort === 'name') all.sort((a, b) => nameOf(a).localeCompare(nameOf(b), 'de'));
+  else if (invSort === 'count' && !creative) all.sort((a, b) => (game.inv[b] || 0) - (game.inv[a] || 0));
+  for (const t of all) {
     const b = BLOCKS[t] && !isItem(t) ? BLOCKS[t] : ITEMS[t], n = creative ? '∞' : (game.inv[t] || 0);
     if (invCat !== 'all' && b.cat !== invCat) continue;
     if (q && !b.name.toLowerCase().includes(q)) continue;
     if (invOwned && !creative && !n) continue;
     const tip = isItem(t) ? itemInfo(b) : b.tool ? ' · am besten mit ' + b.tool[0].toUpperCase() + b.tool.slice(1) : '';
-    h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}" title="${b.name}${tip}">${icon(t)}<span>${b.name}</span><b>${n}</b></button>`;
+    h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}" draggable="true" title="${b.name}${tip}${touchMode ? '' : ' · Umschalt-Klick: in freien Platz · auf die Hotbar ziehen'}">${icon(t)}<span>${b.name}</span><b>${n}</b></button>`;
   }
   $('invGrid').innerHTML = h || '<div class="empty-note">Nichts gefunden.</div>';
   $('recH').hidden = creative;
@@ -112,12 +133,23 @@ $('invSearch').addEventListener('input', e => { invQuery = e.target.value; rende
 $('invOwned').addEventListener('change', e => { invOwned = e.target.checked; renderInventory(); });
 $('invGrid').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if (!b) return;
-  const t = Number(b.dataset.t), i = game.hotbar.indexOf(t);
-  if (i >= 0) game.hotbar[i] = game.hotbar[game.sel];
-  game.hotbar[game.sel] = t;
-  game.unsaved = true;
-  game.onChange();
+  const t = Number(b.dataset.t);
+  if (e.shiftKey) { // Schnellverschieben: in den ersten freien Hotbar-Platz
+    if (game.hotbar.includes(t)) { toast('Liegt schon in der Hotbar'); return; }
+    const free = game.hotbar.indexOf(0);
+    if (free < 0) { toast('Kein freier Hotbar-Platz'); return; }
+    game.hotbar[free] = t; game.unsaved = true; game.onChange(); toast(`${nameOf(t)} → Platz ${free + 1}`); return;
+  }
+  dropOn(game.sel, String(t));
 });
+$('invGrid').addEventListener('dragstart', e => { const b = e.target.closest('[data-t]'); if (b) e.dataTransfer.setData('text/plain', b.dataset.t); });
+$('invGrid').addEventListener('dragover', e => e.preventDefault());
+$('invGrid').addEventListener('drop', e => { // Hotbar-Platz ins Inventar ziehen = Platz leeren
+  e.preventDefault();
+  const w = e.dataTransfer.getData('text/plain');
+  if (w[0] === 'h') { game.hotbar[Number(w.slice(1))] = 0; game.unsaved = true; game.onChange(); }
+});
+$('invSort').addEventListener('change', e => { invSort = e.target.value; renderInventory(); });
 $('recipes').addEventListener('click', e => {
   const b = e.target.closest('[data-r]'); if (!b) return;
   const r = RECIPES[Number(b.dataset.r)];
@@ -205,7 +237,7 @@ $('trList').addEventListener('click', e => {
 function closeTrade() {
   if (state !== 'trade') return;
   trader = null; setState('playing'); game.resume(); lockPointer();
-  if (!touchMode) setTimeout(() => { if (state === 'playing' && !locked()) pause(); }, 250);
+  if (needLock()) setTimeout(() => { if (state === 'playing' && !locked() && needLock()) pause(); }, 250);
 }
 $('trClose').onclick = closeTrade;
 
@@ -258,14 +290,16 @@ $('qlogClose').onclick = () => show('qlog', false);
 // ---------- Zustände ----------
 const show = (id, on) => { $(id).hidden = !on; };
 function setState(s) {
-  state = s;
+  state = s; document.body.dataset.st = s;
   document.body.classList.toggle('playing', s === 'playing');
+  show('map', s === 'map');
   show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings'); show('dead', s === 'dead'); show('trade', s === 'trade'); show('mp', s === 'mp');
   show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || s === 'trade' || ((s === 'settings' || s === 'mp') && setReturn === 'paused'));
   if (s !== 'playing') game.onMine(0);
   if (s !== 'paused') show('qlog', false);
 }
 const locked = () => document.pointerLockElement === canvas;
+const needLock = () => !touchMode && !pad.raf; // mit Gamepad muss die Maus nicht gefangen sein
 function lockPointer() {
   if (touchMode || locked()) return;
   try { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (e) { /* ignorieren */ }
@@ -294,19 +328,19 @@ function openInventory() {
   if (state !== 'playing') return;
   invStations = game.stationsNear();
   if (invAt && !invStations.has(invAt)) invAt = null;
-  releaseInput(); setState('inventory'); renderInvTabs(); renderInventory();
+  releaseInput(); setState('inventory'); renderInvTabs(); renderInventory(); renderHotbar();
   if (locked()) document.exitPointerLock();
   halt(); // statisches Bild – spart Akku
 }
 function closeInventory() {
   if (state !== 'inventory') return;
   invAt = null;
-  setState('playing'); game.resume(); lockPointer();
-  if (!touchMode) setTimeout(() => { if (state === 'playing' && !locked()) pause(); }, 250);
+  setState('playing'); renderHotbar(); game.resume(); lockPointer();
+  if (needLock()) setTimeout(() => { if (state === 'playing' && !locked() && needLock()) pause(); }, 250);
 }
 
-document.addEventListener('pointerlockchange', () => { if (!locked() && state === 'playing' && !touchMode) pause(); });
-document.addEventListener('pointerlockerror', () => { if (state === 'playing' && !touchMode) pause(); });
+document.addEventListener('pointerlockchange', () => { if (!locked() && state === 'playing' && needLock()) pause(); });
+document.addEventListener('pointerlockerror', () => { if (state === 'playing' && needLock()) pause(); });
 
 // ---------- Speichern ----------
 function saveNow(announce) {
@@ -444,7 +478,7 @@ $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
 $('bWp').onclick = () => game.toggleWaypoint();
 $('bUndo').onclick = () => game.undo(false);
-$('bMap').onclick = toggleMap;
+$('bMap').onclick = () => openMap();
 $('td').oninput = e => { game.time = Number(e.target.value) / 100; $('tdVal').textContent = game.clockText(); game.updateSky(); game.render(); };
 $('pFreeze').onclick = () => { game.timeFrozen = !game.timeFrozen; $('pFreeze').textContent = game.timeFrozen ? '⏸ Zeit steht still' : '⏱ Zeit läuft'; };
 $('bPause').onclick = pause;
@@ -453,12 +487,14 @@ $('bPause').onclick = pause;
 function syncKeys() {
   const inp = game.input;
   if (touchActive.joy) return;
-  inp.f = (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) - (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0);
-  inp.r = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
+  if (pad.active) return;
+  const k = a => keys.has(binds[a]);
+  inp.f = (k('fwd') || keys.has('ArrowUp') ? 1 : 0) - (k('back') || keys.has('ArrowDown') ? 1 : 0);
+  inp.r = (k('right') || keys.has('ArrowRight') ? 1 : 0) - (k('left') || keys.has('ArrowLeft') ? 1 : 0);
   const fly = game.player.flying;
-  inp.sprint = keys.has('ControlLeft') || (!fly && keys.has('ShiftLeft'));
-  inp.down = fly && keys.has('ShiftLeft') || touchActive.down;
-  inp.jump = keys.has('Space') || touchActive.jump;
+  inp.sprint = k('sprint') || (!fly && k('sneak'));
+  inp.down = fly && k('sneak') || touchActive.down;
+  inp.jump = k('jump') || touchActive.jump;
 }
 const touchActive = { joy: false, jump: false, down: false };
 let lastSpace = 0;
@@ -469,28 +505,36 @@ function toggleFly() {
   $('bDown').hidden = !(touchMode && p.flying); $('bFly').classList.toggle('on', p.flying);
 }
 window.addEventListener('keydown', e => {
+  if (capture) { // Einstellungen: neue Taste für eine Aktion
+    e.preventDefault();
+    if (e.code !== 'Escape') { const nb = rebind(binds, capture, e.code); if (nb) { binds = nb; settings.keys = { ...nb }; saveSettings(settings); } else toast('Diese Taste ist reserviert'); }
+    capture = null; renderKeys(); return;
+  }
   if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) {
     if (e.code === 'Escape') { e.target.blur(); if (state === 'inventory') closeInventory(); else if (state === 'settings') closeSettings(); }
     return;
   }
   if (state === 'settings') { if (e.code === 'Escape') closeSettings(); return; }
   if (state === 'mp') { if (e.code === 'Escape') $('mpClose').onclick(); return; }
+  if (state === 'map') { if (e.code === 'Escape' || e.code === binds.map) { e.preventDefault(); closeMap(); } return; }
+  if (state === 'layout') { if (e.code === 'Escape') endLayout(); return; }
   if (state === 'trade') { if (e.code === 'Escape' || e.code === 'KeyE') { e.preventDefault(); closeTrade(); } return; }
-  if (state === 'inventory') { if (e.code === 'KeyE' || e.code === 'Escape') { e.preventDefault(); closeInventory(); } return; }
+  if (state === 'inventory') { if (e.code === binds.inv || e.code === 'Escape') { e.preventDefault(); closeInventory(); } return; }
   if (state !== 'playing') return;
-  if (e.code === 'Space' || e.code === 'Tab' || e.code.startsWith('Arrow')) e.preventDefault();
+  const act = actionOf(binds, e.code);
+  if (act === 'jump' || e.code === 'Tab' || e.code.startsWith('Arrow')) e.preventDefault();
   if (e.repeat) return;
   if (/^Digit[1-9]$/.test(e.code)) { game.selectSlot(Number(e.code[5]) - 1); return; }
-  if (e.code === 'KeyE') { e.preventDefault(); openInventory(); return; }
   if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); game.undo(e.shiftKey); return; }
   if (e.code === 'KeyY' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); game.undo(true); return; }
-  if (e.code === 'KeyF') { toggleFly(); return; }
-  if (e.code === 'KeyG') { game.cycleBuild(e.shiftKey ? -1 : 1); return; }
-  if (e.code === 'KeyQ') { game.fireHook(); return; }
-  if (e.code === 'KeyB') { game.toggleWaypoint(); return; }
-  if (e.code === 'KeyM') { toggleMap(); return; }
-  if (e.code === 'KeyJ') { questMin = !questMin; renderQuest(); return; }
-  if (e.code === 'Space') { const n = performance.now(); if (n - lastSpace < 280) toggleFly(); lastSpace = n; }
+  if (act === 'inv') { e.preventDefault(); openInventory(); return; }
+  if (act === 'fly') { toggleFly(); return; }
+  if (act === 'build') { game.cycleBuild(e.shiftKey ? -1 : 1); return; }
+  if (act === 'hook') { game.fireHook(); return; }
+  if (act === 'wp') { game.toggleWaypoint(); return; }
+  if (act === 'map') { openMap(); return; }
+  if (act === 'quests') { questMin = !questMin; renderQuest(); return; }
+  if (act === 'jump') { const n = performance.now(); if (n - lastSpace < 280) toggleFly(); lastSpace = n; }
   keys.add(e.code); syncKeys();
 });
 window.addEventListener('keyup', e => { keys.delete(e.code); if (state === 'playing') syncKeys(); });
@@ -576,11 +620,60 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
   $('bHook').addEventListener('pointerdown', e => { e.preventDefault(); unlockAudio(); game.fireHook(); });
 })();
 
+// ---------- Gamepad (läuft nur, solange eins verbunden ist) ----------
+const pad = { active: false, prev: [], raf: 0, last: 0 };
+function padLoop(now) {
+  const gp = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(g => g && g.connected);
+  if (!gp) { pad.raf = 0; pad.active = false; $('sPad').textContent = 'Kein Gamepad erkannt – eine Taste am Gamepad drücken.'; return; }
+  pad.raf = requestAnimationFrame(padLoop);
+  const dt = Math.min(0.05, (now - (pad.last || now)) / 1000); pad.last = now;
+  const r = readPad(gp, pad.prev); pad.prev = r.buttons;
+  if (r.buttons.some(Boolean) || r.r || r.f) unlockAudio();
+  if (state === 'paused') { if (r.pause) resume(); return; }
+  if (state === 'inventory') { if (r.inv || r.back) closeInventory(); return; }
+  if (state === 'map') { if (r.map || r.back) closeMap(); return; }
+  if (state === 'trade') { if (r.back) closeTrade(); return; }
+  if (state !== 'playing') return;
+  const inp = game.input, moving = r.r || r.f;
+  if (moving) { pad.active = true; inp.r = r.r; inp.f = r.f; inp.sprint = r.sprint; }
+  else if (pad.active) { pad.active = false; inp.f = inp.r = 0; inp.sprint = false; syncKeys(); }
+  if (r.lx || r.ly) look(r.lx * 900 * dt, r.ly * 600 * dt, SENS * settings.mouseSens);
+  inp.jump = r.jump || keys.has(binds.jump) || touchActive.jump;
+  inp.down = (r.down && game.player.flying) || touchActive.down;
+  if (r.buttons[7] !== pad.rt) { pad.rt = r.buttons[7]; game.breakHeld = pad.rt; }
+  if (r.buttons[6] !== pad.lt) { pad.lt = r.buttons[6]; game.placeHeld = pad.lt; }
+  if (r.hook) game.fireHook();
+  if (r.prev) game.selectSlot((game.sel + 8) % 9);
+  if (r.next) game.selectSlot((game.sel + 1) % 9);
+  if (r.inv) openInventory();
+  else if (r.map) openMap();
+  else if (r.pause) pause();
+}
+window.addEventListener('gamepadconnected', e => {
+  toast(`🎮 Gamepad verbunden`); $('sPad').textContent = `Erkannt: ${String(e.gamepad.id).slice(0, 40)}`;
+  if (!pad.raf) pad.raf = requestAnimationFrame(padLoop);
+});
+
 // ---------- Fenster ----------
 window.addEventListener('resize', () => game.resize());
 // ---------- Minikarte (Blick von oben, Norden oben) ----------
-let mapOn = true;
-function toggleMap() { mapOn = !mapOn; $('mm').classList.toggle('off', !mapOn); }
+let mapOn = settings.minimap;
+$('mm').classList.toggle('off', !mapOn);
+const worldMap = new MapScreen(game, $, toast);
+function openMap() {
+  if (state !== 'playing' || !game.map) return;
+  releaseInput(); setState('map'); $('mapMini').checked = mapOn;
+  if (locked()) document.exitPointerLock();
+  halt(); worldMap.open();
+}
+function closeMap() {
+  if (state !== 'map') return;
+  setState('playing'); game.resume(); lockPointer();
+  if (needLock()) setTimeout(() => { if (state === 'playing' && !locked() && needLock()) pause(); }, 250);
+}
+$('mapClose').onclick = closeMap;
+$('mm').addEventListener('click', () => openMap());
+$('mapMini').onchange = e => { mapOn = settings.minimap = e.target.checked; saveSettings(settings); $('mm').classList.toggle('off', !mapOn); };
 const mmCtx = $('mm').getContext('2d'), mmImg = mmCtx.createImageData(56, 56);
 function drawMap() {
   const w = game.world, p = game.player, d = mmImg.data, ox = Math.floor(p.x) - 28, oz = Math.floor(p.z) - 28, py = p.y;
@@ -629,14 +722,64 @@ function applySettings() {
   const auto = settings.quality === 'auto';
   game.setQuality(auto ? autoBase(coarse) : settings.quality, auto);
   game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; game.enemies = settings.enemies; game.preview = settings.preview;
-  sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
+  sfx.vol = settings.sfxVol; sfx.music = settings.musicVol; sfx.amb = settings.ambVol;
   document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
   document.body.classList.toggle('lefty', settings.lefty);
 }
 const SET_RANGES = [['sMouse', 'mouseSens', v => v.toFixed(1) + '×'], ['sTouch', 'touchSens', v => v.toFixed(1) + '×'], ['sJoy', 'joySens', v => v.toFixed(1) + '×'],
-  ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %']];
+  ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %'], ['sAmb', 'ambVol', v => Math.round(v * 100) + ' %']];
 const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps'], ['sEnemy', 'enemies'], ['sPreview', 'preview']];
+// ---------- Tastenbelegung ----------
+let capture = null; // Aktion, die gerade eine neue Taste bekommt
+function renderKeys() {
+  const box = $('sKeys');
+  box.textContent = '';
+  for (const [a, label] of ACTIONS) {
+    const l = document.createElement('label'), b = document.createElement('button');
+    l.textContent = label; b.dataset.a = a;
+    b.textContent = capture === a ? 'Taste drücken …' : keyName(binds[a]);
+    b.className = capture === a ? 'wait' : '';
+    l.append(b); box.append(l);
+  }
+}
+$('sKeys').addEventListener('click', e => { const b = e.target.closest('button[data-a]'); if (!b) return; e.preventDefault(); capture = b.dataset.a; renderKeys(); });
+
+// ---------- Touch-Tasten verschieben ----------
+const MOVABLE = ['bJump', 'bDown', 'bBreak', 'bPlace', 'bFly', 'bHook'];
+function placeButtons() {
+  for (const id of MOVABLE) {
+    const el = $(id), p = settings.touchPos[id];
+    const ok = Array.isArray(p) && p.length === 2 && p.every(v => Number.isFinite(v) && v >= 0 && v <= 1);
+    el.style.left = ok ? (p[0] * 100) + '%' : ''; el.style.top = ok ? (p[1] * 100) + '%' : '';
+    el.style.right = el.style.bottom = ok ? 'auto' : '';
+    el.style.transform = ok ? 'translate(-50%,-50%)' : '';
+  }
+}
+let layoutBack = 'settings', layoutDrag = null;
+function startLayout() { layoutBack = setReturn; setState('layout'); $('layoutBar').hidden = false; }
+function endLayout() { $('layoutBar').hidden = true; saveSettings(settings); setState('settings'); setReturn = layoutBack; }
+$('sLayout').onclick = startLayout;
+$('lDone').onclick = endLayout;
+$('lReset').onclick = () => { settings.touchPos = {}; placeButtons(); };
+// im Verschiebemodus fangen wir die Tasten ab, bevor ihre eigene Funktion auslöst
+$('touch').addEventListener('pointerdown', e => {
+  if (state !== 'layout') return;
+  const el = e.target.closest('.tb');
+  e.stopPropagation(); e.preventDefault();
+  if (!el) return;
+  try { el.setPointerCapture(e.pointerId); } catch { /* künstliches Ereignis */ }
+  layoutDrag = { el, id: e.pointerId };
+}, { capture: true });
+$('touch').addEventListener('pointermove', e => {
+  if (state !== 'layout' || !layoutDrag || layoutDrag.id !== e.pointerId) return;
+  const x = Math.max(0.04, Math.min(0.96, e.clientX / innerWidth)), y = Math.max(0.1, Math.min(0.94, e.clientY / innerHeight));
+  settings.touchPos = { ...settings.touchPos, [layoutDrag.el.id]: [+x.toFixed(3), +y.toFixed(3)] };
+  placeButtons();
+}, { capture: true });
+$('touch').addEventListener('pointerup', e => { if (state === 'layout') { e.stopPropagation(); layoutDrag = null; } }, { capture: true });
+
 function renderSettings() {
+  renderKeys();
   $('sQuality').value = settings.quality; $('sDeath').value = settings.deathLoss;
   for (const [id, k, f] of SET_RANGES) { $(id).value = settings[k]; $(id + 'V').textContent = f(settings[k]); }
   for (const [id, k] of SET_CHECKS) $(id).checked = settings[k];
@@ -654,14 +797,19 @@ $('sQuality').onchange = e => { settings.quality = e.target.value; changed(true)
 $('sDeath').onchange = e => { settings.deathLoss = e.target.value; changed(false); };
 for (const [id, k, f] of SET_RANGES) $(id).oninput = e => { settings[k] = Number(e.target.value); $(id + 'V').textContent = f(settings[k]); changed(false); };
 for (const [id, k] of SET_CHECKS) $(id).onchange = e => { settings[k] = e.target.checked; changed(false); };
-$('sReset').onclick = () => { settings = { ...DEFAULTS }; changed(true); renderSettings(); toast('Standard wiederhergestellt'); };
+$('sReset').onclick = () => {
+  settings = { ...DEFAULTS, keys: {}, touchPos: {}, stun: settings.stun, mpName: settings.mpName };
+  binds = keyBinds(settings.keys); placeButtons(); mapOn = settings.minimap; $('mm').classList.toggle('off', !mapOn);
+  changed(true); renderSettings(); toast('Standard wiederhergestellt');
+};
 function openSettings() { setReturn = state; renderSettings(); setState('settings'); }
-function closeSettings() { if (state !== 'settings') return; setState(setReturn); if (setReturn === 'paused') { $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist; } }
+function closeSettings() { if (state !== 'settings') return; capture = null; setState(setReturn); if (setReturn === 'paused') { $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist; } }
 $('pSettings').onclick = openSettings;
 $('mSettings').onclick = openSettings;
 $('setClose').onclick = closeSettings;
 
 applySettings();
+placeButtons();
 renderSlots();
 // ---------- Mehrspieler ----------
 const mp = new Multiplayer(game, {

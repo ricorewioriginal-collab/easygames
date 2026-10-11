@@ -13,12 +13,33 @@
 | Fliegen (Kreativ) | F oder Leertaste doppelt; runter mit Umschalt | Taste „Fliegen“, dann „Runter“ |
 | Seilhaken | Q | Taste „Haken“ |
 | Gleiten | Sprungtaste im Fall halten | Sprungtaste im Fall halten |
-| Wegpunkt / Minikarte | B / M | 📍 / 🗺 |
+| Wegpunkt / Weltkarte | B / M | 📍 / 🗺 (oder Minikarte antippen) |
 | Bauform wechseln | G (Umschalt+G zurück) | ▦ |
 | Aufträge (Story) | J | Auftragskarte antippen |
 | Pause / Speichern | Esc | ⏸ |
 
 Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und das Laufen rechts.
+**Tasten verschieben:** ⚙ Einstellungen → „✥ Touch-Tasten verschieben“, Tasten mit dem Finger an ihren Platz ziehen, „Fertig“. „Zurücksetzen“ stellt die Standardplätze wieder her.
+
+**Tastenbelegung (PC):** ⚙ Einstellungen → Tastatur: Feld anklicken, neue Taste drücken (Esc bricht ab). Liegt die Taste schon auf einer anderen Aktion, tauschen beide. Esc, Tab und 1–9 sind fest. Die Pfeiltasten laufen immer.
+
+**Gamepad** (Standard-Layout, z. B. Xbox- oder PlayStation-Controller): wird nach dem ersten Tastendruck erkannt.
+| Gamepad | Aktion |
+|---|---|
+| linker / rechter Stick | laufen / umschauen |
+| A / B | springen / runter (Fliegen) und Fenster schließen |
+| X / Y | Seilhaken / Inventar |
+| LB / RB | Hotbar-Platz zurück / weiter |
+| RT / LT | abbauen / setzen |
+| L3 | rennen |
+| Select / Start | Weltkarte / Pause (Start setzt auch fort) |
+
+## Weltkarte
+- 🗺, **M** oder Antippen der Minikarte öffnet die Karte. Zu sehen ist nur, was du schon entdeckt hast (Umkreis von etwa 5 Chunks um deine Wege).
+- Ziehen verschiebt, ＋/－ oder das Mausrad zoomen, „◎ Zu mir“ springt zurück. Der Pfeil zeigt deine Blickrichtung.
+- Ort antippen → „★ Hier markieren“ (bis 20 Markierungen, umbenennbar) oder „📍 Wegpunkt hierher“. Bei einer Markierung: ★ zeigt sie, 📍 setzt den Wegpunkt, ✕ löscht.
+- Eingezeichnet: Dörfer 🏘, Funkstationen 📻 (Radio-Blöcke), Wegpunkt bzw. Storyziel 📍, Unglücksort ✝, Mitspieler 👤.
+- Entdeckte Gebiete, Markierungen und Funkstationen werden mit der Welt gespeichert (ein paar hundert Byte). Das Häkchen „Minikarte“ blendet die kleine Karte oben links ein oder aus.
 
 ## Modi
 - **Überleben:** Abgebaute Blöcke kommen in den Vorrat (höchstens 999 je Sorte). Zum Start gibt es etwas Erde, Bretter, Glas sowie einige Logo- und Spezialblöcke.
@@ -87,7 +108,10 @@ der Freund antwortet über „👥 Bei Freunden mitspielen“ im Hauptmenü. All
 ## Inventar
 - **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funktechnik, Funk-Logos, Werkzeuge & Essen) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
 - **„nur Vorrat“** blendet Blöcke aus, die du nicht hast.
-- Block antippen = in den gewählten Hotbar-Platz legen.
+- Block antippen = in den gewählten Hotbar-Platz legen. Am PC: Block auf einen Hotbar-Platz **ziehen**, Hotbar-Plätze untereinander tauschen, einen Platz ins Raster ziehen = Platz leeren, **Umschalt-Klick** = in den ersten freien Platz.
+- **Sortierung** nach Art, Name oder Menge.
+- Werkzeuge zeigen in der Hotbar einen **Haltbarkeitsbalken** (grün → rot).
+- Der Vorrat zählt je Blockart (bis 999); getrennte Stapel gibt es deshalb nicht, „Stapel teilen“ entfällt bewusst.
 - Bei Rezepten sind fehlende Zutaten rot mit deinem Vorrat in Klammern; die Zahl rechts sagt, wie oft du es herstellen kannst. Umschalt-Klick stellt 5× her.
 
 ## Spezial-Blöcke
@@ -103,7 +127,8 @@ Radio-Block (spielt einen erzeugten Beat, leiser mit Abstand) · Regenbogen-Bloc
 | Linkshänder | Tasten links, Laufen rechts |
 | Blick umkehren | oben/unten vertauscht |
 | Setzen erst nach kurzem Halten wiederholen | verhindert versehentliche Doppel-Blöcke |
-| Lautstärke Effekte / Radio-Musik | getrennt regelbar |
+| Lautstärke Effekte / Radio-Musik / Umgebung | getrennt regelbar; Umgebung = Schritte je Untergrund, Wasser, Tierstimmen |
+| Tastatur, Gamepad, Touch-Tasten verschieben | siehe oben |
 | Bildrate anzeigen | FPS in der Infozeile |
 
 „Standard wiederherstellen“ setzt alles zurück. Einstellungen gelten nur auf diesem Gerät.

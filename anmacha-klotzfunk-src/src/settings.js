@@ -20,19 +20,23 @@ export const DEFAULTS = {
   placeDelay: true,     // Setzen erst nach kurzem Halten wiederholen
   sfxVol: 0.8,
   musicVol: 0.8,
+  ambVol: 0.7,          // Umgebung: Schritte, Wasser, Tiere
   showFps: false,
   deathLoss: 'keep',    // keep | grave (Vorrat bleibt am Todesort liegen)
   enemies: true,        // Gegner im Überlebensmodus (aus = friedlich)
   preview: true,        // Platzierungsvorschau (weißer Rahmen)
   stun: true,           // Mehrspieler: öffentlichen STUN-Server nutzen
-  mpName: ''            // Mehrspieler: eigener Name
+  mpName: '',           // Mehrspieler: eigener Name
+  minimap: true,        // Minikarte oben links
+  keys: {},             // eigene Tastenbelegung (Aktion -> KeyboardEvent.code)
+  touchPos: {}          // verschobene Touch-Tasten (id -> [x, y] in Bildschirmanteilen)
 };
 
 export function loadSettings() {
   let s = {};
   try { s = JSON.parse(globalThis.localStorage.getItem(KEY)) || {}; } catch (e) { s = {}; }
   const out = { ...DEFAULTS };
-  for (const k of Object.keys(DEFAULTS)) if (s[k] !== undefined && typeof s[k] === typeof DEFAULTS[k]) out[k] = s[k];
+  for (const k of Object.keys(DEFAULTS)) if (s[k] !== undefined && typeof s[k] === typeof DEFAULTS[k] && (s[k] === null) === (DEFAULTS[k] === null)) out[k] = s[k];
   if (out.quality !== 'auto' && !QUALITY[out.quality]) out.quality = 'auto';
   if (!['keep', 'grave'].includes(out.deathLoss)) out.deathLoss = 'keep';
   return out;

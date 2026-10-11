@@ -144,6 +144,22 @@ Grenzen stehen in MULTIPLAYER.md (Vorrat der Gäste nur für den Besuch, Tiere n
 
 ---
 
+## 2h. Etappe 7 – Karte, Steuerung, Inventar, Klänge ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Weltkarte | entdeckte Chunks als Bitfeld je 32×32-Region (Base64, ~170 Zeichen je Region) im Spielstand `map`; Farben aus echten Blöcken oder aus dem Generator (Biomfarben), zwischengespeichert; Spieler mit Blickrichtung, Wegpunkt/Storyziel, bis 20 eigene Markierungen (umbenennen, Wegpunkt, löschen), Dörfer, Funkstationen, Unglücksort, Mitspieler; Ziehen, Zoom, Ort wählen. Zeichnet nur bei Bedarf, keine eigene Schleife | `src/worldmap.js`, `src/mapui.js`, `src/game.js` |
+| Tastatur | alle 14 Aktionen frei belegbar (Tausch bei Doppelbelegung, Esc/Tab/1–9 fest), gespeichert in den Einstellungen | `src/controls.js`, `src/main.js` |
+| Gamepad | Gamepad-API, Standard-Layout: Sticks, Springen, Abbauen/Setzen, Hotbar, Haken, Inventar, Karte, Pause; Abfrage läuft nur, solange ein Gamepad verbunden ist; ohne Mausfang kein Zwangs-Pausieren | `src/controls.js`, `src/main.js` |
+| Touch | Tasten frei verschiebbar (Verschiebemodus aus den Einstellungen, Position als Bildschirmanteil gespeichert, Zurücksetzen) | `src/main.js`, `src/style.css` |
+| Inventar | Ziehen & Ablegen auf/zwischen Hotbar-Plätzen, Platz ins Raster ziehen = leeren, Umschalt-Klick = freier Platz, Sortierung (Art/Name/Menge), Haltbarkeitsbalken | `src/main.js` |
+| Klänge | ein AudioContext, drei Lautstärken (Effekte, Radio-Musik, Umgebung); Schritte je Untergrund, Platschen, Tierstimmen und Gegnergeräusche nach Abstand, Schalter-Klick, Maschinen/Funktor, Empfänger-Piepen, Auftrags-Melodie, Treffer | `src/audio.js`, `src/game.js` |
+| Tests | 95 Tests (neu: `worldmap.test.js`, `controls.test.js`) | `tests/` |
+
+„Stapel teilen“ aus Abschnitt 22 gibt es bewusst nicht: der Vorrat zählt je Blockart, die Hotbar verweist nur darauf. Ein Teilen hätte keine Wirkung (keine Fake-Funktion).
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
@@ -166,15 +182,15 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 17 | Automatisierung | 🟡 | 4 | Signale mit Rechenlimit ✅; später Taktgeber, Verzögerung, Logik-Gatter, Förderband |
 | 18 | Spielmodi | ✅ | 4 | Story nutzt die Überlebensregeln ✅ |
 | 19 | Multiplayer | ✅ | 6 | WebRTC ohne Server ✅; später Vorrat der Gäste beim Gastgeber speichern, Fahrzeuge teilen |
-| 20 | Smartphone | 🟡 | 1 ✅ / 3 | Tastenpositionen frei verschiebbar, optionaler Platzierungsmodus mit Vorschau |
-| 21 | Desktop | 🟡 | 3 | Tastenbelegung ändern, Gamepad |
-| 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
-| 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
+| 20 | Smartphone | ✅ | 1 / 7 | Tasten verschiebbar ✅, Vorschau ✅; fehlt: Test auf echten Geräten |
+| 21 | Desktop | ✅ | 7 | Tastenbelegung ✅, Gamepad ✅; später Gamepad-Belegung ändern, Bedienung der Menüs mit dem Gamepad |
+| 22 | Inventar/HUD | ✅ | 1 / 2 / 7 | Ziehen, Schnellverschieben, Sortieren, Haltbarkeit ✅; Stapel teilen entfällt (Vorrat je Blockart) |
+| 23 | Karten | ✅ | 7 | Weltkarte, Markierungen, Dörfer, Funkstationen ✅; später verlassene Minen eintragen |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
 | 25/26 | Performance | 🟡 | 1 / 5 ✅ | Worker-Meshing ✅; echte Handymessungen fehlen |
 | 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
-| 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
-| 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
+| 28 | Audio | 🟡 | 1 / 7 | Schritte, Wasser, Tiere, Gegner, Maschinen, Story ✅; Wetter und Türen fehlen, weil es kein Wetter und keine Türen gibt |
+| 29 | Tests | ✅ | laufend | 95 Node-Tests + Browser-Durchläufe je Etappe (TESTING.md) |
 | 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, MULTIPLAYER, TESTING, PROGRESS |
 
 ---
@@ -210,11 +226,32 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 7 „Karte, Steuerung, Inventar, Klänge“
-1. Weltkarte mit aufgedeckten Gebieten, eigenen Markierungen, Dörfern und Funkstationen.
-2. Touch-Tasten verschiebbar, Tastenbelegung änderbar, Gamepad.
-3. Inventar: Hotbar-Plätze tauschen und sortieren, Haltbarkeitsbalken.
-4. Klänge: Schritte je Material, Wasser, Tiere, Maschinen.
+### Abschlussprüfung gegen Abschnitt 34 (Stand 1.8.0)
+
+| Kriterium | Stand | Beleg |
+|---|---|---|
+| Welt stabil generiert, große Bereiche erkundbar, Chunks laden/entladen | ✅ | `world.test.js` (Reihenfolge-Unabhängigkeit, Entladen), Streaming mit Zeitbudget, Worker-Meshing |
+| Bauen/Abbauen, Crafting, Inventar | ✅ | `crafting.test.js`, `build.test.js`, Browser-Durchläufe Etappe 1–7 |
+| drei Spielmodi spielbar, Story abschließbar, Welt danach frei | ✅ | `signal.test.js` (Story lösbar), STORY.md |
+| Biome, Höhlen, Rohstoffe | ✅ | 15 Biome, Höhlen, Erze (`world.test.js`) |
+| Tiere, NPCs, faire Gegner | ✅ | `mobs.test.js` (Sichtlinie, Angriffstakt, Höchstzahl, abschaltbar) |
+| Survival nachvollziehbar | ✅ | `survival.test.js` |
+| Funktechnik mit echter Funktion | ✅ | `signal.test.js`, Story-Kapitel 4–6 |
+| Spielstände zuverlässig | ✅ | `storage.test.js` (alte Formate, Sicherung, voller Speicher) |
+| Smartphones vernünftig bedienbar | 🟡 | in Headless-Chromium mit Handy-Größen geprüft; **kein Test auf echten Android-Geräten** |
+| Desktop und Web stabil | ✅ | Browser-Durchläufe ohne JavaScript-Fehler |
+| keine kritischen Blockaden bekannt | ✅ | – |
+| Build entspricht dem Quelltext | ✅ | `npm run build` vor jedem Commit, Ergebnis eingecheckt |
+| Doku beschreibt den echten Stand | ✅ | dieses Dokument, GAMEPLAY, TESTING, MULTIPLAYER, PERFORMANCE |
+
+Damit sind alle geplanten Etappen umgesetzt. Offen bleibt vor allem, was sich hier nicht prüfen lässt (echte Handys).
+
+### Wenn es weitergeht (Vorschläge, nach Nutzen sortiert)
+1. Auf echten Android-Handys und iPhones spielen und messen (Bildrate, Akku, Bedienung), danach Grafikstufen nachschärfen.
+2. Formblöcke (Treppen, Halbblöcke, Türen, Zäune) mit Nicht-Würfel-Meshing; dann auch Türgeräusche.
+3. Wetter (Regen, Gewitter) mit Klängen und Einfluss auf Felder.
+4. Ofen mit Brennzeit, Taktgeber und Logik-Gatter fürs Funknetz.
+5. Mehrspieler: Vorrat der Gäste beim Gastgeber speichern, Fahrzeuge teilen.
 
 ---
 
@@ -229,3 +266,7 @@ Regeln, die nicht gebrochen werden dürfen:
 - Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
 - Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.
+- Es gibt kein Wetter und keine Türen, darum auch keine Wetter- oder Türgeräusche. Die Klänge wurden nur auf fehlerfreien Ablauf geprüft, nicht angehört.
+- Das Gamepad wurde nur simuliert (Gamepad-API im Browser-Test), nicht mit einem echten Controller. Menüs bedient man weiter mit Maus oder Finger; das Gamepad steuert das Spiel, schließt Fenster und pausiert.
+- Ziehen & Ablegen im Inventar geht mit der Maus; am Handy legt Antippen in den gewählten Platz.
+- Die Weltkarte zeigt ein Farbfeld je 4×4 Blöcke; Bauwerke sind darauf nicht einzeln zu erkennen.

@@ -13,12 +13,13 @@ import { Vehicles, KINDS as VEH_KINDS } from './vehicles.js';
 import { VehicleView } from './vehview.js';
 import { BUILD_MODES, MAX_CELLS, shapeCells, bounds, copyRegion, pasteCells } from './build.js';
 import { villageIn, regionOf } from './structures.js';
+import { WorldMap } from './worldmap.js';
 import { Farm, isCrop, cropDrops } from './farm.js';
 import { Vitals, fallDamage } from './survival.js';
 import { Mobs, rollDrops } from './mobs.js';
 import { MobView } from './mobview.js';
 import { Player, raycast, EYE } from './physics.js';
-import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
+import { playBreak, playPlace, playDeny, setRadio, playStep, playSplash, playCall, playClick, playClank, playBeep, playJingle, playHurt } from './audio.js';
 import { campaignOf, questProgress } from './quests.js';
 import { solve, ON_ID, OFF_ID } from './signal.js';
 import { nearestVillage } from './structures.js';
@@ -74,6 +75,14 @@ uniform sampler2D uTex; uniform vec3 uCol; varying vec2 vUv; varying float vD;
 void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; gl_FragColor = vec4(uCol, a); }`;
 
 const lerp = (a, b, t) => a + (b - a) * t;
+// Schritt-Geräusch nach Untergrund
+function stepKind(t) {
+  if (t === B.SNOW) return 'schnee';
+  if (t === B.GLASS || t === B.ICE) return 'glas';
+  if (t === B.SAND || t === B.GRAVEL) return 'sand';
+  const tool = BLOCKS[t] && BLOCKS[t].tool;
+  return tool === 'axt' ? 'holz' : tool === 'spitzhacke' ? 'stein' : 'weich';
+}
 const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -299,7 +308,7 @@ export class Game {
       for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
       for (let i = 0; i < SPECIAL_COUNT; i++) this.inv[SPECIAL0 + i] = 8;
     }
-    this.wp = save.wp || null; this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
+    this.wp = save.wp || null; this.map = new WorldMap(save.map); this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
     this.handType = -1;
     // Überleben (nur im Überlebensmodus): Gesundheit/Hunger, Werkzeug-Abnutzung, Grab mit verlorenen Sachen
     // Story ab Generator 3 („Das große Rauschen“) spielt mit den Überlebensregeln; alte Story-Welten bleiben wie gehabt
@@ -428,7 +437,8 @@ export class Game {
       vit: this.vitals ? this.vitals.toJSON() : undefined, dur: this.dur, grave: this.grave || undefined, mobs: this.mobs ? this.mobs.serialize() : undefined,
       age: Math.round(this.age), farm: this.farm.plants.size ? this.farm.serialize() : undefined,
       arm: this.armor.kopf || this.armor.brust ? [this.armor.kopf, this.armor.brust, this.armWear.kopf, this.armWear.brust] : undefined,
-      veh: this.vehicles && this.vehicles.list.length ? this.vehicles.serialize() : undefined
+      veh: this.vehicles && this.vehicles.list.length ? this.vehicles.serialize() : undefined,
+      map: this.map ? this.map.serialize() : undefined
     };
   }
 
@@ -468,7 +478,7 @@ export class Game {
     this.uni.uTime.value = performance.now() / 1000;
     if (!this.dead) {
       if (this.ride) this.rideStep();
-      else { this.updateHook(dt); p.update(w, dt, this.input, this.yaw); }
+      else { this.updateHook(dt); p.update(w, dt, this.input, this.yaw); this.sounds(dt); }
       if (p.bounces) { this.questEvent('bounce', 0, p.bounces); p.bounces = 0; }
       if (this.story && p.gliding) this.glideAcc = (this.glideAcc || 0) + dt;
       if (this.vitals && !p.waiting) this.updateVitals(dt);
@@ -514,9 +524,29 @@ export class Game {
     this.cloudU.uOff.value.x += dt * 2.5;
     this.radioT -= dt;
     if (this.world.sigDirty || (this.sigRetry && this.radioT <= 0)) this.updateSignals();
-    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave(); }
+    if (this.radioT <= 0) {
+      this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave();
+      if ((this.mapT = (this.mapT || 0) + 1) % 4 === 0 && this.map) { this.map.markAround(this.player.x, this.player.z, Math.min(this.viewDist, 5)); this.map.syncRadios(this.world); }
+    }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
+  }
+
+  // Schritte je Material, Platschen, Rufe der Tiere in der Nähe
+  sounds(dt) {
+    const p = this.player, w = this.world;
+    if (p.onGround && !p.flying && !p.inWater) {
+      this.stepAcc = (this.stepAcc || 0) + Math.hypot(p.vx, p.vz) * dt;
+      if (this.stepAcc > 2.1) { this.stepAcc = 0; playStep(stepKind(w.getBlock(Math.floor(p.x), Math.floor(p.y - 0.05), Math.floor(p.z)))); }
+    }
+    if (p.inWater && !this.wasWater) playSplash(p.vy < -6);
+    else if (p.inWater && (this.swimAcc = (this.swimAcc || 0) + Math.hypot(p.vx, p.vz) * dt) > 2.5) { this.swimAcc = 0; playSplash(false); }
+    this.wasWater = p.inWater;
+    if (this.mobs && (this.callT = (this.callT ?? 3) - dt) <= 0) {
+      this.callT = 2.5 + Math.random() * 5;
+      const near = this.mobs.list.filter(m => Math.hypot(m.x - p.x, m.z - p.z) < 20);
+      if (near.length) { const m = near[Math.floor(Math.random() * near.length)]; playCall(m.T.key, Math.hypot(m.x - p.x, m.y - p.y, m.z - p.z)); }
+    }
   }
 
   // ---------- Überleben ----------
@@ -526,7 +556,7 @@ export class Game {
     if (p.impact) { const f = fallDamage(p.impact); p.impact = 0; if (f && !p.inWater) { v.hurt(f, 'Sturz'); dmg += f; } }
     const onMagma = p.onGround && this.world.getBlock(Math.floor(p.x), Math.floor(p.y - 0.05), Math.floor(p.z)) === B.MAGMA;
     dmg += v.tick(dt, { moving: Math.hypot(p.vx, p.vz) > 0.5, sprint: this.input.sprint, eyeWater: p.eyeWater, onMagma });
-    if (dmg > 0) { this.onHurt(dmg, v.cause); this.unsaved = true; }
+    if (dmg > 0) { this.onHurt(dmg, v.cause); this.unsaved = true; if (dmg >= 1) playHurt(); }
     if (v.dead) { this.die(v.cause); return; }
     if (before[0] !== Math.ceil(v.hp) || before[1] !== Math.ceil(v.food) || before[2] !== Math.ceil(v.air)) this.onVitals();
   }
@@ -633,7 +663,7 @@ export class Game {
     } else { p.vx += (p.x - m.x) / d * 6; p.vz += (p.z - m.z) / d * 6; p.vy = Math.max(p.vy, 5); p.onGround = false; }
     const dmg = m.T.dmg * armorFactor(this.armorPoints());
     this.wearArmor();
-    v.hurt(dmg, m.T.name); playDeny();
+    v.hurt(dmg, m.T.name); playHurt();
     this.onHurt(dmg, m.T.name); this.onVitals(); this.unsaved = true;
     if (v.dead) this.die(m.T.name);
   }
@@ -648,7 +678,7 @@ export class Game {
       pos.setXYZ(0, f[0], f[1], f[2]); pos.setXYZ(1, p.x, p.y + 1.2, p.z); pos.needsUpdate = true; this.beam.visible = true; this.beamT = 0.15;
     } else if (f) { const d = Math.hypot(p.x - f[0], p.z - f[2]) || 1; p.vx += (p.x - f[0]) / d * 6; p.vz += (p.z - f[2]) / d * 6; p.vy = Math.max(p.vy, 5); p.onGround = false; }
     const cause = typeof m.cause === 'string' ? m.cause.slice(0, 30) : 'Gegner', dmg = Math.min(10, m.dmg) * armorFactor(this.armorPoints());
-    this.wearArmor(); v.hurt(dmg, cause); playDeny();
+    this.wearArmor(); v.hurt(dmg, cause); playHurt();
     this.onHurt(dmg, cause); this.onVitals();
     if (v.dead) this.die(cause);
   }
@@ -738,6 +768,7 @@ export class Game {
   // ---------- Funknetz: nur bei Änderungen neu berechnen, Maschinen umschalten ----------
   updateSignals() {
     const w = this.world, p = this.player, r = solve(w.sig);
+    let snd = false;
     this.sigStats = r; this.sigRetry = false;
     for (const [k, n] of w.sig) {
       const t = n[3], base = OFF_ID[t] ?? t;
@@ -747,6 +778,8 @@ export class Game {
       // ein Tor schließt nicht, solange der Spieler darin steht
       if (want === B.GATE && p.x + 0.3 > n[0] && p.x - 0.3 < n[0] + 1 && p.z + 0.3 > n[2] && p.z - 0.3 < n[2] + 1 && p.y + 1.8 > n[1] && p.y < n[1] + 1) { this.sigRetry = true; continue; }
       w.setBlock(n[0], n[1], n[2], want);
+      const d = Math.hypot(n[0] - p.x, n[1] - p.y, n[2] - p.z);
+      if (d < 24 && !snd) { snd = true; (base === B.GATE ? playClank : playBeep)(); } // hörbar in der Nähe, einmal je Umschaltung
     }
     w.sigDirty = false; // eigene Umschaltungen ändern das Ergebnis nicht
     if (r.capped) this.onToast('Signalnetz zu groß: nicht alles wird berechnet');
@@ -835,7 +868,7 @@ export class Game {
         const v = nearestVillage(this.seed, this.player.x, this.player.z);
         if (v) this.wp = { x: v.x, y: v.y + 1, z: v.z };
       }
-      this.unsaved = true; playPlace();
+      this.unsaved = true; playJingle();
       this.onQuestDone(q, s.done);
       this.onChange();
     }
@@ -949,7 +982,7 @@ export class Game {
     if (t && (t.type === B.SWITCH || t.type === B.SWITCH_ON)) {
       if (!this.placeFirst) return false;
       const to = t.type === B.SWITCH ? B.SWITCH_ON : B.SWITCH;
-      if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playPlace(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
+      if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playClick(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
       return true;
     }
     // Werkbank/Ofen benutzen statt daneben zu bauen (Kreativ: keine Rezepte, dort wird gebaut)
