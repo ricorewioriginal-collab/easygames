@@ -146,7 +146,7 @@ export const de: Record<string, string> = {
   'opt.medium': 'Mittel',
   'opt.high': 'Hoch',
   'opt.camera': 'Kamera',
-  'opt.fov': 'Sichtfeld',
+  'opt.fov': 'Sichtfeld (horizontal)',
   'opt.camDist': 'Kameraabstand',
   'opt.ballCam': 'Ball-Kamera beim Start',
   'opt.ballCamHint': 'Im Spiel jederzeit umschaltbar.',
@@ -161,6 +161,9 @@ export const de: Record<string, string> = {
   'opt.cm.deuteranopia': 'Grün-Schwäche (Deuteranopie)',
   'opt.cm.tritanopia': 'Blau-Schwäche (Tritanopie)',
   'opt.touch': 'Touch-Steuerung',
+  'opt.touchAssist': 'Einfache Touch-Steuerung',
+  'opt.touchAssistHint':
+    'Der Stick zeigt die Richtung auf dem Bildschirm – das Auto lenkt selbst dorthin und gibt Gas. Aus = klassisch (hoch = Gas, seitlich = lenken).',
   'opt.on': 'An',
   'opt.off': 'Aus',
   'opt.online': 'Online',

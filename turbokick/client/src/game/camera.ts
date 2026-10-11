@@ -28,23 +28,43 @@ export function clampInsideArena(p: THREE.Vector3, margin = 0.6): THREE.Vector3 
   return p;
 }
 
+/** Kürzester Winkelabstand (−π … π) */
+const angleDiff = (a: number, b: number): number => {
+  let d = b - a;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  return d;
+};
+
 /**
- * Verfolgerkamera: „Auto-Kamera" (hinter dem Auto in Fahrtrichtung) oder „Ball-Kamera" (Auto und Ball im Bild).
- * Weiche Nachführung, Sichtfeld wächst mit dem Tempo und beim Boost.
+ * Verfolgerkamera wie in Auto-Fußballspielen üblich:
+ * - **Ball-Kamera:** Die Kamera steht hinter dem Auto auf der Linie Ball → Auto und blickt auf den Ball.
+ *   Der Ball bleibt dadurch immer in der Bildmitte, das Auto unten davor. Liegt der Ball hinter dem Auto,
+ *   schwenkt die Kamera mit begrenzter Drehgeschwindigkeit um das Auto herum (kein Springen).
+ * - **Auto-Kamera:** Blick in Fahrtrichtung.
+ * Die Drehung wird als Winkel geglättet (nie über einen Nullvektor), damit sie nicht flackert.
+ * `cfg.fov` ist das HORIZONTALE Sichtfeld; im Hochformat wird automatisch weiter herausgezoomt.
  */
 export class ChaseCamera {
   readonly position = new THREE.Vector3(0, 6, -20);
   readonly target = new THREE.Vector3(0, 1, 0);
-  fov = 80;
-  private dir = new THREE.Vector3(0, 0, 1);
+  /** Vertikales Sichtfeld, das apply() setzt */
+  fov = 70;
+  private yaw = 0;
+  /** Aktuelle Blickrichtung der Kamera als Gierwinkel (atan2(x, z)) */
+  get heading(): number {
+    return this.yaw;
+  }
+  private init = false;
   private shakeT = 0;
   private shakeA = 0;
-  private init = false;
   private time = 0;
+  private boostFov = 0;
+  private aspect = 16 / 9;
+  private readonly want = new THREE.Vector3();
+  private readonly look = new THREE.Vector3();
 
-  constructor(public cfg: CameraConfig) {
-    this.fov = cfg.fov;
-  }
+  constructor(public cfg: CameraConfig) {}
 
   shake(amount = 0.25, sec = 0.35): void {
     if (!this.cfg.shake) return;
@@ -56,60 +76,74 @@ export class ChaseCamera {
     this.init = false;
   }
 
-  /** Normale Fahrt-Kamera. `car` darf zerstört sein (dann Überblick auf den Ball). */
+  /** Hochformat: Abstand und Höhe wachsen, damit Ball und Auto trotz schmalem Bild sichtbar bleiben */
+  private get portrait(): number {
+    return Math.max(0, Math.min(1, (1.25 - this.aspect) / 0.7));
+  }
+
   update(dt: number, car: CarState, ball: BallState, ballCam: boolean, speed: number): void {
     this.time += dt;
-    const dist = 3.7 * this.cfg.distance;
-    const height = 1.35 * this.cfg.distance;
+    const p = this.portrait;
+    const dist = (3.9 + p * 1.6) * this.cfg.distance;
+    const height = (1.45 + p * 0.7) * this.cfg.distance;
     const carPos = tmpA.set(car.pos[0], car.pos[1], car.pos[2]);
     const ballPos = tmpB.set(ball.pos[0], ball.pos[1], ball.pos[2]);
-    // Blickrichtung des Autos (Nase) und Fahrtrichtung
+    const dead = car.demolished > 0;
     tmpQ.set(car.quat[0], car.quat[1], car.quat[2], car.quat[3]);
     const fwd = tmpC.set(0, 0, 1).applyQuaternion(tmpQ);
-    const want = new THREE.Vector3();
-    if (car.demolished > 0) {
-      want.copy(ballPos).sub(carPos);
-      want.y = 0;
-    } else if (ballCam) {
-      want.copy(ballPos).sub(carPos);
-      want.y = 0;
-      // Liegt der Ball hinter dem Auto, nimmt die Kamera die Fahrtrichtung (sonst stünde sie vor dem Auto)
-      const f2 = Math.hypot(fwd.x, fwd.z) || 1;
-      if (
-        want.lengthSq() < 0.01 ||
-        (want.x * fwd.x + want.z * fwd.z) / (Math.sqrt(want.lengthSq()) * f2) < -0.15
-      )
-        want.set(fwd.x, 0, fwd.z);
-    } else {
+    // Gewünschte Blickrichtung (Gierwinkel um die Hochachse)
+    let wantYaw: number;
+    const toBallX = ballPos.x - carPos.x;
+    const toBallZ = ballPos.z - carPos.z;
+    const ballDist = Math.hypot(toBallX, toBallZ);
+    if ((ballCam || dead) && ballDist > 0.8) wantYaw = Math.atan2(toBallX, toBallZ);
+    else {
       const sp = Math.hypot(car.vel[0], car.vel[2]);
-      if (sp > 4 && car.vel[0] * fwd.x + car.vel[2] * fwd.z > 0) want.set(car.vel[0], 0, car.vel[2]);
-      else want.set(fwd.x, 0, fwd.z);
+      const fx = Math.hypot(fwd.x, fwd.z) > 0.3 ? fwd.x : car.vel[0];
+      const fz = Math.hypot(fwd.x, fwd.z) > 0.3 ? fwd.z : car.vel[2];
+      // Beim Rückwärtsfahren nicht umdrehen; an Wänden der Bewegung folgen
+      wantYaw =
+        sp > 6 && Math.hypot(fwd.x, fwd.z) < 0.5 ? Math.atan2(car.vel[0], car.vel[2]) : Math.atan2(fx, fz);
     }
-    if (want.lengthSq() < 1e-6) want.set(0, 0, 1);
-    want.normalize();
+    if (!Number.isFinite(wantYaw)) wantYaw = this.yaw;
     if (!this.init) {
-      this.dir.copy(want);
+      this.yaw = wantYaw;
       this.init = true;
     } else {
-      const k = 1 - Math.exp(-dt * (ballCam ? 7 : 5));
-      this.dir.lerp(want, k).normalize();
+      // Exponentiell nachführen, aber höchstens ~3 Umdrehungen pro Sekunde
+      const d = angleDiff(this.yaw, wantYaw);
+      const step = d * (1 - Math.exp(-dt * (ballCam ? 9 : 6)));
+      const maxStep = 6 * dt;
+      this.yaw += Math.max(-maxStep, Math.min(maxStep, step));
     }
-    const base = car.demolished > 0 ? ballPos : carPos;
-    const pos = new THREE.Vector3().copy(base).addScaledVector(this.dir, -dist);
-    pos.y = base.y + height + (car.demolished > 0 ? 6 : 0);
-    // Beim Wandfahren die Kamera am „Oben" des Autos ausrichten
-    const upCar = new THREE.Vector3(0, 1, 0).applyQuaternion(tmpQ);
-    if (upCar.y < 0.7 && car.demolished <= 0) pos.addScaledVector(upCar, height * 0.6);
-    clampInsideArena(pos);
-    const look = new THREE.Vector3().copy(base);
-    if (ballCam && car.demolished <= 0) look.lerp(ballPos, 0.55);
-    look.y += 0.55;
-    const kp = 1 - Math.exp(-dt * 12);
-    if (this.position.lengthSq() === 0) this.position.copy(pos);
-    this.position.lerp(pos, kp);
-    this.target.lerp(look, 1 - Math.exp(-dt * 14));
-    const fovWant = this.cfg.fov + Math.min(10, speed * 0.28) + (car.boosting ? 4 : 0);
-    this.fov += (fovWant - this.fov) * (1 - Math.exp(-dt * 4));
+    const dx = Math.sin(this.yaw);
+    const dz = Math.cos(this.yaw);
+    const base = dead ? ballPos : carPos;
+    const want = this.want.set(
+      base.x - dx * dist,
+      Math.max(base.y, 0.2) + height + (dead ? 5 : 0),
+      base.z - dz * dist,
+    );
+    clampInsideArena(want);
+    // Blickziel: Ball-Kamera schaut auf den Ball (Höhe begrenzt, damit das Auto nicht aus dem Bild fällt), sonst vor das Auto
+    const look = this.look;
+    if ((ballCam || dead) && ballDist > 0.8) {
+      look.copy(ballPos);
+      const maxUp = base.y + height + Math.max(2, ballDist * 0.45);
+      look.y = Math.min(look.y, maxUp);
+      // Nahe am Auto etwas tiefer blicken, damit das eigene Auto sichtbar bleibt
+      look.lerp(base, ballDist < 6 ? 0.35 : 0.12);
+    } else look.set(base.x + dx * 6, base.y + 0.9, base.z + dz * 6);
+    if (!this.position.lengthSq() || !this.initPos) {
+      this.position.copy(want);
+      this.target.copy(look);
+      this.initPos = true;
+    }
+    // Position folgt fest (kein Gummiband-Gefühl), Blickziel etwas weicher
+    this.position.lerp(want, 1 - Math.exp(-dt * 16));
+    this.target.lerp(look, 1 - Math.exp(-dt * 12));
+    this.boostFov +=
+      ((car.boosting ? 5 : 0) + Math.min(8, speed * 0.25) - this.boostFov) * (1 - Math.exp(-dt * 4));
     if (this.shakeT > 0) {
       this.shakeT -= dt;
       const a = this.shakeA * Math.max(0, this.shakeT) * 3;
@@ -117,6 +151,7 @@ export class ChaseCamera {
       this.position.y += Math.cos(this.time * 77) * a * 0.1;
     }
   }
+  private initPos = false;
 
   /** Kreisende Torjubel-/Überblickskamera um einen Punkt */
   orbit(dt: number, center: THREE.Vector3, radius: number, height: number, angularSpeed: number): void {
@@ -133,12 +168,19 @@ export class ChaseCamera {
     const k = 1 - Math.exp(-dt * 3);
     this.position.lerp(pos, k);
     this.target.lerp(center, 1 - Math.exp(-dt * 6));
-    this.fov += (this.cfg.fov - 10 - this.fov) * (1 - Math.exp(-dt * 3));
+    this.boostFov += (0 - this.boostFov) * k;
+    this.init = false;
   }
 
+  /** Setzt Kamera-Position/-Blick; rechnet das horizontale Sichtfeld in das vertikale um (Hoch- und Querformat) */
   apply(cam: THREE.PerspectiveCamera): void {
+    this.aspect = cam.aspect > 0 ? cam.aspect : 16 / 9;
+    const hfov = Math.min(120, this.cfg.fov + this.boostFov) * (Math.PI / 180);
+    let vfov = 2 * Math.atan(Math.tan(hfov / 2) / this.aspect) * (180 / Math.PI);
+    vfov = Math.max(45, Math.min(100, vfov));
+    this.fov = vfov;
     cam.position.copy(this.position);
-    cam.fov = this.fov;
+    cam.fov = vfov;
     cam.updateProjectionMatrix();
     cam.up.copy(UP);
     cam.lookAt(this.target);

@@ -707,7 +707,11 @@ export class Bot {
     let appr = this.appr;
     if (appr) {
       if (mis > tol || sAlong > 1.5) appr = false;
-    } else if ((mis <= tol * 0.6 && sAlong <= 0.5) || state.tick - this.reposTick > 240) appr = true;
+    } else {
+      // Nah am Ball zählt auch die Blickrichtung: sonst wechselt der Bot neben dem Ball endlos zwischen Anfahren und Umsetzen
+      const facing = d < 8 ? (cx * this.b.fx + cz * this.b.fz) / (d || 1) > 0.5 : true;
+      if ((mis <= tol * 0.6 && sAlong <= 0.5 && facing) || state.tick - this.reposTick > 240) appr = true;
+    }
     if (!appr && this.appr) this.reposTick = state.tick;
     this.appr = appr;
     let off = 0;
@@ -967,6 +971,18 @@ export class Bot {
 
     o.steer = -clampN(2.2 * ang - 0.25 * wy, -1, 1);
     const absAng = Math.abs(ang);
+    // Ziel liegt innerhalb des kleinsten Wendekreises (z. B. Pad direkt neben dem Auto): sonst kreist der Bot ewig darum.
+    // Dann erst geradeaus Abstand gewinnen und danach eindrehen.
+    if (
+      this.mode === 'boost' &&
+      absAng > 0.6 &&
+      dist < 9 &&
+      dist / (2 * Math.sin(Math.min(absAng, Math.PI / 2))) < 2.9
+    ) {
+      o.steer = 0;
+      o.throttle = 1;
+      return;
+    }
     let vT = Math.min(this.vcap, MAX_V * clampN(1.75 - absAng * 0.95, 0.4, 1));
     if (absAng > 0.3 && dist < 40) {
       // Kurvenradius: das Ziel muss auf einem Kreis liegen, den das Auto bei diesem Tempo fahren kann
