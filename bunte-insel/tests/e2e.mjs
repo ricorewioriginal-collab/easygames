@@ -41,7 +41,7 @@ ok(!fire.mission && fire.before === 0, 'Feuerwehr: Feuer mit Wasser gelöscht, M
 // Hubschrauber: starten, Ringe, Landen, Aussteigen nur am Boden
 const hel = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'heli'); b.P.x = v.x + 3; b.P.z = v.z; b.enter(v); b.answerOffer(true);
-  const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; await sleep(2500); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
+  const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; for (let i = 0; i < 150 && v.y <= 3.5; i++) await sleep(100); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
   for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const s = m.steps[m.i]; v.x = s.x; v.z = s.z; v.y = s.air ? s.y : .5; v.v = 0; v.vy = 0; await sleep(250); }
   await sleep(300); const g = b.save.stars - s0; v.y = 0; v.vy = 0; v.v = 0; b.leave(); return { y1, stayed, g, n, out: !b.P.veh };
 });
@@ -529,6 +529,18 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const r3 = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}; const hs = b.W.interiors.filter(q => q.kind === 'house' && Math.abs(q.cz) < 200); o.n = hs.length; const q = hs[0], front = q.s > 0 ? q.z1 : q.z0;
     b.P.x = q.cx; b.P.z = front + q.s * 4; await sl(200); const door = b.W.free(q.cx, front - q.s * .8, .4); const wall = !b.W.free(q.x0 + 2.5, front + q.s * .6, .4) || true; b.P.x = q.cx; b.P.z = (q.z0 + q.z1) / 2; await sl(500); o.inside = b.town.inside() === q && b.W.free(q.cx, (q.z0 + q.z1) / 2, .4); o.roof = q.roof.visible === false; o.door = door; o.resident = !!q.resNpc; o.items = q.items.length; return o; });
   ok(r3.n >= 20 && r3.door && r3.inside && r3.roof && r3.resident && r3.items >= 3, `Häuser auf der Insel sind begehbar (${r3.n} Häuser mit Tür, Möbeln und Bewohnern)`);
+  await c.close();
+}
+{ // Himmels-Parcours, Emotes, Schnell-Chat
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const b = window.__bi, o = b.obby, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const till = async (f, n = 60) => { for (let i = 0; i < n && !f(); i++) await sl(100); return f(); };
+    b.P.x = o.pad.x; b.P.z = o.pad.z; await sl(300); const n = b.placeNear(); out.src = n && n.src + ':' + n.n.k; b.placeAct(n); out.run = await till(() => o.run && Math.abs(b.P.y - 14) < .3);
+    b.P.x = o.pad.x + 10.6; out.stone = await till(() => Math.abs(b.P.y - 14) < .3); b.P.y = 5; out.respawn = await till(() => o.run && o.run.falls === 1 && Math.abs(b.P.y - 14) < .3);
+    b.P.x = o.fin.x; b.P.z = o.fin.z; b.P.y = o.fin.y; const s0 = b.save.stars; out.done = await till(() => !o.run && b.save.stars >= s0 + 6); out.top = b.save.obby && b.save.obby.top.length; out.back = Math.abs(b.P.y) < 1.5;
+    const x = b.express; x.show(); out.open = x.open && !document.getElementById('expPanel').hidden; x.close(); x.emote('flip'); out.cur = !!x.cur; out.end = await till(() => !x.cur, 100); x.chat(0); await sl(200); out.bub = b.bubbles.length > 0; out.n = x.EMOTES.length;
+    return out; });
+  ok(r.src === 'obby:start' && r.run && r.stone && r.respawn && r.done && r.top === 1 && r.back, 'Himmels-Parcours: Start am Boden, Plattformen tragen, Sturz → Checkpoint, Ziel mit Sternen + Bestenliste, zurück am Boden'); ok(r.open && r.cur && r.end && r.bub && r.n >= 8, `Emotes (${r.n}) und Schnell-Chat (Sprechblase) funktionieren`);
   await c.close();
 }
 await browser.close();
