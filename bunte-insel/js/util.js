@@ -196,10 +196,19 @@ BI.presetToCu = function (po) {
 /* Haustiere: Blitz (Polizeihund) + weitere, gleiche Bedienung (pose/trick/reset) */
 BI.PETS = [
   { id: 'blitz', name: 'Blitz', icon: '🐕‍🦺' }, { id: 'bello', name: 'Bello', icon: '🐶' }, { id: 'mieze', name: 'Mieze', icon: '🐱' },
-  { id: 'hoppel', name: 'Hoppel', icon: '🐰' }, { id: 'schnuffel', name: 'Schnuffel', icon: '🐷' }, { id: 'rexi', name: 'Rexi', icon: '🦖' }
+  { id: 'hoppel', name: 'Hoppel', icon: '🐰' }, { id: 'schnuffel', name: 'Schnuffel', icon: '🐷' }, { id: 'rexi', name: 'Rexi', icon: '🦖' },
+  { id: 'zuendel', name: 'Zündel', icon: '🐲', mascot: true }, { id: 'willi', name: 'Willi', icon: '🐭', mascot: true } // Maskottchen aus anderen Welten: werden dort als Partner freigeschaltet
 ];
+/* Maskottchen-Partner: Figur der Welt (BI.makeDrache / BI.makeWilli) mit der gleichen Haustier-Schnittstelle (pose/trick/reset) */
+BI.makeMascotPet = function (def) {
+  const dr = def.id === 'zuendel', rig = dr ? BI.makeDrache({}) : BI.makeWilli(), root = new THREE.Group(); rig.root.scale.setScalar(dr ? 1 : 1.1); root.add(rig.root);
+  return { group: root, reset() { rig.root.position.y = 0; },
+    trick(nm, k) { rig.set(dr ? 'happy' : 'dance', k * 3, 0); },
+    pose(phase, amp, wag) { const mv = amp > .05; if (dr) { rig.set(mv ? 'walk' : 'idle', phase / 8); rig.root.position.y = 0; } else { rig.set('idle', phase / 2); rig.root.position.y = mv ? Math.abs(Math.sin(phase)) * .09 : 0; } } };
+};
 BI.makePet = function (kind, name) {
   const def = BI.PETS.find(p => p.id === kind) || BI.PETS[0]; name = name || def.name;
+  if (def.mascot) return BI.makeMascotPet(def);
   if (def.id === 'blitz') return BI.makeDog({ name });
   const K = {
     bello: { c: 0xd9a05b, c2: 0xffffff, ear: 'floppy', sn: .1, tail: 'up', sz: .95 },

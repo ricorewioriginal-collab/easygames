@@ -142,13 +142,14 @@ BI.createDampf = function (G) {
   drawFilm(-1); tex.needsUpdate = true;
   /* ===== Hunde-ähnliche Spielleiste für Willi ===== */
   BI.injectHudCss(); const host = (document.getElementById('mission') || {}).parentNode || document.body, panel = document.createElement('div'); panel.className = 'pPanel'; panel.hidden = true; panel.innerHTML = '<div class="pT">🐭 Willi – was machen wir?</div><div class="pB"></div>';
-  const OPT = [['talk', '🎞️', 'Reden'], ['dance', '💃', 'Tanzen'], ['whistle', '📯', 'Pfeifen'], ['wave', '👋', 'Winken'], ['stretch', '🤹', 'Gummi-Arme']];
+  const OPT = [['talk', '🎞️', 'Reden'], ['dance', '💃', 'Tanzen'], ['whistle', '📯', 'Pfeifen'], ['wave', '👋', 'Winken'], ['stretch', '🤹', 'Gummi-Arme'], ['partner', '🎒', 'Als Partner mitnehmen']];
   for (const [k, ic, tx] of OPT) { const b = document.createElement('button'); b.innerHTML = '<span>' + ic + '</span>' + tx; b.addEventListener('click', e => { e.stopPropagation(); willChoose(k); }); panel.querySelector('.pB').appendChild(b); }
   { const x = document.createElement('button'); x.className = 'pX'; x.textContent = '✖'; x.addEventListener('click', e => { e.stopPropagation(); panel.hidden = true; }); panel.appendChild(x); } host.appendChild(panel);
   const LINES = ['🎞️ „Pssst … ich spreche nur in Zwischentiteln. Das hier ist einer!“', '🎞️ „Mein Dampfer heißt Brummel. Er ist alt, aber sein Tuut ist jung!“', '🎞️ „Bring die Farbe zurück – dann tanzen sogar die Schornsteine!“', '🎞️ „Früher gab es keinen Ton. Heute pfeife ich einfach selbst.“', '🎞️ „Ein Gummischlauch-Arm ist praktisch: Er reicht bis zur Keksdose!“', '🎞️ „Hast du schon alle sechs Instrumente ausprobiert? Das Orchester wartet!“'];
   let li = 0;
   function willChoose(k) {
-    panel.hidden = true; if (k === 'talk') { say(LINES[li++ % LINES.length], 4600); wAct = { n: 'wave', t: 0, d: 1.6 }; return; }
+    panel.hidden = true; if (k === 'partner') { wAct = { n: 'wave', t: 0, d: 1.6 }; G.takeMascot('willi'); return; }
+    if (k === 'talk') { say(LINES[li++ % LINES.length], 4600); wAct = { n: 'wave', t: 0, d: 1.6 }; return; }
     wAct = { n: k, t: 0, d: k === 'stretch' ? 2.2 : 3 }; if (k === 'whistle') whistle(true); else if (k === 'dance') { for (let i = 0; i < 8; i++) { note([392, 494, 587, 494][i % 4], .12, 'triangle', .09, i * .2); drum(i % 2 ? 's' : 'k', i * .2); } say('🎞️ „Charleston!“', 1800); } else if (k === 'stretch') { snd('whoosh'); say('🎞️ „Gummi-Arme! Boing!“', 1800); } else say('🎞️ „Hallöchen!“', 1500);
     fx.burst(wp.x, 2.2, wp.z, 10, [[1, 1, 1], [.8, .8, .8]], 3, 1, 26, 3);
   }
@@ -168,7 +169,7 @@ BI.createDampf = function (G) {
   const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
   K.near = function () {
     if (P.veh || P.y > 1.5) return null; if (Math.hypot(P.x - D.x, P.z - D.z) > D.R + 4) return null;
-    if (nr(wp.x, wp.z, 3.2)) return { k: 'wwilli' };
+    if (nr(wp.x, wp.z, 3.2) && save.pet !== 'willi') return { k: 'wwilli' };
     for (const q of BU) if (nr(q.x, q.z, 2.4)) return { k: 'wbucket', i: q.i };
     for (const q of IN) if (nr(q.x, q.z, 2.5)) return { k: 'winst', i: q.i };
     if (nr(W.spots.dampfWheel.x, W.spots.dampfWheel.z + 1, 3.4) || nr(W.spots.dampfBoat.x, W.spots.dampfBoat.z, 3)) return { k: 'wboat' };
@@ -201,7 +202,7 @@ BI.createDampf = function (G) {
   /* ===== Frame-Update (nur in der Nähe) ===== */
   let tk = 0, steamT = 0; const toggle = (on) => { if (K.on === on) return; K.on = on; for (const o of [willi.root, statue.root, wheel, screen, wLabel]) o.visible = on; for (const q of IN) q.g.visible = on; for (const n of NT) n.s.visible = on && !S().notes.includes(n.i); };
   K.update = function (dt, t) {
-    const near = Math.hypot(P.x - D.x, P.z - D.z) < D.R + 40; toggle(near); if (!near) return; const s = S();
+    const near = Math.hypot(P.x - D.x, P.z - D.z) < D.R + 40; toggle(near); if (!near) return; if (save.pet === 'willi') willi.root.visible = wLabel.visible = false; const s = S();
     wheel.rotation.z = (wheel.rotation.z || 0) - dt * (film >= 0 || (wAct && wAct.n === 'whistle') ? 3.2 : .9);
     /* Willi: schaut zum Spieler, Pose nach Aktion */
     const dx = P.x - wp.x, dz = P.z - wp.z, d = Math.hypot(dx, dz); if (d < 9) wFace += BI.angDiff(wFace, Math.atan2(dx, dz)) * Math.min(1, dt * 5); willi.root.rotation.y = wFace;
