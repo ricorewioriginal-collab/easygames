@@ -104,14 +104,15 @@ BI.createDrachen = function (G) {
   const tor = W.spots.drachenTor, disc = new THREE.Mesh(new THREE.CircleGeometry(3.1, 24), new THREE.MeshBasicMaterial({ color: 0x4a4a7a, transparent: true, opacity: .55, side: THREE.DoubleSide })); disc.position.set(tor.x, tor.y + .95, tor.z); scene.add(disc);
   /* ===== Spielleiste für Zündel ===== */
   BI.injectHudCss(); const host = (document.getElementById('mission') || {}).parentNode || document.body, panel = document.createElement('div'); panel.className = 'pPanel'; panel.hidden = true; panel.innerHTML = '<div class="pT">🐲 Zündel – was machen wir?</div><div class="pB"></div>';
-  const OPT = [['talk', '💬', 'Reden'], ['fire', '🔥', 'Feuer!'], ['wing', '🪽', 'Flattern'], ['hug', '🤗', 'Kuscheln'], ['happy', '🎉', 'Freudentanz']];
+  const OPT = [['talk', '💬', 'Reden'], ['fire', '🔥', 'Feuer!'], ['wing', '🪽', 'Flattern'], ['hug', '🤗', 'Kuscheln'], ['happy', '🎉', 'Freudentanz'], ['partner', '🎒', 'Als Partner mitnehmen']];
   for (const [k, ic, tx] of OPT) { const b = document.createElement('button'); b.innerHTML = '<span>' + ic + '</span>' + tx; b.addEventListener('click', e => { e.stopPropagation(); choose(k); }); panel.querySelector('.pB').appendChild(b); }
   { const x = document.createElement('button'); x.className = 'pX'; x.textContent = '✖'; x.addEventListener('click', e => { e.stopPropagation(); panel.hidden = true; }); panel.appendChild(x); } host.appendChild(panel);
   const LINES = ['🐲 „Rrrr! Ich bin Zündel. Mein Feuer ist so warm wie eine Umarmung!“', '🐲 „Sechs Fackeln warten auf meine Flamme. Und sechs Freunde sitzen im Kristall. Hilfst du mir?“', '🐲 „Mit Flügeln kannst du gleiten: Spring und halte den Sprung-Knopf. Probier den Flügel-Ständer!“', '🐲 „Funkelsteine sind rot, grün, blau und golden. Gold ist am wertvollsten!“', '🐲 „Wenn alle Fackeln brennen, öffnet sich das Himmelstor. Dahinter liegt der Drachenflug!“', '🐲 „Ich habe mal einen Pups gemacht, der war so heiß, dass der Kakao gekocht hat. Entschuldigung!“'];
   let li = 0, lastHug = -1e9;
   function breathe(tx, ty, tz, n) { const sx = zs.x + Math.sin(zs.h) * 1.3, sz = zs.z + Math.cos(zs.h) * 1.3; for (let i = 0; i < n; i++) setTimeout(() => { const f = Math.min(1, i / n); fx.emit && fx.emit(sx, 1.7, sz, (tx - sx) * (1.1 + Math.random() * .6), (ty - 1.7) * 1 + Math.random() * 1.2, (tz - sz) * (1.1 + Math.random() * .6), .7, 46, 1, .5 + Math.random() * .4, .2, 0, .9); }, i * 40); drum('s'); snd('whoosh'); }
   function choose(k) {
-    panel.hidden = true; if (k === 'talk') { say(LINES[li++ % LINES.length], 5200); zs.act = { n: 'happy', t: 0, d: 1.4 }; return; }
+    panel.hidden = true; if (k === 'partner') { zs.act = { n: 'happy', t: 0, d: 1.6 }; G.takeMascot('zuendel'); return; }
+    if (k === 'talk') { say(LINES[li++ % LINES.length], 5200); zs.act = { n: 'happy', t: 0, d: 1.4 }; return; }
     if (k === 'fire') { const f = Math.sin(P.h), g = Math.cos(P.h); zs.h = P.h; zs.act = { n: 'fire', t: 0, d: 1.6 }; breathe(zs.x + Math.sin(zs.h) * 6, 2.4, zs.z + Math.cos(zs.h) * 6, 30); say('🔥 „Fauuuch!“', 1500); return; }
     if (k === 'wing') { zs.act = { n: 'fly', t: 0, d: 2.6 }; snd('whoosh'); say('🪽 „Flatter, flatter!“', 1600); return; }
     if (k === 'hug') { zs.act = { n: 'happy', t: 0, d: 2 }; fx.burst(zs.x, 2, zs.z, 12, [[1, .45, .7], [1, .7, .8]], 3, 1.4, 26, -1); say('🤗 „Drachen-Umarmung! So warm!“', 2600); const now = performance.now(); if (now - lastHug > 45000) { lastHug = now; G.addStars(1); say('🤗 +1 ⭐ fürs Kuscheln!', 1600); } return; }
@@ -130,7 +131,7 @@ BI.createDrachen = function (G) {
   const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
   K.near = function () {
     if (P.veh || P.y > 1.8) return null; if (Math.hypot(P.x - D.x, P.z - D.z) > D.R + 4) return null;
-    if (nr(zs.x, zs.z, 3)) return { k: 'dzuendel' };
+    if (nr(zs.x, zs.z, 3) && save.pet !== 'zuendel') return { k: 'dzuendel' };
     for (const f of FK) if (nr(f.q.x, f.q.z, 2.6)) return { k: 'dfackel', i: f.q.i };
     for (const q of KR) if (nr(q.q.x, q.q.z, 2.8)) return { k: 'dfreund', i: q.q.i };
     if (nr(tor.x, tor.z + 2, 3.6)) return { k: 'dtor' };
@@ -155,7 +156,7 @@ BI.createDrachen = function (G) {
   let on = null, windT = 0, ringNext = 0; const toggle = v => { if (on === v) return; on = v; for (const o of [statue.root, zun.root, zs.lab, gemMesh, disc]) o.visible = v; for (const f of FK) f.m.visible = v && !!S().fackeln[f.q.i]; for (const r of RG) r.m.visible = v; for (const w of WD) w.m.visible = v; for (const q of KR) { q.fr.root.visible = v; q.shell.visible = v && !S().freunde[q.q.i]; } };
   const vis = (h, v) => { h.visible = v; };
   K.update = function (dt, t) {
-    const near = Math.hypot(P.x - D.x, P.z - D.z) < D.R + 40; toggle(near); if (!near) return; const s = S(), inIsle = Math.hypot(P.x - D.x, P.z - D.z) < D.R;
+    const near = Math.hypot(P.x - D.x, P.z - D.z) < D.R + 40; toggle(near); if (!near) return; if (save.pet === 'zuendel') zun.root.visible = zs.lab.visible = false; const s = S(), inIsle = Math.hypot(P.x - D.x, P.z - D.z) < D.R;
     /* Zündel: folgt dir auf der Insel, sonst wartet er an der Plaza */
     const tx = inIsle ? P.x - Math.sin(P.h) * 2.4 + Math.cos(P.h) * 1.4 : X(5), tz = inIsle ? P.z - Math.cos(P.h) * 2.4 - Math.sin(P.h) * 1.4 : Z(6), dx = tx - zs.x, dz = tz - zs.z, d = Math.hypot(dx, dz);
     if (zs.act) { zs.act.t += dt; const a = zs.act; zun.set(a.n, t); zun.root.rotation.y = zs.h; if (a.t >= a.d) zs.act = null; }

@@ -189,3 +189,7 @@ Dateien: `js/drachen.js` (Welt, Zündel, Logik), `js/gadgets.js` (Flügel), `js/
 ### 🐕 Fellnasen-Mobil (Fellretter-Bucht)
 
 In der Fellretter-Bucht steht ein fahrbares **Fellnasen-Mobil**: ein blauer Streifenwagen, der aussieht wie Blitz (Hundegesicht mit Schnauze, Schlappohren, Wedelschwanz) und einen dreifarbigen Lichtbalken hat. Mit E einsteigen und fahren; die Sirene (🚨-Knopf) mischt Polizei, Rettungswagen und Feuerwehr, die Hupe bellt. Eigenes Design, keine Originalfahrzeuge.
+
+### 🐾 Haustier-Zuhause und Maskottchen-Partner
+
+Dein Haustier wartet standardmäßig an deiner Wohnung. Mitnehmen ist freiwillig: E beim Tier (oder in der Garderobe unter „🐾 Haustier“ → „Mitnehmen“ / „Zu Hause lassen“). An der eigenen Wohnungstür kannst du es wieder dalassen. Maskottchen aus anderen Welten (Zündel in den Drachenhöhen, Willi im Dampfer-Hafen) wählst du im Gespräch mit „🎒 Als Partner mitnehmen“. Sie begleiten dich dann überall und stehen danach in der Garderobe zur Auswahl.

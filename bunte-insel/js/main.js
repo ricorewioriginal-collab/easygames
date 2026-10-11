@@ -1017,8 +1017,8 @@
   const rainbow = BI.createRainbow({ scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => { kids.earn(id); meta.note(id); } }); rainbow.people(town.folk);
   const pups = BI.createPups({ scene, W, A, fx, P, say, talk: n => talkNpc(n), addStars: n => addStars(n), look: () => charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, ''), earn: id => { kids.earn(id); meta.note(id); } }); pups.people(town.folk);
   const arcade = BI.createArcade({ scene, W, P, start: k => startGame(k, true), info: k => gdef(k) });
-  const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) }); dampf.people(town.folk);
-  const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true) }); drachen.people(town.folk);
+  const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), takeMascot: id => takeMascot(id) }); dampf.people(town.folk);
+  const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true), takeMascot: id => takeMascot(id) }); drachen.people(town.folk);
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
   for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
@@ -1053,6 +1053,7 @@
     if (obby.run && state === 'play' && !P.veh) return { src: 'obby', n: { k: 'quit' } };
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
     const g = garden.near(); if (g) return { src: 'garden', n: g };
+    if (pup.mode === 'home' && pup.d.group.visible && Math.hypot(P.x - pup.x, P.z - pup.z) < 2.6) return { src: 'pethome', n: { k: 'pethome' } };
     if (combat.nearKai()) return { src: 'arena' };
     { const tn = town.near(); if (tn) return { src: 'furn', n: tn }; }
     { const si = nearStation(); if (si >= 0) return { src: 'station', i: si }; }
@@ -1072,12 +1073,13 @@
     { const on = obby.near(); if (on) return { src: 'obby', n: on }; }
     { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
     const an = farm.animalNear(); if (an) return { src: 'animal', a: an };
+    { const hd = flats[mySlot()].door; if (pup.mode !== 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'pethome', n: { k: 'pethome' } }; }
     return null;
   }
   const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
-  function placeLabel(n) { if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
+  function placeLabel(n) { if (n.src === 'pethome') return pup.mode === 'home' ? ['🐾', pup.name + ' mitnehmen'] : ['🏠', pup.name + ' zu Hause lassen']; if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1171,11 +1173,11 @@
     else if (k === 'cannon') { if (onDeck()) { SHIP.cannons.forEach((c, i) => fun.cannon(c, i * .18)); say('💥 Feuer frei!', 1200); } }
     else if (k === 'ahoi') { A.arr(); P.wave = 1.6; pap.wiggle = 1; say('🏴‍☠️ Ahoi, Käpt\'n ' + heroName() + '!', 1800); fx.burst(P.x, 2.6, P.z, 10, [BI.C.gold, BI.C.white, BI.C.red], 3, 1.2, 30, -1); }
     else if (k === 'trick') {
-      if (pup.trick || pup.mode === 'fetch') return; const T = TRICKS[pup.trickIdx % TRICKS.length]; pup.trickIdx++; pup.mode = 'follow'; pup.trick = { name: T[0], t: 0, dur: T[2] }; A.bark(); say('🐶 ' + pup.name + ' macht ' + T[1] + '!', 1600); fx.burst(pup.x, 1.4, pup.z, 6, [BI.C.pink, BI.C.gold], 2, 1, 30, -1);
+      if (pup.mode === 'home') { say('🏠 ' + pup.name + ' ist zu Hause – nimm ihn mit (E beim Tier)!', 2200); return; } if (pup.trick || pup.mode === 'fetch') return; const T = TRICKS[pup.trickIdx % TRICKS.length]; pup.trickIdx++; pup.mode = 'follow'; pup.trick = { name: T[0], t: 0, dur: T[2] }; A.bark(); say('🐶 ' + pup.name + ' macht ' + T[1] + '!', 1600); fx.burst(pup.x, 1.4, pup.z, 6, [BI.C.pink, BI.C.gold], 2, 1, 30, -1);
       if (++pup.tricksDone % TRICKS.length === 0) { addStars(2); A.star(); say('🏅 Trick-Meister! Alle Tricks geschafft! +2 ⭐', 2600); }
     }
     else if (k === 'fetch') {
-      if (pup.mode === 'fetch' || pup.trick) return; let bl = fun.balls[fun.balls.length - 1]; if (!bl) { fun.ball(); bl = fun.balls[fun.balls.length - 1]; }
+      if (pup.mode === 'home') { say('🏠 ' + pup.name + ' ist zu Hause – nimm ihn mit (E beim Tier)!', 2200); return; } if (pup.mode === 'fetch' || pup.trick) return; let bl = fun.balls[fun.balls.length - 1]; if (!bl) { fun.ball(); bl = fun.balls[fun.balls.length - 1]; }
       bl.vx = Math.sin(P.h) * 11; bl.vz = Math.cos(P.h) * 11; bl.vy = 5; bl.cd = .5; pup.fetch = { ball: bl, phase: 'go', t: 0 }; pup.mode = 'fetch'; A.kick(); say('🎾 Hol den Ball, ' + pup.name + '!', 1800);
     }
     else if (k === 'dance') { if (P.veh) { say('🕺 Zum Tanzen erst aussteigen', 1600); return; } if (build.active) return; fun.setDance(!fun.dancing); }
@@ -1184,7 +1186,7 @@
     else if (k === 'xxl') fun.xxl();
     else if (k === 'bark') { pup.bark = .6; A.bark(); say('🐶 Wuff!', 900); fx.burst(pup.x, 1.4, pup.z, 5, [BI.C.pink, BI.C.gold], 2, 1, 32, -1); for (const n of npcs) if (Math.hypot(n.x - pup.x, n.z - pup.z) < 12) { n.hop = .6; n.wave = 2; } }
     else if (k === 'search') {
-      if (pup.trick || pup.mode === 'fetch') return;
+      if (pup.mode === 'home') { say('🏠 ' + pup.name + ' ist zu Hause – nimm ihn mit (E beim Tier)!', 2200); return; } if (pup.trick || pup.mode === 'fetch') return;
       if (pup.cd > 0) { say('🐶 ' + pup.name + ' verschnauft kurz …', 1200); return; }
       const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; let best = null, bd = 1e9; for (const s of stars) if (s.on) { const d = Math.hypot(s.x - px, s.z - pz); if (d < bd) { bd = d; best = s; } }
       if (best) { pup.star = best; pup.mode = 'search'; A.bark(); pup.bark = .3; say('🐶 ' + pup.name + ', such den Stern! 🔎', 1800); }
@@ -1347,7 +1349,8 @@
     // Reiter 10: Haustier
     { const p = panel(); lab(p, '🐾 Mein Haustier'); const r = document.createElement('div'); r.className = 'row pets'; p.appendChild(r); const bs = [];
       BI.PETS.forEach(pt => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = pt.icon + ' ' + pt.name; b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
-      syncs.push(() => bs.forEach((b, i) => b.classList.toggle('sel', BI.PETS[i].id === save.pet))); }
+      const hb = document.createElement('button'); hb.className = 'pill'; hb.onclick = () => { setPetHome(pup.mode !== 'home'); refreshPickers(); }; r.appendChild(hb);
+      syncs.push(() => { bs.forEach((b, i) => { const q = BI.PETS[i]; b.hidden = !!q.mascot && !(save.mascots || []).includes(q.id); b.classList.toggle('sel', q.id === save.pet); }); hb.textContent = save.petHome !== false ? '🐾 Mitnehmen' : '🏠 Zu Hause lassen'; }); }
     const TABS = ['🧑‍🤝‍🧑 Figuren', '🧍 Körper', '😀 Gesicht', '👀 Augen', '💇 Haare', '🧔 Bart', '👕 Kleidung', '👟 Schuhe', '💍 Zubehör', '🎩 Hüte', '🐾 Haustier'], tbs = []; let cur = 0;
     function showTab(i) { cur = i; panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); }
     TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; b.textContent = t; b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
@@ -1495,10 +1498,26 @@
     }
     hitCool -= dt;
   }
+  /* Haustier-Zuhause: das Tier wartet standardmäßig an der eigenen Wohnung; mitnehmen (E am Tier) ist freiwillig. Maskottchen anderer Welten lassen sich als festen Partner mitnehmen. */
+  const petHomeSpot = () => { const f = flats[mySlot()]; return { x: f.door.x + 1.8, z: f.door.z + 2.6 }; };
+  function setPetHome(on) {
+    fx.burst(pup.x, .8, pup.z, 10, [BI.C.white, BI.C.gold], 3, .8, 30, 2); save.petHome = on; persist(); A.pop();
+    if (!on) { pup.mode = 'follow'; pup.x = P.x + 1.5; pup.z = P.z + 1; fx.burst(pup.x, .8, pup.z, 10, [BI.C.white, BI.C.pink], 3, .8, 30, 2); }
+    say(on ? '🏠 ' + pup.name + ' bleibt zu Hause und wartet auf dich.' : '🐾 ' + pup.name + ' kommt mit dir!', 2400);
+  }
+  function takeMascot(id) {
+    const def = BI.PETS.find(q => q.id === id); if (!def) return; const m = save.mascots || (save.mascots = []); if (!m.includes(id)) m.push(id);
+    const old = pup.name; setPet(id); save.petHome = false; pup.mode = 'follow'; pup.x = P.x + 1.5; pup.z = P.z + 1; persist(); A.star(); fx.burst(pup.x, 1, pup.z, 16, [BI.C.gold, BI.C.white, BI.C.pink], 4, 1, 28, 2);
+    say('🎒 ' + def.name + ' ist jetzt dein Partner und kommt überall mit! ' + old + ' wartet in der Garderobe (🐾 Haustier).', 5200);
+  }
   function updatePup(dt) {
     const dv = P.veh && !P.veh.spec.remote ? P.veh : null;
     const px = dv ? dv.x : P.x, pz = dv ? dv.z : P.z, ph = dv ? dv.h : P.h; let tx, tz, sp = 0;
     pup.cd = Math.max(0, pup.cd - dt); pup.bark = Math.max(0, pup.bark - dt);
+    const hs = save.petHome !== false ? petHomeSpot() : null;
+    if (hs) { if (pup.mode !== 'home') { pup.mode = 'home'; pup.fetch = null; pup.star = null; pup.trick = null; pup.x = hs.x; pup.z = hs.z; } if (Math.hypot(P.x - hs.x, P.z - hs.z) > 90) { pup.d.group.visible = false; return; } }
+    else if (pup.mode === 'home') pup.mode = 'follow';
+    pup.d.group.visible = true;
     if (pup.trick) {
       pup.trick.t += dt; pup.h += BI.angDiff(pup.h, Math.atan2(px - pup.x, pz - pup.z)) * Math.min(1, dt * 5);
       if (pup.trick.t >= pup.trick.dur) { pup.trick = null; pup.d.reset(); }
