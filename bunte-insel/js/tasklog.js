@@ -39,6 +39,7 @@ BI.renderTaskLog = function (box, D) {
         if (act) { m.steps.forEach((s, i) => { const done = i < E.state.cur.step; d.appendChild(row(done, '  ' + s.icon, s.text, BI.TASKLOG_DEST[s.at], i === E.state.cur.step)); }); d.appendChild(row(false, '  🚨', 'Bericht an der Einsatz-Tafel (Fellretter-Bucht)', 'pups', E.state.cur.step >= m.steps.length)); } } }); }
   /* ===== 📦 Aufträge ===== */
   sec('📦 Aufträge mit Fahrzeugen', '', !!D.mission, d => { if (D.mission) d.appendChild(row(false, D.mission.icon, D.mission.title + (D.mission.n ? ' – Schritt ' + D.mission.i + ' von ' + D.mission.n : ''), null, true)); else d.appendChild(el('p', 'help', 'Steig in ein Fahrzeug – die Leute auf der Insel fragen dich, ob du einen Auftrag annehmen willst. Dann „Ja“ sagen!')); });
+  for (const x of D.extras || []) sec(x.title, x.count, false, d => x.rows.forEach(r => d.appendChild(row(r.ok, r.icon, r.text, r.dest))));
   /* ===== 🎁 Tagesgeschenk ===== */
   if (D.daily) sec('🎁 Tagesgeschenk', '', false, d => d.appendChild(el('div', 'lgDay', (D.daily.today ? '✅ Heute schon abgeholt' : '⬜ Heute noch nicht abgeholt') + ' · ' + D.daily.streak + (D.daily.streak === 1 ? ' Tag' : ' Tage') + ' in Folge')));
 };

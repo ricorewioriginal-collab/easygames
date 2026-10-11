@@ -38,6 +38,9 @@ BI.THEMES = {
   /* Fellretter-Bucht: heldenhafter Marsch mit Trompeten */
   fellretter: { name: 'Fellretter-Marsch', bpm: 118, chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'C'], pad: { type: 'sawtooth', vol: .014 }, bass: { pat: 'x...5...x...5...', type: 'triangle', vol: .09, len: 2 },
     drums: { k: 'x.......x.......', kv: .1, s: 'x.x.x.x.x.x.x.xx', sv: .03, h: '..x...x...x...x.', hv: .012 }, lead: { type: 'square', vol: .03, len: 2.2, bell: true, notes: 'G4 . . . C5 . . . E5 . . . G5 . . .  G5 . F5 . D5 . . . B4 . . . D5 . . .  E5 . . . A5 . . . C6 . . . A5 . . .  A5 . G5 . F5 . . . C5 . . . F5 . . .  E5 . . G5 . . C6 . . . B5 . A5 . . .  G5 . . . D5 . . . G5 . . . B5 . . .  A5 . . A5 . . G5 . . . F5 . . . . .  G5 . . . G5 . . . C6 . . . . . . .' } },
+  /* Dampfer-Hafen: Ragtime der 1920er (eigene Melodie, Klavier-Stil mit Oompah-Bass) */
+  dampfer: { name: 'Dampfer-Ragtime', bpm: 138, swing: .22, chords: ['C', 'C', 'E7', 'E7', 'A7', 'A7', 'D7', 'G7'], bass: { pat: 'x...5...x...5...', type: 'triangle', vol: .1, len: 2 }, arp: { pat: '..*...*...*...*.', type: 'triangle', vol: .03, len: 1.2 },
+    drums: { k: 'x.......x.......', kv: .05, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'triangle', vol: .075, len: 1.8, bell: true, notes: 'E5 . G5 . E5 . C5 . . G4 . C5 . E5 . .  G5 . . E5 . C5 . . A4 . C5 . E5 . . .  G#4 . B4 . D5 . B4 . G#4 . E4 . B4 . . .  E5 . D5 . B4 . G#4 . . B4 . D5 . E5 . .  A4 . C#5 . E5 . C#5 . A4 . G4 . E4 . . .  C#5 . E5 . G5 . E5 . . C#5 . A4 . C#5 . .  D5 . F#5 . A5 . F#5 . D5 . C5 . A4 . F#4 .  B4 . D5 . G5 . F5 . D5 . B4 . G4 . . .' } },
   /* Himmels-Parcours: Chiptune */
   obby: { name: 'Himmels-Sprung', bpm: 142, chords: ['C', 'F', 'G', 'C'], bass: { pat: 'x.x.5.x.x.x.5.x.', type: 'triangle', vol: .08, len: 1.2 },
     drums: { k: 'x...x...x...x...', kv: .07, s: '....x.......x...', sv: .035, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'square', vol: .03, len: 1.4, notes: 'C5 E5 G5 E5 C5 E5 G5 E5 C5 E5 G5 C6 . . . .  A4 C5 F5 C5 A4 C5 F5 C5 A4 C5 F5 A5 . . . .  B4 D5 G5 D5 B4 D5 G5 D5 B4 D5 G5 B5 . . . .  C5 E5 G5 E5 C5 E5 G5 E5 G5 . E5 . C5 . . .' } },
@@ -57,6 +60,7 @@ BI.zoneAt = function (x, z, flags) {
   if (d(R.x - 27, R.z) < 20) return 'buehne';
   if (d(R.x, R.z) < R.R + 8) return 'regenbogen';
   if (d(BI.PUPS.x, BI.PUPS.z) < BI.PUPS.R + 8) return 'fellretter';
+  if (d(BI.DAMPF.x, BI.DAMPF.z) < BI.DAMPF.R + 8) return 'dampfer';
   if (d(K.x, K.z) < K.R + 8) return 'park';
   if (d(C.x, C.z) < C.R + 8) return 'stadt';
   if (x > 30 && x < 76 && z > 124 && z < 152) return 'pool';
@@ -71,6 +75,6 @@ BI.zoneAt = function (x, z, flags) {
 
 /* In welcher Welt (Insel) ist dieser Punkt? 'insel' (Hauptinsel mit Camp, Freibad, Hof …), 'stadt', 'park', 'regenbogen', 'bucht' */
 BI.worldAt = function (x, z) {
-  const d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, F = BI.PUPS;
-  if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
+  const d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, F = BI.PUPS, DM = BI.DAMPF;
+  if (d(DM.x, DM.z) < DM.R + 12) return 'dampf'; if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
 };
