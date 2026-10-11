@@ -749,6 +749,40 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ctx.close();
 }
 
+/* ---------- 10. Politur: Wetter, Ton, Leistungswächter ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  s = await ev(page, () => { const k = []; for (let d = 1; d <= 80; d++) k.push(GL.weather.kind(d)); return { all: ['sun', 'cloud', 'rain', 'fog'].every(x => k.includes(x)), same: k.every((x, i) => x === GL.weather.kind(i + 1)), sun: k.filter(x => x === 'sun').length }; });
+  ok(s.all && s.same && s.sun > 20 && s.sun < 55, 'Wetter: alle vier Arten, pro Tag fest, Sonne häufigste Art ' + JSON.stringify(s));
+  const mood = async k => ev(page, kk => { GL.weather.force(kk); return GL.life.mood(); }, k);
+  await ev(page, () => { GL.S.life.needs.energy = 60; GL.S.life.needs.hunger = 60; GL.S.life.needs.hygiene = 60; GL.S.life.needs.social = 60; GL.S.life.needs.stress = 40; GL.S.life.boost = 0; });
+  const ms = await mood('sun'), mr = await mood('rain'), mc = await mood('cloud');
+  ok(Math.round(ms - mc) === 2 && Math.round(mc - mr) === 3, `Laune draußen: Sonne +2, Regen −3 (${ms.toFixed(1)} / ${mc.toFixed(1)} / ${mr.toFixed(1)})`);
+  await ev(page, () => GL.weather.force('rain')); await page.waitForTimeout(700);
+  s = await ev(page, () => { const W = GL.W, r = W.scene.children.find(o => o.type === 'LineSegments' && o.material.color.getHex() === 0xaec6e8); return { rain: !!r && r.visible, n: W.scene.fog.near, base: W.fogN, snd: GL.audio.state().rain }; });
+  ok(s.rain && s.n < s.base * .6, `Regen: Tropfen sichtbar, Nebelgrenze näher (${s.n.toFixed(0)} statt ${s.base})`);
+  ok(s.snd === true, 'Regen: Rauschen läuft draußen');
+  await ev(page, () => GL.home.enter()); await waitFade(page); await page.waitForTimeout(500);
+  s = await ev(page, () => { const W = GL.W, r = W.scene.children.find(o => o.type === 'LineSegments' && o.material.color.getHex() === 0xaec6e8); return { rain: !!r && r.visible, n: W.scene.fog.near, base: W.fogN, snd: GL.audio.state().rain, b: GL.weather.bonus() }; });
+  ok(!s.rain && s.n === s.base && !s.snd && s.b === 0, 'Drinnen: kein Regen, kein Rauschen, keine Stimmung vom Wetter');
+  await ev(page, () => { GL.W.player.x = GL.home.O.x; GL.home.leave && GL.home.leave(true); }); await waitFade(page).catch(() => {});
+  await ev(page, () => GL.weather.force('sun')); await page.waitForTimeout(500);
+  ok(await ev(page, () => { const r = GL.W.scene.children.find(o => o.type === 'LineSegments' && o.material.color.getHex() === 0xaec6e8); return !r || !r.visible; }), 'Sonne: Regen wieder weg');
+  ok(await ev(page, () => { GL.phone.open('weather'); const t = document.querySelector('#phone .pbody').textContent; GL.phone.close(); return /Heute/.test(t) && /Sonnig/.test(t); }), 'Handy-App Wetter zeigt heute und die nächsten Tage');
+  // Ton: Club-Musik läuft nur beim Tanzen
+  await ev(page, () => { GL.S.sound = true; GL.S.world.t = 16 / 24; GL.S.life.needs.energy = 90; GL.S.life.money = 300; GL.night.dance(); }); await page.waitForTimeout(900);
+  s = await ev(page, () => GL.audio.state()); ok(s.music && s.steps > 2, 'Club-Musik läuft beim Tanzen (' + s.steps + ' Schläge geplant)');
+  await ev(page, () => GL.ui.close()); await page.waitForTimeout(300);
+  ok(!(await ev(page, () => GL.audio.state().music)), 'Musik stoppt, wenn das Tanz-Menü geschlossen wird');
+  await ev(page, () => { GL.S.sound = false; GL.emit('muted'); }); ok(!(await ev(page, () => GL.audio.state().music || GL.audio.state().rain)), 'Ton aus: nichts läuft');
+  // Leistungswächter
+  s = await ev(page, () => { GL.S.settings.q = -1; GL.perfCap = undefined; GL.perf.cap = 2; GL.perf.low = 0; const a = GL.perf.judge(10), b = GL.perf.judge(10), cap = GL.perf.cap, ok1 = GL.perfCap; GL.S.settings.q = 2; GL.perf.low = 0; const c = GL.perf.judge(5), d = GL.perf.judge(5); return { a, b, cap, ok1, c, d, cap2: GL.perf.cap }; });
+  ok(!s.a && s.b && s.cap === 1 && s.ok1 === 1 && !s.c && !s.d && s.cap2 === 1, 'Leistungswächter senkt im Auto-Modus nach zwei schwachen Messungen, bei fester Qualität nicht ' + JSON.stringify(s));
+  await ev(page, () => { GL.S.settings.q = -1; GL.perfCap = undefined; GL.perf.cap = 2; });
+  await ctx.close();
+}
+
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));
 await browser.close();
 console.log(fails ? `\n${fails} Prüfung(en) fehlgeschlagen` : '\nAlle Prüfungen bestanden');
