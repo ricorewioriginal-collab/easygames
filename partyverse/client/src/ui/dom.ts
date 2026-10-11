@@ -8,6 +8,7 @@ export interface Attrs {
   value?: string;
   placeholder?: string;
   disabled?: boolean;
+  readonly?: boolean;
   min?: number;
   max?: number;
   step?: number;

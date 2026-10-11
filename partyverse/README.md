@@ -5,14 +5,14 @@ Ein 3D-Browser-Partyspiel im Stil klassischer Brett-Party-Spiele – **vollstän
 - **5 Welten × 10 Bretter = 50 Layouts** (PRISMARA, NOVA NEXUS, WURZELWILD, PARADOX CITY, INFINITY CARNIVAL), alle aus Daten von einer gemeinsamen Brett-Engine geladen und beim Test auf Struktur und Erreichbarkeit geprüft
 - **22 Minispiele** mit gemeinsamem Rahmen (Anleitung, Countdown, Ergebnis, faire Belohnung)
 - **8 Figuren** mit Animationen und Kosmetik (Hüte, Spuren, Würfel-Skins)
-- **Modi:** gegen Bots (3 Stufen), lokal auf einem Gerät (Hot-Seat, 2–4 Spieler), online per Colyseus (Raumcode, öffentliche Räume, Lobby, Wiederverbindung)
+- **Modi:** gegen Bots (3 Stufen), lokal auf einem Gerät (Hot-Seat, 2–4 Spieler), **online ohne Server per QR-Code oder Text-Code** (WebRTC-Direktverbindung, läuft von GitHub Pages) und optional online über einen Colyseus-Spielserver (Raumcode, öffentliche Räume, Wiederverbindung)
 - Desktop (Maus/Tastatur) und Handy/Tablet (Touch, Hoch- und Querformat)
 - Deutsche Oberfläche (vorbereitet für weitere Sprachen), Barrierefreiheits-Optionen, adaptive Grafikqualität
 - Musik und Soundeffekte werden zur Laufzeit selbst erzeugt (Web Audio), Spielstand lokal im Browser
 
 ## Spielen
 
-Gebaut liegt das Spiel unter `partyverse/app/` (GitHub Pages: `…/easygames/partyverse/`). Lokale Partien brauchen **keinen Server**. Der Online-Modus braucht einen eigenen Spielserver – siehe [docs/server.md](docs/server.md). **GitHub Pages kann keinen Spielserver hosten.**
+Gebaut liegt das Spiel unter `partyverse/app/` (GitHub Pages: `…/easygames/partyverse/`). Lokale Partien und **Online mit Freunden per QR-Code/Text-Code** brauchen **keinen Server** – siehe [docs/p2p.md](docs/p2p.md). Nur der optionale Raumcode-Modus braucht einen eigenen Spielserver ([docs/server.md](docs/server.md)); GitHub Pages kann keinen Spielserver hosten.
 
 ## Entwicklung
 
@@ -72,7 +72,7 @@ partyverse/
   server/src/           # Colyseus-Raum (PartyRoom), Lobby-Schema, Zeitgeber
   client/src/
     app/                #   App-Wurzel, Speicher (versioniert), Erfolge, Theme
-    net/                #   Session-Schnittstelle: LocalSession (Bots/Hot-Seat) und OnlineSession (Colyseus)
+    net/                #   Session-Schnittstelle: LocalSession (Bots/Hot-Seat), HostSession/GuestSession (WebRTC, ohne Server), OnlineSession (Colyseus), Verbindungs-Codes (signal.ts)
     game/               #   Spielablauf: Brett-Bühne, Kamera, Würfel, HUD, Minispiel-Ablauf, Siegerehrung
     render/             #   Engine (adaptive Qualität), Materialien, Figuren, Welten + Brett-Darstellung
     minigames/          #   Minispiel-Bühne und 22 Ansichten (Three.js)
@@ -87,17 +87,18 @@ partyverse/
 
 - [Alle 50 Bretter](docs/levels.md)
 - [Alle 22 Minispiele](docs/minigames.md)
-- [Server betreiben](docs/server.md)
+- [Online ohne Server (QR/Code)](docs/p2p.md)
+- [Spielserver betreiben (optional)](docs/server.md)
 - [Mehrsprachigkeit](docs/i18n.md)
 - [Drittanbieter-Lizenzen](THIRD_PARTY.md)
 
 ## Veröffentlichen (GitHub Pages)
 
-`npm run build` schreibt das Spiel nach `partyverse/app/` mit relativer Basis-URL (`./`); die Datei `partyverse/index.html` leitet dorthin. Pages liefert nur diese statischen Dateien aus. Für Online-Partien muss ein Spielserver separat laufen und per `wss://` erreichbar sein (Serveradresse in den Optionen oder beim Bauen als `VITE_SERVER_URL`). Es gibt keine Geheimnisse im Client.
+`npm run build` schreibt das Spiel nach `partyverse/app/` mit relativer Basis-URL (`./`); die Datei `partyverse/index.html` leitet dorthin. Pages liefert nur diese statischen Dateien aus. Online mit Freunden (QR/Text-Code) funktioniert direkt von Pages. Nur für den Raumcode-Modus muss ein Spielserver separat laufen und per `wss://` erreichbar sein (Serveradresse in den Optionen oder beim Bauen als `VITE_SERVER_URL`). Es gibt keine Geheimnisse im Client.
 
 ## Bekannte Grenzen
 
 - Musik und Klänge wurden nur strukturell getestet (keine Hörprobe in der Entwicklungsumgebung); Pegel können Feinschliff brauchen.
 - Bildschirmfotos und Abläufe wurden mit Software-Rendering geprüft; die Leistung auf echten Geräten ist nicht gemessen. Die Grafikqualität senkt sich bei niedriger Bildrate selbst ab.
-- Ein echter Mehrgeräte-Test des Online-Modus im Browser fand nicht statt; die Server-Integrationstests spielen komplette Partien über echte WebSocket-Verbindungen.
+- Online ohne Server wurde mit zwei Browser-Seiten bis zum Finale getestet (lokales Netz, ohne STUN); Tests mit zwei echten Geräten und über verschiedene Netze (STUN/NAT) fanden nicht statt. Strenge Netze können Direktverbindungen verhindern (kein TURN). Der Server-Modus ist über echte WebSocket-Verbindungen getestet, aber nicht zwischen echten Geräten.
 - Einige Texte (Optionen, Anleitung, Spieldaten) stehen direkt auf Deutsch im Code und sind noch nicht übersetzbar.

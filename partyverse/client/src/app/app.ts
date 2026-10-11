@@ -14,7 +14,7 @@ export interface ScreenView {
   dispose?(): void;
 }
 
-export type RouteName = 'menu' | 'setup' | 'online' | 'options' | 'credits' | 'rules' | 'cosmetics' | 'achievements';
+export type RouteName = 'menu' | 'setup' | 'p2p' | 'online' | 'options' | 'credits' | 'rules' | 'cosmetics' | 'achievements';
 export interface RouteParams {
   mode?: 'hotseat' | 'bots';
   back?: RouteName;
@@ -24,6 +24,7 @@ export type RouteModule = { create(app: App, params?: RouteParams): ScreenView |
 const ROUTES: Record<RouteName, () => Promise<RouteModule>> = {
   menu: () => import('../ui/mainMenu'),
   setup: () => import('../ui/setup'),
+  p2p: () => import('../ui/p2p'),
   online: () => import('../ui/online'),
   options: () => import('../ui/screens/options'),
   credits: () => import('../ui/screens/credits'),

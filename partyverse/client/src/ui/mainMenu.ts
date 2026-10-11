@@ -28,6 +28,7 @@ export function create(app: App, _params?: RouteParams): ScreenView {
       { class: 'menu' },
       btn(t('menu.bots'), () => void app.go('setup', { mode: 'bots' }), 'hot big'),
       btn(t('menu.hotseat'), () => void app.go('setup', { mode: 'hotseat' })),
+      btn(t('menu.p2p'), () => void app.go('p2p'), 'good'),
       btn(online ? t('menu.online') : t('menu.onlineOff'), () => void app.go('online')),
       h(
         'div',

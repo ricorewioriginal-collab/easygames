@@ -55,12 +55,14 @@ const isObj = (v: unknown): v is Record<string, unknown> =>
 /** Bereinigt einen Anzeigenamen (Steuerzeichen entfernen, kürzen). Gibt '' zurück, wenn nichts übrig bleibt. */
 export function cleanName(v: unknown): string {
   if (typeof v !== 'string') return '';
-  return v
-    // eslint-disable-next-line no-control-regex
-    .replace(/[\u0000-\u001f\u007f<>&"]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, MAX_NAME);
+  return (
+    v
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001f\u007f<>&"]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, MAX_NAME)
+  );
 }
 
 /** Prüft und normalisiert eine Client-Nachricht. Gibt null zurück, wenn sie ungültig ist. */

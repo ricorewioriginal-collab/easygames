@@ -15,6 +15,8 @@ export const LIBRARIES: ReadonlyArray<{ name: string; version: string; license: 
     use: 'WebSocket-Transport des Servers',
   },
   { name: 'express', version: '4.21.2', license: 'MIT', use: 'HTTP-Server' },
+  { name: 'qrcode-generator', version: '1.4.4', license: 'MIT', use: 'QR-Codes zeichnen' },
+  { name: 'jsqr', version: '1.4.0', license: 'Apache-2.0', use: 'QR-Codes per Kamera lesen' },
   { name: 'vite', version: '5.4.21', license: 'MIT', use: 'Entwicklung und Build' },
   { name: 'typescript', version: '5.6.3', license: 'Apache-2.0', use: 'Programmiersprache und Typprüfung' },
   { name: 'vitest', version: '2.1.9', license: 'MIT', use: 'Tests' },

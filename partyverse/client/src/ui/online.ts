@@ -1,12 +1,11 @@
-import type { Difficulty } from '@shared/core/types';
-import { CHARACTERS, type CharacterId } from '@shared/characters';
+import type { CharacterId } from '@shared/characters';
 import { cleanName } from '@shared/net/protocol';
 import type { App, RouteParams, ScreenView } from '../app/app';
-import { OnlineClient, OnlineError, type LobbyView, type PublicRoom } from '../net/online';
-import { PLAYER_SYMBOLS } from '../app/theme';
+import { OnlineClient, OnlineError, type PublicRoom } from '../net/online';
 import { t } from '../i18n';
 import { btn, clear, h, toast } from './dom';
-import { characterPicker, layoutPicker } from './pickers';
+import { characterPicker } from './pickers';
+import { LobbyPanel, copyText } from './lobbyPanel';
 
 /** Online-Mehrspieler: Raum erstellen/beitreten, Lobby mit Figurenwahl, Bereit-Status und Hostsicht */
 export function create(app: App, _params?: RouteParams): ScreenView {
@@ -164,152 +163,35 @@ export function create(app: App, _params?: RouteParams): ScreenView {
   const showLobby = (client: OnlineClient): void => {
     if (refreshTimer) clearInterval(refreshTimer);
     refreshTimer = null;
-    const view = h('div', { class: 'panel wide' });
-    clear(root);
-    root.appendChild(view);
-    let picker: ReturnType<typeof layoutPicker> | null = null;
-    let lastLayout = '';
-    let roundsOut: HTMLElement | null = null;
-    const render = (v: LobbyView): void => {
-      const me =
-        v.slots.find((s) => s.id === v.meId) ?? v.slots.find((s) => s.name === app.store.data.profile.name);
-      const isHost = !!me?.host;
-      clear(view);
-      const slots = h('div', { class: 'plist' });
-      v.slots.forEach((s, i) => {
-        const cdef = CHARACTERS.find((c) => c.id === s.character);
-        slots.appendChild(
-          h(
-            'div',
-            { class: `prow pc${(i % 4) + 1}` },
-            h('div', { class: 'sym' }, PLAYER_SYMBOLS[i % 4]),
-            h(
-              'div',
-              { class: 'cfg' },
-              h(
-                'b',
-                null,
-                s.name,
-                s.host ? ' 👑' : '',
-                s.kind === 'bot' ? ` 🤖 (${t('diff.' + s.difficulty)})` : '',
-                !s.connected ? ' ⚠' : '',
-              ),
-              h('small', null, cdef ? `${cdef.name} – ${cdef.species}` : s.character),
-            ),
-            s.kind === 'bot' && isHost
-              ? btn('✕', () => client.send({ type: 'lobby:removeBot', playerId: s.id }), 'ghost', {
-                  'aria-label': t('setup.remove'),
-                })
-              : h('span', { class: 'badge' }, s.ready || s.host ? t('lobby.ready') : t('lobby.waiting')),
-          ),
-        );
-      });
-      const taken = v.slots.filter((s) => s.id !== me?.id).map((s) => s.character);
-      const chars = characterPicker(
-        (me?.character ?? 'pip') as CharacterId,
-        () => taken,
-        (c) => client.send({ type: 'lobby:profile', character: c }),
-      );
-      const everyoneReady = v.slots.every((s) => s.ready || s.host || s.kind === 'bot');
-      const cfg = h('div');
-      if (isHost) {
-        if (!picker || lastLayout === '') {
-          picker = layoutPicker(v.layoutId, (id) => client.send({ type: 'lobby:config', layoutId: id }));
-        }
-        lastLayout = v.layoutId;
-        picker.set(v.layoutId);
-        roundsOut = h('b', null, String(v.rounds));
-        cfg.append(
-          picker.el,
-          h('h3', null, t('setup.rounds')),
-          h(
-            'div',
-            { class: 'stepper' },
-            btn('−', () => client.send({ type: 'lobby:config', rounds: Math.max(3, v.rounds - 1) }), 'ghost'),
-            roundsOut,
-            btn(
-              '+',
-              () => client.send({ type: 'lobby:config', rounds: Math.min(30, v.rounds + 1) }),
-              'ghost',
-            ),
-          ),
-          h(
-            'div',
-            { class: 'chips', style: 'margin-top:8px' },
-            ...(['easy', 'normal', 'hard'] as Difficulty[]).map((d) =>
-              btn(
-                `+ 🤖 ${t('diff.' + d)}`,
-                () => client.send({ type: 'lobby:addBot', difficulty: d }),
-                'ghost',
-                { disabled: v.slots.length >= 4 },
-              ),
-            ),
-          ),
-        );
-      } else cfg.append(h('p', null, t('lobby.hostConfig', { layout: v.layoutId, rounds: v.rounds })));
-      view.append(
-        h(
-          'div',
-          { class: 'head' },
-          h('h2', null, t('lobby.title')),
-          btn(
-            '← ' + t('lobby.leave'),
-            () => {
-              client.leave();
-              app.online = null;
-              void showHome();
-            },
-            'ghost back',
-          ),
-        ),
+    const panel = new LobbyPanel(
+      {
+        setCharacter: (c) => client.send({ type: 'lobby:profile', character: c }),
+        ready: (r) => client.send({ type: 'lobby:ready', ready: r }),
+        config: (c) => client.send({ type: 'lobby:config', ...c }),
+        addBot: (d) => client.send({ type: 'lobby:addBot', difficulty: d }),
+        remove: (id) => client.send({ type: 'lobby:removeBot', playerId: id }),
+        start: () => client.send({ type: 'lobby:start' }),
+        leave: () => {
+          client.leave();
+          app.online = null;
+          void showHome();
+        },
+      },
+      () => [
         h(
           'div',
           { class: 'codebox' },
           h('small', null, t('lobby.code')),
-          h('b', { class: 'code' }, v.code),
-          btn(
-            t('lobby.copy'),
-            () => {
-              void navigator.clipboard
-                ?.writeText(v.code)
-                .then(() => toast(t('lobby.copied'), 'good'))
-                .catch(() => toast(v.code));
-            },
-            'ghost',
-          ),
+          h('b', { class: 'code' }, client.lobby()?.code ?? ''),
+          btn(t('lobby.copy'), () => copyText(client.lobby()?.code ?? ''), 'ghost'),
         ),
-        h(
-          'div',
-          { class: 'two' },
-          h(
-            'div',
-            null,
-            h('h3', null, t('setup.players')),
-            slots,
-            h('h3', null, t('lobby.yourFigure')),
-            chars,
-          ),
-          h('div', null, h('h3', null, t('setup.board')), cfg),
-        ),
-        h(
-          'div',
-          { style: 'text-align:right;margin-top:10px' },
-          isHost
-            ? btn(t('lobby.start'), () => client.send({ type: 'lobby:start' }), 'hot big', {
-                disabled: v.slots.length < 2 || !everyoneReady,
-              })
-            : btn(
-                me?.ready ? t('lobby.notReady') : t('lobby.imReady'),
-                () => client.send({ type: 'lobby:ready', ready: !me?.ready }),
-                me?.ready ? 'ghost' : 'good big',
-              ),
-        ),
-        ...(isHost && !everyoneReady ? [h('p', null, t('lobby.waitAll'))] : []),
-      );
-    };
+      ],
+    );
+    clear(root);
+    root.appendChild(panel.el);
     offs.push(
       client.onLobby((v) => {
-        if (v.phase === 'lobby') render(v);
+        if (v.phase === 'lobby') panel.update(v);
       }),
     );
     offs.push(client.onMessage((k, text) => toast(text, k === 'error' ? 'error' : 'info')));
@@ -327,7 +209,7 @@ export function create(app: App, _params?: RouteParams): ScreenView {
       }),
     );
     const v = client.lobby();
-    if (v) render(v);
+    if (v) panel.update(v);
   };
 
   void (async () => {

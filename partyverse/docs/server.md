@@ -1,6 +1,8 @@
 # PARTYVERSE – Spielserver (Online-Modus)
 
-Der Online-Modus braucht einen **eigenen Colyseus-Server** (Node.js). **GitHub Pages kann keinen solchen Server hosten**: Pages liefert nur statische Dateien aus und erlaubt keine laufenden Prozesse oder WebSocket-Verbindungen. Die Webseite (Client) und der Spielserver sind deshalb getrennt:
+> **Hinweis:** Online-Partien mit Freunden gehen auch **ganz ohne Server** per QR-Code oder Text-Code (Direktverbindung, siehe [p2p.md](p2p.md)). Dieser Server ist nur für den optionalen Raumcode-Modus mit öffentlichen Räumen, Wiederverbindung und manipulationssicheren Partien nötig.
+
+Der Server-Modus braucht einen **eigenen Colyseus-Server** (Node.js). **GitHub Pages kann keinen solchen Server hosten**: Pages liefert nur statische Dateien aus und erlaubt keine laufenden Prozesse oder WebSocket-Verbindungen. Die Webseite (Client) und der Spielserver sind deshalb getrennt:
 
 | Teil   | Wo                                                                | Was                                                  |
 | ------ | ----------------------------------------------------------------- | ---------------------------------------------------- |

@@ -703,7 +703,7 @@ export class GameScreen {
   private openPause(): void {
     if (this.paused || this.finaleStage) return;
     this.paused = true;
-    const online = this.session.kind === 'online';
+    const online = this.session.kind === 'online' || this.session.shared === true;
     if (!online) {
       this.app.engine.stop();
       this.session.setBusy(true);
@@ -745,7 +745,7 @@ export class GameScreen {
     if (!this.paused) return;
     this.paused = false;
     clear(this.overlay);
-    if (this.session.kind === 'local') {
+    if (this.session.kind === 'local' && !this.session.shared) {
       this.app.engine.start();
       this.session.setBusy(this.pumping);
     }
@@ -865,7 +865,10 @@ export class GameScreen {
     this.app.engine.setScreen(fs);
     this.app.audio.music('finale');
     clear(this.overlay);
-    const again = this.session instanceof LocalSession ? (): void => void this.restartLocal() : null;
+    const again =
+      this.session instanceof LocalSession && this.session.canRestart
+        ? (): void => void this.restartLocal()
+        : null;
     const ov = finaleOverlay(s, this.session.players, fs, (n) => this.app.audio.sfx(n), {
       again,
       menu: () => void this.app.toMenu(),
@@ -891,7 +894,7 @@ export class GameScreen {
           layoutId: this.layout.id,
           world,
           won: rank === 0,
-          online: this.session.kind === 'online',
+          online: this.session.kind === 'online' || this.session.shared === true,
           rounds: this.state.rounds,
           players: this.session.players.length,
           coinsEarned: p.stats.coinsEarned,

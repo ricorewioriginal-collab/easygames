@@ -6,6 +6,8 @@ import { Rng, randomSeed } from '@shared/rng';
 /** Eine laufende Partie aus Sicht des Clients – lokal (Hot-Seat/Bots) oder online. Die Oberfläche kennt nur diese Schnittstelle. */
 export interface GameSession {
   readonly kind: 'local' | 'online';
+  /** true, wenn andere Menschen an anderen Geräten mitspielen (Pause hält das Spiel dann nicht an) */
+  readonly shared?: boolean;
   readonly players: PlayerSetup[];
   readonly layoutId: string;
   readonly rounds: number;
@@ -36,15 +38,17 @@ export function botDelay(rng: Rng, phase: string): number {
 
 export class LocalSession implements GameSession {
   readonly kind = 'local' as const;
+  shared = false;
+  canRestart = true;
   readonly core: GameCore;
   readonly localIds: string[];
   readonly initialEvents: GameEvent[];
-  private updateCbs: Array<(e: GameEvent[], f: boolean) => void> = [];
-  private msgCbs: Array<(k: 'error' | 'notice', t: string) => void> = [];
-  private timer: ReturnType<typeof setTimeout> | null = null;
-  private busy = false;
-  private rng = new Rng(randomSeed());
-  private disposed = false;
+  protected updateCbs: Array<(e: GameEvent[], f: boolean) => void> = [];
+  protected msgCbs: Array<(k: 'error' | 'notice', t: string) => void> = [];
+  protected timer: ReturnType<typeof setTimeout> | null = null;
+  protected busy = false;
+  protected rng = new Rng(randomSeed());
+  protected disposed = false;
 
   constructor(
     readonly config: GameConfig,
@@ -91,7 +95,7 @@ export class LocalSession implements GameSession {
     return null;
   }
 
-  private emit(events: GameEvent[]): void {
+  protected emit(events: GameEvent[]): void {
     for (const c of this.updateCbs) c(events, false);
     this.schedule();
   }

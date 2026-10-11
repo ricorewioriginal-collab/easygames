@@ -23,6 +23,8 @@ export interface Settings {
   touchControls: 'auto' | 'on' | 'off';
   /** Eigener Spielserver (ws:// oder wss://), leer = Online-Modus aus */
   serverUrl: string;
+  /** Öffentlichen STUN-Dienst für Verbindungen ohne Server nutzen (nötig, wenn Spieler in verschiedenen Netzen sind) */
+  useStun: boolean;
   language: string;
 }
 
@@ -66,7 +68,7 @@ function envServerUrl(): string {
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
-    settings: { master: 0.8, music: 0.6, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', serverUrl: envServerUrl(), language: 'de' },
+    settings: { master: 0.8, music: 0.6, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', serverUrl: envServerUrl(), useStun: true, language: 'de' },
     profile: { name: 'Spieler', character: 'pip' },
     cosmetics: { hat: null, trail: null, dice: 'klassisch' },
     achievements: {},
@@ -100,6 +102,7 @@ export function sanitize(raw: unknown): SaveData {
     cameraShake: bool(s.cameraShake, true),
     touchControls: oneOf(s.touchControls, ['auto', 'on', 'off'], 'auto'),
     serverUrl: normalizeServerUrl(str(s.serverUrl, '', 200)) ?? '',
+    useStun: bool(s.useStun, true),
     language: str(s.language, 'de', 8),
   };
   const p = isObj(raw.profile) ? raw.profile : {};
