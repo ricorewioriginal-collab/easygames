@@ -108,15 +108,24 @@ BI.createBuild = function (G) {
   function dropItem(i) { const it = B.items[i]; for (const k of it.cols) W.removeCollider(k); B.items.splice(i, 1); dirty = true; }
   B.place = function () {
     if (!B.valid) { G.say('Hier kann man nicht bauen 🚫', 1400); return false; }
-    addItem(B.sel, B.gx, B.gz, B.rot, B.color); A.place(); if (B.onOp) B.onOp({ op: 'a', i: [B.sel, B.gx, B.gz, B.rot, B.color] });
+    const slot = slotOf(B.sel, B.rot), was = B.items.filter(o => !o.o && o.gx === B.gx && o.gz === B.gz && slotOf(o.t, o.r) === slot).map(o => [o.t, o.gx, o.gz, o.r, o.c]);
+    addItem(B.sel, B.gx, B.gz, B.rot, B.color); hist.push({ a: 1, p: [B.sel, B.gx, B.gz, B.rot, B.color], was }); if (hist.length > 60) hist.shift(); A.place(); if (B.onOp) B.onOp({ op: 'a', i: [B.sel, B.gx, B.gz, B.rot, B.color] });
     const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 10, [BI.C.gold, BI.C.white, BI.C.pink], 3, .7, 26, 6); return true;
   };
   B.remove = function () {
-    let n = 0; for (let i = B.items.length - 1; i >= 0; i--) if (B.items[i].gx === B.gx && B.items[i].gz === B.gz) { dropItem(i); n++; }
-    if (n) { save(); if (B.onOp) B.onOp({ op: 'd', gx: B.gx, gz: B.gz }); A.pop(); const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 8, [BI.C.dust, BI.C.white], 3, .6, 30, 6); } else G.say('Hier ist nichts zum Wegräumen', 1400);
+    let n = 0; const gone = []; for (let i = B.items.length - 1; i >= 0; i--) if (B.items[i].gx === B.gx && B.items[i].gz === B.gz) { const o = B.items[i]; if (!o.o) gone.push([o.t, o.gx, o.gz, o.r, o.c]); dropItem(i); n++; }
+    if (n) { if (gone.length) { hist.push({ a: 0, was: gone }); if (hist.length > 60) hist.shift(); } save(); if (B.onOp) B.onOp({ op: 'd', gx: B.gx, gz: B.gz }); A.pop(); const [cx, cz] = center(B.gx, B.gz); fx.burst(cx, 1, cz, 8, [BI.C.dust, BI.C.white], 3, .6, 30, 6); } else G.say('Hier ist nichts zum Wegräumen', 1400);
     return n;
   };
-  B.clearAll = function () { for (let i = B.items.length - 1; i >= 0; i--) if (!B.items[i].o) dropItem(i); save(); if (B.onOp) B.onOp({ op: 'l', l: [] }); };
+  /* Rückgängig (letzte 60 Aktionen) */
+  const hist = [];
+  B.undo = function () {
+    const o = hist.pop(); if (!o) { G.say('Nichts zum Zurücknehmen', 1200); return false; }
+    if (o.a) { const p = o.p; for (let i = B.items.length - 1; i >= 0; i--) { const it = B.items[i]; if (!it.o && it.t === p[0] && it.gx === p[1] && it.gz === p[2] && it.r === p[3]) { dropItem(i); break; } } if (B.onOp) B.onOp({ op: 'd', gx: p[1], gz: p[2] }); }
+    for (const r of o.was || []) { addItem(r[0], r[1], r[2], r[3], r[4], true); if (B.onOp) B.onOp({ op: 'a', i: r }); }
+    save(); A.pop(); return true;
+  };
+  B.clearAll = function () { hist.length = 0; for (let i = B.items.length - 1; i >= 0; i--) if (!B.items[i].o) dropItem(i); save(); if (B.onOp) B.onOp({ op: 'l', l: [] }); };
   /* Gemeinsames Bauen: Teile von Freunden sind nur für diese Sitzung da (nicht gespeichert) */
   B.exportMine = () => B.items.filter(i => !i.o).map(i => [i.t, i.gx, i.gz, i.r, i.c]);
   B.exportOwner = o => B.items.filter(i => i.o === o).map(i => [i.t, i.gx, i.gz, i.r, i.c]);
@@ -165,6 +174,8 @@ BI.createBuild = function (G) {
 
   /* ---------- Bedienung ---------- */
   B.setType = function (t) { if (!CAT[t]) return; B.sel = t; B.color = CAT[t].c != null ? CAT[t].c : B.color; };
+  /* Vorschau-Mesh für das Baumenü (js/thumbs.js) */
+  B.thumbMesh = t => { const d = new BI.Batch(); append(d, local(t, CAT[t].c != null ? CAT[t].c : 7), 0, 0, 0); return d.mesh(mat); };
   B.rotate = function () { B.rot = (B.rot + 1) % 4; };
   B.nextColor = function () { B.color = (B.color + 1) % PAL.length; };
   B.setCursor = function (x, z) {
@@ -176,7 +187,7 @@ BI.createBuild = function (G) {
   B.update = function (dt, t) {
     if (dirty) { rebuildT -= dt; if (rebuildT <= 0) { rebuild(); rebuildT = .08; } }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) flushSave(); }
-    if (B.active) updateGhost();
+    if (B.active && !B.hidden) updateGhost(); const vis = B.active && !B.hidden; if (grid.visible !== vis) grid.visible = cell.visible = vis; if (ghost && ghost.visible !== vis) ghost.visible = vis;
     if (roofMesh) { const P = G.P, hide = B.active || (!P.veh && B.shelter(P.x, P.z) === 2); if (roofMesh.visible === hide) roofMesh.visible = !hide; }
   };
   /* 2 = unter einem Dach (Dach wird ausgeblendet, Kamera steiler), 1 = nahe an Wänden, 0 = draußen */

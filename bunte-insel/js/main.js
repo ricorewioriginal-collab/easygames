@@ -408,7 +408,7 @@
     }
   });
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-  function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
+  function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (voxTab) { vox.aim(o, d); return; } if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
   const endPtr = e => { rs.down = false; if (e.pointerId === drag.id && build.active && drag.moved < 12 && performance.now() - drag.t0 < 500) tapGround(e.clientX, e.clientY);
     if (e.pointerId === stick.id) { stick.id = null; setStick(0, 0); sKnob.style.transform = 'translate(0,0)'; } if (e.pointerId === drag.id) drag.id = null; };
   zone.addEventListener('pointerup', endPtr); zone.addEventListener('pointercancel', endPtr);
@@ -448,10 +448,11 @@
       case 'KeyX': inp.down = true; break;
       case 'KeyV': toggleEgo(); break;
       case 'KeyB': toggleBuild(); break;
-      case 'KeyG': if (build.active) build.place(); break;
-      case 'KeyO': if (build.active) build.rotate(); break;
+      case 'KeyG': if (build.active) buildPlace(); break;
+      case 'KeyO': if (build.active && !voxTab) build.rotate(); break;
+      case 'KeyZ': if (build.active) buildUndo(); break;
       case 'KeyK': if (build.active) build.nextColor(); break;
-      case 'Delete': case 'Backspace': if (build.active) build.remove(); break;
+      case 'Delete': case 'Backspace': if (build.active) buildRemove(); break;
       case 'Digit1': doFun('dance'); break;
       case 'Digit2': doFun('gum'); break;
       case 'Digit3': doFun('ball'); break;
@@ -872,7 +873,7 @@
   }
   function finishGame() {
     const g = gm; gm = null; $('gameBar').hidden = true; if (chestM) chestM.visible = false; fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; const now = performance.now(), me = selfId(), def = gdef(g.k);
-    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
+    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (g.k === 'bauplan_bauland') { (save.bauland || (save.bauland = { placed: 0, ms: 0 })).played = 1; persist(); } if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
     if (g.k === 'tag') { g.itTime[g.it] = (g.itTime[g.it] || 0) + now - g.since; rows = ids.map(id => ({ id, v: (g.itTime[id] || 0) / 1000, s: ((g.itTime[id] || 0) / 1000).toFixed(1) + ' s' })).sort((a, b) => a.v - b.v); sub = 'Fangen – wer war am kürzesten dran?'; }
     else if (g.k === 'treasure') { if (g.winner) { const w = g.winner; rows = [{ id: w, s: '🗺️ Schatz gefunden!' }].concat(ids.filter(id => id !== w).map(id => ({ id, s: '' }))); sub = (w === me ? 'Du hast' : gmNames(w) + ' hat') + ' den Schatz gefunden!'; } else { rows = ids.map(id => ({ id, s: '' })); sub = 'Der Schatz wurde nicht gefunden – nächstes Mal klappt es!'; } }
     else if (g.k === 'hide') { const hiders = ids.filter(id => id !== g.it), nf = hiders.filter(id => g.found[id]).length, seekStart = g.ph0, surv = id => ((g.found[id] || now) - seekStart) / 1000; rows = [{ id: g.it, s: '🔍 Sucher: ' + nf + ' von ' + hiders.length + ' gefunden', v: nf === hiders.length ? 1e9 : -1 }].concat(hiders.map(id => ({ id, s: g.found[id] ? '🙈 gefunden nach ' + surv(id).toFixed(0) + ' s' : '🏆 nicht gefunden!', v: g.found[id] ? surv(id) : 1e8 }))).sort((a, b) => b.v - a.v); sub = 'Verstecken'; }
@@ -970,7 +971,7 @@
     if (sl.t >= 3.6 && sl.t < 3.7) { fadeEl.classList.remove('on'); sl.t = 3.7; P.x = f.bed.x + 2.3; P.z = f.bed.z + 1.2; P.y = 0; g.rotation.set(0, 0, 0); g.position.set(P.x, 0, P.z); say('Guten Morgen, ' + heroName() + '! ☀️', 2600); A.fanfare(); kids.earn('sleep'); }
     if (sl.t > 4.6) sl.t = -1;
   }
-  function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); say('Such dir etwas Schönes aus! 👕', 1800); }
+  function openWard() { wardOpen = true; setStick(0, 0); wardPanel.hidden = false; renderWard(); wardTabs.showTab(6); BI.Thumb.load($('wardPick')); say('Such dir etwas Schönes aus! 👕', 1800); }
   function closeWard() { wardOpen = false; wardPanel.hidden = true; updateButtons(true); }
   function renderWard() {
     refreshPickers(); const box = $('wardItems'); box.innerHTML = ''; const mine = SHOP.filter(q => save.owned.includes(q.id) && q.slot !== 'kite' && q.slot !== 'rcheli' && q.slot !== 'skate' && q.slot !== 'rollator' && q.slot !== 'deco');
@@ -1006,7 +1007,7 @@
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const story = BI.createStory({ A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
     farmGoal: () => farm.questText(),
-    log: () => ({ extras: [dampf.log(), drachen.log()], farm: farm.log(), einsatz: einsatz.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
+    log: () => ({ extras: [dampf.log(), drachen.log(), bauland.log()], farm: farm.log(), einsatz: einsatz.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
       daily: { today: !!(save.daily && save.daily.d === (d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())(new Date())), streak: (save.daily && save.daily.s) || 0 } }) });
   kids.onEarn = id => story.onEarn(id); { const mn = meta.note; meta.note = (k, n) => { mn(k, n); story.note(k); }; }
   const cinema = BI.createCinema({ scene, P, say, A, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
@@ -1020,6 +1021,8 @@
   const arcade = BI.createArcade({ scene, W, P, start: k => startGame(k, true), info: k => gdef(k) });
   const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), takeMascot: id => takeMascot(id) }); dampf.people(town.folk);
   const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true), takeMascot: id => takeMascot(id) }); drachen.people(town.folk);
+  const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
+  const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
   for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
@@ -1070,6 +1073,7 @@
     { const an = arcade.near(); if (an) return { src: 'arcade', n: an }; }
     { const dn = dampf.near(); if (dn) return { src: 'dampf', n: dn }; }
     { const rn2 = drachen.near(); if (rn2) return { src: 'drachen', n: rn2 }; }
+    { const bn = bauland.near(); if (bn) return { src: 'bauland', n: bn }; }
     { const sn = pups.near(); if (sn) return { src: 'pups', n: sn }; }
     { const on = obby.near(); if (on) return { src: 'obby', n: on }; }
     { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
@@ -1079,10 +1083,10 @@
     { const hd = flats[mySlot()].door; if (pup.mode !== 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'pethome', n: { k: 'pethome' } }; }
     return null;
   }
-  const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
+  const PLN = { bwerk: ['🏗️', 'Bauen starten'], plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
   function placeLabel(n) { if (n.src === 'paphome') return papHomeOn() ? ['🎈', 'Pappnase mitnehmen'] : ['🏠', 'Pappnase zu Hause lassen']; if (n.src === 'pethome') return pup.mode === 'home' ? ['🐾', pup.name + ' mitnehmen'] : ['🏠', pup.name + ' zu Hause lassen']; if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'paphome') setPapHome(!papHomeOn()); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'bauland') bauland.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'paphome') setPapHome(!papHomeOn()); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1102,6 +1106,7 @@
     { id: 'lighthouse', icon: '💡', name: 'Leuchtturm (Hauptinsel)', at: () => ({ x: SPOT.lighthouse.x, z: SPOT.lighthouse.z + 5 }) },
     { id: 'dampf', icon: '🎬', name: 'Dampfer-Hafen', at: () => ({ x: BI.DAMPF.x + 34, z: BI.DAMPF.z }) },
     { id: 'drachen', icon: '🐉', name: 'Drachenhöhen', at: () => ({ x: BI.DRACHEN.x, z: BI.DRACHEN.z - 38 }) },
+    { id: 'bauland', icon: '🏗️', name: 'Bauland', at: () => ({ x: BI.BAULAND.entry.x, z: BI.BAULAND.entry.z }) },
     { id: 'pups', icon: '🐶', name: 'Fellretter-Bucht', at: () => ({ x: BI.PUPS.x, z: BI.PUPS.z - 40 }) },
     { id: 'rainbow', icon: '🌈', name: 'Regenbogenwelt', at: () => ({ x: BI.RAINBOW.bridge.x0 - 6, z: BI.RAINBOW.z }) },
     { id: 'camp', icon: '⛺', name: 'Camp', at: () => ({ x: SPOT.camp.x, z: SPOT.camp.z + 5 }) },
@@ -1118,7 +1123,7 @@
   let guideOpen = false; function closeGuide() { guideOpen = false; guideEl.hidden = true; updateButtons(true); }
   function setGuide(d) { guide = { d, t: 0 }; const p = d.at(); say('🧭 Ich zeige dir den Weg: ' + d.icon + ' ' + d.name, 2600); updateHud(); }
   /* Blickziel pro Ziel: nach dem Hinzaubern schaut man direkt auf die Welt / das Gebäude (Standard: zur Inselmitte) */
-  const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, pups: () => BI.PUPS };
+  const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, bauland: () => BI.BAULAND, pups: () => BI.PUPS };
   function beamTo(d) {
     if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; { const lk = d.id === 'home' ? null : (LOOK[d.id] && LOOK[d.id]()) || { x: 0, z: 0 }; P.h = lk && Math.hypot(lk.x - P.x, lk.z - P.z) > 3 ? Math.atan2(lk.x - P.x, lk.z - P.z) : Math.PI; cam.yaw = P.h + Math.PI; } A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
   }
@@ -1232,30 +1237,40 @@
   $('bPack').addEventListener('click', ev => { ev.stopPropagation(); A.resume(); pack.toggle(); });
   $('bFun').addEventListener('click', () => { const f = $('funBar'); if (!f.hidden) { closeQuick(); return; } quickAll = false; renderQuick(); f.hidden = false; $('bFun').classList.add('on'); });
   $('bCam').addEventListener('click', toggleEgo);
-  let preBuild = null, tab = 0, clearT = 0;
+  let preBuild = null, tab = 0, clearT = 0, voxTab = null, lastVC = -1;
+  const tabList = () => { const L = []; if (vox.inBauland()) for (const g of BI.VOX_GROUPS) L.push({ icon: g.icon, name: g.name, vox: g.id }); build.TABS.forEach((tb, i) => L.push({ icon: tb.icon, name: tb.name, part: i })); return L; };
+  const buildPlace = () => voxTab ? vox.place() : build.place(), buildRemove = () => voxTab ? vox.remove() : build.remove(), buildUndo = () => voxTab ? vox.undo() : build.undo();
+  function updateBuildCount() { const e = $('bCount'); if (e) e.textContent = voxTab ? '🧱 ' + vox.count + ' / ' + vox.MAXV : '🏠 ' + build.count + ' Teile'; }
   function renderBuild() {
+    const L = tabList(); if (tab >= L.length || tab < 0) tab = 0; const cur = L[tab]; voxTab = cur.vox || null;
+    if (voxTab && !vox.active) vox.enter(P.x, P.z, P.h); else if (!voxTab && vox.active) vox.exit(); build.hidden = !!voxTab; $('buildPanel').classList.toggle('vox', !!voxTab);
     const tabs = $('bTabs'); tabs.innerHTML = '';
-    build.TABS.forEach((tb, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === tab ? ' sel' : ''); b.textContent = tb.icon + ' ' + tb.name; b.onclick = () => { tab = i; renderBuild(); }; tabs.appendChild(b); });
+    L.forEach((tb, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === tab ? ' sel' : ''); b.textContent = tb.icon + ' ' + tb.name; b.onclick = () => { tab = i; renderBuild(); }; tabs.appendChild(b); });
     const items = $('bItems'); items.innerHTML = '';
-    Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== tab) return; const b = document.createElement('button'); b.className = 'bi' + (id === build.sel ? ' sel' : ''); b.innerHTML = '<b>' + c.icon + '</b><small>' + c.name + '</small>'; b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
+    if (voxTab) vox.TYPES.forEach((ty, i) => { if (ty.g !== voxTab) return; const b = BI.Thumb.button('bi' + (i === vox.sel ? ' sel' : ''), ty.icon, ty.name); BI.Thumb.attach(b, 'v|' + i, () => BI.Thumb.render(vox.thumbMesh(i), null, .62, .4)); b.onclick = () => { vox.setType(i); A.pop(); renderBuild(); }; items.appendChild(b); });
+    else Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== cur.part) return; const b = BI.Thumb.button('bi' + (id === build.sel ? ' sel' : ''), c.icon, c.name); BI.Thumb.attach(b, 'b|' + id, () => BI.Thumb.render(build.thumbMesh(id), null, .55, .42)); b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
+    BI.Thumb.load(items);
     const cols = $('bColors'); cols.innerHTML = '';
-    build.PAL.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw sm' + (i === build.color ? ' sel' : ''); b.style.background = '#' + c.toString(16).padStart(6, '0'); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { build.color = i; renderBuild(); }; cols.appendChild(b); });
+    if (!voxTab) build.PAL.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw sm' + (i === build.color ? ' sel' : ''); b.style.background = hexc(c); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { build.color = i; renderBuild(); }; cols.appendChild(b); });
+    updateBuildCount();
   }
+  const hexc = c => '#' + c.toString(16).padStart(6, '0');
   function toggleBuild() {
     if (state !== 'play' || rs.ui || sl.t >= 0 || wardOpen) return;
     if (build.active) { exitBuild(); return; }
     if (P.veh) { say('🏗️ Zum Bauen erst aussteigen', 1600); return; }
-    fun.setDance(false); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8;
+    fun.setDance(false); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8; tab = 0;
     document.body.classList.add('building'); $('buildPanel').hidden = false; $('bBuild').classList.add('on'); renderBuild(); updateButtons(true);
-    say(isTouch() ? '🏗️ Tippe auf den Boden, wähle ein Teil und drücke ✔ Bauen' : '🏗️ Klicke auf den Boden, wähle ein Teil und drücke G oder ✔ Bauen', 4200);
+    say(vox.inBauland() ? '🏗️ Tippe auf den Boden oder einen Block, wähle oben einen Block und drücke ✔ Bauen' : (isTouch() ? '🏗️ Tippe auf den Boden, wähle ein Teil und drücke ✔ Bauen' : '🏗️ Klicke auf den Boden, wähle ein Teil und drücke G oder ✔ Bauen'), 4600);
   }
   function exitBuild() {
-    build.exit(); document.body.classList.remove('building'); $('buildPanel').hidden = true; $('bBuild').classList.remove('on');
+    build.exit(); vox.exit(); voxTab = null; build.hidden = false; document.body.classList.remove('building'); $('buildPanel').hidden = true; $('bBuild').classList.remove('on');
     if (preBuild) { cam.pitch = preBuild.pitch; cam.zoom = preBuild.zoom; } updateButtons(true);
   }
   $('bBuild').addEventListener('click', toggleBuild); $('bClose').addEventListener('click', exitBuild);
-  $('bRot').addEventListener('click', () => { build.rotate(); A.pop(); }); $('bPlace').addEventListener('click', () => build.place()); $('bDel').addEventListener('click', () => build.remove());
-  $('bClear').addEventListener('click', () => { if (performance.now() - clearT < 3000) { build.clearAll(); clearT = 0; say('🧹 Alles weggeräumt', 1600); } else { clearT = performance.now(); say('Nochmal drücken: ALLES wegräumen?', 2800); } });
+  $('bRot').addEventListener('click', () => { if (!voxTab) { build.rotate(); A.pop(); } }); $('bPlace').addEventListener('click', () => buildPlace()); $('bDel').addEventListener('click', () => buildRemove()); $('bUndo').addEventListener('click', () => buildUndo());
+  $('bUp').addEventListener('click', () => vox.shift(1)); $('bDn').addEventListener('click', () => vox.shift(-1));
+  $('bClear').addEventListener('click', () => { if (performance.now() - clearT < 3000) { if (voxTab) vox.clearAll(); else build.clearAll(); clearT = 0; say('🧹 Alles weggeräumt', 1600); updateBuildCount(); } else { clearT = performance.now(); say(voxTab ? 'Nochmal drücken: ALLE Blöcke wegräumen?' : 'Nochmal drücken: ALLES wegräumen?', 2800); } });
   const pickers = [], refreshPickers = () => { for (const f of pickers) f(); $('hello').textContent = 'Hallo ' + heroName() + '! ♥'; for (const i of document.querySelectorAll('.pn')) if (i !== document.activeElement) i.value = save.pname || ''; };
   function setPet(kind) {
     const def = BI.PETS.find(q => q.id === kind) || BI.PETS[0], g = pup.d.group, was = g.parent; freeObj(g); pup.d = BI.makePet(def.id); pup.name = def.name; pup.trick = null; if (was) scene.add(pup.d.group); pup.d.group.position.set(pup.x, 0, pup.z);
@@ -1281,97 +1296,116 @@
     const ic = arr => i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = arr[i]; return b; };
     const lb = arr => i => { const b = document.createElement('button'); b.className = 'hat lbl'; const e = document.createElement('b'), s = document.createElement('small'); e.textContent = arr[i][0]; s.textContent = arr[i][1]; b.append(e, s); return b; };
     const num = (k, d) => () => cu()[k] == null ? d : cu()[k] | 0;
+    /* Vorschaubilder statt Emoji: kleine 3D-Bilder (js/thumbs.js), neutrale Figur, nur das jeweilige Teil ändert sich */
+    const bustEl = ico => { const w = document.createElement('span'), im = document.createElement('img'); w.className = 'tw'; w.textContent = ico; im.alt = ''; w.appendChild(im); return w; };
+    const bustThumb = (hero, cuv, shirt, hat, eq) => () => BI.Thumb.render(BI.makeChar(charOpts({ hero, cu: cuv || {}, shirt: shirt | 0, hat: hat | 0, eq: eq || {} }, '')).group, [.95, 1.95]);
+    const TH_BASE = { skin: 1, hair: 2, style: 11, eye: 0, mouth: 1, pants: 0, hgt: 2, age: 2, build: 1, shoe: 0 }, REG = { full: [-.05, 2.0], head: [1.3, 1.95], hat: [1.3, 2.25], torso: [.55, 1.45], legs: [-.05, .98], feet: [-.05, .42] };
+    const thumb = (over, reg, extra, az) => () => { const l = Object.assign({ hero: 'custom', cu: Object.assign({}, TH_BASE, over), shirt: 4, hat: 0, eq: {} }, extra); return BI.Thumb.render(BI.makeChar(charOpts(l, '')).group, REG[reg], az); };
+    const tb = (key, arr, reg) => i => { const b = BI.Thumb.button('hat lbl', arr[i][0], arr[i][1]); BI.Thumb.attach(b, 'c|' + key + '|' + i, thumb({ [key]: i }, reg)); return b; };
+    const ti = (key, arr, reg) => i => { const b = BI.Thumb.button('hat', arr[i]); BI.Thumb.attach(b, 'c|' + key + '|' + i, thumb({ [key]: i }, reg)); return b; };
+    const t2 = (key, icons, reg) => i => { const b = BI.Thumb.button('hat', icons[i]); BI.Thumb.attach(b, 'c|' + key + '|' + i, thumb({ [key]: i }, reg)); return b; };
     // Reiter 0: Meine Figuren + Vorlagen
     const slotsPanel = panel(); let armDel = -1;
     function renderSlots() {
       slotsPanel.innerHTML = ''; const ch = ensureChars(); lab(slotsPanel, '🧑‍🤝‍🧑 Meine Figuren (bis zu ' + MAXCH + ') – tippe eine an, um mit ihr zu spielen:'); const g = document.createElement('div'); g.className = 'hgrid'; slotsPanel.appendChild(g);
-      ch.forEach((c, i) => { const h = BI.heroById(c.hero), ico = c.hero === 'custom' ? (BI.STYLE_ICONS[(c.cu && c.cu.style) | 0] || '🙂') : h.icon, b = document.createElement('button'); b.className = 'hc' + (i === save.cur ? ' sel' : ''); const e = document.createElement('b'), s = document.createElement('span'); e.textContent = ico; s.textContent = (i === save.cur ? '✔ ' : '') + (c.n || (c.hero === 'custom' ? 'Figur ' + (i + 1) : h.name)); b.append(e, s); b.onclick = () => { applyChar(i); A.pop(); renderSlots(); }; g.appendChild(b); });
+      ch.forEach((c, i) => { const h = BI.heroById(c.hero), ico = c.hero === 'custom' ? (BI.STYLE_ICONS[(c.cu && c.cu.style) | 0] || '🙂') : h.icon, b = document.createElement('button'); b.className = 'hc' + (i === save.cur ? ' sel' : ''); const e = bustEl(ico), s = document.createElement('span'); BI.Thumb.attach(b, 's|' + JSON.stringify([c.hero, c.cu, c.shirt, c.hat, c.eq]), bustThumb(c.hero, c.cu, c.shirt, c.hat, c.eq)); b.classList.add('th'); s.textContent = (i === save.cur ? '✔ ' : '') + (c.n || (c.hero === 'custom' ? 'Figur ' + (i + 1) : h.name)); b.append(e, s); b.onclick = () => { applyChar(i); A.pop(); renderSlots(); }; g.appendChild(b); });
       const bar = document.createElement('div'); bar.className = 'row'; slotsPanel.appendChild(bar); const mk = (t, fn, cls) => { const b = document.createElement('button'); b.className = 'pill' + (cls ? ' ' + cls : ''); b.textContent = t; b.onclick = fn; bar.appendChild(b); return b; };
       if (ch.length < MAXCH) { mk('➕ Neue Figur', () => { syncChar(); ch.push({ n: '', hero: 'custom', cu: Object.assign(BI.randomCu(), { acc: {} }), shirt: (Math.random() * BI.SHIRTS.length) | 0, hat: 0, eq: { hat: 'none', glasses: false, pack: false, teddy: false } }); applyChar(ch.length - 1); A.pop(); showTab(1); renderSlots(); }); mk('📄 Kopieren', () => { syncChar(); ch.push(Object.assign(clone(ch[save.cur]), { n: '' })); applyChar(ch.length - 1); A.pop(); renderSlots(); }); }
       if (ch.length > 1) mk(armDel === save.cur ? '❓ Wirklich löschen?' : '🗑️ Löschen', () => { if (armDel !== save.cur) { armDel = save.cur; renderSlots(); return; } const k = save.cur; armDel = -1; ch.splice(k, 1); applyChar(Math.max(0, k - 1)); A.pop(); renderSlots(); }, armDel === save.cur ? 'warn' : '');
       lab(slotsPanel, '⭐ Vorlagen – such dir eine aus und ändere danach alles, was du willst:'); const g2 = document.createElement('div'); g2.className = 'hgrid'; slotsPanel.appendChild(g2);
-      BI.HEROES.forEach(h => { if (h.id === 'custom') return; const b = document.createElement('button'); b.className = 'hc' + (save.hero === h.id ? ' sel' : ''); b.dataset.id = h.id; const e = document.createElement('b'), s = document.createElement('span'); e.textContent = h.icon; s.textContent = h.name; b.append(e, s); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if ((h.id === 'oma' || h.id === 'opa') && !vehicles.some(q => q.type === 'rollator' && Math.hypot(q.x - P.x, q.z - P.z) < 12)) spawnRC(true, 'rollator'); renderSlots(); }; g2.appendChild(b); });
+      BI.HEROES.forEach(h => { if (h.id === 'custom') return; const b = document.createElement('button'); b.className = 'hc' + (save.hero === h.id ? ' sel' : ''); b.dataset.id = h.id; const e = bustEl(h.icon), s = document.createElement('span'); BI.Thumb.attach(b, 'h|' + h.id, bustThumb(h.id, {}, 0, 0, {})); b.classList.add('th'); s.textContent = h.name; b.append(e, s); b.onclick = () => { save.hero = h.id; persist(); buildChar(); refreshPickers(); A.pop(); if ((h.id === 'oma' || h.id === 'opa') && !vehicles.some(q => q.type === 'rollator' && Math.hypot(q.x - P.x, q.z - P.z) < 12)) spawnRC(true, 'rollator'); renderSlots(); }; g2.appendChild(b); }); BI.Thumb.load(slotsPanel);
     }
     syncs.push(() => { if (!slotsPanel.hidden) renderSlots(); });
     // Reiter 1: Körper
     { const p = panel();
-      row(p, '🎂 Alter', 4, lb(CO.age), num('age', 2), i => cu().age = i);
-      row(p, '📏 Größe', 5, lb(CO.hgt), () => cu().hgt != null ? cu().hgt | 0 : [1, 2, 3][cu().size == null ? 1 : cu().size | 0], i => cu().hgt = i);
-      row(p, '🏋️ Körperform', 4, lb(CO.build), num('build', 1), i => cu().build = i);
+      row(p, '🎂 Alter', 4, tb('age', CO.age, 'full'), num('age', 2), i => cu().age = i);
+      row(p, '📏 Größe', 5, tb('hgt', CO.hgt, 'full'), () => cu().hgt != null ? cu().hgt | 0 : [1, 2, 3][cu().size == null ? 1 : cu().size | 0], i => cu().hgt = i);
+      row(p, '🏋️ Körperform', 4, tb('build', CO.build, 'full'), num('build', 1), i => cu().build = i);
       row(p, '🎨 Hautfarbe', BI.SKINS.length, sw(BI.SKINS), num('skin', 0), i => cu().skin = i); }
     // Reiter 2: Gesicht
     { const p = panel();
-      row(p, '🔵 Gesichtsform', 4, lb(CO.face), num('face', 0), i => cu().face = i);
-      row(p, '👃 Nase', 4, lb(CO.nose), num('nose', 0), i => cu().nose = i);
-      row(p, '😊 Mund', BI.MOUTHS.length, ic(BI.MOUTH_ICONS), () => cu().mouth == null ? 1 : cu().mouth | 0, i => cu().mouth = i);
+      row(p, '🔵 Gesichtsform', 4, tb('face', CO.face, 'head'), num('face', 0), i => cu().face = i);
+      row(p, '👃 Nase', 4, tb('nose', CO.nose, 'head'), num('nose', 0), i => cu().nose = i);
+      row(p, '😊 Mund', BI.MOUTHS.length, ti('mouth', BI.MOUTH_ICONS, 'head'), () => cu().mouth == null ? 1 : cu().mouth | 0, i => cu().mouth = i);
       row(p, '💄 Lippenfarbe', CO.lip.length, sw(CO.lip), num('lip', 0), i => cu().lip = i);
       row(p, '🌸 Bäckchen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '😊' : '😐'; return b; }, () => cu().blush === 0 ? 0 : 1, i => cu().blush = i);
-      row(p, '✨ Sommersprossen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '🌟' : '🚫'; return b; }, num('fr', 0), i => cu().fr = i);
-      row(p, '⚡ Narbe', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⚡' : '🚫'; return b; }, num('scar', 0), i => cu().scar = i); }
+      row(p, '✨ Sommersprossen', 2, t2('fr', ['🚫', '🌟'], 'head'), num('fr', 0), i => cu().fr = i);
+      row(p, '⚡ Narbe', 2, t2('scar', ['🚫', '⚡'], 'head'), num('scar', 0), i => cu().scar = i); }
     // Reiter 3: Augen
     { const p = panel();
-      row(p, '👁️ Augenform', 5, lb(CO.eyeS), num('eyeS', 0), i => cu().eyeS = i);
+      row(p, '👁️ Augenform', 5, tb('eyeS', CO.eyeS, 'head'), num('eyeS', 0), i => cu().eyeS = i);
       row(p, '🌈 Augenfarbe', BI.EYES.length, sw(BI.EYES), num('eye', 0), i => cu().eye = i);
-      row(p, '🤨 Augenbrauen', 4, lb(CO.brow), num('brow', 1), i => cu().brow = i);
-      row(p, '👓 Brille', 5, lb(CO.glassT), num('glassT', 0), i => cu().glassT = i);
+      row(p, '🤨 Augenbrauen', 4, tb('brow', CO.brow, 'head'), num('brow', 1), i => cu().brow = i);
+      row(p, '👓 Brille', 5, tb('glassT', CO.glassT, 'head'), num('glassT', 0), i => cu().glassT = i);
       row(p, '🎨 Brillenfarbe', CO.glassC.length, sw(CO.glassC), num('glassC', 0), i => cu().glassC = i); }
     // Reiter 4: Haare
     { const p = panel();
-      row(p, '💇 Frisur', BI.STYLES.length, ic(BI.STYLE_ICONS), num('style', 0), i => cu().style = i);
+      row(p, '💇 Frisur', BI.STYLES.length, ti('style', BI.STYLE_ICONS, 'head'), num('style', 0), i => cu().style = i);
       row(p, '🌈 Haarfarbe', BI.HAIRS.length, sw(BI.HAIRS), num('hair', 0), i => cu().hair = i);
       row(p, '✨ Strähnen', BI.HAIRS.length + 1, i => sw([0].concat(BI.HAIRS))(i), num('hair2', 0), i => cu().hair2 = i); }
     // Reiter 5: Bart
     { const p = panel();
-      row(p, '🧔 Bartform', 9, lb(CO.beard), num('beard', 0), i => cu().beard = i);
+      row(p, '🧔 Bartform', 9, tb('beard', CO.beard, 'head'), num('beard', 0), i => cu().beard = i);
       row(p, '🎨 Bartfarbe (✖ = wie Haare)', CO.beardc.length, sw(CO.beardc), num('beardc', 0), i => cu().beardc = i); }
     // Reiter 6: Kleidung
     { const p = panel();
-      row(p, '👕 Oberteil', 6, lb(CO.ctype), num('ctype', 0), i => cu().ctype = i);
-      row(p, '💪 Ärmel', 3, lb(CO.sleeve), num('sleeve', 0), i => cu().sleeve = i);
+      row(p, '👕 Oberteil', 6, tb('ctype', CO.ctype, 'torso'), num('ctype', 0), i => cu().ctype = i);
+      row(p, '💪 Ärmel', 3, tb('sleeve', CO.sleeve, 'torso'), num('sleeve', 0), i => cu().sleeve = i);
       row(p, '🎨 Oberteil-Farbe', BI.SHIRTS.length, sw(BI.SHIRTS), () => save.shirt | 0, i => save.shirt = i);
-      row(p, '🧥 Schnitt', 3, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = ['👕', '👗', '🧑‍🌾'][i]; return b; }, num('top', 0), i => cu().top = i);
-      row(p, '👖 Hose / Rock', 4, lb(CO.bot), num('bot', 0), i => cu().bot = i);
+      row(p, '🧥 Schnitt', 3, t2('top', ['👕', '👗', '🧑‍🌾'], 'torso'), num('top', 0), i => cu().top = i);
+      row(p, '👖 Hose / Rock', 4, tb('bot', CO.bot, 'legs'), num('bot', 0), i => cu().bot = i);
       row(p, '🎨 Hosen-Farbe', BI.PANTS.length, sw(BI.PANTS), num('pants', 0), i => cu().pants = i);
       row(p, '🦓 Streifen', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '〰️' : '🚫'; return b; }, num('stripe', 0), i => cu().stripe = i);
-      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), num('logo', 0), i => cu().logo = i); }
+      row(p, '⭐ Aufdruck', BI.LOGOS.length, sw(BI.LOGOS), num('logo', 0), i => cu().logo = i);
+      /* Outfits: Kleidung merken und per Tipp wieder anziehen (gelten für alle deine Figuren) */
+      const OK = ['ctype', 'sleeve', 'top', 'bot', 'pants', 'stripe', 'logo', 'shoeT', 'shoe', 'ear', 'neck', 'band'], oRow = document.createElement('div'); let oArm = -1;
+      lab(p, '👗 Meine Outfits (bis 6) – tippe zum Anziehen'); oRow.className = 'row'; p.appendChild(oRow);
+      const renderOutfits = () => { oRow.innerHTML = ''; const L = save.outfits || (save.outfits = []);
+        L.forEach((o, i) => { const b = document.createElement('button'); b.className = 'outf'; b.style.background = 'linear-gradient(135deg,' + hex(BI.SHIRTS[o.shirt | 0] || 0xffffff) + ' 50%,' + hex(BI.PANTS[(o.cu && o.cu.pants) | 0] || 0x444444) + ' 50%)'; b.textContent = i + 1; b.setAttribute('aria-label', 'Outfit ' + (i + 1) + ' anziehen');
+          b.onclick = () => edit(() => { for (const k of OK) cu()[k] = (o.cu || {})[k] | 0; save.shirt = o.shirt | 0; renderOutfits(); });
+          const x = document.createElement('span'); x.className = 'ox'; x.textContent = oArm === i ? '?' : '✖'; x.onclick = e => { e.stopPropagation(); if (oArm !== i) { oArm = i; renderOutfits(); return; } oArm = -1; L.splice(i, 1); persist(); A.pop(); renderOutfits(); }; b.appendChild(x); oRow.appendChild(b); });
+        if (L.length < 6) { const a = document.createElement('button'); a.className = 'pill'; a.textContent = '💾 Outfit speichern'; a.onclick = () => { const o = { cu: {}, shirt: save.shirt | 0 }; for (const k of OK) o.cu[k] = cu()[k] | 0; L.push(o); persist(); A.pop(); say('👗 Outfit ' + L.length + ' gespeichert!', 1600); renderOutfits(); }; oRow.appendChild(a); }
+        const r = document.createElement('button'); r.className = 'pill'; r.textContent = '🎲 Zufalls-Outfit'; r.onclick = () => edit(() => { const q = BI.randomCu(); for (const k of OK) cu()[k] = q[k] | 0; save.shirt = (Math.random() * BI.SHIRTS.length) | 0; }); oRow.appendChild(r); };
+      syncs.push(renderOutfits); renderOutfits(); }
     // Reiter 7: Schuhe
     { const p = panel();
-      row(p, '👟 Schuhart', 4, lb(CO.shoeT), num('shoeT', 0), i => cu().shoeT = i);
+      row(p, '👟 Schuhart', 4, tb('shoeT', CO.shoeT, 'feet'), num('shoeT', 0), i => cu().shoeT = i);
       row(p, '🎨 Schuhfarbe', BI.SHOES.length, sw(BI.SHOES), num('shoe', 0), i => cu().shoe = i); }
     // Reiter 8: Zubehör
     { const p = panel();
-      row(p, '👂 Ohrringe', 4, lb(CO.ear), num('ear', 0), i => cu().ear = i);
+      row(p, '👂 Ohrringe', 4, tb('ear', CO.ear, 'head'), num('ear', 0), i => cu().ear = i);
       row(p, '📿 Kette', CO.neck.length, sw(CO.neck), num('neck', 0), i => cu().neck = i);
       row(p, '🎀 Stirnband', CO.band.length, sw(CO.band), num('band', 0), i => cu().band = i);
       row(p, '📎 Haarspange', CO.clip.length, sw(CO.clip), num('clip', 0), i => cu().clip = i);
       row(p, '🦸 Maske', CO.mask.length, sw(CO.mask), num('mask', 0), i => cu().mask = i);
       row(p, '⌚ Uhr', 2, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = i ? '⌚' : '🚫'; return b; }, num('watch', 0), i => cu().watch = i);
       lab(p, '🎒 Mehr (antippen = an/aus)'); const r = document.createElement('div'); r.className = 'row'; p.appendChild(r); const AC = [['pack', '🎒'], ['cape', '🦸'], ['wings', '🧚'], ['teddy', '🧸'], ['patch', '🏴‍☠️']], bs = [];
-      for (const [k, e] of AC) { const b = document.createElement('button'); b.className = 'hat'; b.textContent = e; b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
+      for (const [k, e] of AC) { const b = BI.Thumb.button('hat', e); BI.Thumb.attach(b, 'c|acc|' + k, thumb({ acc: { [k]: true } }, 'full', null, 2.6)); b.onclick = () => edit(() => { const a = cu().acc || (cu().acc = {}); a[k] = !a[k]; }); r.appendChild(b); bs.push([k, b]); }
       syncs.push(() => bs.forEach(([k, b]) => b.classList.toggle('sel', save.hero === 'custom' && !!(cu().acc && cu().acc[k])))); }
     // Reiter 9: Hüte
-    { const p = panel(); row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = document.createElement('button'); b.className = 'hat'; b.textContent = BI.HAT_ICONS[BI.HATS[i]]; return b; }, () => save.hat | 0, i => save.hat = i); }
+    { const p = panel(); row(p, '🎩 Mütze / Hut', BI.HATS.length, i => { const b = BI.Thumb.button('hat', BI.HAT_ICONS[BI.HATS[i]]); BI.Thumb.attach(b, 'c|hat|' + i, thumb({}, 'hat', { hat: i })); return b; }, () => save.hat | 0, i => save.hat = i); }
     // Reiter 10: Haustier
     { const p = panel(); lab(p, '🐾 Mein Haustier'); const r = document.createElement('div'); r.className = 'row pets'; p.appendChild(r); const bs = [];
-      BI.PETS.forEach(pt => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = pt.icon + ' ' + pt.name; b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
+      BI.PETS.forEach(pt => { const b = BI.Thumb.button('pill', pt.icon, pt.name); BI.Thumb.attach(b, 'p|' + pt.id, () => BI.Thumb.render(BI.makePet(pt.id).group, null, .6)); b.onclick = () => { setPet(pt.id); refreshPickers(); A.pop(); }; r.appendChild(b); bs.push(b); });
       const hb = document.createElement('button'); hb.className = 'pill'; hb.onclick = () => { setPetHome(pup.mode !== 'home'); refreshPickers(); }; r.appendChild(hb);
       syncs.push(() => { bs.forEach((b, i) => { const q = BI.PETS[i]; b.hidden = !!q.mascot && !(save.mascots || []).includes(q.id); b.classList.toggle('sel', q.id === save.pet); }); hb.textContent = save.petHome !== false ? '🐾 Mitnehmen' : '🏠 Zu Hause lassen'; }); }
     const TABS = ['🧑‍🤝‍🧑 Figuren', '🧍 Körper', '😀 Gesicht', '👀 Augen', '💇 Haare', '🧔 Bart', '👕 Kleidung', '👟 Schuhe', '💍 Zubehör', '🎩 Hüte', '🐾 Haustier'], tbs = []; let cur = 0;
-    function showTab(i) { cur = i; panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); }
-    TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; b.textContent = t; b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
+    function showTab(i) { cur = i; box.classList.toggle('t0', i === 0); panels.forEach((d, k) => d.hidden = k !== i); tbs.forEach((b, k) => b.classList.toggle('sel', k === i)); if (i === 0) renderSlots(); BI.Thumb.load(panels[i]); }
+    TABS.forEach((t, i) => { const b = document.createElement('button'); b.className = 'ctab'; { const sp = t.indexOf(' '), ti = document.createElement('span'), tl = document.createElement('span'); ti.className = 'ti'; ti.textContent = t.slice(0, sp); tl.textContent = t.slice(sp + 1); b.append(ti, tl); } b.onclick = () => { showTab(i); A.pop(); }; tabsEl.appendChild(b); tbs.push(b); });
     { const mk = (t, fn) => { const b = document.createElement('button'); b.className = 'pill'; b.textContent = t; b.onclick = fn; actEl.appendChild(b); };
       mk('🎲 Zufall', () => edit(() => { const r = BI.randomCu(); save.cu = Object.assign(r, { acc: (save.cu && save.cu.acc) || {} }); save.shirt = (Math.random() * BI.SHIRTS.length) | 0; }));
       mk('⟲', () => { cam.yaw -= .8; A.pop(); }); mk('⏯ Drehen', () => { orbitOff = !orbitOff; A.pop(); }); mk('⟳', () => { cam.yaw += .8; A.pop(); }); }
     showTab(0);
     pickers.push(() => { syncs.forEach(f => f()); });
+    return { showTab };
   }
-  buildHeroPicker($('heroPick')); buildHeroPicker($('wardPick'));
+  buildHeroPicker($('heroPick')); const wardTabs = buildHeroPicker($('wardPick'));
   { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = 'Bunte Insel'.split(' ').map((w, wi) => '<div class="w">' + [...w].map((ch, i) => '<span style="--i:' + (i + wi * 6) + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join('') + '</div>').join('<i></i>'); }
-  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); };
+  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); if (creating) setTimeout(() => BI.Thumb.load($('heroPick')), 60); };
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
   const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? (i.pn || BI.heroById(i.hero).name) : 'Neu'; };
   function slotBarRefresh() { const i = BI.store.info(SLOT); $('slotBar').innerHTML = '<span>💾 Spielstand ' + SLOT + ' · ' + (i.has ? heroName() + ' · ⭐ ' + save.stars : 'Neu') + '</span><span>Wechseln ›</span>'; $('slotLab').textContent = '💾 Spielstand ' + SLOT + (saveOk ? '' : ' ⚠️ Speicher voll'); }
-  function flushAll() { persist(); try { build.saveNow(); } catch (e) { } }
+  function flushAll() { persist(); try { build.saveNow(); vox.saveNow(); } catch (e) { } }
   function saveNow(quiet) { flushAll(); slotBarRefresh(); if (!quiet) say(saveOk ? '💾 Gespeichert ✔ (Spielstand ' + SLOT + ')' : '⚠️ Speicher voll – lösche Fotos oder sichere in eine Datei', 2600); }
   function download(name, obj) {
     const txt = JSON.stringify(obj), blob = new Blob([txt], { type: 'application/json' });
@@ -1473,7 +1507,7 @@
       if (running && P.y < .1 && Math.random() < dt * 12) fx.burst(P.x - Math.sin(P.h) * .3, .12, P.z - Math.cos(P.h) * .3, 1, [BI.C.dust], 1.2, .4, 22, 2);
       const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
-      const gy = Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y));
+      const vf = vox.floorAt(P.x, P.z, P.y), gy = Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
       if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung
       if (P.jbuf > 0) P.jbuf -= dt;
       if (inp.jump) { inp.jump = false; P.jbuf = .14; }
@@ -1485,7 +1519,7 @@
       gadgets.thrust(dt, inp.held || inp.up, gy);
       if (P.softFall > 0) P.softFall -= dt;
       P.y += P.vy * dt;
-      if (P.y < gy) { P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7) || play.trampAt(P.x, P.z)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
+      if (P.y < gy) { if (vf === gy && gy - P.y > .05 && gy - P.y <= 1.1 && P.vy <= .5) { P.y = Math.min(gy, P.y + 11 * dt); P.vy = 0; } else P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7) || play.trampAt(P.x, P.z)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
       if (P.y <= gy + .02 && P.speed > .5 && Math.random() < dt * 10 && build.nearType(P.x, P.z, 'pool', 1.9)) { fx.burst(P.x, .3, P.z, 3, [BI.C.water], 2, .5, 24, 6); if (Math.random() < .2) A.splash(); }
       P.phase += dt * (6 + P.speed * 1.2); P.wave = Math.max(0, P.wave - dt);
       if (inp.hornEdge) {
@@ -1682,7 +1716,8 @@
   function updateCamera(dt) {
     const v = P.veh; let tx, ty, tz, dist, pitch = cam.pitch;
     if (rs.ui === 'play' && state === 'play') { camera.position.set(RG.x + .9, 2.25, RG.z + 2.7); camera.lookAt(RG.x, 1.75, -88); cam.x = RG.x; cam.y = 2.25; cam.z = RG.z + 2.7; sun.position.set(RG.x + 60, 100, RG.z + 40); sun.target.position.set(RG.x, 0, RG.z); sky.position.set(RG.x, 0, RG.z); return; }
-    if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -.55 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
+    if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -1.05 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
+    else if (wardOpen && !v) { cam.yaw += dt * (orbitOff ? 0 : .5); tx = P.x; ty = P.y + (innerHeight > innerWidth ? -1.05 : .7); tz = P.z; dist = 5.2; pitch = .1; }
     else if (v) {
       if (cam.ego && state === 'play') {
         const e = EYE[v.isTrain ? 'train' : v.type] || [0, 1.4, .4], ex = v.x + Math.sin(v.h) * e[2], ez = v.z + Math.cos(v.h) * e[2], ey = (v.y || 0) + e[1], yaw = v.h + cam.egoOff;
@@ -1729,7 +1764,7 @@
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
     updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); cinema.update(); story.update(dt, state === 'play', { hud: $('mission').hidden, idle: !P.veh && !mission && !shopOpen && !guideOpen && !parentOpen && !kids.busy() && !cinema.open }); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); park.update(dt, t); rainbow.update(dt, t); pups.update(dt, t); dampf.update(dt, t); drachen.update(dt, t); einsatz.update(dt, t); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); meta.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
-    if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
+    if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t); vox.update(dt, t); if (build.active && vox.count !== lastVC) { lastVC = vox.count; updateBuildCount(); }
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
     if (state === 'play') { updateButtons(false); updateArrow(); updateGauge(); }
@@ -1745,6 +1780,6 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { vox, bauland, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
 
