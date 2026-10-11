@@ -617,8 +617,9 @@ function showLine() { var W = WD, D = W.dlg, d = $('#dlg'); d.innerHTML = '<div 
 function nextLine() { var W = WD, D = W.dlg; if (!D) return; D.i++; if (D.i >= D.lines.length) { W.dlg = null; $('#dlg').style.display = 'none'; if (D.done) D.done(); } else showLine(); }
 var banT = 0;
 function banner(t, sub) { var b = $('#ban'); b.innerHTML = '<div>' + esc(t) + '</div>' + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.style.display = 'block'; b.classList.remove('in'); void b.offsetWidth; b.classList.add('in'); clearTimeout(banT); banT = setTimeout(function () { b.style.display = 'none'; }, 3600); }
-function talk(n) {
-  var W = WD, d = n.d; n.wait = 4; n.look = 1; GL.emit('talk', d.id);
+function talk(n) { n.wait = 4; n.look = 1; GL.emit('talk', n.d.id); if (GL.emit('talkMenu', n, talkBase)) return; talkBase(n); }
+function talkBase(n) {
+  var W = WD, d = n.d;
   var sq = SIDE[d.id], ws = S.world;
   if (sq) {
     var st = ws.side[d.id] || 0;
@@ -1681,7 +1682,7 @@ function mpAuto() {
 window.addEventListener('pagehide', save);
 
 /* ---------- Schnittstelle für die Module in js/ ---------- */
-GL.core = { $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
+GL.core = { talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
   editor: editor, openGame: openGame, showHub: showHub, menuHub: menuHub, gameOf: gameOf, bestOf: bestOf, makePerson: makePerson, animPerson: animPerson, lmat: lmat, cvTex: cvTex, labelSprite: labelSprite, mix: mix,
   GAMES: GAMES, POIS: POIS, QUESTS: QUESTS, SIDE: SIDE, NPCDEF: NPCDEF, DATES: DATES, STARS: STARS, RB: RB, resize: function () { if (WD && WD.on) resize(); } };
 Object.defineProperty(GL, 'W', { get: function () { return WD; } });

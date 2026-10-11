@@ -13,7 +13,7 @@
       // ab v2
       life: { day: 1, needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, stress: 20 }, boost: 0, money: 150, log: [], food: 2, inside: 0, ix: 0, iz: 3, warn: {}, stats: { meals: 0, showers: 0, sleeps: 0 } },
       jobs: { bar: { xp: 0, shifts: 0, earned: 0 } },
-      rel: {},
+      rel: {}, msgs: [], cal: [], dating: { ints: [] },
       settings: { q: -1 } };
   }
   function merge(d, s) {
