@@ -535,12 +535,12 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
   await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
   const r = await p.evaluate(async () => { const b = window.__bi, o = b.obby, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; const till = async (f, n = 60) => { for (let i = 0; i < n && !f(); i++) await sl(100); return f(); };
-    b.P.x = o.pad.x; b.P.z = o.pad.z; await sl(300); const n = b.placeNear(); out.src = n && n.src + ':' + n.n.k; b.placeAct(n); out.run = await till(() => o.run && Math.abs(b.P.y - 14) < .3);
+    b.P.x = o.pad.x; b.P.z = o.pad.z; await sl(300); const n = b.placeNear(); out.src = n && n.src + ':' + n.n.k; b.placeAct(n); out.run = await till(() => o.run && Math.abs(b.P.y - 14) < .3); out.noVeh = b.nearVehicle() === null;
     b.P.x = o.pad.x + 10.6; out.stone = await till(() => Math.abs(b.P.y - 14) < .3); b.P.y = 5; out.respawn = await till(() => o.run && o.run.falls === 1 && Math.abs(b.P.y - 14) < .3);
     b.P.x = o.fin.x; b.P.z = o.fin.z; b.P.y = o.fin.y; const s0 = b.save.stars; out.done = await till(() => !o.run && b.save.stars >= s0 + 6); out.top = b.save.obby && b.save.obby.top.length; out.back = Math.abs(b.P.y) < 1.5;
     const x = b.express; x.show(); out.open = x.open && !document.getElementById('expPanel').hidden; x.close(); x.emote('flip'); out.cur = !!x.cur; out.end = await till(() => !x.cur, 100); x.chat(0); await sl(200); out.bub = b.bubbles.length > 0; out.n = x.EMOTES.length;
     return out; });
-  ok(r.src === 'obby:start' && r.run && r.stone && r.respawn && r.done && r.top === 1 && r.back, 'Himmels-Parcours: Start am Boden, Plattformen tragen, Sturz → Checkpoint, Ziel mit Sternen + Bestenliste, zurück am Boden'); ok(r.open && r.cur && r.end && r.bub && r.n >= 8, `Emotes (${r.n}) und Schnell-Chat (Sprechblase) funktionieren`);
+  ok(r.src === 'obby:start' && r.run && r.noVeh && r.stone && r.respawn && r.done && r.top === 1 && r.back, 'Himmels-Parcours: Start am Boden, Plattformen tragen, Sturz → Checkpoint, Ziel mit Sternen + Bestenliste, zurück am Boden'); ok(r.open && r.cur && r.end && r.bub && r.n >= 8, `Emotes (${r.n}) und Schnell-Chat (Sprechblase) funktionieren`);
   await c.close();
 }
 { // Gadgets und eigener Parcours

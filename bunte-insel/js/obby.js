@@ -28,8 +28,8 @@ BI.createObby = function (G) {
   { const b = new BI.Batch();
     for (const p of plats) {
       const w = p.x1 - p.x0, d = p.z1 - p.z0, cx = p.cx, cz = p.cz;
-      b.box(cx, p.y - .7, cz, w, .7, d, p.col); b.box(cx, p.y - .08, cz, w - .3, .08, d - .3, 0xffffff);
-      b.sph(cx, p.y - 1.0, cz, Math.max(w, d) * .38, 0xffffff, 1, 1.2, .55, 1.2);
+      b.box(cx, p.y - .72, cz, w, .7, d, p.col); b.box(cx, p.y - .08, cz, w - .3, .08, d - .3, 0xffffff); /* Oberseite der Farbplatte liegt 2 cm tiefer → kein Flackern */
+      b.sph(cx, p.y - 1.5, cz, Math.min(Math.max(w, d) * .3, 2.2), 0xffffff, 1, 1.3, .4, 1.3); /* kleine Wolke ganz unter der Platte (ragt nie hindurch) */
     }
     for (const c of cps) { b.box(c.x + 2.2, c.y, c.z - 2.2, .12, 2.2, .12, 0xdddddd); b.box(c.x + 2.2 + .5, c.y + 1.7, c.z - 2.2, 1.0, .6, .06, 0xe0382b); }
     /* Ziel-Torbogen */
