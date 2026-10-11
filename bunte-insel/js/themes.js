@@ -68,3 +68,9 @@ BI.zoneAt = function (x, z, flags) {
   if (x > CI.x0 && x < CI.x1 && z > CI.z0 && z < CI.z1) return 'kino';
   return 'insel';
 };
+
+/* In welcher Welt (Insel) ist dieser Punkt? 'insel' (Hauptinsel mit Camp, Freibad, Hof …), 'stadt', 'park', 'regenbogen', 'bucht' */
+BI.worldAt = function (x, z) {
+  const d = (cx, cz) => Math.hypot(x - cx, z - cz), R = BI.RAINBOW, K = BI.PARK, C = BI.CITY, F = BI.PUPS;
+  if (d(R.x, R.z) < R.R + 12) return 'regenbogen'; if (d(F.x, F.z) < F.R + 12) return 'bucht'; if (d(K.x, K.z) < K.R + 12) return 'park'; if (d(C.x, C.z) < C.R + 12) return 'stadt'; return 'insel';
+};
