@@ -26,7 +26,7 @@
 
   function n(k) { return L.needs[k]; }
   life.mood = function () {
-    var v = (n('energy') + n('hunger') + n('hygiene') + n('social') + (100 - n('stress'))) / 5 + L.boost + (GL.furn ? GL.furn.bonus() : 0) + (GL.story ? GL.story.bonus() : 0);
+    var v = (n('energy') + n('hunger') + n('hygiene') + n('social') + (100 - n('stress'))) / 5 + L.boost + (GL.furn ? GL.furn.bonus() : 0) + (GL.story ? GL.story.bonus() : 0) + (GL.weather ? GL.weather.bonus() : 0);
     return Math.round(clamp(v, 0, 100));
   };
   life.moodName = function (m) { m = m == null ? life.mood() : m; return m >= 75 ? 'Bestens' : m >= 55 ? 'Gut' : m >= 35 ? 'Geht so' : 'Mies'; };

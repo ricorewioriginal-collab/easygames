@@ -136,10 +136,10 @@
   ph.applyQuality = function (Wb) {
     var W = Wb || GL.W; if (!W) return;
     var q = S.settings.q, coarse = (window.matchMedia && matchMedia('(pointer:coarse)').matches) || (navigator.maxTouchPoints > 0 && Math.min(innerWidth, innerHeight) < 820);
-    if (q < 0) q = coarse ? 1 : 2;
+    if (q < 0) q = Math.min(coarse ? 1 : 2, GL.perfCap == null ? 2 : GL.perfCap);
     var dpr = window.devicePixelRatio || 1, pr = [.75, 1, 1.5][q];
     W.R.setPixelRatio(Math.min(dpr, pr));
-    W.scene.fog.near = q === 0 ? 45 : 70; W.scene.fog.far = q === 0 ? 170 : 230;
+    W.scene.fog.near = W.fogN = q === 0 ? 45 : 70; W.scene.fog.far = W.fogF = q === 0 ? 170 : 230;
     if (!W.inside) { W.cam.far = q === 0 ? 260 : 420; W.cam.updateProjectionMatrix(); }
     C().resize();
   };

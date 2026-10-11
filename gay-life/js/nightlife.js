@@ -35,6 +35,7 @@
     var o = nt(), t = N.theme(), i = 0, pts = 0, styles = opt.styles || [t.st, t.st === 'Lounge' ? 'Pop' : 'House', ['Pop', 'Salsa', 'Disco', 'Techno'][(L.day + o.danced) % 4]], rnd = Math.random;
     if (opt.seed) { var a = opt.seed >>> 0; rnd = function () { a |= 0; a = a + 0x6D2B79F5 | 0; var q = Math.imul(a ^ a >>> 15, 1 | a); q = q + Math.imul(q ^ q >>> 7, 61 | q) ^ q; return ((q ^ q >>> 14) >>> 0) / 4294967296; }; }
     function round() {
+      if (GL.audio) GL.audio.song(styles[i], 'club');
       var s = styles[i], b = STYLE[s], sh = function () { return rnd() - .5; }, mv = MOVES.slice().sort(sh).filter(function (m) { return m === b[0] || m === b[1]; }).concat(MOVES.filter(function (m) { return m !== b[0] && m !== b[1]; }).sort(sh).slice(0, 2)).sort(sh);
       GL.ui.menu('Tanzfläche · Song ' + (i + 1) + ' von 3', 'Der DJ legt <b>' + s + '</b> auf. Was tanzt du?', mv.map(function (m) {
         return { e: '🕺', t: m, fn: function () { var p = m === b[0] ? 2 : m === b[1] ? 1 : 0; pts += p; GL.core.sfx(p === 2 ? 'ok' : p ? 'tap' : 'no'); GL.life.advance(30); GL.life.change({ energy: -7 }, 0); if (++i < 3) round(); else finish(); } };

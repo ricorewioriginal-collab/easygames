@@ -2,6 +2,24 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 9 (11.10.2026): Politur (M10): Wetter, Ton, Leistungswächter
+
+### Neu umgesetzt
+
+- **Wetter** (`js/weather.js`, `GL.weather`): ein Wetter pro Spieltag (sonnig, bewölkt, Regen, Nebel), aus der Tageszahl berechnet (kein Spielstand nötig, auf allen Geräten gleich). Draußen ändert es Licht, Nebelweite, Himmel und Wolken, Regentropfen (260 Linien um die Figur) und die Laune (Sonne +2, Regen −3); in Wohnungen ohne Wirkung. Handy-App „Wetter“ mit heute und den nächsten drei Tagen. Hinweis zum neuen Tag.
+- **Ton ohne Dateien** (`js/audio.js`, `GL.audio`): Club-Musik aus einem kleinen Beat-Generator je Tanzstil (Kick, Hi-Hat, Bass, Melodie), läuft nur solange das Tanz-Menü offen ist; Regenrauschen draußen bei Regen. Beides folgt dem Ton-Schalter.
+- **Leistungswächter** (`js/perf.js`, `GL.perf`): Im Qualitäts-Modus „Auto“ senkt er die Auflösung stufenweise, wenn die Bildrate zweimal in Folge unter 24 liegt; hebt nie von selbst an; feste Qualität bleibt unangetastet.
+- Neues Ereignis `skyAfter` (nach der Himmelsberechnung), `muted` (Ton-Schalter).
+
+### Tests Durchgang 9
+
+- e2e Abschnitt 10: Wetterverteilung, Laune, Regen sichtbar/Nebel näher/Rauschen, drinnen nichts, Handy-App, Club-Musik beginnt und endet, Ton aus, Leistungswächter. Regen per Bildschirmfoto angesehen. Gesamtlauf: 236 Prüfungen grün.
+- **Ehrlich**: Hörbarkeit und Klang der Musik und des Regens wurden nicht von Menschen geprüft (nur, dass die Töne geplant werden). Echte Bildraten auf Handys nicht gemessen.
+
+### Offen
+
+- Club-Innenräume mit Tanzfläche in 3D, Stylist/Eventmanager/Performer, Viertel-Bewohner mit Dates, Pride-Event, Gewitter/Schnee, LOD für ferne Figuren.
+
 ## Stand nach Durchgang 8 (11.10.2026): 3D-Charaktereditor (M9)
 
 ### Neu umgesetzt

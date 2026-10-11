@@ -299,7 +299,7 @@ function menuHub() {
   $('#glEdit').onclick = editor;
   if ($('#glCity')) $('#glCity').onclick = function () { $('#hub').style.display = 'none'; enterWorld(); };
   $('#glSave').onclick = function () { save(); toast('Gespeichert auf diesem Gerät.'); };
-  $('#glSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; sfx('ok'); };
+  $('#glSnd').onclick = function () { S.sound = !S.sound; save(); GL.emit('muted'); this.textContent = S.sound ? '🔊' : '🔇'; sfx('ok'); };
   [].forEach.call(document.querySelectorAll('.gcard'), function (b) { b.onclick = function () { var g = GAMES.filter(function (x) { return x.id === b.dataset.g; })[0]; openGame(g); }; });
   window.scrollTo(0, 0);
 }
@@ -605,7 +605,7 @@ function controls(W) {
   $('#act').onclick = function () { act(); };
   $('#wLook').onclick = editor;
   $('#wMap').onclick = function () { GL.emit('openMap'); };
-  mpControls(); $('#wSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; };
+  mpControls(); $('#wSnd').onclick = function () { S.sound = !S.sound; save(); GL.emit('muted'); this.textContent = S.sound ? '🔊' : '🔇'; };
 }
 function curInter() {
   var W = WD, p = W.player, best = null, bd = 1e9;
@@ -678,6 +678,7 @@ function skyUpdate() {
   W.sunM.position.set(cp.x + Math.cos(ang) * 260, Math.sin(ang) * 220, cp.z - 120); W.moonM.position.set(cp.x - Math.cos(ang) * 260, -Math.sin(ang) * 220, cp.z + 120);
   W.sunM.visible = Math.sin(ang) > -.05; W.moonM.visible = -Math.sin(ang) > -.05; W.starsM.material.opacity = 1 - dayF; W.starsM.position.set(cp.x, 0, cp.z);
   var ni = (1 - dayF) * 1.1; W.win.forEach(function (m) { m.emissiveIntensity = ni; }); W.lamps.forEach(function (l) { l.visible = dayF < .6; });
+  GL.emit('skyAfter', W);
 }
 var lastT = 0;
 function frame(ts) {
@@ -1730,7 +1731,7 @@ function mpAuto() {
 window.addEventListener('pagehide', save);
 
 /* ---------- Schnittstelle für die Module in js/ ---------- */
-GL.core = { talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
+GL.core = { ac: ac, talkBase: talkBase, $: $, esc: esc, fmt: fmt, pick: pick, toast: toast, banner: banner, say: say, sfx: sfx, gain: gain, level: level, glz2: glz2, avatar: avatar,
   editor: editor, openGame: openGame, showHub: showHub, menuHub: menuHub, gameOf: gameOf, bestOf: bestOf, makePerson: makePerson, animPerson: animPerson, lmat: lmat, cvTex: cvTex, labelSprite: labelSprite, mix: mix,
   GAMES: GAMES, POIS: POIS, QUESTS: QUESTS, SIDE: SIDE, NPCDEF: NPCDEF, DATES: DATES, STARS: STARS, RB: RB, resize: function () { if (WD && WD.on) resize(); } };
 Object.defineProperty(GL, 'W', { get: function () { return WD; } });
