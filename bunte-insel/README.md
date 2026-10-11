@@ -227,7 +227,7 @@ Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die gro
 
 ### ⭐ Zotik – Lunaris, die Hauptstadt der Splitter (eigenes Rollenspiel-Universum)
 
-Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als begehbare Welt. **Eingang:** leuchtender Kristallring „Rissportal“ im Westen der Hauptinsel (🧭 → Zotik, E am Portal). Lunaris liegt weit weg auf einer eigenen schwebenden Insel mit Abendhimmel, Mond und Sternen; die Hauptwelt wird dort ausgeblendet (spart GPU).
+Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als große Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
 
 - **Stadt:** Plaza mit Mondkristall-Brunnen, Markt „Wanderhand“ (Händler Rurik), Taverne, Akademie-Turm, **Burg Lunaris auf einem 8-stufigen Hügel**, Hafen, schwebende Nachbarinseln, leuchtende Mondbäume.
 - **Bewohner mit Dialog:** Mira (Questgeberin), Rurik, Lyra, Rovan, Nia, Professorium. **Moosling Felli** streicheln = neuer **Partner** (wie Zündel/Willi).

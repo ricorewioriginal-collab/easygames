@@ -53,7 +53,9 @@ BI.buildWorld = function (scene) {
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
     if (rad > K.LIMIT - r) {
-      if (alt == null && pz > 150 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      else if (W.zotik && zotikWalk(px, pz, r)) { /* Brücke / Zotik – Lunaris */ }
+      else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40 && Math.abs(px - W.zotik.x) < 90) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
       else if (W.city && cityWalk(px, pz, r)) { /* Brücke / Stadtinsel */ }
       else if (W.park && parkWalk(px, pz, r)) { /* Brücke / Parkinsel */ }
       else if (W.rainbow && rainbowWalk(px, pz, r)) { /* Brücke / Regenbogeninsel */ }
@@ -67,7 +69,6 @@ BI.buildWorld = function (scene) {
       else if (W.park && px > 160 && Math.hypot(px - W.park.x, pz - W.park.z) < W.park.R + 40 && Math.abs(pz - W.park.z) < 70) { const dd = Math.hypot(px - W.park.x, pz - W.park.z) || 1, k = Math.min(1, (W.park.R - r) / dd); px = W.park.x + (px - W.park.x) * k; pz = W.park.z + (pz - W.park.z) * k; hit = true; }
       else if (W.city && pz < -170 && Math.hypot(px - W.city.x, pz - W.city.z) < Math.hypot(px, pz) + 20 && Math.hypot(px - W.city.x, pz - W.city.z) < W.city.R + 40) { const dd = Math.hypot(px - W.city.x, pz - W.city.z) || 1, k = (W.city.R - r) / dd; px = W.city.x + (px - W.city.x) * k; pz = W.city.z + (pz - W.city.z) * k; hit = true; }
       else if (W.atlantis && W.atlantis.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Atlantis (unter der Erde) */ }
-      else if (W.zotik && W.zotik.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Zotik / Lunaris (schwebende Insel) */ }
       else if (W.radio && W.radio.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Funkwelle (Radio-Insel) */ }
       else if (W.bauland && baulandWalk(px, pz, r)) { /* Brücke / Bauland */ }
       else if (W.bauland && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < W.bauland.R + 60 && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < Math.hypot(px, pz)) { const dd = Math.hypot(px - W.bauland.x, pz - W.bauland.z) || 1, k = Math.min(1, (W.bauland.R - r) / dd); px = W.bauland.x + (px - W.bauland.x) * k; pz = W.bauland.z + (pz - W.bauland.z) * k; hit = true; }
@@ -78,6 +79,7 @@ BI.buildWorld = function (scene) {
   const baulandWalk = (px, pz, r) => { const C = W.bauland, b = C.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * C.ux + rz * C.uz, sd = -rx * C.uz + rz * C.ux; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3); };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const drachenWalk = (px, pz, r) => { const C = W.drachen, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
+  const zotikWalk = (px, pz, r) => { const C = W.zotik, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const dampfWalk = (px, pz, r) => { const C = W.dampf, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const pupsWalk = (px, pz, r) => { const C = W.pups, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const rainbowWalk = (px, pz, r) => { const C = W.rainbow, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
