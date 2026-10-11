@@ -60,6 +60,9 @@ BI.buildPupsGround = function (c) {
     snow: o => { for (const sd of [-1, 1]) o.box(sd * .9, .15, .3, .3, .12, 3.6, 0xeef3ff, 0, .15); o.box(0, .45, -.2, 1.6, .8, 2.8, 0x4fc3f7); o.box(0, .95, 1.0, 1.2, .5, .06, 0xbfe6ff, 0, -.5); o.box(0, 1.0, -1.0, 1.2, .3, 1.4, 0x2a2f3a); o.box(0, .3, -1.7, 1.6, .5, .8, 0x2a2a33); o.box(0, 1.2, .6, 1.2, .1, .1, 0xdddddd); }
   };
   TEAM.forEach((q, i) => { const x = (i - 3) * 4.4; VEH[q.veh](V(X(x), Z(9.5))); });
+  /* Einsatz-Tafel (Bild kommt zur Laufzeit aus einsatz.js): Pfosten, Rückwand, Blinklicht */
+  { const bx = X(-10), bz = Z(1.3); for (const sd of [-1, 1]) st.box(bx + sd * 2.6, 0, bz, .3, 1.6, .3, 0x555a66); st.box(bx, 1.5, bz, 6.2, 4.7, .3, 0x14305f); st.box(bx, 6.2, bz, 6.6, .3, .6, 0xffd23f); lamp.sph(bx, 6.9, bz, .4, 0xff3b3b, 1);
+    W.addBox(X(-13.2), Z(1.0), X(-6.8), Z(1.6), false, 6); W.spots.pupsBoard = { x: bx, z: Z(-1.6) }; }
   /* Lampen entlang Promenade und Fahrzeug-Platz */
   for (let v = -42; v <= -22; v += 10) for (const sd of [-1, 1]) { st.cyl(X(sd * 4.2), 0, Z(v), .08, .1, 4.2, 0x555a66, 6); lamp.sph(X(sd * 4.2), 4.4, Z(v), .34, [0xff7a1a, 0x2d6be0][(sd + 1) >> 1], 1); }
   for (const u of [-18, 18]) { st.cyl(X(u), 0, Z(3), .08, .1, 4.2, 0x555a66, 6); lamp.sph(X(u), 4.4, Z(3), .34, 0xffd23f, 1); }
