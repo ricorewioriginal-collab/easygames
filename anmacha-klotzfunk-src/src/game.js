@@ -1170,6 +1170,13 @@ export class Game {
   }
 
   // ---------- Chunk-Streaming ----------
+  // Ladefortschritt (0..1): Anteil der Chunks im Umkreis r, die schon ein Mesh haben
+  areaReady(r) {
+    const pcx = Math.floor(this.player.x / CS), pcz = Math.floor(this.player.z / CS);
+    let n = 0, done = 0;
+    for (const [dx, dz, d] of this.offsets) { if (d > r) continue; n++; const c = this.world.getChunk(pcx + dx, pcz + dz); if (c && c.meshed) done++; }
+    return n ? done / n : 1;
+  }
   stream() {
     const pcx = Math.floor(this.player.x / CS), pcz = Math.floor(this.player.z / CS);
     const moved = !this.lastPC || this.lastPC[0] !== pcx || this.lastPC[1] !== pcz;

@@ -14,6 +14,7 @@ import { TRADES, GREET } from './trades.js';
 import { Multiplayer } from './mp.js';
 import { MapScreen } from './mapui.js';
 import { ACTIONS, keyBinds, rebind, actionOf, keyName, readPad } from './controls.js';
+import { version } from '../package.json';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
@@ -297,6 +298,7 @@ function setState(s) {
   show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || s === 'trade' || ((s === 'settings' || s === 'mp') && setReturn === 'paused'));
   if (s !== 'playing') game.onMine(0);
   if (s !== 'paused') show('qlog', false);
+  if (s === 'menu') menuPage(null); // Startmenü: Hauptliste, erster Eintrag hat den Fokus
 }
 const locked = () => document.pointerLockElement === canvas;
 const needLock = () => !touchMode && !pad.raf; // mit Gamepad muss die Maus nicht gefangen sein
@@ -340,7 +342,12 @@ function closeInventory() {
 }
 
 document.addEventListener('pointerlockchange', () => { if (!locked() && state === 'playing' && needLock()) pause(); });
-document.addEventListener('pointerlockerror', () => { if (state === 'playing' && needLock()) pause(); });
+document.addEventListener('pointerlockerror', () => {
+  if (state !== 'playing' || !needLock()) return;
+  // nach dem Laden ist kein Klick mehr „frisch“: dann wartet das Spiel auf einen Klick ins Bild statt zu pausieren
+  if (performance.now() - lockGrace < 2000) { toast('Ins Bild klicken, um loszulegen'); return; }
+  pause();
+});
 
 // ---------- Speichern ----------
 function saveNow(announce) {
@@ -378,12 +385,59 @@ function renderSlots() {
     } else {
       h += `<div class="card new"><div class="top"><div class="ico">✨</div><div class="ttl"><b>Neue Welt ${i + 1}</b><span class="pill">frei</span></div></div>
         <div class="seed"><input id="seed${i}" placeholder="Startwert (leer = Zufall)" maxlength="24" autocomplete="off"><button data-act="dice" data-i="${i}" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div>
-        <div class="seg three" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben</button><button data-mode="creative">🕊 Kreativ</button><button data-mode="story">📜 Story</button></div>
+        <div class="seg three" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben<small>Rohstoffe, Hunger</small></button><button data-mode="creative">🕊 Kreativ<small>alles, fliegen</small></button><button data-mode="story">📜 Story<small>6 Kapitel</small></button></div>
         <button class="go" data-act="new" data-i="${i}">Welt erzeugen</button></div>`;
     }
   }
   $('slots').innerHTML = h;
+  updateContinue();
 }
+// ---------- Startmenü: Seiten, Weiterspielen, Bedienung mit Tasten und Gamepad ----------
+let menuPg = null, lastSlot = -1;
+const PAGES = { worlds: 'pgWorlds', help: 'pgHelp', data: 'pgData' };
+function updateContinue() {
+  let best = null;
+  for (let i = 0; i < SLOTS; i++) { const m = readMeta(i); if (m && (!best || m.savedAt > best.m.savedAt)) best = { i, m }; }
+  lastSlot = best ? best.i : -1;
+  $('mContinue').hidden = !best;
+  if (best) {
+    const m = best.m, mode = m.mode === 'story' ? 'Story' : m.mode === 'creative' ? 'Kreativ' : 'Überleben';
+    $('mContinueSub').textContent = `${m.name} · ${mode} · ${new Date(m.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })}`;
+  }
+}
+function menuPage(name) {
+  menuPg = name || null;
+  for (const [k, id] of Object.entries(PAGES)) show(id, k === menuPg);
+  $('menu').classList.toggle('paged', !!menuPg);
+  for (const b of document.querySelectorAll('#mmNav [data-page]')) b.classList.toggle('cur', b.dataset.page === menuPg);
+  const root = menuPg ? $(PAGES[menuPg]) : $('mmNav'), main = menuPg && root.querySelector('.go');
+  if (main && !touchMode) main.focus(); else menuFocus(root);
+}
+// sichtbare, bedienbare Elemente eines Bereichs (für Pfeiltasten und Gamepad)
+const focusables = root => [...root.querySelectorAll('button,input,select,a[href],summary')].filter(el => !el.disabled && el.offsetParent !== null);
+function menuFocus(root, k = 0) {
+  if (touchMode) return; // am Handy keine Fokusrahmen und keine Tastatur
+  const list = focusables(root); if (list.length) list[Math.min(k, list.length - 1)].focus({ preventScroll: false });
+}
+function menuMove(dir) {
+  const root = menuPg ? $(PAGES[menuPg]) : $('mmNav'), list = focusables(root);
+  if (!list.length) return;
+  const i = list.indexOf(document.activeElement);
+  list[i < 0 ? 0 : (i + dir + list.length) % list.length].focus();
+}
+function menuBack() { if (menuPg) { const from = menuPg; menuPage(null); const b = document.querySelector(`#mmNav [data-page=${from}]`); if (b && !touchMode) b.focus(); } }
+$('mmNav').addEventListener('click', e => { const b = e.target.closest('[data-page]'); if (b) menuPage(b.dataset.page); });
+for (const b of document.querySelectorAll('.pg-back')) b.onclick = menuBack;
+$('mContinue').onclick = () => { if (lastSlot >= 0) loadSlot(lastSlot); };
+$('mmVer').textContent = version;
+function renderHints(kind) {
+  const H = {
+    pad: [['A', 'Auswählen', 1], ['B', 'Zurück', 1], ['✚', 'Bewegen', 1]],
+    keys: [['↑↓', 'Auswählen'], ['Enter', 'Bestätigen'], ['Esc', 'Zurück']]
+  }[kind] || [];
+  $('mmHints').innerHTML = H.map(([k, t, p]) => `<span><kbd class="${p ? 'pad' : ''}">${k}</kbd>${t}</span>`).join('');
+}
+renderHints('keys');
 $('slots').addEventListener('click', e => {
   const sg = e.target.closest('.seg [data-mode]');
   if (sg) {
@@ -399,13 +453,7 @@ $('slots').addEventListener('click', e => {
   } else if (b.dataset.act === 'del') {
     if (confirm('Diese Welt wirklich löschen?')) { deleteWorld(i); renderSlots(); }
   } else if (b.dataset.act === 'load') {
-    let s = readWorld(i);
-    if (!s) {
-      const bk = readBackup(i);
-      if (bk && confirm('Dieser Speicherstand ist beschädigt. Die letzte Sicherung laden?')) { restoreBackup(i); s = bk; }
-      else { toast('Speicherstand nicht lesbar'); renderSlots(); return; }
-    }
-    launch(i, s);
+    loadSlot(i);
   } else if (b.dataset.act === 'exp') {
     const s = readWorld(i);
     if (!s) { toast('Speicherstand nicht lesbar'); return; }
@@ -422,6 +470,16 @@ $('slots').addEventListener('click', e => {
       gen: GEN_LATEST });
   }
 });
+
+function loadSlot(i) {
+  let s = readWorld(i);
+  if (!s) {
+    const bk = readBackup(i);
+    if (bk && confirm('Dieser Speicherstand ist beschädigt. Die letzte Sicherung laden?')) { restoreBackup(i); s = bk; }
+    else { toast('Speicherstand nicht lesbar'); renderSlots(); return; }
+  }
+  launch(i, s);
+}
 
 function downloadText(name, text) {
   try {
@@ -446,25 +504,71 @@ $('importFile').addEventListener('change', e => {
   }).catch(() => toast('Datei nicht lesbar'));
 });
 
+// ---------- Ladebildschirm ----------
+const TIPS = [
+  'Halte die Sprungtaste im Fall gedrückt, um zu gleiten.',
+  'Q oder „Haken“ zieht dich mit dem Seilhaken bis zu 40 Blöcke weit.',
+  'Mit M oder 🗺 öffnest du die Weltkarte. Dort kannst du eigene Markierungen setzen.',
+  'Erze brauchen eine Spitzhacke. Für Eisen und Funkkristall muss sie mindestens aus Stein sein.',
+  'Nachts kommen Rauschlinge. Sie verfolgen dich nur, wenn sie dich sehen.',
+  'Setzen auf einen Dorfbewohner öffnet den Handel.',
+  'Ein Schalter speist den Funksender daneben. Relais tragen das Signal weiter.',
+  'Ein Boot fährt auf Wasser, eine Lore folgt Schienen über Kurven und Stufen.',
+  'G wechselt die Bauform: Linie, Fläche, Wand oder Säule.',
+  'Weizen wächst auf Ackerboden. Aus 3 Weizen wird Brot.',
+  'Pause → 👥 Mehrspieler lädt bis zu 4 Freunde in deine Welt ein.',
+  'In den Einstellungen kannst du alle Tasten neu belegen und die Touch-Tasten verschieben.'
+];
+let tipTimer = 0, ldTimer = 0, lockGrace = 0;
+function loadingScreen(save) {
+  const mode = { story: '📜 Story', creative: '🕊 Kreativ' }[save.mode] || '⛏ Überleben';
+  $('ldName').textContent = save.name || 'Welt'; $('ldMode').textContent = mode;
+  let k = Math.floor(Math.random() * TIPS.length);
+  const tip = () => { $('ldTip').textContent = TIPS[k++ % TIPS.length]; };
+  tip(); clearInterval(tipTimer); tipTimer = setInterval(tip, 4000);
+  ldProgress(0.04, save.px === undefined ? 'Welt wird erzeugt …' : 'Spielstand wird geladen …');
+}
+function ldProgress(p, text) {
+  $('ldFill').style.width = Math.round(p * 100) + '%'; $('ldBar').setAttribute('aria-valuenow', Math.round(p * 100));
+  if (text) $('ldStep').textContent = text;
+}
+// läuft, bis die Umgebung sichtbar fertig ist (höchstens 10 s), dann ins Spiel
+function finishLoading(done) {
+  const t0 = performance.now(), R = Math.min(game.viewDist, 3) + 0.5;
+  game.resume();
+  const tick = () => {
+    if (state !== 'loading') return;
+    const r = game.areaReady(R);
+    ldProgress(0.3 + r * 0.7, `Umgebung wird gebaut … ${Math.round(r * 100)} %`);
+    if (r >= 1 || performance.now() - t0 > 10000) { ldProgress(1, 'Los geht’s!'); ldTimer = setTimeout(done, 180); return; }
+    ldTimer = setTimeout(tick, 100);
+  };
+  tick();
+}
 function launch(i, save) {
   unlockAudio();
   slot = i;
+  loadingScreen(save);
   setState('loading');
   // Ein Frame Pause, damit der Ladebildschirm sichtbar wird
   requestAnimationFrame(() => setTimeout(() => {
     try {
       game.start(save);
+      ldProgress(0.3, 'Umgebung wird gebaut …');
       if (save.mode === 'creative') game.player.flying = false;
       $('bFly').hidden = !(touchMode && game.mode === 'creative');
       $('bUndo').hidden = game.mode !== 'creative';
       $('bmode').hidden = true;
-      renderHotbar(); renderQuest(); setState('playing'); renderVitals(); lockPointer();
-      if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner(game.story.c ? `📻 Kapitel 1: ${CHAPTERS[1].t}<small>${CHAPTERS[1].d} Dein Auftrag steht links (J blendet ihn aus).</small>` : '📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
-      if (!game.unsaved && save.px === undefined) saveNow(false);
+      renderHotbar(); renderQuest();
+      finishLoading(() => { clearInterval(tipTimer); if (state !== 'loading') return; setState('playing'); renderVitals(); lockGrace = performance.now(); lockPointer(); welcome(save); });
     } catch (err) {
-      console.error(err); setState('menu'); renderSlots(); alert('Die Welt konnte nicht gestartet werden.');
+      clearInterval(tipTimer); console.error(err); setState('menu'); renderSlots(); alert('Die Welt konnte nicht gestartet werden.');
     }
   }, 30));
+}
+function welcome(save) {
+  if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner(game.story.c ? `📻 Kapitel 1: ${CHAPTERS[1].t}<small>${CHAPTERS[1].d} Dein Auftrag steht links (J blendet ihn aus).</small>` : '📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
+  if (!game.unsaved && save.px === undefined) saveNow(false);
 }
 
 $('pResume').onclick = () => { unlockAudio(); resume(); };
@@ -510,8 +614,16 @@ window.addEventListener('keydown', e => {
     if (e.code !== 'Escape') { const nb = rebind(binds, capture, e.code); if (nb) { binds = nb; settings.keys = { ...nb }; saveSettings(settings); } else toast('Diese Taste ist reserviert'); }
     capture = null; renderKeys(); return;
   }
+  if (state === 'menu' && e.target && e.target.tagName === 'INPUT' && (e.code === 'ArrowUp' || e.code === 'ArrowDown')) { e.preventDefault(); menuMove(e.code === 'ArrowDown' ? 1 : -1); return; }
   if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) {
     if (e.code === 'Escape') { e.target.blur(); if (state === 'inventory') closeInventory(); else if (state === 'settings') closeSettings(); }
+    return;
+  }
+  if (state === 'menu') {
+    if (e.code === 'ArrowDown' || e.code === 'ArrowRight') { e.preventDefault(); menuMove(1); }
+    else if (e.code === 'ArrowUp' || e.code === 'ArrowLeft') { e.preventDefault(); menuMove(-1); }
+    else if (e.code === 'Escape' || e.code === 'Backspace') { e.preventDefault(); menuBack(); }
+    renderHints('keys');
     return;
   }
   if (state === 'settings') { if (e.code === 'Escape') closeSettings(); return; }
@@ -621,14 +733,28 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
 })();
 
 // ---------- Gamepad (läuft nur, solange eins verbunden ist) ----------
-const pad = { active: false, prev: [], raf: 0, last: 0 };
+const pad = { active: false, prev: [], raf: 0, last: 0, sT: 0, sdir: 0 };
 function padLoop(now) {
   const gp = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(g => g && g.connected);
   if (!gp) { pad.raf = 0; pad.active = false; $('sPad').textContent = 'Kein Gamepad erkannt – eine Taste am Gamepad drücken.'; return; }
   pad.raf = requestAnimationFrame(padLoop);
   const dt = Math.min(0.05, (now - (pad.last || now)) / 1000); pad.last = now;
-  const r = readPad(gp, pad.prev); pad.prev = r.buttons;
+  const before = pad.prev, r = readPad(gp, before); pad.prev = r.buttons;
   if (r.buttons.some(Boolean) || r.r || r.f) unlockAudio();
+  const edge = i => r.buttons[i] && !before[i];
+  if (state === 'menu' || state === 'settings' || state === 'mp') { // Menüs: Steuerkreuz/Stick bewegt, A wählt, B zurück
+    const dir = edge(13) || edge(15) ? 1 : edge(12) || edge(14) ? -1 : 0;
+    const sy = -r.f, sdir = Math.abs(sy) > 0.6 ? Math.sign(sy) : 0;
+    let move = dir;
+    if (sdir && (sdir !== pad.sdir || now - pad.sT > 260)) { move = sdir; pad.sT = now; }
+    pad.sdir = sdir;
+    if (state === 'menu') {
+      if (move) menuMove(move);
+      if (edge(0) && document.activeElement && $('menu').contains(document.activeElement)) document.activeElement.click();
+      if (edge(1)) menuBack();
+    } else if (edge(1)) { if (state === 'settings') closeSettings(); else $('mpClose').onclick(); }
+    return;
+  }
   if (state === 'paused') { if (r.pause) resume(); return; }
   if (state === 'inventory') { if (r.inv || r.back) closeInventory(); return; }
   if (state === 'map') { if (r.map || r.back) closeMap(); return; }
@@ -650,7 +776,7 @@ function padLoop(now) {
   else if (r.pause) pause();
 }
 window.addEventListener('gamepadconnected', e => {
-  toast(`🎮 Gamepad verbunden`); $('sPad').textContent = `Erkannt: ${String(e.gamepad.id).slice(0, 40)}`;
+  toast(`🎮 Gamepad verbunden`); renderHints('pad'); $('sPad').textContent = `Erkannt: ${String(e.gamepad.id).slice(0, 40)}`;
   if (!pad.raf) pad.raf = requestAnimationFrame(padLoop);
 });
 

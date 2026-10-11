@@ -1,6 +1,6 @@
 {
   "name": "anmacha-klotzfunk",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": true,
   "type": "module",
   "description": "KLOTZFUNK 3D – Voxel-Sandbox im Browser (Three.js + Vite)",
