@@ -56,11 +56,15 @@ export function buildBraid(ctx: BuildCtx, p: BraidParams): Draft {
     dense.push([ax * Math.cos(t), 0, depth * Math.sin(t)]);
   }
   let arcLen = 0;
-  for (let i = 1; i < dense.length; i++) arcLen += Math.hypot((dense[i][0] as number) - (dense[i - 1][0] as number), (dense[i][2] as number) - (dense[i - 1][2] as number));
+  for (let i = 1; i < dense.length; i++)
+    arcLen += Math.hypot(
+      (dense[i][0] as number) - (dense[i - 1][0] as number),
+      (dense[i][2] as number) - (dense[i - 1][2] as number),
+    );
   const cnt = Math.max(4, Math.round(arcLen / 3.6) - 1);
   const pts = resample(dense, cnt + 2, false).slice(1, -1);
   const ret = pts.map((q, i) => d.add([q[0], 0.4 * Math.sin((Math.PI * (i + 1)) / (cnt + 1)), q[2]]));
   d.chain([last, ...ret, d.start], ctx.st.link);
-  d.groupIsland(ret, 2);
+  d.chunkIslands(ret, 6, 2);
   return d;
 }

@@ -39,11 +39,19 @@ export const STEP = 3.4;
 /** Radius eines Rings, auf dem n Felder mit Abstand `step` liegen */
 export const ringRadius = (n: number, step = STEP): number => (n * step) / (2 * Math.PI);
 
-export const polar = (cx: number, cz: number, r: number, a: number, y = 0): V3 => [cx + r * Math.cos(a), y, cz + r * Math.sin(a)];
+export const polar = (cx: number, cz: number, r: number, a: number, y = 0): V3 => [
+  cx + r * Math.cos(a),
+  y,
+  cz + r * Math.sin(a),
+];
 
 export const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 
-export const lerp3 = (a: V3, b: V3, t: number): V3 => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+export const lerp3 = (a: V3, b: V3, t: number): V3 => [
+  lerp(a[0], b[0], t),
+  lerp(a[1], b[1], t),
+  lerp(a[2], b[2], t),
+];
 
 export const dist3 = (a: V3, b: V3): number => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
@@ -147,7 +155,14 @@ function segCross(a: V3, b: V3, c: V3, d: V3): { t: number; u: number } | null {
 }
 
 /** Kreuzen sich zwei Kanten in der Draufsicht (und liegen auf gleicher Höhe)? */
-export function edgesClash(nodes: HasPos[], a: number, b: number, c: number, d: number): boolean {
+export function edgesClash(
+  nodes: HasPos[],
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  minDy = 2.6,
+): boolean {
   if (a === c || a === d || b === c || b === d) return false;
   const pa = (nodes[a] as HasPos).pos,
     pb = (nodes[b] as HasPos).pos,
@@ -155,7 +170,7 @@ export function edgesClash(nodes: HasPos[], a: number, b: number, c: number, d: 
     pd = (nodes[d] as HasPos).pos;
   const x = segCross(pa, pb, pc, pd);
   if (!x) return false;
-  return Math.abs(lerp(pa[1], pb[1], x.t) - lerp(pc[1], pd[1], x.u)) < 2.6;
+  return Math.abs(lerp(pa[1], pb[1], x.t) - lerp(pc[1], pd[1], x.u)) < minDy;
 }
 
 function pointSegDist(p: V3, a: V3, b: V3): number {
@@ -163,7 +178,10 @@ function pointSegDist(p: V3, a: V3, b: V3): number {
     vy = b[1] - a[1],
     vz = b[2] - a[2];
   const l2 = vx * vx + vy * vy + vz * vz;
-  const t = l2 === 0 ? 0 : Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy + (p[2] - a[2]) * vz) / l2));
+  const t =
+    l2 === 0
+      ? 0
+      : Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy + (p[2] - a[2]) * vz) / l2));
   return Math.hypot(p[0] - (a[0] + vx * t), p[1] - (a[1] + vy * t), p[2] - (a[2] + vz * t));
 }
 

@@ -34,7 +34,11 @@ export function buildZigzag(ctx: BuildCtx, p: ZigzagParams): Draft {
     d.chain(ordered, ctx.st.main);
     if (r + 1 < R) {
       const endCol = r % 2 === 0 ? C - 1 : 0;
-      d.link((grid[r] as number[])[endCol] as number, (grid[r + 1] as number[])[endCol] as number, ctx.st.main);
+      d.link(
+        (grid[r] as number[])[endCol] as number,
+        (grid[r + 1] as number[])[endCol] as number,
+        ctx.st.main,
+      );
     }
   }
   // Rückweg am linken Rand, von der letzten Reihe zum Start
@@ -55,7 +59,6 @@ export function buildZigzag(ctx: BuildCtx, p: ZigzagParams): Draft {
     else d.link(b, a, ctx.st.climb);
   }
   for (let r = 0; r < R; r += 2) {
-    const ids = [...(grid[r] as number[]), ...(grid[r + 1] as number[])];
     for (let c = 0; c < C; c += 3) {
       const hi = C - (c + 3) < 2 ? C : c + 3;
       const part = [...(grid[r] as number[]).slice(c, hi), ...(grid[r + 1] as number[]).slice(c, hi)];
@@ -63,7 +66,6 @@ export function buildZigzag(ctx: BuildCtx, p: ZigzagParams): Draft {
       d.groupIsland(part, 1.9);
       if (hi === C) break;
     }
-    void ids;
   }
   return d;
 }

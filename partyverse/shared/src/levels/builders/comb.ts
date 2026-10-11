@@ -35,7 +35,7 @@ export function buildComb(ctx: BuildCtx, p: CombParams): Draft {
   d.start = S[0] as number;
   const teeth: number[][] = [];
   const tooth = (row: number[], j: number, h: number, sign: number, reverse: boolean) => {
-    const base = (row[j] as number),
+    const base = row[j] as number,
       next = row[j + 1] as number;
     const bp = (d.nodes[base] as { pos: number[] }).pos;
     const a: number[] = [],

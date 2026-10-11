@@ -113,6 +113,7 @@ class Rig implements CharacterRig {
     this.parts = BUILDERS[def.silhouette](this.env);
     this.root.name = `char-${id}`;
     this.rigG.name = 'pose';
+    this.parts.head.name = 'head';
     this.rigG.add(this.parts.model);
     this.root.add(this.rigG);
     this.root.scale.setScalar(opts.scale ?? 1);
@@ -191,7 +192,7 @@ class Rig implements CharacterRig {
     }
     if (color === null || this.disposed) return;
     const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false });
-    const mesh = new THREE.InstancedMesh(G.sph(0.11, 8, 6), mat, TRAIL_N);
+    const mesh = new THREE.InstancedMesh(G.sph(0.17, 8, 6), mat, TRAIL_N);
     mesh.frustumCulled = false;
     mesh.renderOrder = 3;
     const base = new THREE.Color(color);

@@ -44,7 +44,7 @@ export function buildPip(env: Env): Parts {
   }
   const hatAnchor = grp(head, 0, 0.58, -0.02);
 
-  const style: Style = { gait: 'hop', idle: 'bounce', walkF: 1.5, runMul: 1.35, jumpH: 1.1, squash: 1.5, arms: 1, dance: { bounce: 1.6, sway: 1, spin: 1, speed: 1.1 } };
+  const style: Style = { gait: 'hop', idle: 'bounce', walkF: 1.5, runMul: 1.35, jumpH: 1.1, squash: 1.0, arms: 1, dance: { bounce: 1.6, sway: 1, spin: 1, speed: 1.1 } };
   const k = fitModel(model, 1.7, true);
   return {
     model, head, armL, armR, legL, legR, face, hatAnchor, hatScale: 0.95 * 1, headY: 0.78 * k, shadow: 0.72, height: 1.7, ground: true, style,
@@ -149,20 +149,20 @@ export function buildLumi(env: Env): Parts {
 
   const tents: Array<{ a: THREE.Group; b: THREE.Group; ph: number; ang: number }> = [];
   const tm1 = env.m(lighten(primary, 0.1));
-  const tm2 = env.m(accent);
+  const tm2 = env.m(lighten(primary, 0.45));
   for (let i = 0; i < 5; i++) {
     const ang = (i / 5) * Math.PI * 2;
     const a = grp(model, Math.sin(ang) * 0.24, 0.74, Math.cos(ang) * 0.24);
-    mk(a, G.cyl(0.075, 0.055, 0.46, 8), tm1, 0, -0.23, 0);
-    const b = grp(a, 0, -0.46, 0);
-    mk(b, G.cyl(0.055, 0.02, 0.42, 8), tm2, 0, -0.21, 0);
+    mk(a, G.cap(0.065, 0.34, 4), tm1, 0, -0.23, 0);
+    const b = grp(a, 0, -0.44, 0);
+    mk(b, G.cap(0.048, 0.3, 4), tm2, 0, -0.2, 0);
     tents.push({ a, b, ph: i * 1.3, ang });
   }
   const mkArm = (s: number): THREE.Group => {
     const a = grp(model, 0.38 * s, 1.04, 0.05);
-    mk(a, G.cyl(0.05, 0.04, 0.34, 8), tm1, 0, -0.17, 0);
-    const b = grp(a, 0, -0.34, 0);
-    mk(b, G.cyl(0.04, 0.03, 0.28, 8), tm1, 0, -0.14, 0);
+    mk(a, G.cap(0.045, 0.28, 4), tm1, 0, -0.17, 0);
+    const b = grp(a, 0, -0.33, 0);
+    mk(b, G.cap(0.038, 0.22, 4), tm1, 0, -0.14, 0);
     mk(b, G.sph(0.075, 8, 6), env.glow('#fff6c8'), 0, -0.3, 0);
     return a;
   };
@@ -181,7 +181,7 @@ export function buildLumi(env: Env): Parts {
       core.scale.setScalar(1 + 0.07 * sin(c.t * 3) + 0.05 * (c.pose.glow ?? 0));
       for (const t of tents) {
         const w = sin(c.t * 2.4 - t.ph);
-        const amp = 0.18 + 0.2 * Math.min(1.8, mv);
+        const amp = 0.3 + 0.2 * Math.min(1.8, mv);
         t.a.rotation.x = Math.cos(t.ang) * 0.12 + (0.25 * mv + c.j * 0.35) + w * amp * 0.6;
         t.a.rotation.z = -Math.sin(t.ang) * 0.12 + w * amp * 0.4;
         t.b.rotation.x = 0.3 * mv + sin(c.t * 2.4 - t.ph - 1) * amp;
@@ -258,15 +258,15 @@ export function buildZapp(env: Env): Parts {
 
   // Zackenschweif
   const tail = grp(model, 0, 0.72, -0.4);
-  tail.rotation.x = -0.9;
+  tail.rotation.x = -0.5;
   const segs: THREE.Group[] = [];
   let parent: THREE.Group = tail;
   const tcols = [orange, env.m(secondary), orange, blue];
   for (let i = 0; i < 4; i++) {
-    const sgrp = grp(parent, 0, i === 0 ? 0 : 0.38 * Math.pow(0.88, i - 1), 0);
+    const sgrp = grp(parent, 0, i === 0 ? 0 : 0.62 * Math.pow(0.88, i - 1), 0);
     const sc = Math.pow(0.88, i);
-    mk(sgrp, G.cone(0.15 * sc, 0.46 * sc, 8), tcols[i], 0, 0.2 * sc, 0);
-    sgrp.userData.base = (i % 2 ? -1 : 1) * 0.75;
+    mk(sgrp, G.cone(0.22 * sc, 0.74 * sc, 8), tcols[i], 0, 0.3 * sc, 0);
+    sgrp.userData.base = (i % 2 ? -1 : 1) * 0.95;
     segs.push(sgrp);
     parent = sgrp;
   }
@@ -279,7 +279,7 @@ export function buildZapp(env: Env): Parts {
     extra(c) {
       const mv = c.pose.move ?? 0;
       tail.rotation.z = 0.2 * sin(c.t * 3.6) * (0.5 + mv) + c.jl * 0.4;
-      tail.rotation.x = -0.9 + c.j * 0.25 - 0.18 * Math.min(1.8, mv);
+      tail.rotation.x = -0.5 + c.j * 0.25 - 0.18 * Math.min(1.8, mv);
       segs.forEach((s, i) => {
         s.rotation.z = (s.userData.base as number) + 0.14 * sin(c.t * 6 - i * 0.9) * (0.6 + mv);
       });

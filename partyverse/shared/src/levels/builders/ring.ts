@@ -54,7 +54,7 @@ export function buildRing(ctx: BuildCtx, p: RingParams): Draft {
     d.nodes.forEach((nd, i) => {
       if (i >= p.n) {
         const a = Math.atan2(nd.pos[2], nd.pos[0]);
-        const idx = Math.round(((a + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI) * p.n) % p.n;
+        const idx = Math.round((((a + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI)) * p.n) % p.n;
         nd.island = (d.nodes[idx] as { island?: number }).island;
       }
     });

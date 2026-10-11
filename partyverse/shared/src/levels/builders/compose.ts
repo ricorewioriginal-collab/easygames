@@ -48,7 +48,11 @@ export function makeLayout(spec: LayoutSpec): Layout {
   const rng = new Rng(spec.seed ?? hashString(id));
   const d = spec.build({ rng: rng.fork(1), st: spec.styles });
   if (spec.shortcuts && spec.shortcuts.count > 0)
-    addExtraEdges(d, rng.fork(2), { count: spec.shortcuts.count, style: spec.shortcuts.style ?? spec.styles.short, minHop: spec.shortcuts.minHop });
+    addExtraEdges(d, rng.fork(2), {
+      count: spec.shortcuts.count,
+      style: spec.shortcuts.style ?? spec.styles.short,
+      minHop: spec.shortcuts.minHop,
+    });
   const foldPhases = spec.folds ? spec.folds.phases : 1;
   if (spec.folds && spec.folds.count > 0)
     addExtraEdges(d, rng.fork(3), {
@@ -58,17 +62,35 @@ export function makeLayout(spec: LayoutSpec): Layout {
       shift: spec.folds.shift,
       minHop: spec.folds.minHop,
     });
-  if (d.islands.length === 0) d.groupIsland(d.nodes.map((_, i) => i), 3);
-  if (spec.spin) d.islands.forEach((isl, i) => {
-    const s = spec.spin?.(i, d.islands.length);
-    if (s !== undefined) isl.spin = s;
-  });
+  if (d.islands.length === 0)
+    d.groupIsland(
+      d.nodes.map((_, i) => i),
+      3,
+    );
+  if (spec.spin)
+    d.islands.forEach((isl, i) => {
+      const s = spec.spin?.(i, d.islands.length);
+      if (s !== undefined) isl.spin = s;
+    });
 
-  const mix: Mix = { portals: 0, gates: 0, shops: 2, chaos: 0, items: 2, events: 2, thorn: 0.16, ...spec.mix };
+  const mix: Mix = {
+    portals: 0,
+    gates: 0,
+    shops: 2,
+    chaos: 0,
+    items: 2,
+    events: 2,
+    thorn: 0.16,
+    ...spec.mix,
+  };
   mix.shops = Math.min(mix.shops, Math.ceil(d.nodes.length / 8));
   const kr = assignKinds(d, rng.fork(4), mix);
   const nodes: LayoutNode[] = d.nodes.map((nd, i) => {
-    const ln: LayoutNode = { id: i, kind: kr.kinds[i] as LayoutNode['kind'], pos: [round1(nd.pos[0]), round1(nd.pos[1]), round1(nd.pos[2])] };
+    const ln: LayoutNode = {
+      id: i,
+      kind: kr.kinds[i] as LayoutNode['kind'],
+      pos: [round1(nd.pos[0]), round1(nd.pos[1]), round1(nd.pos[2])],
+    };
     const p = kr.portal[i];
     if (p !== undefined) ln.portal = p;
     if (nd.island !== undefined) ln.island = nd.island;

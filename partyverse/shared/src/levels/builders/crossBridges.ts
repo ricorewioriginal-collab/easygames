@@ -42,11 +42,12 @@ export function buildCrossBridges(ctx: BuildCtx, p: CrossParams): Draft {
       q[1] = level * Math.sin(Math.PI * t);
       mids.push(d.add(q));
     }
-    const ids = j % 2 === 0 ? [ring[s] as number, ...mids, ring[e] as number] : [ring[e] as number, ...[...mids].reverse(), ring[s] as number];
+    const ids =
+      j % 2 === 0
+        ? [ring[s] as number, ...mids, ring[e] as number]
+        : [ring[e] as number, ...[...mids].reverse(), ring[s] as number];
     d.chain(ids, ctx.st.link);
   }
-  const nb = d.nodes.length;
-  void nb;
   d.addIsland([0, -0.6, 0], R + 2.6);
   for (let i = 0; i < n; i++) (d.nodes[i] as { island?: number }).island = 0;
   return d;

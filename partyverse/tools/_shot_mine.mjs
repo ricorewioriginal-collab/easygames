@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
 const [id, skill = '0.8', prefix = '/tmp/lab', port = '5180', touch = '0'] = process.argv.slice(2);
 if (!id) { console.error('Minispiel-ID fehlt'); process.exit(2); }
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
-const ctx = await browser.newContext({ viewport: touch === '1' ? { width: 820, height: 390 } : { width: 1000, height: 600 }, hasTouch: touch === '1' });
+const ctx = await browser.newContext({ viewport: process.env.VP ? { width: +process.env.VP.split('x')[0], height: +process.env.VP.split('x')[1] } : touch === '1' ? { width: 820, height: 390 } : { width: 1000, height: 600 }, hasTouch: touch === '1' });
 const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', (e) => errs.push(e.message));

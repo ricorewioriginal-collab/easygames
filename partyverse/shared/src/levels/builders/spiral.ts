@@ -53,8 +53,13 @@ export function buildSpiral(ctx: BuildCtx, p: SpiralParams): Draft {
     }
     d.groupIsland(part, 2);
   }
-  const lastIsl = ids.map((i) => (d.nodes[i] as { island?: number }).island).filter((x) => x !== undefined).pop();
-  for (const i of ids) if ((d.nodes[i] as { island?: number }).island === undefined) (d.nodes[i] as { island?: number }).island = lastIsl;
+  const lastIsl = ids
+    .map((i) => (d.nodes[i] as { island?: number }).island)
+    .filter((x) => x !== undefined)
+    .pop();
+  for (const i of ids)
+    if ((d.nodes[i] as { island?: number }).island === undefined)
+      (d.nodes[i] as { island?: number }).island = lastIsl;
   const ci = d.addIsland([0, ySurf(0) - 0.4, 0], 3.4);
   (d.nodes[center] as { island?: number }).island = ci;
   return d;

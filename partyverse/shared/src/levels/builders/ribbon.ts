@@ -40,7 +40,11 @@ export function buildRibbon(ctx: BuildCtx, p: RibbonParams): Draft {
     nz /= nl;
     const tw = (twist * phi) / 2;
     const base = (p.wave ?? 0) * Math.sin(2 * phi);
-    const off = (s: number): V3 => [cx + s * (w / 2) * Math.cos(tw) * nx, base + s * (w / 2) * Math.sin(tw), cz + s * (w / 2) * Math.cos(tw) * nz];
+    const off = (s: number): V3 => [
+      cx + s * (w / 2) * Math.cos(tw) * nx,
+      base + s * (w / 2) * Math.sin(tw),
+      cz + s * (w / 2) * Math.cos(tw) * nz,
+    ];
     A.push(d.add(off(1)));
     B.push(d.add(off(-1)));
   }

@@ -26,16 +26,17 @@ export function buildStarHub(ctx: BuildCtx, p: StarParams): Draft {
       vx = -uz,
       vz = ux;
     const lift = p.lift?.[j] ?? 0;
-    const T = (L + 1) * STEP;
+    const t0 = k >= 5 ? STEP * 1.5 : k === 4 ? STEP * 1.2 : STEP;
+    const T = t0 + L * STEP;
     const at = (t: number, side: number): V3 => {
       const w = Math.min(2.8, c * t) * side;
       return [ux * t + vx * w, (lift * t) / T, uz * t + vz * w];
     };
     const outs: number[] = [],
       rets: number[] = [];
-    for (let i = 1; i <= L; i++) outs.push(d.add(at(i * STEP, 1)));
+    for (let i = 1; i <= L; i++) outs.push(d.add(at(t0 + (i - 1) * STEP, 1)));
     const tip = d.add(at(T, 0));
-    for (let i = L; i >= 1; i--) rets.push(d.add(at(i * STEP, -1)));
+    for (let i = L; i >= 1; i--) rets.push(d.add(at(t0 + (i - 1) * STEP, -1)));
     d.chain([hub, ...outs, tip, ...rets, hub], j % 2 === 0 ? ctx.st.main : ctx.st.link);
     d.groupIsland([...outs, tip, ...rets], 2.2);
   }

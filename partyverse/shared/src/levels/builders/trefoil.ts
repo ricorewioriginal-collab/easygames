@@ -16,7 +16,11 @@ export function buildTrefoil(ctx: BuildCtx, p: TrefoilParams): Draft {
     const pts: V3[] = [];
     for (let i = 0; i < 720; i++) {
       const t = (2 * Math.PI * i) / 720 + (p.phase ?? 0);
-      pts.push([S * (Math.sin(t) + 2 * Math.sin(2 * t)), -S * hk * Math.sin(3 * t) * 1.6, S * (Math.cos(t) - 2 * Math.cos(2 * t))]);
+      pts.push([
+        S * (Math.sin(t) + 2 * Math.sin(2 * t)),
+        -S * hk * Math.sin(3 * t) * 1.6,
+        S * (Math.cos(t) - 2 * Math.cos(2 * t)),
+      ]);
     }
     return pts;
   };

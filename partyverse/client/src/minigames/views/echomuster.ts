@@ -131,7 +131,7 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   const dotGeo = new THREE.SphereGeometry(0.17, 10, 8);
   for (let i = 0; i < MAXD; i++) {
     const m = new THREE.Mesh(dotGeo, glow(0x7a6ad8));
-    m.position.set((i - (MAXD - 1) / 2) * 0.5, 0.2, 5.0);
+    m.position.set((i - (MAXD - 1) / 2) * 0.5, 0.2, 4.6);
     root.add(m);
     dots.push(m);
   }
@@ -151,9 +151,9 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
   const burstPos = new THREE.Vector3();
 
   const placeCamera = () => {
-    const d = Math.max(11.5, 12.8 / camera.aspect);
+    const d = Math.max(11.5, 10.8 / camera.aspect);
     camera.position.set(0, d * 0.78, d * 0.64 + 0.5);
-    camera.lookAt(0, 0.5, -0.3);
+    camera.lookAt(0, 0.5, 0.6);
     lastAspect = camera.aspect;
   };
   placeCamera();
@@ -271,9 +271,9 @@ export const createView: MiniGameViewFactory<EchoState> = (ctx) => {
 
       // Kamera
       shake = Math.max(0, shake - dt);
-      const d = Math.max(11.5, 12.8 / camera.aspect);
+      const d = Math.max(11.5, 10.8 / camera.aspect);
       camera.position.set((Math.sin(t * 60) * shake * 0.25), d * 0.78, d * 0.64 + 0.5);
-      camera.lookAt(0, 0.5, -0.3);
+      camera.lookAt(0, 0.5, 0.6);
     },
     dispose() {
       /* Alles hängt an root und wird vom Stage freigegeben */

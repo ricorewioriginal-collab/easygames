@@ -28,7 +28,9 @@ export function buildLattice(ctx: BuildCtx, p: LatticeParams): Draft {
     }
   d.start = id(0, 0);
   const style = (a: number, b: number, dflt: 'main' | 'link') => {
-    const dy = Math.abs((d.nodes[a] as { pos: number[] }).pos[1]! - (d.nodes[b] as { pos: number[] }).pos[1]!);
+    const dy = Math.abs(
+      (d.nodes[a] as { pos: number[] }).pos[1]! - (d.nodes[b] as { pos: number[] }).pos[1]!,
+    );
     return dy >= 1.3 ? ctx.st.climb : dflt === 'main' ? ctx.st.main : ctx.st.link;
   };
   const L = (a: number, b: number, dflt: 'main' | 'link') => d.link(a, b, style(a, b, dflt));

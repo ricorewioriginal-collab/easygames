@@ -73,7 +73,6 @@ export function buildChainLoops(ctx: BuildCtx, p: ChainParams): Draft {
     const own = (ids[k] as number[]).filter((i) => !used.has(i));
     own.forEach((i) => used.add(i));
     d.groupIsland(own, 2.2);
-    for (const i of ids[k] as number[]) if (!own.includes(i)) continue;
   }
   return d;
 }

@@ -51,6 +51,7 @@ export function startCharLab(params: URLSearchParams): void {
   const trail = trailParam ? parseInt(trailParam.replace('#', ''), 16) : null;
   const once = params.get('once') === '1';
   const lookOn = params.get('look') === '1';
+  const moveOn = params.get('move') === '1' || trail !== null;
   const rotDeg = parseFloat(params.get('rot') ?? '0') || 0;
 
   const scene = new THREE.Scene();
@@ -127,7 +128,13 @@ export function startCharLab(params: URLSearchParams): void {
       if (lookOn) {
         lookTarget.set(Math.sin(t * 0.8) * 4, 1.2 + Math.sin(t * 0.5), 4);
       }
-      for (const r of rigs) {
+      for (const [i, r] of rigs.entries()) {
+        if (moveOn) {
+          // Hin und her laufen (Bewegung für Spur und Drehung testen)
+          const bx = (i - (ids.length - 1) / 2) * spacing;
+          r.root.position.x = bx + Math.sin(t * 0.9) * 0.9;
+          r.faceTowards(Math.cos(t * 0.9) >= 0 ? Math.PI / 2 : -Math.PI / 2);
+        }
         if (lookOn) r.lookAt(lookTarget);
         r.update(dt);
         if (frames % 20 === 0) {

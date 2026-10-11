@@ -41,7 +41,10 @@ export function buildTwinLoops(ctx: BuildCtx, p: TwinParams): Draft {
     for (let i = 0; i < n; i++) {
       const ai = Math.PI + (2 * Math.PI * i) / n;
       const dd = Math.abs(Math.atan2(Math.sin(ai - a), Math.cos(ai - a)));
-      if (dd < bd) ((bd = dd), (best = i));
+      if (dd < bd) {
+        bd = dd;
+        best = i;
+      }
     }
     return ids[best] as number;
   };
@@ -65,10 +68,8 @@ export function buildTwinLoops(ctx: BuildCtx, p: TwinParams): Draft {
   const m1 = bridge(a1, b1, p.bridges[0], 1.4);
   const m2 = bridge(b2, a2, p.bridges[1], 1.4);
   d.start = A[0] as number;
-  const ia = d.groupIsland(A, 2.4),
-    ib = d.groupIsland(B, 2.4);
-  void ia;
-  void ib;
+  d.groupIsland(A, 2.4);
+  d.groupIsland(B, 2.4);
   [...m1, ...m2].forEach((i) => ((d.nodes[i] as { island?: number }).island = undefined));
   return d;
 }

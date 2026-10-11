@@ -87,7 +87,7 @@ export function buildQuirl(env: Env): Parts {
   mk(model, G.sph(0.5, 18, 10), fleshDark, 0, 0.14, 0.05, 0.9, 0.24, 1.35);
   const neck = mk(model, G.cap(0.27, 0.6, 5), flesh, 0, 0.75, 0.08);
   neck.rotation.x = -0.12;
-  const shell = mk(model, shellGeo(mixColor(secondary, secondary, 0), mixColor(primary, 0xffffff, 0.15)), env.vertex(), 0, 1.0, -0.42, 1.0, 1.0, 1.0);
+  const shell = mk(model, shellGeo(mixColor(secondary, secondary, 0), mixColor(primary, 0xffffff, 0.15)), env.vertex(), 0, 1.0, -0.5, 1.45, 1.45, 1.45);
   shell.rotation.set(0.1, Math.PI / 2, 0);
 
   const HY = 1.4;

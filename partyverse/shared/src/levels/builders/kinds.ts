@@ -34,7 +34,11 @@ function allDistances(d: Draft): number[][] {
     const q = [s];
     for (let i = 0; i < q.length; i++) {
       const x = q[i] as number;
-      for (const m of adj[x] as number[]) if (dist[m] === Infinity) ((dist[m] = (dist[x] as number) + 1), q.push(m));
+      for (const m of adj[x] as number[])
+        if (dist[m] === Infinity) {
+          dist[m] = (dist[x] as number) + 1;
+          q.push(m);
+        }
     }
     return dist;
   });
@@ -49,7 +53,8 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
   const portal: (number | undefined)[] = new Array<number | undefined>(n).fill(undefined);
   kinds[d.start] = 'start';
   const special: number[] = [d.start];
-  const minTo = (i: number, list: number[]) => (list.length ? Math.min(...list.map((j) => row(i)[j] as number)) : 99);
+  const minTo = (i: number, list: number[]) =>
+    list.length ? Math.min(...list.map((j) => row(i)[j] as number)) : 99;
   const freeNodes = () => kinds.map((k, i) => (k === null ? i : -1)).filter((i) => i >= 0);
 
   const outCore = (i: number) => d.edges.filter((e) => e.from === i && !e.folds).length;
@@ -64,7 +69,14 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
     return s;
   };
 
-  function place(kind: NodeKind, count: number, minStart: number, sameGap: number, otherGap: number, score?: (i: number) => number): number[] {
+  function place(
+    kind: NodeKind,
+    count: number,
+    minStart: number,
+    sameGap: number,
+    otherGap: number,
+    score?: (i: number) => number,
+  ): number[] {
     const same: number[] = [];
     for (let c = 0; c < count; c++) {
       let ms = minStart,
@@ -72,10 +84,15 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
         og = otherGap;
       let cand: number[] = [];
       for (let relax = 0; relax < 6 && cand.length === 0; relax++) {
-        cand = freeNodes().filter((i) => row(d.start)[i]! >= ms && minTo(i, same) >= sg && minTo(i, special) >= og);
+        cand = freeNodes().filter(
+          (i) => row(d.start)[i]! >= ms && minTo(i, same) >= sg && minTo(i, special) >= og,
+        );
         if (cand.length === 0) {
           if (relax % 2 === 0) sg = Math.max(1, sg - 1);
-          else (og = Math.max(1, og - 1), (ms = Math.max(1, ms - 1)));
+          else {
+            og = Math.max(1, og - 1);
+            ms = Math.max(1, ms - 1);
+          }
         }
       }
       if (cand.length === 0) break;
@@ -83,7 +100,10 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
         bestScore = -Infinity;
       for (const i of cand) {
         const s = Math.min(minTo(i, same), 8) + (score ? score(i) : 0) + rng.next() * 2;
-        if (s > bestScore) ((bestScore = s), (best = i));
+        if (s > bestScore) {
+          bestScore = s;
+          best = i;
+        }
       }
       kinds[best] = kind;
       special.push(best);
@@ -107,7 +127,8 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
       cand = freeNodes().filter(
         (i) =>
           row(a)[i]! >= minPair - relax &&
-          dist3((d.nodes[a] as (typeof d.nodes)[number]).pos, (d.nodes[i] as (typeof d.nodes)[number]).pos) >= 9 - relax * 2 &&
+          dist3((d.nodes[a] as (typeof d.nodes)[number]).pos, (d.nodes[i] as (typeof d.nodes)[number]).pos) >=
+            9 - relax * 2 &&
           row(d.start)[i]! >= 2 &&
           minTo(i, special) >= (relax < 3 ? 2 : 1) &&
           minTo(i, portals) >= 3,
@@ -122,8 +143,15 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
     let best = cand[0] as number,
       bestScore = -Infinity;
     for (const i of cand) {
-      const s = dist3((d.nodes[a] as (typeof d.nodes)[number]).pos, (d.nodes[i] as (typeof d.nodes)[number]).pos) * 0.3 + minTo(i, portals) + rng.next() * 3;
-      if (s > bestScore) ((bestScore = s), (best = i));
+      const s =
+        dist3((d.nodes[a] as (typeof d.nodes)[number]).pos, (d.nodes[i] as (typeof d.nodes)[number]).pos) *
+          0.3 +
+        minTo(i, portals) +
+        rng.next() * 3;
+      if (s > bestScore) {
+        bestScore = s;
+        best = i;
+      }
     }
     kinds[best] = 'portal';
     special.push(best);
@@ -137,13 +165,23 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
   // Rest: Items, Ereignisse, Dornen, Glimmer
   const free = rng.shuffle(freeNodes());
   const thorns = Math.min(Math.round(mix.thorn * n), Math.floor(n * 0.28));
+  // Glimmer sollen mindestens ~36 % aller Felder stellen: bei Platzmangel zuerst Dornen, dann Items/Ereignisse kürzen
+  const room = Math.max(2, free.length - Math.ceil(n * 0.36) + kinds.filter((k) => k === 'glimmer').length);
+  let nItem = Math.max(1, mix.items),
+    nEvent = Math.max(1, mix.events),
+    nThorn = thorns;
+  while (nItem + nEvent + nThorn > room && (nThorn > 0 || nItem > 1 || nEvent > 1)) {
+    if (nThorn > 0) nThorn--;
+    else if (nItem >= nEvent && nItem > 1) nItem--;
+    else if (nEvent > 1) nEvent--;
+    else break;
+  }
   const pool: NodeKind[] = [];
-  for (let i = 0; i < Math.max(1, mix.items); i++) pool.push('item');
-  for (let i = 0; i < Math.max(1, mix.events); i++) pool.push('event');
-  for (let i = 0; i < thorns; i++) pool.push('thorn');
+  for (let i = 0; i < nItem; i++) pool.push('item');
+  for (let i = 0; i < nEvent; i++) pool.push('event');
+  for (let i = 0; i < nThorn; i++) pool.push('thorn');
   while (pool.length < free.length) pool.push('glimmer');
   const assigned = pool.slice(0, free.length);
-  // Glimmer dürfen nie verdrängt werden: bei Platzmangel Dornen kürzen
   free.forEach((i, k) => (kinds[i] = assigned[k] as NodeKind));
   // Nachbarn mit gleicher Art entzerren
   const nbrs: number[][] = d.nodes.map(() => []);
@@ -157,8 +195,14 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
     for (const i of free) {
       const k = kinds[i] as NodeKind;
       if (k === 'glimmer' || !same(i, k)) continue;
-      const target = free.find((j) => kinds[j] === 'glimmer' && !same(j, k) && !(nbrs[j] as number[]).includes(i));
-      if (target !== undefined) ((kinds[target] = k), (kinds[i] = 'glimmer'), (changed = true));
+      const target = free.find(
+        (j) => kinds[j] === 'glimmer' && !same(j, k) && !(nbrs[j] as number[]).includes(i),
+      );
+      if (target !== undefined) {
+        kinds[target] = k;
+        kinds[i] = 'glimmer';
+        changed = true;
+      }
     }
     if (!changed) break;
   }
@@ -166,11 +210,12 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
   // Altar-Orte: gestreut, nicht am Start
   const want = Math.max(5, Math.min(8, Math.round(n / 9)));
   const okKinds = new Set<NodeKind>(['glimmer', 'event', 'item', 'chaos']);
-  let pool2 = freeNodes2().filter((i) => okKinds.has(kinds[i] as NodeKind) && row(d.start)[i]! >= 3);
-  function freeNodes2() {
-    return kinds.map((_, i) => i);
-  }
-  if (pool2.length < want) pool2 = freeNodes2().filter((i) => kinds[i] !== 'start' && kinds[i] !== 'portal' && kinds[i] !== 'gate' && kinds[i] !== null);
+  const allIdx = kinds.map((_, i) => i);
+  let pool2 = allIdx.filter((i) => okKinds.has(kinds[i] as NodeKind) && row(d.start)[i]! >= 3);
+  if (pool2.length < want)
+    pool2 = allIdx.filter(
+      (i) => kinds[i] !== 'start' && kinds[i] !== 'portal' && kinds[i] !== 'gate' && kinds[i] !== null,
+    );
   const altar: number[] = [];
   while (altar.length < want && altar.length < pool2.length) {
     let best = -1,
@@ -178,7 +223,10 @@ export function assignKinds(d: Draft, rng: Rng, mix: Mix): KindResult {
     for (const i of pool2) {
       if (altar.includes(i)) continue;
       const s = (altar.length ? Math.min(minTo(i, altar), 9) : row(d.start)[i]!) + rng.next() * 1.5;
-      if (s > bestScore) ((bestScore = s), (best = i));
+      if (s > bestScore) {
+        bestScore = s;
+        best = i;
+      }
     }
     if (best < 0) break;
     altar.push(best);

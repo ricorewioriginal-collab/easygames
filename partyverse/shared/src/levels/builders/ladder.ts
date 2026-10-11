@@ -32,8 +32,16 @@ export function buildLadder(ctx: BuildCtx, p: LadderParams): Draft {
     const a = (2 * Math.PI * 1.5 * i) / m;
     bot.push(d.add([x(i), -wave * Math.sin(a) + slope * (i - m / 2) * 0.2, w]));
   }
-  const capR = d.add([x(m - 1) + STEP * 0.95, ((d.nodes[top[m - 1] as number] as { pos: number[] }).pos[1] as number) * 0.5, 0]);
-  const capL = d.add([x(0) - STEP * 0.95, ((d.nodes[top[0] as number] as { pos: number[] }).pos[1] as number) * 0.5, 0]);
+  const capR = d.add([
+    x(m - 1) + STEP * 0.95,
+    ((d.nodes[top[m - 1] as number] as { pos: number[] }).pos[1] as number) * 0.5,
+    0,
+  ]);
+  const capL = d.add([
+    x(0) - STEP * 0.95,
+    ((d.nodes[top[0] as number] as { pos: number[] }).pos[1] as number) * 0.5,
+    0,
+  ]);
   d.chain(top, ctx.st.main);
   d.link(top[m - 1] as number, capR, ctx.st.main);
   d.link(capR, bot[m - 1] as number, ctx.st.main);

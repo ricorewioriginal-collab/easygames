@@ -18,13 +18,27 @@ export function buildOrbits(ctx: BuildCtx, p: OrbitsParams): Draft {
   const d = new Draft();
   const K = p.rings.length;
   const radii: number[] = [];
-  p.rings.forEach((n, k) => radii.push(Math.max(k === 0 ? 4.8 : (radii[k - 1] as number) + 4.8, ringRadius(n))));
+  p.rings.forEach((n, k) =>
+    radii.push(Math.max(k === 0 ? 4.8 : (radii[k - 1] as number) + 4.8, ringRadius(n))),
+  );
   const ids: number[][] = [];
-  const angOf = (k: number, j: number) => (k % 2 === 0 ? 1 : -1) * ((2 * Math.PI * j) / (p.rings[k] as number)) + k * 0.4;
+  const angOf = (k: number, j: number) =>
+    (k % 2 === 0 ? 1 : -1) * ((2 * Math.PI * j) / (p.rings[k] as number)) + k * 0.4;
   for (let k = 0; k < K; k++) {
     const row: number[] = [];
     const n = p.rings[k] as number;
-    for (let j = 0; j < n; j++) row.push(d.add(polar(0, 0, radii[k] as number, angOf(k, j), k * (p.yStep ?? 0) + (p.wave ?? 0) * Math.sin(3 * angOf(k, j)))));
+    for (let j = 0; j < n; j++)
+      row.push(
+        d.add(
+          polar(
+            0,
+            0,
+            radii[k] as number,
+            angOf(k, j),
+            k * (p.yStep ?? 0) + (p.wave ?? 0) * Math.sin(3 * angOf(k, j)),
+          ),
+        ),
+      );
     d.loop(row, ctx.st.main);
     ids.push(row);
   }
@@ -34,7 +48,10 @@ export function buildOrbits(ctx: BuildCtx, p: OrbitsParams): Draft {
     const n = p.rings[k] as number;
     for (let j = 0; j < n; j++) {
       const dd = Math.abs(Math.atan2(Math.sin(angOf(k, j) - a), Math.cos(angOf(k, j) - a)));
-      if (dd < bd) ((bd = dd), (best = j));
+      if (dd < bd) {
+        bd = dd;
+        best = j;
+      }
     }
     return (ids[k] as number[])[best] as number;
   };

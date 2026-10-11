@@ -33,7 +33,8 @@ export function buildTerraces(ctx: BuildCtx, p: TerraceParams): Draft {
     d.loop(ids, ctx.st.main);
     rings.push(ids);
   }
-  const mid = (k: number, side: number) => (rings[k] as number[])[side * (p.sides[k] as number) + Math.floor((p.sides[k] as number) / 2)] as number;
+  const mid = (k: number, side: number) =>
+    (rings[k] as number[])[side * (p.sides[k] as number) + Math.floor((p.sides[k] as number) / 2)] as number;
   const stairs = p.stairs ?? 2;
   for (let k = 0; k + 1 < K; k++) {
     const s1 = k % 2,

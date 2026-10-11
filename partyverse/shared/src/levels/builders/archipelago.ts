@@ -11,7 +11,7 @@ export interface ArchipelagoParams {
   hub?: { size: number; spokes: number };
   /** Höhenstreuung der Inseln */
   spread?: number;
-  /** Zusätzliche Rückbrücken (Insel i+1 → i) */
+  /** Anzahl Brücken, die auch rückwärts begehbar sind */
   back?: number;
 }
 
@@ -42,7 +42,8 @@ export function buildArchipelago(ctx: BuildCtx, p: ArchipelagoParams): Draft {
     const dirIn = Math.atan2(prv[2] - c[2], prv[0] - c[0]);
     const m = p.sizes[i] as number;
     const ids: number[] = [];
-    for (let j = 0; j < m; j++) ids.push(d.add(polar(c[0], c[2], rs[i] as number, dirOut + (2 * Math.PI * j) / m, c[1])));
+    for (let j = 0; j < m; j++)
+      ids.push(d.add(polar(c[0], c[2], rs[i] as number, dirOut + (2 * Math.PI * j) / m, c[1])));
     d.loop(ids, ctx.st.main);
     rings.push(ids);
     outPort.push(ids[0] as number);
@@ -51,12 +52,16 @@ export function buildArchipelago(ctx: BuildCtx, p: ArchipelagoParams): Draft {
     for (let j = 0; j < m; j++) {
       const a = dirOut + (2 * Math.PI * j) / m;
       const dd = Math.abs(Math.atan2(Math.sin(a - dirIn), Math.cos(a - dirIn)));
-      if (dd < bd) ((bd = dd), (best = j));
+      if (dd < bd) {
+        bd = dd;
+        best = j;
+      }
     }
     inPort.push(ids[best] as number);
     d.groupIsland(ids, 2.2);
   }
   d.start = (rings[0] as number[])[Math.floor((p.sizes[0] as number) / 2)] as number;
+  const bridgePaths: number[][] = [];
   const bridge = (a: number, b: number) => {
     if (p.bridgeNodes) {
       const pa = (d.nodes[a] as { pos: V3 }).pos,
@@ -65,17 +70,17 @@ export function buildArchipelago(ctx: BuildCtx, p: ArchipelagoParams): Draft {
       mid[1] += 1.2;
       const mi = d.add(mid);
       d.chain([a, mi, b], ctx.st.link);
-    } else d.link(a, b, ctx.st.link);
+      bridgePaths.push([a, mi, b]);
+    } else {
+      d.link(a, b, ctx.st.link);
+      bridgePaths.push([a, b]);
+    }
   };
   for (let i = 0; i < k; i++) bridge(outPort[i] as number, inPort[(i + 1) % k] as number);
-  // Rückbrücken: von der Einlass-Seite zurück zur Vorgängerinsel
+  // Zweiwege-Brücken: einzelne Brücken lassen sich auch rückwärts überqueren
   for (let q = 0; q < (p.back ?? 0); q++) {
     const i = Math.floor(((q + 0.5) * k) / (p.back as number)) % k;
-    const prev = (i + k - 1) % k;
-    const m = p.sizes[i] as number;
-    const from = (rings[i] as number[])[(Math.floor(m / 2) + 1) % m] as number;
-    const to = (rings[prev] as number[])[Math.floor((p.sizes[prev] as number) / 2)] as number;
-    if (!d.has(from, to)) d.link(from, to, ctx.st.link);
+    d.chain([...(bridgePaths[i] as number[])].reverse(), ctx.st.link);
   }
   if (p.hub) {
     const hm = p.hub.size;
@@ -90,7 +95,10 @@ export function buildArchipelago(ctx: BuildCtx, p: ArchipelagoParams): Draft {
       for (const id of ids) {
         const q = (d.nodes[id] as { pos: V3 }).pos;
         const dd = Math.hypot(q[0] - target[0], q[2] - target[2]);
-        if (dd < bd) ((bd = dd), (best = id));
+        if (dd < bd) {
+          bd = dd;
+          best = id;
+        }
       }
       return best;
     };
