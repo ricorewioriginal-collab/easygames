@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#120a24">
+<title>Gay Life! – die Spielesammlung</title>
+<style>
+:root{--bg:#110a22;--bg2:#1b1235;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.14);--tx:#f6f1ff;--mu:#b9acd6;--rb:linear-gradient(90deg,#ff3b6b,#ff9f1c,#ffe14d,#3ddc84,#2ea8ff,#9b5cff);--pk:#ff4f9a;--ok:#3ddc84;--bad:#ff5d6c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:radial-gradient(1200px 700px at 10% -10%,#3b1b6e 0,transparent 60%),radial-gradient(900px 600px at 100% 0,#7a1d5a 0,transparent 55%),var(--bg);background-attachment:fixed;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:16px}
+h1,h2,h3{margin:0}
+.logo{font-weight:900;font-size:clamp(34px,8vw,64px);letter-spacing:-1px;background:var(--rb);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05}
+.sub{color:var(--mu);margin:4px 0 0}
+.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:6px 0 18px}
+.prof{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:12px 16px;backdrop-filter:blur(10px);flex:1;min-width:280px}
+.prof .av{width:76px;height:90px;border-radius:16px;overflow:hidden;flex:none}
+.prof b{font-size:19px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{font-size:12px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid var(--line)}
+.chip.on{background:linear-gradient(90deg,#ff3b6b55,#9b5cff55);border-color:#fff5}
+.btn{border:0;border-radius:14px;padding:10px 16px;background:rgba(255,255,255,.12);border:1px solid var(--line);font-weight:600}
+.btn:hover{background:rgba(255,255,255,.2)}
+.btn.pri{background:linear-gradient(90deg,#ff3b6b,#9b5cff);border-color:transparent}
+.btn.sm{padding:6px 11px;font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.gcard{position:relative;text-align:left;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:var(--card);padding:0;display:flex;flex-direction:column;transition:transform .15s}
+.gcard:hover{transform:translateY(-3px)}
+.gcard .pic{height:150px;display:flex;align-items:flex-end;justify-content:center;gap:0;overflow:hidden}
+.gcard .pic svg{height:150px;width:auto;display:block}
+.gcard .in{padding:12px 16px 16px}
+.gcard h3{font-size:20px}
+.gcard p{margin:4px 0 0;color:var(--mu);font-size:14px}
+.gcard .best{position:absolute;top:10px;right:10px;font-size:12px;background:#000a;border-radius:99px;padding:3px 10px}
+.foot{color:var(--mu);font-size:12px;text-align:center;margin:26px 0 10px}
+#game{display:none;min-height:100vh}
+.gh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.gh h2{font-size:22px;flex:1}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;backdrop-filter:blur(8px)}
+.bubble{background:rgba(255,255,255,.1);border:1px solid var(--line);border-radius:18px 18px 18px 4px;padding:12px 14px;margin:10px 0}
+.bubble.me{border-radius:18px 18px 4px 18px;background:linear-gradient(90deg,#ff3b6b44,#9b5cff44)}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.07)}
+.opt:hover:not(:disabled){background:rgba(255,255,255,.17)}
+.opt:disabled{opacity:.55;cursor:default}
+.opt.ok{background:#3ddc8433;border-color:var(--ok);opacity:1}
+.opt.no{background:#ff5d6c33;border-color:var(--bad);opacity:1}
+.dateTop{display:flex;gap:14px;align-items:center}
+.dateTop .av{width:110px;height:132px;border-radius:20px;overflow:hidden;flex:none}
+.hearts{font-size:22px;letter-spacing:2px}
+.bar{height:8px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--rb);width:100%}
+.big{font-size:clamp(30px,7vw,48px);font-weight:900}
+.tap{width:min(60vw,230px);aspect-ratio:1;border-radius:50%;border:4px solid #fff5;background:radial-gradient(circle at 50% 30%,#ff7ac0,#7d3cff 70%);overflow:hidden;padding:0;margin:8px auto;display:block;box-shadow:0 0 50px #ff4f9a66;touch-action:manipulation;user-select:none}
+.tap:active{transform:scale(.96)}
+.tap svg{width:100%;height:100%;display:block;pointer-events:none}
+.up{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.06);width:100%;text-align:left}
+.up:disabled{opacity:.45}
+.up .e{font-size:26px;width:34px;text-align:center}
+.up small{display:block;color:var(--mu)}
+.fly{position:fixed;z-index:30;font-size:44px;border:0;background:none;animation:fl 1.8s ease-in-out infinite alternate}
+@keyframes fl{to{transform:translateY(-18px) rotate(10deg)}}
+#cv{display:block;width:100%;height:min(72vh,640px);border-radius:20px;background:#0b0618;touch-action:none;border:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#000d;border:1px solid var(--line);border-radius:99px;padding:9px 18px;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
+.modal{position:fixed;inset:0;background:var(--bg);display:none;z-index:40;overflow:auto}
+.modal .box{max-width:720px;margin:0 auto;padding:16px}
+.edit{display:grid;grid-template-columns:200px 1fr;gap:16px}
+.edit .av{width:200px;height:240px;border-radius:22px;overflow:hidden;position:sticky;top:8px}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;padding:0}
+.sw.on,.pill.on{outline:3px solid #fff;outline-offset:1px}
+.pill{border-radius:99px;padding:5px 12px;border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:14px}
+.lab{font-size:13px;color:var(--mu);margin:12px 0 5px}
+input[type=text]{background:rgba(255,255,255,.1);border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:9px 12px;font:inherit;width:100%}
+.jury{display:grid;gap:6px;margin-top:8px}
+.jury div{background:rgba(255,255,255,.07);border-radius:12px;padding:8px 12px;font-size:14px}
+.stars{font-size:28px}
+@media(max-width:560px){.edit{grid-template-columns:1fr}.edit .av{position:static;margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="wrap" id="hub"></div>
+<div class="wrap" id="game"></div>
+<div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+<script src="../cloud/anmacha-cloud.js" data-game="gay-life" data-prefix="anmachaGayLife" data-save-btn="#glSave" defer></script>
+<script>
+(function () {
+'use strict';
+var KEY = 'anmachaGayLife';
+function $(s, r) { return (r || document).querySelector(s); }
+function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function fmt(n) { n = Math.floor(n); if (n < 1e4) return String(n); var u = ['k', 'M', 'B', 'T'], i = -1; while (n >= 1000 && i < 3) { n /= 1000; i++; } return n.toFixed(n < 100 ? 1 : 0) + u[i]; }
+
+/* ---------- Speicherstand ---------- */
+function def() {
+  return { v: 1, name: 'Du', look: { skin: 1, hair: 1, hc: 1, beard: 1, acc: 0, top: 0, tc: 0, eye: 0 }, glitzer: 0, xp: 0,
+    club: { coins: 0, total: 0, items: {}, tap: 0, last: 0 }, dates: {}, quiz: { best: 0, runs: 0 }, rave: { best: {} }, style: { best: 0 }, sound: true };
+}
+function merge(d, s) {
+  if (!s || typeof s !== 'object') return d;
+  for (var k in s) {
+    if (d[k] && typeof d[k] === 'object' && !Array.isArray(d[k])) d[k] = merge(d[k], s[k]);
+    else if (s[k] !== undefined && s[k] !== null) d[k] = s[k];
+  }
+  return d;
+}
+var S;
+try { S = merge(def(), JSON.parse(localStorage.getItem(KEY))); } catch (e) { S = def(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function level() { return Math.floor(Math.sqrt(S.xp / 25)) + 1; }
+function gain(n) { n = Math.max(0, Math.floor(n)); S.glitzer += n; S.xp += n; save(); return n; }
+var toastT = 0;
+function toast(t) { var d = $('.toast'); if (d) d.remove(); d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); clearTimeout(toastT); toastT = setTimeout(function () { d.remove(); }, 2400); }
+
+/* ---------- Ton ---------- */
+var AC = null;
+function ac() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = false; } } if (AC && AC.state === 'suspended') AC.resume(); return AC; }
+function blip(f, d, type, v) {
+  if (!S.sound) return; var a = ac(); if (!a) return;
+  var o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+  o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); g.gain.setValueAtTime(v || 0.08, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d);
+}
+function sfx(k) { if (k === 'ok') { blip(660, .12, 'triangle'); setTimeout(function () { blip(880, .16, 'triangle'); }, 90); } else if (k === 'no') blip(180, .25, 'sawtooth', .05); else if (k === 'tap') blip(520 + Math.random() * 200, .07, 'sine', .06); else blip(440, .08, 'triangle'); }
+
+/* ---------- Menschen (Vektor-Porträts) ---------- */
+var SKIN = [['#f8e0cf', '#e4b898'], ['#f0c8a4', '#d4a37c'], ['#dba67a', '#b98254'], ['#b97d52', '#966039'], ['#8d5a3b', '#6d4229'], ['#5f3b27', '#432719']];
+var HC = ['#1b1511', '#3b2616', '#6a4426', '#a8742f', '#dcb85e', '#b8431f', '#8e8e96', '#ececf2', '#ff4fa3', '#4aa3ff'];
+var TC = ['#ff4f9a', '#1c1c26', '#f2f2f6', '#3a6cff', '#2fbf71', '#ffb020', '#8b5cf6', '#e9b9a3'];
+var TCN = ['Pink', 'Schwarz', 'Weiß', 'Blau', 'Grün', 'Gelb', 'Lila', 'Nude'];
+var EYE = ['#5a3a22', '#3b78c4', '#4a8a52', '#7a8590'];
+var HAIRN = ['Kurz', 'Tolle', 'Locken', 'Buzz', 'Lang', 'Undercut', 'Glatze'];
+var BEARDN = ['Glatt', 'Dreitage', 'Vollbart', 'Ziegenbart', 'Schnauzer'];
+var ACCN = ['Nichts', 'Brille', 'Sonnenbrille', 'Cap', 'Ohrring', 'Goldkette'];
+var TOPN = ['Shirt', 'Tanktop', 'Hemd', 'Hoodie', 'Jacke'];
+function mix(a, b, t) {
+  var p = function (h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); }, x = p(a), y = p(b);
+  return '#' + x.map(function (v, i) { return ('0' + Math.round(v + (y[i] - v) * t).toString(16)).slice(-2); }).join('');
+}
+var uid = 0;
+function avatar(o, bg, flat) {
+  var id = 'a' + (++uid), sk = SKIN[o.skin] || SKIN[1], hc = HC[o.hc] || HC[1], tc = TC[o.tc] || TC[0], ec = EYE[o.eye || 0];
+  bg = bg || ['#6a3cc8', '#ff5fa8'];
+  var brow = mix(hc, '#000000', .25), lip = mix(sk[1], '#a03a40', .5), sh = mix(tc, '#000000', .3);
+  var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" preserveAspectRatio="xMidYMax slice"><defs>' +
+    '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + bg[0] + '"/><stop offset="1" stop-color="' + bg[1] + '"/></linearGradient>' +
+    '<radialGradient id="' + id + 'f" cx=".4" cy=".32" r=".85"><stop offset="0" stop-color="' + sk[0] + '"/><stop offset="1" stop-color="' + sk[1] + '"/></radialGradient>' +
+    '<linearGradient id="' + id + 't" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></linearGradient>' +
+    '<radialGradient id="' + id + 'l" cx=".3" cy=".25" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
+    '</defs>' + (flat ? '' : '<rect width="200" height="240" fill="url(#' + id + 'g)"/><ellipse cx="100" cy="120" rx="90" ry="100" fill="url(#' + id + 'l)" opacity=".25"/>');
+  var ln = o.hair === 4;
+  if (ln) s += '<path d="M50 100 C36 150 40 192 58 204 L142 204 C160 192 164 150 150 100Z" fill="' + hc + '"/><path d="M50 100 C36 150 40 192 58 204 L142 204 C160 192 164 150 150 100Z" fill="url(#' + id + 't)" opacity=".5"/>';
+  // Hals + Oberkörper
+  var T = 'M12 240 C16 190 58 174 100 174 C142 174 184 190 188 240Z';
+  s += '<rect x="84" y="136" width="32" height="46" rx="10" fill="url(#' + id + 'f)"/><ellipse cx="100" cy="166" rx="26" ry="10" fill="#000" opacity=".16"/>';
+  if (o.top === 1) {
+    s += '<path d="' + T + '" fill="url(#' + id + 'f)"/><path d="M52 240 L60 198 C68 182 84 178 100 192 C116 178 132 182 140 198 L148 240Z" fill="' + tc + '"/><path d="M52 240 L60 198 C68 182 84 178 100 192 C116 178 132 182 140 198 L148 240Z" fill="url(#' + id + 't)"/>';
+  } else {
+    s += '<path d="' + T + '" fill="' + tc + '"/>';
+    if (o.top === 3) s += '<ellipse cx="100" cy="177" rx="36" ry="15" fill="' + sh + '"/><path d="M64 240 L72 214 H128 L136 240Z" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="2"/><path d="M92 186 V214 M108 186 V214" stroke="#fff" stroke-opacity=".7" stroke-width="2.4"/>';
+    if (o.top === 4) s += '<path d="M80 174 L100 216 L120 174Z" fill="#f2f2f4"/>';
+    s += '<path d="' + T + '" fill="url(#' + id + 't)"/>';
+    if (o.top === 4) s += '<path d="M78 172 L100 218 L66 240 L48 198Z M122 172 L100 218 L134 240 L152 198Z" fill="#000" opacity=".22"/>';
+    if (o.top === 2) s += '<path d="M84 174 L100 204 L116 174Z" fill="url(#' + id + 'f)"/><path d="M100 176 L78 170 L88 198Z M100 176 L122 170 L112 198Z" fill="#fff" opacity=".92"/><circle cx="100" cy="216" r="2.2" fill="#fff" opacity=".6"/><circle cx="100" cy="230" r="2.2" fill="#fff" opacity=".6"/>';
+    if (o.top === 3) s += '<ellipse cx="100" cy="178" rx="20" ry="9" fill="url(#' + id + 'f)"/>';
+    if (o.top === 0) s += '<ellipse cx="100" cy="177" rx="21" ry="10" fill="url(#' + id + 'f)"/>';
+  }
+  if (o.acc === 5) s += '<path d="M78 178 Q100 214 122 178" fill="none" stroke="#f3c34a" stroke-width="3"/><circle cx="100" cy="206" r="4" fill="#f3c34a"/>';
+  // Ohren + Kopf
+  s += '<ellipse cx="58" cy="104" rx="7" ry="12" fill="' + sk[1] + '"/><ellipse cx="142" cy="104" rx="7" ry="12" fill="' + sk[1] + '"/>';
+  var H = 'M58 92 C58 48 142 48 142 92 C142 132 122 158 100 158 C78 158 58 132 58 92Z';
+  s += '<path d="' + H + '" fill="url(#' + id + 'f)"/><circle cx="73" cy="120" r="10" fill="#ff6b7a" opacity=".13"/><circle cx="127" cy="120" r="10" fill="#ff6b7a" opacity=".13"/>';
+  // Bart
+  var B = o.beard;
+  if (B === 1) s += '<path d="M60 100 C60 140 80 158 100 158 C120 158 140 140 140 100 C134 122 120 130 100 130 C80 130 66 122 60 100Z" fill="' + hc + '" opacity=".3"/>';
+  if (B === 2) s += '<path d="M58 98 C56 142 80 164 100 164 C120 164 144 142 142 98 C136 120 124 126 112 130 Q100 126 88 130 C76 126 64 120 58 98Z" fill="' + hc + '"/><path d="M58 98 C56 142 80 164 100 164 C120 164 144 142 142 98 C136 120 124 126 112 130 Q100 126 88 130 C76 126 64 120 58 98Z" fill="url(#' + id + 't)" opacity=".4"/>';
+  if (B === 3) s += '<path d="M85 140 Q100 170 115 140 Q100 148 85 140Z" fill="' + hc + '"/>';
+  if (B === 3 || B === 4) s += '<path d="M82 133 Q100 123 118 133 Q108 140 100 135 Q92 140 82 133Z" fill="' + hc + '"/>';
+  // Gesicht
+  [80, 120].forEach(function (x) {
+    s += '<ellipse cx="' + x + '" cy="98" rx="9.5" ry="5.8" fill="#fff"/><circle cx="' + x + '" cy="98" r="4.7" fill="' + ec + '"/><circle cx="' + x + '" cy="98" r="2.2" fill="#111"/><circle cx="' + (x + 1.6) + '" cy="96.4" r="1.3" fill="#fff"/>' +
+      '<path d="M' + (x - 10.5) + ' 98 Q' + x + ' 90 ' + (x + 10.5) + ' 98" fill="none" stroke="#2a1a14" stroke-width="1.7" stroke-linecap="round"/>' +
+      '<path d="M' + (x - 11) + ' 88 Q' + x + ' 82 ' + (x + 11) + ' 87" fill="none" stroke="' + brow + '" stroke-width="3.6" stroke-linecap="round"/>';
+  });
+  s += '<path d="M100 101 C99 112 94 118 95 123 Q100 127 105 123" fill="none" stroke="' + sk[1] + '" stroke-width="2" stroke-linecap="round" opacity=".85"/>';
+  s += '<path d="M88 139 Q100 152 112 139 Q100 143 88 139Z" fill="#fff"/><path d="M87 139 Q100 145 113 139 M89 140 Q100 152 111 140" fill="none" stroke="' + (B >= 2 ? '#7a3a3a' : lip) + '" stroke-width="2" stroke-linecap="round"/>';
+  if (B === 4) s += '<path d="M84 132 Q100 124 116 132 Q108 137 100 133 Q92 137 84 132Z" fill="' + hc + '"/>';
+  // Haare vorn
+  var H0 = 'M55 96 C46 44 154 44 145 96 C142 78 132 66 100 64 C68 66 58 78 55 96Z', hh = o.hair;
+  if (hh === 0 || hh === 3) s += '<path d="' + H0 + '" fill="' + hc + '"' + (hh === 3 ? ' opacity=".6"' : '') + '/>';
+  if (hh === 1) s += '<path d="M54 96 C40 46 78 20 124 28 C162 36 158 72 146 96 C142 76 130 68 106 66 C82 64 62 74 54 96Z" fill="' + hc + '"/><path d="M80 40 C100 28 130 34 140 52" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="4" stroke-linecap="round"/>';
+  if (hh === 2) { s += '<path d="' + H0 + '" fill="' + hc + '"/>'; [[62, 70, 16], [80, 56, 18], [100, 50, 19], [120, 56, 18], [138, 70, 16], [55, 92, 11], [145, 92, 11], [90, 66, 12], [112, 66, 12]].forEach(function (c) { s += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '" fill="' + hc + '"/>'; }); s += '<circle cx="92" cy="50" r="7" fill="#fff" opacity=".12"/>'; }
+  if (hh === 4) s += '<path d="M54 100 C48 44 152 44 146 100 C142 72 116 62 98 64 C80 66 60 78 54 100Z" fill="' + hc + '"/>';
+  if (hh === 5) s += '<path d="' + H0 + '" fill="' + hc + '" opacity=".32"/><path d="M62 80 C58 38 142 38 138 80 C128 64 114 58 100 58 C86 58 72 64 62 80Z" fill="' + hc + '"/>';
+  if (hh !== 6) s += '<path d="' + (hh === 1 ? 'M54 96 C40 46 78 20 124 28' : 'M58 80 C70 56 130 56 142 80') + '" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="6" stroke-linecap="round"/>';
+  // Accessoires
+  if (o.acc === 1) s += '<g fill="none" stroke="#222" stroke-width="2.4"><circle cx="80" cy="98" r="13.5"/><circle cx="120" cy="98" r="13.5"/><path d="M93.5 97 H106.5 M66.5 96 L58 92 M133.5 96 L142 92"/></g><path d="M70 90 Q78 86 86 90" stroke="#fff" stroke-opacity=".5" stroke-width="2" fill="none"/>';
+  if (o.acc === 2) s += '<g><rect x="63" y="88" width="35" height="22" rx="9" fill="#14141c"/><rect x="102" y="88" width="35" height="22" rx="9" fill="#14141c"/><path d="M98 96 H102 M63 93 L56 90 M137 93 L144 90" stroke="#14141c" stroke-width="3"/><path d="M68 92 L80 92 M107 92 L119 92" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" stroke-linecap="round"/></g>';
+  if (o.acc === 3) s += '<path d="M54 86 C54 40 146 40 146 86Z" fill="' + mix(tc, '#000000', .1) + '"/><path d="M54 86 C54 40 146 40 146 86Z" fill="url(#' + id + 't)"/><path d="M52 84 H148 Q166 86 172 94 H56Z" fill="' + sh + '"/>';
+  if (o.acc === 4) s += '<circle cx="59" cy="117" r="3.6" fill="#f3c34a"/><circle cx="141" cy="117" r="3.6" fill="#f3c34a"/>';
+  return s + '</svg>';
+}
+
+/* ---------- Datenbank: Dates ---------- */
+var DATES = [
+  { id: 'jonas', name: 'Jonas', age: 29, tag: 'Brunch-Prinz, besitzt 14 Zimmerpflanzen',
+    look: { skin: 1, hair: 1, hc: 2, beard: 1, acc: 1, top: 2, tc: 7, eye: 2 }, bg: ['#ffb36b', '#ff5fa8'], scenes: [
+      { t: 'Jonas bestellt Avocado-Toast mit pochiertem Ei und fragt, was du nimmst.', o: [
+        ['Dasselbe, aber ohne Avocado.', 1, 'Jonas atmet hörbar ein. „Mutig.“'],
+        ['Das große Frühstück mit allem. Ich habe Hunger.', 2, 'Er lacht. „Endlich jemand, der nicht nur am Kaffee nippt.“'],
+        ['Sektfrühstück, und zwar für uns beide.', 3, '„Du verstehst das Wochenende“, haucht er und zückt das Handy fürs Foto.']] },
+      { t: 'Er zeigt dir Fotos seiner Zimmerpflanzen. Alle haben Namen.', o: [
+        ['Ich töte jede Pflanze nach einer Woche.', 0, '„Das war es dann wohl mit uns“, sagt er. Halb im Scherz. Halb.'],
+        ['Die große da sieht aus wie eine Monica.', 3, '„MONICA!“, ruft er. Das ganze Café dreht sich um. Du hast einen Stein im Brett.'],
+        ['Welche davon ist deine Lieblingspflanze?', 2, 'Er strahlt und erzählt zehn Minuten von Ficus Benjamin. Du lächelst tapfer.']] },
+      { t: 'Die Rechnung kommt. Jonas zückt Portemonnaie, Kreditkarte und seinen Stolz.', o: [
+        ['Ich übernehme, du die nächste Runde.', 3, '„Es gibt eine nächste Runde?“ Er wird rot wie die Tomate auf seinem Teller.'],
+        ['Wir teilen, jeder zahlt seins.', 1, 'Er nickt höflich. Ganz leicht enttäuscht, aber höflich.'],
+        ['Ich muss kurz aufs Klo.', 0, 'Du kommst nie wieder. Der Kellner kennt diesen Trick.']] }] },
+  { id: 'mehmet', name: 'Mehmet', age: 31, tag: 'Personal Trainer, Meal-Prep-Meister',
+    look: { skin: 3, hair: 3, hc: 0, beard: 2, acc: 5, top: 1, tc: 1, eye: 0 }, bg: ['#23a6d5', '#7d3cff'], scenes: [
+      { t: 'Im Studio fragt Mehmet, ob er dich bei den Kniebeugen „spotten“ soll.', o: [
+        ['Gerne, aber nur beim Gucken.', 3, 'Er grinst. „Das nennt man Motivation.“'],
+        ['Nein, ich mache nur Cardio. Auf dem Laufband. Langsam.', 1, 'Er schaut, als hättest du sein Lieblingsgerät beleidigt.'],
+        ['Wo ist hier eigentlich die Sauna?', 2, '„Erst Training, dann Sauna“, sagt er streng. Aber er lächelt.']] },
+      { t: 'Beim Proteinshake erzählt er dir von seinem Meal-Prep für die ganze Woche.', o: [
+        ['Du isst jeden Tag dasselbe? Das ist romantisch.', 2, '„Reis, Hähnchen, Brokkoli. Es ist Liebe“, sagt er ernst.'],
+        ['Ich bestelle nachher Pizza.', 0, 'Er hält sich kurz das Herz. „Das tut weh.“'],
+        ['Kochst du auch mal für mich?', 3, '„Drei Behälter, beschriftet“, sagt er stolz. Das ist ein Heiratsantrag.']] },
+      { t: 'Zum Abschluss fragt er, ob du noch auf einen Döner mitkommst. „Zählt als Rest-Kalorien.“', o: [
+        ['Mit allem und scharf!', 3, 'Er lacht laut. „Mein Mann.“ (Er hat es wirklich gesagt.)'],
+        ['Ich nehme nur Salat.', 0, 'Er schaut dich lange an. „Wer bist du?“'],
+        ['Du bezahlst, ich trage deine Tasche.', 2, 'Er findet dich charmant und gibt dir die Tasche. Sie wiegt neun Kilo.']] }] },
+  { id: 'luca', name: 'Luca', age: 26, tag: 'Influencer, filmt auch dein Dessert',
+    look: { skin: 0, hair: 2, hc: 4, beard: 0, acc: 2, top: 4, tc: 0, eye: 1 }, bg: ['#ff4f9a', '#ffd23f'], scenes: [
+      { t: 'Luca filmt das Restaurant für seine Stories. „Kurz winken!“', o: [
+        ['Ich winke elegant wie die Queen.', 3, '„Content!“ ruft er. Du hast 400 Views in einer Minute.'],
+        ['Ich verstecke mich hinter der Speisekarte.', 1, 'Er schneidet es später raus. Aber es tut ihm im Herzen weh.'],
+        ['Ich bestelle mir den Salat und post ihn selbst.', 2, 'Er mustert dich. „Ein Rivale. Ich mag das.“']] },
+      { t: 'Er fragt nach deinem Sternzeichen und deiner Skincare-Routine.', o: [
+        ['Skorpion. Skincare: Wasser und Hoffnung.', 2, '„Mein Gott“, flüstert er. „Wir fangen bei Null an. Das ist spannend.“'],
+        ['Zehn Schritte, jeden Abend, mit Jade-Roller.', 3, 'Er greift nach deiner Hand. „Sag mir deine Produkte. SOFORT.“'],
+        ['Ich glaube nicht an Sternzeichen.', 0, 'Luca stellt sein Glas ab. „Und das beim ersten Date.“']] },
+      { t: 'Zum Abschied: „Folgst du mir? Dann folge ich dir. Vielleicht.“', o: [
+        ['Ich folge dir auch im echten Leben.', 3, 'Er vergisst für einen Moment, das Handy zu zücken. Das ist selten.'],
+        ['Ich überlege es mir.', 1, 'Er schaut auf sein Handy. „Dein Follower-Status: pending.“'],
+        ['Ich habe nur einen Account, und der ist privat.', 0, 'Er schnappt nach Luft. „Wie soll man dich da stalken?!“']] }] },
+  { id: 'kai', name: 'Kai', age: 34, tag: 'Grafikdesigner, Katzenpapa von Pixel',
+    look: { skin: 2, hair: 5, hc: 0, beard: 3, acc: 1, top: 3, tc: 6, eye: 0 }, bg: ['#2ec4b6', '#6a4cff'], scenes: [
+      { t: 'Beim Filmabend springt Kater Pixel auf deinen Schoß und starrt dich an.', o: [
+        ['Ich bin allergisch. Aber das ist es wert.', 3, 'Kai schmilzt dahin. „Er mag dich. Er mag niemanden.“'],
+        ['Kannst du ihn bitte wegnehmen?', 0, 'Pixel faucht. Kai faucht auch. Ihr beide.'],
+        ['Hallo Pixel. Ich bin der Neue.', 2, 'Pixel blinzelt langsam. Das ist Katzen-Zustimmung.']] },
+      { t: 'Kai erklärt dir, warum eine bestimmte Schriftart ein Verbrechen ist.', o: [
+        ['Comic Sans? Das ist ein Hilferuf!', 3, 'Er lacht so laut, dass Pixel vom Sofa fällt. Er verzeiht dir.'],
+        ['Ist doch nur eine Schrift.', 0, 'Kai schaut dich an, als hättest du seinen Computer getreten.'],
+        ['Welche Schrift habe ich gerade auf dem Handy?', 1, 'Er prüft kurz. „Die geht gerade noch. Ich bin gnädig.“']] },
+      { t: 'Er fragt, wie du zu Vinyl stehst. Hinter ihm stapeln sich 400 Platten.', o: [
+        ['Ich liebe Platten. Rauschen ist Gefühl.', 3, 'Er legt feierlich eine Diva-Platte auf. Der Abend ist gerettet.'],
+        ['Ich höre alles über den Handy-Lautsprecher.', 0, 'Kai fasst sich an die Brust. „Mein Plattenspieler weint.“'],
+        ['Zeig mir deine liebste.', 2, 'Er zieht eine hervor, wischt sie ab und strahlt wie ein Kind.']] }] },
+  { id: 'dennis', name: 'Dennis', age: 40, tag: 'Spätberufen, besitzt Dackel Gerd',
+    look: { skin: 1, hair: 0, hc: 6, beard: 4, acc: 0, top: 2, tc: 3, eye: 3 }, bg: ['#7a8cff', '#ff9f6b'], scenes: [
+      { t: 'Dennis: „Ich war bis letztes Jahr verheiratet. Mit einer Frau. Aber Gerd mochte sie nie.“', o: [
+        ['Gerd hat eben Geschmack.', 3, 'Dennis lacht befreit. Unter dem Tisch wedelt Gerd.'],
+        ['Oh. Das ist ja eine Geschichte.', 1, 'Er nickt. „Ich habe noch dreißig Jahre davon zu erzählen.“'],
+        ['Und wann hast du es gemerkt?', 2, '„Als Gerd bei der Hochzeit schon geseufzt hat“, sagt er mit trockenem Humor.']] },
+      { t: 'Er will wissen, was man bei einem Straßenfest in Regenbogenfarben anzieht.', o: [
+        ['Alles, nur nicht dezent.', 3, 'Er notiert sich das im Handy. Unter „Wichtig“.'],
+        ['Karohemd und Mut reichen völlig.', 2, 'Er sieht erleichtert an sich hinab. „Das habe ich an.“'],
+        ['Am besten gar nicht hingehen.', 0, '„Dann hätte ich mein Outing auch lassen können“, murmelt er.']] },
+      { t: 'Er versucht, dir einen Tanzschritt aus einem Internetvideo beizubringen.', o: [
+        ['Ich mache mit. Jetzt gibt es kein Zurück.', 3, 'Ihr tanzt mitten im Wohnzimmer. Gerd ist peinlich berührt.'],
+        ['Ich filme das für die Familiengruppe.', 0, 'Dennis erstarrt. „Meine Mutter ist in dieser Gruppe.“'],
+        ['Ich zeige dir einen einfacheren.', 2, 'Er lernt schnell und ist sehr stolz. Beim dritten Mal klatscht er sogar selbst.']] }] }
+];
+var DEND = [[7, 'Zweites Date!', 'Ihr tauscht Nummern aus. Er schreibt noch vor dem Heimweg. Im Gruppenchat wird schon getuschelt.'], [4, 'Freundschaft mit Brunch-Option', 'Ihr versteht euch gut, aber der Funke fehlt. Ihr trefft euch trotzdem Sonntag zum Frühstück.'], [0, 'Ghosting', 'Seine Nachricht kommt nicht. Du siehst „zuletzt online“ und tust, als wäre es dir egal.']];
+
+/* ---------- Datenbank: Quiz ---------- */
+var QUIZ = [
+  ['Wer entwarf 1978 die erste Regenbogenflagge?', ['Gilbert Baker', 'Elton John', 'Harvey Milk'], 0, 'Gilbert Baker nähte sie in San Francisco. Mit acht Farben, später wurde gespart.'],
+  ['In welchem Jahr begannen die Stonewall-Aufstände in New York?', ['1959', '1969', '1989'], 1, 'Sommer 1969. Daher feiern wir Pride bis heute im Juni.'],
+  ['In welchem Jahr trat die „Ehe für alle“ in Deutschland in Kraft?', ['2007', '2012', '2017'], 2, 'Am 1. Oktober 2017. Seitdem gibt es Hochzeits-Playlists in rauen Mengen.'],
+  ['Wer gewann 2014 den Eurovision Song Contest mit „Rise Like a Phoenix“?', ['Conchita Wurst', 'Lena', 'Loreen'], 0, 'Conchita Wurst für Österreich. Bart, Glitzer, Weltrekord.'],
+  ['Wer gewann 2024 den Eurovision Song Contest mit „The Code“?', ['Nemo', 'Käärijä', 'Måneskin'], 0, 'Nemo aus der Schweiz. Und ja, die Geige hat nicht nur geklungen, sie hat geglänzt.'],
+  ['Welcher Mathematiker half, die Enigma zu knacken?', ['Alan Turing', 'Albert Einstein', 'Isaac Newton'], 0, 'Alan Turing. Heute zierte er sogar den britischen 50-Pfund-Schein.'],
+  ['Wann wurde der Paragraf 175 in Deutschland endgültig gestrichen?', ['1969', '1994', '2004'], 1, '1994. Viel zu spät, aber er ist weg.'],
+  ['Welche Farbe fehlt? Rot, Orange, Gelb, Grün, Violett …', ['Blau', 'Rosa', 'Türkis'], 0, 'Blau. Sechs Farben hat die klassische Pride-Flagge.'],
+  ['Wer sang den Disco-Klassiker „I Will Survive“?', ['Gloria Gaynor', 'Cher', 'Tina Turner'], 0, 'Gloria Gaynor. Kein Straßenfest ohne diesen Song.'],
+  ['Welcher Beiname gehört Madonna?', ['Queen of Pop', 'Königin der Nacht', 'Lady Sunshine'], 0, 'Queen of Pop. Aber die Krone teilt sie sich mit mindestens drei weiteren Divas.'],
+  ['Wer war der erste offen schwule Politiker, der in San Francisco in ein Amt gewählt wurde?', ['Harvey Milk', 'Bill Clinton', 'Barack Obama'], 0, 'Harvey Milk, 1977. Eine Ikone, sein Name lebt weiter.'],
+  ['Was bedeutete das Wort „queer“ ursprünglich im Englischen?', ['seltsam, sonderbar', 'glitzernd', 'fröhlich'], 0, 'Seltsam, sonderbar. Die Community hat das Wort stolz zurückerobert.'],
+  ['Welche Band hat „Bohemian Rhapsody“ aufgenommen?', ['Queen', 'ABBA', 'Pet Shop Boys'], 0, 'Queen mit Freddie Mercury. Sechs Minuten pure Oper.'],
+  ['Was ist am Sonntag laut Klischee ein absolutes Muss?', ['Brunch', 'Gartenarbeit', 'Steuererklärung'], 0, 'Brunch. Und zwar mit Sekt und mindestens einem Foto vom Essen.'],
+  ['Wie viele Kissen braucht ein Sofa laut Klischee mindestens?', ['Zwei', 'Vierzehn', 'Keines'], 1, 'Vierzehn, in drei Farben. Und keiner darf sich anlehnen.'],
+  ['Was macht man beim Betreten einer neuen Wohnung als Erstes?', ['Die Pflanzen begutachten', 'Den Kühlschrank leeren', 'Das Dach prüfen'], 0, 'Die Pflanzen. Wenn sie sterben, war es ein Fehler in der Beziehung.'],
+  ['Wofür steht die Abkürzung CSD?', ['Christopher Street Day', 'Club Super Disco', 'Community Sommer Dienstag'], 0, 'Christopher Street Day, benannt nach der Straße der Stonewall-Aufstände.']
+];
+
+/* ---------- Datenbank: Outfit ---------- */
+var MOTTOS = [
+  { t: 'Brunch am Sonntag', e: '🥂', top: [0, 1, 3, 2, 1], tc: [3, 1, 3, 1, 0, 3, 2, 3], acc: [1, 2, 1, 0, 1, 1] },
+  { t: 'Pride-Parade', e: '🌈', top: [3, 3, 1, 0, 1], tc: [3, 0, 1, 2, 3, 3, 3, 1], acc: [1, 2, 1, 1, 2, 3] },
+  { t: 'Wanderurlaub in den Bergen', e: '⛰️', top: [2, 0, 1, 3, 2], tc: [1, 1, 0, 2, 3, 2, 0, 1], acc: [0, 1, 0, 3, 0, 0] },
+  { t: 'Club-Nacht mit Discokugel', e: '🪩', top: [2, 3, 1, 0, 3], tc: [3, 3, 1, 2, 1, 2, 3, 0], acc: [0, 0, 3, 1, 2, 3] },
+  { t: 'Erstes Date im feinen Restaurant', e: '🕯️', top: [0, 0, 3, 1, 2], tc: [1, 3, 2, 3, 2, 0, 1, 2], acc: [1, 2, 0, 0, 1, 2] },
+  { t: 'Hundespaziergang im Park', e: '🐕', top: [3, 1, 1, 3, 2], tc: [1, 1, 2, 3, 2, 2, 1, 2], acc: [1, 1, 1, 3, 0, 0] }
+];
+var JURY = [
+  ['Tante Gerda (68, sieht alles)', ['Junge, was ist das denn?', 'Na ja, geht noch.', 'Das ist ordentlich. Gefällt mir.', 'Hach, so würde ich dich meiner Nachbarin vorstellen!']],
+  ['Chantal, Stylistin', ['Ich muss mich kurz setzen.', 'Mit Potenzial. Mit sehr viel Potenzial.', 'Ja, Süßer. Das hat Haltung.', 'Perfekt. Ich weine gleich.']],
+  ['Der Türsteher', ['Du kommst heute nicht rein.', 'Hm. Heute ausnahmsweise.', 'Rein mit dir, und zwar nach vorn.', 'Ich habe dir einen Platz an der Bar reserviert.']]
+];
+
+/* ---------- Hub ---------- */
+var GAMES = [
+  { id: 'dates', n: 'Date-Roulette', d: 'Fünf Typen, fünf Dates, viele Peinlichkeiten. Wer meldet sich nach dem Abend noch?', k: 'dates', ch: 'jonas', run: gDates },
+  { id: 'club', n: 'Clubnacht-Manager', d: 'Mach aus einer Eckkneipe den angesagtesten Laden der Stadt. Mit Drag-Show und Discokugel.', k: 'club', ch: 'luca', run: gClub },
+  { id: 'rave', n: 'Regenbogen-Rave', d: 'Du bist DJ auf der Pride-Party: Triff die Beats und bring die Tanzfläche zum Kochen.', k: 'rave', ch: 'mehmet', run: gRave },
+  { id: 'style', n: 'Outfit-Check', d: 'Fünf Anlässe, eine strenge Jury. Stell dich passend zusammen, ohne dich zu blamieren.', k: 'style', ch: 'kai', run: gStyle },
+  { id: 'quiz', n: 'Klischee-Quiz', d: 'Zehn Fragen zu Geschichte, Pop und Klischees. Wer bist du: Wissens-Diva oder Brunch-Statist?', k: 'quiz', ch: 'dennis', run: gQuiz }
+];
+var stop = null;
+function bestOf(g) {
+  if (g.k === 'dates') { var n = Object.keys(S.dates).length; return n ? n + '/5 Dates' : ''; }
+  if (g.k === 'club') return S.club.total > 0 ? fmt(S.club.total) + ' verdient' : '';
+  if (g.k === 'rave') { var m = 0; for (var s in S.rave.best) m = Math.max(m, S.rave.best[s]); return m ? 'Best ' + fmt(m) : ''; }
+  if (g.k === 'style') return S.style.best ? 'Best ' + S.style.best + '/45' : '';
+  return S.quiz.best ? 'Best ' + S.quiz.best : '';
+}
+var ACH = [
+  ['Erstes Date', function () { return Object.keys(S.dates).length >= 1; }],
+  ['Casanova', function () { return Object.keys(S.dates).filter(function (k) { return S.dates[k].best >= 7; }).length >= 3; }],
+  ['Club-Besitzer', function () { return S.club.total >= 1000; }],
+  ['Club-Tycoon', function () { return S.club.total >= 100000; }],
+  ['Rave-Königin', function () { for (var s in S.rave.best) if (S.rave.best[s] >= 8000) return true; return false; }],
+  ['Stilikone', function () { return S.style.best >= 36; }],
+  ['Wissens-Diva', function () { return S.quiz.best >= 140; }]
+];
+function showHub() {
+  if (stop) { try { stop(); } catch (e) {} stop = null; }
+  $('#game').style.display = 'none'; $('#hub').style.display = '';
+  var h = '<div class="top"><div><div class="logo">Gay Life!</div><p class="sub">Die Spielesammlung mit Herz, Humor und Glitzer.</p></div>' +
+    '<div class="prof"><div class="av">' + avatar(S.look) + '</div><div style="flex:1;min-width:0"><b>' + esc(S.name) + '</b><div class="sub">Level ' + level() + ' · ✨ ' + fmt(S.glitzer) + ' Glitzer</div>' +
+    '<div class="row" style="margin-top:8px"><button class="btn sm pri" id="glEdit">Anpassen</button><button class="btn sm" id="glSave">Speichern</button><button class="btn sm" id="glSnd">' + (S.sound ? '🔊' : '🔇') + '</button></div></div></div></div>';
+  h += '<div class="grid">';
+  GAMES.forEach(function (g) {
+    var c = DATES.filter(function (x) { return x.id === g.ch; })[0], b = bestOf(g);
+    h += '<button class="gcard" data-g="' + g.id + '"><div class="pic" style="background:linear-gradient(145deg,' + c.bg[0] + ',' + c.bg[1] + ')">' + avatar(c.look, c.bg, 1) + '</div>' + (b ? '<span class="best">' + esc(b) + '</span>' : '') +
+      '<div class="in"><h3>' + g.n + '</h3><p>' + g.d + '</p></div></button>';
+  });
+  h += '</div><div class="chips" style="margin-top:18px">' + ACH.map(function (a) { return '<span class="chip' + (a[1]() ? ' on' : '') + '">' + (a[1]() ? '🏅 ' : '🔒 ') + a[0] + '</span>'; }).join('') + '</div>' +
+    '<p class="foot">Alle Figuren sind frei erfunden. · Speicherstand läuft lokal und optional per Google-Konto. · Ein Spiel von AnMaCha</p>';
+  $('#hub').innerHTML = h;
+  $('#glEdit').onclick = editor;
+  $('#glSave').onclick = function () { save(); toast('Gespeichert auf diesem Gerät.'); };
+  $('#glSnd').onclick = function () { S.sound = !S.sound; save(); this.textContent = S.sound ? '🔊' : '🔇'; sfx('ok'); };
+  [].forEach.call(document.querySelectorAll('.gcard'), function (b) { b.onclick = function () { var g = GAMES.filter(function (x) { return x.id === b.dataset.g; })[0]; openGame(g); }; });
+  window.scrollTo(0, 0);
+}
+function openGame(g) {
+  $('#hub').style.display = 'none'; var G = $('#game'); G.style.display = 'block';
+  G.innerHTML = '<div class="gh"><button class="btn sm" id="glBack">← Menü</button><h2>' + g.n + '</h2><span class="chip">✨ <span id="glG">' + fmt(S.glitzer) + '</span></span></div><div id="gbody"></div>';
+  $('#glBack').onclick = showHub; window.scrollTo(0, 0);
+  g.run($('#gbody'));
+}
+function glz() { var e = $('#glG'); if (e) e.textContent = fmt(S.glitzer); }
+
+/* ---------- Editor ---------- */
+function editor() {
+  var m = $('#modal'), L = S.look;
+  function sw(key, arr, names) { return arr.map(function (c, i) { return '<button class="sw' + (L[key] === i ? ' on' : '') + '" data-k="' + key + '" data-i="' + i + '" style="background:' + (Array.isArray(c) ? c[0] : c) + '" title="' + (names ? names[i] : '') + '"></button>'; }).join(' '); }
+  function pills(key, names) { return names.map(function (n, i) { return '<button class="pill' + (L[key] === i ? ' on' : '') + '" data-k="' + key + '" data-i="' + i + '">' + n + '</button>'; }).join(' '); }
+  function draw() {
+    $('#mbox').innerHTML = '<div class="gh"><h2>Dein Look</h2><button class="btn pri sm" id="mOk">Fertig</button></div><div class="edit"><div class="av">' + avatar(L) + '</div><div>' +
+      '<div class="lab">Name</div><input type="text" id="mName" maxlength="14" value="' + esc(S.name) + '">' +
+      '<div class="lab">Hautton</div><div class="row">' + sw('skin', SKIN) + '</div>' +
+      '<div class="lab">Frisur</div><div class="row">' + pills('hair', HAIRN) + '</div>' +
+      '<div class="lab">Haarfarbe</div><div class="row">' + sw('hc', HC) + '</div>' +
+      '<div class="lab">Bart</div><div class="row">' + pills('beard', BEARDN) + '</div>' +
+      '<div class="lab">Augenfarbe</div><div class="row">' + sw('eye', EYE) + '</div>' +
+      '<div class="lab">Extra</div><div class="row">' + pills('acc', ACCN) + '</div>' +
+      '<div class="lab">Oberteil</div><div class="row">' + pills('top', TOPN) + '</div>' +
+      '<div class="lab">Farbe</div><div class="row">' + sw('tc', TC, TCN) + '</div></div></div>';
+    [].forEach.call(document.querySelectorAll('#mbox [data-k]'), function (b) { b.onclick = function () { L[b.dataset.k] = +b.dataset.i; save(); draw(); }; });
+    $('#mName').oninput = function () { S.name = this.value.trim() || 'Du'; save(); };
+    $('#mOk').onclick = function () { m.style.display = 'none'; showHub(); };
+  }
+  draw(); m.style.display = 'block';
+}
+
+/* ---------- Spiel 1: Date-Roulette ---------- */
+function gDates(root) {
+  function list() {
+    var h = '<p class="sub">Such dir ein Date aus. Drei Situationen, je bis zu drei Herzen. Ab sieben gibt es ein zweites Date.</p><div class="grid" style="margin-top:12px">';
+    DATES.forEach(function (d) {
+      var r = S.dates[d.id];
+      h += '<button class="gcard" data-d="' + d.id + '"><div class="pic" style="background:linear-gradient(145deg,' + d.bg[0] + ',' + d.bg[1] + ')">' + avatar(d.look, d.bg, 1) + '</div>' + (r ? '<span class="best">' + '❤'.repeat(Math.min(9, r.best)) + '</span>' : '') +
+        '<div class="in"><h3>' + d.name + ', ' + d.age + '</h3><p>' + d.tag + '</p></div></button>';
+    });
+    root.innerHTML = h + '</div>';
+    [].forEach.call(root.querySelectorAll('[data-d]'), function (b) { b.onclick = function () { play(DATES.filter(function (x) { return x.id === b.dataset.d; })[0]); }; });
+  }
+  function play(d) {
+    var i = 0, pts = 0;
+    function scene() {
+      var sc = d.scenes[i];
+      root.innerHTML = '<div class="panel"><div class="dateTop"><div class="av" style="background:linear-gradient(145deg,' + d.bg[0] + ',' + d.bg[1] + ')">' + avatar(d.look, d.bg) + '</div><div><h3>' + d.name + ', ' + d.age + '</h3><div class="sub">' + d.tag + '</div><div class="hearts">' + '❤'.repeat(pts) + '<span style="opacity:.25">' + '❤'.repeat(9 - pts) + '</span></div><div class="sub">Szene ' + (i + 1) + ' von 3</div></div></div>' +
+        '<div class="bubble">' + sc.t + '</div><div class="opts" id="opts">' + sc.o.map(function (o, k) { return '<button class="opt" data-k="' + k + '">' + o[0] + '</button>'; }).join('') + '</div><div id="rx"></div></div>';
+      [].forEach.call(root.querySelectorAll('.opt'), function (b) {
+        b.onclick = function () {
+          var o = sc.o[+b.dataset.k]; pts += o[1]; sfx(o[1] >= 2 ? 'ok' : o[1] === 0 ? 'no' : 'tap');
+          [].forEach.call(root.querySelectorAll('.opt'), function (x) { x.disabled = true; });
+          b.classList.add(o[1] >= 2 ? 'ok' : o[1] === 0 ? 'no' : '');
+          $('#rx').innerHTML = '<div class="bubble me" style="margin-top:12px">' + o[2] + '<div class="hearts" style="margin-top:4px">' + (o[1] ? '❤'.repeat(o[1]) : '💔') + '</div></div><button class="btn pri" id="nx" style="margin-top:6px">' + (i < 2 ? 'Weiter' : 'Ergebnis') + '</button>';
+          $('#nx').onclick = function () { i++; if (i < 3) scene(); else end(); };
+        };
+      });
+    }
+    function end() {
+      var e = DEND.filter(function (x) { return pts >= x[0]; })[0], old = S.dates[d.id], bonus = pts * 4 + (pts >= 7 ? 15 : 0);
+      S.dates[d.id] = { best: Math.max(old ? old.best : 0, pts), runs: (old ? old.runs : 0) + 1 }; var g = gain(bonus); glz();
+      root.innerHTML = '<div class="panel" style="text-align:center"><div class="av" style="width:140px;height:168px;margin:0 auto 10px;border-radius:24px;overflow:hidden;background:linear-gradient(145deg,' + d.bg[0] + ',' + d.bg[1] + ')">' + avatar(d.look, d.bg) + '</div><div class="big">' + e[1] + '</div><div class="hearts">' + '❤'.repeat(pts) + '</div>' +
+        '<p>' + e[2] + '</p><p class="sub">' + pts + ' von 9 Herzen · +' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button><button class="btn" id="ot">Anderes Date</button></div></div>';
+      $('#ag').onclick = function () { play(d); }; $('#ot').onclick = list;
+    }
+    scene();
+  }
+  list();
+}
+
+/* ---------- Spiel 2: Clubnacht-Manager ---------- */
+var CITEMS = [
+  { id: 'disco', n: 'Discokugel', d: 'Glitzert. Macht Gäste weich.', e: '🪩', c: 15, p: .3 },
+  { id: 'bar', n: 'Barkeeper Björn', d: 'Kennt jeden Cocktail und jede Beichte.', e: '🍸', c: 100, p: 1.5 },
+  { id: 'dj', n: 'DJ Dennis', d: 'Spielt nur Diven. Auf Wunsch auch zweimal.', e: '🎧', c: 600, p: 7 },
+  { id: 'foto', n: 'Fotobox mit Federboa', d: 'Jedes Foto geht auf Instagram. Alle sind schön.', e: '📸', c: 3500, p: 30 },
+  { id: 'drag', n: 'Show: Madame Mimosa', d: 'Zwei Meter Perücke, null Gnade, drei Zugaben.', e: '👑', c: 20000, p: 140 },
+  { id: 'vip', n: 'VIP-Lounge', d: 'Samtvorhang, Sekt, Hunde in Handtaschen.', e: '🛋️', c: 110000, p: 650 },
+  { id: 'kanone', n: 'Glitzer-Kanone', d: 'Bis in den Februar werden Reste gefunden.', e: '🎆', c: 600000, p: 3200 }
+];
+var CEVENTS = [['Eine Drag-Queen betritt den Laden. Alle klatschen.', '👑'], ['Ein Hetero hat sich verirrt und bestellt Weißbier. Trinkgeld!', '🍺'], ['Der Bürgermeister kommt vorbei und tanzt mit.', '🕺'], ['Eine Influencerin postet euren Laden. Ansturm!', '📱'], ['Jemand hat die Playlist gehackt: nur noch Disco!', '🎶']];
+function gClub(root) {
+  var C = S.club, tmr = [], ev = null;
+  function cost(it) { return Math.ceil(it.c * Math.pow(1.15, C.items[it.id] || 0)); }
+  function tcost() { return Math.ceil(50 * Math.pow(2.4, C.tap)); }
+  function cps() { return CITEMS.reduce(function (a, it) { return a + it.p * (C.items[it.id] || 0); }, 0); }
+  var now = Date.now();
+  if (C.last && cps() > 0) { var off = Math.min(3600, (now - C.last) / 1000) * cps() * .5; if (off >= 1) { C.coins += off; C.total += off; setTimeout(function () { toast('Während du weg warst: +' + fmt(off) + ' Kohle'); }, 300); } }
+  C.last = now;
+  root.innerHTML = '<div class="panel" style="text-align:center"><div class="sub">Kohle</div><div class="big" id="cc">0</div><div class="sub" id="cp"></div>' +
+    '<button class="tap" id="ctap" aria-label="Drink mixen">' + avatar(S.look, ['#7d3cff', '#ff4f9a']) + '</button><div class="sub">Tippe dich zum Barkeeper-Star: Drink mixen!</div></div><div class="opts" id="cu" style="margin-top:12px"></div>';
+  function upd() {
+    $('#cc').textContent = fmt(C.coins); $('#cp').textContent = fmt(cps()) + '/s · ' + fmt(1 + C.tap) + ' pro Tipp · Ruf: ' + Math.floor(Math.sqrt(C.total / 10)) + ' Stammgäste';
+    var h = '<button class="up" data-u="tap"><span class="e">🥤</span><span><b>Besserer Shaker</b> (Stufe ' + C.tap + ')<small>+1 Kohle pro Tipp · ' + fmt(tcost()) + '</small></span></button>';
+    CITEMS.forEach(function (it) { h += '<button class="up" data-u="' + it.id + '"><span class="e">' + it.e + '</span><span><b>' + it.n + '</b> (' + (C.items[it.id] || 0) + ')<small>' + it.d + ' +' + it.p + '/s · ' + fmt(cost(it)) + '</small></span></button>'; });
+    var box = $('#cu'); if (box.dataset.sig !== h) { box.innerHTML = h; box.dataset.sig = h; bind(); }
+    [].forEach.call(box.querySelectorAll('.up'), function (b) { var u = b.dataset.u, c = u === 'tap' ? tcost() : cost(CITEMS.filter(function (x) { return x.id === u; })[0]); b.disabled = C.coins < c; });
+  }
+  function bind() {
+    [].forEach.call(root.querySelectorAll('.up'), function (b) {
+      b.onclick = function () {
+        var u = b.dataset.u, c;
+        if (u === 'tap') { c = tcost(); if (C.coins < c) return; C.coins -= c; C.tap++; }
+        else { var it = CITEMS.filter(function (x) { return x.id === u; })[0]; c = cost(it); if (C.coins < c) return; C.coins -= c; C.items[u] = (C.items[u] || 0) + 1; }
+        sfx('ok'); save(); upd();
+      };
+    });
+  }
+  $('#ctap').onclick = function () { var v = 1 + C.tap; C.coins += v; C.total += v; sfx('tap'); upd(); };
+  upd();
+  tmr.push(setInterval(function () { var p = cps() / 4; if (p > 0) { C.coins += p; C.total += p; } upd(); }, 250));
+  tmr.push(setInterval(function () { C.last = Date.now(); save(); if (C.total >= 1000) gainClub(); }, 5000));
+  var rewarded = Math.floor(C.total / 1000);
+  function gainClub() { var r = Math.floor(C.total / 1000); if (r > rewarded) { gain((r - rewarded) * 2); rewarded = r; glz(); } }
+  tmr.push(setInterval(function () {
+    if (ev) return; var e = pick(CEVENTS), b = document.createElement('button'); b.className = 'fly'; b.textContent = e[1];
+    b.style.left = (10 + Math.random() * 75) + '%'; b.style.top = (25 + Math.random() * 55) + '%'; document.body.appendChild(b); ev = b;
+    var to = setTimeout(function () { b.remove(); ev = null; }, 8000);
+    b.onclick = function () { clearTimeout(to); var r = Math.max(60, cps() * 45); C.coins += r; C.total += r; b.remove(); ev = null; sfx('ok'); toast(e[0] + ' +' + fmt(r)); upd(); };
+  }, 22000));
+  stop = function () { tmr.forEach(clearInterval); if (ev) ev.remove(); C.last = Date.now(); save(); };
+}
+
+/* ---------- Spiel 3: Regenbogen-Rave ---------- */
+var SONGS = [
+  { id: 'disco', n: 'Disco-Fieber', bpm: 112, dens: .5, seed: 7 },
+  { id: 'glitzer', n: 'Glitzer-Techno', bpm: 126, dens: .62, seed: 21 },
+  { id: 'diva', n: 'Diva-Ballade (Remix)', bpm: 138, dens: .72, seed: 42 }
+];
+var LANEC = ['#ff3b6b', '#ffb020', '#3ddc84', '#2ea8ff'];
+function gRave(root) {
+  function menu() {
+    root.innerHTML = '<p class="sub">Vier Spuren, vier Tasten (D F J K oder 1 2 3 4) oder tippe die Spuren an. Die Musik erzeugt dein Gerät selbst.</p><div class="opts">' +
+      SONGS.map(function (s) { return '<button class="opt" data-s="' + s.id + '"><b>' + s.n + '</b> · ' + s.bpm + ' BPM' + (S.rave.best[s.id] ? ' · Best ' + fmt(S.rave.best[s.id]) : '') + '</button>'; }).join('') + '</div>';
+    [].forEach.call(root.querySelectorAll('[data-s]'), function (b) { b.onclick = function () { start(SONGS.filter(function (x) { return x.id === b.dataset.s; })[0]); }; });
+  }
+  function start(song) {
+    root.innerHTML = '<canvas id="cv"></canvas><div class="row" style="justify-content:space-between;margin-top:8px"><span class="chip" id="rs">0</span><span class="chip" id="rc">Combo 0</span></div>';
+    var cv = $('#cv'), ctx = cv.getContext('2d'), W = 0, H = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
+    function size() { var r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size(); window.addEventListener('resize', size);
+    var step = 60 / song.bpm / 2, FALL = 1.7, LEAD = 2.2, steps = 128, seed = song.seed;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    var notes = [], last = -1;
+    for (var s = 8; s < steps; s++) {
+      var onBeat = s % 2 === 0;
+      if (rnd() < song.dens * (onBeat ? 1 : .6)) { var l = Math.floor(rnd() * 4); if (l === last && rnd() < .6) l = (l + 1 + Math.floor(rnd() * 3)) % 4; last = l; notes.push({ t: LEAD + s * step, l: l, hit: 0, y: 0 }); }
+    }
+    var endT = LEAD + steps * step + 1.5, t0 = performance.now() + 150, score = 0, combo = 0, maxc = 0, perf = 0, good = 0, miss = 0, fx = [], done = false, flash = 0, ls = [0, 0, 0, 0];
+    var a = S.sound ? ac() : null, base = a ? a.currentTime + .15 : 0, nextStep = 0, scale = [0, 3, 5, 7, 10, 12, 15], timer = 0, raf = 0;
+    function clock() { return (performance.now() - t0) / 1000; }
+    function sched() {
+      if (!a) return;
+      while (nextStep < steps + 8 && base + nextStep * step < a.currentTime + .25) {
+        var t = base + nextStep * step, n = nextStep++;
+        if (n % 2 === 0) kick(t); else hat(t);
+        if (n % 8 === 4) clap(t);
+        bass(t, [0, 0, 7, 5][Math.floor(n / 8) % 4] + (n % 4 === 2 ? 12 : 0));
+        if (n >= 8 && n % 2 === 1) lead(t, scale[(n * 5 + Math.floor(n / 16)) % scale.length]);
+      }
+    }
+    function env(t, v, d, node) { var g = a.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); node.connect(g); g.connect(a.destination); }
+    function kick(t) { var o = a.createOscillator(); o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(42, t + .14); env(t, .5, .22, o); o.start(t); o.stop(t + .25); }
+    function noiseBuf() { if (!noiseBuf.b) { var b = a.createBuffer(1, a.sampleRate * .3, a.sampleRate), d = b.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; noiseBuf.b = b; } return noiseBuf.b; }
+    function hat(t) { var s = a.createBufferSource(), f = a.createBiquadFilter(); s.buffer = noiseBuf(); f.type = 'highpass'; f.frequency.value = 7000; s.connect(f); env(t, .14, .05, f); s.start(t); s.stop(t + .08); }
+    function clap(t) { var s = a.createBufferSource(), f = a.createBiquadFilter(); s.buffer = noiseBuf(); f.type = 'bandpass'; f.frequency.value = 1800; s.connect(f); env(t, .3, .14, f); s.start(t); s.stop(t + .18); }
+    function bass(t, semi) { var o = a.createOscillator(), f = a.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = 55 * Math.pow(2, semi / 12); f.type = 'lowpass'; f.frequency.value = 380; o.connect(f); env(t, .16, step * .95, f); o.start(t); o.stop(t + step); }
+    function lead(t, semi) { var o = a.createOscillator(); o.type = 'square'; o.frequency.value = 440 * Math.pow(2, semi / 12); env(t, .035, step * .8, o); o.start(t); o.stop(t + step); }
+    function press(l) {
+      if (done) return; var now = clock(), best = null, bd = .2;
+      notes.forEach(function (n) { if (!n.hit && n.l === l) { var d = Math.abs(n.t - now); if (d < bd) { bd = d; best = n; } } });
+      ls[l] = .18;
+      if (!best) { combo = 0; return; }
+      best.hit = bd < .06 ? 2 : 1; if (best.hit === 2) { perf++; score += 100 * (1 + Math.floor(combo / 10) * .5); } else { good++; score += 50 * (1 + Math.floor(combo / 10) * .5); }
+      combo++; maxc = Math.max(maxc, combo); flash = 1; fx.push({ l: l, t: 0, txt: best.hit === 2 ? 'Perfekt!' : 'Gut' }); blip(660 + l * 110, .08, 'triangle', .04);
+      $('#rs').textContent = Math.floor(score); $('#rc').textContent = 'Combo ' + combo;
+    }
+    function lane(x) { return Math.max(0, Math.min(3, Math.floor(x / W * 4))); }
+    cv.onpointerdown = function (e) { e.preventDefault(); var r = cv.getBoundingClientRect(); press(lane(e.clientX - r.left)); };
+    var keys = { d: 0, f: 1, j: 2, k: 3, 1: 0, 2: 1, 3: 2, 4: 3, ArrowLeft: 0, ArrowDown: 1, ArrowUp: 2, ArrowRight: 3 };
+    function kd(e) { if (e.repeat) return; var l = keys[e.key]; if (l !== undefined) press(l); }
+    document.addEventListener('keydown', kd);
+    function frame() {
+      var now = clock(), hy = H - 70, k;
+      ctx.fillStyle = '#0b0618'; ctx.fillRect(0, 0, W, H);
+      var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'rgba(155,92,255,' + (.18 + flash * .25) + ')'); g.addColorStop(1, 'rgba(255,59,107,' + (.1 + flash * .2) + ')'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); flash *= .9;
+      for (k = 0; k < 4; k++) { ctx.fillStyle = 'rgba(255,255,255,' + (.04 + ls[k]) + ')'; ctx.fillRect(k * W / 4 + 2, 0, W / 4 - 4, H); ls[k] = Math.max(0, ls[k] - .01); }
+      ctx.fillStyle = '#fff6'; ctx.fillRect(0, hy - 2, W, 4);
+      for (k = 0; k < 4; k++) { ctx.strokeStyle = LANEC[k]; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc((k + .5) * W / 4, hy, 26, 0, 7); ctx.stroke(); }
+      notes.forEach(function (n) {
+        if (!n.hit && now - n.t > .14 && !n.miss) { n.miss = 1; miss++; combo = 0; $('#rc').textContent = 'Combo 0'; }
+        if (n.hit) return;
+        var y = hy - (n.t - now) / FALL * hy; if (y < -40 || y > H + 40) return;
+        var x = (n.l + .5) * W / 4; ctx.globalAlpha = n.miss ? .25 : 1; ctx.fillStyle = LANEC[n.l]; ctx.shadowColor = LANEC[n.l]; ctx.shadowBlur = 16;
+        ctx.beginPath(); ctx.arc(x, y, 22, 0, 7); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#fff8'; ctx.beginPath(); ctx.arc(x - 6, y - 7, 6, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+      });
+      ctx.font = 'bold 18px system-ui'; ctx.textAlign = 'center';
+      fx = fx.filter(function (f) { f.t += .02; ctx.globalAlpha = Math.max(0, 1 - f.t); ctx.fillStyle = LANEC[f.l]; ctx.fillText(f.txt, (f.l + .5) * W / 4, hy - 40 - f.t * 50); ctx.globalAlpha = 1; return f.t < 1; });
+      if (now < 0) { ctx.fillStyle = '#fff'; ctx.font = 'bold 28px system-ui'; ctx.fillText('Mach dich bereit …', W / 2, H / 2); }
+      if (now > endT) return finish();
+      raf = requestAnimationFrame(frame);
+    }
+    function cleanup() { done = true; cancelAnimationFrame(raf); clearInterval(timer); document.removeEventListener('keydown', kd); window.removeEventListener('resize', size); }
+    function finish() {
+      cleanup(); var tot = notes.length, acc = tot ? (perf + good * .5) / tot : 0, rank = acc > .92 ? 'S' : acc > .8 ? 'A' : acc > .6 ? 'B' : 'C', sc = Math.floor(score);
+      var pb = sc > (S.rave.best[song.id] || 0); if (pb) S.rave.best[song.id] = sc; var g = gain(sc / 120 + (rank === 'S' ? 30 : 0)); glz();
+      root.innerHTML = '<div class="panel" style="text-align:center"><div class="big">' + (rank === 'S' ? 'Rave-Königin!' : rank === 'A' ? 'Tanzfläche brennt!' : rank === 'B' ? 'Ordentlich gefeiert' : 'Noch etwas Übung, Süße') + '</div><div class="stars">Rang ' + rank + '</div>' +
+        '<p>' + sc + ' Punkte' + (pb ? ' · Neuer Rekord!' : '') + '<br>' + perf + ' perfekt · ' + good + ' gut · ' + miss + ' verpasst · längste Combo ' + maxc + '</p><p class="sub">+' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button><button class="btn" id="mn">Songs</button></div></div>';
+      $('#ag').onclick = function () { start(song); }; $('#mn').onclick = menu; stop = null;
+    }
+    if (a) { sched(); timer = setInterval(sched, 40); }
+    raf = requestAnimationFrame(frame);
+    stop = cleanup;
+  }
+  menu();
+}
+
+/* ---------- Spiel 4: Outfit-Check ---------- */
+function gStyle(root) {
+  function run() {
+    var rounds = shuffle(MOTTOS).slice(0, 5), r = 0, total = 0, L = JSON.parse(JSON.stringify(S.look));
+    function round() {
+      var m = rounds[r];
+      function draw() {
+        root.innerHTML = '<div class="panel"><div class="dateTop"><div class="av" style="width:130px;height:156px;background:linear-gradient(145deg,#6a3cc8,#ff5fa8)">' + avatar(L) + '</div><div><div class="sub">Anlass ' + (r + 1) + ' von 5 · ' + total + ' Punkte</div><h3>' + m.e + ' ' + m.t + '</h3><div class="sub">Stell dich passend zusammen.</div></div></div>' +
+          '<div class="lab">Oberteil</div><div class="row">' + TOPN.map(function (n, i) { return '<button class="pill' + (L.top === i ? ' on' : '') + '" data-k="top" data-i="' + i + '">' + n + '</button>'; }).join('') + '</div>' +
+          '<div class="lab">Farbe</div><div class="row">' + TC.map(function (c, i) { return '<button class="sw' + (L.tc === i ? ' on' : '') + '" data-k="tc" data-i="' + i + '" style="background:' + c + '" title="' + TCN[i] + '"></button>'; }).join('') + '</div>' +
+          '<div class="lab">Extra</div><div class="row">' + ACCN.map(function (n, i) { return '<button class="pill' + (L.acc === i ? ' on' : '') + '" data-k="acc" data-i="' + i + '">' + n + '</button>'; }).join('') + '</div>' +
+          '<button class="btn pri" id="go" style="margin-top:16px">Jury fragen</button></div>';
+        [].forEach.call(root.querySelectorAll('[data-k]'), function (b) { b.onclick = function () { L[b.dataset.k] = +b.dataset.i; sfx('tap'); draw(); }; });
+        $('#go').onclick = judge;
+      }
+      function judge() {
+        var p = m.top[L.top] + m.tc[L.tc] + m.acc[L.acc], tier = p >= 8 ? 3 : p >= 6 ? 2 : p >= 3 ? 1 : 0; total += p; sfx(tier >= 2 ? 'ok' : tier === 0 ? 'no' : 'tap');
+        root.innerHTML = '<div class="panel" style="text-align:center"><div class="av" style="width:150px;height:180px;margin:0 auto 8px;border-radius:24px;overflow:hidden">' + avatar(L, tier >= 2 ? ['#ffb020', '#ff4f9a'] : ['#555a7a', '#2a2a40']) + '</div><div class="big">' + p + ' / 9</div><div class="jury">' +
+          JURY.map(function (j) { return '<div><b>' + j[0] + ':</b> „' + j[1][Math.max(0, Math.min(3, tier + (Math.random() < .25 ? (Math.random() < .5 ? -1 : 1) : 0)))] + '“</div>'; }).join('') +
+          '</div><button class="btn pri" id="nx" style="margin-top:14px">' + (r < 4 ? 'Nächster Anlass' : 'Gesamtwertung') + '</button></div>';
+        $('#nx').onclick = function () { r++; if (r < 5) round(); else end(); };
+      }
+      draw();
+    }
+    function end() {
+      var pb = total > S.style.best; if (pb) S.style.best = total; var g = gain(total * 1.5); glz();
+      var t = total >= 36 ? 'Stilikone! Die Jury will ein Autogramm.' : total >= 26 ? 'Gut gekleidet. Man würde dich einladen.' : total >= 16 ? 'Mutig. Sehr mutig. Aber mutig.' : 'Tante Gerda hat Mitleid und bringt dir Kuchen.';
+      root.innerHTML = '<div class="panel" style="text-align:center"><div class="big">' + total + ' / 45</div><p>' + t + (pb ? ' Neuer Rekord!' : '') + '</p><p class="sub">+' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button></div></div>';
+      $('#ag').onclick = run;
+    }
+    round();
+  }
+  run();
+}
+
+/* ---------- Spiel 5: Klischee-Quiz ---------- */
+function gQuiz(root) {
+  function run() {
+    var qs = shuffle(QUIZ).slice(0, 10), i = 0, score = 0, right = 0, T = 14, left = T, tm = 0, locked = false;
+    function q() {
+      var d = qs[i]; locked = false; left = T;
+      var order = shuffle([0, 1, 2]);
+      root.innerHTML = '<div class="panel"><div class="row" style="justify-content:space-between"><span class="chip">Frage ' + (i + 1) + ' / 10</span><span class="chip">' + score + ' Punkte</span></div><div class="bar" style="margin:10px 0"><i id="qb"></i></div><div class="bubble" style="font-size:18px">' + d[0] + '</div><div class="opts">' +
+        order.map(function (k) { return '<button class="opt" data-k="' + k + '">' + d[1][k] + '</button>'; }).join('') + '</div><div id="rx"></div></div>';
+      [].forEach.call(root.querySelectorAll('.opt'), function (b) { b.onclick = function () { answer(+b.dataset.k); }; });
+      clearInterval(tm); tm = setInterval(function () { left -= .1; var e = $('#qb'); if (e) e.style.width = Math.max(0, left / T * 100) + '%'; if (left <= 0) answer(-1); }, 100);
+    }
+    function answer(k) {
+      if (locked) return; locked = true; clearInterval(tm); var d = qs[i], ok = k === d[2];
+      [].forEach.call(root.querySelectorAll('.opt'), function (b) { b.disabled = true; if (+b.dataset.k === d[2]) b.classList.add('ok'); else if (+b.dataset.k === k) b.classList.add('no'); });
+      if (ok) { right++; score += 10 + Math.ceil(left); sfx('ok'); } else sfx('no');
+      $('#rx').innerHTML = '<div class="bubble me" style="margin-top:12px">' + (k < 0 ? 'Zeit abgelaufen. ' : ok ? 'Richtig! ' : 'Leider falsch. ') + d[3] + '</div><button class="btn pri" id="nx">' + (i < 9 ? 'Weiter' : 'Ergebnis') + '</button>';
+      $('#nx').onclick = function () { i++; if (i < 10) q(); else end(); };
+    }
+    function end() {
+      var pb = score > S.quiz.best; if (pb) S.quiz.best = score; S.quiz.runs++; var g = gain(score / 4 + right); glz();
+      var t = right >= 9 ? 'Wissens-Diva! Du gehörst auf die Bühne.' : right >= 6 ? 'Stark. Du bekommst einen Sekt aufs Haus.' : right >= 3 ? 'Brunch-Statist mit Potenzial.' : 'Zum Glück zählt beim Brunch nur der Auftritt.';
+      root.innerHTML = '<div class="panel" style="text-align:center"><div class="big">' + right + ' / 10</div><p>' + t + '</p><p>' + score + ' Punkte' + (pb ? ' · Neuer Rekord!' : '') + '</p><p class="sub">+' + g + ' Glitzer</p><div class="row" style="justify-content:center"><button class="btn pri" id="ag">Nochmal</button></div></div>';
+      $('#ag').onclick = run;
+    }
+    stop = function () { clearInterval(tm); };
+    q();
+  }
+  run();
+}
+
+document.addEventListener('visibilitychange', function () { if (document.hidden) save(); });
+window.addEventListener('pagehide', save);
+showHub();
+})();
+</script>
+</body>
+</html>
