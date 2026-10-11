@@ -1677,7 +1677,7 @@
     if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
     if (state === 'pause') { updateParent(dt); renderer.render(scene, camera); return; } // Eltern-Knopf (gedrückt halten) liegt im Pause-Menü
     t += dt;
-    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5); return; }
+    if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5, 'insel'); return; }
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
@@ -1686,7 +1686,7 @@
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
     if (state === 'play') { updateButtons(false); updateArrow(); updateGauge(); }
-    if (state !== 'menu') A.music(dt, night > .5);
+    if (state !== 'menu') A.music(dt, night > .5, BI.zoneAt(P.x, P.z, { cinema: cinema.open, obby: obby.run }));
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
     if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
