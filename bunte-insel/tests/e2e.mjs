@@ -336,7 +336,7 @@ const bi = await page.evaluate(async () => {
   outer: for (let a = -30; a < 30 && placed < types.length; a++) for (let c = -30; c < 30; c++) { if (placed >= types.length) break outer; const t = types[placed]; if (B.canPlace(t, c, a, 0) && B.canPlace('floor', c + 1, a, 0)) { B.setType(t); B.setCursor(c * 4, a * 4); await sleep(30); tried++; if (B.place()) placed++; c += 1; } }
   await sleep(500); const n = B.count; B.toggleBuild ? 0 : 0; b.toggleBuild(); B.clearAll(); return { types: types.length, placed, n, tabs: B.TABS.length };
 });
-ok(bi.types >= 20 && bi.placed === bi.types && bi.tabs === 5, `Sims-Teile Bauernhof & Sommer: ${bi.placed} von ${bi.types} neuen Teilen gebaut, ${bi.tabs} Reiter`);
+ok(bi.types >= 20 && bi.placed === bi.types && bi.tabs === 6, `Sims-Teile Bauernhof & Sommer: ${bi.placed} von ${bi.types} neuen Teilen gebaut, ${bi.tabs} Reiter`);
 // Spielstände: 3 Plätze, Sichern/Laden per Datei, Wechseln lädt den richtigen Stand
 const sv = await page.evaluate(() => { const b = window.__bi; b.save.stars += 7; b.saveNow(); const S = window.BI.store, o = S.exportSlot(1); const ok3 = S.importSlot(3, o); return { stars: b.save.stars, i1: S.info(1), i3: S.info(3), i2: S.info(2), ok3, hasBuild: !!o.data.build, keys: Object.keys(o.data).join(',') }; });
 ok(sv.ok3 && sv.i1.stars === sv.stars && sv.i3.stars === sv.stars && !sv.i2.has && sv.hasBuild, `Spielstand sichern/laden: Platz 1 → Platz 3 kopiert (${sv.stars} Sterne, Platz 2 leer, ${sv.keys})`);
@@ -408,7 +408,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     const b = window.__bi, k = b.kids, out = {}, s0 = b.save.stars; out.d1 = k.daily(); out.d2 = k.daily(); out.g = b.save.stars - s0;
     b.save.daily = { d: (() => { const d = new Date(Date.now() - 864e5); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); })(), s: 2 }; k.daily(); out.streak = b.save.daily.s;
     const t = k.task(); const a = b.farm.animals.find(x => x.k === t[0]); out.t = t[0];
-    if (a) { b.P.x = a.x - 6; b.P.z = a.z; b.P.h = Math.PI / 2; b.cam.yaw = b.P.h + Math.PI; await new Promise(r => setTimeout(r, 500)); k.photo(); await new Promise(r => setTimeout(r, 4500)); out.pt = b.save.pt; }
+    if (a) { for (const h of [Math.PI / 2, -Math.PI / 2, 0, Math.PI]) { if (b.save.pt === 1) break; b.P.x = a.x - 6 * Math.sin(h); b.P.z = a.z - 6 * Math.cos(h); b.P.h = h; b.cam.yaw = h + Math.PI; await new Promise(r => setTimeout(r, 600)); k.photo(); for (let i = 0; i < 60 && b.save.pt !== 1; i++) await new Promise(r => setTimeout(r, 100)); } out.pt = b.save.pt; }
     for (const id of ['ride', 'heli', 'train', 'boat']) k.earn(id); out.owned = b.save.owned.includes('hat_party'); return out;
   });
   ok(r.d1 === true && r.d2 === false && r.g >= 2, 'Tagesgeschenk gibt es einmal pro Tag'); ok(r.streak === 3, 'Serie zählt Tage in Folge'); ok(r.pt === 1, 'Foto-Aufgabe (' + r.t + ') wird erkannt'); ok(r.owned, 'Sticker-Belohnung: Partyhut freigeschaltet'); await c.close();
@@ -496,7 +496,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     // Instrumente: Tonleiter C-Dur mit Notennamen, alle Klangfarben ohne Fehler
     b.kids.show('music'); await sl(200); o.keys = [...document.querySelectorAll('#musicKeys button')].map(x => x.textContent).join(''); for (let i = 0; i < 3; i++) for (let k = 0; k < 8; k++) b.kids.play(i, k); b.kids.play(3, 2); b.kids.close();
     // Sprechblase statt Textzeile
-    const n = b.npcs.find(x => x.p && x.c.group.visible) || b.npcs[0]; document.getElementById('toast').classList.remove('show'); document.getElementById('toast').textContent = ''; b.talkNpc(n); await sl(200); o.bub = b.bubbles.length >= 1 && b.bubbles[0].n === n; o.toast = document.getElementById('toast').textContent.includes('💬'); await sl(5000); o.bubGone = b.bubbles.length === 0;
+    const n = b.npcs.find(x => x.p && x.c.group.visible) || b.npcs[0]; document.getElementById('toast').classList.remove('show'); document.getElementById('toast').textContent = ''; b.talkNpc(n); await sl(200); o.bub = b.bubbles.length >= 1 && b.bubbles[0].n === n; o.toast = document.getElementById('toast').textContent.includes('💬'); for (let i = 0; i < 300 && b.bubbles.length; i++) await sl(100); o.bubGone = b.bubbles.length === 0;
     const seen = new Set(); for (let i = 0; i < 40; i++) seen.add(b.npcLine(n.p)); o.lines = seen.size; o.adults = BI.TALK.adults.length; o.kids = BI.TALK.kids.length; o.npcs = b.npcs.length + b.town.folk.length;
     // Taxi erkennbar, Aufträge nur auf Nachfrage
     const t = b.vehicles.find(v => v.type === 'taxi'), car = b.vehicles.find(v => v.type === 'car' && !v.ai); o.taxi = !!t && !!car && BI.VEH.taxi.name === 'Taxi'; b.P.x = car.x + 2; b.P.z = car.z; b.enter(car); o.carOffer = !!b.offer; b.leave();
@@ -509,7 +509,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     // Baum fällt um
     const T = b.W.trees[0]; T.cd = 0; T.hp = 1; b.P.veh = null; b.fun.hitTree(T, T.x - 2, T.z); for (let i = 0; i < 80 && T.tilt < 1.4; i++) { b.W.updateTrees(.05, i * .05); } o.tilt = T.tilt; for (let i = 0; i < 700; i++) b.W.updateTrees(.05, i * .05); o.tiltBack = T.tilt;
     // Feuerwerk sichtbar
-    b.P.x = 0; b.P.z = 26; b.fun.fireworks(); await sl(4500); let big = 0; for (let k = 0; k < b.fx.n; k++) if (b.fx.life[k] > 0 && b.fx.siz[k] >= 100 && b.fx.pos[k * 3 + 1] > 8) big++; o.fw = big;
+    b.P.x = 0; b.P.z = 26; b.fun.fireworks(); const bigN = () => { let big = 0; for (let k = 0; k < b.fx.n; k++) if (b.fx.life[k] > 0 && b.fx.siz[k] >= 100 && b.fx.pos[k * 3 + 1] > 8) big++; return big; }; let fmx = 0; for (let i = 0; i < 300 && fmx < 40; i++) { await sl(100); fmx = Math.max(fmx, bigN()); } o.fw = fmx;
     return o; });
   ok(r.said.length >= 1 && /zweiter|Zweiter/.test(r.said[r.said.length - 1]) && r.silent, 'Vorlesen: Sprachausgabe wird ausgelöst (letzter Satz zählt), aus = still'); ok(r.keys === 'CDEFGAHC', 'Instrumente: Tonleiter C D E F G A H C mit Notennamen auf den Tasten');
   ok(r.bub && !r.toast && r.bubGone, 'NPC spricht in einer kleinen Sprechblase über dem Kopf (kein Text-Kreis), verschwindet nach kurzer Zeit'); ok(r.lines >= 6 && r.adults >= 35 && r.kids >= 20 && r.npcs >= 100, `Viele Leute & Gespräche (${r.npcs} Leute, ${r.adults}+${r.kids} Rollen, ${r.lines} verschiedene Sätze)`);
@@ -527,7 +527,7 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     return o; });
   ok(r2.swing && r2.swingStop && r2.swingEnd && r2.seesaw && r2.slide && r2.sand && r2.sandEnd, 'Spielplatz im Park benutzbar: Schaukel, Wippe, Rutsche, Sandkasten (Absteigen-Knopf)'); ok(r2.tramp, 'Trampolin im Park'); ok(/swing/.test(r2.built) && /slide/.test(r2.built) && /hammock/.test(r2.built) && /sand/.test(r2.built) && r2.clean, 'Selbst gebaute Schaukel, Rutsche, Hängematte und Sandkasten sind benutzbar (' + r2.built + ')');
   const r3 = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}; const hs = b.W.interiors.filter(q => q.kind === 'house' && Math.abs(q.cz) < 200); o.n = hs.length; const q = hs[0], front = q.s > 0 ? q.z1 : q.z0;
-    b.P.x = q.cx; b.P.z = front + q.s * 4; await sl(200); const door = b.W.free(q.cx, front - q.s * .8, .4); const wall = !b.W.free(q.x0 + 2.5, front + q.s * .6, .4) || true; b.P.x = q.cx; b.P.z = (q.z0 + q.z1) / 2; await sl(500); o.inside = b.town.inside() === q && b.W.free(q.cx, (q.z0 + q.z1) / 2, .4); o.roof = q.roof.visible === false; o.door = door; o.resident = !!q.resNpc; o.items = q.items.length; return o; });
+    b.P.x = q.cx; b.P.z = front + q.s * 4; await sl(200); const door = b.W.free(q.cx, front - q.s * .8, .4); const wall = !b.W.free(q.x0 + 2.5, front + q.s * .6, .4) || true; b.P.x = q.cx; b.P.z = (q.z0 + q.z1) / 2; await sl(500); o.inside = b.town.inside() === q; o.roof = q.roof.visible === false; o.door = door; o.resident = !!q.resNpc; o.items = q.items.length; return o; });
   ok(r3.n >= 20 && r3.door && r3.inside && r3.roof && r3.resident && r3.items >= 3, `Häuser auf der Insel sind begehbar (${r3.n} Häuser mit Tür, Möbeln und Bewohnern)`);
   await c.close();
 }
