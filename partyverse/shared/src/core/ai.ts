@@ -14,7 +14,10 @@ export function distancesTo(layout: Layout, target: number, phase: number): numb
   const q = [target];
   for (let i = 0; i < q.length; i++) {
     const n = q[i] as number;
-    for (const f of rev[n] ?? []) if (d[f] === Infinity) ((d[f] = (d[n] as number) + 1), q.push(f));
+    for (const f of rev[n] ?? []) if (d[f] === Infinity) {
+      d[f] = (d[n] as number) + 1;
+      q.push(f);
+    }
   }
   return d;
 }
@@ -86,7 +89,10 @@ export function decide(core: GameCore, id: string, rng: Rng): Action | null {
           if (wantAltar) v -= (level === 'easy' ? 0.1 : 0.55) * (toAltar[o] as number);
           else if (level === 'hard') v += 0.1 * rng.next();
           v += rng.next() * (level === 'easy' ? 3 : 0.2);
-          if (v > bestScore) ((bestScore = v), (bestNode = o));
+          if (v > bestScore) {
+            bestScore = v;
+            bestNode = o;
+          }
         }
         return { type: 'chooseBranch', node: bestNode };
       }

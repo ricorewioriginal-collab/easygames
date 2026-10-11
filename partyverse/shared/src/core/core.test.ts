@@ -107,7 +107,10 @@ describe('Würfel', () => {
         if (c.state.phase !== 'turn') continue;
         const id = c.state.current;
         const ev = c.apply(id, { type: 'roll' }).events.find((e) => e.t === 'dice') as Extract<GameEvent, { t: 'dice' }> | undefined;
-        if (ev && ev.dice.length === 1) (counts[ev.dice[0]! - 1]!++, n++);
+        if (ev && ev.dice.length === 1) {
+          counts[ev.dice[0]! - 1]!++;
+          n++;
+        }
       }
     }
     expect(n).toBeGreaterThan(4500);

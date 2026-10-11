@@ -70,7 +70,10 @@ export class MiniInput {
         let dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
         let dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
         const len = Math.hypot(dx, dy);
-        if (len > 1) ((dx /= len), (dy /= len));
+        if (len > 1) {
+          dx /= len;
+          dy /= len;
+        }
         this.stick.x = Math.abs(dx) < 0.12 ? 0 : dx;
         this.stick.y = Math.abs(dy) < 0.12 ? 0 : -dy;
         knob.style.transform = `translate(${dx * 38}px, ${dy * 38}px)`;

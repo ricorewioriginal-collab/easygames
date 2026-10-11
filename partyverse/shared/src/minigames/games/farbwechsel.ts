@@ -78,7 +78,7 @@ export const game: MiniGame<FarbState> = {
   name: 'Farbwechsel-Arena',
   tagline: 'Steh auf der richtigen Farbe, wenn der Boden bricht!',
   instructions: [
-    'Oben steht die Zielfarbe. Renn auf eine fliese in dieser Farbe!'.replace('fliese', 'Fliese'),
+    'Oben steht die Zielfarbe. Renn auf eine Fliese in dieser Farbe!',
     'Nach der Warnzeit brechen alle anderen Fliesen weg – wer darauf steht, fällt.',
     'Mit A springst du ein Stück in Laufrichtung. In der Luft kannst du nicht fallen.',
     'Jede Runde wird kürzer und es kommen mehr Farben. Pro Runde 100 Punkte, schnelles Ankommen gibt Bonus.',
@@ -205,7 +205,7 @@ export const game: MiniGame<FarbState> = {
     const elapsed = s.warnLen - s.timer;
     const react = Math.round(lerp(60, 12, skill));
     if (elapsed < react) return { ...NEUTRAL_INPUT };
-    const u = Math.abs(Math.sin((s.round + 1) * 12.9898) * 43758.5453) % 1;
+    const u = (Math.imul(s.rnd.state ^ 0x9e3779b9, 2654435761) >>> 0) / 4294967296; // je Runde fest, aber unabhängig vom Spielerverhalten
     const wrong = u < (1 - skill) * 0.45;
     // Zielfliese: nächste in der (vielleicht verwechselten) Farbe
     const want = wrong ? (s.target + 1) % s.ncolors : s.target;
