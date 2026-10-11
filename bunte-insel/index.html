@@ -237,6 +237,22 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 .outf{position:relative;width:54px;height:54px;border-radius:16px;border:3px solid #fff;box-shadow:var(--shadow);font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}.outf.sel{outline:4px solid var(--pri);outline-offset:2px}.outf .ox{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ff8a7a;color:#fff;font-size:12px;line-height:22px;text-shadow:none;box-shadow:var(--shadow)}
 #wardPanel{place-items:end center;padding:8px 8px max(8px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(20,60,120,.3))}@media (min-width:860px){#wardPanel{place-items:center end;padding-right:7vw}#wardPanel .card.shop{max-height:86vh}#menu.creating .menucard{max-height:86vh}}
 #wardPanel .card.shop .logo{font-size:20px;flex:none;margin-bottom:4px}#wardPanel .card.shop .sub{display:none}#wardPanel .card.shop>.lab{flex:none;margin:4px 0 2px;font-size:13px}#wardItems{flex:none;max-height:84px;overflow:auto;margin:2px 0}#wardClose{flex:none;align-self:center}
+
+/* ---- Baumenü (Bauteile + Blöcke): modern, Karten, große Knöpfe ---- */
+#buildPanel{width:min(860px,100%);grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;gap:6px 12px;padding:8px 12px max(8px,env(safe-area-inset-bottom));border-radius:26px 26px 0 0}
+#bTop{grid-column:1;grid-row:1;display:flex;flex-wrap:nowrap;gap:8px;align-items:center}
+#bTabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;padding:2px 2px 4px;touch-action:pan-x}#bTabs::-webkit-scrollbar{display:none}
+.bt{flex:none;display:flex;align-items:center;gap:5px;white-space:nowrap;padding:7px 12px;border-radius:14px;font-size:13px}.bt.sel{transform:translateY(-1px)}
+#bCount{flex:none;font-weight:800;font-size:12px;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.75);box-shadow:var(--shadow);white-space:nowrap}
+#bClear{flex:none;width:34px;height:34px;border-radius:12px;background:#fff;box-shadow:var(--shadow);font-size:17px}
+#bColors{grid-column:1;grid-row:2;display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#buildPanel.vox #bColors{display:none}
+#bItems{grid-column:1;grid-row:3;gap:8px;padding:6px 8px 8px;min-width:0}#buildPanel.vox #bItems{grid-row:2/4}
+.bi{width:74px;height:74px;border-radius:18px;transition:transform .1s}.bi.sel{transform:scale(1.06)}
+.bi .vc{display:block;width:34px;height:34px;border-radius:9px;border:2px solid rgba(0,0,0,.18);box-shadow:inset -4px -4px 0 rgba(0,0,0,.12),inset 3px 3px 0 rgba(255,255,255,.35)}.bi .vc.gl{opacity:.6}.bi .vc.nn{box-shadow:0 0 10px currentColor,inset 3px 3px 0 rgba(255,255,255,.5)}
+#bActs{grid-column:2;grid-row:1/4;grid-template-columns:repeat(2,54px);gap:6px;align-content:center}
+#bActs button{height:50px}#bActs .go{grid-column:1/3;height:60px}#bActs .fin{grid-column:1/3;height:44px;flex-direction:row;gap:6px}#bActs .fin small{margin:0}
+#buildPanel.vox #bRot{display:none}#buildPanel:not(.vox) #bUp,#buildPanel:not(.vox) #bDn{display:none}
+@media (max-height:520px){#bActs button{height:40px;font-size:18px}#bActs .go{height:46px}#bActs .fin{height:36px}.bi{width:62px;height:62px}.bi b{font-size:22px}}
 </style>
 </head>
 <body>
@@ -284,9 +300,10 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
   <div id="keys" class="kb">WASD/Pfeile laufen & fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Rennen & Turbo · F Sirene/Hauen · 1–8 Spaß · B Bauen · V Ego-Kamera</div>
 </div>
 <div id="buildPanel" hidden>
-  <div id="bTop"><div id="bTabs"></div><div id="bColors"></div></div>
+  <div id="bTop"><div id="bTabs"></div><span id="bCount"></span><button id="bClear" aria-label="Alles wegräumen">🧹</button></div>
+  <div id="bColors"></div>
   <div id="bItems"></div>
-  <div id="bActs"><button id="bRot">⟳<small>Drehen</small></button><button id="bPlace" class="go">✔<small>Bauen</small></button><button id="bDel">🗑️<small>Weg</small></button><button id="bClear">🧹<small>Alles</small></button><button id="bClose">✖<small>Fertig</small></button></div>
+  <div id="bActs"><button id="bPlace" class="go">✔<small>Bauen</small></button><button id="bDel">⛏<small>Weg</small></button><button id="bUndo">↶<small>Zurück</small></button><button id="bRot">⟳<small>Drehen</small></button><button id="bUp">▲<small>Höher</small></button><button id="bDn">▼<small>Tiefer</small></button><button id="bClose" class="fin">✖<small>Fertig</small></button></div>
 </div>
 <div id="emo" hidden><div id="emoRow" hidden></div><button id="emoBtn" class="tb" aria-label="Zurufen">💬</button></div>
 <div id="gameBar" class="chip" hidden></div>
@@ -562,6 +579,8 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/pups.js"></script>
 <script src="js/dampfer.js"></script>
 <script src="js/drachen.js"></script>
+<script src="js/bauland.js"></script>
+<script src="js/voxel.js"></script>
 <script src="js/einsatz.js"></script>
 <script src="js/arcade.js"></script>
 <script src="js/cinema.js"></script>

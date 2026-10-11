@@ -408,7 +408,7 @@
     }
   });
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-  function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
+  function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (voxTab) { vox.aim(o, d); return; } if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
   const endPtr = e => { rs.down = false; if (e.pointerId === drag.id && build.active && drag.moved < 12 && performance.now() - drag.t0 < 500) tapGround(e.clientX, e.clientY);
     if (e.pointerId === stick.id) { stick.id = null; setStick(0, 0); sKnob.style.transform = 'translate(0,0)'; } if (e.pointerId === drag.id) drag.id = null; };
   zone.addEventListener('pointerup', endPtr); zone.addEventListener('pointercancel', endPtr);
@@ -448,10 +448,11 @@
       case 'KeyX': inp.down = true; break;
       case 'KeyV': toggleEgo(); break;
       case 'KeyB': toggleBuild(); break;
-      case 'KeyG': if (build.active) build.place(); break;
-      case 'KeyO': if (build.active) build.rotate(); break;
+      case 'KeyG': if (build.active) buildPlace(); break;
+      case 'KeyO': if (build.active && !voxTab) build.rotate(); break;
+      case 'KeyZ': if (build.active) buildUndo(); break;
       case 'KeyK': if (build.active) build.nextColor(); break;
-      case 'Delete': case 'Backspace': if (build.active) build.remove(); break;
+      case 'Delete': case 'Backspace': if (build.active) buildRemove(); break;
       case 'Digit1': doFun('dance'); break;
       case 'Digit2': doFun('gum'); break;
       case 'Digit3': doFun('ball'); break;
@@ -872,7 +873,7 @@
   }
   function finishGame() {
     const g = gm; gm = null; $('gameBar').hidden = true; if (chestM) chestM.visible = false; fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; const now = performance.now(), me = selfId(), def = gdef(g.k);
-    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
+    const ids = [me].concat([...remote.keys()]); let rows = [], title = 'Geschafft!', sub = def.name, bonus = 1, win = null; kids.earn('mini'); if (g.k === 'bauplan_bauland') { (save.bauland || (save.bauland = { placed: 0, ms: 0 })).played = 1; persist(); } if (QUIZ.includes(g.k)) kids.earn('quiz'); if (g.k === 'treasure' && g.winner === me) kids.earn('treasure');
     if (g.k === 'tag') { g.itTime[g.it] = (g.itTime[g.it] || 0) + now - g.since; rows = ids.map(id => ({ id, v: (g.itTime[id] || 0) / 1000, s: ((g.itTime[id] || 0) / 1000).toFixed(1) + ' s' })).sort((a, b) => a.v - b.v); sub = 'Fangen – wer war am kürzesten dran?'; }
     else if (g.k === 'treasure') { if (g.winner) { const w = g.winner; rows = [{ id: w, s: '🗺️ Schatz gefunden!' }].concat(ids.filter(id => id !== w).map(id => ({ id, s: '' }))); sub = (w === me ? 'Du hast' : gmNames(w) + ' hat') + ' den Schatz gefunden!'; } else { rows = ids.map(id => ({ id, s: '' })); sub = 'Der Schatz wurde nicht gefunden – nächstes Mal klappt es!'; } }
     else if (g.k === 'hide') { const hiders = ids.filter(id => id !== g.it), nf = hiders.filter(id => g.found[id]).length, seekStart = g.ph0, surv = id => ((g.found[id] || now) - seekStart) / 1000; rows = [{ id: g.it, s: '🔍 Sucher: ' + nf + ' von ' + hiders.length + ' gefunden', v: nf === hiders.length ? 1e9 : -1 }].concat(hiders.map(id => ({ id, s: g.found[id] ? '🙈 gefunden nach ' + surv(id).toFixed(0) + ' s' : '🏆 nicht gefunden!', v: g.found[id] ? surv(id) : 1e8 }))).sort((a, b) => b.v - a.v); sub = 'Verstecken'; }
@@ -1006,7 +1007,7 @@
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const story = BI.createStory({ A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
     farmGoal: () => farm.questText(),
-    log: () => ({ extras: [dampf.log(), drachen.log()], farm: farm.log(), einsatz: einsatz.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
+    log: () => ({ extras: [dampf.log(), drachen.log(), bauland.log()], farm: farm.log(), einsatz: einsatz.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
       daily: { today: !!(save.daily && save.daily.d === (d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())(new Date())), streak: (save.daily && save.daily.s) || 0 } }) });
   kids.onEarn = id => story.onEarn(id); { const mn = meta.note; meta.note = (k, n) => { mn(k, n); story.note(k); }; }
   const cinema = BI.createCinema({ scene, P, say, A, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
@@ -1020,6 +1021,8 @@
   const arcade = BI.createArcade({ scene, W, P, start: k => startGame(k, true), info: k => gdef(k) });
   const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), takeMascot: id => takeMascot(id) }); dampf.people(town.folk);
   const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true), takeMascot: id => takeMascot(id) }); drachen.people(town.folk);
+  const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
+  const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
   for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
@@ -1070,6 +1073,7 @@
     { const an = arcade.near(); if (an) return { src: 'arcade', n: an }; }
     { const dn = dampf.near(); if (dn) return { src: 'dampf', n: dn }; }
     { const rn2 = drachen.near(); if (rn2) return { src: 'drachen', n: rn2 }; }
+    { const bn = bauland.near(); if (bn) return { src: 'bauland', n: bn }; }
     { const sn = pups.near(); if (sn) return { src: 'pups', n: sn }; }
     { const on = obby.near(); if (on) return { src: 'obby', n: on }; }
     { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
@@ -1079,10 +1083,10 @@
     { const hd = flats[mySlot()].door; if (pup.mode !== 'home' && Math.hypot(P.x - hd.x, P.z - hd.z) < 4.5) return { src: 'pethome', n: { k: 'pethome' } }; }
     return null;
   }
-  const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
+  const PLN = { bwerk: ['🏗️', 'Bauen starten'], plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], rbow: ['🌈', 'Freude teilen'], statue: ['🏆', 'Statue bewundern'], ebrett: ['🚨', 'Einsatz-Tafel'], arcade: ['🕹️', 'Spielen'], pup: ['🐾', 'Mit Hund spielen'], wwilli: ['🐭', 'Mit Willi spielen'], wbucket: ['🎨', 'Farbe holen'], winst: ['🎵', 'Spielen'], wboat: ['📯', 'Pfeife ziehen'], wkino: ['🎬', 'Film ansehen'], wstatue: ['📸', 'Statue ansehen'], dzuendel: ['🐲', 'Mit Zündel spielen'], dfackel: ['🔥', 'Fackel anzünden'], dfreund: ['💎', 'Freund befreien'], dtor: ['🌀', 'Himmelstor'], dfluegel: ['🪽', 'Flügel'], dstatue: ['📸', 'Statue ansehen'], ehilfe: ['🆘', 'Helfen'], stop: ['⬇️', 'Absteigen'], ferris: ['🎡', 'Riesenrad'], carousel: ['🎠', 'Karussell'], chain: ['🪢', 'Kettenkarussell'], coaster: ['🎢', 'Achterbahn'], cotton: ['🍥', 'Zuckerwatte 1⭐'], popcorn: ['🍿', 'Popcorn 1⭐'], icecream: ['🍦', 'Eis 1⭐'], start: ['🏁', 'Parcours'], quit: ['↩️', 'Abbrechen'] };
   function placeLabel(n) { if (n.src === 'paphome') return papHomeOn() ? ['🎈', 'Pappnase mitnehmen'] : ['🏠', 'Pappnase zu Hause lassen']; if (n.src === 'pethome') return pup.mode === 'home' ? ['🐾', pup.name + ' mitnehmen'] : ['🏠', pup.name + ' zu Hause lassen']; if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'cinema') return n.n.k === 'kino' ? ['🎬', 'Kino'] : ['🚗', 'Autokino']; if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'paphome') setPapHome(!papHomeOn()); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'cinema') cinema.show(n.n.k); else if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'park') park.act(n.n); else if (n.src === 'rainbow') rainbow.act(n.n); else if (n.src === 'pups') pups.act(n.n); else if (n.src === 'einsatz') einsatz.act(n.n); else if (n.src === 'arcade') arcade.act(n.n); else if (n.src === 'dampf') dampf.act(n.n); else if (n.src === 'drachen') drachen.act(n.n); else if (n.src === 'bauland') bauland.act(n.n); else if (n.src === 'pethome') setPetHome(pup.mode !== 'home'); else if (n.src === 'paphome') setPapHome(!papHomeOn()); else if (n.src === 'obby') obby.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1102,6 +1106,7 @@
     { id: 'lighthouse', icon: '💡', name: 'Leuchtturm (Hauptinsel)', at: () => ({ x: SPOT.lighthouse.x, z: SPOT.lighthouse.z + 5 }) },
     { id: 'dampf', icon: '🎬', name: 'Dampfer-Hafen', at: () => ({ x: BI.DAMPF.x + 34, z: BI.DAMPF.z }) },
     { id: 'drachen', icon: '🐉', name: 'Drachenhöhen', at: () => ({ x: BI.DRACHEN.x, z: BI.DRACHEN.z - 38 }) },
+    { id: 'bauland', icon: '🏗️', name: 'Bauland', at: () => ({ x: BI.BAULAND.entry.x, z: BI.BAULAND.entry.z }) },
     { id: 'pups', icon: '🐶', name: 'Fellretter-Bucht', at: () => ({ x: BI.PUPS.x, z: BI.PUPS.z - 40 }) },
     { id: 'rainbow', icon: '🌈', name: 'Regenbogenwelt', at: () => ({ x: BI.RAINBOW.bridge.x0 - 6, z: BI.RAINBOW.z }) },
     { id: 'camp', icon: '⛺', name: 'Camp', at: () => ({ x: SPOT.camp.x, z: SPOT.camp.z + 5 }) },
@@ -1118,7 +1123,7 @@
   let guideOpen = false; function closeGuide() { guideOpen = false; guideEl.hidden = true; updateButtons(true); }
   function setGuide(d) { guide = { d, t: 0 }; const p = d.at(); say('🧭 Ich zeige dir den Weg: ' + d.icon + ' ' + d.name, 2600); updateHud(); }
   /* Blickziel pro Ziel: nach dem Hinzaubern schaut man direkt auf die Welt / das Gebäude (Standard: zur Inselmitte) */
-  const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, pups: () => BI.PUPS };
+  const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, bauland: () => BI.BAULAND, pups: () => BI.PUPS };
   function beamTo(d) {
     if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; { const lk = d.id === 'home' ? null : (LOOK[d.id] && LOOK[d.id]()) || { x: 0, z: 0 }; P.h = lk && Math.hypot(lk.x - P.x, lk.z - P.z) > 3 ? Math.atan2(lk.x - P.x, lk.z - P.z) : Math.PI; cam.yaw = P.h + Math.PI; } A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
   }
@@ -1232,30 +1237,39 @@
   $('bPack').addEventListener('click', ev => { ev.stopPropagation(); A.resume(); pack.toggle(); });
   $('bFun').addEventListener('click', () => { const f = $('funBar'); if (!f.hidden) { closeQuick(); return; } quickAll = false; renderQuick(); f.hidden = false; $('bFun').classList.add('on'); });
   $('bCam').addEventListener('click', toggleEgo);
-  let preBuild = null, tab = 0, clearT = 0;
+  let preBuild = null, tab = 0, clearT = 0, voxTab = null, lastVC = -1;
+  const tabList = () => { const L = []; if (vox.inBauland()) for (const g of BI.VOX_GROUPS) L.push({ icon: g.icon, name: g.name, vox: g.id }); build.TABS.forEach((tb, i) => L.push({ icon: tb.icon, name: tb.name, part: i })); return L; };
+  const buildPlace = () => voxTab ? vox.place() : build.place(), buildRemove = () => voxTab ? vox.remove() : build.remove(), buildUndo = () => voxTab ? vox.undo() : build.undo();
+  function updateBuildCount() { const e = $('bCount'); if (e) e.textContent = voxTab ? '🧱 ' + vox.count + ' / ' + vox.MAXV : '🏠 ' + build.count + ' Teile'; }
   function renderBuild() {
+    const L = tabList(); if (tab >= L.length || tab < 0) tab = 0; const cur = L[tab]; voxTab = cur.vox || null;
+    if (voxTab && !vox.active) vox.enter(P.x, P.z, P.h); else if (!voxTab && vox.active) vox.exit(); build.hidden = !!voxTab; $('buildPanel').classList.toggle('vox', !!voxTab);
     const tabs = $('bTabs'); tabs.innerHTML = '';
-    build.TABS.forEach((tb, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === tab ? ' sel' : ''); b.textContent = tb.icon + ' ' + tb.name; b.onclick = () => { tab = i; renderBuild(); }; tabs.appendChild(b); });
+    L.forEach((tb, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === tab ? ' sel' : ''); b.textContent = tb.icon + ' ' + tb.name; b.onclick = () => { tab = i; renderBuild(); }; tabs.appendChild(b); });
     const items = $('bItems'); items.innerHTML = '';
-    Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== tab) return; const b = document.createElement('button'); b.className = 'bi' + (id === build.sel ? ' sel' : ''); b.innerHTML = '<b>' + c.icon + '</b><small>' + c.name + '</small>'; b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
+    if (voxTab) vox.TYPES.forEach((ty, i) => { if (ty.g !== voxTab) return; const b = document.createElement('button'); b.className = 'bi' + (i === vox.sel ? ' sel' : ''); const sw = document.createElement('i'); sw.className = 'vc' + (ty.glass ? ' gl' : '') + (ty.neon ? ' nn' : ''); sw.style.background = 'linear-gradient(135deg,' + hexc(ty.top) + ' 50%,' + hexc(ty.side) + ' 50%)'; sw.style.color = hexc(ty.top); const sm = document.createElement('small'); sm.textContent = ty.name; b.append(sw, sm); b.onclick = () => { vox.setType(i); A.pop(); renderBuild(); }; items.appendChild(b); });
+    else Object.entries(build.CAT).forEach(([id, c]) => { if (c.tab !== cur.part) return; const b = document.createElement('button'); b.className = 'bi' + (id === build.sel ? ' sel' : ''); b.innerHTML = '<b>' + c.icon + '</b><small>' + c.name + '</small>'; b.onclick = () => { build.setType(id); renderBuild(); }; items.appendChild(b); });
     const cols = $('bColors'); cols.innerHTML = '';
-    build.PAL.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw sm' + (i === build.color ? ' sel' : ''); b.style.background = '#' + c.toString(16).padStart(6, '0'); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { build.color = i; renderBuild(); }; cols.appendChild(b); });
+    if (!voxTab) build.PAL.forEach((c, i) => { const b = document.createElement('button'); b.className = 'sw sm' + (i === build.color ? ' sel' : ''); b.style.background = hexc(c); b.setAttribute('aria-label', 'Farbe ' + (i + 1)); b.onclick = () => { build.color = i; renderBuild(); }; cols.appendChild(b); });
+    updateBuildCount();
   }
+  const hexc = c => '#' + c.toString(16).padStart(6, '0');
   function toggleBuild() {
     if (state !== 'play' || rs.ui || sl.t >= 0 || wardOpen) return;
     if (build.active) { exitBuild(); return; }
     if (P.veh) { say('🏗️ Zum Bauen erst aussteigen', 1600); return; }
-    fun.setDance(false); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8;
+    fun.setDance(false); build.enter(P.x, P.z, P.h); preBuild = { pitch: cam.pitch, zoom: cam.zoom }; cam.pitch = .95; cam.zoom = 1.8; tab = 0;
     document.body.classList.add('building'); $('buildPanel').hidden = false; $('bBuild').classList.add('on'); renderBuild(); updateButtons(true);
-    say(isTouch() ? '🏗️ Tippe auf den Boden, wähle ein Teil und drücke ✔ Bauen' : '🏗️ Klicke auf den Boden, wähle ein Teil und drücke G oder ✔ Bauen', 4200);
+    say(vox.inBauland() ? '🏗️ Tippe auf den Boden oder einen Block, wähle oben einen Block und drücke ✔ Bauen' : (isTouch() ? '🏗️ Tippe auf den Boden, wähle ein Teil und drücke ✔ Bauen' : '🏗️ Klicke auf den Boden, wähle ein Teil und drücke G oder ✔ Bauen'), 4600);
   }
   function exitBuild() {
-    build.exit(); document.body.classList.remove('building'); $('buildPanel').hidden = true; $('bBuild').classList.remove('on');
+    build.exit(); vox.exit(); voxTab = null; build.hidden = false; document.body.classList.remove('building'); $('buildPanel').hidden = true; $('bBuild').classList.remove('on');
     if (preBuild) { cam.pitch = preBuild.pitch; cam.zoom = preBuild.zoom; } updateButtons(true);
   }
   $('bBuild').addEventListener('click', toggleBuild); $('bClose').addEventListener('click', exitBuild);
-  $('bRot').addEventListener('click', () => { build.rotate(); A.pop(); }); $('bPlace').addEventListener('click', () => build.place()); $('bDel').addEventListener('click', () => build.remove());
-  $('bClear').addEventListener('click', () => { if (performance.now() - clearT < 3000) { build.clearAll(); clearT = 0; say('🧹 Alles weggeräumt', 1600); } else { clearT = performance.now(); say('Nochmal drücken: ALLES wegräumen?', 2800); } });
+  $('bRot').addEventListener('click', () => { if (!voxTab) { build.rotate(); A.pop(); } }); $('bPlace').addEventListener('click', () => buildPlace()); $('bDel').addEventListener('click', () => buildRemove()); $('bUndo').addEventListener('click', () => buildUndo());
+  $('bUp').addEventListener('click', () => vox.shift(1)); $('bDn').addEventListener('click', () => vox.shift(-1));
+  $('bClear').addEventListener('click', () => { if (performance.now() - clearT < 3000) { if (voxTab) vox.clearAll(); else build.clearAll(); clearT = 0; say('🧹 Alles weggeräumt', 1600); updateBuildCount(); } else { clearT = performance.now(); say(voxTab ? 'Nochmal drücken: ALLE Blöcke wegräumen?' : 'Nochmal drücken: ALLES wegräumen?', 2800); } });
   const pickers = [], refreshPickers = () => { for (const f of pickers) f(); $('hello').textContent = 'Hallo ' + heroName() + '! ♥'; for (const i of document.querySelectorAll('.pn')) if (i !== document.activeElement) i.value = save.pname || ''; };
   function setPet(kind) {
     const def = BI.PETS.find(q => q.id === kind) || BI.PETS[0], g = pup.d.group, was = g.parent; freeObj(g); pup.d = BI.makePet(def.id); pup.name = def.name; pup.trick = null; if (was) scene.add(pup.d.group); pup.d.group.position.set(pup.x, 0, pup.z);
@@ -1382,7 +1396,7 @@
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
   const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? (i.pn || BI.heroById(i.hero).name) : 'Neu'; };
   function slotBarRefresh() { const i = BI.store.info(SLOT); $('slotBar').innerHTML = '<span>💾 Spielstand ' + SLOT + ' · ' + (i.has ? heroName() + ' · ⭐ ' + save.stars : 'Neu') + '</span><span>Wechseln ›</span>'; $('slotLab').textContent = '💾 Spielstand ' + SLOT + (saveOk ? '' : ' ⚠️ Speicher voll'); }
-  function flushAll() { persist(); try { build.saveNow(); } catch (e) { } }
+  function flushAll() { persist(); try { build.saveNow(); vox.saveNow(); } catch (e) { } }
   function saveNow(quiet) { flushAll(); slotBarRefresh(); if (!quiet) say(saveOk ? '💾 Gespeichert ✔ (Spielstand ' + SLOT + ')' : '⚠️ Speicher voll – lösche Fotos oder sichere in eine Datei', 2600); }
   function download(name, obj) {
     const txt = JSON.stringify(obj), blob = new Blob([txt], { type: 'application/json' });
@@ -1484,7 +1498,7 @@
       if (running && P.y < .1 && Math.random() < dt * 12) fx.burst(P.x - Math.sin(P.h) * .3, .12, P.z - Math.cos(P.h) * .3, 1, [BI.C.dust], 1.2, .4, 22, 2);
       const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
-      const gy = Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y));
+      const vf = vox.floorAt(P.x, P.z, P.y), gy = Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
       if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung
       if (P.jbuf > 0) P.jbuf -= dt;
       if (inp.jump) { inp.jump = false; P.jbuf = .14; }
@@ -1496,7 +1510,7 @@
       gadgets.thrust(dt, inp.held || inp.up, gy);
       if (P.softFall > 0) P.softFall -= dt;
       P.y += P.vy * dt;
-      if (P.y < gy) { P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7) || play.trampAt(P.x, P.z)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
+      if (P.y < gy) { if (vf === gy && gy - P.y > .05 && gy - P.y <= 1.1 && P.vy <= .5) { P.y = Math.min(gy, P.y + 11 * dt); P.vy = 0; } else P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7) || play.trampAt(P.x, P.z)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
       if (P.y <= gy + .02 && P.speed > .5 && Math.random() < dt * 10 && build.nearType(P.x, P.z, 'pool', 1.9)) { fx.burst(P.x, .3, P.z, 3, [BI.C.water], 2, .5, 24, 6); if (Math.random() < .2) A.splash(); }
       P.phase += dt * (6 + P.speed * 1.2); P.wave = Math.max(0, P.wave - dt);
       if (inp.hornEdge) {
@@ -1741,7 +1755,7 @@
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
     updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); cinema.update(); story.update(dt, state === 'play', { hud: $('mission').hidden, idle: !P.veh && !mission && !shopOpen && !guideOpen && !parentOpen && !kids.busy() && !cinema.open }); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); park.update(dt, t); rainbow.update(dt, t); pups.update(dt, t); dampf.update(dt, t); drachen.update(dt, t); einsatz.update(dt, t); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); meta.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
-    if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
+    if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t); vox.update(dt, t); if (build.active && vox.count !== lastVC) { lastVC = vox.count; updateBuildCount(); }
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
     if (state === 'play') { updateButtons(false); updateArrow(); updateGauge(); }
@@ -1757,6 +1771,6 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { vox, bauland, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
 

@@ -9,6 +9,7 @@ BI.ARCADES = [
   { kind: 'crane_dampfer', x: -276, z: -128, yaw: Math.PI, body: 0x555a66, top: 0xdddddd },
   { kind: 'jump_bucht', x: -80, z: 276.5, yaw: Math.PI, body: 0xff7a1a, top: 0x2d6be0 }
 ];
+(function () { const B = BI.BAULAND, E = B.entry; BI.ARCADES.push({ kind: 'bauplan_bauland', x: E.x + B.ux * 7 + B.uz * 6, z: E.z + B.uz * 7 - B.ux * 6, yaw: Math.atan2(-B.ux, -B.uz), body: 0xff9a2e, top: 0x3fb85c }); })();
 BI.buildArcades = function (c) {
   const { W, st, lamp } = c, RB = BI.RAINBOW_COL; W.spots.arcades = [];
   for (const a of BI.ARCADES) {

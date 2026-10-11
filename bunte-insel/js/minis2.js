@@ -6,6 +6,7 @@
    🌈 Pride-Disco (Regenbogenwelt) – Rhythmus-Tanzspiel: Pfeile im Takt treffen (eigener Beat, Töne im Browser erzeugt)
    🐉 Drachenflug (Drachenhöhen) – Ring-Flug in Pseudo-3D, ziehen/zielen
    🎬 Hafen-Kran (Dampfer-Hafen) – Kisten stapeln: im richtigen Moment loslassen
+   🏗️ Pixel-Plan (Bauland) – Merkspiel: Bauplan merken, aus dem Gedächtnis nachbauen
    (🐶 Fellretter-Sprint = Jump 'n' Run der Fellretter-Bucht steht in jump.js.)
    Alle starten über den Spielautomaten in der Welt (arcade.js) oder über das 🎮-Spiele-Menü; bei „Mit Freunden“ gleicher Startwert = gleiche Strecke/Pyramiden/Noten. */
 (BI.MINI_EXT = BI.MINI_EXT || []).push(function (M, h) {
@@ -252,10 +253,55 @@
     return G;
   };
 
+
+  /* =====================  🏗️ PIXEL-PLAN (Bauland)  ===================== */
+  /* Merkspiel: Bauplan kurz ansehen, dann Farbe wählen und die Felder aus dem Gedächtnis nachbauen. Muster wachsen von 3×3 bis 5×5. */
+  const plan = () => {
+    const G = {}, PAL = ['#ff3b3b', '#3f8cff', '#ffd23f', '#4cd07d', '#a66bff', '#ff8a1f']; let lv, n, ncol, pat, grid, phase, pt, sel, msg, msgT, ok;
+    const lay = () => { const W = h.W(), H = h.H(), s = Math.min(W * .84 / n, H * .46 / n, 110); return { W, H, s, gx: (W - s * n) / 2, gy: H * .17, pw: Math.min(64, W / (ncol + 1.5)), py: H * .77 }; };
+    function next() { n = lv < 3 ? 3 : lv < 6 ? 4 : 5; ncol = Math.min(6, 3 + (lv >> 1)); pat = []; grid = []; for (let i = 0; i < n * n; i++) { pat.push((h.rnd() * ncol) | 0); grid.push(-1); } phase = 'show'; pt = 1.2 + n * n * .22 - Math.min(1.2, lv * .08); sel = 0; }
+    G.init = function () { lv = 0; msg = ''; msgT = 0; ok = 0; next(); };
+    G.resize = function () { };
+    function check() {
+      const L = lay(); ok = 0; for (let i = 0; i < pat.length; i++) if (grid[i] === pat[i]) { ok++; h.add(1, L.gx + (i % n + .5) * L.s, L.gy + ((i / n | 0) + .5) * L.s); }
+      const perfect = ok === pat.length; if (perfect) { h.add(5, L.W / 2, L.gy - 10); snd('star'); msg = 'Perfekt! +5'; h.burst(L.W / 2, L.gy + n * L.s / 2, 16, ['#fff', '#ffe27a', '#ff8fc8']); } else { snd('ding'); msg = ok + ' von ' + pat.length + ' richtig'; }
+      msgT = 1.6; phase = 'check'; pt = 1.6; if (perfect || ok >= Math.ceil(pat.length * .7)) lv++;
+    }
+    const act = (x, y) => {
+      const L = lay(); if (phase !== 'build') return;
+      for (let k = 0; k < ncol; k++) { const px = L.W / 2 + (k - (ncol - 1) / 2) * (L.pw + 8); if (Math.abs(x - px) < L.pw / 2 + 4 && Math.abs(y - L.py) < L.pw / 2 + 4) { sel = k; snd('pop'); return; } }
+      const bx = L.W / 2, by = L.H * .91; if (Math.abs(x - bx) < 90 && Math.abs(y - by) < 28) { if (grid.every(v => v >= 0)) check(); else { msg = 'Fülle erst alle Felder'; msgT = 1.2; } return; }
+      const cx = Math.floor((x - L.gx) / L.s), cy = Math.floor((y - L.gy) / L.s); if (cx >= 0 && cy >= 0 && cx < n && cy < n) { grid[cy * n + cx] = sel; snd('pop'); if (grid.every(v => v >= 0)) { /* automatisch prüfen, wenn alles gefüllt ist */ } }
+    };
+    G.tap = (x, y) => act(x, y); G.keydown = c => { const d = parseInt(c.replace('Digit', ''), 10); if (d >= 1 && d <= ncol) sel = d - 1; if (c === 'Enter' && phase === 'build' && grid.every(v => v >= 0)) check(); };
+    G.update = function (dt) {
+      msgT = Math.max(0, msgT - dt); pt -= dt;
+      if (phase === 'show' && pt <= 0) { phase = 'build'; pt = 0; snd('whoosh'); }
+      else if (phase === 'check' && pt <= 0) next();
+    };
+    G.draw = function () {
+      const c = h.ctx(), L = lay(), W = L.W, H = L.H; h.bg('#9ad7ff', '#e8f7ff'); c.fillStyle = '#7fd66b'; c.fillRect(0, H * .72, W, H); c.fillStyle = '#6cc25a'; c.fillRect(0, H * .72, W, 8);
+      c.font = 'bold ' + Math.round(Math.min(34, W * .06)) + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 7; c.strokeStyle = '#fff'; const ttl = phase === 'show' ? '👀 Merk dir den Bauplan!' : phase === 'build' ? '🔨 Jetzt nachbauen!' : msg; c.strokeText(ttl, W / 2, L.gy - 36); c.fillStyle = '#16335e'; c.fillText(ttl, W / 2, L.gy - 36);
+      for (let i = 0; i < n * n; i++) {
+        const x = L.gx + (i % n) * L.s, y = L.gy + ((i / n) | 0) * L.s, v = phase === 'show' ? pat[i] : grid[i];
+        rr(c, x + 3, y + 3, L.s - 6, L.s - 6, 10); c.fillStyle = v >= 0 ? PAL[v] : 'rgba(255,255,255,.55)'; c.fill(); c.lineWidth = 3; c.strokeStyle = v >= 0 ? 'rgba(0,0,0,.25)' : 'rgba(22,51,94,.35)'; if (v < 0) c.setLineDash([6, 6]); c.stroke(); c.setLineDash([]);
+        if (phase === 'check') { const good = grid[i] === pat[i]; c.font = Math.round(L.s * .4) + 'px system-ui'; c.fillStyle = '#fff'; c.fillText(good ? '✔' : '✖', x + L.s / 2, y + L.s / 2); if (!good) { c.fillStyle = PAL[pat[i]]; c.beginPath(); c.arc(x + L.s - 14, y + 14, 9, 0, 6.3); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); } }
+      }
+      if (phase === 'show') { const tot = 1.2 + n * n * .22 - Math.min(1.2, lv * .08); c.fillStyle = 'rgba(22,51,94,.25)'; rr(c, W * .2, L.gy + n * L.s + 14, W * .6, 12, 6); c.fill(); c.fillStyle = '#ffd23f'; rr(c, W * .2, L.gy + n * L.s + 14, W * .6 * Math.max(0, pt / tot), 12, 6); c.fill(); }
+      if (phase === 'build') {
+        for (let k = 0; k < ncol; k++) { const px = W / 2 + (k - (ncol - 1) / 2) * (L.pw + 8); rr(c, px - L.pw / 2, L.py - L.pw / 2, L.pw, L.pw, 14); c.fillStyle = PAL[k]; c.fill(); c.lineWidth = k === sel ? 7 : 3; c.strokeStyle = k === sel ? '#16335e' : '#fff'; c.stroke(); }
+        const full = grid.every(v => v >= 0); rr(c, W / 2 - 90, H * .91 - 26, 180, 52, 26); c.fillStyle = full ? '#3fb85c' : '#9aa7b8'; c.fill(); c.font = 'bold 24px Fredoka, system-ui, sans-serif'; c.fillStyle = '#fff'; c.fillText('✔ Fertig', W / 2, H * .91 + 1);
+        if (msgT > 0) { c.font = 'bold 22px Fredoka, system-ui, sans-serif'; c.fillStyle = '#e8453c'; c.fillText(msg, W / 2, L.py + L.pw / 2 + 22); }
+      }
+      c.font = 'bold 20px Fredoka, system-ui, sans-serif'; c.textAlign = 'left'; c.fillStyle = '#16335e'; c.fillText('Stufe ' + (lv + 1), 16, H - 22); c.textAlign = 'center';
+    };
+    return G;
+  };
   h.register('heli_insel', heli(), { icon: '🚁', name: 'Heli-Rettung', help: 'Flieg den Rettungs-Heli durch die Felsentore: Halten = steigen. Sterne und Gerettete einsammeln!', dur: 75, goal: 40, zone: 'insel' });
   h.register('taxi_stadt', taxi(), { icon: '🚕', name: 'Taxi-Rush', help: 'Wechsle die Spur, weiche Autos aus und sammle Fahrgäste und Münzen!', dur: 70, goal: 40, zone: 'stadt' });
   h.register('cans_park', cans(), { icon: '🥫', name: 'Dosen-Knall', help: 'Ball ziehen, zielen, loslassen: Wirf die Dosenpyramiden um!', dur: 90, goal: 30, zone: 'park' });
   h.register('dance_regenbogen', dance(), { icon: '💃', name: 'Pride-Disco', help: 'Triff die Pfeile im Takt – Perfekt-Treffer und Kombos geben mehr Punkte!', dur: 62, goal: 400, zone: null });
   h.register('crane_dampfer', crane(), { icon: '🏗️', name: 'Hafen-Kran', help: 'Stapel die Kisten am Kran so genau wie möglich – Überstehendes wird abgeschnitten!', dur: 90, goal: 25, zone: 'dampfer' });
+  h.register('bauplan_bauland', plan(), { icon: '🏗️', name: 'Pixel-Plan', help: 'Merke dir den Bauplan – dann Farbe wählen und die Felder aus dem Gedächtnis nachbauen. Mit jeder Stufe wird das Muster größer!', dur: 80, goal: 30, zone: 'bauland' });
   h.register('ringflug_drache', flug(), { icon: '🐉', name: 'Drachenflug', help: 'Flieg als Drache durch die goldenen Ringe, sammle Funkelsteine und weiche den Gewitterwolken aus!', dur: 60, goal: 40, zone: 'drachen' });
 });

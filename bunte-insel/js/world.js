@@ -50,6 +50,7 @@ BI.buildWorld = function (scene) {
         }
       }
     }
+    if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
     if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
@@ -65,10 +66,13 @@ BI.buildWorld = function (scene) {
       else if (W.rainbow && px < -160 && Math.hypot(px - W.rainbow.x, pz - W.rainbow.z) < W.rainbow.R + 40 && Math.abs(pz - W.rainbow.z) < 70) { const dd = Math.hypot(px - W.rainbow.x, pz - W.rainbow.z) || 1, k = Math.min(1, (W.rainbow.R - r) / dd); px = W.rainbow.x + (px - W.rainbow.x) * k; pz = W.rainbow.z + (pz - W.rainbow.z) * k; hit = true; }
       else if (W.park && px > 160 && Math.hypot(px - W.park.x, pz - W.park.z) < W.park.R + 40 && Math.abs(pz - W.park.z) < 70) { const dd = Math.hypot(px - W.park.x, pz - W.park.z) || 1, k = Math.min(1, (W.park.R - r) / dd); px = W.park.x + (px - W.park.x) * k; pz = W.park.z + (pz - W.park.z) * k; hit = true; }
       else if (W.city && pz < -170 && Math.hypot(px - W.city.x, pz - W.city.z) < Math.hypot(px, pz) + 20 && Math.hypot(px - W.city.x, pz - W.city.z) < W.city.R + 40) { const dd = Math.hypot(px - W.city.x, pz - W.city.z) || 1, k = (W.city.R - r) / dd; px = W.city.x + (px - W.city.x) * k; pz = W.city.z + (pz - W.city.z) * k; hit = true; }
+      else if (W.bauland && baulandWalk(px, pz, r)) { /* Brücke / Bauland */ }
+      else if (W.bauland && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < W.bauland.R + 60 && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < Math.hypot(px, pz)) { const dd = Math.hypot(px - W.bauland.x, pz - W.bauland.z) || 1, k = Math.min(1, (W.bauland.R - r) / dd); px = W.bauland.x + (px - W.bauland.x) * k; pz = W.bauland.z + (pz - W.bauland.z) * k; hit = true; }
       else { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
     }
     out.x = px; out.z = pz; out.hit = hit; return out;
   };
+  const baulandWalk = (px, pz, r) => { const C = W.bauland, b = C.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * C.ux + rz * C.uz, sd = -rx * C.uz + rz * C.ux; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3); };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const drachenWalk = (px, pz, r) => { const C = W.drachen, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const dampfWalk = (px, pz, r) => { const C = W.dampf, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
@@ -108,7 +112,7 @@ BI.buildWorld = function (scene) {
   }
   W.blockedAt = blockedAt;
   /* Bauplatz frei? (ohne die vom Spieler gebauten Teile) */
-  W.canBuild = (x, z, pad) => Math.hypot(x, z) < K.LIMIT - 8 && !blockedAt(x, z, pad == null ? 2 : pad, true);
+  W.canBuild = (x, z, pad) => (Math.hypot(x, z) < K.LIMIT - 8 || (W.bauland && Math.hypot(x - W.bauland.x, z - W.bauland.z) < W.bauland.R - 8 && Math.hypot(x - W.bauland.entry.x, z - W.bauland.entry.z) > 15)) && !blockedAt(x, z, pad == null ? 2 : pad, true);
 
   /* Schienentabelle (gleichmäßig 1 m) */
   (function () {
@@ -399,6 +403,7 @@ BI.buildWorld = function (scene) {
   BI.buildPupsGround({ W, st, lamp, ROADY, GRASS, SAND });
   BI.buildDampfGround({ W, st, lamp, ROADY });
   BI.buildDrachenGround({ W, st, lamp, ROADY });
+  BI.buildBaulandGround({ W, st, lamp, ROADY });
   BI.buildArcades({ W, st, lamp });
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
@@ -672,7 +677,7 @@ BI.buildWorld = function (scene) {
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water;
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam;
-  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); const f7 = new THREE.Mesh(new THREE.RingGeometry(W.drachen.R + 7, W.drachen.R + 13, 56), foam.material); f7.rotation.x = -Math.PI / 2; f7.position.set(W.drachen.x, -.2, W.drachen.z); scene.add(f7); }
+  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); const f7 = new THREE.Mesh(new THREE.RingGeometry(W.drachen.R + 7, W.drachen.R + 13, 56), foam.material); f7.rotation.x = -Math.PI / 2; f7.position.set(W.drachen.x, -.2, W.drachen.z); scene.add(f7); const f8 = new THREE.Mesh(new THREE.RingGeometry(W.bauland.R + 7, W.bauland.R + 13, 96), foam.material); f8.rotation.x = -Math.PI / 2; f8.position.set(W.bauland.x, -.2, W.bauland.z); scene.add(f8); }
 
   /* ---------- Meshes ---------- */
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }

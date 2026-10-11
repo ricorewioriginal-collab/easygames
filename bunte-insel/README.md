@@ -201,3 +201,13 @@ Auch die **Pappnase** schwebt standardmäßig an der Wohnung: E an der Pappnase 
 ### 👗 Charakter-Studio & Kleiderschrank (modernisiert)
 
 Bottom-Sheet statt Vollbild-Karte: die Figur bleibt oben sichtbar (auch im Kleiderschrank), der Fertig-Knopf überdeckt nichts mehr, Reiter mit großen Icons, Optionen in übersichtlichen Karten, größere Farbfelder. Der Name steht nur noch im Reiter „Figuren“. Der Kleiderschrank öffnet direkt bei „Kleidung“. Neu: **Outfits** (bis 6 Kleidungs-Kombis speichern, per Tipp anziehen, Zufalls-Outfit), gültig für alle deine Figuren.
+
+### 🏗️ Bauland & Block-Bauen (Minecraft-/Roblox-Mix)
+
+Neue Insel **Bauland** im Nordosten (Brücke von der Hauptinsel, 🧭 → Bauland): Radius 150 m, etwa dreimal so groß wie die anderen Welten, mit Tor, Plaza, Werkbank (E = Bauen starten), Beispielbauten, Bewohnern, eigener Musik und dem Highlight-Spiel **🏗️ Pixel-Plan** (Merkspiel; Spielautomat an der Plaza).
+
+**Baumenü neu** (B oder 🏗️): Bottom-Sheet mit Reitern, Karten und großen Knöpfen: ✔ Bauen, ⛏ Weg, ↶ Zurück (letzte 60/120 Schritte), ⟳ Drehen (Bauteile), ▲/▼ Höhe (Blöcke), 🧹 Alles. Zwei Bauarten:
+- **Bauteile** (wie bisher, 4-m-Raster: Wände, Möbel, Garten …) – jetzt auch im Bauland erlaubt.
+- **🧊 Blöcke** (nur im Bauland): 1-m-Würfel stapeln (bis 32 m hoch, bis 12 000 Blöcke), man läuft darauf und stößt an Wände (Stufen von 1 m gehen automatisch). 30 Blocksorten: Natur, 8 Wollfarben, Gold, Glas, Neon, dazu **Sprungblock**, **Lavablock** (zurück zum Start) und **Startblock** 🚩. Tippen auf Boden oder Block zielt (der neue Block entsteht an der angetippten Seite), Meilensteine bei 25/100/300/1000/3000 Blöcken geben ⭐. Wird im Spielstand gespeichert (nicht mit Freunden geteilt).
+
+Technik (sparsam): Blöcke liegen in 16×16-Stücken, nur geänderte Stücke werden neu gebaut, verdeckte Flächen werden weggelassen; Kollision läuft direkt über den Block-Raster (kein Collider pro Block). Dateien: `js/bauland.js`, `js/voxel.js`, `js/build.js` (Zurück), `js/minis2.js` (Pixel-Plan).
