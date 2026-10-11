@@ -2,6 +2,24 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 12 (11.10.2026): Club Glitzer als Innenraum
+
+### Neu umgesetzt
+
+- **Begehbarer Club** (`js/club.js`, `GL.club`, `W.inside = 2`; die Wohnung bleibt 1): Innenraum abseits der Stadt (x 0, z 450) mit leuchtender 6×6-Tanzfläche im Takt des Abendstils, Discokugel, zwei Strahlen, DJ-Pult mit DJ, Bar mit Bruno, Sitzecke und sechs tanzenden Gästen. Betreten über das Club-Menü („Club betreten“, Eintritt wie bisher einmal pro Nacht), nur 20–5 Uhr; um 5 Uhr schließt der Club und man steht draußen.
+- **Stellen im Raum**: Tanzfläche (Tanzen), Bar (Getränke), DJ-Pult (Club-Menü inkl. Gruppentanz), Tür.
+- **Eigene Musik**: Der Beat-Generator spielt im Club durchgehend im Stil des Abends (stoppt beim Verlassen, läuft nach dem Tanzen weiter).
+- **Mehrspieler**: Im Club gilt der Ort „c“, Mitspieler sehen sich dort.
+- Angepasst: Wohnung/Möbel/Besuch prüfen jetzt `inside === 1`; Tram/Handy-Reise verlassen auch den Club.
+
+### Tests Durchgang 12
+
+- e2e Abschnitt 13: tagsüber zu, Eintritt, Innenraum, Musik, Stellen im Raum, Tanzen ohne zweite Zahlung, Bar, Verlassen, Schließzeit. Bildschirmfoto angesehen (Software-WebGL). Gesamtlauf: 273 Prüfungen grün.
+
+### Weiterhin offen
+
+- Kein eigener Innenraum für andere Orte (Café, Gym …), Gewitter/Schnee, LOD für ferne Figuren, echte Zwei-Geräte-Tests, Playtest durch Menschen.
+
 ## Stand nach Durchgang 11 (11.10.2026): Viertel-Bewohner mit Tagesplan und Dates
 
 ### Neu umgesetzt

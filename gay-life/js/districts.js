@@ -123,6 +123,7 @@
     if (!instant) { if (L.money < FARE) { GL.core.toast('Die Tram kostet ' + FARE + ' €.'); GL.core.sfx('no'); return false; } GL.eco.spend(FARE, 'Tram'); }
     function sw() {
       if (GL.home.inside()) GL.home.leave(true);
+      if (GL.club && GL.club.inside()) GL.club.leave(true);
       if (id === 'kiez') toKiez(W); else enter(by(id), W);
       if (!instant) GL.life.advance(20); GL.core.sfx('ok'); GL.save(); GL.emit('district', id);
     }

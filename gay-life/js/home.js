@@ -143,12 +143,12 @@
     }, 500);
   };
   home.leave = function (instant) {
-    var W = GL.W; if (!W || !W.inside) return;
+    var W = GL.W; if (!W || W.inside !== 1) return;
     function go() { apply(W, 0); var d = W.pois.home; W.player.x = d.x; W.player.z = d.z; W.camYaw = Math.PI; W.yaw = Math.PI; snapCam(W); GL.save(); }
     if (instant) go(); else GL.ui.fade('Raus in die Stadt', go, 500);
   };
   home.root = function () { return R && R.g; }; home.O = { x: OX, z: OZ };
-  home.inside = function () { return !!(GL.W && GL.W.inside); };
+  home.inside = function () { return !!(GL.W && GL.W.inside === 1); };
 
   GL.on('poi', function (id) { if (id === 'home') { home.enter(); return true; } });
   GL.on('worldBuilt', function (W) {
@@ -160,7 +160,7 @@
   });
   /* Licht im Raum: hell am Tag, warm am Abend; Fensterbild folgt der Tageszeit */
   GL.on('sky', function (W) {
-    if (!W.inside) return;
+    if (W.inside !== 1) return;
     var h = GL.life.hour(), day = h > 7 && h < 19, c = day ? 0xd9c8e8 : 0x2a1f40;
     if (!W._inCol || W._inCol !== c) { W._inCol = c; W.scene.background = new THREE.Color(c); W.scene.fog.color.setHex(c); R.voidM.color.setHex(day ? 0xb9a6cf : 0x1c1430); }
     W.hemi.intensity = day ? .95 : .7; W.sun.intensity = day ? .55 : .3; W.sun.color.setHex(day ? 0xffffff : 0xffc28a);

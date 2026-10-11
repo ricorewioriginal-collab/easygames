@@ -14,7 +14,8 @@
   /* ---------- Ort ---------- */
   M.loc = function () {
     var W = GL.W;
-    if (W && W.inside) return { l: 'h:' + (visit ? visit.owner : GL.mp.me() || 'x'), ox: GL.home.O.x, oz: GL.home.O.z };
+    if (W && W.inside === 2) return { l: 'c', ox: GL.club.O.x, oz: GL.club.O.z };
+    if (W && W.inside === 1) return { l: 'h:' + (visit ? visit.owner : GL.mp.me() || 'x'), ox: GL.home.O.x, oz: GL.home.O.z };
     if (GL.dist && GL.dist.cur()) { var d = GL.dist.LIST.filter(function (q) { return q.id === GL.dist.cur(); })[0]; return { l: 'd:' + d.id, ox: d.cx, oz: d.cz }; }
     return { l: 'k', ox: 0, oz: 0 };
   };
