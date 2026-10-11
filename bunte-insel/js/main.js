@@ -174,7 +174,7 @@
   /* ---------- Einsteigen / Aussteigen ---------- */
   function nearVehicle() {
     let best = null, bd = 4.2;
-    if (!P.veh) {
+    if (!P.veh && P.y < 3) {
       for (const v of vehicles) { if (v.ai) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
       const dt_ = train.nearest(P.x, P.z); if (dt_ < 4.2 && dt_ < bd) best = trainVeh;
       if (!best) { let rd = 25; for (const q of vehicles) if (q.spec.remote) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < rd) { rd = d; best = q; } } }
@@ -931,7 +931,7 @@
   /* ---------- Wohnungen: Zimmer, Eltern, Bett zum Schlafen, Kleiderschrank zum Umziehen ---------- */
   const FB = W.spots.flatBlock, flats = W.spots.flats, wardPanel = $('wardPanel'), fadeEl = $('fade'); let wardOpen = false; const sl = { t: -1, f: null, said: false };
   function textSprite(txt, w, h, fs) {
-    const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * h / w); const c = cv.getContext('2d'); c.font = 'bold ' + fs + 'px Fredoka, system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 12; c.strokeStyle = '#16335e'; c.strokeText(txt, 256, cv.height / 2 + 3); c.fillStyle = '#fff'; c.fillText(txt, 256, cv.height / 2 + 3);
+    const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * h / w); const c = cv.getContext('2d'); c.font = 'bold ' + fs + 'px Fredoka, system-ui, sans-serif'; { const mw = c.measureText(txt).width; if (mw > 470) c.font = 'bold ' + Math.floor(fs * 470 / mw) + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 12; c.strokeStyle = '#16335e'; c.strokeText(txt, 256, cv.height / 2 + 3); c.fillStyle = '#fff'; c.fillText(txt, 256, cv.height / 2 + 3);
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, h, 1); return sp;
   }
   const PARENT = [[{ shirt: 0xff6fae, pants: 0x7a5ce0, hair: 0x6b4423, style: 'ponytail', dress: true, name: 'Mama Anna' }, { shirt: 0x4da3ff, pants: 0x3d4a7a, hair: 0x222222, name: 'Papa Tom', hat: 'none' }], [{ shirt: 0xffd23f, pants: 0x3d4a7a, hair: 0xd9a441, style: 'long', dress: true, name: 'Mama Lena', skin: 0xf3c9a0 }, { shirt: 0x4cd07d, pants: 0x5a3d2b, hair: 0x6b4423, name: 'Papa Jonas', skin: 0xf3c9a0 }], [{ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0x222222, style: 'bun', dress: true, name: 'Mama Amara', skin: 0x8d5a3b }, { shirt: 0xff8a1f, pants: 0x2d6a4f, hair: 0x222222, name: 'Papa Kofi', skin: 0x8d5a3b }], [{ shirt: 0x2fae5a, pants: 0x7a3d6a, hair: 0xa14a2b, style: 'curly', dress: true, name: 'Mama Sophie' }, { shirt: 0xe8453c, pants: 0x3d4a7a, hair: 0x6b4423, name: 'Papa Max' }]];
@@ -1619,5 +1619,7 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
+  /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
+  { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
   window.__bi = { pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
