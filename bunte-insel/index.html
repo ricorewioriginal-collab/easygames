@@ -209,6 +209,11 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 #cineGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}@media (min-width:560px){#cineGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .ctile{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#222;color:#fff;font-weight:700;padding:0;text-align:left;box-shadow:var(--shadow)}.ctile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ctile.noimg{background:var(--tc,#6741d9)}.ctile i{position:absolute;left:8px;top:4px;font-style:normal;font-size:26px;text-shadow:0 2px 4px rgba(0,0,0,.5)}.ctile span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 5px;font-size:14px;line-height:1.15;background:linear-gradient(transparent,rgba(0,0,0,.8))}
 #cineQ,#parYt{flex:1;min-width:0;padding:9px 14px;border-radius:999px;border:0;font:inherit;font-size:16px}
+#questChip{position:absolute;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);max-width:min(420px,calc(100% - 330px));display:flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border-radius:20px;text-align:left;z-index:5}#qcIcon{font-size:24px}.qct{display:flex;flex-direction:column;min-width:0}.qct b{font-size:12px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qct small{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:430px){#questChip{left:calc(max(10px,env(safe-area-inset-left)) + 96px);transform:none;max-width:calc(100% - 430px);padding:4px 10px}#qcIcon{font-size:20px}}
+@media (max-width:620px){#questChip{top:calc(max(10px,env(safe-area-inset-top)) + 52px);left:max(60px,calc(env(safe-area-inset-left) + 60px));transform:none;max-width:calc(100% - 180px)}}
+.card.quest{width:min(520px,100%);max-height:calc(100vh - 20px);overflow:auto;text-align:left}.card.quest .logo{text-align:center}.qbarw{height:12px;border-radius:99px;background:rgba(0,0,0,.12);overflow:hidden}#questBar{height:100%;width:0;background:linear-gradient(90deg,#4cd07d,#ffd23f)}.qhead{font-weight:800;font-size:20px;margin:4px 0}
+.qtask{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;margin:5px 0;border-radius:14px;background:rgba(255,255,255,.6);font-weight:700}.qtask.ok{opacity:.6}.qtask .pill{padding:6px 12px;font-size:14px;flex:none}#questList{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.qch{padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.55);font-size:13px;font-weight:700}.qch.ok{background:#c9f2d6}.qch.cur{background:#ffd23f}
 .parent{text-align:left;font-weight:700}.parent label{display:flex;gap:10px;align-items:center;margin:8px 0}.parent input[type=range]{flex:1}#bParent{background:linear-gradient(90deg,#ffd23f var(--p,0%),#fff var(--p,0%))}
 </style>
 </head>
@@ -219,6 +224,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <div id="hud" hidden>
   <div id="stars" class="chip"><span class="ic">⭐</span><span id="starN">0</span></div>
   <button id="friends" class="chip" hidden aria-label="Mitspieler">👥 <span id="friendsN">1</span></button>
+  <button id="questChip" class="chip" hidden aria-label="Inselreise – nächstes Ziel"><span id="qcIcon"></span><span class="qct"><b id="qcTitle"></b><small id="qcText"></small></span></button>
   <div id="mission" class="chip" hidden>
     <div id="mIcon">🚗</div>
     <div id="mBody"><div id="mTitle"></div><div id="mText"></div></div>
@@ -338,6 +344,10 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
     <div id="cineList"><div class="row" id="cineTabs"></div><div id="cineSearch" hidden><div class="row"><input id="cineQ" type="search" maxlength="60" placeholder="Was möchtest du sehen?" aria-label="Suche"><button class="pill sel" id="cineGo">🔍</button></div></div><p class="help" id="cineMsg" style="font-size:14px"></p><div id="cineGrid"></div></div>
     <button class="big" id="cineClose" style="margin-top:10px;font-size:20px;padding:10px 26px">✖ Hinausgehen</button></div>
 </section>
+<section id="questPanel" class="screen" hidden>
+  <div class="card quest"><div class="logo" style="font-size:28px">📖 Die Inselreise</div><div class="qbarw"><div id="questBar"></div></div><div class="help" id="questCount" style="margin:2px 0 8px"></div><div id="questNow"></div><div id="questList"></div>
+    <div class="row" style="margin-top:8px"><button class="pill" id="questRead">🔊 Vorlesen</button></div><button class="big" id="questClose" style="margin-top:10px;font-size:20px;padding:10px 26px">✔ Los geht’s!</button></div>
+</section>
 <section id="arenaPanel" class="screen" hidden>
   <div class="card"><div class="logo" style="font-size:28px">🥊 Kampfarena</div><p id="arenaTxt" class="help"></p><div id="arenaBox"></div><button class="big" id="arenaClose" style="margin-top:8px">✖ Zurück</button></div>
 </section>
@@ -356,6 +366,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
   <div class="card shop">
     <div style="font-size:34px;line-height:1">🧭</div><div class="logo" style="font-size:28px">Wohin möchtest du?</div>
     <div class="sub" style="margin:4px 0 8px">Ich zeige dir den Weg – oder zaubere dich hin ✨</div>
+    <button class="pill sel" id="bStory" style="margin:0 0 8px">📖 Die Inselreise (Kapitel & Ziele)</button>
     <div id="guideGrid"></div>
     <button class="big" id="guideClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✖ Zurück</button>
   </div>
@@ -522,6 +533,7 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 <script src="js/pack.js"></script>
 <script src="js/park.js"></script>
 <script src="js/cinema.js"></script>
+<script src="js/story.js"></script>
 <script src="js/kitchen.js"></script>
 <script src="js/room.js"></script>
 <script src="js/camp.js"></script>

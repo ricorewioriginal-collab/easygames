@@ -85,6 +85,8 @@ BI.createBuild = function (G) {
     const e = rotPt(0, -2, r * Math.PI / 2); return [cx + e[0], cz + e[1]];
   }
   const slotOf = (t, r) => CAT[t].edge ? 'edge' + r : CAT[t].slot;
+  /* Gebautes, das vor dem Kino schon auf dessen Fläche stand, bleibt erhalten (sonst würde es beim nächsten Speichern verschwinden) */
+  const legacy = (t, gx, gz, r) => { const C = BI.CINEMA; if (!C || B.items.length >= MAXP) return false; const q = checkPoint(t, gx, gz, r); return q[0] > C.x0 - 3 && q[0] < -43 && q[1] > C.z0 - 3 && q[1] < C.z1 + 3; };
   B.canPlace = function (t, gx, gz, r) { const q = checkPoint(t, gx, gz, r); return B.items.length < MAXP + 1 && W.canBuild(q[0], q[1], CAT[t].edge ? 1.2 : 1.8); };
 
   /* ---------- Teile setzen / entfernen ---------- */
@@ -188,7 +190,7 @@ BI.createBuild = function (G) {
 
   /* ---------- Laden ---------- */
   const saved = BI.store.get('build', []);
-  if (Array.isArray(saved)) for (const r of saved.slice(0, MAXP)) { if (Array.isArray(r) && CAT[r[0]] && B.canPlace(r[0], r[1] | 0, r[2] | 0, r[3] | 0)) addItem(r[0], r[1] | 0, r[2] | 0, (r[3] | 0) & 3, (r[4] | 0) % PAL.length, true); }
+  if (Array.isArray(saved)) for (const r of saved.slice(0, MAXP)) { if (Array.isArray(r) && CAT[r[0]] && (B.canPlace(r[0], r[1] | 0, r[2] | 0, r[3] | 0) || legacy(r[0], r[1] | 0, r[2] | 0, r[3] | 0))) addItem(r[0], r[1] | 0, r[2] | 0, (r[3] | 0) & 3, (r[4] | 0) % PAL.length, true); }
   rebuild();
   return B;
 };

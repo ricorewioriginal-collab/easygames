@@ -568,6 +568,29 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     ok(!c4[0] && /about:blank/.test(c4[1]) && c4[2] === 'play', 'Esc schließt das Kino und stoppt den Film');
     const c5 = await p.evaluate(async () => { const b = window.__bi; b.P.x = -75; b.P.z = 43.5; await new Promise(r => setTimeout(r, 400)); b.placeAct(b.placeNear()); const cl = document.getElementById('cineCard').className; b.cinema.close(); b.openParent(); document.getElementById('parYt').value = 'kurz'; document.getElementById('parYtSave').click(); const bad = b.cinema.hasKey(); document.getElementById('parYtDel').click(); const gone = !b.cinema.hasKey(); document.getElementById('parYt').value = 'AIzaSyDUMMYKEY_1234567890abcdefghijk'; document.getElementById('parYtSave').click(); const okk = b.cinema.hasKey(); document.getElementById('parYtDel').click(); b.closeParent(); return { cl, bad, gone, okk, end: !b.cinema.hasKey() }; });
     ok(/drive/.test(c5.cl) && c5.gone && c5.okk && c5.end, 'Autokino-Aussehen; Eltern-Bereich: Schlüssel prüfen, speichern, entfernen');
+    const c6 = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}, till = async (f, n = 40) => { for (let i = 0; i < n && !f(); i++) await sl(100); return f(); };
+      if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'taxi' && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); b.answerOffer(false); v.x = -75; v.z = 43.5; v.v = 0;
+      o.btn = await till(() => /Autokino/.test(document.getElementById('bAct').textContent)); b.inp.act = true; o.drive = await till(() => b.cinema.open && b.cinema.mode === 'drive'); b.cinema.close(); b.leave(); await sl(200);
+      b.P.x = -77; b.P.z = 36; await sl(400); b.placeAct(b.placeNear()); document.querySelectorAll('#cineTabs button')[0].click(); document.querySelector('#cineGrid .ctile').click(); b.kids.showBreak(); o.brk = await till(() => !b.cinema.open && /about:blank/.test(document.getElementById('cineFrame').src)); document.getElementById('breakPanel').hidden = true; b.kids.open = '';
+      b.P.x = -77; b.P.z = 36; await sl(400); b.placeAct(b.placeNear()); return o; });
+    await p.focus('#cineQ').catch(() => { }); await p.evaluate(() => document.querySelectorAll('#cineTabs button')[2].click()); await p.focus('#cineQ'); await p.keyboard.press('Escape'); const escQ = await p.evaluate(() => !window.__bi.cinema.open);
+    ok(c6.btn && c6.drive && c6.brk && escQ, 'Autokino mit dem Auto (Knopf „Autokino“), Pausen-Erinnerung stoppt den Film, Esc im Suchfeld schließt (' + JSON.stringify(c6) + ' esc=' + escQ + ')');
+    const ph = await p.evaluate(async () => { const b = window.__bi; b.pause(true); await new Promise(r => setTimeout(r, 200)); document.getElementById('bParent').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); for (let i = 0; i < 60 && document.getElementById('parentPanel').hidden; i++) await new Promise(r => setTimeout(r, 100)); const open = !document.getElementById('parentPanel').hidden; b.closeParent(); b.pause(false); return open; });
+    ok(ph, 'Eltern-Knopf im Pause-Menü: gedrückt halten öffnet den Eltern-Bereich');
+  }
+  { // Inselreise: Kapitel-Ablauf, Nachholen, Ziel abhaken, Kapitel abschließen, Fenster
+    const q = await p.evaluate(async () => { const b = window.__bi, s = b.story, ST = BI.STORY, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+      s.start(); const c0 = b.save.story.c, isDone = t => t[0] === 'stk' ? (b.save.stk || []).includes(t[1]) : !!b.save.story.ev[t[1]];
+      o.consistent = ST.slice(0, c0).every(c => c.tasks.every(isDone)) && (c0 >= ST.length || !ST[c0].tasks.every(isDone));
+      o.chip = !document.getElementById('questChip').hidden || c0 >= ST.length;
+      if (c0 < ST.length) { const s0 = b.save.stars; for (const t of ST[c0].tasks) if (!isDone(t)) { if (t[0] === 'stk') b.kids.earn(t[1]); else b.meta.note(t[1]); } await sl(200); o.next = b.save.story.c === c0 + 1; o.gain = b.save.stars - s0; } else { o.next = true; o.gain = 5; }
+      { const bk = [b.save.stk, b.save.story, b.save.talked]; b.save.stk = []; b.save.talked = []; b.save.story = { c: 0, ev: {}, seen: true };
+        b.kids.earn('ride'); b.meta.note('talk'); b.kids.earn('pack'); b.kids.earn('guide'); await sl(100); o.c1 = b.save.story.c;
+        const s1 = b.save.stars; b.meta.note('mission'); b.kids.earn('train'); await sl(100); o.c2 = b.save.story.c; o.early = b.save.stars - s1; // 2 Ziele +1, Sticker +2, Kapitel +5, früher erledigtes „ride“ +1 = 10
+        b.save.stk = bk[0]; b.save.story = bk[1]; b.save.talked = bk[2]; s.start(); }
+      document.getElementById('bGuide').click(); await sl(100); document.getElementById('bStory').click(); o.open = s.open && !document.getElementById('questPanel').hidden && document.querySelectorAll('#questList .qch').length === ST.length; s.close();
+      return o; });
+    ok(q.consistent && q.chip && q.next && q.gain >= 5 && q.open && q.c1 === 1 && q.c2 === 2 && q.early === 10, 'Inselreise: Kapitel-Ablauf, Geschafftes wird nachgeholt, Kapitel-Abschluss +⭐, Fenster über 🧭 (' + JSON.stringify(q) + ')');
   }
   await c.close();
 }

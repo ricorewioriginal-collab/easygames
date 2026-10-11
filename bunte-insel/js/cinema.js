@@ -78,7 +78,8 @@ BI.createCinema = function (G) {
   }
   const signs = [sign('🎬 KINO', 8, 2, '#3a1d33', '#ffd23f', C.kino.cx, C.kino.h + 2.6, C.kino.cz + C.kino.d / 2 + .5, 0), sign('🚗 AUTOKINO', 12, 3, '#20242c', '#ffffff', C.screen.cx, C.screen.y + C.screen.h + 2.6, C.screen.z - .6, Math.PI), sign('Dein Platz 🍿', 3.4, .85, '#2b8a3e', '#ffffff', C.seat.x, 2.6, C.seat.z + 2.2, 0)];
   K.near = function () {
-    if (P.veh || K.open) return null;
+    if (K.open) return null; const v = P.veh;
+    if (v) return !v.isTrain && !v.spec.fly && !v.spec.remote && Math.hypot(P.x - C.seat.x, P.z - C.seat.z) < 3.4 ? { k: 'drive' } : null; // mit dem Auto auf „Dein Platz“ fahren
     if (Math.hypot(P.x - C.door.x, P.z - C.door.z) < 3.4 && P.y < 1) return { k: 'kino' };
     if (Math.hypot(P.x - C.seat.x, P.z - C.seat.z) < 2.8 && P.y < 1) return { k: 'drive' };
     return null;
@@ -122,15 +123,15 @@ BI.createCinema = function (G) {
     finally { clearTimeout(to); busyQ = false; }
   };
   $('cineGo').addEventListener('click', () => K.search($('cineQ').value));
-  $('cineQ').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') K.search($('cineQ').value); }); $('cineQ').addEventListener('keyup', e => e.stopPropagation());
+  $('cineQ').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') K.search($('cineQ').value); else if (e.key === 'Escape') K.close(); }); $('cineQ').addEventListener('keyup', e => e.stopPropagation());
   $('cineBack').addEventListener('click', K.stopPlay);
   K.show = function (mode) {
-    if (K.open) return; K.open = true; K.mode = mode === 'drive' ? 'drive' : 'kino'; G.setStick(0, 0); try { musicWas = A.musicOn; A.setMusic(false); if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { }
+    if (K.open) return; K.open = true; K.mode = mode === 'drive' ? 'drive' : 'kino'; G.setStick(0, 0); if (P.veh && P.veh.v) P.veh.v = 0; try { musicWas = A.musicOn; A.setMusic(false); if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { }
     card.className = 'card cine ' + K.mode; $('cineTitle').textContent = K.mode === 'drive' ? '🚗 Autokino unter Sternen' : '🎬 Kino'; $('cineSub').textContent = K.mode === 'drive' ? 'Du sitzt im Auto – such dir einen Film aus 🍿' : 'Such dir einen Platz und einen Film aus 🍿';
     K.stopPlay(); render(); $('cinePanel').hidden = false;
   };
   K.close = function () { if (!K.open) return; K.open = false; K.stopPlay(); $('cinePanel').hidden = true; try { A.setMusic(musicWas); } catch (e) { } G.updateButtons(true); };
   $('cineClose').addEventListener('click', K.close);
-  K.update = function () { const n = Math.hypot(P.x - C.seat.x, P.z - 35) < 90; for (const s of signs) s.visible = n; };
+  K.update = function () { if (K.open && !$('breakPanel').hidden) K.close(); /* Pausen-Erinnerung: Film stoppen */ const n = Math.hypot(P.x - C.seat.x, P.z - 35) < 90; for (const s of signs) s.visible = n; };
   return K;
 };
