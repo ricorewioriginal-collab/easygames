@@ -5,7 +5,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 | Spiel | Verzeichnis |
 |---|---|
-| ZOTIK – Die Splitter der Welten – neues 3D-Action-Rollenspiel mit 10 Kapiteln, Begleitern, Rätseln und Zwischensequenzen (Einzeldatei, Three.js; Quelle: Repo `ricorewioriginal-collab/zotik`, Ordner `zotik/`) | [`zotik/`](zotik/) |
+| ZOTIK – Die Splitter der Welten – neues 3D-Action-Rollenspiel mit 10 Kapiteln plus Endspiel, Begleitern, Rätseln, Zwischensequenzen und drei Enden (Einzeldatei, Three.js; Quelle: Repo `ricorewioriginal-collab/zotik`, Ordner `zotik/`) | [`zotik/`](zotik/) |
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
 | AnMaCha Radio-Match 3D – Match-3 mit Radio-Bauteilen, 100 Level, wachsendes Raster, Power-ups (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-radio-match/`](anmacha-radio-match/) |
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
