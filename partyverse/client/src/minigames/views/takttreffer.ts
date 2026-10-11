@@ -51,11 +51,11 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
 
   // Noten
   const POOL = 28;
-  const noteGeo = new THREE.SphereGeometry(0.72, 20, 12);
+  const noteGeo = new THREE.SphereGeometry(0.85, 20, 12);
   const notes = new THREE.InstancedMesh(noteGeo, toon(0xffffff), POOL);
   notes.frustumCulled = false;
   root.add(notes);
-  const rimGeo = new THREE.TorusGeometry(0.74, 0.06, 6, 24);
+  const rimGeo = new THREE.TorusGeometry(0.87, 0.07, 6, 24);
   const rims = new THREE.InstancedMesh(rimGeo, glow(0xffffff, 0.9), POOL);
   rims.frustumCulled = false;
   root.add(rims);
@@ -122,11 +122,13 @@ export const createView: MiniGameViewFactory<BeatState> = (ctx) => {
   judgeSprites.stray = judgeSprites.miss as THREE.Sprite;
   for (const k of ['perfect', 'good', 'miss']) {
     const sp = judgeSprites[k] as THREE.Sprite;
+    sp.material.fog = false;
     sp.visible = false;
     root.add(sp);
   }
   const multSprites = [1, 2, 3, 4].map((m) => {
     const sp = textSprite(`x${m}`, { color: '#ffffff', bg: m === 1 ? '#3b3189' : '#ff4d8d', size: 56, width: 1.5 });
+    sp.material.fog = false;
     sp.position.set(4.3, 1.4, -1);
     sp.visible = m === 1;
     root.add(sp);

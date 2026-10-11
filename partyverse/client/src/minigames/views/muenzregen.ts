@@ -59,8 +59,8 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
   }
   const hillMat = [toon(0x3fae6a), toon(0x2f9a7a), toon(0x5ac86e)];
   for (let i = 0; i < 6; i++) {
-    const hill = new THREE.Mesh(new THREE.SphereGeometry(4 + (i % 3) * 1.6, 24, 14), hillMat[i % 3]!);
-    hill.position.set(-16 + i * 6.4, -3.2, -9 - (i % 2) * 3);
+    const hill = new THREE.Mesh(new THREE.SphereGeometry(3.4 + (i % 3) * 1.3, 24, 14), hillMat[i % 3]!);
+    hill.position.set(-17 + i * 6.8, -3.4, -12 - (i % 2) * 3);
     root.add(hill);
   }
   // Sonne
@@ -73,16 +73,16 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
   root.add(sunHalo);
   // Wolken (hier fällt der Regen heraus)
   const clouds: THREE.Group[] = [];
-  const cloudMat = toon(0xffffff);
+  const cloudMat = toon(0xffffff, { emissive: 0xdde8ff, emissiveIntensity: 0.7 });
   for (let i = 0; i < 7; i++) {
     const g = new THREE.Group();
     for (let k = 0; k < 4; k++) {
-      const b = new THREE.Mesh(new THREE.SphereGeometry(1.0 + (k % 2) * 0.35, 14, 10), cloudMat);
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.75 + (k % 2) * 0.3, 14, 10), cloudMat);
       b.position.set((k - 1.5) * 1.1, (k % 2) * 0.35, 0);
       b.scale.y = 0.75;
       g.add(b);
     }
-    g.position.set(-14 + i * 4.8, TOP_Y + 2.2 + (i % 3) * 0.6, -6 - (i % 2) * 2);
+    g.position.set(-15 + i * 5, TOP_Y + 2.4 + (i % 3) * 0.5, -8 - (i % 2) * 2);
     root.add(g);
     clouds.push(g);
   }

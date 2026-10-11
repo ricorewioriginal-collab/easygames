@@ -24,7 +24,10 @@ export function reachable(layout: Layout, from: number, pred: (e: LayoutEdge) =>
   const stack = [from];
   while (stack.length) {
     const n = stack.pop() as number;
-    for (const e of adj[n] ?? []) if (pred(e) && !seen.has(e.to)) (seen.add(e.to), stack.push(e.to));
+    for (const e of adj[n] ?? []) if (pred(e) && !seen.has(e.to)) {
+        seen.add(e.to);
+        stack.push(e.to);
+      }
   }
   return seen;
 }
@@ -37,7 +40,10 @@ export function canReach(layout: Layout, target: number, pred: (e: LayoutEdge) =
   const stack = [target];
   while (stack.length) {
     const n = stack.pop() as number;
-    for (const e of rev[n] ?? []) if (!seen.has(e.from)) (seen.add(e.from), stack.push(e.from));
+    for (const e of rev[n] ?? []) if (!seen.has(e.from)) {
+        seen.add(e.from);
+        stack.push(e.from);
+      }
   }
   return seen;
 }
@@ -50,7 +56,10 @@ export function distancesFrom(layout: Layout, from: number, phase: number): numb
   const q = [from];
   for (let i = 0; i < q.length; i++) {
     const n = q[i] as number;
-    for (const e of adj[n] ?? []) if (edgeActive(e, phase) && d[e.to] === Infinity) ((d[e.to] = (d[n] as number) + 1), q.push(e.to));
+    for (const e of adj[n] ?? []) if (edgeActive(e, phase) && d[e.to] === Infinity) {
+        d[e.to] = (d[n] as number) + 1;
+        q.push(e.to);
+      }
   }
   return d;
 }

@@ -28,7 +28,13 @@ export function buildTrefoil(ctx: BuildCtx, p: TrefoilParams): Draft {
   const S = (p.n * 3.5) / L1;
   const pts = resample(raw(S), p.n, true);
   const ids = pts.map((q) => d.add(q));
-  d.loop(ids, ctx.st.main);
+  // Steile Stücke (Über- und Unterführungen) bekommen den Auf-/Abstiegsstil
+  for (let i = 0; i < ids.length; i++) {
+    const a = ids[i] as number,
+      b = ids[(i + 1) % ids.length] as number;
+    const dy = Math.abs((pts[i] as V3)[1] - (pts[(i + 1) % ids.length] as V3)[1]);
+    d.link(a, b, dy >= 1.1 ? ctx.st.climb : ctx.st.main);
+  }
   d.start = ids[0] as number;
   const third = Math.floor(p.n / 3);
   d.groupIsland(ids.slice(0, third), 2.6);

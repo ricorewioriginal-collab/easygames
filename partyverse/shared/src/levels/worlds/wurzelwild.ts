@@ -58,7 +58,7 @@ export const LAYOUTS_WURZELWILD: Layout[] = [
     styles: WILD,
     build: (c) => buildLattice(c, { cols: 6, rows: 5, streets: 'both', hill: 1.8, wave: 0.4 }),
     folds: { phases: 2, count: 4, shift: true },
-    mix: { gates: 1, shops: 4, items: 4, events: 3, thorn: 0.14 },
+    mix: { gates: 1, shops: 3, items: 4, events: 3, thorn: 0.14 },
     features: ['Wachsende Wurzeln', 'Viele Kreuzungen'],
     difficulty: 2,
     rounds: 13,
@@ -69,7 +69,7 @@ export const LAYOUTS_WURZELWILD: Layout[] = [
     name: 'Der große Stamm',
     template: 'tower-spiral',
     blurb:
-      'Eine Rankentreppe windet sich um einen riesigen Stamm bis in die Krone; außen rankt ein Abstieg zurück. Zwei wachsende Äste öffnen zeitweise Abkürzungen.',
+      'Eine Rankentreppe windet sich um einen riesigen Stamm bis in die Krone; außen rankt ein Abstieg zurück. Drei wachsende Äste öffnen zeitweise Abkürzungen.',
     styles: WILD,
     build: (c) => buildTowerSpiral(c, { perTurn: 9, turns: 3, rise: 5 }),
     folds: { phases: 2, count: 3 },

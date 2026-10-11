@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { LANE_W, type DashCoin, type DashRow, type DashState } from '@shared/minigames/games/hindernisdash';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { glow, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
 
 /** Hindernis-Dash: Neon-Zuckerbahn im Abendrot. Läufer von hinten, Welt rauscht entgegen. */
-export const createView: MiniGameViewFactory<DashState> = (ctx, initial) => {
+export const createView: MiniGameViewFactory<DashState> = (ctx) => {
   const { root, camera, scene } = ctx;
   scene.background = new THREE.Color(0xff8a5c);
   scene.fog = new THREE.Fog(0x7a3b9c, 45, 135);
@@ -37,11 +38,11 @@ export const createView: MiniGameViewFactory<DashState> = (ctx, initial) => {
   }
 
   // ---------- Bahn ----------
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 400), toon(0x3b1a6b));
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 400), glow(0x3b1a6b));
   ground.rotation.x = -Math.PI / 2;
   ground.position.set(0, -0.06, -120);
   root.add(ground);
-  const track = new THREE.Mesh(new THREE.PlaneGeometry(LANE_W * 3 + 0.4, 400), toon(0x5a3aa8));
+  const track = new THREE.Mesh(new THREE.PlaneGeometry(LANE_W * 3 + 0.4, 400), glow(0x5a3aa8));
   track.rotation.x = -Math.PI / 2;
   track.position.set(0, -0.02, -120);
   root.add(track);
@@ -66,6 +67,30 @@ export const createView: MiniGameViewFactory<DashState> = (ctx, initial) => {
   const sc = new THREE.Vector3();
   const pos = new THREE.Vector3();
 
+
+  /** Fasst eine Gruppe aus Primitiven zu EINEM Mesh mit Vertexfarben zusammen (spart Draw Calls). */
+  const vcMat = toon(0xffffff).clone();
+  vcMat.vertexColors = true;
+  vcMat.userData = {};
+  const bake = (grp: THREE.Group): THREE.Mesh => {
+    grp.updateMatrixWorld(true);
+    const geos: THREE.BufferGeometry[] = [];
+    grp.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const geo = m.geometry.clone();
+      geo.applyMatrix4(m.matrixWorld);
+      geo.deleteAttribute('uv');
+      const col = (m.material as THREE.MeshToonMaterial).color;
+      const n = geo.getAttribute('position').count;
+      const arr = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) col.toArray(arr, i * 3);
+      geo.setAttribute('color', new THREE.BufferAttribute(arr, 3));
+      geos.push(geo);
+    });
+    return new THREE.Mesh(mergeGeometries(geos, false) as THREE.BufferGeometry, vcMat);
+  };
+
   // ---------- Hindernis-Pool ----------
   const posts = toon(0xf4f0ff);
   const red = toon(0xff3d6e);
@@ -76,9 +101,9 @@ export const createView: MiniGameViewFactory<DashState> = (ctx, initial) => {
   const wallTop = toon(0xc9a6ff);
   interface Cell {
     g: THREE.Group;
-    low: THREE.Group;
-    high: THREE.Group;
-    wall: THREE.Group;
+    low: THREE.Object3D;
+    high: THREE.Object3D;
+    wall: THREE.Object3D;
     lamp: THREE.Mesh;
   }
   const lampOn = glow(0xff3030);
@@ -125,10 +150,13 @@ export const createView: MiniGameViewFactory<DashState> = (ctx, initial) => {
     }
     const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), lampOn);
     lamp.position.set(0, 2.7, 0);
-    wall.add(lamp);
-    g.add(low, high, wall);
+    const lowM = bake(low);
+    const highM = bake(high);
+    const wallM = bake(wall);
+    wallM.add(lamp);
+    g.add(lowM, highM, wallM);
     root.add(g);
-    return { g, low, high, wall, lamp };
+    return { g, low: lowM, high: highM, wall: wallM, lamp };
   };
   const cells: Cell[] = [];
   for (let i = 0; i < SLOTS * 3; i++) cells.push(makeCell());

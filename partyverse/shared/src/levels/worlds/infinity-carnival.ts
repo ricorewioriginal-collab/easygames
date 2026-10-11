@@ -74,7 +74,7 @@ export const LAYOUTS_INFINITY_CARNIVAL: Layout[] = [
     name: 'Jahrmarkt-Kamm',
     template: 'comb',
     blurb:
-      'Eine Budenreihe mit Zinken: Jede Bude ist ein kleiner Schienen-Umweg mit Items. Eine Abkürzung und ein Portal-Paar erlauben Sprünge über die Reihen.',
+      'Eine Budenreihe mit Zinken: Jede Bude ist ein kleiner Schienen-Umweg mit Items. Zwei Abkürzungen und ein Portal-Paar erlauben Sprünge über die Reihen.',
     styles: MIXED,
     build: (c) => buildComb(c, { m: 8, top: [2, 3, 2], bottom: [0, 2, 0], lift: 1.4 }),
     shortcuts: { count: 2 },

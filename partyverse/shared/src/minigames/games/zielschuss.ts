@@ -71,13 +71,13 @@ function spawn(s: ZielState): void {
   if (kind === 'pop') {
     const y = h.float(-0.7, 0.8);
     const x = h.float(-1.35, 1.35);
-    s.targets.push({ id, kind, x, y0: y, y, vx: 0, r: 0.15, age: 0, life: Math.round(lerp(95, 62, d)), amp: 0, freq: 0, pts: pointsOf('pop') });
+    s.targets.push({ id, kind, x, y0: y, y, vx: 0, r: 0.17, age: 0, life: Math.round(lerp(95, 62, d)), amp: 0, freq: 0, pts: pointsOf('pop') });
   } else {
     const row = h.int(3);
     const dir = row % 2 === 0 ? 1 : -1;
     const base = { duck: 0.62, fast: 1.15, big: 0.4, bonus: 1.05, decoy: 0.7 }[kind];
     const spd = base * lerp(1, 1.4, d) * h.float(0.9, 1.15);
-    const r = { duck: 0.14, fast: 0.1, big: 0.21, bonus: 0.1, decoy: 0.14 }[kind];
+    const r = { duck: 0.16, fast: 0.115, big: 0.22, bonus: 0.115, decoy: 0.15 }[kind];
     const y0 = (ROW_Y[row] as number) + h.float(-0.04, 0.04);
     const wob = kind === 'bonus' || kind === 'fast';
     s.targets.push({
@@ -193,7 +193,7 @@ export const game: MiniGame<ZielState> = {
       for (const t of s.targets) {
         if (t.kind === 'pop' && t.age < 6) continue; // noch nicht aufgeklappt
         const d = Math.hypot(t.x - s.cx, t.y - s.cy);
-        if (d <= t.r + 0.015 && d < bd) {
+        if (d <= t.r + 0.03 && d < bd) {
           bd = d;
           best = t;
         }

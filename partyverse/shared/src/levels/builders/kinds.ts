@@ -20,11 +20,12 @@ export interface KindResult {
   altar: number[];
 }
 
-/** Ungerichtete Abstände zwischen allen Feldern (alle Kanten, auch faltbare) */
+/** Ungerichtete Abstände zwischen allen Feldern über die dauerhaften Kanten (Faltungen zählen nicht) */
 function allDistances(d: Draft): number[][] {
   const n = d.nodes.length;
   const adj: number[][] = d.nodes.map(() => []);
   for (const e of d.edges) {
+    if (e.folds) continue;
     (adj[e.from] as number[]).push(e.to);
     (adj[e.to] as number[]).push(e.from);
   }

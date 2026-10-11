@@ -201,7 +201,7 @@ export const game: MiniGame<SpuerState> = {
   hud: (s) => ({
     left: `Gefunden ${s.found}`,
     right: `${Math.max(0, Math.ceil((LIMIT - s.clock) / 60))} s · ${s.total} Pkt`,
-    hint: s.lock > 0 ? 'Daneben! −1,5 s' : s.oddKind === 'shape' ? 'Welche Form weicht ab?' : s.oddKind === 'color' ? 'Welche Farbe weicht ab?' : 'Welche Drehung weicht ab?',
+    hint: s.lock > 0 ? 'Daneben! −1,5 s' : 'Welches Symbol fällt aus der Reihe?',
   }),
 };
 

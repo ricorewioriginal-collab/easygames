@@ -343,7 +343,7 @@ export const createView: MiniGameViewFactory<ZielState> = (ctx, initial) => {
       }
       if (flashT < 0.25) {
         flashT += dt;
-        flash.scale.setScalar(1 + flashT * 6);
+        flash.scale.setScalar(1 + flashT * 3);
         (flash.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1 - flashT * 4.5);
         if (flashT >= 0.25) flash.visible = false;
       }

@@ -50,8 +50,27 @@ function foldSet(phases: number, k: number): number[] {
  */
 export function addExtraEdges(d: Draft, rng: Rng, o: ExtraOpts): number {
   const n = d.nodes.length;
-  const outDeg = (a: number) => d.edges.filter((e) => e.from === a).length;
-  const inDeg = (b: number) => d.edges.filter((e) => e.to === b).length;
+  const outD = new Array<number>(n).fill(0);
+  const inD = new Array<number>(n).fill(0);
+  for (const e of d.edges) {
+    outD[e.from]++;
+    inD[e.to]++;
+  }
+  const hopCache = new Map<number, number[]>();
+  const hopsFrom = (a: number): number[] => {
+    let h = hopCache.get(a);
+    if (!h) {
+      h = coreHops(d, a);
+      hopCache.set(a, h);
+    }
+    return h;
+  };
+  const add = (a: number, b: number, folds?: number[]): void => {
+    d.link(a, b, o.style, undefined, folds);
+    outD[a]++;
+    inD[b]++;
+    if (!folds) hopCache.clear();
+  };
   const stages = [
     { hop: o.minHop ?? 5, min: o.minLen ?? 4.2, max: o.maxLen ?? 12.5 },
     { hop: Math.max(3, (o.minHop ?? 5) - 2), min: 3.6, max: 14 },
@@ -69,12 +88,12 @@ export function addExtraEdges(d: Draft, rng: Rng, o: ExtraOpts): number {
       (d.nodes[b] as (typeof d.nodes)[number]).pos,
     );
     if (len < st.min || len > st.max) continue;
-    if (outDeg(a) >= (o.phases ? 3 : 2) || inDeg(b) >= (o.phases ? 3 : 2)) continue;
-    const hop = (coreHops(d, a)[b] as number) ?? Infinity;
+    if ((outD[a] as number) >= (o.phases ? 3 : 2) || (inD[b] as number) >= (o.phases ? 3 : 2)) continue;
+    const hop = hopsFrom(a)[b] as number;
     if (hop < st.hop || hop > maxHop) continue;
     if (clashes(d, a, b)) continue;
     const folds = o.phases ? foldSet(o.phases, added) : undefined;
-    d.link(a, b, o.style, undefined, folds);
+    add(a, b, folds);
     added++;
     if (o.shift && o.phases && added < o.count) {
       // verschobene Brücke: gleiches Startfeld, Nachbar des Ziels, nächste Phase
@@ -87,7 +106,7 @@ export function addExtraEdges(d: Draft, rng: Rng, o: ExtraOpts): number {
           (d.nodes[b2] as (typeof d.nodes)[number]).pos,
         );
         if (l2 > 15.5) continue;
-        d.link(a, b2, o.style, undefined, [(phase + 1) % o.phases]);
+        add(a, b2, [(phase + 1) % o.phases]);
         added++;
         break;
       }
