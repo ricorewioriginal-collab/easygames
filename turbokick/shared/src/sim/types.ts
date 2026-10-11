@@ -72,6 +72,11 @@ export interface CarState {
   demolished: number;
   /** Aktuell ausgeführtes Ausweichmanöver (für Animation), 0 = keins */
   dodgeTimer: number;
+  /**
+   * ERGÄNZUNG (Sim): Sekunden seit Sprung bzw. seit Verlassen des Bodens (steuert Sprung-Halten bis 0,2 s und Ausweichfenster 1,5 s).
+   * Achsen des Fahrzeugs im Modellsystem: +x = links, +y = oben, +z = Nase. Quaternionen sind [x, y, z, w].
+   */
+  jumpTimer: number;
   /** true, solange Boost wirklich Schub gibt (für Effekte/Ton) */
   boosting: boolean;
   /** Letzte Eingabe (für Animationen: Lenkeinschlag, Gas) */
@@ -117,6 +122,8 @@ export interface SimState {
   prevTouch: number;
   /** Sieger nach phase 'ended': 0, 1 oder −1 (unentschieden gibt es nicht: Verlängerung) */
   winner: -1 | 0 | 1;
+  /** ERGÄNZUNG (Sim): Zustand des Zufallsgenerators (mulberry32), damit der gesamte dynamische Zustand im SimState liegt. */
+  rngState: number;
 }
 
 export type SimEvent =

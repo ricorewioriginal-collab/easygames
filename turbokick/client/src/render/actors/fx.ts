@@ -327,11 +327,32 @@ export class Debris {
 
 /* ---------------------------------------------- Ringe, Kugelblitze, Lichtsäulen */
 
+/** Drei senkrechte, gekreuzte Ebenen (Breite 1, Höhe 1, Fuß bei y = 0): weiche Lichtsäule aus jeder Richtung */
+function beamGeometry(): THREE.BufferGeometry {
+  const pos: number[] = [];
+  const uv: number[] = [];
+  const idx: number[] = [];
+  for (let k = 0; k < 3; k++) {
+    const a = (k * Math.PI) / 3;
+    const cx = Math.cos(a) * 0.5;
+    const cz = Math.sin(a) * 0.5;
+    const o = k * 4;
+    pos.push(-cx, 0, -cz, cx, 0, cz, cx, 1, cz, -cx, 1, -cz);
+    uv.push(0, 0, 1, 0, 1, 1, 0, 1);
+    idx.push(o, o + 1, o + 2, o, o + 2, o + 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+
 type FlashKind = 'ringFlat' | 'ringVert' | 'sphere' | 'column';
 
 interface Flash {
-  mesh: THREE.Mesh;
-  mat: THREE.MeshBasicMaterial;
+  mesh: THREE.Object3D;
+  mat: THREE.MeshBasicMaterial | THREE.SpriteMaterial;
   t: number;
   life: number;
   s0: number;
@@ -343,7 +364,7 @@ interface Flash {
 /** Kleiner Pool wiederverwendeter Meshes gleicher Art (additiv, ein Material je Stück wegen eigener Deckkraft). */
 class FlashPool {
   readonly items: Flash[] = [];
-  private geo: THREE.BufferGeometry;
+  private geo: THREE.BufferGeometry | null = null;
   constructor(
     parent: THREE.Object3D,
     private readonly kind: FlashKind,
@@ -357,13 +378,22 @@ class FlashPool {
         this.geo = new THREE.PlaneGeometry(1, 1);
         break;
       case 'sphere':
-        this.geo = new THREE.IcosahedronGeometry(0.5, 1);
+        this.geo = null; // Sprite mit weichem Lichtpunkt
         break;
       default:
-        this.geo = new THREE.CylinderGeometry(0.5, 0.5, 1, 14, 1, true).translate(0, 0.5, 0);
+        this.geo = beamGeometry();
     }
-    const tex = kind === 'column' ? columnTexture() : kind === 'sphere' ? null : ringTexture();
+    const tex = kind === 'column' ? columnTexture() : ringTexture();
     for (let i = 0; i < count; i++) {
+      if (kind === 'sphere') {
+        const sm = new THREE.SpriteMaterial({ map: glowTexture(), color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+        const sp = new THREE.Sprite(sm);
+        sp.visible = false;
+        sp.renderOrder = 5;
+        parent.add(sp);
+        this.items.push({ mesh: sp, mat: sm, t: 1, life: 1, s0: 1, s1: 1, h: 1, a: 1 });
+        continue;
+      }
       const mat = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         map: tex,
@@ -371,9 +401,9 @@ class FlashPool {
         opacity: 0,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        side: kind === 'sphere' ? THREE.FrontSide : THREE.DoubleSide,
+        side: THREE.DoubleSide,
       });
-      const mesh = new THREE.Mesh(this.geo, mat);
+      const mesh = new THREE.Mesh(this.geo as THREE.BufferGeometry, mat);
       mesh.visible = false;
       mesh.frustumCulled = false;
       mesh.renderOrder = 5;
@@ -413,7 +443,7 @@ class FlashPool {
         f.mesh.scale.set(s, s, 1);
         break;
       case 'sphere':
-        f.mesh.scale.setScalar(s);
+        f.mesh.scale.setScalar(s * 1.7);
         break;
       default:
         f.mesh.scale.set(s, f.h * (0.35 + 0.65 * k), s);
@@ -440,7 +470,7 @@ class FlashPool {
       f.mesh.removeFromParent();
       f.mat.dispose();
     }
-    this.geo.dispose();
+    this.geo?.dispose();
   }
 }
 

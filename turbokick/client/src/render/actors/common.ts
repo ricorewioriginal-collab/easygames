@@ -102,7 +102,7 @@ export const streakTexture = (): THREE.CanvasTexture =>
 
 /** Senkrechter Verlauf: unten hell, oben transparent (Lichtsäulen) */
 export const columnTexture = (): THREE.CanvasTexture =>
-  cachedTex('column', () => pixelTex(8, 64, (_u, v) => Math.pow(1 - v, 1.3) * Math.min(1, v * 14 + 0.25)));
+  cachedTex('column', () => pixelTex(32, 64, (u, v) => Math.pow(1 - v, 1.3) * Math.min(1, v * 14 + 0.25) * Math.pow(Math.sin(u * Math.PI), 1.3)));
 
 /* ------------------------------------------------------------ Mesh-Baukasten */
 
