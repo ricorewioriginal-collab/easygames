@@ -12,6 +12,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Kampf** mit angekündigten Angriffen, Unverwundbarkeit, drei Gegnertypen, verzögertem Wiedererscheinen. **Bosse** mit Phasen, Rücksetzpunkt am Arenaeingang und Phasen-Checkpoint. → `story.cjs`, `logic.cjs`
 - **Dialogsystem:** kein Doppelstart, pausensicher, Überspringen bekannter Dialoge, Reaktionen nach Meilensteinen. → `logic.cjs`, `story.cjs`
 - **Spielstand-Migration** von Version 1/2 auf 3 inkl. altem Vesper-Finale und alter Sechs-Insel-Erweiterung, Sicherungskopien, Reparatur unvollständiger/widersprüchlicher Stände, unlesbare Stände werden gesichert statt gelöscht. → `logic.cjs`
+- **Splitter-Belohnungen:** alle 144 Splitter sind einsammelbar; Sternenglanz (144) macht die Flügelkraft unbegrenzt und färbt die Flugspur golden. → `logic.cjs`
 - **Erreichbarkeit** aller Splitter, Laternen, Rastpunkte; versteckte Stufen, Kristallturm, Ringe im echten Flug. → `logic.cjs`
 - **Mobile Oberfläche** ohne Überlappungen/Überläufe in 3 Desktop-, 3 Hochkant- und 2 Querformat-Viewports (Chromium, Touch-Emulation). → `browser.cjs`
 - **2D-Ersatzmodus** ohne WebGL mit Hinweis, spielbar. → `webview.cjs`
@@ -30,7 +31,6 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 
 - Test auf echten Geräten (mindestens ein Android-Handy, ein iPhone, ein Notebook mit integrierter Grafik) und Eintrag der Messwerte in TESTING.md.
 - Bäume und Gras bewegen sich nicht im Wind.
-- Die Belohnung bei 144 Splittern ist nur eine Auszeichnung ohne Spieleffekt.
 - Keine Controller-Unterstützung (Gamepad).
 - Keine Sprachausgabe/Vertonung; Texte nur auf Deutsch.
 

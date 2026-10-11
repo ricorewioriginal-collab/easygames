@@ -55,7 +55,7 @@ upgrades: [
   {gems:72, id:'range', text:'Weiter Wind · Windstoß reicht weiter'},
   {gems:96, id:'heart2', text:'Zweites Splitterherz · noch ein Herz'},
   {gems:120, id:'speed', text:'Sturmschwingen · schnellerer Flug'},
-  {gems:144, id:'glow', text:'Sternenglanz · alle Himmelssplitter gefunden'}
+  {gems:144, id:'glow', text:'Sternenglanz · unbegrenzte Flügelkraft und goldene Flugspur'}
 ],
 
 // Story-Objekte. Sie erscheinen nur, solange ein aktiver Questschritt sie verlangt.

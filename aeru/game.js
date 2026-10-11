@@ -129,6 +129,7 @@ const waveMat = new T.MeshBasicMaterial({color: 0xf5baa1, toneMapped: false});
 const shieldMat = new T.MeshBasicMaterial({color: 0x9fe8ff, transparent: true, opacity: .18, depthWrite: false, toneMapped: false});
 const orbMat = new T.MeshBasicMaterial({color: 0xff8a6a, toneMapped: false});
 const flightTrail = new T.Group(); scene.add(flightTrail);
+const glowStreakMat = new T.MeshBasicMaterial({color: 0xffd36a, transparent: true, opacity: .95, depthWrite: false, toneMapped: false});
 for (const sign of [-1, 1]) for (let i = 0; i < 4; i++) { const m = new T.Mesh(windStreakGeo, windWhiteMat); m.position.set(sign * (1.45 + i * .12), 1.1, 1 + i * .55); flightTrail.add(m); }
 
 // ───────── Spielstand ─────────
@@ -151,6 +152,9 @@ const upgrade = id => totalGems() >= story.upgrades.find(u => u.id === id).gems;
 const maxHp = () => 5 + (upgrade('heart1') ? 1 : 0) + (upgrade('heart2') ? 1 : 0);
 const maxStamina = () => upgrade('stamina') ? 125 : 100;
 const attackRange = () => upgrade('range') ? 8.5 : 7;
+// Sternenglanz (alle 144 Splitter): Flügelkraft verbraucht sich nicht mehr, Aeru zieht eine goldene Spur.
+let starGlow = false;
+function refreshGlow() { starGlow = upgrade('glow'); for (const m of flightTrail.children) m.material = starGlow ? glowStreakMat : windWhiteMat; }
 
 // ───────── Audio ─────────
 // Ein einziger AudioContext, erst nach einer Interaktion. Musik, Effekte und Wind laufen über eigene Lautstärken.
@@ -284,6 +288,7 @@ function npcMarker(id) {
 const activeSteps = () => story.quests.filter(q => save.quests[q.id]?.s === 'active').map(q => ({quest: q, step: q.steps[save.quests[q.id].step], record: save.quests[q.id]}));
 
 function buildLevel(index, titleOnly = false) {
+  refreshGlow();
   if (world) scene.remove(world);
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
@@ -455,6 +460,7 @@ function movePlayer(dt) {
     if (!wasGround) { if (fallSpeed < -9) { state.landing = .2; sfx.land(); spark(state.x, state.y + .2, state.z, '#e9e2c8', 8); } else if (fallSpeed < -4) sfx.step(); }
   } else state.onGround = false;
   if (state.onGround && length > .1) { state.stepDist += Math.hypot(state.vx, state.vz) * dt; if (state.stepDist > 1.7) { state.stepDist = 0; sfx.step(); } }
+  if (starGlow) state.stamina = maxStamina();
   if (state.y < -16) respawn('Der Wind fängt dich auf · zurück am letzten Rastpunkt');
   // Rastpunkte: Wer sicher steht, wird hier wieder aufgefangen.
   state.cpTimer -= dt;
@@ -476,7 +482,7 @@ function animatePlayer(dt, input, gliding) {
   player.userData.wings.forEach((w, i) => { const flapping = state.vy > 1 && !state.onGround; const target = (i ? 1 : -1) * (gliding || flapping ? -.18 + Math.sin(time * (flapping ? 13 : 4)) * (flapping ? .45 : .08) : .5 + Math.sin(time * 3) * .16); w.rotation.z = approach(w.rotation.z, target, 12, dt); });
   player.userData.tail.rotation.y = Math.sin(time * 5) * .15;
   player.userData.legs.forEach((l, i) => l.rotation.x = state.onGround && length > .1 ? Math.sin(state.distance * 2.4 + i * 2) * .45 : -.15);
-  flightTrail.visible = gliding && Math.hypot(state.vx, state.vz) > 2; flightTrail.position.set(state.x, state.y, state.z); flightTrail.rotation.y = state.yaw;
+  flightTrail.visible = (gliding || starGlow && !state.onGround) && Math.hypot(state.vx, state.vz) > 2; flightTrail.position.set(state.x, state.y, state.z); flightTrail.rotation.y = state.yaw;
 }
 function respawn(message) {
   const max = maxHp();
@@ -695,7 +701,7 @@ function pickups() {
   for (const g of gems) if (!g.got && Math.hypot(state.x - g.x, state.z - g.z) < 1.2 && Math.abs(state.y + .9 - g.y) < 1.8) {
     const before = totalGems(); g.got = true; g.m.visible = false; save.collected[save.level].push(g.id); sfx.gem(g.id); spark(g.x, g.y, g.z, '#c9ffdd', 7);
     const unlocked = story.upgrades.find(u => before < u.gems && totalGems() >= u.gems);
-    if (unlocked) { sfx.story(); toast('Neue Fähigkeit · ' + unlocked.text); state.hp = maxHp(); state.stamina = maxStamina(); }
+    if (unlocked) { sfx.story(); toast('Neue Fähigkeit · ' + unlocked.text); state.hp = maxHp(); state.stamina = maxStamina(); refreshGlow(); }
     else if (totalGems() % 6 === 0 && state.hp < maxHp()) { state.hp++; toast('Sechs Splitter · Ein Herz aufgefüllt'); }
     persist(); quests.emit({type: 'gem', level: save.level}); updateHUD();
   }
