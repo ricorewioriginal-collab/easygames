@@ -61,6 +61,12 @@ function flyTo(h, tx, ty, tz, {maxTicks = 900, land = false} = {}) {
   // Echter Hin- und Rückflug zur Ostinsel und zurück.
   api.teleport(24, 0, 2, -Math.PI / 2); h.tick(); let s = flyTo(h, 37, 1, 2, {land: true}); assert(s.onGround && s.y === 1 && s.x > 31, 'Landung auf der Ostinsel');
   s = flyTo(h, 22, 0, 2, {land: true}); assert(s.onGround && s.y === 0 && s.x < 27, 'Rückflug zur Hauptinsel'); ok('echter Flug zur Außeninsel und zurück');
+  // Kantenhilfe: knapp unter der Inselkante (Ostinsel, Oberkante y=1) gegen den Rand fliegen zieht Aeru hinauf statt ihn abprallen oder abstürzen zu lassen.
+  api.teleport(29.2, .1, 2, -Math.PI / 2); h.key('KeyD'); h.tick(20); h.up('KeyD'); h.tick(20);
+  s = h.snap().state; assert(s.onGround && s.y === 1 && s.x > 30, `Kantenhilfe zieht auf die Insel (${s.x.toFixed(1)}, ${s.y.toFixed(2)})`);
+  // Kollision folgt dem sichtbaren Felskegel: dicht unter der Insel blockiert der Fels, tief unten (schmale Spitze) nicht.
+  api.teleport(28, -2.5, 2, -Math.PI / 2); h.tick(1); api.flight(); h.key('KeyD'); h.tick(20); h.up('KeyD'); assert(h.snap().state.x < 30.5, 'Fels direkt unter der Insel ist fest');
+  h.tick(400); ok('Kantenhilfe, Fels unter Inseln fest');
   // Kamera bleibt über dem Boden.
   for (let i = 0; i < 30; i++) h.frame()(1000 + i * 16);
   assert(h.snap().camera.y > h.api.floorAt(h.snap().camera.x, h.snap().camera.z) + .5, 'Kamera nicht im Boden');

@@ -11,11 +11,13 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Ausweichen:** Umschalt am Boden – kurzer Schub mit Unverwundbarkeit.
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
 - Plattformen haben echte Dicke: Man kann unter ihnen hindurchlaufen, es gibt keine unsichtbaren Wände.
+- **Kantenhilfe:** Wer bis zu 1,3 m unter einer Kante gegen Insel oder Plattform stößt, zieht sich hinauf.
+- Der Fels unter einer Insel ist fest und folgt ihrer sichtbaren, nach unten schmaler werdenden Form.
 
 ## Flug
 
 - G/FLUG startet den Flug, erneut landet man. In der Luft wechselt ein Flügelschlag in den Flug.
-- Sprung länger halten = steigen (kostet Flügelkraft), Umschalt/AUSWEICHEN = sinken, sonst langsames Sinken.
+- Sprung länger halten = steigen (kostet Flügelkraft), Umschalt/ROLLE = sinken, sonst langsames Sinken. Ohne Steigen lädt die Flügelkraft im Flug langsam nach.
 - Flügelkraft lädt am Boden und in türkisen **Aufwinden**, die zusätzlich anheben. Bei wenig Kraft warnt die Anzeige.
 - Optionale **Flughilfe** in den Einstellungen.
 

@@ -7,7 +7,7 @@ Alle Befehle aus dem Ordner `aeru/` ausführen. Node 18+ genügt; nur der Browse
 | `node tests/story.cjs` | wenige Sekunden | komplette Hauptgeschichte vom Neustart bis zum Abspann |
 | `node tests/logic.cjs` | wenige Sekunden | Steuerung, Physik, Kampf, Negativfälle, Spielstände, Erreichbarkeit |
 | `node tests/webview.cjs` | < 5 s | 2D-Ersatzmodus ohne WebGL |
-| `NODE_PATH=$(npm root -g) node tests/browser.cjs` | ca. 5 min | echtes Chromium in 8 Viewports, Screenshots, Bildzeiten |
+| `NODE_PATH=$(npm root -g) node tests/browser.cjs` | ca. 5 min | echtes Chromium in 9 Viewports, Screenshots, Bildzeiten |
 
 `story`, `logic` und `webview` laden das echte Spiel (alle vier Skripte) mit echter Three.js-r128-Geometrie in eine Node-VM (`tests/harness.cjs`). Nur Zeichnen und DOM sind Attrappen; Physik, Quests, Kampf und Speichern laufen unverändert.
 
@@ -24,6 +24,7 @@ Der Test setzt **keine Flags**. Er liest wie ein Spieler das aktuelle Ziel und d
 
 - Laufen und Abbremsen, variable Sprunghöhe, Coyote Time, Sprungpuffer, Gleiten, Treppe mit echten Sprüngen, unter Plattformen hindurchlaufen.
 - Flug: Steigen kostet Kraft, Sinken, Landung, Aufladen, Aufwind; echter Hin- und Rückflug zur Außeninsel per Tasten-Autopilot.
+- Kantenhilfe an der Ostinsel, fester Fels unter Inseln.
 - Kamera bleibt über dem Boden, Ausweichen.
 - 30/60/120 Hz ergeben dieselbe Laufstrecke.
 - Kampf: Angriffe werden angekündigt, Schaden nur in der Angriffsphase, Windstoß trifft, Tod setzt am Rastpunkt zurück.
@@ -34,9 +35,11 @@ Der Test setzt **keine Flags**. Er liest wie ein Spieler das aktuelle Ziel und d
 
 ## Browser und Geräte (`browser.cjs`)
 
-Chromium 141 (Playwright 1.56) headless, Viewports 1920×1080, 1366×768, 1280×720, 360×800, 390×844, 412×915, 800×360 und 915×412 (Querformat); Handys mit Touch-Emulation und Pixelverhältnis 2. Pro Viewport: Start, Dialog vollständig sichtbar, echte Bewegung per Taste bzw. Touch-Stick, keine Überlappung der Bedienelemente (Herzen, Zähler, Pause, Ziel, Karte, Flügelkraft, Stick, Aktionstasten, Bossanzeige), kein horizontaler Überlauf, Pausenknöpfe mindestens 32 px hoch, keine Konsolenfehler. Screenshots (Titel, Dialog, Spiel, Pause, Tagebuch, Einstellungen) landen in `tests/screenshots/` (nicht im Repository).
+Chromium 141 (Playwright 1.56) headless, Viewports 1920×1080, 1366×768, 1280×720, 360×800, 390×844, 412×915, 800×360, 915×412 und 904×407 mit Pixelverhältnis 3 (Querformat wie im Fehlerbericht vom 11.10.2026); Handys mit Touch-Emulation und Pixelverhältnis 2. Pro Viewport: Start, Dialog vollständig sichtbar, echte Bewegung per Taste bzw. Touch-Stick, keine Überlappung der Bedienelemente (Herzen, Zähler, Pause, Ziel, Karte, Flügelkraft, Stick, Aktionstasten, Bossanzeige), kein horizontaler Überlauf, Pausenknöpfe mindestens 32 px hoch, keine Konsolenfehler. Screenshots (Titel, Dialog, Spiel, Pause, Tagebuch, Einstellungen) landen in `tests/screenshots/` (nicht im Repository).
 
-Letzter Lauf: **alle 8 Viewports bestanden.**
+Die Prüfung läuft im Flug, damit auch die Flügelkraftanzeige zwischen den Bedienelementen Platz haben muss.
+
+Letzter Lauf: **alle 9 Viewports bestanden.**
 
 ### Messwerte – bitte richtig lesen
 

@@ -14,7 +14,8 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Spielstand-Migration** von Version 1/2 auf 3 inkl. altem Vesper-Finale und alter Sechs-Insel-Erweiterung, Sicherungskopien, Reparatur unvollständiger/widersprüchlicher Stände, unlesbare Stände werden gesichert statt gelöscht. → `logic.cjs`
 - **Splitter-Belohnungen:** alle 144 Splitter sind einsammelbar; Sternenglanz (144) macht die Flügelkraft unbegrenzt und färbt die Flugspur golden. → `logic.cjs`
 - **Erreichbarkeit** aller Splitter, Laternen, Rastpunkte; versteckte Stufen, Kristallturm, Ringe im echten Flug. → `logic.cjs`
-- **Mobile Oberfläche** ohne Überlappungen/Überläufe in 3 Desktop-, 3 Hochkant- und 2 Querformat-Viewports (Chromium, Touch-Emulation). → `browser.cjs`
+- **Mobile Oberfläche** ohne Überlappungen/Überläufe in 3 Desktop-, 3 Hochkant- und 3 Querformat-Viewports (Chromium, Touch-Emulation), auch im Flug. Kompakte Questanzeige und neu geordnete Touch-Tasten nach dem Fehlerbericht vom 11.10.2026. → `browser.cjs`
+- **Kollision:** Fels unter Inseln folgt der sichtbaren Form, Kantenhilfe bis 1,3 m, Flügelkraft lädt im Flug ohne Steigen langsam nach (Fehlerbericht „man fällt durch“). → `logic.cjs`
 - **2D-Ersatzmodus** ohne WebGL mit Hinweis, spielbar. → `webview.cjs`
 - **Grafikstufen** Sparsam/Ausgewogen/Hoch/Automatisch; die Automatik senkt nachweislich die Auflösung bei langsamen Bildern. → `browser.cjs`
 
