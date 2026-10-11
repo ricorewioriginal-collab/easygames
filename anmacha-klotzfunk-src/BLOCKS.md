@@ -84,6 +84,7 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 76 | Signallampe (an) | – | ja | ja | – | ja | 0.3 | – |
 | 77 | Funktor | Funktechnik | ja | ja | – | – | 2 | spitzhacke |
 | 78 | Funktor (offen) | – | – | – | – | – | 2 | spitzhacke |
+| 79 | Schiene | Funktechnik | – | – | – | – | 0.4 | – |
 
 **Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
 
@@ -122,3 +123,5 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 1032 | Kupferharnisch | – | – | – | – |
 | 1033 | Eisenhelm | – | – | – | – |
 | 1034 | Eisenharnisch | – | – | – | – |
+| 1035 | Boot | – | – | – | – |
+| 1036 | Lore | – | – | – | – |

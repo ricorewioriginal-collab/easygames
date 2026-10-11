@@ -1,7 +1,7 @@
 # KLOTZFUNK 3D
 
 Voxel-Sandbox im Browser (Three.js + Vite) für PC und Smartphone. Bauen, abbauen, erkunden – in 15 Biomen mit Höhlen, Erzen,
-Dörfern, verlassenen Minen und leuchtenden Funkkristallen, mit Radio-Blöcken, einem Funknetz mit Schaltern, Sendern, Relais und Maschinen, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken und Gleiter. Alle Texturen und Geräusche
+Dörfern, verlassenen Minen und leuchtenden Funkkristallen, mit Radio-Blöcken, einem Funknetz mit Schaltern, Sendern, Relais und Maschinen, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken, Gleiter, Boot und Lore auf Schienen. Alle Texturen und Geräusche
 werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Konto, keine Kosten, keine externen Dienste nötig.
 
 ## Spielen

@@ -50,10 +50,15 @@ add(1032, 'COPPER_CHEST', 'Kupferharnisch', { draw: 'harnisch', col: TIERS[2].co
 add(1033, 'IRON_HELMET', 'Eisenhelm', { draw: 'helm', col: TIERS[3].col, armor: { slot: 'kopf', pts: 3, dur: 110 } });
 add(1034, 'IRON_CHEST', 'Eisenharnisch', { draw: 'harnisch', col: TIERS[3].col, armor: { slot: 'brust', pts: 5, dur: 150 } });
 
+// ab 1035: Fahrzeuge (werden als Fahrzeug in die Welt gesetzt, siehe vehicles.js)
+add(1035, 'BOAT', 'Boot', { draw: 'boot', col: '#a87a46', vehicle: 'boot' });
+add(1036, 'MINECART', 'Lore', { draw: 'lore', col: '#8a8c94', vehicle: 'lore' });
+
 export const isItem = id => id >= ITEM0;
 export const armorOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].armor || null : null);
 // Schadensfaktor bei Schutzpunkten (höchstens 40 % weniger)
 export const armorFactor = pts => 1 - Math.min(0.4, Math.max(0, pts) * 0.05);
+export const vehicleOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].vehicle || null : null);
 export const plantOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].plant || 0 : 0);
 export const nameOf = id => (id >= ITEM0 ? (ITEMS[id] ? ITEMS[id].name : '?') : NAMES[id] || '?');
 export const toolOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].tool : null);

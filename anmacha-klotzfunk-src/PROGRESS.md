@@ -116,13 +116,27 @@ und ohne Messung auf echten Handys lässt sich der Nutzen des Workers nicht bele
 
 ---
 
+## 2f. Etappe 5 – Fahrzeuge und Meshing im Worker ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Boot | schwimmt auf der Wasseroberfläche (Feder zur Oberfläche), Schub und Lenkung mit eigener Trägheit, Wasser- und Bodenreibung, Kollision achsenweise mit festen Blöcken; schaukelt, Paddel schlagen beim Fahren | `src/vehicles.js`, `src/vehview.js` |
+| Schienen und Lore | Schiene (Block 79) als flache Platte, Ausrichtung im Mesher aus den Nachbarschienen; Lore fährt von Zellmitte zu Zellmitte, geradeaus vor Kurve, Stufen ±1, Hangabtrieb, Bremsen, Umkehren in Blickrichtung, hält am Ende, entgleist ohne Schiene; Räder drehen, Neigung auf Stufen | `src/vehicles.js`, `src/mesher.js`, `src/blocks.js` |
+| Bedienung | Setzen = einsteigen/Fahrzeug setzen, Springen = aussteigen (freie Stelle wird gesucht), Abbauen = einpacken; Rezepte an der Werkbank; im Spielstand `veh` (optional, ungültige Einträge werden verworfen) | `src/game.js`, `src/crafting.js`, `src/items.js` |
+| Worker-Meshing | Nachladen im Web Worker, Bauen bleibt synchron; halbiert die Hauptthread-Zeit beim Erkunden (Messung in PERFORMANCE.md) | `src/meshworker.js`, `src/game.js` |
+| Tests | 82 Tests (neu: `vehicles.test.js`) | `tests/` |
+
+Nicht umgesetzt: Reittiere und angetriebene Schienen. Reittiere bräuchten Tier-Animationen, die es noch nicht gibt (siehe Abschnitt 6).
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
 
 | # | Abschnitt | Stand | Etappe | Nächster konkreter Schritt |
 |---|---|---|---|---|
-| 4 | Voxel-Engine | 🟡 | 1 ✅ / 5 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
+| 4 | Voxel-Engine | ✅ | 1 / 5 | Meshing im Web Worker ✅; Formblöcke (Treppen, Halbblöcke) wären der nächste Schritt |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
 | 7 | Bauen | ✅ | 3b | Vorschau, Formen, Kopieren/Einfügen ✅; später Drehen beim Einfügen, Bauvorlagen |
@@ -132,7 +146,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 11 | Gegner, Kampf | ✅ | 3b | später Bogen, Bosse in Story-Kapitel 5 |
 | 12 | Dörfer, NPCs | ✅ | 3b | später mehr Berufe, Gespräche mit Story-Bezug |
 | 13 | Landwirtschaft | 🟡 | 3 ✅ | weitere Pflanzen (Karotte, Kartoffel), Bewässerung, Tierzucht |
-| 14 | Fahrzeuge | 🟡 | 5 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
+| 14 | Fahrzeuge | ✅ | 5 | Boot, Lore, Schienen ✅; später Reittier, angetriebene Schiene |
 | 15 | Story „Das große Rauschen“ | ✅ | 4 | später Bosskampf im „Herz des Rauschens“, Sprachzeilen der Bewohner je Kapitel |
 | 16 | Funktechnik | ✅ | 4 | später Frequenzen (getrennte Netze), Antennen mit größerer Reichweite |
 | 17 | Automatisierung | 🟡 | 4 | Signale mit Rechenlimit ✅; später Taktgeber, Verzögerung, Logik-Gatter, Förderband |
@@ -143,7 +157,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
 | 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
-| 25/26 | Performance | 🟡 | 1 ✅ / 5 | echte Handymessungen, Worker-Meshing |
+| 25/26 | Performance | 🟡 | 1 / 5 ✅ | Worker-Meshing ✅; echte Handymessungen fehlen |
 | 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
 | 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
 | 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
@@ -182,11 +196,9 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 5 „Fahrzeuge, Leistung, Mehrspieler“
-1. Boot (auf Wasser) und Lore auf Schienen (neuer Schienenblock, Formblock-Meshing nötig).
-2. Meshing im Web Worker, vorher und nachher auf einem echten Android-Handy messen.
-3. Mehrspieler prüfen: WebRTC Peer-to-Peer mit Host als Autorität; GitHub Pages bleibt ohne Server.
-4. Tests für alle neuen Systeme.
+### Nächste Sitzung: Etappe 6 „Mehrspieler“
+1. WebRTC Peer-to-Peer mit Host als Autorität, Verbindungsaufbau ohne eigenen Server; GitHub Pages bleibt Einzelspieler-fähig.
+2. Tests für alle neuen Systeme.
 
 ---
 

@@ -459,7 +459,7 @@ function syncKeys() {
 const touchActive = { joy: false, jump: false, down: false };
 let lastSpace = 0;
 function toggleFly() {
-  if (game.mode !== 'creative') return;
+  if (game.mode !== 'creative' || game.ride) return;
   const p = game.player; p.flying = !p.flying; p.vy = 0;
   toast(p.flying ? 'Fliegen an' : 'Fliegen aus');
   $('bDown').hidden = !(touchMode && p.flying); $('bFly').classList.toggle('on', p.flying);

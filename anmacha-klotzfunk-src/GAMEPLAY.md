@@ -66,6 +66,13 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - Der weiße Rahmen zeigt, wo der Block oder die Form landet (in den Einstellungen abschaltbar).
 - **Rückgängig (Kreativ):** Strg+Z oder ↶ macht die letzten 100 Schritte rückgängig, eine ganze Form zählt als ein Schritt; Strg+Y wiederholt.
 
+## Fahrzeuge
+- **Boot** (Werkbank: 5 Bretter, 1 Stock): mit Setzen aufs Wasser in Blickrichtung setzen (an Land geht es auch, dort kommt es kaum voran). Setzen auf das Boot = einsteigen.
+  Vor/zurück paddelt, links/rechts lenkt. Das Boot schwimmt auf der Wasseroberfläche und stößt an Ufer und Mauern.
+- **Schienen** (Werkbank: 16 Stück aus 3 Kupferbarren und 2 Stöcken) liegen flach auf dem Block darunter. Gerade Strecken, Kurven (Schiene an der Seite) und Stufen um einen Block hoch oder runter gehen.
+- **Lore** (Werkbank: 3 Eisenbarren, 2 Kupferbarren) wird auf eine Schiene gesetzt. Vor schiebt in Blickrichtung an (fast stehend auch rückwärts), zurück bremst. Bergauf wird sie langsamer, bergab schneller; am Ende der Strecke hält sie. Fehlt die Schiene unter ihr, bleibt sie liegen.
+- **Springen** = aussteigen (neben oder über dem Fahrzeug), **Abbauen** auf ein Fahrzeug packt es wieder ein. Fahrzeuge bleiben im Spielstand an ihrem Platz (höchstens 64 je Welt).
+
 ## Funknetz
 - **Schalter:** Setzen-Taste legt ihn um. Ein eingeschalteter Schalter speist **Signalleitungen**, die ihn berühren an einer Würfelseite (nicht über Ecken); Leitungen reichen beliebig weit.
 - **Funksender** neben einem gespeisten Schalter oder einer Leitung gehen auf Sendung. Sie erreichen **Funkrelais** und **Empfänger** bis **24 Blöcke** entfernt (Luftlinie, durch Wände). Relais tragen das Signal weitere 24 Blöcke.

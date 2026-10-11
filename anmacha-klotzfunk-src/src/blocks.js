@@ -6,7 +6,7 @@
 // self (gleiche Nachbarn zeigen Innenflächen, z. B. Blätter), emit (Eigenleuchten, 2 = Regenbogen),
 // hard (Härte, Sekunden Grundabbauzeit), tool (passendes Werkzeug), color (Bruchstücke), map (Kartenfarbe),
 // icon (Atlas-Kachel für Hotbar/Inventar), inv (im Inventar wählbar),
-// shape ('cross' = Pflanze), tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen),
+// shape ('cross' = Pflanze, 'flat' = Bodenplatte), tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen),
 // drop (abgebauter Block gibt diese Id statt der eigenen, z. B. eingeschaltete Signalblöcke).
 
 export const LOGO0 = 11, LOGO_COUNT = 16, SPECIAL0 = 27, SPECIAL_COUNT = 11;
@@ -88,7 +88,9 @@ const DEF = [
   [75, 'SIGLAMP', 'Signallampe', 'technik', [71, 71, 71], { hard: 0.3, color: 0x6a5a40, map: [110, 92, 66], icon: 71 }],
   [76, 'SIGLAMP_ON', 'Signallampe (an)', '', [72, 72, 72], { hard: 0.3, color: 0xffd87a, map: [255, 220, 120], inv: 0, drop: 75, emit: 1 }],
   [77, 'GATE', 'Funktor', 'technik', [73, 73, 73], { hard: 2.0, tool: 'spitzhacke', color: 0xb4b6be, map: [170, 172, 180], icon: 73 }],
-  [78, 'GATE_OPEN', 'Funktor (offen)', '', [74, 74, 74], { solid: 0, opaque: 0, hard: 2.0, tool: 'spitzhacke', color: 0xb4b6be, map: [130, 132, 140], inv: 0, drop: 77 }]
+  [78, 'GATE_OPEN', 'Funktor (offen)', '', [74, 74, 74], { solid: 0, opaque: 0, hard: 2.0, tool: 'spitzhacke', color: 0xb4b6be, map: [130, 132, 140], inv: 0, drop: 77 }],
+  // ab 79: Fahrzeuge (Schiene ist eine flache Platte auf dem Block darunter)
+  [79, 'RAIL', 'Schiene', 'technik', [75, 75, 75], { shape: 'flat', solid: 0, opaque: 0, hard: 0.4, color: 0x8a7a6a, map: [140, 120, 100], icon: 75 }]
 ];
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
@@ -104,6 +106,7 @@ export const EMIT = new Float32Array(MAX_ID);
 export const TRANS = new Uint8Array(MAX_ID);
 export const SELF = new Uint8Array(MAX_ID);
 export const CROSS = new Uint8Array(MAX_ID); // Pflanzen: zwei gekreuzte Flächen statt Würfel
+export const FLAT = new Uint8Array(MAX_ID);  // flache Platte am Boden (Schiene)
 export const TILES = {};
 
 for (const [id, key, name, cat, tiles, p] of DEF) {
@@ -111,7 +114,7 @@ for (const [id, key, name, cat, tiles, p] of DEF) {
   const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, shape: null, drop: 0, ...p };
   if (b.trans) b.opaque = 0;
   BLOCKS[id] = b; B[key] = id; NAMES[id] = name;
-  SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit; CROSS[id] = b.shape === 'cross' ? 1 : 0;
+  SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit; CROSS[id] = b.shape === 'cross' ? 1 : 0; FLAT[id] = b.shape === 'flat' ? 1 : 0;
   SKYBLOCK[id] = b.opaque || b.self ? 1 : 0;
   if (tiles) TILES[id] = tiles;
 }

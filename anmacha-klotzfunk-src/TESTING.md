@@ -6,7 +6,7 @@ cd anmacha-klotzfunk-src
 npm test
 ```
 Läuft mit dem in Node eingebauten Test-Runner (keine zusätzliche Bibliothek), braucht keinen Browser und unter einer Sekunde.
-Stand dieser Etappe: **76 Tests, alle grün.**
+Stand dieser Etappe: **82 Tests, alle grün.**
 
 | Datei | prüft |
 |---|---|
@@ -21,6 +21,7 @@ Stand dieser Etappe: **76 Tests, alle grün.**
 | `tests/structures.test.js` | Generator 3: neue Welten nutzen ihn; Dorf fest je Seed mit offenen Türen, Dachspitze, Brunnen, Feld, Radio am Mast, begehbaren Arbeitsplätzen; unabhängig von der Ladereihenfolge; Generator 2 bleibt ohne Dörfer und ist außerhalb von Strukturen identisch; Mine mit Kammer, Ofen, Stützbalken; Startpunkt am Dorfplatz (Story nicht) |
 | `tests/build.test.js` | Linie, Fläche, Wand, Säule; Größengrenze; Weltgrenze; Kopieren/Einfügen ohne Luft und Wasser |
 | `tests/signal.test.js` | Schalter, Sender, Relais, Empfänger als Kette mit Reichweite 24; Leitungen tragen das Signal, Empfänger speisen weiter, Maschinen schalten; Rechenlimit bei riesigen Netzen; Welt merkt sich Netz-Blöcke auch nach Entladen; Story „Das große Rauschen“ hat 6 Kapitel und lösbare Aufträge |
+| `tests/vehicles.test.js` | Boot schwimmt auf der Oberfläche, fährt, lenkt, hält an Mauern, treibt ohne Fahrer aus, ist an Land langsam; Lore folgt Gerade, Kurve und Stufe, hält am Ende, fährt zurück; entgleist ohne Schiene; Speichern/Laden mit ungültigen Einträgen; Höchstzahl; Treffer-Strahl; Aussteigen |
 | `tests/settings.test.js` | Standardwerte, Speichern, ungültige oder kaputte Einträge werden ignoriert |
 
 ## Browser-Test (manuell ausgeführt in dieser Etappe)
@@ -40,6 +41,9 @@ Mit Playwright und Headless-Chromium (Software-Grafik, SwiftShader) gegen den Pr
 | Etappe 4, neue Story-Welt: Generator 3, Kampagne „rauschen“, Herzen und Tiere aktiv, Banner Kapitel 1; Dorf-Auftrag setzt Wegpunkt zum Dorf, beim Ankommen Banner Kapitel 2; Auftragsliste mit 6 Kapitel-Überschriften | ✅ ohne JavaScript-Fehler |
 | Etappe 4, Funknetz: Schalter → Sender → Relais → Empfänger in 40 Blöcken Abstand, Signallampe an, Funktor offen, Reichweite 40 erkannt, Auftrag „Die Verbindung“ erfüllt | ✅ |
 | Etappe 4, alter Story-Spielstand (ohne Kampagne): Generator 1, 15 Aufträge, keine Herzen, keine Tiere | ✅ |
+| Etappe 5, Überleben (Sumpf am Wasser): Boot aus dem Vorrat aufs Wasser gesetzt, eingestiegen, 12 Blöcke gefahren und gelenkt, ausgestiegen, Boot im Spielstand und nach Neuladen da, mit Abbauen eingepackt (wieder im Vorrat) | ✅ ohne JavaScript-Fehler |
+| Etappe 5, Kreativ: Schienen-Brücke 20 gerade, Kurve, 8 weiter, Stufe hoch; Lore gesetzt, eingestiegen, bis zum Ende gefahren (Kurve und Stufe genommen, hält an) | ✅ |
+| Etappe 5, Nachladen beim Flug mit und ohne Worker (siehe PERFORMANCE.md) | ✅ gleiche Chunks, halbe Hauptthread-Zeit |
 | Teleport in 8 Biome und eine Höhle (Kreativ, Seed 12345), Screenshots | ✅ Biome wie beschrieben, kein Durchfallen |
 
 **Einschränkungen:** Kein echtes Android-Gerät, kein Firefox/Edge/Safari, keine WebViews getestet. Die Bildraten aus Headless-Chromium
