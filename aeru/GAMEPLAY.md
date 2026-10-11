@@ -55,7 +55,7 @@ Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). 
 | 72 | größere Windstoß-Reichweite |
 | 96 | zusätzliches Herz |
 | 120 | 12 % schnellerer Flug |
-| 144 | Auszeichnung „Sternenglanz“ (nur Meldung, kein Spieleffekt) |
+| 144 | Sternenglanz: unbegrenzte Flügelkraft (Steigen, Gleiten, Flügelschlag) und goldene Flugspur |
 
 ## Einstellungen (Pause → Einstellungen)
 

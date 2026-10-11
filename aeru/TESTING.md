@@ -29,7 +29,7 @@ Der Test setzt **keine Flags**. Er liest wie ein Spieler das aktuelle Ziel und d
 - Kampf: Angriffe werden angekündigt, Schaden nur in der Angriffsphase, Windstoß trifft, Tod setzt am Rastpunkt zurück.
 - **Negativfälle:** Quest zu früh abschließen (Figur erneut ansprechen), Folgequest bleibt gesperrt, Dialog doppelt auslösen, gesperrtes Tor und gesperrte Inselwahl, Pause im Dialog (Dialog setzt an derselben Zeile fort), Speichern/Laden mitten in einer Quest, keine doppelten Splitter nach dem Laden, Boss zu früh (kein Kampf, kein Schaden), Tod im Bosskampf (Arenaeingang, Boss auf Phasenbeginn, Quest bleibt).
 - **Spielstände:** Version 1 mit altem Vesper-Sieg → Kapitel 4; Version 2 mit allen sechs alten Inseln → neues Finale wartet und ist bis zum Abspann spielbar; widersprüchliche Kerne und halbes Laternenrätsel; leerer `{version:3}`; unmögliche Abschlüsse werden verworfen; unlesbarer Stand wird gesichert, nicht gelöscht.
-- Splitter-Upgrade bei 24 Splittern.
+- Splitter-Upgrades: Flügelkraft bei 24, alle 144 Splitter auf sechs Inseln einsammelbar, zwei Zusatzherzen, Sternenglanz hält die Flügelkraft beim Steigen voll.
 - **Erreichbarkeit:** Auf allen 6 Inseln stehen Splitter, Laternen und Rastpunkte auf festem Boden; versteckte Stufen im Bernsteinhain mit echten Sprüngen, Kristallturm per Aufwind, je ein Ring pro Ringinsel im echten Flug.
 
 ## Browser und Geräte (`browser.cjs`)

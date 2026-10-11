@@ -162,7 +162,13 @@ function flyTo(h, tx, ty, tz, {maxTicks = 900, land = false} = {}) {
   const h = fresh(), {api} = h;
   for (const g of h.snap().layout.gems) { api.teleport(g.x, g.y - .9, g.z); h.tick(); }
   const s = h.snap(); assert.equal(s.save.collected[0].length, 24); assert.equal(s.state.stamina, 125, 'Upgrade nach 24 Splittern');
-  ok('Splitter-Upgrades');
+  // Alle 144 Splitter: Sternenglanz macht die Flügelkraft unbegrenzt; vorher sinkt sie beim Steigen.
+  for (let level = 1; level < 6; level++) { api.level(level); h.tick(); for (const g of h.snap().layout.gems) { api.teleport(g.x, g.y - .9, g.z); h.tick(); } }
+  const all = h.snap().save.collected.reduce((n, a) => n + a.length, 0); assert.equal(all, 144, 'alle Splitter einsammelbar');
+  assert.equal(h.snap().state.hp, 7, 'zwei Splitterherzen'); assert(h.context.AERU_STORY.upgrades.every(u => u.gems <= all));
+  api.level(0); h.tick(); api.teleport(0, 0, 19); h.tick(5); api.flight(); api.hold('jump', true); h.tick(240); api.hold('jump', false);
+  const st = h.snap().state; assert(st.flight && st.y > 8 && st.stamina === 125, 'Sternenglanz: Steigen kostet keine Flügelkraft');
+  ok('Splitter-Upgrades bis Sternenglanz');
 }
 // ───────── Erreichbarkeit ─────────
 {
