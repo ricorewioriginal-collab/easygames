@@ -57,8 +57,10 @@
   var acc = 0;
   GL.on('tick', function (dt) {
     acc += dt; if (acc < 1) return; acc = 0;
-    if (visit && !GL.home.inside()) endVisit(false);
-    if (hosting && !GL.home.inside()) endHosting();
+    /* Erst beenden, wenn man wirklich drin war (der Szenenwechsel dauert, besonders auf langsamen Geräten) */
+    var inH = GL.home.inside();
+    if (visit) { if (inH) visit.in = 1; else if (visit.in) endVisit(false); }
+    if (hosting) { if (inH) hosting.in = 1; else if (hosting.in) endHosting(); }
   });
   GL.on('mpchange', function () {
     var pe = GL.mp.peers();
