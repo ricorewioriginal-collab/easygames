@@ -2,6 +2,7 @@
 import { Sim, COURSES, DT, fmtTime, rank, pointsFor, standings } from './engine.js';
 import { SFX, Audio_ } from './audio.js';
 import { initPair, JOIN, loadScript } from './pair.js';
+import { CHARS } from './chars.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const COLORS = [0xff6fb0, 0x00b8d9, 0xffd24a, 0x8b5cf6], CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], LOGO = [5, 1, 8, 12], MAXT = 90, ABORT = { abort: 1 };
@@ -19,8 +20,8 @@ if (JOIN) {
   addEventListener('resize', () => arena.resize());
   { const im = new Image(); im.onload = () => { $('brandImg').src = im.src; $('brandImg').hidden = false; $('brandText').hidden = true; document.querySelector('.tag').hidden = true; }; im.onerror = () => {}; im.src = 'logo.png'; }
 
-  const S = { mode: 'show', n: 2, names: store.get('fpNames', []).slice(0, 4), tc: 0 };
-  for (let i = 0; i < 4; i++) if (!S.names[i]) S.names[i] = 'Läufer ' + (i + 1);
+  const S = { mode: 'show', n: 2, names: store.get('fpNames', []).slice(0, 4), chars: store.get('fpChars', [0, 1, 3, 2]).slice(0, 4), tc: 0 };
+  for (let i = 0; i < 4; i++) { if (!S.names[i]) S.names[i] = 'Läufer ' + (i + 1); if (!(S.chars[i] >= 0 && S.chars[i] < CHARS.length)) S.chars[i] = i; }
   let G = null, token = 0, pending = null, curCourse = -1, snd = store.get('fpSnd', true), keys = 0, touchM = 0; const phoneM = [0, 0, 0, 0];
   Audio_.setOn(snd);
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
@@ -69,7 +70,8 @@ if (JOIN) {
 
   // ------------------------------------------------------------ Menü / Einrichtung
   function fillNames() {
-    const n = S.mode === 'train' ? 1 : S.n; $('names').innerHTML = Array.from({ length: n }, (_, i) => `<input style="--pc:${CSS[i]}" data-i="${i}" maxlength="14" value="${esc(S.names[i])}" aria-label="Name Läufer ${i + 1}" autocomplete="off">`).join('');
+    const n = S.mode === 'train' ? 1 : S.n; $('names').innerHTML = Array.from({ length: n }, (_, i) => `<div class="nm" style="--pc:${CSS[i]}"><input data-i="${i}" maxlength="14" value="${esc(S.names[i])}" aria-label="Name Läufer ${i + 1}" autocomplete="off"><button class="chb" data-c="${i}" aria-label="Figur wechseln">🧍 ${esc(CHARS[S.chars[i]].n)} ▸</button></div>`).join('');
+    $('names').querySelectorAll('.chb').forEach(b => b.onclick = () => { const i = +b.dataset.c; S.chars[i] = (S.chars[i] + 1) % CHARS.length; store.set('fpChars', S.chars); b.textContent = '🧍 ' + CHARS[S.chars[i]].n + ' ▸'; SFX.click(); look(i); });
     $('names').querySelectorAll('input').forEach(inp => inp.oninput = () => { S.names[+inp.dataset.i] = inp.value.trim().slice(0, 14) || 'Läufer ' + (+inp.dataset.i + 1); store.set('fpNames', S.names); });
   }
   function setupView(mode) {
@@ -81,7 +83,7 @@ if (JOIN) {
   const seg = (id, fn) => $(id).addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; SFX.click(); $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); fn(+b.dataset.v); });
   seg('sgPl', v => { S.n = v; fillNames(); push(); }); seg('sgCourse', v => { S.tc = v; loadScene(v); });
   function loadScene(ci) { if (curCourse !== ci) { curCourse = ci; arena.setCourse(COURSES[ci]); } }
-  function look(i) { arena.setLook(COLORS[i], LOGO[i]); }
+  function look(i) { arena.setLook(COLORS[i], LOGO[i], S.chars[i]); }
 
   // ------------------------------------------------------------ Lauf
   const ghostAt = (g, t) => { if (!g || g.length < 4) return null; const f = t * 20, i = Math.min(Math.floor(f), g.length / 2 - 2); if (i < 0) return [g[0], g[1]]; const u = Math.min(1, f - i); return [g[2 * i] + (g[2 * i + 2] - g[2 * i]) * u, g[2 * i + 1] + (g[2 * i + 3] - g[2 * i + 1]) * u]; };
@@ -97,7 +99,7 @@ if (JOIN) {
     await A(ask(`<div class="card"><h2 style="color:${CSS[pi]}">${esc(G.players[pi].name)}</h2><div class="sub">${esc(course.name)}${G.mode === 'train' ? ' · Training' : ` · Lauf ${pi + 1} von ${G.players.length}`}</div>${runs.some(Boolean) ? `<div class="tbl">${rows(runs, G.players)}</div>` : ''}${ghost ? '<div class="hint">👻 Der Geist zeigt die Bestzeit.</div>' : ''}<div class="hint ${ph ? 'ph' : ''}">${ph ? '📱 Tippe am Handy auf „Bereit"' : 'Bereit? Leertaste oder Button'}</div><button class="btn green" id="bReady">Bereit!</button></div>`, ['bReady']));
     G.phase = 'count'; push(); keys = touchM = 0;
     for (const n of [3, 2, 1]) { big(String(n), '', 700); SFX.count(); await A(sleep(800)); }
-    big('LOS!', '', 800); SFX.go(); G.phase = 'run'; push();
+    big('LOS!', '', 800); SFX.go(); arena.fire(1); G.phase = 'run'; push();
     const sim = new Sim(course); G.sim = sim; $('pad').hidden = false; const rec = []; let acc = 0, n = 0, prevG = true;
     const res = await A(new Promise(done => {
       G.tick = dt => {

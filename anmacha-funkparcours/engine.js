@@ -5,17 +5,18 @@ export const DT = 1 / 60;
 
 // ---------------------------------------------------------------- Parcours bauen
 class Builder {
-  constructor(name) { this.name = name; this.o = []; this.x = 0; this.y = 1; }
+  constructor(name) { this.name = name; this.o = []; this.x = 0; this.y = 1; this.secs = []; }
+  sec(n) { this.secs.push({ n, x: this.x }); return this; }
   plat(x, w, y) { this.o.push({ k: 'plat', x, y, w }); return this; }
   start(w = 6) { this.plat(0, w, this.y); this.x = w; return this; }
   rest(w, dy = 0, g = 0) { this.y += dy; this.plat(this.x + g, w, this.y); this.x += g + w; return this; }
-  stones(list) { for (const s of list) { this.y += s.dy || 0; this.plat(this.x + s.g, s.w, this.y); this.x += s.g + s.w; } return this; }
-  mover({ g, w = 2.6, ax = 3, ay = 0, period = 4.2, phase = 0, dy = 0 }) { this.y += dy; const bx = this.x + g + ax; this.o.push({ k: 'move', x: bx, y: this.y, w, ax, ay, period, phase }); this.x = bx + ax + w; return this; }
-  sinkers(count, g, w, delay = 0.55, dy = 0) { for (let i = 0; i < count; i++) { this.y += i === 0 ? dy : 0; this.o.push({ k: 'sink', x: this.x + g, y: this.y, w, delay }); this.x += g + w; } return this; }
-  swings(span, n, { len = 3.6, amp = 0.95, period = 2.6, spread = 0 } = {}) { const x0 = this.x; this.plat(x0, span, this.y); for (let i = 0; i < n; i++) this.o.push({ k: 'swing', px: x0 + (span / (n + 1)) * (i + 1), py: this.y + 5.2, len, amp, period, phase: i * (spread || 1.3), r: 0.55 }); this.x += span; return this; }
-  bars(gap, h = 2.3, w = 3, dy = 0) { const x1 = this.x + 1.0, x2 = this.x + gap - 1.0, y = this.y + h; this.o.push({ k: 'bars', x1, x2, y }); this.x += gap; this.y += dy; this.plat(this.x, w, this.y); this.x += w; return this; }
-  wall(g = 1.5, h = 4.2) { const wx = this.x + g + 2.6; this.plat(this.x + g, 2.6, this.y); this.o.push({ k: 'wall', x: wx, y: this.y, h, w: 0.6 }); this.o.push({ k: 'plat', x: wx, y: this.y + h, w: 3.6 }); this.o.push({ k: 'finish', x: wx + 1.6, y: this.y + h }); this.end = wx + 3.6; this.wallX = wx; return this; }
-  build() { return { name: this.name, o: this.o, finish: this.o.find(o => o.k === 'finish'), length: this.end, wallX: this.wallX }; }
+  stones(list) { this.sec('Stufensprung'); for (const s of list) { this.y += s.dy || 0; this.plat(this.x + s.g, s.w, this.y); this.x += s.g + s.w; } return this; }
+  mover({ g, w = 2.6, ax = 3, ay = 0, period = 4.2, phase = 0, dy = 0 }) { this.sec(ay ? 'Fahrstuhl' : 'Schiebebrücke'); this.y += dy; const bx = this.x + g + ax; this.o.push({ k: 'move', x: bx, y: this.y, w, ax, ay, period, phase }); this.x = bx + ax + w; return this; }
+  sinkers(count, g, w, delay = 0.55, dy = 0) { this.sec('Bruchplatten'); for (let i = 0; i < count; i++) { this.y += i === 0 ? dy : 0; this.o.push({ k: 'sink', x: this.x + g, y: this.y, w, delay }); this.x += g + w; } return this; }
+  swings(span, n, { len = 3.6, amp = 0.95, period = 2.6, spread = 0 } = {}) { this.sec('Abrissbirnen'); const x0 = this.x; this.plat(x0, span, this.y); for (let i = 0; i < n; i++) this.o.push({ k: 'swing', px: x0 + (span / (n + 1)) * (i + 1), py: this.y + 5.2, len, amp, period, phase: i * (spread || 1.3), r: 0.55 }); this.x += span; return this; }
+  bars(gap, h = 2.3, w = 3, dy = 0) { this.sec('Hangelstangen'); const x1 = this.x + 1.0, x2 = this.x + gap - 1.0, y = this.y + h; this.o.push({ k: 'bars', x1, x2, y }); this.x += gap; this.y += dy; this.plat(this.x, w, this.y); this.x += w; return this; }
+  wall(g = 1.5, h = 4.2) { this.sec('Steilwand'); const wx = this.x + g + 2.6; this.plat(this.x + g, 2.6, this.y); this.o.push({ k: 'wall', x: wx, y: this.y, h, w: 0.6 }); this.o.push({ k: 'plat', x: wx, y: this.y + h, w: 3.6 }); this.o.push({ k: 'finish', x: wx + 1.6, y: this.y + h }); this.end = wx + 3.6; this.wallX = wx; return this; }
+  build() { return { name: this.name, o: this.o, secs: this.secs, finish: this.o.find(o => o.k === 'finish'), length: this.end, wallX: this.wallX }; }
 }
 export const COURSES = [
   new Builder('Vorrunde').start(6).stones([{ g: 2.2, w: 2.4 }, { g: 2.6, w: 2.2 }, { g: 2.4, w: 2.0, dy: 0.3 }, { g: 2.8, w: 2.4 }, { g: 2.4, w: 2.2, dy: -0.3 }]).mover({ g: 2.4, w: 2.8, ax: 2.2, period: 4.4 }).rest(2.6, 0, 2.0).sinkers(4, 2.0, 2.0, 0.7).rest(3, 0, 2.0).swings(10, 2, { period: 3.0 }).stones([{ g: 2.4, w: 2.2 }, { g: 2.6, w: 2.0 }, { g: 2.4, w: 2.4 }]).bars(8.5, 2.3, 3, 0).wall().build(),
@@ -58,7 +59,9 @@ export class Sim {
     // Hängen an den Stangen
     if (this.hang) {
       const o = this.c.o[this.hang.bar]; this.vy = 0; this.vx = (R - L) * HANG_SPEED * (this.stun > 0 ? 0 : 1); this.x += this.vx * dt; if (R - L) this.face = R - L; this.y = o.y - PH;
-      if (!Gr || this.x > o.x2 + 0.35 || this.x < o.x1 - 0.35) { this.hang = null; this.grabCool = 0.35; this.prevG = Gr; if (J) { this.vy = 6.5; this.vx = this.face * 5; } } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; this.prevJ = J; this.prevG = Gr; } else { this.prevJ = J; this.prevG = Gr; this.dist = Math.max(this.dist, this.x); this.check(); return; }
+      // Am Ende der Stangen automatisch abschwingen; Sprung = Absprung nach vorn
+      if (this.x > o.x2 + 0.1) { this.hang = null; this.grabCool = 0.35; this.vy = 6; this.vx = 5; this.face = 1; } else if (this.x < o.x1 - 0.35) { this.hang = null; this.grabCool = 0.35; } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; } else { this.prevJ = J; this.prevG = Gr; this.dist = Math.max(this.dist, this.x); this.check(); return; }
+      this.prevJ = J; this.prevG = Gr;
     }
     const ctl = this.stun > 0 ? 0 : 1; const dir = (R - L) * ctl, accel = this.onGround ? ACC : AIR_ACC;
     if (dir) { const target = dir * RUN; const dv = accel * dt; this.vx = Math.abs(target - this.vx) <= dv ? target : this.vx + Math.sign(target - this.vx) * dv; this.face = dir; } else if (this.onGround) { const f = FRICTION * dt; this.vx = Math.abs(this.vx) <= f ? 0 : this.vx - Math.sign(this.vx) * f; }
@@ -71,13 +74,15 @@ export class Sim {
       this.vy = JUMP_V; this.onGround = false; this.ground = null; this.coyote = 0; this.buf = 0;
     }
     if (!J && this.vy > 3.5) this.vy -= 55 * dt;   // kurzer Tipp = kleiner Sprung
-    // Greifen
-    this.grabCool = (this.grabCool || 0) - dt; if (Gr && !this.onGround && ctl && this.grabCool <= 0) { const b = this.nearBar(); if (b) { this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = b.o.y - PH; this.prevG = Gr; return; } } this.prevG = Gr;
+    // Greifen: in der Luft an den Stangen automatisch
+    this.grabCool = (this.grabCool || 0) - dt; if (!this.onGround && ctl && this.grabCool <= 0) { const b = this.nearBar(); if (b) { this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = b.o.y - PH; this.prevG = Gr; return; } } this.prevG = Gr;
     this.vy -= G * dt;
     let carryX = 0, carryY = 0; if (this.onGround && this.ground) { carryX = this.ground.vx * dt; carryY = this.ground.vy * dt; }
     // x-Bewegung
     this.x += this.vx * dt + carryX; if (this.onGround && this.ground) { /* Plattform setzt y */ }
-    for (const s of this.solids) { if (this.y < s.top - 0.2 && this.y + PH > s.bot + 0.02 && this.x + PW / 2 > s.x0 && this.x - PW / 2 < s.x1) { const penL = this.x + PW / 2 - s.x0, penR = s.x1 - (this.x - PW / 2); if (penL < penR) { this.x = s.x0 - PW / 2; if (this.vx > 0) this.vx = 0; } else { this.x = s.x1 + PW / 2; if (this.vx < 0) this.vx = 0; } } }
+    for (const s of this.solids) { if (this.y < s.top && this.y + PH > s.bot + 0.02 && this.x + PW / 2 > s.x0 && this.x - PW / 2 < s.x1) {
+      if (!s.wall && this.y >= s.top - 0.45 && this.vy <= 3 && !(this.ground && this.ground.i === s.i)) { this.y = s.top; if (this.vy < 0) this.vy = 0; continue; }   // Kantenhilfe: knapp verfehlte Kante wird noch erwischt
+      if (this.y >= s.top - 0.2) continue; const penL = this.x + PW / 2 - s.x0, penR = s.x1 - (this.x - PW / 2); if (penL < penR) { this.x = s.x0 - PW / 2; if (this.vx > 0) this.vx = 0; } else { this.x = s.x1 + PW / 2; if (this.vx < 0) this.vx = 0; } } }
     // y-Bewegung
     const y0 = this.y; this.y += this.vy * dt + carryY; this.onGround = false; this.ground = null;
     for (const s of this.solids) {

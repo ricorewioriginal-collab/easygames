@@ -1,4 +1,4 @@
-/* Funkparcours – Handy-Pad: beitreten, „Bereit" sagen, dann links/rechts/springen/greifen. */
+/* Funkparcours – Handy-Pad: beitreten, „Bereit" sagen, dann links/rechts/springen (gegriffen wird automatisch). */
 import { JOIN, CDN, peerCfg, loadScript } from './pair.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'];
@@ -34,7 +34,7 @@ export function startController() {
     if (s.phase === 'ready') { put(`${head(s)}<div class="info">Du bist dran: <b>${esc(s.cname)}</b></div><button class="btn green" id="cr" style="min-height:120px;font-size:30px">Bereit!</button>`); $('cr').onclick = () => { tx({ t: 'ready' }); $('cr').disabled = true; }; return; }
     if (s.phase === 'count') { put(`${head(s)}<div class="bigt">3 · 2 · 1</div><div class="info">Halte dich bereit …</div>`); return; }
     if (s.phase === 'run') {
-      put(`<div class="cpad"><div class="pg"><button data-b="1" aria-label="links">◀</button><button data-b="2" aria-label="rechts">▶</button></div><div class="pg"><button data-b="8" aria-label="greifen">✊</button><button data-b="4" class="big" aria-label="springen">⤒</button></div></div>`);
+      put(`<div class="cpad"><div class="pg"><button data-b="1" aria-label="links">◀</button><button data-b="2" aria-label="rechts">▶</button></div><div class="pg"><button data-b="4" class="big" aria-label="springen">⤒</button></div></div>`);
       const act = new Map(); root.querySelectorAll('.cpad button').forEach(b => {
         const bit = +b.dataset.b, rel = () => { if (act.has(bit)) { act.delete(bit); b.classList.remove('on'); setMask([...act.keys()].reduce((a, x) => a | x, 0)); } };
         b.addEventListener('pointerdown', e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (x) {} act.set(bit, 1); b.classList.add('on'); setMask([...act.keys()].reduce((a, x) => a | x, 0)); });

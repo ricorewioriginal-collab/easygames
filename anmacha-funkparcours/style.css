@@ -50,7 +50,7 @@ body.touch #game .pad:not([hidden]){display:flex}
 .hint{text-align:center;font-weight:700;color:var(--c);font-size:14px}.hint.ph{color:var(--g)}
 .prize{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;background:rgba(255,154,31,.15);border:1px solid rgba(255,154,31,.5)}.prize img{border-radius:16px}.prize small{display:block;color:var(--mut)}
 .ptag{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--pc);margin-right:6px}
-.names input{border-left:6px solid var(--pc)}
+.names input{border-left:6px solid var(--pc)}.nm{display:flex;flex-direction:column;gap:4px;min-width:0}.chb{height:36px;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid var(--pc);color:#fff;font-weight:800;font-size:14px}
 /* Handy-Pad */
 body.ctrl #cv{display:none}body.ctrl{background:#0a0c24}
 body.ctrl .screen:not(#ctl),body.ctrl .dialog,body.ctrl #big{display:none!important}#ctl{display:none;justify-content:flex-start;align-items:stretch;gap:10px;text-align:left;background:#0a0c24}body.ctrl #ctl{display:flex}

@@ -309,13 +309,14 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 
 ## AnMaCha Funkparcours – Das Hindernis-Zeitspiel
 
-- **Prinzip:** Hindernis-Show im Studio-Look (eigener Name, eigene Hindernisse, kein Klon). Jeder Läufer geht **allein** auf den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke). Die Zeiten werden verglichen. **Präsentiert vom RicoReWi Radioportal**, die Sender-Logos hängen als Banner über der Tribüne und auf den Trikots.
-- **Hindernisse:** Stufen mit Lücken, schwingende und wegbrechende Plattformen, Pendel, Hangelstangen und die Steilwand (mit Tempo anlaufen, oben Buzzer). **3 Parcours:** Vorrunde, Halbfinale, Finale.
+- **Prinzip:** Hindernis-Show im Look einer großen TV-Studio-Show (eigener Name, eigene Hindernisse, eigenes Design, kein Klon): Wasserbecken mit Unterwasserlicht, Stahl-Traversen mit LED-Schild über jedem Hindernis, Moving-Heads, steile Tribüne, LED-Bande, Startturm und Buzzer-Turm mit Flammen und Zeit-Anzeige. Jeder Läufer geht **allein** auf den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke). Die Zeiten werden verglichen. **Präsentiert vom RicoReWi Radioportal**, die Sender-Logos hängen als Banner über der Tribüne und auf den Trikots.
+- **Hindernisse:** Stufensprung, Schiebebrücke, Fahrstuhl, Bruchplatten, Abrissbirnen, Hangelstangen und die Steilwand (mit Tempo anlaufen, oben Buzzer). **3 Parcours:** Vorrunde, Halbfinale, Finale.
+- **Figuren:** 8 erfundene Läufer (Frisur, Hautton, Statur, Shirt) mit Gelenken an Knie und Ellbogen; pro Läufer im Einrichtungs-Bildschirm wählbar (🧍-Knopf), wird im Browser gemerkt.
 - **Show:** 1–4 Läufer nacheinander („Bereit?" → 3-2-1-LOS), nach jedem Parcours Wertung (Platz 1 bekommt die meisten Punkte), am Ende Gesamtsieger (Punkte, bei Gleichstand die Gesamtzeit). Ein **Geist** zeigt den bisher Schnellsten.
 - **Training:** ein Parcours, Bestzeit und Geist werden im Browser gespeichert.
-- **Steuerung:** ◀ ▶ / A D laufen, Leertaste / ↑ / W springen (länger halten = höher), ↓ / S / Shift Stangen greifen; auf dem Handy Touch-Tasten.
-- **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy wird das Steuer-Pad eines Läufers (◀ ▶ ✊ ⤒) und sagt „Bereit".
-- **Technik:** `engine.js` (feste Physik mit 60 Schritten/s, Parcours-Bauer, Wertung – rein), `bot.js` (Planer-Bot: simuliert kurze Zukünfte mit der echten Physik, beweist dass jeder Parcours machbar ist), `scene.js` (Three.js r128), `main.js`, `pair.js`/`controller.js`, `audio.js` (WebAudio).
+- **Steuerung:** ◀ ▶ / A D laufen, Leertaste / ↑ / W springen (länger halten = höher); an den Hangelstangen greift der Läufer von selbst und schwingt am Ende ab (Sprung = früher abspringen); knapp verfehlte Kanten werden noch erwischt. Auf dem Handy drei Touch-Tasten.
+- **Handy-Kopplung 📱:** QR-Code/Code (PeerJS/WebRTC); jedes Handy wird das Steuer-Pad eines Läufers (◀ ▶ ⤒) und sagt „Bereit".
+- **Technik:** `engine.js` (feste Physik mit 60 Schritten/s, Parcours-Bauer, Wertung – rein), `bot.js` (Planer-Bot: simuliert kurze Zukünfte mit der echten Physik, beweist dass jeder Parcours machbar ist), `scene.js` (Three.js r128; Traversen und Publikum als Instanzen, Licht-Rig wandert mit der Kamera), `chars.js` (Figuren), `main.js`, `pair.js`/`controller.js`, `audio.js` (WebAudio).
 - **Tests:** `node anmacha-funkparcours/tests/engine-tests.js` (Physik, Hindernisse, Wertung, Machbarkeit aller Parcours per Bot), Browser-Tests `tests/e2e.mjs` (Show mit 2 Läufern, Training, Geist, Touch) und `tests/e2e-pair.mjs` (2 Handys).
 
 ## Funkhaus Reality – Die Live-WG
