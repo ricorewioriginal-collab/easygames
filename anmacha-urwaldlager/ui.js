@@ -260,17 +260,18 @@
   UI.menuOpen = menuOpen;
   function holdCloud() { const cb = $('cloudBox'), h = $('cloudHold'); if (cb && h && cb.parentNode !== h) h.appendChild(cb); }
   function showMenu(html, onShow) {
-    const m = $('menu'); holdCloud(); m.innerHTML = html; m.hidden = false; I.setLock(false); I.setLayout(null);
+    const m = $('menu'); cmOn = false; m.classList.remove('cm-on'); holdCloud(); m.innerHTML = html; m.hidden = false; I.setLock(false); I.setLayout(null);
     const slot = m.querySelector('.cloudslot'), cb = $('cloudBox'); if (slot && cb) slot.appendChild(cb);
     if (onShow) onShow(m); const card = m.querySelector('.card'); if (card) card.scrollTop = 0;
   }
-  UI.hideMenu = () => { holdCloud(); const m = $('menu'); m.hidden = true; m.innerHTML = ''; I.clearEdges(); };
+  UI.hideMenu = () => { cmOn = false; holdCloud(); const m = $('menu'); m.classList.remove('cm-on'); m.hidden = true; m.innerHTML = ''; I.clearEdges(); };
   $('menu').addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; Snd.unlock(); Snd.click(); act(b.dataset.a, b); });
   $('menu').addEventListener('input', e => { const t = e.target; if (t.dataset.s) setting(t.dataset.s, t.type === 'checkbox' ? t.checked : +t.value); if (t.id === 'suName') setup.name = t.value.slice(0, 16); });
   let back = null, inGame = false;
   UI.setInGame = v => { inGame = v; };
   function act(a, b) {
     const h = UI.hooks;
+    if (a.startsWith('cm:')) return cmActivate(+a.slice(3));
     if (a === 'title') return h.toTitle ? h.toTitle() : UI.title();
     if (a === 'continue') return h.continueGame();
     if (a === 'setup') return UI.setup();
@@ -300,16 +301,72 @@
     else if (k === 'speed') { st.speed = v; if (G()) G().settings.speed = v; }
     UI.saveSet(); UI.applySet();
   }
-  UI.title = function () {
-    inGame = false; const s = S(), info = s.hasSave() ? s.saveInfo() : null, b = s.best();
-    showMenu(`<div class="card cen title"><div class="logo">URWALD<span>LAGER</span></div><div class="tagline">Die große Wildnis-Show · 3D</div>
-      <p class="h">Lebe im Dschungelcamp: Holz sammeln, Wasser holen, kochen, Freundschaften schließen – und zwölf echte Prüfungen bestehen, bis das simulierte Publikum den Champion kürt.</p>
-      <div class="col">${info ? `<button class="btn go big" data-a="continue">▶ Weiterspielen <small>Tag ${info.day}/${info.days} · ${esc(info.name)} · ${info.alive} im Camp</small></button>` : ''}
-      <button class="btn ${info ? '' : 'go'} big" data-a="setup">🌴 Neue Staffel</button>
-      <div class="row c"><button class="btn" data-a="arena">⭐ Prüfungs-Arena</button><button class="btn" data-a="help">📖 Anleitung</button><button class="btn" data-a="settings">⚙️ Einstellungen</button></div></div>
-      ${b.plays ? `<p class="h">Bisher: ${b.plays} Staffel${b.plays > 1 ? 'n' : ''} · ${b.wins || 0} Sieg${b.wins === 1 ? '' : 'e'} · bester Platz ${b.best || '–'} · ${b.stars || 0} ★ gesamt</p>` : ''}
-      <div class="cloudslot"></div><p class="h tiny">Alle Figuren, Namen und Sendungsinhalte sind frei erfunden. Zuschauerabstimmungen werden nur simuliert.</p></div>`);
+  // ---------- Hauptmenü im Konsolen-Stil ----------
+  let cmFocus = 0, cmItems = [], cmOn = false, cmLast = null;
+  const ago = t => { if (!t) return ''; const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'gerade eben' : m < 60 ? `vor ${m} Min.` : m < 1440 ? `vor ${Math.round(m / 60)} Std.` : `vor ${Math.round(m / 1440)} Tag${m >= 2880 ? 'en' : ''}`; };
+  UI.title = function (focusId) {
+    inGame = false; const s = S(), info = s.hasSave() ? s.saveInfo() : null;
+    cmItems = [info && { id: 'continue', ic: '▶', l: 'Weiterspielen', sub: `Tag ${info.day}/${info.days} · ${info.name}` }, { id: 'setup', ic: '🌴', l: 'Neue Staffel' }, { id: 'arena', ic: '⭐', l: 'Prüfungs-Arena' }, { id: 'settings', ic: '⚙️', l: 'Einstellungen' }, { id: 'help', ic: '📖', l: 'Anleitung' }, { id: 'cloud', ic: '☁️', l: 'Google-Sicherung' }].filter(Boolean);
+    const fi = cmItems.findIndex(x => x.id === (focusId || cmLast)); cmFocus = fi >= 0 ? fi : 0;
+    showMenu(`<div class="cm"><div class="cm-left"><div class="logo cm-logo">URWALD<span>LAGER</span></div><div class="cm-tag">Die große Wildnis-Show</div>
+      <nav class="cm-nav">${cmItems.map((x, i) => `<button class="cm-it" data-a="cm:${i}" data-i="${i}"><span class="ic">${x.ic}</span><span class="lb">${x.l}${x.sub ? `<small>${esc(x.sub)}</small>` : ''}</span></button>`).join('')}</nav></div>
+      <div class="cm-panel" id="cmPanel"></div>
+      <div class="cm-foot"><span class="cm-keys">${I.touch ? 'Antippen zum Auswählen' : '<kbd>↑</kbd><kbd>↓</kbd> Auswählen · <kbd>Enter</kbd> Bestätigen · <kbd>Esc</kbd> Zurück · 🎮 Gamepad'}</span><span class="cm-legal">Alle Figuren frei erfunden · Publikum nur simuliert</span></div></div>`, m => { m.classList.add('cm-on'); });
+    cmOn = true; cmSet(cmFocus, true);
   };
+  function cmSet(i, force) {
+    if (!cmOn || !cmItems.length) return; i = (i + cmItems.length) % cmItems.length; if (i === cmFocus && !force) return; cmFocus = i;
+    const m = $('menu'); m.querySelectorAll('.cm-it').forEach((b, k) => b.classList.toggle('on', k === i));
+    holdCloud(); const p = $('cmPanel'); if (!p) return; p.innerHTML = cmPanel(cmItems[i].id); p.classList.remove('in'); void p.offsetWidth; p.classList.add('in');
+    const slot = p.querySelector('.cloudslot'), cb = $('cloudBox'); if (slot && cb) slot.appendChild(cb);
+    if (!force) Snd.click();
+  }
+  function cmPanel(id) {
+    const s = S(), b = s.best(), ids = s.TRIAL_IDS.filter(x => T.defs[x]), tb = b.trials || {};
+    if (id === 'continue') { const inf = s.saveInfo(); return `<h3>Weiterspielen</h3><div class="cm-save">${inf.look ? `<div class="avw you">${root.Avatar.svg(inf.look, 'happy')}</div>` : ''}<div><b>${esc(inf.name)}</b><small>Tag ${inf.day} von ${inf.days} · ${inf.alive} im Camp · ${inf.stars} ★</small><small>Gespeichert ${ago(inf.at)}</small></div></div><p class="h">Mach genau da weiter, wo du aufgehört hast – das Camp wartet.</p>${cmGo('continue', 'Fortsetzen')}`; }
+    if (id === 'setup') return `<h3>Neue Staffel</h3><p>Zieh ins Urwaldlager: Holz sammeln, Wasser holen, kochen, Freundschaften schließen – und Prüfungen bestehen, bis das simulierte Publikum den Champion kürt.</p><ul class="cm-list"><li>6, 8 oder 12 Camper</li><li>12 Prüfungen + großes Finale</li><li>Jede Staffel mit neuer Besetzung und neuen Ereignissen</li></ul>${s.hasSave() ? '<p class="warn">⚠ Eine neue Staffel ersetzt deinen gespeicherten Stand.</p>' : ''}${b.plays ? `<div class="cm-stats"><div><b>${b.plays}</b><small>Staffeln</small></div><div><b>${b.wins || 0}</b><small>Siege</small></div><div><b>${b.best || '–'}</b><small>Bester Platz</small></div><div><b>${b.stars || 0}</b><small>Sterne</small></div></div>` : ''}${cmGo('setup', 'Staffel einrichten')}`;
+    if (id === 'arena') { const played = ids.filter(x => tb[x] != null).length, sum = ids.reduce((a, x) => a + (tb[x] || 0), 0); return `<h3>Prüfungs-Arena</h3><p>Übe jede Prüfung einzeln, ohne Staffel – oder spiel das dreiteilige Finale.</p><div class="cm-stats"><div><b>${ids.length}</b><small>Prüfungen</small></div><div><b>${played}</b><small>gespielt</small></div><div><b>${sum}</b><small>Bestwert-Sterne</small></div></div><div class="cm-chips">${ids.map(x => `<span title="${esc(T.defs[x].name)}">${T.defs[x].e}</span>`).join('')}</div>${cmGo('arena', 'Zur Arena')}`; }
+    if (id === 'settings') return `<h3>Einstellungen</h3><p>Grafik: <b>${{ low: 'Niedrig', mid: 'Mittel', high: 'Hoch' }[E.q.level]}</b>${UI.set.quality === 'auto' ? ' (automatisch)' : ''} · Ton: <b>${Snd.isOn() ? 'an' : 'aus'}</b></p><p class="h">Grafikstufe, Lautstärken, Kamera, Touch-Tastengröße, Spieltempo, Tipps und Vollbild.</p>${cmGo('settings', 'Öffnen')}`;
+    if (id === 'help') return `<h3>Anleitung</h3><p>${I.touch ? '📱 Links ziehen = laufen · rechts wischen = umsehen · große grüne Taste = Aktion.' : '⌨️ WASD laufen · Maus umsehen · E Aktion · Tab Übersicht · Esc Pause.'}</p><p class="h">Camp-Leben, Staffelablauf, das simulierte Publikum und alle Prüfungen erklärt.</p>${cmGo('help', 'Lesen')}`;
+    return `<h3>Google-Sicherung</h3><p class="h">Sichere Spielstand und Bestwerte mit Google und spiel auf jedem Gerät weiter.</p><div class="cloudslot"></div>`;
+  }
+  const cmGo = (a, l) => `<button class="btn go cm-go" data-a="${a}">${l} ▶</button>`;
+  function cmActivate(i) { const it = cmItems[i]; if (!it) return; cmLast = it.id; if (it.id === 'cloud') return cmSet(i); cmOn = false; $('menu').classList.remove('cm-on'); act(it.id, document.createElement('b')); }
+  $('menu').addEventListener('pointerover', e => { if (!cmOn || e.pointerType !== 'mouse') return; const b = e.target.closest('.cm-it'); if (b) cmSet(+b.dataset.i); });
+  // Tastatur & Gamepad für Menüs
+  function menuKey(k) {
+    if (!menuOpen() || cur) return false;
+    if (cmOn) { if (k === 'up') { cmSet(cmFocus - 1); return true; } if (k === 'down') { cmSet(cmFocus + 1); return true; } if (k === 'ok') { Snd.click(); cmActivate(cmFocus); return true; } return false; }
+    if (k === 'back') { const b = $('menu').querySelector('[data-a="back"],[data-a="title"],[data-a="resume"]'); if (b) { b.click(); return true; } }
+    return false;
+  }
+  root.addEventListener('keydown', e => {
+    const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') || e.repeat && !/Arrow/.test(e.code)) return;
+    const k = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Enter: 'ok', Space: 'ok', KeyE: 'ok', Escape: 'back', Backspace: 'back' }[e.code];
+    if (k && (k !== 'back' || !inGame) && menuKey(k)) { e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
+  let padPrev = {}, padRep = 0;
+  UI.gamepad = function (dt) {
+    const gp = navigator.getGamepads ? [...navigator.getGamepads()].find(g => g && g.connected) : null; if (!gp) return;
+    const bt = i => gp.buttons[i] && gp.buttons[i].pressed, ay = gp.axes[1] || 0, st = { up: bt(12) || ay < -.6, down: bt(13) || ay > .6, ok: bt(0) || bt(9), back: bt(1) };
+    padRep -= dt; ['up', 'down'].forEach(k => { if (st[k] && (!padPrev[k] || padRep <= 0)) { menuKey(k); padRep = padPrev[k] ? .16 : .38; } });
+    ['ok', 'back'].forEach(k => { if (st[k] && !padPrev[k]) { if (k === 'ok' && cur && modal) { const b = modal.querySelector('[data-m].go,[data-m].gold,[data-m]'); if (b) b.click(); } else menuKey(k); } });
+    padPrev = st;
+  };
+  // ---------- Ladebildschirm ----------
+  const TIPS = ['Ohne Wasser im Fass gibt es kein Abendessen.', 'Wer im Camp mit anpackt, gewinnt Sympathie – das simulierte Publikum sieht alles.', 'Lästern bringt Unterhaltung, kann sich aber herumsprechen.', 'Je mehr Prüfungssterne, desto besser das Abendessen.', 'Ein Feuer, das nachts ausgeht, sorgt für schlechten Schlaf.', 'In der Prüfungs-Arena kannst du jede Prüfung üben.', 'Die Buschtrommel (Tab / 🥁) zeigt Tagesplan, Beziehungen und Publikumsgunst.', 'Mit „🔔 Raus“ kannst du jede Prüfung abbrechen – Urwald, ich will raus!'];
+  let tipI = Math.floor(Math.random() * TIPS.length), tipT = null, loadDone = false;
+  UI.loading = function (pct, msg) {
+    const bar = $('ldBar'), p = $('ldPct'), m = $('loadMsg'); if (bar) bar.style.width = pct + '%'; if (p) p.textContent = Math.round(pct) + ' %'; if (m && msg) m.textContent = msg;
+    if (!tipT && $('ldTip')) { const show = () => { const el = $('ldTip'); if (!el) return; el.classList.remove('in'); void el.offsetWidth; el.textContent = TIPS[tipI++ % TIPS.length]; el.classList.add('in'); }; show(); tipT = setInterval(show, 4200); }
+  };
+  UI.loadReady = function (onStart) {
+    UI.loading(100, 'Bereit'); const L = $('loading'); if (!L) return onStart(); L.classList.add('ready'); const st = $('ldStart'); st.textContent = I.touch ? 'Tippe zum Starten' : 'Drücke eine beliebige Taste'; st.hidden = false;
+    const go = e => { if (loadDone) return; if (e && e.type === 'keydown' && (e.repeat || e.code === 'Tab')) return; loadDone = true; root.removeEventListener('keydown', go, true); L.removeEventListener('pointerdown', go); if (e && e.preventDefault) e.preventDefault(); Snd.unlock(); Snd.ambience(); Snd.fan(); UI.dismissLoading(); onStart(); };
+    UI.pressStart = go; root.addEventListener('keydown', go, true); L.addEventListener('pointerdown', go);
+    const poll = () => { if (loadDone) return; const gp = navigator.getGamepads ? [...navigator.getGamepads()].find(g => g && g.connected) : null; if (gp && gp.buttons.some(b => b.pressed)) return go(); requestAnimationFrame(poll); }; poll();
+  };
+  UI.dismissLoading = function () { loadDone = true; const L = $('loading'); if (!L || L.hidden) return; clearInterval(tipT); L.classList.add('out'); setTimeout(() => { L.hidden = true; }, 600); };
   // Neue Staffel
   const setup = Object.assign({ name: '', type: 0, look: { skin: D.SKINS[1], hair: D.HAIRS[1], hs: 'short', top: D.TOPS[1] }, len: 'normal', diff: 1, mode: 'taeglich', castIds: [] }, UI.set.last || {});
   function setupPick(k, v) {

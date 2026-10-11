@@ -31,6 +31,7 @@
     const you = Object.assign(mk({ id: 'you', name: o.name, short: o.name, job: t.name, age: 30, mut: t.mut, ekel: t.ekel, kopf: t.kopf, trait: 'you', skin: o.look.skin, hair: o.look.hair, hs: o.look.hs, top: o.look.top, acc: [] }, 5), {});
     you.look.pants = '#3a3a4a'; you.aud.S = t.sym; you.aud.E = 50;
     const cast = [you].concat(pool.map(mk));
+    S.dayTurning = false; S.entering = false;
     G = S.G = {
       v: VERSION, seed: o.seed || 1, settings: { len: o.len, diff: o.diff == null ? 1 : o.diff, mode: o.mode || 'taeglich', speed: o.speed || 'normal', type: o.type || 0 },
       n, days: n - 1, day: 1, clock: 8 * 60, cast, you: null, rel: {}, friends: [], rivals: [], gossip: [], usedMoments: [], usedCampfire: [], usedEvents: [], log: [], audLog: {}, outOrder: [],
@@ -256,6 +257,7 @@
 
   // ---------- Schlafen & neuer Tag ----------
   S.goSleep = function (forced) {
+    if (W.player.state === 'sleep' || S.dayTurning) return; S.dayTurning = true;
     const b = C.bedOf('you'); C.standUp(); if (W.player.carry) C.carry(null); W.player.x = b.x; W.player.z = b.z; W.player.yaw = b.yaw; W.player.state = 'sleep'; W.snapCam();
     if (!forced && G.today.night === 'dieb' && root.UEvents && !G.today.nightDone) { G.today.nightDone = true; return root.UEvents.nightThief(); }
     S.nextDay();
@@ -267,7 +269,7 @@
       if (G.camp.fuel <= 0) UI.toast('🥶 Das Feuer war nachts aus – alle haben schlecht geschlafen.', 'bad');
       G.camp.fuel = Math.max(0, G.camp.fuel - .35); nightDrift(); G.day++; G.clock = 6.5 * 60; if (root.UEvents) root.UEvents.reset(); newToday(); W.player.state = 'free'; const b = C.bedOf('you'); W.player.x = b.x + Math.sin(b.yaw) * 1.4; W.player.z = b.z + Math.cos(b.yaw) * 1.4; W.player.yaw = b.yaw; W.snapCam(true);
       C.placeForTime(); W.updateProps(G.camp); W.branches.forEach(x => { x.have = true; }); W.fruit.forEach(f => { f.n = 3; }); W.updateProps(G.camp);
-      S.log(`Tag ${G.day} beginnt.`); S.save(); UI.dayCard();
+      S.dayTurning = false; S.log(`Tag ${G.day} beginnt.`); S.save(); UI.dayCard();
     });
   };
 
@@ -276,10 +278,10 @@
   S.setBest = v => { try { localStorage.setItem(BEST, JSON.stringify(v)); } catch (e) { } };
   S.save = function () { if (!G || G.over) return false; G.player = { x: +W.player.x.toFixed(2), z: +W.player.z.toFixed(2), yaw: +W.player.yaw.toFixed(2) }; G.branches = W.branches.map(b => b.have ? 1 : 0); G.fruitN = W.fruit.map(f => f.n); G.savedAt = Date.now(); try { localStorage.setItem(SAVE, JSON.stringify(G)); return true; } catch (e) { return false; } };
   S.hasSave = () => { try { const s = JSON.parse(localStorage.getItem(SAVE)); return !!(s && s.v === VERSION && !s.over); } catch (e) { return false; } };
-  S.saveInfo = () => { try { const s = JSON.parse(localStorage.getItem(SAVE)); return s && s.v === VERSION ? { day: s.day, days: s.days, name: (s.cast.find(c => c.id === 'you') || {}).name, alive: s.cast.filter(c => !c.out).length, at: s.savedAt } : null; } catch (e) { return null; } };
+  S.saveInfo = () => { try { const s = JSON.parse(localStorage.getItem(SAVE)); return s && s.v === VERSION ? { day: s.day, days: s.days, name: (s.cast.find(c => c.id === 'you') || {}).name, look: (s.cast.find(c => c.id === 'you') || {}).look, stars: (s.cast.find(c => c.id === 'you') || {}).stars || 0, alive: s.cast.filter(c => !c.out).length, at: s.savedAt } : null; } catch (e) { return null; } };
   S.load = function () {
     let s = null; try { s = JSON.parse(localStorage.getItem(SAVE)); } catch (e) { s = null; } if (!s || s.v !== VERSION) return null;
-    G = S.G = s; linkYou(); G.today.ceremonyRunning = false; if (G.today.ceremonyCalled && !G.today.ceremonyDone && G.clock > 1260) G.clock = 1260;
+    G = S.G = s; S.dayTurning = false; S.entering = false; linkYou(); G.today.ceremonyRunning = false; if (G.today.ceremonyCalled && !G.today.ceremonyDone && G.clock > 1260) G.clock = 1260;
     // fehlende Felder älterer v2-Stände ergänzen
     ['friends', 'rivals', 'gossip', 'usedMoments', 'usedCampfire', 'usedEvents', 'log', 'outOrder', 'results', 'decisions'].forEach(k => { if (!Array.isArray(G[k])) G[k] = []; }); G.audLog = G.audLog || {}; G.tut = G.tut || { on: false, done: [] }; G.intro = false; if (G.today.trialId !== 'finale' && !T.defs[G.today.trialId]) G.today.trialId = TRIAL_IDS.find(id => T.defs[id]);
     return G;

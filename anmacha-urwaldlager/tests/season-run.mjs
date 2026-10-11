@@ -5,7 +5,7 @@ const vp = dev === 'm' ? { viewport: { width: 740, height: 360 }, hasTouch: true
 const b = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const ctx = await b.newContext(vp); const p = await ctx.newPage(); const errs = [];
 p.on('pageerror', e => errs.push(e.message + ' @ ' + (e.stack||'').split('\n').slice(1,3).join(' | '))); p.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text()); });
-await p.goto(`${BASE}/index.html?q=low`); await p.waitForTimeout(2500);
+await p.goto(`${BASE}/index.html?q=low&skipintro=1`); await p.waitForTimeout(2500);
 await p.evaluate(([len, mode, win]) => { window.__win = win; __ul.newGame({ len, mode, seed: 777 }); }, [len, mode, process.argv[5] === "win"]);
 let shots = 0, lastDay = 0, saved = false, it = 0; const log = [];
 while (it++ < 2500) {

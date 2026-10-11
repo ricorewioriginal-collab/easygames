@@ -24,24 +24,29 @@
   }
 
   // ---------- Welt aufbauen ----------
-  loadMsg.textContent = 'Camp wird aufgebaut …';
-  setTimeout(boot, 30);
+  UI.loading(35, 'Dschungel wird gepflanzt …');
+  setTimeout(boot, 60);
   function boot() {
     try { W.build(12); } catch (err) { console.error(err); loadMsg.textContent = 'Fehler beim Aufbau: ' + err.message; return; }
+    UI.loading(80, 'Lagerfeuer wird entzündet …');
+    setTimeout(boot2, 30);
+  }
+  function boot2() {
+    try { W.setTime(17.6, 'sun', 10); W.cine(20, 7.5, 3, 0, 1.2, 1, 2); W.updateCamera(1); E.renderer.compile(W.scene, W.camera); } catch (err) { console.error(err); }
     W.onThunder = () => Snd.thunder();
     E.hooks.push(k => { if (k === 'hidden' && G() && !G().over) S.save(); });
     document.addEventListener('visibilitychange', () => { if (document.hidden && G() && !G().over && inGame) S.save(); });
     window.addEventListener('pagehide', () => { if (G() && !G().over && inGame) S.save(); });
     I.onPause = why => { if (T.onKeyPause()) return; if (inGame && !UI.menuOpen() && !UI.blocking()) UI.pause(); else if (inGame && UI.menuOpen() && why !== 'lock') resume(); };
-    document.addEventListener('pointerdown', () => { Snd.unlock(); Snd.ambience(); }, { once: true });
-    hideLoading(); toTitle();
+        E.setMode(titleMode); UI.loading(100, 'Bereit');
+    if (q.get('skipintro')) { UI.dismissLoading(); toTitle(); } else UI.loadReady(() => toTitle());
   }
   const G = () => S.G;
 
   // ---------- Titel ----------
   let inGame = false, orbit = 0;
   const titleMode = {
-    update(dt) { orbit += dt * .04; W.setTime(17.6, 'sun', dt); W.cine(Math.cos(orbit) * 20, 7.5, Math.sin(orbit) * 20 + 3, 0, 1.2, 1, 2); W.updateCamera(dt); W.update(dt); Snd.env(0, 0, .3); },
+    update(dt) { UI.gamepad(dt); orbit += dt * .04; W.setTime(17.6, 'sun', dt); W.cine(Math.cos(orbit) * 20, 7.5, Math.sin(orbit) * 20 + 3, 0, 1.2, 1, 2); W.updateCamera(dt); W.update(dt); Snd.env(0, 0, .3); },
     render: r => W.render(r), get scene() { return W.scene; }, get camera() { return W.camera; }
   };
   function toTitle(discard) {
@@ -59,7 +64,7 @@
     arenaTrial
   };
   function startGame(g, fresh) {
-    UI.hideMenu(); UI.closeAll(); EV.reset(); W.endCine(); W.hostPose = null;
+    UI.dismissLoading(); UI.hideMenu(); UI.closeAll(); EV.reset(); W.endCine(); W.hostPose = null;
     W.spawnPlayer(g.you.look); C.init(g, S, UI);
     const p = W.player; p.x = g.player.x; p.z = g.player.z; p.yaw = g.player.yaw; p.state = 'free'; p.carry = null; p.seat = null; p.hammock = false;
     if (Array.isArray(g.branches)) W.branches.forEach((b, i) => { b.have = g.branches[i] !== 0; b.t = 0; b.claim = null; }); else W.branches.forEach(b => { b.have = true; });
