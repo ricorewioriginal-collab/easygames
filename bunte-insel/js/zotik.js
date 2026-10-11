@@ -61,8 +61,12 @@ BI.buildZotikGround = function (c) {
   { const cx = X(-54), cz = Z(52), cols = [0xff8a3d, 0x4da3ff, 0xdddddd, 0xff5ab4, 0xffd23f, 0x35d6e0]; st.disc(cx, cz, 22, .012, 0xd8d0e8, 36); st.ring(cx, cz, 17, 18, .02, GOLD, 36); A.gates = [];
     for (let k = 0; k < 6; k++) { const a = (-60 + k * 24) * Math.PI / 180 + Math.PI * .75, [x, z] = [cx + Math.sin(a) * 15, cz + Math.cos(a) * 15], ry = a + Math.PI; for (const sd of [-1, 1]) { const ox = Math.cos(a) * sd * 2.2, oz = -Math.sin(a) * sd * 2.2; st.cyl(x + ox, 0, z + oz, .45, .55, 5, MARB, 8); glow.sph(x + ox, 5.2, z + oz, .5, cols[k], 1); W.addCircle(x + ox, z + oz, .8, false, 5); } st.box(x, 5, z, 5.4, .8, .8, MARB, ry); A.gates.push({ x, z, a, col: cols[k], i: k }); } A.gateC = { x: cx, z: cz }; }
   /* Mondbäume (violett, leuchtend) und Laternen */
-  for (let i = 0; i < 46; i++) { const a = rn() * TAU, d = 30 + rn() * (A.R - 44), [x, z] = P(d, a); if (Math.hypot(x - hx, z - hz) < H.R + 6 || Math.hypot(x - X(-44), z - Z(0)) < 22 || Math.hypot(x - X(40), z - Z(8)) < 14 || Math.hypot(x - X(60), z - Z(52)) < 18 || Math.hypot(x - X(-54), z - Z(52)) < 26 || (z > Z(70) && Math.abs(x - A.x) < 32) || Math.hypot(x - X(0), z - Z(0)) < 28 || Math.hypot(x - X(75), z - Z(-10)) < 9) continue; const h = 3 + rn() * 2; st.cyl(x, 0, z, .26, .38, h, 0x6a4a8a, 7); glow.sph(x, h + 1.2, z, 1.7 + rn() * .6, GL[i % 4], 1, 1, .9, 1); glow.sph(x + .9, h + .5, z + .4, .8, GL[(i + 1) % 4], 1); W.addCircle(x, z, .5, false, 4); }
+  for (let i = 0; i < 46; i++) { const a = rn() * TAU, d = 30 + rn() * (A.R - 44), [x, z] = P(d, a); if (Math.hypot(x - hx, z - hz) < H.R + 6 || Math.hypot(x - X(-44), z - Z(0)) < 22 || Math.hypot(x - X(40), z - Z(8)) < 14 || Math.hypot(x - X(60), z - Z(52)) < 18 || Math.hypot(x - X(-54), z - Z(52)) < 26 || (z > Z(70) && Math.abs(x - A.x) < 32) || Math.hypot(x - X(0), z - Z(0)) < 28 || Math.hypot(x - X(75), z - Z(-10)) < 9 || Math.hypot(x - X(22), z - Z(30)) < 15) continue; const h = 3 + rn() * 2; st.cyl(x, 0, z, .26, .38, h, 0x6a4a8a, 7); glow.sph(x, h + 1.2, z, 1.7 + rn() * .6, GL[i % 4], 1, 1, .9, 1); glow.sph(x + .9, h + .5, z + .4, .8, GL[(i + 1) % 4], 1); W.addCircle(x, z, .5, false, 4); }
   for (let k = 0; k < 20; k++) { const a = k / 20 * TAU, [x, z] = P(30, a); if (z > Z(70) || Math.hypot(x - hx, z - hz) < H.R + 3) continue; st.cyl(x, 0, z, .08, .1, 3.2, 0x3a3a52, 6); glow.sph(x, 3.4, z, .3, 0xffe08a, 1); }
+  /* Zotik-Statue (Hauptheld) auf Marmorsockel mit Goldring und Lichtsäulen – die Figur selbst kommt zur Laufzeit */
+  { const sx = X(22), sz = Z(30); st.cyl(sx, 0, sz, 7.2, 7.8, .6, STONE, 28); st.cyl(sx, .6, sz, 6, 6.4, .5, MARB, 28); st.cyl(sx, 1.1, sz, 4.2, 4.6, 1.6, MARB, 20); st.ring(sx, sz, 6.2, 6.8, 1.12, GOLD, 40); st.ring(sx, sz, 4.7, 5, 1.14, BLUE, 40);
+    for (let k = 0; k < 6; k++) { const a = k / 6 * TAU, x = sx + Math.sin(a) * 6.6, z = sz + Math.cos(a) * 6.6; st.cyl(x, .6, z, .25, .3, 2.4, MARB, 8); glow.sph(x, 3.2, z, .4, GL[k % 4], 1); }
+    W.addCircle(sx, sz, 7.6, false, 3); A.statue = { x: sx, z: sz, top: 2.7 }; }
   /* Rückkehr-Rissportal (Osten) */
   { const [x, z] = [X(76), Z(-10)]; for (let k = 0; k < 10; k++) { const a = k / 10 * TAU; glow.cone(x + Math.sin(a) * 3.2, 0, z + Math.cos(a) * 3.2, .5, 2 + (k % 2) * 1.2, GL[k % 4], 5); } st.cyl(x, 0, z, 3.6, 3.8, .3, STONE, 20); W.addCircle(x, z, 4.2, false, 3); A.back = { x, z }; }
   /* eigene Meshes (nur in der Nähe sichtbar) */
@@ -107,6 +111,10 @@ BI.createZotik = function (G) {
   mk('rovan', X(44), Z(-8), { shirt: 0x5a3a2a, pants: 0x2a2a2a, hair: 0x222222, skin: 0xd8a070, style: 'short', beard: 5, beardc: 0x222222, ctype: 3, brow: 3, build: 2, scale: 1.08 }, 'Rovan – Schwertkämpfer', ['Stärke ist nicht die Gewalt, sondern die Kraft, für andere da zu sein. Ruhig und beschützend – so kämpfe ich.', 'Feuer schlägt Natur, Natur schlägt Licht, Licht schlägt Schatten, Schatten schlägt Wasser – und Wasser löscht Feuer.', 'Ich stehe immer an deiner Seite, Zotik.']);
   mk('nia', X(9), Z(-30), { shirt: 0x2f6a4a, pants: 0x3a2a1a, hair: 0x4a3322, skin: 0xe0a979, style: 'ponytail', glassT: 3, hat: 'none', cape: true, scale: .98 }, 'Nia – Bogenjägerin', ['Das Leben ist zu kurz, um nur einen Weg zu gehen! 🏹', 'Von hier oben auf den Stufen sieht man ganz Lunaris – und die schwebenden Inseln. Keine Sorge, die fallen nicht runter.', 'Frech sein, klug sein, frei sein – und immer das Ziel treffen.']);
   mk('prof', X(10), Z(82), { shirt: 0xe8e2d8, pants: 0x4a3a2a, hair: 0xeeeeee, skin: 0xf3c9a0, style: 'wavy', beard: 3, beardc: 0xeeeeee, glassT: 3, ctype: 4, hsc: .98, scale: 1 }, 'Professorium – Erfinder', ['Das ist die Nautilux! Sie taucht, sie fliegt, sie entdeckt überall hin. Steig ein – aber lande, bevor du aussteigst! ⚙️', 'Ich weiß mehr, als ich zeige. Zum Beispiel: Die Splitter in den Gassen sind Reste der zerbrochenen Welten.', 'Wissen ist Macht – aber Neugier ist der Schlüssel zu neuen Welten!']);
+  /* Zotik-Statue in Originalfarben (Fuchs-Mensch: orange Fell, grüner Schal, Lederriemen) */
+  const statue = BI.makeChar(Object.assign({}, BI.heroById('zotik').o, { scale: 1 })); statue.group.scale.setScalar(6); statue.group.position.set(A.statue.x, A.statue.top, A.statue.z); statue.group.rotation.y = Math.atan2(X(-4) - A.statue.x, Z(48) - A.statue.z); statue.pose && statue.pose(0, 0, false); grp.add(statue.group);
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(5.2, .12, 6, 40), new THREE.MeshBasicMaterial({ color: 0xffe08a, fog: false })); halo.rotation.x = Math.PI / 2; halo.position.set(A.statue.x, A.statue.top + 1, A.statue.z); grp.add(halo);
+  sign('🦊 Zotik – der Weltenhörer', A.statue.x, A.statue.top + 17.4, A.statue.z, 13);
   /* Moosling „Felli“ (Waldgeist): hüpft herum, geht als Partner mit */
   const felli = BI.makeMoosling(); felli.root.scale.setScalar(1.15); felli.root.position.set(X(-8), 0, Z(7)); grp.add(felli.root); sign('Felli – Moosling', X(-8), 2.6, Z(7), 3.6);
   /* ===== Quest: Der Ruf des Kristalls ===== */
@@ -122,6 +130,7 @@ BI.createZotik = function (G) {
     if (P.veh || P.y > 12) return null; const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
     const q = W.spots.zotikPortal; if (nr(q.x, q.z, 6.4)) return { k: 'zin' }; if (!K.inside) return null; if (nr(A.back.x, A.back.z, 6)) return { k: 'zout' };
     for (const n of NPC) if (nr(n.x, n.z, 3)) return { k: 'zspeak', id: n.id, label: ['💬', 'Mit ' + n.name.split(' – ')[0] + ' sprechen'] };
+    if (nr(A.statue.x, A.statue.z, 9.5)) return { k: 'zstatue', label: ['📸', 'Zotik-Statue bewundern'] };
     if (nr(felli.root.position.x, felli.root.position.z, 2.6)) return { k: 'zfelli', label: ['🌱', 'Felli streicheln'] };
     if (nr(A.hint.x, A.hint.z, 3)) return { k: 'zhint', label: ['📜', 'Hinweis untersuchen'] };
     if (nr(rissPos.x, rissPos.z, 4.4)) return { k: 'zriss', label: ['⚡', 'Den Riss untersuchen'] };
@@ -137,6 +146,7 @@ BI.createZotik = function (G) {
     else if (n.k === 'zhint') { if (s.q === 1) { s.q = 2; persist(); G.addStars(1); say('📜 Hinweis gefunden: „Der Riss öffnet sich über der Akademie. Nur wer die Elemente kennt, kann ihn schließen.“ +1 ⭐', 7000); snd('star'); } else say('📜 Alte Notiz: „Der Riss öffnet sich über der Akademie …“', 3600); }
     else if (n.k === 'zriss') { if (s.q < 2) say('⚡ Ein flackernder Riss in der Luft … Vielleicht hat Mira mehr Hinweise? (Quest-Log: 📋)', 4200); else { say('⚡ Aus dem Riss springt ein Wesen hervor – Elementar-Kampf!', 2600); G.start('elementar_zotik'); } }
     else if (n.k === 'zgate') { if (s.q < 4) { say('🌀 Das Tor schläft noch … Hilf zuerst Mira mit dem Riss (📋 Quest-Log).', 4200); return; } const g = A.gates[n.i]; if (!s.gates) { s.gates = 1; persist(); G.addStars(2); say('🌀 Das erste Weltentor! +2 ⭐', 2200); } G.go(gateDest[n.i]); }
+    else if (n.k === 'zstatue') { fx.burst(A.statue.x, A.statue.top + 4, A.statue.z, 26, [[1, .85, .4], [1, 1, 1], [.5, .8, 1]], 5, 1.4, 28, -1); [523, 659, 784, 1047].forEach((f, i) => note(f, 1.2, 'sine', .1, i * .1)); if (!s.statue) { s.statue = 1; persist(); G.addStars(1); say('🦊 Zotik, der Weltenhörer – der Held von Lunaris! +1 ⭐', 4200); } else say('🦊 Zotik, der Weltenhörer – der Held von Lunaris!', 3000); }
     else if (n.k === 'zcrystal') { fx.burst(X(0), 6, Z(0), 24, [[.5, .8, 1], [1, 1, 1], [.8, .6, 1]], 4, 1.3, 28, -1); [523, 659, 784].forEach((f, i) => note(f, 1.4, 'sine', .1, i * .12)); say('💎 Der Mondkristall summt – „Zehn Welten, ein Abenteuer.“', 3200); }
   };
   /* ===== Ein- und Ausgang ===== */
@@ -152,7 +162,7 @@ BI.createZotik = function (G) {
     const near = Math.hypot(P.x - A.x, P.z - A.z) < 900; if (grp.visible !== near) grp.visible = near;
     if (K.portalSign) K.portalSign.visible = Math.hypot(P.x - W.spots.zotikPortal.x, P.z - W.spots.zotikPortal.z) < 40;
     if (!ins) return; const s = S();
-    crystal.rotation.y = t * .7; crystal.position.y = 5.6 + Math.sin(t * 1.5) * .3; beam.material.opacity = .28 + .08 * Math.sin(t * 2.2); hintM.rotation.y = t * 1.6; hintM.position.y = 1.6 + Math.sin(t * 2) * .15; riss.rotation.z = t * .8; rissIn.material.opacity = .42 + .15 * Math.sin(t * 4);
+    halo.rotation.z = t * .5; halo.position.y = A.statue.top + 1 + Math.sin(t * 1.4) * .15;     crystal.rotation.y = t * .7; crystal.position.y = 5.6 + Math.sin(t * 1.5) * .3; beam.material.opacity = .28 + .08 * Math.sin(t * 2.2); hintM.rotation.y = t * 1.6; hintM.position.y = 1.6 + Math.sin(t * 2) * .15; riss.rotation.z = t * .8; rissIn.material.opacity = .42 + .15 * Math.sin(t * 4);
     for (const f of floats) f.m.position.y = f.y + Math.sin(t * f.sp + f.ph) * 3; gateGlow.forEach((m, i) => { m.material.opacity = (s.q >= 4 ? .6 : .22) + .12 * Math.sin(t * 2.4 + i); });
     for (const n of NPC) { if (Math.hypot(P.x - n.x, P.z - n.z) < 9) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 4); n.c.pose && n.c.pose(t * 1.3 + n.x, 0, Math.hypot(P.x - n.x, P.z - n.z) < 5); }
     felli.set('idle', t); { const px = felli.root.position.x, pz = felli.root.position.z; felli.root.rotation.y += BI.angDiff(felli.root.rotation.y, Math.atan2(P.x - px, P.z - pz)) * Math.min(1, dt * 3); }
@@ -162,11 +172,12 @@ BI.createZotik = function (G) {
     if (s.q === 2 && s.fought) { s.q = 3; persist(); say('⚔️ Der Riss ist geschlossen! Berichte Mira vom Kampf.', 4200); }
     if (Math.random() < dt * 5 && Math.hypot(P.x - X(0), P.z - Z(0)) < 50) fx.emit(X(0) + (Math.random() - .5) * 3, 5 + Math.random() * 3, Z(0) + (Math.random() - .5) * 3, 0, 1.2, 0, 1.4, 34, .6, .8, 1, -.5, .8);
   };
-  K.log = () => { const s = S(), q = s.q; return { title: '⭐ Zotik – Lunaris', count: (Math.min(4, q) + (s.visit ? 1 : 0) + (s.ship ? 1 : 0) + (s.gates ? 1 : 0) + Math.min(3, Math.floor(s.pts / 20)) + (s.fought ? 1 : 0)) + ' von 11', rows: [
+  K.log = () => { const s = S(), q = s.q; return { title: '⭐ Zotik – Lunaris', count: (Math.min(4, q) + (s.visit ? 1 : 0) + (s.ship ? 1 : 0) + (s.gates ? 1 : 0) + Math.min(3, Math.floor(s.pts / 20)) + (s.fought ? 1 : 0) + (s.statue ? 1 : 0)) + ' von 12', rows: [
     { ok: !!s.visit, icon: '🌀', text: 'Lunaris betreten (Rissportal auf der Bunten Insel)', dest: 'zotik' },
     { ok: q >= 1, icon: '💬', text: 'Quest „Der Ruf des Kristalls“: ' + QS[0], dest: 'zotik' },
     { ok: q >= 2, icon: '📜', text: QS[1], dest: 'zotik' }, { ok: q >= 3, icon: '⚡', text: QS[2] + ' (Elementar-Kampf)', dest: 'zotik' }, { ok: q >= 4, icon: '🏆', text: QS[3], dest: 'zotik' },
     { ok: !!s.ship, icon: '🚢', text: 'Mit dem Luftschiff Nautilux fliegen', dest: 'zotik' },
+    { ok: !!s.statue, icon: '🦊', text: 'Die große Zotik-Statue bewundern', dest: 'zotik' },
     { ok: !!s.gates, icon: '🌀', text: 'Durch ein Weltentor reisen', dest: 'zotik' },
     { ok: s.pts >= 60, icon: '💠', text: 'Splitter sammeln: ' + s.pts + ' (alle 10 = 1 ⭐)', dest: 'zotik' }] }; };
   return K;
