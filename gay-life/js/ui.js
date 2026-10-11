@@ -50,7 +50,7 @@
       var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
       if (el('modal').style.display === 'block') return;
       var k = e.key.toLowerCase();
-      if (k === 'escape') { if (GL.phone && GL.phone.isOpen()) GL.phone.close(); else ui.close(); return; }
+      if (k === 'escape') { if (GL.phone && GL.phone.isOpen()) GL.phone.close(); else if (el('maps').style.display === 'block') ui.close(); else if (!ui.fading && !W.dlg) GL.emit('pause'); return; }
       if (ui.fading || W.dlg) return;
       if (k === 'p' || k === 'tab') { e.preventDefault(); GL.phone.toggle(); }
       else if (k === 'm') { GL.emit('openMap'); }

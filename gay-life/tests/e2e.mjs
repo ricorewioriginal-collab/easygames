@@ -12,9 +12,10 @@ const browser = await pw.chromium.launch({ args: ['--no-sandbox', '--use-gl=swif
 let fails = 0, errs = [];
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 
-async function newPage(opts) {
+async function newPage(opts, title) {
   const ctx = await browser.newContext(opts || { viewport: { width: 1000, height: 640 } });
   const page = await ctx.newPage();
+  if (!title) await page.addInitScript(() => { window.__GL_SKIP_TITLE = true; });
   page.on('pageerror', e => errs.push('PAGEERR ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::|Failed to load resource/.test(m.text())) errs.push('console: ' + m.text()); });
   if (process.env.THREE) await page.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
@@ -204,12 +205,13 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   ok(inView.every(x => x[1]), 'Alle Bedienelemente liegen im Bildschirm: ' + inView.filter(x => !x[1]).map(x => x[0]).join(',') );
   ok(await ev(page, () => GL.W.R.getPixelRatio() <= 1), 'Automatische Qualität auf dem Handy: Pixelverhältnis höchstens 1');
   const p0 = await ev(page, () => ({ x: GL.W.player.x, z: GL.W.player.z }));
+  ok(await ev(page, () => document.getElementById('world').classList.contains('tch') && getComputedStyle(document.getElementById('stk')).display !== 'none'), 'Touch-Steuerung ist auf dem Handy sofort sichtbar (fester Stick)');
   await ev(page, async () => {
-    const cv = document.getElementById('wc'), o = { pointerId: 7, pointerType: 'touch', bubbles: true, isPrimary: true };
-    cv.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ clientX: 80, clientY: 600 }, o)));
-    cv.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: 80, clientY: 540 }, o)));
+    const sk = document.getElementById('stk'), r = sk.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, o = { pointerId: 7, pointerType: 'touch', bubbles: true, isPrimary: true };
+    sk.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ clientX: cx, clientY: cy }, o)));
+    sk.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: cx, clientY: cy - 60 }, o)));
     await new Promise(r => setTimeout(r, 700));
-    cv.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: 80, clientY: 540 }, o)));
+    sk.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: cx, clientY: cy - 60 }, o)));
   });
   const p1 = await ev(page, () => ({ x: GL.W.player.x, z: GL.W.player.z }));
   ok(Math.hypot(p1.x - p0.x, p1.z - p0.z) > 1.5, `Virtueller Joystick bewegt die Figur (${Math.hypot(p1.x - p0.x, p1.z - p0.z).toFixed(1)} m)`);
@@ -656,7 +658,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   if (process.env.QRCODE) await ctx.route(/qrcode/, r => r.fulfill({ path: process.env.QRCODE, contentType: 'application/javascript' })); else await ctx.route(/qrcode/, r => r.abort());
   await ctx.route(/gstatic|googleapis/, r => r.abort());
   const mk = async hash => {
-    const page = await ctx.newPage();
+    const page = await ctx.newPage(); await page.addInitScript(() => { window.__GL_SKIP_TITLE = true; });
     page.on('pageerror', e => errs.push('PAGEERR ' + e.message));
     page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::|Failed to load resource/.test(m.text())) errs.push('console: ' + m.text()); });
     await page.goto(BASE + '/gay-life/tests/');
@@ -901,6 +903,102 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ev(page, () => GL.emit('poi', 'club')); await row('Club betreten'); await waitFade(page); await page.waitForTimeout(800);
   await setH(5); await page.waitForTimeout(2500); await waitFade(page).catch(() => {}); await page.waitForTimeout(800);
   ok(await ev(page, () => GL.W.inside === 0), 'Um 5 Uhr schließt der Club und man steht draußen');
+  await ctx.close();
+}
+
+/* ---------- 14. Ladebildschirm, Startmenü, Konsolen-Steuerung ---------- */
+{
+  const { ctx, page } = await newPage(undefined, true);
+  await page.goto(BASE + '/gay-life/tests/'); await page.evaluate(() => localStorage.clear());
+  await page.goto(BASE + '/gay-life/index.html');
+  await page.waitForFunction(() => window.GL && GL.start && getComputedStyle(document.getElementById('title')).display !== 'none', null, { timeout: 30000 });
+  ok(await ev(page, () => !GL.W), 'Startmenü zuerst: die Stadt ist noch nicht gebaut');
+  await page.waitForFunction(() => getComputedStyle(document.getElementById('boot')).display === 'none', null, { timeout: 8000 });
+  ok(true, 'Ladebildschirm verschwindet nach dem Start');
+  const m0 = await ev(page, () => [...document.querySelectorAll('#title .mi')].map(b => b.querySelector('b').textContent));
+  ok(m0.join('|') === 'Spiel starten|Charakter|Minispiele|Mehrspieler|Einstellungen|Info & Hilfe', 'Menüpunkte: ' + m0.join(', '));
+  await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown');
+  ok(await ev(page, () => document.querySelector('#title .mi.sel b').textContent) === 'Minispiele', 'Pfeiltasten wählen Menüpunkte');
+  // Einstellungen
+  await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
+  ok(await ev(page, () => /Touch-Steuerung/.test(document.getElementById('title').textContent)), 'Einstellungen zeigen Ton, Grafik und Touch-Steuerung');
+  const snd0 = await ev(page, () => GL.S.sound); await page.keyboard.press('Enter');
+  ok(await ev(page, () => GL.S.sound) === !snd0, 'Ton lässt sich im Startmenü umschalten');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Escape');
+  ok(await ev(page, () => document.querySelector('#title .mi b').textContent) === 'Spiel starten', 'Esc führt zurück ins Hauptmenü');
+  // Minispiele und zurück
+  await page.click('#title .mi:nth-child(3)');
+  ok(await ev(page, () => document.getElementById('hub').style.display !== 'none' && !!document.getElementById('glTitle') && document.querySelectorAll('.gcard').length >= 8), 'Minispiele: Übersicht mit Zurück-Taste zum Startmenü');
+  await page.click('#glTitle');
+  ok(await ev(page, () => document.getElementById('title').style.display !== 'none' && document.getElementById('hub').style.display === 'none'), 'Zurück zum Startmenü');
+  // Charakter und zurück
+  await page.click('#title .mi:nth-child(2)'); await page.waitForSelector('#mOk');
+  await page.click('#mOk');
+  ok(await ev(page, () => document.getElementById('title').style.display !== 'none' && !GL.W), 'Charakter „Fertig“ führt zum Startmenü zurück');
+  // Spielen
+  await page.click('#title .mi:nth-child(1)');
+  await page.waitForFunction(() => GL.W && GL.W.on, null, { timeout: 30000 });
+  ok(await ev(page, () => document.getElementById('title').style.display === 'none'), 'Spiel starten baut die Stadt und blendet das Menü aus');
+  await page.waitForFunction(() => getComputedStyle(document.getElementById('boot')).display === 'none', null, { timeout: 8000 });
+  ok(await ev(page, () => !document.getElementById('world').classList.contains('tch')), 'Am Rechner ohne Touch: keine Bildschirmtasten');
+  // Pausenmenü und Startmenü
+  await closeDialogs(page);
+  await page.keyboard.press('Escape');
+  ok(await ev(page, () => document.getElementById('maps').dataset.k === 'pause'), 'Esc öffnet das Pausenmenü');
+  await page.click('#maps .row2:nth-child(7)');
+  ok(await ev(page, () => document.getElementById('title').style.display !== 'none' && !GL.W.on), 'Pause → Startmenü verlässt die Stadt');
+  await page.click('#title .mi:nth-child(1)');
+  await page.waitForFunction(() => GL.W.on, null, { timeout: 30000 });
+  ok(await ev(page, () => GL.W.on && GL.W.inside === 0), 'Wieder in der Stadt');
+  await ctx.close();
+}
+{
+  const { ctx, page } = await newPage({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
+  await boot(page);
+  const box = id => ev(page, id => { const r = document.getElementById(id).getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, w: r.width }; }, id);
+  const ids = ['stk', 'bA', 'bB', 'bX', 'bY'], B = {}; for (const i of ids) B[i] = await box(i);
+  const inside = ids.every(i => B[i].l >= 0 && B[i].r <= 390 && B[i].t >= 0 && B[i].b <= 780 && B[i].w > 40);
+  ok(inside, 'Stick und vier Tasten liegen im Bildschirm (Hochformat)');
+  ok(B.stk.l < 195 && B.bA.l > 195 && B.bB.l > 195 && B.bX.l > 195 && B.bY.l > 195, 'Stick links, vier Tasten rechts');
+  ok(B.bA.t > B.bY.t && B.bB.l > B.bX.l, 'Tasten als Raute: Y oben, A unten, X links, B rechts');
+  const ov = (a, b) => !(a.r <= b.l || b.r <= a.l || a.b <= b.t || b.b <= a.t);
+  ok(!ov(B.bA, B.bB) && !ov(B.bA, B.bX) && !ov(B.bY, B.bB) && !ov(B.bY, B.bX) && !ov(B.stk, B.bX), 'Tasten überlappen sich nicht');
+  // Stick in alle Richtungen
+  const dirs = await ev(page, async () => {
+    const sk = document.getElementById('stk'), r = sk.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, o = { pointerId: 9, pointerType: 'touch', bubbles: true, isPrimary: true }, out = [];
+    sk.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ clientX: cx, clientY: cy }, o)));
+    for (const a of [0, 90, 180, 270, 45]) { const rad = a * Math.PI / 180; sk.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: cx + Math.sin(rad) * 80, clientY: cy - Math.cos(rad) * 80 }, o))); out.push([a, +GL.W.jx.toFixed(2), +GL.W.jz.toFixed(2)]); }
+    sk.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: cx + 2, clientY: cy }, o))); out.push(['mitte', GL.W.jx, GL.W.jz]);
+    sk.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: cx, clientY: cy }, o))); out.push(['los', GL.W.jx, GL.W.jz]);
+    return out;
+  });
+  ok(dirs[0][2] > .95 && dirs[1][1] > .95 && dirs[2][2] < -.95 && dirs[3][1] < -.95 && Math.abs(dirs[4][1] - .71) < .05, 'Stick liefert 360° analog (oben, rechts, unten, links, Diagonale)');
+  ok(dirs[5][1] === 0 && dirs[5][2] === 0 && dirs[6][1] === 0, 'Totzone in der Mitte, beim Loslassen steht die Figur');
+  // Y: Pause, X: Handy, B: Orte, A: Aktion
+  await page.tap('#bY');
+  ok(await ev(page, () => document.getElementById('maps').dataset.k === 'pause'), 'Y öffnet das Pausenmenü');
+  await page.tap('#mx');
+  await page.tap('#bX');
+  ok(await ev(page, () => GL.phone.isOpen()), 'X öffnet das Handy');
+  await page.tap('#pclose');
+  await page.tap('#bB');
+  ok(await ev(page, () => GL.phone.isOpen() && /Orte|Karte/i.test(document.querySelector('#phone').textContent)), 'B öffnet die Orte-Karte im Handy');
+  await page.tap('#pclose');
+  const hp = await ev(page, () => ({ x: GL.W.pois.home.x, z: GL.W.pois.home.z })); await goTo(page, hp.x, hp.z);
+  await page.tap('#bA'); await waitFade(page);
+  ok(await ev(page, () => GL.W.inside === 1), 'A löst die Aktion aus (Wohnung betreten)');
+  // Kamera per Wischen auf dem Bild
+  const y0 = await ev(page, () => GL.W.camYaw);
+  await ev(page, () => { const cv = document.getElementById('wc'), o = { pointerId: 11, pointerType: 'touch', bubbles: true, isPrimary: true }; cv.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ clientX: 200, clientY: 300 }, o))); cv.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: 260, clientY: 300 }, o))); cv.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: 260, clientY: 300 }, o))); });
+  ok(Math.abs(await ev(page, () => GL.W.camYaw) - y0) > .2, 'Wischen auf dem Bild dreht die Kamera');
+  await ctx.close();
+}
+{
+  const { ctx, page } = await newPage({ viewport: { width: 780, height: 360 }, hasTouch: true, isMobile: true });
+  await boot(page);
+  const ok2 = await ev(page, () => ['stk', 'bA', 'bB', 'bX', 'bY'].every(id => { const r = document.getElementById(id).getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && r.width > 30; }));
+  ok(ok2, 'Querformat (780×360): Stick und Tasten sichtbar und im Bild');
   await ctx.close();
 }
 
