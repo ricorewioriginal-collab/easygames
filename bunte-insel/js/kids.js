@@ -8,7 +8,7 @@ BI.createKids = function (G) {
 
   /* ---------- Sammelalbum ---------- */
   const ST = [
-    ['ride', '🚗', 'Erste Fahrt', 'Steig in ein Fahrzeug'], ['heli', '🚁', 'Hubschrauber-Pilot', 'Flieg mit dem Hubschrauber'], ['train', '🚂', 'Lokführer', 'Fahr den Zug'], ['boat', '⛵', 'Kapitän', 'Segle mit dem Boot'],
+    ['ride', '🚗', 'Erste Fahrt', 'Steig in ein Fahrzeug'], ['play', '🎠', 'Spielplatz-Profi', 'Schaukle, rutsche oder wippe'], ['heli', '🚁', 'Hubschrauber-Pilot', 'Flieg mit dem Hubschrauber'], ['train', '🚂', 'Lokführer', 'Fahr den Zug'], ['boat', '⛵', 'Kapitän', 'Segle mit dem Boot'],
     ['shoot', '🎯', 'Zielschütze', 'Spiel in der Schießbude'], ['tree', '🌳', 'Baumhauer', 'Hau einen Baum'], ['build', '🏠', 'Baumeister', 'Bau ein Teil'], ['sleep', '😴', 'Gut geschlafen', 'Schlaf in deinem Bett'],
     ['photo', '📸', 'Fotograf', 'Mach ein Foto'], ['music', '🎹', 'Musikant', 'Spiel auf dem Klavier'], ['paint', '🎨', 'Maler', 'Mal ein Bild'], ['quiz', '🧠', 'Schlaukopf', 'Spiel ein Lernspiel'],
     ['pet', '🐾', 'Haustierfreund', 'Füttere dein Haustier'], ['treasure', '🗺️', 'Schatzsucher', 'Finde einen Schatz'], ['friend', '👥', 'Freunde', 'Spiel mit einem Freund'], ['mini', '🎮', 'Spielprofi', 'Spiel ein Mini-Spiel'],
@@ -71,13 +71,13 @@ BI.createKids = function (G) {
   $('photoSave').addEventListener('click', () => { if (bigI < 0) return; const a = document.createElement('a'); a.href = photos[bigI]; a.download = 'bunte-insel-foto.jpg'; document.body.appendChild(a); a.click(); a.remove(); });
 
   /* ---------- Musik machen ---------- */
-  const NOTES = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25], NCOL = ['#ff5a5a', '#ff8a1f', '#ffd23f', '#4cd07d', '#2dc4c4', '#4da3ff', '#b36bff', '#ff8fc8'];
+  const NOTES = [261.63, 293.66, 329.63, 349.23, 392.0, 440.0, 493.88, 523.25], NLAB = ['C', 'D', 'E', 'F', 'G', 'A', 'H', 'C'], NCOL = ['#ff5a5a', '#ff8a1f', '#ffd23f', '#4cd07d', '#2dc4c4', '#4da3ff', '#b36bff', '#ff8fc8'];
   const INST = [['🎹', 'Klavier'], ['🎶', 'Xylophon'], ['🎺', 'Trompete'], ['🥁', 'Trommeln']], KEYS = ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK']; let inst = 0, noteN = 0;
   function buildMusic() {
     const tabs = $('musicTabs'), keys = $('musicKeys'); tabs.innerHTML = ''; keys.innerHTML = '';
     INST.forEach((it, i) => { const b = document.createElement('button'); b.className = 'bt' + (i === inst ? ' sel' : ''); b.textContent = it[0] + ' ' + it[1]; b.onclick = () => { inst = i; buildMusic(); }; tabs.appendChild(b); });
     const n = inst === 3 ? 4 : 8; keys.className = 'mkeys' + (inst === 3 ? ' drums' : '');
-    for (let i = 0; i < n; i++) { const b = document.createElement('button'); b.style.background = NCOL[inst === 3 ? i * 2 : i]; b.textContent = inst === 3 ? ['🥁', '🪘', '✨', '🔔'][i] : ''; b.setAttribute('aria-label', 'Ton ' + (i + 1)); const go = e => { e.preventDefault(); A.resume(); K.play(inst, i); b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 120); }; b.addEventListener('pointerdown', go); keys.appendChild(b); }
+    for (let i = 0; i < n; i++) { const b = document.createElement('button'); b.style.background = NCOL[inst === 3 ? i * 2 : i]; b.textContent = inst === 3 ? ['🥁', '🪘', '✨', '🔔'][i] : NLAB[i]; b.setAttribute('aria-label', 'Ton ' + (i + 1)); const go = e => { e.preventDefault(); A.resume(); K.play(inst, i); b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 120); }; b.addEventListener('pointerdown', go); keys.appendChild(b); }
   }
   K.play = function (ins, i, remoteAv) {
     if (ins === 3) A.drum(i, remoteAv ? .5 : 1); else A.note(NOTES[i % 8], ins, remoteAv ? .5 : 1);
