@@ -194,8 +194,16 @@ BI.buildWorld = function (scene) {
 
   /* ---------- Boden ---------- */
   const GRASS = 0x89c879, SAND = 0xf2dfb5, ASPH = 0x586c7c, STONE = 0xd9d3c4;
-  st.disc(0, 0, K.R + 12, 0, GRASS, 72);
-  st.ring(0, 0, 165, K.R + 12, .012, SAND, 72);
+  { /* Boden der Hauptinsel; an der Küste (Südosten) ist ein Loch für die Atlantis-Treppe: Polarzellen, nur rund ums Loch fein */
+    const pit = BI.ATLANTIS && BI.ATLANTIS.pit, TAU2 = Math.PI * 2, D5 = Math.PI / 36, Rg = K.R + 12;
+    const polar = (r0, r1, y, color) => {
+      if (!pit) { st.ring(0, 0, r0, r1, y, color, 72); return; }
+      const f0 = Math.round(pit.a / D5) * D5 - D5, f1 = f0 + 2 * D5, d1 = Math.PI / 180;
+      st.ring(0, 0, r0, r1, y, color, Math.round(f0 / D5), 0, f0); st.ring(0, 0, r0, r1, y, color, Math.round((TAU2 - f1) / D5), f1, TAU2);
+      for (let r = r0; r < r1; r += 2) for (let a = f0; a < f1 - 1e-6; a += d1) { if (a >= pit.a - pit.da - 1e-6 && a < pit.a + pit.da - 1e-6 && r < pit.r0 + pit.L + pit.land + 1 && r + 2 > pit.r0) continue; st.ring(0, 0, r, Math.min(r + 2, r1), y, color, 1, a, a + d1); }
+    };
+    st.disc(0, 0, 142, 0, GRASS, 72); polar(140, Rg, 0, GRASS); polar(165, Rg, .012, SAND);
+  }
   for (let i = 0, tries = 0; i < 46 && tries < 400; tries++) { // Wiesenflecken
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 155, x = Math.sin(a) * d, z = Math.cos(a) * d, r = rr(6, 16);
     if (nearRoad(x, z, r) || W.railSdf(x, z) < r + 5) continue; i++;
@@ -701,6 +709,10 @@ BI.buildWorld = function (scene) {
   const cloudMat = new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0x555a66 });
   clouds.add(cb.mesh(cloudMat)); scene.add(clouds); W.clouds = clouds; W.cloudMat = cloudMat;
   const water = new THREE.Mesh(new THREE.CircleGeometry(900, 40), new THREE.MeshLambertMaterial({ color: 0x3aa8e8 }));
+  if (BI.ATLANTIS && BI.ATLANTIS.pit) { /* Wasser mit Loch über der Atlantis-Treppe, sonst läge das Meer über den Stufen */
+    const q = BI.ATLANTIS.pit, sh = new THREE.Shape(), ho = new THREE.Path(), c = [[-.2, -6.2], [q.L + q.land + 2, -6.2], [q.L + q.land + 2, 6.2], [-.2, 6.2]].map(([t, l]) => { const r = BI.ATLANTIS.pitPt(t, l); return [r[0], -r[1]]; });
+    sh.absarc(0, 0, 900, 0, Math.PI * 2, false); ho.moveTo(c[0][0], c[0][1]); for (let i = 1; i < 4; i++) ho.lineTo(c[i][0], c[i][1]); ho.closePath(); sh.holes.push(ho); water.geometry.dispose(); water.geometry = new THREE.ShapeGeometry(sh, 40);
+  }
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water; W.bigMeshes.push(water);
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam; W.bigMeshes.push(foam);
@@ -729,6 +741,7 @@ BI.buildWorld = function (scene) {
     } return { x: 0, z: 30 };
   };
   W.groundY = (x, z) => {
+    if (W.atlPit) { const h = W.atlPit.floor(x, z); if (h !== null) return h; }
     if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
     if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
     if (W.radio) { const h = W.radio.floor(x, z); if (h) return h; }

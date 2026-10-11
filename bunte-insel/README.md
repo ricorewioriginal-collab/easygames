@@ -219,7 +219,7 @@ Auswahl-Knöpfe zeigen jetzt ein kleines 3D-Bild des echten Teils: Frisuren, Hü
 
 ### 🔱 Atlantis – die Stadt unter der Erde
 
-Eingang: leuchtendes Steintor am See der Hauptinsel (🧭 → Atlantis, E am Tor). Die Stadt liegt in einer eigenen Höhle (Kuppel mit Kristallsternen) und ist nach der alten **Sage von Atlantis** (Platon, gemeinfrei; ob es Atlantis gab, weiß niemand) gebaut: Ringe aus Land und Wasser mit Brücken, in der Mitte ein Stufenberg mit Tempel und dem „Herz von Atlantis“. Alles Konkrete ist eigen erfunden.
+Eingang: eine **breite Steintreppe an der Südküste der Hauptinsel** (neben dem Steg, 🧭 → Atlantis): sie führt 5,5 m nach unten in einen überdachten Gang; am Ende geht es nahtlos nach Atlantis, und zurück läuft man die Treppe in der Stadt hinauf (kein Knopfdruck nötig). Die Stadt liegt in einer eigenen Höhle (Kuppel mit Kristallsternen) und ist nach der alten **Sage von Atlantis** (Platon, gemeinfrei; ob es Atlantis gab, weiß niemand) gebaut: Ringe aus Land und Wasser mit Brücken, in der Mitte ein Stufenberg mit Tempel und dem „Herz von Atlantis“. Alles Konkrete ist eigen erfunden.
 
 Was es sonst nirgends gibt: **Aqua-Gleiter** (schwebende Fahrzeuge), **Schwerelos-Halle** (Mondschwerkraft, riesige Sprünge), **Kristall-Harfe** (8 Kristalle anschlagen, links nach rechts = Bonus), **Hologramm-Archiv** (die Sage in 5 Bildern, kindgerecht, als Sage gekennzeichnet), **Orichalcum-Splitter** (72 Stück, je 10 = 1 ⭐), **Delfin-Drohnen** und **Leuchtquallen**, Highlight-Spiel **💧 Strömungs-Rätsel** (Leitungs-Puzzle, Spielautomat im Ring). 5 Bewohner, eigene Musik, Einträge im Aufgaben-Log.
 
@@ -253,6 +253,22 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 - **Regenbogen-Brücke:** Der Zaun des Streichelzoos versperrte das Brückenende – das Eselgehege hat jetzt ein Tor zur Brücke.
 - **Dampfer-Hafen:** Der Dampfer ist begehbar (Gangway vom Kai, Deck, Weg um die Aufbauten).
 - **Doppelsprung für alle:** zweimal Springen drücken, auch im Lauf; keine Zubehör-Pflicht mehr.
+
+### 🐾 Mehr Leben in jeder Welt
+
+Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wird eine Welt erst, wenn man ihr nahekommt; bewegt und gezeichnet wird nur, was in der Nähe ist (Sparmodus: kürzere Sichtweite). Bewohner mit Menschengestalt kann man ansprechen.
+- 🏝️ **Hauptinsel:** Jogger, Wanderer, Gärtner, Hunde, Katzen, Hoppel-Hasen, Eichhörnchen, Igel, Tauben, Schmetterlinge, Möwen, Strandkrabben.
+- 🏙️ **Stadt:** Geschäftsleute, Touristen, Straßenmusiker, Tauben, Katzen, Hunde.
+- 🎡 **Freizeitpark:** Kinder, Clowns, Bärchen-Maskottchen, Tauben, Eichhörnchen, Schmetterlinge.
+- 🌈 **Regenbogenwelt:** bunte Feiernde, Einhörner, Schmetterlinge, Möwen.
+- 🎬 **Dampfer-Hafen:** Matrosen und Hafenarbeiter in Schwarz-Weiß, Dampfer-Mäuse, Möwen.
+- 🐶 **Fellretter-Bucht:** Hunde, Welpen, Katzen, Hasen, Fellretter und Tierärztin.
+- 🐉 **Drachenhöhen:** Babydrachen, Ritter, Zauberer, Fledermäuse.
+- 🏗️ **Bauland:** Bauarbeiter, Roboter, Rehe, Hasen, Tauben, Schmetterlinge.
+- ⭐ **Lunaris:** Mooslinge, Fuchsleute, Wächter, Gelehrte und Händler, Irrlichter.
+- 📻 **Funkwelle:** DJs, tanzende Fans, Roboter, schwebende Noten.
+- 🔱 **Atlantis:** Meerleute, Fischschwärme, Quallen, Krabben.
+- Quelltext: `js/life.js`.
 
 ### 🚚 Umziehen im Baumenü + Fahrzeuge für jedes Haus
 
