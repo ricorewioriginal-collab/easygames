@@ -2,29 +2,19 @@ import { lerp3, quatNormalize, quatSlerp } from './math';
 import type { CarState, Phase, SimState } from './types';
 
 /**
- * Kompakter Netzwerk-Schnappschuss (Little Endian). Enthält den gesamten dynamischen Zustand für sauberes Weiterrechnen.
- * Aufbau: Kopf (35 B) | je Auto 40 B | Ball 18 B | je Pad 2 B | Prüfsumme (FNV-1a, 4 B)
- * Quantisierung: Positionen Int16 (1/512 m, ±64 m), Geschwindigkeiten Int16 (1/400 m/s), Winkelgeschwindigkeit Int16 (1/2000 rad/s),
- * Quaternion als drei Int16 (w ≥ 0 wird rekonstruiert), Zeiten/Boost als Uint16 (Millisekunden bzw. 1/100).
+ * Kompakter Netzwerk-Schnappschuss (Little Endian). Enthält den gesamten dynamischen Zustand für sauberes Weiterrechnen
+ * (Rollback-Vorhersage): Float32 für alle Vektoren/Zeiten (Fehler ~1e-6 relativ, damit diskrete Schwellen der Sim nicht kippen),
+ * Quaternion als drei Float32 (w ≥ 0 wird rekonstruiert), Phase/Uhr als Float64.
+ * Aufbau: Kopf (35 B) | je Auto 71 B | Ball 36 B | je Pad 2 B | Prüfsumme (FNV-1a, 4 B). Sechs Autos + 34 Pads: 569 Byte.
  */
 const MAGIC0 = 0x54;
 const MAGIC1 = 0x4b;
-const VERSION = 2;
+const VERSION = 3;
 const HEADER = 35;
-const CAR_BYTES = 40;
-const BALL_BYTES = 18;
+const CAR_BYTES = 71;
+const BALL_BYTES = 36;
 const PHASES: readonly Phase[] = ['countdown', 'playing', 'goal', 'ended'];
-
-const POS_SCALE = 512;
-const VEL_SCALE = 400;
-const ANG_SCALE = 2000;
-const QUAT_SCALE = 32767;
 const PAD_TIME_SCALE = 1000;
-
-function q16(v: number, scale: number): number {
-  const r = Math.round(v * scale);
-  return r > 32767 ? 32767 : r < -32768 ? -32768 : r;
-}
 
 function u16(v: number, scale: number): number {
   const r = Math.round(v * scale);
@@ -71,26 +61,28 @@ export function encodeSnapshot(s: SimState): Uint8Array {
   o += 8;
   dv.setUint32(o, s.rngState >>> 0, true);
   o += 4;
-  // o == HEADER
-  const vec = (a: ArrayLike<number>, scale: number): void => {
-    for (let k = 0; k < 3; k++) {
-      dv.setInt16(o, q16(a[k] as number, scale), true);
-      o += 2;
-    }
+  const f32 = (v: number): void => {
+    dv.setFloat32(o, v, true);
+    o += 4;
+  };
+  const vec = (a: ArrayLike<number>): void => {
+    f32(a[0] as number);
+    f32(a[1] as number);
+    f32(a[2] as number);
   };
   for (const c of s.cars) {
-    vec(c.pos, POS_SCALE);
-    let sg = c.quat[3] < 0 ? -1 : 1;
+    vec(c.pos);
     const ql = Math.sqrt(c.quat[0] ** 2 + c.quat[1] ** 2 + c.quat[2] ** 2 + c.quat[3] ** 2) || 1;
-    sg /= ql;
-    for (let k = 0; k < 3; k++) {
-      dv.setInt16(o, q16((c.quat[k] as number) * sg, QUAT_SCALE), true);
-      o += 2;
-    }
-    vec(c.vel, VEL_SCALE);
-    vec(c.angVel, ANG_SCALE);
-    dv.setUint16(o, u16(c.boost, 100), true);
-    o += 2;
+    const sg = (c.quat[3] < 0 ? -1 : 1) / ql;
+    f32((c.quat[0] as number) * sg);
+    f32((c.quat[1] as number) * sg);
+    f32((c.quat[2] as number) * sg);
+    vec(c.vel);
+    vec(c.angVel);
+    f32(c.boost);
+    f32(c.demolished);
+    f32(c.dodgeTimer);
+    f32(c.jumpTimer);
     const flags =
       (c.jumpUsed ? 1 : 0) |
       (c.canDodge ? 2 : 0) |
@@ -103,20 +95,15 @@ export function encodeSnapshot(s: SimState): Uint8Array {
       (c.input.handbrake ? 1 << 10 : 0);
     dv.setUint16(o, flags, true);
     o += 2;
-    dv.setUint16(o, u16(c.demolished, 1000), true);
-    dv.setUint16(o + 2, u16(c.dodgeTimer, 1000), true);
-    dv.setUint16(o + 4, u16(c.jumpTimer, 1000), true);
-    o += 6;
     dv.setInt8(o++, i8(c.input.throttle));
     dv.setInt8(o++, i8(c.input.steer));
     dv.setInt8(o++, i8(c.input.pitch));
     dv.setInt8(o++, i8(c.input.yaw));
     dv.setInt8(o++, i8(c.input.roll));
-    out[o++] = c.id & 255;
   }
-  vec(s.ball.pos, POS_SCALE);
-  vec(s.ball.vel, VEL_SCALE);
-  vec(s.ball.angVel, ANG_SCALE);
+  vec(s.ball.pos);
+  vec(s.ball.vel);
+  vec(s.ball.angVel);
   for (const p of s.pads) {
     dv.setUint16(o, p.active ? 0 : Math.max(1, u16(p.timer, PAD_TIME_SCALE)), true);
     o += 2;
@@ -139,20 +126,22 @@ export function decodeSnapshot(bytes: Uint8Array, into: SimState): boolean {
     if (dv.getUint32(end, true) !== fnv(bytes, end)) return false;
     const phaseIdx = bytes[5] as number;
     const fl = bytes[6] as number;
-    if (phaseIdx > 3 || fl > 7 || (fl >> 1) > 2) return false;
+    if (phaseIdx > 3 || fl > 7 || fl >> 1 > 2) return false;
     const phaseTimer = dv.getFloat64(15, true);
     const clock = dv.getFloat64(23, true);
     if (!Number.isFinite(phaseTimer) || !Number.isFinite(clock)) return false;
 
-    // Vorprüfung der Quaternionen (nichts schreiben, bevor alles gültig ist)
+    // Vorprüfung aller Fließkommawerte und Quaternionen (nichts schreiben, bevor alles gültig ist)
     let o = HEADER;
     for (let i = 0; i < nCars; i++) {
-      const x = dv.getInt16(o + 6, true) / QUAT_SCALE;
-      const y = dv.getInt16(o + 8, true) / QUAT_SCALE;
-      const z = dv.getInt16(o + 10, true) / QUAT_SCALE;
+      for (let k = 0; k < 16; k++) if (!Number.isFinite(dv.getFloat32(o + k * 4, true))) return false;
+      const x = dv.getFloat32(o + 12, true);
+      const y = dv.getFloat32(o + 16, true);
+      const z = dv.getFloat32(o + 20, true);
       if (x * x + y * y + z * z > 1.01) return false;
       o += CAR_BYTES;
     }
+    for (let k = 0; k < 9; k++) if (!Number.isFinite(dv.getFloat32(o + k * 4, true))) return false;
 
     into.phase = PHASES[phaseIdx] as Phase;
     into.overtime = (fl & 1) === 1;
@@ -166,28 +155,33 @@ export function decodeSnapshot(bytes: Uint8Array, into: SimState): boolean {
     into.clock = clock;
     into.rngState = dv.getUint32(31, true);
     o = HEADER;
-    const vec = (a: number[], scale: number): void => {
-      for (let k = 0; k < 3; k++) {
-        a[k] = dv.getInt16(o, true) / scale;
-        o += 2;
-      }
+    const f32 = (): number => {
+      const v = dv.getFloat32(o, true);
+      o += 4;
+      return v;
+    };
+    const vec = (a: number[]): void => {
+      a[0] = f32();
+      a[1] = f32();
+      a[2] = f32();
     };
     for (let i = 0; i < nCars; i++) {
       const c = into.cars[i] as CarState;
-      vec(c.pos, POS_SCALE);
-      const x = dv.getInt16(o, true) / QUAT_SCALE;
-      const y = dv.getInt16(o + 2, true) / QUAT_SCALE;
-      const z = dv.getInt16(o + 4, true) / QUAT_SCALE;
-      o += 6;
+      vec(c.pos);
+      const x = f32();
+      const y = f32();
+      const z = f32();
       c.quat[0] = x;
       c.quat[1] = y;
       c.quat[2] = z;
       c.quat[3] = Math.sqrt(Math.max(0, 1 - x * x - y * y - z * z));
       quatNormalize(c.quat);
-      vec(c.vel, VEL_SCALE);
-      vec(c.angVel, ANG_SCALE);
-      c.boost = Math.min(100, dv.getUint16(o, true) / 100);
-      o += 2;
+      vec(c.vel);
+      vec(c.angVel);
+      c.boost = Math.min(100, Math.max(0, f32()));
+      c.demolished = Math.max(0, f32());
+      c.dodgeTimer = Math.max(0, f32());
+      c.jumpTimer = Math.max(0, f32());
       const flags = dv.getUint16(o, true);
       o += 2;
       c.jumpUsed = (flags & 1) !== 0;
@@ -199,20 +193,15 @@ export function decodeSnapshot(bytes: Uint8Array, into: SimState): boolean {
       c.input.jump = (flags & (1 << 8)) !== 0;
       c.input.boost = (flags & (1 << 9)) !== 0;
       c.input.handbrake = (flags & (1 << 10)) !== 0;
-      c.demolished = dv.getUint16(o, true) / 1000;
-      c.dodgeTimer = dv.getUint16(o + 2, true) / 1000;
-      c.jumpTimer = dv.getUint16(o + 4, true) / 1000;
-      o += 6;
       c.input.throttle = dv.getInt8(o++) / 127;
       c.input.steer = dv.getInt8(o++) / 127;
       c.input.pitch = dv.getInt8(o++) / 127;
       c.input.yaw = dv.getInt8(o++) / 127;
       c.input.roll = dv.getInt8(o++) / 127;
-      c.id = bytes[o++] as number;
     }
-    vec(into.ball.pos, POS_SCALE);
-    vec(into.ball.vel, VEL_SCALE);
-    vec(into.ball.angVel, ANG_SCALE);
+    vec(into.ball.pos);
+    vec(into.ball.vel);
+    vec(into.ball.angVel);
     for (let i = 0; i < nPads; i++) {
       const t = dv.getUint16(o, true);
       o += 2;

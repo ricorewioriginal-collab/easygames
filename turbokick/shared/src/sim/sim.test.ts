@@ -278,7 +278,8 @@ describe('Regeln', () => {
   it('Ablauf: Countdown 3,2,1 → Anstoß → Tor → Feier → neuer Anstoß', () => {
     const sim = new Sim({ cars: [{ team: 0 }, { team: 1 }], seed: 3 });
     const ev: SimEvent[] = [];
-    const tickOf = (pred: (e: SimEvent) => boolean, list: SimEvent[][]): number => list.findIndex((l) => l.some(pred));
+    const tickOf = (pred: (e: SimEvent) => boolean, list: SimEvent[][]): number =>
+      list.findIndex((l) => l.some(pred));
     const per: SimEvent[][] = [];
     for (let i = 0; i < 200; i++) {
       const e = sim.step([]);
@@ -377,8 +378,19 @@ describe('Boost-Pads und Demolition', () => {
   it('Pads sind symmetrisch (Spiegelung an x und z)', () => {
     const s = createSimState({ cars: [], seed: 1 });
     for (const p of s.pads) {
-      for (const [mx, mz] of [[-1, 1], [1, -1], [-1, -1]] as const) {
-        expect(s.pads.some((q) => q.big === p.big && Math.abs(q.pos[0] - p.pos[0] * mx) < 1e-9 && Math.abs(q.pos[2] - p.pos[2] * mz) < 1e-9)).toBe(true);
+      for (const [mx, mz] of [
+        [-1, 1],
+        [1, -1],
+        [-1, -1],
+      ] as const) {
+        expect(
+          s.pads.some(
+            (q) =>
+              q.big === p.big &&
+              Math.abs(q.pos[0] - p.pos[0] * mx) < 1e-9 &&
+              Math.abs(q.pos[2] - p.pos[2] * mz) < 1e-9,
+          ),
+        ).toBe(true);
       }
     }
   });
@@ -446,10 +458,12 @@ describe('Determinismus und Robustheit', () => {
     for (let i = 0; i < 3000; i++) {
       sim.step(cars.map(() => randomInput(rng)));
       for (const c of sim.state.cars) {
-        for (const x of [...c.pos, ...c.vel, ...c.angVel, ...c.quat, c.boost]) expect(Number.isFinite(x)).toBe(true);
+        for (const x of [...c.pos, ...c.vel, ...c.angVel, ...c.quat, c.boost])
+          expect(Number.isFinite(x)).toBe(true);
         if (c.demolished <= 0) worstCar = Math.min(worstCar, arenaDistance(c.pos, d).dist);
       }
-      for (const x of [...sim.state.ball.pos, ...sim.state.ball.vel, ...sim.state.ball.angVel]) expect(Number.isFinite(x)).toBe(true);
+      for (const x of [...sim.state.ball.pos, ...sim.state.ball.vel, ...sim.state.ball.angVel])
+        expect(Number.isFinite(x)).toBe(true);
       worstBall = Math.min(worstBall, arenaDistance(sim.state.ball.pos, d).dist);
     }
     expect(worstCar).toBeGreaterThan(-0.3);
@@ -458,7 +472,13 @@ describe('Determinismus und Robustheit', () => {
 
   it('ungültige Eingaben (NaN, Strings) werden neutralisiert', () => {
     const sim = makeSim();
-    const bad = { throttle: NaN, steer: Infinity, pitch: 'x', jump: 1, boost: 'yes' } as unknown as Partial<CarInput>;
+    const bad = {
+      throttle: NaN,
+      steer: Infinity,
+      pitch: 'x',
+      jump: 1,
+      boost: 'yes',
+    } as unknown as Partial<CarInput>;
     for (let i = 0; i < 60; i++) sim.step([bad, undefined, null as unknown as undefined]);
     expect(speed(sim.state.cars[0]!.vel)).toBeLessThan(0.1);
   });

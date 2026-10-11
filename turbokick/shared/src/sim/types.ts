@@ -50,7 +50,16 @@ export interface CarInput {
   handbrake: boolean;
 }
 
-export const NEUTRAL_CAR_INPUT: Readonly<CarInput> = Object.freeze({ throttle: 0, steer: 0, pitch: 0, yaw: 0, roll: 0, jump: false, boost: false, handbrake: false });
+export const NEUTRAL_CAR_INPUT: Readonly<CarInput> = Object.freeze({
+  throttle: 0,
+  steer: 0,
+  pitch: 0,
+  yaw: 0,
+  roll: 0,
+  jump: false,
+  boost: false,
+  handbrake: false,
+});
 
 export interface CarState {
   /** 0 … n−1, fester Platz im Spiel */
@@ -164,5 +173,14 @@ export const clamp = (v: number, lo: number, hi: number): number => (v < lo ? lo
 export function clampInput(raw: unknown): CarInput {
   const r = (typeof raw === 'object' && raw !== null ? raw : {}) as Record<string, unknown>;
   const ax = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? clamp(v, -1, 1) : 0);
-  return { throttle: ax(r.throttle), steer: ax(r.steer), pitch: ax(r.pitch), yaw: ax(r.yaw), roll: ax(r.roll), jump: r.jump === true, boost: r.boost === true, handbrake: r.handbrake === true };
+  return {
+    throttle: ax(r.throttle),
+    steer: ax(r.steer),
+    pitch: ax(r.pitch),
+    yaw: ax(r.yaw),
+    roll: ax(r.roll),
+    jump: r.jump === true,
+    boost: r.boost === true,
+    handbrake: r.handbrake === true,
+  };
 }

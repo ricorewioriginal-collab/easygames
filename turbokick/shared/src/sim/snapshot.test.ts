@@ -40,11 +40,13 @@ describe('Schnappschuss', () => {
       const d = into.cars[i]!;
       for (let k = 0; k < 3; k++) {
         expect(Math.abs(c.pos[k]! - d.pos[k]!)).toBeLessThan(0.02);
-        expect(Math.abs(c.vel[k]! - d.vel[k]!)).toBeLessThan(0.01);
+        expect(Math.abs(c.vel[k]! - d.vel[k]!)).toBeLessThan(0.001);
       }
       const ql = Math.hypot(...d.quat);
       expect(Math.abs(ql - 1)).toBeLessThan(1e-9);
-      const dot = Math.abs(c.quat[0] * d.quat[0] + c.quat[1] * d.quat[1] + c.quat[2] * d.quat[2] + c.quat[3] * d.quat[3]);
+      const dot = Math.abs(
+        c.quat[0] * d.quat[0] + c.quat[1] * d.quat[1] + c.quat[2] * d.quat[2] + c.quat[3] * d.quat[3],
+      );
       expect(dot).toBeGreaterThan(0.99999);
       expect(d.jumpUsed).toBe(c.jumpUsed);
       expect(d.canDodge).toBe(c.canDodge);
@@ -117,7 +119,7 @@ describe('Schnappschuss', () => {
 
 describe('Rollback-Vorhersage', () => {
   it('encode → decode → loadState → 120 Ticks mit denselben Eingaben bleibt nahe am Original', () => {
-    for (const warm of [400, 900, 1500]) {
+    for (const warm of [300, 500, 700, 1100, 1300]) {
       const host = midGame(warm);
       const bytes = encodeSnapshot(host.state);
       const tmp = createSimState(config);
@@ -133,7 +135,8 @@ describe('Rollback-Vorhersage', () => {
         const a: SimState = host.state;
         const b: SimState = client.state;
         for (let k = 0; k < a.cars.length; k++) {
-          for (let j = 0; j < 3; j++) worst = Math.max(worst, Math.abs(a.cars[k]!.pos[j]! - b.cars[k]!.pos[j]!));
+          for (let j = 0; j < 3; j++)
+            worst = Math.max(worst, Math.abs(a.cars[k]!.pos[j]! - b.cars[k]!.pos[j]!));
         }
         for (let j = 0; j < 3; j++) worst = Math.max(worst, Math.abs(a.ball.pos[j]! - b.ball.pos[j]!));
       }

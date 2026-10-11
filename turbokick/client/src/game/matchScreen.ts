@@ -38,7 +38,6 @@ export class MatchScreen implements Screen {
   private ended = false;
   private disposed = false;
   private lastPhase = '';
-  private lastCountdown = -1;
   private pendingEvents: SimEvent[] = [];
   private goalPos = new THREE.Vector3();
   private startedAt = Date.now();

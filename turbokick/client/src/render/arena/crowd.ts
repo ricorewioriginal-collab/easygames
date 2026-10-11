@@ -59,7 +59,7 @@ export class StandsView {
         }
       }
       // Rückwand der Tribüne
-      stand.box(s * (W + 3.5 + SIDE_ROWS * ROW_D + 0.5), 7, 0, 1, 16, sideZ * 2 + 12, standCol.clone().multiplyScalar(0.7));
+      stand.box(s * (W + 3.5 + SIDE_ROWS * ROW_D + 0.5), 5.5, 0, 1, 13, sideZ * 2 + 12, standCol.clone().multiplyScalar(0.7));
       // LED-Bande direkt hinter dem Glas
       for (let z = -sideZ + 3; z < sideZ - 2; z += 6) {
         leds.box(s * (W + 2.6), 0.75, z, 0.12, 1.2, 5.4, ((z + sideZ) / 6) % 2 < 1 ? lineA : lineB);
@@ -80,7 +80,7 @@ export class StandsView {
           seats.push({ x: -endX + 1 + i * 1.1 + (k % 2) * 0.55 + rng.float(-0.12, 0.12), y: top, z: cz + rng.float(-0.12, 0.12), end: true });
         }
       }
-      stand.box(0, 7, s * (L + D + 3.5 + END_ROWS * ROW_D + 0.5), endX * 2 + 6, 16, 1, standCol.clone().multiplyScalar(0.7));
+      stand.box(0, 5.5, s * (L + D + 3.5 + END_ROWS * ROW_D + 0.5), endX * 2 + 6, 13, 1, standCol.clone().multiplyScalar(0.7));
       // Bande hinter dem Tor
       leds.box(0, 0.75, s * (L + 2.6), 0.12 + 32, 1.2, 0.12, s < 0 ? new THREE.Color(TEAM_COLORS[0]) : new THREE.Color(TEAM_COLORS[1]));
     }

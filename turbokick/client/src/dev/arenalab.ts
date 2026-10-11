@@ -12,6 +12,8 @@ import type { QualityLevel } from '../render/quality';
 interface LabState {
   errors: string[];
   frames: number;
+  calls?: number;
+  tris?: number;
 }
 
 /**
@@ -38,6 +40,7 @@ export function startArenaLab(params: URLSearchParams): void {
   engine.autoQuality = false;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(62, 1, 0.3, 1500);
+  (window as unknown as { __scene: THREE.Scene }).__scene = scene;
   const arena = createArena(theme, engine.quality);
   scene.add(arena.group);
   arena.applyTo(scene);
@@ -121,6 +124,8 @@ export function startArenaLab(params: URLSearchParams): void {
       const dt = rawDt * speed;
       t += dt;
       lab.frames++;
+      lab.calls = engine.renderer.info.render.calls;
+      lab.tris = engine.renderer.info.render.triangles;
       state.tick++;
       // Ball auf einer Bahn, damit Lichtpfütze und Wandglühen sichtbar werden
       const bx = Math.sin(t * 0.4) * 22;

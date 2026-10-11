@@ -3,7 +3,13 @@ import type { CarInput, SimConfig } from './types';
 
 /** Hilfen für die Headless-Tests (kein Teil der öffentlichen API) */
 export function makeSim(cars: Array<0 | 1> = [0], extra: Partial<SimConfig> = {}): Sim {
-  const sim = new Sim({ cars: cars.map((team) => ({ team })), seed: 1, training: true, pads: false, ...extra });
+  const sim = new Sim({
+    cars: cars.map((team) => ({ team })),
+    seed: 1,
+    training: true,
+    pads: false,
+    ...extra,
+  });
   skipCountdown(sim);
   return sim;
 }
@@ -13,7 +19,11 @@ export function skipCountdown(sim: Sim): void {
   for (let i = 0; i < 181 && sim.state.phase === 'countdown'; i++) sim.step([]);
 }
 
-export function run(sim: Sim, ticks: number, input: Partial<CarInput> | ((i: number) => Partial<CarInput>)): void {
+export function run(
+  sim: Sim,
+  ticks: number,
+  input: Partial<CarInput> | ((i: number) => Partial<CarInput>),
+): void {
   for (let i = 0; i < ticks; i++) sim.step([typeof input === 'function' ? input(i) : input]);
 }
 

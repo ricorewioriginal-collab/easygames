@@ -181,7 +181,12 @@ function collideCar(
   car.vel[1] -= dvy * T.carRecoil;
   car.vel[2] -= dvz * T.carRecoil;
   if (ev && rel > 1) {
-    ev.push({ t: 'touch', car: car.id, speed: rel, ballSpeed: Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) });
+    ev.push({
+      t: 'touch',
+      car: car.id,
+      speed: rel,
+      ballSpeed: Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]),
+    });
   }
   return true;
 }

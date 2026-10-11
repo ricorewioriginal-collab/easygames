@@ -270,7 +270,12 @@ function collideArena(car: CarState, grounded: boolean): void {
  * Ein Tick für ein (nicht zerstörtes) Auto: Eingabe übernehmen, Fahrmodell/Luftsteuerung/Sprung/Boost, Integration, Arena-Kollision.
  * Zeitabhängige Zustände (jumpTimer, dodgeTimer) liegen im CarState.
  */
-export function stepCar(car: CarState, raw: Partial<CarInput> | undefined, dt: number, events: SimEvent[]): void {
+export function stepCar(
+  car: CarState,
+  raw: Partial<CarInput> | undefined,
+  dt: number,
+  events: SimEvent[],
+): void {
   const prevJump = car.input.jump;
   sanitizeInto(car.input, raw);
   const inp = car.input;

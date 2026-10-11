@@ -146,8 +146,8 @@ class ArenaImpl implements ArenaView {
     this.pulseAge += dt;
     this.cheerAge += dt;
     u.uFlash.value.set(flashValue(this.flashAge[0]), flashValue(this.flashAge[1]));
-    const pk = Math.max(0, 1 - this.pulseAge / PULSE_TIME);
-    u.uPulse.value = pk * pk * (0.65 + 0.35 * Math.sin(this.pulseAge * 11));
+    const pk = this.pulseAge < PULSE_TIME ? 1 - this.pulseAge / PULSE_TIME : 0;
+    u.uPulse.value = pk > 0 ? pk * pk * (0.65 + 0.35 * Math.sin(this.pulseAge * 11)) : 0;
     const ck = Math.max(0, 1 - this.cheerAge / CHEER_TIME);
     u.uCheer.value = Math.min(1, ck * 2.2) * (ck > 0 ? 1 : 0);
 

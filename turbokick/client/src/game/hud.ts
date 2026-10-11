@@ -103,7 +103,8 @@ export class Hud {
   }
   show(text: string, sub: string, team: 0 | 1 | null, sticky = false): void {
     clear(this.banner);
-    this.banner.append(text, sub ? h('small', null, sub) : null);
+    this.banner.append(text);
+    if (sub) this.banner.append(h('small', null, sub));
     this.banner.className = 'banner' + (team === null ? '' : ' t' + team) + (sticky ? ' sticky' : '');
     void this.banner.offsetWidth;
     this.banner.classList.add('on');

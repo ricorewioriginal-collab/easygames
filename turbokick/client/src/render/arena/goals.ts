@@ -53,7 +53,7 @@ export class GoalsView {
     for (const s of [-1, 1]) {
       const team = s < 0 ? 0 : 1;
       const c = new THREE.Color(TEAM_COLORS[team]);
-      const hc = c.clone().multiplyScalar(0.55);
+      const hc = c.clone().multiplyScalar(0.4);
       const zf = s * L;
       const zb = s * (L + D);
       const zm = s * (L + D / 2);
@@ -62,21 +62,21 @@ export class GoalsView {
         halo.box(x, y, z, sx + thick, sy + thick, sz + thick, hc);
       };
       // Rahmen am Spielfeldrand
-      bar(-GW, GH / 2, zf, 0.5, GH + 0.5, 0.8, 1.2);
-      bar(GW, GH / 2, zf, 0.5, GH + 0.5, 0.8, 1.2);
-      bar(0, GH, zf, 2 * GW + 0.5, 0.5, 0.8, 1.2);
+      bar(-GW, GH / 2, zf, 0.4, GH + 0.4, 0.6, 0.7);
+      bar(GW, GH / 2, zf, 0.4, GH + 0.4, 0.6, 0.7);
+      bar(0, GH, zf, 2 * GW + 0.4, 0.4, 0.6, 0.7);
       // Rückseite (dünner)
-      bar(-GW, GH / 2, zb, 0.28, GH, 0.28, 0.7);
-      bar(GW, GH / 2, zb, 0.28, GH, 0.28, 0.7);
-      bar(0, GH, zb, 2 * GW, 0.28, 0.28, 0.7);
-      bar(-GW, GH, zm, 0.28, 0.28, D, 0.7);
-      bar(GW, GH, zm, 0.28, 0.28, D, 0.7);
+      bar(-GW, GH / 2, zb, 0.28, GH, 0.28, 0.45);
+      bar(GW, GH / 2, zb, 0.28, GH, 0.28, 0.45);
+      bar(0, GH, zb, 2 * GW, 0.28, 0.28, 0.45);
+      bar(-GW, GH, zm, 0.28, 0.28, D, 0.45);
+      bar(GW, GH, zm, 0.28, 0.28, D, 0.45);
     }
     const frameGeo = solid.build();
     const haloGeo = halo.build();
     this.geos.push(frameGeo, haloGeo);
     const frameMat = glowMaterial(u, 0, 1.15);
-    const haloMat = glowMaterial(u, 2, 1, 0.3);
+    const haloMat = glowMaterial(u, 2, 1, 0.28);
     this.mats.push(frameMat, haloMat);
     this.group.add(new THREE.Mesh(frameGeo, frameMat));
     const haloMesh = new THREE.Mesh(haloGeo, haloMat);

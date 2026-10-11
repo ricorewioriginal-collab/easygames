@@ -89,7 +89,7 @@ export function palette(theme: ArenaTheme): Palette {
         mast: 0x2a4766,
         lamp: 0xe8f8ff,
         beam: 0xbfe8ff,
-        beamAlpha: 0.1,
+        beamAlpha: 0.06,
       };
     case 'canyon':
       return {
@@ -98,7 +98,7 @@ export function palette(theme: ArenaTheme): Palette {
         skyBottom: 0xffa04a,
         ground: 0xc9783a,
         fog: 0xe08c46,
-        fogDensity: 0.0030,
+        fogDensity: 0.0021,
         skySunDir: [-0.45, 0.1, -0.88],
         skySunSize: 0.075,
         skySunCol: 0xffd68a,
@@ -125,7 +125,7 @@ export function palette(theme: ArenaTheme): Palette {
         mast: 0x4a2a1c,
         lamp: 0xffd9a0,
         beam: 0xffc27a,
-        beamAlpha: 0.08,
+        beamAlpha: 0.05,
       };
     default:
       return {
@@ -144,8 +144,8 @@ export function palette(theme: ArenaTheme): Palette {
         hemiSky: 0xa88cff,
         hemiGround: 0x2a1040,
         hemiIntensity: 1.25,
-        floorA: 0x171a36,
-        floorB: 0x1d2145,
+        floorA: 0x0f1228,
+        floorB: 0x151a38,
         floorLine: 0xffffff,
         floorGrid: 0x4a40a8,
         lineA: 0xff3da8,
@@ -161,7 +161,7 @@ export function palette(theme: ArenaTheme): Palette {
         mast: 0x201c48,
         lamp: 0xf2ecff,
         beam: 0xb48cff,
-        beamAlpha: 0.09,
+        beamAlpha: 0.055,
       };
   }
 }

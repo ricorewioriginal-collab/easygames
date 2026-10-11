@@ -48,7 +48,8 @@ export function create(app: App, params?: RouteParams): ScreenView {
       h('div', { class: 'chips' },
         btn(t('opt.export'), () => {
           const url = URL.createObjectURL(new Blob([s.exportJson()], { type: 'application/json' }));
-          const a = h('a', { href: url });
+          const a = document.createElement('a');
+          a.href = url;
           a.download = 'turbokick-spielstand.json';
           a.click();
           setTimeout(() => URL.revokeObjectURL(url), 2000);

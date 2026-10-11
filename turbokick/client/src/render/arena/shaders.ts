@@ -354,11 +354,12 @@ export function netMaterial(u: ArenaUniforms): THREE.ShaderMaterial {
       void main(){
         vec3 N = normalize(vN);
         vec2 g = abs(N.z) > 0.6 ? vW.xy : (abs(N.x) > 0.6 ? vW.zy : vW.xz);
-        vec2 r = vec2(g.x + g.y, g.x - g.y) / 0.5;
+        vec2 r = vec2(g.x + g.y, g.x - g.y) / 0.9;
         vec2 f = abs(fract(r) - 0.5);
         vec2 w = fwidth(r) * 1.2;
         float d = min(0.5 - f.x, 0.5 - f.y);
         float net = 1.0 - smoothstep(0.035, 0.035 + max(w.x, w.y) + 0.01, d);
+        net = mix(net, 0.3, smoothstep(0.2, 0.55, max(w.x, w.y)));
         bool neg = vW.z < 0.0;
         vec3 tc = neg ? uT0 : uT1;
         float depth = clamp((abs(vW.z) - 50.0) / 8.0, 0.0, 1.0);

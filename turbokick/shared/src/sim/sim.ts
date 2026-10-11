@@ -55,7 +55,12 @@ export function createSimState(config: SimConfig): SimState {
     pads:
       config.pads === false
         ? []
-        : BOOST_PADS.map((p) => ({ pos: [p.pos[0], p.pos[1], p.pos[2]] as Vec3, big: p.big, active: true, timer: 0 })),
+        : BOOST_PADS.map((p) => ({
+            pos: [p.pos[0], p.pos[1], p.pos[2]] as Vec3,
+            big: p.big,
+            active: true,
+            timer: 0,
+          })),
     lastTouch: -1,
     prevTouch: -1,
     winner: -1,
@@ -113,7 +118,8 @@ export function copyStateInto(src: SimState, dst: SimState): void {
   dst.prevTouch = src.prevTouch;
   dst.winner = src.winner;
   dst.rngState = src.rngState;
-  if (dst.cars.length !== src.cars.length) dst.cars = src.cars.map((c) => cloneState({ ...src, cars: [c], pads: [] }).cars[0] as CarState);
+  if (dst.cars.length !== src.cars.length)
+    dst.cars = src.cars.map((c) => cloneState({ ...src, cars: [c], pads: [] }).cars[0] as CarState);
   else {
     for (let i = 0; i < src.cars.length; i++) {
       const a = src.cars[i] as CarState;
@@ -222,8 +228,8 @@ function carFinite(c: CarState): boolean {
   const v = c.vel;
   const w = c.angVel;
   const q = c.quat;
-  return (
-    Number.isFinite(p[0] + p[1] + p[2] + v[0] + v[1] + v[2] + w[0] + w[1] + w[2] + q[0] + q[1] + q[2] + q[3] + c.boost)
+  return Number.isFinite(
+    p[0] + p[1] + p[2] + v[0] + v[1] + v[2] + w[0] + w[1] + w[2] + q[0] + q[1] + q[2] + q[3] + c.boost,
   );
 }
 
@@ -291,7 +297,8 @@ export class Sim {
     }
     if (p.vel) copyArr(p.vel, c.vel);
     if (p.angVel) copyArr(p.angVel, c.angVel);
-    if (p.boost !== undefined && Number.isFinite(p.boost)) c.boost = Math.min(MAX_BOOST, Math.max(0, p.boost));
+    if (p.boost !== undefined && Number.isFinite(p.boost))
+      c.boost = Math.min(MAX_BOOST, Math.max(0, p.boost));
     this.syncPrev();
   }
 
@@ -403,7 +410,17 @@ export class Sim {
       }
     }
     const b = s.ball;
-    let bad = !Number.isFinite(b.pos[0] + b.pos[1] + b.pos[2] + b.vel[0] + b.vel[1] + b.vel[2] + b.angVel[0] + b.angVel[1] + b.angVel[2]);
+    let bad = !Number.isFinite(
+      b.pos[0] +
+        b.pos[1] +
+        b.pos[2] +
+        b.vel[0] +
+        b.vel[1] +
+        b.vel[2] +
+        b.angVel[0] +
+        b.angVel[1] +
+        b.angVel[2],
+    );
     if (!bad && s.phase !== 'goal') {
       arenaSdf(b.pos[0], b.pos[1], b.pos[2], SDF);
       bad = (SDF[0] as number) < -BALL_RADIUS - 1;

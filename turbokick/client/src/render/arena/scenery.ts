@@ -117,7 +117,7 @@ export class SceneryView {
     const dir = new THREE.Vector3();
     const H = 50;
     const beamLen = 118;
-    const cone = new THREE.ConeGeometry(30, beamLen, 22, 1, true).translate(0, -beamLen / 2, 0);
+    const cone = new THREE.ConeGeometry(19, beamLen, 22, 1, true).translate(0, -beamLen / 2, 0);
     const cx = ARENA.halfWidth + 26;
     const cz = ARENA.halfLength + ARENA.goalDepth + 22;
     for (const sx of [-1, 1]) {
