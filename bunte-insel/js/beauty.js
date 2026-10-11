@@ -28,14 +28,14 @@ BI.createBeauty = function (G) {
   const sunDir = new THREE.Vector3(60, 100, 40).normalize();
 
   /* ---------- Wiesenflecken (zwei zusätzliche Grüntöne) ---------- */
-  if (!soft) { const b = new BI.Batch(), cols = [0x7fcb62, 0x95dc78, 0x6dbd57, 0x88d46c, 0xa6e585];
+  if (!soft) { const b = new BI.Batch(), cols = [0x82c174, 0x9acf87, 0x77b869, 0x8cc77d, 0xa6d591];
     for (let i = 0, n = 0; i < 400 && n < (eco ? 40 : 95); i++) { const a = rnd() * TAU, d = Math.sqrt(rnd()) * 150, x = Math.sin(a) * d, z = Math.cos(a) * d, r = 4 + rnd() * 10; if (![[0, 0], [r * .8, 0], [-r * .8, 0], [0, r * .8], [0, -r * .8]].every(([ox, oz]) => !W.onRoad(x + ox, z + oz) && Math.hypot(x + ox, z + oz) < 158 && Math.hypot(x + ox - W.lake.x, z + oz - W.lake.z) > W.lake.r + 2)) continue; b.disc(x, z, r, .026 + (n % 3) * .001, cols[n % cols.length], 14); n++; }
     const m = b.mesh(mat); m.frustumCulled = false; scene.add(m); }
 
   /* ---------- Blumen und Grasbüschel (Instanzen) ---------- */
   const flowerPos = [];
   if (!soft) { const stem = new BI.Batch(), head = new BI.Batch(), tuft = new BI.Batch();
-    stem.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); head.sph(0, .38, 0, .13, 0xffffff, 0, 1, .75, 1); head.sph(0, .39, 0, .05, 0xffd23f, 0);
+    stem.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); for (let petal = 0; petal < 5; petal++) { const a = petal / 5 * BI.TAU; head.sph(Math.sin(a) * .105, .38, Math.cos(a) * .105, .095, 0xffffff, 0, 1, .45, 1); } head.sph(0, .405, 0, .065, 0xffd23f, 0, 1, .6, 1);
     for (let k = 0; k < 3; k++) tuft.cone(Math.sin(k * 2.1) * .07, 0, Math.cos(k * 2.1) * .07, .09, .42 + k * .05, 0x5cc04a, 4);
     const NF = eco ? 120 : 330, NT = eco ? 200 : 520, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat, n); im.frustumCulled = false; scene.add(im); return im; };
     const iS = mk(stem, NF), iH = mk(head, NF), iT = mk(tuft, NT), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();
@@ -86,3 +86,4 @@ BI.createBeauty = function (G) {
   };
   return K;
 };
+

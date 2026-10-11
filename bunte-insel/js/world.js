@@ -128,21 +128,37 @@ BI.buildWorld = function (scene) {
   };
 
   /* ---------- Boden ---------- */
-  const GRASS = 0x86d36a, SAND = 0xf3dfa2, ASPH = 0x59606c, STONE = 0xd9d3c4;
+  const GRASS = 0x89c879, SAND = 0xf2dfb5, ASPH = 0x586c7c, STONE = 0xd9d3c4;
   st.disc(0, 0, K.R + 12, 0, GRASS, 72);
   st.ring(0, 0, 165, K.R + 12, .012, SAND, 72);
   for (let i = 0, tries = 0; i < 46 && tries < 400; tries++) { // Wiesenflecken
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 155, x = Math.sin(a) * d, z = Math.cos(a) * d, r = rr(6, 16);
     if (nearRoad(x, z, r) || W.railSdf(x, z) < r + 5) continue; i++;
-    st.disc(x, z, r, .02, pick([0x78c85e, 0x93da74, 0x6fbf58, 0x9be07c]), 14);
+    st.disc(x, z, r, .02, pick([0x83c273, 0x96cf82, 0x7bbe70, 0x9bd18a]), 14);
   }
   // See
-  st.disc(LAKE.x, LAKE.z, LAKE.r + 1.6, .03, SAND, 20); st.disc(LAKE.x, LAKE.z, LAKE.r, .045, 0x4db6f0, 24);
+  st.disc(LAKE.x, LAKE.z, LAKE.r + 1.6, .03, SAND, 20); st.disc(LAKE.x, LAKE.z, LAKE.r, .045, 0x58bfc9, 48);
+  st.ring(LAKE.x, LAKE.z, LAKE.r - .85, LAKE.r - .05, .047, 0x8ddad0, 48);
   W.addCircle(LAKE.x, LAKE.z, LAKE.r - 1);
   for (let i = 0; i < 9; i++) { const a = i * .7, d = LAKE.r + 2.5; st.cyl(LAKE.x + Math.sin(a) * d, 0, LAKE.z + Math.cos(a) * d, .08, .08, 1.4 + rnd(), 0x5a8f3c, 5); st.cyl(LAKE.x + Math.sin(a) * d, 1.4, LAKE.z + Math.cos(a) * d, .16, .16, .5, 0x8a5a33, 5); }
 
   /* ---------- Straßen ---------- */
   const ROADY = .06;
+  // Gehwege unter dem Asphalt: Kreuzungen bleiben frei, ohne neue Kollisionen.
+  for (const radius of [K.RR, K.RA, K.RB]) {
+    st.ring(0, 0, radius - RW - 1.65, radius + RW + 1.65, .035, 0xc5baa3, 128);
+    st.ring(0, 0, radius - RW - 1.45, radius + RW + 1.45, .04, 0xeee1c8, 128);
+    for (let i = 0; i < Math.ceil(radius * 2); i++) {
+      const a = i / Math.ceil(radius * 2) * BI.TAU;
+      for (const side of [-1, 1]) st.strip(Math.sin(a) * (radius + side * (RW + .8)), Math.cos(a) * (radius + side * (RW + .8)), .035, 1.35, a, .044, 0xd4c8b1);
+    }
+  }
+  for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    for (const [edge, y, color] of [[1.65, .035, 0xc5baa3], [1.45, .04, 0xeee1c8]])
+      st.rect(Math.min(dx * 14, dx * 156) - (dz ? RW + edge : 0), Math.min(dz * 14, dz * 156) - (dx ? RW + edge : 0), Math.max(dx * 14, dx * 156) + (dz ? RW + edge : 0), Math.max(dz * 14, dz * 156) + (dx ? RW + edge : 0), y, color);
+    for (let t = 18; t < 156; t += 2.5) for (const side of [-1, 1])
+      st.strip(dx * t + dz * side * (RW + .8), dz * t + dx * side * (RW + .8), 1.35, .035, Math.atan2(dx, dz), .044, 0xd4c8b1);
+  }
   // Kreisverkehr, Ringe
   st.ring(0, 0, K.RR - RW, K.RR + RW, ROADY, ASPH, 40);
   st.ring(0, 0, K.RA - RW, K.RA + RW, ROADY, ASPH, 72);
@@ -175,10 +191,20 @@ BI.buildWorld = function (scene) {
   const WALLS = [0xffe9a8, 0xffc4b8, 0xbfe3ff, 0xd9f0b8, 0xf6d1ff, 0xffd9a0, 0xc9f3e8], ROOFS = [0xd9534f, 0x3f7fd9, 0x8a5a44, 0xe8883a, 0x5f9d5a];
   function windows(cx, cz, w, d, y0, floors, fh, skipDoor) {
     const nx = Math.max(1, Math.floor(w / 3.2)), nz = Math.max(1, Math.floor(d / 3.2));
+    const framed = (x, y, z, side, alongX) => {
+      const hh = fh * .45, frame = 0xfff3d9;
+      const piece = (u, yy, offset, width, height, depth, color, batch = st) =>
+        batch.box(x + (alongX ? u : side * offset), yy, z + (alongX ? side * offset : u), alongX ? width : depth, height, alongX ? depth : width, color);
+      piece(0, y - .1, 0, 1.38, hh + .2, .1, frame);
+      piece(0, y, .065, 1.1, hh, .06, 0xffffff, win);
+      piece(0, y, .105, .07, hh, .04, frame);
+      piece(0, y + hh * .55, .105, 1.1, .07, .04, frame);
+      piece(0, y - .16, .1, 1.52, .13, .32, frame);
+    };
     for (let f = 0; f < floors; f++) {
       const y = y0 + f * fh + fh * .3;
-      for (let i = 0; i < nx; i++) { const x = cx - w / 2 + (i + .5) * w / nx; for (const s of [-1, 1]) { if (skipDoor === s && f === 0 && Math.abs(x - cx) < 1.6) continue; win.box(x, y, cz + s * (d / 2 + .02), 1.1, fh * .45, .08, 0xffffff); } }
-      for (let i = 0; i < nz; i++) { const z = cz - d / 2 + (i + .5) * d / nz; for (const s of [-1, 1]) win.box(cx + s * (w / 2 + .02), y, z, .08, fh * .45, 1.1, 0xffffff); }
+      for (let i = 0; i < nx; i++) { const x = cx - w / 2 + (i + .5) * w / nx; for (const s of [-1, 1]) { if (skipDoor === s && f === 0 && Math.abs(x - cx) < 1.6) continue; framed(x, y, cz + s * (d / 2 + .02), s, true); } }
+      for (let i = 0; i < nz; i++) { const z = cz - d / 2 + (i + .5) * d / nz; for (const s of [-1, 1]) framed(cx + s * (w / 2 + .02), y, z, s, false); }
     }
   }
   function box(cx, cz, w, d, h, color, y0 = 0) { st.box(cx, y0, cz, w, h, d, color); }
@@ -687,3 +713,4 @@ BI.buildWorld = function (scene) {
   };
   return W;
 };
+

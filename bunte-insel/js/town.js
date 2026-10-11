@@ -37,6 +37,28 @@ BI.buildEnterable = function (c, o) {
   const rb = new BI.Batch(), rh = Math.min(w, d) * .45;
   if (ridgeX) rb.prism(cx, h, cz, d + 1.4, rh, w + 1.4, roof, Math.PI / 2); else rb.prism(cx, h, cz, w + 1.4, rh, d + 1.4, roof, 0);
   rb.box(cx + w * .25, h + rh * .3, cz + d * .2, .9, rh + .6, .9, 0x9a5a48);
+  // Gesimse, Dachziegel-Reihen und First bleiben im ausblendbaren Dachmesh.
+  const trim = 0xfff1d5, tile = new THREE.Color(roof).multiplyScalar(.82).getHex();
+  rb.box(cx, h - .16, cz, w + 1.05, .22, d + 1.05, trim);
+  for (let row = 1; row < 7; row++) {
+    const t = row / 7, offset = (ridgeX ? d + 1.4 : w + 1.4) * .5 * (1 - t);
+    for (const side of [-1, 1]) rb.box(cx + (ridgeX ? 0 : side * offset), h + rh * t + .015, cz + (ridgeX ? side * offset : 0), ridgeX ? w + 1.42 : .055, .045, ridgeX ? .055 : d + 1.42, tile);
+  }
+  rb.box(cx, h + rh - .015, cz, ridgeX ? w + 1.5 : .2, .16, ridgeX ? .2 : d + 1.5, tile);
+  rb.box(cx + w * .25, h + rh * 1.3 + .55, cz + d * .2, 1.13, .16, 1.13, trim);
+  // Ecksteine und Sockel: keine Geometrie in der Türöffnung.
+  for (const xx of [x0, x1]) for (const zz of [z0, z1]) st.box(xx, 0, zz, .22, h - .18, .22, trim);
+  st.box(cx, .1, back, w, .3, .48, 0xc9bca6);
+  for (const sd of [-1, 1]) {
+    st.box(cx + sd * (w / 4 + GAP / 2), .1, front, w / 2 - GAP, .3, .48, 0xc9bca6);
+    const bx = cx + sd * w * .32, bz = front + s * .24;
+    st.box(bx, 1.05, bz, 1.35, .28, .38, 0xb77e62);
+    st.box(bx, 1.31, bz, 1.22, .07, .3, 0x537b4b);
+    for (let flower = -1; flower <= 1; flower++) {
+      st.sph(bx + flower * .35, 1.5, bz, .17, flower === 0 ? 0xffce68 : 0xef8fa7, 0);
+      st.sph(bx + flower * .35, 1.63, bz, .055, 0xfff1bb, 0);
+    }
+  }
   const it = { x0: x0 + T, x1: x1 - T, z0: z0 + T, z1: z1 - T, cx, cz, w, d, s, shop: shop ? shop.id : null, kind: shop ? 'shop' : 'house', items: [], roofB: rb, h };
   const X = u => cx + u, Z = v => back + s * v; // u: seitlich ab Mitte, v: Abstand von der Rückwand nach vorn
   const Win = w - 2 * T, LU = -Win / 2, RU = Win / 2, V0 = T;
@@ -145,7 +167,7 @@ BI.createTown = function (G) {
 BI.CITY = { x: 0, z: -290, R: 62, bridge: { x0: -4.5, x1: 4.5, z0: -232, z1: -170 } };
 BI.buildCity = function (c) {
   const { W, st, win, lamp, ROADY, windows, GRASS, SAND } = c, C = BI.CITY, crnd = BI.rng(555), rr = (a, b) => a + crnd() * (b - a), pick = a => a[(crnd() * a.length) | 0];
-  const ctx = { W, st, win, ROADY, windows, rr, pick }, ASPH = 0x6a717c, WALK = 0xe0dacb, WD = 0x8a5a33;
+  const ctx = { W, st, win, ROADY, windows, rr, pick }, ASPH = 0x586c7c, WALK = 0xeee1c8, WD = 0x8a5a33;
   W.city = C; W.spots.city = { x: 0, z: -236 };
   // Boden: Wiese + Sandring + Wasserschaum liegt in world.js
   st.disc(C.x, C.z, C.R + 9, 0, GRASS, 56); st.ring(C.x, C.z, C.R - 5, C.R + 9, .012, SAND, 56);
@@ -156,7 +178,14 @@ BI.buildCity = function (c) {
     for (let z = b.z0 + 4; z < b.z1; z += 10) for (const sd of [-1, 1]) st.cyl(sd * 3.8, -1.6, z, .45, .5, 1.62, 0x6b4a2a, 8);
     for (const sd of [-1, 1]) { st.box(sd * 6.2, 0, b.z0 + .2, .5, 5.2, .5, WD); } st.box(0, 4.7, b.z0 + .2, 13.4, .7, .4, 0xe0382b); st.box(0, 5.4, b.z0 + .2, 13.4, .12, .5, 0xffd23f); W.spots.cityGate = { x: 0, y: 5.05, z: b.z0 + .6 }; }
   // Straßen: Hauptstraße A (z -265), Querstraße B (z -296), Allee in der Mitte; Gehwege
-  const road = (x0, z0, x1, z1) => st.rect(x0, z0, x1, z1, ROADY, ASPH), walk = (x0, z0, x1, z1) => st.rect(x0, z0, x1, z1, ROADY + .012, WALK);
+  const road = (x0, z0, x1, z1) => st.rect(x0, z0, x1, z1, ROADY, ASPH), walk = (x0, z0, x1, z1) => {
+    const ax = Math.min(x0, x1), bx = Math.max(x0, x1), az = Math.min(z0, z1), bz = Math.max(z0, z1);
+    st.rect(ax, az, bx, bz, ROADY + .012, WALK);
+    st.rect(ax, az, bx, az + .12, ROADY + .015, 0xc5baa3);
+    st.rect(ax, bz - .12, bx, bz, ROADY + .015, 0xc5baa3);
+    if (bx - ax > bz - az) for (let x = ax + 2; x < bx; x += 2) st.rect(x, az, x + .035, bz, ROADY + .016, 0xd4c8b1);
+    else for (let z = az + 2; z < bz; z += 2) st.rect(ax, z, bx, z + .035, ROADY + .016, 0xd4c8b1);
+  };
   road(-52, -270, 52, -260); road(-52, -301, 52, -291); road(-5, -291, 5, -232 + 0); road(-5, -270, 5, -232);
   walk(-52, -273, 52, -270); walk(-52, -260, 52, -257); walk(-52, -304, 52, -301); walk(-52, -291, 52, -288); for (const sd of [-1, 1]) { walk(sd * 5, -257, sd * 8, -240); walk(sd * 5, -291, sd * 8, -273); }
   for (let x = -50; x < 50; x += 6) { if (Math.abs(x) < 6) continue; st.rect(x, -265.1, x + 3, -264.9, ROADY + .01, 0xfff3c0); st.rect(x, -296.1, x + 3, -295.9, ROADY + .01, 0xfff3c0); }
@@ -180,3 +209,4 @@ BI.buildCity = function (c) {
   W.vehicleSpawns.push({ type: 'car', x: -30, z: -261.4, h: Math.PI / 2 }, { type: 'taxi', x: 22, z: -268.6, h: -Math.PI / 2 }, { type: 'bus', x: 40, z: -261.6, h: Math.PI / 2 }, { type: 'car', x: -44, z: -268.6, h: -Math.PI / 2 });
   W.pads.push([C.x - C.R, C.z - C.R, C.x + C.R, C.z + C.R]);
 };
+

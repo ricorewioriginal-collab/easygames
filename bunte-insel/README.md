@@ -115,3 +115,9 @@ Das gemeinsame Figurenmodell nutzt jetzt glatte Oberflächen, abgerundete Körpe
 `js/characters.js` ergänzt `util.js` und muss danach geladen werden. Die bekannten Optionen sowie `group`, `armL`, `armR`, `legL`, `legR`, `remote`, `pose`, `dance`, `sit` und `punch` bleiben erhalten. Beim Wechseln der Spielfigur werden die alten Geometrien und Namensschilder freigegeben. Spielstände werden unverändert gelesen.
 
 Prüfung: `node bunte-insel/tests/characters.cjs` (nutzt die bereits im Repo vorhandene Three.js-Kopie unter `aeru/vendor/`). 80 Figuren-/Kleidungsvarianten, endliche Geometrie, Animationsschnittstellen, maximal sieben gebündelte Meshes und freie Augen bei allen Frisuren. Eine separat gerenderte Modellübersicht wurde visuell geprüft; ein vollständiger WebGL-Spieltest war in der Entwicklungsumgebung nicht verfügbar. Die tatsächliche Mobilgeräte-Performance wurde nicht gemessen.
+
+### Stadtgestaltung (Oktober 2026)
+
+Helle gepflasterte Gehwege auf der Hauptinsel und im Stadtviertel, Fenster mit Rahmen und Sprossen, Blumenkästen, Ecksteine, Dachziegel-Reihen und Firstleisten. Abgestimmte Wiesenfarben, türkisfarbener Seerand und fünfblättrige Blumen. Neue Gebäudedetails verwenden die vorhandenen Batches; Dachdetails werden beim Betreten zusammen mit dem Dach ausgeblendet. Layout, Kollisionen und Speicherformat bleiben unverändert.
+
+Validierung: JavaScript-Syntax und Geometrieaufbau mit Three.js r128 geprüft; Vergleich der 46 begehbaren Gebäude sowie Kollisions-, Straßen- und Fahrzeugdaten vor/nach der Änderung (Park/Kino im isolierten Test ausgeklammert). Gleiche Anzahl Meshes; zusätzliche Geometrie. Kein vollständiger Browser-/Mobiltest in dieser Umgebung.
