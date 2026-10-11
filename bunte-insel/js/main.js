@@ -1081,6 +1081,7 @@
     { id: 'obby', icon: '🏁', name: 'Himmels-Parcours', at: () => obby.pad },
     { id: 'park', icon: '🎡', name: 'Freizeitpark', at: () => ({ x: BI.PARK.bridge.x1 + 6, z: BI.PARK.z }) },
     { id: 'rainbow', icon: '🌈', name: 'Regenbogenwelt', at: () => ({ x: BI.RAINBOW.bridge.x0 - 6, z: BI.RAINBOW.z }) },
+    { id: 'rbstage', icon: '🎤', name: 'Regenbogen-Bühne', at: () => ({ x: BI.RAINBOW.x - 22, z: BI.RAINBOW.z }) },
     { id: 'camp', icon: '⛺', name: 'Camp', at: () => ({ x: SPOT.camp.x, z: SPOT.camp.z + 5 }) },
     { id: 'zoo', icon: '🐮', name: 'Streichelzoo', at: () => ({ x: SPOT.pens[0].gate.x + 3, z: SPOT.pens[0].gate.z + 3 }) }, { id: 'pool', icon: '🏊', name: 'Freibad', at: () => ({ x: SPOT.pool.gate.x, z: SPOT.pool.gate.z - 4 }) },
     { id: 'station', icon: '🚂', name: 'Bahnhof', at: () => SPOT.station }, { id: 'hospital', icon: '🏥', name: 'Krankenhaus', at: () => SPOT.hospital },
@@ -1680,7 +1681,7 @@
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); cinema.update(); story.update(dt, state === 'play', { hud: $('mission').hidden, idle: !P.veh && !mission && !shopOpen && !guideOpen && !parentOpen && !kids.busy() && !cinema.open }); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); park.update(dt, t); rainbow.update(dt); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); meta.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); cinema.update(); story.update(dt, state === 'play', { hud: $('mission').hidden, idle: !P.veh && !mission && !shopOpen && !guideOpen && !parentOpen && !kids.busy() && !cinema.open }); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); obby.update(dt, t); park.update(dt, t); rainbow.update(dt, t); express.update(dt, t); parcours.update(dt); gadgets.update(dt, t); meta.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
