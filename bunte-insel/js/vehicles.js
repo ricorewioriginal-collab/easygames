@@ -277,6 +277,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       if (rad < lo) { this.x *= lo / rad; this.z *= lo / rad; hit = 1; } else if (rad > hi) { this.x *= hi / rad; this.z *= hi / rad; hit = 1; }
       const P = W.pier, bx = BI.clamp(this.x, P[0], P[2]), bz = BI.clamp(this.z, P[1], P[3]), dx = this.x - bx, dz = this.z - bz, d = Math.hypot(dx, dz);
       if (d < this.r) { if (d > 1e-6) { this.x += dx / d * (this.r - d); this.z += dz / d * (this.r - d); } else this.x += this.r; hit = 1; }
+      const Z = W.zotik && W.zotik.bridge; if (Z) { const cx = BI.clamp(this.x, Z.x0, Z.x1), cz = BI.clamp(this.z, Z.z0, Z.z1), ex = this.x - cx, ez = this.z - cz, e = Math.hypot(ex, ez); if (e < this.r) { if (e > 1e-6) { this.x += ex / e * (this.r - e); this.z += ez / e * (this.r - e); } else this.x += (this.x < 0 ? -1 : 1) * this.r; hit = 1; } }
       if (hit) this.v *= .6; return 0;
     }
     step(dt, inp, W, fx) {

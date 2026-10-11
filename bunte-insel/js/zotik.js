@@ -67,7 +67,7 @@ BI.buildZotikGround = function (c) {
     for (let k = 0; k < 6; k++) { const a = k / 6 * TAU, x = sx + Math.sin(a) * 6.6, z = sz + Math.cos(a) * 6.6; st.cyl(x, .6, z, .25, .3, 2.4, MARB, 8); glow.sph(x, 3.2, z, .4, GL[k % 4], 1); }
     W.addCircle(sx, sz, 7.6, false, 3); A.statue = { x: sx, z: sz, top: 2.7 }; }
   /* Brücke vom Steg der Hauptinsel (Holzdeck mit Geländer, Pfähle im Wasser, Rampe zur Insel) */
-  { const x = A.x, z0 = Bz.z0 + 3, z1 = Bz.z1 - 7, L = z1 - z0; st.box(x, .35, (z0 + z1) / 2, 5.2, .3, L, 0xb98650); for (let k = 0; k < L; k += 2.5) st.box(x, .64, z0 + k, 5.2, .02, .08, 0x7a5a33);
+  { const x = A.x, z0 = Bz.z0 + 1, z1 = Bz.z1 - 7, L = z1 - z0; st.box(x, .35, (z0 + z1) / 2, 5.2, .3, L, 0xb98650); for (let k = 0; k < L; k += 2.5) st.box(x, .64, z0 + k, 5.2, .02, .08, 0x7a5a33);
     st.box(x, .22, z1 + 3.5, 5.2, .2, 7.1, 0xb98650, 0, Math.atan(.65 / 7)); for (const sd of [-1, 1]) { st.box(x + sd * 2.45, .65, (z0 + z1) / 2, .14, 1.0, L, 0x8a5a33); for (let k = 0; k <= L; k += 4) st.cyl(x + sd * 2.45, 0, z0 + k, .12, .14, 1.2, 0x6a4a2a, 5); }
     for (let k = 4; k < L; k += 10) for (const sd of [-1, 1]) st.cyl(x + sd * 1.9, -1.6, z0 + k, .4, .45, 1.9, 0x4a4a52, 8);
     for (const sd of [-1, 1]) W.addBox(x + sd * 2.45 - .1, z0, x + sd * 2.45 + .1, z1 + 1, false, 1.3); }
