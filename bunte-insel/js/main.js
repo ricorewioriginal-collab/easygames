@@ -365,9 +365,10 @@
   function updateButtons(force) {
     const v = P.veh, rideN = state === 'play' && !v && !ride && !build.active ? nearRide() : null, near = state === 'play' && !v && !ride && !rideN && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
     const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), rangeNear = state === 'play' && !rs.ui && nearRange(), flatN = state === 'play' && !rs.ui && !wardOpen ? flatNear() : null, placeN = state === 'play' ? placeNear() : null, driveIn = state === 'play' && v ? cinema.near() : null, chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
-    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : ''))].join('|');
+    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : '')), isTouch()].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
+    if (ride || rideN || v) act.classList.remove('idle');
     if (ride) { act.hidden = false; act.innerHTML = '<b>🚪</b><small>Aussteigen</small>'; act.classList.remove('pulse'); horn.hidden = false; horn.innerHTML = '<b>📣</b><small>Hupe</small>'; jump.hidden = true; aux.hidden = true; }
     else if (rideN) { act.hidden = false; act.innerHTML = '<b>🙋</b><small>Mitfahren</small>'; act.classList.add('pulse'); jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = true; }
     else if (v) {
@@ -380,7 +381,7 @@
       }
       jump.hidden = false; horn.hidden = false;
     } else {
-      act.hidden = !(near || shopNear || chestNear || rangeNear || flatN || placeN); if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', !!(near || shopNear || chestNear || rangeNear || flatN || placeN));
+      const has = !!(near || shopNear || chestNear || rangeNear || flatN || placeN); act.hidden = !has && !isTouch(); act.classList.toggle('idle', !has); if (!has) act.innerHTML = '<b>✋</b><small>Aktion</small>'; else if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', has);
       jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
@@ -410,13 +411,23 @@
 
   /* ---------- Eingabe ---------- */
   function setStick(x, y) { inp.sx = x; inp.sy = y; }
-  const zone = $('zone'), joy = $('joy'), sKnob = $('joyKnob'); const stick = { id: null, cx: 0, cy: 0, R: 48, hit: 100 }, drag = { id: null, x: 0, y: 0 };
-  function joyGeom() { const r = joy.getBoundingClientRect(); stick.cx = r.left + r.width / 2; stick.cy = r.top + r.height / 2; stick.R = r.width * .34; stick.hit = r.width * .85; return r.width > 0; }
-  function moveStick(e) { let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; setStick(dx / R, -dy / R); }
+  /* Stick links: Fangbereich ist die ganze untere linke Ecke. Wer neben den Ring tippt, bekommt den Stick unter den Finger (schwebend),
+     damit es beim Anfassen nicht ruckt; beim Loslassen springt er zurück. Kleine Totzone gegen Zittern. */
+  const zone = $('zone'), joy = $('joy'), sKnob = $('joyKnob'); const stick = { id: null, cx: 0, cy: 0, R: 48, ox: 0, oy: 0 }, drag = { id: null, x: 0, y: 0 };
+  function stickArea(x, y) { const r = joy.getBoundingClientRect(); if (!r.width) return null; const hx = r.left + r.width / 2, hy = r.top + r.height / 2, m = r.width * .6; return x < Math.min(hx + r.width * .5 + m, innerWidth * .45) && y > hy - r.height * .5 - m ? { hx, hy, w: r.width } : null; }
+  function startStick(e, a) {
+    const w = a.w, d = Math.hypot(e.clientX - a.hx, e.clientY - a.hy); stick.id = e.pointerId; stick.R = w * .36;
+    stick.cx = a.hx; stick.cy = a.hy; stick.ox = stick.oy = 0;
+    if (d > w * .3) { stick.cx = clamp(e.clientX, w / 2 + 4, innerWidth - w / 2 - 4); stick.cy = clamp(e.clientY, w / 2 + 4, innerHeight - w / 2 - 4); stick.ox = stick.cx - a.hx; stick.oy = stick.cy - a.hy; }
+    joy.style.transform = stick.ox || stick.oy ? 'translate(' + stick.ox + 'px,' + stick.oy + 'px)' : ''; joy.classList.add('on'); moveStick(e);
+  }
+  function moveStick(e) { let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; if (l < R * .12) setStick(0, 0); else setStick(dx / R, -dy / R); }
+  function endStick() { stick.id = null; setStick(0, 0); sKnob.style.transform = ''; joy.style.transform = ''; joy.classList.remove('on'); }
   zone.addEventListener('pointerdown', e => {
     A.resume(); if (state !== 'play') return; if (rs.ui === 'play') { rangeAim(e.clientX, e.clientY); rs.down = true; rangeShoot(); try { zone.setPointerCapture(e.pointerId); } catch (x) { } return; } if (!$('funBar').hidden) closeQuick();
-    if (stick.id == null && joyGeom() && Math.hypot(e.clientX - stick.cx, e.clientY - stick.cy) < stick.hit) { stick.id = e.pointerId; moveStick(e); }
-    else if (drag.id == null) { drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY; drag.t0 = performance.now(); drag.moved = 0; }
+    const sa = isTouch() ? stickArea(e.clientX, e.clientY) : null;
+    if (sa) { if (stick.id != null) endStick(); startStick(e, sa); } // neuer Finger im Stick-Bereich übernimmt immer – ein „hängender“ Stick kann so nicht blockieren
+    else { drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY; drag.t0 = performance.now(); drag.moved = 0; }
     try { zone.setPointerCapture(e.pointerId); } catch (x) { }
   });
   zone.addEventListener('pointermove', e => {
@@ -431,8 +442,10 @@
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (voxTab) { vox.aim(o, d); return; } if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
   const endPtr = e => { rs.down = false; if (e.pointerId === drag.id && build.active && drag.moved < 12 && performance.now() - drag.t0 < 500) tapGround(e.clientX, e.clientY);
-    if (e.pointerId === stick.id) { stick.id = null; setStick(0, 0); sKnob.style.transform = 'translate(0,0)'; } if (e.pointerId === drag.id) drag.id = null; };
-  zone.addEventListener('pointerup', endPtr); zone.addEventListener('pointercancel', endPtr);
+    if (e.pointerId === stick.id) endStick(); if (e.pointerId === drag.id) drag.id = null; };
+  zone.addEventListener('pointerup', endPtr); zone.addEventListener('pointercancel', endPtr); zone.addEventListener('lostpointercapture', e => { if (e.pointerId === stick.id) endStick(); if (e.pointerId === drag.id) drag.id = null; });
+  // App-Wechsel, Anruf, Benachrichtigung: alles loslassen, sonst läuft die Figur allein weiter
+  function releaseAll() { if (stick.id != null) endStick(); drag.id = null; rs.down = false; inp.horn = inp.turbo = inp.up = inp.down = false; for (const b of document.querySelectorAll('.abtn.down')) b.classList.remove('down'); }
   zone.addEventListener('wheel', e => { cam.zoom = clamp(cam.zoom * (e.deltaY > 0 ? 1.1 : .9), .6, 2.2); e.preventDefault(); }, { passive: false });
   zone.addEventListener('contextmenu', e => e.preventDefault());
   function hold(btn, key) {
@@ -505,8 +518,8 @@
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') inp.turbo = false;
     if (e.code === 'KeyQ') keys.q = false; if (e.code === 'KeyR') keys.r = false;
   });
-  addEventListener('blur', () => { for (const k in keys) keys[k] = false; inp.horn = inp.turbo = inp.up = inp.down = false; if (state === 'play' && !cinema.open && !radio.open) pause(true); }); // Klick in den Film-Player löst blur aus → dann nicht pausieren
-  document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') pause(true); });
+  addEventListener('blur', () => { for (const k in keys) keys[k] = false; releaseAll(); if (state === 'play' && !cinema.open && !radio.open) pause(true); }); // Klick in den Film-Player löst blur aus → dann nicht pausieren
+  document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); if (document.hidden && state === 'play') pause(true); });
 
   /* ---------- Menüs ---------- */
   function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('bNight').textContent = save.night ? '☀️' : '🌙'; }
@@ -517,7 +530,7 @@
   { const mc = $('mission'); mc.classList.toggle('min', save.mmin !== false);
     mc.addEventListener('pointerdown', e => { e.stopPropagation(); A.resume(); if (mc.classList.contains('min')) { mc.classList.remove('min'); save.mmin = false; persist(); } else if (e.target.id === 'mMin') { mc.classList.add('min'); save.mmin = true; persist(); } else readMission(); }); }
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
-  function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } setStick(0, 0); stick.id = drag.id = null; sKnob.style.transform = 'translate(0,0)'; }
+  function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } releaseAll(); }
   function startPlay() {
     A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; { const f = myFlat(); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.vy = 0; } /* Start: vor der eigenen Haustür */ cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     setTimeout(() => { if (state === 'play' && !kids.open) kids.daily(); }, 3500);

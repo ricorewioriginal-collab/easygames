@@ -144,7 +144,7 @@ Tanzen (das ganze Dorf tanzt mit), Kanone, Ahoi, Blitz-Trick, Apport, Kaugummi w
 🏗️: auf den Boden tippen/klicken, Teil wählen, ✔. Boden, Disko-Boden, Wand, Tür, Fenster, Dach, Turm, Möbel (Sofa, Bett, Tisch, Fernseher, Pflanze, Lampe), Garten & Spaß (Baum, Beet, Zaun, Brunnen, Pool, Trampolin, Rutsche, Zelt, Hundehütte), 8 Farben, drehen, löschen, alles wird gespeichert.
 
 ## Steuerung
-- **Handy**: fester Joystick links (läuft/lenkt), rechts wischen = Kamera, große Knöpfe rechts (Einsteigen, Hupe, Sirene/Türen/Sinken, Turbo/Springen/Steigen). Tastatur-Hinweise sind am Handy ausgeblendet.
+- **Handy**: Joystick links (läuft/lenkt); wer daneben in die untere linke Ecke tippt, bekommt den Stick direkt unter den Finger, beim Loslassen springt er zurück. Kleine Totzone gegen Zittern, ein neuer Finger übernimmt immer, App-Wechsel oder Pause lassen alles los. Rechts wischen = Kamera. Rechts eine Knopf-Raute wie auf einer Konsole: unten der große bunte Aktion-Knopf (Einsteigen, Reden, Einkaufen …, ohne Ziel blass „✋ Aktion“), rechts Springen/Turbo/Steigen, links Hallo/Hupe, oben Sirene/Türen/Sinken/Baum hauen (nur wenn passend). Tastatur-Hinweise sind am Handy ausgeblendet.
 - **PC**: WASD/Pfeile, E einsteigen, Leertaste Hupe/Sprung (Hubschrauber: steigen), X sinken, Shift Turbo, F Sirene/Türen/Baum hauen, 1–0 Spaß, B Bauen (G bauen, O drehen, K Farbe, Entf), V Ego-Kamera, N Nacht, M Ton, C Kameraabstand, Q/R Kamera, P/Esc Pause, Maus ziehen = Kamera.
 
 ## Leichtgewichtig
