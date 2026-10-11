@@ -78,6 +78,9 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 1× Empfänger | 1× Kupferbarren + 1× Glas + 2× Bretter | Werkbank | Funktechnik |
 | 2× Signallampe | 1× Leuchtblock + 1× Signalleitung | Werkbank | Funktechnik |
 | 2× Funktor | 1× Eisenbarren + 4× Bretter | Werkbank | Funktechnik |
+| 1× Boot | 5× Bretter + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Lore | 3× Eisenbarren + 2× Kupferbarren | Werkbank | Werkzeuge & Essen |
+| 16× Schiene | 3× Kupferbarren + 2× Stock | Werkbank | Funktechnik |
 | 1× Kupferbarren | 1× Kupfererz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Eisenbarren | 1× Eisenerz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Braten | 1× Rohes Fleisch + 1× Bretter | Schmelzofen | Werkzeuge & Essen |

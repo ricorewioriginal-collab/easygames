@@ -30,7 +30,7 @@ das Meshing bleibt der größere Posten und hängt vor allem davon ab, wie viele
 | Automatische Anpassung an die gemessene Bildrate | ✅ neu |
 | Menü-Kulisse mit ~30 Bildern/s, Inventar/Pause stoppen das Rendern | ✅ seit 1.0 |
 | Physik in festen Teilschritten (gleiches Verhalten bei 30/60/120 Hz) | ✅ neu (Test) |
-| Meshing im Web Worker | ⬜ geplant (Etappe 4); das Zeitbudget fängt die Spitzen bis dahin ab |
+| Meshing im Web Worker (Nachladen beim Erkunden; Bauen/Abbauen bleibt sofort und synchron; ohne Worker-Unterstützung automatisch synchron) | ✅ Etappe 5 |
 | Greedy Meshing | geprüft, vorerst nicht sinnvoll (siehe PROGRESS.md, Abschnitt 4) |
 
 ## Grafikstufen
@@ -45,3 +45,19 @@ das Meshing bleibt der größere Posten und hängt vor allem davon ab, wie viele
 über 26 ms (unter ~38 Bildern/s) sinkt zuerst die Auflösung (bis 60 %), dann die Sichtweite (bis 3). Erst nach dreimal hintereinander unter 18 ms
 (über ~55 Bildern/s) geht es schrittweise wieder hoch. Pausen über 250 ms (Tab-Wechsel) zählen nicht mit.
 Die Sichtweite im Pausemenü lässt sich jederzeit von Hand setzen; sie wird dann zur Obergrenze.
+
+## Meshing im Web Worker (Etappe 5)
+Neue Chunks beim Erkunden werden im Worker gebaut. Der Hauptthread kopiert nur die 3×3 Chunk-Daten (je 24 KB) und Höhenkarten hinüber
+und bekommt die fertigen Puffer zurück (übertragen, nicht kopiert); höchstens 4 Aufträge sind gleichzeitig unterwegs. Veraltete Ergebnisse
+(Chunk inzwischen entladen oder nach einer Blockänderung synchron neu gebaut) werden verworfen.
+
+Messung: Headless-Chromium, Kreativwelt, Sichtweite 6, Flug mit 30 Blöcken/s über 300 Spielschritte, gemessen wird die Zeit eines Spielschritts
+ohne Zeichnen (also nur, was den Hauptthread blockiert). Zwei Durchläufe je Variante, jeweils 184 fertige Chunks am Ende.
+
+| Variante | Mittel je Schritt | 95 % der Schritte unter | längster Schritt |
+|---|---:|---:|---:|
+| mit Worker | 1,4 / 2,0 ms | 7,5 / 8,2 ms | 11 / 25 ms |
+| ohne Worker | 3,4 / 4,3 ms | 13,4 / 11,7 ms | 21 / 27 ms |
+
+Der Hauptthread hat beim Erkunden also gut die Hälfte weniger zu tun. Übrig bleiben das Erzeugen der Chunks (~0,5 ms je Chunk) und das Hochladen
+der Geometrie auf die Grafikkarte. Auf echten Handys wurde auch das nicht gemessen.

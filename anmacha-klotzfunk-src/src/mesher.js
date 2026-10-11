@@ -1,7 +1,7 @@
 // Chunk-Mesher: Flächen-Culling, weiche Ecken-Beleuchtung (Ambient Occlusion + Himmelslicht),
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
 import { CS, H, ATLAS_COLS, ATLAS_ROWS } from './consts.js';
-import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, TILES, isLogo as isLogoId } from './blocks.js';
+import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, FLAT, TILES, isLogo as isLogoId } from './blocks.js';
 export { TILES };
 
 // n = Normale, o = Ursprungsecke, a/b = Kantenvektoren (a × b = n, also gegen den Uhrzeigersinn von außen)
@@ -56,12 +56,23 @@ function tileUv(tile, logo) {
   return [(tile % cols) * tu + eu, 1 - (Math.floor(tile / cols) + 1) * tv + ev, tu - 2 * eu, tv - 2 * ev];
 }
 
-export function buildMesh(world, chunk) {
+// Eingaben für den Mesher: 3×3 Chunk-Daten und Höhenkarten (auch für den Web Worker), null wenn unvollständig
+export function meshInput(world, chunk) {
   const nb = world.neighborhood(chunk);
   if (!nb) return null;
   const hms = [];
   for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) hms.push(world.heightmap(world.getChunk(chunk.cx + dx, chunk.cz + dz)));
-  const data = chunk.data;
+  return { nb, hms, maxY: chunk.maxY };
+}
+
+export function buildMesh(world, chunk) {
+  const inp = meshInput(world, chunk);
+  return inp ? meshFrom(inp.nb, inp.hms, inp.maxY) : null;
+}
+
+// reiner Mesher ohne Welt-Objekt: nb[4] ist der Chunk selbst
+export function meshFrom(nb, hms, maxY) {
+  const data = nb[4];
   const idxOf = (x, z) => (z < 0 ? 0 : z >= CS ? 2 : 1) * 3 + (x < 0 ? 0 : x >= CS ? 2 : 1);
   const get = (x, y, z) => {
     if (y < 0) return B.STONE;
@@ -73,13 +84,18 @@ export function buildMesh(world, chunk) {
     return y >= top ? 1 : SKY_D[Math.min(3, top - y)];
   };
   const O = new Part(), T = new Part(), L = new Part(), br = [0, 0, 0, 0];
-  const top = Math.min(H - 1, chunk.maxY + 1);
+  const top = Math.min(H - 1, maxY + 1);
   for (let y = 0; y <= top; y++) {
     for (let z = 0; z < CS; z++) {
       for (let x = 0; x < CS; x++) {
         const t = data[x + (z << 4) + (y << 8)];
         if (t === B.AIR) continue;
         if (CROSS[t]) { cross(O, x, y, z, TILES[t][0], sky(x, y, z)); continue; }
+        if (FLAT[t]) { // Schiene längs x, wenn nur dort Nachbarschienen liegen (auch eine Stufe höher/tiefer)
+          const r = (ax, az) => get(x + ax, y, z + az) === t || get(x + ax, y + 1, z + az) === t || get(x + ax, y - 1, z + az) === t;
+          flat(O, x, y, z, TILES[t][0], sky(x, y, z), (r(1, 0) || r(-1, 0)) && !r(0, 1) && !r(0, -1));
+          continue;
+        }
         const isLogo = isLogoId(t);
         const part = isLogo ? L : TRANS[t] ? T : O;
         const lamp = EMIT[t];
@@ -131,6 +147,22 @@ function cross(P, x, y, z, tile, s) {
       P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
       P.n++;
     }
+  }
+}
+
+// Bodenplatte (Schiene): eine waagerechte Fläche knapp über dem Block darunter, von oben und unten sichtbar
+function flat(P, x, y, z, tile, s, alongX) {
+  const [u0, v0, du, dv] = tileUv(tile, false), h = y + 0.0625;
+  // Textur-Koordinaten je Ecke (x, z), (x, z+1), (x+1, z+1), (x+1, z): Schienen laufen entlang v
+  const uvz = [u0, v0, u0, v0 + dv, u0 + du, v0 + dv, u0 + du, v0], uvx = [u0, v0, u0 + du, v0, u0 + du, v0 + dv, u0, v0 + dv];
+  const q = alongX ? uvx : uvz;
+  for (const flip of [0, 1]) {
+    const b = P.n * 4;
+    if (flip) { P.pos.push(x, h, z, x + 1, h, z, x + 1, h, z + 1, x, h, z + 1); P.uv.push(q[0], q[1], q[6], q[7], q[4], q[5], q[2], q[3]); }
+    else { P.pos.push(x, h, z, x, h, z + 1, x + 1, h, z + 1, x + 1, h, z); P.uv.push(...q); }
+    for (let k = 0; k < 4; k++) P.col.push(0.95, s, 0, flip ? 5 : 4);
+    P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+    P.n++;
   }
 }
 

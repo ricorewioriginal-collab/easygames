@@ -457,6 +457,12 @@ const PAINT = [
     const e = Math.min(u, v, 1 - u, 1 - v);
     if (e > 0.1) return [0, 0, 0, 0];
     return [...add([120, 122, 130], grain(x, y, 61, 8)), 255];
+  },
+  // 75 Schiene: Holzschwellen mit zwei Eisenschienen (Rest durchsichtig)
+  (u, v, x, y) => {
+    if (Math.abs(u - 0.22) < 0.055 || Math.abs(u - 0.78) < 0.055) return [...add(mix([150, 150, 158], [200, 200, 208], 1 - Math.abs(u - (u < 0.5 ? 0.22 : 0.78)) / 0.055), grain(x, y, 62, 6)), 255];
+    if ((v * 4) % 1 < 0.42 && u > 0.08 && u < 0.92) return [...add(mix([104, 72, 42], [132, 94, 56], fbm(u, v, 6, 2, 172)), grain(x, y, 63, 8)), 255];
+    return [0, 0, 0, 0];
   }
 ];
 export const TILE_COUNT = PAINT.length;
@@ -570,6 +576,11 @@ export function drawItems(items) {
         px(4, 4, col, 8, 3); px(3, 6, col, 10, 4); px(3, 10, dk, 3, 2); px(10, 10, dk, 3, 2); px(5, 4, lt, 5, 1); px(6, 8, '#1a1a22', 4, 1); break;
       case 'harnisch':
         px(3, 3, col, 3, 3); px(10, 3, col, 3, 3); px(4, 5, col, 8, 8); px(5, 5, lt, 2, 6); px(4, 12, dk, 8, 1); px(7, 3, dk, 2, 3); break;
+      case 'boot':
+        px(1, 8, col, 14, 3); px(2, 11, dk, 12, 2); px(3, 13, dk, 10, 1); px(1, 7, lt, 14, 1); px(4, 9, '#5a3a1e', 8, 1); px(7, 2, '#5a3a1e', 1, 6); px(8, 3, '#efe6d2', 4, 3); break;
+      case 'lore':
+        px(2, 5, col, 12, 6); px(2, 5, lt, 12, 1); px(3, 6, dk, 10, 1); px(2, 10, dk, 12, 1);
+        px(3, 11, '#2a2a30', 3, 3); px(10, 11, '#2a2a30', 3, 3); px(4, 12, '#6a6a72', 1, 1); px(11, 12, '#6a6a72', 1, 1); break;
       default: px(4, 4, col, 8, 8);
     }
   });

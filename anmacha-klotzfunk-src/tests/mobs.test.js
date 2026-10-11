@@ -159,3 +159,20 @@ test('Drohne schwebt und feuert aus Abstand, Höhlenwesen nur in Höhlen', async
   for (let i = 0; i < 40; i++) mobs.spawnHostile(8, 40, 8, true);
   assert.ok(mobs.list.every(m => m.type !== T_HOEHLE), 'an der Oberfläche keine Höhlenwesen');
 });
+
+test('Mehrspieler: Gegner verfolgen den nächsten Spieler und merken sich das Ziel', () => {
+  const g = (x, y) => (y <= 10 ? B.STONE : B.AIR);
+  const w = { getBlock: g, isSolid: (x, y, z) => g(x, y, z) !== B.AIR, isLoaded: () => true, getChunk: () => null };
+  const mobs = new Mobs(w, 1, null);
+  mobs.refresh = () => {}; mobs.spawnHostile = () => {}; // keine Besiedlung in dieser Testwelt
+  const m = new Mob(3, 30.5, 11, 0.5);
+  mobs.list.push(m);
+  const others = [{ id: 2, x: 34.5, y: 11, z: 0.5 }];
+  let hits = 0;
+  mobs.onAttack = mob => { if (mob.target === 2) hits++; };
+  for (let i = 0; i < 60 * 4; i++) mobs.update(1 / 60, 0.5, 0.5, { py: 11, night: true, hostiles: true, others });
+  assert.equal(m.target, 2, 'Gast ist näher als der Gastgeber');
+  assert.ok(Math.abs(m.x - 34.5) < 1.6, 'läuft zum Gast');
+  assert.ok(hits >= 1, 'greift den Gast an');
+  assert.ok(m.id > 0);
+});

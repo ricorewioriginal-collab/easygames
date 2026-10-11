@@ -6,17 +6,20 @@ import { BIOME_NAMES } from './worldgen.js';
 import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
 import { QUALITY } from './settings.js';
 import { MAX_STACK } from './crafting.js';
-import { buildMesh, cubeData } from './mesher.js';
+import { buildMesh, meshInput, cubeData } from './mesher.js';
 import { drawAtlas, createLogoAtlas, cloudCanvas, drawItems, ITEM_TILE, ITEM_GRID } from './textures.js';
-import { ITEMS, ITEM_LIST, I, isItem, nameOf, toolOf, foodOf, plantOf, mineTime, canHarvest, toolFits, known, armorOf, armorFactor } from './items.js';
+import { ITEMS, ITEM_LIST, I, isItem, nameOf, toolOf, foodOf, plantOf, mineTime, canHarvest, toolFits, known, armorOf, armorFactor, vehicleOf } from './items.js';
+import { Vehicles, KINDS as VEH_KINDS } from './vehicles.js';
+import { VehicleView } from './vehview.js';
 import { BUILD_MODES, MAX_CELLS, shapeCells, bounds, copyRegion, pasteCells } from './build.js';
 import { villageIn, regionOf } from './structures.js';
+import { WorldMap } from './worldmap.js';
 import { Farm, isCrop, cropDrops } from './farm.js';
 import { Vitals, fallDamage } from './survival.js';
 import { Mobs, rollDrops } from './mobs.js';
 import { MobView } from './mobview.js';
 import { Player, raycast, EYE } from './physics.js';
-import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
+import { playBreak, playPlace, playDeny, setRadio, playStep, playSplash, playCall, playClick, playClank, playBeep, playJingle, playHurt } from './audio.js';
 import { campaignOf, questProgress } from './quests.js';
 import { solve, ON_ID, OFF_ID } from './signal.js';
 import { nearestVillage } from './structures.js';
@@ -72,6 +75,14 @@ uniform sampler2D uTex; uniform vec3 uCol; varying vec2 vUv; varying float vD;
 void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; gl_FragColor = vec4(uCol, a); }`;
 
 const lerp = (a, b, t) => a + (b - a) * t;
+// Schritt-Geräusch nach Untergrund
+function stepKind(t) {
+  if (t === B.SNOW) return 'schnee';
+  if (t === B.GLASS || t === B.ICE) return 'glas';
+  if (t === B.SAND || t === B.GRAVEL) return 'sand';
+  const tool = BLOCKS[t] && BLOCKS[t].tool;
+  return tool === 'axt' ? 'holz' : tool === 'spitzhacke' ? 'stein' : 'weich';
+}
 const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -187,6 +198,14 @@ export class Game {
     this.itemHand.frustumCulled = false; this.itemHand.renderOrder = 50; this.itemHand.visible = false;
     this.camera.add(this.itemHand);
     this.mobView = new MobView(this.scene); this.mobs = null; this.light = 1;
+    this.vehView = new VehicleView(this.scene); this.vehicles = null; this.ride = null; this.prevJump = false;
+    // Meshing im Web Worker (Nachladen beim Erkunden); Bauen/Abbauen bleibt synchron für sofortige Rückmeldung
+    this.meshSeq = 0; this.mwJobs = 0; this.mw = null;
+    if (typeof Worker !== 'undefined') try {
+      this.mw = new Worker(new URL('./meshworker.js', import.meta.url), { type: 'module' });
+      this.mw.onmessage = e => this.onMeshed(e.data);
+      this.mw.onerror = () => { this.mw = null; this.mwJobs = 0; this.scanDirty = true; }; // Rückfall: synchron
+    } catch { this.mw = null; }
     this.handType = -1; this.swing = 0; this.bob = 0;
 
     this.parts = []; this.partCount = 0;
@@ -210,7 +229,8 @@ export class Game {
     this.vitals = null; this.dead = false; this.mine = null; this.deathLoss = 'keep'; this.enemies = true;
     this.farm = new Farm(); this.age = 0; this.history = []; this.redoList = [];
     this.onVitals = () => {}; this.onHurt = () => {}; this.onDeath = () => {}; this.onMine = () => {}; this.onStation = () => {};
-    this.onTrade = () => {}; this.onBuildMode = () => {};
+    this.onTrade = () => {}; this.onBuildMode = () => {}; this.onRide = () => {};
+    this.mp = null; this.net = null; // Mehrspieler (mp.js): mp = Sitzung, net = Gast-Protokoll
     this.armor = { kopf: 0, brust: 0 }; this.armWear = { kopf: 0, brust: 0 };
     this.resize();
   }
@@ -288,7 +308,7 @@ export class Game {
       for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
       for (let i = 0; i < SPECIAL_COUNT; i++) this.inv[SPECIAL0 + i] = 8;
     }
-    this.wp = save.wp || null; this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
+    this.wp = save.wp || null; this.map = new WorldMap(save.map); this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
     this.handType = -1;
     // Überleben (nur im Überlebensmodus): Gesundheit/Hunger, Werkzeug-Abnutzung, Grab mit verlorenen Sachen
     // Story ab Generator 3 („Das große Rauschen“) spielt mit den Überlebensregeln; alte Story-Welten bleiben wie gehabt
@@ -313,6 +333,9 @@ export class Game {
       return out;
     };
     this.mobs.onAdd = m => this.mobView.add(m); this.mobs.onRemove = m => this.mobView.remove(m);
+    this.vehicles = new Vehicles(this.world, save.veh); this.ride = null; this.prevJump = false;
+    this.vehicles.onAdd = v => this.vehView.add(v); this.vehicles.onRemove = v => this.vehView.remove(v);
+    this.vehicles.attach();
     this.mobs.onAttack = m => this.mobHits(m);
     this.mobs.onPoof = m => this.spawnBreak(m.x - 0.5, m.y + 0.5, m.z - 0.5, B.BASALT);
     // Landwirtschaft: gespielte Zeit (Sekunden) als Uhr für das Wachstum
@@ -393,8 +416,10 @@ export class Game {
     for (const c of this.group.children.slice()) { c.geometry.dispose(); this.group.remove(c); }
     if (this.mobs) { this.mobs.clear(); this.mobs = null; }
     this.mobView.clear();
+    if (this.vehicles) { this.vehicles.clear(); this.vehicles = null; }
+    this.vehView.clear(); this.ride = null;
     this.vitals = null; this.dead = false;
-    this.world = null;
+    this.world = null; this.mwJobs = 0;
   }
 
   // synchron: Daten bis Radius rd, Meshes bis Radius rm (Chunks)
@@ -411,7 +436,9 @@ export class Game {
       px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, story: this.story, edits,
       vit: this.vitals ? this.vitals.toJSON() : undefined, dur: this.dur, grave: this.grave || undefined, mobs: this.mobs ? this.mobs.serialize() : undefined,
       age: Math.round(this.age), farm: this.farm.plants.size ? this.farm.serialize() : undefined,
-      arm: this.armor.kopf || this.armor.brust ? [this.armor.kopf, this.armor.brust, this.armWear.kopf, this.armWear.brust] : undefined
+      arm: this.armor.kopf || this.armor.brust ? [this.armor.kopf, this.armor.brust, this.armWear.kopf, this.armWear.brust] : undefined,
+      veh: this.vehicles && this.vehicles.list.length ? this.vehicles.serialize() : undefined,
+      map: this.map ? this.map.serialize() : undefined
     };
   }
 
@@ -450,22 +477,29 @@ export class Game {
     if (!this.timeFrozen) this.time = (this.time + dt / DAY_LENGTH) % 1;
     this.uni.uTime.value = performance.now() / 1000;
     if (!this.dead) {
-      this.updateHook(dt);
-      p.update(w, dt, this.input, this.yaw);
+      if (this.ride) this.rideStep();
+      else { this.updateHook(dt); p.update(w, dt, this.input, this.yaw); this.sounds(dt); }
       if (p.bounces) { this.questEvent('bounce', 0, p.bounces); p.bounces = 0; }
       if (this.story && p.gliding) this.glideAcc = (this.glideAcc || 0) + dt;
       if (this.vitals && !p.waiting) this.updateVitals(dt);
+    }
+    if (this.vehicles && this.vehicles.list.length) {
+      const fx = -Math.sin(this.yaw), fz = -Math.cos(this.yaw), fl = Math.hypot(fx, fz) || 1;
+      this.vehicles.update(dt, this.ride, this.ride && !this.dead ? { f: this.input.f, r: this.input.r, look: [fx / fl, fz / fl] } : null);
+      if (this.ride) this.seatPlayer();
+      this.vehView.update(p.x, p.z, this.light, this.viewDist * CS, this.uni.uTime.value);
     }
     this.applyCamera();
     this.stream();
     const night = this.time > 0.52 && this.time < 0.98; // Sonne unter dem Horizont
     if (this.mobs) {
-      this.mobs.update(dt, p.x, p.z, { py: p.y, night, time: this.time, hostiles: this.survival && this.enemies && !this.dead });
+      this.mobs.update(dt, p.x, p.z, { py: p.y, night, time: this.time, hostiles: this.survival && this.enemies && !this.dead, others: this.mp ? this.mp.others() : null });
       this.mobView.update(p.x, p.z, this.light, this.viewDist * CS, this.uni.uTime.value);
     }
+    if (this.mp) this.mp.tick(dt);
     if (!this.dead) this.age += dt;
     this.farmT -= dt;
-    if (this.farmT <= 0) { this.farmT = 2; if (this.farm.update(this.world, this.age)) this.unsaved = true; }
+    if (this.farmT <= 0) { this.farmT = 2; if (!this.net && this.farm.update(this.world, this.age)) this.unsaved = true; } // Gast: Wachstum kommt vom Gastgeber
     // Zielblock und Aktionen
     const c = this.camera, dir = this.lookDir || (this.lookDir = new THREE.Vector3());
     dir.set(0, 0, -1).applyEuler(c.rotation);
@@ -490,9 +524,29 @@ export class Game {
     this.cloudU.uOff.value.x += dt * 2.5;
     this.radioT -= dt;
     if (this.world.sigDirty || (this.sigRetry && this.radioT <= 0)) this.updateSignals();
-    if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave(); }
+    if (this.radioT <= 0) {
+      this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave();
+      if ((this.mapT = (this.mapT || 0) + 1) % 4 === 0 && this.map) { this.map.markAround(this.player.x, this.player.z, Math.min(this.viewDist, 5)); this.map.syncRadios(this.world); }
+    }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
+  }
+
+  // Schritte je Material, Platschen, Rufe der Tiere in der Nähe
+  sounds(dt) {
+    const p = this.player, w = this.world;
+    if (p.onGround && !p.flying && !p.inWater) {
+      this.stepAcc = (this.stepAcc || 0) + Math.hypot(p.vx, p.vz) * dt;
+      if (this.stepAcc > 2.1) { this.stepAcc = 0; playStep(stepKind(w.getBlock(Math.floor(p.x), Math.floor(p.y - 0.05), Math.floor(p.z)))); }
+    }
+    if (p.inWater && !this.wasWater) playSplash(p.vy < -6);
+    else if (p.inWater && (this.swimAcc = (this.swimAcc || 0) + Math.hypot(p.vx, p.vz) * dt) > 2.5) { this.swimAcc = 0; playSplash(false); }
+    this.wasWater = p.inWater;
+    if (this.mobs && (this.callT = (this.callT ?? 3) - dt) <= 0) {
+      this.callT = 2.5 + Math.random() * 5;
+      const near = this.mobs.list.filter(m => Math.hypot(m.x - p.x, m.z - p.z) < 20);
+      if (near.length) { const m = near[Math.floor(Math.random() * near.length)]; playCall(m.T.key, Math.hypot(m.x - p.x, m.y - p.y, m.z - p.z)); }
+    }
   }
 
   // ---------- Überleben ----------
@@ -502,13 +556,14 @@ export class Game {
     if (p.impact) { const f = fallDamage(p.impact); p.impact = 0; if (f && !p.inWater) { v.hurt(f, 'Sturz'); dmg += f; } }
     const onMagma = p.onGround && this.world.getBlock(Math.floor(p.x), Math.floor(p.y - 0.05), Math.floor(p.z)) === B.MAGMA;
     dmg += v.tick(dt, { moving: Math.hypot(p.vx, p.vz) > 0.5, sprint: this.input.sprint, eyeWater: p.eyeWater, onMagma });
-    if (dmg > 0) { this.onHurt(dmg, v.cause); this.unsaved = true; }
+    if (dmg > 0) { this.onHurt(dmg, v.cause); this.unsaved = true; if (dmg >= 1) playHurt(); }
     if (v.dead) { this.die(v.cause); return; }
     if (before[0] !== Math.ceil(v.hp) || before[1] !== Math.ceil(v.food) || before[2] !== Math.ceil(v.air)) this.onVitals();
   }
 
   die(cause) {
     const p = this.player;
+    if (this.ride) this.dismount();
     this.dead = true; this.breakHeld = this.placeHeld = false; this.hookT = 0; this.rope.visible = false; this.setMine(null);
     p.vx = p.vy = p.vz = 0;
     const at = { x: Math.round(p.x), y: Math.round(p.y), z: Math.round(p.z) };
@@ -559,6 +614,8 @@ export class Game {
     if (this.actCool > 0) return;
     const c = this.camera.position, t = this.target;
     const mh = this.mobs ? this.mobs.raycast(c.x, c.y, c.z, dir.x, dir.y, dir.z, REACH) : null;
+    const vh = this.vehHit(dir);
+    if (vh && (!t || vh.t < t.t) && (!mh || vh.t < mh.t)) { this.pickVehicle(vh.veh); this.actCool = 0.45; this.setMine(null); return; }
     if (mh && (!t || mh.t < t.t)) { this.attack(mh.mob); this.actCool = 0.45; this.setMine(null); return; }
     if (!this.survival) { this.setMine(null); if (this.breakBlock()) this.actCool = 0.22; return; }
     if (!t || t.y === 0) { this.setMine(null); return; }
@@ -581,6 +638,7 @@ export class Game {
     const dmg = this.mode === 'creative' ? 99 : !tool ? 1 : tool.kind === 'schwert' ? tool.dmg : tool.kind === 'axt' ? 3 : 2;
     this.swing = 1; playBreak();
     if (tool && tool.kind === 'schwert') this.wear(held);
+    if (this.net) { this.net.hit(mob.id, Math.min(dmg, 10)); mob.hurtT = 0.35; return; } // Gast: Gastgeber entscheidet, Beute kommt zurück
     if (!mob.hit(dmg, p.x, p.z)) return;
     this.spawnBreak(mob.x - 0.5, mob.y, mob.z - 0.5, B.WOOL);
     this.mobs.remove(mob, false);
@@ -594,6 +652,7 @@ export class Game {
 
   // Gegner trifft den Spieler (Treffer nur mit freier Sicht, siehe mobs.js)
   mobHits(m) {
+    if (m.target && this.mp) { this.mp.hurtGuest(m); return; } // Gegner trifft einen Gast
     const v = this.vitals, p = this.player;
     if (!v || this.dead) return;
     const d = Math.hypot(p.x - m.x, p.z - m.z) || 1;
@@ -604,14 +663,30 @@ export class Game {
     } else { p.vx += (p.x - m.x) / d * 6; p.vz += (p.z - m.z) / d * 6; p.vy = Math.max(p.vy, 5); p.onGround = false; }
     const dmg = m.T.dmg * armorFactor(this.armorPoints());
     this.wearArmor();
-    v.hurt(dmg, m.T.name); playDeny();
+    v.hurt(dmg, m.T.name); playHurt();
     this.onHurt(dmg, m.T.name); this.onVitals(); this.unsaved = true;
     if (v.dead) this.die(m.T.name);
+  }
+
+  // Mehrspieler-Gast: Treffer eines Gegners beim Gastgeber
+  remoteHurt(m) {
+    const v = this.vitals, p = this.player;
+    if (!v || this.dead) return;
+    const f = Array.isArray(m.from) && m.from.slice(0, 3).every(Number.isFinite) ? m.from : null;
+    if (f && f[3]) {
+      const pos = this.beam.geometry.attributes.position;
+      pos.setXYZ(0, f[0], f[1], f[2]); pos.setXYZ(1, p.x, p.y + 1.2, p.z); pos.needsUpdate = true; this.beam.visible = true; this.beamT = 0.15;
+    } else if (f) { const d = Math.hypot(p.x - f[0], p.z - f[2]) || 1; p.vx += (p.x - f[0]) / d * 6; p.vz += (p.z - f[2]) / d * 6; p.vy = Math.max(p.vy, 5); p.onGround = false; }
+    const cause = typeof m.cause === 'string' ? m.cause.slice(0, 30) : 'Gegner', dmg = Math.min(10, m.dmg) * armorFactor(this.armorPoints());
+    this.wearArmor(); v.hurt(dmg, cause); playHurt();
+    this.onHurt(dmg, cause); this.onVitals();
+    if (v.dead) this.die(cause);
   }
 
   // ---------- Rückgängig / Wiederholen (nur Kreativ, sonst ließen sich Blöcke vermehren) ----------
   // Ein Eintrag = Liste von Änderungen [x, y, z, vorher, nachher]; Formen und Einfügen sind ein Schritt
   record(x, y, z, from, to) {
+    if (this.net) this.net.local(x, y, z, from, to); // Mehrspieler-Gast: Wunsch an den Gastgeber
     if (this.mode !== 'creative') return;
     if (this.batch) { this.batch.push([x, y, z, from, to]); return; }
     this.history.push([[x, y, z, from, to]]);
@@ -629,7 +704,7 @@ export class Game {
     const e = src.pop();
     if (!e) { this.onToast(redo ? 'Nichts zum Wiederholen' : 'Nichts zum Rückgängigmachen'); return false; }
     const list = redo ? e : e.slice().reverse();
-    for (const [x, y, z, from, to] of list) { this.world.ensure(x >> 4, z >> 4); this.world.setBlock(x, y, z, redo ? to : from); }
+    for (const [x, y, z, from, to] of list) { this.world.ensure(x >> 4, z >> 4); const a = redo ? from : to, b = redo ? to : from; if (this.world.setBlock(x, y, z, b) && this.net) this.net.local(x, y, z, a, b); }
     dst.push(e); this.unsaved = true; playPlace();
     if (!this.running) { this.flushDirty(); this.render(); }
     return true;
@@ -693,6 +768,7 @@ export class Game {
   // ---------- Funknetz: nur bei Änderungen neu berechnen, Maschinen umschalten ----------
   updateSignals() {
     const w = this.world, p = this.player, r = solve(w.sig);
+    let snd = false;
     this.sigStats = r; this.sigRetry = false;
     for (const [k, n] of w.sig) {
       const t = n[3], base = OFF_ID[t] ?? t;
@@ -702,6 +778,8 @@ export class Game {
       // ein Tor schließt nicht, solange der Spieler darin steht
       if (want === B.GATE && p.x + 0.3 > n[0] && p.x - 0.3 < n[0] + 1 && p.z + 0.3 > n[2] && p.z - 0.3 < n[2] + 1 && p.y + 1.8 > n[1] && p.y < n[1] + 1) { this.sigRetry = true; continue; }
       w.setBlock(n[0], n[1], n[2], want);
+      const d = Math.hypot(n[0] - p.x, n[1] - p.y, n[2] - p.z);
+      if (d < 24 && !snd) { snd = true; (base === B.GATE ? playClank : playBeep)(); } // hörbar in der Nähe, einmal je Umschaltung
     }
     w.sigDirty = false; // eigene Umschaltungen ändern das Ergebnis nicht
     if (r.capped) this.onToast('Signalnetz zu groß: nicht alles wird berechnet');
@@ -709,7 +787,7 @@ export class Game {
 
   // ---------- Seilhaken, Wegpunkt, Radio ----------
   fireHook() {
-    if (!this.running) return;
+    if (!this.running || this.ride) return;
     const c = this.camera, d = new THREE.Vector3(0, 0, -1).applyEuler(c.rotation);
     const r = raycast(this.world, c.position.x, c.position.y, c.position.z, d.x, d.y, d.z, 40);
     if (!r) { playDeny(); this.onToast('Seilhaken: kein Ziel in Reichweite'); return; }
@@ -790,7 +868,7 @@ export class Game {
         const v = nearestVillage(this.seed, this.player.x, this.player.z);
         if (v) this.wp = { x: v.x, y: v.y + 1, z: v.z };
       }
-      this.unsaved = true; playPlace();
+      this.unsaved = true; playJingle();
       this.onQuestDone(q, s.done);
       this.onChange();
     }
@@ -818,6 +896,7 @@ export class Game {
       }
     }
     const p = this.player, moving = Math.hypot(p.vx, p.vz) > 0.5 && p.onGround;
+    if (this.ride) { this.hand.visible = this.itemHand.visible = false; this.handType = -1; return; } // Hände am Paddel bzw. Rand
     if (moving) this.bob += dt * 9;
     this.swing = Math.max(0, this.swing - dt * 4.5);
     const sw = Math.sin(this.swing * Math.PI);
@@ -895,11 +974,15 @@ export class Game {
     // Dorfbewohner ansprechen (wenn er vor dem Zielblock steht)
     const c = this.camera.position, d = this.lookDir, mh = this.mobs && d ? this.mobs.raycast(c.x, c.y, c.z, d.x, d.y, d.z, REACH) : null;
     if (mh && mh.mob.npc && (!t || mh.t < t.t)) { this.onTrade(mh.mob); this.questEvent('talk', 0); this.actCool = 0.5; return false; }
+    // in ein Fahrzeug einsteigen
+    const vh = d ? this.vehHit(d) : null;
+    if (vh && (!t || vh.t < t.t) && !this.ride) { if (this.placeFirst) this.mount(vh.veh); return false; }
+    if (type && vehicleOf(type)) return this.placeVehicle(type);
     // Schalter umlegen
     if (t && (t.type === B.SWITCH || t.type === B.SWITCH_ON)) {
       if (!this.placeFirst) return false;
       const to = t.type === B.SWITCH ? B.SWITCH_ON : B.SWITCH;
-      if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playPlace(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
+      if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playClick(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
       return true;
     }
     // Werkbank/Ofen benutzen statt daneben zu bauen (Kreativ: keine Rezepte, dort wird gebaut)
@@ -1005,6 +1088,65 @@ export class Game {
     g.visible = true;
   }
 
+  // ---------- Fahrzeuge ----------
+  vehHit(dir) {
+    if (!this.vehicles || !this.vehicles.list.length) return null;
+    const c = this.camera.position, h = this.vehicles.raycast(c.x, c.y, c.z, dir.x, dir.y, dir.z, REACH);
+    return h && h.veh !== this.ride ? h : null;
+  }
+  // Boot aufs Wasser in Blickrichtung (sonst auf den Zielblock), Lore auf eine Schiene
+  placeVehicle(type) {
+    if (!this.placeFirst) return false;
+    const kind = vehicleOf(type), K = VEH_KINDS[kind], t = this.target, d = this.lookDir, c = this.camera.position;
+    if (this.mode !== 'creative' && !(this.inv[type] > 0)) { playDeny(); this.onToast(`Kein ${K.name} im Vorrat`); return false; }
+    let at = null;
+    if (kind === 'boot') {
+      for (let s = 0.5; s <= REACH && !at; s += 0.25) { // erstes Wasser auf dem Blickstrahl
+        const x = Math.floor(c.x + d.x * s), y = Math.floor(c.y + d.y * s), z = Math.floor(c.z + d.z * s);
+        if (t && s > t.t) break;
+        if (this.world.getBlock(x, y, z) === B.WATER) { const top = this.vehicles.waterTop(x + 0.5, y, z + 0.5); if (top !== null) at = [x + 0.5, top - 0.3, z + 0.5]; }
+      }
+      if (!at && t && t.ny === 1) at = [t.x + 0.5, t.y + 1.001, t.z + 0.5];
+    } else if (t && t.type === B.RAIL) at = [t.x + 0.5, t.y, t.z + 0.5];
+    else if (t && t.ny === 1 && this.world.getBlock(t.x, t.y + 1, t.z) === B.RAIL) at = [t.x + 0.5, t.y + 1, t.z + 0.5];
+    if (!at) { playDeny(); this.onToast(kind === 'boot' ? 'Boot: aufs Wasser oder auf den Boden zielen' : 'Die Lore braucht eine Schiene'); this.actCool = 0.5; return false; }
+    if (this.vehicles.boxHits({ K }, at[0], at[1] + 0.05, at[2])) { playDeny(); this.onToast('Kein Platz für das Fahrzeug'); return false; }
+    const v = this.vehicles.add(kind, at[0], at[1], at[2], this.yaw);
+    if (!v) { playDeny(); this.onToast(kind === 'lore' ? 'Die Lore braucht eine Schiene' : 'Zu viele Fahrzeuge in dieser Welt'); return false; }
+    if (this.mode !== 'creative') this.inv[type]--;
+    this.swing = 1; playPlace(); this.unsaved = true; this.onChange();
+    this.onToast(`${K.name} gesetzt · Setzen = einsteigen, Abbauen = einpacken`);
+    return true;
+  }
+  pickVehicle(v) {
+    this.vehicles.remove(v); this.spawnBreak(v.x - 0.5, v.y, v.z - 0.5, v.kind === 'boot' ? B.PLANKS : B.STONE); playBreak();
+    if (this.mode !== 'creative') { this.inv[v.K.item] = Math.min(MAX_STACK, (this.inv[v.K.item] || 0) + 1); this.onToast(`+1 ${v.K.name}`); }
+    this.unsaved = true; this.onChange();
+  }
+  mount(v) {
+    const p = this.player;
+    this.ride = v; v.rider = true; p.flying = false; p.vx = p.vy = p.vz = 0; p.eyeWater = false; p.impact = 0; this.hookT = 0; this.rope.visible = false;
+    this.prevJump = true; // Sprung erst nach dem Loslassen werten
+    if (v.kind === 'lore') this.yaw = v.yaw;
+    this.seatPlayer(); playPlace();
+    this.onToast(v.kind === 'boot' ? 'Im Boot: vor/zurück = paddeln, links/rechts = lenken, Springen = aussteigen' : 'In der Lore: vor = anschieben (in Blickrichtung), zurück = bremsen, Springen = aussteigen');
+    this.onRide(true);
+  }
+  dismount() {
+    const v = this.ride, p = this.player;
+    if (!v) return;
+    this.ride = null; v.rider = false;
+    const [x, y, z] = this.vehicles.exitSpot(v, (a, b, c) => p.collides(this.world, a, b, c));
+    p.x = x; p.y = y; p.z = z; p.vx = p.vy = p.vz = 0; p.onGround = false;
+    this.onRide(false);
+  }
+  seatPlayer() { const v = this.ride, p = this.player; p.x = v.x; p.y = v.y + v.K.seat - 0.4; p.z = v.z; }
+  rideStep() {
+    const j = this.input.jump;
+    if (j && !this.prevJump) this.dismount();
+    this.prevJump = j;
+  }
+
   // ---------- Rüstung ----------
   equip(type) {
     const a = armorOf(type), creative = this.mode === 'creative';
@@ -1052,7 +1194,7 @@ export class Game {
         if (c && !needMesh) continue;
         if (ops > 0 && performance.now() - t0 > this.budget) { worked = true; break outer; }
         if (!c) { c = this.world.ensure(pcx + dx, pcz + dz); ops++; worked = true; }
-        if (needMesh && this.applyMesh(c)) { ops++; worked = true; }
+        if (needMesh) { const r = this.requestMesh(c); if (r === true) { ops++; worked = true; } else if (r === 'wait') worked = true; }
       }
     }
     if (!worked) this.scanDirty = false;
@@ -1071,9 +1213,33 @@ export class Game {
     }
   }
 
+  // Mesh im Worker anfordern (höchstens 4 gleichzeitig); ohne Worker synchron. 'wait' = später erneut versuchen
+  requestMesh(c) {
+    if (!this.mw) return this.applyMesh(c);
+    if (c.pending || this.mwJobs >= 4) return 'wait';
+    const inp = meshInput(this.world, c);
+    if (!inp) return false;
+    const nb = inp.nb.map(a => a.slice()), hms = inp.hms.map(a => a.slice());
+    c.pending = c.ver = ++this.meshSeq; this.mwJobs++;
+    this.mw.postMessage({ key: c.key, ver: c.ver, nb, hms, maxY: inp.maxY }, nb.map(a => a.buffer));
+    return true;
+  }
+  onMeshed({ key, ver, r }) {
+    this.mwJobs = Math.max(0, this.mwJobs - 1);
+    const c = this.world && this.world.chunks.get(key);
+    if (!c || c.ver !== ver || c.pending !== ver) return; // veraltet (Chunk entladen, neu erzeugt oder inzwischen synchron gebaut)
+    c.pending = 0;
+    this.setPart(c, 'opaque', r.opaque, this.matO);
+    this.setPart(c, 'trans', r.trans, this.matT);
+    this.setPart(c, 'logo', r.logo, this.matL);
+    c.meshed = true; this.scanDirty = true;
+    if (!this.running && this.world) this.render();
+  }
+
   applyMesh(c) {
     const res = buildMesh(this.world, c);
     if (!res) return false;
+    c.ver = ++this.meshSeq; c.pending = 0;
     this.setPart(c, 'opaque', res.opaque, this.matO);
     this.setPart(c, 'trans', res.trans, this.matT);
     this.setPart(c, 'logo', res.logo, this.matL);

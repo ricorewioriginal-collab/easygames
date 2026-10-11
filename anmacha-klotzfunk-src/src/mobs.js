@@ -46,9 +46,11 @@ const NEAR = 24;
 const GROUND = new Set([B.GRASS, B.FLOWERS, B.SNOW, B.MYCEL]);
 const keyOf = (cx, cz) => (cx + 32768) * 65536 + (cz + 32768);
 
+let NEXT_ID = 1; // laufende Nummer (Mehrspieler: Tiere über das Netz ansprechen)
 export class Mob {
   constructor(type, x, y, z, hp) {
     const T = MOB_TYPES[type];
+    this.id = NEXT_ID++; this.target = 0;
     this.type = type; this.T = T; this.x = x; this.y = y; this.z = z; this.hp = hp ?? T.hp;
     this.vx = 0; this.vy = 0; this.vz = 0; this.yaw = 0; this.onGround = false;
     this.walk = 0; this.timer = 0; this.flee = 0; this.hurtT = 0; this.acc = 0; this.moving = false;
@@ -337,7 +339,7 @@ export class Mobs {
     return inside ? [m.front, to] : [to];
   }
 
-  // env: { py, night, hostiles } – Spielerhöhe, Nacht, Gegner erlaubt
+  // env: { py, night, hostiles, others } – Spielerhöhe, Nacht, Gegner erlaubt, weitere Spieler (Mehrspieler)
   update(dt, px, pz, env = {}) {
     if (!this.enabled) return;
     const py = env.py ?? 0;
@@ -352,7 +354,11 @@ export class Mobs {
     for (const m of this.list) {
       if (m.npc && m.phase !== ph) { m.phase = ph; m.path = this.route(m, ph); m.bestD = Infinity; m.stuck = 0; }
       const d = Math.hypot(m.x - px, m.z - pz);
-      if (d < NEAR || m.flee > 0 || m.hostile) m.update(this.world, dt, this.rnd, px, pz, py);
+      if (m.hostile) { // Gegner verfolgen den nächsten Spieler (Mehrspieler: env.others = [{ id, x, y, z }])
+        let tx = px, ty = py, tz = pz, best = d; m.target = 0;
+        if (env.others) for (const o of env.others) { const od = Math.hypot(m.x - o.x, m.z - o.z); if (od < best) { best = od; tx = o.x; ty = o.y; tz = o.z; m.target = o.id; } }
+        m.update(this.world, dt, this.rnd, tx, tz, ty);
+      } else if (d < NEAR || m.flee > 0) m.update(this.world, dt, this.rnd, px, pz, py);
       else { m.acc += dt; if (m.acc >= 0.25) { m.update(this.world, Math.min(m.acc, 0.25), this.rnd, px, pz, py); m.acc = 0; } }
       if (m.attack) { m.attack = false; this.onAttack(m); }
     }
