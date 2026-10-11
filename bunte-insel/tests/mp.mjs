@@ -22,8 +22,8 @@ const INIT = () => {
 };
 const errs = []; let fails = 0; const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 const pages = [];
-const mk = async () => { const ctx = await browser.newContext({ viewport: { width: 800, height: 500 } }); await ctx.addInitScript(INIT); const p = await ctx.newPage(); pages.push(p); await p.exposeFunction('__tx', m => { for (const q of pages) if (q !== p) q.evaluate(x => window.__rx && window.__rx(x), m).catch(() => { }); }); p.on('pageerror', e => errs.push('PAGEERR ' + e.message)); p.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED/.test(m.text())) errs.push(m.text()); }); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); return p; };
-const [A, B, C] = [await mk(), await mk(), await mk()];
+const mk = async () => { const ctx = await browser.newContext({ viewport: { width: 800, height: 500 } }); await ctx.addInitScript(INIT); const p = await ctx.newPage(); pages.push(p); await p.exposeFunction('__tx', m => { for (const q of pages) if (q !== p) q.evaluate(x => window.__rx && window.__rx(x), m).catch(() => { }); }); p.on('pageerror', e => errs.push('PAGEERR ' + e.message)); p.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED/.test(m.text())) errs.push(m.text()); }); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.goto(BASE + '/bunte-insel/index.html', { waitUntil: 'domcontentloaded', timeout: 90000 }); await p.waitForFunction(() => window.__bi, null, { timeout: 90000 }); return p; };
+const A = await mk(); console.log('A ok'); const B = await mk(); console.log('B ok'); const C = await mk(); console.log('C ok');
 // Titelbildschirm
 const ti = await A.evaluate(() => ({ letters: document.querySelectorAll('#ttl span').length, home: !document.querySelector('[data-v=home]').hidden, hero: document.querySelector('[data-v=hero]').hidden }));
 await A.click('#bHero'); const heroView = await A.evaluate(() => !document.querySelector('[data-v=hero]').hidden && document.querySelector('[data-v=home]').hidden); await A.click('#bHeroBack');
@@ -119,6 +119,21 @@ ok(left.every(n => n === 1), `Nach dem Verlassen bleibt 1 Mitspieler (${left.joi
   ok(r.n === 1 && r.stars >= sb + 2, `Party: Freund sieht den Kuchen und bekommt Sterne (${r.n}, +${r.stars - sb})`);
   const v = await C.evaluate(() => { const b = window.__bi, a = [...b.remote.values()][0]; b.visitFlat(a.id); const f = b.flats[0], g = b.flats[1]; return Math.min(Math.hypot(b.P.x - f.door.x, b.P.z - f.door.z), Math.hypot(b.P.x - g.door.x, b.P.z - g.door.z)); });
   ok(v < 3, `Besuchen: Gast steht vor einer Wohnungstür (${v.toFixed(1)} m)`); }
+// Rucksack: Geschenk und Tausch zwischen zwei echten Fenstern
+{ const peerId = await A.evaluate(() => [...window.__bi.remote.keys()][0]); const bId = await B.evaluate(() => window.__bi.net.id); const Bp = bId === peerId ? B : C; 
+  await A.evaluate(() => { const iv = window.__bi.garden.inv(); iv.apple = 3; iv.cookie = 0; }); await Bp.evaluate(() => { const iv = window.__bi.garden.inv(); iv.apple = 0; iv.cookie = 2; });
+  const click = (pg, sel, re, i = 0) => pg.evaluate(([sel, re, i]) => { const l = [...document.querySelectorAll(sel)].filter(x => new RegExp(re).test(x.textContent)); if (!l[i]) return false; l[i].click(); return true; }, [sel, re, i]);
+  await A.evaluate(() => { window.__bi.pack.show(0); }); await A.waitForTimeout(150);
+  await click(A, '#packBody .pslot', 'Apfel'); await A.waitForTimeout(100); await click(A, '#packDetail button', 'Verschenken'); await A.waitForTimeout(100); const fr = await click(A, '#packBody button', '.', 0); await Bp.waitForTimeout(900);
+  const g = await Promise.all([A.evaluate(() => window.__bi.garden.inv().apple), Bp.evaluate(() => window.__bi.garden.inv().apple)]);
+  ok(fr && g[0] === 2 && g[1] === 1, `Geschenk: Apfel wandert von A zu B (A ${g[0]}, B ${g[1]})`);
+  await A.evaluate(() => { window.__bi.pack.show(0); }); await A.waitForTimeout(150); await click(A, '#packBody .pslot', 'Apfel'); await A.waitForTimeout(100); await click(A, '#packDetail button', 'Tauschen'); await A.waitForTimeout(100); await click(A, '#packBody button', '.', 0);
+  await Bp.waitForFunction(() => !document.getElementById('tradePanel').hidden, null, { timeout: 8000 }); await click(Bp, '#tradePanel button', 'Ja'); await A.waitForTimeout(600);
+  await Bp.evaluate(() => { const bs = [...document.querySelectorAll('#tradePanel .pbt button.alt')]; const c = bs.find(x => x.title === 'Keks'); (c || bs[0]).click(); }); await A.waitForTimeout(800);
+  await click(A, '#tradePanel button', 'Tauschen!'); await Bp.waitForTimeout(600); await click(Bp, '#tradePanel button', 'Tauschen!'); await A.waitForTimeout(1200);
+  const t = await Promise.all([A.evaluate(() => ({ a: window.__bi.garden.inv().apple, c: window.__bi.garden.inv().cookie || 0, open: !document.getElementById('tradePanel').hidden })), Bp.evaluate(() => ({ a: window.__bi.garden.inv().apple, c: window.__bi.garden.inv().cookie || 0, open: !document.getElementById('tradePanel').hidden }))]);
+  ok(t[0].a === 1 && t[0].c === 1 && t[1].a === 2 && t[1].c === 1 && !t[0].open && !t[1].open, `Tausch: Apfel ↔ Keks (A ${JSON.stringify(t[0])}, B ${JSON.stringify(t[1])})`);
+}
 // falscher Code
 const bad = await B.evaluate(async () => { try { await window.__bi.net.join('ZZZZ'); return 'joined'; } catch (e) { return e.message; } });
 ok(bad === 'nocode', `Falscher Code wird freundlich abgelehnt (${bad})`);
