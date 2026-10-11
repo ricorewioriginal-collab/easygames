@@ -4,6 +4,7 @@ import { SFX, Audio_ } from './audio.js';
 import { initPair, JOIN, loadScript } from './pair.js';
 import { CHARS } from './chars.js';
 import { createUI } from './menu.js';
+import { stick, hold } from './stick.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const COLORS = [0xff6fb0, 0x00b8d9, 0xffd24a, 0x8b5cf6], CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], LOGO = [5, 1, 8, 12], MAXT = 90, ABORT = { abort: 1 };
@@ -34,7 +35,7 @@ if (JOIN) {
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
   const bests = () => store.get('fpBest1', {});
   const show = id => { for (const s of ['menu', 'setup', 'game']) $(s).hidden = s !== id; if (id === 'menu') ui.menu.refresh(); };
-  const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').textContent = snd ? '🔊' : '🔇'; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; };
+  const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').textContent = snd ? '🔊' : '🔇'; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; $('aSnd').querySelector('.ai').textContent = snd ? '🔊' : '🔇'; };
   const toggleSnd = () => { snd = !snd; Audio_.setOn(snd); store.set('fpSnd', snd); setSnd(); SFX.click(); };
   setSnd();
 
@@ -42,7 +43,7 @@ if (JOIN) {
   function ask(html, ids) { $('cardBox').innerHTML = html; $('card').hidden = false; const fb = $('cardBox').querySelector('button'); if (fb) fb.focus({ preventScroll: true }); return new Promise(res => { pending = { res, ids }; }); }
   function fire(id) { if (pending && pending.ids.includes(id)) { const p = pending; pending = null; $('card').hidden = true; p.res(id); } }
   $('cardBox').addEventListener('click', e => { const b = e.target.closest('button[id]'); if (b) { SFX.click(); fire(b.id); } });
-  function abort() { token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; $('pad').hidden = true; arena.setGhost(null); if (p) p.res('abort'); push(); }
+  function abort() { token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
   const rows = (runs, pl, upto) => { const ord = rank(runs.map(r => r || { finished: false, dist: -1 })); return ord.filter(i => runs[i]).map((i, k) => { const r = runs[i]; return `<div class="tr ${r.finished ? '' : 'dnf'}" style="--pc:${CSS[i]}"><em>${k + 1}.</em><b>${esc(pl[i].name)}</b><span>${r.finished ? fmtTime(r.time) : r.why}</span>${upto != null ? `<em>+${r.pts || 0}</em>` : ''}</div>`; }).join(''); };
 
   // ------------------------------------------------------------ Eingabe
@@ -50,12 +51,9 @@ if (JOIN) {
   addEventListener('keydown', e => { if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const b = KEYMAP[e.code]; if (b) { keys |= b; if (G && G.phase !== 'ready') e.preventDefault(); } if ((e.code === 'Space' || e.code === 'Enter') && pending && pending.ids.includes('bReady')) { e.preventDefault(); fire('bReady'); } });
   addEventListener('keyup', e => { const b = KEYMAP[e.code]; if (b) keys &= ~b; });
   addEventListener('blur', () => { keys = 0; touchM = 0; });
-  const BIT = { l: 1, r: 2, j: 4, g: 8 };
-  document.querySelectorAll('#pad button').forEach(b => {
-    const bit = BIT[b.dataset.k], up = () => { touchM &= ~bit; b.classList.remove('on'); };
-    b.addEventListener('pointerdown', e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (x) {} touchM |= bit; b.classList.add('on'); });
-    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, up));
-  });
+  // Touch: Stick links (Bits 1/2), Springen rechts (Bit 4), dazu Menü und Ton
+  const stk = stick($('stick'), m => { touchM = (touchM & ~3) | m; }), jumpUp = hold(document.querySelector('#pad [data-k="j"]'), () => { touchM |= 4; }, () => { touchM &= ~4; });
+  const padOn = v => { $('pad').hidden = !v; $('game').classList.toggle('pl', v); if (!v) { stk.reset(); jumpUp(); touchM = 0; } };
   let padM = 0; const readInput = () => { const m = keys | touchM | padM | (G ? phoneM[G.cur] : 0); return { l: m & 1, r: m & 2, j: m & 4, g: m & 8 }; };
 
   // ------------------------------------------------------------ Handy-Kopplung
@@ -99,7 +97,7 @@ if (JOIN) {
 
   async function turn(tok, ci, pi, runs, leader) {
     const A = async p => { const v = await p; if (tok !== token) throw ABORT; return v; };
-    const course = COURSES[ci]; G.course = course; G.cur = pi; G.phase = 'ready'; G.say = ''; phoneM[pi] = 0; updateTop(); show('game'); $('pad').hidden = true; $('clock').textContent = fmtTime(0);
+    const course = COURSES[ci]; G.course = course; G.cur = pi; G.phase = 'ready'; G.say = ''; phoneM[pi] = 0; updateTop(); show('game'); padOn(false); $('clock').textContent = fmtTime(0);
     loadScene(ci); look(pi); G.sim = null; let ghost = null; if (G.mode === 'train') { const b = bests()[ci]; ghost = b ? b.g : null; } else if (leader && leader.g) ghost = leader.g; G.ghost = ghost; arena.setGhost(ghost);
     push();
     const ph = hasPhone(pi);
@@ -107,7 +105,7 @@ if (JOIN) {
     G.phase = 'count'; push(); keys = touchM = 0;
     for (const n of [3, 2, 1]) { big(String(n), '', 700); SFX.count(); await A(sleep(800)); }
     big('LOS!', '', 800); SFX.go(); arena.fire(1); G.phase = 'run'; push();
-    const sim = new Sim(course); G.sim = sim; $('pad').hidden = false; const rec = []; let acc = 0, n = 0, prevG = true;
+    const sim = new Sim(course); G.sim = sim; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true;
     const res = await A(new Promise(done => {
       G.tick = dt => {
         acc += dt;
@@ -120,7 +118,7 @@ if (JOIN) {
         if (sim.dead || sim.finished) { G.tick = null; done({ finished: sim.finished, time: sim.t, dist: sim.dist, dead: sim.dead }); }
       };
     }));
-    G.phase = 'done'; $('pad').hidden = true; phoneM[pi] = 0;
+    G.phase = 'done'; padOn(false); phoneM[pi] = 0;
     if (res.finished) { res.why = ''; SFX.top(); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
     else { res.why = res.dead === 'time' ? 'Zeit ab' : `Baden · ${Math.round(res.dist)} m`; if (res.dead === 'time') SFX.buzz(); else { arena.splash(sim.x); SFX.splash(); SFX.sad(); } big(res.dead === 'time' ? 'ZEIT ABGELAUFEN' : 'PLATSCH!', 'bad sm', 1500); }
     res.g = rec; G.say = res.finished ? fmtTime(res.time) : res.why; push();
@@ -180,7 +178,7 @@ if (JOIN) {
     if (id === 'show') return `<h3>Show starten</h3><p>Die große Hindernis-Show: Vorrunde, Halbfinale und Finale. Jeder Läufer geht allein auf den Parcours, die Zeiten werden verglichen – am Ende gewinnt, wer die meisten Punkte hat.</p><div class="cm-stats"><div><b>1–4</b><small>Läufer</small></div><div><b>3</b><small>Parcours</small></div><div><b>${CHARS.length}</b><small>Figuren</small></div></div>${go('show', 'Show einrichten')}`;
     if (id === 'train') return `<h3>Training</h3><p>Ein Parcours, so oft du willst. Deine Bestzeit wird gespeichert und läuft als Geist mit.</p><div class="cm-stats">${COURSES.map((c, i) => `<div><b>${b[i] ? fmtTime(b[i].t) : '–'}</b><small>${esc(c.name)}</small></div>`).join('')}</div><p class="h">${done ? `${done} von ${COURSES.length} Parcours geschafft.` : 'Noch keine Bestzeit – ab ins Ziel!'}</p>${go('train', 'Training wählen')}`;
     if (id === 'pair') return `<h3>Handys koppeln</h3><p>QR-Code scannen oder Code eingeben: Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4) und meldet „Bereit".</p><p class="h">Ohne Handy spielt ihr abwechselnd an diesem Gerät.</p>${go('pair', 'Koppeln')}`;
-    if (id === 'rules') return `<h3>So wird gespielt</h3><div class="cm-keys2">${touch ? '<span>📱 ◀ ▶</span><span>laufen</span><span>📱 ⤒</span><span>springen (länger halten = höher)</span>' : '<span><kbd>←</kbd><kbd>→</kbd> <kbd>A</kbd><kbd>D</kbd></span><span>laufen</span><span><kbd>Leertaste</kbd> <kbd>W</kbd></span><span>springen (länger halten = höher)</span>'}<span>🎮</span><span>Steuerkreuz/Stick laufen, A springen</span></div><p class="h">An den Hangelstangen greift dein Läufer von selbst. Wer ins Wasser fällt, ist raus – dann zählt die Strecke.</p>${go('rules', 'Alle Regeln')}`;
+    if (id === 'rules') return `<h3>So wird gespielt</h3><div class="cm-keys2">${touch ? '<span>🕹️ Stick</span><span>laufen</span><span>⤒ Springen</span><span>springen (länger halten = höher)</span>' : '<span><kbd>←</kbd><kbd>→</kbd> <kbd>A</kbd><kbd>D</kbd></span><span>laufen</span><span><kbd>Leertaste</kbd> <kbd>W</kbd></span><span>springen (länger halten = höher)</span>'}<span>🎮</span><span>Steuerkreuz/Stick laufen, A springen</span></div><p class="h">An den Hangelstangen greift dein Läufer von selbst. Wer ins Wasser fällt, ist raus – dann zählt die Strecke.</p>${go('rules', 'Alle Regeln')}`;
     if (id === 'sound') return `<h3>Ton</h3><p>Musik und Effekte sind gerade <b>${snd ? 'an' : 'aus'}</b>.</p>${go('sound', snd ? 'Ton aus' : 'Ton an')}`;
     return `<h3>Alle Spiele</h3><p>Zurück zur AnMaCha-Spielesammlung.</p>${go('home', 'Zur Sammlung')}`;
   }
@@ -190,7 +188,7 @@ if (JOIN) {
   $('bStart').onclick = () => { Audio_.unlock(); SFX.click(); start(S.mode); };
   $('bGMenu').onclick = () => { if (confirm('Show wirklich beenden?')) { abort(); show('menu'); } };
   $('rulesOk').onclick = () => { $('rules').hidden = true; if (!$('menu').hidden) ui.menu.refresh(); };
-  $('bSnd').onclick = toggleSnd;
+  $('bSnd').onclick = toggleSnd; $('aSnd').onclick = toggleSnd; $('aMenu').onclick = () => $('bGMenu').click();
   addEventListener('keydown', e => { if (e.code === 'Escape' && !$('game').hidden && !pending) $('bGMenu').click(); });
   window.__fp = { get G() { return G; }, S, arena, COURSES, ui }; requestAnimationFrame(loop);
   await texDone; booting = false; ui.boot.ready(() => { show('menu'); ui.menu.show('show'); });
