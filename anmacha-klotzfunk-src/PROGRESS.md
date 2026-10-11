@@ -68,6 +68,21 @@ Legende: ✅ fertig und getestet · 🟡 teilweise · ⬜ offen
 
 ---
 
+## 2c. Etappe 3 (Teil 1) – Felder, Gegner, Rückgängig ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Landwirtschaft | Hacke (Holz, Stein) macht Gras/Erde zu Ackerboden; Weizensamen (12 % beim Abbauen von Gras) darauf setzen; 4 Wachstumsstufen à 90 s Spielzeit; reif = Weizen + 1–2 Samen; 3 Weizen = Brot (+6 Hunger) | `src/farm.js`, `src/items.js`, `src/blocks.js` |
+| Wachstum über Zeitstempel | jede Pflanze speichert ihre Setz-Zeit (`farm`, gespielte Sekunden `age` im Spielstand); die Stufe wird alle 2 s nur für geladene Pflanzen berechnet, nach langer Abwesenheit genügt ein Aufruf; ohne Ackerboden vergeht die Pflanze; höchstens 4096 Pflanzen | `src/farm.js` |
+| Pflanzen-Modelle | neue Blockform „Kreuz“ (zwei diagonale, beidseitige Flächen, nicht fest) im Mesher | `src/mesher.js`, `src/textures.js` |
+| Gegner | Rauschling: erscheint nachts unter freiem Himmel und jederzeit in tiefen Höhlen (unter Meereshöhe − 4), 14–26 Blöcke entfernt, höchstens 4; sieht den Spieler nur mit freier Sichtlinie (≤ 18 Blöcke), verfolgt, springt über Stufen, trifft 1× je Sekunde (1 Herz, Rückstoß); verschwindet bei Tageslicht oder > 40 Blöcken; Beute 0–1 Funkkristall; wird nicht gespeichert. Einstellung „Gegner“ (aus = friedlich). | `src/mobs.js`, `src/mobview.js`, `src/game.js` |
+| Kampf | Schwerter in 4 Stufen (3–6 Schaden, nutzen sich ab); Treffer durch Wände sind unmöglich (Tier-Strahl wird mit dem Block-Strahl verglichen) | `src/items.js`, `src/game.js` |
+| Rückgängig | Kreativ: letzte 100 Bau-Schritte, Strg+Z / ↶-Knopf, Strg+Y bzw. Strg+Umschalt+Z wiederholt (im Überleben bewusst nicht, sonst ließen sich Blöcke vermehren) | `src/game.js`, `src/main.js` |
+| Fehler behoben | negativer Zeitschritt, wenn der Bild-Zeitstempel knapp vor dem Fortsetzen lag | `src/game.js` |
+| Tests | 60 Tests (neu: `farm.test.js`, Gegner in `mobs.test.js`) | `tests/` |
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
@@ -77,13 +92,13 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 4 | Voxel-Engine | 🟡 | 1 ✅ / 4 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
-| 7 | Bauen | 🟡 | 3 | Platzierungsvorschau, Linie/Fläche/Wand/Säule, Rückgängig/Wiederholen, Kopieren/Einfügen, Bauvorlagen (lokal + Export) |
+| 7 | Bauen | 🟡 | 3 ✅ / 3b | Rückgängig/Wiederholen ✅; Platzierungsvorschau, Linie/Fläche/Wand/Säule, Kopieren/Einfügen, Bauvorlagen |
 | 8 | Crafting, Werkzeuge, Stationen | ✅ | 2 | später: Kochstelle, Schmelzen mit Zeitablauf, Werkzeug-Haltbarkeit je Stück statt je Stapel |
 | 9 | Survival | ✅ | 2 | Betten/eigener Startpunkt, Rüstung (mit Gegnern, Etappe 3) |
 | 10 | Tiere | ✅ | 2 | Biom-Tiere (z. B. Ziege, Pinguin), Züchten mit Futter, Beine animieren |
-| 11 | Gegner, Kampf | ⬜ | 3 | eigene Gegner (Rauschlinge, Höhlenwesen, Störsender-Drohnen), Sichtlinien-Prüfung gegen Treffer durch Wände |
-| 12 | Dörfer, NPCs | ⬜ | 3 | Strukturgenerator mit Flächenausgleich, NPC-Tagesablauf mit festem Aufenthaltsort, Handel |
-| 13 | Landwirtschaft | ⬜ | 3 | Wachstum über Zeitstempel (kein Dauer-Simulieren), Zustand im Block-Edit gespeichert |
+| 11 | Gegner, Kampf | 🟡 | 3 ✅ / 3b | Höhlenwesen und Störsender-Drohnen als eigene Arten, Rüstung, Bogen |
+| 12 | Dörfer, NPCs | ⬜ | 3b | Strukturgenerator mit Flächenausgleich (neue Generator-Version), NPC-Tagesablauf mit festem Aufenthaltsort, Handel |
+| 13 | Landwirtschaft | 🟡 | 3 ✅ | weitere Pflanzen (Karotte, Kartoffel), Bewässerung, Tierzucht |
 | 14 | Fahrzeuge | 🟡 | 4 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
 | 15 | Story „Das große Rauschen“ | 🟡 | 4 | 6 Kapitel, alte 15 Aufträge werden Kapitel 1–2; Migration: alter Fortschritt `story.i` → neues Kapitel/Schritt |
 | 16 | Funktechnik | 🟡 | 4 | Radio-Blöcke vorhanden; Funknetz (Sender, Relais, Reichweite), Signale steuern Maschinen |
@@ -120,7 +135,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 ```bash
 cd anmacha-klotzfunk-src
 npm install
-npm test          # 51 Tests, ~1 s
+npm test          # 60 Tests, ~2 s
 npm run bench     # Chunk-Erzeugung/Meshing messen (Seed 12345, Radius 6, Generator 2)
 npm run docs      # BLOCKS.md und CRAFTING.md aus dem Code erzeugen
 npm run build     # schreibt ../anmacha-klotzfunk/ (mit committen!)
@@ -133,13 +148,12 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 3 „Bauen, Gegner, Dörfer“
-1. Gegner auf dem Tier-Grundgerüst: Rauschlinge (nachts), Höhlenwesen, Störsender-Drohnen; Sichtlinie gegen Treffer durch Wände; Schwerter und Rüstung.
-2. Strukturgenerator (Dörfer mit Flächenausgleich, verlassene Minen) als Generator-Feature mit eigener Version, falls sich Gelände sichtbar ändert.
-3. NPCs mit festem Tagesablauf und Handel.
-4. Landwirtschaft über Zeitstempel (Wachstum beim Laden nachrechnen, kein Dauer-Simulieren).
-5. Bau-Werkzeuge: Vorschau, Linie/Fläche/Wand, Rückgängig.
-6. Tests für alle neuen Systeme.
+### Nächste Sitzung: Etappe 3b „Dörfer und Bauen“
+1. Strukturgenerator: Dörfer mit Flächenausgleich und verlassene Minen. Das verändert neues Gelände → als Generator 3 (`gen: 3`), Generator 2 bleibt unverändert.
+2. NPCs mit festem Tagesablauf (Haus, Arbeit, Platz) und Handel (Tausch gegen Weizen, Barren, Kristalle).
+3. Bau-Werkzeuge: Platzierungsvorschau, Linie/Fläche/Wand/Säule, Kopieren/Einfügen.
+4. Weitere Gegnerarten (Höhlenwesen, Störsender-Drohne) und Rüstung.
+5. Tests für alle neuen Systeme.
 
 ---
 
@@ -148,6 +162,8 @@ Regeln, die nicht gebrochen werden dürfen:
 - Gemessen wurde in Node (Desktop-CPU) und im Headless-Chromium mit Software-Grafik. **Echte Android-Geräte wurden nicht getestet.** Siehe PERFORMANCE.md und TESTING.md.
 - Die Story nutzt weiter die 15 Aufträge von Version 1.0.
 - Schmelzen und Kochen gehen sofort; der Ofen hat noch keinen Brennvorgang mit Zeit.
+- Rauschlinge haben nur einen Nahkampf-Angriff, keine Rüstung für den Spieler; Gegner gibt es nur im Überlebensmodus.
+- Weizen wächst auch ohne Wasser in der Nähe und nur, solange gespielt wird (gespielte Zeit, nicht Echtzeit).
 - Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
 - Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.

@@ -35,6 +35,21 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Umkippen:** Du stehst am Startpunkt wieder auf, ein Wegpunkt zeigt den Unglücksort. In den Einstellungen wählst du, ob der Vorrat bleibt oder am Unglücksort liegen bleibt (dann durch Hingehen abholen).
 - **Tiere:** Hühner, Schafe und Kühe leben auf Wiesen, Schnee und Pilzboden. Abbauen-Taste auf ein Tier = schlagen; erlegte Tiere geben Fleisch (Schafe auch Wolle). Tiere gibt es in Überlebens- und Kreativwelten, nicht in der Story.
 
+## Felder
+- **Hacke** (Werkbank: 2 Bretter oder Stein + 2 Stöcke) wählen und Setzen auf Gras oder Erde drücken = Ackerboden.
+- **Weizensamen** bekommst du manchmal beim Abbauen von Gras. Samen wählen und auf Ackerboden setzen.
+- Weizen wächst in 4 Stufen, reif nach etwa 4½ Minuten Spielzeit (auch während du woanders bist, solange du spielst). Reif geerntet gibt er Weizen und 1–2 Samen, unreif nur den Samen zurück.
+- **Brot** aus 3 Weizen (+6 Hunger).
+
+## Gegner
+- **Rauschlinge** tauchen nachts unter freiem Himmel und in tiefen Höhlen auf, höchstens 4 gleichzeitig. Sie verfolgen dich nur, wenn sie dich sehen können, und treffen etwa einmal pro Sekunde.
+- Bei Tagesanbruch zerfallen sie an der Oberfläche. Erlegte Rauschlinge lassen manchmal einen Funkkristall fallen.
+- **Schwerter** (Werkbank: 2 Bretter, Stein, Kupfer- oder Eisenbarren + 1 Stock) treffen härter als Hand und Werkzeuge.
+- In den Einstellungen lassen sich Gegner abschalten (friedlich).
+
+## Kreativ: Rückgängig
+Strg+Z oder der ↶-Knopf macht die letzten 100 Bau-Schritte rückgängig, Strg+Y wiederholt sie.
+
 ## Inventar
 - **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funk-Logos, Werkzeuge & Essen) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
 - **„nur Vorrat“** blendet Blöcke aus, die du nicht hast.

@@ -358,7 +358,24 @@ const PAINT = [
   (u, v, x, y) => {
     const n = fbm(u, v, 8, 3, 147), curl = pn(u * 16, v * 16, 16, 16, 148);
     return [...add(mix([214, 210, 202], [246, 244, 238], n * 0.5 + curl * 0.5), grain(x, y, 45, 6)), 255];
-  }
+  },
+  // 56 Ackerboden oben: dunkle Furchen
+  (u, v, x, y) => {
+    const f = (v * 5) % 1, furrow = f < 0.32;
+    let c = mix([74, 50, 30], [104, 72, 46], fbm(u, v, 6, 3, 150));
+    if (furrow) c = add(c, -22);
+    return [...add(c, grain(x, y, 46, 10)), 255];
+  },
+  // 57..60 Weizen in vier Stufen (Halme mit Lücken, Alpha)
+  ...[0, 1, 2, 3].map(st => (u, v, x, y) => {
+    const h = [0.3, 0.52, 0.76, 0.92][st], col = [[70, 170, 50], [90, 176, 54], [150, 176, 60], [214, 184, 76]][st];
+    const stalk = Math.floor(u * 8), sx = (u * 8) % 1, sh = h * (0.8 + 0.2 * hash(stalk, st, 151));
+    if (1 - v > sh || sx < 0.3 || sx > 0.7) {
+      if (st === 3 && 1 - v > sh - 0.22 && 1 - v < sh + 0.04 && sx > 0.15 && sx < 0.85 && hash(x >> 1, y >> 1, 152) > 0.3) return [228, 196, 90, 255]; // Ähre
+      return [0, 0, 0, 0];
+    }
+    return [...add(col, grain(x, y, 47 + st, 16) - (1 - v) * 20), 255];
+  })
 ];
 export const TILE_COUNT = PAINT.length;
 // Kachel-Rand: leichte Kante, die jeden Block als Körper lesbar macht
@@ -452,6 +469,21 @@ export function drawItems(items) {
       case 'schaufel':
         stick(5);
         px(10, 2, col, 4, 4); px(9, 3, col, 1, 3); px(14, 3, dk, 1, 3); px(10, 2, lt, 4, 1); px(11, 6, dk, 2, 1); break;
+      case 'hacke':
+        stick(3);
+        px(9, 2, col, 5, 2); px(12, 4, col, 2, 2); px(9, 2, lt, 5, 1); px(13, 4, dk, 1, 2); break;
+      case 'schwert':
+        for (let i = 0; i < 9; i++) { px(5 + i, 10 - i, col); px(6 + i, 10 - i, lt); px(5 + i, 11 - i, dk); }
+        px(3, 10, '#5a3a1e', 4, 1); px(5, 8, '#5a3a1e', 1, 5); px(2, 13, '#8a6034', 2, 2); px(4, 11, '#8a6034', 1, 2); break;
+      case 'seeds':
+        [[4, 6], [8, 4], [10, 8], [6, 10], [11, 11], [5, 13], [9, 12]].forEach(([x, y]) => { px(x, y, '#c8b060', 2, 1); px(x, y + 1, '#8a7a3a', 2, 1); });
+        break;
+      case 'wheat':
+        for (let i = 0; i < 3; i++) { const x = 5 + i * 3; px(x, 7, '#6a8a2a', 1, 8); px(x - 1, 2, '#e0c060', 3, 5); px(x, 1, '#f0d880', 1, 2); }
+        px(4, 11, '#8a6a2a', 9, 1); break;
+      case 'bread':
+        px(2, 6, '#c8843c', 12, 6); px(3, 5, '#d89848', 10, 1); px(2, 12, '#8a5420', 12, 1);
+        for (let i = 0; i < 3; i++) px(4 + i * 3, 7, '#f0c070', 2, 1); break;
       default: px(4, 4, col, 8, 8);
     }
   });

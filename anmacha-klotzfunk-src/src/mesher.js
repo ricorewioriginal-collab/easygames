@@ -1,7 +1,7 @@
 // Chunk-Mesher: Flächen-Culling, weiche Ecken-Beleuchtung (Ambient Occlusion + Himmelslicht),
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
 import { CS, H } from './consts.js';
-import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, TILES, isLogo as isLogoId } from './blocks.js';
+import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, TILES, isLogo as isLogoId } from './blocks.js';
 export { TILES };
 
 // n = Normale, o = Ursprungsecke, a/b = Kantenvektoren (a × b = n, also gegen den Uhrzeigersinn von außen)
@@ -77,6 +77,7 @@ export function buildMesh(world, chunk) {
       for (let x = 0; x < CS; x++) {
         const t = data[x + (z << 4) + (y << 8)];
         if (t === B.AIR) continue;
+        if (CROSS[t]) { cross(O, x, y, z, TILES[t][0], sky(x, y, z)); continue; }
         const isLogo = isLogoId(t);
         const part = isLogo ? L : TRANS[t] ? T : O;
         const lamp = EMIT[t];
@@ -112,6 +113,23 @@ export function buildMesh(world, chunk) {
     }
   }
   return { opaque: O.finish(), trans: T.finish(), logo: L.finish() };
+}
+
+// Pflanze: zwei diagonale Flächen, beidseitig (opakes Mesh, Alpha-Ausschnitt)
+const CROSS_Q = [[[0.15, 0.15], [0.85, 0.85]], [[0.85, 0.15], [0.15, 0.85]]];
+function cross(P, x, y, z, tile, s) {
+  const [u0, v0, du] = tileUv(tile, false);
+  for (const [[ax, az], [bx, bz]] of CROSS_Q) {
+    for (const flip of [0, 1]) {
+      const b = P.n * 4;
+      const pts = flip ? [[bx, bz], [ax, az]] : [[ax, az], [bx, bz]];
+      P.pos.push(x + pts[0][0], y, z + pts[0][1], x + pts[1][0], y, z + pts[1][1], x + pts[1][0], y + 1, z + pts[1][1], x + pts[0][0], y + 1, z + pts[0][1]);
+      P.uv.push(u0, v0, u0 + du, v0, u0 + du, v0 + du, u0, v0 + du);
+      for (let k = 0; k < 4; k++) P.col.push(0.9, s, 0, 4);
+      P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+      P.n++;
+    }
+  }
 }
 
 // Einheitswürfel (für Hand-Block): gleiche Vertex-Daten wie der Welt-Mesher

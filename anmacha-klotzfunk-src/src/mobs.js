@@ -10,8 +10,22 @@ import { I } from './items.js';
 export const MOB_TYPES = [
   { key: 'huhn', name: 'Huhn', hp: 3, half: 0.25, h: 0.8, speed: 1.5, drops: [[I.MEAT_RAW, 1, 1]] },
   { key: 'schaf', name: 'Schaf', hp: 5, half: 0.42, h: 1.2, speed: 1.2, drops: [[I.MEAT_RAW, 1, 2], [B.WOOL, 1, 2]] },
-  { key: 'kuh', name: 'Kuh', hp: 6, half: 0.45, h: 1.4, speed: 1.1, drops: [[I.MEAT_RAW, 2, 3]] }
+  { key: 'kuh', name: 'Kuh', hp: 6, half: 0.45, h: 1.4, speed: 1.1, drops: [[I.MEAT_RAW, 2, 3]] },
+  // Gegner: nachts an der Oberfläche, jederzeit in tiefen Höhlen; werden nicht gespeichert
+  { key: 'rauschling', name: 'Rauschling', hp: 8, half: 0.3, h: 1.7, speed: 2.4, hostile: true, dmg: 2, drops: [[B.CRYSTAL, 0, 1]] }
 ];
+export const HOSTILE_MAX = 4;     // gleichzeitig höchstens
+const SIGHT = 18;                  // Sichtweite der Gegner (Blöcke)
+
+// freie Sichtlinie zwischen zwei Punkten (Schritte von 0,4 Blöcken, feste Blöcke verdecken)
+export function lineOfSight(w, x0, y0, z0, x1, y1, z1) {
+  const d = Math.hypot(x1 - x0, y1 - y0, z1 - z0), n = Math.ceil(d / 0.4);
+  for (let i = 1; i < n; i++) {
+    const t = i / n;
+    if (w.isSolid(Math.floor(x0 + (x1 - x0) * t), Math.floor(y0 + (y1 - y0) * t), Math.floor(z0 + (z1 - z0) * t))) return false;
+  }
+  return true;
+}
 export const ACTIVE_R = 3;   // Aktivradius in Chunks
 export const MAX_MOBS = 40;  // Obergrenze gleichzeitig aktiver Tiere
 const NEAR = 24;
@@ -24,6 +38,7 @@ export class Mob {
     this.type = type; this.T = T; this.x = x; this.y = y; this.z = z; this.hp = hp ?? T.hp;
     this.vx = 0; this.vy = 0; this.vz = 0; this.yaw = 0; this.onGround = false;
     this.walk = 0; this.timer = 0; this.flee = 0; this.hurtT = 0; this.acc = 0; this.moving = false;
+    this.hostile = !!T.hostile; this.sees = false; this.seeT = 0; this.atkT = 0; this.attack = false;
   }
 
   collides(w, x, y, z) {
@@ -45,12 +60,19 @@ export class Mob {
   }
 
   // rnd: Zufallsfunktion (für Tests austauschbar); px/pz: Spieler (für Flucht)
-  update(w, dt, rnd, px, pz) {
+  update(w, dt, rnd, px, pz, py = this.y) {
     if (!w.isLoaded(Math.floor(this.x), Math.floor(this.z))) return; // Bereich nicht geladen: einfrieren
     const T = this.T;
     this.hurtT = Math.max(0, this.hurtT - dt);
     this.timer -= dt;
-    if (this.flee > 0) {
+    if (this.hostile) { // Gegner: Spieler sehen, verfolgen, angreifen
+      this.atkT -= dt; this.seeT -= dt;
+      const d = Math.hypot(px - this.x, pz - this.z);
+      if (this.seeT <= 0) { this.seeT = 0.5; this.sees = d < SIGHT && lineOfSight(w, this.x, this.y + 1.5, this.z, px, py + 1.6, pz); }
+      if (this.sees && d > 0.8) { this.walk = 1; this.yaw = Math.atan2(-(px - this.x), -(pz - this.z)); this.timer = 0.5; }
+      if (this.sees && d < 1.5 && Math.abs(py - this.y) < 1.8 && this.atkT <= 0) { this.atkT = 1; this.attack = true; }
+    }
+    if (this.hostile && this.sees) { /* Verfolgung hat Vorrang */ } else if (this.flee > 0) {
       this.flee -= dt; this.walk = 1;
       this.yaw = Math.atan2(-(this.x - px), -(this.z - pz)); // vom Spieler weg
     } else if (this.timer <= 0) { // neue Absicht: laufen oder stehen
@@ -62,12 +84,13 @@ export class Mob {
     let sp = this.walk ? T.speed * (this.flee > 0 ? 2.2 : 1) : 0;
     let dx = -Math.sin(this.yaw), dz = -Math.cos(this.yaw);
     // nicht über Kanten (> 3 Blöcke) oder ins tiefe Wasser laufen
-    if (sp && this.onGround) {
+    if (sp && this.onGround && !this.sees) {
       const ax = Math.floor(this.x + dx * (T.half + 0.6)), az = Math.floor(this.z + dz * (T.half + 0.6));
       let drop = 0;
       for (let y = Math.floor(this.y) - 1; drop < 4 && y > 0 && !SOLID[w.getBlock(ax, y, az)]; y--) { drop++; if (w.getBlock(ax, y, az) === B.WATER && !this.flee) { drop = 9; break; } }
       if (drop > 3) { this.yaw += Math.PI * (0.5 + rnd()); this.timer = 0.5 + rnd(); dx = -dx; dz = -dz; sp *= 0.3; }
     }
+    if (this.hostile && this.sees && Math.hypot(px - this.x, pz - this.z) < 0.9) sp = 0; // nicht in den Spieler laufen
     this.vx = dx * sp; this.vz = dz * sp;
     if (inWater) { this.vy = Math.min(2, this.vy + 20 * dt); }
     else this.vy = Math.max(-40, this.vy - 28 * dt);
@@ -85,7 +108,7 @@ export class Mob {
 
   // Treffer: Rückgabe true = erlegt
   hit(dmg, px, pz) {
-    this.hp -= dmg; this.hurtT = 0.35; this.flee = 3.5;
+    this.hp -= dmg; this.hurtT = 0.35; if (!this.hostile) this.flee = 3.5;
     const d = Math.hypot(this.x - px, this.z - pz) || 1;
     this.x += (this.x - px) / d * 0.15; this.z += (this.z - pz) / d * 0.15; this.vy = 4.5;
     return this.hp <= 0;
@@ -116,10 +139,11 @@ export class Mobs {
     if (store && typeof store === 'object') for (const k of Object.keys(store)) {
       const v = store[k], key = Number(k);
       if (!Array.isArray(v) || !Number.isFinite(key)) continue;
-      this.store.set(key, v.filter(r => Array.isArray(r) && MOB_TYPES[r[0]] && r.slice(1, 5).every(Number.isFinite)));
+      this.store.set(key, v.filter(r => Array.isArray(r) && MOB_TYPES[r[0]] && !MOB_TYPES[r[0]].hostile && r.slice(1, 5).every(Number.isFinite)));
     }
     this.list = []; this.active = new Set(); this.lastPC = null; this.rnd = Math.random;
-    this.onAdd = () => {}; this.onRemove = () => {};
+    this.onAdd = () => {}; this.onRemove = () => {}; this.onAttack = () => {}; this.onPoof = () => {};
+    this.day = true; this.spawnT = 3;
   }
 
   // einmalige, feste Erstbesiedlung eines Chunks (gleicher Startwert = gleiche Tiere)
@@ -167,11 +191,40 @@ export class Mobs {
     const i = this.list.indexOf(m);
     if (i < 0) return;
     this.list.splice(i, 1); this.onRemove(m);
+    if (this.hostile(m)) return; // Gegner werden nicht gespeichert
     if (keep) this.stash(m.record());
     else { // Chunk bleibt markiert, damit dort nicht neu besiedelt wird
       const key = keyOf(Math.floor(m.x / CS), Math.floor(m.z / CS));
       if (!this.store.has(key) && !this.active.has(key)) this.store.set(key, []);
     }
+  }
+
+  hostile(m) { return m.hostile; }
+  hostileCount() { let n = 0; for (const m of this.list) if (m.hostile) n++; return n; }
+
+  // Gegner erscheinen 14–26 Blöcke entfernt: nachts auf freiem Himmel, in tiefen Höhlen (unter Meereshöhe − 4) jederzeit.
+  // Rückgabe: neuer Gegner oder null
+  spawnHostile(px, py, pz, night, rnd = this.rnd) {
+    if (this.hostileCount() >= HOSTILE_MAX || this.list.length >= MAX_MOBS) return null;
+    for (let tries = 0; tries < 6; tries++) {
+      const a = rnd() * Math.PI * 2, r = 14 + rnd() * 12;
+      const x = Math.floor(px + Math.cos(a) * r), z = Math.floor(pz + Math.sin(a) * r);
+      const c = this.world.getChunk(x >> 4, z >> 4);
+      if (!c) continue;
+      const hm = this.world.heightmap(c)[(x & 15) + (z & 15) * CS];
+      for (let y = Math.min(H - 3, Math.floor(py) + 8); y > Math.max(1, Math.floor(py) - 10); y--) {
+        if (!SOLID[this.world.getBlock(x, y - 1, z)] || this.world.getBlock(x, y - 1, z) === B.WATER) continue;
+        if (this.world.getBlock(x, y, z) !== B.AIR || this.world.getBlock(x, y + 1, z) !== B.AIR) continue;
+        const open = y >= hm, deep = !open && y < SEA - 4;
+        if ((open && night) || deep) {
+          const m = new Mob(3, x + 0.5, y, z + 0.5);
+          m.yaw = rnd() * 6.28; this.list.push(m); this.onAdd(m);
+          return m;
+        }
+        break; // nur die oberste freie Stelle dieser Säule
+      }
+    }
+    return null;
   }
 
   // Aktivbereich um den Spieler pflegen (nur bei Chunkwechsel oder wenn neue Chunks geladen sind)
@@ -189,23 +242,34 @@ export class Mobs {
       this.active.delete(key);
       // gespeicherte Markierung „alle weg“ bleibt erhalten
     }
-    // Tiere außerhalb des Aktivbereichs ablegen
+    // Tiere außerhalb des Aktivbereichs ablegen, Gegner verschwinden (zu weit weg oder Tageslicht an der Oberfläche)
     for (const m of this.list.slice()) {
       const key = keyOf(Math.floor(m.x / CS), Math.floor(m.z / CS));
-      if (!this.active.has(key)) this.remove(m, true);
+      if (m.hostile) {
+        const far = Math.hypot(m.x - px, m.z - pz) > 40;
+        const c = this.world.getChunk(Math.floor(m.x) >> 4, Math.floor(m.z) >> 4);
+        const open = c && Math.floor(m.y) >= this.world.heightmap(c)[(Math.floor(m.x) & 15) + (Math.floor(m.z) & 15) * CS];
+        if (far || (this.day && open)) { this.onPoof(m); this.remove(m, false); }
+      } else if (!this.active.has(key)) this.remove(m, true);
     }
   }
 
-  update(dt, px, pz) {
+  // env: { py, night, hostiles } – Spielerhöhe, Nacht, Gegner erlaubt
+  update(dt, px, pz, env = {}) {
     if (!this.enabled) return;
+    const py = env.py ?? 0;
+    this.day = !env.night;
+    if (env.hostiles) { this.spawnT -= dt; if (this.spawnT <= 0) { this.spawnT = 3; this.spawnHostile(px, py, pz, !!env.night); } }
+    else if (this.hostileCount()) for (const m of this.list.slice()) if (m.hostile) this.remove(m, false);
     const pcx = Math.floor(px / CS), pcz = Math.floor(pz / CS);
     if (!this.lastPC || this.lastPC[0] !== pcx || this.lastPC[1] !== pcz || (this.refreshT = (this.refreshT || 0) - dt) <= 0) {
       this.lastPC = [pcx, pcz]; this.refreshT = 1; this.refresh(px, pz);
     }
     for (const m of this.list) {
       const d = Math.hypot(m.x - px, m.z - pz);
-      if (d < NEAR || m.flee > 0) m.update(this.world, dt, this.rnd, px, pz);
-      else { m.acc += dt; if (m.acc >= 0.25) { m.update(this.world, Math.min(m.acc, 0.25), this.rnd, px, pz); m.acc = 0; } }
+      if (d < NEAR || m.flee > 0 || m.hostile) m.update(this.world, dt, this.rnd, px, pz, py);
+      else { m.acc += dt; if (m.acc >= 0.25) { m.update(this.world, Math.min(m.acc, 0.25), this.rnd, px, pz, py); m.acc = 0; } }
+      if (m.attack) { m.attack = false; this.onAttack(m); }
     }
   }
 
@@ -226,6 +290,7 @@ export class Mobs {
     for (const [k, a] of this.store) out[k] = a.slice();
     for (const key of this.active) if (!out[key]) out[key] = []; // besiedelte aktive Chunks markieren
     for (const m of this.list) {
+      if (m.hostile) continue;
       const key = keyOf(Math.floor(m.x / CS), Math.floor(m.z / CS));
       (out[key] || (out[key] = [])).push(m.record());
     }

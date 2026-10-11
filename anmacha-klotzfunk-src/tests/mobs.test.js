@@ -78,3 +78,37 @@ test('Ungültige Einträge im Spielstand werden verworfen', () => {
   assert.equal(mobs.store.size, 1);
   assert.equal([...mobs.store.values()][0].length, 1);
 });
+
+test('Gegner: verfolgen nur mit freier Sicht und greifen in Reichweite an', async () => {
+  const { lineOfSight } = await import('../src/mobs.js');
+  const g = (x, y, z) => (y <= 10 ? B.STONE : x === 5 && y <= 14 ? B.STONE : B.AIR);
+  const w = { getBlock: g, isSolid: (x, y, z) => g(x, y, z) !== B.AIR, isLoaded: () => true };
+  assert.equal(lineOfSight(w, 0.5, 12.5, 0.5, 9.5, 12.5, 0.5), false, 'Wand verdeckt');
+  assert.equal(lineOfSight(w, 0.5, 12.5, 0.5, 4.2, 12.5, 0.5), true);
+  // hinter der Wand: bleibt unbeteiligt
+  const hidden = new Mob(3, 9.5, 11, 0.5);
+  for (let i = 0; i < 120; i++) hidden.update(w, 1 / 60, () => 0.99, 0.5, 0.5, 11);
+  assert.equal(hidden.sees, false);
+  // freie Sicht: läuft heran und greift an
+  const m = new Mob(3, 4.0, 11, 8.5);
+  let hits = 0;
+  for (let i = 0; i < 60 * 8; i++) { m.update(w, 1 / 60, () => 0.5, 2.5, 3.5, 11); if (m.attack) { hits++; m.attack = false; } }
+  assert.ok(m.sees);
+  assert.ok(Math.hypot(m.x - 2.5, m.z - 3.5) < 1.6, 'ist herangekommen');
+  assert.ok(hits >= 3 && hits <= 8, 'greift etwa einmal je Sekunde an: ' + hits);
+});
+
+test('Gegner erscheinen nur nachts oder tief unten und werden nicht gespeichert', () => {
+  const w = loaded(12345), mobs = new Mobs(w, 12345, null);
+  mobs.rnd = seeded(3);
+  let day = 0, night = 0;
+  for (let i = 0; i < 30; i++) { if (mobs.spawnHostile(8, 40, 8, false)) day++; }
+  for (let i = 0; i < 30; i++) { if (mobs.spawnHostile(8, 40, 8, true)) night++; }
+  assert.equal(day, 0, 'tagsüber an der Oberfläche keine');
+  assert.ok(night > 0 && mobs.hostileCount() <= 4, 'nachts höchstens 4');
+  const saved = mobs.serialize();
+  assert.ok(Object.values(saved).every(a => a.every(r => !MOB_TYPES[r[0]].hostile)));
+  // Tagesanbruch: Gegner an der Oberfläche verschwinden
+  mobs.update(1.1, 8, 8, { py: 40, night: false, hostiles: true });
+  assert.equal(mobs.hostileCount(), 0);
+});

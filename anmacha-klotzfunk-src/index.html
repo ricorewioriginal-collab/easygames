@@ -26,6 +26,7 @@
   <div id="hurt"></div>
   <div id="topbtns">
     <button id="bMap" class="tbtn" aria-label="Karte">🗺</button>
+    <button id="bUndo" class="tbtn" aria-label="Rückgängig" title="Rückgängig (Strg+Z)" hidden>↶</button>
     <button id="bWp" class="tbtn" aria-label="Wegpunkt">📍</button>
     <button id="bInv" class="tbtn" aria-label="Inventar">🎒</button>
     <button id="bPause" class="tbtn" aria-label="Pause">⏸</button>
@@ -49,7 +50,7 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🐑 Tiere</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
     <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
@@ -65,6 +66,7 @@
         <div><b>Story-Modus</b><br>Die Funkzentrale gibt dir 15 feste Aufträge: Holz, Bretter, Fundament, Licht, Funkmast, Federn, Seilhaken, Gleiten, Neon bis zum Regenbogen-Finale. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder</div>
         <div><b>Überleben</b><br>Abbauen dauert je nach Härte; Werkzeuge machen es schneller und nutzen sich ab. Erze brauchen eine Spitzhacke, Eisen und Funkkristall mindestens eine aus Stein. Bretter → Stöcke und Werkbank, an der Werkbank Werkzeuge und Schmelzofen, im Ofen Barren und Braten. Rechtsklick/Setzen auf Werkbank oder Ofen öffnet das Herstellen. Essen: Essen wählen und Setzen drücken. Stürze, Ertrinken, Magma und Hunger kosten Herzen.</div>
+        <div><b>Felder &amp; Gegner</b><br>Hacke auf Gras oder Erde = Ackerboden, Samen (manchmal aus Gras) darauf setzen. Weizen wächst in etwa 4½ Minuten Spielzeit, 3 Weizen = Brot. Nachts und in tiefen Höhlen kommen Rauschlinge: sie verfolgen dich nur, wenn sie dich sehen. Schwerter treffen härter. In den Einstellungen lassen sich Gegner abschalten. Kreativ: Strg+Z / ↶ macht rückgängig, Strg+Y wiederholt.</div>
         <div><b>Neue Welten</b><br>Ebenen, Wälder, Nadelwald, Berge, Schnee, Wüste, Strand, Sumpf, Dschungel, Blumenwiesen, Vulkane, Pilzwälder, Kristallfelder, Küsten und Meere. Unter der Erde: Höhlen, Seen, Kohle, Kupfer, Eisen und leuchtende Funkkristalle. Bestehende Welten bleiben unverändert.</div>
       </div>
     </details>
@@ -128,6 +130,7 @@
         <label class="chk"><input type="checkbox" id="sInvY"> Blick nach oben/unten umkehren</label>
         <label class="chk"><input type="checkbox" id="sPlace"> Setzen erst nach kurzem Halten wiederholen</label>
         <label class="chk"><input type="checkbox" id="sFps"> Bildrate anzeigen</label>
+        <label class="chk"><input type="checkbox" id="sEnemy"> Gegner im Überlebensmodus (aus = friedlich)</label>
       </div>
     </div>
     <p class="sub">„Automatisch“ senkt bei ruckelndem Bild zuerst die Auflösung und dann die Sichtweite und hebt sie wieder an, wenn genug Reserve da ist. Alles wird nur auf diesem Gerät gespeichert.</p>

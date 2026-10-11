@@ -1,6 +1,6 @@
 // Gegenstände ohne Block (Werkzeuge, Barren, Nahrung). Eigener Id-Bereich ab 1000, damit sie nie mit Block-Ids
 // (0–255, stehen in den Welt-Änderungen) kollidieren. Ids sind dauerhaft – nur hinten anhängen.
-import { BLOCKS, NAMES } from './blocks.js';
+import { B, BLOCKS, NAMES } from './blocks.js';
 
 export const ITEM0 = 1000;
 export const ITEMS = [];   // nach Id (Lücken = undefined)
@@ -36,7 +36,16 @@ TIERS.forEach((t, ti) => KINDS.forEach((k, ki) => {
   add(1010 + ti * 3 + ki, t.key + '_' + k.key, t.name + k.name, { draw: k.kind, col: t.col, tool: { kind: k.kind, tier: ti + 1, speed: t.speed, dur: t.dur } });
 }));
 
+// ab 1022: Landwirtschaft und Kampf
+add(1022, 'WOOD_HOE', 'Holzhacke', { draw: 'hacke', col: TIERS[0].col, tool: { kind: 'hacke', tier: 1, speed: 1, dur: TIERS[0].dur } });
+add(1023, 'STONE_HOE', 'Steinhacke', { draw: 'hacke', col: TIERS[1].col, tool: { kind: 'hacke', tier: 2, speed: 1, dur: TIERS[1].dur } });
+add(1024, 'SEEDS', 'Weizensamen', { draw: 'seeds', plant: B.WHEAT0 });
+add(1025, 'WHEAT', 'Weizen', { draw: 'wheat' });
+add(1026, 'BREAD', 'Brot', { draw: 'bread', food: 6 });
+TIERS.forEach((t, ti) => add(1027 + ti, t.key + '_SWORD', t.name + 'schwert', { draw: 'schwert', col: t.col, tool: { kind: 'schwert', tier: ti + 1, speed: 1, dur: t.dur, dmg: 3 + ti } }));
+
 export const isItem = id => id >= ITEM0;
+export const plantOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].plant || 0 : 0);
 export const nameOf = id => (id >= ITEM0 ? (ITEMS[id] ? ITEMS[id].name : '?') : NAMES[id] || '?');
 export const toolOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].tool : null);
 export const foodOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].food : 0);

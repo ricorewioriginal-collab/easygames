@@ -158,7 +158,7 @@ game.onHurt = () => {
   if (navigator.vibrate && touchMode) try { navigator.vibrate(60); } catch (e) { /* ignorieren */ }
 };
 game.onMine = p => { $('mine').classList.toggle('on', p > 0); $('mine').firstChild.style.width = Math.round(p * 100) + '%'; };
-const DEATH_WHY = { Sturz: 'Zu tief gefallen.', Ertrunken: 'Unter Wasser ging die Luft aus.', Magma: 'Magma ist heiß.', Hunger: 'Vor Hunger.' };
+const DEATH_WHY = { Sturz: 'Zu tief gefallen.', Ertrunken: 'Unter Wasser ging die Luft aus.', Magma: 'Magma ist heiß.', Hunger: 'Vor Hunger.', Rauschling: 'Ein Rauschling hat dich erwischt.' };
 game.onDeath = (cause, grave) => {
   releaseInput(); setState('dead');
   $('deadWhy').textContent = (DEATH_WHY[cause] || '') + (grave ? ' Dein Vorrat liegt am Unglücksort, der Wegpunkt 📍 zeigt den Weg.' : ' Dein Vorrat bleibt erhalten. Der Wegpunkt 📍 markiert den Unglücksort.');
@@ -362,6 +362,7 @@ function launch(i, save) {
       game.start(save);
       if (save.mode === 'creative') game.player.flying = false;
       $('bFly').hidden = !(touchMode && game.mode === 'creative');
+      $('bUndo').hidden = game.mode !== 'creative';
       renderHotbar(); renderQuest(); setState('playing'); renderVitals(); lockPointer();
       if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner('📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
       if (!game.unsaved && save.px === undefined) saveNow(false);
@@ -381,6 +382,7 @@ $('vd').oninput = e => { const v = Number(e.target.value); game.maxView = v; gam
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
 $('bWp').onclick = () => game.toggleWaypoint();
+$('bUndo').onclick = () => game.undo(false);
 $('bMap').onclick = toggleMap;
 $('td').oninput = e => { game.time = Number(e.target.value) / 100; $('tdVal').textContent = game.clockText(); game.updateSky(); game.render(); };
 $('pFreeze').onclick = () => { game.timeFrozen = !game.timeFrozen; $('pFreeze').textContent = game.timeFrozen ? '⏸ Zeit steht still' : '⏱ Zeit läuft'; };
@@ -417,6 +419,8 @@ window.addEventListener('keydown', e => {
   if (e.repeat) return;
   if (/^Digit[1-9]$/.test(e.code)) { game.selectSlot(Number(e.code[5]) - 1); return; }
   if (e.code === 'KeyE') { e.preventDefault(); openInventory(); return; }
+  if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); game.undo(e.shiftKey); return; }
+  if (e.code === 'KeyY' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); game.undo(true); return; }
   if (e.code === 'KeyF') { toggleFly(); return; }
   if (e.code === 'KeyQ') { game.fireHook(); return; }
   if (e.code === 'KeyB') { game.toggleWaypoint(); return; }
@@ -560,14 +564,14 @@ setInterval(() => {
 function applySettings() {
   const auto = settings.quality === 'auto';
   game.setQuality(auto ? autoBase(coarse) : settings.quality, auto);
-  game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss;
+  game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; game.enemies = settings.enemies;
   sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
   document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
   document.body.classList.toggle('lefty', settings.lefty);
 }
 const SET_RANGES = [['sMouse', 'mouseSens', v => v.toFixed(1) + '×'], ['sTouch', 'touchSens', v => v.toFixed(1) + '×'], ['sJoy', 'joySens', v => v.toFixed(1) + '×'],
   ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %']];
-const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps']];
+const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps'], ['sEnemy', 'enemies']];
 function renderSettings() {
   $('sQuality').value = settings.quality; $('sDeath').value = settings.deathLoss;
   for (const [id, k, f] of SET_RANGES) { $(id).value = settings[k]; $(id + 'V').textContent = f(settings[k]); }
@@ -577,7 +581,7 @@ function changed(quality) {
   saveSettings(settings);
   if (quality) applySettings();
   else { // ohne Grafikwechsel: Sichtweite/Auflösung nicht zurücksetzen
-    game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
+    game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; game.enemies = settings.enemies; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
     document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
     document.body.classList.toggle('lefty', settings.lefty);
   }

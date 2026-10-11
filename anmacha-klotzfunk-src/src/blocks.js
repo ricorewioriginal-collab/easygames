@@ -6,7 +6,7 @@
 // self (gleiche Nachbarn zeigen Innenflächen, z. B. Blätter), emit (Eigenleuchten, 2 = Regenbogen),
 // hard (Härte, Sekunden Grundabbauzeit), tool (passendes Werkzeug), color (Bruchstücke), map (Kartenfarbe),
 // icon (Atlas-Kachel für Hotbar/Inventar), inv (im Inventar wählbar),
-// tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen).
+// shape ('cross' = Pflanze), tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen).
 
 export const LOGO0 = 11, LOGO_COUNT = 16, SPECIAL0 = 27, SPECIAL_COUNT = 11;
 export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
@@ -66,7 +66,13 @@ const DEF = [
   // ab 58: Überleben (Stationen, Tierprodukte)
   [58, 'WORKBENCH', 'Werkbank', 'bau', [51, 52, 8], { hard: 1.2, tool: 'axt', color: 0x9a7444, map: [150, 112, 66], icon: 51, station: 'werkbank' }],
   [59, 'FURNACE', 'Schmelzofen', 'bau', [54, 53, 54], { hard: 2.0, tool: 'spitzhacke', color: 0x6a6a70, map: [110, 110, 116], icon: 53, station: 'ofen' }],
-  [60, 'WOOL', 'Wolle', 'bau', [55, 55, 55], { hard: 0.4, color: 0xeeeae2, map: [236, 232, 224], icon: 55 }]
+  [60, 'WOOL', 'Wolle', 'bau', [55, 55, 55], { hard: 0.4, color: 0xeeeae2, map: [236, 232, 224], icon: 55 }],
+  // ab 61: Landwirtschaft (Pflanzen sind Kreuz-Modelle, nicht fest, nicht im Inventar)
+  [61, 'FARMLAND', 'Ackerboden', 'natur', [56, 2, 2], { hard: 0.5, tool: 'schaufel', color: 0x5a3e26, map: [96, 66, 40], icon: 56 }],
+  [62, 'WHEAT0', 'Weizen (Keim)', '', [57, 57, 57], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0x6ab040, map: [100, 150, 60] }],
+  [63, 'WHEAT1', 'Weizen (jung)', '', [58, 58, 58], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0x7ab440, map: [110, 160, 60] }],
+  [64, 'WHEAT2', 'Weizen (grün)', '', [59, 59, 59], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0xa0b040, map: [150, 170, 60] }],
+  [65, 'WHEAT3', 'Weizen (reif)', '', [60, 60, 60], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0xd8b850, map: [216, 184, 80] }]
 ];
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
@@ -81,14 +87,15 @@ export const SKYBLOCK = new Uint8Array(MAX_ID); // wirft Schatten (Himmelslicht)
 export const EMIT = new Float32Array(MAX_ID);
 export const TRANS = new Uint8Array(MAX_ID);
 export const SELF = new Uint8Array(MAX_ID);
+export const CROSS = new Uint8Array(MAX_ID); // Pflanzen: zwei gekreuzte Flächen statt Würfel
 export const TILES = {};
 
 for (const [id, key, name, cat, tiles, p] of DEF) {
   if (BLOCKS[id]) throw new Error('Block-Id doppelt: ' + id);
-  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, ...p };
+  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, shape: null, ...p };
   if (b.trans) b.opaque = 0;
   BLOCKS[id] = b; B[key] = id; NAMES[id] = name;
-  SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit;
+  SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit; CROSS[id] = b.shape === 'cross' ? 1 : 0;
   SKYBLOCK[id] = b.opaque || b.self ? 1 : 0;
   if (tiles) TILES[id] = tiles;
 }
@@ -96,3 +103,4 @@ export const isLogo = t => t >= LOGO0 && t < LOGO0 + LOGO_COUNT;
 export const SPECIAL_NAMES = NAMES.slice(SPECIAL0, SPECIAL0 + SPECIAL_COUNT);
 // alle wählbaren Blöcke in Anzeige-Reihenfolge
 export const INV_BLOCKS = BLOCKS.filter(b => b && b.inv).map(b => b.id);
+export const CROPS = [B.WHEAT0, B.WHEAT1, B.WHEAT2, B.WHEAT3]; // Wachstumsstufen

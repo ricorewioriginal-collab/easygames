@@ -21,6 +21,13 @@ const MODELS = [
     [-0.32, 1.3, -0.95, -0.24, 1.46, -0.88, 0xe8e2d0], [0.24, 1.3, -0.95, 0.32, 1.46, -0.88, 0xe8e2d0],
     [-0.36, 0, -0.62, -0.16, 0.56, -0.42, 0x3a281a], [0.16, 0, -0.62, 0.36, 0.56, -0.42, 0x3a281a],
     [-0.36, 0, 0.42, -0.16, 0.56, 0.62, 0x3a281a], [0.16, 0, 0.42, 0.36, 0.56, 0.62, 0x3a281a]
+  ],
+  [ // Rauschling: dunkle, flimmernde Gestalt mit leuchtenden Augen und Antenne
+    [-0.28, 0.75, -0.16, 0.28, 1.35, 0.16, 0x2a2440], [-0.22, 1.35, -0.22, 0.22, 1.75, 0.22, 0x342c52],
+    [-0.15, 1.52, -0.24, -0.05, 1.6, -0.21, 0x6af0ff], [0.05, 1.52, -0.24, 0.15, 1.6, -0.21, 0x6af0ff],
+    [-0.02, 1.75, -0.02, 0.02, 1.98, 0.02, 0x8a80b0], [-0.05, 1.96, -0.05, 0.05, 2.04, 0.05, 0xff3c8c],
+    [-0.42, 0.8, -0.08, -0.28, 1.32, 0.08, 0x2a2440], [0.28, 0.8, -0.08, 0.42, 1.32, 0.08, 0x2a2440],
+    [-0.22, 0, -0.1, -0.04, 0.75, 0.1, 0x221c36], [0.04, 0, -0.1, 0.22, 0.75, 0.1, 0x221c36]
   ]
 ];
 // Helligkeit je Flächenrichtung: +X, −X, +Y, −Y, +Z, −Z
@@ -72,10 +79,11 @@ export class MobView {
       mesh.visible = d < maxD;
       if (!mesh.visible) continue;
       const bob = m.moving ? Math.abs(Math.sin(t * 9 + m.x)) * 0.05 : 0;
+      const l = m.hostile ? Math.max(light, 0.7) * (0.85 + 0.15 * Math.sin(t * 23 + m.z)) : light; // Rauschen: flimmert, auch nachts sichtbar
       mesh.position.set(m.x, m.y + bob, m.z);
       mesh.rotation.y = m.yaw;
-      if (m.hurtT > 0) mesh.material.color.setRGB(light * 1.3, light * 0.45, light * 0.45);
-      else mesh.material.color.setRGB(light, light, light);
+      if (m.hurtT > 0) mesh.material.color.setRGB(l * 1.3, l * 0.45, l * 0.45);
+      else mesh.material.color.setRGB(l, l, l);
     }
   }
   clear() { for (const m of [...this.meshes.keys()]) this.remove(m); }

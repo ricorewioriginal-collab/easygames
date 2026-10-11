@@ -58,6 +58,13 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 1× Eisenspitzhacke | 3× Eisenbarren + 2× Stock | Werkbank | Werkzeuge & Essen |
 | 1× Eisenaxt | 3× Eisenbarren + 2× Stock | Werkbank | Werkzeuge & Essen |
 | 1× Eisenschaufel | 1× Eisenbarren + 2× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Holzhacke | 2× Bretter + 2× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Steinhacke | 2× Stein + 2× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Holzschwert | 2× Bretter + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Steinschwert | 2× Stein + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Kupferschwert | 2× Kupferbarren + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Eisenschwert | 2× Eisenbarren + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Brot | 3× Weizen | – | Werkzeuge & Essen |
 | 1× Kupferbarren | 1× Kupfererz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Eisenbarren | 1× Eisenerz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Braten | 1× Rohes Fleisch + 1× Bretter | Schmelzofen | Werkzeuge & Essen |

@@ -66,6 +66,11 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 58 | Werkbank | Bauen | ja | ja | – | – | 1.2 | axt |
 | 59 | Schmelzofen | Bauen | ja | ja | – | – | 2 | spitzhacke |
 | 60 | Wolle | Bauen | ja | ja | – | – | 0.4 | – |
+| 61 | Ackerboden | Natur | ja | ja | – | – | 0.5 | schaufel |
+| 62 | Weizen (Keim) | – | – | – | – | – | 0 | – |
+| 63 | Weizen (jung) | – | – | – | – | – | 0 | – |
+| 64 | Weizen (grün) | – | – | – | – | – | 0 | – |
+| 65 | Weizen (reif) | – | – | – | – | – | 0 | – |
 
 **Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
 
@@ -91,3 +96,12 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 1019 | Eisenspitzhacke | spitzhacke Stufe 4 | 6× | 360 Blöcke | – |
 | 1020 | Eisenaxt | axt Stufe 4 | 6× | 360 Blöcke | – |
 | 1021 | Eisenschaufel | schaufel Stufe 4 | 6× | 360 Blöcke | – |
+| 1022 | Holzhacke | hacke Stufe 1 | 1× | 60 Blöcke | – |
+| 1023 | Steinhacke | hacke Stufe 2 | 1× | 140 Blöcke | – |
+| 1024 | Weizensamen | – | – | – | – |
+| 1025 | Weizen | – | – | – | – |
+| 1026 | Brot | – | – | – | +6 |
+| 1027 | Holzschwert | schwert Stufe 1 | 1× | 60 Blöcke | – |
+| 1028 | Steinschwert | schwert Stufe 2 | 1× | 140 Blöcke | – |
+| 1029 | Kupferschwert | schwert Stufe 3 | 1× | 220 Blöcke | – |
+| 1030 | Eisenschwert | schwert Stufe 4 | 1× | 360 Blöcke | – |

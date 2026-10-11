@@ -40,6 +40,10 @@ TIERS.forEach((t, ti) => KINDS.forEach((k, ki) => {
   const id = I[t.key + '_' + k.key];
   RECIPES.push({ id: 'tool' + id, give: [id, 1], need: [[TOOL_MAT[ti], HEAD[ki]], [I.STICK, 2]], st: 'werkbank' });
 }));
+const HOE_MAT = [B.PLANKS, B.STONE];
+['WOOD', 'STONE'].forEach((k, i) => RECIPES.push({ id: 'tool' + I[k + '_HOE'], give: [I[k + '_HOE'], 1], need: [[HOE_MAT[i], 2], [I.STICK, 2]], st: 'werkbank' }));
+TIERS.forEach((t, ti) => RECIPES.push({ id: 'tool' + I[t.key + '_SWORD'], give: [I[t.key + '_SWORD'], 1], need: [[TOOL_MAT[ti], 2], [I.STICK, 1]], st: 'werkbank' }));
+RECIPES.push({ id: 'bread', give: [I.BREAD, 1], need: [[I.WHEAT, 3]] });
 RECIPES.push(
   { id: 'ingotCopper', give: [I.COPPER_INGOT, 1], need: [[B.COPPER, 1], [B.COAL, 1]], st: 'ofen' },
   { id: 'ingotIron', give: [I.IRON_INGOT, 1], need: [[B.IRON, 1], [B.COAL, 1]], st: 'ofen' },

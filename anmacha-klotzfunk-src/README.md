@@ -9,7 +9,7 @@ werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Kon
 - **Lokal aus dem Build:** den Ordner `anmacha-klotzfunk/` über einen beliebigen Webserver öffnen (z. B. `python3 -m http.server` im Repo-Hauptordner).
 
 ## Spielmodi
-- **Überleben:** Abbauzeit nach Härte, Werkzeuge aus Holz, Stein, Kupfer und Eisen, Werkbank und Schmelzofen, Herzen, Hunger, Fallschaden, Ertrinken, Tiere (57 Rezepte, siehe [CRAFTING.md](CRAFTING.md) und [GAMEPLAY.md](GAMEPLAY.md)).
+- **Überleben:** Abbauzeit nach Härte, Werkzeuge aus Holz, Stein, Kupfer und Eisen, Werkbank und Schmelzofen, Herzen, Hunger, Fallschaden, Ertrinken, Tiere, Weizenfelder, nächtliche Rauschlinge und Schwerter (64 Rezepte, siehe [CRAFTING.md](CRAFTING.md) und [GAMEPLAY.md](GAMEPLAY.md)).
 - **Kreativ:** alle Blöcke unbegrenzt, Fliegen.
 - **Story:** 15 Aufträge der Funkzentrale in einer festen Welt (siehe [STORY.md](STORY.md)).
 
