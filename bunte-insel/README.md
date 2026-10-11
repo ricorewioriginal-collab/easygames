@@ -68,6 +68,12 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Fahrten sind gratis; pro Attraktion gibt es höchstens alle 45 Sekunden +1 ⭐. Besucher (Clown, Kartenfrau …) erzählen etwas.
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
+## Regenbogenwelt 🌈 (Erweiterung, Aufklärung für Kinder)
+Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreichbar; auch per 🧭 Wohin? → „Regenbogenwelt“.
+- **Plaza** mit Regenbogen-Ringen und Brunnen (🌈 „Freude teilen“: Konfetti, ein Spruch über Vielfalt, alle 45 s +1 ⭐), zwei große **Regenbogen-Bögen**, **Flaggen** (Regenbogen, Trans, Bi, Pan), bunte Häuser, Tanzfläche, bunte Bäume.
+- **Bewohner** (10 Personen, zum Antippen): zwei Mamas, zwei Papas, Oma & Opa, Lehrer Leo (Auslachen ist nicht okay, Hilfe holen), Sam, Kinder … Sie erzählen kindgerecht und freundlich, dass Familien verschieden sind, jeder richtig ist, wie er ist, und dass man niemanden auslacht.
+- Sparsam: Boden, Bögen, Flaggen und Häuser stecken im einen Welt-Mesh; zur Laufzeit nur Schilder, Bewohner und wenige Funken (nur in der Nähe). Quelltext: `js/rainbow.js`.
+
 ## Charakter-Studio 🧑‍🎨 (wie bei den Sims)
 Im Titelmenü „Mein Held“ und im Kleiderschrank. Der Held dreht sich als Vorschau (⟲ ⏯ ⟳), **🎲 Zufall** würfelt eine Figur.
 - **Figuren**: bis zu 6 eigene Figuren speichern (jede mit Name, Aussehen, Kleidung), wechseln, ➕ neu, 📄 kopieren, 🗑️ löschen (mit Rückfrage). **Vorlagen** (20 Helden, z. B. Oma Gerda, Opa Otto, Ninja Kai, Prinzessin Lilly, Rockstar Rex, Zauberer Merlin, Wikinger Olaf, Clown Pippo) sind der Startpunkt – ändert man etwas, wird daraus eine eigene Figur mit allen Werten.
