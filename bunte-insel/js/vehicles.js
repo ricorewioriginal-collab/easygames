@@ -275,7 +275,8 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       this.v = BI.damp(this.v, want, air ? 1.5 : 6, dt); this.acc = (this.v - v0) / dt;
       this.h -= this.steerCur * sp.turn * (air ? 1 : .35) * dt;
       this.x += Math.sin(this.h) * this.v * dt; this.z += Math.cos(this.h) * this.v * dt;
-      const p = {}; W.resolve(this.x, this.z, this.r, p, this.y); if (p.hit) { this.x = p.x; this.z = p.z; this.v *= .6; }
+      const hi = this.y > 5, p = {}; W.resolve(this.x, this.z, this.r, p, this.y, hi); if (p.hit) { this.x = p.x; this.z = p.z; this.v *= .6; }
+      if (hi && this.y < 8.6 && !W.landAt(this.x, this.z)) { this.y = 8.6; if (this.vy < 0) this.vy = 0; } /* über Wasser/Dächern bleibt der Hubschrauber oben */
       return 0;
     }
     stepBoat(dt, inp, W) {

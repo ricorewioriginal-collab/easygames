@@ -28,7 +28,7 @@ BI.buildDrachenGround = function (c) {
   /* Fackeln (Feuerschalen): zunächst dunkel, Zündel entzündet sie */
   W.spots.drachenFackeln = []; for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + .52, u = Math.sin(a) * 17, v = Math.cos(a) * 17; st.cyl(X(u), 0, Z(v), .35, .5, 1.5, STONE2, 8); st.cyl(X(u), 1.5, Z(v), .8, .5, .5, DARK, 10); st.cyl(X(u), 2.0, Z(v), .65, .65, .08, 0x2a2a33, 10); W.addCircle(X(u), Z(v), .7, false, 2); W.spots.drachenFackeln.push({ x: X(u), z: Z(v), i: k }); }
   /* Kristall-Freunde: sechs kleine Drachen, eingeschlossen in Kristall */
-  { const px = X(-10.4), pz = Z(-6), hd = Math.atan2(10.4, 6); st.cyl(px, 0, pz, 4.4, 4.6, .3, STONE2, 20); st.cyl(px, .3, pz, 3.9, 3.9, .08, 0xe2b27a, 20); st.ring(px, pz, 3.2, 3.5, .4, 0xff8a1f, 20);
+  { const px = X(-10.4), pz = Z(-6), hd = Math.atan2(10.4, 6); W.addFloor(px, pz, 4.4, .3); W.addFloor(px, pz, 3.9, .38); st.cyl(px, 0, pz, 4.4, 4.6, .3, STONE2, 20); st.cyl(px, .3, pz, 3.9, 3.9, .08, 0xe2b27a, 20); st.ring(px, pz, 3.2, 3.5, .4, 0xff8a1f, 20);
     W.spots.drachenReit = { x: px, z: pz, h: hd }; W.vehicleSpawns.push({ type: 'drake', x: px, z: pz, h: hd }); }
   W.spots.drachenKristalle = []; for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + .1, u = Math.sin(a) * 31, v = Math.cos(a) * 31; st.cyl(X(u), 0, Z(v), 1.7, 2, .35, STONE2, 10); W.addCircle(X(u), Z(v), 1.7, false, 2); W.spots.drachenKristalle.push({ x: X(u), z: Z(v), i: k }); }
   /* Himmelstor (Portal) im Norden: zwei Säulen, Bogen, Sterne */

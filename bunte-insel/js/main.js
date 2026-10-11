@@ -69,6 +69,9 @@
   addVeh('ice', -9, -36, Math.PI); addVeh('bus', 31, 9, Math.PI / 2); addVeh('bike', 14, -9, .5, { color: 0xff8a1f }); addVeh('bike', 150, 14, 1.2, { color: 0xff5a9a }); addVeh('bicycle', 7, 36, .4, { color: 0x3f8cff }); addVeh('scooter', -7, 36, -.4, { color: 0xff5a9a }); addVeh('bicycle', 80, 36, 2.2, { color: 0x4cd07d });
   addVeh('car', 150, -12, 1.6, { color: 0x4cd07d }); addVeh('rollator', 11, 33, .4); addVeh('rollator', 238, 28, 1.2, { color: 0x3fa0ff });
   const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
+  /* Mitspielen: diese Fahrzeuge stehen auf jedem Gerät gleich -> Nummer vi, damit ein Auto nur einmal existiert (fährt ein Freund, fährt es bei allen mit) */
+  let ride = ''; /* Mitfahren: ID des Freundes, der gerade lenkt (leer = du fährst nicht mit) */
+  const VEH_SYNC = vehicles.length; vehicles.forEach((v, i) => { if (!v.spec.drake && !v.spec.remote) { v.vi = i; v.sx = v.x; v.sz = v.z; v.sh = v.h; } });
   const traffic = [];
   for (let i = 0; i < 9; i++) {
     const dir = i % 2 ? -1 : 1, lane = dir > 0 ? K.RB + 2.2 : K.RB - 2.2, v = addVeh('car', 0, lane, 0, { color: BI.PAINT[(i * 3 + 1) % BI.PAINT.length], ai: true });
@@ -181,9 +184,9 @@
   function nearVehicle() {
     let best = null, bd = 4.2;
     if (!P.veh && P.y < 3) {
-      for (const v of vehicles) { if (v.ai) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
+      for (const v of vehicles) { if (v.ai || v.netBy) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
       const dt_ = train.nearest(P.x, P.z); if (dt_ < 4.2 && dt_ < bd) best = trainVeh;
-      if (!best) { let rd = 25; for (const q of vehicles) if (q.spec.remote) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < rd) { rd = d; best = q; } } }
+      if (!best) { let rd = 25; for (const q of vehicles) if (q.spec.remote && !q.netBy) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < rd) { rd = d; best = q; } } }
     }
     return best;
   }
@@ -208,18 +211,19 @@
       if ((v.idleT > 20 && dp > 14) || (v.idleT > 90 && dp > 6)) { fx.burst(v.x, 1.2, v.z, 10, [BI.C.white, BI.C.gold], 3, .8, 26, 3); v.v = 0; v.y = 0; v.vy = 0; v.setPose(hm.x, hm.z, hm.h); v.idleT = 0; fx.burst(hm.x, 1.2, hm.z, 10, [BI.C.white, BI.C.pink], 3, .8, 26, 3); }
     }
   }
-  function leave() {
+  function leave(force) {
     const v = P.veh; if (!v) return;
     if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; offer = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
     if (v.isTrain && train.v > 3) { say('Halte den Zug an zum Aussteigen 🚂', 2200); return; }
-    if (v.spec.boat && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
-    if (v.spec && v.spec.fly && !v.spec.drake && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
+    if (!force && v.spec.boat && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
+    if (!force && v.spec && v.spec.fly && !v.spec.drake && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
     A.leave(); A.horn('car', false); A.siren('police', false); A.water(false);
     const lx = Math.cos(v.h), lz = -Math.sin(v.h), rad = v.isTrain ? 5.5 : v.spec.drake ? 0 : v.r + 1.3;
     let px = v.x + lx * rad, pz = v.z + lz * rad;
     if (v.isTrain) { const L = Math.hypot(v.x, v.z) || 1; px = v.x - v.x / L * 6; pz = v.z - v.z / L * 6; }
-    if (v.spec.boat) { px = .2; pz = 205.5; }
+    if (v.spec.boat && !force) { px = .2; pz = 205.5; }
     if (!v.isTrain) { v.driver = null; v.siren = false; if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
+    if (!v.isTrain && v.vi != null && net.connected()) { v.v = 0; net.send({ t: 'vp', l: [[v.vi, Math.round(v.x * 100) / 100, Math.round(v.z * 100) / 100, Math.round(v.h * 100) / 100]] }); } /* Auto bleibt bei allen am selben Platz stehen */
     P.veh = null; char.group.visible = true;
     const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
     if (v.spec.drake) { /* Abgestiegen: du bleibst dort (fällst nach unten), Zündel fliegt zurück zu seinem Platz */ if (Math.hypot(q.x - px, q.z - pz) < 2) P.y = Math.max(P.y, v.y); const hm = W.spots.drachenReit; v.setPose(hm.x, hm.z, hm.h); v.y = 0; v.vy = 0; v.v = 0; fx.burst(hm.x, 2, hm.z, 14, [BI.C.gold, BI.C.white, BI.C.pink], 4, 1, 28, 2); }
@@ -247,7 +251,7 @@
   function startMission(first) {
     if (!P.veh) { mission = null; clearMissionVisuals(); return; }
     const key = P.veh.isTrain ? 'train' : P.veh.type, kind = MISSION_BY[key]; if (!kind) { mission = null; clearMissionVisuals(); return; }
-    const M = { kind, steps: [], i: 0 }; let p = null;
+    const M = { kind, steps: [], i: 0 }; let p = null; rideSend({ t: 'mi', k: kind });
     const reach = (pt, label, npc, r) => ({ x: pt.x, z: pt.z, label, type: 'reach', npc: !!npc, r: r || 7 });
     if (kind === 'patrol') for (let i = 0; i < 3; i++) { p = road(p); M.steps.push(reach(p, 'Kontrollpunkt ' + (i + 1) + ' von 3')); }
     else if (kind === 'rescue') { p = road(null, 60); M.steps.push(reach(p, 'Verletzten abholen 🩹', true, 8)); M.steps.push(reach(W.spots.hospital, 'Ab ins Krankenhaus 🏥', false, 9)); }
@@ -284,7 +288,7 @@
     if (s.npc) { const c = BI.makeChar({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], hat: Math.random() < .5 ? 'none' : 'cap' }); c.group.position.set(s.x + 3.2, 0, s.z + 1); c.group.rotation.y = -1.2; scene.add(c.group); mNpc = { c, x: s.x + 3.2, z: s.z + 1 }; }
   }
   function stepDone() {
-    const M = mission, s = M.steps[M.i]; A.star(); addStars(1);
+    const M = mission, s = M.steps[M.i]; A.star(); addStars(1); rideSend({ t: 'ms', n: M.i + 1 >= M.steps.length ? 6 : 1 });
     const px = s.type === 'spray' ? s.fx : s.type === 'lap' ? P.veh.x : s.x, pz = s.type === 'spray' ? s.fz : s.type === 'lap' ? P.veh.z : s.z;
     fx.burst(px, s.air ? s.y : 2, pz, 26, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green], 8, 1.4, 26, 9);
     if (mNpc) { fx.burst(mNpc.x, 2.2, mNpc.z, 8, [BI.C.pink], 3, 1.2, 40, -1); }
@@ -359,12 +363,14 @@
   }
   let btnSig = '';
   function updateButtons(force) {
-    const v = P.veh, near = state === 'play' && !v && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
+    const v = P.veh, rideN = state === 'play' && !v && !ride && !build.active ? nearRide() : null, near = state === 'play' && !v && !ride && !rideN && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
     const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), rangeNear = state === 'play' && !rs.ui && nearRange(), flatN = state === 'play' && !rs.ui && !wardOpen ? flatNear() : null, placeN = state === 'play' ? placeNear() : null, driveIn = state === 'play' && v ? cinema.near() : null, chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
-    const sig = [!!v, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : ''))].join('|');
+    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : ''))].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
-    if (v) {
+    if (ride) { act.hidden = false; act.innerHTML = '<b>🚪</b><small>Aussteigen</small>'; act.classList.remove('pulse'); horn.hidden = false; horn.innerHTML = '<b>📣</b><small>Hupe</small>'; jump.hidden = true; aux.hidden = true; }
+    else if (rideN) { act.hidden = false; act.innerHTML = '<b>🙋</b><small>Mitfahren</small>'; act.classList.add('pulse'); jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = true; }
+    else if (v) {
       act.hidden = false; act.innerHTML = spec.remote ? '<b>🎮</b><small>Zurück</small>' : driveIn ? '<b>🎬</b><small>Autokino</small>' : '<b>🚪</b><small>Aussteigen</small>'; act.classList.remove('pulse');
       if (spec.fly) { jump.innerHTML = '<b>⬆</b><small>Steigen</small>'; horn.innerHTML = '<b>🔔</b><small>Klingel</small>'; aux.innerHTML = '<b>⬇</b><small>Sinken</small>'; aux.hidden = false; }
       else {
@@ -455,7 +461,7 @@
     if (e.code === 'Escape' && rs.ui && state === 'play') { if (rs.ui === 'play' || rs.ui === 'result') exitRange(); else closeRangeUi(); return; }
     if (cinema.open && e.code === 'Escape') { cinema.close(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
-    if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu') { startPlay(); e.preventDefault(); } return; }
+    if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu' && !(e.target && e.target.closest && e.target.closest('#menu button'))) { startPlay(); e.preventDefault(); } return; }
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
     if (rs.ui) { if (rs.ui === 'play' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); rangeShoot(); } else if (e.code === 'KeyE' && rs.ui !== 'play') inp.act = true; return; }
     switch (e.code) {
@@ -654,7 +660,7 @@
   const myLook = () => ({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu, n: myName(), pk: save.pet });
   const charFor = l => BI.makeChar(charOpts(l, l.n));
   const freeObj = o => { o.traverse(m => { if (m.geometry) m.geometry.dispose(); if (m.isSprite && m.material.map) m.material.map.dispose(); }); if (o.parent) o.parent.remove(o); };
-  function dropAvatar(av) { if (av.char) freeObj(av.char.group); if (av.gv) freeObj(av.gv.root); if (av.pet) freeObj(av.pet.d.group); }
+  function dropAvatar(av) { if (av.lv) { freeNetVeh(av.lv, av); av.lv = null; } if (av.char) freeObj(av.char.group); if (av.gv) freeObj(av.gv.root); if (av.pet) freeObj(av.pet.d.group); }
   function updateFriends() { if (typeof updateFlats === 'function') updateFlats(); const n = net.count(), on = net.connected(); if ($('emo')) { $('emo').hidden = !(on && state === 'play'); if (!on) $('emoRow').hidden = true; } $('friends').hidden = !(on && state === 'play'); $('friendsN').textContent = n; }
   const mpSay = m => { const el = $('mpStatus'); el.textContent = m || ''; el.classList.remove('err'); };
   const mpErr = m => { const el = $('mpStatus'); el.textContent = m; el.classList.add('err'); };
@@ -711,6 +717,10 @@
       if (d.t === 'n') { const a = remote.get(d.id); if (a) kids.play(d.i | 0, (d.k | 0) & 7, a); return; }
       if (d.t === 'b') { build.applyRemote(d.o || d.id, d); return; }
       if (d.t === 'g') { applyGame(d.op === 'cnt' ? Object.assign({}, d) : d); return; }
+      if (d.t === 'hk') { const a = remote.get(d.id); if (a && Math.hypot(a.x - P.x, a.z - P.z) < 40) honk(); return; }
+      if (d.t === 'mi') { const a = remote.get(d.id), m = MTITLE[d.k]; if (a && m && ride === d.id) say(m[0] + ' ' + a.name + ' startet: ' + m[1] + ' – hilf mit! 👀', 3200); return; }
+      if (d.t === 'ms') { if (ride === d.id) { const n = Math.max(1, Math.min(6, d.n | 0)); addStars(n); A.star(); if (n > 1) { A.fanfare(); say('🎉 Gemeinsam geschafft! +' + n + ' ⭐', 2800); } } return; }
+      if (d.t === 'vp') { if (Array.isArray(d.l)) for (const q of d.l) { const v = vehicles[q[0] | 0]; if (v && v.vi === (q[0] | 0) && v !== P.veh && (!v.netBy || v.netBy === d.id) && [q[1], q[2], q[3]].every(Number.isFinite)) { v.setPose(q[1], q[2], q[3]); v.v = 0; const a = remote.get(d.id); if (a && v.netBy === d.id) { a.x = a.tx = q[1]; a.z = a.tz = q[2]; a.h = a.th = q[3]; a.sp = 0; } } } return; }
       if (d.t !== 's') return;
       let a = remote.get(d.id);
       if (!a) {
@@ -718,41 +728,102 @@
         if (net.role === 'guest' && !P.veh) { const q = W.resolve(d.x + 2, d.z + 2, .5, {}); P.x = q.x; P.z = q.z; }
       }
       if (d.l && JSON.stringify(d.l) !== a.look) { a.look = JSON.stringify(d.l); const pk = d.l.pk || 'blitz'; if (a.pet && a.pet.k !== pk) { freeObj(a.pet.d.group); a.pet = null; } if (!a.pet) { a.pet = { k: pk, d: BI.makePet(pk), x: a.x - 1.5, z: a.z - 1, h: 0, ph: 0 }; scene.add(a.pet.d.group); } if (a.char) freeObj(a.char.group); a.char = charFor(d.l); a.char.group.position.set(a.x, a.y, a.z); scene.add(a.char.group); const first = a.name === 'Freund'; a.name = d.l.n || 'Freund'; if (first) { kids.earn('friend'); say(a.name + ' ist dabei! 🎉', 2600); fx.burst(a.x, 2, a.z, 20, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6); A.fanfare(); } updateFriends(); renderMp(); }
-      a.tx = d.x; a.tz = d.z; a.ty = d.y || 0; a.th = d.h || 0; a.sp = d.sp || 0; a.a = d.a || 0; a.v = d.v || ''; a.vy = d.vy || 0;
+      a.tx = d.x; a.tz = d.z; a.ty = d.y || 0; a.th = d.h || 0; a.sp = d.sp || 0; a.a = d.a || 0; a.v = d.v || ''; a.vy = d.vy || 0; a.rt = performance.now();
+      a.vi = typeof d.vi === 'number' && d.vi >= 0 && d.vi < VEH_SYNC ? d.vi : -1;
+      /* Beide sind gleichzeitig ins selbe Auto gestiegen: die kleinere ID lenkt, der andere fährt mit */
+      if (a.vi >= 0 && P.veh && P.veh.vi === a.vi && P.veh.type === a.v && selfId() > d.id) { leave(true); startRide(d.id); }
+      const rd = typeof d.rd === 'string' ? d.rd : '';
+      if (rd !== (a.rd || '')) { if (rd && rd === selfId()) { A.pop(); say('🙋 ' + a.name + ' fährt bei dir mit! Du lenkst.', 2600); } else if (a.rd === selfId()) say(a.name + ' ist ausgestiegen 👋', 2000); a.rd = rd; }
     },
-    onJoin: id => { lookSig = ''; netT = 0; updateFriends(); shareBuild(id); if (mpOpen && net.role === 'host' && mpView === 'host') mpShow('on'); if (net.role === 'guest') { say('Verbunden! 🎉', 2000); } },
+    onJoin: id => { lookSig = ''; netT = 0; updateFriends(); shareBuild(id); shareVehicles(id); if (mpOpen && net.role === 'host' && mpView === 'host') mpShow('on'); if (net.role === 'guest') { say('Verbunden! 🎉', 2000); } },
     onLeave: id => { build.dropOwner(id); const a = remote.get(id); if (a) { dropAvatar(a); remote.delete(id); say(a.name + ' ist gegangen 👋', 2200); } updateFriends(); renderMp(); },
     onClosed: () => { build.dropOwner(null); for (const a of remote.values()) dropAvatar(a); remote.clear(); updateFriends(); if (mpOpen && mpView === 'on') { mpShow('choose'); mpSay('Verbindung beendet.'); } },
     onStatus: m => mpSay(m)
   });
   { const m = /join=([A-Za-z0-9]{4})/.exec(location.hash || ''); if (m) { joinCode = net.normCode(m[1]); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } setTimeout(() => { openMp('menu', 'join'); mpJoinGo(); }, 400); } }
   function sendNet(dt) {
-    if (!net.connected() || state !== 'play') return; const nw = performance.now(); if (nw - netT < 100) return; netT = nw;
+    if (!net.connected() || state !== 'play') return; const nw = performance.now(); if (nw - netT < (P.veh || ride ? 66 : 100)) return; netT = nw; /* beim Fahren etwas öfter senden: ruckelfrei */
     const v = P.veh && !P.veh.spec.remote ? P.veh : null, tr = v && v.isTrain, o = v && !tr ? v : null, r1 = n => Math.round(n * 100) / 100;
+    if (ride) { const hv = rideHost(); if (hv) { const d = { t: 's', x: r1(hv.x), z: r1(hv.z), y: r1(hv.y || 0), h: r1(hv.h), sp: 0, v: '', a: 0, rd: ride }; const sg = JSON.stringify(myLook()); if (sg !== lookSig || ++lookN > 40) { lookSig = sg; lookN = 0; d.l = myLook(); } net.send(d); return; } }
     const d = { t: 's', x: r1(o ? o.x : tr ? train.cars[0].x : P.x), z: r1(o ? o.z : tr ? train.cars[0].z : P.z), y: r1(o ? o.y || 0 : tr ? .6 : P.y), h: r1(o ? o.h : tr ? train.cars[0].h : P.h), sp: r1(o ? o.v : P.speed), v: o ? o.type : '', a: sl.t >= 0 && sl.t > 1.1 && sl.t < 3.7 ? 5 : rs.ui === 'play' ? 3 : fun.dancing ? 1 : P.wave > 0 ? 2 : P.punchT > 0 ? 4 : 0 };
+    if (o && o.vi != null) d.vi = o.vi;
     const sg = JSON.stringify(myLook()); if (sg !== lookSig || ++lookN > 40) { lookSig = sg; lookN = 0; d.l = myLook(); }
     net.send(d);
   }
   function updateRemote(dt) {
     for (const a of remote.values()) {
-      if (Math.hypot(a.tx - a.x, a.tz - a.z) > 25) { a.x = a.tx; a.z = a.tz; }
-      a.x = BI.damp(a.x, a.tx, 12, dt); a.z = BI.damp(a.z, a.tz, 12, dt); a.y = BI.damp(a.y, a.ty, 12, dt); a.h += BI.angDiff(a.h, a.th) * Math.min(1, dt * 10);
-      if (a.gv && a.gv.type !== a.v) { freeObj(a.gv.root); a.gv = null; }
-      if (a.v && !a.gv) { const v = new BI.Vehicle(a.v, a.x, a.z, a.h, {}); v.type = a.v; scene.add(v.root); a.gv = v; }
+      /* Fahrzeuge: kurz vorausrechnen (Tempo x Zeit seit dem letzten Paket), dann weich nachziehen -> flüssige Fahrt auch bei 10-15 Paketen/s */
+      const ex = a.v ? a.sp * Math.min(.15, (performance.now() - (a.rt || 0)) / 1000) : 0, gx = a.tx + Math.sin(a.th) * ex, gz = a.tz + Math.cos(a.th) * ex;
+      if (Math.hypot(gx - a.x, gz - a.z) > 25) { a.x = gx; a.z = gz; }
+      a.x = BI.damp(a.x, gx, 12, dt); a.z = BI.damp(a.z, gz, 12, dt); a.y = BI.damp(a.y, a.ty, 12, dt); a.h += BI.angDiff(a.h, a.th) * Math.min(1, dt * 10);
+      /* Fährt der Freund ein Auto, das es auf jedem Gerät gibt, fährt genau dieses Auto mit (kein doppeltes Auto am Parkplatz) */
+      let lv = a.v && a.vi >= 0 ? vehicles[a.vi] : null; if (lv && (lv.type !== a.v || lv === P.veh || (lv.netBy && lv.netBy !== a.id))) lv = null;
+      if (a.lv !== lv) { if (a.lv) freeNetVeh(a.lv, a); a.lv = lv; if (lv) { lv.driver = 'net'; lv.netBy = a.id; } }
+      if (a.gv && (a.gv.type !== a.v || lv)) { freeObj(a.gv.root); a.gv = null; }
+      if (a.v && !lv && !a.gv) { const v = new BI.Vehicle(a.v, a.x, a.z, a.h, {}); v.type = a.v; scene.add(v.root); a.gv = v; }
+      if (lv) { lv.setPose(a.x, a.z, a.h); lv.y = a.y; lv.v = a.sp; }
       if (a.pet) { /* Haustier des Freundes folgt ihm (läuft auf jedem Gerät selbst) */
         const pt = a.pet, bx = a.x - Math.sin(a.h) * 2.4 + Math.cos(a.h), bz = a.z - Math.cos(a.h) * 2.4 - Math.sin(a.h), pd = Math.hypot(bx - pt.x, bz - pt.z); let sp = 0;
         if (pd > 45) { pt.x = bx; pt.z = bz; } else if (!a.v) sp = pd > 1 ? Math.min(8.5, 1.5 + pd * 2.4) : 0;
         if (sp > 0) { pt.h += BI.angDiff(pt.h, Math.atan2(bx - pt.x, bz - pt.z)) * Math.min(1, dt * 10); pt.x += Math.sin(pt.h) * sp * dt; pt.z += Math.cos(pt.h) * sp * dt; } else pt.h += BI.angDiff(pt.h, Math.atan2(a.x - pt.x, a.z - pt.z)) * Math.min(1, dt * 4);
         pt.ph += dt * (sp > .3 ? 6 + sp * 1.2 : 2); pt.d.group.position.set(pt.x, W.groundY(pt.x, pt.z), pt.z); pt.d.group.rotation.y = pt.h; pt.d.pose(pt.ph, sp > .3 ? Math.min(.85, sp * .12) : 0, sp === 0);
       }
-      const inV = !!a.v && !!a.gv; if (a.char) a.char.group.visible = !inV;
-      if (inV) { a.gv.root.visible = true; a.gv.setPose(a.x, a.z, a.h); a.gv.y = a.y; a.gv.v = a.sp; a.gv.visual(dt, t, null); }
-      else if (a.char) {
+      const inV = !!a.v && !!a.gv, hv = a.rd ? hostVeh(a.rd) : null; if (a.char) a.char.group.visible = !inV && !a.lv;
+      if (hv) { if (a.char) seatOn(a.char, hv, a.id, a.rd); }
+      else if (inV) { a.gv.root.visible = true; a.gv.setPose(a.x, a.z, a.h); a.gv.y = a.y; a.gv.v = a.sp; a.gv.visual(dt, t, null); }
+      else if (a.char && !a.lv) {
         const c = a.char, g = c.group; g.position.set(a.x, a.y, a.z); g.rotation.set(0, a.h, 0); a.phase += dt * (6 + a.sp * 1.2);
         if (a.a === 1) { c.dance(t, 0); g.position.y += Math.abs(Math.sin(t * 8)) * .18; } else if (a.a === 4) c.punch((t * 2.5) % 1);
         else if (a.a === 3) { c.pose(0, 0, false); c.armR.rotation.set(-1.45, 0, 0); } else if (a.a === 5) { c.pose(0, 0, false); g.rotation.set(-Math.PI / 2, 0, 0); } else c.pose(a.phase, a.sp > .3 ? Math.min(1.1, a.sp * .17) : 0, a.a === 2);
       }
     }
+  }
+
+  /* ---- Mitfahren: zu zweit (oder zu viert) in einem Fahrzeug. Der Fahrer lenkt, alle anderen sitzen drin und fahren mit ---- */
+  function freeNetVeh(v, a) { v.driver = null; v.netBy = null; v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } }
+  /* Fahrzeug, in dem der Fahrer mit dieser ID sitzt (bei mir: mein eigenes) */
+  function hostVeh(id) {
+    if (id === selfId()) return P.veh && !P.veh.spec.remote && !P.veh.isTrain ? P.veh : null;
+    const b = remote.get(id); return b && b.v && !b.rd ? b.lv || b.gv : null;
+  }
+  const rideHost = () => ride ? hostVeh(ride) : null;
+  /* Sitzplatz: offene Fahrzeuge zeigen die Mitfahrer hinter/neben dem Fahrer, geschlossene verstecken sie (sie sitzen drinnen) */
+  function seatOn(c, hv, id, host) {
+    const s = hv.seat, g = c.group; if (!(hv.spec.open && s)) { g.visible = false; return; }
+    let k = 0; if (ride === host && selfId() < id) k++; for (const a of remote.values()) if (a.rd === host && a.id < id) k++; /* feste Reihenfolge auf allen Geräten */
+    const wide = hv.r > 1, lx = wide ? (k % 2 ? -.6 : .6) : (k % 2 ? .35 : -.35) * (k > 0 ? 1 : 0), lz = wide ? s[2] - .2 - (k >> 1) * .7 : s[2] - .7 - k * .55, sn = Math.sin(hv.h), cs = Math.cos(hv.h);
+    g.visible = true; g.position.set(hv.x + sn * lz + cs * lx, (hv.y || 0) + (hv.tilt ? hv.tilt.position.y : 0) + s[1] - .42, hv.z + cs * lz - sn * lx); g.rotation.set(0, hv.h, 0); c.sit();
+  }
+  function nearRide() {
+    if (P.veh || ride || P.y > 3 || !net.connected()) return null; let best = null, bd = 4.2;
+    for (const a of remote.values()) { const hv = hostVeh(a.id); if (!hv || hv.spec.remote) continue; const d = Math.hypot(P.x - hv.x, P.z - hv.z) - hv.r * 1.3 - Math.max(...hv.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = a; } }
+    return best;
+  }
+  function startRide(id) {
+    const a = remote.get(id); if (!a || !hostVeh(id) || P.veh) return; if (build.active) toggleBuild(); fun.setDance(false);
+    ride = id; P.speed = 0; P.vy = 0; mission = null; offer = null; clearMissionVisuals(); A.enter(); kids.earn('ride'); meta.note('ride');
+    say('🚗 Du fährst bei ' + a.name + ' mit! Mit 📣 hupen, mit 🚪 aussteigen.', 3200); updateHud(); updateButtons(true); netT = 0;
+  }
+  function endRide(msg) {
+    const hv = rideHost(); ride = ''; const g = char.group; g.visible = true; g.rotation.set(0, 0, 0); A.leave();
+    if (hv) { const lx = -Math.cos(hv.h), lz = Math.sin(hv.h), rad = (hv.r || 1) + 1.3, q = W.resolve(hv.x + lx * rad, hv.z + lz * rad, .5, {}); P.x = q.x; P.z = q.z; P.h = hv.h; }
+    P.y = W.groundY(P.x, P.z); P.vy = 0; if (msg) say(msg, 2400); updateHud(); updateButtons(true); netT = 0;
+  }
+  function rideStep() {
+    const hv = rideHost(); if (!hv) { const a = remote.get(ride); endRide(a ? a.name + ' ist ausgestiegen – du auch! 🚪' : 'Die Fahrt ist zu Ende 🚪'); return; }
+    P.x = hv.x; P.z = hv.z; P.h = hv.h; P.y = hv.y || 0; P.speed = 0; inp.jump = inp.aux = false;
+    if (inp.hornEdge) { inp.hornEdge = false; honk(); if (net.connected()) net.send({ t: 'hk' }); }
+    if (cam.ego) char.group.visible = false; else seatOn(char, hv, selfId(), ride);
+  }
+  let honkT = 0;
+  function honk() { const n = performance.now(); if (n - honkT < 500) return; honkT = n; A.horn('car', true); setTimeout(() => A.horn('car', false), 380); }
+  /* Nachricht an alle, die gerade bei mir mitfahren (Auftrag gestartet / Stern geschafft) */
+  function rideSend(d) { if (!net.connected()) return; for (const a of remote.values()) if (a.rd === selfId()) { net.send(d); return; } }
+  /* Neuer Mitspieler: ihm sagen, wo Autos inzwischen geparkt sind (sonst stünden sie bei ihm am alten Platz) */
+  function shareVehicles(toId) {
+    if (net.role !== 'host') return; const l = [], r2 = n => Math.round(n * 100) / 100;
+    for (let i = 0; i < VEH_SYNC; i++) { const v = vehicles[i]; if (v.vi !== i || v.netBy || v === P.veh) continue; if (Math.abs(v.x - v.sx) + Math.abs(v.z - v.sz) > .8) l.push([i, r2(v.x), r2(v.z), r2(v.h)]); }
+    if (l.length) net.sendTo(toId, { t: 'vp', l });
   }
 
   /* ---------- Mitspiel-Extras: Zurufe, Abklatschen, gemeinsames Bauen, Fangen, Sterne-Wettlauf ---------- */
@@ -792,7 +863,7 @@
   }
   /* ---- Besuch in der Wohnung eines Freundes + Geburtstagsparty ---- */
   function visitFlat(id) {
-    if (P.veh || sl.t >= 0) { say('Steig erst aus 🙂', 1800); return; } const f = flats[slotOf(id)], a = remote.get(id); closeMp(); fx.burst(P.x, 1.2, P.z, 14, [BI.C.white, BI.C.blue], 4, 1, 28, 4);
+    if (P.veh || ride || sl.t >= 0) { say('Steig erst aus 🙂', 1800); return; } const f = flats[slotOf(id)], a = remote.get(id); closeMp(); fx.burst(P.x, 1.2, P.z, 14, [BI.C.white, BI.C.blue], 4, 1, 28, 4);
     P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.h = Math.PI; cam.yaw = 0; A.fanfare(); say('🏠 Zu Besuch bei ' + (a ? a.name : 'deinem Freund') + '!', 2600); kids.earn('visit');
   }
   const parties = []; let partyCd = 0;
@@ -866,7 +937,7 @@
   }
   function startGame(k, solo) {
     const def = gdef(k); if (!def) return; if (gm || mini.active) { say('Es läuft schon ein Spiel!', 2000); return; }
-    if (!solo && !net.connected()) { say('Dafür brauchst du Mitspieler 👥', 2000); return; } if (P.veh) { say('Steig erst aus 🚪', 1800); return; }
+    if (!solo && !net.connected()) { say('Dafür brauchst du Mitspieler 👥', 2000); return; } if (P.veh || ride) { say('Steig erst aus 🚪', 1800); return; }
     const ids = [selfId()].concat([...remote.keys()]); const d = { t: 'g', op: 'start', k, seed: (Math.random() * 1e9) | 0, it: ids[(Math.random() * ids.length) | 0], dur: def.dur };
     applyGame(d, !!solo); if (!solo) net.send(d);
   }
@@ -1440,7 +1511,7 @@
   }
   buildHeroPicker($('heroPick')); const wardTabs = buildHeroPicker($('wardPick'));
   { const TC = ['#ff4f9a', '#ff8a1f', '#ffb800', '#4cd07d', '#2d8cff', '#9b6bff']; let li = 0; $('ttl').innerHTML = 'Bunte Insel'.split(' ').map((w, wi) => '<div class="w">' + [...w].map((ch, i) => '<span style="--i:' + (i + wi * 6) + ';color:' + TC[li++ % 6] + '">' + ch + '</span>').join('') + '</div>').join('<i></i>'); }
-  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); if (creating) setTimeout(() => BI.Thumb.load($('heroPick')), 60); };
+  const menuView = v => { for (const e of $('menu').querySelectorAll('[data-v]')) e.hidden = e.dataset.v !== v; $('menu').dataset.v = v; creating = v === 'hero'; $('menu').classList.toggle('creating', creating); if (creating) setTimeout(() => BI.Thumb.load($('heroPick')), 60); };
   /* ---------- Spielstände: 3 Plätze im Browser + Sicherungsdatei ---------- */
   const SLOT = BI.store.slot, slotName = s => { const i = BI.store.info(s); return i.has ? (i.pn || BI.heroById(i.hero).name) : 'Neu'; };
   function slotBarRefresh() { const i = BI.store.info(SLOT); $('slotBar').innerHTML = '<span>💾 Spielstand ' + SLOT + ' · ' + (i.has ? heroName() + ' · ⭐ ' + save.stars : 'Neu') + '</span><span>Wechseln ›</span>'; $('slotLab').textContent = '💾 Spielstand ' + SLOT + (saveOk ? '' : ' ⚠️ Speicher voll'); }
@@ -1504,12 +1575,14 @@
   let hitCool = 0, hornActive = false;
   function updatePlayer(dt) {
     const [jx, jy] = axes();
-    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (story.open) story.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) { if (cinema.near()) cinema.show('drive'); else leave(); } else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
+    if (inp.act && ride) { inp.act = false; endRide(); }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (story.open) story.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) { if (cinema.near()) cinema.show('drive'); else leave(); } else { const nr = nearRide(), nv = nr ? null : nearVehicle(); if (nr) startRide(nr.id); else if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
     if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
     if (rs.ui) { inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (pool.busy()) { inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (park.busy()) { if (inp.jump || inp.aux) park.stop(); inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (play.busy()) { if (inp.jump || inp.aux) play.stop(); inp.jump = inp.aux = inp.hornEdge = false; return; }
+    if (ride) { rideStep(); hitCool -= dt; return; }
     if (fun.dancing && (jx || jy || inp.jump || P.veh)) fun.setDance(false);
     if (P.veh) {
       const v = P.veh;
@@ -1546,7 +1619,7 @@
       if (running && P.y < .1 && Math.random() < dt * 12) fx.burst(P.x - Math.sin(P.h) * .3, .12, P.z - Math.cos(P.h) * .3, 1, [BI.C.dust], 1.2, .4, 22, 2);
       const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
-      const vf = Math.max(vox.floorAt(P.x, P.z, P.y), atlantis.floor(P.x, P.z)), pf = W.atlPit ? W.atlPit.floor(P.x, P.z) : null, gy = pf !== null ? pf : Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
+      const vf = Math.max(vox.floorAt(P.x, P.z, P.y), atlantis.floor(P.x, P.z), W.floorAt(P.x, P.z, P.y)), pf = W.atlPit ? W.atlPit.floor(P.x, P.z) : null, gy = pf !== null ? pf : Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
       if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung
       if (P.jbuf > 0) P.jbuf -= dt;
       if (inp.jump) { inp.jump = false; P.jbuf = .14; }
@@ -1755,7 +1828,7 @@
   function blockedByBuilding(x, z, y) { for (const b of W.boxes) if (y < b.h && x > b.x0 - .6 && x < b.x1 + .6 && z > b.z0 - .6 && z < b.z1 + .6) return true; return false; }
   const EYE = { rc: [0, .45, .2], car: [0, 1.2, .3], police: [0, 1.2, .3], ambulance: [0, 1.9, 1.7], fire: [0, 2.5, 2.9], bus: [0, 2.4, 3.4], tractor: [0, 2.3, -.6], ice: [0, 1.5, 1.0], bike: [0, 1.8, -.1], heli: [0, 1.9, 1.2], train: [0, 3.0, -1.7] };
   function updateCamera(dt) {
-    const v = P.veh; let tx, ty, tz, dist, pitch = cam.pitch;
+    const v = P.veh || (ride ? rideHost() : null); let tx, ty, tz, dist, pitch = cam.pitch;
     if (rs.ui === 'play' && state === 'play') { camera.position.set(RG.x + .9, 2.25, RG.z + 2.7); camera.lookAt(RG.x, 1.75, -88); cam.x = RG.x; cam.y = 2.25; cam.z = RG.z + 2.7; sun.position.set(RG.x + 60, 100, RG.z + 40); sun.target.position.set(RG.x, 0, RG.z); sky.position.set(RG.x, 0, RG.z); return; }
     if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -1.05 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
     else if (wardOpen && !v) { cam.yaw += dt * (orbitOff ? 0 : .5); tx = P.x; ty = P.y + (innerHeight > innerWidth ? -1.05 : .7); tz = P.z; dist = 5.2; pitch = .1; }
@@ -1781,7 +1854,7 @@
     cam.x = BI.damp(cam.x, gx, 14, dt); cam.y = BI.damp(cam.y, gy, 14, dt); cam.z = BI.damp(cam.z, gz, 14, dt);
     camera.position.set(cam.x, Math.max(.8, cam.y), cam.z);
     if (cam.shake > 0) { cam.shake -= dt; camera.position.x += (Math.random() - .5) * .25; camera.position.y += (Math.random() - .5) * .25; }
-    if (state === 'menu' && innerWidth > 860) camera.lookAt(tx + Math.cos(cam.yaw) * 1.5, ty + .2, tz - Math.sin(cam.yaw) * 1.5); else camera.lookAt(tx, ty + .4, tz);
+    if (state === 'menu' && (innerWidth > 860 || (!creating && innerWidth > 640 && innerWidth > innerHeight * 1.3))) camera.lookAt(tx + Math.cos(cam.yaw) * 1.5, ty + .2, tz - Math.sin(cam.yaw) * 1.5); else camera.lookAt(tx, ty + .4, tz);
     sun.position.set(tx + 60, 100, tz + 40); sun.target.position.set(tx, 0, tz);
     sky.position.set(tx, 0, tz);
   }
@@ -1816,11 +1889,22 @@
     renderer.render(scene, camera);
   }
   spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate'); if (save.owned.includes('rollator')) spawnRC(true, 'rollator');
-  $('loading').hidden = true; $('menu').hidden = false;
+  $('loading').hidden = true; $('menu').hidden = false; if (!document.body.classList.contains('touch')) $('bStart').focus({ preventScroll: true });
+  /* Konsolen-Steuerung im Startmenü: Pfeiltasten / Steuerkreuz wählen, Enter / A öffnet, Esc / B geht zurück */
+  { const btns = () => [...$('menu').querySelectorAll('[data-v]:not([hidden]) button')].filter(b => !b.disabled && b.offsetParent), live = () => state === 'menu' && !$('menu').hidden && !mpOpen && !creating;
+    const move = d => { const l = btns(); if (!l.length) return; const i = l.indexOf(document.activeElement); l[(i < 0 ? 0 : (i + d + l.length) % l.length)].focus({ preventScroll: true }); A.pop && A.pop(); };
+    const back = () => { const v = $('menu').dataset.v; if (v === 'slots') menuView('home'); };
+    addEventListener('keydown', e => { if (!live() || (e.target && e.target.tagName === 'INPUT')) return; const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.code]; if (k) { A.resume(); move(k); e.preventDefault(); } else if (e.code === 'Escape') { back(); e.preventDefault(); } });
+    const pad = {}; setInterval(() => {
+      if (!live() || !navigator.getGamepads) return; const gp = [...navigator.getGamepads()].find(Boolean); if (!gp) return;
+      const on = (n, v) => { const was = pad[n]; pad[n] = v; return v && !was; }, b = i => !!(gp.buttons[i] && gp.buttons[i].pressed), ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
+      if (on('l', b(14) || b(12) || ax < -.6 || ay < -.6)) move(-1); if (on('r', b(15) || b(13) || ax > .6 || ay > .6)) move(1);
+      if (on('a', b(0))) { const f = document.activeElement; if (f && f.closest('#menu')) f.click(); } if (on('b', b(1))) back();
+    }, 100); }
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { life, home, radio, zotik, atlantis, vox, bauland, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
 

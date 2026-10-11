@@ -61,8 +61,8 @@ BI.buildWorld = function (scene) {
     }
   }
   /* u = vom Spieler gebaut (darf wieder entfernt werden) */
-  W.addCircle = (x, z, r, u, h) => { const it = { c: 1, x, z, r, u: !!u, h: h || 7 }; W.circles.push(it); put(it, x - r, z - r, x + r, z + r); return it; };
-  W.addBox = (x0, z0, x1, z1, u, h) => { const it = { c: 0, x0, z0, x1, z1, u: !!u, h: h || 12 }; W.boxes.push(it); put(it, x0, z0, x1, z1); return it; };
+  W.addCircle = (x, z, r, u, h) => { const it = { c: 1, x, z, r, u: !!u, h: h || 7, dh: !h }; W.circles.push(it); put(it, x - r, z - r, x + r, z + r); return it; };
+  W.addBox = (x0, z0, x1, z1, u, h) => { const it = { c: 0, x0, z0, x1, z1, u: !!u, h: h || 12, dh: !h }; W.boxes.push(it); put(it, x0, z0, x1, z1); return it; };
   W.removeCollider = it => {
     for (const k of it.cells || []) { const a = grid.get(k); if (a) { const i = a.indexOf(it); if (i >= 0) a.splice(i, 1); } }
     const arr = it.c ? W.circles : W.boxes, j = arr.indexOf(it); if (j >= 0) arr.splice(j, 1);
@@ -70,7 +70,7 @@ BI.buildWorld = function (scene) {
   const seen = new Set();
   /* schiebt einen Kreis (px,pz,r) aus allen Hindernissen; liefert Verschiebung zurück */
   /* alt = Flughöhe (Hubschrauber): überfliegt Hindernisse, die niedriger sind */
-  W.resolve = function (px, pz, r, out, alt) {
+  W.resolve = function (px, pz, r, out, alt, air) {
     out = out || {}; let hit = false;
     for (let pass = 0; pass < 2; pass++) {
       seen.clear();
@@ -79,11 +79,11 @@ BI.buildWorld = function (scene) {
         for (let i = 0; i < a.length; i++) {
           const it = a[i]; if (seen.has(it)) continue; seen.add(it);
           if (it.c) {
-            if (alt != null && alt > it.h) continue;
+            if (alt != null && alt > (air && it.dh ? it.h * .5 : it.h)) continue; /* Flug: Standard-Höhen sind grob geschätzt – kleine Dinge (Bank, Busch) stören Hubschrauber nicht */
             const dx = px - it.x, dz = pz - it.z, d = Math.hypot(dx, dz), m = r + it.r;
             if (d < m) { const k = d > 1e-6 ? (m - d) / d : 0; if (d > 1e-6) { px += dx * k; pz += dz * k; } else px += m; hit = true; }
           } else {
-            if (alt != null && alt > it.h) continue;
+            if (alt != null && alt > (air && it.dh ? it.h * .5 : it.h)) continue;
             const cx = BI.clamp(px, it.x0, it.x1), cz = BI.clamp(pz, it.z0, it.z1), dx = px - cx, dz = pz - cz, d2 = dx * dx + dz * dz;
             if (d2 > 1e-9) { if (d2 < r * r) { const d = Math.sqrt(d2), k = (r - d) / d; px += dx * k; pz += dz * k; hit = true; } }
             else { // Mittelpunkt im Kasten: kürzeste Seite hinaus
@@ -96,7 +96,8 @@ BI.buildWorld = function (scene) {
     }
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
-    if (rad > K.LIMIT - r) {
+    if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
+    else if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
       else if (W.zotik && zotikWalk(px, pz, r, alt)) { /* Brücke / Zotik – Lunaris */ }
       else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
@@ -128,7 +129,14 @@ BI.buildWorld = function (scene) {
   const pupsWalk = (px, pz, r) => { const C = W.pups, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   const rainbowWalk = (px, pz, r) => { const C = W.rainbow, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const cityWalk = (px, pz, r) => { const C = W.city, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - .2 && px < b.x1 + .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
-  const _o = {};
+  /* größter Abstand, bis zu dem es etwas zu sehen gibt (Inseln + Rand): dahinter ist die Luft zu Ende */
+  W.flyLimit = () => { if (W._fl) return W._fl; let m = K.LIMIT; for (const k of ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland']) { const C = W[k]; if (C && C.R) m = Math.max(m, Math.hypot(C.x, C.z) + C.R); } return W._fl = m + 30; };
+  /* Boden unter dem Punkt? (Land, Brücke, Steg – kein Meer, kein Hindernis). Hubschrauber sinken über dem Wasser nicht tiefer als 8 m */
+  W.landAt = (x, z) => { const p = W.resolve(x, z, 0, _o2, 0); return !p.hit; };
+  /* Niedrige Podeste (Bühne, Sockel) zum Daraufsteigen: runde Scheiben mit Höhe y */
+  const floors = []; W.addFloor = (x, z, r, y) => { floors.push({ x, z, r, y }); };
+  W.floorAt = (x, z, y) => { let b = -1e9; for (const f of floors) if (f.y > b && f.y <= y + .65 && (x - f.x) * (x - f.x) + (z - f.z) * (z - f.z) < f.r * f.r) b = f.y; return b; };
+  const _o = {}, _o2 = {};
   W.free = (x, z, r) => { const p = W.resolve(x, z, r, _o); return !p.hit; };
 
   /* ---------- Straßen-/Schienen-Geometrie ---------- */

@@ -49,14 +49,28 @@ ok(near && near.d < 6 && Math.abs(near.ax - 20) < 2 && near.name.length > 2 && n
 const pk = await A.evaluate(() => { const a = [...window.__bi.remote.values()][0]; return { k: a.pet && a.pet.k, n: a.name }; });
 ok(pk.k === 'mieze' && /Fee Luna/.test(pk.n), `Freund erscheint mit eigener Figur und eigenem Haustier (${pk.n}, ${pk.k})`);
 // Fahrzeug wird live gezeigt
-await A.evaluate(() => { const b = window.__bi; const v = b.vehicles.find(v => v.type === 'car' && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); v.x += 0; b.inp.sy = 0; }); await B.waitForTimeout(1800);
-const veh = await B.evaluate(() => { const a = [...window.__bi.remote.values()][0]; return { v: a.v, gv: !!a.gv, hid: !a.char.group.visible }; });
-ok(veh.v === 'car' && veh.gv && veh.hid, 'Fahrzeug des Freundes wird gezeigt, Figur ausgeblendet');
-await A.evaluate(() => window.__bi.leave()); 
+await A.evaluate(() => { const b = window.__bi; const v = b.vehicles.find(v => v.type === 'car' && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); v.x += 0; b.inp.sy = 0; }); await B.waitForFunction(() => { const a = [...window.__bi.remote.values()][0]; return a && a.v === 'car' && a.lv; }, null, { timeout: 30000 }).catch(() => { });
+const veh = await B.evaluate(() => { const a = [...window.__bi.remote.values()][0]; return { v: a.v, lv: !!a.lv && a.lv.netBy === a.id, hid: !a.char.group.visible, twins: a.gv ? 1 : 0, near: !!a.lv && Math.hypot(a.lv.x - a.x, a.lv.z - a.z) < 1.5 }; });
+ok(veh.v === 'car' && veh.lv && veh.hid && veh.twins === 0 && veh.near, 'Fahrzeug des Freundes: dasselbe Auto fährt mit (kein doppeltes Auto), Figur ausgeblendet ' + JSON.stringify(veh));
+// Mitfahren: B steigt zu A ins Auto, A lenkt, B fährt synchron mit
+const aId = await A.evaluate(() => window.__bi.net.id), bId0 = await B.evaluate(() => window.__bi.net.id);
+const rideBtn = await B.evaluate(async () => { const b = window.__bi, a = [...b.remote.values()][0], v = a.lv; b.P.x = v.x + 2.2; b.P.z = v.z; for (let i = 0; i < 200 && !(b.nearRide() && /Mitfahren/.test(document.getElementById('bAct').textContent)); i++) await new Promise(r => setTimeout(r, 100)); const lbl = document.getElementById('bAct').textContent; b.inp.act = true; for (let i = 0; i < 100 && !b.ride; i++) await new Promise(r => setTimeout(r, 100)); return { lbl, ride: b.ride }; });
+ok(/Mitfahren/.test(rideBtn.lbl) && rideBtn.ride === aId, `Mitfahren: Knopf „Mitfahren“ erscheint, Gast sitzt im Auto des Freundes (${rideBtn.lbl})`);
+await A.evaluate(async () => { const b = window.__bi, v = b.P.veh; for (let i = 0; i < 20; i++) { b.inp.sy = 1; await new Promise(r => setTimeout(r, 100)); } b.inp.sy = 0; v.v = 0; });
+await B.waitForTimeout(2500);
+const posA = await A.evaluate(() => { const v = window.__bi.P.veh; return { x: v.x, z: v.z, pas: [...window.__bi.remote.values()].some(a => a.rd === window.__bi.net.id) }; });
+const posB = await B.evaluate(() => ({ x: window.__bi.P.x, z: window.__bi.P.z, ride: window.__bi.ride, act: document.getElementById('bAct').textContent }));
+const dAB = Math.hypot(posA.x - posB.x, posA.z - posB.z);
+ok(posB.ride === aId && dAB < 1.5 && posA.pas && /Aussteigen/.test(posB.act), `Mitfahren: A lenkt, B fährt mit (Abstand ${dAB.toFixed(2)} m), A sieht den Mitfahrer`);
+await A.evaluate(() => window.__bi.leave()); await B.waitForFunction(() => window.__bi.ride === '', null, { timeout: 30000 }).catch(() => { }); await B.waitForTimeout(500);
+const out = await B.evaluate(p => { const b = window.__bi, v = b.vehicles.find(q => q.type === 'car' && Math.hypot(q.x - p.x, q.z - p.z) < 1.5); return { ride: b.ride, parked: !!v && !v.netBy && v.root.visible, d: Math.hypot(b.P.x - p.x, b.P.z - p.z) }; }, posA);
+ok(out.ride === '' && out.parked && out.d < 6, `Fahrer steigt aus: Mitfahrer steigt mit aus, Auto bleibt bei beiden am selben Platz stehen (${out.d.toFixed(1)} m)`);
 // Dritter Spieler (über den Host weitergeleitet)
 await C.click('#bMulti'); await C.click('#mpJoin'); await C.evaluate(c => { for (const ch of c) [...document.querySelectorAll('#mpPad button')].find(b => b.textContent === ch).click(); }, code); await C.click('#mpPad .go');
-await C.waitForFunction(() => window.__bi.net.connected(), null, { timeout: 8000 }); await C.click('#mpBack'); await C.click('#bStart'); await C.waitForTimeout(2500);
+await C.waitForFunction(() => window.__bi.net.connected(), null, { timeout: 40000 }); await C.click('#mpBack'); await C.click('#bStart'); await C.waitForTimeout(2500);
 const cnt = await Promise.all([A, B, C].map(p => p.evaluate(() => window.__bi.remote.size)));
+const parkC = await C.evaluate(p => window.__bi.vehicles.some(q => q.type === 'car' && Math.hypot(q.x - p.x, q.z - p.z) < 1.5), posA);
+ok(parkC, 'Später beigetreten: geparktes Auto steht auch beim neuen Spieler am richtigen Platz');
 ok(cnt.every(n => n === 2), `3 Spieler sehen sich alle gegenseitig (${cnt.join(',')})`);
 const chip = await A.evaluate(() => ({ n: document.getElementById('friendsN').textContent, vis: !document.getElementById('friends').hidden }));
 ok(chip.n === '3' && chip.vis, 'Mitspieler-Anzeige im Spiel zeigt 3');
@@ -110,7 +124,7 @@ const h2 = await Promise.all(ps.map(p => p.evaluate(() => ({ gm: !!window.__bi.g
 ok(locked && h2.every(x => !x.gm && x.shown && x.rows === 3), `Verstecken: Sucher zählt (Bild dunkel), nach dem Zählen werden alle gefunden, Ergebnis bei allen (${JSON.stringify(h2.map(x => x.rows))})`);
 for (const p of ps) await p.evaluate(() => document.getElementById('grOk').click());
 // Ein Spieler geht
-await B.evaluate(() => window.__bi.net.close()); await A.waitForTimeout(800);
+await B.evaluate(() => window.__bi.net.close()); await C.waitForFunction(() => window.__bi.remote.size === 1, null, { timeout: 30000 }).catch(() => { }); await A.waitForTimeout(500);
 const left = await Promise.all([A, C].map(p => p.evaluate(() => window.__bi.remote.size)));
 ok(left.every(n => n === 1), `Nach dem Verlassen bleibt 1 Mitspieler (${left.join(',')})`);
 // Geburtstagsparty (A feiert, C ist in der Nähe) und Besuch in der Wohnung des Freundes
