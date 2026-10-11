@@ -196,7 +196,7 @@ const sfx = {
 };
 
 // ───────── Weltzustand ─────────
-let state, solids = [], gems = [], torches = [], enemies = [], npcs = new Map(), items = [], fallbackTrees = [], particles = [], clouds = [], checkpoints = [], updrafts = [], flightRings = [], gusts = [], waves = [], markers = [], anchors = [];
+let state, treeColliders = [], solids = [], gems = [], torches = [], enemies = [], npcs = new Map(), items = [], fallbackTrees = [], particles = [], clouds = [], checkpoints = [], updrafts = [], flightRings = [], gusts = [], waves = [], markers = [], anchors = [];
 let portal, core, boss = null, birds = null, pond = null;
 let time = 0, last = 0, mode = 'title', pausedFrom = 'play', elapsed = 0, lastSave = 0, accumulator = 0, dirty = false;
 let camYaw = 0, camPitch = .43, camDist = innerHeight > innerWidth ? 13 : 10, camManualUntil = 0, near = null, toastUntil = 0;
@@ -248,7 +248,7 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
 function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .25 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
-function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
+function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
 function arch(x, z) { const c = levels[save.level].accent; for (const s of [-1, 1]) { mesh('box', c, x + s * 2.5, 2.5, z, .8, 5, .9); mesh('box', c, x + s * 2.5, .3, z, 1.3, .6, 1.4); mesh('box', c, x + s * 2.5, 5, z, 1.25, .4, 1.3); } const r = ring(x, 4.8, z, 2.5, c); r.scale.y = .6; mesh('box', c, x, 6.2, z, 5.5, .4, 1); }
 const SLOTS = {keeper: {x: -4, z: 13, y: 0}, side: {x: 12, z: 9, y: 0}, helper: {x: -10, z: -12, y: 0}};
 function npcModel(kind, c) {
@@ -293,7 +293,7 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  gusts = []; updrafts = []; flightRings = []; solids = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
   clearInput(); accumulator = 0; save.level = index;
   const cfg = levels[index];
@@ -460,6 +460,18 @@ function movePlayer(dt) {
         if (Math.abs(state.x - s.x) >= ex) { nx = state.x; state.vx = 0; } else if (Math.abs(state.z - s.z) >= ez) { nz = state.z; state.vz = 0; }
       }
     }
+  }
+  // Kantenschutz: Beim Laufen bleibt Aeru kurz an der Kante stehen; wer weiter drückt, springt bewusst hinunter.
+  if (state.onGround && state.dodge <= 0 && floorAt(nx, nz, state.y + .42) < state.y - .6) {
+    state.edgeT = (state.edgeT || 0) + dt;
+    if (state.edgeT < .45) { nx = state.x; nz = state.z; state.vx = 0; state.vz = 0; }
+  } else if (state.onGround) state.edgeT = 0;
+  // Bäume sind fest: Stamm am Boden, Krone in der Luft. Niemand läuft oder fliegt mehr hinein.
+  for (const t of treeColliders) {
+    const lim = (state.y + 1.6 > t.cy - t.ch && state.y < t.cy + t.ch ? t.crown : state.y < t.trunkTop ? t.crown * .55 : 0) + .35;
+    if (lim <= .35) continue;
+    const d = Math.hypot(nx - t.x, nz - t.z);
+    if (d < lim && d > 0) { const ux = (nx - t.x) / d, uz = (nz - t.z) / d; nx = t.x + ux * lim; nz = t.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; } }
   }
   state.x = nx; state.z = nz;
   if (length > .05 || state.dodge > 0) { const target = Math.atan2(-(state.dodge > 0 ? state.dodgeX : dx), -(state.dodge > 0 ? state.dodgeZ : dz)); state.yaw += Math.atan2(Math.sin(target - state.yaw), Math.cos(target - state.yaw)) * (1 - Math.exp(-dt * 13)); state.distance += Math.hypot(state.vx, state.vz) * dt; }
@@ -756,10 +768,21 @@ function updateCamera(dt) {
   const distance = camDist + (state.flight ? 2.5 : 0), pitch = camPitch + (state.flight ? .05 : 0);
   cameraGoal.set(cameraTarget.x + Math.sin(camYaw) * distance * Math.cos(pitch * .5), cameraTarget.y + 1.7 + Math.sin(pitch) * distance, cameraTarget.z + Math.cos(camYaw) * distance * Math.cos(pitch * .5));
   // Hindernisse: Die Kamera bleibt über Boden und Plattformen und kriecht nicht in Inseln.
+  // Baumkronen zwischen Aeru und Kamera: Die Kamera rückt davor, statt im Laub zu stecken.
+  for (const t of treeColliders) {
+    const ox = cameraTarget.x - t.x, oy = cameraTarget.y - t.cy, oz = cameraTarget.z - t.z, R = t.crown + .6;
+    const dx = cameraGoal.x - cameraTarget.x, dy = cameraGoal.y - cameraTarget.y, dz = cameraGoal.z - cameraTarget.z;
+    const a = dx * dx + dy * dy + dz * dz, b = 2 * (ox * dx + oy * dy + oz * dz), c = ox * ox + oy * oy + oz * oz - R * R, disc = b * b - 4 * a * c;
+    if (c > 0 && disc > 0) { const hit = (-b - Math.sqrt(disc)) / (2 * a); if (hit > 0 && hit < 1) cameraGoal.set(cameraTarget.x + dx * Math.max(.3, hit), cameraTarget.y + dy * Math.max(.3, hit), cameraTarget.z + dz * Math.max(.3, hit)); }
+  }
   const ground = floorAt(cameraGoal.x, cameraGoal.z, cameraTarget.y + 2.5);
   if (cameraGoal.y < ground + .9) cameraGoal.y = ground + .9;
   camera.position.lerp(cameraGoal, 1 - Math.exp(-dt * 9));
   if (camera.position.y < ground + .6) camera.position.y = ground + .6;
+  for (const t of treeColliders) {
+    const ox = camera.position.x - t.x, oy = camera.position.y - t.cy, oz = camera.position.z - t.z, d = Math.hypot(ox, oy, oz), R = t.crown + .4;
+    if (d < R && d > 0) camera.position.set(t.x + ox / d * R, t.cy + oy / d * R, t.z + oz / d * R);
+  }
   camera.lookAt(cameraTarget);
 }
 
@@ -1179,7 +1202,7 @@ if (TEST) window.aeruTest = {
     near: near === 'portal' ? 'portal' : near?.id, target: currentTarget, npcs: [...npcs.values()].filter(n => n.present).map(n => ({id: n.id, x: n.x, y: n.y, z: n.z, marker: npcMarker(n.id)})),
     items: items.map(i => ({id: i.id, x: i.x, y: i.y, z: i.z, visible: i.m.visible})), enemies: enemies.map(e => ({kind: e.kind, x: e.x, z: e.z, state: e.state, hp: e.hp})),
     waves: waves.map(w => w.r), markers: markers.length, orbs: orbPool.filter(o => o.life > 0).length, gusts: gusts.map(e => ({age: e.age, meshes: e.g.children.length})),
-    layout: {gems: gems.map(g => ({x: g.x, y: g.y, z: g.z, id: g.id})), torches: torches.map(t => ({x: t.x, y: t.y, z: t.z, id: t.id, lit: t.lit})), rings: flightRings.map(r => ({x: r.x, y: r.y, z: r.z})), updrafts: updrafts.map(u => ({x: u.x, y: u.y, z: u.z, height: u.height})), solids: solids.map(s => ({...s})), checkpoints}, settings: {...settings}, quality: {auto: autoLevel, scale: renderScale}}),
+    layout: {trees: treeColliders.map(t => ({...t})), gems: gems.map(g => ({x: g.x, y: g.y, z: g.z, id: g.id})), torches: torches.map(t => ({x: t.x, y: t.y, z: t.z, id: t.id, lit: t.lit})), rings: flightRings.map(r => ({x: r.x, y: r.y, z: r.z})), updrafts: updrafts.map(u => ({x: u.x, y: u.y, z: u.z, height: u.height})), solids: solids.map(s => ({...s})), checkpoints}, settings: {...settings}, quality: {auto: autoLevel, scale: renderScale}}),
   teleport: (x, y, z, yaw = 0) => { Object.assign(state, {x, y, z, yaw, vy: 0, vx: 0, vz: 0, flight: false, dodge: 0}); },
   strike, talk, jump: jumpPress, flight, dodge, travel, pause, resume, advance, skipDialog, frame: animate, step: update, level: buildLevel, floorAt,
   finishDialog: () => { let guard = 0; while (mode === 'dialog' && guard++ < 500) { typing = null; advance(); } },

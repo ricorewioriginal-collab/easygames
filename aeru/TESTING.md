@@ -24,7 +24,8 @@ Der Test setzt **keine Flags**. Er liest wie ein Spieler das aktuelle Ziel und d
 
 - Laufen und Abbremsen, variable Sprunghöhe, Coyote Time, Sprungpuffer, Gleiten, Treppe mit echten Sprüngen, unter Plattformen hindurchlaufen.
 - Flug: Steigen kostet Kraft, Sinken, Landung, Aufladen, Aufwind; echter Hin- und Rückflug zur Außeninsel per Tasten-Autopilot.
-- Kantenhilfe an der Ostinsel, fester Fels unter Inseln.
+- Kantenhilfe und Kantenschutz an der Ostinsel, fester Fels unter Inseln.
+- Vom Startpunkt in acht Richtungen loslaufen: Aeru kommt weg, versinkt nicht, steckt nie in einer Baumkrone, die Kamera nie im Laub; kein Sammelobjekt, keine Laterne, kein Ring und keine Figur steckt in einem Baum.
 - Kamera bleibt über dem Boden, Ausweichen.
 - 30/60/120 Hz ergeben dieselbe Laufstrecke.
 - Kampf: Angriffe werden angekündigt, Schaden nur in der Angriffsphase, Windstoß trifft, Tod setzt am Rastpunkt zurück.

@@ -12,6 +12,8 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
 - Plattformen haben echte Dicke: Man kann unter ihnen hindurchlaufen, es gibt keine unsichtbaren Wände.
 - **Kantenhilfe:** Wer bis zu 1,3 m unter einer Kante gegen Insel oder Plattform stößt, zieht sich hinauf.
+- **Kantenschutz:** Beim Laufen bleibt Aeru 0,45 s an einer Kante stehen; wer weiter drückt, geht bewusst hinunter.
+- Bäume sind fest (Stamm und Krone); die Kamera rückt vor Baumkronen, statt im Laub zu stecken.
 - Der Fels unter einer Insel ist fest und folgt ihrer sichtbaren, nach unten schmaler werdenden Form.
 
 ## Flug
@@ -20,6 +22,10 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - Sprung länger halten = steigen (kostet Flügelkraft), Umschalt/ROLLE = sinken, sonst langsames Sinken. Ohne Steigen lädt die Flügelkraft im Flug langsam nach.
 - Flügelkraft lädt am Boden und in türkisen **Aufwinden**, die zusätzlich anheben. Bei wenig Kraft warnt die Anzeige.
 - Optionale **Flughilfe** in den Einstellungen.
+
+## Touch-Steuerung
+
+Links ein großer Stick mit Totzonenring. Rechts ein Aktionsrad: SPRUNG groß unten, FLUG oben, WIND links, ROLLE rechts. REDEN erscheint nur, wenn jemand in der Nähe ist.
 
 ## Kamera
 
