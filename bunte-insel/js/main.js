@@ -1528,7 +1528,7 @@
       if (inp.jump) { inp.jump = false; P.jbuf = .14; }
       if (P.jbuf > 0) {
         if (P.coy > 0) { P.jbuf = P.coy = 0; P.vy = 7 * (atlantis.gScale(P.x, P.z) < 1 ? 1.75 : 1); A.jump(); fx.burst(P.x, .2, P.z, 5, [BI.C.dust], 2, .5, 26, 3); }
-        else if ((gadgets.canDouble() || obby.run) && !P.dj && P.y > gy + .05) { P.jbuf = 0; P.dj = true; gadgets.doubleJump(); } // im Himmels-Parcours gibt es den Doppelsprung für alle
+        else if (!P.dj && P.y > gy + .05) { P.jbuf = 0; P.dj = true; gadgets.doubleJump(); if (atlantis.gScale(P.x, P.z) < 1) P.vy *= 1.75; } // Doppelsprung für alle: zweimal Springen drücken (auch im Lauf)
       }
       if (fun.ride) P.vy = P.y < 6 ? 2.2 : 0; else P.vy = Math.max(P.vy - 20 * dt * atlantis.gScale(P.x, P.z), P.softFall > 0 ? -5 : -14);
       gadgets.thrust(dt, inp.held || inp.up, gy);

@@ -36,7 +36,10 @@ BI.buildDampfGround = function (c) {
     for (const sd of [-1, 1]) st.box(bx + sd * 3.9, 3.55, P.z, .14, .1, L, WH); st.box(bx, 2.75, P.z, 6.6, 2.2, 8, WH); st.box(bx, 4.95, Z(-1), 6.9, .3, 8.4, G3);
     st.box(bx, 5.25, Z(-5), 3.6, 2.2, 3.6, WH); st.box(bx, 7.45, Z(-5), 4, .3, 4, BK); for (const sd of [-1, 1]) st.sph(bx + sd * 1.2, 6.45, Z(-6.8), .32, BK, 1);
     for (const k of [-1, 1]) { st.cyl(bx, 5.25, Z(2 + k * 2.2), 1.1, 1.3, 3.6, BK, 12); st.cyl(bx, 8.35, Z(2 + k * 2.2), 1.15, 1.15, .7, WH, 12); st.cyl(bx, 8.9, Z(2 + k * 2.2), 1.2, 1.2, 1.1, BK, 12); }
-    st.box(bx, 2.75, Z(L / 2 - 1), 6, 3, 1.4, G3); W.addBox(bx - 4.2, Z(-L / 2 - 2), bx + 4.2, Z(L / 2), false, 9);
+    st.box(bx, 2.75, Z(L / 2 - 1), 6, 3, 1.4, G3); /* Begehbar: Rumpf nur bis 2,4 m fest, Deck (2,75 m) über eine Gangway vom Kai, Aufbauten fest; Bug-Spitze bleibt gesperrt */
+    W.addBox(bx - 4.2, Z(-L / 2 - 2), bx + 4.2, Z(-L / 2 + 1), false, 9); W.addBox(bx - 4.2, Z(-L / 2 + 1), bx + 4.2, Z(L / 2), false, 2.4); W.addBox(bx - 3, Z(-4), bx + 3, Z(4), false, 5.2); W.addBox(bx - 3, Z(L / 2 - 1.7), bx + 3, Z(L / 2), false, 6);
+    st.box(bx + 7.5, 1.275, P.z, 7.52, .2, 2.6, WD, 0, 0, -Math.atan(2.75 / 7)); for (const sd of [-1, 1]) st.box(bx + 7.5, 1.9, P.z + sd * 1.35, 7.4, .08, .08, WH, 0, 0, -Math.atan(2.75 / 7));
+    W.dampfShip = { x0: bx - 4.2, x1: bx + 4.2, z0: Z(-L / 2 + 1), z1: Z(L / 2), y: 2.75, r0: bx + 4, r1: bx + 11, rz0: P.z - 1.3, rz1: P.z + 1.3 };
     W.spots.dampfBoat = { x: bx + 5.4, z: Z(-5) }; W.spots.dampfStack = { x: bx, y: 10.4, z: Z(2) }; W.spots.dampfWheel = { x: bx, z: Z(L / 2 + 1.5) }; }
   /* Kai-Planken zwischen Plaza und Dampfer */
   for (let i = 0; i < 12; i++) for (let j = -1; j < 1; j++) st.rect(X(-32 + i * 1.6), Z(j * 3), X(-32 + i * 1.6 + 1.5), Z(j * 3 + 3), ROADY + .01, (i + j) & 1 ? WD : 0x909090);

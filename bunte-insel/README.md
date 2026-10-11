@@ -239,6 +239,11 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 - Dateien: `js/zotik.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Elementar-Kampf), `js/vehicles.js` (Nautilux), `js/themes.js` (Musik „Lunaris“).
 - **Rechtliches:** Zotik, seine Welt und alle Figuren sind Ricos eigene Erfindung; von Fantasy-Spielen sind nur allgemeine Ideen (schwebende Inseln, Weltentore, Elementkreis) übernommen, keine geschützten Figuren, Namen oder Bilder. Keine Rechtsberatung.
 
+### 🔧 Fixes: Brücken, Dampfer, Doppelsprung
+- **Regenbogen-Brücke:** Der Zaun des Streichelzoos versperrte das Brückenende – das Eselgehege hat jetzt ein Tor zur Brücke.
+- **Dampfer-Hafen:** Der Dampfer ist begehbar (Gangway vom Kai, Deck, Weg um die Aufbauten).
+- **Doppelsprung für alle:** zweimal Springen drücken, auch im Lauf; keine Zubehör-Pflicht mehr.
+
 ### 🎤 Popstar Kay und 🦊 Zotik (neue Vorlagen, für alle wählbar)
 
 - **Popstar Kay**: eigene Figur im Glam-Rock-Stil (helle Strubbelfrisur, dicke Brauen, Ziegenbart, Septum-Ring, Ketten, oranger Mantel) mit **Regenbogen-Pride-Shirt**. Nur der Look ist angelehnt, die Figur ist frei erfunden und trägt keinen Namen einer realen Person.

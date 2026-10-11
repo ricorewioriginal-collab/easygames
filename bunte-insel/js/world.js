@@ -708,6 +708,7 @@ BI.buildWorld = function (scene) {
   W.groundY = (x, z) => {
     if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
     if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
+    { const D = W.dampfShip; if (D && z > D.z0 - 1 && z < D.z1 + 1 && x > D.x0 - 1 && x < D.r1 + 1) { if (x > D.x0 && x < D.x1 && z > D.z0 && z < D.z1) return D.y; if (x >= D.x1 && x < D.r1 && z > D.rz0 && z < D.rz1) return D.y * (D.r1 - x) / (D.r1 - D.x1 - 0); } }
     for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;
     const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
     if (Math.abs(x) < 2.5 && z > 156 && z < 208) return .65;
