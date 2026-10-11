@@ -820,6 +820,58 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ctx.close();
 }
 
+/* ---------- 12. Viertel-Bewohner mit Tagesplan und Dates ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const setH = h => ev(page, hh => { GL.S.world.t = ((hh - 6 + 24) % 24) / 24; }, h);
+  const row = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  const menuText = () => ev(page, () => document.getElementById('maps').textContent);
+  ok(await ev(page, () => GL.res.LIST.length === 14 && GL.dist.LIST.every(d => GL.res.LIST.filter(r => r.d === d.id).length === 2)), '14 Bewohner, zwei pro Viertel');
+  s = await ev(page, () => { const r = GL.res.LIST[0]; return { wk: GL.res.spotAt(r, 10, false), night: GL.res.spotAt(r, 3, false), we: GL.res.spotAt(r, 11, true) }; });
+  ok(s.wk >= 0 && s.night === -1 && s.we >= 0 && s.wk !== s.we, 'Tagesplan: tagsüber an einem Ort, nachts zu Hause, am Wochenende woanders ' + JSON.stringify(s));
+  await ev(page, () => { GL.S.life.day = 2; GL.S.life.needs.energy = 90; GL.S.life.money = 200; GL.S.life.mood; }); await setH(10);
+  await ev(page, () => GL.dist.go('love', true)); await page.waitForTimeout(1200);
+  s = await ev(page, () => { const W = GL.W, i = W.inter.filter(x => /Ansprechen: (Rosa|Elias)/.test(x.label) && x.on); return { n: i.length, spots: GL.res.where('elias') }; });
+  ok(s.n === 2, 'Love Gardens vormittags: beide Bewohner sind sichtbar und ansprechbar (' + s.spots + ')');
+  await setH(3); await page.waitForTimeout(1500);
+  ok(await ev(page, () => GL.W.inter.filter(x => /Ansprechen: (Rosa|Elias)/.test(x.label) && x.on).length === 0), 'Nachts sind sie zu Hause und nicht ansprechbar');
+  await setH(10); await page.waitForTimeout(1500);
+  await ev(page, () => GL.res.talkTo(GL.res.by('elias')));
+  ok(/Plaudern/.test(await menuText()) && await ev(page, () => GL.S.res.elias.met === 2), 'Gespräch: Menü öffnet sich, Kontakt wird gespeichert');
+  await row('Plaudern'); ok(await ev(page, () => GL.S.res.elias.f === 4), 'Plaudern: Freundschaft +4'); await row('Weiter');
+  await row('Ein Thema ansprechen'); await page.click('#maps .row2 >> nth=0'); await page.waitForTimeout(100);
+  ok(await ev(page, () => GL.S.res.elias.f >= 4 && GL.S.res.elias.topic === 2), 'Thema ansprechen: einmal pro Tag'); await row('Weiter');
+  ok(await ev(page, () => [...document.querySelectorAll('#maps .row2')].find(x => /Thema/.test(x.textContent)).disabled), 'Zweites Thema am selben Tag gesperrt');
+  await ev(page, () => { GL.S.res.elias.f = 12; GL.res.talkTo(GL.res.by('elias')); });
+  await row('Zusammen Zeit verbringen'); await waitFade(page); await page.waitForTimeout(300);
+  ok(await ev(page, () => GL.S.res.elias.f >= 10), 'Zusammen Zeit verbringen: Freundschaft steigt');
+  await ev(page, () => { GL.S.res.elias.f = 30; GL.S.res.elias.last = 0; GL.res.talkTo(GL.res.by('elias')); }); await row('Plaudern');
+  ok(/Persönliche Geschichte/.test(await menuText()) && await ev(page, () => GL.S.res.elias.story === 1), 'Persönliche Geschichte ab Freundschaft 25');
+  await row('Weiter');
+  // Date: freie Entscheidung, Respekt
+  await ev(page, () => { const q = GL.S.res.elias; q.f = 80; q.r = 30; q.asked = 0; q.lock = 0; GL.S.home.partner = ''; GL.life.change({ social: 30 }, 5); });
+  await row('Zum Date einladen');
+  const asked = await menuText();
+  if (/Date mit Elias/.test(asked)) {
+    for (let i = 0; i < 3; i++) await page.click(`#maps .row2:has-text("${['zuhören', 'Stille aushalten', 'Ehrlich sagen'][i]}")`);
+    await waitFade(page); await page.waitForTimeout(400);
+    ok(await ev(page, () => GL.S.res.elias.dates === 1 && GL.S.res.elias.r > 30), 'Date mit guten Entscheidungen: Romantik steigt');
+  } else ok(await ev(page, () => GL.S.res.elias.no === 1 && GL.S.res.elias.lock > GL.S.life.day), 'Absage wird gespeichert und respektiert');
+  await ev(page, () => GL.ui.close());
+  // Absage respektieren
+  await ev(page, () => { const q = GL.S.res.elias; q.f = 30; q.r = 0; q.asked = 0; q.lock = 0; q.no = 0; GL.S.life.needs.social = 5; GL.S.life.needs.stress = 95; GL.S.life.needs.energy = 40; GL.res.talkTo(GL.res.by('elias')); });
+  await row('Zum Date einladen');
+  s = await ev(page, () => ({ t: document.getElementById('maps').textContent, q: GL.S.res.elias })); 
+  ok(/(lieber nicht|Date mit Elias)/.test(s.t) && s.q.asked === 2, 'Einladung: die Person entscheidet, höchstens einmal pro Tag');
+  await ev(page, () => { GL.ui.close(); const q = GL.S.res.elias; q.asked = 0; q.lock = 0; q.no = 0; GL.S.home.partner = 'jonas'; GL.res.talkTo(GL.res.by('elias')); });
+  ok(await ev(page, () => { const b = [...document.querySelectorAll('#maps .row2')].find(x => /Date einladen/.test(x.textContent)); return b.disabled && /Beziehung/.test(b.textContent); }), 'In einer Beziehung: keine Date-Einladungen');
+  await ev(page, () => { GL.S.home.partner = ''; GL.ui.close(); GL.res.talkTo(GL.res.by('rosa')); });
+  ok(await ev(page, () => { const b = [...document.querySelectorAll('#maps .row2')].find(x => /Date einladen|Freund/.test(x.textContent)); return !b || b.disabled; }), 'Wer nur Freundschaft möchte, bekommt keine Einladung angeboten'); await ev(page, () => GL.ui.close());
+  ok(await ev(page, () => { GL.phone.open('res'); const t = document.querySelector('#phone .pbody').textContent; GL.phone.close(); return /Elias/.test(t) && /Gerade:/.test(t); }), 'Handy-App Bewohner zeigt Treffpunkt nach Tagesplan');
+  await ctx.close();
+}
+
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));
 await browser.close();
 console.log(fails ? `\n${fails} Prüfung(en) fehlgeschlagen` : '\nAlle Prüfungen bestanden');
