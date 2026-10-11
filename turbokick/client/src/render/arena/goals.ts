@@ -36,8 +36,17 @@ export class GoalsView {
       const lo: V3 = s > 0 ? [-GW, 0, L - GOAL_R] : [-GW, 0, -L - D];
       const hi: V3 = s > 0 ? [GW, GH, L + D] : [GW, GH, -L + GOAL_R];
       const zg = axisCoords(lo[2], hi[2], GOAL_R, 4, [], 5);
-      const keep = s > 0 ? (t: { cz: number }): boolean => t.cz > L + 1e-4 : (t: { cz: number }): boolean => t.cz < -L - 1e-4;
-      return buildShell(lo, hi, GOAL_R, [axisCoords(-GW, GW, GOAL_R, 4, [], 5), axisCoords(0, GH, GOAL_R, 4, [], 3), zg], keep);
+      const keep =
+        s > 0
+          ? (t: { cz: number }): boolean => t.cz > L + 1e-4
+          : (t: { cz: number }): boolean => t.cz < -L - 1e-4;
+      return buildShell(
+        lo,
+        hi,
+        GOAL_R,
+        [axisCoords(-GW, GW, GOAL_R, 4, [], 5), axisCoords(0, GH, GOAL_R, 4, [], 3), zg],
+        keep,
+      );
     };
     const netGeo = mergeGeometries([mk(1), mk(-1)]);
     this.geos.push(netGeo);
@@ -57,7 +66,15 @@ export class GoalsView {
       const zf = s * L;
       const zb = s * (L + D);
       const zm = s * (L + D / 2);
-      const bar = (x: number, y: number, z: number, sx: number, sy: number, sz: number, thick: number): void => {
+      const bar = (
+        x: number,
+        y: number,
+        z: number,
+        sx: number,
+        sy: number,
+        sz: number,
+        thick: number,
+      ): void => {
         solid.box(x, y, z, sx, sy, sz, c);
         halo.box(x, y, z, sx + thick, sy + thick, sz + thick, hc);
       };
@@ -195,7 +212,8 @@ export class GoalsView {
     const secs = Math.max(0, Math.ceil(state.clock));
     const ph = state.phase === 'countdown' ? 1 : state.phase === 'goal' ? 2 : state.phase === 'ended' ? 3 : 0;
     const cd = ph === 1 ? Math.max(1, Math.ceil(state.phaseTimer)) : 0;
-    const key = ((state.score[0] * 64 + state.score[1]) * 8 + ph) * 8 + cd + (state.overtime ? 0.5 : 0) + secs * 1e6;
+    const key =
+      ((state.score[0] * 64 + state.score[1]) * 8 + ph) * 8 + cd + (state.overtime ? 0.5 : 0) + secs * 1e6;
     if (key === this.lastKey) return;
     this.lastKey = key;
     let center: string;

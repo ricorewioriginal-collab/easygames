@@ -15,7 +15,8 @@ function buildPlates(): THREE.BufferGeometry {
   const ico = new THREE.IcosahedronGeometry(1, 2);
   const pa = ico.getAttribute('position');
   const triCount = pa.count / 3;
-  const key = (i: number): string => `${pa.getX(i).toFixed(4)},${pa.getY(i).toFixed(4)},${pa.getZ(i).toFixed(4)}`;
+  const key = (i: number): string =>
+    `${pa.getX(i).toFixed(4)},${pa.getY(i).toFixed(4)},${pa.getZ(i).toFixed(4)}`;
   const verts = new Map<string, { v: THREE.Vector3; tris: number[] }>();
   const centroids: THREE.Vector3[] = [];
   for (let t = 0; t < triCount; t++) {
@@ -42,7 +43,17 @@ function buildPlates(): THREE.BufferGeometry {
     pos.push(v.x * r, v.y * r, v.z * r);
     col.push(c.r, c.g, c.b);
   };
-  const tri = (a: THREE.Vector3, ra: number, ca: THREE.Color, b: THREE.Vector3, rb: number, cb: THREE.Color, c: THREE.Vector3, rc: number, cc: THREE.Color): void => {
+  const tri = (
+    a: THREE.Vector3,
+    ra: number,
+    ca: THREE.Color,
+    b: THREE.Vector3,
+    rb: number,
+    cb: THREE.Color,
+    c: THREE.Vector3,
+    rc: number,
+    cc: THREE.Color,
+  ): void => {
     push(a, ra, ca);
     push(b, rb, cb);
     push(c, rc, cc);
@@ -128,14 +139,30 @@ export class BallActor {
       coreGeo = new THREE.IcosahedronGeometry(R * 0.955, 2);
       markShared(coreGeo);
     }
-    this.plateMat = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.3, roughness: 0.55, flatShading: true, emissive: 0x000000, emissiveIntensity: 1 });
+    this.plateMat = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      metalness: 0.3,
+      roughness: 0.55,
+      flatShading: true,
+      emissive: 0x000000,
+      emissiveIntensity: 1,
+    });
     this.coreMat = new THREE.MeshBasicMaterial({ color: NEUTRAL_GLOW });
     this.plates = new THREE.Mesh(platesGeo, this.plateMat);
     this.core = new THREE.Mesh(coreGeo, this.coreMat);
     this.spinRoot.add(this.core, this.plates);
     this.root.add(this.spinRoot);
     const mk = (op: number): THREE.Sprite => {
-      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: NEUTRAL_GLOW, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const s = new THREE.Sprite(
+        new THREE.SpriteMaterial({
+          map: glowTexture(),
+          color: NEUTRAL_GLOW,
+          transparent: true,
+          opacity: op,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        }),
+      );
       s.renderOrder = 3;
       return s;
     };
@@ -183,7 +210,9 @@ export class BallActor {
     const pulse = 1 + 0.05 * Math.sin(this.t * 6.5) + this.flash * 0.25;
     this.tmpC.copy(this.cur).lerp(this.white, 0.35 + this.flash * 0.5);
     this.coreMat.color.copy(this.tmpC);
-    this.plateMat.emissive.copy(this.cur).multiplyScalar(0.09 + 0.05 * Math.sin(this.t * 4) + this.flash * 0.25);
+    this.plateMat.emissive
+      .copy(this.cur)
+      .multiplyScalar(0.09 + 0.05 * Math.sin(this.t * 4) + this.flash * 0.25);
     this.core.scale.setScalar(pulse);
     this.halo.material.color.copy(this.cur);
     this.halo2.material.color.copy(this.tmpC);

@@ -75,10 +75,14 @@ export class ChaseCamera {
       want.y = 0;
       // Liegt der Ball hinter dem Auto, nimmt die Kamera die Fahrtrichtung (sonst stünde sie vor dem Auto)
       const f2 = Math.hypot(fwd.x, fwd.z) || 1;
-      if (want.lengthSq() < 0.01 || (want.x * fwd.x + want.z * fwd.z) / (Math.sqrt(want.lengthSq()) * f2) < -0.15) want.set(fwd.x, 0, fwd.z);
+      if (
+        want.lengthSq() < 0.01 ||
+        (want.x * fwd.x + want.z * fwd.z) / (Math.sqrt(want.lengthSq()) * f2) < -0.15
+      )
+        want.set(fwd.x, 0, fwd.z);
     } else {
       const sp = Math.hypot(car.vel[0], car.vel[2]);
-      if (sp > 4 && (car.vel[0] * fwd.x + car.vel[2] * fwd.z) > 0) want.set(car.vel[0], 0, car.vel[2]);
+      if (sp > 4 && car.vel[0] * fwd.x + car.vel[2] * fwd.z > 0) want.set(car.vel[0], 0, car.vel[2]);
       else want.set(fwd.x, 0, fwd.z);
     }
     if (want.lengthSq() < 1e-6) want.set(0, 0, 1);
@@ -118,8 +122,14 @@ export class ChaseCamera {
   orbit(dt: number, center: THREE.Vector3, radius: number, height: number, angularSpeed: number): void {
     this.time += dt;
     const a = this.time * angularSpeed;
-    const pos = new THREE.Vector3(center.x + Math.sin(a) * radius, center.y + height, center.z + Math.cos(a) * radius);
+    const pos = new THREE.Vector3(
+      center.x + Math.sin(a) * radius,
+      center.y + height,
+      center.z + Math.cos(a) * radius,
+    );
     clampInsideArena(pos, 1);
+    // Die Jubelkamera bleibt im Spielfeld (nicht im Tornetz)
+    pos.z = Math.max(-(ARENA.halfLength - 2), Math.min(ARENA.halfLength - 2, pos.z));
     const k = 1 - Math.exp(-dt * 3);
     this.position.lerp(pos, k);
     this.target.lerp(center, 1 - Math.exp(-dt * 6));

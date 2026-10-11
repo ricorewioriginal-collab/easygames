@@ -2,7 +2,14 @@ import * as THREE from 'three';
 import { ARENA } from '@shared/sim/types';
 import type { Rng } from '@shared/rng';
 import { Batch } from './geometry';
-import { attachPointScale, glowMaterial, groundMaterial, pointsMaterial, sceneryMaterial, skyMaterial } from './shaders';
+import {
+  attachPointScale,
+  glowMaterial,
+  groundMaterial,
+  pointsMaterial,
+  sceneryMaterial,
+  skyMaterial,
+} from './shaders';
 import type { ArenaUniforms } from './shaders';
 import type { ArenaTheme, Palette } from './themes';
 
@@ -24,7 +31,10 @@ export class SceneryView {
     };
 
     // Himmelskuppel: folgt der Kamera, liegt per Shader immer am Tiefenende
-    const sky = new THREE.Mesh(track(new THREE.SphereGeometry(100, 32, 18)), trackM(skyMaterial(u, pal, mode)));
+    const sky = new THREE.Mesh(
+      track(new THREE.SphereGeometry(100, 32, 18)),
+      trackM(skyMaterial(u, pal, mode)),
+    );
     sky.frustumCulled = false;
     sky.renderOrder = -100;
     sky.onBeforeRender = (_r, _s, cam): void => {
@@ -33,7 +43,10 @@ export class SceneryView {
     this.group.add(sky);
 
     // Boden der Umgebung
-    const ground = new THREE.Mesh(track(new THREE.CircleGeometry(1100, 64).rotateX(-Math.PI / 2)), trackM(groundMaterial(u, pal, mode)));
+    const ground = new THREE.Mesh(
+      track(new THREE.CircleGeometry(1100, 64).rotateX(-Math.PI / 2)),
+      trackM(groundMaterial(u, pal, mode)),
+    );
     ground.position.y = -0.06;
     this.group.add(ground);
 
@@ -64,10 +77,30 @@ export class SceneryView {
         const geo = new THREE.CylinderGeometry(w * rng.float(0, 0.12), w, h, 6, 1);
         const x = Math.cos(a) * rad;
         const z = Math.sin(a) * rad;
-        far.place(geo, x, h / 2 - 2, z, rng.float(-0.12, 0.12), rng.float(0, 6), rng.float(-0.14, 0.14), 1, rng.pick(cols));
+        far.place(
+          geo,
+          x,
+          h / 2 - 2,
+          z,
+          rng.float(-0.12, 0.12),
+          rng.float(0, 6),
+          rng.float(-0.14, 0.14),
+          1,
+          rng.pick(cols),
+        );
         if (rng.chance(0.6)) {
           const g2 = new THREE.CylinderGeometry(0, w * 0.55, h * 0.6, 6, 1);
-          far.place(g2, x + rng.float(-14, 14), h * 0.3 - 2, z + rng.float(-14, 14), rng.float(-0.3, 0.3), rng.float(0, 6), rng.float(-0.3, 0.3), 1, rng.pick(cols));
+          far.place(
+            g2,
+            x + rng.float(-14, 14),
+            h * 0.3 - 2,
+            z + rng.float(-14, 14),
+            rng.float(-0.3, 0.3),
+            rng.float(0, 6),
+            rng.float(-0.3, 0.3),
+            1,
+            rng.pick(cols),
+          );
         }
       }
     } else {
@@ -80,10 +113,30 @@ export class SceneryView {
         const geo = new THREE.CylinderGeometry(w * rng.float(0.55, 0.8), w, h, 7, 1);
         const x = Math.cos(a) * rad;
         const z = Math.sin(a) * rad;
-        far.place(geo, x, h / 2 - 2, z, 0, rng.float(0, 6), 0, [rng.float(0.8, 1.3), 1, rng.float(0.8, 1.3)], rng.pick(cols));
+        far.place(
+          geo,
+          x,
+          h / 2 - 2,
+          z,
+          0,
+          rng.float(0, 6),
+          0,
+          [rng.float(0.8, 1.3), 1, rng.float(0.8, 1.3)],
+          rng.pick(cols),
+        );
         if (rng.chance(0.5)) {
           const g2 = new THREE.CylinderGeometry(w * 0.3, w * 0.5, h * 0.55, 6, 1);
-          far.place(g2, x + rng.float(-w, w), h * 0.27 - 2, z + rng.float(-w, w), 0, rng.float(0, 6), 0, 1, rng.pick(cols));
+          far.place(
+            g2,
+            x + rng.float(-w, w),
+            h * 0.27 - 2,
+            z + rng.float(-w, w),
+            0,
+            rng.float(0, 6),
+            0,
+            1,
+            rng.pick(cols),
+          );
         }
       }
     }
@@ -132,13 +185,33 @@ export class SceneryView {
           for (let rx = -2; rx <= 2; rx++) {
             const ox = Math.cos(yaw) * rx * 1.8;
             const oz = -Math.sin(yaw) * rx * 1.8;
-            lamps.box(x + ox + Math.sin(yaw) * 0.55, H - 1.4 + ry * 2.6 + 0.3, z + oz + Math.cos(yaw) * 0.55, 1.4, 1.8, 0.3, lampCol, undefined, yaw);
+            lamps.box(
+              x + ox + Math.sin(yaw) * 0.55,
+              H - 1.4 + ry * 2.6 + 0.3,
+              z + oz + Math.cos(yaw) * 0.55,
+              1.4,
+              1.8,
+              0.3,
+              lampCol,
+              undefined,
+              yaw,
+            );
           }
         }
         dir.set(-x, -(H + 0.3), -z).normalize();
         q.setFromUnitVectors(down, dir);
         e.setFromQuaternion(q);
-        beams.place(cone, x + Math.sin(yaw) * 0.9, H + 0.3, z + Math.cos(yaw) * 0.9, e.x, e.y, e.z, 1, beamCol);
+        beams.place(
+          cone,
+          x + Math.sin(yaw) * 0.9,
+          H + 0.3,
+          z + Math.cos(yaw) * 0.9,
+          e.x,
+          e.y,
+          e.z,
+          1,
+          beamCol,
+        );
       }
     }
     track(cone);

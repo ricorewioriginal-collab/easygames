@@ -70,7 +70,8 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
       group.add(a.rig.root);
       actors[i] = a;
     }
-    if (!shadows[i]) shadows[i] = new BlobShadow(group, CAR_HALF[0] * 2.8, CAR_HALF[2] * 2.9, CAR_HALF[1], 0.62);
+    if (!shadows[i])
+      shadows[i] = new BlobShadow(group, CAR_HALF[0] * 2.8, CAR_HALF[2] * 2.9, CAR_HALF[1], 0.62);
     return a;
   }
 
@@ -101,7 +102,14 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
       case 'jump': {
         const c = cars[e.car];
         if (!c || !finite3(c.pos)) return;
-        fx.jump(c.pos[0], c.pos[1], c.pos[2], c.team, e.kind === 'dodge', (c.wheelsOnSurface ?? 0) > 0 || c.pos[1] < 0.7);
+        fx.jump(
+          c.pos[0],
+          c.pos[1],
+          c.pos[2],
+          c.team,
+          e.kind === 'dodge',
+          (c.wheelsOnSurface ?? 0) > 0 || c.pos[1] < 0.7,
+        );
         break;
       }
       case 'touch': {
@@ -111,7 +119,17 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
         if (tmp.lengthSq() < 1e-6) tmp.set(0, 1, 0);
         tmp.normalize();
         const b = state.ball.pos;
-        fx.touch(b[0] + tmp.x * BALL_RADIUS, b[1] + tmp.y * BALL_RADIUS, b[2] + tmp.z * BALL_RADIUS, tmp.x, tmp.y, tmp.z, c.team, isNum(e.speed) ? e.speed : 10, isNum(e.ballSpeed) ? e.ballSpeed : 10);
+        fx.touch(
+          b[0] + tmp.x * BALL_RADIUS,
+          b[1] + tmp.y * BALL_RADIUS,
+          b[2] + tmp.z * BALL_RADIUS,
+          tmp.x,
+          tmp.y,
+          tmp.z,
+          c.team,
+          isNum(e.speed) ? e.speed : 10,
+          isNum(e.ballSpeed) ? e.ballSpeed : 10,
+        );
         ball.pulse(0.6);
         break;
       }
@@ -174,7 +192,19 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
           const s = Math.min(1, (ball.speed - 15) / 30);
           for (let k = 0; k < n; k++) {
             tmp2.lerpVectors(prevBall, tmp, (k + 1) / n);
-            fx.glow.emit(tmp2.x, tmp2.y, tmp2.z, 0, 0, 0, ball.color, BALL_RADIUS * (1.0 + s * 0.5), BALL_RADIUS * 0.15, 0.3 + s * 0.3, 0.38 + s * 0.3);
+            fx.glow.emit(
+              tmp2.x,
+              tmp2.y,
+              tmp2.z,
+              0,
+              0,
+              0,
+              ball.color,
+              BALL_RADIUS * (1.0 + s * 0.5),
+              BALL_RADIUS * 0.15,
+              0.3 + s * 0.3,
+              0.38 + s * 0.3,
+            );
           }
         }
       }
@@ -198,6 +228,9 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
 }
 
 /** Auto für die Garage im Menü (dreht sich langsam, Räder rollen). Der Ursprung liegt am Boden unter dem Auto. */
-export function createCarPreview(look: ActorLook, team: 0 | 1): { object: THREE.Group; update(dt: number): void; dispose(): void } {
+export function createCarPreview(
+  look: ActorLook,
+  team: 0 | 1,
+): { object: THREE.Group; update(dt: number): void; dispose(): void } {
   return buildCarPreview(look, team);
 }

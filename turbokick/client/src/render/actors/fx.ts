@@ -228,7 +228,12 @@ const tmpCol = new THREE.Color();
 export class Debris {
   readonly mesh: THREE.InstancedMesh;
   private readonly geo = new THREE.BoxGeometry(1, 1, 1);
-  private readonly mat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.4, roughness: 0.5, flatShading: true });
+  private readonly mat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    metalness: 0.4,
+    roughness: 0.5,
+    flatShading: true,
+  });
   private n = 0;
   private readonly d: Float32Array; // 18 Werte je Stück
   private static readonly W = 18; // px py pz vx vy vz ax ay az ang spin sx sy sz life max (+2 frei)
@@ -241,7 +246,20 @@ export class Debris {
     this.d = new Float32Array(cap * Debris.W);
   }
 
-  spawn(x: number, y: number, z: number, vx: number, vy: number, vz: number, color: number, sx: number, sy: number, sz: number, life: number, rng: Rng): void {
+  spawn(
+    x: number,
+    y: number,
+    z: number,
+    vx: number,
+    vy: number,
+    vz: number,
+    color: number,
+    sx: number,
+    sy: number,
+    sz: number,
+    life: number,
+    rng: Rng,
+  ): void {
     if (this.n >= this.cap) return;
     const o = this.n * Debris.W;
     const d = this.d;
@@ -386,7 +404,14 @@ class FlashPool {
     const tex = kind === 'column' ? columnTexture() : ringTexture();
     for (let i = 0; i < count; i++) {
       if (kind === 'sphere') {
-        const sm = new THREE.SpriteMaterial({ map: glowTexture(), color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+        const sm = new THREE.SpriteMaterial({
+          map: glowTexture(),
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
         const sp = new THREE.Sprite(sm);
         sp.visible = false;
         sp.renderOrder = 5;
@@ -412,7 +437,17 @@ class FlashPool {
     }
   }
 
-  spawn(x: number, y: number, z: number, color: number, s0: number, s1: number, life: number, alpha: number, h = 1): void {
+  spawn(
+    x: number,
+    y: number,
+    z: number,
+    color: number,
+    s0: number,
+    s1: number,
+    life: number,
+    alpha: number,
+    h = 1,
+  ): void {
     // Das älteste/fertige Stück verwenden
     let f = this.items[0] as Flash;
     for (const it of this.items) {
@@ -517,7 +552,18 @@ export class Fx {
   private readonly d = new THREE.Vector3();
 
   /** Funken-Salve: von (x,y,z) in alle Richtungen (mit Aufwärtsneigung) */
-  private sparks(x: number, y: number, z: number, count: number, speed: number, cols: readonly number[], size: number, life: number, grav: number, up = 0.3): void {
+  private sparks(
+    x: number,
+    y: number,
+    z: number,
+    count: number,
+    speed: number,
+    cols: readonly number[],
+    size: number,
+    life: number,
+    grav: number,
+    up = 0.3,
+  ): void {
     const n = this.n(count);
     const d = this.d;
     for (let i = 0; i < n; i++) {
@@ -556,7 +602,21 @@ export class Fx {
     for (let i = 0; i < n; i++) {
       this.dir(d);
       const s = this.rng.float(2, 8);
-      this.glow.emit(x, y, z, d.x * s, d.y * s * 0.6, d.z * s, i % 2 ? c.main : c.accent, 2.6, 5.2, this.rng.float(0.5, 0.95), 0.55, 0, 2.5);
+      this.glow.emit(
+        x,
+        y,
+        z,
+        d.x * s,
+        d.y * s * 0.6,
+        d.z * s,
+        i % 2 ? c.main : c.accent,
+        2.6,
+        5.2,
+        this.rng.float(0.5, 0.95),
+        0.55,
+        0,
+        2.5,
+      );
     }
     // Funkenregen von oben
     const rain = this.n(80);
@@ -593,7 +653,21 @@ export class Fx {
       this.dir(d);
       const s = this.rng.float(1.5, 6.5);
       const col = i % 3 === 0 ? 0xffffff : i % 3 === 1 ? c.accent : c.main;
-      this.glow.emit(x, y, z, d.x * s, d.y * s, d.z * s, col, 1.3, 3.2, this.rng.float(0.4, 0.85), 0.8, 0, 2.2);
+      this.glow.emit(
+        x,
+        y,
+        z,
+        d.x * s,
+        d.y * s,
+        d.z * s,
+        col,
+        1.3,
+        3.2,
+        this.rng.float(0.4, 0.85),
+        0.8,
+        0,
+        2.2,
+      );
     }
     this.sparks(x, y, z, 55, 15, [c.main, c.accent, 0xffffff], 0.2, 1.4, 12);
     // Qualm (normale Überblendung, dunkel)
@@ -601,7 +675,21 @@ export class Fx {
     for (let i = 0; i < sm; i++) {
       this.dir(d);
       const s = this.rng.float(0.8, 3.5);
-      this.smoke.emit(x, y, z, d.x * s, Math.abs(d.y) * s + 0.6, d.z * s, 0x1b1e2b, 0.9, 3, this.rng.float(1, 1.8), 0.75, -0.8, 1.4);
+      this.smoke.emit(
+        x,
+        y,
+        z,
+        d.x * s,
+        Math.abs(d.y) * s + 0.6,
+        d.z * s,
+        0x1b1e2b,
+        0.9,
+        3,
+        this.rng.float(1, 1.8),
+        0.75,
+        -0.8,
+        1.4,
+      );
     }
     // Trümmer
     const dbr = Math.max(3, this.n(9));
@@ -609,7 +697,20 @@ export class Fx {
       this.dir(d);
       const s = this.rng.float(4, 10);
       const sz = this.rng.float(0.07, 0.2);
-      this.debris.spawn(x, y, z, d.x * s, Math.abs(d.y) * s + 2, d.z * s, i % 3 === 0 ? c.main : i % 3 === 1 ? 0x232838 : c.accent, sz, sz * this.rng.float(0.4, 1), sz * this.rng.float(0.8, 1.8), this.rng.float(1.3, 2.1), this.rng);
+      this.debris.spawn(
+        x,
+        y,
+        z,
+        d.x * s,
+        Math.abs(d.y) * s + 2,
+        d.z * s,
+        i % 3 === 0 ? c.main : i % 3 === 1 ? 0x232838 : c.accent,
+        sz,
+        sz * this.rng.float(0.4, 1),
+        sz * this.rng.float(0.8, 1.8),
+        this.rng.float(1.3, 2.1),
+        this.rng,
+      );
     }
   }
 
@@ -622,14 +723,47 @@ export class Fx {
 
   pad(x: number, y: number, z: number, team: number, big: boolean): void {
     const c = teamColors(team);
-    this.ringsFlat.spawn(x, y + 0.08, z, big ? c.main : c.accent, 0.5, big ? 6.4 : 3.4, big ? 0.6 : 0.4, 0.95);
-    this.columns.spawn(x, y, z, big ? c.main : c.accent, big ? 1.3 : 0.8, big ? 0.8 : 0.5, big ? 0.55 : 0.4, 0.8, big ? 9 : 4.5);
+    this.ringsFlat.spawn(
+      x,
+      y + 0.08,
+      z,
+      big ? c.main : c.accent,
+      0.5,
+      big ? 6.4 : 3.4,
+      big ? 0.6 : 0.4,
+      0.95,
+    );
+    this.columns.spawn(
+      x,
+      y,
+      z,
+      big ? c.main : c.accent,
+      big ? 1.3 : 0.8,
+      big ? 0.8 : 0.5,
+      big ? 0.55 : 0.4,
+      0.8,
+      big ? 9 : 4.5,
+    );
     this.glow.emit(x, y + 0.5, z, 0, 0, 0, 0xffffff, big ? 3.2 : 1.8, 0.2, 0.22, 0.9);
     const n = this.n(big ? 34 : 12);
     for (let i = 0; i < n; i++) {
       const a = this.rng.float(0, TAU);
       const r = this.rng.float(0.1, big ? 0.9 : 0.5);
-      this.glow.emit(x + Math.cos(a) * r, y + 0.1, z + Math.sin(a) * r, Math.cos(a) * 0.8, this.rng.float(2.5, big ? 7 : 4.5), Math.sin(a) * 0.8, i % 2 ? 0xffffff : c.accent, 0.2, 0.02, this.rng.float(0.5, 0.9), 1, 6, 0.3);
+      this.glow.emit(
+        x + Math.cos(a) * r,
+        y + 0.1,
+        z + Math.sin(a) * r,
+        Math.cos(a) * 0.8,
+        this.rng.float(2.5, big ? 7 : 4.5),
+        Math.sin(a) * 0.8,
+        i % 2 ? 0xffffff : c.accent,
+        0.2,
+        0.02,
+        this.rng.float(0.5, 0.9),
+        1,
+        6,
+        0.3,
+      );
     }
   }
 
@@ -648,12 +782,36 @@ export class Fx {
     for (let i = 0; i < n; i++) {
       const a = (i / Math.max(1, n)) * TAU + this.rng.float(-0.3, 0.3);
       const s = this.rng.float(1.2, 3);
-      this.smoke.emit(x + Math.cos(a) * 0.35, y - 0.15, z + Math.sin(a) * 0.35, Math.cos(a) * s, this.rng.float(0.1, 0.7), Math.sin(a) * s, 0x8f98b8, 0.4, 1.3, this.rng.float(0.45, 0.8), 0.32, -0.2, 3);
+      this.smoke.emit(
+        x + Math.cos(a) * 0.35,
+        y - 0.15,
+        z + Math.sin(a) * 0.35,
+        Math.cos(a) * s,
+        this.rng.float(0.1, 0.7),
+        Math.sin(a) * s,
+        0x8f98b8,
+        0.4,
+        1.3,
+        this.rng.float(0.45, 0.8),
+        0.32,
+        -0.2,
+        3,
+      );
     }
     this.ringsFlat.spawn(x, y - 0.12, z, 0x9ab0e0, 0.6, 2.8, 0.35, 0.35);
   }
 
-  touch(x: number, y: number, z: number, nx: number, ny: number, nz: number, team: number, speed: number, ballSpeed: number): void {
+  touch(
+    x: number,
+    y: number,
+    z: number,
+    nx: number,
+    ny: number,
+    nz: number,
+    team: number,
+    speed: number,
+    ballSpeed: number,
+  ): void {
     const c = teamColors(team);
     const power = Math.min(1, Math.max(0.15, (speed + ballSpeed) / 60));
     this.glow.emit(x, y, z, 0, 0, 0, 0xffffff, 0.8 + power * 2, 0.2, 0.14, 0.9);
@@ -667,7 +825,21 @@ export class Fx {
       d.z += nz * 1.3;
       d.normalize();
       const s = this.rng.float(2, 7 + power * 12);
-      this.glow.emit(x, y, z, d.x * s, d.y * s, d.z * s, i % 3 === 0 ? 0xffffff : i % 3 === 1 ? c.accent : c.main, 0.17, 0.02, this.rng.float(0.25, 0.6), 1, 9, 0.8);
+      this.glow.emit(
+        x,
+        y,
+        z,
+        d.x * s,
+        d.y * s,
+        d.z * s,
+        i % 3 === 0 ? 0xffffff : i % 3 === 1 ? c.accent : c.main,
+        0.17,
+        0.02,
+        this.rng.float(0.25, 0.6),
+        1,
+        9,
+        0.8,
+      );
     }
     if (ballSpeed > 22) this.spheres.spawn(x, y, z, 0xffffff, BALL_RADIUS * 1.0, BALL_RADIUS * 2.6, 0.2, 0.5);
   }

@@ -333,11 +333,20 @@ export function floorMaterial(u: ArenaUniforms, pal: Palette): THREE.MeshLambert
     });
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vFW;')
-      .replace('#include <project_vertex>', '#include <project_vertex>\nvFW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      .replace(
+        '#include <project_vertex>',
+        '#include <project_vertex>\nvFW = (modelMatrix * vec4(transformed, 1.0)).xyz;',
+      );
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', '#include <common>\n' + glsl)
-      .replace('#include <color_fragment>', '#include <color_fragment>\nvec3 floorGlow; diffuseColor.rgb = floorColor(vFW, floorGlow);')
-      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += floorGlow;');
+      .replace(
+        '#include <color_fragment>',
+        '#include <color_fragment>\nvec3 floorGlow; diffuseColor.rgb = floorColor(vFW, floorGlow);',
+      )
+      .replace(
+        '#include <emissivemap_fragment>',
+        '#include <emissivemap_fragment>\ntotalEmissiveRadiance += floorGlow;',
+      );
   };
   return m;
 }
@@ -583,6 +592,8 @@ export function attachPointScale(points: THREE.Points, u: ArenaUniforms): void {
   const size = new THREE.Vector2();
   points.onBeforeRender = (renderer, _scene, camera): void => {
     renderer.getDrawingBufferSize(size);
-    u.uScale.value = size.y * 0.5 * (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5] as number;
+    u.uScale.value = (size.y *
+      0.5 *
+      (camera as THREE.PerspectiveCamera).projectionMatrix.elements[5]) as number;
   };
 }

@@ -19,9 +19,30 @@ export function create(app: App, params?: RouteParams): ScreenView {
     h(
       'div',
       { class: 'panel' },
-      h('div', { class: 'head' }, h('h2', null, t('menu.credits')), btn('← ' + t('back'), () => void app.go(params?.back ?? 'menu'), 'ghost back')),
+      h(
+        'div',
+        { class: 'head' },
+        h('h2', null, t('menu.credits')),
+        btn('← ' + t('back'), () => void app.go(params?.back ?? 'menu'), 'ghost back'),
+      ),
       h('p', null, t('credits.own')),
-      h('table', { class: 'table' }, h('thead', null, h('tr', null, h('th', null, t('credits.lib')), h('th', null, t('credits.version')), h('th', null, t('credits.license')), h('th', null, t('credits.use')))), h('tbody', null, ...LIBS.map((l) => h('tr', null, ...l.map((c) => h('td', null, c)))))),
+      h(
+        'table',
+        { class: 'table' },
+        h(
+          'thead',
+          null,
+          h(
+            'tr',
+            null,
+            h('th', null, t('credits.lib')),
+            h('th', null, t('credits.version')),
+            h('th', null, t('credits.license')),
+            h('th', null, t('credits.use')),
+          ),
+        ),
+        h('tbody', null, ...LIBS.map((l) => h('tr', null, ...l.map((c) => h('td', null, c))))),
+      ),
       h('p', null, t('credits.note')),
     ),
   );

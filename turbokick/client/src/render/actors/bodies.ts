@@ -55,7 +55,14 @@ function pair(b: MeshBuilder, f: () => void): void {
 }
 
 /** Flügelplatte entlang x (rechts): Wurzel- und Spitzenquerschnitt in (y, z) */
-function wing(b: MeshBuilder, x0: number, x1: number, root: { y: number; z0: number; z1: number }, tip: { y: number; z0: number; z1: number }, th: number): void {
+function wing(
+  b: MeshBuilder,
+  x0: number,
+  x1: number,
+  root: { y: number; z0: number; z1: number },
+  tip: { y: number; z0: number; z1: number },
+  th: number,
+): void {
   const ring = (x: number, s: { y: number; z0: number; z1: number }): V3[] => [
     [x, s.y - th, s.z0],
     [x, s.y + th, s.z0],
@@ -88,7 +95,11 @@ export const BODY_SPECS: Record<CarBody, BodySpec> = {
         hex(0.45, 0.25, 0.3, -0.11, -0.04, -0.01, 0.2),
         hex(0.62, 0.13, 0.2, -0.1, -0.06, -0.04, 0.11),
       ]);
-      p.glass.loftZ([hex(-0.34, 0.2, 0.22, 0.05, 0.09, 0.16, 0.15), hex(-0.1, 0.19, 0.21, 0.05, 0.09, 0.2, 0.12), hex(0.16, 0.22, 0.24, 0.04, 0.06, 0.06, 0.2)]);
+      p.glass.loftZ([
+        hex(-0.34, 0.2, 0.22, 0.05, 0.09, 0.16, 0.15),
+        hex(-0.1, 0.19, 0.21, 0.05, 0.09, 0.2, 0.12),
+        hex(0.16, 0.22, 0.24, 0.04, 0.06, 0.06, 0.2),
+      ]);
       // Heckflügel mit Streben, Frontsplitter, Schweller, Diffusor
       p.trim.box(0, 0.165, -0.57, 0.38, 0.011, 0.075);
       pair(p.trim, () => {
@@ -129,7 +140,12 @@ export const BODY_SPECS: Record<CarBody, BodySpec> = {
         hex(0.52, 0.3, 0.34, -0.12, 0.0, 0.09, 0.28),
         hex(0.62, 0.28, 0.32, -0.11, -0.02, 0.05, 0.25),
       ]);
-      p.glass.loftZ([hex(-0.34, 0.27, 0.29, 0.1, 0.14, 0.27, 0.24), hex(-0.02, 0.27, 0.29, 0.1, 0.14, 0.28, 0.24), hex(0.2, 0.28, 0.3, 0.09, 0.12, 0.17, 0.26), hex(0.3, 0.28, 0.3, 0.08, 0.1, 0.12, 0.26)]);
+      p.glass.loftZ([
+        hex(-0.34, 0.27, 0.29, 0.1, 0.14, 0.27, 0.24),
+        hex(-0.02, 0.27, 0.29, 0.1, 0.14, 0.28, 0.24),
+        hex(0.2, 0.28, 0.3, 0.09, 0.12, 0.17, 0.26),
+        hex(0.3, 0.28, 0.3, 0.08, 0.1, 0.12, 0.26),
+      ]);
       // Rammbügel, Seitenstufen, Dachbalken, Auspuffrohre
       p.trim.box(0, -0.06, 0.655, 0.33, 0.045, 0.025);
       p.trim.box(0, 0.04, 0.66, 0.2, 0.012, 0.018);
@@ -171,7 +187,11 @@ export const BODY_SPECS: Record<CarBody, BodySpec> = {
         hex(0.35, 0.12, 0.16, -0.11, -0.02, 0.04, 0.08),
         hex(0.68, 0.03, 0.05, -0.08, -0.04, -0.01, 0.02),
       ]);
-      p.glass.loftZ([hex(-0.22, 0.1, 0.13, 0.04, 0.08, 0.14, 0.06), hex(0.0, 0.13, 0.15, 0.04, 0.09, 0.2, 0.07), hex(0.24, 0.09, 0.12, 0.03, 0.05, 0.06, 0.06)]);
+      p.glass.loftZ([
+        hex(-0.22, 0.1, 0.13, 0.04, 0.08, 0.14, 0.06),
+        hex(0.0, 0.13, 0.15, 0.04, 0.09, 0.2, 0.07),
+        hex(0.24, 0.09, 0.12, 0.03, 0.05, 0.06, 0.06),
+      ]);
       // Achsstreben, Heckspoiler mit Doppelfinnen
       pair(p.trim, () => {
         p.trim.bar([0.14, -0.05, 0.38], [0.33, -0.03, 0.38], 0.012);
@@ -216,7 +236,11 @@ export const BODY_SPECS: Record<CarBody, BodySpec> = {
         hex(0.4, 0.1, 0.13, -0.1, -0.04, 0.0, 0.07),
         hex(0.78, 0.012, 0.02, -0.09, -0.07, -0.05, 0.01),
       ]);
-      p.glass.loftZ([hex(-0.34, 0.15, 0.17, 0.04, 0.08, 0.14, 0.1), hex(-0.12, 0.12, 0.15, 0.03, 0.07, 0.17, 0.06), hex(0.12, 0.08, 0.1, 0.02, 0.04, 0.06, 0.04)]);
+      p.glass.loftZ([
+        hex(-0.34, 0.15, 0.17, 0.04, 0.08, 0.14, 0.1),
+        hex(-0.12, 0.12, 0.15, 0.03, 0.07, 0.17, 0.06),
+        hex(0.12, 0.08, 0.1, 0.02, 0.04, 0.06, 0.04),
+      ]);
       // Heckfinnen, Mittelfinne, Canards
       pair(p.trim, () => {
         p.trim.prism(-0.62, -0.42, 0.34, 0.15, 0.011, 0.1, 0.011, 0.04);
@@ -256,7 +280,12 @@ export const BODY_SPECS: Record<CarBody, BodySpec> = {
         hex(0.4, 0.28, 0.35, -0.12, 0.02, 0.13, 0.25),
         hex(0.58, 0.17, 0.23, -0.1, -0.01, 0.06, 0.14),
       ]);
-      p.glass.loftZ([hex(-0.34, 0.2, 0.26, 0.08, 0.13, 0.2, 0.15), hex(-0.14, 0.26, 0.3, 0.08, 0.15, 0.28, 0.17), hex(0.1, 0.27, 0.3, 0.08, 0.15, 0.27, 0.17), hex(0.3, 0.2, 0.26, 0.08, 0.12, 0.16, 0.14)]);
+      p.glass.loftZ([
+        hex(-0.34, 0.2, 0.26, 0.08, 0.13, 0.2, 0.15),
+        hex(-0.14, 0.26, 0.3, 0.08, 0.15, 0.28, 0.17),
+        hex(0.1, 0.27, 0.3, 0.08, 0.15, 0.27, 0.17),
+        hex(0.3, 0.2, 0.26, 0.08, 0.12, 0.16, 0.14),
+      ]);
       // Stoßfänger, Kotflügel-Leisten
       p.trim.box(0, -0.075, 0.6, 0.18, 0.03, 0.02);
       p.trim.box(0, -0.065, -0.6, 0.16, 0.03, 0.02);
@@ -275,4 +304,3 @@ export const BODY_SPECS: Record<CarBody, BodySpec> = {
     },
   },
 };
-

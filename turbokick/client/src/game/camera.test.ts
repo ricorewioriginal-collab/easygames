@@ -3,7 +3,25 @@ import * as THREE from 'three';
 import { ARENA, NEUTRAL_CAR_INPUT, type BallState, type CarState } from '@shared/sim/types';
 import { ChaseCamera, clampInsideArena } from './camera';
 
-const car = (over: Partial<CarState> = {}): CarState => ({ id: 0, team: 0, pos: [0, 0.4, -20], quat: [0, 0, 0, 1], vel: [0, 0, 10], angVel: [0, 0, 0], boost: 50, jumpTimer: 0, wheelsOnSurface: 4, jumpUsed: false, canDodge: false, demolished: 0, dodgeTimer: 0, boosting: false, input: { ...NEUTRAL_CAR_INPUT }, supersonic: false, ...over });
+const car = (over: Partial<CarState> = {}): CarState => ({
+  id: 0,
+  team: 0,
+  pos: [0, 0.4, -20],
+  quat: [0, 0, 0, 1],
+  vel: [0, 0, 10],
+  angVel: [0, 0, 0],
+  boost: 50,
+  jumpTimer: 0,
+  wheelsOnSurface: 4,
+  jumpUsed: false,
+  canDodge: false,
+  demolished: 0,
+  dodgeTimer: 0,
+  boosting: false,
+  input: { ...NEUTRAL_CAR_INPUT },
+  supersonic: false,
+  ...over,
+});
 const ball: BallState = { pos: [0, 1, 0], vel: [0, 0, 0], angVel: [0, 0, 0] };
 
 describe('Kamera', () => {
@@ -22,7 +40,8 @@ describe('Kamera', () => {
   });
   it('liegt der Ball hinter dem Auto, gibt es keine Kamera vor dem Auto', () => {
     const cam = new ChaseCamera({ fov: 80, distance: 1, shake: false });
-    for (let i = 0; i < 180; i++) cam.update(1 / 60, car({ pos: [0, 0.4, 10] }), { ...ball, pos: [0, 1, -30] }, true, 10);
+    for (let i = 0; i < 180; i++)
+      cam.update(1 / 60, car({ pos: [0, 0.4, 10] }), { ...ball, pos: [0, 1, -30] }, true, 10);
     expect(cam.position.z).toBeLessThan(10);
   });
   it('bleibt immer in der Arena und endlich (auch bei Müll-Zuständen)', () => {

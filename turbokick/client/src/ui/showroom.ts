@@ -28,7 +28,10 @@ export class Showroom implements Screen {
     const rim2 = new THREE.DirectionalLight(0xff7a1a, 0.8);
     rim2.position.set(5, 2, -5);
     this.scene.add(key, rim, rim2);
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(40, 48), new THREE.MeshStandardMaterial({ color: 0x0b0c1c, metalness: 0.7, roughness: 0.35 }));
+    const floor = new THREE.Mesh(
+      new THREE.CircleGeometry(40, 48),
+      new THREE.MeshStandardMaterial({ color: 0x0b0c1c, metalness: 0.7, roughness: 0.35 }),
+    );
     floor.rotation.x = -Math.PI / 2;
     this.scene.add(floor);
     // Leuchtgitter
@@ -40,13 +43,19 @@ export class Showroom implements Screen {
       this.scene.add(l);
     }
     for (let i = 0; i < 24; i++) {
-      const l = new THREE.Mesh(new THREE.PlaneGeometry(80, 0.04), new THREE.MeshBasicMaterial({ color: i % 2 ? 0xff2d95 : 0x19c8ff, transparent: true, opacity: 0.45 }));
+      const l = new THREE.Mesh(
+        new THREE.PlaneGeometry(80, 0.04),
+        new THREE.MeshBasicMaterial({ color: i % 2 ? 0xff2d95 : 0x19c8ff, transparent: true, opacity: 0.45 }),
+      );
       l.rotation.x = -Math.PI / 2;
       l.position.set(0, 0.01, -30 + i * 2.5);
       this.scene.add(l);
       this.lines.push(l);
     }
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(2.6, 0.04, 8, 64), new THREE.MeshBasicMaterial({ color: 0xb6ff3b }));
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(2.6, 0.04, 8, 64),
+      new THREE.MeshBasicMaterial({ color: 0xb6ff3b }),
+    );
     ring.rotation.x = Math.PI / 2;
     ring.position.y = 0.03;
     this.scene.add(ring);

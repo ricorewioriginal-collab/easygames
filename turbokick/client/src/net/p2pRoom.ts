@@ -1,4 +1,18 @@
-import { MAX_SLOTS, P2P_VERSION, cleanLook, cleanName, parseToGuest, parseToHost, type Difficulty, type Look, type P2PLobby, type P2PSlot, type StartMessage, type StartPlayer, type ToGuest } from '@shared/net/p2p';
+import {
+  MAX_SLOTS,
+  P2P_VERSION,
+  cleanLook,
+  cleanName,
+  parseToGuest,
+  parseToHost,
+  type Difficulty,
+  type Look,
+  type P2PLobby,
+  type P2PSlot,
+  type StartMessage,
+  type StartPlayer,
+  type ToGuest,
+} from '@shared/net/p2p';
 import type { TeamId } from '@shared/sim/types';
 import type { Link } from './p2pLink';
 
@@ -41,10 +55,25 @@ export class P2PHostRoom {
   started = false;
 
   constructor(host: { name: string; look: Look }) {
-    this.seats.push({ slot: { id: this.hostId, name: cleanName(host.name) || 'Gastgeber', team: 0, kind: 'human', difficulty: 'normal', look: host.look, ready: true, connected: true, host: true }, link: null, lastSeen: Date.now() });
+    this.seats.push({
+      slot: {
+        id: this.hostId,
+        name: cleanName(host.name) || 'Gastgeber',
+        team: 0,
+        kind: 'human',
+        difficulty: 'normal',
+        look: host.look,
+        ready: true,
+        connected: true,
+        host: true,
+      },
+      link: null,
+      lastSeen: Date.now(),
+    });
     this.dog = setInterval(() => {
       const now = Date.now();
-      for (const s of [...this.seats]) if (s.link && now - s.lastSeen > P2P_TIMING.deadAfter) this.drop(s, 'Verbindung verloren');
+      for (const s of [...this.seats])
+        if (s.link && now - s.lastSeen > P2P_TIMING.deadAfter) this.drop(s, 'Verbindung verloren');
     }, 2000);
   }
 
@@ -65,7 +94,12 @@ export class P2PHostRoom {
   }
 
   private lobby(): P2PLobby {
-    return { teamSize: this.teamSize, minutes: this.minutes, arena: this.arena, slots: this.seats.map((s) => ({ ...s.slot })) };
+    return {
+      teamSize: this.teamSize,
+      minutes: this.minutes,
+      arena: this.arena,
+      slots: this.seats.map((s) => ({ ...s.slot })),
+    };
   }
   view(): LobbyView {
     return { ...this.lobby(), meId: this.hostId };
@@ -100,11 +134,28 @@ export class P2PHostRoom {
         if (m.t !== 'hello') return;
         clearTimeout(timer);
         if (this.seats.length >= MAX_SLOTS || this.started) {
-          link.send({ t: 'kick', reason: this.started ? 'Das Spiel läuft schon.' : 'Der Raum ist voll.' } satisfies ToGuest);
+          link.send({
+            t: 'kick',
+            reason: this.started ? 'Das Spiel läuft schon.' : 'Der Raum ist voll.',
+          } satisfies ToGuest);
           link.close();
           return;
         }
-        seat = { slot: { id: 'p' + ++this.counter, name: m.name, team: this.smallerTeam(), kind: 'human', difficulty: 'normal', look: m.look, ready: false, connected: true, host: false }, link, lastSeen: Date.now() };
+        seat = {
+          slot: {
+            id: 'p' + ++this.counter,
+            name: m.name,
+            team: this.smallerTeam(),
+            kind: 'human',
+            difficulty: 'normal',
+            look: m.look,
+            ready: false,
+            connected: true,
+            host: false,
+          },
+          link,
+          lastSeen: Date.now(),
+        };
         this.seats.push(seat);
         link.send({ t: 'welcome', you: seat.slot.id } satisfies ToGuest);
         this.notice(`${m.name} ist beigetreten.`);
@@ -153,7 +204,8 @@ export class P2PHostRoom {
   }
   setConfig(c: { teamSize?: 1 | 2 | 3; minutes?: number; arena?: string; nitro?: boolean }): void {
     if (c.teamSize) this.teamSize = c.teamSize;
-    if (c.minutes !== undefined && Number.isInteger(c.minutes) && c.minutes >= 1 && c.minutes <= 10) this.minutes = c.minutes;
+    if (c.minutes !== undefined && Number.isInteger(c.minutes) && c.minutes >= 1 && c.minutes <= 10)
+      this.minutes = c.minutes;
     if (c.arena && /^[a-z]{2,10}$/.test(c.arena)) this.arena = c.arena;
     if (c.nitro !== undefined) this.nitro = c.nitro;
     this.changed();
@@ -167,7 +219,25 @@ export class P2PHostRoom {
   addBot(team: TeamId, difficulty: Difficulty): void {
     if (this.seats.length >= MAX_SLOTS || this.teamCount(team) >= 3) return;
     const n = this.seats.filter((s) => s.slot.kind === 'bot').length;
-    this.seats.push({ slot: { id: 'p' + ++this.counter, name: BOT_NAMES[n % BOT_NAMES.length] as string, team, kind: 'bot', difficulty, look: { body: ['pfeil', 'brocken', 'libelle', 'kaefer'][n % 4] as string, decal: 'streifen', accent: '' }, ready: true, connected: true, host: false }, link: null, lastSeen: Date.now() });
+    this.seats.push({
+      slot: {
+        id: 'p' + ++this.counter,
+        name: BOT_NAMES[n % BOT_NAMES.length] as string,
+        team,
+        kind: 'bot',
+        difficulty,
+        look: {
+          body: ['pfeil', 'brocken', 'libelle', 'kaefer'][n % 4] as string,
+          decal: 'streifen',
+          accent: '',
+        },
+        ready: true,
+        connected: true,
+        host: false,
+      },
+      link: null,
+      lastSeen: Date.now(),
+    });
     this.changed();
   }
   remove(id: string): void {
@@ -186,16 +256,32 @@ export class P2PHostRoom {
   start(difficulty: Difficulty = 'normal'): HostPlan {
     const err = this.canStart();
     if (err) throw new Error(err);
-    for (const team of [0, 1] as TeamId[]) while (this.teamCount(team) < this.teamSize) this.addBot(team, difficulty);
+    for (const team of [0, 1] as TeamId[])
+      while (this.teamCount(team) < this.teamSize) this.addBot(team, difficulty);
     this.started = true;
     clearInterval(this.dog);
     const ordered = [...this.seats].sort((a, b) => a.slot.team - b.slot.team);
-    const players: StartPlayer[] = ordered.map((s, i) => ({ carId: i, name: s.slot.name, team: s.slot.team, kind: s.slot.kind, difficulty: s.slot.difficulty, look: s.slot.look }));
+    const players: StartPlayer[] = ordered.map((s, i) => ({
+      carId: i,
+      name: s.slot.name,
+      team: s.slot.team,
+      kind: s.slot.kind,
+      difficulty: s.slot.difficulty,
+      look: s.slot.look,
+    }));
     const guests = new Map<number, Link>();
     ordered.forEach((s, i) => {
       if (s.link) guests.set(i, s.link);
     });
-    return { seed: (Math.random() * 2 ** 32) >>> 0, matchSeconds: this.minutes * 60, arena: this.arena, nitro: this.nitro, players, hostCar: ordered.findIndex((s) => s.slot.host), guests };
+    return {
+      seed: (Math.random() * 2 ** 32) >>> 0,
+      matchSeconds: this.minutes * 60,
+      arena: this.arena,
+      nitro: this.nitro,
+      players,
+      hostCar: ordered.findIndex((s) => s.slot.host),
+      guests,
+    };
   }
 
   close(): void {

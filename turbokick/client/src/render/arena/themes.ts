@@ -3,10 +3,34 @@ export type ArenaTheme = 'neon' | 'eis' | 'canyon';
 /** Teamfarben: 0 = Funken (orange), 1 = Frost (cyan-blau) */
 export const TEAM_COLORS: readonly [number, number] = [0xff7a1a, 0x2ac8ff];
 
-export const ARENA_THEMES: ReadonlyArray<{ id: ArenaTheme; name: string; blurb: string; skyTop: number; skyBottom: number }> = [
-  { id: 'neon', name: 'Neon-Metropole', blurb: 'Synthwave-Nacht über der Stadt: Neonlinien, Glasdach und ein Gitter bis zum Horizont.', skyTop: 0x03000d, skyBottom: 0x6a1470 },
-  { id: 'eis', name: 'Eis-Dom', blurb: 'Kühle Kuppel aus Kristall und Schnee, Polarlicht über dem Spielfeld.', skyTop: 0x06183a, skyBottom: 0xa9d8f5 },
-  { id: 'canyon', name: 'Glutschlucht', blurb: 'Wüsten-Canyon bei Sonnenuntergang: orange Felsen, Staub und Fackeln.', skyTop: 0x1d1442, skyBottom: 0xffa04a },
+export const ARENA_THEMES: ReadonlyArray<{
+  id: ArenaTheme;
+  name: string;
+  blurb: string;
+  skyTop: number;
+  skyBottom: number;
+}> = [
+  {
+    id: 'neon',
+    name: 'Neon-Metropole',
+    blurb: 'Synthwave-Nacht über der Stadt: Neonlinien, Glasdach und ein Gitter bis zum Horizont.',
+    skyTop: 0x03000d,
+    skyBottom: 0x6a1470,
+  },
+  {
+    id: 'eis',
+    name: 'Eis-Dom',
+    blurb: 'Kühle Kuppel aus Kristall und Schnee, Polarlicht über dem Spielfeld.',
+    skyTop: 0x06183a,
+    skyBottom: 0xa9d8f5,
+  },
+  {
+    id: 'canyon',
+    name: 'Glutschlucht',
+    blurb: 'Wüsten-Canyon bei Sonnenuntergang: orange Felsen, Staub und Fackeln.',
+    skyTop: 0x1d1442,
+    skyBottom: 0xffa04a,
+  },
 ];
 
 /** Alle themenabhängigen Farben und Einstellungen an einer Stelle */

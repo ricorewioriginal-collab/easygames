@@ -26,7 +26,11 @@ export function markShared<T extends { userData: Record<string, unknown> }>(o: T
 
 /* ---------------------------------------------------------------- Texturen */
 
-function canvasTex(w: number, h: number, draw: (g: CanvasRenderingContext2D, w: number, h: number) => void): THREE.CanvasTexture {
+function canvasTex(
+  w: number,
+  h: number,
+  draw: (g: CanvasRenderingContext2D, w: number, h: number) => void,
+): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
@@ -102,7 +106,13 @@ export const streakTexture = (): THREE.CanvasTexture =>
 
 /** Senkrechter Verlauf: unten hell, oben transparent (Lichtsäulen) */
 export const columnTexture = (): THREE.CanvasTexture =>
-  cachedTex('column', () => pixelTex(32, 64, (u, v) => Math.pow(1 - v, 1.3) * Math.min(1, v * 14 + 0.25) * Math.pow(Math.sin(u * Math.PI), 1.3)));
+  cachedTex('column', () =>
+    pixelTex(
+      32,
+      64,
+      (u, v) => Math.pow(1 - v, 1.3) * Math.min(1, v * 14 + 0.25) * Math.pow(Math.sin(u * Math.PI), 1.3),
+    ),
+  );
 
 /* ------------------------------------------------------------ Mesh-Baukasten */
 
@@ -127,7 +137,17 @@ export class MeshBuilder {
     const p = this.pos;
     const n = p.length;
     for (let i = since; i < n; i += 9) {
-      p.push(-p[i]!, p[i + 1]!, p[i + 2]!, -p[i + 6]!, p[i + 7]!, p[i + 8]!, -p[i + 3]!, p[i + 4]!, p[i + 5]!);
+      p.push(
+        -p[i]!,
+        p[i + 1]!,
+        p[i + 2]!,
+        -p[i + 6]!,
+        p[i + 7]!,
+        p[i + 8]!,
+        -p[i + 3]!,
+        p[i + 4]!,
+        p[i + 5]!,
+      );
     }
   }
   get empty(): boolean {
@@ -165,7 +185,16 @@ export class MeshBuilder {
   }
 
   /** Achsenparallele (konische) Kiste entlang z: halbe Maße vorn/hinten */
-  prism(z0: number, z1: number, cx: number, cy: number, hx0: number, hy0: number, hx1 = hx0, hy1 = hy0): void {
+  prism(
+    z0: number,
+    z1: number,
+    cx: number,
+    cy: number,
+    hx0: number,
+    hy0: number,
+    hx1 = hx0,
+    hy1 = hy0,
+  ): void {
     this.loftZ([
       { z: z0, p: rect(cx, cy, hx0, hy0) },
       { z: z1, p: rect(cx, cy, hx1, hy1) },
@@ -231,7 +260,15 @@ export function rect(cx: number, cy: number, hx: number, hy: number): Array<[num
 }
 
 /** Sechseck-Querschnitt: unten, Schulter (größte Breite), oben */
-export function hex(z: number, wb: number, ws: number, yb: number, ym: number, yt: number, wt: number): { z: number; p: Array<[number, number]> } {
+export function hex(
+  z: number,
+  wb: number,
+  ws: number,
+  yb: number,
+  ym: number,
+  yt: number,
+  wt: number,
+): { z: number; p: Array<[number, number]> } {
   return {
     z,
     p: [

@@ -1,7 +1,22 @@
 import { Bot } from '@shared/ai/bot';
-import { clampInput, NEUTRAL_CAR_INPUT, TICK_DT, type CarInput, type SimEvent, type SimState, type TeamId } from '@shared/sim/types';
+import {
+  clampInput,
+  NEUTRAL_CAR_INPUT,
+  TICK_DT,
+  type CarInput,
+  type SimEvent,
+  type SimState,
+  type TeamId,
+} from '@shared/sim/types';
 import { Sim, cloneState, createSimState, decodeSnapshot, encodeSnapshot } from '@shared/sim';
-import { parseToGuest, parseToHost, type Difficulty, type StartMessage, type StartPlayer, type ToGuest } from '@shared/net/p2p';
+import {
+  parseToGuest,
+  parseToHost,
+  type Difficulty,
+  type StartMessage,
+  type StartPlayer,
+  type ToGuest,
+} from '@shared/net/p2p';
 import type { Link } from '../net/p2pLink';
 import type { HostPlan } from '../net/p2pRoom';
 
@@ -42,8 +57,20 @@ export interface LocalPlan {
 
 const MAX_STEPS_PER_FRAME = 5;
 
-function simFrom(plan: { players: StartPlayer[]; seed: number; matchSeconds: number; nitro: boolean; training?: boolean }): Sim {
-  return new Sim({ cars: plan.players.map((p) => ({ team: p.team })), matchSeconds: plan.matchSeconds, seed: plan.seed, pads: plan.nitro, training: plan.training === true });
+function simFrom(plan: {
+  players: StartPlayer[];
+  seed: number;
+  matchSeconds: number;
+  nitro: boolean;
+  training?: boolean;
+}): Sim {
+  return new Sim({
+    cars: plan.players.map((p) => ({ team: p.team })),
+    matchSeconds: plan.matchSeconds,
+    seed: plan.seed,
+    pads: plan.nitro,
+    training: plan.training === true,
+  });
 }
 
 /** Partie auf diesem Gerät: Bots steuern die übrigen Autos */
@@ -68,7 +95,8 @@ export class LocalMatch implements MatchSession {
     this.training = plan.training === true;
     this.sim = simFrom(plan);
     plan.players.forEach((p, i) => {
-      if (!plan.localCars.includes(i) && p.kind === 'bot') this.bots.set(i, new Bot(p.difficulty, plan.seed + i * 7919));
+      if (!plan.localCars.includes(i) && p.kind === 'bot')
+        this.bots.set(i, new Bot(p.difficulty, plan.seed + i * 7919));
     });
     this.sim.resetKickoff();
   }
@@ -143,14 +171,28 @@ export class HostMatch extends LocalMatch {
   private dog: ReturnType<typeof setInterval>;
 
   constructor(plan: HostPlan) {
-    super({ players: plan.players, seed: plan.seed, matchSeconds: plan.matchSeconds, arena: plan.arena, nitro: plan.nitro, localCars: [plan.hostCar] });
+    super({
+      players: plan.players,
+      seed: plan.seed,
+      matchSeconds: plan.matchSeconds,
+      arena: plan.arena,
+      nitro: plan.nitro,
+      localCars: [plan.hostCar],
+    });
     this.shared = true;
     for (const [carId, link] of plan.guests) {
       this.guests.set(carId, { link, input: { ...NEUTRAL_CAR_INPUT }, lastSeen: Date.now(), seq: -1 });
       link.onMessage((raw) => this.fromGuest(carId, raw));
       link.onFast((d) => this.fromGuestFast(carId, d));
       link.onClose(() => this.guestGone(carId));
-      const start: StartMessage = { seed: plan.seed, matchSeconds: plan.matchSeconds, arena: plan.arena, nitro: plan.nitro, you: carId, players: plan.players };
+      const start: StartMessage = {
+        seed: plan.seed,
+        matchSeconds: plan.matchSeconds,
+        arena: plan.arena,
+        nitro: plan.nitro,
+        you: carId,
+        players: plan.players,
+      };
       link.send({ t: 'start', msg: start } satisfies ToGuest);
     }
     this.dog = setInterval(() => {
@@ -216,7 +258,8 @@ export class HostMatch extends LocalMatch {
       new DataView(packet.buffer).setUint32(1, g.seq >>> 0, true);
       packet.set(bytes, 5);
       g.link.sendFast(packet);
-      if (this.pendingEvents.length) g.link.send({ t: 'events', tick: this.sim.state.tick, events: this.pendingEvents } satisfies ToGuest);
+      if (this.pendingEvents.length)
+        g.link.send({ t: 'events', tick: this.sim.state.tick, events: this.pendingEvents } satisfies ToGuest);
       void id;
     }
     this.pendingEvents = [];
@@ -269,9 +312,19 @@ export class GuestMatch implements MatchSession {
     this.players = start.players;
     this.arena = start.arena;
     this.localCars = [start.you];
-    this.sim = simFrom({ players: start.players, seed: start.seed, matchSeconds: start.matchSeconds, nitro: start.nitro });
+    this.sim = simFrom({
+      players: start.players,
+      seed: start.seed,
+      matchSeconds: start.matchSeconds,
+      nitro: start.nitro,
+    });
     this.sim.resetKickoff();
-    this.tmp = createSimState({ cars: start.players.map((p) => ({ team: p.team })), seed: start.seed, matchSeconds: start.matchSeconds, pads: start.nitro });
+    this.tmp = createSimState({
+      cars: start.players.map((p) => ({ team: p.team })),
+      seed: start.seed,
+      matchSeconds: start.matchSeconds,
+      pads: start.nitro,
+    });
     link.onFast((d) => this.onSnapshot(d));
     link.onMessage((raw) => this.fromHost(raw));
     link.onClose(() => this.lost());
@@ -302,7 +355,9 @@ export class GuestMatch implements MatchSession {
       case 'events': {
         const me = this.localCars[0];
         // Eigene Sprünge/Pads/Berührungen kommen schon aus der Vorhersage (sofort), vom Gastgeber nur den Rest
-        for (const e of m.events) if (!(('car' in e) && e.car === me && (e.t === 'jump' || e.t === 'pad' || e.t === 'touch'))) this.events.push(e);
+        for (const e of m.events)
+          if (!('car' in e && e.car === me && (e.t === 'jump' || e.t === 'pad' || e.t === 'touch')))
+            this.events.push(e);
         break;
       }
       case 'pong': {
@@ -358,7 +413,12 @@ export class GuestMatch implements MatchSession {
     const mix = (a: number[], b: number[], k: number): void => {
       for (let i = 0; i < a.length; i++) a[i] = (b[i] as number) + ((a[i] as number) - (b[i] as number)) * k;
     };
-    const near = (a: number[], b: number[]): boolean => Math.hypot((a[0] as number) - (b[0] as number), (a[1] as number) - (b[1] as number), (a[2] as number) - (b[2] as number)) < 3;
+    const near = (a: number[], b: number[]): boolean =>
+      Math.hypot(
+        (a[0] as number) - (b[0] as number),
+        (a[1] as number) - (b[1] as number),
+        (a[2] as number) - (b[2] as number),
+      ) < 3;
     s.cars.forEach((c, i) => {
       const p = prev.cars[i];
       if (p && near(c.pos, p.pos) && c.demolished <= 0 && p.demolished <= 0) mix(c.pos, p.pos, 0.35);
@@ -379,7 +439,8 @@ export class GuestMatch implements MatchSession {
       if (this.pending.length > 240) this.pending.shift();
       this.link.sendFast(JSON.stringify({ t: 'input', seq, i: input }));
       const all = this.sim.state.cars.map((c, i) => (i === me ? input : c.input));
-      for (const e of this.sim.step(all)) if ('car' in e && e.car === me && (e.t === 'jump' || e.t === 'pad' || e.t === 'touch')) out.push(e);
+      for (const e of this.sim.step(all))
+        if ('car' in e && e.car === me && (e.t === 'jump' || e.t === 'pad' || e.t === 'touch')) out.push(e);
     }
     return out;
   }

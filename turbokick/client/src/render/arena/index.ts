@@ -95,7 +95,11 @@ class ArenaImpl implements ArenaView {
       [-W, 0, -L],
       [W, H, L],
       R,
-      [axisCoords(-W, W, R, 8, [-GW, GW], 4), axisCoords(0, H, R, 8, [GH], 3), axisCoords(-L, L, R, 8, [], 6)],
+      [
+        axisCoords(-W, W, R, 8, [-GW, GW], 4),
+        axisCoords(0, H, R, 8, [GH], 3),
+        axisCoords(-L, L, R, 8, [], 6),
+      ],
       (t) => {
         if (t.maxY < 1e-4) return false; // ebener Boden: eigenes Mesh mit Markierungen
         return !(Math.abs(t.cx) < GW && t.cy < GH && Math.abs(t.cz) > L - R + 1e-3);
@@ -111,7 +115,8 @@ class ArenaImpl implements ArenaView {
 
     // Boden: Hauptfläche + Streifen vor den Toren (dort fehlt die Rundung)
     const main = new THREE.PlaneGeometry(2 * (W - R), 2 * (L - R)).rotateX(-Math.PI / 2);
-    const strip = (s: number): THREE.BufferGeometry => new THREE.PlaneGeometry(2 * GW, R).rotateX(-Math.PI / 2).translate(0, 0, s * (L - R / 2));
+    const strip = (s: number): THREE.BufferGeometry =>
+      new THREE.PlaneGeometry(2 * GW, R).rotateX(-Math.PI / 2).translate(0, 0, s * (L - R / 2));
     const floorGeo = mergeGeometries([main, strip(1), strip(-1)]);
     this.geos.push(floorGeo);
     const floorMat = floorMaterial(u, pal);
@@ -126,7 +131,14 @@ class ArenaImpl implements ArenaView {
     this.scenery = new SceneryView(theme, u, pal, rng.fork(2));
     this.weather = new Weather(theme, u, quality.particles, rng.fork(3));
     this.fireworks = new Fireworks(u, quality.particles, rng.fork(4));
-    this.group.add(this.pads.group, this.goals.group, this.stands.group, this.scenery.group, this.weather.points, this.fireworks.points);
+    this.group.add(
+      this.pads.group,
+      this.goals.group,
+      this.stands.group,
+      this.scenery.group,
+      this.weather.points,
+      this.fireworks.points,
+    );
   }
 
   applyTo(scene: THREE.Scene): void {

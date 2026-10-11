@@ -77,7 +77,12 @@ export class Weather {
     for (let i = 0; i < this.n; i++) {
       const j = i * 3;
       const ph = this.ph[i] as number;
-      const sway = k === 1 ? Math.sin(this.t * 0.9 + ph * 40) * 0.6 : k === 0 ? Math.sin(this.t * 0.6 + ph * 30) * 0.3 : 0;
+      const sway =
+        k === 1
+          ? Math.sin(this.t * 0.9 + ph * 40) * 0.6
+          : k === 0
+            ? Math.sin(this.t * 0.6 + ph * 30) * 0.3
+            : 0;
       p[j] = (p[j] as number) + ((v[j] as number) + sway) * dt;
       p[j + 1] = (p[j + 1] as number) + (v[j + 1] as number) * dt;
       p[j + 2] = (p[j + 2] as number) + (v[j + 2] as number) * dt;
@@ -136,7 +141,11 @@ export class Fireworks {
   private foAcc = new Float32Array(MAX_FOUNTAINS);
   private readonly tmp = new THREE.Color();
 
-  constructor(u: ArenaUniforms, particles: number, private readonly rng: Rng) {
+  constructor(
+    u: ArenaUniforms,
+    particles: number,
+    private readonly rng: Rng,
+  ) {
     this.quality = Math.min(1, Math.max(0, particles));
     const n = Math.floor(900 * (0.35 + 0.65 * this.quality));
     this.n = n;
@@ -166,7 +175,17 @@ export class Fireworks {
     attachPointScale(this.points, u);
   }
 
-  private spawn(x: number, y: number, z: number, vx: number, vy: number, vz: number, c: THREE.Color, life: number, size: number): void {
+  private spawn(
+    x: number,
+    y: number,
+    z: number,
+    vx: number,
+    vy: number,
+    vz: number,
+    c: THREE.Color,
+    life: number,
+    size: number,
+  ): void {
     const i = this.cursor;
     this.cursor = (this.cursor + 1) % this.n;
     const j = i * 3;
@@ -247,7 +266,17 @@ export class Fireworks {
       this.shPos[k + 2] = (this.shPos[k + 2] as number) + (this.shVel[k + 2] as number) * dt;
       this.shVel[k + 1] = (this.shVel[k + 1] as number) - 6 * dt;
       c.setRGB(1, 0.8, 0.45);
-      this.spawn(this.shPos[k] as number, this.shPos[k + 1] as number, this.shPos[k + 2] as number, r.float(-0.6, 0.6), r.float(-3, -1), r.float(-0.6, 0.6), c, 0.55, 0.5);
+      this.spawn(
+        this.shPos[k] as number,
+        this.shPos[k + 1] as number,
+        this.shPos[k + 2] as number,
+        r.float(-0.6, 0.6),
+        r.float(-3, -1),
+        r.float(-0.6, 0.6),
+        c,
+        0.55,
+        0.5,
+      );
       this.shFuse[i] = (this.shFuse[i] as number) - dt;
       if ((this.shFuse[i] as number) <= 0) {
         this.shState[i] = 0;
@@ -259,8 +288,23 @@ export class Fireworks {
           const rr = Math.sqrt(1 - uu * uu);
           const sp = r.float(7, 15);
           if (hot && r.chance(0.35)) c.setRGB(1.2, 1.1, 0.8);
-          else c.setRGB(this.shCol[k] as number, this.shCol[k + 1] as number, this.shCol[k + 2] as number).multiplyScalar(1.4);
-          this.spawn(this.shPos[k] as number, this.shPos[k + 1] as number, this.shPos[k + 2] as number, rr * Math.cos(a) * sp, uu * sp, rr * Math.sin(a) * sp, c, r.float(1.4, 2.4), r.float(0.7, 1.3));
+          else
+            c.setRGB(
+              this.shCol[k] as number,
+              this.shCol[k + 1] as number,
+              this.shCol[k + 2] as number,
+            ).multiplyScalar(1.4);
+          this.spawn(
+            this.shPos[k] as number,
+            this.shPos[k + 1] as number,
+            this.shPos[k + 2] as number,
+            rr * Math.cos(a) * sp,
+            uu * sp,
+            rr * Math.sin(a) * sp,
+            c,
+            r.float(1.4, 2.4),
+            r.float(0.7, 1.3),
+          );
         }
       }
     }
@@ -272,12 +316,26 @@ export class Fireworks {
       this.foTime[i] = left - dt;
       const k = i * 3;
       this.foAcc[i] = (this.foAcc[i] as number) + dt * 110 * (0.4 + 0.6 * this.quality);
-      c.setRGB(this.foCol[k] as number, this.foCol[k + 1] as number, this.foCol[k + 2] as number).multiplyScalar(1.5);
+      c.setRGB(
+        this.foCol[k] as number,
+        this.foCol[k + 1] as number,
+        this.foCol[k + 2] as number,
+      ).multiplyScalar(1.5);
       while ((this.foAcc[i] as number) >= 1) {
         this.foAcc[i] = (this.foAcc[i] as number) - 1;
         const a = r.float(0, Math.PI * 2);
         const sp = r.float(0.5, 3.5);
-        this.spawn(this.foPos[k] as number, this.foPos[k + 1] as number, this.foPos[k + 2] as number, Math.cos(a) * sp, r.float(11, 17), Math.sin(a) * sp, c, r.float(0.8, 1.4), r.float(0.4, 0.8));
+        this.spawn(
+          this.foPos[k] as number,
+          this.foPos[k + 1] as number,
+          this.foPos[k + 2] as number,
+          Math.cos(a) * sp,
+          r.float(11, 17),
+          Math.sin(a) * sp,
+          c,
+          r.float(0.8, 1.4),
+          r.float(0.4, 0.8),
+        );
       }
     }
     // Funken

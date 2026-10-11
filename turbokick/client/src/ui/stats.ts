@@ -21,7 +21,22 @@ export function create(app: App, params?: RouteParams): ScreenView {
   const el = h(
     'div',
     { class: 'screen' },
-    h('div', { class: 'panel' }, h('div', { class: 'head' }, h('h2', null, t('menu.stats')), btn('← ' + t('back'), () => void app.go(params?.back ?? 'menu'), 'ghost back')), h('table', { class: 'table' }, h('tbody', null, ...rows.map(([a, b]) => h('tr', null, h('td', null, a), h('td', null, b))))), h('p', null, t('stats.note'))),
+    h(
+      'div',
+      { class: 'panel' },
+      h(
+        'div',
+        { class: 'head' },
+        h('h2', null, t('menu.stats')),
+        btn('← ' + t('back'), () => void app.go(params?.back ?? 'menu'), 'ghost back'),
+      ),
+      h(
+        'table',
+        { class: 'table' },
+        h('tbody', null, ...rows.map(([a, b]) => h('tr', null, h('td', null, a), h('td', null, b)))),
+      ),
+      h('p', null, t('stats.note')),
+    ),
   );
   return { el };
 }

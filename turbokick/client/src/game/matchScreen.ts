@@ -53,18 +53,31 @@ export class MatchScreen implements Screen {
     const s = app.store.data.settings;
     const n = session.localCars.length;
     this.cams = Array.from({ length: n }, () => new THREE.PerspectiveCamera(s.fov, 16 / 9, 0.1, 900));
-    this.chase = this.cams.map(() => new ChaseCamera({ fov: s.fov, distance: s.camDistance, shake: s.cameraShake && !s.reducedMotion }));
+    this.chase = this.cams.map(
+      () =>
+        new ChaseCamera({ fov: s.fov, distance: s.camDistance, shake: s.cameraShake && !s.reducedMotion }),
+    );
     this.ballCam = this.cams.map(() => s.ballCam);
     this.arena = createArena(session.arena as ArenaTheme, app.engine.quality);
     this.arena.applyTo(this.scene);
     this.scene.add(this.arena.group);
     this.actors = createActors(app.engine.quality, session.players.length);
-    this.actors.setLooks(session.players.map((p): ActorLook => ({ body: p.look.body as CarBody, decal: p.look.decal as CarDecal, ...(p.look.accent ? { accent: parseInt(p.look.accent.slice(1), 16) } : {}) })));
+    this.actors.setLooks(
+      session.players.map(
+        (p): ActorLook => ({
+          body: p.look.body as CarBody,
+          decal: p.look.decal as CarDecal,
+          ...(p.look.accent ? { accent: parseInt(p.look.accent.slice(1), 16) } : {}),
+        }),
+      ),
+    );
     this.scene.add(this.actors.group);
     this.stats = session.players.map(() => ({ goals: 0, assists: 0, demos: 0 }));
     this.hud = new Hud(n, () => this.openPause());
     this.hud.layout(n > 1);
-    this.input = new LocalInput(this.el, defaultBindings(n as 1 | 2, app.touch), { touchLayout: s.touchControls });
+    this.input = new LocalInput(this.el, defaultBindings(n as 1 | 2, app.touch), {
+      touchLayout: s.touchControls,
+    });
     this.el.classList.toggle('is-touch', app.touch);
     this.el.append(this.hud.el, this.overlay);
     void this.tmpState;
@@ -128,8 +141,16 @@ export class MatchScreen implements Screen {
       const chase = this.chase[i] as ChaseCamera;
       const car = st.cars[this.session.localCars[i] as number];
       if (!car) return;
-      if (st.phase === 'goal' || st.phase === 'ended') chase.orbit(dt, this.goalPos.set(ball.pos[0], Math.max(ball.pos[1], 1.5), ball.pos[2]), 14, 5, 0.35);
-      else chase.update(dt, car, ball, this.ballCam[i] as boolean, Math.hypot(car.vel[0], car.vel[1], car.vel[2]));
+      if (st.phase === 'goal' || st.phase === 'ended')
+        chase.orbit(dt, this.goalPos.set(ball.pos[0], Math.max(ball.pos[1], 1.5), ball.pos[2]), 20, 7, 0.3);
+      else
+        chase.update(
+          dt,
+          car,
+          ball,
+          this.ballCam[i] as boolean,
+          Math.hypot(car.vel[0], car.vel[1], car.vel[2]),
+        );
       chase.apply(cam);
     });
     this.camera.position.copy((this.cams[0] as THREE.PerspectiveCamera).position);
@@ -143,7 +164,12 @@ export class MatchScreen implements Screen {
     else this.hud.setCountdown(null);
     this.session.localCars.forEach((c, i) => {
       const car = st.cars[c];
-      if (car) this.hud.gauges[i]?.set(car.boost, Math.hypot(car.vel[0], car.vel[1], car.vel[2]) * 3.6, car.boosting);
+      if (car)
+        this.hud.gauges[i]?.set(
+          car.boost,
+          Math.hypot(car.vel[0], car.vel[1], car.vel[2]) * 3.6,
+          car.boosting,
+        );
     });
     if (st.phase !== this.lastPhase) {
       if (st.phase === 'playing' && this.lastPhase === 'countdown') this.hud.hideBanner();
@@ -155,12 +181,21 @@ export class MatchScreen implements Screen {
     const { audio } = this.app;
     const cam = this.cams[0] as THREE.PerspectiveCamera;
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(cam.quaternion);
-    const map = new Map<number, { speed01: number; boosting: boolean; onGround: boolean; gain: number; pan: number }>();
+    const map = new Map<
+      number,
+      { speed01: number; boosting: boolean; onGround: boolean; gain: number; pan: number }
+    >();
     for (const c of st.cars) {
       if (c.demolished > 0) continue;
       const d = Math.hypot(c.pos[0] - cam.position.x, c.pos[1] - cam.position.y, c.pos[2] - cam.position.z);
       const rel = new THREE.Vector3(c.pos[0] - cam.position.x, 0, c.pos[2] - cam.position.z).normalize();
-      map.set(c.id, { speed01: Math.min(1, Math.hypot(c.vel[0], c.vel[1], c.vel[2]) / 23), boosting: c.boosting, onGround: c.wheelsOnSurface >= 3, gain: Math.max(0, 1 - d / 60), pan: Math.max(-1, Math.min(1, rel.dot(right))) });
+      map.set(c.id, {
+        speed01: Math.min(1, Math.hypot(c.vel[0], c.vel[1], c.vel[2]) / 23),
+        boosting: c.boosting,
+        onGround: c.wheelsOnSurface >= 3,
+        gain: Math.max(0, 1 - d / 60),
+        pan: Math.max(-1, Math.min(1, rel.dot(right))),
+      });
     }
     audio.updateCars(map);
     const ballNearGoal = Math.abs(st.ball.pos[2]) > 30 ? 0.8 : 0.35;
@@ -230,7 +265,13 @@ export class MatchScreen implements Screen {
           if (as && e.assist >= 0) as.assists++;
           const who = e.scorer >= 0 ? this.nameOf(e.scorer) : t('hud.ownGoal');
           const own = e.scorer >= 0 && this.teamOf(e.scorer) !== e.team;
-          this.hud.show(t('hud.goal'), own ? `${t('hud.ownGoal')} · ${who}` : `${who}${e.assist >= 0 ? ' · ' + t('hud.assist') + ' ' + this.nameOf(e.assist) : ''} · ${Math.round(e.speed * 3.6)} km/h`, e.team);
+          this.hud.show(
+            t('hud.goal'),
+            own
+              ? `${t('hud.ownGoal')} · ${who}`
+              : `${who}${e.assist >= 0 ? ' · ' + t('hud.assist') + ' ' + this.nameOf(e.assist) : ''} · ${Math.round(e.speed * 3.6)} km/h`,
+            e.team,
+          );
           this.chase.forEach((c) => c.shake(0.6, 0.8));
           break;
         }
@@ -255,17 +296,63 @@ export class MatchScreen implements Screen {
     const { audio } = this.app;
     audio.music(won ? 'victory' : 'defeat');
     audio.sfx(won ? 'win' : 'lose');
-    this.hud.show(`${TEAM_NAMES[winner as 0 | 1]} ${t('hud.wins')}`, `${st.score[0]} : ${st.score[1]}`, winner as 0 | 1, true);
+    this.hud.show(
+      `${TEAM_NAMES[winner as 0 | 1]} ${t('hud.wins')}`,
+      `${st.score[0]} : ${st.score[1]}`,
+      winner as 0 | 1,
+      true,
+    );
     this.recordStats(won);
-    const rows = this.session.players.map((p, i) => h('tr', { class: 't' + p.team }, h('td', null, (p.kind === 'bot' ? '🤖 ' : '') + p.name), h('td', null, String(this.stats[i]?.goals ?? 0)), h('td', null, String(this.stats[i]?.assists ?? 0)), h('td', null, String(this.stats[i]?.demos ?? 0))));
+    const rows = this.session.players.map((p, i) =>
+      h(
+        'tr',
+        { class: 't' + p.team },
+        h('td', null, (p.kind === 'bot' ? '🤖 ' : '') + p.name),
+        h('td', null, String(this.stats[i]?.goals ?? 0)),
+        h('td', null, String(this.stats[i]?.assists ?? 0)),
+        h('td', null, String(this.stats[i]?.demos ?? 0)),
+      ),
+    );
     setTimeout(() => {
       if (this.disposed) return;
       clear(this.overlay);
       this.overlay.appendChild(
-        h('div', { class: 'cover' }, h('div', { class: 'panel' },
-          h('h2', { style: `color:var(--${winner === 0 ? 'fire' : 'ice'})` }, `${TEAM_NAMES[winner as 0 | 1]} ${t('hud.wins')} ${st.score[0]} : ${st.score[1]}`),
-          h('table', { class: 'table' }, h('thead', null, h('tr', null, h('th', null, t('end.player')), h('th', null, t('end.goals')), h('th', null, t('end.assists')), h('th', null, t('end.demos')))), h('tbody', null, ...rows)),
-          h('div', { class: 'chips', style: 'margin-top:12px' }, this.session.kind === 'local' ? btn(t('end.rematch'), () => void this.rematch(), '') : null, btn(t('end.menu'), () => void this.app.toMenu(), 'ghost')))),
+        h(
+          'div',
+          { class: 'cover' },
+          h(
+            'div',
+            { class: 'panel' },
+            h(
+              'h2',
+              { style: `color:var(--${winner === 0 ? 'fire' : 'ice'})` },
+              `${TEAM_NAMES[winner as 0 | 1]} ${t('hud.wins')} ${st.score[0]} : ${st.score[1]}`,
+            ),
+            h(
+              'table',
+              { class: 'table' },
+              h(
+                'thead',
+                null,
+                h(
+                  'tr',
+                  null,
+                  h('th', null, t('end.player')),
+                  h('th', null, t('end.goals')),
+                  h('th', null, t('end.assists')),
+                  h('th', null, t('end.demos')),
+                ),
+              ),
+              h('tbody', null, ...rows),
+            ),
+            h(
+              'div',
+              { class: 'chips', style: 'margin-top:12px' },
+              this.session.kind === 'local' ? btn(t('end.rematch'), () => void this.rematch(), '') : null,
+              btn(t('end.menu'), () => void this.app.toMenu(), 'ghost'),
+            ),
+          ),
+        ),
       );
     }, 3500);
   }
@@ -294,7 +381,18 @@ export class MatchScreen implements Screen {
   private async rematch(): Promise<void> {
     const ls = this.app.store.data.lastSetup;
     const rng = new Rng((Math.random() * 2 ** 32) >>> 0);
-    const opts: PlanOptions = { mode: this.session.localCars.length > 1 ? 'split' : 'quick', teamSize: ls.teamSize, difficulty: ls.difficulty, minutes: ls.minutes, arena: this.session.arena, nitro: ls.nitro, splitVersus: true, name: this.app.store.data.profile.name, garage: this.app.store.data.garage, seed: rng.int(2 ** 31) };
+    const opts: PlanOptions = {
+      mode: this.session.localCars.length > 1 ? 'split' : 'quick',
+      teamSize: ls.teamSize,
+      difficulty: ls.difficulty,
+      minutes: ls.minutes,
+      arena: this.session.arena,
+      nitro: ls.nitro,
+      splitVersus: true,
+      name: this.app.store.data.profile.name,
+      garage: this.app.store.data.garage,
+      seed: rng.int(2 ** 31),
+    };
     await this.app.startMatch(new LocalMatch(buildLocalPlan(opts)));
   }
 
@@ -306,16 +404,43 @@ export class MatchScreen implements Screen {
     const shared = this.session.shared;
     clear(this.overlay);
     this.overlay.appendChild(
-      h('div', { class: 'cover' }, h('div', { class: 'panel' },
-        h('h2', null, t('pause.title')),
-        shared ? h('p', null, t('pause.sharedNote')) : null,
-        slider(t('opt.master'), s.data.settings.master, 0, 1, 0.05, (v) => s.update((d) => { d.settings.master = v; })),
-        toggle(t('opt.mute'), s.data.settings.muted, (v) => s.update((d) => { d.settings.muted = v; })),
-        h('div', { class: 'pausebtns' },
-          btn(t('pause.resume'), () => this.closePause(), 'big'),
-          this.session.training ? btn(t('pause.reset'), () => { this.session.reset(); this.closePause(); }, 'ghost') : null,
-          btn(t('pause.help'), () => this.showHelp(), 'ghost'),
-          btn(t('pause.leave'), () => void this.app.toMenu(), 'ghost')))),
+      h(
+        'div',
+        { class: 'cover' },
+        h(
+          'div',
+          { class: 'panel' },
+          h('h2', null, t('pause.title')),
+          shared ? h('p', null, t('pause.sharedNote')) : null,
+          slider(t('opt.master'), s.data.settings.master, 0, 1, 0.05, (v) =>
+            s.update((d) => {
+              d.settings.master = v;
+            }),
+          ),
+          toggle(t('opt.mute'), s.data.settings.muted, (v) =>
+            s.update((d) => {
+              d.settings.muted = v;
+            }),
+          ),
+          h(
+            'div',
+            { class: 'pausebtns' },
+            btn(t('pause.resume'), () => this.closePause(), 'big'),
+            this.session.training
+              ? btn(
+                  t('pause.reset'),
+                  () => {
+                    this.session.reset();
+                    this.closePause();
+                  },
+                  'ghost',
+                )
+              : null,
+            btn(t('pause.help'), () => this.showHelp(), 'ghost'),
+            btn(t('pause.leave'), () => void this.app.toMenu(), 'ghost'),
+          ),
+        ),
+      ),
     );
   }
   private closePause(): void {
@@ -325,7 +450,31 @@ export class MatchScreen implements Screen {
   }
   private showHelp(): void {
     clear(this.overlay);
-    this.overlay.appendChild(h('div', { class: 'cover' }, h('div', { class: 'panel' }, h('h2', null, t('menu.help')), h('p', null, t('help.goalText')), h('p', null, t('help.movesText')), h('div', { style: 'text-align:right' }, btn(t('back'), () => { this.paused = false; this.openPause(); }, 'ghost back')))));
+    this.overlay.appendChild(
+      h(
+        'div',
+        { class: 'cover' },
+        h(
+          'div',
+          { class: 'panel' },
+          h('h2', null, t('menu.help')),
+          h('p', null, t('help.goalText')),
+          h('p', null, t('help.movesText')),
+          h(
+            'div',
+            { style: 'text-align:right' },
+            btn(
+              t('back'),
+              () => {
+                this.paused = false;
+                this.openPause();
+              },
+              'ghost back',
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // ------------------------------------------------------------------ Darstellung (Splitscreen)

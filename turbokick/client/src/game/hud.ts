@@ -18,9 +18,29 @@ export class BoostGauge {
     const svg = document.createElementNS(SVGNS, 'svg');
     svg.setAttribute('viewBox', '0 0 100 100');
     const bg = document.createElementNS(SVGNS, 'circle');
-    for (const [k, v] of Object.entries({ cx: '50', cy: '50', r: '42', fill: 'rgba(5,6,20,0.7)', stroke: 'rgba(255,255,255,0.15)', 'stroke-width': '9' })) bg.setAttribute(k, v);
+    for (const [k, v] of Object.entries({
+      cx: '50',
+      cy: '50',
+      r: '42',
+      fill: 'rgba(5,6,20,0.7)',
+      stroke: 'rgba(255,255,255,0.15)',
+      'stroke-width': '9',
+    }))
+      bg.setAttribute(k, v);
     this.arc = document.createElementNS(SVGNS, 'circle');
-    for (const [k, v] of Object.entries({ cx: '50', cy: '50', r: '42', fill: 'none', stroke: '#b6ff3b', 'stroke-width': '9', 'stroke-linecap': 'butt', transform: 'rotate(-90 50 50)', 'stroke-dasharray': '264', 'stroke-dashoffset': '264' })) this.arc.setAttribute(k, v);
+    for (const [k, v] of Object.entries({
+      cx: '50',
+      cy: '50',
+      r: '42',
+      fill: 'none',
+      stroke: '#b6ff3b',
+      'stroke-width': '9',
+      'stroke-linecap': 'butt',
+      transform: 'rotate(-90 50 50)',
+      'stroke-dasharray': '264',
+      'stroke-dashoffset': '264',
+    }))
+      this.arc.setAttribute(k, v);
     svg.append(bg, this.arc);
     this.el.append(svg, this.num);
     this.speed.append(h('b'), 'km/h');
@@ -60,8 +80,18 @@ export class Hud {
   private lastClock = '';
 
   constructor(localCount: number, onMenu: () => void) {
-    this.menuBtn = h('button', { type: 'button', class: 'btn ghost menubtn', 'aria-label': t('pause.title'), onclick: () => onMenu() }, '☰');
-    this.el.append(h('div', { class: 'scorebar' }, this.s0, this.clock, this.s1), this.feed, this.banner, this.count, this.menuBtn);
+    this.menuBtn = h(
+      'button',
+      { type: 'button', class: 'btn ghost menubtn', 'aria-label': t('pause.title'), onclick: () => onMenu() },
+      '☰',
+    );
+    this.el.append(
+      h('div', { class: 'scorebar' }, this.s0, this.clock, this.s1),
+      this.feed,
+      this.banner,
+      this.count,
+      this.menuBtn,
+    );
     for (let i = 0; i < localCount; i++) {
       const g = new BoostGauge();
       this.gauges.push(g);

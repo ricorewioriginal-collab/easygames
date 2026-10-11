@@ -1,8 +1,21 @@
 import * as THREE from 'three';
 import { Engine, type Screen } from '../render/engine';
 import { QUALITY_PRESETS } from '../render/quality';
-import { CAR_BODIES, createActors, createCarPreview, type ActorLook, type CarBody, type CarDecal } from '../render/actors';
-import { NEUTRAL_CAR_INPUT, type CarState, type SimEvent, type SimState, type TeamId } from '@shared/sim/types';
+import {
+  CAR_BODIES,
+  createActors,
+  createCarPreview,
+  type ActorLook,
+  type CarBody,
+  type CarDecal,
+} from '../render/actors';
+import {
+  NEUTRAL_CAR_INPUT,
+  type CarState,
+  type SimEvent,
+  type SimState,
+  type TeamId,
+} from '@shared/sim/types';
 
 /**
  * actors-Labor (?lab=actors&body=flitzer|…|all&decal=…&team=0|1|both&anim=drive|boost|dodge|demo|goal|ball|all
@@ -15,7 +28,9 @@ export function startActorsLab(params: URLSearchParams): void {
   const lab = { errors: [] as string[], frames: 0 };
   (window as unknown as { __lab: typeof lab }).__lab = lab;
   window.addEventListener('error', (e) => lab.errors.push(String(e.message || e.error)));
-  window.addEventListener('unhandledrejection', (e) => lab.errors.push('Promise: ' + String((e as PromiseRejectionEvent).reason)));
+  window.addEventListener('unhandledrejection', (e) =>
+    lab.errors.push('Promise: ' + String((e as PromiseRejectionEvent).reason)),
+  );
 
   const bodyP = params.get('body') ?? 'flitzer';
   const anim = params.get('anim') ?? 'drive';
@@ -30,10 +45,15 @@ export function startActorsLab(params: URLSearchParams): void {
   const looks: ActorLook[] = [];
   const carTeams: TeamId[] = [];
   const slots: Array<[number, number]> = []; // Mittelpunkt (x, z)
-  const bodiesShown: CarBody[] = all ? ids : [(ids.includes(bodyP as CarBody) ? bodyP : 'flitzer') as CarBody];
+  const bodiesShown: CarBody[] = all
+    ? ids
+    : [(ids.includes(bodyP as CarBody) ? bodyP : 'flitzer') as CarBody];
   teams.forEach((team, row) => {
     bodiesShown.forEach((b, i) => {
-      looks.push({ body: b, decal: (decalP as CarDecal | null) ?? (all ? (decals[i] as CarDecal) : 'streifen') });
+      looks.push({
+        body: b,
+        decal: (decalP as CarDecal | null) ?? (all ? (decals[i] as CarDecal) : 'streifen'),
+      });
       carTeams.push(team);
       const spacing = all ? 3.3 : 5;
       slots.push([(i - (bodiesShown.length - 1) / 2) * spacing, row * 3.6 - (teams.length - 1) * 1.8]);
@@ -56,7 +76,10 @@ export function startActorsLab(params: URLSearchParams): void {
   const rimB = new THREE.PointLight(0x19c8ff, 12, 14);
   rimB.position.set(6, 2.5, -4);
   scene.add(rimA, rimB);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 120).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x0a0d18, metalness: 0.4, roughness: 0.6 }));
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(120, 120).rotateX(-Math.PI / 2),
+    new THREE.MeshStandardMaterial({ color: 0x0a0d18, metalness: 0.4, roughness: 0.6 }),
+  );
   scene.add(ground);
   const grid = new THREE.GridHelper(80, 80, 0x1c8bc0, 0x143048);
   grid.position.y = 0.003;
@@ -126,7 +149,8 @@ export function startActorsLab(params: URLSearchParams): void {
   const X = new THREE.Vector3(1, 0, 0);
   let t = 0;
   let events: SimEvent[] = [];
-  const every = (t0: number, t1: number, period: number, offset: number): boolean => Math.floor((t1 - offset) / period) > Math.floor((t0 - offset) / period);
+  const every = (t0: number, t1: number, period: number, offset: number): boolean =>
+    Math.floor((t1 - offset) / period) > Math.floor((t0 - offset) / period);
 
   const modeBoost = anim === 'boost' || anim === 'all';
   const modeDodge = anim === 'dodge' || anim === 'all';
@@ -155,7 +179,7 @@ export function startActorsLab(params: URLSearchParams): void {
       c.dodgeTimer = 0;
       c.input.steer = pose !== null ? 0 : 0.7;
       c.input.throttle = 1;
-      c.boosting = modeBoost && (Math.floor(t * 0.7 + i * 0.4) % 4 !== 3);
+      c.boosting = modeBoost && Math.floor(t * 0.7 + i * 0.4) % 4 !== 3;
       c.supersonic = anim === 'boost' && c.boosting && i % 2 === 0;
       // Ausweichen: Sprung, Flip, Landung (Periode 2,6 s)
       if (modeDodge) {
@@ -177,7 +201,8 @@ export function startActorsLab(params: URLSearchParams): void {
       if (modeDemo) {
         const per = 4.5;
         const ph = (t + i * 0.8) % per;
-        if (every(t0 + i * 0.8, t + i * 0.8, per, 1.2)) events.push({ t: 'demo', victim: i, attacker: (i + 1) % N });
+        if (every(t0 + i * 0.8, t + i * 0.8, per, 1.2))
+          events.push({ t: 'demo', victim: i, attacker: (i + 1) % N });
         c.demolished = ph > 1.2 && ph < 3.1 ? 3.1 - ph : 0;
       } else c.demolished = 0;
       c.pos = [x, y, z];
@@ -191,8 +216,9 @@ export function startActorsLab(params: URLSearchParams): void {
       const bx = Math.sin(t * 1.1) * (all ? 9 : 6);
       b.pos = [bx, 1.6 + 0.5 * Math.sin(t * 2), all ? -4.5 : -2.5];
       b.vel = [Math.cos(t * 1.1) * (all ? 9 : 6) * 1.1 * (anim === 'ball' ? 4 : 2.2), 0, 0];
-      state.lastTouch = Math.floor(t / 1.6) % (N + 1) - 1;
-      if (every(t0, t, 1.6, 0.2)) events.push({ t: 'touch', car: Math.max(0, state.lastTouch), speed: 20, ballSpeed: 28 });
+      state.lastTouch = (Math.floor(t / 1.6) % (N + 1)) - 1;
+      if (every(t0, t, 1.6, 0.2))
+        events.push({ t: 'touch', car: Math.max(0, state.lastTouch), speed: 20, ballSpeed: 28 });
       if (every(t0, t, 3.1, 0.5)) events.push({ t: 'wall', speed: 30 });
     } else {
       b.pos = [all ? 0 : -4.5, 1.6 + 0.3 * Math.sin(t * 2), all ? -4.5 : -5];

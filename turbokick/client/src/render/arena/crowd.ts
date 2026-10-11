@@ -51,15 +51,36 @@ export class StandsView {
         stand.box(cx, (top - 1) / 2, 0, ROW_D, top + 1, sideZ * 2, standCol);
         stand.box(cx - s * (ROW_D / 2 - 0.06), top + 0.02, 0, 0.12, 0.05, sideZ * 2, topCol);
         if (k % 3 === 1) {
-          leds.box(cx - s * (ROW_D / 2 + 0.01), top - 0.25, 0, 0.05, 0.12, sideZ * 2 - 2, k % 2 ? lineA : lineB);
+          leds.box(
+            cx - s * (ROW_D / 2 + 0.01),
+            top - 0.25,
+            0,
+            0.05,
+            0.12,
+            sideZ * 2 - 2,
+            k % 2 ? lineA : lineB,
+          );
         }
         const nz = Math.floor((sideZ * 2 - 2) / 1.1);
         for (let i = 0; i < nz; i++) {
-          seats.push({ x: cx + rng.float(-0.12, 0.12), y: top, z: -sideZ + 1 + i * 1.1 + (k % 2) * 0.55 + rng.float(-0.12, 0.12), end: false });
+          seats.push({
+            x: cx + rng.float(-0.12, 0.12),
+            y: top,
+            z: -sideZ + 1 + i * 1.1 + (k % 2) * 0.55 + rng.float(-0.12, 0.12),
+            end: false,
+          });
         }
       }
       // Rückwand der Tribüne
-      stand.box(s * (W + 3.5 + SIDE_ROWS * ROW_D + 0.5), 5.5, 0, 1, 13, sideZ * 2 + 12, standCol.clone().multiplyScalar(0.7));
+      stand.box(
+        s * (W + 3.5 + SIDE_ROWS * ROW_D + 0.5),
+        5.5,
+        0,
+        1,
+        13,
+        sideZ * 2 + 12,
+        standCol.clone().multiplyScalar(0.7),
+      );
       // LED-Bande direkt hinter dem Glas
       for (let z = -sideZ + 3; z < sideZ - 2; z += 6) {
         leds.box(s * (W + 2.6), 0.75, z, 0.12, 1.2, 5.4, ((z + sideZ) / 6) % 2 < 1 ? lineA : lineB);
@@ -74,15 +95,45 @@ export class StandsView {
         const top = 1.0 + k * ROW_H;
         stand.box(0, (top - 1) / 2, cz, endX * 2, top + 1, ROW_D, standCol);
         stand.box(0, top + 0.02, cz - s * (ROW_D / 2 - 0.06), endX * 2, 0.05, 0.12, topCol);
-        if (k % 3 === 1) leds.box(0, top - 0.25, cz - s * (ROW_D / 2 + 0.01), endX * 2 - 2, 0.12, 0.05, k % 2 ? lineA : lineB);
+        if (k % 3 === 1)
+          leds.box(
+            0,
+            top - 0.25,
+            cz - s * (ROW_D / 2 + 0.01),
+            endX * 2 - 2,
+            0.12,
+            0.05,
+            k % 2 ? lineA : lineB,
+          );
         const nx = Math.floor((endX * 2 - 2) / 1.1);
         for (let i = 0; i < nx; i++) {
-          seats.push({ x: -endX + 1 + i * 1.1 + (k % 2) * 0.55 + rng.float(-0.12, 0.12), y: top, z: cz + rng.float(-0.12, 0.12), end: true });
+          seats.push({
+            x: -endX + 1 + i * 1.1 + (k % 2) * 0.55 + rng.float(-0.12, 0.12),
+            y: top,
+            z: cz + rng.float(-0.12, 0.12),
+            end: true,
+          });
         }
       }
-      stand.box(0, 5.5, s * (L + D + 3.5 + END_ROWS * ROW_D + 0.5), endX * 2 + 6, 13, 1, standCol.clone().multiplyScalar(0.7));
+      stand.box(
+        0,
+        5.5,
+        s * (L + D + 3.5 + END_ROWS * ROW_D + 0.5),
+        endX * 2 + 6,
+        13,
+        1,
+        standCol.clone().multiplyScalar(0.7),
+      );
       // Bande hinter dem Tor
-      leds.box(0, 0.75, s * (L + 2.6), 0.12 + 32, 1.2, 0.12, s < 0 ? new THREE.Color(TEAM_COLORS[0]) : new THREE.Color(TEAM_COLORS[1]));
+      leds.box(
+        0,
+        0.75,
+        s * (L + 2.6),
+        0.12 + 32,
+        1.2,
+        0.12,
+        s < 0 ? new THREE.Color(TEAM_COLORS[0]) : new THREE.Color(TEAM_COLORS[1]),
+      );
     }
 
     const standGeo = stand.build();
@@ -99,7 +150,18 @@ export class StandsView {
     this.persons = chosen.length;
     const pb = new Batch();
     pb.box(0, 0.45, 0, 0.46, 0.8, 0.3, new THREE.Color(1, 1, 1), [0, 0]);
-    pb.place(new THREE.IcosahedronGeometry(0.17, 0), 0, 1.02, 0, 0, 0, 0, 1, new THREE.Color(1, 1, 1), [1, 0]);
+    pb.place(
+      new THREE.IcosahedronGeometry(0.17, 0),
+      0,
+      1.02,
+      0,
+      0,
+      0,
+      0,
+      1,
+      new THREE.Color(1, 1, 1),
+      [1, 0],
+    );
     const personGeo = pb.build();
     this.geos.push(personGeo);
     const crowdMat = crowdMaterial(u, pal);

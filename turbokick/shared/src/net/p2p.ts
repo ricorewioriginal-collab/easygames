@@ -68,15 +68,23 @@ export type ToGuest =
   | { t: 'pong'; n: number }
   | { t: 'kick'; reason: string };
 
-const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const isObj = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
 
 // eslint-disable-next-line no-control-regex
-export const cleanName = (v: unknown): string => (typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f<>&"]/g, '').replace(/\s+/g, ' ').trim().slice(0, MAX_NAME) : '');
-const token = (v: unknown, d: string): string => (typeof v === 'string' && /^[a-z0-9_-]{1,20}$/.test(v) ? v : d);
+const CTRL = new RegExp('[\\u0000-\\u001f\\u007f<>&"]', 'g');
+export const cleanName = (v: unknown): string =>
+  typeof v === 'string' ? v.replace(CTRL, '').replace(/\s+/g, ' ').trim().slice(0, MAX_NAME) : '';
+const token = (v: unknown, d: string): string =>
+  typeof v === 'string' && /^[a-z0-9_-]{1,20}$/.test(v) ? v : d;
 
 export function cleanLook(v: unknown): Look {
   const o = isObj(v) ? v : {};
-  return { body: token(o.body, 'flitzer'), decal: token(o.decal, 'keins'), accent: typeof o.accent === 'string' && /^#[0-9a-fA-F]{6}$/.test(o.accent) ? o.accent : '' };
+  return {
+    body: token(o.body, 'flitzer'),
+    decal: token(o.decal, 'keins'),
+    accent: typeof o.accent === 'string' && /^#[0-9a-fA-F]{6}$/.test(o.accent) ? o.accent : '',
+  };
 }
 
 const isTeam = (v: unknown): v is TeamId => v === 0 || v === 1;
@@ -105,7 +113,9 @@ export function parseToHost(raw: unknown): ToHost | null {
     case 'ready':
       return typeof raw.ready === 'boolean' ? { t: 'ready', ready: raw.ready } : null;
     case 'input':
-      return typeof raw.seq === 'number' && Number.isFinite(raw.seq) ? { t: 'input', seq: raw.seq, i: clampInput(raw.i) } : null;
+      return typeof raw.seq === 'number' && Number.isFinite(raw.seq)
+        ? { t: 'input', seq: raw.seq, i: clampInput(raw.i) }
+        : null;
     case 'ping':
       return typeof raw.n === 'number' && Number.isFinite(raw.n) ? { t: 'ping', n: raw.n } : null;
     default:
@@ -113,7 +123,19 @@ export function parseToHost(raw: unknown): ToHost | null {
   }
 }
 
-const EVENT_TYPES = new Set(['countdown', 'kickoff', 'touch', 'jump', 'pad', 'wall', 'goal', 'demo', 'respawn', 'overtime', 'end']);
+const EVENT_TYPES = new Set([
+  'countdown',
+  'kickoff',
+  'touch',
+  'jump',
+  'pad',
+  'wall',
+  'goal',
+  'demo',
+  'respawn',
+  'overtime',
+  'end',
+]);
 
 /** Formprüfung einer Nachricht des Gastgebers (Müll soll nichts zerstören) */
 export function parseToGuest(raw: unknown): ToGuest | null {
@@ -127,25 +149,79 @@ export function parseToGuest(raw: unknown): ToGuest | null {
       const slots: P2PSlot[] = [];
       for (const s of l.slots) {
         if (!isObj(s) || typeof s.id !== 'string' || !isTeam(s.team)) return null;
-        slots.push({ id: s.id.slice(0, 32), name: cleanName(s.name) || '?', team: s.team, kind: s.kind === 'bot' ? 'bot' : 'human', difficulty: s.difficulty === 'easy' || s.difficulty === 'hard' || s.difficulty === 'pro' ? s.difficulty : 'normal', look: cleanLook(s.look), ready: s.ready === true, connected: s.connected !== false, host: s.host === true });
+        slots.push({
+          id: s.id.slice(0, 32),
+          name: cleanName(s.name) || '?',
+          team: s.team,
+          kind: s.kind === 'bot' ? 'bot' : 'human',
+          difficulty:
+            s.difficulty === 'easy' || s.difficulty === 'hard' || s.difficulty === 'pro'
+              ? s.difficulty
+              : 'normal',
+          look: cleanLook(s.look),
+          ready: s.ready === true,
+          connected: s.connected !== false,
+          host: s.host === true,
+        });
       }
       const ts = l.teamSize === 1 || l.teamSize === 3 ? l.teamSize : 2;
-      return { t: 'lobby', lobby: { teamSize: ts, minutes: typeof l.minutes === 'number' ? Math.max(1, Math.min(10, Math.round(l.minutes))) : 3, arena: token(l.arena, 'neon'), slots } };
+      return {
+        t: 'lobby',
+        lobby: {
+          teamSize: ts,
+          minutes: typeof l.minutes === 'number' ? Math.max(1, Math.min(10, Math.round(l.minutes))) : 3,
+          arena: token(l.arena, 'neon'),
+          slots,
+        },
+      };
     }
     case 'start': {
       const m = raw.msg;
-      if (!isObj(m) || !Array.isArray(m.players) || m.players.length < 2 || m.players.length > MAX_SLOTS || typeof m.you !== 'number' || typeof m.seed !== 'number') return null;
+      if (
+        !isObj(m) ||
+        !Array.isArray(m.players) ||
+        m.players.length < 2 ||
+        m.players.length > MAX_SLOTS ||
+        typeof m.you !== 'number' ||
+        typeof m.seed !== 'number'
+      )
+        return null;
       const players: StartPlayer[] = [];
       for (const p of m.players) {
         if (!isObj(p) || typeof p.carId !== 'number' || !isTeam(p.team)) return null;
-        players.push({ carId: p.carId, name: cleanName(p.name) || '?', team: p.team, kind: p.kind === 'bot' ? 'bot' : 'human', difficulty: p.difficulty === 'easy' || p.difficulty === 'hard' || p.difficulty === 'pro' ? p.difficulty : 'normal', look: cleanLook(p.look) });
+        players.push({
+          carId: p.carId,
+          name: cleanName(p.name) || '?',
+          team: p.team,
+          kind: p.kind === 'bot' ? 'bot' : 'human',
+          difficulty:
+            p.difficulty === 'easy' || p.difficulty === 'hard' || p.difficulty === 'pro'
+              ? p.difficulty
+              : 'normal',
+          look: cleanLook(p.look),
+        });
       }
-      const secs = typeof m.matchSeconds === 'number' && Number.isFinite(m.matchSeconds) ? Math.max(30, Math.min(900, m.matchSeconds)) : 180;
-      return { t: 'start', msg: { seed: m.seed >>> 0, matchSeconds: secs, arena: token(m.arena, 'neon'), nitro: m.nitro !== false, you: m.you, players } };
+      const secs =
+        typeof m.matchSeconds === 'number' && Number.isFinite(m.matchSeconds)
+          ? Math.max(30, Math.min(900, m.matchSeconds))
+          : 180;
+      return {
+        t: 'start',
+        msg: {
+          seed: m.seed >>> 0,
+          matchSeconds: secs,
+          arena: token(m.arena, 'neon'),
+          nitro: m.nitro !== false,
+          you: m.you,
+          players,
+        },
+      };
     }
     case 'events': {
       if (typeof raw.tick !== 'number' || !Array.isArray(raw.events) || raw.events.length > 64) return null;
-      const events = raw.events.filter((e): e is SimEvent => isObj(e) && typeof e.t === 'string' && EVENT_TYPES.has(e.t));
+      const events = raw.events.filter(
+        (e): e is SimEvent => isObj(e) && typeof e.t === 'string' && EVENT_TYPES.has(e.t),
+      );
       return { t: 'events', tick: raw.tick, events };
     }
     case 'error':

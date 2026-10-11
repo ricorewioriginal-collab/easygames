@@ -2,7 +2,17 @@ import * as THREE from 'three';
 import { CAR_HALF, type CarState, type TeamId } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import { BODY_SPECS, type BodySpec } from './bodies';
-import { MeshBuilder, TAU, clamp01, finite3, glowTexture, isNum, markShared, streakTexture, teamColors } from './common';
+import {
+  MeshBuilder,
+  TAU,
+  clamp01,
+  finite3,
+  glowTexture,
+  isNum,
+  markShared,
+  streakTexture,
+  teamColors,
+} from './common';
 import type { Fx } from './fx';
 import type { ActorLook, CarDecal } from './types';
 
@@ -45,7 +55,12 @@ function bodyGeos(id: ActorLook['body']): BodyGeos {
     for (let k = 0; k < 8; k++) {
       const a0 = (k * TAU) / 8;
       const a1 = ((k + 1) * TAU) / 8;
-      sp.bar([x, Math.cos(a0) * r * 0.66, Math.sin(a0) * r * 0.66], [x, Math.cos(a1) * r * 0.66, Math.sin(a1) * r * 0.66], r * 0.045, 0.004);
+      sp.bar(
+        [x, Math.cos(a0) * r * 0.66, Math.sin(a0) * r * 0.66],
+        [x, Math.cos(a1) * r * 0.66, Math.sin(a1) * r * 0.66],
+        r * 0.045,
+        0.004,
+      );
     }
   }
   g = {
@@ -80,7 +95,9 @@ let tailGeo: THREE.BufferGeometry | null = null;
 function sonicGeo(): THREE.BufferGeometry {
   if (!tailGeo) {
     const g = new THREE.BufferGeometry();
-    const pos = new Float32Array([-0.5, 0, 0, 0.5, 0, 0, 0.5, 0, -1, -0.5, 0, -1, 0, -0.5, 0, 0, 0.5, 0, 0, 0.5, -1, 0, -0.5, -1]);
+    const pos = new Float32Array([
+      -0.5, 0, 0, 0.5, 0, 0, 0.5, 0, -1, -0.5, 0, -1, 0, -0.5, 0, 0, 0.5, 0, 0, 0.5, -1, 0, -0.5, -1,
+    ]);
     const uv = new Float32Array([0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0]);
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
@@ -227,12 +244,59 @@ export class CarRig {
         emissiveIntensity: 0.16,
       });
     });
-    const trimMat = cachedMat('trim', () => new THREE.MeshStandardMaterial({ color: 0x1b2030, metalness: 0.7, roughness: 0.38, flatShading: true, emissive: 0x070912, emissiveIntensity: 1 }));
-    const glassMat = cachedMat(`glass|${this.main}`, () => new THREE.MeshStandardMaterial({ color: 0x0b1226, metalness: 0.9, roughness: 0.12, flatShading: true, emissive: new THREE.Color(0x0a1224).lerp(new THREE.Color(this.main), 0.16), emissiveIntensity: 1 }));
-    const neonMat = cachedMat(`neon|${this.accent}`, () => new THREE.MeshBasicMaterial({ color: this.accent }));
-    const headLampMat = cachedMat(`head|${this.accent}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(this.accent).lerp(new THREE.Color(0xffffff), 0.6) }));
-    const tailLampMat = cachedMat(`tail|${this.main}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(this.main).lerp(new THREE.Color(0xff2040), 0.35) }));
-    const finMat = cachedMat(`fin|${this.accent}`, () => new THREE.MeshBasicMaterial({ color: this.accent, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }));
+    const trimMat = cachedMat(
+      'trim',
+      () =>
+        new THREE.MeshStandardMaterial({
+          color: 0x1b2030,
+          metalness: 0.7,
+          roughness: 0.38,
+          flatShading: true,
+          emissive: 0x070912,
+          emissiveIntensity: 1,
+        }),
+    );
+    const glassMat = cachedMat(
+      `glass|${this.main}`,
+      () =>
+        new THREE.MeshStandardMaterial({
+          color: 0x0b1226,
+          metalness: 0.9,
+          roughness: 0.12,
+          flatShading: true,
+          emissive: new THREE.Color(0x0a1224).lerp(new THREE.Color(this.main), 0.16),
+          emissiveIntensity: 1,
+        }),
+    );
+    const neonMat = cachedMat(
+      `neon|${this.accent}`,
+      () => new THREE.MeshBasicMaterial({ color: this.accent }),
+    );
+    const headLampMat = cachedMat(
+      `head|${this.accent}`,
+      () =>
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color(this.accent).lerp(new THREE.Color(0xffffff), 0.6),
+        }),
+    );
+    const tailLampMat = cachedMat(
+      `tail|${this.main}`,
+      () =>
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color(this.main).lerp(new THREE.Color(0xff2040), 0.35),
+        }),
+    );
+    const finMat = cachedMat(
+      `fin|${this.accent}`,
+      () =>
+        new THREE.MeshBasicMaterial({
+          color: this.accent,
+          transparent: true,
+          opacity: 0.32,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        }),
+    );
 
     this.root.add(this.tilt);
     const add = (geo: THREE.BufferGeometry, mat: THREE.Material): THREE.Mesh => {
@@ -265,7 +329,14 @@ export class CarRig {
     }
 
     // Unterboden-Leuchten (Licht auf dem Boden)
-    this.floorMat = new THREE.MeshBasicMaterial({ color: this.main, map: glowTexture(), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false });
+    this.floorMat = new THREE.MeshBasicMaterial({
+      color: this.main,
+      map: glowTexture(),
+      transparent: true,
+      opacity: 0.5,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
     this.floor = new THREE.Mesh(floorGlowGeo(), this.floorMat);
     this.floor.position.set(0, -CAR_HALF[1] + 0.012, spec.glow[2]);
     this.floor.scale.set(spec.glow[0], 1, spec.glow[1]);
@@ -273,7 +344,14 @@ export class CarRig {
     this.tilt.add(this.floor);
 
     // Scheinwerfer-Lichtpunkte
-    this.headMat = new THREE.SpriteMaterial({ map: glowTexture(), color: this.accent, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false });
+    this.headMat = new THREE.SpriteMaterial({
+      map: glowTexture(),
+      color: this.accent,
+      transparent: true,
+      opacity: 0.7,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
     for (const h of spec.headSpots) {
       const s = new THREE.Sprite(this.headMat);
       s.position.set(h[0], h[1], h[2]);
@@ -286,7 +364,14 @@ export class CarRig {
     const flameCols = [this.main, this.accent, 0xffffff];
     const flameAlpha = [0.38, 0.5, 0.62];
     for (let i = 0; i < 3; i++) {
-      const m = new THREE.MeshBasicMaterial({ color: flameCols[i] as number, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+      const m = new THREE.MeshBasicMaterial({
+        color: flameCols[i] as number,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      });
       m.userData.alpha = flameAlpha[i];
       const cone = new THREE.Mesh(coneGeo(), m);
       cone.renderOrder = 3;
@@ -294,14 +379,31 @@ export class CarRig {
       this.cones.push(cone);
       this.coneMats.push(m);
     }
-    this.flameGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), color: this.accent, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+    this.flameGlow = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: glowTexture(),
+        color: this.accent,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
     this.flameGlow.renderOrder = 3;
     this.flame.add(this.flameGlow);
     this.flame.visible = false;
     this.tilt.add(this.flame);
 
     // Supersonic-Schweif
-    this.sonicMat = new THREE.MeshBasicMaterial({ color: this.accent, map: streakTexture(), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+    this.sonicMat = new THREE.MeshBasicMaterial({
+      color: this.accent,
+      map: streakTexture(),
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
     this.sonic = new THREE.Mesh(sonicGeo(), this.sonicMat);
     this.sonic.position.set(0, 0.02, spec.exhaust[2] + 0.05);
     this.sonic.renderOrder = 3;
@@ -326,13 +428,21 @@ export class CarRig {
     const spec = this.spec;
     if (boost > 0.02) {
       this.flame.visible = true;
-      const f = 1 + 0.16 * Math.sin(t * 53 + this.phase) + 0.1 * Math.sin(t * 91 + this.phase * 2.3) + 0.06 * Math.sin(t * 143);
+      const f =
+        1 +
+        0.16 * Math.sin(t * 53 + this.phase) +
+        0.1 * Math.sin(t * 91 + this.phase * 2.3) +
+        0.06 * Math.sin(t * 143);
       const len = spec.flame * boost * (0.65 + 0.35 * level) * (1 + sonic * 0.45) * f;
       const rad = spec.flameR * (0.6 + 0.4 * boost);
       const k = [1, 0.62, 0.3];
       const kl = [1, 0.72, 0.45];
       for (let i = 0; i < 3; i++) {
-        (this.cones[i] as THREE.Mesh).scale.set(rad * (k[i] as number), rad * (k[i] as number), len * (kl[i] as number));
+        (this.cones[i] as THREE.Mesh).scale.set(
+          rad * (k[i] as number),
+          rad * (k[i] as number),
+          len * (kl[i] as number),
+        );
         const m = this.coneMats[i] as THREE.MeshBasicMaterial;
         m.opacity = (m.userData.alpha as number) * clamp01(boost * 1.2);
       }
@@ -434,7 +544,13 @@ export class CarActor {
 
     // Pose nur übernehmen, wenn sie gültig ist
     const q4 = car.quat;
-    const okQ = !!q4 && isNum(q4[0]) && isNum(q4[1]) && isNum(q4[2]) && isNum(q4[3]) && q4[0] * q4[0] + q4[1] * q4[1] + q4[2] * q4[2] + q4[3] * q4[3] > 1e-8;
+    const okQ =
+      !!q4 &&
+      isNum(q4[0]) &&
+      isNum(q4[1]) &&
+      isNum(q4[2]) &&
+      isNum(q4[3]) &&
+      q4[0] * q4[0] + q4[1] * q4[1] + q4[2] * q4[2] + q4[3] * q4[3] > 1e-8;
     if (finite3(car.pos)) {
       root.position.set(car.pos[0], car.pos[1], car.pos[2]);
       this.x = car.pos[0];
@@ -539,8 +655,25 @@ export class CarActor {
       for (let i = 0; i < n; i++) {
         const sx = this.rng.chance(0.5) ? 1 : -1;
         const sz = this.rng.float(-0.4, 0.4);
-        tmpV.set(sx * 0.4, -0.18, sz).applyQuaternion(root.quaternion).add(root.position);
-        fx.glow.emit(tmpV.x, tmpV.y, tmpV.z, -v[0] * 0.15 + this.rng.float(-2, 2), -v[1] * 0.15 + this.rng.float(-1, 2), -v[2] * 0.15 + this.rng.float(-2, 2), 0xffe2a8, 0.1, 0.02, 0.3, 1, 8, 0.5);
+        tmpV
+          .set(sx * 0.4, -0.18, sz)
+          .applyQuaternion(root.quaternion)
+          .add(root.position);
+        fx.glow.emit(
+          tmpV.x,
+          tmpV.y,
+          tmpV.z,
+          -v[0] * 0.15 + this.rng.float(-2, 2),
+          -v[1] * 0.15 + this.rng.float(-1, 2),
+          -v[2] * 0.15 + this.rng.float(-2, 2),
+          0xffe2a8,
+          0.1,
+          0.02,
+          0.3,
+          1,
+          8,
+          0.5,
+        );
       }
     }
   }
@@ -557,7 +690,10 @@ export function carSig(look: ActorLook, team: TeamId): string {
 /* ----------------------------------------------------------- Vorschau */
 
 /** Auto für die Garage: dreht sich langsam, Räder rollen, Aufbau federt sanft. */
-export function buildCarPreview(look: ActorLook, team: TeamId): { object: THREE.Group; update(dt: number): void; dispose(): void } {
+export function buildCarPreview(
+  look: ActorLook,
+  team: TeamId,
+): { object: THREE.Group; update(dt: number): void; dispose(): void } {
   const rig = new CarRig(look, team, 1);
   const object = new THREE.Group();
   // Auto auf Bodenhöhe der Vorschau (Hitbox-Unterkante bei y = 0)

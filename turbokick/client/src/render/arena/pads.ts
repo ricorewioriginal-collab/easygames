@@ -76,8 +76,13 @@ export class PadsView {
     sb.place(flatten(new THREE.CircleGeometry(0.8, 28)), 0, 0.126, 0, 0, 0, 0, 1, g(0.7));
     sb.place(flatten(new THREE.RingGeometry(0.88, 1.0, 40)), 0, 0.13, 0, 0, 0, 0, 1, g(1.4));
     const bolt = new THREE.Shape();
-    bolt.moveTo(0.12, 0.5); bolt.lineTo(-0.3, -0.05); bolt.lineTo(-0.02, -0.05); bolt.lineTo(-0.12, -0.5);
-    bolt.lineTo(0.3, 0.05); bolt.lineTo(0.02, 0.05); bolt.closePath();
+    bolt.moveTo(0.12, 0.5);
+    bolt.lineTo(-0.3, -0.05);
+    bolt.lineTo(-0.02, -0.05);
+    bolt.lineTo(-0.12, -0.5);
+    bolt.lineTo(0.3, 0.05);
+    bolt.lineTo(0.02, 0.05);
+    bolt.closePath();
     sb.place(flatten(new THREE.ShapeGeometry(bolt)), 0, 0.134, 0, 0, 0, 0, 1, g(0.12));
     const smallGeo = sb.build();
     this.geos.push(smallGeo);
@@ -198,7 +203,9 @@ export class PadsView {
     this.big.instanceMatrix.needsUpdate = true;
     this.can.instanceMatrix.needsUpdate = true;
     this.halo.instanceMatrix.needsUpdate = true;
-    for (let k = 0; k < 4; k++) ((this.meshes[k] as THREE.InstancedMesh).instanceColor as THREE.InstancedBufferAttribute).needsUpdate = true;
+    for (let k = 0; k < 4; k++)
+      ((this.meshes[k] as THREE.InstancedMesh).instanceColor as THREE.InstancedBufferAttribute).needsUpdate =
+        true;
   }
 
   private clear(): void {

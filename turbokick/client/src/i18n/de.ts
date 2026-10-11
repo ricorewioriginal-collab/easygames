@@ -23,7 +23,8 @@ export const de: Record<string, string> = {
   'play.training': 'Training',
   'play.modeHelp.quick': 'Du gegen Bots – allein oder mit Bot-Teamkameraden.',
   'play.modeHelp.split': 'Zwei Spieler an einem Gerät, geteilter Bildschirm (Tastatur oder Gamepads).',
-  'play.modeHelp.training': 'Freies Spiel ohne Gegner und ohne Uhr: Ball, Nitro, Wände – übe Schüsse und Sprünge (R setzt zurück).',
+  'play.modeHelp.training':
+    'Freies Spiel ohne Gegner und ohne Uhr: Ball, Nitro, Wände – übe Schüsse und Sprünge (R setzt zurück).',
   'play.teamSize': 'Teamgröße',
   'play.duration': 'Spieldauer',
   'play.splitMode': 'Zweiter Spieler',
@@ -60,13 +61,17 @@ export const de: Record<string, string> = {
   'garage.decal': 'Aufkleber',
   'garage.accent': 'Akzentfarbe',
   'help.goal': 'Ziel',
-  'help.goalText': 'Zwei Teams, eine Plasmakugel: Schieße sie mit deinem Auto ins gegnerische Tor. Wer nach der Spielzeit mehr Tore hat, gewinnt. Bei Gleichstand gibt es eine Verlängerung – das nächste Tor entscheidet.',
+  'help.goalText':
+    'Zwei Teams, eine Plasmakugel: Schieße sie mit deinem Auto ins gegnerische Tor. Wer nach der Spielzeit mehr Tore hat, gewinnt. Bei Gleichstand gibt es eine Verlängerung – das nächste Tor entscheidet.',
   'help.nitro': 'Nitro',
-  'help.nitroText': 'Fahre über leuchtende Nitro-Felder (kleine +12, große Kanister +100), um Nitro zu tanken. Halte die Boost-Taste für kräftigen Schub – am Boden und in der Luft. Bei sehr hohem Tempo (Supersonic) kannst du Gegner mit einem Rammstoß zerstören; sie kehren nach kurzer Zeit zurück.',
+  'help.nitroText':
+    'Fahre über leuchtende Nitro-Felder (kleine +12, große Kanister +100), um Nitro zu tanken. Halte die Boost-Taste für kräftigen Schub – am Boden und in der Luft. Bei sehr hohem Tempo (Supersonic) kannst du Gegner mit einem Rammstoß zerstören; sie kehren nach kurzer Zeit zurück.',
   'help.moves': 'Fahrkünste',
-  'help.movesText': 'Der Sprung öffnet die Luftsteuerung (Nase, Drehung, Rollen). Ein zweiter Druck kurz danach löst einen Salto-Stoß (Ausweichmanöver) aus oder – ohne Richtung – einen Doppelsprung. Mit genug Tempo fährst du die Wände und die Rundungen hinauf. Die Ball-Kamera schaltest du um, um Auto und Ball im Blick zu behalten.',
+  'help.movesText':
+    'Der Sprung öffnet die Luftsteuerung (Nase, Drehung, Rollen). Ein zweiter Druck kurz danach löst einen Salto-Stoß (Ausweichmanöver) aus oder – ohne Richtung – einen Doppelsprung. Mit genug Tempo fährst du die Wände und die Rundungen hinauf. Die Ball-Kamera schaltest du um, um Auto und Ball im Blick zu behalten.',
   'help.rules': 'Regeln',
-  'help.rulesText': 'Nach jedem Tor gibt es einen neuen Anstoß mit Countdown. Eigentore zählen für den Gegner. Ein Tor in der letzten Sekunde zählt nur, wenn der Ball vor Ablauf der Uhr die Torlinie überquert hat. Die Teams heißen Funken (orange) und Frost (blau).',
+  'help.rulesText':
+    'Nach jedem Tor gibt es einen neuen Anstoß mit Countdown. Eigentore zählen für den Gegner. Mit dem Ende der Uhr endet das Spiel sofort (ein Tor im selben Moment zählt noch). Die Teams heißen Funken (orange) und Frost (blau).',
   'help.controls': 'Steuerung',
   'help.action': 'Aktion',
   'help.arrows': 'Pfeile',
@@ -87,13 +92,17 @@ export const de: Record<string, string> = {
   'lobby.copied': 'Code kopiert.',
   'lobby.copyFailed': 'Kopieren nicht möglich – bitte den Text von Hand markieren.',
   'p2p.title': 'Online mit Freunden',
-  'p2p.intro': 'Ohne Server und ohne Konto: Ihr verbindet euch direkt miteinander. Der Gastgeber zeigt jedem Mitspieler einen QR-Code (oder Text-Code), der Mitspieler antwortet mit seinem eigenen Code.',
-  'p2p.unsupported': 'Dein Browser unterstützt diese Verbindung nicht (WebRTC fehlt). Bitte verwende einen aktuellen Browser.',
+  'p2p.intro':
+    'Ohne Server und ohne Konto: Ihr verbindet euch direkt miteinander. Der Gastgeber zeigt jedem Mitspieler einen QR-Code (oder Text-Code), der Mitspieler antwortet mit seinem eigenen Code.',
+  'p2p.unsupported':
+    'Dein Browser unterstützt diese Verbindung nicht (WebRTC fehlt). Bitte verwende einen aktuellen Browser.',
   'p2p.stun': 'Verbindungshilfe nutzen (STUN)',
-  'p2p.stunHint': 'Nötig, wenn ihr in verschiedenen Netzen seid (z. B. WLAN und Mobilfunk). Dabei werden nur Verbindungsdaten an einen öffentlichen Dienst gesendet, keine Spielinhalte. Im selben WLAN geht es auch ohne.',
+  'p2p.stunHint':
+    'Nötig, wenn ihr in verschiedenen Netzen seid (z. B. WLAN und Mobilfunk). Dabei werden nur Verbindungsdaten an einen öffentlichen Dienst gesendet, keine Spielinhalte. Im selben WLAN geht es auch ohne.',
   'p2p.host': 'Raum erstellen',
   'p2p.join': 'Raum beitreten',
-  'p2p.note': 'Hinweis: Der Gastgeber rechnet das Spiel; verlässt er es, endet die Partie. Verbindet sich ein Mitspieler nicht, kann es an einem sehr strengen Netz liegen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk. Je besser die Verbindung (kleine Laufzeit), desto flüssiger das Spiel.',
+  'p2p.note':
+    'Hinweis: Der Gastgeber rechnet das Spiel; verlässt er es, endet die Partie. Verbindet sich ein Mitspieler nicht, kann es an einem sehr strengen Netz liegen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk. Je besser die Verbindung (kleine Laufzeit), desto flüssiger das Spiel.',
   'p2p.hostHelp': 'Lade bis zu fünf Mitspieler ein. Jeder bekommt einen eigenen Code.',
   'p2p.invite': '+ Mitspieler einladen',
   'p2p.preparing': 'Code wird vorbereitet …',
@@ -115,7 +124,8 @@ export const de: Record<string, string> = {
   'p2p.step3': '2. Zeige diesen Antwort-Code dem Gastgeber',
   'p2p.showHost': 'Der Gastgeber scannt diesen QR-Code oder du schickst ihm den Text.',
   'p2p.waitHost': 'Warte, bis der Gastgeber den Code eingegeben hat …',
-  'p2p.guestWait': 'Du bist verbunden. Wähle dein Team (⇄) und drücke „Ich bin bereit“. Der Gastgeber startet das Spiel.',
+  'p2p.guestWait':
+    'Du bist verbunden. Wähle dein Team (⇄) und drücke „Ich bin bereit“. Der Gastgeber startet das Spiel.',
   'p2p.hostGone': 'Die Verbindung zum Gastgeber ist beendet.',
   'qr.alt': 'QR-Code',
   'qr.scan': 'Kamerabild zum Scannen',
@@ -162,7 +172,8 @@ export const de: Record<string, string> = {
   'opt.reset': 'Alles zurücksetzen',
   'opt.resetAsk': 'Wirklich alles zurücksetzen? Das kann nicht rückgängig gemacht werden.',
   'opt.resetYes': 'Ja, zurücksetzen',
-  'credits.own': 'TURBOKICK ist ein unabhängiges Spiel mit eigenen Fahrzeugen, Arenen, Namen, Musik und Klängen (alles im Browser erzeugt, keine fremden Assets). Es steht in keiner Verbindung zu anderen Auto-Fußball-Spielen.',
+  'credits.own':
+    'TURBOKICK ist ein unabhängiges Spiel mit eigenen Fahrzeugen, Arenen, Namen, Musik und Klängen (alles im Browser erzeugt, keine fremden Assets). Es steht in keiner Verbindung zu anderen Auto-Fußball-Spielen.',
   'credits.lib': 'Bibliothek',
   'credits.version': 'Version',
   'credits.license': 'Lizenz',

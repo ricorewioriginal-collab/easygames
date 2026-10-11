@@ -7,7 +7,14 @@ export type V3 = [number, number, number];
  * gleichmäßig im Winkel verteilt (s = r·tan θ), dazwischen liegen `midDiv` gleich große Abschnitte
  * plus die Pflicht-Stützstellen `extras` (z. B. Torkanten, damit der Ausschnitt sauber geschnitten wird).
  */
-export function axisCoords(lo: number, hi: number, r: number, steps: number, extras: number[], midDiv: number): number[] {
+export function axisCoords(
+  lo: number,
+  hi: number,
+  r: number,
+  steps: number,
+  extras: number[],
+  midDiv: number,
+): number[] {
   const out: number[] = [];
   for (let k = 0; k <= steps; k++) out.push(lo + r - r * Math.tan((Math.PI / 4) * (1 - k / steps)));
   for (let k = 0; k <= steps; k++) out.push(hi - r + r * Math.tan((Math.PI / 4) * (k / steps)));
@@ -46,9 +53,15 @@ export function buildShell(
   const ctx: TriCtx = { cx: 0, cy: 0, cz: 0, minY: 0, maxY: 0 };
 
   const pushTri = (a: number, b: number, c: number): void => {
-    const ax = pos[a * 3] as number, ay = pos[a * 3 + 1] as number, az = pos[a * 3 + 2] as number;
-    const bx = pos[b * 3] as number, by = pos[b * 3 + 1] as number, bz = pos[b * 3 + 2] as number;
-    const cx = pos[c * 3] as number, cy = pos[c * 3 + 1] as number, cz = pos[c * 3 + 2] as number;
+    const ax = pos[a * 3] as number,
+      ay = pos[a * 3 + 1] as number,
+      az = pos[a * 3 + 2] as number;
+    const bx = pos[b * 3] as number,
+      by = pos[b * 3 + 1] as number,
+      bz = pos[b * 3 + 2] as number;
+    const cx = pos[c * 3] as number,
+      cy = pos[c * 3 + 1] as number,
+      cz = pos[c * 3 + 2] as number;
     ctx.cx = (ax + bx + cx) / 3;
     ctx.cy = (ay + by + cy) / 3;
     ctx.cz = (az + bz + cz) / 3;
@@ -56,9 +69,15 @@ export function buildShell(
     ctx.maxY = Math.max(ay, by, cy);
     if (keep && !keep(ctx)) return;
     // Entartete Dreiecke weglassen und Umlaufsinn so wählen, dass die Vorderseite nach innen zeigt
-    const ux = bx - ax, uy = by - ay, uz = bz - az;
-    const vx = cx - ax, vy = cy - ay, vz = cz - az;
-    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const ux = bx - ax,
+      uy = by - ay,
+      uz = bz - az;
+    const vx = cx - ax,
+      vy = cy - ay,
+      vz = cz - az;
+    const nx = uy * vz - uz * vy,
+      ny = uz * vx - ux * vz,
+      nz = ux * vy - uy * vx;
     if (nx * nx + ny * ny + nz * nz < 1e-12) return;
     const avx = (nor[a * 3] as number) + (nor[b * 3] as number) + (nor[c * 3] as number);
     const avy = (nor[a * 3 + 1] as number) + (nor[b * 3 + 1] as number) + (nor[c * 3 + 1] as number);
@@ -83,7 +102,9 @@ export function buildShell(
           const cxp = Math.min(Math.max(p[0], clo[0] as number), chi[0] as number);
           const cyp = Math.min(Math.max(p[1], clo[1] as number), chi[1] as number);
           const czp = Math.min(Math.max(p[2], clo[2] as number), chi[2] as number);
-          let dx = p[0] - cxp, dy = p[1] - cyp, dz = p[2] - czp;
+          let dx = p[0] - cxp,
+            dy = p[1] - cyp,
+            dz = p[2] - czp;
           const len = Math.hypot(dx, dy, dz) || 1;
           dx /= len;
           dy /= len;
@@ -130,7 +151,12 @@ export class Batch {
   private c = new THREE.Color();
 
   /** uvConst überschreibt die UV-Koordinaten aller Eckpunkte (z. B. u = Gebäudekennung, v = Dachhöhe). */
-  add(geo: THREE.BufferGeometry, m: THREE.Matrix4, color: THREE.Color | number, uvConst?: [number, number]): void {
+  add(
+    geo: THREE.BufferGeometry,
+    m: THREE.Matrix4,
+    color: THREE.Color | number,
+    uvConst?: [number, number],
+  ): void {
     this.c.set(color);
     this.nm.getNormalMatrix(m);
     const p = geo.getAttribute('position');
@@ -151,7 +177,17 @@ export class Batch {
     else for (let i = 0; i < p.count; i++) this.idx.push(base + i);
   }
 
-  box(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, color: THREE.Color | number, uvConst?: [number, number], rotY = 0): void {
+  box(
+    cx: number,
+    cy: number,
+    cz: number,
+    sx: number,
+    sy: number,
+    sz: number,
+    color: THREE.Color | number,
+    uvConst?: [number, number],
+    rotY = 0,
+  ): void {
     this.e.set(0, rotY, 0);
     this.q.setFromEuler(this.e);
     this.tmp.compose(this.t.set(cx, cy, cz), this.q, this.s.set(sx, sy, sz));
@@ -159,7 +195,18 @@ export class Batch {
   }
 
   /** Beliebige Geometrie an Position/Drehung/Skalierung einfügen */
-  place(geo: THREE.BufferGeometry, x: number, y: number, z: number, rx: number, ry: number, rz: number, sc: number | V3, color: THREE.Color | number, uvConst?: [number, number]): void {
+  place(
+    geo: THREE.BufferGeometry,
+    x: number,
+    y: number,
+    z: number,
+    rx: number,
+    ry: number,
+    rz: number,
+    sc: number | V3,
+    color: THREE.Color | number,
+    uvConst?: [number, number],
+  ): void {
     this.e.set(rx, ry, rz);
     this.q.setFromEuler(this.e);
     if (typeof sc === 'number') this.s.set(sc, sc, sc);
@@ -178,7 +225,11 @@ export class Batch {
     g.setAttribute('normal', new THREE.Float32BufferAttribute(this.nor, 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
-    g.setIndex(this.idx.length > 65535 ? new THREE.Uint32BufferAttribute(this.idx, 1) : new THREE.Uint16BufferAttribute(this.idx, 1));
+    g.setIndex(
+      this.idx.length > 65535
+        ? new THREE.Uint32BufferAttribute(this.idx, 1)
+        : new THREE.Uint16BufferAttribute(this.idx, 1),
+    );
     this.unitBox.dispose();
     return g;
   }

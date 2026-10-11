@@ -28,7 +28,9 @@ export function startArenaLab(params: URLSearchParams): void {
   const lab: LabState = { errors: [], frames: 0 };
   (window as unknown as { __lab: LabState }).__lab = lab;
   window.addEventListener('error', (e) => lab.errors.push(String(e.message)));
-  window.addEventListener('unhandledrejection', (e) => lab.errors.push(String((e as PromiseRejectionEvent).reason)));
+  window.addEventListener('unhandledrejection', (e) =>
+    lab.errors.push(String((e as PromiseRejectionEvent).reason)),
+  );
 
   const themeParam = params.get('theme');
   const theme: ArenaTheme = themeParam === 'eis' || themeParam === 'canyon' ? themeParam : 'neon';
@@ -48,12 +50,23 @@ export function startArenaLab(params: URLSearchParams): void {
   const recreate = params.get('recreate') === '1';
 
   // Attrappen: Ball und zwei Autos (Größenvergleich, Schatten)
-  const ballMesh = new THREE.Mesh(new THREE.SphereGeometry(BALL_RADIUS, 24, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x88ccff, emissiveIntensity: 0.9, roughness: 0.3 }));
+  const ballMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(BALL_RADIUS, 24, 16),
+    new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0x88ccff,
+      emissiveIntensity: 0.9,
+      roughness: 0.3,
+    }),
+  );
   ballMesh.castShadow = true;
   scene.add(ballMesh);
   const carGeo = new THREE.BoxGeometry(CAR_HALF[0] * 2, CAR_HALF[1] * 2, CAR_HALF[2] * 2);
   const cars: THREE.Mesh[] = [];
-  for (const [x, z, c] of [[-6, -10, 0xff7a1a], [8, 14, 0x2ac8ff]] as Array<[number, number, number]>) {
+  for (const [x, z, c] of [
+    [-6, -10, 0xff7a1a],
+    [8, 14, 0x2ac8ff],
+  ] as Array<[number, number, number]>) {
     const m = new THREE.Mesh(carGeo, new THREE.MeshStandardMaterial({ color: c, roughness: 0.4 }));
     m.scale.setScalar(2.2);
     m.position.set(x, CAR_HALF[1] * 2.2, z);
@@ -63,7 +76,12 @@ export function startArenaLab(params: URLSearchParams): void {
   }
 
   // Pads: genau die Positionen der Physik (6 große + 28 kleine)
-  const pads: PadState[] = BOOST_PADS.map((p) => ({ pos: [p.pos[0], p.pos[1], p.pos[2]], big: p.big, active: true, timer: 0 }));
+  const pads: PadState[] = BOOST_PADS.map((p) => ({
+    pos: [p.pos[0], p.pos[1], p.pos[2]],
+    big: p.big,
+    active: true,
+    timer: 0,
+  }));
 
   const state: SimState = {
     tick: 0,
@@ -102,7 +120,11 @@ export function startArenaLab(params: URLSearchParams): void {
     dir.normalize();
     const ang = Math.atan2(dir.x, dir.z) + yaw;
     const el = Math.max(-1.4, Math.min(1.4, Math.asin(dir.y) + pitch));
-    tgt.set(camera.position.x + Math.sin(ang) * Math.cos(el) * len, camera.position.y + Math.sin(el) * len, camera.position.z + Math.cos(ang) * Math.cos(el) * len);
+    tgt.set(
+      camera.position.x + Math.sin(ang) * Math.cos(el) * len,
+      camera.position.y + Math.sin(el) * len,
+      camera.position.z + Math.cos(ang) * Math.cos(el) * len,
+    );
     camera.lookAt(tgt);
   };
   applyCam();

@@ -23,7 +23,8 @@ async function boot(): Promise<void> {
     await app.go('menu');
   } catch (e) {
     console.error(e);
-    host.textContent = 'TURBOKICK konnte nicht gestartet werden. Dein Browser unterstützt WebGL möglicherweise nicht – bitte aktualisiere ihn oder versuche einen anderen.';
+    host.textContent =
+      'TURBOKICK konnte nicht gestartet werden. Dein Browser unterstützt WebGL möglicherweise nicht – bitte aktualisiere ihn oder versuche einen anderen.';
   }
 }
 void boot();
