@@ -3,7 +3,7 @@
 const View3D = typeof THREE === 'undefined' ? null : (() => {
   const T3 = THREE, D = Data, P = D.PRODUCTS, S0 = 1 / 1.6;
   let radioLeds = [], R, scene, cam, topCam, cv, W = 0, H = 0, aspect = 1, world = null, worldKey = '', ceil = null, heat = null, heatT = 0, sun, hemi, ghost = null, carryG = null, carryKey = '', rampG = null, rampKey = '', messG = null, messKey = '', skyOut = null, lights = [];
-  const st = { yaw: 0, pitch: 0, top: false, bob: 0, radioOn: false, q: 1 }, objs = new Map(), people = new Map(), hits = [], ray = new T3.Raycaster(), dummy = new T3.Object3D(), v2 = new T3.Vector2();
+  const st = { yaw: 0, pitch: 0, top: false, bob: 0, radioOn: false, q: 1, zoom: 1, panX: 0, panY: 0, port: false, hh: 20, sw: 18, sh: 12 }, objs = new Map(), people = new Map(), hits = [], ray = new T3.Raycaster(), dummy = new T3.Object3D(), v2 = new T3.Vector2();
   const geo = { box: new T3.BoxGeometry(1, 1, 1), sph: new T3.SphereGeometry(.5, 14, 10), cyl: new T3.CylinderGeometry(.5, .5, 1, 14), plane: new T3.PlaneGeometry(1, 1), cone: new T3.ConeGeometry(.5, 1, 12) };
   const mats = {}, mat = (c, o) => { const k = c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T3.MeshLambertMaterial(Object.assign({ color: c }, o || {}))); };
   const mesh = (g, m, x, y, z, sx, sy, sz) => { const o = new T3.Mesh(g, m); o.position.set(x || 0, y || 0, z || 0); o.scale.set(sx == null ? 1 : sx, sy == null ? 1 : sy, sz == null ? 1 : sz); return o; };
@@ -256,6 +256,8 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   function look(dx, dy) { st.yaw -= dx; st.pitch = Math.max(-1.25, Math.min(1.1, st.pitch - dy)); }
   const move = (fwd, side) => { const f = [-Math.sin(st.yaw), -Math.cos(st.yaw)], r = [Math.cos(st.yaw), -Math.sin(st.yaw)]; return [f[0] * fwd + r[0] * side, f[1] * fwd + r[1] * side]; };
   function setTop(b) { st.top = !!b; if (ceil) ceil.visible = !st.top; }
+  function zoomBy(f) { st.zoom = Math.max(.35, Math.min(1.1, st.zoom * f)); }
+  function panBy(dx, dy) { const k = 2 * st.hh * Math.tan(topCam.fov * Math.PI / 360) / Math.max(1, H); if (st.port) { st.panY -= dx * k; st.panX += dy * k; } else { st.panX -= dx * k; st.panY -= dy * k; } }
   function pick(cx, cy, maxD) {   // Bildschirmposition (Pixel im Canvas) -> Objekt-ID
     v2.set(cx / W * 2 - 1, -(cy / H) * 2 + 1); const c = st.top ? topCam : cam; ray.setFromCamera(v2, c); ray.far = maxD || 6; const hs = ray.intersectObjects(hits, false); ray.far = Infinity; return hs.length ? { id: hs[0].object.userData.oid, d: hs[0].distance } : null;
   }
@@ -266,7 +268,11 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     // Himmel nach Tageszeit & Wetter
     const tt = S.phase === 'open' ? S.t / Sim.DAYLEN : S.phase === 'prep' ? 0 : 1, wx = S.weather, day = new T3.Color(wx === 'regen' ? '#7f8ea3' : wx === 'wolke' ? '#a9bdd3' : wx === 'kalt' ? '#b9d4ea' : wx === 'heiss' ? '#8fc8f5' : '#8fc5f2'), dusk = new T3.Color('#f0a068'); scene.background.copy(day).lerp(dusk, Math.max(0, (tt - .8) / .2) * .8);
     const dim = S.blackout ? .35 : 1; hemi.intensity = (wx === 'regen' ? .55 : .62) * dim; sun.intensity = (wx === 'regen' || wx === 'wolke' ? .25 : .45) * dim; lights.forEach(l => l.material.color.set(S.blackout ? '#444' : '#fffbe8'));
-    const p = S.player; if (st.top) { const W0 = S.W, H0 = S.H, fov = topCam.fov * Math.PI / 180, hh = Math.max(H0 * .62 / Math.tan(fov / 2), W0 * .55 / (Math.tan(fov / 2) * aspect)); topCam.position.set(W0 / 2, hh, H0 / 2 + hh * .28); topCam.lookAt(W0 / 2, 0, H0 / 2 + .3); }
+    const p = S.player; if (st.top) {   // Hochformat: Laden um 90° gedreht, damit er den Bildschirm füllt; Zoom & Verschieben
+      const port = st.port = aspect < .8, W0 = port ? S.H : S.W, H0 = port ? S.W : S.H, tf = Math.tan(topCam.fov * Math.PI / 360), hh = st.hh = Math.max(H0 * .62 / tf, W0 * .55 / (tf * aspect)) * st.zoom; st.sw = S.W; st.sh = S.H;
+      const mx = (1 - Math.min(1, st.zoom)) * S.W / 2 + .5, my = (1 - Math.min(1, st.zoom)) * S.H / 2 + .5; st.panX = Math.max(-mx, Math.min(mx, st.panX)); st.panY = Math.max(-my, Math.min(my, st.panY)); const cx = S.W / 2 + st.panX, cz = S.H / 2 + st.panY;
+      if (port) { topCam.up.set(1, 0, 0); topCam.position.set(cx - hh * .28, hh, cz); topCam.lookAt(cx - .3, 0, cz); } else { topCam.up.set(0, 1, 0); topCam.position.set(cx, hh, cz + hh * .28); topCam.lookAt(cx, 0, cz + .3); }
+    }
     else { const mv = Math.hypot(p.vx, p.vy) > .1 ? 1 : 0; st.bob += dt * 9 * mv; cam.position.set(p.x, .98 + Math.sin(st.bob) * .012 * mv, p.y); cam.rotation.set(st.pitch, st.yaw, 0); }
     // getragene Kartons
     const ck = p.carry.map(b => b.empty ? '~' : b.p).join(','); if (ck !== carryKey || !carryG) { carryKey = ck; if (carryG) cam.remove(carryG); carryG = new T3.Group(); carryG.position.set(.12, -.34, -.72); p.carry.forEach((b, i) => { const c = cartonMesh(b.p, b.empty); c.position.set(0, i * .34, 0); c.rotation.y = -.25; c.scale.setScalar(.8); carryG.add(c); }); cam.add(carryG); }
@@ -281,5 +287,5 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
     syncBeacon(opt, now); updateFly(dt);
     R.render(scene, st.top ? topCam : cam);
   }
-  return { addFly, setQuality, init, resize, render, look, move, setTop, pick, floorAt, st, people, get ready() { return !!R; } };
+  return { addFly, setQuality, init, resize, render, look, move, setTop, zoomBy, panBy, pick, floorAt, st, people, get ready() { return !!R; } };
 })();

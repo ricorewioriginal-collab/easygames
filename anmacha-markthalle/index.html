@@ -6,89 +6,182 @@
 <meta name="theme-color" content="#0b1020">
 <title>AnMaCha Markthalle 24</title>
 <style>
-  :root{--c:#00e5ff;--ma:#ff2d95;--v:#8b5cf6;--o:#ff9a1f;--g:#00ffc8;--bg:#0b1020;--tx:#eaf2ff;--mut:#8fa3bd;--y:#ffd24a}
+  :root{--c:#00e5ff;--ma:#ff2d95;--v:#8b5cf6;--o:#ff9a1f;--g:#00ffc8;--bg:#0b1020;--tx:#eaf2ff;--mut:#8fa3bd;--y:#ffd24a;--pn:#121a38;--hud:44px}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   [hidden]{display:none!important}
   html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,'Segoe UI',Roboto,Arial,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+  input{user-select:text;-webkit-user-select:text}
   #app{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
   .glass{background:rgba(20,28,56,.82);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px}
-  #hud{display:flex;gap:6px;align-items:center;padding:6px 8px;flex-wrap:wrap;position:relative;z-index:3}
-  .chip{padding:5px 10px;font-weight:800;font-size:clamp(12px,3.2vw,15px);white-space:nowrap;display:flex;align-items:center;gap:6px}
+  /* Kopfzeile: eine Zeile auf allen Geräten */
+  #hud{display:flex;gap:6px;align-items:center;padding:6px 8px;position:relative;z-index:3;background:linear-gradient(180deg,rgba(8,12,28,.96),rgba(8,12,28,.85));border-bottom:1px solid rgba(255,255,255,.08);min-height:var(--hud)}
+  .chip{padding:5px 10px;font-weight:800;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;cursor:default}
   .chip small{color:var(--mut);font-weight:700}
-  #xpb{width:70px;height:7px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden}#xpb i{display:block;height:100%;background:linear-gradient(90deg,var(--c),var(--ma));width:0}
+  #hud .fill{flex:1;min-width:0}
+  #xpb{width:64px;height:7px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden;flex:none}#xpb i{display:block;height:100%;background:linear-gradient(90deg,var(--c),var(--ma));width:0}
   #money{color:var(--y)} .neg{color:#ff6b7a!important}
-  .sp{display:flex;gap:4px}.sp button,.btn{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:var(--tx);font:800 14px Inter,system-ui,sans-serif;border-radius:12px;padding:8px 12px;min-height:40px;cursor:pointer}
+  .sp{display:flex;gap:3px}.sp button,.btn{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:var(--tx);font:800 14px Inter,system-ui,sans-serif;border-radius:12px;padding:8px 12px;min-height:40px;cursor:pointer;touch-action:manipulation}
+  .sp button{min-height:32px;padding:4px 10px}
   .sp button.on{background:linear-gradient(180deg,var(--c),#0a7aa8);color:#04101c}
+  .btn:hover:not(:disabled){filter:brightness(1.15)}
   .btn.go{background:linear-gradient(180deg,#43e08a,#0f9a54);color:#04170d;border-color:#fff}.btn.stop{background:linear-gradient(180deg,#ff6b7a,#b01c34);border-color:#fff}
-  .btn:disabled{opacity:.4;cursor:default}.btn.sm{padding:5px 9px;min-height:32px;font-size:13px}
+  .btn:disabled{opacity:.4;cursor:default}.btn.sm{padding:5px 9px;min-height:34px;font-size:13px}
+  #bOpen{min-height:34px;padding:6px 12px;flex:none}
+  #sCyc{display:none;min-width:46px;min-height:34px;padding:4px 8px;flex:none}
+  .w{display:inline}.n{display:none}
+  /* Spielfläche */
   #stage{flex:1;min-height:0;position:relative}
   #cv,#cv3{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
   body.v3 #cv,body:not(.v3) #cv3{display:none}
   #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;z-index:3;pointer-events:none;display:none}
   #cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.9);box-shadow:0 0 3px #000}#cross::before{left:8px;top:0;width:2px;height:18px}#cross::after{top:8px;left:0;height:2px;width:18px}
   body.v3.fps #cross{display:block}
-  #goal{position:absolute;left:50%;top:8px;transform:translateX(-50%);padding:7px 16px;font-weight:800;font-size:clamp(12px,3.4vw,15px);z-index:3;pointer-events:none;text-align:center;max-width:94%;background:rgba(255,210,74,.92);color:#2a1700;border-color:#fff}
-  #carry{position:absolute;left:10px;top:8px;padding:6px 12px;font-weight:800;font-size:14px;z-index:3;pointer-events:none}
-  #namebox,#payov,#idov{position:fixed;inset:0;z-index:25;background:rgba(5,8,20,.9);display:grid;place-items:center;padding:14px;overflow:auto}
-  #namebox .in,#payov .in,#idov .in{width:min(460px,100%);padding:18px}
-  #namebox h2,#payov h2,#idov h2{margin:0 0 8px;font:900 22px 'Trebuchet MS',sans-serif;color:var(--y)}
+  #tops{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:5px;width:min(600px,94%);pointer-events:none}
+  #goal{padding:7px 14px;font-weight:800;font-size:14px;text-align:center;max-width:100%;background:rgba(255,210,74,.93);color:#2a1700;border-color:#fff;pointer-events:auto;cursor:pointer;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+  #goal.min{display:block;white-space:nowrap;text-overflow:ellipsis;font-size:12px;padding:4px 10px;opacity:.85}
+  #carry{padding:5px 12px;font-weight:800;font-size:13px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #tip{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);padding:6px 12px;font-weight:700;font-size:13px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
+  #toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);max-width:min(560px,92%);padding:8px 14px;font-weight:700;font-size:14px;z-index:4;text-align:center;pointer-events:none;transition:opacity .4s}
+  #zoom{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:6px;z-index:4}
+  #zoom .btn{width:44px;height:44px;padding:0;font-size:20px}
+  body.top #zoom{display:flex}
+  /* Touch: Joystick & Aktionsknopf */
+  #stick{position:absolute;left:14px;bottom:14px;width:128px;height:128px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,16,40,.35);z-index:4;touch-action:none;display:none}
+  #knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8)}
+  #act{position:absolute;right:14px;bottom:14px;min-width:104px;max-width:150px;height:104px;border-radius:52px;border:4px solid #fff;background:radial-gradient(circle at 35% 30%,#ffe58a,var(--o));color:#2a1700;font:900 14px Inter,system-ui,sans-serif;padding:8px;z-index:4;cursor:pointer;display:none;text-align:center;line-height:1.15;overflow:hidden}
+  #act.idle{filter:grayscale(.85) brightness(.75)}
+  body.touch.fps #stick,body.touch.fps #act,body.kb.fps #act{display:block}
+  body.kb:not(.touch) #act{height:64px;min-width:120px;border-radius:32px;font-size:13px}
+  body.touch.fps #toast{bottom:150px}
+  /* Info-Karte (Regal/Kasse) */
+  #card{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;width:min(440px,94%);padding:12px;z-index:5;max-height:70%;overflow:auto;touch-action:pan-y}
+  body.touch #card{bottom:auto;top:8px}
+  #card h3{margin:0 0 6px;font-size:16px}#card .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  /* Leiste unten */
+  #dock{display:flex;gap:5px;padding:6px 8px 8px;position:relative;z-index:3;justify-content:center;flex-wrap:wrap;background:linear-gradient(0deg,rgba(8,12,28,.96),rgba(8,12,28,.85));border-top:1px solid rgba(255,255,255,.08)}
+  #dock .btn{flex:none;display:flex;align-items:center;gap:5px;padding:7px 10px;min-height:38px;position:relative}
+  #dock .btn i{font-style:normal;font-size:16px}
+  #dock .btn kbd{font:700 10px Inter,sans-serif;color:var(--mut);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:0 4px;margin-left:2px}
+  #dock .btn .dot{position:absolute;top:3px;right:3px;width:9px;height:9px;border-radius:50%;background:var(--ma);box-shadow:0 0 0 2px #0b1020}
+  #dock #bMore{display:none}
+  body.touch #dock kbd,body.coarse #dock kbd{display:none}
+  /* Fenster */
+  #panel,#sum,#more{position:fixed;inset:0;z-index:20;background:rgba(3,6,16,.78);display:flex;justify-content:center;align-items:center;padding:20px;touch-action:pan-y}
+  #panel>.in,#sum>.in{width:min(880px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--pn);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden}
+  .ph{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)}.ph h2{margin:0;flex:1;font:900 21px 'Trebuchet MS',sans-serif;color:var(--y);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #pb,#sb{overflow:auto;padding:12px 14px 18px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1;min-height:0}
+  #sum>.in{width:min(520px,100%);background:none;border:0;box-shadow:none}
+  #more>.in{width:min(460px,100%);background:var(--pn);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px}
+  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .mgrid .btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;font-size:13px}
+  .mgrid .btn i{font-style:normal;font-size:26px}
+  .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;padding-bottom:4px;scrollbar-width:thin}.tabs .btn{flex:none}.tabs .btn.on{background:linear-gradient(180deg,var(--ma),#a8105f);border-color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+  .it{padding:9px 10px;display:flex;flex-direction:column;gap:4px}.it b{font-size:14px}.it .e{font-size:26px}.it small{color:var(--mut);font-size:12px;line-height:1.4}.it .row{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;align-items:center}
+  .it.deal{border-color:var(--y);box-shadow:0 0 0 1px rgba(255,210,74,.4) inset}
+  .badge{display:inline-block;font:800 11px Inter,sans-serif;padding:2px 6px;border-radius:6px;background:var(--y);color:#2a1700;margin-left:4px;vertical-align:middle}
+  .good{color:var(--g)}.bad{color:#ff6b7a}.warn{color:var(--y)}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl td,.tbl th{padding:6px 5px;border-bottom:1px solid rgba(255,255,255,.1);text-align:left;white-space:nowrap}.tbl th{color:var(--mut);font-size:11px}
+  p.h{color:var(--mut);font-size:13px;line-height:1.5;margin:6px 0}
+  h3{font-size:16px;margin:14px 0 8px}
+  .bar{height:8px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}.bar i{display:block;height:100%;background:var(--g)}
+  .pr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.pr b.v{min-width:70px;text-align:center;font-size:15px}
+  .steps{display:grid;gap:8px;counter-reset:s}.steps>div{display:flex;gap:10px;align-items:flex-start;padding:10px}.steps>div>i{font-style:normal;font-size:26px;flex:none;width:34px;text-align:center}.steps small{display:block}
+  .keys{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;align-items:center}.keys kbd{font:800 12px Inter,sans-serif;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-bottom-width:3px;border-radius:6px;padding:2px 7px;white-space:nowrap;justify-self:start}
+  /* Dialoge (Name, Ausweis, Bargeld, Karte) */
+  #namebox,#payov,#idov,#cardov{position:fixed;inset:0;z-index:25;background:rgba(5,8,20,.9);display:flex;padding:14px;overflow:auto;touch-action:pan-y}
+  #namebox .in,#payov .in,#idov .in,#cardov .in{width:min(460px,100%);padding:18px;margin:auto}
+  .tcols{display:grid;gap:4px 12px}
+  #namebox h2,#payov h2,#idov h2,#cardov h2{margin:0 0 8px;font:900 22px 'Trebuchet MS',sans-serif;color:var(--y)}
   .fld{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font:700 16px Inter,sans-serif;margin:4px 0 10px}
   .swatches{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}.sw{width:38px;height:38px;border-radius:10px;border:3px solid transparent;cursor:pointer}.sw.on{border-color:#fff}
-  .money{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.money button{padding:12px 4px;font-size:15px}
-  .big{font:900 28px 'Trebuchet MS',sans-serif;color:var(--g);text-align:center;margin:6px 0}
-  #tip{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);padding:6px 12px;font-weight:700;font-size:13px;z-index:3;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
-  #dock{display:flex;gap:6px;padding:6px 8px 8px;overflow-x:auto;position:relative;z-index:3;scrollbar-width:none}
-  #dock::-webkit-scrollbar{display:none}
-  #dock .btn{flex:none}
-  #toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);max-width:92%;padding:8px 14px;font-weight:700;font-size:14px;z-index:4;text-align:center;pointer-events:none;transition:opacity .4s}
-  #stick{position:absolute;left:12px;bottom:12px;width:128px;height:128px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,16,40,.35);z-index:4;touch-action:none;display:none}
-  #knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8)}
-  #act{position:absolute;right:12px;bottom:12px;min-width:104px;height:104px;border-radius:52px;border:4px solid #fff;background:radial-gradient(circle at 35% 30%,#ffe58a,var(--o));color:#2a1700;font:900 15px Inter,system-ui,sans-serif;padding:8px;z-index:4;cursor:pointer;display:none;text-align:center;line-height:1.2}
-  #act.idle{filter:grayscale(.85) brightness(.75)}
-  body.touch #stick,body.touch #act,body.kb #act{display:block}
-  #card{position:absolute;left:50%;transform:translateX(-50%);bottom:56px;width:min(420px,94%);padding:12px;z-index:5}
-  #card h3{margin:0 0 6px;font-size:16px}#card .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
-  #panel,#sum{position:fixed;inset:0;z-index:20;background:rgba(5,8,20,.86);overflow:auto;padding:calc(10px + env(safe-area-inset-top)) 10px 18px;touch-action:pan-y}
-  #panel .in,#sum .in{max-width:760px;margin:0 auto}
-  .ph{display:flex;align-items:center;gap:8px;margin-bottom:8px}.ph h2{margin:0;flex:1;font:900 22px 'Trebuchet MS',sans-serif;color:var(--y)}
-  .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;padding-bottom:4px}.tabs .btn{flex:none}.tabs .btn.on{background:linear-gradient(180deg,var(--ma),#a8105f);border-color:#fff}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
-  .it{padding:9px 10px;display:flex;flex-direction:column;gap:4px}.it b{font-size:14px}.it .e{font-size:26px}.it small{color:var(--mut);font-size:12px;line-height:1.35}.it .row{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
-  .good{color:var(--g)}.bad{color:#ff6b7a}.warn{color:var(--y)}
-  .tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl td,.tbl th{padding:6px 5px;border-bottom:1px solid rgba(255,255,255,.1);text-align:left}.tbl th{color:var(--mut);font-size:11px}
-  p.h{color:var(--mut);font-size:13px;line-height:1.5;margin:6px 0}
-  .bar{height:8px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}.bar i{display:block;height:100%;background:var(--g)}
+  .money{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.money button{padding:12px 2px;font-size:14px}
+  .big{font:900 30px 'Trebuchet MS',sans-serif;color:var(--g);text-align:center;margin:6px 0}
+  .term{background:#0a1a12;border:2px solid #2d5a40;border-radius:12px;padding:10px 14px;margin:8px 0;font:800 30px ui-monospace,Menlo,Consolas,monospace;color:#7dffb0;text-align:right;letter-spacing:1px}
+  .term small{display:block;font:700 12px Inter,sans-serif;color:#6ea888;text-align:left;letter-spacing:0}
+  .term.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pad .btn{font-size:20px;min-height:52px}
   #big{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(5,8,20,.9);text-align:center;padding:20px}
   #big h1{font:900 clamp(28px,7vw,54px)/1.05 'Trebuchet MS',sans-serif;margin:0 0 10px;background:linear-gradient(180deg,#fff,var(--y) 55%,var(--ma));-webkit-background-clip:text;background-clip:text;color:transparent}
-  @media (max-height:520px){#stick{width:104px;height:104px;bottom:6px}#act{height:84px;min-width:90px;bottom:6px}#toast{bottom:4px}#dock{padding-bottom:4px}}
+  /* Mittlere Breite: Ladenname & Leistenkürzel weg */
+  @media (max-width:1100px){#sname{display:none}}
+  @media (max-width:1300px){#dock kbd{display:none}}@media (max-width:900px){#dock .btn{padding:7px 8px;font-size:13px}}
+  /* Handy hochkant & schmale Fenster: kompakte Kopfzeile, Tab-Leiste mit „Mehr“ */
+  @media (max-width:760px), (max-height:520px){
+    :root{--hud:40px}
+    #hud{gap:4px;padding:4px 6px}
+    .chip{padding:4px 7px;font-size:13px;gap:4px;border-radius:11px}
+    #back,.w,#xpb,#lvl{display:none}.n{display:inline}
+    .sp{display:none}#sCyc{display:block}
+    #bOpen{padding:5px 9px;font-size:12px;border-radius:11px}
+    #dock{flex-wrap:nowrap;gap:4px;padding:4px 4px 6px}
+    #dock .btn{flex:1 1 0;min-width:0;flex-direction:column;gap:1px;padding:4px 2px;min-height:48px;font-size:10.5px;border-radius:11px}
+    #dock .btn i{font-size:20px}
+    #dock .btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+    #dock .btn:not(.pri){display:none}#dock #bMore{display:flex!important}
+    #panel,#sum{padding:0;align-items:stretch}
+    #panel>.in,#sum>.in{border-radius:0;max-height:none;height:100%;width:100%;border:0}
+    #sum>.in{height:auto;max-height:100%;margin:auto 0}
+    #more{align-items:flex-end;padding:0}
+    #more>.in{border-radius:18px 18px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+    .ph h2{font-size:18px}
+    .grid{grid-template-columns:1fr 1fr}
+    #goal{font-size:12.5px;padding:5px 10px}
+    #toast{font-size:13px}
+  }
+  @media (max-width:420px){.grid{grid-template-columns:1fr}.money{grid-template-columns:repeat(4,1fr)}}
+  /* Handy quer (wenig Höhe): alles flacher */
+  @media (max-height:520px){
+    :root{--hud:36px}
+    #hud{padding:3px 6px}
+    #dock{padding:3px 4px}
+    #dock .btn{min-height:36px;flex-direction:row;font-size:12px}
+    #dock .btn i{font-size:16px}
+    #stick{width:104px;height:104px;bottom:8px}#act{height:80px;min-width:84px;bottom:8px;font-size:12px}
+    body.touch.fps #toast{bottom:100px}
+    #panel,#sum{padding:0}#panel>.in,#sum>.in{border-radius:0;height:100%;max-height:none}
+    #goal{display:block;white-space:nowrap;text-overflow:ellipsis}
+    #payov p.h:last-child,#cardov p.h:last-child,#cardov p.h:first-of-type{display:none}
+    #cardov .in{width:min(720px,100%)}.tcols{grid-template-columns:1fr 1fr;align-items:start}.pad .btn{min-height:42px}.term{font-size:24px;margin:6px 0}
+    #namebox .in,#payov .in,#idov .in,#cardov .in{padding:12px}
+  }
 </style>
 </head>
 <body>
 <div id="app">
   <div id="hud">
-    <a class="btn glass sm" href="../" title="Alle Spiele" style="text-decoration:none">←</a>
-    <div class="chip glass"><span id="money">0 €</span></div>
-    <div class="chip glass" id="sname" style="max-width:34vw;overflow:hidden;text-overflow:ellipsis"></div><div class="chip glass"><span id="clock">Tag 1</span><span id="wx"></span></div>
-    <div class="chip glass"><span id="stars"></span><div id="xpb"><i></i></div><small id="lvl">Stufe 1</small></div>
-    <div class="sp glass" style="padding:3px"><button id="s0" title="Pause">⏸</button><button id="s1" class="on">1×</button><button id="s2">2×</button><button id="s3">4×</button></div>
-    <button class="btn go" id="bOpen">LADEN ÖFFNEN</button>
+    <a class="btn glass sm" id="back" href="../" title="Alle Spiele" style="text-decoration:none">←</a>
+    <div class="chip glass" title="Kontostand" style="flex:none"><span id="money">0 €</span></div>
+    <div class="chip glass" id="clockc"><span id="clock">Tag 1</span><span id="wx"></span></div>
+    <div class="chip glass" title="Ruf und Stufe"><span id="stars"></span><div id="xpb"><i></i></div><small id="lvl">Stufe 1</small></div>
+    <div class="chip glass" id="sname"></div>
+    <div class="fill"></div>
+    <div class="sp glass" style="padding:3px"><button id="s0" title="Pause (P)">⏸</button><button id="s1" class="on" title="Normal">1×</button><button id="s2" title="Schneller">2×</button><button id="s3" title="Am schnellsten">4×</button></div>
+    <button class="btn glass" id="sCyc" title="Tempo">1×</button>
+    <button class="btn go" id="bOpen" title="Laden öffnen / Feierabend (O)">LADEN ÖFFNEN</button>
   </div>
-  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="goal" class="glass" hidden></div><div id="carry" class="glass" hidden></div><div id="tip" class="glass" hidden></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
-    <button class="btn glass" id="bView" title="Ansicht wechseln (V)">👁️ Vogelperspektive</button><button class="btn glass" data-p="markt">💻 Bestell-PC</button><button class="btn glass" data-p="laden">🏪 Laden</button><button class="btn glass" data-p="bauen">🔧 Bauen</button><button class="btn glass" data-p="preise">🏷️ Preise</button><button class="btn glass" data-p="staff">👥 Personal</button>
-    <button class="btn glass" data-p="radio">📻 Radio</button><button class="btn glass" data-p="up">⭐ Ausbau</button><button class="btn glass" data-p="stat">📊 Zahlen</button><button class="btn glass" data-p="ziele">🎯 Ziele</button><button class="btn glass" data-p="menu">☰ Menü</button>
+    <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass" data-p="menu" title="Menü (0)"><i>☰</i><span>Menü</span><kbd>0</kbd></button><button class="btn glass pri" id="bMore"><i>☰</i><span>Mehr</span></button>
   </div>
 </div>
-<div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px">✕ Schließen</button></div><div id="pb"></div></div></div>
-<div id="sum" hidden><div class="in" id="sb"></div></div>
+<div id="panel" hidden><div class="in"><div class="ph"><h2 id="pt"></h2><button class="btn glass" id="px" title="Schließen (Esc)">✕</button></div><div id="pb"></div><div id="cloudwrap" hidden style="padding:0 14px 14px"><div id="cloudbox"></div></div></div></div>
+<div id="more" hidden><div class="in"><div class="ph" style="padding:0 0 10px;border:0;background:none"><h2>☰ Mehr</h2><button class="btn glass" data-m="x">✕</button></div><div class="mgrid">
+  <button class="btn glass" data-m="laden"><i>🏪</i>Mein Laden</button><button class="btn glass" data-m="staff"><i>👥</i>Personal</button><button class="btn glass" data-m="ziele"><i>🎯</i>Ziele</button>
+  <button class="btn glass" data-m="up"><i>⭐</i>Ausbau &amp; Bank</button><button class="btn glass" data-m="stat"><i>📊</i>Zahlen</button><button class="btn glass" data-m="radio"><i>📻</i>Radio</button>
+  <button class="btn glass" data-m="hilfe"><i>❓</i>Anleitung</button><button class="btn glass" data-m="menu"><i>⚙️</i>Einstellungen</button><a class="btn glass" href="../" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;font-size:13px"><i style="font-style:normal;font-size:26px">🎮</i>Alle Spiele</a>
+</div></div></div>
+<div id="sum" hidden><div class="in"><div id="sb"></div></div></div>
 <div id="namebox" hidden><div class="in glass" id="nb"></div></div>
 <div id="idov" hidden><div class="in glass" id="io"></div></div>
 <div id="payov" hidden><div class="in glass" id="po"></div></div>
+<div id="cardov" hidden><div class="in glass" id="co"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="data.js"></script>
 <script src="sim.js"></script>
 <script src="view3d.js"></script>
 <script src="game.js"></script>
-<script src="../cloud/anmacha-cloud.js" data-save-btn="[data-a=&quot;save&quot;]" data-game="markthalle" data-prefix="amh_" defer></script>
+<script src="../cloud/anmacha-cloud.js" data-save-btn="[data-a=&quot;save&quot;]" data-game="markthalle" data-prefix="amh_" data-mount="#cloudbox" data-hint="Sichere deinen Supermarkt mit Google und spiel auf jedem Gerät weiter." defer></script>
 </body>
 </html>
