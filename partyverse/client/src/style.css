@@ -155,3 +155,10 @@ button, input, select { font: inherit; color: inherit; }
 select { color-scheme: dark; background: #251f5c; color: #fff; }
 select option { background: #251f5c; color: #fff; }
 .foot { position: sticky; bottom: -18px; padding: 10px 0 2px; margin-top: 8px; text-align: right; background: linear-gradient(180deg, transparent, var(--panel) 35%); }
+
+.game.mg-on .hud > :not(.menubtn) { display: none; }
+.game.finale-on .hud > :not(.menubtn) { display: none; }
+.game.finale-on .menubtn { display: none; }
+.cover.finale { background: transparent; place-items: center start; padding-left: max(4vw, 16px); }
+.cover.finale .panel { width: min(100%, 440px); }
+@media (max-aspect-ratio: 5/4) { .cover.finale { place-items: end center; padding: 8px; } }

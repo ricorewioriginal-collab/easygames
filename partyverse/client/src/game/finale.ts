@@ -92,8 +92,9 @@ export class FinaleStage implements Screen {
       for (let k = 0; k < 2; k++) this.particles.burst(new THREE.Vector3((Math.random() - 0.5) * 12, 9, (Math.random() - 0.5) * 4), cols[(Math.random() * cols.length) | 0] as number, 3, { speed: 1.5, life: 2.2, gravity: 2.5, size: 0.3 });
     }
     this.beams.forEach((b) => (b.rotation.z = Math.sin(this.t * 0.8 + (b.userData.ph as number)) * 0.5));
-    this.camera.position.x = Math.sin(this.t * 0.25) * (this.calm ? 0 : 2);
-    this.camera.lookAt(0, 1.8, 0);
+    const shift = this.camera.aspect > 1.3 ? -3.2 : 0;
+    this.camera.position.x = Math.sin(this.t * 0.25) * (this.calm ? 0 : 2) + shift;
+    this.camera.lookAt(shift, 1.8, 0);
     this.sky.position.copy(this.camera.position);
   }
 
@@ -117,13 +118,14 @@ export function finaleOverlay(
   const fin = state.finale;
   const ranking = fin?.ranking ?? state.order;
   const el = h('div', { class: 'cover finale' });
+  el.style.pointerEvents = 'none';
   const list = h('div', { class: 'rank' });
   const title = h('h2', { class: 'ftitle' }, t('finale.title'));
   const bonusList = h('div', { class: 'chips' });
   const nameOf = (id: string): string => players.find((p) => p.id === id)?.name ?? id;
   for (const b of fin?.bonuses ?? []) bonusList.appendChild(h('span', { class: 'chip on' }, `${t('finale.bonus.' + b.id)}: ${b.players.map(nameOf).join(', ')}`));
   const buttons = h('div', { class: 'chips', style: 'justify-content:flex-end;margin-top:10px' });
-  el.appendChild(h('div', { class: 'panel' }, title, list, bonusList, buttons));
+  el.appendChild(h('div', { class: 'panel', style: 'pointer-events:auto' }, title, list, bonusList, buttons));
   const timers: Array<ReturnType<typeof setTimeout>> = [];
   const n = ranking.length;
   const medal = ['🥇', '🥈', '🥉', '4.'];

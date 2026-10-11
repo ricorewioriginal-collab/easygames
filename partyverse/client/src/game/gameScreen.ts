@@ -620,6 +620,7 @@ export class GameScreen {
     const world = this.layout.world as WorldId;
     const fs = new FinaleStage(ranking, this.session.players, world, this.app.engine.quality, this.app.store.data.settings.reducedMotion);
     this.finaleStage = fs;
+    this.el.classList.add('finale-on');
     this.hud.clearActions();
     this.hud.setBanner(null);
     this.flow.update(s);

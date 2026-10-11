@@ -1,0 +1,1 @@
+import"./characters-H_6OcGOn.js";const s="partyverse",t=14;function o(e){return typeof e!="string"?"":e.replace(/[\u0000-\u001f\u007f<>&"]/g,"").replace(/\s+/g," ").trim().slice(0,t)}const n=e=>typeof e=="string"&&/^[A-HJ-NP-Z2-9]{4}$/.test(e);export{s as R,o as c,n as i};

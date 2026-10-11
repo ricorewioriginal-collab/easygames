@@ -125,6 +125,7 @@ export class MinigameFlow {
     }
     if (this.disposed) return;
     clear(this.el);
+    this.area.classList.add('mg-on');
     this.input = new MiniInput(this.area, g, this.app.touch);
     const idx = s.order.indexOf(who);
     const stage = new MiniStage(g, m.seed, { playerIndex: Math.max(0, idx), players: s.order.length }, { quality: this.app.engine.quality, sfx: (n) => this.app.audio.sfx(n), input: this.input });
@@ -164,6 +165,7 @@ export class MinigameFlow {
   }
 
   private endRun(): void {
+    this.area.classList.remove('mg-on');
     this.input?.dispose?.();
     this.input = null;
     this.stage?.dispose();
@@ -175,6 +177,7 @@ export class MinigameFlow {
 
   dispose(): void {
     this.disposed = true;
+    this.area.classList.remove('mg-on');
     cancelAnimationFrame(this.raf);
     this.timers.forEach(clearTimeout);
     if (this.stage) {
