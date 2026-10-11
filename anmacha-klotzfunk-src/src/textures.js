@@ -1,5 +1,5 @@
 // Prozedurale, nahtlose Texturen (64 px je Kachel, Atlas 8x8) plus Funk-Logo-Atlas (4x4 à 128 px).
-export const TILE = 64, GRID = 8;
+export const TILE = 64, GRID = 8, ROWS = 16; // Block-Atlas: 8 Spalten × 16 Zeilen
 export const LOGO_TILE = 128, LOGO_GRID = 4, LOGO_COUNT = 16;
 
 function hash(x, y, s) {
@@ -358,18 +358,117 @@ const PAINT = [
   (u, v, x, y) => {
     const n = fbm(u, v, 8, 3, 147), curl = pn(u * 16, v * 16, 16, 16, 148);
     return [...add(mix([214, 210, 202], [246, 244, 238], n * 0.5 + curl * 0.5), grain(x, y, 45, 6)), 255];
+  },
+  // 56 Ackerboden oben: dunkle Furchen
+  (u, v, x, y) => {
+    const f = (v * 5) % 1, furrow = f < 0.32;
+    let c = mix([74, 50, 30], [104, 72, 46], fbm(u, v, 6, 3, 150));
+    if (furrow) c = add(c, -22);
+    return [...add(c, grain(x, y, 46, 10)), 255];
+  },
+  // 57..60 Weizen in vier Stufen (Halme mit Lücken, Alpha)
+  ...[0, 1, 2, 3].map(st => (u, v, x, y) => {
+    const h = [0.3, 0.52, 0.76, 0.92][st], col = [[70, 170, 50], [90, 176, 54], [150, 176, 60], [214, 184, 76]][st];
+    const stalk = Math.floor(u * 8), sx = (u * 8) % 1, sh = h * (0.8 + 0.2 * hash(stalk, st, 151));
+    if (1 - v > sh || sx < 0.3 || sx > 0.7) {
+      if (st === 3 && 1 - v > sh - 0.22 && 1 - v < sh + 0.04 && sx > 0.15 && sx < 0.85 && hash(x >> 1, y >> 1, 152) > 0.3) return [228, 196, 90, 255]; // Ähre
+      return [0, 0, 0, 0];
+    }
+    return [...add(col, grain(x, y, 47 + st, 16) - (1 - v) * 20), 255];
+  }),
+  // 61 Dorfweg oben: festgetretener Kies
+  (u, v, x, y) => {
+    const n = fbm(u, v, 6, 3, 160), p = pn(u * 16, v * 16, 16, 16, 161);
+    let c = mix([128, 110, 84], [160, 142, 112], n);
+    if (p > 0.72) c = add(c, 22); else if (p < 0.22) c = add(c, -18);
+    return [...add(c, grain(x, y, 50, 10)), 255];
+  },
+  // 62 Bruchstein: unregelmäßige Steine mit Fugen
+  (u, v, x, y) => {
+    const cell = (a, b) => hash(Math.floor(a), Math.floor(b), 162);
+    const gu = u * 4 + (Math.floor(v * 4) & 1) * 0.5, gv = v * 4, fu = gu % 1, fv = gv % 1;
+    let c = mix([96, 96, 100], [150, 150, 156], cell(gu, gv) * 0.6 + fbm(u, v, 5, 2, 163) * 0.4);
+    if (fu < 0.08 || fv < 0.1) c = [64, 64, 68];
+    return [...add(c, grain(x, y, 51, 8)), 255];
+  },
+  // 63/64 Schalter aus/an: Steinplatte mit Hebel
+  ...[0, 1].map(on => (u, v, x, y) => {
+    let c = mix([110, 110, 116], [140, 140, 146], fbm(u, v, 5, 2, 164));
+    if (Math.abs(u - 0.5) < 0.2 && Math.abs(v - 0.5) < 0.3) c = [70, 70, 76];
+    const lx = 0.5 + (on ? 0.12 : -0.12) * (0.5 - v) * 2;
+    if (Math.abs(u - lx) < 0.05 && v > 0.25 && v < 0.6) c = [138, 98, 54];
+    if (Math.abs(u - (on ? 0.62 : 0.38)) < 0.08 && v > 0.2 && v < 0.3) c = on ? [80, 240, 120] : [200, 60, 60];
+    return [...add(c, grain(x, y, 52, 6)), 255];
+  }),
+  // 65 Signalleitung: Stein mit Kupferbahnen
+  (u, v, x, y) => {
+    let c = mix([84, 84, 92], [112, 112, 120], fbm(u, v, 5, 2, 165));
+    if (Math.abs(u - 0.5) < 0.07 || Math.abs(v - 0.5) < 0.07) c = [214, 128, 60];
+    if (Math.abs(u - 0.5) < 0.12 && Math.abs(v - 0.5) < 0.12) c = [240, 160, 80];
+    return [...add(c, grain(x, y, 53, 6)), 255];
+  },
+  // 66 Funksender oben: Antennenfuß mit Kristall
+  (u, v, x, y) => {
+    let c = mix([60, 64, 76], [86, 90, 104], fbm(u, v, 5, 2, 166));
+    const d = Math.hypot(u - 0.5, v - 0.5);
+    if (d < 0.18) c = mix([60, 200, 240], [180, 250, 255], 1 - d / 0.18);
+    else if (d < 0.24) c = [200, 120, 60];
+    return [...add(c, grain(x, y, 54, 6)), 255];
+  },
+  // 67 Funksender Seite: Gehäuse mit Funkwellen
+  (u, v, x, y) => {
+    let c = mix([56, 60, 72], [80, 84, 98], fbm(u, v, 5, 2, 167));
+    const d = Math.hypot(u - 0.5, v - 0.15);
+    if (v > 0.15 && Math.abs(((d * 5) % 1) - 0.5) < 0.09 && d < 0.75) c = [106, 232, 255];
+    if (v > 0.82) c = [200, 120, 60];
+    return [...add(c, grain(x, y, 55, 6)), 255];
+  },
+  // 68 Funkrelais: Gitter mit Kristallpunkt
+  (u, v, x, y) => {
+    let c = mix([70, 74, 86], [98, 102, 116], fbm(u, v, 5, 2, 168));
+    if ((u * 6) % 1 < 0.12 || (v * 6) % 1 < 0.12) c = [180, 110, 56];
+    if (Math.hypot(u - 0.5, v - 0.5) < 0.12) c = [106, 232, 255];
+    return [...add(c, grain(x, y, 56, 6)), 255];
+  },
+  // 69/70 Empfänger aus/an: Lautsprecher mit Anzeige
+  ...[0, 1].map(on => (u, v, x, y) => {
+    let c = mix([48, 52, 62], [70, 74, 86], fbm(u, v, 5, 2, 169));
+    const d = Math.hypot(u - 0.5, v - 0.58);
+    if (d < 0.26 && (d * 14) % 1 < 0.5) c = [30, 32, 40];
+    if (v < 0.2 && Math.abs(u - 0.5) < 0.3) c = on ? [90, 255, 140] : [90, 40, 40];
+    return [...add(c, grain(x, y, 57, 6)), 255];
+  }),
+  // 71/72 Signallampe aus/an
+  ...[0, 1].map(on => (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.1) return [...add([150, 96, 52], grain(x, y, 58, 8)), 255];
+    const n = fbm(u, v, 4, 2, 170);
+    return [...add(on ? mix([255, 200, 90], [255, 240, 170], n) : mix([86, 70, 50], [110, 92, 66], n), grain(x, y, 59, 6)), 255];
+  }),
+  // 73 Funktor geschlossen: Eisenplatten mit Nieten
+  (u, v, x, y) => {
+    let c = mix([150, 152, 160], [188, 190, 198], fbm(u, v, 4, 2, 171));
+    if ((v * 2) % 1 < 0.05 || u < 0.05 || u > 0.95) c = [96, 98, 106];
+    if (Math.hypot(((u * 4) % 1) - 0.5, ((v * 2) % 1) - 0.2) < 0.09) c = [110, 112, 120];
+    return [...add(c, grain(x, y, 60, 6)), 255];
+  },
+  // 74 Funktor offen: nur der Rahmen (Alpha)
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e > 0.1) return [0, 0, 0, 0];
+    return [...add([120, 122, 130], grain(x, y, 61, 8)), 255];
   }
 ];
 export const TILE_COUNT = PAINT.length;
 // Kachel-Rand: leichte Kante, die jeden Block als Körper lesbar macht
-const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49, 52, 53, 54, 55]);
+const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49, 52, 53, 54, 55, 61, 63, 64, 65, 66, 67, 68, 69, 70, 73]);
 
 export function drawAtlas() {
   const cv = document.createElement('canvas');
-  cv.width = cv.height = TILE * GRID;
+  cv.width = TILE * GRID; cv.height = TILE * ROWS;
   const g = cv.getContext('2d');
   const img = g.createImageData(TILE, TILE), d = img.data;
-  const W = TILE * GRID, raw = new Uint8Array(W * W * 4); // Rohdaten (nicht vormultipliziert, Zeile 0 = unten) für die GPU
+  const W = TILE * GRID, HH = TILE * ROWS, raw = new Uint8Array(W * HH * 4); // Rohdaten (nicht vormultipliziert, Zeile 0 = unten) für die GPU
   for (let t = 0; t < PAINT.length; t++) {
     for (let y = 0; y < TILE; y++) for (let x = 0; x < TILE; x++) {
       const c = PAINT[t]((x + 0.5) / TILE, (y + 0.5) / TILE, x, y), i = (y * TILE + x) * 4;
@@ -380,7 +479,7 @@ export function drawAtlas() {
       }
       d[i] = Math.max(0, Math.min(255, c[0] + k)); d[i + 1] = Math.max(0, Math.min(255, c[1] + k));
       d[i + 2] = Math.max(0, Math.min(255, c[2] + k)); d[i + 3] = Math.max(0, Math.min(255, c[3]));
-      const ri = ((W - 1 - (Math.floor(t / GRID) * TILE + y)) * W + (t % GRID) * TILE + x) * 4;
+      const ri = ((HH - 1 - (Math.floor(t / GRID) * TILE + y)) * W + (t % GRID) * TILE + x) * 4;
       raw[ri] = d[i]; raw[ri + 1] = d[i + 1]; raw[ri + 2] = d[i + 2]; raw[ri + 3] = d[i + 3];
     }
     g.putImageData(img, (t % GRID) * TILE, Math.floor(t / GRID) * TILE);
@@ -452,6 +551,25 @@ export function drawItems(items) {
       case 'schaufel':
         stick(5);
         px(10, 2, col, 4, 4); px(9, 3, col, 1, 3); px(14, 3, dk, 1, 3); px(10, 2, lt, 4, 1); px(11, 6, dk, 2, 1); break;
+      case 'hacke':
+        stick(3);
+        px(9, 2, col, 5, 2); px(12, 4, col, 2, 2); px(9, 2, lt, 5, 1); px(13, 4, dk, 1, 2); break;
+      case 'schwert':
+        for (let i = 0; i < 9; i++) { px(5 + i, 10 - i, col); px(6 + i, 10 - i, lt); px(5 + i, 11 - i, dk); }
+        px(3, 10, '#5a3a1e', 4, 1); px(5, 8, '#5a3a1e', 1, 5); px(2, 13, '#8a6034', 2, 2); px(4, 11, '#8a6034', 1, 2); break;
+      case 'seeds':
+        [[4, 6], [8, 4], [10, 8], [6, 10], [11, 11], [5, 13], [9, 12]].forEach(([x, y]) => { px(x, y, '#c8b060', 2, 1); px(x, y + 1, '#8a7a3a', 2, 1); });
+        break;
+      case 'wheat':
+        for (let i = 0; i < 3; i++) { const x = 5 + i * 3; px(x, 7, '#6a8a2a', 1, 8); px(x - 1, 2, '#e0c060', 3, 5); px(x, 1, '#f0d880', 1, 2); }
+        px(4, 11, '#8a6a2a', 9, 1); break;
+      case 'bread':
+        px(2, 6, '#c8843c', 12, 6); px(3, 5, '#d89848', 10, 1); px(2, 12, '#8a5420', 12, 1);
+        for (let i = 0; i < 3; i++) px(4 + i * 3, 7, '#f0c070', 2, 1); break;
+      case 'helm':
+        px(4, 4, col, 8, 3); px(3, 6, col, 10, 4); px(3, 10, dk, 3, 2); px(10, 10, dk, 3, 2); px(5, 4, lt, 5, 1); px(6, 8, '#1a1a22', 4, 1); break;
+      case 'harnisch':
+        px(3, 3, col, 3, 3); px(10, 3, col, 3, 3); px(4, 5, col, 8, 8); px(5, 5, lt, 2, 6); px(4, 12, dk, 8, 1); px(7, 3, dk, 2, 3); break;
       default: px(4, 4, col, 8, 8);
     }
   });

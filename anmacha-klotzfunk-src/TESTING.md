@@ -6,7 +6,7 @@ cd anmacha-klotzfunk-src
 npm test
 ```
 Läuft mit dem in Node eingebauten Test-Runner (keine zusätzliche Bibliothek), braucht keinen Browser und unter einer Sekunde.
-Stand dieser Etappe: **51 Tests, alle grün.**
+Stand dieser Etappe: **76 Tests, alle grün.**
 
 | Datei | prüft |
 |---|---|
@@ -16,7 +16,11 @@ Stand dieser Etappe: **51 Tests, alle grün.**
 | `tests/crafting.test.js` | Rezepte eindeutig und gültig; Stationen nötig; Werkzeugkette Holz bis Eisen vollständig; genauer Verbrauch; fehlende Zutaten ändern nichts; Vorratsgrenze ohne Verlust; „wie oft herstellbar“; keine Doppelbuchung; Suche |
 | `tests/storage.test.js` | Format 1 (Version 1.0) wird gelesen; kompaktes Format verlustfrei und kleiner; Welt lädt mit Änderungen; Sicherung wird angelegt, nicht ständig überschrieben und lässt sich wiederherstellen; voller Speicher zerstört nichts und opfert zuerst Sicherungen; beschädigte Stände werden erkannt; Export/Import |
 | `tests/survival.test.js` | Item-Register im eigenen Id-Bereich; Abbauzeit je Werkzeug und Stufe; Erze nur mit passender Spitzhacke; Fallschaden-Kurve; Physik meldet Aufprall (nicht auf Federblock); Hunger, Erholung, Hunger zehrt nur bis ½ Herz; Ertrinken und Luft; Essen; kaputte Spielstand-Werte |
-| `tests/mobs.test.js` | feste Erstbesiedlung; Tiere stecken nie im Block und bewegen sich; erlegte Tiere bleiben nach Speichern/Laden weg; Aktivbereich legt entfernte Tiere ab und weckt sie wieder; Einfrieren in ungeladenem Bereich; Treffer-Strahl; Beute; ungültige Spielstand-Einträge |
+| `tests/mobs.test.js` | feste Erstbesiedlung; Tiere stecken nie im Block und bewegen sich; erlegte Tiere bleiben nach Speichern/Laden weg; Aktivbereich legt entfernte Tiere ab und weckt sie wieder; Einfrieren in ungeladenem Bereich; Treffer-Strahl; Beute; ungültige Spielstand-Einträge; Gegner sehen nicht durch Wände, verfolgen und greifen etwa 1× je Sekunde an; Gegner nur nachts/tief unten, höchstens 4, nicht gespeichert, verschwinden bei Tagesanbruch |
+| `tests/farm.test.js` | Wachstumsstufe aus Zeitstempel; Wachsen nach langer Pause mit einem Aufruf; ohne Ackerboden vergeht die Pflanze; nicht geladene Pflanzen bleiben; Speichern/Laden; Ernte und Brot; Pflanzen nicht fest und als Kreuz gezeichnet |
+| `tests/structures.test.js` | Generator 3: neue Welten nutzen ihn; Dorf fest je Seed mit offenen Türen, Dachspitze, Brunnen, Feld, Radio am Mast, begehbaren Arbeitsplätzen; unabhängig von der Ladereihenfolge; Generator 2 bleibt ohne Dörfer und ist außerhalb von Strukturen identisch; Mine mit Kammer, Ofen, Stützbalken; Startpunkt am Dorfplatz (Story nicht) |
+| `tests/build.test.js` | Linie, Fläche, Wand, Säule; Größengrenze; Weltgrenze; Kopieren/Einfügen ohne Luft und Wasser |
+| `tests/signal.test.js` | Schalter, Sender, Relais, Empfänger als Kette mit Reichweite 24; Leitungen tragen das Signal, Empfänger speisen weiter, Maschinen schalten; Rechenlimit bei riesigen Netzen; Welt merkt sich Netz-Blöcke auch nach Entladen; Story „Das große Rauschen“ hat 6 Kapitel und lösbare Aufträge |
 | `tests/settings.test.js` | Standardwerte, Speichern, ungültige oder kaputte Einträge werden ignoriert |
 
 ## Browser-Test (manuell ausgeführt in dieser Etappe)
@@ -30,6 +34,12 @@ Mit Playwright und Headless-Chromium (Software-Grafik, SwiftShader) gegen den Pr
 | Etappe 2, Desktop 1280×800, Überleben (Seed 12345): Tiere vorhanden (Kuh, Schaf, Huhn), Kuh erlegt (Fleisch im Vorrat), Werkbank gesetzt und per Setzen-Taste geöffnet, Stöcke und Steinspitzhacke hergestellt, Ofen-Rezept als „nicht in der Nähe“ gesperrt, Kohle mit der Hand verweigert und mit Steinspitzhacke in 0,6 s Spielzeit abgebaut (berechnet 0,6 s), Braten gegessen, Sturz aus 30 Blöcken = 11 Schaden, Umkippen mit liegengebliebenem Vorrat, Aufstehen und Abholen, Speichern/Laden mit Herzen, Tieren und Haltbarkeit | ✅ ohne JavaScript-Fehler |
 | Etappe 2, Story-Welt: keine Tiere, kein Hunger, keine Herzen-Anzeige | ✅ |
 | Etappe 2, Pixel 7 hoch und quer: Herzen/Hunger, Hotbar mit Werkzeug, Touch-Tasten überlappen nicht | ✅ |
+| Etappe 3, Überleben (Seed 12345, Spielschritte von Hand mit 60 Hz): Hacke macht Ackerboden, Samen gesetzt, nach 271 s Spielzeit reif, Ernte = Weizen + Samen; Nacht: Rauschling erscheint, trifft (2 Schaden), Eisenschwert erledigt ihn in 2 Schlägen; bei Tagesanbruch sind alle Rauschlinge weg; „friedlich“ = keine Gegner. Kreativ: Block setzen, Rückgängig, Wiederholen, Strg+Z | ✅ ohne JavaScript-Fehler |
+| Etappe 3b, Überleben (Seed 12345): Start am Dorfplatz, 3 Bewohner bei der Arbeit, Handel mit der Bäuerin (4 Äpfel für 4 Weizen), Bewohner nicht angreifbar, Eisenhelm und -harnisch angelegt (8 Punkte, Drohnen-Treffer 1,2 statt 2 Herzen-Punkte, Störstrahl sichtbar), Rüstung im Spielstand. Kreativ: Fläche 5×3 mit Vorschau-Rahmen, ein Rückgängig-Schritt entfernt alles, Kopieren und Einfügen (15 Blöcke) | ✅ ohne JavaScript-Fehler |
+| Etappe 3b, iPhone-Größe 390×844: Bauform-Taste, Handelsfenster, obere Knöpfe überlappen die Minikarte nicht | ✅ |
+| Etappe 4, neue Story-Welt: Generator 3, Kampagne „rauschen“, Herzen und Tiere aktiv, Banner Kapitel 1; Dorf-Auftrag setzt Wegpunkt zum Dorf, beim Ankommen Banner Kapitel 2; Auftragsliste mit 6 Kapitel-Überschriften | ✅ ohne JavaScript-Fehler |
+| Etappe 4, Funknetz: Schalter → Sender → Relais → Empfänger in 40 Blöcken Abstand, Signallampe an, Funktor offen, Reichweite 40 erkannt, Auftrag „Die Verbindung“ erfüllt | ✅ |
+| Etappe 4, alter Story-Spielstand (ohne Kampagne): Generator 1, 15 Aufträge, keine Herzen, keine Tiere | ✅ |
 | Teleport in 8 Biome und eine Höhle (Kreativ, Seed 12345), Screenshots | ✅ Biome wie beschrieben, kein Durchfallen |
 
 **Einschränkungen:** Kein echtes Android-Gerät, kein Firefox/Edge/Safari, keine WebViews getestet. Die Bildraten aus Headless-Chromium

@@ -6,7 +6,8 @@
 // self (gleiche Nachbarn zeigen Innenflächen, z. B. Blätter), emit (Eigenleuchten, 2 = Regenbogen),
 // hard (Härte, Sekunden Grundabbauzeit), tool (passendes Werkzeug), color (Bruchstücke), map (Kartenfarbe),
 // icon (Atlas-Kachel für Hotbar/Inventar), inv (im Inventar wählbar),
-// tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen).
+// shape ('cross' = Pflanze), tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen),
+// drop (abgebauter Block gibt diese Id statt der eigenen, z. B. eingeschaltete Signalblöcke).
 
 export const LOGO0 = 11, LOGO_COUNT = 16, SPECIAL0 = 27, SPECIAL_COUNT = 11;
 export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
@@ -14,7 +15,7 @@ export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPo
 
 export const CATS = [
   { id: 'natur', name: 'Natur' }, { id: 'erz', name: 'Erze & Steine' }, { id: 'bau', name: 'Bauen' },
-  { id: 'licht', name: 'Licht' }, { id: 'spezial', name: 'Spezial' }, { id: 'funk', name: 'Funk-Logos' }
+  { id: 'licht', name: 'Licht' }, { id: 'spezial', name: 'Spezial' }, { id: 'technik', name: 'Funktechnik' }, { id: 'funk', name: 'Funk-Logos' }
 ];
 
 const DEF = [
@@ -66,7 +67,28 @@ const DEF = [
   // ab 58: Überleben (Stationen, Tierprodukte)
   [58, 'WORKBENCH', 'Werkbank', 'bau', [51, 52, 8], { hard: 1.2, tool: 'axt', color: 0x9a7444, map: [150, 112, 66], icon: 51, station: 'werkbank' }],
   [59, 'FURNACE', 'Schmelzofen', 'bau', [54, 53, 54], { hard: 2.0, tool: 'spitzhacke', color: 0x6a6a70, map: [110, 110, 116], icon: 53, station: 'ofen' }],
-  [60, 'WOOL', 'Wolle', 'bau', [55, 55, 55], { hard: 0.4, color: 0xeeeae2, map: [236, 232, 224], icon: 55 }]
+  [60, 'WOOL', 'Wolle', 'bau', [55, 55, 55], { hard: 0.4, color: 0xeeeae2, map: [236, 232, 224], icon: 55 }],
+  // ab 61: Landwirtschaft (Pflanzen sind Kreuz-Modelle, nicht fest, nicht im Inventar)
+  [61, 'FARMLAND', 'Ackerboden', 'natur', [56, 2, 2], { hard: 0.5, tool: 'schaufel', color: 0x5a3e26, map: [96, 66, 40], icon: 56 }],
+  [62, 'WHEAT0', 'Weizen (Keim)', '', [57, 57, 57], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0x6ab040, map: [100, 150, 60] }],
+  [63, 'WHEAT1', 'Weizen (jung)', '', [58, 58, 58], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0x7ab440, map: [110, 160, 60] }],
+  [64, 'WHEAT2', 'Weizen (grün)', '', [59, 59, 59], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0xa0b040, map: [150, 170, 60] }],
+  [65, 'WHEAT3', 'Weizen (reif)', '', [60, 60, 60], { shape: 'cross', solid: 0, opaque: 0, inv: 0, hard: 0, color: 0xd8b850, map: [216, 184, 80] }],
+  // ab 66: Dörfer und Minen (Generator 3)
+  [66, 'PATH', 'Dorfweg', 'bau', [61, 2, 2], { hard: 0.5, tool: 'schaufel', color: 0x9a8662, map: [150, 132, 100], icon: 61 }],
+  [67, 'COBBLE', 'Bruchstein', 'bau', [62, 62, 62], { hard: 1.6, tool: 'spitzhacke', color: 0x808086, map: [120, 120, 126], icon: 62 }],
+  // ab 68: Funktechnik und Signale (Zustand „an“ ist eine eigene Id, wirft aber den Grundblock ab)
+  [68, 'SWITCH', 'Schalter', 'technik', [63, 63, 63], { hard: 0.5, color: 0x8a8a90, map: [140, 140, 146], icon: 63 }],
+  [69, 'SWITCH_ON', 'Schalter (an)', '', [64, 64, 64], { hard: 0.5, color: 0x8a8a90, map: [140, 160, 146], inv: 0, drop: 68 }],
+  [70, 'WIRE', 'Signalleitung', 'technik', [65, 65, 65], { hard: 0.5, color: 0xd8803c, map: [200, 120, 60], icon: 65 }],
+  [71, 'SENDER', 'Funksender', 'technik', [66, 67, 62], { hard: 0.8, color: 0x3a3e4a, map: [80, 200, 240], icon: 67 }],
+  [72, 'RELAY', 'Funkrelais', 'technik', [68, 68, 68], { hard: 0.8, color: 0x4a4e5a, map: [110, 200, 230], icon: 68 }],
+  [73, 'RECEIVER', 'Empfänger', 'technik', [69, 69, 69], { hard: 0.8, color: 0x30343e, map: [70, 74, 86], icon: 69 }],
+  [74, 'RECEIVER_ON', 'Empfänger (an)', '', [70, 70, 70], { hard: 0.8, color: 0x30343e, map: [90, 230, 140], inv: 0, drop: 73, emit: 1 }],
+  [75, 'SIGLAMP', 'Signallampe', 'technik', [71, 71, 71], { hard: 0.3, color: 0x6a5a40, map: [110, 92, 66], icon: 71 }],
+  [76, 'SIGLAMP_ON', 'Signallampe (an)', '', [72, 72, 72], { hard: 0.3, color: 0xffd87a, map: [255, 220, 120], inv: 0, drop: 75, emit: 1 }],
+  [77, 'GATE', 'Funktor', 'technik', [73, 73, 73], { hard: 2.0, tool: 'spitzhacke', color: 0xb4b6be, map: [170, 172, 180], icon: 73 }],
+  [78, 'GATE_OPEN', 'Funktor (offen)', '', [74, 74, 74], { solid: 0, opaque: 0, hard: 2.0, tool: 'spitzhacke', color: 0xb4b6be, map: [130, 132, 140], inv: 0, drop: 77 }]
 ];
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
@@ -81,14 +103,15 @@ export const SKYBLOCK = new Uint8Array(MAX_ID); // wirft Schatten (Himmelslicht)
 export const EMIT = new Float32Array(MAX_ID);
 export const TRANS = new Uint8Array(MAX_ID);
 export const SELF = new Uint8Array(MAX_ID);
+export const CROSS = new Uint8Array(MAX_ID); // Pflanzen: zwei gekreuzte Flächen statt Würfel
 export const TILES = {};
 
 for (const [id, key, name, cat, tiles, p] of DEF) {
   if (BLOCKS[id]) throw new Error('Block-Id doppelt: ' + id);
-  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, ...p };
+  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, shape: null, drop: 0, ...p };
   if (b.trans) b.opaque = 0;
   BLOCKS[id] = b; B[key] = id; NAMES[id] = name;
-  SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit;
+  SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit; CROSS[id] = b.shape === 'cross' ? 1 : 0;
   SKYBLOCK[id] = b.opaque || b.self ? 1 : 0;
   if (tiles) TILES[id] = tiles;
 }
@@ -96,3 +119,4 @@ export const isLogo = t => t >= LOGO0 && t < LOGO0 + LOGO_COUNT;
 export const SPECIAL_NAMES = NAMES.slice(SPECIAL0, SPECIAL0 + SPECIAL_COUNT);
 // alle wählbaren Blöcke in Anzeige-Reihenfolge
 export const INV_BLOCKS = BLOCKS.filter(b => b && b.inv).map(b => b.id);
+export const CROPS = [B.WHEAT0, B.WHEAT1, B.WHEAT2, B.WHEAT3]; // Wachstumsstufen

@@ -1,7 +1,7 @@
 // Chunk-Mesher: Flächen-Culling, weiche Ecken-Beleuchtung (Ambient Occlusion + Himmelslicht),
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
-import { CS, H } from './consts.js';
-import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, TILES, isLogo as isLogoId } from './blocks.js';
+import { CS, H, ATLAS_COLS, ATLAS_ROWS } from './consts.js';
+import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, TILES, isLogo as isLogoId } from './blocks.js';
 export { TILES };
 
 // n = Normale, o = Ursprungsecke, a/b = Kantenvektoren (a × b = n, also gegen den Uhrzeigersinn von außen)
@@ -49,9 +49,11 @@ class Part {
 }
 
 // UV-Rechteck einer Kachel: Raster 8x8 (Blöcke) bzw. 4x4 (Logos), Rand innen versetzt gegen Mip-Bluten
+// [u0, v0, Breite, Höhe] einer Kachel; Block-Atlas 8×16, Logo-Atlas 4×4
 function tileUv(tile, logo) {
-  const grid = logo ? 4 : 8, ts = 1 / grid, eps = (logo ? 3 : 2) / 512;
-  return [(tile % grid) * ts + eps, 1 - (Math.floor(tile / grid) + 1) * ts + eps, ts - 2 * eps];
+  const cols = logo ? 4 : ATLAS_COLS, rows = logo ? 4 : ATLAS_ROWS, tu = 1 / cols, tv = 1 / rows;
+  const eu = (logo ? 3 : 2) / 512, ev = logo ? eu : 2 / (64 * ATLAS_ROWS);
+  return [(tile % cols) * tu + eu, 1 - (Math.floor(tile / cols) + 1) * tv + ev, tu - 2 * eu, tv - 2 * ev];
 }
 
 export function buildMesh(world, chunk) {
@@ -77,6 +79,7 @@ export function buildMesh(world, chunk) {
       for (let x = 0; x < CS; x++) {
         const t = data[x + (z << 4) + (y << 8)];
         if (t === B.AIR) continue;
+        if (CROSS[t]) { cross(O, x, y, z, TILES[t][0], sky(x, y, z)); continue; }
         const isLogo = isLogoId(t);
         const part = isLogo ? L : TRANS[t] ? T : O;
         const lamp = EMIT[t];
@@ -87,7 +90,7 @@ export function buildMesh(world, chunk) {
           const f = FACES[fi];
           if (!visible(t, get(x + f.n[0], y + f.n[1], z + f.n[2]))) continue;
           const tile = isLogo ? t - LOGO0 : tiles[f.k];
-          const [u0, v0, du] = tileUv(tile, isLogo);
+          const [u0, v0, du, dv] = tileUv(tile, isLogo);
           for (let k = 0; k < 4; k++) {
             const c = f.c[k];
             const sc = sky(x + f.n[0], y + f.n[1], z + f.n[2]);
@@ -100,7 +103,7 @@ export function buildMesh(world, chunk) {
             const s = (sc + (b1 ? sc : sky(x1, y1, z1)) + (b2 ? sc : sky(x2, y2, z2)) + (b3 ? sc : sky(x3, y3, z3))) / 4;
             br[k] = AO[a] * (0.5 + 0.5 * s);
             part.pos.push(x + c.p[0], y + c.p[1] - (lower && c.p[1] === 1 ? 0.12 : 0), z + c.p[2]);
-            part.uv.push(u0 + c.i * du, v0 + c.j * du);
+            part.uv.push(u0 + c.i * du, v0 + c.j * dv);
             part.col.push(AO[a], s, lamp, fi);
           }
           const b = part.n * 4;
@@ -114,14 +117,31 @@ export function buildMesh(world, chunk) {
   return { opaque: O.finish(), trans: T.finish(), logo: L.finish() };
 }
 
+// Pflanze: zwei diagonale Flächen, beidseitig (opakes Mesh, Alpha-Ausschnitt)
+const CROSS_Q = [[[0.15, 0.15], [0.85, 0.85]], [[0.85, 0.15], [0.15, 0.85]]];
+function cross(P, x, y, z, tile, s) {
+  const [u0, v0, du, dv] = tileUv(tile, false);
+  for (const [[ax, az], [bx, bz]] of CROSS_Q) {
+    for (const flip of [0, 1]) {
+      const b = P.n * 4;
+      const pts = flip ? [[bx, bz], [ax, az]] : [[ax, az], [bx, bz]];
+      P.pos.push(x + pts[0][0], y, z + pts[0][1], x + pts[1][0], y, z + pts[1][1], x + pts[1][0], y + 1, z + pts[1][1], x + pts[0][0], y + 1, z + pts[0][1]);
+      P.uv.push(u0, v0, u0 + du, v0, u0 + du, v0 + dv, u0, v0 + dv);
+      for (let k = 0; k < 4; k++) P.col.push(0.9, s, 0, 4);
+      P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+      P.n++;
+    }
+  }
+}
+
 // Einheitswürfel (für Hand-Block): gleiche Vertex-Daten wie der Welt-Mesher
 export function cubeData(type) {
   const isLogo = isLogoId(type), tiles = TILES[type], P = new Part();
   for (let fi = 0; fi < 6; fi++) {
-    const f = FACES[fi], [u0, v0, du] = tileUv(isLogo ? type - LOGO0 : tiles[f.k], isLogo);
+    const f = FACES[fi], [u0, v0, du, dv] = tileUv(isLogo ? type - LOGO0 : tiles[f.k], isLogo);
     for (let k = 0; k < 4; k++) {
       const c = f.c[k];
-      P.pos.push(c.p[0] - 0.5, c.p[1] - 0.5, c.p[2] - 0.5); P.uv.push(u0 + c.i * du, v0 + c.j * du); P.col.push(1, 1, EMIT[type], fi);
+      P.pos.push(c.p[0] - 0.5, c.p[1] - 0.5, c.p[2] - 0.5); P.uv.push(u0 + c.i * du, v0 + c.j * dv); P.col.push(1, 1, EMIT[type], fi);
     }
     const b = P.n * 4; P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3); P.n++;
   }

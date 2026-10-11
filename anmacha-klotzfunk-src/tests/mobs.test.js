@@ -78,3 +78,84 @@ test('Ungültige Einträge im Spielstand werden verworfen', () => {
   assert.equal(mobs.store.size, 1);
   assert.equal([...mobs.store.values()][0].length, 1);
 });
+
+test('Gegner: verfolgen nur mit freier Sicht und greifen in Reichweite an', async () => {
+  const { lineOfSight } = await import('../src/mobs.js');
+  const g = (x, y, z) => (y <= 10 ? B.STONE : x === 5 && y <= 14 ? B.STONE : B.AIR);
+  const w = { getBlock: g, isSolid: (x, y, z) => g(x, y, z) !== B.AIR, isLoaded: () => true };
+  assert.equal(lineOfSight(w, 0.5, 12.5, 0.5, 9.5, 12.5, 0.5), false, 'Wand verdeckt');
+  assert.equal(lineOfSight(w, 0.5, 12.5, 0.5, 4.2, 12.5, 0.5), true);
+  // hinter der Wand: bleibt unbeteiligt
+  const hidden = new Mob(3, 9.5, 11, 0.5);
+  for (let i = 0; i < 120; i++) hidden.update(w, 1 / 60, () => 0.99, 0.5, 0.5, 11);
+  assert.equal(hidden.sees, false);
+  // freie Sicht: läuft heran und greift an
+  const m = new Mob(3, 4.0, 11, 8.5);
+  let hits = 0;
+  for (let i = 0; i < 60 * 8; i++) { m.update(w, 1 / 60, () => 0.5, 2.5, 3.5, 11); if (m.attack) { hits++; m.attack = false; } }
+  assert.ok(m.sees);
+  assert.ok(Math.hypot(m.x - 2.5, m.z - 3.5) < 1.6, 'ist herangekommen');
+  assert.ok(hits >= 3 && hits <= 8, 'greift etwa einmal je Sekunde an: ' + hits);
+});
+
+test('Gegner erscheinen nur nachts oder tief unten und werden nicht gespeichert', () => {
+  const w = loaded(12345), mobs = new Mobs(w, 12345, null);
+  mobs.rnd = seeded(3);
+  let day = 0, night = 0;
+  for (let i = 0; i < 30; i++) { if (mobs.spawnHostile(8, 40, 8, false)) day++; }
+  for (let i = 0; i < 30; i++) { if (mobs.spawnHostile(8, 40, 8, true)) night++; }
+  assert.equal(day, 0, 'tagsüber an der Oberfläche keine');
+  assert.ok(night > 0 && mobs.hostileCount() <= 4, 'nachts höchstens 4');
+  const saved = mobs.serialize();
+  assert.ok(Object.values(saved).every(a => a.every(r => !MOB_TYPES[r[0]].hostile)));
+  // Tagesanbruch: Gegner an der Oberfläche verschwinden
+  mobs.update(1.1, 8, 8, { py: 40, night: false, hostiles: true });
+  assert.equal(mobs.hostileCount(), 0);
+});
+
+test('Erstbesiedlung bringt nur Tiere, nie Gegner oder Dorfbewohner', async () => {
+  const { ANIMALS } = await import('../src/mobs.js');
+  const w = loaded(12345, 6), mobs = new Mobs(w, 12345, null);
+  let n = 0;
+  for (let z = -6; z <= 6; z++) for (let x = -6; x <= 6; x++) for (const r of mobs.spawnRecords(x, z) || []) { n++; assert.ok(r[0] < ANIMALS); }
+  assert.ok(n > 0);
+});
+
+test('Dorfbewohner: Tagesablauf, nicht angreifbar, nicht gespeichert', async () => {
+  const { npcPhase, T_NPC } = await import('../src/mobs.js');
+  const { nearestVillage } = await import('../src/structures.js');
+  assert.equal(npcPhase(0.1), 'work'); assert.equal(npcPhase(0.25), 'plaza'); assert.equal(npcPhase(0.7), 'home');
+  const v = nearestVillage(12345), w = new World(12345, null, 3);
+  for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) w.ensure((v.x >> 4) + dx, (v.z >> 4) + dz);
+  const mobs = new Mobs(w, 12345, null);
+  mobs.findVillages = () => [v]; mobs.rnd = seeded(5);
+  mobs.update(0.01, v.x, v.z, { py: v.y + 1, time: 0.1 });
+  const npcs = mobs.list.filter(m => m.npc);
+  assert.equal(npcs.length, v.houses.length, 'ein Bewohner je Haus');
+  assert.equal(npcs[0].type, T_NPC);
+  assert.equal(npcs[0].hit(99, v.x, v.z), false); assert.equal(npcs[0].hp, MOB_TYPES[T_NPC].hp);
+  // abends nach Hause: alle erreichen ihr Haus (notfalls über Wegpunkte)
+  for (let i = 0; i < 60 * 40; i++) mobs.update(1 / 60, v.x, v.z, { py: v.y + 1, time: 0.6 });
+  for (const m of npcs) assert.ok(Math.hypot(m.x - m.home.x, m.z - m.home.z) < 2.6, `${m.name} ist zu Hause`);
+  assert.ok(Object.values(mobs.serialize()).every(a => a.every(r => r[0] !== T_NPC)));
+  // weit weg: Bewohner verschwinden, beim Zurückkommen wieder da
+  mobs.refresh(v.x + 300, v.z);
+  assert.equal(mobs.list.filter(m => m.npc).length, 0);
+  mobs.refresh(v.x, v.z);
+  assert.equal(mobs.list.filter(m => m.npc).length, v.houses.length);
+});
+
+test('Drohne schwebt und feuert aus Abstand, Höhlenwesen nur in Höhlen', async () => {
+  const { T_DROHNE, T_HOEHLE } = await import('../src/mobs.js');
+  const g = (x, y, z) => (y <= 10 ? B.STONE : B.AIR);
+  const w = { getBlock: g, isSolid: (x, y, z) => g(x, y, z) !== B.AIR, isLoaded: () => true };
+  const d = new Mob(T_DROHNE, 10.5, 16, 0.5);
+  let shots = 0;
+  for (let i = 0; i < 60 * 6; i++) { d.update(w, 1 / 60, () => 0.5, 0.5, 0.5, 11); if (d.attack) { shots++; d.attack = false; } }
+  assert.ok(d.y > 12, 'fällt nicht herunter');
+  assert.ok(shots >= 2 && shots <= 4, 'Störimpuls etwa alle 2 s: ' + shots);
+  const ww = loaded(12345), mobs = new Mobs(ww, 12345, null);
+  mobs.rnd = seeded(9);
+  for (let i = 0; i < 40; i++) mobs.spawnHostile(8, 40, 8, true);
+  assert.ok(mobs.list.every(m => m.type !== T_HOEHLE), 'an der Oberfläche keine Höhlenwesen');
+});

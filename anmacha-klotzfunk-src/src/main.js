@@ -1,7 +1,7 @@
 // Oberfläche, Eingabe (Tastatur/Maus/Touch), Menüs, Speichern.
 import './style.css';
 import { Game } from './game.js';
-import { B, NAMES, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
+import { B, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
 import { BLOCKS, CATS, INV_BLOCKS } from './blocks.js';
 import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot } from './storage.js';
 import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK, STATION_NAMES } from './crafting.js';
@@ -9,7 +9,8 @@ import { ITEMS, ITEM_LIST, isItem, nameOf } from './items.js';
 import { MAX_HP, MAX_FOOD, MAX_AIR } from './survival.js';
 import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
 import { unlockAudio, sfx } from './audio.js';
-import { QUESTS, questProgress } from './quests.js';
+import { QUESTS, RAUSCHEN, CHAPTERS, campaignOf, questProgress } from './quests.js';
+import { TRADES, GREET } from './trades.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
@@ -18,7 +19,7 @@ let settings = loadSettings();
 const game = new Game(canvas, coarse, settings.quality);
 window.__bv = game; // Testzugriff
 
-let state = 'menu';       // menu | loading | playing | paused | inventory | settings
+let state = 'menu';       // menu | loading | playing | paused | inventory | settings | trade | dead
 let setReturn = 'menu';   // wohin „Einstellungen schließen“ zurückführt
 let slot = -1;
 let touchMode = coarse;
@@ -34,7 +35,7 @@ const icon = t => {
   if (isLogo(t)) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
   if (t === B.RAINBOW) return '<i class="ic rb"></i>';
   const k = BLOCKS[t] ? BLOCKS[t].icon : 0;
-  return `<i class="ic" style="background-position:${(k % 8) * 100 / 7}% ${Math.floor(k / 8) * 100 / 7}%"></i>`;
+  return `<i class="ic" style="background-position:${(k % 8) * 100 / 7}% ${Math.floor(k / 8) * 100 / 15}%"></i>`;
 };
 // Logo-Atlas als Bild für Hotbar/Inventar, sobald alle Logos geladen sind
 game.onLogos = () => { document.documentElement.style.setProperty('--logos', `url(${game.logoCanvas.toDataURL('image/png')})`); };
@@ -134,6 +135,7 @@ const vitCtx = $('vit').getContext('2d');
 const HEART = ['.##.##.', '#######', '#######', '.#####.', '..###..', '...#...'];
 const LEG = ['....##.', '...####', '..#####', '.####..', '##.....', '#......'];
 const BUBBLE = ['..###..', '.#...#.', '#.....#', '#.....#', '.#...#.', '..###..'];
+const SHIELD = ['#######', '#######', '#######', '.#####.', '..###..', '...#...'];
 function pix(pat, x, y, full, half, empty) {
   for (let j = 0; j < 6; j++) for (let i = 0; i < 7; i++) if (pat[j][i] === '#') {
     vitCtx.fillStyle = i < 3.5 ? (full || half ? (full ? full : half) : empty) : (full ? full : empty);
@@ -149,6 +151,8 @@ function renderVitals() {
   for (let i = 0; i < MAX_HP / 2; i++) { const k = hp - i * 2; pix(HEART, i * 10, 18, k >= 2 ? '#ff3b4a' : null, k === 1 ? '#ff3b4a' : null, '#3a1a20'); }
   for (let i = 0; i < MAX_FOOD / 2; i++) { const k = fd - i * 2; pix(LEG, 186 - i * 10, 18, k >= 2 ? '#d89048' : null, k === 1 ? '#d89048' : null, '#3a2a1a'); }
   if (v.air < MAX_AIR) for (let i = 0; i < Math.ceil(v.air); i++) pix(BUBBLE, 186 - i * 10, 2, '#9ad8ff', null, '#9ad8ff');
+  const ap = game.armorPoints(); // Rüstung: ein Schild je Schutzpunkt
+  for (let i = 0; i < ap; i++) pix(SHIELD, i * 10, 2, '#cfd6e2', null, '#cfd6e2');
 }
 game.onVitals = renderVitals;
 let hurtTimer = 0;
@@ -158,7 +162,8 @@ game.onHurt = () => {
   if (navigator.vibrate && touchMode) try { navigator.vibrate(60); } catch (e) { /* ignorieren */ }
 };
 game.onMine = p => { $('mine').classList.toggle('on', p > 0); $('mine').firstChild.style.width = Math.round(p * 100) + '%'; };
-const DEATH_WHY = { Sturz: 'Zu tief gefallen.', Ertrunken: 'Unter Wasser ging die Luft aus.', Magma: 'Magma ist heiß.', Hunger: 'Vor Hunger.' };
+const DEATH_WHY = { Sturz: 'Zu tief gefallen.', Ertrunken: 'Unter Wasser ging die Luft aus.', Magma: 'Magma ist heiß.', Hunger: 'Vor Hunger.', Rauschling: 'Ein Rauschling hat dich erwischt.',
+  'Höhlenwesen': 'Ein Höhlenwesen hat dich erwischt.', 'Störsender-Drohne': 'Die Störimpulse einer Drohne waren zu viel.' };
 game.onDeath = (cause, grave) => {
   releaseInput(); setState('dead');
   $('deadWhy').textContent = (DEATH_WHY[cause] || '') + (grave ? ' Dein Vorrat liegt am Unglücksort, der Wegpunkt 📍 zeigt den Weg.' : ' Dein Vorrat bleibt erhalten. Der Wegpunkt 📍 markiert den Unglücksort.');
@@ -169,6 +174,49 @@ $('dRevive').onclick = () => { game.revive(); renderHotbar(); setState('playing'
 $('dMenu').onclick = () => { game.revive(); $('pMenu').onclick(); };
 game.onStation = st => { invAt = st; invCat = 'all'; openInventory(); };
 
+// ---------- Handel mit Dorfbewohnern ----------
+let trader = null;
+function renderTrade() {
+  const list = TRADES[trader.role] || [];
+  $('trName').firstChild.textContent = trader.name + ' ';
+  $('trSay').textContent = '„' + (GREET[trader.role] || 'Hallo!') + '“';
+  $('trList').innerHTML = list.map((r, i) => {
+    const c = checkRecipe(game.inv, r);
+    const need = r.need.map(([t, n]) => { const have = game.inv[t] || 0; return have >= n ? `${n}× ${nameOf(t)}` : `<i>${n}× ${nameOf(t)} (${have})</i>`; }).join(' + ');
+    return `<button data-tr="${i}" ${c.ok ? '' : 'disabled'}>${icon(r.give[0])}<span><b>${r.give[1]}× ${nameOf(r.give[0])}</b><small>für ${need}</small></span></button>`;
+  }).join('');
+}
+game.onTrade = m => {
+  if (state !== 'playing') return;
+  if (game.mode === 'creative') { toast(`${m.name}: „Im Kreativmodus hast du doch schon alles!“`); return; }
+  trader = m; releaseInput(); setState('trade'); renderTrade();
+  if (locked()) document.exitPointerLock();
+  game.stop();
+};
+$('trList').addEventListener('click', e => {
+  const b = e.target.closest('[data-tr]'); if (!b || !trader) return;
+  const r = TRADES[trader.role][Number(b.dataset.tr)], res = craft(game.inv, r);
+  toast(res.ok ? `Getauscht: ${res.msg}` : res.msg);
+  if (!res.ok) return;
+  game.unsaved = true; renderTrade(); renderHotbar();
+  game.questEvent('trade', r.give[0]);
+});
+function closeTrade() {
+  if (state !== 'trade') return;
+  trader = null; setState('playing'); game.resume(); lockPointer();
+  if (!touchMode) setTimeout(() => { if (state === 'playing' && !locked()) pause(); }, 250);
+}
+$('trClose').onclick = closeTrade;
+
+// ---------- Bauform ----------
+game.onBuildMode = m => {
+  const el = $('bmode');
+  el.hidden = m.key === 'einzeln';
+  el.textContent = `▦ ${m.name}` + (m.clicks === 2 ? ' · zwei Ecken setzen' : m.key === 'einfuegen' ? ' · Setzen fügt ein' : '') + ' (G wechselt)';
+  toast('Bauform: ' + m.name);
+};
+$('bBuild').onclick = () => game.cycleBuild(1);
+
 // ---------- Story: Auftragsanzeige, Banner, Liste ----------
 let questMin = false, bannerTimer = 0;
 function renderQuest() {
@@ -176,8 +224,9 @@ function renderQuest() {
   if (!s || game.menuMode) { el.hidden = true; return; }
   el.hidden = false; el.classList.toggle('min', questMin);
   if (s.done) { el.innerHTML = '<b>🎉 Story abgeschlossen</b><small class="txt">Alle Aufträge erledigt. Baue frei weiter!</small>'; return; }
-  const q = QUESTS[s.i], [cur, n] = questProgress(game, q), pct = Math.min(100, Math.round(cur / n * 100));
-  el.innerHTML = `<b>Auftrag ${s.i + 1}/${QUESTS.length} · ${q.t}</b><div class="bar"><i style="width:${pct}%"></i></div><small>${Math.min(cur, n)} / ${n}</small><small class="txt">${q.d}</small>`;
+  const list = campaignOf(s), q = list[s.i], [cur, n] = questProgress(game, q), pct = Math.min(100, Math.round(cur / n * 100));
+  const head = q.c ? `Kapitel ${q.c} · ${q.t}` : `Auftrag ${s.i + 1}/${list.length} · ${q.t}`;
+  el.innerHTML = `<b>${head}</b><div class="bar"><i style="width:${pct}%"></i></div><small>${Math.min(cur, n)} / ${n}${q.c ? ` · Auftrag ${s.i + 1}/${list.length}` : ''}</small><small class="txt">${q.d}</small>`;
 }
 function showBanner(html) {
   const b = $('banner'); b.innerHTML = html; b.classList.add('on');
@@ -185,15 +234,21 @@ function showBanner(html) {
 }
 game.onQuest = renderQuest;
 game.onQuestDone = (q, last) => {
-  const rw = Object.entries(q.r || {}).map(([t, c]) => `+${c} ${NAMES[t]}`).join(' · ');
-  showBanner(last ? `🎉 Story abgeschlossen!<small>${q.t} geschafft. Die Funkzentrale sendet wieder. Baue frei weiter.</small>` : `✔ Auftrag erledigt: ${q.t}<small>${rw}</small>`);
+  const rw = Object.entries(q.r || {}).map(([t, c]) => `+${c} ${nameOf(Number(t))}`).join(' · ');
+  const next = !last && campaignOf(game.story)[game.story.i];
+  if (last) showBanner(q.c ? '🎉 Das Rauschen ist verstummt!<small>Das Funknetz steht wieder. Die Welt gehört dir, baue frei weiter.</small>'
+    : `🎉 Story abgeschlossen!<small>${q.t} geschafft. Die Funkzentrale sendet wieder. Baue frei weiter.</small>`);
+  else if (next && next.c && next.c !== q.c) showBanner(`📻 Kapitel ${next.c}: ${CHAPTERS[next.c].t}<small>${CHAPTERS[next.c].d}</small>`);
+  else showBanner(`✔ Auftrag erledigt: ${q.t}<small>${rw}</small>`);
 };
 function renderQuestLog() {
   const s = game.story; if (!s) return;
-  $('qlist').innerHTML = QUESTS.map((q, i) => {
+  $('qlist').innerHTML = campaignOf(s).map((q, i, list) => {
     const done = s.done || i < s.i, cur = !s.done && i === s.i;
-    return `<div class="qi ${done ? 'done' : cur ? 'cur' : ''}"><span class="st">${done ? '✔' : cur ? '➜' : i + 1}</span><div><b>${q.t}</b>${done || cur ? `<small>${q.d}</small>` : ''}</div></div>`;
+    const ch = q.c && (i === 0 || list[i - 1].c !== q.c) ? `<h3 class="qch">Kapitel ${q.c} · ${CHAPTERS[q.c].t}</h3>` : '';
+    return `${ch}<div class="qi ${done ? 'done' : cur ? 'cur' : ''}"><span class="st">${done ? '✔' : cur ? '➜' : i + 1}</span><div><b>${q.t}</b>${done || cur ? `<small>${q.d}</small>` : ''}</div></div>`;
   }).join('');
+  $('qlogT').textContent = s.c === 'rauschen' ? 'Das große Rauschen' : 'Aufträge der Funkzentrale';
 }
 $('quest').addEventListener('click', () => { questMin = !questMin; renderQuest(); });
 $('pQuests').onclick = () => { renderQuestLog(); show('qlog', true); };
@@ -204,8 +259,8 @@ const show = (id, on) => { $(id).hidden = !on; };
 function setState(s) {
   state = s;
   document.body.classList.toggle('playing', s === 'playing');
-  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings'); show('dead', s === 'dead');
-  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || (s === 'settings' && setReturn === 'paused'));
+  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings'); show('dead', s === 'dead'); show('trade', s === 'trade');
+  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || s === 'dead' || s === 'trade' || (s === 'settings' && setReturn === 'paused'));
   if (s !== 'playing') game.onMine(0);
   if (s !== 'paused') show('qlog', false);
 }
@@ -277,7 +332,8 @@ function renderSlots() {
     const meta = readMeta(i);
     if (meta) {
       const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative', st = meta.mode === 'story';
-      const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : 'Auftrag ' + ((meta.q ?? 0) + 1) + '/' + QUESTS.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
+      const ql = meta.qc === 'rauschen' ? RAUSCHEN : QUESTS, qn = meta.q ?? 0;
+      const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : (ql[qn] && ql[qn].c ? 'Kapitel ' + ql[qn].c + ' · ' : '') + 'Auftrag ' + (qn + 1) + '/' + ql.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
       h += `<div class="card"><div class="top"><div class="ico">${st ? '📜' : cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b>${pill}</div></div>
         <small>${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)}${(meta.gen || 1) < GEN_LATEST ? ' · klassische Welt' : ''} · zuletzt ${d}</small>
         <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="exp" data-i="${i}" aria-label="Welt exportieren" title="Welt als Datei sichern">⤓</button>${hasBackup(i) ? `<button data-act="bak" data-i="${i}" aria-label="Sicherung laden" title="Ältere Sicherung wiederherstellen">↺</button>` : ''}<button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
@@ -324,8 +380,8 @@ $('slots').addEventListener('click', e => {
   } else {
     const mode = $('mode' + i).querySelector('.on').dataset.mode;
     launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode,
-      // Story bleibt vorerst auf der erprobten Originalwelt (alle 15 Aufträge dort lösbar); neue Story-Kapitel folgen mit Generator 2
-      gen: mode === 'story' ? 1 : GEN_LATEST });
+      // neue Story-Welten: „Das große Rauschen“ auf Generator 3 mit Dorf (Startwert 777)
+      gen: GEN_LATEST });
   }
 });
 
@@ -362,8 +418,10 @@ function launch(i, save) {
       game.start(save);
       if (save.mode === 'creative') game.player.flying = false;
       $('bFly').hidden = !(touchMode && game.mode === 'creative');
+      $('bUndo').hidden = game.mode !== 'creative';
+      $('bmode').hidden = true;
       renderHotbar(); renderQuest(); setState('playing'); renderVitals(); lockPointer();
-      if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner('📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
+      if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner(game.story.c ? `📻 Kapitel 1: ${CHAPTERS[1].t}<small>${CHAPTERS[1].d} Dein Auftrag steht links (J blendet ihn aus).</small>` : '📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
       if (!game.unsaved && save.px === undefined) saveNow(false);
     } catch (err) {
       console.error(err); setState('menu'); renderSlots(); alert('Die Welt konnte nicht gestartet werden.');
@@ -381,6 +439,7 @@ $('vd').oninput = e => { const v = Number(e.target.value); game.maxView = v; gam
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
 $('bWp').onclick = () => game.toggleWaypoint();
+$('bUndo').onclick = () => game.undo(false);
 $('bMap').onclick = toggleMap;
 $('td').oninput = e => { game.time = Number(e.target.value) / 100; $('tdVal').textContent = game.clockText(); game.updateSky(); game.render(); };
 $('pFreeze').onclick = () => { game.timeFrozen = !game.timeFrozen; $('pFreeze').textContent = game.timeFrozen ? '⏸ Zeit steht still' : '⏱ Zeit läuft'; };
@@ -411,13 +470,17 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (state === 'settings') { if (e.code === 'Escape') closeSettings(); return; }
+  if (state === 'trade') { if (e.code === 'Escape' || e.code === 'KeyE') { e.preventDefault(); closeTrade(); } return; }
   if (state === 'inventory') { if (e.code === 'KeyE' || e.code === 'Escape') { e.preventDefault(); closeInventory(); } return; }
   if (state !== 'playing') return;
   if (e.code === 'Space' || e.code === 'Tab' || e.code.startsWith('Arrow')) e.preventDefault();
   if (e.repeat) return;
   if (/^Digit[1-9]$/.test(e.code)) { game.selectSlot(Number(e.code[5]) - 1); return; }
   if (e.code === 'KeyE') { e.preventDefault(); openInventory(); return; }
+  if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); game.undo(e.shiftKey); return; }
+  if (e.code === 'KeyY' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); game.undo(true); return; }
   if (e.code === 'KeyF') { toggleFly(); return; }
+  if (e.code === 'KeyG') { game.cycleBuild(e.shiftKey ? -1 : 1); return; }
   if (e.code === 'KeyQ') { game.fireHook(); return; }
   if (e.code === 'KeyB') { game.toggleWaypoint(); return; }
   if (e.code === 'KeyM') { toggleMap(); return; }
@@ -560,14 +623,14 @@ setInterval(() => {
 function applySettings() {
   const auto = settings.quality === 'auto';
   game.setQuality(auto ? autoBase(coarse) : settings.quality, auto);
-  game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss;
+  game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; game.enemies = settings.enemies; game.preview = settings.preview;
   sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
   document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
   document.body.classList.toggle('lefty', settings.lefty);
 }
 const SET_RANGES = [['sMouse', 'mouseSens', v => v.toFixed(1) + '×'], ['sTouch', 'touchSens', v => v.toFixed(1) + '×'], ['sJoy', 'joySens', v => v.toFixed(1) + '×'],
   ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %']];
-const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps']];
+const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps'], ['sEnemy', 'enemies'], ['sPreview', 'preview']];
 function renderSettings() {
   $('sQuality').value = settings.quality; $('sDeath').value = settings.deathLoss;
   for (const [id, k, f] of SET_RANGES) { $(id).value = settings[k]; $(id + 'V').textContent = f(settings[k]); }
@@ -577,7 +640,7 @@ function changed(quality) {
   saveSettings(settings);
   if (quality) applySettings();
   else { // ohne Grafikwechsel: Sichtweite/Auflösung nicht zurücksetzen
-    game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
+    game.placeDelay = settings.placeDelay; game.deathLoss = settings.deathLoss; game.enemies = settings.enemies; game.preview = settings.preview; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
     document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
     document.body.classList.toggle('lefty', settings.lefty);
   }

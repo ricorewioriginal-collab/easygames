@@ -21,6 +21,30 @@ const MODELS = [
     [-0.32, 1.3, -0.95, -0.24, 1.46, -0.88, 0xe8e2d0], [0.24, 1.3, -0.95, 0.32, 1.46, -0.88, 0xe8e2d0],
     [-0.36, 0, -0.62, -0.16, 0.56, -0.42, 0x3a281a], [0.16, 0, -0.62, 0.36, 0.56, -0.42, 0x3a281a],
     [-0.36, 0, 0.42, -0.16, 0.56, 0.62, 0x3a281a], [0.16, 0, 0.42, 0.36, 0.56, 0.62, 0x3a281a]
+  ],
+  [ // Rauschling: dunkle, flimmernde Gestalt mit leuchtenden Augen und Antenne
+    [-0.28, 0.75, -0.16, 0.28, 1.35, 0.16, 0x2a2440], [-0.22, 1.35, -0.22, 0.22, 1.75, 0.22, 0x342c52],
+    [-0.15, 1.52, -0.24, -0.05, 1.6, -0.21, 0x6af0ff], [0.05, 1.52, -0.24, 0.15, 1.6, -0.21, 0x6af0ff],
+    [-0.02, 1.75, -0.02, 0.02, 1.98, 0.02, 0x8a80b0], [-0.05, 1.96, -0.05, 0.05, 2.04, 0.05, 0xff3c8c],
+    [-0.42, 0.8, -0.08, -0.28, 1.32, 0.08, 0x2a2440], [0.28, 0.8, -0.08, 0.42, 1.32, 0.08, 0x2a2440],
+    [-0.22, 0, -0.1, -0.04, 0.75, 0.1, 0x221c36], [0.04, 0, -0.1, 0.22, 0.75, 0.1, 0x221c36]
+  ],
+  [ // Höhlenwesen: flacher Panzer, sechs Beine, rote Augen
+    [-0.42, 0.25, -0.3, 0.42, 0.72, 0.5, 0x3a3a44], [-0.28, 0.3, -0.62, 0.28, 0.66, -0.3, 0x2a2a32],
+    [-0.2, 0.5, -0.64, -0.08, 0.6, -0.61, 0xff3030], [0.08, 0.5, -0.64, 0.2, 0.6, -0.61, 0xff3030],
+    ...[-0.2, 0.1, 0.35].flatMap(z => [[-0.82, 0, z - 0.05, -0.42, 0.4, z + 0.05, 0x24242c], [0.42, 0, z - 0.05, 0.82, 0.4, z + 0.05, 0x24242c]])
+  ],
+  [ // Störsender-Drohne: Gehäuse, Kuppel, rotes Auge, vier Rotoren
+    [-0.35, 0.15, -0.35, 0.35, 0.42, 0.35, 0x505868], [-0.2, 0.42, -0.2, 0.2, 0.56, 0.2, 0x2a2e38],
+    [-0.1, 0.2, -0.38, 0.1, 0.34, -0.35, 0xff2050], [-0.03, 0.56, -0.03, 0.03, 0.7, 0.03, 0x8a8a96],
+    ...[[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [a * 0.55 - 0.13, 0.44, b * 0.55 - 0.13, a * 0.55 + 0.13, 0.48, b * 0.55 + 0.13, 0x9aa0ac])
+  ],
+  [ // Dorfbewohner: Hose, Kittel mit Schürze, Arme, Kopf mit Haar
+    [-0.2, 0, -0.1, -0.02, 0.7, 0.1, 0x4a3a2a], [0.02, 0, -0.1, 0.2, 0.7, 0.1, 0x4a3a2a],
+    [-0.25, 0.7, -0.15, 0.25, 1.35, 0.15, 0x3a6aa0], [-0.2, 0.75, -0.17, 0.2, 1.2, -0.15, 0x8a6a40],
+    [-0.36, 0.8, -0.08, -0.25, 1.3, 0.08, 0x3a6aa0], [0.25, 0.8, -0.08, 0.36, 1.3, 0.08, 0x3a6aa0],
+    [-0.2, 1.35, -0.2, 0.2, 1.73, 0.2, 0xe8c09a], [-0.22, 1.68, -0.22, 0.22, 1.82, 0.22, 0x6a4a2a],
+    [-0.12, 1.52, -0.22, -0.05, 1.58, -0.2, 0x202020], [0.05, 1.52, -0.22, 0.12, 1.58, -0.2, 0x202020]
   ]
 ];
 // Helligkeit je Flächenrichtung: +X, −X, +Y, −Y, +Z, −Z
@@ -72,10 +96,11 @@ export class MobView {
       mesh.visible = d < maxD;
       if (!mesh.visible) continue;
       const bob = m.moving ? Math.abs(Math.sin(t * 9 + m.x)) * 0.05 : 0;
+      const l = m.hostile ? Math.max(light, 0.7) * (0.85 + 0.15 * Math.sin(t * 23 + m.z)) : light; // Rauschen: flimmert, auch nachts sichtbar
       mesh.position.set(m.x, m.y + bob, m.z);
       mesh.rotation.y = m.yaw;
-      if (m.hurtT > 0) mesh.material.color.setRGB(light * 1.3, light * 0.45, light * 0.45);
-      else mesh.material.color.setRGB(light, light, light);
+      if (m.hurtT > 0) mesh.material.color.setRGB(l * 1.3, l * 0.45, l * 0.45);
+      else mesh.material.color.setRGB(l, l, l);
     }
   }
   clear() { for (const m of [...this.meshes.keys()]) this.remove(m); }

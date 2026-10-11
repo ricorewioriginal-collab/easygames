@@ -6,7 +6,8 @@
 - Gleicher **Startwert (Seed)** = gleiche Landschaft. Gespeichert werden nur deine Änderungen; beim erneuten Laden entsteht die Landschaft neu und die Änderungen werden darübergelegt.
 - Jede Welt merkt sich ihre **Generator-Version**:
   - **Generator 1** – die Originalwelt aus Version 1.0 (Hügel, Wiesen, Strände, Bäume). Alle alten Spielstände und die Story nutzen ihn, Bit für Bit unverändert.
-  - **Generator 2** – neue Welten im Überlebens- und Kreativmodus: Biome, Gebirge, Höhlen und Erze.
+  - **Generator 2** – Welten aus Version 1.1–1.3: Biome, Gebirge, Höhlen und Erze.
+  - **Generator 3** – neue Welten: Generator 2 plus Dörfer und verlassene Minen (siehe unten). Wo keine Struktur steht, ist die Landschaft identisch mit Generator 2.
 
 ## Generator 2: wie die Landschaft entsteht
 Für jede Säule (x, z) werden mehrere weiche Zufallsfelder (Value-Noise) abgefragt:
@@ -47,6 +48,13 @@ An Biomgrenzen sorgt ein feines Rauschen für einen ausgefransten, natürlichen 
 - **Erzadern:** Kohle (bis Höhe 70), Kupfer (bis 44), Eisen (bis 30), Funkkristall (bis 14, selten). Erze ersetzen nur Stein.
 - Unter Küsten und Meeren bleiben Höhlen tiefer als jeder Meeresboden – kein Wasser hängt in der Luft.
 - Höhe 0 ist immer Stein: man kann nicht aus der Welt fallen.
+
+## Dörfer und Minen (Generator 3)
+- Die Welt ist in **Regionen** von 160 × 160 Blöcken geteilt. Jede Region hat mit etwas Glück ein Dorf und eine Mine; beide liegen ganz in ihrer Region.
+- **Dörfer** entstehen nur auf trockenem, halbwegs ebenem Land (Ebene, Wald, Wiese, Nadelwald, Schnee, Wüste, höchstens 9 Blöcke Höhenunterschied).
+  Der Platz (Radius 20) wird eingeebnet, am Rand gleicht ein 4 Blöcke breiter Streifen zum natürlichen Gelände aus.
+- **Minen** liegen auf Höhe 10–17: zwei sich kreuzende Stollen mit Stützbalken und einer Kammer in der Mitte.
+- Neue Überlebens- und Kreativwelten beginnen am Dorfplatz des nächsten Dorfes.
 
 ## Laden und Entladen
 - Um den Spieler werden Chunks bis zur Sichtweite gezeichnet und zwei Ringe weiter als Daten vorgehalten (für Licht und Bäume an Rändern).

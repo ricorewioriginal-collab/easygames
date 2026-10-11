@@ -68,35 +68,83 @@ Legende: ✅ fertig und getestet · 🟡 teilweise · ⬜ offen
 
 ---
 
+## 2c. Etappe 3 (Teil 1) – Felder, Gegner, Rückgängig ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Landwirtschaft | Hacke (Holz, Stein) macht Gras/Erde zu Ackerboden; Weizensamen (12 % beim Abbauen von Gras) darauf setzen; 4 Wachstumsstufen à 90 s Spielzeit; reif = Weizen + 1–2 Samen; 3 Weizen = Brot (+6 Hunger) | `src/farm.js`, `src/items.js`, `src/blocks.js` |
+| Wachstum über Zeitstempel | jede Pflanze speichert ihre Setz-Zeit (`farm`, gespielte Sekunden `age` im Spielstand); die Stufe wird alle 2 s nur für geladene Pflanzen berechnet, nach langer Abwesenheit genügt ein Aufruf; ohne Ackerboden vergeht die Pflanze; höchstens 4096 Pflanzen | `src/farm.js` |
+| Pflanzen-Modelle | neue Blockform „Kreuz“ (zwei diagonale, beidseitige Flächen, nicht fest) im Mesher | `src/mesher.js`, `src/textures.js` |
+| Gegner | Rauschling: erscheint nachts unter freiem Himmel und jederzeit in tiefen Höhlen (unter Meereshöhe − 4), 14–26 Blöcke entfernt, höchstens 4; sieht den Spieler nur mit freier Sichtlinie (≤ 18 Blöcke), verfolgt, springt über Stufen, trifft 1× je Sekunde (1 Herz, Rückstoß); verschwindet bei Tageslicht oder > 40 Blöcken; Beute 0–1 Funkkristall; wird nicht gespeichert. Einstellung „Gegner“ (aus = friedlich). | `src/mobs.js`, `src/mobview.js`, `src/game.js` |
+| Kampf | Schwerter in 4 Stufen (3–6 Schaden, nutzen sich ab); Treffer durch Wände sind unmöglich (Tier-Strahl wird mit dem Block-Strahl verglichen) | `src/items.js`, `src/game.js` |
+| Rückgängig | Kreativ: letzte 100 Bau-Schritte, Strg+Z / ↶-Knopf, Strg+Y bzw. Strg+Umschalt+Z wiederholt (im Überleben bewusst nicht, sonst ließen sich Blöcke vermehren) | `src/game.js`, `src/main.js` |
+| Fehler behoben | negativer Zeitschritt, wenn der Bild-Zeitstempel knapp vor dem Fortsetzen lag | `src/game.js` |
+| Tests | 60 Tests (neu: `farm.test.js`, Gegner in `mobs.test.js`) | `tests/` |
+
+---
+
+## 2d. Etappe 3b – Dörfer und Bauen ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Generator 3 | neue Welten: Generator 2 plus Strukturen; Generator 2 bleibt Bit für Bit gleich (Test). Regionen von 160×160 Blöcken mit höchstens einem Dorf und einer Mine, beide ganz in ihrer Region, also prüft jeder Chunk nur seine eigene Region. Startpunkt am Dorfplatz des nächsten Dorfes. | `src/structures.js`, `src/world.js` |
+| Dörfer | nur in Ebene, Wald, Wiese, Nadelwald, Schnee, Wüste und nur bei höchstens 9 Blöcken Höhenunterschied; Platz mit Radius 20 eben, 4 Blöcke weicher Übergang, Bäume darüber entfernt, Höhleneingänge zugeschüttet. Brunnen, Laternen, Wege, 3–4 Häuser (Tür zum Platz, Fenster, Pyramidendach, Lampe), Weizenfeld mit Wasserrinne, Funkmast mit spielendem Radio. Baustoffe je Biom (Bretter/Ziegel, Fichte, Sandstein). | `src/structures.js` |
+| Minen | zwei kreuzende Stollen (3 breit, 3 hoch, Länge 37–59) auf Höhe 10–17, Stützbalken alle 5 Blöcke, vereinzelt Lampen, Brücken über Höhlen, Erze an den Wänden, Kammer mit altem Ofen und Werkbank; nie unter Meer oder flachem Gelände | `src/structures.js` |
+| Dorfbewohner | Bäuerin, Schmied, Funkerin, Hirte (ein Bewohner je Haus); Tagesablauf zu Hause → Arbeit → Dorfplatz → Arbeit → abends nach Hause, Häuser nur durch die Tür (Wegpunkte); hängt einer 5 s fest, wird er zum Wegpunkt versetzt. Sie entstehen aus den Dorfdaten, wenn der Dorfplatz geladen ist, und werden nicht gespeichert (kein neues Spielstandfeld). Nicht angreifbar; im Dorf erscheinen keine Gegner. | `src/mobs.js`, `src/mobview.js` |
+| Handel | Setzen-Taste auf einen Bewohner öffnet den Tausch; je Beruf 3–4 Angebote (Weizen, Kohle, Barren, Kristalle gegen Äpfel, Werkzeug, Rüstung, Radio, Lampen, Schalter); gleiche Prüfung wie Rezepte | `src/trades.js`, `src/main.js` |
+| Bau-Werkzeuge | Bauform mit G bzw. ▦: Einzeln, Linie, Fläche, Wand, Säule (zwei Ecken setzen), Kreativ zusätzlich Kopieren (bis 32 768 Blöcke) und Einfügen. Vorschau als weißer Rahmen (abschaltbar). Formen füllen nur freie Zellen; Überleben: höchstens 512 Blöcke und nur aus dem Vorrat. Eine Form = ein Rückgängig-Schritt. | `src/build.js`, `src/game.js` |
+| Gegner | Höhlenwesen (nur tief in Höhlen, 12 Leben, 1½ Herzen Schaden, Kohle/Eisen) und Störsender-Drohne (nachts, fliegt, hält Abstand, Störimpuls auf 7 Blöcke alle 2 s, Kupferbarren/Kristall) | `src/mobs.js`, `src/mobview.js` |
+| Rüstung | Kupfer- und Eisenhelm, Kupfer- und Eisenharnisch (Werkbank); Setzen-Taste legt an; je Schutzpunkt 5 % weniger Schaden durch Gegner (höchstens 40 %); nutzt sich je Treffer ab; Schilde über den Herzen; `arm` im Spielstand | `src/items.js`, `src/game.js`, `src/main.js` |
+| Technik | Block-Atlas auf 8×16 Kacheln erweitert (vorher 8×8 voll); neue Blöcke 66–78 (Dorfweg, Bruchstein und die Funktechnik für Etappe 4); `drop` im Blockregister | `src/consts.js`, `src/textures.js`, `src/mesher.js`, `src/blocks.js` |
+| Fehler behoben | Erstbesiedlung konnte seit Etappe 3 Rauschlinge als Tierherde erzeugen (Typ-Auswahl über alle Arten statt nur Tiere) | `src/mobs.js` |
+| Tests | 71 Tests (neu: `structures.test.js`, `build.test.js`, Dorfbewohner/Drohne in `mobs.test.js`) | `tests/` |
+
+---
+
+## 2e. Etappe 4 – Story „Das große Rauschen“ und Funknetz ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Story | neue Kampagne `rauschen`: 6 Kapitel, 25 Aufträge (Grundversorgung → Dorf, Gespräch, Handel → Höhle, Kupfer, Kristalle → Sender, Relais, Verbindung über 40 Blöcke → Rüstung, Drohne, Höhlenwesen, Maschinen → Turm, 3 Empfänger, Finale). Neue Auftragsarten: Ort besuchen, sprechen, tauschen, Tiefe, Gegner besiegen, Netz (Empfänger/Maschinen), Reichweite. Kapitelbanner, Liste nach Kapiteln. | `src/quests.js`, `src/game.js`, `src/main.js` |
+| Story-Regeln | neue Story-Welten: Generator 3, Seed 777, Überlebensregeln, Tiere und Gegner, Start abseits des Dorfes; Kampagne im Spielstand (`story.c`), Kampagne im Weltmenü (`meta.qc`) | `src/game.js`, `src/storage.js` |
+| Alte Story | Spielstände ohne `story.c` behalten Generator 1, die 15 Aufträge und die alten Regeln (Entscheidung statt Umrechnung, siehe STORY.md) | `src/quests.js`, `src/game.js` |
+| Funknetz | Schalter, Signalleitung, Funksender, Relais, Empfänger, Signallampe, Funktor (Blöcke 68–78, Rezepte an der Werkbank). Breitensuche über die Netz-Blöcke, Funk 24 Blöcke, Rechenlimit 4 096 Schritte; gerechnet nur nach Änderungen. Netz-Blöcke werden beim Laden der Chunks erfasst, nicht extra gespeichert. Tor schließt nicht, solange der Spieler darin steht. | `src/signal.js`, `src/world.js`, `src/game.js` |
+| Tests | 76 Tests (neu: `signal.test.js`) | `tests/` |
+
+**Bewusst verschoben auf Etappe 5:** Fahrzeuge (Boot, Lore) und Meshing im Web Worker. Beides ist eigenständig groß, die Story braucht es nicht,
+und ohne Messung auf echten Handys lässt sich der Nutzen des Workers nicht belegen.
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.
 
 | # | Abschnitt | Stand | Etappe | Nächster konkreter Schritt |
 |---|---|---|---|---|
-| 4 | Voxel-Engine | 🟡 | 1 ✅ / 4 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
+| 4 | Voxel-Engine | 🟡 | 1 ✅ / 5 | Meshing im Web Worker (siehe PERFORMANCE.md), Speicherfreigabe für Geometrie-Puffer prüfen |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
 | 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
-| 7 | Bauen | 🟡 | 3 | Platzierungsvorschau, Linie/Fläche/Wand/Säule, Rückgängig/Wiederholen, Kopieren/Einfügen, Bauvorlagen (lokal + Export) |
+| 7 | Bauen | ✅ | 3b | Vorschau, Formen, Kopieren/Einfügen ✅; später Drehen beim Einfügen, Bauvorlagen |
 | 8 | Crafting, Werkzeuge, Stationen | ✅ | 2 | später: Kochstelle, Schmelzen mit Zeitablauf, Werkzeug-Haltbarkeit je Stück statt je Stapel |
 | 9 | Survival | ✅ | 2 | Betten/eigener Startpunkt, Rüstung (mit Gegnern, Etappe 3) |
 | 10 | Tiere | ✅ | 2 | Biom-Tiere (z. B. Ziege, Pinguin), Züchten mit Futter, Beine animieren |
-| 11 | Gegner, Kampf | ⬜ | 3 | eigene Gegner (Rauschlinge, Höhlenwesen, Störsender-Drohnen), Sichtlinien-Prüfung gegen Treffer durch Wände |
-| 12 | Dörfer, NPCs | ⬜ | 3 | Strukturgenerator mit Flächenausgleich, NPC-Tagesablauf mit festem Aufenthaltsort, Handel |
-| 13 | Landwirtschaft | ⬜ | 3 | Wachstum über Zeitstempel (kein Dauer-Simulieren), Zustand im Block-Edit gespeichert |
-| 14 | Fahrzeuge | 🟡 | 4 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
-| 15 | Story „Das große Rauschen“ | 🟡 | 4 | 6 Kapitel, alte 15 Aufträge werden Kapitel 1–2; Migration: alter Fortschritt `story.i` → neues Kapitel/Schritt |
-| 16 | Funktechnik | 🟡 | 4 | Radio-Blöcke vorhanden; Funknetz (Sender, Relais, Reichweite), Signale steuern Maschinen |
-| 17 | Automatisierung | ⬜ | 4 | Signal-Leitungen mit Warteschlange und Rechenlimit je Tick |
-| 18 | Spielmodi | 🟡 | laufend | Survival-Regeln ✅; Story zieht mit Etappe 4 auf die neuen Regeln um |
+| 11 | Gegner, Kampf | ✅ | 3b | später Bogen, Bosse in Story-Kapitel 5 |
+| 12 | Dörfer, NPCs | ✅ | 3b | später mehr Berufe, Gespräche mit Story-Bezug |
+| 13 | Landwirtschaft | 🟡 | 3 ✅ | weitere Pflanzen (Karotte, Kartoffel), Bewässerung, Tierzucht |
+| 14 | Fahrzeuge | 🟡 | 5 | Seilhaken/Gleiter/Aufwind vorhanden; Boot, Lore auf Schienen, Reittier |
+| 15 | Story „Das große Rauschen“ | ✅ | 4 | später Bosskampf im „Herz des Rauschens“, Sprachzeilen der Bewohner je Kapitel |
+| 16 | Funktechnik | ✅ | 4 | später Frequenzen (getrennte Netze), Antennen mit größerer Reichweite |
+| 17 | Automatisierung | 🟡 | 4 | Signale mit Rechenlimit ✅; später Taktgeber, Verzögerung, Logik-Gatter, Förderband |
+| 18 | Spielmodi | ✅ | 4 | Story nutzt die Überlebensregeln ✅ |
 | 19 | Multiplayer | ⬜ | 5 | WebRTC (Peer-to-Peer, Host = Autorität) zuerst prüfen; GitHub Pages bleibt Einzelspieler ohne Server |
 | 20 | Smartphone | 🟡 | 1 ✅ / 3 | Tastenpositionen frei verschiebbar, optionaler Platzierungsmodus mit Vorschau |
 | 21 | Desktop | 🟡 | 3 | Tastenbelegung ändern, Gamepad |
 | 22 | Inventar/HUD | 🟡 | 1 ✅ / 2 ✅ | Drag & Drop, Haltbarkeitsbalken im Platz |
 | 23 | Karten | 🟡 | 3 | Weltkarte mit aufgedeckten Gebieten (Biomfarben stehen schon in `BIOME_COLORS`), mehrere Wegpunkte |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
-| 25/26 | Performance | 🟡 | 1 ✅ / 4 | echte Handymessungen, Worker-Meshing |
-| 27 | Entities | 🟡 | 2 ✅ / 3 | Gegner und NPCs auf dem Tier-Grundgerüst (`src/mobs.js`) |
+| 25/26 | Performance | 🟡 | 1 ✅ / 5 | echte Handymessungen, Worker-Meshing |
+| 27 | Entities | ✅ | 2–3b | Gegner und Dorfbewohner laufen auf dem Tier-Grundgerüst |
 | 28 | Audio | 🟡 | 1 ✅ / 3 | Lautstärke-Kategorien vorhanden; Schritte je Material, Wasser, Wetter |
 | 29 | Tests | 🟡 | laufend | jede Etappe bringt Tests für ihre Systeme mit |
 | 31 | Doku | ✅ | laufend | README, GAMEPLAY, STORY, BLOCKS, CRAFTING, WORLD, PERFORMANCE, TESTING, PROGRESS |
@@ -107,7 +155,8 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 
 - **Generator-Version im Spielstand (`gen`).** Alte Welten speichern nur Änderungen gegenüber der erzeugten Welt. Ein neuer Generator würde ihre Bauwerke in fremdes Gelände setzen. Darum: `gen` fehlt ⇒ Generator 1 (unverändert), neue Welten ⇒ Generator 2.
 - **Weltgröße 96 statt 64.** Die Chunk-Indizes (`x + z·16 + y·256`) bleiben gleich, alte Änderungen passen weiter. Speicher je Chunk: 24 KB statt 16 KB.
-- **Story vorerst auf Generator 1.** Die 15 Aufträge sind dort erprobt (Sand am Wasser in Startnähe). Mit der neuen Story (Etappe 4) zieht sie auf Generator 2 um.
+- **Neue Story auf Generator 3, alte Story bleibt auf Generator 1.** Die neue Kampagne braucht Dörfer, Erze und Kristalle. Alte Story-Spielstände werden nicht umgerechnet, weil ihre Welt diese Dinge nicht hat (Begründung in STORY.md).
+- **Funknetz ohne eigenes Spielstandfeld.** Netz-Blöcke sind normale Blockänderungen; ihr Zustand (an/aus) ergibt sich aus den Schaltern und wird beim Laden neu berechnet.
 - **Kein Greedy Meshing (geprüft).** Der Mesher nutzt Ecken-Ambient-Occlusion und Atlas-Kacheln. Greedy Meshing bräuchte wiederholende Kacheln im Shader und würde AO-Verläufe zusammenlegen. Gemessen: ~850–1 100 Flächen je Chunk, Meshing ~2–3 ms (Node, Desktop-CPU). Der Gewinn rechtfertigt den Umbau derzeit nicht; der größere Hebel ist Meshing im Worker.
 - **localStorage statt IndexedDB (vorerst).** Durch das kompakte Format belegen 100 000 Änderungen ~400 KB. Drei Welten plus Sicherungen passen in die üblichen 5 MB. Bei Speicher voll werden zuerst Sicherungen geopfert, der Hauptstand hat Vorrang, ein misslungenes Speichern verändert nichts. Wechsel auf IndexedDB, wenn Tiere/NPC/Maschinen viel Zustand bringen (Etappe 2/3).
 - **Sicherungen außerhalb des Cloud-Präfixes** (`klotzfunk-bak.*`), damit das optionale Google-Sync nicht doppelt so viel hochlädt.
@@ -120,7 +169,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 ```bash
 cd anmacha-klotzfunk-src
 npm install
-npm test          # 51 Tests, ~1 s
+npm test          # alle Tests, ~2 s
 npm run bench     # Chunk-Erzeugung/Meshing messen (Seed 12345, Radius 6, Generator 2)
 npm run docs      # BLOCKS.md und CRAFTING.md aus dem Code erzeugen
 npm run build     # schreibt ../anmacha-klotzfunk/ (mit committen!)
@@ -133,21 +182,22 @@ Regeln, die nicht gebrochen werden dürfen:
 4. Speicherformat: `decodeEdits` muss Format 1 und 2 lesen können; neue Felder im Spielstand immer optional.
 5. Vor jedem Commit: `npm test` und `npm run build`, Ergebnisordner mit committen.
 
-### Nächste Sitzung: Etappe 3 „Bauen, Gegner, Dörfer“
-1. Gegner auf dem Tier-Grundgerüst: Rauschlinge (nachts), Höhlenwesen, Störsender-Drohnen; Sichtlinie gegen Treffer durch Wände; Schwerter und Rüstung.
-2. Strukturgenerator (Dörfer mit Flächenausgleich, verlassene Minen) als Generator-Feature mit eigener Version, falls sich Gelände sichtbar ändert.
-3. NPCs mit festem Tagesablauf und Handel.
-4. Landwirtschaft über Zeitstempel (Wachstum beim Laden nachrechnen, kein Dauer-Simulieren).
-5. Bau-Werkzeuge: Vorschau, Linie/Fläche/Wand, Rückgängig.
-6. Tests für alle neuen Systeme.
+### Nächste Sitzung: Etappe 5 „Fahrzeuge, Leistung, Mehrspieler“
+1. Boot (auf Wasser) und Lore auf Schienen (neuer Schienenblock, Formblock-Meshing nötig).
+2. Meshing im Web Worker, vorher und nachher auf einem echten Android-Handy messen.
+3. Mehrspieler prüfen: WebRTC Peer-to-Peer mit Host als Autorität; GitHub Pages bleibt ohne Server.
+4. Tests für alle neuen Systeme.
 
 ---
 
 ## 6. Bekannte Einschränkungen (ehrlich)
 
 - Gemessen wurde in Node (Desktop-CPU) und im Headless-Chromium mit Software-Grafik. **Echte Android-Geräte wurden nicht getestet.** Siehe PERFORMANCE.md und TESTING.md.
-- Die Story nutzt weiter die 15 Aufträge von Version 1.0.
+- Alte Story-Welten (vor 1.5) spielen weiter die 15 Aufträge; die neue Story gibt es nur in neuen Story-Welten.
+- Das Funknetz kennt nur an/aus, keine getrennten Frequenzen; Funk geht durch Wände.
 - Schmelzen und Kochen gehen sofort; der Ofen hat noch keinen Brennvorgang mit Zeit.
+- Gegner gibt es nur im Überlebensmodus und in der neuen Story.
+- Weizen wächst auch ohne Wasser in der Nähe und nur, solange gespielt wird (gespielte Zeit, nicht Echtzeit).
 - Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
 - Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.

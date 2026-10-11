@@ -20,12 +20,15 @@
   <div id="banner"></div>
   <canvas id="vit" width="200" height="34" hidden aria-label="Gesundheit und Hunger"></canvas>
   <div id="mine"><i></i></div>
+  <div id="bmode" hidden></div>
   <div id="hotbar"></div>
   <div id="toast"></div>
   <div id="uw"></div>
   <div id="hurt"></div>
   <div id="topbtns">
     <button id="bMap" class="tbtn" aria-label="Karte">🗺</button>
+    <button id="bUndo" class="tbtn" aria-label="Rückgängig" title="Rückgängig (Strg+Z)" hidden>↶</button>
+    <button id="bBuild" class="tbtn" aria-label="Bauform wechseln" title="Bauform wechseln (G)">▦</button>
     <button id="bWp" class="tbtn" aria-label="Wegpunkt">📍</button>
     <button id="bInv" class="tbtn" aria-label="Inventar">🎒</button>
     <button id="bPause" class="tbtn" aria-label="Pause">⏸</button>
@@ -49,7 +52,7 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🐑 Tiere</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Werkzeuge, Erze &amp; Schmelzofen</li><li>🏘 Dörfer, Handel &amp; Minen</li><li>🐑 Tiere &amp; 🌾 Felder</li><li>👾 Rauschlinge, Drohnen &amp; Rüstung</li><li>▦ Bauformen &amp; Kopieren</li><li>❤ Gesundheit &amp; Hunger</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story „Das große Rauschen“</li><li>📡 Funknetz &amp; Maschinen</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
     <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
@@ -62,9 +65,12 @@
       <div class="cols">
         <div><b>PC</b><br>WASD laufen · Maus blicken · Leertaste springen · Strg/Shift rennen<br>Linksklick abbauen · Rechtsklick setzen · 1–9 / Mausrad Block wählen<br>E Inventar · F fliegen (Kreativ) · Esc Pause</div>
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Minikarte</div>
-        <div><b>Story-Modus</b><br>Die Funkzentrale gibt dir 15 feste Aufträge: Holz, Bretter, Fundament, Licht, Funkmast, Federn, Seilhaken, Gleiten, Neon bis zum Regenbogen-Finale. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste.</div>
+        <div><b>Story-Modus</b><br>„Das große Rauschen“: 6 Kapitel mit 25 Aufträgen, vom ersten Unterschlupf über das Dorf und die Höhlen bis zum großen Funknetz. Es gelten die Überlebensregeln. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste. Alte Story-Welten spielen ihre 15 Aufträge weiter.</div>
+        <div><b>Funknetz</b><br>Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben. Der Sender erreicht Relais und Empfänger bis 24 Blöcke weit, Relais tragen weiter. Empfänger und Leitungen schalten Signallampen und Funktore daneben ein. Alles an der Werkbank.</div>
         <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder</div>
         <div><b>Überleben</b><br>Abbauen dauert je nach Härte; Werkzeuge machen es schneller und nutzen sich ab. Erze brauchen eine Spitzhacke, Eisen und Funkkristall mindestens eine aus Stein. Bretter → Stöcke und Werkbank, an der Werkbank Werkzeuge und Schmelzofen, im Ofen Barren und Braten. Rechtsklick/Setzen auf Werkbank oder Ofen öffnet das Herstellen. Essen: Essen wählen und Setzen drücken. Stürze, Ertrinken, Magma und Hunger kosten Herzen.</div>
+        <div><b>Felder &amp; Gegner</b><br>Hacke auf Gras oder Erde = Ackerboden, Samen (manchmal aus Gras) darauf setzen. Weizen wächst in etwa 4½ Minuten Spielzeit, 3 Weizen = Brot. Nachts und in tiefen Höhlen kommen Rauschlinge: sie verfolgen dich nur, wenn sie dich sehen. Schwerter treffen härter. In den Einstellungen lassen sich Gegner abschalten. Kreativ: Strg+Z / ↶ macht rückgängig, Strg+Y wiederholt.</div>
+        <div><b>Dörfer &amp; Bauen</b><br>Neue Welten beginnen im Dorf. Setzen-Taste auf einen Bewohner = handeln. G / ▦ wechselt die Bauform: Linie, Fläche, Wand, Säule (zwei Ecken setzen), Kreativ auch Kopieren und Einfügen. Rüstung wählen und Setzen = anlegen. Tief unten: Höhlenwesen und verlassene Minen; nachts Störsender-Drohnen.</div>
         <div><b>Neue Welten</b><br>Ebenen, Wälder, Nadelwald, Berge, Schnee, Wüste, Strand, Sumpf, Dschungel, Blumenwiesen, Vulkane, Pilzwälder, Kristallfelder, Küsten und Meere. Unter der Erde: Höhlen, Seen, Kohle, Kupfer, Eisen und leuchtende Funkkristalle. Bestehende Welten bleiben unverändert.</div>
       </div>
     </details>
@@ -98,13 +104,21 @@
     <p class="sub" id="invHint">Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.</p>
     <div id="invGrid" class="grid"></div>
     <h3 id="recH">Herstellen <small>(Umschalt-Klick: 5×)</small></h3>
-    <div id="recipes"></div>
+    <div id="recipes" class="rec"></div>
+  </div>
+</section>
+
+<section id="trade" class="screen" hidden>
+  <div class="panel wide">
+    <h2 id="trName">Handel <button id="trClose" class="x" aria-label="Schließen">✕</button></h2>
+    <p class="sub say" id="trSay"></p>
+    <div id="trList" class="rec"></div>
   </div>
 </section>
 
 <section id="qlog" class="screen" hidden>
   <div class="panel wide">
-    <h2>Aufträge der Funkzentrale <button id="qlogClose" class="x" aria-label="Schließen">✕</button></h2>
+    <h2><span id="qlogT">Aufträge der Funkzentrale</span> <button id="qlogClose" class="x" aria-label="Schließen">✕</button></h2>
     <div id="qlist"></div>
   </div>
 </section>
@@ -128,6 +142,8 @@
         <label class="chk"><input type="checkbox" id="sInvY"> Blick nach oben/unten umkehren</label>
         <label class="chk"><input type="checkbox" id="sPlace"> Setzen erst nach kurzem Halten wiederholen</label>
         <label class="chk"><input type="checkbox" id="sFps"> Bildrate anzeigen</label>
+        <label class="chk"><input type="checkbox" id="sEnemy"> Gegner im Überlebensmodus (aus = friedlich)</label>
+        <label class="chk"><input type="checkbox" id="sPreview"> Vorschau, wo der nächste Block landet</label>
       </div>
     </div>
     <p class="sub">„Automatisch“ senkt bei ruckelndem Bild zuerst die Auflösung und dann die Sichtweite und hebt sie wieder an, wenn genug Reserve da ist. Alles wird nur auf diesem Gerät gespeichert.</p>

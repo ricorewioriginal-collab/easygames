@@ -1,6 +1,6 @@
 // Gegenstände ohne Block (Werkzeuge, Barren, Nahrung). Eigener Id-Bereich ab 1000, damit sie nie mit Block-Ids
 // (0–255, stehen in den Welt-Änderungen) kollidieren. Ids sind dauerhaft – nur hinten anhängen.
-import { BLOCKS, NAMES } from './blocks.js';
+import { B, BLOCKS, NAMES } from './blocks.js';
 
 export const ITEM0 = 1000;
 export const ITEMS = [];   // nach Id (Lücken = undefined)
@@ -36,7 +36,25 @@ TIERS.forEach((t, ti) => KINDS.forEach((k, ki) => {
   add(1010 + ti * 3 + ki, t.key + '_' + k.key, t.name + k.name, { draw: k.kind, col: t.col, tool: { kind: k.kind, tier: ti + 1, speed: t.speed, dur: t.dur } });
 }));
 
+// ab 1022: Landwirtschaft und Kampf
+add(1022, 'WOOD_HOE', 'Holzhacke', { draw: 'hacke', col: TIERS[0].col, tool: { kind: 'hacke', tier: 1, speed: 1, dur: TIERS[0].dur } });
+add(1023, 'STONE_HOE', 'Steinhacke', { draw: 'hacke', col: TIERS[1].col, tool: { kind: 'hacke', tier: 2, speed: 1, dur: TIERS[1].dur } });
+add(1024, 'SEEDS', 'Weizensamen', { draw: 'seeds', plant: B.WHEAT0 });
+add(1025, 'WHEAT', 'Weizen', { draw: 'wheat' });
+add(1026, 'BREAD', 'Brot', { draw: 'bread', food: 6 });
+TIERS.forEach((t, ti) => add(1027 + ti, t.key + '_SWORD', t.name + 'schwert', { draw: 'schwert', col: t.col, tool: { kind: 'schwert', tier: ti + 1, speed: 1, dur: t.dur, dmg: 3 + ti } }));
+
+// ab 1031: Rüstung (slot: kopf | brust, pts: Schutzpunkte, je Punkt 5 % weniger Schaden durch Gegner, dur: Treffer)
+add(1031, 'COPPER_HELMET', 'Kupferhelm', { draw: 'helm', col: TIERS[2].col, armor: { slot: 'kopf', pts: 2, dur: 60 } });
+add(1032, 'COPPER_CHEST', 'Kupferharnisch', { draw: 'harnisch', col: TIERS[2].col, armor: { slot: 'brust', pts: 3, dur: 80 } });
+add(1033, 'IRON_HELMET', 'Eisenhelm', { draw: 'helm', col: TIERS[3].col, armor: { slot: 'kopf', pts: 3, dur: 110 } });
+add(1034, 'IRON_CHEST', 'Eisenharnisch', { draw: 'harnisch', col: TIERS[3].col, armor: { slot: 'brust', pts: 5, dur: 150 } });
+
 export const isItem = id => id >= ITEM0;
+export const armorOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].armor || null : null);
+// Schadensfaktor bei Schutzpunkten (höchstens 40 % weniger)
+export const armorFactor = pts => 1 - Math.min(0.4, Math.max(0, pts) * 0.05);
+export const plantOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].plant || 0 : 0);
 export const nameOf = id => (id >= ITEM0 ? (ITEMS[id] ? ITEMS[id].name : '?') : NAMES[id] || '?');
 export const toolOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].tool : null);
 export const foodOf = id => (id >= ITEM0 && ITEMS[id] ? ITEMS[id].food : 0);

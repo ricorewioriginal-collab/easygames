@@ -1,6 +1,6 @@
 // Spielkern: Rendering, Chunk-Streaming, Physik-Schleife, Bauen/Abbauen, Tag-Nacht, Speicherstand.
 import * as THREE from 'three';
-import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo } from './world.js';
+import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo, normGen } from './world.js';
 import { BLOCKS } from './blocks.js';
 import { BIOME_NAMES } from './worldgen.js';
 import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
@@ -8,13 +8,18 @@ import { QUALITY } from './settings.js';
 import { MAX_STACK } from './crafting.js';
 import { buildMesh, cubeData } from './mesher.js';
 import { drawAtlas, createLogoAtlas, cloudCanvas, drawItems, ITEM_TILE, ITEM_GRID } from './textures.js';
-import { ITEMS, ITEM_LIST, I, isItem, nameOf, toolOf, foodOf, mineTime, canHarvest, toolFits, known } from './items.js';
+import { ITEMS, ITEM_LIST, I, isItem, nameOf, toolOf, foodOf, plantOf, mineTime, canHarvest, toolFits, known, armorOf, armorFactor } from './items.js';
+import { BUILD_MODES, MAX_CELLS, shapeCells, bounds, copyRegion, pasteCells } from './build.js';
+import { villageIn, regionOf } from './structures.js';
+import { Farm, isCrop, cropDrops } from './farm.js';
 import { Vitals, fallDamage } from './survival.js';
 import { Mobs, rollDrops } from './mobs.js';
 import { MobView } from './mobview.js';
 import { Player, raycast, EYE } from './physics.js';
 import { playBreak, playPlace, playDeny, setRadio } from './audio.js';
-import { QUESTS, questProgress } from './quests.js';
+import { campaignOf, questProgress } from './quests.js';
+import { solve, ON_ID, OFF_ID } from './signal.js';
+import { nearestVillage } from './structures.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
@@ -155,6 +160,14 @@ export class Game {
     this.hl = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.75 }));
     this.hl.visible = false;
     this.scene.add(this.hl);
+    // Platzierungsvorschau: wo der nächste Block bzw. die Form landet
+    this.ghost = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthTest: false }));
+    this.ghost.visible = false; this.ghost.renderOrder = 40;
+    this.scene.add(this.ghost);
+    this.buildMode = 0; this.anchor = null; this.clip = null; this.batch = null; this.preview = true;
+    // Störimpuls der Drohnen
+    this.beam = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xff2a6a }));
+    this.beam.frustumCulled = false; this.beam.visible = false; this.beamT = 0; this.scene.add(this.beam);
 
     // Block in der Hand
     const handUni = {
@@ -194,8 +207,11 @@ export class Game {
     this.onToast = () => {};
     this.story = null; this.onQuest = () => {}; this.onQuestDone = () => {};
     // Überleben: Rückmeldungen an die Oberfläche
-    this.vitals = null; this.dead = false; this.mine = null; this.deathLoss = 'keep';
+    this.vitals = null; this.dead = false; this.mine = null; this.deathLoss = 'keep'; this.enemies = true;
+    this.farm = new Farm(); this.age = 0; this.history = []; this.redoList = [];
     this.onVitals = () => {}; this.onHurt = () => {}; this.onDeath = () => {}; this.onMine = () => {}; this.onStation = () => {};
+    this.onTrade = () => {}; this.onBuildMode = () => {};
+    this.armor = { kopf: 0, brust: 0 }; this.armWear = { kopf: 0, brust: 0 };
     this.resize();
   }
 
@@ -257,14 +273,17 @@ export class Game {
     this.clearWorld();
     this.leaveMenu();
     // Generator: alte Spielstände (ohne Angabe) behalten exakt ihre Originalwelt
-    this.gen = save.gen === 2 ? 2 : 1;
+    this.gen = normGen(save.gen);
     this.world = new World(save.seed, decodeEdits(save.edits), this.gen);
     this.name = save.name; this.seed = save.seed; this.mode = save.mode;
     this.time = save.time ?? 0.08;
     this.hotbar = (Array.isArray(save.hotbar) && save.hotbar.length === 9) ? save.hotbar.map(t => (Number.isInteger(t) && known(t) ? t : 0)) : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
-    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false }) : null;
+    // neue Story-Welten (Generator 3) spielen „Das große Rauschen“, alte die 15 Aufträge
+    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false, c: this.gen === 3 ? 'rauschen' : undefined }) : null;
+    if (this.story && !this.story.c) delete this.story.c;
+    this.sigStats = { receivers: 0, machines: 0, reach: 0, senders: 0 }; this.sigRetry = false;
     if (!save.inv && save.mode === 'survival') {
       for (let i = 0; i < 16; i++) this.inv[LOGO0 + i] = 4;
       for (let i = 0; i < SPECIAL_COUNT; i++) this.inv[SPECIAL0 + i] = 8;
@@ -272,17 +291,35 @@ export class Game {
     this.wp = save.wp || null; this.hookT = 0; this.rope.visible = false; this.timeFrozen = false;
     this.handType = -1;
     // Überleben (nur im Überlebensmodus): Gesundheit/Hunger, Werkzeug-Abnutzung, Grab mit verlorenen Sachen
-    this.survival = save.mode === 'survival';
+    // Story ab Generator 3 („Das große Rauschen“) spielt mit den Überlebensregeln; alte Story-Welten bleiben wie gehabt
+    this.survival = save.mode === 'survival' || (save.mode === 'story' && this.gen === 3);
     this.vitals = this.survival ? new Vitals(save.vit || {}) : null;
     this.dead = false; this.mine = null; this.player.impact = 0;
     this.dur = {};
     if (save.dur && typeof save.dur === 'object') for (const [k, v] of Object.entries(save.dur)) if (toolOf(Number(k)) && Number.isFinite(v)) this.dur[k] = v;
+    this.armor = { kopf: 0, brust: 0 }; this.armWear = { kopf: 0, brust: 0 };
+    if (Array.isArray(save.arm)) ['kopf', 'brust'].forEach((sl, i) => {
+      const a = armorOf(save.arm[i]);
+      if (a && a.slot === sl) { this.armor[sl] = save.arm[i]; this.armWear[sl] = Math.max(0, Math.min(a.dur - 1, save.arm[i + 2] | 0)); }
+    });
+    this.buildMode = 0; this.anchor = null; this.clip = null; this.batch = null;
     const g = save.grave;
     this.grave = g && [g.x, g.y, g.z].every(Number.isFinite) && g.inv && typeof g.inv === 'object' ? g : null;
     // Tiere: in Überleben und Kreativ (Story bleibt unverändert)
-    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story');
+    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story' || this.gen === 3);
+    if (this.gen === 3) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
+      const out = [], rx = regionOf(px), rz = regionOf(pz);
+      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = villageIn(this.seed, rx + dx, rz + dz); if (v) out.push(v); }
+      return out;
+    };
     this.mobs.onAdd = m => this.mobView.add(m); this.mobs.onRemove = m => this.mobView.remove(m);
-    this.spawn = this.world.findSpawn();
+    this.mobs.onAttack = m => this.mobHits(m);
+    this.mobs.onPoof = m => this.spawnBreak(m.x - 0.5, m.y + 0.5, m.z - 0.5, B.BASALT);
+    // Landwirtschaft: gespielte Zeit (Sekunden) als Uhr für das Wachstum
+    this.age = Number.isFinite(save.age) && save.age >= 0 ? save.age : 0;
+    this.farm = new Farm(save.farm); this.farmT = 0;
+    this.history = []; this.redoList = []; // Rückgängig/Wiederholen (Kreativ)
+    this.spawn = this.world.findSpawn(save.mode !== 'story');
     this.spawnY = this.spawn.y;
     const p = this.player;
     if (save.px !== undefined) { p.x = save.px; p.y = save.py; p.z = save.pz; this.yaw = save.yaw || 0; this.pitch = save.pitch || 0; }
@@ -372,7 +409,9 @@ export class Game {
     return {
       v: SAVE_VERSION, gen: this.gen, name: this.name, seed: this.seed, mode: this.mode, time: this.time, savedAt: Date.now(),
       px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, story: this.story, edits,
-      vit: this.vitals ? this.vitals.toJSON() : undefined, dur: this.dur, grave: this.grave || undefined, mobs: this.mobs ? this.mobs.serialize() : undefined
+      vit: this.vitals ? this.vitals.toJSON() : undefined, dur: this.dur, grave: this.grave || undefined, mobs: this.mobs ? this.mobs.serialize() : undefined,
+      age: Math.round(this.age), farm: this.farm.plants.size ? this.farm.serialize() : undefined,
+      arm: this.armor.kopf || this.armor.brust ? [this.armor.kopf, this.armor.brust, this.armWear.kopf, this.armWear.brust] : undefined
     };
   }
 
@@ -400,7 +439,7 @@ export class Game {
     this.raf = requestAnimationFrame(t => this.frame(t));
     if (this.menuMode && now - this.last < 32) return; // Menü-Kulisse: ca. 30 Bilder/s genügen
     this.measure(now - this.last);
-    const dt = Math.min(0.05, (now - this.last) / 1000);
+    const dt = Math.max(0, Math.min(0.05, (now - this.last) / 1000)); // rAF-Zeitstempel kann knapp vor resume() liegen
     this.last = now;
     if (this.menuMode) this.menuStep(dt); else this.step(dt);
     this.render();
@@ -419,13 +458,22 @@ export class Game {
     }
     this.applyCamera();
     this.stream();
-    if (this.mobs) { this.mobs.update(dt, p.x, p.z); this.mobView.update(p.x, p.z, this.light, this.viewDist * CS, this.uni.uTime.value); }
+    const night = this.time > 0.52 && this.time < 0.98; // Sonne unter dem Horizont
+    if (this.mobs) {
+      this.mobs.update(dt, p.x, p.z, { py: p.y, night, time: this.time, hostiles: this.survival && this.enemies && !this.dead });
+      this.mobView.update(p.x, p.z, this.light, this.viewDist * CS, this.uni.uTime.value);
+    }
+    if (!this.dead) this.age += dt;
+    this.farmT -= dt;
+    if (this.farmT <= 0) { this.farmT = 2; if (this.farm.update(this.world, this.age)) this.unsaved = true; }
     // Zielblock und Aktionen
     const c = this.camera, dir = this.lookDir || (this.lookDir = new THREE.Vector3());
     dir.set(0, 0, -1).applyEuler(c.rotation);
     this.target = this.dead ? null : raycast(w, c.position.x, c.position.y, c.position.z, dir.x, dir.y, dir.z, REACH);
     if (this.target) { this.hl.position.set(this.target.x + 0.5, this.target.y + 0.5, this.target.z + 0.5); this.hl.visible = true; }
     else this.hl.visible = false;
+    this.updateGhost();
+    if (this.beamT > 0 && (this.beamT -= dt) <= 0) this.beam.visible = false;
     this.actCool -= dt;
     if (this.placeHeld && !this.prevPlace) this.placeFirst = true; // neuer Tastendruck
     this.prevPlace = this.placeHeld;
@@ -441,6 +489,7 @@ export class Game {
     this.updateSky();
     this.cloudU.uOff.value.x += dt * 2.5;
     this.radioT -= dt;
+    if (this.world.sigDirty || (this.sigRetry && this.radioT <= 0)) this.updateSignals();
     if (this.radioT <= 0) { this.radioT = 0.3; this.updateRadio(); this.questTick(); this.checkGrave(); }
     this.updateHand(dt);
     if (this.partCount) this.updateParticles(dt);
@@ -527,17 +576,86 @@ export class Game {
   }
 
   attack(mob) {
+    if (mob.npc) { this.onToast(`${mob.name}: „He, nicht hauen! Lass uns lieber tauschen.“`); this.actCool = 0.8; return; }
     const held = this.held(), tool = toolOf(held), p = this.player;
-    const dmg = this.mode === 'creative' ? 99 : (tool ? (tool.kind === 'axt' ? 3 : 2) + (tool.tier >= 3 ? 1 : 0) : 1);
+    const dmg = this.mode === 'creative' ? 99 : !tool ? 1 : tool.kind === 'schwert' ? tool.dmg : tool.kind === 'axt' ? 3 : 2;
     this.swing = 1; playBreak();
+    if (tool && tool.kind === 'schwert') this.wear(held);
     if (!mob.hit(dmg, p.x, p.z)) return;
     this.spawnBreak(mob.x - 0.5, mob.y, mob.z - 0.5, B.WOOL);
     this.mobs.remove(mob, false);
     this.unsaved = true;
+    this.questEvent('kill', mob.type);
     if (this.mode === 'creative') return;
     const got = rollDrops(mob.type).map(([id, n]) => { this.inv[id] = Math.min(MAX_STACK, (this.inv[id] || 0) + n); return `+${n} ${nameOf(id)}`; });
     if (got.length) this.onToast(got.join(' · '));
     this.onChange();
+  }
+
+  // Gegner trifft den Spieler (Treffer nur mit freier Sicht, siehe mobs.js)
+  mobHits(m) {
+    const v = this.vitals, p = this.player;
+    if (!v || this.dead) return;
+    const d = Math.hypot(p.x - m.x, p.z - m.z) || 1;
+    if (m.T.range) { // Störimpuls als kurzer Strahl, ohne Rückstoß
+      const pos = this.beam.geometry.attributes.position;
+      pos.setXYZ(0, m.x, m.y + 0.3, m.z); pos.setXYZ(1, p.x, p.y + 1.2, p.z); pos.needsUpdate = true;
+      this.beam.visible = true; this.beamT = 0.15;
+    } else { p.vx += (p.x - m.x) / d * 6; p.vz += (p.z - m.z) / d * 6; p.vy = Math.max(p.vy, 5); p.onGround = false; }
+    const dmg = m.T.dmg * armorFactor(this.armorPoints());
+    this.wearArmor();
+    v.hurt(dmg, m.T.name); playDeny();
+    this.onHurt(dmg, m.T.name); this.onVitals(); this.unsaved = true;
+    if (v.dead) this.die(m.T.name);
+  }
+
+  // ---------- Rückgängig / Wiederholen (nur Kreativ, sonst ließen sich Blöcke vermehren) ----------
+  // Ein Eintrag = Liste von Änderungen [x, y, z, vorher, nachher]; Formen und Einfügen sind ein Schritt
+  record(x, y, z, from, to) {
+    if (this.mode !== 'creative') return;
+    if (this.batch) { this.batch.push([x, y, z, from, to]); return; }
+    this.history.push([[x, y, z, from, to]]);
+    if (this.history.length > 100) this.history.shift();
+    this.redoList.length = 0;
+  }
+  beginBatch() { this.batch = []; }
+  endBatch() {
+    const b = this.batch; this.batch = null;
+    if (b && b.length) { this.history.push(b); if (this.history.length > 100) this.history.shift(); this.redoList.length = 0; }
+  }
+  undo(redo = false) {
+    if (this.mode !== 'creative') { this.onToast('Rückgängig gibt es im Kreativmodus'); return false; }
+    const src = redo ? this.redoList : this.history, dst = redo ? this.history : this.redoList;
+    const e = src.pop();
+    if (!e) { this.onToast(redo ? 'Nichts zum Wiederholen' : 'Nichts zum Rückgängigmachen'); return false; }
+    const list = redo ? e : e.slice().reverse();
+    for (const [x, y, z, from, to] of list) { this.world.ensure(x >> 4, z >> 4); this.world.setBlock(x, y, z, redo ? to : from); }
+    dst.push(e); this.unsaved = true; playPlace();
+    if (!this.running) { this.flushDirty(); this.render(); }
+    return true;
+  }
+
+  // Hacke: Gras/Erde zu Ackerboden (nur mit freiem Raum darüber)
+  hoe(held) {
+    const t = this.target;
+    if (!t || ![B.GRASS, B.DIRT, B.FLOWERS, B.MYCEL].includes(t.type) || this.world.getBlock(t.x, t.y + 1, t.z) !== B.AIR) return false;
+    if (!this.world.setBlock(t.x, t.y, t.z, B.FARMLAND)) return false;
+    this.record(t.x, t.y, t.z, t.type, B.FARMLAND);
+    this.wear(held); this.swing = 1; playPlace(); this.unsaved = true; this.onChange();
+    return true;
+  }
+
+  // Samen auf Ackerboden setzen
+  sow(type) {
+    const t = this.target;
+    if (!t || t.type !== B.FARMLAND || this.world.getBlock(t.x, t.y + 1, t.z) !== B.AIR) { this.onToast('Samen brauchen Ackerboden (Hacke auf Gras oder Erde)'); this.actCool = 0.6; return false; }
+    if (this.mode !== 'creative' && !(this.inv[type] > 0)) { playDeny(); this.onToast(`Keine ${nameOf(type)} im Vorrat`); this.actCool = 0.4; return false; }
+    if (!this.farm.plant(t.x, t.y + 1, t.z, this.age)) { this.onToast('Zu viele Pflanzen in dieser Welt'); return false; }
+    this.world.setBlock(t.x, t.y + 1, t.z, plantOf(type));
+    this.record(t.x, t.y + 1, t.z, B.AIR, plantOf(type));
+    if (this.mode !== 'creative') this.inv[type]--;
+    this.swing = 1; playPlace(); this.unsaved = true; this.onChange();
+    return true;
   }
 
   eat(type) {
@@ -570,6 +688,23 @@ export class Game {
       if (b && b.station) out.add(b.station);
     }
     return out;
+  }
+
+  // ---------- Funknetz: nur bei Änderungen neu berechnen, Maschinen umschalten ----------
+  updateSignals() {
+    const w = this.world, p = this.player, r = solve(w.sig);
+    this.sigStats = r; this.sigRetry = false;
+    for (const [k, n] of w.sig) {
+      const t = n[3], base = OFF_ID[t] ?? t;
+      if (!ON_ID[base]) continue;
+      const want = r.on.has(k) ? ON_ID[base] : base;
+      if (want === t) continue;
+      // ein Tor schließt nicht, solange der Spieler darin steht
+      if (want === B.GATE && p.x + 0.3 > n[0] && p.x - 0.3 < n[0] + 1 && p.z + 0.3 > n[2] && p.z - 0.3 < n[2] + 1 && p.y + 1.8 > n[1] && p.y < n[1] + 1) { this.sigRetry = true; continue; }
+      w.setBlock(n[0], n[1], n[2], want);
+    }
+    w.sigDirty = false; // eigene Umschaltungen ändern das Ergebnis nicht
+    if (r.capped) this.onToast('Signalnetz zu groß: nicht alles wird berechnet');
   }
 
   // ---------- Seilhaken, Wegpunkt, Radio ----------
@@ -624,9 +759,11 @@ export class Game {
   questTick() {
     const s = this.story;
     if (!s || s.done) return;
-    const q = QUESTS[s.i];
+    const q = campaignOf(s)[s.i];
     if (q.k === 'height') s.max = Math.max(s.max, this.player.y - this.spawnY);
     if (q.k === 'glide' && this.glideAcc) { s.p += this.glideAcc; }
+    if (q.k === 'depth' && this.player.y < q.y) s.p = 1;
+    if (q.k === 'visit' && this.world.villageAt(this.player.x, this.player.z)) s.p = 1;
     this.glideAcc = 0;
     this.questCheck();
   }
@@ -634,7 +771,7 @@ export class Game {
   questEvent(kind, type, n = 1) {
     const s = this.story;
     if (!s || s.done) return;
-    const q = QUESTS[s.i];
+    const q = campaignOf(s)[s.i];
     if (q.k === 'have') { this.questCheck(); return; }
     if (q.k !== kind || (q.a && !q.a.includes(type))) return;
     s.p += n;
@@ -642,13 +779,17 @@ export class Game {
   }
 
   questCheck() {
-    const s = this.story;
-    for (let guard = 0; s && !s.done && guard < QUESTS.length; guard++) {
-      const q = QUESTS[s.i], [cur, n] = questProgress(this, q);
+    const s = this.story, list = campaignOf(s);
+    for (let guard = 0; s && !s.done && guard < list.length; guard++) {
+      const q = list[s.i], [cur, n] = questProgress(this, q);
       if (cur < n) break;
       for (const [t, c] of Object.entries(q.r || {})) this.inv[t] = Math.min(MAX_STACK, (this.inv[t] || 0) + c);
       s.i++; s.p = 0; s.max = 0;
-      if (s.i >= QUESTS.length) s.done = true;
+      if (s.i >= list.length) s.done = true;
+      else if (list[s.i].k === 'visit') { // Wegpunkt zum nächsten Dorf
+        const v = nearestVillage(this.seed, this.player.x, this.player.z);
+        if (v) this.wp = { x: v.x, y: v.y + 1, z: v.z };
+      }
       this.unsaved = true; playPlace();
       this.onQuestDone(q, s.done);
       this.onChange();
@@ -729,7 +870,14 @@ export class Game {
     const t = this.target;
     if (!t || t.y === 0) return false;
     if (this.world.setBlock(t.x, t.y, t.z, B.AIR)) {
-      if (this.mode !== 'creative') this.inv[t.type] = Math.min(MAX_STACK, (this.inv[t.type] || 0) + 1);
+      this.record(t.x, t.y, t.z, t.type, B.AIR);
+      const give = (id, n) => { this.inv[id] = Math.min(MAX_STACK, (this.inv[id] || 0) + n); };
+      if (isCrop(t.type)) { // Ernte statt Block
+        this.farm.remove(t.x, t.y, t.z);
+        if (this.mode !== 'creative') { const got = cropDrops(t.type); got.forEach(([id, n]) => give(id, n)); this.onToast(got.map(([id, n]) => `+${n} ${nameOf(id)}`).join(' · ')); }
+      } else if (this.mode !== 'creative') give(BLOCKS[t.type].drop || (t.type === B.FARMLAND ? B.DIRT : t.type), 1);
+      // Gras gibt manchmal Samen
+      if (this.mode !== 'creative' && (t.type === B.GRASS || t.type === B.FLOWERS) && Math.random() < 0.12) { give(I.SEEDS, 1); this.onToast('+1 Weizensamen'); }
       if (this.survival) {
         const held = this.held();
         if (toolFits(t.type, held)) this.wear(held);
@@ -744,9 +892,27 @@ export class Game {
 
   placeBlock() {
     const t = this.target, type = this.hotbar[this.sel];
+    // Dorfbewohner ansprechen (wenn er vor dem Zielblock steht)
+    const c = this.camera.position, d = this.lookDir, mh = this.mobs && d ? this.mobs.raycast(c.x, c.y, c.z, d.x, d.y, d.z, REACH) : null;
+    if (mh && mh.mob.npc && (!t || mh.t < t.t)) { this.onTrade(mh.mob); this.questEvent('talk', 0); this.actCool = 0.5; return false; }
+    // Schalter umlegen
+    if (t && (t.type === B.SWITCH || t.type === B.SWITCH_ON)) {
+      if (!this.placeFirst) return false;
+      const to = t.type === B.SWITCH ? B.SWITCH_ON : B.SWITCH;
+      if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playPlace(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
+      return true;
+    }
     // Werkbank/Ofen benutzen statt daneben zu bauen (Kreativ: keine Rezepte, dort wird gebaut)
     if (t && this.mode !== 'creative' && BLOCKS[t.type] && BLOCKS[t.type].station) { this.onStation(BLOCKS[t.type].station); this.actCool = 0.5; return false; }
-    if (type && isItem(type)) return foodOf(type) ? this.eat(type) : false;
+    if (type && armorOf(type)) return this.equip(type);
+    if (type && isItem(type)) {
+      const held = this.held(), tool = toolOf(held);
+      if (tool && tool.kind === 'hacke') return this.hoe(held);
+      if (plantOf(type)) return this.sow(type);
+      return foodOf(type) ? this.eat(type) : false;
+    }
+    const mode = BUILD_MODES[this.buildMode];
+    if (mode.key !== 'einzeln') return this.buildClick(mode, t, type);
     if (!t || !type) return false;
     if (this.mode !== 'creative' && !(this.inv[type] > 0)) { playDeny(); this.onToast(`Kein ${NAMES[type]} im Vorrat`); this.actCool = 0.4; return false; }
     const x = t.x + t.nx, y = t.y + t.ny, z = t.z + t.nz;
@@ -757,6 +923,7 @@ export class Game {
     const p = this.player, hw = 0.3;
     if (p.x + hw > x && p.x - hw < x + 1 && p.z + hw > z && p.z - hw < z + 1 && p.y + 1.8 > y && p.y < y + 1) return false;
     if (!this.world.setBlock(x, y, z, type)) return false;
+    this.record(x, y, z, cur, type);
     if (this.mode !== 'creative') this.inv[type]--;
     this.unsaved = true; this.swing = 1; playPlace(); this.onChange();
     this.questEvent('place', type);
@@ -764,6 +931,101 @@ export class Game {
   }
 
   selectSlot(i) { this.sel = ((i % 9) + 9) % 9; this.onChange(); }
+
+  // ---------- Bau-Werkzeuge: Formen, Kopieren/Einfügen, Vorschau ----------
+  cycleBuild(dir = 1) {
+    const list = BUILD_MODES.map((m, i) => i).filter(i => !BUILD_MODES[i].creative || this.mode === 'creative');
+    const k = Math.max(0, list.indexOf(this.buildMode));
+    this.buildMode = list[(k + dir + list.length) % list.length];
+    this.anchor = null;
+    this.onBuildMode(BUILD_MODES[this.buildMode]);
+  }
+
+  buildClick(mode, t, type) {
+    if (!this.placeFirst) return false; // Formen nur einmal je Tastendruck
+    if (mode.creative && this.mode !== 'creative') { this.onToast(`${mode.name} gibt es im Kreativmodus`); return true; }
+    if (mode.key === 'einfuegen') {
+      if (!this.clip) { this.onToast('Erst mit „Kopieren“ zwei Ecken wählen'); return true; }
+      if (!t) return false;
+      return this.applyCells(pasteCells(this.clip, [t.x + t.nx, t.y + t.ny, t.z + t.nz]), 'Eingefügt', true);
+    }
+    if (!t) return false;
+    const cell = mode.key === 'kopieren' ? [t.x, t.y, t.z] : [t.x + t.nx, t.y + t.ny, t.z + t.nz];
+    if (!this.anchor) { this.anchor = cell; this.onToast(`${mode.name}: erste Ecke gesetzt, jetzt die zweite wählen`); playPlace(); return true; }
+    const a = this.anchor; this.anchor = null;
+    if (mode.key === 'kopieren') {
+      const clip = copyRegion(this.world, a, cell);
+      if (!clip) { playDeny(); this.onToast('Zu groß zum Kopieren (höchstens 32 768 Blöcke)'); return true; }
+      this.clip = clip; playPlace();
+      this.onToast(`${clip.n} Blöcke kopiert (${clip.sx}×${clip.sy}×${clip.sz}), jetzt „Einfügen“ wählen`);
+      return true;
+    }
+    if (!type || isItem(type)) { this.onToast('Wähle einen Block in der Hotbar'); return true; }
+    const max = this.mode === 'creative' ? MAX_CELLS.creative : MAX_CELLS.survival;
+    const cells = shapeCells(mode.key, a, cell, max);
+    if (!cells) { playDeny(); this.onToast(`Zu groß: höchstens ${max} Blöcke auf einmal`); return true; }
+    return this.applyCells(cells.map(c => [c[0], c[1], c[2], type]), mode.name, false);
+  }
+
+  // Liste [x, y, z, typ] setzen (Formen nur in freie Zellen, Einfügen überschreibt); ein Rückgängig-Schritt
+  applyCells(list, label, overwrite) {
+    const creative = this.mode === 'creative', p = this.player, hw = 0.3;
+    let n = 0, short = false;
+    this.beginBatch();
+    for (const [x, y, z, type] of list) {
+      if (y <= 0 || y >= H) continue;
+      if (!creative && !(this.inv[type] > 0)) { short = true; continue; }
+      const cur = this.world.getBlock(x, y, z);
+      if (cur === type || (!(overwrite && creative) && cur !== B.AIR && cur !== B.WATER)) continue;
+      if (BLOCKS[type].solid && p.x + hw > x && p.x - hw < x + 1 && p.z + hw > z && p.z - hw < z + 1 && p.y + 1.8 > y && p.y < y + 1) continue;
+      if (!this.world.setBlock(x, y, z, type)) continue;
+      this.record(x, y, z, cur, type);
+      if (!creative) this.inv[type]--;
+      n++;
+      this.questEvent('place', type);
+    }
+    this.endBatch();
+    if (n) { this.unsaved = true; this.swing = 1; playPlace(); this.onChange(); }
+    this.onToast(n ? `${label}: ${n} Blöcke${short ? ' (Vorrat reichte nicht)' : ''}` : short ? 'Nicht genug im Vorrat' : 'Nichts zu setzen');
+    return true;
+  }
+
+  updateGhost() {
+    const g = this.ghost, t = this.target, mode = BUILD_MODES[this.buildMode], type = this.hotbar[this.sel];
+    let box = null;
+    if (t && !this.dead && (this.preview || mode.key !== 'einzeln')) {
+      const place = [t.x + t.nx, t.y + t.ny, t.z + t.nz];
+      if (mode.key === 'einfuegen') { if (this.clip) box = [...place, place[0] + this.clip.sx - 1, place[1] + this.clip.sy - 1, place[2] + this.clip.sz - 1]; }
+      else if (mode.key === 'kopieren') { const c = [t.x, t.y, t.z]; box = this.anchor ? bounds(this.anchor, c) : [...c, ...c]; }
+      else if (type && !isItem(type) && !(this.mode !== 'creative' && BLOCKS[t.type] && BLOCKS[t.type].station)) box = this.anchor ? bounds(this.anchor, place) : [...place, ...place];
+    }
+    if (!box) { g.visible = false; return; }
+    g.position.set((box[0] + box[3] + 1) / 2, (box[1] + box[4] + 1) / 2, (box[2] + box[5] + 1) / 2);
+    g.scale.set(box[3] - box[0] + 1, box[4] - box[1] + 1, box[5] - box[2] + 1);
+    g.visible = true;
+  }
+
+  // ---------- Rüstung ----------
+  equip(type) {
+    const a = armorOf(type), creative = this.mode === 'creative';
+    if (!creative && !(this.inv[type] > 0)) { playDeny(); this.onToast(`Kein ${nameOf(type)} im Vorrat`); this.actCool = 0.4; return false; }
+    const old = this.armor[a.slot];
+    if (old === type) { this.onToast(`${nameOf(type)} trägst du schon`); this.actCool = 0.6; return false; }
+    if (!creative) { this.inv[type]--; if (old) this.inv[old] = Math.min(MAX_STACK, (this.inv[old] || 0) + 1); }
+    this.armor[a.slot] = type; this.armWear[a.slot] = 0;
+    this.swing = 1; playPlace(); this.unsaved = true;
+    this.onToast(`${nameOf(type)} angelegt · Schutz ${this.armorPoints() * 5} %`); this.onChange(); this.onVitals();
+    return true;
+  }
+  armorPoints() { let n = 0; for (const sl of ['kopf', 'brust']) { const a = armorOf(this.armor[sl]); if (a) n += a.pts; } return n; }
+  wearArmor() {
+    if (this.mode === 'creative') return;
+    for (const sl of ['kopf', 'brust']) {
+      const id = this.armor[sl], a = armorOf(id);
+      if (!a) continue;
+      if (++this.armWear[sl] >= a.dur) { this.armor[sl] = 0; this.armWear[sl] = 0; this.onToast(`${nameOf(id)} ist zerbrochen`); }
+    }
+  }
 
   // ---------- Chunk-Streaming ----------
   stream() {

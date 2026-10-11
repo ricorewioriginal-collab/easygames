@@ -58,6 +58,26 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 1× Eisenspitzhacke | 3× Eisenbarren + 2× Stock | Werkbank | Werkzeuge & Essen |
 | 1× Eisenaxt | 3× Eisenbarren + 2× Stock | Werkbank | Werkzeuge & Essen |
 | 1× Eisenschaufel | 1× Eisenbarren + 2× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Holzhacke | 2× Bretter + 2× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Steinhacke | 2× Stein + 2× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Holzschwert | 2× Bretter + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Steinschwert | 2× Stein + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Kupferschwert | 2× Kupferbarren + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Eisenschwert | 2× Eisenbarren + 1× Stock | Werkbank | Werkzeuge & Essen |
+| 1× Brot | 3× Weizen | – | Werkzeuge & Essen |
+| 1× Kupferhelm | 5× Kupferbarren | Werkbank | Werkzeuge & Essen |
+| 1× Kupferharnisch | 8× Kupferbarren | Werkbank | Werkzeuge & Essen |
+| 1× Eisenhelm | 5× Eisenbarren | Werkbank | Werkzeuge & Essen |
+| 1× Eisenharnisch | 8× Eisenbarren | Werkbank | Werkzeuge & Essen |
+| 2× Bruchstein | 2× Stein | – | Bauen |
+| 2× Dorfweg | 1× Kies + 1× Erde | – | Bauen |
+| 2× Schalter | 1× Stein + 1× Stock | Werkbank | Funktechnik |
+| 8× Signalleitung | 1× Kupferbarren + 1× Stein | Werkbank | Funktechnik |
+| 1× Funksender | 2× Kupferbarren + 1× Funkkristall + 1× Radio-Block | Werkbank | Funktechnik |
+| 1× Funkrelais | 1× Kupferbarren + 1× Funkkristall + 2× Stein | Werkbank | Funktechnik |
+| 1× Empfänger | 1× Kupferbarren + 1× Glas + 2× Bretter | Werkbank | Funktechnik |
+| 2× Signallampe | 1× Leuchtblock + 1× Signalleitung | Werkbank | Funktechnik |
+| 2× Funktor | 1× Eisenbarren + 4× Bretter | Werkbank | Funktechnik |
 | 1× Kupferbarren | 1× Kupfererz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Eisenbarren | 1× Eisenerz + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 1× Braten | 1× Rohes Fleisch + 1× Bretter | Schmelzofen | Werkzeuge & Essen |
