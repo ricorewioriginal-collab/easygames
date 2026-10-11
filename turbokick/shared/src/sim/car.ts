@@ -507,8 +507,12 @@ export function stepCar(
       vel[1] += az1 * ab;
       vel[2] += az2 * ab;
     }
-    // Air Control (nicht während eines Flips)
-    if (car.dodgeTimer <= 0) {
+    // Luftsteuerung nur ohne Oberflächenkontakt (und nicht während eines Flips).
+    // Zwei Räder/Karosseriekontakt reichen noch nicht zum Fahren, sind aber auch
+    // kein freier Flug: Gas/Lenken senden zugleich Pitch/Yaw und würden das Auto
+    // beim Aufsetzen sonst weiter kippen. Der Sprung-Guard erlaubt Luftsteuerung
+    // unmittelbar nach einem absichtlichen Absprung.
+    if (car.dodgeTimer <= 0 && !surface) {
       const wx = w[0] * ax0 + w[1] * ax1 + w[2] * ax2;
       const wy = w[0] * ay0 + w[1] * ay1 + w[2] * ay2;
       const wz = w[0] * az0 + w[1] * az1 + w[2] * az2;
@@ -733,3 +737,4 @@ export function collideCars(cars: CarState[], events: SimEvent[]): void {
     }
   }
 }
+
