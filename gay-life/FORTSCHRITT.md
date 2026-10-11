@@ -2,6 +2,29 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 3 (11.10.2026): Wohnen
+
+### Neu umgesetzt (M6)
+
+- **Möbel (`js/furniture.js`, `GL.furn`)**: Am Laptop in der Wohnung: Speichern, **Möbel kaufen** (9 Stücke, 30–150 €), **Einrichten** (8 feste Stellflächen, Möbel verschieben oder Platz leeren), **Miete & Vermieter**. Gekaufte Möbel stehen als 3D-Modelle aus einfachen Quadern im Raum und haben Kollision.
+  - Benutzbar: Bücherregal (Lesen), Hantelbank (Trainieren, nur wenn nicht erschöpft), Plattenspieler, Kaffeemaschine (höchstens 3 Tassen pro Tag), Aquarium, Zocker-Sessel, Yogamatte. Jede Nutzung kostet Spielzeit und verändert Bedürfnisse.
+  - Dekoration (Aquarium, Regenbogenlampe, Skulptur) hebt die Stimmung (Bonus höchstens +6).
+- **Miete**: 70 € pro Woche, montags abgebucht (erste Abbuchung Tag 8). Fehlt das Geld, wird sie zur Schuld mit Stress; die Schuld wird beim nächsten Montag mitbezahlt, sobald das Geld reicht, oder am Laptop. Anzeige in der Finanz-App.
+- **Gäste und Partner**: Ein Date „Bei dir zu Hause“ lässt die Figur zur Termin­zeit in der Wohnung stehen (ansprechbar, Date-Menü). **Zusammenziehen** (Partner, Romantik ≥ 75, ≥ 3 Dates; Zusage ab Romantik 80): Partner ist abends und morgens in der Wohnung, schläft mit, Miete halbiert (40 €). Trennung lässt ihn ausziehen.
+- Spielstand: `home: { own, placed, partner, rentDay, debt }` (alte Stände werden ergänzt).
+
+### Tests Durchgang 3
+
+`gay-life/tests/e2e.mjs`: **135 Prüfungen, alle bestanden**, keine Konsolenfehler. Neu: Katalog, Kaufen (Doppelkauf, zu wenig Geld), Aufstellen/Verschieben/Leeren samt Kollisionen, Benutzen (Lesen, Kaffee-Limit, Erschöpfung), Dekorationsbonus, Miete (Montag, keine Doppelbuchung, Schuld, Nachzahlung), Finanz-App, Date zu Hause mit Gast, Zusammenziehen, Trennung, Speichern/Laden.
+
+Einschränkungen: Optik der Möbel ist schlicht (Quader), nicht von Menschen probegespielt; keine größeren Wohnungen und keine Räumung bei hohen Schulden (nur Stress).
+
+### Weiterhin offen
+
+M2, M4, M5, M7, M8, M9, M10 wie unten. Nächster Schritt: Nachtleben (M4) und Jobs (M5).
+
+---
+
 ## Stand nach Durchgang 2 (11.10.2026): Dating, Tagesabläufe, Nachrichten
 
 ### Neu umgesetzt

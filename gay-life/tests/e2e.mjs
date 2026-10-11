@@ -106,6 +106,7 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await act(page); ok(await ev(page, () => document.getElementById('modal').style.display === 'block'), 'Kleiderschrank öffnet den Charakter-Editor');
   await page.click('#mOk'); await page.waitForFunction(() => GL.W.on); ok(await ev(page, () => GL.W.inside === 1), 'Nach dem Umziehen weiter in der Wohnung');
   await spot(3.3, -3.8, /Laptop/);
+  ok(await ev(page, () => /Möbel kaufen/.test(document.getElementById('maps').textContent)), 'Laptop öffnet das Menü mit Speichern, Möbeln und Miete'); await page.click('#mx');
   await spot(0, 4.9, /verlassen/);
   ok(await ev(page, () => GL.W.inside === 0 && Math.abs(GL.W.player.z - GL.W.pois.home.z) < 1), 'Wohnung verlassen, vor der Haustür');
 
@@ -384,6 +385,83 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
   s = await ev(page, () => ({ rel: GL.S.rel.mehmet && GL.S.rel.mehmet.st, ints: GL.S.dating.ints.join(), msgs: GL.S.msgs.length }));
   ok(s.rel === 'ex' && s.ints === 'natur,essen,kultur' && s.msgs > 0, 'Beziehungsstatus, Interessen und Nachrichten bleiben nach Neuladen erhalten');
+  await ctx.close();
+}
+
+/* ---------- 5. Wohnen: Möbel, Miete, Besuch, Zusammenziehen ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const dlg = async () => { for (let i = 0; i < 14; i++) { if (!(await ev(page, () => !!GL.W.dlg))) break; await page.click('#dn'); await page.waitForTimeout(50); } await page.waitForTimeout(260); };
+  const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
+  const menuItem = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  await ev(page, () => { GL.S.life.money = 600; GL.home.enter(); }); await waitFade(page);
+  ok(await ev(page, () => Object.keys(GL.furn.CAT).length === 9 && GL.S.home.debt === 0), 'Möbelkatalog mit 9 Stücken, keine Schulden zum Start');
+  // Laptop-Menü: kaufen und aufstellen über die Menüs
+  await ev(page, () => { GL.furn.laptop(); });
+  ok(await ev(page, () => /Möbel kaufen/.test(document.getElementById('maps').textContent) && /Miete/.test(document.getElementById('maps').textContent)), 'Laptop bietet Speichern, Möbel, Einrichten und Miete');
+  await menuItem('Möbel kaufen'); await menuItem('Bücherregal');
+  ok(await ev(page, () => GL.S.home.own.regal === 1 && GL.S.life.money === 540), 'Möbel kaufen: Bücherregal 60 € abgebucht');
+  await closeMenu();
+  ok(await ev(page, () => GL.furn.buy('regal') === false && GL.S.life.money === 540), 'Doppelt kaufen nicht möglich');
+  ok(await ev(page, () => { const m = GL.S.life.money; GL.S.life.money = 5; const r = GL.furn.buy('aquarium'); GL.S.life.money = m; return r === false && !GL.S.home.own.aquarium; }), 'Zu wenig Geld: kein Kauf');
+  const nc = await ev(page, () => GL.W.colliders.length);
+  await ev(page, () => { GL.furn.laptop(); }); await menuItem('Einrichten'); await menuItem('Platz 1'); await menuItem('Bücherregal'); await closeMenu();
+  ok(await ev(page, () => GL.S.home.placed[0] === 'regal') && await ev(page, n => GL.W.colliders.length === n + 1, nc), 'Möbel auf Platz 1 gestellt, Kollisionsfläche ergänzt');
+  // Benutzen
+  const useIt = async lab => { await ev(page, lab => { const i = GL.W.inter.find(i => i.on && i.label.indexOf(lab) === 0); const p = GL.W.player; p.x = i.x; p.z = i.z; i.fn(); }, lab); await waitFade(page); };
+  await ev(page, () => { GL.S.life.needs.stress = 80; });
+  await useIt('Lesen');
+  ok(await ev(page, () => GL.S.life.needs.stress < 70), 'Bücherregal: Lesen senkt Stress');
+  // Verschieben statt Duplizieren, Platz leeren
+  await ev(page, () => { GL.furn.buy('lampe'); GL.furn.buy('kunst'); GL.furn.buy('aquarium'); GL.furn.place(1, 'regal'); });
+  ok(await ev(page, () => GL.S.home.placed[0] === undefined && GL.S.home.placed[1] === 'regal'), 'Möbel wird verschoben, nicht doppelt gestellt');
+  const m0 = await ev(page, () => GL.life.mood());
+  await ev(page, () => { GL.furn.place(0, 'lampe'); GL.furn.place(2, 'kunst'); GL.furn.place(3, 'aquarium'); });
+  ok(await ev(page, () => GL.furn.bonus() === 5) && await ev(page, m => GL.life.mood() > m, m0), 'Dekoration (Lampe, Skulptur, Aquarium) hebt die Stimmung (+5)');
+  ok(await ev(page, () => { const c = GL.W.colliders.length; GL.furn.place(0, ''); GL.furn.place(0, 'lampe'); return GL.W.colliders.length === c; }), 'Leeren und Neustellen lässt keine Kollisionsreste zurück');
+  // Kaffee: Tageslimit
+  await ev(page, () => { GL.furn.buy('kaffee'); GL.furn.place(4, 'kaffee'); GL.S.life.needs.energy = 30; });
+  for (let i = 0; i < 4; i++) await useIt('Kaffee kochen');
+  ok(await ev(page, () => GL.S.life.needs.energy > 60 && GL.S.life.needs.energy < 90), 'Kaffeemaschine: höchstens drei Tassen am Tag');
+  // Hantelbank: zu erschöpft
+  await ev(page, () => { GL.furn.buy('hantel'); GL.furn.place(5, 'hantel'); GL.S.life.needs.energy = 10; });
+  const e0 = await ev(page, () => { const i = GL.W.inter.find(i => i.on && i.label.indexOf('Trainieren') === 0); i.fn(); return GL.S.life.needs.energy; });
+  ok(!(await ev(page, () => GL.ui.fading)) && e0 > 9.5 && e0 <= 10, 'Hantelbank: bei Erschöpfung keine Wirkung');
+  // Miete
+  await ev(page, () => { GL.S.life.day = 7; GL.S.home.rentDay = 0; GL.S.life.money = 500; GL.life.advance(1440); });
+  s = await ev(page, () => ({ d: GL.S.life.day, m: GL.S.life.money, r: GL.S.home.rentDay, debt: GL.S.home.debt }));
+  ok(s.d === 8 && s.m === 430 && s.r === 8 && s.debt === 0, `Montag: Miete 70 € abgebucht (${s.m} €)`);
+  await ev(page, () => { GL.life.advance(1440); });
+  ok(await ev(page, () => GL.S.life.money === 430), 'Dienstag: keine zweite Abbuchung');
+  await ev(page, () => { GL.S.life.money = 10; for (let i = 0; i < 6; i++) GL.life.advance(1440); });
+  s = await ev(page, () => ({ m: GL.S.life.money, debt: GL.S.home.debt }));
+  ok(s.m === 10 && s.debt === 70, 'Kein Geld: Miete wird zur Schuld');
+  await ev(page, () => { GL.S.life.money = 400; for (let i = 0; i < 7; i++) GL.life.advance(1440); });
+  s = await ev(page, () => ({ m: GL.S.life.money, debt: GL.S.home.debt }));
+  ok(s.debt === 0 && s.m === 400 - 140, `Mit Geld: Schulden und neue Miete bezahlt (${s.m} €)`);
+  ok(await ev(page, () => /Wohnung/.test(GL.emit('phoneMoney') || '')), 'Finanz-App zeigt Wohnung und Miete');
+  // Besuch zu Hause: Date-Einladung
+  await ev(page, () => { const r = GL.dating.rel('luca'); r.f = 50; r.r = 30; r.st = ''; GL.S.cal = []; GL.S.world.t = (19 - 6) / 24; GL.dating.addAppt('luca', 'home', GL.S.life.day, 19); });
+  ok(await ev(page, () => GL.furn.visitor() === 'luca'), 'Date zu Hause: Luca kommt zur vereinbarten Zeit');
+  await page.waitForTimeout(1500);
+  ok(await ev(page, () => GL.W.inter.some(i => i.on && /Mit Luca reden/.test(i.label))), 'Gast steht in der Wohnung und lässt sich ansprechen');
+  await ev(page, () => { const i = GL.W.inter.find(i => i.on && /Mit Luca reden/.test(i.label)); i.fn(); });
+  ok(await ev(page, () => /Date beginnen/.test(document.getElementById('maps').textContent)), 'Gesprächsmenü bietet das Date an');
+  await closeMenu();
+  // Zusammenziehen
+  await ev(page, () => { GL.S.cal = []; const r = GL.dating.rel('luca'); r.st = 'partner'; r.r = 85; r.dates = 3; r.conflict = 0; });
+  await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'luca'); GL.dating.menu(n); });
+  await menuItem('Zusammenziehen'); await dlg(); await closeMenu();
+  ok(await ev(page, () => GL.S.home.partner === 'luca' && GL.furn.rent() === 40), 'Zusammenziehen: Luca zieht ein, Miete halbiert');
+  await ev(page, () => { GL.S.world.t = (21 - 6) / 24; });
+  ok(await ev(page, () => GL.furn.visitor() === 'luca'), 'Partner ist abends in der Wohnung');
+  ok(await ev(page, () => { GL.dating.endRel('luca', 'Test'); return GL.S.home.partner === '' && GL.furn.rent() === 70; }), 'Trennung: Partner zieht aus, Miete wieder voll');
+  // Speichern und Laden
+  await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
+  s = await ev(page, () => ({ p: JSON.stringify(GL.S.home.placed), n: Object.keys(GL.S.home.own).length, nc: GL.W.colliders.length }));
+  ok(s.n === 6 && /lampe/.test(s.p) && /kaffee/.test(s.p), 'Eingerichtete Wohnung bleibt nach Neuladen erhalten');
+  ok(await ev(page, () => GL.W.colliders.length > 0), 'Möbel stehen nach Neuladen wieder (Kollision aktiv)');
   await ctx.close();
 }
 

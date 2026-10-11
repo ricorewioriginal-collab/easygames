@@ -26,7 +26,7 @@
 
   function n(k) { return L.needs[k]; }
   life.mood = function () {
-    var v = (n('energy') + n('hunger') + n('hygiene') + n('social') + (100 - n('stress'))) / 5 + L.boost;
+    var v = (n('energy') + n('hunger') + n('hygiene') + n('social') + (100 - n('stress'))) / 5 + L.boost + (GL.furn ? GL.furn.bonus() : 0);
     return Math.round(clamp(v, 0, 100));
   };
   life.moodName = function (m) { m = m == null ? life.mood() : m; return m >= 75 ? 'Bestens' : m >= 55 ? 'Gut' : m >= 35 ? 'Geht so' : 'Mies'; };
@@ -54,6 +54,7 @@
       var low = 0; ['energy', 'hunger', 'hygiene', 'social'].forEach(function (q) { if (L.needs[q] < 25) low++; });
       L.needs.stress = clamp(L.needs.stress + (low ? low * 1.5 : -1) * h, 0, 100);
     }
+    if (!sleeping && S.home && S.home.partner) L.needs.social = clamp(L.needs.social + h, 0, 100); // zusammenwohnen tut gut
     L.boost = L.boost > 0 ? Math.max(0, L.boost - 10 * h) : Math.min(0, L.boost + 10 * h);
     var t0 = S.world.t, t1 = t0 + min / 1440;
     // Mitternacht liegt bei t = 0.75
