@@ -61,7 +61,7 @@
   for (const s of W.vehicleSpawns) addVeh(s.type, s.x, s.z, s.h);
   addVeh('taxi', 9, -24, Math.PI); addVeh('car', 12, -30, Math.PI, { color: 0xe8453c }); addVeh('car', -9, 24, 0, { color: 0x3f8cff });
   addVeh('ice', -9, -36, Math.PI); addVeh('bus', 31, 9, Math.PI / 2); addVeh('bike', 14, -9, .5, { color: 0xff8a1f }); addVeh('bike', 150, 14, 1.2, { color: 0xff5a9a }); addVeh('bicycle', 7, 36, .4, { color: 0x3f8cff }); addVeh('scooter', -7, 36, -.4, { color: 0xff5a9a }); addVeh('bicycle', 80, 36, 2.2, { color: 0x4cd07d });
-  addVeh('car', 150, -12, 1.6, { color: 0x4cd07d }); addVeh('taxi', 144, -12, 1.6);
+  addVeh('car', 150, -12, 1.6, { color: 0x4cd07d });
   const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
   const traffic = [];
   for (let i = 0; i < 9; i++) {
