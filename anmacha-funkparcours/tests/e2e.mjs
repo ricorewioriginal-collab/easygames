@@ -3,12 +3,26 @@
 import { chromium } from 'playwright';
 const BASE = process.env.BASE || 'http://localhost:8080/anmacha-funkparcours'; let fails = 0; const errs = [], log = (ok, m) => { console.log((ok ? '✓ ' : '✗ ') + m); if (!ok) fails++; };
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
-const mk = async (o) => { const ctx = await browser.newContext(o), p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept());
-  if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.goto(BASE + '/index.html'); await p.waitForFunction(() => window.__fp, null, { timeout: 30000 }); return p; };
+const mk = async (o) => { const ctx = await browser.newContext(Object.assign({}, o, { keepBoot: undefined })), p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept());
+  if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.goto(BASE + '/index.html'); await p.waitForFunction(() => window.__fp, null, { timeout: 30000 }); if (!o.keepBoot) await pressStart(p); return p; };
+const pressStart = async p => { await p.waitForSelector('#boot.ready', { timeout: 30000 }); await p.keyboard.press('Enter'); await p.waitForSelector('#menu:not([hidden]) .cm-it.on', { timeout: 5000 }); };
 const SHOT = process.env.SHOT || '/tmp';
 const bot = p => p.evaluate(async () => { const { plan } = await import('./bot.js'); let c = {}, until = 0, hold = 0, lastT = 0; window.__fpBot = true; window.__fpInput = sim => { if (window.__fpStupid) return { r: 1 }; if (sim.t < lastT) until = 0; lastT = sim.t; if (sim.t >= until) { c = plan(sim); until = sim.t + 0.05; hold = sim.t + (c.hold || 0.1); } return { l: c.l, r: c.r, j: c.j && sim.t < hold, g: c.g }; }; });
 const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && window.__fp.G.phase === x, ph, { timeout: ms, polling: 100 });
 
+{ // ---- Ladebildschirm + Konsolen-Menü (Tastatur)
+  const p = await mk({ viewport: { width: 1000, height: 600 }, keepBoot: true });
+  log(await p.isVisible('#boot'), 'Ladebildschirm erscheint zuerst'); await p.waitForSelector('#boot.ready', { timeout: 30000 });
+  log((await p.textContent('#bootPct')).trim() === '100 %' && await p.isVisible('#bootStart'), 'Ladebalken bei 100 %, „Drücke eine beliebige Taste"'); await p.screenshot({ path: `${SHOT}/fp-boot.png` });
+  await p.keyboard.press('Enter'); await p.waitForSelector('#menu:not([hidden]) .cm-it.on'); await p.waitForTimeout(600);
+  log(await p.evaluate(() => document.getElementById('boot').classList.contains('out')) && /Show starten/.test(await p.textContent('#cmPanel')), 'Taste startet: Menü mit Fokus auf „Show starten"'); await p.screenshot({ path: `${SHOT}/fp-menu.png` });
+  await p.keyboard.press('ArrowDown'); log(await p.evaluate(() => document.querySelector('.cm-it.on').id === 'bTrain') && /Training/.test(await p.textContent('#cmPanel h3')), 'Pfeil runter: Fokus auf Training, Info-Feld wechselt');
+  await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp'); log(await p.evaluate(() => document.querySelector('.cm-it.on').id === 'bHome'), 'Liste läuft oben herum (Fokus auf „Alle Spiele")');
+  await p.keyboard.press('ArrowUp'); const s0 = await p.textContent('#bSound'); await p.keyboard.press('Enter'); log(await p.textContent('#bSound') !== s0, 'Enter auf „Ton" schaltet um (' + s0.trim() + ' → ' + (await p.textContent('#bSound')).trim() + ')'); await p.keyboard.press('Enter');
+  await p.keyboard.press('ArrowDown'); await p.keyboard.press('ArrowDown'); await p.keyboard.press('Enter'); await p.waitForSelector('#setup:not([hidden])'); log((await p.textContent('#setTitle')) === 'Neue Show', 'Enter auf „Show starten" öffnet die Einrichtung');
+  await p.keyboard.press('Escape'); await p.waitForSelector('#menu:not([hidden])'); log(await p.evaluate(() => document.querySelector('.cm-it.on').id === 'bPlay'), 'Esc führt zurück ins Menü, Fokus bleibt');
+  await p.close();
+}
 { // ---- Show, 2 Läufer
   const p = await mk({ viewport: { width: 1000, height: 600 } }); await bot(p); await p.evaluate(() => { window.__fpFast = 3; });
   await p.click('#bPlay'); await p.click('#sgPl [data-v="2"]'); await p.fill('#names input[data-i="0"]', 'Anna'); await p.fill('#names input[data-i="1"]', 'Ben'); await p.click('#bStart');
@@ -32,6 +46,7 @@ const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && win
 }
 { // ---- Training mit Geist, Handy-Format + Touch-Pad
   const p = await mk({ viewport: { width: 420, height: 820 }, hasTouch: true, isMobile: true }); await p.evaluate(() => { window.__fpFast = 3; });
+  { await p.waitForTimeout(400); await p.screenshot({ path: `${SHOT}/fp-menu-mobile.png` }); const m = await p.evaluate(() => { const r = document.getElementById('bHome').getBoundingClientRect(); return { sw: document.documentElement.scrollWidth, iw: innerWidth, vis: r.bottom > 0 && r.right <= innerWidth + 1 }; }); log(m.sw <= m.iw && m.vis, 'Handy-Menü: alle Einträge erreichbar, kein horizontales Scrollen'); }
   await p.click('#bTrain'); await p.click('#sgCourse [data-v="0"]'); await p.click('#bStart'); await p.waitForSelector('#bReady'); log(await p.isVisible('#bReady'), 'Training: Bereit-Karte'); await p.click('#bReady'); await phase(p, 'run');
   const x0 = await p.evaluate(() => window.__fp.G.sim.x); const bt = p.locator('#pad [data-k="r"]'); await bt.dispatchEvent('pointerdown', { pointerId: 7, bubbles: true }); await p.waitForTimeout(500);
   const x1 = await p.evaluate(() => window.__fp.G.sim.x); await bt.dispatchEvent('pointerup', { pointerId: 7, bubbles: true }); log(x1 > x0 + 1, 'Touch-Pad „rechts" bewegt den Läufer (' + x0.toFixed(1) + ' → ' + x1.toFixed(1) + ')'); await p.screenshot({ path: `${SHOT}/fp-mobile.png` });

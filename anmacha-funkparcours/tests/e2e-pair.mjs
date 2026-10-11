@@ -8,7 +8,7 @@ async function mk(vw, three) { const c = await browser.newContext({ viewport: vw
   if (three && process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
   if (process.env.PEERJS) await p.route('**/peerjs.min.js', r => r.fulfill({ path: process.env.PEERJS, contentType: 'application/javascript' })); if (process.env.QRLIB) await p.route('**/qrcode.js', r => r.fulfill({ path: process.env.QRLIB, contentType: 'application/javascript' })); return p; }
 const host = await mk({ width: 1000, height: 640 }, true);
-await host.goto(BASE + '/index.html?ph=' + PH); await host.waitForFunction(() => window.__fp, null, { timeout: 30000 });
+await host.goto(BASE + '/index.html?ph=' + PH); await host.waitForFunction(() => window.__fp, null, { timeout: 30000 }); await host.waitForSelector('#boot.ready', { timeout: 30000 }); await host.keyboard.press('Enter'); await host.waitForSelector('#menu:not([hidden])');
 await host.click('#bPairMenu'); await host.waitForFunction(() => /^[A-Z0-9]{4}$/.test(document.getElementById('code').textContent), null, { timeout: 15000 }); const code = await host.textContent('#code'); log(true, 'Gastgeber zeigt Code ' + code); log(await host.isVisible('#qr svg'), 'QR-Code wird angezeigt');
 const phones = [];
 for (const nm of ['Anna', 'Ben']) { const p = await mk({ width: 390, height: 800 }); await p.goto(`${BASE}/index.html?join=${code}&ph=${PH}`); await p.waitForSelector('#cj'); await p.fill('#cn', nm); await p.click('#cj'); await p.waitForFunction(() => /Verbunden/.test(document.getElementById('ctl').textContent), null, { timeout: 15000 }); phones.push(p); }
