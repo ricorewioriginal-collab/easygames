@@ -1,46 +1,58 @@
 # KLOTZFUNK 3D
 
-Voxel-Sandbox im Browser (Three.js + Vite). Prozedurale Welt mit Gras, Erde, Stein, Sand, Holz, Blättern, Wasser und Bäumen,
-Tag-Nacht-Wechsel, Chunk-System, Abbauen/Setzen, Hotbar, Inventar mit Herstellen, 3 Speicherplätze (localStorage).
-Dazu 16 Blöcke mit den AnMaCha-Senderlogos (Inventar → Funk-Logos; Quelle `public/logos/`, 128 px). Für PC (Maus + Tastatur) und Smartphone (Touch-Steuerung). Alle Texturen und Geräusche werden im Browser erzeugt – keine Assets.
+Voxel-Sandbox im Browser (Three.js + Vite) für PC und Smartphone. Bauen, abbauen, erkunden – in 15 Biomen mit Höhlen, Erzen und
+leuchtenden Funkkristallen, mit Radio-Blöcken, 16 AnMaCha-Senderlogo-Blöcken, Seilhaken und Gleiter. Alle Texturen und Geräusche
+werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Konto, keine Kosten, keine externen Dienste nötig.
 
 ## Spielen
 - **Online:** `anmacha-klotzfunk/` (fertig gebautes Ergebnis, wird mit GitHub Pages ausgeliefert, in der Spieleliste verlinkt).
-- **Lokal aus dem Build:** `anmacha-klotzfunk/` über einen beliebigen Webserver öffnen (z. B. `python3 -m http.server`).
+- **Lokal aus dem Build:** den Ordner `anmacha-klotzfunk/` über einen beliebigen Webserver öffnen (z. B. `python3 -m http.server` im Repo-Hauptordner).
 
-## Entwickeln (Vite)
+## Spielmodi
+- **Überleben:** abgebaute Blöcke landen im Vorrat, Neues wird hergestellt (37 Rezepte, siehe [CRAFTING.md](CRAFTING.md)).
+- **Kreativ:** alle Blöcke unbegrenzt, Fliegen.
+- **Story:** 15 Aufträge der Funkzentrale in einer festen Welt (siehe [STORY.md](STORY.md)).
+
+Mehr zu Steuerung und Spielablauf: [GAMEPLAY.md](GAMEPLAY.md). Welt und Biome: [WORLD.md](WORLD.md). Alle Blöcke: [BLOCKS.md](BLOCKS.md).
+
+## Speichern
+Drei Weltplätze im Browser (`localStorage`). Gespeichert wird automatisch alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite;
+abgelegt werden nur Startwert, Generator-Version und die tatsächlichen Änderungen. Zusätzlich:
+- **Sicherung:** höchstens alle 10 Minuten wird der vorige Stand als Sicherung behalten (↺ auf der Weltkarte stellt ihn wieder her).
+  Ist ein Spielstand beschädigt, bietet das Spiel beim Laden die Sicherung an.
+- **Export/Import:** ⤓ auf der Weltkarte lädt die Welt als `.json`-Datei herunter, „⤒ Welt importieren“ im Hauptmenü liest sie in einen freien Platz.
+- **Optional:** Spielstände mit Google sichern (Hauptmenü, aufklappbar). Ohne Anmeldung bleibt alles auf dem Gerät.
+- Welten aus Version 1.0 laden unverändert mit ihrer Originallandschaft.
+
+## Entwickeln
 ```bash
 cd anmacha-klotzfunk-src
 npm install
 npm run dev        # Entwicklungsserver mit Hot Reload
+npm test           # automatische Tests (Node, ohne Browser)
+npm run bench      # Leistungsmessung: Chunk-Erzeugung und Meshing
+npm run docs       # BLOCKS.md und CRAFTING.md aus dem Code neu erzeugen
 npm run build      # schreibt das Ergebnis nach ../anmacha-klotzfunk/ (wird eingecheckt)
 ```
-Nach Änderungen am Quelltext immer `npm run build` ausführen und den Ordner `anmacha-klotzfunk/` mit committen.
-
-## Steuerung
-| | PC | Smartphone |
-|---|---|---|
-| Laufen | WASD | linke Bildschirmhälfte wischen (weit ziehen = rennen) |
-| Umschauen | Maus (Klick ins Bild aktiviert Pointer Lock) | rechte Bildschirmhälfte wischen |
-| Springen | Leertaste | Taste „Sprung“ |
-| Abbauen / Setzen | Linksklick / Rechtsklick (gedrückt halten wiederholt) | Tasten „Abbauen“ / „Setzen“ |
-| Block wählen | 1–9, Mausrad | Hotbar antippen |
-| Inventar | E | 🎒 |
-| Fliegen (Kreativ) | F oder Leertaste doppelt | Taste „Fliegen“ |
-| Seilhaken | Q | Taste „Haken“ |
-| Gleiten | Sprungtaste im Fall halten | Sprungtaste im Fall halten |
-| Wegpunkt / Minikarte | B / M | 📍 / 🗺 |
-| Pause / Speichern | Esc | ⏸ |
-
-Modi: **Überleben** (abgebaute Blöcke landen im Inventar, Herstellen: Holz → Bretter, Sand → Glas, Glas + Holz → Leuchtblock) **Kreativ** (unbegrenzte Blöcke, Fliegen) und **Story** (15 feste Aufträge der Funkzentrale, feste Welt, Start ohne Material; Auftragsbuch mit J oder im Pausemenü; Belohnungen als Items).
-**Spezial-Blöcke** (Inventar → Spezial-Blöcke, im Überleben herstellbar): Federblock (hohe Sprünge), Turbo-Block (2,4-faches Tempo), Aufwind-Block (hebt bis 11 Blöcke hoch), Radio-Block (spielt einen erzeugten Beat, leiser mit Abstand), Regenbogen-Block (wandernde Farben), vier Neon-Blöcke (leuchten), Ziegel, Marmor.
-
-Die Welt wird alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite automatisch gespeichert. Nur geänderte Blöcke werden abgelegt.
+Nach Änderungen am Quelltext immer `npm test` und `npm run build` ausführen und den Ordner `anmacha-klotzfunk/` mit committen.
+Stand und Plan der Weiterentwicklung: [PROGRESS.md](PROGRESS.md). Tests: [TESTING.md](TESTING.md). Leistung: [PERFORMANCE.md](PERFORMANCE.md).
 
 ## Aufbau
-- `src/world.js` – Block-Typen, Terrain (Value-Noise), Bäume, Chunk-Speicher, Änderungen
-- `src/mesher.js` – Flächen-Culling, weiche Beleuchtung (Ambient Occlusion + Himmelslicht), je Chunk bis zu drei Meshes
-- `src/textures.js` – prozedurale Texturen (64 px, nahtlos), Logo-Atlas, Wolken
-- `src/physics.js` – Spieler-Kollision, Wasser, Raycast
-- `src/game.js` – Rendering, Streaming, Tag/Nacht, Bauen/Abbauen, Speicherstand
-- `src/main.js` – Menüs, HUD, Tastatur/Maus/Touch
+| Datei | Aufgabe |
+|---|---|
+| `src/blocks.js` | Blockregister: alle Blöcke mit Id, Name, Kategorie, Eigenschaften |
+| `src/consts.js`, `src/noise.js` | Weltmaße, deterministisches Value-Noise |
+| `src/world.js` | Chunk-Speicher, Änderungen, Generator 1 (Originalwelt), Startpunkt |
+| `src/worldgen.js` | Generator 2: Biome, Höhlen, Erze, Bäume |
+| `src/mesher.js` | Flächen-Culling, Ambient Occlusion, Himmelslicht, je Chunk bis zu drei Meshes |
+| `src/textures.js` | prozedurale Texturen (64 px, nahtlos), Logo-Atlas, Wolken |
+| `src/physics.js` | Spieler-Kollision (feste Teilschritte), Wasser, Raycast |
+| `src/game.js` | Rendering, Streaming mit Zeitbudget, Grafikstufen, Tag/Nacht, Bauen, Story-Logik |
+| `src/crafting.js` | Rezepte, Prüfen und Herstellen |
+| `src/storage.js` | Speichern, Format-Versionen, Sicherung, Export/Import |
+| `src/settings.js` | Einstellungen und Grafikstufen |
+| `src/quests.js` | Story-Aufträge |
+| `src/audio.js` | Geräusche und Radio-Beat (ein AudioContext, Lautstärke je Kategorie) |
+| `src/main.js` | Menüs, HUD, Inventar, Einstellungen, Tastatur/Maus/Touch |
+
+Multiplayer gibt es noch nicht; Planung in [PROGRESS.md](PROGRESS.md).

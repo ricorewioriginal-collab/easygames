@@ -1,6 +1,7 @@
 // Kleine Geräusche, im Browser erzeugt (kein Asset-Download).
 let ctx = null, buf = null;
-export const sfx = { enabled: true };
+// enabled = Ton an/aus, vol = Effekte, music = Radio-Musik (je 0..1). Es gibt genau einen AudioContext.
+export const sfx = { enabled: true, vol: 0.8, music: 0.8 };
 
 export function unlockAudio() {
   try {
@@ -10,7 +11,7 @@ export function unlockAudio() {
 }
 
 function burst(freq, dur, vol) {
-  if (!ctx || !sfx.enabled || ctx.state !== 'running') return;
+  if (!ctx || !sfx.enabled || ctx.state !== 'running' || sfx.vol <= 0) return;
   if (!buf) {
     buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.25), ctx.sampleRate);
     const d = buf.getChannelData(0);
@@ -18,7 +19,7 @@ function burst(freq, dur, vol) {
   }
   const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), t = ctx.currentTime;
   src.buffer = buf; f.type = 'lowpass'; f.frequency.value = freq;
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  g.gain.setValueAtTime(vol * sfx.vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
   src.connect(f); f.connect(g); g.connect(ctx.destination);
   src.start(t); src.stop(t + dur + 0.02);
 }
@@ -68,6 +69,7 @@ function scheduler() {
 }
 // vol 0..1 (Nähe zum Radio-Block), seed = Variante je Block; vol 0 stoppt die Musik
 export function setRadio(vol, seed) {
+  vol *= sfx.music;
   if (!ctx || !sfx.enabled || vol <= 0.01) {
     if (radio.on) { radio.on = false; clearInterval(radio.timer); if (radio.master) radio.master.gain.setTargetAtTime(0, ctx.currentTime, 0.1); }
     return;

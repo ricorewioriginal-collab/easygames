@@ -1,29 +1,33 @@
 // Oberfläche, Eingabe (Tastatur/Maus/Touch), Menüs, Speichern.
 import './style.css';
 import { Game } from './game.js';
-import { B, NAMES, LOGO0, LOGO_COUNT, SPECIAL0, SPECIAL_COUNT, H, isLogo } from './world.js';
-import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld } from './storage.js';
+import { B, NAMES, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
+import { BLOCKS, CATS, INV_BLOCKS } from './blocks.js';
+import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot } from './storage.js';
+import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK } from './crafting.js';
+import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
 import { unlockAudio, sfx } from './audio.js';
 import { QUESTS, questProgress } from './quests.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
 const coarse = window.matchMedia('(pointer: coarse)').matches;
-const game = new Game(canvas, coarse);
+let settings = loadSettings();
+const game = new Game(canvas, coarse, settings.quality);
 window.__bv = game; // Testzugriff
 
-let state = 'menu';       // menu | loading | playing | paused | inventory
+let state = 'menu';       // menu | loading | playing | paused | inventory | settings
+let setReturn = 'menu';   // wohin „Einstellungen schließen“ zurückführt
 let slot = -1;
 let touchMode = coarse;
 const keys = new Set();
 
 // ---------- Icons / Atlas ----------
 document.documentElement.style.setProperty('--atlas', `url(${game.atlasCanvas.toDataURL()})`);
-const ICON_TILE = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 7, 7: 8, 8: 9, 9: 10, 27: 12, 28: 14, 29: 16, 30: 18, 31: 20, 32: 21, 33: 22, 34: 23, 35: 24, 36: 25, 37: 26 };
 const icon = t => {
   if (isLogo(t)) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
   if (t === B.RAINBOW) return '<i class="ic rb"></i>';
-  const k = ICON_TILE[t] ?? 0;
+  const k = BLOCKS[t] ? BLOCKS[t].icon : 0;
   return `<i class="ic" style="background-position:${(k % 8) * 100 / 7}% ${Math.floor(k / 8) * 100 / 7}%"></i>`;
 };
 // Logo-Atlas als Bild für Hotbar/Inventar, sobald alle Logos geladen sind
@@ -57,75 +61,58 @@ function renderHotbar() {
   }
 }
 
-const RECIPES = [
-  { give: [B.PLANKS, 4], need: [[B.WOOD, 1]] },
-  { give: [B.GLASS, 1], need: [[B.SAND, 2]] },
-  { give: [B.LAMP, 2], need: [[B.GLASS, 2], [B.WOOD, 1]] },
-  { give: [B.FEDER, 2], need: [[B.LEAVES, 4], [B.PLANKS, 1]] },
-  { give: [B.TURBO, 2], need: [[B.STONE, 2], [B.LAMP, 1]] },
-  { give: [B.WIND, 2], need: [[B.GLASS, 2], [B.LEAVES, 2]] },
-  { give: [B.RADIO, 1], need: [[B.PLANKS, 4], [B.LAMP, 1]] },
-  { give: [B.RAINBOW, 2], need: [[B.GLASS, 2], [B.LAMP, 1]] },
-  { give: [B.NEON_R, 3], need: [[B.LAMP, 1], [B.SAND, 1]] },
-  { give: [B.NEON_B, 3], need: [[B.LAMP, 1], [B.GLASS, 1]] },
-  { give: [B.NEON_G, 3], need: [[B.LAMP, 1], [B.LEAVES, 1]] },
-  { give: [B.NEON_P, 3], need: [[B.LAMP, 1], [B.DIRT, 1]] },
-  { give: [B.BRICK, 4], need: [[B.DIRT, 2], [B.SAND, 1]] },
-  { give: [B.MARBLE, 2], need: [[B.STONE, 2], [B.SAND, 1]] }
-];
-function renderInventory() {
-  const creative = game.mode === 'creative';
-  $('invHint').textContent = creative ? 'Kreativmodus: alle Blöcke sind unbegrenzt. Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.'
-    : 'Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.';
-  let h = '';
-  for (let t = 1; t <= 9; t++) {
-    const n = creative ? '∞' : (game.inv[t] || 0);
-    h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b></button>`;
-  }
-  $('invGrid').innerHTML = h;
-  let lg = '';
-  for (let i = 0; i < LOGO_COUNT; i++) {
-    const t = LOGO0 + i, n = creative ? '∞' : (game.inv[t] || 0);
-    lg += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b>${creative ? '' : `<i class="plus" data-craft="${t}" title="1 Bretter → 2 Logo-Blöcke">＋</i>`}</button>`;
-  }
-  $('logoGrid').innerHTML = lg;
-  let sp = '';
-  for (let i = 0; i < SPECIAL_COUNT; i++) {
-    const t = SPECIAL0 + i, n = creative ? '∞' : (game.inv[t] || 0);
-    sp += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}">${icon(t)}<span>${NAMES[t]}</span><b>${n}</b></button>`;
-  }
-  $('specialGrid').innerHTML = sp;
-  $('recipes').innerHTML = creative ? '<small>Herstellen ist im Kreativmodus nicht nötig.</small>' : RECIPES.map((r, i) => {
-    const ok = r.need.every(([t, n]) => (game.inv[t] || 0) >= n);
-    const need = r.need.map(([t, n]) => `${n}× ${NAMES[t]}`).join(' + ');
-    return `<button data-r="${i}" ${ok ? '' : 'disabled'}>${icon(r.give[0])}<span><b>${r.give[1]}× ${NAMES[r.give[0]]}</b> aus ${need}</span></button>`;
-  }).join('');
+// ---------- Inventar: Kategorien, Suche, Rezepte ----------
+let invCat = 'all', invQuery = '', invOwned = false;
+function renderInvTabs() {
+  $('invTabs').innerHTML = [{ id: 'all', name: 'Alle' }, ...CATS].map(c => `<button role="tab" data-cat="${c.id}" class="${c.id === invCat ? 'on' : ''}" aria-selected="${c.id === invCat}">${c.name}</button>`).join('');
 }
-function onInvClick(e) {
-  const pl = e.target.closest('[data-craft]');
-  if (pl) {
-    if ((game.inv[B.PLANKS] || 0) < 1) { toast('Dafür brauchst du 1 Bretter'); return; }
-    const t = Number(pl.dataset.craft);
-    game.inv[B.PLANKS]--; game.inv[t] = Math.min(999, (game.inv[t] || 0) + 2);
-    game.unsaved = true; game.onChange(); return;
+function renderInventory() {
+  const creative = game.mode === 'creative', q = invQuery.trim().toLowerCase();
+  $('invHint').textContent = creative ? 'Kreativmodus: alle Blöcke sind unbegrenzt. Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.'
+    : 'Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen. Zahl = Vorrat.';
+  $('invOwnedL').hidden = creative;
+  let h = '';
+  for (const t of INV_BLOCKS) {
+    const b = BLOCKS[t], n = creative ? '∞' : (game.inv[t] || 0);
+    if (invCat !== 'all' && b.cat !== invCat) continue;
+    if (q && !b.name.toLowerCase().includes(q)) continue;
+    if (invOwned && !creative && !n) continue;
+    h += `<button class="cell ${n ? 'has' : 'dim'}" data-t="${t}" title="${b.name}${b.tool ? ' · am besten mit ' + b.tool[0].toUpperCase() + b.tool.slice(1) : ''}">${icon(t)}<span>${b.name}</span><b>${n}</b></button>`;
   }
+  $('invGrid').innerHTML = h || '<div class="empty-note">Nichts gefunden.</div>';
+  $('recH').hidden = creative;
+  if (creative) { $('recipes').innerHTML = ''; return; }
+  const list = RECIPES.map((r, i) => [r, i]).filter(([r]) => (invCat === 'all' || r.cat === invCat) && recipeMatches(r, q));
+  $('recipes').innerHTML = list.length ? list.map(([r, i]) => {
+    const c = checkRecipe(game.inv, r), k = craftable(game.inv, r);
+    const need = r.need.map(([t, n]) => { const have = game.inv[t] || 0; return have >= n ? `${n}× ${NAMES[t]}` : `<i>${n}× ${NAMES[t]} (${have})</i>`; }).join(' + ');
+    const why = c.full ? ' · Vorrat voll' : '';
+    return `<button data-r="${i}" ${c.ok ? '' : 'disabled'}>${icon(r.give[0])}<span><b>${r.give[1]}× ${NAMES[r.give[0]]}</b><small>aus ${need}${why}</small></span><span class="cnt">${k ? k + '×' : ''}</span></button>`;
+  }).join('') : '<div class="empty-note">Kein passendes Rezept.</div>';
+}
+$('invTabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-cat]'); if (!b) return;
+  invCat = b.dataset.cat; renderInvTabs(); renderInventory();
+});
+$('invSearch').addEventListener('input', e => { invQuery = e.target.value; renderInventory(); });
+$('invOwned').addEventListener('change', e => { invOwned = e.target.checked; renderInventory(); });
+$('invGrid').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if (!b) return;
   const t = Number(b.dataset.t), i = game.hotbar.indexOf(t);
   if (i >= 0) game.hotbar[i] = game.hotbar[game.sel];
   game.hotbar[game.sel] = t;
+  game.unsaved = true;
   game.onChange();
-}
-$('invGrid').addEventListener('click', onInvClick);
-$('logoGrid').addEventListener('click', onInvClick);
-$('specialGrid').addEventListener('click', onInvClick);
+});
 $('recipes').addEventListener('click', e => {
   const b = e.target.closest('[data-r]'); if (!b) return;
   const r = RECIPES[Number(b.dataset.r)];
-  if (!r.need.every(([t, n]) => (game.inv[t] || 0) >= n)) return;
-  for (const [t, n] of r.need) game.inv[t] -= n;
-  game.inv[r.give[0]] = Math.min(999, (game.inv[r.give[0]] || 0) + r.give[1]);
+  let made = 0, res = null;
+  for (let k = e.shiftKey ? 5 : 1; k > 0; k--) { res = craft(game.inv, r, MAX_STACK); if (!res.ok) break; made++; }
+  if (!made) { toast(res.msg); return; }
   game.unsaved = true; game.onChange();
-  game.questEvent('craft', r.give[0], r.give[1]);
+  game.questEvent('craft', r.give[0], r.give[1] * made);
+  toast(`+${r.give[1] * made} ${NAMES[r.give[0]]}`);
 });
 game.onChange = () => { renderHotbar(); if (state === 'inventory') renderInventory(); };
 
@@ -164,8 +151,8 @@ const show = (id, on) => { $(id).hidden = !on; };
 function setState(s) {
   state = s;
   document.body.classList.toggle('playing', s === 'playing');
-  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading');
-  show('hud', s === 'playing' || s === 'paused' || s === 'inventory');
+  show('menu', s === 'menu'); show('pause', s === 'paused'); show('inv', s === 'inventory'); show('loading', s === 'loading'); show('set', s === 'settings');
+  show('hud', s === 'playing' || s === 'paused' || s === 'inventory' || (s === 'settings' && setReturn === 'paused'));
   if (s !== 'paused') show('qlog', false);
 }
 const locked = () => document.pointerLockElement === canvas;
@@ -192,7 +179,7 @@ function resume() {
 }
 function openInventory() {
   if (state !== 'playing') return;
-  releaseInput(); setState('inventory'); renderInventory();
+  releaseInput(); setState('inventory'); renderInvTabs(); renderInventory();
   if (locked()) document.exitPointerLock();
   game.stop(); // statisches Bild – spart Akku
 }
@@ -207,7 +194,7 @@ document.addEventListener('pointerlockerror', () => { if (state === 'playing' &&
 
 // ---------- Speichern ----------
 function saveNow(announce) {
-  if (!game.world || slot < 0) return;
+  if (!game.world || slot < 0 || game.menuMode) return;
   const ok = writeWorld(slot, game.serialize());
   if (ok) game.unsaved = false;
   if (announce || !ok) toast(ok ? 'Gespeichert ✔' : 'Speichern fehlgeschlagen (Speicher voll?)');
@@ -235,8 +222,8 @@ function renderSlots() {
       const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative', st = meta.mode === 'story';
       const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : 'Auftrag ' + ((meta.q ?? 0) + 1) + '/' + QUESTS.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
       h += `<div class="card"><div class="top"><div class="ico">${st ? '📜' : cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b>${pill}</div></div>
-        <small>${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)} · zuletzt ${d}</small>
-        <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
+        <small>${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)}${(meta.gen || 1) < GEN_LATEST ? ' · klassische Welt' : ''} · zuletzt ${d}</small>
+        <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="exp" data-i="${i}" aria-label="Welt exportieren" title="Welt als Datei sichern">⤓</button>${hasBackup(i) ? `<button data-act="bak" data-i="${i}" aria-label="Sicherung laden" title="Ältere Sicherung wiederherstellen">↺</button>` : ''}<button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
     } else {
       h += `<div class="card new"><div class="top"><div class="ico">✨</div><div class="ttl"><b>Neue Welt ${i + 1}</b><span class="pill">frei</span></div></div>
         <div class="seed"><input id="seed${i}" placeholder="Startwert (leer = Zufall)" maxlength="24" autocomplete="off"><button data-act="dice" data-i="${i}" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div>
@@ -261,13 +248,51 @@ $('slots').addEventListener('click', e => {
   } else if (b.dataset.act === 'del') {
     if (confirm('Diese Welt wirklich löschen?')) { deleteWorld(i); renderSlots(); }
   } else if (b.dataset.act === 'load') {
-    const s = readWorld(i);
-    if (!s) { toast('Speicherstand nicht lesbar'); renderSlots(); return; }
+    let s = readWorld(i);
+    if (!s) {
+      const bk = readBackup(i);
+      if (bk && confirm('Dieser Speicherstand ist beschädigt. Die letzte Sicherung laden?')) { restoreBackup(i); s = bk; }
+      else { toast('Speicherstand nicht lesbar'); renderSlots(); return; }
+    }
     launch(i, s);
+  } else if (b.dataset.act === 'exp') {
+    const s = readWorld(i);
+    if (!s) { toast('Speicherstand nicht lesbar'); return; }
+    downloadText(`klotzfunk-${s.name.replace(/[^\w-]+/g, '_')}.json`, exportText(s));
+  } else if (b.dataset.act === 'bak') {
+    const bk = readBackup(i);
+    if (!bk) { toast('Keine lesbare Sicherung'); renderSlots(); return; }
+    const when = new Date(bk.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
+    if (confirm(`Sicherung vom ${when} wiederherstellen? Der aktuelle Stand wird dafür zur Sicherung.`)) { toast(restoreBackup(i) ? 'Sicherung wiederhergestellt' : 'Wiederherstellen fehlgeschlagen'); renderSlots(); }
   } else {
     const mode = $('mode' + i).querySelector('.on').dataset.mode;
-    launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode });
+    launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode,
+      // Story bleibt vorerst auf der erprobten Originalwelt (alle 15 Aufträge dort lösbar); neue Story-Kapitel folgen mit Generator 2
+      gen: mode === 'story' ? 1 : GEN_LATEST });
   }
+});
+
+function downloadText(name, text) {
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' })), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  } catch (e) { toast('Export nicht möglich'); }
+}
+$('mImport').onclick = () => {
+  if (freeSlot() < 0) { toast('Kein freier Platz – lösche zuerst eine Welt'); return; }
+  $('importFile').value = ''; $('importFile').click();
+};
+$('importFile').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  if (f.size > 8 * 1024 * 1024) { toast('Datei zu groß'); return; }
+  f.text().then(text => {
+    const s = importText(text), i = freeSlot();
+    if (!s) { toast('Keine gültige KLOTZFUNK-Welt'); return; }
+    if (i < 0) { toast('Kein freier Platz'); return; }
+    toast(writeWorld(i, s) ? `„${s.name}“ importiert (Platz ${i + 1})` : 'Import fehlgeschlagen (Speicher voll?)');
+    renderSlots();
+  }).catch(() => toast('Datei nicht lesbar'));
 });
 
 function launch(i, save) {
@@ -295,7 +320,7 @@ $('pRespawn').onclick = () => { game.respawn(); resume(); };
 $('pSound').onclick = () => { sfx.enabled = !sfx.enabled; $('pSound').textContent = sfx.enabled ? '🔊 Ton: an' : '🔇 Ton: aus'; };
 $('pFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()); } catch (e) { /* ignorieren */ } };
 $('pMenu').onclick = () => { saveNow(false); slot = -1; renderSlots(); setState('menu'); game.startMenu(); renderQuest(); };
-$('vd').oninput = e => { game.setViewDist(Number(e.target.value)); $('vdVal').textContent = e.target.value; };
+$('vd').oninput = e => { const v = Number(e.target.value); game.maxView = v; game.setViewDist(v); $('vdVal').textContent = v; };
 $('invClose').onclick = closeInventory;
 $('bInv').onclick = openInventory;
 $('bWp').onclick = () => game.toggleWaypoint();
@@ -324,7 +349,11 @@ function toggleFly() {
   $('bDown').hidden = !(touchMode && p.flying); $('bFly').classList.toggle('on', p.flying);
 }
 window.addEventListener('keydown', e => {
-  if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) {
+    if (e.code === 'Escape') { e.target.blur(); if (state === 'inventory') closeInventory(); else if (state === 'settings') closeSettings(); }
+    return;
+  }
+  if (state === 'settings') { if (e.code === 'Escape') closeSettings(); return; }
   if (state === 'inventory') { if (e.code === 'KeyE' || e.code === 'Escape') { e.preventDefault(); closeInventory(); } return; }
   if (state !== 'playing') return;
   if (e.code === 'Space' || e.code === 'Tab' || e.code.startsWith('Arrow')) e.preventDefault();
@@ -343,12 +372,12 @@ window.addEventListener('keyup', e => { keys.delete(e.code); if (state === 'play
 window.addEventListener('blur', () => { keys.clear(); syncKeys(); });
 
 // ---------- Maus ----------
-const SENS = 0.0022;
+const SENS = 0.0022, TOUCH_SENS = 0.0058;
 function look(dx, dy, s) {
   game.yaw -= dx * s;
-  game.pitch = Math.max(-1.55, Math.min(1.55, game.pitch - dy * s));
+  game.pitch = Math.max(-1.55, Math.min(1.55, game.pitch - dy * s * (settings.invertY ? -1 : 1)));
 }
-window.addEventListener('mousemove', e => { if (state === 'playing' && locked()) look(e.movementX, e.movementY, SENS); });
+window.addEventListener('mousemove', e => { if (state === 'playing' && locked()) look(e.movementX, e.movementY, SENS * settings.mouseSens); });
 canvas.addEventListener('mousedown', e => {
   if (state !== 'playing' || touchMode && e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
   unlockAudio();
@@ -389,7 +418,7 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
     let dx = e.clientX - jp.x, dy = e.clientY - jp.y;
     const len = Math.hypot(dx, dy), k = len > R ? R / len : 1;
     thumb.style.transform = `translate(${dx * k}px,${dy * k}px)`;
-    const m = Math.min(1, len / R), dead = m < 0.14 ? 0 : (m - 0.14) / 0.86;
+    const m = Math.min(1, len * settings.joySens / R), dead = m < 0.14 ? 0 : (m - 0.14) / 0.86;
     const nx = len ? dx / len : 0, ny = len ? dy / len : 0;
     game.input.r = nx * dead; game.input.f = -ny * dead; game.input.sprint = len > R * 1.35;
   });
@@ -403,7 +432,7 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
   zr.addEventListener('pointerdown', e => { if (lp) return; lp = { id: e.pointerId, x: e.clientX, y: e.clientY }; zr.setPointerCapture(e.pointerId); });
   zr.addEventListener('pointermove', e => {
     if (!lp || e.pointerId !== lp.id) return;
-    look(e.clientX - lp.x, e.clientY - lp.y, 0.0058); lp.x = e.clientX; lp.y = e.clientY;
+    look(e.clientX - lp.x, e.clientY - lp.y, TOUCH_SENS * settings.touchSens); lp.x = e.clientX; lp.y = e.clientY;
   });
   const endLook = e => { if (lp && e.pointerId === lp.id) lp = null; };
   zr.addEventListener('pointerup', endLook); zr.addEventListener('pointercancel', endLook);
@@ -425,8 +454,6 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
 // ---------- Fenster ----------
 window.addEventListener('resize', () => game.resize());
 // ---------- Minikarte (Blick von oben, Norden oben) ----------
-const MAP_COLOR = { 1: [88, 160, 60], 2: [134, 96, 63], 3: [124, 124, 128], 4: [219, 203, 142], 5: [104, 80, 46], 6: [46, 120, 44], 7: [172, 134, 82], 8: [200, 230, 240], 9: [255, 214, 120], 10: [44, 100, 200],
-  27: [255, 100, 160], 28: [255, 214, 40], 29: [80, 200, 235], 30: [60, 64, 76], 31: [220, 100, 255], 32: [255, 40, 70], 33: [40, 140, 255], 34: [50, 255, 120], 35: [190, 70, 255], 36: [154, 74, 56], 37: [232, 232, 240] };
 let mapOn = true;
 function toggleMap() { mapOn = !mapOn; $('mm').classList.toggle('off', !mapOn); }
 const mmCtx = $('mm').getContext('2d'), mmImg = mmCtx.createImageData(56, 56);
@@ -439,7 +466,7 @@ function drawMap() {
       const idx = (wx & 15) + (wz & 15) * 16;
       let y = Math.min(H - 1, c.maxY);
       while (y > 0 && c.data[idx + y * 256] === 0) y--;
-      const t = c.data[idx + y * 256], col = MAP_COLOR[t] || [200, 200, 210], k = t === 10 ? 1 : Math.max(0.55, Math.min(1.25, 1 + (y - py) * 0.025));
+      const t = c.data[idx + y * 256], col = BLOCKS[t] ? BLOCKS[t].map : [200, 200, 210], k = t === B.WATER ? 1 : Math.max(0.55, Math.min(1.25, 1 + (y - py) * 0.025));
       r = col[0] * k; g = col[1] * k; b = col[2] * k;
     }
     d[o] = r; d[o + 1] = g; d[o + 2] = b; d[o + 3] = 255;
@@ -463,12 +490,52 @@ setInterval(() => {
   if (p.flying) extra += ' · fliegt'; if (p.gliding) extra += ' · gleitet'; if (game.hookT > 0) extra += ' · Haken';
   if (game.wp) extra += ` · 📍 ${Math.round(Math.hypot(game.wp.x - p.x, game.wp.z - p.z))} m`;
   if (game.radioDist < 24) extra += ' · ♪';
+  const bio = game.biomeName();
+  if (bio) extra += ' · ' + bio;
+  if (settings.showFps) extra += ` · ${game.fps} FPS`;
   $('info').textContent = `${game.clockText()} ${game.time < 0.5 ? '☀' : '☾'} · X ${p.x.toFixed(0)} Y ${p.y.toFixed(0)} Z ${p.z.toFixed(0)}${extra}`;
   $('uw').classList.toggle('on', !!game.underwater);
   if (mapOn && (mapTick++ & 1) === 0) drawMap();
   if (game.story) renderQuest();
 }, 250);
 
+// ---------- Einstellungen ----------
+function applySettings() {
+  const auto = settings.quality === 'auto';
+  game.setQuality(auto ? autoBase(coarse) : settings.quality, auto);
+  game.placeDelay = settings.placeDelay;
+  sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
+  document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
+  document.body.classList.toggle('lefty', settings.lefty);
+}
+const SET_RANGES = [['sMouse', 'mouseSens', v => v.toFixed(1) + '×'], ['sTouch', 'touchSens', v => v.toFixed(1) + '×'], ['sJoy', 'joySens', v => v.toFixed(1) + '×'],
+  ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %']];
+const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps']];
+function renderSettings() {
+  $('sQuality').value = settings.quality;
+  for (const [id, k, f] of SET_RANGES) { $(id).value = settings[k]; $(id + 'V').textContent = f(settings[k]); }
+  for (const [id, k] of SET_CHECKS) $(id).checked = settings[k];
+}
+function changed(quality) {
+  saveSettings(settings);
+  if (quality) applySettings();
+  else { // ohne Grafikwechsel: Sichtweite/Auflösung nicht zurücksetzen
+    game.placeDelay = settings.placeDelay; sfx.vol = settings.sfxVol; sfx.music = settings.musicVol;
+    document.documentElement.style.setProperty('--tbs', String(settings.btnScale));
+    document.body.classList.toggle('lefty', settings.lefty);
+  }
+}
+$('sQuality').onchange = e => { settings.quality = e.target.value; changed(true); };
+for (const [id, k, f] of SET_RANGES) $(id).oninput = e => { settings[k] = Number(e.target.value); $(id + 'V').textContent = f(settings[k]); changed(false); };
+for (const [id, k] of SET_CHECKS) $(id).onchange = e => { settings[k] = e.target.checked; changed(false); };
+$('sReset').onclick = () => { settings = { ...DEFAULTS }; changed(true); renderSettings(); toast('Standard wiederhergestellt'); };
+function openSettings() { setReturn = state; renderSettings(); setState('settings'); }
+function closeSettings() { if (state !== 'settings') return; setState(setReturn); if (setReturn === 'paused') { $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist; } }
+$('pSettings').onclick = openSettings;
+$('mSettings').onclick = openSettings;
+$('setClose').onclick = closeSettings;
+
+applySettings();
 renderSlots();
 setState('menu');
 game.startMenu();

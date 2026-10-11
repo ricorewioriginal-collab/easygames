@@ -1,6 +1,11 @@
 // Spielkern: Rendering, Chunk-Streaming, Physik-Schleife, Bauen/Abbauen, Tag-Nacht, Speicherstand.
 import * as THREE from 'three';
 import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo } from './world.js';
+import { BLOCKS } from './blocks.js';
+import { BIOME_NAMES } from './worldgen.js';
+import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
+import { QUALITY } from './settings.js';
+import { MAX_STACK } from './crafting.js';
 import { buildMesh, cubeData } from './mesher.js';
 import { drawAtlas, createLogoAtlas, cloudCanvas } from './textures.js';
 import { Player, raycast, EYE } from './physics.js';
@@ -9,7 +14,6 @@ import { QUESTS, questProgress } from './quests.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
-const MAX_STACK = 999;
 
 // Block-Shader: Beleuchtung pro Vertex aus Flächenrichtung, Sonne/Mond, Himmelslicht und Ambient Occlusion
 const VERT = `
@@ -58,20 +62,18 @@ const CLOUD_FRAG = `
 uniform sampler2D uTex; uniform vec3 uCol; varying vec2 vUv; varying float vD;
 void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; gl_FragColor = vec4(uCol, a); }`;
 
-// mittlere Blockfarben für Bruchstücke
-const BLOCK_COLOR = { 1: 0x58a03c, 2: 0x86603f, 3: 0x7c7c80, 4: 0xdbcb8e, 5: 0x68502e, 6: 0x3a8030, 7: 0xac8652, 8: 0xcfe8f0, 9: 0xffd87a,
-  27: 0xff6aa0, 28: 0xffd628, 29: 0x50c8ee, 30: 0x3a3e4a, 31: 0xdd66ff, 32: 0xff2846, 33: 0x288cff, 34: 0x32ff78, 35: 0xbe46ff, 36: 0x9a4a38, 37: 0xe6e6ee };
-
 const lerp = (a, b, t) => a + (b - a) * t;
 const mix3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 export class Game {
-  constructor(canvas, coarse) {
+  constructor(canvas, coarse, quality = 'auto') {
     this.coarse = coarse;
     const dpr = window.devicePixelRatio || 1;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !(coarse && dpr >= 2.5), powerPreference: 'high-performance' });
-    this.maxDpr = coarse ? 1.75 : 2;
+    // Kantenglättung kostet auf schwachen Geräten viel – bei Eco und sehr dichten Handydisplays aus
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: quality !== 'eco' && !(coarse && dpr >= 2.5), powerPreference: 'high-performance' });
+    this.maxDpr = coarse ? 1.75 : 2; this.dprScale = 1; this.budget = coarse ? 4 : 6; this.maxView = coarse ? 4 : 7;
+    this.autoQ = false; this.cloudsOn = true; this.perf = { acc: 0, n: 0, good: 0 }; this.fps = 0; this.placeDelay = true;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(coarse ? 70 : 75, 1, 0.08, 1500);
     this.camera.rotation.order = 'YXZ';
@@ -141,6 +143,7 @@ export class Game {
       vertexShader: CLOUD_VERT, fragmentShader: CLOUD_FRAG, uniforms: this.cloudU, transparent: true, depthWrite: false, side: THREE.DoubleSide
     }));
     this.clouds.rotation.x = -Math.PI / 2; this.clouds.frustumCulled = false;
+    this.chunkSphereR = Math.hypot(CS / 2, H / 2, CS / 2) + 1;
     this.scene.add(this.clouds);
 
     // Zielmarkierung
@@ -182,6 +185,36 @@ export class Game {
   }
 
   // ---------- Einstellungen ----------
+  // Grafikstufe (siehe settings.js); auto = Stufe als Obergrenze, Pixeldichte und Sichtweite passen sich der Bildrate an
+  setQuality(name, auto) {
+    const q = QUALITY[name] || QUALITY.standard;
+    this.qName = name; this.autoQ = !!auto;
+    this.maxDpr = q.dpr; this.dprScale = 1; this.budget = q.budget; this.cloudsOn = q.clouds; this.maxView = q.view;
+    this.perf.acc = this.perf.n = this.perf.good = 0;
+    if (this.menuMode) this.savedView = q.view; else this.setViewDist(q.view);
+    this.resize();
+  }
+
+  // Bildrate messen (alle 2 s) und bei „Automatisch“ nachregeln
+  measure(ms) {
+    const pf = this.perf;
+    if (ms > 250) return; // Pausen/Tab-Wechsel nicht mitzählen
+    pf.acc += ms; pf.n++;
+    if (pf.acc < 2000) return;
+    const avg = pf.acc / pf.n; pf.acc = pf.n = 0;
+    this.fps = Math.round(1000 / avg);
+    if (!this.autoQ || this.menuMode) return;
+    if (avg > 26) { // unter ~38 Bilder/s: erst Auflösung, dann Sichtweite senken
+      pf.good = 0;
+      if (this.dprScale > 0.6) { this.dprScale = Math.max(0.6, this.dprScale - 0.15); this.resize(); }
+      else if (this.viewDist > 3) this.setViewDist(this.viewDist - 1);
+    } else if (avg < 18 && ++pf.good >= 3) { // stabil über ~55 Bilder/s: langsam wieder hoch
+      pf.good = 0;
+      if (this.dprScale < 1) { this.dprScale = Math.min(1, this.dprScale + 0.1); this.resize(); }
+      else if (this.viewDist < this.maxView) this.setViewDist(this.viewDist + 1);
+    }
+  }
+
   setViewDist(r) {
     this.viewDist = r;
     const dataR = r + 2, list = [];
@@ -196,7 +229,7 @@ export class Game {
 
   resize() {
     const w = window.innerWidth, h = window.innerHeight;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.maxDpr));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.maxDpr) * this.dprScale);
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
@@ -208,13 +241,9 @@ export class Game {
     this.stop();
     this.clearWorld();
     this.leaveMenu();
-    const edits = new Map();
-    if (save.edits) for (const k of Object.keys(save.edits)) {
-      const arr = save.edits[k], m = new Map();
-      for (let i = 0; i + 1 < arr.length; i += 2) m.set(arr[i], arr[i + 1]);
-      edits.set(Number(k), m);
-    }
-    this.world = new World(save.seed, edits);
+    // Generator: alte Spielstände (ohne Angabe) behalten exakt ihre Originalwelt
+    this.gen = save.gen === 2 ? 2 : 1;
+    this.world = new World(save.seed, decodeEdits(save.edits), this.gen);
     this.name = save.name; this.seed = save.seed; this.mode = save.mode;
     this.time = save.time ?? 0.08;
     this.hotbar = (save.hotbar && save.hotbar.length === 9) ? save.hotbar.slice() : [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -250,7 +279,7 @@ export class Game {
     this.menuMode = true;
     this.savedView = this.savedView ?? this.viewDist;
     this.setViewDist(Math.min(this.viewDist, 4));
-    this.world = new World(20241, new Map());
+    this.world = new World(20241, new Map(), 1); // Menü-Kulisse: offene Originalwelt (freie Sicht auf die Bühne)
     this.mode = 'creative'; this.time = 0.06; this.menuT = 0; this.hotbar = new Array(9).fill(0); this.sel = 0; this.inv = {};
     const sp = this.world.findSpawn(), p = this.player, w = this.world;
     p.x = sp.x; p.z = sp.z; p.y = sp.y; p.flying = false; p.vx = p.vy = p.vz = 0; p.hook = false;
@@ -310,11 +339,9 @@ export class Game {
   }
 
   serialize() {
-    const edits = {};
-    for (const [k, m] of this.world.edits) { const a = []; for (const [i, t] of m) a.push(i, t); edits[k] = a; }
-    const p = this.player;
+    const p = this.player, edits = encodeEdits(this.world.edits);
     return {
-      v: 1, name: this.name, seed: this.seed, mode: this.mode, time: this.time, savedAt: Date.now(),
+      v: SAVE_VERSION, gen: this.gen, name: this.name, seed: this.seed, mode: this.mode, time: this.time, savedAt: Date.now(),
       px: p.x, py: p.y, pz: p.z, yaw: this.yaw, pitch: this.pitch, hotbar: this.hotbar, sel: this.sel, inv: this.inv, wp: this.wp, story: this.story, edits
     };
   }
@@ -341,6 +368,7 @@ export class Game {
     if (!this.running) return;
     this.raf = requestAnimationFrame(t => this.frame(t));
     if (this.menuMode && now - this.last < 32) return; // Menü-Kulisse: ca. 30 Bilder/s genügen
+    this.measure(now - this.last);
     const dt = Math.min(0.05, (now - this.last) / 1000);
     this.last = now;
     if (this.menuMode) this.menuStep(dt); else this.step(dt);
@@ -363,9 +391,14 @@ export class Game {
     if (this.target) { this.hl.position.set(this.target.x + 0.5, this.target.y + 0.5, this.target.z + 0.5); this.hl.visible = true; }
     else this.hl.visible = false;
     this.actCool -= dt;
+    if (this.placeHeld && !this.prevPlace) this.placeFirst = true; // neuer Tastendruck
+    this.prevPlace = this.placeHeld;
     if (this.actCool <= 0) {
       if (this.breakHeld && this.breakBlock()) this.actCool = 0.22;
-      else if (this.placeHeld && this.placeBlock()) this.actCool = 0.25;
+      else if (this.placeHeld && this.placeBlock()) {
+        // erst nach kurzem Halten wiederholen: verhindert versehentliche Doppel-Blöcke (vor allem am Handy)
+        this.actCool = this.placeFirst && this.placeDelay ? 0.45 : 0.25; this.placeFirst = false;
+      }
     }
     this.flushDirty();
     this.updateSky();
@@ -484,7 +517,7 @@ export class Game {
   }
 
   spawnBreak(x, y, z, type) {
-    const color = BLOCK_COLOR[type] ?? 0xdddddd;
+    const color = BLOCKS[type] ? BLOCKS[type].color : 0xdddddd;
     for (let i = 0; i < 10; i++) {
       this.partIdx = ((this.partIdx || 0) + 1) % 24;
       let m = this.parts[this.partIdx];
@@ -563,17 +596,19 @@ export class Game {
       }
     }
     if (!this.scanDirty) return;
-    let gen = this.coarse ? 2 : 3, mesh = this.coarse ? 1 : 2, worked = false;
-    const R = this.viewDist + 0.5;
-    for (const [dx, dz, d] of this.offsets) {
-      let c = this.world.getChunk(pcx + dx, pcz + dz);
-      if (!c) {
-        if (gen <= 0) { worked = true; continue; }
-        c = this.world.ensure(pcx + dx, pcz + dz); gen--; worked = true;
-      }
-      if (d <= R && !c.meshed) {
-        if (mesh <= 0) { worked = true; continue; }
-        if (this.applyMesh(c)) { mesh--; worked = true; }
+    // Zeitbudget je Bild statt fester Anzahl: nahe Chunks und Chunks in Blickrichtung zuerst
+    const t0 = performance.now(), R = this.viewDist + 0.5, fx = -Math.sin(this.yaw), fz = -Math.cos(this.yaw);
+    let worked = false, ops = 0;
+    outer: for (let pass = 0; pass < 2; pass++) {
+      for (const [dx, dz, d] of this.offsets) {
+        const front = d < 2.5 || dx * fx + dz * fz > -0.3 * d;
+        if ((pass === 0) !== front) continue;
+        let c = this.world.getChunk(pcx + dx, pcz + dz);
+        const needMesh = d <= R && (!c || !c.meshed);
+        if (c && !needMesh) continue;
+        if (ops > 0 && performance.now() - t0 > this.budget) { worked = true; break outer; }
+        if (!c) { c = this.world.ensure(pcx + dx, pcz + dz); ops++; worked = true; }
+        if (needMesh && this.applyMesh(c)) { ops++; worked = true; }
       }
     }
     if (!worked) this.scanDirty = false;
@@ -610,7 +645,7 @@ export class Game {
     g.setAttribute('uv', new THREE.BufferAttribute(d.uv, 2));
     g.setAttribute('aCol', new THREE.BufferAttribute(d.col, 4));
     g.setIndex(new THREE.BufferAttribute(d.idx, 1));
-    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(8, H / 2, 8), 36);
+    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(CS / 2, H / 2, CS / 2), this.chunkSphereR);
     if (m) { m.geometry.dispose(); m.geometry = g; return; }
     m = new THREE.Mesh(g, mat);
     m.position.set(c.cx * CS, 0, c.cz * CS);
@@ -667,12 +702,17 @@ export class Game {
     this.starMat.opacity = Math.max(0, Math.min(1, (0.12 - s) * 3)) * (under ? 0 : 1);
     this.stars.rotation.z = a;
     this.clouds.position.set(c.x, 105, c.z);
-    this.clouds.visible = !under;
+    this.clouds.visible = !under && this.cloudsOn;
     const cl = mix3([0.2, 0.23, 0.36], [1, 1, 1], day);
     this.cloudU.uCol.value.set(cl[0] + dw * 0.0, cl[1] - dw * 0.18, cl[2] - dw * 0.3);
   }
 
   render() { this.renderer.render(this.scene, this.camera); }
+
+  biomeName() {
+    const b = this.world ? this.world.biomeAt(this.player.x, this.player.z) : -1;
+    return b >= 0 ? BIOME_NAMES[b] : '';
+  }
 
   // Uhrzeit als Text (Tag beginnt 06:00 bei time = 0)
   clockText() {

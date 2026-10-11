@@ -7,8 +7,8 @@
 <meta name="description" content="KLOTZFUNK 3D – Voxel-Sandbox im Browser: bauen, abbauen, entdecken. Für PC und Smartphone.">
 <title>KLOTZFUNK 3D</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%234c9a3a%27/%3E%3Crect y=%275%27 width=%2716%27 height=%2711%27 fill=%27%23865f43%27/%3E%3C/svg%3E">
-  <script type="module" crossorigin src="./assets/index-CaUCjFIn.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-C6Rev5ri.css">
+  <script type="module" crossorigin src="./assets/index-Cq-GvGJy.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DBNRCEr2.css">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -47,16 +47,22 @@
     <header class="hero">
       <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
       <p class="tag">Deine Block-Welt mit Radio-Beats, Neon und Seilhaken</p>
-      <ul class="chips"><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>🌈 Neon &amp; Regenbogen</li><li>🗺 Minikarte</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
+      <ul class="chips"><li>🏔 15 Biome &amp; Höhlen</li><li>⛏ Erze &amp; Kristalle</li><li>🎵 16 Radio-Logo-Blöcke</li><li>🪝 Seilhaken &amp; Gleiter</li><li>📜 Story mit Aufträgen</li><li>📱 PC &amp; Handy</li></ul>
     </header>
     <div id="slots"></div>
+    <div class="menu-tools"><button id="mImport">⤒ Welt importieren</button><button id="mSettings">⚙ Einstellungen</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
+    <details class="help">
+      <summary>☁ Spielstände mit Google sichern (optional)</summary>
+      <div id="cloudbox"></div>
+    </details>
     <details class="help">
       <summary>Steuerung &amp; Tipps</summary>
       <div class="cols">
         <div><b>PC</b><br>WASD laufen · Maus blicken · Leertaste springen · Strg/Shift rennen<br>Linksklick abbauen · Rechtsklick setzen · 1–9 / Mausrad Block wählen<br>E Inventar · F fliegen (Kreativ) · Esc Pause</div>
         <div><b>Besonderes</b><br>Q / Taste „Haken“: Seilhaken zieht dich zum Ziel (bis 40 Blöcke)<br>Sprungtaste im Fall halten: Gleiten<br>Federblock: hohe Sprünge · Turbo: doppeltes Tempo · Aufwind: schwebt nach oben<br>Radio-Block spielt Musik · B Wegpunkt · M Minikarte</div>
         <div><b>Story-Modus</b><br>Die Funkzentrale gibt dir 15 feste Aufträge: Holz, Bretter, Fundament, Licht, Funkmast, Federn, Seilhaken, Gleiten, Neon bis zum Regenbogen-Finale. J blendet die Auftragsanzeige ein oder aus, im Pausemenü steht die Liste.</div>
-        <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen</div>
+        <div><b>Smartphone</b><br>Links wischen: laufen (weit ziehen = rennen)<br>Rechts wischen: umschauen<br>Tasten: Sprung, Abbauen, Setzen, Haken · Hotbar antippen<br>⚙ Einstellungen: Tastengröße, Empfindlichkeit, Linkshänder</div>
+        <div><b>Neue Welten</b><br>Ebenen, Wälder, Nadelwald, Berge, Schnee, Wüste, Strand, Sumpf, Dschungel, Blumenwiesen, Vulkane, Pilzwälder, Kristallfelder, Küsten und Meere. Unter der Erde: Höhlen, Seen, Kohle, Kupfer, Eisen und leuchtende Funkkristalle. Bestehende Welten bleiben unverändert.</div>
       </div>
     </details>
     <footer><a href="../">← Alle Spiele</a><span>ein Spiel von AnMaCha · ricorewi</span></footer>
@@ -72,6 +78,7 @@
     <label class="rng">Sichtweite: <b id="vdVal"></b><input id="vd" type="range" min="2" max="10" step="1"></label>
     <label class="rng">Tageszeit: <b id="tdVal"></b><input id="td" type="range" min="0" max="100" step="1"></label>
     <button id="pFreeze">⏱ Zeit läuft</button>
+    <button id="pSettings">⚙ Einstellungen</button>
     <button id="pQuests" hidden>📜 Aufträge</button>
     <button id="pSound">🔊 Ton: an</button>
     <button id="pFull">⛶ Vollbild</button>
@@ -82,13 +89,11 @@
 <section id="inv" class="screen" hidden>
   <div class="panel wide">
     <h2>Inventar <button id="invClose" class="x" aria-label="Schließen">✕</button></h2>
+    <div class="invbar"><input id="invSearch" type="search" placeholder="Block oder Rezept suchen …" autocomplete="off" aria-label="Suchen"><label class="chk" id="invOwnedL"><input type="checkbox" id="invOwned"> nur Vorrat</label></div>
+    <div class="tabs" id="invTabs" role="tablist"></div>
     <p class="sub" id="invHint">Tippe einen Block, um ihn in den gewählten Hotbar-Platz zu legen.</p>
     <div id="invGrid" class="grid"></div>
-    <h3>Spezial-Blöcke <small>(mit eigenen Fähigkeiten)</small></h3>
-    <div id="specialGrid" class="grid"></div>
-    <h3>Funk-Logos <small>(Blöcke mit den AnMaCha-Senderlogos)</small></h3>
-    <div id="logoGrid" class="grid"></div>
-    <h3>Herstellen</h3>
+    <h3 id="recH">Herstellen <small>(Umschalt-Klick: 5×)</small></h3>
     <div id="recipes"></div>
   </div>
 </section>
@@ -100,7 +105,31 @@
   </div>
 </section>
 
+<section id="set" class="screen" hidden>
+  <div class="panel wide">
+    <h2>Einstellungen <button id="setClose" class="x" aria-label="Schließen">✕</button></h2>
+    <div class="setgrid">
+      <label class="rng">Grafik
+        <select id="sQuality"><option value="auto">Automatisch (passt sich an)</option><option value="eco">Eco – schwache Handys</option><option value="mobile">Mobil</option><option value="standard">Standard</option><option value="high">Hoch</option></select></label>
+      <label class="rng">Maus-Empfindlichkeit: <b id="sMouseV"></b><input id="sMouse" type="range" min="0.3" max="2.5" step="0.1"></label>
+      <label class="rng">Kamera am Handy: <b id="sTouchV"></b><input id="sTouch" type="range" min="0.3" max="2.5" step="0.1"></label>
+      <label class="rng">Joystick-Empfindlichkeit: <b id="sJoyV"></b><input id="sJoy" type="range" min="0.6" max="1.8" step="0.1"></label>
+      <label class="rng">Größe der Touch-Tasten: <b id="sBtnV"></b><input id="sBtn" type="range" min="0.7" max="1.5" step="0.05"></label>
+      <label class="rng">Lautstärke Effekte: <b id="sSfxV"></b><input id="sSfx" type="range" min="0" max="1" step="0.05"></label>
+      <label class="rng">Lautstärke Radio-Musik: <b id="sMusV"></b><input id="sMus" type="range" min="0" max="1" step="0.05"></label>
+      <div>
+        <label class="chk"><input type="checkbox" id="sLefty"> Linkshänder (Tasten links, Laufen rechts)</label>
+        <label class="chk"><input type="checkbox" id="sInvY"> Blick nach oben/unten umkehren</label>
+        <label class="chk"><input type="checkbox" id="sPlace"> Setzen erst nach kurzem Halten wiederholen</label>
+        <label class="chk"><input type="checkbox" id="sFps"> Bildrate anzeigen</label>
+      </div>
+    </div>
+    <p class="sub">„Automatisch“ senkt bei ruckelndem Bild zuerst die Auflösung und dann die Sichtweite und hebt sie wieder an, wenn genug Reserve da ist. Alles wird nur auf diesem Gerät gespeichert.</p>
+    <button id="sReset">↺ Standard wiederherstellen</button>
+  </div>
+</section>
+
 <section id="loading" class="screen" hidden><div class="panel"><h2>Welt wird erzeugt …</h2></div></section>
-<script src="../cloud/anmacha-cloud.js" data-save-btn="#pSave" data-game="klotzfunk" data-prefix="klotzfunk." defer></script>
+<script src="../cloud/anmacha-cloud.js" data-save-btn="#pSave" data-game="klotzfunk" data-prefix="klotzfunk." data-mount="#cloudbox" data-hint="Optional: Spielstände mit Google sichern und auf anderen Geräten weiterspielen. Ohne Anmeldung bleibt alles nur auf diesem Gerät." defer></script>
 </body>
 </html>

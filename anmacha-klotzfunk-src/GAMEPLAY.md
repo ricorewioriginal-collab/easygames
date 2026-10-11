@@ -1,0 +1,50 @@
+# Spielen: Steuerung, Modi, Einstellungen
+
+## Steuerung
+| | PC | Smartphone |
+|---|---|---|
+| Laufen | WASD oder Pfeiltasten | linke Bildschirmhälfte wischen (weit ziehen = rennen) |
+| Umschauen | Maus (Klick ins Bild fängt den Mauszeiger) | rechte Bildschirmhälfte wischen |
+| Springen | Leertaste | Taste „Sprung“ |
+| Rennen | Strg oder Umschalt | Joystick weit ziehen |
+| Abbauen / Setzen | Linksklick / Rechtsklick (halten wiederholt) | Tasten „Abbauen“ / „Setzen“ (halten wiederholt) |
+| Block wählen | 1–9, Mausrad | Hotbar antippen |
+| Inventar | E | 🎒 |
+| Fliegen (Kreativ) | F oder Leertaste doppelt; runter mit Umschalt | Taste „Fliegen“, dann „Runter“ |
+| Seilhaken | Q | Taste „Haken“ |
+| Gleiten | Sprungtaste im Fall halten | Sprungtaste im Fall halten |
+| Wegpunkt / Minikarte | B / M | 📍 / 🗺 |
+| Aufträge (Story) | J | Auftragskarte antippen |
+| Pause / Speichern | Esc | ⏸ |
+
+Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und das Laufen rechts.
+
+## Modi
+- **Überleben:** Abgebaute Blöcke kommen in den Vorrat (höchstens 999 je Sorte). Zum Start gibt es etwas Erde, Bretter, Glas sowie einige Logo- und Spezialblöcke.
+  Im Inventar unter „Herstellen“ entstehen neue Blöcke – Rezepte in [CRAFTING.md](CRAFTING.md).
+- **Kreativ:** alles unbegrenzt, Fliegen erlaubt, Herstellen nicht nötig.
+- **Story:** 15 Aufträge der Funkzentrale, siehe [STORY.md](STORY.md).
+
+## Inventar
+- **Kategorien** (Natur, Erze & Steine, Bauen, Licht, Spezial, Funk-Logos) und **Suche** (findet Blöcke und Rezepte, auch über Zutaten).
+- **„nur Vorrat“** blendet Blöcke aus, die du nicht hast.
+- Block antippen = in den gewählten Hotbar-Platz legen.
+- Bei Rezepten sind fehlende Zutaten rot mit deinem Vorrat in Klammern; die Zahl rechts sagt, wie oft du es herstellen kannst. Umschalt-Klick stellt 5× her.
+
+## Spezial-Blöcke
+Federblock (hohe Sprünge, wirft beim Aufprall zurück) · Turbo-Block (2,4-faches Tempo) · Aufwind-Block (hebt bis 11 Blöcke hoch) ·
+Radio-Block (spielt einen erzeugten Beat, leiser mit Abstand) · Regenbogen-Block · vier Neon-Farben · Funkkristall und Magma leuchten.
+
+## Einstellungen (⚙ im Hauptmenü und im Pausemenü)
+| Einstellung | Wirkung |
+|---|---|
+| Grafik | Eco, Mobil, Standard, Hoch oder Automatisch (misst die Bildrate und passt Auflösung und Sichtweite an) |
+| Maus- / Kamera- / Joystick-Empfindlichkeit | Faktor 0,3–2,5 (Joystick 0,6–1,8) |
+| Größe der Touch-Tasten | 70–150 % |
+| Linkshänder | Tasten links, Laufen rechts |
+| Blick umkehren | oben/unten vertauscht |
+| Setzen erst nach kurzem Halten wiederholen | verhindert versehentliche Doppel-Blöcke |
+| Lautstärke Effekte / Radio-Musik | getrennt regelbar |
+| Bildrate anzeigen | FPS in der Infozeile |
+
+„Standard wiederherstellen“ setzt alles zurück. Einstellungen gelten nur auf diesem Gerät.
