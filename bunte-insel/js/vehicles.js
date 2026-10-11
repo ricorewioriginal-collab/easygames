@@ -3,6 +3,7 @@
 BI.VEH = {
   car:       { name: 'Auto', icon: '🚗', max: 22, rev: 7, acc: 11, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
   taxi:      { name: 'Taxi', icon: '🚕', max: 24, rev: 7, acc: 12, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
+  bumper:    { name: 'Autoscooter', icon: '🚗', max: 9, rev: 4, acc: 9, brake: 20, drag: 4, turn: 2.6, kind: 'car', horn: 'bell', cols: [-.9, .9], r: .95, cam: 7 },
   bike:      { name: 'Motorrad', icon: '🏍️', max: 28, rev: 4, acc: 15, brake: 22, drag: 5, turn: 2.3, kind: 'bike', horn: 'bike', cols: [-.5, .5], r: .5, open: true, cam: 7 },
   police:    { name: 'Polizeiauto', icon: '🚓', max: 27, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', siren: 'police', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
   ambulance: { name: 'Krankenwagen', icon: '🚑', max: 24, rev: 6, acc: 10, brake: 22, drag: 5, turn: 1.7, kind: 'car', horn: 'truck', siren: 'ambulance', cols: [-1.5, 1.5], r: 1.2, cam: 10.5 },
@@ -47,6 +48,10 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(0, 1.55, -.15, .9, .22, .36, 0xfffbe0); b.box(0, 1.5, -.15, .5, .12, .3, 0x1a1a1a); b.box(0, 1.69, -.15, .84, .04, .3, 0x1a1a1a);
       b.box(0, 1.56, .04, .8, .12, .02, 0x1a1a1a); b.box(0, 1.56, -.34, .8, .12, .02, 0x1a1a1a);
       return o;
+    },
+    bumper(b, o) { /* runder Scooter mit Gummiring und Stromstange */
+      const c = o.color || 0xff5a5a; b.cyl(0, .18, 0, 1.0, 1.05, .35, 0x2b2f3a, 14); b.cyl(0, .5, 0, .85, 1.0, .5, c, 14); b.cyl(0, 1.0, 0, .55, .75, .25, 0xffffff, 14); b.box(0, 1.2, -.1, .9, .35, .5, c); b.cyl(-.0, 1.2, -.5, .05, .05, 1.6, 0x555a66, 5); b.sph(0, 2.85, -.5, .12, 0xffd23f, 1);
+      return { wheels: [[.5, .22, .6, .22, .16, 1], [-.5, .22, .6, .22, .16, 1], [.5, .22, -.6, .22, .16, 0], [-.5, .22, -.6, .22, .16, 0]], head: [[-.35, .65, .95], [.35, .65, .95]], tail: [] };
     },
     police(b) {
       const o = MODELS.car(b, { color: 0xf4f6fa });

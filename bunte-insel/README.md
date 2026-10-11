@@ -58,6 +58,14 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 - **Bonbon-Fabrik** 🍭: 4 Maschinen kaufen und ausbauen (Zuckerwatte, Lutscher, Schoko, Eis), Bonbons entstehen beim Spielen, Lager erweitern, 25 🍬 = 1 ⭐ verkaufen.
 - Schon vorhanden: eigener Avatar, Freunde/Mitspielen, Abzeichen (Sticker), Bauen, Haustiere, Läden, Tagesgeschenk.
 
+## Freizeitpark 🎡 (Erweiterung im Osten)
+Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Promenade mit Lichterketten, Platz mit Brunnen und Besuchern.
+- **Riesenrad** 🎡 (eine Runde mit Aussicht), **Karussell** 🎠 (Pferde, mit 🚪 jederzeit absteigen), **Kettenkarussell** 🪢 (schwingt hinaus), **Achterbahn** 🎢 (zwei Runden, Hände hoch).
+- **Autoscooter** 🚗: vier Wagen in der Halle, einsteigen und rempeln.
+- **Imbissbuden**: Zuckerwatte 🍥, Popcorn 🍿, Eis 🍦 für je 1 ⭐ – landet im Rucksack 🎒 (dort essen).
+- Fahrten sind gratis; pro Attraktion gibt es höchstens alle 45 Sekunden +1 ⭐. Besucher (Clown, Kartenfrau …) erzählen etwas.
+- Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
+
 ## Rucksack 🎒 (Knopf links oben oder Taste I)
 Alles, was du hast, ordentlich sortiert: **Essen** (Ernte & Zutaten, Zum Essen, Tränke, Blumen & Geschenke), **Kleidung**, **Spielzeug & Gadgets**, **Zimmer-Deko**, **Tiere**. Tippe einen Gegenstand an: „**Was ist das?**“ und „**Wofür?**“ erklären ihn, passende Knöpfe (Anlegen, Essen, Holen, Mitnehmen …) benutzen ihn. Der Reiter **❓ Hilfe** erklärt das ganze Spiel. Im Laden steht an jedem Stück, wofür es ist.
 - **🎁 Verschenken** und **🔄 Tauschen** mit verbundenen Freunden (Mehrspieler): Geschenke kommen sofort an (auch Sterne); beim Tausch wählen beide etwas aus, beide bestätigen, dann wird getauscht. Es gehen nur feste Gegenstände aus dem Spiel (keine freie Eingabe), Fremdes wird ignoriert.
