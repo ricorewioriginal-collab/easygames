@@ -2,6 +2,29 @@
 
 Zentrale Fortschrittsdatei. Jede Sitzung trägt hier ein, was **tatsächlich** umgesetzt und geprüft ist, was offen ist und womit es weitergeht. Architektur und Meilensteine: [`PLAN.md`](PLAN.md).
 
+## Stand nach Durchgang 5 (11.10.2026): Rainbow City – sieben Viertel
+
+### Neu umgesetzt (M2 weitgehend)
+
+- **Viertel (`js/districts.js`, `GL.dist`)**: Neben dem Pride District (dem bisherigen Regenbogenkiez) gibt es **Downtown, Neon Nights, Rainbow Beach, Love Gardens, Fashion Boulevard, Rainbow Heights und Crystal Coast**. Jedes hat eigenen Boden, drei Gebäude und einen Kiosk mit je einem Ort mit echter Wirkung (Zeit, Geld, Bedürfnisse, Öffnungszeiten), eine Tramhaltestelle und zwei ansprechbare Passanten.
+  - **Laden/Entladen**: Ein Viertel wird erst beim ersten Besuch gebaut (eine Gruppe) und ist nur sichtbar, solange man dort ist. Bäume, Palmen, Blumen, Neonmasten und Laternen sind instanziert; Laternen/Fenster leuchten nachts.
+  - **Tram**: Haltestelle am Brunnenplatz und in jedem Viertel, außerdem Handy-App „Tram“. 3 €, 20 Minuten. Die Handy-Karte bringt auch aus einem Viertel zum Ziel im Pride District.
+  - **Orte mit Wirkung**: u. a. Kino, Streetfood, Bibliothek; Ramen, Spielhalle, Straßentanz; Schwimmen, Sonnenliege, Beachvolleyball, Eis; Picknick, Blumenhändlerin, Rosenlaube; Anprobe (Kleiderschrank), Friseur; Dachterrasse, Sky-Lounge, Dach-Yoga; Angeln (Fisch fürs Kochen), Leuchtturm (einmalig +10 Glitzer), Strandcafé.
+  - **Blumenstrauß**: Von der Blumenhändlerin (6 €, höchstens 5) und beim Entschuldigen in der Dating-Menü kostenlos nutzbar.
+- Nach dem Neuladen steht man immer im Pride District. Spielstand: `life.flowers`.
+
+### Tests Durchgang 5
+
+`gay-life/tests/e2e.mjs`: **177 Prüfungen, alle bestanden**, keine Konsolenfehler. Neu: Katalog, Haltestelle, Fahrt (Preis, Zeit, Grenzen), Laden/Entladen, Orte nutzen und Öffnungszeiten, zu wenig Geld, alle sieben Viertel erreichbar, Angeln, Leuchtturm, Blumen, Tram-App, Karte aus dem Viertel, Neuladen.
+
+Einschränkungen: Viertel sind schlicht aufgebaut (Quader, ein Layout-Schema), ohne eigene Bewohner im Tagesablauf, ohne Dating-Orte und ohne Wetter. Nicht probegespielt und nicht auf echten Geräten geprüft.
+
+### Weiterhin offen
+
+M2-Rest (Wetter, Bewohner mit Tagesplänen in den Vierteln, Dates dort), M4-Rest, M5-Rest, M7, M8, M9, M10.
+
+---
+
 ## Stand nach Durchgang 4 (11.10.2026): Jobs und Nachtleben
 
 ### Neu umgesetzt (M5 teilweise, M4 teilweise)

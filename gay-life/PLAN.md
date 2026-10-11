@@ -31,6 +31,7 @@ Klassische Skripte ohne Build-Schritt, genau ein globaler Namensraum `window.GL`
 | `js/dating.js` | Dating-Figuren, Gesprächsmenü, Flirt/Ablehnung, Dates, Beziehung, Streit, Trennung |
 | `js/messages.js` | Nachrichten mit Antworten und Verzögerung |
 | `js/datingapp.js` | Handy-Apps Nachrichten, Dating, Kalender |
+| `js/districts.js` | Sieben weitere Viertel, Tram, Orte mit Wirkung, Passanten |
 | `js/phone.js` | Handy mit Apps, Grafikqualität |
 | `js/main.js` | Start |
 
@@ -75,7 +76,7 @@ settings: { q }   // -1 automatisch, 0 niedrig, 1 mittel, 2 hoch
 |---|---|---|
 | M0 | Analyse, Aufteilung in Module, Migration, Browser-Testgerüst | erledigt |
 | M1 | Alltag: Uhr, Bedürfnisse, Geld, Späti, Barjob, eigene Wohnung, Handy, Kontakte | erledigt (Grundstufe) |
-| M2 | Rainbow City: Viertel Downtown, Pride District (heutiger Regenbogenkiez), Neon Nights, Rainbow Beach, Love Gardens, Fashion Boulevard, Rainbow Heights, Crystal Coast; Weltabschnitte laden/entladen, Tram zwischen Vierteln, Wetter, Instancing für Bäume/Lampen | offen |
+| M2 | Rainbow City: Viertel Downtown, Pride District (heutiger Regenbogenkiez), Neon Nights, Rainbow Beach, Love Gardens, Fashion Boulevard, Rainbow Heights, Crystal Coast; Weltabschnitte laden/entladen, Tram zwischen Vierteln, Wetter, Instancing für Bäume/Lampen | weitgehend erledigt (Durchgang 5: sieben Viertel, Tram, Laden/Entladen, Instancing; Wetter und Bewohner offen) |
 | M3 | Menschen: NPC-Tagesabläufe nach Uhrzeit/Wochentag; Dating-Kern mit Persönlichkeit, Vorlieben, Gesprächsarten (Smalltalk, tief, Flirt, Kompliment), Zustimmung und Ablehnung, Beziehungsstufen bis Partnerschaft, Erinnerungen; Nachrichten, Dating-App, Kalender mit Terminen | erledigt (Durchgang 2; Konflikte/Zusammenziehen ohne Wohnung, Zusammenziehen folgt in M6) |
 | M4 | Nachtleben: Club-Innenräume mit eigenen Musikstilen (selbst erzeugt), Tanzen mit Emotes, Bar-Bestellungen, Karaoke/Tanzwettbewerb in der Welt, Themenpartys, Pride-Events | teilweise (Durchgang 4: Themenabende, Tanzen, Getränke; Innenräume, Musik, Events offen) |
 | M5 | Karriere: weitere Jobs mit eigenen Abläufen (DJ, Verkäufer, Fitnesstrainer, Fotograf, Stylist, Eventmanager, Performer), Beförderungen | teilweise (Durchgang 4: Verkäufer, Fitnesstrainer, Fotograf, DJ mit Stufen) |

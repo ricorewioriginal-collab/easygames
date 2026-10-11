@@ -126,6 +126,7 @@
     ph.close();
     GL.ui.fade('Mit der Tram unterwegs …', function () {
       if (GL.home.inside()) GL.home.leave(true);
+      if (GL.dist) GL.dist.leave();
       W.player.x = t.x; W.player.z = t.z; W.camYaw = t.yaw; W.cam.position.set(t.x + Math.sin(t.yaw) * W.camD, W.camH, t.z + Math.cos(t.yaw) * W.camD);
       GL.life.advance(10); C().sfx('ok'); GL.save();
     }, 600);

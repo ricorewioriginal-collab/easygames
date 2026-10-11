@@ -516,6 +516,66 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ctx.close();
 }
 
+/* ---------- 7. Rainbow City: Viertel und Tram ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const closeMenu = async () => { if (await ev(page, () => document.getElementById('maps').style.display === 'block')) await page.click('#mx'); };
+  const menuItem = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  const setTime = h => ev(page, h => { GL.S.world.t = ((h - 6 + 24) % 24) / 24; }, h);
+  const go = async id => { const r = await ev(page, id => GL.dist.go(id), id); if (r) await waitFade(page); return r; };
+  const spot = async lab => { await ev(page, lab => { const i = GL.W.inter.find(i => i.on && i.label.indexOf(lab) >= 0); const p = GL.W.player; p.x = i.x; p.z = i.z; i.fn(); }, lab); await waitFade(page).catch(() => {}); await page.waitForTimeout(100); };
+  ok(await ev(page, () => GL.dist.LIST.length === 7 && GL.dist.LIST.every(d => d.sp.length === 4)), 'Sieben neue Viertel mit je vier Orten');
+  await ev(page, () => { GL.S.life.money = 200; GL.S.life.needs.energy = 90; GL.S.life.day = 3; }); await setTime(12);
+  // Tram aus dem Pride District
+  await goTo(page, 10, 18); ok(/Tram/.test(await ev(page, () => document.getElementById('act').textContent)), 'Haltestelle am Brunnenplatz');
+  const n0 = await ev(page, () => ({ c: GL.W.colliders.length, h: GL.life.hour(), m: GL.S.life.money, ch: GL.W.scene.children.length }));
+  ok(await go('beach'), 'Tram nach Rainbow Beach');
+  s = await ev(page, () => ({ d: GL.W.district, b: GL.W.bounds, x: GL.W.player.x, z: GL.W.player.z, m: GL.S.life.money, h: GL.life.hour(), ch: GL.W.scene.children.length, g: GL.W.scene.children.filter(c => c.type === 'Group' && c.visible && c.children.length > 30).length }));
+  ok(s.d === 'beach' && s.x > s.b.x0 && s.x < s.b.x1 && s.z > s.b.z0 && s.z < s.b.z1 && s.m === n0.m - 3 && Math.abs(((s.h - n0.h + 24) % 24) - 1 / 3) < .05, `Im Viertel: Position in den Grenzen, Fahrpreis 3 €, 20 Min. (${s.d})`);
+  ok(s.ch - n0.ch <= 3, 'Viertel wird als eine Gruppe gebaut (' + (s.ch - n0.ch) + ' neue Wurzelobjekte)');
+  // Orte nutzen
+  await ev(page, () => { GL.S.life.needs.stress = 80; });
+  await spot('Sonnenliege'); ok(await ev(page, () => GL.S.life.needs.stress < 70), 'Sonnenliege senkt Stress');
+  const m1 = await ev(page, () => GL.S.life.money); await spot('Eisstand'); ok(await ev(page, m => GL.S.life.money === m - 4, m1), 'Eisstand kostet 4 €');
+  await setTime(23); const m2 = await ev(page, () => GL.S.life.money);
+  await spot('Eisstand'); ok(await ev(page, m => GL.S.life.money === m, m2) && await ev(page, () => /geschlossen/.test(GL.W.inter.find(i => i.on && i.label.indexOf('Eisstand') >= 0).label)), 'Nachts geschlossen: kein Abbuchen');
+  ok(await ev(page, () => { const p = GL.W.player, b = GL.W.bounds; return GL.W.inter.some(i => i.on && i.label.indexOf('Ansprechen') === 0 && Math.hypot(i.x - p.x, i.z - p.z) < 60); }), 'Passanten sind ansprechbar');
+  // Zurück und weiter
+  ok(await go('kiez') && await ev(page, () => GL.W.district === '' && GL.W.bounds.x1 === 96), 'Zurück im Pride District, Grenzen wiederhergestellt');
+  ok(await ev(page, () => GL.W.scene.children.filter(c => c.type === 'Group' && c.visible && c.position.x > 100).length === 0), 'Viertel ist nach der Abfahrt unsichtbar');
+  await ev(page, () => { GL.S.life.money = 2; }); ok(!(await go('love')) && await ev(page, () => GL.W.district === ''), 'Zu wenig Geld: keine Fahrt');
+  await ev(page, () => { GL.S.life.money = 300; GL.S.life.food = 1; });
+  for (const id of ['down', 'neon', 'love', 'fashion', 'heights', 'coast']) { await go(id); const r = await ev(page, id => GL.W.district === id && GL.W.bounds.x1 - GL.W.bounds.x0 === 90, id); if (!r) ok(false, 'Viertel ' + id + ' erreichbar'); }
+  ok(true, 'Alle Viertel erreichbar');
+  // Küste: Angeln und Leuchtturm
+  await ev(page, () => { const r = Math.random; Math.random = () => .1; window.__r = r; }); await setTime(12);
+  await spot('Angeln'); ok(await ev(page, () => GL.S.life.food === 2), 'Angeln mit Fang: Fisch im Kühlschrank');
+  await ev(page, () => { Math.random = () => .9; }); await spot('Angeln'); ok(await ev(page, () => GL.S.life.food === 2), 'Angeln ohne Fang: nichts im Kühlschrank');
+  await ev(page, () => { Math.random = window.__r; });
+  const g0 = await ev(page, () => GL.S.glitzer); await spot('Leuchtturm'); await spot('Leuchtturm');
+  ok(await ev(page, g => GL.S.glitzer === g + 10, g0), 'Leuchtturm: Glitzer nur beim ersten Mal');
+  // Love Gardens: Blumen für die Entschuldigung
+  await go('love');
+  await spot('Blumenhändlerin'); ok(await ev(page, () => GL.S.life.flowers === 1), 'Blumenhändlerin: Strauß im Vorrat');
+  await go('kiez');
+  const m3 = await ev(page, () => { const r = GL.dating.rel('mehmet'); r.st = 'partner'; r.conflict = 3; r.r = 50; return GL.S.life.money; });
+  await ev(page, () => { const n = GL.W.npcs.find(n => n.d.id === 'mehmet'); GL.dating.menu(n); });
+  await menuItem('Blumenstrauß schenken'); for (let i = 0; i < 6 && await ev(page, () => !!GL.W.dlg); i++) { await page.click('#dn'); await page.waitForTimeout(60); } await closeMenu();
+  ok(await ev(page, m => GL.S.life.flowers === 0 && GL.dating.rel('mehmet').conflict === 0 && GL.S.life.money === m, m3), 'Blumenstrauß aus dem Vorrat versöhnt kostenlos');
+  // Handy: Tram-App und Karte
+  await ev(page, () => { GL.phone.open('tram'); });
+  ok(await ev(page, () => /Rainbow Beach/.test(document.querySelector('#phone .pbody').textContent)), 'Tram-App listet die Viertel');
+  await page.click('#phone [data-t="fashion"]'); await waitFade(page);
+  ok(await ev(page, () => GL.W.district === 'fashion'), 'Tram-App fährt ins Viertel');
+  await ev(page, () => { GL.phone.open('map'); }); await page.click('#phone [data-p="cafe"]'); await waitFade(page);
+  ok(await ev(page, () => GL.W.district === '' && Math.hypot(GL.W.player.x - GL.W.pois.cafe.x, GL.W.player.z - GL.W.pois.cafe.z) < 3), 'Karten-Tram aus dem Viertel führt zum Ziel im Kiez');
+  // Neuladen im Viertel
+  await go('coast'); await ev(page, () => GL.save()); await page.reload(); await page.waitForFunction(() => window.GL && GL.W && GL.W.on); await closeDialogs(page);
+  ok(await ev(page, () => GL.W.district === undefined || GL.W.district === '') && await ev(page, () => Math.abs(GL.W.player.x) < 100 && Math.abs(GL.W.player.z) < 70), 'Nach dem Neuladen wieder im Pride District');
+  await ctx.close();
+}
+
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));
 await browser.close();
 console.log(fails ? `\n${fails} Prüfung(en) fehlgeschlagen` : '\nAlle Prüfungen bestanden');

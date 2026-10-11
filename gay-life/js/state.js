@@ -11,7 +11,7 @@
     return { v: VERSION, name: 'Du', look: { skin: 1, hair: 1, hc: 1, beard: 1, acc: 0, top: 0, tc: 0, eye: 0 }, glitzer: 0, xp: 0,
       club: { coins: 0, total: 0, items: {}, best: 0, shifts: 0 }, world: { x: 0, z: 14, yaw: 0, t: .3, q: 0, stars: [], dog: 0, cat: 0, qv: 4, done: 0, intro: 0, side: {}, zut: [] }, dates: {}, quiz: { best: 0, runs: 0 }, match: { best: 0 }, run: { best: 0 }, gym: { best: 0 }, rave: { best: {} }, style: { best: 0 }, sound: true, world3d: true, own: {}, dance: { best: 0 }, pool: { best: 0 }, kara: { best: 0 }, sauna: { best: 0 }, dark: { best: 0 }, cast: { best: 0 },
       // ab v2
-      life: { day: 1, needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, stress: 20 }, boost: 0, money: 150, log: [], food: 2, inside: 0, ix: 0, iz: 3, warn: {}, stats: { meals: 0, showers: 0, sleeps: 0 } },
+      life: { day: 1, needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, stress: 20 }, boost: 0, money: 150, log: [], food: 2, flowers: 0, inside: 0, ix: 0, iz: 3, warn: {}, stats: { meals: 0, showers: 0, sleeps: 0 } },
       jobs: { bar: { xp: 0, shifts: 0, earned: 0 } },
       rel: {}, msgs: [], cal: [], dating: { ints: [] }, home: { own: {}, placed: {}, partner: '', rentDay: 0, debt: 0 },
       settings: { q: -1 } };
