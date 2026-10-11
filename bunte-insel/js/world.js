@@ -195,12 +195,12 @@ BI.buildWorld = function (scene) {
   function houseOnX(cx, cz, side) { // Tür zeigt zur Straße (z=0)
     const w = rr(8, 10), d = rr(7.5, 9), h = rr(4.6, 6.4), wall = pick(WALLS), roof = pick(ROOFS);
     const dz = -Math.sign(cz); // nach Norden/Süden
-    house(cx, cz, w, d, h, wall, roof, dz, true);
+    BI.buildEnterable(TC, { cx, cz, w, d, h, wall, roof, s: dz, ridgeX: true }); W.pads.push([cx - w / 2 - .3, cz - d / 2 - .3, cx + w / 2 + .3, cz + d / 2 + .3]);
   }
   function houseOnZ(cx, cz) { // Tür-Seite entlang z gebaut -> für Wohnhäuser an N/S-Straße Tür zur Nord-Süd-Straße: wir drehen Maße
     const w = rr(7.5, 9), d = rr(8, 10), h = rr(4.6, 6.4), wall = pick(WALLS), roof = pick(ROOFS);
     // Tür-Seite zeigt zur Straße in x; unsere Tür sitzt auf der z-Seite -> Haus quer: Tür nach +z, ok für Optik
-    house(cx, cz, w, d, h, wall, roof, 1, false);
+    BI.buildEnterable(TC, { cx, cz, w, d, h, wall, roof, s: 1, ridgeX: false }); W.pads.push([cx - w / 2 - .3, cz - d / 2 - .3, cx + w / 2 + .3, cz + d / 2 + .3]);
   }
 
   // --- Spezialgebäude ---
@@ -366,7 +366,9 @@ BI.buildWorld = function (scene) {
     // Sandkasten
     st.box(-66, 0, 60, 5, .4, 4, 0xa86a3c); st.box(-66, .35, 60, 4.4, .05, 3.4, 0xf1dd9a); W.addBox(-68.5, 58, -63.5, 62);
     // Wippe
-    st.box(-58, 0, 61, .4, .8, .4, 0x7a5ce0); st.box(-58, .8, 61, .5, .15, 4.4, 0xff8fc8, 0, 0, 0); W.addCircle(-58, 61, 1.3);
+    st.box(-58, 0, 61, .4, .8, .4, 0x7a5ce0); W.addCircle(-58, 61, 1.3);
+    // Trampolin (federt von selbst, siehe play.js)
+    for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3; st.cyl(-49.5 + Math.sin(a) * 1.45, 0, 62 + Math.cos(a) * 1.45, .07, .07, .28, 0x2b2f3a, 5); } st.cyl(-49.5, .25, 62, 1.6, 1.6, .1, 0x2b2f3a, 18); st.cyl(-49.5, .33, 62, 1.35, 1.35, .05, 0x4da3ff, 18);
     // Bank + Bäume
     st.box(-50, .0, 50, 2.6, .5, .8, 0x8a5a33); st.box(-50, .5, 49.6, 2.6, .6, .15, 0x8a5a33); W.addBox(-51.3, 49.5, -48.7, 50.5);
   }
@@ -515,7 +517,7 @@ BI.buildWorld = function (scene) {
       st.sph(tx, ty - .2, tz, .45, 0x7a4a2a, 0); W.addCircle(x, z, .5);
       return;
     }
-    const T = { x, z, kind, parts: [], hp: 8, cd: 0, wob: 0, wx: 0, wz: 1, tilt: 0, top: kind === 'pine' ? 5 * s : 4 * s, dirty: false };
+    const T = { x, z, kind, parts: [], hp: 5, cd: 0, wob: 0, wx: 0, wz: 1, tilt: 0, top: kind === 'pine' ? 5 * s : 4 * s, dirty: false };
     if (kind === 'pine') {
       inst('trunk', T, x, 0, z, .85 * s, 1.6 * s, .85 * s, 0x7a5233, 0);
       for (let k = 0; k < 3; k++) inst('cone', T, x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, (2.1 - k * .5) * s, pick([0x2f8f4a, 0x3aa055, 0x2a8044]), .1);
@@ -546,9 +548,11 @@ BI.buildWorld = function (scene) {
   W.updateTrees = function (dt, t) {
     for (const T of W.trees) {
       if (T.cd > 0) T.cd -= dt;
-      const target = T.cd > 0 ? .35 : 0, dtl = target - T.tilt;
+      const down = T.cd > 3; let target = down ? 1.5 : 0;
+      if (down && T.tilt < 1.5) { T.fv = (T.fv || 0) + dt * 5; T.tilt = Math.min(1.5, T.tilt + T.fv * dt); T.dirty = true; T.wob = 0; if (T.tilt >= 1.5) { T.fv = 0; if (W.onTreeFall) W.onTreeFall(T); } poseTree(T, T.tilt); continue; }
+      const dtl = target - T.tilt;
       if (T.wob <= 0 && Math.abs(dtl) < .002) { if (T.dirty) { T.tilt = target; poseTree(T, T.tilt); T.dirty = false; } continue; }
-      T.dirty = true; T.wob = Math.max(0, T.wob - dt * 1.1); T.tilt += dtl * Math.min(1, dt * 3); poseTree(T, T.tilt + T.wob * .25 * Math.sin(t * 22));
+      T.dirty = true; T.wob = Math.max(0, T.wob - dt * 1.1); T.tilt += dtl * Math.min(1, dt * (down ? 3 : 1.2)); poseTree(T, T.tilt + (down ? 0 : T.wob * .25 * Math.sin(t * 22)));
     }
     for (const m of _touch) m.instanceMatrix.needsUpdate = true; _touch.clear();
   };
@@ -653,7 +657,7 @@ BI.buildWorld = function (scene) {
   W.update = function (t, dt, night) {
     W.clouds.rotation.y += dt * .006; W.foam.scale.setScalar(1 + Math.sin(t * .8) * .012); W.foam.material.opacity = .35 + Math.sin(t * .8) * .1;
     if (W.mill) W.mill.rotation.z += dt * .9;
-    if (W.swing) W.swing.rotation.x = Math.sin(t * 1.6) * .45;
+    if (W.swing && !W.swing.manual) W.swing.rotation.x = Math.sin(t * 1.6) * .45;
     W.beam.rotation.y = t * .8; W.beamMat.opacity = night * .18; W.beam.visible = night > .05;
   };
   W.setNight = function (n) {

@@ -43,3 +43,73 @@ BI.TALK.shops = {
   apotheke: ['Apothekerin Anna', 'Meine Tränke helfen im Verbotenen Wald – aber bleib vorsichtig! ⚕️'], cafe: ['Kellner Karl', 'Eine heiße Schokolade gefällig? ☕'], buecherei: ['Bibliothekarin Berta', 'Psst! Such dir ein schönes Buch aus. 📚'],
   tiere: ['Tierpfleger Timo', 'Hast du Futter für die Tiere im Zoo? 🐾'], mode: ['Schneiderin Sina', 'Probier doch etwas Neues an! 👒']
 };
+
+/* ---------- Noch mehr Leute, Gespräche, Tipps ---------- */
+BI.TALK.adults.push(
+  ['Bürgermeisterin Martha', ['Willkommen auf unserer bunten Insel! 🏝️', 'Hier darf jeder mithelfen: Sterne sammeln, bauen, fahren, spielen.', 'Im Park haben wir einen neuen Spielplatz – probier die Schaukel!']],
+  ['Eisverkäufer Enzo', ['Eis, Eis, Eis! Welche Sorte magst du? 🍦', 'Mein Eiswagen spielt ein Lied – hör mal, wenn er vorbeifährt!', 'Schoko, Erdbeere, Vanille … und manchmal Regenbogen!']],
+  ['Taxifahrerin Tamara', ['Mein Taxi ist gelb mit einem Schild auf dem Dach. 🚕', 'Steig in ein Taxi – dann fragt dich das Spiel, ob du einen Fahrgast fahren möchtest.', 'Pünktlich sein ist das Wichtigste beim Taxifahren!']],
+  ['Polizist Peter', ['Ich passe auf, dass alle sicher über die Straße kommen. 🚓', 'Auf dem Zebrastreifen haben immer die Fußgänger Vorrang.', 'Du darfst mit dem Polizeiauto sogar die Sirene anmachen!']],
+  ['Ärztin Dr. Doris', ['Ein Apfel am Tag hält den Doktor fern. 🍎', 'Bei Bauchweh hilft Tee und ein bisschen Ruhe.', 'Im Krankenhaus gibt es einen Hubschrauberlandeplatz!']],
+  ['Zugführerin Zora', ['Alles einsteigen, bitte! Der Zug fährt gleich ab. 🚂', 'Am Bahnsteig kannst du selbst den Zug fahren.', 'Pfeife nicht zu laut, sonst erschrecken die Schafe!']],
+  ['Zoowärter Zack', ['Die Tiere im Streichelzoo lieben Streicheleinheiten. 🐑', 'Kühe muss man vorsichtig melken – ganz sanft.', 'Ein Pferd erkennt dich nach ein paar Besuchen wieder.']],
+  ['Bademeisterin Bea', ['Im Freibad gibt es zwei Rutschen und ein Sprungbrett! 🏊', 'Erst abkühlen, dann rein ins Wasser.', 'Schwimmflügel sind keine Schande – sie machen Spaß!']],
+  ['Pilot Paulchen', ['Der Hubschrauber startet am Landeplatz neben dem Krankenhaus. 🚁', 'Von oben sieht die Insel aus wie ein bunter Kuchen.', 'Mit ⬆ und ⬇ steuerst du die Flughöhe.']],
+  ['Schmied Sven', ['Klong klong klong! Ich baue ein Hufeisen. 🔨', 'Wer Bäume haut, braucht kräftige Arme!', 'Wenn man oft genug haut, fällt der Baum um – Achtung, TIMBER!']],
+  ['Imkerin Ida', ['Bienen machen Honig und bestäuben die Blumen. 🐝', 'Summ summ summ – die Blumen im Park lieben meine Bienen.', 'Bienen stechen nur, wenn man sie ärgert.']],
+  ['Hausmeister Hugo', ['Ich repariere alles: Türen, Lampen, Fahrräder. 🔧', 'Wenn die Schaukel quietscht, öle ich sie.', 'Mit einem Schraubenzieher kommt man weit.']],
+  ['Sängerin Sophie', ['Do – Re – Mi – Fa – So – La – Ti – Do! 🎤', 'Die Musik-Tasten im Spiel heißen C D E F G A H.', 'Singen macht glücklich, auch wenn es schief klingt!']],
+  ['Gymnastiklehrer Gregor', ['Strecken, beugen, hüpfen! Das Trampolin im Park ist super. 🤸', 'Fünf Mal hoch springen – und noch ein Salto!', 'Bewegung macht müde Knochen munter.']],
+  ['Verkäuferin Vera', ['Im Supermarkt gibt es alles: Obst, Brot, Milch. 🛒', 'Frag an der Kasse nach Sonderangeboten!', 'Mit Sternen bezahlst du bei uns ganz einfach.']],
+  ['Detektiv Dario', ['Ich suche einen verschwundenen Ball. Hast du ihn gesehen? 🔍', 'Ein guter Detektiv schaut genau hin – zum Beispiel nach goldenen Sternen.', 'Die Schatztruhe liegt am Strand. Geheimtipp!']],
+  ['Astronomin Astrid', ['Nachts sieht man hier Sterne ohne Ende. 🔭', 'Der Mond ist ungefähr 384.000 Kilometer entfernt.', 'Drück den Mond-Knopf, dann wird es Nacht!']],
+  ['Kunstlehrer Karim', ['Mal ein Bild im Mal-Block – es kommt in dein Album! 🖌️', 'Aus Gelb und Blau mischt man Grün.', 'Es gibt keine falschen Farben.']],
+  ['Pizzabäcker Paolo', ['Eine Pizza mit extra viel Käse! 🍕', 'Der Teig muss ganz dünn gerollt werden.', 'Mamma mia, das duftet!']],
+  ['Hirtin Helga', ['Meine Schafe sind heute ganz brav. 🐑', 'Schafe haben ein sehr gutes Gedächtnis für Gesichter.', 'Mäh! Das heißt: Guten Morgen!']],
+  ['Bibliothekar Benedikt', ['Pssst! Bücher sind wie Reisen ohne Koffer. 📚', 'In der Bücherei kann man sich Geschichten vorlesen lassen.', 'Lesen macht klug und müde zugleich.']],
+  ['Gärtner Gustav', ['Ich schneide gerade die Hecke. Schnipp schnapp! ✂️', 'Gieß deine Pflanzen am besten morgens.', 'Aus kleinen Samen werden große Pflanzen.']],
+  ['Postfrau Petra', ['Einen Brief für dich! Ach nein, der ist für den Bäcker. ✉️', 'Briefmarken sind kleine Kunstwerke.', 'Ich trage täglich 100 Briefe aus.']],
+  ['Pirat Pit', ['Arrr! Ich suche den Schatz der Insel. 🏴‍☠️', 'Am Strand steht ein Piratenschiff – mit Kanonen!', 'Ein Pirat ist auch nur ein Kind mit Papphut.']],
+  ['Zauberer Zarino', ['Abrakadabra – und schon ist ein Stern da! ✨', 'Zaubern ist 90 Prozent Übung und 10 Prozent Tricks.', 'Wer lächelt, zaubert Freude.']]
+);
+BI.TALK.kids.push(
+  ['Anna', ['Ich habe eine Sandburg gebaut – mit Turm! 🏰', 'Magst du mit mir schaukeln?', 'Wippen geht nur zu zweit!']],
+  ['Ben', ['Ich bin schneller als ein Hubschrauber! 🚁 Na ja, fast.', 'Hast du schon die Zuckerwatte probiert?', 'Ich möchte später Zugführer werden.']],
+  ['Clara', ['Meine Lieblingsfarbe ist Regenbogen. 🌈', 'Ich male jeden Tag ein Bild.', 'Weißt du, wie Pferde schlafen? Im Stehen!']],
+  ['David', ['Mein Fahrrad hat drei Gänge. 🚲', 'Ich übe gerade Einrad fahren.', 'Fang mich, fang mich!']],
+  ['Ella', ['Wusstest du, dass Delfine miteinander sprechen? 🐬', 'Ich mag Pfannkuchen mit Zucker.', 'Wir spielen Verstecken – du darfst suchen!']],
+  ['Felix', ['Ich habe einen Frosch gefunden! 🐸 Quaak!', 'Beim Hüpfen auf dem Trampolin kann ich fast fliegen.', 'Heute Abend gibt es Feuerwerk, glaub ich.']],
+  ['Greta', ['Schau, ich habe ein Vierblättriges Kleeblatt! 🍀', 'Ich möchte einen Hund. Oder einen Hamster.', 'Wollen wir Seilspringen?']],
+  ['Hannes', ['Was ist grün und hüpft über die Wiese? Ein Gras-hüpfer! 🦗', 'Meine Katze heißt Wolke.', 'Ich kann pfeifen – hör mal!']],
+  ['Ida', ['Heute bin ich Prinzessin. 👑', 'Meine Puppe hat ein Kleid aus Seide.', 'Ich tanze gern – tanz mit mir!']],
+  ['Jakob', ['Ich baue ein Raumschiff aus Kartons. 🚀', 'Drei, zwei, eins – Start!', 'Weißt du, wie viele Monde der Mars hat? Zwei!']],
+  ['Klara', ['Im Wald gibt es Kämpfe – aber nur im Verbotenen Wald! ⚔️', 'Ich passe auf meinen kleinen Bruder auf.', 'Magst du Gummibärchen?']],
+  ['Leo', ['Ich bin ein Löwe! Rooaar! 🦁', 'Mein Papa kocht die beste Nudelsuppe.', 'Ich zähle gern Sterne – schon 15 heute!']],
+  ['Marie', ['Ich lerne Klavier – spiel doch mit mir! 🎹', 'Hast du das Lied „Alle meine Entchen“ geübt? C D E F G G.', 'Meine Lieblingstiere sind Hasen.']],
+  ['Noah', ['Ich habe Hunger! Hast du einen Keks? 🍪', 'Das Taxi ist gelb – sieht man sofort!', 'Heute wird ein toller Tag!']],
+  ['Olivia', ['Ich mag das Planschbecken. 💦', 'Wer zuerst unten an der Rutsche ist, gewinnt!', 'Meine Schwester kann einen Handstand.']],
+  ['Paul', ['Ich bin Feuerwehrmann – tatütata! 🚒', 'Ich rette Katzen aus Bäumen.', 'Wasser marsch!']]
+);
+/* Allgemeiner Plausch + Tipps fürs Spiel – wird gern zwischen die persönlichen Sätze gemischt */
+BI.TALK.chat = [
+  'Schönes Wetter heute, oder? ☀️', 'Hast du schon das Feuerwerk ausprobiert? 🎆 Schau einfach in den Himmel!', 'Im Park gibt es eine Schaukel, eine Rutsche und ein Trampolin. 🛝',
+  'Hast du die Häuser schon besucht? Du kannst überall hineingehen! 🏠', 'In der Stadt gibt es acht verschiedene Läden. 🛒', 'Ich liebe diese Insel!', 'Kennst du schon den Verbotenen Wald? Nur dort darf man kämpfen. ⚔️',
+  'Sammle die goldenen Sterne – sie liegen überall herum. ⭐', 'Wenn du in ein Auto steigst, fragt dich das Spiel, ob du einen Auftrag annehmen willst.', 'Das gelbe Auto mit dem Dachschild ist ein Taxi! 🚕',
+  'Mit dem Zug kannst du einmal um die Insel fahren. 🚂', 'Im Camp erzählt man Geschichten am Lagerfeuer. 🔥', 'Kennst du schon den Streichelzoo? Da gibt es Kühe, Schafe und Ziegen!', 'Die Knöpfe A, B, X und Y sind auf dem Bildschirm wie bei einer Spielkonsole angeordnet. 🎮',
+  'Hast du schon einen Baum gehauen? Wenn er umkippt, ruf laut TIMBER! 🌳', 'Ein Lächeln kostet nichts und macht andere froh. 😊', 'Hallo! Schön, dass du da bist!', 'Gleich gibt es Mittagessen, glaube ich.', 'Heute habe ich schon viel erlebt!',
+  'Wusstest du, dass der Mond immer dasselbe Gesicht zeigt? 🌙', 'Im Freibad kannst du rutschen und tauchen. 🏊', 'Kennst du den Trick mit dem Fahrrad? Einfach schneller treten!', 'Wenn du müde bist, schlaf in einem Bett – in jedem Haus steht eins. 🛏️',
+  'Möchtest du dir meinen Hut ausleihen? Besser nicht … 🎩', 'Weißt du, wer die schnellste Schnecke der Welt ist? Ich nicht. 🐌', 'Mein Lieblingsplatz ist die Bank im Park.', 'Lass uns Freunde sein! 🤝'
+];
+/* Passende Sätze zur Lage: Tageszeit, Wetter, Sterne – env = { night, kind ('rain'|'snow'|'clear'|'cloudy'), stars, name } */
+BI.TALK.ctx = function (env) {
+  const pick = a => a[(Math.random() * a.length) | 0], out = [];
+  if (env.night) out.push('Es ist schon dunkel. Gute Nacht, bald! 🌙', 'Hörst du die Grillen? Nachts ist es besonders still.', 'Bei Nacht sieht man die Sterne am Himmel funkeln. ✨');
+  else out.push('Die Sonne scheint – ein richtig guter Tag! ☀️', 'Morgens ist die Luft am frischesten.');
+  if (env.kind === 'rain') out.push('Es regnet! Hast du einen Schirm? ☔', 'Nach dem Regen kommt manchmal ein Regenbogen. 🌈', 'Die Pfützen sind perfekt zum Reinspringen!');
+  else if (env.kind === 'snow') out.push('Es schneit! Schneemänner bauen? ⛄', 'Brrr, ist das kalt. Mütze auf! 🧣');
+  else if (env.kind === 'cloudy') out.push('Heute ist es bewölkt. Vielleicht kommt gleich Regen.');
+  if (env.stars >= 100) out.push('Wow, du hast ' + env.stars + ' Sterne – du bist ein Superstar! 🌟');
+  else if (env.stars >= 20) out.push('Du hast schon ' + env.stars + ' Sterne gesammelt. Weiter so! ⭐');
+  else out.push('Hast du schon Sterne gesammelt? Die liegen überall herum. ⭐');
+  return pick(out);
+};

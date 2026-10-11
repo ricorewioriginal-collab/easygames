@@ -48,7 +48,19 @@ BI.audio = (function () {
     bump() { tone(110, .16, 'sawtooth', .16, 55); },
     splash() { tone(500, .25, 'sine', .1, 150); },
     /* Musik machen: Klavier, Xylophon, Trompete + Trommeln */
-    note(f, inst, vol) { vol = vol || 1; if (inst === 1) { tone(f * 2, .45, 'sine', .22 * vol); tone(f * 4, .12, 'sine', .06 * vol); } else if (inst === 2) { tone(f, .55, 'sawtooth', .1 * vol); tone(f * 2, .5, 'square', .03 * vol); } else { tone(f, .7, 'triangle', .26 * vol); tone(f * 2, .45, 'sine', .08 * vol); } },
+    note(f, inst, vol) { /* echte Instrumentklänge aus Teiltönen: Klavier (Anschlag + Ausklingen), Xylophon (hell, kurz), Trompete (Blech mit Anschwellen + Vibrato) */
+      if (!ctx) return; vol = vol || 1; const t = ctx.currentTime;
+      const part = (fr, type, v, a, d, dly) => { const o = ctx.createOscillator(), g = ctx.createGain(), s = t + (dly || 0); o.type = type; o.frequency.value = fr; g.gain.setValueAtTime(.0001, s); g.gain.exponentialRampToValueAtTime(v * vol, s + a); g.gain.exponentialRampToValueAtTime(.0001, s + a + d); o.connect(g); g.connect(sfxBus); if (wet && fr >= 500) g.connect(wet); o.start(s); o.stop(s + a + d + .05); };
+      if (inst === 1) { part(f * 2, 'sine', .3, .004, .55); part(f * 2 * 3.93, 'sine', .08, .002, .16); part(f * 2 * 9.2, 'sine', .02, .002, .06); }
+      else if (inst === 2) {
+        const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter(), lf = ctx.createOscillator(), lg = ctx.createGain();
+        o.type = 'sawtooth'; o.frequency.value = f; lp.type = 'lowpass'; lp.Q.value = 2; lp.frequency.setValueAtTime(f * 1.5, t); lp.frequency.exponentialRampToValueAtTime(f * 6, t + .09); lp.frequency.exponentialRampToValueAtTime(f * 3, t + .6);
+        lf.frequency.value = 5.5; lg.gain.value = f * .006; lf.connect(lg); lg.connect(o.frequency);
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2 * vol, t + .05); g.gain.setValueAtTime(.2 * vol, t + .42); g.gain.exponentialRampToValueAtTime(.0001, t + .68);
+        o.connect(lp); lp.connect(g); g.connect(sfxBus); o.start(t); lf.start(t); o.stop(t + .72); lf.stop(t + .72);
+      }
+      else { part(f, 'triangle', .3, .006, 1.1); part(f * 2, 'sine', .12, .004, .7); part(f * 3, 'sine', .05, .004, .4); part(f * 4, 'sine', .02, .003, .25); noise(.03, .05 * vol, 3000); }
+    },
     drum(k, vol) { vol = vol || 1; if (k === 0) { tone(150, .22, 'sine', .45 * vol, 40); } else if (k === 1) { noise(.16, .3 * vol, 1200); tone(220, .1, 'triangle', .15 * vol, 120); } else if (k === 2) { noise(.06, .18 * vol, 6000); } else { tone(200, .3, 'sine', .35 * vol, 90); } },
     shutter() { noise(.05, .35, 2500); tone(1800, .04, 'square', .08); tone(900, .06, 'square', .08, 0, .07); },
     meow() { tone(620, .3, 'triangle', .12, 960); tone(900, .3, 'triangle', .1, 520, .28); },
@@ -158,8 +170,19 @@ BI.audio = (function () {
     speak(txt) {
       const ss = window.speechSynthesis; if (!A.voiceOn || muted || !ss || !txt || typeof SpeechSynthesisUtterance === 'undefined') return;
       const clean = String(txt).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}→➤✔✖]/gu, ' ').replace(/[„“"]/g, '').replace(/\s+/g, ' ').trim(); if (clean.length < 4 || clean === A._said && ss.speaking) return;
-      if (!A._v || !A._vs) { const vs = ss.getVoices().filter(v => /^de/i.test(v.lang)); if (vs.length) { const sc = v => (/natural|neural|online/i.test(v.name) ? 6 : 0) + (/google|anna|petra|katja|marlene|vicki|amala|seraphina|yannick/i.test(v.name) ? 3 : 0) + (v.lang === 'de-DE' ? 2 : 0) + (v.localService ? 0 : 1); A._v = vs.sort((a, b) => sc(b) - sc(a))[0]; A._vs = true; } }
-      try { ss.cancel(); const u = new SpeechSynthesisUtterance(clean); u.lang = 'de-DE'; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1; A._said = clean; ss.speak(u); } catch (e) { }
+      A._said = clean; A._want = clean;
+      if (A._spT) return; /* mehrere Aufrufe kurz hintereinander: nur der letzte wird gesprochen (Chrome verschluckt speak() direkt nach cancel()) */
+      A._spT = setTimeout(() => {
+        A._spT = 0; const t = A._want; A._want = ''; if (!t || !A.voiceOn || muted) return;
+        try {
+          if (ss.speaking || ss.pending) ss.cancel();
+          if (ss.paused) ss.resume();
+          if (!A._v) { const vs = ss.getVoices().filter(v => /^de/i.test(v.lang)); if (vs.length) { const sc = v => (/natural|neural|online/i.test(v.name) ? 6 : 0) + (/google|anna|petra|katja|marlene|vicki|amala|seraphina|yannick/i.test(v.name) ? 3 : 0) + (v.lang === 'de-DE' ? 2 : 0) + (v.localService ? 1 : 0); A._v = vs.sort((a, b) => sc(b) - sc(a))[0]; } }
+          const u = new SpeechSynthesisUtterance(t); u.lang = 'de-DE'; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1;
+          u.onerror = e => { if (A._v && e && e.error !== 'canceled' && e.error !== 'interrupted') { A._v = null; A._bad = (A._bad || 0) + 1; if (A._bad < 3 && A.voiceOn) { const u2 = new SpeechSynthesisUtterance(t); u2.lang = 'de-DE'; try { ss.speak(u2); } catch (x) { } } } };
+          A._u = u; ss.speak(u); /* Referenz halten (sonst räumt Chrome die Äußerung manchmal vorzeitig weg) */
+        } catch (e) { }
+      }, 90);
     },
     setVoice(on) { A.voiceOn = on; if (!on && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } },
     rain(on) { // leises Regenrauschen (Schleife aus gefiltertem Rauschen)
@@ -187,5 +210,7 @@ BI.audio = (function () {
   A.goat = A.goat || A.baa;
   /* Beim ersten Tippen die Tierstimmen schon mal im Hintergrund laden */
   const _res = A.resume; A.resume = function () { _res(); if (ctx && !A._pre) { A._pre = true; setTimeout(() => ['cow', 'sheep', 'goat', 'pig', 'chicken', 'horse', 'donkey', 'dog', 'cat', 'duck', 'hit', 'coins', 'enter'].forEach(loadSample), 1500); } };
+  /* Stimmenliste früh anstoßen (Chrome lädt sie asynchron) */
+  try { const ss = window.speechSynthesis; if (ss) { ss.getVoices(); if (ss.addEventListener) ss.addEventListener('voiceschanged', () => { A._v = null; }); } } catch (e) { }
   return A;
 })();

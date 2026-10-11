@@ -2,6 +2,7 @@
 /* Bunte Insel – Fahrzeuge (Auto, Motorrad, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Eiswagen) und der Zug */
 BI.VEH = {
   car:       { name: 'Auto', icon: '🚗', max: 22, rev: 7, acc: 11, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
+  taxi:      { name: 'Taxi', icon: '🚕', max: 24, rev: 7, acc: 12, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
   bike:      { name: 'Motorrad', icon: '🏍️', max: 28, rev: 4, acc: 15, brake: 22, drag: 5, turn: 2.3, kind: 'bike', horn: 'bike', cols: [-.5, .5], r: .5, open: true, cam: 7 },
   police:    { name: 'Polizeiauto', icon: '🚓', max: 27, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', siren: 'police', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
   ambulance: { name: 'Krankenwagen', icon: '🚑', max: 24, rev: 6, acc: 10, brake: 22, drag: 5, turn: 1.7, kind: 'car', horn: 'truck', siren: 'ambulance', cols: [-1.5, 1.5], r: 1.2, cam: 10.5 },
@@ -39,6 +40,13 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       for (const z of [-1.15, .85]) for (const x of [-.82, .82]) b.box(x, .8, z, .1, .62, .12, c);
       b.box(0, 1.38, -.15, 1.5, .08, 2.2, c); b.box(0, .2, 2.05, 1.8, .3, .2, DARK); b.box(0, .2, -2.05, 1.8, .3, .2, DARK);
       return { wheels: [[.95, .38, 1.3, .38, .26, 1], [-.95, .38, 1.3, .38, .26, 1], [.95, .38, -1.3, .38, .26, 0], [-.95, .38, -1.3, .38, .26, 0]], head: [[-.65, .55, 2.1], [.65, .55, 2.1]], tail: [[-.65, .6, -2.1], [.65, .6, -2.1]] };
+    },
+    taxi(b) { /* gelb mit schwarz-weißem Schachbrett-Streifen und leuchtendem TAXI-Schild auf dem Dach – sofort erkennbar */
+      const o = MODELS.car(b, { color: 0xffcc1f });
+      for (let i = 0; i < 9; i++) { const c = i % 2 ? 0x1a1a1a : 0xffffff; for (const s of [-1, 1]) b.box(s * .96, .42, -1.9 + i * .44, .03, .12, .22, c); }
+      b.box(0, 1.55, -.15, .9, .22, .36, 0xfffbe0); b.box(0, 1.5, -.15, .5, .12, .3, 0x1a1a1a); b.box(0, 1.69, -.15, .84, .04, .3, 0x1a1a1a);
+      b.box(0, 1.56, .04, .8, .12, .02, 0x1a1a1a); b.box(0, 1.56, -.34, .8, .12, .02, 0x1a1a1a);
+      return o;
     },
     police(b) {
       const o = MODELS.car(b, { color: 0xf4f6fa });

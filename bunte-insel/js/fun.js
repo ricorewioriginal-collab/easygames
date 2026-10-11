@@ -108,17 +108,29 @@ BI.createFun = function (G) {
   /* ---------- Feuerwerk ---------- */
   const rockets = [];
   F.fireworks = function () {
-    const o = origin(); A.whoosh();
-    for (let i = 0; i < 4; i++) { const a = Math.random() * TAU, r = 7 + Math.random() * 8; rockets.push({ x: o.x + Math.sin(a) * r, z: o.z + Math.cos(a) * r, y: 1, vy: 22 + Math.random() * 6, ty: 26 + Math.random() * 12, delay: i * .45, c: [RGB(COL[(Math.random() * COL.length) | 0]), RGB(COL[(Math.random() * COL.length) | 0]), BI.C.white] }); }
+    const o = origin(); A.whoosh(); const yaw = G.camYaw ? G.camYaw() : 0, fx0 = -Math.sin(yaw), fz0 = -Math.cos(yaw);
+    if (G.skyLook) G.skyLook(9); /* Kamera schaut kurz flacher, damit der Himmel im Bild ist */
+    for (let i = 0; i < 6; i++) {
+      const d = 48 + Math.random() * 22, s = (i / 5 - .5) * 70 + (Math.random() - .5) * 8, x = o.x + fx0 * d + fz0 * -s, z = o.z + fz0 * d + fx0 * s;
+      const c1 = RGB(COL[(Math.random() * COL.length) | 0]), c2 = RGB(COL[(Math.random() * COL.length) | 0]);
+      rockets.push({ x, z, y: 1, vy: 26 + Math.random() * 6, ty: 17 + Math.random() * 12, delay: i * .5, ring: i % 3 === 1, c: [c1, c2, BI.C.white] });
+    }
     G.say('🎆 Feuerwerk!', 1500);
   };
   function updateRockets(dt) {
     for (let i = rockets.length - 1; i >= 0; i--) {
       const r = rockets[i]; if ((r.delay -= dt) > 0) continue;
-      r.y += r.vy * dt; fx.emit(r.x, r.y, r.z, (Math.random() - .5) * .8, -2, (Math.random() - .5) * .8, .5, 22, 1, .85, .4, 0, .9);
+      r.y += r.vy * dt; fx.emit(r.x, r.y, r.z, (Math.random() - .5) * .8, -2, (Math.random() - .5) * .8, .6, 70, 1, .85, .4, 0, .9);
       if (r.y >= r.ty) {
         A.boom();
-        for (let k = 0; k < 64; k++) { const a = Math.random() * TAU, e = Math.acos(2 * Math.random() - 1), sp = 7 + Math.random() * 3, c = r.c[k % 3]; fx.emit(r.x, r.y, r.z, Math.sin(e) * Math.cos(a) * sp, Math.cos(e) * sp, Math.sin(e) * Math.sin(a) * sp, 1.6, 40, c[0], c[1], c[2], 5, 1); }
+        const n = 80, sp0 = 9 + Math.random() * 3, ax = Math.random() * TAU;
+        for (let k = 0; k < n; k++) {
+          const a = Math.random() * TAU, e = Math.acos(2 * Math.random() - 1), sp = r.ring ? sp0 : sp0 * (.55 + Math.random() * .45), c = r.c[k % 3];
+          let vx = Math.sin(e) * Math.cos(a) * sp, vy = Math.cos(e) * sp, vz = Math.sin(e) * Math.sin(a) * sp;
+          if (r.ring) { const q = k / n * TAU; vx = Math.cos(q) * sp; vy = Math.sin(q) * sp * Math.cos(ax); vz = Math.sin(q) * sp * Math.sin(ax) * .6 + Math.cos(q) * 0; }
+          fx.emit(r.x, r.y, r.z, vx, vy, vz, 2.2 + Math.random() * .6, 130, c[0], c[1], c[2], 3, 1);
+        }
+        fx.burst(r.x, r.y, r.z, 14, [BI.C.white, BI.C.gold], 3, 1.4, 160, 0);
         rockets.splice(i, 1);
       }
     }
@@ -150,12 +162,13 @@ BI.createFun = function (G) {
     return best;
   };
   const WORDS = ['BONK!', 'PUFF!', 'AUA!', 'BUMM!', 'HUIII!', 'WUMMS!'];
+  G.W.onTreeFall = T => { fx.burst(T.x + T.wx * 3, .6, T.z + T.wz * 3, 22, [BI.C.dust, BI.C.green, BI.C.white], 4, .8, 26, 4); A.bump && A.bump(); };
   F.hitTree = function (T, fx0, fz0) {
     const dx = T.x - fx0, dz = T.z - fz0, l = Math.hypot(dx, dz) || 1; T.wx = dx / l; T.wz = dz / l; T.wob = 1; A.bonk(); G.say(WORDS[(Math.random() * WORDS.length) | 0], 700);
     fx.burst(T.x - T.wx * .5, 1.3, T.z - T.wz * .5, 6, [BI.C.dust, BI.C.white], 2.5, .5, 26, 6);
     for (let i = 0; i < 12; i++) fx.emit(T.x + (Math.random() - .5) * 2.2, (T.top || 3.6) + Math.random(), T.z + (Math.random() - .5) * 2.2, (Math.random() - .5) * 1.5, .5, (Math.random() - .5) * 1.5, 2.4, 24, .3 + Math.random() * .3, .75, .3, 1.5, .95);
     if (T.cd > 0) return; T.hp--; if (Math.random() < .35) apple(T);
-    if (T.hp <= 0) { T.cd = 25; T.hp = 8; for (let i = 0; i < 4; i++) apple(T); A.fanfare(); G.addStars(3); G.say('🏆 Der Baum gibt auf! +3 ⭐', 2800); fx.burst(T.x, 3, T.z, 40, [BI.C.gold, BI.C.pink, BI.C.green, BI.C.white], 8, 1.6, 26, 9); }
+    if (T.hp <= 0) { T.cd = 25; T.hp = 5; for (let i = 0; i < 4; i++) apple(T); A.fanfare(); G.addStars(3); G.say('🏆 TIMBER! Der Baum fällt um! +3 ⭐', 2800); fx.burst(T.x, 3, T.z, 40, [BI.C.gold, BI.C.pink, BI.C.green, BI.C.white], 8, 1.6, 26, 9); }
   };
   function updateApples(dt) {
     const P = G.P, px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;

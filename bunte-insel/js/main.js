@@ -48,7 +48,7 @@
 
   /* ---------- Welt, Effekte ---------- */
   let world = null; world = BI.buildWorld(scene);
-  const W = world, fx = new BI.Fx(scene, 520);
+  const W = world, fx = new BI.Fx(scene, 900);
   applyNight();
   const miniC = $('mini'), miniS = 150, miniBase = document.createElement('canvas'); miniBase.width = miniBase.height = miniS * 2; world.minimap(miniBase.getContext('2d'), miniS * 2);
   miniC.width = miniC.height = miniS * 2;
@@ -59,9 +59,9 @@
     const v = new BI.Vehicle(type, x, z, h, opts); const p = {}; W.resolve(x, z, v.r + .3, p); v.setPose(p.x, p.z, h); v.visual(0, 0); scene.add(v.root); vehicles.push(v); return v;
   }
   for (const s of W.vehicleSpawns) addVeh(s.type, s.x, s.z, s.h);
-  addVeh('car', 9, -24, Math.PI, { color: 0xe8453c }); addVeh('car', -9, 24, 0, { color: 0x3f8cff });
+  addVeh('taxi', 9, -24, Math.PI); addVeh('car', 12, -30, Math.PI, { color: 0xe8453c }); addVeh('car', -9, 24, 0, { color: 0x3f8cff });
   addVeh('ice', -9, -36, Math.PI); addVeh('bus', 31, 9, Math.PI / 2); addVeh('bike', 14, -9, .5, { color: 0xff8a1f }); addVeh('bike', 150, 14, 1.2, { color: 0xff5a9a }); addVeh('bicycle', 7, 36, .4, { color: 0x3f8cff }); addVeh('scooter', -7, 36, -.4, { color: 0xff5a9a }); addVeh('bicycle', 80, 36, 2.2, { color: 0x4cd07d });
-  addVeh('car', 150, -12, 1.6, { color: 0x4cd07d });
+  addVeh('car', 150, -12, 1.6, { color: 0x4cd07d }); addVeh('taxi', 144, -12, 1.6);
   const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
   const traffic = [];
   for (let i = 0; i < 9; i++) {
@@ -72,7 +72,7 @@
   for (let i = 0, made = 0; i < 160 && made < 14; i++) {
     const dir = (Math.random() * 4) | 0, d = 24 + Math.random() * 120, off = (Math.random() < .5 ? -1 : 1) * (6.4 + Math.random() * 1.2), x = [d, -d, off, off][dir], z = [off, off, d, -d][dir], r = Math.hypot(x, z);
     if (Math.abs(r - K.RA) < 8 || Math.abs(r - K.RB) < 8 || W.railSdf(x, z) < 9 || !W.free(x, z, 2.6)) continue;
-    const type = ['car', 'car', 'car', 'car', 'bike', 'bike', 'bus', 'ice'][made % 8]; addVeh(type, x, z, dir < 2 ? (Math.random() < .5 ? Math.PI / 2 : -Math.PI / 2) : (Math.random() < .5 ? 0 : Math.PI), { color: BI.PAINT[(Math.random() * BI.PAINT.length) | 0] }); made++;
+    const type = ['car', 'taxi', 'car', 'car', 'bike', 'bike', 'bus', 'ice'][made % 8]; addVeh(type, x, z, dir < 2 ? (Math.random() < .5 ? Math.PI / 2 : -Math.PI / 2) : (Math.random() < .5 ? 0 : Math.PI), { color: BI.PAINT[(Math.random() * BI.PAINT.length) | 0] }); made++;
   }
   const train = new BI.Train(scene, W);
   const trainVeh = { isTrain: true, spec: { name: 'Zug', icon: '🚂', max: 24, kind: 'train', horn: 'train', cam: 17 }, get x() { return train.cars[0].x; }, get z() { return train.cars[0].z; }, get h() { return train.cars[0].h; }, get v() { return train.v; }, siren: false, r: 3 };
@@ -103,13 +103,13 @@
     scene.add(c.group); npcs.push(n); return n;
   }
   const spot = () => W.randRoadPoint(Math.random, 0, 0, 0);
-  for (let i = 0; i < 14; i++) { const p = spot(); mkNpc(p.x + (Math.abs(p.x) < 5 ? 6.5 : 0), p.z + (Math.abs(p.z) < 5 ? 6.5 : 0)); }
-  for (let f = 0; f < 9; f++) { /* Familien: Eltern vorn, Kinder laufen hinterher */
+  for (let i = 0; i < 22; i++) { const p = spot(); mkNpc(p.x + (Math.abs(p.x) < 5 ? 6.5 : 0), p.z + (Math.abs(p.z) < 5 ? 6.5 : 0)); }
+  for (let f = 0; f < 12; f++) { /* Familien: Eltern vorn, Kinder laufen hinterher */
     const p = spot(), skin = rnd(SK), lead = mkNpc(p.x + 6.5, p.z + 6.5, { skin }); lead.spd = 1.3;
     if (Math.random() < .55) mkNpc(p.x + 7.5, p.z + 6.5, { skin, lead, fd: .6, fs: 1.1 });
     const kids = 1 + ((Math.random() * 2) | 0); for (let k = 0; k < kids; k++) mkNpc(p.x + 6.5, p.z + 8, { skin, kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * (.7 + k * .3) });
   }
-  for (let i = 0; i < 10; i++) { const p = spot(); mkNpc(p.x + 5, p.z + 5, { kid: true }); } /* spielende Kinder */
+  for (let i = 0; i < 16; i++) { const p = spot(); mkNpc(p.x + 5, p.z + 5, { kid: true }); } /* spielende Kinder */
   for (const n of npcs) { n.spd0 = n.spd; n.style = 0; n.dancer = 0; }
   function animalMesh(kind) {
     const b = new BI.Batch(), g = new THREE.Group();
@@ -152,13 +152,13 @@
   const dummy = new THREE.Object3D();
 
   /* ---------- Zustand ---------- */
-  let creating = false, creatorFirst = false, state = 'menu', t = 0, toastT = 0, mission = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
+  let creating = false, creatorFirst = false, state = 'menu', t = 0, toastT = 0, mission = null, offer = null, missionDelay = 0, everDrove = false, introT = 0, saveT = 0;
   const cam = { yaw: 0, pitch: .42, zoom: 1, off: 0, idle: 0, x: 0, y: 8, z: 40, dist: 8, ego: false, egoOff: 0 };
   const inp = { kx: 0, ky: 0, sx: 0, sy: 0, horn: false, turbo: false, act: false, aux: false, jump: false, hornEdge: false, up: false, down: false };
   const keys = {};
 
   function say(txt, ms) { A.speak(txt); const el = $('toast'); el.textContent = txt; el.classList.add('show'); toastT = ms || 2600; }
-  const G = { makePappnase: BI.makePappnase, scene, camera, fx, W, A, P, vehicles, npcs, animals, say, addStars: n => addStars(n), userTrees: () => { const out = []; for (const it of build.items) if (it.t === 'tree') { if (!it.tr) it.tr = { x: it.gx * 4, z: it.gz * 4, top: 4, hp: 8, cd: 0, wob: 0 }; out.push(it.tr); } return out; } };
+  const G = { camYaw: () => cam.yaw, skyLook: s => { cam.fw = s; }, makePappnase: BI.makePappnase, scene, camera, fx, W, A, P, vehicles, npcs, animals, say, addStars: n => addStars(n), userTrees: () => { const out = []; for (const it of build.items) if (it.t === 'tree') { if (!it.tr) it.tr = { x: it.gx * 4, z: it.gz * 4, top: 4, hp: 8, cd: 0, wob: 0 }; out.push(it.tr); } return out; } };
   const fun = BI.createFun(G), build = BI.createBuild(G), range = BI.createRange(G);
   let pax = 0, lastWarn = -9;
   const platPeople = W.stations.map(stn => {
@@ -184,18 +184,18 @@
   function enter(v) {
     if (build.active) return;
     fun.setDance(false); P.veh = v; everDrove = true; A.enter(); kids.earn(v.isTrain ? 'train' : v.spec.boat ? 'boat' : v.type === 'heli' || v.type === 'rcheli' ? 'heli' : 'ride');
-    if (v.spec.remote) { v.driver = true; startMission(true); updateButtons(true); say('🎮 ' + heroName() + ' steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
+    if (v.spec.remote) { v.driver = true; offer = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); say('🎮 ' + heroName() + ' steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
     else {
       v.driver = true; v.v = v.v || 0;
       if (v.spec.open && v.seat) { v.tilt.add(char.group); char.group.position.set(v.seat[0], v.seat[1] - .42, v.seat[2]); char.group.rotation.set(0, 0, 0); char.sit(); char.group.visible = true; } else char.group.visible = false;
     }
     if (v.isTrain) train.driven = true;
-    startMission(true); updateButtons(true);
+    offerMission(); updateButtons(true);
   }
   function leave() {
     const v = P.veh; if (!v) return;
-    if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
+    if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; offer = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
     if (v.isTrain && train.v > 3) { say('Halte den Zug an zum Aussteigen 🚂', 2200); return; }
     if (v.spec.boat && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
     if (v.spec && v.spec.fly && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
@@ -207,11 +207,11 @@
     if (!v.isTrain) { v.driver = null; v.siren = false; if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
     P.veh = null; char.group.visible = true;
     const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
-    mission = null; clearMissionVisuals(); updateHud(); updateButtons(true);
+    mission = null; offer = null; clearMissionVisuals(); updateHud(); updateButtons(true);
   }
 
   /* ---------- Missionen ---------- */
-  const MISSION_BY = { bicycle: 'courier', scooter: 'courier', police: 'patrol', ambulance: 'rescue', fire: 'fire', bus: 'bus', ice: 'ice', car: 'taxi', bike: 'courier', tractor: 'hay', train: 'train', heli: 'fly', boat: 'sail' };
+  const MISSION_BY = { bicycle: 'courier', scooter: 'courier', police: 'patrol', ambulance: 'rescue', fire: 'fire', bus: 'bus', ice: 'ice', taxi: 'taxi', bike: 'courier', tractor: 'hay', train: 'train', heli: 'fly', boat: 'sail' };
   const MTITLE = { patrol: ['🚓', 'Streife fahren'], rescue: ['🚑', 'Notruf!'], fire: ['🚒', 'Feuerwehr-Einsatz'], bus: ['🚌', 'Bus-Linie'], ice: ['🍦', 'Eis-Lieferung'], taxi: ['🚕', 'Taxi-Fahrt'], courier: ['📦', 'Paket-Kurier'], hay: ['🌾', 'Heu einsammeln'], train: ['🚂', 'Zug-Fahrt'], fly: ['🚁', 'Rundflug'], sail: ['⛵', 'Segeltörn'] };
   const beacon = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 38, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .32, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
   beacon.position.y = 19; beacon.visible = false; scene.add(beacon);
@@ -221,6 +221,13 @@
   let mNpc = null;
   function clearMissionVisuals() { beacon.visible = beaconRing.visible = flame.visible = false; if (mNpc) { scene.remove(mNpc.c.group); mNpc = null; } }
   function road(prev, min) { return W.randRoadPoint(Math.random, prev ? prev.x : (P.veh ? P.veh.x : P.x), prev ? prev.z : (P.veh ? P.veh.z : P.z), min || 55); }
+  /* Aufträge starten nie von selbst: erst eine Anfrage – das Kind entscheidet (Ja/Nein, auch Taste J / N) */
+  function offerMission() {
+    mission = null; offer = null; clearMissionVisuals(); const v = P.veh; if (!v) { updateHud(); return; }
+    const kind = MISSION_BY[v.isTrain ? 'train' : v.type]; if (kind && !(v.spec.remote)) offer = { kind, veh: v }; updateHud();
+  }
+  function answerOffer(yes) { if (!offer) return; const o = offer; offer = null; if (yes && P.veh === o.veh) { A.ding && A.ding(); startMission(true); } else { updateHud(); if (!yes) say('Alles klar – fahr einfach so los 😊', 1800); } }
+  $('mYes').addEventListener('click', () => answerOffer(true)); $('mNo').addEventListener('click', () => answerOffer(false));
   function startMission(first) {
     if (!P.veh) { mission = null; clearMissionVisuals(); return; }
     const key = P.veh.isTrain ? 'train' : P.veh.type, kind = MISSION_BY[key]; if (!kind) { mission = null; clearMissionVisuals(); return; }
@@ -273,7 +280,7 @@
   }
   function updateMission(dt) {
     if (!P.veh) return;
-    if (!mission) { if (missionDelay > 0) { missionDelay -= dt; if (missionDelay <= 0) startMission(); } return; }
+    if (!mission) { if (missionDelay > 0) { missionDelay -= dt; if (missionDelay <= 0) offerMission(); } return; }
     const M = mission, s = M.steps[M.i], v = P.veh;
     if (s.type === 'reach') { if (Math.hypot(v.x - s.x, v.z - s.z) < s.r && (!s.air || Math.abs((v.y || 0) - s.y) < 7)) stepDone(); }
     else if (s.type === 'land') { if (Math.hypot(v.x - s.x, v.z - s.z) < 9 && (v.y || 0) < 1.6 && Math.abs(v.v) < 2.5) stepDone(); }
@@ -324,14 +331,13 @@
   /* ---------- HUD ---------- */
   const mCard = $('mission'), arrow = $('mArrow');
   function updateHud() {
-    const M = mission;
-    if (M) {
+    const M = mission; mCard.classList.toggle('offer', !!offer); $('mOffer').hidden = !offer;
+    if (offer && !M) { const [ic, ti] = MTITLE[offer.kind]; $('mIcon').textContent = ic; $('mTitle').textContent = ti; $('mText').textContent = 'Auftrag annehmen?'; mCard.hidden = false; mCard.classList.remove('min'); if (state === 'play' && ('o' + offer.kind) !== spoke) { spoke = 'o' + offer.kind; A.speak(ti + '. Möchtest du den Auftrag annehmen?'); } }
+    else if (M) {
       const s = M.steps[M.i], [ic, ti] = MTITLE[M.kind];
       $('mIcon').textContent = ic; $('mTitle').textContent = ti + (M.steps.length > 1 ? ' · ' + (M.i + 1) + '/' + M.steps.length : ''); $('mText').textContent = s.type === 'tstop' ? phaseText(s) : s.label; mCard.hidden = false; const sk = M.kind + M.i + s.type; if (sk !== spoke && state === 'play') { spoke = sk; if (s.type !== 'tstop') A.speak(s.label); }
     } else if (guide && state === 'play') {
       $('mIcon').textContent = guide.d.icon; $('mTitle').textContent = '🧭 Ziel'; $('mText').textContent = guide.d.name; mCard.hidden = false;
-    } else if (!P.veh && state === 'play') {
-      $('mIcon').textContent = everDrove ? '⭐' : '🚗'; $('mTitle').textContent = everDrove ? 'Sterne sammeln' : 'Los geht\'s!'; $('mText').textContent = everDrove ? 'Lauf oder fahre zu den Sternen' : 'Geh zu einem Fahrzeug und steige ein'; mCard.hidden = false;
     } else mCard.hidden = true;
     $('starN').textContent = save.stars;
   }
@@ -455,9 +461,10 @@
       case 'Digit0': doFun('xxl'); break;
       case 'ShiftLeft': case 'ShiftRight': inp.turbo = true; break;
       case 'KeyE': case 'Enter': inp.act = true; break;
+      case 'KeyJ': if (offer) answerOffer(true); break;
       case 'KeyF': inp.aux = true; break;
       case 'KeyH': inp.horn = true; inp.hornEdge = true; break;
-      case 'KeyN': toggleNight(); break;
+      case 'KeyN': if (offer) answerOffer(false); else toggleNight(); break;
       case 'KeyM': toggleSound(); break;
       case 'KeyC': cam.zoom = cam.zoom > 1.3 ? .75 : cam.zoom + .35; break;
       case 'KeyQ': keys.q = true; break;
@@ -734,6 +741,27 @@
   function updateEmojis(dt) {
     for (let i = emos.length - 1; i >= 0; i--) { const q = emos[i]; q.t += dt; const a = q.av, x = a ? a.x : P.veh ? P.veh.x : P.x, z = a ? a.z : P.veh ? P.veh.z : P.z, y = (a ? (a.y || 0) + (a.up || 0) : P.veh ? 0 : P.y) + 2.9 + q.t * .5; q.sp.position.set(x, y, z); q.sp.material.opacity = Math.min(1, (2.4 - q.t) * 2); q.sp.scale.setScalar(1.1 + Math.sin(Math.min(q.t, .4) / .4 * Math.PI) * .5); if (q.t > 2.4) { scene.remove(q.sp); q.sp.material.dispose(); emos.splice(i, 1); } }
   }
+  /* Sprechblase über dem Kopf (NPC): kurz sichtbar, wächst auf, blendet aus – ersetzt die große Textzeile */
+  const bubbles = [];
+  function showBubble(n, txt, ms) {
+    let b = bubbles.find(q => q.n === n); if (b) { b.sp.material.map.dispose(); b.sp.material.dispose(); scene.remove(b.sp); bubbles.splice(bubbles.indexOf(b), 1); }
+    if (bubbles.length > 5) { const o = bubbles.shift(); o.sp.material.map.dispose(); o.sp.material.dispose(); scene.remove(o.sp); }
+    const cv = document.createElement('canvas'), W0 = 300, c = cv.getContext('2d'); let fs = txt.length > 70 ? 21 : txt.length > 40 ? 24 : 28, lines;
+    const wrap = () => { c.font = '700 ' + fs + 'px system-ui, sans-serif'; const out = []; let cur = ''; for (const w of txt.split(' ')) { const t = cur ? cur + ' ' + w : w; if (c.measureText(t).width > W0 - 36 && cur) { out.push(cur); cur = w; } else cur = t; } out.push(cur); return out; };
+    lines = wrap(); while (lines.length > 4 && fs > 15) { fs -= 2; lines = wrap(); } if (lines.length > 4) { lines = lines.slice(0, 4); lines[3] = lines[3].slice(0, -1) + '…'; }
+    const lh = fs * 1.25, H0 = Math.ceil(lines.length * lh + 34); cv.width = W0; cv.height = H0 + 16; c.font = '700 ' + fs + 'px system-ui, sans-serif';
+    c.fillStyle = '#fff'; c.strokeStyle = 'rgba(30,60,110,.55)'; c.lineWidth = 3; c.beginPath(); const r = 16; c.moveTo(r + 2, 2); c.arcTo(W0 - 2, 2, W0 - 2, H0, r); c.arcTo(W0 - 2, H0, W0 / 2 + 12, H0, r); c.lineTo(W0 / 2 + 10, H0); c.lineTo(W0 / 2, H0 + 14); c.lineTo(W0 / 2 - 8, H0); c.arcTo(2, H0, 2, 2, r); c.arcTo(2, 2, W0, 2, r); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#16335e'; c.textAlign = 'center'; c.textBaseline = 'middle'; lines.forEach((l, i) => c.fillText(l, W0 / 2, 17 + lh * (i + .5)));
+    const tex = new THREE.CanvasTexture(cv); tex.minFilter = THREE.LinearFilter; const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false })); sp.renderOrder = 20;
+    const k = 0.0105; sp.scale.set(W0 * k, (H0 + 16) * k, 1); sp.center.set(.5, 0); scene.add(sp); bubbles.push({ n, sp, t: 0, ms: (ms || 3600) / 1000, k, asp: (H0 + 16) / W0 });
+  }
+  function updateBubbles(dt) {
+    for (let i = bubbles.length - 1; i >= 0; i--) {
+      const q = bubbles[i]; q.t += dt; const n = q.n, e = Math.min(1, q.t / .18), s = 1 + (1 - e) * -.6 + Math.sin(e * Math.PI) * .08;
+      q.sp.position.set(n.x, (n.y || 0) + (n.up || 0) + 2.45, n.z); q.sp.scale.set(300 * q.k * s, 300 * q.k * s * q.asp, 1); q.sp.material.opacity = Math.min(1, (q.ms - q.t) * 3);
+      if (q.t >= q.ms) { q.sp.material.map.dispose(); q.sp.material.dispose(); scene.remove(q.sp); bubbles.splice(i, 1); }
+    }
+  }
   function highFive(a) {
     const now = performance.now(); if (now - (a.hfDone || 0) < 6000) return; a.hfDone = now; addStars(1); A.star(); A.fanfare(); const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;
     fx.burst((px + a.x) / 2, 2.3, (pz + a.z) / 2, 24, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 30, 6); say('🙌 Abklatschen mit ' + a.name + '! +1 ⭐', 2600);
@@ -958,6 +986,7 @@
   let weather = null;
   function applySeason() { if (weather) weather.applySeason(); }
   const pool = BI.createPool({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), earn: id => kids.earn(id), char: () => char, openWard: () => openWard() });
+  const play = BI.createPlay({ scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => kids.earn(id), char: () => char, items: () => build.items });
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
@@ -976,13 +1005,21 @@
     enter(trainVeh);
   }
   function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs.concat(town.folk)) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
+  /* Satz für das Gespräch: beim ersten Mal persönliche Begrüßung, danach bunt gemischt (eigene Sätze, Plausch, Tageszeit/Wetter/Sterne) – ohne Wiederholung hintereinander */
+  function npcLine(p) {
+    if (!(save.talked || []).includes(p.name)) { p.last = 0; return 'Hallo ' + heroName() + '! ' + p.lines[0]; }
+    const r = Math.random(); if (r < .2) return BI.TALK.ctx({ night: night > .5, kind: weather && weather.kind, stars: save.stars });
+    if (r < .4) { const c = BI.TALK.chat; return c[(Math.random() * c.length) | 0]; }
+    let k = 0; if (p.lines.length > 1) do { k = (Math.random() * p.lines.length) | 0; } while (k === p.last); p.last = k; return p.lines[k];
+  }
   function talkNpc(n) {
-    const p = n.p, line = p.lines[p.i++ % p.lines.length]; n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
-    say('💬 ' + p.name + ': „' + line + '“', 5200); if (A.speak) A.speak(p.name.split(' ')[0] + ' sagt: ' + line);
+    const p = n.p, line = npcLine(p); n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
+    showBubble(n, line, 2600 + line.length * 38); if (A.speak) A.speak(line);
     { const iv = garden.inv(); if ((iv.bouquet || 0) > 0) { iv.bouquet--; addStars(3); A.fanfare(); fx.burst(n.x, 2, n.z, 16, [BI.C.pink, BI.C.red, BI.C.white], 4, 1.2, 28, 4); say('💐 ' + p.name + ': „Oh, danke für die Blumen!“ +3 ⭐', 3200); kids.earn('gift'); } }
     const T = save.talked || (save.talked = []); if (!T.includes(p.name)) { T.push(p.name); persist(); if (T.length >= 5) kids.earn('chat'); }
   }
   function placeNear() {
+    if (play.busy() && state === 'play') return { src: 'play', n: { k: 'stop' } };
     if (P.veh || sl.t >= 0 || rs.ui || mpOpen || wardOpen) return null;
     const g = garden.near(); if (g) return { src: 'garden', n: g };
     if (combat.nearKai()) return { src: 'arena' };
@@ -992,14 +1029,15 @@
     if (camp.near()) return { src: 'camp' };
     if (farm.nearFarmer()) return { src: 'farmer' };
     const pn = pool.near(); if (pn) return { src: 'pool', n: pn };
+    { const ln = play.near(); if (ln) return { src: 'play', n: ln }; }
     { const nn = npcNear(); if (nn) return { src: 'npc', npc: nn }; }
     const an = farm.animalNear(); if (an) return { src: 'animal', a: an };
     return null;
   }
-  const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'] };
+  const PLN = { plant: ['🌱', 'Pflanzen'], water: ['💧', 'Gießen'], harvest: ['🧺', 'Ernten'], slide: ['🛝', 'Rutschen'], dive: ['🤿', 'Springen'], ice: ['🍦', 'Eis holen'], cabin: ['🚪', 'Umziehen'], swing: ['🪢', 'Schaukeln'], seesaw: ['⚖️', 'Wippen'], sand: ['🏖️', 'Buddeln'], hammock: ['🛌', 'Ausruhen'], lounger: ['☀️', 'Sonnenbaden'], wish: ['⛲', 'Wünschen'], stop: ['⬇️', 'Absteigen'] };
   function placeLabel(n) { if (n.src === 'furn') return town.label(n.n);  if (n.src === 'station') return ['🚂', 'Zug fahren'];  if (n.src === 'arena') return ['🥊', 'Arena'];  if (n.src === 'npc') return ['💬', n.npc.p.name.split(' ')[0]];  if (n.src === 'camp') return ['📖', 'Geschichten']; if (n.src === 'kitchen') return ['🍳', 'Kochen']; if (n.src === 'animal' && n.a.k === 'cow') return ['🥛', 'Melken']; if (n.src === 'farmer') return ['💬', 'Bauer Heinz']; if (n.src === 'animal') return ['🤗', farm.SP[n.a.k].name]; return PLN[n.n.k]; }
   function placeAct(n) {
-    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
+    if (n.src === 'garden') garden.act(n.n); else if (n.src === 'farmer') farm.talk(); else if (n.src === 'pool') pool.act(n.n); else if (n.src === 'play') play.act(n.n); else if (n.src === 'npc') talkNpc(n.npc); else if (n.src === 'kitchen') kitchen.show(); else if (n.src === 'camp') camp.show(); else if (n.src === 'arena') combat.openPanel(); else if (n.src === 'furn') town.act(n.n); else if (n.src === 'station') boardTrain(n.i); else if (n.src === 'animal') { if (!farm.milk(n.a)) farm.care('stroke'); }
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
@@ -1275,16 +1313,17 @@
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
     jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
-    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || town.open || combat.panelOpen || pool.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
+    if (shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || garden.open || farm.bookOpen || kitchen.open || room.open || camp.open || town.open || combat.panelOpen || pool.busy() || play.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
   let hitCool = 0, hornActive = false;
   function updatePlayer(dt) {
     const [jx, jy] = axes();
-    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (P.veh) leave(); else { const nv = nearVehicle(); if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
     if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
     if (rs.ui) { inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (pool.busy()) { inp.jump = inp.aux = inp.hornEdge = false; return; }
+    if (play.busy()) { if (inp.jump || inp.aux) play.stop(); inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (fun.dancing && (jx || jy || inp.jump || P.veh)) fun.setDance(false);
     if (P.veh) {
       const v = P.veh;
@@ -1324,7 +1363,7 @@
       if (fun.ride) P.vy = P.y < 6 ? 2.2 : 0; else P.vy = Math.max(P.vy - 20 * dt, P.softFall > 0 ? -5 : -14);
       if (P.softFall > 0) P.softFall -= dt;
       P.y += P.vy * dt;
-      if (P.y < gy) { P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
+      if (P.y < gy) { P.y = gy; P.vy = 0; if (build.nearType(P.x, P.z, 'tramp', 1.7) || play.trampAt(P.x, P.z)) { P.vy = 11.5; A.boing(); fx.burst(P.x, .3, P.z, 6, [BI.C.blue, BI.C.white], 3, .6, 24, 6); } }
       if (P.y <= gy + .02 && P.speed > .5 && Math.random() < dt * 10 && build.nearType(P.x, P.z, 'pool', 1.9)) { fx.burst(P.x, .3, P.z, 3, [BI.C.water], 2, .5, 24, 6); if (Math.random() < .2) A.splash(); }
       P.phase += dt * (6 + P.speed * 1.2); P.wave = Math.max(0, P.wave - dt);
       if (inp.hornEdge) {
@@ -1487,7 +1526,7 @@
       if (!s.on) { s.t -= dt; if (s.t <= 0) { const p = starSpot(false); s.x = p.x; s.z = p.z; s.on = true; } dummy.scale.setScalar(0); }
       else {
         if (Math.abs(s.x - px) < R && Math.abs(s.z - pz) < R && Math.hypot(s.x - px, s.z - pz) < R && low && state === 'play') { s.on = false; s.t = 45; A.star(); addStars(1); gameStar(); fx.burst(s.x, 1.8, s.z, 14, [BI.C.gold, BI.C.white], 5, .9, 24, 8); }
-        dummy.position.set(s.x, 1.9 + Math.sin(t * 2 + s.ph) * .25, s.z); dummy.rotation.set(0, t * 1.8 + s.ph, 0); dummy.scale.setScalar(1.1);
+        dummy.position.set(s.x, 1.3 + Math.sin(t * 2 + s.ph) * .15, s.z); dummy.rotation.set(0, t * 1.8 + s.ph, 0); dummy.scale.setScalar(.42);
       }
       dummy.updateMatrix(); starMesh.setMatrixAt(i, dummy.matrix);
     }
@@ -1514,6 +1553,7 @@
       pitch = BI.lerp(pitch, Math.abs(v.v) > 12 ? .3 : .42, .02);
     } else { tx = P.x; ty = P.y + 1.3; tz = P.z; dist = 7.2 * cam.zoom; const sh = Math.max(build.shelter(P.x, P.z), W.shelter ? W.shelter(P.x, P.z) : 0); cam.sp = BI.damp(cam.sp || 0, sh === 2 ? 1.12 : sh === 1 ? .85 : 0, 3, dt); if (cam.sp > .04 && !build.active) pitch = Math.max(pitch, cam.sp); }
     { const L = !v && combat.lock(); if (L) { tx = L.x; tz = L.z; ty = 1.3; dist = 9; pitch = .3; cam.yaw += BI.angDiff(cam.yaw, L.yaw) * Math.min(1, dt * 3); } }
+    cam.fwp = BI.damp(cam.fwp || 0, cam.fw > 0 ? 1 : 0, 2.5, dt); if (cam.fw > 0) cam.fw -= dt; if (cam.fwp > .01) pitch = BI.lerp(pitch, Math.min(pitch, .08), cam.fwp);
     if (keys.q) cam.yaw += dt * 1.6; if (keys.r) cam.yaw -= dt * 1.6;
     // Gebäude zwischen Kamera und Ziel -> näher heranholen
     let d = dist; const cp = Math.cos(pitch), sx = Math.sin(cam.yaw) * cp, sz = Math.cos(cam.yaw) * cp;
@@ -1546,7 +1586,7 @@
     if (Math.abs(nightT - night) > .002) { night += clamp(nightT - night, -dt * .8, dt * .8); applyNight(); }
     if (state === 'play') { updatePlayer(dt); updateMission(dt); }
     else if (state === 'menu') { char.group.position.set(P.x, 0, P.z); char.group.rotation.y = P.h; char.pose(t * 2, 0, Math.sin(t) > .6); }
-    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
+    updateWorldActors(dt); updateRange(dt); updateRemote(dt); updateEmojis(dt); updateBubbles(dt); updateGame(dt); kids.update(dt); updateGuide(dt); updateParent(dt); garden.update(dt, t); farm.update(dt, t); weather.update(dt, t); town.update(dt, t); beauty.update(dt, t, night, weather.wx); updateParties(dt); camp.update(dt, t, night); { const kk = Math.max(weather.wx, combat.dim); if (Math.abs(kk - wxK) > .004) { wxK = kk; applyWx(); } } pool.update(dt, t); play.update(dt, t); sendNet(dt); updateFlatsLife(dt); updateSleep(dt);
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t);
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
@@ -1561,5 +1601,5 @@
   $('loading').hidden = true; $('menu').hidden = false;
   requestAnimationFrame(frame);
   // Test-/Debug-Zugriff
-  window.__bi = { W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();

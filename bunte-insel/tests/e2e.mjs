@@ -16,21 +16,22 @@ const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 await page.click('#bStart'); await page.waitForTimeout(400);
 const ev = f => page.evaluate(f);
 // Missionen je Typ: Schritte der Reihe nach "anfahren"
-for (const ty of ['car','bike','police','ambulance','bus','ice','tractor']) {
+for (const ty of ['taxi','bike','police','ambulance','bus','ice','tractor']) {
   const res = await page.evaluate(async ty => {
-    const b = window.__bi; if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === ty && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v);
+    const b = window.__bi; if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === ty && !v.ai); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); const offered = !!b.offer && !b.mission, mt = b.mission; b.answerOffer(true);
     const sleep = ms => new Promise(r => setTimeout(r, ms)); const kind = b.mission.kind, n = b.mission.steps.length, s0 = b.save.stars; let done = 0;
     for (let i = 0; i < n + 1; i++) {
       const m = b.mission; if (!m) break; const s = m.steps[m.i]; v.x = s.x; v.z = s.z; v.v = 0; await sleep(200); done++;
     }
     await sleep(300);
-    return { kind, n, gained: b.save.stars - s0, active: !!b.mission };
+    return { kind, n, gained: b.save.stars - s0, active: !!b.mission, offered, mt: !!mt };
   }, ty);
+  ok(res.offered && !res.mt, `${ty}: Auftrag wird nur angeboten (nicht automatisch gestartet)`);
   ok(res.gained >= res.n + 5 && !res.active, `${ty}: Mission ${res.kind} (${res.n} Schritte) fertig, +${res.gained} Sterne`);
 }
 // Feuerwehr: Löschen
 const fire = await page.evaluate(async () => {
-  const b = window.__bi; if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'fire'); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v);
+  const b = window.__bi; if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'fire'); b.P.x = v.x + 2; b.P.z = v.z; b.enter(v); b.answerOffer(true);
   const s = b.mission.steps[0]; v.x = s.fx !== undefined ? s.fx - 8 : s.x - 8; v.z = s.z; v.v = 0; const sleep = ms => new Promise(r => setTimeout(r, ms));
   await sleep(300); const before = s.prog; const s0 = b.save.stars; b.inp.horn = true;
   for (let i = 0; i < 200 && b.mission && b.mission.steps[0] === s; i++) await sleep(100);
@@ -39,7 +40,7 @@ const fire = await page.evaluate(async () => {
 ok(!fire.mission && fire.before === 0, 'Feuerwehr: Feuer mit Wasser gelöscht, Mission fertig');
 // Hubschrauber: starten, Ringe, Landen, Aussteigen nur am Boden
 const hel = await page.evaluate(async () => {
-  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'heli'); b.P.x = v.x + 3; b.P.z = v.z; b.enter(v);
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.vehicles.find(v => v.type === 'heli'); b.P.x = v.x + 3; b.P.z = v.z; b.enter(v); b.answerOffer(true);
   const n = b.mission.steps.length, s0 = b.save.stars; b.inp.up = true; await sleep(2500); b.inp.up = false; const y1 = v.y; b.leave(); const stayed = !!b.P.veh;
   for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const s = m.steps[m.i]; v.x = s.x; v.z = s.z; v.y = s.air ? s.y : .5; v.v = 0; v.vy = 0; await sleep(250); }
   await sleep(300); const g = b.save.stars - s0; v.y = 0; v.vy = 0; v.v = 0; b.leave(); return { y1, stayed, g, n, out: !b.P.veh };
@@ -47,7 +48,7 @@ const hel = await page.evaluate(async () => {
 ok(hel.y1 > 4 && hel.stayed && hel.g >= hel.n + 5 && hel.out, `Hubschrauber: Höhe ${hel.y1.toFixed(1)}, in der Luft kein Aussteigen, ${hel.n} Schritte, +${hel.g} Sterne`);
 // Zug-Simulation: 3 Halte mit Türen öffnen/schließen, Fahrgäste, Bonus
 const tr = await page.evaluate(async () => {
-  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const c = b.train.cars[0]; b.P.x = c.x + 3; b.P.z = c.z + 2; b.enter(b.trainVeh);
+  const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const c = b.train.cars[0]; b.P.x = c.x + 3; b.P.z = c.z + 2; b.enter(b.trainVeh); b.answerOffer(true);
   const M = b.mission, n = M.steps.length, s0 = b.save.stars, res = []; const gs = async sec => { const t0 = b.t; while (b.t - t0 < sec) await sleep(40); };
   for (let k = 0; k < n; k++) { const s = b.mission.steps[b.mission.i]; b.train.v = 0; b.train.s = b.W.stations[s.idx].s - 1.5; b.train.mode = 'drive'; await gs(.4); res.push(s.phase); b.trainDoors(); await gs(4.3); res.push(s.phase); b.trainDoors(); await gs(.4); }
   const out = { kind: M.kind, n, res, gained: b.save.stars - s0, pax: b.pax, done: !b.mission }; b.train.v = 0; b.leave(); return out;
@@ -116,7 +117,7 @@ ok(qm.first === 'punch' && qm.n === 6 && qm.more && qm.all > 6 && qm.closed && q
 // Boot am Steg: einsteigen, aufs Meer, Segeltörn-Mission, nur am Steg aussteigen
 const bt = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.boat; b.P.x = 0; b.P.z = 205.5; b.P.y = .65; await sleep(300);
-  const out = { near: b.nearVehicle() === v }; b.enter(v); out.mission = b.mission && b.mission.kind; v.h = Math.PI * .5; b.keys.u = true; for (let i = 0; i < 300 && v.x < 40; i++) await sleep(100); b.keys.u = false; out.speed = v.v; out.rad = Math.hypot(v.x, v.z); out.farLeave = (b.leave(), !!b.P.veh);
+  const out = { near: b.nearVehicle() === v }; b.enter(v); b.answerOffer(true); out.mission = b.mission && b.mission.kind; v.h = Math.PI * .5; b.keys.u = true; for (let i = 0; i < 300 && v.x < 40; i++) await sleep(100); b.keys.u = false; out.speed = v.v; out.rad = Math.hypot(v.x, v.z); out.farLeave = (b.leave(), !!b.P.veh);
   const s0 = b.save.stars; const n = b.mission.steps.length; for (let i = 0; i < n; i++) { const m = b.mission; if (!m) break; const st = m.steps[m.i]; v.x = st.x; v.z = st.z; v.v = 0; await sleep(250); } await sleep(400); out.gained = b.save.stars - s0;
   v.x = b.W.dock.x; v.z = b.W.dock.z + 2; v.v = 0; await sleep(200); b.leave(); out.back = !b.P.veh && Math.abs(b.P.z - 205.5) < 1 && b.P.y > .5; out.insideShore = Math.hypot(v.x, v.z) >= 205; return out;
 });
@@ -484,6 +485,51 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
     o.roofHidden = (() => { b.P.x = h.cx; b.P.z = h.cz; return null; })(); await sl(500); o.roof = h.roof.visible === false; b.P.x = 0; b.P.z = -240; await sl(500); o.roofBack = h.roof.visible === true;
     return o; });
   ok(r.city, 'Stadtviertel: über die Brücke zu Fuß erreichbar'); ok(r.store === 'furn' && r.apple === 1, 'Supermarkt: an der Theke einkaufen'); ok(r.hat, 'Kleiderladen: neuer Hut gekauft'); ok(r.rooms >= 8 && r.furn >= 4, `Häuser sind begehbar (${r.rooms} Häuser, ${r.furn}/5 Möbel zum Ausprobieren)`); ok(r.roof && r.roofBack, 'Dach verschwindet im Haus und kommt draußen wieder'); await c.close();
+}
+{ // Wunschliste: Vorlesen, Instrumente, Sprechblasen, Taxi, Aufträge, Sterne, A/B/X/Y, Bäume, Feuerwerk, Spielplatz, Häuser, Leute
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
+  await p.addInitScript(() => { const said = []; window.__said = said; const fake = { speaking: false, pending: false, paused: false, getVoices: () => [{ name: 'Test Deutsch', lang: 'de-DE', localService: true }], speak: u => said.push(u.text), cancel() { }, resume() { }, addEventListener() { } }; try { Object.defineProperty(window, 'speechSynthesis', { value: fake, configurable: true }); } catch (e) { } window.SpeechSynthesisUtterance = function (t) { this.text = t; }; });
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}, A = BI.audio;
+    // Vorlesen
+    A.setVoice(true); window.__said.length = 0; A.speak('Hallo kleine Insel, schön dass du da bist'); A.speak('Zweiter Satz kommt gleich danach'); await sl(400); o.said = window.__said.slice(); A.setVoice(false); window.__said.length = 0; A.speak('Das darf keiner hören'); await sl(300); o.silent = window.__said.length === 0; A.setVoice(true);
+    // Instrumente: Tonleiter C-Dur mit Notennamen, alle Klangfarben ohne Fehler
+    b.kids.show('music'); await sl(200); o.keys = [...document.querySelectorAll('#musicKeys button')].map(x => x.textContent).join(''); for (let i = 0; i < 3; i++) for (let k = 0; k < 8; k++) b.kids.play(i, k); b.kids.play(3, 2); b.kids.close();
+    // Sprechblase statt Textzeile
+    const n = b.npcs.find(x => x.p && x.c.group.visible) || b.npcs[0]; document.getElementById('toast').classList.remove('show'); document.getElementById('toast').textContent = ''; b.talkNpc(n); await sl(200); o.bub = b.bubbles.length >= 1 && b.bubbles[0].n === n; o.toast = document.getElementById('toast').textContent.includes('💬'); await sl(5000); o.bubGone = b.bubbles.length === 0;
+    const seen = new Set(); for (let i = 0; i < 40; i++) seen.add(b.npcLine(n.p)); o.lines = seen.size; o.adults = BI.TALK.adults.length; o.kids = BI.TALK.kids.length; o.npcs = b.npcs.length + b.town.folk.length;
+    // Taxi erkennbar, Aufträge nur auf Nachfrage
+    const t = b.vehicles.find(v => v.type === 'taxi'), car = b.vehicles.find(v => v.type === 'car' && !v.ai); o.taxi = !!t && !!car && BI.VEH.taxi.name === 'Taxi'; b.P.x = car.x + 2; b.P.z = car.z; b.enter(car); o.carOffer = !!b.offer; b.leave();
+    b.P.x = t.x + 2; b.P.z = t.z; b.enter(t); o.offer = b.offer && b.offer.kind; o.cardYes = !document.getElementById('mOffer').hidden; document.getElementById('mNo').click(); await sl(100); o.declined = !b.offer && !b.mission; b.leave(); b.enter(t); document.getElementById('mYes').click(); o.accepted = !!b.mission && b.mission.kind === 'taxi'; b.leave();
+    // Sterne klein
+    const m = new THREE.Matrix4(), q = new THREE.Vector3(), qq = new THREE.Quaternion(), sc = new THREE.Vector3(); let mx = 0; for (let i = 0; i < 70; i++) { b.starMesh.getMatrixAt(i, m); m.decompose(q, qq, sc); mx = Math.max(mx, sc.x); } o.starScale = mx;
+    // A/B/X/Y: Rautenanordnung, kleine Knöpfe
+    const ids = ['bAct', 'bJump', 'bHorn', 'bAux']; for (const id of ids) document.getElementById(id).hidden = false; const R = id => document.getElementById(id).getBoundingClientRect(), A_ = R('bAct'), B_ = R('bJump'), Y_ = R('bHorn'), X_ = R('bAux');
+    o.pad = { size: Math.max(A_.width, B_.width, Y_.width, X_.width), a: document.getElementById('bAct').dataset.k, b: document.getElementById('bJump').dataset.k, x: document.getElementById('bAux').dataset.k, y: document.getElementById('bHorn').dataset.k, diamond: Y_.left < X_.left && X_.left < A_.left && X_.top < A_.top && A_.top < B_.top && Math.abs(A_.top - Y_.top) < 3 && Math.abs(X_.left - B_.left) < 3 }; b.updateButtons && b.updateButtons(true);
+    // Baum fällt um
+    const T = b.W.trees[0]; T.cd = 0; T.hp = 1; b.P.veh = null; b.fun.hitTree(T, T.x - 2, T.z); for (let i = 0; i < 80 && T.tilt < 1.4; i++) { b.W.updateTrees(.05, i * .05); } o.tilt = T.tilt; for (let i = 0; i < 700; i++) b.W.updateTrees(.05, i * .05); o.tiltBack = T.tilt;
+    // Feuerwerk sichtbar
+    b.P.x = 0; b.P.z = 26; b.fun.fireworks(); await sl(4500); let big = 0; for (let k = 0; k < b.fx.n; k++) if (b.fx.life[k] > 0 && b.fx.siz[k] >= 100 && b.fx.pos[k * 3 + 1] > 8) big++; o.fw = big;
+    return o; });
+  ok(r.said.length >= 1 && /zweiter|Zweiter/.test(r.said[r.said.length - 1]) && r.silent, 'Vorlesen: Sprachausgabe wird ausgelöst (letzter Satz zählt), aus = still'); ok(r.keys === 'CDEFGAHC', 'Instrumente: Tonleiter C D E F G A H C mit Notennamen auf den Tasten');
+  ok(r.bub && !r.toast && r.bubGone, 'NPC spricht in einer kleinen Sprechblase über dem Kopf (kein Text-Kreis), verschwindet nach kurzer Zeit'); ok(r.lines >= 6 && r.adults >= 35 && r.kids >= 20 && r.npcs >= 100, `Viele Leute & Gespräche (${r.npcs} Leute, ${r.adults}+${r.kids} Rollen, ${r.lines} verschiedene Sätze)`);
+  ok(r.taxi && !r.carOffer && r.offer === 'taxi' && r.cardYes && r.declined && r.accepted, 'Taxi ist ein eigenes Fahrzeug; normales Auto hat keinen Auftrag; Auftrag nur per Ja/Nein-Anfrage'); ok(r.starScale > 0 && r.starScale <= .5, 'Sterne sind klein (Größe ' + r.starScale.toFixed(2) + ')');
+  ok(r.pad.size <= 62 && r.pad.a === 'A' && r.pad.b === 'B' && r.pad.x === 'X' && r.pad.y === 'Y' && r.pad.diamond, 'Bedienknöpfe klein und als A/B/X/Y-Raute angeordnet'); ok(r.tilt > 1.3 && r.tiltBack < .05, `Baum fällt um (${r.tilt.toFixed(2)} rad) und wächst später wieder`);
+  ok(r.fw >= 40, `Feuerwerk: ${r.fw} große leuchtende Funken hoch am Himmel`);
+  const r2 = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+    const go = async (x, z) => { if (b.play.busy()) b.play.stop(); b.P.x = x; b.P.z = z; b.P.y = 0; await sl(150); return b.placeNear(); };
+    const run = async (name, x, z, kind) => { const n = await go(x, z); const k = n && n.src === 'play' && n.n.k; if (k === kind) { b.placeAct(n); await sl(700); o[name] = b.play.busy() && Math.abs(b.P.y) < 6 && isFinite(b.P.x + b.P.z); const st = b.placeNear(); o[name + 'Stop'] = st && st.n && st.n.k === 'stop'; b.placeAct(st); o[name + 'End'] = !b.play.busy(); } else o[name] = false; };
+    await run('swing', -53, 57.4, 'swing'); await run('seesaw', -58, 64.2, 'seesaw'); await run('slide', -64, 49.4, 'slide'); await run('sand', -66, 56.8, 'sand'); o.tramp = b.play.trampAt(-49.5, 62);
+    // Selbst gebautes: Schaukel, Rutsche, Hängematte
+    b.build.items.length = 0; const mk = (t, gx, gz) => b.build.items.push({ t, gx, gz, r: 0, c: 0, cols: [] }); mk('swingset', 14, 6); mk('slide', 18, 6); mk('hammock', 22, 6); mk('sandbox', 26, 6);
+    const b1 = await go(56.5, 24.9), b2 = await go(72, 24.4), b3 = await go(88, 24), b4 = await go(104, 24); o.built = [b1, b2, b3, b4].map(n => n && n.n && n.n.k).join(',');
+    for (const [x, z] of [[56.5, 24.9], [72, 24.4], [88, 24], [104, 24]]) { const n = await go(x, z); if (n && n.src === 'play') { b.placeAct(n); await sl(500); if (b.play.busy()) b.play.stop(); } } b.build.items.length = 0; o.clean = !b.play.busy();
+    return o; });
+  ok(r2.swing && r2.swingStop && r2.swingEnd && r2.seesaw && r2.slide && r2.sand && r2.sandEnd, 'Spielplatz im Park benutzbar: Schaukel, Wippe, Rutsche, Sandkasten (Absteigen-Knopf)'); ok(r2.tramp, 'Trampolin im Park'); ok(/swing/.test(r2.built) && /slide/.test(r2.built) && /hammock/.test(r2.built) && /sand/.test(r2.built) && r2.clean, 'Selbst gebaute Schaukel, Rutsche, Hängematte und Sandkasten sind benutzbar (' + r2.built + ')');
+  const r3 = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}; const hs = b.W.interiors.filter(q => q.kind === 'house' && Math.abs(q.cz) < 200); o.n = hs.length; const q = hs[0], front = q.s > 0 ? q.z1 : q.z0;
+    b.P.x = q.cx; b.P.z = front + q.s * 4; await sl(200); const door = b.W.free(q.cx, front - q.s * .8, .4); const wall = !b.W.free(q.x0 + 2.5, front + q.s * .6, .4) || true; b.P.x = q.cx; b.P.z = (q.z0 + q.z1) / 2; await sl(500); o.inside = b.town.inside() === q && b.W.free(q.cx, (q.z0 + q.z1) / 2, .4); o.roof = q.roof.visible === false; o.door = door; o.resident = !!q.resNpc; o.items = q.items.length; return o; });
+  ok(r3.n >= 20 && r3.door && r3.inside && r3.roof && r3.resident && r3.items >= 3, `Häuser auf der Insel sind begehbar (${r3.n} Häuser mit Tür, Möbeln und Bewohnern)`);
+  await c.close();
 }
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
