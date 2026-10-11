@@ -1,0 +1,1 @@
+function a(o){const t=Math.max(0,Math.floor(o));return`${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`}function n(o){const t=Math.floor(o/60);return t>=60?`${Math.floor(t/60)} h ${t%60} min`:`${t} min`}export{a,n as f};
