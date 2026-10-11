@@ -27,7 +27,7 @@
   var VIEWS = {
     home: function () {
       return '<div class="pgrid">' + APPS.map(function (a) { return '<button class="papp" data-app="' + a[0] + '"><span>' + a[2] + (ph.badge && ph.badge(a[0]) ? '<i class="bdg">' + ph.badge(a[0]) + '</i>' : '') + '</span>' + a[1] + '</button>'; }).join('') + '</div>' +
-        '<p class="sub" style="text-align:center;margin-top:18px">' + esc(GL.life.weekday()) + ', Tag ' + L.day + ' · ' + GL.life.clock() + ' Uhr<br>' + (GL.home.inside() ? 'Zu Hause' : 'Regenbogenkiez, Rainbow City') + '</p>';
+        '<p class="sub" style="text-align:center;margin-top:18px">' + esc(GL.life.weekday()) + ', Tag ' + L.day + ' · ' + GL.life.clock() + ' Uhr<br>' + (GL.home.inside() ? 'Zu Hause' : GL.club && GL.club.inside() ? 'Club Glitzer' : 'Regenbogenkiez, Rainbow City') + '</p>';
     },
     status: function () {
       var m = GL.life.mood(), h = '<div class="pcard"><b>' + GL.life.moodIcon(m) + ' Stimmung: ' + GL.life.moodName(m) + '</b> (' + m + ')' + bar(m, needCol(m)) + '<small class="sub">Die Stimmung ergibt sich aus allen Bedürfnissen und dem, was du zuletzt erlebt hast. Gute Laune bringt mehr Trinkgeld.</small></div>';
@@ -58,8 +58,8 @@
       return h;
     },
     map: function () {
-      var W = GL.W, p = W ? W.player : { x: 0, z: 0 }, inside = GL.home.inside(), POIS = C().POIS, k = GL.eco.KIOSK;
-      var px = inside ? W.pois.home.x : p.x, pz = inside ? W.pois.home.z : p.z, dir = W ? W.yaw : 0;
+      var W = GL.W, p = W ? W.player : { x: 0, z: 0 }, inside = GL.home.inside() || !!(GL.club && GL.club.inside()), POIS = C().POIS, k = GL.eco.KIOSK;
+      var ref = inside ? (GL.club && GL.club.inside() ? W.pois.club : W.pois.home) : null, px = inside ? ref.x : p.x, pz = inside ? ref.z : p.z, dir = W ? W.yaw : 0;
       var s = '<svg class="pmap" viewBox="-102 -74 204 148"><rect x="-102" y="-74" width="204" height="148" fill="#8fcf9b"/><rect x="-115" y="-75" width="230" height="150" fill="#cdc3dc"/>' +
         '<rect x="-115" y="-6" width="230" height="12" fill="#3a3750"/><rect x="-6" y="-75" width="12" height="150" fill="#3a3750"/><rect x="69" y="-21" width="34" height="62" fill="#7fd18a"/><circle cx="86" cy="14" r="7" fill="#59c8ff"/><circle r="11" fill="#efe6f7"/>';
       POIS.forEach(function (o) { s += '<g data-p="' + o.id + '" class="pm"><rect x="' + (o.x - 7) + '" y="' + (o.z - 7) + '" width="14" height="14" rx="2" fill="#' + ('000000' + o.c.toString(16)).slice(-6) + '"/><text x="' + o.x + '" y="' + (o.z + 3) + '" font-size="8" text-anchor="middle">' + o.e + '</text></g>'; });
@@ -126,6 +126,7 @@
     ph.close();
     GL.ui.fade('Mit der Tram unterwegs …', function () {
       if (GL.home.inside()) GL.home.leave(true);
+      if (GL.club && GL.club.inside()) GL.club.leave(true);
       if (GL.dist) GL.dist.leave();
       W.player.x = t.x; W.player.z = t.z; W.camYaw = t.yaw; W.cam.position.set(t.x + Math.sin(t.yaw) * W.camD, W.camH, t.z + Math.cos(t.yaw) * W.camD);
       GL.life.advance(10); C().sfx('ok'); GL.save();

@@ -22,6 +22,7 @@
   function menu() {
     var o = nt(), t = N.theme(), open = N.isOpen(), cl = 'Der Club öffnet um 20 Uhr.';
     GL.ui.menu('Club Glitzer', 'Heute: <b>' + GL.core.esc(t.n) + '</b> · Musik ' + t.st + ' · Eintritt ' + t.fee + ' €' + (o.paid ? ' (bezahlt)' : '') + (open ? '' : '<br>' + cl), [
+      { e: '🪩', t: 'Club betreten', s: open ? 'Tanzfläche, Bar und DJ-Pult zum Herumlaufen. Eintritt ' + t.fee + ' €.' : cl, dis: !open || !GL.club, fn: function () { GL.club.enter(); } },
       { e: '🍸', t: 'Arbeiten: Barkeeper', s: 'Das Minispiel mit Schicht und Lohn.', fn: function () { GL.ui.close(); GL.core.openGame(GL.core.gameOf('club')); } },
       { e: '💃', t: 'Tanzen', s: open ? '3 Songs, Bewegung passend zur Musik wählen.' : cl, dis: !open || L.needs.energy < 15, fn: dance },
       { e: '👯', t: 'Gruppentanz mit dem Raum', s: GL.mp && GL.mp.on() ? 'Alle im Mehrspieler-Raum tanzen die gleichen Songs. Wenn alle gut sind, gibt es einen Bonus.' : 'Dafür brauchst du einen Mehrspieler-Raum (👥).', dis: !open || !(GL.mp && GL.mp.on()) || L.needs.energy < 15, fn: function () { GL.ui.close(); GL.multi.startDance(); } },
@@ -55,9 +56,9 @@
       { e: '🍹', t: 'Cocktail (8 €)', s: o.drinks >= 3 ? 'Bruno: „Genug für heute.“' : 'Kontakte +8, Stress −6', dis: o.drinks >= 3 || L.money < 8, fn: function () {
           if (!enter()) return; if (GL.eco.spend(8, 'Cocktail im Club')) { o.drinks++; GL.life.advance(15); GL.life.change({ social: 8, stress: -6, energy: -3 }, 2); GL.core.sfx('ok'); GL.save(); } drinks(); } },
       { e: '💧', t: 'Wasser (gratis)', s: 'Energie +3', fn: function () { if (!enter()) return; GL.life.advance(5); GL.life.change({ energy: 3 }, 0); GL.save(); GL.core.toast('Schön erfrischend.'); drinks(); } },
-      { e: '↩', t: 'Zurück', fn: menu }], 'club');
+      { e: '↩', t: 'Zurück', fn: function () { if (GL.club && GL.club.inside()) GL.ui.close(); else menu(); } }], 'club');
   }
-  N.dance = dance; N.STYLES = Object.keys(STYLE); N.enter = enter;
+  N.dance = dance; N.STYLES = Object.keys(STYLE); N.enter = enter; N.menu = menu; N.drinks = drinks;
   GL.on('poi', function (id) {
     if (id !== 'club' || L.needs.energy < 12) return; /* bei Erschöpfung greift der Türsteher in economy.js */
     menu(); return true;

@@ -154,7 +154,7 @@
   var acc = 0;
   GL.on('tick', function (dt, W) {
     acc += dt; if (acc < 1) return; acc = 0;
-    if (!W.inside || !GL.home.root()) return;
+    if (W.inside !== 1 || !GL.home.root()) return;
     var id = visitor();
     if (!id) { if (guestFig) guestFig.visible = false; return; }
     figure(id).visible = true;
@@ -163,11 +163,11 @@
     F.refresh();
     SLOTS.forEach(function (s, k) {
       W.inter.push({ x: GL.home.O.x + s[0], z: GL.home.O.z + s[1] + (s[1] > 0 ? -1.1 : 1.1), r: 1.4,
-        get on() { var c = CAT[lay()[k]]; return !!(W.inside && c && c.use); },
+        get on() { var c = CAT[lay()[k]]; return !!(W.inside === 1 && c && c.use); },
         get label() { var c = CAT[lay()[k]]; return c && c.use ? c.use[0] + ' (' + c.n + ')' : ''; }, fn: function () { use(k); } });
     });
     W.inter.push({ x: GL.home.O.x - 1.9, z: GL.home.O.z - .2, r: 1.6,
-      get on() { return !!(W.inside && guestFig && guestFig.visible); },
+      get on() { return !!(W.inside === 1 && guestFig && guestFig.visible); },
       get label() { var n = guestId && GL.social.npc(guestId); return n ? 'Mit ' + n.n + ' reden' : ''; },
       fn: function () { var n = W.npcs.filter(function (q) { return q.d.id === guestId; })[0]; if (n) { n.wait = 4; GL.dating.menu(n); } } });
   });

@@ -872,6 +872,38 @@ async function act(page) { await page.keyboard.press('e'); await page.waitForTim
   await ctx.close();
 }
 
+/* ---------- 13. Club Glitzer als Innenraum ---------- */
+{
+  let s; const { ctx, page } = await newPage();
+  await boot(page);
+  const setH = h => ev(page, hh => { GL.S.world.t = ((hh - 6 + 24) % 24) / 24; }, h);
+  const row = async t => { await page.click(`#maps .row2:has-text("${t}")`); await page.waitForTimeout(80); };
+  await ev(page, () => { GL.S.sound = true; GL.S.life.needs.energy = 90; GL.S.life.money = 200; GL.S.life.day = 3; }); await setH(15);
+  await ev(page, () => GL.emit('poi', 'club'));
+  ok(await ev(page, () => { const b = [...document.querySelectorAll('#maps .row2')].find(x => /Club betreten/.test(x.textContent)); return b.disabled; }), 'Tagsüber ist der Club zu: Betreten gesperrt'); await page.click('#mx');
+  await setH(22); const m0 = await ev(page, () => GL.S.life.money);
+  await ev(page, () => GL.emit('poi', 'club')); await row('Club betreten'); await waitFade(page); await page.waitForTimeout(1500);
+  s = await ev(page, () => ({ i: GL.W.inside, home: GL.home.inside(), club: GL.club.inside(), m: GL.S.life.money, paid: GL.S.jobs.night.paid, music: GL.audio.state().music, loc: GL.multi.loc().l, b: GL.W.bounds.z0, dn: GL.W.scene.children.some(o => o.children && o.children.length > 40 && o.position.z === 450) }));
+  ok(s.i === 2 && s.club && !s.home && s.paid === 1 && s.m < m0 && s.loc === 'c', 'Club betreten: Innenraum aktiv, Eintritt bezahlt, Ort c ' + JSON.stringify(s));
+  ok(s.music, 'Im Club läuft die erzeugte Musik'); ok(s.dn, 'Innenraum steht abseits der Stadt (Tanzfläche, Bar, DJ, Gäste)');
+  ok(await ev(page, () => ['Tanzen', 'Bar: Getränke', 'DJ-Pult', 'Club verlassen'].every(l => GL.W.inter.some(x => x.on && x.label.indexOf(l) === 0))), 'Stellen im Raum: Tanzfläche, Bar, DJ-Pult, Tür');
+  const m1 = await ev(page, () => GL.S.life.money);
+  await ev(page, () => GL.W.inter.find(x => x.on && /^Tanzen/.test(x.label)).fn());
+  ok(await ev(page, () => /Tanzfläche · Song 1 von 3/.test(document.getElementById('maps').textContent)), 'Tanzfläche startet das Tanzen (ohne zweite Eintrittszahlung)');
+  ok(await ev(page, m => GL.S.life.money === m && GL.S.jobs.night.paid === 1, m1), 'Eintritt nur einmal pro Nacht'); await ev(page, () => GL.ui.close());
+  await ev(page, () => GL.W.inter.find(x => x.on && /^Bar/.test(x.label)).fn());
+  ok(await ev(page, () => /Cocktail/.test(document.getElementById('maps').textContent)), 'Bar öffnet die Getränkekarte'); await row('Zurück');
+  ok(await ev(page, () => document.getElementById('maps').style.display !== 'block'), 'Zurück schließt im Innenraum das Menü');
+  await ev(page, () => GL.W.inter.find(x => x.on && /^Club verlassen/.test(x.label)).fn()); await waitFade(page); await page.waitForTimeout(500);
+  s = await ev(page, () => ({ i: GL.W.inside, m: GL.audio.state().music, d: Math.hypot(GL.W.player.x - GL.W.pois.club.x, GL.W.player.z - GL.W.pois.club.z) }));
+  ok(s.i === 0 && !s.m && s.d < 3, 'Club verlassen: wieder vor der Tür, Musik aus');
+  // Schließzeit
+  await ev(page, () => GL.emit('poi', 'club')); await row('Club betreten'); await waitFade(page); await page.waitForTimeout(800);
+  await setH(5); await page.waitForTimeout(2500); await waitFade(page).catch(() => {}); await page.waitForTimeout(800);
+  ok(await ev(page, () => GL.W.inside === 0), 'Um 5 Uhr schließt der Club und man steht draußen');
+  await ctx.close();
+}
+
 ok(errs.length === 0, 'Keine Skriptfehler in der Konsole' + (errs.length ? ':\n  ' + errs.slice(0, 8).join('\n  ') : ''));
 await browser.close();
 console.log(fails ? `\n${fails} Prüfung(en) fehlgeschlagen` : '\nAlle Prüfungen bestanden');
