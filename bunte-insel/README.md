@@ -170,3 +170,17 @@ Prüfung: `node bunte-insel/tests/characters.cjs` (nutzt die bereits im Repo vor
 Helle gepflasterte Gehwege auf der Hauptinsel und im Stadtviertel, Fenster mit Rahmen und Sprossen, Blumenkästen, Ecksteine, Dachziegel-Reihen und Firstleisten. Abgestimmte Wiesenfarben, türkisfarbener Seerand und fünfblättrige Blumen. Neue Gebäudedetails verwenden die vorhandenen Batches; Dachdetails werden beim Betreten zusammen mit dem Dach ausgeblendet. Layout, Kollisionen und Speicherformat bleiben unverändert.
 
 Validierung: JavaScript-Syntax und Geometrieaufbau mit Three.js r128 geprüft; Vergleich der 46 begehbaren Gebäude sowie Kollisions-, Straßen- und Fahrzeugdaten vor/nach der Änderung (Park/Kino im isolierten Test ausgeklammert). Gleiche Anzahl Meshes; zusätzliche Geometrie. Kein vollständiger Browser-/Mobiltest in dieser Umgebung.
+
+### 🐉 Drachenhöhen (Insel im Süden, Brücke ab der Hauptinsel)
+
+Eine eigene Drachen-Welt mit Steinbrücke, Tor, Plaza, Berg- und Kristall-Landschaft und eigener Musik. Highlights:
+
+- **Zündel** – ein kleiner, tollpatschiger Drache (eigene Figur, eigener Name) folgt dir, speit Feuer und hat ein Menü: Reden, Feuer, Flattern, Kuscheln, Freudentanz. Als Statue steht er auf der Plaza.
+- **6 Fackeln** anzünden → das **Himmelstor** öffnet sich → Minispiel **🐉 Drachenflug** (Ringe durchfliegen, 💎 sammeln, Gewitterwolken ausweichen; auch im 🎮-Menü).
+- **6 Kristall-Freunde** mit Zündels Flamme befreien, **Funkelsteine** einsammeln (Wert 1/2/5/10), **4 Aufwinde** und **8 Flugringe** der Reihe nach.
+- **🪽 Drachenflügel** (Flügel-Ständer): Gadget zum Gleiten (Sprung-Knopf in der Luft halten), auch auf der ganzen Insel nutzbar.
+- 4 sprechende Figuren, Fortschritt im 📋 Aufgaben-Log („🐉 Drachenhöhen“).
+
+Urheberrecht: Die Welt ist von Drachen-Abenteuerspielen *inspiriert*, übernimmt aber nur allgemeine Ideen (Edelsteine sammeln, Feuer speien, gleiten, Freunde befreien). Figuren, Namen, Gestaltung, Musik und Spiel sind komplett eigen; keine Logos, Namen oder Originalfiguren. Keine Verbindung zu den Rechteinhabern; keine Rechtsberatung.
+
+Dateien: `js/drachen.js` (Welt, Zündel, Logik), `js/gadgets.js` (Flügel), `js/minis2.js` (Drachenflug), `js/themes.js` (Musik).
