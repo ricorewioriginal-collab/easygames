@@ -219,18 +219,20 @@
   function url() {
     return 'https://firestore.googleapis.com/v1/projects/' + CONFIG.projectId + '/databases/(default)/documents/users/' + user.uid + '/saves/' + game;
   }
-  function pull(tok) {
-    return fetch(url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
+  // Genau eine ältere Sicherung je Nutzer und Spiel: eigenes Dokument "<spiel>__alt" (gleiche Regeln wie der Spielstand)
+  function urlAlt() { return url() + '__alt'; }
+  function pull(tok, u) {
+    return fetch(u || url(), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) {
       if (r.status === 404) return {};
       if (!r.ok) throw new Error('Laden ' + r.status);
       return r.json().then(function (j) { return ungz(j.fields.d.stringValue).then(JSON.parse).catch(function () { return {}; }); });
     });
   }
-  function push(tok, state, keep) {
+  function push(tok, state, keep, u) {
     return gz(JSON.stringify(state)).then(function (d) {
       if (d.length > 900000) throw new Error('Spielstand zu groß für die Cloud');
       var body = JSON.stringify({ fields: { d: { stringValue: d }, t: { integerValue: String(Date.now()) } } });
-      return fetch(url() + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
+      return fetch((u || url()) + '?updateMask.fieldPaths=d&updateMask.fieldPaths=t', {
         method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: body, keepalive: !!keep && body.length < 60000
       }).then(function (r) { if (!r.ok) throw new Error('Speichern ' + r.status); });
     });
@@ -246,6 +248,14 @@
     }).then(function (tok) {
       return Promise.all([pull(tok), localState()]).then(function (rl) {
         var remote = rl[0], local = rl[1], merged = {}, changed = false, dirty = false, k, writes = [];
+        // Beim ersten Abgleich (Start/Anmeldung) ersetzt der neuere Stand den abweichenden älteren: den ersetzten Eintrag
+        // als einzige ältere Sicherung aufheben (überschreibt die vorherige Sicherung).
+        var lost = {}, nl = 0;
+        if (first) for (k in remote) {
+          if (!local[k] || local[k].v === remote[k].v) continue;
+          if (local[k].t > remote[k].t && remote[k].v !== null) { lost[k] = remote[k]; nl++; }
+          else if (remote[k].t > local[k].t && local[k].v !== null) { lost[k] = local[k]; nl++; }
+        }
         for (k in remote) merged[k] = remote[k];
         for (k in local) {
           if (!remote[k] || local[k].t > remote[k].t) { merged[k] = local[k]; if (!remote[k] || remote[k].v !== local[k].v) dirty = true; }
@@ -260,6 +270,7 @@
         saveMeta();
         lastErr = ''; lastOk = Date.now();
         var p = Promise.all(writes).then(function () { return dirty ? push(tok, merged, keep) : null; });
+        if (nl) { var p0 = p; p = push(tok, lost, false, urlAlt()).catch(function () {}).then(function () { return p0; }); }
         return p.then(function () {
           if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
         });
@@ -304,6 +315,30 @@
       if (!n) { lastErr = 'In der Cloud liegt noch kein Spielstand.'; render(); return; }
       saveMeta();
       return Promise.all(w).then(function () { location.reload(); });
+    }).catch(function (e) { lastErr = e.message || 'Wiederherstellen fehlgeschlagen'; render(); });
+  }
+  // Ältere Sicherung zurückholen: tauscht sie mit dem aktuellen Stand (danach gibt es weiterhin nur eine ältere Sicherung)
+  function restoreOlder() {
+    var tk;
+    if (!confirm('Älteren Spielstand wiederherstellen?\nDer aktuelle Stand wird dabei zur einzigen älteren Sicherung (tauscht die beiden).')) return;
+    loadSdk().then(function () { return user.getIdToken(); }).then(function (tok) {
+      tk = tok;
+      return Promise.all([pull(tok, urlAlt()), pull(tok)]);
+    }).then(function (rl) {
+      var alt = rl[0], cur = rl[1], k, n = 0, now = Date.now(), w = [], back = {}, merged = {};
+      for (k in cur) merged[k] = cur[k];
+      for (k in alt) {
+        if (cur[k] && cur[k].v !== alt[k].v) back[k] = cur[k];
+        merged[k] = { v: alt[k].v, t: now };
+        if (k.slice(0, 4) === 'idb:') w.push(idbWrite(k.slice(4), merged[k]));
+        else { if (alt[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, alt[k].v); meta[k] = now; }
+        n++;
+      }
+      if (!n) { lastErr = 'Es gibt noch keine ältere Sicherung.'; render(); return; }
+      saveMeta();
+      return Promise.all(w).then(function () { return push(tk, merged); })
+        .then(function () { return Object.keys(back).length ? push(tk, back, false, urlAlt()) : null; })
+        .then(function () { location.reload(); });
     }).catch(function (e) { lastErr = e.message || 'Wiederherstellen fehlgeschlagen'; render(); });
   }
   function openPanel() { if (panel) { panel.style.display = 'block'; render(); } }
@@ -361,6 +396,7 @@
         lastErr ? '⚠ ' + lastErr : '● Mit Google verbunden' + (lastOk ? ' · zuletzt gesichert ' + new Date(lastOk).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '')));
       row('Jetzt in Google speichern', function () { first = false; sync(); }, G);
       row('Spielstand mit Google wiederherstellen', restore, G);
+      row('Älteren Stand wiederherstellen', restoreOlder, G);
       row('Abmelden', signOut);
     } else if (PAIR) {
       var lk = PORTAL + '#koppeln=' + PAIR.id;
