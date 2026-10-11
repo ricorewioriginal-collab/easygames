@@ -48,6 +48,11 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 - **Spielzeugladen** (begehbar, Regale voller Spielzeug, Verkäuferin Frau Bunt) mit 3 Reitern: **Mützen** (Krone, Hasen-, Bären-, Katzenohren, Cap, Piraten-, Zauber-, Koch-, Party-, Cowboyhut, Helm), **Zubehör** (Sonnenbrille, Augenklappe, Rucksack, Teddy, Umhang, Feenflügel) und **Spielzeug** (Drachen an der Hand, **RC-Hubschrauber** mit Fernsteuerung) gegen Sterne.
 - Stadt, Krankenhaus mit Landeplatz, Polizei, Feuerwehr, Park mit Spielplatz, Farm mit Tieren, See mit Enten, Strand, Leuchtturm, **Tag/Nacht**, Minimap.
 
+## Wie in großen Online-Spielwelten
+- **Himmels-Parcours (Obby)** 🏁: Startkreis am Boden (🧭 → „Himmels-Parcours“). Der Knopf **Parcours** bringt dich zu schwebenden Plattformen: Trittsteine, schmaler Balken, **Drehbalken** zum Drüberspringen, Treppe, Zickzack. Fällst du, geht es zum letzten **Checkpoint 🚩**. Am Ziel gibt es Sterne und eine **Bestenliste** (Top 3 Zeiten, gespeichert). Hoch oben gibt es keine Hindernisse am Boden, daher funktioniert er überall.
+- **Emotes & Schnell-Chat** 🎭 (Schnellmenü 🎉 → „Emotes & Chat“): Winken, Jubeln, Lachen, Tanzen, Verbeugen, Salto, Schlafen, Zeigen, Muskeln – plus feste, freundliche Sätze in einer Sprechblase (keine freie Texteingabe, kindersicher). Mitspieler sehen beides.
+- Schon vorhanden: eigener Avatar, Freunde/Mitspielen, Abzeichen (Sticker), Bauen, Haustiere, Läden, Tagesgeschenk.
+
 ## Spaß (Schnellmenü 🎉)
 Das Schnellmenü zeigt nur die 6 passendsten Aktionen (Baum in der Nähe → Hauen, RC-Auto weit weg → Holen, nachts → Feuerwerk, oft benutzte zuerst), „Mehr“ zeigt alle:
 Tanzen (das ganze Dorf tanzt mit), Kanone, Ahoi, Blitz-Trick, Apport, Kaugummi werfen (Kleckse bleiben, Treffer = ⭐), Ball, Luftballons, Feuerwerk, Seifenblasen und **XXL-Seifenblase** (Jannis schwebt in der Riesenblase), **Baum hauen** (wackelt, Blätter und Äpfel fallen, nach 8 Treffern gibt der Baum auf), Blitz bellen/suchen.
