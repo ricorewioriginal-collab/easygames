@@ -1,9 +1,10 @@
 import './style.css';
 
 const params = new URLSearchParams(location.search);
-const lab = params.get('lab');
 
+/** Startet entweder ein Entwickler-Labor (?lab=, ?charlab=, ?worldlab=) oder das Spiel */
 async function boot(): Promise<void> {
+  const lab = params.get('lab');
   if (lab) {
     const { startLab } = await import('./dev/lab');
     startLab(lab, params);
@@ -19,7 +20,17 @@ async function boot(): Promise<void> {
     startWorldLab(params);
     return;
   }
-  const el = document.getElementById('app');
-  if (el) el.textContent = 'PARTYVERSE lädt …';
+  const host = document.getElementById('app');
+  if (!host) return;
+  host.textContent = 'PARTYVERSE lädt …';
+  try {
+    const { App } = await import('./app/app');
+    const app = new App(host);
+    (window as unknown as { __app: unknown }).__app = app;
+    await app.go('menu');
+  } catch (e) {
+    console.error(e);
+    host.textContent = 'PARTYVERSE konnte nicht gestartet werden. Dein Browser unterstützt WebGL möglicherweise nicht – bitte aktualisiere ihn oder versuche einen anderen.';
+  }
 }
 void boot();

@@ -1,7 +1,7 @@
 import { Rng } from '../../rng';
 import type { InputFrame, MiniGame } from '../types';
 import { NEUTRAL_INPUT } from '../types';
-import { clamp, lerp } from '../util';
+import { lerp } from '../util';
 
 /**
  * Stapelturm: Ein Kran schwingt einen Block hin und her, A (oder Klick) lässt ihn fallen.
@@ -154,4 +154,3 @@ export const game: MiniGame<TowerState> = {
     hint: s.streak >= 2 ? `Perfekt x${s.streak}!` : s.lost ? 'Verfehlt!' : s.perfects ? `${s.perfects} Perfekte` : undefined,
   }),
 };
-void clamp;

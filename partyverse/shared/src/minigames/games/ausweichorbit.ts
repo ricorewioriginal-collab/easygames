@@ -245,7 +245,7 @@ export const game: MiniGame<OrbitState> = {
           a0 = m.ang;
           r0 = m.rad;
           if (coin) md0 = Math.min(md0, Math.hypot(r0 * Math.cos(a0) - coin.r * Math.cos(coin.a), r0 * Math.sin(a0) - coin.r * Math.sin(coin.a)));
-          if (k > s.inv && hitAt(s, a0, r0, k)) {
+          if (k > s.inv && (k & 1) === 0 && hitAt(s, a0, r0, k)) {
             c0 = 1000 + ((H - k) / H) * 1000;
             break;
           }
@@ -254,6 +254,7 @@ export const game: MiniGame<OrbitState> = {
         let sub = Infinity;
         for (let nx = -1; nx <= 1; nx++) {
           for (let ny = -1; ny <= 1; ny++) {
+            if (nx !== 0 && ny !== 0) continue; // Fortsetzung nur geradeaus/seitwärts/stehen (spart Rechenzeit)
             let a = a0;
             let r = r0;
             let cost = c0;
@@ -264,7 +265,7 @@ export const game: MiniGame<OrbitState> = {
                 a = m.ang;
                 r = m.rad;
                 if (coin) md = Math.min(md, Math.hypot(r * Math.cos(a) - coin.r * Math.cos(coin.a), r * Math.sin(a) - coin.r * Math.sin(coin.a)));
-                if (k > s.inv && hitAt(s, a, r, k)) {
+                if (k > s.inv && ((k & 1) === 0 || k === H) && hitAt(s, a, r, k)) {
                   cost += 1000 + ((H - k) / H) * 1000;
                   break;
                 }

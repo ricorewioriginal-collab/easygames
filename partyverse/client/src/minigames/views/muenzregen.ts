@@ -49,8 +49,8 @@ export const createView: MiniGameViewFactory<MuenzState> = (ctx, initial) => {
   scene.background = sky;
 
   // --- Landschaft ----------------------------------------------------------
-  const ground = new THREE.Mesh(new THREE.BoxGeometry(60, 1, 14), toon(0x58c95a));
-  ground.position.set(0, -1.5, -1);
+  const ground = new THREE.Mesh(new THREE.BoxGeometry(80, 30, 40), toon(0x58c95a));
+  ground.position.set(0, -16, 4);
   root.add(ground);
   for (let i = -7; i <= 7; i++) {
     const stripe = new THREE.Mesh(new THREE.BoxGeometry(2, 0.05, 14), toon(i % 2 ? 0x6bdc66 : 0x4fbe55));

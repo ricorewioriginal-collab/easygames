@@ -19,7 +19,7 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
   // --- Hintergrund -----------------------------------------------------------
   const nebulaCols = [0xff3d9a, 0x2bd1c4, 0x6a4dff, 0xff8a3d];
   for (let i = 0; i < 4; i++) {
-    const n = new THREE.Mesh(new THREE.CircleGeometry(9 + (i % 2) * 4, 32), glow(nebulaCols[i]!, 0.1));
+    const n = new THREE.Mesh(new THREE.CircleGeometry(9 + (i % 2) * 4, 32), glow(nebulaCols[i]!, 0.055));
     n.position.set(-14 + i * 9.5, (i % 2 ? 5 : -5), -26);
     root.add(n);
   }
@@ -119,7 +119,7 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
   flameInner.position.y = -0.66;
   flame.add(flameOuter, flameInner);
   model.add(flame);
-  model.scale.setScalar(1.15);
+  model.scale.setScalar(1.55);
   root.add(ship);
   const bar = new THREE.Group();
   const barBg = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.14), glow(0x0a0624, 0.7));
@@ -216,12 +216,12 @@ export const createView: MiniGameViewFactory<GraviState> = (ctx, initial) => {
         burnT -= dt;
         if (burnT <= 0) {
           burnT = 0.05;
-          const bx = s.x - Math.cos(s.ang) * 0.75;
-          const by = s.y - Math.sin(s.ang) * 0.75;
-          ctx.burst(v3.set(bx, by, 0), Math.random() < 0.5 ? 0xff8a2d : 0xffe06a, 2);
+          const bx = s.x - Math.cos(s.ang) * 1.0;
+          const by = s.y - Math.sin(s.ang) * 1.0;
+          ctx.burst(v3.set(bx, by, 0), Math.floor(t * 20) % 2 === 0 ? 0xff8a2d : 0xffe06a, 2);
         }
       }
-      bar.position.set(s.x, s.y - 0.95, 0.2);
+      bar.position.set(s.x, s.y - 1.25, 0.2);
       barFg.scale.x = Math.max(0.001, s.fuel);
       barFg.position.x = -0.55 * (1 - s.fuel);
       (barFg.material as THREE.MeshBasicMaterial).color.setHex(s.fuel < 0.2 ? 0xff5a5a : s.fuel < 0.45 ? 0xffc933 : 0x6dff9a);

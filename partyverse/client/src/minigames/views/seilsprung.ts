@@ -340,8 +340,8 @@ export const createView: MiniGameViewFactory<RopeState> = (ctx) => {
 
       // Kamera
       const aspect = camera.aspect;
-      const halfW = 5.6;
-      const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 8.5, 19);
+      const halfW = 6.3;
+      const d = THREE.MathUtils.clamp(halfW / (Math.tan((camera.fov * Math.PI) / 360) * aspect), 8.5, 22);
       const camH = aspect < 1 ? 3.6 : 2.5;
       camera.position.set(0, camH, d);
       camera.lookAt(0, aspect < 1 ? 1.6 : 1.35, 0);

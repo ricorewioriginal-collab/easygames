@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { OrbitState } from '@shared/minigames/games/ausweichorbit';
-import { R_MAX, WAVE_START } from '@shared/minigames/games/ausweichorbit';
+import { R_MAX } from '@shared/minigames/games/ausweichorbit';
 import { glow, toon } from '../../render/materials';
 import type { MiniGameViewFactory } from '../viewTypes';
 
@@ -290,7 +290,6 @@ export const createView: MiniGameViewFactory<OrbitState> = (ctx, initial) => {
         }
         im.instanceMatrix.needsUpdate = true;
         (waveMats[wi] as THREE.MeshBasicMaterial).opacity = active ? 0.85 : 0.18 + 0.15 * (Math.floor(t * 8) % 2);
-        void WAVE_START;
       }
 
       // Münzen

@@ -183,7 +183,7 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
     tray.position.set(cx, cy - bh / 2 - pad - 0.3, 0.1);
     chalkA.position.set(cx - 0.5, cy - bh / 2 - pad - 0.12, 0.25);
     chalkB.position.set(cx + 0.2, cy - bh / 2 - pad - 0.12, 0.25);
-    mascot.position.set(cx + bw / 2 - 1.2, -H * 1.0 + 0.45, 1.0);
+    mascot.position.set(cx + bw / 2 - 1.2, -H * 1.0 + 0.25, 1.0);
     mascot.scale.setScalar(Math.min(0.62, H * 0.13));
     lastN = 0;
   };
@@ -300,7 +300,7 @@ export const createView: MiniGameViewFactory<SpuerState> = (ctx) => {
       // Maskottchen: schnüffelt, nickt bei Erfolg, schüttelt bei Fehler
       const sniff = 1 + Math.sin(t * 9) * 0.05 * (1 + Math.max(0, -mood));
       nose.scale.setScalar(sniff);
-      mascot.position.y = -geom.H * 1.0 + 0.45 + Math.max(0, mood) * 0.35 * Math.abs(Math.sin(t * 10)) + (mood < 0 ? -0.1 : 0);
+      mascot.position.y = -geom.H * 1.0 + 0.25 + Math.max(0, mood) * 0.35 * Math.abs(Math.sin(t * 10)) + (mood < 0 ? -0.1 : 0);
       mascot.rotation.z = mood < 0 ? Math.sin(t * 30) * 0.12 * -mood : Math.sin(t * 1.3) * 0.05;
       const target = cellPos(s.n, s.curR * s.n + s.curC);
       const lookX = Math.max(-1, Math.min(1, (target.x - mascot.position.x) / geom.W));

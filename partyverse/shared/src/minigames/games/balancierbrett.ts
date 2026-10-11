@@ -215,11 +215,8 @@ export const game: MiniGame<BoardState> = {
     }
     const d = disturbance(s, s.tick);
     const gain = lerp(0.9, 3.4, skill);
-    let ax = (wx - s.vx) * gain - d.x;
-    let ay = (wy - s.vy) * gain - d.y;
-    // Verzögerung der Neigung vorausschauend ausgleichen
-    ax -= (s.tx * G - ax) * 0.0;
-    ay -= (s.ty * G - ay) * 0.0;
+    const ax = (wx - s.vx) * gain - d.x;
+    const ay = (wy - s.vy) * gain - d.y;
     const noise = (1 - skill) * 0.9;
     return { ...NEUTRAL_INPUT, x: clamp(ax / G + rng.float(-noise, noise), -1, 1), y: clamp(ay / G + rng.float(-noise, noise), -1, 1) };
   },
