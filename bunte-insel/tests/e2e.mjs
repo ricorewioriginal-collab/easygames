@@ -594,5 +594,18 @@ console.log('errs', errs); console.log(fails ? 'FEHLER: ' + fails : 'ALLES OK');
   ok(r.open && r.tabs === 6 && r.groups && r.detail && r.ate && r.eq, 'Rucksack: 6 Reiter, sortiert in Gruppen, Erklärung „Was ist das? / Wofür?“, Essen & Anlegen'); ok(r.gift && r.safe && r.foreign, 'Geschenke: Empfang, unbekannte Dinge und fremde Adressen werden ignoriert'); ok(r.req && r.pick, 'Tausch: Anfrage → Fenster → Auswahl'); console.log('  Rucksack-Zahlen:', r.cnt);
   await c.close();
 }
+{ // Freizeitpark: Brücke, Attraktionen, Imbiss, Autoscooter
+  const c = await browser.newContext({ viewport: { width: 800, height: 500 } }), p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' })); await p.route('**/fonts.googleapis.com/**', r => r.abort());
+  await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 30000 }); await p.click('#bStart'); await p.waitForTimeout(600);
+  const r = await p.evaluate(async () => { const b = window.__bi, K = b.park, W = b.W, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; b.save.stars = 50;
+    out.bridge = !W.resolve(200, 20, .5, {}).hit && !W.resolve(262, 20, .5, {}).hit; const far = W.resolve(420, 20, .5, {}); out.limit = far.x < 345; out.sea = W.resolve(230, 80, .5, {}).hit;
+    const ride = async (name, x, z, kind) => { b.P.x = x; b.P.z = z; b.P.y = 0; b.P.veh = null; await sl(250); const n = b.placeNear(); out[name + 'N'] = n && n.src === 'park' && n.n.k === kind; if (!out[name + 'N']) return; b.placeAct(n); out[name + 'On'] = K.busy(); let g = 0; for (let i = 0; i < 400 && K.busy(); i++) { K.update(.5, 100 + i * .5); g++; } out[name + 'End'] = !K.busy() && b.P.y < 1.5 && isFinite(b.P.x + b.P.z); };
+    await ride('carousel', 261.2, 48, 'carousel'); await ride('chain', 326.1, 50, 'chain'); await ride('ferris', K.FW.x, K.FW.z + 4.6, 'ferris'); await ride('coaster', K.PATH[0][0] + 3.4, K.PATH[0][2], 'coaster');
+    const cs = K.stands.find(s => s.k === 'popcorn'); b.P.x = cs.front.x; b.P.z = cs.front.z; b.P.y = 0; await sl(250); const n2 = b.placeNear(); out.stand = n2 && n2.n.k === 'popcorn'; const s0 = b.save.stars, p0 = b.garden.inv().popcorn || 0; b.placeAct(n2); out.buy = b.save.stars === s0 - 1 && (b.garden.inv().popcorn || 0) === p0 + 1;
+    const bu = b.vehicles.find(v => v.type === 'bumper'); b.P.x = bu.x + 2; b.P.z = bu.z; b.P.y = 0; await sl(200); out.bumper = !!bu && b.nearVehicle() === bu; b.enter(bu); out.driving = b.P.veh === bu && !b.offer; b.leave();
+    out.people = b.town.folk.filter(f => f.p && /Clown|Pippo/.test(f.p.name)).length; return out; });
+  ok(r.bridge && r.limit && r.sea, 'Freizeitpark: Brücke und Insel begehbar, Rand und Meer halten'); ok(r.carouselN && r.carouselEnd && r.chainN && r.chainEnd && r.ferrisN && r.ferrisOn && r.ferrisEnd && r.coasterN && r.coasterOn && r.coasterEnd, 'Riesenrad, Karussell, Kettenkarussell, Achterbahn: einsteigen, fahren, sicher wieder am Boden'); ok(r.stand && r.buy && r.bumper && r.driving && r.people >= 1, 'Imbissbude (Popcorn für 1 ⭐ → Rucksack), Autoscooter fahrbar, Besucher da');
+  await c.close();
+}
 await browser.close();
 process.exit(fails || errs.length ? 1 : 0);
