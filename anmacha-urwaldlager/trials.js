@@ -208,7 +208,7 @@
   T.echo = g => {
     const n = g.max, PADS = [{ e: '🦜', c: '#33c26b', n: 'Papagei' }, { e: '🐸', c: '#e0c030', n: 'Frosch' }, { e: '🐆', c: '#ff8a2a', n: 'Jaguar' }, { e: '🐒', c: '#e8508a', n: 'Äffchen' }];
     let round = 0, seq = [], state = 'wait', step = 0, tm = 1, lit = -1, litT = 0, lives = 2, bugsA = [], fogT = 0, bg = null, msg = '', msgT = 0, pi = 0;
-    const base = g.short ? 2 : 2, mk = () => { seq = []; for (let i = 0; i < base + round; i++) seq.push(Math.floor(rnd(0, 4))); };
+    const base = g.opt.echoBase || (g.short ? 2 : 3), mk = () => { seq = []; for (let i = 0; i < base + round; i++) seq.push(Math.floor(rnd(0, 4))); };
     const rects = () => { const s = Math.min(g.W - 40, g.H - 190, 460), gp = 14, p = (s - gp) / 2, x0 = (g.W - s) / 2, y0 = 92 + (g.H - 92 - s) / 2 - 10; return [0, 1, 2, 3].map(i => ({ x: x0 + (i % 2) * (p + gp), y: y0 + Math.floor(i / 2) * (p + gp), w: p, h: p })); };
     function press(i) { lit = i; litT = .28; snd().pad(i); }
     return {
@@ -326,5 +326,5 @@
     raf = requestAnimationFrame(frame);
     return { stop() { if (!stopped) { stopped = true; cleanup(); } }, g, game };
   }
-  root.Trials = { run, ids: Object.keys(T) };
+  root.Trials = { run, ids: Object.keys(T), T, text };
 })(typeof window !== 'undefined' ? window : globalThis);
