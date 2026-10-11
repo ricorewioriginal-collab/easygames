@@ -122,6 +122,7 @@ BI.createFarm = function (G) {
     } else say('Bauer Heinz: „' + c.icon + ' ' + c.title + ': ' + p + ' von ' + c.need + '. Du schaffst das!“', 3600);
   };
   K.questText = () => { const q = Q(); if (!q.on) return ''; const c = cur(), p = progress(); return c.icon + ' ' + c.title + ' ' + p + '/' + c.need + (p >= c.need ? ' – zu Heinz!' : ''); };
+  K.log = () => { const q = Q(), n = QUESTS.length, ci = q.i % n; return { on: q.on, rounds: q.rounds || 0, cur: ci, items: QUESTS.map((c, i) => ({ icon: c.icon, title: c.title, text: c.text, need: c.need, ok: i < ci, p: i === ci && q.on ? progress() : 0 })) }; };
   K.nearFarmer = () => !P.veh && Math.hypot(P.x - F.farmer.x, P.z - F.farmer.z) < 3.4;
 
   /* ---------- Tiere entdecken, streicheln, füttern ---------- */

@@ -14,6 +14,25 @@ BI.PUP_TEAM = [
   { id: 'pia', name: 'Pia', veh: 'plane', col: 0x9b4de0, fur: 0xf4eaff, dark: 0xcdb6f0, uni: 0x9b4de0, trim: 0xffd23f, hat: 'goggles', lines: ['Hallo, ich bin Pia! Ich fliege hoch über die Bucht. ✈️', 'Von oben sieht die Insel aus wie ein Bonbon.', 'Mein Flieger „Wölkchen“ landet auf jeder Wiese.'] },
   { id: 'bella', name: 'Bella', veh: 'ambulance', col: 0xff5a7a, fur: 0xffffff, dark: 0x8a5a33, uni: 0xff5a7a, trim: 0xffffff, hat: 'cap', lines: ['Ich bin Bella, die Sani-Hündin. 🚑', 'Ein Pflaster hilft bei kleinen Wehwehchen – und ein Kuss auch!', 'Wenn sich jemand verletzt hat, hol sofort einen Erwachsenen.'] }
 ];
+const PUP_MORE = {
+  rodel: ['Wusstest du? Keine zwei Schneeflocken sind gleich – wie wir Hunde! ❄️', 'Wenn du mit mir spielst, wird mir ganz warm ums Herz. Die beste Heizung der Welt!', 'Ich träume davon, mal im Sommer Schlitten zu fahren. Auf Sand!'],
+  welle: ['Ich liebe Bälle! Wirfst du mir einen? 🎾', 'Fische sind meine Freunde – ich rette sie nur, wenn sie sich verirren.', 'Nach jedem Einsatz gibt es bei mir eine Runde Planschen!'],
+  sprudel: ['Ich kann mit meinem Schlauch Regenbögen spritzen! 🌈', 'Wenn es brennt: ruhig bleiben und Hilfe rufen. Das schaffst du!', 'Mein Helm glänzt schon wieder. Ich putze ihn jeden Morgen!'],
+  brumm: ['Ich zähle gern Schrauben. Gestern waren es 4.711! 🔩', 'Gemeinsam bauen wir sogar eine Sandburg bis zum Mond!', 'Mein Bagger Schaufel-Susi ist ein kleines bisschen eifersüchtig auf Wölkchen.'],
+  pia: ['Von oben sieht man alles – sogar, wo dein Teddy liegt! 🧸', 'Wolken sind wie Zuckerwatte, nur ohne Zucker. Ich habe es probiert.', 'Willst du mal mitfliegen? In unserer Fantasie geht alles!'],
+  bella: ['Lachen ist die beste Medizin – und Streicheln auch! 💗', 'Ich habe immer einen Verband dabei, falls ein Teddy hinfällt.', 'Trink genug Wasser! Das wünscht dir deine Sani-Hündin.']
+};
+BI.PUP_TEAM.forEach(q => { if (PUP_MORE[q.id]) q.lines = q.lines.concat(PUP_MORE[q.id]); });
+/* Gemeinsame Bildschirm-Styles (Einsatz-Hinweis unten in der Mitte, Hunde-Spielleiste): kollidieren nicht mit den Anzeigen oben */
+BI.injectHudCss = function () {
+  if (document.getElementById('bi-hud-css')) return; const st = document.createElement('style'); st.id = 'bi-hud-css';
+  st.textContent = '.eChip{position:absolute;left:50%;transform:translateX(-50%);bottom:64px;width:min(520px,calc(100% - 440px));display:flex;align-items:center;gap:10px;padding:7px 14px;border-radius:20px;pointer-events:none;font-weight:700;font-size:14px;line-height:1.25;z-index:6}.eChip[hidden]{display:none}'
+    + '.pPanel{position:absolute;left:50%;transform:translateX(-50%);bottom:122px;width:min(560px,calc(100% - 24px));padding:10px 10px 10px;border-radius:22px;background:rgba(255,255,255,.93);box-shadow:0 6px 24px rgba(20,50,100,.25);z-index:7;display:flex;flex-direction:column;gap:6px;pointer-events:auto}.pPanel[hidden]{display:none}'
+    + '.pT{font-weight:800;text-align:center;color:#16335e;font-size:16px}.pB{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}'
+    + '.pB button{display:flex;flex-direction:column;align-items:center;min-width:78px;padding:6px 8px;border-radius:16px;font-weight:800;font-size:13px;background:#fff;color:#16335e;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14);pointer-events:auto}.pB button span{font-size:24px;line-height:1.1}.pX{position:absolute;top:4px;right:10px;font-size:16px;font-weight:800;color:#16335e;pointer-events:auto;background:none}'
+    + '@media (orientation:portrait){.eChip{bottom:25vh;width:calc(100% - 24px)}.pPanel{bottom:33vh}}';
+  document.head.appendChild(st);
+};
 BI.PUPS_GOLD = { shirt: 0xffd23f, pants: 0xe6b422, hair: 0xc9951a, skin: 0xffe08a, shoe: 0xc9951a };
 
 /* ---------- Boden, Brücke, Tor, Bellwarte, Fahrzeug-Platz, Häuser, Leuchtturm, Strand (statisch) ---------- */
@@ -95,10 +114,45 @@ BI.createPups = function (G) {
   /* Goldene Statue: Jannis (Arme hoch) und Blitz (sitzt) auf dem Sockel */
   { const s = W.spots.pupsStatue, L = G.look ? G.look() : {}; const hero = BI.makeChar(Object.assign({}, GOLD, { style: L.style, hat: L.hat && L.hat !== 'none' ? L.hat : 'cap', scale: 1.9, mouth: 'smile' })); hero.dance(0, 0); hero.group.position.set(s.x - .9, s.y, s.z); hero.group.rotation.y = Math.PI; scene.add(hero.group);
     const dog = BI.makeDog({ fur: 0xe6b422, dark: 0xc9951a, uni: 0xffd23f, trim: 0xfff3a0, noName: true }); dog.group.scale.setScalar(1.9); dog.trick('sit', .5); dog.group.position.set(s.x + 1.3, s.y, s.z + .3); dog.group.rotation.y = Math.PI * .85; scene.add(dog.group); }
-  /* Fellretter-Hunde: stehen bei ihren Fahrzeugen, erzählen und wedeln, wenn man nah kommt */
+  /* ===== Mit den Hunden spielen: Reden, Pfötchen, Ball holen, Leckerli, Rolle, Salto ===== */
+  BI.injectHudCss(); K.pups = [];
+  const host = (document.getElementById('mission') || {}).parentNode || document.body, panel = document.createElement('div'); panel.className = 'pPanel'; panel.hidden = true; panel.innerHTML = '<div class="pT"></div><div class="pB"></div>';
+  const OPT = [['talk', '💬', 'Reden'], ['paw', '🐾', 'Pfötchen'], ['ball', '🎾', 'Ball holen'], ['treat', '🦴', 'Leckerli'], ['roll', '🔄', 'Rolle'], ['flip', '🤸', 'Salto']];
+  for (const [k, ic, tx] of OPT) { const b = document.createElement('button'); b.innerHTML = '<span>' + ic + '</span>' + tx; b.addEventListener('click', e => { e.stopPropagation(); choose(k); }); panel.querySelector('.pB').appendChild(b); }
+  { const x = document.createElement('button'); x.className = 'pX'; x.textContent = '✖'; x.addEventListener('click', e => { e.stopPropagation(); closePanel(); }); panel.appendChild(x); } host.appendChild(panel);
+  let pi = -1, cur = null, lastTreat = -1e9, lastFetch = -1e9; const ball = new THREE.Mesh(new THREE.SphereGeometry(.24, 10, 8), new THREE.MeshLambertMaterial({ color: 0xffd23f })); ball.visible = false; scene.add(ball);
+  const openPanel = i => { pi = i; panel.querySelector('.pT').textContent = '🐾 ' + K.pups[i].name + ' – was wollen wir machen?'; panel.hidden = false; };
+  const closePanel = () => { pi = -1; panel.hidden = true; };
+  const dist = (p, x, z) => Math.hypot(p.n.x - x, p.n.z - z), face = (p, x, z) => { const h = Math.atan2(x - p.n.x, z - p.n.z); p.n.h = h; p.d.group.rotation.y = h; };
+  const place = (p, x, z) => { p.n.x = x; p.n.z = z; p.d.group.position.x = x; p.d.group.position.z = z; };
+  const bark = (p, txt) => say('🐾 ' + p.name + ': „' + txt + '“', 3200);
+  function choose(k) {
+    const p = K.pups[pi]; if (!p) return; closePanel(); if (k === 'talk') { if (G.talk) G.talk(p.n); return; }
+    if (cur) { say('🐾 ' + p.name + ' ist noch beschäftigt – gleich wieder!', 1800); return; }
+    const now = performance.now(), TR = { paw: ['paw', 1.7, 'Pfötchen! Wuff!'], roll: ['roll', 1.2, 'Rolle, Rolle, Rolle!'], flip: ['flip', 1.1, 'Ta-daa! Salto!'], treat: ['beg', 1.8, 'Mmmh, lecker! Danke dir!'] };
+    if (k === 'treat' && now - lastTreat > 40000) { lastTreat = now; G.addStars(1); say('🦴 +1 ⭐ fürs Verwöhnen!', 1600); }
+    if (TR[k]) { const t = TR[k]; cur = { p, mode: 'trick', name: t[0], t: 0, dur: t[1] }; bark(p, t[2]); fx.burst(p.n.x, 1.8, p.n.z, 8, [BI.C.pink, BI.C.white], 3, 1, 26, 3); return; }
+    if (k === 'ball') { const f = [Math.sin(P.h), Math.cos(P.h)], q = W.resolve(P.x + f[0] * 7, P.z + f[1] * 7, .5, {}); cur = { p, mode: 'fly', t: 0, sx: P.x, sz: P.z, ex: q.x, ez: q.z }; ball.visible = true; ball.position.set(P.x, 1.4, P.z); bark(p, 'Wirf! Wirf! Ich hol ihn!'); snd('whoosh'); }
+  }
+  const snd = n => { try { A[n] && A[n](); } catch (e) { } };
+  K.dbg = () => ({ cur: cur && cur.mode, ball: ball.visible && [ball.position.x, ball.position.z] });
+  K.update = function (dt, t) {
+    if (pi >= 0 && Math.hypot(P.x - K.pups[pi].n.x, P.z - K.pups[pi].n.z) > 6.5) closePanel();
+    if (cur) { const c = cur, p = c.p, d = p.d; c.t += dt;
+      if (c.mode === 'trick') { d.trick(c.name, Math.min(1, c.t / c.dur)); if (c.t >= c.dur) { d.reset(); cur = null; } }
+      else if (c.mode === 'fly') { const k = Math.min(1, c.t / .9); ball.position.set(c.sx + (c.ex - c.sx) * k, 1.4 + Math.sin(k * Math.PI) * 2.6 - k * 1.1, c.sz + (c.ez - c.sz) * k); if (k >= 1) { c.mode = 'chase'; c.t = 0; } }
+      else if (c.mode === 'chase') { const dx = ball.position.x - p.n.x, dz = ball.position.z - p.n.z, dd = Math.hypot(dx, dz); if (dd < .8) { c.mode = 'carry'; c.t = 0; snd('ding'); } else { face(p, ball.position.x, ball.position.z); place(p, p.n.x + dx / dd * 7 * dt, p.n.z + dz / dd * 7 * dt); d.pose(t * 14, .8, false); } }
+      else if (c.mode === 'carry') { const dx = P.x - p.n.x, dz = P.z - p.n.z, dd = Math.hypot(dx, dz); ball.position.set(p.n.x + Math.sin(p.n.h) * 1.2, .75, p.n.z + Math.cos(p.n.h) * 1.2);
+        if (dd < 1.7) { c.mode = 'drop'; c.t = 0; ball.position.set(p.n.x + Math.sin(p.n.h) * 1.4, .24, p.n.z + Math.cos(p.n.h) * 1.4); bark(p, 'Hier, dein Ball! Nochmal?'); const now = performance.now(); if (now - lastFetch > 12000) { lastFetch = now; G.addStars(1); say('🎾 +1 ⭐ fürs Spielen!', 1600); } fx.burst(p.n.x, 1.8, p.n.z, 10, [BI.C.gold, BI.C.white], 3, 1, 26, 3); }
+        else { face(p, P.x, P.z); place(p, p.n.x + dx / dd * 6.5 * dt, p.n.z + dz / dd * 6.5 * dt); d.pose(t * 14, .8, false); } }
+      else if (c.mode === 'drop') { d.trick('sit', Math.min(1, c.t / 1.4)); if (c.t > 1.4) { d.reset(); ball.visible = false; cur = null; } } }
+    /* Hunde, die beim Spielen weggelaufen sind, gehen gemütlich zurück zu ihrem Fahrzeug */
+    for (const p of K.pups) { if (cur && cur.p === p) continue; const dx = p.home.x - p.n.x, dz = p.home.z - p.n.z, dd = Math.hypot(dx, dz); if (dd > .15) { face(p, p.home.x, p.home.z); place(p, p.n.x + dx / dd * Math.min(dd, 3.2 * dt), p.n.z + dz / dd * Math.min(dd, 3.2 * dt)); p.d.pose(t * 10, .7, false); } else if (dd > 0) { place(p, p.home.x, p.home.z); p.n.h = p.n.h0; } }
+  };
+  /* Fellretter-Hunde: stehen bei ihren Fahrzeugen, erzählen, wedeln und spielen mit dir */
   K.people = function (folk) {
     const mk = (c, x, z, h, name, lines, kid) => { c.group.position.set(x, 0, z); c.group.rotation.y = h; scene.add(c.group); const n = { c, x, z, h, h0: h, p: { name, lines, i: 0 }, wait: 0, hop: 0, kid: !!kid, fixed: true }; folk.push(n); return n; };
-    TEAM.forEach((q, i) => { if (!q.lines.length) return; const d = BI.makeDog({ name: q.name, fur: q.fur, dark: q.dark, uni: q.uni, trim: q.trim, hat: q.hat }); d.group.scale.setScalar(1.45); mk(d, PU.x + (i - 3) * 4.4 + 1.6, PU.z + 5.2, Math.PI, 'Fellretter ' + q.name, q.lines, false); });
+    TEAM.forEach((q, i) => { if (!q.lines.length) return; const d = BI.makeDog({ name: q.name, fur: q.fur, dark: q.dark, uni: q.uni, trim: q.trim, hat: q.hat }); d.group.scale.setScalar(1.45); const hx = PU.x + (i - 3) * 4.4 + 1.6, hz = PU.z + 5.2, n = mk(d, hx, hz, Math.PI, 'Fellretter ' + q.name, q.lines, false); K.pups.push({ id: q.id, name: q.name, n, d, home: { x: hx, z: hz } }); });
     const SK = [0xffd2a8, 0xe0a979, 0x8d5a3b, 0xf3c9a0, 0xc68a5a], cit = [
       ['Bürgermeister Bommel', 'Willkommen in der Fellretter-Bucht! Bei uns passen alle auf alle auf. 🏛️', 'Die Fellretter sind unsere Helden – aber jeder kann ein Held sein: einfach freundlich helfen!', [-27, -3], { shirt: 0x2d6be0, pants: 0x3d4a7a, hair: 0xdddddd, skin: SK[3], hat: 'cap', style: 'short', wrink: 1, scale: .98 }],
       ['Tante Tilda', 'Mein Café hat den besten Hundekuchen der Bucht – natürlich nur für Hunde! 🍪', 'Für Kinder gibt es Kakao mit Sahne. Und Sterne? Die gibt es gratis, wenn du nett bist!', [27, -4], { shirt: 0xff7a1a, pants: 0x7a3d6a, hair: 0xa14a2b, skin: SK[1], hat: 'chef', style: 'bun', dress: true, scale: .96 }],
@@ -111,7 +165,7 @@ BI.createPups = function (G) {
   };
   /* Statue bewundern: Konfetti, Spruch, +1 ⭐ alle 60 s */
   let last = -1e9; const COLS = [[1, .82, .2], [.35, .7, 1], [1, .6, .2], [1, 1, 1]];
-  K.near = function () { const s = W.spots.pupsStatue; if (!s || P.veh || P.y > 1.5) return null; return Math.hypot(P.x - s.x, P.z - s.z) < 5.4 ? { k: 'statue' } : null; };
-  K.act = function (n) { if (!n || n.k !== 'statue') return; const s = W.spots.pupsStatue, now = performance.now(); fx.burst(s.x, s.y + 3.4, s.z, 26, COLS, 4, 1.4, 28, 3); A.fanfare && A.fanfare(); say('🏆 Jannis & Blitz – die ersten Fellretter! Gemeinsam sind wir stark.', 4200); if (now - last > 60000) { last = now; G.addStars(1); say('🏆 +1 ⭐ fürs Bewundern!', 1800); } };
+  K.near = function () { if (P.veh || P.y > 1.5) return null; for (let i = 0; i < K.pups.length; i++) { const p = K.pups[i]; if (p.n.c.group.visible && Math.hypot(P.x - p.n.x, P.z - p.n.z) < 2.7) return { k: 'pup', i }; } const s = W.spots.pupsStatue; if (!s) return null; return Math.hypot(P.x - s.x, P.z - s.z) < 5.4 ? { k: 'statue' } : null; };
+  K.act = function (n) { if (n && n.k === 'pup') { if (pi === n.i) closePanel(); else openPanel(n.i); return; } if (!n || n.k !== 'statue') return; const s = W.spots.pupsStatue, now = performance.now(); fx.burst(s.x, s.y + 3.4, s.z, 26, COLS, 4, 1.4, 28, 3); A.fanfare && A.fanfare(); say('🏆 Jannis & Blitz – die ersten Fellretter! Gemeinsam sind wir stark.', 4200); if (now - last > 60000) { last = now; G.addStars(1); say('🏆 +1 ⭐ fürs Bewundern!', 1800); } };
   return K;
 };

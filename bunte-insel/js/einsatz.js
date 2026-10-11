@@ -64,7 +64,7 @@ BI.createEinsatz = function (G) {
   beam.visible = ring.visible = false; beam.position.y = 35; ring.position.y = .15; scene.add(beam, ring);
   /* ===== Hinweis oben: Einsatz, Ziel, Entfernung, Pfeil ===== */
   const host = document.getElementById('mission'), chip = document.createElement('div'); chip.className = 'chip'; chip.hidden = true;
-  chip.style.cssText = 'position:absolute;left:50%;top:max(66px,calc(env(safe-area-inset-top) + 56px));transform:translateX(-50%);width:min(440px,calc(100% - 330px));display:flex;align-items:center;gap:10px;padding:7px 14px;border-radius:20px;pointer-events:none;font-weight:700;font-size:14px;line-height:1.25;z-index:6';
+  BI.injectHudCss(); chip.classList.add('eChip');
   chip.innerHTML = '<span style="font-size:22px">🚨</span><span style="flex:1"></span><span class="eArr" style="font-size:22px;display:inline-block">⬆️</span><b class="eDist"></b>';
   if (host && host.parentNode) host.parentNode.appendChild(chip); else document.body.appendChild(chip);
   const eTxt = chip.children[1], eArr = chip.querySelector('.eArr'), eDist = chip.querySelector('.eDist'); let hudT = 0, lastTxt = '';
@@ -88,18 +88,22 @@ BI.createEinsatz = function (G) {
     const nm = next(); e.cur = { id: nm.id, step: 0 }; persist(); paint(); refresh(); A.fanfare && A.fanfare(); fx.burst(P.x, 1.6, P.z, 22, COLS, 4, 1.2, 26, 3);
     say('🚨 Einsatz angenommen! ' + nm.pup + ': „' + nm.quote + '“', 7000);
   };
-  /* Anzeige aktualisieren (Säule, Hinweis) */
-  function refresh() { const t = target(); beam.visible = ring.visible = !!t; if (t) { beam.position.set(t.x, 35, t.z); ring.position.set(t.x, .15, t.z); } chip.hidden = !t || !G.playing(); lastTxt = ''; }
+  /* Anzeige nur in der passenden Welt: Säule und Hinweis in der Welt des Ziels, der Hinweis zusätzlich in der Fellretter-Bucht (dort wird berichtet) */
+  function refresh() { lastTxt = ''; hudT = 0; }
   K.refresh = refresh;
   K.update = function (dt, t) {
-    const tg = target(); if (!tg) { if (!chip.hidden) chip.hidden = true; if (beam.visible) beam.visible = ring.visible = false; return; } if (!beam.visible) refresh();
-    ring.scale.setScalar(1 + .12 * Math.sin(t * 4)); beam.material.opacity = .26 + .1 * Math.sin(t * 3);
-    hudT -= dt; if (hudT > 0) return; hudT = .25; const play = G.playing(); if (chip.hidden === play) chip.hidden = !play; if (!play) return;
+    const tg = target(); if (!tg) { if (!chip.hidden) chip.hidden = true; if (beam.visible) beam.visible = ring.visible = false; return; }
+    const play = G.playing(), here = BI.worldAt(P.x, P.z), inW = here === BI.worldAt(tg.x, tg.z), show = play && (inW || here === 'bucht');
+    if (beam.visible !== inW) beam.visible = ring.visible = inW;
+    if (inW) { beam.position.set(tg.x, 35, tg.z); ring.position.set(tg.x, .15, tg.z); ring.scale.setScalar(1 + .12 * Math.sin(t * 4)); beam.material.opacity = .26 + .1 * Math.sin(t * 3); }
+    if (chip.hidden === show) chip.hidden = !show; if (!show) return;
+    hudT -= dt; if (hudT > 0) return; hudT = .25;
     const dx = tg.x - P.x, dz = tg.z - P.z, d = Math.hypot(dx, dz), fw = [-Math.sin(cam.yaw), -Math.cos(cam.yaw)], rt = [Math.cos(cam.yaw), -Math.sin(cam.yaw)], rel = Math.atan2(dx * rt[0] + dz * rt[1], dx * fw[0] + dz * fw[1]);
     const m = cur(), txt = (m ? m.title + ': ' : '') + tg.icon + ' ' + tg.text; if (txt !== lastTxt) { lastTxt = txt; eTxt.textContent = txt; }
-    eArr.style.transform = 'rotate(' + (rel * 180 / Math.PI).toFixed(0) + 'deg)'; eDist.textContent = d < 1000 ? Math.round(d) + ' m' : '';
+    /* Pfeil und Entfernung nur, wenn das Ziel in derselben Welt liegt; sonst zeigt der Text, wohin es geht (🧭 hilft) */
+    eArr.style.visibility = eDist.style.visibility = inW ? 'visible' : 'hidden'; eArr.style.transform = 'rotate(' + (rel * 180 / Math.PI).toFixed(0) + 'deg)'; eDist.textContent = inW && d < 1000 ? Math.round(d) + ' m' : '';
   };
   if (E().cur && !byId(E().cur.id)) { E().cur = null; persist(); }
-  K.missions = MS; K.state = E; K.target = target;
+  K.log = () => ({ missions: MS, state: E() }); K.missions = MS; K.state = E; K.target = target; K.beamOn = () => beam.visible;
   return K;
 };

@@ -27,9 +27,10 @@ BI.createStory = function (G) {
   const rw = () => S().rw || (S().rw = {}); // Ziele, für die es schon den Stern gab
   K.chapter = () => ST[S().c] || null;
   K.finished = () => S().c >= ST.length;
-  const chip = $('questChip');
+  const chip = $('questChip'); BI.injectLogCss();
   function next() { const c = K.chapter(); return c ? c.tasks.find(t => !done(t)) : null; }
   function renderChip() {
+    const fq = G.farmGoal ? G.farmGoal() : ''; if (fq) { $('qcIcon').textContent = '🚜'; $('qcTitle').textContent = 'Hof-Aufgabe'; $('qcText').textContent = fq; return; } /* eine Anzeige oben: Hof-Aufgabe, sonst nächstes Inselreise-Ziel */
     const c = K.chapter(); if (!c) { chip.hidden = true; return; } const n = next(), k = c.tasks.filter(done).length;
     $('qcIcon').textContent = n ? n[2] : c.icon; $('qcTitle').textContent = 'Kapitel ' + (S().c + 1) + '/' + ST.length + ' · ' + c.name + ' (' + k + '/3)'; $('qcText').textContent = n ? n[3] : '';
   }
@@ -58,28 +59,20 @@ BI.createStory = function (G) {
   function tick(c, k) { const t = c.tasks.find(q => q[1] === k); if (!rw()[k]) { rw()[k] = 1; G.addStars(1); } A.ding && A.ding(); G.persist(); if (!check(false)) { setTimeout(() => say('📖 ✔ ' + t[2] + ' ' + t[3].replace(/ \(.*\)$/, '') + ' +1 ⭐', 2600), 1200); renderChip(); if (K.open) render(); } } // schließt das Ziel das Kapitel ab, spricht nur die Kapitel-Ansage (sonst würde sie abgeschnitten)
   /* ---------- Fenster ---------- */
   function render() {
-    const s = S(), c = K.chapter(), box = $('questNow'), list = $('questList'); box.innerHTML = ''; list.innerHTML = '';
-    $('questBar').style.width = Math.round(Math.min(s.c, ST.length) / ST.length * 100) + '%'; $('questCount').textContent = Math.min(s.c, ST.length) + ' von ' + ST.length + ' Kapiteln';
-    if (c) {
-      const h = document.createElement('div'); h.className = 'qhead'; h.textContent = c.icon + ' Kapitel ' + (s.c + 1) + ': ' + c.name; box.appendChild(h);
-      const p = document.createElement('p'); p.className = 'help'; p.textContent = '👩‍💼 ' + c.intro; box.appendChild(p);
-      for (const t of c.tasks) {
-        const r = document.createElement('div'), ok = done(t); r.className = 'qtask' + (ok ? ' ok' : ''); const l = document.createElement('span'); l.textContent = (ok ? '✅ ' : '⬜ ') + t[2] + ' ' + t[3]; r.appendChild(l);
-        if (!ok && t[4]) { const b = document.createElement('button'); b.className = 'pill'; b.textContent = '👣 Weg'; b.onclick = () => { K.close(); G.guideTo(t[4]); }; r.appendChild(b); }
-        box.appendChild(r);
-      }
-    } else { const h = document.createElement('div'); h.className = 'qhead'; h.textContent = '🏆 Inselheld! Alle Kapitel geschafft'; box.appendChild(h); const p = document.createElement('p'); p.className = 'help'; p.textContent = 'Die Insel gehört dir: Erkunde alles, sammle Sticker, schaff die Tagesaufgaben (🎉-Menü) und lade Freunde ein!'; box.appendChild(p); }
-    ST.forEach((q, i) => { const d = document.createElement('span'); d.className = 'qch' + (i < s.c ? ' ok' : i === s.c ? ' cur' : ''); d.textContent = (i < s.c ? '✅' : q.icon) + ' ' + q.name; list.appendChild(d); });
+    const s = S(), box = $('questNow'), list = $('questList'); box.innerHTML = ''; list.innerHTML = '';
+    const L = G.log ? G.log() : {};
+    BI.renderTaskLog(box, { story: { finished: K.finished(), chapters: ST.map((c, i) => ({ icon: c.icon, name: c.name, intro: c.intro, cur: i === s.c, done: i < s.c, tasks: c.tasks.map(t => ({ icon: t[2], text: t[3], ok: done(t), dest: t[4] })) })) },
+      farm: L.farm, einsatz: L.einsatz, mission: L.mission, daily: L.daily, guide: id => { K.close(); G.guideTo(id); } });
   }
   K.show = function () { if (K.open) return; K.open = true; G.setStick(0, 0); S().seen = true; G.persist(); render(); $('questPanel').hidden = false; };
   K.close = function () { if (!K.open) return; K.open = false; $('questPanel').hidden = true; G.updateButtons(true); };
   $('questClose').addEventListener('click', K.close); chip.addEventListener('click', () => K.show());
   $('questRead').addEventListener('click', () => { const c = K.chapter(); if (c && A.speak) A.speak(c.intro); });
   /* Start: bereits Geschafftes nachholen; beim allerersten Mal das erste Kapitel ansagen (kein Fenster, damit nichts im Weg ist) */
-  let introT = S().seen ? -1 : 2.5;
+  let introT = S().seen ? -1 : 2.5, fgT = 0;
   K.start = function () { check(true); renderChip(); };
   K.update = function (dt, playing, free) {
-    chip.hidden = !playing || K.finished() || !free.hud;
+    fgT -= dt; if (fgT <= 0) { fgT = .5; renderChip(); } chip.hidden = !playing || (K.finished() && !(G.farmGoal && G.farmGoal())) || !free.hud;
     if (introT > 0 && playing && free.idle) { introT -= dt; if (introT <= 0) { introT = -1; S().seen = true; const c = K.chapter(); if (c) announce(c, '👩‍💼 Bürgermeisterin Rosi: '); } }
   };
   return K;
