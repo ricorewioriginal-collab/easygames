@@ -1,63 +1,26 @@
-// Welt: Block-Typen, Terrain-Generierung, Chunk-Speicher.
-export const CS = 16;        // Chunk-Kantenlänge
-export const H = 64;         // Weltmaximum (Höhe)
-export const SEA = 24;       // Meeresspiegel
-export const B = { AIR: 0, GRASS: 1, DIRT: 2, STONE: 3, SAND: 4, WOOD: 5, LEAVES: 6, PLANKS: 7, GLASS: 8, LAMP: 9, WATER: 10 };
+// Welt: Terrain-Generierung (Generator 1 = Originalwelt, Generator 2 = Biome/Höhlen/Erze), Chunk-Speicher.
+import { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo } from './blocks.js';
+import { biomeColumn, decorateChunk, BIOME, GEN2_SPAWN_BIOMES } from './worldgen.js';
+export { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo };
+import { CS, H, SEA } from './consts.js';
+import { hash, fbm } from './noise.js';
+export { CS, H, SEA };
+export const GEN_LATEST = 2; // Generator für neue Welten
+const H1_MAX = 52;           // Höhengrenze der Originalwelt (Generator 1), nie ändern
 
-// Namen und Eigenschaften je Block-Typ
-// Funk-Logos sind Blöcke mit den Ids 11..26
-export const LOGO0 = 11, LOGO_COUNT = 16;
-export const isLogo = t => t >= 11 && t < 27;
-export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
-  'RockRadio 24', 'ChristmasRadio', 'KultRadio 24', 'Zocker-FM', 'Special-Radio', 'AnMaChaCast', 'SenderWelt', 'RadioPortal'];
-// Spezial-Blöcke mit eigenen Funktionen (Ids 27..37)
-B.FEDER = 27; B.TURBO = 28; B.WIND = 29; B.RADIO = 30; B.RAINBOW = 31;
-B.NEON_R = 32; B.NEON_B = 33; B.NEON_G = 34; B.NEON_P = 35; B.BRICK = 36; B.MARBLE = 37;
-export const SPECIAL0 = 27, SPECIAL_COUNT = 11;
-export const SPECIAL_NAMES = ['Federblock', 'Turbo-Block', 'Aufwind-Block', 'Radio-Block', 'Regenbogen-Block', 'Neonrot', 'Neonblau', 'Neongrün', 'Neonlila', 'Ziegel', 'Marmor'];
-export const NAMES = ['Luft', 'Gras', 'Erde', 'Stein', 'Sand', 'Holz', 'Blätter', 'Bretter', 'Glas', 'Leuchtblock', 'Wasser', ...LOGO_NAMES, ...SPECIAL_NAMES];
-export const SOLID = new Uint8Array(48);   // begehbar blockierend
-export const OPAQUE = new Uint8Array(48);  // verdeckt Nachbarflächen
-export const SKYBLOCK = new Uint8Array(48); // wirft Schatten (Sonnenlicht)
-export const EMIT = new Float32Array(48);  // Eigenleuchten (2 = Regenbogen-Animation)
-for (const t of [1, 2, 3, 4, 5, 6, 7, 8, 9]) SOLID[t] = 1;
-for (const t of [1, 2, 3, 4, 5, 7, 9]) OPAQUE[t] = 1;
-for (let i = 0; i < LOGO_COUNT; i++) { SOLID[LOGO0 + i] = 1; OPAQUE[LOGO0 + i] = 1; }
-for (let i = 0; i < SPECIAL_COUNT; i++) { SOLID[SPECIAL0 + i] = 1; OPAQUE[SPECIAL0 + i] = 1; }
-for (let t = 1; t < 48; t++) if (OPAQUE[t] || t === 6) SKYBLOCK[t] = 1;
-EMIT[B.LAMP] = 1; EMIT[B.RAINBOW] = 2;
-for (const t of [B.NEON_R, B.NEON_B, B.NEON_G, B.NEON_P]) EMIT[t] = 1;
-
-function hash(x, z, s) {
-  let h = Math.imul(x | 0, 0x27d4eb2d) ^ Math.imul(z | 0, 0x165667b1) ^ Math.imul(s | 0, 0x9e3779b1);
-  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b);
-  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
-  h ^= h >>> 16;
-  return (h >>> 0) / 4294967296;
-}
-function vnoise(x, z, s) {
-  const xi = Math.floor(x), zi = Math.floor(z), xf = x - xi, zf = z - zi;
-  const u = xf * xf * (3 - 2 * xf), v = zf * zf * (3 - 2 * zf);
-  const a = hash(xi, zi, s), b = hash(xi + 1, zi, s), c = hash(xi, zi + 1, s), d = hash(xi + 1, zi + 1, s);
-  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
-}
-function fbm(x, z, s, oct) {
-  let sum = 0, amp = 0.5, f = 1, norm = 0;
-  for (let i = 0; i < oct; i++) { sum += amp * vnoise(x * f, z * f, s + i * 101); norm += amp; amp *= 0.5; f *= 2; }
-  return sum / norm;
-}
 export function terrainHeight(seed, wx, wz) {
   const n = fbm(wx / 110, wz / 110, seed, 4);
   const m = fbm(wx / 24, wz / 24, seed + 5, 2);
   const h = Math.floor(10 + n * 44 + (m - 0.5) * 5);
-  return Math.max(2, Math.min(H - 12, h));
+  return Math.max(2, Math.min(H1_MAX, h));
 }
 
 export function chunkKey(cx, cz) { return (cx + 32768) * 65536 + (cz + 32768); }
 
 export class World {
-  constructor(seed, edits) {
+  constructor(seed, edits, gen = 1) {
     this.seed = seed | 0;
+    this.gen = gen === 2 ? 2 : 1;
     this.chunks = new Map();
     this.edits = edits || new Map(); // key -> Map(index -> type)
     this.dirty = new Set();
@@ -75,6 +38,12 @@ export class World {
 
   generate(cx, cz, key) {
     const data = new Uint8Array(CS * CS * H);
+    const maxY = this.gen === 2 ? decorateChunk(this.seed, cx, cz, data) : this.generate1(cx, cz, data);
+    return this.finish(cx, cz, key, data, maxY);
+  }
+
+  // Generator 1: unverändert aus Version 1.0, damit alte Spielstände exakt dieselbe Welt bekommen
+  generate1(cx, cz, data) {
     const seed = this.seed;
     let maxY = 0;
     for (let z = 0; z < CS; z++) {
@@ -115,6 +84,10 @@ export class World {
         if (h + th + 1 > maxY) maxY = h + th + 1;
       }
     }
+    return maxY;
+  }
+
+  finish(cx, cz, key, data, maxY) {
     // gespeicherte Änderungen
     const ed = this.edits.get(key);
     if (ed) for (const [i, t] of ed) {
@@ -132,6 +105,8 @@ export class World {
     const c = this.chunks.get(chunkKey(x >> 4, z >> 4));
     return c ? c.data[(x & 15) + (z & 15) * CS + y * CS * CS] : B.AIR;
   }
+
+  isLoaded(x, z) { return this.chunks.has(chunkKey(x >> 4, z >> 4)); }
 
   // Für Physik: nicht geladene Bereiche gelten als fest.
   isSolid(x, y, z) {
@@ -187,8 +162,12 @@ export class World {
     return out;
   }
 
-  // Sicherer Startpunkt: erste Landfläche ohne Baum
+  // Sicherer Startpunkt: erste Landfläche ohne Baum (Generator 2: in Ebene, Wald oder Blumenwiese)
   findSpawn() {
+    if (this.gen === 2) {
+      const s = this.findSpawn2();
+      if (s) return s;
+    }
     for (let r = 0; r < 60; r++) {
       for (let k = 0; k < Math.max(1, r * 8); k++) {
         const a = (k / Math.max(1, r * 8)) * Math.PI * 2;
@@ -203,6 +182,34 @@ export class World {
         return { x: x + 0.5, y: y + 1.01, z: z + 0.5 };
       }
     }
-    return { x: 0.5, y: H - 2, z: 0.5 };
+    return { x: 0.5, y: H1_MAX + 2, z: 0.5 };
+  }
+
+  findSpawn2() {
+    const col = {};
+    for (let r = 0; r < 120; r++) {
+      const n = Math.max(1, r * 8);
+      for (let k = 0; k < n; k++) {
+        const a = (k / n) * Math.PI * 2;
+        const x = Math.round(Math.cos(a) * r * 8), z = Math.round(Math.sin(a) * r * 8);
+        biomeColumn(this.seed, x, z, col);
+        if (!GEN2_SPAWN_BIOMES.includes(col.biome) || col.h < SEA + 2 || col.h > SEA + 18) continue;
+        const c = this.ensure(x >> 4, z >> 4);
+        let y = H - 1;
+        while (y > 0 && c.data[(x & 15) + (z & 15) * CS + y * CS * CS] === B.AIR) y--;
+        const t = c.data[(x & 15) + (z & 15) * CS + y * CS * CS];
+        if (t !== B.GRASS && t !== B.FLOWERS) continue;
+        if (c.data[(x & 15) + (z & 15) * CS + (y + 1) * CS * CS] !== B.AIR || c.data[(x & 15) + (z & 15) * CS + (y + 2) * CS * CS] !== B.AIR) continue;
+        return { x: x + 0.5, y: y + 1.01, z: z + 0.5 };
+      }
+    }
+    return null;
+  }
+
+  // Biom an einer Weltposition (Generator 1 kennt keine Biome)
+  biomeAt(x, z) {
+    if (this.gen !== 2) return -1;
+    return biomeColumn(this.seed, Math.floor(x), Math.floor(z), {}).biome;
   }
 }
+export { BIOME };

@@ -38,9 +38,18 @@ export class Player {
   }
 
   // inp: { f, r, jump, down, sprint } – f/r analog in [-1, 1]
+  // Feste Teilschritte (höchstens 1/120 s): gleiche Sprunghöhen und Wege bei 30, 60 und 120 Hz
   update(world, dt, inp, yaw) {
+    // Bereich noch nicht geladen (z. B. nach Teleport): Position halten statt durchzufallen oder hochgeschoben zu werden
+    if (world.isLoaded && !world.isLoaded(Math.floor(this.x), Math.floor(this.z))) { this.vx = this.vy = this.vz = 0; this.waiting = true; return; }
+    this.waiting = false;
     // aus Blöcken befreien (z. B. nach geladenen Änderungen)
     for (let i = 0; i < 12 && this.collides(world, this.x, this.y, this.z); i++) this.y += 1;
+    const n = Math.max(1, Math.ceil(dt * 120 - 1e-9)), h = dt / n;
+    for (let i = 0; i < n; i++) this.step(world, h, inp, yaw);
+  }
+
+  step(world, dt, inp, yaw) {
 
     const sin = Math.sin(yaw), cos = Math.cos(yaw);
     let wx = -inp.f * sin + inp.r * cos, wz = -inp.f * cos - inp.r * sin;

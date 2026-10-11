@@ -37,13 +37,14 @@ body:not(.playing) #touch{display:none!important}
 #zl{left:0;width:46%}#zr{right:0;width:54%}
 #joy{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);display:none;pointer-events:none}
 #joy i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(255,255,255,.4);border:2px solid rgba(255,255,255,.6)}
-.tb{position:absolute;width:62px;height:62px;border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(10,16,34,.55);font-size:24px;line-height:1;pointer-events:auto;touch-action:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+:root{--tbs:1;--tb:calc(62px * var(--tbs))}
+.tb{position:absolute;width:var(--tb);height:var(--tb);border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(10,16,34,.55);font-size:24px;line-height:1;pointer-events:auto;touch-action:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
 .tb small{font-size:9px;opacity:.8;margin-top:1px}
 .tb:active,.tb.on{background:rgba(0,229,255,.35);border-color:var(--cy)}
 #bBreak{right:calc(16px + var(--sar));bottom:calc(74px + var(--sab))}
-#bPlace{right:calc(86px + var(--sar));bottom:calc(74px + var(--sab))}
-#bJump{right:calc(16px + var(--sar));bottom:calc(146px + var(--sab))}
-#bDown{right:calc(86px + var(--sar));bottom:calc(146px + var(--sab))}
+#bPlace{right:calc(24px + var(--tb) + var(--sar));bottom:calc(74px + var(--sab))}
+#bJump{right:calc(16px + var(--sar));bottom:calc(84px + var(--tb) + var(--sab))}
+#bDown{right:calc(24px + var(--tb) + var(--sar));bottom:calc(84px + var(--tb) + var(--sab))}
 #bFly{left:calc(14px + var(--sal));bottom:calc(74px + var(--sab))}
 
 /* Bildschirme */
@@ -86,8 +87,8 @@ footer a{color:var(--cy);text-decoration:none}
 #mm{position:absolute;left:calc(10px + var(--sal));top:calc(34px + var(--sat));width:112px;height:112px;border-radius:12px;border:2px solid rgba(255,255,255,.35);background:#0b1020;image-rendering:pixelated;opacity:.92}
 #mm.off{display:none}
 .ic.rb{background:conic-gradient(#ff3b3b,#ffd23b,#3bff6a,#3bd5ff,#a23bff,#ff3b3b)}
-#bHook{left:calc(84px + var(--sal));bottom:calc(74px + var(--sab))}
-@media (max-height:480px){.tb{width:56px;height:56px;font-size:21px}#mm{width:92px;height:92px}}
+#bHook{left:calc(22px + var(--tb) + var(--sal));bottom:calc(74px + var(--sab))}
+@media (max-height:480px){:root{--tb:calc(56px * var(--tbs))}.tb{font-size:21px}#mm{width:92px;height:92px}}
 body.touch #mm{top:calc(8px + var(--sat))}
 
 /* ---- Hauptmenü: Kulisse + Glas-Karten ---- */
@@ -143,3 +144,37 @@ body.touch #quest{top:calc(112px + var(--sat))}
 .seg.three{grid-template-columns:1fr 1fr 1fr}.seg.three button{font-size:12px;padding:9px 2px}
 .pill.st{background:rgba(255,210,59,.16);color:#ffe08a;border-color:rgba(255,210,59,.45)}
 @media (max-height:480px){#quest{width:min(230px,46vw);font-size:11.5px}#quest small.txt{display:none}}
+
+/* ---- Linkshänder: Tasten links, Laufen rechts ---- */
+body.lefty #zl{left:auto;right:0}body.lefty #zr{right:auto;left:0}
+body.lefty #bBreak,body.lefty #bJump{right:auto;left:calc(16px + var(--sal))}
+body.lefty #bPlace,body.lefty #bDown{right:auto;left:calc(24px + var(--tb) + var(--sal))}
+body.lefty #bFly{left:auto;right:calc(14px + var(--sar))}
+body.lefty #bHook{left:auto;right:calc(22px + var(--tb) + var(--sar))}
+
+/* ---- Inventar: Suche, Kategorien, Rezepte ---- */
+.invbar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.invbar input[type=search]{flex:1;min-width:0;padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.35);color:#fff;font:inherit;font-size:14px;user-select:text;-webkit-user-select:text}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin:8px 0;cursor:pointer}
+.chk input{width:20px;height:20px;flex:none}
+.invbar .chk{margin:0;white-space:nowrap;font-size:13px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px;scrollbar-width:thin}
+.tabs button{flex:none;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);font-size:13px;font-weight:700}
+.tabs button.on{background:linear-gradient(90deg,rgba(0,229,255,.3),rgba(139,92,246,.32));border-color:var(--cy)}
+#inv .panel{max-height:calc(100dvh - 24px);overflow:auto}
+#invGrid{max-height:min(38vh,340px);overflow:auto;padding:2px}
+#recipes{max-height:min(34vh,320px);overflow:auto;padding:2px}
+#recipes button span{flex:1;min-width:0}
+#recipes small{display:block;opacity:.8;font-size:12px}
+#recipes small i{font-style:normal;color:#ff9b9b}
+#recipes .cnt{flex:none;font-size:12px;opacity:.8}
+.empty-note{opacity:.7;font-size:13px;padding:6px 2px}
+
+/* ---- Einstellungen ---- */
+#set{background:rgba(5,8,18,.8)}
+.setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 18px}
+.setgrid select{display:block;width:100%;margin-top:6px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:#121a34;color:#fff;font:inherit}
+#set .panel{max-height:calc(100dvh - 24px);overflow:auto}
+.menu-tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.menu-tools button{padding:9px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(8,12,26,.78);font-weight:700;font-size:14px}
+.card .row button[data-act=exp],.card .row button[data-act=bak]{flex:none;width:48px}

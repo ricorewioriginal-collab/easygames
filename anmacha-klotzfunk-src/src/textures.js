@@ -183,10 +183,143 @@ const PAINT = [
     let c = mix([236, 236, 242], [214, 216, 226], n);
     if (vein < 0.03) c = add(c, -52); else if (vein < 0.05) c = add(c, -22);
     return [...add(c, grain(x, y, 17, 5)), 255];
+  },
+  // ---- ab hier: Biome, Höhlen, Erze (Welt-Generator 2) ----
+  // 27 Schnee oben
+  (u, v, x, y) => [...add(mix([226, 234, 244], [250, 252, 255], fbm(u, v, 5, 3, 101)), grain(x, y, 18, 6)), 255],
+  // 28 Schnee Seite (Erde mit Schneekappe)
+  (u, v, x, y) => {
+    const d = 0.2 + 0.1 * pn(u * 8, 0.5, 8, 1, 102);
+    if (v < d) return [...add([240, 246, 252], grain(x, y, 19, 6)), 255];
+    const c = DIRT(u, v, x, y), sh = Math.max(0, 1 - (v - d) * 7) * 0.2;
+    return [c[0] * (1 - sh), c[1] * (1 - sh), c[2] * (1 - sh), 255];
+  },
+  // 29 Eis
+  (u, v, x, y) => {
+    const n = fbm(u, v, 4, 3, 103), crack = Math.abs(fbm(u, v, 3, 2, 104) - 0.5) < 0.018;
+    return [...add(mix([150, 196, 236], [196, 226, 250], n), crack ? 30 : grain(x, y, 20, 5)), 255];
+  },
+  // 30 Kies
+  (u, v, x, y) => {
+    const k = pn(u * 10, v * 10, 10, 10, 105), n = fbm(u, v, 16, 2, 106);
+    const c = k > 0.6 ? [150, 144, 138] : k < 0.3 ? [96, 92, 90] : [124, 120, 116];
+    return [...add(c, (n - 0.5) * 40 + grain(x, y, 21, 10)), 255];
+  },
+  // 31 Ton
+  (u, v, x, y) => {
+    const band = Math.sin((v + fbm(u, v, 3, 2, 107) * 0.2) * Math.PI * 6) * 6;
+    return [...add(mix([142, 152, 168], [168, 176, 190], fbm(u, v, 4, 3, 108)), band + grain(x, y, 22, 6)), 255];
+  },
+  // 32 Fichtenholz Seite
+  (u, v, x, y) => {
+    const g = pn(u * 12, v * 2, 12, 2, 109) * 0.6 + pn(u * 24, v * 5, 24, 5, 110) * 0.4;
+    let c = mix([52, 36, 22], [92, 64, 40], g);
+    if (g < 0.32) c = add(c, -12);
+    return [...add(c, grain(x, y, 23, 8)), 255];
+  },
+  // 33 Fichtenholz oben
+  (u, v, x, y) => {
+    const dx = u - 0.5, dy = v - 0.5, edge = Math.max(Math.abs(dx), Math.abs(dy));
+    if (edge > 0.43) return [...add([66, 46, 28], grain(x, y, 24, 8)), 255];
+    const t = 0.5 + 0.5 * Math.sin((Math.hypot(dx, dy) * 18 + fbm(u, v, 3, 2, 111) * 2) * Math.PI * 2);
+    return [...add(mix([170, 128, 80], [130, 92, 56], t), grain(x, y, 25, 7)), 255];
+  },
+  // 34 Fichtennadeln (mit Löchern)
+  (u, v, x, y) => {
+    const n = fbm(u, v, 10, 3, 112), hole = fbm(u, v, 11, 2, 113);
+    const c = mix([22, 58, 34], [52, 104, 60], n);
+    if (hole > 0.66) return [c[0], c[1], c[2], 0];
+    return [...add(c, grain(x, y, 26, 12)), 255];
+  },
+  // 35 Kaktus Seite
+  (u, v, x, y) => {
+    const rib = Math.abs(((u * 4) % 1) - 0.5) < 0.08;
+    let c = mix([44, 120, 44], [70, 150, 58], fbm(u, v, 4, 2, 114));
+    if (rib) c = add(c, -24);
+    if (hash(x >> 2, y >> 2, 115) > 0.93) c = [230, 226, 190];
+    return [...add(c, grain(x, y, 27, 6)), 255];
+  },
+  // 36 Kaktus oben
+  (u, v, x, y) => {
+    const r = Math.hypot(u - 0.5, v - 0.5);
+    return [...add(mix([92, 168, 70], [50, 124, 44], Math.min(1, r * 2)), grain(x, y, 28, 6)), 255];
+  },
+  // 37..39 Erze: Stein mit Einschlüssen
+  ...[[[34, 34, 38], [58, 58, 64]], [[196, 108, 52], [236, 150, 84]], [[196, 160, 128], [232, 204, 176]]].map((col, k) => (u, v, x, y) => {
+    const n = fbm(u, v, 4, 4, 3);
+    let c = mix([92, 94, 100], [142, 144, 150], n);
+    const o = pn(u * 6, v * 6, 6, 6, 116 + k);
+    if (o > 0.68) c = mix(col[0], col[1], pn(u * 24, v * 24, 24, 24, 119 + k));
+    return [...add(c, grain(x, y, 29 + k, 9)), 255];
+  }),
+  // 40 Funkkristall (leuchtet)
+  (u, v, x, y) => {
+    const f = Math.abs(((u + v) * 3) % 1 - 0.5), g = Math.abs(((u - v + 1) * 3) % 1 - 0.5);
+    const facet = Math.min(f, g);
+    const c = mix([40, 170, 230], [170, 250, 255], 1 - facet * 2);
+    return [...add(c, fbm(u, v, 6, 2, 120) * 30 - 15), 255];
+  },
+  // 41 Schlamm
+  (u, v, x, y) => {
+    const n = fbm(u, v, 5, 3, 121), wet = fbm(u, v, 9, 2, 122) > 0.64;
+    return [...add(mix([60, 50, 38], [92, 76, 58], n), wet ? 18 : grain(x, y, 32, 8)), 255];
+  },
+  // 42 Blütenwiese oben (Gras mit Blüten)
+  (u, v, x, y) => {
+    const c = GRASS(u, v, x, y), cell = hash(x >> 2, y >> 2, 123);
+    if (cell > 0.88 && (x & 3) > 0 && (y & 3) > 0) {
+      const k = Math.floor(hash(x >> 2, y >> 2, 124) * 4);
+      return [...[[250, 230, 70], [240, 80, 110], [250, 250, 250], [150, 110, 240]][k], 255];
+    }
+    return c;
+  },
+  // 43 Basalt
+  (u, v, x, y) => {
+    const col = Math.floor(u * 4), e = Math.abs((u * 4) % 1 - 0.5) > 0.45;
+    let c = mix([38, 38, 44], [66, 64, 72], fbm(u, v + col * 0.3, 4, 3, 125));
+    if (e) c = add(c, -14);
+    return [...add(c, grain(x, y, 33, 8)), 255];
+  },
+  // 44 Magma (leuchtet)
+  (u, v, x, y) => {
+    const n = fbm(u, v, 4, 3, 126), crust = Math.abs(fbm(u, v, 5, 2, 127) - 0.5) < 0.06;
+    if (crust) return [60, 30, 26, 255];
+    return [...mix([230, 70, 20], [255, 200, 60], n), 255];
+  },
+  // 45 Pilzhut (rot mit Punkten)
+  (u, v, x, y) => {
+    const dot = pn(u * 5, v * 5, 5, 5, 128) > 0.72;
+    if (dot) return [...add([240, 236, 226], grain(x, y, 34, 6)), 255];
+    return [...add(mix([170, 34, 38], [214, 60, 56], fbm(u, v, 4, 2, 129)), grain(x, y, 35, 8)), 255];
+  },
+  // 46 Pilzboden oben
+  (u, v, x, y) => [...add(mix([98, 82, 108], [140, 120, 150], fbm(u, v, 6, 3, 130)), grain(x, y, 36, 12)), 255],
+  // 47 Pilzboden Seite
+  (u, v, x, y) => {
+    const d = 0.16 + 0.08 * pn(u * 8, 0.5, 8, 1, 131);
+    if (v < d) return [...add([120, 100, 130], grain(x, y, 37, 10)), 255];
+    return DIRT(u, v, x, y);
+  },
+  // 48 Sandstein
+  (u, v, x, y) => {
+    const band = Math.floor(v * 4), fy = (v * 4) % 1;
+    let c = mix([206, 182, 124], [226, 204, 150], fbm(u, v, 5, 2, 132 + band));
+    if (fy < 0.06) c = add(c, -22);
+    return [...add(c, grain(x, y, 38, 6)), 255];
+  },
+  // 49 Pilzstiel
+  (u, v, x, y) => [...add(mix([214, 206, 188], [240, 234, 222], pn(u * 8, v * 2, 8, 2, 133)), grain(x, y, 39, 6)), 255],
+  // 50 Dschungelblätter (mit Löchern)
+  (u, v, x, y) => {
+    const n = fbm(u, v, 7, 3, 134), hole = fbm(u, v, 8, 2, 135);
+    const c = mix([24, 100, 22], [70, 170, 40], n);
+    if (hole > 0.68) return [c[0], c[1], c[2], 0];
+    return [...add(c, grain(x, y, 40, 10)), 255];
   }
 ];
+export const TILE_COUNT = PAINT.length;
 // Kachel-Rand: leichte Kante, die jeden Block als Körper lesbar macht
-const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26]);
+const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49]);
 
 export function drawAtlas() {
   const cv = document.createElement('canvas');
