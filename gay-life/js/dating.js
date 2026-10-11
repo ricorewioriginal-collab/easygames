@@ -263,7 +263,7 @@
   }
   function apologize(n, flowers) {
     var id = n.d.id, r = D.rel(id); GL.ui.close();
-    if (flowers && !GL.eco.spend(15, 'Blumen für ' + nm(id))) { GL.core.toast('Für Blumen reicht dein Geld nicht.'); return menu(n); }
+    if (flowers) { if (S.life.flowers > 0) S.life.flowers--; else if (!GL.eco.spend(15, 'Blumen für ' + nm(id))) { GL.core.toast('Für Blumen reicht dein Geld nicht.'); return menu(n); } }
     r.conflict = 0; r.f = clamp(r.f + 3, 0, 100); r.r = clamp(r.r + (flowers ? 4 : 1), 0, 100); r.last = S.life.day; D.mem(id, flowers ? 'Hat sich mit Blumen entschuldigt' : 'Hat sich entschuldigt'); after(id, 20, { social: 10 }); GL.core.sfx('ok');
     GL.core.say(nm(id), look(id), [flowers ? '„Blumen? Du Schuft.“ Er nimmt sie trotzdem lächelnd. „Okay. Entschuldigung angenommen.“' : '„Danke, dass du das sagst. Ich war enttäuscht, aber ich merke, dass es dir ernst ist.“'], reopen(n));
   }
@@ -296,7 +296,7 @@
     if (r.st !== 'partner') items.push({ e: '😉', t: 'Flirten', s: r.st === 'closed' ? 'Er hat klar gesagt, was er möchte.' : r.lock > d ? 'Gib ihm ein paar Tage.' : r.f < 30 ? 'Ab Freundschaft 30.' : 'Auf eigenes Risiko: Er entscheidet selbst.', dis: r.st === 'closed', fn: function () { flirt(n); } });
     if (!ap && r.f >= 30 && r.st !== 'closed') items.push({ e: '📅', t: 'Zum Date einladen', s: 'Ort und Zeit aussuchen.', fn: function () { invite(n); } });
     if (r.st !== 'partner' && r.st !== 'closed' && r.r >= 60 && r.dates >= 2) items.push({ e: '💍', t: 'Beziehung ansprechen', s: 'Du fragst, ob ihr zusammen sein wollt.', fn: function () { propose(n); } });
-    if (r.conflict) { items.push({ e: '🙏', t: 'Entschuldigen', fn: function () { apologize(n, 0); } }); items.push({ e: '💐', t: 'Blumen schenken (15 €)', dis: S.life.money < 15, fn: function () { apologize(n, 1); } }); }
+    if (r.conflict) { items.push({ e: '🙏', t: 'Entschuldigen', fn: function () { apologize(n, 0); } }); items.push({ e: '💐', t: S.life.flowers > 0 ? 'Blumenstrauß schenken (aus deinem Vorrat)' : 'Blumen schenken (15 €)', dis: !(S.life.flowers > 0) && S.life.money < 15, fn: function () { apologize(n, 1); } }); }
     if (r.st === 'partner' && !r.conflict) items.push({ e: '🥰', t: 'Zeit zusammen verbringen', s: 'Eine Stunde nur zu zweit.', fn: function () { GL.ui.close(); r.last = d; r.r = clamp(r.r + 2, 0, 100); after(id, 60, { social: 18, stress: -8 }); GL.core.say(nm(id), look(id), ['Ihr sitzt zusammen, redet und schweigt zwischendurch. Genau so soll es sein.'], reopen(n)); } });
     if (r.st === 'partner' && !S.home.partner && r.r >= 75 && r.dates >= 3) items.push({ e: '🏠', t: 'Zusammenziehen', s: 'Er zieht bei dir ein. Die Miete wird geteilt.', fn: function () { moveIn(n); } });
     if (r.st === 'partner') items.push({ e: '💔', t: 'Beziehung beenden', fn: function () { breakup(n); } });
