@@ -278,7 +278,7 @@ export const createView: MiniGameViewFactory<BridgeState> = (ctx, initial) => {
       if (popT > 0 && popSprite) {
         popT -= dt;
         popSprite.visible = popT > 0;
-        popSprite.position.set(cur.r - 1.2, 2.8 + (1.2 - popT) * 0.6, 0.8);
+        popSprite.position.set(camX, 3.2 + (1.2 - popT) * 0.6, 0.8);
       } else if (popSprite) popSprite.visible = false;
 
       // ---------- Türme ----------
