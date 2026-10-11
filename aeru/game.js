@@ -245,7 +245,7 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
 }
 
 // ───────── Inselbau ─────────
-function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 6}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
+function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
 function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .25 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
 function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
@@ -370,7 +370,7 @@ function refreshWorld() {
 }
 
 // ───────── Spieler: Bewegung, Sprung, Gleiten, Flug ─────────
-const COYOTE = .12, BUFFER = .14, GRAVITY = 23, JUMP = 11;
+const COYOTE = .12, BUFFER = .14, GRAVITY = 23, JUMP = 11, LEDGE = 1.3;
 function jumpPress() {
   if (mode !== 'play') return; audioStart();
   jumpHeldTime = 0;
@@ -389,7 +389,7 @@ function flight() {
   if (state.flight) { state.flight = false; state.draftSuppressed = true; toast('Flügel angelegt · Landen'); return; }
   if (state.stamina < 12) { toast('Flügelkraft lädt am Boden oder im Aufwind auf.'); return; }
   state.flight = true; state.draftSuppressed = false; state.onGround = false; state.vy = Math.max(state.vy, 9); state.stamina -= 8; sfx.flap();
-  if (!flight.told) { flight.told = true; toast('Flug · SPRUNG antippen: Flügelschlag · halten: steigen · Umschalt: sinken'); }
+  if (!flight.told) { flight.told = true; toast(matchMedia('(pointer:coarse)').matches ? 'Flug · SPRUNG halten: steigen · ROLLE: sinken' : 'Flug · Leertaste antippen: Flügelschlag · halten: steigen · Umschalt: sinken'); }
 }
 function dodge() {
   if (mode !== 'play' || state.dodgeCooldown > 0 || !state.onGround) return;
@@ -427,7 +427,8 @@ function movePlayer(dt) {
     const assist = settings.flightAssist ? .5 : 1;
     if (shiftDown) state.vy = approach(state.vy, -7.5, 4, dt);
     else if (jumpDown && jumpHeldTime > .22 && state.stamina > 0) { state.vy = approach(state.vy, 4.2, 3, dt); state.stamina = Math.max(0, state.stamina - 16 * assist * dt); }
-    else state.vy = approach(state.vy, state.stamina > 0 ? -1.4 : -2.6, 2.5, dt);
+    // Ohne Steigen erholen sich die Flügel langsam, damit niemand ohne Kraft unter einer Insel festhängt.
+    else { state.vy = approach(state.vy, state.stamina > 0 ? -1.4 : -2.6, 2.5, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
   } else if (gliding) { state.vy = Math.max(-2.2, state.vy - 5 * dt); state.stamina = Math.max(0, state.stamina - 10 * dt); }
   else {
     // Variable Sprunghöhe: früh losgelassen = kleiner Hüpfer (mindestens gut eine Stufe hoch).
@@ -442,12 +443,22 @@ function movePlayer(dt) {
   let nx = state.x + state.vx * dt, nz = state.z + state.vz * dt;
   for (const s of solids) {
     if (!(s.y > state.y + .4 && state.y + 1.6 > s.y - s.thick)) continue;
+    // Kantenhilfe: Wer knapp unter der Oberkante gegen eine Insel oder Plattform stößt, zieht sich hinauf statt abzuprallen.
+    const ledge = s.y - state.y < LEDGE && state.vy < 6;
     if (s.r) {
-      const d = Math.hypot(nx - s.x, nz - s.z), lim = s.r + .35;
-      if (d < lim && d > 0) { const ux = (nx - s.x) / d, uz = (nz - s.z) / d; nx = s.x + ux * lim; nz = s.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; } }
+      // Der Felskegel unter einer Insel wird nach unten schmaler; die Kollision folgt seiner sichtbaren Form.
+      const depth = s.y - (state.y + 1.6), lim = (depth < 1.2 ? s.r : s.r * .99 * Math.max(0, 1 - (depth - .7) / 9)) + .35;
+      const d = Math.hypot(nx - s.x, nz - s.z);
+      if (d < lim && d > 0) {
+        if (ledge && depth < 1.2) { const k = Math.min(1, (s.r - .6) / d); nx = s.x + (nx - s.x) * k; nz = s.z + (nz - s.z) * k; state.y = s.y; state.vy = 0; continue; }
+        const ux = (nx - s.x) / d, uz = (nz - s.z) / d; nx = s.x + ux * lim; nz = s.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; }
+      }
     } else {
       const ex = s.w / 2 + .4, ez = s.d / 2 + .4;
-      if (Math.abs(nx - s.x) < ex && Math.abs(nz - s.z) < ez) { if (Math.abs(state.x - s.x) >= ex) { nx = state.x; state.vx = 0; } else if (Math.abs(state.z - s.z) >= ez) { nz = state.z; state.vz = 0; } }
+      if (Math.abs(nx - s.x) < ex && Math.abs(nz - s.z) < ez) {
+        if (ledge) { nx = clamp(nx, s.x - s.w / 2 + .1, s.x + s.w / 2 - .1); nz = clamp(nz, s.z - s.d / 2 + .1, s.z + s.d / 2 - .1); state.y = s.y; state.vy = 0; continue; }
+        if (Math.abs(state.x - s.x) >= ex) { nx = state.x; state.vx = 0; } else if (Math.abs(state.z - s.z) >= ez) { nz = state.z; state.vz = 0; }
+      }
     }
   }
   state.x = nx; state.z = nz;

@@ -19,7 +19,7 @@ Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln
 | Kamera | Maus ziehen, Q/E, Mausrad, C = hinter Aeru | rechts wischen |
 | Springen / Flügelschlag / Gleiten | Leertaste (halten = höher, in der Luft halten = gleiten) | SPRUNG |
 | Flug ein/aus | G (im Flug Leertaste halten = steigen) | FLUG |
-| Ausweichen / im Flug sinken | Umschalt | AUSWEICHEN |
+| Ausweichen / im Flug sinken | Umschalt | ROLLE |
 | Windstoß | F | WIND |
 | Sprechen, Tor | R / Enter | REDEN oder Hinweis antippen |
 | Tagebuch / Pause | J / Esc oder P | ☰ / Ⅱ |

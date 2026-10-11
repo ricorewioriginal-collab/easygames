@@ -15,7 +15,8 @@ const VIEWPORTS = [
   {name: 'phone-390x844', width: 390, height: 844, mobile: true},
   {name: 'phone-412x915', width: 412, height: 915, mobile: true},
   {name: 'phone-landscape-800x360', width: 800, height: 360, mobile: true},
-  {name: 'phone-landscape-915x412', width: 915, height: 412, mobile: true}
+  {name: 'phone-landscape-915x412', width: 915, height: 412, mobile: true},
+  {name: 'phone-landscape-904x407-dpr3', width: 904, height: 407, mobile: true, dpr: 3}
 ];
 // Sichtbare, feste Bedienelemente, die sich nicht überdecken dürfen.
 const UI = ['#hud .brand', '#hud .stats', '#pause', '#quest', '#map', '#flightHud', '#stick', '#jump', '#attack', '#fly', '#dodge', '#talk', '#bossHud'];
@@ -32,7 +33,7 @@ async function layoutProblems(page, selectors) {
   const browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH || undefined, headless: true, args: ['--no-sandbox', '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist']});
   const results = [], failures = [];
   for (const vp of VIEWPORTS) {
-    const context = await browser.newContext({viewport: {width: vp.width, height: vp.height}, deviceScaleFactor: vp.mobile ? 2 : 1, isMobile: !!vp.mobile, hasTouch: !!vp.mobile});
+    const context = await browser.newContext({viewport: {width: vp.width, height: vp.height}, deviceScaleFactor: vp.dpr || (vp.mobile ? 2 : 1), isMobile: !!vp.mobile, hasTouch: !!vp.mobile});
     const page = await context.newPage(), errors = [];
     page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
     await page.goto(page_url); await page.waitForTimeout(800);
@@ -52,6 +53,8 @@ async function layoutProblems(page, selectors) {
     await page.evaluate(() => aeruTest.setQuality('sparsam')); await page.waitForTimeout(2500); const low = await page.evaluate(() => aeruTest.perf());
     await page.evaluate(() => aeruTest.setQuality('hoch')); await page.waitForTimeout(2500); const high = await page.evaluate(() => aeruTest.perf());
     await page.evaluate(() => aeruTest.setQuality('auto'));
+    // Im Flug ist auch die Flügelkraftanzeige sichtbar und muss zwischen die Bedienelemente passen.
+    await page.evaluate(() => aeruTest.flight()); await page.waitForTimeout(400);
     const playProblems = await layoutProblems(page, UI);
     await page.screenshot({path: path.join(out, vp.name + '-play.png')});
     await page.evaluate(() => aeruTest.pause()); await page.waitForTimeout(200);

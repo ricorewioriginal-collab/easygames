@@ -81,7 +81,7 @@ quests: [
  why:'Edda hat gemessen, wohin der Wind verschwindet.',
  steps:[
   {text:'Sprich mit Edda an der Treppe', goal:{type:'talk', npc:'edda'}, dialog:'c1_edda'},
-  {text:'Vertreibe drei Nebelkäfer', hint:'Sie zeigen ihren Angriff durch Zittern an. Ausweichen: Umschalt / AUSWEICHEN',
+  {text:'Vertreibe drei Nebelkäfer', hint:'Sie zeigen ihren Angriff durch Zittern an. Ausweichen: Umschalt / ROLLE',
    goal:{type:'enemy', count:3, kind:'kaefer'}, where:'enemies'},
   {text:'Flieg zur Ostinsel und finde die Spur', hint:'Türkiser Aufwind am Ostrand · G / FLUG zum Abheben',
    goal:{type:'item', ids:['feather']}, where:'items', after:'c1_feather_found'},
@@ -152,7 +152,7 @@ quests: [
   {text:'Reise durch das Sternentor zu den Wolkenriffen', goal:{type:'arrive', level:3}, where:'portal', dialog:'c4_arrive'},
   {text:'Sprich mit Luma', goal:{type:'talk', npc:'luma'}, dialog:'c4_luma'},
   {text:'Rette Tessa auf dem Westriff', hint:'Aufwinde füllen die Flügelkraft. Halte SPRUNG im Flug zum Steigen.', goal:{type:'talk', npc:'tessa'}, dialog:'c4_tessa'},
-  {text:'Knüpfe die drei Windwege: flieg durch die Himmelsringe', hint:'Im Flug: SPRUNG halten steigt, Umschalt / AUSWEICHEN sinkt.', goal:{type:'ring', count:3, retro:true}, where:'rings'},
+  {text:'Knüpfe die drei Windwege: flieg durch die Himmelsringe', hint:'Im Flug: SPRUNG halten steigt, Umschalt / ROLLE sinkt.', goal:{type:'ring', count:3, retro:true}, where:'rings'},
   {text:'Such Vesper auf dem Ostriff', goal:{type:'talk', npc:'vesper'}, dialog:'c4_vesper'},
   {text:'Kehr zu Luma zurück', goal:{type:'talk', npc:'luma'}, dialog:'c4_luma_wait'},
   {text:'Hör zu, was Vesper Luma sagt', goal:{type:'talk', npc:'vesper'}, dialog:'c4_end'}
