@@ -24,7 +24,7 @@ interface PlayerStats {
 export class MatchScreen implements Screen {
   readonly el = h('div', { class: 'game' });
   readonly scene = new THREE.Scene();
-  readonly camera = new THREE.PerspectiveCamera(80, 16 / 9, 0.1, 600);
+  readonly camera = new THREE.PerspectiveCamera(80, 16 / 9, 0.1, 900);
   private readonly cams: THREE.PerspectiveCamera[];
   private readonly chase: ChaseCamera[];
   private readonly ballCam: boolean[];
@@ -52,7 +52,7 @@ export class MatchScreen implements Screen {
   ) {
     const s = app.store.data.settings;
     const n = session.localCars.length;
-    this.cams = Array.from({ length: n }, () => new THREE.PerspectiveCamera(s.fov, 16 / 9, 0.1, 600));
+    this.cams = Array.from({ length: n }, () => new THREE.PerspectiveCamera(s.fov, 16 / 9, 0.1, 900));
     this.chase = this.cams.map(() => new ChaseCamera({ fov: s.fov, distance: s.camDistance, shake: s.cameraShake && !s.reducedMotion }));
     this.ballCam = this.cams.map(() => s.ballCam);
     this.arena = createArena(session.arena as ArenaTheme, app.engine.quality);

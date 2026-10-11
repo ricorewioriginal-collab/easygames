@@ -48,6 +48,7 @@ export class PadsView {
   private readonly cBig: THREE.Color;
   private readonly cSmall: THREE.Color;
   private readonly tmp = new THREE.Color();
+  private meshes: THREE.InstancedMesh[] = [];
   private readonly geos: THREE.BufferGeometry[] = [];
   private readonly mats: THREE.Material[] = [];
   private time = 0;
@@ -121,7 +122,8 @@ export class PadsView {
     this.big = new THREE.InstancedMesh(bigGeo, smallMat, Math.max(1, nb));
     this.can = new THREE.InstancedMesh(canGeo, canMat, Math.max(1, nb));
     this.halo = new THREE.InstancedMesh(haloGeo, haloMat, pads.length);
-    for (const m of [this.small, this.big, this.can, this.halo]) {
+    this.meshes = [this.small, this.big, this.can, this.halo];
+    for (const m of this.meshes) {
       m.frustumCulled = false;
       m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       m.setColorAt(0, this.cOff);
@@ -196,11 +198,11 @@ export class PadsView {
     this.big.instanceMatrix.needsUpdate = true;
     this.can.instanceMatrix.needsUpdate = true;
     this.halo.instanceMatrix.needsUpdate = true;
-    for (const m of [this.small, this.big, this.can, this.halo]) (m.instanceColor as THREE.InstancedBufferAttribute).needsUpdate = true;
+    for (let k = 0; k < 4; k++) ((this.meshes[k] as THREE.InstancedMesh).instanceColor as THREE.InstancedBufferAttribute).needsUpdate = true;
   }
 
   private clear(): void {
-    for (const m of [this.small, this.big, this.can, this.halo]) {
+    for (const m of this.meshes) {
       m.dispose();
       m.removeFromParent();
     }

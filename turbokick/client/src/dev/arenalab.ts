@@ -13,6 +13,7 @@ interface LabState {
   errors: string[];
   frames: number;
   calls?: number;
+  mem?: string;
   tris?: number;
 }
 
@@ -41,9 +42,10 @@ export function startArenaLab(params: URLSearchParams): void {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(62, 1, 0.3, 1500);
   (window as unknown as { __scene: THREE.Scene }).__scene = scene;
-  const arena = createArena(theme, engine.quality);
+  let arena = createArena(theme, engine.quality);
   scene.add(arena.group);
   arena.applyTo(scene);
+  const recreate = params.get('recreate') === '1';
 
   // Attrappen: Ball und zwei Autos (Größenvergleich, Schatten)
   const ballMesh = new THREE.Mesh(new THREE.SphereGeometry(BALL_RADIUS, 24, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x88ccff, emissiveIntensity: 0.9, roughness: 0.3 }));
@@ -124,6 +126,14 @@ export function startArenaLab(params: URLSearchParams): void {
       const dt = rawDt * speed;
       t += dt;
       lab.frames++;
+      if (recreate && lab.frames === 6) {
+        // Test: Arena freigeben und neu erzeugen (Speicher darf nicht wachsen)
+        arena.dispose();
+        arena = createArena(theme, engine.quality);
+        scene.add(arena.group);
+        arena.applyTo(scene);
+      }
+      lab.mem = JSON.stringify(engine.renderer.info.memory) + ' ' + engine.renderer.info.programs?.length;
       lab.calls = engine.renderer.info.render.calls;
       lab.tris = engine.renderer.info.render.triangles;
       state.tick++;

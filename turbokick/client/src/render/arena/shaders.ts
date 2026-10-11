@@ -212,6 +212,7 @@ export function hullMaterial(u: ArenaUniforms, pal: Palette): THREE.ShaderMateri
       uColA: col(pal.lineA),
       uColB: col(pal.lineB),
       uGlass: col(pal.glass),
+      uFloor: col(pal.floorB),
       uAlpha: { value: pal.glassAlpha },
       uHalf: { value: new THREE.Vector3(ARENA.halfWidth, ARENA.height, ARENA.halfLength) },
       uGoalTop: { value: ARENA.goalHeight },
@@ -225,7 +226,7 @@ export function hullMaterial(u: ArenaUniforms, pal: Palette): THREE.ShaderMateri
     fragmentShader: /* glsl */ `
       ${COMMON}${AA}
       varying vec3 vW; varying vec3 vN;
-      uniform vec3 uColA; uniform vec3 uColB; uniform vec3 uGlass; uniform float uAlpha; uniform vec3 uHalf; uniform float uGoalTop;
+      uniform vec3 uColA; uniform vec3 uColB; uniform vec3 uGlass; uniform vec3 uFloor; uniform float uAlpha; uniform vec3 uHalf; uniform float uGoalTop;
       void main(){
         vec3 N = normalize(vN);
         vec3 V = normalize(cameraPosition - vW);
@@ -253,10 +254,14 @@ export function hullMaterial(u: ArenaUniforms, pal: Palette): THREE.ShaderMateri
         c += lineC * e * (1.0 - 0.55 * roof);
         c += lineC * (fres * 0.55 + foot * 0.45);
         c += mix(lineC, vec3(1.0), 0.5) * bg * 0.65;
-        c += fcol * fz * 1.3 + vec3(fz * 0.25);
-        c += uPulseCol * uPulse * (0.25 + e * 0.8);
-        float a = uAlpha * (1.0 - 0.45 * roof) + clamp(e, 0.0, 1.0) * 0.75 + fres * 0.38 + foot * 0.2 + bg * 0.3 + fz * 0.55 + uPulse * 0.18;
-        gl_FragColor = vec4(c, clamp(a, 0.0, 0.96));
+        c += fcol * fz * 0.95 + vec3(fz * 0.05);
+        c += uPulseCol * uPulse * (0.1 + e * 0.6);
+        float a = uAlpha * (1.0 - 0.45 * roof) + clamp(e, 0.0, 1.0) * 0.75 + fres * 0.38 + foot * 0.2 + bg * 0.3 + fz * 0.35 + uPulse * 0.1;
+        // Der untere Rundungsbogen setzt den Boden fort (undurchsichtig, damit man dort den Ball gut sieht)
+        float cv = smoothstep(0.12, 0.55, N.y) * (1.0 - roof);
+        c += uFloor * 1.5 * cv;
+        a = mix(a, max(a, 0.94), cv);
+        gl_FragColor = vec4(c, clamp(a, 0.0, 0.97));
         #include <colorspace_fragment>
       }`,
   });
@@ -300,7 +305,7 @@ export function floorMaterial(u: ArenaUniforms, pal: Palette): THREE.MeshLambert
       glow += uLineCol * lm * 1.1 + mix(uLineCol, tint, 0.75) * max(pen, gar) * 1.1 + tint * gl * 2.4;
       float ex = 34.0 - ax;
       float ez = 44.0 - az;
-      float e = mix(min(ex, ez), ex, step(ax, 8.0) * step(38.0, az));
+      float e = min(ex, mix(1000.0, ez, smoothstep(7.0, 12.0, ax)));
       float edge = exp(-max(e, 0.0) * 0.5);
       glow += mix(uColA, tint, smoothstep(30.0, 46.0, az) * 0.7) * edge * 0.4;
       float bd = distance(q, uBall.xz);
@@ -309,9 +314,9 @@ export function floorMaterial(u: ArenaUniforms, pal: Palette): THREE.MeshLambert
       vec3 V = normalize(cameraPosition - p);
       float fr = pow(1.0 - clamp(V.y, 0.0, 1.0), 3.0);
       glow += uSkyGlow * fr * 0.3 * (0.6 + edge);
-      glow += uPulseCol * uPulse * (0.08 + 0.45 * g2 + 0.3 * edge);
+      glow += uPulseCol * uPulse * (0.05 + 0.3 * g2 + 0.2 * edge);
       float fl = q.y < 0.0 ? uFlash.x : uFlash.y;
-      glow += (q.y < 0.0 ? uT1 : uT0) * fl * smoothstep(10.0, 50.0, az) * 0.9;
+      glow += (q.y < 0.0 ? uT1 : uT0) * fl * smoothstep(10.0, 50.0, az) * 0.55;
       return base;
     }`;
   m.customProgramCacheKey = () => 'tk-floor-v1';
@@ -367,7 +372,7 @@ export function netMaterial(u: ArenaUniforms): THREE.ShaderMaterial {
         vec3 sc = neg ? uT1 : uT0;
         vec3 c = vec3(0.01, 0.015, 0.03) + tc * (0.1 + 0.4 * depth);
         c += mix(tc, vec3(1.0), 0.45) * net * (0.55 + 0.6 * depth);
-        c += sc * fl * (0.4 + net * 1.6);
+        c += sc * fl * (0.25 + net * 0.9);
         c += uPulseCol * uPulse * net * 0.6;
         float a = 0.3 + net * 0.62 + depth * 0.15 + fl * 0.4;
         gl_FragColor = vec4(c, clamp(a, 0.0, 0.97));
@@ -397,12 +402,12 @@ export function glowMaterial(u: ArenaUniforms, mode: 0 | 1 | 2, gain = 1, alpha 
       varying vec3 vC; varying vec2 vUv; varying vec3 vW; varying vec3 vN;
       void main(){
         float fl = vW.z < 0.0 ? uFlash.x : uFlash.y;
-        vec3 c = vC * uGain * (1.0 + 1.6 * fl) + vec3(fl * 0.5) + uPulseCol * uPulse * 0.4;
+        vec3 c = vC * uGain * (1.0 + 0.6 * fl) + vec3(fl * 0.12) + uPulseCol * uPulse * 0.22;
         float a = 1.0;
         #if MODE == 1
           vec3 V = normalize(cameraPosition - vW);
           float soft = pow(abs(dot(normalize(vN), V)), 1.4);
-          a = uAlpha * pow(clamp(vUv.y, 0.0, 1.0), 1.3) * soft * (0.8 + 0.2 * sin(uTime * 0.7 + vW.x * 0.1)) * (1.0 + fl * 2.0 + uCheer);
+          a = uAlpha * pow(clamp(vUv.y, 0.0, 1.0), 2.0) * soft * (0.8 + 0.2 * sin(uTime * 0.7 + vW.x * 0.1)) * (1.0 + fl * 2.0 + uCheer);
           c *= a;
           a = 1.0;
         #elif MODE == 2
