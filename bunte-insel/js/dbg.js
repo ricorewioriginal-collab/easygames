@@ -6,7 +6,7 @@
   let cam = null; const orig = renderer.render.bind(renderer); renderer.render = (s, c) => { cam = c; return orig(s, c); };
   const info = () => {
     const f = scene.fog, ri = renderer.info.render, p = b.P;
-    return ['GPU: ' + (ex ? gl.getParameter(ex.UNMASKED_RENDERER_WEBGL) : '?'), 'WebGL' + (renderer.capabilities.isWebGL2 ? '2' : '1') + ' · Tiefe ' + gl.getParameter(gl.DEPTH_BITS) + ' Bit · ' + renderer.capabilities.precision + ' · Auflösung ×' + renderer.getPixelRatio().toFixed(2),
+    return ['GPU: ' + (ex ? gl.getParameter(ex.UNMASKED_RENDERER_WEBGL) : '?'), 'WebGL' + (renderer.capabilities.isWebGL2 ? '2' : '1') + ' (Adresse: ?gl=1 / ?gl=2 / ?aa=0)' + ' · Tiefe ' + gl.getParameter(gl.DEPTH_BITS) + ' Bit · ' + renderer.capabilities.precision + ' · Auflösung ×' + renderer.getPixelRatio().toFixed(2),
       'Nebel ' + (f ? Math.round(f.near) + '–' + Math.round(f.far) : 'aus') + ' · Kamera near ' + (cam ? cam.near.toFixed(1) : '?') + ' far ' + (cam ? cam.far : '?'), 'Zeichenaufrufe ' + ri.calls + ' · Dreiecke ' + Math.round(ri.triangles / 1000) + 'k', 'Ort ' + Math.round(p.x) + ' / ' + Math.round(p.z)].join('\n');
   };
   const box = document.createElement('div'); box.style.cssText = 'position:fixed;left:6px;top:6px;z-index:99999;background:rgba(0,0,0,.72);color:#fff;font:12px/1.35 monospace;padding:6px 8px;border-radius:8px;max-width:92vw;pointer-events:none;white-space:pre-wrap'; document.body.appendChild(box);
