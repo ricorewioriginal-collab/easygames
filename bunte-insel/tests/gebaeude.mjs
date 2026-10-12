@@ -27,5 +27,17 @@ const r = await p.evaluate(async () => {
 if (process.env.DEBUG) console.log(JSON.stringify(r));
 ok(r.length === 20, r.length + ' öffentliche Gebäude (Hauptinsel, Stadt, Fellretter-Insel) sind begehbar: ' + r.map(o => o.name).join(', '));
 for (const o of r) ok(o.door && o.wall && o.inside && o.roofBack && o.npc && o.npcIn, o.name + ': Tür frei, Wand hält, Dach verschwindet drinnen, Figur steht drinnen');
+/* Aktionstaste am Spielautomaten: ein geparktes Fahrzeug daneben darf den Knopf nicht übernehmen ("Fernsteuern"/"Einsteigen") */
+{
+  const r2 = await p.evaluate(async () => {
+    const b = window.__bi, W = b.W, sl = ms => new Promise(r => setTimeout(r, ms)), a = (W.spots.arcades || [])[0]; if (!a) return { none: true };
+    b.P.veh = null; b.P.y = 0; b.P.x = a.x; b.P.z = a.z + 2.2; await sl(300);
+    const v = b.vehicles.find(x => !x.ai); if (!v) return { none: true };
+    v.x = b.P.x + 1; v.z = b.P.z; if (v.root) v.root.position.set(v.x, 0, v.z); await sl(500);
+    const lab = document.getElementById('bAct').textContent, pn = b.placeNear(); return { lab, src: pn && pn.src };
+  });
+  if (process.env.DEBUG) console.log(JSON.stringify(r2));
+  ok(r2.none || (r2.src === 'arcade' && !/Fernsteuern|Einsteigen/.test(r2.lab)), 'Spielautomat: Aktionstaste zeigt „Spielen“ statt Fahrzeug-Aktion (' + (r2.lab || '-') + ')');
+}
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);
