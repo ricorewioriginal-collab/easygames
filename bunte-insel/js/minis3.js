@@ -169,6 +169,8 @@
   W3('noten_radio', hunt({ good: ['🎵', '🎶', '🎸'], bad: ['🔇'], motion: 'fall', bg: ['#2a2f6a', '#6a3aa0'], fx: ['#6ad0ff', '#ff5ab4', '#fff'] }), '🎵', 'Noten-Fang', 'Fang die bunten Noten! Den stummen Lautsprecher lässt du in Ruhe.', 'radio');
   W3('elemente_zotik', match({ set: ['🔥', '💧', '🌿', '✨', '🌑', '⚡'], bg: ['#2a2a6a', '#6a4aa8'], draw: drawEmoji }), '🔥', 'Zauber-Suche', 'Welcher Zauber ist oben? Tippe den gleichen unten an!', 'zotik');
   W3('sterne_maerchen', hunt({ good: ['⭐', '🌟', '💫'], bad: ['☁️'], motion: 'fall', bg: ['#1c1f5a', '#a86ad8'], fx: ['#ffe27a', '#fff'] }), '⭐', 'Sternschnuppen', 'Fang die Sterne, die vom Himmel fallen! Die graue Wolke lässt du ziehen.', 'maerchen');
+  W3('schatten_schluessel', hunt({ good: ['👾', '🌑', '👻'], bad: ['❤️'], motion: 'drift', bg: ['#1a1030', '#4a2a8a'], fx: ['#ffe27a', '#fff', '#b48aff'] }), '🗝️', 'Schatten-Jagd', 'Tippe die Dunkelwichtel an! Das rote Herz lässt du in Ruhe.', 'schluessel');
+  W3('reise_schluessel', hunt({ good: ['⭐', '💎', '✨'], bad: ['☄️'], motion: 'fall', bg: ['#050a30', '#3a2a8a'], fx: ['#9ad8ff', '#fff', '#ffe27a'] }), '🚀', 'Weltenreise', 'Flieg mit dem Sternenschiff! Fang Sterne und Kristalle – dem Meteor weichst du aus.', 'schluessel');
   W3('blasen_atlantis', hunt({ good: ['🫧', '🐚', '🦀'], bad: ['🪼'], motion: 'rise', bg: ['#0e3a5a', '#35d6e0'], fx: ['#9fe3ff', '#fff'] }), '🫧', 'Blasen-Pop', 'Tippe die Blasen und Muscheln an! Die Qualle lässt du in Ruhe.', 'atlantis');
 });
 
@@ -185,6 +187,8 @@ BI.EXTRA_ARCADES = [
   { kind: 'formen_bauland', at: () => { const B = BI.BAULAND; return { x: B.entry.x - B.uz * 10, z: B.entry.z + B.ux * 10, c: B }; }, body: 0xff9a2e, top: 0x3f8cff },
   { kind: 'noten_radio', at: () => { const R = BI.RADIO, B = R.bridge; return { x: B.bx, z: B.bz, c: R }; }, body: 0x1a1f5a, top: 0x6ad0ff },
   { kind: 'sterne_maerchen', at: () => { const M = BI.MAERCHEN, p = M.at(-40, 12); return { x: p.x, z: p.z, c: M }; }, body: 0x6a2a9a, top: 0xffd23f },
+  { kind: 'schatten_schluessel', at: () => { const S = BI.SCHLUESSEL, p = S.at(-66, -4); return { x: p.x, z: p.z, c: S }; }, body: 0x2a1a5a, top: 0xffd23f },
+  { kind: 'reise_schluessel', at: () => { const S = BI.SCHLUESSEL, p = S.at(-4, 38); return { x: p.x, z: p.z, c: S }; }, body: 0x1a3a8a, top: 0xff7a3a },
   { kind: 'elemente_zotik', at: () => { const Z = BI.ZOTIK; return { x: Z.x + 8, z: Z.bridge.z1 + 14, c: Z }; }, body: 0x2a2a6a, top: 0xb48aff }
 ];
 /* Platz suchen: nahe am Wunschpunkt, frei und auf der richtigen Insel; Automat schaut zum Weltmittelpunkt der Hauptinsel */

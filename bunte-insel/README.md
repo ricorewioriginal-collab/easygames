@@ -349,3 +349,10 @@ Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wir
 - **Popstar Kay**: eigene Figur im Glam-Rock-Stil (helle Strubbelfrisur, dicke Brauen, Ziegenbart, Septum-Ring, Ketten, oranger Mantel) mit **Regenbogen-Pride-Shirt**. Nur der Look ist angelehnt, die Figur ist frei erfunden und trägt keinen Namen einer realen Person.
 - **Zotik**, der Weltenhörer (eigene Erfindung): Fuchs-Mensch mit spitzen Ohren, heller Schnauze, buschigem Schwanz, grünem Schal, Lederriemen, Rucksack und fingerlosen Handschuhen.
 - Beide stehen bei den Vorlagen im Charakter-Studio und sind damit für jeden Spieler (auch im Mehrspieler) auswählbar. Neu im Studio unter Zubehör: **🦊 Fuchs** (Ohren, Schnauze, Schwanz in der eigenen Hautfarbe) und **🏳️‍🌈 Regenbogen-Shirt**; neue Hautfarben Fuchs-Orange und Silber.
+
+### 🗝️ Schlüsselreich – die Lichtschlüssel-Insel (Westen)
+Eigene, frei erfundene Abenteuer-Insel (Welt "Herzlicht", eigene Musik): riesige Statue des **Lichtwanderers Lio** auf dem Glasmosaik-Platz, fünf Gebiete mit je einem **Schlüsselloch** (Strand der Freunde, Dämmerstadt mit Uhrturm/Eis/Sonnenhügel, Kristall-Burg mit Licht-Rätsel, Wald der Schatten, Schleier-Turm), ~30 Figuren (Meister Orrin, Rivo, Luma, Pico, Bruno, Wuscheln …).
+- **Schwingen** (Aktionstaste / Spaß-Aktion "Schlüssel schwingen"): Dunkelwichtel vertreiben → 💎 Herz-Kristalle → im **Wuschel-Laden** 5 Lichtschlüssel-Aussehen kaufen (in der Hand sichtbar).
+- Alle fünf Schlüssellöcher offen → **Tor der Herzen** → Kampf gegen den **Dunkelriesen** (roten Kreisen ausweichen).
+- Highlight: **Schlüsselschwert-Mobil** (fliegendes Fahrzeug, am Sternen-Hafen oder per "Rufen"), 2 Spiele + 2 Automaten, Sticker, Aufgaben-Log, Wohin-Menü, Sammeln (Angeln am Rand).
+- Test: `node bunte-insel/tests/schluessel.mjs`

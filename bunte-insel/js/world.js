@@ -486,6 +486,7 @@ BI.buildWorld = function (scene) {
   BI.buildBaulandGround({ W, st, lamp, ROADY });
   BI.buildFussballGround({ W, st, lamp, ROADY });
   BI.buildMaerchenGround({ W, st, lamp, ROADY });
+  BI.buildSchluesselGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
   BI.buildRadioGround({ W, st, lamp, scene });
