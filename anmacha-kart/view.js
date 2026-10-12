@@ -7,13 +7,13 @@ const View = (() => {
   const wrap = a => { while (a > Math.PI) a -= PI2; while (a < -Math.PI) a += PI2; return a; };
   const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
   const KCOL = ['#00e5ff', '#ff2d95', '#ffd24a', '#7cff6a', '#8b5cf6', '#ff9a1f', '#e84118', '#ffffff'];
-  const mats = {}, lam = (c, o) => { const k = c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T.MeshLambertMaterial(Object.assign({ color: c, flatShading: true }, o || {}))); };
+  const mats = {}, lam = (c, o) => { const k = c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T.MeshLambertMaterial(Object.assign({ color: c }, o || {}))); };
   const bas = (c, o) => new T.MeshBasicMaterial(Object.assign({ color: c }, o || {}));
   const canvasTex = (w, h, draw, rep) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const x = new T.CanvasTexture(c); x.encoding = T.sRGBEncoding; x.anisotropy = 4; if (rep) { x.wrapS = x.wrapT = T.RepeatWrapping; } return x; };
   const logoMat = i => { const t = logoTex[i]; return t ? new T.MeshBasicMaterial({ map: t, transparent: true }) : bas(0x223355); };
 
   function init(canvas, lg) {
-    renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); renderer.outputEncoding = T.sRGBEncoding; renderer.setScissorTest(true); renderer.autoClear = true;
+    renderer = new T.WebGLRenderer({ canvas, antialias: true, stencil: false, powerPreference: 'high-performance' }); if (renderer.debug) renderer.debug.checkShaderErrors = false; renderer.outputEncoding = T.sRGBEncoding; renderer.setScissorTest(true); renderer.autoClear = true;
     logos = lg || []; logos.forEach(l => { const x = new T.Texture(l.im); x.encoding = T.sRGBEncoding; x.anisotropy = 4; x.needsUpdate = true; logoTex[l.idx] = x; });
     scene = new T.Scene(); hemi = new T.HemisphereLight(0xcfd8ff, 0x405030, 0.75); scene.add(hemi); sun = new T.DirectionalLight(0xffffff, 0.8); sun.position.set(60, 120, 40); scene.add(sun);
     const sg = new T.SphereGeometry(900, 16, 10), cols = new Float32Array(sg.attributes.position.count * 3); sg.setAttribute('color', new T.BufferAttribute(cols, 3));
@@ -28,10 +28,11 @@ const View = (() => {
     shared.boxGeo = new T.BoxGeometry(2.2, 2.2, 2.2); shared.wheelGeo = new T.CylinderGeometry(0.5, 0.5, 0.45, 12); shared.wheelGeo.rotateZ(Math.PI / 2);
     rocketGeo = new T.ConeGeometry(0.5, 2.4, 8); rocketGeo.rotateX(Math.PI / 2); mineGeo = new T.IcosahedronGeometry(1.3, 0);
     shared.sphere = new T.SphereGeometry(1, 12, 8);
+    shared.dot = canvasTex(32, 32, (g, w, h) => { const r = g.createRadialGradient(16, 16, 0, 16, 16, 16); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.4, 'rgba(255,255,255,.8)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h); });
   }
 
   // ------------------------------------------------------------------ Strecke bauen
-  let skyGroup = null; const anim = [];
+  let skyGroup = null, dustCol = 0xcccccc; const anim = [], blinkers = [];
   function strip(a, b, y, vs, mat, wall, h) {
     const N = tr.N, pos = [], uv = [], idx = [];
     for (let i = 0; i <= N; i++) {
@@ -42,7 +43,7 @@ const View = (() => {
     const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
     const m = new T.Mesh(g, mat); m.frustumCulled = false; return m;
   }
-  const instLam = new T.MeshLambertMaterial({ color: 0xffffff, flatShading: true }), instBas = () => new T.MeshBasicMaterial({ color: 0xffffff });
+  const instLam = new T.MeshLambertMaterial({ color: 0xffffff }), instBas = () => new T.MeshBasicMaterial({ color: 0xffffff });
   function inst(geo, mat, list) {
     if (!list.length) return null; const m = new T.InstancedMesh(geo, mat, list.length); m.instanceColor = new T.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
     const m4 = new T.Matrix4(), q = new T.Quaternion(), e = new T.Euler(), v = new T.Vector3(), s = new T.Vector3(), c = new T.Color();
@@ -65,7 +66,7 @@ const View = (() => {
 
   function setTrack(track) {
     if (world) { scene.remove(world); world.traverse(o => { if (o.geometry && !o.userData.keep && !Object.values(G_).includes(o.geometry)) o.geometry.dispose(); }); }
-    if (skyGroup) scene.remove(skyGroup); anim.length = 0; tr = track; const d = tr.def, th = d.theme || 'wiese'; world = new T.Group(); scene.add(world); skyGroup = new T.Group(); scene.add(skyGroup);
+    if (skyGroup) scene.remove(skyGroup); anim.length = 0; blinkers.length = 0; skidClear(); tr = track; const d = tr.def, th = d.theme || 'wiese'; world = new T.Group(); scene.add(world); skyGroup = new T.Group(); scene.add(skyGroup);
     let sx = 0, sz = 0; for (let i = 0; i < tr.N; i++) { sx += tr.P[i * 2]; sz += tr.P[i * 2 + 1]; } CX = sx / tr.N; CZ = sz / tr.N; R0 = 0; for (let i = 0; i < tr.N; i++) R0 = Math.max(R0, Math.hypot(tr.P[i * 2] - CX, tr.P[i * 2 + 1] - CZ));
     scene.background = new T.Color(d.sky[0]); scene.fog = new T.Fog(d.fog, d.fogR[0], d.fogR[1]); const L = d.light; hemi.intensity = L[0]; sun.intensity = L[1]; sun.color.set(L[2]); hemi.groundColor.set(L[3]); hemi.color.set(th === 'gruft' ? '#8aa0ff' : th === 'fantasia' ? '#fff0ff' : '#cfd8ff');
     const cA = new T.Color(d.sky[0]), cB = new T.Color(d.sky[1]), cC = new T.Color(d.sky[2]), pa = sky.geometry.attributes.position, ca = sky.geometry.attributes.color, c = new T.Color();
@@ -90,6 +91,7 @@ const View = (() => {
     const nb = 16; for (let k = 0; k < nb; k++) { const i = Math.floor(tr.N * (k + 0.3) / nb), s = k % 2 ? 1 : -1, nx = tr.Nm[i * 2], nz = tr.Nm[i * 2 + 1], lid = logos.length ? logos[k % logos.length].idx : 0, g = new T.Group(); g.position.set(tr.P[i * 2] + nx * s * (tr.wallD + 5), 0, tr.P[i * 2 + 1] + nz * s * (tr.wallD + 5)); g.rotation.y = Math.atan2(-nx * s, -nz * s);
       [-2.6, 2.6].forEach(x => { const p = new T.Mesh(new T.BoxGeometry(0.5, 7, 0.5), lam('#1a1d33')); p.position.set(x, 3.5, 0); g.add(p); }); const bd = new T.Mesh(new T.BoxGeometry(6.4, 4.2, 0.4), lam('#0a0f2a')); bd.position.y = 6; g.add(bd); const lg = new T.Mesh(new T.PlaneGeometry(4, 4), logoMat(lid)); lg.position.set(0, 6, 0.22); g.add(lg); world.add(g); }
     (SC[th] || SC.wiese)(d);
+    world.children.forEach(o => { if (o.userData.blink) blinkers.push(o); }); dustCol = new T.Color(d.ground).lerp(new T.Color(0xffffff), th === 'gruft' || th === 'neon' ? 0.25 : 0.4).getHex();
   }
 
   // ------------------------------------------------------------------ Kulissen je Welt
@@ -182,7 +184,7 @@ const View = (() => {
     frosch(h, t, g, C) { const gn = lam('#4cc84a'); S_(h, gn, 0, -0.03, 0, 0.55, 0.42, 0.5); [-1, 1].forEach(s => { S_(h, eyeW, s * 0.27, 0.36, 0.14, 0.2); S_(h, eyeB, s * 0.27, 0.38, 0.32, 0.1); }); B_(h, bas(0x2a5a2a), 0, -0.15, 0.46, 0.62, 0.035, 0.03); S_(h, lam('#e8ffd8'), 0, -0.32, 0.25, 0.3, 0.14, 0.3); S_(g, lam('#3a9a3a'), 0, 0.95, -1.7, 0.22, 0.12, 0.3); },
     drache(h, t, g, C) { const gn = lam('#3da84a'), cr = lam('#fff0c8'), rd = lam('#e8412a'); S_(h, gn, 0, 0, 0, 0.5); S_(h, lam('#6ac86a'), 0, -0.13, 0.42, 0.28, 0.2, 0.28); [-1, 1].forEach(s => { S_(h, eyeW, s * 0.2, 0.12, 0.4, 0.08); S_(h, eyeB, s * 0.2, 0.12, 0.46, 0.04); S_(h, lam('#222'), s * 0.08, -0.08, 0.68, 0.03); C_(h, cr, s * 0.2, 0.55, -0.1, 0.09, 0.45, [-0.5, 0, -s * 0.3], 6); });
       [[0.45, -0.2], [0.3, -0.4], [0.12, -0.55]].forEach(p => C_(h, rd, 0, p[0] + 0.04, p[1], 0.09, 0.22, [-0.5, 0, 0], 4));
-      const wm = new T.MeshLambertMaterial({ color: 0xe8412a, side: T.DoubleSide, flatShading: true }), wg = geo('wing', () => { const gg = new T.BufferGeometry(); gg.setAttribute('position', new T.Float32BufferAttribute([0, 0, 0, 1.5, 0.9, -0.1, 1.2, 0.1, -0.5, 0, 0, 0, 1.2, 0.1, -0.5, 0.3, -0.5, -0.4], 3)); gg.computeVertexNormals(); return gg; });
+      const wm = new T.MeshLambertMaterial({ color: 0xe8412a, side: T.DoubleSide }), wg = geo('wing', () => { const gg = new T.BufferGeometry(); gg.setAttribute('position', new T.Float32BufferAttribute([0, 0, 0, 1.5, 0.9, -0.1, 1.2, 0.1, -0.5, 0, 0, 0, 1.2, 0.1, -0.5, 0.3, -0.5, -0.4], 3)); gg.computeVertexNormals(); return gg; });
       [-1, 1].forEach(s => { const w = part(t, wg, wm, s * 0.4, 0.25, -0.35, 1, 1, 1); w.scale.x = s; w.rotation.z = s * 0.15; }); },
     einhorn(h, t, g, C) { const w = lam('#fdfdff'), pk = lam('#ff9ad0'); S_(h, w, 0, 0, 0, 0.5, 0.48, 0.5); S_(h, w, 0, -0.14, 0.38, 0.24, 0.2, 0.26); C_(h, lam('#ffd24a'), 0, 0.72, 0.2, 0.09, 0.6, [0.45, 0, 0], 6); eyes(h, 0.2, 0.08, 0.4, 0.075); S_(h, pk, -0.3, -0.08, 0.38, 0.07); S_(h, pk, 0.3, -0.08, 0.38, 0.07); [-1, 1].forEach(s => C_(h, w, s * 0.28, 0.5, -0.1, 0.1, 0.28, [0, 0, -s * 0.25], 4));
       ['#ff2d95', '#ffd24a', '#7cff6a', '#00e5ff', '#8b5cf6'].forEach((c, i) => S_(h, lam(c), 0, 0.38 - i * 0.2, -0.45 - i * 0.04, 0.17)); ['#ff2d95', '#ffd24a', '#00e5ff'].forEach((c, i) => S_(g, lam(c), 0.0, 1.0 + i * 0.05, -1.72 - i * 0.12, 0.17 - i * 0.02)); },
@@ -259,34 +261,61 @@ const View = (() => {
       part(spin, wg_, tire, 0, 0, 0, q[1], q[0], q[0]); part(spin, wg_, rim, p[0] * 0.03, 0, 0, q[1] * 1.04, q[0] * 0.55, q[0] * 0.55); B_(spin, slot, p[0] * q[1] * 0.55, 0, 0, 0.05, q[0] * 0.9, 0.12); B_(spin, slot, p[0] * q[1] * 0.55, 0, 0, 0.05, 0.12, q[0] * 0.9); g.add(wg); wheels.push({ wg, w: spin, front }); });
     const fz = id === 'dragster' ? -3.3 : -3.0, flame = new T.Mesh(new T.ConeGeometry(0.4, 1.8, 8), bas(0x66ccff, { transparent: true, opacity: 0.85, blending: T.AdditiveBlending })); flame.rotation.x = -Math.PI / 2; flame.position.set(0, 0.8, fz); flame.visible = false; g.add(flame);
     const shield = new T.Mesh(shared.sphere, bas(0x66e0ff, { transparent: true, opacity: 0.28, blending: T.AdditiveBlending, depthWrite: false })); shield.scale.set(2.6, 2.3, 3.2); shield.position.y = 1.3; shield.visible = false; g.add(shield);
-    const sp = new T.Points(new T.BufferGeometry().setAttribute('position', new T.BufferAttribute(new Float32Array(30), 3)), new T.PointsMaterial({ size: 0.5, color: 0xffd24a, transparent: true, depthWrite: false })); sp.frustumCulled = false; sp.visible = false; g.add(sp);
+    const sp = new T.Points(new T.BufferGeometry().setAttribute('position', new T.BufferAttribute(new Float32Array(30), 3)), new T.PointsMaterial({ size: 0.75, color: 0xffd24a, map: shared.dot, transparent: true, depthWrite: false, blending: T.AdditiveBlending })); sp.frustumCulled = false; sp.visible = false; g.add(sp);
     const blob = new T.Mesh(new T.CircleGeometry(1.7, 14), bas(0x000000, { transparent: true, opacity: 0.35 })); blob.rotation.x = -Math.PI / 2; blob.position.y = 0.05; g.add(blob);
     const stars = new T.Group(); for (let i = 0; i < 3; i++) { const s = new T.Mesh(shared.sphere, bas(0xffe14a)); s.scale.setScalar(0.2); stars.add(s); } stars.visible = false; g.add(stars);
     const trailB = new T.Group(), trailR = new T.Group(); for (let i = 0; i < 3; i++) { const b = bananaMesh(); b.visible = false; trailB.add(b); const r = rockMesh(0.7); r.visible = false; trailR.add(r); } g.add(trailB); g.add(trailR);
-    g.scale.setScalar(1.1); scene.add(g); return { g, body, wheels, flame, shield, sp, stars, trailB, trailR, k, head };
+    g.scale.setScalar(1.1); scene.add(g); return { g, body, wheels, flame, shield, sp, stars, trailB, trailR, k, head, pit: 0, lvf: 0 };
   }
   // Nur für Tests/Vorschau: alle Figuren/Karts nebeneinander
   function gallery(mode) { if (world) world.visible = false; const gp = new T.Mesh(new T.PlaneGeometry(400, 400), lam('#8fd870')); gp.rotation.x = -Math.PI / 2; scene.add(gp); CHARS.forEach((c, i) => { const m = makeKart({ k: i, logo: i, char: mode === 'karts' ? 1 : i, kart: mode === 'karts' ? i % 6 : 0 }); m.g.position.set((i % 6 - 2.5) * 6.2, 0, Math.floor(i / 6) * -8); m.g.rotation.y = 0.55; }); }
   function peek(x, y, z, lx, ly, lz, w, h) { const c = mcam(); c.position.set(x, y, z); c.lookAt(lx, ly, lz); c.aspect = w / h; c.updateProjectionMatrix(); sky.position.copy(c.position); if (skyGroup) skyGroup.position.copy(c.position); renderer.setViewport(0, 0, W, H); renderer.setScissor(0, 0, W, H); renderer.render(scene, c); }
   // ------------------------------------------------------------------ Effekte (Partikel, Blitze)
-  const FXN = 260, fxPos = new Float32Array(FXN * 3).fill(-100), fxCol = new Float32Array(FXN * 3), fxVel = new Float32Array(FXN * 3), fxLife = new Float32Array(FXN); let fxPts = null, fxHead = 0;
-  function initFx() { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(fxPos, 3)); g.setAttribute('color', new T.BufferAttribute(fxCol, 3)); fxPts = new T.Points(g, new T.PointsMaterial({ size: 1.3, vertexColors: true, transparent: true, depthWrite: false })); fxPts.frustumCulled = false; scene.add(fxPts); }
-  function burst(x, y, z, hex, n, spd, up) { if (!fxPts) initFx(); const c = new T.Color(hex); for (let i = 0; i < n; i++) { const k = (fxHead++ % FXN) * 3, a = Math.random() * PI2, s = (spd || 6) * (0.4 + Math.random() * 0.8); fxPos[k] = x; fxPos[k + 1] = y; fxPos[k + 2] = z; fxVel[k] = Math.cos(a) * s; fxVel[k + 1] = (up == null ? 4 : up) * (0.4 + Math.random()); fxVel[k + 2] = Math.sin(a) * s; fxCol[k] = c.r; fxCol[k + 1] = c.g; fxCol[k + 2] = c.b; fxLife[k / 3] = 0.5 + Math.random() * 0.5; } fxPts.geometry.attributes.color.needsUpdate = true; }
-  function stepFx(dt) { if (!fxPts) return; let any = false; for (let i = 0; i < FXN; i++) { if (fxLife[i] <= 0) continue; const k = i * 3; fxLife[i] -= dt; if (fxLife[i] <= 0) { fxPos[k + 1] = -100; continue; } any = true; fxPos[k] += fxVel[k] * dt; fxPos[k + 1] += fxVel[k + 1] * dt; fxPos[k + 2] += fxVel[k + 2] * dt; fxVel[k + 1] -= 10 * dt; } fxPts.geometry.attributes.position.needsUpdate = true; }
+  const FXN = 420, fxPos = new Float32Array(FXN * 3).fill(-100), fxCol = new Float32Array(FXN * 3), fxVel = new Float32Array(FXN * 3), fxLife = new Float32Array(FXN); let fxPts = null, fxHead = 0;
+  function initFx() { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(fxPos, 3)); g.setAttribute('color', new T.BufferAttribute(fxCol, 3)); fxPts = new T.Points(g, new T.PointsMaterial({ size: 1.5, map: shared.dot, vertexColors: true, transparent: true, depthWrite: false })); fxPts.frustumCulled = false; scene.add(fxPts); }
+  function burst(x, y, z, hex, n, spd, up) { if (!fxPts) initFx(); const c = new T.Color(hex); for (let i = 0; i < n; i++) { const k = (fxHead++ % FXN) * 3, a = Math.random() * PI2, s = (spd || 6) * (0.4 + Math.random() * 0.8); fxPos[k] = x; fxPos[k + 1] = y; fxPos[k + 2] = z; fxVel[k] = Math.cos(a) * s; fxVel[k + 1] = (up == null ? 4 : up) * (0.4 + Math.random()); fxVel[k + 2] = Math.sin(a) * s; fxCol[k] = c.r; fxCol[k + 1] = c.g; fxCol[k + 2] = c.b; fxLife[k / 3] = 0.5 + Math.random() * 0.5; } fxPts.geometry.attributes.color.needsUpdate = true; fxAny = true; }
+  let fxAny = false;
+  function stepFx(dt) { if (!fxPts || (!fxAny && dt > 0)) return; let any = false; for (let i = 0; i < FXN; i++) { if (fxLife[i] <= 0) continue; const k = i * 3; fxLife[i] -= dt; if (fxLife[i] <= 0) { fxPos[k + 1] = -100; continue; } any = true; fxPos[k] += fxVel[k] * dt; fxPos[k + 1] += fxVel[k + 1] * dt; fxPos[k + 2] += fxVel[k + 2] * dt; fxVel[k + 1] -= 10 * dt; } fxPts.geometry.attributes.position.needsUpdate = true; fxAny = any; }
+  const SKN = 1400, skPos = new Float32Array(SKN * 12), skLast = []; let skid = null, skHead = 0, skLo = 1e9, skHi = -1;
+  function initSkid() {
+    if (skid) return; const idx = new Uint16Array(SKN * 6); for (let i = 0; i < SKN; i++) { const v = i * 4, o = i * 6; idx[o] = v; idx[o + 1] = v + 2; idx[o + 2] = v + 1; idx[o + 3] = v + 1; idx[o + 4] = v + 2; idx[o + 5] = v + 3; }
+    const g = new T.BufferGeometry(), a = new T.BufferAttribute(skPos, 3); a.setUsage(T.DynamicDrawUsage); g.setAttribute('position', a); g.setIndex(new T.BufferAttribute(idx, 1));
+    skid = new T.Mesh(g, new T.MeshBasicMaterial({ color: 0x0c0c12, transparent: true, opacity: 0.4, depthWrite: false, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 })); skid.frustumCulled = false; skid.renderOrder = 1; scene.add(skid);
+  }
+  function skidClear() { skPos.fill(0); skHead = 0; skLast.length = 0; skLo = 1e9; skHi = -1; if (skid) { const a = skid.geometry.attributes.position; a.updateRange.offset = 0; a.updateRange.count = -1; a.needsUpdate = true; } }
+  function skidSeg(ax, az, bx, bz) {
+    const dx = bx - ax, dz = bz - az, l = Math.hypot(dx, dz) || 1, nx = -dz / l * 0.26, nz = dx / l * 0.26, i = skHead++ % SKN, o = i * 12, y = 0.05;
+    skPos[o] = ax - nx; skPos[o + 1] = y; skPos[o + 2] = az - nz; skPos[o + 3] = ax + nx; skPos[o + 4] = y; skPos[o + 5] = az + nz;
+    skPos[o + 6] = bx - nx; skPos[o + 7] = y; skPos[o + 8] = bz - nz; skPos[o + 9] = bx + nx; skPos[o + 10] = y; skPos[o + 11] = bz + nz;
+    if (o < skLo) skLo = o; if (o + 12 > skHi) skHi = o + 12;
+  }
+  function skidKart(i, k) {
+    const on = (k.drift && k.vf > 9 && !k.rough) || (k.spinT > 0 && k.vf > 6), L = skLast[i] || (skLast[i] = { on: false, lx: 0, lz: 0, rx: 0, rz: 0 });
+    if (!on) { L.on = false; return; } const s = Math.sin(k.th), c = Math.cos(k.th), bx = k.x - s * 1.3, bz = k.z - c * 1.3, lx = bx - c * 1.2, lz = bz + s * 1.2, rx = bx + c * 1.2, rz = bz - s * 1.2;
+    if (L.on) { const dx = lx - L.lx, dz = lz - L.lz, d2 = dx * dx + dz * dz; if (d2 < 1) return; if (d2 < 16) { skidSeg(L.lx, L.lz, lx, lz); skidSeg(L.rx, L.rz, rx, rz); } }
+    L.on = true; L.lx = lx; L.lz = lz; L.rx = rx; L.rz = rz;
+  }
+  function skidFlush() { if (!skid || skHi < 0) return; const a = skid.geometry.attributes.position; a.updateRange.offset = skLo; a.updateRange.count = skHi - skLo; a.needsUpdate = true; skLo = 1e9; skHi = -1; }
   const bolts = []; function bolt(x, z) { let b = bolts.find(q => q.t <= 0); if (!b) { const g = new T.Group(); for (let i = 0; i < 6; i++) { const s = new T.Mesh(geo('b', () => new T.BoxGeometry(1, 1, 1)), bas(0xffffff, { transparent: true, opacity: 0.95, blending: T.AdditiveBlending, depthWrite: false })); s.scale.set(0.35, 3.4, 0.35); s.position.set((i % 2 ? 1 : -1) * 0.7, 18 - i * 3.2, 0); s.rotation.z = (i % 2 ? 1 : -1) * 0.4; g.add(s); } scene.add(g); b = { g, t: 0 }; bolts.push(b); } b.t = 0.55; b.g.position.set(x, 0, z); b.g.visible = true; }
 
   // ------------------------------------------------------------------ Rennen: Aufbau und Einzelbild
   let boxes = [], padsM = [], hazM = { mine: [], banana: [] }, rocM = { rocket: [], rock: [] }, boomM = [];
   function setupRace(S, humanIdx) {
-    kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8, b.z); scene.add(m); return m; });
+    initSkid(); skidClear(); fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8, b.z); scene.add(m); return m; });
     padsM.forEach(p => scene.remove(p)); padsM = S.pads.map(p => { const m = new T.Mesh(new T.PlaneGeometry(8, 12), padMat); m.rotation.order = 'YXZ'; m.rotation.x = -Math.PI / 2; m.rotation.y = p.th + Math.PI; m.position.set(p.x, 0.08, p.z); scene.add(m); return m; });
     [].concat(hazM.mine, hazM.banana, rocM.rocket, rocM.rock, boomM).forEach(m => scene.remove(m)); hazM = { mine: [], banana: [] }; rocM = { rocket: [], rock: [] }; boomM = [];
-    cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66 }); });
+    cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66 }); });
   }
   const poolGet = (arr, mk) => { let m = arr.find(x => !x.visible); if (!m) { m = mk(); arr.push(m); scene.add(m); } m.visible = true; return m; };
+  const ip = [];
+  function interp(S, a) { S.karts.forEach((k, i) => { const p = ip[i] || (ip[i] = { x: 0, z: 0, th: 0 }); if (k.px == null || a >= 1) { p.x = k.x; p.z = k.z; p.th = k.th; } else { p.x = k.px + (k.x - k.px) * a; p.z = k.pz + (k.z - k.pz) * a; p.th = k.pth + wrap(k.th - k.pth) * a; } }); }
   function updateKarts(S, dt, time) {
     S.karts.forEach((k, i) => {
-      const m = kmesh[i]; if (!m) return; m.g.position.set(k.x, 0, k.z); m.g.rotation.y = k.th;
+      const m = kmesh[i]; if (!m) return; const p = ip[i]; m.g.position.set(p.x, 0, p.z); m.g.rotation.y = p.th;
+      if (dt > 0) { const ac = (k.vf - m.lvf) / dt; m.lvf = k.vf; m.pit += (clamp(-ac * 0.0035, -0.07, 0.07) - m.pit) * Math.min(1, dt * 6); m.body.rotation.x = m.pit;
+        skidKart(i, k); const sn = Math.sin(k.th), cs = Math.cos(k.th);
+        if (k.rough && k.vf > 7 && Math.random() < 0.4) burst(k.x - sn * 1.6 + (Math.random() - 0.5) * 2, 0.4, k.z - cs * 1.6, dustCol, 1, 1.4, 1.6);
+        else if (k.drift && k.vf > 10 && Math.random() < 0.25) burst(k.x - sn * 1.6 + (Math.random() - 0.5) * 2.4, 0.3, k.z - cs * 1.6, 0xd8dce8, 1, 1, 1.2); }
       const roll = -k.steer * 0.12 * clamp(k.vf / 30, 0, 1) + (k.drift ? k.drift * 0.1 : 0); m.body.rotation.z = roll; m.body.rotation.y = k.drift ? k.drift * 0.35 : 0; m.body.position.y = k.spinT > 0 ? Math.abs(Math.sin(time * 14)) * 0.6 : 0;
       m.wheels.forEach(w => { w.w.rotation.x += k.vf * dt / 0.5; if (w.front) w.wg.rotation.y = -k.steer * 0.45; });
       m.flame.visible = k.boostT > 0; if (m.flame.visible) { m.flame.scale.set(1, 0.8 + Math.random() * 0.8, 1); }
@@ -313,32 +342,50 @@ const View = (() => {
     });
     boomM.forEach(m => { if (!m.visible) return; m.userData.t += dt; const u = m.userData.t / 0.5; m.scale.setScalar(1 + u * 5); m.material.opacity = Math.max(0, 0.8 - u); if (u >= 1) m.visible = false; });
     bolts.forEach(b => { if (b.t > 0) { b.t -= dt; b.g.visible = b.t > 0 && ((time * 30) | 0) % 2 === 0; if (b.t <= 0) b.g.visible = false; } });
-    stepFx(dt); anim.forEach(f => f(time)); world && world.children.forEach(o => { if (o.userData && o.userData.blink) o.visible = ((time * 1.5) | 0) % 2 === 0; });
+    skidFlush(); stepFx(dt); anim.forEach(f => f(time)); const bl = ((time * 1.5) | 0) % 2 === 0; blinkers.forEach(o => { o.visible = bl; });
   }
   function updateCam(c, S, dt) {
-    const k = c.k, tgt = k.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
-    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.75), dist = (7.4 + clamp(k.vf / 36, 0, 1.4) * 0.9) * af, wx = k.x - Math.sin(c.ang) * dist, wz = k.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
+    const k = c.k, p = ip[c.ki] || k, tgt = p.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
+    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.75), dist = (7.4 + clamp(k.vf / 36, 0, 1.4) * 0.9) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
     c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y = 3.1 * (0.85 + 0.15 * af); c.cam.position.copy(c.pos);
+    if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
     const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
-    c.cam.lookAt(k.x + Math.sin(c.ang) * 5, 1.6, k.z + Math.cos(c.ang) * 5);
+    c.cam.lookAt(p.x + Math.sin(c.ang) * 5, 1.6, p.z + Math.cos(c.ang) * 5);
   }
   function rects(n, w, h) {
     if (n <= 1) return [[0, 0, w, h]]; const hw = (w / 2) | 0, hh = (h / 2) | 0;
     if (n === 2) return w >= h ? [[0, 0, hw, h], [hw, 0, w - hw, h]] : [[0, hh, w, h - hh], [0, 0, w, hh]];
     return [[0, hh, hw, h - hh], [hw, hh, w - hw, h - hh], [0, 0, hw, hh], [hw, 0, w - hw, hh]];
   }
-  function resize(w, h, n) { W = w; H = h; pr = Math.min(window.devicePixelRatio || 1, n >= 3 ? 1 : n === 2 ? 1.25 : 1.75); renderer.setPixelRatio(pr); renderer.setSize(w, h, false); }
-  function renderRace(S, dt, time, n) {
-    updateKarts(S, dt, time); const rs = rects(Math.max(1, cams.length), W, H);
+  let prMax = 1, prScale = 1, pEma = 16.7, pDev = 0, pSlow = 0, pFast = 0, pCool = 0, pT = 0, pUpAt = -1e9, pNoUp = false;
+  function applyPr(force) { const p = Math.max(0.6, prMax * prScale); if (!force && Math.abs(p - pr) < 0.01) return; pr = p; renderer.setPixelRatio(pr); renderer.setSize(W, H, false); }
+  function resize(w, h, n) { W = w; H = h; prMax = Math.min(window.devicePixelRatio || 1, n >= 3 ? 1 : n === 2 ? 1.25 : 1.75); applyPr(true); }
+  // Dynamische Auflösung: bleibt die Bildrate länger unter ~48 fps, wird die interne Auflösung gesenkt; läuft es lange flüssig, wieder angehoben.
+  // Feste 30-fps-Bremsen (Stromsparmodus) erkennt die geringe Streuung und lässt die Auflösung dann in Ruhe.
+  function perf(ms) {
+    if (!(ms > 0) || ms > 250) return; const s = ms / 1000; pT += s; pDev += (Math.abs(ms - pEma) - pDev) * 0.06; pEma += (ms - pEma) * 0.06; if ((pCool -= s) > 0) return;
+    const capped30 = pEma > 31 && pEma < 36 && pDev < 1.5;
+    if (pEma > 21 && !capped30) { pFast = 0; if ((pSlow += s) > 1 && prScale > 0.5) { prScale = Math.max(0.5, prScale - 0.15); applyPr(); pSlow = 0; pCool = 1.5; if (pT - pUpAt < 8) pNoUp = true; } }
+    else if (pEma < 17.6) { pSlow = 0; if (!pNoUp && prScale < 1 && (pFast += s) > 5) { prScale = Math.min(1, prScale + 0.1); applyPr(); pFast = 0; pCool = 2; pUpAt = pT; } }
+    else pSlow = pFast = 0;
+  }
+  const perfReset = () => { pEma = 16.7; pDev = 0; pSlow = pFast = 0; pCool = 1.5; };
+  function renderRace(S, dt, time, n, alpha) {
+    interp(S, alpha == null ? 1 : alpha); updateKarts(S, dt, time); const rs = rects(Math.max(1, cams.length), W, H);
     cams.forEach((c, i) => { updateCam(c, S, dt); const r = rs[i]; renderer.setViewport(r[0], r[1], r[2], r[3]); renderer.setScissor(r[0], r[1], r[2], r[3]); c.cam.aspect = r[2] / r[3]; c.cam.updateProjectionMatrix(); sky.position.copy(c.cam.position); if (skyGroup) skyGroup.position.copy(c.cam.position); renderer.render(scene, c.cam); });
     return rs;
+  }
+  function warmup() {
+    if (!fxPts) initFx(); initSkid(); const g = new T.Group(), m = makeKart({ k: 0, logo: logos.length ? logos[0].idx : 0, char: 0, kart: 0 }); scene.remove(m.g); g.add(m.g); m.flame.visible = m.shield.visible = m.sp.visible = m.stars.visible = true;
+    g.add(bananaMesh(), rockMesh(1), new T.Mesh(shared.boxGeo, boxMat), new T.Mesh(new T.PlaneGeometry(8, 12), padMat), new T.Mesh(mineGeo, lam('#a020f0', { emissive: 0x4a0a6a })), new T.Mesh(rocketGeo, bas(0xff4a2a)));
+    scene.add(g); try { const c = mcam(); c.aspect = W / H; c.updateProjectionMatrix(); renderer.compile(scene, c); } catch (e) {} scene.remove(g);
   }
   const mcam = () => menuCam.cam || (menuCam.cam = new T.PerspectiveCamera(60, 1, 0.5, 1400));
   function renderMenu(dt, time) {
     if (!tr) return; menuCam.f = (menuCam.f + dt * 9 / 3) % tr.N; const o = {}; tr.at(menuCam.f, 0, o); const c = mcam(), o2 = {}; tr.at(menuCam.f + 14, 0, o2);
-    c.position.set(o.x - o.tx * 20, 22, o.z - o.tz * 20); c.lookAt(o2.x, 2, o2.z); c.aspect = W / H; c.updateProjectionMatrix(); sky.position.copy(c.position); if (skyGroup) skyGroup.position.copy(c.position);
+    c.position.set(o.x - o.tx * 20 + o.tz * Math.sin(time * 0.23) * 5, 21 + Math.sin(time * 0.31) * 3, o.z - o.tz * 20 - o.tx * Math.sin(time * 0.23) * 5); c.lookAt(o2.x, 2, o2.z); c.aspect = W / H; c.updateProjectionMatrix(); sky.position.copy(c.position); if (skyGroup) skyGroup.position.copy(c.position);
     kmesh.forEach(m => scene.remove(m.g)); kmesh = []; boxes.forEach(b => scene.remove(b)); boxes = []; anim.forEach(f => f(time));
     renderer.setViewport(0, 0, W, H); renderer.setScissor(0, 0, W, H); renderer.render(scene, c);
   }
-  return { gallery, peek, burst, init, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
+  return { gallery, peek, burst, init, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
 })();
