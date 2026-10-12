@@ -3,12 +3,15 @@ window.EASYGAMES_GUIDES = {
  "zotik": {
   "anleitung": "Zotik ist ein 3D-Action-Rollenspiel mit zehn Welten von Lunaris bis Elyndra und einem Endspiel im Weltenriss. Du erkundest die Welten, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), löst Rätsel, kämpfst mit deinen Gefährten gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Weltreise, Inventar, Fähigkeiten, Steuerung mit Optionen und Koop; das Spiel speichert automatisch, zusätzlich über das Menü.",
   "steuerung": [
-   "PC: WASD bewegen, Maus ziehen = Kamera, J oder Klick = Angriff (3-Hieb-Kombo), Shift = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc = Menü, Antworten in Gesprächen mit 1–9 oder Pfeiltasten + Enter",
+   "PC: WASD bewegen, Maus ziehen = Kamera, J oder Klick = Angriff (3-Hieb-Kombo), Shift = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc = Menü, Antworten in Gesprächen mit 1–9, Befehlsleiste mit ↑ ↓ Enter, Q = Ziel erfassen, F = Reaktion, T = Team-Angriff, G = Rissform, 4/5/6 = IP-Techniken, C/X = Werkzeug benutzen/wechseln",
    "PC (Nautilux, sobald freigeschaltet): V = ein-/aussteigen, B = Form wechseln",
    "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff und Ausweichen, Fähigkeit-Taste (tippen = einsetzen, halten = wechseln), Aktion-Taste (Sprechen, Öffnen, Einsteigen), Menü-Taste ☰ oben links"
   ],
   "tipps": [
    "Treffer laden Mana auf, nutze Fähigkeiten also im Kampf.",
+   "Erscheint ▲ über dem Kampf, drücke F (Handy: Aktion-Taste) für einen Konter.",
+   "Felli ist dein Kapselmonster: füttere es im Menü, dann entwickelt es sich.",
+   "Die Uralte Höhle in Lunaris startet immer bei Stufe 1 – nur blaue Truhen behältst du.",
    "Heiltränke gibt es im Laden gegen Rissplitter."
   ]
  },
