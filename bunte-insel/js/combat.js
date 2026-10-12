@@ -16,12 +16,20 @@ BI.createCombat = function (G) {
     blob: b => { b.sph(0, .55, 0, .6, 0x6bd66b, 1, 1, .85, 1); eyes(b, .72, .42, .22, .14); b.box(0, .5, .58, .3, .05, .04, 0x2b6b2b); b.sph(-.3, .06, .2, .14, 0x4fb84f, 0); b.sph(.3, .06, .2, .14, 0x4fb84f, 0); },
     spike: b => { b.sph(0, .5, 0, .5, 0xff9a3a, 1, 1, .9, 1.1); for (let i = 0; i < 9; i++) { const a = i * .7; b.cone(Math.sin(a) * .34, .78 + (i % 3) * .06, Math.cos(a) * .34 - .12, .1, .36, 0xc0541a, 5); } eyes(b, .62, .42, .2, .12); b.sph(0, .5, .56, .08, 0x5a2b1a, 0); },
     mush: b => { b.cyl(0, 0, 0, .3, .36, .55, 0xf4e6c8, 8); b.sph(0, .72, 0, .62, 0xe0382b, 1, 1, .62, 1); for (const [x, z] of [[-.3, .2], [.28, .3], [0, -.3], [.32, -.1]]) b.sph(x, .98 - Math.abs(x) * .3, z, .12, 0xffffff, 0); eyes(b, .35, .3, .13, .09); },
+    /* Gegner aus allen Welten, die sich im Verbotenen Wald treffen: Schlüsselreich (Dunkelwichtel, Dunkelriese), Zotik/Lunaris (Moosling, Dornenwolf, Frostgeist, Lavadrache) */
+    wichtel: b => { b.sph(0, .55, 0, .5, 0x1a1228, 1, 1, .9, 1); b.cone(-.2, .95, 0, .12, .45, 0x1a1228, 4); b.cone(.2, .95, 0, .12, .45, 0x1a1228, 4); b.sph(-.18, .62, .4, .11, 0xffe14a, 0); b.sph(.18, .62, .4, .11, 0xffe14a, 0); b.box(0, .02, 0, .9, .1, .7, 0x2a1a3a); },
+    moos: b => { b.sph(0, .5, 0, .55, 0x6aa84a, 1, 1, .8, 1); for (let i = 0; i < 5; i++) b.sph(Math.sin(i * 1.3) * .3, .85, Math.cos(i * 1.3) * .25, .2, 0x3f7a2e, 0); eyes(b, .6, .42, .2, .12); b.box(0, .42, .55, .26, .05, .04, 0x2b4b1b); },
+    wolf: b => { b.sph(0, .5, -.1, .5, 0x8a7a6a, 1, .9, .8, 1.3); b.sph(0, .62, .62, .32, 0x8a7a6a, 1); b.cone(-.15, .92, .6, .1, .25, 0x5a4a3a, 4); b.cone(.15, .92, .6, .1, .25, 0x5a4a3a, 4); for (let i = 0; i < 6; i++) b.cone(0, .85, -.5 + i * .2, .07, .3, 0x4a3a2a, 4); eyes(b, .7, .86, .12, .08); b.box(0, .5, .92, .14, .1, .1, 0x2a2018); for (const [x, z] of [[-.25, .2], [.25, .2], [-.25, -.4], [.25, -.4]]) b.box(x, 0, z, .14, .3, .14, 0x6a5a4a); },
+    frost: b => { b.cone(0, 0, 0, .6, 1.0, 0xcfeeff, 8); b.sph(0, 1.05, 0, .5, 0xe8f8ff, 1); eyes(b, 1.1, .38, .18, .1); for (let i = 0; i < 5; i++) b.cone(Math.sin(i * 1.26) * .45, .95, Math.cos(i * 1.26) * .45, .08, .3, 0x8ad0ff, 4); },
+    lava: b => { b.sph(0, .55, 0, .55, 0xe0552a, 1, 1, .8, 1.2); b.sph(0, .7, .6, .32, 0xff7a2e, 1); for (const sx of [-1, 1]) { b.cone(sx * .15, 1.0, .6, .08, .3, 0xffd23f, 4); b.box(sx * .6, .85, -.1, .5, .05, .4, 0xff9a3a, 0, 0, sx * .5); } eyes(b, .78, .86, .12, .08); b.cone(0, .45, -.7, .12, .5, 0xffd23f, 4); },
     gblob: b => { b.sph(0, .55, 0, .6, 0xb36bff, 1, 1, .85, 1); eyes(b, .72, .42, .22, .14); b.box(0, .5, .58, .34, .06, .04, 0x4a2b6b); for (let i = 0; i < 3; i++) b.cone(-.3 + i * .3, 1.05, 0, .1, .3, 0xff8fc8, 4); },
     boss: b => { b.cyl(0, 0, 0, .6, .85, 1.6, 0x4a3a2a, 8); b.sph(0, 2.0, 0, .85, 0x2f6b4a, 1, 1, .9, 1); for (let i = 0; i < 6; i++) b.cone(Math.sin(i) * .6, 2.6, Math.cos(i) * .5, .2, .6, 0x1f4a3a, 5); for (const sx of [-1, 1]) { b.box(sx * 1.0, 1.1, 0, .28, 1.3, .28, 0x4a3a2a, 0, sx * .5); b.sph(sx * .3, 2.0, .72, .18, 0xffe14a, 0); b.box(sx * 1.2, .6, 0, .5, .12, .12, 0x4a3a2a); } b.box(0, 1.55, .85, .6, .1, .06, 0x1a1a1a); }
   };
   const geo = k => geos[k] || (geos[k] = (() => { const b = new BI.Batch(); MODEL[k](b); return b.mesh(mat).geometry; })());
   const TYPES = {
     blob: { n: 'Glibbi', hp: 30, spd: 2.0, dmg: 7, reach: 1.5, base: 1 }, spike: { n: 'Stachli', hp: 40, spd: 2.8, dmg: 9, reach: 1.5, base: 1 }, mush: { n: 'Pilzling', hp: 36, spd: 2.3, dmg: 8, reach: 1.5, base: 1 },
+    wichtel: { n: 'Dunkelwichtel', hp: 34, spd: 2.5, dmg: 8, reach: 1.5, base: 1.1 }, moos: { n: 'Moosling', hp: 32, spd: 2.0, dmg: 7, reach: 1.5, base: 1 }, wolf: { n: 'Dornenwolf', hp: 44, spd: 3.0, dmg: 10, reach: 1.7, base: 1.1 }, frost: { n: 'Frostgeist', hp: 38, spd: 2.4, dmg: 9, reach: 1.6, base: 1.1 }, lava: { n: 'Lavadrache', hp: 60, spd: 2.2, dmg: 12, reach: 2.0, base: 1.3 },
+    riese: { n: 'Dunkelriese', hp: 300, spd: 1.9, dmg: 19, reach: 3.4, base: 3.2, big: true, geo: 'wichtel' },
     gblob: { n: 'Riesen-Glibbi', hp: 150, spd: 1.8, dmg: 14, reach: 2.8, base: 2.4, big: true, geo: 'gblob' }, boss: { n: 'Waldgeist', hp: 230, spd: 2.0, dmg: 17, reach: 3.2, base: 2.2, big: true, geo: 'boss' }
   };
   const barGeo = new THREE.PlaneGeometry(1, .12), barBg = new THREE.MeshBasicMaterial({ color: 0x2b2f3a, depthTest: false, transparent: true, opacity: .7 }), barFg = new THREE.MeshBasicMaterial({ color: 0x4cd07d, depthTest: false });
@@ -78,9 +86,9 @@ BI.createCombat = function (G) {
   }
   function defeatMonster(e) {
     e.dead = true; e.t = 0; if (e.tele) e.tele.visible = false; A.bigpop && A.bigpop(); fx.burst(e.x, 1.2, e.z, 26, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.purple], 6, 1.4, 32, 6);
-    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else drop(e.x, e.z); if (st.k >= 10) G.earn('forest'); persist(); }
+    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
   }
-  let bossAlive = false; K.kills = 0;
+  let bossAlive = false; K.kills = 0; K.bossN = 0;
 
   /* ---------- Gegner verletzt den Spieler ---------- */
   function hurt(d) {
@@ -146,11 +154,13 @@ BI.createCombat = function (G) {
   }
 
   /* ---------- Verbotener Wald ---------- */
+  const WORLD = ['wichtel', 'moos', 'wolf', 'frost', 'lava'];
   function forestSpawn(dt) {
     if (!inForest()) return; spawnT -= dt; const cap = save.eco ? 4 : 6, alive = enemies.filter(e => !e.dead).length;
     if (spawnT > 0 || alive >= cap) return; spawnT = 3 + rnd() * 3;
     for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (Math.hypot(x - FO.x, z - FO.z) > FO.R - 2.5 || !W.free(x, z, .8)) continue;
-      let kind = rnd() < .34 ? 'blob' : rnd() < .5 ? 'spike' : 'mush'; if (!bossAlive && K.kills >= K.nextBoss) { kind = 'boss'; bossAlive = true; K.nextBoss += 10; say('⚠️ Der Waldgeist erwacht!', 3000); }
+      let kind = rnd() < .34 ? 'blob' : rnd() < .5 ? 'spike' : 'mush'; if (K.kills >= 3 && rnd() < .55) kind = WORLD[(rnd() * Math.min(WORLD.length, 2 + (K.kills / 3 | 0))) | 0];
+      if (!bossAlive && K.kills >= K.nextBoss) { kind = (K.bossN++ % 2) ? 'riese' : 'boss'; bossAlive = true; K.nextBoss += 10; say(kind === 'riese' ? '⚠️ Der Dunkelriese aus dem Schlüsselreich erscheint!' : '⚠️ Der Waldgeist erwacht!', 3000); }
       spawn(kind, x, z, { home: true }); return; }
   }
 

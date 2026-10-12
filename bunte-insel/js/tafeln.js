@@ -22,12 +22,12 @@ BI.TAFELN = {
   drachen: ['🐉🔥', 'Drachen', 'Hier wohnen die Drachen. Sie sind freundlich.'],
   zotik: ['⭐🏰', 'Lunaris', 'Willkommen in Lunaris! Sammle bunte Splitter.'],
   radio: ['📻🎵', 'Radio-Welt', 'In der Funkwelle spielt Musik von vielen Radiosendern.'],
-  schluessel: ['🗝️💛', 'Schlüsselreich', 'Willkommen im Schlüsselreich! Vertreibe Dunkelwichtel und öffne fünf Schlüssellöcher.'],
+  schluessel: ['🗝️💛', 'Schlüsselreich', 'Willkommen im Schlüsselreich! Zünde Laternen an, fahre mit dem Auto die Ringstraße und öffne fünf Schlüssellöcher.'],
   statue_s: ['🗽🗝️', 'Lichtwanderer Lio', 'Die große Statue zeigt Lio. Er hat alle Welten mit dem Lichtschlüssel gerettet.'],
   strand_s: ['🌴🌟', 'Strand der Freunde', 'Am krummen Baum wachsen fünf Sternfrüchte. Sammle sie alle!'],
   stadt_s: ['🕰️🍦', 'Dämmerstadt', 'Hol ein Meersalz-Eis für den Uhrmacher und läute die Glocke.'],
   burg_s: ['🏰💡', 'Kristall-Burg', 'Im Hof leuchten vier Platten. Merk dir die Reihenfolge!'],
-  wald_s: ['🌲🌑', 'Wald der Schatten', 'Hier springen Dunkelwichtel. Besiege acht mit dem Lichtschlüssel!'],
+  wald_s: ['🌲🍄', 'Wald der Schatten', 'Im Wald der Schatten leuchten Glühpilze. Sammle acht!'],
   turm_s: ['🗼💠', 'Schleier-Turm', 'Steig die Stufen hinauf und sammle drei Licht-Splitter.'],
   hafen_s: ['🚀🗝️', 'Sternen-Hafen', 'Hier steht das Sternenschiff. Und das Schlüsselschwert-Mobil kann fliegen!'],
   maerchen: ['🏰✨', 'Märchenland', 'Willkommen im Märchenland! Hier wohnen Prinzessinnen, Piraten und ein Löwenkönig.'],
@@ -60,7 +60,7 @@ BI.createTafeln = function (G) {
   /* An allen „Wohin?“-Zielen: seitlich vom Ankunftspunkt, wo noch Platz ist */
   K.placeAll = function (DEST) {
     for (const dd of DEST) { if (!BI.TAFELN[dd.id]) continue; let a; try { a = dd.at(); } catch (e) { continue; } if (!a || !isFinite(a.x + a.z)) continue;
-      for (const [ox, oz] of [[3.4, 0], [-3.4, 0], [0, 3.4], [0, -3.4], [3, 3], [-3, -3], [-3, 3], [3, -3], [5, 0], [-5, 0]]) { const x = a.x + ox, z = a.z + oz, r = W.resolve(x, z, 1.1, {}); if (!r.hit && Math.abs(r.x - x) < .01) { K.add(dd.id, x, z, a.x, a.z); break; } } }
+      for (const [ox, oz] of [[3.4, 0], [-3.4, 0], [0, 3.4], [0, -3.4], [3, 3], [-3, -3], [-3, 3], [3, -3], [5, 0], [-5, 0]]) { const x = a.x + ox, z = a.z + oz, r = W.resolve(x, z, 1.1, {}); if (!r.hit && Math.abs(r.x - x) < .01 && !(W.schluessel && Math.hypot(x - W.schluessel.x, z - W.schluessel.z) < W.schluessel.R && W.schluessel.roadD(x, z) < 4.6)) { K.add(dd.id, x, z, a.x, a.z); break; } } }
     if (!post.empty) scene.add(post.mesh(BI.mat()));
   };
   const nearest = (r) => { let b = null, bd = r * r; for (const t of list) { const d = (P.x - t.x) ** 2 + (P.z - t.z) ** 2; if (d < bd) { bd = d; b = t; } } return b; };
