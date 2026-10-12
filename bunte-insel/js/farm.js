@@ -54,7 +54,7 @@ BI.createFarm = function (G) {
   const fields = W.spots.fields.map(f => {
     const cs = 1.5, nx = Math.floor((f.x1 - f.x0) / cs), nz = Math.floor((f.z1 - f.z0) / cs), n = nx * nz;
     const gb = new BI.Batch(); for (let k = 0; k < 7; k++) { const a = k * 2.4, r = .18 + (k % 3) * .1; gb.box(Math.sin(a) * r, 0, Math.cos(a) * r, .1, .9 + (k % 2) * .25, .1, k % 2 ? 0xe8c85a : 0xd9b44a, a, 0, (k % 3 - 1) * .08); }
-    const im = new THREE.InstancedMesh(gb.mesh(mat).geometry, new THREE.MeshLambertMaterial({ vertexColors: true }), n); im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); im.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3((f.x0 + f.x1) / 2, .5, (f.z0 + f.z1) / 2), Math.hypot(f.x1 - f.x0, f.z1 - f.z0) / 2 + 3); im.frustumCulled = true;
+    const im = new THREE.InstancedMesh(gb.mesh(mat).geometry, new THREE.MeshLambertMaterial({ vertexColors: true }), n); im.frustumCulled = false; im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     const st = new Float32Array(n).fill(1), d = new THREE.Object3D(), pos = [];
     for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) { const x = f.x0 + cs * (i + .5) + (Math.random() - .5) * .4, z = f.z0 + cs * (j + .5) + (Math.random() - .5) * .4; pos.push([x, z, Math.random() * TAU]); }
     const put = idx => { const p = pos[idx], s = st[idx]; d.position.set(p[0], .04, p[1]); d.rotation.set(0, p[2], 0); d.scale.set(1, Math.max(.07, s), 1); d.updateMatrix(); im.setMatrixAt(idx, d.matrix); };

@@ -184,7 +184,7 @@ BI.createFun = function (G) {
   /* ---------- Seifenblasen: normale zum Plattmachen und XXL (Riesenblase trägt Jannis nach oben) ---------- */
   const NBU = 140, bub = [], TINT = [0xffffff, 0xcfeaff, 0xffd6f0, 0xd9ffe8, 0xfff3c4];
   const bubMat = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: .32, shininess: 140, specular: 0xffffff, emissive: 0x1c2a44, depthWrite: false });
-  const bubMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 10, 8), bubMat, NBU); bubMesh.frustumCulled = false; scene.add(bubMesh);
+  const bubMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 12, 10), bubMat, NBU); bubMesh.frustumCulled = false; scene.add(bubMesh);
   for (let i = 0; i < NBU; i++) { bub.push({ on: false, x: 0, y: -50, z: 0, vx: 0, vy: 0, vz: 0, r: .2, t: 0, ph: Math.random() * 6, big: false }); bubMesh.setColorAt(i, bc.setHex(TINT[i % TINT.length])); bubMesh.setMatrixAt(i, bdm.compose(bdp.set(0, -50, 0), bdq, bds.set(0, 0, 0))); }
   bubMesh.instanceColor.needsUpdate = true; let pops = 0;
   const popFx = (b, big) => { fx.burst(b.x, b.y, b.z, big ? 26 : 5, [RGB(COL[(Math.random() * COL.length) | 0]), BI.C.white, BI.C.blue], big ? 6 : 1.6, big ? 1 : .5, big ? 30 : 16 + b.r * 40, 3); };
@@ -218,7 +218,7 @@ BI.createFun = function (G) {
       }
       if (b.on) { const w = 1 + Math.sin(t * 6 + b.ph) * .035; bubMesh.setMatrixAt(i, _bm.compose(_bp.set(b.x, b.y, b.z), _bq, _bs.set(b.r * w, b.r / w, b.r * w))); } else bubMesh.setMatrixAt(i, _bm.compose(_bp.set(0, -50, 0), _bq, _bs.set(0, 0, 0)));
     }
-    bubMesh.instanceMatrix.needsUpdate = true; { let any = false; for (let i = 0; i < NBU; i++) if (bub[i].on) { any = true; break; } bubMesh.visible = any; }
+    bubMesh.instanceMatrix.needsUpdate = true;
     const R = F.ride; if (R) {
       R.t -= dt; R.r = Math.min(2.1, R.r + dt * 1.8); P.wave = Math.max(P.wave || 0, .3);
       const w = Math.sin(t * 5) * .05; giant.position.set(P.x, P.y + 1.05, P.z); giant.scale.set(R.r * (1 + w), R.r * (1 - w), R.r * (1 + w)); if (R.t <= 0 || P.veh) endRide();
