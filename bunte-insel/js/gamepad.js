@@ -52,6 +52,7 @@ BI.createGamepad = function (G) {
     for (const e of L) { if (e === cur) continue; const r = e.getBoundingClientRect(), x = r.left + r.width / 2 - ax, y = r.top + r.height / 2 - ay, f = x * dx + y * dy; if (f < 4) continue; const side = Math.abs(x * dy - y * dx), sc = f + side * 2.2; if (sc < bs) { bs = sc; best = e; } }
     if (best) mark(best);
   }
+  K.rewire = function () { const g = K.pad == null ? null : pads()[K.pad]; if (!g || !g.connected) { say('🎮 Kein Controller verbunden – schließe einen an und drücke eine Taste.', 3600); return; } try { localStorage.removeItem(key(g.id)); } catch (e) { } K.mapping = Object.assign({}, STD); startWizard(g, (g.id || 'Controller').replace(/\(.*?\)|Vendor:.*|Product:.*/g, '').trim().slice(0, 28) || 'Controller'); };
   K.dbg = { get mapping() { return K.mapping; }, nav, cands, get cur() { return cur; } };
   /* ---------- Jedes Bild ---------- */
   K.update = function (dt) {

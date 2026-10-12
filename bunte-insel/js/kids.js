@@ -149,5 +149,6 @@ BI.createKids = function (G) {
     if (G.state() === 'play') { const lim = (save.breakMin || 0) * 60; if (lim && !K.open) { playS += dt; if (playS >= lim) { playS = 0; K.showBreak(); } } }
     if (holding && K.open === 'break') { holdT += dt; bm.style.setProperty('--p', Math.min(100, holdT / 1.5 * 100) + '%'); if (holdT >= 1.5) { holding = false; holdT = 0; $('breakPanel').hidden = true; K.open = ''; save.breakMin = save.breakMin || 15; playS = Math.max(0, (save.breakMin * 60) - 300); say('Noch 5 Minuten – Mama passt auf 😊', 2400); G.updateButtons(true); } }
   };
+  K.info = id => ST.find(q => q[0] === id) || null;
   return K;
 };
