@@ -62,6 +62,16 @@ window.EASYGAMES_GUIDES = {
    "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
   ]
  },
+ "prismrush": {
+  "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Zen, Präzision und ein Tutorial.",
+  "steuerung": [
+   "PC: A, S, D oder Pfeil links, runter, rechts = Spur wählen und treffen, Leertaste = in aktueller Spur treffen, E/Umschalt = Overdrive, Mausklick = Spur unter dem Zeiger treffen, Esc/P = Pause",
+   "Touch: Die drei großen Spurtasten unten antippen, Tippen = treffen, links/rechts wischen = Spur wechseln, nach oben wischen oder ⚡ = Overdrive, II = Pause"
+  ],
+  "tipps": [
+   "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In den Einstellungen gibt es eine Latenz-Kalibrierung."
+  ]
+ },
  "anmacha-memory": {
   "anleitung": "Finde die zusammengehörigen Logo-Paare, indem du immer zwei Karten aufdeckst. Treffer in Folge bauen eine Combo auf und bringen mehr Punkte; am Ende gibt es bis zu 3 Sterne je nach Anzahl der Züge. Die Kampagne hat 10 Level (teils mit Mischer oder Zeitlimit), im Freien Spiel wählst du die Anzahl der Paare, 1 Spieler oder Duell zu zweit und die Mischer-Stufe. Der Mischer tauscht nach Fehlzügen verdeckte Karten.",
   "steuerung": [
