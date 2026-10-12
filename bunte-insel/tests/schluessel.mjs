@@ -15,7 +15,7 @@ const r = await p.evaluate(async () => {
   out.zone = BI.worldAt(M.entry.x, M.entry.z) === 'schluessel' && BI.zoneAt(M.x, M.z, {}) === 'schluessel';
   const br = M.bridge; out.bridge = [-.4, -.2, 0, .2, .4].every(k => !W.resolve(br.mx + M.ux * br.L * k, br.mz + M.uz * br.L * k, .4, {}).hit);
   out.apart = [BI.CITY, BI.DAMPF, BI.BAULAND, BI.FUSSBALL, BI.MAERCHEN].every(o => Math.hypot(o.x - M.x, o.z - M.z) > o.R + M.R + 6);
-  out.spots = ['statue', 'uhrturm', 'glocke', 'eis', 'sonne', 'simon', 'hafen', 'mobil', 'wald', 'wuschel', 'schmiede', 'turm', 'burg'].every(k => sp[k] && Math.hypot(sp[k].x - M.x, sp[k].z - M.z) < M.R - 4);
+  out.spots = ['statue', 'uhrturm', 'glocke', 'sk_eis', 'sonne', 'simon', 'hafen', 'mobil', 'wald', 'wuschel', 'schmiede', 'turm', 'burg'].every(k => sp[k] && Math.hypot(sp[k].x - M.x, sp[k].z - M.z) < M.R - 4);
   const st = sp.statueTop; out.statueSolid = W.resolve(st.x, st.z, .4, {}).hit === true;
   const fo = b.town.folk.filter(f => f.p && Math.hypot(f.x - M.x, f.z - M.z) < M.R); out.folk = fo.length; out.names = new Set(fo.map(f => f.p.name)).size;
   out.folkIn = fo.every(f => Math.hypot(f.x - M.x, f.z - M.z) < M.R - 2 && !W.resolve(f.x, f.z, .3).hit && f.p.lines.length >= 1);

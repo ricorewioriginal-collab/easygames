@@ -109,11 +109,11 @@ ok(rc.has && rc.near && rc.scale < .5 && rc.rcSpeed > 4 && rc.rcMoved > 3 && rc.
 // Schnellmenü: max. 6 passende Aktionen, Baum in der Nähe -> Hauen vorn, Klick führt aus und schließt
 const qm = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const T = b.W.trees[1]; b.P.x = T.x + 1.6; b.P.z = T.z; await sleep(300);
-  b.renderQuick(); const bar = document.getElementById('funBar'); bar.hidden = false; const first = bar.querySelector('.fb').dataset.k, n = bar.querySelectorAll('.fb:not(.more)').length, more = !!bar.querySelector('.more');
-  bar.querySelector('.more').click(); const all = bar.querySelectorAll('.fb:not(.more)').length; bar.querySelector('.more').click(); const u0 = (b.save.use || {})[first] || 0;
+  b.renderQuick(); const bar = document.getElementById('funBar'); bar.hidden = false; const first = bar.querySelector('.fb').dataset.k, n = bar.querySelectorAll('.fb:not(.more)').length, more = bar.querySelectorAll('.quick-tabs button').length >= 4;
+  bar.querySelector('[data-group=play]').click(); const all = bar.querySelectorAll('.fb').length; bar.querySelector('[data-group=suggested]').click(); const u0 = (b.save.use || {})[first] || 0;
   bar.querySelector('.fb').click(); await sleep(200); return { first, n, more, all, closed: bar.hidden, used: (b.save.use[first] || 0) - u0 };
 });
-ok(qm.first === 'punch' && qm.n === 6 && qm.more && qm.all > 6 && qm.closed && qm.used === 1, `Schnellmenü: ${qm.n} Aktionen (Baum nah -> ${qm.first} zuerst), „Mehr“ zeigt ${qm.all}, schließt nach Auswahl`);
+ok(qm.first === 'punch' && qm.n === 6 && qm.more && qm.all > 6 && qm.closed && qm.used === 1, `Schnellmenü: ${qm.n} Aktionen (Baum nah -> ${qm.first} zuerst), Tab „Spielen“ zeigt ${qm.all}, schließt nach Auswahl`);
 // Boot am Steg: einsteigen, aufs Meer, Segeltörn-Mission, nur am Steg aussteigen
 const bt = await page.evaluate(async () => {
   const b = window.__bi, sleep = ms => new Promise(r => setTimeout(r, ms)); if (b.P.veh) b.leave(); const v = b.boat; b.P.x = 0; b.P.z = 205.5; b.P.y = .65; await sleep(300);

@@ -553,6 +553,7 @@
     if (mpOpen) { if (e.code === 'Escape') { mpBack(); e.preventDefault(); } else if (mpView === 'join') { if (e.code === 'Backspace') { joinCode = joinCode.slice(0, -1); renderJoin(); } else if (e.code === 'Enter') mpJoinGo(); else { const ch = net.normCode(e.key); if (ch && e.key.length === 1 && joinCode.length < 4) { joinCode += ch; renderJoin(); } } } return; }
     if (e.code === 'Escape' && rs.ui && state === 'play') { if (rs.ui === 'play' || rs.ui === 'result') exitRange(); else closeRangeUi(); return; }
     if (cinema.open && e.code === 'Escape') { cinema.close(); return; }
+    if (e.code === 'Escape' && state === 'play' && !$('questPanel').hidden) { $('questClose').click(); e.preventDefault(); return; }
     if (e.code === 'Escape' && (!$('toolPanel').hidden || !$('leftExtra').hidden || !$('funBar').hidden)) { closeHudMenus(); e.preventDefault(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
     if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu' && !(e.target && e.target.closest && e.target.closest('#menu button'))) { startPlay(); e.preventDefault(); } return; }
