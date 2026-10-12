@@ -256,7 +256,7 @@ Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die gro
 
 ### ⭐ Zotik – Lunaris, die Hauptstadt der Splitter (eigenes Rollenspiel-Universum)
 
-Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als große Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
+Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
 
 - **Stadt:** Plaza mit Mondkristall-Brunnen, Markt „Wanderhand“ (Händler Rurik), Taverne, Akademie-Turm, **Burg Lunaris auf einem 8-stufigen Hügel**, Hafen, schwebende Nachbarinseln, leuchtende Mondbäume.
 - **Bewohner mit Dialog:** Mira (Questgeberin), Rurik, Lyra, Rovan, Nia, Professorium. **Moosling Felli** streicheln = neuer **Partner** (wie Zündel/Willi).
@@ -270,7 +270,7 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 
 ### 📻 Funkwelle – die Radio-Welt (13 Sender mit Live-Stream)
 
-**Lage:** große Insel im **Südosten der Hauptinsel**, erreichbar über eine **Brücke** (oder 🧭 → Funkwelle) – wie die anderen Welten, ohne Portal, mit normalem Tag-und-Nacht-Himmel. Im Kreis um den Funkturm liegen **13 Sender-Plätze**, je mit
+**Lage:** Insel im **Südosten der Hauptinsel**, erreichbar über eine **Brücke** (oder 🧭 → Funkwelle) – wie die anderen Welten, ohne Portal, mit normalem Tag-und-Nacht-Himmel. Im Kreis um den Funkturm liegen **13 Sender-Plätze**, je mit
 - **Logo-Statue** (Logo des Senders auf schwingender Tafel, Sockel, Lichtsäule),
 - **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** – die TV-Seite aus `ricorewi-radio` (`https://ricorewi-radio.de/visual-radio-tv.html?station=<sender>&app=1`, Cover, Songtext, Musikvideo) als Fenster; der Ton kommt vom Radio der Spielwelt; „im neuen Tab“ als Ausweg),
 - **Radio**: E = Sender einschalten (Stream `https://stream.laut.fm/<sender>`), nochmal E = aus. Es läuft immer nur ein Stream; die Lautstärke hängt von der Entfernung zum Radio ab, außerhalb des Bereichs wird es leise und der Stream pausiert (spart Daten), beim Verlassen der Welt stoppt er. Die Spielmusik wird beim Radiohören leiser.
