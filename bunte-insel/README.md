@@ -350,8 +350,11 @@ Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wir
 
 ### 🗝️ Schlüsselreich – die Lichtschlüssel-Insel (Westen)
 Eigene, frei erfundene Abenteuer-Insel (Welt "Herzlicht", eigene Musik): riesige Statue des **Lichtwanderers Lio** auf dem Glasmosaik-Platz, fünf Gebiete mit je einem **Schlüsselloch** (Strand der Freunde, Dämmerstadt mit Uhrturm/Eis/Sonnenhügel, Kristall-Burg mit Licht-Rätsel, Wald der Schatten, Schleier-Turm), ~30 Figuren (Meister Orrin, Rivo, Luma, Pico, Bruno, Wuscheln …).
-- **Schwingen** (Aktionstaste / Spaß-Aktion "Schlüssel schwingen"): Dunkelwichtel vertreiben → 💎 Herz-Kristalle → im **Wuschel-Laden** 5 Lichtschlüssel-Aussehen kaufen (in der Hand sichtbar).
-- Alle fünf Schlüssellöcher offen → **Tor der Herzen** → Kampf gegen den **Dunkelriesen** (roten Kreisen ausweichen).
+- **Keine Gegner mehr im Schlüsselreich**: Die Schattenwächter sind jetzt **steinerne Statuen** links und rechts vom Tor der Herzen (begrüßen = +1 ⭐). Ihre wilden Brüder leben im **Verbotenen Wald** (siehe unten).
+- **Mitmachen**: **Lichtzauber** (Aktionstaste / Spaß-Aktion) zündet die Laternen der Insel an (12 → +2 ⭐), **8 Glühpilze** im Wald der Schatten öffnen das Schlüsselloch Wald, **Sternfrüchte, Pilze, Laternen und Sterne** geben 💎 Herz-Kristalle für den **Wuschel-Laden** (5 Lichtschlüssel-Aussehen).
+- **Autos fahren hier**: Ringstraße um den Platz mit Zufahrten zu Strand, Dämmerstadt, Burg, Wuschel-Dorf, Wald und Hafen (Straßen = volle Fahrt). Ein Auto und ein Taxi stehen am Strand-Eingang; **12 Sterne auf der Ringstraße** einsammeln (zu Fuß oder mit dem Auto) = Runde geschafft.
+- Alle fünf Schlüssellöcher offen → **Tor der Herzen** → Feuerwerk, ⭐ und Sticker „Lichtwanderer“.
+- **Verbotener Wald**: Hier treffen sich jetzt die **Gegner aller Welten** – Glibbi, Stachli, Pilzling (Hauptinsel), **Dunkelwichtel** und **Dunkelriese** (Schlüsselreich), **Moosling, Dornenwolf, Frostgeist, Lavadrache** (Zotik – Lunaris) – plus Boss Waldgeist. Test: `tests/wald.mjs`.
 - Highlight: **Schlüsselschwert-Mobil** (fliegendes Fahrzeug, am Sternen-Hafen oder per "Rufen"), 2 Spiele + 2 Automaten, Sticker, Aufgaben-Log, Wohin-Menü, Sammeln (Angeln am Rand).
 - Test: `node bunte-insel/tests/schluessel.mjs`
 

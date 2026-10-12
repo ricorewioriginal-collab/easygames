@@ -1236,7 +1236,7 @@
   kids.onEarn = id => story.onEarn(id); { const mn = meta.note; meta.note = (k, n) => { mn(k, n); story.note(k); }; }
   const cinema = BI.createCinema({ scene, P, say, A, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const camp = BI.createCamp({ scene, W, A, fx, P, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
-  const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), char: () => char, state: () => state, inv: () => garden.inv() });
+  const combat = BI.createCombat({ scene, camera, W, A, fx, P, save, persist, say, addStars: n => addStars(n), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), note: k => meta.note(k), char: () => char, state: () => state, inv: () => garden.inv() });
   const beauty = BI.createBeauty({ scene, camera, W, save, renderer });
   const town = BI.createTown({ scene, W, A, P, fx, save, persist, say, addStars: n => addStars(n), inv: () => garden.inv(), setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id), openMusic: () => kids.show('music'), modeItems: () => SHOP.filter(i => i.tab === 4), sleep: (q, it) => startSleep({ bed: { x: it.x, z: it.z } }) });
   let tycoon = null; const takeStar = n => { save.stars -= n; $('starN').textContent = save.stars; persist(); }, earnSt = id => { kids.earn(id); meta.note(id); };
@@ -1520,7 +1520,7 @@
   }
   /* Schnellmenü: zeigt nur die 6 passendsten Aktionen (je nach Lage + was oft benutzt wird), „Mehr“ zeigt alle */
   const ACTIONS = [
-    { k: 'schluessel', icon: '🗝️', name: 'Schlüssel schwingen', key: '' },
+    { k: 'schluessel', icon: '🗝️', name: 'Lichtzauber (Laternen)', key: '' },
     { k: 'angeln', icon: '🎣', name: 'Angeln', key: '' }, { k: 'kescher', icon: '🥅', name: 'Käfer fangen', key: '' }, { k: 'buddeln', icon: '⛏️', name: 'Buddeln', key: '' }, { k: 'sammelbuch', icon: '📖', name: 'Sammelbuch', key: '' },
     { k: 'punch', icon: '👊', name: 'Baum hauen', key: '6' }, { k: 'rcfetch', icon: '🏎️', name: 'RC-Auto holen', key: '' }, { k: 'dance', icon: '🕺', name: 'Tanzen', key: '1' },
     { k: 'express', icon: '🎭', name: 'Emotes & Chat', key: '' }, { k: 'gadgets', icon: '🚀', name: 'Gadgets', key: '' }, { k: 'pack', icon: '🎒', name: 'Rucksack', key: '' }, { k: 'meta', icon: '📅', name: 'Aufgaben & Haustiere', key: '' }, { k: 'bubbles', icon: '🫧', name: 'Blasen', key: '9' }, { k: 'balloons', icon: '🎈', name: 'Ballons', key: '5' }, { k: 'gum', icon: '🍬', name: 'Kaugummi', key: '2' },

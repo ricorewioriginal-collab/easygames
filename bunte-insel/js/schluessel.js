@@ -12,6 +12,10 @@ BI.SCHLUESSEL = (function () {
   return { x: cx, z: cz, R, ux, uz, entry: { x: cx - ux * (R - 12), z: cz - uz * (R - 12) }, hills: [], rects: [],
     bridge: { mx: (A0.x + A1.x) / 2, mz: (A0.z + A1.z) / 2, L: Math.hypot(A1.x - A0.x, A1.z - A0.z) + 2, w: 7, ry: Math.atan2(ux, uz) } };
 })();
+/* Ringstraße um den Platz + Zufahrten (lokal a,b): Autos fahren hier mit voller Geschwindigkeit (W.onRoad in world.js) */
+BI.SCHLUESSEL.ring = { a: -14, b: 0, r: 32 };
+BI.SCHLUESSEL.roadSegs = [[-80, 0, -46, 0], [-.75, 29.2, 6, 35], [-3.1, -30.1, 24, -34], [18, 0, 36, 8], [-30.6, -27.3, -38, -40], [-26.8, 29.4, -31, 38]];
+BI.SCHLUESSEL.roadD = function (x, z) { const M = BI.SCHLUESSEL, p = M.loc(x, z); let d = Math.abs(Math.hypot(p.a - M.ring.a, p.b - M.ring.b) - M.ring.r); for (const q of M.roadSegs) { const dx = q[2] - q[0], dz = q[3] - q[1], t = BI.clamp(((p.a - q[0]) * dx + (p.b - q[1]) * dz) / (dx * dx + dz * dz), 0, 1); d = Math.min(d, Math.hypot(p.a - q[0] - t * dx, p.b - q[1] - t * dz)); } return d; };
 BI.SCHLUESSEL.at = function (a, b) { const M = BI.SCHLUESSEL; return { x: M.x + M.ux * a - M.uz * b, z: M.z + M.uz * a + M.ux * b }; };
 BI.SCHLUESSEL.loc = function (x, z) { const M = BI.SCHLUESSEL, dx = x - M.x, dz = z - M.z; return { a: dx * M.ux + dz * M.uz, b: -dx * M.uz + dz * M.ux }; };
 /* Höhe des Bodens (begehbare Hügel in 1-Stufen-Schritten) – wird von world.js (groundY) benutzt */
@@ -27,7 +31,7 @@ BI.SCHL_BLADES = [['Sternenschlüssel', '⭐', 0, 0xffd23f, 0x4da3ff], ['Blüten
 
 BI.buildSchluesselGround = function (c) {
   const { W, st, lamp, ROADY } = c, M = BI.SCHLUESSEL, TAU = Math.PI * 2, rn = BI.rng(1313), L = M.at, ry = Math.atan2(M.ux, M.uz), GOLD = 0xffd23f;
-  W.spots.schluessel = { x: M.entry.x, z: M.entry.z }; W.schluessel = M; M.shade = [];
+  W.spots.schluessel = { x: M.entry.x, z: M.entry.z }; W.schluessel = M; M.shade = []; M.lamps = [];
   st.disc(M.x, M.z, M.R + 9, 0, 0x8fd87a, 96); st.ring(M.x, M.z, M.R - 5, M.R + 9, .012, 0xf6e6b8, 96); BI.buildIsleBridge(c, M);
   /* ---- Helfer (alles in lokalen Koordinaten) ---- */
   const bx = (a, b, wb, h, da, col, y0, yaw) => { const p = L(a, b); st.box(p.x, y0 || 0, p.z, wb, h, da, col, ry + (yaw || 0)); return p; };
@@ -38,8 +42,8 @@ BI.buildSchluesselGround = function (c) {
   const solid = (a, b, r, h) => { const p = L(a, b); W.addCircle(p.x, p.z, r, false, h || 4); return p; };
   const path = (a0, b0, a1, b1, w, col) => { const p = L((a0 + a1) / 2, (b0 + b1) / 2), q0 = L(a0, b0), q1 = L(a1, b1); st.strip(p.x, p.z, w, Math.hypot(a1 - a0, b1 - b0), Math.atan2(q1.x - q0.x, q1.z - q0.z), ROADY, col || 0xf0e0b8); };
   const hill = (a, b, r0, tiers, step, dr, cA, cB) => { M.hills.push({ a, b, r0, tiers, step, dr }); for (let k = 1; k <= tiers; k++) { const r = r0 - dr * (k - 1); cyl(a, b, r, r, step, k % 2 ? cA : cB, (k - 1) * step, 40); } };
-  const tree = (a, b, h, col, r) => { cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); sph(a + .5, b - .3, h + 2.5, (r || 1.9) * .62, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), (r || 1.9) * 1.1, h]); };
-  const lantern = (a, b, h, col) => { cyl(a, b, .08, .1, h || 3.2, 0x44485a, 0, 6); glow(a, b, (h || 3.2) + .3, .28, col || 0xfff0b0); };
+  const tree = (a, b, h, col, r) => { if (M.roadD(L(a, b).x, L(a, b).z) < 4.5) return; cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); sph(a + .5, b - .3, h + 2.5, (r || 1.9) * .62, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), (r || 1.9) * 1.1, h]); };
+  const lantern = (a, b, h, col) => { cyl(a, b, .08, .1, h || 3.2, 0x44485a, 0, 6); glow(a, b, (h || 3.2) + .3, .28, col || 0xfff0b0); const q = L(a, b); M.lamps.push({ x: q.x, z: q.z, y: (h || 3.2) + .3 }); };
   const zone = (a, b, r, col, y) => { const p = L(a, b); st.disc(p.x, p.z, r, y || ROADY + .004, col, 40); };
 
   /* ---- Strand der Freunde: krumme Palme mit Sternfrüchten, Hütte, Sandburg, Surfbretter ---- */
@@ -50,7 +54,7 @@ BI.buildSchluesselGround = function (c) {
     for (const [a, b, col] of [[-54, -6, 0xff5a8a], [-53, -4.4, 0x35d6e0], [-52, -2.8, 0xffd23f]]) { const q = L(a, b); st.box(q.x, 0, q.z, .5, 2.4, .12, col, ry + .3, .2); }
     for (const [a, b] of [[-66, -22], [-48, 14], [-70, 14], [-47, -26]]) palmish(a, b);
     W.spots.sk_strand = L(-60, 0); W.spots.palme = L(-62, -10); }
-  function palmish(a, b) { const q = L(a, b), h = 5 + rn() * 2; st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); }
+  function palmish(a, b) { if (M.roadD(L(a, b).x, L(a, b).z) < 4.5) return; const q = L(a, b), h = 5 + rn() * 2; st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); }
   /* ---- Erwachens-Plattform: Glasmosaik-Kreis mit der großen Statue des Lichtwanderers Lio ---- */
   { const SA = -14, SB = 0, p = L(SA, SB), COL = [0x4da3ff, 0xffd23f, 0xff5a8a, 0x7a4ad8, 0x35d6e0, 0xffffff];
     st.disc(p.x, p.z, 17, ROADY + .002, 0x2a3a6a, 48); for (let i = 0; i < 24; i++) st.ring(p.x, p.z, 12, 16.4, ROADY + .006, COL[i % 6], 1, i / 24 * TAU, (i + 1) / 24 * TAU - .02);
@@ -74,7 +78,7 @@ BI.buildSchluesselGround = function (c) {
     for (let k = 0; k < 8; k++) { const g = k / 8 * TAU + .2; lantern(SA + Math.sin(g) * 25, SB + Math.cos(g) * 25, 3.4, 0xcfe8ff); } }
   /* ---- Dämmerstadt: warme Häuser, Uhrturm, Eisstand, Sonnenuntergangs-Hügel ---- */
   { zone(30, -36, 22, 0xe8c9a0); const HC = [0xe8965a, 0xf0b070, 0xd9785a, 0xf4c68a], RC = [0xa83a2a, 0x8a3a3a, 0x6a3a5a];
-    [[16, -50, 9, 8, 6], [24, -50, 8, 8, 7], [44, -50, 9, 8, 6.5], [16, -18, 8, 7, 5.5], [48, -34, 8, 8, 6]].forEach(([a, b, w, d, h], i) => { bx(a, b, w, h, d, HC[i % 4]); const p = L(a, b); st.prism(p.x, h, p.z, d + 1, 2.4, w + 1, RC[i % 3], ry); for (let k = 0; k < 3; k++) { const q = L(a - d / 2 - .05, b - 2 + k * 2); lamp.box(q.x, 2 + (k % 2) * 1.8, q.z, .1, 1.1, .8, 0xffe9a0, ry); } solid(a, b, Math.max(w, d) * .62, h + 2); });
+    [[16, -50, 9, 8, 6], [24, -50, 8, 8, 7], [44, -50, 9, 8, 6.5], [26, -12, 8, 7, 5.5], [48, -34, 8, 8, 6]].forEach(([a, b, w, d, h], i) => { bx(a, b, w, h, d, HC[i % 4]); const p = L(a, b); st.prism(p.x, h, p.z, d + 1, 2.4, w + 1, RC[i % 3], ry); for (let k = 0; k < 3; k++) { const q = L(a - d / 2 - .05, b - 2 + k * 2); lamp.box(q.x, 2 + (k % 2) * 1.8, q.z, .1, 1.1, .8, 0xffe9a0, ry); } solid(a, b, Math.max(w, d) * .62, h + 2); });
     /* Uhrturm */ { const A = 34, B = -44, p = L(A, B); bx(A, B, 6, 22, 6, 0xd9a070); st.prism(p.x, 22, p.z, 7, 6, 7, 0x6a3a5a, ry); for (const sa of [-3.1, 3.1]) { bx(A + sa, B, 3.8, 3.8, .2, 0xfff6d8, 14); bx(A + sa * 1.03, B, .2, 1.6, .15, 0x2a2a2a, 15); bx(A + sa * 1.03, B, 1.3, .2, .15, 0x2a2a2a, 15.6); } sph(A, B, 29.6, .8, GOLD); solid(A, B, 3.6, 26); W.spots.uhrturm = L(A - 7, B); W.spots.glocke = L(A - 4.2, B + 3); cyl(A - 4.2, B + 3, .1, .1, 2.2, 0x44485a, 0, 6); const g = L(A - 4.2, B + 3); st.sph(g.x, 2.6, g.z, .5, GOLD, 1, 1, 1.2, 1); }
     /* Eisstand mit Streifendach */ { const A = 18, B = -28, p = L(A, B); bx(A, B, 4, 1.2, 2.4, 0xfff0e0); for (let k = 0; k < 6; k++) bx(A - 1.4, B - 2.1 + k * .84, .84, .25, 2.4, k % 2 ? 0xffffff : 0xff5a8f, 2.8); cyl(A - 1.2, B - 1.8, .08, .08, 2.8, 0x6a6a7a, 0, 6); cyl(A - 1.2, B + 1.8, .08, .08, 2.8, 0x6a6a7a, 0, 6); const q = L(A - .2, B); st.cone(q.x, 1.2, q.z, .5, 1.1, 0xe0a458, 6); st.sph(q.x, 2.4, q.z, .55, 0x7fd8ff, 1); solid(A, B, 2.4, 3); W.spots.sk_eis = L(A - 3.2, B); }
     /* Sonnenuntergangs-Hügel mit Bank */ hill(44, -20, 9, 4, .9, 1.7, 0xf0b070, 0xe8965a); { const q = bx(44, -20, 2.4, .5, .8, 0x8a5a33, 3.6 + .0); bx(44, -20.6, 2.4, .8, .15, 0x8a5a33, 4.1); W.spots.sonne = { x: q.x, z: q.z, y: 3.6 }; }
@@ -109,12 +113,23 @@ BI.buildSchluesselGround = function (c) {
   /* ---- Wiesenflecken (verschiedene Grüntöne) und ein paar Bäume ---- */
   { const cols = [0x82c174, 0xa6d591, 0x77b869, 0x8cc77d, 0xb4dd8f], put = [[], [], [], []]; for (let i = 0, n = 0; i < 400 && n < 60; i++) { const a = rn() * TAU, d = Math.sqrt(rn()) * (M.R - 14), r = 3 + rn() * 6, x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d, k = n % 4; if (put[k].some(q => Math.hypot(q[0] - x, q[1] - z) < q[2] + r + .2)) continue; put[k].push([x, z, r]); st.disc(x, z, r, .024 + k * .0008, cols[n % cols.length], 14); n++; }
     for (let i = 0; i < 14; i++) { const a = -70 + rn() * 130, b = -70 + rn() * 140, l = L(a, b); if (Math.hypot(a, b) > M.R - 12 || !W.free(l.x, l.z, 2.5)) continue; if (Math.hypot(a + 14, b) < 24 || Math.hypot(a - 30, b + 34) < 24 || Math.hypot(a - 56, b - 14) < 22 || Math.hypot(a + 34, b - 46) < 24 || Math.hypot(a + 42, b + 46) < 18 || Math.hypot(a - 62, b + 38) < 16 || Math.hypot(a - 6, b - 44) < 14) continue; tree(a, b, 3 + rn() * 1.5, [0x4cb85a, 0x5ac966, 0x3fa84e, 0xe8b84a][i % 4]); } }
+  /* ---- Schattenwächter-Statuen (früher Gegner, jetzt steinerne Torwächter) links und rechts vom Tor der Herzen ---- */
+  W.spots.wacht = [L(-19.8, 27), L(-8.2, 27)];
+  for (const [a, b] of [[-19.8, 27], [-8.2, 27]]) { cyl(a, b, 1.5, 1.7, .8, 0x8f98ad, 0, 12); cyl(a, b, 1.2, 1.3, .3, 0xc9d0e0, .8, 12); sph(a, b, 1.75, .95, 0x7d84a0, .85); sph(a, b, 2.5, 1.0, 0x6f7590, .92);
+    for (const sd of [-1, 1]) { cone(a, b + sd * .62, .34, 1.1, 0x6f7590, 3.0, 5); const q = L(a + sd * .42, b - .92); lamp.sph(q.x, 2.55, q.z, .2, 0xffe14a, 1); cyl(a, b + sd * 1.15, .22, .26, 1.1, 0x6f7590, 1.0, 6); }
+    const mo = L(a, b - .98); st.box(mo.x, 2.05, mo.z, .8, .1, .1, 0x3a3f58, ry); solid(a, b, 1.5, 4); }
+  /* ---- Ringstraße + Zufahrten (asphaltgrau mit hellem Rand) ---- */
+  { const RC = L(M.ring.a, M.ring.b), RY = ROADY + .03; st.ring(RC.x, RC.z, M.ring.r - 3.4, M.ring.r + 3.4, RY - .004, 0xd9d4c4, 96); st.ring(RC.x, RC.z, M.ring.r - 3, M.ring.r + 3, RY, 0x6b6f86, 96); st.ring(RC.x, RC.z, M.ring.r - .12, M.ring.r + .12, RY + .004, 0xffe27a, 96);
+    for (const q of M.roadSegs) { const p0 = L(q[0], q[1]), p1 = L(q[2], q[3]), mx = (p0.x + p1.x) / 2, mz = (p0.z + p1.z) / 2, len = Math.hypot(p1.x - p0.x, p1.z - p0.z), ang = Math.atan2(p1.x - p0.x, p1.z - p0.z); st.strip(mx, mz, 6.8, len + .4, ang, RY - .004, 0xd9d4c4); st.strip(mx, mz, 6, len + .4, ang, RY, 0x6b6f86); } }
+  /* ---- Autos zum Mitfahren/Selberfahren am Strand-Eingang ---- */
+  for (const [a, b, ty] of [[-68, -6, 'car'], [-68, 6, 'taxi']]) { const q = L(a, b); W.vehicleSpawns.push({ type: ty, x: q.x, z: q.z, h: Math.atan2(M.ux, M.uz) }); }
+  W.spots.sk_autos = L(-68, 0);
 };
 
 /* ===================================================================== Laufzeit ===================================================================== */
 BI.createSchluessel = function (G) {
   const { scene, W, A, fx, P, say, save, persist, addStars } = G, K = {}, TAU = Math.PI * 2, M = BI.SCHLUESSEL, L = M.at, SP = W.spots, $ = id => document.getElementById(id);
-  const S = () => { const s = save.schluessel || (save.schluessel = {}); s.visit |= 0; s.herz |= 0; s.kills |= 0; s.keys = s.keys || {}; s.fr = s.fr || [0, 0, 0, 0, 0]; s.sp = s.sp || [0, 0, 0]; s.eis |= 0; s.bell |= 0; s.simon |= 0; s.blade |= 0; s.owned = s.owned || [0]; s.boss |= 0; s.fin |= 0; s.once = s.once || {}; return s; };
+  const S = () => { const s = save.schluessel || (save.schluessel = {}); s.visit |= 0; s.herz |= 0; s.kills |= 0; s.keys = s.keys || {}; s.fr = s.fr || [0, 0, 0, 0, 0]; s.sp = s.sp || [0, 0, 0]; s.eis |= 0; s.bell |= 0; s.simon |= 0; s.blade |= 0; s.owned = s.owned || [0]; s.boss |= 0; s.fin |= 0; s.once = s.once || {}; s.lit = s.lit || []; s.gp = s.gp || [0, 0, 0, 0, 0, 0, 0, 0]; s.wacht |= 0; s.rund |= 0; return s; };
   S();
   const note = (f, d, ty, v, del) => { try { A.note && A.note(f, d, ty, v, del || 0); } catch (e) { } };
   const sign = (txt, x, y, z, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#2a2a6a'; c.strokeText(txt, 256, 50); c.fillStyle = '#fff3b0'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(x, y, z); scene.add(sp); return sp; };
@@ -126,39 +141,26 @@ BI.createSchluessel = function (G) {
   /* ---- Tor der Herzen (öffnet, wenn alle fünf Schlüssellöcher offen sind) ---- */
   const PORT = L(-14, 27), portal = new THREE.Mesh(new THREE.TorusGeometry(3.2, .35, 8, 36), new THREE.MeshBasicMaterial({ color: 0xfff3b0 })); portal.position.set(PORT.x, 3.6, PORT.z); portal.rotation.y = Math.atan2(M.ux, M.uz) + Math.PI / 2; portal.visible = false; scene.add(portal);
   const portalIn = new THREE.Mesh(new THREE.CircleGeometry(3, 28), new THREE.MeshBasicMaterial({ color: 0x7a4ad8, transparent: true, opacity: .55, side: THREE.DoubleSide, depthWrite: false })); portalIn.position.copy(portal.position); portalIn.rotation.copy(portal.rotation); portalIn.visible = false; scene.add(portalIn);
-  const refreshKeys = () => { const s = S(); BI.SCHL_KEYS.forEach((k, i) => pill[i].material.color.setHex(s.keys[k[0]] ? 0xffd23f : 0x555a70)); portal.visible = portalIn.visible = !!s.fin && !boss.on; };
+  const refreshKeys = () => { const s = S(); BI.SCHL_KEYS.forEach((k, i) => pill[i].material.color.setHex(s.keys[k[0]] ? 0xffd23f : 0x555a70)); portal.visible = portalIn.visible = !!s.fin; };
   /* ---- Lichtschlüssel (5 Aussehen), in der Hand auf der Insel ---- */
   const keyMesh = i => { const [, , , c1, c2] = BI.SCHL_BLADES[i], b = new BI.Batch(); b.box(0, 0, .55, .07, .07, 1.0, c1); b.box(0, 0, 1.15, .05, .05, .3, c1); for (let k = 0; k < 3; k++) b.box(0, -.09 - k * .0, .95 + k * .13, .05, .14, .07, c1); b.box(0, 0, .02, .34, .07, .08, c2); b.sph(0, 0, -.1, .1, c2, 1); if (i === 0) b.sph(0, 0, -.28, .12, 0xffe14a, 0); if (i === 1) { for (let k = 0; k < 5; k++) b.sph(Math.sin(k * 1.26) * .12, Math.cos(k * 1.26) * .12, -.3, .06, 0xffffff, 0); } if (i === 2) b.cone(0, 0, -.3, .08, .22, 0xffe14a, 5); if (i === 3) b.cone(0, 0, -.3, .09, .26, 0xffffff, 4); if (i === 4) { b.sph(0, 0, -.28, .12, 0xffffff, 1); b.sph(.05, 0, -.28, .1, c2, 1); } return b.mesh(BI.mat()); };
   let keyG = null, keyAt = null, keySk = -1; const attach = () => { const ch = G.char && G.char(); if (!ch || !ch.armR) return false; if (keyAt !== ch.armR) { keyAt = ch.armR; keyG = null; keySk = -1; } if (keySk !== S().blade) { if (keyG) keyAt.remove(keyG); keySk = S().blade; keyG = new THREE.Group(); keyG.add(keyMesh(keySk)); keyG.position.set(0, -.78, .06); keyG.rotation.set(-Math.PI / 2 + .35, 0, 0); keyAt.add(keyG); } return true; };
-  /* ---- Gegner: Dunkelwichtel und der Dunkelriese ---- */
-  const shadowGeo = (() => { const b = new BI.Batch(); b.sph(0, .55, 0, .5, 0x1a1228, 1, 1, .9, 1); b.cone(-.2, .95, 0, .12, .45, 0x1a1228, 4); b.cone(.2, .95, 0, .12, .45, 0x1a1228, 4); b.sph(-.18, .62, .4, .11, 0xffe14a, 0); b.sph(.18, .62, .4, .11, 0xffe14a, 0); b.box(0, .02, 0, .9, .1, .7, 0x2a1a3a); return b.mesh(BI.mat()).geometry; })();
-  const NE = 8, E = [], boss = { on: false, g: null, hp: 0, max: 14, x: 0, z: 0, ring: null, rt: 0, ringT: 0, cool: 0, bar: null };
-  for (let i = 0; i < NE; i++) { const g = new THREE.Group(), m = new THREE.Mesh(shadowGeo, BI.mat()); g.add(m); g.visible = false; scene.add(g); E.push({ on: false, g, m, x: 0, z: 0, hp: 2, hit: 0, ph: Math.random() * 6, cd: 0, t: 0 }); }
-  boss.g = new THREE.Group(); { const m = new THREE.Mesh(shadowGeo, BI.mat()); m.scale.setScalar(3.4); boss.g.add(m); boss.m = m; boss.g.visible = false; scene.add(boss.g); boss.ring = new THREE.Mesh(new THREE.RingGeometry(.9, 1, 32), new THREE.MeshBasicMaterial({ color: 0xff4a4a, transparent: true, opacity: .6, side: THREE.DoubleSide, depthWrite: false })); boss.ring.rotation.x = -Math.PI / 2; boss.ring.visible = false; scene.add(boss.ring);
-    const cv = document.createElement('canvas'); cv.width = 128; cv.height = 16; boss.cv = cv; boss.bar = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); boss.bar.scale.set(5, .6, 1); boss.bar.visible = false; scene.add(boss.bar); }
-  const drawBar = () => { const c = boss.cv.getContext('2d'); c.clearRect(0, 0, 128, 16); c.fillStyle = '#222'; c.fillRect(0, 0, 128, 16); c.fillStyle = '#ff4a6a'; c.fillRect(2, 2, 124 * Math.max(0, boss.hp) / boss.max, 12); boss.bar.material.map.needsUpdate = true; };
-  const onIsle = () => Math.hypot(P.x - M.x, P.z - M.z) < M.R + 4, fromL = (a, b) => L(a, b);
-  const safe = (x, z) => { const p = M.loc(x, z); return Math.hypot(p.a + 14, p.b) < 26 || Math.hypot(p.a + 42, p.b + 46) < 19 || Math.hypot(p.a - 6, p.b - 44) < 12 || p.a < -60; };
+  /* ---- Lichtzauber (Laternen anzünden), Glühpilze, Ringstraßen-Sterne – ohne Gegner: gekämpft wird nur im Verbotenen Wald ---- */
+  const onIsle = () => Math.hypot(P.x - M.x, P.z - M.z) < M.R + 4;
   const heart = (x, z, n) => { const s = S(); s.herz += n; fx.burst(x, 1.2, z, 12, [[1, .4, .6], [1, .9, .5], [1, 1, 1]], 3, 1, 28, 3); };
-  function defeat(e) {
-    e.on = false; e.g.visible = false; const s = S(); s.kills++; heart(e.x, e.z, 1 + (Math.random() < .3 ? 1 : 0)); A.star && A.star(); combo++; comboT = 2.2; if (G.note) G.note('kill');
-    if (s.kills === 1) { if (G.earn) G.earn('schatten'); say('🗝️ Dunkelwichtel besiegt! Du bekommst 💎 Herz-Kristalle.', 3200); } else if (s.kills % 5 === 0) { addStars(1); say('🗝️ ' + s.kills + ' Dunkelwichtel! +1 ⭐', 2400); } if (combo >= 3) say('✨ Kombo ×' + combo + '!', 1200);
-    if (s.kills >= 8) unlock('wald'); if (s.kills >= 10 && G.earn) G.earn('schatten10'); persist();
+  let swingCd = 0;
+  const lampM = M.lamps.map(q => { const m = new THREE.Mesh(new THREE.SphereGeometry(.8, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffe9a0, transparent: true, opacity: .5, depthWrite: false })); m.position.set(q.x, q.y, q.z); m.visible = false; scene.add(m); return m; });
+  const NLAMP = 12, nearLamp = r => { const s = S(); let bi = -1, bd = r; M.lamps.forEach((q, i) => { if (s.lit.includes(i)) return; const d = Math.hypot(q.x - P.x, q.z - P.z); if (d < bd) { bd = d; bi = i; } }); return bi; };
+  function zauber() {
+    if (swingCd > 0 || P.veh) return; swingCd = .5; P.punchT = .4; P.punchHit = true; A.pop && A.pop(); const fx0 = P.x + Math.sin(P.h) * 1.6, fz0 = P.z + Math.cos(P.h) * 1.6; fx.burst(fx0, 1.3, fz0, 10, [[1, .95, .6], [1, 1, 1], [.6, .85, 1]], 3, .9, 28, 1); note(660, .14, 'sine', .08);
+    const s = S(), i = nearLamp(6); if (i < 0) return;
+    s.lit.push(i); lampM[i].visible = true; heart(M.lamps[i].x, M.lamps[i].z, 1); A.star && A.star(); fx.burst(M.lamps[i].x, M.lamps[i].y, M.lamps[i].z, 14, [[1, .9, .5], [1, 1, 1]], 3, 1, 28, 2);
+    if (s.lit.length === NLAMP) { addStars(2); A.fanfare && A.fanfare(); if (G.earn) G.earn('laternen'); say('🔦 ' + NLAMP + ' Laternen leuchten – die ganze Insel strahlt! +2 ⭐', 4200); } else say('🔦 Laterne leuchtet! (' + Math.min(NLAMP, s.lit.length) + ' von ' + NLAMP + ')', 1800); persist();
   }
-  let combo = 0, comboT = 0, swingCd = 0;
-  function swing() {
-    if (swingCd > 0 || P.veh) return; swingCd = .38; P.punchT = .4; P.punchHit = true; A.pop && A.pop(); const fx0 = P.x + Math.sin(P.h) * 1.6, fz0 = P.z + Math.cos(P.h) * 1.6; fx.burst(fx0, 1.2, fz0, 8, [[1, .95, .6], [1, 1, 1]], 3, .8, 28, 1); note(660, .12, 'sine', .08);
-    let hit = false; for (const e of E) if (e.on && Math.hypot(e.x - P.x, e.z - P.z) < 3.6) { e.hp--; e.hit = .3; hit = true; const d = Math.atan2(e.x - P.x, e.z - P.z); e.x += Math.sin(d) * 1.4; e.z += Math.cos(d) * 1.4; fx.burst(e.x, .8, e.z, 8, [[.4, .2, .6], [1, .9, .5]], 3, .8, 28, 3); if (e.hp <= 0) defeat(e); }
-    if (boss.on && Math.hypot(boss.x - P.x, boss.z - P.z) < 5.4) { boss.hp--; boss.hit = .3; hit = true; fx.burst(boss.x, 2.5, boss.z, 12, [[.5, .2, .8], [1, .9, .5]], 4, 1, 28, 3); drawBar(); if (boss.hp <= 0) bossDown(); }
-    if (hit) { note(220, .15, 'square', .06); } else { comboT = Math.min(comboT, .4); }
-  }
-  const nearE = r => { for (const e of E) if (e.on && Math.hypot(e.x - P.x, e.z - P.z) < r) return true; return boss.on && Math.hypot(boss.x - P.x, boss.z - P.z) < r + 2; };
-  function startBoss() {
-    const s = S(); boss.on = true; boss.hp = boss.max; boss.hit = 0; const p = L(-14, 14); boss.x = p.x; boss.z = p.z; boss.g.visible = boss.bar.visible = true; boss.cool = 2.5; boss.ringT = 0; drawBar(); refreshKeys(); A.fanfare && A.fanfare(); say('🌑 Der Dunkelriese erscheint! Schwing den Lichtschlüssel – weich den roten Kreisen aus!', 4600); for (const e of E) { e.on = false; e.g.visible = false; }
-  }
-  function bossDown() {
-    boss.on = false; boss.g.visible = boss.bar.visible = boss.ring.visible = false; const s = S(), first = !s.boss; s.boss++; const r = first ? 10 : 3; addStars(r); heart(boss.x, boss.z, first ? 20 : 6); A.fanfare && A.fanfare(); fx.burst(boss.x, 3, boss.z, 50, [[1, .9, .5], [1, .6, .9], [.5, .8, 1], [1, 1, 1]], 7, 1.6, 30, 4);
-    say(first ? '🏆 Der Dunkelriese ist besiegt! Alle Welten sind sicher. Du bist ein Schlüsselträger! +' + r + ' ⭐' : '🏆 Der Dunkelriese ist wieder besiegt! +' + r + ' ⭐', 5200); if (first && G.earn) G.earn('schluesseltraeger'); persist(); refreshKeys();
+  function tor() {
+    const s = S(), first = !s.boss; s.boss++; const r = first ? 10 : 3; addStars(r); heart(PORT.x, PORT.z, first ? 20 : 6); A.fanfare && A.fanfare();
+    for (let k = 0; k < 4; k++) setTimeout(() => fx.burst(PORT.x + (Math.random() - .5) * 8, 3 + Math.random() * 4, PORT.z + (Math.random() - .5) * 8, 40, [[1, .9, .5], [1, .6, .9], [.5, .8, 1], [1, 1, 1]], 7, 1.6, 30, 4), k * 400);
+    say(first ? '🌟 Das Tor der Herzen ist offen! Alle Welten leuchten – du bist ein Lichtwanderer! +' + r + ' ⭐' : '🌟 Das Tor der Herzen leuchtet wieder! +' + r + ' ⭐', 5200); if (first && G.earn) G.earn('herzentor'); persist(); refreshKeys();
   }
   /* ---- Schlüssellöcher ---- */
   function unlock(id) {
@@ -170,6 +172,8 @@ BI.createSchluessel = function (G) {
   const itemGeo = new THREE.OctahedronGeometry(.4, 0), FR = [[-58, -6], [-64, -8], [-60, -18], [-52, 2], [-66, 4]].map(([a, b]) => L(a, b)), SPL = SP.splitter;
   const frM = FR.map((q, i) => { const m = new THREE.Mesh(itemGeo, new THREE.MeshBasicMaterial({ color: 0xffe14a })); m.scale.set(1, 1.3, 1); m.position.set(q.x, 1.1, q.z); scene.add(m); return m; });
   const spM = SPL.map((q, i) => { const m = new THREE.Mesh(itemGeo, new THREE.MeshBasicMaterial({ color: 0x9ad8ff })); m.scale.set(1.2, 1.8, 1.2); m.position.set(q.x, q.y + 1.1, q.z); scene.add(m); return m; });
+  const GPL = [[-40, 40], [-30, 34], [-44, 50], [-34, 56], [-26, 50], [-38, 46], [-28, 42], [-46, 42]].map(([a, b]) => L(a, b)), gpM = GPL.map(q => { const m = new THREE.Mesh(itemGeo, new THREE.MeshBasicMaterial({ color: 0x9affc8 })); m.scale.set(.8, 1.1, .8); m.position.set(q.x, .9, q.z); scene.add(m); return m; });
+  const RS = [...Array(12).keys()].map(k => L(M.ring.a + Math.cos(k / 12 * TAU) * M.ring.r, M.ring.b + Math.sin(k / 12 * TAU) * M.ring.r)), rsM = RS.map(q => { const m = new THREE.Mesh(itemGeo, new THREE.MeshBasicMaterial({ color: 0xffb3e6 })); m.scale.set(1.2, 1.5, 1.2); m.position.set(q.x, 1.6, q.z); scene.add(m); return m; }), lap = RS.map(() => 0); let lapT = 0;
   /* ---- Licht-Rätsel in der Burg (Merk-Spiel mit vier Platten) ---- */
   const PC = [0xff5a5a, 0x4da3ff, 0xffd23f, 0x4cd07d], PF = [330, 392, 494, 587], plates = SP.plates.map((q, i) => { const m = new THREE.Mesh(new THREE.CircleGeometry(1.5, 20), new THREE.MeshBasicMaterial({ color: PC[i], transparent: true, opacity: .35 })); m.rotation.x = -Math.PI / 2; m.position.set(q.x, .1, q.z); scene.add(m); return m; });
   const Si = { st: 'idle', seq: [], pos: 0, t: 0, lit: -1, litT: 0, last: -1 };
@@ -228,26 +232,28 @@ BI.createSchluessel = function (G) {
     if (nr(SP.glocke, 3.2)) return { k: 'mbell', label: ['🔔', 'Glocke läuten'] };
     if (nr(SP.sonne, 2.6) && P.y > 3) return { k: 'msun', label: ['🌇', 'Sonnenuntergang ansehen'] };
     if (nr(SP.statue, 8)) return { k: 'mstat', label: ['🗝️', 'Statue berühren'] };
-    if (s.fin && !boss.on && nr({ x: PORT.x, z: PORT.z }, 5)) return { k: 'mportal', label: ['🌟', 'Tor der Herzen öffnen'] };
+    if (s.fin && nr({ x: PORT.x, z: PORT.z }, 5)) return { k: 'mportal', label: ['🌟', 'Tor der Herzen öffnen'] };
+    if (SP.wacht.some(q => nr(q, 4.4))) return { k: 'mwacht', label: ['🗿', 'Schattenwächter begrüßen'] };
     if (nr(SP.wuschel, 4.5) || nr(SP.schmiede, 3.5)) return { k: 'mshop', label: ['💎', 'Wuschel-Laden'] };
     if (nr(SP.mobil, 3.6)) return { k: 'mmobil', label: ['🗝️', 'Schlüsselschwert-Mobil rufen'] };
-    if (nearE(3.6) && swingCd <= 0) return { k: 'mswing', label: ['🗝️', 'Schwingen!'] };
+    if (nearLamp(4.5) >= 0) return { k: 'mzauber', label: ['🔦', 'Laterne anzünden'] };
     return null;
   };
   K.act = function (n) {
     if (!n) return; const s = S();
-    if (n.k === 'mswing') { swing(); return; }
+    if (n.k === 'mzauber') { zauber(); return; }
+    if (n.k === 'mwacht') { fx.burst(SP.wacht[0].x, 2.6, SP.wacht[0].z, 14, [[1, .9, .4], [1, 1, 1]], 3, 1, 28, 2); A.hello && A.hello(); if (!s.wacht) { s.wacht = 1; persist(); addStars(1); if (G.earn) G.earn('schatten'); say('🗿 Schattenwächter: „Früher habe ich Besucher erschreckt. Heute bewache ich nur noch das Tor der Herzen. Meine wilden Brüder findest du im Verbotenen Wald!“ +1 ⭐', 7000); } else say('🗿 Der Schattenwächter blinzelt mit goldenen Augen und lächelt.', 2800); A.speak && A.speak('Ich bin der Schattenwächter. Meine wilden Brüder findest du im Verbotenen Wald.'); return; }
     if (n.k === 'msimon') { simonStart(); return; }
     if (n.k === 'meis') { A.pop && A.pop(); fx.burst(SP.sk_eis.x, 1.6, SP.sk_eis.z, 10, [[1, .6, .8], [.6, .9, 1], [1, 1, 1]], 2.4, 1, 28, 3); if (!s.eis) { s.eis = 1; persist(); say('🍦 Meersalz-Eis! Süß und salzig. Uhrmacher Tilo hätte sicher auch gern eins …', 4200); } else say('🍦 Lecker! Das Eis schmeckt nach Meer und Sonne.', 2400); return; }
     if (n.k === 'mtilo') { s.eis = 2; addStars(1); persist(); A.fanfare && A.fanfare(); say('🕰️ Tilo: „Mmmh, danke! Jetzt läute die Glocke am Uhrturm für mich!“ +1 ⭐', 4600); return; }
     if (n.k === 'mbell') { if (s.eis < 2) { say('🔔 Tilo hätte gern erst ein Meersalz-Eis von Sal. Dann läutest du die Glocke!', 3600); return; } note(392, 1.6, 'sine', .14); note(523, 1.6, 'sine', .1, .05); fx.burst(SP.glocke.x, 3, SP.glocke.z, 16, [[1, .9, .5], [1, 1, 1]], 3, 1, 28, 2); if (!s.bell) { s.bell = 1; persist(); unlock('stadt'); } else say('🔔 Bimm-bamm! Die Glocke klingt über die ganze Insel.', 2600); return; }
     if (n.k === 'msun') { fx.burst(SP.sonne.x, 5, SP.sonne.z, 20, [[1, .6, .3], [1, .8, .5], [1, .5, .8]], 4, 1.2, 28, 1); if (!s.once.sun) { s.once.sun = 1; persist(); addStars(1); say('🌇 Wie schön! Der Himmel ist orange und rosa. +1 ⭐', 3600); } else say('🌇 Der Sonnenuntergang ist wunderschön.', 2400); return; }
     if (n.k === 'mstat') { A.fanfare && A.fanfare(); fx.burst(SP.statue.x, 3, SP.statue.z, 24, [[1, .9, .5], [1, 1, 1], [.6, .8, 1]], 5, 1.4, 28, 2); if (!s.once.stat) { s.once.stat = 1; persist(); addStars(1); say('🗽 Lichtwanderer Lio: Er hat die Welten mit seinem Lichtschlüssel gerettet. +1 ⭐', 4600); } else say('🗽 Die Statue funkelt. Lio hat die Welten gerettet.', 2800); A.speak && A.speak('Lichtwanderer Lio hat die Welten gerettet.'); return; }
-    if (n.k === 'mportal') { startBoss(); return; }
+    if (n.k === 'mportal') { tor(); return; }
     if (n.k === 'mshop') { K.shop(); return; }
     if (n.k === 'mmobil') { G.callMobil && G.callMobil(); A.fanfare && A.fanfare(); say('🗝️ Dein Schlüsselschwert-Mobil ist da! Einsteigen und los – ⬆ steigen, ⬇ sinken.', 3600); return; }
   };
-  K.fun = k => { if (k === 'schluessel') { if (!onIsle()) { say('🗝️ Der Lichtschlüssel wirkt im Schlüsselreich. Dort kannst du Dunkelwichtel vertreiben!', 3000); return; } swing(); } };
+  K.fun = k => { if (k === 'schluessel') { if (!onIsle()) { say('🗝️ Der Lichtschlüssel zaubert im Schlüsselreich: Zünde die Laternen an!', 3000); return; } zauber(); } };
   /* ---- Laden: Lichtschlüssel kaufen/wählen, Mobil rufen ---- */
   K.open = false;
   K.shop = function () { if (K.open) return; K.open = true; G.setStick && G.setStick(0, 0); renderShop(); $('schlPanel').hidden = false; };
@@ -257,44 +263,43 @@ BI.createSchluessel = function (G) {
     b.appendChild(el('div', 'logo', '🛍️ Wuschel-Laden')); b.lastChild.style.fontSize = '30px'; b.appendChild(el('div', 'sub', '💎 ' + s.herz + ' Herz-Kristalle')); b.lastChild.style.margin = '4px 0 10px';
     const grid = el('div', ''); grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 4px 10px';
     BI.SCHL_BLADES.forEach((q, i) => { const own = s.owned.includes(i), sel = s.blade === i, c = el('button', '', '<div style="font-size:40px">' + q[1] + '</div><div style="font-size:14px;font-weight:800">' + q[0] + '</div><div style="font-size:13px;font-weight:800;color:' + (sel ? '#2a9a4a' : own ? '#3f9bff' : '#b07a00') + '">' + (sel ? '✔ in der Hand' : own ? 'Wählen' : '💎 ' + q[2]) + '</div>'); c.type = 'button'; c.style.cssText = 'border-radius:16px;border:4px solid ' + (sel ? '#4cd07d' : own ? '#8fb8ff' : '#e0c060') + ';background:#fff;padding:8px 2px;cursor:pointer;font-family:inherit';
-      c.onclick = () => { if (!own) { if (s.herz < q[2]) { say('💎 Dafür brauchst du noch ' + (q[2] - s.herz) + ' Herz-Kristalle. Vertreibe Dunkelwichtel!', 2800); return; } s.herz -= q[2]; s.owned.push(i); A.buy && A.buy(); say('🗝️ ' + q[0] + ' gekauft!', 2200); } s.blade = i; attach(); persist(); renderShop(); }; grid.appendChild(c); }); b.appendChild(grid);
+      c.onclick = () => { if (!own) { if (s.herz < q[2]) { say('💎 Dafür brauchst du noch ' + (q[2] - s.herz) + ' Herz-Kristalle. Sammle Sternfrüchte, Glühpilze und zünde Laternen an!', 3200); return; } s.herz -= q[2]; s.owned.push(i); A.buy && A.buy(); say('🗝️ ' + q[0] + ' gekauft!', 2200); } s.blade = i; attach(); persist(); renderShop(); }; grid.appendChild(c); }); b.appendChild(grid);
     const mb = el('button', 'big', '🗝️ Schlüsselschwert-Mobil rufen'); mb.style.cssText = 'font-size:18px;padding:10px 20px;margin:4px'; mb.onclick = () => { G.callMobil && G.callMobil(); K.close(); say('🗝️ Dein Schlüsselschwert-Mobil ist da!', 2600); }; b.appendChild(mb);
     const done = el('button', 'big', '✔ Fertig'); done.style.cssText = 'margin:6px;font-size:20px;padding:10px 28px'; done.onclick = () => K.close(); b.appendChild(done);
   }
   addEventListener('keydown', e => { if (K.open && e.code === 'Escape') { K.close(); e.preventDefault(); } });
   /* ---- Aufgaben-Log ---- */
   K.log = function () {
-    const s = S(), rows = BI.SCHL_KEYS.map(([id, ic, nm]) => ({ ok: !!s.keys[id], icon: '🗝️', text: 'Schlüsselloch ' + ic + ' ' + nm + ({ strand: ': 5 Sternfrüchte sammeln (' + s.fr.filter(Boolean).length + '/5)', stadt: ': Meersalz-Eis → Tilo → Glocke läuten', burg: ': Licht-Rätsel im Burghof', wald: ': 8 Dunkelwichtel besiegen (' + Math.min(8, s.kills) + '/8)', turm: ': 3 Licht-Splitter am Schleier-Turm (' + s.sp.filter(Boolean).length + '/3)' })[id], dest: id === 'stadt' ? 'stadt_s' : id === 'burg' ? 'burg_s' : id === 'wald' ? 'wald_s' : id === 'turm' ? 'turm_s' : 'strand_s' }));
-    rows.push({ ok: s.boss > 0, icon: '🌑', text: 'Das Tor der Herzen öffnen und den Dunkelriesen besiegen', dest: 'statue_s' }); rows.push({ ok: s.once.mobil === 1, icon: '🗝️', text: 'Mit dem Schlüsselschwert-Mobil fliegen', dest: 'hafen_s' });
-    return { title: '🗝️ Schlüsselreich', count: (Object.keys(s.keys).length + (s.boss > 0 ? 1 : 0) + (s.once.mobil ? 1 : 0)) + ' von 7', rows };
+    const s = S(), rows = BI.SCHL_KEYS.map(([id, ic, nm]) => ({ ok: !!s.keys[id], icon: '🗝️', text: 'Schlüsselloch ' + ic + ' ' + nm + ({ strand: ': 5 Sternfrüchte sammeln (' + s.fr.filter(Boolean).length + '/5)', stadt: ': Meersalz-Eis → Tilo → Glocke läuten', burg: ': Licht-Rätsel im Burghof', wald: ': 8 Glühpilze im Wald der Schatten sammeln (' + s.gp.filter(Boolean).length + '/8)', turm: ': 3 Licht-Splitter am Schleier-Turm (' + s.sp.filter(Boolean).length + '/3)' })[id], dest: id === 'stadt' ? 'stadt_s' : id === 'burg' ? 'burg_s' : id === 'wald' ? 'wald_s' : id === 'turm' ? 'turm_s' : 'strand_s' }));
+    rows.push({ ok: s.boss > 0, icon: '🌟', text: 'Das Tor der Herzen öffnen (Feuerwerk!)', dest: 'statue_s' }); rows.push({ ok: s.once.mobil === 1, icon: '🗝️', text: 'Mit dem Schlüsselschwert-Mobil fliegen', dest: 'hafen_s' });
+    rows.push({ ok: s.lit.length >= NLAMP, icon: '🔦', text: NLAMP + ' Laternen mit dem Lichtschlüssel anzünden (' + Math.min(NLAMP, s.lit.length) + '/' + NLAMP + ')', dest: 'stadt_s' }); rows.push({ ok: s.rund > 0, icon: '🚗', text: 'Alle Sterne auf der Ringstraße einsammeln (zu Fuß oder mit dem Auto)', dest: 'strand_s' }); rows.push({ ok: s.wacht > 0, icon: '🗿', text: 'Den Schattenwächter am Tor der Herzen begrüßen', dest: 'statue_s' });
+    return { title: '🗝️ Schlüsselreich', count: (Object.keys(s.keys).length + (s.boss > 0 ? 1 : 0) + (s.once.mobil ? 1 : 0) + (s.lit.length >= NLAMP ? 1 : 0) + (s.rund > 0 ? 1 : 0) + (s.wacht > 0 ? 1 : 0)) + ' von 10', rows };
   };
   K.ride = function () { const s = S(); if (!s.once.mobil) { s.once.mobil = 1; persist(); addStars(1); if (G.earn) G.earn('mobil_s'); say('🗝️ Du fliegst auf dem Schlüsselschwert-Mobil! +1 ⭐', 3600); } };
-  K.dbg = { E, boss, Si, defeat, unlock, swing, startBoss, simonStart };
+  K.dbg = { Si, unlock, zauber, tor, simonStart, lap, lampM, GPL, RS };
   /* ---- Bild für Bild ---- */
-  let was = false, t0 = 0, spawnT = 3;
+  let was = false, t0 = 0;
   K.update = function (dt, t) {
-    const raw = Math.min(dt, .25), ins = onIsle(); swingCd -= raw; if (comboT > 0 && (comboT -= raw) <= 0) combo = 0;
+    const raw = Math.min(dt, .25), ins = onIsle(); swingCd -= raw;
     if (ins !== was) { was = ins; if (ins) { const s = S(); if (!s.visit) { s.visit = 1; persist(); addStars(1); if (G.earn) G.earn('schluesselreich'); say('🗝️ Willkommen im Schlüsselreich! Du hast einen Lichtschlüssel bekommen. +1 ⭐', 5200); } else say('🗝️ Schlüsselreich', 2000); refreshKeys(); } }
     /* Lichtschlüssel in der Hand (nur auf der Insel, nicht im Fahrzeug) */
     if (attach()) keyG.visible = ins && !P.veh;
     const near = Math.hypot(P.x - M.x, P.z - M.z) < 260; for (let i = 0; i < 5; i++) pill[i].rotation.y = t * 1.2 + i; if (!near) return;
     portal.rotation.z = t * .6; if (portal.visible) portalIn.material.opacity = .45 + Math.sin(t * 3) * .12;
     /* Sammel-Dinge */
-    for (let i = 0; i < 5; i++) { const m = frM[i], s = S(), got = s.fr[i]; m.visible = !got; if (!got) { m.rotation.y = t * 2 + i; m.position.y = 1.1 + Math.sin(t * 2 + i) * .15; if (ins && !P.veh && Math.hypot(P.x - FR[i].x, P.z - FR[i].z) < 1.7) { s.fr[i] = 1; A.star && A.star(); fx.burst(FR[i].x, 1.4, FR[i].z, 12, [[1, .9, .4], [1, 1, 1]], 3, 1, 28, 3); const n = s.fr.filter(Boolean).length; say('🌟 Sternfrucht! (' + n + ' von 5)', 1800); persist(); if (n >= 5) unlock('strand'); } } }
+    for (let i = 0; i < 5; i++) { const m = frM[i], s = S(), got = s.fr[i]; m.visible = !got; if (!got) { m.rotation.y = t * 2 + i; m.position.y = 1.1 + Math.sin(t * 2 + i) * .15; if (ins && !P.veh && Math.hypot(P.x - FR[i].x, P.z - FR[i].z) < 1.7) { s.fr[i] = 1; A.star && A.star(); heart(FR[i].x, FR[i].z, 1); fx.burst(FR[i].x, 1.4, FR[i].z, 12, [[1, .9, .4], [1, 1, 1]], 3, 1, 28, 3); const n = s.fr.filter(Boolean).length; say('🌟 Sternfrucht! (' + n + ' von 5)', 1800); persist(); if (n >= 5) unlock('strand'); } } }
     for (let i = 0; i < 3; i++) { const m = spM[i], s = S(), got = s.sp[i]; m.visible = !got; if (!got) { m.rotation.y = t * 1.6 + i; m.position.y = SPL[i].y + 1.1 + Math.sin(t * 2 + i) * .18; if (ins && !P.veh && Math.hypot(P.x - SPL[i].x, P.z - SPL[i].z) < 2 && P.y > SPL[i].y - 1.4) { s.sp[i] = 1; A.star && A.star(); fx.burst(SPL[i].x, SPL[i].y + 1.4, SPL[i].z, 14, [[.6, .85, 1], [1, 1, 1]], 3, 1, 28, 3); const n = s.sp.filter(Boolean).length; say('💠 Licht-Splitter! (' + n + ' von 3)', 1800); persist(); if (n >= 3) unlock('turm'); } } }
     /* Licht-Rätsel */
     for (let i = 0; i < 4; i++) plates[i].material.opacity = Si.lit === i ? .95 : .35; if (Si.litT > 0 && (Si.litT -= raw) <= 0) Si.lit = -1;
     if (Si.st === 'show') { Si.t -= raw; if (Si.t <= 0) { if (Si.pos < Si.seq.length) { lightPlate(Si.seq[Si.pos], .45); Si.pos++; Si.t = .8; } else { Si.st = 'input'; Si.pos = 0; Si.t = 14; say('💡 Jetzt du! Tritt auf die Platten in derselben Reihenfolge.', 2600); } } }
     else if (Si.st === 'input') { Si.t -= raw; let on = -1; for (let i = 0; i < 4; i++) if (Math.hypot(P.x - SP.plates[i].x, P.z - SP.plates[i].z) < 1.4) on = i; if (on !== Si.last) { Si.last = on; if (on >= 0) { lightPlate(on, .35); if (on === Si.seq[Si.pos]) { Si.pos++; if (Si.pos >= Si.seq.length) { const s = S(); Si.st = 'idle'; s.simon++; addStars(1); A.fanfare && A.fanfare(); say('💡 Geschafft! Runde ' + Math.min(3, s.simon) + ' von 3. +1 ⭐', 2800); persist(); if (s.simon >= 3) unlock('burg'); } } else { Si.st = 'idle'; A.bonk && A.bonk(); say('💡 Nicht ganz – versuch es nochmal! Tippe wieder auf „Licht-Rätsel“.', 2800); } } } if (Si.t <= 0) { Si.st = 'idle'; say('💡 Zu langsam – versuch es nochmal!', 2000); } }
-    /* Dunkelwichtel */
-    if (ins && !P.veh && !boss.on) { spawnT -= raw; const cnt = E.filter(e => e.on).length; if (spawnT <= 0 && cnt < NE) { spawnT = 2.5 + Math.random() * 2.5; for (let tr = 0; tr < 10; tr++) { const a = Math.random() * TAU, d = 9 + Math.random() * 10, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (Math.hypot(x - M.x, z - M.z) > M.R - 10 || safe(x, z) || !W.free(x, z, .8) || W.groundY(x, z) > .3) continue; const e = E.find(q => !q.on); if (!e) break; e.on = true; e.x = x; e.z = z; e.hp = 2; e.hit = 0; e.cd = 1; e.g.visible = true; fx.burst(x, .6, z, 8, [[.3, .15, .5], [.6, .3, .9]], 2, .8, 28, 2); break; } } }
-    for (const e of E) { if (!e.on) continue; const dx = P.x - e.x, dz = P.z - e.z, d = Math.hypot(dx, dz); if (d > 40 || P.veh && d > 30 || !ins) { e.on = false; e.g.visible = false; continue; } e.t += raw; e.cd -= raw; e.hit = Math.max(0, e.hit - raw);
-      if (d < 16 && !(safe(P.x, P.z))) { const sp = 2.3; const nx = e.x + dx / d * sp * raw, nz = e.z + dz / d * sp * raw; if (d > 1.1 && W.free(nx, nz, .5)) { e.x = nx; e.z = nz; } if (d < 1.2 && e.cd <= 0) { e.cd = 2; P.x -= dx / d * 1.8; P.z -= dz / d * 1.8; A.bump && A.bump(); say('💥 Hoppla! Ein Dunkelwichtel – schwing den Lichtschlüssel!', 1800); } } else { e.x += Math.sin(e.ph + e.t * .4) * .6 * raw; e.z += Math.cos(e.ph + e.t * .4) * .6 * raw; }
-      e.g.position.set(e.x, Math.abs(Math.sin(e.t * 5 + e.ph)) * .25, e.z); e.g.rotation.y = Math.atan2(dx, dz); e.g.scale.setScalar(e.hit > 0 ? 1.25 : 1); }
-    /* Dunkelriese */
-    if (boss.on) { const dx = P.x - boss.x, dz = P.z - boss.z, d = Math.hypot(dx, dz); boss.t = (boss.t || 0) + raw; boss.hit = Math.max(0, (boss.hit || 0) - raw); if (d > 4.6) { const sp = 1.6; boss.x += dx / d * sp * raw; boss.z += dz / d * sp * raw; } boss.g.position.set(boss.x, Math.abs(Math.sin(boss.t * 2)) * .4, boss.z); boss.g.rotation.y = Math.atan2(dx, dz); boss.g.scale.setScalar(boss.hit > 0 ? 1.12 : 1); boss.bar.position.set(boss.x, 6.2, boss.z);
-      boss.cool -= raw; if (boss.cool <= 0 && !boss.ringT) { boss.ringT = 1.6; boss.rx = P.x; boss.rz = P.z; boss.cool = 4.5; boss.ring.visible = true; boss.ring.position.set(boss.rx, .12, boss.rz); note(110, .8, 'sawtooth', .08); }
-      if (boss.ringT > 0) { boss.ringT -= raw; boss.ring.scale.setScalar(1 + (1 - boss.ringT / 1.6) * 3.4); boss.ring.material.opacity = .35 + (1 - boss.ringT / 1.6) * .4; if (boss.ringT <= 0) { boss.ringT = 0; boss.ring.visible = false; fx.burst(boss.rx, .5, boss.rz, 22, [[.8, .2, .2], [1, .7, .3]], 5, 1, 28, 2); A.bump && A.bump(); if (Math.hypot(P.x - boss.rx, P.z - boss.rz) < 4.4 && !P.veh) { const a = Math.atan2(P.x - boss.rx, P.z - boss.rz); P.x += Math.sin(a) * 4; P.z += Math.cos(a) * 4; say('💥 Hoppla! Weich den roten Kreisen aus!', 1800); } } } }
+    /* Glühpilze im Wald der Schatten */
+    for (let i = 0; i < 8; i++) { const m = gpM[i], s = S(), got = s.gp[i]; m.visible = !got; if (!got) { m.rotation.y = t * 1.8 + i; m.position.y = .9 + Math.sin(t * 2.4 + i) * .15; if (ins && !P.veh && Math.hypot(P.x - GPL[i].x, P.z - GPL[i].z) < 1.8) { s.gp[i] = 1; A.star && A.star(); heart(GPL[i].x, GPL[i].z, 1); fx.burst(GPL[i].x, 1.1, GPL[i].z, 12, [[.6, 1, .8], [1, 1, 1]], 3, 1, 28, 3); const n = s.gp.filter(Boolean).length; say('🍄 Glühpilz! (' + n + ' von 8)', 1800); persist(); if (n >= 8) unlock('wald'); } } }
+    /* Laternen leuchten */
+    { const s = S(); for (let i = 0; i < lampM.length; i++) { const on = s.lit.includes(i); lampM[i].visible = on; if (on) lampM[i].material.opacity = .42 + Math.sin(t * 3 + i) * .1; } }
+    /* Ringstraße: zwölf Sterne einsammeln – am besten mit dem Auto */
+    if (ins) { const rr = P.veh ? 3.6 : 1.8; let got = 0; for (let i = 0; i < 12; i++) { const m = rsM[i]; m.visible = !lap[i]; if (lap[i]) { got++; continue; } m.rotation.y = t * 2 + i; m.position.y = 1.6 + Math.sin(t * 2 + i) * .2; if (Math.hypot(P.x - RS[i].x, P.z - RS[i].z) < rr) { lap[i] = 1; got++; A.star && A.star(); fx.burst(RS[i].x, 1.6, RS[i].z, 10, [[1, .7, .9], [1, 1, 1]], 3, 1, 28, 3); say('⭐ Stern! (' + got + ' von 12)', 1200); } }
+      if (got >= 12 && !lapT) { const s = S(), first = !s.rund; s.rund++; addStars(first ? 3 : 1); heart(P.x, P.z, 3); A.fanfare && A.fanfare(); if (first && G.earn) G.earn('rundfahrt'); say('🚗 Runde geschafft! +' + (first ? 3 : 1) + ' ⭐ – noch eine?', 3600); persist(); lapT = 3; } if (lapT > 0 && (lapT -= raw) <= 0) { lapT = 0; lap.fill(0); } }
   };
   refreshKeys();
   return K;

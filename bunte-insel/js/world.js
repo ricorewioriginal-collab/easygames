@@ -150,7 +150,7 @@ BI.buildWorld = function (scene) {
   W.onRoad = function (x, z) {
     const ax = Math.abs(x), az = Math.abs(z), r = Math.hypot(x, z);
     if (r < 156 && r > 12 && (ax < RW || az < RW)) return true;
-    return Math.abs(r - K.RA) < RW || Math.abs(r - K.RB) < RW || Math.abs(r - K.RR) < RW || W.onPad(x, z);
+    return Math.abs(r - K.RA) < RW || Math.abs(r - K.RB) < RW || Math.abs(r - K.RR) < RW || W.onPad(x, z) || (W.schluessel && Math.hypot(x - W.schluessel.x, z - W.schluessel.z) < W.schluessel.R && W.schluessel.roadD(x, z) < 3.2);
   };
   W.pads = [];
   W.onPad = (x, z) => W.pads.some(p => x > p[0] && x < p[2] && z > p[1] && z < p[3]);
