@@ -14,5 +14,5 @@ const pc = await (await browser.newContext({ viewport: { width: 1000, height: 60
 await pc.goto(BASE + '/bunte-insel/index.html'); await pc.waitForFunction(() => window.__bi, null, { timeout: 60000 }); ok(!(await pc.evaluate(() => __bi.tv.isPhone())), 'Computer ist kein Handy');
 await pc.evaluate(() => localStorage.setItem('bi-tv-mycode', 'K7M2'));
 const code = await pc.evaluate(() => __bi.tv.start().then(c => c, e => 'ERR')).catch(() => 'ERR');
-if (code === 'ERR') console.log('SKIP Vermittler nicht erreichbar'); else ok(code === 'K7M2', 'Fernseher nimmt den gespeicherten Code wieder (' + code + ')');
+if (code === 'ERR' || code === null) { console.log('SKIP gespeicherter Code (Vermittler nicht erreichbar)'); ok(await pc.evaluate(() => document.getElementById('tvStat').className === 'err' && !document.getElementById('tvRetry').hidden && !document.getElementById('tvPanel').hidden && /controller\.html/.test(document.getElementById('tvLink').textContent)), 'Ohne Vermittler: Panel bleibt sichtbar mit Link, Fehlermeldung und „Nochmal verbinden“'); await pc.screenshot({ path: process.env.SHOT || '/tmp/tvfail.png' }); } else ok(code === 'K7M2', 'Fernseher nimmt den gespeicherten Code wieder (' + code + ')');
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); process.exit(fails ? 1 : 0);
