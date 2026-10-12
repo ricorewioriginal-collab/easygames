@@ -8,13 +8,13 @@ entstehen prozedural, es gibt keine externen Bild- oder Audiodateien.
 
 ## Spielen
 
-| Aktion                      | Tastatur                                  | Maus               | Touch                     |
-| --------------------------- | ----------------------------------------- | ------------------ | ------------------------- |
-| Spur wählen und treffen     | `A` `S` `D`, `←` `↓` `→` oder `J` `K` `L` | Klick auf die Spur | Spurtasten unten          |
-| In aktueller Spur treffen   | `Leertaste`, `↑`, `W`                     |                    | Tippen auf den Bildschirm |
-| Spur wechseln               | `,` / `.`                                 |                    | Wischen links/rechts      |
-| Overdrive (doppelte Punkte) | `E` oder `Umschalt`                       |                    | ⚡ oder nach oben wischen |
-| Pause                       | `Esc` oder `P`                            |                    | II-Knopf                  |
+| Aktion                      | Tastatur                     | Maus               | Touch                                  |
+| --------------------------- | ---------------------------- | ------------------ | -------------------------------------- |
+| Spur wechseln (trifft dort) | `←` / `→`                    |                    | Wischen links/rechts                   |
+| Spur wählen und treffen     | `A` `S` `D` oder `J` `K` `L` | Klick auf die Spur | Spurtasten unten, auch darüber gleiten |
+| In aktueller Spur treffen   | `Leertaste`, `↑`, `↓`, `W`   |                    | Tippen auf den Bildschirm              |
+| Overdrive (doppelte Punkte) | `E` oder `Umschalt`          |                    | ⚡ oder nach oben wischen              |
+| Pause                       | `Esc` oder `P`               |                    | II-Knopf                               |
 
 - **Kristalle** im Takt treffen, wenn sie den Ring unter dem Gleiter erreichen: Perfekt, Super, Gut oder Verfehlt.
 - **Rhythmus-Orbs** werden eingesammelt, wenn du in ihrer Spur bist.
@@ -28,6 +28,13 @@ entstehen prozedural, es gibt keine externen Bild- oder Audiodateien.
 - **Tagesrhythmus:** jeden Tag ein neues, für alle gleiches Stück.
 - **Zen:** ohne Scheitern und Wandschäden.
 - **Präzision:** ein Fehler beendet den Lauf, dafür 1,5-fache Punkte.
+- **Sprint 90:** 90 Sekunden Punktejagd auf generierter Musik, die immer schneller wird.
+- **Remix:** jedes Mal ein neues Zufallsstück mit eigener Strecke und Farbwelt.
+- **Spiegelwelt:** alle Level mit vertauschten Seiten.
+- **Turbo:** Musik und Strecke 30 % schneller, 1,4-fache Punkte.
+- **Blindflug:** Kristalle verblassen kurz vor dem Gleiter, 1,3-fache Punkte.
+- **Gleitflug:** nur lenken, Kristalle in der eigenen Spur werden automatisch eingesammelt.
+- **Wandlauf:** doppelt so viele Wände, jede ausgewichene Wand bringt Punkte.
 - **Tutorial:** interaktiv mit Hinweisen zu Treffern, Spuren, Orbs, Wänden und Overdrive.
 - **19 freischaltbare Effekte:** Gleiter, Lichtspuren, Farbwelten und Trefferexplosionen.
 - **Einstellungen:** Lautstärken, Audio-Latenz mit Kalibrierung, Grafikqualität (automatisch mit FPS-Anpassung), Touch-Tasten, Kamerawackeln, Vibration, reduzierte Bewegung.

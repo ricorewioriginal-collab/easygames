@@ -62,7 +62,7 @@ export class Hud {
     const pauseBtn = h('button', {
       class: 'hud-pause',
       text: 'II',
-      attrs: { type: 'button', 'aria-label': 'Pause', 'data-testid': 'pause-button' },
+      attrs: { type: 'button', tabindex: -1, 'aria-label': 'Pause', 'data-testid': 'pause-button' },
       on: {
         pointerdown: (e) => e.stopPropagation(),
         click: (e) => {
@@ -76,6 +76,7 @@ export class Hud {
       text: '⚡',
       attrs: {
         type: 'button',
+        tabindex: -1,
         'aria-label': 'Overdrive zünden',
         'data-testid': 'overdrive-button',
       },
@@ -89,19 +90,38 @@ export class Hud {
     });
     const labels = ['◀', '●', '▶'];
     this.pads = h('div', { class: 'pads', attrs: { 'data-testid': 'touch-pads' } });
+    // Finger, die gerade auf einer Spurtaste liegen: Gleiten auf eine Nachbartaste wechselt die Spur.
+    const fingers = new Set<number>();
+    const release = (e: PointerEvent) => fingers.delete(e.pointerId);
+    window.addEventListener('pointerup', release);
+    window.addEventListener('pointercancel', release);
     for (let l = 0; l < 3; l++) {
+      const press = (e: PointerEvent) => {
+        emit({ type: 'lane', lane: l }, e.timeStamp);
+        b.classList.remove('flash');
+        void b.offsetWidth;
+        b.classList.add('flash');
+      };
       const b = h('button', {
         class: 'pad',
         text: labels[l],
-        attrs: { type: 'button', 'aria-label': `Spur ${l + 1}`, 'data-testid': `pad-${l}` },
+        attrs: {
+          type: 'button',
+          tabindex: -1,
+          'aria-label': `Spur ${l + 1}`,
+          'data-testid': `pad-${l}`,
+        },
         on: {
           pointerdown: (e) => {
             e.preventDefault();
             e.stopPropagation();
-            emit({ type: 'lane', lane: l }, e.timeStamp);
-            b.classList.remove('flash');
-            void b.offsetWidth;
-            b.classList.add('flash');
+            // Touch fängt den Zeiger sonst an dieser Taste; freigeben erlaubt das Gleiten.
+            if (b.hasPointerCapture?.(e.pointerId)) b.releasePointerCapture(e.pointerId);
+            fingers.add(e.pointerId);
+            press(e);
+          },
+          pointerenter: (e) => {
+            if (fingers.has(e.pointerId)) press(e);
           },
           contextmenu: (e) => e.preventDefault(),
         },

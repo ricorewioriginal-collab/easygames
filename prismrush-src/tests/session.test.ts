@@ -96,9 +96,8 @@ describe('Spielsitzung', () => {
     s.update(t2);
     expect(s.pressLane(0, t2)).toBeNull(); // falsche Spur
     expect(s.hit(t2 + 0.13)).toBeNull(); // aktuelle Spur ist 0
-    s.shift(1);
+    expect(s.shift(1, t2 + 0.13)).toBe('good'); // Wechsel trifft direkt in der neuen Spur
     expect(s.lane).toBe(1);
-    expect(s.hit(t2 + 0.13)).toBe('good');
     expect(s.score.combo).toBe(3);
   });
 

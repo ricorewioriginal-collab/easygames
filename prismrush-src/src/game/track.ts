@@ -36,6 +36,8 @@ export class Track implements MusicSource {
     readonly bpm: number,
     private readonly provider: (index: number) => ChunkPlan | null,
     readonly endless: boolean,
+    /** Optionale Umwandlung je Ereignis (Spiegeln, Entfernen …); null verwirft es. */
+    private readonly mapEvent?: (e: ChartEvent) => ChartEvent | null,
   ) {
     this.appendChunk();
   }
@@ -59,6 +61,13 @@ export class Track implements MusicSource {
         time: stepToSeconds(e.step + startStep, this.bpm),
         id: idStart + i,
       }));
+    }
+    if (this.mapEvent) {
+      const map = this.mapEvent;
+      evs = evs
+        .map((e) => map(e))
+        .filter((e): e is ChartEvent => e !== null)
+        .map((e, i) => ({ ...e, id: idStart + i }));
     }
     for (const e of evs) this.events.push(e);
     this.chunks.push({ song: plan.song, startStep });
@@ -129,6 +138,9 @@ export class Track implements MusicSource {
   }
 }
 
-export function singleSongTrack(plan: ChunkPlan): Track {
-  return new Track(plan.song.bpm, (i) => (i === 0 ? plan : null), false);
+export function singleSongTrack(
+  plan: ChunkPlan,
+  mapEvent?: (e: ChartEvent) => ChartEvent | null,
+): Track {
+  return new Track(plan.song.bpm, (i) => (i === 0 ? plan : null), false, mapEvent);
 }

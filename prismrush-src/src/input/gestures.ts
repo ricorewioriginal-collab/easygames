@@ -7,7 +7,7 @@ export interface GestureOptions {
   maxTapMs: number;
 }
 
-export const DEFAULT_GESTURE: GestureOptions = { minSwipe: 36, maxTapMove: 14, maxTapMs: 350 };
+export const DEFAULT_GESTURE: GestureOptions = { minSwipe: 28, maxTapMove: 14, maxTapMs: 350 };
 
 export function classifyGesture(
   dx: number,

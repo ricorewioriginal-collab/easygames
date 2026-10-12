@@ -13,26 +13,28 @@ export interface TimedAction {
   source: 'keyboard' | 'mouse' | 'touch' | 'pad';
 }
 
+/**
+ * A/S/D und J/K/L wählen eine Spur direkt; die Pfeiltasten links/rechts wechseln
+ * relativ um eine Spur (so wie man es von Runnern kennt).
+ */
 const KEYMAP: Record<string, GameAction> = {
   KeyA: { type: 'lane', lane: 0 },
-  ArrowLeft: { type: 'lane', lane: 0 },
   KeyJ: { type: 'lane', lane: 0 },
   KeyS: { type: 'lane', lane: 1 },
-  ArrowDown: { type: 'lane', lane: 1 },
   KeyK: { type: 'lane', lane: 1 },
   KeyD: { type: 'lane', lane: 2 },
-  ArrowRight: { type: 'lane', lane: 2 },
   KeyL: { type: 'lane', lane: 2 },
+  ArrowLeft: { type: 'shift', dir: -1 },
+  ArrowRight: { type: 'shift', dir: 1 },
   Space: { type: 'hit' },
   ArrowUp: { type: 'hit' },
+  ArrowDown: { type: 'hit' },
   KeyW: { type: 'hit' },
   KeyE: { type: 'overdrive' },
   ShiftLeft: { type: 'overdrive' },
   ShiftRight: { type: 'overdrive' },
   Escape: { type: 'pause' },
   KeyP: { type: 'pause' },
-  Comma: { type: 'shift', dir: -1 },
-  Period: { type: 'shift', dir: 1 },
 };
 
 export function mapKey(code: string): GameAction | null {

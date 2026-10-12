@@ -101,7 +101,14 @@ export class GameSession {
       if (ev.time > t) break;
       if (this.resolved.has(ev.id)) continue;
       if (ev.kind === 'note') {
-        if (t > ev.time + this.window) this.resolveNote(ev, 'miss', t - ev.time);
+        if (this.rules.autoHit && ev.lane === this.lane && t <= ev.time + this.window) {
+          // Gleitflug: Kristalle werden eingesammelt, sobald man in ihrer Spur ist.
+          this.resolveNote(
+            ev,
+            judge(t - ev.time, this.difficulty.windowScale) ?? 'good',
+            t - ev.time,
+          );
+        } else if (t > ev.time + this.window) this.resolveNote(ev, 'miss', t - ev.time);
       } else if (ev.kind === 'orb') {
         this.resolved.add(ev.id);
         const got = this.lane === ev.lane;
@@ -119,7 +126,8 @@ export class GameSession {
           this.score.wall();
           if (this.rules.wallDamage) this.damage(this.difficulty.wallDamage);
           if (this.rules.oneMistakeFails) this.health = 0;
-        }
+        } else if (this.rules.wallBonus)
+          this.score.addBonus(this.rules.wallBonus * this.multiplier);
         this.emit({ type: 'wall', lanes: ev.lanes, event: ev, damaged: hit });
       }
       if (this.status !== 'playing') return;
@@ -136,6 +144,11 @@ export class GameSession {
     if (this.rules.canFail && this.health <= 0) {
       this.status = 'failed';
       this.emit({ type: 'fail' });
+      return;
+    }
+    if (this.rules.timeLimit && this.time >= this.rules.timeLimit) {
+      this.status = 'complete';
+      this.emit({ type: 'complete' });
       return;
     }
     if (
@@ -177,10 +190,14 @@ export class GameSession {
     return this.tryHit(this.lane, t);
   }
 
-  /** Spur relativ wechseln (Wischgesten, Pfeiltasten im Wechselmodus). */
-  shift(dir: -1 | 1): void {
-    if (this.status !== 'playing') return;
+  /**
+   * Spur relativ wechseln (Pfeiltasten, Wischgesten) und in der neuen Spur einen
+   * Treffer versuchen. Am Rand bleibt die Spur stehen, getroffen wird trotzdem.
+   */
+  shift(dir: -1 | 1, t: number): Judgement | null {
+    if (this.status !== 'playing') return null;
     this.lane = clamp(this.lane + dir, 0, LANES - 1);
+    return this.tryHit(this.lane, t);
   }
 
   /** Treffer auf der aktuellen Spur (Leertaste, Tippen). */
