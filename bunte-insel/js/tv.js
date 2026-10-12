@@ -13,11 +13,13 @@ BI.createTv = function (G) {
   /* ---------- Oberfläche auf dem Fernseher ---------- */
   const st = el('style', null, `
   body.tv #keys,body.tv .abtn,body.tv #joy,body.tv #bMore,body.tv #bFun,body.tv #bTools{display:none!important}
-  #tvPanel{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 50% 0%,rgba(40,50,120,.92),rgba(10,12,34,.96));color:#fff;font-family:Fredoka,system-ui,sans-serif}
+  #tvPanel{position:fixed;inset:0;z-index:99990;display:flex;overflow:auto;background:radial-gradient(120% 120% at 50% 0%,rgba(40,50,120,.92),rgba(10,12,34,.96));color:#fff;font-family:Fredoka,system-ui,sans-serif}
   #tvPanel[hidden]{display:none}
-  #tvPanel .box{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,4vw,56px);align-items:center;max-width:min(1100px,94vw);padding:clamp(16px,3vw,40px)}
+  #tvPanel .box{margin:auto;display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,4vw,56px);align-items:center;max-width:min(1100px,94vw);padding:clamp(16px,3vw,40px)}
   #tvPanel h1{margin:0 0 8px;font-size:clamp(28px,5vw,56px)}#tvPanel p{margin:6px 0;font-size:clamp(15px,2.2vw,26px);color:#c9cff5}
   #tvQr{background:#fff;border-radius:24px;padding:14px;width:clamp(180px,30vw,340px);aspect-ratio:1;display:flex;align-items:center;justify-content:center}#tvQr img{width:100%;height:100%;image-rendering:pixelated}
+  #tvLink{display:inline-block;max-width:100%;word-break:break-all;background:rgba(255,255,255,.14);border:2px dashed rgba(255,255,255,.55);border-radius:14px;padding:8px 16px;font-weight:800;font-size:clamp(16px,2.6vw,32px);color:#ffe27a;margin:2px 0 8px}
+  #tvStat{font-weight:700;font-size:clamp(14px,2vw,22px);margin:2px 0 6px;padding:4px 12px;border-radius:12px;display:inline-block;background:rgba(255,255,255,.1)}#tvStat.ok{color:#7dffb0}#tvStat.wait{color:#ffe27a}#tvStat.err{color:#ff9a9a}
   #tvCode{font-size:clamp(44px,9vw,110px);font-weight:800;letter-spacing:.12em;line-height:1;margin:6px 0 10px}
   #tvPl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
   .tvp{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.09);border:2px solid transparent;font-size:clamp(14px,2vw,22px)}
@@ -33,15 +35,18 @@ BI.createTv = function (G) {
   #tvSplit .emp{position:absolute;display:flex;align-items:center;justify-content:center;background:#10142e;color:#c9cff5;font:700 clamp(14px,2vw,24px) Fredoka,system-ui,sans-serif;text-align:center}`);
   document.head.appendChild(st);
   const panel = el('div'); panel.id = 'tvPanel'; panel.hidden = true;
-  panel.innerHTML = '<div class="box"><div id="tvQr">…</div><div><h1>📺 Handy = Controller</h1><p>Scanne den QR-Code oder öffne <b id="tvUrl"></b> auf dem Handy und gib den Code ein – oder öffne das Spiel am Handy: <b>👥 Mitspielen → Spiel beitreten</b> und tippe den Code:</p><div id="tvCode">----</div><div id="tvPl"></div><p id="tvMsg">Bis zu 4 Spieler. Spieler 1 steuert alles, die anderen laufen mit.</p><button class="tvb g" id="tvOk">▶ OK – los geht’s</button><button class="tvb" id="tvSplitB">🪟 Splitscreen: aus</button><button class="tvb" id="tvOff">✖ TV-Modus beenden</button></div></div>';
+  panel.innerHTML = '<div class="box"><div id="tvQr">…</div><div><h1>📺 Handy = Controller</h1><p>1️⃣ Öffne <b>auf dem Handy</b> diesen Link:</p><div id="tvLink"></div><p>2️⃣ Tippe dort diesen <b>Code</b> ein – oder scanne den QR-Code:</p><div id="tvCode">----</div><div id="tvStat" class="wait">…</div><div id="tvPl"></div><p id="tvMsg">Bis zu 4 Spieler. Spieler 1 steuert alles, die anderen laufen mit. 🎮 Oder einfach einen Controller (Xbox, PlayStation, Switch) am Fernseher anschließen und eine Taste drücken – wird automatisch erkannt.</p><button class="tvb g" id="tvOk">▶ OK – los geht’s</button><button class="tvb g" id="tvRetry" hidden>🔄 Nochmal verbinden</button><button class="tvb" id="tvSplitB">🪟 Splitscreen: aus</button><button class="tvb" id="tvOff">✖ TV-Modus beenden</button></div></div>';
   document.body.appendChild(panel);
   const chip = el('div'); chip.id = 'tvChip'; chip.hidden = true; chip.tabIndex = 0; document.body.appendChild(chip);
   const ptrEl = el('div'); ptrEl.id = 'tvPtr'; ptrEl.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34"><path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#10142e" stroke-width="1.6" stroke-linejoin="round"/></svg>'; document.body.appendChild(ptrEl);
   const splitEl = el('div'); splitEl.id = 'tvSplit'; splitEl.hidden = true; document.body.appendChild(splitEl);
 
   function players() { return slots.filter(Boolean); }
+  function setStat(k, t) { const e = $('tvStat'); if (!e) return; T.stat = k === 'ok' ? '' : k; e.className = k; e.textContent = t; }
+  const sleep = ms => new Promise(r => setTimeout(r, ms)), withTimeout = (pr, ms, err) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error(err)), ms))]);
+  function newPeer(id) { return new Promise((res, rej) => { let done = false, q = null; const to = setTimeout(() => { if (done) return; done = true; try { q && q.destroy(); } catch (e) { } rej(Object.assign(new Error('timeout'), { type: 'timeout' })); }, 9000); try { q = new Peer(id); } catch (e) { clearTimeout(to); rej(e); return; } q.on('open', () => { if (done) return; done = true; clearTimeout(to); res(q); }); q.on('error', e => { if (done) return; done = true; clearTimeout(to); try { q.destroy(); } catch (x) { } rej(e || new Error('err')); }); }); }
   function renderPanel() {
-    $('tvCode').textContent = T.code || '----'; $('tvUrl').textContent = location.host + location.pathname.replace(/[^/]*$/, '') + 'controller.html';
+    $('tvCode').textContent = T.code || '----'; $('tvLink').textContent = location.host + location.pathname.replace(/[^/]*$/, '') + 'controller.html'; if (T.on && !T.stat) setStat('ok', players().some(s => !s.away) ? '🟢 ' + players().filter(s => !s.away).length + ' Handy verbunden' : '🟢 Bereit – warte auf das Handy');
     const pl = $('tvPl'); pl.innerHTML = ''; for (let i = 0; i < 4; i++) { const s = slots[i], d = el('div', 'color:' + COL[i]); d.className = 'tvp' + (s ? ' on' : ''); d.innerHTML = '<i style="background:' + COL[i] + '"></i><span style="color:#fff">' + (s ? s.name : '<em>wartet …</em>') + '</span>'; pl.appendChild(d); }
     $('tvSplitB').textContent = '🪟 Splitscreen: ' + (T.split ? 'an' : 'aus'); chip.textContent = '📺 ' + T.code + ' · ' + players().length + ' Spieler';
   }
@@ -57,44 +62,70 @@ BI.createTv = function (G) {
   const send = (s, d) => { if (s && s.conn && s.conn.open) { try { s.conn.send(d); } catch (e) { } } };
   const modeOf = () => G.state() === 'menu' ? 'title' : 'play';
   function welcome(s) { send(s, { t: 'w', slot: s.i, name: s.name, color: COL[s.i], split: T.split, m: s.i === 0 ? (modeOf() === 'title' && !T.ptrOn ? 'title' : T.menuMode ? 'menu' : 'play') : 'play' }); }
+  /* Controller kommt dazu (oder kommt zurück): Der Controller schickt beim „hi“ eine feste Kennung (cid). Gleiche Kennung = gleicher Spieler, alter Platz wird wieder übernommen (Reconnect). */
   function addConn(conn) {
-    conn.on('open', () => {
-      let i = slots.findIndex(s => !s); if (i < 0) { try { conn.send({ t: 'full' }); } catch (e) { } setTimeout(() => conn.close(), 300); return; }
-      const s = slots[i] = { i, conn, id: conn.peer, name: i === 0 ? G.heroName() : 'Spieler ' + (i + 1), stick: [0, 0], held: {}, jump: false, act: false, wave: 0, dance: false, mate: null, ct: 0 };
+    let bound = null, tm = 0;
+    const bind = cid => {
+      if (bound) return; clearTimeout(tm);
+      let s = cid ? slots.find(q => q && q.cid === cid) : null;
+      if (s) { const old = s.conn; s.conn = conn; s.id = conn.peer; s.away = 0; s.rx = Date.now(); bound = s; try { if (old && old !== conn) old.close(); } catch (e) { } welcome(s); setStat('ok', ''); T.stat = ''; renderPanel(); G.say('📱 ' + s.name + ' ist wieder da!', 2000); A.pop && A.pop(); return; }
+      let i = slots.findIndex(q => !q); if (i < 0) { try { conn.send({ t: 'full' }); } catch (e) { } setTimeout(() => { try { conn.close(); } catch (e) { } }, 300); bound = {}; return; }
+      s = slots[i] = { i, conn, id: conn.peer, cid: cid || '', rx: Date.now(), away: 0, name: i === 0 ? G.heroName() : 'Spieler ' + (i + 1), stick: [0, 0], held: {}, jump: false, act: false, wave: 0, dance: false, mate: null, ct: 0 }; bound = s;
       if (i > 0) spawnMate(s);
-      welcome(s); renderPanel(); chip.hidden = false; G.say('📱 ' + s.name + ' ist dabei!', 2200); A.pop && A.pop();
+      welcome(s); T.stat = ''; renderPanel(); chip.hidden = false; G.say('📱 ' + s.name + ' ist dabei!', 2200); A.pop && A.pop();
       if (T.split && players().length < 2) setSplit(false);
-    });
-    conn.on('data', d => onData(conn.peer, d));
-    const gone = () => { const s = slots.find(q => q && q.conn === conn); if (s) dropSlot(s, true); };
+    };
+    conn.on('open', () => { tm = setTimeout(() => bind(''), 2500); /* ältere Controller ohne Kennung */ });
+    conn.on('data', d => { if (d && d.t === 'hi' && !bound) bind(String(d.cid || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 24)); const s = bound && bound.conn === conn ? bound : null; if (s) s.rx = Date.now(); onData(conn.peer, d); });
+    const gone = () => { clearTimeout(tm); const s = slots.find(q => q && q.conn === conn); if (s) away(s); };
     conn.on('close', gone); conn.on('error', gone);
   }
+  /* Verbindung weg: Platz bleibt 30 s reserviert (Figur bleibt stehen), Controller kann sich wieder verbinden */
+  function away(s) {
+    if (s.away) return; s.away = Date.now(); s.conn = null; s.stick = [0, 0]; s.held = {}; if (s.i === 0) { G.setStick(0, 0); releaseP1(); }
+    G.say('📡 ' + s.name + ': Verbindung weg – wartet auf Rückkehr …', 2600); renderPanel();
+  }
+  setInterval(() => { /* Herzschlag: Ping an alle Controller; wer 10 s schweigt ist weg; nach 30 s Abwesenheit wird der Platz frei */
+    if (!T.on) return; const now = Date.now();
+    for (const s of slots) { if (!s) continue; if (s.away) { if (now - s.away > 30000) dropSlot(s, true); continue; } send(s, { t: 'p' }); if (now - s.rx > 10000) { try { s.conn && s.conn.close(); } catch (e) { } away(s); } }
+    if (peer && peer.disconnected && !peer.destroyed) { setStat('wait', '🟡 Vermittler weg – verbinde neu …'); try { peer.reconnect(); } catch (e) { } }
+  }, 2500);
   function dropSlot(s, say) {
     slots[s.i] = null; if (s.i === 0) { G.setStick(0, 0); releaseP1(); }
     if (s.mate) { s.mate.veh = null; scene.remove(s.mate.char.group); s.mate.char.dispose && s.mate.char.dispose(); }
     if (say) G.say('📱 ' + s.name + ' ist weg', 2000); renderPanel(); if (players().length < 2) { T.split = false; layout(); }
   }
+  /* Fernseher-Modus starten: Panel (Link + Code + QR + Status) steht sofort da, Verbindung zum Vermittler mit Zeitgrenzen und Wiederholungen */
   T.start = async function () {
-    if (T.on || T.busy) return; T.busy = true;
+    if (T.on) { openPanel(true); return T.code; }
+    if (T.busy) { openPanel(true); return null; }
+    T.busy = true; $('tvRetry').hidden = true; $('tvCode').textContent = '----'; chip.hidden = false; openPanel(true); renderPanel(); setStat('wait', '🟡 Verbinde mit dem Vermittler …');
     try {
-      await lib('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', () => !!window.Peer);
-      let code = '', p = null;
-      for (let k = 0; k < 6 && !p; k++) {
-        let sv = ''; try { sv = k === 0 ? (localStorage.getItem('bi-tv-mycode') || '') : ''; } catch (e) { } code = /^[A-Z2-9]{4}$/.test(sv) ? sv : ''; if (!code) for (let j = 0; j < 4; j++) code += ALPHA[(Math.random() * ALPHA.length) | 0]; /* gleicher Fernseher = gleicher Code: das Handy verbindet sich beim nächsten Mal von allein */
-        const r = await new Promise(res => { const q = new Peer(PRE + code); let done = false; q.on('open', () => { done = true; res(q); }); q.on('error', e => { if (!done) { done = true; try { q.destroy(); } catch (x) { } res(e && e.type === 'unavailable-id' ? null : 'err'); } }); });
-        if (r === 'err') throw new Error('broker'); p = r;
+      await withTimeout(lib('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', () => !!window.Peer), 12000, 'lib');
+      let code = '', p = null, last = null;
+      for (let k = 0; k < 7 && !p; k++) {
+        let sv = ''; try { sv = k === 0 ? (localStorage.getItem('bi-tv-mycode') || '') : ''; } catch (e) { } code = /^[A-Z2-9]{4}$/.test(sv) ? sv : ''; if (!code) for (let j = 0; j < 4; j++) code += ALPHA[(Math.random() * ALPHA.length) | 0]; /* gleicher Fernseher = gleicher Code */
+        try { p = await newPeer(PRE + code); } catch (e) { last = e; if (!(e && e.type === 'unavailable-id')) { if (k >= 3) break; await sleep(900); } }
       }
-      if (!p) throw new Error('code'); peer = p; T.code = code; T.on = true; T.busy = false; try { localStorage.setItem('bi-tv-mycode', code); } catch (e) { }
-      peer.on('connection', addConn); peer.on('disconnected', () => { try { peer.reconnect(); } catch (e) { } });
-      document.body.classList.add('tv'); chip.hidden = false; openPanel(true); renderPanel();
+      if (!p) throw last || new Error('code');
+      peer = p; T.code = code; T.on = true; T.busy = false; T.stat = ''; try { localStorage.setItem('bi-tv-mycode', code); } catch (e) { }
+      p.on('connection', addConn);
+      p.on('disconnected', () => { if (peer !== p) return; setStat('wait', '🟡 Vermittler weg – verbinde neu …'); setTimeout(() => { try { if (peer === p && !p.destroyed) p.reconnect(); } catch (e) { } }, 800); });
+      p.on('open', () => { if (peer === p) { T.stat = ''; renderPanel(); } });
+      p.on('error', e => { if (peer !== p) return; if (e && (e.type === 'network' || e.type === 'server-error' || e.type === 'socket-error' || e.type === 'socket-closed')) { setStat('wait', '🟡 Verbindung wackelt – versuche neu …'); setTimeout(() => { try { if (peer === p && !p.destroyed) p.reconnect(); } catch (x) { } }, 1500); } });
+      p.on('close', () => { if (peer !== p || !T.on) return; /* Vermittler hat uns verloren: gleichen Code neu belegen */ peer = null; T.on = false; setStat('wait', '🟡 Verbinde neu …'); T.start().catch(() => { }); });
+      document.body.classList.add('tv'); chip.hidden = false; openPanel(true); renderPanel(); setStat('ok', '🟢 Bereit – warte auf das Handy');
       const u = new URL('controller.html?c=' + code, location.href).href;
       lib('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', () => !!window.qrcode).then(() => { const q = qrcode(0, 'M'); q.addData(u); q.make(); $('tvQr').innerHTML = '<img alt="QR-Code zum Controller" src="' + q.createDataURL(8, 0) + '">'; qrOk = true; }).catch(() => { $('tvQr').textContent = code; });
       return code;
-    } catch (e) { T.busy = false; $('tvMsg').textContent = '😕 Verbindung nicht möglich (Internet nötig). Später nochmal versuchen.'; openPanel(true); chip.hidden = false; $('tvCode').textContent = '----'; throw e; }
+    } catch (e) {
+      T.busy = false; T.on = false; setStat('err', '🔴 Keine Verbindung zum Vermittler (Internet nötig).'); $('tvRetry').hidden = false; $('tvMsg').textContent = 'Prüfe das WLAN und tippe auf „Nochmal verbinden“.'; openPanel(true); chip.hidden = false; $('tvCode').textContent = '----'; $('tvQr').textContent = '📺'; return null;
+    }
   };
+  $('tvRetry').onclick = () => { T.start().catch(() => { }); };
   T.stop = function () {
     for (const s of slots) if (s) { send(s, { t: 'bye' }); dropSlot(s, false); }
-    try { peer && peer.destroy(); } catch (e) { } peer = null; T.on = false; T.code = ''; T.split = false; T.ptrOn = false; layout(); openPanel(false); chip.hidden = true; ptrEl.style.display = 'none'; document.body.classList.remove('tv');
+    { const q = peer; peer = null; T.on = false; try { q && q.destroy(); } catch (e) { } } T.code = ''; T.split = false; T.ptrOn = false; layout(); openPanel(false); chip.hidden = true; ptrEl.style.display = 'none'; document.body.classList.remove('tv');
   };
 
   /* ---------- Eingaben ---------- */
@@ -245,7 +276,7 @@ BI.createTv = function (G) {
   T.dbg = { slots, ptr, views: () => views, onData, addConn };
   /* Am Fernseher (Smart-TV, ?tv=1, ?device=tv) startet der Fernseher-Modus von selbst */
   /* Handy/Tablet in der Hand (kein Fernseher): „Spiel am Fernseher öffnen“ öffnet direkt den Handy-Controller */
-  T.isPhone = () => !T.isTvDevice() && !!(window.matchMedia && matchMedia('(pointer:coarse)').matches) && Math.min(screen.width, screen.height) < 900;
+  T.isPhone = () => !T.isTvDevice() && (/iPhone|iPod|iPad|Android.*Mobile|Mobile.*Safari|Windows Phone/i.test(navigator.userAgent) || (!!(window.matchMedia && matchMedia('(pointer:coarse)').matches) && Math.min(screen.width, screen.height) < 900));
   T.openController = () => { let c = ''; try { c = localStorage.getItem('bi-tv-last') || ''; } catch (e) { } location.href = new URL('controller.html' + (c ? '?c=' + c : ''), location.href).href; };
   T.isTvDevice = () => /[?&](tv=1|device=tv)\b/.test(location.search) || /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|AFTS|AFTM|AFTB|AFTT|AFTN|Android TV|GoogleTV|AppleTV|BRAVIA|CrKey|Viera|Roku|VIDAA|Fire TV|FireTV/i.test(navigator.userAgent);
   return T;

@@ -61,6 +61,14 @@ const tgt = await TV.evaluate(() => { const b = document.querySelector('#funBar 
 await TV.evaluate(t => { const p = __bi.tv.dbg.ptr; p.x = t.x - 2; p.y = t.y - 2; }, tgt); await C1.dispatchEvent('#bA', 'pointerdown', { pointerId: 6, bubbles: true }); await sl(80); await C1.dispatchEvent('#bA', 'pointerup', { pointerId: 6, bubbles: true }); await sl(700);
 ok(await TV.evaluate(() => document.getElementById('funBar').hidden), 'Zeiger + Klick am Handy drückt die Schaltfläche am Fernseher (Leiste schließt sich)');
 /* Trennen */ await C2.click('#menuBtn'); await C2.click('[data-k=leave]'); await sl(700); ok(await TV.evaluate(() => __bi.tv.count() === 1 && !__bi.tv.split && __bi.tv.dbg.views().length === 0), 'Spieler 2 trennt: Mitspieler weg, Splitscreen aus');
+/* Sichtbarer Link + erneutes Öffnen + Reconnect */
+ok(await TV.evaluate(() => /controller\.html$/.test(document.getElementById('tvLink').textContent)), 'TV-Panel enthält den Link zum Controller');
+ok(await TV.evaluate(async () => { document.getElementById('tvOk').click(); const open0 = !document.getElementById('tvPanel').hidden; const c = await __bi.tv.start(); return !open0 && !document.getElementById('tvPanel').hidden && c === __bi.tv.code && document.getElementById('tvLink').offsetWidth > 0; }), 'Zweites „Spiel am Fernseher öffnen“ zeigt Code und Link wieder an');
+{ const n0 = await TV.evaluate(() => __bi.tv.count()); await C1.evaluate(() => { try { window.__ctl.conn.close(); } catch (e) { } }); await sl(300);
+  const t0 = await C1.evaluate(() => ({ slot: window.__ctl.slot, txt: document.getElementById('wTitle').textContent }));
+  await C1.waitForFunction(() => window.__ctl.slot === 0, null, { timeout: 15000 }).catch(() => { });
+  const t1 = await C1.evaluate(() => window.__ctl.slot); const n1 = await TV.evaluate(() => __bi.tv.count());
+  ok(t1 === 0 && n1 === n0, 'Reconnect: Verbindung weg → Controller verbindet automatisch neu, gleicher Platz (' + t0.txt + ' → Platz ' + t1 + ', Spieler ' + n1 + ')'); }
 /* Handy öffnet das NORMALE Spiel → Mitspielen → Beitreten → Fernseher-Code: wird automatisch zum Controller */
 { const PH = await mk(844, 390, true); await PH.goto(BASE + '/bunte-insel/index.html'); await PH.waitForFunction(() => window.__bi, null, { timeout: 60000 });
   await PH.evaluate(() => { document.getElementById('bMulti').click(); }); await sl(300); await PH.evaluate(() => document.getElementById('mpJoin').click()); await sl(200);
