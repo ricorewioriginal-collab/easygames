@@ -18,7 +18,8 @@ BI.createWeather = function (G) {
     const a = (P.h || 0) + (Math.random() - .5) * 1.2, px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z;
     bow.position.set(px + Math.sin(a) * 150, -2, pz + Math.cos(a) * 150); bow.rotation.y = Math.atan2(px - bow.position.x, pz - bow.position.z); bow.visible = true; bowT = 70;
     say('🌈 Ein Regenbogen! Sammle die Regenbogen-Sterne!', 3600); A.fanfare && A.fanfare();
-    for (let i = 0, k = 0; i < stars.length && k < 6; i++) { const s = stars[i]; for (let t = 0; t < 20; t++) { const aa = Math.random() * TAU, d = 8 + Math.random() * 16, x = px + Math.sin(aa) * d, z = pz + Math.cos(aa) * d; if (W.free(x, z, 1.2)) { s.x = x; s.z = z; s.on = true; k++; break; } } }
+    for (const s of stars) s.bow = false;
+    for (let i = 0, k = 0; i < stars.length && k < 6; i++) { const s = stars[i]; for (let t = 0; t < 20; t++) { const aa = Math.random() * TAU, d = 8 + Math.random() * 16, x = px + Math.sin(aa) * d, z = pz + Math.cos(aa) * d; if (W.free(x, z, 1.2)) { s.x = x; s.z = z; s.on = true; s.bow = true; s.bi = k; k++; break; } } }
   };
   /* Zustandsautomat: alle 2–4 Minuten neues Wetter */
   let timer = 25 + Math.random() * 40, target = 0, was = 'clear';

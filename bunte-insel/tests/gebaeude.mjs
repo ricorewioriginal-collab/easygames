@@ -26,7 +26,7 @@ const r = await p.evaluate(async () => {
   return out;
 });
 if (process.env.DEBUG) console.log(JSON.stringify(r));
-ok(r.length === 22, r.length + ' öffentliche Gebäude (Hauptinsel, Stadt, Fellretter-Insel) sind begehbar: ' + r.map(o => o.name).join(', '));
+ok(r.length === 23, r.length + ' öffentliche Gebäude (Hauptinsel, Stadt, Fellretter-Insel) sind begehbar: ' + r.map(o => o.name).join(', '));
 for (const o of r) ok(o.door && o.wall && o.inside && o.roofBack && o.npc && o.npcIn, o.name + ': Tür frei, Wand hält, Dach verschwindet drinnen, Figur steht drinnen');
 /* Aktionstaste am Spielautomaten: ein geparktes Fahrzeug daneben darf den Knopf nicht übernehmen ("Fernsteuern"/"Einsteigen") */
 {
@@ -39,6 +39,20 @@ for (const o of r) ok(o.door && o.wall && o.inside && o.roofBack && o.npc && o.n
   });
   if (process.env.DEBUG) console.log(JSON.stringify(r2));
   ok(r2.none || (r2.src === 'arcade' && !/Fernsteuern|Einsteigen/.test(r2.lab)), 'Spielautomat: Aktionstaste zeigt „Spielen“ statt Fahrzeug-Aktion (' + (r2.lab || '-') + ')');
+}
+/* Drachenhöhle: Drachenei streicheln (+1 ⭐ einmal); Regenbogen-Sterne: sechs farbige Sterne, einsammelbar */
+{
+  const r3 = await p.evaluate(async () => {
+    const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), o = {}; b.P.veh = null; b.P.y = 0;
+    const q = b.W.interiors.find(i => i.sign.text && i.sign.text.includes('Drachenhöhle')), egg = q && q.items.find(i => i.k === 'egg'); o.cave = !!egg;
+    if (egg) { b.P.x = egg.x; b.P.z = egg.z; await sl(400); const n = b.placeNear(), s0 = b.save.stars; o.eggNear = !!n && n.src === 'furn'; if (n) b.placeAct(n); await sl(200); o.eggStar = b.save.stars - s0 === 1; }
+    b.weather().rainbow(); await sl(300); const bows = b.stars.filter(s => s.bow && s.on); o.bows = bows.length; o.slots = new Set(bows.map(s => s.bi)).size;
+    const s1 = b.save.stars, bs = bows[0]; if (bs) { b.P.x = bs.x; b.P.z = bs.z; await sl(500); o.collect = b.save.stars > s1 && !bs.bow; }
+    return o;
+  });
+  if (process.env.DEBUG) console.log(JSON.stringify(r3));
+  ok(r3.cave && r3.eggNear && r3.eggStar, 'Drachenhöhle: Drachenei-Knopf, +1 ⭐ einmal');
+  ok(r3.bows >= 4 && r3.slots === r3.bows && r3.collect, 'Regenbogen-Sterne: ' + r3.bows + ' bunte Sterne erscheinen und lassen sich einsammeln');
 }
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);

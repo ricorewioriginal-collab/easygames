@@ -101,6 +101,10 @@ Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richti
 ## Begehbare öffentliche Gebäude 🏥🚓🚒🏛️🏫🍦🚉
 Krankenhaus, Polizei, Feuerwehr, Rathaus, Schule, Eisdiele sowie die Bahnhöfe Hauptbahnhof und Südhalt sind jetzt innen begehbar (Tür, Möbel, Figur zum Reden; Dach verschwindet drinnen). Baustein: `BI.buildEnterable(..., { civic, npc, flat, roofExtra, gap })` in `js/town.js`. Dazu auf den Inseln: Kino (Sitzreihen, Popcorn), Scheune (Heu, Traktor), Stadt-Hochhäuser (Büro, Bank, Hotel, Kaufhaus mit Lobby), Fellretter-Insel (Café, Rathaus, 4 Hütten). Alle vier Bahnhöfe sind begehbar (die quer gebauten Strand/Leuchtturm über `BI.buildEnterableRot`, ein um 90° gedrehter Gebäude-Baustein). Märchenland-Schloss mit Thronsaal. Bewusst nicht begehbar: die Zotik-Häuser (Miniatur-Maßstab 0,6 – Räume wären zu klein), das schräg gebaute Bauland-Haus und die Aufbauten des Dampfers; Drachenhöhen, Atlantis und Radio haben keine geschlossenen Häuser (offene Attraktionen). Test: `tests/gebaeude.mjs`.
 
+**Drachenhöhle 🐉 (Drachenhöhen):** begehbares Felsenhaus im Westen der Insel (Tür zur Plaza): Nest mit drei Drachen-Eiern (Knopf „Drachenei streicheln“, +1 ⭐ einmal), Goldhaufen mit Edelsteinen, Kristalle, Fackeln, Höhlenforscherin Flora. Aufgebaut mit `BI.buildEnterableRot` + `BI.CIVIC.drache`.
+
+**Regenbogen-Sterne 🌈:** Erscheint ein Regenbogen, tauchen 6 größere Sterne auf, deren Farben im Regenbogen-Kreis wandern (eigene Instanzen in `main.js`, normale Sterne bleiben gold). Test: `tests/gebaeude.mjs`.
+
 ## Schatzsuche 🗺️🧰 (alle Inseln)
 **Schatzmeister Piet** (Hauptinsel nahe dem Start, Knopf „🗺️ Schatzsuche starten“) gibt das erste Bilder-Rätsel (wird vorgelesen). Eine **goldene Lichtsäule** zeigt schon von Weitem, wo die Kiste steht; der Pfeil 👣 führt zur Insel. Jede Kiste = +1 ⭐ und das nächste Rätsel: Freizeitpark → Fußball-Arena → Märchenland → Funkwelle → Drachenhöhen → Regenbogenwelt → Lunaris → Atlantis (großer Schatz +10 ⭐, Sticker „Schatzjäger“; danach geht es von vorn, dann +5 ⭐). Immer nur **eine** Kiste und **ein** Strahl (sparsam). Datei `js/schatz.js`, Test `tests/schatz.mjs`.
 

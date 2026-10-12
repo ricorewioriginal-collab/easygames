@@ -214,6 +214,8 @@
   for (let i = 0; i < 10; i++) { const r = i % 2 ? .42 : 1, a = i * Math.PI / 5; sg[i ? 'lineTo' : 'moveTo'](Math.sin(a) * r, Math.cos(a) * r); }
   const starGeo = new THREE.ExtrudeGeometry(sg, { depth: .3, bevelEnabled: false }); starGeo.translate(0, 0, -.15);
   const starMesh = new THREE.InstancedMesh(starGeo, new THREE.MeshLambertMaterial({ color: 0xffd23f, emissive: 0x9a6a00 }), NSTAR); starMesh.frustumCulled = false; starMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(starMesh);
+  /* Regenbogen-Sterne: eigene Instanzen (6), Farben laufen im Regenbogen-Kreis, größer als normale Sterne */
+  const RBCOL = [0xff3b3b, 0xff9a2e, 0xffe14a, 0x4cd07d, 0x3fa0ff, 0x9b4de0], bowMesh = new THREE.InstancedMesh(starGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }), 6), bowCol = new THREE.Color(), ZERO = new THREE.Matrix4().makeScale(0, 0, 0); bowMesh.frustumCulled = false; bowMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); for (let k = 0; k < 6; k++) { bowMesh.setMatrixAt(k, ZERO); bowCol.setHex(RBCOL[k]); bowMesh.setColorAt(k, bowCol); } scene.add(bowMesh);
   function starSpot(near) {
     for (let t = 0; t < 60; t++) {
       let x, z; if (near) { const a = Math.random() * TAU, d = 14 + Math.random() * 22; x = Math.sin(a) * d; z = Math.cos(a) * d; } else { const a = Math.random() * TAU, d = Math.sqrt(Math.random()) * 168; x = Math.sin(a) * d; z = Math.cos(a) * d; }
@@ -1345,6 +1347,7 @@
       ['maerchschiff', '🏴‍☠️', 'Piratenschiff „Salzige Möwe“', () => M.at(-44, -30), 'orte'],
       ['lagune', '🧜', 'Perlenlagune', () => M.at(-46, 27), 'orte'],
       ['basar', '🪔', 'Wüsten-Basar (Wunschgeist)', () => M.at(12, -33), 'orte'],
+      ['drachenhoehle', '🐉', 'Drachenhöhle (Drachenei)', () => ({ x: BI.DRACHEN.x - 20, z: BI.DRACHEN.z + 2 }), 'orte'],
       ['nimmer', '🌙', 'Nimmerland (Fee Glimmer, Fliegen)', () => M.at(31, -17), 'orte'],
       ['greifer', '🕹️', 'Greifer-Automat (Spielzeug-Land)', () => M.at(50, -15), 'spiele'],
       ['dschungel', '🌴', 'Dschungel & Honigwald', () => M.at(12, 33), 'orte'],
@@ -1885,7 +1888,7 @@
       const s = pup.star; if (!s || !s.on) { pup.mode = 'follow'; }
       else {
         tx = s.x; tz = s.z; const d = Math.hypot(tx - pup.x, tz - pup.z);
-        if (d < 1.3) { s.on = false; s.t = 45; A.star(); addStars(1); A.bark(); pup.bark = .5; pup.mode = 'follow'; pup.cd = 4; say('🐾 ' + pup.name + ' hat einen Stern gefunden! +1 ⭐', 2200); fx.burst(s.x, 1.2, s.z, 18, [BI.C.gold, BI.C.white, BI.C.dust], 5, .9, 26, 8); }
+        if (d < 1.3) { s.on = false; s.bow = false; s.t = 45; A.star(); addStars(1); A.bark(); pup.bark = .5; pup.mode = 'follow'; pup.cd = 4; say('🐾 ' + pup.name + ' hat einen Stern gefunden! +1 ⭐', 2200); fx.burst(s.x, 1.2, s.z, 18, [BI.C.gold, BI.C.white, BI.C.dust], 5, .9, 26, 8); }
         else sp = 9.5;
       }
     }
@@ -2031,16 +2034,18 @@
     if (Math.random() < dt * 40) { const a = Math.random() * TAU; fx.emit(Math.sin(a) * .4, 3.6, Math.cos(a) * .4, Math.sin(a) * 1.4, 5 + Math.random() * 2, Math.cos(a) * 1.4, 1.5, 24, .6, .85, 1, 9, .85); }
     // Sterne
     const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z, R = P.veh ? 3.6 : 2.3, low = !P.veh || (P.veh.y || 0) < 5;
+    for (let k = 0; k < 6; k++) bowMesh.setMatrixAt(k, ZERO);
     for (let i = 0; i < NSTAR; i++) {
-      const s = stars[i];
+      const s = stars[i]; let bowOn = false;
       if (!s.on) { s.t -= dt; if (s.t <= 0) { const p = starSpot(false); s.x = p.x; s.z = p.z; s.on = true; } dummy.scale.setScalar(0); }
       else {
-        if (Math.abs(s.x - px) < R && Math.abs(s.z - pz) < R && Math.hypot(s.x - px, s.z - pz) < R && low && state === 'play') { s.on = false; s.t = 45; A.star(); addStars(1); meta.note('star'); { const ex = meta.starBonus(); if (ex) addStars(ex); } gameStar(); fx.burst(s.x, 1.8, s.z, 14, [BI.C.gold, BI.C.white], 5, .9, 24, 8); }
-        dummy.position.set(s.x, 1.3 + Math.sin(t * 2 + s.ph) * .15, s.z); dummy.rotation.set(0, t * 1.8 + s.ph, 0); dummy.scale.setScalar(.42);
+        if (Math.abs(s.x - px) < R && Math.abs(s.z - pz) < R && Math.hypot(s.x - px, s.z - pz) < R && low && state === 'play') { s.on = false; s.bow = false; s.t = 45; A.star(); addStars(1); meta.note('star'); { const ex = meta.starBonus(); if (ex) addStars(ex); } gameStar(); fx.burst(s.x, 1.8, s.z, 14, [BI.C.gold, BI.C.white], 5, .9, 24, 8); }
+        dummy.position.set(s.x, 1.3 + Math.sin(t * 2 + s.ph) * .15, s.z); dummy.rotation.set(0, t * 1.8 + s.ph, 0); dummy.scale.setScalar(s.bow && s.on ? .62 : .42); bowOn = !!(s.bow && s.on);
       }
-      dummy.updateMatrix(); starMesh.setMatrixAt(i, dummy.matrix);
+      dummy.updateMatrix(); if (bowOn) { bowMesh.setMatrixAt(s.bi, dummy.matrix); dummy.scale.setScalar(0); dummy.updateMatrix(); }
+      starMesh.setMatrixAt(i, dummy.matrix);
     }
-    starMesh.instanceMatrix.needsUpdate = true;
+    starMesh.instanceMatrix.needsUpdate = true; bowMesh.instanceMatrix.needsUpdate = true; { const sh = (t * 3) | 0; for (let k = 0; k < 6; k++) { bowCol.setHex(RBCOL[(k + sh) % 6]); bowMesh.setColorAt(k, bowCol); } bowMesh.instanceColor.needsUpdate = true; }
   }
 
   /* ---------- Kamera ---------- */
