@@ -39,6 +39,15 @@ await sl(500); ok(await TV.evaluate(() => __bi.tv.count() === 2 && !!__bi.tv.dbg
 const m0 = await TV.evaluate(() => { const m = __bi.tv.dbg.slots[1].mate; return [m.x, m.z]; }); await C2.mouse.move(120, 280); await C2.mouse.down(); await C2.mouse.move(180, 280, { steps: 4 }); await sl(1800); await C2.mouse.up();
 const m1 = await TV.evaluate(() => { const m = __bi.tv.dbg.slots[1].mate; return [m.x, m.z]; }); ok(Math.hypot(m1[0] - m0[0], m1[1] - m0[1]) > .8, 'Stick von Spieler 2 bewegt dessen Figur (' + Math.hypot(m1[0] - m0[0], m1[1] - m0[1]).toFixed(1) + ' m)');
 await C2.dispatchEvent('#bB', 'pointerdown', { pointerId: 5, bubbles: true }); let mh = 0; for (let k = 0; k < 8; k++) { await sl(70); mh = Math.max(mh, await TV.evaluate(() => __bi.tv.dbg.slots[1].mate.y)); } await C2.dispatchEvent('#bB', 'pointerup', { pointerId: 5, bubbles: true }); ok(mh > .3, 'Spieler 2 kann springen (' + mh.toFixed(2) + ' m)');
+/* Mitfahren: Spieler 2 steigt in das Auto von Spieler 1, fährt nur mit, steigt mit aus */
+await TV.evaluate(async () => { const b = __bi, v = b.vehicles.find(q => q.type === 'car'); b.P.veh = null; b.P.x = v.x + 2; b.P.z = v.z; const m = b.tv.dbg.slots[1].mate; m.x = v.x - 2; m.z = v.z; m.y = 0; await new Promise(r => setTimeout(r, 500)); b.enter(v); await new Promise(r => setTimeout(r, 500)); });
+await sl(500); ok(await C2.evaluate(() => document.querySelector('#bA small').textContent) === 'Mitfahren', 'Controller 2 zeigt „Mitfahren“, sobald Spieler 1 im Auto sitzt');
+await C2.dispatchEvent('#bA', 'pointerdown', { pointerId: 8, bubbles: true }); await sl(80); await C2.dispatchEvent('#bA', 'pointerup', { pointerId: 8, bubbles: true }); await sl(500);
+ok(await TV.evaluate(() => !!__bi.tv.dbg.slots[1].mate.veh && __bi.tv.dbg.slots[1].mate.veh === __bi.P.veh), 'Spieler 2 sitzt im selben Auto wie Spieler 1');
+await C2.mouse.move(120, 280); await C2.mouse.down(); await C2.mouse.move(180, 280, { steps: 3 }); await TV.evaluate(() => { __bi.keys.u = true; }); await sl(2500); await TV.evaluate(() => { __bi.keys.u = false; }); await C2.mouse.up();
+const rd = await TV.evaluate(() => { const v = __bi.P.veh, m = __bi.tv.dbg.slots[1].mate; return { d: Math.hypot(m.x - v.x, m.z - v.z), moved: Math.hypot(v.x - m.sx0, v.z - m.sz0) }; });
+ok(rd.d < 1, 'Spieler 2 fährt mit dem Auto mit (Abstand zum Auto ' + rd.d.toFixed(2) + ' m) – sein Stick lenkt nicht');
+await TV.evaluate(() => __bi.leave(true)); await sl(600); ok(await TV.evaluate(() => !__bi.tv.dbg.slots[1].mate.veh), 'Steigt Spieler 1 aus, steigen die Mitfahrer mit aus');
 /* Splitscreen über das Menü am Handy */
 await C1.click('#menuBtn'); await C1.click('#mSplit'); await sl(800); const sp = await TV.evaluate(() => ({ s: __bi.tv.split, v: __bi.tv.dbg.views().length, dom: !document.getElementById('tvSplit').hidden }));
 ok(sp.s && sp.v === 2 && sp.dom, 'Splitscreen am Handy eingeschaltet: 2 Bilder am Fernseher'); await C1.click('#close'); await sl(1200);
