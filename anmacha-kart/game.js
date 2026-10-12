@@ -2,7 +2,7 @@
 /* AnMaCha Kart Rush – Host/Solo: Menü, Rennablauf, Splitscreen-HUD, Handy-Kopplung (PeerJS). Controller: controller.js */
 const $ = id => document.getElementById(id);
 const qp = new URLSearchParams(location.search);
-const JOIN = (qp.get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6), PH = qp.get('ph') || '', TV = qp.has('tv');
+const JOIN = (qp.get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6), PH = qp.get('ph') || '', TV = qp.has('tv') || /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|AFTS|AFTM|AFTB|AFTT|AFTN|Android TV|GoogleTV|AppleTV|BRAVIA|CrKey|Viera|Roku|VIDAA|Fire TV|FireTV/i.test(navigator.userAgent);
 const NAMES = ['RicoReWi Music & Media', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!', 'RockRadio 24', 'ChristmasRadio 24', 'KultRadio 24', 'Zocker-FM', 'Special-Radio'];
 const CDN = { three: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', peer: 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js', qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js' };
 const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Laden fehlgeschlagen: ' + src)); document.head.appendChild(s); });
@@ -153,6 +153,11 @@ function initHost() {
   const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇 Ton aus' : '🔊 Ton an'; };
   const togSnd = () => { AUD.setMute(!AUD.muted); syncSnd(); if (!R && !AUD.muted) AUD.bed('menu'); };
   $('bSnd').onclick = $('bMenuSnd').onclick = togSnd; syncSnd();
+  // Handy: Code vom Fernseher eintippen → Seite wird zum Lenkrad (gleiche Logik wie ?join=CODE per QR)
+  { const norm = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4), box = $('joinBox'), inp = $('joinIn'), msg = $('joinMsg');
+    const go = () => { const c = norm(inp.value); if (c.length !== 4) { msg.textContent = 'Der Code hat 4 Zeichen 🙂'; return; } msg.textContent = 'Verbinde …'; location.href = location.pathname + '?join=' + c + (PH ? '&ph=' + encodeURIComponent(PH) : ''); };
+    $('bJoin').onclick = () => { box.hidden = false; msg.textContent = ''; inp.value = ''; setTimeout(() => { try { inp.focus(); } catch (e) {} }, 50); };
+    $('joinBack').onclick = () => { box.hidden = true; }; $('joinGo').onclick = go; inp.oninput = () => { inp.value = norm(inp.value); }; inp.onkeydown = e => { if (e.key === 'Enter') go(); else if (e.key === 'Escape') box.hidden = true; e.stopPropagation(); }; }
   $('bTv').onclick = () => { location.href = location.pathname + '?tv' + (PH ? '&ph=' + encodeURIComponent(PH) : ''); };
   // TV-Modus: direkt in die Lobby; der erste Druck auf OK/Enter (oder ein Klick) schaltet in Vollbild – automatisch erlauben Browser das nicht
   if (TV) { $('tvHint').hidden = false; const fs = () => { const d = document.documentElement; if (document.fullscreenElement || document.webkitFullscreenElement) return; try { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (r && r.catch) r.catch(() => {}); } catch (e) {} };
