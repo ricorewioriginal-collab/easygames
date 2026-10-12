@@ -127,6 +127,12 @@ BI.buildEnterableRot = function (c, o) {
 
 /* Innenräume für öffentliche Gebäude auf den Inseln (werden von buildEnterable über { civic } aufgerufen) */
 BI.CIVIC = {
+  drache: k => { const { furn, block, X, Z, st, Win } = k; st.rect(X(-5), Z(.6), X(5), Z(5.2), .08, 0xe0b84a); st.cyl(X(0), 0, Z(2.6), 2.1, 2.3, .35, 0xd9a441, 14); st.cyl(X(0), .35, Z(2.6), 1.6, 1.8, .18, 0xe0b84a, 14);
+    for (const [u, v, c] of [[-.7, 2.3, 0x6cc6ff], [.8, 2.9, 0xff8fc8], [0, 1.9, 0xb48aff]]) { st.sph(X(u), .75, Z(v), .5, c, 1, 1, 1.35, 1); st.sph(X(u), 1.05, Z(v), .12, 0xffffff, 0); } block(0, 2.6, 4.2, 4.2, .6);
+    for (let i = 0; i < 9; i++) st.sph(X(5 + (i % 3) * .55 - .5), .3 + Math.floor(i / 3) * .35, Z(1.6 + (i % 3) * .5), .5, [0xffd23f, 0xffe27a, 0xffc21f][i % 3], 1, 1, .8, 1); for (const [u, v, c] of [[4.2, 3.4, 0xff4d6a], [5.6, 3.3, 0x3fa0ff], [6.1, 1.2, 0x4cd07d]]) st.cone(X(u), 0, Z(v), .3, .9, c, 5); furn(5.3, 2.4, 2.4, 2.8, .1, 0xffd23f); block(5.3, 2, 2.6, 3, 1);
+    for (const u of [-6.2, 6.2]) for (const v of [.7, 4.6]) { st.cone(X(u), 0, Z(v), .4, 1.6 + (v > 3 ? .5 : 0), [0x6ac8ff, 0xa66bff][(u < 0 ? 0 : 1)], 5); } for (const u of [-3.2, 3.2]) { st.cyl(X(u), 0, Z(.45), .08, .1, 2.4, 0x444a5a, 6); st.sph(X(u), 2.55, Z(.45), .28, 0xffae3a, 1); }
+    furn(-5, 6.4, 3, 1.2, .35, 0xe0b84a); block(-5, 6.4, 3, 1.2, .4); st.sph(X(-5.2), .55, Z(6.4), .4, 0x6fae5a, 1, 1.4, .8, 1);
+    k.item('egg', 0, 4.9); k.item('hoard', 4.6, 4.3); k.it.resident = { x: X(-3), z: Z(5.6) }; },
   lobby: k => { const { furn, block, X, Z, st } = k; furn(0, 3.2, 6, 1, 1.1, 0x8a5a33); block(0, 3.2, 6, 1, 1.1); st.box(X(0), 1.1, Z(3.2), 6.1, .08, 1.1, 0xf3e3c3); for (const u of [-6, 6]) { st.cyl(X(u), 0, Z(1.4), .3, .24, .5, 0xc2453d, 8); st.sph(X(u), .95, Z(1.4), .5, 0x3fa84e, 1, 1, 1.2, 1); }
     for (const u of [-1.3, 1.3]) { st.box(X(u), 0, Z(.3), 1.4, 3, .06, 0xc9ced6); st.sph(X(u), 3.3, Z(.25), .08, 0xffd23f, 0); } furn(-5, 6.5, 3, .7, .5, 0x4da3ff); block(-5, 6.5, 3, .7, .5); furn(5, 6.5, 3, .7, .5, 0x4da3ff); block(5, 6.5, 3, .7, .5); k.it.resident = { x: X(0), z: Z(1.9) }; },
   cozy: k => { const { furn, block, X, Z, st, LU, RU } = k; furn(LU + 1, 1.3, 1.5, 2.2, .45, 0x8a5a33); furn(LU + 1, 1.35, 1.4, 2, .2, 0xff7aa8, .45); block(LU + 1, 1.3, 1.5, 2.2, .8); st.rect(X(-.8), Z(2.8), X(1.2), Z(4.6), .08, 0xffd86b); furn(RU - 1, 1.2, 1.4, 1.1, .8, 0xc8803c); block(RU - 1, 1.2, 1.4, 1.1, .8); st.cyl(X(RU - 1), .8, Z(1.2), .25, .25, .3, 0xffe27a, 8); st.cyl(X(LU + .5), 0, Z(5.6), .2, .16, .4, 0xc2453d, 8); st.sph(X(LU + .5), .8, Z(5.6), .38, 0x3fa84e, 1, 1, 1.2, 1); k.it.resident = { x: X(.2), z: Z(3.7) }; },
@@ -159,7 +165,7 @@ BI.createTown = function (G) {
       n.hop = Math.max(0, n.hop - dt); n.c.group.rotation.y = n.h; n.c.group.position.y = n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .5 : 0; n.c.pose(t * 1.2 + n.x, 0, near && Math.sin(t * .8 + n.x) > .6); }
   };
   /* Möbel-Interaktionen */
-  const LAB = { bed: ['🛏️', 'Schlafen'], tv: ['📺', 'Fernsehen'], books: ['📖', 'Lesen'], piano: ['🎹', 'Klavier'], fridge: ['🧊', 'Kühlschrank'], plant: ['🪴', 'Gießen'], store: ['🛒', 'Einkaufen'], sit: ['☕', 'Hinsetzen'] };
+  const LAB = { bed: ['🛏️', 'Schlafen'], tv: ['📺', 'Fernsehen'], books: ['📖', 'Lesen'], piano: ['🎹', 'Klavier'], fridge: ['🧊', 'Kühlschrank'], plant: ['🪴', 'Gießen'], store: ['🛒', 'Einkaufen'], sit: ['☕', 'Hinsetzen'], egg: ['🥚', 'Drachenei streicheln'], hoard: ['💎', 'Schatz bestaunen'] };
   K.near = function () { const q = K.inside(); if (!q) return null; let best = null, bd = 99; for (const it of q.items) { const d = Math.hypot(P.x - it.x, P.z - it.z); if (d < (it.k === 'store' ? 2.4 : 2.0) && d < bd) { bd = d; best = it; } } return best ? { it: best, q } : null; };
   K.label = n => { if (n.it.k === 'store') { const sh = BI.TOWN_SHOPS.find(s => s.id === n.it.shop); return [sh.icon, sh.id === 'buecherei' ? 'Bücherei' : 'Einkaufen']; } return LAB[n.it.k] || ['❔', '?']; };
   let fridgeT = -1e9, tvN = 0, tales = 0, planted = 0;
@@ -171,6 +177,8 @@ BI.createTown = function (G) {
     else if (it.k === 'piano') G.openMusic && G.openMusic();
     else if (it.k === 'bed') G.sleep && G.sleep(n.q, it);
     else if (it.k === 'plant') { A.splash && A.splash(); fx.burst(it.x, 1.2, it.z, 14, [BI.C.water, BI.C.white], 3, 1, 26, 5); say('🪴 Die Pflanze freut sich! 💧', 2000); planted++; }
+    else if (it.k === 'egg') { A.pop && A.pop(); fx.burst(it.x, 1.2, it.z, 14, [BI.C.gold, BI.C.pink, BI.C.white], 3, 1, 26, 3); const s = save.dracheEi | 0; if (!s) { save.dracheEi = 1; persist(); addStars && addStars(1); say('🥚 Das Drachenei ist ganz warm – es wackelt! +1 ⭐', 3600); } else say('🥚 Pst … das Drachenei träumt.', 2200); if (A.speak && !s) A.speak('Das Drachenei ist ganz warm. Es wackelt!'); }
+    else if (it.k === 'hoard') { A.star && A.star(); fx.burst(it.x, 1.4, it.z, 18, [BI.C.gold, BI.C.white, BI.C.blue], 4, 1, 28, 4); say('💎 So viel Gold und so viele Edelsteine! Alles vom Drachen Zündel gesammelt.', 4200); }
     else if (it.k === 'sit') { A.pop && A.pop(); say('☕ Gemütlich hier! Die Kellnerin bringt gleich etwas.', 2400); }
     else if (it.k === 'store') K.openStore(it.shop);
   };

@@ -9,7 +9,7 @@ BI.createBeauty = function (G) {
   const ok = (x, z, r) => Math.hypot(x, z) < 152 && W.free(x, z, r) && !W.onRoad(x, z) && Math.hypot(x - W.lake.x, z - W.lake.z) > W.lake.r + 3;
 
   /* ---------- weiche Schatten (Bäume + große Gebäude), eine Mesh, halbtransparent ---------- */
-  const shMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+  const shMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -60, polygonOffsetUnits: -60 });
   { const b = new BI.Batch(), C = 0x1c2a44, dx = -.83, dz = -.55;
     for (const T of W.trees) { const s = T.top / (T.kind === 'pine' ? 5 : 4), r = (T.kind === 'pine' ? 1.9 : 2.3) * s, L = T.top * .5; b.disc(T.x + dx * L, T.z + dz * L, r, .075, C, 10); }
     for (const q of W.boxes) { const w = q.x1 - q.x0, d = q.z1 - q.z0, h = Math.min(q.h || 6, 9); if (Math.min(w, d) < 3 || w * d < 16 || h < 3) continue; const L = h * .55; b.rect(q.x0 + dx * L, q.z0 + dz * L, q.x1 + dx * L, q.z1 + dz * L, .072, C); }
@@ -29,7 +29,7 @@ BI.createBeauty = function (G) {
 
   /* ---------- Wiesenflecken (zwei zusätzliche Grüntöne) ---------- */
   if (!soft) { const b = new BI.Batch(), cols = [0x82c174, 0x9acf87, 0x77b869, 0x8cc77d, 0xa6d591];
-    for (let i = 0, n = 0; i < 400 && n < (eco ? 40 : 95); i++) { const a = rnd() * TAU, d = Math.sqrt(rnd()) * 150, x = Math.sin(a) * d, z = Math.cos(a) * d, r = 4 + rnd() * 10; if (![[0, 0], [r * .8, 0], [-r * .8, 0], [0, r * .8], [0, -r * .8]].every(([ox, oz]) => !W.onRoad(x + ox, z + oz) && Math.hypot(x + ox, z + oz) < 158 && Math.hypot(x + ox - W.lake.x, z + oz - W.lake.z) > W.lake.r + 2)) continue; b.disc(x, z, r, .026 + (n % 3) * .001, cols[n % cols.length], 14); n++; }
+    const put = [[], [], []]; for (let i = 0, n = 0; i < 400 && n < (eco ? 40 : 95); i++) { const a = rnd() * TAU, d = Math.sqrt(rnd()) * 150, x = Math.sin(a) * d, z = Math.cos(a) * d, r = 4 + rnd() * 10; if (put[n % 3].some(q => Math.hypot(q[0] - x, q[1] - z) < q[2] + r + .2)) continue; if (![[0, 0], [r * .8, 0], [-r * .8, 0], [0, r * .8], [0, -r * .8]].every(([ox, oz]) => !W.onRoad(x + ox, z + oz) && Math.hypot(x + ox, z + oz) < 158 && Math.hypot(x + ox - W.lake.x, z + oz - W.lake.z) > W.lake.r + 2)) continue; put[n % 3].push([x, z, r]); b.disc(x, z, r, .026 + (n % 3) * .001, cols[n % cols.length], 14); n++; }
     const m = b.mesh(mat); m.frustumCulled = false; scene.add(m); }
 
   /* ---------- Blumen und Grasbüschel (Instanzen) ---------- */
