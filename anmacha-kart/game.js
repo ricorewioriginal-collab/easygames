@@ -109,7 +109,7 @@ else initHost();
 function initHost() {
   if (window.self !== window.top) $('backLink').hidden = true;
   const coarse = matchMedia('(pointer:coarse)').matches; if (coarse) document.body.classList.add('touch');
-  let save = { rmode: 'race', track: 0, laps: 3, skill: 1, name: '', logo: 6, char: 1, kart: 0, cup: 0, assist: null, best: {}, kb: true };
+  let save = { rmode: 'race', track: 0, laps: 3, skill: 1, name: '', logo: 6, char: 1, kart: 0, cup: 0, assist: null, best: {}, kbOn: null };
   try { const s = JSON.parse(localStorage.getItem('akSave') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
   const persist = () => { try { localStorage.setItem('akSave', JSON.stringify(save)); } catch (e) {} };
   const TR = Track.DEFS; let trCache = {}; const getTrack = i => trCache[i] || (trCache[i] = Track.build(TR[i]));
@@ -183,7 +183,7 @@ function initHost() {
   const randCode = n => Array.from({ length: n }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
   const remotes = () => players.filter(p => p.conn);
   async function openLobby() {
-    AUD.unlock(); $('menu').hidden = true; $('lobby').hidden = false; lobbyOpen = true; players = players.filter(p => p.conn && p.conn.open); if (save.kb) addKbPlayer(); updateLobby();
+    AUD.unlock(); $('menu').hidden = true; $('lobby').hidden = false; lobbyOpen = true; players = players.filter(p => p.conn && p.conn.open); if (save.kbOn === true || (save.kbOn !== false && !remotes().length)) addKbPlayer(save.kbOn !== true); updateLobby(); remotes().forEach(p => send(p.conn, { t: 'wel' }));
     if (!peer) {
       $('code').textContent = '….'; $('pairUrl').textContent = 'Verbinde …';
       try { await Promise.all([window.Peer || loadScript(CDN.peer), window.qrcode || loadScript(CDN.qr)]); } catch (e) { $('pairUrl').textContent = 'Koppeln nicht möglich (Internet?)'; return; }
@@ -194,22 +194,30 @@ function initHost() {
     room = randCode(4);
     try { peer = new Peer('amk-' + room, peerCfg()); } catch (e) { $('pairUrl').textContent = 'Koppeln nicht möglich'; return; }
     peer.on('open', showPair);
+    // Verbindung zum Vermittlungs-Server verloren (WLAN-Hänger): neu anmelden, damit Handys weiter beitreten können
+    peer.on('disconnected', () => { setTimeout(() => { try { if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); } catch (e) {} }, 1000); });
     peer.on('error', e => { if (e.type === 'unavailable-id') { try { peer.destroy(); } catch (x) {} peer = null; createRoom(); } else $('pairUrl').textContent = 'Verbindung zum Koppel-Server nicht möglich (' + e.type + ')'; });
     peer.on('connection', c => { c.on('data', m => onRemote(c, m)); c.on('close', () => onGone(c)); c.on('error', () => onGone(c)); });
   }
   const pairUrl = () => location.href.split('#')[0].split('?')[0] + '?join=' + room + (PH ? '&ph=' + encodeURIComponent(PH) : '');
   function showPair() { $('code').textContent = room; const url = pairUrl(); $('pairUrl').textContent = url; try { const q = qrcode(0, 'M'); q.addData(url); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { $('qr').innerHTML = ''; } }
   const send = (c, m) => { try { if (c && c.open) c.send(m); } catch (e) {} };
-  function addKbPlayer() { if (!players.some(p => p.kbp)) players.push({ name: (save.name || '').trim() || 'Tastatur', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
+  function addKbPlayer(auto) { if (!players.some(p => p.kbp)) players.push({ kbAuto: !!auto, name: (save.name || '').trim() || 'Tastatur', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
   function onRemote(c, m) {
     if (!m || typeof m !== 'object') return;
     if (m.t === 'join') {
       const old = players.find(p => p.conn === c); const nm = String(m.name || 'Gast').trim().slice(0, 14) || 'Gast', lg = Number.isInteger(m.logo) && m.logo >= 0 && m.logo < 13 ? m.logo : 6, ch = Number.isInteger(m.ch) && m.ch >= 0 && m.ch < CHARS.length ? m.ch : 1, kt = Number.isInteger(m.kt) && m.kt >= 0 && m.kt < KARTS.length ? m.kt : 0;
-      if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; return updateLobby(); }
-      if (R && R.S.state !== 'done') return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
+      const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; send(c, { t: 'wel', race: racing }); return updateLobby(); }
+      // Dasselbe Handy kommt nach einem Abbruch zurück: altes Kart übernehmen statt neu anzumelden
+      const cid = typeof m.cid === 'string' ? m.cid.slice(0, 16) : '', back = cid && players.find(p => p.cid === cid);
+      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing }); return updateLobby(); }
+      if (racing) return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
+      players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
-      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
-    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; } }
+      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
+    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; p.inAt = performance.now(); } }
+    // Start-Knopf am Handy: Lobby starten bzw. nach dem Rennen weiter
+    else if (m.t === 'go' && players.some(p => p.conn === c)) { if (lobbyOpen && !$('bGo').disabled) $('bGo').click(); else if (R && R.ended && !$('res').hidden) $('bNext').click(); }
   }
   function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else players.splice(i, 1); updateLobby(); }
   function updateLobby() {
@@ -218,7 +226,7 @@ function initHost() {
   }
   $('padAdd').onclick = () => { const used = new Set(players.filter(p => p.pad != null).map(p => p.pad)), pad = Pads.list().find(p => !used.has(p.index)); if (!pad) { $('padAdd').textContent = '🎮 Kein Gamepad – Taste am Gamepad drücken'; setTimeout(() => { $('padAdd').textContent = '🎮 Gamepad-Spieler hinzufügen'; }, 2500); return; } if (players.length < 4) players.push({ name: 'Gamepad ' + (used.size + 1), logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, pad: pad.index }); updateLobby(); };
   addEventListener('gamepadconnected', () => { renderMenu(); });
-  $('kbToggle').onclick = () => { if (players.some(p => p.kbp)) players = players.filter(p => !p.kbp); else if (players.length < 4) addKbPlayer(); save.kb = players.some(p => p.kbp); persist(); updateLobby(); };
+  $('kbToggle').onclick = () => { if (players.some(p => p.kbp)) players = players.filter(p => !p.kbp); else if (players.length < 4) addKbPlayer(); save.kbOn = players.some(p => p.kbp); persist(); updateLobby(); };
   $('bLobBack').onclick = () => { $('lobby').hidden = true; lobbyOpen = false; showView('setup'); };
   $('bGo').onclick = () => { $('lobby').hidden = true; lobbyOpen = false; beginSeries(); };
 
@@ -237,7 +245,7 @@ function initHost() {
     const S = Sim.create({ track: tr, laps: save.laps, racers, items: !GP.tt, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
-    humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; });
+    humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; });
     nVp = Math.min(4, humans.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, humans.map((_, i) => i)); buildHud(); buildMap();
     document.body.classList.add('racing'); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
     banner(TR[tIdx].name, GP.gp ? `${Track.CUPS[save.cup].name} ${GP.race + 1}/${GP.order.length}` : '', 1600); paused = false; push('grid');
@@ -296,9 +304,9 @@ function initHost() {
   function noteLap(ki, time) { if (GP.multi || ki !== 0) return; const id = R.tr.def.id, b = save.best[id] || (save.best[id] = {}); if (!b.lap || time < b.lap) { b.lap = time; persist(); R.newBest = time; } }
   // Eingabe der Menschen
   function readInputs() {
-    const pads = Pads.list();
-    return R.humans.map(p => {
-      if (p.conn) return p.input;
+    const pads = Pads.list(), now = performance.now();
+    return R.humans.map((p, i) => {
+      if (p.conn) { const k = R.S.karts[i]; if (!k.finished) k.auto = !!p.gone || now - (p.inAt || 0) > 1500; return p.input; }
       if (p.pad != null) return Pads.read(pads.find(x => x.index === p.pad));
       const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v;
       return { s: clampN(s, -1, 1), g: kb.g || tc.g || (p.local && pa.g) ? 1 : 0, b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
