@@ -71,7 +71,7 @@ BI.createTv = function (G) {
   }
   function dropSlot(s, say) {
     slots[s.i] = null; if (s.i === 0) { G.setStick(0, 0); releaseP1(); }
-    if (s.mate) { scene.remove(s.mate.char.group); s.mate.char.dispose && s.mate.char.dispose(); }
+    if (s.mate) { s.mate.veh = null; scene.remove(s.mate.char.group); s.mate.char.dispose && s.mate.char.dispose(); }
     if (say) G.say('📱 ' + s.name + ' ist weg', 2000); renderPanel(); if (players().length < 2) { T.split = false; layout(); }
   }
   T.start = async function () {
@@ -124,7 +124,7 @@ BI.createTv = function (G) {
   }
   function onBtn(s, k, down) {
     A.resume && A.resume();
-    if (s.i > 0) { if (down) { if (k === 'B') s.jump = true; else if (k === 'A') { s.wave = 1.4; A.hello && A.hello(); } else if (k === 'H') s.dance = !s.dance; else if (k === 'X') s.wave = 1.4; } s.held[k] = down; return; }
+    if (s.i > 0) { if (down) { if (k === 'B') s.jump = true; else if (k === 'A') mateAction(s); else if (k === 'H') { if (s.mate && s.mate.veh) honk(); else s.dance = !s.dance; } else if (k === 'X') s.wave = 1.4; } s.held[k] = down; return; }
     if (T.menuMode) {
       if (!down) return; if (k === 'A') clickAt(ptr.x, ptr.y); else if (k === 'B') closeTopPanel(); return;
     }
@@ -146,14 +146,34 @@ BI.createTv = function (G) {
   function scrollAt(dy) { let e = document.elementFromPoint(ptr.x, ptr.y); while (e && e !== document.body) { if (e.scrollHeight > e.clientHeight + 4 && /auto|scroll/.test(getComputedStyle(e).overflowY)) { e.scrollTop -= dy * 1.6; return; } e = e.parentElement; } }
 
   /* ---------- Mitspieler-Figuren (Spieler 2–4) ---------- */
+  /* Mitfahren: Spieler 2–4 steigen beim Fahrer (Spieler 1) ein und sitzen auf dem Platz – gefahren wird nur vom Fahrer, alle bewegen sich gemeinsam */
+  function boardable(s) { const v = P.veh, m = s.mate; if (!v || !m || m.veh || (v.spec && v.spec.remote)) return null; const d = Math.hypot(m.x - v.x, m.z - v.z) - (v.interactReach || v.r || 1); return d < 4.2 && Math.abs(m.y - (v.y || 0)) < 3 ? v : null; }
+  function mateAction(s) {
+    const m = s.mate; if (!m) return; if (m.veh) { leaveVeh(s); return; } const v = boardable(s);
+    if (v) { m.veh = v; s.dance = false; m.pitch = .42; m.camIdle = 9; A.enter && A.enter(); G.say('🚗 ' + s.name + ' fährt mit!', 2200); } else { s.wave = 1.4; A.hello && A.hello(); }
+  }
+  function leaveVeh(s) {
+    const m = s.mate, v = m && m.veh; if (!m) return; m.veh = null; m.char.group.visible = true; m.char.group.rotation.set(0, m.h, 0);
+    if (v) { const lx = -Math.cos(v.h), lz = Math.sin(v.h), rad = (v.r || 1) + 1.3 + s.i * .5, q = W.resolve(v.x + lx * rad, v.z + lz * rad, .5, {}); m.x = q.x; m.z = q.z; m.h = v.h; m.y = G.groundAt(m.x, m.z, v.y || 0); }
+    m.vy = 0; m.cx = m.cz = 0; A.leave && A.leave();
+  }
+  let honkT = 0; function honk() { const n = performance.now(); if (n - honkT < 500) return; honkT = n; A.horn && A.horn('car', true); setTimeout(() => A.horn && A.horn('car', false), 380); }
+  function seatMate(s, v) {
+    const m = s.mate, g = m.char.group; let k = 0; for (const o of slots) if (o && o.i > 0 && o.mate && o.mate.veh === v && o.i < s.i) k++;
+    m.x = v.x; m.z = v.z; m.h = v.h; m.y = v.y || 0; m.spd = 0; m.vy = 0; const sd = v.seat;
+    if (v.spec.open && sd) { const wide = v.r > 1, lx = wide ? (k % 2 ? -.6 : .6) : (k % 2 ? .35 : -.35) * (k > 0 ? 1 : 0), lz = wide ? sd[2] - .2 - (k >> 1) * .7 : sd[2] - .7 - k * .55, sn = Math.sin(v.h), cs = Math.cos(v.h);
+      g.visible = true; g.position.set(v.x + sn * lz + cs * lx, (v.y || 0) + (v.tilt ? v.tilt.position.y : 0) + sd[1] - .42, v.z + cs * lz - sn * lx); g.rotation.set(0, v.h, 0); m.char.sit && m.char.sit(); } else g.visible = false;
+    if (m.camIdle > 1.6) m.yaw += BI.angDiff(m.yaw, v.h + pi) * Math.min(1, T.dt * (Math.abs(v.v) > .5 ? 3.2 : 1.2));
+  }
   function spawnMate(s) {
     const ch = G.makeMate(s.i, s.name), a = s.i * 2.1 + .6;
     s.mate = { char: ch, x: P.x + Math.sin(a) * 2.4, z: P.z + Math.cos(a) * 2.4, y: P.y, vy: 0, h: P.h, phase: 0, spd: 0, yaw: P.h + pi, pitch: .38, camIdle: 9, cx: 0, cy: 0, cz: 0, cam: new THREE.PerspectiveCamera(58, 1, camera.near, camera.far), run: false };
     s.mate.cam.position.set(s.mate.x, 6, s.mate.z + 8);
   }
   function stepMate(s, dt, t) {
-    const m = s.mate; if (!m) return; const [sx, sy] = s.stick, l = Math.hypot(sx, sy);
-    const run = l > .92, spd = run ? 8.8 : 4.6; let dx = 0, dz = 0; m.camIdle += dt;
+    const m = s.mate; if (!m) return; m.camIdle += dt; if (m.veh) { if (P.veh !== m.veh) leaveVeh(s); else { seatMate(s, m.veh); return; } }
+    const [sx, sy] = s.stick, l = Math.hypot(sx, sy);
+    const run = l > .92, spd = run ? 8.8 : 4.6; let dx = 0, dz = 0;
     if (l > .12) { const fx_ = -Math.sin(m.yaw), fz_ = -Math.cos(m.yaw), rx = -fz_, rz = fx_; dx = fx_ * sy + rx * sx; dz = fz_ * sy + rz * sx; const n = Math.hypot(dx, dz) || 1, k = Math.min(1, l); m.h += BI.angDiff(m.h, Math.atan2(dx, dz)) * Math.min(1, dt * 14); dx = dx / n * spd * k; dz = dz / n * spd * k; s.dance = false; if (m.camIdle > 1.6) m.yaw += BI.angDiff(m.yaw, m.h + pi) * Math.min(1, dt * 1.3); }
     m.x += dx * dt; m.z += dz * dt; m.spd = Math.hypot(dx, dz); m.run = run && m.spd > 1;
     const q = W.resolve(m.x, m.z, .45, {}, m.y > .8 ? m.y : undefined); m.x = q.x; m.z = q.z;
@@ -168,7 +188,7 @@ BI.createTv = function (G) {
     if (dd > lim) { const a = s.i * 2.1 + .6; m.x = P.x + Math.sin(a) * 2.6; m.z = P.z + Math.cos(a) * 2.6; m.y = P.y; m.vy = 0; fx.burst(m.x, 1, m.z, 8, [BI.C.gold, BI.C.white], 2, .8, 28, 1); }
   }
   function mateCam(s, dt, aspect) {
-    const m = s.mate, c = m.cam, tx = m.x, ty = m.y + 1.3, tz = m.z, d = 7.2, cp = Math.cos(m.pitch);
+    const m = s.mate, c = m.cam, v = m.veh, tx = v ? v.x : m.x, ty = (v ? v.y || 0 : m.y) + 1.3, tz = v ? v.z : m.z, d = v ? (v.spec.cam || 9) : 7.2, cp = Math.cos(m.pitch);
     const gx = tx + Math.sin(m.yaw) * cp * d, gy = ty + Math.sin(m.pitch) * d, gz = tz + Math.cos(m.yaw) * cp * d;
     if (!m.cx && !m.cz) { m.cx = gx; m.cy = gy; m.cz = gz; }
     m.cx = BI.damp(m.cx, gx, 14, dt); m.cy = BI.damp(m.cy, gy, 14, dt); m.cz = BI.damp(m.cz, gz, 14, dt);
@@ -216,7 +236,7 @@ BI.createTv = function (G) {
       hudT = .25; const m0 = modeOf() === 'title' && !T.ptrOn ? 'title' : T.menuMode ? 'menu' : 'play';
       for (const s of slots) { if (!s) continue; let h;
         if (s.i === 0) h = { t: 'h', m: m0, a: info('bAct'), j: info('bJump'), h: info('bHorn'), x: info('bAux'), st: G.stars(), nm: s.name, sp: T.split ? 1 : 0 };
-        else h = { t: 'h', m: m0 === 'title' ? 'title' : 'play', a: ['👋', 'Hallo!', 0, 0], j: ['⤒', 'Springen', 0, 0], h: ['💃', s.dance ? 'Stopp' : 'Tanzen', 0, 0], x: ['', '', 1, 0], st: G.stars(), nm: s.name, sp: T.split ? 1 : 0 };
+        else { const rv = s.mate && s.mate.veh, bv = !rv && boardable(s); h = { t: 'h', m: m0 === 'title' ? 'title' : 'play', a: rv ? ['🚪', 'Aussteigen', 0, 0] : bv ? ['🚗', 'Mitfahren', 0, 0] : ['👋', 'Hallo!', 0, 0], j: ['⤒', 'Springen', rv ? 1 : 0, 0], h: rv ? ['📣', 'Hupe', 0, 0] : ['💃', s.dance ? 'Stopp' : 'Tanzen', 0, 0], x: ['', '', 1, 0], st: G.stars(), nm: s.name, sp: T.split ? 1 : 0 }; }
         const sig = JSON.stringify(h); if (sig !== s.sig) { s.sig = sig; send(s, h); } }
     }
   };

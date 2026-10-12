@@ -126,12 +126,12 @@ input{font:inherit;font-size:34px;letter-spacing:10px;text-transform:uppercase;t
   function setMode(m) {
     S.mode = m; if (m === 'title') { show('sTitle'); return; }
     show('pad'); const menu = m === 'menu'; $('banner').hidden = !(menu || S.ptr); $('hint').textContent = menu ? 'Wischen = Scrollen' : 'Rechts wischen = Kamera drehen';
-    $('bH').hidden = menu; $('bX').hidden = menu || (S.hud && S.hud.x && S.hud.x[2]) ; setBtn('bA', menu ? ['👆', 'Klick'] : S.hud && S.hud.a); setBtn('bB', menu ? ['↩', 'Zurück'] : S.hud && S.hud.j);
+    $('bH').hidden = menu; if (menu) $('bB').hidden = false; $('bX').hidden = menu || (S.hud && S.hud.x && S.hud.x[2]) ; setBtn('bA', menu ? ['👆', 'Klick'] : S.hud && S.hud.a); setBtn('bB', menu ? ['↩', 'Zurück'] : S.hud && S.hud.j);
   }
   function setBtn(id, v) { const b = $(id); if (!v) return; b.querySelector('b').textContent = v[0]; b.querySelector('small').textContent = v[1]; b.classList.toggle('idle', !!v[3]); }
   function hud(d) {
     S.hud = d; $('pStars').textContent = d.st | 0; if (d.nm) $('pName').textContent = d.nm; S.split = !!d.sp; $('mSplit').classList.toggle('on', S.split); if (d.m !== S.mode) { setMode(d.m); return; }
-    if (S.mode === 'menu') return; setBtn('bA', d.a); setBtn('bB', d.j); setBtn('bH', d.h); setBtn('bX', d.x); $('bX').hidden = !d.x || !!d.x[2]; $('bH').hidden = !d.h || !!d.h[2];
+    if (S.mode === 'menu') return; setBtn('bA', d.a); setBtn('bB', d.j); $('bB').hidden = !d.j || !!d.j[2]; setBtn('bH', d.h); setBtn('bX', d.x); $('bX').hidden = !d.x || !!d.x[2]; $('bH').hidden = !d.h || !!d.h[2];
   }
   /* ---- Stick (erscheint dort, wo der Daumen aufsetzt) ---- */
   const base = $('stickBase'), knob = $('stickKnob'); let sid = null, sc = [0, 0], cid = null, cl = [0, 0], lastS = 0;
