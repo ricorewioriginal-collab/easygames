@@ -62,8 +62,19 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
 
 ## Neues Spiel hinzufügen
 
-1. Eigenes Verzeichnis anlegen (`mein-spiel/index.html`).
-2. In `index.html` im Array `GAMES` einen Eintrag ergänzen (`id`, Titel, Icon, Farbverlauf, `path`, Kurzbeschreibung). Die Kachel erscheint automatisch.
+Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigation) ergibt sich aus den Einträgen:
+
+1. Eigenes Verzeichnis anlegen (`mein-spiel/index.html`). Die Vorlage `tools/spiel-vorlage/index.html` zeigt, wie ein Spiel zwischen Handy, TV und Computer unterscheidet.
+2. In `games.js` im Array `GAMES` einen Eintrag ergänzen: `id` (nur A–Z, 0–9, `_`, `-`), `title`, `icon`, optional `img` (Kartenbild `mein-spiel/card.png`), `bg` (Farbverlauf), `glow`, `path: 'mein-spiel/'`, `desc`.
+3. Optional Mehrspieler-Fähigkeiten eintragen, in `modes.js` oder direkt am Eintrag (`modes: { … }`):
+   - `pad: true` – Handys koppeln sich per QR-Code als Controller (Adresse `…/mein-spiel/?join=CODE`)
+   - `online: true` – Mehrspieler über mehrere Geräte per Code/QR
+   - `multi: true` – Mehrspieler/Duell auf einem Gerät
+   - `tvParam: true` (oder z. B. `'tv=1'`) – das Spiel kennt einen Parameter, der am TV direkt die Lobby mit QR-Code öffnet; die Übersicht hängt ihn am TV an
+4. Anleitung und Bedienung in `guides.js` ergänzen (`anleitung`, `steuerung`, `tipps`). Ohne Eintrag zeigt die Übersicht die Kurzbeschreibung.
+5. `node tools/check-games.js` ausführen: prüft IDs, Pfade, Bilder, Anleitungen und Modi (Fehler stoppen, Warnungen sind Hinweise).
+
+**Spiel-Vertrag, damit es überall sinnvoll läuft:** Das Spiel füllt die Seite (`100vw`/`100dvh`, kein Scrollen), funktioniert in einem iframe, auf Touch, mit Tastatur und mit Pfeiltasten/OK am TV, und behandelt `?join=CODE` (Controller) sowie, falls vorhanden, `?tv` (Gastgeber am TV). Hilfen dafür: `device.js` (Gerät erkennen) und `gamekit.js` (`EasyGamesKit.start({ controller, host, solo })`, `joinUrl()`, `fullscreenOnInput()`, `keepAwake()`, `back()`, `close()`). Details und Beispiele: `einbinden.html`.
 
 ## AnMaCha Radio Surfer: eigene Hindernisse
 
