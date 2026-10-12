@@ -723,7 +723,7 @@
       if (d.t === 'fb') { d.id && fussball.onNet(d); return; }
       if (d.t === 'fbt') { d.id && fussball.onNetT(d); return; }
       if (d.t === 'full') { net.close(true); mpShow('choose'); mpErr('Das Spiel ist leider voll 😅'); return; }
-      if (d.t === 'bye') { const a = remote.get(d.id); if (a) { pack.peerGone(d.id); dropAvatar(a); remote.delete(d.id); say(a.name + ' ist gegangen 👋', 2200); updateFriends(); renderMp(); } return; }
+      if (d.t === 'bye') { fussball.peerGone(d.id); const a = remote.get(d.id); if (a) { pack.peerGone(d.id); dropAvatar(a); remote.delete(d.id); say(a.name + ' ist gegangen 👋', 2200); updateFriends(); renderMp(); } return; }
       if (d.t === 'gf' || d.t === 'tr') { pack.onNet(d, d.id); return; }
       if (d.t === 'm') { const a = remote.get(d.id), e = express.EMOTES.find(q => q.k === d.k); if (a && e) showEmoji(e.icon, a); return; }
       if (d.t === 'c') { const a = remote.get(d.id), s = express.PHRASES[d.i | 0]; if (a && s) { showBubble(a, s, 3200); A.pop(); } return; }
@@ -751,8 +751,8 @@
       if (rd !== (a.rd || '')) { if (rd && rd === selfId()) { A.pop(); say('🙋 ' + a.name + ' fährt bei dir mit! Du lenkst.', 2600); } else if (a.rd === selfId()) say(a.name + ' ist ausgestiegen 👋', 2000); a.rd = rd; }
     },
     onJoin: id => { lookSig = ''; netT = 0; updateFriends(); shareBuild(id); shareVehicles(id); fussball.share(id); if (mpOpen && net.role === 'host' && mpView === 'host') mpShow('on'); if (net.role === 'guest') { say('Verbunden! 🎉', 2000); } },
-    onLeave: id => { build.dropOwner(id); const a = remote.get(id); if (a) { dropAvatar(a); remote.delete(id); say(a.name + ' ist gegangen 👋', 2200); } updateFriends(); renderMp(); },
-    onClosed: () => { build.dropOwner(null); for (const a of remote.values()) dropAvatar(a); remote.clear(); updateFriends(); if (mpOpen && mpView === 'on') { mpShow('choose'); mpSay('Verbindung beendet.'); } },
+    onLeave: id => { fussball.peerGone(id); build.dropOwner(id); const a = remote.get(id); if (a) { dropAvatar(a); remote.delete(id); say(a.name + ' ist gegangen 👋', 2200); } updateFriends(); renderMp(); },
+    onClosed: () => { fussball.peerGone(null); build.dropOwner(null); for (const a of remote.values()) dropAvatar(a); remote.clear(); updateFriends(); if (mpOpen && mpView === 'on') { mpShow('choose'); mpSay('Verbindung beendet.'); } },
     onStatus: m => mpSay(m)
   });
   { const m = /join=([A-Za-z0-9]{4})/.exec(location.hash || ''); if (m) { joinCode = net.normCode(m[1]); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } setTimeout(() => { openMp('menu', 'join'); mpJoinGo(); }, 400); } }
@@ -1139,7 +1139,7 @@
   const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), takeMascot: id => takeMascot(id) }); dampf.people(town.folk);
   const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true), takeMascot: id => takeMascot(id) }); drachen.people(town.folk);
   const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
-  const fussball = BI.createFussball({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), net: () => net, me: () => selfId(), earn: id => kids.earn(id) }); fussball.people(town.folk);
+  const fussball = BI.createFussball({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), net: () => net, me: () => selfId(), earn: id => kids.earn(id), humansAt: (x, z, r) => 1 + [...remote.values()].filter(a => Math.hypot(a.x - x, a.z - z) < r).length }); fussball.people(town.folk);
   const maerchen = BI.createMaerchen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), mini: () => mini }); maerchen.people(town.folk);
   const schatz = BI.createSchatz({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), guide: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); } }); schatz.people(town.folk);
   const tafeln = BI.createTafeln({ scene, W, A, P, say });
@@ -1277,7 +1277,7 @@
       ['zhafen', '⚓', 'Lunaris: Hafen (Luftschiff)', () => zp(0, 72), 'orte'],
       ['ztore', '🌀', 'Lunaris: Weltentore', () => ({ x: BI.ZOTIK.gateC.x, z: BI.ZOTIK.gateC.z }), 'orte'],
       ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte'],
-      ['atlstadt', '🔱', 'Atlantis: die Stadt unten', () => ({ x: AT.x, z: AT.z + 138 * AT.S }), 'orte']
+      ['atlstadt', '🔱', 'Atlantis: die Stadt unten', () => ({ x: AT.x, z: AT.z + 112 * AT.S }), 'orte']
     ];
     for (const [id, icon, name, at, cat] of more) DEST.push({ id, icon, name, at, cat });
     const CATS = { inseln: ['park', 'dampf', 'drachen', 'atlantis', 'zotik', 'radio', 'maerchen', 'fussball', 'bauland', 'pups', 'rainbow', 'city'], haupt: ['home', 'garden', 'shop', 'range', 'hof', 'fields', 'arena', 'forest', 'obby', 'lighthouse', 'camp', 'zoo', 'pool', 'station', 'hospital', 'playground', 'cinema', 'shops'], fahr: ['heli', 'pier', 'ship'] };

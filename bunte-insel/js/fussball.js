@@ -84,7 +84,7 @@ BI.createFussball = function (G) {
   const gk = [0, 1].map(i => { const c = BI.makeChar({ shirt: i ? 0xff5a5a : 0x3f8cff, pants: 0x222222, hair: 0x4a3320, skin: 0xf3c9a0, hat: 'none', scale: 1.02 }); c.group.position.set(Pt.x + (i ? 1 : -1) * (HX - 1.4), 0, Pt.z); c.group.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; scene.add(c.group); return c; });
   const me = () => (G.me ? G.me() : 'me'), send = (extra) => { const n = G.net && G.net(); if (!n || !n.connected()) return; n.send(Object.assign({ t: 'fb', x: +B.x.toFixed(2), y: +B.y.toFixed(2), z: +B.z.toFixed(2), vx: +B.vx.toFixed(2), vy: +B.vy.toFixed(2), vz: +B.vz.toFixed(2), s: score }, extra || {})); };
   const here = () => Math.hypot(P.x - Pt.x, P.z - Pt.z) < HX + 20;
-  const kick = (dx, dz, sp, vy) => { const l = Math.hypot(dx, dz) || 1; B.vx = dx / l * sp; B.vz = dz / l * sp; B.vy = vy; B.owner = me(); B.rest = 0; cd = .22; A.kick && A.kick(); send(); };
+  const kick = (dx, dz, sp, vy, bot) => { const l = Math.hypot(dx, dz) || 1; B.vx = dx / l * sp; B.vz = dz / l * sp; B.vy = vy; B.owner = me(); B.byBot = !!bot; B.rest = 0; cd = .22; A.kick && A.kick(); send(); };
   const celebrate = (side) => { const gx = Pt.x + (side ? 1 : -1) * HX; fx.burst(gx, 2, Pt.z, 30, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.blue], 6, 1.4, 28, 5); A.star && A.star(); say('⚽ TOOOR für ' + (side ? '🔵 Blau' : '🔴 Rot') + '!  ' + score[0] + ' : ' + score[1], 3200); };
   const goal = (side, byMe) => { /* side 1 = Ost-Tor (zählt für Blau), 0 = West-Tor (zählt für Rot) */ score[side ? 0 : 1]++; B.lock = 2.4; paint(); celebrate(side);
     if (byMe) { const s = S(); s.goals++; while (s.goals - s.paid * 5 >= 5) { s.paid++; G.addStars(1); say('⭐ 5 Tore geschafft! +1 ⭐', 2600); } persist(); } send({ g: side ? 1 : 0 }); };
@@ -95,7 +95,7 @@ BI.createFussball = function (G) {
     const fr = Math.pow(B.y > RB + .05 ? .98 : .42, dt); B.vx *= fr; B.vz *= fr; B.x += B.vx * dt; B.z += B.vz * dt;
     const a = B.x - Pt.x, b = B.z - Pt.z, inWin = Math.abs(b) < GW && B.y < GH;
     if (Math.abs(a) > HX) {
-      if (inWin) { if (!B.lock && mine && Math.abs(a) > HX + .15) goal(a > 0 ? 1 : 0, B.owner === me()); const lim = HX + GD - RB; if (Math.abs(a) > lim) { B.x = Pt.x + Math.sign(a) * lim; B.vx *= -.25; } if (Math.abs(b) > GW - RB) { B.z = Pt.z + Math.sign(b) * (GW - RB); B.vz *= -.3; } }
+      if (inWin) { if (!B.lock && mine && Math.abs(a) > HX + .15) goal(a > 0 ? 1 : 0, B.owner === me() && !B.byBot); const lim = HX + GD - RB; if (Math.abs(a) > lim) { B.x = Pt.x + Math.sign(a) * lim; B.vx *= -.25; } if (Math.abs(b) > GW - RB) { B.z = Pt.z + Math.sign(b) * (GW - RB); B.vz *= -.3; } }
       else { B.x = Pt.x + Math.sign(a) * HX; B.vx *= -.7; if (B.y > GH) B.vy = Math.min(B.vy, 0); }
     }
     if (Math.abs(b) > HZ && !(Math.abs(a) > HX)) { B.z = Pt.z + Math.sign(b) * HZ; B.vz *= -.7; }
@@ -107,7 +107,7 @@ BI.createFussball = function (G) {
   /* ===== Turnier 🏆: 3 Spiele, 3 gegen 3. Wer das Turnier startet, ist „Schiedsrichter“ und rechnet die Roboter-Spieler; Freunde sehen sie (Nachricht 'fbt') und spielen im blauen Team. ===== */
   const BOTS = []; const botLook = tm => ({ shirt: tm ? 0xff5a5a : 0x3f8cff, pants: 0xffffff, hair: [0x4a3320, 0x222222, 0xe0a030][(Math.random() * 3) | 0], skin: [0xf3c9a0, 0xd8a070, 0x8a5a33][(Math.random() * 3) | 0], hat: 'none', style: 'short', scale: .98 });
   const mkBots = () => { if (BOTS.length) return; for (let i = 0; i < 5; i++) { const tm = i < 2 ? 0 : 1, c = BI.makeChar(botLook(tm)); c.group.visible = false; scene.add(c.group); BOTS.push({ c, team: tm, role: tm ? i - 2 : i, x: Pt.x, z: Pt.z, h: 0, cd: 0, on: false, ph: 0 }); } };
-  const humans = () => { const n = G.net && G.net(); return n && n.connected() && n.count ? Math.max(1, n.count()) : 1; };
+  const humans = () => (G.humansAt ? Math.max(1, G.humansAt(Pt.x, Pt.z, HX + 22)) : 1); /* Spieler, die wirklich am Platz sind */
   const place = () => { /* Anstoß-Aufstellung: Blau links (greift nach rechts an), Rot rechts */ const nb = Math.max(0, Math.min(2, 3 - humans())); for (const b of BOTS) { b.on = b.team ? true : b.role < nb; b.x = Pt.x + (b.team ? 1 : -1) * [16, 7, 3][b.role]; b.z = Pt.z + (b.role - 1) * 8; b.h = b.team ? -Math.PI / 2 : Math.PI / 2; b.cd = 0; b.c.group.visible = b.on; } };
   const cupSend = (op, extra) => { const n = G.net && G.net(); if (n && n.connected()) n.send(Object.assign({ t: 'fbt', op }, extra || {})); };
   const startRound = () => { const L = LV[T.round]; KV.v = L.keep; score[0] = score[1] = 0; reset(); T.t = L.secs; T.pause = 0; place(); paint(); say('🏆 Spiel ' + (T.round + 1) + ' von 3 – Anstoß!', 2600); A.speak && A.speak('Anstoß!'); cupSend('s', { r: T.round, nb: BOTS.filter(b => b.on && !b.team).length }); };
@@ -123,17 +123,18 @@ BI.createFussball = function (G) {
       if (b === chase[b.team]) { tx = now.x - sd * .5; tz = now.z; } else { tx = Pt.x + BI.clamp(ba * .5 + sd * [-14, -4, 9][b.role + (b.team ? 0 : 1)], -HX + 4, HX - 4); tz = Pt.z + (b.role - 1) * 7 + (now.z - Pt.z) * .25; }
       const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz), v = L.sp * (b === chase[b.team] ? 1.12 : .8) * (T.pause > 0 || B.lock ? 0 : 1); if (d > .25 && v > 0) { const k = Math.min(d, v * dt) / d; b.x += dx * k; b.z += dz * k; b.h = Math.atan2(dx, dz); b.ph += dt * 9; }
       b.x = BI.clamp(b.x, Pt.x - HX + .8, Pt.x + HX - .8); b.z = BI.clamp(b.z, Pt.z - HZ + .8, Pt.z + HZ - .8);
-      if (b === chase[b.team] && b.cd <= 0 && !B.lock && T.pause <= 0 && Math.hypot(now.x - b.x, now.z - b.z) < 1.05) { const gx = Pt.x + sd * HX, gz = Pt.z + (Math.random() - .5) * GW * 1.4, a0 = Math.atan2(gx - now.x, gz - now.z) + (Math.random() - .5) * 2 * L.noise; kick(Math.sin(a0), Math.cos(a0), L.ks, 1.4); b.cd = .7; cd = 0; } } };
+      if (b === chase[b.team] && b.cd <= 0 && !B.lock && T.pause <= 0 && Math.hypot(now.x - b.x, now.z - b.z) < 1.05) { const gx = Pt.x + sd * HX, gz = Pt.z + (Math.random() - .5) * GW * 1.4, a0 = Math.atan2(gx - now.x, gz - now.z) + (Math.random() - .5) * 2 * L.noise; kick(Math.sin(a0), Math.cos(a0), L.ks, 1.4, true); b.cd = .7; cd = 0; } } };
   const cupUpdate = (dt) => {
     if (T.ghost) return; /* Gast: Roboter kommen per Nachricht */
     if (T.pause > 0) { T.pause -= dt; if (T.pause <= 0) { if (T.after === 'done') cupStop(true); else { if (T.after === 'next') T.round++; startRound(); } } }
     else { T.t -= dt; botStep(dt); if (T.t <= 0 || Math.abs(score[0] - score[1]) >= 5) endRound(); }
-    T.sendT -= dt; if (T.sendT <= 0) { T.sendT = .16; cupSend('b', { p: BOTS.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.h.toFixed(2), b.on ? 1 : 0]), tm: Math.ceil(T.t) }); }
+    T.sendT -= dt; if (T.sendT <= 0) { T.sendT = .16; cupSend('b', { p: BOTS.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.h.toFixed(2), b.on ? 1 : 0]), tm: Math.ceil(T.t), r: T.round }); }
   };
   const botVis = (dt, t) => { for (const b of BOTS) { if (!b.on) continue; b.c.group.position.set(b.x, 0, b.z); b.c.group.rotation.y = b.h; if (b.c.legL) { const w = Math.sin(b.ph) * .7; b.c.legL.rotation.x = w; b.c.legR.rotation.x = -w; } } };
+  K.peerGone = function (id) { if (T.on && T.ghost && (id == null || T.ref === id)) { T.ghostEnd = true; cupStop(true); T.ghostEnd = false; } };
   K.onNetT = function (d) {
     if (d.op === 's') { mkBots(); T.on = true; T.ghost = true; T.ghostEnd = false; T.round = d.r | 0; T.ref = d.id; T.pause = 0; T.t = LV[Math.min(2, T.round)].secs; KV.v = LV[Math.min(2, T.round)].keep; if (here()) { say('🏆 Turnier – Spiel ' + (T.round + 1) + ' von 3!', 2600); } }
-    else if (d.op === 'b' && Array.isArray(d.p)) { if (!T.on) { mkBots(); T.on = true; T.ghost = true; T.ref = d.id; } T.t = +d.tm || 0; d.p.forEach((q, i) => { const b = BOTS[i]; if (!b || !Array.isArray(q)) return; b.on = !!q[3]; b.c.group.visible = b.on; if (isFinite(q[0] + q[1])) { b.ph += Math.hypot(q[0] - b.x, q[1] - b.z) * 3; b.x = q[0]; b.z = q[1]; b.h = +q[2] || 0; } }); }
+    else if (d.op === 'b' && Array.isArray(d.p)) { if (!T.on) { mkBots(); T.on = true; T.ghost = true; T.ref = d.id; } T.t = +d.tm || 0; { const r = Math.max(0, Math.min(2, d.r | 0)); if (r !== T.round || KV.v !== LV[r].keep) { T.round = r; KV.v = LV[r].keep; } } d.p.forEach((q, i) => { const b = BOTS[i]; if (!b || !Array.isArray(q)) return; b.on = !!q[3]; b.c.group.visible = b.on; if (isFinite(q[0] + q[1])) { b.ph += Math.hypot(q[0] - b.x, q[1] - b.z) * 3; b.x = q[0]; b.z = q[1]; b.h = +q[2] || 0; } }); }
     else if (d.op === 'e' && T.on && T.ghost) { if (d.res === 'w' && here()) { G.addStars(1); if (d.cup) { G.addStars(5); G.earn && G.earn('cupwin'); const s = S(); s.cups = (s.cups || 0) + 1; persist(); say('🏆 POKALSIEGER! +6 ⭐', 4600); } else say('🎉 Spiel gewonnen! +1 ⭐', 3000); } else if (here()) say(d.res === 'd' ? '🤝 Unentschieden!' : '😅 Knapp verloren!', 2600); }
     else if (d.op === 'x') { T.ghostEnd = true; cupStop(true); T.ghostEnd = false; }
   };
@@ -149,7 +150,7 @@ BI.createFussball = function (G) {
     paint();
   };
   K.near = function () { if (P.veh || P.y > 1.5 || !near) return null; const pc = W.spots.fcup; if (pc && Math.hypot(P.x - pc.x, P.z - pc.z) < 3.4) return { k: 'fcup', label: ['🏆', T.on ? 'Turnier beenden' : 'Turnier starten (3 Spiele)'] }; if (Math.hypot(P.x - B.x, P.z - B.z) < 3.4 && !B.lock) return { k: 'fkick' }; return null; };
-  K.act = function (n) { if (n && n.k === 'fcup') { if (T.on) { if (T.ghost) say('🏆 Das Turnier leitet ein Freund.', 2200); else cupStop(); } else cupStart(); return; } if (!n || n.k !== 'fkick') return; kick(Math.sin(P.h), Math.cos(P.h), 17, 3.6); S().played = 1; persist(); };
+  K.act = function (n) { if (n && n.k === 'fcup') { if (T.on) { if (T.ghost) { T.ghostEnd = true; cupStop(); T.ghostEnd = false; } else cupStop(); } else cupStart(); return; } if (!n || n.k !== 'fkick') return; kick(Math.sin(P.h), Math.cos(P.h), 17, 3.6); S().played = 1; persist(); };
   K.onNet = function (d) {
     if (d.s && d.s.length === 2) { score[0] = d.s[0] | 0; score[1] = d.s[1] | 0; paint(); }
     if (d.r) { B.x = Pt.x; B.y = RB; B.z = Pt.z; B.vx = B.vy = B.vz = 0; B.lock = 0; B.owner = d.id || null; return; }
