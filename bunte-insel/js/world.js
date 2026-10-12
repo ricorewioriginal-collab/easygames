@@ -99,6 +99,7 @@ BI.buildWorld = function (scene) {
     if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
     else if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      else if (W.bade && W.bade.walk(px, pz, r)) { /* Badestrand + Meer zum Schwimmen */ }
       else if (W.isles && isleWalk(px, pz, r)) { /* Brücke / kleine Inseln zuerst, damit die Sperrringe der älteren Inseln (Dampfer, Regenbogen, Park …) sie nicht verschlucken */ }
       else if (W.zotik && zotikWalk(px, pz, r, alt)) { /* Brücke / Zotik – Lunaris */ }
       else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
@@ -488,6 +489,7 @@ BI.buildWorld = function (scene) {
   BI.buildFussballGround({ W, st, lamp, ROADY });
   BI.buildMaerchenGround({ W, st, lamp, ROADY });
   BI.buildSchluesselGround({ W, st, lamp, ROADY });
+  BI.buildBadeGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
   BI.buildRadioGround({ W, st, lamp, scene });
@@ -778,6 +780,7 @@ BI.buildWorld = function (scene) {
     if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
     if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
     if (W.radio) { const h = W.radio.floor(x, z); if (h) return h; }
+    if (W.bade) { const h = W.bade.floor(x, z); if (h !== null) return h; } /* Badestrand: Meer (schwimmen) und Plattformen */
     if (W.isles) for (const I of W.isles) if (I.floor) { const h = I.floor(x, z); if (h) return h; } /* begehbare Hügel/Decks kleiner Inseln (Märchenland …) */
     { const D = W.dampfShip; if (D && z > D.z0 - 1 && z < D.z1 + 1 && x > D.x0 - 1 && x < D.r1 + 1) { if (x > D.x0 && x < D.x1 && z > D.z0 && z < D.z1) return D.y; if (x >= D.x1 && x < D.r1 && z > D.rz0 && z < D.rz1) return D.y * (D.r1 - x) / (D.r1 - D.x1 - 0); } }
     for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;

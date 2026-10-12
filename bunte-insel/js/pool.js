@@ -9,7 +9,7 @@ BI.createPool = function (G) {
     m.material.map.needsUpdate = true; m.material.map.repeat.set((r.x1 - r.x0) / 6, (r.z1 - r.z0) / 6); scene.add(m); return m;
   });
   /* 0 = trocken, 1 = Planschbecken (flach), 2 = großes Becken (schwimmen) */
-  K.inWater = (x, z) => { const m = F.main, k = F.kids; if (x > m.x0 && x < m.x1 && z > m.z0 && z < m.z1) return 2; if (x > k.x0 && x < k.x1 && z > k.z0 && z < k.z1) return 1; return 0; };
+  K.inWater = (x, z) => { if (W.bade && W.bade.sea(x, z)) return 2; const m = F.main, k = F.kids; if (x > m.x0 && x < m.x1 && z > m.z0 && z < m.z1) return 2; if (x > k.x0 && x < k.x1 && z > k.z0 && z < k.z1) return 1; return 0; };
   K.onDeck = (x, z) => x > F.x0 && x < F.x1 && z > F.z0 && z < F.z1;
   /* Bademeister */
   const guard = BI.makeChar({ shirt: 0xe0382b, pants: 0xffffff, hair: 0x6b4423, skin: 0xe0a979, hat: 'cap', name: 'Herr Fischer' }); guard.group.position.set(F.lifeguard.x, 0, F.lifeguard.z); guard.group.rotation.y = -1.57; scene.add(guard.group);
