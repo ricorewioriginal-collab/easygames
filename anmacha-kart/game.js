@@ -25,20 +25,48 @@ const TILT = {
   disable() { TILT.on = false; TILT.v = 0; }
 };
 const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
-// Analoge Touch-Steuerung: links Daumen ziehen = lenken (Ring folgt dem Finger), rechts Drift / Item / Bremse
+// Touch-Steuerung wie am Konsolen-Controller: links virtueller Joystick (lenken), rechts 4 Tasten im Raute-Layout
+// (unten GAS, links BREMSE, rechts DRIFT, oben ITEM). Ein Daumen zwischen zwei Nachbartasten drückt beide (z. B. Gas + Drift),
+// Wischen von Taste zu Taste wechselt sofort. Alles läuft über Pointer-Events auf einer Ebene; das DOM wird nur bei Änderungen angefasst.
+const TBTN = [['g', 'GAS', 0, 1], ['b', 'BREMSE', -1, 0], ['d', 'DRIFT', 1, 0], ['i', 'ITEM', 0, -1]], TBIT = { g: 1, b: 2, d: 4, i: 8 };
+let touchReset = null;
 function buildTouch(root, st) {
-  root.innerHTML = '<div class="steer"><span class="hint">◀ ZIEHEN ZUM LENKEN ▶</span><div class="ring"></div><div class="knob"></div></div><div class="tbtn tb-g" data-k="g">GAS</div><div class="tbtn tb-b" data-k="b">BREMSE</div><div class="tbtn tb-i" data-k="i">ITEM</div><div class="tbtn tb-d" data-k="d">DRIFT</div>';
-  const ring = root.querySelector('.ring'), knob = root.querySelector('.knob'), hint = root.querySelector('.hint'), btns = new Map(); let sid = null, ox = 0, oy = 0;
-  const R = () => Math.max(50, Math.min(100, Math.min(innerWidth, innerHeight) * 0.16)), upd = () => { st.g = st.b = st.d = st.i = 0; btns.forEach(k => { st[k] = 1; }); root.querySelectorAll('.tbtn').forEach(el => el.classList.toggle('on', !!st[el.dataset.k])); };
+  root.innerHTML = '<div class="joy"><div class="jb"><div class="jk"></div></div></div><div class="pad">' + TBTN.map(([k, t]) => `<div class="tbtn tb-${k}" data-k="${k}">${t}</div>`).join('') + '</div>';
+  const jb = root.querySelector('.jb'), jk = root.querySelector('.jk'), pad = root.querySelector('.pad'), els = {}, ptr = new Map();
+  root.querySelectorAll('.tbtn').forEach(el => { els[el.dataset.k] = el; });
+  let sid = null, hx = 0, hy = 0, ox = 0, oy = 0, rad = 50, mask = 0, g = null;
+  // Tasten-Geometrie (Mitte der Raute, Tastenradius, Abstand der Tastenmitten) – nur beim Antippen neu gemessen
+  const geo = () => { const r = pad.getBoundingClientRect(), br = els.g.offsetWidth / 2; g = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, br, d: r.width / 2 - br }; };
+  const hit = (x, y) => {
+    let m = 0, best = 0, bd = 1e9; for (const [k, , ax, ay] of TBTN) { const dx = x - (g.cx + ax * g.d), dy = y - (g.cy + ay * g.d), q = Math.hypot(dx, dy) / g.br; if (q < 1.2) m |= TBIT[k]; if (q < bd) { bd = q; best = TBIT[k]; } }
+    return m || (bd < 1.7 ? best : 0);
+  };
+  const apply = () => { let m = 0; ptr.forEach(v => { m |= v; }); if (m === mask) return; if (m & ~mask && navigator.vibrate) try { navigator.vibrate(8); } catch (e) {}
+    mask = m; for (const k in TBIT) { const on = m & TBIT[k] ? 1 : 0; st[k] = on; els[k].classList.toggle('on', !!on); } };
+  const knob = (x, y) => { jk.style.transform = `translate3d(${x}px,${y}px,0)`; };
+  const base = (x, y) => { jb.style.transform = `translate3d(${x - hx}px,${y - hy}px,0)`; };
+  const stickEnd = () => { sid = null; st.s = 0; knob(0, 0); jb.classList.remove('act'); jb.style.transform = ''; };
   root.addEventListener('pointerdown', e => {
-    const bt = e.target.closest('[data-k]'); try { root.setPointerCapture(e.pointerId); } catch (x) {}
-    if (bt) { btns.set(e.pointerId, bt.dataset.k); upd(); }
-    else if (sid === null && e.clientX < innerWidth * 0.6) { sid = e.pointerId; ox = e.clientX; oy = e.clientY; ring.style.display = knob.style.display = 'block'; hint.style.display = 'none'; ring.style.left = knob.style.left = ox + 'px'; ring.style.top = knob.style.top = oy + 'px'; st.s = 0; }
-    e.preventDefault();
+    e.preventDefault(); try { root.setPointerCapture(e.pointerId); } catch (x) {}
+    if (sid === null && e.clientX < innerWidth * 0.5 && !e.target.closest('.pad')) {
+      const r = jb.getBoundingClientRect(); hx = r.left + r.width / 2; hy = r.top + r.height / 2; rad = r.width * 0.42; sid = e.pointerId;
+      // Daumen im Joystick-Ring: dort bleiben, sonst springt der Joystick unter den Finger
+      if (Math.hypot(e.clientX - hx, e.clientY - hy) <= r.width / 2) { ox = hx; oy = hy; } else { const h = r.width / 2 + 4; ox = clampN(e.clientX, h, innerWidth - h); oy = clampN(e.clientY, h, innerHeight - h); base(ox, oy); }
+      jb.classList.add('act'); move(e);
+    } else { geo(); ptr.set(e.pointerId, hit(e.clientX, e.clientY)); apply(); }
   });
-  root.addEventListener('pointermove', e => { if (e.pointerId === sid) { const dx = e.clientX - ox, r = R(); let s = clampN(dx / r, -1, 1); if (Math.abs(s) < 0.05) s = 0; st.s = s; knob.style.left = (ox + clampN(dx, -r, r)) + 'px'; knob.style.top = oy + 'px'; } });
-  const end = e => { if (e.pointerId === sid) { sid = null; st.s = 0; ring.style.display = knob.style.display = 'none'; hint.style.display = ''; } if (btns.delete(e.pointerId)) upd(); };
-  ['pointerup', 'pointercancel'].forEach(ev => root.addEventListener(ev, end)); root.addEventListener('contextmenu', e => e.preventDefault());
+  const move = e => {
+    let dx = e.clientX - ox, dy = e.clientY - oy; const dist = Math.hypot(dx, dy);
+    // Zieht der Daumen über den Rand hinaus, wandert der Joystick mit – Gegenlenken greift dann sofort
+    if (dist > rad) { const f = (dist - rad) / dist; ox += dx * f; oy += dy * f; dx -= dx * f; dy -= dy * f; base(ox, oy); }
+    let s = dx / rad; const a = Math.abs(s); s = a < 0.08 ? 0 : Math.sign(s) * Math.pow((a - 0.08) / 0.92, 1.3); st.s = clampN(s, -1, 1); knob(dx, dy);
+  };
+  root.addEventListener('pointermove', e => { if (e.pointerId === sid) move(e); else if (ptr.has(e.pointerId)) { const m = hit(e.clientX, e.clientY); if (m !== ptr.get(e.pointerId)) { ptr.set(e.pointerId, m); apply(); } } });
+  const end = e => { if (e.pointerId === sid) stickEnd(); if (ptr.delete(e.pointerId)) apply(); };
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => root.addEventListener(ev, end)); root.addEventListener('contextmenu', e => e.preventDefault());
+  // Nichts darf hängen bleiben: App-Wechsel, Drehen des Handys oder Fokusverlust lassen alles los
+  if (!touchReset) { const f = () => touchReset && touchReset(); addEventListener('blur', f); addEventListener('orientationchange', f); document.addEventListener('visibilitychange', () => { if (document.hidden) f(); }); }
+  touchReset = () => { ptr.clear(); apply(); if (sid !== null) stickEnd(); };
 }
 // Gamepad (Standard-Belegung): Stick/Steuerkreuz lenken, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen
 const Pads = {
@@ -235,7 +263,7 @@ function initHost() {
       const h = R.huds[i], k = S.karts[i], n = S.karts.length, lap = Math.max(1, Math.min(S.laps, k.lap));
       const c = h.c, pos = k.rank * 100 + n, lp = k.finished ? S.laps : lap, sp = Math.round(Math.max(0, k.vf) * 3.6 * 0.9), roll = k.itemT > 0, fast = k.boostT > 0;
       if (c.pos !== pos) { c.pos = pos; h.pos.innerHTML = `${k.rank}<small>/${n}</small>`; } if (c.lap !== lp) { c.lap = lp; h.lap.textContent = `🏁 ${lp}/${S.laps}`; } if (c.sp !== sp) { c.sp = sp; h.spd.innerHTML = `${sp}<small>km/h</small>`; }
-      const it = roll ? '❓' : itemHtml(k.item, k.itemN); if (it !== h.lastItem) { h.item.innerHTML = it; h.lastItem = it; h.item.style.opacity = it ? 1 : 0.45; } if (c.roll !== roll) { c.roll = roll; h.item.classList.toggle('roll', roll); } if (c.fast !== fast) { c.fast = fast; h.spl.classList.toggle('on', fast); }
+      const it = roll ? '❓' : itemHtml(k.item, k.itemN); if (it !== h.lastItem) { h.item.innerHTML = it; h.lastItem = it; h.item.classList.toggle('empty', !it); } if (c.roll !== roll) { c.roll = roll; h.item.classList.toggle('roll', roll); } if (c.fast !== fast) { c.fast = fast; h.spl.classList.toggle('on', fast); }
       if (h.msgT > 0) { h.msgT -= dt; if (h.msgT <= 0) h.msg.textContent = ''; } if (h.fogT > 0) { h.fogT -= dt; if (h.fogT <= 0) h.fog.classList.remove('on'); }
       if (R.miniAt <= 0) drawMini(h, i);
     }); if (R.miniAt <= 0) R.miniAt = 0.12; else R.miniAt -= dt;

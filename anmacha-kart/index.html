@@ -53,8 +53,10 @@
   .vp .pos{position:absolute;right:12px;bottom:6px;font:900 clamp(34px,7vw,72px)/1 'Trebuchet MS',sans-serif;font-style:italic;color:#ffd24a;-webkit-text-stroke:2px #5a3a00;text-shadow:0 0 16px var(--sc),0 4px 0 #000}
   .vp .pos small{font-size:.42em;color:#fff;-webkit-text-stroke:0}
   .vp .lap{position:absolute;left:10px;bottom:8px;padding:5px 12px;border-radius:10px;background:rgba(10,14,40,.78);border:1px solid rgba(255,255,255,.3);font:900 clamp(13px,2.6vw,20px) 'Trebuchet MS',sans-serif;color:#fff}
-  .vp .nm{position:absolute;left:12px;top:calc(10px + clamp(50px,9vw,78px) + 6px);font-weight:800;font-size:12px;color:var(--sc);text-shadow:0 2px 0 #000}
+  .vp .nm{position:absolute;left:10px;top:calc(10px + clamp(50px,9vw,78px) + 6px);max-width:clamp(50px,9vw,78px);padding:1px 7px;border-radius:999px;background:rgba(10,14,40,.78);border:1px solid var(--sc);font-weight:800;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .vp .item{position:absolute;left:10px;top:10px;width:clamp(50px,9vw,78px);aspect-ratio:1;border-radius:50%;border:4px solid #dfe8ff;background:radial-gradient(circle,#2a3a8a,#0a1040);box-shadow:0 0 14px var(--sc);display:grid;place-items:center;font-size:clamp(26px,5.4vw,44px)}
+  .vp .item.empty{border-color:rgba(223,232,255,.6);background:rgba(10,14,40,.6);box-shadow:none}
+  .vp .item.empty::after{content:'ITEM';font:900 clamp(9px,1.8vw,12px) 'Trebuchet MS',sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.55)}
   .vp .item.roll{animation:spin .25s linear infinite}
   @keyframes spin{50%{transform:scale(.85)}}
   .vp .spd{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;font:900 clamp(14px,2.8vw,22px) 'Trebuchet MS',sans-serif;font-style:italic;text-shadow:0 2px 0 #000;display:flex;align-items:baseline;gap:4px}
@@ -68,18 +70,27 @@
   #tbar{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top));display:flex;gap:8px}
   #tbar.mid{top:50%;transform:translate(-50%,-50%)}
   /* Touch-Steuerung (Solo am Handy) und Controller */
-  .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;--s:clamp(80px,23vmin,128px)}
+  .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;-webkit-touch-callout:none;--s:clamp(54px,15.5vmin,92px);--j:clamp(104px,28vmin,156px);--e:calc(16px + env(safe-area-inset-bottom))}
   body.touch.racing .tc.solo{display:block}
-  .tc .tbtn{position:absolute;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;text-align:center;font:900 clamp(13px,3.4vmin,20px) 'Trebuchet MS',sans-serif;letter-spacing:.04em;color:#fff;border:4px solid rgba(255,255,255,.55);background:radial-gradient(circle at 35% 30%,rgba(120,150,255,.55),rgba(20,28,80,.55));box-shadow:0 4px 14px rgba(0,0,0,.4);user-select:none}
-  .tc .tbtn.on{transform:scale(.92);filter:brightness(1.5)}
-  .tc .tb-d{right:calc(14px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));background:radial-gradient(circle at 35% 30%,rgba(255,190,80,.75),rgba(200,90,10,.6));font-size:clamp(15px,3.8vmin,22px)}
-  .tc .tb-i{right:calc(14px + env(safe-area-inset-right));bottom:calc(30px + var(--s) + env(safe-area-inset-bottom));background:radial-gradient(circle at 35% 30%,rgba(255,110,190,.75),rgba(160,20,100,.6))}
-  .tc .tb-g{right:calc(28px + var(--s) + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));background:radial-gradient(circle at 35% 30%,rgba(90,255,140,.75),rgba(10,130,50,.6));font-size:clamp(15px,3.8vmin,22px)}
-  .tc .tb-b{right:calc(36px + var(--s) * 1.72 + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));width:calc(var(--s) * .72);height:calc(var(--s) * .72)}
-  .tc .steer{position:absolute;left:0;top:0;bottom:0;width:58%}
-  .tc .steer .hint{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));padding:16px 26px;border-radius:999px;border:3px dashed rgba(255,255,255,.4);background:rgba(10,14,40,.35);font:900 clamp(14px,3.6vmin,22px) 'Trebuchet MS',sans-serif;color:rgba(255,255,255,.8);pointer-events:none}
-  .tc .ring{position:absolute;width:clamp(120px,34vmin,200px);height:clamp(120px,34vmin,200px);margin:calc(clamp(120px,34vmin,200px) / -2) 0 0 calc(clamp(120px,34vmin,200px) / -2);border-radius:50%;border:4px solid rgba(255,255,255,.45);background:rgba(10,14,40,.3);display:none;pointer-events:none}
-  .tc .knob{position:absolute;width:clamp(54px,15vmin,84px);height:clamp(54px,15vmin,84px);margin:calc(clamp(54px,15vmin,84px) / -2) 0 0 calc(clamp(54px,15vmin,84px) / -2);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8);box-shadow:0 0 18px #00e5ff;display:none;pointer-events:none}
+  .tc .joy{position:absolute;left:0;top:0;bottom:0;width:50%}
+  .tc .jb{position:absolute;left:calc(22px + env(safe-area-inset-left));bottom:calc(var(--e) + 6px);width:var(--j);height:var(--j);border-radius:50%;border:3px solid rgba(255,255,255,.42);background:radial-gradient(circle,rgba(10,14,40,.15) 40%,rgba(10,14,40,.45));box-shadow:inset 0 0 18px rgba(0,229,255,.18);pointer-events:none;opacity:.7;transition:opacity .15s,transform .18s ease-out;will-change:transform}
+  .tc .jb::before,.tc .jb::after{content:'◀';position:absolute;top:50%;left:8%;transform:translateY(-50%);font-size:calc(var(--j) * .13);color:rgba(255,255,255,.5)}
+  .tc .jb::after{content:'▶';left:auto;right:8%}
+  .tc .jb.act{opacity:1;transition:opacity .15s}
+  .tc .jk{position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8);box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 14px rgba(0,229,255,.55);will-change:transform}
+  .tc .jb:not(.act) .jk{transition:transform .12s ease-out}
+  .tc .pad{position:absolute;right:calc(14px + env(safe-area-inset-right));bottom:var(--e);width:calc(var(--s) * 2.55);height:calc(var(--s) * 2.55);pointer-events:none}
+  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:grid;place-items:center;text-align:center;font:900 clamp(11px,3vmin,17px) 'Trebuchet MS',sans-serif;letter-spacing:.02em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);border:3px solid rgba(255,255,255,.55);box-shadow:0 4px 12px rgba(0,0,0,.4);transition:filter .06s;user-select:none}
+  .tc .tbtn.on{filter:brightness(1.45);border-color:#fff;box-shadow:0 0 16px rgba(255,255,255,.55)}
+  .tc .tb-g{transform:translateY(calc(var(--s) * .775));background:radial-gradient(circle at 35% 30%,rgba(90,255,140,.8),rgba(10,130,50,.65))}
+  .tc .tb-b{transform:translateX(calc(var(--s) * -.775));background:radial-gradient(circle at 35% 30%,rgba(120,150,255,.75),rgba(20,28,110,.65))}
+  .tc .tb-d{transform:translateX(calc(var(--s) * .775));background:radial-gradient(circle at 35% 30%,rgba(255,190,80,.8),rgba(200,90,10,.65))}
+  .tc .tb-i{transform:translateY(calc(var(--s) * -.775));background:radial-gradient(circle at 35% 30%,rgba(255,110,190,.8),rgba(160,20,100,.65))}
+  /* Solo am Touch-Gerät: Platzierung, Runde und Tempo nach oben, damit nichts unter Joystick oder Tasten liegt */
+  body.touch.racing .vp:only-child .nm{display:none}
+  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:calc(20px + clamp(50px,9vw,78px));top:8px;font-size:clamp(28px,8vmin,48px)}
+  body.touch.racing .vp:only-child .lap{left:calc(20px + clamp(50px,9vw,78px));bottom:auto;top:calc(14px + clamp(28px,8vmin,48px))}
+  body.touch.racing .vp:only-child .spd{bottom:auto;top:56px}
   .kcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:560px}
   .kcards button{padding:8px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);text-align:left;font-weight:800;font-size:13px}
   .kcards button b{font-size:22px;margin-right:4px}
@@ -187,7 +198,7 @@
     <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button></div>
     <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
     <div class="info" id="padInfo" hidden></div>
-    <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links den Daumen ziehen = lenken, rechts GAS/Drift/Item/Bremse. 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Dieser Bildschirm zeigt das Rennen (Splitscreen), die Handys werden per Code oder QR-Code gekoppelt.</div></details>
+    <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Dieser Bildschirm zeigt das Rennen (Splitscreen), die Handys werden per Code oder QR-Code gekoppelt.</div></details>
     <div class="info" id="loadInfo"></div>
     <a class="back" id="backLink" href="../">← Alle Spiele</a>
   </section>
