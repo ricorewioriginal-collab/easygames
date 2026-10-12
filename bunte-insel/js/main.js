@@ -443,7 +443,7 @@
   function moveStick(e) { let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; if (l < R * .12) setStick(0, 0); else setStick(dx / R, -dy / R); }
   function endStick() { stick.id = null; setStick(0, 0); sKnob.style.transform = ''; joy.style.transform = ''; joy.classList.remove('on'); }
   zone.addEventListener('pointerdown', e => {
-    A.resume(); if (state !== 'play') return; if (rs.ui === 'play') { rangeAim(e.clientX, e.clientY); rs.down = true; rangeShoot(); try { zone.setPointerCapture(e.pointerId); } catch (x) { } return; } if (!$('funBar').hidden) closeQuick();
+    A.resume(); if (state !== 'play') return; if (rs.ui === 'play') { rangeAim(e.clientX, e.clientY); rs.down = true; rangeShoot(); try { zone.setPointerCapture(e.pointerId); } catch (x) { } return; } closeHudMenus();
     const sa = isTouch() ? stickArea(e.clientX, e.clientY) : null;
     if (sa) { if (stick.id != null) endStick(); startStick(e, sa); } // neuer Finger im Stick-Bereich übernimmt immer – ein „hängender“ Stick kann so nicht blockieren
     else { drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY; drag.t0 = performance.now(); drag.moved = 0; }
@@ -492,6 +492,7 @@
     if (mpOpen) { if (e.code === 'Escape') { mpBack(); e.preventDefault(); } else if (mpView === 'join') { if (e.code === 'Backspace') { joinCode = joinCode.slice(0, -1); renderJoin(); } else if (e.code === 'Enter') mpJoinGo(); else { const ch = net.normCode(e.key); if (ch && e.key.length === 1 && joinCode.length < 4) { joinCode += ch; renderJoin(); } } } return; }
     if (e.code === 'Escape' && rs.ui && state === 'play') { if (rs.ui === 'play' || rs.ui === 'result') exitRange(); else closeRangeUi(); return; }
     if (cinema.open && e.code === 'Escape') { cinema.close(); return; }
+    if (e.code === 'Escape' && (!$('toolPanel').hidden || !$('leftExtra').hidden || !$('funBar').hidden)) { closeHudMenus(); e.preventDefault(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
     if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu' && !(e.target && e.target.closest && e.target.closest('#menu button'))) { startPlay(); e.preventDefault(); } return; }
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
@@ -541,15 +542,15 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); if (document.hidden && state === 'play') pause(true); });
 
   /* ---------- Menüs ---------- */
-  function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('bNight').textContent = save.night ? '☀️' : '🌙'; }
-  function toggleSound() { save.sound = !save.sound; A.setMuted(!save.sound); persist(); $('bSound').textContent = save.sound ? '🔊' : '🔇'; }
+  function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('nightIcon').textContent = save.night ? '☀️' : '🌙'; }
+  function toggleSound() { save.sound = !save.sound; A.setMuted(!save.sound); persist(); $('soundIcon').textContent = save.sound ? '🔊' : '🔇'; }
   function toggleVoice() { save.voice = save.voice === false; A.setVoice(save.voice); persist(); $('bVoice').classList.toggle('off', !save.voice); if (save.voice) A.speak('Ich lese dir alles vor!'); }
   A.voiceOn = save.voice !== false; $('bVoice').classList.toggle('off', !A.voiceOn); $('bVoice').addEventListener('click', toggleVoice);
   let spoke = ''; const readMission = () => { const M = mission; A.speak(M ? M.steps[M.i].type === 'tstop' ? phaseText(M.steps[M.i]) : M.steps[M.i].label : $('mText').textContent); };
   { const mc = $('mission'); mc.classList.toggle('min', save.mmin !== false);
     mc.addEventListener('pointerdown', e => { e.stopPropagation(); A.resume(); if (mc.classList.contains('min')) { mc.classList.remove('min'); save.mmin = false; persist(); } else if (e.target.id === 'mMin') { mc.classList.add('min'); save.mmin = true; persist(); } else readMission(); }); }
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
-  function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } releaseAll(); }
+  function pause(on) { if (state === 'menu') return; if (on) closeHudMenus(); state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } releaseAll(); }
   function startPlay() {
     A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; { const f = myFlat(); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.vy = 0; } /* Start: vor der eigenen Haustür */ cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     setTimeout(() => { if (state === 'play' && !kids.open) kids.daily(); }, 3500);
@@ -563,7 +564,7 @@
   $('bToMenu').addEventListener('click', () => { persist(); try { if (typeof net !== 'undefined' && net.close) net.close(); } catch (e) { } location.reload(); });
   $('bResume').addEventListener('click', () => pause(false)); $('bPause').addEventListener('click', () => pause(true));
   $('bNight').addEventListener('click', toggleNight); $('bSound').addEventListener('click', toggleSound); $('bMusic').addEventListener('click', toggleMusic);
-  $('bNight').textContent = save.night ? '☀️' : '🌙'; $('bSound').textContent = save.sound ? '🔊' : '🔇'; $('bMusic').classList.toggle('off', !save.music);
+  $('nightIcon').textContent = save.night ? '☀️' : '🌙'; $('soundIcon').textContent = save.sound ? '🔊' : '🔇'; $('bMusic').classList.toggle('off', !save.music);
   $('starN').textContent = save.stars;
 
   /* ---------- Spielzeugladen: einkaufen mit Sternen ---------- */
@@ -693,7 +694,7 @@
   const charFor = l => BI.makeChar(charOpts(l, l.n));
   const freeObj = o => { o.traverse(m => { if (m.geometry) m.geometry.dispose(); if (m.isSprite && m.material.map) m.material.map.dispose(); }); if (o.parent) o.parent.remove(o); };
   function dropAvatar(av) { if (av.lv) { freeNetVeh(av.lv, av); av.lv = null; } if (av.char) freeObj(av.char.group); if (av.gv) freeObj(av.gv.root); if (av.pet) freeObj(av.pet.d.group); }
-  function updateFriends() { if (typeof updateFlats === 'function') updateFlats(); const n = net.count(), on = net.connected(); if ($('emo')) { $('emo').hidden = !(on && state === 'play'); if (!on) $('emoRow').hidden = true; } $('friends').hidden = !(on && state === 'play'); $('friendsN').textContent = n; }
+  function updateFriends() { if (typeof updateFlats === 'function') updateFlats(); const n = net.count(), on = net.connected(); if ($('emo')) { $('emo').hidden = !(on && state === 'play'); if (!on) $('emoRow').hidden = true; } $('friends').hidden = !(on && state === 'play'); $('hud').classList.toggle('friends-on', on && state === 'play'); $('friendsN').textContent = n; }
   const mpSay = m => { const el = $('mpStatus'); el.textContent = m || ''; el.classList.remove('err'); };
   const mpErr = m => { const el = $('mpStatus'); el.textContent = m; el.classList.add('err'); };
   function mpShow(v) {
@@ -1366,7 +1367,14 @@
     { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' },
     { k: 'home', icon: '🏠', name: 'Nach Hause', key: '' }, { k: 'pap', icon: '🎈', name: 'Pappnase an/aus', key: '' }, { k: 'games', icon: '🎮', name: 'Spiele', key: '' }, { k: 'photo', icon: '📸', name: 'Foto', key: '' }, { k: 'music', icon: '🎹', name: 'Musik', key: '' }, { k: 'paint', icon: '🎨', name: 'Malen', key: '' }, { k: 'feed', icon: '🦴', name: 'Füttern', key: '' }, { k: 'stroke', icon: '🤗', name: 'Streicheln', key: '' }, { k: 'album', icon: '🏅', name: 'Album', key: '' }, { k: 'guide', icon: '🧭', name: 'Wohin?', key: '' }, { k: 'tierbuch', icon: '📖', name: 'Tierbuch', key: '' }, { k: 'fotos', icon: '🖼️', name: 'Fotoalbum', key: '' }, { k: 'cannon', icon: '💥', name: 'Kanone', key: '' }, { k: 'ahoi', icon: '🏴‍☠️', name: 'Ahoi!', key: '' }, { k: 'trick', icon: '🐾', name: 'Trick', key: '' }, { k: 'fetch', icon: '🎾', name: 'Apport', key: '' }
   ];
-  let quickAll = false;
+  const QUICK_TABS = [['suggested', 'Für dich'], ['play', 'Spielen'], ['create', 'Kreativ'], ['travel', 'Unterwegs'], ['pets', 'Tiere']];
+  const QUICK_GROUPS = {
+    play: new Set(['dance', 'bubbles', 'balloons', 'gum', 'fireworks', 'ball', 'xxl', 'games', 'cannon', 'pap']),
+    create: new Set(['express', 'gadgets', 'photo', 'music', 'paint', 'album', 'fotos']),
+    travel: new Set(['punch', 'rcfetch', 'pack', 'meta', 'home', 'guide', 'ahoi']),
+    pets: new Set(['search', 'bark', 'feed', 'stroke', 'tierbuch', 'trick', 'fetch'])
+  };
+  let quickGroup = 'suggested';
   const onFoot = () => !P.veh || P.veh.spec.remote;
   function avail(a) {
     if (a.k === 'punch') return onFoot() && !!fun.nearTree();
@@ -1384,13 +1392,46 @@
     return (base[a.k] || 0) + (a.k === 'punch' ? 200 : 0) + Math.min((save.use || {})[a.k] || 0, 15) * 1.5;
   }
   function renderQuick() {
-    const bar = $('funBar'); bar.innerHTML = ''; const list = ACTIONS.filter(avail).sort((a, b) => score(b) - score(a)), shown = quickAll ? list : list.slice(0, 6);
-    for (const a of shown) { const b = document.createElement('button'); b.className = 'fb'; b.dataset.k = a.k; b.innerHTML = a.icon + '<small>' + a.name + '</small>' + (a.key ? '<i class="kbd kb">' + a.key + '</i>' : ''); b.onclick = () => { doFun(a.k); closeQuick(); }; bar.appendChild(b); }
-    if (list.length > 6) { const m = document.createElement('button'); m.className = 'fb more'; m.innerHTML = (quickAll ? '▴' : '⋯') + '<small>' + (quickAll ? 'Weniger' : 'Mehr') + '</small>'; m.onclick = () => { quickAll = !quickAll; renderQuick(); }; bar.appendChild(m); }
+    const bar = $('funBar'), available = ACTIONS.filter(avail);
+    const shown = quickGroup === 'suggested' ? available.sort((a, b) => score(b) - score(a)).slice(0, 6) : available.filter(a => QUICK_GROUPS[quickGroup].has(a.k));
+    const title = document.createElement('div'); title.className = 'quick-title'; title.textContent = '🎉 Schnellaktionen';
+    const tabs = document.createElement('div'); tabs.className = 'quick-tabs'; tabs.setAttribute('aria-label', 'Aktionen wählen');
+    for (const [key, label] of QUICK_TABS) {
+      const tab = document.createElement('button'); tab.type = 'button'; tab.dataset.group = key; tab.textContent = label;
+      tab.className = key === quickGroup ? 'sel' : ''; tab.setAttribute('aria-pressed', String(key === quickGroup));
+      tab.onclick = () => { quickGroup = key; renderQuick(); bar.querySelector('[data-group="' + key + '"]').focus({ preventScroll: true }); };
+      tabs.appendChild(tab);
+    }
+    const grid = document.createElement('div'); grid.className = 'quick-grid';
+    for (const a of shown) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'fb'; b.dataset.k = a.k; b.setAttribute('aria-label', a.name);
+      b.innerHTML = '<span class="fun-icon">' + a.icon + '</span><small>' + a.name + '</small>' + (a.key ? '<i class="kbd kb">' + a.key + '</i>' : '');
+      b.onclick = () => { doFun(a.k); closeHudMenus(); }; grid.appendChild(b);
+    }
+    bar.replaceChildren(title, tabs, grid);
   }
-  function closeQuick() { $('funBar').hidden = true; $('bFun').classList.remove('on'); }
-  $('bPack').addEventListener('click', ev => { ev.stopPropagation(); A.resume(); pack.toggle(); });
-  $('bFun').addEventListener('click', () => { const f = $('funBar'); if (!f.hidden) { closeQuick(); return; } quickAll = false; renderQuick(); f.hidden = false; $('bFun').classList.add('on'); });
+  function closeQuick() { $('funBar').hidden = true; $('bFun').classList.remove('on'); $('bFun').setAttribute('aria-expanded', 'false'); }
+  function closeHudMenus() {
+    closeQuick(); $('toolPanel').hidden = true; $('leftExtra').hidden = true;
+    for (const id of ['bTools', 'bMore']) { $(id).classList.remove('on'); $(id).setAttribute('aria-expanded', 'false'); }
+    document.body.classList.remove('hud-tools-open');
+  }
+  $('bTools').addEventListener('click', () => {
+    const open = $('toolPanel').hidden; closeHudMenus(); if (!open) return;
+    $('toolPanel').hidden = false; $('bTools').classList.add('on'); $('bTools').setAttribute('aria-expanded', 'true'); document.body.classList.add('hud-tools-open');
+  });
+  $('bMore').addEventListener('click', () => {
+    const open = $('leftExtra').hidden; closeHudMenus(); if (!open) return;
+    $('leftExtra').hidden = false; $('bMore').classList.add('on'); $('bMore').setAttribute('aria-expanded', 'true');
+  });
+  $('toolPanel').addEventListener('click', e => { if (e.target.closest('button')) closeHudMenus(); });
+  $('leftExtra').addEventListener('click', e => { if (e.target.closest('button')) closeHudMenus(); });
+  $('bLog').addEventListener('click', closeHudMenus);
+  $('bPack').addEventListener('click', ev => { ev.stopPropagation(); closeHudMenus(); A.resume(); pack.toggle(); });
+  $('bFun').addEventListener('click', () => {
+    const open = $('funBar').hidden; closeHudMenus(); if (!open) return;
+    quickGroup = 'suggested'; renderQuick(); $('funBar').hidden = false; $('bFun').classList.add('on'); $('bFun').setAttribute('aria-expanded', 'true');
+  });
   $('bCam').addEventListener('click', toggleEgo);
   let preBuild = null, tab = 0, clearT = 0, voxTab = null, lastVC = -1;
   const tabList = () => { const L = []; if (vox.inBauland()) for (const g of BI.VOX_GROUPS) L.push({ icon: g.icon, name: g.name, vox: g.id }); build.TABS.forEach((tb, i) => L.push({ icon: tb.icon, name: tb.name, part: i })); return L; };

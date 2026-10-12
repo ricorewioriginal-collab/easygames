@@ -318,6 +318,81 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
 @media (min-width:640px) and (min-aspect-ratio:13/10) and (max-height:430px){#menu[data-v=home] .ttl{font-size:clamp(28px,8.5vh,40px)}#menu[data-v=home] .tag{display:none}.tile.main{min-height:74px}.tile:not(.main){min-height:70px}.tile b{font-size:32px;top:8px;left:12px}.tile{padding:8px 12px;font-size:19px}.tile.main{font-size:23px}.tile small{display:none}.tiles{gap:8px}}
 .tile:not(.main) b{font-size:clamp(28px,5.2vh,44px)}.tile:not(.main){min-height:clamp(96px,17vh,140px)}
 @media (prefers-reduced-motion:reduce){.tile.main,.ttl span,#loading .ldIsle span,#loading .ldIsle i{animation:none!important}#menu[data-v=home] .mwrap,#loading .ldBox{animation:none}}
+
+/* Spiel-HUD: klare Zonen für Status, Aufgaben, Menüs und Steuerung. */
+#hud{--hud-top:max(12px,env(safe-area-inset-top));--hud-left:max(12px,env(safe-area-inset-left));--hud-right:max(12px,env(safe-area-inset-right))}
+#stars{left:var(--hud-left);top:var(--hud-top);height:46px;padding:4px 13px 4px 8px;font-size:22px;z-index:4}
+#stars span.ic{font-size:25px}
+#friends{left:calc(var(--hud-left) + 140px);top:var(--hud-top);height:46px;display:grid;place-items:center}
+#topR{right:var(--hud-right);top:var(--hud-top);gap:8px;z-index:7}
+#tools{gap:7px}
+#tools .tb{width:44px;height:44px;background:#f8fbff;border:2px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(20,50,100,.22)}
+#tools .tb:active,.rail-btn:active{transform:scale(.92)}
+#mini{width:96px;height:96px;border:3px solid white;box-shadow:0 4px 12px rgba(20,50,100,.22)}
+#mission,#questChip{left:var(--hud-left);top:calc(var(--hud-top) + 58px);transform:none;width:min(430px,calc(100vw - 152px));max-width:none;border:2px solid rgba(255,255,255,.7);box-shadow:0 4px 12px rgba(20,50,100,.22);z-index:4}
+#mission{padding:7px 10px;gap:7px;min-height:48px;pointer-events:auto}
+#mText{line-height:1.12}
+#questChip{text-align:left;min-height:48px}
+#leftTools{left:var(--hud-left);top:calc(var(--hud-top) + 150px);gap:7px;z-index:6}
+#leftTools .rail-btn{width:49px;height:49px;display:flex;flex-direction:column;gap:0;align-items:center;justify-content:center;border:2px solid #fff;background:#f8fbff;border-radius:17px;line-height:1;box-shadow:0 4px 12px rgba(20,50,100,.22)}
+.rail-btn span{font-size:23px}.rail-btn small{font-size:9px;font-weight:700;margin-top:2px}
+#leftTools .rail-btn.on,#tools .tb.on{background:#ffe59a;outline:2px solid #ffae32;outline-offset:1px}
+.hud-popover{pointer-events:auto;background:#f8fbff;border:2px solid #fff;border-radius:20px;padding:10px;box-shadow:0 12px 30px rgba(16,43,83,.34);color:var(--ink)}
+.hud-popover strong{display:block;font-size:14px;margin:2px 6px 8px}
+.hud-popover .tb{width:100%;height:42px;margin-top:4px;padding:0 10px;display:flex;align-items:center;justify-content:flex-start;gap:10px;border-radius:12px;background:#e9f2ff;box-shadow:none;text-align:left;font-size:22px}
+.hud-popover .tb span{font-size:14px;font-weight:700}.hud-popover .tb:active{background:#d4e7ff}
+.hud-popover .tb .setting-icon{font-size:22px;font-weight:400;min-width:26px;text-align:center}
+#toolPanel{position:absolute;right:0;top:52px;width:185px;z-index:10}
+body.hud-tools-open #mini{visibility:hidden;pointer-events:none}
+#leftExtra{position:absolute;left:57px;top:0;width:165px;z-index:9}
+#funBar{position:absolute;left:57px;top:0;right:auto;bottom:auto;display:block;width:min(420px,calc(100vw - 84px));max-width:none;max-height:min(420px,calc(100dvh - 170px));overflow:auto;padding:12px;background:#f8fbff;border:2px solid #fff;border-radius:20px;box-shadow:0 12px 30px rgba(16,43,83,.34);overscroll-behavior:contain;touch-action:auto;z-index:9}
+.quick-title{font-size:17px;font-weight:700;margin:0 2px 8px}
+.quick-tabs{display:flex;gap:5px;overflow-x:auto;padding-bottom:7px;margin-bottom:6px;touch-action:pan-x;scrollbar-width:thin}
+.quick-tabs button{flex:none;min-height:34px;padding:5px 10px;border-radius:11px;background:#e9f2ff;font-size:12px;font-weight:700;white-space:nowrap}
+.quick-tabs button.sel{background:#2d8cff;color:#fff}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#funBar .fb{width:100%;height:74px;border-radius:14px;background:#e9f2ff;box-shadow:inset 0 -3px 0 rgba(25,65,115,.12);font-size:26px;min-width:0}
+#funBar .fb:active{background:#d0e7ff;transform:scale(.96)}
+#funBar .fb small{max-width:100%;padding:0 2px;font-size:10px;line-height:1.05;opacity:1;overflow-wrap:anywhere}
+#funBar .fb .fun-icon{line-height:1}
+.abtn{background:rgba(27,61,105,.83);border-color:#fff;box-shadow:0 4px 12px rgba(10,30,70,.3)}
+.abtn small{max-width:100%;font-size:10px;letter-spacing:0;text-overflow:clip}
+#bJump small{font-size:9.5px}
+#joy{width:140px;height:140px;background:radial-gradient(circle,rgba(30,68,112,.22),rgba(30,68,112,.5));box-shadow:0 4px 12px rgba(10,30,70,.25)}
+:root{--u:58px;--ua:70px;--r:54px}
+#bAct{width:var(--ua);height:var(--ua)}
+#bAct small{font-size:9.5px}
+#hud button:focus-visible{outline:3px solid #ffad25;outline-offset:2px}
+@media (max-width:620px){
+  #mission,#questChip{top:calc(var(--hud-top) + 57px);left:var(--hud-left);width:calc(100vw - 124px);max-width:none}
+  #mIcon{font-size:27px}#mText{font-size:15px}
+  #mini{width:86px;height:86px}
+  #leftTools{top:calc(var(--hud-top) + 146px)}
+  #friends{left:var(--hud-left);top:calc(var(--hud-top) + 52px);height:38px}
+  #hud.friends-on #mission,#hud.friends-on #questChip{top:calc(var(--hud-top) + 100px)}
+  #hud.friends-on #leftTools{top:calc(var(--hud-top) + 190px)}
+  #funBar{position:absolute;left:57px;right:auto;top:0;bottom:auto;width:calc(100vw - 84px);max-height:min(420px,calc(100dvh - 170px))}
+}
+@media (max-width:380px){#mini{width:76px;height:76px}#mission,#questChip{width:calc(100vw - 110px)}#mission{gap:5px;padding:5px 7px}#mNav{width:32px}#mArrow{width:30px}#mMin{width:22px;height:22px}#leftTools .rail-btn{width:45px;height:45px}#leftExtra,#funBar{left:53px}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#joy{width:128px;height:128px;left:max(12px,env(safe-area-inset-left))}:root{--u:52px;--ua:64px;--r:49px}}
+@media (max-height:430px){
+  #stars{height:40px;font-size:19px}#stars span.ic{font-size:22px}
+  #tools .tb{width:40px;height:40px}#toolPanel{top:46px}
+  #mini{width:74px;height:74px}
+  #mission,#questChip{top:calc(var(--hud-top) + 49px);padding:4px 8px;min-height:40px}
+  #mIcon{font-size:22px}#mTitle{font-size:11px}#mText{font-size:14px}
+  #leftTools{top:calc(var(--hud-top) + 106px)}
+  #leftTools .rail-btn{width:42px;height:42px}#leftTools .rail-btn span{font-size:19px}#leftTools .rail-btn small{font-size:8px}
+  #leftExtra,#funBar{left:50px}
+  #funBar{max-height:calc(100dvh - 126px);padding:8px}
+  #funBar .fb{height:60px;font-size:23px}
+  #hud.friends-on #mission,#hud.friends-on #questChip{top:calc(var(--hud-top) + 92px)}
+  #hud.friends-on #leftTools{top:calc(var(--hud-top) + 140px)}
+}
+body.hostfs #topR{top:calc(var(--hud-top) + 58px)}
+@media (max-width:620px){body.hostfs #mission,body.hostfs #questChip{top:calc(var(--hud-top) + 108px)}body.hostfs #leftTools{top:calc(var(--hud-top) + 198px)}body.hostfs #hud.friends-on #mission,body.hostfs #hud.friends-on #questChip{top:calc(var(--hud-top) + 108px)}body.hostfs #hud.friends-on #leftTools{top:calc(var(--hud-top) + 198px)}body.hostfs #funBar{max-height:calc(100dvh - 220px)}}
+body.building #leftTools{top:calc(var(--hud-top) + 150px)}
+@media (max-height:430px){body.building #leftTools{top:calc(var(--hud-top) + 106px)}}
+@media (max-width:620px){body.hostfs.building #leftTools{top:calc(var(--hud-top) + 198px)}}
 </style>
 </head>
 <body>
@@ -340,22 +415,30 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
   <div id="topR">
     <div id="tools">
       <button class="tb" id="bLog" aria-label="Aufgaben und Hinweise">📋</button>
-    <button class="tb" id="bNight" aria-label="Tag und Nacht">🌙</button>
-      <button class="tb" id="bVoice" aria-label="Vorlesen">🗣️</button>
-      <button class="tb" id="bMusic" aria-label="Musik">🎵</button>
-      <button class="tb" id="bSound" aria-label="Ton">🔊</button>
-      <button class="tb" id="bPause" aria-label="Pause und Hilfe">❚❚</button>
+      <button class="tb" id="bTools" aria-label="Einstellungen öffnen" aria-controls="toolPanel" aria-expanded="false">⚙️</button>
+      <button class="tb" id="bPause" aria-label="Pause und Hilfe">⏸</button>
+    </div>
+    <div id="toolPanel" class="hud-popover" hidden>
+      <strong>Einstellungen</strong>
+      <button class="tb" id="bNight" aria-label="Tag und Nacht"><span class="setting-icon" id="nightIcon">🌙</span><span>Tag &amp; Nacht</span></button>
+      <button class="tb" id="bVoice" aria-label="Vorlesen">🗣️ <span>Vorlesen</span></button>
+      <button class="tb" id="bMusic" aria-label="Musik">🎵 <span>Musik</span></button>
+      <button class="tb" id="bSound" aria-label="Ton"><span class="setting-icon" id="soundIcon">🔊</span><span>Geräusche</span></button>
     </div>
     <canvas id="mini" width="300" height="300"></canvas>
   </div>
   <div id="joy" aria-hidden="true"><span class="ja u">▲</span><span class="ja d">▼</span><span class="ja l">◀</span><span class="ja r">▶</span><div id="joyKnob"></div></div>
   <div id="leftTools">
-    <button class="tb" id="bPack" aria-label="Rucksack">🎒</button>
-    <button class="tb" id="bFun" aria-label="Spaß-Aktionen">🎉</button>
-    <button class="tb" id="bBuild" aria-label="Bauen">🏗️</button>
-    <button class="tb" id="bCam" aria-label="Ego-Kamera">📷</button>
-    <button class="tb" id="bGuide" aria-label="Wohin?">🧭</button>
-    <div id="funBar" hidden></div>
+    <button class="tb rail-btn" id="bPack" aria-label="Rucksack"><span>🎒</span><small>Tasche</small></button>
+    <button class="tb rail-btn" id="bFun" aria-label="Spaß-Aktionen öffnen" aria-controls="funBar" aria-expanded="false"><span>🎉</span><small>Spaß</small></button>
+    <button class="tb rail-btn" id="bMore" aria-label="Weitere Aktionen öffnen" aria-controls="leftExtra" aria-expanded="false"><span>☰</span><small>Mehr</small></button>
+    <div id="leftExtra" class="hud-popover" hidden>
+      <strong>Weitere Aktionen</strong>
+      <button class="tb" id="bBuild" aria-label="Bauen">🏗️ <span>Bauen</span></button>
+      <button class="tb" id="bCam" aria-label="Ego-Kamera">📷 <span>Kamera</span></button>
+      <button class="tb" id="bGuide" aria-label="Wohin?">🧭 <span>Wohin?</span></button>
+    </div>
+    <div id="funBar" aria-label="Schnellaktionen" hidden></div>
   </div>
   <div id="gauge" class="chip" hidden><div id="gVal">0</div><div id="gUnit">km/h</div><div id="gSub"></div></div>
   <button class="abtn" id="bAux" data-k="X" hidden><b>🚨</b><small>Sirene</small></button>
@@ -602,7 +685,7 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
   <div class="card">
     <div class="logo" style="font-size:40px">Pause</div>
     <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Auto anhalten/einsteigen</b> E am fahrenden Auto, dann noch einmal E am stehenden Auto<br><b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
-    <p class="help tc"><b>Laufen/Fahren</b> Joystick links, auch daneben antippen (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Auto anhalten/einsteigen, Reden, Einkaufen</b> großer Aktion-Knopf ✋ unten rechts (fahrendes Auto erst anhalten, dann einsteigen)<br><b>Springen, Hallo, Hupe, Sirene, Turbo</b> runde Knöpfe darüber<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
+    <p class="help tc"><b>Laufen/Fahren</b> Joystick links, auch daneben antippen (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Auto anhalten/einsteigen, Reden, Einkaufen</b> großer Aktion-Knopf ✋ unten rechts (fahrendes Auto erst anhalten, dann einsteigen)<br><b>Springen, Hallo, Hupe, Sirene, Turbo</b> runde Knöpfe darüber<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Menüs</b> 🎉 Spaß nach Themen · ☰ Bauen, Kamera &amp; Wegweiser · ⚙️ Ton &amp; Tag/Nacht<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
     <div class="lab" id="slotLab">💾 Spielstand</div><div class="row"><button class="pill" id="bSaveNow">💾 Jetzt speichern</button><button class="pill" id="bExport">📤 Sichern (Datei)</button></div>
     <div class="lab">⏰ Pausen-Erinnerung (für Eltern)</div><div class="row" id="breakOpts"></div>
     <button class="pill" id="bFriendsP" style="margin-top:6px">👥 Mitspielen</button> <button class="pill" id="bParent" style="margin-top:6px;position:relative;overflow:hidden">👪 Eltern (halten)</button><br><button class="big" id="bResume">▶ Weiter spielen</button><br><button class="pill" id="bToMenu" style="margin-top:8px">🏠 Zurück zum Hauptmenü</button>
@@ -671,7 +754,7 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
 <script src="js/combat.js" onload="__ld()"></script>
 <script src="js/weather.js" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=traffic2" onload="__ld()"></script>
+<script src="js/main.js?v=hud3" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>
