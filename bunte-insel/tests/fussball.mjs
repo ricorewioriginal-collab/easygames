@@ -114,12 +114,16 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     /* Spät dazukommen: Runde und Torwart-Tempo stecken in jedem Roboter-Paket; Schiedsrichter weg → Turnier endet */
     T.onNetT({ t: 'fbt', id: 'ref1', op: 'b', p: [[Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1]], tm: 40, r: 2 });
     out.lateRound = C.T.on && C.T.ghost && C.T.round === 2 && C.LV[2].keep === 2.6; T.peerGone('other'); out.stillOn = C.T.on; T.peerGone('ref1'); out.refGone = !C.T.on && C.BOTS.every(q => !q.c.group.visible);
+    /* Start-Wettlauf: zwei Schiedsrichter → der mit dem kleineren Namen bleibt */
+    P.x = sp.x; P.z = sp.z + 2.5; b.placeAct(b.placeNear()); out.raceStart = C.T.on && !C.T.ghost;
+    T.onNetT({ t: 'fbt', id: 'zzz', op: 's', r: 0 }); out.raceKeep = C.T.on && !C.T.ghost; /* 'me' < 'zzz' → ich bleibe */
+    T.onNetT({ t: 'fbt', id: 'aaa', op: 's', r: 0 }); out.raceYield = C.T.on && C.T.ghost && C.T.ref === 'aaa'; T.peerGone('aaa');
     return out;
   });
   dbg(r); ok(r.label && r.on && r.sentS, 'Turnier: Pokal-Podest startet Spiel 1 mit 5 Roboter-Spielern (3 gegen 3) und meldet es Freunden');
   ok(r.moved && r.inPitch && r.timer && r.sentB, 'Turnier: Roboter laufen/schießen auf dem Platz, Zeit läuft, Positionen gehen an Freunde');
   ok(r.won1 && r.sentE && r.round2, 'Turnier: Spiel gewonnen = +1 ⭐ und weiter zu Spiel 2'); ok(r.again, 'Turnier: verlorenes Spiel wird wiederholt (kein Aus)'); ok(r.cup, 'Turnier: Finale gewonnen = Pokal, +6 ⭐, Roboter gehen');
-  ok(r.botGoal, 'Turnier: Tore der Roboter zählen nicht als eigene Tore (kein ⭐-Zähler)'); ok(r.lateRound && r.stillOn && r.refGone, 'Turnier mit Freunden: Spät-Beitritt kennt die Runde; fällt der Schiedsrichter aus, endet das Turnier'); ok(r.ghost && r.ghostStar && r.ghostEnd, 'Turnier mit Freunden: Roboter, Zeit und Sieg kommen per Nachricht; kaputte Nachrichten schaden nicht');
+  ok(r.botGoal, 'Turnier: Tore der Roboter zählen nicht als eigene Tore (kein ⭐-Zähler)'); ok(r.raceStart && r.raceKeep && r.raceYield, 'Turnier mit Freunden: zwei gleichzeitige Starts – genau ein Schiedsrichter bleibt'); ok(r.lateRound && r.stillOn && r.refGone, 'Turnier mit Freunden: Spät-Beitritt kennt die Runde; fällt der Schiedsrichter aus, endet das Turnier'); ok(r.ghost && r.ghostStar && r.ghostEnd, 'Turnier mit Freunden: Roboter, Zeit und Sieg kommen per Nachricht; kaputte Nachrichten schaden nicht');
 }
 
 /* ---------- 5. Sparsam, Fehler ---------- */

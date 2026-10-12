@@ -1254,7 +1254,7 @@
     { id: 'ship', icon: '🏴‍☠️', name: 'Piratenschiff', at: () => ({ x: W.ship.cx - 6, z: W.ship.cz + 2 }) }, { id: 'playground', icon: '🛝', name: 'Spielplatz', at: () => SPOT.park }, { id: 'cinema', icon: '🎬', name: 'Kino & Autokino', at: () => ({ x: BI.CINEMA.door.x, z: BI.CINEMA.door.z + 1.5 }) }
   ];
   /* Weitere Ziele in den Welten (Orte, Figuren, Spiele) + Einteilung für das 🧭-Menü */
-  { const ZS = BI.ZOTIK.S, zp = (u, v) => ({ x: BI.ZOTIK.x + u * ZS, z: BI.ZOTIK.z + v * ZS }), M = BI.MAERCHEN, F = BI.FUSSBALL.pitch, R = BI.RADIO, PK = BI.PARK, AT = BI.ATLANTIS, sp = W.spots;
+  { const ZS = BI.ZOTIK.S, zp = (u, v) => ({ x: BI.ZOTIK.x + u * ZS, z: BI.ZOTIK.z + v * ZS }), M = BI.MAERCHEN, F = BI.FUSSBALL.pitch, R = BI.RADIO, PK = BI.PARK, sp = W.spots;
     const more = [
       ['schatz', '🗺️', 'Schatzmeister Piet – Schatzsuche', () => ({ x: schatz.piet.x - 2.6, z: schatz.piet.z }), 'spiele'],
       ['turnier', '🏆', 'Fußball-Turnier (Pokal)', () => ({ x: sp.fcup.x, z: sp.fcup.z + 3 }), 'spiele'],
@@ -1276,8 +1276,7 @@
       ['zburg', '🏰', 'Lunaris: Burg auf dem Hügel', () => zp(50, -20), 'orte'],
       ['zhafen', '⚓', 'Lunaris: Hafen (Luftschiff)', () => zp(0, 72), 'orte'],
       ['ztore', '🌀', 'Lunaris: Weltentore', () => ({ x: BI.ZOTIK.gateC.x, z: BI.ZOTIK.gateC.z }), 'orte'],
-      ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte'],
-      ['atlstadt', '🔱', 'Atlantis: die Stadt unten', () => ({ x: AT.x, z: AT.z + 112 * AT.S }), 'orte']
+      ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte']
     ];
     for (const [id, icon, name, at, cat] of more) DEST.push({ id, icon, name, at, cat });
     const CATS = { inseln: ['park', 'dampf', 'drachen', 'atlantis', 'zotik', 'radio', 'maerchen', 'fussball', 'bauland', 'pups', 'rainbow', 'city'], haupt: ['home', 'garden', 'shop', 'range', 'hof', 'fields', 'arena', 'forest', 'obby', 'lighthouse', 'camp', 'zoo', 'pool', 'station', 'hospital', 'playground', 'cinema', 'shops'], fahr: ['heli', 'pier', 'ship'] };
