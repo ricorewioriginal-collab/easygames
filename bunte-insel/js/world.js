@@ -94,6 +94,7 @@ BI.buildWorld = function (scene) {
         }
       }
     }
+    if (W.lock && W.lock.length) for (const o of W.lock) { if (!o.on) continue; const dx = px - o.x, dz = pz - o.z, d = Math.hypot(dx, dz); if (d < o.r) { if (d > 1e-6) { px = o.x + dx / d * o.r; pz = o.z + dz / d * o.r; } else px = o.x + o.r; hit = true; } } /* Story-Modus: noch gesperrte Welten */
     if (W.dyn.length) for (const o of W.dyn) { if (!o.on) continue; const dx = px - o.x, dz = pz - o.z, d = Math.hypot(dx, dz), m = r + o.r; if (d < m) { if (d > 1e-6) { px += dx * (m - d) / d; pz += dz * (m - d) / d; } else px += m; hit = true; } } /* bewegliche Hindernisse (Rätsel-Blöcke, Tore) */
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);

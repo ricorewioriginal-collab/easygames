@@ -49,7 +49,14 @@ BI.registerDoors = function (W) {
 /* Türmatten und goldene Türrahmen (sichtbar, damit Kinder die Tür finden) – nach dem Bau aller Inseln aufrufen */
 BI.buildDoorMarks = function (c) {
   const { st, lamp, W } = c; W.doors = BI.DOORS;
-  for (const d of BI.DOORS) { st.disc(d.x, d.z, 1.1, .05, 0xffd23f, 16); st.disc(d.x, d.z, .75, .06, 0xfff0a0, 16); const nx = Math.sin(d.h), nz = Math.cos(d.h); st.cone(d.x - nx * 1.2, 0, d.z - nz * 1.2, .26, .9, 0xffd23f, 4); lamp.sph(d.x - nx * 1.2, 1.2, d.z - nz * 1.2, .13, 0xfff3b0, 1); }
+  for (const d of BI.DOORS) {
+    st.disc(d.x, d.z, 1.1, .05, 0xffd23f, 16); st.disc(d.x, d.z, .75, .06, 0xfff0a0, 16);
+    /* sichtbare Haustür an der Wand (Rahmen, Tür, Knauf, Fenster, Laterne, Stufe) – Wand liegt ca. .85 hinter dem Türplatz */
+    const nx = Math.sin(d.h), nz = Math.cos(d.h), tx = nz, tz = -nx, wx = d.x - nx * .85, wz = d.z - nz * .85, col = [0x8a4a2a, 0x3a6ad8, 0xc23a3a, 0x2f9a5a][d.id % 4];
+    st.box(wx, 0, wz, 2.3, 3.1, .22, 0xf6e6c8, d.h); st.box(wx + nx * .06, 0, wz + nz * .06, 1.8, 2.7, .2, col, d.h); st.box(wx + nx * .17, 1.3, wz + nz * .17, 1.1, 2.1, .06, col + 0x151515, d.h);
+    st.sph(wx + nx * .24 + tx * .55, 1.25, wz + nz * .24 + tz * .55, .1, 0xffd23f, 0); lamp.sph(wx + nx * .3 + tx * 1.5, 2.6, wz + nz * .3 + tz * 1.5, .16, 0xfff3b0, 1); lamp.sph(wx + nx * .3 - tx * 1.5, 2.6, wz + nz * .3 - tz * 1.5, .16, 0xfff3b0, 1);
+    st.box(wx + nx * .5, 0, wz + nz * .5, 2.2, .14, .7, 0xb8b0a0, d.h);
+  }
 };
 
 BI.createInnen = function (G) {

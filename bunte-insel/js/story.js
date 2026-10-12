@@ -29,6 +29,7 @@ BI.createStory = function (G) {
   const rw = () => S().rw || (S().rw = {}); // Ziele, für die es schon den Stern gab
   K.chapter = () => ST[S().c] || null;
   K.finished = () => S().c >= ST.length;
+  K.index = () => S().c;
   const chip = $('questChip'); BI.injectLogCss();
   function next() { const c = K.chapter(); return c ? c.tasks.find(t => !done(t)) : null; }
   function renderChip() {

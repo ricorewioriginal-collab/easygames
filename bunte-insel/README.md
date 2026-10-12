@@ -412,3 +412,8 @@ Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verlie
 ### 🎮 Vierter Knopf (X) in der Button-Steuerung
 - Zu Fuß gibt es eine feste Liste möglicher Aktionen (Auto, Laden, Schießstand, Schatz, Zimmer, Orte/Türen …). **A = 1. Aktion, X = 2. Aktion** – Beschriftung und Ausführung kommen aus derselben Liste, nichts reagiert mehr „doppelt“ oder passt nicht zur Beschriftung.
 - Ohne zweite Aktion ist X „👊 Hauen“ (Baum hauen) und am Handy immer sichtbar. Test: `tests/buttons.mjs`.
+
+### 📖 Story-Modus & sichtbare Haustüren
+- **Haustüren** sind jetzt echte Türen an der Hauswand (Rahmen, farbige Tür, Knauf, Laternen, Stufe) plus goldene Türmatte.
+- **Zwei Spielmodi, ein Spielstand:** 🌍 *Freie Welt* (alles offen, wie bisher) und 📖 *Story* (`js/storymode.js`). Wechsel jederzeit im Pause-Menü, im ⚙️-Menü oder per Aufgabenliste; Modus wird gespeichert (`save.mode`). Sterne, Sticker, Aufgaben und Inselreise zählen in beiden Modi – schon Geschafftes öffnet im Story-Modus sofort Welten.
+- **Story:** Start zuhause (beim ersten Mal), Rosi erklärt den Weg. Alle 15 Inseln liegen hinter einer gelben Absperrung mit Schild („🔒 … noch Kapitel X / Y Sticker“), die Welt schiebt Spieler und Fahrzeuge hinaus (`W.lock`). Freischalten: Stadt, Fellretter-Bucht, Regenbogen, Dampfer, Drachen, Freizeitpark über die Inselreise-Kapitel 2–7; danach über Sticker (Fußball 15 … Atlantis 76). Aufgabenliste „🗺️ Welten freischalten“. Test: `tests/story.mjs`.
