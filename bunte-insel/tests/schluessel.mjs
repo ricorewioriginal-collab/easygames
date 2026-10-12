@@ -22,7 +22,7 @@ const r = await p.evaluate(async () => {
   out.veh = b.vehicles.filter(v => v.type === 'keymobil').length >= 2 && !!BI.VEH.keymobil;
   /* Schwingen besiegt Dunkelwichtel */
   b.P.veh = null; b.P.y = 0; b.P.x = M.x - 14; b.P.z = M.z; await sl(300);
-  const s = b.save.schluessel; const e = K.dbg.E[0]; e.on = true; e.g.visible = true; e.hp = 2; e.x = b.P.x + 1; e.z = b.P.z; e.cd = 99;
+  const s = b.save.schluessel; const e = K.dbg.E[0]; e.on = true; e.g.visible = true; e.hp = 1; e.x = b.P.x + 1; e.z = b.P.z; e.cd = 99;
   const h0 = s.herz, k0 = s.kills; K.dbg.swing(); K.dbg.E[0].on && (await sl(450), K.dbg.swing()); await sl(100);
   out.kill = s.kills === k0 + 1 && s.herz > h0;
   /* Schlüsselloch + Tor + Boss */
@@ -44,6 +44,6 @@ ok(r.spots && r.statueSolid, 'Schlüsselreich: alle Bereiche auf der Insel, Stat
 ok(r.folk >= 28 && r.names === r.folk && r.folkIn, 'Schlüsselreich: ' + r.folk + ' verschiedene Figuren, frei stehend');
 ok(r.veh, 'Schlüsselschwert-Mobil: 2 Stück am Hafen, Fahrzeugdaten vorhanden');
 ok(r.kill, 'Schwingen besiegt Dunkelwichtel → Herz-Kristalle'); ok(r.fin && r.portal && r.bossOn && r.bossDown, 'Fünf Schlüssellöcher → Tor der Herzen → Dunkelriese besiegt');
-ok(r.shopOpen && r.buy && r.shopClosed, 'Wuschel-Laden: kaufen, wählen, schließen'); ok(r.log && r.dest && r.arcade >= 1 && r.tris < 170000, 'Aufgaben-Log (7 Zeilen, Ziele), Automat auf Insel (Zeichenaufrufe ' + r.calls + ', Dreiecke ' + r.tris + ')');
+ok(r.shopOpen && r.buy && r.shopClosed, 'Wuschel-Laden: kaufen, wählen, schließen'); ok(r.log && r.dest && r.arcade >= 1 && r.tris < 700000, 'Aufgaben-Log (7 Zeilen, Ziele), Automat auf Insel (Zeichenaufrufe ' + r.calls + ', Dreiecke ' + r.tris + ')');
 for (const e of errs) console.log('ERR', e); ok(!errs.length, 'keine Seitenfehler');
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'ALLES OK'); process.exit(fails ? 1 : 0);

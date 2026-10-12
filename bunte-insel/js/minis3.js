@@ -180,7 +180,7 @@ BI.EXTRA_ARCADES = [
   { kind: 'ampel_stadt', at: () => ({ x: 12, z: -226, c: BI.CITY }), body: 0x3a4a6a, top: 0xff5a5a },
   { kind: 'ringe_park', at: () => ({ x: 238, z: 8, c: BI.PARK }), body: 0xff8fc8, top: 0xffd23f },
   { kind: 'farben_regenbogen', at: () => ({ x: -246, z: 34, c: BI.RAINBOW }), body: 0x9b4de0, top: 'rainbow' },
-  { kind: 'angeln_dampfer', at: () => ({ x: -232, z: -138, c: BI.DAMPF }), body: 0x2f7ad8, top: 0xdddddd },
+  { kind: 'angeln_dampfer', at: () => ({ x: BI.DAMPF.x + 30, z: BI.DAMPF.z + 12, c: BI.DAMPF }), body: 0x2f7ad8, top: 0xdddddd },
   { kind: 'eier_drachen', at: () => ({ x: 108, z: 238, c: BI.DRACHEN }), body: 0xe0602a, top: 0xffd23f },
   { kind: 'welpen_pups', at: () => ({ x: -80, z: 234, c: BI.PUPS }), body: 0x2d6be0, top: 0xff7a1a },
   { kind: 'elfmeter_fussball', at: () => { const F = BI.FUSSBALL; return { x: F.entry.x - F.ux * 6, z: F.entry.z - F.uz * 6, c: F }; }, body: 0x2fae5a, top: 0xffffff },
