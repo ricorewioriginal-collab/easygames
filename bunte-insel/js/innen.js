@@ -37,6 +37,7 @@ BI.registerDoors = function (W) {
     lo(S, 34, -44, 0, 1, 'turm', 'Uhrturm', 'schluessel'); lo(S, -56, 18, 1, 0, 'huette', 'Strandhütte', 'schluessel'); lo(S, 58, 14, -1, 0, 'schloss', 'Kristall-Burg', 'schluessel');
     [[0, 0], [8, 3], [-7, 5], [3, -9], [-4, -8]].forEach(([da, db], i) => lo(S, -42 + da, -46 + db, 0, 1, 'pilz', 'Pilzhaus ' + (i + 1), 'schluessel'));
   }
+  if (BI.TASCHI) { const T = BI.TASCHI; lo(T, -38, 28, 0, -1, 'haus', 'Labor von Professor Ulme', 'taschi'); lo(T, -38, -28, 0, 1, 'haus', 'Taschi-Heilhaus', 'taschi'); lo(T, -16, -30, 0, 1, 'laden', 'Taschi-Fangladen', 'taschi'); }
   if (M) { lo(M, 66, -16, -1, 0, 'huette', 'Strandhütte', 'maerchen'); [[5, -33], [19, -33], [5, -41], [19, -41]].forEach(([a, b], i) => lo(M, a, b, 0, 1, 'zelt', ['Wahrsager-Zelt', 'Teppich-Zelt', 'Gewürz-Zelt', 'Lampen-Zelt'][i], 'maerchen')); }
   if (Q) { lo(Q, 14, -32, 0, 1, 'frucht', 'Ananas-Haus', 'schwamm'); lo(Q, 26, -32, 0, 1, 'stein', 'Stein-Haus', 'schwamm'); lo(Q, 38, -32, 0, 1, 'kopf', 'Steinkopf-Haus', 'schwamm'); lo(Q, -14, 34, 0, -1, 'eimer', 'Eimerchen', 'schwamm'); lo(Q, -44, 34, 0, -1, 'held', 'Heldenheim', 'schwamm'); lo(Q, -56, -20, 1, 0, 'huette', 'Strandhütte', 'schwamm'); }
   if (B) { const t = B.at(194, -5.5), k = B.at(184, 12); BI.doorScan(W, t.x, t.z, -B.ux, -B.uz, 'turm', 'Bademeister-Turm', 'bade'); BI.doorScan(W, k.x, k.z, -B.ux, -B.uz, 'laden', 'Eis-Kiosk', 'bade'); }

@@ -7,7 +7,7 @@ if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: p
 await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/cloud/**', r => r.abort());
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 const sl = ms => new Promise(r => setTimeout(r, ms));
-await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 });
+await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); const N = await p.evaluate(() => BI.STORY_ISLES.length);
 /* Hauptmenü hat Buch + Fehler melden */
 ok(await p.evaluate(() => !!document.getElementById('bBuchM') && !!document.getElementById('bBugM')), 'Hauptmenü: Handbuch und Fehler melden');
 await p.click('#bStart'); await p.waitForTimeout(600);
@@ -42,7 +42,7 @@ const c = await p.evaluate(async () => {
 });
 ok(c.bad && c.norm, 'Unbekannter Code wird abgelehnt, Eingabe wird normalisiert (Umlaute, Leerzeichen)'); ok(c.regen, 'STERNENREGEN: +500 Sterne'); ok(c.inf && c.inf2 && c.infOff, 'UNENDLICHSTERNE: Vorrat immer voll, nochmal = aus');
 ok(c.fly && c.flyOff, 'FLIEGEN: Flugmodus (Special) steigt, nochmal = aus'); ok(c.speed && c.giant && c.swap && c.off, 'RAKETENSCHUH / RIESE / ZWERG / ALLESAUS'); ok(c.god, 'UNSTERBLICH aktivierbar');
-ok(c.all.stk && c.all.locked0 === 15 && c.all.locked1 === 0 && c.all.story && c.all.open, 'ALLESFREI: alle Sticker, Inselreise fertig, alle 15 Welten offen (' + c.all.locked0 + ' → ' + c.all.locked1 + ')');
+ok(c.all.stk && c.all.locked0 === N && c.all.locked1 === 0 && c.all.story && c.all.open, 'ALLESFREI: alle Sticker, Inselreise fertig, alle ' + N + ' Welten offen (' + c.all.locked0 + ' → ' + c.all.locked1 + ')');
 /* Eingabefenster + Combat-Unsterblich */
 await p.evaluate(() => document.getElementById('bCode').click()); await sl(300); const hasInput = await p.evaluate(() => !!document.querySelector('input[aria-label=Code]')); await p.fill('input[aria-label=Code]', 'zwerg'); await p.keyboard.press('Enter'); await sl(300);
 ok(hasInput && await p.evaluate(() => __bi.cheats.size() === .5 && /Aktiv/.test(document.body.textContent)), 'Code-Fenster: Eingabe + Enter löst ein, zeigt aktive Specials'); await p.evaluate(() => { __bi.cheats.closePanel(); __bi.cheats.redeem('ALLESAUS'); });
@@ -55,6 +55,6 @@ ok(bug.mail.startsWith('mailto:ricorewioriginal@gmail.com?subject=') && decodeUR
 await p.click('#bgX'); await sl(200); ok(await p.evaluate(() => !__bi.bugs.open), 'Fenster schließt');
 /* 4. Story-Automatik für neue Welten */
 const a = await p.evaluate(() => { BI.NEUINSEL = { x: 700, z: 120, R: 40, bridge: { mx: 0 }, entry: { x: 0, z: 0 }, name: 'Neue Insel' }; const sm = BI.createStoryMode({ stickerIds: () => __bi.buch && BI.STORY_ISLES.length ? Array.from({ length: 200 }, (_, i) => 'x' + i).concat(['ride']) : [], scene: new THREE.Scene(), W: { lock: [] }, A: {}, fx: {}, P: __bi.P, save: { mode: 'story', stk: [] }, say() { }, persist() { }, info: () => null }); const L = sm.islands(); const N = L.find(I => I.key === 'NEUINSEL'); return { n: L.length, N: !!N && N.auto && N.req.length === 3 && N.name === 'Neue Insel', keep: L.filter(I => !I.auto).length }; });
-ok(a.n === 16 && a.N, 'Story erkennt eine NEUE Welt automatisch (gesperrt, 3 Aufgaben, Name) – 15 + 1'); await p.evaluate(() => { BI.STORY_ISLES = BI.STORY_ISLES.filter(d => d.key !== 'NEUINSEL'); delete BI.NEUINSEL; });
+ok(a.n === N + 1 && a.N, 'Story erkennt eine NEUE Welt automatisch (gesperrt, 3 Aufgaben, Name) – ' + N + ' + 1'); await p.evaluate(() => { BI.STORY_ISLES = BI.STORY_ISLES.filter(d => d.key !== 'NEUINSEL'); delete BI.NEUINSEL; });
 { const e2 = errs.filter(e => !/Testfehler/.test(e)); ok(e2.length === 0, 'keine JS-Fehler ' + e2.slice(0, 3).join(' | ')); }
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); process.exit(fails ? 1 : 0);

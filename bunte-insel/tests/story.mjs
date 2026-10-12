@@ -6,7 +6,7 @@ const ctx = await browser.newContext({ viewport: { width: 800, height: 500 } });
 if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
 await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/cloud/**', r => r.abort());
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
-const boot = async (menu) => { await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); if (!menu) await p.click('#bStart'); await p.waitForTimeout(600); };
+let N = 0; const boot = async (menu) => { await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); N = await p.evaluate(() => BI.STORY_ISLES.length); if (!menu) await p.click('#bStart'); await p.waitForTimeout(600); };
 await boot(true);
 /* Hauptmenü: Freie Welt oder Story-Modus */
 const menu = await p.evaluate(() => ({ free: !!document.getElementById('bStart') && /Freie Welt/.test(document.getElementById('bStart').textContent), story: !!document.getElementById('bStartStory') && /Story/.test(document.getElementById('bStartStory').textContent) }));
@@ -26,7 +26,7 @@ const r = await p.evaluate(async () => {
   /* Quest-Log */
   document.getElementById('bLog').click(); await sl(300); const txt = document.getElementById('questNow').textContent; out.log = /Welten freischalten/.test(txt) && /Hauptquest/.test(txt) && /🔒/.test(txt) && !!document.querySelector('#questNow .lgBar'); document.getElementById('questClose').click();
   /* Fortschritt: Stadtinsel-Sticker erledigt → Stadtinsel offen, Rest zu */
-  b.save.stk = [...C.req]; for (let i = 0; i < 30 && (C.lock.on || !K.dbg.S().unl.CITY); i++) await sl(250); out.cityOpen = !C.lock.on && !!K.dbg.S().unl.CITY; out.stillLocked = M.lock.on && L.filter(I => I.lock.on).length === 14; out.walkIn = into(C) < C.r - 1;
+  b.save.stk = [...C.req]; for (let i = 0; i < 30 && (C.lock.on || !K.dbg.S().unl.CITY); i++) await sl(250); out.cityOpen = !C.lock.on && !!K.dbg.S().unl.CITY; out.stillLocked = M.lock.on && L.filter(I => I.lock.on).length === BI.STORY_ISLES.length - 1; out.walkIn = into(C) < C.r - 1;
   out.dest = !!K.lockedAt(M.O.x, M.O.z) && !K.lockedAt(C.O.x, C.O.z);
   K.setMode('free'); await sl(200); out.backFree = !K.on() && L.every(I => !I.lock.on) && !K.lockedAt(M.O.x, M.O.z); out.saved = b.save.mode === 'free';
   K.setMode('story'); await sl(200); out.again = K.on() && M.lock.on && !C.lock.on;
@@ -34,7 +34,7 @@ const r = await p.evaluate(async () => {
 });
 r.menu = menu;
 console.log(JSON.stringify(r));
-ok(r.menu.free && r.menu.story, 'Hauptmenü: „Freie Welt“ und „Story-Modus“ statt „Spielen“'); ok(r.n === 15 && r.story && r.home, 'Story-Modus aus dem Menü: gestartet, zuhause begonnen'); ok(r.locked === 15, 'Neu: alle 15 Welten gesperrt');
+ok(r.menu.free && r.menu.story, 'Hauptmenü: „Freie Welt“ und „Story-Modus“ statt „Spielen“'); ok(r.n === N && r.story && r.home, 'Story-Modus aus dem Menü: gestartet, zuhause begonnen'); ok(r.locked === N, 'Neu: alle ' + N + ' Welten gesperrt');
 ok(r.apart, 'Absperrungen überlappen weder Hauptinsel noch andere Inseln'); ok(r.pushed && r.signs, 'Gesperrte Insel: Glaswand + Schild da, schiebt hinaus'); ok(r.reqs, 'Jede Welt: 3 klare Sticker-Aufgaben mit Namen');
 ok(r.guideLock, '„Wohin?“: gesperrte Orte mit Schloss und Aufgaben, ohne Weg/Hinzaubern (' + r.guideRows + ' Zeilen)'); ok(r.log, 'Quest-Log: Hauptquest + „Welten freischalten“ mit Fortschrittsbalken');
 ok(r.cityOpen && r.stillLocked && r.walkIn, 'Aufgaben geschafft → Stadtinsel öffnet sich, Rest bleibt zu'); ok(r.dest, 'Orte in gesperrten Welten werden erkannt');
@@ -43,6 +43,6 @@ ok(r.backFree && r.saved, 'Zurück zur freien Welt: alles offen, Modus gespeiche
 await p.waitForTimeout(500); await boot(true);
 const sub0 = await p.evaluate(() => document.getElementById('storySub').textContent); await p.click('#bStartStory'); await p.waitForTimeout(1500);
 const r2 = await p.evaluate(() => { const K = __bi.smode; return { on: K.on(), locked: K.dbg.list.filter(I => I.lock.on).length, city: !K.dbg.list.find(I => I.key === 'CITY').lock.on }; });
-ok(/Weiter/.test(sub0) && r2.on && r2.locked === 14 && r2.city, 'Nach Neuladen: „Weiter“ im Story-Menü, Stand (Stadtinsel offen) bleibt gespeichert');
+ok(/Weiter/.test(sub0) && r2.on && r2.locked === N - 1 && r2.city, 'Nach Neuladen: „Weiter“ im Story-Menü, Stand (Stadtinsel offen) bleibt gespeichert');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | '));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); process.exit(fails ? 1 : 0);

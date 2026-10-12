@@ -25,6 +25,7 @@ BI.VEH = {
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   wannenmobil: { name: 'Wannen-Mobil', icon: '🛁', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.0, kind: 'car', horn: 'bike', cols: [-1.1, 1.1], r: 1.4, cam: 9.5 },
   gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
+  funkenballon: { name: 'Funken-Ballon (Heißluftballon)', icon: '🎈', max: 14, rev: 5, turn: 1.3, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 2.6, cam: 16 },
   nautilux:  { name: 'Nautilux (Luftschiff)', icon: '🚢', max: 20, rev: 6, turn: 1.35, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 3.2, cam: 17 },
   limo:      { name: 'Limousine', icon: '🚘', max: 26, rev: 6, acc: 9, brake: 22, drag: 5, turn: 1.55, kind: 'car', horn: 'car', cols: [-2.7, 0, 2.7], r: 1.15, cam: 11 },
   bobby:     { name: 'Rutschauto', icon: '🧸', max: 9, rev: 3, acc: 7, brake: 14, drag: 4, turn: 2.4, kind: 'cycle', horn: 'bell', cols: [-.55, .55], r: .62, open: true, cam: 6 },
@@ -113,6 +114,17 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.sph(0, .7, 0, 1.25, 0xeaf6fb, 1, .95, .42, 1.7); b.sph(0, 1.0, .35, .8, 0x7fe8ff, 1, .85, .6, 1.1); b.box(0, .55, -1.9, .12, .9, .9, 0x35d6e0); for (const x of [-.95, .95]) b.box(x, .45, -.6, .12, .35, 1.4, 0x35d6e0, 0, 0, x > 0 ? -.25 : .25);
       b.cyl(0, .06, 0, 1.15, 1.15, .1, 0x35e0ff, 18); b.cyl(0, .02, 0, 1.0, 1.0, .06, 0xffffff, 18);
       return { wheels: [], head: [[-.5, .55, 2.0], [.5, .55, 2.0]], tail: [[-.4, .6, -2.05], [.4, .6, -2.05]] };
+    },
+    funkenballon(b) { // Funken-Ballon (Taschi-Land): weißer Heißluftballon in Katzenkopf-Form mit rotem F, Goldmünze, Schnurrhaaren und Weidenkorb
+      const WH = 0xfff4e0, RD = 0xe8453c, GD = 0xf0c038, BK = 0x2a2230, BR = 0x9a6a3a;
+      b.sph(0, 6.2, 0, 3.0, WH, 2, 1.12, 1.0, 1.0); b.cyl(0, 3.2, 0, 1.3, 2.2, 1.0, WH, 16); b.cone(-1.9, 8.4, 0, 1.0, 1.9, WH, 5); b.cone(1.9, 8.4, 0, 1.0, 1.9, WH, 5); b.cone(-1.9, 8.5, .05, .55, 1.4, 0xf0a0a0, 5); b.cone(1.9, 8.5, .05, .55, 1.4, 0xf0a0a0, 5);
+      b.sph(0, 7.2, 2.7, .6, GD, 1, 1, 1.2, .3); b.sph(-1.1, 6.1, 2.75, .32, BK, 1, 1, 1.4, .4); b.sph(1.1, 6.1, 2.75, .32, BK, 1, 1, 1.4, .4); b.sph(0, 5.4, 2.95, .2, 0xd86a8a, 1);
+      for (const s of [-1, 1]) for (const k of [0, 1]) b.box(s * 1.9, 5.2 - k * .35, 2.6, 1.6, .06, .08, BK, 0, 0, s * (k ? -.15 : .15));
+      b.box(0, 4.6, 0, 1.4, 4.2, 1.0, RD, 0, 0, 0); b.box(0, 5.4, 0, 3.0, .5, 1.0, RD); b.box(0, 5.9, 3.0, 1.2, .08, .1, 0xffffff);
+      for (const [x, z] of [[-.9, -.9], [.9, -.9], [-.9, .9], [.9, .9]]) b.cyl(x, 1.4, z, .04, .04, 2.0, BR, 4, 0, 0, 0);
+      b.box(0, 0, 0, 2.2, .2, 2.2, BR); for (const s of [-1, 1]) { b.box(s * 1.1, .2, 0, .15, 1.0, 2.2, BR); b.box(0, .2, s * 1.1, 2.2, 1.0, .15, BR); }
+      b.cyl(0, 1.2, 0, .3, .3, 1.8, 0x555a66, 8); b.cone(0, 3.0, 0, .3, .9, 0xff9a3a, 6); b.cone(0, 3.1, 0, .18, .6, 0xffd23f, 6);
+      return { wheels: [], head: [[0, 1.0, 1.4]], tail: [[0, 1.0, -1.4]] };
     },
     nautilux(b) { // Nautilux (Zotik-Welt): blau-goldenes Luftschiff mit Messingringen, Heckflossen, Gondel und Bullaugen
       const BL = 0x2f6fb8, GD = 0xd8a24a, DK = 0x2a3a5a;
@@ -268,6 +280,10 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         const mb = new BI.Batch(); mb.box(0, 0, 0, .4, .05, 7.4, 0x2b2f3a); mb.box(0, 0, 0, 7.4, .05, .4, 0x2b2f3a); this.rotorMain = mk(mb, model.rotor.main);
         const tb = new BI.Batch(); tb.box(0, -.6, 0, .06, 1.2, .16, 0x2b2f3a); this.rotorTail = mk(tb, model.rotor.tail);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
+      }
+      if (type === 'funkenballon') { // Brenner-Flamme (dreht sich) + Schatten
+        const pb = new BI.Batch(); pb.cone(0, 0, 0, .28, .9, 0xff7a1a, 6); pb.cone(0, 0, 0, .16, .6, 0xffd23f, 6); this.prop = new THREE.Group(); this.prop.add(pb.mesh(BI.mat())); this.prop.position.set(0, 3.0, 0); this.tilt.add(this.prop);
+        this.shadow = new THREE.Mesh(new THREE.CircleGeometry(3.2, 18), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
       }
       if (type === 'nautilux') { // Heckpropeller + Schatten
         const pb = new BI.Batch(); for (let i = 0; i < 3; i++) pb.box(0, 0, 0, .14, 1.7, .08, 0xd8a24a, 0, 0, i * 2.094); this.prop = new THREE.Group(); this.prop.add(pb.mesh(BI.mat())); this.prop.position.set(0, 3.4, -5.6); this.tilt.add(this.prop);

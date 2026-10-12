@@ -213,6 +213,15 @@ BI.HEROES = [
   { id: 'dario', name: 'Detektiv Dario', icon: '🕵️', world: 'CITY', o: { shirt: 0x9aa5b8, pants: 0x3a3a4a, hair: 0x222222, skin: 0xc68a5a, hat: 'cowboy', glassT: 3, brow: 3, scarf: true } },
   { id: 'astrid', name: 'Astronomin Astrid', icon: '🔭', world: 'CITY', o: { shirt: 0x1d2a6a, pants: 0x2a2a3a, hair: 0xe8e8e8, skin: 0xffe4d1, style: 'bun', hat: 'wizard', glassT: 1, wrink: 1, hsc: .98 } },
   { id: 'paolo', name: 'Pizzabäcker Paolo', icon: '🍕', world: 'CITY', o: { shirt: 0xffffff, pants: 0x3d4a7a, hair: 0x222222, skin: 0xe0a979, hat: 'chef', beard: 4, beardc: 0x222222, build: 2, mouth: 'grin' } },
+  { id: 'kai_t', name: 'Trainer Kai', icon: '🧢', world: 'TASCHI', o: { shirt: 0x3f6fd8, pants: 0x3a3a4a, hair: 0x222222, skin: 0xf3c9a0, hat: 'cap', style: 'spiky', logo: 0xffffff } },
+  { id: 'ulme', name: 'Professor Ulme', icon: '🔬', world: 'TASCHI', o: { shirt: 0xffffff, pants: 0x6a5a4a, hair: 0xc8c8d0, skin: 0xf3c9a0, style: 'short', glassT: 1, wrink: 1, logo: 0xe8453c } },
+  { id: 'hanna', name: 'Schwester Hanna', icon: '💖', world: 'TASCHI', o: { shirt: 0xff9ac0, pants: 0xffffff, hair: 0xff9ac0, skin: 0xf3c9a0, style: 'bun' } },
+  { id: 'fiete', name: 'Fels-Fiete', icon: '🪨', world: 'TASCHI', o: { shirt: 0x8a8a96, pants: 0x4a4a5a, hair: 0x6b4423, skin: 0xd8a070, style: 'spiky', build: 2 } },
+  { id: 'perla', name: 'Perla', icon: '💧', world: 'TASCHI', o: { shirt: 0x3f9cff, pants: 0xffffff, hair: 0xff8a3a, skin: 0xf3c9a0, style: 'ponytail' } },
+  { id: 'volt', name: 'Käpt’n Volt', icon: '⚡', world: 'TASCHI', o: { shirt: 0xffd23f, pants: 0x3a3a4a, hair: 0x4a3320, skin: 0xd8a070, style: 'short', hat: 'pirate' } },
+  { id: 'aurelia', name: 'Meisterin Aurelia', icon: '👑', world: 'TASCHI', o: { shirt: 0xb36bff, pants: 0xb36bff, hair: 0xf3d98a, skin: 0xf3c9a0, style: 'long', dress: true, hat: 'crown' } },
+  { id: 'jette', name: 'Jette (Team Funke)', icon: '🎈', world: 'TASCHI', o: { shirt: 0xffffff, pants: 0xffffff, hair: 0xe8453c, skin: 0xf3c9a0, style: 'long', dress: true, logo: 0xe8453c } },
+  { id: 'jim', name: 'Jim (Team Funke)', icon: '🎈', world: 'TASCHI', o: { shirt: 0xffffff, pants: 0xffffff, hair: 0x3f8cff, skin: 0xf3c9a0, style: 'spiky', logo: 0xe8453c } },
   { id: 'custom', name: 'Eigener Held', icon: '🎨', o: {} }
 ];
 BI.TOYVEH = ['rcheli', 'skate', 'rollator', 'scooter', 'bicycle', 'bumper', 'mower', 'bobby', 'bike', 'limo', 'ice', 'taxi']; /* Spielzeug-Fahrzeuge aus dem Spielzeugladen („Holen“) */

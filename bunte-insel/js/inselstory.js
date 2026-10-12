@@ -81,7 +81,13 @@ BI.INSELSTORY = [
     { text: 'Willkommen in der versunkenen Stadt! Die Hologramme erzählen ihre Geschichte – schau sie dir an.', hint: 'Sieh dir alle 5 Hologramme im Archiv an', goal: [{ log: 'atlantis', row: 1 }], done: 'Du kennst die Geschichte von Atlantis!' },
     { text: 'Das Herz von Atlantis schlägt auf dem Stufenberg. Steig hinauf und berühre es – und lass die Kristall-Harfe klingen!', hint: 'Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe', goal: [{ log: 'atlantis', row: 2 }, { log: 'atlantis', row: 3 }], done: 'Das Herz schlägt wieder!' },
     { text: 'Zum Schluss: Schwerelos hüpfen und mit dem Aqua-Gleiter fahren!', hint: 'Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter', goal: [{ log: 'atlantis', row: 4 }, { log: 'atlantis', row: 5 }], done: 'Du schwebst durch Atlantis!' }
-  ], end: 'Okeana flüstert: Atlantis hat einen neuen Hüter!' }
+  ], end: 'Okeana flüstert: Atlantis hat einen neuen Hüter!' },
+  { key: 'TASCHI', icon: '🔴', npc: 'Professor Ulme', title: 'Der Weg zum Meister', acts: [
+    { text: 'Willkommen in Taschi-Land! Hier leben freundliche Taschis. Such dir bei mir deinen ersten Freund aus und fang dann im hohen Gras ein wildes Taschi!', hint: 'Wähle bei Professor Ulme dein erstes Taschi und fang ein wildes im Gras', goal: [{ log: 'taschi', row: 0 }, { log: 'taschi', row: 1 }], done: 'Du bist ein echter Taschi-Trainer!' },
+    { text: 'Jetzt die Arena! Besiege Fels-Fiete, Perla, Käpt’n Volt und Blüte – du bekommst jedes Mal einen Orden.', hint: 'Besiege die 4 Arena-Leiter (4 Orden)', goal: [{ log: 'taschi', row: 2 }, { log: 'taschi', row: 3 }, { log: 'taschi', row: 4 }, { log: 'taschi', row: 5 }], done: 'Vier Orden – stark!' },
+    { text: 'Zwei Aufgaben fehlen noch: fang 8 verschiedene Taschis für meinen Forscher-Orden – und schnapp dir Team Funke bei ihrem Heißluftballon!', hint: 'Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen)', goal: [{ log: 'taschi', row: 6 }, { log: 'taschi', row: 7 }], done: 'Der Ballon gehört dir!' },
+    { text: 'Der letzte Orden: Fordere Meisterin Aurelia in der Arena heraus!', hint: 'Besiege Meisterin Aurelia (Meister-Orden)', goal: [{ log: 'taschi', row: 8 }], done: 'Alle 8 Orden!' }
+  ], end: 'Professor Ulme verneigt sich: Du bist Taschi-Meister – und seine Statue strahlt für dich!' }
 ];
 BI.createInselStory = function (G) {
   const { save, say, persist, P } = G, K = { cur: null }, ST = BI.INSELSTORY, got = id => (save.stk || []).includes(id);
