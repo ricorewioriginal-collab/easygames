@@ -6,11 +6,11 @@ import { damp } from './core/math';
 import type { SaveStore } from './core/storage';
 import { DIFFICULTIES, type Difficulty } from './game/difficulty';
 import { LEVELS, levelById, type LevelDef } from './game/levels';
-import { MODES, endlessTrack, levelTrack, nextLevel, speedFactor, type ModeId } from './game/modes';
+import { MODES, buildTrack, nextLevel, speedFactor, type ModeId } from './game/modes';
 import { gradeFor, starsFor } from './game/scoring';
 import { GameSession, type SessionEvent } from './game/session';
 import type { Track } from './game/track';
-import { TUTORIAL_ENERGY_BAR, hintForBar, tutorialTrack } from './game/tutorial';
+import { TUTORIAL_ENERGY_BAR, hintForBar } from './game/tutorial';
 import { newlyUnlocked } from './game/unlocks';
 import type { TimedAction } from './input/actions';
 import { InputManager } from './input/input';
@@ -59,7 +59,7 @@ export class App implements MenuHost {
     },
   ) {
     this.renderer = new WorldRenderer(els.canvas);
-    this.input = new InputManager(els.surface);
+    this.input = new InputManager(els.surface, (x, y) => this.renderer.laneAtScreen(x, y));
     this.hud = new Hud(
       (a, at) => this.input.emit(a, at, 'pad'),
       () => this.pause(),
@@ -155,10 +155,8 @@ export class App implements MenuHost {
   startRun(mode: ModeId, level: LevelDef, difficulty: Difficulty): void {
     this.unlockAudio();
     this.audio.stop();
-    let track: Track;
-    if (mode === 'tutorial') track = tutorialTrack();
-    else if (mode === 'endless') track = endlessTrack((Math.random() * 2 ** 32) >>> 0, difficulty);
-    else track = levelTrack(level, difficulty);
+    const track = buildTrack(mode, level, difficulty, (Math.random() * 2 ** 32) >>> 0);
+    blurFocus();
     const rules = MODES[mode];
     const session = new GameSession(track, rules, DIFFICULTIES[difficulty]);
     session.on((e) => this.onSessionEvent(e));
@@ -207,7 +205,9 @@ export class App implements MenuHost {
     this.menus.hide();
     this.fsm.go('countdown');
     r.resumeAt = performance.now() + 1200;
-    this.input.enabled = false;
+    // Während des Countdowns darf man sich schon in Position bringen (ohne Treffer).
+    this.input.enabled = true;
+    blurFocus();
   }
 
   quitToMenu(): void {
@@ -236,8 +236,13 @@ export class App implements MenuHost {
       return;
     }
     const r = this.run;
-    if (!r || !this.input.enabled || r.resumeAt !== null) return;
+    if (!r || !this.input.enabled || r.ending) return;
     const s = r.session;
+    if (r.resumeAt !== null) {
+      if (action.type === 'lane') s.lane = action.lane;
+      else if (action.type === 'shift') s.lane = Math.min(2, Math.max(0, s.lane + action.dir));
+      return;
+    }
     const t = this.audio.songTimeAt(at);
     switch (action.type) {
       case 'lane':
@@ -245,7 +250,8 @@ export class App implements MenuHost {
         this.renderer.flashLane(action.lane);
         break;
       case 'shift':
-        s.shift(action.dir);
+        s.shift(action.dir, t);
+        this.renderer.flashLane(s.lane);
         break;
       case 'hit':
         s.hit(t);
@@ -331,7 +337,7 @@ export class App implements MenuHost {
       orbs: sc.orbs,
     });
     const unlocked = newlyUnlocked(before, this.store.progress());
-    const next = r.mode === 'campaign' && cleared ? (nextLevel(r.level) ?? null) : null;
+    const next = MODES[r.mode].needsLevel && cleared ? (nextLevel(r.level) ?? null) : null;
     setTimeout(
       () => {
         if (this.run !== r) return;
@@ -429,6 +435,7 @@ export class App implements MenuHost {
         }
       }
       this.lanePos = damp(this.lanePos, s.lane, 20, dt);
+      const limit = s.rules.timeLimit;
       this.hud.update({
         score: s.score.score,
         combo: s.score.combo,
@@ -436,8 +443,9 @@ export class App implements MenuHost {
         health: s.health,
         energy: s.energy,
         overdrive: s.overdriveRemaining(),
-        progress: s.progress(),
-        elapsed: Math.max(0, t),
+        progress: limit ? Math.min(1, Math.max(0, t) / limit) : s.progress(),
+        // Sprint zeigt die Restzeit.
+        elapsed: limit ? Math.max(0, limit - t) : Math.max(0, t),
         endless: r.track.endless,
         lane: s.lane,
         showHealth: r.session.rules.canFail,
@@ -451,6 +459,7 @@ export class App implements MenuHost {
         lanePos: this.lanePos,
         pulse: this.pulseAt(r.track, t),
         overdrive: s.overdriveActive,
+        hidden: !!r.session.rules.hidden,
       });
     } else {
       this.idleTime += dt;
@@ -465,6 +474,7 @@ export class App implements MenuHost {
         lanePos: this.lanePos,
         pulse: Math.exp(-(beat % 1) * 5) * 0.6,
         overdrive: false,
+        hidden: false,
       });
     }
   };
@@ -506,8 +516,9 @@ export class App implements MenuHost {
       },
       seekNearEnd: (secondsLeft = 3) => {
         const r = this.run;
-        if (!r || r.track.endless) return false;
-        const target = Math.max(0, r.track.duration - secondsLeft);
+        const end = r?.session.rules.timeLimit ?? (r && !r.track.endless ? r.track.duration : 0);
+        if (!r || !end) return false;
+        const target = Math.max(0, end - secondsLeft);
         r.session.skipTo(target);
         this.audio.play(r.track, target, 0.05);
         if (this.fsm.state === 'countdown') this.fsm.go('playing');
@@ -516,4 +527,9 @@ export class App implements MenuHost {
       },
     };
   }
+}
+
+function blurFocus(): void {
+  const el = document.activeElement;
+  if (el instanceof HTMLElement) el.blur();
 }

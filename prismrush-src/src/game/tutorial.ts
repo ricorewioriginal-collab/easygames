@@ -44,14 +44,15 @@ export const TUTORIAL_HINTS: TutorialHint[] = [
   {
     fromBar: 2,
     toBar: 6,
-    desktop: 'Triff die Kristalle, wenn sie den Ring erreichen: Leertaste oder S / ↓.',
+    desktop: 'Triff die Kristalle, wenn sie den Ring erreichen: Leertaste, ↑ oder ↓.',
     touch: 'Triff die Kristalle, wenn sie den Ring erreichen: Tippe die mittlere Spurtaste.',
   },
   {
     fromBar: 6,
     toBar: 10,
-    desktop: 'Andere Spuren: A / S / D, ← / ↓ / → oder Mausklick auf die Spur.',
-    touch: 'Andere Spuren: Tippe die passende Spurtaste unten.',
+    desktop:
+      'Spur wechseln: ← / → (trifft gleich mit), A / S / D direkt oder Mausklick auf die Spur.',
+    touch: 'Andere Spuren: Tippe die Spurtaste oder gleite mit dem Finger hinüber.',
   },
   {
     fromBar: 10,

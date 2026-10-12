@@ -5,7 +5,10 @@ import { SwipeTracker, classifyGesture, laneFromX } from '../src/input/gestures'
 describe('Tastatur', () => {
   it('bildet Tasten auf Aktionen ab', () => {
     expect(mapKey('KeyA')).toEqual({ type: 'lane', lane: 0 });
-    expect(mapKey('ArrowDown')).toEqual({ type: 'lane', lane: 1 });
+    expect(mapKey('KeyS')).toEqual({ type: 'lane', lane: 1 });
+    expect(mapKey('ArrowLeft')).toEqual({ type: 'shift', dir: -1 });
+    expect(mapKey('ArrowRight')).toEqual({ type: 'shift', dir: 1 });
+    expect(mapKey('ArrowDown')).toEqual({ type: 'hit' });
     expect(mapKey('KeyL')).toEqual({ type: 'lane', lane: 2 });
     expect(mapKey('Space')).toEqual({ type: 'hit' });
     expect(mapKey('KeyE')).toEqual({ type: 'overdrive' });

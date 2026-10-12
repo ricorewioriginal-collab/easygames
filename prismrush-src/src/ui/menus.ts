@@ -11,7 +11,15 @@ import {
 import type { AudioEngine } from '../audio/engine';
 import { DIFFICULTIES, DIFFICULTY_ORDER, type Difficulty } from '../game/difficulty';
 import { LEVELS, WORLDS, type LevelDef } from '../game/levels';
-import { ENDLESS_LEVEL, MODES, dailyLevel, type ModeId } from '../game/modes';
+import {
+  ENDLESS_LEVEL,
+  MODES,
+  SELECTABLE_MODES,
+  SPRINT_LEVEL,
+  dailyLevel,
+  remixLevel,
+  type ModeId,
+} from '../game/modes';
 import type { Grade, Judgement } from '../game/scoring';
 import { TUTORIAL_LEVEL } from '../game/tutorial';
 import {
@@ -355,48 +363,61 @@ export class Menus {
   private modesScreen(): HTMLElement {
     const diff = this.store.settings.difficulty;
     const today = dailyLevel(new Date());
-    const endlessRec = this.store.record(recordKey('endless', ENDLESS_LEVEL.id, diff));
-    const dailyRec = this.store.record(recordKey('daily', today.id, diff));
-    const card = (mode: ModeId, extra: string, action: () => void) =>
+    const rec = (mode: ModeId, id: string) => this.store.record(recordKey(mode, id, diff));
+    const best = (mode: ModeId, id: string, fallback: string) => {
+      const r = rec(mode, id);
+      return r ? `Bestwert ${formatScore(r.bestScore)}` : fallback;
+    };
+    const start = (mode: ModeId, level: LevelDef) => {
+      this.click();
+      this.host.startRun(mode, level, this.store.settings.difficulty);
+    };
+    const extra = (mode: ModeId): string => {
+      switch (mode) {
+        case 'campaign':
+          return `★ ${this.store.progress().totalStars}`;
+        case 'endless': {
+          const r = rec('endless', ENDLESS_LEVEL.id);
+          return r
+            ? `Bestzeit ${formatTime(r.bestTime)} · ${formatScore(r.bestScore)}`
+            : 'Noch keine Bestzeit';
+        }
+        case 'daily':
+          return best('daily', today.id, today.name);
+        case 'sprint':
+          return best('sprint', SPRINT_LEVEL.id, 'Noch kein Sprint');
+        case 'remix':
+          return best('remix', 'remix', 'Überrasch mich');
+        default:
+          return MODES[mode].scoreMul !== 1
+            ? `Punkte ×${String(MODES[mode].scoreMul).replace('.', ',')}`
+            : 'Level wählen';
+      }
+    };
+    const action = (mode: ModeId) => {
+      if (MODES[mode].needsLevel) return this.openLevels(mode);
+      if (mode === 'daily') return start(mode, today);
+      if (mode === 'sprint') return start(mode, SPRINT_LEVEL);
+      if (mode === 'remix') return start(mode, remixLevel((Math.random() * 2 ** 32) >>> 0));
+      start(mode, ENDLESS_LEVEL);
+    };
+    const card = (mode: ModeId) =>
       h(
         'button',
         {
           class: 'mode-card',
           attrs: { type: 'button', 'data-testid': `mode-${mode}` },
-          on: { click: action },
+          on: { click: () => action(mode) },
         },
         [
           h('strong', { text: MODES[mode].label }),
           h('span', { text: MODES[mode].description }),
-          extra ? h('em', { text: extra }) : null,
+          h('em', { text: extra(mode) }),
         ],
       );
     return this.panel(
       'Spielmodi',
-      [
-        this.difficultyPicker(),
-        h('div', { class: 'mode-grid' }, [
-          card('campaign', `★ ${this.store.progress().totalStars}`, () =>
-            this.openLevels('campaign'),
-          ),
-          card(
-            'endless',
-            endlessRec
-              ? `Bestzeit ${formatTime(endlessRec.bestTime)} · ${formatScore(endlessRec.bestScore)}`
-              : 'Noch keine Bestzeit',
-            () => {
-              this.click();
-              this.host.startRun('endless', ENDLESS_LEVEL, this.store.settings.difficulty);
-            },
-          ),
-          card('daily', dailyRec ? `Heute: ${formatScore(dailyRec.bestScore)}` : today.name, () => {
-            this.click();
-            this.host.startRun('daily', today, this.store.settings.difficulty);
-          }),
-          card('zen', 'Entspannt spielen', () => this.openLevels('zen')),
-          card('hardcore', 'Für Perfektionisten', () => this.openLevels('hardcore')),
-        ]),
-      ],
+      [this.difficultyPicker(), h('div', { class: 'mode-grid' }, SELECTABLE_MODES.map(card))],
       { testId: 'modes', wide: true },
     );
   }
@@ -415,8 +436,9 @@ export class Menus {
           h('div', {}, [
             h('h3', { text: 'Tastatur & Maus' }),
             h('table', { class: 'keys' }, [
-              row('A S D / ← ↓ →', 'Spur wählen und treffen'),
-              row('Leertaste / ↑', 'In aktueller Spur treffen'),
+              row('← →', 'Eine Spur wechseln (trifft dort)'),
+              row('A S D / J K L', 'Spur direkt wählen und treffen'),
+              row('Leertaste / ↑ ↓', 'In aktueller Spur treffen'),
               row('E / Umschalt', 'Overdrive (×2 Punkte)'),
               row('Mausklick', 'Spur unter dem Zeiger treffen'),
               row('Esc / P', 'Pause'),
@@ -426,6 +448,7 @@ export class Menus {
             h('h3', { text: 'Touch' }),
             h('table', { class: 'keys' }, [
               row('Spurtasten', 'Spur wählen und treffen'),
+              row('Über Tasten gleiten', 'Spur wechseln ohne abzusetzen'),
               row('Tippen', 'In aktueller Spur treffen'),
               row('Wischen ← →', 'Spur wechseln'),
               row('Wischen ↑ / ⚡', 'Overdrive'),
@@ -544,6 +567,8 @@ export class Menus {
       );
     });
     const daily = this.store.record(recordKey('daily', today.id, diff));
+    const sprint = this.store.record(recordKey('sprint', SPRINT_LEVEL.id, diff));
+    const remix = this.store.record(recordKey('remix', 'remix', diff));
     const rows = LEVELS.map((l) => {
       const r = this.store.record(recordKey('campaign', l.id, diff));
       return h('tr', {}, [
@@ -569,6 +594,11 @@ export class Menus {
             `Tagesrhythmus (${DIFFICULTIES[diff].label})`,
             daily ? formatScore(daily.bestScore) : '–',
           ),
+          stat(
+            `Sprint 90 (${DIFFICULTIES[diff].label})`,
+            sprint ? formatScore(sprint.bestScore) : '–',
+          ),
+          stat(`Remix (${DIFFICULTIES[diff].label})`, remix ? formatScore(remix.bestScore) : '–'),
         ]),
         this.difficultyPicker(),
         h('div', { class: 'table-wrap' }, [
@@ -865,7 +895,9 @@ export class Menus {
       : r.cleared
         ? r.mode === 'tutorial'
           ? 'Tutorial geschafft!'
-          : 'Level geschafft!'
+          : r.mode === 'sprint'
+            ? 'Zeit um!'
+            : 'Level geschafft!'
         : 'Gescheitert';
     const scoreEl = h('div', {
       class: 'result-score',
@@ -944,12 +976,10 @@ export class Menus {
               testId: 'retry',
             }),
             button(
-              r.mode === 'campaign' || r.mode === 'zen' || r.mode === 'hardcore'
-                ? 'Levelauswahl'
-                : 'Hauptmenü',
+              MODES[r.mode].needsLevel ? 'Levelauswahl' : 'Hauptmenü',
               () => {
                 this.host.quitToMenu();
-                if (r.mode === 'campaign' || r.mode === 'zen' || r.mode === 'hardcore') {
+                if (MODES[r.mode].needsLevel) {
                   this.levelMode = r.mode;
                   this.world = r.level.world >= 0 ? r.level.world : 0;
                   this.stack.push(() => this.levelsScreen());

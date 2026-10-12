@@ -8,7 +8,14 @@ export class InputManager {
   private readonly swipes = new SwipeTracker();
   private readonly detach: (() => void)[] = [];
 
-  constructor(private readonly surface: HTMLElement) {
+  /**
+   * @param laneAt liefert für eine Bildschirmposition die Spur, die dort tatsächlich
+   *   zu sehen ist (perspektivisch projiziert). Ohne Angabe gilt die Bildschirmdrittelung.
+   */
+  constructor(
+    private readonly surface: HTMLElement,
+    private readonly laneAt?: (clientX: number, clientY: number) => number,
+  ) {
     const onKey = (e: KeyboardEvent) => {
       const action = mapKey(e.code);
       if (!action) return;
@@ -20,6 +27,8 @@ export class InputManager {
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT')) return;
       e.preventDefault();
+      // Ein fokussierter Knopf (z. B. Pause) darf Leertaste/Enter nicht zusätzlich auslösen.
+      if (this.enabled && target && target.tagName === 'BUTTON') target.blur();
       this.emit(action, e.timeStamp, 'keyboard');
     };
     const onDown = (e: PointerEvent) => {
@@ -28,12 +37,17 @@ export class InputManager {
       if (e.pointerType === 'mouse') {
         if (e.button !== 0) return;
         const rect = this.surface.getBoundingClientRect();
-        this.emit(
-          { type: 'lane', lane: laneFromX(e.clientX - rect.left, rect.width) },
-          e.timeStamp,
-          'mouse',
-        );
+        const lane = this.laneAt
+          ? this.laneAt(e.clientX, e.clientY)
+          : laneFromX(e.clientX - rect.left, rect.width);
+        this.emit({ type: 'lane', lane }, e.timeStamp, 'mouse');
         return;
+      }
+      // Finger festhalten, damit Wischbewegungen auch über HUD-Elemente hinweg ankommen.
+      try {
+        this.surface.setPointerCapture(e.pointerId);
+      } catch {
+        // Nicht unterstützt: Wischen funktioniert trotzdem über normale Ereignisse.
       }
       this.swipes.down(e.pointerId, e.clientX, e.clientY, e.timeStamp);
       this.emit({ type: 'hit' }, e.timeStamp, 'touch');

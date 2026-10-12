@@ -32,6 +32,7 @@ import {
   DodecahedronGeometry,
   TorusGeometry,
   Vector2,
+  Vector3,
   WebGLRenderer,
   type Object3D,
 } from 'three';
@@ -65,6 +66,8 @@ export interface FrameState {
   lanePos: number;
   pulse: number;
   overdrive: boolean;
+  /** Blindflug: Kristalle und Orbs verblassen vor dem Gleiter. */
+  hidden: boolean;
 }
 
 type ResolvedQuality = Exclude<Quality, 'auto'>;
@@ -269,6 +272,7 @@ export class WorldRenderer {
   });
   private readonly shipEdgeMat = new LineBasicMaterial({ color: 0xffffff });
   private readonly tmpColor = new Color();
+  private readonly tmpVec = new Vector3();
   private shake = 0;
   private bendX = 0;
   private bendY = 0;
@@ -598,6 +602,22 @@ export class WorldRenderer {
     }
   }
 
+  /**
+   * Spur unter einer Bildschirmposition: die Spurmitten auf Höhe der Trefferlinie
+   * werden perspektivisch projiziert, die Grenzen liegen jeweils dazwischen.
+   */
+  laneAtScreen(clientX: number, _clientY: number): number {
+    const xs = [0, 1, 2].map((l) => {
+      this.tmpVec.set(laneX(l) + this.bendOffsetX(0), SHIP_Y, 0).project(this.camera);
+      return ((this.tmpVec.x + 1) / 2) * this.width;
+    });
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    const x = ((clientX - rect.left) / Math.max(1, rect.width)) * this.width;
+    if (x < (xs[0] + xs[1]) / 2) return 0;
+    if (x < (xs[1] + xs[2]) / 2) return 1;
+    return 2;
+  }
+
   flashLane(lane: number): void {
     if (lane >= 0 && lane < 3) this.receptorFlash[lane] = 1;
   }
@@ -828,6 +848,8 @@ export class WorldRenderer {
         if (z > 7) continue;
         const bx = this.bendOffsetX(z);
         const by = this.bendOffsetY(z);
+        // Blindflug: die letzten Meter vor dem Gleiter bleiben Kristalle und Orbs unsichtbar.
+        if (s.hidden && ev.kind !== 'wall' && z > -s.speed * 0.5) continue;
         if (ev.kind === 'note') {
           const m = this.notePool.get();
           const missed = session.isResolved(ev.id) || i < session.firstOpenIndex;
