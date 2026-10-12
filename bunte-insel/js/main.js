@@ -437,10 +437,12 @@
     } else mCard.hidden = true;
     $('starN').textContent = save.stars;
   }
+  const PLACE_FIRST = new Set(['arcade', 'maerchen', 'fussball', 'schatz', 'bauland', 'dampf', 'drachen', 'einsatz', 'rainbow']);
   let btnSig = '';
   function updateButtons(force) {
-    const v = P.veh, rideN = state === 'play' && !v && !ride && !build.active ? nearRide() : null, near = state === 'play' && !v && !ride && !rideN && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
+    const v = P.veh, rideN = state === 'play' && !v && !ride && !build.active ? nearRide() : null; let near = state === 'play' && !v && !ride && !rideN && !build.active ? nearVehicle() : null; const spec = v ? v.spec : null;
     const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), rangeNear = state === 'play' && !rs.ui && nearRange(), flatN = state === 'play' && !rs.ui && !wardOpen ? flatNear() : null, placeN = state === 'play' ? placeNear() : null, driveIn = state === 'play' && v ? cinema.near() : null, chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
+    if (near && placeN && PLACE_FIRST.has(placeN.src)) near = null; /* Spielautomat & Co. gehen vor einem geparkten Fahrzeug in der Nähe */
     const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type + (near.ai && near.traffic && Math.abs(near.v) > .7 ? '-stop' : '')), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : '')), isTouch()].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
@@ -1771,7 +1773,7 @@
   function updatePlayer(dt) {
     const [jx, jy] = axes();
     if (inp.act && ride) { inp.act = false; endRide(); }
-    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (tycoon.open) tycoon.close(); else if (story.open) story.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) { if (cinema.near()) cinema.show('drive'); else leave(); } else { const nr = nearRide(), nv = nr ? null : nearVehicle(); if (nr) startRide(nr.id); else if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
+    if (inp.act) { inp.act = false; if (build.active) say('Beim Bauen: erst ✖ drücken', 1500); else if (cinema.open) cinema.close(); else if (tycoon.open) tycoon.close(); else if (story.open) story.close(); else if (shopOpen) closeShop(); else if (wardOpen) closeWard(); else if (rs.ui) { if (rs.ui !== 'play') closeRangeUi(); } else if (play.busy()) play.stop(); else if (park.busy()) park.act({ k: 'stop' }); else if (P.veh) { if (cinema.near()) cinema.show('drive'); else leave(); } else { const nr = nearRide(), pn0 = nr ? null : placeNear(), nv = nr || (pn0 && PLACE_FIRST.has(pn0.src)) ? null : nearVehicle(); if (nr) startRide(nr.id); else if (nv) enter(nv); else if (nearCounter()) openShop(); else if (nearRange()) openRange(); else if (nearChest()) openChest(); else { const fn = flatNear(); if (fn) flatAct(fn); else { const pn = placeNear(); if (pn) placeAct(pn); } } } }
     if (inp.aux) { inp.aux = false; const v = P.veh; if (v && v.isTrain) trainDoors(); else if (v && v.spec.siren) { v.siren = !v.siren; A.pop(); } else if (!v) doPunch(); }
     if (rs.ui) { inp.jump = inp.aux = inp.hornEdge = false; return; }
     if (pool.busy()) { inp.jump = inp.aux = inp.hornEdge = false; return; }

@@ -59,15 +59,27 @@ BI.buildMaerchenGround = function (c) {
     for (const [a, b] of [[-33, -8], [-33, 8], [-51, -8], [-51, 8]]) { sph(a, b, 1.6, 1.3, 0x4cb85a); cyl(a, b, .15, .2, .5, 0x7a4a2a, 0, 6); }
   }
   /* ---- Schloss „Sternenglanz“: großes Haupthaus, vier Ecktürme, hoher Mittelturm, Zinnen, Tor, Fahnen, Gärten ---- */
-  { const CA = 38, kd = 18, kw = 24, H = 12; bx(CA, 0, kw, H, kd, PK); bx(CA, 0, kw + 1, 1, kd + 1, WH, H); for (let k = -5; k <= 5; k++) for (const sd of [-1, 1]) bx(CA + sd * (kd / 2 + .3), k * 2.2, 1.1, 1.1, .9, WH, H + 1);
-    for (const sd of [-1, 1]) for (let k = -5; k <= 5; k += 2) bx(CA + sd * 0, sd * (kw / 2 + .3), .9, 1.1, 1.1, WH, H + 1);
-    const pr = L(CA, 0); st.prism(pr.x, H + 1, pr.z, kw - 6, 5.5, kd - 2, BL, ry + Math.PI / 2); solid(CA, 0, 11, 16);
+  { const CA = 38, kd = 18, kw = 24, H = 12, T = .8, DG = 2.4, rb = M.roofB = new BI.Batch(), rbx = (a, b, wb, h, da, col, y0, yaw) => { const q = L(a, b); rb.box(q.x, y0 || 0, q.z, wb, h, da, col, ry + (yaw || 0)); };
+    /* Hohlkörper statt Vollkörper: vier Wände (Tor vorn), Boden, Dach als eigenes Mesh (verschwindet drinnen) – Thronsaal ist begehbar */
+    const wl = (a0, b0, a1, b1) => bx((a0 + a1) / 2, (b0 + b1) / 2, b1 - b0, H, a1 - a0, PK), wc = (a0, b0, a1, b1) => { const n = Math.max(1, Math.round(Math.hypot(a1 - a0, b1 - b0) / 1.4)); for (let i = 0; i <= n; i++) solid(a0 + (a1 - a0) * i / n, b0 + (b1 - b0) * i / n, .95, H + 2); };
+    wl(CA + kd / 2 - T, -kw / 2, CA + kd / 2, kw / 2); wl(CA - kd / 2, -kw / 2, CA + kd / 2, -kw / 2 + T); wl(CA - kd / 2, kw / 2 - T, CA + kd / 2, kw / 2); wl(CA - kd / 2, -kw / 2, CA - kd / 2 + T, -DG); wl(CA - kd / 2, DG, CA - kd / 2 + T, kw / 2); bx(CA - kd / 2 + T / 2, 0, DG * 2, H - 5.2, T, PK, 5.2);
+    wc(CA + kd / 2 - T / 2, -kw / 2, CA + kd / 2 - T / 2, kw / 2); wc(CA - kd / 2, -kw / 2 + T / 2, CA + kd / 2, -kw / 2 + T / 2); wc(CA - kd / 2, kw / 2 - T / 2, CA + kd / 2, kw / 2 - T / 2); wc(CA - kd / 2 + T / 2, -kw / 2, CA - kd / 2 + T / 2, -DG - .6); wc(CA - kd / 2 + T / 2, DG + .6, CA - kd / 2 + T / 2, kw / 2);
+    path(CA - kd / 2 + T, 0, CA + kd / 2 - T, 0, kw - 2 * T, 0xf6e4ee); path(CA - kd / 2 - 1, 0, CA + 6, 0, 3.6, 0xc23a3a); path(CA - kd / 2 - 1, -1.9, CA + 6, -1.9, .35, GOLD); path(CA - kd / 2 - 1, 1.9, CA + 6, 1.9, .35, GOLD);
+    /* Thron auf Podest, Säulen, Banner, Kronleuchter */
+    bx(CA + 6.2, 0, 7, .4, 3, 0xc23a8a); bx(CA + 6.7, 0, 6, .4, 2.2, 0xe05aa8, .4); bx(CA + 7.4, 0, 2.2, .8, 1.2, GOLD, .8); bx(CA + 8, 0, 2.2, 3.4, .35, GOLD, .8); bx(CA + 7.95, 0, 3, .4, .6, 0xff5a8a, 4.1); solid(CA + 7.2, 0, 1.6, 3);
+    for (const [a, b] of [[CA - 3, -6], [CA - 3, 6], [CA + 2, -6], [CA + 2, 6]]) { cyl(a, b, .6, .65, H - .2, WH, 0, 12); cone(a, b, .9, .6, GOLD, H - .8, 12); solid(a, b, .8, H); }
+    for (const b of [-8, -4, 4, 8]) { bx(CA - kd / 2 + T + .06, b, 1.6, 4, .1, [0xc23a8a, 0x5a7ae8][(b < 0 ? 0 : 1)], 3.2); bx(CA + kd / 2 - T - .06, b, 1.6, 4.6, .1, [0x5a7ae8, 0xc23a8a][(b < 0 ? 0 : 1)], 3.2); }
+    for (const b of [-5, 0, 5]) { rbx(CA + 1, b, .12, 2.6, .12, 0x8a6a2a, H - 2.6); rbx(CA + 1, b, 1.4, .2, 1.4, GOLD, H - 3); for (let k = 0; k < 4; k++) { const g = k * 1.57, q = L(CA + 1 + Math.sin(g) * .6, b + Math.cos(g) * .6); lamp.sph(q.x, H - 3.4, q.z, .14, 0xfff3b0, 1); } }
+    W.spots.thron = L(CA + 5, 0); W.spots.thronSeat = L(CA + 7, 0);
+    /* Dach-Mesh */
+    rbx(CA, 0, kw + 1, 1, kd + 1, WH, H); for (let k = -5; k <= 5; k++) for (const sd of [-1, 1]) rbx(CA + sd * (kd / 2 + .3), k * 2.2, 1.1, 1.1, .9, WH, H + 1);
+    for (const sd of [-1, 1]) for (let k = -5; k <= 5; k += 2) rbx(CA, sd * (kw / 2 + .3), .9, 1.1, 1.1, WH, H + 1);
+    { const pr = L(CA, 0); rb.prism(pr.x, H + 1, pr.z, kw - 6, 5.5, kd - 2, BL, ry + Math.PI / 2); const q = L(CA + 2, 0); rb.cyl(q.x, H, q.z, 4.5, 4.8, 14, WH, 16); rb.cone(q.x, H + 14, q.z, 5.8, 13, 0xc23a8a, 16); rb.sph(q.x, H + 28, q.z, .8, GOLD, 1); for (let w = 0; w < 3; w++) { const f = L(CA + 2 - 4.5, 0); rb.box(f.x, H + 4 + w * 3.4, f.z, 1, 1.8, .1, 0xffe9a0, ry); } }
+    for (const bb of [-9, 9]) { const f = L(CA - kd / 2 - .5, bb); rb.cyl(f.x, H + 1, f.z, .07, .1, 5, 0xdddddd, 5); rb.box(f.x, H + 5, f.z, .1, 1.4, 2, bb < 0 ? 0xff5a8a : 0x5a8aff, ry); }
+    M.roofIn = { a0: CA - kd / 2 + T, a1: CA + kd / 2 - T, b0: -kw / 2 + T, b1: kw / 2 - T };
     for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) { cyl(aa, bb, 3, 3.3, 18, WH, 0, 14); cone(aa, bb, 4.2, 9, bb < 0 ? 0xc23a8a : BL, 18, 14); glow(aa, bb, 27.6, .55, GOLD); solid(aa, bb, 3.4, 18); for (let w = 0; w < 4; w++) { const q = L(aa - 3.1, bb); lamp.box(q.x, 4 + w * 3.6, q.z, .1, 1.5, .9, 0xffe9a0, ry); } }
-    cyl(CA + 2, 0, 4.5, 4.8, 14, WH, H, 16); cone(CA + 2, 0, 5.8, 13, 0xc23a8a, H + 14, 16); glow(CA + 2, 0, H + 28, .8, GOLD); for (let w = 0; w < 3; w++) { const q = L(CA + 2 - 4.5, 0); lamp.box(q.x, H + 4 + w * 3.4, q.z, .1, 1.8, 1, 0xffe9a0, ry); }
-    const dg = L(CA - kd / 2 - .1, 0); st.box(dg.x, 0, dg.z, 5, 6.4, .6, 0x6b3a2a, ry); st.prism(dg.x, 6.4, dg.z, 5.4, 1.8, .8, 0x8a4a3a, ry + Math.PI / 2); lamp.box(dg.x, 5.2, dg.z - M.uz * 0, .1, .1, .1, 0xffe9a0, ry);
+    const dg = L(CA - kd / 2 - .1, 0); st.prism(dg.x, 5.2, dg.z, 5.4, 1.2, .8, 0x8a4a3a, ry + Math.PI / 2);
     W.spots.schloss = { x: dg.x, z: dg.z, fx: L(CA - kd / 2 - 3, 0).x, fz: L(CA - kd / 2 - 3, 0).z }; W.spots.keep = L(CA, 0);
-    for (const bb of [-9, 9]) { const f = L(CA - kd / 2 - .5, bb); st.cyl(f.x, H + 1, f.z, .07, .1, 5, 0xdddddd, 5); st.box(f.x, H + 5, f.z, .1, 1.4, 2, bb < 0 ? 0xff5a8a : 0x5a8aff, ry); }
-    for (const b of [-8, -5, 5, 8]) solid(CA - kd / 2 + 1, b, 2.2, 14); for (const a of [CA - 4, CA + 4]) for (const sd of [-1, 1]) solid(a, sd * 11, 2.2, 14); for (const b of [-8, 0, 8]) solid(CA + kd / 2 - 1, b, 2.4, 14);
     path(CA - kd / 2 - 1, -6, CA - kd / 2 - 1, 6, 6, 0xf6d9ec);
     for (const sd of [-1, 1]) for (let k = 0; k < 4; k++) { const a = 20 + k * 4.4; cone(a, sd * 9, 1.1, 2.6, 0x3fae4a, .6, 8); cyl(a, sd * 9, .8, .9, .6, 0x8a5a3a, 0, 8); solid(a, sd * 9, 1.1, 3); }
   }
@@ -75,10 +87,10 @@ BI.buildMaerchenGround = function (c) {
   { const CA = 38, kd = 18, kw = 24, H = 12, FR = 0xfff0fa, DK = 0xe8b0cc;
     const win2 = (a, b, y, face, sgn, big) => { const w = big ? 1.5 : 1.2, h = big ? 2.4 : 1.8; if (face === 'a') { bx(a + sgn * .12, b, w + .5, h + .5, .3, FR, y - .25); const p = L(a + sgn * .26, b); lamp.box(p.x, y, p.z, w, h, .1, 0xffe9a0, ry); bx(a + sgn * .3, b, w + .6, .2, .5, DK, y - .4); }
       else { bx(a, b + sgn * .12, .3, h + .5, w + .5, FR, y - .25); const p = L(a, b + sgn * .26); lamp.box(p.x, y, p.z, .1, h, w, 0xffe9a0, ry); bx(a, b + sgn * .3, .5, .2, w + .6, DK, y - .4); } };
-    for (const y of [3.4, 8]) { bx(CA, 0, kw + .35, .4, kd + .35, DK, y + 3.1 - (y > 5 ? 0 : 0) - 1.3); }
+    for (const y of [5.2, 9.8]) { for (const sd of [-1, 1]) { bx(CA + sd * (kd / 2 + .1), 0, kw + .35, .4, .35, DK, y); bx(CA, sd * (kw / 2 + .1), .35, .4, kd + .35, DK, y); } }
     for (const sg of [-1, 1]) { for (const b of [-9, -6, -3, 3, 6, 9]) for (const y of [3.4, 8]) { if (sg < 0 && y < 5 && Math.abs(b) < 4) continue; win2(CA + sg * kd / 2, b, y, 'a', sg); } for (const a of [CA - 5, CA, CA + 5]) for (const y of [3.4, 8]) win2(a, sg * kw / 2, y, 'b', sg); }
     for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) { const sa = aa < CA ? -1 : 1, sb = bb < 0 ? -1 : 1; for (const y of [4, 9, 14, 19.5]) { const p = L(aa + sa * 2.1, bb + sb * 2.1); st.box(p.x, y - .9, p.z, 1.2, .35, 1.2, DK, ry + Math.PI / 4 * sa * sb); lamp.box(p.x, y, p.z, .9, 1.7, .1, 0xffe9a0, ry + Math.PI / 4 * sa * sb * -1 * -1); } bx(aa, bb, 7, .5, 7, DK, 17.4, Math.PI / 4); }
-    for (let k = 0; k < 4; k++) bx(CA - kd / 2 - 1 - k * .5, 0, 7 - k * .2, .22, .9 + (3 - k) * .0 + .5, k % 2 ? 0xe8b0cc : 0xfff0fa, k * .22 - .0, 0);
+    for (let k = 0; k < 3; k++) bx(CA - kd / 2 - 1 - k * .5, 0, 6.4 - k * .3, .15, .5, k % 2 ? 0xe8b0cc : 0xfff0fa, (2 - k) * .05, 0);
     for (const sd of [-1, 1]) { bx(CA - kd / 2 - .1, sd * 2.9, 1.1, 8.2, 1.1, WH, 0); bx(CA - kd / 2 - .1, sd * 2.9, 1.5, .4, 1.5, DK, 8.2); }
     bx(CA - kd / 2 - .4, 0, 7.2, .5, 1.6, DK, 7.6); bx(CA - kd / 2 - .9, 0, 7.4, 1, 1.4, WH, 7.1); for (let k = -3; k <= 3; k++) bx(CA - kd / 2 - 1.5, k * 1.1, .3, 1.3, .3, WH, 8.1);
     M.shadeR.push([L(CA, 0), kw, kd, H + 4]); for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) M.shade.push([L(aa, bb), 4.2, 18]); M.shade.push([L(CA + 2, 0), 5.2, 26]);
@@ -174,6 +186,7 @@ BI.createMaerchen = function (G) {
       const put = (bt, n, cols) => { const im = new THREE.InstancedMesh(bt.mesh(mt).geometry, mt, n), o = new THREE.Object3D(), cl = new THREE.Color(); let c = 0; for (let t = 0; t < n * 6 && c < n; t++) { const a = rr() * TAU, d = Math.sqrt(rr()) * (M.R - 8), x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d; if (!W.free(x, z, .5) || W.groundY(x, z) > .05) continue; o.position.set(x, 0, z); o.rotation.y = rr() * 6; o.scale.setScalar(.8 + rr() * .6); o.updateMatrix(); im.setMatrixAt(c, o.matrix); if (cols) { cl.setHex(cols[c % cols.length]); im.setColorAt(c, cl); } c++; } im.count = c; im.frustumCulled = false; scene.add(im); };
       put(fl, eco ? 80 : 220, [0xffffff, 0xff8fc8, 0xffd23f, 0xb48aff, 0x7fe0ff]); put(tf, eco ? 120 : 340, null); }
   }
+  const hallRoof = M.roofB.mesh(BI.mat()); hallRoof.frustumCulled = false; scene.add(hallRoof); K.hallRoof = hallRoof; M.roofB = null; const RI = M.roofIn;
   /* fliegender Teppich, Glühfeen und Schmetterlinge (instanziert), Mäuserich Willi am Tor */
   const carpet = (() => { const b = new BI.Batch(); b.box(0, 0, 0, 3.2, .12, 1.8, 0x8a2ad8); b.box(0, .12, 0, 2.8, .04, 1.4, 0xffd23f); for (const sd of [-1, 1]) b.box(sd * 1.7, 0, 0, .1, .1, 1.8, 0xffd23f); const m = b.mesh(BI.mat()), q = L(12, -40); m.position.set(q.x, 1.4, q.z); m.rotation.y = Math.atan2(M.ux, M.uz) + Math.PI / 2; scene.add(m); return m; })();
   const orbs = new THREE.InstancedMesh(new THREE.SphereGeometry(.22, 6, 5), new THREE.MeshBasicMaterial({ color: 0xfff7b0, fog: false }), 18), dm = new THREE.Object3D(); orbs.frustumCulled = false; scene.add(orbs);
@@ -191,6 +204,7 @@ BI.createMaerchen = function (G) {
     const mk = (a, b, look, name, lines, face) => { const p = free(L(a, b).x, L(a, b).z), c = BI.makeChar(look), f = face ? L(face[0], face[1]) : L(-42, 0), h = Math.atan2(f.x - p.x, f.z - p.z); c.group.position.set(p.x, 0, p.z); c.group.rotation.y = h; scene.add(c.group); const n = { c, x: p.x, z: p.z, h, h0: h, p: { name, lines, i: 0 }, wait: 0, hop: 0, kid: !!look.scale && look.scale < .8, fixed: true }; folk.push(n); return n; };
     const SK = { fair: 0xf6d2b0, tan: 0xd8a070, dark: 0x8a5a33, green: 0x7fe05a, teal: 0x5ad0a0, blue: 0x5aa8ff, white: 0xf6f6f6 };
     /* Schloss & Garten */
+    mk(43, 4, { shirt: 0xc23a8a, pants: 0xffd23f, hair: 0xe8e8f0, skin: SK.fair, hat: 'crown', style: 'long', dress: true, scale: 1.05 }, 'Königin Aurelia', ['Willkommen in meinem Thronsaal! 👑', 'Setz dich ruhig auf den Thron – er gehört heute dir.', 'Die goldenen Säulen tragen das ganze Dach.', 'Draußen im Garten wartet Prinzessin Lilia. ✨'], [29, 0]);
     mk(24, 5, { shirt: 0x6ad0ff, pants: 0xffffff, hair: 0xf7e08a, skin: SK.fair, hat: 'crown', style: 'long', dress: true, scale: 1.0 }, 'Prinzessin Lilia', ['Hallo, ich bin Lilia! Willkommen im Märchenland. ✨', 'Mein Schloss heißt Sternenglanz. Es funkelt jede Nacht.', 'Besuche meine Freunde auf der ganzen Insel!', 'Wünsch dir etwas am Wunschbrunnen! ⭐']);
     /* Eisreich */
     mk(-4, -44, { shirt: 0xcfeeff, pants: 0xe8f6ff, hair: 0xf2f8ff, skin: SK.white, hat: 'none', style: 'long', dress: true, scale: 1.0 }, 'Eisfee Frida', ['Brr, schön kühl hier! ❄️', 'Aus meinen Händen wird Eis. Schau, wie es glitzert!', 'Steig auf den Eisberg, da oben sieht man alles.'], [-10, -52]);
@@ -241,11 +255,13 @@ BI.createMaerchen = function (G) {
     if (glim && nr(glim, 3.8) && P.y < 3) return { k: 'mdust', label: ['✨', S().flew ? 'Feenstaub streuen' : 'Fee Glimmer: Feenstaub (Fliegen!)'] };
     if (nr(SP.greifer, 3.6) && claw.st === 'idle') return { k: 'mclaw', label: ['🕹️', 'Greifer spielen'] };
     if (nr(SP.uku, 2.8)) return { k: 'muku', label: ['🎶', 'Ukulele spielen'] };
+    if (nr(SP.thronSeat, 2.6)) return { k: 'mthron', label: ['👑', 'Auf dem Thron sitzen'] };
     return null;
   };
   K.act = function (n) {
     if (n && n.k === 'mdust') { const s = S(); if (!s.flew) { s.flew = 1; persist(); G.addStars(1); say('✨ Glimmer streut Feenstaub über dich: Du kannst fliegen! +1 ⭐', 4200); } else say('✨ Feenstaub! Du schwebst …', 2200); A.speak && A.speak('Feenstaub! Du kannst fliegen!'); flyT = 14; fx.burst(P.x, 1.6, P.z, 40, [[1, .95, .5], [1, 1, 1], [.7, 1, .8]], 4, 1.4, 30, 2); [784, 988, 1175, 1568].forEach((f, i) => note(f, .5, 'sine', .1, i * .09)); return; }
     if (n && n.k === 'mclaw') { claw.st = 'down'; claw.t = 0; claw.prize.visible = false; say('🕹️ Der Greifer fährt hinunter …', 1600); note(330, .8, 'triangle', .08); return; }
+    if (n && n.k === 'mthron') { const s = S(); A.fanfare && A.fanfare(); fx.burst(SP.thronSeat.x, 2.5, SP.thronSeat.z, 30, [[1, .85, .3], [1, .5, .8], [.5, .8, 1]], 4, 1.4, 30, 3); if (!s.throne) { s.throne = 1; persist(); G.addStars(1); say('👑 Du sitzt auf dem Thron! Alle jubeln. +1 ⭐', 4200); } else say('👑 Eure Majestät!', 2200); return; }
     if (n && n.k === 'muku') { const s = S(); [392, 440, 523, 659, 523, 440, 392, 330, 392, 523].forEach((f, i) => note(f, .32, 'triangle', .12, i * .26)); fx.burst(SP.uku.x, 2.2, SP.uku.z, 14, [[1, .9, .5], [1, .6, .8]], 2.4, 1, 28, 3); say('🎶 Plink plonk! Die Ukulele klingt wie Urlaub.', 3200); if (!s.uku) { s.uku = 1; persist(); G.addStars(1); say('🎶 Die Ukulele klingt wie Urlaub! +1 ⭐', 3600); } return; }
     if (!n || n.k !== 'mwish') return; const s = S(), w = SP.wunsch; s.wishes++; fx.burst(w.x, 4.4, w.z, 30, [[1, .9, .5], [1, 1, 1], [1, .6, .9], [.5, .8, 1]], 5, 1.4, 28, -1); A.star && A.star();
     if (s.wishes <= 3) { G.addStars(1); say('⭐ Dein Wunsch wurde gehört! +1 ⭐', 3200); } else say('✨ Dein Wunsch glitzert in den Sternen.', 2600); A.speak && A.speak('Dein Wunsch wurde gehört.'); persist();
@@ -260,7 +276,7 @@ BI.createMaerchen = function (G) {
       if (claw.st === 'down') { g.position.y = 4.2 - Math.min(1, claw.t / .9) * 2.4; if (claw.t > 1.2) { claw.st = 'up'; claw.t = 0; claw.prize.material.color.setHex([0xff8fc8, 0x7fe05a, 0x4da3ff, 0xffd23f, 0xb48aff][(Math.random() * 5) | 0]); claw.prize.visible = true; note(660, .3, 'sine', .1); } }
       else if (claw.st === 'up') { g.position.y = 1.8 + Math.min(1, claw.t / .9) * 2.4; if (claw.t > 1.1) { claw.st = 'show'; claw.t = 0; const s = S(); s.claw = (s.claw || 0) + 1; const names = ['🧸 Teddy', '🚀 Rakete', '🐻 Bär', '👽 Quietschi', '🤖 Roboter', '⭐ Stern']; const nm = names[(Math.random() * names.length) | 0]; if (s.claw <= 5) { G.addStars(1); say('🕹️ Gewonnen: ' + nm + '! +1 ⭐ (' + s.claw + '/5)', 3200); } else say('🕹️ Gewonnen: ' + nm + '! Schön!', 2600); persist(); A.star && A.star(); fx.burst(claw.base.x, 3, claw.base.z, 14, [[1, .9, .5], [1, .6, .8], [.5, .9, 1]], 3, 1, 28, 3); } }
       else if (claw.st === 'show') { if (claw.t > 1.2) { claw.st = 'idle'; claw.prize.visible = false; g.position.y = 4.2; } } }
-    const d0 = Math.hypot(P.x - M.x, P.z - M.z), ins = d0 < M.R + 12;
+    const d0 = Math.hypot(P.x - M.x, P.z - M.z), ins = d0 < M.R + 12; { const lp = M.loc(P.x, P.z), inHall = !P.veh && P.y < 4 && lp.a > RI.a0 && lp.a < RI.a1 && lp.b > RI.b0 && lp.b < RI.b1; if (hallRoof.visible === inHall) hallRoof.visible = !inHall; }
     if (ins !== was) { was = ins; if (ins) { const s = S(); if (!s.visit) { s.visit = 1; persist(); G.addStars(1); say('✨ Willkommen im Märchenland! +1 ⭐', 3600); } else say('✨ Märchenland', 2000); } }
     const near = d0 < 280; orbs.visible = carpet.visible = bfly.visible = near; if (!near) return;
     const cq = L(12, -40); carpet.position.set(cq.x, 1.4 + Math.sin(t * 1.6) * .35, cq.z); carpet.rotation.z = Math.sin(t * 1.1) * .06; const cp = L(38, 0);
@@ -269,12 +285,13 @@ BI.createMaerchen = function (G) {
     if (ins) { fireT -= dt; if (fireT <= 0) { fireT = 7 + Math.random() * 5; const x = cp.x + (Math.random() - .5) * 20, z = cp.z + (Math.random() - .5) * 20, cols = [[[1, .8, .3], [1, 1, 1]], [[1, .4, .7], [1, 1, 1]], [[.4, .8, 1], [1, 1, 1]]][(Math.random() * 3) | 0]; fx.burst(x, 46 + Math.random() * 8, z, 36, cols, 7, 1.6, 34, 3); A.pop && A.pop(); } }
     if (G.mini && G.mini().active && G.mini().kind === 'sterne_maerchen') { const s = S(); if (!s.played) { s.played = 1; persist(); } }
   };
-  K.log = () => { const s = S(); return { title: '✨ Märchenland', count: ((s.visit ? 1 : 0) + Math.min(3, s.wishes) + (s.played ? 1 : 0) + (s.flew ? 1 : 0) + (s.uku ? 1 : 0) + ((s.claw || 0) >= 1 ? 1 : 0)) + ' von 8', rows: [
+  K.log = () => { const s = S(); return { title: '✨ Märchenland', count: ((s.visit ? 1 : 0) + Math.min(3, s.wishes) + (s.played ? 1 : 0) + (s.flew ? 1 : 0) + (s.uku ? 1 : 0) + (s.throne ? 1 : 0) + ((s.claw || 0) >= 1 ? 1 : 0)) + ' von 9', rows: [
     { ok: !!s.visit, icon: '🏰', text: 'Märchenland besuchen (Brücke im Nordwesten)', dest: 'maerchen' },
     { ok: s.wishes >= 1, icon: '⭐', text: 'Am Wunschbrunnen einen Wunsch tun: ' + Math.min(3, s.wishes) + ' von 3 (je +1 ⭐)', dest: 'maerchen' },
     { ok: !!s.played, icon: '🌠', text: 'Sternschnuppen am Spielautomaten fangen', dest: 'maerchen' },
     { ok: !!s.flew, icon: '🧚', text: 'Von Fee Glimmer Feenstaub holen und fliegen (Nimmerland)', dest: 'nimmer' },
     { ok: (s.claw || 0) >= 1, icon: '🕹️', text: 'Am Greifer im Spielzeug-Land etwas gewinnen: ' + Math.min(5, s.claw || 0) + ' von 5 (je +1 ⭐)', dest: 'spielzeug' },
-    { ok: !!s.uku, icon: '🎶', text: 'Am Strand die Ukulele spielen', dest: 'strand' }] }; };
+    { ok: !!s.uku, icon: '🎶', text: 'Am Strand die Ukulele spielen', dest: 'strand' },
+    { ok: !!s.throne, icon: '👑', text: 'Im Schloss auf dem Thron sitzen', dest: 'schloss' }] }; };
   return K;
 };
