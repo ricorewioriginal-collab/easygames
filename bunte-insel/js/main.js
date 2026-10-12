@@ -112,9 +112,12 @@
 
   const npcs = [], SK = [0xffd2a8, 0xe0a979, 0x8d5a3b, 0xf3c9a0], HR = [0x6b4423, 0x222222, 0xd9a441, 0xa14a2b, 0xf3d98a], PN = [0x3d4a7a, 0x5a3d2b, 0x2d6a4f, 0x7a3d6a], rnd = a => a[(Math.random() * a.length) | 0];
   function mkNpc(x, z, o) {
-    o = o || {}; const kid = !!o.kid, c = BI.makeChar({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], pants: rnd(PN), hair: rnd(HR), style: rnd(['short','side','curly','pig','bun','bob','afro','braids','ponytail']), mouth: 'smile', hsc: kid ? 1.08 : 1, skin: o.skin || rnd(SK), hat: !kid && Math.random() < .15 ? 'cap' : kid && Math.random() < .3 ? 'party' : 'none', scale: kid ? .58 + Math.random() * .14 : .9 + Math.random() * .1 });
-    const q = W.resolve(x, z, .6, {}), n = { c, x: q.x, z: q.z, h: Math.random() * TAU, tx: q.x, tz: q.z, wait: Math.random() * 3, phase: Math.random() * 6, hop: 0, spd: kid ? 2.4 + Math.random() * .9 : 1.4 + Math.random() * .9, kid, lead: o.lead || null, fd: o.fd || 0, fs: o.fs || 0 };
-    { const pool = kid ? BI.TALK.kids : BI.TALK.adults, L = kid ? (mkNpc.kc = (mkNpc.kc || 0) + 1) : (mkNpc.ac = (mkNpc.ac || 0) + 1), pe = pool[(L - 1) % pool.length]; n.p = { name: kid && L > pool.length ? pe[0] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : kid ? pe[0] : L > pool.length ? pe[0].split(' ')[1] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : pe[0], lines: pe[1], i: 0 }; }
+    o = o || {}; const kid = !!o.kid, c = BI.makeChar(Object.assign({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], pants: rnd(PN), hair: rnd(HR), style: rnd(['short','side','curly','pig','bun','bob','afro','braids','ponytail']), mouth: 'smile', hsc: kid ? 1.08 : 1, skin: o.skin || rnd(SK), hat: !kid && Math.random() < .15 ? 'cap' : kid && Math.random() < .3 ? 'party' : 'none', scale: kid ? .58 + Math.random() * .14 : .9 + Math.random() * .1 }, o.look || {}));
+    const q = W.resolve(x, z, .6, {}), n = { c, x: q.x, z: q.z, h: Math.random() * TAU, tx: q.x, tz: q.z, wait: Math.random() * 3, phase: Math.random() * 6, hop: 0, wave: 0, spd: kid ? 2.4 + Math.random() * .9 : 1.4 + Math.random() * .9, kid, lead: o.lead || null, fd: o.fd || 0, fs: o.fs || 0, roam: o.roam || null, dancer: 0, style: 0 };
+    n.spd0 = n.spd;
+    if (o.persona) n.p = { name: o.persona[0], lines: o.persona[1], i: 0 };
+    else { const pool = kid ? BI.TALK.kids : BI.TALK.adults, L = kid ? (mkNpc.kc = (mkNpc.kc || 0) + 1) : (mkNpc.ac = (mkNpc.ac || 0) + 1), pe = pool[(L - 1) % pool.length]; n.p = { name: kid && L > pool.length ? pe[0] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : kid ? pe[0] : L > pool.length ? pe[0].split(' ')[1] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : pe[0], lines: pe[1], i: 0 }; }
+    c.group.position.set(n.x, 0, n.z); c.group.rotation.y = n.h;
     scene.add(c.group); npcs.push(n); return n;
   }
   const spot = () => W.randRoadPoint(Math.random, 0, 0, 0);
@@ -125,7 +128,61 @@
     const kids = 1 + ((Math.random() * 2) | 0); for (let k = 0; k < kids; k++) mkNpc(p.x + 6.5, p.z + 8, { skin, kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * (.7 + k * .3) });
   }
   for (let i = 0; i < 16; i++) { const p = spot(); mkNpc(p.x + 5, p.z + 5, { kid: true }); } /* spielende Kinder */
-  for (const n of npcs) { n.spd0 = n.spd; n.style = 0; n.dancer = 0; }
+  /* Kleine, feste Nachbarschaften: eigenständige Gespräche und kurze Wege statt zufällig leerer Plätze. */
+  const localCast = [
+    { x: 0, z: 14, r: 7, people: [
+      ['Lea die Malerin', -8, 0, false, { shirt: 0xff739f, style: 'bun', dress: true, scarf: 0xffd23f }, ['Ich male heute den Brunnen. Das Wasser glitzert wie ein Stern!', 'Manchmal darfst du die Farbe einfach laufen lassen.', 'Mein nächstes Bild zeigt alle Freunde der Insel.']],
+      ['Sami der Musiker', 7, -1, false, { shirt: 0x3f8cff, skin: 0x8d5a3b, style: 'afro', hat: 'headphones' }, ['Hör mal! Der Brunnen gibt den Takt für mein Lied vor.', 'Jede Ecke der Insel klingt ein bisschen anders.', 'Vielleicht spielen wir später zusammen ein Konzert?']],
+      ['Oma Ruth', -3, 5, false, { shirt: 0xb36bff, hair: 0xd9d9d9, style: 'bun', dress: true, glasses: true, scale: .88 }, ['Hier habe ich früher mit meinen Freunden gespielt.', 'Ein nettes Hallo macht einen grauen Tag bunt.', 'Von dieser Bank aus sieht man fast die ganze Insel.']],
+      ['Momo', 4, 7, true, { shirt: 0xffd23f, skin: 0xe0a979, style: 'curly', pack: true }, ['Ich sammle Ideen für ein riesiges Abenteuer!', 'Der Brunnen ist unser geheimer Treffpunkt.', 'Wollen wir später den Spielplatz erkunden?']]
+    ] },
+    { x: -36, z: -116, r: 5, people: [
+      ['Lina', -14, 0, true, { shirt: 0xff8fc8, style: 'pig', skin: 0x8d5a3b, pack: true }, ['In unserem Haus wohnt immer jemand, der mitspielt.', 'Ich übe gerade das Rückwärtslaufen. Gar nicht leicht!', 'Die Nachbarn winken, wenn ich zur Schule gehe.']],
+      ['Arif der Nachbar', -4, 2, false, { shirt: 0x4cd07d, skin: 0xe0a979, style: 'short', glasses: true }, ['Ich gieße die Blumen vor unserem Wohnblock.', 'Wenn du Hilfe brauchst, frag ruhig bei uns nach.', 'Am Abend treffen wir uns hier zum Plaudern.']],
+      ['Elsa', 6, 1, true, { shirt: 0xb36bff, style: 'braids', skin: 0xffd2a8, teddy: true }, ['Mein Teddy heißt Wolke. Er kennt jeden Weg nach Hause!', 'Wir spielen heute Verstecken zwischen den Häusern.', 'Gleich kommt meine Freundin Lina vorbei.']],
+      ['Jona', 14, -1, false, { shirt: 0xffa742, skin: 0x8d5a3b, hair: 0x222222, hat: 'cap', overall: true }, ['Ich bringe den Nachbarn frische Brötchen.', 'Bei uns sagt jeder guten Morgen.', 'Die Haustüren sind bunt, damit man sich leicht zurechtfindet.']]
+    ] },
+    { x: -59, z: 56, r: 6, people: [
+      ['Lotti', -10, -8, true, { shirt: 0xff5a8a, hair: 0xd9a441, style: 'ponytail' }, ['Ich rutsche am liebsten ganz schnell!', 'Bei der Schaukel zählen wir bis zehn.', 'Komm, wir spielen Fangen!']],
+      ['Noah', 10, -7, true, { shirt: 0x4da3ff, skin: 0x8d5a3b, style: 'curly' }, ['Mein Rekord auf dem Trampolin ist sieben Sprünge.', 'Ich bin der Kapitän vom Sandkasten-Schiff!', 'Heute darf jeder bei unserem Spiel mitmachen.']],
+      ['Kaya', 9, 10, true, { shirt: 0xffd23f, skin: 0xe0a979, style: 'braids', rainbow: true }, ['Die Wippe macht am meisten Spaß zu zweit.', 'Ich habe eine bunte Schatzkarte gemalt.', 'Vielleicht versteckt sich ein Stern beim Spielplatz.']],
+      ['Tessa', -11, 10, false, { shirt: 0x57caa0, skin: 0xf3c9a0, style: 'bob', scarf: 0xff8fc8 }, ['Ich passe auf, dass alle sicher spielen können.', 'Eine kleine Pause auf der Bank tut immer gut.', 'Die Kinder haben heute ein neues Spiel erfunden.']]
+    ] },
+    { x: -112, z: 106, r: 5, people: [
+      ['Bäuerin Alva', -8, -1, false, { shirt: 0xff8a1f, pants: 0x5a3d2b, skin: 0x8d5a3b, hat: 'cowboy', overall: true }, ['Heute haben wir die Felder und die Tiere versorgt.', 'Unsere Kühe mögen Besuch, wenn du ganz ruhig bist.', 'Die Äpfel im Hofladen sind frisch gepflückt.']],
+      ['Tariq', 8, 1, false, { shirt: 0x4cd07d, skin: 0xe0a979, style: 'short', hat: 'cap', overall: true }, ['Der Traktor wartet schon auf die nächste Runde.', 'Nach der Arbeit gibt es Saft im Hofladen.', 'Ich zeige den Kindern, wo das Gemüse wächst.']],
+      ['Nuri', 1, 7, true, { shirt: 0xffd23f, skin: 0x8d5a3b, style: 'afro', hat: 'cap' }, ['Ich kann schon drei Schafe auseinanderhalten!', 'Mein Lieblingsplatz ist neben der Scheune.', 'Morgen möchte ich beim Ernten helfen.']]
+    ] },
+    { x: 70, z: 30, r: 5, people: [
+      ['Mara die Pfadfinderin', -9, 5, false, { shirt: 0x4cd07d, pants: 0x5a3d2b, skin: 0xe0a979, hat: 'cap', pack: true }, ['Wir erzählen am Lagerfeuer Geschichten von der Insel.', 'Mein Rucksack ist voller kleiner Entdeckungen.', 'Wenn es dunkel wird, leuchten die Sterne besonders schön.']],
+      ['Bo', 9, 4, true, { shirt: 0x3f8cff, hair: 0x222222, skin: 0x8d5a3b, pack: true }, ['Ich habe mein Zelt ganz allein aufgebaut!', 'Heute suche ich ein Blatt, das wie ein Herz aussieht.', 'Die Nachtgeräusche klingen wie ein Abenteuer.']],
+      ['Enya', 1, 9, true, { shirt: 0xff8fc8, hair: 0xa14a2b, style: 'side', scarf: 0xffd23f }, ['Mara kennt alle Sternbilder.', 'Am Lagerfeuer singen wir ein ganz leises Lied.', 'Ich habe einen besonders glatten Stein gefunden.']]
+    ] },
+    { x: 53, z: 119, r: 4, people: [
+      ['Rieke', -5, -1, false, { shirt: 0x3fa0ff, style: 'bun', skin: 0x8d5a3b, glasses: true }, ['Am Freibad ist immer etwas los.', 'Denk an eine Pause nach dem Spielen im Wasser.', 'Die kleine Rutsche ist heute besonders beliebt.']],
+      ['Timo', 2, -2, true, { shirt: 0xffd23f, style: 'short', skin: 0xe0a979, hat: 'cap' }, ['Ich übe Sprünge, erst mal nur auf dem Trockenen!', 'Mein Handtuch ist so bunt wie ein Regenbogen.', 'Nach dem Baden will ich ein Eis.']],
+      ['Sunny', 6, 1, true, { shirt: 0xff6fae, style: 'pig', skin: 0xffd2a8, hat: 'flowers' }, ['Wer findet die größte Wasserwelle?', 'Ich kann schon fast einmal um das Becken laufen.', 'Das Planschbecken ist mein Lieblingsort.']]
+    ] },
+    { x: 0, z: -282, r: 8, people: [
+      ['Lale die Buchhändlerin', -20, 0, false, { shirt: 0xb36bff, style: 'bob', skin: 0xe0a979, glasses: true }, ['In der Stadt kann man jeden Tag eine neue Geschichte finden.', 'Mein Lieblingsbuch handelt von einer kleinen Insel.', 'Wenn du etwas wissen willst, schau in die Bücherei.']],
+      ['Yuki', -7, 2, true, { shirt: 0xffd23f, style: 'bob', skin: 0xf3c9a0, pack: true }, ['Ich zähle die bunten Schaufenster!', 'Der Stadtbrunnen plätschert ganz anders als der Inselbrunnen.', 'Manchmal treffe ich hier Freunde aus allen Vierteln.']],
+      ['Enzo der Bäcker', 8, -1, false, { shirt: 0xffffff, pants: 0x5a3d2b, skin: 0x8d5a3b, hat: 'chef', overall: true }, ['Es duftet schon nach frischen Brötchen.', 'Ich teile meine Kekse gern mit den Nachbarn.', 'Früh am Morgen ist die Stadt ganz still.']],
+      ['Luca', 20, 1, false, { shirt: 0x4da3ff, skin: 0xe0a979, style: 'curly', hat: 'cap', pack: true }, ['Ich bringe kleine Pakete durch die Stadt.', 'Die Brücke verbindet uns mit der großen Insel.', 'Kennst du schon das Café an der Hauptstraße?']]
+    ] },
+    { x: 285, z: 20, r: 7, people: [
+      ['Pia die Schaustellerin', -8, 6, false, { shirt: 0xff5a8a, style: 'wavy', skin: 0x8d5a3b, hat: 'party' }, ['Willkommen auf dem Jahrmarkt! Heute lachen hier alle.', 'Die Musik hört man bis zur Brücke.', 'Mein Lieblingsplatz ist direkt am bunten Brunnen.']],
+      ['Benji', 6, -7, true, { shirt: 0x4cd07d, skin: 0xe0a979, style: 'curly', hat: 'party' }, ['Ich will jede Attraktion einmal ausprobieren!', 'Die Lampen sehen aus wie kleine Bonbons.', 'Nach der Fahrt dreht sich alles noch ein bisschen.']],
+      ['Mina', 9, 7, true, { shirt: 0xffd23f, skin: 0x8d5a3b, style: 'braids', rainbow: true }, ['Ich habe ein Ticket für das nächste Abenteuer!', 'Am Brunnen kann ich mir etwas wünschen.', 'Kommst du mit zum Karussell?']]
+    ] }
+  ];
+  for (const area of localCast) for (const [name, dx, dz, kid, look, lines] of area.people) {
+    const ox = area.x + dx, oz = area.z + dz; let x = ox, z = oz;
+    for (let tryNo = 0; tryNo < 18 && !W.free(x, z, .7); tryNo++) {
+      const a = tryNo * 2.39996, r = .9 + Math.sqrt(tryNo) * 1.4; x = ox + Math.sin(a) * r; z = oz + Math.cos(a) * r;
+    }
+    if (!W.free(x, z, .7)) continue;
+    mkNpc(x, z, { kid, look, persona: [name, lines], roam: { x, z, r: area.r } });
+  }
   function animalMesh(kind) {
     const b = new BI.Batch(), g = new THREE.Group();
     if (kind === 'cow') { b.box(0, .75, 0, .9, .8, 1.7, 0xffffff); b.box(-.46, 1.1, .2, .06, .4, .5, 0x23262d); b.box(.46, 1.0, -.3, .06, .35, .5, 0x23262d); b.box(0, 1.55, .25, .5, .06, .6, 0x23262d); b.box(0, 1.05, .98, .5, .5, .5, 0xffffff); b.box(0, 1.05, 1.22, .36, .26, .08, 0xffb0b8); b.box(-.17, 1.5, .98, .08, .2, .08, 0xf3e9d2); b.box(.17, 1.5, .98, .08, .2, .08, 0xf3e9d2); for (const x of [-.3, .3]) for (const z of [-.6, .6]) b.box(x, 0, z, .2, .75, .2, 0xe8e8e8); }
@@ -1170,7 +1227,7 @@
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
   for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
   { const g = W.spots.cityGate; if (g) { const sp = textSprite('🏙️ Willkommen in der Stadt!', 6.4, 1.1, 54); sp.position.set(g.x, g.y + 1.6, g.z + .4); scene.add(sp); } }
-  { const C = W.city; for (let i = 0; i < 16; i++) { const a = Math.random() * TAU, d = 8 + Math.random() * 36; mkNpc(C.x + Math.sin(a) * d, -266 + (Math.random() < .5 ? -3 : 4) + Math.cos(a) * 3, { kid: i % 5 === 0 }); } for (let f = 0; f < 3; f++) { const x = -30 + f * 30, lead = mkNpc(x, -262, {}); lead.spd = 1.3; for (let k = 0; k < 2; k++) mkNpc(x + 1, -262, { kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * .8 }); } }
+  { const C = W.city; for (let i = 0; i < 16; i++) { const a = Math.random() * TAU, d = 8 + Math.random() * 36, x = C.x + Math.sin(a) * d, z = -266 + (Math.random() < .5 ? -3 : 4) + Math.cos(a) * 3; mkNpc(x, z, { kid: i % 5 === 0, roam: { x, z, r: 10 } }); } for (let f = 0; f < 3; f++) { const x = -30 + f * 30, lead = mkNpc(x, -262, { roam: { x, z: -262, r: 10 } }); lead.spd = lead.spd0 = 1.3; for (let k = 0; k < 2; k++) mkNpc(x + 1, -262, { kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * .8 }); } }
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
   function nearStation() { if (P.veh) return -1; for (let i = 0; i < W.stations.length; i++) { const p = W.stations[i].plat; if (P.x > p[0] - 1.5 && P.x < p[2] + 1.5 && P.z > p[1] - 1.5 && P.z < p[3] + 1.5) return i; } return -1; }
   /* Am Bahnsteig: „Zug fahren“ – der Zug wird an diesen Bahnhof gezaubert und man steigt als Lokführer ein */
@@ -1179,7 +1236,7 @@
     if (d > 7 || train.v > 1.5) { fx.burst(trainVeh.x, 2, trainVeh.z, 20, [BI.C.white, BI.C.blue], 5, 1, 30, 2); train.s = st.s; train.v = 0; train.mode = 'wait'; train.timer = 40; train.stationIdx = i; train.update(0, null, fx); fx.burst(st.x, 2, st.z, 24, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 30, 4); A.fanfare(); say('🚂 Der Zug fährt für dich vor! Alles einsteigen!', 3000); }
     enter(trainVeh);
   }
-  function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs.concat(town.folk, life.talkers)) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
+  function npcNear() { let best = null, bd = 2.3 * 2.3; if (P.veh) return null; const scan = group => { for (const n of group) { if (!n.c.group.visible || !n.p) continue; const dx = P.x - n.x, dz = P.z - n.z, d = dx * dx + dz * dz; if (d < bd) { bd = d; best = n; } } }; scan(npcs); scan(town.folk); scan(life.talkers); return best; }
   /* Satz für das Gespräch: beim ersten Mal persönliche Begrüßung, danach bunt gemischt (eigene Sätze, Plausch, Tageszeit/Wetter/Sterne) – ohne Wiederholung hintereinander */
   function npcLine(p) {
     if (!(save.talked || []).includes(p.name)) { p.last = 0; return 'Hallo ' + heroName() + '! ' + p.lines[0]; }
@@ -1879,10 +1936,20 @@
       else if (n.wait <= 0) {
         const dx = n.tx - n.x, dz = n.tz - n.z, d = Math.hypot(dx, dz);
         if (d < .6 && n.dancer > 0) { dancing = true; n.h += BI.angDiff(n.h, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 6); }
-        else if (d < .6) { n.wait = n.kid ? .2 + Math.random() * 1.6 : 1 + Math.random() * 4; if (n.kid && Math.random() < .4) n.hop = .6; const a = Math.random() * TAU, r = n.kid ? 4 + Math.random() * 9 : 6 + Math.random() * 16; n.tx = clamp(n.x + Math.sin(a) * r, -150, 150); n.tz = clamp(n.z + Math.cos(a) * r, -150, 150); }
+        else if (d < .6) {
+          n.wait = n.kid ? .2 + Math.random() * 1.6 : 1 + Math.random() * 4;
+          if (n.kid && Math.random() < .4) n.hop = .6;
+          if (n.roam) {
+            for (let j = 0; j < 12; j++) {
+              const a = Math.random() * TAU, r = Math.sqrt(Math.random()) * n.roam.r, x = n.roam.x + Math.sin(a) * r, z = n.roam.z + Math.cos(a) * r;
+              if (W.free(x, z, .6)) { n.tx = x; n.tz = z; break; }
+            }
+          } else { const a = Math.random() * TAU, r = n.kid ? 4 + Math.random() * 9 : 6 + Math.random() * 16; n.tx = clamp(n.x + Math.sin(a) * r, -150, 150); n.tz = clamp(n.z + Math.cos(a) * r, -150, 150); }
+        }
         else { n.h += BI.angDiff(n.h, Math.atan2(dx, dz)) * Math.min(1, dt * 8); n.x += Math.sin(n.h) * n.spd * dt; n.z += Math.cos(n.h) * n.spd * dt; moving = true; }
       }
       const q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) n.wait = 0, n.tx = n.x, n.tz = n.z; n.x = q.x; n.z = q.z;
+      if (n.roam && !moving && n.wave <= 0 && Math.abs(n.x - P.x) + Math.abs(n.z - P.z) < 6 && Math.random() < dt * .08) n.wave = 1.3;
       n.phase += dt * (moving ? 7 : 0); const g = n.c.group; g.position.set(n.x, n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0, n.z); g.rotation.y = n.h;
       if (dancing) { n.c.dance(t + n.phase, n.style); g.position.y += Math.abs(Math.sin((t + n.phase) * 8)) * .15; } else n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);
     }
