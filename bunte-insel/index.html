@@ -7,7 +7,6 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="icon" href="card.png" type="image/png"><link rel="apple-touch-icon" href="card.png">
 <title>Bunte Insel</title>
 <meta name="description" content="Bunte Insel – Kinderspiel mit offener Welt: laufen, Auto, Motorrad, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Eiswagen und Zug fahren.">
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -395,6 +394,25 @@ body.hostfs #topR{top:calc(var(--hud-top) + 58px)}
 body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 @media (max-height:430px){body.building #leftTools{top:calc(var(--hud-top) + 106px)}}
 @media (max-width:620px){body.hostfs.building #leftTools{top:calc(var(--hud-top) + 198px)}}
+#graphicsNotice{position:fixed;inset:0;z-index:100;display:grid;align-content:center;justify-items:center;gap:18px;padding:24px;background:rgba(14,35,66,.92);color:#fff;text-align:center;font-size:clamp(20px,4vw,34px)}
+#graphicsNotice button{padding:13px 22px;border-radius:18px;background:#ffcf48;color:#16335e;font-weight:700;box-shadow:0 5px 0 #bc8125}
+#graphicsNotice button:focus-visible{outline:4px solid #fff;outline-offset:4px}
+@media (min-width:1600px) and (min-height:850px){
+  #hud{right:auto;bottom:auto;width:calc(100vw * .84);height:calc(100vh * .84);transform:scale(1.19);transform-origin:top left}
+  #menu[data-v=home] .mwrap{width:min(840px,48vw)}
+  #menu[data-v=home] .ttl{font-size:clamp(68px,5vw,100px)}
+  #menu[data-v=home] .lab{font-size:clamp(20px,1.5vw,28px)}
+  #menu[data-v=home] .tile.main{min-height:clamp(170px,22vh,250px)}
+  #menu[data-v=home] .tile:not(.main){min-height:clamp(130px,17vh,190px)}
+  #menu[data-v=slots] .menucard{width:min(640px,65vw)}
+}
+@media (min-width:2800px) and (min-height:1500px){
+  #hud{width:calc(100vw * .64);height:calc(100vh * .64);transform:scale(1.56)}
+  #menu[data-v=home] .mwrap{width:min(1150px,50vw)}
+  #menu[data-v=slots] .menucard{width:min(850px,70vw)}
+  #menu[data-v=home] .tile.main{min-height:clamp(230px,20vh,350px)}
+  #menu[data-v=home] .tile:not(.main){min-height:clamp(185px,16vh,280px)}
+}
 </style>
 </head>
 <body>
@@ -708,12 +726,12 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
 <script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=62,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="__ld()"></script>
-<script src="js/util.js?v=ins14" onload="__ld()"></script>
+<script src="vendor/three.min.js?v=r128" onload="__ld()"></script>
+<script src="js/util.js?v=gfx1" onload="__ld()"></script>
 <script src="js/characters.js?v=people2" onload="__ld()"></script>
 <script src="js/audio.js" onload="__ld()"></script>
 <script src="js/town.js?v=ins10" onload="__ld()"></script>
-<script src="js/world.js?v=ins15" onload="__ld()"></script>
+<script src="js/world.js?v=gfx1" onload="__ld()"></script>
 <script src="js/places.js" onload="__ld()"></script>
 <script src="js/vehicles.js?v=traffic3" onload="__ld()"></script>
 <script src="js/fun.js?v=ins14" onload="__ld()"></script>
@@ -769,7 +787,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/combat.js" onload="__ld()"></script>
 <script src="js/weather.js?v=ins10" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=ins17" onload="__ld()"></script>
+<script src="js/main.js?v=ins18" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>

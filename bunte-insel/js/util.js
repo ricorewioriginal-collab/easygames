@@ -7,6 +7,14 @@ BI.lerp = (a, b, t) => a + (b - a) * t;
 BI.damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
 BI.angDiff = (a, b) => { let d = (b - a) % BI.TAU; if (d > Math.PI) d -= BI.TAU; if (d < -Math.PI) d += BI.TAU; return d; };
 BI.rng = function (seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+/* Schriftbilder brauchen auf WebGL 1 bei nicht-zweierpotenten Canvasgrößen lineare Filter ohne Mipmaps. */
+BI.labelTexture = function (canvas) {
+  const t = new THREE.CanvasTexture(canvas), pot = v => v > 0 && (v & (v - 1)) === 0;
+  t.generateMipmaps = pot(canvas.width) && pot(canvas.height);
+  t.minFilter = t.generateMipmaps ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
+  t.magFilter = THREE.LinearFilter;
+  return t;
+};
 /* Speicher: 3 Spielstände im Browser (localStorage). Spielstand 1 nutzt die alten Namen (bunteInsel.save …), 2 und 3 eigene Namen. */
 BI.store = {
   KEYS: ['save', 'build', 'photos', 'art'], slot: 1,
@@ -264,7 +272,7 @@ BI.makePet = function (kind, name) {
   else { t.box(0, 0, -.2, .1, .1, .42, C, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, C2, 0, -.5); }
   tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
   const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(name, 96, 30); cx.fillStyle = '#fff'; cx.fillText(name, 96, 30);
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.6 + (K.ear === 'long' ? .2 : 0), .3); root.add(sp);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BI.labelTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.6 + (K.ear === 'long' ? .2 : 0), .3); root.add(sp);
   root.scale.setScalar(K.sz);
   return {
     group: root,
@@ -386,7 +394,7 @@ BI.makeChar = function (o) {
   const armL = arm(shirt, skin, -.34, 1.22), armR = arm(shirt, skin, .34, 1.22);
   if (o.name) {
     const cv0 = document.createElement('canvas'); cv0.width = 512; cv0.height = 128; const cx0 = cv0.getContext('2d'); cx0.scale(2,2); cx0.font = 'bold 40px Fredoka, system-ui, sans-serif'; cx0.textAlign = 'center'; cx0.textBaseline = 'middle'; cx0.lineWidth = 8; cx0.strokeStyle = '#16335e'; cx0.strokeText(o.name, 128, 34); cx0.fillStyle = '#fff'; cx0.fillText(o.name, 128, 34);
-    const sp0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv0), transparent: true, depthWrite: false })); sp0.scale.set(1.5, .38, 1); sp0.position.y = 2.25; root.add(sp0);
+    const sp0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: BI.labelTexture(cv0), transparent: true, depthWrite: false })); sp0.scale.set(1.5, .38, 1); sp0.position.y = 2.25; root.add(sp0);
   }
   let remoteMesh = null;
   if (J) { // Fernsteuerung mit Lenkrad und Antenne in der rechten Hand
@@ -450,7 +458,7 @@ BI.makeDog = function (o) {
   const fl = leg(-.15, .5), fr = leg(.15, .5), bl = leg(-.15, -.36), br = leg(.15, -.36);
   const tg = new THREE.Group(), t = new BI.Batch(); t.box(0, 0, -.2, .1, .1, .42, TAN, 0, -.5); t.box(0, .05, -.4, .07, .07, .16, BLK, 0, -.5); tg.add(t.mesh(mat)); tg.position.set(0, .62, -.46); inner.add(tg);
   const cv = document.createElement('canvas'); cv.width = 192; cv.height = 56; const cx = cv.getContext('2d'); cx.font = 'bold 36px Fredoka, system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.lineWidth = 7; cx.strokeStyle = '#16335e'; cx.strokeText(o.name || 'Blitz', 96, 30); cx.fillStyle = '#fff'; cx.fillText(o.name || 'Blitz', 96, 30);
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); if (!o.noName) root.add(sp);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BI.labelTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(1.1, .32, 1); sp.position.set(0, 1.65, .3); if (!o.noName) root.add(sp);
   return {
     group: root,
     /* Tricks: sit, paw (Pfötchen), roll, beg (Männchen), flip (Salto); k = 0..1 */
