@@ -8,7 +8,7 @@ if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: p
 await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/cloud/**', r => r.abort());
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.waitForTimeout(500);
 const r = await p.evaluate(() => {
-  const W = __bi.W, segs = [], issues = [], bad = [], KEYS = ['CITY', 'DAMPF', 'DRACHEN', 'PARK', 'PUPS', 'RAINBOW', 'ZOTIK', 'BAULAND', 'FUSSBALL', 'MAERCHEN', 'SCHLUESSEL'];
+  const W = __bi.W, segs = [], issues = [], bad = [], KEYS = ['CITY', 'DAMPF', 'DRACHEN', 'PARK', 'PUPS', 'RAINBOW', 'ZOTIK', 'BAULAND', 'FUSSBALL', 'MAERCHEN', 'SCHLUESSEL', 'SCHWAMM'];
   for (const n of KEYS) { const o = BI[n], B = o && o.bridge; if (!B) continue; if (B.mx !== undefined) { const ux = Math.sin(B.ry), uz = Math.cos(B.ry); segs.push({ n, ax: B.mx - ux * B.L / 2, az: B.mz - uz * B.L / 2, bx: B.mx + ux * B.L / 2, bz: B.mz + uz * B.L / 2, w: B.w }); } else { const h = (B.x1 - B.x0) > (B.z1 - B.z0); segs.push(h ? { n, ax: B.x0, az: (B.z0 + B.z1) / 2, bx: B.x1, bz: (B.z0 + B.z1) / 2, w: B.z1 - B.z0 } : { n, ax: (B.x0 + B.x1) / 2, az: B.z0, bx: (B.x0 + B.x1) / 2, bz: B.z1, w: B.x1 - B.x0 }); } }
   const dseg = (x, z, s) => { const dx = s.bx - s.ax, dz = s.bz - s.az, t = Math.max(0, Math.min(1, ((x - s.ax) * dx + (z - s.az) * dz) / (dx * dx + dz * dz))); return { d: Math.hypot(x - (s.ax + t * dx), z - (s.az + t * dz)), t }; };
   for (const s of segs) {

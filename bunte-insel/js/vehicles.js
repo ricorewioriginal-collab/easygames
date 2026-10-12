@@ -23,6 +23,7 @@ BI.VEH = {
   keymobil:  { name: 'Schlüsselschwert-Mobil', icon: '🗝️', max: 30, rev: 8, turn: 2.1, kind: 'heli', horn: 'bike', fly: true, open: true, stand: true, cols: [0], r: 1.3, cam: 10 },
   drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
+  wannenmobil: { name: 'Wannen-Mobil', icon: '🛁', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.0, kind: 'car', horn: 'bike', cols: [-1.1, 1.1], r: 1.4, cam: 9.5 },
   gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
   nautilux:  { name: 'Nautilux (Luftschiff)', icon: '🚢', max: 20, rev: 6, turn: 1.35, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 3.2, cam: 17 },
   limo:      { name: 'Limousine', icon: '🚘', max: 26, rev: 6, acc: 9, brake: 22, drag: 5, turn: 1.55, kind: 'car', horn: 'car', cols: [-2.7, 0, 2.7], r: 1.15, cam: 11 },
@@ -96,6 +97,17 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.box(0, 1.5, -.15, 1.3, .12, .5, DARK); b.box(-.42, 1.62, -.15, .42, .18, .42, 0xff2a2a); b.box(0, 1.62, -.15, .42, .18, .42, 0xffa31a); b.box(.42, 1.62, -.15, .42, .18, .42, 0x2a6aff);
       for (const s of [-1, 1]) b.sph(s * .98, .85, -.5, .2, 0xffe14a, 1, .3, 1, 1);
       o.beacons = [[-.42, 1.82, -.15, 0xff2020], [0, 1.82, -.15, 0xffa020], [.42, 1.82, -.15, 0x2060ff]]; return o;
+    },
+    wannenmobil(b) { // Wannen-Mobil (Meeresmann & Napfschnecken-Bub): rosa-weiße Badewanne auf Rädern mit Gummiente, Sehrohr, Heckflosse und Wellen-Streifen
+      const WH = 0xf4f8ff, PK = 0xff8fc8, BL = 0x4da3ff;
+      b.box(0, .5, 0, 1.9, .55, 3.6, WH); b.box(0, .9, 0, 1.7, .3, 3.4, WH); b.box(0, .62, 1.9, 1.6, .5, .5, WH); b.sph(0, .75, 1.82, .95, WH, 1, .95, .55, .55); b.sph(0, .72, -1.8, .95, WH, 1, .95, .55, .55);
+      b.box(0, 1.04, 0, 1.4, .06, 3.0, BL); for (let i = 0; i < 4; i++) b.box(0, 1.1, -1.1 + i * .75, 1.2, .05, .22, 0xbfeaff);
+      b.box(0, .6, 0, 1.96, .1, 3.62, PK); b.box(0, .98, 0, 1.76, .06, 3.46, PK);
+      b.sph(0, 1.55, 1.3, .36, 0xffe14a, 1, 1, .9, 1); b.sph(0, 1.95, 1.4, .24, 0xffe14a, 1); b.cone(0, 1.92, 1.62, .1, .22, 0xff8a1f, 5); b.sph(-.1, 2.0, 1.55, .04, 0x222222, 0); b.sph(.1, 2.0, 1.55, .04, 0x222222, 0);
+      b.cyl(.55, 1.1, -.9, .07, .07, 1.5, 0x8a96a8, 6); b.box(.55, 2.5, -.7, .12, .12, .5, 0x8a96a8); b.sph(.55, 2.5, -.46, .09, 0x9fe3ff, 0);
+      b.box(0, 1.2, -1.95, .1, .9, 1.2, PK, 0, 0, 0); b.box(0, 1.55, -2.1, .1, .5, .8, BL);
+      for (const x of [-.85, .85]) b.box(x, .85, .6, .1, .35, 1.2, WH, 0, 0, x > 0 ? -.1 : .1);
+      return { wheels: [[.95, .4, 1.15, .4, .28, 1], [-.95, .4, 1.15, .4, .28, 1], [.95, .4, -1.15, .4, .28, 0], [-.95, .4, -1.15, .4, .28, 0]], head: [[-.55, .72, 2.45], [.55, .72, 2.45]], tail: [[-.5, .6, -2.4], [.5, .6, -2.4]] };
     },
     gleiter(b) { // Aqua-Gleiter (Atlantis): schwebende Linse mit Glaskuppel, leuchtendem Schwebering und Heckflossen
       b.sph(0, .7, 0, 1.25, 0xeaf6fb, 1, .95, .42, 1.7); b.sph(0, 1.0, .35, .8, 0x7fe8ff, 1, .85, .6, 1.1); b.box(0, .55, -1.9, .12, .9, .9, 0x35d6e0); for (const x of [-.95, .95]) b.box(x, .45, -.6, .12, .35, 1.4, 0x35d6e0, 0, 0, x > 0 ? -.25 : .25);
