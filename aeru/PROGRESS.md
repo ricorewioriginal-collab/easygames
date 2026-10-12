@@ -16,7 +16,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Erreichbarkeit** aller Splitter, Laternen, Rastpunkte; versteckte Stufen, Kristallturm, Ringe im echten Flug. → `logic.cjs`
 - **Mobile Oberfläche** ohne Überlappungen/Überläufe in 3 Desktop-, 3 Hochkant- und 3 Querformat-Viewports (Chromium, Touch-Emulation), auch im Flug. Kompakte Questanzeige und neu geordnete Touch-Tasten nach dem Fehlerbericht vom 11.10.2026. → `browser.cjs`
 - **Kollision:** Fels unter Inseln folgt der sichtbaren Form, Kantenhilfe bis 1,3 m, Flügelkraft lädt im Flug ohne Steigen langsam nach (Fehlerbericht „man fällt durch“). → `logic.cjs`
-- **2D-Ersatzmodus** ohne WebGL mit Hinweis, spielbar. → `webview.cjs`
+- **2D-Ersatzmodus** ohne WebGL: schräge Pseudo-3D-Ansicht mit sichtbarer Höhe (Inseln mit Dicke, Schatten und Landering am Boden, Höhenlinie, Tiefensortierung). → `webview.cjs`
 - **Grafikstufen** Sparsam/Ausgewogen/Hoch/Automatisch; die Automatik senkt nachweislich die Auflösung bei langsamen Bildern. → `browser.cjs`
 
 ## Umgesetzt, aber nicht vollständig getestet
