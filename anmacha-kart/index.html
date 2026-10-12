@@ -206,7 +206,8 @@
     <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy – oder mit bis zu 4 Handys als Lenkrad vor einem großen Bildschirm.</p>
     <div class="mbtns"><button class="big" id="bSolo" disabled>LADEN …</button><button class="big alt" id="bMulti" disabled>MEHRSPIELER</button></div>
     <button class="sumc" id="selSum" type="button"></button>
-    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button></div>
+    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div>
+    <div class="info" style="font-size:13px">📺 Am Fernseher: „TV-Modus“ öffnen. 📱 Am Handy: „Code eingeben“ – dein Handy wird das Lenkrad.</div>
     <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
     <div class="info" id="padInfo" hidden></div>
     <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Dieser Bildschirm zeigt das Rennen (Splitscreen), die Handys werden per Code oder QR-Code gekoppelt.</div></details>
@@ -225,9 +226,17 @@
   </section>
 </div></div>
 
+<div id="joinBox" class="ov" hidden><div class="box">
+  <h2>🔑 CODE VOM FERNSEHER</h2>
+  <p class="sub">Gib den 4-stelligen Code ein, der am Fernseher steht. Dann wird dein Handy das Lenkrad.</p>
+  <input id="joinIn" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD" style="font:900 clamp(40px,12vw,64px) 'Trebuchet MS',sans-serif;letter-spacing:.2em;text-align:center;text-transform:uppercase;width:min(80vw,320px);border-radius:16px;border:3px solid var(--y);background:rgba(0,0,0,.4);color:var(--y)">
+  <div class="info" id="joinMsg"></div>
+  <div class="row"><button class="big" id="joinGo">VERBINDEN ▶</button><button class="ghost" id="joinBack">Zurück</button></div>
+</div></div>
+
 <div id="lobby" class="ov" hidden><div class="box">
   <h2>HANDYS KOPPELN</h2>
-  <p class="sub">Handy-Kamera auf den QR-Code richten oder die Seite öffnen und den Code eingeben. Bis zu 4 Fahrer.</p>
+  <p class="sub">Handy-Kamera auf den QR-Code richten – oder am Handy diese Seite öffnen, „🔑 Code eingeben“ tippen und den Code unten eintippen. Bis zu 4 Fahrer.</p>
   <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="tvHint" hidden style="color:var(--y);font-weight:800">📺 OK auf der Fernbedienung drücken = Vollbild · Strecke und Start wählt ihr am Handy</div>
   <div id="lobList" style="width:100%;max-width:420px"></div>
   <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button><button class="chip" id="padAdd">🎮 Gamepad-Spieler hinzufügen</button></div>
@@ -248,7 +257,7 @@
 <script src="chars.js"></script>
 <script src="track.js"></script>
 <script src="sim.js"></script>
-<script src="game.js"></script>
+<script src="game.js?v=2"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 </body>
 </html>
