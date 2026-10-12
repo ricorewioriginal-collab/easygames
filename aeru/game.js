@@ -405,6 +405,7 @@ function inputDirection() {
 const approach = (v, target, rate, dt) => v + (target - v) * (1 - Math.exp(-dt * rate));
 // Landehilfe (Handy): über einer Insel sinkt Aeru im Flug von selbst, solange er nicht steigt – die Mitte der Insel liegt frei von Aufwinden.
 function flightFloor(p) { return floorAt(p.x, p.z, p.y + .42); }
+let lastGround = null;
 function movePlayer(dt) {
   const input = inputDirection(), {dx, dz, length} = input;
   const jumpDown = jumpHeld || keys.has('Space'), shiftDown = keys.has('ShiftLeft') || keys.has('ShiftRight') || diveHeld;
@@ -489,7 +490,8 @@ function movePlayer(dt) {
   } else state.onGround = false;
   if (state.onGround && length > .1) { state.stepDist += Math.hypot(state.vx, state.vz) * dt; if (state.stepDist > 1.7) { state.stepDist = 0; sfx.step(); } }
   if (starGlow) state.stamina = maxStamina();
-  if (state.y < -16) respawn('Der Wind fängt dich auf · zurück am letzten Rastpunkt');
+  if (state.onGround) lastGround = {x: state.x, y: state.y, z: state.z};
+  if (state.y < -16) { const g = lastGround; respawn('Der Wind fängt dich auf · zurück am letzten Rastpunkt' + (g ? ` · Abgestürzt nach Boden bei x ${g.x.toFixed(0)} z ${g.z.toFixed(0)} y ${g.y.toFixed(1)}, Insel ${save.level + 1}` : '')); }
   // Rastpunkte: Wer sicher steht, wird hier wieder aufgefangen.
   state.cpTimer -= dt;
   if (state.onGround && state.cpTimer <= 0) {
