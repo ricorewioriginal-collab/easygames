@@ -124,25 +124,26 @@ BI.createFussball = function (G) {
       const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz), v = L.sp * (b === chase[b.team] ? 1.12 : .8) * (T.pause > 0 || B.lock ? 0 : 1); if (d > .25 && v > 0) { const k = Math.min(d, v * dt) / d; b.x += dx * k; b.z += dz * k; b.h = Math.atan2(dx, dz); b.ph += dt * 9; }
       b.x = BI.clamp(b.x, Pt.x - HX + .8, Pt.x + HX - .8); b.z = BI.clamp(b.z, Pt.z - HZ + .8, Pt.z + HZ - .8);
       if (b === chase[b.team] && b.cd <= 0 && !B.lock && T.pause <= 0 && Math.hypot(now.x - b.x, now.z - b.z) < 1.05) { const gx = Pt.x + sd * HX, gz = Pt.z + (Math.random() - .5) * GW * 1.4, a0 = Math.atan2(gx - now.x, gz - now.z) + (Math.random() - .5) * 2 * L.noise; kick(Math.sin(a0), Math.cos(a0), L.ks, 1.4, true); b.cd = .7; cd = 0; } } };
-  const cupUpdate = (dt) => {
+  const cupUpdate = (dt, raw) => {
     if (T.ghost) return; /* Gast: Roboter kommen per Nachricht */
-    if (T.pause > 0) { T.pause -= dt; if (T.pause <= 0) { if (T.after === 'done') cupStop(true); else { if (T.after === 'next') T.round++; startRound(); } } }
-    else { T.t -= dt; botStep(dt); if (T.t <= 0 || Math.abs(score[0] - score[1]) >= 5) endRound(); }
-    T.sendT -= dt; if (T.sendT <= 0) { T.sendT = .16; cupSend('b', { p: BOTS.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.h.toFixed(2), b.on ? 1 : 0]), tm: Math.ceil(T.t), r: T.round }); }
+    if (T.pause > 0) { T.pause -= raw; if (T.pause <= 0) { if (T.after === 'done') cupStop(true); else { if (T.after === 'next') T.round++; startRound(); } } }
+    else { T.t -= raw; botStep(dt); if (T.t <= 0 || Math.abs(score[0] - score[1]) >= 5) endRound(); }
+    T.sendT -= raw; if (T.sendT <= 0) { T.sendT = .16; cupSend('b', { p: BOTS.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.h.toFixed(2), b.on ? 1 : 0]), tm: Math.ceil(T.t), r: T.round }); }
   };
   const botVis = (dt, t) => { for (const b of BOTS) { if (!b.on) continue; b.c.group.position.set(b.x, 0, b.z); b.c.group.rotation.y = b.h; if (b.c.legL) { const w = Math.sin(b.ph) * .7; b.c.legL.rotation.x = w; b.c.legR.rotation.x = -w; } } };
   K.peerGone = function (id) { if (T.on && T.ghost && (id == null || T.ref === id)) { T.ghostEnd = true; cupStop(true); T.ghostEnd = false; } };
   K.onNetT = function (d) {
-    if (d.op === 's') { if (T.on && (T.ghost ? T.ref !== d.id && String(T.ref) < String(d.id) : String(me()) <= String(d.id))) return; /* zwei Starts gleichzeitig: der kleinere Name bleibt Schiedsrichter */ mkBots(); T.on = true; T.ghost = true; T.ghostEnd = false; T.round = d.r | 0; T.ref = d.id; T.pause = 0; T.t = LV[Math.min(2, T.round)].secs; KV.v = LV[Math.min(2, T.round)].keep; if (here()) { say('🏆 Turnier – Spiel ' + (T.round + 1) + ' von 3!', 2600); } }
-    else if (d.op === 'b' && Array.isArray(d.p)) { if (!T.on) { mkBots(); T.on = true; T.ghost = true; T.ref = d.id; } T.t = +d.tm || 0; { const r = Math.max(0, Math.min(2, d.r | 0)); if (r !== T.round || KV.v !== LV[r].keep) { T.round = r; KV.v = LV[r].keep; } } d.p.forEach((q, i) => { const b = BOTS[i]; if (!b || !Array.isArray(q)) return; b.on = !!q[3]; b.c.group.visible = b.on; if (isFinite(q[0] + q[1])) { b.ph += Math.hypot(q[0] - b.x, q[1] - b.z) * 3; b.x = q[0]; b.z = q[1]; b.h = +q[2] || 0; } }); }
+    if (d.op === 's') { if (T.mute && T.mute === d.id) T.mute = null; if (T.on && (T.ghost ? T.ref !== d.id && String(T.ref) < String(d.id) : String(me()) <= String(d.id))) return; /* zwei Starts gleichzeitig: der kleinere Name bleibt Schiedsrichter */ mkBots(); T.on = true; T.ghost = true; T.ghostEnd = false; T.round = d.r | 0; T.ref = d.id; T.pause = 0; T.t = LV[Math.min(2, T.round)].secs; KV.v = LV[Math.min(2, T.round)].keep; if (here()) { say('🏆 Turnier – Spiel ' + (T.round + 1) + ' von 3!', 2600); } }
+    else if (d.op === 'b' && Array.isArray(d.p)) { if (T.mute && T.mute === d.id) return; /* ich habe das Turnier verlassen: Pakete dieses Schiedsrichters ignorieren, bis er neu startet */ if (!T.on) { mkBots(); T.on = true; T.ghost = true; T.ref = d.id; } T.t = +d.tm || 0; { const r = Math.max(0, Math.min(2, d.r | 0)); if (r !== T.round || KV.v !== LV[r].keep) { T.round = r; KV.v = LV[r].keep; } } d.p.forEach((q, i) => { const b = BOTS[i]; if (!b || !Array.isArray(q)) return; b.on = !!q[3]; b.c.group.visible = b.on; if (isFinite(q[0] + q[1])) { b.ph += Math.hypot(q[0] - b.x, q[1] - b.z) * 3; b.x = q[0]; b.z = q[1]; b.h = +q[2] || 0; } }); }
     else if (d.op === 'e' && T.on && T.ghost) { if (d.res === 'w' && here()) { G.addStars(1); if (d.cup) { G.addStars(5); G.earn && G.earn('cupwin'); const s = S(); s.cups = (s.cups || 0) + 1; persist(); say('🏆 POKALSIEGER! +6 ⭐', 4600); } else say('🎉 Spiel gewonnen! +1 ⭐', 3000); } else if (here()) say(d.res === 'd' ? '🤝 Unentschieden!' : '😅 Knapp verloren!', 2600); }
-    else if (d.op === 'x') { T.ghostEnd = true; cupStop(true); T.ghostEnd = false; }
+    else if (d.op === 'x') { if (T.mute === d.id) T.mute = null; T.ghostEnd = true; cupStop(true); T.ghostEnd = false; }
   };
   K.update = function (dt, t) {
+    const raw = Math.min(dt, .25); /* Turnier-Uhr läuft in echter Zeit, nur die Physik wird gedeckelt */
     if (!here()) { near = false; if (T.on && !T.ghost) cupStop(true); else if (T.on) { T.on = false; for (const b of BOTS) { b.on = false; b.c.group.visible = false; } KV.v = 2; } return; } near = true; dt = Math.min(dt, .05);
     /* Spieler berührt den Ball: Dribbeln (laufend) */
     if (!P.veh && P.y < 1.2 && cd <= 0 && !B.lock) { const dx = B.x - P.x, dz = B.z - P.z, d = Math.hypot(dx, dz); if (d < 1.15) kick(d < .05 ? Math.sin(P.h) : dx, d < .05 ? Math.cos(P.h) : dz, Math.max(4.5, (P.speed || 0) * 1.35 + 2), 1.3); }
-    step(dt); if (T.on) { cupUpdate(dt); botVis(dt, t); }
+    step(dt); if (T.on) { cupUpdate(dt, raw); botVis(dt, t); }
     if (B.owner === me()) { const moving = Math.hypot(B.vx, B.vz) > .25 || B.y > RB + .1; B.rest = moving ? 0 : B.rest + dt; B.sent += dt; if (moving && B.sent > .12) { B.sent = 0; send(); } else if (!moving && B.rest > 1.2) { B.owner = null; send(); } }
     ball.position.set(B.x, B.y, B.z); shadow.position.set(B.x, .06, B.z); shadow.scale.setScalar(1 - Math.min(.6, (B.y - RB) / 5));
     const sp = Math.hypot(B.vx, B.vz); if (sp > .05) { inner.rotation.x += B.vz * dt / RB; inner.rotation.z -= B.vx * dt / RB; }
@@ -150,7 +151,7 @@ BI.createFussball = function (G) {
     paint();
   };
   K.near = function () { if (P.veh || P.y > 1.5 || !near) return null; const pc = W.spots.fcup; if (pc && Math.hypot(P.x - pc.x, P.z - pc.z) < 3.4) return { k: 'fcup', label: ['🏆', T.on ? 'Turnier beenden' : 'Turnier starten (3 Spiele)'] }; if (Math.hypot(P.x - B.x, P.z - B.z) < 3.4 && !B.lock) return { k: 'fkick' }; return null; };
-  K.act = function (n) { if (n && n.k === 'fcup') { if (T.on) { if (T.ghost) { T.ghostEnd = true; cupStop(); T.ghostEnd = false; } else cupStop(); } else cupStart(); return; } if (!n || n.k !== 'fkick') return; kick(Math.sin(P.h), Math.cos(P.h), 17, 3.6); S().played = 1; persist(); };
+  K.act = function (n) { if (n && n.k === 'fcup') { if (T.on) { if (T.ghost) { T.mute = T.ref; T.ghostEnd = true; cupStop(); T.ghostEnd = false; } else cupStop(); } else cupStart(); return; } if (!n || n.k !== 'fkick') return; kick(Math.sin(P.h), Math.cos(P.h), 17, 3.6); S().played = 1; persist(); };
   K.onNet = function (d) {
     if (d.s && d.s.length === 2) { score[0] = d.s[0] | 0; score[1] = d.s[1] | 0; paint(); }
     if (d.r) { B.x = Pt.x; B.y = RB; B.z = Pt.z; B.vx = B.vy = B.vz = 0; B.lock = 0; B.owner = d.id || null; return; }

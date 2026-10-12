@@ -118,12 +118,18 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     P.x = sp.x; P.z = sp.z + 2.5; b.placeAct(b.placeNear()); out.raceStart = C.T.on && !C.T.ghost;
     T.onNetT({ t: 'fbt', id: 'zzz', op: 's', r: 0 }); out.raceKeep = C.T.on && !C.T.ghost; /* 'me' < 'zzz' → ich bleibe */
     T.onNetT({ t: 'fbt', id: 'aaa', op: 's', r: 0 }); out.raceYield = C.T.on && C.T.ghost && C.T.ref === 'aaa'; T.onNetT({ t: 'fbt', id: 'bbb', op: 's', r: 0 }); out.raceObs = C.T.ref === 'aaa'; T.onNetT({ t: 'fbt', id: 'aaa', op: 's', r: 1 }); out.raceSame = C.T.ref === 'aaa' && C.T.round === 1; T.peerGone('aaa');
+    /* Gast verlässt das Turnier: Pakete des Schiedsrichters werden ignoriert, bis er neu startet */
+    T.onNetT({ t: 'fbt', id: 'ref9', op: 's', r: 0 }); P.x = sp.x; P.z = sp.z + 2.5; b.placeAct(b.placeNear()); out.optOut = !C.T.on;
+    T.onNetT({ t: 'fbt', id: 'ref9', op: 'b', p: [[Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1], [Pt.x, Pt.z, 0, 1]], tm: 50, r: 0 }); out.stayOut = !C.T.on;
+    T.onNetT({ t: 'fbt', id: 'ref9', op: 's', r: 1 }); out.backIn = C.T.on && C.T.ghost && C.T.round === 1; T.peerGone('ref9');
+    /* Uhr läuft in echter Zeit, auch wenn die Physik pro Bild gedeckelt ist */
+    P.x = sp.x; P.z = sp.z + 2.5; b.placeAct(b.placeNear()); const t0 = C.T.t; for (let i = 0; i < 10; i++) T.update(.2, 400 + i); out.clock = Math.abs((t0 - C.T.t) - 2) < .3; T.peerGone('x'); b.placeAct(b.placeNear()); out.cupOff = !C.T.on;
     return out;
   });
   dbg(r); ok(r.label && r.on && r.sentS, 'Turnier: Pokal-Podest startet Spiel 1 mit 5 Roboter-Spielern (3 gegen 3) und meldet es Freunden');
   ok(r.moved && r.inPitch && r.timer && r.sentB, 'Turnier: Roboter laufen/schießen auf dem Platz, Zeit läuft, Positionen gehen an Freunde');
   ok(r.won1 && r.sentE && r.round2, 'Turnier: Spiel gewonnen = +1 ⭐ und weiter zu Spiel 2'); ok(r.again, 'Turnier: verlorenes Spiel wird wiederholt (kein Aus)'); ok(r.cup, 'Turnier: Finale gewonnen = Pokal, +6 ⭐, Roboter gehen');
-  ok(r.botGoal, 'Turnier: Tore der Roboter zählen nicht als eigene Tore (kein ⭐-Zähler)'); ok(r.raceStart && r.raceKeep && r.raceYield && r.raceObs && r.raceSame, 'Turnier mit Freunden: zwei gleichzeitige Starts – genau ein Schiedsrichter bleibt'); ok(r.lateRound && r.stillOn && r.refGone, 'Turnier mit Freunden: Spät-Beitritt kennt die Runde; fällt der Schiedsrichter aus, endet das Turnier'); ok(r.ghost && r.ghostStar && r.ghostEnd, 'Turnier mit Freunden: Roboter, Zeit und Sieg kommen per Nachricht; kaputte Nachrichten schaden nicht');
+  ok(r.botGoal, 'Turnier: Tore der Roboter zählen nicht als eigene Tore (kein ⭐-Zähler)'); ok(r.optOut && r.stayOut && r.backIn, 'Turnier: Gast kann aussteigen und bleibt draußen, bis ein neues Spiel startet'); ok(r.clock && r.cupOff, 'Turnier: Uhr läuft in echter Zeit (auch bei wenig Bildern pro Sekunde)'); ok(r.raceStart && r.raceKeep && r.raceYield && r.raceObs && r.raceSame, 'Turnier mit Freunden: zwei gleichzeitige Starts – genau ein Schiedsrichter bleibt'); ok(r.lateRound && r.stillOn && r.refGone, 'Turnier mit Freunden: Spät-Beitritt kennt die Runde; fällt der Schiedsrichter aus, endet das Turnier'); ok(r.ghost && r.ghostStar && r.ghostEnd, 'Turnier mit Freunden: Roboter, Zeit und Sieg kommen per Nachricht; kaputte Nachrichten schaden nicht');
 }
 
 /* ---------- 5. Sparsam, Fehler ---------- */

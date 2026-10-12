@@ -29,12 +29,15 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     /* zweiter Durchgang: Schluss-Bonus nur 5 */
     P.x = pi.x + 2; P.z = pi.z; P.y = 0; await sl(150); b.placeAct(b.placeNear()); const s1 = b.save.stars; for (let i = 0; i < 8; i++) { P.x = sp[i].x + 1.5; P.z = sp[i].z; P.y = 0; await sl(100); const m = b.placeNear(); if (m && m.n.k === 'schatz') b.placeAct(m); await sl(40); }
     out.run2 = b.save.stars - s1 === 8 + 5 && b.save.schatz.runs === 2;
+    /* Kiste im Weg (z. B. später gebautes Fahrgeschäft) → wird an einen freien Platz in der Nähe versetzt */
+    P.x = pi.x + 2; P.z = pi.z; P.y = 0; await sl(150); b.placeAct(b.placeNear()); await sl(100); const q0 = { x: sp[0].x, z: sp[0].z }; W.addCircle(q0.x, q0.z, 3.2, false, 6); Z.update(2.5, 20); Z.update(2.5, 21); await sl(50);
+    const q1 = Z.state().spots[0]; out.moved = (q1.x !== q0.x || q1.z !== q0.z) && W.free(q1.x, q1.z, 1.2) && Math.abs(Z.state().chest.position.x - q1.x) < .01 && Math.hypot(q1.x - q0.x, q1.z - q0.z) < 30;
     out.log = b.schatz.log().rows.length === 2; out.kid = JSON.stringify(b.save).includes('schatz'); return out;
   });
   if (process.env.DEBUG) console.log('   ', JSON.stringify(r));
   ok(r.n && r.free && r.apart, 'Schatzsuche: 8 Kisten-Plätze, frei und auf den richtigen Inseln'); ok(r.piet && r.noChest, 'Schatzmeister Piet steht frei auf der Hauptinsel; vor dem Start keine Kiste');
   ok(r.startLabel && r.started && r.spoke && r.clueLabel, 'Start: Knopf „Schatzsuche starten“, erste Kiste + Lichtstrahl, Rätsel wird vorgelesen');
-  ok(r.all && r.stars && r.done, 'Alle 8 Kisten nacheinander: je +1 ⭐, großer Schatz +10 ⭐, danach ist die Suche fertig'); ok(r.run2 && r.log, 'Zweiter Durchgang möglich (Schluss-Bonus 5 ⭐); Aufgaben-Log zeigt die nächste Kiste');
+  ok(r.all && r.stars && r.done, 'Alle 8 Kisten nacheinander: je +1 ⭐, großer Schatz +10 ⭐, danach ist die Suche fertig'); ok(r.moved, 'Schatzsuche: Kiste im Weg wird an einen freien Platz versetzt'); ok(r.run2 && r.log, 'Zweiter Durchgang möglich (Schluss-Bonus 5 ⭐); Aufgaben-Log zeigt die nächste Kiste');
 }
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);

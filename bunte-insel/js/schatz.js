@@ -24,7 +24,9 @@ BI.createSchatz = function (G) {
   /* Kiste + Lichtsäule (ein einziges Objekt, wird versetzt) */
   const chest = new THREE.Group(); { const b = new BI.Batch(); b.box(0, 0, 0, 1.5, .8, 1.0, 0x8a5a33); b.box(0, .8, 0, 1.56, .3, 1.06, 0xb98650); b.box(0, .4, .52, .3, .3, .06, 0xffd23f); b.box(-.7, 0, 0, .1, 1.0, 1.1, 0xffd23f); b.box(.7, 0, 0, .1, 1.0, 1.1, 0xffd23f); b.sph(0, 1.45, 0, .22, 0xffd23f, 1); chest.add(b.mesh(BI.mat())); }
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(.5, 1.3, 130, 8, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .32, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide })); beam.position.y = 65; chest.add(beam); chest.visible = false; scene.add(chest);
-  const showChest = () => { const s = S(); if (s.i < 0 || s.i >= ST.length) { chest.visible = false; return; } chest.position.set(spots[s.i].x, 0, spots[s.i].z); chest.visible = true; };
+  /* Steht später etwas im Weg (z. B. ein gebautes Fahrgeschäft im Park), wird die Kiste an einen freien Platz in der Nähe gesetzt */
+  const revalidate = () => { const s = S(); if (s.i < 0 || s.i >= ST.length) return; const q = spots[s.i]; if (!W.free(q.x, q.z, 1.2)) { const st = ST[s.i], n = findSpot(q, st.isle()); spots[s.i] = n; } };
+  const showChest = () => { const s = S(); if (s.i < 0 || s.i >= ST.length) { chest.visible = false; return; } revalidate(); chest.position.set(spots[s.i].x, 0, spots[s.i].z); chest.visible = true; };
   const clue = (speak) => { const s = S(); if (s.i < 0) return; const t = ST[s.i]; say(t.icons + '  ' + t.short, 4200); if (speak) A.speak && A.speak(t.say); G.guide && G.guide(t.dest); };
   K.start = function () { const s = S(); s.i = 0; persist(); showChest(); say('🗺️ Ahoi! Die Schatzsuche beginnt! Folge dem goldenen Lichtstrahl!', 4200); A.speak && A.speak('Ahoi! Folge dem goldenen Lichtstrahl, dann findest du die Kiste!'); setTimeout(() => clue(true), 3600); };
   /* Figur Piet */
@@ -49,7 +51,8 @@ BI.createSchatz = function (G) {
     }
   };
   let tt = 0;
-  K.update = function (dt, t) { if (!chest.visible) return; chest.rotation.y = Math.sin(t * .8) * .25; chest.position.y = Math.sin(t * 2) * .08; beam.material.opacity = .26 + .1 * Math.sin(t * 3); tt -= dt; if (tt <= 0) { tt = .25; const q = chest.position; if (Math.hypot(P.x - q.x, P.z - q.z) < 60) fx.emit(q.x + (Math.random() - .5) * 1.6, 1.4, q.z + (Math.random() - .5) * 1.6, 0, 1.6, 0, 1.2, 30, .5, .85, .9, -.3, .8); } };
+  let rv = 0;
+  K.update = function (dt, t) { if (!chest.visible) return; rv -= dt; if (rv <= 0) { rv = 2; const o = chest.position.x; revalidate(); const q = spots[S().i]; if (q && (q.x !== o)) chest.position.set(q.x, 0, q.z); } chest.rotation.y = Math.sin(t * .8) * .25; chest.position.y = Math.sin(t * 2) * .08; beam.material.opacity = .26 + .1 * Math.sin(t * 3); tt -= dt; if (tt <= 0) { tt = .25; const q = chest.position; if (Math.hypot(P.x - q.x, P.z - q.z) < 60) fx.emit(q.x + (Math.random() - .5) * 1.6, 1.4, q.z + (Math.random() - .5) * 1.6, 0, 1.6, 0, 1.2, 30, .5, .85, .9, -.3, .8); } };
   K.log = () => { const s = S(), cur = s.i >= 0 && s.i < ST.length ? ST[s.i] : null; return { title: '🗺️ Schatzsuche', count: (s.i < 0 ? s.runs ? 'geschafft ×' + s.runs : 'noch nicht gestartet' : s.i + ' von ' + ST.length), rows: [
     { ok: s.i >= 0 || s.runs > 0, icon: '🗺️', text: 'Mit Schatzmeister Piet sprechen und die Schatzsuche starten', dest: null },
     cur ? { ok: false, icon: cur.icons, text: 'Nächste Kiste: ' + cur.short + ' (goldenen Lichtstrahl folgen)', dest: cur.dest } : { ok: s.runs > 0, icon: '💰', text: 'Alle ' + ST.length + ' Kisten finden – der große Schatz wartet', dest: null }] }; };
