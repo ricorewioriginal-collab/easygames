@@ -408,3 +408,7 @@ Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verlie
 - Knopf heißt jetzt **„Spiel am Fernseher öffnen“**. Am Handy öffnet er direkt den **Controller** (merkt sich den letzten Code); am Computer/Fernseher zeigt er Code + QR.
 - Der Fernseher behält seinen **Code** (gleiches Gerät = gleicher Code); das Handy verbindet sich beim nächsten Mal von allein.
 - Controller: stille **Auto-Wiederholung** (bis 5×), verlässlicher Kanal, „Hallo“ wird wiederholt, bis der Fernseher antwortet → klappt auch beim ersten Mal. Test: `tests/tvhandy.mjs`.
+
+### 🎮 Vierter Knopf (X) in der Button-Steuerung
+- Zu Fuß gibt es eine feste Liste möglicher Aktionen (Auto, Laden, Schießstand, Schatz, Zimmer, Orte/Türen …). **A = 1. Aktion, X = 2. Aktion** – Beschriftung und Ausführung kommen aus derselben Liste, nichts reagiert mehr „doppelt“ oder passt nicht zur Beschriftung.
+- Ohne zweite Aktion ist X „👊 Hauen“ (Baum hauen) und am Handy immer sichtbar. Test: `tests/buttons.mjs`.
