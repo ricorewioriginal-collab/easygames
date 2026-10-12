@@ -9,13 +9,20 @@
   A.setMuted(!save.sound); A.setMusic(save.music);
 
   /* ---------- Renderer, Szene, Himmel ---------- */
-  const canvas = $('cv'), dpr = window.devicePixelRatio || 1;
+  const canvas = $('cv');
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: 'high-performance' }); }
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse || (navigator.deviceMemory || 4) >= 3, powerPreference: 'high-performance' }); }
   catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
+  let graphicsLost = false, graphicsReady = false;
+  const graphicsNotice = document.createElement('div'); graphicsNotice.id = 'graphicsNotice'; graphicsNotice.hidden = true;
+  graphicsNotice.innerHTML = '<strong>Die Grafikverbindung wird neu gestartet …</strong><button type="button">Spiel neu laden</button>';
+  graphicsNotice.querySelector('button').onclick = () => location.reload(); document.body.appendChild(graphicsNotice);
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); graphicsLost = true; graphicsNotice.hidden = false; }, false);
+  canvas.addEventListener('webglcontextrestored', () => { graphicsLost = false; graphicsNotice.hidden = true; if (graphicsReady) { resize(); applyNight(); } }, false);
   const baseQuality = () => save.eco || save.gfx === 'eco' ? 2 : save.gfx === 'sharp' ? 0 : coarse ? 1 : 0;
   let quality = baseQuality();
-  const QUAL = [Math.min(dpr, 2), Math.min(dpr, coarse ? 1.35 : 1.5), Math.min(dpr, 1), .75];
+  const QUAL = [2, coarse ? 1.7 : 1.6, 1, .75], PIXEL_BUDGET = [4200000, 2800000, 1700000, 1000000];
+  const pixelRatioFor = (w, h) => Math.max(.35, Math.min(window.devicePixelRatio || 1, QUAL[quality], Math.sqrt(PIXEL_BUDGET[quality] / (w * h))));
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 1.4, 640);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
   sun.position.set(60, 100, 40); scene.add(hemi, sun, sun.target);
@@ -928,7 +935,7 @@
   /* ---------- Mitspiel-Extras: Zurufe, Abklatschen, gemeinsames Bauen, Fangen, Sterne-Wettlauf ---------- */
   const EMOJIS = ['❤️', '😂', '👍', '🎉', '🙌', '🐾'], emoSp = {}, emos = []; let lastHF = 0, gm = null;
   function emoSprite(e) {
-    if (!emoSp[e]) { const cv = document.createElement('canvas'); cv.width = cv.height = 96; const c = cv.getContext('2d'); c.font = '64px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(e, 48, 54); emoSp[e] = new THREE.CanvasTexture(cv); }
+    if (!emoSp[e]) { const cv = document.createElement('canvas'); cv.width = cv.height = 96; const c = cv.getContext('2d'); c.font = '64px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(e, 48, 54); emoSp[e] = BI.labelTexture(cv); }
     return emoSp[e];
   }
   function showEmoji(e, av) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: emoSprite(e), transparent: true, depthWrite: false })); sp.scale.set(1.3, 1.3, 1); scene.add(sp); emos.push({ sp, av, t: 0 }); }
@@ -946,7 +953,7 @@
     const lh = fs * 1.25, H0 = Math.ceil(lines.length * lh + 34); cv.width = W0; cv.height = H0 + 16; c.font = '700 ' + fs + 'px system-ui, sans-serif';
     c.fillStyle = '#fff'; c.strokeStyle = 'rgba(30,60,110,.55)'; c.lineWidth = 3; c.beginPath(); const r = 16; c.moveTo(r + 2, 2); c.arcTo(W0 - 2, 2, W0 - 2, H0, r); c.arcTo(W0 - 2, H0, W0 / 2 + 12, H0, r); c.lineTo(W0 / 2 + 10, H0); c.lineTo(W0 / 2, H0 + 14); c.lineTo(W0 / 2 - 8, H0); c.arcTo(2, H0, 2, 2, r); c.arcTo(2, 2, W0, 2, r); c.closePath(); c.fill(); c.stroke();
     c.fillStyle = '#16335e'; c.textAlign = 'center'; c.textBaseline = 'middle'; lines.forEach((l, i) => c.fillText(l, W0 / 2, 17 + lh * (i + .5)));
-    const tex = new THREE.CanvasTexture(cv); tex.minFilter = THREE.LinearFilter; const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false })); sp.renderOrder = 20;
+    const tex = BI.labelTexture(cv); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false })); sp.renderOrder = 20;
     const k = 0.0105; sp.scale.set(W0 * k, (H0 + 16) * k, 1); sp.center.set(.5, 0); scene.add(sp); bubbles.push({ n, sp, t: 0, ms: (ms || 3600) / 1000, k, asp: (H0 + 16) / W0 });
   }
   function updateBubbles(dt) {
@@ -1126,7 +1133,7 @@
   let poster = null;
   function drawPoster(img) { const cv = document.createElement('canvas'); cv.width = 320; cv.height = 240; const c = cv.getContext('2d'); if (img) c.drawImage(img, 0, 0, 320, 240); else { c.fillStyle = '#fffdf5'; c.fillRect(0, 0, 320, 240); c.font = '64px system-ui, sans-serif'; c.textAlign = 'center'; c.fillText('🖼️', 160, 100); c.fillStyle = '#16335e'; c.font = 'bold 26px system-ui, sans-serif'; c.fillText('Mal ein Bild!', 160, 170); } return cv; }
   function setPoster(img) {
-    const tex = new THREE.CanvasTexture(drawPoster(img));
+    const tex = BI.labelTexture(drawPoster(img));
     if (!poster) { poster = new THREE.Group(); const fr = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, .06), new THREE.MeshLambertMaterial({ color: 0x8a5a33 })), pl = new THREE.Mesh(new THREE.PlaneGeometry(1.45, 1.08), new THREE.MeshBasicMaterial({ map: tex })); pl.position.z = .04; poster.add(fr, pl); poster.userData.pl = pl; scene.add(poster); }
     else { const m = poster.userData.pl.material; if (m.map) m.map.dispose(); m.map = tex; m.needsUpdate = true; }
     placePoster();
@@ -1139,7 +1146,7 @@
   const FB = W.spots.flatBlock, flats = W.spots.flats, wardPanel = $('wardPanel'), fadeEl = $('fade'); let wardOpen = false; const sl = { t: -1, f: null, said: false };
   function textSprite(txt, w, h, fs) {
     const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * h / w); const c = cv.getContext('2d'); c.font = 'bold ' + fs + 'px Fredoka, system-ui, sans-serif'; { const mw = c.measureText(txt).width; if (mw > 470) c.font = 'bold ' + Math.floor(fs * 470 / mw) + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 12; c.strokeStyle = '#16335e'; c.strokeText(txt, 256, cv.height / 2 + 3); c.fillStyle = '#fff'; c.fillText(txt, 256, cv.height / 2 + 3);
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, h, 1); return sp;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: BI.labelTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, h, 1); return sp;
   }
   const PARENT = [[{ shirt: 0xff6fae, pants: 0x7a5ce0, hair: 0x6b4423, style: 'ponytail', dress: true, name: 'Mama Anna' }, { shirt: 0x4da3ff, pants: 0x3d4a7a, hair: 0x222222, name: 'Papa Tom', hat: 'none' }], [{ shirt: 0xffd23f, pants: 0x3d4a7a, hair: 0xd9a441, style: 'long', dress: true, name: 'Mama Lena', skin: 0xf3c9a0 }, { shirt: 0x4cd07d, pants: 0x5a3d2b, hair: 0x6b4423, name: 'Papa Jonas', skin: 0xf3c9a0 }], [{ shirt: 0xb36bff, pants: 0x3d4a7a, hair: 0x222222, style: 'bun', dress: true, name: 'Mama Amara', skin: 0x8d5a3b }, { shirt: 0xff8a1f, pants: 0x2d6a4f, hair: 0x222222, name: 'Papa Kofi', skin: 0x8d5a3b }], [{ shirt: 0x2fae5a, pants: 0x7a3d6a, hair: 0xa14a2b, style: 'curly', dress: true, name: 'Mama Sophie' }, { shirt: 0xe8453c, pants: 0x3d4a7a, hair: 0x6b4423, name: 'Papa Max' }]];
   function initFlat(f) {
@@ -2125,16 +2132,47 @@
     sky.position.set(tx, 0, tz);
   }
 
+  /* Weiche Bodenschatten in einem Draw-Call: Figuren und Autos wirken auch ohne teure Echtzeit-Schatten geerdet. */
+  const shadowCanvas = document.createElement('canvas'); shadowCanvas.width = shadowCanvas.height = 64;
+  { const c = shadowCanvas.getContext('2d'), g = c.createRadialGradient(32, 32, 2, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(.55, 'rgba(255,255,255,.26)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = g; c.fillRect(0, 0, 64, 64); }
+  const shadowTexture = new THREE.CanvasTexture(shadowCanvas); shadowTexture.minFilter = THREE.LinearFilter; shadowTexture.generateMipmaps = false;
+  const shadowGeo = new THREE.PlaneGeometry(1, 1); shadowGeo.rotateX(-Math.PI / 2);
+  const contactShadows = new THREE.InstancedMesh(shadowGeo, new THREE.MeshBasicMaterial({ map: shadowTexture, color: 0x273e56, transparent: true, opacity: .75, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), 192);
+  contactShadows.count = 0; contactShadows.frustumCulled = false; contactShadows.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(contactShadows);
+  const shadowMatrix = new THREE.Matrix4(), shadowPos = new THREE.Vector3(), shadowScale = new THREE.Vector3(), shadowQuat = new THREE.Quaternion(), shadowAxis = new THREE.Vector3(0, 1, 0);
+  function updateContactShadows() {
+    const cx = P.veh ? P.veh.x : P.x, cz = P.veh ? P.veh.z : P.z; let count = 0;
+    const add = (x, z, w, d, h) => {
+      if (count >= 192 || !Number.isFinite(x) || !Number.isFinite(z) || Math.abs(x - cx) + Math.abs(z - cz) > 105) return;
+      shadowPos.set(x, W.groundY(x, z) + .075, z); shadowScale.set(w, 1, d); shadowQuat.setFromAxisAngle(shadowAxis, h || 0);
+      shadowMatrix.compose(shadowPos, shadowQuat, shadowScale); contactShadows.setMatrixAt(count++, shadowMatrix);
+    };
+    if (!P.veh && char.group.visible) add(P.x, P.z, 1.2, .8, P.h);
+    if (pup.d.group.visible) add(pup.x, pup.z, .9, .65, pup.h);
+    for (const n of npcs) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const n of town.folk) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const n of life.talkers) if (n.c.group.visible) add(n.x, n.z, n.kid ? .75 : 1.1, n.kid ? .55 : .7, n.h);
+    for (const a of animals) if (a.m.visible) add(a.x, a.z, a.k === 'cow' ? 1.8 : 1.1, a.k === 'cow' ? 2.2 : 1.3, a.h);
+    for (const v of vehicles) if (v.root.visible && !v.spec.fly && !v.spec.boat && !v.shadow) {
+      const cycle = v.spec.kind === 'cycle', large = ['bus', 'fire', 'ambulance', 'limo', 'combine'].includes(v.type);
+      add(v.x, v.z, cycle ? .7 : large ? 2.4 : 1.9, cycle ? 1.7 : large ? 5.7 : 3.6, v.h);
+    }
+    contactShadows.count = count; if (count) contactShadows.instanceMatrix.needsUpdate = true;
+  }
+
   /* ---------- Hauptschleife ---------- */
   function resize() {
-    const w = innerWidth, h = innerHeight; renderer.setPixelRatio(QUAL[quality]); renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < .8 ? 74 : w / h < 1.2 ? 66 : 58; camera.updateProjectionMatrix(); if (rs.ui === 'play') rangeFov();
+    const w = Math.max(1, innerWidth), h = Math.max(1, innerHeight); renderer.setPixelRatio(pixelRatioFor(w, h)); renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < .8 ? 74 : w / h < 1.2 ? 66 : 58; camera.updateProjectionMatrix(); if (rs.ui === 'play') rangeFov();
   }
-  addEventListener('resize', resize); resize();
+  addEventListener('resize', resize); resize(); graphicsReady = true;
   let last = performance.now(), fpsAcc = 0, fpsN = 0, lowCount = 0, fastCount = 0, hudTick = 0, miniTick = 0;
   P.veh = null; cam.x = 0; cam.z = 40; cam.y = 7; cam.shake = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > .1) dt = .1; if (dt <= 0) return;
+    if (graphicsLost) return;
     fpsAcc += dt; fpsN++;
     if (fpsN >= 45) {
       const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0;
@@ -2159,7 +2197,7 @@
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
     if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .2; drawMini(); } }
-    if (!tv.render()) renderer.render(scene, camera);
+    updateContactShadows(); if (!tv.render()) renderer.render(scene, camera);
   }
   spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate'); if (save.owned.includes('rollator')) spawnRC(true, 'rollator');
   $('loading').hidden = true; $('menu').hidden = false; if (!document.body.classList.contains('touch')) $('bStart').focus({ preventScroll: true });

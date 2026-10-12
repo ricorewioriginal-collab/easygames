@@ -634,14 +634,18 @@ BI.buildWorld = function (scene) {
     const T = { x, z, kind, parts: [], hp: 5, cd: 0, wob: 0, wx: 0, wz: 1, tilt: 0, top: kind === 'pine' ? 5 * s : 4 * s, dirty: false };
     if (kind === 'pine') {
       inst('trunk', T, x, 0, z, .85 * s, 1.6 * s, .85 * s, 0x7a5233, 0);
+      inst('trunk', T, x, 0, z, 1.25 * s, .32 * s, 1.25 * s, 0x765033, 0);
       for (let k = 0; k < 3; k++) inst('cone', T, x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, (2.1 - k * .5) * s, pick([0x377f50, 0x40925b, 0x296d47]), .1);
       W.addCircle(x, z, .6);
     } else {
+      const blossom = Math.abs(Math.floor(x * 17 + z * 11)) % 13 === 0;
       inst('trunk', T, x, 0, z, s, 2.2 * s, s, 0x8a5a33, 0);
-      inst('crown', T, x, 3.2 * s, z, 1.9 * s, 1.9 * s * .9, 1.9 * s, pick([0x5ba66a, 0x67ae72, 0x4c9c61, 0x7cb982]), .12);
-      inst('crown', T, x + .8 * s, 4 * s, z - .5 * s, 1.2 * s, 1.2 * s * .9, 1.2 * s, pick([0x75ba7c, 0x8ac78e]), .12);
-      inst('crown', T, x - .8 * s, 3.65 * s, z + .55 * s, 1.06 * s, .94 * s, 1.06 * s, 0x78bd80, 0);
-      inst('crown', T, x + .28 * s, 4.45 * s, z + .2 * s, .82 * s, .72 * s, .82 * s, 0x94cd93, 0);
+      inst('trunk', T, x, 0, z, 1.35 * s, .34 * s, 1.35 * s, 0x765033, 0);
+      inst('crown', T, x, 3.2 * s, z, 1.9 * s, 1.9 * s * .9, 1.9 * s, pick(blossom ? [0xe790b1, 0xf0a3bd, 0xe7a9c6] : [0x5ba66a, 0x67ae72, 0x4c9c61, 0x7cb982]), .12);
+      inst('crown', T, x + .8 * s, 4 * s, z - .5 * s, 1.2 * s, 1.2 * s * .9, 1.2 * s, pick(blossom ? [0xf6bad0, 0xf3c2d6] : [0x75ba7c, 0x8ac78e]), .12);
+      inst('crown', T, x - .8 * s, 3.65 * s, z + .55 * s, 1.06 * s, .94 * s, 1.06 * s, blossom ? 0xf2aac5 : 0x78bd80, 0);
+      inst('crown', T, x + .28 * s, 4.45 * s, z + .2 * s, .82 * s, .72 * s, .82 * s, blossom ? 0xf9d0dd : 0x94cd93, 0);
+      inst('crown', T, x - 1.12 * s, 3.25 * s, z - .42 * s, .83 * s, .72 * s, .83 * s, blossom ? 0xf2bad0 : 0x6ead74, 0);
       W.addCircle(x, z, .65);
     }
     W.trees.push(T);
