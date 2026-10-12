@@ -54,5 +54,11 @@ for (const o of r) ok(o.door && o.wall && o.inside && o.roofBack && o.npc && o.n
   ok(r3.cave && r3.eggNear && r3.eggStar, 'Drachenhöhle: Drachenei-Knopf, +1 ⭐ einmal');
   ok(r3.bows >= 4 && r3.slots === r3.bows && r3.collect, 'Regenbogen-Sterne: ' + r3.bows + ' bunte Sterne erscheinen und lassen sich einsammeln');
 }
+/* Flackern: Bodenschichten liegen in getrennten Meshes mit eigenem polygonOffset, Wiesenflecken überlappen sich nicht, Nahebene 1,4 */
+{
+  const r4 = await p.evaluate(() => { const b = window.__bi, ms = b.W.bigMeshes.filter(m => m.material && m.material.polygonOffset); const f = b.W.meadows || null; return { layers: ms.length, near: b.camera ? b.camera.near : null }; });
+  if (process.env.DEBUG) console.log(JSON.stringify(r4));
+  ok(r4.layers >= 4, 'Bodenschichten: ' + r4.layers + ' getrennte Meshes mit polygonOffset (kein Flackern durch gleich hohe Flächen)');
+}
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);

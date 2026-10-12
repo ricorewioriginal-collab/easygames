@@ -113,6 +113,20 @@ BI.store = {
   };
   let shared = null;
   BI.mat = () => shared || (shared = new THREE.MeshLambertMaterial({ vertexColors: true }));
+  /* Bodenschichten (Wiese, Sand, Wege, Markierungen liegen nur Millimeter übereinander) trennen: jede Höhenstufe bekommt ein eigenes Mesh mit eigenem
+     polygonOffset, damit nichts flackert – auch bei kleiner Tiefenpuffer-Genauigkeit (Handys). Gibt die Meshes zurück; der Rest bleibt im Haupt-Mesh. */
+  const LAYERS = [.0005, .006, .016, .021, .0255, .0265, .0275, .0285, .035, .055, .065, .071, .075, .08, .09, .11, .2], lmats = [];
+  BI.layerMeshes = (b) => {
+    const p = b.p, n = b.n, c = b.c, L = LAYERS.map(() => new BI.Batch()), M = new BI.Batch();
+    for (let i = 0; i < p.length; i += 9) {
+      const y0 = p[i + 1]; let d = M;
+      if (n[i + 1] > .9 && y0 < .2 && Math.abs(p[i + 4] - y0) < 1e-4 && Math.abs(p[i + 7] - y0) < 1e-4) { for (let k = 0; k < LAYERS.length; k++) if (y0 <= LAYERS[k]) { d = L[k]; break; } }
+      for (let j = 0; j < 9; j++) { d.p.push(p[i + j]); d.n.push(n[i + j]); d.c.push(c[i + j]); }
+    }
+    const out = [M.mesh(BI.mat())];
+    L.forEach((lb, k) => { if (lb.empty) return; if (!k) { out.push(lb.mesh(BI.mat())); return; } const m = lmats[k] || (lmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2 * k, polygonOffsetUnits: -2 * k })); out.push(lb.mesh(m)); });
+    return out;
+  };
 })();
 
 /* ---- Spielfigur ---- */

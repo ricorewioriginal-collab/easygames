@@ -105,6 +105,8 @@ Krankenhaus, Polizei, Feuerwehr, Rathaus, Schule, Eisdiele sowie die Bahnhöfe H
 
 **Regenbogen-Sterne 🌈:** Erscheint ein Regenbogen, tauchen 6 größere Sterne auf, deren Farben im Regenbogen-Kreis wandern (eigene Instanzen in `main.js`, normale Sterne bleiben gold). Test: `tests/gebaeude.mjs`.
 
+**Flackern behoben:** Boden-Flächen, die nur Millimeter übereinander liegen (Wiese, Sand, Wege, Markierungen), liegen jetzt in getrennten Meshes mit eigenem `polygonOffset` (`BI.layerMeshes`, auch für Zotik/Atlantis/Radio); Wiesenflecken überlappen sich nicht mehr; Kamera-Nahebene 1,4 statt 0,8 (Ego-Kamera 0,5), Ferne 640 – genauerer Tiefenpuffer, besonders auf Handys. Tier-Aktionen im Spaß-Menü holen das Tier jetzt automatisch aus dem Zuhause.
+
 ## Schatzsuche 🗺️🧰 (alle Inseln)
 **Schatzmeister Piet** (Hauptinsel nahe dem Start, Knopf „🗺️ Schatzsuche starten“) gibt das erste Bilder-Rätsel (wird vorgelesen). Eine **goldene Lichtsäule** zeigt schon von Weitem, wo die Kiste steht; der Pfeil 👣 führt zur Insel. Jede Kiste = +1 ⭐ und das nächste Rätsel: Freizeitpark → Fußball-Arena → Märchenland → Funkwelle → Drachenhöhen → Regenbogenwelt → Lunaris → Atlantis (großer Schatz +10 ⭐, Sticker „Schatzjäger“; danach geht es von vorn, dann +5 ⭐). Immer nur **eine** Kiste und **ein** Strahl (sparsam). Datei `js/schatz.js`, Test `tests/schatz.mjs`.
 

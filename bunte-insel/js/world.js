@@ -216,9 +216,10 @@ BI.buildWorld = function (scene) {
     };
     st.disc(0, 0, 142, 0, GRASS, 72); polar(140, Rg, 0, GRASS); polar(165, Rg, .012, SAND);
   }
-  for (let i = 0, tries = 0; i < 46 && tries < 400; tries++) { // Wiesenflecken
+  const meadows = [];
+  for (let i = 0, tries = 0; i < 46 && tries < 400; tries++) { // Wiesenflecken (überlappen sich nicht: gleiche Höhe würde flackern)
     const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * 155, x = Math.sin(a) * d, z = Math.cos(a) * d, r = rr(6, 16);
-    if (nearRoad(x, z, r) || W.railSdf(x, z) < r + 5) continue; i++;
+    if (nearRoad(x, z, r) || W.railSdf(x, z) < r + 5 || meadows.some(q => Math.hypot(q[0] - x, q[1] - z) < q[2] + r + .3)) continue; meadows.push([x, z, r]); i++;
     st.disc(x, z, r, .02, pick([0x83c273, 0x96cf82, 0x7bbe70, 0x9bd18a]), 14);
   }
   // See
@@ -747,7 +748,7 @@ BI.buildWorld = function (scene) {
   /* ---------- Meshes ---------- */
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }
   W.flatRoof = roofB.mesh(BI.mat()); W.flatRoof.frustumCulled = false; scene.add(W.flatRoof);
-  const stMesh = st.mesh(BI.mat()); stMesh.frustumCulled = false; scene.add(stMesh); W.bigMeshes.push(stMesh);
+  for (const stMesh of BI.layerMeshes(st)) { stMesh.frustumCulled = false; scene.add(stMesh); W.bigMeshes.push(stMesh); }
   W.winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff }); W.lampMat = new THREE.MeshBasicMaterial({ color: 0xdcdcdc });
   const winMesh = win.mesh(W.winMat), lampMesh = lamp.mesh(W.lampMat); winMesh.frustumCulled = lampMesh.frustumCulled = false; scene.add(winMesh, lampMesh); W.bigMeshes.push(winMesh, lampMesh);
   // Leuchtturm-Strahl (nur nachts)

@@ -16,7 +16,7 @@
   const baseQuality = () => save.eco || save.gfx === 'eco' ? 2 : save.gfx === 'sharp' ? 0 : coarse ? 1 : 0;
   let quality = baseQuality();
   const QUAL = [Math.min(dpr, 2), Math.min(dpr, coarse ? 1.35 : 1.5), Math.min(dpr, 1), .75];
-  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .8, 800);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 1.4, 640);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
   sun.position.set(60, 100, 40); scene.add(hemi, sun, sun.target);
   scene.fog = new THREE.Fog(0xcfe9ff, 130, 520);
@@ -1451,11 +1451,11 @@
     else if (k === 'cannon') { if (onDeck()) { SHIP.cannons.forEach((c, i) => fun.cannon(c, i * .18)); say('💥 Feuer frei!', 1200); } }
     else if (k === 'ahoi') { A.arr(); P.wave = 1.6; pap.wiggle = 1; say('🏴‍☠️ Ahoi, Käpt\'n ' + heroName() + '!', 1800); fx.burst(P.x, 2.6, P.z, 10, [BI.C.gold, BI.C.white, BI.C.red], 3, 1.2, 30, -1); }
     else if (k === 'trick') {
-      if (pup.mode === 'home') { say('🏠 ' + pup.name + ' ist zu Hause – nimm ihn mit (E beim Tier)!', 2200); return; } if (pup.trick || pup.mode === 'fetch') return; const T = TRICKS[pup.trickIdx % TRICKS.length]; pup.trickIdx++; pup.mode = 'follow'; pup.trick = { name: T[0], t: 0, dur: T[2] }; A.bark(); say('🐶 ' + pup.name + ' macht ' + T[1] + '!', 1600); fx.burst(pup.x, 1.4, pup.z, 6, [BI.C.pink, BI.C.gold], 2, 1, 30, -1);
+      if (pup.mode === 'home') setPetHome(false); /* Tier-Aktion holt das Tier automatisch aus dem Zuhause */ if (pup.trick || pup.mode === 'fetch') return; const T = TRICKS[pup.trickIdx % TRICKS.length]; pup.trickIdx++; pup.mode = 'follow'; pup.trick = { name: T[0], t: 0, dur: T[2] }; A.bark(); say('🐶 ' + pup.name + ' macht ' + T[1] + '!', 1600); fx.burst(pup.x, 1.4, pup.z, 6, [BI.C.pink, BI.C.gold], 2, 1, 30, -1);
       if (++pup.tricksDone % TRICKS.length === 0) { addStars(2); A.star(); say('🏅 Trick-Meister! Alle Tricks geschafft! +2 ⭐', 2600); }
     }
     else if (k === 'fetch') {
-      if (pup.mode === 'home') { say('🏠 ' + pup.name + ' ist zu Hause – nimm ihn mit (E beim Tier)!', 2200); return; } if (pup.mode === 'fetch' || pup.trick) return; let bl = fun.balls[fun.balls.length - 1]; if (!bl) { fun.ball(); bl = fun.balls[fun.balls.length - 1]; }
+      if (pup.mode === 'home') setPetHome(false); /* Tier-Aktion holt das Tier automatisch aus dem Zuhause */ if (pup.mode === 'fetch' || pup.trick) return; let bl = fun.balls[fun.balls.length - 1]; if (!bl) { fun.ball(); bl = fun.balls[fun.balls.length - 1]; }
       bl.vx = Math.sin(P.h) * 11; bl.vz = Math.cos(P.h) * 11; bl.vy = 5; bl.cd = .5; pup.fetch = { ball: bl, phase: 'go', t: 0 }; pup.mode = 'fetch'; A.kick(); say('🎾 Hol den Ball, ' + pup.name + '!', 1800);
     }
     else if (k === 'dance') { if (P.veh) { say('🕺 Zum Tanzen erst aussteigen', 1600); return; } if (build.active) return; fun.setDance(!fun.dancing); }
@@ -1464,7 +1464,7 @@
     else if (k === 'xxl') fun.xxl();
     else if (k === 'bark') { pup.bark = .6; A.bark(); say('🐶 Wuff!', 900); fx.burst(pup.x, 1.4, pup.z, 5, [BI.C.pink, BI.C.gold], 2, 1, 32, -1); for (const n of npcs) if (Math.hypot(n.x - pup.x, n.z - pup.z) < 12) { n.hop = .6; n.wave = 2; } }
     else if (k === 'search') {
-      if (pup.mode === 'home') { say('🏠 ' + pup.name + ' ist zu Hause – nimm ihn mit (E beim Tier)!', 2200); return; } if (pup.trick || pup.mode === 'fetch') return;
+      if (pup.mode === 'home') setPetHome(false); /* Tier-Aktion holt das Tier automatisch aus dem Zuhause */ if (pup.trick || pup.mode === 'fetch') return;
       if (pup.cd > 0) { say('🐶 ' + pup.name + ' verschnauft kurz …', 1200); return; }
       const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; let best = null, bd = 1e9; for (const s of stars) if (s.on) { const d = Math.hypot(s.x - px, s.z - pz); if (d < bd) { bd = d; best = s; } }
       if (best) { pup.star = best; pup.mode = 'search'; A.bark(); pup.bark = .3; say('🐶 ' + pup.name + ', such den Stern! 🔎', 1800); }
@@ -2058,6 +2058,7 @@
     if (state === 'menu') { if (!(creating && orbitOff)) cam.yaw += dt * (creating ? .5 : .25); tx = P.x; ty = creating ? (innerHeight > innerWidth ? -1.05 : .7) : 1.1; tz = P.z; dist = creating ? 5.2 : 4.8; pitch = creating ? .1 : .22; }
     else if (wardOpen && !v) { cam.yaw += dt * (orbitOff ? 0 : .5); tx = P.x; ty = P.y + (innerHeight > innerWidth ? -1.05 : .7); tz = P.z; dist = 5.2; pitch = .1; }
     else if (v) {
+      { const nn = cam.ego && state === 'play' && P.veh ? .5 : 1.4; if (camera.near !== nn) { camera.near = nn; camera.updateProjectionMatrix(); } } /* Ego-Kamera sitzt im Fahrzeug: kleine Nahebene; sonst größer für genaueren Tiefenpuffer */
       if (cam.ego && state === 'play') {
         const e = EYE[v.isTrain ? 'train' : v.type] || [0, 1.4, .4], ex = v.x + Math.sin(v.h) * e[2], ez = v.z + Math.cos(v.h) * e[2], ey = (v.y || 0) + e[1], yaw = v.h + cam.egoOff;
         if (drag.id == null) cam.egoOff = BI.damp(cam.egoOff, 0, 2.5, dt); if (v.spec.open) char.group.visible = false;
