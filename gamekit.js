@@ -9,7 +9,7 @@
  *     solo: () => …            // normal spielen (Handy, Tablet, Computer)
  *   });
  *
- * Weitere Hilfen: mode(), device(), joinCode(), joinUrl(raum), onDevice(cb), fullscreenOnInput(),
+ * Weitere Hilfen: tvUrl() (Link für den TV), mode(), device(), joinCode(), joinUrl(raum), onDevice(cb), fullscreenOnInput(),
  * keepAwake(), back(handler), close(), menu(), next(), prev()
  */
 (function (root) {
@@ -18,6 +18,14 @@
     version: 1,
     device: function () { return root.EasyGamesDevice ? root.EasyGamesDevice.get() : null; },
     params: function () { try { return new URLSearchParams(root.location.search); } catch (e) { return new URLSearchParams(''); } },
+    // Der richtige Link für TV-Gaming dieses Spiels (öffentliche Adresse; auch wenn das Spiel gerade in einer App läuft).
+    // param: Parameter, der am TV die Lobby öffnet (Standard '?tv'; null/'' = keiner). folder: Ordnername des Spiels (Standard: aus der Adresse)
+    tvUrl: function (param, folder) {
+      var D = root.EasyGamesDevice, p = param === undefined ? 'tv' : param;
+      var f = folder || root.location.pathname.replace(/[^/]*$/, '').split('/').filter(Boolean).pop() || '';
+      var url = D ? D.tvUrl(f ? f + '/' : '', p) : root.location.href.split('#')[0].split('?')[0] + (p ? '?' + String(p).replace(/^\?/, '') : '');
+      return url;
+    },
     // Gleiche Regel wie in den bestehenden Spielen: ?join=CODE, bis zu 6 Zeichen A–Z/0–9
     joinCode: function () { return (K.params().get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); },
     isTv: function () { var d = K.device(); return K.params().has('tv') || !!(d && d.type === 'tv'); },

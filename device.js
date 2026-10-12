@@ -7,6 +7,9 @@
  *   const off = EasyGamesDevice.on(d => …);   // bei Drehen, Größenänderung, Gamepad
  *   EasyGamesDevice.set('tv');                // manuell überschreiben (null = automatisch)
  *
+ * TV-Link für Mehrspieler: EasyGamesDevice.tvUrl('spiel-ordner/', tvParam) – nutzt eine öffentliche Adresse, auch wenn die Seite
+ * in einer App/auf localhost läuft (mit window.EASYGAMES_PUBLIC_BASE = 'https://deine-seite/' anpassbar).
+ *
  * Zum Testen/Erzwingen: ?device=tv|phone|tablet|desktop an die URL hängen.
  * Setzt außerdem Klassen am <html>: eg-tv / eg-phone / eg-tablet / eg-desktop, eg-portrait / eg-landscape,
  * eg-gamepad, eg-app und das Attribut data-eg-device.
@@ -89,13 +92,39 @@
     for (var i = 0; i < listeners.length; i++) { try { listeners[i](d); } catch (e) { if (root.console) console.error(e); } }
   }
 
+  // Öffentliche Adresse für TV-Links: Ein TV (oder ein anderes Handy) kann keine Adressen einer App oder von localhost öffnen.
+  var PUBLIC_DEFAULT = 'https://ricorewioriginal-collab.github.io/easygames/';
+  function isPublicBase(u) {
+    try {
+      var x = new URL(u), h = x.hostname;
+      if (!/^https?:$/.test(x.protocol)) return false;
+      if (h === 'localhost' || /\.local$/.test(h) || h.indexOf(':') >= 0 || h.indexOf('.') < 0) return false;
+      return !/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
+    } catch (e) { return false; }
+  }
+  // Basisadresse der Spiele für Links, die auf anderen Geräten geöffnet werden:
+  // 1) window.EASYGAMES_PUBLIC_BASE (oder EasyGamesConfig.publicBase), 2) die aktuelle Adresse, wenn öffentlich, 3) Standard
+  function publicBase(base) {
+    var cfg = root.EASYGAMES_PUBLIC_BASE || (root.EasyGamesConfig && root.EasyGamesConfig.publicBase);
+    if (cfg) return /\/$/.test(cfg) ? cfg : cfg + '/';
+    var b = base || (root.location ? new URL('.', root.location.href).href : '');
+    return isPublicBase(b) ? b : PUBLIC_DEFAULT;
+  }
+  // Der richtige Link für TV-Gaming: direkte Spielseite (+ Parameter wie ?tv, falls das Spiel einen kennt)
+  function tvUrl(path, tvParam, base) {
+    var u = new URL(path, publicBase(base)).href;
+    return tvParam ? u + '?' + (typeof tvParam === 'string' ? tvParam.replace(/^\?/, '') : 'tv') : u;
+  }
+
   var API = root.EasyGamesDevice = {
     version: 1,
     get: function () { if (!cur) refresh(); return cur; },
     is: function (t) { return API.get().type === t; },
     on: function (cb) { listeners.push(cb); return function () { var i = listeners.indexOf(cb); if (i >= 0) listeners.splice(i, 1); }; },
     set: function (t) { forced = TYPES.indexOf(t) >= 0 ? t : null; last = ''; refresh(); },
-    joinCode: function () { return API.get().join; }
+    joinCode: function () { return API.get().join; },
+    publicBase: publicBase,
+    tvUrl: tvUrl
   };
   refresh();
   if (root.addEventListener) {
