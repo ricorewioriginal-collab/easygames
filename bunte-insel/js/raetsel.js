@@ -105,7 +105,7 @@ BI.createRaetsel = function (G) {
   const stars = n => G.addStars(n), earn = id => G.earn && G.earn(id), nr = (o, r) => o && Math.hypot(P.x - o.x, P.z - o.z) < r, onIsle = () => Math.hypot(P.x - M.x, P.z - M.z) < M.R + 4;
   const sign = (txt, p, y, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#2a2a5a'; c.strokeText(txt, 256, 50); c.fillStyle = '#ffe9a0'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(p.x, y, p.z); scene.add(sp); return sp; };
   { const g = L(-70, 0); sign('🗿 Rätsel-Insel der Uralten ⚔️', { x: g.x, z: g.z }, 11, 13); }
-  sign('🏯 Prüfungsturm', SP.rz_turm, 12, 9); sign('🥚 Kapsel-Schrein', SP.rz_schrein, 7, 8); sign('⚒️ Schmiede', SP.rz_schmiede, 6.4, 6); sign('🕳️ Uralte Höhle', SP.rz_hoehle, 8, 8); sign('🦸 Held Milo', SP.rz_statue, 7.6, 6); sign('🏰 Titanen-Festung', { x: SP.rz_festung.x, z: SP.rz_festung.z }, SP.rz_festung.y, 12);
+  sign('🏯 Prüfungsturm', SP.rz_turm, 12, 9); sign('🧱 Block hierher schieben!', L(...T.plate), 4.2, 5); sign('🥚 Kapsel-Schrein', SP.rz_schrein, 7, 8); sign('⚒️ Schmiede', SP.rz_schmiede, 6.4, 6); sign('🕳️ Uralte Höhle', SP.rz_hoehle, 8, 8); sign('🦸 Held Milo', SP.rz_statue, 7.6, 6); sign('🏰 Titanen-Festung', { x: SP.rz_festung.x, z: SP.rz_festung.z }, SP.rz_festung.y, 12);
   /* ---------- Dach des Turms ---------- */
   const roof = M.roofB.mesh(mat); roof.frustumCulled = false; scene.add(roof); M.roofB = null; const RI = M.roofIn;
   /* ---------- Truhen ---------- */
@@ -116,7 +116,10 @@ BI.createRaetsel = function (G) {
   const mk = (fn, x, z, y) => { const b = new BI.Batch(); fn(b); const g = new THREE.Group(); g.add(new THREE.Mesh(b.mesh(mat).geometry, mat)); g.position.set(x, y || 0, z); scene.add(g); return g; };
   const blk = (() => { const q = L(...T.block0); const g = mk(b => { b.box(0, 0, 0, 1.9, 1.9, 1.9, 0x9a9aa8); b.box(0, 1.9, 0, 2.0, .15, 2.0, 0xb8b8c8); b.box(0, .5, .96, .9, .9, .06, 0x5a6aa8); b.box(0, 1.0, .98, .3, .3, .06, 0xffd23f); }, q.x, q.z); g.rotation.y = Math.atan2(M.ux, M.uz); return { g, a: T.block0[0], b: T.block0[1], tw: null, o: null }; })();
   blk.o = { x: blk.g.position.x, z: blk.g.position.z, r: 1.15, on: true }; W.dyn.push(blk.o);
-  const plateQ = L(...T.plate), plate = (() => { const m = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, .12, 20), new THREE.MeshBasicMaterial({ color: 0xffb04a })); m.position.set(plateQ.x, .08, plateQ.z); scene.add(m); return m; })();
+  const plateQ = L(...T.plate), plate = (() => { const m = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, .14, 24), new THREE.MeshBasicMaterial({ color: 0xffb04a })); m.position.set(plateQ.x, .17, plateQ.z); scene.add(m); return m; })();
+  /* Block-Rätsel: Zielplatte mit Leuchtring und Lichtstrahl, damit man sie schon von weitem sieht */
+  const plateRing = (() => { const m = new THREE.Mesh(new THREE.RingGeometry(1.7, 2.5, 28), new THREE.MeshBasicMaterial({ color: 0xffe27a, transparent: true, opacity: .8, side: THREE.DoubleSide, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(plateQ.x, .2, plateQ.z); scene.add(m); return m; })();
+  const plateBeam = (() => { const m = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 9, 14, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .22, side: THREE.DoubleSide, depthWrite: false })); m.position.set(plateQ.x, 4.6, plateQ.z); scene.add(m); return m; })();
   const crQ = L(...T.crystal), crystal = (() => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.OctahedronGeometry(.9, 0), new THREE.MeshBasicMaterial({ color: 0x4a6aa8 })); m.scale.set(1, 1.5, 1); m.position.y = 3.2; g.add(m); const b = new BI.Batch(); b.cyl(0, 0, 0, .8, 1, 2.2, 0x8a8a98, 8); g.add(new THREE.Mesh(b.mesh(mat).geometry, mat)); g.position.set(crQ.x, 0, crQ.z); g.userData.m = m; scene.add(g); return g; })();
   const poolCtr = L((T.pool[0] + T.pool[1]) / 2, 0), bridgeG = mk(b => { for (let k = 0; k < 9; k++) b.box(0, .02, -3.6 + k * .9, 3.2, .16, .8, 0xb98650); for (const sx of [-1.6, 1.6]) b.box(sx, 0, 0, .15, .5, 8.2, 0x8a5a33); }, poolCtr.x, poolCtr.z, .12); bridgeG.rotation.y = Math.atan2(M.ux, M.uz); bridgeG.visible = false;
   const gateG = a => { const q = L(a + .5, 0), g = mk(b => { for (let k = -2; k <= 2; k++) b.box(k * 1.0, 0, 0, .25, 5.6, .3, 0x4a4a58); b.box(0, 5.2, 0, 5.4, .5, .5, 0xffd23f); b.box(0, 1.6, 0, 5.4, .3, .3, 0x6a6a78); }, q.x, q.z); g.rotation.y = Math.atan2(M.ux, M.uz); return g; };
@@ -128,7 +131,7 @@ BI.createRaetsel = function (G) {
   /* ---------- Zustand anwenden ---------- */
   const setGate = (g, dyn, open) => { g.visible = !open; for (const o of dyn) o.on = !open; };
   const placeBlock = (a, b) => { blk.a = a; blk.b = b; const q = L(a, b); blk.g.position.set(q.x, 0, q.z); blk.o.x = q.x; blk.o.z = q.z; };
-  function apply() { const s = S(), p = s.puz; if (p.block) placeBlock(...T.plate); else if (s.blockAt) placeBlock(...s.blockAt); setGate(gA, M.dyn.gateA, !!p.block); plate.material.color.setHex(p.block ? 0x4cd07d : 0xffb04a);
+  function apply() { const s = S(), p = s.puz; if (p.block) placeBlock(...T.plate); else if (s.blockAt) placeBlock(...s.blockAt); setGate(gA, M.dyn.gateA, !!p.block); plate.material.color.setHex(p.block ? 0x4cd07d : 0xffb04a); plateRing.material.color.setHex(p.block ? 0x9affb0 : 0xffe27a); plateBeam.material.color.setHex(p.block ? 0x4cd07d : 0xffd23f);
     crystal.userData.m.material.color.setHex(p.crystal ? 0x7fe0ff : 0x4a6aa8); bridgeG.visible = !!p.crystal; for (const o of M.dyn.pool) o.on = !p.crystal; setGate(gB, M.dyn.gateB, !!p.crystal);
     crack.visible = !p.wall; for (const o of M.dyn.wall) o.on = !p.wall; rockCrack.visible = !p.rock; for (const o of M.dyn.rock) o.on = !p.rock; for (const c of CH) if (s.chests.includes(c.id)) openVis(c); }
   apply();
@@ -245,11 +248,14 @@ BI.createRaetsel = function (G) {
     else if (n.k === 'rzhook') { const to = n.from === posts[0] ? posts[1] : posts[0]; hook({ x: P.x, z: P.z }, { x: to.x + (to.x - n.from.x) * .12, z: to.z + (to.z - n.from.z) * .12 }); }
     else if (n.k === 'rzaltar') { if (s.puz.block) { say('🔄 Das Block-Rätsel ist gelöst!', 2200); return; } placeBlock(...T.block0); s.blockAt = null; persist(); A.pop && A.pop(); say('🔄 Der Block steht wieder am Anfang.', 2200); }
     else if (n.k === 'rzcap') K.show('cap'); else if (n.k === 'rzforge') K.show('forge');
-    else if (n.k === 'rzhoehle') { if (!s.once.hoehle) { s.once.hoehle = 1; persist(); stars(1); earn('hoehle'); } G.start && G.start('hoehle_raetsel'); }
+    else if (n.k === 'rzhoehle') { if (inn && M.hoehleDoor) inn.enter(M.hoehleDoor); else { caveOnce(); G.start && G.start('hoehle_raetsel'); } }
   };
   /* ---------- Bild für Bild ---------- */
   let was = false;
+  let inn = null; const caveOnce = () => { const s = S(); if (!s.once.hoehle) { s.once.hoehle = 1; persist(); stars(1); earn('hoehle'); } };
+  K.setInnen = i => { inn = i; if (M.hoehleDoor) M.hoehleDoor.onEnter = caveOnce; };
   K.update = function (dt, t) {
+    { const k = .5 + .5 * Math.sin((t || 0) * 3.2); plateRing.scale.setScalar(1 + k * .14); plateRing.material.opacity = .55 + k * .4; plateBeam.material.opacity = .14 + k * .12; }
     const raw = Math.min(dt, .25), s = S(), p = s.puz, d0 = Math.hypot(P.x - M.x, P.z - M.z), ins = d0 < M.R + 12, near = d0 < 280;
     refreshCap(); { const forest = W.spots.forest && Math.hypot(P.x - W.spots.forest.x, P.z - W.spots.forest.z) < W.spots.forest.R; if (attachSword()) swG.visible = s.sword > 0 && (onIsle() || forest) && !P.veh; }
     { const lp = M.loc(P.x, P.z), inside = !P.veh && P.y < 4 && lp.a > RI.a0 && lp.a < RI.a1 && lp.b > RI.b0 && lp.b < RI.b1; if (roof.visible === inside) roof.visible = !inside; }

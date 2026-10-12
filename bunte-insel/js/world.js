@@ -97,7 +97,8 @@ BI.buildWorld = function (scene) {
     if (W.dyn.length) for (const o of W.dyn) { if (!o.on) continue; const dx = px - o.x, dz = pz - o.z, d = Math.hypot(dx, dz), m = r + o.r; if (d < m) { if (d > 1e-6) { px += dx * (m - d) / d; pz += dz * (m - d) / d; } else px += m; hit = true; } } /* bewegliche Hindernisse (Rätsel-Blöcke, Tore) */
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
-    if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
+    if (px > 2800) { /* Innenräume (BI.createInnen) liegen weit draußen: keine Inselgrenze */ }
+    else if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
     else if (swim) { /* zu Fuß: Strand und Meer überall begehbar/schwimmbar – nur ganz draußen ist Schluss (kein unsichtbares Mauern-Gewirr mehr) */ const fl = W.flyLimit(); if (rad > fl - r) { const k = (fl - r) / rad; px *= k; pz *= k; hit = true; } }
     else if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
@@ -143,6 +144,7 @@ BI.buildWorld = function (scene) {
   /* Meer (zum Schwimmen): außerhalb des Strands der Hauptinsel, der Insel-Strände (R+10), der Brücken und des Stegs */
   const SEA_ISL = ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland', 'radio'];
   W.seaAt = (x, z) => {
+    if (x > 2800) return false;
     if (x * x + z * z < 203 * 203) return false; if (W.bade && W.bade.sea(x, z)) return true; if (Math.abs(x) < 3.2 && z > 150 && z < 212) return false;
     for (const k of SEA_ISL) { const C = W[k]; if (C && C.R && Math.hypot(x - C.x, z - C.z) < C.R + 10) return false; }
     for (const I of W.isles || []) if (Math.hypot(x - I.x, z - I.z) < I.R + 10) return false;
@@ -507,6 +509,7 @@ BI.buildWorld = function (scene) {
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
   BI.buildRadioGround({ W, st, lamp, scene });
+  if (BI.registerDoors) { BI.registerDoors(W); BI.buildDoorMarks({ W, st, lamp }); }
   BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade(); BI.ZOTIK.addArcade(); BI.RADIO.addArcade(); BI.buildExtraArcades({ W, st, lamp }); BI.ATLANTIS.addExtraArcade('blasen_atlantis', -13, 136, 0x0f5a73, 0x9fe3ff);
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
@@ -790,6 +793,7 @@ BI.buildWorld = function (scene) {
     } return { x: 0, z: 30 };
   };
   W.groundY = (x, z) => {
+    if (x > 2800) return 0;
     if (W.atlPit) { const h = W.atlPit.floor(x, z); if (h !== null) return h; }
     if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
     if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
