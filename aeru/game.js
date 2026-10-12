@@ -247,7 +247,7 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
 // ───────── Inselbau ─────────
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
-function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .25 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
+function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
 function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
 function arch(x, z) { const c = levels[save.level].accent; for (const s of [-1, 1]) { mesh('box', c, x + s * 2.5, 2.5, z, .8, 5, .9); mesh('box', c, x + s * 2.5, .3, z, 1.3, .6, 1.4); mesh('box', c, x + s * 2.5, 5, z, 1.25, .4, 1.3); } const r = ring(x, 4.8, z, 2.5, c); r.scale.y = .6; mesh('box', c, x, 6.2, z, 5.5, .4, 1); }
 const SLOTS = {keeper: {x: -4, z: 13, y: 0}, side: {x: 12, z: 9, y: 0}, helper: {x: -10, z: -12, y: 0}};
@@ -473,10 +473,12 @@ function movePlayer(dt) {
     const d = Math.hypot(nx - t.x, nz - t.z);
     if (d < lim && d > 0) { const ux = (nx - t.x) / d, uz = (nz - t.z) / d; nx = t.x + ux * lim; nz = t.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; } }
   }
-  state.x = nx; state.z = nz;
+  const px = state.x, pz = state.z; state.x = nx; state.z = nz;
   if (length > .05 || state.dodge > 0) { const target = Math.atan2(-(state.dodge > 0 ? state.dodgeX : dx), -(state.dodge > 0 ? state.dodgeZ : dz)); state.yaw += Math.atan2(Math.sin(target - state.yaw), Math.cos(target - state.yaw)) * (1 - Math.exp(-dt * 13)); state.distance += Math.hypot(state.vx, state.vz) * dt; }
   const oldY = state.y, fallSpeed = state.vy, wasGround = state.onGround;
-  state.y += state.vy * dt; const floor = floorAt(state.x, state.z, oldY + .42);
+  state.y += state.vy * dt; let floor = floorAt(state.x, state.z, oldY + .42);
+  // Durchfallschutz: der ganze Weg dieses Schritts zählt (schneller Fall, Kante, Plattformrand), nicht nur der Endpunkt.
+  if (state.vy <= 0) { const f0 = floorAt(px, pz, oldY + .42), f1 = floorAt((px + nx) / 2, (pz + nz) / 2, oldY + .42); if (f0 > floor && f0 <= oldY + .42 && state.y <= f0) floor = f0; if (f1 > floor && f1 <= oldY + .42 && state.y <= f1) floor = f1; }
   if (state.y <= floor && state.vy <= 0) {
     state.y = floor; state.vy = 0; state.onGround = true; state.flight = false; state.jumpCut = true;
     state.stamina = Math.min(maxStamina(), state.stamina + dt * 45);
