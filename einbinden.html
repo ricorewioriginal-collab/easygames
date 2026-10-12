@@ -55,7 +55,7 @@
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
-    <a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
+    <a href="#geraet">Geräteerkennung</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
   <section id="wahl">
@@ -151,6 +151,7 @@
       <tr><td><code>EasyGames.get(id)</code> / <code>url(id)</code></td><td>Ein Spiel bzw. nur seine URL.</td></tr>
       <tr><td><code>EasyGames.guide(id, cb)</code></td><td>Anleitung und Bedienung als Objekt <code>{anleitung, steuerung, tipps}</code>.</td></tr>
       <tr><td><code>EasyGames.fullscreen(iframe)</code></td><td>Startet Vollbild; fällt auf einen neuen Tab zurück, wenn der Browser es nicht kann (z. B. iPhone).</td></tr>
+      <tr><td><code>EasyGames.device()</code></td><td>Geräteinfos (Typ, Rolle, Eingaben …), siehe <a href="#geraet">Geräteerkennung</a>.</td></tr>
       <tr><td><code>EasyGames.scan()</code></td><td>Sucht neu hinzugefügte <code>data-easygames</code>-Elemente (für dynamische Seiten).</td></tr>
     </table></div>
     <h3>Eigenes Spielmenü bauen</h3>
@@ -181,6 +182,7 @@
       <tr><th>Parameter</th><th>Wirkung</th></tr>
       <tr><td><code>?embed=1</code></td><td>Einbettungsmodus: keine Kopfzeile, kein Footer.</td></tr>
       <tr><td><code>?tv=1</code> / <code>?tv=0</code></td><td>TV-Modus erzwingen oder abschalten (sonst automatisch bei Smart-TV-Browsern).</td></tr>
+      <tr><td><code>?device=tv|phone|tablet|desktop</code></td><td>Gerätetyp vorgeben, z. B. zum Testen.</td></tr>
       <tr><td><code>#spiel-id</code></td><td>Öffnet das Spiel direkt im Viewer.</td></tr>
     </table></div>
   </section>
@@ -213,6 +215,57 @@
     <p>Der TV-Modus nutzt größere Karten und Schrift, einen deutlichen Fokusrahmen, Ränder gegen Overscan und eine Hinweisleiste.</p>
   </section>
 
+  <section id="geraet">
+    <h2>Geräteerkennung (TV, Handy, Controller)</h2>
+    <p>easygames erkennt selbst, auf welchem Gerät es läuft. Die Übersicht passt sich an (TV-Layout, Hinweise, Filter), und Spiele können dasselbe nutzen.</p>
+    <h3>device.js einbinden</h3>
+<pre>&lt;script src="<span class="u"></span>device.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  const d = EasyGamesDevice.get();
+  console.log(d.type, d.role, d.input);
+  EasyGamesDevice.on(d =&gt; console.log('geändert:', d.orientation));
+&lt;/script&gt;</pre>
+    <p>Über <code>easygames.js</code> steht es als <code>EasyGames.device()</code> bereit.</p>
+    <h3>Was geliefert wird</h3>
+    <div class="tw"><table>
+      <tr><th>Feld</th><th>Werte</th><th>Bedeutung</th></tr>
+      <tr><td><code>type</code></td><td><code>tv</code>, <code>phone</code>, <code>tablet</code>, <code>desktop</code></td><td>Gerätetyp (Browser-Kennung, Touch/Maus, Bildschirmgröße)</td></tr>
+      <tr><td><code>role</code></td><td><code>host</code>, <code>controller</code>, <code>both</code></td><td>Vorschlag für Mehrspieler: TV = Gastgeber (großer Bildschirm), Handy = Controller, sonst beides</td></tr>
+      <tr><td><code>input</code></td><td><code>touch</code>, <code>mouse</code>, <code>keyboard</code>, <code>remote</code>, <code>gamepad</code></td><td>Mögliche Eingaben</td></tr>
+      <tr><td><code>os</code></td><td>android, ios, ipados, windows, macos, linux, chromeos, tizen, webos, androidtv</td><td>Betriebssystem</td></tr>
+      <tr><td><code>orientation</code>, <code>width</code>, <code>height</code>, <code>dpr</code></td><td>–</td><td>Ausrichtung und Größe, wird bei Drehen aktualisiert</td></tr>
+      <tr><td><code>app</code>, <code>webview</code>, <code>standalone</code></td><td>true/false</td><td>Läuft in einer App-WebView bzw. als installierte Web-App</td></tr>
+      <tr><td><code>fullscreen</code></td><td>true/false</td><td>Browser kann Vollbild</td></tr>
+      <tr><td><code>join</code>, <code>joined</code></td><td>Code / true</td><td>Wert von <code>?join=CODE</code> – das Gerät wurde per QR-Code als Controller eingeladen</td></tr>
+      <tr><td><code>how</code></td><td><code>auto</code>, <code>override</code></td><td>Erkannt oder per <code>?device=</code> vorgegeben</td></tr>
+    </table></div>
+    <div class="note">Erkennung ist eine gut begründete Annahme: Manche TV-Browser melden sich nicht als TV. Mit <code>?device=tv</code> (auch <code>phone</code>, <code>tablet</code>, <code>desktop</code>) oder <code>EasyGamesDevice.set('tv')</code> lässt sich der Typ vorgeben. <code>?tv=1</code> und <code>?tv=0</code> funktionieren ebenfalls.</div>
+    <h3>CSS-Klassen am &lt;html&gt;</h3>
+<pre>eg-tv | eg-phone | eg-tablet | eg-desktop     eg-portrait | eg-landscape     eg-gamepad     eg-app
+/* z. B. */  html.eg-tv .menu { font-size: 150% }  html.eg-phone .stick { display: block }</pre>
+    <h3>So funktioniert die Handy-Kopplung bei den Spielen</h3>
+    <ul>
+      <li>Spiele mit <b>📱 Handy-Controller</b> (Kart Rush, Quiz, Koffer Dealer, Hörerwahl, Frequenzrad, Preisradar, Funkparcours, Funkhaus Reality, Mach mich aus!) laufen am PC oder TV als <b>Gastgeber</b> und zeigen einen QR-Code.</li>
+      <li>Das Handy öffnet über den QR-Code dieselbe Spielseite mit <code>?join=CODE</code> und wird automatisch zum Controller. Dafür braucht es keine Auswahl in der Übersicht.</li>
+      <li>Am <b>TV</b> öffnet die Übersicht Kart Rush mit <code>?tv</code>, dann erscheint direkt die Lobby mit QR-Code.</li>
+      <li>Den QR-Code erzeugt das Spiel aus seiner eigenen Adresse. Spiele im Viewer der Übersicht liefern deshalb den direkten Spiel-Link, den Handys ohne Übersicht öffnen.</li>
+    </ul>
+    <h3>Für Spiele-Entwickler: Gerät im Spiel nutzen</h3>
+<pre>// A) device.js im Spiel einbinden
+&lt;script src="../device.js"&gt;&lt;/script&gt;
+if (EasyGamesDevice.joinCode()) startAsController();
+else if (EasyGamesDevice.is('tv')) startAsHostWithQr();
+
+// B) Läuft das Spiel im Viewer der Übersicht, kommt das Gerät auch per Nachricht
+addEventListener('message', e =&gt; {
+  if (e.data &amp;&amp; e.data.type === 'easygames:device') use(e.data.device);
+});
+parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
+// Bei gleicher Herkunft steht es auch als window.EASYGAMES_DEVICE bereit.</pre>
+    <h3>Filter in der Übersicht</h3>
+    <p>Karten zeigen Abzeichen (📱 Handy-Controller, 🌐 Online, 👥 Mehrspieler), und Filterknöpfe zeigen nur diese Spiele. Die Zuordnung steht in <code>modes.js</code>.</p>
+  </section>
+
   <section id="msg">
     <h2>7. postMessage – Spiele sprechen mit der Übersicht</h2>
     <p>Läuft ein Spiel im Viewer der Übersicht, kann es Nachrichten senden:</p>
@@ -228,7 +281,7 @@ parent.postMessage({ type: 'easygames:prev'  }, '*');   // voriges Spiel</pre>
     <h3>Was in die App muss</h3>
     <ul>
       <li>Die <b>Spielordner</b> (je Spiel ein Ordner mit allen Dateien) – für Direktlinks reicht das.</li>
-      <li>Für die Übersicht zusätzlich: <code>index.html</code>, <code>games.js</code>, <code>guides.js</code> und optional <code>easygames.js</code>. Fehlen <code>games.js</code> und <code>guides.js</code>, bleibt die Übersicht leer.</li>
+      <li>Für die Übersicht zusätzlich: <code>index.html</code>, <code>device.js</code>, <code>games.js</code>, <code>modes.js</code>, <code>guides.js</code> und optional <code>easygames.js</code>. Fehlen <code>games.js</code> und <code>guides.js</code>, bleibt die Übersicht leer.</li>
       <li>Alle Pfade sind relativ. Die Ordnerstruktur darf nicht verändert werden.</li>
       <li>Die Dateien laden nichts aus dem Internet. Einzelne Spiele können dennoch Online-Funktionen haben (z. B. Mehrspieler per Code/QR, Speicherstand per Google).</li>
     </ul>

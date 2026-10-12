@@ -19,6 +19,7 @@
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
+ *      EasyGames.device();                                    // Geräteerkennung (siehe device.js): { type, role, os, input, … }
  *      EasyGames.guide('zotik', cb);                          // Anleitung + Steuerung (lädt guides.js bei Bedarf)
  */
 (function () {
@@ -74,6 +75,8 @@
   EG.get = function (id) { var g = games && find(id); return g ? { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: abs(g.path), card: g.img ? abs(g.img) : null } : null; };
   EG.url = function (id) { var g = games && find(id); return g ? abs(g.path) : null; };
   EG.baseUrl = base;
+  EG.device = function () { return window.EasyGamesDevice ? window.EasyGamesDevice.get() : null; };
+  if (!window.EasyGamesDevice) load('device.js', function () {});
   EG.guide = function (id, cb) {
     function go() { cb(guides && guides[id] || null); }
     if (guides) go(); else load('guides.js', function () { guides = window.EASYGAMES_GUIDES; go(); });

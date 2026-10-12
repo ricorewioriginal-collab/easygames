@@ -105,6 +105,15 @@
   :focus-visible{outline:3px solid var(--cy);outline-offset:3px}
   .tile:focus-visible{transform:translateY(-4px) scale(1.03);border-color:var(--cy);box-shadow:0 0 0 3px var(--cy),0 18px 40px rgba(0,0,0,.5),0 0 34px var(--g,rgba(0,229,255,.35));outline:0}
   @media (pointer:coarse){.help{height:40px;padding:0 14px}#vTab{height:34px;width:96px}}
+  .devhint{margin:14px 0 0;padding:10px 14px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.12));background:rgba(0,229,255,.07);color:#cfe0ee;font-size:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip2{height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#e8f0f7;font-size:14px;font-weight:700}
+  .chip2[aria-pressed=true]{background:linear-gradient(90deg,rgba(0,229,255,.28),rgba(139,92,246,.28));border-color:var(--cy)}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 2px}
+  .badges i{font-style:normal;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.1);color:#cfe0ee}
+  html.tv .chip2{height:52px;font-size:1rem}
+  html.tv .devhint{font-size:1rem}
+  html.tv .badges i{font-size:.8rem}
   .tvhint{display:none}
   /* TV: große Ziele, Fernbedienung (Pfeiltasten/OK/Zurück), Overscan-sichere Ränder */
   html.tv{font-size:20px}
@@ -142,6 +151,14 @@
       <span class="count" id="count"></span>
       <button class="pill" id="libBtn">&lt;/&gt; Alle Spiele einbetten</button>
       <a class="pill" href="einbinden.html" style="display:inline-flex;align-items:center;text-decoration:none">❓ Einbinden &amp; Hilfe</a>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Spielarten">
+      <button class="chip2" data-f="" aria-pressed="true">Alle</button>
+      <button class="chip2" data-f="pad" aria-pressed="false">📱 Handy-Controller</button>
+      <button class="chip2" data-f="online" aria-pressed="false">🌐 Online per Code/QR</button>
+      <button class="chip2" data-f="multi" aria-pressed="false">👥 Mehrspieler</button>
+    </div>
+    <p class="devhint" id="devHint"></p>
     </div>
   </header>
 
@@ -202,7 +219,9 @@
   </div>
 </div>
 
+<script src="device.js"></script>
 <script src="games.js"></script>
+<script src="modes.js"></script>
 <script src="guides.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -219,8 +238,9 @@ const iframeCode = (url, title) =>
 const embedMode = new URLSearchParams(location.search).has('embed');
 if (embedMode) document.body.classList.add('embed-mode');
 const params = new URLSearchParams(location.search);
-// TV-Modus: automatisch bei Smart-TV-Browsern, erzwingen mit ?tv=1, abschalten mit ?tv=0
-const isTv = params.get('tv') === '1' || (params.get('tv') !== '0' && /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|AFTS|AFTM|AFTB|AFTT|Android TV|BRAVIA|CrKey|Viera|Roku|VIDAA|PhilipsTV|Hisense/i.test(navigator.userAgent));
+// Geräteerkennung: device.js (TV, Handy, Tablet, Computer). Erzwingen mit ?device=tv|phone|tablet|desktop, ?tv=1 / ?tv=0
+const DEV = EasyGamesDevice.get(), MODES = window.EASYGAMES_MODES || {};
+const isTv = DEV.type === 'tv';
 if (isTv) document.documentElement.classList.add('tv');
 
 // ----- Kacheln -----
@@ -229,8 +249,12 @@ GAMES.forEach((g, i) => {
   c.className = 'card'; c.dataset.i = i; c.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
   const b = document.createElement('button');
   b.className = 'tile';
-  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><small></small><span class="play">Spielen ▶</span></div>`;
+  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><span class="badges"></span><small></small><span class="play">Spielen ▶</span></div>`;
   b.querySelector('b').textContent = g.title; b.querySelector('small').textContent = g.desc;
+  const m = MODES[g.id] || {}, bd = b.querySelector('.badges');
+  [['pad', '📱 Handy-Controller'], ['online', '🌐 Online'], ['multi', '👥 Mehrspieler']].forEach(([k, t]) => { if (m[k]) { const e = document.createElement('i'); e.textContent = t; bd.appendChild(e); } });
+  if (!bd.children.length) bd.remove();
+  c.dataset.m = Object.keys(m).filter(k => m[k]).join(' ');
   b.addEventListener('click', () => openGame(i));
   const h = document.createElement('button');
   h.className = 'help'; h.textContent = '📖 Anleitung'; h.setAttribute('aria-label', 'Anleitung: ' + g.title);
@@ -240,13 +264,26 @@ GAMES.forEach((g, i) => {
   $('grid').appendChild(c);
 });
 const tiles = [...$('grid').children];
+let modeF = '';
 function filt() {
   const q = $('q').value.trim().toLowerCase(); let n = 0;
-  tiles.forEach(t => { const m = !q || t.dataset.s.includes(q); t.hidden = !m; if (m) n++; });
+  tiles.forEach(t => { const m = (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')); t.hidden = !m; if (m) n++; });
   $('count').textContent = n + (n === 1 ? ' Spiel' : ' Spiele');
   $('empty').classList.toggle('hidden', n > 0);
 }
-$('q').addEventListener('input', filt); filt();
+$('q').addEventListener('input', filt);
+$('chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip2'); if (!b) return;
+  modeF = b.dataset.f; $('chips').querySelectorAll('.chip2').forEach(x => x.setAttribute('aria-pressed', x === b)); filt();
+});
+const HINTS = {
+  tv: '📺 TV erkannt – bei Spielen mit 📱 Handy-Controller erscheint ein QR-Code: Handys scannen ihn und werden zu Controllern. Pfeiltasten und OK steuern diese Seite.',
+  phone: '📱 Handy erkannt – Spiele direkt spielen. Zum Mitspielen an einem TV oder PC dort den QR-Code des Spiels scannen.',
+  tablet: '📱 Tablet erkannt – Spiele direkt spielen oder per QR-Code als Controller zu einem TV oder PC dazukommen.',
+  desktop: '💻 Computer erkannt – Spiele mit 📱 Handy-Controller lassen sich mit Handys koppeln: QR-Code im Spiel scannen.'
+};
+$('devHint').textContent = HINTS[DEV.type] || '';
+filt();
 const jsSnippet = (id) => `<!-- 1. Script einbinden (einmal pro Seite) -->
 <script src="${base}easygames.js"><\/script>
 
@@ -289,11 +326,14 @@ function goFull() {
   if (document.fullscreenElement || !req) return;
   try { const r = req.call(el); if (r && r.catch) r.catch(() => {}); } catch (e) {}
 }
+const gameUrl = g => abs(g.path) + (isTv && MODES[g.id] && MODES[g.id].tvParam ? '?tv' : '');   // am TV öffnen Spiele wie Kart Rush direkt die Lobby mit QR-Code
+function sendDevice() { try { $('frame').contentWindow.postMessage({ type: 'easygames:device', device: EasyGamesDevice.get() }, '*'); } catch (e) {} }
+EasyGamesDevice.on(() => { if (cur >= 0) sendDevice(); });
 function openGame(i, fromHash) {
   const wasOpen = cur >= 0;
   if (!wasOpen) ret = document.activeElement;
   cur = (i + GAMES.length) % GAMES.length;
-  const g = GAMES[cur], url = abs(g.path);
+  const g = GAMES[cur], url = gameUrl(g);
   $('vTitle').textContent = g.title;
   $('frame').title = g.title;
   $('frame').src = url;
@@ -324,7 +364,8 @@ addEventListener('popstate', () => {
 });
 $('frame').addEventListener('load', () => {
   try {
-    const w = $('frame').contentWindow; w.focus();
+    const w = $('frame').contentWindow; w.focus(); try { w.EASYGAMES_DEVICE = EasyGamesDevice.get(); } catch (e) {}
+    sendDevice();
     // gleiche Herkunft: TV-/Handy-Zurücktaste auch bei Fokus im Spiel abfangen
     if (!w.__egk) { w.__egk = 1; w.addEventListener('keydown', e => { if (isBack(e)) { e.preventDefault(); back(); } }, true); }
   } catch (e) {}
@@ -333,7 +374,8 @@ $('frame').addEventListener('load', () => {
 addEventListener('message', e => {
   if (e.source !== $('frame').contentWindow || !e.data) return;
   const t = e.data.type || e.data;
-  if (t === 'easygames:close') closeGame(); else if (t === 'easygames:menu') showBar(5000);
+  if (t === 'easygames:getDevice') sendDevice();
+  else if (t === 'easygames:close') closeGame(); else if (t === 'easygames:menu') showBar(5000);
   else if (t === 'easygames:next') openGame(cur + 1); else if (t === 'easygames:prev') openGame(cur - 1);
 });
 $('vTab').addEventListener('click', () => { showBar(6000); $('vClose').focus(); });
