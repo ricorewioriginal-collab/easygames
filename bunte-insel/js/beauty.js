@@ -37,7 +37,7 @@ BI.createBeauty = function (G) {
   if (!soft) { const stem = new BI.Batch(), head = new BI.Batch(), tuft = new BI.Batch();
     stem.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); for (let petal = 0; petal < 5; petal++) { const a = petal / 5 * BI.TAU; head.sph(Math.sin(a) * .105, .38, Math.cos(a) * .105, .095, 0xffffff, 0, 1, .45, 1); } head.sph(0, .405, 0, .065, 0xffd23f, 0, 1, .6, 1);
     for (let k = 0; k < 3; k++) tuft.cone(Math.sin(k * 2.1) * .07, 0, Math.cos(k * 2.1) * .07, .09, .42 + k * .05, 0x5cc04a, 4);
-    const NF = eco ? 120 : 330, NT = eco ? 200 : 520, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat, n); im.frustumCulled = false; scene.add(im); return im; };
+    const NF = eco ? 120 : 330, NT = eco ? 200 : 520, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat.clone(), n); im.frustumCulled = false; scene.add(im); return im; };
     const iS = mk(stem, NF), iH = mk(head, NF), iT = mk(tuft, NT), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();
     const PAL = [0xff5a8a, 0xffd23f, 0xffffff, 0xb36bff, 0xff8a1f, 0x6ac0ff];
     let nf = 0, nt = 0;
