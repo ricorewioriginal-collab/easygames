@@ -28,10 +28,10 @@ const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
 // Touch-Steuerung wie am Konsolen-Controller: links virtueller Joystick (lenken), rechts 4 Tasten im Raute-Layout
 // (unten GAS, links BREMSE, rechts DRIFT, oben ITEM). Ein Daumen zwischen zwei Nachbartasten drückt beide (z. B. Gas + Drift),
 // Wischen von Taste zu Taste wechselt sofort. Alles läuft über Pointer-Events auf einer Ebene; das DOM wird nur bei Änderungen angefasst.
-const TBTN = [['g', 'GAS', 0, 1], ['b', 'BREMSE', -1, 0], ['d', 'DRIFT', 1, 0], ['i', 'ITEM', 0, -1]], TBIT = { g: 1, b: 2, d: 4, i: 8 };
+const TBTN = [['g', 'GAS', 0, 1, '▲'], ['b', 'BREMSE', -1, 0, '▼'], ['d', 'DRIFT', 1, 0, '↯'], ['i', 'ITEM', 0, -1, '★']], TBIT = { g: 1, b: 2, d: 4, i: 8 };
 let touchReset = null;
 function buildTouch(root, st) {
-  root.innerHTML = '<div class="joy"><div class="jb"><div class="jk"></div></div></div><div class="pad">' + TBTN.map(([k, t]) => `<div class="tbtn tb-${k}" data-k="${k}">${t}</div>`).join('') + '</div>';
+  root.innerHTML = '<div class="joy"><div class="jb"><div class="jk"></div></div></div><div class="pad">' + TBTN.map(([k, t, , , ic]) => `<div class="tbtn tb-${k}" data-k="${k}"><i>${ic}</i>${t}</div>`).join('') + '</div>';
   const jb = root.querySelector('.jb'), jk = root.querySelector('.jk'), pad = root.querySelector('.pad'), els = {}, ptr = new Map();
   root.querySelectorAll('.tbtn').forEach(el => { els[el.dataset.k] = el; });
   let sid = null, hx = 0, hy = 0, ox = 0, oy = 0, rad = 50, mask = 0, g = null;
@@ -214,7 +214,7 @@ function initHost() {
       const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
       // Dasselbe Handy kommt nach einem Abbruch zurück: altes Kart übernehmen statt neu anzumelden
       const cid = typeof m.cid === 'string' ? m.cid.slice(0, 16) : '', back = cid && players.find(p => p.cid === cid);
-      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
+      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, slot: players.indexOf(back), cfg: cfgMsg() }); return updateLobby(); }
       if (racing) return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
       players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });

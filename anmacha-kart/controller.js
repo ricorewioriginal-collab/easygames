@@ -6,6 +6,7 @@ window.startController = function () {
   let cid = ''; try { cid = localStorage.getItem('akCid') || ''; } catch (e) {} if (!/^[a-z0-9]{8,16}$/.test(cid)) { cid = Math.random().toString(36).slice(2, 12).padEnd(8, '0'); try { localStorage.setItem('akCid', cid); } catch (e) {} }
   const logoSrc = i => `logos/${String(i + 1).padStart(2, '0')}.png`, put = html => { root.classList.remove('play'); root.innerHTML = html; }, st = { s: 0, g: 0, b: 0, d: 0, i: 0 };
   const tx = m => { try { conn && conn.open && conn.send(m); } catch (e) {} };
+  const full = () => { const d = document.documentElement; if (document.fullscreenElement || document.webkitFullscreenElement) return; try { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d, { navigationUI: 'hide' }); if (r && r.then) r.then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }, () => {}); } catch (e) {} };
   function screenJoin(msg) {
     stopPlay(); joined = false; clearTimeout(reT); clearInterval(joinT);
     put(`<h2>AnMaCha Kart Rush<br><small style="font-size:14px;color:var(--y)">Handy-Lenkrad · Raum ${esc(JOIN)}</small></h2>
@@ -22,7 +23,7 @@ window.startController = function () {
     $('cl').onclick = () => { logo = (logo + 1) % 13; $('cli').src = logoSrc(logo); $('cln').textContent = NAMES[logo]; };
     $('ct').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('ct').classList.toggle('on', TILT.on); };
     $('ci').onclick = () => { TILT.inv = !TILT.inv; $('ci').classList.toggle('on', TILT.inv); };
-    $('cj').onclick = () => { name = ($('cn').value || '').trim().slice(0, 14) || 'Gast'; try { localStorage.setItem('akName', name); localStorage.setItem('akLogo', logo); localStorage.setItem('akChar', ch); localStorage.setItem('akKart', kt); } catch (e) {} connect(); };
+    $('cj').onclick = () => { name = ($('cn').value || '').trim().slice(0, 14) || 'Gast'; try { localStorage.setItem('akName', name); localStorage.setItem('akLogo', logo); localStorage.setItem('akChar', ch); localStorage.setItem('akKart', kt); } catch (e) {} full(); connect(); };
   }
   async function connect(re) {
     kicked = false; clearTimeout(reT); clearInterval(joinT); if (!re) tries = 0;
@@ -58,6 +59,7 @@ window.startController = function () {
   function onData(m) {
     if (!m) return;
     if (m.cfg) { cfg = m.cfg; if (m.t === 'cfg') return showCfg(); }
+    if (m.t === 'wel' && Number.isInteger(m.slot)) root.style.setProperty('--acc', SLOTC[m.slot % 4]);
     if (m.t === 'wel') { clearInterval(joinT); if (joined && ph !== 'lobby') return; joined = true; tries = 0; waitScreen('Du bist dabei! 🎉', 'Warte, bis das Rennen startet …', m.race ? '' : '▶ RENNEN STARTEN'); }
     else if (m.t === 'full') { kicked = true; screenJoin(m.msg || 'Leider kein Platz mehr.'); try { conn.close(); } catch (e) {} }
     else if (m.t === 'ev') { if (m.e === 'hit' && navigator.vibrate) navigator.vibrate([120, 40, 120]); if (m.e === 'fin') hud('🏁 Ziel! Platz ' + m.pos); if (m.e === 'res') { waitScreen('Rennen beendet 🏁', 'Du wurdest ' + m.pos + '. – weiter geht’s mit dem nächsten Rennen.', '▶ WEITER'); } }
@@ -72,7 +74,7 @@ window.startController = function () {
   function hud(t) { const h = root.querySelector('.hudline'); if (h) h.textContent = t; }
   // Steuerfläche (Vollbild)
   function startPlay() {
-    root.classList.add('play'); root.innerHTML = '<div class="hudline"></div><div class="tc" id="cz" style="display:block"></div>'; buildTouch($('cz'), st);
+    root.classList.add('play'); root.innerHTML = '<div class="hudline"></div><div class="tc" id="cz" style="display:block"></div>'; buildTouch($('cz'), st); $('cz').addEventListener('pointerdown', full);
     try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { wake = w; }).catch(() => {}); } catch (e) {}
     clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const msg = { t: 'in', s: Math.round(s * 100) / 100, g: st.g | pa.g, b: st.b | pa.b, d: st.d | pa.d, i: st.i | pa.i }, k = msg.s + '|' + msg.g + msg.b + msg.d + msg.i, now = Date.now(); if (k !== last || now - lastAt > 250) { last = k; lastAt = now; tx(msg); } }, 33);
     try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {}

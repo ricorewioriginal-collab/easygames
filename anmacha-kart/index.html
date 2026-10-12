@@ -73,19 +73,20 @@
   .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;-webkit-touch-callout:none;--s:clamp(54px,15.5vmin,92px);--j:clamp(104px,28vmin,156px);--e:calc(16px + env(safe-area-inset-bottom))}
   body.touch.racing .tc.solo{display:block}
   .tc .joy{position:absolute;left:0;top:0;bottom:0;width:50%}
-  .tc .jb{position:absolute;left:calc(22px + env(safe-area-inset-left));bottom:calc(var(--e) + 6px);width:var(--j);height:var(--j);border-radius:50%;border:3px solid rgba(255,255,255,.42);background:radial-gradient(circle,rgba(10,14,40,.15) 40%,rgba(10,14,40,.45));box-shadow:inset 0 0 18px rgba(0,229,255,.18);pointer-events:none;opacity:.7;transition:opacity .15s,transform .18s ease-out;will-change:transform}
-  .tc .jb::before,.tc .jb::after{content:'◀';position:absolute;top:50%;left:8%;transform:translateY(-50%);font-size:calc(var(--j) * .13);color:rgba(255,255,255,.5)}
-  .tc .jb::after{content:'▶';left:auto;right:8%}
+  .tc .jb{position:absolute;left:calc(22px + env(safe-area-inset-left));bottom:calc(var(--e) + 6px);width:var(--j);height:var(--j);border-radius:50%;border:2px solid rgba(255,255,255,.16);background:radial-gradient(circle,rgba(255,255,255,.02) 45%,rgba(255,255,255,.07));box-shadow:0 10px 30px rgba(0,0,0,.35);pointer-events:none;opacity:.75;transition:opacity .15s,transform .18s ease-out;will-change:transform}
+  .tc .jb::before,.tc .jb::after{content:'';position:absolute;top:50%;left:9%;width:calc(var(--j) * .07);height:calc(var(--j) * .07);border-left:3px solid rgba(255,255,255,.4);border-bottom:3px solid rgba(255,255,255,.4);transform:translateY(-50%) rotate(45deg)}
+  .tc .jb::after{left:auto;right:9%;transform:translateY(-50%) rotate(-135deg)}
   .tc .jb.act{opacity:1;transition:opacity .15s}
-  .tc .jk{position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8);box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 14px rgba(0,229,255,.55);will-change:transform}
+  .tc .jk{position:absolute;left:29%;top:29%;width:42%;height:42%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff,#d4d9e4 70%,#aab2c2);box-shadow:0 0 0 4px var(--acc,#ff2d95),0 8px 18px rgba(0,0,0,.5);will-change:transform}
   .tc .jb:not(.act) .jk{transition:transform .12s ease-out}
   .tc .pad{position:absolute;right:calc(14px + env(safe-area-inset-right));bottom:var(--e);width:calc(var(--s) * 2.55);height:calc(var(--s) * 2.55);pointer-events:none}
-  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:grid;place-items:center;text-align:center;font:900 clamp(11px,3vmin,17px) 'Trebuchet MS',sans-serif;letter-spacing:.02em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);border:3px solid rgba(255,255,255,.55);box-shadow:0 4px 12px rgba(0,0,0,.4);transition:filter .06s;user-select:none}
-  .tc .tbtn.on{filter:brightness(1.45);border-color:#fff;box-shadow:0 0 16px rgba(255,255,255,.55)}
-  .tc .tb-g{transform:translateY(calc(var(--s) * .775));background:radial-gradient(circle at 35% 30%,rgba(90,255,140,.8),rgba(10,130,50,.65))}
-  .tc .tb-b{transform:translateX(calc(var(--s) * -.775));background:radial-gradient(circle at 35% 30%,rgba(120,150,255,.75),rgba(20,28,110,.65))}
-  .tc .tb-d{transform:translateX(calc(var(--s) * .775));background:radial-gradient(circle at 35% 30%,rgba(255,190,80,.8),rgba(200,90,10,.65))}
-  .tc .tb-i{transform:translateY(calc(var(--s) * -.775));background:radial-gradient(circle at 35% 30%,rgba(255,110,190,.8),rgba(160,20,100,.65))}
+  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:800 clamp(11px,calc(var(--s) * .16),19px) Inter,system-ui,'Segoe UI',Roboto,sans-serif;letter-spacing:.04em;color:var(--bc);background:rgba(16,18,24,.78);border:3px solid var(--bc);box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:background .06s,color .06s,scale .06s;user-select:none}
+  .tc .tbtn i{font-style:normal;font-size:1.5em;line-height:1}
+  .tc .tbtn.on{background:var(--bc);color:#0c0e13;scale:.93;box-shadow:0 0 22px var(--bc)}
+  .tc .tb-g{--bc:#2ee58a;transform:translateY(calc(var(--s) * .775))}
+  .tc .tb-b{--bc:#ff5468;transform:translateX(calc(var(--s) * -.775))}
+  .tc .tb-d{--bc:#ffb020;transform:translateX(calc(var(--s) * .775))}
+  .tc .tb-i{--bc:#ff4fd8;transform:translateY(calc(var(--s) * -.775))}
   /* Solo am Touch-Gerät: Platzierung, Runde und Tempo nach oben, damit nichts unter Joystick oder Tasten liegt */
   body.touch.racing .vp:only-child .nm{display:none}
   body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:calc(20px + clamp(50px,9vw,78px));top:8px;font-size:clamp(28px,8vmin,48px)}
@@ -111,12 +112,17 @@
   .chars button small{display:block;font-weight:600;font-size:9.5px;color:var(--mut)}
   .chars button.on{border-color:var(--ma);box-shadow:0 0 12px rgba(255,45,149,.55);background:rgba(255,45,149,.16)}
   @media (max-width:420px){.chars{grid-template-columns:repeat(4,1fr)}}
-  #ctl{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 0,#15246e,#05060f 70%);overflow:auto;touch-action:pan-y}
+  #ctl{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:radial-gradient(90% 70% at 0 0,rgba(255,45,149,.10),transparent 60%),radial-gradient(90% 70% at 100% 100%,rgba(255,154,31,.08),transparent 60%),linear-gradient(160deg,#14161c,#08090c);overflow:auto;touch-action:pan-y}
+  /* Handy als Lenkrad: große Tasten, ruhiger dunkler Hintergrund, Spielerfarbe als Akzent */
+  #ctl .tc{--s:clamp(66px,min(27vmin,18vw),132px);--j:clamp(130px,min(50vmin,32vw),250px);--e:calc(18px + env(safe-area-inset-bottom))}
+  #ctl.play::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--acc,#ff2d95);box-shadow:0 0 18px var(--acc,#ff2d95);z-index:3}
   body.ctrl #ctl{display:flex}
+  body.ctrl>button[aria-label="Mit Google speichern"]{display:none!important}  /* lag auf dem Handy-Lenkrad über dem Joystick */
   #ctl h2{font-size:22px;text-align:center}
   #ctl .st{text-align:center;color:var(--y);font-weight:800;font-size:15px;min-height:20px}
   #ctl.play{padding:0;touch-action:none;overflow:hidden}
-  #ctl .hudline{position:absolute;left:0;right:0;top:calc(8px + env(safe-area-inset-top));text-align:center;font:900 18px 'Trebuchet MS',sans-serif;text-shadow:0 2px 0 #000;z-index:2;pointer-events:none}
+  #ctl .hudline{position:absolute;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);max-width:calc(100% - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:8px 20px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font:800 clamp(14px,4.6vmin,20px) Inter,system-ui,sans-serif;letter-spacing:.02em;z-index:2;pointer-events:none}
+  #ctl .hudline:empty{display:none}
   #ctl .big{align-self:center}
   /* Ladebildschirm */
   #loader{position:fixed;inset:0;z-index:25;display:grid;place-items:center;padding:24px;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#24125e 0,#0b0b2a 52%,#05060f 100%);transition:opacity .5s ease,visibility .5s}
