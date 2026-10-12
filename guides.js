@@ -1,9 +1,9 @@
 // Spielanleitungen und Bedienung je Spiel-ID (wird von index.html und easygames.js genutzt)
 window.EASYGAMES_GUIDES = {
  "zotik": {
-  "anleitung": "Zotik ist ein 3D-Action-Rollenspiel (Kapitel 1: Lunaris). Du erkundest die Welt, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), kämpfst gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Inventar, Fähigkeiten und Hilfe; gespeichert wird über das Menü.",
+  "anleitung": "Zotik ist ein 3D-Action-Rollenspiel mit zehn Welten von Lunaris bis Elyndra und einem Endspiel im Weltenriss. Du erkundest die Welten, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), löst Rätsel, kämpfst mit deinen Gefährten gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Weltreise, Inventar, Fähigkeiten, Steuerung mit Optionen und Koop; das Spiel speichert automatisch, zusätzlich über das Menü.",
   "steuerung": [
-   "PC: WASD bewegen, Maus ziehen = Kamera, J oder Klick = Angriff (3-Hieb-Kombo), Shift = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc = Menü",
+   "PC: WASD bewegen, Maus ziehen = Kamera, J oder Klick = Angriff (3-Hieb-Kombo), Shift = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc = Menü, Antworten in Gesprächen mit 1–9 oder Pfeiltasten + Enter",
    "PC (Nautilux, sobald freigeschaltet): V = ein-/aussteigen, B = Form wechseln",
    "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff und Ausweichen, Fähigkeit-Taste (tippen = einsetzen, halten = wechseln), Aktion-Taste (Sprechen, Öffnen, Einsteigen), Menü-Taste ☰ oben links"
   ],
