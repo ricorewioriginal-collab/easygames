@@ -37,6 +37,8 @@ try { renderer = new T.WebGLRenderer({canvas: $('world'), antialias: true, alpha
 catch (firstError) {
   try { renderer = new T.WebGLRenderer({canvas: $('world'), antialias: false, alpha: false, powerPreference: 'low-power'}); }
   catch (secondError) {
+   try { renderer = new T.WebGLRenderer({canvas: $('world'), antialias: false, alpha: false, stencil: false, depth: true, precision: 'mediump', failIfMajorPerformanceCaveat: false}); }
+   catch (thirdError) {
     // Manche WebViews bieten weder WebGL 2 noch WebGL 1. Dieselbe Spiellogik bleibt in 2D spielbar.
     let canvas = $('world'), ctx = canvas.getContext('2d');
     if (!ctx) { const fresh = canvas.cloneNode(false); canvas.replaceWith(fresh); canvas = fresh; ctx = canvas.getContext('2d'); }
@@ -46,6 +48,7 @@ catch (firstError) {
     renderer = {shadowMap: {}, info: {render: {calls: 0, triangles: 0}}, setPixelRatio(n) { pixelRatio = Math.min(n, 1.5); }, getPixelRatio: () => pixelRatio,
       setSize(w, h) { canvas.width = Math.max(1, Math.round(w * pixelRatio)); canvas.height = Math.max(1, Math.round(h * pixelRatio)); canvas.style.width = w + 'px'; canvas.style.height = h + 'px'; ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0); },
       render() { drawCanvasFallback(ctx, canvas.width / pixelRatio, canvas.height / pixelRatio); }};
+   }
   }
 }
 const QUALITY = {
@@ -247,7 +250,7 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
 // ───────── Inselbau ─────────
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
-function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .25 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
+function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
 function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
 function arch(x, z) { const c = levels[save.level].accent; for (const s of [-1, 1]) { mesh('box', c, x + s * 2.5, 2.5, z, .8, 5, .9); mesh('box', c, x + s * 2.5, .3, z, 1.3, .6, 1.4); mesh('box', c, x + s * 2.5, 5, z, 1.25, .4, 1.3); } const r = ring(x, 4.8, z, 2.5, c); r.scale.y = .6; mesh('box', c, x, 6.2, z, 5.5, .4, 1); }
 const SLOTS = {keeper: {x: -4, z: 13, y: 0}, side: {x: 12, z: 9, y: 0}, helper: {x: -10, z: -12, y: 0}};
@@ -302,7 +305,7 @@ function buildLevel(index, titleOnly = false) {
   island(0, 0, cfg.mainRadius || 27); island(37, 2, 7, 1); island(-36, -5, 6, 2);
   for (let i = 0; i < 4; i++) platform(0, -11 - i * 2.4, 5.5, 3, .75 * (i + 1)); platform(0, -20, 10, 6, 3);
   for (const [x, z, w, d, y] of cfg.extras) platform(x, z, w, d, y);
-  makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 2, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -5, 2, 12);
+  makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 6, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -1.2, 2, 12);
   if (index >= 3) makeUpdraft(0, 5, 0, 13);
   if (index === 4) { platform(-13, -4, 7, 7, 5); platform(12, -7, 7, 7, 7); makeUpdraft(-13, 1, 0, 14); makeUpdraft(12, -1, 0, 16); for (const [x, z] of [[-13, -4], [12, -7]]) for (let j = 0; j < 5; j++) mesh('gem', cfg.accent, x - 3 + j * 1.5, 1.2, z + 4, .65, 2.8, .65).rotation.z = (j - 2) * .15; }
   if (index === 5) { for (const sign of [-1, 1]) { for (let j = 0; j < 4; j++) platform(sign * (8 + j * 3), -2 - j * 2, 4, 4, .6 + j * .6); makeUpdraft(sign * 16, 2, 0, 14); } }
@@ -403,6 +406,9 @@ function inputDirection() {
   return {x, z, length, dx: x * Math.cos(camYaw) + z * Math.sin(camYaw), dz: -x * Math.sin(camYaw) + z * Math.cos(camYaw)};
 }
 const approach = (v, target, rate, dt) => v + (target - v) * (1 - Math.exp(-dt * rate));
+// Landehilfe (Handy): über einer Insel sinkt Aeru im Flug von selbst, solange er nicht steigt – die Mitte der Insel liegt frei von Aufwinden.
+function flightFloor(p) { return floorAt(p.x, p.z, p.y + .42); }
+let lastGround = null;
 function movePlayer(dt) {
   const input = inputDirection(), {dx, dz, length} = input;
   const jumpDown = jumpHeld || keys.has('Space'), shiftDown = keys.has('ShiftLeft') || keys.has('ShiftRight') || diveHeld;
@@ -416,7 +422,7 @@ function movePlayer(dt) {
   if (state.dodge > 0) { state.dodge -= dt; state.vx = state.dodgeX * 17; state.vz = state.dodgeZ * 17; }
   else {
     let speed, rate;
-    if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed; rate = length > .05 ? 3.4 : 1.8; }
+    if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed; rate = length > .05 ? 3.4 : 1.8; const ff = flightFloor(state); if (ff > -50 && state.y - ff < 12) { speed *= .75; rate = length > .05 ? 5 : 6; } }
     else if (gliding) { speed = 9; rate = 4; }
     else if (air) { speed = 8; rate = 6; }
     else { speed = shiftDown ? 10.5 : 7.4; rate = length > .05 ? 16 : 22; }
@@ -428,6 +434,7 @@ function movePlayer(dt) {
     if (shiftDown) state.vy = approach(state.vy, -7.5, 4, dt);
     else if (jumpDown && jumpHeldTime > .22 && state.stamina > 0) { state.vy = approach(state.vy, 4.2, 3, dt); state.stamina = Math.max(0, state.stamina - 16 * assist * dt); }
     // Ohne Steigen erholen sich die Flügel langsam, damit niemand ohne Kraft unter einer Insel festhängt.
+    else if (flightFloor(state) > -50 && state.y - flightFloor(state) < 12) { state.vy = approach(state.vy, -3.2, 3, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
     else { state.vy = approach(state.vy, state.stamina > 0 ? -1.4 : -2.6, 2.5, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
   } else if (gliding) { state.vy = Math.max(-2.2, state.vy - 5 * dt); state.stamina = Math.max(0, state.stamina - 10 * dt); }
   else {
@@ -473,10 +480,12 @@ function movePlayer(dt) {
     const d = Math.hypot(nx - t.x, nz - t.z);
     if (d < lim && d > 0) { const ux = (nx - t.x) / d, uz = (nz - t.z) / d; nx = t.x + ux * lim; nz = t.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; } }
   }
-  state.x = nx; state.z = nz;
+  const px = state.x, pz = state.z; state.x = nx; state.z = nz;
   if (length > .05 || state.dodge > 0) { const target = Math.atan2(-(state.dodge > 0 ? state.dodgeX : dx), -(state.dodge > 0 ? state.dodgeZ : dz)); state.yaw += Math.atan2(Math.sin(target - state.yaw), Math.cos(target - state.yaw)) * (1 - Math.exp(-dt * 13)); state.distance += Math.hypot(state.vx, state.vz) * dt; }
   const oldY = state.y, fallSpeed = state.vy, wasGround = state.onGround;
-  state.y += state.vy * dt; const floor = floorAt(state.x, state.z, oldY + .42);
+  state.y += state.vy * dt; let floor = floorAt(state.x, state.z, oldY + .42);
+  // Durchfallschutz: der ganze Weg dieses Schritts zählt (schneller Fall, Kante, Plattformrand), nicht nur der Endpunkt.
+  if (state.vy <= 0) { const f0 = floorAt(px, pz, oldY + .42), f1 = floorAt((px + nx) / 2, (pz + nz) / 2, oldY + .42); if (f0 > floor && f0 <= oldY + .42 && state.y <= f0) floor = f0; if (f1 > floor && f1 <= oldY + .42 && state.y <= f1) floor = f1; }
   if (state.y <= floor && state.vy <= 0) {
     state.y = floor; state.vy = 0; state.onGround = true; state.flight = false; state.jumpCut = true;
     state.stamina = Math.min(maxStamina(), state.stamina + dt * 45);
@@ -484,7 +493,8 @@ function movePlayer(dt) {
   } else state.onGround = false;
   if (state.onGround && length > .1) { state.stepDist += Math.hypot(state.vx, state.vz) * dt; if (state.stepDist > 1.7) { state.stepDist = 0; sfx.step(); } }
   if (starGlow) state.stamina = maxStamina();
-  if (state.y < -16) respawn('Der Wind fängt dich auf · zurück am letzten Rastpunkt');
+  if (state.onGround) lastGround = {x: state.x, y: state.y, z: state.z};
+  if (state.y < -16) { const g = lastGround; respawn('Der Wind fängt dich auf · zurück am letzten Rastpunkt' + (g ? ` · Abgestürzt nach Boden bei x ${g.x.toFixed(0)} z ${g.z.toFixed(0)} y ${g.y.toFixed(1)}, Insel ${save.level + 1}` : '')); }
   // Rastpunkte: Wer sicher steht, wird hier wieder aufgefangen.
   state.cpTimer -= dt;
   if (state.onGround && state.cpTimer <= 0) {
@@ -1117,19 +1127,21 @@ function autoAdjust(ms) {
   else if (avg < 14.5) { if (++goodWindows >= 3) { goodWindows = 0; if (renderScale < 1) renderScale = Math.min(1, renderScale + .1); else if (i < 2) autoLevel = QUALITY_ORDER[i + 1]; else return; applyQuality(); } }
   else goodWindows = 0;
 }
+const markerCache = new Map(); let markerTimer = 0;
 function animate(now) {
   requestAnimationFrame(animate);
   const dt = Math.min(.1, (now - (last || now)) / 1000); last = now; time += dt;
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
-  for (const d of updrafts) d.g.children.slice(1).forEach((m, i) => m.position.y = (time * 3 + i * d.height / 4) % d.height);
+  for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
   for (const r of flightRings) r.m.rotation.z = time * .3;
   for (const g of gems) if (!g.got) { g.m.rotation.y = time * 1.2 + g.id; g.m.position.y = g.y + Math.sin(time * 2 + g.id) * .15; }
   for (const it of items) if (it.m.visible) { it.m.rotation.y = time * 1.6; it.m.position.y = it.y + Math.sin(time * 2.4) * .2; }
   for (const t of torches) { t.light.rotation.y = time; t.halo.rotation.y = time * .6; }
+  markerTimer -= dt; if (markerTimer <= 0) { markerTimer = .2; markerCache.clear(); }
   if (state) for (const n of npcs.values()) {
     if (!n.present) continue;
     n.g.position.set(n.x, n.y + Math.abs(Math.sin(time * 2.2 + n.x)) * .06, n.z);
-    const color = npcMarker(n.id); n.marker.visible = !!color; if (color) { n.marker.material = mat(color, true); n.marker.position.set(n.x, n.y + 3.3 + Math.sin(time * 2) * .15, n.z); n.marker.rotation.y = time; }
+    let color = markerCache.get(n.id); if (color === undefined) { color = npcMarker(n.id); markerCache.set(n.id, color); } n.marker.visible = !!color; if (color) { if (n.markerColor !== color) { n.markerColor = color; n.marker.material = mat(color, true); } n.marker.position.set(n.x, n.y + 3.3 + Math.sin(time * 2) * .15, n.z); n.marker.rotation.y = time; }
     if (mode !== 'title' && dist(state, n) < 6) n.g.rotation.y = approach(n.g.rotation.y, Math.atan2(n.x - state.x, n.z - state.z), 6, dt);
   }
   if (portal) { portal.rotation.z = time * .15; portal.material.emissiveIntensity = save.cores[save.level] ? 1.2 : .15; }
@@ -1162,36 +1174,62 @@ function music(dt) {
 // ───────── 2D-Rückfall (ohne WebGL) ─────────
 function drawCanvasFallback(c, w, h) {
   if (!state || !save) return;
-  const cfg = levels[save.level], s = Math.min(w, h) / 42, cx = w / 2, cy = h * .53, cs = Math.cos(camYaw), sn = Math.sin(camYaw);
-  const point = (x, z) => { const dx = x - state.x, dz = z - state.z; return [cx + (dx * cs - dz * sn) * s, cy + (dx * sn + dz * cs) * s]; };
-  const circle = (x, z, r, fill, stroke, line = 1) => { const [px, py] = point(x, z); if (px + r * s < 0 || px - r * s > w || py + r * s < 0 || py - r * s > h) return; c.beginPath(); c.arc(px, py, Math.max(1, r * s), 0, TAU); c.fillStyle = fill; c.fill(); if (stroke) { c.strokeStyle = stroke; c.lineWidth = line; c.stroke(); } };
+  // Schräge Pseudo-3D-Ansicht: Höhe ist sichtbar (Inseln mit Dicke, Schatten am Boden, Höhenlinie), Tiefe sortiert von hinten nach vorn.
+  const cfg = levels[save.level], T_ = .52, K = .95, s = Math.min(w, h * .85) / 34, cx = w / 2, cy = h * .64, cs = Math.cos(camYaw), sn = Math.sin(camYaw);
+  const P = (x, y, z) => { const dx = x - state.x, dz = z - state.z, rz = dx * sn + dz * cs; return [cx + (dx * cs - dz * sn) * s, cy + rz * s * T_ - (y - state.y) * s * K, rz]; };
+  const ell = (px, py, rx, ry, fill, stroke, lw = 1) => { c.beginPath(); c.ellipse(px, py, Math.max(.5, rx), Math.max(.5, ry), 0, 0, TAU); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.lineWidth = lw; c.strokeStyle = stroke; c.stroke(); } };
+  const poly = (pts, fill, stroke) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.lineWidth = 1.5; c.strokeStyle = stroke; c.stroke(); } };
   const label = (text, x, y, color = '#f8f6df') => { c.font = 'bold 11px system-ui,sans-serif'; c.textAlign = 'center'; c.lineWidth = 3; c.strokeStyle = '#17313e'; c.strokeText(text, x, y); c.fillStyle = color; c.fillText(text, x, y); };
-  const bg = c.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, cfg.sky); bg.addColorStop(1, '#70c3c8'); c.fillStyle = bg; c.fillRect(0, 0, w, h);
-  c.strokeStyle = '#ffffff29'; c.lineWidth = 1; for (let y = 18; y < h; y += 42) { c.beginPath(); c.moveTo(0, y + Math.sin(time + y) * 3); c.lineTo(w, y + Math.sin(time + y) * 3); c.stroke(); }
-  for (const ground of solids) {
-    if (ground.r) { circle(ground.x + .35, ground.z + .6, ground.r + 1.4, '#235e6a'); circle(ground.x, ground.z, ground.r + .45, cfg.rock); circle(ground.x, ground.z, ground.r - .35, cfg.grass, '#e4dfa990', 2); }
-    else { const corners = [[ground.x - ground.w / 2, ground.z - ground.d / 2], [ground.x + ground.w / 2, ground.z - ground.d / 2], [ground.x + ground.w / 2, ground.z + ground.d / 2], [ground.x - ground.w / 2, ground.z + ground.d / 2]]; c.beginPath(); corners.forEach(([x, z], i) => { const p = point(x, z); i ? c.lineTo(...p) : c.moveTo(...p); }); c.closePath(); c.fillStyle = ground.y > 1 ? '#dccdac' : cfg.grass; c.fill(); c.strokeStyle = '#f4ecd2'; c.lineWidth = 2; c.stroke(); const [px, py] = point(ground.x, ground.z); if (ground.y > .5) label(ground.y.toFixed(1) + ' m', px, py + 4, '#5a4a2a'); }
-  }
-  for (let i = 0; i < 15; i++) { const z = 19 - i * 2.5, [x0, y0] = point(Math.sin(i * .6) * 1.4, z); c.save(); c.translate(x0, y0); c.rotate(-camYaw + i * .12); c.fillStyle = '#d7c7a6'; c.fillRect(-s * .9, -s * .38, s * 1.8, s * .76); c.restore(); }
-  for (const t of fallbackTrees) { const [x, y] = point(t.x, t.z); if (x < -30 || x > w + 30 || y < -30 || y > h + 30) continue; c.fillStyle = '#2d6c5b'; c.beginPath(); c.arc(x + 3, y + 5, t.s * s * 1.65, 0, TAU); c.fill(); c.fillStyle = cfg.leaf; c.beginPath(); c.arc(x, y, t.s * s * 1.65, 0, TAU); c.fill(); }
-  for (const u of updrafts) { circle(u.x, u.z, 2.2, '#66e6d633', '#9cf8e0', 2); const [x, y] = point(u.x, u.z); label('↑', x, y + 5, '#dcfff3'); }
-  for (const t of torches) { const [x, y] = point(t.x, t.z); circle(t.x, t.z, .72, t.lit ? '#ffe3a3' : '#59677b', t.lit ? '#fff5c9' : '#bdc6ca', 2); label(t.lit ? '✦' : '◇', x, y + 4, t.lit ? '#ffeaa6' : '#d5dce0'); }
-  for (const g of gems) { if (g.got) continue; const [x, y] = point(g.x, g.z); c.save(); c.translate(x, y); c.rotate(Math.PI / 4); c.fillStyle = '#b9ffe2'; c.fillRect(-s * .23, -s * .23, s * .46, s * .46); c.restore(); }
-  for (const it of items) { if (!it.m.visible) continue; const [x, y] = point(it.x, it.z); circle(it.x, it.z, .8, it.color, '#fff', 2); label(it.label, x, y - 14); }
-  for (const r of flightRings) { if (r.got) continue; const [x, y] = point(r.x, r.z); circle(r.x, r.z, 1.15, '#ffdc8440', '#ffe8a8', 3); label('↟ ' + Math.round(r.y) + 'm', x, y - 15, '#ffeab3'); }
-  for (const a of anchors) { if (a.broken) continue; const [x, y] = point(a.x, a.z); circle(a.x, a.z, .9, '#9b7fe6', '#fff', 2); label('ANKER ' + a.y + 'm', x, y - 14); }
-  circle(0, -21, 2.1, '#634a6a', '#ffdda0', 3); { const [x, y] = point(0, -21); label('STERNENTOR', x, y - 29); }
-  for (const n of npcs.values()) { if (!n.present) continue; const [x, y] = point(n.x, n.z); circle(n.x, n.z, .85, story.npcs[n.id].color, '#fff0c8', 2); const mk = npcMarker(n.id); label(n.name + (mk ? ' !' : ''), x, y - 12, mk || '#ffe4a2'); }
-  for (const e of enemies) { if (e.state === 'dead') continue; const [x, y] = point(e.x, e.z); circle(e.x, e.z, .8, ENEMY[e.kind].color, e.state === 'windup' ? '#ff5a3d' : '#edb3a4', e.state === 'windup' ? 4 : 2); label(e.state === 'windup' ? '!' : '✕', x, y + 4, '#ffc4af'); }
-  for (const o of orbPool) if (o.life > 0) circle(o.m.position.x, o.m.position.z, .4, '#ff8a6a');
-  for (const k of markers) circle(k.x, k.z, 1.6, '#ff6a4d55', '#ff6a4d', 2);
-  for (const wv of waves) { const [x, y] = point(boss.def.center.x, boss.def.center.z); c.beginPath(); c.arc(x, y, wv.r * s, 0, TAU); c.lineWidth = 3; c.strokeStyle = '#f5baa1'; c.stroke(); }
-  if (boss && boss.g.visible) { circle(boss.def.center.x, boss.def.center.z, 2.2, '#555173', boss.state === 'open' ? '#ffe39a' : '#f9b9a5', 4); const [x, y] = point(boss.def.center.x, boss.def.center.z); label(boss.def.name.split(' · ')[0] + (boss.state === 'open' ? ' · OFFEN' : ''), x, y - 33); }
-  for (const gust of gusts) { const [x, y] = point(gust.g.position.x, gust.g.position.z); const radius = Math.max(.4, 3 - gust.age * 2) * s; c.beginPath(); c.arc(x, y, radius, 0, TAU); c.lineWidth = 3; c.strokeStyle = '#a9ffeb'; c.stroke(); }
-  if (currentTarget) { const [x, y] = point(currentTarget.x, currentTarget.z); c.strokeStyle = '#ffe39a'; c.lineWidth = 2; c.beginPath(); c.arc(x, y, 14, 0, TAU); c.stroke(); }
-  const lift = Math.min(85, Math.max(0, state.y) * s * .55); if (lift) { c.beginPath(); c.ellipse(cx, cy, s * .7, s * .38, 0, 0, TAU); c.fillStyle = '#12485688'; c.fill(); c.strokeStyle = '#ffffff77'; c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx, cy - lift); c.stroke(); }
-  c.save(); c.translate(cx, cy - lift); c.rotate(state.yaw - camYaw); c.fillStyle = '#d6bd83'; c.beginPath(); c.moveTo(-s * .35, s * .1); c.lineTo(-s * 1.15, s * .48); c.lineTo(-s * .45, -s * .48); c.moveTo(s * .35, s * .1); c.lineTo(s * 1.15, s * .48); c.lineTo(s * .45, -s * .48); c.fill(); c.fillStyle = '#48b9b1'; c.beginPath(); c.ellipse(0, 0, s * .52, s * .72, 0, 0, TAU); c.fill(); c.beginPath(); c.moveTo(0, -s * 1.02); c.lineTo(-s * .36, -s * .35); c.lineTo(s * .36, -s * .35); c.closePath(); c.fill(); c.fillStyle = '#f5e3aa'; c.beginPath(); c.arc(0, -s * .54, s * .24, 0, TAU); c.fill(); c.restore();
-  if (state.y > .5) label('HÖHE ' + state.y.toFixed(1) + ' m', cx, cy - lift - s * 1.3);
+  const on = (px, py, m = 60) => px > -m && px < w + m && py > -m * 3 && py < h + m * 3;
+  const bg = c.createLinearGradient(0, 0, 0, h); bg.addColorStop(0, cfg.sky); bg.addColorStop(1, cfg.fog); c.fillStyle = bg; c.fillRect(0, 0, w, h);
+  for (let i = 0; i < 7; i++) { const px = ((i * 197 + time * (4 + i)) % (w + 240)) - 120, py = h * (.1 + (i % 4) * .09); ell(px, py, 60 + i * 9, 12 + i * 2, '#ffffff38'); }
+  // Inseln und Plattformen von hinten nach vorn.
+  const solidList = solids.map(o => ({o, d: P(o.x, o.y, o.z)[2]})).sort((a, b) => a.d - b.d);
+  const drawIsland = o => {
+    const [px, py] = P(o.x, o.y, o.z), rx = o.r * s, ry = rx * T_, side = 1.2 * s * K;
+    if (!on(px, py, rx + 40)) return;
+    poly([[px - rx, py + side * .6], [px + rx, py + side * .6], [px, py + side * .6 + Math.min(h * .55, 8 * s * K)]], cfg.rock, '#0006');
+    ell(px, py + side, rx, ry, '#2b5a4c'); c.fillStyle = '#2b5a4c'; c.fillRect(px - rx, py, rx * 2, side);
+    ell(px, py + side, rx, ry, '#2b5a4c'); ell(px, py, rx, ry, cfg.grass, '#e4dfa9aa', 2); ell(px, py, rx * .7, ry * .7, '#ffffff14');
+  };
+  const drawBox = o => {
+    const hw = o.w / 2, hd = o.d / 2, cn = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
+    const top = cn.map(([a, b]) => P(o.x + a, o.y, o.z + b)), bot = cn.map(([a, b]) => P(o.x + a, o.y - 1, o.z + b)), mid = P(o.x, o.y, o.z)[2];
+    if (!on(top[0][0], top[0][1], 200)) return;
+    for (let i = 0; i < 4; i++) { const k = (i + 1) % 4; if ((top[i][2] + top[k][2]) / 2 >= mid) poly([top[i], top[k], bot[k], bot[i]], cfg.rock, '#0005'); }
+    poly(top, cfg.grass, '#e4dfa9aa');
+  };
+  // Schatten auf dem Untergrund unter Aeru und allen schwebenden Dingen.
+  const shadow = (x, y, z, r = .7) => { const f = floorAt(x, z, y + .4); if (f < -50) return; const [sx, sy] = P(x, f, z); ell(sx, sy, r * s * (1 - Math.min(.5, (y - f) * .03)), r * s * T_ * .8, '#00000040'); };
+  for (const {o} of solidList) if (o.r) drawIsland(o);
+  for (const {o} of solidList) if (!o.r) drawBox(o);
+  // Dinge, nach Tiefe sortiert.
+  const list = [];
+  const add = (x, y, z, fn) => { const p = P(x, y, z); if (on(p[0], p[1])) list.push({d: p[2], fn, p}); };
+  for (const t of fallbackTrees) add(t.x, floorAt(t.x, t.z), t.z, ([px, py]) => { const r = t.s * s * 1.5; c.fillStyle = '#6b6552'; c.fillRect(px - r * .1, py - r * 1.1, r * .2, r * 1.1); ell(px, py - r * 1.5, r * .95, r * .8, cfg.leaf, '#0003', 1.5); });
+  for (const u of updrafts) add(u.x, u.y, u.z, ([px, py]) => { const top = P(u.x, u.y + u.height, u.z)[1], r = 2.1 * s; const g = c.createLinearGradient(0, py, 0, top); g.addColorStop(0, '#66e6d655'); g.addColorStop(1, '#66e6d610'); c.fillStyle = g; c.fillRect(px - r, top, r * 2, py - top); ell(px, py, r, r * T_, '#66e6d655', '#9cf8e0', 2); for (let i = 0; i < 4; i++) ell(px, py - ((time * 3 + i * u.height / 4) % u.height) * s * K, r, r * T_, null, '#dcfff3aa', 2); });
+  for (const t of torches) add(t.x, t.y, t.z, ([px, py]) => { c.fillStyle = '#c9b88f'; c.fillRect(px - s * .35, py - s * 1.3, s * .7, s * 1.3); ell(px, py - s * 1.9, s * .5, s * .5, t.lit ? '#ffe3a3' : '#59677b', '#fff', 2); });
+  for (const g of gems) if (!g.got) add(g.x, g.y + Math.sin(time * 2 + g.id) * .15, g.z, ([px, py]) => { poly([[px, py - s * .5], [px + s * .3, py], [px, py + s * .5], [px - s * .3, py]], '#b9ffe2', '#fff'); });
+  for (const it of items) if (it.m.visible) add(it.x, it.y + 1.2, it.z, ([px, py]) => { ell(px, py, s * .7, s * .7, it.color, '#fff', 2); label(it.label, px, py - s * 1.2); });
+  for (const r of flightRings) if (!r.got) add(r.x, r.y, r.z, ([px, py]) => { ell(px, py, s * 2.2, s * 2.2, null, '#ffd277', 4); label('Ring', px, py - s * 2.5, '#ffeab3'); });
+  for (const a of anchors) if (!a.broken) add(a.x, a.y, a.z, ([px, py]) => { ell(px, py, s, s, '#9b7fe6', '#fff', 2); label('ANKER', px, py - s * 1.4); });
+  add(0, 3, -21, ([px, py]) => { ell(px, py - s * 3, s * 2.4, s * 3, null, '#ffdda0', 5); label('STERNENTOR', px, py - s * 6.4); });
+  for (const n of npcs.values()) if (n.present) add(n.x, n.y, n.z, ([px, py]) => { c.fillStyle = story.npcs[n.id].color; c.fillRect(px - s * .5, py - s * 1.8, s, s * 1.8); ell(px, py - s * 2.1, s * .55, s * .55, '#ecdfba', '#0004'); const mk = npcMarker(n.id); label(n.name + (mk ? ' !' : ''), px, py - s * 3, mk || '#ffe4a2'); });
+  for (const e of enemies) if (e.state !== 'dead') { const ey = e.y ?? floorAt(e.x, e.z); add(e.x, ey, e.z, ([px, py]) => { ell(px, py - s * .7, s * .8, s * .7, ENEMY[e.kind].color, e.state === 'windup' ? '#ff5a3d' : '#edb3a4', e.state === 'windup' ? 4 : 2); if (e.state === 'windup') label('!', px, py - s * 2, '#ff8a6a'); }); }
+  for (const o of orbPool) if (o.life > 0) add(o.m.position.x, o.m.position.y, o.m.position.z, ([px, py]) => ell(px, py, s * .4, s * .4, '#ff8a6a'));
+  for (const k of markers) add(k.x, floorAt(k.x, k.z), k.z, ([px, py]) => ell(px, py, s * 1.6, s * 1.6 * T_, '#ff6a4d55', '#ff6a4d', 2));
+  for (const wv of waves) add(boss.def.center.x, floorAt(boss.def.center.x, boss.def.center.z), boss.def.center.z, ([px, py]) => ell(px, py, wv.r * s, wv.r * s * T_, null, '#f5baa1', 3));
+  if (boss && boss.g.visible) add(boss.def.center.x, floorAt(boss.def.center.x, boss.def.center.z) + 1.5, boss.def.center.z, ([px, py]) => { ell(px, py, s * 2.2, s * 2.2, '#555173', boss.state === 'open' ? '#ffe39a' : '#f9b9a5', 4); label(boss.def.name.split(' · ')[0], px, py - s * 3); });
+  for (const gust of gusts) add(gust.g.position.x, gust.g.position.y, gust.g.position.z, ([px, py]) => ell(px, py, Math.max(.4, 3 - gust.age * 2) * s, Math.max(.4, 3 - gust.age * 2) * s, null, '#a9ffeb', 3));
+  // Aeru: Schatten auf dem Boden darunter, Höhenlinie und Landering machen die Höhe lesbar.
+  const f = floorAt(state.x, state.z, state.y + .4), air = f > -50 ? state.y - f : 0;
+  add(state.x, state.y, state.z, ([px, py]) => {
+    if (f > -50) { const [fx, fy] = P(state.x, f, state.z); if (air > .5) { c.setLineDash([4, 4]); c.beginPath(); c.moveTo(fx, fy); c.lineTo(px, py); c.lineWidth = 2; c.strokeStyle = '#ffffff88'; c.stroke(); c.setLineDash([]); ell(fx, fy, s * 1.1, s * 1.1 * T_, '#00000045', state.flight ? '#a9ffeb' : '#ffffff77', 2); } else ell(fx, fy, s * .8, s * .8 * T_, '#00000045'); }
+    c.save(); c.translate(px, py - s * .8); c.rotate((state.yaw - camYaw) * .15); c.fillStyle = '#d6bd83'; c.beginPath(); c.moveTo(-s * .4, 0); c.lineTo(-s * 1.4, -s * .5); c.lineTo(-s * .5, s * .5); c.moveTo(s * .4, 0); c.lineTo(s * 1.4, -s * .5); c.lineTo(s * .5, s * .5); c.fill(); ell(0, 0, s * .6, s * .8, '#58cfc4', '#e9ffe9', 2); c.restore();
+    if (air > .5) label(air.toFixed(0) + ' m', px, py - s * 2.3); else if (f < -50) label('Über dem Abgrund', px, py - s * 2.3, '#ffb09a');
+  });
+  list.sort((a, b) => a.d - b.d); for (const l of list) l.fn(l.p);
+  if (currentTarget) { const [px, py] = P(currentTarget.x, currentTarget.y ?? 0, currentTarget.z); c.strokeStyle = '#ffe39a'; c.lineWidth = 2; c.beginPath(); c.arc(px, py, 14, 0, TAU); c.stroke(); }
 }
 
 // ───────── Testschnittstelle (nur mit ?test) ─────────
@@ -1213,7 +1251,7 @@ if (TEST) window.aeruTest = {
 };
 save = readSave(); $('continue').hidden = !save;
 if (loadProblem && !save) { $('saveNote').hidden = false; $('saveNote').textContent = 'Ein vorhandener Spielstand konnte nicht gelesen werden. Er wird vor einem neuen Abenteuer gesichert und nicht gelöscht.'; }
-if (canvasMode) { $('graphicsNotice').textContent = 'Vereinfachter 2D-Modus: Dieses Gerät stellt kein WebGL bereit. Geschichte, Steuerung und Spielstand sind identisch.'; }
+if (canvasMode) { $('graphicsNotice').textContent = 'Schräge 2D-Ansicht (kein WebGL in dieser App) · Spiel und Spielstand sind identisch'; }
 const titleSave = save; save = save ? JSON.parse(JSON.stringify(save)) : Q.freshSave(); newEngine(); buildLevel(save.level, true); save = titleSave || save;
 applySettings(); requestAnimationFrame(animate); if (!TEST) focusFirst('continue', 'start');
 })();
