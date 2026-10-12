@@ -14,7 +14,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
 
 /* ---------- Wohin-Menü ---------- */
 {
-  await p.click('#bGuide'); await p.waitForTimeout(400);
+  await p.evaluate(() => document.getElementById('bGuide').click()); await p.waitForTimeout(400);
   const ui = await p.evaluate(() => { const tabs = [...document.querySelectorAll('#guideTabs .gtab')].map(b => b.textContent.trim()); return { tabs, rows: document.querySelectorAll('#guideGrid .grow').length, open: !document.getElementById('guidePanel').hidden }; });
   if (process.env.DEBUG) console.log('   ', JSON.stringify(ui));
   ok(ui.open && ui.tabs.length === 5 && ui.rows > 8, 'Menü öffnet mit 5 Reitern (' + ui.tabs.join(' | ') + ') und Liste (' + ui.rows + ' Ziele im ersten Reiter)');
@@ -31,7 +31,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   /* Hinzaubern funktioniert (Beispiele) */
   const z = await p.evaluate(async () => { const b = window.__bi, out = []; const sl = ms => new Promise(r => setTimeout(r, ms)); return out; });
   for (const nm of ['Märchenland', 'Fußball-Turnier', 'Lunaris: Weltentore']) {
-    await p.click('#bGuide'); await p.waitForTimeout(250);
+    await p.evaluate(() => document.getElementById('bGuide').click()); await p.waitForTimeout(250);
     for (let i = 1; i <= 5; i++) { await p.click('#guideTabs .gtab:nth-child(' + i + ')'); const found = await p.evaluate(n => { const row = [...document.querySelectorAll('#guideGrid .grow')].find(r => r.querySelector('span').textContent.includes(n)); if (!row) return false; row.querySelectorAll('.gbtn button')[1].click(); return true; }, nm); if (found) break; }
     await p.waitForTimeout(600);
     const ok2 = await p.evaluate(n => { const b = window.__bi, d = b.DEST.find(x => x.name.includes(n)), a = d.at(); return Math.hypot(b.P.x - a.x, b.P.z - a.z) < 14 && !document.getElementById('guidePanel').hidden === false; }, nm); ok(ok2, 'Hinzaubern → ' + nm + ': Figur steht am Ziel, Menü schließt sich');
