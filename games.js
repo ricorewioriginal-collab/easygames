@@ -12,6 +12,8 @@ const GAMES = [
     path: 'anmacha-flipper/', desc: '3D-Pinball mit 13 Tischen: Kampagne mit steigender Schwierigkeit oder freies Spiel.' },
   { id: 'anmacha-beat-surfer', title: 'AnMaCha Beat Surfer', icon: '🎧', bg: 'linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)', glow: 'rgba(255,45,149,.5)',
     path: 'anmacha-beat-surfer/', desc: '3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.' },
+  { id: 'prismrush', title: 'PRISMRUSH', icon: '🔺', img: 'prismrush/card.png', bg: 'linear-gradient(145deg,#ff3df2,#8a3dff 55%,#3df2ff)', glow: 'rgba(255,61,242,.55)',
+    path: 'prismrush/', desc: 'Hypnotisches 3D-Rhythmusspiel aus Licht und synthetischem Klang: 32 Level in 4 Welten, Endlos, Tagesrhythmus, Zen und Präzision, Combos, Overdrive und 19 freischaltbare Effekte. Tastatur, Maus oder Touch.' },
   { id: 'anmacha-memory', title: 'AnMaCha Memory', icon: '🃏', bg: 'linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)', glow: 'rgba(255,45,149,.5)',
     path: 'anmacha-memory/', desc: 'Memory mit unseren Sender-Logos: 10 Level mit Mischer & Zeitlimit, freies Spiel und Duell.' },
   { id: 'anmacha-quest-rpg', title: 'AnMaCha Quest RPG', icon: '⚔️', bg: 'linear-gradient(145deg,#2a3cff,#8B5CF6 55%,#FF9A1F)', glow: 'rgba(80,100,255,.55)',

@@ -10,6 +10,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Radio-Match 3D – Match-3 mit Radio-Bauteilen, 100 Level, wachsendes Raster, Power-ups (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-radio-match/`](anmacha-radio-match/) |
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
 | AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
+| PRISMRUSH – hypnotisches 3D-Rhythmusspiel: 32 Level in 4 Welten, 6 Modi (Kampagne, Endlos, Tagesrhythmus, Zen, Präzision, Tutorial), Combos, Overdrive, 19 freischaltbare Effekte, installierbar als PWA (TypeScript, Three.js + Vite, Musik und Sounds im Browser erzeugt; Quelltext in [`prismrush-src/`](prismrush-src/), gebautes Ergebnis eingecheckt) | [`prismrush/`](prismrush/) |
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
 | AnMaCha Quest RPG – 3D-Rollenspiel in Godot 4 (Web-Export) | [`anmacha-quest-rpg/`](anmacha-quest-rpg/) |
 | AnMaCha Snake 3D – Snake mit Sender-Logos als Futter (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-snake/`](anmacha-snake/) |
