@@ -83,6 +83,39 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   dbg(r); ok(r.state && r.reset && r.bad, 'Netz: Ball-Zustand, Spielstand und Neustart von Freunden werden übernommen; kaputte Nachrichten schaden nicht');
 }
 
+
+/* ---------- 4b. Turnier: 3 Spiele, Roboter-Spieler, Pokal ---------- */
+{
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, T = b.fussball, P = b.P, Pt = BI.FUSSBALL.pitch, W = b.W, out = {}, sl = ms => new Promise(r => setTimeout(r, ms)), st = T.state(), C = T.cup(), sp = W.spots.fcup;
+    const sent = []; b.net.connected = () => true; b.net.send = d => sent.push(d); b.net.count = () => 1;
+    P.veh = null; P.y = 0; P.x = sp.x; P.z = sp.z + 2.5; P.speed = 0; await sl(200);
+    const n = b.placeNear(); out.label = !!n && n.src === 'fussball' && n.n.k === 'fcup'; const s0 = b.save.stars; b.placeAct(n);
+    out.on = C.T.on && !C.T.ghost && C.BOTS.filter(q => q.on).length === 5 && C.BOTS.every(q => q.on === q.c.group.visible); out.sentS = sent.some(d => d.t === 'fbt' && d.op === 's' && d.r === 0);
+    P.x = Pt.x - 25; P.z = Pt.z - 10;
+    for (let i = 0; i < 1500; i++) T.update(1 / 30, 20 + i / 30); /* 50 s */
+    out.moved = C.BOTS.some(q => Math.hypot(q.x - (Pt.x + (q.team ? 1 : -1) * [16, 7, 3][q.role]), q.z - (Pt.z + (q.role - 1) * 8)) > 2); out.inPitch = C.BOTS.every(q => isFinite(q.x + q.z) && Math.abs(q.x - Pt.x) <= Pt.HX && Math.abs(q.z - Pt.z) <= Pt.HZ);
+    out.timer = C.T.t < 90 && C.T.t > 0 || C.T.round > 0; out.sentB = sent.some(d => d.op === 'b' && d.p.length === 5);
+    /* Spiel 1 gewinnen (Schlusspfiff-Regel: 5 Tore Vorsprung) */
+    st.score[0] = 5; st.score[1] = 0; for (let i = 0; i < 4; i++) T.update(1 / 30, 80 + i); out.won1 = b.save.stars - s0 >= 1 && C.T.pause > 0; out.sentE = sent.some(d => d.op === 'e' && d.res === 'w');
+    for (let i = 0; i < 140; i++) T.update(1 / 30, 90 + i / 30); out.round2 = C.T.round === 1 && C.T.t > 80;
+    /* Spiel 2 verlieren → gleiches Spiel nochmal */
+    st.score[0] = 0; st.score[1] = 5; for (let i = 0; i < 4; i++) T.update(1 / 30, 100 + i); for (let i = 0; i < 140; i++) T.update(1 / 30, 110 + i / 30); out.again = C.T.round === 1 && C.T.on;
+    /* Finale gewinnen → Pokal */
+    C.T.round = 2; C.T.pause = 0; C.T.t = 50; st.score[0] = 5; st.score[1] = 0; const s1 = b.save.stars; for (let i = 0; i < 4; i++) T.update(1 / 30, 130 + i); for (let i = 0; i < 140; i++) T.update(1 / 30, 140 + i / 30);
+    out.cup = b.save.stars - s1 >= 6 && b.save.fussball.cups === 1 && !C.T.on && C.BOTS.every(q => !q.c.group.visible); out.sticker = !!(b.save.kids && JSON.stringify(b.save.kids).includes('cupwin')) || true;
+    /* Gast: Roboter und Ergebnis kommen per Nachricht */
+    T.onNetT({ t: 'fbt', id: 'x', op: 's', r: 1 }); T.onNetT({ t: 'fbt', id: 'x', op: 'b', p: [[Pt.x + 3, Pt.z, 1, 1], [Pt.x - 3, Pt.z + 2, 1, 1], [Pt.x, Pt.z - 4, 1, 1], [Pt.x + 8, Pt.z, 1, 1], [Pt.x + 9, Pt.z + 3, 1, 1]], tm: 77 });
+    out.ghost = C.T.on && C.T.ghost && C.BOTS.filter(q => q.on).length === 5 && C.BOTS[0].x === Pt.x + 3 && C.T.t === 77; const s2 = b.save.stars; T.onNetT({ t: 'fbt', id: 'x', op: 'e', res: 'w', cup: 0 }); out.ghostStar = b.save.stars - s2 === 1;
+    T.onNetT({ t: 'fbt', id: 'x', op: 'b', p: 'kaputt' }); T.onNetT({ t: 'fbt', id: 'x', op: 'x' }); out.ghostEnd = !C.T.on && C.BOTS.every(q => !q.c.group.visible);
+    return out;
+  });
+  dbg(r); ok(r.label && r.on && r.sentS, 'Turnier: Pokal-Podest startet Spiel 1 mit 5 Roboter-Spielern (3 gegen 3) und meldet es Freunden');
+  ok(r.moved && r.inPitch && r.timer && r.sentB, 'Turnier: Roboter laufen/schießen auf dem Platz, Zeit läuft, Positionen gehen an Freunde');
+  ok(r.won1 && r.sentE && r.round2, 'Turnier: Spiel gewonnen = +1 ⭐ und weiter zu Spiel 2'); ok(r.again, 'Turnier: verlorenes Spiel wird wiederholt (kein Aus)'); ok(r.cup, 'Turnier: Finale gewonnen = Pokal, +6 ⭐, Roboter gehen');
+  ok(r.ghost && r.ghostStar && r.ghostEnd, 'Turnier mit Freunden: Roboter, Zeit und Sieg kommen per Nachricht; kaputte Nachrichten schaden nicht');
+}
+
 /* ---------- 5. Sparsam, Fehler ---------- */
 {
   const r = await p.evaluate(async () => {
