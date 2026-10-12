@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080B12">
+<title>easygames – Einbinden und Hilfe</title>
+<style>
+  *{box-sizing:border-box}
+  :root{--cy:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6;--mut:#9fb4c8;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.12)}
+  html{scroll-behavior:smooth;scroll-padding-top:16px}
+  body{margin:0;background:#080B12;color:#e8f0f7;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.6;
+    background-image:radial-gradient(900px 500px at 10% -10%,rgba(0,229,255,.16),transparent 60%),radial-gradient(800px 500px at 100% 0%,rgba(255,45,149,.14),transparent 60%);background-attachment:fixed}
+  main{max-width:900px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 18px 70px}
+  a{color:var(--cy)}
+  h1{margin:6px 0 4px;font-size:clamp(30px,6vw,46px);font-weight:900;line-height:1.1;background:linear-gradient(90deg,var(--cy),var(--pu),var(--ma));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{margin:0 0 10px;font-size:24px}
+  h3{margin:22px 0 6px;font-size:17px;color:var(--cy)}
+  p{margin:8px 0}
+  .lead{color:var(--mut);font-size:17px;margin:0 0 18px}
+  .back{display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-weight:700;font-size:14px}
+  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 8px}
+  nav.toc a{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);text-decoration:none;font-size:14px;color:#e8f0f7}
+  nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--cy);outline:0}
+  section{margin-top:34px;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+  pre{margin:8px 0;padding:12px 14px;overflow:auto;background:#04070d;border:1px solid rgba(0,229,255,.25);border-radius:12px;color:#9ff;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre}
+  code{overflow-wrap:anywhere;font:13px ui-monospace,Menlo,Consolas,monospace;background:rgba(0,229,255,.1);padding:1px 6px;border-radius:6px;color:#bff}
+  pre code{background:none;padding:0;color:inherit}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-weight:700;font-size:13px}
+  .tw{overflow-x:auto}
+  .note{margin:12px 0;padding:10px 14px;border-left:4px solid var(--cy);background:rgba(0,229,255,.07);border-radius:0 10px 10px 0}
+  .warn{border-left-color:var(--ma);background:rgba(255,45,149,.08)}
+  .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(139,92,246,.3);margin-left:6px;vertical-align:middle}
+  .gen{display:grid;gap:10px;margin:10px 0}
+  .gen label{font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
+  .gen select,.gen input{height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:#04070d;color:#fff;font:inherit}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>label{flex:1;min-width:150px}
+  button{font:inherit;cursor:pointer}
+  .primary{height:44px;padding:0 20px;border:0;border-radius:999px;font-weight:800;color:#04141a;background:linear-gradient(90deg,var(--cy),var(--pu),var(--ma))}
+  :focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+  details{margin:8px 0;border:1px solid var(--line);border-radius:12px;padding:0 14px;background:rgba(0,0,0,.15)}
+  summary{padding:12px 0;cursor:pointer;font-weight:700}
+  @media (max-width:520px){section{padding:14px}h2{font-size:21px}}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">◀ Zur Spieleübersicht</a>
+  <h1>Spiele einbinden</h1>
+  <p class="lead">Alle Möglichkeiten, easygames auf einer Webseite, in einer App oder auf dem TV zu zeigen – mit Beispielen zum Kopieren.</p>
+
+  <nav class="toc" aria-label="Inhalt">
+    <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
+    <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
+    <a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
+  </nav>
+
+  <section id="wahl">
+    <h2>Welche Variante passt?</h2>
+    <div class="tw"><table>
+      <tr><th>Variante</th><th>Wann</th><th>Aufwand</th></tr>
+      <tr><td><a href="#link">Direktlink</a></td><td>Ein Link oder Knopf öffnet das Spiel als ganze Seite (Vollbild). Einfachste und robusteste Lösung, auch für Homepage-Menüs.</td><td>1 Zeile</td></tr>
+      <tr><td><a href="#iframe">iframe</a></td><td>Ein Spiel soll mitten in einer Seite laufen.</td><td>1 Zeile</td></tr>
+      <tr><td><a href="#js">easygames.js</a></td><td>Spiele per Attribut oder JavaScript-Variable einbauen, mit Vollbild-Knopf. Die Spieleliste kommt automatisch mit.</td><td>2 Zeilen</td></tr>
+      <tr><td><a href="#lib">Bibliothek</a></td><td>Die komplette Übersicht mit Suche, Anleitungen und Spielfenster in deine Seite einbetten.</td><td>1 Zeile</td></tr>
+      <tr><td><a href="#app">App</a></td><td>Spiele in einer Android-, iOS- oder Hybrid-App, auch offline.</td><td>je nach App</td></tr>
+    </table></div>
+    <div class="note">Faustregel: Wo Vollbild wichtig ist (Handy, TV, App), öffne das Spiel am besten direkt als <b>eigene Seite</b> (Direktlink). Das ist am zuverlässigsten.</div>
+  </section>
+
+  <section id="gen">
+    <h2>Code-Generator</h2>
+    <p>Spiel wählen, Optionen einstellen, Code kopieren.</p>
+    <div class="gen">
+      <label>Spiel<select id="gGame"></select></label>
+      <div class="row">
+        <label>Seitenverhältnis<select id="gRatio"><option>16/10</option><option>16/9</option><option>4/3</option><option>1/1</option><option>9/16</option></select></label>
+        <label>Maximale Breite<input id="gMax" value="960px"></label>
+        <label>Vollbild-Knopf<select id="gFs"><option value="">ja (Standard)</option><option value="false">nein</option></select></label>
+      </div>
+    </div>
+    <h3>Direktlink</h3><pre id="oLink"></pre>
+    <h3>iframe</h3><pre id="oIframe"></pre>
+    <h3>easygames.js (Attribute)</h3><pre id="oAttr"></pre>
+    <h3>easygames.js (JavaScript mit Variable)</h3><pre id="oJs"></pre>
+    <div class="row"><button class="primary" data-c="oLink">Link kopieren</button><button class="primary" data-c="oIframe">iframe kopieren</button><button class="primary" data-c="oAttr">Attribute kopieren</button><button class="primary" data-c="oJs">JS kopieren</button></div>
+  </section>
+
+  <section id="link">
+    <h2>1. Direktlink <span class="tag">empfohlen</span></h2>
+    <p>Jedes Spiel liegt in einem eigenen Ordner und ist eine vollständige Seite:</p>
+<pre>&lt;a href="<span class="u"></span>zotik/"&gt;ZOTIK spielen&lt;/a&gt;</pre>
+    <ul>
+      <li>Das Spiel öffnet als ganze Seite. Vollbild, Zurück-Taste und Tastatur regelt der Browser bzw. das Spiel.</li>
+      <li>Mit <code>target="_blank"</code> öffnet es in einem neuen Tab.</li>
+      <li>Die Ordnernamen (Spiel-IDs) stehen in <code>games.js</code> und im Generator oben.</li>
+      <li>Direkt in die Übersicht springen und das Spiel dort öffnen: <code><span class="u"></span>#zotik</code> (der Viewer öffnet es vollflächig; echtes Vollbild braucht zusätzlich einen Tipp).</li>
+    </ul>
+  </section>
+
+  <section id="iframe">
+    <h2>2. Ein Spiel als iframe</h2>
+<pre>&lt;iframe src="<span class="u"></span>zotik/" title="ZOTIK"
+  allow="fullscreen; autoplay" allowfullscreen loading="lazy"
+  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"&gt;&lt;/iframe&gt;</pre>
+    <div class="note warn"><b>Wichtig:</b> Ohne <code>allow="fullscreen"</code> kann im iframe kein Vollbild gestartet werden. Ohne <code>autoplay</code> bleibt Ton oft stumm, bis jemand tippt.</div>
+    <ul>
+      <li>Hochformat-Spiele: <code>aspect-ratio:9/16</code> oder eine feste Höhe nehmen.</li>
+      <li>Das Spiel hat im iframe <b>kein</b> Menü zum Schließen. Das liefert deine Seite.</li>
+      <li>Einfacher mit Vollbild-Knopf: <a href="#js">easygames.js</a>.</li>
+    </ul>
+  </section>
+
+  <section id="js">
+    <h2>3. easygames.js – per Attribut oder JavaScript</h2>
+    <p>Einmal einbinden. Das Script lädt die Spieleliste selbst und findet seinen Pfad automatisch.</p>
+<pre>&lt;script src="<span class="u"></span>easygames.js"&gt;&lt;/script&gt;</pre>
+    <h3>Variante A – nur HTML</h3>
+<pre>&lt;div data-easygames="zotik"&gt;&lt;/div&gt;
+&lt;div data-easygames="anmacha-snake" data-ratio="4/3" data-max-width="720px"&gt;&lt;/div&gt;
+&lt;div data-easygames="all"&gt;&lt;/div&gt;   &lt;!-- komplette Bibliothek --&gt;</pre>
+    <h3>Variante B – JavaScript mit Variablen</h3>
+<pre>&lt;div id="ziel"&gt;&lt;/div&gt;
+&lt;script&gt;
+  const spielId = 'zotik';   // beliebige Spiel-ID, z. B. aus einer Datenbank oder URL
+  EasyGames.embed('#ziel', { game: spielId, ratio: '16/10', maxWidth: '960px' });
+  // Bibliothek: EasyGames.library('#alle');
+&lt;/script&gt;</pre>
+    <h3>Optionen</h3>
+    <div class="tw"><table>
+      <tr><th>Attribut</th><th>JS-Option</th><th>Standard</th><th>Wirkung</th></tr>
+      <tr><td><code>data-easygames</code></td><td><code>game</code></td><td>–</td><td>Spiel-ID oder <code>all</code></td></tr>
+      <tr><td><code>data-width</code></td><td><code>width</code></td><td>100%</td><td>Breite</td></tr>
+      <tr><td><code>data-max-width</code></td><td><code>maxWidth</code></td><td>960px</td><td>Maximale Breite</td></tr>
+      <tr><td><code>data-ratio</code></td><td><code>ratio</code></td><td>16/10</td><td>Seitenverhältnis</td></tr>
+      <tr><td><code>data-height</code></td><td><code>height</code></td><td>–</td><td>Feste Höhe, ersetzt das Seitenverhältnis</td></tr>
+      <tr><td><code>data-radius</code></td><td><code>radius</code></td><td>12px</td><td>Eckenrundung</td></tr>
+      <tr><td><code>data-title</code></td><td><code>title</code></td><td>Spieltitel</td><td>Titel für Screenreader</td></tr>
+      <tr><td><code>data-fullscreen="false"</code></td><td><code>fullscreen:false</code></td><td>Knopf an</td><td>Vollbild-Knopf ausblenden</td></tr>
+    </table></div>
+    <h3>Funktionen</h3>
+    <div class="tw"><table>
+      <tr><th>Aufruf</th><th>Ergebnis</th></tr>
+      <tr><td><code>EasyGames.embed(ziel, optionen)</code></td><td>Setzt ein Spiel in das Ziel (Selektor oder Element).</td></tr>
+      <tr><td><code>EasyGames.library(ziel, optionen)</code></td><td>Setzt die komplette Übersicht ein.</td></tr>
+      <tr><td><code>EasyGames.ready(callback)</code></td><td>Ruft zurück, sobald die Spieleliste geladen ist.</td></tr>
+      <tr><td><code>EasyGames.list()</code></td><td>Alle Spiele: <code>id, title, desc, icon, url, card</code>. Praktisch für eigene Menüs.</td></tr>
+      <tr><td><code>EasyGames.get(id)</code> / <code>url(id)</code></td><td>Ein Spiel bzw. nur seine URL.</td></tr>
+      <tr><td><code>EasyGames.guide(id, cb)</code></td><td>Anleitung und Bedienung als Objekt <code>{anleitung, steuerung, tipps}</code>.</td></tr>
+      <tr><td><code>EasyGames.fullscreen(iframe)</code></td><td>Startet Vollbild; fällt auf einen neuen Tab zurück, wenn der Browser es nicht kann (z. B. iPhone).</td></tr>
+      <tr><td><code>EasyGames.scan()</code></td><td>Sucht neu hinzugefügte <code>data-easygames</code>-Elemente (für dynamische Seiten).</td></tr>
+    </table></div>
+    <h3>Eigenes Spielmenü bauen</h3>
+<pre>&lt;script&gt;
+  EasyGames.ready(() =&gt; {
+    EasyGames.list().forEach(g =&gt; {
+      const a = document.createElement('a');
+      a.href = g.url; a.textContent = g.title;   // Direktlink im Vollbild
+      document.body.appendChild(a);
+    });
+  });
+&lt;/script&gt;</pre>
+  </section>
+
+  <section id="lib">
+    <h2>4. Ganze Bibliothek einbetten</h2>
+<pre>&lt;iframe src="<span class="u"></span>?embed=1" title="easygames"
+  allow="fullscreen; autoplay" allowfullscreen
+  style="width:100%;height:90vh;border:0"&gt;&lt;/iframe&gt;</pre>
+    <ul>
+      <li>Die Übersicht mit Suche und Anleitungen erscheint, ohne Kopfzeile (<code>?embed=1</code>).</li>
+      <li>Ein Tipp auf ein Spiel öffnet es im Vollbild-Viewer, der den iframe ausfüllt und Vollbild anfordert. Dafür ist <code>allow="fullscreen"</code> nötig.</li>
+      <li>Gib dem iframe genug Höhe (z. B. <code>90vh</code>), sonst wird der Viewer klein.</li>
+      <li>Ein bestimmtes Spiel gleich öffnen: <code>?embed=1#zotik</code>.</li>
+    </ul>
+    <h3>URL-Parameter der Übersicht</h3>
+    <div class="tw"><table>
+      <tr><th>Parameter</th><th>Wirkung</th></tr>
+      <tr><td><code>?embed=1</code></td><td>Einbettungsmodus: keine Kopfzeile, kein Footer.</td></tr>
+      <tr><td><code>?tv=1</code> / <code>?tv=0</code></td><td>TV-Modus erzwingen oder abschalten (sonst automatisch bei Smart-TV-Browsern).</td></tr>
+      <tr><td><code>#spiel-id</code></td><td>Öffnet das Spiel direkt im Viewer.</td></tr>
+    </table></div>
+  </section>
+
+  <section id="vollbild">
+    <h2>5. Vollbild</h2>
+    <ul>
+      <li><b>Übersicht:</b> Der Viewer ist immer vollflächig und fordert beim Öffnen Vollbild an. Die Menüleiste blendet sich nach ein paar Sekunden aus. Ein kleiner Tab oben holt sie zurück.</li>
+      <li><b>iframes auf fremden Seiten:</b> Brauchen <code>allow="fullscreen"</code>. Fehlt es, bleibt das Spiel in der iframe-Größe.</li>
+      <li><b>Nutzer-Geste:</b> Browser erlauben Vollbild nur nach einem Tipp oder Klick. Die Übersicht fordert es deshalb beim Tippen auf ein Spiel an.</li>
+      <li><b>iPhone/iPad Safari:</b> Kein Vollbild für Elemente. <code>EasyGames.fullscreen()</code> öffnet dann das Spiel als eigene Seite in einem neuen Tab. Für Handys ist ein <a href="#link">Direktlink</a> deshalb oft die beste Wahl.</li>
+      <li><b>Hoch-/Querformat:</b> Die Übersicht erzwingt keine Ausrichtung; ob ein Spiel Quer- oder Hochformat bevorzugt, entscheidet das Spiel.</li>
+    </ul>
+  </section>
+
+  <section id="nav">
+    <h2>6. Zurück-Taste, Navigation und TV</h2>
+    <ul>
+      <li><b>Zurück schließt das Spiel</b> in der Übersicht (Handy-Zurück-Taste, TV-Fernbedienung, Browser-Pfeil). Dazu legt die Übersicht beim Öffnen einen Verlaufseintrag an.</li>
+      <li>Liegt der Fokus im Spiel auf der <b>gleichen Domain</b> wie die Übersicht, werden auch die TV-Zurück-Tasten dort abgefangen. Bei Spielen auf anderen Domains oder unter <code>file://</code> geht das aus Sicherheitsgründen nicht.</li>
+    </ul>
+    <h3>Tastenbelegung (Übersicht)</h3>
+    <div class="tw"><table>
+      <tr><th>Taste</th><th>Wirkung</th></tr>
+      <tr><td>Pfeiltasten / D-Pad</td><td>Auswahl bewegen (räumlich, über die Kartenraster)</td></tr>
+      <tr><td>OK / Enter</td><td>Spiel starten</td></tr>
+      <tr><td><code>i</code> oder Gelb (TV)</td><td>Anleitung des gewählten Spiels</td></tr>
+      <tr><td>Zurück / Esc</td><td>Anleitung, Teilen oder Spiel schließen</td></tr>
+    </table></div>
+    <p>Der TV-Modus nutzt größere Karten und Schrift, einen deutlichen Fokusrahmen, Ränder gegen Overscan und eine Hinweisleiste.</p>
+  </section>
+
+  <section id="msg">
+    <h2>7. postMessage – Spiele sprechen mit der Übersicht</h2>
+    <p>Läuft ein Spiel im Viewer der Übersicht, kann es Nachrichten senden:</p>
+<pre>parent.postMessage({ type: 'easygames:close' }, '*');   // Spiel schließen
+parent.postMessage({ type: 'easygames:menu'  }, '*');   // Menüleiste zeigen
+parent.postMessage({ type: 'easygames:next'  }, '*');   // nächstes Spiel
+parent.postMessage({ type: 'easygames:prev'  }, '*');   // voriges Spiel</pre>
+    <p>Nur Nachrichten aus dem Spiel-Frame der Übersicht werden beachtet.</p>
+  </section>
+
+  <section id="app">
+    <h2>8. In einer App (auch offline)</h2>
+    <h3>Was in die App muss</h3>
+    <ul>
+      <li>Die <b>Spielordner</b> (je Spiel ein Ordner mit allen Dateien) – für Direktlinks reicht das.</li>
+      <li>Für die Übersicht zusätzlich: <code>index.html</code>, <code>games.js</code>, <code>guides.js</code> und optional <code>easygames.js</code>. Fehlen <code>games.js</code> und <code>guides.js</code>, bleibt die Übersicht leer.</li>
+      <li>Alle Pfade sind relativ. Die Ordnerstruktur darf nicht verändert werden.</li>
+      <li>Die Dateien laden nichts aus dem Internet. Einzelne Spiele können dennoch Online-Funktionen haben (z. B. Mehrspieler per Code/QR, Speicherstand per Google).</li>
+    </ul>
+    <h3>Empfehlung</h3>
+    <div class="note">Öffne in der App entweder die <b>Übersicht</b> (<code>index.html</code>) oder ein <b>Spiel direkt</b> in einer <b>Vollbild-WebView</b> – nicht als iframe in einer anderen Seite. Das vermeidet Probleme mit Vollbild und Zurück-Taste.</div>
+    <h3>Dateien laden: file:// oder https?</h3>
+    <ul>
+      <li><code>file://</code> funktioniert für einfache Spiele. Aber: Der Browser sieht jede Datei als eigene Herkunft. Die Übersicht kann dann nicht in das Spiel hineinhören (Zurück-Taste im Spiel wird nicht abgefangen), und manche Spiele mit Modulen, Wasm oder Speicherung brauchen einen richtigen Ursprung.</li>
+      <li>Besser: ein <b>lokaler https-Ursprung</b> – bei Capacitor/Cordova ist das <code>https://localhost</code> bzw. ein App-Schema, bei Android <code>WebViewAssetLoader</code>, bei iOS ein <code>WKURLSchemeHandler</code>.</li>
+    </ul>
+    <h3>Beispiel Android (Kotlin)</h3>
+<pre>val web = findViewById&lt;WebView&gt;(R.id.web)
+web.settings.javaScriptEnabled = true
+web.settings.domStorageEnabled = true
+web.settings.mediaPlaybackRequiresUserGesture = false
+// Assets unter https://appassets.androidplatform.net/assets/ ausliefern:
+val loader = WebViewAssetLoader.Builder()
+    .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this)).build()
+web.webViewClient = object : WebViewClientCompat() {
+    override fun shouldInterceptRequest(v: WebView, r: WebResourceRequest) = loader.shouldInterceptRequest(r.url)
+}
+// Vollbild aus HTML5 (onShowCustomView/onHideCustomView) im WebChromeClient umsetzen
+web.loadUrl("https://appassets.androidplatform.net/assets/easygames/index.html")
+// Zurück-Taste: if (web.canGoBack()) web.goBack() else finish()</pre>
+    <h3>Beispiel iOS (Swift)</h3>
+<pre>let cfg = WKWebViewConfiguration()
+cfg.allowsInlineMediaPlayback = true
+cfg.mediaTypesRequiringUserActionForPlayback = []
+let web = WKWebView(frame: .zero, configuration: cfg)
+let dir = Bundle.main.url(forResource: "easygames", withExtension: nil)!
+web.loadFileURL(dir.appendingPathComponent("index.html"), allowingReadAccessTo: dir)
+// Zurück: web.allowsBackForwardNavigationGestures = true</pre>
+    <div class="note warn">Die Beispiele sind Ausgangspunkte. Bitte in deiner App mit echten Geräten prüfen: Vollbild, Ton, Zurück-Taste und Speicherstand verhalten sich je nach Version unterschiedlich.</div>
+    <h3>Ton und Touch</h3>
+    <ul>
+      <li>Ton startet erst nach einer Berührung. Deshalb <code>mediaPlaybackRequiresUserGesture = false</code> (Android) bzw. <code>mediaTypesRequiringUserActionForPlayback = []</code> (iOS) setzen.</li>
+      <li>Hardware-Zurück der App an die WebView weitergeben, damit die Übersicht ein Spiel schließen kann.</li>
+    </ul>
+  </section>
+
+  <section id="host">
+    <h2>9. Eigener Server und Pfade</h2>
+    <ul>
+      <li>Die Ordner können auf jeden statischen Webspace kopiert werden. Alles läuft rein im Browser, ein Server wird nicht benötigt (Ausnahme: Online-Mehrspieler bei einzelnen Spielen).</li>
+      <li>In <code>games.js</code> ist <code>path</code> ein Ordner relativ zur Übersicht oder eine komplette URL. So lassen sich Spiele auch von woanders einbinden.</li>
+      <li>Neues Spiel? Einen Eintrag in <code>games.js</code> ergänzen und optional eine Anleitung in <code>guides.js</code>.</li>
+      <li>Schickt dein Server <code>X-Frame-Options: DENY</code> oder ein restriktives <code>frame-ancestors</code>, lassen sich die Seiten nicht in iframes einbetten. GitHub Pages erlaubt das.</li>
+      <li>Auf https-Seiten dürfen nur https-Spiele eingebettet werden (sonst blockiert der Browser gemischte Inhalte).</li>
+    </ul>
+  </section>
+
+  <section id="hilfe">
+    <h2>10. Fehlerhilfe</h2>
+    <div class="tw"><table>
+      <tr><th>Problem</th><th>Ursache und Lösung</th></tr>
+      <tr><td>Vollbild-Knopf tut nichts</td><td>Im iframe fehlt <code>allow="fullscreen"</code>, oder das Gerät (iPhone) unterstützt es nicht. Dann Direktlink nutzen.</td></tr>
+      <tr><td>Kein Ton</td><td>Erst nach Tippen erlaubt. In Apps die Autoplay-Einstellung der WebView anpassen.</td></tr>
+      <tr><td>Übersicht ist leer</td><td><code>games.js</code> wird nicht gefunden (falscher Pfad, nicht mitgepackt, oder Browser-Konsole prüfen).</td></tr>
+      <tr><td>Keine Anleitungen</td><td><code>guides.js</code> fehlt. Die Karten funktionieren trotzdem, nur das Anleitungsfenster zeigt dann die Kurzbeschreibung.</td></tr>
+      <tr><td><code>EasyGames</code> ist undefined</td><td>Das Script ist noch nicht geladen. <code>EasyGames.ready(...)</code> verwenden oder das Script vor dem eigenen Code einbinden.</td></tr>
+      <tr><td>Spiel ist zu klein/abgeschnitten</td><td>Seitenverhältnis oder Höhe anpassen (<code>data-ratio</code>, <code>data-height</code>).</td></tr>
+      <tr><td>Zurück-Taste schließt das Spiel nicht</td><td>Spiel liegt auf anderer Domain oder <code>file://</code>. Zurück in der App selbst an die WebView weiterreichen.</td></tr>
+      <tr><td>Bild bleibt leer</td><td>Mixed Content (http in https), Blockierung durch <code>X-Frame-Options</code>, oder das Spiel braucht Netz und ist offline.</td></tr>
+      <tr><td>TV zeigt falsches Layout</td><td><code>?tv=1</code> anhängen (bzw. <code>?tv=0</code> zum Abschalten).</td></tr>
+    </table></div>
+  </section>
+</main>
+
+<script src="games.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const base = new URL('.', location.href).href;
+document.querySelectorAll('.u').forEach(e => e.textContent = base);
+GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; $('gGame').appendChild(o); });
+function gen() {
+  const g = GAMES.find(x => x.id === $('gGame').value), url = new URL(g.path, base).href;
+  const ratio = $('gRatio').value, max = $('gMax').value || '960px', fs = $('gFs').value;
+  const fsAttr = fs ? ' data-fullscreen="false"' : '', fsOpt = fs ? ', fullscreen: false' : '';
+  $('oLink').textContent = `<a href="${url}">${g.title} spielen</a>`;
+  $('oIframe').textContent = `<iframe src="${url}" title="${g.title}"\n  allow="fullscreen; autoplay" allowfullscreen loading="lazy"\n  style="width:100%;max-width:${max};aspect-ratio:${ratio};border:0;border-radius:12px"></iframe>`;
+  $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${g.id}" data-ratio="${ratio}" data-max-width="${max}"${fsAttr}></div>`;
+  $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, ratio: '${ratio}', maxWidth: '${max}'${fsOpt} });\n<\/script>`;
+}
+['gGame', 'gRatio', 'gMax', 'gFs'].forEach(i => $(i).addEventListener('input', gen)); gen();
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  const t = $(b.dataset.c).textContent, old = b.textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  });
+  b.textContent = 'Kopiert ✓'; setTimeout(() => b.textContent = old, 1500);
+});
+</script>
+</body>
+</html>
