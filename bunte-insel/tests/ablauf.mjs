@@ -5,7 +5,7 @@
 import { chromium } from 'playwright';
 const BASE = process.env.BASE || 'http://localhost:8080';
 const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-const p = await (await browser.newContext({ viewport: { width: 800, height: 500 } })).newPage(); const errs = []; let fails = 0;
+const ctx0 = await browser.newContext({ viewport: { width: 800, height: 500 } }); /* Software-Grafik wird vom Spiel erkannt und lässt Blumen/Gras aus; so läuft derselbe Weg wie auf echter Grafikkarte */ await ctx0.addInitScript(() => { for (const C of [WebGLRenderingContext, WebGL2RenderingContext]) { const o = C.prototype.getExtension; C.prototype.getExtension = function (n) { return n === 'WEBGL_debug_renderer_info' ? null : o.call(this, n); }; } }); const p = await ctx0.newPage(); const errs = []; let fails = 0;
 p.on('pageerror', e => errs.push('PAGEERR ' + e.message + ' ' + (e.stack || '').split('\n').slice(1, 3).join('|'))); p.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::/.test(m.text())) errs.push(m.text()); });
 if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
 await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/cloud/**', r => r.abort());

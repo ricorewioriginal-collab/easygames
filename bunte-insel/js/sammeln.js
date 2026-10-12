@@ -82,7 +82,7 @@ BI.createSammeln = function (G) {
   }
   /* ---------- 🥅 Käfer ---------- */
   const NB = 14, NBA = EVT.g === 'bug' ? 14 : 8, bugs = [], bgeo = (() => { const b = new BI.Batch(); b.sph(0, .1, 0, .15, 0xffffff, 1, 1, .7, 1.5); for (const sd of [-1, 1]) b.box(sd * .17, .2, 0, .3, .02, .22, 0xffffff, 0, 0, sd * .35); b.sph(0, .14, .2, .08, 0x333333, 0); return b.mesh(BI.mat()).geometry; })();
-  const bmesh = new THREE.InstancedMesh(bgeo, BI.mat(), NB), dm = new THREE.Object3D(), cl = new THREE.Color(); bmesh.frustumCulled = false; bmesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(bmesh);
+  const bmesh = new THREE.InstancedMesh(bgeo, BI.mat().clone(), NB), dm = new THREE.Object3D(), cl = new THREE.Color(); bmesh.frustumCulled = false; bmesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(bmesh);
   for (let i = 0; i < NB; i++) { bugs.push({ on: false, x: 0, z: 0, sp: null, ph: Math.random() * 6, vx: 0, vz: 0, t: 0 }); bmesh.setColorAt(i, cl.setHex(0xffffff)); }
   const grass = (x, z) => { if (atInterior(x, z) || W.onRoad(x, z) || !W.free(x, z, .5) || W.groundY(x, z) > .3) return false; const h = (() => { for (const q of [BI.CITY, BI.PARK, BI.RAINBOW, BI.PUPS, BI.DAMPF, BI.DRACHEN, BI.BAULAND, BI.FUSSBALL, BI.MAERCHEN, BI.SCHLUESSEL, BI.ZOTIK, BI.RADIO]) { if (q && q.R && Math.hypot(x - q.x, z - q.z) < q.R - 12) return 1; } return Math.hypot(x, z) < 150 ? 1 : 0; })(); if (!h) return false; const lk = W.lake; return !(lk && Math.hypot(x - lk.x, z - lk.z) < lk.r + 3); };
   function spawnBug(b) {

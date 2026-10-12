@@ -194,7 +194,7 @@ BI.createTycoon = function (G) {
   /* ===================== Müll ===================== */
   const LMAX = T.LCAP;
   const litGeo = (() => { const b = new BI.Batch(); b.box(0, 0, 0, .34, .14, .26, 0xffffff, .5); b.box(.12, .14, .04, .18, .12, .18, 0xffffff, 1.1); return b.mesh(mat).geometry; })();
-  const litMesh = new THREE.InstancedMesh(litGeo, mat, LMAX); litMesh.frustumCulled = false; litMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(litMesh);
+  const litMesh = new THREE.InstancedMesh(litGeo, mat.clone(), LMAX); litMesh.frustumCulled = false; litMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(litMesh);
   { const cc = new THREE.Color(), LC = [0xe0382b, 0x4da3ff, 0xffd23f, 0xb36bff, 0x8a5a33, 0xffffff]; for (let i = 0; i < LMAX; i++) litMesh.setColorAt(i, cc.setHex(LC[i % LC.length])); } litMesh.count = 0; /* count erst NACH setColorAt (three r128 legt den Farbpuffer mit count an) */
   const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(1, 1, 1), _e = new THREE.Euler(), _Y = new THREE.Vector3(0, 1, 0);
   function drawLitter() { litMesh.count = litter.length; for (let i = 0; i < litter.length; i++) { const l = litter[i]; _p.set(l.x, .09, l.z); _q.setFromAxisAngle(_Y, l.a); _m.compose(_p, _q, _s); litMesh.setMatrixAt(i, _m); } litMesh.instanceMatrix.needsUpdate = true; }
@@ -213,7 +213,7 @@ BI.createTycoon = function (G) {
   const MAXG = T.MAXG;
   const gBody = (() => { const b = new BI.Batch(); b.cyl(0, 0, 0, .26, .32, .95, 0xffffff, 6); return b.mesh(mat).geometry; })();
   const gHead = (() => { const b = new BI.Batch(); b.sph(0, 1.25, 0, .3, 0xffd2a8, 1); return b.mesh(mat).geometry; })();
-  const gbm = new THREE.InstancedMesh(gBody, mat, MAXG), ghm = new THREE.InstancedMesh(gHead, mat, MAXG);
+  const gbm = new THREE.InstancedMesh(gBody, mat.clone(), MAXG), ghm = new THREE.InstancedMesh(gHead, mat.clone(), MAXG);
   for (const m of [gbm, ghm]) { m.frustumCulled = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(m); }
   { const cc = new THREE.Color(), GC = [0xff5a5a, 0x4da3ff, 0xffd23f, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xff8a1f, 0x7de0d0]; for (let i = 0; i < MAXG; i++) { gbm.setColorAt(i, cc.setHex(GC[i % GC.length])); ghm.setColorAt(i, cc.setHex(0xffffff)); } } /* beide brauchen Instanzfarben (three r128: gleiches Material, sonst Absturz) */
   gbm.count = ghm.count = 0;
