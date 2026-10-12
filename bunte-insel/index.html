@@ -476,11 +476,15 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 </section>
 <div id="flash"></div>
 <div id="polaroid"><img alt=""></div>
+<section id="sammelPanel" class="screen" hidden>
+  <div class="card shop" id="sammelBox"></div>
+</section>
 <section id="albumPanel" class="screen" hidden>
   <div class="card shop">
     <div class="logo" style="font-size:30px">🏅 Sammelalbum</div>
     <div class="sub" style="margin:4px 0 8px" id="albumCount"></div>
     <div id="albumGrid"></div>
+    <button class="big" id="albumBook" style="margin-top:12px;font-size:20px;padding:10px 24px">📖 Sammelbuch öffnen</button>
     <button class="big" id="albumClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✔ Fertig</button>
   </div>
 </section>
@@ -699,7 +703,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <noscript>Bitte JavaScript aktivieren.</noscript>
 
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
-<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=59,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
+<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=60,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="__ld()"></script>
 <script src="js/util.js?v=ins11" onload="__ld()"></script>
 <script src="js/characters.js?v=people2" onload="__ld()"></script>
@@ -717,7 +721,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/minis2.js" onload="__ld()"></script>
 <script src="js/minis3.js?v=ins4" onload="__ld()"></script>
 <script src="js/mini.js" onload="__ld()"></script>
-<script src="js/kids.js?v=ins2" onload="__ld()"></script>
+<script src="js/kids.js?v=ins12" onload="__ld()"></script>
 <script src="js/garden.js" onload="__ld()"></script>
 <script src="js/farm.js" onload="__ld()"></script>
 <script src="js/pool.js" onload="__ld()"></script>
@@ -726,7 +730,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/express.js" onload="__ld()"></script>
 <script src="js/gadgets.js" onload="__ld()"></script>
 <script src="js/parcours.js" onload="__ld()"></script>
-<script src="js/meta.js" onload="__ld()"></script>
+<script src="js/meta.js?v=ins12" onload="__ld()"></script>
 <script src="js/pack.js" onload="__ld()"></script>
 <script src="js/themes.js?v=ins2" onload="__ld()"></script>
 <script src="js/park.js?v=ty1" onload="__ld()"></script>
@@ -739,6 +743,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/fussball.js?v=ins2" onload="__ld()"></script>
 <script src="js/maerchen.js?v=ins11" onload="__ld()"></script>
 <script src="js/schatz.js?v=ins2" onload="__ld()"></script>
+<script src="js/sammeln.js?v=1" onload="__ld()"></script>
 <script src="js/tafeln.js?v=ins2" onload="__ld()"></script>
 <script src="js/voxel.js" onload="__ld()"></script>
 <script src="js/atlantis.js?v=ins11" onload="__ld()"></script>
@@ -758,7 +763,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/combat.js" onload="__ld()"></script>
 <script src="js/weather.js?v=ins10" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=ins11" onload="__ld()"></script>
+<script src="js/main.js?v=ins12" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>

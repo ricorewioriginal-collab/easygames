@@ -107,6 +107,14 @@ Krankenhaus, Polizei, Feuerwehr, Rathaus, Schule, Eisdiele sowie die Bahnhöfe H
 
 **Flackern behoben:** Boden-Flächen, die nur Millimeter übereinander liegen (Wiese, Sand, Wege, Markierungen), liegen jetzt in getrennten Meshes mit eigenem `polygonOffset` (`BI.layerMeshes`, auch für Zotik/Atlantis/Radio); Wiesenflecken überlappen sich nicht mehr; Kamera-Nahebene 1,4 statt 0,8 (Ego-Kamera 0,5), Ferne 640 – genauerer Tiefenpuffer, besonders auf Handys. Tier-Aktionen im Spaß-Menü holen das Tier jetzt automatisch aus dem Zuhause.
 
+## Sammeln & Sammelbuch 🎣🥅⛏️📖 (alle Inseln)
+Ein Sammelspiel für jeden Tag (eigene Namen und Bilder, nichts kopiert – inspiriert von beliebten Sozial-/Sammelspielen). Alles mit **Bildern statt Text**, Namen werden vorgelesen:
+- 🎣 **Angeln** am See und an jedem Strand: Knopf „Angeln“ erscheint am Wasser → auswerfen → warten → bei „❗ Es beißt!“ nochmal drücken → Fisch (12 Arten, See und Meer, nachts besondere; manchmal ein alter Stiefel 😄), Größe in cm mit Rekord.
+- 🥅 **Käfer fangen**: im Gras krabbeln und flattern bis zu 8 Käfer (12 Arten, Funkel nur nachts); „Käfer fangen“ (Aktionstaste oder Spaß-Menü) – seltene entwischen manchmal.
+- ⛏️ **Buddeln**: glitzernde Stellen am Strand (jede Insel) → „Buddeln“ → Fund (Muscheln, Münzen, Dino-Knochen, Flaschenpost, Goldener Schlüssel …).
+- 📖 **Sammelbuch** (Spaß-Menü → „Kreativ“, oder im 🏅 Sammelalbum der Knopf „Sammelbuch öffnen“): 36 Einträge in drei Kapiteln + Tab „Tiere“ (öffnet das Tierbuch vom Bauernhof). Neuer Eintrag +1 bis +4 ⭐ je nach Seltenheit, **Tagesglück** (+2 ⭐ fürs heutige Wunschwesen), Meilensteine bei 5/10/20/30/36 Einträgen und je Kapitel +10 ⭐.
+- **Verbindung zu vorhandenem:** neue Sticker im Sammelalbum (Angler, Käferfreund, Schatzgräber, Buchleser, Sammelmeister), Tagesaufgaben (Fische, Käfer, Fundstücke), Aufgaben-Log „📖 Sammelbuch & Fangen“, Spaß-Menü (Angeln / Käfer fangen / Buddeln / Sammelbuch), Aktionstaste (hat Vorrang vor geparkten Fahrzeugen). Datei `js/sammeln.js`, Spielstand `save.sammel`, Test `tests/sammeln.mjs`.
+
 ## Schatzsuche 🗺️🧰 (alle Inseln)
 **Schatzmeister Piet** (Hauptinsel nahe dem Start, Knopf „🗺️ Schatzsuche starten“) gibt das erste Bilder-Rätsel (wird vorgelesen). Eine **goldene Lichtsäule** zeigt schon von Weitem, wo die Kiste steht; der Pfeil 👣 führt zur Insel. Jede Kiste = +1 ⭐ und das nächste Rätsel: Freizeitpark → Fußball-Arena → Märchenland → Funkwelle → Drachenhöhen → Regenbogenwelt → Lunaris → Atlantis (großer Schatz +10 ⭐, Sticker „Schatzjäger“; danach geht es von vorn, dann +5 ⭐). Immer nur **eine** Kiste und **ein** Strahl (sparsam). Datei `js/schatz.js`, Test `tests/schatz.mjs`.
 
