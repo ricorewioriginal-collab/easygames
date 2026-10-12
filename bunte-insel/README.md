@@ -356,3 +356,12 @@ Eigene, frei erfundene Abenteuer-Insel (Welt "Herzlicht", eigene Musik): riesige
 - Alle fünf Schlüssellöcher offen → **Tor der Herzen** → Kampf gegen den **Dunkelriesen** (roten Kreisen ausweichen).
 - Highlight: **Schlüsselschwert-Mobil** (fliegendes Fahrzeug, am Sternen-Hafen oder per "Rufen"), 2 Spiele + 2 Automaten, Sticker, Aufgaben-Log, Wohin-Menü, Sammeln (Angeln am Rand).
 - Test: `node bunte-insel/tests/schluessel.mjs`
+
+### 📺 Fernseher-Modus: Handy/Tablet als Controller (+ Splitscreen)
+Die Bunte Insel läuft am Fernseher/Computer, Handys und Tablets werden zum Controller (bis zu 4 Spieler).
+- **Starten:** am Smart-TV/Browser `…/bunte-insel/?tv=1` (öffnet von selbst den TV-Modus) oder im Titelmenü „📺 Am Fernseher spielen“. Der Fernseher zeigt **QR-Code + 4-stelligen Code**; am Handy scannen (öffnet `controller.html`) oder Code eingeben. Verbindung direkt per WebRTC/PeerJS (Internet nötig, kein Server).
+- **Controller (nur das Nötigste):** Stick (erscheint unter dem Daumen), große Tasten **Aktion** (zeigt dieselbe Beschriftung wie am Fernseher: Einsteigen, Hallo, …), **Springen/Turbo/Steigen**, **Hallo/Hupe**, **Aktion 2** (nur wenn nötig, z. B. Sirene, Baum hauen), Wischen rechts = Kamera. ☰ öffnet: Spaß, Wohin?, Tasche, Aufgaben, Pause, Zeiger, Splitscreen, Kamera, Trennen.
+- **Spieler 1** steuert die Hauptfigur mit allem (Fahrzeuge, Aktionen, Spiele). In Menüs/Fenstern am Fernseher schaltet der Controller automatisch in den **Zeiger-Modus** (Stick bewegt den Zeiger, Aktion = Klick, Springen = Zurück, Wischen = Scrollen).
+- **Spieler 2–4** sind Mitspieler-Figuren: laufen, rennen, springen, winken, tanzen (bleiben bei Spieler 1; weit weg → werden zurückgeholt).
+- **Splitscreen** (am Handy ☰ oder am Fernseher): 2 Spieler nebeneinander, 3–4 geviertelt, jeder mit eigener Kamera.
+- Test: `node bunte-insel/tests/tv.mjs` (TV + 2 Controller über Fake-PeerJS).
