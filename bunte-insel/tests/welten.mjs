@@ -65,7 +65,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     out.arc = ['stroemung_atlantis', 'blasen_atlantis'].every(k => (W.spots.arcades || []).some(a => a.kind === k && Math.hypot(a.x - A.x, a.z - A.z) < A.R - 2));
     out.pit = !!W.atlPit && W.atlPit.floor(W.spots.atlPortal.x + Math.sin(A.pit.a) * 3, W.spots.atlPortal.z + Math.cos(A.pit.a) * 3) < 0 && BI.worldAt(W.spots.atlPortal.x, W.spots.atlPortal.z) === 'insel';
     const sh = b.atlantis.shards; out.shards = sh.length > 30 && sh.every(q => Math.hypot(q.x - A.x, q.z - A.z) < A.R);
-    b.atlantis.enter(); await sl(1500); out.enter = Math.hypot(b.P.x - A.x, b.P.z - A.z) < A.R - 2 && b.P.z > A.z;
+    b.atlantis.enter(); const inA = () => Math.hypot(b.P.x - A.x, b.P.z - A.z) < A.R - 2 && b.P.z > A.z; for (let i = 0; i < 40 && !inA(); i++) await sl(250); out.enter = inA();
     const gl = (W.vehicleSpawns || []).filter(v => v.type === 'gleiter'); out.gleiter = gl.length === 3 && gl.every(v => Math.hypot(v.x - A.x, v.z - A.z) < A.R);
     b.P.x = 0; b.P.z = 26; b.P.y = 0; return out;
   });

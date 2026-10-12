@@ -99,6 +99,7 @@ BI.buildWorld = function (scene) {
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
     if (px > 2800) { /* Innenräume (BI.createInnen) liegen weit draußen: keine Inselgrenze */ }
+    else if (W.atlantis && Math.hypot(px - W.atlantis.x, pz - W.atlantis.z) < 300 && W.atlantis.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Atlantis (unter der Erde) liegt außerhalb der Meer-Grenze: zuerst prüfen */ }
     else if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
     else if (swim) { /* zu Fuß: Strand und Meer überall begehbar/schwimmbar – nur ganz draußen ist Schluss (kein unsichtbares Mauern-Gewirr mehr) */ const fl = W.flyLimit(); if (rad > fl - r) { const k = (fl - r) / rad; px *= k; pz *= k; hit = true; } }
     else if (rad > K.LIMIT - r) {
