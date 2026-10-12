@@ -22,6 +22,11 @@ BI.createCombat = function (G) {
     wolf: b => { b.sph(0, .5, -.1, .5, 0x8a7a6a, 1, .9, .8, 1.3); b.sph(0, .62, .62, .32, 0x8a7a6a, 1); b.cone(-.15, .92, .6, .1, .25, 0x5a4a3a, 4); b.cone(.15, .92, .6, .1, .25, 0x5a4a3a, 4); for (let i = 0; i < 6; i++) b.cone(0, .85, -.5 + i * .2, .07, .3, 0x4a3a2a, 4); eyes(b, .7, .86, .12, .08); b.box(0, .5, .92, .14, .1, .1, 0x2a2018); for (const [x, z] of [[-.25, .2], [.25, .2], [-.25, -.4], [.25, -.4]]) b.box(x, 0, z, .14, .3, .14, 0x6a5a4a); },
     frost: b => { b.cone(0, 0, 0, .6, 1.0, 0xcfeeff, 8); b.sph(0, 1.05, 0, .5, 0xe8f8ff, 1); eyes(b, 1.1, .38, .18, .1); for (let i = 0; i < 5; i++) b.cone(Math.sin(i * 1.26) * .45, .95, Math.cos(i * 1.26) * .45, .08, .3, 0x8ad0ff, 4); },
     lava: b => { b.sph(0, .55, 0, .55, 0xe0552a, 1, 1, .8, 1.2); b.sph(0, .7, .6, .32, 0xff7a2e, 1); for (const sx of [-1, 1]) { b.cone(sx * .15, 1.0, .6, .08, .3, 0xffd23f, 4); b.box(sx * .6, .85, -.1, .5, .05, .4, 0xff9a3a, 0, 0, sx * .5); } eyes(b, .78, .86, .12, .08); b.cone(0, .45, -.7, .12, .5, 0xffd23f, 4); },
+    /* Trickfilm-Wüste (inspiriert von Abenteuern in vergessenen Zeichentrick-Welten, eigene Namen): Tinte, Käfer-Roboter, Verdünner, unfertige Skizzen */
+    klecks: b => { b.sph(0, .5, 0, .62, 0x15121e, 1, 1, .8, 1); b.sph(-.2, .75, .1, .16, 0x3a3250, 0, 1, .6, 1); for (const sx of [-1, 1]) { b.cone(sx * .42, .35, 0, .12, .5, 0x15121e, 5, 0); b.sph(sx * .45, .02, .1, .12, 0x15121e, 0, 1, .7, 1); } b.sph(-.2, .62, .5, .15, 0xffffff, 0); b.sph(.2, .62, .5, .15, 0xffffff, 0); b.sph(-.2, .62, .62, .07, 0x222222, 0); b.sph(.2, .62, .62, .07, 0x222222, 0); b.box(0, .4, .6, .34, .05, .04, 0xd8c8ff); },
+    kaeferbot: b => { b.sph(0, .5, 0, .55, 0x8d97a6, 1, 1, .7, 1.25); b.sph(0, .5, .62, .3, 0x6f7a8c, 1); b.sph(0, .62, .86, .1, 0xff3a3a, 0); b.cone(-.15, .85, .8, .04, .5, 0x4a505c, 4); b.cone(.15, .85, .8, .04, .5, 0x4a505c, 4); b.box(0, .75, -.1, .9, .06, .06, 0xffd23f); b.box(0, .75, -.5, .9, .06, .06, 0xffd23f); for (let i = 0; i < 3; i++) for (const sx of [-1, 1]) b.box(sx * .5, .12, -.4 + i * .4, .5, .06, .08, 0x4a505c, 0, 0, sx * .3); },
+    verduenner: b => { b.cone(0, 0, 0, .55, 1.2, 0xbfe6f0, 8); b.sph(0, 1.2, 0, .45, 0xdff4fa, 1, 1, 1.1, 1); b.sph(-.17, 1.25, .38, .1, 0x2a4a6a, 0); b.sph(.17, 1.25, .38, .1, 0x2a4a6a, 0); for (let i = 0; i < 5; i++) b.cone(Math.sin(i * 1.26) * .42, .06, Math.cos(i * 1.26) * .42, .09, .45, 0x8ad0e0, 4, 0); b.sph(0, 1.0, .42, .09, 0x2a4a6a, 0, 1, 1.4, .6); },
+    skizze: b => { b.box(0, .55, 0, .7, .8, .08, 0xfafafa); b.sph(0, 1.2, 0, .32, 0xfafafa, 1, 1, 1, .3); for (const [x, y, w, h] of [[0, .55, .76, .04], [0, .15, .76, .04], [-.37, .35, .04, .44], [.37, .35, .04, .44]]) b.box(x, y + (h > .1 ? .2 : 0), .06, w, h, .04, 0x222222); b.box(-.1, 1.22, .1, .08, .04, .03, 0x222222); b.box(.1, 1.22, .1, .08, .04, .03, 0x222222); b.box(0, 1.1, .1, .16, .03, .03, 0x222222); for (const sx of [-1, 1]) { b.box(sx * .12, .15, 0, .1, .35, .06, 0xfafafa); b.box(sx * .5, .6, 0, .14, .5, .06, 0xfafafa, 0, 0, sx * .5); } },
     gblob: b => { b.sph(0, .55, 0, .6, 0xb36bff, 1, 1, .85, 1); eyes(b, .72, .42, .22, .14); b.box(0, .5, .58, .34, .06, .04, 0x4a2b6b); for (let i = 0; i < 3; i++) b.cone(-.3 + i * .3, 1.05, 0, .1, .3, 0xff8fc8, 4); },
     boss: b => { b.cyl(0, 0, 0, .6, .85, 1.6, 0x4a3a2a, 8); b.sph(0, 2.0, 0, .85, 0x2f6b4a, 1, 1, .9, 1); for (let i = 0; i < 6; i++) b.cone(Math.sin(i) * .6, 2.6, Math.cos(i) * .5, .2, .6, 0x1f4a3a, 5); for (const sx of [-1, 1]) { b.box(sx * 1.0, 1.1, 0, .28, 1.3, .28, 0x4a3a2a, 0, sx * .5); b.sph(sx * .3, 2.0, .72, .18, 0xffe14a, 0); b.box(sx * 1.2, .6, 0, .5, .12, .12, 0x4a3a2a); } b.box(0, 1.55, .85, .6, .1, .06, 0x1a1a1a); }
   };
@@ -29,6 +34,8 @@ BI.createCombat = function (G) {
   const TYPES = {
     blob: { n: 'Glibbi', hp: 30, spd: 2.0, dmg: 7, reach: 1.5, base: 1 }, spike: { n: 'Stachli', hp: 40, spd: 2.8, dmg: 9, reach: 1.5, base: 1 }, mush: { n: 'Pilzling', hp: 36, spd: 2.3, dmg: 8, reach: 1.5, base: 1 },
     wichtel: { n: 'Dunkelwichtel', hp: 34, spd: 2.5, dmg: 8, reach: 1.5, base: 1.1 }, moos: { n: 'Moosling', hp: 32, spd: 2.0, dmg: 7, reach: 1.5, base: 1 }, wolf: { n: 'Dornenwolf', hp: 44, spd: 3.0, dmg: 10, reach: 1.7, base: 1.1 }, frost: { n: 'Frostgeist', hp: 38, spd: 2.4, dmg: 9, reach: 1.6, base: 1.1 }, lava: { n: 'Lavadrache', hp: 60, spd: 2.2, dmg: 12, reach: 2.0, base: 1.3 },
+    klecks: { n: 'Tintenklecks', hp: 30, spd: 2.1, dmg: 7, reach: 1.5, base: 1.1 }, kaeferbot: { n: 'Käfer-Roboter', hp: 46, spd: 2.9, dmg: 9, reach: 1.6, base: 1.1 }, verduenner: { n: 'Verdünner-Geist', hp: 36, spd: 2.5, dmg: 8, reach: 1.6, base: 1.1 }, skizze: { n: 'Skizzen-Wicht', hp: 34, spd: 2.7, dmg: 8, reach: 1.5, base: 1.1 },
+    tintenriese: { n: 'Der große Klecks', hp: 330, spd: 1.8, dmg: 20, reach: 3.4, base: 3.4, big: true, geo: 'klecks' },
     riese: { n: 'Dunkelriese', hp: 300, spd: 1.9, dmg: 19, reach: 3.4, base: 3.2, big: true, geo: 'wichtel' },
     gblob: { n: 'Riesen-Glibbi', hp: 150, spd: 1.8, dmg: 14, reach: 2.8, base: 2.4, big: true, geo: 'gblob' }, boss: { n: 'Waldgeist', hp: 230, spd: 2.0, dmg: 17, reach: 3.2, base: 2.2, big: true, geo: 'boss' }
   };
@@ -86,7 +93,7 @@ BI.createCombat = function (G) {
   }
   function defeatMonster(e) {
     e.dead = true; e.t = 0; if (e.tele) e.tele.visible = false; A.bigpop && A.bigpop(); fx.burst(e.x, 1.2, e.z, 26, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.purple], 6, 1.4, 32, 6);
-    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
+    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'tintenriese') { st.b++; bossAlive = false; addStars(3); say('🖋️ Der große Klecks ist besiegt! +11 ⭐', 4600); A.fanfare(); G.earn('tintenboss'); st.tf = (st.tf | 0) + 1; } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (TRICK.has(e.kind)) { st.tf = (st.tf | 0) + 1; if (st.tf >= 10) G.earn('trickfilm'); } if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
   }
   let bossAlive = false; K.kills = 0; K.bossN = 0;
 
@@ -154,13 +161,13 @@ BI.createCombat = function (G) {
   }
 
   /* ---------- Verbotener Wald ---------- */
-  const WORLD = ['wichtel', 'moos', 'wolf', 'frost', 'lava'];
+  const WORLD = ['wichtel', 'klecks', 'moos', 'kaeferbot', 'wolf', 'verduenner', 'frost', 'skizze', 'lava'], TRICK = new Set(['klecks', 'kaeferbot', 'verduenner', 'skizze', 'tintenriese']);
   function forestSpawn(dt) {
     if (!inForest()) return; spawnT -= dt; const cap = save.eco ? 4 : 6, alive = enemies.filter(e => !e.dead).length;
     if (spawnT > 0 || alive >= cap) return; spawnT = 3 + rnd() * 3;
     for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (Math.hypot(x - FO.x, z - FO.z) > FO.R - 2.5 || !W.free(x, z, .8)) continue;
       let kind = rnd() < .34 ? 'blob' : rnd() < .5 ? 'spike' : 'mush'; if (K.kills >= 3 && rnd() < .55) kind = WORLD[(rnd() * Math.min(WORLD.length, 2 + (K.kills / 3 | 0))) | 0];
-      if (!bossAlive && K.kills >= K.nextBoss) { kind = (K.bossN++ % 2) ? 'riese' : 'boss'; bossAlive = true; K.nextBoss += 10; say(kind === 'riese' ? '⚠️ Der Dunkelriese aus dem Schlüsselreich erscheint!' : '⚠️ Der Waldgeist erwacht!', 3000); }
+      if (!bossAlive && K.kills >= K.nextBoss) { kind = ['boss', 'riese', 'tintenriese'][K.bossN++ % 3]; bossAlive = true; K.nextBoss += 10; say(kind === 'riese' ? '⚠️ Der Dunkelriese aus dem Schlüsselreich erscheint!' : kind === 'tintenriese' ? '⚠️ Der große Klecks quillt aus der Tinte!' : '⚠️ Der Waldgeist erwacht!', 3000); }
       spawn(kind, x, z, { home: true }); return; }
   }
 
