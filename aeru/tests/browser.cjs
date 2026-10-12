@@ -7,7 +7,7 @@ const path = require('node:path'), fs = require('node:fs'), url = require('node:
 let chromium; try { ({chromium} = require('playwright')); } catch { console.log('SKIP: Playwright ist nicht installiert.'); process.exit(0); }
 const out = path.join(__dirname, 'screenshots'); fs.mkdirSync(out, {recursive: true});
 const page_url = url.pathToFileURL(path.resolve(__dirname, '../index.html')).href + '?test';
-const VIEWPORTS = [
+const VIEWPORTS = (process.env.ONLY ? v => v.filter(x => x.name.includes(process.env.ONLY)) : v => v)([
   {name: 'desktop-1920x1080', width: 1920, height: 1080},
   {name: 'desktop-1366x768', width: 1366, height: 768},
   {name: 'desktop-1280x720', width: 1280, height: 720},
@@ -17,7 +17,7 @@ const VIEWPORTS = [
   {name: 'phone-landscape-800x360', width: 800, height: 360, mobile: true},
   {name: 'phone-landscape-915x412', width: 915, height: 412, mobile: true},
   {name: 'phone-landscape-904x407-dpr3', width: 904, height: 407, mobile: true, dpr: 3}
-];
+]);
 // Sichtbare, feste Bedienelemente, die sich nicht überdecken dürfen.
 const UI = ['#hud .brand', '#hud .stats', '#pause', '#quest', '#map', '#flightHud', '#stick', '#jump', '#attack', '#fly', '#dodge', '#talk', '#bossHud'];
 async function layoutProblems(page, selectors) {

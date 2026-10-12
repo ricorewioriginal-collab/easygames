@@ -28,7 +28,9 @@ kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 
 .cores{border-color:#f4cc8166!important}.cores i{background:radial-gradient(#fff5d0,#d89a3f);color:#5a3209}
 .stats b{display:inline-block;font-size:21px;min-width:22px;text-align:right;text-shadow:0 2px 0 #031a20}
 .crystal b{color:var(--mint)}.cores b{color:var(--gold)}
+.chest{border-color:#c9a7ff66!important}.chest i{background:radial-gradient(#f0e0ff,#9a6bd6);color:#2e1650}.chest b{color:#e2c9ff}
 .stats small{font-size:11px;opacity:.6;font-weight:700}
+@media (max-width:480px){.stats{gap:5px}.stats>span{gap:4px;padding:3px 7px 3px 5px}.stats i{width:19px;height:19px;font-size:11px}.stats b{font-size:17px;min-width:12px}.stats small{display:none}}
 .bump{animation:bump .35s ease-out}
 @keyframes bump{40%{transform:scale(1.35)}}
 .square{pointer-events:auto;background:var(--plate);border:2px solid var(--edge);border-radius:12px;width:44px;height:44px;font-size:17px;font-weight:900;box-shadow:0 4px 0 #04161c80;transition:transform .1s}

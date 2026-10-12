@@ -4,9 +4,11 @@ Alle Befehle aus dem Ordner `aeru/` ausführen. Node 18+ genügt; nur der Browse
 
 | Befehl | Dauer (ca.) | Prüft |
 |---|---|---|
-| `node tests/story.cjs` | wenige Sekunden | komplette Hauptgeschichte vom Neustart bis zum Abspann |
+| `node tests/story.cjs` | wenige Sekunden | komplette Hauptgeschichte vom Neustart bis zum Abspann, danach der Epilog im Nachtgarten mit Bosskampf |
 | `node tests/logic.cjs` | wenige Sekunden | Steuerung, Physik, Kampf, Negativfälle, Spielstände, Erreichbarkeit |
 | `node tests/landing.cjs` | < 5 s | Landung auf den schwebenden Inseln (Landehilfe) |
+| `node tests/sky.cjs` | < 20 s | alle 21 Himmelsinseln erreichbar (Aufwind, Flug, Landung), Truhen, Schwung-Ringe |
+| `node tests/neu.cjs` | < 5 s | Rammstoß, Nachtmotte, Wurzelwächter, alter Spielstand → sieben Welten |
 | `node tests/webview.cjs` | < 5 s | 2D-Ersatzmodus ohne WebGL |
 | `NODE_PATH=$(npm root -g) node tests/browser.cjs` | ca. 5 min | echtes Chromium in 9 Viewports, Screenshots, Bildzeiten |
 

@@ -2,7 +2,7 @@
 
 Eigenständiges 3D-Drachenabenteuer für Desktop- und Handybrowser. Start: `index.html`; kein Build, kein Backend, keine externen Downloads. Im Hauptverzeichnis der Spielesammlung eingetragen.
 
-Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln: Der Wind verstummt, eine Spur führt zur Sternenwarte, dort wartet Vesper – doch der Kampf gegen ihn ist erst die Mitte. Die Wahrheit liegt in der Kristallklamm, das Finale in den Morgenruinen. Nach dem Abspann kann frei weitergespielt werden.
+Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln und einen siebten Epilog-Garten: Der Wind verstummt, eine Spur führt zur Sternenwarte, dort wartet Vesper – doch der Kampf gegen ihn ist erst die Mitte. Die Wahrheit liegt in der Kristallklamm, das Finale in den Morgenruinen. Nach dem Abspann kann frei weitergespielt werden.
 
 ## Weitere Dokumente
 
@@ -34,7 +34,7 @@ Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln
 | `game.js` | Darstellung (Three.js r128), Physik, Kampf, Bosse, Oberfläche, Audio, Speichern |
 | `tests/` | automatische Tests, siehe TESTING.md |
 
-Spielstand: `aeru-save-v1` (Format Version 3). Alte Stände (Version 1/2) werden beim Laden übernommen; das Original bleibt unter `aeru-save-backup`. Vor einem neuen Abenteuer wird der alte Stand unter `aeru-save-previous` gesichert. Einstellungen liegen unter `aeru-settings`.
+Spielstand: `aeru-save-v1` (Format Version 3, sieben Welten inkl. Himmelstruhen; ältere Stände ohne Nachtgarten laden unverändert). Alte Stände (Version 1/2) werden beim Laden übernommen; das Original bleibt unter `aeru-save-backup`. Vor einem neuen Abenteuer wird der alte Stand unter `aeru-save-previous` gesichert. Einstellungen liegen unter `aeru-settings`.
 
 `?test` aktiviert ausschließlich lokale Testinstrumentierung (`window.aeruTest`).
 

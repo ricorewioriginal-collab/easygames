@@ -3,7 +3,7 @@
    Die Welt (game.js) meldet Ereignisse (emit/talk) und stellt Abfragen bereit; die Engine entscheidet über Fortschritt. */
 'use strict';
 (function (root) {
-const SAVE_VERSION = 3, LEVELS = 6, GEMS_PER_LEVEL = 24;
+const SAVE_VERSION = 3, LEVELS = 6, WORLDS = 7, GEMS_PER_LEVEL = 24; // LEVELS = Hauptgeschichte (6 Kapitel), WORLDS = Inseln inkl. Nachtgarten (Epilog)
 // Sichtbare Questzustände (Masterprompt §4). Gespeichert werden nur available/active/done; die übrigen sind abgeleitet.
 const STATE = {LOCKED: 'locked', AVAILABLE: 'available', ACTIVE: 'active', PARTIAL: 'partial', READY: 'ready', DONE: 'done'};
 const STATE_LABEL = {locked: 'Noch nicht verfügbar', available: 'Verfügbar', active: 'Aktiv', partial: 'Teilziel erfüllt', ready: 'Bereit zum Abschluss', done: 'Abgeschlossen'};
@@ -11,16 +11,16 @@ const STATE_LABEL = {locked: 'Noch nicht verfügbar', available: 'Verfügbar', a
 // oder sie nur innerhalb des Schritts entstehen können (Rätselreihenfolge). Zähler und Objekte laufen erst ab Aktivierung.
 const passive = g => ['arrive', 'boss', 'enemy', 'item'].includes(g.type) || (['lantern', 'ring', 'gem'].includes(g.type) && (g.retro || g.order));
 
-const grid = (fill) => Array.from({length: LEVELS}, fill);
+const grid = (fill) => Array.from({length: WORLDS}, fill);
 function freshSave() {
   return {version: SAVE_VERSION, level: 0, checkpoint: null,
-    collected: grid(() => []), lit: grid(() => []), rings: grid(() => []), cores: Array(LEVELS).fill(false),
-    quests: {}, flags: {}, seen: {}, boss: {vesper: 6, stille: 9}, elapsed: 0, migration: null};
+    collected: grid(() => []), lit: grid(() => []), rings: grid(() => []), chests: grid(() => []), cores: Array(WORLDS).fill(false),
+    quests: {}, flags: {}, seen: {}, boss: {vesper: 6, stille: 9, bluete: 8}, elapsed: 0, migration: null};
 }
 const uniqueInts = (list, max) => Array.isArray(list) ? [...new Set(list.filter(v => Number.isInteger(v) && v >= 0 && v < max))] : [];
 function copyWorld(target, source) {
-  for (const [key, max] of [['collected', GEMS_PER_LEVEL], ['lit', 3], ['rings', 3]])
-    for (let i = 0; i < LEVELS; i++) target[key][i] = uniqueInts(source?.[key]?.[i], max);
+  for (const [key, max] of [['collected', GEMS_PER_LEVEL], ['lit', 3], ['rings', 3], ['chests', 3]])
+    for (let i = 0; i < WORLDS; i++) target[key][i] = uniqueInts(source?.[key]?.[i], max);
 }
 
 // ───────── Bedingungen ─────────
@@ -274,7 +274,7 @@ function sanitize(raw, story) {
   const save = freshSave();
   copyWorld(save, raw);
   save.elapsed = Number.isFinite(raw.elapsed) ? Math.max(0, raw.elapsed) : 0;
-  for (const key of ['vesper', 'stille']) if (Number.isFinite(raw.boss?.[key])) save.boss[key] = Math.max(0, Math.min(save.boss[key], Math.round(raw.boss[key])));
+  for (const key of ['vesper', 'stille', 'bluete']) if (Number.isFinite(raw.boss?.[key])) save.boss[key] = Math.max(0, Math.min(save.boss[key], Math.round(raw.boss[key])));
   if (raw.flags && typeof raw.flags === 'object') for (const [k, v] of Object.entries(raw.flags)) if (v === true) save.flags[k] = true;
   if (raw.seen && typeof raw.seen === 'object') for (const k of Object.keys(raw.seen)) if (story.dialogs[k]) save.seen[k] = 1;
   const byId = new Map(story.quests.map(q => [q.id, q]));
@@ -290,7 +290,7 @@ function sanitize(raw, story) {
   for (const q of story.quests) if (save.quests[q.id] && !cond(q.when)) delete save.quests[q.id];
   for (const q of story.quests) if (q.reward && Number.isInteger(q.reward.core)) save.cores[q.reward.core] = save.quests[q.id]?.s === 'done';
   let unlocked = 0;
-  while (unlocked < LEVELS - 1 && save.cores[unlocked]) unlocked++;
+  while (unlocked < WORLDS - 1 && save.cores[unlocked]) unlocked++;
   save.level = Number.isInteger(raw.level) ? Math.max(0, Math.min(raw.level, unlocked)) : 0;
   if (raw.checkpoint && Number.isFinite(raw.checkpoint.x) && Number.isFinite(raw.checkpoint.y) && Number.isFinite(raw.checkpoint.z) && raw.checkpoint.level === save.level)
     save.checkpoint = {level: save.level, x: raw.checkpoint.x, y: raw.checkpoint.y, z: raw.checkpoint.z};

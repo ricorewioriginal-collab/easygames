@@ -8,7 +8,7 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Coyote Time:** 0,12 s nach dem Verlassen einer Kante darf noch gesprungen werden.
 - **Sprungpuffer:** Ein Druck bis 0,14 s vor der Landung wird nach dem Aufsetzen ausgeführt (statt eines Flügelschlags knapp über dem Boden).
 - **Gleiten:** In der Luft Sprung halten – deutlich langsamerer Fall.
-- **Ausweichen:** Umschalt am Boden – kurzer Schub mit Unverwundbarkeit.
+- **Rammstoß (Umschalt / RAMM):** Am Boden ein kurzer Schub mit Unverwundbarkeit. Wer im Schub einen Gegner trifft, schlägt ihn (Reichweite 1,7 m, nach den ersten 3 Himmelstruhen 3,2 m) und zerstreut Dornenkugeln.
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
 - Plattformen haben echte Dicke: Man kann unter ihnen hindurchlaufen, es gibt keine unsichtbaren Wände.
 - **Kantenhilfe:** Wer bis zu 1,3 m unter einer Kante gegen Insel oder Plattform stößt, zieht sich hinauf.
@@ -34,7 +34,7 @@ Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). 
 ## Kampf
 
 - **Windstoß** (F/WIND) trifft Gegner, Laternen, Kugeln und Bossschilde in Blickrichtung.
-- Gegner: **Nebelkäfer** (Sprungangriff), **Sturmfunke** (schießt Kugeln), **Stille-Schatten** (weicht aus, nur nach dem Angriff verwundbar).
+- Gegner: **Nebelkäfer** (Sprungangriff), **Sturmfunke** (schießt Kugeln), **Stille-Schatten** (weicht aus, nur nach dem Angriff verwundbar), im Nachtgarten **Nachtmotte** (fliegt im Zickzack, 1 Treffer, schneller Sturzflug) und **Wurzelwächter** (3 Treffer, setzt drei Warnkreise, die nach 1 s einschlagen).
 - Jeder Angriff wird angekündigt (roter Kristall über dem Gegner), dann Angriff, dann Erholung.
 - Nach einem Treffer kurze Unverwundbarkeit. Besiegte Gegner kehren erst nach 20 s zurück und nur, wenn Aeru weit genug weg ist.
 - Tod: zurück zum letzten Rastpunkt (graue Steinplatte), volle Herzen, Questfortschritt bleibt.
@@ -42,6 +42,7 @@ Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). 
 ## Bosse
 
 - **Vesper** (Sternenwarte, 6 Treffer, 3 Phasen): Wellen überspringen, Warnkreisen ausweichen, bei offenem Schild zuschlagen.
+- **Die Nachtblüte** (Nachtgarten, 8 Treffer, 3 Phasen): Wellen überspringen, in Phase 2 Dornenkugeln mit dem Windstoß oder Rammstoß zerstreuen, in Phase 3 Doppelwellen und rote Kreise.
 - **Die Stille** (Morgenruinen, 9 Treffer, 3 Phasen): In Phase 2 müssen schwebende Anker im Flug zerstört werden (temporäre Aufwinde helfen), Phase 3 mit Doppelwellen.
 - Ein Bosskampf beginnt erst, wenn der Questschritt aktiv ist und Aeru die Arena betritt. Wer stirbt, beginnt am Arenaeingang; der Boss wird nur auf den Beginn der aktuellen Phase zurückgesetzt.
 
@@ -52,9 +53,20 @@ Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). 
 - **Tagebuch** (J oder ☰): aktuelles Ziel, Kapitelübersicht, erledigte Schritte, Nebenquests. Künftige Kapitel bleiben verborgen.
 - Laternen der Liedinsel müssen in der richtigen Reihenfolge geweckt werden; ein Fehler löscht sie wieder, das Lied wird erneut angezeigt.
 
+## Himmelsinseln, Truhen und Schwung-Ringe
+
+Jede der 7 Welten hat drei kleine **Himmelsinseln** (Ost-Nord, West-Nord, Süd). Man erreicht sie über einen Aufwind der Hauptinsel und fliegt hinaus; eine Ringstraße aus **Schwung-Ringen** (hellblau) liegt auf dem Weg. Durchfliegen gibt 2,4 s lang 50 % mehr Flugtempo und füllt die Flügelkraft. Die Landehilfe über Inseln hilft beim Aufsetzen. Jede Himmelsinsel trägt eine **Himmelstruhe** (füllt Herzen und Flügelkraft) und einen Rastpunkt.
+
+| Truhen (von 21) | Belohnung |
+|---|---|
+| 3 | stärkerer Rammstoß |
+| 9 | zusätzliches Herz |
+| 15 | Flügelkraft +25 |
+| 21 | Himmelskrone (alle gefunden) |
+
 ## Sammelobjekte und Upgrades
 
-144 Himmelssplitter (24 pro Insel), optional. Gesammelte Splitter bleiben nach dem Laden gesammelt.
+168 Himmelssplitter (24 pro Insel, 7 Inseln), optional. Gesammelte Splitter bleiben nach dem Laden gesammelt.
 
 | Splitter | Belohnung |
 |---|---|

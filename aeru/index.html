@@ -7,7 +7,7 @@
 <div id="fade"></div>
 <header id="hud" hidden>
   <div class="brand"><span id="health" role="img" aria-label="Lebensenergie"></span><small id="region">Die Sterneninseln</small></div>
-  <div class="stats"><span class="crystal" title="Himmelssplitter"><i>◆</i><b id="gems">0</b><small>/144</small></span><span class="cores" title="Leuchtkerne"><i>✺</i><b id="cores">0</b><small>/6</small></span></div>
+  <div class="stats"><span class="crystal" title="Himmelssplitter"><i>◆</i><b id="gems">0</b><small id="gemMax">/144</small></span><span class="chest" title="Himmelstruhen"><i>▣</i><b id="chests">0</b><small id="chestMax">/21</small></span><span class="cores" title="Leuchtkerne"><i>✺</i><b id="cores">0</b><small id="coreMax">/6</small></span></div>
   <button id="journal" class="square" aria-label="Tagebuch">☰</button><button id="pause" class="square" aria-label="Pause">Ⅱ</button>
 </header>
 <aside id="quest" hidden aria-live="polite">
@@ -21,12 +21,12 @@
 <div id="toast" role="status"></div>
 <button id="prompt" hidden><kbd id="promptKey">R</kbd><span id="promptText"></span></button>
 <div id="perf" hidden></div>
-<div id="desktopHelp" hidden><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>Bewegen</span><span><kbd>Maus</kbd><kbd>Q</kbd><kbd>E</kbd>Kamera</span><span><kbd>␣</kbd>Sprung</span><span><kbd>G</kbd>Flug</span><span><kbd>⇧</kbd>Ausweichen</span><span><kbd>F</kbd>Wind</span><span><kbd>R</kbd>Reden</span><span><kbd>J</kbd>Tagebuch</span><span><kbd>Esc</kbd>Pause</span></div>
+<div id="desktopHelp" hidden><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>Bewegen</span><span><kbd>Maus</kbd><kbd>Q</kbd><kbd>E</kbd>Kamera</span><span><kbd>␣</kbd>Sprung</span><span><kbd>G</kbd>Flug</span><span><kbd>⇧</kbd>Rammen</span><span><kbd>F</kbd>Wind</span><span><kbd>R</kbd>Reden</span><span><kbd>J</kbd>Tagebuch</span><span><kbd>Esc</kbd>Pause</span></div>
 <div id="touch" hidden>
   <div id="stick" aria-label="Virtueller Bewegungsstick"><div id="knob"></div></div>
   <div class="actions">
     <button id="talk" aria-label="Sprechen">☷<small>REDEN</small></button>
-    <button id="dodge" aria-label="Ausweichen (Rolle), im Flug sinken">↯<small>ROLLE</small></button>
+    <button id="dodge" aria-label="Rammstoß, im Flug sinken">↯<small>RAMM</small></button>
     <button id="fly" aria-label="Flug aktivieren oder landen" aria-pressed="false">✧<small>FLUG</small></button>
     <button id="attack" aria-label="Windstoß">≋<small>WIND</small></button>
     <button id="jump" aria-label="Springen, Flügelschlag, halten zum Gleiten">↟<small>SPRUNG</small></button>
@@ -38,8 +38,8 @@
   <h2>PAUSE</h2>
   <nav class="tabs" role="tablist"><button id="travelTabButton" role="tab">Reise</button><button id="journalTabButton" role="tab">Tagebuch</button><button id="settingsTabButton" role="tab">Einstellungen</button></nav>
   <div id="travelTab" role="tabpanel"><div class="pauseGrid"><nav class="pauseButtons"><button id="resume" class="primary">Weiterfliegen</button><button id="rescue" class="secondary">Zum letzten Rastpunkt</button><button id="restart" class="secondary">Zum Inselstart</button><button id="toTitle" class="secondary">Speichern &amp; Titelbild</button></nav>
-    <div class="pauseInfo"><small>STEUERUNG</small><ul class="controls"><li><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>Bewegen</li><li><span><kbd>␣</kbd></span>Sprung · in der Luft: Flügelschlag · halten: gleiten</li><li><span><kbd>G</kbd></span>Abheben / Landen · im Flug <kbd>␣</kbd> halten: steigen</li><li><span><kbd>⇧</kbd></span>Ausweichen · im Flug: sinken</li><li><span><kbd>F</kbd></span>Windstoß (halten)</li><li><span><kbd>R</kbd></span>Sprechen / Tor</li><li><span><kbd>Q</kbd><kbd>E</kbd></span>Kamera · <kbd>C</kbd> hinter Aeru</li><li><span><kbd>J</kbd></span>Tagebuch</li></ul><p class="tip">Der goldene Pfeil im Zielfeld zeigt zum nächsten Ziel. Türkise Aufwinde heben dich an und laden die Flügelkraft. Graue Steinplatten sind Rastpunkte.</p></div></div>
-    <div class="islandSelect" aria-label="Inselwahl"><small>INSELWAHL</small><button id="travel0" class="secondary" disabled>Insel 1</button><button id="travel1" class="secondary" disabled>Insel 2</button><button id="travel2" class="secondary" disabled>Insel 3</button><button id="travel3" class="secondary" disabled>Insel 4</button><button id="travel4" class="secondary" disabled>Insel 5</button><button id="travel5" class="secondary" disabled>Insel 6</button></div></div>
+    <div class="pauseInfo"><small>STEUERUNG</small><ul class="controls"><li><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>Bewegen</li><li><span><kbd>␣</kbd></span>Sprung · in der Luft: Flügelschlag · halten: gleiten</li><li><span><kbd>G</kbd></span>Abheben / Landen · im Flug <kbd>␣</kbd> halten: steigen</li><li><span><kbd>⇧</kbd></span>Rammstoß (trifft Gegner, macht unverwundbar) · im Flug: sinken</li><li><span><kbd>F</kbd></span>Windstoß (halten)</li><li><span><kbd>R</kbd></span>Sprechen / Tor</li><li><span><kbd>Q</kbd><kbd>E</kbd></span>Kamera · <kbd>C</kbd> hinter Aeru</li><li><span><kbd>J</kbd></span>Tagebuch</li></ul><p class="tip">Der goldene Pfeil im Zielfeld zeigt zum nächsten Ziel. Türkise Aufwinde heben dich an und laden die Flügelkraft. Graue Steinplatten sind Rastpunkte.</p></div></div>
+    <div class="islandSelect" aria-label="Inselwahl"><small>INSELWAHL</small><button id="travel0" class="secondary" disabled>Insel 1</button><button id="travel1" class="secondary" disabled>Insel 2</button><button id="travel2" class="secondary" disabled>Insel 3</button><button id="travel3" class="secondary" disabled>Insel 4</button><button id="travel4" class="secondary" disabled>Insel 5</button><button id="travel5" class="secondary" disabled>Insel 6</button><button id="travel6" class="secondary" disabled>Insel 7</button></div></div>
   <div id="journalTab" role="tabpanel" hidden><div id="journalBody" class="journal"></div></div>
   <div id="settingsTab" role="tabpanel" hidden><div id="settingsBody" class="settings"></div></div>
 </div></section>

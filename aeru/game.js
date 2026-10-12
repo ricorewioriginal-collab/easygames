@@ -152,8 +152,10 @@ function persist() {
 }
 const totalGems = () => save.collected.reduce((n, a) => n + a.length, 0);
 const upgrade = id => totalGems() >= story.upgrades.find(u => u.id === id).gems;
-const maxHp = () => 5 + (upgrade('heart1') ? 1 : 0) + (upgrade('heart2') ? 1 : 0);
-const maxStamina = () => upgrade('stamina') ? 125 : 100;
+const totalChests = () => save.chests.reduce((n, a) => n + a.length, 0), TOTAL_CHESTS = LEVEL_COUNT * 3;
+const chestUpgrade = id => totalChests() >= story.chestUpgrades.find(u => u.id === id).chests;
+const maxHp = () => 5 + (upgrade('heart1') ? 1 : 0) + (upgrade('heart2') ? 1 : 0) + (chestUpgrade('chestHeart') ? 1 : 0);
+const maxStamina = () => 100 + (upgrade('stamina') ? 25 : 0) + (chestUpgrade('chestWings') ? 25 : 0);
 const attackRange = () => upgrade('range') ? 8.5 : 7;
 // Sternenglanz (alle 144 Splitter): Flügelkraft verbraucht sich nicht mehr, Aeru zieht eine goldene Spur.
 let starGlow = false;
@@ -199,6 +201,7 @@ const sfx = {
 };
 
 // ───────── Weltzustand ─────────
+let chests = [], boostRings = [];
 let state, treeColliders = [], solids = [], gems = [], torches = [], enemies = [], npcs = new Map(), items = [], fallbackTrees = [], particles = [], clouds = [], checkpoints = [], updrafts = [], flightRings = [], gusts = [], waves = [], markers = [], anchors = [];
 let portal, core, boss = null, birds = null, pond = null;
 let time = 0, last = 0, mode = 'title', pausedFrom = 'play', elapsed = 0, lastSave = 0, accumulator = 0, dirty = false;
@@ -245,6 +248,42 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
   const body = new T.Mesh(own(new T.CylinderGeometry(1.7, 2, height, 16, 1, true)), own(new T.MeshBasicMaterial({color: 0x67f5d4, transparent: true, opacity: .14, depthWrite: false, side: T.DoubleSide, toneMapped: false}))); body.position.y = height / 2; g.add(body);
   for (let j = 0; j < 4; j++) { const r = new T.Mesh(windRingGeo, windMat); r.rotation.x = -Math.PI / 2; r.scale.setScalar(2.5); g.add(r); }
   world.add(g); const d = {x, z, y, height, g, temporary}; updrafts.push(d); return d;
+}
+
+// ───────── Himmelsinseln, Truhen, Schwung-Ringe ─────────
+// Drei kleine Inseln pro Welt weit draußen: Aufwind nehmen, hinausfliegen, landen. Jede trägt eine Himmelstruhe, einen Rastpunkt und eine Ringstraße.
+const SKY = [{x: 30, z: -46, r: 6, y: 7, from: [21, 2]}, {x: -32, z: -44, r: 6, y: 9, from: [-21, -5]}, {x: 6, z: 50, r: 6.5, y: 8, from: [21, 2]}];
+function buildSky(index) {
+  const cfg = levels[index];
+  SKY.forEach((sk, id) => {
+    island(sk.x, sk.z, sk.r, sk.y);
+    tree(sk.x - sk.r * .55, sk.z + sk.r * .3, .7); tree(sk.x + sk.r * .5, sk.z - sk.r * .5, .55);
+    const opened = save.chests[index].includes(id), g = new T.Group(); g.position.set(sk.x, sk.y, sk.z); world.add(g);
+    mesh('box', '#8a5a34', 0, .45, 0, 1.3, .9, .9, g); const lid = mesh('cylinder', '#e9c46a', 0, .95, 0, .46, 1.3, .46, g); lid.rotation.z = Math.PI / 2; lid.scale.set(.46, 1.3, .46);
+    const gem = mesh('gem', '#fff0a6', 0, 2.1, 0, .3, .45, .3, g, true); gem.visible = !opened;
+    const halo = ring(sk.x, sk.y + 1.7, sk.z, 1.1, '#ffe9a8'); halo.visible = !opened;
+    chests.push({id, x: sk.x, y: sk.y, z: sk.z, g, gem, halo, opened});
+    // Ringstraße vom Aufwind zur Insel: Durchfliegen gibt kurz Schwung und füllt die Flügelkraft.
+    const [ux, uz] = sk.from, uy = 13;
+    for (let k = 1; k <= 3; k++) {
+      const t = .12 + k * .24, x = ux + (sk.x - ux) * t, z = uz + (sk.z - uz) * t, y = uy + (sk.y + 4 - uy) * t;
+      const m = ring(x, y, z, 1.9, '#7fe9ff'); m.material = own(new T.MeshBasicMaterial({color: 0x7fe9ff, toneMapped: false})); m.rotation.y = Math.atan2(sk.x - ux, sk.z - uz);
+      boostRings.push({x, y, z, m, cd: 0});
+    }
+  });
+}
+function chestPickup() {
+  for (const c of chests) if (!c.opened && Math.hypot(state.x - c.x, state.z - c.z) < 1.9 && Math.abs(state.y - c.y) < 2.4) {
+    c.opened = true; c.gem.visible = false; c.halo.visible = false; save.chests[save.level].push(c.id);
+    const before = totalChests() - 1, up = story.chestUpgrades.find(u => before < u.chests && totalChests() >= u.chests);
+    state.hp = maxHp(); state.stamina = maxStamina(); sfx.story(); spark(c.x, c.y + 1.5, c.z, '#ffe9a8', 36);
+    toast(up ? 'Neue Fähigkeit · ' + up.text : `Himmelstruhe ${save.chests[save.level].length} / 3 · Lebensenergie und Flügelkraft aufgefüllt`);
+    persist(); updateHUD();
+  }
+  for (const r of boostRings) {
+    if (r.cd > 0) { r.cd -= TICK; r.m.visible = r.cd <= 0; continue; }
+    if (Math.hypot(state.x - r.x, state.z - r.z) < 2.4 && Math.abs(state.y + 1 - r.y) < 2.6) { r.cd = 7; r.m.visible = false; state.boost = 2.4; state.stamina = maxStamina(); state.flight = true; state.vy = Math.max(state.vy, 1.5); sfx.right(); spark(r.x, r.y, r.z, '#bff6ff', 18); }
+  }
 }
 
 // ───────── Inselbau ─────────
@@ -296,7 +335,7 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
   clearInput(); accumulator = 0; save.level = index;
   const cfg = levels[index];
@@ -307,6 +346,7 @@ function buildLevel(index, titleOnly = false) {
   for (const [x, z, w, d, y] of cfg.extras) platform(x, z, w, d, y);
   makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 6, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -1.2, 2, 12);
   if (index >= 3) makeUpdraft(0, 5, 0, 13);
+  buildSky(index);
   if (index === 4) { platform(-13, -4, 7, 7, 5); platform(12, -7, 7, 7, 7); makeUpdraft(-13, 1, 0, 14); makeUpdraft(12, -1, 0, 16); for (const [x, z] of [[-13, -4], [12, -7]]) for (let j = 0; j < 5; j++) mesh('gem', cfg.accent, x - 3 + j * 1.5, 1.2, z + 4, .65, 2.8, .65).rotation.z = (j - 2) * .15; }
   if (index === 5) { for (const sign of [-1, 1]) { for (let j = 0; j < 4; j++) platform(sign * (8 + j * 3), -2 - j * 2, 4, 4, .6 + j * .6); makeUpdraft(sign * 16, 2, 0, 14); } }
   (cfg.rings || []).forEach(([x, y, z], id) => { const got = save.rings[index].includes(id); const m = ring(x, y, z, 2.5, '#ffe9a8'); m.material = own(new T.MeshBasicMaterial({color: got ? 0x60c4a4 : 0xffd277, toneMapped: false})); m.rotation.y = id === 1 ? Math.PI / 2 : 0; flightRings.push({x, y, z, id, m, got}); });
@@ -327,7 +367,7 @@ function buildLevel(index, titleOnly = false) {
   cfg.enemies.forEach((kind, i) => { const x = (i % 2 ? 1 : -1) * (7 + (i % 3) * 4), z = 9 - Math.floor(i / 2) * 6; enemies.push(makeEnemy(kind, x, z)); });
   syncNpcs(true);
   // Rastpunkte: Inselstart, oberes Tor, beide Außeninseln, inselspezifische Höhen.
-  checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z}))];
+  checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...SKY.map(sk => ({x: sk.x - sk.r * .45, y: sk.y, z: sk.z - sk.r * .1})), ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z}))];
   for (const c of checkpoints.slice(1)) { const m = mesh('cylinder', cfg.accent, c.x, c.y + .08, c.z, .55, .16, .55); m.castShadow = false; }
   for (let i = 0; i < 14; i++) { const a = i / 14 * TAU, x = Math.cos(a) * (65 + rand() * 30), z = Math.sin(a) * (65 + rand() * 30), y = -8 + rand() * 18; const c = new T.Group(); for (let j = 0; j < 4; j++) { const m = new T.Mesh(geos.ball, mat(index === 2 ? '#94abc3' : '#e3e5d4')); m.position.set(j * 3, 0, j % 2); m.scale.set(4.6, 1.6, 2.8); c.add(m); } c.position.set(x, y - 7, z); world.add(c); clouds.push(c); if (i % 2 === 0) { const m = mesh('cone', cfg.rock, x, y - 12, z, 6 + rand() * 7, 18, 8); m.rotation.z = Math.PI; mesh('cylinder', cfg.grass, x, y - 3, z, 8, .8, 8); } }
   for (const s of [-1, 1]) { ring(s * 28, 3, s === 1 ? 2 : -5, 1.3, '#ffe6a5').rotation.y = Math.PI / 2; tree(s === 1 ? 39 : -37, s === 1 ? 5 : -7, .7); }
@@ -394,11 +434,18 @@ function flight() {
   state.flight = true; state.draftSuppressed = false; state.onGround = false; state.vy = Math.max(state.vy, 9); state.stamina -= 8; sfx.flap();
   if (!flight.told) { flight.told = true; toast(matchMedia('(pointer:coarse)').matches ? 'Flug · SPRUNG halten: steigen · ROLLE: sinken' : 'Flug · Leertaste antippen: Flügelschlag · halten: steigen · Umschalt: sinken'); }
 }
+let rammId = 0;
+// Rammstoß: Wer im Ausweichschub (Umschalt / ROLLE) einen Gegner trifft, schlägt ihn – wie der Ansturm eines Drachenjungen.
+function rammStrike() {
+  const range = chestUpgrade('ramm') ? 3.2 : 1.7;
+  for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); }
+  for (const o of orbPool) if (o.life > 0 && Math.hypot(o.m.position.x - state.x, o.m.position.z - state.z) < range && Math.abs(o.m.position.y - state.y - 1) < 2) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
+}
 function dodge() {
   if (mode !== 'play' || state.dodgeCooldown > 0 || !state.onGround) return;
   const f = inputDirection();
   const dx = f.length > .1 ? f.dx : -Math.sin(state.yaw), dz = f.length > .1 ? f.dz : -Math.cos(state.yaw);
-  state.dodge = .24; state.dodgeCooldown = .7; state.dodgeX = dx; state.dodgeZ = dz; invulnerable = Math.max(invulnerable, .3); whoosh(.2, .05, 700);
+  state.dodge = .24; state.dodgeCooldown = .7; state.dodgeX = dx; state.dodgeZ = dz; invulnerable = Math.max(invulnerable, .3); whoosh(.2, .05, 700); rammId++;
 }
 function inputDirection() {
   let x = moveX + (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0), z = moveY + (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0);
@@ -414,15 +461,15 @@ function movePlayer(dt) {
   const jumpDown = jumpHeld || keys.has('Space'), shiftDown = keys.has('ShiftLeft') || keys.has('ShiftRight') || diveHeld;
   if (jumpDown) jumpHeldTime += dt;
   state.flapCooldown = Math.max(0, state.flapCooldown - dt); state.dodgeCooldown = Math.max(0, state.dodgeCooldown - dt); state.jumpBuffer = Math.max(0, state.jumpBuffer - dt); state.landing = Math.max(0, state.landing - dt);
-  state.coyote = state.onGround ? COYOTE : Math.max(0, state.coyote - dt);
+  state.coyote = state.onGround ? COYOTE : Math.max(0, state.coyote - dt); state.boost = Math.max(0, (state.boost || 0) - dt);
   if (state.jumpBuffer > 0 && (state.onGround || state.coyote > 0)) doJump();
   const air = !state.onGround, gliding = air && !state.flight && jumpDown && state.stamina > 0 && state.vy < 0;
   const flySpeed = upgrade('speed') ? 1.12 : 1;
   // Horizontale Bewegung: schnelles Anlaufen und Abbremsen am Boden, Trägheit in der Luft.
-  if (state.dodge > 0) { state.dodge -= dt; state.vx = state.dodgeX * 17; state.vz = state.dodgeZ * 17; }
+  if (state.dodge > 0) { state.dodge -= dt; state.vx = state.dodgeX * 17; state.vz = state.dodgeZ * 17; rammStrike(); }
   else {
     let speed, rate;
-    if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed; rate = length > .05 ? 3.4 : 1.8; const ff = flightFloor(state); if (ff > -50 && state.y - ff < 12) { speed *= .75; rate = length > .05 ? 5 : 6; } }
+    if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed * (state.boost > 0 ? 1.5 : 1); rate = length > .05 ? 3.4 : 1.8; const ff = flightFloor(state); if (ff > -50 && state.y - ff < 12) { speed *= .75; rate = length > .05 ? 5 : 6; } }
     else if (gliding) { speed = 9; rate = 4; }
     else if (air) { speed = 8; rate = 6; }
     else { speed = shiftDown ? 10.5 : 7.4; rate = length > .05 ? 16 : 22; }
@@ -530,11 +577,15 @@ function respawn(message) {
 const ENEMY = {
   kaefer:   {hp: 2, notice: 8.5, windup: .75, dash: 10, color: '#43516a', eye: '#f7a18f', label: 'Nebelkäfer'},
   funke:    {hp: 2, notice: 10, windup: .9, color: '#e9b54e', eye: '#fff4c2', label: 'Sturmfunke'},
-  schatten: {hp: 2, notice: 9, windup: .65, dash: 11, color: '#2b2744', eye: '#c8a6ff', label: 'Stille-Schatten'}
+  schatten: {hp: 2, notice: 9, windup: .65, dash: 11, color: '#2b2744', eye: '#c8a6ff', label: 'Stille-Schatten'},
+  motte:    {hp: 1, notice: 11, windup: .5, dash: 14, color: '#5b4a9a', eye: '#ffe27a', label: 'Nachtmotte', fly: true},
+  wurzel:   {hp: 3, notice: 9.5, windup: 1.0, color: '#4b3a2e', eye: '#8cffb0', label: 'Wurzelwächter', slam: true}
 };
 function makeEnemy(kind, x, z) {
   const def = ENEMY[kind], g = new T.Group(), body = new T.Group(); g.add(body);
-  if (kind === 'funke') { mesh('gem', def.color, 0, 1.4, 0, .45, .6, .45, body, true); const r = ring(0, 1.4, 0, .5, '#fff1b8', body); r.rotation.x = Math.PI / 2; for (const s of [-1, 1]) mesh('ball', def.eye, s * .16, 1.5, -.35, .08, .08, .05, body, true); }
+  if (kind === 'motte') { mesh('ball', def.color, 0, 1.2, 0, .4, .35, .5, body); for (const sd of [-1, 1]) { const w = mesh('cone', '#b9a3ff', sd * .62, 1.3, 0, .55, .12, .75, body, true); w.rotation.z = sd * 1.2; mesh('gem', def.eye, sd * .16, 1.3, -.42, .09, .09, .06, body, true); } }
+  else if (kind === 'wurzel') { mesh('rock', def.color, 0, .9, 0, .95, 1.0, .95, body); for (let k = 0; k < 4; k++) { const a = k / 4 * TAU; const r = mesh('cone', '#6b533d', Math.cos(a) * .95, .35, Math.sin(a) * .95, .22, 1.3, .22, body); r.rotation.z = Math.cos(a) * 1.0; r.rotation.x = -Math.sin(a) * 1.0; } for (const sd of [-1, 1]) mesh('gem', def.eye, sd * .3, 1.15, -.78, .13, .11, .08, body, true); }
+  else if (kind === 'funke') { mesh('gem', def.color, 0, 1.4, 0, .45, .6, .45, body, true); const r = ring(0, 1.4, 0, .5, '#fff1b8', body); r.rotation.x = Math.PI / 2; for (const s of [-1, 1]) mesh('ball', def.eye, s * .16, 1.5, -.35, .08, .08, .05, body, true); }
   else { mesh('rock', def.color, 0, .65, 0, .75, .7, .65, body); for (const s of [-1, 1]) { mesh('gem', def.eye, s * .24, .8, -.55, .12, .1, .08, body, true); mesh('cone', kind === 'schatten' ? '#4a3f6e' : '#70738d', s * .5, 1.3, .05, .18, .8, .18, body); } }
   const warn = mesh('gem', '#ff6a4d', 0, 2.4, 0, .16, .3, .16, g, true); warn.visible = false;
   g.position.set(x, 0, z); world.add(g);
@@ -557,13 +608,15 @@ function updateEnemies(dt) {
     const d = dist(state, e), level = Math.abs(state.y) < 2.2, dx = (state.x - e.x) / Math.max(d, .1), dz = (state.z - e.z) / Math.max(d, .1);
     e.t -= dt; e.cool -= dt; e.pulse = Math.max(0, e.pulse - dt);
     if (e.state === 'patrol') {
-      if (e.kind === 'funke' && d < e.def.notice && level) { const want = d < 5 ? -1 : d > 8 ? 1 : 0; e.x += dx * want * 2.4 * dt; e.z += dz * want * 2.4 * dt; }
-      else { const hx = e.homeX + Math.sin(time * .6 + e.homeX) * 1.7, hz = e.homeZ + Math.cos(time * .6 + e.homeX) * 1.7; e.x = approach(e.x, hx, 1.6, dt); e.z = approach(e.z, hz, 1.6, dt); }
+      if (e.def.slam && d < e.def.notice && d > 4.5 && level) { e.x += dx * 1.5 * dt; e.z += dz * 1.5 * dt; }
+      else if (e.kind === 'funke' && d < e.def.notice && level) { const want = d < 5 ? -1 : d > 8 ? 1 : 0; e.x += dx * want * 2.4 * dt; e.z += dz * want * 2.4 * dt; }
+      else { const sp = e.def.fly ? 2.2 : .6, rr = e.def.fly ? 3.4 : 1.7, hx = e.homeX + Math.sin(time * sp + e.homeX) * rr, hz = e.homeZ + Math.cos(time * sp * 1.3 + e.homeX) * rr; e.x = approach(e.x, hx, 1.6, dt); e.z = approach(e.z, hz, 1.6, dt); }
       if (d < e.def.notice && level && e.cool <= 0 && mode === 'play') { e.state = 'windup'; e.t = e.def.windup; e.dirX = dx; e.dirZ = dz; e.warn.visible = true; if (d < 12) sfx.warn(); }
     } else if (e.state === 'windup') {
       if (e.t <= 0) {
         e.warn.visible = false;
         if (e.kind === 'funke') { fireOrb(e.x, 1.4, e.z, state.x, state.y + 1, state.z, 7); e.state = 'recover'; e.t = 1.4; }
+        else if (e.def.slam) { for (let k = 0; k < 3; k++) { const m = markerPool.find(q => !q.visible); if (!m) break; const ox = k ? (k === 1 ? 2.2 : -2.2) : 0; m.visible = true; m.position.set(state.x + ox, state.y + .05, state.z + (k ? 1.4 : 0)); m.scale.setScalar(1.6); markers.push({m, x: state.x + ox, y: state.y, z: state.z + (k ? 1.4 : 0), t: 1.0 + k * .25}); } e.state = 'recover'; e.t = 2.0; }
         else { e.state = 'dash'; e.t = .45; }
       }
     } else if (e.state === 'dash') {
@@ -574,7 +627,7 @@ function updateEnemies(dt) {
     // Auf der Insel bleiben.
     const r = Math.hypot(e.x, e.z), maxR = (levels[save.level].mainRadius || 27) - 2; if (r > maxR) { e.x *= maxR / r; e.z *= maxR / r; }
     if (e.state !== 'dash' && d < 1.1 && state.y < 1.6) { state.vx += dx * 4; state.vz += dz * 4; }
-    const hover = e.kind === 'funke' ? .4 + Math.sin(time * 3 + e.homeX) * .25 : .1 + Math.sin(time * 4 + e.homeX) * .15;
+    const hover = e.def.fly ? .9 + Math.sin(time * 5 + e.homeX) * .35 : e.kind === 'funke' ? .4 + Math.sin(time * 3 + e.homeX) * .25 : .1 + Math.sin(time * 4 + e.homeX) * .15;
     e.g.position.set(e.x, hover, e.z); e.g.rotation.y = e.state === 'dash' ? Math.atan2(-e.dirX, -e.dirZ) : Math.atan2(e.x - state.x, e.z - state.z);
     e.body.rotation.z = e.state === 'windup' ? Math.sin(time * 50) * .18 : e.state === 'recover' ? Math.sin(time * 8) * .25 : 0;
     e.body.scale.setScalar(1 + e.pulse * 1.4 + (e.state === 'windup' && e.kind === 'funke' ? (1 - e.t / e.def.windup) * .35 : 0));
@@ -627,12 +680,20 @@ const BOSSES = {
   stille: {level: 5, hp: 9, name: 'DIE STILLE', intro: 'c6_stille_intro', center: {x: 0, y: 3, z: -22},
     phases: [{from: 9, waves: 1, open: 2.4, rest: 1.4}, {from: 6, anchors: true, dialog: 'c6_stille_phase2'}, {from: 3, waves: 2, open: 3.2, rest: 1.6, markers: 2, dialog: 'c6_stille_phase3'}]}
 };
+BOSSES.bluete = {level: 6, hp: 8, name: 'DIE NACHTBLÜTE · DER LETZTE SAME', intro: 'c7_bluete_intro', center: {x: 0, y: 3, z: -22},
+  phases: [{from: 8, waves: 1, open: 2.6, rest: 1.2}, {from: 5, orbs: 3, open: 2.4, rest: 2.0, dialog: 'c7_bluete_phase2'}, {from: 3, waves: 2, open: 2.2, rest: 1.8, markers: 3, dialog: 'c7_bluete_phase3'}]};
 const ANCHORS = [{x: -8, y: 9, z: -16}, {x: 8, y: 9, z: -16}, {x: 0, y: 10, z: -26}];
 const inArena = () => Math.abs(state.x) < 5.4 && state.z < -16.7 && state.z > -23.3 && state.y > 2.4;
 function makeBoss(id) {
   const def = BOSSES[id], c = def.center, g = new T.Group(); g.position.set(c.x, c.y, c.z); world.add(g);
   let model;
   if (id === 'vesper') { model = dragon('#514e77', '#b6bedb', 2.1); g.add(model); }
+  else if (id === 'bluete') {
+    model = new T.Group(); const petal = own(new T.MeshStandardMaterial({color: 0x8a5cc4, emissive: 0x4a2a7a, emissiveIntensity: .7, flatShading: true}));
+    const stem = new T.Mesh(geos.cylinder, own(new T.MeshStandardMaterial({color: 0x2f5a46, flatShading: true}))); stem.scale.set(.35, 2.2, .35); stem.position.y = 1.1; model.add(stem);
+    for (let i = 0; i < 8; i++) { const a = i / 8 * TAU, p = new T.Mesh(geos.cone, petal); p.scale.set(.8, 2.2, .5); p.position.set(Math.cos(a) * 1.3, 2.9, Math.sin(a) * 1.3); p.rotation.z = -Math.cos(a) * 1.1; p.rotation.x = Math.sin(a) * 1.1; model.add(p); }
+    const core = new T.Mesh(geos.gem, own(new T.MeshStandardMaterial({color: 0xffe9a8, emissive: 0xffd36b, emissiveIntensity: 1, flatShading: true}))); core.scale.set(.6, .8, .6); core.position.y = 3; model.add(core); model.userData.wings = []; g.add(model);
+  }
   else { model = new T.Group(); const darkMat = own(new T.MeshStandardMaterial({color: 0x1d1830, emissive: 0x2c1f55, emissiveIntensity: .6, transparent: true, opacity: .88, flatShading: true})); for (let i = 0; i < 9; i++) { const m = new T.Mesh(geos.ball, darkMat); const a = i / 9 * TAU; m.position.set(Math.cos(a) * 1.6, 2.4 + Math.sin(i * 1.7) * .8, Math.sin(a) * 1.2); m.scale.setScalar(1.2 + (i % 3) * .35); model.add(m); } const captive = dragon('#6a5f9e', '#c9b8f0', .8); captive.position.set(0, 1.8, 0); model.add(captive); model.userData.wings = []; g.add(model); }
   const shield = new T.Mesh(geos.sphere, shieldMat); shield.scale.setScalar(id === 'vesper' ? 3.4 : 4); shield.position.y = 2.2; g.add(shield);
   const b = {id, def, g, model, shield, hp: Math.max(1, save.boss[id] || def.hp), phase: 0, state: 'idle', t: 0, active: false, hit: 0, introDone: false, phaseStart: def.hp, wavesLeft: 0, waveT: 0, markerLeft: 0, markerT: 0, orbT: 0, rise: 0};
@@ -669,7 +730,7 @@ function makeBoss(id) {
       const ph = def.phases[p]; b.state = 'rest'; b.t = 2;
       if (ph.anchors) spawnAnchors();
       if (ph.dialog) openDialog(ph.dialog, quests.lines(ph.dialog), () => {});
-      toast(`Phase ${p + 1} · ${ph.anchors ? 'Zerstöre die Anker über den Aufwinden' : ph.markers ? 'Achte auf die roten Kreise am Boden' : 'Wellen überspringen'}`);
+      toast(`Phase ${p + 1} · ${ph.anchors ? 'Zerstöre die Anker über den Aufwinden' : ph.orbs ? 'Zerstreue die Dornenkugeln mit dem Wind' : ph.markers ? 'Achte auf die roten Kreise am Boden' : 'Wellen überspringen'}`);
     } else if (b.state === 'open' && !def.phases[p].anchors) { b.state = 'rest'; b.t = def.phases[p].rest; }
   }
   function finish() {
@@ -705,7 +766,7 @@ function makeBoss(id) {
     }
     b.rise = b.state === 'windup' ? .6 : 0;
     if (b.state === 'rest' && b.t <= 0) { b.state = 'windup'; b.t = .9; sfx.warn(); }
-    else if (b.state === 'windup' && b.t <= 0) { b.state = 'waves'; b.wavesLeft = ph.waves; b.waveT = 0; }
+    else if (b.state === 'windup' && b.t <= 0) { b.state = 'waves'; b.wavesLeft = ph.waves; b.waveT = 0; if (ph.orbs) { b.wavesLeft = 0; sfx.boss(); for (let i = 0; i < ph.orbs; i++) fireOrb(c3.x + (i - 1) * 1.4, c3.y + 3, c3.z, state.x + (i - 1) * 2.6, state.y + 1, state.z, 6.2); } }
     else if (b.state === 'waves') {
       b.waveT -= dt;
       if (b.waveT <= 0 && b.wavesLeft > 0) { const m = wavePool.find(w => !w.visible); if (m) { m.visible = true; m.position.set(c3.x, c3.y + .15, c3.z); m.scale.setScalar(1); waves.push({m, r: .5, hit: false}); } sfx.boss(); b.wavesLeft--; b.waveT = .75; }
@@ -822,7 +883,8 @@ function objectiveTarget(o) {
 }
 function updateHUD() {
   if (!save || !state) return;
-  setCount('gems', totalGems()); setCount('cores', save.cores.filter(Boolean).length);
+  setCount('gems', totalGems()); setCount('cores', save.cores.filter(Boolean).length); setCount('chests', totalChests());
+  setText('gemMax', '/' + TOTAL_GEMS); setText('coreMax', '/' + LEVEL_COUNT); setText('chestMax', '/' + TOTAL_CHESTS);
   const max = maxHp(); setText('health', '♥'.repeat(clamp(state.hp, 0, max)) + '♡'.repeat(max - clamp(state.hp, 0, max)));
   $('health').setAttribute('aria-label', `Lebensenergie ${state.hp} von ${max}`);
   setText('region', levels[save.level].name);
@@ -1099,7 +1161,7 @@ function update(dt) {
   if (keys.has('KeyQ')) { camYaw += dt * 1.7 * settings.camSens; camManualUntil = time + 2; } if (keys.has('KeyE')) { camYaw -= dt * 1.7 * settings.camSens; camManualUntil = time + 2; }
   movePlayer(dt);
   if (mode !== 'play') return;
-  pickups(); updateEnemies(dt); updateBossEffects(dt);
+  pickups(); chestPickup(); updateEnemies(dt); updateBossEffects(dt);
   for (const n of npcs.values()) { if (!n.present) continue; const d = Math.hypot(n.tx - n.x, n.ty - n.y, n.tz - n.z); if (d > .05) { const step = Math.min(d, dt * 8); n.x += (n.tx - n.x) / d * step; n.y += (n.ty - n.y) / d * step; n.z += (n.tz - n.z) / d * step; } }
   near = findNear(); $('prompt').hidden = !near || mode !== 'play';
   setText('promptText', near === 'portal' ? (save.cores[save.level] ? 'Durch das Sternentor' : 'Das Sternentor schläft') : near ? 'Sprechen mit ' + near.name : '');
@@ -1134,6 +1196,8 @@ function animate(now) {
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
   for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
   for (const r of flightRings) r.m.rotation.z = time * .3;
+  for (const c of chests) if (!c.opened) { c.gem.rotation.y = time * 1.4; c.gem.position.y = 2.1 + Math.sin(time * 2 + c.x) * .15; c.halo.rotation.z = time * .5; }
+  for (const r of boostRings) if (r.m.visible) r.m.rotation.z = time * .8;
   for (const g of gems) if (!g.got) { g.m.rotation.y = time * 1.2 + g.id; g.m.position.y = g.y + Math.sin(time * 2 + g.id) * .15; }
   for (const it of items) if (it.m.visible) { it.m.rotation.y = time * 1.6; it.m.position.y = it.y + Math.sin(time * 2.4) * .2; }
   for (const t of torches) { t.light.rotation.y = time; t.halo.rotation.y = time * .6; }
@@ -1175,7 +1239,7 @@ function music(dt) {
 function drawCanvasFallback(c, w, h) {
   if (!state || !save) return;
   // Schräge Pseudo-3D-Ansicht: Höhe ist sichtbar (Inseln mit Dicke, Schatten am Boden, Höhenlinie), Tiefe sortiert von hinten nach vorn.
-  const cfg = levels[save.level], T_ = .52, K = .95, s = Math.min(w, h * .85) / 34, cx = w / 2, cy = h * .64, cs = Math.cos(camYaw), sn = Math.sin(camYaw);
+  const c_ = c, cfg = levels[save.level], T_ = .52, K = .95, s = Math.min(w, h * .85) / 34, cx = w / 2, cy = h * .64, cs = Math.cos(camYaw), sn = Math.sin(camYaw);
   const P = (x, y, z) => { const dx = x - state.x, dz = z - state.z, rz = dx * sn + dz * cs; return [cx + (dx * cs - dz * sn) * s, cy + rz * s * T_ - (y - state.y) * s * K, rz]; };
   const ell = (px, py, rx, ry, fill, stroke, lw = 1) => { c.beginPath(); c.ellipse(px, py, Math.max(.5, rx), Math.max(.5, ry), 0, 0, TAU); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.lineWidth = lw; c.strokeStyle = stroke; c.stroke(); } };
   const poly = (pts, fill, stroke) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.lineWidth = 1.5; c.strokeStyle = stroke; c.stroke(); } };
@@ -1212,6 +1276,8 @@ function drawCanvasFallback(c, w, h) {
   for (const g of gems) if (!g.got) add(g.x, g.y + Math.sin(time * 2 + g.id) * .15, g.z, ([px, py]) => { poly([[px, py - s * .5], [px + s * .3, py], [px, py + s * .5], [px - s * .3, py]], '#b9ffe2', '#fff'); });
   for (const it of items) if (it.m.visible) add(it.x, it.y + 1.2, it.z, ([px, py]) => { ell(px, py, s * .7, s * .7, it.color, '#fff', 2); label(it.label, px, py - s * 1.2); });
   for (const r of flightRings) if (!r.got) add(r.x, r.y, r.z, ([px, py]) => { ell(px, py, s * 2.2, s * 2.2, null, '#ffd277', 4); label('Ring', px, py - s * 2.5, '#ffeab3'); });
+  for (const c of chests) add(c.x, c.y, c.z, ([px, py]) => { c_.fillStyle = '#8a5a34'; c_.fillRect(px - s * .7, py - s * .9, s * 1.4, s * .9); c_.fillStyle = '#e9c46a'; c_.fillRect(px - s * .7, py - s * 1.05, s * 1.4, s * .25); if (!c.opened) { poly([[px, py - s * 2.2], [px + s * .35, py - s * 1.7], [px, py - s * 1.2], [px - s * .35, py - s * 1.7]], '#fff0a6', '#fff'); label('Truhe', px, py - s * 2.5, '#ffe9a8'); } });
+  for (const r of boostRings) if (r.m.visible) add(r.x, r.y, r.z, ([px, py]) => ell(px, py, s * 1.9, s * 1.9, null, '#7fe9ff', 4));
   for (const a of anchors) if (!a.broken) add(a.x, a.y, a.z, ([px, py]) => { ell(px, py, s, s, '#9b7fe6', '#fff', 2); label('ANKER', px, py - s * 1.4); });
   add(0, 3, -21, ([px, py]) => { ell(px, py - s * 3, s * 2.4, s * 3, null, '#ffdda0', 5); label('STERNENTOR', px, py - s * 6.4); });
   for (const n of npcs.values()) if (n.present) add(n.x, n.y, n.z, ([px, py]) => { c.fillStyle = story.npcs[n.id].color; c.fillRect(px - s * .5, py - s * 1.8, s, s * 1.8); ell(px, py - s * 2.1, s * .55, s * .55, '#ecdfba', '#0004'); const mk = npcMarker(n.id); label(n.name + (mk ? ' !' : ''), px, py - s * 3, mk || '#ffe4a2'); });
@@ -1247,6 +1313,7 @@ if (TEST) window.aeruTest = {
   hold: (what, v) => { if (what === 'jump') jumpHeld = v; if (what === 'attack') attackHeld = v; if (what === 'dive') diveHeld = v; },
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
+  sky: SKY, rammId: () => rammId,
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };
 save = readSave(); $('continue').hidden = !save;
