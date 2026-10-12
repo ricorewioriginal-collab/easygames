@@ -386,3 +386,14 @@ Eigene, frei erfundene Insel (nur INSPIRIERT von Trickfilm-Serien am Meeresgrund
 - **🪼 Quallenfischen** im Quallenfeld (Aktionstaste = Kescher), **Schwammis Fruchthaus** (klingeln, Schneckerich streicheln – „Miau“), **Sternchens Stein** (hochheben), **Tadeus' Steinkopf** (Klarinette hören), **Sunnys Luftkuppel** (Karate-Puppe, 10 Schläge = ⭐), **Eimerchen** von Plankto.
 - **🛁 Wannen-Mobil** (Meeresmann & Napfschnecken-Bub): fahrbare Badewanne am Heldenheim; nach dem Aussteigen fährt sie von allein zurück zum Standplatz.
 - **Verbotener Wald**: **Winzling Plankto** (schnell, klein) und sein **Riesen-Roboter** (4. Boss) greifen an; Sticker „Plankto-Bezwinger“. 5 neue Sticker, 8 Aufgaben.
+
+
+### 🗿⚔️ Rätsel-Insel der Uralten – Rollenspiel-Abenteuer (Südwesten)
+Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verliesen und Kapselmonstern (Lufia 2: Werkzeug-Rätsel mit Bomben/Bogen/Enterhaken, Kapselmonster, Uralte Höhle, schwebende Titanen-Festung, Schmieden) – aber mit **eigenen Namen und Formen**: Held Milo, Sela, Gunnar, Alchemist Arto, Kapselmeisterin Pim, Schmied Brokk u. a. (12 Figuren), Musik „Heldenreise“. Code: `js/raetsel.js`, Test: `tests/raetsel.mjs`.
+- **🏯 Prüfungsturm** (3 Kammern, Tore): **Truhen** geben Werkzeuge → 💣 Bomben (Vorhalle), 🏹 Bogen (nach dem **Block-Rätsel**: Block 2 m weise auf die Bodenplatte schieben, Altar = zurücksetzen), 🔷 **Kristall** mit Pfeil treffen (Brücke über das Becken + Tor), rissige Wand **sprengen** → 🪝 Enterhaken, **über den Abgrund** zum Schatz. Aktionstaste wählt automatisch das passende Werkzeug. Zustand wird gespeichert.
+- **🥚 Kapselmonster** (Feuer/Wasser/Wind): Ei am Kapsel-Schrein wählen, mit Essen aus dem Rucksack **füttern → 5 Entwicklungsstufen**, folgt dir überall und **kämpft im Verbotenen Wald mit**.
+- **⚒️ Schmiede**: Schwert verbessern (Holz → Eisen → Silber → Runen → Titan, +18 % Schaden je Stufe im Verbotenen Wald), in der Hand sichtbar.
+- **🕳️ Uralte Höhle**: Mini-Spiel im Nebel – Truhen 🎁 sammeln, Schleimis 👾 ausweichen, Treppe 🪜 finden, immer neue Stockwerke.
+- 6 rote/blaue **Schatztruhen** rund ums Dorf (eine hinter einem Fels, den man sprengen muss), schwebende Titanen-Festung am Himmel, 12 Aufgaben, 7 neue Sticker.
+- **Verbotener Wald**: 5. Boss **Titan Kron** (steinerner Riese).
+- **Strand & Meer überall**: man kann jetzt von jedem Strand der Hauptinsel und aller Inseln ins Meer und rundherum **schwimmen** (keine unsichtbaren Mauern mehr, `tests/meer.mjs`). Märchenland: breite Basar-Gassen, **Märchen-Taxi** (Taxifahrer Theo) mit Straße.

@@ -176,7 +176,7 @@ BI.createTv = function (G) {
     const run = l > .92, spd = run ? 8.8 : 4.6; let dx = 0, dz = 0;
     if (l > .12) { const fx_ = -Math.sin(m.yaw), fz_ = -Math.cos(m.yaw), rx = -fz_, rz = fx_; dx = fx_ * sy + rx * sx; dz = fz_ * sy + rz * sx; const n = Math.hypot(dx, dz) || 1, k = Math.min(1, l); m.h += BI.angDiff(m.h, Math.atan2(dx, dz)) * Math.min(1, dt * 14); dx = dx / n * spd * k; dz = dz / n * spd * k; s.dance = false; if (m.camIdle > 1.6) m.yaw += BI.angDiff(m.yaw, m.h + pi) * Math.min(1, dt * 1.3); }
     m.x += dx * dt; m.z += dz * dt; m.spd = Math.hypot(dx, dz); m.run = run && m.spd > 1;
-    const q = W.resolve(m.x, m.z, .45, {}, m.y > .8 ? m.y : undefined); m.x = q.x; m.z = q.z;
+    const q = W.resolve(m.x, m.z, .45, {}, m.y > .8 ? m.y : undefined, false, true); m.x = q.x; m.z = q.z;
     const gy = G.groundAt(m.x, m.z, m.y);
     if (m.y <= gy + .05) m.coy = .12; else if (m.coy > 0) m.coy -= dt;
     if (s.jump) { s.jump = false; if (m.coy > 0) { m.vy = 7; m.coy = 0; A.jump && A.jump(); } }

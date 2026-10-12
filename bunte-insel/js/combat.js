@@ -30,6 +30,8 @@ BI.createCombat = function (G) {
     /* Winzling Plankto (Schwammi-Bucht): kleiner grüner Plan-Schmieder mit einem Auge und Antennen – und sein Riesen-Roboter */
     plankto: b => { b.sph(0, .42, 0, .42, 0x3fae4a, 1, 1, 1, .9); b.sph(0, .5, .3, .22, 0xffffff, 1); b.sph(0, .5, .46, .1, 0xe0382b, 0); for (const sx of [-1, 1]) { b.cone(sx * .2, .8, 0, .05, .5, 0x2a7a3a, 4); b.sph(sx * .26, 1.12, 0, .07, 0xffe27a, 0); b.box(sx * .18, .06, .02, .2, .12, .3, 0x2a7a3a); } b.box(0, .62, .3, .4, .06, .06, 0x2a7a3a, 0, 0, .1); },
     planktobot: b => { b.box(0, .3, 0, 1.6, 1.2, 1.2, 0x8a96a8); b.box(0, 1.4, 0, 1.9, 1.0, 1.4, 0x6a7686); b.sph(0, 2.3, 0, .8, 0x9fe3ff, 1, 1, .9, 1); b.sph(0, 2.2, 0, .3, 0x3fae4a, 1); b.sph(0, 2.3, .26, .13, 0xffffff, 0); b.sph(0, 2.3, .36, .06, 0xe0382b, 0); for (const sx of [-1, 1]) { b.box(sx * 1.25, .9, 0, .5, 1.5, .5, 0x8a96a8); b.box(sx * 1.35, .3, .2, .7, .3, .7, 0xe0382b); b.cyl(sx * .5, 0, 0, .3, .3, .5, 0x4a5666, 8); b.cone(sx * .35, 3.0, 0, .06, .8, 0x4a5666, 4); b.sph(sx * .35, 3.9, 0, .1, 0xffe27a, 0); } b.box(0, .8, .62, .9, .14, .06, 0xffd23f); },
+    /* Titan Kron (Rätsel-Insel der Uralten): steinerner Riese mit glühendem Kern und Hörnerkrone */
+    titan: b => { b.box(0, 0, 0, 1.5, 1.0, 1.1, 0x6a6a7a); b.box(0, 1.0, 0, 1.9, 1.6, 1.3, 0x8a8a9a); b.sph(0, 1.9, .66, .38, 0xff6a3a, 0); b.sph(0, 1.9, .66, .6, 0xffb04a, 0, 1, 1, .3); b.sph(0, 2.9, 0, .75, 0x8a8a9a, 1, 1, .9, 1); for (let i = 0; i < 5; i++) b.cone(Math.sin(i * 1.26 - 2.5) * .7, 3.4, Math.cos(i * 1.26 - 2.5) * .2, .18, .8, 0xffd23f, 5); b.sph(-.25, 2.95, .66, .13, 0xff6a3a, 0); b.sph(.25, 2.95, .66, .13, 0xff6a3a, 0); for (const sx of [-1, 1]) { b.box(sx * 1.25, .9, 0, .55, 1.9, .55, 0x6a6a7a); b.sph(sx * 1.25, .35, .1, .5, 0x5a5a68, 1); } },
     gblob: b => { b.sph(0, .55, 0, .6, 0xb36bff, 1, 1, .85, 1); eyes(b, .72, .42, .22, .14); b.box(0, .5, .58, .34, .06, .04, 0x4a2b6b); for (let i = 0; i < 3; i++) b.cone(-.3 + i * .3, 1.05, 0, .1, .3, 0xff8fc8, 4); },
     boss: b => { b.cyl(0, 0, 0, .6, .85, 1.6, 0x4a3a2a, 8); b.sph(0, 2.0, 0, .85, 0x2f6b4a, 1, 1, .9, 1); for (let i = 0; i < 6; i++) b.cone(Math.sin(i) * .6, 2.6, Math.cos(i) * .5, .2, .6, 0x1f4a3a, 5); for (const sx of [-1, 1]) { b.box(sx * 1.0, 1.1, 0, .28, 1.3, .28, 0x4a3a2a, 0, sx * .5); b.sph(sx * .3, 2.0, .72, .18, 0xffe14a, 0); b.box(sx * 1.2, .6, 0, .5, .12, .12, 0x4a3a2a); } b.box(0, 1.55, .85, .6, .1, .06, 0x1a1a1a); }
   };
@@ -40,6 +42,7 @@ BI.createCombat = function (G) {
     klecks: { n: 'Tintenklecks', hp: 30, spd: 2.1, dmg: 7, reach: 1.5, base: 1.1 }, kaeferbot: { n: 'Käfer-Roboter', hp: 46, spd: 2.9, dmg: 9, reach: 1.6, base: 1.1 }, verduenner: { n: 'Verdünner-Geist', hp: 36, spd: 2.5, dmg: 8, reach: 1.6, base: 1.1 }, skizze: { n: 'Skizzen-Wicht', hp: 34, spd: 2.7, dmg: 8, reach: 1.5, base: 1.1 },
     tintenriese: { n: 'Der große Klecks', hp: 330, spd: 1.8, dmg: 20, reach: 3.4, base: 3.4, big: true, geo: 'klecks' },
     plankto: { n: 'Winzling Plankto', hp: 28, spd: 3.2, dmg: 7, reach: 1.4, base: .8 }, planktobot: { n: 'Planktos Riesen-Roboter', hp: 340, spd: 1.9, dmg: 20, reach: 3.4, base: 2.4, big: true },
+    titan: { n: 'Titan Kron', hp: 360, spd: 1.8, dmg: 21, reach: 3.5, base: 2.4, big: true },
     riese: { n: 'Dunkelriese', hp: 300, spd: 1.9, dmg: 19, reach: 3.4, base: 3.2, big: true, geo: 'wichtel' },
     gblob: { n: 'Riesen-Glibbi', hp: 150, spd: 1.8, dmg: 14, reach: 2.8, base: 2.4, big: true, geo: 'gblob' }, boss: { n: 'Waldgeist', hp: 230, spd: 2.0, dmg: 17, reach: 3.2, base: 2.2, big: true, geo: 'boss' }
   };
@@ -85,7 +88,7 @@ BI.createCombat = function (G) {
   function hitEnemies(a) {
     let any = false; for (const e of targets()) {
       const dx = e.x - P.x, dz = e.z - P.z, d = Math.hypot(dx, dz); if (d > a.range + (e.T && e.T.big ? 1 : 0)) continue; if (!a.ring && Math.abs(BI.angDiff(P.h, Math.atan2(dx, dz))) > 1.15) continue;
-      let dmg = a.dmg; if (e.blocking) dmg *= .2; damage(e, dmg, dx / (d || 1), dz / (d || 1)); any = true;
+      let dmg = a.dmg * (G.sword ? G.sword() : 1); if (e.blocking) dmg *= .2; damage(e, dmg, dx / (d || 1), dz / (d || 1)); any = true;
     }
     if (a.ring) { fx.burst(P.x, 1, P.z, 30, [BI.C.gold, BI.C.white, BI.C.blue], 6, 1, 28, 2); }
     if (!any && !a.ring) A.pop();
@@ -97,7 +100,7 @@ BI.createCombat = function (G) {
   }
   function defeatMonster(e) {
     e.dead = true; e.t = 0; if (e.tele) e.tele.visible = false; A.bigpop && A.bigpop(); fx.burst(e.x, 1.2, e.z, 26, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.purple], 6, 1.4, 32, 6);
-    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'planktobot') { st.b++; bossAlive = false; addStars(3); say('🧪 Planktos Roboter ist kaputt! Plankto flüchtet. +11 ⭐', 4600); A.fanfare(); G.earn('plankton'); } else if (e.kind === 'tintenriese') { st.b++; bossAlive = false; addStars(3); say('🖋️ Der große Klecks ist besiegt! +11 ⭐', 4600); A.fanfare(); G.earn('tintenboss'); st.tf = (st.tf | 0) + 1; } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (TRICK.has(e.kind)) { st.tf = (st.tf | 0) + 1; if (st.tf >= 10) G.earn('trickfilm'); } if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
+    const st = S(); if (mode === 'wave') { addStars(e.T.big ? 5 : 1); } else { addStars(e.T.big ? 8 : 1); st.k++; K.kills++; if (G.note) G.note('kill'); if (e.kind === 'boss') { st.b++; bossAlive = false; say('👑 Waldgeist besiegt! Du bist ein Waldheld! +8 ⭐', 4200); A.fanfare(); G.earn('boss'); } else if (e.kind === 'titan') { st.b++; bossAlive = false; addStars(3); say('🗿 Titan Kron ist besiegt – die Uralten sind stolz! +11 ⭐', 4600); A.fanfare(); G.earn('titan'); } else if (e.kind === 'planktobot') { st.b++; bossAlive = false; addStars(3); say('🧪 Planktos Roboter ist kaputt! Plankto flüchtet. +11 ⭐', 4600); A.fanfare(); G.earn('plankton'); } else if (e.kind === 'tintenriese') { st.b++; bossAlive = false; addStars(3); say('🖋️ Der große Klecks ist besiegt! +11 ⭐', 4600); A.fanfare(); G.earn('tintenboss'); st.tf = (st.tf | 0) + 1; } else if (e.kind === 'riese') { st.b++; bossAlive = false; addStars(2); say('🌑 Dunkelriese besiegt! Du bist ein Schlüsselträger! +10 ⭐', 4600); A.fanfare(); G.earn('schluesseltraeger'); } else { drop(e.x, e.z); if (TRICK.has(e.kind)) { st.tf = (st.tf | 0) + 1; if (st.tf >= 10) G.earn('trickfilm'); } if (e.kind === 'wichtel') { st.dw = (st.dw | 0) + 1; G.earn('schatten'); if (st.dw >= 10) G.earn('schatten10'); } } if (st.k >= 10) G.earn('forest'); persist(); }
   }
   let bossAlive = false; K.kills = 0; K.bossN = 0;
 
@@ -171,7 +174,7 @@ BI.createCombat = function (G) {
     if (spawnT > 0 || alive >= cap) return; spawnT = 3 + rnd() * 3;
     for (let k = 0; k < 14; k++) { const a = rnd() * TAU, d = 9 + rnd() * 9, x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (Math.hypot(x - FO.x, z - FO.z) > FO.R - 2.5 || !W.free(x, z, .8)) continue;
       let kind = rnd() < .34 ? 'blob' : rnd() < .5 ? 'spike' : 'mush'; if (K.kills >= 3 && rnd() < .55) kind = WORLD[(rnd() * Math.min(WORLD.length, 2 + (K.kills / 3 | 0))) | 0];
-      if (!bossAlive && K.kills >= K.nextBoss) { kind = ['boss', 'riese', 'tintenriese', 'planktobot'][K.bossN++ % 4]; bossAlive = true; K.nextBoss += 10; say(kind === 'planktobot' ? '⚠️ Winzling Plankto kommt in seinem Riesen-Roboter!' : kind === 'riese' ? '⚠️ Der Dunkelriese aus dem Schlüsselreich erscheint!' : kind === 'tintenriese' ? '⚠️ Der große Klecks quillt aus der Tinte!' : '⚠️ Der Waldgeist erwacht!', 3000); }
+      if (!bossAlive && K.kills >= K.nextBoss) { kind = ['boss', 'riese', 'tintenriese', 'planktobot', 'titan'][K.bossN++ % 5]; bossAlive = true; K.nextBoss += 10; say(kind === 'titan' ? '⚠️ Titan Kron stampft aus der Titanen-Festung herab!' : kind === 'planktobot' ? '⚠️ Winzling Plankto kommt in seinem Riesen-Roboter!' : kind === 'riese' ? '⚠️ Der Dunkelriese aus dem Schlüsselreich erscheint!' : kind === 'tintenriese' ? '⚠️ Der große Klecks quillt aus der Tinte!' : '⚠️ Der Waldgeist erwacht!', 3000); }
       spawn(kind, x, z, { home: true }); return; }
   }
 
@@ -260,6 +263,8 @@ BI.createCombat = function (G) {
     }
     if (!act && enemies.length && !mode && !fz) { clearEnemies(); }
   };
+  /* Helfer (Kapselmonster der Rätsel-Insel): trifft den nächsten Gegner in der Nähe */
+  K.helper = function (x, z, r, dmg) { let best = null, bd = r; for (const e of enemies) { if (e.dead) continue; const d = Math.hypot(e.x - x, e.z - z); if (d < bd) { bd = d; best = e; } } if (best) { const dx = best.x - x, dz = best.z - z, d = Math.hypot(dx, dz) || 1; damage(best, dmg, dx / d, dz / d); } return best; };
   K.dbg = { enemies, spawn, damage, hurt, FIGHTERS, startDuel, startWave, get duel() { return duel; }, get mode() { return mode; }, get hp() { return hp; }, get atk() { return atk; } };
   return K;
 };

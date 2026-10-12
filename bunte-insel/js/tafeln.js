@@ -4,6 +4,11 @@
    wird der Text laut vorgelesen (A.speak). Sparsam: alle Pfosten in einem Mesh, pro Tafel eine Fläche, weit entfernte Tafeln sind unsichtbar. */
 BI.TAFELN = {
   /* Welt-ID (wie in „Wohin?“) → [Bilder, kurzer Text, vorgelesener Satz] */
+  raetsel: ['🗿⚔️', 'Rätsel-Insel', 'Willkommen auf der Rätsel-Insel! Löse Rätsel im Turm, wecke ein Kapselmonster und schmiede dein Schwert.'],
+  turm_r: ['🏯💣', 'Prüfungsturm', 'Im Turm lösen Bomben, Bogen und Enterhaken die Rätsel.'],
+  schrein_r: ['🥚🐉', 'Kapsel-Schrein', 'Hier schlüpft dein Kapselmonster. Füttere es, dann wird es stark!'],
+  schmiede_r: ['⚒️⚔️', 'Schmiede', 'Hier wird dein Schwert stärker.'],
+  hoehle_r: ['🕳️🎁', 'Uralte Höhle', 'In der Höhle liegen Truhen im Nebel.'],
   schwamm: ['🧽🦀', 'Schwammi-Bucht', 'Willkommen in der Schwammi-Bucht! Iss in der Knusper-Krabbe, brate Burger und fang Quallen.'],
   krabbe_s: ['🦀🍔', 'Die Knusper-Krabbe', 'Hier kannst du Burger essen und selbst Burger braten.'],
   quallen_s: ['🪼🥅', 'Quallenfeld', 'Hier schweben bunte Quallen. Fang sie mit dem Kescher!'],

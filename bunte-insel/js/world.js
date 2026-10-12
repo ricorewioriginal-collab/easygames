@@ -50,7 +50,7 @@ BI.homeSpawns = function (f) {
 BI.buildWorld = function (scene) {
   const K = BI.WORLD, rnd = BI.rng(20240611), rr = (a, b) => a + rnd() * (b - a), pick = a => a[(rnd() * a.length) | 0];
   const st = new BI.Batch(), win = new BI.Batch(), lamp = new BI.Batch(), roofB = new BI.Batch();
-  const W = { K, boxes: [], circles: [], bigMeshes: [], vehicleSpawns: [], roadPts: [], houses: [], parts: [] };
+  const W = { K, boxes: [], circles: [], dyn: [], bigMeshes: [], vehicleSpawns: [], roadPts: [], houses: [], parts: [] };
 
   /* ---------- Kollision (Raster) ---------- */
   const CELL = 12, grid = new Map(), cellKey = (ix, iz) => (ix + 40) * 100 + (iz + 40);
@@ -70,7 +70,7 @@ BI.buildWorld = function (scene) {
   const seen = new Set();
   /* schiebt einen Kreis (px,pz,r) aus allen Hindernissen; liefert Verschiebung zurück */
   /* alt = Flughöhe (Hubschrauber): überfliegt Hindernisse, die niedriger sind */
-  W.resolve = function (px, pz, r, out, alt, air) {
+  W.resolve = function (px, pz, r, out, alt, air, swim) {
     out = out || {}; let hit = false;
     for (let pass = 0; pass < 2; pass++) {
       seen.clear();
@@ -94,9 +94,11 @@ BI.buildWorld = function (scene) {
         }
       }
     }
+    if (W.dyn.length) for (const o of W.dyn) { if (!o.on) continue; const dx = px - o.x, dz = pz - o.z, d = Math.hypot(dx, dz), m = r + o.r; if (d < m) { if (d > 1e-6) { px += dx * (m - d) / d; pz += dz * (m - d) / d; } else px += m; hit = true; } } /* bewegliche Hindernisse (Rätsel-Blöcke, Tore) */
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
     if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
+    else if (swim) { /* zu Fuß: Strand und Meer überall begehbar/schwimmbar – nur ganz draußen ist Schluss (kein unsichtbares Mauern-Gewirr mehr) */ const fl = W.flyLimit(); if (rad > fl - r) { const k = (fl - r) / rad; px *= k; pz *= k; hit = true; } }
     else if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
       else if (W.bade && W.bade.walk(px, pz, r)) { /* Badestrand + Meer zum Schwimmen */ }
@@ -138,6 +140,15 @@ BI.buildWorld = function (scene) {
   /* größter Abstand, bis zu dem es etwas zu sehen gibt (Inseln + Rand): dahinter ist die Luft zu Ende */
   W.flyLimit = () => { if (W._fl) return W._fl; let m = K.LIMIT; for (const k of ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland']) { const C = W[k]; if (C && C.R) m = Math.max(m, Math.hypot(C.x, C.z) + C.R); } for (const I of W.isles || []) m = Math.max(m, Math.hypot(I.x, I.z) + I.R); return W._fl = m + 30; };
   /* Boden unter dem Punkt? (Land, Brücke, Steg – kein Meer, kein Hindernis). Hubschrauber sinken über dem Wasser nicht tiefer als 8 m */
+  /* Meer (zum Schwimmen): außerhalb des Strands der Hauptinsel, der Insel-Strände (R+10), der Brücken und des Stegs */
+  const SEA_ISL = ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland', 'radio'];
+  W.seaAt = (x, z) => {
+    if (x * x + z * z < 203 * 203) return false; if (W.bade && W.bade.sea(x, z)) return true; if (Math.abs(x) < 3.2 && z > 150 && z < 212) return false;
+    for (const k of SEA_ISL) { const C = W[k]; if (C && C.R && Math.hypot(x - C.x, z - C.z) < C.R + 10) return false; }
+    for (const I of W.isles || []) if (Math.hypot(x - I.x, z - I.z) < I.R + 10) return false;
+    return !W.landAt(x, z) && !W.floorOver(x, z);
+  };
+  W.floorOver = (x, z) => { const h = W.bade ? W.bade.floor(x, z) : null; return h !== null && h > .15; }; /* Plattformen im Badegebiet gelten nicht als Wasser */
   W.landAt = (x, z) => { const p = W.resolve(x, z, 0, _o2, 0); return !p.hit; };
   /* Niedrige Podeste (Bühne, Sockel) zum Daraufsteigen: runde Scheiben mit Höhe y */
   const floors = []; W.addFloor = (x, z, r, y) => { floors.push({ x, z, r, y }); };
@@ -150,7 +161,7 @@ BI.buildWorld = function (scene) {
   W.onRoad = function (x, z) {
     const ax = Math.abs(x), az = Math.abs(z), r = Math.hypot(x, z);
     if (r < 156 && r > 12 && (ax < RW || az < RW)) return true;
-    return Math.abs(r - K.RA) < RW || Math.abs(r - K.RB) < RW || Math.abs(r - K.RR) < RW || W.onPad(x, z) || (W.schluessel && Math.hypot(x - W.schluessel.x, z - W.schluessel.z) < W.schluessel.R && W.schluessel.roadD(x, z) < 3.2);
+    return Math.abs(r - K.RA) < RW || Math.abs(r - K.RB) < RW || Math.abs(r - K.RR) < RW || W.onPad(x, z) || (W.maerchen && W.maerchen.road(x, z)) || (W.schluessel && Math.hypot(x - W.schluessel.x, z - W.schluessel.z) < W.schluessel.R && W.schluessel.roadD(x, z) < 3.2);
   };
   W.pads = [];
   W.onPad = (x, z) => W.pads.some(p => x > p[0] && x < p[2] && z > p[1] && z < p[3]);
@@ -491,6 +502,7 @@ BI.buildWorld = function (scene) {
   BI.buildMaerchenPlus({ W, st, lamp, ROADY });
   BI.buildSchluesselGround({ W, st, lamp, ROADY });
   BI.buildSchwammGround({ W, st, lamp, ROADY });
+  BI.buildRaetselGround({ W, st, lamp, ROADY });
   BI.buildBadeGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
@@ -788,6 +800,7 @@ BI.buildWorld = function (scene) {
     for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;
     const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
     if (Math.abs(x) < 2.5 && z > 156 && z < 208) return .65;
+    if (x * x + z * z > 203 * 203 && W.seaAt(x, z)) return -.05; /* Meer: man schwimmt knapp unter der Oberfläche */
     return 0;
   };
   W.onDeck = (x, z) => { const S = W.ship; return x > S.deck.x0 && x < S.deck.x1 && z > S.deck.z0 && z < S.deck.z1; };

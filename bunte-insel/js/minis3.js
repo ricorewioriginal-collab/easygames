@@ -196,6 +196,41 @@
     return G;
   };
 
+  /* =====================  Uralte Höhle 🕳️ (Rätsel-Insel): immer neue Stockwerke im Nebel  ===================== */
+  const cave = () => {
+    const G = {}; const N = 5; let floor, tiles, hx, hy, hearts, t, msg, msgT, shake;
+    const geo = () => { const W = h.W(), H = h.H(), s = Math.min(W * .9 / N, H * .66 / N); return { W, H, s, x0: W / 2 - s * N / 2, y0: H * .2 }; };
+    const build = () => {
+      tiles = []; for (let y = 0; y < N; y++) { tiles.push([]); for (let x = 0; x < N; x++) tiles[y].push('e'); } hx = 0; hy = N - 1;
+      const free = () => { for (let k = 0; k < 60; k++) { const x = (h.rnd() * N) | 0, y = (h.rnd() * N) | 0; if (tiles[y][x] === 'e' && Math.abs(x - hx) + Math.abs(y - hy) > 1) return [x, y]; } return null; };
+      let q = null; for (let k = 0; k < 60; k++) { const x = (h.rnd() * N) | 0, y = (h.rnd() * N) | 0; if (Math.abs(x - hx) + Math.abs(y - hy) >= 5) { q = [x, y]; break; } } q = q || [N - 1, 0]; tiles[q[1]][q[0]] = 's';
+      for (let i = 0; i < 2; i++) { const f = free(); if (f) tiles[f[1]][f[0]] = 'c'; } for (let i = 0; i < Math.min(5, 2 + (floor >> 1)); i++) { const f = free(); if (f) tiles[f[1]][f[0]] = 'm'; } if (h.rnd() < .35) { const f = free(); if (f) tiles[f[1]][f[0]] = 'p'; }
+    };
+    G.init = function () { floor = 1; hearts = 3; t = 0; msg = ''; msgT = 0; shake = 0; build(); };
+    G.resize = function () { };
+    const say = (m, d) => { msg = m; msgT = d || 1; };
+    function step(nx, ny) {
+      hx = nx; hy = ny; const k = tiles[ny][nx], g0 = geo(), cx = g0.x0 + (nx + .5) * g0.s, cy = g0.y0 + (ny + .5) * g0.s;
+      if (k === 'c') { tiles[ny][nx] = 'e'; h.add(1, cx, cy); snd('ding'); say('🎁 +1', .7); }
+      else if (k === 'm') { tiles[ny][nx] = 'e'; hearts--; shake = .4; snd('bonk'); say('💥 Autsch!', .8); if (hearts <= 0) { M.over = true; } }
+      else if (k === 'p') { tiles[ny][nx] = 'e'; hearts = Math.min(3, hearts + 1); snd('pop'); say('🧪 +❤️', .8); }
+      else if (k === 's') { h.add(3, cx, cy); snd('star'); floor++; say('🪜 Stockwerk ' + floor + '!', 1); build(); }
+    }
+    G.tap = function (x, y) {
+      const g = geo(), tx = Math.floor((x - g.x0) / g.s), ty = Math.floor((y - g.y0) / g.s); if (tx < 0 || ty < 0 || tx >= N || ty >= N || (tx === hx && ty === hy)) return;
+      const dx = tx - hx, dy = ty - hy; if (Math.abs(dx) >= Math.abs(dy)) step(hx + Math.sign(dx), hy); else step(hx, hy + Math.sign(dy));
+    };
+    G.update = function (dt) { t += dt; msgT = Math.max(0, msgT - dt); shake = Math.max(0, shake - dt); };
+    G.dbg = () => ({ get tiles() { return tiles; }, get hero() { return [hx, hy]; }, get floor() { return floor; }, get hearts() { return hearts; }, geo, tapTile: (x, y) => { const g = geo(); G.tap(g.x0 + (x + .5) * g.s, g.y0 + (y + .5) * g.s); } });
+    G.draw = function () {
+      const c = h.ctx(), g = geo(), W = g.W, H = g.H; h.bg('#2a2438', '#4a3a58'); const sh = shake > 0 ? Math.sin(t * 80) * 5 : 0;
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const px = g.x0 + x * g.s + sh, py = g.y0 + y * g.s, seen = Math.abs(x - hx) + Math.abs(y - hy) <= 2; c.fillStyle = seen ? ((x + y) % 2 ? '#7a6a8a' : '#8a7a9a') : '#3a2e48'; c.fillRect(px + 2, py + 2, g.s - 4, g.s - 4); const k = tiles[y][x];
+        if (x === hx && y === hy) h.emoji('🦸', px + g.s / 2, py + g.s / 2, g.s * .8); else if (!seen) h.emoji('❔', px + g.s / 2, py + g.s / 2, g.s * .45); else if (k !== 'e') h.emoji({ c: '🎁', m: '👾', s: '🪜', p: '🧪' }[k], px + g.s / 2, py + g.s / 2, g.s * .72); }
+      for (let i = 0; i < 3; i++) h.emoji(i < hearts ? '❤️' : '🖤', W / 2 - 50 + i * 50, H * .1, Math.min(48, W / 10)); h.text('Stockwerk ' + floor, W / 2, H * .94, Math.min(34, W / 14), '#ffe9a0'); if (msgT > 0) h.text(msg, W / 2, H * .17, Math.min(40, W / 12), '#fff');
+    };
+    return G;
+  };
+
   const W3 = (key, g, icon, name, help, zone, goal) => h.register(key, g, { icon, name, help, dur: 45, goal: goal || 14, zone, kids: 1 });
   W3('schmetterling_insel', hunt({ good: ['🦋', '🐞', '🐝'], bad: ['🕷️'], motion: 'flutter', bg: ['#bff2ff', '#a8e88c'], ground: '#7fd65c' }), '🦋', 'Schmetterlinge fangen', 'Tippe die Schmetterlinge an! Die Spinne lässt du in Ruhe.', 'insel');
   W3('ampel_stadt', ampel(), '🚦', 'Ampel-Held', 'Wenn die Ampel grün ist: schnell tippen, dann fährt das Auto los! Bei Rot wartest du.', 'stadt', 10);
@@ -212,6 +247,7 @@
   W3('schatten_schluessel', hunt({ good: ['👾', '🌑', '👻'], bad: ['❤️'], motion: 'drift', bg: ['#1a1030', '#4a2a8a'], fx: ['#ffe27a', '#fff', '#b48aff'] }), '🗝️', 'Schatten-Jagd', 'Tippe die Dunkelwichtel an! Das rote Herz lässt du in Ruhe.', 'schluessel');
   W3('reise_schluessel', hunt({ good: ['⭐', '💎', '✨'], bad: ['☄️'], motion: 'fall', bg: ['#050a30', '#3a2a8a'], fx: ['#9ad8ff', '#fff', '#ffe27a'] }), '🚀', 'Weltenreise', 'Flieg mit dem Sternenschiff! Fang Sterne und Kristalle – dem Meteor weichst du aus.', 'schluessel');
   W3('burger_krabbe', burger(), '🍔', 'Burger braten', 'Brate das Fleisch (tippe, wenn es einen grünen Ring hat) und stapele die Zutaten in der Reihenfolge der Bestellung. Zum Schluss das Brötchen!', 'schwamm', 12);
+  W3('hoehle_raetsel', cave(), '🕳️', 'Uralte Höhle', 'Tippe auf ein Feld, um dorthin zu laufen. Im Nebel liegen Truhen 🎁 und Schleimis 👾 – finde die Treppe 🪜!', 'raetsel', 14);
   W3('blasen_atlantis', hunt({ good: ['🫧', '🐚', '🦀'], bad: ['🪼'], motion: 'rise', bg: ['#0e3a5a', '#35d6e0'], fx: ['#9fe3ff', '#fff'] }), '🫧', 'Blasen-Pop', 'Tippe die Blasen und Muscheln an! Die Qualle lässt du in Ruhe.', 'atlantis');
 });
 
