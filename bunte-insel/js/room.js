@@ -3,14 +3,23 @@
 BI.createRoom = function (G) {
   const { scene, A, fx, P, save, persist, say } = G, $ = id => document.getElementById(id), K = { open: false }, mat = BI.mat();
   const WALL = [0, 0xfff0b0, 0xffc4dc, 0xbfe6ff, 0xc9f0c0, 0xe2d0ff, 0xffd6a0], RUG = [0, 0xff6b6b, 0x4da3ff, 0x4cd07d, 0xb36bff, 0xffd23f, 0x222831], BED = [0, 0xff5a8a, 0x3fa0ff, 0x4cd07d, 0xb36bff, 0xffd23f, 0xffffff];
-  const DECO = [['', '✖'], ['lamp', '💡'], ['plant', '🪴'], ['teddy', '🧸'], ['globe', '🌍'], ['fish', '🐠'], ['balloons', '🎈'], ['piano', '🎹', 'deco_piano'], ['rocket', '🚀', 'deco_rocket'], ['dino', '🦖', 'deco_dino'], ['castle', '🏰', 'deco_castle'], ['racecar', '🏎️', 'deco_racecar']];
+  const DECO = [['', '✖'], ['lamp', '💡'], ['plant', '🪴'], ['teddy', '🧸'], ['globe', '🌍'], ['fish', '🐠'], ['balloons', '🎈'], ['piano', '🎹', 'deco_piano'], ['rocket', '🚀', 'deco_rocket'], ['dino', '🦖', 'deco_dino'], ['castle', '🏰', 'deco_castle'], ['racecar', '🏎️', 'deco_racecar'], ['aqua', '🐟', 'deco_aqua', 'Fange 3 Fische'], ['vitrine', '🦋', 'deco_vitrine', 'Fange 3 Käfer'], ['fund', '🐚', 'deco_fund', 'Finde 3 Sachen am Strand']];
   const WALLD = [['', '✖'], ['garland', '⭐'], ['clock', '🕒'], ['flags', '🚩'], ['rainbow', '🌈', 'deco_rainbow'], ['stars2', '🌟', 'deco_stars']];
   const SPOTS = [[-1.2, .8], [2.9, .8], [.4, 5.2], [-1.8, 5.6]];
   const st = () => { const r = save.room || (save.room = {}); r.wall |= 0; r.rug |= 0; r.bed |= 0; if (!Array.isArray(r.d)) r.d = [0, 0, 0, 0]; r.w |= 0; return r; };
   K.state = st;
   const group = new THREE.Group(); scene.add(group); let flat = null;
   const hex = c => '#' + c.toString(16).padStart(6, '0');
-  function model(b, k, x, z) {
+  const FC = [0xff8a1f, 0x4da3ff, 0xffd23f, 0xff5a8a, 0x4cd07d, 0xb36bff];
+  /* Sammel-Vitrinen zeigen, wie viel im Sammelbuch gefunden wurde (auch bei Besuchern) */
+  const have = o => Math.min(12, Object.keys(o || {}).length), counts = () => { const s = save.sammel || {}; return { fish: have(s.fish), bug: have(s.bug), dig: have(s.dig) }; };
+  function sammelModel(b, k, x, z, c) {
+    if (k === 'aqua') { b.box(x, .45, z, 1.26, .08, .66, 0x3a3d45); b.box(x, .5, z, 1.2, .85, .6, 0xcfeeff); b.box(x, 1.33, z, 1.26, .06, .66, 0x3a3d45); b.cone(x - .45, .53, z + .1, .12, .45, 0x3fa84e, 5); b.cone(x + .45, .53, z - .1, .1, .35, 0x4cd07d, 5); for (let i = 0; i < Math.min(6, c.fish); i++) { b.sph(x - .4 + (i % 3) * .4, .75 + (i >> 1) * .22, z + (i % 2 ? .1 : -.1), .1, FC[i], 1, 1.5, 1, 1); b.cone(x - .5 + (i % 3) * .4, .75 + (i >> 1) * .22, z + (i % 2 ? .1 : -.1), .06, .1, FC[i], 4); } b.cyl(x, 0, z, .5, .55, .45, 0x6a4a2a, 8); }
+    else if (k === 'vitrine') { b.box(x, 0, z, 1.1, 1.7, .5, 0x8a5a33); b.box(x, .15, z + .05, 1.0, 1.4, .42, 0xdff2ff); for (let r = 0; r < 3; r++) b.box(x, .5 + r * .45, z + .08, 1.0, .03, .38, 0x6a4a2a); for (let i = 0; i < Math.min(9, c.bug); i++) b.sph(x - .35 + (i % 3) * .35, .6 + Math.floor(i / 3) * .45, z + .1, .09, FC[i % 6], 1, 1.3, .7, 1); }
+    else if (k === 'fund') { b.box(x, 0, z, 1.2, .6, .6, 0xc8803c); b.box(x, .6, z, 1.3, .06, .7, 0xf3e3c3); for (let i = 0; i < Math.min(6, c.dig); i++) { const u = x - .45 + (i % 3) * .45, v = z + (i < 3 ? -.12 : .14); if (i % 3 === 0) b.sph(u, .72, v, .12, 0xffc4dc, 1, 1.3, .8, 1); else if (i % 3 === 1) b.cone(u, .66, v, .1, .3, 0x4dc8ff, 5); else b.cyl(u, .66, v, .13, .13, .05, 0xffd23f, 8); } }
+  }
+  function model(b, k, x, z, c) {
+    if (k === 'aqua' || k === 'vitrine' || k === 'fund') { sammelModel(b, k, x, z, c || counts()); return; }
     if (k === 'lamp') { b.cyl(x, 0, z, .22, .26, .08, 0x555a66, 8); b.cyl(x, .08, z, .05, .05, 1.3, 0x555a66, 6); b.cone(x, 1.25, z, .42, .5, 0xffe27a, 8); }
     else if (k === 'plant') { b.cyl(x, 0, z, .3, .22, .5, 0xc2453d, 8); b.sph(x, .95, z, .5, 0x3fa84e, 1, 1, 1.2, 1); b.sph(x + .2, 1.25, z, .25, 0x56c46a, 1); }
     else if (k === 'teddy') { b.sph(x, .35, z, .32, 0xb07840, 1); b.sph(x, .85, z, .24, 0xb07840, 1); b.sph(x - .17, 1.04, z, .09, 0xb07840, 0); b.sph(x + .17, 1.04, z, .09, 0xb07840, 0); b.sph(x, .8, z + .2, .08, 0xe8c9a0, 0); b.sph(x - .08, .9, z + .2, .035, 0x111111, 0); b.sph(x + .08, .9, z + .2, .035, 0x111111, 0); }
@@ -30,25 +39,31 @@ BI.createRoom = function (G) {
     else if (k === 'stars2') for (let i = 0; i < 14; i++) b.sph(cx + .8 + (i * 37 % 100) / 100 * 4.6, 1.2 + (i * 53 % 100) / 100 * 1.8, z, .08 + (i % 3) * .03, 0xffe14a, 0);
     else if (k === 'flags') for (let i = 0; i < 6; i++) b.cone(cx + 1.2 + i * .75, 2.7 - Math.abs(i - 2.5) * .08, z, .22, .4, [0xff5a5a, 0xffd23f, 0x4da3ff, 0x4cd07d, 0xb36bff, 0xff8a1f][i], 3);
   }
-  K.build = function () {
-    while (group.children.length) { const c = group.children.pop(); c.geometry.dispose(); } if (!flat) return; const r = st(), b = new BI.Batch(), cx = flat.cx, zb = flat.zB, FW = flat.x1 - flat.x0;
-    if (r.wall) b.box(cx, 1.65, zb + .205, FW - .5, 3.1, .01, WALL[r.wall]);
-    if (r.rug) b.box(cx + .2, .08, zb + 5.1, 4.4, .02, 2.6, RUG[r.rug]);
-    if (r.bed) b.box(cx - 3.6, .78, zb + 2.6, 1.9, .04, 2.0, BED[r.bed]);
-    r.d.forEach((i, s) => { if (i && DECO[i]) model(b, DECO[i][0], cx + SPOTS[s][0], zb + SPOTS[s][1]); }); if (r.w && WALLD[r.w]) wallModel(b, WALLD[r.w][0], cx, zb);
-    if (!b.p.length) return; const m = b.mesh(mat); m.frustumCulled = false; group.add(m);
-  };
+  function draw(grp, fl, r, cnt) {
+    while (grp.children.length) { const c = grp.children.pop(); c.geometry.dispose(); } if (!fl) return; const bt = new BI.Batch(), cx = fl.cx, zb = fl.zB, FW = fl.x1 - fl.x0;
+    if (r.wall && WALL[r.wall]) bt.box(cx, 1.65, zb + .205, FW - .5, 3.1, .01, WALL[r.wall]);
+    if (r.rug && RUG[r.rug]) bt.box(cx + .2, .08, zb + 5.1, 4.4, .02, 2.6, RUG[r.rug]);
+    if (r.bed && BED[r.bed]) bt.box(cx - 3.6, .78, zb + 2.6, 1.9, .04, 2.0, BED[r.bed]);
+    (r.d || []).forEach((i, s) => { if (i && DECO[i] && SPOTS[s]) model(bt, DECO[i][0], cx + SPOTS[s][0], zb + SPOTS[s][1], cnt); }); if (r.w && WALLD[r.w]) wallModel(bt, WALLD[r.w][0], cx, zb);
+    if (!bt.p.length) return; const m = bt.mesh(mat); m.frustumCulled = false; grp.add(m);
+  }
+  K.build = function () { draw(group, flat, st(), counts()); };
+  /* Räume der Mitspieler (nur Anzeige): Zustand kommt über das Netz */
+  const rem = new Map();
+  K.setRemote = (fl, s) => { if (!fl || !s) return; let g = rem.get(fl); if (!g) { g = new THREE.Group(); scene.add(g); rem.set(fl, g); } const n = v => (v | 0) > 0 ? Math.min(12, v | 0) : 0; draw(g, fl, { wall: s.w | 0, rug: s.u | 0, bed: s.b | 0, d: Array.isArray(s.d) ? s.d.slice(0, 4).map(v => v | 0) : [], w: s.x | 0 }, { fish: n(s.f), bug: n(s.g), dig: n(s.k) }); };
+  K.clearRemote = () => { for (const [, g] of rem) { while (g.children.length) { const c = g.children.pop(); c.geometry.dispose(); } scene.remove(g); } rem.clear(); };
+  K.share = () => { const r = st(), c = counts(); return { w: r.wall, u: r.rug, b: r.bed, d: r.d.slice(), x: r.w, f: c.fish, g: c.bug, k: c.dig, h: save.hearts | 0 }; };
   K.place = f => { if (f === flat) return; flat = f; K.build(); };
   function render() {
-    const r = st(), box = $('roomBox'); box.innerHTML = '';
+    const r = st(), box = $('roomBox'); box.innerHTML = ''; { const hh = document.createElement('div'); hh.className = 'lab'; hh.textContent = '❤️ Herzen von Freunden: ' + (save.hearts | 0) + ' · 🐟🦋🐚 Aquarium, Vitrine und Fundtisch gibt es durchs Sammeln'; box.appendChild(hh); }
     const row = (title, n, get, set, mk) => { const d = document.createElement('div'); d.className = 'lab'; d.textContent = title; box.appendChild(d); const rw = document.createElement('div'); rw.className = 'row'; for (let i = 0; i < n; i++) { const b = mk(i); b.classList.toggle('sel', get() === i); b.onclick = () => { set(i); persist(); K.build(); A.pop(); render(); }; rw.appendChild(b); } box.appendChild(rw); };
     const sw = (arr) => i => { const b = document.createElement('button'); b.className = 'sw'; if (arr[i]) b.style.background = hex(arr[i]); else { b.style.background = '#fff'; b.textContent = '✖'; } b.setAttribute('aria-label', 'Farbe ' + i); return b; };
-    const ic = arr => i => { const b = document.createElement('button'); b.className = 'hat'; const lock = arr[i][2] && !save.owned.includes(arr[i][2]); b.textContent = lock ? '🔒' : arr[i][1]; if (lock) { b.disabled = true; b.title = 'Gibt es im Spielzeugladen'; } return b; };
+    const ic = arr => i => { const b = document.createElement('button'); b.className = 'hat'; const lock = arr[i][2] && !save.owned.includes(arr[i][2]); b.textContent = lock ? '🔒' : arr[i][1]; if (lock) { b.disabled = true; b.title = arr[i][3] || 'Gibt es im Spielzeugladen'; } return b; };
     row('🎨 Tapete', WALL.length, () => r.wall, v => r.wall = v, sw(WALL)); row('🟥 Teppich', RUG.length, () => r.rug, v => r.rug = v, sw(RUG)); row('🛏️ Bettwäsche', BED.length, () => r.bed, v => r.bed = v, sw(BED));
     for (let s = 0; s < 4; s++) row('🪑 Deko ' + (s + 1), DECO.length, () => r.d[s], v => r.d[s] = v, ic(DECO)); row('🖼️ Wand', WALLD.length, () => r.w, v => r.w = v, ic(WALLD));
   }
   K.show = function () { if (K.open) return; K.open = true; G.setStick(0, 0); render(); $('roomPanel').hidden = false; };
-  K.close = function () { K.open = false; $('roomPanel').hidden = true; G.updateButtons(true); G.earn && G.earn('room'); };
+  K.close = function () { K.open = false; $('roomPanel').hidden = true; G.updateButtons(true); G.earn && G.earn('room'); G.changed && G.changed(); };
   $('roomClose').addEventListener('click', K.close);
   return K;
 };
