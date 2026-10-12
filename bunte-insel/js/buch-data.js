@@ -39,6 +39,10 @@ BI.BUCH = {
     { id: 'fahren', icon: '🚗', title: 'Fahren, Schwimmen, Fliegen', body: [
       ['ul', ['Fahrzeuge: an ein Fahrzeug herantreten, A „Einsteigen“. Laufende Autos erst anhalten (A), dann einsteigen. Hupe, Turbo, bei Polizei/Feuerwehr Sirene (X/F).', 'Mitfahren: bei einem Freund einsteigen; nur der Fahrer lenkt.', 'Zug, Segelboot ⛵, Hubschrauber 🚁: einsteigen und die Insel von oben oder vom Wasser entdecken; Hubschrauber/Boot geben Sticker.', 'Schwimmen: am Strand und im Meer kann man überall schwimmen – es gibt keine unsichtbaren Mauern. Nur ganz weit draußen ist Schluss.', 'Brücken verbinden die Hauptinsel mit den Welten.']]
     ] },
+    { id: 'fahrzeugmenue', icon: '🚗', title: 'Fahrzeug-Menü', body: [
+      ['p', 'Alle Fahrzeuge des Spiels stehen unter 🧭 Wohin? → Reiter 🚗 Fahrzeuge (28 Arten plus Boot und Piratenschiff).'],
+      ['ul', ['🚗 Herholen: Auto, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Mähdrescher, Hubschrauber, RC-Auto und alle Spielzeug-Fahrzeuge bekommst du als eigenes Exemplar neben dich gestellt.', '👣 Weg zeigen und ✨ Hinzaubern führen zu Fahrzeugen, die zu ihrer Welt gehören (Schlüsselschwert-Mobil, Reit-Drache, Fellnasen-Mobil, Wannen-Mobil, Aqua-Gleiter, Nautilux, Segelboot).', 'Spielzeug-Fahrzeuge (Tretroller, Fahrrad, Autoscooter, Aufsitzmäher, Rutschauto, Motorrad, Taxi, Eiswagen, Limousine, RC-Hubschrauber, Skateboard, Rollator) kaufst du im Spielzeugladen 🧸 (Reiter 🚗 Fahrzeuge); vorher zeigt das Menü 🔒.', 'Im Story-Modus sind Fahrzeuge gesperrter Welten mit 🔒 und den fehlenden Aufgaben markiert.']]
+    ] },
     { id: 'zuhause', icon: '🏠', title: 'Zuhause, Garten und Bauernhof', body: [
       ['ul', ['Jeder Held hat eine eigene Wohnung mit Garten. Zimmer einrichten, im Bett schlafen, im Garten ernten.', 'Bauernhof (Bauer Heinz): Tiere streicheln, Felder mähen, in der Hofküche kochen. Hof-Aufgaben stehen oben im Aufgaben-Chip.', 'Freunde besuchen: ❤️ Herzen für das Zimmer schenken.']]
     ] },
@@ -48,6 +52,9 @@ BI.BUCH = {
     ] },
     { id: 'begleiter', icon: '🐾', title: 'Haustiere und Begleiter', body: [
       ['ul', ['Unter „Mein Held → 🐾 Haustier“ wählst du dein Tier. „Mitnehmen“ lässt es überall mitkommen, „Zu Hause lassen“ wartet es in der Wohnung.', 'Freischaltbare Tiere: 🦊 Funki (Sticker Schlüsselreisender), 🦝 Räubi (Bucht-Besucher), 🦄 Sternenstaub (Karussell-Kind), 🐻 Brummi (Türöffner).', 'Maskottchen aus den Welten (z. B. Zündel, Willi, Felli) werden dort als Partner freigeschaltet.', 'Dein Kapselmonster (Rätsel-Insel) ist ebenfalls ein Begleiter, sobald du am Kapsel-Schrein ein Ei gewählt hast – es kämpft im Wald weiter mit.']]
+    ] },
+    { id: 'figuren', icon: '🧑‍🎤', title: 'Figuren und Spielzeugladen', body: [
+      ['ul', ['Unter „Mein Held“ wählst du aus über 45 Figuren: die Klassiker (Jannis, Mia, Fee Luna, Ritter Ben …), Helden aus den Welten (Käpt’n Muschel, Fee Glimmer, Drachenwächterin Brisa, Kapselmeisterin Pim, Lichtwanderer Lio, Schwammi, Orakel Okeana, Mira von Lunaris …) und deinen eigenen Held im Studio.', 'Spielzeugladen 🧸: 7 Reiter – Mützen, Zubehör, Spielzeug, Zimmer, Hüte & mehr, 🚗 Fahrzeuge (zum Herholen) und 💍 Style (Brillen, Ohrringe, Ketten, Stirnbänder, Masken, Bärte, Uhr, Regenbogen-/Fuchs-Look). Gekaufte Sachen liegen im Rucksack 🎒.']]
     ] },
     { id: 'sterne', icon: '⭐', title: 'Sterne, Sticker und Läden', body: [
       ['ul', ['⭐ Sterne gibt es für Aufträge, Kapitel, Mini-Spiele, Tagesgeschenk, Schätze, Truhen … Mit Sternen kauft man im Spielzeugladen, in Läden und Automaten.', '🏅 Sticker sind Erfolge (über 100). Jeder gibt +2 ⭐. Alle stehen im Lösungsbuch mit ihrer Aufgabe.', 'Das Tagesgeschenk wartet beim ersten Start jedes Tages; Tage hintereinander spielen gibt den Sticker „Stammgast“.']]

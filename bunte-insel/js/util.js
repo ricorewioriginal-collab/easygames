@@ -191,8 +191,31 @@ BI.HEROES = [
   { id: 'lyra', name: 'Lyra', icon: '✨', o: { shirt: 0x1d2a6a, pants: 0x2a2a3a, hair: 0x3fa0ff, skin: 0xf3c9a0, style: 'long', cape: true } },
   { id: 'rovan', name: 'Rovan', icon: '⚔️', o: { shirt: 0x5a3a2a, pants: 0x2a2a2a, hair: 0x222222, skin: 0xd8a070, style: 'short', beard: 5, beardc: 0x222222, ctype: 3, brow: 3, build: 2, scale: 1.04 } },
   { id: 'nia', name: 'Nia', icon: '🏹', o: { shirt: 0x2f6a4a, pants: 0x3a2a1a, hair: 0x4a3322, skin: 0xe0a979, style: 'ponytail', glassT: 3, cape: true } },
+  /* Figuren aus den Welten (eigene Erfindungen, inspiriert von den Vorbildern der Inseln) */
+  { id: 'muschel', name: 'Käpt’n Muschel', icon: '⚓', world: 'DAMPF', o: { shirt: 0x2a4a8a, pants: 0xffffff, hair: 0xe8e8e8, skin: 0xe0a979, style: 'bald', beard: 5, beardc: 0xe8e8e8, hat: 'cap', build: 2, glassT: 1, wrink: 1, hsc: .98 } },
+  { id: 'glimmer', name: 'Fee Glimmer', icon: '🧚‍♀️', world: 'MAERCHEN', o: { shirt: 0x6bff9a, pants: 0x35c870, hair: 0xfff3a0, skin: 0xf6d2b0, style: 'bun', dress: true, wings: true, hat: 'flowers', scale: .95 } },
+  { id: 'brisa', name: 'Drachenwächterin Brisa', icon: '🐉', world: 'DRACHEN', o: { shirt: 0xd0642a, pants: 0x5a3d2b, hair: 0xe0382b, skin: 0xc68a5a, style: 'ponytail', cape: true, headband: 0xffd23f, shoeT: 1, shoe: 0x5a3d2b } },
+  { id: 'pim', name: 'Kapselmeisterin Pim', icon: '🥚', world: 'RAETSEL', o: { shirt: 0xffd23f, pants: 0x4da3ff, hair: 0xff8fc8, skin: 0xffd2a8, style: 'pig', hat: 'cap', logo: 0xffffff, scale: .92 } },
+  { id: 'lio', name: 'Lichtwanderer Lio', icon: '🗝️', world: 'SCHLUESSEL', o: { shirt: 0x4a4aa8, pants: 0x23262d, hair: 0xf3d98a, skin: 0xf3c9a0, style: 'spiky', cape: true, necklace: 0xffd23f, shoeT: 1, shoe: 0x23262d } },
+  { id: 'schwammi', name: 'Schwammi', icon: '🧽', world: 'SCHWAMM', o: { shirt: 0xffffff, pants: 0x8a5a2a, hair: 0xffe14a, skin: 0xffe14a, style: 'bald', freckles: true, mouth: 'grin', eyeS: 2, scale: .9, logo: 0xffd23f } },
+  { id: 'lena', name: 'Trainerin Lena', icon: '⚽', world: 'FUSSBALL', o: { shirt: 0x2fae5a, pants: 0xffffff, hair: 0x6b4423, skin: 0xf3c9a0, style: 'ponytail', logo: 0xffffff, shoe: 0xffd23f } },
+  { id: 'okeana', name: 'Orakel Okeana', icon: '🔱', world: 'ATLANTIS', o: { shirt: 0x2fd0d0, pants: 0x2fd0d0, hair: 0x3fa0ff, skin: 0xe8b48a, style: 'long', dress: true, hat: 'crown', necklace: 0xffffff, earring: 2 } },
+  { id: 'mira', name: 'Mira von Lunaris', icon: '🔮', world: 'ZOTIK', o: { shirt: 0x7a3fd0, pants: 0x2a2a3a, hair: 0xff9a5a, skin: 0xe0a979, style: 'wavy', cape: true, earring: 1 } },
+  { id: 'frida', name: 'Funkmeisterin Frida', icon: '📻', world: 'RADIO', o: { shirt: 0xff5a8a, pants: 0x3a3a4a, hair: 0x222222, skin: 0x8d5a3b, style: 'curly', hat: 'headphones' } },
+  { id: 'bruno', name: 'Parkchef Bruno', icon: '🎡', world: 'PARK', o: { shirt: 0xe8453c, pants: 0x23262d, hair: 0x6b4423, skin: 0xf3c9a0, hat: 'tophat', beard: 4, beardc: 0x6b4423, build: 2, logo: 0xffd23f } },
+  { id: 'berta', name: 'Baumeisterin Berta', icon: '🧱', world: 'BAULAND', o: { shirt: 0xffd23f, pants: 0x3d9aff, hair: 0x8a5a33, skin: 0xffd2a8, style: 'bun', hat: 'helmet', overall: true, shoeT: 1, shoe: 0x5a3d2b } },
+  { id: 'luna2', name: 'Stadtführerin Luna', icon: '🏙️', world: 'CITY', o: { shirt: 0xb36bff, pants: 0xb36bff, hair: 0x222222, skin: 0xc68a5a, style: 'bob', dress: true, glassT: 3 } },
+  { id: 'berti', name: 'Bürgermeister Berti', icon: '🎖️', world: 'PUPS', o: { shirt: 0x3a6ad8, pants: 0x23262d, hair: 0xcccccc, skin: 0xe0a979, hat: 'cap', beard: 4, beardc: 0xcccccc, build: 2, glassT: 1, medal: true } },
+  { id: 'romy', name: 'Regenbogen-Romy', icon: '🌈', world: 'RAINBOW', o: { shirt: 0xffffff, pants: 0xff8a1f, hair: 0xff8a1f, skin: 0xe0a979, style: 'curly', dress: true, rainbow: true, earring: 1 } },
+  { id: 'pia', name: 'Fellretterin Pia', icon: '🐶', world: 'PUPS', o: { shirt: 0x4da3ff, pants: 0x23262d, hair: 0xd9a441, skin: 0xffd2a8, style: 'ponytail', hat: 'cap', logo: 0xffd23f } },
+  { id: 'karl', name: 'Kino-Karl', icon: '🎬', world: 'DAMPF', o: { shirt: 0xffffff, pants: 0x23262d, hair: 0x222222, skin: 0xf3c9a0, style: 'side', glassT: 2, bowtie: true, ctype: 1 } },
+  { id: 'perle', name: 'Kapitänin Perle', icon: '🐚', world: 'ATLANTIS', o: { shirt: 0x35d6e0, pants: 0xffffff, hair: 0x4da3ff, skin: 0xffe4d1, style: 'long', hat: 'flowers', dress: true } },
+  { id: 'dario', name: 'Detektiv Dario', icon: '🕵️', world: 'CITY', o: { shirt: 0x9aa5b8, pants: 0x3a3a4a, hair: 0x222222, skin: 0xc68a5a, hat: 'cowboy', glassT: 3, brow: 3, scarf: true } },
+  { id: 'astrid', name: 'Astronomin Astrid', icon: '🔭', world: 'CITY', o: { shirt: 0x1d2a6a, pants: 0x2a2a3a, hair: 0xe8e8e8, skin: 0xffe4d1, style: 'bun', hat: 'wizard', glassT: 1, wrink: 1, hsc: .98 } },
+  { id: 'paolo', name: 'Pizzabäcker Paolo', icon: '🍕', world: 'CITY', o: { shirt: 0xffffff, pants: 0x3d4a7a, hair: 0x222222, skin: 0xe0a979, hat: 'chef', beard: 4, beardc: 0x222222, build: 2, mouth: 'grin' } },
   { id: 'custom', name: 'Eigener Held', icon: '🎨', o: {} }
 ];
+BI.TOYVEH = ['rcheli', 'skate', 'rollator', 'scooter', 'bicycle', 'bumper', 'mower', 'bobby', 'bike', 'limo', 'ice', 'taxi']; /* Spielzeug-Fahrzeuge aus dem Spielzeugladen („Holen“) */
 BI.heroById = id => BI.HEROES.find(h => h.id === id) || BI.HEROES[0];
 /* Studio-Daten (cu) → makeChar-Optionen. Alles optional; ungültige Werte fallen auf Standard zurück (auch bei Daten von Mitspielern). */
 BI.cuOpts = function (cu) {

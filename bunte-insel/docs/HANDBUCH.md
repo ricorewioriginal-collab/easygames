@@ -10,15 +10,17 @@
 4. 📖 Freie Welt und Story-Modus
 5. 🧭 Orientierung und Menüs
 6. 🚗 Fahren, Schwimmen, Fliegen
-7. 🏠 Zuhause, Garten und Bauernhof
-8. 🚪 Gebäude betreten
-9. 🐾 Haustiere und Begleiter
-10. ⭐ Sterne, Sticker und Läden
-11. ⚔️ Kämpfen und Monster
-12. 🕹️ Mini-Spiele und Spielautomaten
-13. 🗺️ Die Welten
-14. 👥 Mitspielen
-15. 🛟 Hilfe, Eltern, Fehler melden
+7. 🚗 Fahrzeug-Menü
+8. 🏠 Zuhause, Garten und Bauernhof
+9. 🚪 Gebäude betreten
+10. 🐾 Haustiere und Begleiter
+11. 🧑‍🎤 Figuren und Spielzeugladen
+12. ⭐ Sterne, Sticker und Läden
+13. ⚔️ Kämpfen und Monster
+14. 🕹️ Mini-Spiele und Spielautomaten
+15. 🗺️ Die Welten
+16. 👥 Mitspielen
+17. 🛟 Hilfe, Eltern, Fehler melden
 
 ---
 
@@ -136,6 +138,17 @@ Im Hauptmenü wählt man „🌍 Freie Welt“ oder „📖 Story-Modus“. Beid
 
 ---
 
+## 🚗 Fahrzeug-Menü
+
+Alle Fahrzeuge des Spiels stehen unter 🧭 Wohin? → Reiter 🚗 Fahrzeuge (28 Arten plus Boot und Piratenschiff).
+
+- 🚗 Herholen: Auto, Polizei, Krankenwagen, Feuerwehr, Bus, Traktor, Mähdrescher, Hubschrauber, RC-Auto und alle Spielzeug-Fahrzeuge bekommst du als eigenes Exemplar neben dich gestellt.
+- 👣 Weg zeigen und ✨ Hinzaubern führen zu Fahrzeugen, die zu ihrer Welt gehören (Schlüsselschwert-Mobil, Reit-Drache, Fellnasen-Mobil, Wannen-Mobil, Aqua-Gleiter, Nautilux, Segelboot).
+- Spielzeug-Fahrzeuge (Tretroller, Fahrrad, Autoscooter, Aufsitzmäher, Rutschauto, Motorrad, Taxi, Eiswagen, Limousine, RC-Hubschrauber, Skateboard, Rollator) kaufst du im Spielzeugladen 🧸 (Reiter 🚗 Fahrzeuge); vorher zeigt das Menü 🔒.
+- Im Story-Modus sind Fahrzeuge gesperrter Welten mit 🔒 und den fehlenden Aufgaben markiert.
+
+---
+
 ## 🏠 Zuhause, Garten und Bauernhof
 
 - Jeder Held hat eine eigene Wohnung mit Garten. Zimmer einrichten, im Bett schlafen, im Garten ernten.
@@ -160,6 +173,13 @@ Alle massiven Gebäude der Welten haben eine echte Haustür und eine goldene Tü
 - Freischaltbare Tiere: 🦊 Funki (Sticker Schlüsselreisender), 🦝 Räubi (Bucht-Besucher), 🦄 Sternenstaub (Karussell-Kind), 🐻 Brummi (Türöffner).
 - Maskottchen aus den Welten (z. B. Zündel, Willi, Felli) werden dort als Partner freigeschaltet.
 - Dein Kapselmonster (Rätsel-Insel) ist ebenfalls ein Begleiter, sobald du am Kapsel-Schrein ein Ei gewählt hast – es kämpft im Wald weiter mit.
+
+---
+
+## 🧑‍🎤 Figuren und Spielzeugladen
+
+- Unter „Mein Held“ wählst du aus über 45 Figuren: die Klassiker (Jannis, Mia, Fee Luna, Ritter Ben …), Helden aus den Welten (Käpt’n Muschel, Fee Glimmer, Drachenwächterin Brisa, Kapselmeisterin Pim, Lichtwanderer Lio, Schwammi, Orakel Okeana, Mira von Lunaris …) und deinen eigenen Held im Studio.
+- Spielzeugladen 🧸: 7 Reiter – Mützen, Zubehör, Spielzeug, Zimmer, Hüte & mehr, 🚗 Fahrzeuge (zum Herholen) und 💍 Style (Brillen, Ohrringe, Ketten, Stirnbänder, Masken, Bärte, Uhr, Regenbogen-/Fuchs-Look). Gekaufte Sachen liegen im Rucksack 🎒.
 
 ---
 
@@ -216,7 +236,7 @@ Brücken führen von der Hauptinsel zu den Welten. Im Story-Modus öffnen sie si
 
 **📍 Orte:** ⚽ Fußballplatz (Eingang) · ⭐ Wunschbrunnen (Märchenland) · 🏰 Schloss Sternenglanz · ❄️ Eispalast Frostgipfel (Eisberg) · 🦁 Königsfels (Savanne) · 🏴‍☠️ Piratenschiff „Salzige Möwe“ · 🧜 Perlenlagune · 🪔 Wüsten-Basar (Wunschgeist) · 🐉 Drachenhöhle (Drachenei) · 🗽 Statue des Lichtwanderers Lio · 🌴 Strand der Freunde (Sternfrüchte) · 🕰️ Dämmerstadt & Uhrturm · 🏰 Kristall-Burg (Licht-Rätsel) · 🌲 Wald der Schatten · 🗼 Schleier-Turm · 🚀 Sternen-Hafen & Schlüsselschwert-Mobil · 🍄 Wuschel-Dorf & Laden · 🦀 Die Knusper-Krabbe (Restaurant & Burger braten) · 🍍 Schwammis Fruchthaus, Sternchen & Sunny · 🪼 Quallenfeld (Quallenfischen) · 🛁 Heldenheim & Wannen-Mobil · 🏯 Prüfungsturm (Rätsel-Verlies) · 🥚 Kapsel-Schrein (Kapselmonster) · ⚒️ Schmiede (Schwert verbessern) · 🕳️ Uralte Höhle (Mini-Spiel) · 🌙 Nimmerland (Fee Glimmer, Fliegen) · 🌴 Dschungel & Honigwald · 🧸 Spielzeug-Land · 🎃 Gruselhügel · 🏖️ Strand der Träume · 🤖 Roboter-Ecke · 🏢 Park-Büro (Park-Tycoon) · 🚗 Autoscooter · 📡 Funkturm (13 Sender) · 🛒 Lunaris: Markt „Wanderhand“ · 🍺 Lunaris: Taverne · 🎓 Lunaris: Akademie · 🏰 Lunaris: Burg auf dem Hügel · ⚓ Lunaris: Hafen (Luftschiff) · 🌀 Lunaris: Weltentore · 🦊 Lunaris: Zotik-Statue
 
-**🚗 Fahrzeuge:** 🚁 Hubschrauber · ⛵ Boot am Steg · 🏴‍☠️ Piratenschiff
+**🚗 Fahrzeuge:** 🚗 Auto · 🚕 Taxi · 🚗 Autoscooter · 🏍️ Motorrad · 🚓 Polizeiauto · 🚑 Krankenwagen · 🚒 Feuerwehr · 🚌 Bus · 🚜 Traktor · 🌾 Mähdrescher · 🚲 Fahrrad · 🛴 Tretroller · 🦽 Rollator · 🛹 Skateboard · 🌿 Aufsitzmäher · 🏎️ RC-Auto · ⛵ Segelboot · 🚁 RC-Hubschrauber · 🚁 Hubschrauber · 🗝️ Schlüsselschwert-Mobil · 🐲 Reit-Drache Zündel · 🐕 Fellnasen-Mobil · 🛁 Wannen-Mobil · 🛸 Aqua-Gleiter · 🚢 Nautilux (Luftschiff) · 🚘 Limousine · 🧸 Rutschauto · 🍦 Eiswagen
 
 ---
 

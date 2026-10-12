@@ -21,6 +21,11 @@ Das Spiel wächst ständig. Damit **Story-Modus, Handbuch, Lösungsbuch, Codes u
 ## 1c. Begleiter 🐾
 - Freischaltbare Tiere/Begleiter: `BI.PETS` (`js/util.js`) – `unlock: '<sticker-id>'` (wird mit dem Sticker frei) oder `mascot: true` (explizit per `takeMascot`/`unlockPet`). Neue Tiere ggf. als Eintrag in der Tabelle `K` von `BI.makePet`.
 
+## 1d. Fahrzeuge, Figuren, Spielzeugladen
+- **Neues Fahrzeug** (`BI.VEH` in `js/vehicles.js`): erscheint automatisch im Fahrzeug-Menü (🧭 → 🚗). In `js/main.js` entscheiden: `VEH_FREE` (kann man herholen), `VEH_WORLD` (gehört zu einer Welt → Story-Sperre/Weg zeigen) oder `BI.TOYVEH` (Spielzeugladen-Artikel; dann Eintrag in `SHOP`, Tab 5).
+- **Neue Spielfigur** einer Welt: Eintrag in `BI.HEROES` (`js/util.js`, mit `world: 'KEY'`) – sie erscheint automatisch unter „Mein Held“.
+- **Spielzeugladen** (`SHOP`, `SHOP_TABS` in `js/main.js`): Style-Zubehör mit `slot` + `val` (Variante/Farbe); Fahrzeug-Spielzeug mit `slot` = Fahrzeugart. `tests/fuhrpark.mjs` prüft Menü, Laden und Figuren.
+
 ## 2. Handbuch & Lösungsbuch
 - Text steht in `js/buch-data.js`: ein Satz zur neuen Welt in `welten` (Handbuch) und – wenn es Rätsel gibt – ein Abschnitt in `loesung`.
 - Welten, Sticker, Aufgabenlisten (`log()` der Insel-Module) und Codes erscheinen **automatisch**. Neue Insel-Module deshalb in die Liste `worldLogs` in `js/main.js` aufnehmen.
