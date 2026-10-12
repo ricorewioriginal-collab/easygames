@@ -72,11 +72,18 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
 
+## Verbindung zum ZOTIK-Spiel 💠⇄🏝️
+Die beiden Spiele (liegen nebeneinander: `zotik/` und `bunte-insel/`) sind verbunden:
+- **Bunte Insel → ZOTIK:** Auf der Zotik-Insel (Lunaris) steht in der Mitte des Weltentor-Platzes das **Tor zum Zotik-Spiel** (Knopf „🌀 Ins Zotik-Spiel reisen“, zur Sicherheit erst eine Rückfrage, dann Wechsel; auch im 🧭-Menü unter Spiele). Der Fortschritt wird vorher gespeichert.
+- **ZOTIK → Bunte Insel:** Im Zotik-Spiel gibt es ein grünes **Tor zur Bunten Insel** neben dem Weltentor in Lunaris (Dialog „Hinüberreisen / Noch nicht“) und den Knopf **🏝️ Bunte Insel** im Titel- und im Spielmenü.
+- **Rückkehr:** Die Adresse trägt `?from=zotik` bzw. `?from=bunteinsel`; die Bunte Insel setzt dich dann am Tor in Lunaris ab (einmalig +2 ⭐), die Adresse wird bereinigt. Test: `tests/verbund.mjs`.
+
 ## Fußball-Arena ⚽ (Erweiterung im Südwesten)
 Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richtigen Fußballplatz: Rasenstreifen, Linien, zwei Tore mit Netz, Banden mit Eingangslücke, Flutlicht, Tribüne und Anzeigetafel (🔵 Blau : Rot 🔴, Ost-Tor zählt für Blau, West-Tor für Rot).
 - **Dribbeln**: einfach in den Ball laufen. **Schuss**: Hauptknopf („⚽ Schießen“) in der Nähe des Balls, Richtung = Blickrichtung.
 - **Torwarte** halten beide Tore (Schüsse in die Ecken sind der Trick). Nach einem Tor gibt es Konfetti und der Ball geht zum Anstoß zurück. **5 Tore = 1 ⭐**.
 - **Mit Freunden**: ein gemeinsamer Ball. Wer ihn zuletzt berührt hat, rechnet ihn aus und schickt Position/Tempo (Nachricht `fb`, ca. 8×/s solange er rollt); Tore und Spielstand sieht jeder. Neue Mitspieler bekommen den Stand beim Beitritt.
+- **Turnier 🏆** (Pokal-Podest an der Nordbande): 3 Spiele gegen Roboter-Spieler, 3 gegen 3, jedes Spiel schwerer (Spiel gewonnen = +1 ⭐, Pokal = +5 ⭐ und Sticker „Pokalsieger“). Verloren? Das Spiel wird einfach wiederholt. **Mit Freunden** spielen alle im blauen Team; wer das Turnier startet, rechnet die Roboter (Nachricht `fbt`), die anderen sehen sie.
 - Figuren: **Kapitän Jannis** und Trainerin Lena erklären das Spiel. Neue Musik „Stadion-Stimmung“.
 - Technik: `js/fussball.js`; kleine Inseln nutzen den gemeinsamen Helfer `BI.buildIsleBridge` + `W.isles` (Brücke, Rand, Flughöhe, Schaum). Test: `node bunte-insel/tests/fussball.mjs` (`DEBUG=1` zeigt Rohwerte).
 
@@ -86,6 +93,13 @@ Kleine Zauberinsel über eine Brücke (🧭 → „Märchenland“), **inspirier
 - **Schloss „Sternenglanz“** mit Prinzessin Lilia, **Wunschbrunnen** (Wunsch tun: Glitzer, die ersten 3 Wünsche geben je ⭐), Märchentor, Glühfeen und **Feuerwerk** über dem Schloss.
 - **Eispalast „Frostgipfel“** (Eisfee Frida, Schneemann Olli), **Königsfels** (Löwenkönig Leo), **Piratenschiff „Salzige Möwe“** (Käpt'n Kralle), **Perlenlagune** (Meerjungfrau Marina), **Teppich-Basar** mit schwebendem Teppich (Teppich-Tom), **Dschungelpfad** (Bär Bruno) und Mäuserich Willi am Tor. Alle Figuren sind ansprechbar und sprechen kurze, leichte Sätze.
 - Spielautomat **„Sternschnuppen“** (siehe Kinder-Spiele), Musik „Märchen-Zauber“, Aufgaben im 📋 Log. Datei: `js/maerchen.js`, Test: `tests/maerchen.mjs`.
+
+
+## Schatzsuche 🗺️🧰 (alle Inseln)
+**Schatzmeister Piet** (Hauptinsel nahe dem Start, Knopf „🗺️ Schatzsuche starten“) gibt das erste Bilder-Rätsel (wird vorgelesen). Eine **goldene Lichtsäule** zeigt schon von Weitem, wo die Kiste steht; der Pfeil 👣 führt zur Insel. Jede Kiste = +1 ⭐ und das nächste Rätsel: Freizeitpark → Fußball-Arena → Märchenland → Funkwelle → Drachenhöhen → Regenbogenwelt → Lunaris → Atlantis (großer Schatz +10 ⭐, Sticker „Schatzjäger“; danach geht es von vorn, dann +5 ⭐). Immer nur **eine** Kiste und **ein** Strahl (sparsam). Datei `js/schatz.js`, Test `tests/schatz.mjs`.
+
+## 🧭 „Wohin möchtest du?“ – übersichtlich in Reitern
+Das Menü hat fünf Reiter mit Zähler: 🏝️ Inseln, 🏠 Hauptinsel, 🕹️ Spiele (alle Spielautomaten, Schatzsuche, Turnier), 📍 Orte (Märchenland-Sehenswürdigkeiten, Lunaris-Viertel, Park-Büro, Funkturm …), 🚗 Fahrzeuge. Jede Zeile: großes Bild, Name, **👣 Weg zeigen** und **✨ Hinzaubern**. Neue Orte tragen sich über `DEST` in `main.js` ein (Kategorie `cat`), die Spielautomaten werden automatisch aus der Welt gelesen – nichts geht verloren. Test: `tests/wohin.mjs`.
 
 ## Bild-Tafeln 🪧 und Kinder-Spiele 🧒 (für Kleine, die noch nicht lesen)
 - **Bild-Tafeln** (`js/tafeln.js`) stehen an den Eingängen aller Welten: große Bilder + höchstens 3 Wörter. Beim Hinlaufen (einmal) oder mit dem Hauptknopf „🔊 Vorlesen“ wird der Text **laut vorgelesen**. Sparsam: Pfosten in einem Mesh, weit entfernte Tafeln sind unsichtbar. Test: `tests/tafeln.mjs`.

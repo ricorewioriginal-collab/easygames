@@ -224,7 +224,9 @@ body.ranging #emo,body.ranging #gameBar{display:none!important}
 @media (max-height:520px){#seedGrid button b{font-size:26px}#seedGrid{gap:5px}}
 .gc2{min-width:0;word-break:break-word;text-align:center;background:#fff;border-radius:16px;padding:8px 6px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:13px}.gc2 b{font-size:30px}.gc2 .gb button{padding:4px 6px;font-size:12px}
 #storeGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}#storeGrid button{background:#fff;border-radius:16px;padding:8px 4px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:13px;line-height:1.15}#storeGrid button b{font-size:30px}#storeGrid button small{opacity:.75}#storeGrid button:disabled{opacity:.55}#storePanel{z-index:11}
-#guideGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media (min-width:520px){#guideGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (min-width:760px){#guideGrid{grid-template-columns:repeat(5,minmax(0,1fr))}}#guidePanel .card{max-width:min(760px,100%);box-sizing:border-box}#guidePanel .logo .em{-webkit-text-fill-color:initial;background:none}#guidePanel{z-index:11}#parentPanel{z-index:16}
+#guideTabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:-2px;z-index:2}#guideTabs::-webkit-scrollbar{display:none}.gtab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;border:0;border-radius:16px;background:rgba(255,255,255,.75);padding:6px 8px;font:inherit;cursor:pointer;box-shadow:var(--shadow);color:#1a2a5e}.gtab span{font-size:26px;line-height:1.1}.gtab small{font-size:10px;font-weight:700;white-space:nowrap}.gtab.on{background:linear-gradient(180deg,#ffb347,#ff8a1f);color:#fff;box-shadow:0 3px 0 #c9620c}
+#guideGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}@media (min-width:640px){#guideGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}.grow{display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:6px 8px 6px 10px;box-shadow:var(--shadow);text-align:left}.grow b{font-size:32px;line-height:1;flex:none;width:40px;text-align:center}.grow span{flex:1;min-width:0;font-weight:700;font-size:15px;line-height:1.2;color:#1a2a5e}.grow .gbtn{display:flex;gap:6px;flex:none;position:static;margin:0;padding:0;background:none}.grow .gbtn button{width:46px;height:46px;border:0;border-radius:50%;font-size:24px;cursor:pointer;background:#eef3ff;box-shadow:0 2px 0 #c7d3f0;padding:0}.grow .gbtn button:active{transform:translateY(1px)}
+#guidePanel .card{max-width:min(760px,100%);box-sizing:border-box}#guidePanel .logo .em{-webkit-text-fill-color:initial;background:none}#guidePanel{z-index:11}#parentPanel{z-index:16}
 .cine{width:min(760px,100%);max-height:calc(100vh - 20px);overflow:auto;color:#fff}.cine .help{color:#fff}.cine .pill{color:#222}.cine .pill.sel{color:#fff}.cine.kino{background:linear-gradient(180deg,#5b1230,#2b0a1a);box-shadow:inset 0 0 0 4px #c9a227,0 14px 40px rgba(0,0,0,.5)}.cine.drive{background:linear-gradient(180deg,#0d1b3d,#05080f);box-shadow:inset 0 0 0 4px #4da3ff,0 14px 40px rgba(0,0,0,.5)}
 .cscreen{position:relative;aspect-ratio:16/9;width:min(100%,calc(46vh * 1.778));margin:0 auto;background:#000;border-radius:10px;overflow:hidden;box-shadow:0 0 0 4px #1b1b1b,0 0 30px rgba(255,255,255,.25)}.cscreen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 #cineGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}@media (min-width:560px){#cineGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -555,6 +557,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
     <div style="font-size:34px;line-height:1">🧭</div><div class="logo" style="font-size:28px">Wohin möchtest du?</div>
     <div class="sub" style="margin:4px 0 8px">Ich zeige dir den Weg – oder zaubere dich hin ✨</div>
     <button class="pill sel" id="bStory" style="margin:0 0 8px">📖 Die Inselreise (Kapitel & Ziele)</button>
+    <div id="guideTabs"></div>
     <div id="guideGrid"></div>
     <button class="big" id="guideClose" style="margin-top:12px;font-size:20px;padding:10px 28px">✖ Zurück</button>
   </div>
@@ -696,13 +699,13 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <noscript>Bitte JavaScript aktivieren.</noscript>
 
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
-<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=58,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
+<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=59,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="__ld()"></script>
 <script src="js/util.js?v=people2" onload="__ld()"></script>
 <script src="js/characters.js?v=people2" onload="__ld()"></script>
 <script src="js/audio.js" onload="__ld()"></script>
 <script src="js/town.js?v=town2" onload="__ld()"></script>
-<script src="js/world.js?v=nature3" onload="__ld()"></script>
+<script src="js/world.js?v=ins2" onload="__ld()"></script>
 <script src="js/places.js" onload="__ld()"></script>
 <script src="js/vehicles.js?v=traffic2" onload="__ld()"></script>
 <script src="js/fun.js" onload="__ld()"></script>
@@ -712,9 +715,9 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/net.js" onload="__ld()"></script>
 <script src="js/jump.js" onload="__ld()"></script>
 <script src="js/minis2.js" onload="__ld()"></script>
-<script src="js/minis3.js?v=m3" onload="__ld()"></script>
+<script src="js/minis3.js?v=ins2" onload="__ld()"></script>
 <script src="js/mini.js" onload="__ld()"></script>
-<script src="js/kids.js?v=ty1" onload="__ld()"></script>
+<script src="js/kids.js?v=ins2" onload="__ld()"></script>
 <script src="js/garden.js" onload="__ld()"></script>
 <script src="js/farm.js" onload="__ld()"></script>
 <script src="js/pool.js" onload="__ld()"></script>
@@ -725,7 +728,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/parcours.js" onload="__ld()"></script>
 <script src="js/meta.js" onload="__ld()"></script>
 <script src="js/pack.js" onload="__ld()"></script>
-<script src="js/themes.js" onload="__ld()"></script>
+<script src="js/themes.js?v=ins2" onload="__ld()"></script>
 <script src="js/park.js?v=ty1" onload="__ld()"></script>
 <script src="js/tycoon.js?v=ty1" onload="__ld()"></script>
 <script src="js/rainbow.js" onload="__ld()"></script>
@@ -733,20 +736,21 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/dampfer.js" onload="__ld()"></script>
 <script src="js/drachen.js" onload="__ld()"></script>
 <script src="js/bauland.js" onload="__ld()"></script>
-<script src="js/fussball.js?v=fb1" onload="__ld()"></script>
-<script src="js/maerchen.js?v=mc1" onload="__ld()"></script>
-<script src="js/tafeln.js?v=tf1" onload="__ld()"></script>
+<script src="js/fussball.js?v=ins2" onload="__ld()"></script>
+<script src="js/maerchen.js?v=ins2" onload="__ld()"></script>
+<script src="js/schatz.js?v=ins2" onload="__ld()"></script>
+<script src="js/tafeln.js?v=ins2" onload="__ld()"></script>
 <script src="js/voxel.js" onload="__ld()"></script>
-<script src="js/atlantis.js" onload="__ld()"></script>
-<script src="js/zotik.js" onload="__ld()"></script>
-<script src="js/radio.js" onload="__ld()"></script>
+<script src="js/atlantis.js?v=ins2" onload="__ld()"></script>
+<script src="js/zotik.js?v=ins2" onload="__ld()"></script>
+<script src="js/radio.js?v=ins2" onload="__ld()"></script>
 <script src="js/home.js" onload="__ld()"></script>
-<script src="js/life.js" onload="__ld()"></script>
+<script src="js/life.js?v=ins2" onload="__ld()"></script>
 <script src="js/einsatz.js?v=ty1" onload="__ld()"></script>
 <script src="js/arcade.js" onload="__ld()"></script>
 <script src="js/cinema.js" onload="__ld()"></script>
-<script src="js/tasklog.js?v=ty1" onload="__ld()"></script>
-<script src="js/story.js?v=ty1" onload="__ld()"></script>
+<script src="js/tasklog.js?v=ins2" onload="__ld()"></script>
+<script src="js/story.js?v=ins2" onload="__ld()"></script>
 <script src="js/kitchen.js" onload="__ld()"></script>
 <script src="js/room.js" onload="__ld()"></script>
 <script src="js/camp.js" onload="__ld()"></script>
@@ -754,7 +758,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/combat.js" onload="__ld()"></script>
 <script src="js/weather.js" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=neighbors4" onload="__ld()"></script>
+<script src="js/main.js?v=ins3" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>
