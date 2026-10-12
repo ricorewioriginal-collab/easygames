@@ -20,6 +20,7 @@ BI.VEH = {
   boat:      { name: 'Segelboot', icon: '⛵', max: 14, rev: 3.5, acc: 4.5, brake: 7, drag: 1.6, turn: 1.3, kind: 'tractor', horn: 'bus', boat: true, open: true, cols: [-1, 1], r: 1.3, cam: 11 },
   rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
+  keymobil:  { name: 'Schlüsselschwert-Mobil', icon: '🗝️', max: 30, rev: 8, turn: 2.1, kind: 'heli', horn: 'bike', fly: true, open: true, stand: true, cols: [0], r: 1.3, cam: 10 },
   drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
@@ -193,6 +194,15 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     b.box(0, .83, -2.3, .8, .08, .5, 0x6b4423);
     return { wheels: [], head: [[0, .85, 3.0]], tail: [[0, .85, -2.45]], seat: [0, .85, -.4] };
   };
+  MODELS.keymobil = b => { /* Schlüsselschwert-Mobil: ein riesiger Lichtschlüssel, auf dem man steht und fliegt */
+    const G1 = 0xffd23f, G2 = 0xffe9a0, BL = 0x4da3ff, VI = 0x7a4ad8;
+    b.box(0, .2, .2, .55, .22, 5.6, G1); b.box(0, .34, .2, .3, .06, 5.2, G2);                       /* Schaft + Mittelstreifen */
+    for (let i = 0; i < 3; i++) { b.box(0, .2, 3.2 + i * .45, .3, .22, .35, G1); b.box(.5 + (i % 2) * .15, .2, 3.1 + i * .45, .7 - i * .1, .2, .3, G1); }  /* Bart (Zähne) vorn */
+    b.box(0, .2, 3.75, .9, .3, .5, G1); b.box(0, .2, -2.1, 2.6, .22, .5, BL); b.box(-1.5, .28, -2.2, .7, .18, .5, BL, .5); b.box(1.5, .28, -2.2, .7, .18, .5, BL, -.5);  /* Parierstange / Flügel */
+    b.cyl(0, .08, -3.1, .6, .6, .22, VI, 12); b.cyl(0, .08, -3.1, .35, .35, .26, 0xffffff, 12); b.sph(0, .3, -3.9, .3, G1, 1);       /* Griffring + Anhänger */
+    b.sph(-1.6, .35, -2.2, .16, 0xffffff, 0); b.sph(1.6, .35, -2.2, .16, 0xffffff, 0);
+    return { wheels: [], head: [[0, .36, 3.9]], tail: [[0, .36, -3.4]], seat: [0, .36, -.4] };
+  };
   MODELS.rcheli = b => MODELS.heli(b);
   MODELS.drake = b => { b.box(0, 0, 0, .02, .02, .02, 0); return { wheels: [], seat: [0, 3.35, .2] }; }; // Körper = Zündel-Figur (BI.makeDrache), im Konstruktor angebaut
   MODELS.rc = b => { // Jannis' rotes Rennauto: tiefer Keil, dunkle Scheiben, graue Felgen, Heckflügel, Aufkleber 38
@@ -251,6 +261,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         const pb = new BI.Batch(); for (let i = 0; i < 3; i++) pb.box(0, 0, 0, .14, 1.7, .08, 0xd8a24a, 0, 0, i * 2.094); this.prop = new THREE.Group(); this.prop.add(pb.mesh(BI.mat())); this.prop.position.set(0, 3.4, -5.6); this.tilt.add(this.prop);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(3.6, 18), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
       }
+      if (type === 'keymobil') { this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.4, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow); }
       if (type === 'drake') { // Reit-Drache: Zündel-Figur dreifach groß, Schatten am Boden
         this.rig = BI.makeDrache({}); this.rig.root.scale.setScalar(3); this.tilt.add(this.rig.root);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.6, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
@@ -342,6 +353,13 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         const air = this.y > .3 || (this.driver && Math.abs(this.v) > 1); this.rig.set(air ? 'fly' : 'idle', t); this.rig.inner.position.y = 0;
         this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.vy * .03 + this.v / sp.max * .12, -.4, .4), 4, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, air ? this.steerCur * .3 : 0, 4, dt);
         this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .02); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .005);
+        return;
+      }
+      if (this.type === 'keymobil') { /* schwebt wie ein Brett, kippt in die Kurve, goldene Funkenspur */
+        const air = this.y > .3 || (this.driver && Math.abs(this.v) > 1);
+        this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.vy * .03 + this.v / sp.max * .12, -.35, .35), 4, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, air ? this.steerCur * .35 : 0, 4, dt); this.tilt.position.y = air ? .5 + Math.sin(t * 3) * .1 : .3;
+        this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .02); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .005);
+        if (fx && this.driver && Math.abs(this.v) > 2 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 3.2 + (Math.random() - .5), this.y + .3, this.z - Math.cos(this.h) * 3.2 + (Math.random() - .5), 0, .3, 0, .8, 28, 1, .85, .3, 0, .5);
         return;
       }
       if (sp.fly) {
