@@ -365,3 +365,6 @@ Die Bunte Insel läuft am Fernseher/Computer, Handys und Tablets werden zum Cont
 - **Spieler 2–4** sind Mitspieler-Figuren: laufen, rennen, springen, winken, tanzen (bleiben bei Spieler 1; weit weg → werden zurückgeholt). **Mitfahren:** Sitzt Spieler 1 in einem Fahrzeug, zeigt der Controller „Mitfahren“; Mitfahrer sitzen auf den Plätzen, gefahren wird nur vom Fahrer (alle bewegen sich gemeinsam, eigene Kamera folgt dem Fahrzeug), Hupe möglich. Steigt der Fahrer aus, steigen alle mit aus.
 - **Splitscreen** (am Handy ☰ oder am Fernseher): 2 Spieler nebeneinander, 3–4 geviertelt, jeder mit eigener Kamera.
 - Test: `node bunte-insel/tests/tv.mjs` (TV + 2 Controller über Fake-PeerJS).
+
+### 🛠️ Grafik-Diagnose (`?dbg=1`)
+Hängt man `?dbg=1` an die Adresse (`…/bunte-insel/?dbg=1`), zeigt das Spiel oben Daten der Grafikkarte (GPU, WebGL-Version, Tiefenpuffer-Bits, Nebel, Kamera) und unten Schalter, mit denen sich einzelne Dinge live ein-/ausschalten lassen (Nebel, Tiefenversatz, Sichtkegel-Test, Zotik-Insel, Wasser, Himmel, Kamera-Nahebene). So lassen sich Darstellungsfehler auf echten Geräten eingrenzen. Im normalen Spiel wird nichts davon geladen.
