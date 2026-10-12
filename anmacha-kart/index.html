@@ -115,6 +115,11 @@
   #ctl{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:radial-gradient(90% 70% at 0 0,rgba(255,45,149,.10),transparent 60%),radial-gradient(90% 70% at 100% 100%,rgba(255,154,31,.08),transparent 60%),linear-gradient(160deg,#14161c,#08090c);overflow:auto;touch-action:pan-y}
   /* Handy als Lenkrad: große Tasten, ruhiger dunkler Hintergrund, Spielerfarbe als Akzent */
   #ctl .tc{--s:clamp(66px,min(27vmin,18vw),132px);--j:clamp(130px,min(50vmin,32vw),250px);--e:calc(18px + env(safe-area-inset-bottom))}
+  /* Eigenes Rennbild: 3D-Bild liegt unter der Steuerung, Tasten etwas kleiner und durchscheinend */
+  #ctl.play.view{background:transparent}
+  #ctl.view .hudline{background:rgba(8,10,14,.55);border-color:rgba(255,255,255,.18)}
+  #ctl.view .tc{--s:clamp(60px,min(22vmin,15vw),112px);--j:clamp(118px,min(40vmin,27vw),210px)}
+  #ctl.view .tc .tbtn:not(.on){background:rgba(16,18,24,.42)}
   #ctl.play::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--acc,#ff2d95);box-shadow:0 0 18px var(--acc,#ff2d95);z-index:3}
   body.ctrl #ctl{display:flex}
   body.ctrl>button[aria-label="Mit Google speichern"]{display:none!important}  /* lag auf dem Handy-Lenkrad über dem Joystick */
