@@ -226,6 +226,7 @@ BI.presetToCu = function (po) {
 BI.PETS = [
   { id: 'blitz', name: 'Blitz', icon: '🐕‍🦺' }, { id: 'bello', name: 'Bello', icon: '🐶' }, { id: 'mieze', name: 'Mieze', icon: '🐱' },
   { id: 'hoppel', name: 'Hoppel', icon: '🐰' }, { id: 'schnuffel', name: 'Schnuffel', icon: '🐷' }, { id: 'rexi', name: 'Rexi', icon: '🦖' },
+  { id: 'fuchs', name: 'Funki', icon: '🦊', unlock: 'schluesselreich' }, { id: 'waschbaer', name: 'Räubi', icon: '🦝', unlock: 'schwammi' }, { id: 'einhorn', name: 'Sternenstaub', icon: '🦄', unlock: 'karussell' }, { id: 'baerchen', name: 'Brummi', icon: '🐻', unlock: 'forscher5' },
   { id: 'zuendel', name: 'Zündel', icon: '🐲', mascot: true }, { id: 'willi', name: 'Willi', icon: '🐭', mascot: true }, { id: 'moosling', name: 'Felli', icon: '🌱', mascot: true } // Maskottchen aus anderen Welten: werden dort als Partner freigeschaltet
 ];
 /* Maskottchen-Partner: Figur der Welt (BI.makeDrache / BI.makeWilli) mit der gleichen Haustier-Schnittstelle (pose/trick/reset) */
@@ -237,6 +238,7 @@ BI.makeMascotPet = function (def) {
 };
 BI.makePet = function (kind, name) {
   const def = BI.PETS.find(p => p.id === kind) || BI.PETS[0]; name = name || def.name;
+  if (def.kapsel && BI.makeKapselPet) return BI.makeKapselPet(def);
   if (def.mascot) return BI.makeMascotPet(def);
   if (def.id === 'blitz') return BI.makeDog({ name });
   const K = {
@@ -244,7 +246,9 @@ BI.makePet = function (kind, name) {
     mieze: { c: 0x8d93a8, c2: 0xffffff, ear: 'point', sn: -.06, tail: 'long', sz: .8 },
     hoppel: { c: 0xffffff, c2: 0xffc2d4, ear: 'long', sn: -.06, tail: 'puff', sz: .78 },
     schnuffel: { c: 0xffa8c0, c2: 0xff6f9a, ear: 'fsmall', sn: .04, tail: 'curl', sz: .9 },
-    rexi: { c: 0x4cd07d, c2: 0xffe27a, ear: 'none', sn: .16, tail: 'thick', sz: 1, spikes: true }
+    rexi: { c: 0x4cd07d, c2: 0xffe27a, ear: 'none', sn: .16, tail: 'thick', sz: 1, spikes: true },
+    fuchs: { c: 0xe8742a, c2: 0xffffff, ear: 'point', sn: .1, tail: 'puff', sz: .85 }, waschbaer: { c: 0x8a8d98, c2: 0x3a3a44, ear: 'fsmall', sn: .02, tail: 'long', sz: .8 },
+    einhorn: { c: 0xffffff, c2: 0xff9ad8, ear: 'point', sn: .12, tail: 'long', sz: 1.05 }, baerchen: { c: 0x8a5a33, c2: 0xe0b890, ear: 'fsmall', sn: .06, tail: 'puff', sz: 1.05 }
   }[def.id], mat = BI.mat(), C = K.c, C2 = K.c2, DK = 0x2a2a33;
   const root = new THREE.Group(), b = new BI.Batch(), inner = new THREE.Group(); root.add(inner);
   b.box(0, .42, 0, .44, .4, .95, C); b.box(0, .3, .02, .38, .2, .8, C2); b.box(0, .5, .52, .36, .42, .34, C);

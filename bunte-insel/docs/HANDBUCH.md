@@ -12,12 +12,13 @@
 6. 🚗 Fahren, Schwimmen, Fliegen
 7. 🏠 Zuhause, Garten und Bauernhof
 8. 🚪 Gebäude betreten
-9. ⭐ Sterne, Sticker und Läden
-10. ⚔️ Kämpfen und Monster
-11. 🕹️ Mini-Spiele und Spielautomaten
-12. 🗺️ Die Welten
-13. 👥 Mitspielen
-14. 🛟 Hilfe, Eltern, Fehler melden
+9. 🐾 Haustiere und Begleiter
+10. ⭐ Sterne, Sticker und Läden
+11. ⚔️ Kämpfen und Monster
+12. 🕹️ Mini-Spiele und Spielautomaten
+13. 🗺️ Die Welten
+14. 👥 Mitspielen
+15. 🛟 Hilfe, Eltern, Fehler melden
 
 ---
 
@@ -150,6 +151,15 @@ Alle massiven Gebäude der Welten haben eine echte Haustür und eine goldene Tü
 - Drinnen gibt es je nach Haus Bett (ausruhen), Tisch (Snack ⭐), Bücherregal (Tipps), Schatztruhe (einmal pro Haus: ⭐ + Futter), Bewohner zum Reden, Läden, Schmiede, Fernrohr, Kristallkugel, Thron …
 - Die Uralte Höhle auf der Rätsel-Insel hat einen Abstieg ins Mini-Spiel.
 - Am Ausgang „Hinausgehen“. Neu betretene Häuser geben ⭐; Sticker für 5, 20 und 40 Gebäude und für 10 Truhen.
+
+---
+
+## 🐾 Haustiere und Begleiter
+
+- Unter „Mein Held → 🐾 Haustier“ wählst du dein Tier. „Mitnehmen“ lässt es überall mitkommen, „Zu Hause lassen“ wartet es in der Wohnung.
+- Freischaltbare Tiere: 🦊 Funki (Sticker Schlüsselreisender), 🦝 Räubi (Bucht-Besucher), 🦄 Sternenstaub (Karussell-Kind), 🐻 Brummi (Türöffner).
+- Maskottchen aus den Welten (z. B. Zündel, Willi, Felli) werden dort als Partner freigeschaltet.
+- Dein Kapselmonster (Rätsel-Insel) ist ebenfalls ein Begleiter, sobald du am Kapsel-Schrein ein Ei gewählt hast – es kämpft im Wald weiter mit.
 
 ---
 

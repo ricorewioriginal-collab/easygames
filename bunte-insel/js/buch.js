@@ -16,6 +16,7 @@ BI.createBuch = function (G) {
     }
     else if (tag === '@reise') { for (const [i, c] of (G.chapters ? G.chapters() : []).entries()) { out.push(['h', 'Kapitel ' + (i + 1) + ': ' + c.icon + ' ' + c.name]); out.push(['p', c.intro]); out.push(['ul', c.tasks.map(t => t.icon + ' ' + t.text)]); } out.push(['tip', 'Nach dem letzten Kapitel gibt es das Insel-Fest und den Sticker „Inselheld“. Bereits Geschafftes wird automatisch abgehakt.']); }
     else if (tag === '@freischalten') { for (const I of (G.smode ? G.smode.islands() : [])) { out.push(['h', I.icon + ' ' + I.name]); out.push(['ul', I.req.map(id => { const q = G.info(id); return q ? q[1] + ' ' + q[2] + ': ' + q[3] : id; })]); } }
+    else if (tag === '@geschichten') for (const d of BI.INSELSTORY || []) { out.push(['h', d.icon + ' ' + d.title + ' – erzählt von ' + d.npc]); out.push(['ul', d.acts.map((a, i) => 'Akt ' + (i + 1) + ': ' + a.hint + ' → ' + a.goal.map(id => { const q = G.info(id); return q ? q[1] + ' ' + q[2] : id; }).join(' + '))]); }
     else if (tag === '@aufgaben') { for (const l of (G.worldLogs ? G.worldLogs() : [])) { out.push(['h', l.title]); out.push(['ul', l.rows.map(r => r.icon + ' ' + r.text)]); } }
     else if (tag === '@sticker') out.push(['tbl', (G.stickers ? G.stickers() : []).map(q => [q[1] + ' ' + q[2], q[3]])]);
     else if (tag === '@codes') out.push(['tbl', (G.cheats ? G.cheats.list() : []).map(c => [c.icon + ' ' + c.code, c.text + (c.toggle ? ' (nochmal eingeben = aus)' : '')])]);
