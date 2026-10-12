@@ -50,7 +50,7 @@ BI.homeSpawns = function (f) {
 BI.buildWorld = function (scene) {
   const K = BI.WORLD, rnd = BI.rng(20240611), rr = (a, b) => a + rnd() * (b - a), pick = a => a[(rnd() * a.length) | 0];
   const st = new BI.Batch(), win = new BI.Batch(), lamp = new BI.Batch(), roofB = new BI.Batch();
-  const W = { K, boxes: [], circles: [], bigMeshes: [], vehicleSpawns: [], roadPts: [], houses: [], parts: [] };
+  const W = { K, boxes: [], circles: [], dyn: [], bigMeshes: [], vehicleSpawns: [], roadPts: [], houses: [], parts: [] };
 
   /* ---------- Kollision (Raster) ---------- */
   const CELL = 12, grid = new Map(), cellKey = (ix, iz) => (ix + 40) * 100 + (iz + 40);
@@ -94,6 +94,7 @@ BI.buildWorld = function (scene) {
         }
       }
     }
+    if (W.dyn.length) for (const o of W.dyn) { if (!o.on) continue; const dx = px - o.x, dz = pz - o.z, d = Math.hypot(dx, dz), m = r + o.r; if (d < m) { if (d > 1e-6) { px += dx * (m - d) / d; pz += dz * (m - d) / d; } else px += m; hit = true; } } /* bewegliche Hindernisse (Rätsel-Blöcke, Tore) */
     if (W.vox && W.vox.count) { const v = W.vox.push(px, pz, r, alt == null ? 0 : alt); if (v) { px = v.x; pz = v.z; hit = true; } } /* Blöcke im Bauland */
     const rad = Math.hypot(px, pz);
     if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
@@ -501,6 +502,7 @@ BI.buildWorld = function (scene) {
   BI.buildMaerchenPlus({ W, st, lamp, ROADY });
   BI.buildSchluesselGround({ W, st, lamp, ROADY });
   BI.buildSchwammGround({ W, st, lamp, ROADY });
+  BI.buildRaetselGround({ W, st, lamp, ROADY });
   BI.buildBadeGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
