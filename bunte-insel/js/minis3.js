@@ -156,6 +156,46 @@
   };
 
   /* =====================  Registrieren  ===================== */
+  /* =====================  Burger braten 🍔 (Schwammi-Bucht, Knusper-Krabbe)  ===================== */
+  const burger = () => {
+    const G = {}; let order, stack, grill, t, msg, msgT, mist, served, flash;
+    const KEYS = ['cheese', 'salad', 'tomato'], EM = { patty: '🥩', cheese: '🧀', salad: '🥬', tomato: '🍅' };
+    const geo = () => { const W = h.W(), H = h.H(), s = Math.min(W / 5.4, H * .15, 96); return { W, H, s, by: H - s * .75, bx: i => W / 2 + (i - 1.5) * s * 1.15, gx: i => W * .26 + i * s * 1.5, gy: H * .5, px: W * .74, py: H * .62 }; };
+    const newOrder = () => { const n = 2 + Math.min(2, served >> 1), o = []; for (let i = 0; i < n; i++) o.push(i === 0 || h.rnd() < .45 ? 'patty' : KEYS[(h.rnd() * 3) | 0]); order = o; stack = []; mist = 0; };
+    G.init = function () { served = 0; t = 0; msg = ''; msgT = 0; flash = 0; grill = [{ t: 0, w: 0 }, { t: -1.4, w: 0 }]; newOrder(); };
+    G.resize = function () { };
+    const say = (m, d) => { msg = m; msgT = d || 1; };
+    const need = () => order[stack.length];
+    function add(k, x, y) { if (stack.length >= order.length) { say('🍞!', .8); return false; } if (need() === k) { stack.push(k); snd('pop'); h.burst(x, y, 6, ['#ffe27a', '#fff']); return true; } mist++; snd('bonk'); say('😅 ' + EM[need()] + ' kommt zuerst!', 1.1); return false; }
+    G.tap = function (x, y) {
+      const g = geo();
+      for (let i = 0; i < 2; i++) if (Math.hypot(x - g.gx(i), y - g.gy) < g.s * .8) { const p = grill[i]; if (p.t < 0) return; if (p.t < 2.2) { say('🥩 noch roh …', .8); snd('bonk'); return; } if (p.t > 5.4) { p.t = -1.6; say('🔥 verbrannt!', .9); snd('bonk'); return; } if (add('patty', g.gx(i), g.gy)) { p.t = -1.6; } return; }
+      for (let i = 0; i < 3; i++) if (Math.abs(x - g.bx(i)) < g.s * .56 && Math.abs(y - g.by) < g.s * .62) { add(KEYS[i], g.bx(i), g.by); return; }
+      if (Math.abs(x - g.bx(3)) < g.s * .56 && Math.abs(y - g.by) < g.s * .62) {
+        if (stack.length < order.length) { say('Noch nicht fertig!', .9); snd('bonk'); return; }
+        const pts = 3 + (mist === 0 ? 1 : 0); served++; h.add(pts, g.px, g.py - 80); h.burst(g.px, g.py - 40, 22, ['#ffd23f', '#fff', '#ff8fc8']); snd('ding'); say(mist === 0 ? '🌟 Perfekt!' : '😋 Lecker!', 1.1); flash = .5; newOrder();
+      }
+    };
+    G.update = function (dt) { t += dt; msgT = Math.max(0, msgT - dt); flash = Math.max(0, flash - dt); for (const p of grill) { p.t += dt; if (p.t > 7.2) p.t = -1.2; } };
+    G.dbg = () => ({ get order() { return order; }, get stack() { return stack; }, grill, tapAt: (x, y) => G.tap(x, y), geo });
+    G.draw = function () {
+      const c = h.ctx(), g = geo(), W = g.W, H = g.H; h.bg('#ffe9b8', '#ffb27a'); c.fillStyle = '#6a3a1a'; c.fillRect(0, H * .36, W, H * .04); c.fillStyle = 'rgba(255,255,255,.55)'; c.fillRect(0, 0, W, H * .3);
+      /* Bestellung (oben): Brötchen – Zutaten – Brötchen */
+      const os = Math.min(W / (order.length + 3), H * .12), ox = W / 2 - (order.length + 1) * os * .55; h.emoji('🍞', ox, H * .14, os);
+      order.forEach((k, i) => { const done = i < stack.length, cur = i === stack.length; if (cur) { c.fillStyle = 'rgba(255,210,63,.7)'; c.beginPath(); c.arc(ox + (i + 1) * os * 1.1, H * .14, os * .62, 0, 6.283); c.fill(); } h.emoji(EM[k], ox + (i + 1) * os * 1.1, H * .14, os * (done ? .7 : 1)); if (done) h.emoji('✅', ox + (i + 1) * os * 1.1 + os * .3, H * .14 + os * .3, os * .45); }); h.emoji('🍞', ox + (order.length + 1) * os * 1.1, H * .14, os);
+      /* Grill */
+      c.fillStyle = '#2a2d36'; c.fillRect(g.gx(0) - g.s, g.gy - g.s * .8, g.gx(1) - g.gx(0) + g.s * 2, g.s * 1.6);
+      grill.forEach((p, i) => { const x = g.gx(i), y = g.gy; c.fillStyle = '#ff7a2a'; c.globalAlpha = .35 + .2 * Math.sin(t * 8 + i); c.fillRect(x - g.s * .7, y + g.s * .55, g.s * 1.4, g.s * .12); c.globalAlpha = 1; if (p.t < 0) { h.emoji('🫧', x, y, g.s * .6); return; } const col = p.t < 2.2 ? '#e87a7a' : p.t < 5.4 ? '#a05a2a' : '#222'; c.fillStyle = col; c.beginPath(); c.arc(x, y, g.s * .55, 0, 6.283); c.fill(); if (p.t >= 2.2 && p.t <= 5.4) { c.strokeStyle = '#4cd07d'; c.lineWidth = 6; c.beginPath(); c.arc(x, y, g.s * .66, 0, 6.283); c.stroke(); } h.emoji(p.t > 5.4 ? '🔥' : '🥩', x, y, g.s * .7); if (p.t >= 2.2 && p.t <= 5.4) h.emoji('👆', x + g.s * .5, y + g.s * .6, g.s * .5); });
+      /* Teller mit dem Burger */
+      c.fillStyle = '#fff'; c.beginPath(); c.ellipse(g.px, g.py + g.s * .5, g.s * 1.1, g.s * .28, 0, 0, 6.283); c.fill(); h.emoji('🍞', g.px, g.py + g.s * .35 - 4, g.s * .8); stack.forEach((k, i) => h.emoji(EM[k], g.px, g.py + g.s * .1 - i * g.s * .28, g.s * .8)); if (stack.length >= order.length) h.emoji('🍞', g.px, g.py + g.s * .1 - stack.length * g.s * .28 - 6, g.s * .8);
+      /* Zutaten-Knöpfe */
+      KEYS.concat(['bun']).forEach((k, i) => { const x = g.bx(i); c.fillStyle = 'rgba(255,255,255,.8)'; c.beginPath(); c.arc(x, g.by, g.s * .52, 0, 6.283); c.fill(); h.emoji(k === 'bun' ? '🍞' : EM[k], x, g.by, g.s * .8); });
+      if (msgT > 0) h.text(msg, W / 2, H * .3, Math.min(44, W / 12), '#fff');
+      if (flash > 0) { c.fillStyle = 'rgba(255,255,255,' + flash * .5 + ')'; c.fillRect(0, 0, W, H); }
+    };
+    return G;
+  };
+
   const W3 = (key, g, icon, name, help, zone, goal) => h.register(key, g, { icon, name, help, dur: 45, goal: goal || 14, zone, kids: 1 });
   W3('schmetterling_insel', hunt({ good: ['🦋', '🐞', '🐝'], bad: ['🕷️'], motion: 'flutter', bg: ['#bff2ff', '#a8e88c'], ground: '#7fd65c' }), '🦋', 'Schmetterlinge fangen', 'Tippe die Schmetterlinge an! Die Spinne lässt du in Ruhe.', 'insel');
   W3('ampel_stadt', ampel(), '🚦', 'Ampel-Held', 'Wenn die Ampel grün ist: schnell tippen, dann fährt das Auto los! Bei Rot wartest du.', 'stadt', 10);
@@ -171,6 +211,7 @@
   W3('sterne_maerchen', hunt({ good: ['⭐', '🌟', '💫'], bad: ['☁️'], motion: 'fall', bg: ['#1c1f5a', '#a86ad8'], fx: ['#ffe27a', '#fff'] }), '⭐', 'Sternschnuppen', 'Fang die Sterne, die vom Himmel fallen! Die graue Wolke lässt du ziehen.', 'maerchen');
   W3('schatten_schluessel', hunt({ good: ['👾', '🌑', '👻'], bad: ['❤️'], motion: 'drift', bg: ['#1a1030', '#4a2a8a'], fx: ['#ffe27a', '#fff', '#b48aff'] }), '🗝️', 'Schatten-Jagd', 'Tippe die Dunkelwichtel an! Das rote Herz lässt du in Ruhe.', 'schluessel');
   W3('reise_schluessel', hunt({ good: ['⭐', '💎', '✨'], bad: ['☄️'], motion: 'fall', bg: ['#050a30', '#3a2a8a'], fx: ['#9ad8ff', '#fff', '#ffe27a'] }), '🚀', 'Weltenreise', 'Flieg mit dem Sternenschiff! Fang Sterne und Kristalle – dem Meteor weichst du aus.', 'schluessel');
+  W3('burger_krabbe', burger(), '🍔', 'Burger braten', 'Brate das Fleisch (tippe, wenn es einen grünen Ring hat) und stapele die Zutaten in der Reihenfolge der Bestellung. Zum Schluss das Brötchen!', 'schwamm', 12);
   W3('blasen_atlantis', hunt({ good: ['🫧', '🐚', '🦀'], bad: ['🪼'], motion: 'rise', bg: ['#0e3a5a', '#35d6e0'], fx: ['#9fe3ff', '#fff'] }), '🫧', 'Blasen-Pop', 'Tippe die Blasen und Muscheln an! Die Qualle lässt du in Ruhe.', 'atlantis');
 });
 
