@@ -305,7 +305,7 @@ BI.buildWorld = function (scene) {
     W.houses.push({ x: cx, z: cz, w, d });
   }
   W.interiors = []; // begehbare Gebäude (nur im Stadtviertel)
-  const TC = { W, st, win, ROADY, windows, rr, pick };
+  const TC = { W, st, win, ROADY, windows, rr, pick }; BI.TC = TC;
   function houseOnX(cx, cz, side) { // Tür zeigt zur Straße (z=0)
     const w = rr(8, 10), d = rr(7.5, 9), h = rr(4.6, 6.4), wall = pick(WALLS), roof = pick(ROOFS);
     const dz = -Math.sign(cz); // nach Norden/Süden
@@ -522,9 +522,8 @@ BI.buildWorld = function (scene) {
     W.farm = { x0: fx0 + 2, x1: fx1 - 2, z0: fz0 + 2, z1: fz1 - 2 };
     // Scheune
     const bx = -112, bz = 62;
-    box(bx, bz, 16, 12, 6, 0xc83d34); st.prism(bx, 6, bz, 17, 4.6, 12.6, 0x8a2b2b, Math.PI / 2 * 0); st.box(bx, 0, bz + 6.05, 5, 4.4, .15, 0xf5ecd8); st.box(bx, 0, bz + 6.1, .3, 4.4, .12, 0xc83d34, 0, 0, 0);
-    st.box(bx - 2.5, 0, bz + 6.12, .3, 4.4, .1, 0xc83d34, 0, 0, .0); st.box(bx, 1, bz + 6.14, 5, .25, .1, 0xc83d34, 0, 0, .75); st.box(bx, 1, bz + 6.14, 5, .25, .1, 0xc83d34, 0, 0, -.75);
-    solid(bx, bz, 16, 12, 11);
+    BI.buildEnterable(TC, { cx: bx, cz: bz, w: 16, d: 12, h: 6, wall: 0xc83d34, roof: 0x8a2b2b, s: 1, ridgeX: false, gap: 2.4, dh: 3.6, win: [2.2, 1, 4], title: '🐄 Scheune', npc: ['Bauer Heinz', ['Muh! Hier im Stroh ist es schön warm. 🐄', 'Die Hühner legen jeden Morgen Eier.', 'Unser Traktor ist ganz grün!'], 0x2d6a4f], civic: BI.CIVIC.barn });
+    st.box(bx, 3.7, bz + 6.1, 5.2, .3, .2, 0xf5ecd8);
     // Silo
     st.cyl(-96, 0, 60, 2.4, 2.4, 11, 0xdfe6ee, 12); st.sph(-96, 11, 60, 2.4, 0xc83d34, 1, 1, .6, 1); W.addCircle(-96, 60, 2.5, false, 14);
     // Windmühle

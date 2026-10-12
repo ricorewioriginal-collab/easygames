@@ -27,14 +27,12 @@ BI.buildCinema = function (c) {
   st.rect(-76.9, 41, -73.1, 46, ROADY + .012, 0x4cd07d); st.rect(-76.6, 41.3, -73.4, 45.7, ROADY + .014, 0xffd23f); // Dein Platz
   /* Kino-Gebäude */
   { const { cx, cz, w, d, h } = K, fz = cz + d / 2;
-    st.box(cx, 0, cz, w, h, d, 0x8e3b5e); st.box(cx, h, cz, w + .8, .7, d + .8, 0x3a1d33); st.box(cx, 0, cz, w + .3, .6, d + .3, 0x5a2640);
-    for (const sd of [-1, 1]) { st.cyl(cx + sd * 6, h + .7, cz, 1.9, 1.9, .5, 0xf2f2f2, 16, Math.PI / 2); st.cyl(cx + sd * 6, h + .7, cz, .5, .5, .6, 0x3a1d33, 8, Math.PI / 2); for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2; st.cyl(cx + sd * 6, h + .7 + Math.sin(a) * 1.1, cz + Math.cos(a) * 1.1, .38, .38, .62, 0x3a1d33, 8, Math.PI / 2); } }
+    BI.buildEnterable(BI.TC, { cx, cz, w, d, h, wall: 0x8e3b5e, roof: 0x3a1d33, s: 1, flat: true, gap: 2, dh: 3.2, win: false, title: '🎬 Kino', npc: ['Kinomann Otto', ['Gleich beginnt der Film! 🍿', 'Popcorn gibt es bei mir – und der Film läuft am Eingang.', 'Pssst, im Kino sind alle leise.'], 0xb03a48], civic: BI.CIVIC.kino,
+      roofExtra: rb => { for (const sd of [-1, 1]) { rb.cyl(cx + sd * 6, h + .7, cz, 1.9, 1.9, .5, 0xf2f2f2, 16, Math.PI / 2); rb.cyl(cx + sd * 6, h + .7, cz, .5, .5, .6, 0x3a1d33, 8, Math.PI / 2); for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2; rb.cyl(cx + sd * 6, h + .7 + Math.sin(a) * 1.1, cz + Math.cos(a) * 1.1, .38, .38, .62, 0x3a1d33, 8, Math.PI / 2); } } } });
     st.box(cx, 3.5, fz + 1.1, 12, .45, 2.4, 0xfafafa); st.box(cx, 3.95, fz + 1.1, 12.4, .12, 2.6, 0xe0382b);
     for (let i = 0; i < 13; i++) lamp.sph(cx - 6 + i, 3.3, fz + 2.35, .16, COL[i % COL.length], 1);
     for (const sd of [-1, 1]) st.box(cx + sd * 5.7, 0, fz + 2, .5, 3.5, .5, 0xfafafa);
-    st.box(cx, 0, fz + .06, 4, 2.7, .12, 0x2a1630); st.box(cx, 0, fz + .1, .1, 2.7, .1, 0xffd23f);
     for (const sd of [-1, 1]) for (let k = 0; k < 2; k++) { const px = cx + sd * (5.2 + k * 3.3) + (sd > 0 ? 0 : 0); st.box(px, 1.0, fz + .06, 2.4, 2.6, .1, 0x222222); st.box(px, 1.15, fz + .1, 2.1, 2.3, .06, COL[(k * 2 + (sd > 0 ? 1 : 0) + 2) % COL.length]); st.sph(px, 2.2, fz + .16, .5, 0xffffff, 1); }
-    W.addBox(cx - w / 2, cz - d / 2, cx + w / 2, cz + d / 2, false, h + 2);
     /* Popcorn-Wagen */
     const px = -62.5, pz = 29; st.box(px, .5, pz, 2.2, 1.1, 1.4, 0xe0382b); st.box(px, 1.6, pz, 2.4, .1, 1.6, 0xffffff); for (let k = 0; k < 5; k++) st.box(px - 1 + k * .5, 2.2, pz - .8, .5, .9, .1, k % 2 ? 0xffffff : 0xe0382b);
     st.cyl(px, 1.7, pz, .5, .5, .5, 0xf6f0d0, 10); for (let k = 0; k < 6; k++) st.sph(px + Math.cos(k) * .4, 2.35, pz + Math.sin(k) * .4, .22, 0xfff3b0, 1); for (const sd of [-1, 1]) st.cyl(px + sd * .8, 0, pz + .9, .3, .3, .2, 0x333333, 8, Math.PI / 2);
