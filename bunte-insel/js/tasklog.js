@@ -19,6 +19,7 @@ BI.renderTaskLog = function (box, D) {
   /* ===== ▶ Als Nächstes ===== */
   const next = []; if (cs) { const i = E.state.cur.step; if (i >= cs.steps.length) next.push(['🚨', 'Einsatz „' + cs.title + '“: Bericht an der Einsatz-Tafel in der Fellretter-Bucht', 'pups']); else next.push([cs.steps[i].icon, 'Einsatz „' + cs.title + '“: ' + cs.steps[i].text, BI.TASKLOG_DEST[cs.steps[i].at]]); }
   if (D.mission) next.push([D.mission.icon, 'Auftrag: ' + D.mission.title + (D.mission.n ? ' (Schritt ' + D.mission.i + ' von ' + D.mission.n + ')' : ''), null]);
+  if (D.tycoon && D.tycoon.next) next.push([D.tycoon.next.icon, 'Park: ' + D.tycoon.next.title + ' – ' + D.tycoon.next.text, 'park']);
   if (D.farm && D.farm.on) { const c = D.farm.items[D.farm.cur]; next.push(['🚜', 'Hof: ' + c.icon + ' ' + c.title + ' ' + c.p + '/' + c.need + (c.p >= c.need ? ' – zu Bauer Heinz!' : ''), 'hof']); }
   { const c = D.story.chapters.find(q => q.cur); if (c) { const t = c.tasks.find(q => !q.ok); if (t) next.push([t.icon, 'Inselreise – ' + c.name + ': ' + t.text, t.dest]); } }
   sec('▶ Als Nächstes', next.length ? next.length + ' offen' : '', true, d => {
@@ -33,6 +34,8 @@ BI.renderTaskLog = function (box, D) {
       if (S.finished) d.appendChild(el('p', 'help', '🏆 Inselheld! Alle Kapitel geschafft – die Insel gehört dir!')); }); }
   /* ===== 🚜 Hof-Aufgaben ===== */
   if (D.farm) { const F = D.farm, nOk = F.items.filter(q => q.ok).length; sec('🚜 Hof-Aufgaben', nOk + ' von ' + F.items.length + (F.rounds ? ' · Runde ' + (F.rounds + 1) : ''), F.on, d => { for (const q of F.items) d.appendChild(row(q.ok, q.icon, q.title + (q.cur && F.on ? ' ' + q.p + '/' + q.need : ' – ' + q.text), 'hof', q.cur && F.on)); }); }
+  /* ===== 🎢 Park-Missionen ===== */
+  if (D.tycoon) { const Y = D.tycoon; sec('🎢 Park-Missionen', Y.done.length + ' von ' + Y.missions.length + (Y.medal ? ' 👑' : ''), false, d => { for (const m of Y.missions) d.appendChild(row(Y.done.includes(m.id), m.icon, m.title + ' – ' + m.text, 'park', Y.next && Y.next.id === m.id)); }); }
   /* ===== 🚨 Fellretter-Einsätze ===== */
   if (E) { const n = E.state.done.length; sec('🚨 Fellretter-Einsätze', n + ' von ' + E.missions.length + (E.state.medal ? ' 🥇' : ''), !!cs, d => {
       for (const m of E.missions) { const ok = E.state.done.includes(m.id), act = cs && cs.id === m.id; d.appendChild(row(ok, m.icon, m.title + ' (' + m.pup + ')' + (act ? ' – läuft: Schritt ' + Math.min(E.state.cur.step + 1, m.steps.length + 1) + '/' + (m.steps.length + 1) : ''), null, act));

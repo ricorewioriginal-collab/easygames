@@ -62,10 +62,13 @@ Kinderspiel mit kleiner offener Insel-Welt (Three.js r128 per CDN, sonst keine B
 
 ## Freizeitpark 🎡 (Erweiterung im Osten)
 Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Promenade mit Lichterketten, Platz mit Brunnen und Besuchern.
-- **Riesenrad** 🎡 (eine Runde mit Aussicht), **Karussell** 🎠 (Pferde, mit 🚪 jederzeit absteigen), **Kettenkarussell** 🪢 (schwingt hinaus), **Achterbahn** 🎢 (zwei Runden, Hände hoch).
-- **Autoscooter** 🚗: vier Wagen in der Halle, einsteigen und rempeln.
-- **Imbissbuden**: Zuckerwatte 🍥, Popcorn 🍿, Eis 🍦 für je 1 ⭐ – landet im Rucksack 🎒 (dort essen).
-- Fahrten sind gratis; pro Attraktion gibt es höchstens alle 45 Sekunden +1 ⭐. Besucher (Clown, Kartenfrau …) erzählen etwas.
+- **Park-Tycoon** 🎢 (`js/tycoon.js`): am **Park-Büro** (Häuschen am Eingang) wird der Baumodus gestartet. Auf einem 2-m-Raster lassen sich **Wege**, **Buden** (Zuckerwatte, Popcorn, Eis, Limo), **Toiletten**, **Mülleimer** und **Deko** (Bank, Baum, Blumen, Laterne, Brunnen) frei setzen, **verschieben** und **verkaufen** (60 % zurück). Platz am Brunnen, Promenade, Autoscooter und Büro bleiben gesperrt; große Dinge dürfen nicht auf Wegen stehen.
+- **Fahrgeschäfte** frei platzierbar: **Karussell** 🎠 (Start-Ausstattung), **Kettenkarussell** 🪢, **Riesenrad** 🎡, **Achterbahn** 🎢 (sehr groß: passt zunächst nur an die Nordkante bei x≈288, z≈−5 – oder nach dem Abräumen von Wegen in den Süden). Einsteigen wie bisher mit dem Hauptknopf, mit 🚪 jederzeit absteigen. Das Kettenkarussell, das Riesenrad und die Achterbahn müssen erst **erforscht** werden.
+- **Erreichbarkeit:** Buden und Fahrgeschäfte bringen nur Einnahmen, wenn ein Weg vom Platz am Brunnen bis zu ihnen führt (sonst Warnschild). **Gäste** laufen auf den Wegen, **Müll** entsteht (Obergrenze 24), wird beim Drüberlaufen eingesammelt oder vom erforschten Hausmeister; Sauberkeit zählt zur **Parkbewertung** (bis 5 Sterne).
+- **Münzen 🪙, Forschung 🔬, 13 Park-Missionen** (Tafel am Büro, auch im 📋 Aufgaben-Log); Kapitel 9 „Parkdirektor“ der Inselreise, 4 neue Sticker. Gespeichert in `save.tycoon` (kaputte Spielstände werden repariert).
+- **Autoscooter** 🚗: vier Wagen in der Halle, einsteigen und rempeln (fest, nicht verschiebbar).
+- Fahrten sind gratis; pro Attraktion gibt es höchstens alle 45 Sekunden +1 ⭐ (Buden und Fahrgeschäfte bringen zusätzlich Münzen 🪙).
+- Test: `BASE=http://localhost:8080 THREE=…/three.min.js node bunte-insel/tests/tycoon.mjs` (`DEBUG=1` zeigt Rohwerte).
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
 ## Regenbogenwelt 🌈 (Erweiterung, Aufklärung für Kinder)

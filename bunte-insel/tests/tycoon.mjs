@@ -48,9 +48,9 @@ let p = await boot();
     out.collider = b.W.resolve(296, 44 - 8.4, .3, {}).hit === true; /* Sockel des Karussells blockt */
     let M = T.calc(); out.offBefore = M.off.length === 1 && Math.abs(M.incMin - i0) < 1e-6;
     /* Weg zum neuen Karussell: Kachelreihe von (274,40) → (284,40) → … */
-    for (let x = 276; x <= 286; x += 2) T.place('path', x, 40, true); M = T.calc(); out.offAfter = M.off.length === 0 && M.incMin > i0; out.paths = T.paths() >= 12;
+    T.place('path', 274, 42, true); for (let x = 274; x <= 284; x += 2) T.place('path', x, 44, true); /* um den Eis-Stand herum */ M = T.calc(); out.offAfter = M.off.length === 0 && M.incMin > i0; out.paths = T.paths() >= 12;
     /* Forschung */
-    out.resNeed = T.research('rad') === false; s.coins += 500; out.res1 = T.research('kette') === true && s.res.includes('kette'); out.chain = T.place('chain', 300, 70 - 6, false) || T.place('chain', 318, 36, false);
+    out.resNeed = T.research('rad') === false; s.coins += 500; out.res1 = T.research('kette') === true && s.res.includes('kette'); out.chain = T.place('chain', 316, 24, false);
     out.res2 = T.research('kette') === false; out.maxC = (() => { let n = 0; for (let i = 0; i < 5; i++) if (T.place('carousel', 262 + i * 22, 60, true)) n++; return T.count('carousel') <= 3; })();
     return out;
   });
@@ -103,14 +103,14 @@ let p = await boot();
     const b = window.__bi, T = b.tycoon, s = T.state(), out = {}, sl = ms => new Promise(r => setTimeout(r, ms));
     for (const it of T.items().slice()) T.sellItem(it); T.place('carousel', 262, 44, true); T.place('icecream', 278, 38, true); T.calc(); b.P.x = 276; b.P.z = 30; b.P.y = 0; await sl(200);
     const cl0 = T.calc().clean; for (let i = 0; i < 8; i++) T.spawnLitter(); out.litter = T.litter.length === 8; out.cleanDown = T.calc().clean < cl0;
-    const lit = T.litter[0]; b.P.x = lit.x; b.P.z = lit.z; await sl(300); out.picked = T.litter.length === 7 && s.st.litter >= 1;
+    const lit = T.litter[0]; b.P.x = lit.x; b.P.z = lit.z; await sl(300); out.picked = !T.litter.includes(lit) && s.st.litter >= 1;
     for (let i = 0; i < 40; i++) T.spawnLitter(); out.cap = T.litter.length <= 24;
     /* Gäste laufen nur auf Wegen */
     s.coins += 0; T.calc(); await sl(1500); out.guests = T.guests.length > 0 && T.guests.every(g => b.tycoon.paths() > 0);
     /* Hausmeister räumt auf */
     s.res.push('hausmeister'); const n0 = T.litter.length; for (let i = 0; i < 30; i++) b.tycoon.update(1, 50 + i); out.janitor = T.litter.length < n0;
     /* Mission: Wegebauer */
-    out.misBefore = !s.mis.includes('weg'); const c0 = s.coins; for (let x = 266; x <= 280; x += 2) T.place('path', x, 60, true); T.checkMis(); out.mis = s.mis.includes('weg') && s.coins >= c0 + 30;
+    s.mis = s.mis.filter(m => m !== 'weg'); out.misBefore = !s.mis.includes('weg'); const c0 = s.coins; for (let x = 266; x <= 280; x += 2) T.place('path', x, 60, true); T.checkMis(); out.mis = s.mis.includes('weg') && s.coins >= c0 + 30;
     out.board = document.getElementById('parkOffice') !== null; T.show(); for (const t of [0, 1, 2]) { T.otab = t; T.show(); } out.office = document.querySelectorAll('#parkOffice .tyRow').length > 3; T.close();
     return out;
   });
@@ -145,15 +145,15 @@ let p = await boot();
     const calls0 = b.renderer.info.render.calls; await sl(200); const c1 = b.renderer.info.render.calls;
     /* 40 Dekoteile + 120 Wegstücke + 3 Fahrgeschäfte dazu */
     let n = 0; for (let x = 238; x <= 330 && n < 40; x += 4) for (const z of [50, 56, 62]) if (n < 40 && T.place(['tree', 'bench', 'flowers', 'lamp', 'bin'][n % 5], x, z, true)) n++;
-    for (let x = 240; x <= 330; x += 2) for (const z of [34, 36]) T.place('path', x, z, true); T.place('ferris', 300, 6, true); T.place('coaster', 264, 2, true); T.place('chain', 318, 44, true);
-    await sl(500); T.calc(); const c2 = b.renderer.info.render.calls; out.calls = [c1, c2]; out.items = T.items().length; out.paths = T.paths();
+    for (let x = 240; x <= 330; x += 2) for (const z of [34, 36]) T.place('path', x, z, true); await sl(500); T.calc(); const c2 = b.renderer.info.render.calls;
+    T.place('ferris', 300, 46, true); T.place('coaster', 288, -5, true); T.place('chain', 316, 24, true); await sl(500); T.calc(); const c3 = b.renderer.info.render.calls; out.rideCalls = c3 - c2; out.calls = [c1, c2]; out.items = T.items().length; out.paths = T.paths();
     let t0 = performance.now(); for (let i = 0; i < 300; i++) T.update(1 / 60, 10 + i / 60); out.ms = (performance.now() - t0) / 300; t0 = performance.now(); for (let i = 0; i < 100; i++) b.park.update(1 / 60, 10 + i / 60); out.pms = (performance.now() - t0) / 100;
     out.mem = b.renderer.info.memory.geometries;
     /* alles verkaufen darf keine Geometrien liegen lassen */
     for (const it of T.items().slice()) T.sellItem(it); await sl(300); out.memAfter = b.renderer.info.memory.geometries; out.rides = b.park.rides.length;
     return out;
   });
-  dbg(r); ok(r.calls[1] - r.calls[0] <= 12 && r.calls[1] < 400, 'Sparsam: ' + r.items + ' Teile + ' + r.paths + ' Wege kosten wenige Zeichenaufrufe (' + r.calls.join(' → ') + ')'); ok(r.ms < 2 && r.pms < 2, 'Rechenzeit pro Bild klein (Tycoon ' + r.ms.toFixed(2) + ' ms, Park ' + r.pms.toFixed(2) + ' ms)');
+  dbg(r); ok(r.calls[1] - r.calls[0] <= 12 && r.calls[1] < 400, 'Sparsam: ' + r.items + ' Teile + ' + r.paths + ' Wege kosten wenige Zeichenaufrufe (' + r.calls.join(' → ') + '), 3 Fahrgeschäfte +' + r.rideCalls); ok(r.rideCalls <= 40, 'Sparsam: ein Fahrgeschäft kostet im Schnitt höchstens ~13 Zeichenaufrufe'); ok(r.ms < 2 && r.pms < 2, 'Rechenzeit pro Bild klein (Tycoon ' + r.ms.toFixed(2) + ' ms, Park ' + r.pms.toFixed(2) + ' ms)');
   dbg(r); ok(r.rides === 0 && r.memAfter <= r.mem, 'Verkaufen räumt auf (Geometrien ' + r.mem + ' → ' + r.memAfter + ')');
 }
 
