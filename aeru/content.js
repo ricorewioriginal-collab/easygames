@@ -36,5 +36,10 @@ window.AERU_LEVELS=[
  music:{root:98,scale:[0,3,5,7,10,12,15],tempo:.6,wind:600},
  torches:[[-17,-8,2.4],[17,-8,2.4],[0,-16,2.25]],rings:[[0,7,10],[-16,8,-4],[16,8,-6]],
  enemies:['schatten','kaefer','schatten','kaefer','schatten','kaefer','schatten','kaefer'],
- extras:[],checkpoints:[[-17,2.4,-8],[17,2.4,-8]]}
+ extras:[],checkpoints:[[-17,2.4,-8],[17,2.4,-8]]},
+{name:'07 · Nachtgarten',title:'Samen im Himmel',sky:'#241a47',fog:'#5e4d8c',grass:'#41707c',rock:'#3a3357',leaf:'#8a5cc4',accent:'#dcaaff',
+ light:{sun:'#b9a8ff',sunI:.8,hemi:.9},
+ music:{root:87.31,scale:[0,3,7,10,12,15],tempo:.72,wind:650},
+ enemies:['motte','wurzel','motte','motte','wurzel','motte','wurzel'],
+ extras:[],checkpoints:[]}
 ];

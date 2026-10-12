@@ -19,6 +19,8 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **2D-Ersatzmodus** ohne WebGL: schräge Pseudo-3D-Ansicht mit sichtbarer Höhe (Inseln mit Dicke, Schatten und Landering am Boden, Höhenlinie, Tiefensortierung). → `webview.cjs`
 - **Grafikstufen** Sparsam/Ausgewogen/Hoch/Automatisch; die Automatik senkt nachweislich die Auflösung bei langsamen Bildern. → `browser.cjs`
 
+- **Erweiterung (Himmelsinseln, Rammstoß, Nachtgarten):** 21 Himmelsinseln mit Truhen und Schwung-Ringen, Rammstoß, siebte Welt mit eigener Geschichte (Epilog), neuen Gegnern (Nachtmotte, Wurzelwächter) und Boss (Nachtblüte). → `sky.cjs`, `neu.cjs`, `story.cjs`
+
 ## Umgesetzt, aber nicht vollständig getestet
 
 - **Leistung auf echten Geräten:** Nur unter SwiftShader (Software-Rendering, keine GPU) gemessen, siehe TESTING.md. Echte Handys und Grafikkarten wurden nicht getestet.

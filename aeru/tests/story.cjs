@@ -48,7 +48,7 @@ function createDriver(h) {
       if (s.waves.some(r => r < d && d - r < 1.4) && s.state.onGround) { api.hold('jump', true); api.jump(); }
       else if (s.state.vy < 0) api.hold('jump', false);
       if (s.markers && s.state.onGround) api.teleport(s.state.x > 0 ? -2.5 : 2.5, 3, -18, 0);
-      if (s.boss.state === 'open') { api.strike(); }
+      if (s.boss.state === 'open' || s.orbs > 0) { api.strike(); }
       h.tick(1);
     }
     throw new Error('Boss nicht besiegt: ' + id);
@@ -91,18 +91,18 @@ if (require.main === module) {
   assert.equal(h.context.AERU_QUESTS.validate(story).join(' | '), '', 'Storydaten sind vollständig und verweisen nur auf vorhandene Quests, Figuren, Dialoge und Objekte');
   els.start.onclick(); d.finish();
   // Erwartete Dialogreihenfolge der Hauptgeschichte aus den Storydaten.
-  const expected = [];
-  for (const q of story.quests.filter(q => q.kind === 'main')) for (const s of q.steps) { if (s.dialog) expected.push(s.dialog); if (s.after) expected.push(s.after); }
+  const expected = [], epilog = [];
+  for (const q of story.quests.filter(q => q.kind === 'main')) for (const s of q.steps) for (const id of [s.dialog, s.after]) if (id) (q.chapter <= 5 ? expected : epilog).push(id);
   const chaptersSeen = new Set();
   let guard = 0;
   while (d.snap().mode !== 'ending' && guard++ < 400) { const o = d.snap().objective; if (o) chaptersSeen.add(story.quests.find(q => q.id === o.quest).chapter); if (process.env.TRACE) console.log(guard, o && o.quest + ":" + o.step, o && o.text, d.snap().mode); d.step(); }
   assert.equal(d.snap().mode, 'ending', 'Abspann erreicht');
-  assert.deepEqual([...chaptersSeen].sort(), [0, 1, 2, 3, 4, 5], 'alle sechs Kapitel durchlaufen');
+  assert.deepEqual([...chaptersSeen].sort(), [0, 1, 2, 3, 4, 5], 'alle sechs Kapitel der Hauptgeschichte durchlaufen');
   const mainLog = d.log.filter(id => expected.includes(id));
   assert.deepEqual(mainLog, expected, 'Storydialoge in der richtigen Reihenfolge, keiner doppelt, keiner fehlt');
   const s = d.snap();
-  assert(s.save.cores.every(Boolean), 'alle sechs Leuchtkerne');
-  assert(story.quests.filter(q => q.kind === 'main').every(q => s.quests[q.id] === 'done'), 'alle Hauptquests abgeschlossen');
+  assert(s.save.cores.slice(0, 6).every(Boolean) && !s.save.cores[6], 'sechs Leuchtkerne, der siebte wartet im Nachtgarten');
+  assert(story.quests.filter(q => q.kind === 'main' && q.chapter <= 5).every(q => s.quests[q.id] === 'done'), 'alle Hauptquests der sechs Kapitel abgeschlossen');
   assert(s.save.flags['boss:vesper'] && s.save.flags['boss:stille'], 'beide Bosse besiegt');
   // Freies Weiterspielen nach dem Abspann.
   els.explore.onclick(); assert.equal(d.snap().mode, 'play');
@@ -110,6 +110,16 @@ if (require.main === module) {
   d.talkTo('mira'); assert(d.log.at(-1) === 'react:mira', 'Mira reagiert auf das Ende');
   assert(api.travel(5)); d.finish(); assert(d.snap().npcs.some(n => n.id === 'vesper'), 'Vesper wohnt nach dem Ende im Hafen');
   const stored = JSON.parse(h.stored['aeru-save-v1']); assert(stored.quests.c6_finale.s === 'done');
-  console.log(`PASS story: 6 Kapitel, ${story.quests.filter(q => q.kind === 'main').length} Hauptquests, ${expected.length} Storydialoge in Reihenfolge, beide Bosse, Abspann, freies Weiterspielen, Reaktionen nach dem Ende.`);
+  // Epilog: Nachtgarten (siebte Welt) mit neuen Gegnern, Himmelsinsel-Samen und der Nachtblüte.
+  api.travel(5); d.finish(); guard = 0;
+  while (d.snap().objective && guard++ < 200) { const o = d.snap().objective; chaptersSeen.add(story.quests.find(q => q.id === o.quest).chapter); d.step(); }
+  assert(!d.snap().objective, 'Epilog vollständig durchgespielt'); const e = d.snap();
+  assert.deepEqual([...chaptersSeen].sort(), [0, 1, 2, 3, 4, 5, 6], 'alle sieben Kapitel');
+  assert.deepEqual(d.log.filter(id => epilog.includes(id)), epilog, 'Epilogdialoge in der richtigen Reihenfolge');
+  assert(e.save.cores.every(Boolean) && e.save.flags['boss:bluete'], 'sieben Kerne, Nachtblüte besiegt');
+  assert(story.quests.filter(q => q.kind === 'main').every(q => e.quests[q.id] === 'done'), 'alle Hauptquests abgeschlossen');
+  assert(e.save.level === 6 && e.enemies.some(x => x.kind === 'motte') && e.enemies.some(x => x.kind === 'wurzel'), 'neue Gegnertypen im Nachtgarten');
+  d.talkTo('sorel'); assert(d.log.at(-1) === 'react:sorel', 'Sorel reagiert auf das Ende');
+  console.log(`PASS story: 7 Kapitel (6 + Nachtgarten), ${story.quests.filter(q => q.kind === 'main').length} Hauptquests, ${expected.length + epilog.length} Storydialoge in Reihenfolge, beide Bosse, Abspann, freies Weiterspielen, Reaktionen nach dem Ende.`);
 }
 module.exports = {createDriver};

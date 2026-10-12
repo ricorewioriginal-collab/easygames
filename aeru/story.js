@@ -36,7 +36,11 @@ npcs: {
             {level:5, x:5, z:12, y:0, when:'done:c6_finale'},
             {level:2, x:3, z:14, y:0, when:'done:c6_finale'}
           ]},
-  stille:{name:'Die Stille', role:'EINGESPERRTER WIND', portrait:'◌'}
+  sorel: {name:'Sorel', role:'GÄRTNERIN DER NACHT', level:6, slot:'keeper', kind:'dragon', color:'#9f8bdc'},
+  mott:  {name:'Mott', role:'LATERNENFÄNGER', level:6, slot:'side', kind:'owl', color:'#8fb7c9'},
+  pilla: {name:'Pilla', role:'SAMENHÜTERIN', level:6, slot:'helper', kind:'wizard', color:'#c88fb4'},
+  stille:{name:'Die Stille', role:'EINGESPERRTER WIND', portrait:'◌'},
+  bluete:{name:'Die Nachtblüte', role:'DER LETZTE SAME', portrait:'❀'}
 },
 
 chapters: [
@@ -45,7 +49,16 @@ chapters: [
   {level:2, title:'Das gebrochene Sternentor', summary:'In der Sternenwarte stellt Aeru Vesper. Nach dem Kampf gibt Vesper das gesammelte Licht zurück und warnt vor der Stille.'},
   {level:3, title:'Die verlorenen Windwege', summary:'In den Wolkenriffen knüpft Aeru die zerrissenen Windwege neu, rettet Tessa und bringt Vesper dazu, sich Luma zu stellen.'},
   {level:4, title:'Das Echo der Wahrheit', summary:'Die Kristalle der Klamm geben das Echo der Langen Nacht frei. Die Stille ist eingesperrter Wind – und sie holt sich Vesper.'},
-  {level:5, title:'Der letzte Morgen', summary:'In den Morgenruinen öffnet Aeru den alten Himmelshafen und befreit Vesper und den eingesperrten Wind.'}
+  {level:5, title:'Der letzte Morgen', summary:'In den Morgenruinen öffnet Aeru den alten Himmelshafen und befreit Vesper und den eingesperrten Wind.'},
+  {level:6, title:'Der Nachtgarten', summary:'Aus der Stille sind Samen gefallen. Im Nachtgarten wachsen dunkle Blüten – Aeru sammelt die Samen auf den Himmelsinseln und stellt sich der Nachtblüte.'}
+],
+
+// Himmelstruhen (3 pro Insel, auf den Himmelsinseln): Belohnungen nach Gesamtzahl.
+chestUpgrades: [
+  {chests:3, id:'ramm', text:'Starker Rammstoß · Rammen trifft doppelt so weit'},
+  {chests:9, id:'chestHeart', text:'Himmelsherz · ein zusätzliches Herz'},
+  {chests:15, id:'chestWings', text:'Himmelsschwingen · Flügelkraft +25'},
+  {chests:21, id:'chestGlow', text:'Himmelskrone · alle Himmelstruhen gefunden'}
 ],
 
 // Upgrades durch Himmelssplitter (optional, insgesamt gezählt, nie doppelt vergeben – sie werden aus der Anzahl berechnet).
@@ -63,7 +76,10 @@ items: [
   {id:'feather', level:0, x:35, z:4, y:1, label:'Dunkle Feder', color:'#7a6bc0'},
   {id:'amber_grove', level:1, x:30, z:-22, y:3, label:'Bernstein: Der Ruf', color:'#ffb347'},
   {id:'amber_islet', level:1, x:-38, z:-3, y:2, label:'Bernstein: Das Tor', color:'#ffb347'},
-  {id:'amber_spring', level:1, x:20, z:12, y:0, label:'Bernstein: Die Nacht', color:'#ffb347'}
+  {id:'amber_spring', level:1, x:20, z:12, y:0, label:'Bernstein: Die Nacht', color:'#ffb347'},
+  {id:'seed_a', level:6, x:33, z:-46, y:7, label:'Nachtsame: Ost', color:'#c58cff'},
+  {id:'seed_b', level:6, x:-29, z:-44, y:9, label:'Nachtsame: West', color:'#c58cff'},
+  {id:'seed_c', level:6, x:8.5, z:50, y:8, label:'Nachtsame: Süd', color:'#c58cff'}
 ],
 
 quests: [
@@ -208,6 +224,31 @@ quests: [
   {text:'Sprich mit Vela', goal:{type:'talk', npc:'vela'}, dialog:'c6_vela_ask'},
   {text:'Hol die Siegel von beiden Außeninseln', hint:'Bereits gefundene zählen.', goal:{type:'gem', ids:[21,23], retro:true}, where:'gems'},
   {text:'Bring Vela die Siegel', goal:{type:'talk', npc:'vela'}, dialog:'c6_vela_thanks'}
+ ], reward:{heal:true}}
+,
+
+// ───────── Kapitel 7 · Nachtgarten (Epilog) ─────────
+{id:'c7_garden', chapter:6, level:6, kind:'main', when:'done:c6_finale', title:'Samen im Himmel',
+ why:'Aus der Stille sind Samen gefallen. Im Nachtgarten wachsen dunkle Blüten.',
+ steps:[
+  {text:'Reise durch das Sternentor in den Nachtgarten', goal:{type:'arrive', level:6}, where:'portal', dialog:'c7_arrive'},
+  {text:'Sprich mit Sorel', goal:{type:'talk', npc:'sorel'}, dialog:'c7_sorel'},
+  {text:'Vertreibe vier Nachtmotten', hint:'Sie sind schnell und kommen im Zickzack · RAMM (Umschalt / ROLLE) trifft sie im Anflug', goal:{type:'enemy', count:4, kind:'motte'}, where:'enemies'},
+  {text:'Finde die drei Nachtsamen auf den Himmelsinseln', hint:'Flieg über die Aufwinde hinaus: Ost, West und Süd · Ringe geben Schwung', goal:{type:'item', ids:['seed_a','seed_b','seed_c']}, where:'items'},
+  {text:'Bring Pilla die Samen', goal:{type:'talk', npc:'pilla'}, dialog:'c7_pilla'}
+ ]},
+{id:'c7_bloom', chapter:6, level:6, kind:'main', when:'done:c7_garden', title:'Die Nachtblüte',
+ why:'Die Samen haben die letzte Blüte geweckt. Sie wächst über dem Gartentor.',
+ steps:[
+  {text:'Stell dich der Nachtblüte am Gartentor', hint:'Phase 1: Wellen überspringen · Phase 2: Dornenkugeln mit Wind zerstreuen · Phase 3: Wellen und rote Kreise', goal:{type:'boss', id:'bluete'}, where:'arena', after:'c7_bloom_down'},
+  {text:'Sprich mit Sorel', goal:{type:'talk', npc:'sorel'}, dialog:'c7_end'}
+ ], reward:{core:6}},
+{id:'c7_mott', chapter:6, level:6, kind:'side', giver:'mott', when:'step:c7_garden:1', title:'Laternen für die Nacht',
+ why:'Mott will, dass der Garten leuchtet.',
+ steps:[
+  {text:'Sprich mit Mott', goal:{type:'talk', npc:'mott'}, dialog:'c7_mott_ask'},
+  {text:'Entzünde die drei Windlaternen', goal:{type:'lantern', count:3, retro:true}, where:'lanterns'},
+  {text:'Erzähl Mott vom Licht', goal:{type:'talk', npc:'mott'}, dialog:'c7_mott_thanks'}
  ], reward:{heal:true}}
 ],
 
@@ -382,6 +423,30 @@ c6_end:[['neri','Aeru, Vesper – der Hafen ist offen. Zum ersten Mal seit der L
 c6_vela_ask:[['vela','Die beiden Außeninseln tragen die alten Hafensiegel. Ohne sie bleibt eine Seite unserer Chronik leer.'],['vela','Ihre Splitter liegen ganz im Osten und Westen.']],
 c6_vela_thanks:[['vela','Beide Siegel sind zurück. Auf der nächsten Seite der Chronik steht dein Name, Aeru.'],['aeru','Schreib dazu: experimentelle Landungen.']],
 
+// Kapitel 7
+c7_arrive:[['aeru','Der Nachtgarten. Alles leuchtet ein bisschen violett. Und überall wachsen Blüten, die nach mir greifen.'],
+ ['sorel','Nicht anfassen! Aber willkommen. Du bist Aeru, nicht wahr? Der Wind hat von dir erzählt.']],
+c7_sorel:[['sorel','Als die Stille frei wurde, sind Samen aus ihr gefallen. Dunkle Samen. Sie wollen zurück ins Ruhige und schlagen hier Wurzeln.'],
+ ['sorel','Nachtmotten umschwärmen sie und beschützen sie. Vertreib vier von ihnen. Sie sind schnell – aber ein Rammstoß im richtigen Moment trifft sie.'],
+ ['sorel','Die ersten drei Samen sind auf die Himmelsinseln gefallen. Pilla sammelt sie, damit sie nicht zusammenwachsen.'],
+ ['aeru','Rammen mit Umschalt oder ROLLE. Verstanden.']],
+c7_pilla:[['pilla','Drei Nachtsamen! Warm sind sie. Sie wollen eigentlich gar nichts Böses.'],
+ ['pilla','Aber ihr Vater, der letzte Same, wächst schon über dem Gartentor. Er hält alles für sein Revier.'],
+ ['sorel','Dann geht es um die Nachtblüte, Aeru. Sie hat Dornenkugeln und Wellen. Aber auch sie ist nur ein Same, der vergessen hat, wie man blüht.'],
+ ['aeru','Dann erinnern wir sie.']],
+c7_bluete_intro:[['bluete','Still … bleib. Hier ist es dunkel und weich. Niemand zieht an dir.'],['aeru','Auch Blumen brauchen Licht. Ich zeige dir, wie das geht.']],
+c7_bluete_phase2:[['bluete','Dornen! Alle meine Dornen! Ihr nehmt mir alles!'],['sorel','Die Kugeln! Zerstreu sie mit deinem Wind, bevor sie dich treffen!']],
+c7_bluete_phase3:[['bluete','… Es zieht. Etwas zieht in mir. Es tut weh.'],['pilla','Das ist Wachstum, Aeru! Halte durch!']],
+c7_bloom_down:[['bluete','… Ich bin … offen? Es ist hell. Ich blühe?'],
+ ['sorel','Sie blüht! Zum ersten Mal in ihrem Leben!'],
+ ['aeru','Hallo, Blume. Willkommen im Licht.']],
+c7_end:[['sorel','Der Garten leuchtet. Kein dunkler Same mehr – nur Blüten, die sich nach dem Himmel richten.'],
+ ['pilla','Wir nennen die Blume Morgenschein.'],
+ ['sorel','Danke, Aeru. Sieben Inseln, sieben Kerne. Und über jeder Insel gibt es noch kleine Himmelsinseln mit Truhen. Wer sucht, findet.'],
+ ['aeru','Dann suche ich weiter. Ich habe noch Flügelkraft übrig.']],
+c7_mott_ask:[['mott','Pst! Ich fange Laternen. Nicht die kaputten – die schlafenden. Im Garten stehen drei und warten auf Wind.']],
+c7_mott_thanks:[['mott','Alle drei leuchten! Jetzt sieht man auch die Motten schon von weitem.'],['aeru','Das macht es leichter, sie zu rammen.']],
+
 // Ereignisse außerhalb von Questschritten
 lantern_mute:[['aeru','Die Laterne bleibt stumm. Sie wartet auf etwas – vielleicht weiß Oru, worauf.']],
 gate_closed:[['aeru','Das Sternentor schläft noch. Ohne neuen Leuchtkern trägt es mich nicht.']],
@@ -408,6 +473,9 @@ reactions: {
   neri:[[null,'Wir bauen weiter, Stein für Stein.'],['done:c6_harbor','Der Hafen atmet. Jetzt das Tor.'],['done:c6_finale','Jeden Abend bleibt eine Laterne am Tor an. Für alle, die noch unterwegs sind.']],
   juno:[[null,'Ein Segel ist nur ein Tuch, bis Wind kommt.'],['done:c6_finale','Meine Segel sind so voll wie nie. Willst du mitfliegen?']],
   vela:[[null,'Die Chronik hat Lücken. Große.'],['done:c6_vela','Ein neues Kapitel: Der letzte Morgen. Es endet mit einem offenen Tor.']],
+  sorel:[[null,'Nicht anfassen. Auch wenn sie freundlich aussehen.'],['done:c7_garden','Der Garten atmet wieder. Fast.'],['done:c7_bloom','Morgenschein blüht jeden Abend neu. Komm vorbei.']],
+  mott:[[null,'Pst. Ich höre Laternen schnarchen.'],['done:c7_mott','Meine Laternen leuchten. Ich nenne sie alle Hans.']],
+  pilla:[[null,'Warm. Die Samen sind warm.'],['done:c7_garden','Die Samen schlafen jetzt ruhig.'],['done:c7_bloom','Aus dem einen großen Samen wurden hundert kleine Blüten.']],
   vesper:[[null,'…'],['done:c3_storm','Lass mich einen Moment hier draußen. Ich muss nachdenken.'],['done:c4_reefs','Die Kristalle machen mir Angst. Aber ich komme mit.'],['done:c6_finale','Wenn du jemals den Weg verlierst: Dieses Tor bleibt offen. Dafür sorge ich.']]
 }
 };

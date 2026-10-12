@@ -12,6 +12,7 @@ Alle Inhalte stehen als Daten in `story.js`. Die Quest-Engine (`quests.js`) lies
 | 4 | Wolkenriffe | Die verlorenen Windwege | Flugkapitel: Tessa retten, drei Windwege (Ringe) knüpfen, Vesper stellt sich Luma. |
 | 5 | Kristallklamm | Das Echo der Wahrheit | Laternen auf Kristalltürmen, Stille-Schatten, Ringe. Wahrheit: Die Stille ist eingesperrter Wind – und sie holt sich Vesper. |
 | 6 | Morgenruinen | Der letzte Morgen | Leuchtfeuer, Hafenwindwege, Finale gegen die Stille (3 Phasen, Anker im Flug). Abspann, dann freies Weiterspielen. |
+| 7 | Nachtgarten | Samen im Himmel | Epilog nach dem Abspann: Aus der Stille sind dunkle Samen gefallen. Sorel, Mott und Pilla bitten Aeru, Nachtmotten zu vertreiben, drei Nachtsamen von den Himmelsinseln zu holen und sich der Nachtblüte zu stellen (3 Phasen, Dornenkugeln). |
 
 ## Hauptquests (Reihenfolge)
 
@@ -27,6 +28,10 @@ Jede Hauptquest setzt die vorige voraus (`when: 'done:…'`). Leuchtkerne gibt e
 8. `c5_truth` Ankunft → Yara → Turmlaternen → Elin → drei Stille-Schatten → drei Ringe → Yara · **Kern 5**
 9. `c6_harbor` Ankunft → Neri → Juno → Leuchtfeuer → Ringe → Neri
 10. `c6_finale` Boss Stille → Neri und Vesper · **Kern 6, Abspann**
+11. `c7_garden` Ankunft → Sorel → vier Nachtmotten → drei Nachtsamen (Himmelsinseln Ost, West, Süd) → Pilla
+12. `c7_bloom` Boss Nachtblüte → Sorel · **Kern 7**
+
+Nebenquest `c7_mott` (Laternen für die Nacht). Der Epilog ist optional: Der Abspann kommt nach Kapitel 6.
 
 ## Nebenquests
 
