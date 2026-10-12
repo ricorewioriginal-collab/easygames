@@ -50,6 +50,11 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   const before = reqs.length; await z.evaluate(() => document.querySelectorAll('#dOpts button')[0].click()); await z.waitForTimeout(800); ok(reqs.length > before && /\/bunte-insel\/\?from=zotik$/.test(reqs[reqs.length - 1]), 'Zotik-Spiel: „Hinüberreisen“ öffnet die Bunte Insel');
   await z.goto(BASE + '/zotik/index.html'); await z.waitForTimeout(1200); reqs.length = 0; await z.evaluate(() => { document.getElementById('tmenu').hidden = false; }); await z.click('#bBunt').catch(() => { }); await z.waitForTimeout(800);
   ok(reqs.some(u => /\/bunte-insel\/\?from=zotik$/.test(u)), 'Zotik-Spiel: Knopf im Titel-Menü öffnet die Bunte Insel');
+  const sv = await z.evaluate(() => Object.keys(localStorage).filter(k => /zotik2_save/.test(k)).length); ok(sv === 0, 'Zotik-Spiel: Titel-Knopf legt keinen Spielstand an und überschreibt keinen (Platz 1 bleibt)');
+  /* Ankunft aus der Bunten Insel: in Lunaris am grünen Tor, Adresse bereinigt */
+  await z.goto(BASE + '/zotik/index.html?from=bunteinsel'); await z.waitForTimeout(1200);
+  const ar = await z.evaluate(() => { const Zt = window.__zotik, S = Zt.S(); S.ch = 1; S.x = 30; S.z = 30; Zt.begin(false); const o = Zt.INT.find(x => x.name === 'Bunte Insel'); return { near: Math.hypot(Zt.pl.x - o.x, Zt.pl.z - (o.z - 2.4)) < 6, clean: !/from=/.test(location.search) }; });
+  ok(ar.near && ar.clean, 'Zotik-Spiel: Ankunft aus der Bunten Insel setzt dich in Lunaris am grünen Tor ab (Adresse bereinigt)');
   ok(zerrs.length === 0, 'Zotik-Spiel: keine Seitenfehler' + (zerrs.length ? ' – ' + zerrs.join('|') : ''));
   await z.close();
 }

@@ -1167,6 +1167,7 @@ function begin(isNew){
   switchWorld(S.ch||1);if(!WLD)ensureBoss2();
   pl.x=S.x;pl.z=S.z;pl.y=hgt(pl.x,pl.z);pl.face=S.ry;pl.dead=false;pl.vx=pl.vz=0;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);sndOn=S.snd!==false;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';
   fel.x=pl.x+2;fel.z=pl.z+2;syncParty();if(S.ng)for(const e of E)e.hp=e.max=Math.round(e.d.hp*(1+.5*S.ng));
+  if(FROM_BUNT&&!isNew){FROM_BUNT=false;if((S.ch||1)===1){pl.x=-8;pl.z=-15.5;pl.y=hgt(pl.x,pl.z);pl.face=Math.PI;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);setTimeout(()=>toast('🏝️ Willkommen zurück aus der Bunten Insel!'),700)}else setTimeout(()=>toast('🏝️ Willkommen zurück! Das grüne Tor zur Bunten Insel steht in Lunaris.'),700)}else FROM_BUNT=false;
   /* Weltzustand laden */
   for(const c of chests)c.m.visible=!S.chests[c.id];
   if(S.boss&&boss&&boss.k!=='orun'){boss.dead=true;boss.m.root.visible=false;boss.tel.visible=false}
@@ -1831,8 +1832,11 @@ $('bLoad').onclick=()=>{initAudio();openSlots('load')};
 $('bHelp').onclick=()=>{initAudio();$('thc').innerHTML=controlsHTML();$('thelp').hidden=false;tStage='help'};
 /* Verbindung zum Schwesterspiel „Bunte Insel“ (liegt neben diesem Spiel; dort steht auf der Zotik-Insel ein Tor hierher) */
 const BUNT_URL=new URL('../bunte-insel/?from=zotik',location.href).href;
-function toBunt(){try{saveGame(true)}catch(e){}location.href=BUNT_URL}
-$('bBunt').onclick=toBunt;$('mBunt').onclick=toBunt;
+function toBunt(){try{saveGame(true)}catch(e){}location.href=BUNT_URL} /* nur aus dem laufenden Spiel (Menü, Tor): speichert vorher */
+$('bBunt').onclick=()=>{location.href=BUNT_URL}; /* Titel-Menü: kein Spielstand aktiv → nichts speichern (sonst würde Platz 1 überschrieben) */
+$('mBunt').onclick=toBunt;
+/* Ankunft aus der Bunten Insel (?from=bunteinsel): in Lunaris am grünen Tor absetzen, sonst nur begrüßen */
+let FROM_BUNT=/[?&]from=bunteinsel\b/.test(location.search);if(FROM_BUNT){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}}
 $('thClose').onclick=()=>{$('thelp').hidden=true;tStage='menu'};
 /* Customizer */
 function crUpdate(){applyCos(cr);document.querySelectorAll('#crl .crr').forEach(r=>{const k=r.dataset.k;r.querySelector('b span').textContent=COS[k].o[cr[k]][0];r.querySelectorAll('.sw').forEach((w,i)=>w.classList.toggle('on',i===cr[k]))})}
