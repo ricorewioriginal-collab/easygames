@@ -6,7 +6,7 @@
 BI.TASKLOG_DEST = { karussell: 'park', fussball: 'fussball', maerchen: 'maerchen', eisbude: 'park', parkeingang: 'park', staedte: 'city', staedte2: 'city', staedte3: 'city', spielzeug: 'shop', buehne: 'rainbow', plaza: 'rainbow', tierpark: 'zoo', camp: 'camp', bad: 'pool', hospital: 'hospital', spielplatz: 'playground', wald: 'forest', kino: 'cinema', steg: 'pier', bahnhof: 'station', bauernhof: 'hof', leuchtturm: 'lighthouse' };
 BI.injectLogCss = function () {
   if (!document.getElementById('bi-log-css')) { const st = document.createElement('style'); st.id = 'bi-log-css';
-    st.textContent = '.lgSec{margin:8px 0;border-radius:16px;background:rgba(255,255,255,.45);padding:2px 8px 6px}.lgSec>summary{cursor:pointer;font-weight:800;padding:8px 4px;font-size:17px;list-style:none}.lgSec>summary::-webkit-details-marker{display:none}.lgSec>summary::before{content:"▸ "}.lgSec[open]>summary::before{content:"▾ "}'
+    st.textContent = '.lgBar{height:12px;border-radius:8px;background:rgba(0,0,0,.14);overflow:hidden;margin:4px 0 6px}.lgBar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#ffb23f,#4cd07d)}.lgW{margin:6px 0;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.55)}.lgW.lock{background:rgba(255,230,160,.6)}.lgW b{font-size:16px}.lgW .qtask{font-size:14px}.lgSec{margin:8px 0;border-radius:16px;background:rgba(255,255,255,.45);padding:2px 8px 6px}.lgSec>summary{cursor:pointer;font-weight:800;padding:8px 4px;font-size:17px;list-style:none}.lgSec>summary::-webkit-details-marker{display:none}.lgSec>summary::before{content:"▸ "}.lgSec[open]>summary::before{content:"▾ "}'
       + '.qtask.cur{background:rgba(255,226,122,.75);opacity:1}.lgTip{margin:5px 2px;font-weight:600;font-size:15px}.lgSub{font-weight:800;margin:8px 2px 2px;font-size:15px}.lgCh{margin:4px 0;opacity:.9}.lgDay{font-weight:700;margin:6px 2px}#farmBar{display:none!important}.qbarw,#questCount{display:none}';
     document.head.appendChild(st); }
 };
@@ -26,9 +26,15 @@ BI.renderTaskLog = function (box, D) {
     if (next.length) next.forEach((n, i) => d.appendChild(row(false, n[0], n[1], n[2], i === 0))); else d.appendChild(el('p', 'help', '🎉 Gerade ist nichts offen – schau bei der Einsatz-Tafel in der Fellretter-Bucht oder bei Bauer Heinz auf dem Hof vorbei!'));
     const tips = []; if (!cs) tips.push('💡 Einsätze nimmst du nur an der Einsatz-Tafel in der Fellretter-Bucht an (🧭 → Fellretter-Bucht).'); if (D.farm && !D.farm.on) tips.push('💡 Bauer Heinz auf dem Bauernhof hat neue Aufgaben für dich.');
     tips.push('💡 Mit 🧭 „Wohin?“ kommst du schnell überall hin, und mit „👣 Weg“ zeigt dir die Insel den Weg.'); if (D.daily && !D.daily.today) tips.push('💡 Dein Tagesgeschenk wartet beim nächsten Start auf dich.'); tips.slice(0, 3).forEach(t => d.appendChild(el('div', 'lgTip', t))); });
+  /* ===== 🗺️ Story: Welten freischalten ===== */
+  if (D.world) { const Wd = D.world; sec('🗺️ Story: Welten freischalten', Wd.count + ' offen', true, d => {
+      const b = el('div', 'lgBar'); const bi = document.createElement('i'); bi.style.width = Math.round(Wd.n / Wd.total * 100) + '%'; b.appendChild(bi); d.appendChild(b);
+      d.appendChild(el('p', 'help', 'Jede Welt öffnet sich, wenn du ihre 3 Aufgaben (Sticker) geschafft hast. Gesperrte Welten erkennst du an der Glaswand mit Schloss.'));
+      for (const w of Wd.worlds) { const c = el('div', 'lgW' + (w.open ? '' : ' lock')); c.appendChild(el('b', '', (w.open ? '🔓 ' : '🔒 ') + w.icon + ' ' + w.name + (w.open ? ' – offen' : ' – ' + w.p + ' von ' + w.of))); if (!w.open) { const b2 = el('div', 'lgBar'), i2 = document.createElement('i'); i2.style.width = Math.round(w.p / w.of * 100) + '%'; b2.appendChild(i2); c.appendChild(b2); for (const r of w.reqs) c.appendChild(row(r.ok, r.icon, r.text)); } d.appendChild(c); } }); }
   /* ===== 📖 Inselreise ===== */
   { const S = D.story, nDone = S.chapters.filter(c => c.done).length;
-    sec('📖 Die Inselreise', nDone + ' von ' + S.chapters.length + ' Kapiteln', !!S.chapters.find(c => c.cur), d => {
+    sec((D.world ? '📖 Hauptquest: ' : '📖 ') + 'Die Inselreise', nDone + ' von ' + S.chapters.length + ' Kapiteln', !!S.chapters.find(c => c.cur), d => {
+      if (D.world) { const b = el('div', 'lgBar'), bi = document.createElement('i'); bi.style.width = Math.round(nDone / S.chapters.length * 100) + '%'; b.appendChild(bi); d.appendChild(b); }
       for (const c of S.chapters) { if (c.cur) { d.appendChild(el('div', 'lgSub', c.icon + ' Kapitel ' + (S.chapters.indexOf(c) + 1) + ': ' + c.name + ' (jetzt)')); d.appendChild(el('p', 'help', '👩‍💼 ' + c.intro)); for (const t of c.tasks) d.appendChild(row(t.ok, t.icon, t.text, t.dest, false)); }
         else d.appendChild(el('div', 'lgCh', (c.done ? '✅ ' : '⬜ ') + c.icon + ' ' + c.name + (c.done ? '' : ' – ' + c.tasks.map(t => t.icon).join(' ')))); }
       if (S.finished) d.appendChild(el('p', 'help', '🏆 Inselheld! Alle Kapitel geschafft – die Insel gehört dir!')); }); }

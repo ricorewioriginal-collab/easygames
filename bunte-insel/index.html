@@ -300,6 +300,8 @@ body.underground #mini{opacity:.0;pointer-events:none}
 .tile span{display:block;line-height:1.1;text-shadow:0 2px 0 rgba(0,0,0,.25)}.tile small{display:block;font-size:clamp(12px,2.8vw,14px);font-weight:600;opacity:.92;margin-top:3px;text-shadow:none}
 .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.28),rgba(255,255,255,0) 45%);pointer-events:none}
 .tile.main{grid-area:m;background:linear-gradient(160deg,#ffb23f,#ff6a1a);font-size:clamp(26px,6vw,38px)}
+.tile b{position:static!important;margin-bottom:auto;font-size:clamp(28px,5.2vw,44px)!important}.tile.main{min-height:clamp(120px,24vh,180px)!important}.tile:not(.main){min-height:clamp(100px,18vh,140px)!important}
+.tiles{grid-template-columns:1fr 1fr!important;grid-template-areas:"m s" "a b"!important}.tile.main.story{grid-area:s;background:linear-gradient(160deg,#b48aff,#6a3fe0)}.tile.main{font-size:clamp(22px,5vw,32px)}.gp-hint{display:none}
 .tile.t2{grid-area:a;background:linear-gradient(160deg,#4cd07d,#1fa05a)}.tile.t3{grid-area:b;background:linear-gradient(160deg,#4da3ff,#2d6be0)}
 .tile:hover,.tile:focus-visible{transform:translateY(-5px) scale(1.03);filter:brightness(1.07);outline:none;box-shadow:0 0 0 5px #fff,0 0 0 9px rgba(255,255,255,.35),0 18px 34px rgba(0,0,0,.35)}
 .tile:active{transform:translateY(2px) scale(.99);box-shadow:0 3px 0 rgba(8,20,48,.35)}
@@ -613,12 +615,14 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
       <div data-v="home">
         <div class="lab" id="hello">Hallo Jannis! ♥</div>
         <div class="tiles">
-          <button class="tile main" id="bStart"><b>▶</b><span>Spielen<small>Los geht's auf die Insel</small></span></button>
+          <button class="tile main" id="bStart"><b>🌍</b><span>Freie Welt<small>Alles entdecken, überall hin</small></span></button>
+          <button class="tile main story" id="bStartStory"><b>📖</b><span>Story-Modus<small id="storySub">Start zuhause · Welten freispielen</small></span></button>
           <button class="tile t2" id="bMulti"><b>👥</b><span>Mitspielen<small>Mit Freunden</small></span></button>
           <button class="tile t3" id="bHero"><b>🎨</b><span>Mein Held<small>Aussehen &amp; Haustier</small></span></button>
         </div>
         <button class="slotbar" id="slotBar"></button>
-        <button class="slotbar" id="bTv" style="margin-top:8px">📺 Spiel am Fernseher öffnen · Handy = Controller</button>
+        <button class="slotbar" id="bTv" style="margin-top:8px">📺 Spiel am Fernseher öffnen · Link &amp; Code zeigen</button>
+        <button class="slotbar" id="bCtl" style="margin-top:8px">📱 Handy-Controller öffnen · Code eingeben</button>
       </div>
       <div data-v="slots" hidden>
         <div class="lab">💾 Wähle deinen Spielstand</div>
@@ -721,7 +725,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
     <div class="lab">🎮 Spielmodus (Stand bleibt gleich)</div><div class="row"><button class="pill" id="bModeFree">🌍 Freie Welt</button><button class="pill" id="bModeStory">📖 Story</button></div>
     <div class="lab" id="slotLab">💾 Spielstand</div><div class="row"><button class="pill" id="bSaveNow">💾 Jetzt speichern</button><button class="pill" id="bExport">📤 Sichern (Datei)</button></div>
     <div class="lab">⏰ Pausen-Erinnerung (für Eltern)</div><div class="row" id="breakOpts"></div>
-    <button class="pill" id="bFriendsP" style="margin-top:6px">👥 Mitspielen</button> <button class="pill" id="bParent" style="margin-top:6px;position:relative;overflow:hidden">👪 Eltern (halten)</button><br><button class="big" id="bResume">▶ Weiter spielen</button><br><button class="pill" id="bToMenu" style="margin-top:8px">🏠 Zurück zum Hauptmenü</button>
+    <button class="pill" id="bKeys" style="margin-top:6px">⌨️ Tasten &amp; Controller belegen</button> <button class="pill" id="bFriendsP" style="margin-top:6px">👥 Mitspielen</button> <button class="pill" id="bParent" style="margin-top:6px;position:relative;overflow:hidden">👪 Eltern (halten)</button><br><button class="big" id="bResume">▶ Weiter spielen</button><br><button class="pill" id="bToMenu" style="margin-top:8px">🏠 Zurück zum Hauptmenü</button>
   </div>
 </section>
 
@@ -729,7 +733,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <noscript>Bitte JavaScript aktivieren.</noscript>
 
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
-<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=69,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
+<script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=70,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
 <script src="vendor/three.min.js?v=r128" onload="__ld()"></script>
 <script src="js/util.js?v=nc1" onload="__ld()"></script>
 <script src="js/characters.js?v=people2" onload="__ld()"></script>
@@ -778,8 +782,9 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/tafeln.js?v=rz1" onload="__ld()"></script>
 <script src="js/innen.js?v=2" onload="__ld()"></script>
 <script src="js/storymode.js?v=1" onload="__ld()"></script>
-<script src="js/tv.js?v=6" onload="__ld()"></script>
-<script src="js/gamepad.js?v=1" onload="__ld()"></script>
+<script src="js/tv.js?v=7" onload="__ld()"></script>
+<script src="js/gamepad.js?v=2" onload="__ld()"></script>
+<script src="js/keys.js?v=1" onload="__ld()"></script>
 <script src="js/voxel.js" onload="__ld()"></script>
 <script src="js/atlantis.js?v=nc1" onload="__ld()"></script>
 <script src="js/zotik.js?v=nc1" onload="__ld()"></script>
@@ -798,7 +803,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/combat.js?v=rz1" onload="__ld()"></script>
 <script src="js/weather.js?v=ins10" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=in1&o=gp1" onload="__ld()"></script>
+<script src="js/main.js?v=in1&o=ky1" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>

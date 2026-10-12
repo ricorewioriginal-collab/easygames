@@ -6,33 +6,43 @@ const ctx = await browser.newContext({ viewport: { width: 800, height: 500 } });
 if (process.env.THREE) await p.route('**/three.min.js', r => r.fulfill({ path: process.env.THREE, contentType: 'application/javascript' }));
 await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/cloud/**', r => r.abort());
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
-const boot = async () => { await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.click('#bStart'); await p.waitForTimeout(600); };
-await boot();
+const boot = async (menu) => { await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); if (!menu) await p.click('#bStart'); await p.waitForTimeout(600); };
+await boot(true);
+/* Hauptmenü: Freie Welt oder Story-Modus */
+const menu = await p.evaluate(() => ({ free: !!document.getElementById('bStart') && /Freie Welt/.test(document.getElementById('bStart').textContent), story: !!document.getElementById('bStartStory') && /Story/.test(document.getElementById('bStartStory').textContent) }));
+await p.click('#bStartStory'); await p.waitForTimeout(1500);
 const r = await p.evaluate(async () => {
   const b = __bi, K = b.smode, W = b.W, P = b.P, out = {}, sl = ms => new Promise(r => setTimeout(r, ms)), L = K.dbg.list;
   const into = I => { P.veh = null; P.x = I.O.x + 3; P.z = I.O.z; P.y = 0; const q = W.resolve(P.x, P.z, .45, {}); return Math.hypot(q.x - I.O.x, q.z - I.O.z); };
-  out.n = L.length; out.free = L.every(I => !I.lock.on) && !K.on(); const M = L.find(I => I.key === 'MAERCHEN');
-  out.freeWalk = into(M) < M.r - 1; /* Freie Welt: nichts schiebt hinaus */
+  const M = L.find(I => I.key === 'MAERCHEN'), C = L.find(I => I.key === 'CITY');
+  out.n = L.length; out.story = K.on(); out.locked = L.filter(I => I.lock.on).length; out.home = Math.hypot(P.x + 54, P.z + 120) < 60 && !!K.dbg.S().started;
   out.apart = L.every(A => Math.hypot(A.O.x, A.O.z) - A.r > 185 && L.every(B => B === A || Math.hypot(A.O.x - B.O.x, A.O.z - B.O.z) > A.r + 5));
-  K.setMode('story'); await sl(300); const home = b.P; out.story = K.on(); out.locked = L.filter(I => I.lock.on).length; out.cityLocked = L.find(I => I.key === 'CITY').lock.on;
-  out.home = Math.hypot(P.x + 54, P.z + 120) < 60; out.homeXZ = [Math.round(P.x), Math.round(P.z)];
-  out.pushed = into(M) >= M.r - .05; out.signs = L.every(I => !I.lock.on || I.sp.visible);
-  /* Fortschritt aus der freien Welt zählt: Sticker + Inselreise */
-  b.save.stk = Array.from({ length: 30 }, (_, i) => 'fake' + i); b.save.story = b.save.story || { c: 0, ev: {}, seen: true }; b.save.story.c = 9; await sl(1600);
-  const open = L.filter(I => !I.lock.on).map(I => I.key); out.open = open.join(','); out.maerchenOpen = !M.lock.on && !!K.dbg.S().unl.MAERCHEN; out.stillLocked = L.find(I => I.key === 'SCHLUESSEL').lock.on;
-  out.walkIn = into(M) < M.r - 1; out.log = !!K.log() && K.log().rows.length === L.length;
-  K.setMode('free'); await sl(200); out.backFree = !K.on() && L.every(I => !I.lock.on); out.saved = b.save.mode === 'free';
-  K.setMode('story'); await sl(200); out.again = K.on() && L.find(I => I.key === 'SCHLUESSEL').lock.on;
+  out.pushed = into(M) >= M.r - .05; out.signs = L.every(I => !I.lock.on || I.sp.visible && I.mesh.visible); out.reqs = L.every(I => I.req.length === 3 && I.req.every(id => !!K.dbg.info(id).name && K.dbg.info(id).name !== id));
+  /* Wohin?: gesperrte Orte mit Schloss, ohne Weg/Hinzaubern */
+  document.getElementById('bGuide').click(); await sl(300); const rows = [...document.querySelectorAll('#guideGrid .grow')]; const lockedRows = rows.filter(r => r.textContent.includes('🔒'));
+  document.getElementById('guideTabs').children[0] && [...document.querySelectorAll('#guideTabs .gtab')].forEach(t => t.click());
+  out.guideLock = lockedRows.length > 0 && lockedRows.every(r => !r.querySelector('button[title="Weg zeigen"]') && !r.querySelector('button[title="Hinzaubern"]') && /gesperrt/.test(r.textContent)); out.guideRows = rows.length;
+  document.getElementById('guideClose').click(); await sl(100);
+  /* Quest-Log */
+  document.getElementById('bLog').click(); await sl(300); const txt = document.getElementById('questNow').textContent; out.log = /Welten freischalten/.test(txt) && /Hauptquest/.test(txt) && /🔒/.test(txt) && !!document.querySelector('#questNow .lgBar'); document.getElementById('questClose').click();
+  /* Fortschritt: Stadtinsel-Sticker erledigt → Stadtinsel offen, Rest zu */
+  b.save.stk = [...C.req]; await sl(1600); out.cityOpen = !C.lock.on && !!K.dbg.S().unl.CITY; out.stillLocked = M.lock.on && L.filter(I => I.lock.on).length === 14; out.walkIn = into(C) < C.r - 1;
+  out.dest = !!K.lockedAt(M.O.x, M.O.z) && !K.lockedAt(C.O.x, C.O.z);
+  K.setMode('free'); await sl(200); out.backFree = !K.on() && L.every(I => !I.lock.on) && !K.lockedAt(M.O.x, M.O.z); out.saved = b.save.mode === 'free';
+  K.setMode('story'); await sl(200); out.again = K.on() && M.lock.on && !C.lock.on;
   return out;
 });
+r.menu = menu;
 console.log(JSON.stringify(r));
-ok(r.n === 15 && r.free, 'Freie Welt: 15 Inseln, nichts gesperrt'); ok(r.freeWalk, 'Freie Welt: man kommt überall hin'); ok(r.apart, 'Absperrungen überlappen weder Hauptinsel noch andere Inseln');
-ok(r.story && r.home, 'Story-Start: zuhause (' + r.homeXZ + ')'); ok(r.locked === 15 && r.cityLocked, 'Story (neu): alle 15 Inseln gesperrt'); ok(r.pushed && r.signs, 'Gesperrte Insel schiebt hinaus, Schild sichtbar');
-ok(r.maerchenOpen && r.stillLocked && r.walkIn, 'Fortschritt (30 Sticker, Reise fertig) öffnet Märchenland, Schlüsselreich bleibt zu (offen: ' + r.open + ')'); ok(r.log, 'Aufgabenliste „Welten freischalten“');
+ok(r.menu.free && r.menu.story, 'Hauptmenü: „Freie Welt“ und „Story-Modus“ statt „Spielen“'); ok(r.n === 15 && r.story && r.home, 'Story-Modus aus dem Menü: gestartet, zuhause begonnen'); ok(r.locked === 15, 'Neu: alle 15 Welten gesperrt');
+ok(r.apart, 'Absperrungen überlappen weder Hauptinsel noch andere Inseln'); ok(r.pushed && r.signs, 'Gesperrte Insel: Glaswand + Schild da, schiebt hinaus'); ok(r.reqs, 'Jede Welt: 3 klare Sticker-Aufgaben mit Namen');
+ok(r.guideLock, '„Wohin?“: gesperrte Orte mit Schloss und Aufgaben, ohne Weg/Hinzaubern (' + r.guideRows + ' Zeilen)'); ok(r.log, 'Quest-Log: Hauptquest + „Welten freischalten“ mit Fortschrittsbalken');
+ok(r.cityOpen && r.stillLocked && r.walkIn, 'Aufgaben geschafft → Stadtinsel öffnet sich, Rest bleibt zu'); ok(r.dest, 'Orte in gesperrten Welten werden erkannt');
 ok(r.backFree && r.saved, 'Zurück zur freien Welt: alles offen, Modus gespeichert'); ok(r.again, 'Wieder Story: Fortschritt bleibt, Rest gesperrt');
 /* nach Neuladen: Modus + Stand bleiben */
-await p.waitForTimeout(500); await boot();
-const r2 = await p.evaluate(() => { const K = __bi.smode; return { on: K.on(), locked: K.dbg.list.filter(I => I.lock.on).length, schl: K.dbg.list.find(I => I.key === 'SCHLUESSEL').lock.on }; });
-ok(r2.on && r2.locked > 0 && r2.schl, 'Nach Neuladen: Story-Modus und Stand bleiben gespeichert (' + r2.locked + ' gesperrt)');
+await p.waitForTimeout(500); await boot(true);
+const sub0 = await p.evaluate(() => document.getElementById('storySub').textContent); await p.click('#bStartStory'); await p.waitForTimeout(1500);
+const r2 = await p.evaluate(() => { const K = __bi.smode; return { on: K.on(), locked: K.dbg.list.filter(I => I.lock.on).length, city: !K.dbg.list.find(I => I.key === 'CITY').lock.on }; });
+ok(/Weiter/.test(sub0) && r2.on && r2.locked === 14 && r2.city, 'Nach Neuladen: „Weiter“ im Story-Menü, Stand (Stadtinsel offen) bleibt gespeichert');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | '));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); process.exit(fails ? 1 : 0);

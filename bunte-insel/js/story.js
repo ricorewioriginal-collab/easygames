@@ -66,7 +66,7 @@ BI.createStory = function (G) {
     const s = S(), box = $('questNow'), list = $('questList'); box.innerHTML = ''; list.innerHTML = '';
     const L = G.log ? G.log() : {};
     BI.renderTaskLog(box, { story: { finished: K.finished(), chapters: ST.map((c, i) => ({ icon: c.icon, name: c.name, intro: c.intro, cur: i === s.c, done: i < s.c, tasks: c.tasks.map(t => ({ icon: t[2], text: t[3], ok: done(t), dest: t[4] })) })) },
-      farm: L.farm, einsatz: L.einsatz, mission: L.mission, daily: L.daily, extras: L.extras, guide: id => { K.close(); G.guideTo(id); } });
+      farm: L.farm, einsatz: L.einsatz, mission: L.mission, daily: L.daily, extras: L.extras, world: G.worldLog ? G.worldLog() : null, guide: id => { K.close(); G.guideTo(id); } });
   }
   K.show = function () { if (K.open) return; K.open = true; G.setStick(0, 0); S().seen = true; G.persist(); render(); $('questPanel').hidden = false; };
   K.close = function () { if (!K.open) return; K.open = false; $('questPanel').hidden = true; G.updateButtons(true); };
