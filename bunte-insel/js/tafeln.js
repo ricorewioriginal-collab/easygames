@@ -21,6 +21,7 @@ BI.TAFELN = {
   drachen: ['🐉🔥', 'Drachen', 'Hier wohnen die Drachen. Sie sind freundlich.'],
   zotik: ['⭐🏰', 'Lunaris', 'Willkommen in Lunaris! Sammle bunte Splitter.'],
   radio: ['📻🎵', 'Radio-Welt', 'In der Funkwelle spielt Musik von vielen Radiosendern.'],
+  maerchen: ['🏰✨', 'Märchenland', 'Willkommen im Märchenland! Hier wohnen Prinzessinnen, Piraten und ein Löwenkönig.'],
   fussball: ['⚽🥅', 'Fußball', 'Willkommen beim Fußball! Lauf in den Ball und schieße Tore.'],
   bauland: ['🏗️🧱', 'Bauen', 'Im Bauland darfst du alles bauen, was du willst.'],
   pups: ['🐶🚒', 'Fellretter', 'Die Fellretter helfen Tieren in Not.'],

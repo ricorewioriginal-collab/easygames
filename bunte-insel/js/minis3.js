@@ -184,6 +184,7 @@ BI.EXTRA_ARCADES = [
   { kind: 'elfmeter_fussball', at: () => { const F = BI.FUSSBALL; return { x: F.entry.x - F.ux * 6, z: F.entry.z - F.uz * 6, c: F }; }, body: 0x2fae5a, top: 0xffffff },
   { kind: 'formen_bauland', at: () => { const B = BI.BAULAND; return { x: B.entry.x - B.uz * 10, z: B.entry.z + B.ux * 10, c: B }; }, body: 0xff9a2e, top: 0x3f8cff },
   { kind: 'noten_radio', at: () => { const R = BI.RADIO, B = R.bridge; return { x: B.bx, z: B.bz, c: R }; }, body: 0x1a1f5a, top: 0x6ad0ff },
+  { kind: 'sterne_maerchen', at: () => { const M = BI.MAERCHEN, p = M.at(-40, 12); return { x: p.x, z: p.z, c: M }; }, body: 0x6a2a9a, top: 0xffd23f },
   { kind: 'elemente_zotik', at: () => { const Z = BI.ZOTIK; return { x: Z.x + 8, z: Z.bridge.z1 + 14, c: Z }; }, body: 0x2a2a6a, top: 0xb48aff }
 ];
 /* Platz suchen: nahe am Wunschpunkt, frei und auf der richtigen Insel; Automat schaut zum Weltmittelpunkt der Hauptinsel */
