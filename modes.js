@@ -17,7 +17,7 @@ window.EASYGAMES_MODES = {
   'partyverse': { online: true, multi: true },
   'anmacha-stapelrausch': { online: true, multi: true },
   'gay-life': { online: true },
-  'bunte-insel': { online: true },
+  'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'anmacha-spielesammlung': { multi: true },
   'anmacha-memory': { multi: true },
   'anmacha-showdown': { multi: true },

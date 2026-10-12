@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0f1226">
+<title>Bunte Insel Controller</title>
+<style>
+:root{--bg:#0f1226;--bg2:#1b1f3d;--glass:rgba(255,255,255,.1);--line:rgba(255,255,255,.18);--tx:#fff;--mut:#aab0d8;--c:#ffb400;--A:#3fd07a;--B:#4da3ff;--H:#ff7ab8;--X:#ff8a3d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(120% 120% at 50% 0%,var(--bg2),var(--bg));color:var(--tx);font-family:Fredoka,system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{position:fixed;inset:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}
+.scr[hidden],[hidden]{display:none!important}
+h1{margin:0;font-size:30px;letter-spacing:.5px}
+p{margin:0;color:var(--mut);font-size:16px;line-height:1.35}
+input{font:inherit;font-size:34px;letter-spacing:10px;text-transform:uppercase;text-align:center;width:min(280px,80vw);padding:12px;border-radius:18px;border:2px solid var(--line);background:var(--glass);color:var(--tx);touch-action:auto;user-select:text;-webkit-user-select:text}
+.btn{font:inherit;font-weight:700;color:#fff;border:0;border-radius:20px;padding:14px 26px;font-size:20px;background:linear-gradient(180deg,#5ab8ff,#2b7fe0);box-shadow:0 6px 0 #1a56a8,0 10px 24px rgba(0,0,0,.35)}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #1a56a8}
+.btn.g{background:linear-gradient(180deg,#58e08f,#2aa35a);box-shadow:0 6px 0 #1b7a42,0 10px 24px rgba(0,0,0,.35)}
+.err{color:#ff9a9a;min-height:22px}
+/* Spielansicht */
+#pad{position:absolute;inset:0}
+#bar{position:absolute;left:10px;right:10px;top:max(8px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px;pointer-events:none}
+.chip{pointer-events:auto;display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:15px;font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px rgba(255,255,255,.2)}
+#link{width:9px;height:9px;border-radius:50%;background:#3fd07a}
+#link.off{background:#ff5a5a}
+#sp{flex:1}
+#menuBtn{pointer-events:auto;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--glass);color:#fff;font-size:22px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#stickBase{position:absolute;left:max(28px,env(safe-area-inset-left));bottom:max(28px,env(safe-area-inset-bottom));width:150px;height:150px;border-radius:50%;border:2px solid var(--line);background:radial-gradient(circle,rgba(255,255,255,.08),rgba(255,255,255,.02));opacity:.4;transition:opacity .15s}
+#stickBase.on{opacity:1}
+#stickKnob{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(220,225,255,.8));box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.ab{position:absolute;border-radius:50%;border:0;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.22),0 8px 22px rgba(0,0,0,.4);font:inherit;transition:transform .06s}
+.ab b{font-size:30px;line-height:1}.ab small{font-size:12px;font-weight:700;opacity:.95;max-width:92%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ab.dn{transform:scale(.92);filter:brightness(1.15)}
+#bA{right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:112px;height:112px;background:var(--A)}
+#bB{right:calc(max(18px,env(safe-area-inset-right)) + 124px);bottom:max(14px,env(safe-area-inset-bottom));width:86px;height:86px;background:var(--B)}
+#bH{right:calc(max(18px,env(safe-area-inset-right)) + 96px);bottom:calc(max(22px,env(safe-area-inset-bottom)) + 100px);width:74px;height:74px;background:var(--H)}
+#bX{right:max(18px,env(safe-area-inset-right));bottom:calc(max(22px,env(safe-area-inset-bottom)) + 124px);width:74px;height:74px;background:var(--X)}
+.ab.idle{opacity:.55}
+#hint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:13px;color:var(--mut);pointer-events:none}
+#banner{position:absolute;left:50%;top:max(60px,calc(env(safe-area-inset-top) + 52px));transform:translateX(-50%);padding:8px 16px;border-radius:14px;background:rgba(255,180,0,.2);border:1px solid rgba(255,180,0,.6);font-weight:700;font-size:14px;pointer-events:none;white-space:nowrap}
+#sheet{position:absolute;inset:0;background:rgba(8,10,28,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}
+#sheet .in{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(520px,100%)}
+#sheet button{font:inherit;font-weight:700;color:#fff;border:1px solid var(--line);border-radius:18px;background:var(--glass);padding:14px 6px;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:4px}
+#sheet button b{font-size:28px}
+#sheet button.on{border-color:var(--c);background:rgba(255,180,0,.22)}
+#sheet .x{grid-column:1/-1;background:linear-gradient(180deg,#5ab8ff,#2b7fe0);border:0;font-size:18px;padding:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <section class="scr" id="sJoin">
+    <div style="font-size:60px">🎮</div>
+    <h1>Bunte Insel</h1>
+    <p>Gib den Code vom Fernseher ein<br>oder scanne den QR-Code dort.</p>
+    <input id="code" maxlength="4" inputmode="text" autocapitalize="characters" autocomplete="off" placeholder="CODE" aria-label="Code vom Fernseher">
+    <button class="btn g" id="go">Verbinden</button>
+    <div class="err" id="err"></div>
+  </section>
+  <section class="scr" id="sWait" hidden>
+    <div style="font-size:54px" id="wIcon">🔌</div>
+    <h1 id="wTitle">Verbinde …</h1>
+    <p id="wText">Einen Moment bitte.</p>
+    <button class="btn" id="wBtn" hidden>Nochmal</button>
+  </section>
+  <section class="scr" id="sTitle" hidden>
+    <div style="font-size:60px">🏝️</div>
+    <h1>Bereit!</h1>
+    <p id="tInfo">Du bist verbunden.</p>
+    <button class="btn g" id="bStart" style="font-size:26px;padding:18px 40px">▶ Spielen</button><button class="btn" id="bPtr" style="font-size:16px;padding:10px 18px">🎨 Held wählen (Zeiger)</button>
+  </section>
+  <section id="pad" hidden>
+    <div id="bar"><div class="chip"><span class="dot" id="pDot"></span><span id="pName">Spieler</span></div><div class="chip">⭐ <span id="pStars">0</span></div><div class="chip"><span id="link"></span></div><div id="sp"></div><button id="menuBtn" aria-label="Menü">☰</button></div>
+    <div id="banner" hidden>🖱️ Zeiger-Modus · Stick bewegt · grün = Klick</div>
+    <div id="stickBase"><div id="stickKnob"></div></div>
+    <button class="ab" id="bX" hidden><b>👊</b><small>Aktion</small></button>
+    <button class="ab" id="bH"><b>👋</b><small>Hallo!</small></button>
+    <button class="ab" id="bB"><b>⤒</b><small>Springen</small></button>
+    <button class="ab" id="bA"><b>✋</b><small>Aktion</small></button>
+    <div id="hint">Rechts wischen = Kamera drehen</div>
+  </section>
+  <div id="sheet" hidden><div class="in">
+    <button data-k="fun"><b>🎉</b>Spaß</button><button data-k="wohin"><b>🧭</b>Wohin?</button><button data-k="pack"><b>🎒</b>Tasche</button>
+    <button data-k="log"><b>📋</b>Aufgaben</button><button data-k="pause"><b>⏸</b>Pause</button><button data-k="ptr" id="mPtr"><b>🖱️</b>Zeiger</button>
+    <button data-k="split" id="mSplit"><b>🪟</b>Splitscreen</button><button data-k="cam"><b>📷</b>Kamera</button><button data-k="leave"><b>🚪</b>Trennen</button>
+    <button class="x" id="close">✔ Zurück zum Spiel</button>
+  </div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<script>
+'use strict';
+(function () {
+  const $ = id => document.getElementById(id), PRE = 'bitv-';
+  const q = new URLSearchParams(location.search); let code = (q.get('c') || q.get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+  const S = { peer: null, conn: null, slot: -1, mode: 'title', ptr: false, split: false, tries: 0, hud: null, stick: [0, 0] };
+  const show = id => { for (const s of ['sJoin', 'sWait', 'sTitle', 'pad']) $(s).hidden = s !== id; };
+  const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) { } };
+  const send = d => { const c = S.conn; if (c && c.open) { try { c.send(d); } catch (e) { } } };
+  let wake = null; async function keepAwake() { try { if (navigator.wakeLock && !wake) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (e) { } }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && S.conn) keepAwake(); });
+  function wait(icon, title, text, btn) { $('wIcon').textContent = icon; $('wTitle').textContent = title; $('wText').textContent = text; $('wBtn').hidden = !btn; show('sWait'); }
+  function connect() {
+    if (code.length !== 4) { show('sJoin'); return; }
+    try { S.peer && S.peer.destroy(); } catch (e) { } S.conn = null; wait('🔌', 'Verbinde …', 'Code ' + code);
+    if (!window.Peer) { wait('📡', 'Kein Internet?', 'Die Verbindungs-Bibliothek konnte nicht geladen werden.', true); return; }
+    let done = false; const fail = (t, x) => { if (done) return; done = true; wait('😕', t, x, true); };
+    const p = new Peer(); S.peer = p; const to = setTimeout(() => fail('Keine Antwort', 'Ist der Fernseher im TV-Modus und der Code richtig?'), 14000);
+    p.on('error', e => { clearTimeout(to); fail(e && e.type === 'peer-unavailable' ? 'Code nicht gefunden' : 'Verbindungsproblem', e && e.type === 'peer-unavailable' ? 'Stimmt der Code am Fernseher?' : 'Bitte nochmal versuchen.'); });
+    p.on('open', () => {
+      const c = p.connect(PRE + code, { reliable: false }); S.conn = c;
+      c.on('open', () => { if (done) return; done = true; clearTimeout(to); try { localStorage.setItem('bi-tv-name', $('pName').textContent); } catch (e) { } send({ t: 'hi', name: nameGuess() }); keepAwake(); });
+      c.on('data', onData); c.on('close', lost); c.on('error', lost);
+    });
+  }
+  function nameGuess() { try { return localStorage.getItem('bi-tv-name') || ''; } catch (e) { return ''; } }
+  function lost() { if (S.slot < 0 && !$('sWait').hidden) return; S.slot = -1; $('link').className = 'off'; if (S.tries++ < 6) { wait('📡', 'Verbindung weg …', 'Ich versuche es nochmal.'); setTimeout(connect, 1200 * S.tries); } else wait('😕', 'Getrennt', 'Tippe auf „Nochmal“.', true); }
+  function onData(d) {
+    if (!d || typeof d !== 'object') return;
+    if (d.t === 'w') { S.slot = d.slot; S.tries = 0; $('pName').textContent = d.name; $('pDot').style.background = d.color; document.documentElement.style.setProperty('--c', d.color); $('link').className = ''; S.split = !!d.split; setMode(d.m || 'title'); }
+    else if (d.t === 'full') wait('🙈', 'Voll', 'Es sind schon 4 Spieler dabei.', true);
+    else if (d.t === 'h') hud(d);
+    else if (d.t === 'bye') wait('👋', 'Fernseher beendet', 'Bis bald!', true);
+  }
+  function setMode(m) {
+    S.mode = m; if (m === 'title') { show('sTitle'); return; }
+    show('pad'); const menu = m === 'menu'; $('banner').hidden = !(menu || S.ptr); $('hint').textContent = menu ? 'Wischen = Scrollen' : 'Rechts wischen = Kamera drehen';
+    $('bH').hidden = menu; $('bX').hidden = menu || (S.hud && S.hud.x && S.hud.x[2]) ; setBtn('bA', menu ? ['👆', 'Klick'] : S.hud && S.hud.a); setBtn('bB', menu ? ['↩', 'Zurück'] : S.hud && S.hud.j);
+  }
+  function setBtn(id, v) { const b = $(id); if (!v) return; b.querySelector('b').textContent = v[0]; b.querySelector('small').textContent = v[1]; b.classList.toggle('idle', !!v[3]); }
+  function hud(d) {
+    S.hud = d; $('pStars').textContent = d.st | 0; if (d.nm) $('pName').textContent = d.nm; S.split = !!d.sp; $('mSplit').classList.toggle('on', S.split); if (d.m !== S.mode) { setMode(d.m); return; }
+    if (S.mode === 'menu') return; setBtn('bA', d.a); setBtn('bB', d.j); setBtn('bH', d.h); setBtn('bX', d.x); $('bX').hidden = !d.x || !!d.x[2]; $('bH').hidden = !d.h || !!d.h[2];
+  }
+  /* ---- Stick (erscheint dort, wo der Daumen aufsetzt) ---- */
+  const base = $('stickBase'), knob = $('stickKnob'); let sid = null, sc = [0, 0], cid = null, cl = [0, 0], lastS = 0;
+  const R = 62;
+  function stickMove(x, y, force) { let dx = x - sc[0], dy = y - sc[1]; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; let nx = dx / R, ny = -dy / R; if (Math.hypot(nx, ny) < .1) nx = ny = 0; S.stick = [nx, ny]; const n = performance.now(); if (force || n - lastS > 33) { lastS = n; send({ t: 's', x: +nx.toFixed(2), y: +ny.toFixed(2) }); } }
+  function stickEnd() { sid = null; base.classList.remove('on'); base.style.left = base.style.top = base.style.bottom = ''; S.stick = [0, 0]; knob.style.transform = ''; send({ t: 's', x: 0, y: 0 }); }
+  const pad = $('pad');
+  pad.addEventListener('pointerdown', e => {
+    if (e.target.closest('.ab,.chip,#menuBtn')) return; e.preventDefault();
+    if (e.clientX < innerWidth * .5 && sid == null) { sid = e.pointerId; sc = [e.clientX, e.clientY]; base.style.bottom = 'auto'; base.style.left = (e.clientX - 75) + 'px'; base.style.top = (e.clientY - 75) + 'px'; base.classList.add('on'); try { pad.setPointerCapture(e.pointerId); } catch (x) { } stickMove(e.clientX, e.clientY, true); }
+    else if (cid == null) { cid = e.pointerId; cl = [e.clientX, e.clientY]; try { pad.setPointerCapture(e.pointerId); } catch (x) { } }
+  });
+  pad.addEventListener('pointermove', e => {
+    if (e.pointerId === sid) stickMove(e.clientX, e.clientY);
+    else if (e.pointerId === cid) { const dx = e.clientX - cl[0], dy = e.clientY - cl[1]; cl = [e.clientX, e.clientY]; send({ t: 'c', dx: +dx.toFixed(1), dy: +dy.toFixed(1) }); }
+  });
+  const up = e => { if (e.pointerId === sid) stickEnd(); if (e.pointerId === cid) cid = null; };
+  pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
+  /* ---- Tasten ---- */
+  for (const [id, k] of [['bA', 'A'], ['bB', 'B'], ['bH', 'H'], ['bX', 'X']]) {
+    const b = $(id); let on = false;
+    b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (on) return; on = true; b.classList.add('dn'); buzz(k === 'A' ? 22 : 12); try { b.setPointerCapture(e.pointerId); } catch (x) { } send({ t: 'b', k, d: 1 }); });
+    const off = () => { if (!on) return; on = false; b.classList.remove('dn'); send({ t: 'b', k, d: 0 }); };
+    b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+  }
+  /* ---- Menü ---- */
+  $('menuBtn').addEventListener('click', () => { $('sheet').hidden = false; });
+  $('close').addEventListener('click', () => { $('sheet').hidden = true; });
+  $('sheet').addEventListener('click', e => {
+    const b = e.target.closest('button[data-k]'); if (!b) return; const k = b.dataset.k;
+    if (k === 'leave') { send({ t: 'k', k: 'leave' }); try { S.conn.close(); S.peer.destroy(); } catch (x) { } S.slot = -1; wait('👋', 'Getrennt', 'Tippe auf „Nochmal“, um wieder dabei zu sein.', true); $('sheet').hidden = true; return; }
+    if (k === 'ptr') { S.ptr = !S.ptr; $('mPtr').classList.toggle('on', S.ptr); $('banner').hidden = !(S.ptr || S.mode === 'menu'); }
+    send({ t: 'k', k }); if (k !== 'ptr' && k !== 'split') $('sheet').hidden = true;
+  });
+  $('go').addEventListener('click', () => { code = $('code').value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); if (code.length !== 4) { $('err').textContent = 'Der Code hat 4 Zeichen.'; return; } $('err').textContent = ''; S.tries = 0; connect(); });
+  $('code').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').click(); });
+  $('wBtn').addEventListener('click', () => { S.tries = 0; connect(); });
+  $('bStart').addEventListener('click', () => { send({ t: 'k', k: 'start' }); });
+  $('bPtr').addEventListener('click', () => { S.ptr = true; $('mPtr').classList.add('on'); send({ t: 'k', k: 'ptr' }); });
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  $('code').value = code; if (code.length === 4) connect(); else show('sJoin');
+  window.__ctl = S;
+})();
+</script>
+</body>
+</html>

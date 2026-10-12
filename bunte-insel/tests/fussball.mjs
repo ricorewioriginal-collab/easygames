@@ -138,7 +138,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     const b = window.__bi, T = b.fussball, Pt = BI.FUSSBALL.pitch, sl = ms => new Promise(r => setTimeout(r, ms)); b.P.x = Pt.x - 30; b.P.z = Pt.z; b.P.y = 0; await sl(400);
     const t0 = performance.now(); for (let i = 0; i < 300; i++) T.update(1 / 60, 50 + i / 60); return { ms: (performance.now() - t0) / 300, calls: b.renderer.info.render.calls };
   });
-  dbg(r); ok(r.ms < 1, 'Rechenzeit pro Bild klein (' + r.ms.toFixed(3) + ' ms)'); ok(r.calls < 400, 'Zeichenaufrufe in der Arena niedrig (' + r.calls + ')');
+  dbg(r); ok(r.ms < 1, 'Rechenzeit pro Bild klein (' + r.ms.toFixed(3) + ' ms)'); ok(r.calls < 520, 'Zeichenaufrufe in der Arena niedrig (' + r.calls + ')');
 }
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);

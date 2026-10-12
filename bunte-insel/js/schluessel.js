@@ -49,7 +49,7 @@ BI.buildSchluesselGround = function (c) {
     for (let i = 0; i < 3; i++) { const q = L(-64 + i * 2, 8 + i * 1.2); st.cyl(q.x, 0, q.z, 1.8 - i * .5, 2 - i * .5, .9, 0xe6cf98, 12); if (i < 2) st.cone(q.x, .9, q.z, .5, 1.2, 0xff5a5a, 6); }
     for (const [a, b, col] of [[-54, -6, 0xff5a8a], [-53, -4.4, 0x35d6e0], [-52, -2.8, 0xffd23f]]) { const q = L(a, b); st.box(q.x, 0, q.z, .5, 2.4, .12, col, ry + .3, .2); }
     for (const [a, b] of [[-66, -22], [-48, 14], [-70, 14], [-47, -26]]) palmish(a, b);
-    W.spots.strand = L(-60, 0); W.spots.palme = L(-62, -10); }
+    W.spots.sk_strand = L(-60, 0); W.spots.palme = L(-62, -10); }
   function palmish(a, b) { const q = L(a, b), h = 5 + rn() * 2; st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); }
   /* ---- Erwachens-Plattform: Glasmosaik-Kreis mit der großen Statue des Lichtwanderers Lio ---- */
   { const SA = -14, SB = 0, p = L(SA, SB), COL = [0x4da3ff, 0xffd23f, 0xff5a8a, 0x7a4ad8, 0x35d6e0, 0xffffff];
@@ -76,7 +76,7 @@ BI.buildSchluesselGround = function (c) {
   { zone(30, -36, 22, 0xe8c9a0); const HC = [0xe8965a, 0xf0b070, 0xd9785a, 0xf4c68a], RC = [0xa83a2a, 0x8a3a3a, 0x6a3a5a];
     [[16, -50, 9, 8, 6], [24, -50, 8, 8, 7], [44, -50, 9, 8, 6.5], [16, -18, 8, 7, 5.5], [48, -34, 8, 8, 6]].forEach(([a, b, w, d, h], i) => { bx(a, b, w, h, d, HC[i % 4]); const p = L(a, b); st.prism(p.x, h, p.z, d + 1, 2.4, w + 1, RC[i % 3], ry); for (let k = 0; k < 3; k++) { const q = L(a - d / 2 - .05, b - 2 + k * 2); lamp.box(q.x, 2 + (k % 2) * 1.8, q.z, .1, 1.1, .8, 0xffe9a0, ry); } solid(a, b, Math.max(w, d) * .62, h + 2); });
     /* Uhrturm */ { const A = 34, B = -44, p = L(A, B); bx(A, B, 6, 22, 6, 0xd9a070); st.prism(p.x, 22, p.z, 7, 6, 7, 0x6a3a5a, ry); for (const sa of [-3.1, 3.1]) { bx(A + sa, B, 3.8, 3.8, .2, 0xfff6d8, 14); bx(A + sa * 1.03, B, .2, 1.6, .15, 0x2a2a2a, 15); bx(A + sa * 1.03, B, 1.3, .2, .15, 0x2a2a2a, 15.6); } sph(A, B, 29.6, .8, GOLD); solid(A, B, 3.6, 26); W.spots.uhrturm = L(A - 7, B); W.spots.glocke = L(A - 4.2, B + 3); cyl(A - 4.2, B + 3, .1, .1, 2.2, 0x44485a, 0, 6); const g = L(A - 4.2, B + 3); st.sph(g.x, 2.6, g.z, .5, GOLD, 1, 1, 1.2, 1); }
-    /* Eisstand mit Streifendach */ { const A = 18, B = -28, p = L(A, B); bx(A, B, 4, 1.2, 2.4, 0xfff0e0); for (let k = 0; k < 6; k++) bx(A - 1.4, B - 2.1 + k * .84, .84, .25, 2.4, k % 2 ? 0xffffff : 0xff5a8f, 2.8); cyl(A - 1.2, B - 1.8, .08, .08, 2.8, 0x6a6a7a, 0, 6); cyl(A - 1.2, B + 1.8, .08, .08, 2.8, 0x6a6a7a, 0, 6); const q = L(A - .2, B); st.cone(q.x, 1.2, q.z, .5, 1.1, 0xe0a458, 6); st.sph(q.x, 2.4, q.z, .55, 0x7fd8ff, 1); solid(A, B, 2.4, 3); W.spots.eis = L(A - 3.2, B); }
+    /* Eisstand mit Streifendach */ { const A = 18, B = -28, p = L(A, B); bx(A, B, 4, 1.2, 2.4, 0xfff0e0); for (let k = 0; k < 6; k++) bx(A - 1.4, B - 2.1 + k * .84, .84, .25, 2.4, k % 2 ? 0xffffff : 0xff5a8f, 2.8); cyl(A - 1.2, B - 1.8, .08, .08, 2.8, 0x6a6a7a, 0, 6); cyl(A - 1.2, B + 1.8, .08, .08, 2.8, 0x6a6a7a, 0, 6); const q = L(A - .2, B); st.cone(q.x, 1.2, q.z, .5, 1.1, 0xe0a458, 6); st.sph(q.x, 2.4, q.z, .55, 0x7fd8ff, 1); solid(A, B, 2.4, 3); W.spots.sk_eis = L(A - 3.2, B); }
     /* Sonnenuntergangs-Hügel mit Bank */ hill(44, -20, 9, 4, .9, 1.7, 0xf0b070, 0xe8965a); { const q = bx(44, -20, 2.4, .5, .8, 0x8a5a33, 3.6 + .0); bx(44, -20.6, 2.4, .8, .15, 0x8a5a33, 4.1); W.spots.sonne = { x: q.x, z: q.z, y: 3.6 }; }
     for (const [a, b] of [[24, -34], [40, -26], [30, -22], [22, -40], [44, -42]]) lantern(a, b, 3.4, 0xffd890); path(14, -34, 52, -34, 3.4, 0xe8c9a0); path(30, -52, 30, -16, 3.4, 0xe8c9a0); W.spots.stadt = L(30, -30); }
   /* ---- Kristall-Burg mit Licht-Rätsel im Hof ---- */
@@ -95,7 +95,7 @@ BI.buildSchluesselGround = function (c) {
     const sb = (a, b, w, h, d, y0, col, yaw) => bx(HA + a, HB + b, w, h, d, col, y0, yaw);
     sb(0, 0, 3.2, 1.8, 7, .6, 0xe8453c); sb(0, 0, 2.4, 1.2, 4, 2.4, 0xf4f4ff); sb(0, -3.4, 1.6, 1.2, 1.6, 1.2, 0xffd23f); sb(0, 1.2, 2.6, .9, 1.2, 3.2, 0x4da3ff); /* Rumpf, Kuppel, Bug, Dach */
     for (const sd of [-1, 1]) { sb(sd * 2.9, 1, .6, 1.6, 4.4, .4, 0x4da3ff, 0); sb(sd * 2.9, -1.4, .4, 2.6, 1.2, .4, 0xffd23f); sb(sd * 1.1, 3.8, 1, 1, 1.4, .8, 0x7a4ad8); lamp.sph(L(HA, HB).x + (sd * 1.1) * -M.uz + 3.8 * M.ux, .9, L(HA, HB).z + (sd * 1.1) * M.ux + 3.8 * M.uz, .45, 0xffa23a, 1); }
-    sb(0, 3.8, 1.2, 4, 1.2, 1.2, 0xffffff); solid(HA, HB, 4, 6); W.spots.hafen = L(HA - 9, HB); W.spots.schiff = L(HA, HB); W.spots.mobil = L(-8, 22); for (const [a, b] of [[-8, 26], [-4, 30]]) { const q = L(a, b); W.vehicleSpawns.push({ type: 'keymobil', x: q.x, z: q.z, h: Math.atan2(M.ux, M.uz) + Math.PI / 2 }); } }
+    sb(0, 3.8, 1.2, 4, 1.2, 1.2, 0xffffff); solid(HA, HB, 4, 6); W.spots.hafen = L(HA - 9, HB); W.spots.sk_schiff = L(HA, HB); W.spots.mobil = L(-8, 22); for (const [a, b] of [[-8, 26], [-4, 30]]) { const q = L(a, b); W.vehicleSpawns.push({ type: 'keymobil', x: q.x, z: q.z, h: Math.atan2(M.ux, M.uz) + Math.PI / 2 }); } }
   /* ---- Wald der Schatten: dunkle Bäume, Leuchtpilze ---- */
   { const FA = -34, FB = 46; zone(FA, FB, 22, 0x4a3a6a); for (let i = 0; i < 20; i++) { const g = rn() * TAU, d = 4 + Math.sqrt(rn()) * 18, a = FA + Math.sin(g) * d, b = FB + Math.cos(g) * d; if (Math.hypot(a, b) > M.R - 12) continue; tree(a, b, 3 + rn() * 2.4, [0x2a1a4a, 0x3a2a6a, 0x1f1a3a][i % 3], 2 + rn() * .6); }
     for (let i = 0; i < 12; i++) { const g = rn() * TAU, d = 3 + rn() * 19, a = FA + Math.sin(g) * d, b = FB + Math.cos(g) * d; if (Math.hypot(a, b) > M.R - 8) continue; cyl(a, b, .1, .14, .5, 0xe8e0f8, 0, 6); glow(a, b, .6, .3, [0x9affc8, 0xc89aff, 0xffe27a][i % 3]); }
@@ -119,7 +119,7 @@ BI.createSchluessel = function (G) {
   const note = (f, d, ty, v, del) => { try { A.note && A.note(f, d, ty, v, del || 0); } catch (e) { } };
   const sign = (txt, x, y, z, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#2a2a6a'; c.strokeText(txt, 256, 50); c.fillStyle = '#fff3b0'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(x, y, z); scene.add(sp); return sp; };
   const sg = (txt, p, y, w) => sign(txt, p.x, y, p.z, w);
-  sg('🗝️ Schlüsselreich', SP.schluessel, 9, 13); sg('🗽 Lichtwanderer Lio', SP.statue, 30, 12); sg('🌴 Strand der Freunde', SP.strand, 9, 10); sg('🕰️ Dämmerstadt', SP.stadt, 16, 10); sg('🍦 Meersalz-Eis', SP.eis, 5, 6); sg('🏰 Kristall-Burg', SP.burg, 16, 10); sg('💡 Licht-Rätsel', SP.simon, 5, 6);
+  sg('🗝️ Schlüsselreich', SP.schluessel, 9, 13); sg('🗽 Lichtwanderer Lio', SP.statue, 30, 12); sg('🌴 Strand der Freunde', SP.sk_strand, 9, 10); sg('🕰️ Dämmerstadt', SP.stadt, 16, 10); sg('🍦 Meersalz-Eis', SP.sk_eis, 5, 6); sg('🏰 Kristall-Burg', SP.burg, 16, 10); sg('💡 Licht-Rätsel', SP.simon, 5, 6);
   sg('🚀 Sternen-Hafen', SP.hafen, 10, 9); sg('🌲 Wald der Schatten', SP.wald, 11, 11); sg('🍄 Wuschel-Dorf', SP.wuschel, 8, 9); sg('🗼 Schleier-Turm', { x: L(62, -38).x, z: L(62, -38).z }, 25, 11); sg('🌇 Sonnenhügel', SP.sonne, 7, 7);
   /* ---- Schlüsselloch-Säulen: grau = zu, golden = offen ---- */
   const pill = SP.pillars.map((q, k) => { const m = new THREE.Mesh(new THREE.OctahedronGeometry(.75, 0), new THREE.MeshBasicMaterial({ color: 0x555a70 })); m.scale.set(1, 1.5, 1); m.position.set(q.x, q.y, q.z); scene.add(m); sign(BI.SCHL_KEYS[k][1], q.x, q.y + 2.4, q.z, 2.6); return m; });
@@ -223,7 +223,7 @@ BI.createSchluessel = function (G) {
     if (P.veh || P.y > 12 || !onIsle()) return null; const s = S();
     if (Si.st === 'show') return { k: 'idle0', label: ['👀', 'Gut aufpassen …'] };
     if (nr(SP.simon, 4) && Si.st === 'idle') return { k: 'msimon', label: ['💡', 'Licht-Rätsel starten'] };
-    if (nr(SP.eis, 3.4)) return { k: 'meis', label: ['🍦', 'Meersalz-Eis holen'] };
+    if (nr(SP.sk_eis, 3.4)) return { k: 'meis', label: ['🍦', 'Meersalz-Eis holen'] };
     if (s.eis === 1 && nr(SP.uhrturm, 4.5)) return { k: 'mtilo', label: ['🍦', 'Eis an Tilo geben'] };
     if (nr(SP.glocke, 3.2)) return { k: 'mbell', label: ['🔔', 'Glocke läuten'] };
     if (nr(SP.sonne, 2.6) && P.y > 3) return { k: 'msun', label: ['🌇', 'Sonnenuntergang ansehen'] };
@@ -238,7 +238,7 @@ BI.createSchluessel = function (G) {
     if (!n) return; const s = S();
     if (n.k === 'mswing') { swing(); return; }
     if (n.k === 'msimon') { simonStart(); return; }
-    if (n.k === 'meis') { A.pop && A.pop(); fx.burst(SP.eis.x, 1.6, SP.eis.z, 10, [[1, .6, .8], [.6, .9, 1], [1, 1, 1]], 2.4, 1, 28, 3); if (!s.eis) { s.eis = 1; persist(); say('🍦 Meersalz-Eis! Süß und salzig. Uhrmacher Tilo hätte sicher auch gern eins …', 4200); } else say('🍦 Lecker! Das Eis schmeckt nach Meer und Sonne.', 2400); return; }
+    if (n.k === 'meis') { A.pop && A.pop(); fx.burst(SP.sk_eis.x, 1.6, SP.sk_eis.z, 10, [[1, .6, .8], [.6, .9, 1], [1, 1, 1]], 2.4, 1, 28, 3); if (!s.eis) { s.eis = 1; persist(); say('🍦 Meersalz-Eis! Süß und salzig. Uhrmacher Tilo hätte sicher auch gern eins …', 4200); } else say('🍦 Lecker! Das Eis schmeckt nach Meer und Sonne.', 2400); return; }
     if (n.k === 'mtilo') { s.eis = 2; addStars(1); persist(); A.fanfare && A.fanfare(); say('🕰️ Tilo: „Mmmh, danke! Jetzt läute die Glocke am Uhrturm für mich!“ +1 ⭐', 4600); return; }
     if (n.k === 'mbell') { if (s.eis < 2) { say('🔔 Tilo hätte gern erst ein Meersalz-Eis von Sal. Dann läutest du die Glocke!', 3600); return; } note(392, 1.6, 'sine', .14); note(523, 1.6, 'sine', .1, .05); fx.burst(SP.glocke.x, 3, SP.glocke.z, 16, [[1, .9, .5], [1, 1, 1]], 3, 1, 28, 2); if (!s.bell) { s.bell = 1; persist(); unlock('stadt'); } else say('🔔 Bimm-bamm! Die Glocke klingt über die ganze Insel.', 2600); return; }
     if (n.k === 'msun') { fx.burst(SP.sonne.x, 5, SP.sonne.z, 20, [[1, .6, .3], [1, .8, .5], [1, .5, .8]], 4, 1.2, 28, 1); if (!s.once.sun) { s.once.sun = 1; persist(); addStars(1); say('🌇 Wie schön! Der Himmel ist orange und rosa. +1 ⭐', 3600); } else say('🌇 Der Sonnenuntergang ist wunderschön.', 2400); return; }
