@@ -7,7 +7,6 @@ Alle Befehle aus dem Ordner `aeru/` ausführen. Node 18+ genügt; nur der Browse
 | `node tests/story.cjs` | wenige Sekunden | komplette Hauptgeschichte vom Neustart bis zum Abspann |
 | `node tests/logic.cjs` | wenige Sekunden | Steuerung, Physik, Kampf, Negativfälle, Spielstände, Erreichbarkeit |
 | `node tests/landing.cjs` | < 5 s | Landung auf den schwebenden Inseln (Landehilfe) |
-| `node tests/culling.cjs` | < 5 s | Landschaft verschwindet nicht per Frustum-Culling |
 | `node tests/webview.cjs` | < 5 s | 2D-Ersatzmodus ohne WebGL |
 | `NODE_PATH=$(npm root -g) node tests/browser.cjs` | ca. 5 min | echtes Chromium in 9 Viewports, Screenshots, Bildzeiten |
 

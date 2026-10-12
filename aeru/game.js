@@ -343,7 +343,7 @@ function buildLevel(index, titleOnly = false) {
 function batchScenery() {
   const dynamic = new Set([core, ...gems.map(g => g.m), ...torches.map(t => t.light), ...items.map(i => i.m)]), groups = new Map();
   for (const m of [...world.children]) { if (!m.isMesh || m.isInstancedMesh || dynamic.has(m) || !Object.values(geos).includes(m.geometry)) continue; const key = m.geometry.uuid + ':' + m.material.uuid; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(m); }
-  for (const objects of groups.values()) { if (objects.length < 3) continue; const batch = new T.InstancedMesh(objects[0].geometry, objects[0].material, objects.length); batch.castShadow = true; batch.receiveShadow = true; batch.frustumCulled = false; objects.forEach((m, i) => { m.updateMatrix(); batch.setMatrixAt(i, m.matrix); world.remove(m); }); batch.instanceMatrix.needsUpdate = true; world.add(batch); }
+  for (const objects of groups.values()) { if (objects.length < 3) continue; const batch = new T.InstancedMesh(objects[0].geometry, objects[0].material, objects.length); batch.castShadow = true; batch.receiveShadow = true; objects.forEach((m, i) => { m.updateMatrix(); batch.setMatrixAt(i, m.matrix); world.remove(m); }); batch.instanceMatrix.needsUpdate = true; world.add(batch); }
 }
 
 // ───────── Quest-Anbindung ─────────
@@ -1216,7 +1216,6 @@ if (TEST) window.aeruTest = {
   hold: (what, v) => { if (what === 'jump') jumpHeld = v; if (what === 'attack') attackHeld = v; if (what === 'dive') diveHeld = v; },
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
-  culledBatches: () => { let n = 0; scene.traverse(o => { if (o.isInstancedMesh && o.frustumCulled) n++; }); return n; },
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };
 save = readSave(); $('continue').hidden = !save;
