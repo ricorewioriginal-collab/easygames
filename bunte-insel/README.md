@@ -403,3 +403,8 @@ Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verlie
 - „Betreten“ → eigener kleiner **Innenraum** (Puppenstube, weit draußen bei x≥3000, erst beim ersten Betreten gebaut). Je nach Gebäude: Bett, Tisch (Snack ⭐), Bücherregal (Tipps), **Schatztruhe** (einmal pro Haus, ⭐ + Futter), Bewohner zum Reden, Laden (einkaufen), Schmiede (hämmern), Fernrohr, Kristallkugel, Kamin, Thron, Pokal …
 - Die **Uralte Höhle** der Rätsel-Insel ist ein Höhlenraum mit Abstieg ins Mini-Spiel. Das Block-Rätsel hat jetzt eine leuchtende Zielplatte mit Lichtstrahl und Schild.
 - Sticker: Türöffner (5), Dorfentdecker (20), Weltenbummler (40), Truhenfinder (10). Aufgabenliste „🚪 Gebäude erkunden“. Test: `node bunte-insel/tests/innen.mjs`.
+
+### 📺 Fernseher-Modus: einfacher & stabiler
+- Knopf heißt jetzt **„Spiel am Fernseher öffnen“**. Am Handy öffnet er direkt den **Controller** (merkt sich den letzten Code); am Computer/Fernseher zeigt er Code + QR.
+- Der Fernseher behält seinen **Code** (gleiches Gerät = gleicher Code); das Handy verbindet sich beim nächsten Mal von allein.
+- Controller: stille **Auto-Wiederholung** (bis 5×), verlässlicher Kanal, „Hallo“ wird wiederholt, bis der Fernseher antwortet → klappt auch beim ersten Mal. Test: `tests/tvhandy.mjs`.

@@ -805,7 +805,7 @@
   { const pad = $('mpPad'); for (const ch of PAD) { const b = document.createElement('button'); b.textContent = ch; b.onclick = () => { if (joinCode.length < 4) { joinCode += ch; renderJoin(); } }; pad.appendChild(b); }
     const del = document.createElement('button'); del.className = 'wide'; del.textContent = '⌫'; del.onclick = () => { joinCode = joinCode.slice(0, -1); renderJoin(); }; pad.appendChild(del);
     const go = document.createElement('button'); go.className = 'go'; go.textContent = 'Los! ▶'; go.onclick = mpJoinGo; pad.appendChild(go); }
-  $('mpHost').addEventListener('click', mpHost); $('mpJoin').addEventListener('click', () => { joinCode = ''; mpSay('📺 Auch Fernseher-Codes gehen: dein Handy wird dann der Controller.'); mpShow('join'); }); $('mpTv').addEventListener('click', () => { closeMp(); tv.start().catch(() => { }); });
+  $('mpHost').addEventListener('click', mpHost); $('mpJoin').addEventListener('click', () => { joinCode = ''; mpSay('📺 Auch Fernseher-Codes gehen: dein Handy wird dann der Controller.'); mpShow('join'); }); $('mpTv').addEventListener('click', () => { closeMp(); tvButton(); });
   $('mpBack').addEventListener('click', mpBack); $('mpStop').addEventListener('click', () => { net.close(); mpShow('choose'); mpSay('Verbindung beendet.'); });
   $('mpCopy').addEventListener('click', () => { try { navigator.clipboard.writeText(net.link()); mpSay('Link kopiert! 📋'); } catch (e) { mpSay(net.link()); } });
   $('bMulti').addEventListener('click', () => openMp('menu')); $('bFriendsP').addEventListener('click', () => openMp('pause')); $('friends').addEventListener('click', () => openMp('play'));
@@ -1261,7 +1261,8 @@
   const sammeln = BI.createSammeln({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), note: k => meta.note(k), night: () => night, setStick, updateButtons: f => updateButtons(f), zoo: () => farm.openBook(), room: () => room.build(), share: () => shareRoomSoon(), rainbow: () => weather && weather.rainbow() });
   const tv = BI.createTv({ scene, camera, renderer, W, P, inp, cam, A, fx, say, state: () => state, uiBusy, setStick, stars: () => save.stars, heroName, startGame: () => $('bStart').click(), groundAt: (x, z, y) => Math.max(W.groundY(x, z), W.floorAt ? W.floorAt(x, z, y) : 0),
     makeMate: (i, name) => { const c = BI.makeChar(charOpts({ hero: 'custom', shirt: (i * 3 + 2) % BI.SHIRTS.length, hat: 0, eq: {}, cu: { skin: i % BI.SKINS.length, hair: (i * 2 + 1) % BI.HAIRS.length, pants: i, shoe: i, eye: i, mouth: 1 } }, name)); scene.add(c.group); return c; }, dragHold: on => { if (on) drag.id = -99; else if (drag.id === -99) drag.id = null; } });
-  $('bTv').addEventListener('click', () => { tv.start().catch(() => { }); });
+  function tvButton() { if (tv.isPhone()) tv.openController(); else tv.start().catch(() => { }); } /* Handy: Controller öffnet sich direkt; Computer/Fernseher: Code + QR */
+  $('bTv').addEventListener('click', tvButton);
   if (tv.isTvDevice()) tv.start().catch(() => { });
   $('albumBook').addEventListener('click', () => { kids.close(); sammeln.show(); });
   const tafeln = BI.createTafeln({ scene, W, A, P, say });
