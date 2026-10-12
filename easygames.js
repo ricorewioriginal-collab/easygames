@@ -8,7 +8,7 @@
  *      <div data-easygames="zotik"></div>
  *      <div data-easygames="all" data-ratio="4/3"></div>
  *    Optional: data-width, data-max-width, data-ratio, data-height, data-radius, data-title,
- *    data-fullscreen="false" (blendet den Vollbild-Knopf aus)
+ *    data-fullscreen="false" (blendet den Vollbild-Knopf aus), data-tv-link="false" (blendet den TV-Link bei Mehrspieler-Spielen aus)
  *
  * 3) Variante B – per JavaScript:
  *      const gameId = 'anmacha-snake';
@@ -19,6 +19,7 @@
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
+ *      EasyGames.tvUrl('anmacha-kart');                       // Link für den TV (nur Mehrspieler-Spiele, sonst null)
  *      EasyGames.device();                                    // Geräteerkennung (siehe device.js): { type, role, os, input, … }
  *      EasyGames.guide('zotik', cb);                          // Anleitung + Steuerung (lädt guides.js bei Bedarf)
  */
@@ -70,9 +71,31 @@
     return w;
   }
   EG.fullscreen = fullscreen;
+  // Zeile unter Mehrspieler-Spielen: Link für den TV (anzeigen/kopieren)
+  function tvRow(g, o) {
+    if (o.tvLink === false || o.tvLink === 'false' || !multi(g)) return null;
+    var u = tvUrl(g), r = document.createElement('div'), a = document.createElement('a'), b = document.createElement('button');
+    r.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;font:14px system-ui,sans-serif';
+    r.appendChild(document.createTextNode('\uD83D\uDCFA Am TV spielen: '));
+    a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = u; a.style.cssText = 'word-break:break-all';
+    b.type = 'button'; b.textContent = 'Link kopieren'; b.style.cssText = 'min-height:36px;padding:0 12px;border-radius:999px;border:1px solid currentColor;background:none;color:inherit;font:inherit;cursor:pointer';
+    b.onclick = function () {
+      function ok() { var t = b.textContent; b.textContent = 'Kopiert \u2713'; setTimeout(function () { b.textContent = t; }, 1500); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(ok, function () { window.prompt('Link für den TV:', u); });
+      else window.prompt('Link für den TV:', u);
+    };
+    r.appendChild(a); r.appendChild(b);
+    return r;
+  }
   EG.ready = function (cb) { if (games) cb(); else waiting.push(cb); };
-  EG.list = function () { return (games || []).map(function (g) { return { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: abs(g.path), card: g.img ? abs(g.img) : null }; }); };
-  EG.get = function (id) { var g = games && find(id); return g ? { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: abs(g.path), card: g.img ? abs(g.img) : null } : null; };
+  function modesOf(g) { var m = {}, a = (window.EASYGAMES_MODES || {})[g.id] || {}, b = g.modes || {}, k; for (k in a) m[k] = a[k]; for (k in b) m[k] = b[k]; return m; }
+  function multi(g) { var m = modesOf(g); return !!(m.pad || m.online || m.multi); }
+  // Der richtige Link für TV-Gaming: öffentliche Spielseite (+ ?tv, wo das Spiel es kennt) – auch wenn diese Seite in einer App oder auf localhost läuft
+  function tvUrl(g) { var D = window.EasyGamesDevice; return D ? D.tvUrl(g.path, modesOf(g).tvParam, base) : abs(g.path); }
+  function info(g) { return { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: abs(g.path), card: g.img ? abs(g.img) : null, multiplayer: multi(g), modes: modesOf(g), tvUrl: multi(g) ? tvUrl(g) : null }; }
+  EG.list = function () { return (games || []).map(info); };
+  EG.get = function (id) { var g = games && find(id); return g ? info(g) : null; };
+  EG.tvUrl = function (id) { var g = games && find(id); return g && multi(g) ? tvUrl(g) : null; };
   EG.url = function (id) { var g = games && find(id); return g ? abs(g.path) : null; };
   EG.baseUrl = base;
   EG.device = function () { return window.EasyGamesDevice ? window.EasyGamesDevice.get() : null; };
@@ -92,7 +115,9 @@
       var g = find(o.game);
       if (!g) { console.error('EasyGames: unbekanntes Spiel "' + o.game + '"'); return; }
       f = frame(abs(g.path), o.title || g.title, o);
-      t.appendChild(wrap(f, o));
+      var node = wrap(f, o), row = tvRow(g, o);
+      if (row) { var box = document.createElement('div'); box.style.cssText = 'width:' + (o.width || '100%') + ';max-width:' + (o.maxWidth || '960px'); node.style.width = '100%'; node.style.maxWidth = 'none'; box.appendChild(node); box.appendChild(row); node = box; }
+      t.appendChild(node);
     });
     return t;
   };
@@ -110,7 +135,7 @@
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
-      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen };
+      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink };
       if (d.easygames === 'all') EG.library(n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
@@ -121,5 +146,6 @@
     q.forEach(function (cb) { cb(); });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
   }
-  if (games) start(); else load('games.js', function () { games = window.EASYGAMES_GAMES; start(); });
+  function withModes() { if (window.EASYGAMES_MODES) start(); else load('modes.js', start); }   // Mehrspieler-Angaben für die TV-Links
+  if (games) withModes(); else load('games.js', function () { games = window.EASYGAMES_GAMES; withModes(); });
 })();

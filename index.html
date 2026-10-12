@@ -201,6 +201,7 @@
     <h3 id="sTitle">Teilen</h3>
     <label for="sLink">Direkter Link zum Spiel</label>
     <input id="sLink" readonly>
+    <div id="sTvBox" class="hidden"><label for="sTv">📺 Link für den TV (Mehrspieler)</label><input id="sTv" readonly style="margin-top:4px"><div class="row" style="margin-top:6px"><button class="primary" data-copy="sTv">TV-Link kopieren</button></div></div>
     <div class="row"><button class="primary" data-copy="sLink">Link kopieren</button><button class="ib" id="sNative">Teilen …</button><a class="ib" id="sOpen" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit">Neuer Tab ↗</a></div>
     <label for="sCode">Einbetten (iframe)</label>
     <textarea id="sCode" readonly></textarea>
@@ -215,6 +216,7 @@
   <div class="box">
     <h3 id="gTitle"></h3>
     <div id="gBody"></div>
+    <div id="gTvBox" class="hidden"><h4 style="margin:14px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)">📺 Am TV spielen</h4><p id="gTvText" style="margin:0 0 6px"></p><input id="gTv" readonly style="width:100%;font:13px ui-monospace,Menlo,Consolas,monospace;padding:10px;border-radius:10px;border:1px solid rgba(0,229,255,.3);background:#04070d;color:#9ff"><div class="row" style="margin-top:6px"><button class="primary" data-copy="gTv">TV-Link kopieren</button></div></div>
     <div class="row" style="margin-top:14px"><button class="primary" id="gPlay">Spielen ▶</button><button class="ib" id="gClose" style="margin-left:auto">Schließen</button></div>
   </div>
 </div>
@@ -239,7 +241,7 @@ const embedMode = new URLSearchParams(location.search).has('embed');
 if (embedMode) document.body.classList.add('embed-mode');
 const params = new URLSearchParams(location.search);
 // Geräteerkennung: device.js (TV, Handy, Tablet, Computer). Erzwingen mit ?device=tv|phone|tablet|desktop, ?tv=1 / ?tv=0
-if (!window.EasyGamesDevice) window.EasyGamesDevice = { get: () => ({ type: 'desktop', role: 'both', input: [], orientation: 'landscape' }), on: () => () => {}, is: () => false };   // device.js fehlt: ohne Erkennung weiterlaufen
+if (!window.EasyGamesDevice) window.EasyGamesDevice = { get: () => ({ type: 'desktop', role: 'both', input: [], orientation: 'landscape' }), on: () => () => {}, is: () => false, tvUrl: p => new URL(p, location.href).href };   // device.js fehlt: ohne Erkennung weiterlaufen
 const DEV = EasyGamesDevice.get(), MODES = window.EASYGAMES_MODES || {};
 // Fähigkeiten eines Spiels: modes.js und/oder direkt am Eintrag in games.js (modes: { pad: true, … })
 const modesOf = g => Object.assign({}, MODES[g.id], g.modes);
@@ -331,6 +333,9 @@ function goFull() {
   try { const r = req.call(el); if (r && r.catch) r.catch(() => {}); } catch (e) {}
 }
 const tvQuery = g => { const p = modesOf(g).tvParam; return isTv && p ? '?' + (typeof p === 'string' ? p.replace(/^\?/, '') : 'tv') : ''; };
+const isMulti = g => { const m = modesOf(g); return !!(m.pad || m.online || m.multi); };
+// Der richtige Link für TV-Gaming: öffentliche Spielseite (auch wenn die Übersicht in einer App/auf localhost läuft), mit ?tv wo das Spiel es kennt
+const tvLink = g => EasyGamesDevice.tvUrl(g.path, modesOf(g).tvParam);
 const gameUrl = g => abs(g.path) + tvQuery(g);   // am TV öffnen Spiele wie Kart Rush direkt die Lobby mit QR-Code
 function sendDevice() { try { $('frame').contentWindow.postMessage({ type: 'easygames:device', device: EasyGamesDevice.get() }, '*'); } catch (e) {} }
 EasyGamesDevice.on(() => { if (cur >= 0) sendDevice(); });
@@ -400,6 +405,7 @@ function openShare() {
   const g = GAMES[cur], url = abs(g.path);
   $('sTitle').textContent = g.title + ' teilen';
   $('sLink').value = url; $('sCode').value = iframeCode(url, g.title); $('sJs').value = jsSnippet(g.id); $('sOpen').href = url;
+  $('sTvBox').classList.toggle('hidden', !isMulti(g)); if (isMulti(g)) $('sTv').value = tvLink(g);
   $('sNative').classList.toggle('hidden', !navigator.share);
   $('share').classList.remove('hidden');
 }
@@ -416,6 +422,11 @@ function openGuide(i) {
   const p = document.createElement('p'); p.textContent = d ? d.anleitung : g.desc; sec('Spielanleitung', p);
   if (d && d.steuerung && d.steuerung.length) { const w = document.createElement('div'); fill(w, d.steuerung); sec('Bedienung', w.firstChild); }
   if (d && d.tipps && d.tipps.length) { const w = document.createElement('div'); fill(w, d.tipps); sec('Tipps', w.firstChild); }
+  const mm = modesOf(g), mult = isMulti(g); $('gTvBox').classList.toggle('hidden', !mult);
+  if (mult) {
+    $('gTv').value = tvLink(g);
+    $('gTvText').textContent = mm.pad ? 'Diesen Link am TV öffnen (z. B. im TV-Browser). Handys scannen dann den QR-Code im Spiel und werden zu Controllern.' : mm.online ? 'Diesen Link am TV öffnen. Weitere Geräte treten per Code oder QR-Code im Spiel bei.' : 'Diesen Link am TV öffnen, um das Spiel dort mit mehreren Spielern zu spielen.';
+  }
   $('guide').classList.remove('hidden'); $('gClose').focus();
 }
 function closeGuide() { $('guide').classList.add('hidden'); gi = -1; if (ret2 && document.contains(ret2)) ret2.focus({ preventScroll: true }); }

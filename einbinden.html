@@ -55,7 +55,7 @@
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
-    <a href="#geraet">Geräteerkennung</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
+    <a href="#geraet">Geräteerkennung</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
   <section id="wahl">
@@ -140,6 +140,7 @@
       <tr><td><code>data-radius</code></td><td><code>radius</code></td><td>12px</td><td>Eckenrundung</td></tr>
       <tr><td><code>data-title</code></td><td><code>title</code></td><td>Spieltitel</td><td>Titel für Screenreader</td></tr>
       <tr><td><code>data-fullscreen="false"</code></td><td><code>fullscreen:false</code></td><td>Knopf an</td><td>Vollbild-Knopf ausblenden</td></tr>
+      <tr><td><code>data-tv-link="false"</code></td><td><code>tvLink:false</code></td><td>Zeile an</td><td>TV-Link unter Mehrspieler-Spielen ausblenden</td></tr>
     </table></div>
     <h3>Funktionen</h3>
     <div class="tw"><table>
@@ -151,6 +152,7 @@
       <tr><td><code>EasyGames.get(id)</code> / <code>url(id)</code></td><td>Ein Spiel bzw. nur seine URL.</td></tr>
       <tr><td><code>EasyGames.guide(id, cb)</code></td><td>Anleitung und Bedienung als Objekt <code>{anleitung, steuerung, tipps}</code>.</td></tr>
       <tr><td><code>EasyGames.fullscreen(iframe)</code></td><td>Startet Vollbild; fällt auf einen neuen Tab zurück, wenn der Browser es nicht kann (z. B. iPhone).</td></tr>
+      <tr><td><code>EasyGames.tvUrl(id)</code></td><td>Link für den TV (öffentliche Adresse, ggf. mit <code>?tv</code>); <code>null</code> bei Einzelspielen, siehe <a href="#tvlink">TV-Link</a>.</td></tr>
       <tr><td><code>EasyGames.device()</code></td><td>Geräteinfos (Typ, Rolle, Eingaben …), siehe <a href="#geraet">Geräteerkennung</a>.</td></tr>
       <tr><td><code>EasyGames.scan()</code></td><td>Sucht neu hinzugefügte <code>data-easygames</code>-Elemente (für dynamische Seiten).</td></tr>
     </table></div>
@@ -264,6 +266,32 @@ parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
 // Bei gleicher Herkunft steht es auch als window.EASYGAMES_DEVICE bereit.</pre>
     <h3>Filter in der Übersicht</h3>
     <p>Karten zeigen Abzeichen (📱 Handy-Controller, 🌐 Online, 👥 Mehrspieler), und Filterknöpfe zeigen nur diese Spiele. Die Zuordnung steht in <code>modes.js</code>.</p>
+  </section>
+
+  <section id="tvlink">
+    <h2>Link für TV-Gaming (Mehrspieler)</h2>
+    <p>Bei jedem Mehrspieler-Spiel (📱 Handy-Controller, 🌐 Online, 👥 Mehrspieler) zeigt easygames den <b>richtigen Link für den TV</b>: die öffentliche Spielseite, bei Spielen mit TV-Parameter inklusive <code>?tv</code>. Der TV-Browser öffnet sie direkt als Vollbildseite, die Handys koppeln sich dann per QR-Code im Spiel.</p>
+    <h3>Wo der TV-Link erscheint</h3>
+    <ul>
+      <li><b>Übersicht:</b> im Anleitungsfenster (📖) und im Teilen-Dialog jedes Mehrspieler-Spiels, mit Kopieren-Knopf.</li>
+      <li><b>Eingebundene Spiele auf anderen Seiten:</b> <code>easygames.js</code> setzt unter jedes Mehrspieler-Spiel die Zeile „📺 Am TV spielen: …“ mit Link und Kopieren-Knopf. Ausblenden mit <code>data-tv-link="false"</code> bzw. <code>tvLink: false</code>.</li>
+      <li><b>Eigene Oberfläche:</b> <code>EasyGames.tvUrl('anmacha-kart')</code> liefert den Link (für Einzelspiele <code>null</code>). <code>EasyGames.list()</code> enthält <code>multiplayer</code>, <code>modes</code> und <code>tvUrl</code>.</li>
+      <li><b>Im Spiel selbst:</b> <code>EasyGamesKit.tvUrl()</code> – zum Anzeigen oder als QR-Code für den TV.</li>
+    </ul>
+    <h3>Auch in Apps und auf anderen Seiten richtig</h3>
+    <p>Ein TV kann keine Adresse einer App, von <code>localhost</code> oder aus dem lokalen Netz öffnen. Deshalb nimmt easygames für TV-Links immer eine <b>öffentliche</b> Adresse:</p>
+    <ol>
+      <li>Ist <code>window.EASYGAMES_PUBLIC_BASE</code> gesetzt, gilt diese (z. B. deine eigene Domain).</li>
+      <li>Sonst die Adresse, unter der easygames gerade läuft, falls sie öffentlich ist (<code>https://…</code>).</li>
+      <li>Sonst (App, <code>file://</code>, <code>localhost</code>, lokale IPs) die Standardadresse <code>https://ricorewioriginal-collab.github.io/easygames/</code>.</li>
+    </ol>
+<pre>&lt;script&gt;
+  // vor easygames.js bzw. device.js setzen – nur nötig, wenn die Spiele auf einer eigenen Domain liegen
+  window.EASYGAMES_PUBLIC_BASE = 'https://spiele.meine-seite.de/';
+&lt;/script&gt;</pre>
+    <div class="note">Der TV braucht Internet, auch wenn die Spiele in der App offline laufen: Er öffnet die öffentliche Seite. Läuft das Spiel selbst bereits auf dem TV, wird kein TV-Link gebraucht.</div>
+    <h3>Neues Mehrspieler-Spiel</h3>
+    <p>Sobald ein Spiel in <code>modes.js</code> (oder am Eintrag in <code>games.js</code>) <code>pad</code>, <code>online</code> oder <code>multi</code> hat, erscheint der TV-Link überall automatisch. Hat das Spiel einen Parameter, der am TV direkt die Lobby öffnet, kommt <code>tvParam</code> dazu.</p>
   </section>
 
   <section id="neu">

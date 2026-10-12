@@ -75,6 +75,8 @@ Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigati
 4. Anleitung und Bedienung in `guides.js` ergänzen (`anleitung`, `steuerung`, `tipps`). Ohne Eintrag zeigt die Übersicht die Kurzbeschreibung.
 5. `node tools/check-games.js` ausführen: prüft IDs, Pfade, Bilder, Anleitungen und Modi (Fehler stoppen, Warnungen sind Hinweise).
 
+Bei Mehrspieler-Spielen (`pad`, `online` oder `multi`) zeigen Übersicht, Einbettung (`easygames.js`) und `EasyGamesKit.tvUrl()` automatisch den **Link für TV-Gaming**: immer die öffentliche Spielseite (bei Apps/`localhost` die Standardadresse oder `window.EASYGAMES_PUBLIC_BASE`), mit `tvParam`, falls vorhanden.
+
 **Spiel-Vertrag, damit es überall sinnvoll läuft:** Das Spiel füllt die Seite (`100vw`/`100dvh`, kein Scrollen), funktioniert in einem iframe, auf Touch, mit Tastatur und mit Pfeiltasten/OK am TV, und behandelt `?join=CODE` (Controller) sowie, falls vorhanden, `?tv` (Gastgeber am TV). Hilfen dafür: `device.js` (Gerät erkennen) und `gamekit.js` (`EasyGamesKit.start({ controller, host, solo })`, `joinUrl()`, `fullscreenOnInput()`, `keepAwake()`, `back()`, `close()`). Details und Beispiele: `einbinden.html`.
 
 ## AnMaCha Radio Surfer: eigene Hindernisse
