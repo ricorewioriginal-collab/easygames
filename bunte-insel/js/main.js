@@ -715,8 +715,8 @@
     save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
     if (BI.TOYVEH.includes(it.slot)) spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
   }
-  function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; renderShop(); say('Frau Bunt: „Viel Spaß mit dem Spielzeug!“', 2200); }
-  function closeShop() { shopOpen = false; shopPanel.hidden = true; updateButtons(true); }
+  function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; document.body.classList.add('shopping'); renderShop(); }
+  function closeShop() { shopOpen = false; shopPanel.hidden = true; document.body.classList.remove('shopping'); updateButtons(true); }
   $('shopClose').addEventListener('click', closeShop);
 
 

@@ -26,7 +26,7 @@ const r = await p.evaluate(async () => {
   /* Quest-Log */
   document.getElementById('bLog').click(); await sl(300); const txt = document.getElementById('questNow').textContent; out.log = /Welten freischalten/.test(txt) && /Hauptquest/.test(txt) && /🔒/.test(txt) && !!document.querySelector('#questNow .lgBar'); document.getElementById('questClose').click();
   /* Fortschritt: Stadtinsel-Sticker erledigt → Stadtinsel offen, Rest zu */
-  b.save.stk = [...C.req]; await sl(1600); out.cityOpen = !C.lock.on && !!K.dbg.S().unl.CITY; out.stillLocked = M.lock.on && L.filter(I => I.lock.on).length === 14; out.walkIn = into(C) < C.r - 1;
+  b.save.stk = [...C.req]; for (let i = 0; i < 30 && (C.lock.on || !K.dbg.S().unl.CITY); i++) await sl(250); out.cityOpen = !C.lock.on && !!K.dbg.S().unl.CITY; out.stillLocked = M.lock.on && L.filter(I => I.lock.on).length === 14; out.walkIn = into(C) < C.r - 1;
   out.dest = !!K.lockedAt(M.O.x, M.O.z) && !K.lockedAt(C.O.x, C.O.z);
   K.setMode('free'); await sl(200); out.backFree = !K.on() && L.every(I => !I.lock.on) && !K.lockedAt(M.O.x, M.O.z); out.saved = b.save.mode === 'free';
   K.setMode('story'); await sl(200); out.again = K.on() && M.lock.on && !C.lock.on;
