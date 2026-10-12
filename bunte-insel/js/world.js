@@ -115,12 +115,16 @@ BI.buildWorld = function (scene) {
       else if (W.city && pz < -170 && Math.hypot(px - W.city.x, pz - W.city.z) < Math.hypot(px, pz) + 20 && Math.hypot(px - W.city.x, pz - W.city.z) < W.city.R + 40) { const dd = Math.hypot(px - W.city.x, pz - W.city.z) || 1, k = (W.city.R - r) / dd; px = W.city.x + (px - W.city.x) * k; pz = W.city.z + (pz - W.city.z) * k; hit = true; }
       else if (W.atlantis && W.atlantis.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Atlantis (unter der Erde) */ }
       else if (W.radio && W.radio.fix(px, pz, r, out)) { px = out.fx; pz = out.fz; hit = out.fhit; /* Funkwelle (Radio-Insel) */ }
+      else if (W.isles && isleWalk(px, pz, r)) { /* Brücke / kleine Inseln (Fußball, Märchenland …) */ }
+      else if (W.isles && isleClamp(out, px, pz, r)) { px = out.cx; pz = out.cz; hit = true; }
       else if (W.bauland && baulandWalk(px, pz, r)) { /* Brücke / Bauland */ }
       else if (W.bauland && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < W.bauland.R + 60 && Math.hypot(px - W.bauland.x, pz - W.bauland.z) < Math.hypot(px, pz)) { const dd = Math.hypot(px - W.bauland.x, pz - W.bauland.z) || 1, k = Math.min(1, (W.bauland.R - r) / dd); px = W.bauland.x + (px - W.bauland.x) * k; pz = W.bauland.z + (pz - W.bauland.z) * k; hit = true; }
       else { const k = (K.LIMIT - r) / rad; px *= k; pz *= k; hit = true; }
     }
     out.x = px; out.z = pz; out.hit = hit; return out;
   };
+  const isleWalk = (px, pz, r) => { for (const I of W.isles) { const b = I.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * I.ux + rz * I.uz, sd = -rx * I.uz + rz * I.ux; if (Math.hypot(px - I.x, pz - I.z) <= I.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3)) return true; } return false; };
+  const isleClamp = (out, px, pz, r) => { for (const I of W.isles) { const dd = Math.hypot(px - I.x, pz - I.z); if (dd < I.R + 60 && dd < Math.hypot(px, pz)) { const k = Math.min(1, (I.R - r) / (dd || 1)); out.cx = I.x + (px - I.x) * k; out.cz = I.z + (pz - I.z) * k; return true; } } return false; };
   const baulandWalk = (px, pz, r) => { const C = W.bauland, b = C.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * C.ux + rz * C.uz, sd = -rx * C.uz + rz * C.ux; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3); };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const drachenWalk = (px, pz, r) => { const C = W.drachen, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 + .2 && px < b.x1 - .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
@@ -130,7 +134,7 @@ BI.buildWorld = function (scene) {
   const rainbowWalk = (px, pz, r) => { const C = W.rainbow, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
   const cityWalk = (px, pz, r) => { const C = W.city, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - .2 && px < b.x1 + .2 && pz > b.z0 - 1 && pz < b.z1 + 1); };
   /* größter Abstand, bis zu dem es etwas zu sehen gibt (Inseln + Rand): dahinter ist die Luft zu Ende */
-  W.flyLimit = () => { if (W._fl) return W._fl; let m = K.LIMIT; for (const k of ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland']) { const C = W[k]; if (C && C.R) m = Math.max(m, Math.hypot(C.x, C.z) + C.R); } return W._fl = m + 30; };
+  W.flyLimit = () => { if (W._fl) return W._fl; let m = K.LIMIT; for (const k of ['zotik', 'city', 'park', 'rainbow', 'drachen', 'dampf', 'pups', 'bauland']) { const C = W[k]; if (C && C.R) m = Math.max(m, Math.hypot(C.x, C.z) + C.R); } for (const I of W.isles || []) m = Math.max(m, Math.hypot(I.x, I.z) + I.R); return W._fl = m + 30; };
   /* Boden unter dem Punkt? (Land, Brücke, Steg – kein Meer, kein Hindernis). Hubschrauber sinken über dem Wasser nicht tiefer als 8 m */
   W.landAt = (x, z) => { const p = W.resolve(x, z, 0, _o2, 0); return !p.hit; };
   /* Niedrige Podeste (Bühne, Sockel) zum Daraufsteigen: runde Scheiben mit Höhe y */
@@ -469,10 +473,12 @@ BI.buildWorld = function (scene) {
   BI.buildDampfGround({ W, st, lamp, ROADY });
   BI.buildDrachenGround({ W, st, lamp, ROADY });
   BI.buildBaulandGround({ W, st, lamp, ROADY });
+  BI.buildFussballGround({ W, st, lamp, ROADY });
+  BI.buildMaerchenGround({ W, st, lamp, ROADY });
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
   BI.buildRadioGround({ W, st, lamp, scene });
-  BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade(); BI.ZOTIK.addArcade(); BI.RADIO.addArcade();
+  BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade(); BI.ZOTIK.addArcade(); BI.RADIO.addArcade(); BI.buildExtraArcades({ W, st, lamp }); BI.ATLANTIS.addExtraArcade('blasen_atlantis', -13, 136, 0x0f5a73, 0x9fe3ff);
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
   { const x0 = -72, x1 = -46, z0 = 46, z1 = 66;
@@ -727,7 +733,7 @@ BI.buildWorld = function (scene) {
   water.rotation.x = -Math.PI / 2; water.position.y = -.35; scene.add(water); W.water = water; W.bigMeshes.push(water);
   const foam = new THREE.Mesh(new THREE.RingGeometry(K.R + 8, K.R + 16, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false }));
   foam.rotation.x = -Math.PI / 2; foam.position.y = -.2; scene.add(foam); W.foam = foam; W.bigMeshes.push(foam);
-  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); const f7 = new THREE.Mesh(new THREE.RingGeometry(W.drachen.R + 7, W.drachen.R + 13, 56), foam.material); f7.rotation.x = -Math.PI / 2; f7.position.set(W.drachen.x, -.2, W.drachen.z); scene.add(f7); const f8 = new THREE.Mesh(new THREE.RingGeometry(W.bauland.R + 7, W.bauland.R + 13, 96), foam.material); f8.rotation.x = -Math.PI / 2; f8.position.set(W.bauland.x, -.2, W.bauland.z); scene.add(f8); }
+  { const f2 = new THREE.Mesh(new THREE.RingGeometry(W.city.R + 7, W.city.R + 13, 56), foam.material); f2.rotation.x = -Math.PI / 2; f2.position.set(W.city.x, -.2, W.city.z); scene.add(f2); const f3 = new THREE.Mesh(new THREE.RingGeometry(W.park.R + 7, W.park.R + 13, 56), foam.material); f3.rotation.x = -Math.PI / 2; f3.position.set(W.park.x, -.2, W.park.z); scene.add(f3); const f4 = new THREE.Mesh(new THREE.RingGeometry(W.rainbow.R + 7, W.rainbow.R + 13, 56), foam.material); f4.rotation.x = -Math.PI / 2; f4.position.set(W.rainbow.x, -.2, W.rainbow.z); scene.add(f4); const f5 = new THREE.Mesh(new THREE.RingGeometry(W.pups.R + 7, W.pups.R + 13, 56), foam.material); f5.rotation.x = -Math.PI / 2; f5.position.set(W.pups.x, -.2, W.pups.z); scene.add(f5); const f6 = new THREE.Mesh(new THREE.RingGeometry(W.dampf.R + 7, W.dampf.R + 13, 56), foam.material); f6.rotation.x = -Math.PI / 2; f6.position.set(W.dampf.x, -.2, W.dampf.z); scene.add(f6); const f7 = new THREE.Mesh(new THREE.RingGeometry(W.drachen.R + 7, W.drachen.R + 13, 56), foam.material); f7.rotation.x = -Math.PI / 2; f7.position.set(W.drachen.x, -.2, W.drachen.z); scene.add(f7); const f8 = new THREE.Mesh(new THREE.RingGeometry(W.bauland.R + 7, W.bauland.R + 13, 96), foam.material); f8.rotation.x = -Math.PI / 2; f8.position.set(W.bauland.x, -.2, W.bauland.z); scene.add(f8); for (const I of W.isles || []) { const fi = new THREE.Mesh(new THREE.RingGeometry(I.R + 7, I.R + 13, 56), foam.material); fi.rotation.x = -Math.PI / 2; fi.position.set(I.x, -.2, I.z); scene.add(fi); } }
 
   /* ---------- Meshes ---------- */
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }

@@ -5,7 +5,7 @@
    Streams: https://stream.laut.fm/<Sendername> (laut.fm-Betrieb). Das laut.fm-Logo wird aus radio/lautfm.png geladen, sonst steht dort die Schrift „laut.fm“.
    Währung: Noten 🎵 (10 = 1 ⭐). Highlight-Spiel: Frequenz-Dreher (Geschick/Timing). Die Welt liegt weit weg auf einer eigenen Nacht-Insel.
    Lage: große Insel im Südosten der Hauptinsel, erreichbar über eine Brücke (wie die anderen Welten, ohne Portal). Alle Sender-Namen und Logos gehören den jeweiligen Betreibern (hier: RicoReWi Radioportal). */
-BI.RADIO = { x: 300, z: 230, R: 112, ring: 76, hub: 34, lautLogo: 'radio/lautfm.png', portalLogo: 'radio/logos/16.png',
+BI.RADIO = { x: 240, z: 184, R: 64, ring: 44, hub: 19, lautLogo: 'radio/lautfm.png', portalLogo: 'radio/logos/16.png',
   visual: slug => 'https://ricorewi-radio.de/visual-radio-tv.html?station=' + encodeURIComponent(slug) + '&app=1', /* Visual Radio (TV-Seite aus ricorewi-radio; app=1: ohne eigenen Ton – der Ton kommt vom Radio in der Spielwelt) */
   stations: [['RicoReWi Radio', 'ricorewi'], ['YourTime-FM', 'yourtime-fm'], ['RapRadio 24', 'rapradio24'], ['SchlagerPop 24', 'schlagerpop24'], ['ChartRadio 24', 'chartradio24'], ['ClubRadio 24', 'clubradio24'], ['AnMaCha 24', 'anmacha24'],
     ['RadioFloh!', 'radiofloh'], ['RockRadio 24', 'rockradio24'], ['ChristmasRadio 24', 'christmasradio24'], ['KultRadio 24', 'kultradio24'], ['Zocker-FM', 'zockerfm'], ['Special-Radio', 'special-radio']] };
@@ -29,25 +29,26 @@ BI.buildRadioGround = function (c) {
     floor(x, z) { const qx = x - Bz.ax, qz = z - Bz.az, t = qx * Bz.ux + qz * Bz.uz; if (t < 2 || t > Bz.L - 2 || Math.abs(qx * nx + qz * nz) > Bz.w / 2) return 0; return bh; } };
   /* Insel: Nacht-Bühne mit Neon-Rand, Felsunterseite */
   st.disc(X(0), Z(0), A.R, 0, 0x3a4272, 72); st.ring(X(0), Z(0), A.R - 3, A.R + 4, .012, STONE, 72); glow.ring(X(0), Z(0), A.R - 1.2, A.R - .8, .03, 0x6ad0ff, 72); st.cyl(X(0), -60.08, Z(0), A.R + 3.6, 8, 60, 0x2a2f55, 28);
-  for (let k = 0; k < 56; k++) { const a = k / 56 * TAU, x = X(Math.sin(a) * (A.R - 1.6)), z = Z(Math.cos(a) * (A.R - 1.6)); st.cyl(x, 0, z, .25, .3, 1.2, STONE, 6); if (k % 4 === 0) glow.sph(x, 1.5, z, .3, hexOf(k / 4, .6), 1); }
+  for (let k = 0; k < 36; k++) { const a = k / 36 * TAU, x = X(Math.sin(a) * (A.R - 1.6)), z = Z(Math.cos(a) * (A.R - 1.6)); st.cyl(x, 0, z, .25, .3, 1.2, STONE, 6); if (k % 4 === 0) glow.sph(x, 1.5, z, .3, hexOf(k / 4, .6), 1); }
   /* Hub: Platz, Ringe, Funkturm (Gitter) mit Antenne und Warnlicht, Sockel für das Portal-Logo */
-  st.disc(X(0), Z(0), A.hub, .012, 0x4a5388, 56); for (const [r0, r1, col] of [[8, 8.5, 0x6ad0ff], [20, 20.5, 0xff5ab4], [A.hub - 1, A.hub, 0xffd23f]]) glow.ring(X(0), Z(0), r0, r1, .03, col, 56);
+  st.disc(X(0), Z(0), A.hub, .012, 0x4a5388, 56); for (const [r0, r1, col] of [[6, 6.4, 0x6ad0ff], [12, 12.4, 0xff5ab4], [A.hub - 1, A.hub, 0xffd23f]]) glow.ring(X(0), Z(0), r0, r1, .03, col, 56);
   for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + Math.PI / 4; st.cyl(X(Math.sin(a) * 2.4), 0, Z(Math.cos(a) * 2.4), .15, .45, 34, 0xc9ccdc, 6); }
   for (let y = 4; y < 34; y += 5) { const r = 2.4 - y * .045; st.ring(X(0), Z(0), r, r + .2, y, 0xc9ccdc, 12); } st.cyl(X(0), 34, Z(0), .1, .3, 26, 0xc9ccdc, 6); st.cyl(X(0), 33, Z(0), 3.2, .5, .5, 0xd8d8e8, 12);
   glow.sph(X(0), 60.8, Z(0), .8, 0xff3b3b, 1); for (let k = 0; k < 3; k++) st.box(X(0), 22 + k * 4.5, Z(0), 6 - k * 1.5, .2, .2, 0xff5555 + k * 0x000010, k * 1.1); W.addCircle(X(0), Z(0), 3.6, false, 10);
-  st.cyl(X(0), 0, Z(0), 5.2, 5.6, .8, MARB, 20);
+  st.cyl(X(0), 0, Z(0), 4.2, 4.6, .8, MARB, 20);
   /* Arcade (Hub, Nordwest) */
-  A.addArcade = function () { const a = { x: X(-14), z: Z(-18) }, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W, st: ast, lamp: alamp, only: [{ kind: 'frequenz_radio', x: a.x, z: a.z, yaw: Math.atan2(X(0) - a.x, Z(0) - a.z), body: 0x1a1f5a, top: 0xff5ab4 }] }); A.group.add(ast.mesh(BI.mat())); if (!alamp.empty) A.group.add(alamp.mesh(W.lampMat)); };
+  A.addArcade = function () { const a = { x: X(-9), z: Z(-11) }, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W, st: ast, lamp: alamp, only: [{ kind: 'frequenz_radio', x: a.x, z: a.z, yaw: Math.atan2(X(0) - a.x, Z(0) - a.z), body: 0x1a1f5a, top: 0xff5ab4 }] }); A.group.add(ast.mesh(BI.mat())); if (!alamp.empty) A.group.add(alamp.mesh(W.lampMat)); };
   /* 13 Plätze */
+  const PS = .62, PR = 9.7; /* Plätze sind kleiner: Maße x PS, Platzradius PR */
   A.plots = ST.map(s => {
     const a = A.rot + (s.i + .5) / N * TAU, o = { x: Math.sin(a), z: Math.cos(a) }, t = { x: o.z, z: -o.x }, f = { x: -o.x, z: -o.z }, ry = Math.atan2(f.x, f.z), col = hexOf(s.i), C = { x: X(o.x * A.ring), z: Z(o.z * A.ring) };
-    const at = (u, w) => ({ x: C.x + t.x * u + o.x * w, z: C.z + t.z * u + o.z * w });
-    st.strip(X(o.x * (A.hub + A.ring - 15) / 2), Z(o.z * (A.hub + A.ring - 15) / 2), 5, A.ring - 15 - A.hub + 2, a, .015, 0x3a4170);
-    st.disc(C.x, C.z, 15.5, .02, hexOf(s.i, .18), 30); glow.ring(C.x, C.z, 15, 15.5, .035, col, 40);
+    const at = (u, w) => ({ x: C.x + t.x * u * PS + o.x * w * PS, z: C.z + t.z * u * PS + o.z * w * PS });
+    st.strip(X(o.x * (A.hub + A.ring - PR) / 2), Z(o.z * (A.hub + A.ring - PR) / 2), 4, A.ring - PR - A.hub + 2, a, .015, 0x3a4170);
+    st.disc(C.x, C.z, PR, .02, hexOf(s.i, .18), 30); glow.ring(C.x, C.z, PR - .5, PR, .035, col, 40);
     /* Statue: Sockel mit Logo-Tafel (die Tafel kommt zur Laufzeit) */
-    const sp = at(0, 3); st.cyl(sp.x, 0, sp.z, 3, 3.2, .6, MARB, 16); st.cyl(sp.x, .6, sp.z, 2.4, 2.6, .5, STONE, 16); st.cyl(sp.x, 1.1, sp.z, 1, 1.2, 1.3, MARB, 10); glow.ring(sp.x, sp.z, 3.3, 3.6, .65, col, 24); W.addCircle(sp.x, sp.z, 3.2, false, 2.4);
+    const sp = at(0, 3); st.cyl(sp.x, 0, sp.z, 1.9, 2.0, .6, MARB, 16); st.cyl(sp.x, .6, sp.z, 1.5, 1.6, .5, STONE, 16); st.cyl(sp.x, 1.1, sp.z, .7, .8, 1.1, MARB, 10); glow.ring(sp.x, sp.z, 2.05, 2.3, .65, col, 24); W.addCircle(sp.x, sp.z, 2.0, false, 2.2);
     /* Bildschirm: Rahmen auf zwei Pfosten (das Bild kommt zur Laufzeit) */
-    const sc = at(0, 11.5); for (const u of [-4.2, 4.2]) { const p = at(u, 11.5); st.cyl(p.x, 0, p.z, .3, .4, 2.4, DARK, 8); W.addCircle(p.x, p.z, .6, false, 2.4); } st.box(sc.x, 2.2, sc.z, 9.7, 5.6, .4, DARK, ry); st.box(sc.x, 2.1, sc.z, 9.9, .15, .5, col, ry); st.box(sc.x, 7.75, sc.z, 9.9, .15, .5, col, ry);
+    const sc = at(0, 11.5); for (const u of [-4.9, 4.9]) { const p = at(u, 11.5); st.cyl(p.x, 0, p.z, .25, .3, 1.6, DARK, 8); W.addCircle(p.x, p.z, .5, false, 1.6); } st.box(sc.x, 1.5, sc.z, 6.0, 3.6, .35, DARK, ry); st.box(sc.x, 1.4, sc.z, 6.2, .15, .45, col, ry); st.box(sc.x, 5.0, sc.z, 6.2, .15, .45, col, ry);
     /* Radio: Tisch + Gerät mit Lautsprechern und Antenne */
     const rp = at(7.5, -3.5); st.cyl(rp.x, 0, rp.z, .5, .6, 1, DARK, 8); st.box(rp.x, 1, rp.z, 2.6, 1.3, 1, 0x2a2f55, ry); st.box(rp.x, 2.25, rp.z, 2.7, .12, 1.1, col, ry); for (const sd of [-1, 1]) { const q = at(7.5 + sd * .8, -3.5 + .5); st.sph(q.x, 1.65, q.z, .42, 0x12152a, 1); glow.sph(q.x, 1.65, q.z, .2, col, 0); } st.cyl(rp.x + t.x * 1.1, 2.3, rp.z + t.z * 1.1, .03, .05, 1.5, 0xdddddd, 5); W.addCircle(rp.x, rp.z, 1.5, false, 2.4);
     for (let k = 0; k < 4; k++) { const p = at(-9 + k * 1.6, -9); st.cyl(p.x, 0, p.z, .06, .08, 3.2, 0x555a80, 5); glow.sph(p.x, 3.4, p.z, .28, col, 1); }
@@ -76,16 +77,16 @@ BI.createRadio = function (G) {
   const beamGeo = new THREE.CylinderGeometry(1.1, 1.8, 90, 8, 1, true); const P0 = A.plots;
   const beams = P0.map(p => { const m = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color: p.col, transparent: true, opacity: .18, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide })); m.position.set(p.sp.x, 45, p.sp.z); grp.add(m); return m; });
   /* ===== Schilder ===== */
-  const laut = sign('📡 laut.fm', X(0), 44, Z(0), 16, '#ffffff'); sign('📻 Funkwelle – 13 Sender', X(0), 11, Z(0), 16); sign('🕹️ Frequenz-Dreher', X(-14), 6, Z(-18), 8);
+  const laut = sign('📡 laut.fm', X(0), 44, Z(0), 16, '#ffffff'); sign('📻 Funkwelle – 13 Sender', X(0), 11, Z(0), 16); sign('🕹️ Frequenz-Dreher', X(-9), 6, Z(-11), 8);
   /* ===== Plätze: Logo-Tafel (schwingt), Bildschirm (Canvas), Leuchtkugel am Radio ===== */
-  const plateGeo = new THREE.PlaneGeometry(6.2, 6.2), frameB = new BI.Batch(); frameB.box(0, 3.2, 0, 6.9, .3, .3, 0xd8a24a); frameB.box(0, -3.5, 0, 6.9, .3, .3, 0xd8a24a); for (const sd of [-1, 1]) frameB.box(sd * 3.3, -3.3, 0, .3, 6.6, .3, 0xd8a24a); const frameGeo = frameB.mesh(BI.mat()).geometry;
-  const scrGeo = new THREE.PlaneGeometry(9.2, 5.18), ballGeo = new THREE.SphereGeometry(.45, 10, 8);
+  const plateGeo = new THREE.PlaneGeometry(4, 4), frameB = new BI.Batch(); frameB.box(0, 2.05, 0, 4.5, .2, .2, 0xd8a24a); frameB.box(0, -2.25, 0, 4.5, .2, .2, 0xd8a24a); for (const sd of [-1, 1]) frameB.box(sd * 2.15, -2.15, 0, .2, 4.3, .2, 0xd8a24a); const frameGeo = frameB.mesh(BI.mat()).geometry;
+  const scrGeo = new THREE.PlaneGeometry(5.7, 3.2), ballGeo = new THREE.SphereGeometry(.45, 10, 8);
   const PL = P0.map(p => {
-    const s = ST[p.i], plateMat = new THREE.MeshBasicMaterial({ color: 0x555a80, transparent: true, alphaTest: .04, side: THREE.DoubleSide, fog: false }), g = new THREE.Group(); g.position.set(p.sp.x, 5.9, p.sp.z);
+    const s = ST[p.i], plateMat = new THREE.MeshBasicMaterial({ color: 0x555a80, transparent: true, alphaTest: .04, side: THREE.DoubleSide, fog: false }), g = new THREE.Group(); g.position.set(p.sp.x, 4.4, p.sp.z);
     const plate = new THREE.Mesh(plateGeo, plateMat); g.add(plate, new THREE.Mesh(frameGeo, BI.mat())); grp.add(g);
-    const scrMat = new THREE.MeshBasicMaterial({ color: 0x0b1030, fog: false }), scr = new THREE.Mesh(scrGeo, scrMat); scr.position.set(p.sc.x + p.f.x * .25, 4.95, p.sc.z + p.f.z * .25); scr.rotation.y = p.ry; grp.add(scr);
+    const scrMat = new THREE.MeshBasicMaterial({ color: 0x0b1030, fog: false }), scr = new THREE.Mesh(scrGeo, scrMat); scr.position.set(p.sc.x + p.f.x * .25, 3.3, p.sc.z + p.f.z * .25); scr.rotation.y = p.ry; grp.add(scr);
     const ball = new THREE.Mesh(ballGeo, new THREE.MeshBasicMaterial({ color: p.col, transparent: true, opacity: .25, fog: false })); ball.position.set(p.rp.x, 3.3, p.rp.z); grp.add(ball);
-    sign(s.n, p.sp.x, 9.5, p.sp.z, 7, colStr(s.i, .8)); sign('📺 Visual Radio', p.sc.x, 9.2, p.sc.z, 5.6, '#ffffff'); sign('📻 Radio', p.rp.x, 3.9, p.rp.z, 2.6, colStr(s.i, .8));
+    sign(s.n, p.sp.x, 6.9, p.sp.z, 5.6, colStr(s.i, .8)); sign('📺 Visual Radio', p.sc.x, 6.4, p.sc.z, 4, '#ffffff'); sign('📻 Radio', p.rp.x, 3.9, p.rp.z, 2.6, colStr(s.i, .8));
     return { i: s.i, p, g, plate, plateMat, scrMat, scr, ball, cv: null, tex: null, loaded: false, lastDraw: 0 };
   });
   /* ===== Radio-Wiedergabe (ein Stream gleichzeitig) ===== */
@@ -123,13 +124,13 @@ BI.createRadio = function (G) {
     q.tex.needsUpdate = true;
   }
   /* ===== Noten (Währung): 10 = 1 ⭐ ===== */
-  const SP = []; { const rr = BI.rng(555); for (let i = 0; SP.length < 52 && i < 900; i++) { const a = rr() * TAU, d = 8 + rr() * (A.R - 14), x = A.x + Math.sin(a) * d, z = A.z + Math.cos(a) * d; if (!W.free(x, z, .9)) continue; SP.push({ x, z, y: 1.0, v: SP.length % 8 === 7 ? 5 : 1 }); } }
+  const SP = []; { const rr = BI.rng(555); for (let i = 0; SP.length < 44 && i < 900; i++) { const a = rr() * TAU, d = 8 + rr() * (A.R - 14), x = A.x + Math.sin(a) * d, z = A.z + Math.cos(a) * d; if (!W.free(x, z, .9)) continue; SP.push({ x, z, y: 1.0, v: SP.length % 8 === 7 ? 5 : 1 }); } }
   K.shards = SP; const noteM = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.42, 0), new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false }), SP.length), dm = new THREE.Object3D(), cl = new THREE.Color(); noteM.frustumCulled = false; SP.forEach((q, i) => noteM.setColorAt(i, cl.setHex(q.v > 1 ? 0xffd23f : [0x6ad0ff, 0xff5ab4][i % 2]))); grp.add(noteM);
   /* ===== Ein- und Ausgang ===== */
   /* ===== Nähe / Aktion ===== */
   K.near = function () {
     if (P.veh || P.y > 12 || K.open || !K.inside) return null; const nr = (x, z, r) => Math.hypot(P.x - x, P.z - z) < r;
-    for (const p of P0) { if (!nr(p.C.x, p.C.z, 22)) continue; if (nr(p.rp.x, p.rp.z, 3.4)) return { k: 'rradio', i: p.i, label: ['📻', R.on && R.cur === p.i ? ST[p.i].n + ' ausschalten' : ST[p.i].n + ' einschalten'] }; if (nr(p.scr.x, p.scr.z, 5)) return { k: 'rvis', i: p.i, label: ['📺', 'Visual Radio ansehen'] }; if (nr(p.sp.x, p.sp.z, 6.2)) return { k: 'rstat', i: p.i, label: ['📸', ST[p.i].n + '-Statue ansehen'] }; }
+    for (const p of P0) { if (!nr(p.C.x, p.C.z, 14.5)) continue; if (nr(p.rp.x, p.rp.z, 3.2)) return { k: 'rradio', i: p.i, label: ['📻', R.on && R.cur === p.i ? ST[p.i].n + ' ausschalten' : ST[p.i].n + ' einschalten'] }; if (nr(p.scr.x, p.scr.z, 3.8)) return { k: 'rvis', i: p.i, label: ['📺', 'Visual Radio ansehen'] }; if (nr(p.sp.x, p.sp.z, 4.4)) return { k: 'rstat', i: p.i, label: ['📸', ST[p.i].n + '-Statue ansehen'] }; }
     if (nr(X(0), Z(0), 8)) return { k: 'rtower', label: ['📡', 'Funkturm'] };
     return null;
   };
@@ -147,14 +148,14 @@ BI.createRadio = function (G) {
     if (!ins) return; const s = S();
     if (!lautIm) { lautIm = loadImg(A.lautLogo); portalIm = loadImg(A.portalLogo); }
     for (const q of PL) {
-      const p = q.p, dd = Math.hypot(P.x - p.C.x, P.z - p.C.z), act = R.on && R.cur === q.i, nearP = dd < 80;
+      const p = q.p, dd = Math.hypot(P.x - p.C.x, P.z - p.C.z), act = R.on && R.cur === q.i, nearP = dd < 55;
       if (nearP && !imgs[q.i]) { imgs[q.i] = loadImg(ST[q.i].logo); imgs[q.i].onload = () => { const tx = new THREE.Texture(imgs[q.i]); tx.needsUpdate = true; q.plateMat.map = tx; q.plateMat.color.setHex(0xffffff); q.plateMat.needsUpdate = true; q.lastDraw = 0; }; }
-      if (nearP) { q.g.rotation.y = p.ry + Math.sin(t * .7 + q.i) * .45; q.g.position.y = 5.9 + Math.sin(t * 1.3 + q.i) * .15; q.plate.scale.setScalar(1); }
+      if (nearP) { q.g.rotation.y = p.ry + Math.sin(t * .7 + q.i) * .45; q.g.position.y = 4.4 + Math.sin(t * 1.3 + q.i) * .12; q.plate.scale.setScalar(1); }
       beams[q.i].material.opacity = act ? .38 + .1 * Math.sin(t * 6) : .14; q.ball.material.opacity = act ? .8 + .2 * Math.sin(t * 8) : .25; q.ball.scale.setScalar(act ? 1 + .25 * Math.sin(t * 8) : 1);
-      if ((dd < 45 || (act && dd < 90)) && t - q.lastDraw > .09) { q.lastDraw = t; drawScreen(q, t); }
+      if ((dd < 32 || (act && dd < 60)) && t - q.lastDraw > .09) { q.lastDraw = t; drawScreen(q, t); }
     }
     if (R.on) {
-      const p = posOf(R.cur), d = Math.hypot(P.x - p.x, P.z - p.z), v = d < 12 ? 1 : d > 62 ? 0 : Math.pow(1 - (d - 12) / 50, 1.5); R.vol = v;
+      const p = posOf(R.cur), d = Math.hypot(P.x - p.x, P.z - p.z), v = d < 6 ? 1 : d > 28 ? 0 : Math.pow(1 - (d - 6) / 22, 1.5); R.vol = v;
       if (R.el) { R.el.volume = Math.max(0, Math.min(1, v * (AU.muted ? 0 : (AU._vol == null ? 1 : AU._vol)))); if (v <= .01 && !R.pausedFar && !R.el.paused) { R.el.pause(); R.pausedFar = true; } else if (v > .03 && R.pausedFar) { R.pausedFar = false; startStream(R.cur); R.el.volume = Math.max(0, Math.min(1, v * (AU.muted ? 0 : (AU._vol == null ? 1 : AU._vol)))); } }
       try { AU.duck && AU.duck(1 - .88 * v); } catch (e) { } nowPlaying();
       if (!R.pausedFar && R.el && !R.el.paused && R.el.readyState > 2 && v > .2) { R.heardT += dt; if (R.heardT >= 20 && !s.done.includes(R.cur)) { s.done.push(R.cur); persist(); G.addStars(1); say('📻 ' + ST[R.cur].n + ' gehört! +1 ⭐ (' + s.done.length + '/13)', 3200); if (s.done.length >= N && !s.all) { s.all = 1; persist(); setTimeout(() => bonus(10, '🏆 Alle 13 Sender gehört!'), 1500); } } }

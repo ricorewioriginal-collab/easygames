@@ -8,24 +8,27 @@
    Technik: eigene Batches (nur sichtbar, wenn man in der Nähe ist), beim Hinabsteigen werden die großen Hauptwelt-Meshes ausgeblendet (spart GPU). */
 /* Abstieg an der Küste der Hauptinsel (Süden, neben dem Steg): eine breite Steintreppe führt 5,5 m nach unten in einen überdachten Gang; am Ende geht es nahtlos nach Atlantis.
    a = Richtung (Winkel von +z aus, x = sin a), r0 = Radius des Treppenanfangs, L = Länge der Treppe, land = ebenes Stück davor, da = halbe Winkelbreite des Lochs im Boden */
-BI.ATLANTIS = { x: 1200, z: 0, R: 160, pit: { a: 6 * Math.PI / 180, r0: 154, L: 17, land: 6, depth: 5.5, da: 2 * Math.PI / 180 }, bands: [[36, 46], [80, 92]] };
+BI.ATLANTIS = { x: 1200, z: 0, S: .6, R: 96, pit: { a: 6 * Math.PI / 180, r0: 154, L: 17, land: 6, depth: 5.5, da: 2 * Math.PI / 180 }, bands: [[36, 46], [80, 92]] };
 BI.ATLANTIS.pitPt = (t, l) => { const q = BI.ATLANTIS.pit, ux = Math.sin(q.a), uz = Math.cos(q.a); return [ux * (q.r0 + t) + uz * l, uz * (q.r0 + t) - ux * l]; };
 BI.ATLANTIS.portal = { x: Math.sin(BI.ATLANTIS.pit.a) * BI.ATLANTIS.pit.r0, z: Math.cos(BI.ATLANTIS.pit.a) * BI.ATLANTIS.pit.r0 };
 
 /* ---------- statisch: Höhle, Ringe, Kanäle, Brücken, Akropolis, Gebäude, Gärten (+ Eingangstor an der Oberfläche) ---------- */
 BI.buildAtlantisGround = function (c) {
-  const { W, st: mainSt, lamp: mainLamp, scene } = c, A = BI.ATLANTIS, TAU = Math.PI * 2, rn = BI.rng(777);
+  /* Miniatur-Maßstab: Die Höhle wird in Original-Maßen (Radius R0) gebaut und um den Mittelpunkt auf A.S verkleinert (Meshes skaliert, Kollisionen/Laufregeln umgerechnet); nur die Treppe an der Oberfläche bleibt in echten Maßen */
+  const { W: W0, st: mainSt, lamp: mainLamp, scene } = c, A = BI.ATLANTIS, S = A.S, R0 = A.R / S, TAU = Math.PI * 2, rn = BI.rng(777), M = (x, z) => [A.x + (x - A.x) * S, A.z + (z - A.z) * S];
+  const W = Object.create(W0); W.addCircle = (x, z, r, u, h) => { const p = M(x, z); return W0.addCircle(p[0], p[1], r * S, u, h && h * S); }; W.addBox = (x0, z0, x1, z1, u, h) => { const p = M(x0, z0), q = M(x1, z1); return W0.addBox(p[0], p[1], q[0], q[1], u, h && h * S); };
+  const scaleMesh = m => { m.scale.setScalar(S); m.position.set(A.x * (1 - S), 0, A.z * (1 - S)); return m; };
   const st = new BI.Batch(), lamp = new BI.Batch(), glow = new BI.Batch(), X = u => A.x + u, Z = v => A.z + v, P = (r, a) => [X(Math.sin(a) * r), Z(Math.cos(a) * r)];
   const MARBLE = 0xe8f0f6, MARBLE2 = 0xcad8e4, AQUA = 0x35d6e0, COP = 0xe6803a, GOLD = 0xffd23f, TEAL = 0x0f5a73, DEEP = 0x0e2a40, GL = [0x35d6e0, 0x7a8cff, 0xff6ad5, 0x6bffd0];
   /* Laufregeln (früh festlegen, auch die Gleiter beim Aufbau brauchen sie): Rand der Höhle, Kanäle nur über Brücken, Akropolis in 1-m-Stufen */
-  W.atlantis = { x: A.x, z: A.z, R: A.R, bands: A.bands,
+  W0.atlantis = { x: A.x, z: A.z, R: A.R, bands: A.bands,
     fix(px, pz, r, out) {
-      let lx = px - A.x, lz = pz - A.z, d = Math.hypot(lx, lz); if (d > 380) return false; let hit = false;
-      if (d > A.R - r) { const k = (A.R - r) / d; lx *= k; lz *= k; d = A.R - r; hit = true; }
-      for (const [a, b] of A.bands) if (d > a - r && d < b + r && !(Math.abs(lx) < 4.2 || Math.abs(lz) < 4.2)) { const t = d < (a + b) / 2 ? a - r : b + r, k = t / d; lx *= k; lz *= k; d = t; hit = true; }
-      out.fx = A.x + lx; out.fz = A.z + lz; out.fhit = hit; return true;
+      let lx = (px - A.x) / S, lz = (pz - A.z) / S, d = Math.hypot(lx, lz); const ru = r / S; if (d * S > 380) return false; let hit = false;
+      if (d > R0 - ru) { const k = (R0 - ru) / d; lx *= k; lz *= k; d = R0 - ru; hit = true; }
+      for (const [a, b] of A.bands) if (d > a - ru && d < b + ru && !(Math.abs(lx) < 4.2 || Math.abs(lz) < 4.2)) { const t = d < (a + b) / 2 ? a - ru : b + ru, k = t / d; lx *= k; lz *= k; d = t; hit = true; }
+      out.fx = A.x + lx * S; out.fz = A.z + lz * S; out.fhit = hit; return true;
     },
-    floor(x, z) { const lx = x - A.x, lz = z - A.z; if (lx < -40 || lx > 40 || lz < -40 || lz > 40) return 0; const d = Math.hypot(lx, lz); return d < 36 ? Math.min(6, 1 + Math.floor((36 - d) / 5)) : 0; } };
+    floor(x, z) { const lx = (x - A.x) / S, lz = (z - A.z) / S; if (lx < -40 || lx > 40 || lz < -40 || lz > 40) return 0; const d = Math.hypot(lx, lz); return d < 36 ? Math.min(6, 1 + Math.floor((36 - d) / 5)) * S : 0; } };
   /* Höhle: Boden, Felsen, riesige Leuchtkristalle am Rand */
   st.disc(X(0), Z(0), 340, -3.2, DEEP, 48);
   for (let i = 0; i < 70; i++) { const a = rn() * TAU, d = 172 + rn() * 130, h = 6 + rn() * 26, [x, z] = P(d, a); glow.cone(x, -3.2, z, 1.5 + rn() * 2.6, h, GL[i % 4], 5); if (i % 3 === 0) glow.cone(x + 2.6, -3.2, z + 1.4, 1 + rn() * 1.4, h * .6, GL[(i + 1) % 4], 5); }
@@ -59,22 +62,24 @@ BI.buildAtlantisGround = function (c) {
   for (let k = 0; k < 4; k++) { const a = (45 + k * 90) * Math.PI / 180, [x, z] = P(105, a); st.cyl(x, 0, z, 5, 5.4, .5, MARBLE2, 5, 0, a); for (let q = 0; q < 5; q++) { const aa = a + q * TAU / 5; st.cyl(x + Math.sin(aa) * 4.6, 0, z + Math.cos(aa) * 4.6, .3, .35, 3.4, COP, 6); } st.cone(x, 3.5, z, 5.6, 2.4, 0xf3a8d8, 5); W.addCircle(x, z, 5.3, false, 3.6); }
   for (let k = 0; k < 24; k++) { const a = k * TAU / 24, [x, z] = P(157, a); if (k === 0) continue; st.cyl(x, 0, z, .8, 1, 7, MARBLE, 8); glow.sph(x, 7.4, z, .6, GL[k % 4], 1); W.addCircle(x, z, 1, false, 7); }
   /* Aufstiegstor im Süden: Bogen aus Stein, Leuchtfläche, Treppe */
-  { const gx = X(0), gz = Z(151); for (const sd of [-1, 1]) { st.cyl(gx + sd * 5, 0, gz, 1.1, 1.3, 9, MARBLE, 10); glow.sph(gx + sd * 5, 9.5, gz, .7, GOLD, 1); W.addCircle(gx + sd * 5, gz, 1.4, false, 9); } st.box(gx, 8.4, gz, 12, 1.4, 1.6, COP); for (let k = 0; k < 6; k++) st.box(gx, k * .25, gz - 3 - k * .8, 7 - k * .4, .25, .8, MARBLE2); W.spots.atlExit = { x: gx, z: gz - 2, y: 9 }; }
+  { const gx = X(0), gz = Z(151); for (const sd of [-1, 1]) { st.cyl(gx + sd * 5, 0, gz, 1.1, 1.3, 9, MARBLE, 10); glow.sph(gx + sd * 5, 9.5, gz, .7, GOLD, 1); W.addCircle(gx + sd * 5, gz, 1.4, false, 9); } st.box(gx, 8.4, gz, 12, 1.4, 1.6, COP); for (let k = 0; k < 6; k++) st.box(gx, k * .25, gz - 3 - k * .8, 7 - k * .4, .25, .8, MARBLE2); { const q = M(gx, gz - 2); W.spots.atlExit = { x: q[0], z: q[1], y: 9 * S }; } }
   /* Gleiter-Station: Podest und 3 Aqua-Gleiter */
-  { const sx = X(0), sz = Z(124); st.cyl(sx, 0, sz, 15, 15, .25, MARBLE2, 28); st.ring(sx, sz, 12, 13, .27, AQUA, 28); for (const [dx, dz, h] of [[-8, 0, Math.PI], [8, 0, Math.PI], [0, -6, Math.PI]]) { W.vehicleSpawns.push({ type: 'gleiter', x: sx + dx, z: sz + dz, h }); } W.spots.atlGleiter = { x: sx, z: sz }; }
+  { const sx = X(0), sz = Z(124); st.cyl(sx, 0, sz, 15, 15, .25, MARBLE2, 28); st.ring(sx, sz, 12, 13, .27, AQUA, 28); for (const [dx, dz, h] of [[-8, 0, Math.PI], [8, 0, Math.PI], [0, -6, Math.PI]]) { { const q = M(sx + dx, sz + dz); W.vehicleSpawns.push({ type: 'gleiter', x: q[0], z: q[1], h }); } } { const q = M(sx, sz); W.spots.atlGleiter = { x: q[0], z: q[1] }; } }
   /* eigene Meshes (nur in der Nähe sichtbar) */
   const grp = new THREE.Group(), stM = st.mesh(BI.mat()), glowM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })), lampM = lamp.empty ? null : lamp.mesh(W.lampMat);
-  stM.frustumCulled = glowM.frustumCulled = false; grp.add(stM, glowM); if (lampM) grp.add(lampM);
+  stM.frustumCulled = glowM.frustumCulled = false; scaleMesh(stM); scaleMesh(glowM); grp.add(stM, glowM); if (lampM) { scaleMesh(lampM); grp.add(lampM); }
   /* Arcade (Strömungs-Rätsel) im eigenen Batch, damit es unter der Erde sichtbar bleibt – wird von world.js nach den Hauptwelt-Automaten gebaut */
-  A.addArcade = function () { const a = A.arcade, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W, st: ast, lamp: alamp, only: [{ kind: 'stroemung_atlantis', x: a.x, z: a.z, yaw: Math.atan2(X(0) - a.x, Z(0) - a.z), body: 0x0f5a73, top: 0x35d6e0 }] }); grp.add(ast.mesh(BI.mat())); if (!alamp.empty) grp.add(alamp.mesh(W.lampMat)); };
+  const mkArcade = a0 => { const a = a0, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W, st: ast, lamp: alamp, only: [{ kind: a.kind, x: a.x, z: a.z, yaw: Math.atan2(X(0) - a.x, Z(0) - a.z), body: a.body, top: a.top }] }); grp.add(scaleMesh(ast.mesh(BI.mat()))); if (!alamp.empty) grp.add(scaleMesh(alamp.mesh(W.lampMat))); const sp = W0.spots.arcades[W0.spots.arcades.length - 1], q1 = M(sp.x, sp.z), q2 = M(sp.fx, sp.fz); sp.x = q1[0]; sp.z = q1[1]; sp.fx = q2[0]; sp.fz = q2[1]; };
+  A.addArcade = function () { mkArcade({ kind: 'stroemung_atlantis', x: A.arcade.x, z: A.arcade.z, body: 0x0f5a73, top: 0x35d6e0 }); };
+  A.addExtraArcade = function (kind, lx, lz, body, top) { mkArcade({ kind, x: X(lx), z: Z(lz), body, top }); };
   /* Kuppel (Himmel der Höhle) mit Sternenkristallen, Wasserflächen */
-  { const g = new THREE.SphereGeometry(330, 28, 14, 0, TAU, 0, Math.PI / 2), pos = g.attributes.position, col = new Float32Array(pos.count * 3), hor = new THREE.Color(0x0e5a7a), top = new THREE.Color(0x02101f), cc = new THREE.Color();
-    for (let i = 0; i < pos.count; i++) { const k = Math.pow(Math.min(1, pos.getY(i) / 330), .7); cc.copy(hor).lerp(top, k); col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b; }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); const dm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false })); dm.position.set(A.x, -3, A.z); grp.add(dm);
-    const n = 260, sp = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const a = rn() * TAU, e = .1 + rn() * 1.35, d = 320; sp[i * 3] = A.x + Math.sin(a) * Math.cos(e) * d; sp[i * 3 + 1] = -3 + Math.sin(e) * d; sp[i * 3 + 2] = A.z + Math.cos(a) * Math.cos(e) * d; }
+  { const g = new THREE.SphereGeometry(330 * S, 28, 14, 0, TAU, 0, Math.PI / 2), pos = g.attributes.position, col = new Float32Array(pos.count * 3), hor = new THREE.Color(0x0e5a7a), top = new THREE.Color(0x02101f), cc = new THREE.Color();
+    for (let i = 0; i < pos.count; i++) { const k = Math.pow(Math.min(1, pos.getY(i) / (330 * S)), .7); cc.copy(hor).lerp(top, k); col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b; }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); const dm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false })); dm.position.set(A.x, -3 * S, A.z); grp.add(dm);
+    const n = 260, sp = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const a = rn() * TAU, e = .1 + rn() * 1.35, d = 320 * S; sp[i * 3] = A.x + Math.sin(a) * Math.cos(e) * d; sp[i * 3 + 1] = -3 * S + Math.sin(e) * d; sp[i * 3 + 2] = A.z + Math.cos(a) * Math.cos(e) * d; }
     const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3)); const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xbff6ff, size: 3, sizeAttenuation: false, fog: false })); stars.frustumCulled = false; grp.add(stars);
     A.waterMat = new THREE.MeshBasicMaterial({ color: 0x28c8e0, transparent: true, opacity: .88, side: THREE.DoubleSide, fog: false });
-    for (const [a0, b0] of A.bands) { const w = new THREE.Mesh(new THREE.RingGeometry(a0, b0, 64), A.waterMat); w.rotation.x = -Math.PI / 2; w.position.set(A.x, -.3, A.z); grp.add(w); } }
+    for (const [a0, b0] of A.bands) { const w = new THREE.Mesh(new THREE.RingGeometry(a0 * S, b0 * S, 64), A.waterMat); w.rotation.x = -Math.PI / 2; w.position.set(A.x, -.3 * S, A.z); grp.add(w); } }
   grp.visible = false; scene.add(grp); A.group = grp;
   /* Abstieg an der Oberfläche (Hauptinsel, Küste): Steintreppe nach unten in einen überdachten Gang; im Boden ist dafür ein Loch (siehe world.js, polarGround) */
   { const pa = A.pit, ux = Math.sin(pa.a), uz = Math.cos(pa.a), nx = Math.cos(pa.a), nz = -Math.sin(pa.a), L = pa.L, tl = pa.land, D = pa.depth, END = L + tl, PT = (t, l) => [ux * (pa.r0 + t) + nx * l, uz * (pa.r0 + t) + nz * l], n = Math.ceil(L / .8), run = L / n, rise = D / n;
@@ -91,16 +96,16 @@ BI.buildAtlantisGround = function (c) {
     { const [x, z] = PT(-1.2, 0); mainSt.box(x, 5.0, z, 15, .8, 1.4, 0xd9dde8, pa.a); }
     for (let t = 4; t < END; t += 4) for (const sd of [-1, 1]) { const [x, z] = PT(t, sd * 4.95), y = -D * Math.min(1, t / L); mainLamp.sph(x, y + 2.1, z, .22, 0x9fe8ff, 1); }
     /* Kollisionen: Wände und Endwand als Kreisreihen */
-    for (let t = -1; t <= END + 2; t += 1) for (const sd of [-1, 1]) { const [x, z] = PT(t, sd * 5.7); W.addCircle(x, z, .9, false, 8); }
-    for (let l = -5.5; l <= 5.6; l += 1) { const [x, z] = PT(END + .7, l); W.addCircle(x, z, .9, false, 8); }
-    { const c = [PT(-2, -8), PT(-2, 8), PT(END + 3, -8), PT(END + 3, 8)]; W.pads.push([Math.min(...c.map(q => q[0])), Math.min(...c.map(q => q[1])), Math.max(...c.map(q => q[0])), Math.max(...c.map(q => q[1]))]); }
-    W.atlPit = { END, floor(x, z) { const t = x * ux + z * uz - pa.r0, l = x * nx + z * nz; if (Math.abs(l) > 5.2 || t < -.3 || t > END + .5) return null; return t < 0 ? 0 : t < L ? -D * t / L : -D; }, to: (t, l) => PT(t, l), ux, uz };
-    W.spots.atlPortal = { x: PT(0, 0)[0], z: PT(0, 0)[1], ry: Math.atan2(-ux, -uz) }; }
+    for (let t = -1; t <= END + 2; t += 1) for (const sd of [-1, 1]) { const [x, z] = PT(t, sd * 5.7); W0.addCircle(x, z, .9, false, 8); }
+    for (let l = -5.5; l <= 5.6; l += 1) { const [x, z] = PT(END + .7, l); W0.addCircle(x, z, .9, false, 8); }
+    { const c = [PT(-2, -8), PT(-2, 8), PT(END + 3, -8), PT(END + 3, 8)]; W0.pads.push([Math.min(...c.map(q => q[0])), Math.min(...c.map(q => q[1])), Math.max(...c.map(q => q[0])), Math.max(...c.map(q => q[1]))]); }
+    W0.atlPit = { END, floor(x, z) { const t = x * ux + z * uz - pa.r0, l = x * nx + z * nz; if (Math.abs(l) > 5.2 || t < -.3 || t > END + .5) return null; return t < 0 ? 0 : t < L ? -D * t / L : -D; }, to: (t, l) => PT(t, l), ux, uz };
+    W0.spots.atlPortal = { x: PT(0, 0)[0], z: PT(0, 0)[1], ry: Math.atan2(-ux, -uz) }; }
 };
 
 /* ---------- Laufzeit ---------- */
 BI.createAtlantis = function (G) {
-  const { scene, W, A: AU, fx, P, say, save, persist } = G, K = {}, A = BI.ATLANTIS, TAU = Math.PI * 2, X = u => A.x + u, Z = v => A.z + v, Pol = (r, a) => [X(Math.sin(a) * r), Z(Math.cos(a) * r)];
+  const { scene, W, A: AU, fx, P, say, save, persist } = G, K = {}, A = BI.ATLANTIS, TAU = Math.PI * 2, X = u => A.x + u * A.S, Z = v => A.z + v * A.S, Pol = (r, a) => [X(Math.sin(a) * r), Z(Math.cos(a) * r)];
   const S = () => save.atlantis || (save.atlantis = { holo: [0, 0, 0, 0, 0], shards: [], pts: 0, paid: 0, harp: 0, lowg: 0, herz: 0, glider: 0, played: 0, visit: 0 });
   const note = (f, d, ty, v, del) => { try { AU.note && AU.note(f, d, ty, v, del || 0); } catch (e) { } }, snd = n => { try { AU[n] && AU[n](); } catch (e) { } };
   const bonus = (n, msg) => { G.addStars(n); say(msg + ' +' + n + ' ⭐', 3600); snd('fanfare'); };
@@ -108,7 +113,7 @@ BI.createAtlantis = function (G) {
   const sign = (txt, x, y, z, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#06304a'; c.strokeText(txt, 256, 50); c.fillStyle = '#bff6ff'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, fog: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(x, y, z); scene.add(sp); return sp; };
   /* ===== Schwerkraft ===== */
   K.floor = W.atlantis.floor; K.group = () => A.group; const R = A.R;
-  const LG = (() => { const [x, z] = Pol(62, 225 * Math.PI / 180); return { x, z, r: 17 }; })();
+  const LG = (() => { const [x, z] = Pol(62, 225 * Math.PI / 180); return { x, z, r: 17 * A.S }; })();
   K.gScale = (x, z) => K.inside && Math.hypot(x - LG.x, z - LG.z) < LG.r ? .28 : 1;
   /* ===== Himmel/Stimmung, Sichtbarkeit ===== */
   const inside = () => Math.hypot(P.x - A.x, P.z - A.z) < 380;
@@ -139,16 +144,16 @@ BI.createAtlantis = function (G) {
   const harpCols = [0x35d6e0, 0x6bffd0, 0x7a8cff, 0xff6ad5, 0xffd23f, 0xff8a5a, 0x9f7aff, 0xffffff], harp = HF.map(q => { const m = new THREE.Mesh(new THREE.ConeGeometry(.7, 3 + q.i * .45, 5), new THREE.MeshBasicMaterial({ color: harpCols[q.i], fog: false })); m.position.set(q.x, (3 + q.i * .45) / 2, q.z); K.group().add(m); return m; });
   let harpHist = []; const harpPlay = i => { const q = HF[i], s = S(); note(q.f, 1.4, 'sine', .14, 0); note(q.f * 2, .8, 'sine', .04, .02); q.hz = 1; fx.burst(q.x, 3 + i * .45, q.z, 8, [[.4, .9, 1], [1, 1, 1]], 2.4, .9, 26, -1); harpHist.push(i); if (harpHist.length > 8) harpHist.shift(); if (!s.harp && harpHist.length === 8 && harpHist.every((v, k) => v === k)) { s.harp = 1; persist(); setTimeout(() => bonus(2, '🎶 Du hast die Kristall-Harfe gemeistert!'), 600); } };
   /* ===== Herz von Atlantis ===== */
-  const heart = new THREE.Mesh(new THREE.OctahedronGeometry(1, 0), new THREE.MeshBasicMaterial({ color: 0x7fffff, fog: false })); heart.scale.set(1.5, 2.4, 1.5); heart.position.set(A.x, 9.2, A.z); K.group().add(heart);
-  const heartHalo = new THREE.Mesh(new THREE.IcosahedronGeometry(2.8, 1), new THREE.MeshBasicMaterial({ color: 0x35d6e0, transparent: true, opacity: .22, wireframe: true, fog: false })); heartHalo.position.copy(heart.position); K.group().add(heartHalo);
+  const heart = new THREE.Mesh(new THREE.OctahedronGeometry(1, 0), new THREE.MeshBasicMaterial({ color: 0x7fffff, fog: false })); heart.scale.set(1.5 * A.S, 2.4 * A.S, 1.5 * A.S); heart.position.set(A.x, 9.2 * A.S, A.z); K.group().add(heart);
+  const heartHalo = new THREE.Mesh(new THREE.IcosahedronGeometry(2.8 * A.S, 1), new THREE.MeshBasicMaterial({ color: 0x35d6e0, transparent: true, opacity: .22, wireframe: true, fog: false })); heartHalo.position.copy(heart.position); K.group().add(heartHalo);
   /* ===== Orichalcum-Splitter ===== */
   const SP = []; { const rn = BI.rng(4242); for (let i = 0; SP.length < 72 && i < 800; i++) { const a = rn() * TAU, band = rn() < .45 ? [50, 78] : rn() < .8 ? [96, 148] : [10, 34], r = band[0] + rn() * (band[1] - band[0]), [x, z] = Pol(r, a); if (!W.free(x, z, .9) && r > 40) continue; SP.push({ x, z, y: Math.min(6, K.floor(x, z)) + 1.0, i: SP.length }); } }
   K.shards = SP; const shardM = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.4, 0), new THREE.MeshBasicMaterial({ color: 0xff9a4a, fog: false }), SP.length), dm = new THREE.Object3D(); shardM.frustumCulled = false; K.group().add(shardM);
   /* ===== Delfin-Drohnen, Leuchtquallen, Schwerelos-Blasen ===== */
-  const drones = []; { const rn = BI.rng(99); for (let i = 0; i < 6; i++) { const b = new BI.Batch(); b.sph(0, 0, 0, .55, 0xeaf6fb, 1, .7, .7, 2); b.cone(0, 0, 1.15, .3, .9, 0xcad8e4, 6); b.box(0, .5, -.1, .08, .6, .6, 0x35d6e0); b.box(0, 0, -1.3, 1.1, .08, .45, 0x35d6e0); b.sph(0, .25, .5, .14, 0x35e0ff, 1); const m = b.mesh(BI.mat()); m.scale.setScalar(2.2); m.frustumCulled = false; K.group().add(m); drones.push({ m, r: 60 + rn() * 80, a: rn() * TAU, w: (rn() < .5 ? -1 : 1) * (.12 + rn() * .12), y: 36 + rn() * 26, ph: rn() * 6 }); } }
-  const jelly = []; { const rn = BI.rng(55), jm = [0xff6ad5, 0x6bffd0, 0x7a8cff, 0x35d6e0]; for (let i = 0; i < 16; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 6, 0, TAU, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: jm[i % 4], transparent: true, opacity: .55, side: THREE.DoubleSide, fog: false })); m.frustumCulled = false; K.group().add(m); const [x, z] = Pol(30 + rn() * 118, rn() * TAU); jelly.push({ m, x, z, y: 7 + rn() * 14, s: 1.2 + rn() * 1.3, ph: rn() * 6, sp: .3 + rn() * .4 }); } }
-  const bubM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.32, 1), new THREE.MeshBasicMaterial({ color: 0xbff6ff, transparent: true, opacity: .5, fog: false }), 36), bub = []; bubM.frustumCulled = false; K.group().add(bubM); { const rn = BI.rng(8); for (let i = 0; i < 36; i++) bub.push({ x: LG.x + (rn() - .5) * 28, z: LG.z + (rn() - .5) * 28, y: rn() * 14, ph: rn() * 6 }); }
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(17.5, 20, 10, 0, TAU, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x9fe8ff, transparent: true, opacity: .13, side: THREE.DoubleSide, fog: false, depthWrite: false })); dome.position.set(LG.x, 0, LG.z); K.group().add(dome);
+  const drones = []; { const rn = BI.rng(99); for (let i = 0; i < 6; i++) { const b = new BI.Batch(); b.sph(0, 0, 0, .55, 0xeaf6fb, 1, .7, .7, 2); b.cone(0, 0, 1.15, .3, .9, 0xcad8e4, 6); b.box(0, .5, -.1, .08, .6, .6, 0x35d6e0); b.box(0, 0, -1.3, 1.1, .08, .45, 0x35d6e0); b.sph(0, .25, .5, .14, 0x35e0ff, 1); const m = b.mesh(BI.mat()); m.scale.setScalar(2.2 * A.S); m.frustumCulled = false; K.group().add(m); drones.push({ m, r: (60 + rn() * 80) * A.S, a: rn() * TAU, w: (rn() < .5 ? -1 : 1) * (.12 + rn() * .12) / A.S, y: (36 + rn() * 26) * A.S, ph: rn() * 6 }); } }
+  const jelly = []; { const rn = BI.rng(55), jm = [0xff6ad5, 0x6bffd0, 0x7a8cff, 0x35d6e0]; for (let i = 0; i < 16; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 6, 0, TAU, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: jm[i % 4], transparent: true, opacity: .55, side: THREE.DoubleSide, fog: false })); m.frustumCulled = false; K.group().add(m); const [x, z] = Pol(30 + rn() * 118, rn() * TAU); jelly.push({ m, x, z, y: (7 + rn() * 14) * A.S, s: (1.2 + rn() * 1.3) * A.S, ph: rn() * 6, sp: .3 + rn() * .4 }); } }
+  const bubM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.32, 1), new THREE.MeshBasicMaterial({ color: 0xbff6ff, transparent: true, opacity: .5, fog: false }), 36), bub = []; bubM.frustumCulled = false; K.group().add(bubM); { const rn = BI.rng(8); for (let i = 0; i < 36; i++) bub.push({ x: LG.x + (rn() - .5) * 28 * A.S, z: LG.z + (rn() - .5) * 28 * A.S, y: rn() * 14 * A.S, ph: rn() * 6 }); }
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(17.5 * A.S, 20, 10, 0, TAU, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x9fe8ff, transparent: true, opacity: .13, side: THREE.DoubleSide, fog: false, depthWrite: false })); dome.position.set(LG.x, 0, LG.z); K.group().add(dome);
   /* ===== Bewohner ===== */
   K.people = function (folk) {
     const mk = (r, a, look, name, lines) => { const [x, z] = Pol(r, a), c = BI.makeChar(look), h = Math.atan2(X(0) - x, Z(0) - z); c.group.position.set(x, 0, z); c.group.rotation.y = h; scene.add(c.group); const n = { c, x, z, h, h0: h, p: { name, lines, i: 0 }, wait: 0, hop: 0, kid: !!look.scale && look.scale < .8, fixed: true }; folk.push(n); K.npcs.push(c.group); return n; };
@@ -167,7 +172,7 @@ BI.createAtlantis = function (G) {
     if (nr(ext.x, ext.z, 5)) return { k: 'atlout' };
     for (const q of HP) if (nr(q.x, q.z, 3)) return { k: 'aholo', i: q.i };
     for (const q of HF) if (nr(q.x, q.z, 2.4)) return { k: 'aharp', i: q.i };
-    if (P.y > 4.5 && nr(A.x, A.z, 5.2)) return { k: 'aherz' };
+    if (P.y > 4.5 * A.S && nr(A.x, A.z, 3.4)) return { k: 'aherz' };
     return null;
   };
   K.act = function (n) {
@@ -185,7 +190,7 @@ BI.createAtlantis = function (G) {
     if (!ins) return;
     const s = S();
     /* Animationen */
-    heart.rotation.y = t * .9; heart.position.y = 9.2 + Math.sin(t * 1.6) * .25; heartHalo.rotation.y = -t * .5; heartHalo.rotation.x = t * .3; heartHalo.position.y = heart.position.y;
+    heart.rotation.y = t * .9; heart.position.y = 9.2 * A.S + Math.sin(t * 1.6) * .15; heartHalo.rotation.y = -t * .5; heartHalo.rotation.x = t * .3; heartHalo.position.y = heart.position.y;
     for (const d of drones) { d.a += d.w * dt; const x = A.x + Math.sin(d.a) * d.r, z = A.z + Math.cos(d.a) * d.r, y = d.y + Math.sin(t * .8 + d.ph) * 2.4; d.m.position.set(x, y, z); d.m.rotation.set(Math.sin(t + d.ph) * .08, d.a + (d.w > 0 ? Math.PI / 2 : -Math.PI / 2), 0); }
     for (const j of jelly) { j.y += Math.sin(t * j.sp + j.ph) * .01; j.m.position.set(j.x + Math.sin(t * .3 + j.ph) * 2, j.y + Math.sin(t * j.sp * 2 + j.ph) * .8, j.z + Math.cos(t * .25 + j.ph) * 2); const sc = j.s * (1 + .12 * Math.sin(t * 2.2 + j.ph)); j.m.scale.set(sc, sc * (.8 + .12 * Math.sin(t * 2.2 + j.ph)), sc); }
     holo.forEach((m, i) => { m.rotation.y = t * (.7 + i * .1); m.rotation.x = i === 1 ? t * .5 : 0; m.position.y = 3.0 + Math.sin(t * 1.4 + i) * .12; m.material.opacity = .5 + .15 * Math.sin(t * 3 + i); });

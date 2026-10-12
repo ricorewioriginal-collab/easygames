@@ -71,6 +71,29 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Test: `BASE=http://localhost:8080 THREE=…/three.min.js node bunte-insel/tests/tycoon.mjs` (`DEBUG=1` zeigt Rohwerte).
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
+
+## Fußball-Arena ⚽ (Erweiterung im Südwesten)
+Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richtigen Fußballplatz: Rasenstreifen, Linien, zwei Tore mit Netz, Banden mit Eingangslücke, Flutlicht, Tribüne und Anzeigetafel (🔵 Blau : Rot 🔴, Ost-Tor zählt für Blau, West-Tor für Rot).
+- **Dribbeln**: einfach in den Ball laufen. **Schuss**: Hauptknopf („⚽ Schießen“) in der Nähe des Balls, Richtung = Blickrichtung.
+- **Torwarte** halten beide Tore (Schüsse in die Ecken sind der Trick). Nach einem Tor gibt es Konfetti und der Ball geht zum Anstoß zurück. **5 Tore = 1 ⭐**.
+- **Mit Freunden**: ein gemeinsamer Ball. Wer ihn zuletzt berührt hat, rechnet ihn aus und schickt Position/Tempo (Nachricht `fb`, ca. 8×/s solange er rollt); Tore und Spielstand sieht jeder. Neue Mitspieler bekommen den Stand beim Beitritt.
+- Figuren: **Kapitän Jannis** und Trainerin Lena erklären das Spiel. Neue Musik „Stadion-Stimmung“.
+- Technik: `js/fussball.js`; kleine Inseln nutzen den gemeinsamen Helfer `BI.buildIsleBridge` + `W.isles` (Brücke, Rand, Flughöhe, Schaum). Test: `node bunte-insel/tests/fussball.mjs` (`DEBUG=1` zeigt Rohwerte).
+
+
+## Märchenland ✨🏰 (Erweiterung im Nordwesten)
+Kleine Zauberinsel über eine Brücke (🧭 → „Märchenland“), **inspiriert** von den großen Märchen- und Trickfilm-Welten, aber mit ganz **eigenen, selbst erfundenen** Figuren und Orten (nichts davon ist ein Original):
+- **Schloss „Sternenglanz“** mit Prinzessin Lilia, **Wunschbrunnen** (Wunsch tun: Glitzer, die ersten 3 Wünsche geben je ⭐), Märchentor, Glühfeen und **Feuerwerk** über dem Schloss.
+- **Eispalast „Frostgipfel“** (Eisfee Frida, Schneemann Olli), **Königsfels** (Löwenkönig Leo), **Piratenschiff „Salzige Möwe“** (Käpt'n Kralle), **Perlenlagune** (Meerjungfrau Marina), **Teppich-Basar** mit schwebendem Teppich (Teppich-Tom), **Dschungelpfad** (Bär Bruno) und Mäuserich Willi am Tor. Alle Figuren sind ansprechbar und sprechen kurze, leichte Sätze.
+- Spielautomat **„Sternschnuppen“** (siehe Kinder-Spiele), Musik „Märchen-Zauber“, Aufgaben im 📋 Log. Datei: `js/maerchen.js`, Test: `tests/maerchen.mjs`.
+
+## Bild-Tafeln 🪧 und Kinder-Spiele 🧒 (für Kleine, die noch nicht lesen)
+- **Bild-Tafeln** (`js/tafeln.js`) stehen an den Eingängen aller Welten: große Bilder + höchstens 3 Wörter. Beim Hinlaufen (einmal) oder mit dem Hauptknopf „🔊 Vorlesen“ wird der Text **laut vorgelesen**. Sparsam: Pfosten in einem Mesh, weit entfernte Tafeln sind unsichtbar. Test: `tests/tafeln.mjs`.
+- **13 neue Mini-Spiele** (`js/minis3.js`), nur Antippen, kein Verlieren, Erklärung mit Bildern statt Text; jede Insel hat ihren eigenen Spielautomaten und alle gehen auch „Mit Freunden“: 🦋 Schmetterlinge fangen (Hauptinsel), 🚦 Ampel-Held (Stadt), 🎠 Karussell-Ringe (Park), 🌈 Farben-Suche (Regenbogen), 🎣 Fische fangen (Dampfer), 🥚 Drachen-Eier, 🐶 Welpen-Suche (Fellretter), ⚽ Elfmeter (Fußball), 🔷 Formen-Suche (Bauland), 🎵 Noten-Fang (Funkwelle), 🔥 Zauber-Suche (Zotik), ⭐ Sternschnuppen (Märchenland), 🫧 Blasen-Pop (Atlantis). Vier Bausteine: Tipp-Jagd, Such-Bild, Ring-Fang, plus Ampel und Elfmeter. Test: `tests/minis3.mjs`.
+
+## Kleinere Welten
+Zotik (Lunaris, jetzt R≈70 bei (0, 380)), die Funkwelle (R≈64 bei (240, 184), Plätze und Reichweite der Radios angepasst) und Atlantis (Höhle R≈96) sind auf **Inselgröße** verkleinert. Zotik und Atlantis werden dafür in Original-Maßen gebaut und im Maßstab `S` (0,625 / 0,6) um die Mitte verkleinert (Meshes, Kollisionen, Laufregeln, Figuren); die Brücke bzw. Treppe an der Oberfläche bleibt in echten Maßen. Test: `tests/welten.mjs`.
+
 ## Regenbogenwelt 🌈 (Erweiterung, Aufklärung für Kinder)
 Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreichbar; auch per 🧭 Wohin? → „Regenbogenwelt“.
 - **Plaza** mit Regenbogen-Ringen und Brunnen (🌈 „Freude teilen“: Konfetti, ein Spruch über Vielfalt, alle 45 s +1 ⭐), zwei große **Regenbogen-Bögen**, **Flaggen** (Regenbogen, Trans, Bi, Pan), bunte Häuser, Tanzfläche, bunte Bäume.
@@ -233,7 +256,7 @@ Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die gro
 
 ### ⭐ Zotik – Lunaris, die Hauptstadt der Splitter (eigenes Rollenspiel-Universum)
 
-Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als große Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
+Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
 
 - **Stadt:** Plaza mit Mondkristall-Brunnen, Markt „Wanderhand“ (Händler Rurik), Taverne, Akademie-Turm, **Burg Lunaris auf einem 8-stufigen Hügel**, Hafen, schwebende Nachbarinseln, leuchtende Mondbäume.
 - **Bewohner mit Dialog:** Mira (Questgeberin), Rurik, Lyra, Rovan, Nia, Professorium. **Moosling Felli** streicheln = neuer **Partner** (wie Zündel/Willi).
@@ -247,7 +270,7 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 
 ### 📻 Funkwelle – die Radio-Welt (13 Sender mit Live-Stream)
 
-**Lage:** große Insel im **Südosten der Hauptinsel**, erreichbar über eine **Brücke** (oder 🧭 → Funkwelle) – wie die anderen Welten, ohne Portal, mit normalem Tag-und-Nacht-Himmel. Im Kreis um den Funkturm liegen **13 Sender-Plätze**, je mit
+**Lage:** Insel im **Südosten der Hauptinsel**, erreichbar über eine **Brücke** (oder 🧭 → Funkwelle) – wie die anderen Welten, ohne Portal, mit normalem Tag-und-Nacht-Himmel. Im Kreis um den Funkturm liegen **13 Sender-Plätze**, je mit
 - **Logo-Statue** (Logo des Senders auf schwingender Tafel, Sockel, Lichtsäule),
 - **Bildschirm** mit Sendername, Logo, Equalizer und „Jetzt läuft“ (E am Bildschirm öffnet das **Visual Radio** – die TV-Seite aus `ricorewi-radio` (`https://ricorewi-radio.de/visual-radio-tv.html?station=<sender>&app=1`, Cover, Songtext, Musikvideo) als Fenster; der Ton kommt vom Radio der Spielwelt; „im neuen Tab“ als Ausweg),
 - **Radio**: E = Sender einschalten (Stream `https://stream.laut.fm/<sender>`), nochmal E = aus. Es läuft immer nur ein Stream; die Lautstärke hängt von der Entfernung zum Radio ab, außerhalb des Bereichs wird es leise und der Stream pausiert (spart Daten), beim Verlassen der Welt stoppt er. Die Spielmusik wird beim Radiohören leiser.
