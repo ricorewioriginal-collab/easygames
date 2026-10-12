@@ -63,7 +63,7 @@
 
   /* ---------- Welt, Effekte ---------- */
   let world = null; world = BI.buildWorld(scene);
-  const W = world, fx = new BI.Fx(scene, 900);
+  const W = world, fx = new BI.Fx(scene, 900); BI.groundYFn = (x, z) => W.groundY(x, z);
   applyNight();
   const miniC = $('mini'), miniS = 150, miniBase = document.createElement('canvas'); miniBase.width = miniBase.height = miniS * 2; world.minimap(miniBase.getContext('2d'), miniS * 2);
   miniC.width = miniC.height = miniS * 2;
@@ -2106,7 +2106,7 @@
       }
       const q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) n.wait = 0, n.tx = n.x, n.tz = n.z; n.x = q.x; n.z = q.z;
       if (n.roam && !moving && n.wave <= 0 && Math.abs(n.x - P.x) + Math.abs(n.z - P.z) < 6 && Math.random() < dt * .08) n.wave = 1.3;
-      n.phase += dt * (moving ? 7 : 0); const g = n.c.group; g.position.set(n.x, n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0, n.z); g.rotation.y = n.h;
+      n.phase += dt * (moving ? 7 : 0); const g = n.c.group; if (moving || n.gy === undefined || (n.gyT = (n.gyT || 0) - dt) < 0) { n.gy = W.groundY(n.x, n.z); n.gyT = 1.5; } /* Hügel/Decks: Figuren stehen auf dem Boden statt darin zu versinken */ g.position.set(n.x, n.gy + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0), n.z); g.rotation.y = n.h;
       if (dancing) { n.c.dance(t + n.phase, n.style); g.position.y += Math.abs(Math.sin((t + n.phase) * 8)) * .15; } else n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);
     }
     // Bahnsteig-Leute: steigen ein, kommen wieder, wenn der Zug weg ist

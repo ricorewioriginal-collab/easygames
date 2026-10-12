@@ -350,7 +350,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     }
     /* Optik: Räder, Neigung, Blaulicht */
     visual(dt, t, fx) {
-      const sp = this.spec; if (sp.boat) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      const sp = this.spec; if (sp.boat) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; else if (!sp.fly) { /* Bodenfahrzeuge folgen Hügeln, Brücken und Decks (sonst versinken sie z. B. im Märchenland-Gebirge) */ const gy = BI.groundYFn ? Math.max(0, BI.groundYFn(this.x, this.z)) : 0; this.gy = this.gy === undefined || Math.abs(gy - this.gy) > 3 ? gy : BI.damp(this.gy, gy, 14, dt); this.y = this.gy; } this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
       if (sp.boat) {
         this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, -this.steerCur * Math.abs(this.v) / sp.max * .22 + Math.sin(t * 1.3) * .03, 5, dt); this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .01, -.08, .08) + Math.sin(t * 1.1) * .02, 4, dt);
         if (fx && Math.abs(this.v) > 1.5 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 2.2 + (Math.random() - .5), -.1, this.z - Math.cos(this.h) * 2.2 + (Math.random() - .5), (Math.random() - .5) * 1.4, .8, (Math.random() - .5) * 1.4, 1.1, 40, .95, .98, 1, 1, .8);

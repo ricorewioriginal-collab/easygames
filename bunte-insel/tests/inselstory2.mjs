@@ -29,7 +29,7 @@ const res = await p.evaluate(async keys => {
   for (const key of keys) {
     const d = BI.INSELSTORY.find(q => q.key === key), O = BI[key], r = { acts: d.acts.length, stages: [], fresh: true };
     b.save.stk = []; b.save.talked = []; b.save.flags = {}; b.save.einsatz = { done: [], cur: null }; for (const k of ['dampf', 'drachen', 'fussball', 'zotik', 'radio', 'atlantis']) delete b.save[k]; delete b.save.inselstory;
-    P.veh = null; if (key === 'ATLANTIS') { b.atlantis.enter(); await until(() => b.atlantis.inside, 25000); await sl(300); } else { P.x = O.x + O.R * .4; P.z = O.z; P.y = 0; } r.started = await until(() => I.dbg.stage(d) === 0);
+    P.veh = null; if (key === 'ATLANTIS') { I.dbg.start(d); /* Atlantis liegt unter Wasser (Zugang über die Treppe, G.inside): Start im Test direkt auslösen */ } else { P.x = O.x + O.R * .4; P.z = O.z; P.y = 0; } r.started = await until(() => I.dbg.stage(d) === 0);
     await sl(900); r.noSkip = I.dbg.stage(d) === 0 && d.acts.every(a => !I.dbg.ST || true); r.fresh = d.acts.every((a, i) => i > 0 || !a.goal.every(I.goalDone));
     for (let i = 0; i < d.acts.length; i++) { for (const g of d.acts[i].goal) sat(g, key); r.stages.push(await until(() => I.dbg.stage(d) === i + 1)); }
     r.sticker = b.save.stk.includes('geschichte_' + key.toLowerCase()); r.goalChip = true; out[key] = r;

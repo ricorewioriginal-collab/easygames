@@ -162,7 +162,7 @@ BI.createTown = function (G) {
   K.update = function (dt, t) {
     const ins = K.inside(); K.cur = ins; for (const q of W.interiors) { const v = ins !== q; if (q.roof.visible !== v) q.roof.visible = v; }
     for (const n of K.folk) { const d = Math.hypot(P.x - n.x, P.z - n.z), vis = d < 70; if (n.c.group.visible !== vis) n.c.group.visible = vis; if (!vis) continue; const near = d < 6 && ins; if (near) n.h += BI.angDiff(n.h, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 4); else n.h += BI.angDiff(n.h, n.h0) * Math.min(1, dt * 2);
-      n.hop = Math.max(0, n.hop - dt); n.c.group.rotation.y = n.h; n.c.group.position.y = n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .5 : 0; n.c.pose(t * 1.2 + n.x, 0, near && Math.sin(t * .8 + n.x) > .6); }
+      n.hop = Math.max(0, n.hop - dt); n.c.group.rotation.y = n.h; if (n.gy === undefined) n.gy = Math.max(0, W.groundY(n.x, n.z)); /* feste Bewohner auf Hügeln/Decks stehen auf dem Boden */ n.c.group.position.y = n.gy + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .5 : 0); n.c.pose(t * 1.2 + n.x, 0, near && Math.sin(t * .8 + n.x) > .6); }
   };
   /* Möbel-Interaktionen */
   const LAB = { bed: ['🛏️', 'Schlafen'], tv: ['📺', 'Fernsehen'], books: ['📖', 'Lesen'], piano: ['🎹', 'Klavier'], fridge: ['🧊', 'Kühlschrank'], plant: ['🪴', 'Gießen'], store: ['🛒', 'Einkaufen'], sit: ['☕', 'Hinsetzen'], egg: ['🥚', 'Drachenei streicheln'], hoard: ['💎', 'Schatz bestaunen'] };
