@@ -799,13 +799,13 @@
     if (joinCode.length !== 4) { mpErr('Der Code hat 4 Zeichen 🙂'); return; }
     mpSay('Verbinde … 🔌');
     try { await net.join(joinCode); mpShow('on'); mpSay(''); }
-    catch (e) { mpErr(e.message === 'nocode' ? 'Diesen Code gibt es nicht 🤔' : e.message === 'timeout' ? 'Das hat zu lange gedauert. Nochmal versuchen?' : 'Keine Verbindung möglich 🌐'); }
+    catch (e) { if (e.message === 'nocode') { mpSay('📺 Das ist ein Fernseher-Code? Dein Handy wird jetzt der Controller …'); setTimeout(() => { location.href = new URL('controller.html?c=' + joinCode, location.href).href; }, 900); return; } mpErr( e.message === 'timeout' ? 'Das hat zu lange gedauert. Nochmal versuchen?' : 'Keine Verbindung möglich 🌐'); }
   }
   const PAD = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'.split('');
   { const pad = $('mpPad'); for (const ch of PAD) { const b = document.createElement('button'); b.textContent = ch; b.onclick = () => { if (joinCode.length < 4) { joinCode += ch; renderJoin(); } }; pad.appendChild(b); }
     const del = document.createElement('button'); del.className = 'wide'; del.textContent = '⌫'; del.onclick = () => { joinCode = joinCode.slice(0, -1); renderJoin(); }; pad.appendChild(del);
     const go = document.createElement('button'); go.className = 'go'; go.textContent = 'Los! ▶'; go.onclick = mpJoinGo; pad.appendChild(go); }
-  $('mpHost').addEventListener('click', mpHost); $('mpJoin').addEventListener('click', () => { joinCode = ''; mpSay(''); mpShow('join'); });
+  $('mpHost').addEventListener('click', mpHost); $('mpJoin').addEventListener('click', () => { joinCode = ''; mpSay('📺 Auch Fernseher-Codes gehen: dein Handy wird dann der Controller.'); mpShow('join'); }); $('mpTv').addEventListener('click', () => { closeMp(); tv.start().catch(() => { }); });
   $('mpBack').addEventListener('click', mpBack); $('mpStop').addEventListener('click', () => { net.close(); mpShow('choose'); mpSay('Verbindung beendet.'); });
   $('mpCopy').addEventListener('click', () => { try { navigator.clipboard.writeText(net.link()); mpSay('Link kopiert! 📋'); } catch (e) { mpSay(net.link()); } });
   $('bMulti').addEventListener('click', () => openMp('menu')); $('bFriendsP').addEventListener('click', () => openMp('pause')); $('friends').addEventListener('click', () => openMp('play'));
