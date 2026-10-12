@@ -16,10 +16,15 @@ Das Spiel wächst ständig. Damit **Story-Modus, Handbuch, Lösungsbuch, Codes u
 ## 1b. Inselgeschichte 📜 (jede Welt erzählt eine kleine eigene Geschichte)
 - Neuer Eintrag in `BI.INSELSTORY` (`js/inselstory.js`): Figur der Welt (`npc`), Titel, 2–4 **Akte** mit Erzähltext, Hinweis und Ziel (`goal` = Sticker-IDs, die man in dieser Welt schafft), Abschlusstext. Inspiriert vom Vorbild der Welt, aber **mit eigenen Namen** (keine fremden Marken).
 - Abschluss-Sticker `geschichte_<key>` (Kleinbuchstaben) in `js/kids.js` anlegen. Wenn die Welt noch keine eigenen Sticker für Meilensteine hat, bitte welche ergänzen (`kids.earn(...)` an den Meilensteinen).
-- Noch ohne Inselgeschichte: Stadtinsel, Fellretter-Bucht, Regenbogeninsel, Dampfer-Hafen, Drachenhöhen, Fußball-Arena, Zotik & Lunaris, Radio-Insel, Atlantis (brauchen erst Meilenstein-Sticker).
+- **Alle 15 Welten haben eine Inselgeschichte.** Ziele (`goal`) können sein: Sticker-ID · `{ log: 'dampf', row: 0 }` (Zeile der Aufgabenliste der Welt, Modul in `logs` von `createInselStory` in `js/main.js` eintragen) · `{ talk: 'CITY', n: 3 }` (n Bewohner der Insel angesprochen) · `{ flag: 'x' }` (`save.flags.x`, im Modul setzen) · `{ einsatz: n }` / `{ medal: 1 }`. `tests/inselstory2.mjs` spielt jede Geschichte durch – bei neuen Welten dort das Setzen des Spielstands für neue Ziel-Arten ergänzen.
 
 ## 1c. Begleiter 🐾
 - Freischaltbare Tiere/Begleiter: `BI.PETS` (`js/util.js`) – `unlock: '<sticker-id>'` (wird mit dem Sticker frei) oder `mascot: true` (explizit per `takeMascot`/`unlockPet`). Neue Tiere ggf. als Eintrag in der Tabelle `K` von `BI.makePet`.
+
+## 1d. Fahrzeuge, Figuren, Spielzeugladen
+- **Neues Fahrzeug** (`BI.VEH` in `js/vehicles.js`): erscheint automatisch im Fahrzeug-Menü (🧭 → 🚗). In `js/main.js` entscheiden: `VEH_FREE` (kann man herholen), `VEH_WORLD` (gehört zu einer Welt → Story-Sperre/Weg zeigen) oder `BI.TOYVEH` (Spielzeugladen-Artikel; dann Eintrag in `SHOP`, Tab 5).
+- **Neue Spielfigur** einer Welt: Eintrag in `BI.HEROES` (`js/util.js`, mit `world: 'KEY'`) – sie erscheint automatisch unter „Mein Held“.
+- **Spielzeugladen** (`SHOP`, `SHOP_TABS` in `js/main.js`): Style-Zubehör mit `slot` + `val` (Variante/Farbe); Fahrzeug-Spielzeug mit `slot` = Fahrzeugart. `tests/fuhrpark.mjs` prüft Menü, Laden und Figuren.
 
 ## 2. Handbuch & Lösungsbuch
 - Text steht in `js/buch-data.js`: ein Satz zur neuen Welt in `welten` (Handbuch) und – wenn es Rätsel gibt – ein Abschnitt in `loesung`.

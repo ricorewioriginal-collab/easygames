@@ -34,14 +34,76 @@ BI.INSELSTORY = [
   { key: 'BAULAND', icon: '🧱', npc: 'Baumeisterin Berta', title: 'Die Stadt aus Blöcken', acts: [
     { text: 'Hier gehört alles dir: Block für Block entsteht deine Welt! Bau dein erstes Teil.', hint: 'Bau ein Teil (Bauen-Knopf 🧱)', goal: ['build'], done: 'Der erste Block sitzt!' },
     { text: 'Jetzt ein richtiger Parcours – bau ihn und schaffe ihn selbst!', hint: 'Schaffe deinen selbst gebauten Parcours', goal: ['parcours'], done: 'Dein Parcours ist geschafft!' }
-  ], end: 'Berta staunt: Meisterbaumeister!' }
+  ], end: 'Berta staunt: Meisterbaumeister!' },
+  { key: 'CITY', icon: '🏙️', npc: 'Stadtführerin Luna', title: 'Die Lichter der Großstadt', acts: [
+    { text: 'Willkommen in der Stadt, die niemals schläft! Hier kennt fast jeder jeden. Lerne ein paar Stadtbewohner kennen: tippe auf sie und sag Hallo!', hint: 'Sprich mit 3 Stadtbewohnern der Stadtinsel', goal: [{ talk: 'CITY', n: 3 }], done: 'Die ersten Freunde in der Großstadt!' },
+    { text: 'Die Ampeln der Stadt spinnen und der Verkehr steht still! Am Spielautomaten der Stadt kannst du den Verkehr ordnen.', hint: 'Spiele das Ampel-Spiel am Spielautomaten der Stadtinsel', goal: [{ flag: 'ampel' }], done: 'Der Verkehr fließt wieder!' },
+    { text: 'Jetzt kennst du die Straßen. Zeig, dass die ganze Stadt dein Zuhause ist – sag allen Hallo!', hint: 'Sprich mit 8 Stadtbewohnern der Stadtinsel', goal: [{ talk: 'CITY', n: 8 }], done: 'Die ganze Stadt kennt dich!' }
+  ], end: 'Luna jubelt: Du bist Ehren-Stadtkind – die Lichter leuchten für dich!' },
+  { key: 'PUPS', icon: '🐶', npc: 'Bürgermeister Berti', title: 'Die große Fellretter-Parade', acts: [
+    { text: 'Ein Notruf! Die Fellretter helfen überall, wo Not am Pfötchen ist. Nimm an der Einsatz-Tafel deinen ersten Einsatz an und schließe ihn ab!', hint: 'Schließe 1 Einsatz an der Einsatz-Tafel ab', goal: [{ einsatz: 1 }], done: 'Erster Einsatz geschafft – ein echter Fellretter!' },
+    { text: 'Es gibt viel zu tun in der Bucht! Drei Einsätze, dann gehörst du zum Team.', hint: 'Schließe 3 Einsätze ab', goal: [{ einsatz: 3 }], done: 'Das Team ist stolz auf dich!' },
+    { text: 'Die große Parade wartet auf alle Helden. Schaffe alle Einsätze, dann bekommst du die goldene Medaille!', hint: 'Schaffe alle Fellretter-Einsätze (Medaille)', goal: [{ medal: 1 }], done: 'Alle Einsätze geschafft – goldene Medaille!' }
+  ], end: 'Berti ruft: Hurra für den Fellretter-Helden – Parade für dich!' },
+  { key: 'RAINBOW', icon: '🌈', npc: 'Regenbogen-Romy', title: 'Jeder gehört dazu', acts: [
+    { text: 'Hallo und willkommen! Auf unserer Regenbogeninsel ist jeder anders – und jeder gehört dazu. Lerne drei von uns kennen, jeder hat etwas Eigenes zu erzählen.', hint: 'Sprich mit 3 Bewohnern der Regenbogeninsel', goal: [{ talk: 'RAINBOW', n: 3 }], done: 'Neue Freunde – jeder ist besonders!' },
+    { text: 'Gemeinsam macht alles mehr Spaß! Komm zum großen Regenbogen auf der Plaza und teile deine Freude mit allen.', hint: 'Teile Freude am großen Regenbogen der Plaza (Aktionstaste direkt am Regenbogen)', goal: [{ flag: 'rb_share' }], done: 'Die Plaza tanzt mit dir!' },
+    { text: 'Jetzt fehlt nur noch, dass du alle kennst. Sag Hallo – dann wird die Plaza ganz bunt!', hint: 'Sprich mit 8 Bewohnern der Regenbogeninsel', goal: [{ talk: 'RAINBOW', n: 8 }], done: 'Alle Farben sind beisammen!' }
+  ], end: 'Romy strahlt: Hier gehört jeder dazu – auch du!' },
+  { key: 'DAMPF', icon: '🚢', npc: 'Käpt’n Muschel', title: 'Das Orchester der Farben', acts: [
+    { text: 'Ahoi! Der Hafen ist ganz grau geworden – die Farbe ist weg! Öffne die sechs Farbeimer und bring die Farbe zurück.', hint: 'Öffne alle 6 Farbeimer im Dampfer-Hafen', goal: [{ log: 'dampf', row: 0 }], done: 'Der Hafen ist wieder bunt!' },
+    { text: 'Jetzt fehlt die Musik! Spiel die Instrumente des Dampfer-Orchesters und finde die verlorenen Noten.', hint: 'Spiele alle 6 Instrumente und finde alle 8 Noten', goal: [{ log: 'dampf', row: 1 }, { log: 'dampf', row: 2 }], done: 'Das Orchester spielt wieder!' },
+    { text: 'Zum großen Finale zeigen wir einen Stummfilm im Freiluftkino. Setz dich und schau zu!', hint: 'Sieh dir einen Stummfilm im Freiluftkino an', goal: [{ log: 'dampf', row: 3 }], done: 'Bravo – Vorhang zu, Applaus!' }
+  ], end: 'Käpt’n Muschel pfeift: Ehren-Matrose des Dampfer-Hafens!' },
+  { key: 'DRACHEN', icon: '🐉', npc: 'Drachenwächterin Brisa', title: 'Zündels Himmelsflug', acts: [
+    { text: 'Die Drachenhöhen sind dunkel und kalt. Zündel, der kleine Drache, braucht deine Hilfe: Zünde alle sechs Fackeln an!', hint: 'Zünde alle 6 Fackeln an (Zündel hilft)', goal: [{ log: 'drachen', row: 0 }], done: 'Die Höhlen leuchten warm!' },
+    { text: 'Gefangene Kristall-Freunde warten auf dich, und im Aufwind warten die Flugringe!', hint: 'Befreie alle 6 Kristall-Freunde und fliege durch alle 8 Flugringe', goal: [{ log: 'drachen', row: 1 }, { log: 'drachen', row: 2 }], done: 'Alle frei und alle Ringe geflogen!' },
+    { text: 'Jetzt ist Zündel bereit für den Himmelsflug: Öffne das Himmelstor!', hint: 'Öffne das Himmelstor und spiele „Drachenflug“', goal: [{ log: 'drachen', row: 4 }], done: 'Zündel fliegt hoch hinaus!' }
+  ], end: 'Brisa lächelt: Du bist Drachenfreund fürs Leben!' },
+  { key: 'FUSSBALL', icon: '⚽', npc: 'Trainerin Lena', title: 'Der goldene Pokal', acts: [
+    { text: 'Willkommen in der Arena! Jede Meisterin hat mal klein angefangen. Schieß deinen ersten Ball!', hint: 'Schieß einmal richtig (Knopf am Ball)', goal: [{ log: 'fussball', row: 0 }], done: 'Der erste Schuss sitzt!' },
+    { text: 'Gut so! Jetzt zeig, dass du treffen kannst: fünf Tore!', hint: 'Schieße 5 Tore', goal: [{ log: 'fussball', row: 1 }], done: 'Fünf Tore – du hast den Dreh raus!' },
+    { text: 'Fehlt nur noch Ausdauer! Schaffe 25 Tore.', hint: 'Schieße 25 Tore', goal: [{ log: 'fussball', row: 2 }], done: '25 Tore – Wahnsinn!' },
+    { text: 'Das Turnier wartet! Gewinne den goldenen Pokal!', hint: 'Gewinne das Fußball-Turnier', goal: ['cupwin'], done: 'Pokalsieger!' }
+  ], end: 'Lena hebt den Pokal: Du bist die Meisterin der Arena!' },
+  { key: 'ZOTIK', icon: '🦊', npc: 'Mira', title: 'Der Ruf des Kristalls', acts: [
+    { text: 'Reisende, ich habe auf dich gewartet! Der große Kristall von Lunaris ruft nach Hilfe. Sprich mit mir in der Taverne – dann geht es los.', hint: 'Besuche Lunaris und sprich mit Mira in der Taverne', goal: [{ log: 'zotik', row: 0 }, { log: 'zotik', row: 1 }], done: 'Mira vertraut dir!' },
+    { text: 'Ein Hinweis liegt im Hafen. Such ihn!', hint: 'Finde den Hinweis im Hafen', goal: [{ log: 'zotik', row: 2 }], done: 'Der Hinweis führt zur Akademie!' },
+    { text: 'An der Akademie ist ein Riss in der Luft. Untersuche ihn – aber sei auf einen Kampf gefasst!', hint: 'Untersuche den Riss an der Akademie (Elementar-Kampf)', goal: [{ log: 'zotik', row: 3 }], done: 'Der Riss ist geschlossen!' },
+    { text: 'Erzähl Mira, was geschehen ist!', hint: 'Berichte Mira vom Kampf', goal: [{ log: 'zotik', row: 4 }], done: 'Der Kristall strahlt wieder!' }
+  ], end: 'Mira verneigt sich: Du bist der Held von Lunaris!' },
+  { key: 'RADIO', icon: '📻', npc: 'Funkmeisterin Frida', title: 'Die dreizehn Sender', acts: [
+    { text: 'Hörst du das Rauschen? Die Funkwelle hat 13 Sender! Schalte am Platz ein Radio ein und hör 20 Sekunden zu.', hint: 'Höre einen Sender (Radio am Platz, 20 Sekunden zuhören)', goal: [{ log: 'radio', row: 1 }], done: 'Dein erster Sender!' },
+    { text: 'Das Visual Radio zeigt die Musik als Bilder. Schau es dir an einem Bildschirm an!', hint: 'Sieh dir das Visual Radio an einem Bildschirm an', goal: [{ log: 'radio', row: 3 }], done: 'Musik zum Sehen!' },
+    { text: 'Jetzt der große Empfang: alle 13 Sender!', hint: 'Höre alle 13 Sender', goal: [{ log: 'radio', row: 2 }], done: 'Alle Sender empfangen!' }
+  ], end: 'Frida dreht auf: Du bist Funkmeister!' },
+  { key: 'ATLANTIS', icon: '🔱', npc: 'Orakel Okeana', title: 'Das Herz von Atlantis', acts: [
+    { text: 'Willkommen in der versunkenen Stadt! Die Hologramme erzählen ihre Geschichte – schau sie dir an.', hint: 'Sieh dir alle 5 Hologramme im Archiv an', goal: [{ log: 'atlantis', row: 1 }], done: 'Du kennst die Geschichte von Atlantis!' },
+    { text: 'Das Herz von Atlantis schlägt auf dem Stufenberg. Steig hinauf und berühre es – und lass die Kristall-Harfe klingen!', hint: 'Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe', goal: [{ log: 'atlantis', row: 2 }, { log: 'atlantis', row: 3 }], done: 'Das Herz schlägt wieder!' },
+    { text: 'Zum Schluss: Schwerelos hüpfen und mit dem Aqua-Gleiter fahren!', hint: 'Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter', goal: [{ log: 'atlantis', row: 4 }, { log: 'atlantis', row: 5 }], done: 'Du schwebst durch Atlantis!' }
+  ], end: 'Okeana flüstert: Atlantis hat einen neuen Hüter!' }
 ];
 BI.createInselStory = function (G) {
   const { save, say, persist, P } = G, K = { cur: null }, ST = BI.INSELSTORY, got = id => (save.stk || []).includes(id);
   const S = () => { const s = save.inselstory || (save.inselstory = {}); return s; };
   const of = key => ST.find(q => q.key === key);
   const stage = d => { const a = S()[d.key]; return a == null ? -1 : a; }; /* -1 nicht begonnen, 0..n-1 Akt, n fertig */
-  const actDone = a => a.goal.every(got);
+  /* Ziele: Sticker-ID · { log, row } (Zeile der Aufgabenliste der Welt erledigt) · { talk, n } (n Bewohner der Insel angesprochen) · { flag } · { einsatz: n } · { medal } */
+  const logs = () => (G.logs ? G.logs() : {});
+  const residents = key => { const O = BI[key], out = new Set(); if (O && G.folk) for (const n of G.folk()) if (n.p && n.p.name && Math.hypot(n.x - O.x, n.z - O.z) < O.R + 5) out.add(n.p.name); return out; };
+  const goalDone = g => {
+    if (typeof g === 'string') return got(g);
+    try {
+      if (g.log) { const f = logs()[g.log], l = f && f(), r = l && l.rows[g.row]; return !!(r && r.ok); }
+      if (g.talk) { const names = residents(g.talk), T = save.talked || []; let n = 0; for (const q of T) if (names.has(q)) n++; return n >= g.n; }
+      if (g.flag) return !!(save.flags && save.flags[g.flag]);
+      if (g.einsatz != null) { const f = logs().einsatz, l = f && f(); return !!(l && l.state.done.length >= g.einsatz); }
+      if (g.medal) { const f = logs().einsatz, l = f && f(); return !!(l && l.state.medal); }
+    } catch (e) { }
+    return false;
+  };
+  K.goalDone = goalDone;
+  const actDone = a => a.goal.every(goalDone);
   /* Fortschritt prüfen: erledigte Akte weiterschalten (leise nachholen, wenn es schon Geschafftes gibt) */
   function advance(d, quiet) {
     const s = S(); let moved = false;
@@ -60,7 +122,7 @@ BI.createInselStory = function (G) {
   K.update = function (dt) {
     tmr -= dt; if (tmr > 0) return; tmr = .8; K.cur = null; const x = P.veh ? P.veh.x : P.x, z = P.veh ? P.veh.z : P.z;
     for (const d of ST) {
-      const O = BI[d.key]; if (!O) continue; const on = Math.hypot(x - O.x, z - O.z) < O.R + 12;
+      const O = BI[d.key]; if (!O) continue; const on = Math.hypot(x - O.x, z - O.z) < O.R + 12 || !!(G.inside && G.inside(d.key)); /* Atlantis liegt unter Wasser: dort zählt „drinnen“ */
       if (S()[d.key] != null) advance(d, false);
       if (on && !K.locked(d)) { if (S()[d.key] == null) start(d); const a = d.acts[S()[d.key]]; if (a) K.cur = { d, a, i: S()[d.key] }; }
     }
@@ -74,6 +136,6 @@ BI.createInselStory = function (G) {
       if (a != null && !done) for (let i = 0; i < d.acts.length; i++) rows.push({ ok: i < a, icon: '  ' + (i < a ? '✔' : '▫'), text: d.acts[i].hint, dest: null }); }
     return { title: '📜 Inselgeschichten', count: n + ' von ' + ST.length, rows };
   };
-  K.dbg = { S, advance, start, stage, ST };
+  K.dbg = { S, advance, start, stage, ST, goalDone, residents };
   return K;
 };

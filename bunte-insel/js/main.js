@@ -63,7 +63,7 @@
 
   /* ---------- Welt, Effekte ---------- */
   let world = null; world = BI.buildWorld(scene);
-  const W = world, fx = new BI.Fx(scene, 900);
+  const W = world, fx = new BI.Fx(scene, 900); BI.groundYFn = (x, z) => W.groundY(x, z);
   applyNight();
   const miniC = $('mini'), miniS = 150, miniBase = document.createElement('canvas'); miniBase.width = miniBase.height = miniS * 2; world.minimap(miniBase.getContext('2d'), miniS * 2);
   miniC.width = miniC.height = miniS * 2;
@@ -111,10 +111,12 @@
   /* Aussehen aus Held + Schrank (gekaufte Sachen gewinnen gegenüber dem Helden-Kostüm) */
   function charOpts(l, name) {
     const E = l.eq || {}, cu = l.cu || {}, H = BI.heroById(l.hero), po = H.o || {}, ac = k => !!E[k] || !!po[k], accs = { glasses: ac('glasses'), pack: ac('pack'), teddy: ac('teddy'), patch: ac('patch'), cape: ac('cape'), wings: ac('wings'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') };
+    const xt = {}, nv = k => typeof E[k] === 'number' ? E[k] : 0; /* Style-Zubehör aus dem Spielzeugladen (Werte = Variante/Farbe) */
+    if (E.watch) xt.watch = 1; if (E.headband) xt.headband = nv('headband') || 0xff6fae; if (E.earring) xt.earring = nv('earring') || 2; if (E.necklace) xt.necklace = nv('necklace') || 0xffd23f; if (E.mask) xt.mask = nv('mask') || 0xe0382b; if (E.rainbow) xt.rainbow = true; if (E.fox) xt.fox = true; if (nv('glassT')) { xt.glassT = nv('glassT'); xt.glasses = false; } if (nv('beard')) { xt.beard = nv('beard'); xt.beardc = 0x6b4423; }
     if (H.id === 'custom') { const acc = cu.acc || {}, a2 = k => ac(k) || !!acc[k]; const base = Object.assign({ shirt: BI.SHIRTS[l.shirt | 0] || BI.SHIRTS[0], pants: BI.PANTS[cu.pants | 0] || 0x3d4a7a, skin: BI.SKINS[cu.skin | 0], hair: BI.HAIRS[cu.hair | 0], style: BI.STYLES[cu.style | 0] === 'none' ? undefined : BI.STYLES[cu.style | 0], hat: E.hat && E.hat !== 'none' ? E.hat : BI.HATS[l.hat | 0] || 'none', name,
       eye: BI.EYES[cu.eye | 0], mouth: BI.MOUTHS[cu.mouth == null ? 1 : cu.mouth | 0], freckles: !!cu.fr, shoe: BI.SHOES[cu.shoe | 0], scale: BI.SIZES[cu.size == null ? 1 : cu.size | 0], dress: cu.top === 1, overall: cu.top === 2, stripe: !!cu.stripe, logo: BI.LOGOS[cu.logo | 0] || undefined },
-      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), fox: a2('fox'), rainbow: a2('rainbow'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); const ex = BI.cuOpts(cu); if (ex.glassT) base.glasses = false; return Object.assign(base, ex); }
-    return Object.assign({}, po, { hat: E.hat && E.hat !== 'none' ? E.hat : po.hat || 'none', name }, accs);
+      { glasses: a2('glasses'), pack: a2('pack'), teddy: a2('teddy'), patch: a2('patch'), cape: a2('cape'), wings: a2('wings'), fox: a2('fox'), rainbow: a2('rainbow'), scarf: ac('scarf'), bowtie: ac('bowtie'), medal: ac('medal') }); const ex = BI.cuOpts(cu); if (ex.glassT) base.glasses = false; return Object.assign(base, ex, xt); }
+    return Object.assign({}, po, { hat: E.hat && E.hat !== 'none' ? E.hat : po.hat || 'none', name }, accs, xt);
   }
   const P = { x: 0, z: 26, y: 0, vy: 0, h: Math.PI, phase: 0, wave: 0, veh: null, speed: 0, step: 0 };
   buildChar(); char.group.position.set(P.x, 0, P.z);
@@ -668,19 +670,31 @@
     { id: 'deco_castle', icon: '🏰', name: 'Zimmer: Ritterburg', price: 6, slot: 'deco', tab: 3 }, { id: 'deco_racecar', icon: '🏎️', name: 'Zimmer: Rennauto', price: 4, slot: 'deco', tab: 3 }, { id: 'deco_rainbow', icon: '🌈', name: 'Wand: Regenbogen', price: 3, slot: 'deco', tab: 3 }, { id: 'deco_stars', icon: '🌟', name: 'Wand: Sternenhimmel', price: 3, slot: 'deco', tab: 3 },
     { id: 'hat_viking', icon: '🪓', name: 'Wikingerhelm', price: 4, slot: 'hat', val: 'viking', tab: 4 }, { id: 'hat_tophat', icon: '🎩', name: 'Zylinder', price: 4, slot: 'hat', val: 'tophat', tab: 4 }, { id: 'hat_flowers', icon: '🌸', name: 'Blumenkranz', price: 3, slot: 'hat', val: 'flowers', tab: 4 },
     { id: 'hat_headphones', icon: '🎧', name: 'Kopfhörer', price: 4, slot: 'hat', val: 'headphones', tab: 4 }, { id: 'hat_santa', icon: '🎅', name: 'Weihnachtsmütze', price: 3, slot: 'hat', val: 'santa', tab: 4 }, { id: 'hat_ninja', icon: '🥷', name: 'Ninja-Stirnband', price: 4, slot: 'hat', val: 'ninja', tab: 4 },
+    /* Fahrzeug-Spielzeug: „Holen“ stellt das Fahrzeug neben dich (auch im Fahrzeug-Menü 🧭) */
+    { id: 'scooter', icon: '🛴', name: 'Tretroller', price: 4, slot: 'scooter', tab: 5 }, { id: 'bicycle', icon: '🚲', name: 'Fahrrad', price: 4, slot: 'bicycle', tab: 5 }, { id: 'bumper', icon: '🚗', name: 'Autoscooter', price: 6, slot: 'bumper', tab: 5 },
+    { id: 'mower', icon: '🌿', name: 'Aufsitzmäher', price: 5, slot: 'mower', tab: 5 }, { id: 'bobby', icon: '🧸', name: 'Rutschauto', price: 5, slot: 'bobby', tab: 5 }, { id: 'bike', icon: '🏍️', name: 'Motorrad', price: 8, slot: 'bike', tab: 5 },
+    { id: 'taxi', icon: '🚕', name: 'Taxi', price: 6, slot: 'taxi', tab: 5 }, { id: 'ice', icon: '🍦', name: 'Eiswagen', price: 8, slot: 'ice', tab: 5 }, { id: 'limo', icon: '🚘', name: 'Limousine', price: 10, slot: 'limo', tab: 5 },
+    /* Style: Schmuck, Brillen, Bärte und Looks (wirken bei jeder Figur; Varianten ersetzen sich gegenseitig) */
+    { id: 'watch', icon: '⌚', name: 'Armbanduhr', price: 3, slot: 'watch', tab: 6 }, { id: 'rainbow', icon: '🌈', name: 'Regenbogen-Shirt', price: 4, slot: 'rainbow', tab: 6 }, { id: 'fox', icon: '🦊', name: 'Fuchs-Look', price: 5, slot: 'fox', tab: 6 },
+    { id: 'gl1', icon: '👓', name: 'Runde Brille', price: 2, slot: 'glassT', val: 1, tab: 6 }, { id: 'gl2', icon: '🕶️', name: 'Pilotenbrille', price: 3, slot: 'glassT', val: 2, tab: 6 }, { id: 'gl3', icon: '😎', name: 'Coole Brille', price: 3, slot: 'glassT', val: 3, tab: 6 }, { id: 'gl4', icon: '🤓', name: 'Lesebrille', price: 2, slot: 'glassT', val: 4, tab: 6 },
+    { id: 'ear1', icon: '⚪', name: 'Ohrstecker', price: 2, slot: 'earring', val: 1, tab: 6 }, { id: 'earring', icon: '💎', name: 'Ohrring', price: 2, slot: 'earring', val: 2, tab: 6 }, { id: 'ear3', icon: '⭐', name: 'Stern-Ohrring', price: 3, slot: 'earring', val: 3, tab: 6 },
+    { id: 'necklace', icon: '📿', name: 'Goldkette', price: 3, slot: 'necklace', val: 0xffd23f, tab: 6 }, { id: 'neck2', icon: '🔗', name: 'Silberkette', price: 3, slot: 'necklace', val: 0xc9ced6, tab: 6 }, { id: 'neck3', icon: '💗', name: 'Herzkette', price: 3, slot: 'necklace', val: 0xff5a8a, tab: 6 }, { id: 'neck4', icon: '💙', name: 'Blaue Kette', price: 3, slot: 'necklace', val: 0x3fa0ff, tab: 6 },
+    { id: 'headband', icon: '🎀', name: 'Stirnband pink', price: 2, slot: 'headband', val: 0xff6fae, tab: 6 }, { id: 'hb2', icon: '🟦', name: 'Stirnband blau', price: 2, slot: 'headband', val: 0x3fa0ff, tab: 6 }, { id: 'hb3', icon: '🟨', name: 'Stirnband gelb', price: 2, slot: 'headband', val: 0xffd23f, tab: 6 }, { id: 'hb4', icon: '🟥', name: 'Stirnband rot', price: 2, slot: 'headband', val: 0xe0382b, tab: 6 },
+    { id: 'mask', icon: '🥷', name: 'Maske rot', price: 3, slot: 'mask', val: 0xe0382b, tab: 6 }, { id: 'mask2', icon: '🔵', name: 'Maske blau', price: 3, slot: 'mask', val: 0x3fa0ff, tab: 6 }, { id: 'mask3', icon: '⚫', name: 'Maske schwarz', price: 3, slot: 'mask', val: 0x23262d, tab: 6 }, { id: 'mask4', icon: '🟡', name: 'Maske gold', price: 4, slot: 'mask', val: 0xffd23f, tab: 6 },
+    { id: 'bd2', icon: '👨', name: 'Schnurrbart', price: 3, slot: 'beard', val: 2, tab: 6 }, { id: 'bd4', icon: '🧔', name: 'Ziegenbart', price: 3, slot: 'beard', val: 4, tab: 6 }, { id: 'bd5', icon: '🧔‍♂️', name: 'Vollbart', price: 4, slot: 'beard', val: 5, tab: 6 }, { id: 'bd6', icon: '🧙‍♂️', name: 'Langer Bart', price: 4, slot: 'beard', val: 6, tab: 6 },
     { id: 'scarf', icon: '🧣', name: 'Schal', price: 3, slot: 'scarf', tab: 4 }, { id: 'bowtie', icon: '🎀', name: 'Fliege', price: 2, slot: 'bowtie', tab: 4 }, { id: 'medal', icon: '🏅', name: 'Medaille', price: 3, slot: 'medal', tab: 4 }
   ];
-  const SHOP_TABS = ['👒 Mützen', '🎒 Zubehör', '🧸 Spielzeug', '🏠 Zimmer']; let shopTab = 0;
+  const SHOP_TABS = ['👒 Mützen', '🎒 Zubehör', '🧸 Spielzeug', '🏠 Zimmer', '🎩 Hüte & mehr', '🚗 Fahrzeuge', '💍 Style']; let shopTab = 0;
   let shopOpen = false, wasInShop = false;
   const shopPanel = $('shopPanel');
   const inShop = () => !P.veh && Math.abs(P.x - SH.x) < SH.half && Math.abs(P.z - SH.z) < SH.half;
   const nearCounter = () => inShop() && Math.hypot(P.x - SH.keeper.x, P.z - (SH.keeper.z - 1.8)) < 5.2;
-  const isEq = it => it.slot === 'hat' ? save.equip.hat === it.val : !!save.equip[it.slot];
-  function setEq(it, on) { if (it.slot === 'hat') save.equip.hat = on ? it.val : 'none'; else save.equip[it.slot] = on; persist(); buildChar(); }
+  const isEq = it => it.slot === 'hat' ? save.equip.hat === it.val : it.val !== undefined ? save.equip[it.slot] === it.val : !!save.equip[it.slot];
+  function setEq(it, on) { if (it.slot === 'hat') save.equip.hat = on ? it.val : 'none'; else save.equip[it.slot] = on ? (it.val !== undefined ? it.val : true) : false; persist(); buildChar(); }
   function spawnRC(quiet, type) {
-    type = type || 'rc'; const out = inShop(), sd = type === 'rcheli' ? 2.2 : 0, hx = (out ? SH.x : P.x + Math.sin(P.h) * 2.4) + Math.cos(P.h) * sd, hz = (out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4) - Math.sin(P.h) * sd; let v = vehicles.find(q => q.type === type);
-    if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } } else addVeh(type, hx, hz, P.h);
-    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : type === 'skate' ? '🛹 Dein Skateboard steht bereit!' : type === 'rollator' ? '🦽 Dein Rollator steht bereit – Turbo für Wheelie-Unfug!' : '🏎️ Dein rotes RC-Auto steht bereit!', 1800);
+    type = type || 'rc'; const out = inShop(), sd = type === 'rcheli' ? 2.2 : 0, hx = (out ? SH.x : P.x + Math.sin(P.h) * 2.4) + Math.cos(P.h) * sd, hz = (out ? SH.z - 10 : P.z + Math.cos(P.h) * 2.4) - Math.sin(P.h) * sd; const own = ['rc', 'rcheli', 'skate', 'rollator'].includes(type); let v = vehicles.find(q => q.type === type && (own || q.toy)); /* neue Spielzeug-Fahrzeuge sind eigene Exemplare (nicht der Verkehr) */
+    if (v) { const q = W.resolve(hx, hz, .6, {}); v.setPose(q.x, q.z, P.h); v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } } else { const nv = addVeh(type, hx, hz, P.h); if (nv && !own) nv.toy = true; }
+    if (!quiet) say(type === 'rcheli' ? '🚁 Dein RC-Hubschrauber steht bereit!' : type === 'skate' ? '🛹 Dein Skateboard steht bereit!' : type === 'rollator' ? '🦽 Dein Rollator steht bereit – Turbo für Wheelie-Unfug!' : type === 'rc' ? '🏎️ Dein rotes RC-Auto steht bereit!' : '🚗 ' + (BI.VEH[type] ? BI.VEH[type].name : 'Fahrzeug') + ' steht bereit!', 1800);
   }
   function renderShop() {
     $('shopStars').textContent = '⭐ ' + save.stars; const tabs = $('shopTabs'); tabs.innerHTML = '';
@@ -690,7 +704,7 @@
       const owned = save.owned.includes(it.id), c = document.createElement('div'), b = document.createElement('button'); c.className = 'sc' + (owned ? ' own' : '');
       c.innerHTML = '<div class="si">' + it.icon + '</div><div class="sn">' + it.name + '</div><div style="font-size:10px;opacity:.7;line-height:1.1">' + pack.shopHint(it) + '</div><div class="sp">' + (owned ? '✔ gehört dir' : it.price + ' ⭐') + '</div>';
       if (!owned) { b.textContent = 'Kaufen'; b.disabled = save.stars < it.price; b.onclick = () => buyItem(it); }
-      else if (it.slot === 'rcheli' || it.slot === 'skate' || it.slot === 'rollator') { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, it.slot); closeShop(); }; }
+      else if (BI.TOYVEH.includes(it.slot)) { b.textContent = 'Holen'; b.onclick = () => { spawnRC(false, it.slot); closeShop(); }; }
       else if (it.slot === 'deco') { b.textContent = '✔ In „Mein Zimmer“'; b.disabled = true; }
       else { b.textContent = isEq(it) ? 'Ablegen' : 'Anziehen'; b.onclick = () => { setEq(it, !isEq(it)); A.pop(); renderShop(); }; }
       c.appendChild(b); grid.appendChild(c);
@@ -699,7 +713,7 @@
   function buyItem(it) {
     if (save.owned.includes(it.id) || save.stars < it.price) return;
     save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
-    if (it.slot === 'rcheli' || it.slot === 'skate' || it.slot === 'rollator') spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
+    if (BI.TOYVEH.includes(it.slot)) spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
   }
   function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; renderShop(); say('Frau Bunt: „Viel Spaß mit dem Spielzeug!“', 2200); }
   function closeShop() { shopOpen = false; shopPanel.hidden = true; updateButtons(true); }
@@ -1076,6 +1090,7 @@
     $('grTitle').textContent = rec ? '🏆 Neuer Rekord!' : 'Geschafft!'; $('grText').textContent = d.name + ': ' + score + ' Punkte  +' + stars + ' ⭐'; $('grList').innerHTML = ''; $('gameRes').hidden = false; mpOpen = true;
   }
   function startGame(k, solo) {
+    if (k === 'ampel_stadt') (save.flags || (save.flags = {})).ampel = 1;
     const def = gdef(k); if (!def) return; if (gm || mini.active) { say('Es läuft schon ein Spiel!', 2000); return; }
     if (!solo && !net.connected()) { say('Dafür brauchst du Mitspieler 👥', 2000); return; } if (P.veh || ride) { say('Steig erst aus 🚪', 1800); return; }
     const ids = [selfId()].concat([...remote.keys()]); const d = { t: 'g', op: 'start', k, seed: (Math.random() * 1e9) | 0, it: ids[(Math.random() * ids.length) | 0], dur: def.dur };
@@ -1262,7 +1277,7 @@
   let tycoon = null; const takeStar = n => { save.stars -= n; $('starN').textContent = save.stars; persist(); }, earnSt = id => { kids.earn(id); meta.note(id); };
   const park = BI.createPark({ scene, W, A, fx, P, say, save, inv: () => garden.inv(), addStars: n => addStars(n), takeStar, earn: earnSt, char: () => char, onRide: k => { if (tycoon) tycoon.onRide(k); } }); park.people(town.folk);
   tycoon = BI.createTycoon({ scene, W, A, fx, P, say, save, persist, park, playing: () => state === 'play', addStars: n => addStars(n), takeStar, inv: () => garden.inv(), earn: earnSt, setStick, updateButtons: f => updateButtons(f) });
-  const rainbow = BI.createRainbow({ scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => { kids.earn(id); meta.note(id); } }); rainbow.people(town.folk);
+  const rainbow = BI.createRainbow({ flag: f => { (save.flags || (save.flags = {}))[f] = 1; }, scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => { kids.earn(id); meta.note(id); } }); rainbow.people(town.folk);
   const pups = BI.createPups({ scene, W, A, fx, P, say, talk: n => talkNpc(n), addStars: n => addStars(n), look: () => charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, ''), earn: id => { kids.earn(id); meta.note(id); } }); pups.people(town.folk);
   const arcade = BI.createArcade({ scene, W, P, start: k => startGame(k, true), info: k => gdef(k) });
   const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), takeMascot: id => takeMascot(id) }); dampf.people(town.folk);
@@ -1280,7 +1295,7 @@
   const schluessel = BI.createSchluessel({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), note: k => meta.note(k), char: () => char, setStick, updateButtons: f => updateButtons(f), callMobil }); schluessel.people(town.folk);
   const sammeln = BI.createSammeln({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), note: k => meta.note(k), night: () => night, setStick, updateButtons: f => updateButtons(f), zoo: () => farm.openBook(), room: () => room.build(), share: () => shareRoomSoon(), rainbow: () => weather && weather.rainbow() });
   const pad = BI.createGamepad({ inp, cam, P, say, state: () => state, busy: () => uiBusy(), mini: () => mini.active, setStick });
-  istory = BI.createInselStory({ save, say, persist, P, addStars: n => addStars(n), earn: id => kids.earn(id), speak: t => A.speak && A.speak(t), fanfare: () => A.fanfare && A.fanfare(), lockedAt: (x, z) => smode.lockedAt(x, z) });
+  istory = BI.createInselStory({ inside: k => k === 'ATLANTIS' && !!atlantis.inside, folk: () => town.folk, logs: () => ({ dampf: () => dampf.log(), drachen: () => drachen.log(), fussball: () => fussball.log(), zotik: () => zotik.log(), radio: () => radio.log(), atlantis: () => atlantis.log(), einsatz: () => { const E = save.einsatz || { done: [], cur: null }; return { state: E }; } }), save, say, persist, P, addStars: n => addStars(n), earn: id => kids.earn(id), speak: t => A.speak && A.speak(t), fanfare: () => A.fanfare && A.fanfare(), lockedAt: (x, z) => smode.lockedAt(x, z) });
   const kb = BI.createKeys({ say, pad }); $('bKeys').addEventListener('click', () => kb.open());
   /* Geheimcodes, Handbuch/Lösungsbuch, Fehler melden */
   const cheats = BI.createCheats({ save, say, persist, P, fx, A, setStick, addStars: n => addStars(n), char: () => char, goHome, daily: () => kids.daily(), stickerIds: () => kids.all().map(q => q[0]), shopIds: () => SHOP.map(q => q.id), unlockPets: () => { const mm = save.mascots || (save.mascots = []); for (const q of BI.PETS) if (q.mascot && !mm.includes(q.id)) mm.push(q.id); }, finishStory: () => story.finish(), applyStory: () => smode.apply(), refreshStars: () => { $('starN').textContent = save.stars; } });
@@ -1464,13 +1479,47 @@
   let guide = null; const guideEl = $('guidePanel');
   let guideTab = 'inseln';
   const GTABS = [['inseln', '🏝️', 'Inseln'], ['haupt', '🏠', 'Hauptinsel'], ['spiele', '🕹️', 'Spiele'], ['orte', '📍', 'Orte'], ['fahr', '🚗', 'Fahrzeuge']];
+  /* ---------- Fahrzeug-Menü: ALLE Fahrzeuge des Spiels sehen, herholen oder hingehen ---------- */
+  const VEH_FREE = new Set(['car', 'taxi', 'bumper', 'bike', 'police', 'ambulance', 'fire', 'bus', 'tractor', 'combine', 'bicycle', 'scooter', 'rollator', 'skate', 'mower', 'rc', 'rcheli', 'heli', 'limo', 'bobby', 'ice']); /* diese kann man zu sich holen; die anderen gehören zu ihrer Welt (Weg zeigen / hinzaubern) */
+  const VEH_WORLD = { keymobil: 'SCHLUESSEL', pupmobil: 'PUPS', wannenmobil: 'SCHWAMM', gleiter: 'ATLANTIS', nautilux: 'ZOTIK', drake: 'DRACHEN' };
+  const nearestVeh = type => { let b = null, bd = 1e12; for (const v of vehicles) { if (v.type !== type || v === P.veh) continue; const d = Math.hypot(v.x - P.x, v.z - P.z); if (d < bd) { bd = d; b = v; } } return b; };
+  function vehicleList() { return Object.keys(BI.VEH).map(type => { const sp = BI.VEH[type], inst = nearestVeh(type), toy = BI.TOYVEH.includes(type), owned = !toy || save.owned.includes(type), lk = inst && smode && smode.lockedAt(inst.x, inst.z), item = SHOP.find(q => q.id === type);
+    return { type, icon: sp.icon, name: sp.name, inst, toy, owned, lk, price: item ? item.price : 0, free: VEH_FREE.has(type), world: VEH_WORLD[type] }; }); }
+  function callVeh(type) {
+    if (P.veh) leave(); const info = vehicleList().find(q => q.type === type); if (!info) return;
+    if (info.lk) { say(smode.reqText(info.lk), 6000); return; } if (!info.owned) { say('🔒 ' + info.name + ' gibt es im Spielzeugladen 🧸 (' + info.price + ' ⭐).', 4200); return; }
+    if (type === 'keymobil') { callMobil(); return; }
+    if (!info.free) { const d = { id: 'veh_' + type, icon: info.icon, name: info.name, at: () => { const v = nearestVeh(type); return v ? { x: v.x, z: v.z } : { x: P.x, z: P.z }; } }; setGuide(d); return; }
+    if (BI.TOYVEH.includes(type) || type === 'rc') { spawnRC(false, type); return; }
+    /* Verkehr und Festplätze bleiben, wo sie sind: du bekommst dein eigenes Exemplar neben dich gestellt */
+    const hx = P.x + Math.sin(P.h) * 3.4, hz = P.z + Math.cos(P.h) * 3.4; let v = vehicles.find(q => q.type === type && q.toy);
+    if (v) { const q = W.resolve(hx, hz, v.r + .3, {}); v.setPose(q.x, q.z, P.h + Math.PI / 2); v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } } else { v = addVeh(type, hx, hz, P.h + Math.PI / 2); if (v) v.toy = true; }
+    fx.burst(hx, 1, hz, 14, [BI.C.white, BI.C.gold], 3, .8, 26, 3); A.pop && A.pop(); say(info.icon + ' ' + info.name + ' steht bereit!', 2200);
+  }
+  function renderVehMenu(g) {
+    const list = vehicleList(); for (const q of list) {
+      const c = document.createElement('div'); c.className = 'grow'; const sub = q.lk ? '🔒 ' + q.lk.name + ' gesperrt' : !q.owned ? '🔒 Spielzeugladen · ' + q.price + ' ⭐' : q.free ? (q.toy && !q.inst ? 'gehört dir' : 'zum Herholen') : q.world ? 'steht in ' + (BI[q.world] && smode ? (smode.islands().find(I => I.key === q.world) || { name: q.world }).name : q.world) : 'steht an ihrem Platz'; if (q.lk) c.style.background = 'rgba(255,225,150,.55)';
+      c.innerHTML = '<b>' + q.icon + '</b><span>' + q.name + '<small style="display:block;font-weight:600;opacity:.8">' + sub + '</small></span><div class="gbtn"></div>'; const gb = c.querySelector('.gbtn');
+      const mk = (txt, ttl, f) => { const b = document.createElement('button'); b.textContent = txt; b.title = ttl; b.setAttribute('aria-label', ttl + ': ' + q.name); b.onclick = f; gb.appendChild(b); };
+      const loc = () => ({ id: 'veh_' + q.type, icon: q.icon, name: q.name, at: () => { const v = nearestVeh(q.type); return v ? { x: v.x, z: v.z } : { x: P.x, z: P.z }; } });
+      if (q.free && q.owned && !q.lk) mk('🚗', 'Herholen', () => { closeGuide(); callVeh(q.type); });
+      if (!q.owned && !q.lk) mk('🧸', 'Zum Spielzeugladen', () => { const d = DEST.find(x => x.id === 'shop'); if (d) { setGuide(d); closeGuide(); } });
+      if (q.inst && !q.lk) { mk('👣', 'Weg zeigen', () => { setGuide(loc()); closeGuide(); }); if (!q.free) mk('✨', 'Hinzaubern', () => { closeGuide(); beamTo(loc()); }); }
+      else if (q.lk) mk('ℹ️', 'Was fehlt noch?', () => say(smode.reqText(q.lk), 6000));
+      g.appendChild(c);
+    }
+    /* Fahrzeuge der Welt, die keine eigene Art sind (Boot am Steg, Piratenschiff …) */
+    for (const d of DEST.filter(x => x.cat === 'fahr' && !Object.values(BI.VEH).some(v => x.name.includes(v.name)))) { const c = document.createElement('div'); c.className = 'grow'; c.innerHTML = '<b>' + d.icon + '</b><span>' + d.name + '</span><div class="gbtn"></div>'; const gb = c.querySelector('.gbtn'); const b1 = document.createElement('button'); b1.textContent = '👣'; b1.title = 'Weg zeigen'; b1.onclick = () => { setGuide(d); closeGuide(); }; const b2 = document.createElement('button'); b2.textContent = '✨'; b2.title = 'Hinzaubern'; b2.onclick = () => { closeGuide(); beamTo(d); }; gb.append(b1, b2); g.appendChild(c); }
+  }
   function guideItems(cat) {
+    if (cat === 'fahr') return Object.keys(BI.VEH).map(t => ({ id: 'veh_' + t, icon: BI.VEH[t].icon, name: BI.VEH[t].name, cat: 'fahr', at: () => ({ x: P.x, z: P.z }) }));
     const L = DEST.filter(d => d.cat === cat);
     if (cat === 'spiele') { const seen = new Set(); for (const a of W.spots.arcades || []) { if (seen.has(a.kind)) continue; seen.add(a.kind); const g = gdef(a.kind); if (!g) continue; L.push({ id: 'arc_' + a.kind, icon: g.icon, name: g.name + ' (Spielautomat)', at: () => ({ x: a.fx, z: a.fz }), cat }); } }
     return L; }
   function renderGuide() {
     const g = $('guideGrid'), tabs = $('guideTabs'); g.innerHTML = ''; tabs.innerHTML = '';
     for (const [k, ic, nm] of GTABS) { const n = guideItems(k).length, b = document.createElement('button'); b.className = 'gtab' + (k === guideTab ? ' on' : ''); b.innerHTML = '<span>' + ic + '</span><small>' + nm + ' · ' + n + '</small>'; b.onclick = () => { guideTab = k; renderGuide(); }; tabs.appendChild(b); }
+    if (guideTab === 'fahr') { renderVehMenu(g); return; }
     for (const d of guideItems(guideTab)) { const c = document.createElement('div'); c.className = 'grow'; const pl = d.at(), lk = smode && smode.lockedAt(pl.x, pl.z);
       if (lk) { /* Story-Modus: gesperrte Welt – Schloss und Aufgaben statt Weg/Hinzaubern */ c.style.background = 'rgba(255,225,150,.55)'; c.innerHTML = '<b>🔒</b><span>' + d.name + '<small style="display:block;font-weight:600;opacity:.85">' + lk.icon + ' ' + lk.name + ' gesperrt · ' + smode.reqLines(lk).filter(r => !r.ok).map(r => r.icon + ' ' + r.text.split(':')[0]).join(' · ') + '</small></span><div class="gbtn"></div>'; const bi = document.createElement('button'); bi.textContent = 'ℹ️'; bi.title = 'Was fehlt noch?'; bi.setAttribute('aria-label', 'Was fehlt noch: ' + d.name); bi.onclick = () => { say(smode.reqText(lk), 6000); }; c.querySelector('.gbtn').appendChild(bi); g.appendChild(c); continue; }
       c.innerHTML = '<b>' + d.icon + '</b><span>' + d.name + '</span><div class="gbtn"></div>'; const gb = c.querySelector('.gbtn');
@@ -2105,7 +2154,7 @@
       }
       const q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) n.wait = 0, n.tx = n.x, n.tz = n.z; n.x = q.x; n.z = q.z;
       if (n.roam && !moving && n.wave <= 0 && Math.abs(n.x - P.x) + Math.abs(n.z - P.z) < 6 && Math.random() < dt * .08) n.wave = 1.3;
-      n.phase += dt * (moving ? 7 : 0); const g = n.c.group; g.position.set(n.x, n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0, n.z); g.rotation.y = n.h;
+      n.phase += dt * (moving ? 7 : 0); const g = n.c.group; if (moving || n.gy === undefined || (n.gyT = (n.gyT || 0) - dt) < 0) { n.gy = W.groundY(n.x, n.z); n.gyT = 1.5; } /* Hügel/Decks: Figuren stehen auf dem Boden statt darin zu versinken */ g.position.set(n.x, n.gy + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0), n.z); g.rotation.y = n.h;
       if (dancing) { n.c.dance(t + n.phase, n.style); g.position.y += Math.abs(Math.sin((t + n.phase) * 8)) * .15; } else n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);
     }
     // Bahnsteig-Leute: steigen ein, kommen wieder, wenn der Zug weg ist
@@ -2253,7 +2302,7 @@
     if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .2; drawMini(); } }
     updateContactShadows(); if (!tv.render()) renderer.render(scene, camera);
   }
-  spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate'); if (save.owned.includes('rollator')) spawnRC(true, 'rollator');
+  spawnRC(true); for (const tv of BI.TOYVEH) if (save.owned.includes(tv)) spawnRC(true, tv);
   $('loading').hidden = true; $('menu').hidden = false; if (!document.body.classList.contains('touch')) $('bStart').focus({ preventScroll: true });
   /* Konsolen-Steuerung im Startmenü: Pfeiltasten / Steuerkreuz wählen, Enter / A öffnet, Esc / B geht zurück */
   { const btns = () => [...$('menu').querySelectorAll('[data-v]:not([hidden]) button')].filter(b => !b.disabled && b.offsetParent), live = () => state === 'menu' && !$('menu').hidden && !mpOpen && !creating;
@@ -2270,7 +2319,7 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { kids, istory, setPet, pup, setPetHome, cheats, buch, bugs, kb, pad, smode, footNow, innen, tv, bade, mplus, schwamm, raetsel, schluessel, sammeln, gotHeart, giveHeart, remoteRooms, remote, get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, fussball, maerchen, schatz, DEST, tafeln, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, tycoon, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { openShop, shopItems: () => SHOP, buyItem, setEq, callVeh, vehicleList, kids, istory, setPet, pup, setPetHome, cheats, buch, bugs, kb, pad, smode, footNow, innen, tv, bade, mplus, schwamm, raetsel, schluessel, sammeln, gotHeart, giveHeart, remoteRooms, remote, get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, fussball, maerchen, schatz, DEST, tafeln, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, tycoon, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
   if (/[?&]dbg=1\b/.test(location.search)) { const sc = document.createElement('script'); sc.src = 'js/dbg.js?v=1'; document.head.appendChild(sc); }
 })();
 

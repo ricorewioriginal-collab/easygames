@@ -85,7 +85,7 @@ BI.createRainbow = function (G) {
   let si = 0, last = -1e9; const COLS = [[1, .23, .23], [1, .6, .18], [1, .88, .29], [.3, .82, .49], [.25, .63, 1], [.61, .3, .88]];
   K.near = function () { if (P.veh || P.y > 1.5) return null; return Math.hypot(P.x - R.x, P.z - R.z) < 6.8 ? { k: 'rbow' } : null; };
   K.act = function (n) {
-    if (!n || n.k !== 'rbow') return; const now = performance.now(); fx.burst(R.x, 3.2, R.z, 24, COLS, 4, 1.4, 28, 3); A.fanfare && A.fanfare(); say(SAYS[si++ % SAYS.length], 4200);
+    if (!n || n.k !== 'rbow') return; G.flag && G.flag('rb_share'); const now = performance.now(); fx.burst(R.x, 3.2, R.z, 24, COLS, 4, 1.4, 28, 3); A.fanfare && A.fanfare(); say(SAYS[si++ % SAYS.length], 4200);
     if (now - last > 45000) { last = now; G.addStars(1); say('🌈 +1 ⭐ fürs Freude teilen!', 1800); G.earn && G.earn('play'); }
   };
   /* ===== Regenbogen-Bühne: Leinwand mit 5 Pride-Songs (nur Titel + Künstler zum Lesen), Pride-Party rund um die Uhr ===== */
