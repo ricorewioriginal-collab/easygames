@@ -321,31 +321,37 @@ BI.buildWorld = function (scene) {
   W.spots = {};
   { // Krankenhaus (NE)
     const cx = 56, cz = -56, w = 26, d = 18, h = 9;
-    box(cx, cz, w, d, h, 0xf6f8fc); box(cx, cz, 10, d + 2, h + 3.5, 0xeaf0f8); box(cx, cz, w + .6, d + .6, .6, 0x4da3ff, h);
-    st.box(cx, h + 3.5, cz, 10.4, .6, d + 2.4, 0x4da3ff);
-    windows(cx, cz, w, d, 1.6, 2, 3.6, 1); windows(cx, cz, 10, d + 2, h + .4, 1, 3.4);
-    st.box(cx, 0, cz + d / 2 + .1, 3.4, 3, .2, 0x7dc4ff); st.box(cx, 3, cz + d / 2 + 1.6, 6, .4, 3.4, 0xe53b3b);
+    BI.buildEnterable(TC, { cx, cz, w, d, h, wall: 0xf6f8fc, roof: 0x4da3ff, s: 1, flat: true, gap: 1.6, dh: 3, win: [1.6, 2, 3.6], title: '🏥 Krankenhaus', npc: ['Doktor Fina', ['Hier werden alle wieder gesund! 🩺', 'Ein Pflaster hilft bei fast allem.', 'Iss viel Obst, das macht stark. 🍎'], 0xffffff],
+      roofExtra: rb => { rb.box(cx, h + .5, cz, 10, 3, d + 2, 0xeaf0f8); rb.box(cx, h + 3.5, cz, 10.4, .6, d + 2.4, 0x4da3ff); rb.disc(cx + 8, cz, 4.6, h + .65, 0x444a55, 16); rb.strip(cx + 8, cz - 1.8, .6, 3.6, 0, h + .7, 0xffd23f); rb.strip(cx + 8, cz + 1.8, .6, 3.6, 0, h + .7, 0xffd23f); rb.strip(cx + 8, cz, 3.6, .6, 0, h + .7, 0xffd23f); },
+      civic: k => { const { furn, block, X, Z, st: s2 } = k; for (let i = 0; i < 4; i++) { const u = -9.5 + i * 3.4; furn(u, 1.5, 1.7, 2.4, .5, 0xffffff); furn(u, 1.9, 1.6, 1.6, .2, 0x7dc4ff, .5); furn(u, .5, 1.7, .3, 1.1, 0xd7dde6); block(u, 1.5, 1.7, 2.4, 1); }
+        s2.box(X(-5), 3.4, Z(.3), .5, 1.8, .06, 0xe53b3b); s2.box(X(-5), 4.0, Z(.3), 1.8, .5, .06, 0xe53b3b); furn(5, 6, 6, 1, 1.1, 0xe8f0ff); block(5, 6, 6, 1, 1.1); s2.box(X(5), 1.12, Z(6), 6.1, .08, 1.1, 0x4da3ff);
+        for (const u of [-9, -3, 9]) { furn(u, 12.5, 3, .8, .5, 0x4da3ff); block(u, 12.5, 3, .8, .6); } furn(-10.5, 8, .6, 1.8, 1.3, 0xffffff); block(-10.5, 8, .6, 1.8, 1.3); k.item('plant', 10.5, 14); k.it.resident = { x: X(5), z: Z(7.4) }; } });
+    st.box(cx, 3, cz + d / 2 + 1.6, 6, .4, 3.4, 0xe53b3b);
     st.box(cx, 5.5, cz + d / 2 + 1.02, 1.6, 5, .2, 0xe53b3b); st.box(cx, 7.2, cz + d / 2 + 1.02, 5, 1.6, .2, 0xe53b3b);
-    st.disc(cx + 8, cz, 4.6, h + .65, 0x444a55, 16); st.strip(cx + 8, cz - 1.8, .6, 3.6, 0, h + .7, 0xffd23f); st.strip(cx + 8, cz + 1.8, .6, 3.6, 0, h + .7, 0xffd23f); st.strip(cx + 8, cz, 3.6, .6, 0, h + .7, 0xffd23f);
-    solid(cx, cz, w, d, 13); pad(cx - 13, cz + d / 2 + .2, cx + 13, cz + d / 2 + 12.2);
+    pad(cx - 13, cz + d / 2 + .2, cx + 13, cz + d / 2 + 12.2);
     W.spots.hospital = { x: cx, z: cz + d / 2 + 6 };
     W.vehicleSpawns.push({ type: 'ambulance', x: cx - 6, z: cz + d / 2 + 7, h: 0 }, { type: 'ambulance', x: cx + 6, z: cz + d / 2 + 7, h: 0 });
   }
   { // Polizeiwache (NW)
     const cx = -56, cz = -56, w = 22, d = 16, h = 7;
-    box(cx, cz, w, d, h, 0xe8eefc); box(cx, cz + d / 2 - .1, w, .5, 2, 0x2f5fd0, 0); box(cx, cz, w + .6, d + .6, .7, 0x2f5fd0, h);
-    st.box(cx, h + .7, cz, 5, 1.2, 5, 0x2f5fd0); st.cyl(cx, h + 1.9, cz, .08, .08, 5, 0x888, 5);
-    windows(cx, cz, w, d, 1.6, 2, 3.2, 1);
-    st.box(cx, 0, cz + d / 2 + .1, 3, 2.6, .15, 0x2a3f7a); st.cyl(cx, 3.8, cz + d / 2 + .15, 1.1, 1.1, .2, 0xffcf2e, 8, Math.PI / 2);
-    solid(cx, cz, w, d, 10); pad(cx - 11, cz + d / 2 + .2, cx + 11, cz + d / 2 + 11.2);
+    BI.buildEnterable(TC, { cx, cz, w, d, h, wall: 0xe8eefc, roof: 0x2f5fd0, s: 1, flat: true, gap: 1.5, win: [1.6, 2, 3.2], title: '🚓 Polizei', npc: ['Wachtmeister Paul', ['Ich passe auf, dass alle sicher sind. 👮', 'Immer schön bei Grün über die Straße!', 'Im Notfall rufst du 110 – das ist ganz einfach.'], 0x2f5fd0],
+      roofExtra: rb => { rb.box(cx, h + .5, cz, 5, 1.2, 5, 0x2f5fd0); rb.cyl(cx, h + 1.7, cz, .08, .08, 5, 0x888, 5); },
+      civic: k => { const { furn, block, X, Z, st: s2 } = k; for (const u of [-6.5, 6.5]) { for (let i = 0; i <= 8; i++) furn(u - 2 + i * .5, 1.6, .08, .08, 2.4, 0x555a66); furn(u, 1.6, 4.2, .08, .1, 0x555a66, 2.4); furn(u, .5, 4.2, .08, 2.4, 0x555a66); block(u, 1.6, 4.4, .3, 2.4); furn(u, .9, 2, 1.1, .5, 0x8a8f9a); }
+        furn(0, 5.5, 5, 1.2, 1.0, 0x8a5a33); block(0, 5.5, 5, 1.2, 1); s2.box(X(0), 1.0, Z(5.5), 5.1, .08, 1.3, 0xd9b88a); s2.box(X(-1.5), 1.1, Z(5.5), .5, .3, .4, 0x4a4f5a); furn(0, 3.6, 8, .1, 2.2, 0xf3e3c3, 1.0); for (let i = 0; i < 4; i++) s2.box(X(-2.4 + i * 1.6), 2.4, Z(.35), 1.1, 1.4, .05, [0xfff3a0, 0xffd6d6, 0xd6f0ff, 0xe0ffd6][i]);
+        for (const u of [-9, 9]) { furn(u, 10, .7, 2.6, 1.9, 0x6a7a96); block(u, 10, .7, 2.6, 1.9); } k.item('plant', -4, 12); k.it.resident = { x: X(2), z: Z(7.6) }; } });
+    st.cyl(cx, 3.8, cz + d / 2 + .15, 1.1, 1.1, .2, 0xffcf2e, 8, Math.PI / 2);
+    pad(cx - 11, cz + d / 2 + .2, cx + 11, cz + d / 2 + 11.2);
     W.vehicleSpawns.push({ type: 'police', x: cx - 5, z: cz + d / 2 + 6, h: 0 }, { type: 'police', x: cx + 5, z: cz + d / 2 + 6, h: 0 });
   }
   { // Feuerwehr (SE) – Eingang nach Norden
     const cx = 56, cz = 56, w = 24, d = 16, h = 7;
-    box(cx, cz, w, d, h, 0xe04b3c); box(cx, cz, w + .6, d + .6, .6, 0xfafafa, h);
+    BI.buildEnterable(TC, { cx, cz, w, d, h, wall: 0xe04b3c, roof: 0xfafafa, s: -1, flat: true, gap: 1.6, win: [1.8, 1, 5], title: '🚒 Feuerwehr', npc: ['Feuerwehrmann Flo', ['Tatütata! Wir löschen jedes Feuer. 🔥', 'Kinder dürfen auf die Rutschstange schauen!', 'Streichhölzer sind kein Spielzeug – Feuer ist gefährlich.'], 0xe04b3c],
+      roofExtra: rb => { rb.box(cx + 9.5, h + .5, cz + 4, 3.5, 7, 3.5, 0xd2392c); rb.cone(cx + 9.5, h + 7.6, cz + 4, 2.8, 2.6, 0x333c4a, 4); },
+      civic: k => { const { furn, block, X, Z, st: s2 } = k; for (const u of [-8, 8]) { s2.cyl(X(u), 0, Z(1.6), .9, .9, .5, 0xe0382b, 12); s2.cyl(X(u), .5, Z(1.6), .7, .7, .7, 0xffd23f, 12); block(u, 1.6, 1.8, 1.8, 1.2); }
+        s2.cyl(X(3.5), 0, Z(4), .12, .12, 7, 0xc9ced6, 6); s2.cyl(X(3.5), 0, Z(4), .5, .5, .1, 0x444a55, 10); block(3.5, 4, .5, .5, 7); furn(-3.5, .6, 5, .5, 2.2, 0x6a7a96); block(-3.5, .6, 5, .5, 2.2); for (let i = 0; i < 5; i++) s2.box(X(-5.5 + i * 1), 1.1, Z(.9), .08, 1.8, .12, [0xff8a1f, 0xffd23f][i % 2]);
+        furn(0, 5, 3, 1.2, .5, 0x8a5a33); furn(0, 5.5, 3, .3, .5, 0xe04b3c, .5); block(0, 5, 3, 1.2, .8); for (const sd of [-1, 1]) { furn(sd * 9.5, 7, .5, 5, 1.6, 0xd7dde6); block(sd * 9.5, 7, .5, 5, 1.6); } k.it.resident = { x: X(-2), z: Z(7.6) }; } });
     for (const x of [-6, 6]) { st.box(cx + x, 0, cz - d / 2 - .1, 7, 5.2, .15, 0xd7dde6); for (let k = 0; k < 5; k++) st.box(cx + x, 1 + k, cz - d / 2 - .2, 7, .08, .05, 0x9aa3b0); }
-    st.box(cx + 9.5, h + .6, cz + 4, 3.5, 7, 3.5, 0xd2392c); st.cone(cx + 9.5, h + 7.6, cz + 4, 2.8, 2.6, 0x333c4a, 4);
-    windows(cx, cz, w, d, 1.8, 1, 5, 0); solid(cx, cz, w, d, 16); pad(cx - 12, cz - d / 2 - 12.2, cx + 12, cz - d / 2 - .2);
+    pad(cx - 12, cz - d / 2 - 12.2, cx + 12, cz - d / 2 - .2);
     W.vehicleSpawns.push({ type: 'fire', x: cx - 6, z: cz - d / 2 - 7, h: Math.PI }, { type: 'fire', x: cx + 6, z: cz - d / 2 - 7, h: Math.PI });
   }
   /* Vier Bahnhöfe auf dem Schienenring (Zug fährt im Uhrzeigersinn) */
@@ -353,13 +359,13 @@ BI.buildWorld = function (scene) {
   function station(o) {
     const T = W.track, [px0, pz0, px1, pz1] = o.plat, pw = px1 - px0, pd = pz1 - pz0, pcx = (px0 + px1) / 2, pcz = (pz0 + pz1) / 2, [bx, bz, bw, bd] = o.bld;
     st.box(pcx, 0, pcz, pw, .2, pd, 0xcfc7b8);
-    box(bx, bz, bw, bd, 5.5, 0xffe3a6);
-    if (o.ridgeX) st.prism(bx, 5.5, bz, bd + 1, 2.6, bw + 1, o.roof, Math.PI / 2); else st.prism(bx, 5.5, bz, bw + 1, 2.6, bd + 1, o.roof, 0);
-    windows(bx, bz, bw, bd, 1.4, 1, 3, 0);
     const [dx, dz] = o.door;
-    if (o.ridgeX) { st.box(dx, 0, dz, 4, 2.6, .14, 0x8a5a33); st.box(dx, 3.0, dz, 5, .9, .16, o.sign); for (let i = 0; i < 4; i++) st.box(px0 + 4 + i * (pw - 8) / 3, .2, o.post, .3, 3.5, .3, 0x6b6f78); st.box(pcx, 3.7, pcz, pw - 2, .4, pd + 1, o.roof); }
+    if (o.ridgeX) BI.buildEnterable(TC, { cx: bx, cz: bz, w: bw, d: bd, h: 5.5, wall: 0xffe3a6, roof: o.roof, s: dz > bz ? 1 : -1, ridgeX: true, gap: 1.4, win: [1.4, 1, 3], title: o.icon + ' ' + o.name, npc: ['Bahnhofsvorsteher Karl', ['Bitte zurückbleiben, der Zug fährt ein! 🚂', 'Der Zug fährt im Kreis rund um die ganze Insel.', 'Hinter dem Gebäude am Gleis kannst du einsteigen.'], 0xe0382b],
+      civic: k => { const { furn, block, X, Z, st: s2, Win } = k; furn(-6, 1.2, 6, .9, 1.1, 0x8a5a33); block(-6, 1.2, 6, .9, 1.1); s2.box(X(-6), 1.1, Z(1.2), 6.1, .08, 1, 0xf3e3c3); s2.box(X(-4.5), 1.2, Z(1.2), .5, .3, .4, 0x4a4f5a); for (let i = 0; i < 4; i++) s2.box(X(-3 + i * 2.5), 3.4, Z(.3), 2, 1, .06, 0x14161c), s2.box(X(-3 + i * 2.5), 3.4, Z(.27), 1.6, .12, .02, [0xffd23f, 0x4cd07d, 0xff8a1f, 0x7dc4ff][i]);
+        for (const u of [2, 6.5, 10]) { furn(u, 4.4, 2.2, .6, .5, 0xc8803c); block(u, 4.4, 2.2, .6, .6); } s2.cyl(X(-9.5), 0, Z(5.5), .5, .5, 1.2, 0x2d6a4f, 8); block(-9.5, 5.5, 1, 1, 1.2); s2.box(X(10.5), 1.4, Z(.3), .9, 1.1, .06, 0xffffff); s2.cyl(X(10.5), 2.3, Z(.3), .5, .5, .06, 0xffffff, 12); k.it.resident = { x: X(-1), z: Z(2.6) }; } });
+    else { box(bx, bz, bw, bd, 5.5, 0xffe3a6); st.prism(bx, 5.5, bz, bw + 1, 2.6, bd + 1, o.roof, 0); windows(bx, bz, bw, bd, 1.4, 1, 3, 0); W.addBox(bx - bw / 2, bz - bd / 2, bx + bw / 2, bz + bd / 2, false, 9); }
+    if (o.ridgeX) { st.box(dx, 3.0, dz, 5, .9, .16, o.sign); for (let i = 0; i < 4; i++) st.box(px0 + 4 + i * (pw - 8) / 3, .2, o.post, .3, 3.5, .3, 0x6b6f78); st.box(pcx, 3.7, pcz, pw - 2, .4, pd + 1, o.roof); }
     else { st.box(dx, 0, dz, .14, 2.6, 4, 0x8a5a33); st.box(dx, 3.0, dz, .16, .9, 5, o.sign); for (let i = 0; i < 4; i++) st.box(o.post, .2, pz0 + 4 + i * (pd - 8) / 3, .3, 3.5, .3, 0x6b6f78); st.box(pcx, 3.7, pcz, pw + 1, .4, pd - 2, o.roof); }
-    W.addBox(bx - bw / 2, bz - bd / 2, bx + bw / 2, bz + bd / 2, false, 9);
     let bi = 0, bdst = 1e9; for (let i = 0; i < T.N; i++) { const d = Math.hypot(T.X[i] - o.stop[0], T.Z[i] - o.stop[1]); if (d < bdst) { bdst = d; bi = i; } }
     W.stations.push({ name: o.name, icon: o.icon, x: o.stop[0], z: o.stop[1], s: bi * T.ds, px: pcx, pz: pcz, plat: o.plat, ridgeX: o.ridgeX });
   }
@@ -378,24 +384,29 @@ BI.buildWorld = function (scene) {
   // innere Gebäude
   { // Rathaus mit Uhrturm (NE-innen)
     const cx = 27, cz = -27;
-    box(cx, cz, 14, 14, 7, 0xf1e6cf); st.prism(cx, 7, cz, 15, 3, 15, 0x7c8aa0, 0); box(cx, cz, 5, 5, 16, 0xe5d6b8, 0);
-    st.cone(cx, 16, cz, 3.8, 5, 0x3f7fd9, 4); st.cyl(cx, 12, cz + 2.55, 1.2, 1.2, .2, 0xffffff, 16, Math.PI / 2); st.box(cx, 12.8, cz + 2.7, .12, .9, .08, 0x222);
-    for (let k = -2; k <= 2; k++) st.cyl(cx + k * 2.4, 0, cz + 7.5, .4, .4, 5, 0xfafafa, 8);
-    windows(cx, cz, 14, 14, 1.4, 1, 3.5, 1); st.cyl(cx + 9, 0, cz + 8, .08, .08, 9, 0xaaaaaa, 5); st.box(cx + 9.8, 6.5, cz + 8, 1.5, 1, .05, 0xff5a5a); solid(cx, cz, 14, 14, 22);
+    BI.buildEnterable(TC, { cx, cz, w: 14, d: 14, h: 7, wall: 0xf1e6cf, roof: 0x7c8aa0, s: 1, gap: 1.5, win: [1.4, 1, 3.5], title: '🏛️ Rathaus', npc: ['Sekretär Max', ['Willkommen im Rathaus! 🏛️', 'Hier wird entschieden, was in der Stadt gebaut wird.', 'Die Bürgermeisterin Rosi ist gerade draußen unterwegs.'], 0x3d4a7a],
+      roofExtra: rb => { rb.box(cx, 7, cz, 5, 16, 5, 0xe5d6b8); rb.cone(cx, 16, cz, 3.8, 5, 0x3f7fd9, 4); rb.cyl(cx, 12, cz + 2.55, 1.2, 1.2, .2, 0xffffff, 16, Math.PI / 2); rb.box(cx, 12.8, cz + 2.7, .12, .9, .08, 0x222222); },
+      civic: k => { const { furn, block, X, Z, st: s2 } = k; furn(0, 3.4, 8, 1.2, 1.0, 0x8a5a33); block(0, 3.4, 8, 1.2, 1); s2.box(X(0), 1, Z(3.4), 8.1, .08, 1.3, 0xd9b88a); for (const u of [-3, 0, 3]) furn(u, 5.2, 1.2, 1.2, .5, 0x3d86e0); s2.rect(X(-3.4), Z(7), X(3.4), Z(11), .08, 0xb03a48);
+        for (const u of [-5.5, 5.5]) { s2.cyl(X(u), 0, Z(.9), .08, .08, 4, 0xaaaaaa, 5); furn(u + .8, .9, 1.4, .05, 1, u < 0 ? 0xff5a5a : 0x4da3ff, 3); } for (const u of [-5.5, 5.5]) { furn(u, 11, .6, 2, 2.2, 0xb98650); block(u, 11, .6, 2, 2.2); } k.it.resident = { x: X(0), z: Z(2.2) }; k.item('books', -5.5, 10); } });
   }
-  { // Schule (NW-innen)
+  for (const k of [-2, -1, 1, 2]) st.cyl(27 + k * 2.4, 0, -27 + 7.5, .4, .4, 5, 0xfafafa, 8); st.cyl(36, 0, -19, .08, .08, 9, 0xaaaaaa, 5); st.box(36.8, 6.5, -19, 1.5, 1, .05, 0xff5a5a);
+  { // Schule (NW-innen) – begehbar: Klassenzimmer mit Tafel, Pulten, Bücherregal und Lehrerin
     const cx = -27, cz = -27;
-    box(cx, cz, 14, 14, 6, 0xffd75a); st.box(cx, 6, cz, 14.6, .5, 14.6, 0xc2453d); box(cx - 4, cz + 4, 4, 4, 9, 0xffd75a); st.cone(cx - 4, 9, cz + 4, 3.1, 3, 0xc2453d, 4);
-    windows(cx, cz, 14, 14, 1.4, 2, 2.4, 1); st.box(cx + 3, 0, cz + 7.1, 2.2, 2.4, .12, 0x2d6a4f); solid(cx, cz, 14, 14, 13);
+    BI.buildEnterable(TC, { cx, cz, w: 14, d: 14, h: 6, wall: 0xffd75a, roof: 0xc2453d, s: 1, flat: true, gap: 1.5, win: [1.4, 2, 2.4], title: '🏫 Schule', npc: ['Lehrerin Lena', ['Heute lernen wir Zählen: 1, 2, 3! 🔢', 'Lesen macht schlau – und Spaß!', 'Hast du schon die Bücher im Regal gesehen? 📚'], 0xff8fc8],
+      roofExtra: rb => { rb.box(cx - 4, 6, cz + 4, 4, 3, 4, 0xffd75a); rb.cone(cx - 4, 9, cz + 4, 3.1, 3, 0xc2453d, 4); },
+      civic: k => { const { furn, block, X, Z, st: s2 } = k; furn(0, .35, 8, .08, 1.7, 0x2d6a4f, 1.2); s2.box(X(0), 1.1, Z(.45), 8.4, .1, .2, 0x8a5a33); for (let i = 0; i < 4; i++) s2.box(X(-2.4 + i * 1.6), 2.0, Z(.4), 1.0, .06, .02, 0xffffff);
+        for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++) { const u = -4.2 + c * 2.8, v = 5.5 + r * 2.6; furn(u, v, 1.6, .9, .08, 0xd9b88a, .7); furn(u - .6, v, .08, .9, .7, 0x555a66); furn(u + .6, v, .08, .9, .7, 0x555a66); furn(u, v + .9, .8, .5, .08, [0xff5a5a, 0x4da3ff, 0xffd23f, 0x4cd07d][c], .45); block(u, v, 1.6, .9, .8); }
+        furn(5.8, 2.4, .6, 2.6, 2.2, 0xb98650); block(5.8, 2.4, .6, 2.6, 2.2); for (let i = 0; i < 6; i++) for (let r = 0; r < 3; r++) s2.box(X(5.45), .3 + r * .65, Z(1.3 + i * .4), .1, .5, .3, [0xe0382b, 0x3fa0ff, 0x4cd07d, 0xffd23f][(i + r) % 4]); k.item('books', 5, 2.4); k.it.resident = { x: X(-3.6), z: Z(2.4) }; } });
     st.sph(cx + 3, 2.2, cz + 12, 1.2, 0xff5a5a, 1); st.sph(cx - 1, 2.2, cz + 12, 1.2, 0x4da3ff, 1);
   }
-  { // Eisdiele (SE-innen)
+  { // Eisdiele (SE-innen) – begehbar: Theke mit Eissorten, Tische, Eisverkäuferin
     const cx = 27, cz = 27;
-    box(cx, cz, 14, 14, 5, 0xffc4dc); st.box(cx, 5, cz, 14.6, .4, 14.6, 0xffffff);
     for (let k = -3; k <= 3; k++) st.box(cx + k * 1.9, 3.2, cz - 8.5, 1.9, .5, 3, k % 2 ? 0xffffff : 0xff5a8f);
-    st.sph(cx, 11, cz, 1.9, 0xff8fb8, 1); st.sph(cx, 12.8, cz, 1.5, 0xfff1b8, 1); st.sph(cx, 14.3, cz, 1.1, 0x9be0c8, 1); st.sph(cx, 15.6, cz, .35, 0xe53b3b, 0);
-    st.cyl(cx, 5.4, cz, 1.9, 0.05, 5, 0xe0a458, 6);
-    windows(cx, cz, 14, 14, 1.4, 1, 3.2, -1); st.box(cx, 0, cz - 7.1, 2.2, 2.4, .12, 0x8a5a33); solid(cx, cz, 14, 14, 17);
+    BI.buildEnterable(TC, { cx, cz, w: 14, d: 14, h: 5, wall: 0xffc4dc, roof: 0xffffff, s: -1, flat: true, gap: 1.5, win: [1.4, 1, 3.2], title: '🍦 Eisdiele', npc: ['Eisverkäuferin Gina', ['Erdbeere, Schoko oder Vanille? 🍨', 'Drei Kugeln sind das Beste!', 'Im Sommer kommen alle zu mir.'], 0xff5a8f],
+      roofExtra: rb => { rb.sph(cx, 11, cz, 1.9, 0xff8fb8, 1); rb.sph(cx, 12.8, cz, 1.5, 0xfff1b8, 1); rb.sph(cx, 14.3, cz, 1.1, 0x9be0c8, 1); rb.sph(cx, 15.6, cz, .35, 0xe53b3b, 0); rb.cyl(cx, 5.4, cz, 1.9, 0.05, 5, 0xe0a458, 6); },
+      civic: k => { const { furn, block, X, Z, st: s2 } = k; furn(0, .4, 11, .8, 1.1, 0xfff0f6); block(0, .4, 11, .8, 1.1); s2.box(X(0), 1.1, Z(.4), 11.1, .08, .9, 0xff8fb8); for (let i = 0; i < 6; i++) s2.sph(X(-4.5 + i * 1.8), 1.3, Z(.4), .3, [0xff8fb8, 0xfff1b8, 0x9be0c8, 0x8a5a33, 0xffd23f, 0xb48aff][i], 1);
+        for (const [u, v] of [[-3.5, 5], [3.5, 5], [-3.5, 8.5], [3.5, 8.5]]) { s2.cyl(X(u), 0, Z(v), .7, .7, .06, 0xffffff, 10); s2.cyl(X(u), .06, Z(v), .09, .09, .7, 0xff5a8f, 6); s2.cyl(X(u), .76, Z(v), .8, .8, .06, 0xffffff, 10); block(u, v, 1.6, 1.6, .9); }
+        k.item('sit', -3.5, 6.2); k.item('sit', 3.5, 6.2); k.it.resident = { x: X(0), z: Z(1.5) }; } });
   }
   { // Spielzeugladen (SW-innen) – begehbar, mit Regalen voller Spielzeug und Verkäuferin
     const cx = -27, cz = 27, WALL = 0xffb45a, WOOD = 0xc8803c, DW = 0x8a5a33, P = [0xff5a5a, 0x4da3ff, 0xffd23f, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xff9a3a];

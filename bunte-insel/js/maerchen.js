@@ -4,7 +4,8 @@
    Gruselhügel, Strand mit kleinem Außerirdischen, Roboter-Ecke, Schloss mit Prinzessin) – aber mit ganz EIGENEN, selbst erfundenen Figuren, Namen,
    Farben und Formen. Nichts davon ist ein Original oder ein geschütztes Zeichen; die Figuren sind bewusst „neutralisiert“ (andere Namen, andere Gestalt).
    Aufbau: Insel mit echten Höhen – begehbare Hügel (Eisberg, Königsfels, Baumhaus-Hügel, Gruselhügel) und ein betretbares Piratenschiff (Deck + Laufplanke),
-   13 Themen-Bereiche rund um das Schloss, 29 ansprechbare Figuren, Wunschbrunnen, Glühfeen, Schmetterlinge, fliegender Teppich, Feuerwerk.
+   14 Themen-Bereiche rund um das Schloss (neu: 🌙 Nimmerland mit fliegendem Jungen Pit, Fee Glimmer und Krokodil Tick-Tack – Feenstaub lässt dich 14 Sekunden schweben),
+   Greifer-Automat im Spielzeug-Land, Ukulele am Strand, Elch Fridolin im Eisreich, 32 ansprechbare Figuren, Wunschbrunnen, Glühfeen, Schmetterlinge, fliegender Teppich, Feuerwerk.
    Lokale Koordinaten (a, b): a = Richtung Schloss (weg von der Brücke), b = quer dazu. */
 BI.MAERCHEN = (function () {
   const R = 78, cx = -175, cz = -275, len = Math.hypot(cx, cz), ux = cx / len, uz = cz / len; // ux,uz: Richtung Hauptinsel → Märchenland
@@ -24,7 +25,7 @@ BI.MAERCHEN.floor = function (x, z) {
 
 BI.buildMaerchenGround = function (c) {
   const { W, st, lamp, ROADY } = c, M = BI.MAERCHEN, TAU = Math.PI * 2, rn = BI.rng(4711), L = M.at, ry = Math.atan2(M.ux, M.uz), GOLD = 0xffd23f, BL = 0x5a7ae8, PK = 0xffd6e8, WH = 0xfff0fa;
-  W.spots.maerchen = { x: M.entry.x, z: M.entry.z }; W.maerchen = M;
+  W.spots.maerchen = { x: M.entry.x, z: M.entry.z }; W.maerchen = M; M.shade = []; M.shadeR = [];
   st.disc(M.x, M.z, M.R + 9, 0, 0x9be88a, 96); st.ring(M.x, M.z, M.R - 5, M.R + 9, .012, 0xfff0c8, 96); BI.buildIsleBridge(c, M);
   /* ---- Helfer (alles in lokalen Koordinaten) ---- */
   const bx = (a, b, wb, h, da, col, y0, yaw) => { const p = L(a, b); st.box(p.x, y0 || 0, p.z, wb, h, da, col, ry + (yaw || 0)); return p; };   /* Quader: wb quer (b), da längs (a) */
@@ -35,11 +36,11 @@ BI.buildMaerchenGround = function (c) {
   const solid = (a, b, r, h) => { const p = L(a, b); W.addCircle(p.x, p.z, r, false, h || 4); return p; };
   const path = (a0, b0, a1, b1, w, col) => { const p = L((a0 + a1) / 2, (b0 + b1) / 2), q0 = L(a0, b0), q1 = L(a1, b1); st.strip(p.x, p.z, w, Math.hypot(a1 - a0, b1 - b0), Math.atan2(q1.x - q0.x, q1.z - q0.z), ROADY, col || 0xf6d9ec); };
   const hill = (a, b, r0, tiers, step, dr, cA, cB) => { M.hills.push({ a, b, r0, tiers, step, dr }); for (let k = 1; k <= tiers; k++) { const r = r0 - dr * (k - 1); cyl(a, b, r, r, step, k % 2 ? cA : cB, (k - 1) * step, 40); } };
-  const tree = (a, b, h, col, r) => { cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); solid(a, b, .5, 3); };
+  const tree = (a, b, h, col, r) => { cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); sph(a + .5, b - .3, h + 2.5, (r || 1.9) * .62, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), (r || 1.9) * 1.1, h]); };
   const palm = (a, b, h, lean) => { const q = L(a, b); st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); };
   const flowers = (a, b, r, n, seed) => { const rr = BI.rng(seed || 7); for (let i = 0; i < n; i++) { const g = rr() * TAU, d = Math.sqrt(rr()) * r, p = L(a + Math.sin(g) * d, b + Math.cos(g) * d); st.sph(p.x, .25, p.z, .22 + rr() * .12, [0xff5a8a, 0xffd23f, 0xb48aff, 0xff8a1f, 0x7fe0ff][i % 5], 1); st.cyl(p.x, 0, p.z, .03, .03, .25, 0x3fae4a, 3); } };
   const lantern = (a, b, h) => { cyl(a, b, .07, .09, h || 3.6, 0x5a4a7a, 0, 6); glow(a, b, (h || 3.6) + .2, .32, 0xfff3b0); };
-  const zones = [[-66, 0, 10], [-42, 0, 14], [38, 0, 24], [-10, -52, 18], [-10, 52, 19], [-44, -42, 15], [-46, 38, 15], [12, -44, 16], [12, 44, 16], [52, -30, 14], [52, 30, 14], [64, -12, 10], [63, 10, 9]];
+  const zones = [[-66, 0, 10], [-42, 0, 14], [38, 0, 24], [31, -30, 14], [-10, -52, 18], [-10, 52, 19], [-44, -42, 15], [-46, 38, 15], [12, -44, 16], [12, 44, 16], [52, -30, 14], [52, 30, 14], [64, -12, 10], [63, 10, 9]];
   /* ---- Wege (Pastell-Pflaster) und Laternen ---- */
   path(-66, 0, 26, 0, 7); for (const [a, b] of [[-10, -52], [-10, 52], [12, -44], [12, 44], [52, -30], [52, 30], [-44, -42], [-46, 38]]) path(Math.min(-20, Math.max(-42, a)) , b > 0 ? 8 : -8, a, b > 0 ? b - 12 : b + 12, 3.4, 0xf1e0ff);
   path(-42, -8, -44, -30, 3.4); path(-42, 8, -46, 28, 3.4); path(26, 0, 52, 0, 4.4); path(40, 0, 52, -30, 3); path(40, 0, 52, 30, 3);
@@ -69,6 +70,18 @@ BI.buildMaerchenGround = function (c) {
     for (const b of [-8, -5, 5, 8]) solid(CA - kd / 2 + 1, b, 2.2, 14); for (const a of [CA - 4, CA + 4]) for (const sd of [-1, 1]) solid(a, sd * 11, 2.2, 14); for (const b of [-8, 0, 8]) solid(CA + kd / 2 - 1, b, 2.4, 14);
     path(CA - kd / 2 - 1, -6, CA - kd / 2 - 1, 6, 6, 0xf6d9ec);
     for (const sd of [-1, 1]) for (let k = 0; k < 4; k++) { const a = 20 + k * 4.4; cone(a, sd * 9, 1.1, 2.6, 0x3fae4a, .6, 8); cyl(a, sd * 9, .8, .9, .6, 0x8a5a3a, 0, 8); solid(a, sd * 9, 1.1, 3); }
+  }
+  /* ---- Schloss-Details: Fenster mit Rahmen, Steinbänder, Treppe, Torbogen, Balkon, Turmfenster (echte Tiefe statt glatter Wände) ---- */
+  { const CA = 38, kd = 18, kw = 24, H = 12, FR = 0xfff0fa, DK = 0xe8b0cc;
+    const win2 = (a, b, y, face, sgn, big) => { const w = big ? 1.5 : 1.2, h = big ? 2.4 : 1.8; if (face === 'a') { bx(a + sgn * .12, b, w + .5, h + .5, .3, FR, y - .25); const p = L(a + sgn * .26, b); lamp.box(p.x, y, p.z, w, h, .1, 0xffe9a0, ry); bx(a + sgn * .3, b, w + .6, .2, .5, DK, y - .4); }
+      else { bx(a, b + sgn * .12, .3, h + .5, w + .5, FR, y - .25); const p = L(a, b + sgn * .26); lamp.box(p.x, y, p.z, .1, h, w, 0xffe9a0, ry); bx(a, b + sgn * .3, .5, .2, w + .6, DK, y - .4); } };
+    for (const y of [3.4, 8]) { bx(CA, 0, kw + .35, .4, kd + .35, DK, y + 3.1 - (y > 5 ? 0 : 0) - 1.3); }
+    for (const sg of [-1, 1]) { for (const b of [-9, -6, -3, 3, 6, 9]) for (const y of [3.4, 8]) { if (sg < 0 && y < 5 && Math.abs(b) < 4) continue; win2(CA + sg * kd / 2, b, y, 'a', sg); } for (const a of [CA - 5, CA, CA + 5]) for (const y of [3.4, 8]) win2(a, sg * kw / 2, y, 'b', sg); }
+    for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) { const sa = aa < CA ? -1 : 1, sb = bb < 0 ? -1 : 1; for (const y of [4, 9, 14, 19.5]) { const p = L(aa + sa * 2.1, bb + sb * 2.1); st.box(p.x, y - .9, p.z, 1.2, .35, 1.2, DK, ry + Math.PI / 4 * sa * sb); lamp.box(p.x, y, p.z, .9, 1.7, .1, 0xffe9a0, ry + Math.PI / 4 * sa * sb * -1 * -1); } bx(aa, bb, 7, .5, 7, DK, 17.4, Math.PI / 4); }
+    for (let k = 0; k < 4; k++) bx(CA - kd / 2 - 1 - k * .5, 0, 7 - k * .2, .22, .9 + (3 - k) * .0 + .5, k % 2 ? 0xe8b0cc : 0xfff0fa, k * .22 - .0, 0);
+    for (const sd of [-1, 1]) { bx(CA - kd / 2 - .1, sd * 2.9, 1.1, 8.2, 1.1, WH, 0); bx(CA - kd / 2 - .1, sd * 2.9, 1.5, .4, 1.5, DK, 8.2); }
+    bx(CA - kd / 2 - .4, 0, 7.2, .5, 1.6, DK, 7.6); bx(CA - kd / 2 - .9, 0, 7.4, 1, 1.4, WH, 7.1); for (let k = -3; k <= 3; k++) bx(CA - kd / 2 - 1.5, k * 1.1, .3, 1.3, .3, WH, 8.1);
+    M.shadeR.push([L(CA, 0), kw, kd, H + 4]); for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) M.shade.push([L(aa, bb), 4.2, 18]); M.shade.push([L(CA + 2, 0), 5.2, 26]);
   }
   /* ---- Eisreich „Frostgipfel“: begehbarer Eisberg (Stufen), Kristalle, Schneedecke, Schneemann ---- */
   { hill(-10, -52, 14, 8, .8, 1.6, 0xf4fbff, 0xcdeaff); for (let i = 0; i < 9; i++) { const g = i / 9 * TAU, d = i ? 3 + (i % 3) * 2.4 : 0, a = -10 + Math.sin(g) * d, b = -52 + Math.cos(g) * d, h = 4 + (i * 7 % 5) + (i ? 0 : 6); cone(a, b, 1.2 + (i ? .3 : 1), h, [0xbfeaff, 0xa0dcff, 0xe0f6ff][i % 3], 6.4, 6); glow(a, b, 6.4 + h + .4, .22, 0xdff6ff); }
@@ -123,10 +136,25 @@ BI.buildMaerchenGround = function (c) {
     for (let i = 0; i < 6; i++) { const q = L(62 + (i % 3) * 2, -2 + Math.floor(i / 3) * 3); st.sph(q.x, .15, q.z, .5, [0xff5a8a, 0xffd23f][i % 2], 1, 1, .4, 1); } W.spots.strand = L(64, -12);
     for (const [a, b, w, h, col] of [[62, 12, 3, 1.8, 0x9a9aa6], [66, 8, 2.4, 1.4, 0x7a7a86], [60, 15, 2.6, 2.2, 0x8a8a96]]) { bx(a, b, w, h, w, col, 0, a * .3); W.addCircle(L(a, b).x, L(a, b).z, w * .8, false, h); }
     { const q = L(62, 10); st.cyl(q.x, 0, q.z, .5, .6, .6, 0x6a4a2a, 8); st.cone(q.x, .6, q.z, .35, 1.2, 0x3fae4a, 5); } for (let i = 0; i < 3; i++) { const q = L(64 + i, 14 - i); lamp.sph(q.x, .5, q.z, .12, [0x7fe0ff, 0xff8a1f][i % 2], 1); } W.spots.roboter = L(63, 10); }
+  /* ---- Nimmerland 🌙: Mondhügel mit Baumhaus-Versteck, Sterne, Uhr-Turm, Teich (Tick-Tack) ---- */
+  { hill(31, -30, 10, 6, .9, 1.5, 0x5a4a9a, 0x4a3a8a); const TY = 5.4, hp = L(31, -30);
+    bx(31, -30, 5, 2.8, 5, 0xc8903c, TY); st.prism(hp.x, TY + 2.8, hp.z, 6, 2.2, 6, 0x3fae4a, ry + Math.PI / 2); for (const sd of [-1, 1]) { const q = L(31 - 2.55, sd * 1.4); lamp.box(q.x, TY + 1.2, q.z, .1, .9, .8, 0xffe9a0, ry); } solid(31, -30, 3, 9);
+    cyl(31, -30, .1, .12, 6, 0x8a5a33, TY + 5, 6); glow(31, -30, TY + 11.6, 1.7, 0xfff3b0); glow(31, -30, TY + 11.6, 1.2, 0xffffff); for (let i = 0; i < 18; i++) { const g = i * 1.9, d = 6 + (i % 5) * 1.6; glow(31 + Math.sin(g) * d, -30 + Math.cos(g) * d, TY + 3 + (i % 6) * 1.4, .13 + (i % 3) * .05, [0xfff3b0, 0xbfeaff, 0xffd6f0][i % 3]); }
+    for (let k = 0; k < 8; k++) { const g = k / 8 * TAU + .2; lantern(31 + Math.sin(g) * 12.5, -30 + Math.cos(g) * 12.5, 3.2); }
+    { const q = L(38, -41); st.disc(q.x, q.z, 5.2, ROADY + .008, 0xf4e6b8, 28); st.disc(q.x, q.z, 4.2, ROADY + .02, 0x4ac8ff, 28); for (let i = 0; i < 3; i++) { const g = i * 2.1 + .4; cyl(38 + Math.sin(g) * 2.2, -41 + Math.cos(g) * 2.2, .7, .7, .05, 0x3fae4a, ROADY + .03, 8); } }
+    { const q = L(24, -42); st.cyl(q.x, 0, q.z, 1.1, 1.3, .6, 0x8a5a33, 10); st.box(q.x, .6, q.z, 1.6, 4.4, 1.6, 0x6a4a2a, ry); st.sph(q.x - M.ux * .85, 3.4, q.z - M.uz * .85, .7, 0xfff6d8, 1, .2, 1, 1); st.box(q.x - M.ux * .88, 3.4, q.z - M.uz * .88, .08, .05, .55, 0x2a2a2a, ry, 0, .6); st.box(q.x - M.ux * .88, 3.4, q.z - M.uz * .88, .05, .4, .08, 0x2a2a2a, ry); solid(24, -42, 1.3, 5); }
+    W.spots.nimmer = L(31, -30); W.spots.nimmerTop = { x: hp.x, z: hp.z, y: TY }; W.spots.tickteich = L(38, -41); }
+  /* ---- Greifer-Automat im Spielzeug-Land ---- */
+  { const g = L(53, -15), CY = 4.8; st.box(g.x, 0, g.z, 3.8, 1.2, 3.2, 0xe8453c, ry); for (const [da, db] of [[-1.5, -1.8], [-1.5, 1.8], [1.5, -1.8], [1.5, 1.8]]) { const q = L(53 + da, -15 + db); st.cyl(q.x, 1.2, q.z, .1, .1, CY - 1.2, 0xf6f6f6, 6); } st.box(g.x, CY, g.z, 4, .5, 3.4, 0xe8453c, ry); lamp.box(g.x, CY + .55, g.z, 3.4, .12, .12, 0xffd23f, ry);
+    for (let i = 0; i < 9; i++) { const q = L(53 + ((i % 3) - 1) * .9, -15 + (Math.floor(i / 3) - 1) * .9); st.sph(q.x, 1.55 + (i % 2) * .15, q.z, .38, [0xff8fc8, 0x7fe05a, 0x4da3ff, 0xffd23f, 0xb48aff][i % 5], 1); } W.addCircle(g.x, g.z, 2.4, false, 5); W.spots.greifer = L(53, -15); }
+  /* ---- Ukulele-Stein am Strand ---- */
+  { const q = L(62, -4); st.cyl(q.x, 0, q.z, .7, .8, .6, 0x8a5a33, 8); st.sph(q.x, .95, q.z, .34, 0xc8803c, 1, 1, 1.2, .6); st.box(q.x, 1.2, q.z, .09, .06, .8, 0x6a4a2a, ry, 0, -.5); glow(62, -4, 2.4, .12, 0xfff3b0); W.addCircle(q.x, q.z, .8, false, 1); W.spots.uku = L(62, -4); }
   /* ---- Blumen, Märchenbäume und Hecken am Rand ---- */
   flowers(-10, -30, 7, 40, 21); flowers(-10, 30, 7, 40, 22); flowers(10, 0, 8, 40, 23); flowers(30, 22, 5, 25, 24); flowers(30, -22, 5, 25, 25);
   for (let i = 0; i < 70; i++) { const a = rn() * TAU, d = 52 + rn() * 17, x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d, pl = M.loc(x, z); if (zones.some(zn => Math.hypot(pl.a - zn[0], pl.b - zn[1]) < zn[2] + 3)) continue; if (Math.abs(pl.b) < 8 && pl.a < 30) continue;
     const h = 2.6 + rn() * 2; st.cyl(x, 0, z, .24, .34, h, 0x8a5a7a, 6); st.sph(x, h + 1.2, z, 1.6 + rn() * .6, [0xff9ad5, 0xb48aff, 0x7fe0ff, 0xffe08a][i % 4], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); }
+  /* ---- Wiesenflecken (verschiedene Grüntöne, wie auf der Hauptinsel – damit die Insel nicht flach wirkt) ---- */
+  { const cols = [0x82c174, 0xa6d591, 0x77b869, 0x8cc77d, 0xb4dd8f]; for (let i = 0; i < 70; i++) { const a = rn() * TAU, d = Math.sqrt(rn()) * (M.R - 12), r = 3 + rn() * 7, x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d; st.disc(x, z, r, .024 + (i % 4) * .0008, cols[i % cols.length], 14); } }
 };
 
 BI.createMaerchen = function (G) {
@@ -135,12 +163,28 @@ BI.createMaerchen = function (G) {
   const SP = W.spots; { const g = SP.maerchenGate; sign('✨ Märchenland ✨', g.x, g.y, g.z, 13); }
   const sg = (txt, p, y, w) => sign(txt, p.x, y, p.z, w);
   sg('🏰 Schloss Sternenglanz', L(38, 0), 36, 12); sg('❄️ Frostgipfel', SP.eis, 14.5, 7); sg('🦁 Königsfels', SP.fels, 16, 7); sg('🏴‍☠️ Salzige Möwe', SP.schiff, 17, 7); sg('🧜 Perlenlagune', SP.lagune, 6, 7);
-  sg('🪔 Wüsten-Basar', SP.basar, 11, 7); sg('🌴 Dschungel & Honigwald', SP.dschungel, 14, 9); sg('🧸 Spielzeug-Land', SP.spielzeug, 10, 7); sg('🎃 Gruselhügel', SP.grusel, 10, 7); sg('🏖️ Strand der Träume', SP.strand, 9, 8); sg('🤖 Roboter-Ecke', SP.roboter, 5, 6); sg('⭐ Wunschbrunnen', SP.wunsch, 7, 6);
+  sg('🪔 Wüsten-Basar', SP.basar, 11, 7); sg('🌴 Dschungel & Honigwald', SP.dschungel, 14, 9); sg('🧸 Spielzeug-Land', SP.spielzeug, 10, 7); sg('🎃 Gruselhügel', SP.grusel, 10, 7); sg('🏖️ Strand der Träume', SP.strand, 9, 8); sg('🤖 Roboter-Ecke', SP.roboter, 5, 6); sg('⭐ Wunschbrunnen', SP.wunsch, 7, 6); sg('🌙 Nimmerland', SP.nimmer, 20, 8); sg('🕹️ Greifer', SP.greifer, 7.4, 4);
+  /* weiche eingebrannte Schatten (1 Mesh, wie auf der Hauptinsel) + Blumen & Grasbüschel (Instanzen; im Sparmodus weniger) */
+  { const dx = -.83, dz = -.55, b = new BI.Batch(), C = 0x1c2a44;
+    for (const [q, r, h] of M.shade) { const l = h * .5; b.disc(q.x + dx * l, q.z + dz * l, r, .075, C, 10); }
+    for (const [q, w, d, h] of M.shadeR) { const l = h * .5, hw = (w + 1) / 2, hd = (d + 1) / 2; b.quad(q.x + dx * l - M.uz * hw + M.ux * hd, q.z + dz * l + M.ux * hw + M.uz * hd, q.x + dx * l + M.uz * hw + M.ux * hd, q.z + dz * l - M.ux * hw + M.uz * hd, q.x + dx * l + M.uz * hw - M.ux * hd, q.z + dz * l - M.ux * hw - M.uz * hd, q.x + dx * l - M.uz * hw - M.ux * hd, q.z + dz * l + M.ux * hw - M.uz * hd, .072, C); }
+    const m = b.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })); m.frustumCulled = false; m.renderOrder = 1; scene.add(m);
+    let soft = false; try { const gl = G.renderer.getContext(), ex = gl.getExtension('WEBGL_debug_renderer_info'); soft = !!ex && /swiftshader|llvmpipe|software/i.test(String(gl.getParameter(ex.UNMASKED_RENDERER_WEBGL))); } catch (e) { }
+    if (!soft) { const eco = !!save.eco, rr = BI.rng(909), mt = BI.mat(), fl = new BI.Batch(), tf = new BI.Batch(); fl.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); for (let k = 0; k < 5; k++) { const a = k / 5 * TAU; fl.sph(Math.sin(a) * .105, .38, Math.cos(a) * .105, .095, 0xffffff, 0, 1, .45, 1); } fl.sph(0, .405, 0, .065, 0xffd23f, 0, 1, .6, 1); for (let k = 0; k < 3; k++) tf.cone(Math.sin(k * 2.1) * .07, 0, Math.cos(k * 2.1) * .07, .09, .42 + k * .05, 0x5cc04a, 4);
+      const put = (bt, n, cols) => { const im = new THREE.InstancedMesh(bt.mesh(mt).geometry, mt, n), o = new THREE.Object3D(), cl = new THREE.Color(); let c = 0; for (let t = 0; t < n * 6 && c < n; t++) { const a = rr() * TAU, d = Math.sqrt(rr()) * (M.R - 8), x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d; if (!W.free(x, z, .5) || W.groundY(x, z) > .05) continue; o.position.set(x, 0, z); o.rotation.y = rr() * 6; o.scale.setScalar(.8 + rr() * .6); o.updateMatrix(); im.setMatrixAt(c, o.matrix); if (cols) { cl.setHex(cols[c % cols.length]); im.setColorAt(c, cl); } c++; } im.count = c; im.frustumCulled = false; scene.add(im); };
+      put(fl, eco ? 80 : 220, [0xffffff, 0xff8fc8, 0xffd23f, 0xb48aff, 0x7fe0ff]); put(tf, eco ? 120 : 340, null); }
+  }
   /* fliegender Teppich, Glühfeen und Schmetterlinge (instanziert), Mäuserich Willi am Tor */
   const carpet = (() => { const b = new BI.Batch(); b.box(0, 0, 0, 3.2, .12, 1.8, 0x8a2ad8); b.box(0, .12, 0, 2.8, .04, 1.4, 0xffd23f); for (const sd of [-1, 1]) b.box(sd * 1.7, 0, 0, .1, .1, 1.8, 0xffd23f); const m = b.mesh(BI.mat()), q = L(12, -40); m.position.set(q.x, 1.4, q.z); m.rotation.y = Math.atan2(M.ux, M.uz) + Math.PI / 2; scene.add(m); return m; })();
   const orbs = new THREE.InstancedMesh(new THREE.SphereGeometry(.22, 6, 5), new THREE.MeshBasicMaterial({ color: 0xfff7b0, fog: false }), 18), dm = new THREE.Object3D(); orbs.frustumCulled = false; scene.add(orbs);
   const bfly = new THREE.InstancedMesh(new THREE.PlaneGeometry(.7, .5), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, fog: false }), 22), bf = []; bfly.frustumCulled = false; scene.add(bfly); { const rr = BI.rng(88), cl = new THREE.Color(); for (let i = 0; i < 22; i++) { bf.push({ a: rr() * 6.28, r: 4 + rr() * 16, y: 1 + rr() * 3, sp: .3 + rr() * .5, ph: rr() * 6, cx: [-42, 12, -10, 30][i % 4], cz: [0, 0, 30, -22][i % 4] }); bfly.setColorAt(i, cl.setHex([0xff5a8a, 0xffd23f, 0x7fe0ff, 0xb48aff, 0xff8a1f][i % 5])); } }
   let willi = null; try { willi = BI.makeWilli(); const g = SP.maerchenGate, p = L(-62, -7); willi.root.scale.setScalar(1.5); willi.root.position.set(p.x, 0, p.z); willi.root.rotation.y = Math.atan2(g.x - p.x, g.z - p.z) + .6; scene.add(willi.root); sign('Willi', p.x, 3.9, p.z, 3); } catch (e) { willi = null; }
+  /* ---- Fee Glimmer (schwebt, streut Feenstaub), Greifer-Arm, Hilfsfunktionen ---- */
+  const note = (f, d, ty, v, del) => { try { A.note && A.note(f, d, ty, v, del || 0); } catch (e) { } };
+  const wingsB = () => { const b = new BI.Batch(); for (const sd of [-1, 1]) { b.box(sd * .32, 1.15, -.22, .5, .85, .04, 0xbfeaff, 0, 0, sd * .35); b.box(sd * .36, .8, -.22, .38, .5, .04, 0xffd6f0, 0, 0, sd * .5); } return b.mesh(BI.mat()); };
+  const antlersB = () => { const b = new BI.Batch(); for (const sd of [-1, 1]) { b.cyl(sd * .17, 1.62, 0, .035, .05, .55, 0x6a4a2a, 5); b.cyl(sd * .3, 2.0, 0, .025, .035, .35, 0x6a4a2a, 4); b.cyl(sd * .1, 2.0, 0, .025, .035, .3, 0x6a4a2a, 4); } return b.mesh(BI.mat()); };
+  let glim = null; { const gp = L(28, -19), c = BI.makeChar({ shirt: 0x6bff9a, pants: 0x35c870, hair: 0xfff3a0, skin: 0xf6d2b0, hat: 'none', style: 'bun', dress: true, scale: .4 }); c.group.position.set(gp.x, 1.8, gp.z); c.group.rotation.y = Math.atan2(L(31, -30).x - gp.x, L(31, -30).z - gp.z); c.group.add(wingsB()); const orb = new THREE.Mesh(new THREE.SphereGeometry(.5, 10, 8), new THREE.MeshBasicMaterial({ color: 0xfff7b0, transparent: true, opacity: .45, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); orb.position.y = .8; c.group.add(orb); scene.add(c.group); sign('✨ Fee Glimmer', gp.x, 3.9, gp.z, 5); glim = { c, x: gp.x, z: gp.z }; }
+  const claw = (() => { const b = new BI.Batch(); b.cyl(0, 0, 0, .05, .05, 2, 0x555a66, 5); for (const sd of [-1, 1]) b.box(sd * .28, -.45, 0, .1, .6, .1, 0xc9ccdc, 0, 0, sd * .35); const m = b.mesh(BI.mat()), g = new THREE.Group(); g.add(m); const base = L(53, -15); g.position.set(base.x, 4.2, base.z); scene.add(g); const prize = new THREE.Mesh(new THREE.SphereGeometry(.4, 10, 8), new THREE.MeshBasicMaterial({ color: 0xff8fc8 })); prize.position.y = -.9; prize.visible = false; g.add(prize); return { g, m, prize, st: 'idle', t: 0, base }; })();
   /* ---- Figuren (alle selbst erfunden; Tierfreunde als Kostüm-Figuren) ---- */
   K.people = function (folk) {
     const free = (x, z) => { if (W.free(x, z, .6)) return { x, z }; for (let r = 1; r <= 5; r += 1) for (let k = 0; k < 12; k++) { const g = k / 12 * TAU + r, qx = x + Math.sin(g) * r, qz = z + Math.cos(g) * r; if (W.free(qx, qz, .6)) return { x: qx, z: qz }; } return { x, z }; }; /* steht etwas im Weg, rückt die Figur ein Stück beiseite */
@@ -181,19 +225,41 @@ BI.createMaerchen = function (G) {
     mk(46, 24, { shirt: 0x1a1a22, pants: 0x1a1a22, hair: 0xf4f4f4, skin: 0xf4f4f4, hat: 'none', style: 'short', scale: 1.15 }, 'Knochi das Skelett', ['Klapper klapper! Ich bin Knochi. 💀', 'Keine Angst, ich bin ganz lieb! Nur ein bisschen knochig.'], [52, 30]);
     mk(50, 22, { shirt: 0x5a2a8a, pants: 0x3a1a5a, hair: 0x2a1a3a, skin: 0xa8d8a0, hat: 'cat', style: 'long', dress: true, cape: true, scale: 1.1 }, 'Dunkelfee Morgana', ['Muhaha! Ich bin Morgana, die Dunkelfee. 🦇', 'Eigentlich bin ich gar nicht böse. Ich mag nur Lila.'], [52, 30]);
     /* Strand & Roboter */
+    /* Neu: Elch im Eisreich, Nimmerland (Pit, Tick-Tack) */
+    { const n = mk(-3, -40, { shirt: 0xb08050, pants: 0x6a4a2a, hair: 0x6a4a2a, skin: 0x9a6a3a, hat: 'bunny', style: 'short', scale: 1.15 }, 'Elch Fridolin', ['Mmmh, Schnee! Mein Lieblingsessen. 🫎', 'Ich trage die Frostfeen über den Eisberg.', 'Mein Geweih ist ganz echt, schau!'], [-10, -52]); n.c.group.add(antlersB()); }
+    mk(31, -17, { shirt: 0x3fae4a, pants: 0x6a4a2a, hair: 0xc8501a, skin: SK.fair, hat: 'cap', style: 'short', scale: .92 }, 'Pit, der fliegende Junge', ['Juhu! Ich bin Pit und ich kann fliegen! 🌙', 'Fee Glimmer gibt dir Feenstaub – dann fliegst du mit mir!', 'Mein Versteck ist oben auf dem Mondhügel.'], [31, -30]);
+    mk(36, -37, { shirt: 0x4cb85a, pants: 0x3a8a4a, hair: 0x3a8a4a, skin: 0x7fd060, hat: 'none', style: 'short', scale: 1.1 }, 'Krokodil Tick-Tack', ['Tick-tack, tick-tack! Ich habe eine Uhr verschluckt. ⏰', 'Keine Sorge, ich beiße nicht. Ich esse nur Kekse! 🍪', 'Hör mal, wie es in meinem Bauch tickt!'], [38, -41]);
     mk(60, -13, { shirt: 0xe8453c, pants: 0xe8453c, hair: 0x1a1a1a, skin: SK.dark, hat: 'none', style: 'long', dress: true, scale: .9 }, 'Mali vom Strand', ['Aloha! Ich bin Mali. 🌺', 'Pico spielt so schön auf der Ukulele!'], [64, -12]);
     mk(62, -10, { shirt: 0x5ad0a0, pants: 0x35a07a, hair: 0x35a07a, skin: SK.teal, hat: 'bunny', style: 'short', scale: .62 }, 'Pico, der kleine Außerirdische', ['Ich bin Pico! Ich komme von ganz weit weg. 🛸', 'Auf der Insel ist es so schön, ich bleibe hier!'], [64, -12]);
     mk(60, 8, { shirt: 0xc9a227, pants: 0x8a8a96, hair: 0x555555, skin: 0xb0b0b8, hat: 'goggles', style: 'short', scale: .85 }, 'Rolli, der Müllroboter', ['Piep. Ich sammle Müll und finde Schätze. 🤖', 'Schau, ich habe eine kleine Pflanze gefunden!'], [63, 10]);
     mk(66, 12, { shirt: 0xffffff, pants: 0xffffff, hair: 0xf0f0f0, skin: 0xffffff, hat: 'none', style: 'short', scale: 1.3 }, 'Pummel, der Pflege-Roboter', ['Ich bin Pummel und mache dich wieder heile! 🩹', 'Ein Pflaster, ein Lächeln – und alles ist gut.'], [63, 10]);
   };
   /* Nähe / Aktion: Wunschbrunnen */
-  K.near = function () { if (P.veh || P.y > 6) return null; const w = SP.wunsch; if (Math.hypot(P.x - w.x, P.z - w.z) < 6.2) return { k: 'mwish' }; return null; };
+  const nr = (o, r) => Math.hypot(P.x - o.x, P.z - o.z) < r;
+  K.near = function () {
+    if (P.veh || P.y > 6) return null; if (nr(SP.wunsch, 6.2)) return { k: 'mwish' };
+    if (glim && nr(glim, 3.8) && P.y < 3) return { k: 'mdust', label: ['✨', S().flew ? 'Feenstaub streuen' : 'Fee Glimmer: Feenstaub (Fliegen!)'] };
+    if (nr(SP.greifer, 3.6) && claw.st === 'idle') return { k: 'mclaw', label: ['🕹️', 'Greifer spielen'] };
+    if (nr(SP.uku, 2.8)) return { k: 'muku', label: ['🎶', 'Ukulele spielen'] };
+    return null;
+  };
   K.act = function (n) {
+    if (n && n.k === 'mdust') { const s = S(); if (!s.flew) { s.flew = 1; persist(); G.addStars(1); say('✨ Glimmer streut Feenstaub über dich: Du kannst fliegen! +1 ⭐', 4200); } else say('✨ Feenstaub! Du schwebst …', 2200); A.speak && A.speak('Feenstaub! Du kannst fliegen!'); flyT = 14; fx.burst(P.x, 1.6, P.z, 40, [[1, .95, .5], [1, 1, 1], [.7, 1, .8]], 4, 1.4, 30, 2); [784, 988, 1175, 1568].forEach((f, i) => note(f, .5, 'sine', .1, i * .09)); return; }
+    if (n && n.k === 'mclaw') { claw.st = 'down'; claw.t = 0; claw.prize.visible = false; say('🕹️ Der Greifer fährt hinunter …', 1600); note(330, .8, 'triangle', .08); return; }
+    if (n && n.k === 'muku') { const s = S(); [392, 440, 523, 659, 523, 440, 392, 330, 392, 523].forEach((f, i) => note(f, .32, 'triangle', .12, i * .26)); fx.burst(SP.uku.x, 2.2, SP.uku.z, 14, [[1, .9, .5], [1, .6, .8]], 2.4, 1, 28, 3); say('🎶 Plink plonk! Die Ukulele klingt wie Urlaub.', 3200); if (!s.uku) { s.uku = 1; persist(); G.addStars(1); say('🎶 Die Ukulele klingt wie Urlaub! +1 ⭐', 3600); } return; }
     if (!n || n.k !== 'mwish') return; const s = S(), w = SP.wunsch; s.wishes++; fx.burst(w.x, 4.4, w.z, 30, [[1, .9, .5], [1, 1, 1], [1, .6, .9], [.5, .8, 1]], 5, 1.4, 28, -1); A.star && A.star();
     if (s.wishes <= 3) { G.addStars(1); say('⭐ Dein Wunsch wurde gehört! +1 ⭐', 3200); } else say('✨ Dein Wunsch glitzert in den Sternen.', 2600); A.speak && A.speak('Dein Wunsch wurde gehört.'); persist();
   };
-  let was = false, fireT = 4;
+  let was = false, fireT = 4, flyT = 0;
   K.update = function (dt, t) {
+    const raw = Math.min(dt, .25);
+    /* Feenstaub: 14 Sekunden schweben (Höhe ≈ 6 m über dem Boden), mit Glitzerspur */
+    if (flyT > 0 && !P.veh) { flyT -= raw; const gy = W.groundY(P.x, P.z), ty = gy + 6; P.vy = Math.max(-3, Math.min(4.6, (ty - P.y) * 2.6)); if (Math.random() < raw * 18) fx.emit(P.x + (Math.random() - .5), P.y + .2, P.z + (Math.random() - .5), 0, -.4, 0, .9, 22, .6, .9, 1, -.4, .8); if (flyT <= 0) say('✨ Der Feenstaub ist verbraucht – gleite sanft nach unten!', 2400); }
+    if (glim) { glim.c.group.position.y = 1.8 + Math.sin(t * 2) * .25; if (Math.random() < raw * 3 && Math.hypot(P.x - glim.x, P.z - glim.z) < 60) fx.emit(glim.x + (Math.random() - .5) * .8, 1.6, glim.z + (Math.random() - .5) * .8, 0, -.3, 0, 1.2, 20, .6, .95, .7, -.2, .6); }
+    if (claw.st !== 'idle') { claw.t += raw; const g = claw.g, gx = Math.sin(claw.t * 2) * .4;
+      if (claw.st === 'down') { g.position.y = 4.2 - Math.min(1, claw.t / .9) * 2.4; if (claw.t > 1.2) { claw.st = 'up'; claw.t = 0; claw.prize.material.color.setHex([0xff8fc8, 0x7fe05a, 0x4da3ff, 0xffd23f, 0xb48aff][(Math.random() * 5) | 0]); claw.prize.visible = true; note(660, .3, 'sine', .1); } }
+      else if (claw.st === 'up') { g.position.y = 1.8 + Math.min(1, claw.t / .9) * 2.4; if (claw.t > 1.1) { claw.st = 'show'; claw.t = 0; const s = S(); s.claw = (s.claw || 0) + 1; const names = ['🧸 Teddy', '🚀 Rakete', '🐻 Bär', '👽 Quietschi', '🤖 Roboter', '⭐ Stern']; const nm = names[(Math.random() * names.length) | 0]; if (s.claw <= 5) { G.addStars(1); say('🕹️ Gewonnen: ' + nm + '! +1 ⭐ (' + s.claw + '/5)', 3200); } else say('🕹️ Gewonnen: ' + nm + '! Schön!', 2600); persist(); A.star && A.star(); fx.burst(claw.base.x, 3, claw.base.z, 14, [[1, .9, .5], [1, .6, .8], [.5, .9, 1]], 3, 1, 28, 3); } }
+      else if (claw.st === 'show') { if (claw.t > 1.2) { claw.st = 'idle'; claw.prize.visible = false; g.position.y = 4.2; } } }
     const d0 = Math.hypot(P.x - M.x, P.z - M.z), ins = d0 < M.R + 12;
     if (ins !== was) { was = ins; if (ins) { const s = S(); if (!s.visit) { s.visit = 1; persist(); G.addStars(1); say('✨ Willkommen im Märchenland! +1 ⭐', 3600); } else say('✨ Märchenland', 2000); } }
     const near = d0 < 280; orbs.visible = carpet.visible = bfly.visible = near; if (!near) return;
@@ -203,9 +269,12 @@ BI.createMaerchen = function (G) {
     if (ins) { fireT -= dt; if (fireT <= 0) { fireT = 7 + Math.random() * 5; const x = cp.x + (Math.random() - .5) * 20, z = cp.z + (Math.random() - .5) * 20, cols = [[[1, .8, .3], [1, 1, 1]], [[1, .4, .7], [1, 1, 1]], [[.4, .8, 1], [1, 1, 1]]][(Math.random() * 3) | 0]; fx.burst(x, 46 + Math.random() * 8, z, 36, cols, 7, 1.6, 34, 3); A.pop && A.pop(); } }
     if (G.mini && G.mini().active && G.mini().kind === 'sterne_maerchen') { const s = S(); if (!s.played) { s.played = 1; persist(); } }
   };
-  K.log = () => { const s = S(); return { title: '✨ Märchenland', count: ((s.visit ? 1 : 0) + Math.min(3, s.wishes) + (s.played ? 1 : 0)) + ' von 5', rows: [
+  K.log = () => { const s = S(); return { title: '✨ Märchenland', count: ((s.visit ? 1 : 0) + Math.min(3, s.wishes) + (s.played ? 1 : 0) + (s.flew ? 1 : 0) + (s.uku ? 1 : 0) + ((s.claw || 0) >= 1 ? 1 : 0)) + ' von 8', rows: [
     { ok: !!s.visit, icon: '🏰', text: 'Märchenland besuchen (Brücke im Nordwesten)', dest: 'maerchen' },
     { ok: s.wishes >= 1, icon: '⭐', text: 'Am Wunschbrunnen einen Wunsch tun: ' + Math.min(3, s.wishes) + ' von 3 (je +1 ⭐)', dest: 'maerchen' },
-    { ok: !!s.played, icon: '🌠', text: 'Sternschnuppen am Spielautomaten fangen', dest: 'maerchen' }] }; };
+    { ok: !!s.played, icon: '🌠', text: 'Sternschnuppen am Spielautomaten fangen', dest: 'maerchen' },
+    { ok: !!s.flew, icon: '🧚', text: 'Von Fee Glimmer Feenstaub holen und fliegen (Nimmerland)', dest: 'nimmer' },
+    { ok: (s.claw || 0) >= 1, icon: '🕹️', text: 'Am Greifer im Spielzeug-Land etwas gewinnen: ' + Math.min(5, s.claw || 0) + ' von 5 (je +1 ⭐)', dest: 'spielzeug' },
+    { ok: !!s.uku, icon: '🎶', text: 'Am Strand die Ukulele spielen', dest: 'strand' }] }; };
   return K;
 };

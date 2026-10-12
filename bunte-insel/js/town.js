@@ -15,7 +15,7 @@ BI.TOWN_SHOPS = [
 /* baut ein begehbares Gebäude. c = { W, st, win, ROADY, windows, rr, pick }, o = { cx, cz, w, d, h, wall, roof, s (Türseite ±1 auf z), ridgeX, shop } */
 BI.buildEnterable = function (c, o) {
   const { W, st, win, ROADY, rr, pick } = c, { cx, cz, w, d, h, wall, roof, s, ridgeX } = o, T = .4, x0 = cx - w / 2, x1 = cx + w / 2, z0 = cz - d / 2, z1 = cz + d / 2;
-  const back = s > 0 ? z0 : z1, front = s > 0 ? z1 : z0, GAP = 1.15, DH = 2.6, shop = o.shop || null;
+  const back = s > 0 ? z0 : z1, front = s > 0 ? z1 : z0, GAP = o.gap || 1.15, DH = o.dh || 2.6, shop = o.shop || null;
   const slab = (ax0, az0, ax1, az1, y0, hh, col) => { st.box((ax0 + ax1) / 2, y0, (az0 + az1) / 2, ax1 - ax0, hh, az1 - az0, col || wall); };
   const solid = (ax0, az0, ax1, az1, hh) => W.addBox(ax0, az0, ax1, az1, false, hh);
   const ba0 = s > 0 ? z0 : z1 - T, ba1 = s > 0 ? z0 + T : z1, fa0 = s > 0 ? z1 - T : z0, fa1 = s > 0 ? z1 : z0 + T;
@@ -32,25 +32,28 @@ BI.buildEnterable = function (c, o) {
   st.rect(x0 + T, z0 + T, x1 - T, z1 - T, ROADY + .01, floorC);
   if (shop) for (let i = 0; i < 6; i++) for (let j = 0; j < 5; j++) if ((i + j) % 2) st.rect(x0 + T + i * (w - 2 * T) / 6, z0 + T + j * (d - 2 * T) / 5, x0 + T + (i + 1) * (w - 2 * T) / 6, z0 + T + (j + 1) * (d - 2 * T) / 5, ROADY + .012, 0xe2d2b0);
   st.rect(cx - 1.3, front + s * .1, cx + 1.3, front + s * 1.5, ROADY + .02, shop ? shop.awn[0] : 0xb08a64);
-  c.windows(cx, cz, w, d, 1.4, h > 5.5 ? 2 : 1, h > 5.5 ? 2.8 : 3.4, s);
+  c.windows(cx, cz, w, d, ...(o.win || [1.4, h > 5.5 ? 2 : 1, h > 5.5 ? 2.8 : 3.4]), s);
   // Dach (eigenes Mesh, verschwindet, wenn man drin ist)
   const rb = new BI.Batch(), rh = Math.min(w, d) * .45;
+  if (o.flat) rb.box(cx, h, cz, w + 1, .5, d + 1, roof); else {
   if (ridgeX) rb.prism(cx, h, cz, d + 1.4, rh, w + 1.4, roof, Math.PI / 2); else rb.prism(cx, h, cz, w + 1.4, rh, d + 1.4, roof, 0);
-  rb.box(cx + w * .25, h + rh * .3, cz + d * .2, .9, rh + .6, .9, 0x9a5a48);
+  rb.box(cx + w * .25, h + rh * .3, cz + d * .2, .9, rh + .6, .9, 0x9a5a48); }
+  if (o.roofExtra) o.roofExtra(rb);
   // Gesimse, Dachziegel-Reihen und First bleiben im ausblendbaren Dachmesh.
   const trim = 0xfff1d5, tile = new THREE.Color(roof).multiplyScalar(.82).getHex();
   rb.box(cx, h - .16, cz, w + 1.05, .22, d + 1.05, trim);
-  for (let row = 1; row < 7; row++) {
+  for (let row = 1; row < 7 && !o.flat; row++) {
     const t = row / 7, offset = (ridgeX ? d + 1.4 : w + 1.4) * .5 * (1 - t);
     for (const side of [-1, 1]) rb.box(cx + (ridgeX ? 0 : side * offset), h + rh * t + .015, cz + (ridgeX ? side * offset : 0), ridgeX ? w + 1.42 : .055, .045, ridgeX ? .055 : d + 1.42, tile);
   }
-  rb.box(cx, h + rh - .015, cz, ridgeX ? w + 1.5 : .2, .16, ridgeX ? .2 : d + 1.5, tile);
-  rb.box(cx + w * .25, h + rh * 1.3 + .55, cz + d * .2, 1.13, .16, 1.13, trim);
+  if (!o.flat) { rb.box(cx, h + rh - .015, cz, ridgeX ? w + 1.5 : .2, .16, ridgeX ? .2 : d + 1.5, tile);
+  rb.box(cx + w * .25, h + rh * 1.3 + .55, cz + d * .2, 1.13, .16, 1.13, trim); }
   // Ecksteine und Sockel: keine Geometrie in der Türöffnung.
   for (const xx of [x0, x1]) for (const zz of [z0, z1]) st.box(xx, 0, zz, .22, h - .18, .22, trim);
   st.box(cx, .1, back, w, .3, .48, 0xc9bca6);
   for (const sd of [-1, 1]) {
     st.box(cx + sd * (w / 4 + GAP / 2), .1, front, w / 2 - GAP, .3, .48, 0xc9bca6);
+    if (o.civic) continue;
     const bx = cx + sd * w * .32, bz = front + s * .24;
     st.box(bx, 1.05, bz, 1.35, .28, .38, 0xb77e62);
     st.box(bx, 1.31, bz, 1.22, .07, .3, 0x537b4b);
@@ -59,13 +62,14 @@ BI.buildEnterable = function (c, o) {
       st.sph(bx + flower * .35, 1.63, bz, .055, 0xfff1bb, 0);
     }
   }
-  const it = { x0: x0 + T, x1: x1 - T, z0: z0 + T, z1: z1 - T, cx, cz, w, d, s, shop: shop ? shop.id : null, kind: shop ? 'shop' : 'house', items: [], roofB: rb, h };
+  const it = { x0: x0 + T, x1: x1 - T, z0: z0 + T, z1: z1 - T, cx, cz, w, d, s, shop: shop ? shop.id : null, kind: shop ? 'shop' : o.civic ? 'civic' : 'house', npcDef: o.npc || null, items: [], roofB: rb, h };
   const X = u => cx + u, Z = v => back + s * v; // u: seitlich ab Mitte, v: Abstand von der Rückwand nach vorn
   const Win = w - 2 * T, LU = -Win / 2, RU = Win / 2, V0 = T;
   const furn = (u, v, bw, bd, hh, col, y0) => { st.box(X(u), y0 || 0, Z(v), bw, hh, bd, col); };
   const block = (u, v, bw, bd, hh) => solid(X(u) - bw / 2, Math.min(Z(v) - bd / 2, Z(v) + bd / 2), X(u) + bw / 2, Math.max(Z(v) - bd / 2, Z(v) + bd / 2), hh);
   const item = (k, u, v, extra) => it.items.push(Object.assign({ k, x: X(u), z: Z(v) }, extra || {}));
-  if (!shop) {
+  if (o.civic) { o.civic({ furn, block, item, X, Z, LU, RU, Win, V0, Dd: d - 2 * T, st, it }); }
+  else if (!shop) {
     // Wohnhaus: Bett (hinten links), Fernseher + Sofa (Mitte), Regal oder Klavier (hinten rechts), Küche (rechts), Pflanze + Lampe vorn
     const bc = pick([0xff7aa8, 0x6fb3ff, 0xffd23f, 0x7de0a0]);
     furn(LU + 1.05, V0 + 1.3, 1.8, 2.4, .45, 0x8a5a33); furn(LU + 1.05, V0 + 1.35, 1.7, 2.25, .22, bc, .45); furn(LU + .9, V0 + .55, .9, .5, .16, 0xffffff, .67); block(LU + 1.05, V0 + 1.3, 1.8, 2.4, .9); item('bed', LU + 1.05, V0 + 1.6);
@@ -92,7 +96,7 @@ BI.buildEnterable = function (c, o) {
     if (shop.id === 'buecherei') { item('books', -Win / 2 + 1.0, V0 + 1.4); item('books', Win / 2 - 1.0, V0 + 1.4); }
     if (shop.id === 'cafe') { for (const sd of [-1, 1]) { st.cyl(X(sd * 1.2), 0, Z(V0 + 5.6), .45, .45, .75, 0xffffff, 10); st.cyl(X(sd * 1.2), 0, Z(V0 + 5.6), .06, .06, .75, 0x555a66, 6); } item('sit', 0, V0 + 5.6); }
   }
-  it.sign = { x: cx, y: Math.min(h - .3, DH + 1.2), z: front + s * .35, text: shop ? shop.icon + ' ' + shop.name : null };
+  it.sign = { x: cx, y: Math.min(h - .3, DH + 1.2), z: front + s * .35, text: shop ? shop.icon + ' ' + shop.name : (o.title || null) };
   W.interiors.push(it); W.houses.push({ x: cx, z: cz, w, d });
   return it;
 };
@@ -107,8 +111,8 @@ BI.createTown = function (G) {
   function folk(x, z, look, persona, h) { const c = BI.makeChar(look); c.group.position.set(x, 0, z); c.group.rotation.y = h; scene.add(c.group); const n = { c, x, z, h, h0: h, p: persona, wait: 0, hop: 0, kid: !!look.scale && look.scale < .8, fixed: true }; K.folk.push(n); return n; }
   for (const q of W.interiors) {
     if (q.shop) { const sh = BI.TOWN_SHOPS.find(s => s.id === q.shop), t = TALK.shops[q.shop]; q.keeperNpc = folk(q.keeper.x, q.keeper.z, { shirt: sh.awn[0], pants: 0x3d4a7a, hair: pick(HR), skin: pick(SK), hat: ['baeckerei', 'cafe'].includes(q.shop) ? 'chef' : 'cap', scale: .95 }, { name: t[0], lines: [t[1], 'Willkommen! Schau dich in Ruhe um. 😊', 'Zur Kasse kommst du an der Theke.'], i: 0 }, q.s > 0 ? Math.PI : 0); }
-    else { const a = TALK.adults[ai++ % TALK.adults.length]; q.resNpc = folk(q.resident.x, q.resident.z, { shirt: pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: rnd() < .12 ? 'cap' : 'none', scale: .92 + rnd() * .08 }, { name: a[0], lines: a[1], i: 0 }, q.s > 0 ? Math.PI : 0);
-      if (rnd() < .5) { const k = TALK.kids[ki++ % TALK.kids.length]; folk(q.resident.x - 1.6, q.resident.z - q.s * 1.0, { shirt: pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: 'none', scale: .6 + rnd() * .1 }, { name: k[0], lines: k[1], i: 0 }, q.s > 0 ? Math.PI : 0); } }
+    else { const a = q.npcDef ? q.npcDef : TALK.adults[ai++ % TALK.adults.length]; q.resNpc = folk(q.resident.x, q.resident.z, { shirt: q.npcDef ? q.npcDef[2] : pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: rnd() < .12 ? 'cap' : 'none', scale: .92 + rnd() * .08 }, { name: a[0], lines: a[1], i: 0 }, q.s > 0 ? Math.PI : 0);
+      if (!q.npcDef && rnd() < .5) { const k = TALK.kids[ki++ % TALK.kids.length]; folk(q.resident.x - 1.6, q.resident.z - q.s * 1.0, { shirt: pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: 'none', scale: .6 + rnd() * .1 }, { name: k[0], lines: k[1], i: 0 }, q.s > 0 ? Math.PI : 0); } }
   }
   K.sign = null;
   K.inside = () => { if (P.veh) return null; for (const q of W.interiors) if (P.x > q.x0 && P.x < q.x1 && P.z > q.z0 && P.z < q.z1) return q; return null; };

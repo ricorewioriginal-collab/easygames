@@ -20,7 +20,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     const br = M.bridge; out.bridge = [-.4, -.2, 0, .2, .4].every(k => !W.resolve(br.mx + M.ux * br.L * k, br.mz + M.uz * br.L * k, .4, {}).hit);
     const far = W.resolve(M.x + M.R * 1.3 * M.uz * -1 + M.ux * 30, M.z + M.R * 1.3 * M.ux + M.uz * 30, .4, {}); out.edge = Math.hypot(far.x - M.x, far.z - M.z) <= M.R + .01;
     const others = [BI.CITY, BI.DAMPF, BI.BAULAND, BI.FUSSBALL]; out.apart = others.every(o => Math.hypot(o.x - M.x, o.z - M.z) > o.R + M.R + 6);
-    out.spots = ['wunsch', 'schloss', 'keep', 'eis', 'fels', 'schiff', 'lagune', 'basar', 'dschungel', 'honig', 'spielzeug', 'grusel', 'strand', 'roboter'].every(k => sp[k] && Math.hypot(sp[k].x - M.x, sp[k].z - M.z) < M.R - 4);
+    out.spots = ['wunsch', 'schloss', 'keep', 'eis', 'fels', 'schiff', 'lagune', 'basar', 'dschungel', 'honig', 'spielzeug', 'grusel', 'strand', 'roboter', 'nimmer', 'greifer', 'uku'].every(k => sp[k] && Math.hypot(sp[k].x - M.x, sp[k].z - M.z) < M.R - 4);
     out.castle = W.resolve(sp.keep.x, sp.keep.z, .4, {}).hit === true;
     const fo = b.town.folk.filter(f => f.p && Math.hypot(f.x - M.x, f.z - M.z) < M.R); out.folk = fo.length; out.names = new Set(fo.map(f => f.p.name)).size;
     out.folkIn = fo.every(f => Math.hypot(f.x - M.x, f.z - M.z) < M.R - 3 && !W.resolve(f.x, f.z, .3).hit && f.p.lines.length >= 1);
@@ -41,9 +41,33 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   });
   if (process.env.DEBUG) console.log('   ', JSON.stringify(r));
   ok(r.size && r.apart && r.zone, 'Märchenland: Inselgröße (R≈78), Zone/Musik, überlappt keine Nachbarinsel'); ok(r.bridge && r.edge, 'Märchenland: Brücke begehbar, Inselrand hält');
-  ok(r.spots && r.castle, 'Märchenland: alle 13 Themen-Bereiche auf der Insel, Schloss ist ein Hindernis'); ok(r.folk === 29 && r.names === 29 && r.folkIn, 'Märchenland: 29 verschiedene Figuren, frei stehend auf der Insel');
+  ok(r.spots && r.castle, 'Märchenland: alle 16 Themen-Bereiche auf der Insel, Schloss ist ein Hindernis'); ok(r.folk === 32 && r.names === 32 && r.folkIn, 'Märchenland: 32 verschiedene Figuren, frei stehend auf der Insel');
   ok(r.rockTop && r.climb && r.ice, 'Märchenland: Königsfels und Eisberg sind in Stufen begehbar (Höhe 8 m / 6 m)'); ok(r.deck && r.ramp && r.hull, 'Märchenland: Piratenschiff mit Deck (2,4 m), Laufplanke, Bordwand hält');
   ok(r.wishLabel && r.stars && r.wishes, 'Wunschbrunnen: Knopf erscheint, die ersten 3 Wünsche geben je ⭐'); ok(r.arcade && r.log && r.calls < 700, 'Sternschnuppen-Automat steht auf der Insel; Aufgaben-Log hat Einträge (Zeichenaufrufe ' + r.calls + ')');
+}
+/* ---------- Nimmerland, Feenstaub, Greifer, Ukulele ---------- */
+{
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, W = b.W, M = BI.MAERCHEN, sp = W.spots, out = {}, sl = ms => new Promise(r => setTimeout(r, ms));
+    const hq = M.at(31, -24); out.top = Math.abs(W.groundY(sp.nimmerTop.x, sp.nimmerTop.z) - 5.4) < .01 && W.groundY(hq.x, hq.z) > 2 && !W.resolve(hq.x, hq.z, .4, {}).hit && W.resolve(sp.nimmerTop.x, sp.nimmerTop.z, .4, {}).hit;
+    const notes = []; const o = BI.audio.note; BI.audio.note = function () { notes.push(arguments[0]); return o && o.apply(this, arguments); };
+    b.P.veh = null; b.P.y = 0;
+    /* Ukulele */
+    const u = sp.uku; b.P.x = u.x + 1.5; b.P.z = u.z; await sl(250); let n = b.placeNear(); out.uku = !!n && n.src === 'maerchen'; const s0 = b.save.stars; if (n) b.placeAct(n); await sl(300); out.ukuNotes = notes.length >= 5; out.ukuStar = b.save.stars - s0 === 1;
+    /* Greifer */
+    const g = sp.greifer; b.P.x = g.x + 2; b.P.z = g.z; await sl(250); n = b.placeNear(); out.claw = !!n && n.src === 'maerchen'; const s1 = b.save.stars; if (n) b.placeAct(n); for (let i = 0; i < 40 && !b.save.maerchen.claw; i++) await sl(250); out.clawStar = b.save.maerchen.claw === 1 && b.save.stars - s1 >= 1;
+    /* Fee Glimmer: Feenstaub → Fliegen */
+    const m = M.at(28, -19); b.P.x = m.x + 2; b.P.z = m.z; b.P.y = 0; await sl(250); n = b.placeNear(); out.dust = !!n && n.src === 'maerchen'; const s2 = b.save.stars; if (n) b.placeAct(n);
+    let maxY = 0; for (let i = 0; i < 24; i++) { await sl(250); maxY = Math.max(maxY, b.P.y); }
+    out.fly = maxY > 3; out.flyStar = b.save.stars - s2 >= 1 && b.save.maerchen.flew === 1;
+    for (let i = 0; i < 120 && b.P.y > 1.5; i++) await sl(250); out.land = b.P.y < 1.5;
+    const lg = b.maerchen.log(); out.log = lg.rows.length === 6 && /von 8$/.test(lg.count);
+    return out;
+  });
+  if (process.env.DEBUG) console.log('   ', JSON.stringify(r));
+  ok(r.top, 'Nimmerland: Mondhügel mit Versteck begehbar'); ok(r.uku && r.ukuNotes && r.ukuStar, 'Ukulele am Strand: Knopf, Melodie, +1 ⭐ einmal');
+  ok(r.claw && r.clawStar, 'Greifer: Knopf, fährt hinunter und gewinnt einen Preis (+1 ⭐)'); ok(r.dust && r.fly && r.flyStar && r.land, 'Fee Glimmer: Feenstaub lässt dich schweben (> 3 m), +1 ⭐, danach sanft zurück');
+  ok(r.log, 'Aufgaben-Log: 6 Zeilen, „von 8“');
 }
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);
