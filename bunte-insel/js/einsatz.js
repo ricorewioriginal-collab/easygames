@@ -36,7 +36,7 @@ BI.createEinsatz = function (G) {
   /* Zielorte (in den anderen Welten); fit() schiebt sie auf begehbaren Boden */
   const PARK = BI.PARK, RB = BI.RAINBOW, CIT = BI.CINEMA;
   const WHERE = {
-    karussell: [252, 38, 'Freizeitpark'], eisbude: [274, 17, 'Freizeitpark'], staedte: [0, -262, 'Stadt'], staedte2: [0, -248, 'Stadt'], staedte3: [0, -238, 'Stadt'],
+    karussell: [PARK.x - 8, PARK.z + 8, 'Freizeitpark'], eisbude: [PARK.x + 8, PARK.z - 8, 'Freizeitpark'], /* auf dem Platz am Brunnen: der bleibt immer frei, egal wie der Spieler den Park baut */ staedte: [0, -262, 'Stadt'], staedte2: [0, -248, 'Stadt'], staedte3: [0, -238, 'Stadt'],
     spielzeug: [SP.shop.x, SP.shop.z + 8, 'Spielzeugladen'], buehne: [RB.x - 27, RB.z + 10, 'Regenbogenwelt'], plaza: [RB.x + 16, RB.z + 6, 'Regenbogenwelt'], tierpark: [SP.tierpark.x, SP.tierpark.z, 'Tierpark'],
     camp: [SP.camp.x, SP.camp.z + 5, 'Camp'], leuchtturm: [SP.lighthouse.x, SP.lighthouse.z + 5, 'Leuchtturm'], steg: [4.5, 168, 'Steg'], bahnhof: [SP.station.x, SP.station.z + 6, 'Bahnhof'], parkeingang: [PARK.bridge.x1 + 6, PARK.z, 'Freizeitpark'], bauernhof: [SP.farm.customer.x, SP.farm.customer.z, 'Bauernhof'], bad: [SP.pool.gate.x, SP.pool.gate.z - 4, 'Freibad'], hospital: [SP.hospital.x, SP.hospital.z, 'Krankenhaus'], spielplatz: [SP.park.x, SP.park.z - 4, 'Spielplatz'],
     wald: [SP.forest.gate.x, SP.forest.gate.z, 'Verbotener Wald'], kino: [CIT.door.x, CIT.door.z + 1.5, 'Kino']
