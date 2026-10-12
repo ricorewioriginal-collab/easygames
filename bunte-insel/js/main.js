@@ -1253,18 +1253,59 @@
     { id: 'heli', icon: '🚁', name: 'Hubschrauber', at: () => SPOT.helipad }, { id: 'pier', icon: '⛵', name: 'Boot am Steg', at: () => ({ x: 4.5, z: 170 }) },
     { id: 'ship', icon: '🏴‍☠️', name: 'Piratenschiff', at: () => ({ x: W.ship.cx - 6, z: W.ship.cz + 2 }) }, { id: 'playground', icon: '🛝', name: 'Spielplatz', at: () => SPOT.park }, { id: 'cinema', icon: '🎬', name: 'Kino & Autokino', at: () => ({ x: BI.CINEMA.door.x, z: BI.CINEMA.door.z + 1.5 }) }
   ];
+  /* Weitere Ziele in den Welten (Orte, Figuren, Spiele) + Einteilung für das 🧭-Menü */
+  { const ZS = BI.ZOTIK.S, zp = (u, v) => ({ x: BI.ZOTIK.x + u * ZS, z: BI.ZOTIK.z + v * ZS }), M = BI.MAERCHEN, F = BI.FUSSBALL.pitch, R = BI.RADIO, PK = BI.PARK, AT = BI.ATLANTIS, sp = W.spots;
+    const more = [
+      ['schatz', '🗺️', 'Schatzmeister Piet – Schatzsuche', () => ({ x: schatz.piet.x - 2.6, z: schatz.piet.z }), 'spiele'],
+      ['turnier', '🏆', 'Fußball-Turnier (Pokal)', () => ({ x: sp.fcup.x, z: sp.fcup.z + 3 }), 'spiele'],
+      ['fplatz', '⚽', 'Fußballplatz (Eingang)', () => ({ x: F.x + 16.5, z: F.z - F.HZ - 2 }), 'orte'],
+      ['wunsch', '⭐', 'Wunschbrunnen (Märchenland)', () => ({ x: sp.wunsch.x + 4.5, z: sp.wunsch.z }), 'orte'],
+      ['schloss', '🏰', 'Schloss Sternenglanz', () => M.at(12, 0), 'orte'],
+      ['frost', '❄️', 'Eispalast Frostgipfel', () => ({ x: sp.eis.x - M.ux * 7, z: sp.eis.z - M.uz * 7 }), 'orte'],
+      ['fels', '🦁', 'Königsfels', () => ({ x: sp.fels.x - M.ux * 8, z: sp.fels.z - M.uz * 8 }), 'orte'],
+      ['maerchschiff', '🏴‍☠️', 'Piratenschiff „Salzige Möwe“', () => ({ x: sp.schiff.x + M.ux * 8, z: sp.schiff.z + M.uz * 8 }), 'orte'],
+      ['lagune', '🧜', 'Perlenlagune', () => ({ x: sp.lagune.x - M.ux * 10, z: sp.lagune.z - M.uz * 10 }), 'orte'],
+      ['basar', '🪔', 'Teppich-Basar', () => ({ x: sp.basar.x - M.ux * 7, z: sp.basar.z - M.uz * 7 }), 'orte'],
+      ['dschungel', '🌴', 'Dschungelpfad', () => ({ x: sp.dschungel.x - M.ux * 5, z: sp.dschungel.z - M.uz * 5 }), 'orte'],
+      ['pbuero', '🏢', 'Park-Büro (Park-Tycoon)', () => ({ x: PK.office.x, z: PK.office.z + 4.2 }), 'orte'],
+      ['scooter', '🚗', 'Autoscooter', () => ({ x: (PK.arena.x0 + PK.arena.x1) / 2, z: PK.arena.z1 + 3 }), 'orte'],
+      ['funkturm', '📡', 'Funkturm (13 Sender)', () => ({ x: R.x, z: R.z + 7 }), 'orte'],
+      ['zmarkt', '🛒', 'Lunaris: Markt „Wanderhand“', () => zp(-34, 8), 'orte'],
+      ['ztaverne', '🍺', 'Lunaris: Taverne', () => zp(36, 20), 'orte'],
+      ['zakademie', '🎓', 'Lunaris: Akademie', () => zp(50, 58), 'orte'],
+      ['zburg', '🏰', 'Lunaris: Burg auf dem Hügel', () => zp(50, -20), 'orte'],
+      ['zhafen', '⚓', 'Lunaris: Hafen (Luftschiff)', () => zp(0, 72), 'orte'],
+      ['ztore', '🌀', 'Lunaris: Weltentore', () => ({ x: BI.ZOTIK.gateC.x, z: BI.ZOTIK.gateC.z }), 'orte'],
+      ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte'],
+      ['atlstadt', '🔱', 'Atlantis: die Stadt unten', () => ({ x: AT.x, z: AT.z + 138 * AT.S }), 'orte']
+    ];
+    for (const [id, icon, name, at, cat] of more) DEST.push({ id, icon, name, at, cat });
+    const CATS = { inseln: ['park', 'dampf', 'drachen', 'atlantis', 'zotik', 'radio', 'maerchen', 'fussball', 'bauland', 'pups', 'rainbow', 'city'], haupt: ['home', 'garden', 'shop', 'range', 'hof', 'fields', 'arena', 'forest', 'obby', 'lighthouse', 'camp', 'zoo', 'pool', 'station', 'hospital', 'playground', 'cinema', 'shops'], fahr: ['heli', 'pier', 'ship'] };
+    for (const [c, ids] of Object.entries(CATS)) for (const id of ids) { const d = DEST.find(x => x.id === id); if (d) d.cat = c; }
+    for (const d of DEST) if (!d.cat) d.cat = 'haupt'; /* nichts geht im Menü verloren */
+  }
   let guide = null; const guideEl = $('guidePanel');
-  function openGuide() { if (state !== 'play' || mini.active || gm || kids.busy()) return; guideOpen = true; setStick(0, 0); const g = $('guideGrid'); g.innerHTML = '';
-    for (const d of DEST) { const c = document.createElement('div'); c.className = 'gc2'; c.innerHTML = '<b>' + d.icon + '</b>' + d.name + '<div class="gb"></div>'; const gb = c.querySelector('.gb');
-      const b1 = document.createElement('button'); b1.textContent = '👣 Weg zeigen'; b1.onclick = () => { setGuide(d); closeGuide(); }; const b2 = document.createElement('button'); b2.textContent = '✨ Hinzaubern'; b2.onclick = () => { closeGuide(); beamTo(d); }; gb.append(b1, b2); g.appendChild(c); }
-    guideEl.hidden = false; }
+  let guideTab = 'inseln';
+  const GTABS = [['inseln', '🏝️', 'Inseln'], ['haupt', '🏠', 'Hauptinsel'], ['spiele', '🕹️', 'Spiele'], ['orte', '📍', 'Orte'], ['fahr', '🚗', 'Fahrzeuge']];
+  function guideItems(cat) {
+    const L = DEST.filter(d => d.cat === cat);
+    if (cat === 'spiele') { const seen = new Set(); for (const a of W.spots.arcades || []) { if (seen.has(a.kind)) continue; seen.add(a.kind); const g = gdef(a.kind); if (!g) continue; L.push({ id: 'arc_' + a.kind, icon: g.icon, name: g.name + ' (Spielautomat)', at: () => ({ x: a.fx, z: a.fz }), cat }); } }
+    return L; }
+  function renderGuide() {
+    const g = $('guideGrid'), tabs = $('guideTabs'); g.innerHTML = ''; tabs.innerHTML = '';
+    for (const [k, ic, nm] of GTABS) { const n = guideItems(k).length, b = document.createElement('button'); b.className = 'gtab' + (k === guideTab ? ' on' : ''); b.innerHTML = '<span>' + ic + '</span><small>' + nm + ' · ' + n + '</small>'; b.onclick = () => { guideTab = k; renderGuide(); }; tabs.appendChild(b); }
+    for (const d of guideItems(guideTab)) { const c = document.createElement('div'); c.className = 'grow'; c.innerHTML = '<b>' + d.icon + '</b><span>' + d.name + '</span><div class="gbtn"></div>'; const gb = c.querySelector('.gbtn');
+      const b1 = document.createElement('button'); b1.textContent = '👣'; b1.title = 'Weg zeigen'; b1.setAttribute('aria-label', 'Weg zeigen: ' + d.name); b1.onclick = () => { setGuide(d); closeGuide(); };
+      const b2 = document.createElement('button'); b2.textContent = '✨'; b2.title = 'Hinzaubern'; b2.setAttribute('aria-label', 'Hinzaubern: ' + d.name); b2.onclick = () => { closeGuide(); beamTo(d); }; gb.append(b1, b2); g.appendChild(c); }
+  }
+  function openGuide() { if (state !== 'play' || mini.active || gm || kids.busy()) return; guideOpen = true; setStick(0, 0); renderGuide(); guideEl.hidden = false; }
   let guideOpen = false; function closeGuide() { guideOpen = false; guideEl.hidden = true; updateButtons(true); }
   function setGuide(d) { guide = { d, t: 0 }; const p = d.at(); say('🧭 Ich zeige dir den Weg: ' + d.icon + ' ' + d.name, 2600); updateHud(); }
   /* Blickziel pro Ziel: nach dem Hinzaubern schaut man direkt auf die Welt / das Gebäude (Standard: zur Inselmitte) */
   tafeln.placeAll(DEST);
   const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, bauland: () => BI.BAULAND, atlantis: () => W.spots.atlPortal, zotik: () => BI.ZOTIK, radio: () => BI.RADIO, pups: () => BI.PUPS };
   function beamTo(d) {
-    if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; { const lk = d.id === 'home' ? null : (LOOK[d.id] && LOOK[d.id]()) || { x: 0, z: 0 }; P.h = lk && Math.hypot(lk.x - P.x, lk.z - P.z) > 3 ? Math.atan2(lk.x - P.x, lk.z - P.z) : Math.PI; cam.yaw = P.h + Math.PI; } A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
+    if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; { const lk = d.id === 'home' ? null : (LOOK[d.id] && LOOK[d.id]()) || (d.look && d.look()) || { x: 0, z: 0 }; P.h = lk && Math.hypot(lk.x - P.x, lk.z - P.z) > 3 ? Math.atan2(lk.x - P.x, lk.z - P.z) : Math.PI; cam.yaw = P.h + Math.PI; } A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
   }
   function updateGuide(dt) { if (!guide) return; const p = guide.d.at(), px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; if (Math.hypot(p.x - px, p.z - pz) < 7) { say('🎉 Angekommen: ' + guide.d.icon + ' ' + guide.d.name + '!', 3000); A.star(); kids.earn('guide'); guide = null; updateHud(); } }
   $('bStory').addEventListener('click', () => { closeGuide(); if (state === 'play') story.show(); });
@@ -1934,6 +1975,6 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, fussball, maerchen, schatz, tafeln, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, tycoon, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, fussball, maerchen, schatz, DEST, tafeln, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, tycoon, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
 })();
 
