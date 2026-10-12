@@ -41,7 +41,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   });
   if (process.env.DEBUG) console.log('   ', JSON.stringify(r));
   ok(r.size && r.apart && r.zone, 'Märchenland: Inselgröße (R≈78), Zone/Musik, überlappt keine Nachbarinsel'); ok(r.bridge && r.edge, 'Märchenland: Brücke begehbar, Inselrand hält');
-  ok(r.spots && r.castle, 'Märchenland: alle 16 Themen-Bereiche auf der Insel, Schloss: Wand hält, Tor offen, Thronsaal frei'); ok(r.folk === 33 && r.names === 33 && r.folkIn, 'Märchenland: 33 verschiedene Figuren, frei stehend auf der Insel');
+  ok(r.spots && r.castle, 'Märchenland: alle 16 Themen-Bereiche auf der Insel, Schloss: Wand hält, Tor offen, Thronsaal frei'); ok(r.folk === 34 && r.names === 34 && r.folkIn, 'Märchenland: 34 verschiedene Figuren, frei stehend auf der Insel');
   ok(r.rockTop && r.climb && r.ice, 'Märchenland: Königsfels und Eisberg sind in Stufen begehbar (Höhe 8 m / 6 m)'); ok(r.deck && r.ramp && r.hull, 'Märchenland: Piratenschiff mit Deck (2,4 m), Laufplanke, Bordwand hält');
   ok(r.wishLabel && r.stars && r.wishes, 'Wunschbrunnen: Knopf erscheint, die ersten 3 Wünsche geben je ⭐'); ok(r.arcade && r.log && r.calls < 700, 'Sternschnuppen-Automat steht auf der Insel; Aufgaben-Log hat Einträge (Zeichenaufrufe ' + r.calls + ')');
 }

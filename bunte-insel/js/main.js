@@ -1875,7 +1875,7 @@
       }
       P.x += dx * dt; P.z += dz * dt; P.speed = Math.hypot(dx, dz); P.running = !!running;
       if (running && P.y < .1 && Math.random() < dt * 12) fx.burst(P.x - Math.sin(P.h) * .3, .12, P.z - Math.cos(P.h) * .3, 1, [BI.C.dust], 1.2, .4, 22, 2);
-      const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined); P.x = q.x; P.z = q.z;
+      const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined, false, true); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
       const vf = Math.max(vox.floorAt(P.x, P.z, P.y), atlantis.floor(P.x, P.z), W.floorAt(P.x, P.z, P.y)), pf = W.atlPit ? W.atlPit.floor(P.x, P.z) : null, gy = pf !== null ? pf : Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
       if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung

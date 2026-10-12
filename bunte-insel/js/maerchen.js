@@ -16,6 +16,8 @@ BI.MAERCHEN = (function () {
 BI.MAERCHEN.at = function (a, b) { const M = BI.MAERCHEN; return { x: M.x + M.ux * a - M.uz * b, z: M.z + M.uz * a + M.ux * b }; };
 BI.MAERCHEN.loc = function (x, z) { const M = BI.MAERCHEN, dx = x - M.x, dz = z - M.z; return { a: dx * M.ux + dz * M.uz, b: -dx * M.uz + dz * M.ux }; };
 /* Höhe des Bodens (begehbare Hügel in 1-Stufen-Schritten, Schiffsdeck + Laufplanke) – wird von world.js (groundY) benutzt */
+/* Hauptstraße + Plaza: Fahrzeuge fahren hier mit voller Geschwindigkeit (W.onRoad) */
+BI.MAERCHEN.road = function (x, z) { const M = BI.MAERCHEN; if (Math.hypot(x - M.x, z - M.z) > M.R) return false; const p = M.loc(x, z); return (Math.abs(p.b) < 3.6 && p.a > -70 && p.a < 28) || Math.hypot(p.a + 42, p.b) < 13 || Math.hypot(p.a + 56, p.b - 8.5) < 5.5; };
 BI.MAERCHEN.floor = function (x, z) {
   const M = BI.MAERCHEN, p = M.loc(x, z); if (Math.abs(p.a) > 80 || Math.abs(p.b) > 80) return 0;
   for (const r of M.rects) if (p.a > r.a0 && p.a < r.a1 && p.b > r.b0 && p.b < r.b1) return r.ramp ? r.y * (r.dir > 0 ? (p.b - r.b0) / (r.b1 - r.b0) : (r.b1 - p.b) / (r.b1 - r.b0)) : r.y;
@@ -122,10 +124,10 @@ BI.buildMaerchenGround = function (c) {
     for (let i = 0; i < 7; i++) { const g = i / 7 * TAU + 1, a = -46 + Math.sin(g) * 12, b = 38 + Math.cos(g) * 12; sph(a, b, .45, 1.2 + (i % 2) * .6, 0x8a96a8, .8); solid(a, b, 1.3, 1.4); } for (let i = 0; i < 4; i++) glow(-46 + Math.sin(i * 1.7) * 7, 38 + Math.cos(i * 1.7) * 7, .6, .16, 0xffffff);
     solid(-58, 46, 7, 7); W.spots.lagune = L(-46, 38); }
   /* ---- Wüsten-Basar: Zwiebeltürme, Zelte, Teppiche, Wunschlampe ---- */
-  { for (const [a, b, r, h, col] of [[12, -52, 3, 7, 0x35d6e0], [20, -46, 2.4, 5, 0xff8a1f], [4, -50, 2.2, 6, 0xb48aff]]) { cyl(a, b, r, r * 1.05, h, 0xf4d9a8, 0, 14); sph(a, b, h + r * .9, r * 1.1, col, 1.2); cone(a, b, .25, 2, GOLD, h + r * 2, 5); glow(a, b, h + r * 2 + 2.1, .3, GOLD); solid(a, b, r + .2, h + 4); for (let w = 0; w < 3; w++) { const q = L(a - r - .05, b); lamp.box(q.x, 1.8 + w * 1.6, q.z, .1, .8, .5, 0xffe9a0, ry); } }
-    for (let i = 0; i < 6; i++) { const t = L(8 + (i % 3) * 5.2, -34 - Math.floor(i / 3) * 5); for (let k = 0; k < 8; k++) st.prism(t.x, 2.6, t.z, 2.2, 1.8, 4.6, k % 2 ? [0xff8a1f, 0xff5a8a, 0x35d6e0][i % 3] : WH, ry + k * Math.PI / 8); st.box(t.x, 0, t.z, 4, 2.6, 4, 0xf4d9a8, ry); W.addCircle(t.x, t.z, 2.6, false, 4); }
-    for (const [a, b, col] of [[14, -30, 0x8a2ad8], [18, -28, 0xe8453c], [10, -28, 0x35d6e0]]) { bx(a, b, 3.2, .06, 2, col, .04); bx(a, b, 2.6, .07, 1.4, GOLD, .045); }
-    { const p = L(22, -47); st.cyl(p.x, 0, p.z, 1.4, 2, .5, GOLD, 12); st.sph(p.x, 1.4, p.z, 1.5, GOLD, 1, 1, .7, 1); st.cone(p.x + M.ux * 1.6, .9, p.z + M.uz * 1.6, .35, 2.2, GOLD, 6); st.cyl(p.x - M.ux * 1.4, 1.3, p.z - M.uz * 1.4, .1, .5, 1.4, GOLD, 6); st.sph(p.x, 3.6, p.z, 1.1, 0x6ad0ff, 1, 1, 1.8, 1); W.addCircle(p.x, p.z, 2, false, 2); }
+  { for (const [a, b, r, h, col] of [[12, -55, 3, 7, 0x35d6e0], [24, -50, 2.4, 5, 0xff8a1f], [0, -53, 2.2, 6, 0xb48aff]]) { cyl(a, b, r, r * 1.05, h, 0xf4d9a8, 0, 14); sph(a, b, h + r * .9, r * 1.1, col, 1.2); cone(a, b, .25, 2, GOLD, h + r * 2, 5); glow(a, b, h + r * 2 + 2.1, .3, GOLD); solid(a, b, r + .2, h + 4); for (let w = 0; w < 3; w++) { const q = L(a - r - .05, b); lamp.box(q.x, 1.8 + w * 1.6, q.z, .1, .8, .5, 0xffe9a0, ry); } }
+    for (let i = 0; i < 4; i++) { const t = L(i % 2 ? 19 : 5, i < 2 ? -33 : -41); for (let k = 0; k < 8; k++) st.prism(t.x, 2.6, t.z, 2.2, 1.8, 4.6, k % 2 ? [0xff8a1f, 0xff5a8a, 0x35d6e0][i % 3] : WH, ry + k * Math.PI / 8); st.box(t.x, 0, t.z, 4, 2.6, 4, 0xf4d9a8, ry); W.addCircle(t.x, t.z, 2.6, false, 4); }
+    for (const [a, b, col] of [[12, -37, 0x8a2ad8], [12, -42, 0xe8453c], [12, -47, 0x35d6e0]]) { bx(a, b, 3.2, .06, 2, col, .04); bx(a, b, 2.6, .07, 1.4, GOLD, .045); }
+    { const p = L(12, -51.5); st.cyl(p.x, 0, p.z, 1.4, 2, .5, GOLD, 12); st.sph(p.x, 1.4, p.z, 1.5, GOLD, 1, 1, .7, 1); st.cone(p.x + M.ux * 1.6, .9, p.z + M.uz * 1.6, .35, 2.2, GOLD, 6); st.cyl(p.x - M.ux * 1.4, 1.3, p.z - M.uz * 1.4, .1, .5, 1.4, GOLD, 6); st.sph(p.x, 3.6, p.z, 1.1, 0x6ad0ff, 1, 1, 1.8, 1); W.addCircle(p.x, p.z, 2, false, 2); }
     W.spots.basar = L(12, -44); }
   /* ---- Honigwald & Dschungel: hohe Bäume, Baumhaus-Hügel, Honigtöpfe, Lianen ---- */
   { hill(26, 40, 6.5, 4, .9, 1.5, 0x9a7a4a, 0x8a6a3a); { const q = L(26, 40), ty = 3.6; st.box(q.x, ty, q.z, 4.6, 2.6, 4.6, 0xc8903c, ry); st.prism(q.x, ty + 2.6, q.z, 5.4, 1.9, 5.6, 0x3fae4a, ry + Math.PI / 2); lamp.box(q.x - M.ux * 2.35, ty + 1.2, q.z - M.uz * 2.35, .1, .8, .8, 0xffe9a0, ry); }
@@ -159,6 +161,8 @@ BI.buildMaerchenGround = function (c) {
   /* ---- Greifer-Automat im Spielzeug-Land ---- */
   { const g = L(53, -15), CY = 4.8; st.box(g.x, 0, g.z, 3.8, 1.2, 3.2, 0xe8453c, ry); for (const [da, db] of [[-1.5, -1.8], [-1.5, 1.8], [1.5, -1.8], [1.5, 1.8]]) { const q = L(53 + da, -15 + db); st.cyl(q.x, 1.2, q.z, .1, .1, CY - 1.2, 0xf6f6f6, 6); } st.box(g.x, CY, g.z, 4, .5, 3.4, 0xe8453c, ry); lamp.box(g.x, CY + .55, g.z, 3.4, .12, .12, 0xffd23f, ry);
     for (let i = 0; i < 9; i++) { const q = L(53 + ((i % 3) - 1) * .9, -15 + (Math.floor(i / 3) - 1) * .9); st.sph(q.x, 1.55 + (i % 2) * .15, q.z, .38, [0xff8fc8, 0x7fe05a, 0x4da3ff, 0xffd23f, 0xb48aff][i % 5], 1); } W.addCircle(g.x, g.z, 2.4, false, 5); W.spots.greifer = L(53, -15); }
+  /* ---- Märchen-Taxi am Eingang (fährt auf der Hauptstraße; kehrt nach dem Aussteigen zum Standplatz zurück) ---- */
+  { const q = L(-56, 8.5); W.vehicleSpawns.push({ type: 'taxi', x: q.x, z: q.z, h: Math.atan2(M.ux, M.uz), home: 98 }); W.spots.maerchenTaxi = q; bx(-56, 12.4, 3.4, .16, 6, 0xffd23f, 0); for (let k = 0; k < 6; k++) bx(-56 + (k - 2.5) * .9, 12.4, 3.4, .17, .3, k % 2 ? 0x222222 : 0xffd23f, 0); { const p = L(-56, 12.6); st.cyl(p.x, 0, p.z, .06, .06, 2.6, 0x444a5a, 6); st.box(p.x, 2.4, p.z, .9, .7, .1, 0xffd23f, ry); } }
   /* ---- Ukulele-Stein am Strand ---- */
   { const q = L(62, -4); st.cyl(q.x, 0, q.z, .7, .8, .6, 0x8a5a33, 8); st.sph(q.x, .95, q.z, .34, 0xc8803c, 1, 1, 1.2, .6); st.box(q.x, 1.2, q.z, .09, .06, .8, 0x6a4a2a, ry, 0, -.5); glow(62, -4, 2.4, .12, 0xfff3b0); W.addCircle(q.x, q.z, .8, false, 1); W.spots.uku = L(62, -4); }
   /* ---- Blumen, Märchenbäume und Hecken am Rand ---- */
@@ -216,14 +220,16 @@ BI.createMaerchen = function (G) {
     mk(1, 45, { shirt: 0xf6c860, pants: 0x8a5a2a, hair: 0xd09030, skin: SK.tan, hat: 'cat', style: 'braids', dress: true, scale: .58 }, 'Löwenmädchen Jara', ['Samu ist so frech! Aber wir sind beste Freunde.', 'Wollen wir Verstecken spielen?'], [-10, 52]);
     mk(-9, 38, { shirt: 0x8a5a3a, pants: 0x6a4a2a, hair: 0x7a4a3a, skin: 0xe0a08a, hat: 'none', style: 'pig', scale: 1.1 }, 'Warzel das Wildschwein', ['Grunz! Ich bin Warzel. Ich esse gern Käfer. 🐗', 'Schmeckt wie Schokolade, ehrlich!'], [-10, 52]);
     mk(-6, 37, { shirt: 0xc89a5a, pants: 0x8a6a3a, hair: 0x8a6a3a, skin: SK.tan, hat: 'bear', style: 'short', scale: .5 }, 'Erdi das Erdmännchen', ['Ich halte Wache! Ich sehe alles. 👀', 'Da hinten kommt jemand… ach, du bist es.'], [-10, 52]);
+    /* Taxi am Eingang */
+    mk(-55, 11, { shirt: 0xffd23f, pants: 0x222222, hair: 0x6a4a2a, skin: SK.tan, hat: 'cap', style: 'short', scale: 1.0 }, 'Taxifahrer Theo', ['Das gelbe Taxi da vorne gehört mir! 🚕 Steig ein und fahr die Hauptstraße entlang.', 'Wenn du aussteigst, rollt es von allein wieder an seinen Platz.', 'Zum Basar geht es links ab – dort sind die Gassen jetzt breit genug!'], [-56, 8.5]);
     /* Piratenbucht */
     mk(-44, -30, { shirt: 0xc23a3a, pants: 0x2a2a3a, hair: 0x222222, skin: SK.tan, hat: 'pirate', style: 'short', beard: 5, beardc: 0x222222, scale: 1.05 }, "Käpt'n Kralle", ['Ahoi! Ich bin Käpt\'n Kralle. 🏴‍☠️', 'Geh über die Planke auf mein Schiff Salzige Möwe!', 'Oben im Mast ist die Flagge. Und im Fass? Ein Schatz!'], [-44, -42]);
     /* Lagune */
     mk(-46, 27, { shirt: 0x35d6e0, pants: 0x2fa8b8, hair: 0xe8453c, skin: SK.fair, hat: 'none', style: 'long', dress: true, scale: .96 }, 'Meerjungfrau Marina', ['Blubb! Ich bin Marina. 🧜', 'In der Lagune finde ich Perlen und Muscheln.', 'Hinten rauscht ein Wasserfall. Hör mal!'], [-46, 38]);
     /* Wüsten-Basar */
-    mk(10, -34, { shirt: 0x8a2ad8, pants: 0xffe08a, hair: 0x222222, skin: 0xc89060, hat: 'party', style: 'short', beard: 3, beardc: 0x222222, scale: 1.0 }, 'Teppich-Tom', ['Willkommen im Basar! Mein Teppich kann fliegen. ✨', 'Schau, er schwebt ganz von allein!'], [12, -40]);
-    mk(15, -37, { shirt: 0x35d6e0, pants: 0x2a8a9a, hair: 0x111111, skin: 0xc89060, hat: 'none', style: 'long', dress: true, scale: .98 }, 'Prinzessin Jasra', ['Ich bin Jasra. Der Basar ist mein Lieblingsplatz. 🌙', 'Hast du schon den Wunschgeist gesehen?'], [12, -40]);
-    mk(20, -43, { shirt: 0x4aa8ff, pants: 0x2a6ad8, hair: 0x1a3a8a, skin: SK.blue, hat: 'party', style: 'bun', cape: true, scale: 2.1 }, 'Wunschgeist Dschinni', ['Huuuh! Ich bin Dschinni, der Wunschgeist! ✨', 'Du hast einen Wunsch frei – aber nur einen kleinen!', 'Tipp: Wünsch dir Sterne am Wunschbrunnen.'], [12, -40]);
+    mk(12, -34.5, { shirt: 0x8a2ad8, pants: 0xffe08a, hair: 0x222222, skin: 0xc89060, hat: 'party', style: 'short', beard: 3, beardc: 0x222222, scale: 1.0 }, 'Teppich-Tom', ['Willkommen im Basar! Mein Teppich kann fliegen. ✨', 'Schau, er schwebt ganz von allein!'], [12, -40]);
+    mk(12, -40, { shirt: 0x35d6e0, pants: 0x2a8a9a, hair: 0x111111, skin: 0xc89060, hat: 'none', style: 'long', dress: true, scale: .98 }, 'Prinzessin Jasra', ['Ich bin Jasra. Der Basar ist mein Lieblingsplatz. 🌙', 'Hast du schon den Wunschgeist gesehen?'], [12, -40]);
+    mk(12, -46.5, { shirt: 0x4aa8ff, pants: 0x2a6ad8, hair: 0x1a3a8a, skin: SK.blue, hat: 'party', style: 'bun', cape: true, scale: 2.1 }, 'Wunschgeist Dschinni', ['Huuuh! Ich bin Dschinni, der Wunschgeist! ✨', 'Du hast einen Wunsch frei – aber nur einen kleinen!', 'Tipp: Wünsch dir Sterne am Wunschbrunnen.'], [12, -40]);
     /* Honigwald & Dschungel */
     mk(8, 36, { shirt: 0xe0a060, pants: 0x8a5a33, hair: 0x6b4a2a, skin: 0xc8905a, hat: 'bear', style: 'short', scale: 1.15 }, 'Bär Bruno', ['Brumm! Ich bin Bruno der Bär. 🐻', 'Ich esse am liebsten Honig.', 'Im Dschungel gibt es leckere Beeren.'], [12, 44]);
     mk(14, 38, { shirt: 0xf09a30, pants: 0xe8453c, hair: 0xe0a030, skin: 0xe0b050, hat: 'bear', style: 'short', scale: .85 }, 'Honigbär Brummi', ['Hast du Honig dabei? Ich hab immer Hunger! 🍯', 'Schau, die Töpfe da. Alle für mich!'], [12, 44]);
