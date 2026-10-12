@@ -9,7 +9,7 @@ BI.createBeauty = function (G) {
   const ok = (x, z, r) => Math.hypot(x, z) < 152 && W.free(x, z, r) && !W.onRoad(x, z) && Math.hypot(x - W.lake.x, z - W.lake.z) > W.lake.r + 3;
 
   /* ---------- weiche Schatten (Bäume + große Gebäude), eine Mesh, halbtransparent ---------- */
-  const shMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -60, polygonOffsetUnits: -60 });
+  const shMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -16 });
   { const b = new BI.Batch(), C = 0x1c2a44, dx = -.83, dz = -.55;
     for (const T of W.trees) { const s = T.top / (T.kind === 'pine' ? 5 : 4), r = (T.kind === 'pine' ? 1.9 : 2.3) * s, L = T.top * .5; b.disc(T.x + dx * L, T.z + dz * L, r, .075, C, 10); }
     for (const q of W.boxes) { const w = q.x1 - q.x0, d = q.z1 - q.z0, h = Math.min(q.h || 6, 9); if (Math.min(w, d) < 3 || w * d < 16 || h < 3) continue; const L = h * .55; b.rect(q.x0 + dx * L, q.z0 + dz * L, q.x1 + dx * L, q.z1 + dz * L, .072, C); }

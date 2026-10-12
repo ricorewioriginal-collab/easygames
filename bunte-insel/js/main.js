@@ -2139,7 +2139,7 @@
     c.fillStyle = g; c.fillRect(0, 0, 64, 64); }
   const shadowTexture = new THREE.CanvasTexture(shadowCanvas); shadowTexture.minFilter = THREE.LinearFilter; shadowTexture.generateMipmaps = false;
   const shadowGeo = new THREE.PlaneGeometry(1, 1); shadowGeo.rotateX(-Math.PI / 2);
-  const contactShadows = new THREE.InstancedMesh(shadowGeo, new THREE.MeshBasicMaterial({ map: shadowTexture, color: 0x273e56, transparent: true, opacity: .75, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), 192);
+  const contactShadows = new THREE.InstancedMesh(shadowGeo, new THREE.MeshBasicMaterial({ map: shadowTexture, color: 0x273e56, transparent: true, opacity: .75, depthWrite: false, polygonOffset: false }), 192);
   contactShadows.count = 0; contactShadows.frustumCulled = false; contactShadows.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(contactShadows);
   const shadowMatrix = new THREE.Matrix4(), shadowPos = new THREE.Vector3(), shadowScale = new THREE.Vector3(), shadowQuat = new THREE.Quaternion(), shadowAxis = new THREE.Vector3(0, 1, 0);
   function updateContactShadows() {

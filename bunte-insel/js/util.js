@@ -138,7 +138,7 @@ BI.store = {
       for (let j = 0; j < 9; j++) { d.p.push(p[i + j]); d.n.push(n[i + j]); d.c.push(c[i + j]); }
     }
     const out = chunkMeshes(M, BI.mat());
-    L.forEach((lb, k) => { if (lb.empty) return; if (!k) { out.push(...chunkMeshes(lb, BI.mat())); return; } const m = lmats[k] || (lmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2 * k, polygonOffsetUnits: -2 * k })); out.push(...chunkMeshes(lb, m)); });
+    L.forEach((lb, k) => { if (lb.empty) return; if (!k) { out.push(...chunkMeshes(lb, BI.mat())); return; } const m = lmats[k] || (lmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -2 * k })); out.push(...chunkMeshes(lb, m)); });
     return out;
   };
 })();
