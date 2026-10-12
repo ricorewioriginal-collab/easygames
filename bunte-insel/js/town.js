@@ -34,7 +34,7 @@ BI.buildEnterable = function (c, o) {
   st.rect(cx - 1.3, front + s * .1, cx + 1.3, front + s * 1.5, ROADY + .02, shop ? shop.awn[0] : 0xb08a64);
   c.windows(cx, cz, w, d, ...(o.win || [1.4, h > 5.5 ? 2 : 1, h > 5.5 ? 2.8 : 3.4]), s);
   // Dach (eigenes Mesh, verschwindet, wenn man drin ist)
-  const rb = new BI.Batch(), rh = Math.min(w, d) * .45;
+  const rb = o.mkBatch ? o.mkBatch(new BI.Batch()) : new BI.Batch(), rh = Math.min(w, d) * .45;
   if (o.flat) rb.box(cx, h, cz, w + 1, .5, d + 1, roof); else {
   if (ridgeX) rb.prism(cx, h, cz, d + 1.4, rh, w + 1.4, roof, Math.PI / 2); else rb.prism(cx, h, cz, w + 1.4, rh, d + 1.4, roof, 0);
   rb.box(cx + w * .25, h + rh * .3, cz + d * .2, .9, rh + .6, .9, 0x9a5a48); }
@@ -101,6 +101,30 @@ BI.buildEnterable = function (c, o) {
   return it;
 };
 
+/* Wie buildEnterable, aber um 90° gedreht: die Tür liegt an einer x-Seite (s = +1 → Tür nach +x, s = -1 → nach -x). Gebaut wird in der Standardlage um den Mittelpunkt
+   und über Hüllen für Batch/W gedreht; o.w ist die Ausdehnung in z (Welt), o.d die in x (Welt). */
+BI.buildEnterableRot = function (c, o) {
+  const cx = o.cx, cz = o.cz, A = Math.PI / 2, P = (x, z) => [cx + (z - cz), cz - (x - cx)];
+  const hull = b => { const q = Object.create(b);
+    q.box = (x, y, z, w, h, d, col, ry = 0, ...r) => { const p = P(x, z); return b.box.call(q, p[0], y, p[1], w, h, d, col, ry + A, ...r); };
+    q.cyl = (x, y, z, rt, rb, h, col, seg = 8, rx = 0, ry = 0, rz = 0, jit = 0) => { const p = P(x, z); return b.cyl.call(q, p[0], y, p[1], rt, rb, h, col, seg, rx, ry + A, rz, jit); };
+    q.sph = (x, y, z, r, col, det = 1, sx = 1, sy = 1, sz = 1, jit = 0) => { const p = P(x, z); return b.sph.call(q, p[0], y, p[1], r, col, det, sz, sy, sx, jit); };
+    q.prism = (x, y, z, w, h, len, col, ry = 0, jit = 0) => { const p = P(x, z); return b.prism.call(q, p[0], y, p[1], w, h, len, col, ry + A, jit); };
+    q.tri = (ax, az, bx, bz, cx2, cz2, y, col) => { const a = P(ax, az), bb = P(bx, bz), d = P(cx2, cz2); return b.tri.call(q, a[0], a[1], bb[0], bb[1], d[0], d[1], y, col); };
+    return q; };
+  const W2 = Object.create(c.W);
+  W2.addBox = (x0, z0, x1, z1, u, h) => { const a = P(x0, z0), b = P(x1, z1); return c.W.addBox(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]), u, h); };
+  W2.addCircle = (x, z, r, u, h) => { const p = P(x, z); return c.W.addCircle(p[0], p[1], r, u, h); };
+  const c2 = Object.assign({}, c, { W: W2, st: hull(c.st), windows: () => { } }), o2 = Object.assign({}, o, { mkBatch: hull });
+  const nI = c.W.interiors.length, nH = c.W.houses.length, it = BI.buildEnterable(c2, o2);
+  c.W.interiors.length = nI; c.W.houses.length = nH;
+  const m = q => { if (q) { const p = P(q.x, q.z); q.x = p[0]; q.z = p[1]; } };
+  { const a = P(it.x0, it.z0), b = P(it.x1, it.z1); it.x0 = Math.min(a[0], b[0]); it.x1 = Math.max(a[0], b[0]); it.z0 = Math.min(a[1], b[1]); it.z1 = Math.max(a[1], b[1]); }
+  it.items.forEach(m); m(it.resident); m(it.keeper); if (it.sign) { const p = P(it.sign.x, it.sign.z); it.sign.x = p[0]; it.sign.z = p[1]; }
+  const sw = it.w; it.w = it.d; it.d = sw; it.rot = true; c.W.interiors.push(it); c.W.houses.push({ x: cx, z: cz, w: it.w, d: it.d });
+  return it;
+};
+
 /* Innenräume für öffentliche Gebäude auf den Inseln (werden von buildEnterable über { civic } aufgerufen) */
 BI.CIVIC = {
   lobby: k => { const { furn, block, X, Z, st } = k; furn(0, 3.2, 6, 1, 1.1, 0x8a5a33); block(0, 3.2, 6, 1, 1.1); st.box(X(0), 1.1, Z(3.2), 6.1, .08, 1.1, 0xf3e3c3); for (const u of [-6, 6]) { st.cyl(X(u), 0, Z(1.4), .3, .24, .5, 0xc2453d, 8); st.sph(X(u), .95, Z(1.4), .5, 0x3fa84e, 1, 1, 1.2, 1); }
@@ -121,10 +145,11 @@ BI.createTown = function (G) {
   /* Bewohner & Verkäufer (stehen drinnen, erzählen etwas) */
   let ai = 3, ki = 2;
   function folk(x, z, look, persona, h) { const c = BI.makeChar(look); c.group.position.set(x, 0, z); c.group.rotation.y = h; scene.add(c.group); const n = { c, x, z, h, h0: h, p: persona, wait: 0, hop: 0, kid: !!look.scale && look.scale < .8, fixed: true }; K.folk.push(n); return n; }
+  const hd = q => q.rot ? Math.atan2(-q.s, 0) : (q.s > 0 ? Math.PI : 0); /* Blickrichtung weg von der Tür (um 90° gedrehte Gebäude: Tür an der x-Seite) */
   for (const q of W.interiors) {
-    if (q.shop) { const sh = BI.TOWN_SHOPS.find(s => s.id === q.shop), t = TALK.shops[q.shop]; q.keeperNpc = folk(q.keeper.x, q.keeper.z, { shirt: sh.awn[0], pants: 0x3d4a7a, hair: pick(HR), skin: pick(SK), hat: ['baeckerei', 'cafe'].includes(q.shop) ? 'chef' : 'cap', scale: .95 }, { name: t[0], lines: [t[1], 'Willkommen! Schau dich in Ruhe um. 😊', 'Zur Kasse kommst du an der Theke.'], i: 0 }, q.s > 0 ? Math.PI : 0); }
-    else { const a = q.npcDef ? q.npcDef : TALK.adults[ai++ % TALK.adults.length]; q.resNpc = folk(q.resident.x, q.resident.z, { shirt: q.npcDef ? q.npcDef[2] : pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: rnd() < .12 ? 'cap' : 'none', scale: .92 + rnd() * .08 }, { name: a[0], lines: a[1], i: 0 }, q.s > 0 ? Math.PI : 0);
-      if (!q.npcDef && rnd() < .5) { const k = TALK.kids[ki++ % TALK.kids.length]; folk(q.resident.x - 1.6, q.resident.z - q.s * 1.0, { shirt: pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: 'none', scale: .6 + rnd() * .1 }, { name: k[0], lines: k[1], i: 0 }, q.s > 0 ? Math.PI : 0); } }
+    if (q.shop) { const sh = BI.TOWN_SHOPS.find(s => s.id === q.shop), t = TALK.shops[q.shop]; q.keeperNpc = folk(q.keeper.x, q.keeper.z, { shirt: sh.awn[0], pants: 0x3d4a7a, hair: pick(HR), skin: pick(SK), hat: ['baeckerei', 'cafe'].includes(q.shop) ? 'chef' : 'cap', scale: .95 }, { name: t[0], lines: [t[1], 'Willkommen! Schau dich in Ruhe um. 😊', 'Zur Kasse kommst du an der Theke.'], i: 0 }, hd(q)); }
+    else { const a = q.npcDef ? q.npcDef : TALK.adults[ai++ % TALK.adults.length]; q.resNpc = folk(q.resident.x, q.resident.z, { shirt: q.npcDef ? q.npcDef[2] : pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: rnd() < .12 ? 'cap' : 'none', scale: .92 + rnd() * .08 }, { name: a[0], lines: a[1], i: 0 }, hd(q));
+      if (!q.npcDef && rnd() < .5) { const k = TALK.kids[ki++ % TALK.kids.length]; folk(q.resident.x - 1.6, q.resident.z - q.s * 1.0, { shirt: pick(BI.SHIRTS.slice(0, 6)), pants: pick(PN), hair: pick(HR), skin: pick(SK), hat: 'none', scale: .6 + rnd() * .1 }, { name: k[0], lines: k[1], i: 0 }, hd(q)); } }
   }
   K.sign = null;
   K.inside = () => { if (P.veh) return null; for (const q of W.interiors) if (P.x > q.x0 && P.x < q.x1 && P.z > q.z0 && P.z < q.z1) return q; return null; };
