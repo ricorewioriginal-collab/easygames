@@ -102,7 +102,7 @@ let p = await boot();
   const r = await p.evaluate(async () => {
     const b = window.__bi, T = b.tycoon, s = T.state(), out = {}, sl = ms => new Promise(r => setTimeout(r, ms));
     for (const it of T.items().slice()) T.sellItem(it); T.place('carousel', 262, 44, true); T.place('icecream', 278, 38, true); T.calc(); b.P.x = 276; b.P.z = 30; b.P.y = 0; await sl(200);
-    const cl0 = T.calc().clean; for (let i = 0; i < 8; i++) T.spawnLitter(); out.litter = T.litter.length === 8; out.cleanDown = T.calc().clean < cl0;
+    const cl0 = T.calc().clean; for (let i = 0; i < 8; i++) T.spawnLitter(); out.litter = T.litter.length >= 8; /* zusätzlich kann von selbst Müll entstehen */ out.cleanDown = T.calc().clean < cl0;
     const lit = T.litter[0]; b.P.x = lit.x; b.P.z = lit.z; await sl(300); out.picked = !T.litter.includes(lit) && s.st.litter >= 1;
     for (let i = 0; i < 40; i++) T.spawnLitter(); out.cap = T.litter.length <= 24;
     /* Gäste laufen nur auf Wegen */
