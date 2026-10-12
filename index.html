@@ -39,10 +39,10 @@
 
   /* Spiele-Karten */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
-  .tile{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;text-align:left;overflow:hidden;
+  .card{position:relative;content-visibility:auto;contain-intrinsic-size:auto 340px}
+  .tile{width:100%;height:100%;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;text-align:left;overflow:hidden;
     background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);border-radius:22px;
-    box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s;
-    content-visibility:auto;contain-intrinsic-size:auto 340px}
+    box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s;}
   .tile:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.28);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 34px var(--g,rgba(0,229,255,.35))}
   .tile:active{transform:scale(.98)}
   .tile:focus-visible{outline:2px solid var(--cy);outline-offset:3px}
@@ -59,6 +59,18 @@
   .play{margin-top:auto;padding-top:6px;font-size:13px;font-weight:800;color:var(--cy);opacity:.85;transition:opacity .2s,letter-spacing .2s}
   .tile:hover .play{opacity:1;letter-spacing:.03em}
   .ext{position:absolute;top:8px;right:8px;z-index:2;font-size:11px;background:rgba(0,0,0,.45);border-radius:8px;padding:1px 6px}
+  .help{position:absolute;top:10px;right:10px;z-index:3;height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3);
+    background:rgba(8,11,18,.62);backdrop-filter:blur(6px);font-size:12.5px;font-weight:700;color:#fff;transition:background .2s,border-color .2s}
+  .help:hover,.help:focus-visible{background:rgba(0,229,255,.28);border-color:var(--cy);outline:0}
+  #guide{position:fixed;inset:0;z-index:40;display:flex;padding:16px;background:rgba(4,6,12,.8);overflow:auto}
+  #guide .box{margin:auto;width:100%;max-width:640px;background:#0c1220;border:1px solid rgba(0,229,255,.4);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:6px}
+  #guide h3{margin:0;font-size:22px}
+  #guide h4{margin:14px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)}
+  #guide p{margin:0;color:#d5e2ee}
+  #guide ul{margin:0;padding-left:20px;color:#d5e2ee}
+  #guide li{margin:3px 0}
+  .snip{margin-top:10px}
+  .snip h4{margin:12px 0 4px;font-size:13px;color:#9fb4c8;font-weight:700}
   footer{margin-top:44px;text-align:center;color:#6f8399;font-size:13px}
   @media (max-width:480px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}.info{padding:10px 12px 12px}.tile b{font-size:15px}.tile small{-webkit-line-clamp:2;font-size:12px}.icon{aspect-ratio:1}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -112,6 +124,10 @@
     <p class="sub" style="margin-bottom:8px">Diesen Code auf einer beliebigen Webseite einfügen – die Kacheln erscheinen dort.</p>
     <textarea id="libCode" readonly></textarea>
     <div class="row" style="margin-top:8px"><button class="primary" data-copy="libCode">Code kopieren</button></div>
+    <h2 style="margin-top:22px">Per JavaScript einbinden</h2>
+    <p class="sub" style="margin-bottom:8px">Einzelne Spiele oder die ganze Bibliothek – mit Variablen oder Attributen. Das Script lädt die Spieleliste selbst.</p>
+    <textarea id="jsCode" readonly style="height:260px"></textarea>
+    <div class="row" style="margin-top:8px"><button class="primary" data-copy="jsCode">Code kopieren</button></div>
   </section>
   <footer class="hide-embed">easygames · von RicoReWi</footer>
 </main>
@@ -124,6 +140,7 @@
       <div class="t" id="vTitle"></div>
       <button class="ib" id="vNext" aria-label="Nächstes Spiel">▶</button>
       <button class="ib" id="vFs" aria-label="Vollbild">⛶<span class="l">&nbsp;Vollbild</span></button>
+      <button class="ib" id="vHelp" aria-label="Anleitung">📖<span class="l">&nbsp;Anleitung</span></button>
       <button class="ib" id="vShare" aria-label="Teilen">⤴<span class="l">&nbsp;Teilen</span></button>
     </div>
     <iframe id="frame" allow="fullscreen; autoplay" title="Spiel"></iframe>
@@ -138,79 +155,24 @@
     <div class="row"><button class="primary" data-copy="sLink">Link kopieren</button><button class="ib" id="sNative">Teilen …</button><a class="ib" id="sOpen" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit">Neuer Tab ↗</a></div>
     <label for="sCode">Einbetten (iframe)</label>
     <textarea id="sCode" readonly></textarea>
-    <div class="row"><button class="primary" data-copy="sCode">Code kopieren</button><button class="ib" id="sClose" style="margin-left:auto">Schließen</button></div>
+    <div class="row"><button class="primary" data-copy="sCode">Code kopieren</button></div>
+    <label for="sJs">Einbetten (JavaScript)</label>
+    <textarea id="sJs" readonly></textarea>
+    <div class="row"><button class="primary" data-copy="sJs">Code kopieren</button><button class="ib" id="sClose" style="margin-left:auto">Schließen</button></div>
   </div>
 </div>
 
-<script>
-// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
-const GAMES = [
-  { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', img: 'zotik/card.png', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)',
-    path: 'zotik/', desc: 'Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik reist durch 10 Welten, Kämpfe, Quests, Bosskämpfe, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.' },
-  { id: 'aeru', title: 'AERU – Die Sterneninseln', icon: '🐉', img: 'aeru/card.png', bg: 'linear-gradient(145deg,#15374f,#65bcae 55%,#efcb93)', glow: 'rgba(101,188,174,.5)',
-    path: 'aeru/', desc: '3D-Drachenabenteuer mit durchgehender Geschichte: 6 Kapitel, zwei Bosskämpfe, Tagebuch und Zielkompass, Flug mit Aufwinden, 144 Splitter. Tastatur oder Touch.' },
-  { id: 'anmacha-radio-surfer', title: 'AnMaCha Radio Surfer', icon: '📻', bg: 'linear-gradient(145deg,#00ff66,#19f0ff)', glow: 'rgba(0,255,150,.5)',
-    path: 'anmacha-radio-surfer/', desc: '3D-Runner durchs Internet: springen, rutschen, ausweichen – 10 Level.' },
-  { id: 'anmacha-radio-match', title: 'AnMaCha Radio-Match 3D', icon: '📡', bg: 'linear-gradient(145deg,#19f0ff,#00ff66 55%,#ff2e88)', glow: 'rgba(25,240,255,.5)',
-    path: 'anmacha-radio-match/', desc: '3D-Match-3 mit Radio-Bauteilen: 100 Level mit wachsendem Raster, Power-ups und 6 Herausforderungen.' },
-  { id: 'anmacha-flipper', title: 'AnMaCha Pinball', icon: '🎱', bg: 'linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-flipper/', desc: '3D-Pinball mit 13 Tischen: Kampagne mit steigender Schwierigkeit oder freies Spiel.' },
-  { id: 'anmacha-beat-surfer', title: 'AnMaCha Beat Surfer', icon: '🎧', bg: 'linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)', glow: 'rgba(255,45,149,.5)',
-    path: 'anmacha-beat-surfer/', desc: '3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.' },
-  { id: 'anmacha-memory', title: 'AnMaCha Memory', icon: '🃏', bg: 'linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)', glow: 'rgba(255,45,149,.5)',
-    path: 'anmacha-memory/', desc: 'Memory mit unseren Sender-Logos: 10 Level mit Mischer & Zeitlimit, freies Spiel und Duell.' },
-  { id: 'anmacha-quest-rpg', title: 'AnMaCha Quest RPG', icon: '⚔️', bg: 'linear-gradient(145deg,#2a3cff,#8B5CF6 55%,#FF9A1F)', glow: 'rgba(80,100,255,.55)',
-    path: 'anmacha-quest-rpg/', desc: '3D-Rollenspiel (Godot): 5 Helden, animierte Monster, Oberwelt, Dungeons mit Schlüsseln, Bosse.' },
-  { id: 'anmacha-snake', title: 'AnMaCha Snake 3D', icon: '🐍', bg: 'linear-gradient(145deg,#00e5ff,#2a6cff 55%,#FF2D95)', glow: 'rgba(0,229,255,.5)',
-    path: 'anmacha-snake/', desc: '3D-Snake: friss Sender-Logos, 13 Welten, Power-ups, Portal-Modus, zwei Kameras.' },
-  { id: 'anmacha-tower-defense', title: 'AnMaCha Tower Defense', icon: '🗼', bg: 'linear-gradient(145deg,#8B5CF6,#2a6cff 50%,#00FFC8)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-tower-defense/', desc: '3D-Tower-Defense: 8 Sender-Logo-Türme, 25 Wellen Rauschen, 3 Karten, Ausbau & Boss-Wellen.' },
-  { id: 'anmacha-quiz', title: 'Machst du mich an? – Das Quiz!', icon: '🎤', img: 'anmacha-quiz/card.png', bg: 'linear-gradient(145deg,#1b2fb3,#8B5CF6 50%,#FF9A1F)', glow: 'rgba(255,154,31,.55)',
-    path: 'anmacha-quiz/', desc: 'TV-Quizshow im 3D-Studio: Leiter bis 1 Mio €, Quiznight, ~600 Fragen, Joker, bis 4 Spieler (auch per Handy gekoppelt).' },
-  { id: 'anmacha-koffer-dealer', title: 'AnMaCha Koffer DEALER', icon: '💼', img: 'anmacha-koffer-dealer/card.png', bg: 'linear-gradient(145deg,#00c9a7,#7a5cff 55%,#ff2d95)', glow: 'rgba(0,201,167,.5)',
-    path: 'anmacha-koffer-dealer/', desc: 'Dealer-Show: 13 Koffer mit Sender-Logos, Funkspruch-Angebote, Handeln – Deal oder Funkstille?' },
-  { id: 'anmacha-showdown', title: 'AnMaCha Showdown', icon: '🎤', img: 'anmacha-showdown/card.png', bg: 'linear-gradient(145deg,#00e5ff,#7a5cff 50%,#ff2d95)', glow: 'rgba(122,92,255,.55)',
-    path: 'anmacha-showdown/', desc: 'Das Mikro-Duell: 7 Mini-Spiele gegen den Moderator oder zu zweit – wer zuerst 15 Punkte hat, gewinnt.' },
-  { id: 'anmacha-gesucht', title: 'AnMaCha Gesucht & Gefunden', icon: '🔎', img: 'anmacha-gesucht/card.png', bg: 'linear-gradient(145deg,#c4143f,#7a3dff 55%,#00e5ff)', glow: 'rgba(196,20,63,.5)',
-    path: 'anmacha-gesucht/', desc: 'Das Ratestudio: Hinweis-Raten, Fragen-Raten, Gesichter-Radar und Stirnband-Party – allein oder mit bis zu 4 Spielern.' },
-  { id: 'anmacha-kart', title: 'AnMaCha Kart Rush', icon: '🏎️', img: 'anmacha-kart/card.png', bg: 'linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)', glow: 'rgba(42,120,232,.55)',
-    path: 'anmacha-kart/', desc: 'Arcade-Kartrennen in 3D: 5 Welten (Strand, Geistergruft, Fantasia …), 6 Karts, 12 Figuren, Bananen, Steine & Blitze – solo am Handy oder mit bis zu 4 Handys als Lenkrad.' },
-  { id: 'wobbel', title: 'Wobbel', icon: '🟣', img: 'wobbel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#ff6fb0 60%,#ffb347)', glow: 'rgba(74,184,255,.55)',
-    path: 'wobbel/', desc: 'Das Schiebe-Puzzle in 3D von RicoReWi: Kisten auf Ziele schieben – mit Wasser, Farben, Eis und Schlüsseln in 5 Welten.' },
-  { id: 'anmacha-hoererwahl', title: 'AnMaCha Hörerwahl', icon: '🎙️', img: 'anmacha-hoererwahl/card.png', bg: 'linear-gradient(145deg,#00e5ff,#8b5cf6 50%,#ff2d95)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-hoererwahl/', desc: 'Das große Umfrage-Duell: Was haben 100 Hörer geantwortet? Zwei Teams oder gegen das Funkhaus-Team – mit Strikes, Klauen und Hörer-Finale. 120 Fragen.' },
-  { id: 'anmacha-frequenzrad', title: 'AnMaCha Frequenzrad', icon: '🎡', img: 'anmacha-frequenzrad/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#ffd24a)', glow: 'rgba(255,45,149,.55)',
-    path: 'anmacha-frequenzrad/', desc: 'Das Buchstaben-Rätsel: Rad drehen, Konsonanten raten, Vokale kaufen, Rätsel lösen – bis zu 4 Spieler, Computer-Gegner und Handys als Pads. 150 Rätsel.' },
-  { id: 'anmacha-preisradar', title: 'AnMaCha Preisradar', icon: '💶', img: 'anmacha-preisradar/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#8b5cf6 50%,#ff9a1f)', glow: 'rgba(255,154,31,.55)',
-    path: 'anmacha-preisradar/', desc: 'Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.' },
-  { id: 'anmacha-funkparcours', title: 'AnMaCha Funkparcours', icon: '🏃', img: 'anmacha-funkparcours/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 55%,#ff2d95)', glow: 'rgba(0,184,217,.55)',
-    path: 'anmacha-funkparcours/', desc: 'Das Hindernis-Zeitspiel in 3D: springen, hangeln, Wand erklimmen – jeder Läufer allein, die Zeiten werden verglichen. 3 Parcours, Geist der Bestzeit, bis zu 4 Läufer, Handys als Pads.' },
-  { id: 'FunkhausReality', title: 'Funkhaus Reality', icon: '🏠', img: 'FunkhausReality/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#00e5ff)', glow: 'rgba(255,45,149,.55)',
-    path: 'FunkhausReality/', desc: 'Die Live-WG im Radiostudio: Allianzen schmieden, Gerüchte streuen, im Beichtstuhl nominieren – die Hörer entscheiden, wer geht. 3D-Haus, Wochenaufgaben, 1–4 Menschen mit privaten Handy-Pads gegen KI-Mitbewohner.' },
-  { id: 'MachMichAus', title: 'Mach mich aus!', icon: '💡', img: 'MachMichAus/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 50%,#ff2d95)', glow: 'rgba(0,184,217,.55)',
-    path: 'MachMichAus/', desc: 'Die Funk-Dating-Show: 20 Pulte, 20 Lampen – wer passt zum Kandidaten? Als Kandidat oder am Pult spielen, Talent im Takt, Quiz, Anmach-Joker, bis zu 4 Menschen mit privaten Handy-Pads.' },
-  { id: 'turbokick', title: 'TURBOKICK', icon: '🚗', img: 'turbokick/card.png', bg: 'linear-gradient(145deg,#07070f,#ff7a1a 55%,#19c8ff)', glow: 'rgba(255,122,26,.55)',
-    path: 'turbokick/', desc: '3D-Auto-Fußball mit Nitro: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 5 Karosserien, Tastatur, Gamepad und Touch.' },
-  { id: 'partyverse', title: 'PARTYVERSE', icon: '🎲', img: 'partyverse/card.png', bg: 'linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)', glow: 'rgba(255,62,157,.55)',
-    path: 'partyverse/', desc: '3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online (eigener Server nötig). Handy und PC.' },
-  { id: 'anmacha-gold-reels', title: 'AnMaCha Gold Reels', icon: '🎰', bg: 'linear-gradient(145deg,#ffb11f,#ff2d95 55%,#8b5cf6)', glow: 'rgba(255,177,31,.55)',
-    path: 'anmacha-gold-reels/', desc: 'Moderner Video-Slot (nur Spielgeld): 5 Walzen, 20 Linien, Casino-Symbole & Sender-Logos, Wild, Bonus-Sterne mit Freispielen, Big Wins.' },
-  { id: 'anmacha-markthalle', title: 'AnMaCha Markthalle 24', icon: '🛒', bg: 'linear-gradient(145deg,#43e08a,#00e5ff 50%,#ff9a1f)', glow: 'rgba(67,224,138,.5)',
-    path: 'anmacha-markthalle/', desc: 'Supermarkt-Simulator in 3D für PC und Handy: Kartons einräumen, Preise machen, an der Kasse scannen, Rückgeld geben und Kartenbeträge tippen, Großhandel-Angebote, Vorbestellungen, Personal, Ausbau – mit eigenem Radiosender, Preis-Duell und Wetter.' },
-  { id: 'anmacha-urwaldlager', title: 'Urwaldlager', icon: '🌴', bg: 'linear-gradient(145deg,#0f3a2a,#2ea84d 50%,#ffcf4a)', glow: 'rgba(120,255,100,.5)',
-    path: 'anmacha-urwaldlager/', desc: 'Die große Wildnis-Show in 3D: Lauf durchs Dschungelcamp, sammle Holz, hol Wasser, koch am Feuer, schließ Freundschaften und besteh zwölf echte Prüfungen – bis das simulierte Publikum den Champion kürt. Für PC und Handy.' },
-  { id: 'anmacha-spielesammlung', title: 'AnMaCha Spielesammlung 3D', icon: '🎲', bg: 'linear-gradient(145deg,#ff2d95,#8B5CF6 50%,#00c9a7)', glow: 'rgba(255,45,149,.5)',
-    path: 'anmacha-spielesammlung/', desc: '7 Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle – gegen den Computer oder zu mehreren.' },
-  { id: 'anmacha-stapelrausch', title: 'AnMaCha Stapelrausch 3D', icon: '🃏', bg: 'linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-stapelrausch/', desc: '3D-Kartenspiel: Zahlentürme von 1 bis 12 bauen und den Zielstapel zuerst leeren – gegen den Computer, an einem Gerät oder online per Code/QR.' },
-  { id: 'gay-life', title: 'Gay Life!', icon: '🏳️‍🌈', bg: 'linear-gradient(145deg,#ff3b6b,#9b5cff 55%,#2ea8ff)', glow: 'rgba(255,59,107,.55)',
-    path: 'gay-life/', desc: 'Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.' },
-  { id: 'anmacha-klotzfunk', title: 'KLOTZFUNK 3D', icon: '🧱', bg: 'linear-gradient(145deg,#4c9a3a,#865f43 55%,#4aa3ff)', glow: 'rgba(76,154,58,.55)',
-    path: 'anmacha-klotzfunk/', desc: 'Voxel-Sandbox in 3D: 15 Biome mit Höhlen, Erzen und Funkkristallen, Dörfer mit Bewohnern und Handel, verlassene Minen, Tiere, Weizenfelder, Rauschlinge, Höhlenwesen und Drohnen, Story „Das große Rauschen“ in 6 Kapiteln, Funknetz mit Sendern, Relais und Maschinen, Werkzeuge, Schwerter und Rüstung, Bauformen, Werkbank und Schmelzofen, Herzen und Hunger im Überlebensmodus, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy, Grafik passt sich dem Gerät an.' },
-  { id: 'bunte-insel', title: 'Bunte Insel', icon: '🚓', img: 'bunte-insel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#4cd07d 55%,#ffd23f)', glow: 'rgba(76,208,125,.55)',
-    path: 'bunte-insel/', desc: 'Kinderspiel mit offener Insel-Welt: laufen, 9 Fahrzeuge (auch Hubschrauber & Zug-Simulation), Spielzeugladen, Bauen wie bei den Sims, Tanzparty, Seifenblasen, Baum hauen, Polizeihund Blitz und Pappnase. Touch mit festem Joystick und Tastatur.' }
-];
+<div id="guide" class="hidden" role="dialog" aria-modal="true" aria-labelledby="gTitle">
+  <div class="box">
+    <h3 id="gTitle"></h3>
+    <div id="gBody"></div>
+    <div class="row" style="margin-top:14px"><button class="primary" id="gPlay">Spielen ▶</button><button class="ib" id="gClose" style="margin-left:auto">Schließen</button></div>
+  </div>
+</div>
 
+<script src="games.js"></script>
+<script src="guides.js"></script>
+<script>
 const $ = id => document.getElementById(id);
 // Haupt-Logo (optional): logo.png / .jpg / .jpeg / .svg / .webp im Hauptordner
 (function () {
@@ -227,13 +189,18 @@ if (embedMode) document.body.classList.add('embed-mode');
 
 // ----- Kacheln -----
 GAMES.forEach((g, i) => {
+  const c = document.createElement('div');
+  c.className = 'card'; c.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
   const b = document.createElement('button');
-  b.className = 'tile'; b.dataset.i = i;
+  b.className = 'tile';
   b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><small></small><span class="play">Spielen ▶</span></div>`;
   b.querySelector('b').textContent = g.title; b.querySelector('small').textContent = g.desc;
-  b.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
   b.addEventListener('click', () => openGame(i));
-  $('grid').appendChild(b);
+  const h = document.createElement('button');
+  h.className = 'help'; h.textContent = '📖 Anleitung'; h.setAttribute('aria-label', 'Anleitung: ' + g.title);
+  h.addEventListener('click', () => openGuide(i));
+  c.append(b, h);
+  $('grid').appendChild(c);
 });
 const tiles = [...$('grid').children];
 function filt() {
@@ -243,6 +210,29 @@ function filt() {
   $('empty').classList.toggle('hidden', n > 0);
 }
 $('q').addEventListener('input', filt); filt();
+const jsSnippet = (id) => `<!-- 1. Script einbinden (einmal pro Seite) -->
+<script src="${base}easygames.js"><\/script>
+
+<!-- 2a. Nur HTML: Spiel-ID als Attribut -->
+<div data-easygames="${id}" data-ratio="16/10"></div>
+
+<!-- 2b. Oder per JavaScript mit Variablen -->
+<div id="spiel"></div>
+<script>
+  const spielId = '${id}';          // beliebige Spiel-ID
+  EasyGames.embed('#spiel', { game: spielId, ratio: '16/10', maxWidth: '960px' });
+<\/script>
+
+<!-- 3. Alle Spiele (Bibliothek) -->
+<div data-easygames="all"></div>
+<!-- oder: EasyGames.library('#ziel'); -->
+
+<!-- Weitere Funktionen:
+  EasyGames.ready(() => console.log(EasyGames.list()));  // alle Spiele mit URL
+  EasyGames.url('${id}');   EasyGames.get('${id}');
+  EasyGames.guide('${id}', g => console.log(g));        // Anleitung + Steuerung
+-->`;
+$('jsCode').value = jsSnippet(GAMES[0].id);
 $('libCode').value = iframeCode(base + '?embed=1', 'easygames – Spielebibliothek');
 $('libBtn').addEventListener('click', () => $('lib').classList.toggle('hidden'));
 
@@ -279,11 +269,29 @@ $('vFs').addEventListener('click', () => {
 function openShare() {
   const g = GAMES[cur], url = abs(g.path);
   $('sTitle').textContent = g.title + ' teilen';
-  $('sLink').value = url; $('sCode').value = iframeCode(url, g.title); $('sOpen').href = url;
+  $('sLink').value = url; $('sCode').value = iframeCode(url, g.title); $('sJs').value = jsSnippet(g.id); $('sOpen').href = url;
   $('sNative').classList.toggle('hidden', !navigator.share);
   $('share').classList.remove('hidden');
 }
 $('vShare').addEventListener('click', openShare);
+const GUIDES = window.EASYGAMES_GUIDES || {};
+let gi = -1;
+const li = a => '<ul>' + a.map(x => '<li></li>').join('') + '</ul>';
+function fill(h, arr) { const d = document.createElement('div'); d.innerHTML = li(arr); [...d.querySelectorAll('li')].forEach((n, k) => n.textContent = arr[k]); h.appendChild(d.firstChild); }
+function openGuide(i) {
+  gi = i; const g = GAMES[i], d = GUIDES[g.id], body = $('gBody');
+  $('gTitle').textContent = g.title; body.textContent = '';
+  const sec = (t, node) => { const h = document.createElement('h4'); h.textContent = t; body.append(h, node); };
+  const p = document.createElement('p'); p.textContent = d ? d.anleitung : g.desc; sec('Spielanleitung', p);
+  if (d && d.steuerung && d.steuerung.length) { const w = document.createElement('div'); fill(w, d.steuerung); sec('Bedienung', w.firstChild); }
+  if (d && d.tipps && d.tipps.length) { const w = document.createElement('div'); fill(w, d.tipps); sec('Tipps', w.firstChild); }
+  $('guide').classList.remove('hidden'); $('gClose').focus();
+}
+function closeGuide() { $('guide').classList.add('hidden'); gi = -1; }
+$('vHelp').addEventListener('click', () => openGuide(cur));
+$('gClose').addEventListener('click', closeGuide);
+$('gPlay').addEventListener('click', () => { const i = gi; closeGuide(); openGame(i); });
+$('guide').addEventListener('click', e => { if (e.target === $('guide')) closeGuide(); });
 $('sClose').addEventListener('click', () => $('share').classList.add('hidden'));
 $('sNative').addEventListener('click', () => navigator.share({ title: GAMES[cur].title, url: abs(GAMES[cur].path) }).catch(() => {}));
 document.addEventListener('click', e => {
@@ -294,7 +302,8 @@ document.addEventListener('click', e => {
 });
 addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (!$('share').classList.contains('hidden')) $('share').classList.add('hidden');
+  if (!$('guide').classList.contains('hidden')) closeGuide();
+  else if (!$('share').classList.contains('hidden')) $('share').classList.add('hidden');
   else if (!$('viewer').classList.contains('hidden')) closeGame();
 });
 
