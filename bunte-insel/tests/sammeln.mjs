@@ -28,19 +28,38 @@ const r = await p.evaluate(async () => {
   o.dig = Object.keys(b.save.sammel.dig).length >= 1; o.stickerDig = (b.save.stk || []).includes('graeber');
   /* Verbindungen: Tagesaufgaben, Log, Buch, Album-Knopf, Spaß-Menü */
   o.tasks = !!b.save.dq && b.save.dq.q.some(q => ['fish', 'bug', 'dig'].includes(q.k) && q.have > 0) || true;
-  const lg = S.log(); o.log = lg.rows.length === 4 && /^\d+ von 36$/.test(lg.count);
+  const lg = S.log(); o.log = lg.rows.length === 5 && /^\d+ von 42$/.test(lg.count);
   S.show(); await sl(200); const cards = document.querySelectorAll('#sammelBox button').length; o.book = cards >= 12 + 4 && !document.getElementById('sammelPanel').hidden; S.close(); o.bookClosed = document.getElementById('sammelPanel').hidden;
   o.albumBtn = !!document.getElementById('albumBook');
   document.getElementById('bFun').click(); const tabs = [...document.querySelectorAll('#funBar [data-group]')]; const has = k => { for (const t of tabs) { t.click(); if (document.querySelector('#funBar .fb[data-k="' + k + '"]')) return true; } return false; }; o.funBook = has('sammelbuch'); o.funNet = has('kescher'); document.getElementById('bFun').click();
   return o;
 });
 if (process.env.DEBUG) console.log(JSON.stringify(r));
-ok(r.species === 36, 'Sammelbuch: 36 Einträge (12 Fische, 12 Käfer, 12 Funde)');
+ok(r.species === 42, 'Sammelbuch: 42 Einträge (je 14 Fische, Käfer, Funde)');
 ok(r.fishLabel && r.waiting && r.busy, 'Angeln: Knopf am See, auswerfen, Warten-Zustand');
 ok(r.bite && r.fish && r.fishStar && r.stickerAngler, 'Angeln: Biss, einholen, Eintrag + Sterne + Sticker „Angler“');
 ok(r.bugsOn >= 1 && r.bug && r.stickerKaefer, 'Käfer: erscheinen im Gras (' + r.bugsOn + '), Kescher fängt, Sticker „Käferfreund“');
 ok(r.spots >= 1 && r.digLabel && r.dig && r.stickerDig, 'Buddeln: glitzernde Stelle (' + r.spots + '), Knopf, Fund + Sticker „Schatzgräber“');
 ok(r.log && r.book && r.bookClosed && r.albumBtn, 'Verbindung: Aufgaben-Log, Sammelbuch-Fenster, Knopf im Sammelalbum');
 ok(r.funBook && r.funNet, 'Spaß-Menü: Sammelbuch und Käfer fangen sind drin');
+/* Tages-Ereignis, Regionen, Zimmer-Vitrinen, Zimmer der Mitspieler */
+{
+  const r5 = await p.evaluate(async () => {
+    const b = window.__bi, S = b.sammeln, o = {}, flats = b.W.spots.flats;
+    const ev = S.event(); o.event = ['fish', 'bug', 'dig', 'rainbow'].includes(ev.g) && !!ev.name;
+    o.regions = ['zauber', 'dampfhai'].every(id => BI.SAMMEL.fish.some(q => q[0] === id && /region:/.test(q[4]))) && BI.SAMMEL.dig.some(q => q[0] === 'drachenei') && BI.SAMMEL.bug.some(q => q[0] === 'feuer');
+    const set = b.save.sammel; set.fish = {}; for (let i = 0; i < 3; i++) S.dbg.collect('fish', BI.SAMMEL.fish[i]);
+    o.unlock = b.save.owned.includes('deco_aqua'); const sh = b.room.share(); o.share = sh.f >= 3 && Array.isArray(sh.d);
+    b.save.room = b.save.room || {}; b.save.room.d = [13, 14, 15, 0]; b.room.build();
+    const n0 = b.scene.children.length; b.room.setRemote(flats[1], { w: 2, u: 3, b: 1, d: [13, 14, 15, 5], x: 2, f: 5, g: 5, k: 5 }); o.remoteAdd = b.scene.children.length === n0 + 1; b.room.setRemote(flats[1], { w: 99, u: -4, b: 'x', d: [999, -1, 'a'], x: 77 }); b.room.clearRemote(); o.remoteClear = b.scene.children.length === n0;
+    const h0 = b.save.hearts | 0, s0 = b.save.stars; b.gotHeart('x'); o.heart = (b.save.hearts | 0) === h0 + 1 && b.save.stars === s0 + 1; b.gotHeart('x'); o.heartLimit = (b.save.hearts | 0) === h0 + 1;
+    return o;
+  });
+  if (process.env.DEBUG) console.log(JSON.stringify(r5));
+  ok(r5.event && r5.regions, 'Tages-Ereignis (Fest des Tages) und Regionen-Arten (Drachenhöhen, Märchenland, Dampfer)');
+  ok(r5.unlock && r5.share, 'Sammel-Belohnung: 3 Fische → Aquarium fürs Zimmer; Zimmer-Zustand zum Teilen');
+  ok(r5.heart && r5.heartLimit, 'Herz von einem Freund: +1 ❤️ und +1 ⭐ (nicht doppelt hintereinander)');
+  ok(r5.remoteAdd && r5.remoteClear, 'Zimmer von Mitspielern: wird angezeigt (auch mit kaputten Werten) und wieder entfernt');
+}
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);
