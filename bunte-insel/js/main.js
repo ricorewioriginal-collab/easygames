@@ -1146,7 +1146,7 @@
   const atlantis = BI.createAtlantis({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, fade: cb => { fadeEl.firstElementChild.textContent = '🔱'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setAtlMood(on) }); atlantis.people(town.folk);
   const radio = BI.createRadio({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, setStick, updateButtons: f => updateButtons(f) });
   const life = BI.createLife({ scene, W, P, say });
-  const zotik = BI.createZotik({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, takeMascot: id => takeMascot(id), start: k => startGame(k, true), go: id => { const d = DEST.find(x => x.id === id); if (d) beamTo(d); } });
+  const zotik = BI.createZotik({ scene, W, A, fx, P, say, save, persist, playing: () => state === 'play', addStars: n => addStars(n), cam, takeMascot: id => takeMascot(id), start: k => startGame(k, true), go: id => { const d = DEST.find(x => x.id === id); if (d) beamTo(d); } });
   const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
   const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
@@ -1276,6 +1276,7 @@
       ['zburg', '🏰', 'Lunaris: Burg auf dem Hügel', () => zp(50, -20), 'orte'],
       ['zhafen', '⚓', 'Lunaris: Hafen (Luftschiff)', () => zp(0, 72), 'orte'],
       ['ztore', '🌀', 'Lunaris: Weltentore', () => ({ x: BI.ZOTIK.gateC.x, z: BI.ZOTIK.gateC.z }), 'orte'],
+      ['zspiel', '💠', 'Tor zum Zotik-Spiel (Schwesterspiel)', () => ({ x: BI.ZOTIK.zportal.x, z: BI.ZOTIK.zportal.z + 5 }), 'spiele'],
       ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte']
     ];
     for (const [id, icon, name, at, cat] of more) DEST.push({ id, icon, name, at, cat });

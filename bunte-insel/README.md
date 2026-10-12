@@ -72,6 +72,12 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
 
+## Verbindung zum ZOTIK-Spiel 💠⇄🏝️
+Die beiden Spiele (liegen nebeneinander: `zotik/` und `bunte-insel/`) sind verbunden:
+- **Bunte Insel → ZOTIK:** Auf der Zotik-Insel (Lunaris) steht in der Mitte des Weltentor-Platzes das **Tor zum Zotik-Spiel** (Knopf „🌀 Ins Zotik-Spiel reisen“, zur Sicherheit erst eine Rückfrage, dann Wechsel; auch im 🧭-Menü unter Spiele). Der Fortschritt wird vorher gespeichert.
+- **ZOTIK → Bunte Insel:** Im Zotik-Spiel gibt es ein grünes **Tor zur Bunten Insel** neben dem Weltentor in Lunaris (Dialog „Hinüberreisen / Noch nicht“) und den Knopf **🏝️ Bunte Insel** im Titel- und im Spielmenü.
+- **Rückkehr:** Die Adresse trägt `?from=zotik` bzw. `?from=bunteinsel`; die Bunte Insel setzt dich dann am Tor in Lunaris ab (einmalig +2 ⭐), die Adresse wird bereinigt. Test: `tests/verbund.mjs`.
+
 ## Fußball-Arena ⚽ (Erweiterung im Südwesten)
 Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richtigen Fußballplatz: Rasenstreifen, Linien, zwei Tore mit Netz, Banden mit Eingangslücke, Flutlicht, Tribüne und Anzeigetafel (🔵 Blau : Rot 🔴, Ost-Tor zählt für Blau, West-Tor für Rot).
 - **Dribbeln**: einfach in den Ball laufen. **Schuss**: Hauptknopf („⚽ Schießen“) in der Nähe des Balls, Richtung = Blickrichtung.
