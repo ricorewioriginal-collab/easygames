@@ -71,6 +71,15 @@ Eigene Insel hinter einer Brücke (🧭 → „Freizeitpark“): Eingangstor, Pr
 - Test: `BASE=http://localhost:8080 THREE=…/three.min.js node bunte-insel/tests/tycoon.mjs` (`DEBUG=1` zeigt Rohwerte).
 - Sparsam: Boden und Wege in Sammel-Meshes, nur drehende Teile sind eigene Objekte, Gondeln als eine Instanz-Gruppe.
 
+
+## Fußball-Arena ⚽ (Erweiterung im Südwesten)
+Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richtigen Fußballplatz: Rasenstreifen, Linien, zwei Tore mit Netz, Banden mit Eingangslücke, Flutlicht, Tribüne und Anzeigetafel (🔵 Blau : Rot 🔴, Ost-Tor zählt für Blau, West-Tor für Rot).
+- **Dribbeln**: einfach in den Ball laufen. **Schuss**: Hauptknopf („⚽ Schießen“) in der Nähe des Balls, Richtung = Blickrichtung.
+- **Torwarte** halten beide Tore (Schüsse in die Ecken sind der Trick). Nach einem Tor gibt es Konfetti und der Ball geht zum Anstoß zurück. **5 Tore = 1 ⭐**.
+- **Mit Freunden**: ein gemeinsamer Ball. Wer ihn zuletzt berührt hat, rechnet ihn aus und schickt Position/Tempo (Nachricht `fb`, ca. 8×/s solange er rollt); Tore und Spielstand sieht jeder. Neue Mitspieler bekommen den Stand beim Beitritt.
+- Figuren: **Kapitän Jannis** und Trainerin Lena erklären das Spiel. Neue Musik „Stadion-Stimmung“.
+- Technik: `js/fussball.js`; kleine Inseln nutzen den gemeinsamen Helfer `BI.buildIsleBridge` + `W.isles` (Brücke, Rand, Flughöhe, Schaum). Test: `node bunte-insel/tests/fussball.mjs` (`DEBUG=1` zeigt Rohwerte).
+
 ## Regenbogenwelt 🌈 (Erweiterung, Aufklärung für Kinder)
 Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreichbar; auch per 🧭 Wohin? → „Regenbogenwelt“.
 - **Plaza** mit Regenbogen-Ringen und Brunnen (🌈 „Freude teilen“: Konfetti, ein Spruch über Vielfalt, alle 45 s +1 ⭐), zwei große **Regenbogen-Bögen**, **Flaggen** (Regenbogen, Trans, Bi, Pan), bunte Häuser, Tanzfläche, bunte Bäume.

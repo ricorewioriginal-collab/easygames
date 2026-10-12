@@ -3,7 +3,7 @@
    Das Log steckt im Inselreise-Fenster (story.js): 📋 links oder Tipp auf die Anzeige oben öffnet es. Gesammelt werden:
    ▶ Als Nächstes (alles, was gerade offen ist + Tipps), 📖 Inselreise, 🚜 Hof-Aufgaben, 🚨 Fellretter-Einsätze, 📦 Aufträge, 🎁 Tagesgeschenk.
    Reine Anzeige, kein eigener Spielstand – die Daten kommen aus den jeweiligen Systemen. */
-BI.TASKLOG_DEST = { karussell: 'park', eisbude: 'park', parkeingang: 'park', staedte: 'city', staedte2: 'city', staedte3: 'city', spielzeug: 'shop', buehne: 'rainbow', plaza: 'rainbow', tierpark: 'zoo', camp: 'camp', bad: 'pool', hospital: 'hospital', spielplatz: 'playground', wald: 'forest', kino: 'cinema', steg: 'pier', bahnhof: 'station', bauernhof: 'hof', leuchtturm: 'lighthouse' };
+BI.TASKLOG_DEST = { karussell: 'park', fussball: 'fussball', eisbude: 'park', parkeingang: 'park', staedte: 'city', staedte2: 'city', staedte3: 'city', spielzeug: 'shop', buehne: 'rainbow', plaza: 'rainbow', tierpark: 'zoo', camp: 'camp', bad: 'pool', hospital: 'hospital', spielplatz: 'playground', wald: 'forest', kino: 'cinema', steg: 'pier', bahnhof: 'station', bauernhof: 'hof', leuchtturm: 'lighthouse' };
 BI.injectLogCss = function () {
   if (!document.getElementById('bi-log-css')) { const st = document.createElement('style'); st.id = 'bi-log-css';
     st.textContent = '.lgSec{margin:8px 0;border-radius:16px;background:rgba(255,255,255,.45);padding:2px 8px 6px}.lgSec>summary{cursor:pointer;font-weight:800;padding:8px 4px;font-size:17px;list-style:none}.lgSec>summary::-webkit-details-marker{display:none}.lgSec>summary::before{content:"▸ "}.lgSec[open]>summary::before{content:"▾ "}'
