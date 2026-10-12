@@ -11,10 +11,11 @@
   /* ---------- Renderer, Szene, Himmel ---------- */
   const canvas = $('cv'), dpr = window.devicePixelRatio || 1;
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: 'high-performance' }); }
   catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
-  let quality = save.gfx === 'eco' ? 2 : 0; // standardmäßig scharf; wird bei Ruckeln automatisch gesenkt
-  const QUAL = [Math.min(dpr, 2), Math.min(dpr, 1.5), 1, .75];
+  const baseQuality = () => save.eco || save.gfx === 'eco' ? 2 : save.gfx === 'sharp' ? 0 : coarse ? 1 : 0;
+  let quality = baseQuality();
+  const QUAL = [Math.min(dpr, 2), Math.min(dpr, coarse ? 1.35 : 1.5), Math.min(dpr, 1), .75];
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .8, 800);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
   sun.position.set(60, 100, 40); scene.add(hemi, sun, sun.target);
@@ -71,12 +72,17 @@
   const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
   /* Mitspielen: diese Fahrzeuge stehen auf jedem Gerät gleich -> Nummer vi, damit ein Auto nur einmal existiert (fährt ein Freund, fährt es bei allen mit) */
   let ride = ''; /* Mitfahren: ID des Freundes, der gerade lenkt (leer = du fährst nicht mit) */
-  const VEH_SYNC = vehicles.length; vehicles.forEach((v, i) => { if (!v.spec.drake && !v.spec.remote) { v.vi = i; v.sx = v.x; v.sz = v.z; v.sh = v.h; } });
+  let VEH_SYNC = vehicles.length; vehicles.forEach((v, i) => { if (!v.spec.drake && !v.spec.remote) { v.vi = i; v.sx = v.x; v.sz = v.z; v.sh = v.h; } });
   const traffic = [];
   for (let i = 0; i < 9; i++) {
     const dir = i % 2 ? -1 : 1, lane = dir > 0 ? K.RB + 2.2 : K.RB - 2.2, v = addVeh('car', 0, lane, 0, { color: BI.PAINT[(i * 3 + 1) % BI.PAINT.length], ai: true });
-    traffic.push({ v, a: i / 9 * TAU * 1 + .4 + (i % 2) * .35, dir, lane, sp: 8 + (i % 3) * 1.5 }); v.ai = true;
+    const a = i / 9 * TAU + .4 + (i % 2) * .35;
+    const tr = { v, a, dir, lane, sp: 8 + (i % 3) * 1.5, stopUntil: 0, rejoinAt: 0 };
+    v.traffic = tr; v.vi = vehicles.length - 1;
+    v.setPose(Math.sin(a) * lane, Math.cos(a) * lane, Math.atan2(Math.cos(a) * dir, -Math.sin(a) * dir));
+    v.sx = v.x; v.sz = v.z; v.sh = v.h; traffic.push(tr);
   }
+  VEH_SYNC = vehicles.length; // nur feste Fahrzeuge und deterministischer Verkehr; zufällig geparkte Autos bleiben lokal
   /* mehr Fahrzeuge: am Straßenrand geparkt (nicht auf der Ringstraße, damit der Verkehr nicht blockiert) */
   for (let i = 0, made = 0; i < 160 && made < 14; i++) {
     const dir = (Math.random() * 4) | 0, d = 24 + Math.random() * 120, off = (Math.random() < .5 ? -1 : 1) * (6.4 + Math.random() * 1.2), x = [d, -d, off, off][dir], z = [off, off, d, -d][dir], r = Math.hypot(x, z);
@@ -106,9 +112,12 @@
 
   const npcs = [], SK = [0xffd2a8, 0xe0a979, 0x8d5a3b, 0xf3c9a0], HR = [0x6b4423, 0x222222, 0xd9a441, 0xa14a2b, 0xf3d98a], PN = [0x3d4a7a, 0x5a3d2b, 0x2d6a4f, 0x7a3d6a], rnd = a => a[(Math.random() * a.length) | 0];
   function mkNpc(x, z, o) {
-    o = o || {}; const kid = !!o.kid, c = BI.makeChar({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], pants: rnd(PN), hair: rnd(HR), style: rnd(['short','side','curly','pig','bun','bob','afro','braids','ponytail']), mouth: 'smile', hsc: kid ? 1.08 : 1, skin: o.skin || rnd(SK), hat: !kid && Math.random() < .15 ? 'cap' : kid && Math.random() < .3 ? 'party' : 'none', scale: kid ? .58 + Math.random() * .14 : .9 + Math.random() * .1 });
-    const q = W.resolve(x, z, .6, {}), n = { c, x: q.x, z: q.z, h: Math.random() * TAU, tx: q.x, tz: q.z, wait: Math.random() * 3, phase: Math.random() * 6, hop: 0, spd: kid ? 2.4 + Math.random() * .9 : 1.4 + Math.random() * .9, kid, lead: o.lead || null, fd: o.fd || 0, fs: o.fs || 0 };
-    { const pool = kid ? BI.TALK.kids : BI.TALK.adults, L = kid ? (mkNpc.kc = (mkNpc.kc || 0) + 1) : (mkNpc.ac = (mkNpc.ac || 0) + 1), pe = pool[(L - 1) % pool.length]; n.p = { name: kid && L > pool.length ? pe[0] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : kid ? pe[0] : L > pool.length ? pe[0].split(' ')[1] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : pe[0], lines: pe[1], i: 0 }; }
+    o = o || {}; const kid = !!o.kid, c = BI.makeChar(Object.assign({ shirt: BI.SHIRTS[(Math.random() * 6) | 0], pants: rnd(PN), hair: rnd(HR), style: rnd(['short','side','curly','pig','bun','bob','afro','braids','ponytail']), mouth: 'smile', hsc: kid ? 1.08 : 1, skin: o.skin || rnd(SK), hat: !kid && Math.random() < .15 ? 'cap' : kid && Math.random() < .3 ? 'party' : 'none', scale: kid ? .58 + Math.random() * .14 : .9 + Math.random() * .1 }, o.look || {}));
+    const q = W.resolve(x, z, .6, {}), n = { c, x: q.x, z: q.z, h: Math.random() * TAU, tx: q.x, tz: q.z, wait: Math.random() * 3, phase: Math.random() * 6, hop: 0, wave: 0, spd: kid ? 2.4 + Math.random() * .9 : 1.4 + Math.random() * .9, kid, lead: o.lead || null, fd: o.fd || 0, fs: o.fs || 0, roam: o.roam || null, dancer: 0, style: 0 };
+    n.spd0 = n.spd;
+    if (o.persona) n.p = { name: o.persona[0], lines: o.persona[1], i: 0 };
+    else { const pool = kid ? BI.TALK.kids : BI.TALK.adults, L = kid ? (mkNpc.kc = (mkNpc.kc || 0) + 1) : (mkNpc.ac = (mkNpc.ac || 0) + 1), pe = pool[(L - 1) % pool.length]; n.p = { name: kid && L > pool.length ? pe[0] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : kid ? pe[0] : L > pool.length ? pe[0].split(' ')[1] + ' ' + String.fromCharCode(64 + Math.ceil(L / pool.length)) + '.' : pe[0], lines: pe[1], i: 0 }; }
+    c.group.position.set(n.x, 0, n.z); c.group.rotation.y = n.h;
     scene.add(c.group); npcs.push(n); return n;
   }
   const spot = () => W.randRoadPoint(Math.random, 0, 0, 0);
@@ -119,7 +128,61 @@
     const kids = 1 + ((Math.random() * 2) | 0); for (let k = 0; k < kids; k++) mkNpc(p.x + 6.5, p.z + 8, { skin, kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * (.7 + k * .3) });
   }
   for (let i = 0; i < 16; i++) { const p = spot(); mkNpc(p.x + 5, p.z + 5, { kid: true }); } /* spielende Kinder */
-  for (const n of npcs) { n.spd0 = n.spd; n.style = 0; n.dancer = 0; }
+  /* Kleine, feste Nachbarschaften: eigenständige Gespräche und kurze Wege statt zufällig leerer Plätze. */
+  const localCast = [
+    { x: 0, z: 14, r: 7, people: [
+      ['Lea die Malerin', -8, 0, false, { shirt: 0xff739f, style: 'bun', dress: true, scarf: 0xffd23f }, ['Ich male heute den Brunnen. Das Wasser glitzert wie ein Stern!', 'Manchmal darfst du die Farbe einfach laufen lassen.', 'Mein nächstes Bild zeigt alle Freunde der Insel.']],
+      ['Sami der Musiker', 7, -1, false, { shirt: 0x3f8cff, skin: 0x8d5a3b, style: 'afro', hat: 'headphones' }, ['Hör mal! Der Brunnen gibt den Takt für mein Lied vor.', 'Jede Ecke der Insel klingt ein bisschen anders.', 'Vielleicht spielen wir später zusammen ein Konzert?']],
+      ['Oma Ruth', -3, 5, false, { shirt: 0xb36bff, hair: 0xd9d9d9, style: 'bun', dress: true, glasses: true, scale: .88 }, ['Hier habe ich früher mit meinen Freunden gespielt.', 'Ein nettes Hallo macht einen grauen Tag bunt.', 'Von dieser Bank aus sieht man fast die ganze Insel.']],
+      ['Momo', 4, 7, true, { shirt: 0xffd23f, skin: 0xe0a979, style: 'curly', pack: true }, ['Ich sammle Ideen für ein riesiges Abenteuer!', 'Der Brunnen ist unser geheimer Treffpunkt.', 'Wollen wir später den Spielplatz erkunden?']]
+    ] },
+    { x: -36, z: -116, r: 5, people: [
+      ['Lina', -14, 0, true, { shirt: 0xff8fc8, style: 'pig', skin: 0x8d5a3b, pack: true }, ['In unserem Haus wohnt immer jemand, der mitspielt.', 'Ich übe gerade das Rückwärtslaufen. Gar nicht leicht!', 'Die Nachbarn winken, wenn ich zur Schule gehe.']],
+      ['Arif der Nachbar', -4, 2, false, { shirt: 0x4cd07d, skin: 0xe0a979, style: 'short', glasses: true }, ['Ich gieße die Blumen vor unserem Wohnblock.', 'Wenn du Hilfe brauchst, frag ruhig bei uns nach.', 'Am Abend treffen wir uns hier zum Plaudern.']],
+      ['Elsa', 6, 1, true, { shirt: 0xb36bff, style: 'braids', skin: 0xffd2a8, teddy: true }, ['Mein Teddy heißt Wolke. Er kennt jeden Weg nach Hause!', 'Wir spielen heute Verstecken zwischen den Häusern.', 'Gleich kommt meine Freundin Lina vorbei.']],
+      ['Jona', 14, -1, false, { shirt: 0xffa742, skin: 0x8d5a3b, hair: 0x222222, hat: 'cap', overall: true }, ['Ich bringe den Nachbarn frische Brötchen.', 'Bei uns sagt jeder guten Morgen.', 'Die Haustüren sind bunt, damit man sich leicht zurechtfindet.']]
+    ] },
+    { x: -59, z: 56, r: 6, people: [
+      ['Lotti', -10, -8, true, { shirt: 0xff5a8a, hair: 0xd9a441, style: 'ponytail' }, ['Ich rutsche am liebsten ganz schnell!', 'Bei der Schaukel zählen wir bis zehn.', 'Komm, wir spielen Fangen!']],
+      ['Noah', 10, -7, true, { shirt: 0x4da3ff, skin: 0x8d5a3b, style: 'curly' }, ['Mein Rekord auf dem Trampolin ist sieben Sprünge.', 'Ich bin der Kapitän vom Sandkasten-Schiff!', 'Heute darf jeder bei unserem Spiel mitmachen.']],
+      ['Kaya', 9, 10, true, { shirt: 0xffd23f, skin: 0xe0a979, style: 'braids', rainbow: true }, ['Die Wippe macht am meisten Spaß zu zweit.', 'Ich habe eine bunte Schatzkarte gemalt.', 'Vielleicht versteckt sich ein Stern beim Spielplatz.']],
+      ['Tessa', -11, 10, false, { shirt: 0x57caa0, skin: 0xf3c9a0, style: 'bob', scarf: 0xff8fc8 }, ['Ich passe auf, dass alle sicher spielen können.', 'Eine kleine Pause auf der Bank tut immer gut.', 'Die Kinder haben heute ein neues Spiel erfunden.']]
+    ] },
+    { x: -112, z: 106, r: 5, people: [
+      ['Bäuerin Alva', -8, -1, false, { shirt: 0xff8a1f, pants: 0x5a3d2b, skin: 0x8d5a3b, hat: 'cowboy', overall: true }, ['Heute haben wir die Felder und die Tiere versorgt.', 'Unsere Kühe mögen Besuch, wenn du ganz ruhig bist.', 'Die Äpfel im Hofladen sind frisch gepflückt.']],
+      ['Tariq', 8, 1, false, { shirt: 0x4cd07d, skin: 0xe0a979, style: 'short', hat: 'cap', overall: true }, ['Der Traktor wartet schon auf die nächste Runde.', 'Nach der Arbeit gibt es Saft im Hofladen.', 'Ich zeige den Kindern, wo das Gemüse wächst.']],
+      ['Nuri', 1, 7, true, { shirt: 0xffd23f, skin: 0x8d5a3b, style: 'afro', hat: 'cap' }, ['Ich kann schon drei Schafe auseinanderhalten!', 'Mein Lieblingsplatz ist neben der Scheune.', 'Morgen möchte ich beim Ernten helfen.']]
+    ] },
+    { x: 70, z: 30, r: 5, people: [
+      ['Mara die Pfadfinderin', -9, 5, false, { shirt: 0x4cd07d, pants: 0x5a3d2b, skin: 0xe0a979, hat: 'cap', pack: true }, ['Wir erzählen am Lagerfeuer Geschichten von der Insel.', 'Mein Rucksack ist voller kleiner Entdeckungen.', 'Wenn es dunkel wird, leuchten die Sterne besonders schön.']],
+      ['Bo', 9, 4, true, { shirt: 0x3f8cff, hair: 0x222222, skin: 0x8d5a3b, pack: true }, ['Ich habe mein Zelt ganz allein aufgebaut!', 'Heute suche ich ein Blatt, das wie ein Herz aussieht.', 'Die Nachtgeräusche klingen wie ein Abenteuer.']],
+      ['Enya', 1, 9, true, { shirt: 0xff8fc8, hair: 0xa14a2b, style: 'side', scarf: 0xffd23f }, ['Mara kennt alle Sternbilder.', 'Am Lagerfeuer singen wir ein ganz leises Lied.', 'Ich habe einen besonders glatten Stein gefunden.']]
+    ] },
+    { x: 53, z: 119, r: 4, people: [
+      ['Rieke', -5, -1, false, { shirt: 0x3fa0ff, style: 'bun', skin: 0x8d5a3b, glasses: true }, ['Am Freibad ist immer etwas los.', 'Denk an eine Pause nach dem Spielen im Wasser.', 'Die kleine Rutsche ist heute besonders beliebt.']],
+      ['Timo', 2, -2, true, { shirt: 0xffd23f, style: 'short', skin: 0xe0a979, hat: 'cap' }, ['Ich übe Sprünge, erst mal nur auf dem Trockenen!', 'Mein Handtuch ist so bunt wie ein Regenbogen.', 'Nach dem Baden will ich ein Eis.']],
+      ['Sunny', 6, 1, true, { shirt: 0xff6fae, style: 'pig', skin: 0xffd2a8, hat: 'flowers' }, ['Wer findet die größte Wasserwelle?', 'Ich kann schon fast einmal um das Becken laufen.', 'Das Planschbecken ist mein Lieblingsort.']]
+    ] },
+    { x: 0, z: -282, r: 8, people: [
+      ['Lale die Buchhändlerin', -20, 0, false, { shirt: 0xb36bff, style: 'bob', skin: 0xe0a979, glasses: true }, ['In der Stadt kann man jeden Tag eine neue Geschichte finden.', 'Mein Lieblingsbuch handelt von einer kleinen Insel.', 'Wenn du etwas wissen willst, schau in die Bücherei.']],
+      ['Yuki', -7, 2, true, { shirt: 0xffd23f, style: 'bob', skin: 0xf3c9a0, pack: true }, ['Ich zähle die bunten Schaufenster!', 'Der Stadtbrunnen plätschert ganz anders als der Inselbrunnen.', 'Manchmal treffe ich hier Freunde aus allen Vierteln.']],
+      ['Enzo der Bäcker', 8, -1, false, { shirt: 0xffffff, pants: 0x5a3d2b, skin: 0x8d5a3b, hat: 'chef', overall: true }, ['Es duftet schon nach frischen Brötchen.', 'Ich teile meine Kekse gern mit den Nachbarn.', 'Früh am Morgen ist die Stadt ganz still.']],
+      ['Luca', 20, 1, false, { shirt: 0x4da3ff, skin: 0xe0a979, style: 'curly', hat: 'cap', pack: true }, ['Ich bringe kleine Pakete durch die Stadt.', 'Die Brücke verbindet uns mit der großen Insel.', 'Kennst du schon das Café an der Hauptstraße?']]
+    ] },
+    { x: 285, z: 20, r: 7, people: [
+      ['Pia die Schaustellerin', -8, 6, false, { shirt: 0xff5a8a, style: 'wavy', skin: 0x8d5a3b, hat: 'party' }, ['Willkommen auf dem Jahrmarkt! Heute lachen hier alle.', 'Die Musik hört man bis zur Brücke.', 'Mein Lieblingsplatz ist direkt am bunten Brunnen.']],
+      ['Benji', 6, -7, true, { shirt: 0x4cd07d, skin: 0xe0a979, style: 'curly', hat: 'party' }, ['Ich will jede Attraktion einmal ausprobieren!', 'Die Lampen sehen aus wie kleine Bonbons.', 'Nach der Fahrt dreht sich alles noch ein bisschen.']],
+      ['Mina', 9, 7, true, { shirt: 0xffd23f, skin: 0x8d5a3b, style: 'braids', rainbow: true }, ['Ich habe ein Ticket für das nächste Abenteuer!', 'Am Brunnen kann ich mir etwas wünschen.', 'Kommst du mit zum Karussell?']]
+    ] }
+  ];
+  for (const area of localCast) for (const [name, dx, dz, kid, look, lines] of area.people) {
+    const ox = area.x + dx, oz = area.z + dz; let x = ox, z = oz;
+    for (let tryNo = 0; tryNo < 18 && !W.free(x, z, .7); tryNo++) {
+      const a = tryNo * 2.39996, r = .9 + Math.sqrt(tryNo) * 1.4; x = ox + Math.sin(a) * r; z = oz + Math.cos(a) * r;
+    }
+    if (!W.free(x, z, .7)) continue;
+    mkNpc(x, z, { kid, look, persona: [name, lines], roam: { x, z, r: area.r } });
+  }
   function animalMesh(kind) {
     const b = new BI.Batch(), g = new THREE.Group();
     if (kind === 'cow') { b.box(0, .75, 0, .9, .8, 1.7, 0xffffff); b.box(-.46, 1.1, .2, .06, .4, .5, 0x23262d); b.box(.46, 1.0, -.3, .06, .35, .5, 0x23262d); b.box(0, 1.55, .25, .5, .06, .6, 0x23262d); b.box(0, 1.05, .98, .5, .5, .5, 0xffffff); b.box(0, 1.05, 1.22, .36, .26, .08, 0xffb0b8); b.box(-.17, 1.5, .98, .08, .2, .08, 0xf3e9d2); b.box(.17, 1.5, .98, .08, .2, .08, 0xf3e9d2); for (const x of [-.3, .3]) for (const z of [-.6, .6]) b.box(x, 0, z, .2, .75, .2, 0xe8e8e8); }
@@ -184,14 +247,27 @@
   function nearVehicle() {
     let best = null, bd = 4.2;
     if (!P.veh && P.y < 3) {
-      for (const v of vehicles) { if (v.ai || v.netBy) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
+      for (const v of vehicles) {
+        if (v.netBy || (v.ai && !v.traffic)) continue;
+        const d = Math.hypot(P.x - v.x, P.z - v.z) - v.interactReach;
+        const reach = v.ai && Math.abs(v.v) > .7 ? 7.2 : 4.2;
+        if (d < reach && (!best || d < bd)) { bd = d; best = v; }
+      }
       const dt_ = train.nearest(P.x, P.z); if (dt_ < 4.2 && dt_ < bd) best = trainVeh;
       if (!best) { let rd = 25; for (const q of vehicles) if (q.spec.remote && !q.netBy) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < rd) { rd = d; best = q; } } }
     }
     return best;
   }
   function enter(v) {
-    if (build.active) return;
+    if (build.active || v.netBy) return;
+    if (v.traffic && v.ai) {
+      if (Math.abs(v.v) > .7) {
+        v.traffic.stopUntil = t + 18;
+        A.pop(); say('✋ Das Auto hält an. Geh hin und steig ein!', 2400); updateButtons(true);
+        return;
+      }
+      v.ai = false; v.traffic.stopUntil = 0; v.traffic.rejoinAt = 0; v.v = 0;
+    }
     fun.setDance(false); P.veh = v; everDrove = true; meta.note('ride'); A.enter(); kids.earn(v.isTrain ? 'train' : v.spec.boat ? 'boat' : v.type === 'heli' || v.type === 'rcheli' ? 'heli' : 'ride');
     if (v.spec.remote) { v.driver = true; offer = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); say('🎮 ' + heroName() + ' steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
@@ -222,7 +298,7 @@
     let px = v.x + lx * rad, pz = v.z + lz * rad;
     if (v.isTrain) { const L = Math.hypot(v.x, v.z) || 1; px = v.x - v.x / L * 6; pz = v.z - v.z / L * 6; }
     if (v.spec.boat && !force) { px = .2; pz = 205.5; }
-    if (!v.isTrain) { v.driver = null; v.siren = false; if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
+    if (!v.isTrain) { v.driver = null; v.siren = false; if (v.traffic) { v.ai = false; v.v = 0; v.traffic.rejoinAt = t + 20; } if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
     if (!v.isTrain && v.vi != null && net.connected()) { v.v = 0; net.send({ t: 'vp', l: [[v.vi, Math.round(v.x * 100) / 100, Math.round(v.z * 100) / 100, Math.round(v.h * 100) / 100]] }); } /* Auto bleibt bei allen am selben Platz stehen */
     P.veh = null; char.group.visible = true;
     const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
@@ -365,7 +441,7 @@
   function updateButtons(force) {
     const v = P.veh, rideN = state === 'play' && !v && !ride && !build.active ? nearRide() : null, near = state === 'play' && !v && !ride && !rideN && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
     const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), rangeNear = state === 'play' && !rs.ui && nearRange(), flatN = state === 'play' && !rs.ui && !wardOpen ? flatNear() : null, placeN = state === 'play' ? placeNear() : null, driveIn = state === 'play' && v ? cinema.near() : null, chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
-    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : '')), isTouch()].join('|');
+    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type + (near.ai && near.traffic && Math.abs(near.v) > .7 ? '-stop' : '')), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : '')), isTouch()].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
     if (ride || rideN || v) act.classList.remove('idle');
@@ -381,7 +457,7 @@
       }
       jump.hidden = false; horn.hidden = false;
     } else {
-      const has = !!(near || shopNear || chestNear || rangeNear || flatN || placeN); act.hidden = !has && !isTouch(); act.classList.toggle('idle', !has); if (!has) act.innerHTML = '<b>✋</b><small>Aktion</small>'; else if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', has);
+      const has = !!(near || shopNear || chestNear || rangeNear || flatN || placeN); act.hidden = !has && !isTouch(); act.classList.toggle('idle', !has); if (!has) act.innerHTML = '<b>✋</b><small>Aktion</small>'; else if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : near.ai && near.traffic && Math.abs(near.v) > .7 ? '<b>✋</b><small>Anhalten</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', has);
       jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
@@ -424,7 +500,7 @@
   function moveStick(e) { let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; if (l < R * .12) setStick(0, 0); else setStick(dx / R, -dy / R); }
   function endStick() { stick.id = null; setStick(0, 0); sKnob.style.transform = ''; joy.style.transform = ''; joy.classList.remove('on'); }
   zone.addEventListener('pointerdown', e => {
-    A.resume(); if (state !== 'play') return; if (rs.ui === 'play') { rangeAim(e.clientX, e.clientY); rs.down = true; rangeShoot(); try { zone.setPointerCapture(e.pointerId); } catch (x) { } return; } if (!$('funBar').hidden) closeQuick();
+    A.resume(); if (state !== 'play') return; if (rs.ui === 'play') { rangeAim(e.clientX, e.clientY); rs.down = true; rangeShoot(); try { zone.setPointerCapture(e.pointerId); } catch (x) { } return; } closeHudMenus();
     const sa = isTouch() ? stickArea(e.clientX, e.clientY) : null;
     if (sa) { if (stick.id != null) endStick(); startStick(e, sa); } // neuer Finger im Stick-Bereich übernimmt immer – ein „hängender“ Stick kann so nicht blockieren
     else { drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY; drag.t0 = performance.now(); drag.moved = 0; }
@@ -473,6 +549,7 @@
     if (mpOpen) { if (e.code === 'Escape') { mpBack(); e.preventDefault(); } else if (mpView === 'join') { if (e.code === 'Backspace') { joinCode = joinCode.slice(0, -1); renderJoin(); } else if (e.code === 'Enter') mpJoinGo(); else { const ch = net.normCode(e.key); if (ch && e.key.length === 1 && joinCode.length < 4) { joinCode += ch; renderJoin(); } } } return; }
     if (e.code === 'Escape' && rs.ui && state === 'play') { if (rs.ui === 'play' || rs.ui === 'result') exitRange(); else closeRangeUi(); return; }
     if (cinema.open && e.code === 'Escape') { cinema.close(); return; }
+    if (e.code === 'Escape' && (!$('toolPanel').hidden || !$('leftExtra').hidden || !$('funBar').hidden)) { closeHudMenus(); e.preventDefault(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
     if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu' && !(e.target && e.target.closest && e.target.closest('#menu button'))) { startPlay(); e.preventDefault(); } return; }
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
@@ -522,15 +599,15 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); if (document.hidden && state === 'play') pause(true); });
 
   /* ---------- Menüs ---------- */
-  function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('bNight').textContent = save.night ? '☀️' : '🌙'; }
-  function toggleSound() { save.sound = !save.sound; A.setMuted(!save.sound); persist(); $('bSound').textContent = save.sound ? '🔊' : '🔇'; }
+  function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('nightIcon').textContent = save.night ? '☀️' : '🌙'; }
+  function toggleSound() { save.sound = !save.sound; A.setMuted(!save.sound); persist(); $('soundIcon').textContent = save.sound ? '🔊' : '🔇'; }
   function toggleVoice() { save.voice = save.voice === false; A.setVoice(save.voice); persist(); $('bVoice').classList.toggle('off', !save.voice); if (save.voice) A.speak('Ich lese dir alles vor!'); }
   A.voiceOn = save.voice !== false; $('bVoice').classList.toggle('off', !A.voiceOn); $('bVoice').addEventListener('click', toggleVoice);
   let spoke = ''; const readMission = () => { const M = mission; A.speak(M ? M.steps[M.i].type === 'tstop' ? phaseText(M.steps[M.i]) : M.steps[M.i].label : $('mText').textContent); };
   { const mc = $('mission'); mc.classList.toggle('min', save.mmin !== false);
     mc.addEventListener('pointerdown', e => { e.stopPropagation(); A.resume(); if (mc.classList.contains('min')) { mc.classList.remove('min'); save.mmin = false; persist(); } else if (e.target.id === 'mMin') { mc.classList.add('min'); save.mmin = true; persist(); } else readMission(); }); }
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
-  function pause(on) { if (state === 'menu') return; state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } releaseAll(); }
+  function pause(on) { if (state === 'menu') return; if (on) closeHudMenus(); state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } releaseAll(); }
   function startPlay() {
     A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; { const f = myFlat(); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.vy = 0; } /* Start: vor der eigenen Haustür */ cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     setTimeout(() => { if (state === 'play' && !kids.open) kids.daily(); }, 3500);
@@ -544,7 +621,7 @@
   $('bToMenu').addEventListener('click', () => { persist(); try { if (typeof net !== 'undefined' && net.close) net.close(); } catch (e) { } location.reload(); });
   $('bResume').addEventListener('click', () => pause(false)); $('bPause').addEventListener('click', () => pause(true));
   $('bNight').addEventListener('click', toggleNight); $('bSound').addEventListener('click', toggleSound); $('bMusic').addEventListener('click', toggleMusic);
-  $('bNight').textContent = save.night ? '☀️' : '🌙'; $('bSound').textContent = save.sound ? '🔊' : '🔇'; $('bMusic').classList.toggle('off', !save.music);
+  $('nightIcon').textContent = save.night ? '☀️' : '🌙'; $('soundIcon').textContent = save.sound ? '🔊' : '🔇'; $('bMusic').classList.toggle('off', !save.music);
   $('starN').textContent = save.stars;
 
   /* ---------- Spielzeugladen: einkaufen mit Sternen ---------- */
@@ -674,7 +751,7 @@
   const charFor = l => BI.makeChar(charOpts(l, l.n));
   const freeObj = o => { o.traverse(m => { if (m.geometry) m.geometry.dispose(); if (m.isSprite && m.material.map) m.material.map.dispose(); }); if (o.parent) o.parent.remove(o); };
   function dropAvatar(av) { if (av.lv) { freeNetVeh(av.lv, av); av.lv = null; } if (av.char) freeObj(av.char.group); if (av.gv) freeObj(av.gv.root); if (av.pet) freeObj(av.pet.d.group); }
-  function updateFriends() { if (typeof updateFlats === 'function') updateFlats(); const n = net.count(), on = net.connected(); if ($('emo')) { $('emo').hidden = !(on && state === 'play'); if (!on) $('emoRow').hidden = true; } $('friends').hidden = !(on && state === 'play'); $('friendsN').textContent = n; }
+  function updateFriends() { if (typeof updateFlats === 'function') updateFlats(); const n = net.count(), on = net.connected(); if ($('emo')) { $('emo').hidden = !(on && state === 'play'); if (!on) $('emoRow').hidden = true; } $('friends').hidden = !(on && state === 'play'); $('hud').classList.toggle('friends-on', on && state === 'play'); $('friendsN').textContent = n; }
   const mpSay = m => { const el = $('mpStatus'); el.textContent = m || ''; el.classList.remove('err'); };
   const mpErr = m => { const el = $('mpStatus'); el.textContent = m; el.classList.add('err'); };
   function mpShow(v) {
@@ -735,7 +812,7 @@
       if (d.t === 'hk') { const a = remote.get(d.id); if (a && Math.hypot(a.x - P.x, a.z - P.z) < 40) honk(); return; }
       if (d.t === 'mi') { const a = remote.get(d.id), m = MTITLE[d.k]; if (a && m && ride === d.id) say(m[0] + ' ' + a.name + ' startet: ' + m[1] + ' – hilf mit! 👀', 3200); return; }
       if (d.t === 'ms') { if (ride === d.id) { const n = Math.max(1, Math.min(6, d.n | 0)); addStars(n); A.star(); if (n > 1) { A.fanfare(); say('🎉 Gemeinsam geschafft! +' + n + ' ⭐', 2800); } } return; }
-      if (d.t === 'vp') { if (Array.isArray(d.l)) for (const q of d.l) { const v = vehicles[q[0] | 0]; if (v && v.vi === (q[0] | 0) && v !== P.veh && (!v.netBy || v.netBy === d.id) && [q[1], q[2], q[3]].every(Number.isFinite)) { v.setPose(q[1], q[2], q[3]); v.v = 0; const a = remote.get(d.id); if (a && v.netBy === d.id) { a.x = a.tx = q[1]; a.z = a.tz = q[2]; a.h = a.th = q[3]; a.sp = 0; } } } return; }
+      if (d.t === 'vp') { if (Array.isArray(d.l)) for (const q of d.l) { const v = vehicles[q[0] | 0]; if (v && v.vi === (q[0] | 0) && v !== P.veh && (!v.netBy || v.netBy === d.id) && [q[1], q[2], q[3]].every(Number.isFinite)) { v.setPose(q[1], q[2], q[3]); v.v = 0; if (v.traffic) { v.ai = false; v.traffic.stopUntil = 0; v.traffic.rejoinAt = t + 20; } const a = remote.get(d.id); if (a && v.netBy === d.id) { a.x = a.tx = q[1]; a.z = a.tz = q[2]; a.h = a.th = q[3]; a.sp = 0; } } } return; }
       if (d.t !== 's') return;
       let a = remote.get(d.id);
       if (!a) {
@@ -795,7 +872,7 @@
   }
 
   /* ---- Mitfahren: zu zweit (oder zu viert) in einem Fahrzeug. Der Fahrer lenkt, alle anderen sitzen drin und fahren mit ---- */
-  function freeNetVeh(v, a) { v.driver = null; v.netBy = null; v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } }
+  function freeNetVeh(v, a) { v.driver = null; v.netBy = null; v.v = 0; if (v.traffic) { v.ai = false; v.traffic.rejoinAt = t + 20; } if (v.spec.fly) { v.y = 0; v.vy = 0; } }
   /* Fahrzeug, in dem der Fahrer mit dieser ID sitzt (bei mir: mein eigenes) */
   function hostVeh(id) {
     if (id === selfId()) return P.veh && !P.veh.spec.remote && !P.veh.isTrain ? P.veh : null;
@@ -811,7 +888,7 @@
   }
   function nearRide() {
     if (P.veh || ride || P.y > 3 || !net.connected()) return null; let best = null, bd = 4.2;
-    for (const a of remote.values()) { const hv = hostVeh(a.id); if (!hv || hv.spec.remote) continue; const d = Math.hypot(P.x - hv.x, P.z - hv.z) - hv.r * 1.3 - Math.max(...hv.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = a; } }
+    for (const a of remote.values()) { const hv = hostVeh(a.id); if (!hv || hv.spec.remote) continue; const d = Math.hypot(P.x - hv.x, P.z - hv.z) - hv.interactReach; if (d < bd) { bd = d; best = a; } }
     return best;
   }
   function startRide(id) {
@@ -837,7 +914,7 @@
   /* Neuer Mitspieler: ihm sagen, wo Autos inzwischen geparkt sind (sonst stünden sie bei ihm am alten Platz) */
   function shareVehicles(toId) {
     if (net.role !== 'host') return; const l = [], r2 = n => Math.round(n * 100) / 100;
-    for (let i = 0; i < VEH_SYNC; i++) { const v = vehicles[i]; if (v.vi !== i || v.netBy || v === P.veh) continue; if (Math.abs(v.x - v.sx) + Math.abs(v.z - v.sz) > .8) l.push([i, r2(v.x), r2(v.z), r2(v.h)]); }
+    for (let i = 0; i < VEH_SYNC; i++) { const v = vehicles[i]; if (v.vi !== i || v.netBy || v === P.veh || v.ai) continue; if (Math.abs(v.x - v.sx) + Math.abs(v.z - v.sz) > .8) l.push([i, r2(v.x), r2(v.z), r2(v.h)]); }
     if (l.length) net.sendTo(toId, { t: 'vp', l });
   }
 
@@ -1152,7 +1229,7 @@
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
   for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
   { const g = W.spots.cityGate; if (g) { const sp = textSprite('🏙️ Willkommen in der Stadt!', 6.4, 1.1, 54); sp.position.set(g.x, g.y + 1.6, g.z + .4); scene.add(sp); } }
-  { const C = W.city; for (let i = 0; i < 16; i++) { const a = Math.random() * TAU, d = 8 + Math.random() * 36; mkNpc(C.x + Math.sin(a) * d, -266 + (Math.random() < .5 ? -3 : 4) + Math.cos(a) * 3, { kid: i % 5 === 0 }); } for (let f = 0; f < 3; f++) { const x = -30 + f * 30, lead = mkNpc(x, -262, {}); lead.spd = 1.3; for (let k = 0; k < 2; k++) mkNpc(x + 1, -262, { kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * .8 }); } }
+  { const C = W.city; for (let i = 0; i < 16; i++) { const a = Math.random() * TAU, d = 8 + Math.random() * 36, x = C.x + Math.sin(a) * d, z = -266 + (Math.random() < .5 ? -3 : 4) + Math.cos(a) * 3; mkNpc(x, z, { kid: i % 5 === 0, roam: { x, z, r: 10 } }); } for (let f = 0; f < 3; f++) { const x = -30 + f * 30, lead = mkNpc(x, -262, { roam: { x, z: -262, r: 10 } }); lead.spd = lead.spd0 = 1.3; for (let k = 0; k < 2; k++) mkNpc(x + 1, -262, { kid: true, lead, fd: 1.6 + k * .9, fs: (k % 2 ? 1 : -1) * .8 }); } }
   weather = BI.createWeather({ scene, camera, W, A, P, save, say, stars, fx, garden });
   function nearStation() { if (P.veh) return -1; for (let i = 0; i < W.stations.length; i++) { const p = W.stations[i].plat; if (P.x > p[0] - 1.5 && P.x < p[2] + 1.5 && P.z > p[1] - 1.5 && P.z < p[3] + 1.5) return i; } return -1; }
   /* Am Bahnsteig: „Zug fahren“ – der Zug wird an diesen Bahnhof gezaubert und man steigt als Lokführer ein */
@@ -1161,7 +1238,7 @@
     if (d > 7 || train.v > 1.5) { fx.burst(trainVeh.x, 2, trainVeh.z, 20, [BI.C.white, BI.C.blue], 5, 1, 30, 2); train.s = st.s; train.v = 0; train.mode = 'wait'; train.timer = 40; train.stationIdx = i; train.update(0, null, fx); fx.burst(st.x, 2, st.z, 24, [BI.C.gold, BI.C.white, BI.C.pink], 5, 1.2, 30, 4); A.fanfare(); say('🚂 Der Zug fährt für dich vor! Alles einsteigen!', 3000); }
     enter(trainVeh);
   }
-  function npcNear() { let best = null, bd = 2.3; if (P.veh) return null; for (const n of npcs.concat(town.folk, life.talkers)) { if (!n.c.group.visible || !n.p) continue; const d = Math.hypot(P.x - n.x, P.z - n.z); if (d < bd) { bd = d; best = n; } } return best; }
+  function npcNear() { let best = null, bd = 2.3 * 2.3; if (P.veh) return null; const scan = group => { for (const n of group) { if (!n.c.group.visible || !n.p) continue; const dx = P.x - n.x, dz = P.z - n.z, d = dx * dx + dz * dz; if (d < bd) { bd = d; best = n; } } }; scan(npcs); scan(town.folk); scan(life.talkers); return best; }
   /* Satz für das Gespräch: beim ersten Mal persönliche Begrüßung, danach bunt gemischt (eigene Sätze, Plausch, Tageszeit/Wetter/Sterne) – ohne Wiederholung hintereinander */
   function npcLine(p) {
     if (!(save.talked || []).includes(p.name)) { p.last = 0; return 'Hallo ' + heroName() + '! ' + p.lines[0]; }
@@ -1316,11 +1393,11 @@
   const SEASONS = [['auto', 'Auto'], ['spring', '🌸 Frühling'], ['summer', '☀️ Sommer'], ['autumn', '🍂 Herbst'], ['winter', '❄️ Winter']];
   const ecoOn = () => !!save.eco;
   function applyVolume() { A.setVolume(save.vol == null ? 1 : save.vol); }
-  function applyEco() { if (ecoOn()) quality = Math.max(quality, 2); resize(); }
+  function applyEco() { quality = baseQuality(); resize(); }
   function renderParent() {
     $('parVol').value = Math.round((save.vol == null ? 1 : save.vol) * 100); $('parMp').classList.toggle('sel', !save.mpOff); $('parMp').textContent = save.mpOff ? '👥 Mitspielen gesperrt' : '👥 Mitspielen erlaubt'; $('parEco').classList.toggle('sel', ecoOn()); $('parVoice').classList.toggle('sel', A.voiceOn);
     const sb = $('parSeason'); sb.innerHTML = ''; SEASONS.forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.season || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.season = k; persist(); if (typeof applySeason === 'function') applySeason(); renderParent(); }; sb.appendChild(b); });
-    const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = k === 'eco' ? 2 : 0; resize(); renderParent(); }; gb.appendChild(b); });
+    const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = baseQuality(); resize(); renderParent(); }; gb.appendChild(b); });
     const bb = $('parBreak'); bb.innerHTML = ''; kids.breakOpts.forEach(m => { const b = document.createElement('button'); b.className = 'pill' + ((save.breakMin || 0) === m ? ' sel' : ''); b.textContent = m ? m + ' Min' : 'Aus'; b.onclick = () => { save.breakMin = m; persist(); kids.refreshBreak(); renderParent(); }; bb.appendChild(b); });
   }
   function renderYt() { $('parYtInfo').textContent = cinema.hasKey() ? '✅ Kino-Suche ist an (nur kindersichere, einbettbare Videos). Der Schlüssel bleibt nur auf diesem Gerät.' : 'Ohne Schlüssel ist die Suche im Kino aus. Einen kostenlosen Schlüssel gibt es in der Google Cloud Console („YouTube Data API v3“ aktivieren → API-Schlüssel erstellen). Pro Suche werden die Suchwörter an YouTube gesendet.'; $('parYtDel').hidden = !cinema.hasKey(); }
@@ -1391,7 +1468,14 @@
     { k: 'xxl', icon: '🔮', name: 'XXL-Blase', key: '0' }, { k: 'bark', icon: '🐶', name: 'Wuff!', key: '7' },
     { k: 'home', icon: '🏠', name: 'Nach Hause', key: '' }, { k: 'pap', icon: '🎈', name: 'Pappnase an/aus', key: '' }, { k: 'games', icon: '🎮', name: 'Spiele', key: '' }, { k: 'photo', icon: '📸', name: 'Foto', key: '' }, { k: 'music', icon: '🎹', name: 'Musik', key: '' }, { k: 'paint', icon: '🎨', name: 'Malen', key: '' }, { k: 'feed', icon: '🦴', name: 'Füttern', key: '' }, { k: 'stroke', icon: '🤗', name: 'Streicheln', key: '' }, { k: 'album', icon: '🏅', name: 'Album', key: '' }, { k: 'guide', icon: '🧭', name: 'Wohin?', key: '' }, { k: 'tierbuch', icon: '📖', name: 'Tierbuch', key: '' }, { k: 'fotos', icon: '🖼️', name: 'Fotoalbum', key: '' }, { k: 'cannon', icon: '💥', name: 'Kanone', key: '' }, { k: 'ahoi', icon: '🏴‍☠️', name: 'Ahoi!', key: '' }, { k: 'trick', icon: '🐾', name: 'Trick', key: '' }, { k: 'fetch', icon: '🎾', name: 'Apport', key: '' }
   ];
-  let quickAll = false;
+  const QUICK_TABS = [['suggested', 'Für dich'], ['play', 'Spielen'], ['create', 'Kreativ'], ['travel', 'Unterwegs'], ['pets', 'Tiere']];
+  const QUICK_GROUPS = {
+    play: new Set(['dance', 'bubbles', 'balloons', 'gum', 'fireworks', 'ball', 'xxl', 'games', 'cannon', 'pap']),
+    create: new Set(['express', 'gadgets', 'photo', 'music', 'paint', 'album', 'fotos']),
+    travel: new Set(['punch', 'rcfetch', 'pack', 'meta', 'home', 'guide', 'ahoi']),
+    pets: new Set(['search', 'bark', 'feed', 'stroke', 'tierbuch', 'trick', 'fetch'])
+  };
+  let quickGroup = 'suggested';
   const onFoot = () => !P.veh || P.veh.spec.remote;
   function avail(a) {
     if (a.k === 'punch') return onFoot() && !!fun.nearTree();
@@ -1409,13 +1493,46 @@
     return (base[a.k] || 0) + (a.k === 'punch' ? 200 : 0) + Math.min((save.use || {})[a.k] || 0, 15) * 1.5;
   }
   function renderQuick() {
-    const bar = $('funBar'); bar.innerHTML = ''; const list = ACTIONS.filter(avail).sort((a, b) => score(b) - score(a)), shown = quickAll ? list : list.slice(0, 6);
-    for (const a of shown) { const b = document.createElement('button'); b.className = 'fb'; b.dataset.k = a.k; b.innerHTML = a.icon + '<small>' + a.name + '</small>' + (a.key ? '<i class="kbd kb">' + a.key + '</i>' : ''); b.onclick = () => { doFun(a.k); closeQuick(); }; bar.appendChild(b); }
-    if (list.length > 6) { const m = document.createElement('button'); m.className = 'fb more'; m.innerHTML = (quickAll ? '▴' : '⋯') + '<small>' + (quickAll ? 'Weniger' : 'Mehr') + '</small>'; m.onclick = () => { quickAll = !quickAll; renderQuick(); }; bar.appendChild(m); }
+    const bar = $('funBar'), available = ACTIONS.filter(avail);
+    const shown = quickGroup === 'suggested' ? available.sort((a, b) => score(b) - score(a)).slice(0, 6) : available.filter(a => QUICK_GROUPS[quickGroup].has(a.k));
+    const title = document.createElement('div'); title.className = 'quick-title'; title.textContent = '🎉 Schnellaktionen';
+    const tabs = document.createElement('div'); tabs.className = 'quick-tabs'; tabs.setAttribute('aria-label', 'Aktionen wählen');
+    for (const [key, label] of QUICK_TABS) {
+      const tab = document.createElement('button'); tab.type = 'button'; tab.dataset.group = key; tab.textContent = label;
+      tab.className = key === quickGroup ? 'sel' : ''; tab.setAttribute('aria-pressed', String(key === quickGroup));
+      tab.onclick = () => { quickGroup = key; renderQuick(); bar.querySelector('[data-group="' + key + '"]').focus({ preventScroll: true }); };
+      tabs.appendChild(tab);
+    }
+    const grid = document.createElement('div'); grid.className = 'quick-grid';
+    for (const a of shown) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'fb'; b.dataset.k = a.k; b.setAttribute('aria-label', a.name);
+      b.innerHTML = '<span class="fun-icon">' + a.icon + '</span><small>' + a.name + '</small>' + (a.key ? '<i class="kbd kb">' + a.key + '</i>' : '');
+      b.onclick = () => { doFun(a.k); closeHudMenus(); }; grid.appendChild(b);
+    }
+    bar.replaceChildren(title, tabs, grid);
   }
-  function closeQuick() { $('funBar').hidden = true; $('bFun').classList.remove('on'); }
-  $('bPack').addEventListener('click', ev => { ev.stopPropagation(); A.resume(); pack.toggle(); });
-  $('bFun').addEventListener('click', () => { const f = $('funBar'); if (!f.hidden) { closeQuick(); return; } quickAll = false; renderQuick(); f.hidden = false; $('bFun').classList.add('on'); });
+  function closeQuick() { $('funBar').hidden = true; $('bFun').classList.remove('on'); $('bFun').setAttribute('aria-expanded', 'false'); }
+  function closeHudMenus() {
+    closeQuick(); $('toolPanel').hidden = true; $('leftExtra').hidden = true;
+    for (const id of ['bTools', 'bMore']) { $(id).classList.remove('on'); $(id).setAttribute('aria-expanded', 'false'); }
+    document.body.classList.remove('hud-tools-open');
+  }
+  $('bTools').addEventListener('click', () => {
+    const open = $('toolPanel').hidden; closeHudMenus(); if (!open) return;
+    $('toolPanel').hidden = false; $('bTools').classList.add('on'); $('bTools').setAttribute('aria-expanded', 'true'); document.body.classList.add('hud-tools-open');
+  });
+  $('bMore').addEventListener('click', () => {
+    const open = $('leftExtra').hidden; closeHudMenus(); if (!open) return;
+    $('leftExtra').hidden = false; $('bMore').classList.add('on'); $('bMore').setAttribute('aria-expanded', 'true');
+  });
+  $('toolPanel').addEventListener('click', e => { if (e.target.closest('button')) closeHudMenus(); });
+  $('leftExtra').addEventListener('click', e => { if (e.target.closest('button')) closeHudMenus(); });
+  $('bLog').addEventListener('click', closeHudMenus);
+  $('bPack').addEventListener('click', ev => { ev.stopPropagation(); closeHudMenus(); A.resume(); pack.toggle(); });
+  $('bFun').addEventListener('click', () => {
+    const open = $('funBar').hidden; closeHudMenus(); if (!open) return;
+    quickGroup = 'suggested'; renderQuick(); $('funBar').hidden = false; $('bFun').classList.add('on'); $('bFun').setAttribute('aria-expanded', 'true');
+  });
   $('bCam').addEventListener('click', toggleEgo);
   let preBuild = null, tab = 0, clearT = 0, voxTab = null, lastVC = -1;
   const tabList = () => { const L = []; if (vox.inBauland()) for (const g of BI.VOX_GROUPS) L.push({ icon: g.icon, name: g.name, vox: g.id }); build.TABS.forEach((tb, i) => L.push({ icon: tb.icon, name: tb.name, part: i })); return L; };
@@ -1629,6 +1746,8 @@
     let hit = false;
     for (const o of vehicles) {
       if (o === self) continue;
+      const reach = r + o.collisionReach;
+      if (Math.abs(x - o.x) > reach || Math.abs(z - o.z) > reach) continue;
       for (const off of o.cols) {
         const cx = o.x + Math.sin(o.h) * off, cz = o.z + Math.cos(o.h) * off, dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz), m = r + o.r;
         if (d < m && d > 1e-6) { x += dx / d * (m - d); z += dz / d * (m - d); hit = true; }
@@ -1818,18 +1937,31 @@
     // Parkende Fahrzeuge rollen aus
     updateHomeVeh(dt);
     for (const v of vehicles) if (!v.driver && !v.ai && Math.abs(v.v) > .05) { v.step(dt, { steer: 0, thr: 0 }, W, fx); }
+    // Verkehr
+    for (const tr of traffic) {
+      const v = tr.v;
+      if (!v.ai) {
+        if (tr.rejoinAt && t >= tr.rejoinAt && !v.driver && !v.netBy && P.veh !== v && Math.hypot(P.x - v.x, P.z - v.z) > 18) {
+          tr.a = Math.atan2(v.x, v.z); v.ai = true; tr.rejoinAt = 0; v.v = 0;
+          v.setPose(Math.sin(tr.a) * tr.lane, Math.cos(tr.a) * tr.lane, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
+        }
+        continue;
+      }
+      if (v.driver || v.netBy || P.veh === v) continue;
+      const waiting = tr.stopUntil > t; let sp = waiting ? 0 : tr.sp;
+      if (!waiting) tr.stopUntil = 0;
+      const sn = Math.sin(v.h), cs = Math.cos(v.h);
+      const ahead = (ox, oz) => { const dx = ox - v.x, dz = oz - v.z, f = dx * sn + dz * cs; return f > 0 && f < 12 && Math.abs(dx * cs - dz * sn) < 3.2; };
+      if (ahead(P.veh ? P.veh.x : P.x, P.veh ? P.veh.z : P.z)) sp = 0;
+      for (const o of vehicles) if (o !== v && ahead(o.x, o.z)) sp = 0;
+      const oldV = v.v;
+      v.v = waiting ? Math.max(0, v.v - 18 * dt) : BI.damp(v.v, sp, 2.5, dt);
+      v.acc = (v.v - oldV) / dt; tr.a += tr.dir * v.v / tr.lane * dt;
+      const x = Math.sin(tr.a) * tr.lane, z = Math.cos(tr.a) * tr.lane; v.setPose(x, z, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
+    }
     for (const v of vehicles) {
       if (v.driver || v === P.veh) { v.root.visible = true; v.visual(dt, t, fx); continue; }
       const far = Math.abs(v.x - qx) + Math.abs(v.z - qz) > 150; if (far === v.root.visible) v.root.visible = !far; if (!far) v.visual(dt, t, null);
-    }
-    // Verkehr
-    for (const tr of traffic) {
-      const v = tr.v; let sp = tr.sp;
-      const ahead = (ox, oz) => { const dx = ox - v.x, dz = oz - v.z, f = dx * Math.sin(v.h) + dz * Math.cos(v.h); return f > 0 && f < 14 && Math.abs(dx * Math.cos(v.h) - dz * Math.sin(v.h)) < 3.2; };
-      if (ahead(P.veh ? P.veh.x : P.x, P.veh ? P.veh.z : P.z)) sp = 0;
-      for (const o of vehicles) if (o !== v && ahead(o.x, o.z) && Math.hypot(o.x - v.x, o.z - v.z) < 12) sp = 0;
-      v.v = BI.damp(v.v, sp, 2.5, dt); tr.a += tr.dir * v.v / tr.lane * dt;
-      const x = Math.sin(tr.a) * tr.lane, z = Math.cos(tr.a) * tr.lane; v.setPose(x, z, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
     }
     if (P.veh !== trainVeh) train.update(dt, null, fx);
     life.update(dt, t, !!save.eco, night);
@@ -1848,10 +1980,20 @@
       else if (n.wait <= 0) {
         const dx = n.tx - n.x, dz = n.tz - n.z, d = Math.hypot(dx, dz);
         if (d < .6 && n.dancer > 0) { dancing = true; n.h += BI.angDiff(n.h, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 6); }
-        else if (d < .6) { n.wait = n.kid ? .2 + Math.random() * 1.6 : 1 + Math.random() * 4; if (n.kid && Math.random() < .4) n.hop = .6; const a = Math.random() * TAU, r = n.kid ? 4 + Math.random() * 9 : 6 + Math.random() * 16; n.tx = clamp(n.x + Math.sin(a) * r, -150, 150); n.tz = clamp(n.z + Math.cos(a) * r, -150, 150); }
+        else if (d < .6) {
+          n.wait = n.kid ? .2 + Math.random() * 1.6 : 1 + Math.random() * 4;
+          if (n.kid && Math.random() < .4) n.hop = .6;
+          if (n.roam) {
+            for (let j = 0; j < 12; j++) {
+              const a = Math.random() * TAU, r = Math.sqrt(Math.random()) * n.roam.r, x = n.roam.x + Math.sin(a) * r, z = n.roam.z + Math.cos(a) * r;
+              if (W.free(x, z, .6)) { n.tx = x; n.tz = z; break; }
+            }
+          } else { const a = Math.random() * TAU, r = n.kid ? 4 + Math.random() * 9 : 6 + Math.random() * 16; n.tx = clamp(n.x + Math.sin(a) * r, -150, 150); n.tz = clamp(n.z + Math.cos(a) * r, -150, 150); }
+        }
         else { n.h += BI.angDiff(n.h, Math.atan2(dx, dz)) * Math.min(1, dt * 8); n.x += Math.sin(n.h) * n.spd * dt; n.z += Math.cos(n.h) * n.spd * dt; moving = true; }
       }
       const q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) n.wait = 0, n.tx = n.x, n.tz = n.z; n.x = q.x; n.z = q.z;
+      if (n.roam && !moving && n.wave <= 0 && Math.abs(n.x - P.x) + Math.abs(n.z - P.z) < 6 && Math.random() < dt * .08) n.wave = 1.3;
       n.phase += dt * (moving ? 7 : 0); const g = n.c.group; g.position.set(n.x, n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0, n.z); g.rotation.y = n.h;
       if (dancing) { n.c.dance(t + n.phase, n.style); g.position.y += Math.abs(Math.sin((t + n.phase) * 8)) * .15; } else n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);
     }
@@ -1934,13 +2076,20 @@
     const w = innerWidth, h = innerHeight; renderer.setPixelRatio(QUAL[quality]); renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < .8 ? 74 : w / h < 1.2 ? 66 : 58; camera.updateProjectionMatrix(); if (rs.ui === 'play') rangeFov();
   }
   addEventListener('resize', resize); resize();
-  let last = performance.now(), fpsAcc = 0, fpsN = 0, lowCount = 0;
+  let last = performance.now(), fpsAcc = 0, fpsN = 0, lowCount = 0, fastCount = 0, hudTick = 0, miniTick = 0;
   P.veh = null; cam.x = 0; cam.z = 40; cam.y = 7; cam.shake = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > .1) dt = .1; if (dt <= 0) return;
     fpsAcc += dt; fpsN++;
-    if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
+    if (fpsN >= 45) {
+      const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0;
+      if (state === 'play' && save.gfx !== 'sharp') {
+        if (avg > .027) { fastCount = 0; if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } }
+        else if (avg < .0175 && quality > baseQuality()) { lowCount = 0; if (++fastCount >= 8) { quality--; fastCount = 0; resize(); } }
+        else { lowCount = 0; fastCount = 0; }
+      }
+    }
     if (state === 'pause') { updateParent(dt); renderer.render(scene, camera); return; } // Eltern-Knopf (gedrückt halten) liegt im Pause-Menü
     t += dt;
     if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5, (() => { const mg = mini.GAMES[mini.kind]; return mg && 'zone' in mg ? mg.zone : 'insel'; })()); return; }
@@ -1951,11 +2100,11 @@
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t); vox.update(dt, t); atlantis.update(dt, t); zotik.update(dt, t); radio.update(dt, t); if (build.active && vox.count !== lastVC) { lastVC = vox.count; updateBuildCount(); }
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
-    if (state === 'play') { updateButtons(false); updateArrow(); updateGauge(); }
+    if (state === 'play') { hudTick -= dt; if (hudTick <= 0) { hudTick = .1; updateButtons(false); updateArrow(); updateGauge(); } }
     if (state !== 'menu') A.music(dt, night > .5, BI.zoneAt(P.x, P.z, { cinema: cinema.open, obby: obby.run }));
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
-    if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
+    if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .2; drawMini(); } }
     renderer.render(scene, camera);
   }
   spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate'); if (save.owned.includes('rollator')) spawnRC(true, 'rollator');
