@@ -78,7 +78,7 @@ BI.buildZotikGround = function (c) {
     for (let k = 4; k < L; k += 10) for (const sd of [-1, 1]) bst.cyl(x + sd * 1.9, -1.6, z0 + k, .4, .45, 1.9, 0x4a4a52, 8);
     for (const sd of [-1, 1]) W0.addBox(x + sd * 2.45 - .1, z0, x + sd * 2.45 + .1, z1 + 1, false, 1.3); }
   /* eigene Meshes (nur in der Nähe sichtbar) */
-  const grp = new THREE.Group(), stMs = BI.layerMeshes(st), glM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); glM.frustumCulled = false; for (const m of [...stMs, glM]) { m.scale.setScalar(S); m.position.set(A.x * (1 - S), 0, A.z * (1 - S)); } grp.add(...stMs, glM); { const bM = bst.mesh(BI.mat()); bM.frustumCulled = false; grp.add(bM); }
+  const grp = new THREE.Group(), stMs = BI.layerMeshes(st), glM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); glM.frustumCulled = false; for (const m of [...stMs, glM]) { m.frustumCulled = false; m.scale.setScalar(S); m.position.set(A.x * (1 - S), 0, A.z * (1 - S)); } grp.add(...stMs, glM); { const bM = bst.mesh(BI.mat()); bM.frustumCulled = false; grp.add(bM); }
   for (const o of [A.tavern, A.akad, A.statue, A.hint, A.gateC, A.zportal].concat(A.gates)) { const q = M(o.x, o.z); o.x = q[0]; o.z = q[1]; } A.statue.top *= S; grp.visible = false; scene.add(grp); A.group = grp;
   /* Arcade (Elementar-Kampf) neben der Taverne – nach den Hauptwelt-Automaten gebaut */
   A.addArcade = function () { const a = { x: A.x + 26 * S, z: A.z - 12 * S }, ast = new BI.Batch(), alamp = new BI.Batch(); BI.buildArcades({ W: W0, st: ast, lamp: alamp, only: [{ kind: 'elementar_zotik', x: a.x, z: a.z, yaw: Math.atan2(A.x - a.x, A.z - a.z), body: 0x2a2a6a, top: 0xff8a1f }] }); grp.add(ast.mesh(BI.mat())); if (!alamp.empty) grp.add(alamp.mesh(W.lampMat)); };
