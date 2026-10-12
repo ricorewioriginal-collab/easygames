@@ -142,10 +142,10 @@ let p = await boot();
   await p.close(); p = await boot();
   const r = await p.evaluate(async () => {
     const b = window.__bi, T = b.tycoon, s = T.state(), sl = ms => new Promise(r => setTimeout(r, ms)), out = {}; s.coins = 1e6; s.res.push('kette', 'rad', 'bahn', 'garten', 'licht'); b.P.x = 276; b.P.z = 30; b.P.y = 0; await sl(400);
-    const calls0 = b.renderer.info.render.calls; await sl(200); const c1 = b.renderer.info.render.calls;
+    const calls0 = b.renderer.info.render.calls; await sl(200); const c1 = b.renderer.info.render.calls, g1 = T.guests.length;
     /* 40 Dekoteile + 120 Wegstücke + 3 Fahrgeschäfte dazu */
     let n = 0; for (let x = 238; x <= 330 && n < 40; x += 4) for (const z of [50, 56, 62]) if (n < 40 && T.place(['tree', 'bench', 'flowers', 'lamp', 'bin'][n % 5], x, z, true)) n++;
-    for (let x = 240; x <= 330; x += 2) for (const z of [34, 36]) T.place('path', x, z, true); await sl(500); T.calc(); const c2 = b.renderer.info.render.calls;
+    for (let x = 240; x <= 330; x += 2) for (const z of [34, 36]) T.place('path', x, z, true); await sl(500); T.calc(); const c2 = b.renderer.info.render.calls; out.guests = T.guests.length - g1; /* neue Gäste sind eigene Figuren und kosten je ein paar Aufrufe */
     T.place('ferris', 300, 46, true); T.place('coaster', 288, -5, true); T.place('chain', 316, 24, true); await sl(500); T.calc(); const c3 = b.renderer.info.render.calls; out.rideCalls = c3 - c2; out.calls = [c1, c2]; out.items = T.items().length; out.paths = T.paths();
     let t0 = performance.now(); for (let i = 0; i < 300; i++) T.update(1 / 60, 10 + i / 60); out.ms = (performance.now() - t0) / 300; t0 = performance.now(); for (let i = 0; i < 100; i++) b.park.update(1 / 60, 10 + i / 60); out.pms = (performance.now() - t0) / 100;
     out.mem = b.renderer.info.memory.geometries;
@@ -153,7 +153,7 @@ let p = await boot();
     for (const it of T.items().slice()) T.sellItem(it); await sl(300); out.memAfter = b.renderer.info.memory.geometries; out.rides = b.park.rides.length;
     return out;
   });
-  dbg(r); ok(r.calls[1] - r.calls[0] <= 12 && r.calls[1] < 400, 'Sparsam: ' + r.items + ' Teile + ' + r.paths + ' Wege kosten wenige Zeichenaufrufe (' + r.calls.join(' → ') + '), 3 Fahrgeschäfte +' + r.rideCalls); ok(r.rideCalls <= 40, 'Sparsam: ein Fahrgeschäft kostet im Schnitt höchstens ~13 Zeichenaufrufe'); ok(r.ms < 2 && r.pms < 2, 'Rechenzeit pro Bild klein (Tycoon ' + r.ms.toFixed(2) + ' ms, Park ' + r.pms.toFixed(2) + ' ms)');
+  dbg(r); ok(r.calls[1] - r.calls[0] <= 12 + 8 * Math.max(0, r.guests) && r.calls[1] < 400, 'Sparsam: ' + r.items + ' Teile + ' + r.paths + ' Wege kosten wenige Zeichenaufrufe (' + r.calls.join(' → ') + '), 3 Fahrgeschäfte +' + r.rideCalls); ok(r.rideCalls <= 40, 'Sparsam: ein Fahrgeschäft kostet im Schnitt höchstens ~13 Zeichenaufrufe'); ok(r.ms < 2 && r.pms < 2, 'Rechenzeit pro Bild klein (Tycoon ' + r.ms.toFixed(2) + ' ms, Park ' + r.pms.toFixed(2) + ' ms)');
   dbg(r); ok(r.rides === 0 && r.memAfter <= r.mem, 'Verkaufen räumt auf (Geometrien ' + r.mem + ' → ' + r.memAfter + ')');
 }
 
