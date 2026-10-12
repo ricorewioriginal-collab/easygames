@@ -19,7 +19,7 @@ const r = await p.evaluate(async () => {
     if (!n || n.k !== 'door' || n.d !== d) { bad.push('near:' + d.name); continue; }
     K.act(n); await sl(40); if (!K.inside || P.x < 2800) { bad.push('enter:' + d.name); continue; } built++;
     const R = K.inside; const m = W.resolve(P.x, P.z, .45, {}); if (Math.hypot(m.x - P.x, m.z - P.z) > .05) bad.push('stuck:' + d.name);
-    const x = K.near(); if (!x) { /* Ausgang ist nah an der Tür */ P.x = R.exit.x; P.z = R.exit.z; await sl(30); } const o = K.near(); if (!o || o.k !== 'inout') { bad.push('exit:' + d.name); K.leave(); continue; }
+    P.x = R.exit.x; P.z = R.exit.z; await sl(30); /* Ausgang ist nah an der Tür */ const o = K.near(); if (!o || o.k !== 'inout') { bad.push('exit:' + d.name); K.leave(); continue; }
     K.act(o); await sl(30); if (K.inside || Math.hypot(P.x - d.x, P.z - d.z) > .2) bad.push('leave:' + d.name);
   }
   out.bad = bad; out.built = built;
