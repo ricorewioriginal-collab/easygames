@@ -11,7 +11,9 @@
   /* ---------- Renderer, Szene, Himmel ---------- */
   const canvas = $('cv');
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse || (navigator.deviceMemory || 4) >= 3, powerPreference: 'high-performance' }); }
+  /* Zum Eingrenzen von Darstellungsfehlern: ?gl=1 erzwingt WebGL 1, ?gl=2 WebGL 2, ?aa=0 schaltet die Kantenglättung ab (sonst wählt der Browser selbst) */
+  const glQ = (location.search.match(/[?&]gl=([12])/) || [])[1], aaQ = (location.search.match(/[?&]aa=([01])/) || [])[1];
+  try { const ro = { canvas, antialias: aaQ ? aaQ === '1' : (!coarse || (navigator.deviceMemory || 4) >= 3), powerPreference: 'high-performance' }; if (glQ) { const c = canvas.getContext(glQ === '2' ? 'webgl2' : 'webgl', { antialias: ro.antialias, powerPreference: ro.powerPreference }); if (c) ro.context = c; } renderer = new THREE.WebGLRenderer(ro); }
   catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
   let graphicsLost = false, graphicsReady = false;
   const graphicsNotice = document.createElement('div'); graphicsNotice.id = 'graphicsNotice'; graphicsNotice.hidden = true;
