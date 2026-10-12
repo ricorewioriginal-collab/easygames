@@ -1117,19 +1117,21 @@ function autoAdjust(ms) {
   else if (avg < 14.5) { if (++goodWindows >= 3) { goodWindows = 0; if (renderScale < 1) renderScale = Math.min(1, renderScale + .1); else if (i < 2) autoLevel = QUALITY_ORDER[i + 1]; else return; applyQuality(); } }
   else goodWindows = 0;
 }
+const markerCache = new Map(); let markerTimer = 0;
 function animate(now) {
   requestAnimationFrame(animate);
   const dt = Math.min(.1, (now - (last || now)) / 1000); last = now; time += dt;
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
-  for (const d of updrafts) d.g.children.slice(1).forEach((m, i) => m.position.y = (time * 3 + i * d.height / 4) % d.height);
+  for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
   for (const r of flightRings) r.m.rotation.z = time * .3;
   for (const g of gems) if (!g.got) { g.m.rotation.y = time * 1.2 + g.id; g.m.position.y = g.y + Math.sin(time * 2 + g.id) * .15; }
   for (const it of items) if (it.m.visible) { it.m.rotation.y = time * 1.6; it.m.position.y = it.y + Math.sin(time * 2.4) * .2; }
   for (const t of torches) { t.light.rotation.y = time; t.halo.rotation.y = time * .6; }
+  markerTimer -= dt; if (markerTimer <= 0) { markerTimer = .2; markerCache.clear(); }
   if (state) for (const n of npcs.values()) {
     if (!n.present) continue;
     n.g.position.set(n.x, n.y + Math.abs(Math.sin(time * 2.2 + n.x)) * .06, n.z);
-    const color = npcMarker(n.id); n.marker.visible = !!color; if (color) { n.marker.material = mat(color, true); n.marker.position.set(n.x, n.y + 3.3 + Math.sin(time * 2) * .15, n.z); n.marker.rotation.y = time; }
+    let color = markerCache.get(n.id); if (color === undefined) { color = npcMarker(n.id); markerCache.set(n.id, color); } n.marker.visible = !!color; if (color) { if (n.markerColor !== color) { n.markerColor = color; n.marker.material = mat(color, true); } n.marker.position.set(n.x, n.y + 3.3 + Math.sin(time * 2) * .15, n.z); n.marker.rotation.y = time; }
     if (mode !== 'title' && dist(state, n) < 6) n.g.rotation.y = approach(n.g.rotation.y, Math.atan2(n.x - state.x, n.z - state.z), 6, dt);
   }
   if (portal) { portal.rotation.z = time * .15; portal.material.emissiveIntensity = save.cores[save.level] ? 1.2 : .15; }
