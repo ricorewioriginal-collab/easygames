@@ -53,7 +53,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     const notes = []; const o = BI.audio.note; BI.audio.note = function () { notes.push(arguments[0]); return o && o.apply(this, arguments); };
     b.P.veh = null; b.P.y = 0;
     /* Ukulele */
-    const u = sp.uku; b.P.x = u.x + 1.5; b.P.z = u.z; await sl(250); let n = b.placeNear(); out.uku = !!n && n.src === 'maerchen'; const s0 = b.save.stars; if (n) b.placeAct(n); await sl(300); out.ukuNotes = notes.length >= 5; out.ukuStar = b.save.stars - s0 === 1;
+    const u = sp.uku; b.P.x = u.x + 1.5; b.P.z = u.z; await sl(250); let n = b.placeNear(); out.uku = !!n && n.src === 'maerchen'; const s0 = b.save.stars; if (n) b.placeAct(n); await sl(300); out.ukuNotes = notes.length >= 5; out.ukuStar = b.save.stars - s0 >= 1 && b.save.maerchen.uku === 1;
     /* Greifer */
     const g = sp.greifer; b.P.x = g.x + 2; b.P.z = g.z; await sl(250); n = b.placeNear(); out.claw = !!n && n.src === 'maerchen'; const s1 = b.save.stars; if (n) b.placeAct(n); for (let i = 0; i < 40 && !b.save.maerchen.claw; i++) await sl(250); out.clawStar = b.save.maerchen.claw === 1 && b.save.stars - s1 >= 1;
     /* Fee Glimmer: Feenstaub → Fliegen */

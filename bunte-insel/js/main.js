@@ -1194,7 +1194,7 @@
   function updateFlatsLife(dt) {
     kissCd -= dt; const q = Math.hypot(P.x - (FB.x0 + FB.x1) / 2, P.z - (FB.zB + FB.zF) / 2) < 70;
     for (const f of flats) { if (f.visP !== q) { f.visP = q; f.mom.group.visible = f.dad.group.visible = f.sign.visible = q; } if (q) { const nm = Math.hypot(P.x - f.mama.x, P.z - f.mama.z) < 5; f.mom.pose(t * 1.3 + f.i, 0, nm); f.dad.pose(t * 1.1 + f.i * 2, 0, Math.hypot(P.x - f.papa.x, P.z - f.papa.z) < 5); } }
-    const inB = !P.veh && P.x > FB.x0 && P.x < FB.x1 && P.z > FB.zB - .5 && P.z < FB.zF + .2; if (W.flatRoof.visible === inB) W.flatRoof.visible = !inB;
+    const inB = !P.veh && P.x > FB.x0 && P.x < FB.x1 && P.z > FB.zB - .5 && P.z < FB.zF + .2; if (W.flatRoof.visible === inB) for (const m of W.flatRoofs) m.visible = !inB;
     if (homeFlat) { const f = homeFlat, q2 = Math.hypot(P.x - f.cx, P.z - f.zB) < 70; if (f.visP !== q2) { f.visP = q2; f.mom.group.visible = f.dad.group.visible = f.sign.visible = q2; } if (q2) { f.mom.pose(t * 1.3 + f.i, 0, Math.hypot(P.x - f.mama.x, P.z - f.mama.z) < 5); f.dad.pose(t * 1.1 + f.i * 2, 0, Math.hypot(P.x - f.papa.x, P.z - f.papa.z) < 5); }
       const insH = !P.veh && P.x > f.x0 && P.x < f.x1 && P.z > f.zB - .5 && P.z < f.zF + .2; if (home.roof() && home.roof().visible === insH) home.roof().visible = !insH; }
   }

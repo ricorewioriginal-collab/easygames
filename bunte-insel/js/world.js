@@ -649,9 +649,15 @@ BI.buildWorld = function (scene) {
     const flat = g => { const n = g.toNonIndexed(); n.computeVertexNormals(); return n; };
     const geos = { trunk: flat(new THREE.CylinderGeometry(.3, .42, 1, 6).translate(0, .5, 0)), crown: flat(new THREE.IcosahedronGeometry(1, 1)), cone: flat(new THREE.ConeGeometry(1, 1, 7).translate(0, .5, 0)) };
     const mat = new THREE.MeshLambertMaterial({ color: 0xffffff }); W.treeMat = mat;
+    /* Bäume in ~96-m-Feldern: jedes Feld ist ein eigener Instanz-Mesh mit eigener Hüllkugel → außerhalb des Bildes wird nichts gezeichnet */
     for (const k of ['trunk', 'crown', 'cone']) {
-      const list = IL[k]; if (!list.length) continue; const m = new THREE.InstancedMesh(geos[k], mat, list.length); m.frustumCulled = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      list.forEach((e, i) => { m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m); W.bigMeshes.push(m);
+      const list = IL[k]; if (!list.length) continue; const cells = new Map();
+      for (const e of list) { const key = Math.floor(e.m.elements[12] / 96) + ',' + Math.floor(e.m.elements[14] / 96); let a = cells.get(key); if (!a) { a = []; cells.set(key, a); } a.push(e); }
+      for (const arr of cells.values()) {
+        const geo = geos[k].clone(), m = new THREE.InstancedMesh(geo, mat, arr.length); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
+        arr.forEach((e, i) => { m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; e.i = i; const x = e.m.elements[12], z = e.m.elements[14]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (z < z0) z0 = z; if (z > z1) z1 = z; });
+        geo.boundingSphere = new THREE.Sphere(new THREE.Vector3((x0 + x1) / 2, 3, (z0 + z1) / 2), Math.hypot(x1 - x0, z1 - z0) / 2 + 12); m.frustumCulled = true; scene.add(m); W.bigMeshes.push(m);
+      }
     }
   }
   const _a = new THREE.Matrix4(), _r = new THREE.Matrix4(), _b = new THREE.Matrix4(), _ax = new THREE.Vector3(), _touch = new Set();
@@ -747,10 +753,10 @@ BI.buildWorld = function (scene) {
 
   /* ---------- Meshes ---------- */
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }
-  W.flatRoof = roofB.mesh(BI.mat()); W.flatRoof.frustumCulled = false; scene.add(W.flatRoof);
-  for (const stMesh of BI.layerMeshes(st)) { stMesh.frustumCulled = false; scene.add(stMesh); W.bigMeshes.push(stMesh); }
+  W.flatRoofs = BI.chunkMeshes(roofB, BI.mat()); W.flatRoof = W.flatRoofs[0]; for (const m of W.flatRoofs) scene.add(m);
+  for (const stMesh of BI.layerMeshes(st)) { scene.add(stMesh); W.bigMeshes.push(stMesh); } /* Kacheln: Sichtkegel-Test an */
   W.winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff }); W.lampMat = new THREE.MeshBasicMaterial({ color: 0xdcdcdc });
-  const winMesh = win.mesh(W.winMat), lampMesh = lamp.mesh(W.lampMat); winMesh.frustumCulled = lampMesh.frustumCulled = false; scene.add(winMesh, lampMesh); W.bigMeshes.push(winMesh, lampMesh);
+  for (const m of [...BI.chunkMeshes(win, W.winMat), ...BI.chunkMeshes(lamp, W.lampMat)]) { scene.add(m); W.bigMeshes.push(m); }
   // Leuchtturm-Strahl (nur nachts)
   { const bg = new THREE.ConeGeometry(14, 80, 12, 1, true); bg.translate(0, -40, 0); bg.rotateX(Math.PI / 2); // Spitze am Ursprung, Öffnung nach +z
     W.beamMat = new THREE.MeshBasicMaterial({ color: 0xfff3b0, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide });

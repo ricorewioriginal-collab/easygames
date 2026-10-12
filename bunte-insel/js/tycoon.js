@@ -242,7 +242,7 @@ BI.createTycoon = function (G) {
       const g = guests[i], x = BI.lerp(g.ix, g.nx, g.f) * GR + g.ox, z = BI.lerp(g.iz, g.nz, g.f) * GR + g.oz, bob = Math.abs(Math.sin(t * 7 + g.ph)) * .06;
       _p.set(x, bob, z); _q.setFromAxisAngle(_Y, g.yaw); _m.compose(_p, _q, _s); gbm.setMatrixAt(i, _m); ghm.setMatrixAt(i, _m);
     }
-    gbm.instanceMatrix.needsUpdate = ghm.instanceMatrix.needsUpdate = true;
+    gbm.instanceMatrix.needsUpdate = ghm.instanceMatrix.needsUpdate = true; gbm.visible = ghm.visible = Math.hypot(P.x - BI.PARK.x, P.z - BI.PARK.z) < 220; /* Gäste nur in Parknähe zeichnen */
   }
 
   /* ===================== Bauen, Verschieben, Verkaufen ===================== */
