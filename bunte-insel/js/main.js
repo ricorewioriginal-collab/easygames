@@ -1217,7 +1217,7 @@
   const drachen = BI.createDrachen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), start: k => startGame(k, true), takeMascot: id => takeMascot(id) }); drachen.people(town.folk);
   const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
   const fussball = BI.createFussball({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), net: () => net, me: () => selfId(), earn: id => kids.earn(id), humansAt: (x, z, r) => 1 + [...remote.values()].filter(a => Math.hypot(a.x - x, a.z - z) < r).length }); fussball.people(town.folk);
-  const maerchen = BI.createMaerchen({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), mini: () => mini }); maerchen.people(town.folk);
+  const maerchen = BI.createMaerchen({ scene, renderer, W, A, fx, P, say, save, persist, addStars: n => addStars(n), mini: () => mini }); maerchen.people(town.folk);
   const schatz = BI.createSchatz({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), guide: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); } }); schatz.people(town.folk);
   const tafeln = BI.createTafeln({ scene, W, A, P, say });
   const atlantis = BI.createAtlantis({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, fade: cb => { fadeEl.firstElementChild.textContent = '🔱'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setAtlMood(on) }); atlantis.people(town.folk);

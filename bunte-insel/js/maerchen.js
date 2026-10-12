@@ -25,7 +25,7 @@ BI.MAERCHEN.floor = function (x, z) {
 
 BI.buildMaerchenGround = function (c) {
   const { W, st, lamp, ROADY } = c, M = BI.MAERCHEN, TAU = Math.PI * 2, rn = BI.rng(4711), L = M.at, ry = Math.atan2(M.ux, M.uz), GOLD = 0xffd23f, BL = 0x5a7ae8, PK = 0xffd6e8, WH = 0xfff0fa;
-  W.spots.maerchen = { x: M.entry.x, z: M.entry.z }; W.maerchen = M;
+  W.spots.maerchen = { x: M.entry.x, z: M.entry.z }; W.maerchen = M; M.shade = []; M.shadeR = [];
   st.disc(M.x, M.z, M.R + 9, 0, 0x9be88a, 96); st.ring(M.x, M.z, M.R - 5, M.R + 9, .012, 0xfff0c8, 96); BI.buildIsleBridge(c, M);
   /* ---- Helfer (alles in lokalen Koordinaten) ---- */
   const bx = (a, b, wb, h, da, col, y0, yaw) => { const p = L(a, b); st.box(p.x, y0 || 0, p.z, wb, h, da, col, ry + (yaw || 0)); return p; };   /* Quader: wb quer (b), da längs (a) */
@@ -36,7 +36,7 @@ BI.buildMaerchenGround = function (c) {
   const solid = (a, b, r, h) => { const p = L(a, b); W.addCircle(p.x, p.z, r, false, h || 4); return p; };
   const path = (a0, b0, a1, b1, w, col) => { const p = L((a0 + a1) / 2, (b0 + b1) / 2), q0 = L(a0, b0), q1 = L(a1, b1); st.strip(p.x, p.z, w, Math.hypot(a1 - a0, b1 - b0), Math.atan2(q1.x - q0.x, q1.z - q0.z), ROADY, col || 0xf6d9ec); };
   const hill = (a, b, r0, tiers, step, dr, cA, cB) => { M.hills.push({ a, b, r0, tiers, step, dr }); for (let k = 1; k <= tiers; k++) { const r = r0 - dr * (k - 1); cyl(a, b, r, r, step, k % 2 ? cA : cB, (k - 1) * step, 40); } };
-  const tree = (a, b, h, col, r) => { cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); solid(a, b, .5, 3); };
+  const tree = (a, b, h, col, r) => { cyl(a, b, .25, .38, h, 0x7a4a2a, 0, 6); sph(a, b, h + 1.2, r || 1.9, col, .95); sph(a + .5, b - .3, h + 2.5, (r || 1.9) * .62, col + 0x0a140a, .95); solid(a, b, .5, 3); M.shade.push([L(a, b), (r || 1.9) * 1.1, h]); };
   const palm = (a, b, h, lean) => { const q = L(a, b); st.cyl(q.x, 0, q.z, .2, .3, h, 0x9a6a3a, 6); for (let f = 0; f < 6; f++) { const g = f / 6 * TAU; st.box(q.x + Math.sin(g) * 1.3, h - .2, q.z + Math.cos(g) * 1.3, 2.8, .1, .8, 0x3fae4a, g); } solid(a, b, .45, 6); };
   const flowers = (a, b, r, n, seed) => { const rr = BI.rng(seed || 7); for (let i = 0; i < n; i++) { const g = rr() * TAU, d = Math.sqrt(rr()) * r, p = L(a + Math.sin(g) * d, b + Math.cos(g) * d); st.sph(p.x, .25, p.z, .22 + rr() * .12, [0xff5a8a, 0xffd23f, 0xb48aff, 0xff8a1f, 0x7fe0ff][i % 5], 1); st.cyl(p.x, 0, p.z, .03, .03, .25, 0x3fae4a, 3); } };
   const lantern = (a, b, h) => { cyl(a, b, .07, .09, h || 3.6, 0x5a4a7a, 0, 6); glow(a, b, (h || 3.6) + .2, .32, 0xfff3b0); };
@@ -70,6 +70,18 @@ BI.buildMaerchenGround = function (c) {
     for (const b of [-8, -5, 5, 8]) solid(CA - kd / 2 + 1, b, 2.2, 14); for (const a of [CA - 4, CA + 4]) for (const sd of [-1, 1]) solid(a, sd * 11, 2.2, 14); for (const b of [-8, 0, 8]) solid(CA + kd / 2 - 1, b, 2.4, 14);
     path(CA - kd / 2 - 1, -6, CA - kd / 2 - 1, 6, 6, 0xf6d9ec);
     for (const sd of [-1, 1]) for (let k = 0; k < 4; k++) { const a = 20 + k * 4.4; cone(a, sd * 9, 1.1, 2.6, 0x3fae4a, .6, 8); cyl(a, sd * 9, .8, .9, .6, 0x8a5a3a, 0, 8); solid(a, sd * 9, 1.1, 3); }
+  }
+  /* ---- Schloss-Details: Fenster mit Rahmen, Steinbänder, Treppe, Torbogen, Balkon, Turmfenster (echte Tiefe statt glatter Wände) ---- */
+  { const CA = 38, kd = 18, kw = 24, H = 12, FR = 0xfff0fa, DK = 0xe8b0cc;
+    const win2 = (a, b, y, face, sgn, big) => { const w = big ? 1.5 : 1.2, h = big ? 2.4 : 1.8; if (face === 'a') { bx(a + sgn * .12, b, w + .5, h + .5, .3, FR, y - .25); const p = L(a + sgn * .26, b); lamp.box(p.x, y, p.z, w, h, .1, 0xffe9a0, ry); bx(a + sgn * .3, b, w + .6, .2, .5, DK, y - .4); }
+      else { bx(a, b + sgn * .12, .3, h + .5, w + .5, FR, y - .25); const p = L(a, b + sgn * .26); lamp.box(p.x, y, p.z, .1, h, w, 0xffe9a0, ry); bx(a, b + sgn * .3, .5, .2, w + .6, DK, y - .4); } };
+    for (const y of [3.4, 8]) { bx(CA, 0, kw + .35, .4, kd + .35, DK, y + 3.1 - (y > 5 ? 0 : 0) - 1.3); }
+    for (const sg of [-1, 1]) { for (const b of [-9, -6, -3, 3, 6, 9]) for (const y of [3.4, 8]) { if (sg < 0 && y < 5 && Math.abs(b) < 4) continue; win2(CA + sg * kd / 2, b, y, 'a', sg); } for (const a of [CA - 5, CA, CA + 5]) for (const y of [3.4, 8]) win2(a, sg * kw / 2, y, 'b', sg); }
+    for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) { const sa = aa < CA ? -1 : 1, sb = bb < 0 ? -1 : 1; for (const y of [4, 9, 14, 19.5]) { const p = L(aa + sa * 2.1, bb + sb * 2.1); st.box(p.x, y - .9, p.z, 1.2, .35, 1.2, DK, ry + Math.PI / 4 * sa * sb); lamp.box(p.x, y, p.z, .9, 1.7, .1, 0xffe9a0, ry + Math.PI / 4 * sa * sb * -1 * -1); } bx(aa, bb, 7, .5, 7, DK, 17.4, Math.PI / 4); }
+    for (let k = 0; k < 4; k++) bx(CA - kd / 2 - 1 - k * .5, 0, 7 - k * .2, .22, .9 + (3 - k) * .0 + .5, k % 2 ? 0xe8b0cc : 0xfff0fa, k * .22 - .0, 0);
+    for (const sd of [-1, 1]) { bx(CA - kd / 2 - .1, sd * 2.9, 1.1, 8.2, 1.1, WH, 0); bx(CA - kd / 2 - .1, sd * 2.9, 1.5, .4, 1.5, DK, 8.2); }
+    bx(CA - kd / 2 - .4, 0, 7.2, .5, 1.6, DK, 7.6); bx(CA - kd / 2 - .9, 0, 7.4, 1, 1.4, WH, 7.1); for (let k = -3; k <= 3; k++) bx(CA - kd / 2 - 1.5, k * 1.1, .3, 1.3, .3, WH, 8.1);
+    M.shadeR.push([L(CA, 0), kw, kd, H + 4]); for (const [aa, bb] of [[CA - kd / 2, -kw / 2], [CA - kd / 2, kw / 2], [CA + kd / 2, -kw / 2], [CA + kd / 2, kw / 2]]) M.shade.push([L(aa, bb), 4.2, 18]); M.shade.push([L(CA + 2, 0), 5.2, 26]);
   }
   /* ---- Eisreich „Frostgipfel“: begehbarer Eisberg (Stufen), Kristalle, Schneedecke, Schneemann ---- */
   { hill(-10, -52, 14, 8, .8, 1.6, 0xf4fbff, 0xcdeaff); for (let i = 0; i < 9; i++) { const g = i / 9 * TAU, d = i ? 3 + (i % 3) * 2.4 : 0, a = -10 + Math.sin(g) * d, b = -52 + Math.cos(g) * d, h = 4 + (i * 7 % 5) + (i ? 0 : 6); cone(a, b, 1.2 + (i ? .3 : 1), h, [0xbfeaff, 0xa0dcff, 0xe0f6ff][i % 3], 6.4, 6); glow(a, b, 6.4 + h + .4, .22, 0xdff6ff); }
@@ -141,6 +153,8 @@ BI.buildMaerchenGround = function (c) {
   flowers(-10, -30, 7, 40, 21); flowers(-10, 30, 7, 40, 22); flowers(10, 0, 8, 40, 23); flowers(30, 22, 5, 25, 24); flowers(30, -22, 5, 25, 25);
   for (let i = 0; i < 70; i++) { const a = rn() * TAU, d = 52 + rn() * 17, x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d, pl = M.loc(x, z); if (zones.some(zn => Math.hypot(pl.a - zn[0], pl.b - zn[1]) < zn[2] + 3)) continue; if (Math.abs(pl.b) < 8 && pl.a < 30) continue;
     const h = 2.6 + rn() * 2; st.cyl(x, 0, z, .24, .34, h, 0x8a5a7a, 6); st.sph(x, h + 1.2, z, 1.6 + rn() * .6, [0xff9ad5, 0xb48aff, 0x7fe0ff, 0xffe08a][i % 4], 1, 1, .95, 1); W.addCircle(x, z, .5, false, 3); }
+  /* ---- Wiesenflecken (verschiedene Grüntöne, wie auf der Hauptinsel – damit die Insel nicht flach wirkt) ---- */
+  { const cols = [0x82c174, 0xa6d591, 0x77b869, 0x8cc77d, 0xb4dd8f]; for (let i = 0; i < 70; i++) { const a = rn() * TAU, d = Math.sqrt(rn()) * (M.R - 12), r = 3 + rn() * 7, x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d; st.disc(x, z, r, .024 + (i % 4) * .0008, cols[i % cols.length], 14); } }
 };
 
 BI.createMaerchen = function (G) {
@@ -150,6 +164,16 @@ BI.createMaerchen = function (G) {
   const sg = (txt, p, y, w) => sign(txt, p.x, y, p.z, w);
   sg('🏰 Schloss Sternenglanz', L(38, 0), 36, 12); sg('❄️ Frostgipfel', SP.eis, 14.5, 7); sg('🦁 Königsfels', SP.fels, 16, 7); sg('🏴‍☠️ Salzige Möwe', SP.schiff, 17, 7); sg('🧜 Perlenlagune', SP.lagune, 6, 7);
   sg('🪔 Wüsten-Basar', SP.basar, 11, 7); sg('🌴 Dschungel & Honigwald', SP.dschungel, 14, 9); sg('🧸 Spielzeug-Land', SP.spielzeug, 10, 7); sg('🎃 Gruselhügel', SP.grusel, 10, 7); sg('🏖️ Strand der Träume', SP.strand, 9, 8); sg('🤖 Roboter-Ecke', SP.roboter, 5, 6); sg('⭐ Wunschbrunnen', SP.wunsch, 7, 6); sg('🌙 Nimmerland', SP.nimmer, 20, 8); sg('🕹️ Greifer', SP.greifer, 7.4, 4);
+  /* weiche eingebrannte Schatten (1 Mesh, wie auf der Hauptinsel) + Blumen & Grasbüschel (Instanzen; im Sparmodus weniger) */
+  { const dx = -.83, dz = -.55, b = new BI.Batch(), C = 0x1c2a44;
+    for (const [q, r, h] of M.shade) { const l = h * .5; b.disc(q.x + dx * l, q.z + dz * l, r, .075, C, 10); }
+    for (const [q, w, d, h] of M.shadeR) { const l = h * .5, hw = (w + 1) / 2, hd = (d + 1) / 2; b.quad(q.x + dx * l - M.uz * hw + M.ux * hd, q.z + dz * l + M.ux * hw + M.uz * hd, q.x + dx * l + M.uz * hw + M.ux * hd, q.z + dz * l - M.ux * hw + M.uz * hd, q.x + dx * l + M.uz * hw - M.ux * hd, q.z + dz * l - M.ux * hw - M.uz * hd, q.x + dx * l - M.uz * hw - M.ux * hd, q.z + dz * l + M.ux * hw - M.uz * hd, .072, C); }
+    const m = b.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })); m.frustumCulled = false; m.renderOrder = 1; scene.add(m);
+    let soft = false; try { const gl = G.renderer.getContext(), ex = gl.getExtension('WEBGL_debug_renderer_info'); soft = !!ex && /swiftshader|llvmpipe|software/i.test(String(gl.getParameter(ex.UNMASKED_RENDERER_WEBGL))); } catch (e) { }
+    if (!soft) { const eco = !!save.eco, rr = BI.rng(909), mt = BI.mat(), fl = new BI.Batch(), tf = new BI.Batch(); fl.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); for (let k = 0; k < 5; k++) { const a = k / 5 * TAU; fl.sph(Math.sin(a) * .105, .38, Math.cos(a) * .105, .095, 0xffffff, 0, 1, .45, 1); } fl.sph(0, .405, 0, .065, 0xffd23f, 0, 1, .6, 1); for (let k = 0; k < 3; k++) tf.cone(Math.sin(k * 2.1) * .07, 0, Math.cos(k * 2.1) * .07, .09, .42 + k * .05, 0x5cc04a, 4);
+      const put = (bt, n, cols) => { const im = new THREE.InstancedMesh(bt.mesh(mt).geometry, mt, n), o = new THREE.Object3D(), cl = new THREE.Color(); let c = 0; for (let t = 0; t < n * 6 && c < n; t++) { const a = rr() * TAU, d = Math.sqrt(rr()) * (M.R - 8), x = M.x + Math.sin(a) * d, z = M.z + Math.cos(a) * d; if (!W.free(x, z, .5) || W.groundY(x, z) > .05) continue; o.position.set(x, 0, z); o.rotation.y = rr() * 6; o.scale.setScalar(.8 + rr() * .6); o.updateMatrix(); im.setMatrixAt(c, o.matrix); if (cols) { cl.setHex(cols[c % cols.length]); im.setColorAt(c, cl); } c++; } im.count = c; im.frustumCulled = false; scene.add(im); };
+      put(fl, eco ? 80 : 220, [0xffffff, 0xff8fc8, 0xffd23f, 0xb48aff, 0x7fe0ff]); put(tf, eco ? 120 : 340, null); }
+  }
   /* fliegender Teppich, Glühfeen und Schmetterlinge (instanziert), Mäuserich Willi am Tor */
   const carpet = (() => { const b = new BI.Batch(); b.box(0, 0, 0, 3.2, .12, 1.8, 0x8a2ad8); b.box(0, .12, 0, 2.8, .04, 1.4, 0xffd23f); for (const sd of [-1, 1]) b.box(sd * 1.7, 0, 0, .1, .1, 1.8, 0xffd23f); const m = b.mesh(BI.mat()), q = L(12, -40); m.position.set(q.x, 1.4, q.z); m.rotation.y = Math.atan2(M.ux, M.uz) + Math.PI / 2; scene.add(m); return m; })();
   const orbs = new THREE.InstancedMesh(new THREE.SphereGeometry(.22, 6, 5), new THREE.MeshBasicMaterial({ color: 0xfff7b0, fog: false }), 18), dm = new THREE.Object3D(); orbs.frustumCulled = false; scene.add(orbs);

@@ -95,6 +95,11 @@ Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richti
 - 🌙 **Nimmerland** (Mondhügel mit Baumhaus-Versteck, Sterne, Uhr-Turm, Teich): Fee Glimmer streut **Feenstaub** (Knopf ✨ → 14 s schweben, +1 ⭐ beim ersten Mal), Junge Pit, Krokodil Tick-Tack · 🐾 Elch Fridolin im Frostgipfel · 🕹️ **Greifer** im Spielzeug-Land (Preis gewinnen, die ersten 5 = je +1 ⭐) · 🎶 **Ukulele** am Strand (Melodie, +1 ⭐ einmal).
 - **32 ansprechbare Figuren** mit kurzen, leichten Sätzen (werden vorgelesen), Spielautomat **„Sternschnuppen“**, Musik „Märchen-Zauber“, alle Orte im 🧭-Menü (Reiter „Orte“) und im 📋 Log. Technik: `js/maerchen.js` (Stufenhügel/Deck über `M.floor` → `W.groundY` in `world.js`), Test `tests/maerchen.mjs`.
 
+**Optik (neu):** weiche eingebrannte Schatten unter Bäumen/Schloss, Wiesenflecken in mehreren Grüntönen, Blumen & Grasbüschel (Instanzen, nur mit Grafikchip), zweilagige Baumkronen; Schloss mit Fensterrahmen, Steinbändern, Treppe, Torbogen und Balkon.
+
+## Begehbare öffentliche Gebäude 🏥🚓🚒🏛️🏫🍦🚉
+Krankenhaus, Polizei, Feuerwehr, Rathaus, Schule, Eisdiele sowie die Bahnhöfe Hauptbahnhof und Südhalt sind jetzt innen begehbar (Tür, Möbel, Figur zum Reden; Dach verschwindet drinnen). Baustein: `BI.buildEnterable(..., { civic, npc, flat, roofExtra, gap })` in `js/town.js`. Noch nicht begehbar: die Bahnhöfe Strand/Leuchtturm (quer gebaut), einige Gebäude auf den Nebeninseln. Test: `tests/gebaeude.mjs`.
+
 ## Schatzsuche 🗺️🧰 (alle Inseln)
 **Schatzmeister Piet** (Hauptinsel nahe dem Start, Knopf „🗺️ Schatzsuche starten“) gibt das erste Bilder-Rätsel (wird vorgelesen). Eine **goldene Lichtsäule** zeigt schon von Weitem, wo die Kiste steht; der Pfeil 👣 führt zur Insel. Jede Kiste = +1 ⭐ und das nächste Rätsel: Freizeitpark → Fußball-Arena → Märchenland → Funkwelle → Drachenhöhen → Regenbogenwelt → Lunaris → Atlantis (großer Schatz +10 ⭐, Sticker „Schatzjäger“; danach geht es von vorn, dann +5 ⭐). Immer nur **eine** Kiste und **ein** Strahl (sparsam). Datei `js/schatz.js`, Test `tests/schatz.mjs`.
 
