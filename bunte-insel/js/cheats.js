@@ -29,7 +29,7 @@ BI.createCheats = function (G) {
   function unlockAll() {
     const S0 = S(); S0.open = true; let n = 0;
     for (const id of G.stickerIds()) if (!(save.stk || (save.stk = [])).includes(id)) { save.stk.push(id); n++; }
-    if (G.finishStory) G.finishStory();
+    if (G.finishStory) G.finishStory(); if (G.unlockPets) G.unlockPets();
     for (const it of G.shopIds()) if (!save.owned.includes(it)) save.owned.push(it);
     persist(); G.applyStory && G.applyStory(); return n;
   }

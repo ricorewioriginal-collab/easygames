@@ -36,6 +36,7 @@ BI.createStory = function (G) {
   function next() { const c = K.chapter(); return c ? c.tasks.find(t => !done(t)) : null; }
   function renderChip() {
     const fq = G.farmGoal ? G.farmGoal() : ''; if (fq) { $('qcIcon').textContent = '🚜'; $('qcTitle').textContent = 'Hof-Aufgabe'; $('qcText').textContent = fq; return; } /* eine Anzeige oben: Hof-Aufgabe, sonst nächstes Inselreise-Ziel */
+    { const ig = G.islandGoal ? G.islandGoal() : null; if (ig) { $('qcIcon').textContent = ig.icon; $('qcTitle').textContent = '📜 ' + ig.title; $('qcText').textContent = ig.text; return; } }
     const c = K.chapter(); if (!c) { chip.hidden = true; return; } const n = next(), k = c.tasks.filter(done).length;
     $('qcIcon').textContent = n ? n[2] : c.icon; $('qcTitle').textContent = 'Kapitel ' + (S().c + 1) + '/' + ST.length + ' · ' + c.name + ' (' + k + '/3)'; $('qcText').textContent = n ? n[3] : '';
   }

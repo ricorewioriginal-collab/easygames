@@ -6,15 +6,16 @@
 
 1. 📖 Die Inselreise Schritt für Schritt
 2. 🔓 Story: Welten freischalten
-3. 🗿 Rätsel-Insel der Uralten
-4. 🗝️ Schlüsselreich
-5. 🧽 Schwammi-Bucht
-6. 🎠 Märchenland
-7. 🌊 Weitere Welten
-8. 📋 Alle Aufgaben der Welten
-9. 🏅 Alle Sticker
-10. 🔑 Geheimcodes
-11. 💡 Tipps und Tricks
+3. 📜 Inselgeschichten
+4. 🗿 Rätsel-Insel der Uralten
+5. 🗝️ Schlüsselreich
+6. 🧽 Schwammi-Bucht
+7. 🎠 Märchenland
+8. 🌊 Weitere Welten
+9. 📋 Alle Aufgaben der Welten
+10. 🏅 Alle Sticker
+11. 🔑 Geheimcodes
+12. 💡 Tipps und Tricks
 
 ---
 
@@ -192,6 +193,49 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 
 ---
 
+## 📜 Inselgeschichten
+
+Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. Jeder Akt hat ein Ziel (ein Sticker); schon Geschafftes zählt gleich mit. Pro Akt +3 ⭐, am Ende +10 ⭐ und ein Sticker. Der Aufgaben-Chip oben zeigt den nächsten Akt, solange du auf der Insel bist.
+
+### 🗿 Die Prüfung der Uralten – erzählt von Kapselmeisterin Pim
+
+- Akt 1: Schaffe alle Rätsel im Prüfungsturm (Block, Pfeil, Bombe, Enterhaken) → 🏆 Turm-Bezwinger
+- Akt 2: Wähle am Kapsel-Schrein ein Ei und schmiede ein Silberschwert → 🥚 Kapsel-Freund + ⚒️ Schwertschmied
+- Akt 3: Steige in die Uralte Höhle hinab → 🕳️ Höhlenforscher
+- Akt 4: Besiege Titan Kron im Verbotenen Wald → 🗿 Titanen-Bezwinger
+
+### 🗝️ Das Licht der Schlüssel – erzählt von Lichtwanderer Lio
+
+- Akt 1: Zünde 12 Laternen mit dem Lichtschlüssel an → 🔦 Laternenanzünder
+- Akt 2: Sammle alle Sterne der Ringstraße und flieg mit dem Schlüsselschwert-Mobil → 🚗 Rundfahrer + 🛹 Schlüsselflieger
+- Akt 3: Öffne das Tor der Herzen im Schlüsselreich → 🌟 Lichtwanderer
+- Akt 4: Besiege den Dunkelriesen im Verbotenen Wald → 👑 Schlüsselträger
+
+### 🧽 Das Geheimrezept der Knusper-Krabbe – erzählt von Schwammi
+
+- Akt 1: Iss drei verschiedene Gerichte in der Knusper-Krabbe → 🦀 Stammgast
+- Akt 2: Fang 15 Quallen und übe zehnmal Karate bei Sunny → 🪼 Quallenfischer + 🥋 Karate-Kind
+- Akt 3: Besiege Planktos Riesen-Roboter im Verbotenen Wald → 🧪 Plankto-Bezwinger
+
+### 🎠 Das verlorene Märchenbuch – erzählt von Fee Glimmer
+
+- Akt 1: Fahr mit dem Märchen-Karussell und dem Schwanenboot → 🎠 Karussell-Kind + 🦢 Schwanenkapitän
+- Akt 2: Rutsch vom Frostgipfel und lauf beim Märchen-Umzug mit → 🛷 Eisrutscher + 🎭 Umzugsläufer
+- Akt 3: Fülle das Stempelheft und starte die Schloss-Show → 🔖 Stempelsammler + 🎆 Showstar
+
+### 🎡 Der Traumpark – erzählt von Parkchef Bruno
+
+- Akt 1: Fahr eine Attraktion im Freizeitpark → 🎡 Freizeitpark-Fan
+- Akt 2: Baue etwas im Park und schließe eine Park-Mission ab → 🔨 Parkbauer + 📋 Park-Manager
+- Akt 3: Erreiche 3 Sterne Parkbewertung und schaffe alle Park-Missionen → 🌟 Sterne-Park + 👑 Parkdirektor
+
+### 🧱 Die Stadt aus Blöcken – erzählt von Baumeisterin Berta
+
+- Akt 1: Bau ein Teil (Bauen-Knopf 🧱) → 🏠 Baumeister
+- Akt 2: Schaffe deinen selbst gebauten Parcours → 🧗 Parcours-Baumeister
+
+---
+
 ## 🗿 Rätsel-Insel der Uralten
 
 Brücke im Süden. Zelda-/Lufia-Gefühl: Rätsel im Prüfungsturm, Dorf, Schmiede, Kapsel-Schrein und die Uralte Höhle.
@@ -199,7 +243,7 @@ Brücke im Süden. Zelda-/Lufia-Gefühl: Rätsel im Prüfungsturm, Dorf, Schmied
 - Truhe in der Vorhalle des Prüfungsturms öffnen → Bomben.
 - Raum 1 – Block-Rätsel: den Block (Aktion „Block schieben“) zuerst nach oben, dann auf die leuchtende Platte (Lichtstrahl, Schild „Block hierher schieben!“) schieben → Tor A öffnet, dahinter die Bogen-Truhe.
 - Raum 2: mit dem Bogen den blauen Kristall treffen (von weit weg zielen) → Wasser/Tor öffnet sich.
-- Rissige Wand: Bombe legen und warten → dahinter die Truhe mit dem Enterhaken.
+- Rissige Wand: in Raum 2 leuchtet an der Seitenwand eine Platte mit Rissen und dem Schild „💣 Rissige Wand“. Davorstellen, A „Bombe legen“, Abstand halten → Wand bricht, dahinter die Truhe mit dem Enterhaken.
 - Abgrund: an den Haken-Pfosten „Enterhaken“ benutzen und hinüberschwingen → Schatz des Turms.
 - Kapsel-Schrein: ein Ei wählen, Kapselmonster füttern (Futter aus Truhen/Läden) bis Stufe 5.
 - Schmiede: Schwert gegen ⭐ verbessern. Dorf: 6 Schatztruhen im Umland.
@@ -401,6 +445,15 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 - 🏘️ 20 verschiedene Gebäude betreten
 - 🎁 Schatztruhen in Gebäuden öffnen: 0 von 10
 
+### 📜 Inselgeschichten
+
+- 🗿 Die Prüfung der Uralten – noch nicht begonnen (geh auf die Insel)
+- 🗝️ Das Licht der Schlüssel – noch nicht begonnen (geh auf die Insel)
+- 🧽 Das Geheimrezept der Knusper-Krabbe – noch nicht begonnen (geh auf die Insel)
+- 🎠 Das verlorene Märchenbuch – noch nicht begonnen (geh auf die Insel)
+- 🎡 Der Traumpark – noch nicht begonnen (geh auf die Insel)
+- 🧱 Die Stadt aus Blöcken – noch nicht begonnen (geh auf die Insel)
+
 ---
 
 ## 🏅 Alle Sticker
@@ -490,6 +543,12 @@ So bekommst du jeden Sticker:
 | ⚒️ Schwertschmied | Schmiede ein Silberschwert |
 | 🕳️ Höhlenforscher | Betritt die Uralte Höhle |
 | 🚪 Türöffner | Betritt 5 Gebäude |
+| 🗿 Held der Uralten | Schaffe die Geschichte der Rätsel-Insel (Die Prüfung der Uralten) |
+| 🗝️ Schlüsselheld | Schaffe die Geschichte des Schlüsselreichs (Das Licht der Schlüssel) |
+| 🧽 Rezept-Retter | Schaffe die Geschichte der Schwammi-Bucht (Das Geheimrezept) |
+| 📖 Märchenretter | Schaffe die Geschichte des Märchenlands (Das verlorene Märchenbuch) |
+| 🎡 Traumpark-Chef | Schaffe die Geschichte des Freizeitparks (Der Traumpark) |
+| 🧱 Block-Baumeister | Schaffe die Geschichte vom Bauland (Die Stadt aus Blöcken) |
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |
 | 🗺️ Weltenbummler | Betritt 40 Gebäude |
 | 🎁 Truhenfinder | Öffne 10 Schatztruhen in Gebäuden |
