@@ -61,5 +61,12 @@ const tgt = await TV.evaluate(() => { const b = document.querySelector('#funBar 
 await TV.evaluate(t => { const p = __bi.tv.dbg.ptr; p.x = t.x - 2; p.y = t.y - 2; }, tgt); await C1.dispatchEvent('#bA', 'pointerdown', { pointerId: 6, bubbles: true }); await sl(80); await C1.dispatchEvent('#bA', 'pointerup', { pointerId: 6, bubbles: true }); await sl(700);
 ok(await TV.evaluate(() => document.getElementById('funBar').hidden), 'Zeiger + Klick am Handy drückt die Schaltfläche am Fernseher (Leiste schließt sich)');
 /* Trennen */ await C2.click('#menuBtn'); await C2.click('[data-k=leave]'); await sl(700); ok(await TV.evaluate(() => __bi.tv.count() === 1 && !__bi.tv.split && __bi.tv.dbg.views().length === 0), 'Spieler 2 trennt: Mitspieler weg, Splitscreen aus');
+/* Handy öffnet das NORMALE Spiel → Mitspielen → Beitreten → Fernseher-Code: wird automatisch zum Controller */
+{ const PH = await mk(844, 390, true); await PH.goto(BASE + '/bunte-insel/index.html'); await PH.waitForFunction(() => window.__bi, null, { timeout: 60000 });
+  await PH.evaluate(() => { document.getElementById('bMulti').click(); }); await sl(300); await PH.evaluate(() => document.getElementById('mpJoin').click()); await sl(200);
+  ok(await PH.evaluate(() => /Fernseher/.test(document.getElementById('mpStatus').textContent)), 'Beitreten-Dialog erklärt: Fernseher-Codes gehen auch');
+  await PH.evaluate(c => { const b = [...document.querySelectorAll('#mpPad button')]; for (const ch of c) b.find(x => x.textContent === ch).click(); [...document.querySelectorAll('#mpPad button.go')][0].click(); }, code);
+  await PH.waitForURL(/controller\.html\?c=/, { timeout: 15000 }).catch(() => { }); ok(/controller\.html\?c=/.test(PH.url()), 'Fernseher-Code im „Mitspielen“-Dialog öffnet den Controller (' + PH.url().split('/').pop() + ')');
+  await PH.waitForFunction(() => window.__ctl && window.__ctl.slot >= 0, null, { timeout: 10000 }).catch(() => { }); ok(await PH.evaluate(() => !!window.__ctl && window.__ctl.slot >= 0), 'Das Handy ist am Fernseher als Controller verbunden (Platz ' + await PH.evaluate(() => window.__ctl && window.__ctl.slot) + ')'); }
 for (const e of errs.slice(0, 10)) console.log('ERR ', e); ok(errs.length === 0, 'Keine Seitenfehler');
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);
