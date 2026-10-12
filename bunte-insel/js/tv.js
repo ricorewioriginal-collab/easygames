@@ -80,11 +80,11 @@ BI.createTv = function (G) {
       await lib('https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js', () => !!window.Peer);
       let code = '', p = null;
       for (let k = 0; k < 6 && !p; k++) {
-        code = ''; for (let j = 0; j < 4; j++) code += ALPHA[(Math.random() * ALPHA.length) | 0];
+        let sv = ''; try { sv = k === 0 ? (localStorage.getItem('bi-tv-mycode') || '') : ''; } catch (e) { } code = /^[A-Z2-9]{4}$/.test(sv) ? sv : ''; if (!code) for (let j = 0; j < 4; j++) code += ALPHA[(Math.random() * ALPHA.length) | 0]; /* gleicher Fernseher = gleicher Code: das Handy verbindet sich beim nächsten Mal von allein */
         const r = await new Promise(res => { const q = new Peer(PRE + code); let done = false; q.on('open', () => { done = true; res(q); }); q.on('error', e => { if (!done) { done = true; try { q.destroy(); } catch (x) { } res(e && e.type === 'unavailable-id' ? null : 'err'); } }); });
         if (r === 'err') throw new Error('broker'); p = r;
       }
-      if (!p) throw new Error('code'); peer = p; T.code = code; T.on = true; T.busy = false;
+      if (!p) throw new Error('code'); peer = p; T.code = code; T.on = true; T.busy = false; try { localStorage.setItem('bi-tv-mycode', code); } catch (e) { }
       peer.on('connection', addConn); peer.on('disconnected', () => { try { peer.reconnect(); } catch (e) { } });
       document.body.classList.add('tv'); chip.hidden = false; openPanel(true); renderPanel();
       const u = new URL('controller.html?c=' + code, location.href).href;
@@ -244,6 +244,9 @@ BI.createTv = function (G) {
   T.count = () => players().length;
   T.dbg = { slots, ptr, views: () => views, onData, addConn };
   /* Am Fernseher (Smart-TV, ?tv=1, ?device=tv) startet der Fernseher-Modus von selbst */
+  /* Handy/Tablet in der Hand (kein Fernseher): „Spiel am Fernseher öffnen“ öffnet direkt den Handy-Controller */
+  T.isPhone = () => !T.isTvDevice() && !!(window.matchMedia && matchMedia('(pointer:coarse)').matches) && Math.min(screen.width, screen.height) < 900;
+  T.openController = () => { let c = ''; try { c = localStorage.getItem('bi-tv-last') || ''; } catch (e) { } location.href = new URL('controller.html' + (c ? '?c=' + c : ''), location.href).href; };
   T.isTvDevice = () => /[?&](tv=1|device=tv)\b/.test(location.search) || /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|AFTS|AFTM|AFTB|AFTT|AFTN|Android TV|GoogleTV|AppleTV|BRAVIA|CrKey|Viera|Roku|VIDAA|Fire TV|FireTV/i.test(navigator.userAgent);
   return T;
 };
