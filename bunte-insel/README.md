@@ -397,3 +397,9 @@ Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verlie
 - 6 rote/blaue **Schatztruhen** rund ums Dorf (eine hinter einem Fels, den man sprengen muss), schwebende Titanen-Festung am Himmel, 12 Aufgaben, 7 neue Sticker.
 - **Verbotener Wald**: 5. Boss **Titan Kron** (steinerner Riese).
 - **Strand & Meer überall**: man kann jetzt von jedem Strand der Hauptinsel und aller Inseln ins Meer und rundherum **schwimmen** (keine unsichtbaren Mauern mehr, `tests/meer.mjs`). Märchenland: breite Basar-Gassen, **Märchen-Taxi** (Taxifahrer Theo) mit Straße.
+
+### 🚪 Gebäude betreten – Open-World-Prinzip (`js/innen.js`)
+- Massive Gebäude aller Welten (Rätsel-Insel, Schlüsselreich, Märchenland, Schwammi-Bucht, Badestrand, Zotik, Bauland, Park, Dampfer) haben eine **goldene Türmatte** (`BI.registerDoors`, Tür wird automatisch an der Gebäudekante gefunden). Stadt, Fellretter-Bucht & Co. waren schon hohl/begehbar.
+- „Betreten“ → eigener kleiner **Innenraum** (Puppenstube, weit draußen bei x≥3000, erst beim ersten Betreten gebaut). Je nach Gebäude: Bett, Tisch (Snack ⭐), Bücherregal (Tipps), **Schatztruhe** (einmal pro Haus, ⭐ + Futter), Bewohner zum Reden, Laden (einkaufen), Schmiede (hämmern), Fernrohr, Kristallkugel, Kamin, Thron, Pokal …
+- Die **Uralte Höhle** der Rätsel-Insel ist ein Höhlenraum mit Abstieg ins Mini-Spiel. Das Block-Rätsel hat jetzt eine leuchtende Zielplatte mit Lichtstrahl und Schild.
+- Sticker: Türöffner (5), Dorfentdecker (20), Weltenbummler (40), Truhenfinder (10). Aufgabenliste „🚪 Gebäude erkunden“. Test: `node bunte-insel/tests/innen.mjs`.
