@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Spiel-Vorlage</title>
+<style>
+  html,body{margin:0;height:100%;background:#080B12;color:#fff;font-family:system-ui,sans-serif}
+  body{display:flex;align-items:center;justify-content:center;text-align:center;padding:env(safe-area-inset-top) 16px}
+  h1{margin:0 0 8px} p{margin:6px 0;color:#9fb4c8} code{background:#04070d;padding:2px 8px;border-radius:8px;color:#9ff}
+  button{height:48px;padding:0 22px;border:0;border-radius:999px;font:700 16px system-ui;background:#00E5FF;color:#04141a}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<!-- Beim Kopieren: Pfade anpassen (aus tools/spiel-vorlage/ liegen die Dateien zwei Ebenen höher) -->
+<script src="../../device.js"></script>
+<script src="../../gamekit.js"></script>
+<script>
+const app = document.getElementById('app');
+const show = html => { app.innerHTML = html; };
+EasyGamesKit.start({
+  // Handy wurde per QR-Code eingeladen
+  controller: code => show(`<h1>📱 Controller</h1><p>Verbunden mit Raum <code>${code}</code></p><p>Hier kommen Stick und Tasten hin.</p>`),
+  // TV oder ?tv: großer Bildschirm, zeigt QR-Code zum Koppeln
+  host: () => {
+    const room = Math.random().toString(36).slice(2, 6).toUpperCase();
+    show(`<h1>📺 Gastgeber</h1><p>Handys öffnen:</p><p><code>${EasyGamesKit.joinUrl(room)}</code></p><p>Hier kommen Lobby und Spielfeld hin.</p>`);
+    EasyGamesKit.fullscreenOnInput(); EasyGamesKit.keepAwake();
+  },
+  // alles andere: normal spielen
+  solo: () => show(`<h1>🎮 Spiel-Vorlage</h1><p>Normales Spiel am ${EasyGamesKit.device() ? EasyGamesKit.device().type : 'Gerät'}.</p><button id="x">Zurück zur Übersicht</button>`)
+});
+document.addEventListener('click', e => { if (e.target.id === 'x') EasyGamesKit.close(); });
+</script>
+</body>
+</html>

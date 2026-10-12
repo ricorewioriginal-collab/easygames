@@ -239,7 +239,10 @@ const embedMode = new URLSearchParams(location.search).has('embed');
 if (embedMode) document.body.classList.add('embed-mode');
 const params = new URLSearchParams(location.search);
 // Geräteerkennung: device.js (TV, Handy, Tablet, Computer). Erzwingen mit ?device=tv|phone|tablet|desktop, ?tv=1 / ?tv=0
+if (!window.EasyGamesDevice) window.EasyGamesDevice = { get: () => ({ type: 'desktop', role: 'both', input: [], orientation: 'landscape' }), on: () => () => {}, is: () => false };   // device.js fehlt: ohne Erkennung weiterlaufen
 const DEV = EasyGamesDevice.get(), MODES = window.EASYGAMES_MODES || {};
+// Fähigkeiten eines Spiels: modes.js und/oder direkt am Eintrag in games.js (modes: { pad: true, … })
+const modesOf = g => Object.assign({}, MODES[g.id], g.modes);
 const isTv = DEV.type === 'tv';
 if (isTv) document.documentElement.classList.add('tv');
 
@@ -251,7 +254,7 @@ GAMES.forEach((g, i) => {
   b.className = 'tile';
   b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><span class="badges"></span><small></small><span class="play">Spielen ▶</span></div>`;
   b.querySelector('b').textContent = g.title; b.querySelector('small').textContent = g.desc;
-  const m = MODES[g.id] || {}, bd = b.querySelector('.badges');
+  const m = modesOf(g), bd = b.querySelector('.badges');
   [['pad', '📱 Handy-Controller'], ['online', '🌐 Online'], ['multi', '👥 Mehrspieler']].forEach(([k, t]) => { if (m[k]) { const e = document.createElement('i'); e.textContent = t; bd.appendChild(e); } });
   if (!bd.children.length) bd.remove();
   c.dataset.m = Object.keys(m).filter(k => m[k]).join(' ');
@@ -272,6 +275,7 @@ function filt() {
   $('empty').classList.toggle('hidden', n > 0);
 }
 $('q').addEventListener('input', filt);
+$('chips').querySelectorAll('.chip2[data-f]').forEach(b => { if (b.dataset.f && !tiles.some(t => (' ' + t.dataset.m + ' ').includes(' ' + b.dataset.f + ' '))) b.hidden = true; });   // Arten ohne Spiel ausblenden
 $('chips').addEventListener('click', e => {
   const b = e.target.closest('.chip2'); if (!b) return;
   modeF = b.dataset.f; $('chips').querySelectorAll('.chip2').forEach(x => x.setAttribute('aria-pressed', x === b)); filt();
@@ -326,7 +330,8 @@ function goFull() {
   if (document.fullscreenElement || !req) return;
   try { const r = req.call(el); if (r && r.catch) r.catch(() => {}); } catch (e) {}
 }
-const gameUrl = g => abs(g.path) + (isTv && MODES[g.id] && MODES[g.id].tvParam ? '?tv' : '');   // am TV öffnen Spiele wie Kart Rush direkt die Lobby mit QR-Code
+const tvQuery = g => { const p = modesOf(g).tvParam; return isTv && p ? '?' + (typeof p === 'string' ? p.replace(/^\?/, '') : 'tv') : ''; };
+const gameUrl = g => abs(g.path) + tvQuery(g);   // am TV öffnen Spiele wie Kart Rush direkt die Lobby mit QR-Code
 function sendDevice() { try { $('frame').contentWindow.postMessage({ type: 'easygames:device', device: EasyGamesDevice.get() }, '*'); } catch (e) {} }
 EasyGamesDevice.on(() => { if (cur >= 0) sendDevice(); });
 function openGame(i, fromHash) {
@@ -367,7 +372,7 @@ $('frame').addEventListener('load', () => {
     const w = $('frame').contentWindow; w.focus(); try { w.EASYGAMES_DEVICE = EasyGamesDevice.get(); } catch (e) {}
     sendDevice();
     // gleiche Herkunft: TV-/Handy-Zurücktaste auch bei Fokus im Spiel abfangen
-    if (!w.__egk) { w.__egk = 1; w.addEventListener('keydown', e => { if (isBack(e)) { e.preventDefault(); back(); } }, true); }
+    if (!w.__egk) { w.__egk = 1; w.addEventListener('keydown', e => { if (isBack(e) && !w.__egBack) { e.preventDefault(); back(); } }, true); }
   } catch (e) {}
 });
 // Spiele können über postMessage mit der Übersicht sprechen
