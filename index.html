@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080B12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>easygames – Minispiele</title>
 <style>
   *{box-sizing:border-box}
@@ -18,32 +20,62 @@
   button{font:inherit;color:inherit;cursor:pointer}
   .hidden{display:none!important}
   main{max-width:1040px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 18px 56px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
-  h1{margin:0;font-size:clamp(28px,6vw,44px);font-weight:900;font-style:italic;letter-spacing:.01em;
+  header{margin-bottom:22px}
+  h1{margin:0;font-size:clamp(34px,7vw,60px);font-weight:900;letter-spacing:-.01em;line-height:1.05;
     background:linear-gradient(90deg,var(--cy),var(--pu),var(--ma));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .brandrow{display:flex;align-items:center;gap:16px}
+  .brandrow{display:flex;align-items:center;gap:18px}
   [hidden]{display:none!important}
   .brand{max-height:64px;max-width:200px;width:auto;height:auto;filter:drop-shadow(0 0 12px rgba(255,255,255,.25))}
-  .sub{margin:2px 0 0;color:#9fb4c8;font-size:15px}
-  .pill{border:1px solid rgba(0,229,255,.45);background:rgba(255,255,255,.04);border-radius:999px;padding:9px 18px;font-weight:700;font-size:14px;color:var(--cy)}
-  .pill:hover{background:rgba(0,229,255,.12)}
+  .sub{margin:6px 0 0;color:#9fb4c8;font-size:16px}
+  .bar2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;height:46px;padding:0 16px 0 44px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);
+    color:#fff;font:inherit;font-size:15px;backdrop-filter:blur(8px);transition:border-color .2s,box-shadow .2s}
+  .search input::placeholder{color:#7f93a8}
+  .search input:focus{outline:0;border-color:var(--cy);box-shadow:0 0 0 3px rgba(0,229,255,.18)}
+  .search::before{content:'🔍';position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.7;pointer-events:none}
+  .count{color:#9fb4c8;font-size:14px;white-space:nowrap}
+  .pill{height:46px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);border-radius:999px;padding:0 18px;font-weight:700;font-size:14px;color:var(--cy);backdrop-filter:blur(8px);transition:background .2s,border-color .2s}
+  .pill:hover{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.5)}
+  .empty{text-align:center;color:#9fb4c8;padding:40px 0}
 
-  /* App-Kacheln */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:26px 18px}
-  .tile{display:flex;flex-direction:column;align-items:center;gap:10px;background:none;border:0;padding:6px;text-align:center;border-radius:20px;
-    transition:transform .15s}
-  .tile:hover{transform:translateY(-4px)}
-  .tile:active{transform:scale(.96)}
-  .tile:focus-visible{outline:2px solid var(--cy);outline-offset:4px}
-  .icon{position:relative;width:min(100%,132px);aspect-ratio:1;border-radius:28%;display:flex;align-items:center;justify-content:center;
-    font-size:clamp(46px,9vw,64px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 28px var(--g,rgba(0,229,255,.35)),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -10px 22px rgba(0,0,0,.25);overflow:hidden}
-  .icon::after{content:'';position:absolute;inset:0 0 55% 0;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,0))}
-  .icon span{filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));position:relative;z-index:1}
-  .icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
-  .icon.has-img::after{opacity:.22}
-  .tile b{font-size:16px}
-  .tile small{color:#9fb4c8;font-size:12.5px;line-height:1.35;max-width:170px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  /* Spiele-Karten */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+  .card{min-width:0;position:relative;content-visibility:auto;contain-intrinsic-size:auto 340px}
+  .tile{width:100%;height:100%;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;text-align:left;overflow:hidden;
+    background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);border-radius:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s;}
+  .tile:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.28);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 34px var(--g,rgba(0,229,255,.35))}
+  .tile:active{transform:scale(.98)}
+  .tile:focus-visible{outline:2px solid var(--cy);outline-offset:3px}
+  .icon{position:relative;width:100%;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(52px,9vw,68px);overflow:hidden}
+  .icon::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 45%,rgba(8,11,18,.45))}
+  .icon span{filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));position:relative;z-index:1;transition:transform .3s}
+  .icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
+  .tile:hover .icon img,.tile:hover .icon span{transform:scale(1.07)}
+  .icon.has-img::after{background:linear-gradient(180deg,rgba(255,255,255,0) 55%,rgba(8,11,18,.5))}
+  .info{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px;flex:1}
+  .tile b{font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+  .tile small{color:#9fb4c8;font-size:13px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .play{margin-top:auto;padding-top:6px;font-size:13px;font-weight:800;color:var(--cy);opacity:.85;transition:opacity .2s,letter-spacing .2s}
+  .tile:hover .play{opacity:1;letter-spacing:.03em}
   .ext{position:absolute;top:8px;right:8px;z-index:2;font-size:11px;background:rgba(0,0,0,.45);border-radius:8px;padding:1px 6px}
+  .help{position:absolute;top:10px;right:10px;z-index:3;height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3);
+    background:rgba(8,11,18,.62);backdrop-filter:blur(6px);font-size:12.5px;font-weight:700;color:#fff;transition:background .2s,border-color .2s}
+  .help:hover,.help:focus-visible{background:rgba(0,229,255,.28);border-color:var(--cy);outline:0}
+  #guide{position:fixed;inset:0;z-index:40;display:flex;padding:16px;background:rgba(4,6,12,.8);overflow:auto}
+  #guide .box{margin:auto;width:100%;max-width:640px;background:#0c1220;border:1px solid rgba(0,229,255,.4);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:6px}
+  #guide h3{margin:0;font-size:22px}
+  #guide h4{margin:14px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)}
+  #guide p{margin:0;color:#d5e2ee}
+  #guide ul{margin:0;padding-left:20px;color:#d5e2ee}
+  #guide li{margin:3px 0}
+  .snip{margin-top:10px}
+  .snip h4{margin:12px 0 4px;font-size:13px;color:#9fb4c8;font-weight:700}
+  footer{margin-top:44px;text-align:center;color:#6f8399;font-size:13px}
+  @media (max-width:480px){.help{font-size:0;width:40px;padding:0;top:8px;right:8px}.help::before{content:'📖';font-size:17px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.info{padding:10px 12px 12px}.tile b{font-size:15px}.tile small{-webkit-line-clamp:2;font-size:12px}.icon{aspect-ratio:1}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
   section.lib{margin-top:44px;background:rgba(255,255,255,.04);border:1px solid rgba(0,229,255,.22);border-radius:18px;padding:16px}
   section.lib h2{margin:0 0 4px;font-size:18px}
@@ -52,17 +84,52 @@
   .primary{border:0;color:#04141a;font-weight:800;background:linear-gradient(90deg,var(--cy),var(--pu),var(--ma));border-radius:999px;padding:10px 22px}
 
   /* App-Fenster */
-  #viewer{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;background:rgba(4,6,12,.86);backdrop-filter:blur(6px)}
-  #win{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;background:#080B12;overflow:hidden}
-  @media (min-width:900px) and (min-height:640px){#viewer{padding:3vh 3vw}#win{border-radius:20px;border:1px solid rgba(0,229,255,.4);box-shadow:0 0 60px rgba(0,229,255,.2)}}
-  #bar{display:flex;align-items:center;gap:8px;padding:8px 10px calc(8px) 10px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);padding-top:calc(8px + env(safe-area-inset-top))}
+  #viewer{position:fixed;inset:0;height:100vh;height:100dvh;z-index:20;display:flex;flex-direction:column;background:#000;overscroll-behavior:none}
+  #win{position:relative;display:flex;flex-direction:column;flex:1;min-height:0;margin:0;background:#000;overflow:hidden}
+  #bar{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:8px;padding:8px 10px;
+    padding-top:calc(8px + env(safe-area-inset-top));padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right));
+    background:rgba(8,11,18,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.12);
+    transform:translateY(-105%);transition:transform .22s;visibility:hidden}
+  .bar-on #bar{transform:none;visibility:visible}
   #bar .t{flex:1;min-width:0;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
-  .ib{height:40px;min-width:40px;padding:0 12px;border-radius:12px;border:1px solid rgba(0,229,255,.4);background:rgba(255,255,255,.04);font-weight:700;font-size:14px;white-space:nowrap}
+  #vTab{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:4;width:84px;height:28px;padding:0;border:0;border-radius:0 0 16px 16px;
+    background:rgba(8,11,18,.55);color:#fff;font-size:15px;line-height:1;opacity:.55;transition:opacity .2s}
+  #vTab:hover,#vTab:focus-visible{opacity:1;outline:0;background:rgba(0,229,255,.4)}
+  .bar-on #vTab{display:none}
+  .ib{height:44px;min-width:44px;padding:0 12px;border-radius:12px;border:1px solid rgba(0,229,255,.4);background:rgba(255,255,255,.04);font-weight:700;font-size:14px;white-space:nowrap}
   .ib:hover{background:rgba(0,229,255,.14)}
   .ib .l{display:none}
   @media (min-width:640px){.ib .l{display:inline}}
-  #frame{flex:1;width:100%;border:0;background:#000;min-height:0}
-  #win:fullscreen{border-radius:0;border:0}
+  #frame{flex:1;width:100%;height:100%;border:0;background:#000;min-height:0}
+  button,a,input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  :focus-visible{outline:3px solid var(--cy);outline-offset:3px}
+  .tile:focus-visible{transform:translateY(-4px) scale(1.03);border-color:var(--cy);box-shadow:0 0 0 3px var(--cy),0 18px 40px rgba(0,0,0,.5),0 0 34px var(--g,rgba(0,229,255,.35));outline:0}
+  @media (pointer:coarse){.help{height:40px;padding:0 14px}#vTab{height:34px;width:96px}}
+  .devhint{margin:14px 0 0;padding:10px 14px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.12));background:rgba(0,229,255,.07);color:#cfe0ee;font-size:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip2{height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#e8f0f7;font-size:14px;font-weight:700}
+  .chip2[aria-pressed=true]{background:linear-gradient(90deg,rgba(0,229,255,.28),rgba(139,92,246,.28));border-color:var(--cy)}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 2px}
+  .badges i{font-style:normal;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.1);color:#cfe0ee}
+  html.tv .chip2{height:52px;font-size:1rem}
+  html.tv .devhint{font-size:1rem}
+  html.tv .badges i{font-size:.8rem}
+  .tvhint{display:none}
+  /* TV: große Ziele, Fernbedienung (Pfeiltasten/OK/Zurück), Overscan-sichere Ränder */
+  html.tv{font-size:20px}
+  html.tv main{max-width:none;padding:4vh 5vw 8vh}
+  html.tv .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+  html.tv .help{display:none}
+  html.tv .tile b{font-size:1.2rem}
+  html.tv .tile small{font-size:.9rem}
+  html.tv .play{font-size:1rem}
+  html.tv .sub{font-size:1.1rem}
+  html.tv .pill,html.tv .search input{height:56px;font-size:1.05rem}
+  html.tv .ib{height:56px;min-width:56px;font-size:1.05rem}
+  html.tv .ib .l{display:inline}
+  html.tv footer{display:none}
+  html.tv .tvhint{display:block;position:fixed;left:0;right:0;bottom:0;padding:10px 5vw calc(10px + env(safe-area-inset-bottom));background:rgba(8,11,18,.9);color:#cfe0ee;font-size:.9rem;text-align:center;z-index:10}
+  body.embed-mode .tvhint{display:none}
 
   /* Teilen */
   #share{position:fixed;inset:0;z-index:30;display:flex;padding:16px;background:rgba(4,6,12,.8);overflow:auto}
@@ -79,27 +146,50 @@
 <main>
   <header class="hide-embed">
     <div class="brandrow"><img id="brandImg" class="brand" alt="Logo" hidden><div><h1>easygames</h1><p class="sub">Kleine Spiele für Browser und Handy – antippen und loslegen.</p></div></div>
-    <button class="pill" id="libBtn">&lt;/&gt; Alle Spiele einbetten</button>
+    <div class="bar2">
+      <label class="search"><input id="q" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" autocomplete="off"></label>
+      <span class="count" id="count"></span>
+      <button class="pill" id="libBtn">&lt;/&gt; Alle Spiele einbetten</button>
+      <a class="pill" href="einbinden.html" style="display:inline-flex;align-items:center;text-decoration:none">❓ Einbinden &amp; Hilfe</a>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Spielarten">
+      <button class="chip2" data-f="" aria-pressed="true">Alle</button>
+      <button class="chip2" data-f="pad" aria-pressed="false">📱 Handy-Controller</button>
+      <button class="chip2" data-f="online" aria-pressed="false">🌐 Online per Code/QR</button>
+      <button class="chip2" data-f="multi" aria-pressed="false">👥 Mehrspieler</button>
+    </div>
+    <p class="devhint" id="devHint"></p>
+    </div>
   </header>
 
   <div class="grid" id="grid"></div>
+  <p class="empty hidden" id="empty">Kein Spiel gefunden.</p>
 
   <section class="lib hide-embed hidden" id="lib">
     <h2>Komplette Spielebibliothek einbetten</h2>
+    <p class="sub"><a href="einbinden.html" style="color:var(--cy)">Ausführliche Hilfe zum Einbinden (Webseite, App, TV, Offline) ▶</a></p>
     <p class="sub" style="margin-bottom:8px">Diesen Code auf einer beliebigen Webseite einfügen – die Kacheln erscheinen dort.</p>
     <textarea id="libCode" readonly></textarea>
     <div class="row" style="margin-top:8px"><button class="primary" data-copy="libCode">Code kopieren</button></div>
+    <h2 style="margin-top:22px">Per JavaScript einbinden</h2>
+    <p class="sub" style="margin-bottom:8px">Einzelne Spiele oder die ganze Bibliothek – mit Variablen oder Attributen. Das Script lädt die Spieleliste selbst.</p>
+    <textarea id="jsCode" readonly style="height:260px"></textarea>
+    <div class="row" style="margin-top:8px"><button class="primary" data-copy="jsCode">Code kopieren</button></div>
   </section>
+  <footer class="hide-embed">easygames · von RicoReWi</footer>
+  <div class="tvhint hide-embed">◀ ▲ ▼ ▶ auswählen · OK spielen · Taste „i“ oder Gelb: Anleitung · Zurück: schließen</div>
 </main>
 
 <div id="viewer" class="hidden">
   <div id="win">
+    <button id="vTab" aria-label="Menü einblenden">⌄</button>
     <div id="bar">
       <button class="ib" id="vClose" aria-label="Schließen">✕<span class="l">&nbsp;Schließen</span></button>
       <button class="ib" id="vPrev" aria-label="Voriges Spiel">◀</button>
       <div class="t" id="vTitle"></div>
       <button class="ib" id="vNext" aria-label="Nächstes Spiel">▶</button>
       <button class="ib" id="vFs" aria-label="Vollbild">⛶<span class="l">&nbsp;Vollbild</span></button>
+      <button class="ib" id="vHelp" aria-label="Anleitung">📖<span class="l">&nbsp;Anleitung</span></button>
       <button class="ib" id="vShare" aria-label="Teilen">⤴<span class="l">&nbsp;Teilen</span></button>
     </div>
     <iframe id="frame" allow="fullscreen; autoplay" title="Spiel"></iframe>
@@ -114,79 +204,26 @@
     <div class="row"><button class="primary" data-copy="sLink">Link kopieren</button><button class="ib" id="sNative">Teilen …</button><a class="ib" id="sOpen" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit">Neuer Tab ↗</a></div>
     <label for="sCode">Einbetten (iframe)</label>
     <textarea id="sCode" readonly></textarea>
-    <div class="row"><button class="primary" data-copy="sCode">Code kopieren</button><button class="ib" id="sClose" style="margin-left:auto">Schließen</button></div>
+    <div class="row"><button class="primary" data-copy="sCode">Code kopieren</button></div>
+    <label for="sJs">Einbetten (JavaScript)</label>
+    <textarea id="sJs" readonly></textarea>
+    <div class="row"><button class="primary" data-copy="sJs">Code kopieren</button><button class="ib" id="sClose" style="margin-left:auto">Schließen</button></div>
   </div>
 </div>
 
-<script>
-// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
-const GAMES = [
-  { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', img: 'zotik/card.png', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)',
-    path: 'zotik/', desc: 'Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik reist durch 10 Welten, Kämpfe, Quests, Bosskämpfe, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.' },
-  { id: 'aeru', title: 'AERU – Die Sterneninseln', icon: '🐉', img: 'aeru/card.png', bg: 'linear-gradient(145deg,#15374f,#65bcae 55%,#efcb93)', glow: 'rgba(101,188,174,.5)',
-    path: 'aeru/', desc: '3D-Drachenabenteuer mit durchgehender Geschichte: 6 Kapitel, zwei Bosskämpfe, Tagebuch und Zielkompass, Flug mit Aufwinden, 144 Splitter. Tastatur oder Touch.' },
-  { id: 'anmacha-radio-surfer', title: 'AnMaCha Radio Surfer', icon: '📻', bg: 'linear-gradient(145deg,#00ff66,#19f0ff)', glow: 'rgba(0,255,150,.5)',
-    path: 'anmacha-radio-surfer/', desc: '3D-Runner durchs Internet: springen, rutschen, ausweichen – 10 Level.' },
-  { id: 'anmacha-radio-match', title: 'AnMaCha Radio-Match 3D', icon: '📡', bg: 'linear-gradient(145deg,#19f0ff,#00ff66 55%,#ff2e88)', glow: 'rgba(25,240,255,.5)',
-    path: 'anmacha-radio-match/', desc: '3D-Match-3 mit Radio-Bauteilen: 100 Level mit wachsendem Raster, Power-ups und 6 Herausforderungen.' },
-  { id: 'anmacha-flipper', title: 'AnMaCha Pinball', icon: '🎱', bg: 'linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-flipper/', desc: '3D-Pinball mit 13 Tischen: Kampagne mit steigender Schwierigkeit oder freies Spiel.' },
-  { id: 'anmacha-beat-surfer', title: 'AnMaCha Beat Surfer', icon: '🎧', bg: 'linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)', glow: 'rgba(255,45,149,.5)',
-    path: 'anmacha-beat-surfer/', desc: '3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.' },
-  { id: 'anmacha-memory', title: 'AnMaCha Memory', icon: '🃏', bg: 'linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)', glow: 'rgba(255,45,149,.5)',
-    path: 'anmacha-memory/', desc: 'Memory mit unseren Sender-Logos: 10 Level mit Mischer & Zeitlimit, freies Spiel und Duell.' },
-  { id: 'anmacha-quest-rpg', title: 'AnMaCha Quest RPG', icon: '⚔️', bg: 'linear-gradient(145deg,#2a3cff,#8B5CF6 55%,#FF9A1F)', glow: 'rgba(80,100,255,.55)',
-    path: 'anmacha-quest-rpg/', desc: '3D-Rollenspiel (Godot): 5 Helden, animierte Monster, Oberwelt, Dungeons mit Schlüsseln, Bosse.' },
-  { id: 'anmacha-snake', title: 'AnMaCha Snake 3D', icon: '🐍', bg: 'linear-gradient(145deg,#00e5ff,#2a6cff 55%,#FF2D95)', glow: 'rgba(0,229,255,.5)',
-    path: 'anmacha-snake/', desc: '3D-Snake: friss Sender-Logos, 13 Welten, Power-ups, Portal-Modus, zwei Kameras.' },
-  { id: 'anmacha-tower-defense', title: 'AnMaCha Tower Defense', icon: '🗼', bg: 'linear-gradient(145deg,#8B5CF6,#2a6cff 50%,#00FFC8)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-tower-defense/', desc: '3D-Tower-Defense: 8 Sender-Logo-Türme, 25 Wellen Rauschen, 3 Karten, Ausbau & Boss-Wellen.' },
-  { id: 'anmacha-quiz', title: 'Machst du mich an? – Das Quiz!', icon: '🎤', img: 'anmacha-quiz/card.png', bg: 'linear-gradient(145deg,#1b2fb3,#8B5CF6 50%,#FF9A1F)', glow: 'rgba(255,154,31,.55)',
-    path: 'anmacha-quiz/', desc: 'TV-Quizshow im 3D-Studio: Leiter bis 1 Mio €, Quiznight, ~600 Fragen, Joker, bis 4 Spieler (auch per Handy gekoppelt).' },
-  { id: 'anmacha-koffer-dealer', title: 'AnMaCha Koffer DEALER', icon: '💼', img: 'anmacha-koffer-dealer/card.png', bg: 'linear-gradient(145deg,#00c9a7,#7a5cff 55%,#ff2d95)', glow: 'rgba(0,201,167,.5)',
-    path: 'anmacha-koffer-dealer/', desc: 'Dealer-Show: 13 Koffer mit Sender-Logos, Funkspruch-Angebote, Handeln – Deal oder Funkstille?' },
-  { id: 'anmacha-showdown', title: 'AnMaCha Showdown', icon: '🎤', img: 'anmacha-showdown/card.png', bg: 'linear-gradient(145deg,#00e5ff,#7a5cff 50%,#ff2d95)', glow: 'rgba(122,92,255,.55)',
-    path: 'anmacha-showdown/', desc: 'Das Mikro-Duell: 7 Mini-Spiele gegen den Moderator oder zu zweit – wer zuerst 15 Punkte hat, gewinnt.' },
-  { id: 'anmacha-gesucht', title: 'AnMaCha Gesucht & Gefunden', icon: '🔎', img: 'anmacha-gesucht/card.png', bg: 'linear-gradient(145deg,#c4143f,#7a3dff 55%,#00e5ff)', glow: 'rgba(196,20,63,.5)',
-    path: 'anmacha-gesucht/', desc: 'Das Ratestudio: Hinweis-Raten, Fragen-Raten, Gesichter-Radar und Stirnband-Party – allein oder mit bis zu 4 Spielern.' },
-  { id: 'anmacha-kart', title: 'AnMaCha Kart Rush', icon: '🏎️', img: 'anmacha-kart/card.png', bg: 'linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)', glow: 'rgba(42,120,232,.55)',
-    path: 'anmacha-kart/', desc: 'Arcade-Kartrennen in 3D: 5 Welten (Strand, Geistergruft, Fantasia …), 6 Karts, 12 Figuren, Bananen, Steine & Blitze – solo am Handy oder mit bis zu 4 Handys als Lenkrad.' },
-  { id: 'wobbel', title: 'Wobbel', icon: '🟣', img: 'wobbel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#ff6fb0 60%,#ffb347)', glow: 'rgba(74,184,255,.55)',
-    path: 'wobbel/', desc: 'Das Schiebe-Puzzle in 3D von RicoReWi: Kisten auf Ziele schieben – mit Wasser, Farben, Eis und Schlüsseln in 5 Welten.' },
-  { id: 'anmacha-hoererwahl', title: 'AnMaCha Hörerwahl', icon: '🎙️', img: 'anmacha-hoererwahl/card.png', bg: 'linear-gradient(145deg,#00e5ff,#8b5cf6 50%,#ff2d95)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-hoererwahl/', desc: 'Das große Umfrage-Duell: Was haben 100 Hörer geantwortet? Zwei Teams oder gegen das Funkhaus-Team – mit Strikes, Klauen und Hörer-Finale. 120 Fragen.' },
-  { id: 'anmacha-frequenzrad', title: 'AnMaCha Frequenzrad', icon: '🎡', img: 'anmacha-frequenzrad/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#ffd24a)', glow: 'rgba(255,45,149,.55)',
-    path: 'anmacha-frequenzrad/', desc: 'Das Buchstaben-Rätsel: Rad drehen, Konsonanten raten, Vokale kaufen, Rätsel lösen – bis zu 4 Spieler, Computer-Gegner und Handys als Pads. 150 Rätsel.' },
-  { id: 'anmacha-preisradar', title: 'AnMaCha Preisradar', icon: '💶', img: 'anmacha-preisradar/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#8b5cf6 50%,#ff9a1f)', glow: 'rgba(255,154,31,.55)',
-    path: 'anmacha-preisradar/', desc: 'Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.' },
-  { id: 'anmacha-funkparcours', title: 'AnMaCha Funkparcours', icon: '🏃', img: 'anmacha-funkparcours/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 55%,#ff2d95)', glow: 'rgba(0,184,217,.55)',
-    path: 'anmacha-funkparcours/', desc: 'Das Hindernis-Zeitspiel in 3D: springen, hangeln, Wand erklimmen – jeder Läufer allein, die Zeiten werden verglichen. 3 Parcours, Geist der Bestzeit, bis zu 4 Läufer, Handys als Pads.' },
-  { id: 'FunkhausReality', title: 'Funkhaus Reality', icon: '🏠', img: 'FunkhausReality/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#00e5ff)', glow: 'rgba(255,45,149,.55)',
-    path: 'FunkhausReality/', desc: 'Die Live-WG im Radiostudio: Allianzen schmieden, Gerüchte streuen, im Beichtstuhl nominieren – die Hörer entscheiden, wer geht. 3D-Haus, Wochenaufgaben, 1–4 Menschen mit privaten Handy-Pads gegen KI-Mitbewohner.' },
-  { id: 'MachMichAus', title: 'Mach mich aus!', icon: '💡', img: 'MachMichAus/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 50%,#ff2d95)', glow: 'rgba(0,184,217,.55)',
-    path: 'MachMichAus/', desc: 'Die Funk-Dating-Show: 20 Pulte, 20 Lampen – wer passt zum Kandidaten? Als Kandidat oder am Pult spielen, Talent im Takt, Quiz, Anmach-Joker, bis zu 4 Menschen mit privaten Handy-Pads.' },
-  { id: 'turbokick', title: 'TURBOKICK', icon: '🚗', img: 'turbokick/card.png', bg: 'linear-gradient(145deg,#07070f,#ff7a1a 55%,#19c8ff)', glow: 'rgba(255,122,26,.55)',
-    path: 'turbokick/', desc: '3D-Auto-Fußball mit Nitro: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 5 Karosserien, Tastatur, Gamepad und Touch.' },
-  { id: 'partyverse', title: 'PARTYVERSE', icon: '🎲', img: 'partyverse/card.png', bg: 'linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)', glow: 'rgba(255,62,157,.55)',
-    path: 'partyverse/', desc: '3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online (eigener Server nötig). Handy und PC.' },
-  { id: 'anmacha-gold-reels', title: 'AnMaCha Gold Reels', icon: '🎰', bg: 'linear-gradient(145deg,#ffb11f,#ff2d95 55%,#8b5cf6)', glow: 'rgba(255,177,31,.55)',
-    path: 'anmacha-gold-reels/', desc: 'Moderner Video-Slot (nur Spielgeld): 5 Walzen, 20 Linien, Casino-Symbole & Sender-Logos, Wild, Bonus-Sterne mit Freispielen, Big Wins.' },
-  { id: 'anmacha-markthalle', title: 'AnMaCha Markthalle 24', icon: '🛒', bg: 'linear-gradient(145deg,#43e08a,#00e5ff 50%,#ff9a1f)', glow: 'rgba(67,224,138,.5)',
-    path: 'anmacha-markthalle/', desc: 'Supermarkt-Simulator in 3D für PC und Handy: Kartons einräumen, Preise machen, an der Kasse scannen, Rückgeld geben und Kartenbeträge tippen, Großhandel-Angebote, Vorbestellungen, Personal, Ausbau – mit eigenem Radiosender, Preis-Duell und Wetter.' },
-  { id: 'anmacha-urwaldlager', title: 'Urwaldlager', icon: '🌴', bg: 'linear-gradient(145deg,#0f3a2a,#2ea84d 50%,#ffcf4a)', glow: 'rgba(120,255,100,.5)',
-    path: 'anmacha-urwaldlager/', desc: 'Die große Wildnis-Show in 3D: Lauf durchs Dschungelcamp, sammle Holz, hol Wasser, koch am Feuer, schließ Freundschaften und besteh zwölf echte Prüfungen – bis das simulierte Publikum den Champion kürt. Für PC und Handy.' },
-  { id: 'anmacha-spielesammlung', title: 'AnMaCha Spielesammlung 3D', icon: '🎲', bg: 'linear-gradient(145deg,#ff2d95,#8B5CF6 50%,#00c9a7)', glow: 'rgba(255,45,149,.5)',
-    path: 'anmacha-spielesammlung/', desc: '7 Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle – gegen den Computer oder zu mehreren.' },
-  { id: 'anmacha-stapelrausch', title: 'AnMaCha Stapelrausch 3D', icon: '🃏', bg: 'linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)', glow: 'rgba(139,92,246,.55)',
-    path: 'anmacha-stapelrausch/', desc: '3D-Kartenspiel: Zahlentürme von 1 bis 12 bauen und den Zielstapel zuerst leeren – gegen den Computer, an einem Gerät oder online per Code/QR.' },
-  { id: 'gay-life', title: 'Gay Life!', icon: '🏳️‍🌈', bg: 'linear-gradient(145deg,#ff3b6b,#9b5cff 55%,#2ea8ff)', glow: 'rgba(255,59,107,.55)',
-    path: 'gay-life/', desc: 'Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.' },
-  { id: 'anmacha-klotzfunk', title: 'KLOTZFUNK 3D', icon: '🧱', bg: 'linear-gradient(145deg,#4c9a3a,#865f43 55%,#4aa3ff)', glow: 'rgba(76,154,58,.55)',
-    path: 'anmacha-klotzfunk/', desc: 'Voxel-Sandbox in 3D: 15 Biome mit Höhlen, Erzen und Funkkristallen, Dörfer mit Bewohnern und Handel, verlassene Minen, Tiere, Weizenfelder, Rauschlinge, Höhlenwesen und Drohnen, Story „Das große Rauschen“ in 6 Kapiteln, Funknetz mit Sendern, Relais und Maschinen, Werkzeuge, Schwerter und Rüstung, Bauformen, Werkbank und Schmelzofen, Herzen und Hunger im Überlebensmodus, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy, Grafik passt sich dem Gerät an.' },
-  { id: 'bunte-insel', title: 'Bunte Insel', icon: '🚓', img: 'bunte-insel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#4cd07d 55%,#ffd23f)', glow: 'rgba(76,208,125,.55)',
-    path: 'bunte-insel/', desc: 'Kinderspiel mit offener Insel-Welt: laufen, 9 Fahrzeuge (auch Hubschrauber & Zug-Simulation), Spielzeugladen, Bauen wie bei den Sims, Tanzparty, Seifenblasen, Baum hauen, Polizeihund Blitz und Pappnase. Touch mit festem Joystick und Tastatur.' }
-];
+<div id="guide" class="hidden" role="dialog" aria-modal="true" aria-labelledby="gTitle">
+  <div class="box">
+    <h3 id="gTitle"></h3>
+    <div id="gBody"></div>
+    <div class="row" style="margin-top:14px"><button class="primary" id="gPlay">Spielen ▶</button><button class="ib" id="gClose" style="margin-left:auto">Schließen</button></div>
+  </div>
+</div>
 
+<script src="device.js"></script>
+<script src="games.js"></script>
+<script src="modes.js"></script>
+<script src="guides.js"></script>
+<script>
 const $ = id => document.getElementById(id);
 // Haupt-Logo (optional): logo.png / .jpg / .jpeg / .svg / .webp im Hauptordner
 (function () {
@@ -200,43 +237,159 @@ const iframeCode = (url, title) =>
   `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
 const embedMode = new URLSearchParams(location.search).has('embed');
 if (embedMode) document.body.classList.add('embed-mode');
+const params = new URLSearchParams(location.search);
+// Geräteerkennung: device.js (TV, Handy, Tablet, Computer). Erzwingen mit ?device=tv|phone|tablet|desktop, ?tv=1 / ?tv=0
+if (!window.EasyGamesDevice) window.EasyGamesDevice = { get: () => ({ type: 'desktop', role: 'both', input: [], orientation: 'landscape' }), on: () => () => {}, is: () => false };   // device.js fehlt: ohne Erkennung weiterlaufen
+const DEV = EasyGamesDevice.get(), MODES = window.EASYGAMES_MODES || {};
+// Fähigkeiten eines Spiels: modes.js und/oder direkt am Eintrag in games.js (modes: { pad: true, … })
+const modesOf = g => Object.assign({}, MODES[g.id], g.modes);
+const isTv = DEV.type === 'tv';
+if (isTv) document.documentElement.classList.add('tv');
 
 // ----- Kacheln -----
 GAMES.forEach((g, i) => {
+  const c = document.createElement('div');
+  c.className = 'card'; c.dataset.i = i; c.dataset.s = (g.title + ' ' + g.desc).toLowerCase();
   const b = document.createElement('button');
-  b.className = 'tile'; b.dataset.i = i;
-  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><b></b><small></small>`;
+  b.className = 'tile';
+  b.innerHTML = `<div class="icon${g.img ? ' has-img' : ''}" style="background:${g.bg};--g:${g.glow}">${g.external ? '<div class="ext">extern</div>' : ''}${g.img ? `<img src="${g.img}" alt="" loading="lazy">` : `<span>${g.icon}</span>`}</div><div class="info"><b></b><span class="badges"></span><small></small><span class="play">Spielen ▶</span></div>`;
   b.querySelector('b').textContent = g.title; b.querySelector('small').textContent = g.desc;
+  const m = modesOf(g), bd = b.querySelector('.badges');
+  [['pad', '📱 Handy-Controller'], ['online', '🌐 Online'], ['multi', '👥 Mehrspieler']].forEach(([k, t]) => { if (m[k]) { const e = document.createElement('i'); e.textContent = t; bd.appendChild(e); } });
+  if (!bd.children.length) bd.remove();
+  c.dataset.m = Object.keys(m).filter(k => m[k]).join(' ');
   b.addEventListener('click', () => openGame(i));
-  $('grid').appendChild(b);
+  const h = document.createElement('button');
+  h.className = 'help'; h.textContent = '📖 Anleitung'; h.setAttribute('aria-label', 'Anleitung: ' + g.title);
+  h.addEventListener('click', () => openGuide(i));
+  if (isTv) h.tabIndex = -1;
+  c.append(b, h);
+  $('grid').appendChild(c);
 });
+const tiles = [...$('grid').children];
+let modeF = '';
+function filt() {
+  const q = $('q').value.trim().toLowerCase(); let n = 0;
+  tiles.forEach(t => { const m = (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')); t.hidden = !m; if (m) n++; });
+  $('count').textContent = n + (n === 1 ? ' Spiel' : ' Spiele');
+  $('empty').classList.toggle('hidden', n > 0);
+}
+$('q').addEventListener('input', filt);
+$('chips').querySelectorAll('.chip2[data-f]').forEach(b => { if (b.dataset.f && !tiles.some(t => (' ' + t.dataset.m + ' ').includes(' ' + b.dataset.f + ' '))) b.hidden = true; });   // Arten ohne Spiel ausblenden
+$('chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip2'); if (!b) return;
+  modeF = b.dataset.f; $('chips').querySelectorAll('.chip2').forEach(x => x.setAttribute('aria-pressed', x === b)); filt();
+});
+const HINTS = {
+  tv: '📺 TV erkannt – bei Spielen mit 📱 Handy-Controller erscheint ein QR-Code: Handys scannen ihn und werden zu Controllern. Pfeiltasten und OK steuern diese Seite.',
+  phone: '📱 Handy erkannt – Spiele direkt spielen. Zum Mitspielen an einem TV oder PC dort den QR-Code des Spiels scannen.',
+  tablet: '📱 Tablet erkannt – Spiele direkt spielen oder per QR-Code als Controller zu einem TV oder PC dazukommen.',
+  desktop: '💻 Computer erkannt – Spiele mit 📱 Handy-Controller lassen sich mit Handys koppeln: QR-Code im Spiel scannen.'
+};
+$('devHint').textContent = HINTS[DEV.type] || '';
+filt();
+const jsSnippet = (id) => `<!-- 1. Script einbinden (einmal pro Seite) -->
+<script src="${base}easygames.js"><\/script>
+
+<!-- 2a. Nur HTML: Spiel-ID als Attribut -->
+<div data-easygames="${id}" data-ratio="16/10"></div>
+
+<!-- 2b. Oder per JavaScript mit Variablen -->
+<div id="spiel"></div>
+<script>
+  const spielId = '${id}';          // beliebige Spiel-ID
+  EasyGames.embed('#spiel', { game: spielId, ratio: '16/10', maxWidth: '960px' });
+<\/script>
+
+<!-- 3. Alle Spiele (Bibliothek) -->
+<div data-easygames="all"></div>
+<!-- oder: EasyGames.library('#ziel'); -->
+
+<!-- Weitere Funktionen:
+  EasyGames.ready(() => console.log(EasyGames.list()));  // alle Spiele mit URL
+  EasyGames.url('${id}');   EasyGames.get('${id}');
+  EasyGames.guide('${id}', g => console.log(g));        // Anleitung + Steuerung
+-->`;
+$('jsCode').value = jsSnippet(GAMES[0].id);
 $('libCode').value = iframeCode(base + '?embed=1', 'easygames – Spielebibliothek');
 $('libBtn').addEventListener('click', () => $('lib').classList.toggle('hidden'));
 
-// ----- App-Fenster -----
-let cur = -1;
+// ----- App-Fenster (immer Vollbild; Menüleiste blendet sich selbst aus) -----
+let cur = -1, ret = null, barT = 0;
+const isBack = e => e.key === 'GoBack' || e.key === 'BrowserBack' || e.key === 'XF86Back' || [10009, 461, 4].includes(e.keyCode);
+function showBar(ms) {
+  $('viewer').classList.add('bar-on'); clearTimeout(barT);
+  if (ms) barT = setTimeout(hideBar, ms);
+}
+function hideBar() {
+  clearTimeout(barT); $('viewer').classList.remove('bar-on');
+  if ($('bar').contains(document.activeElement)) try { $('frame').contentWindow.focus(); } catch (e) {}
+}
+function goFull() {
+  const el = $('viewer'), req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (document.fullscreenElement || !req) return;
+  try { const r = req.call(el); if (r && r.catch) r.catch(() => {}); } catch (e) {}
+}
+const tvQuery = g => { const p = modesOf(g).tvParam; return isTv && p ? '?' + (typeof p === 'string' ? p.replace(/^\?/, '') : 'tv') : ''; };
+const gameUrl = g => abs(g.path) + tvQuery(g);   // am TV öffnen Spiele wie Kart Rush direkt die Lobby mit QR-Code
+function sendDevice() { try { $('frame').contentWindow.postMessage({ type: 'easygames:device', device: EasyGamesDevice.get() }, '*'); } catch (e) {} }
+EasyGamesDevice.on(() => { if (cur >= 0) sendDevice(); });
 function openGame(i, fromHash) {
+  const wasOpen = cur >= 0;
+  if (!wasOpen) ret = document.activeElement;
   cur = (i + GAMES.length) % GAMES.length;
-  const g = GAMES[cur], url = abs(g.path);
+  const g = GAMES[cur], url = gameUrl(g);
   $('vTitle').textContent = g.title;
   $('frame').title = g.title;
   $('frame').src = url;
   $('viewer').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-  if (!fromHash) history.replaceState(null, '', '#' + g.id);
+  // Zurück-Taste (Handy/TV) schließt das Spiel: pro Öffnen ein Verlaufseintrag
+  if (!fromHash) history[wasOpen ? 'replaceState' : 'pushState']({ eg: 1 }, '', '#' + g.id);
+  else history.replaceState({ eg: 0 }, '', '#' + g.id);
+  showBar(2500);
+  if (!wasOpen) goFull();
+}
+function closeUi() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  clearTimeout(barT);
+  $('viewer').classList.add('hidden'); $('viewer').classList.remove('bar-on'); $('frame').src = 'about:blank';
+  document.body.style.overflow = ''; cur = -1;
+  if (ret && document.contains(ret)) ret.focus({ preventScroll: true });
 }
 function closeGame() {
-  if (document.fullscreenElement) document.exitFullscreen();
-  $('viewer').classList.add('hidden'); $('frame').src = 'about:blank';
-  document.body.style.overflow = ''; cur = -1;
-  history.replaceState(null, '', location.pathname + location.search);
+  if (cur < 0) return;
+  closeUi();
+  if (history.state && history.state.eg === 1) history.back();
+  else history.replaceState(null, '', location.pathname + location.search);
 }
-$('frame').addEventListener('load', () => { try { $('frame').contentWindow.focus(); } catch (e) {} });
+addEventListener('popstate', () => {
+  const i = GAMES.findIndex(g => '#' + g.id === location.hash);
+  if (i >= 0) { if (i !== cur) openGame(i, true); } else if (cur >= 0) closeUi();
+});
+$('frame').addEventListener('load', () => {
+  try {
+    const w = $('frame').contentWindow; w.focus(); try { w.EASYGAMES_DEVICE = EasyGamesDevice.get(); } catch (e) {}
+    sendDevice();
+    // gleiche Herkunft: TV-/Handy-Zurücktaste auch bei Fokus im Spiel abfangen
+    if (!w.__egk) { w.__egk = 1; w.addEventListener('keydown', e => { if (isBack(e) && !w.__egBack) { e.preventDefault(); back(); } }, true); }
+  } catch (e) {}
+});
+// Spiele können über postMessage mit der Übersicht sprechen
+addEventListener('message', e => {
+  if (e.source !== $('frame').contentWindow || !e.data) return;
+  const t = e.data.type || e.data;
+  if (t === 'easygames:getDevice') sendDevice();
+  else if (t === 'easygames:close') closeGame(); else if (t === 'easygames:menu') showBar(5000);
+  else if (t === 'easygames:next') openGame(cur + 1); else if (t === 'easygames:prev') openGame(cur - 1);
+});
+$('vTab').addEventListener('click', () => { showBar(6000); $('vClose').focus(); });
+['pointerdown', 'keydown', 'focusin'].forEach(ev => $('bar').addEventListener(ev, () => { if (cur >= 0) showBar(6000); }));
 $('vClose').addEventListener('click', closeGame);
 $('vPrev').addEventListener('click', () => openGame(cur - 1));
 $('vNext').addEventListener('click', () => openGame(cur + 1));
 $('vFs').addEventListener('click', () => {
-  const el = $('win'), req = el.requestFullscreen || el.webkitRequestFullscreen;
+  const el = $('viewer'), req = el.requestFullscreen || el.webkitRequestFullscreen;
   if (document.fullscreenElement) { document.exitFullscreen(); return; }
   if (req) { req.call(el).catch(() => { location.href = abs(GAMES[cur].path); }); }
   else location.href = abs(GAMES[cur].path);          // z. B. iPhone: Spiel direkt als ganze Seite öffnen
@@ -246,11 +399,30 @@ $('vFs').addEventListener('click', () => {
 function openShare() {
   const g = GAMES[cur], url = abs(g.path);
   $('sTitle').textContent = g.title + ' teilen';
-  $('sLink').value = url; $('sCode').value = iframeCode(url, g.title); $('sOpen').href = url;
+  $('sLink').value = url; $('sCode').value = iframeCode(url, g.title); $('sJs').value = jsSnippet(g.id); $('sOpen').href = url;
   $('sNative').classList.toggle('hidden', !navigator.share);
   $('share').classList.remove('hidden');
 }
 $('vShare').addEventListener('click', openShare);
+const GUIDES = window.EASYGAMES_GUIDES || {};
+let gi = -1, ret2 = null;
+const li = a => '<ul>' + a.map(x => '<li></li>').join('') + '</ul>';
+function fill(h, arr) { const d = document.createElement('div'); d.innerHTML = li(arr); [...d.querySelectorAll('li')].forEach((n, k) => n.textContent = arr[k]); h.appendChild(d.firstChild); }
+function openGuide(i) {
+  if (gi < 0) ret2 = document.activeElement;
+  gi = i; const g = GAMES[i], d = GUIDES[g.id], body = $('gBody');
+  $('gTitle').textContent = g.title; body.textContent = '';
+  const sec = (t, node) => { const h = document.createElement('h4'); h.textContent = t; body.append(h, node); };
+  const p = document.createElement('p'); p.textContent = d ? d.anleitung : g.desc; sec('Spielanleitung', p);
+  if (d && d.steuerung && d.steuerung.length) { const w = document.createElement('div'); fill(w, d.steuerung); sec('Bedienung', w.firstChild); }
+  if (d && d.tipps && d.tipps.length) { const w = document.createElement('div'); fill(w, d.tipps); sec('Tipps', w.firstChild); }
+  $('guide').classList.remove('hidden'); $('gClose').focus();
+}
+function closeGuide() { $('guide').classList.add('hidden'); gi = -1; if (ret2 && document.contains(ret2)) ret2.focus({ preventScroll: true }); }
+$('vHelp').addEventListener('click', () => openGuide(cur));
+$('gClose').addEventListener('click', closeGuide);
+$('gPlay').addEventListener('click', () => { const i = gi; closeGuide(); openGame(i); });
+$('guide').addEventListener('click', e => { if (e.target === $('guide')) closeGuide(); });
 $('sClose').addEventListener('click', () => $('share').classList.add('hidden'));
 $('sNative').addEventListener('click', () => navigator.share({ title: GAMES[cur].title, url: abs(GAMES[cur].path) }).catch(() => {}));
 document.addEventListener('click', e => {
@@ -259,11 +431,48 @@ document.addEventListener('click', e => {
   (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).catch(() => document.execCommand('copy'));
   const old = t.textContent; t.textContent = 'Kopiert ✓'; setTimeout(() => t.textContent = old, 1500);
 });
+function back() {
+  if (!$('guide').classList.contains('hidden')) closeGuide();
+  else if (!$('share').classList.contains('hidden')) $('share').classList.add('hidden');
+  else if (cur >= 0) closeGame();
+}
+// Räumliche Navigation (Pfeiltasten/D-Pad) für TV und Tastatur
+function spatial(dir, scope) {
+  const list = [...scope.querySelectorAll('button,input,a[href]')].filter(el => el.tabIndex >= 0 && !el.disabled && el.getClientRects().length);
+  const a = document.activeElement;
+  if (!list.includes(a)) { if (list[0]) { list[0].focus(); return true; } return false; }
+  const r = a.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  let best = null, bs = Infinity;
+  for (const el of list) {
+    if (el === a) continue;
+    const q = el.getBoundingClientRect(), dx = q.left + q.width / 2 - cx, dy = q.top + q.height / 2 - cy;
+    const main = dir === 'ArrowRight' ? dx : dir === 'ArrowLeft' ? -dx : dir === 'ArrowDown' ? dy : -dy;
+    const off = dir === 'ArrowRight' || dir === 'ArrowLeft' ? Math.abs(dy) : Math.abs(dx);
+    if (main <= 1) continue;
+    const sc = main + off * 2.5;
+    if (sc < bs) { bs = sc; best = el; }
+  }
+  if (!best) return false;
+  best.focus({ preventScroll: true }); best.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  return true;
+}
 addEventListener('keydown', e => {
-  if (e.key !== 'Escape') return;
-  if (!$('share').classList.contains('hidden')) $('share').classList.add('hidden');
-  else if (!$('viewer').classList.contains('hidden')) closeGame();
+  if (e.key === 'Escape' || isBack(e)) { if (e.key !== 'Escape') e.preventDefault(); back(); return; }
+  const t = e.target;
+  if ((e.key === 'i' || e.key === 'I' || e.keyCode === 405) && !t.matches('input,textarea')) {
+    if (cur >= 0) { openGuide(cur); e.preventDefault(); return; }
+    const c = t.closest && t.closest('.card'); if (c) { openGuide(+c.dataset.i); e.preventDefault(); }
+    return;
+  }
+  if (!/^Arrow(Up|Down|Left|Right)$/.test(e.key) || e.altKey || e.ctrlKey || e.metaKey || t.matches('textarea')) return;
+  if (t.matches('input') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return;
+  const scope = !$('guide').classList.contains('hidden') ? $('guide')
+    : !$('share').classList.contains('hidden') ? $('share')
+    : cur >= 0 ? ($('viewer').classList.contains('bar-on') ? $('bar') : null)
+    : document.querySelector('main');
+  if (scope && spatial(e.key, scope)) e.preventDefault();
 });
+if (isTv && tiles[0]) tiles[0].querySelector('.tile').focus({ preventScroll: true });
 
 // Direktlink zur Spieleliste: ...#anmacha-flipper öffnet das Spiel gleich
 const start = GAMES.findIndex(g => '#' + g.id === location.hash);

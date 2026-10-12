@@ -28,10 +28,10 @@ const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
 // Touch-Steuerung wie am Konsolen-Controller: links virtueller Joystick (lenken), rechts 4 Tasten im Raute-Layout
 // (unten GAS, links BREMSE, rechts DRIFT, oben ITEM). Ein Daumen zwischen zwei Nachbartasten drückt beide (z. B. Gas + Drift),
 // Wischen von Taste zu Taste wechselt sofort. Alles läuft über Pointer-Events auf einer Ebene; das DOM wird nur bei Änderungen angefasst.
-const TBTN = [['g', 'GAS', 0, 1], ['b', 'BREMSE', -1, 0], ['d', 'DRIFT', 1, 0], ['i', 'ITEM', 0, -1]], TBIT = { g: 1, b: 2, d: 4, i: 8 };
+const TBTN = [['g', 'GAS', 0, 1, '▲'], ['b', 'BREMSE', -1, 0, '▼'], ['d', 'DRIFT', 1, 0, '↯'], ['i', 'ITEM', 0, -1, '★']], TBIT = { g: 1, b: 2, d: 4, i: 8 };
 let touchReset = null;
 function buildTouch(root, st) {
-  root.innerHTML = '<div class="joy"><div class="jb"><div class="jk"></div></div></div><div class="pad">' + TBTN.map(([k, t]) => `<div class="tbtn tb-${k}" data-k="${k}">${t}</div>`).join('') + '</div>';
+  root.innerHTML = '<div class="joy"><div class="jb"><div class="jk"></div></div></div><div class="pad">' + TBTN.map(([k, t, , , ic]) => `<div class="tbtn tb-${k}" data-k="${k}"><i>${ic}</i>${t}</div>`).join('') + '</div>';
   const jb = root.querySelector('.jb'), jk = root.querySelector('.jk'), pad = root.querySelector('.pad'), els = {}, ptr = new Map();
   root.querySelectorAll('.tbtn').forEach(el => { els[el.dataset.k] = el; });
   let sid = null, hx = 0, hy = 0, ox = 0, oy = 0, rad = 50, mask = 0, g = null;
@@ -173,6 +173,7 @@ function initHost() {
   }).catch(e => { LD.stop(); $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); if (R) R.dirty = true; } });
+  if (coarse) $('kbToggle').textContent = '👆 Spieler an diesem Gerät';
   buildTouch($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('tiltBtn').classList.toggle('on', TILT.on); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; $('tiltInv').classList.toggle('on', TILT.inv); }; }
   function showView(v) {
     menuView = v; $('menu').hidden = false; $('mTitle').hidden = v !== 'title'; $('mSetup').hidden = v !== 'setup'; $('menu').classList.toggle('title', v === 'title'); $('mBox').classList.toggle('wide', v === 'setup');
@@ -206,19 +207,19 @@ function initHost() {
   const pairUrl = () => location.href.split('#')[0].split('?')[0] + '?join=' + room + (PH ? '&ph=' + encodeURIComponent(PH) : '');
   function showPair() { $('code').textContent = room; const url = pairUrl(); $('pairUrl').textContent = url; try { const q = qrcode(0, 'M'); q.addData(url); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { $('qr').innerHTML = ''; } }
   const send = (c, m) => { try { if (c && c.open) c.send(m); } catch (e) {} };
-  function addKbPlayer(auto) { if (!players.some(p => p.kbp)) players.push({ kbAuto: !!auto, name: (save.name || '').trim() || 'Tastatur', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
+  function addKbPlayer(auto) { if (!players.some(p => p.kbp)) players.push({ kbAuto: !!auto, name: (save.name || '').trim() || (coarse ? 'Spieler' : 'Tastatur'), logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, kbp: true }); }
   function onRemote(c, m) {
     if (!m || typeof m !== 'object') return;
     if (m.t === 'join') {
       const old = players.find(p => p.conn === c); const nm = String(m.name || 'Gast').trim().slice(0, 14) || 'Gast', lg = Number.isInteger(m.logo) && m.logo >= 0 && m.logo < 13 ? m.logo : 6, ch = Number.isInteger(m.ch) && m.ch >= 0 && m.ch < CHARS.length ? m.ch : 1, kt = Number.isInteger(m.kt) && m.kt >= 0 && m.kt < KARTS.length ? m.kt : 0;
-      const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
+      const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; old.view = !!m.view; send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
       // Dasselbe Handy kommt nach einem Abbruch zurück: altes Kart übernehmen statt neu anzumelden
       const cid = typeof m.cid === 'string' ? m.cid.slice(0, 16) : '', back = cid && players.find(p => p.cid === cid);
-      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
+      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.view = !!m.view; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, slot: players.indexOf(back), cfg: cfgMsg() }); return updateLobby(); }
       if (racing) return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
-      players = players.filter(p => !p.kbAuto);
+      if (!coarse) players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
-      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c), cfg: cfgMsg() }); updateLobby();
+      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, view: !!m.view, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c), cfg: cfgMsg() }); updateLobby();
     } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; p.inAt = performance.now(); } }
     // Start-Knopf am Handy: Lobby starten bzw. nach dem Rennen weiter
     // Strecke/Cup und Runden vom Handy aus (Lobby oder Ergebnis-Bildschirm); alle Handys bekommen die neue Auswahl
@@ -226,12 +227,13 @@ function initHost() {
       const v = String(m.sel || ''), n = +v.slice(1); if (v[0] === 't' && TR[n]) { save.rmode = 'race'; save.track = n; } else if (v[0] === 'c' && Track.CUPS[n]) { save.rmode = 'gp'; save.cup = n; }
       if ([2, 3, 5].includes(m.laps)) save.laps = m.laps; persist(); renderMenu(); const cm = cfgMsg(); remotes().forEach(p => send(p.conn, { t: 'cfg', cfg: cm }));
     }
+    else if (m.t === 'need') { const p = players.find(x => x.conn === c); if (p && p.view && R && !R.ended && R.humans.includes(p)) sendRace(p); }
     else if (m.t === 'go' && players.some(p => p.conn === c)) { if (lobbyOpen && !$('bGo').disabled) $('bGo').click(); else if (R && R.ended && !$('res').hidden) $('bNext').click(); }
   }
   const cfgMsg = () => ({ opts: TR.map((t, i) => ['t' + i, t.name]).concat(Track.CUPS.map((c, i) => ['c' + i, '🏆 ' + c.name])), sel: save.rmode === 'gp' ? 'c' + save.cup : 't' + save.track, laps: save.laps });
   function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else players.splice(i, 1); updateLobby(); }
   function updateLobby() {
-    $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji}${KARTS[(p.kart || 0) % KARTS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? '📱 gekoppelt' : p.pad != null ? '🎮 Gamepad' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
+    $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji}${KARTS[(p.kart || 0) % KARTS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? (p.view ? '📱 eigenes Bild' : '📱 gekoppelt') : p.pad != null ? '🎮 Gamepad' : coarse ? '👆 dieses Gerät' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
     $('bGo').disabled = !players.length; $('kbToggle').classList.toggle('on', players.some(p => p.kbp));
   }
   $('padAdd').onclick = () => { const used = new Set(players.filter(p => p.pad != null).map(p => p.pad)), pad = Pads.list().find(p => !used.has(p.index)); if (!pad) { $('padAdd').textContent = '🎮 Kein Gamepad – Taste am Gamepad drücken'; setTimeout(() => { $('padAdd').textContent = '🎮 Gamepad-Spieler hinzufügen'; }, 2500); return; } if (players.length < 4) players.push({ name: 'Gamepad ' + (used.size + 1), logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, pad: pad.index }); updateLobby(); };
@@ -256,14 +258,17 @@ function initHost() {
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; });
-    nVp = Math.min(4, humans.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, humans.map((_, i) => i)); buildHud(); buildMap();
+    // Handys mit eigenem Rennbild brauchen kein Feld im Splitscreen; zeigt keiner ein eigenes Bild hier, bleiben alle sichtbar (Fernseher als Zuschauerbild)
+    R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = humans.map((_, i) => i); R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
+    nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
+    humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
     document.body.classList.add('racing'); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
     banner(TR[tIdx].name, GP.gp ? `${Track.CUPS[save.cup].name} ${GP.race + 1}/${GP.order.length}` : '', 1600); paused = false; push('grid');
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
   // HUD je Fahrer
   function buildHud() {
-    const hud = $('hud'); hud.innerHTML = ''; R.huds = R.humans.map((p, i) => { const d = document.createElement('div'); d.className = 'vp'; d.style.setProperty('--sc', SLOTC[i]); d.innerHTML = `<div class="spl"></div><div class="nm">${esc(p.name)}</div><div class="item"></div><div class="fog"></div><canvas width="160" height="160"></canvas><div class="pos"></div><div class="lap"></div><div class="spd"></div><div class="msg"></div>`; hud.appendChild(d); return { d, c: {}, spl: d.querySelector('.spl'), item: d.querySelector('.item'), fog: d.querySelector('.fog'), fogT: 0, cv: d.querySelector('canvas'), pos: d.querySelector('.pos'), lap: d.querySelector('.lap'), spd: d.querySelector('.spd'), msg: d.querySelector('.msg'), lastItem: null, msgT: 0 }; }); layoutHud();
+    const hud = $('hud'); hud.innerHTML = ''; R.huds = R.vis.slice(0, 4).map(i => { const p = R.humans[i], d = document.createElement('div'); d.className = 'vp'; d.style.setProperty('--sc', SLOTC[i]); d.innerHTML = `<div class="spl"></div><div class="nm">${esc(p.name)}</div><div class="item"></div><div class="fog"></div><canvas width="160" height="160"></canvas><div class="pos"></div><div class="lap"></div><div class="spd"></div><div class="msg"></div>`; hud.appendChild(d); return { ki: i, d, c: {}, spl: d.querySelector('.spl'), item: d.querySelector('.item'), fog: d.querySelector('.fog'), fogT: 0, cv: d.querySelector('canvas'), pos: d.querySelector('.pos'), lap: d.querySelector('.lap'), spd: d.querySelector('.spd'), msg: d.querySelector('.msg'), lastItem: null, msgT: 0 }; }); layoutHud();
   }
   function layoutHud() { if (!R) return; const rs = View.rects(Math.max(1, R.huds.length), innerWidth, innerHeight); R.huds.forEach((h, i) => { const r = rs[i]; Object.assign(h.d.style, { left: r[0] + 'px', top: (innerHeight - r[1] - r[3]) + 'px', width: r[2] + 'px', height: r[3] + 'px' }); }); }
   function buildMap() {
@@ -277,8 +282,8 @@ function initHost() {
     S.karts.forEach((k, i) => { if (i === hi) return; g.fillStyle = k.human ? SLOTC[i % 4] : '#ff9a1f'; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 5, 0, 7); g.fill(); }); const k = S.karts[hi]; g.fillStyle = '#fff'; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 9, 0, 7); g.fill(); g.fillStyle = SLOTC[hi % 4]; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 6.5, 0, 7); g.fill();
   }
   function updateHud(dt) {
-    const S = R.S; R.humans.forEach((p, i) => {
-      const h = R.huds[i], k = S.karts[i], n = S.karts.length, lap = Math.max(1, Math.min(S.laps, k.lap));
+    const S = R.S; R.huds.forEach(h => {
+      const i = h.ki, k = S.karts[i], n = S.karts.length, lap = Math.max(1, Math.min(S.laps, k.lap));
       const c = h.c, pos = k.rank * 100 + n, lp = k.finished ? S.laps : lap, sp = Math.round(Math.max(0, k.vf) * 3.6 * 0.9), roll = k.itemT > 0, fast = k.boostT > 0;
       if (c.pos !== pos) { c.pos = pos; h.pos.innerHTML = `${k.rank}<small>/${n}</small>`; } if (c.lap !== lp) { c.lap = lp; h.lap.textContent = `🏁 ${lp}/${S.laps}`; } if (c.sp !== sp) { c.sp = sp; h.spd.innerHTML = `${sp}<small>km/h</small>`; }
       const it = roll ? '❓' : itemHtml(k.item, k.itemN); if (it !== h.lastItem) { h.item.innerHTML = it; h.lastItem = it; h.item.classList.toggle('empty', !it); } if (c.roll !== roll) { c.roll = roll; h.item.classList.toggle('roll', roll); } if (c.fast !== fast) { c.fast = fast; h.spl.classList.toggle('on', fast); }
@@ -286,9 +291,18 @@ function initHost() {
       if (R.miniAt <= 0) drawMini(h, i);
     }); if (R.miniAt <= 0) R.miniAt = 0.12; else R.miniAt -= dt;
   }
-  const hmsg = (ki, t, sec) => { const h = R.huds[ki]; if (h) { h.msg.textContent = t; h.msgT = sec || 1.6; } };
+  const hudOf = ki => R.huds.find(h => h.ki === ki), hmsg = (ki, t, sec) => { const h = hudOf(ki); if (h) { h.msg.textContent = t; h.msgT = sec || 1.6; } };
   function push(ph) { R && R.humans.forEach((p, i) => { if (!p.conn) return; const k = R.S.karts[i]; send(p.conn, { t: 'st', ph, pos: k.rank, n: R.S.karts.length, lap: Math.max(1, Math.min(R.S.laps, k.lap)), laps: R.S.laps, item: k.item ? ITEM_ICON[k.item] + (k.itemN > 1 ? '×' + k.itemN : '') : '', roll: k.itemT > 0, spd: Math.round(Math.max(0, k.vf) * 3.24), fin: k.finished }); }); }
   const isHuman = ki => ki < R.humans.length;
+  // Eigenes Rennbild am Handy: einmal Strecke/Karts, dann ~20× pro Sekunde der Zustand (das Handy zeichnet und glättet selbst)
+  let raceNo = 0; const r2 = v => Math.round(v * 100) / 100, FXE = { boom: 1, splat: 1, smash: 1, rockBounce: 1, hit: 1, pad: 1, flash: 1, use: 1, fog: 1 };
+  function sendRace(p) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, items: S.items, me: R.humans.indexOf(p), karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
+  function sendSnap() {
+    const S = R.S, vw = R.humans.filter(p => p.conn && p.view && !p.gone); if (!vw.length) { R.fxq.length = 0; return; }
+    const k = []; for (const q of S.karts) k.push(r2(q.x), r2(q.z), Math.round(q.th * 1000) / 1000, r2(q.vf), r2(q.steer), r2(q.drift || 0), r2(q.spinT), q.boostT > 0 ? 1 : 0, Math.round(q.shieldT * 10) / 10, q.rough ? 1 : 0, q.dTier || 0, q.item || 0, q.itemN || 0);
+    const m = { t: 's', r: R.rid, k, b: S.boxes.map(b => b.cd > 0 ? 1 : 0).join(''), h: S.hazards.map(h => [h.kind, r2(h.x), r2(h.z)]), p: S.proj.map(q => [q.kind, r2(q.x), r2(q.z), r2(q.th)]), e: R.fxq.splice(0) };
+    vw.forEach(p => send(p.conn, m));
+  }
   function onEvent(e) {
     const S = R.S;
     switch (e.t) {
@@ -298,7 +312,7 @@ function initHost() {
       case 'use': if (isHuman(e.k)) { ({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs })[e.item](); } break;
       case 'hit': if (isHuman(e.k)) { if (e.kind === 'banana') AUD.sfx.slip(); else if (e.kind !== 'flash') AUD.sfx.hit(); hmsg(e.k, { banana: 'AUSGERUTSCHT!', rock: 'FELSBROCKEN!', flash: 'FUNK-BLITZ!', rocket: 'GETROFFEN!', mine: 'STÖRSIGNAL!' }[e.kind] || 'GETROFFEN!', 1.3); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'hit' }); } break;
       case 'flash': AUD.sfx.thunder(); { const f = $('fxFlash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); } if (isHuman(e.k)) hmsg(e.k, 'FUNK-BLITZ!', 1.2); break;
-      case 'fog': AUD.sfx.fogs(); (e.ids || []).forEach(id => { if (isHuman(id)) { const h = R.huds[id]; h.fog.classList.add('on'); h.fogT = 3.8; hmsg(id, 'NEBELBOMBE!', 1.4); } }); break;
+      case 'fog': AUD.sfx.fogs(); (e.ids || []).forEach(id => { if (isHuman(id)) { const h = hudOf(id); if (h) { h.fog.classList.add('on'); h.fogT = 3.8; } hmsg(id, 'NEBELBOMBE!', 1.4); } }); break;
       case 'splat': AUD.sfx.splat(); break;
       case 'smash': AUD.sfx.smash(); break;
       case 'shieldHit': if (isHuman(e.k)) AUD.sfx.shield(); break;
@@ -352,11 +366,11 @@ function initHost() {
     const live = !paused && !R.ended;
     if (live) {
       const ff = window.__ffwd || 1; acc += dt * ff; let n = 0; const S = R.S;
-      while (acc >= 1 / 60 && n++ < 5 * ff) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); if (S.state === 'done') break; }
+      while (acc >= 1 / 60 && n++ < 5 * ff) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
       if (acc >= 1 / 60) acc = 0;        // Rückstand nach Hängern verwerfen statt aufzustauen
       if (S.state === 'grid') { const c = Math.ceil(S.count - 0.2); if (c !== R.lastCount && c >= 1 && c <= 3) { R.lastCount = c; banner(String(c), '', 900, c === 1 ? '#ffd24a' : '#fff'); AUD.sfx.beep(false); } }
       const k0 = S.karts[0]; AUD.engine(S.state !== 'done' && !paused, Math.max(0, k0.vf) / 36, k0.boostT > 0);
-      updateHud(dt); R.pushAt -= dt; if (R.pushAt <= 0) { R.pushAt = 0.15; push(S.state === 'grid' ? 'grid' : 'race'); }
+      updateHud(dt); if ((R.snapAt -= dt) <= 0) { R.snapAt = 0.05; sendSnap(); } R.pushAt -= dt; if (R.pushAt <= 0) { R.pushAt = 0.15; push(S.state === 'grid' ? 'grid' : 'race'); }
       if (S.state === 'done') finishRace();
     }
     if (paused) { if (!R.dirty) return; R.dirty = false; View.renderRace(R.S, 0, tAll, nVp, 1); return; }
