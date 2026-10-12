@@ -1,4 +1,4 @@
-/* Browser-Test: öffentliche Gebäude der Hauptinsel sind begehbar (Krankenhaus, Polizei, Feuerwehr, Rathaus, Schule, Eisdiele).
+/* Browser-Test: öffentliche Gebäude sind begehbar (Hauptinsel, Stadt, Fellretter-Insel, Scheune, Kino).
    Aufruf: BASE=http://localhost:8080 node bunte-insel/tests/gebaeude.mjs   (optional THREE=/pfad/zu/three.min.js; DEBUG=1) */
 import { chromium } from 'playwright';
 const BASE = process.env.BASE || 'http://localhost:8080';
@@ -15,7 +15,7 @@ const r = await p.evaluate(async () => {
   for (const q of civ) {
     const front = q.s > 0 ? q.z1 + .4 : q.z0 - .4, o = { name: q.sign.text, n: 0 };
     /* Tür: von außen über die Schwelle bis in die Mitte ohne Hindernis */
-    let walk = true; const zs = q.s > 0 ? [front + 2, front, q.z1 - .6, q.cz + q.s * 1] : [front - 2, front, q.z0 + .6, q.cz + q.s * 1]; for (const z of zs) if (W.resolve(q.cx, z, .4, {}).hit) walk = false; o.door = walk;
+    let walk = true; const zs = [front + q.s * 2, front, front - q.s * 1.2]; for (const z of zs) if (W.resolve(q.cx, z, .4, {}).hit) walk = false; o.door = walk;
     o.wall = W.resolve(q.x0 + .1 - .4, q.cz, .4, {}).hit === true || W.resolve(q.x0 - .3, q.cz, .4, {}).hit === true;
     b.P.x = q.cx; b.P.z = q.cz + q.s * 1; b.P.y = 0; await sl(350); o.inside = b.town.inside() === q && q.roof.visible === false;
     b.P.x = q.cx; b.P.z = front + q.s * 6; await sl(350); o.roofBack = q.roof.visible === true;
@@ -25,7 +25,7 @@ const r = await p.evaluate(async () => {
   return out;
 });
 if (process.env.DEBUG) console.log(JSON.stringify(r));
-ok(r.length === 8, 'Acht öffentliche Gebäude sind begehbar: ' + r.map(o => o.name).join(', '));
+ok(r.length === 20, r.length + ' öffentliche Gebäude (Hauptinsel, Stadt, Fellretter-Insel) sind begehbar: ' + r.map(o => o.name).join(', '));
 for (const o of r) ok(o.door && o.wall && o.inside && o.roofBack && o.npc && o.npcIn, o.name + ': Tür frei, Wand hält, Dach verschwindet drinnen, Figur steht drinnen');
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);
