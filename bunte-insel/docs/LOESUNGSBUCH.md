@@ -12,10 +12,11 @@
 6. 🧽 Schwammi-Bucht
 7. 🎠 Märchenland
 8. 🌊 Weitere Welten
-9. 📋 Alle Aufgaben der Welten
-10. 🏅 Alle Sticker
-11. 🔑 Geheimcodes
-12. 💡 Tipps und Tricks
+9. 🔴 Taschi-Land: fangen, kämpfen, Orden
+10. 📋 Alle Aufgaben der Welten
+11. 🏅 Alle Sticker
+12. 🔑 Geheimcodes
+13. 💡 Tipps und Tricks
 
 ---
 
@@ -191,6 +192,12 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 - ⚒️ Schwertschmied: Schmiede ein Silberschwert
 - 🏘️ Dorfentdecker: Betritt 20 Gebäude
 
+### 🔴 Taschi-Land
+
+- 😋 Feinschmecker: Iss etwas aus dem Rucksack
+- 🎂 Partykind: Feiere mit Freunden eine Party
+- 👑 Waldheld: Besiege den Waldgeist
+
 ---
 
 ## 📜 Inselgeschichten
@@ -290,6 +297,13 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 2: Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe → Aufgabe der Welt
 - Akt 3: Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter → Aufgabe der Welt
 
+### 🔴 Der Weg zum Meister – erzählt von Professor Ulme
+
+- Akt 1: Wähle bei Professor Ulme dein erstes Taschi und fang ein wildes im Gras → Aufgabe der Welt
+- Akt 2: Besiege die 4 Arena-Leiter (4 Orden) → Aufgabe der Welt
+- Akt 3: Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen) → Aufgabe der Welt
+- Akt 4: Besiege Meisterin Aurelia (Meister-Orden) → Aufgabe der Welt
+
 ---
 
 ## 🗿 Rätsel-Insel der Uralten
@@ -351,6 +365,23 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 - 🐉 Drachenhöhen: Fackeln, Kristall-Freunde, Flugringe, Himmelstor „Drachenflug“.
 - 🚢 Dampfer-Hafen: Farbeimer, Orchester, Noten, Stummfilm. 🏗️ Bauland: Blöcke bauen, Startblock. ⚽ Fußball-Arena: Tore schießen, Turnier.
 - 🗺️ Schatzsuche: mit Schatzmeister Piet reden und alle 8 Kisten finden.
+
+---
+
+## 🔴 Taschi-Land: fangen, kämpfen, Orden
+
+Brücke im Osten. Hier leben Taschis – freundliche Taschenwesen. Ziel der Insel: 8 Orden sammeln und Taschi-Meister werden.
+
+- 🔬 Professor Ulme (Labor, große Statue auf dem Platz): Erstes Taschi wählen (Glutzahn 🔥, Samenling 🌿 oder Plätscherchen 💧), Taschidex, Orden, Geschenke.
+- 🌿 Hohes Gras (4 Zonen: Blumenwiese, Teichufer, Felsgrat, Glut-Hügel): wilde Taschis erscheinen. Fangen mit Taschibällen 🔴 – je weniger Lebenspunkte, desto besser klappt es.
+- ⚔️ Kampf: abwechselnd. Wähle Attacke, Beutel (Bälle, Tränke), Team oder Flucht. Typen: 🔥 schlägt 🌿, 🌿 schlägt 💧, 💧 schlägt 🔥🪨, ⚡ schlägt 💧🕊️, 🪨 schlägt 🔥🕊️, 🕊️ schlägt 🌿, 👻 schlägt 👻.
+- ⬆️ Level & Entwicklung: Gewinner bekommen EP, steigen auf und entwickeln sich. Fellino wird mit einem Stein zu Wellino, Flamino, Blitzino oder Laubino.
+- 💖 Heilhaus (Schwester Hanna) heilt dein Team gratis. 🛒 Fangladen: Bälle, Tränke, Steine für Sterne. Wird dein Team müde, wachst du im Heilhaus auf.
+- 🏟️ Arena: Fels-Fiete, Perla, Käpt’n Volt, Blüte – jeder gibt einen Orden. Meisterin Aurelia wartet erst, wenn du 7 Orden hast.
+- 🎈 Team Funke (Jette, Jim, Mauzi) im Lager hinten: drei Kämpfe in Folge, dann gehört dir ihr Heißluftballon (Fahrzeug).
+- 💛 Freunde: Blitzi, Fellino, Flamino & Co. laufen auf dem Platz herum. Sie sind nie Gegner – streicheln erlaubt!
+
+Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten · 📘 Forscher (8 Taschis) · 🎈 Ballon (Team Funke) · 👑 Meister. Alles hier ist selbst erfunden – inspiriert von klassischen Sammel-Rollenspielen.
 
 ---
 
@@ -448,6 +479,18 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 - ⚽ 5 Tore schießen: 0 von 5 (dann gibt es einen ⭐)
 - 🏆 25 Tore schießen: 0 von 25
 
+### 🔴 Taschi-Land
+
+- 🔬 Bei Professor Ulme dein erstes Taschi wählen
+- 🔴 Im hohen Gras ein wildes Taschi fangen (Fang-Orden)
+- 🪨 Fels-Fiete in der Arena besiegen
+- 💧 Perla in der Arena besiegen
+- ⚡ Käpt'n Volt in der Arena besiegen
+- 🌿 Blüte in der Arena besiegen
+- 📘 Taschidex: 8 verschiedene Taschis fangen (0 von 8)
+- 🎈 Team Funke (Jette, Jim, Mauzi) besiegen
+- 👑 Meisterin Aurelia besiegen (alle 7 Orden nötig)
+
 ### ✨ Märchenland
 
 - 🏰 Märchenland besuchen (Brücke im Nordwesten)
@@ -497,7 +540,7 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 
 ### 🚪 Gebäude erkunden
 
-- 🚪 Gebäude betreten: 0 von 42 (5 für den Sticker)
+- 🚪 Gebäude betreten: 0 von 45 (5 für den Sticker)
 - 🏘️ 20 verschiedene Gebäude betreten
 - 🎁 Schatztruhen in Gebäuden öffnen: 0 von 10
 
@@ -518,6 +561,7 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 - 🦊 Der Ruf des Kristalls – noch nicht begonnen (geh auf die Insel)
 - 📻 Die dreizehn Sender – noch nicht begonnen (geh auf die Insel)
 - 🔱 Das Herz von Atlantis – noch nicht begonnen (geh auf die Insel)
+- 🔴 Der Weg zum Meister – noch nicht begonnen (geh auf die Insel)
 
 ---
 
@@ -623,6 +667,9 @@ So bekommst du jeden Sticker:
 | 🦊 Held von Lunaris | Schaffe die Geschichte von Zotik & Lunaris (Der Ruf des Kristalls) |
 | 📻 Funkmeister | Schaffe die Geschichte der Funkwelle (Die dreizehn Sender) |
 | 🔱 Hüter von Atlantis | Schaffe die Geschichte von Atlantis (Das Herz von Atlantis) |
+| 🔴 Taschi-Held | Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister) |
+| 🎯 Taschi-Fänger | Fang dein erstes wildes Taschi |
+| 👑 Taschi-Meister | Hol alle 8 Orden in Taschi-Land |
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |
 | 🗺️ Weltenbummler | Betritt 40 Gebäude |
 | 🎁 Truhenfinder | Öffne 10 Schatztruhen in Gebäuden |
@@ -657,6 +704,7 @@ Eingabe über ⚙️ → „🔑 Code eingeben“ (Groß-/Kleinschreibung egal).
 
 | Eintrag | Beschreibung |
 |---|---|
+| 🔴 TASCHIMEISTER | Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team). |
 | ♾️ UNENDLICHSTERNE | Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999). (nochmal eingeben = aus) |
 | 🔓 ALLESFREI | Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände. |
 | 🌟 STERNENREGEN | +500 Sterne sofort. |

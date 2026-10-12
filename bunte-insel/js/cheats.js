@@ -2,6 +2,7 @@
 /* Bunte Insel – Geheimcodes 🔑 (⚙️ → „Code eingeben“): Cheats und Specials, die es im normalen Spiel nicht gibt.
    Toggle-Codes (nochmal eingeben = aus) merken sich im Spielstand (save.cheat.on). Neue Codes: einfach in BI.CHEATS eintragen – Eingabefenster, Lösungsbuch und docs/ ziehen sie automatisch. */
 BI.CHEATS = [
+  { code: 'TASCHIMEISTER', icon: '🔴', text: 'Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team).' },
   { code: 'UNENDLICHSTERNE', icon: '♾️', text: 'Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999).', toggle: true },
   { code: 'ALLESFREI', icon: '🔓', text: 'Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände.' },
   { code: 'STERNENREGEN', icon: '🌟', text: '+500 Sterne sofort.' },
@@ -29,7 +30,7 @@ BI.createCheats = function (G) {
   function unlockAll() {
     const S0 = S(); S0.open = true; let n = 0;
     for (const id of G.stickerIds()) if (!(save.stk || (save.stk = [])).includes(id)) { save.stk.push(id); n++; }
-    if (G.finishStory) G.finishStory(); if (G.unlockPets) G.unlockPets();
+    if (G.finishStory) G.finishStory(); if (G.unlockPets) G.unlockPets(); if (G.taschiAll) G.taschiAll();
     for (const it of G.shopIds()) if (!save.owned.includes(it)) save.owned.push(it);
     persist(); G.applyStory && G.applyStory(); return n;
   }
@@ -39,6 +40,7 @@ BI.createCheats = function (G) {
     if (!c) { A.bonk && A.bonk(); return { ok: false, msg: '🤔 Diesen Code kenne ich nicht. Tipp: Codes stehen im Lösungsbuch.' }; }
     const s = S(); let msg = c.icon + ' ' + c.code + '!';
     if (c.code === 'ALLESFREI') { const n = unlockAll(); msg = '🔓 Alles freigeschaltet! (' + n + ' neue Sticker, Inselreise fertig, alle Welten offen, alle Gegenstände)'; }
+    else if (c.code === 'TASCHIMEISTER') { G.taschiAll && G.taschiAll(); msg = '🔴 Taschi-Land: alle Orden, Taschidex voll, Beutel gefüllt!'; }
     else if (c.code === 'STERNENREGEN') { G.addStars(500); msg = '🌟 +500 Sterne!'; }
     else if (c.code === 'TAGESGESCHENK') { save.daily = { d: '', s: (save.daily && save.daily.s) || 0 }; G.daily && G.daily(); msg = '🎁 Tagesgeschenk!'; }
     else if (c.code === 'ZUHAUSE') { G.goHome && G.goHome(); msg = '🏠 Zuhause!'; }

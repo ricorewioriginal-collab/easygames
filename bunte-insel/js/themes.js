@@ -86,6 +86,7 @@ BI.zoneAt = function (x, z, flags) {
   if (d(BI.DRACHEN.x, BI.DRACHEN.z) < BI.DRACHEN.R + 8) return 'drachen';
   if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 8) return 'bauland';
   if (BI.FUSSBALL && d(BI.FUSSBALL.x, BI.FUSSBALL.z) < BI.FUSSBALL.R + 8) return 'fussball';
+  if (BI.TASCHI && d(BI.TASCHI.x, BI.TASCHI.z) < BI.TASCHI.R + 8) return 'fussball';
   if (BI.MAERCHEN && d(BI.MAERCHEN.x, BI.MAERCHEN.z) < BI.MAERCHEN.R + 8) return 'maerchen';
   if (BI.SCHLUESSEL && d(BI.SCHLUESSEL.x, BI.SCHLUESSEL.z) < BI.SCHLUESSEL.R + 8) return 'schluessel';
   if (BI.SCHWAMM && d(BI.SCHWAMM.x, BI.SCHWAMM.z) < BI.SCHWAMM.R + 8) return 'seegrund';
