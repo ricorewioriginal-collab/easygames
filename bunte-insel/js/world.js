@@ -478,7 +478,7 @@ BI.buildWorld = function (scene) {
   BI.buildAtlantisGround({ W, st, lamp, ROADY, scene });
   BI.buildZotikGround({ W, st, lamp, scene });
   BI.buildRadioGround({ W, st, lamp, scene });
-  BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade(); BI.ZOTIK.addArcade(); BI.RADIO.addArcade(); BI.buildExtraArcades({ W, st, lamp });
+  BI.buildArcades({ W, st, lamp }); BI.ATLANTIS.addArcade(); BI.ZOTIK.addArcade(); BI.RADIO.addArcade(); BI.buildExtraArcades({ W, st, lamp }); BI.ATLANTIS.addExtraArcade('blasen_atlantis', -13, 136, 0x0f5a73, 0x9fe3ff);
 
   /* ---------- Park mit Spielplatz (SW) ---------- */
   { const x0 = -72, x1 = -46, z0 = 46, z1 = 66;

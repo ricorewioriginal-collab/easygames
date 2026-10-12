@@ -80,6 +80,20 @@ Kleine Insel über eine Brücke (🧭 → „Fußball-Arena“) mit einem richti
 - Figuren: **Kapitän Jannis** und Trainerin Lena erklären das Spiel. Neue Musik „Stadion-Stimmung“.
 - Technik: `js/fussball.js`; kleine Inseln nutzen den gemeinsamen Helfer `BI.buildIsleBridge` + `W.isles` (Brücke, Rand, Flughöhe, Schaum). Test: `node bunte-insel/tests/fussball.mjs` (`DEBUG=1` zeigt Rohwerte).
 
+
+## Märchenland ✨🏰 (Erweiterung im Nordwesten)
+Kleine Zauberinsel über eine Brücke (🧭 → „Märchenland“), **inspiriert** von den großen Märchen- und Trickfilm-Welten, aber mit ganz **eigenen, selbst erfundenen** Figuren und Orten (nichts davon ist ein Original):
+- **Schloss „Sternenglanz“** mit Prinzessin Lilia, **Wunschbrunnen** (Wunsch tun: Glitzer, die ersten 3 Wünsche geben je ⭐), Märchentor, Glühfeen und **Feuerwerk** über dem Schloss.
+- **Eispalast „Frostgipfel“** (Eisfee Frida, Schneemann Olli), **Königsfels** (Löwenkönig Leo), **Piratenschiff „Salzige Möwe“** (Käpt'n Kralle), **Perlenlagune** (Meerjungfrau Marina), **Teppich-Basar** mit schwebendem Teppich (Teppich-Tom), **Dschungelpfad** (Bär Bruno) und Mäuserich Willi am Tor. Alle Figuren sind ansprechbar und sprechen kurze, leichte Sätze.
+- Spielautomat **„Sternschnuppen“** (siehe Kinder-Spiele), Musik „Märchen-Zauber“, Aufgaben im 📋 Log. Datei: `js/maerchen.js`, Test: `tests/maerchen.mjs`.
+
+## Bild-Tafeln 🪧 und Kinder-Spiele 🧒 (für Kleine, die noch nicht lesen)
+- **Bild-Tafeln** (`js/tafeln.js`) stehen an den Eingängen aller Welten: große Bilder + höchstens 3 Wörter. Beim Hinlaufen (einmal) oder mit dem Hauptknopf „🔊 Vorlesen“ wird der Text **laut vorgelesen**. Sparsam: Pfosten in einem Mesh, weit entfernte Tafeln sind unsichtbar. Test: `tests/tafeln.mjs`.
+- **13 neue Mini-Spiele** (`js/minis3.js`), nur Antippen, kein Verlieren, Erklärung mit Bildern statt Text; jede Insel hat ihren eigenen Spielautomaten und alle gehen auch „Mit Freunden“: 🦋 Schmetterlinge fangen (Hauptinsel), 🚦 Ampel-Held (Stadt), 🎠 Karussell-Ringe (Park), 🌈 Farben-Suche (Regenbogen), 🎣 Fische fangen (Dampfer), 🥚 Drachen-Eier, 🐶 Welpen-Suche (Fellretter), ⚽ Elfmeter (Fußball), 🔷 Formen-Suche (Bauland), 🎵 Noten-Fang (Funkwelle), 🔥 Zauber-Suche (Zotik), ⭐ Sternschnuppen (Märchenland), 🫧 Blasen-Pop (Atlantis). Vier Bausteine: Tipp-Jagd, Such-Bild, Ring-Fang, plus Ampel und Elfmeter. Test: `tests/minis3.mjs`.
+
+## Kleinere Welten
+Zotik (Lunaris, jetzt R≈70 bei (0, 380)), die Funkwelle (R≈64 bei (240, 184), Plätze und Reichweite der Radios angepasst) und Atlantis (Höhle R≈96) sind auf **Inselgröße** verkleinert. Zotik und Atlantis werden dafür in Original-Maßen gebaut und im Maßstab `S` (0,625 / 0,6) um die Mitte verkleinert (Meshes, Kollisionen, Laufregeln, Figuren); die Brücke bzw. Treppe an der Oberfläche bleibt in echten Maßen. Test: `tests/welten.mjs`.
+
 ## Regenbogenwelt 🌈 (Erweiterung, Aufklärung für Kinder)
 Kleine Insel im Westen (Spiegelbild zum Freizeitpark), über die Brücke erreichbar; auch per 🧭 Wohin? → „Regenbogenwelt“.
 - **Plaza** mit Regenbogen-Ringen und Brunnen (🌈 „Freude teilen“: Konfetti, ein Spruch über Vielfalt, alle 45 s +1 ⭐), zwei große **Regenbogen-Bögen**, **Flaggen** (Regenbogen, Trans, Bi, Pan), bunte Häuser, Tanzfläche, bunte Bäume.

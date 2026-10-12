@@ -49,5 +49,29 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   ok(r.size && r.apartIsles, 'Funkwelle: Insel-Größe (R≈64), überlappt keine andere Insel'); ok(r.bridge && r.bridgeLen, 'Funkwelle: Brücke lückenlos');
   ok(r.plots && r.apart && r.hub, 'Funkwelle: 13 Sender-Plätze passen nebeneinander auf die kleinere Insel'); ok(r.zone && r.notes, 'Funkwelle: Zone/Musik, Noten auf der Insel');
 }
+
+/* ---------- Atlantis (Höhle im Miniatur-Maßstab) ---------- */
+{
+  const r = await p.evaluate(async () => {
+    const b = window.__bi, W = b.W, A = BI.ATLANTIS, S = A.S, out = {}, sl = ms => new Promise(r => setTimeout(r, ms)), o = {};
+    out.size = A.R <= 100 && A.R >= 80; out.zone = BI.zoneAt(A.x + 20, A.z, {}) === 'atlantis' && BI.worldAt(A.x, A.z) === 'atlantis';
+    /* Mitte und Achsen begehbar (Brücken), Kanäle abseits der Achsen gesperrt, Rand hält */
+    out.center = !W.resolve(A.x, A.z, .4, o).hit;
+    out.axis = true; for (let d = 5; d < 88; d += 4) { if (W.resolve(A.x, A.z + d * S, .4, {}).hit && d * S < 40) out.axis = false; }
+    const through = []; for (let d = 30; d < 150; d += 3) { const x = A.x + Math.cos(.8) * d * S, z = A.z + Math.sin(.8) * d * S, q = W.resolve(x, z, .4, {}); through.push(Math.hypot(q.x - x, q.z - z) > .01); } out.canalBlocks = through.filter(Boolean).length >= 4;
+    const edge = W.resolve(A.x + A.R + 30, A.z, .4, {}); out.edge = Math.hypot(edge.x - A.x, edge.z - A.z) <= A.R + .01;
+    out.acro = W.atlantis.floor(A.x + 3, A.z) > 2 && W.atlantis.floor(A.x + 3, A.z) < 4.2 && W.atlantis.floor(A.x + 70, A.z + 70) === 0;
+    const ex = W.spots.atlExit; out.exit = Math.hypot(ex.x - A.x, ex.z - A.z) < A.R - 2 && ex.y < 9;
+    out.arc = ['stroemung_atlantis', 'blasen_atlantis'].every(k => (W.spots.arcades || []).some(a => a.kind === k && Math.hypot(a.x - A.x, a.z - A.z) < A.R - 2));
+    out.pit = !!W.atlPit && W.atlPit.floor(W.spots.atlPortal.x + Math.sin(A.pit.a) * 3, W.spots.atlPortal.z + Math.cos(A.pit.a) * 3) < 0 && BI.worldAt(W.spots.atlPortal.x, W.spots.atlPortal.z) === 'insel';
+    const sh = b.atlantis.shards; out.shards = sh.length > 30 && sh.every(q => Math.hypot(q.x - A.x, q.z - A.z) < A.R);
+    b.atlantis.enter(); await sl(1500); out.enter = Math.hypot(b.P.x - A.x, b.P.z - A.z) < A.R - 2 && b.P.z > A.z;
+    const gl = (W.vehicleSpawns || []).filter(v => v.type === 'gleiter'); out.gleiter = gl.length === 3 && gl.every(v => Math.hypot(v.x - A.x, v.z - A.z) < A.R);
+    b.P.x = 0; b.P.z = 26; b.P.y = 0; return out;
+  });
+  if (process.env.DEBUG) console.log('   ', JSON.stringify(r));
+  ok(r.size && r.zone, 'Atlantis: Höhlen-Größe (R≈96), Zone/Musik'); ok(r.center && r.axis && r.canalBlocks && r.edge, 'Atlantis: Mitte/Brücken begehbar, Kanäle abseits gesperrt, Rand hält');
+  ok(r.acro && r.exit && r.arc && r.shards, 'Atlantis: Akropolis-Stufen, Ausgang, beide Spielautomaten und Splitter auf der Insel'); ok(r.pit && r.enter && r.gleiter, 'Atlantis: Treppe an der Oberfläche unverändert, Abstieg landet in der Stadt, 3 Gleiter');
+}
 ok(errs.length === 0, 'Keine Konsolen-/Seitenfehler' + (errs.length ? '\n' + errs.slice(0, 5).join('\n') : ''));
 await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);
