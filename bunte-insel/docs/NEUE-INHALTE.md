@@ -16,7 +16,7 @@ Das Spiel wächst ständig. Damit **Story-Modus, Handbuch, Lösungsbuch, Codes u
 ## 1b. Inselgeschichte 📜 (jede Welt erzählt eine kleine eigene Geschichte)
 - Neuer Eintrag in `BI.INSELSTORY` (`js/inselstory.js`): Figur der Welt (`npc`), Titel, 2–4 **Akte** mit Erzähltext, Hinweis und Ziel (`goal` = Sticker-IDs, die man in dieser Welt schafft), Abschlusstext. Inspiriert vom Vorbild der Welt, aber **mit eigenen Namen** (keine fremden Marken).
 - Abschluss-Sticker `geschichte_<key>` (Kleinbuchstaben) in `js/kids.js` anlegen. Wenn die Welt noch keine eigenen Sticker für Meilensteine hat, bitte welche ergänzen (`kids.earn(...)` an den Meilensteinen).
-- Noch ohne Inselgeschichte: Stadtinsel, Fellretter-Bucht, Regenbogeninsel, Dampfer-Hafen, Drachenhöhen, Fußball-Arena, Zotik & Lunaris, Radio-Insel, Atlantis (brauchen erst Meilenstein-Sticker).
+- **Alle 15 Welten haben eine Inselgeschichte.** Ziele (`goal`) können sein: Sticker-ID · `{ log: 'dampf', row: 0 }` (Zeile der Aufgabenliste der Welt, Modul in `logs` von `createInselStory` in `js/main.js` eintragen) · `{ talk: 'CITY', n: 3 }` (n Bewohner der Insel angesprochen) · `{ flag: 'x' }` (`save.flags.x`, im Modul setzen) · `{ einsatz: n }` / `{ medal: 1 }`. `tests/inselstory2.mjs` spielt jede Geschichte durch – bei neuen Welten dort das Setzen des Spielstands für neue Ziel-Arten ergänzen.
 
 ## 1c. Begleiter 🐾
 - Freischaltbare Tiere/Begleiter: `BI.PETS` (`js/util.js`) – `unlock: '<sticker-id>'` (wird mit dem Sticker frei) oder `mascot: true` (explizit per `takeMascot`/`unlockPet`). Neue Tiere ggf. als Eintrag in der Tabelle `K` von `BI.makePet`.

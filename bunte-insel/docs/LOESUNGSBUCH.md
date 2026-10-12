@@ -234,6 +234,62 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 1: Bau ein Teil (Bauen-Knopf 🧱) → 🏠 Baumeister
 - Akt 2: Schaffe deinen selbst gebauten Parcours → 🧗 Parcours-Baumeister
 
+### 🏙️ Die Lichter der Großstadt – erzählt von Stadtführerin Luna
+
+- Akt 1: Sprich mit 3 Stadtbewohnern der Stadtinsel → Aufgabe der Welt
+- Akt 2: Spiele das Ampel-Spiel am Spielautomaten der Stadtinsel → Aufgabe der Welt
+- Akt 3: Sprich mit 8 Stadtbewohnern der Stadtinsel → Aufgabe der Welt
+
+### 🐶 Die große Fellretter-Parade – erzählt von Bürgermeister Berti
+
+- Akt 1: Schließe 1 Einsatz an der Einsatz-Tafel ab → Aufgabe der Welt
+- Akt 2: Schließe 3 Einsätze ab → Aufgabe der Welt
+- Akt 3: Schaffe alle Fellretter-Einsätze (Medaille) → Aufgabe der Welt
+
+### 🌈 Jeder gehört dazu – erzählt von Regenbogen-Romy
+
+- Akt 1: Sprich mit 3 Bewohnern der Regenbogeninsel → Aufgabe der Welt
+- Akt 2: Teile Freude am großen Regenbogen der Plaza (Aktionstaste direkt am Regenbogen) → Aufgabe der Welt
+- Akt 3: Sprich mit 8 Bewohnern der Regenbogeninsel → Aufgabe der Welt
+
+### 🚢 Das Orchester der Farben – erzählt von Käpt’n Muschel
+
+- Akt 1: Öffne alle 6 Farbeimer im Dampfer-Hafen → Aufgabe der Welt
+- Akt 2: Spiele alle 6 Instrumente und finde alle 8 Noten → Aufgabe der Welt
+- Akt 3: Sieh dir einen Stummfilm im Freiluftkino an → Aufgabe der Welt
+
+### 🐉 Zündels Himmelsflug – erzählt von Drachenwächterin Brisa
+
+- Akt 1: Zünde alle 6 Fackeln an (Zündel hilft) → Aufgabe der Welt
+- Akt 2: Befreie alle 6 Kristall-Freunde und fliege durch alle 8 Flugringe → Aufgabe der Welt
+- Akt 3: Öffne das Himmelstor und spiele „Drachenflug“ → Aufgabe der Welt
+
+### ⚽ Der goldene Pokal – erzählt von Trainerin Lena
+
+- Akt 1: Schieß einmal richtig (Knopf am Ball) → Aufgabe der Welt
+- Akt 2: Schieße 5 Tore → Aufgabe der Welt
+- Akt 3: Schieße 25 Tore → Aufgabe der Welt
+- Akt 4: Gewinne das Fußball-Turnier → 🏆 Pokalsieger
+
+### 🦊 Der Ruf des Kristalls – erzählt von Mira
+
+- Akt 1: Besuche Lunaris und sprich mit Mira in der Taverne → Aufgabe der Welt
+- Akt 2: Finde den Hinweis im Hafen → Aufgabe der Welt
+- Akt 3: Untersuche den Riss an der Akademie (Elementar-Kampf) → Aufgabe der Welt
+- Akt 4: Berichte Mira vom Kampf → Aufgabe der Welt
+
+### 📻 Die dreizehn Sender – erzählt von Funkmeisterin Frida
+
+- Akt 1: Höre einen Sender (Radio am Platz, 20 Sekunden zuhören) → Aufgabe der Welt
+- Akt 2: Sieh dir das Visual Radio an einem Bildschirm an → Aufgabe der Welt
+- Akt 3: Höre alle 13 Sender → Aufgabe der Welt
+
+### 🔱 Das Herz von Atlantis – erzählt von Orakel Okeana
+
+- Akt 1: Sieh dir alle 5 Hologramme im Archiv an → Aufgabe der Welt
+- Akt 2: Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe → Aufgabe der Welt
+- Akt 3: Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter → Aufgabe der Welt
+
 ---
 
 ## 🗿 Rätsel-Insel der Uralten
@@ -453,6 +509,15 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 - 🎠 Das verlorene Märchenbuch – noch nicht begonnen (geh auf die Insel)
 - 🎡 Der Traumpark – noch nicht begonnen (geh auf die Insel)
 - 🧱 Die Stadt aus Blöcken – noch nicht begonnen (geh auf die Insel)
+- 🏙️ Die Lichter der Großstadt – noch nicht begonnen (geh auf die Insel)
+- 🐶 Die große Fellretter-Parade – noch nicht begonnen (geh auf die Insel)
+- 🌈 Jeder gehört dazu – noch nicht begonnen (geh auf die Insel)
+- 🚢 Das Orchester der Farben – noch nicht begonnen (geh auf die Insel)
+- 🐉 Zündels Himmelsflug – noch nicht begonnen (geh auf die Insel)
+- ⚽ Der goldene Pokal – noch nicht begonnen (geh auf die Insel)
+- 🦊 Der Ruf des Kristalls – noch nicht begonnen (geh auf die Insel)
+- 📻 Die dreizehn Sender – noch nicht begonnen (geh auf die Insel)
+- 🔱 Das Herz von Atlantis – noch nicht begonnen (geh auf die Insel)
 
 ---
 
@@ -549,6 +614,15 @@ So bekommst du jeden Sticker:
 | 📖 Märchenretter | Schaffe die Geschichte des Märchenlands (Das verlorene Märchenbuch) |
 | 🎡 Traumpark-Chef | Schaffe die Geschichte des Freizeitparks (Der Traumpark) |
 | 🧱 Block-Baumeister | Schaffe die Geschichte vom Bauland (Die Stadt aus Blöcken) |
+| 🏙️ Ehren-Stadtkind | Schaffe die Geschichte der Stadtinsel (Die Lichter der Großstadt) |
+| 🐶 Fellretter-Held | Schaffe die Geschichte der Fellretter-Bucht (Die große Fellretter-Parade) |
+| 🌈 Regenbogen-Freund | Schaffe die Geschichte der Regenbogeninsel (Jeder gehört dazu) |
+| 🚢 Ehren-Matrose | Schaffe die Geschichte vom Dampfer-Hafen (Das Orchester der Farben) |
+| 🐉 Drachenfreund | Schaffe die Geschichte der Drachenhöhen (Zündels Himmelsflug) |
+| ⚽ Arena-Meisterin | Schaffe die Geschichte der Fußball-Arena (Der goldene Pokal) |
+| 🦊 Held von Lunaris | Schaffe die Geschichte von Zotik & Lunaris (Der Ruf des Kristalls) |
+| 📻 Funkmeister | Schaffe die Geschichte der Funkwelle (Die dreizehn Sender) |
+| 🔱 Hüter von Atlantis | Schaffe die Geschichte von Atlantis (Das Herz von Atlantis) |
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |
 | 🗺️ Weltenbummler | Betritt 40 Gebäude |
 | 🎁 Truhenfinder | Öffne 10 Schatztruhen in Gebäuden |

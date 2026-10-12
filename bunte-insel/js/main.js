@@ -1076,6 +1076,7 @@
     $('grTitle').textContent = rec ? '🏆 Neuer Rekord!' : 'Geschafft!'; $('grText').textContent = d.name + ': ' + score + ' Punkte  +' + stars + ' ⭐'; $('grList').innerHTML = ''; $('gameRes').hidden = false; mpOpen = true;
   }
   function startGame(k, solo) {
+    if (k === 'ampel_stadt') (save.flags || (save.flags = {})).ampel = 1;
     const def = gdef(k); if (!def) return; if (gm || mini.active) { say('Es läuft schon ein Spiel!', 2000); return; }
     if (!solo && !net.connected()) { say('Dafür brauchst du Mitspieler 👥', 2000); return; } if (P.veh || ride) { say('Steig erst aus 🚪', 1800); return; }
     const ids = [selfId()].concat([...remote.keys()]); const d = { t: 'g', op: 'start', k, seed: (Math.random() * 1e9) | 0, it: ids[(Math.random() * ids.length) | 0], dur: def.dur };
@@ -1262,7 +1263,7 @@
   let tycoon = null; const takeStar = n => { save.stars -= n; $('starN').textContent = save.stars; persist(); }, earnSt = id => { kids.earn(id); meta.note(id); };
   const park = BI.createPark({ scene, W, A, fx, P, say, save, inv: () => garden.inv(), addStars: n => addStars(n), takeStar, earn: earnSt, char: () => char, onRide: k => { if (tycoon) tycoon.onRide(k); } }); park.people(town.folk);
   tycoon = BI.createTycoon({ scene, W, A, fx, P, say, save, persist, park, playing: () => state === 'play', addStars: n => addStars(n), takeStar, inv: () => garden.inv(), earn: earnSt, setStick, updateButtons: f => updateButtons(f) });
-  const rainbow = BI.createRainbow({ scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => { kids.earn(id); meta.note(id); } }); rainbow.people(town.folk);
+  const rainbow = BI.createRainbow({ flag: f => { (save.flags || (save.flags = {}))[f] = 1; }, scene, W, A, fx, P, say, addStars: n => addStars(n), earn: id => { kids.earn(id); meta.note(id); } }); rainbow.people(town.folk);
   const pups = BI.createPups({ scene, W, A, fx, P, say, talk: n => talkNpc(n), addStars: n => addStars(n), look: () => charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, ''), earn: id => { kids.earn(id); meta.note(id); } }); pups.people(town.folk);
   const arcade = BI.createArcade({ scene, W, P, start: k => startGame(k, true), info: k => gdef(k) });
   const dampf = BI.createDampf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), takeMascot: id => takeMascot(id) }); dampf.people(town.folk);
@@ -1280,7 +1281,7 @@
   const schluessel = BI.createSchluessel({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), note: k => meta.note(k), char: () => char, setStick, updateButtons: f => updateButtons(f), callMobil }); schluessel.people(town.folk);
   const sammeln = BI.createSammeln({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), note: k => meta.note(k), night: () => night, setStick, updateButtons: f => updateButtons(f), zoo: () => farm.openBook(), room: () => room.build(), share: () => shareRoomSoon(), rainbow: () => weather && weather.rainbow() });
   const pad = BI.createGamepad({ inp, cam, P, say, state: () => state, busy: () => uiBusy(), mini: () => mini.active, setStick });
-  istory = BI.createInselStory({ save, say, persist, P, addStars: n => addStars(n), earn: id => kids.earn(id), speak: t => A.speak && A.speak(t), fanfare: () => A.fanfare && A.fanfare(), lockedAt: (x, z) => smode.lockedAt(x, z) });
+  istory = BI.createInselStory({ inside: k => k === 'ATLANTIS' && !!atlantis.inside, folk: () => town.folk, logs: () => ({ dampf: () => dampf.log(), drachen: () => drachen.log(), fussball: () => fussball.log(), zotik: () => zotik.log(), radio: () => radio.log(), atlantis: () => atlantis.log(), einsatz: () => { const E = save.einsatz || { done: [], cur: null }; return { state: E }; } }), save, say, persist, P, addStars: n => addStars(n), earn: id => kids.earn(id), speak: t => A.speak && A.speak(t), fanfare: () => A.fanfare && A.fanfare(), lockedAt: (x, z) => smode.lockedAt(x, z) });
   const kb = BI.createKeys({ say, pad }); $('bKeys').addEventListener('click', () => kb.open());
   /* Geheimcodes, Handbuch/Lösungsbuch, Fehler melden */
   const cheats = BI.createCheats({ save, say, persist, P, fx, A, setStick, addStars: n => addStars(n), char: () => char, goHome, daily: () => kids.daily(), stickerIds: () => kids.all().map(q => q[0]), shopIds: () => SHOP.map(q => q.id), unlockPets: () => { const mm = save.mascots || (save.mascots = []); for (const q of BI.PETS) if (q.mascot && !mm.includes(q.id)) mm.push(q.id); }, finishStory: () => story.finish(), applyStory: () => smode.apply(), refreshStars: () => { $('starN').textContent = save.stars; } });
