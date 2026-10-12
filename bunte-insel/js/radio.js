@@ -59,7 +59,7 @@ BI.buildRadioGround = function (c) {
   { const L = Bz.L, cx = (Bz.ax + Bz.bx) / 2, cz = (Bz.az + Bz.bz) / 2, ry = Math.atan2(Bz.ux, Bz.uz); st.box(cx, .35, cz, Bz.w, .3, L, 0xb98650, ry);
     for (const sd of [-1, 1]) { st.box(cx + nx * sd * (Bz.w / 2 - .1), .65, cz + nz * sd * (Bz.w / 2 - .1), .14, 1.0, L, 0x8a5a33, ry); for (let k = 0; k <= L; k += 4) { const px = Bz.ax + Bz.ux * k + nx * sd * (Bz.w / 2 - .1), pz = Bz.az + Bz.uz * k + nz * sd * (Bz.w / 2 - .1); st.cyl(px, 0, pz, .12, .14, 1.2, 0x6a4a2a, 5); } }
     for (let k = 6; k < L; k += 10) for (const sd of [-1, 1]) st.cyl(Bz.ax + Bz.ux * k + nx * sd * 1.9, -1.6, Bz.az + Bz.uz * k + nz * sd * 1.9, .4, .45, 1.9, 0x4a4a52, 8); }
-  const grp = new THREE.Group(), stMs = BI.layerMeshes(st), glM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); glM.frustumCulled = false; for (const m of stMs) { m.frustumCulled = false; grp.add(m); } grp.add(glM); grp.visible = false; scene.add(grp); A.group = grp;
+  const grp = new THREE.Group(), stMs = BI.layerMeshes(st), glM = glow.mesh(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false })); glM.frustumCulled = false; for (const m of stMs) { grp.add(m); } grp.add(glM); grp.visible = false; scene.add(grp); A.group = grp;
 };
 
 /* ---------- Laufzeit ---------- */

@@ -2,7 +2,7 @@
 /* Bunte Insel – Optik-Extras, die fast nichts kosten: weiche eingebrannte Schatten (1 Zeichenaufruf), glitzerndes Wasser, Sonne am Himmel,
    Wiesenflecken, Blumen & Grasbüschel (Instanzen), Büsche an Häusern, Vögel und Schmetterlinge. Im Sparmodus weniger davon. */
 BI.createBeauty = function (G) {
-  const { scene, camera, W, save, renderer } = G, K = {}, TAU = BI.TAU, rnd = BI.rng(2024), mat = BI.mat();
+  const { scene, camera, W, save, renderer } = G, K = {}, LOCAL = [], TAU = BI.TAU, rnd = BI.rng(2024), mat = BI.mat();
   /* Sparmodus oder reines Software-Rendering (kein Grafikchip): weniger Zierde */
   let soft = false; try { const gl = renderer.getContext(), ex = gl.getExtension('WEBGL_debug_renderer_info'); soft = !!ex && /swiftshader|llvmpipe|software/i.test(String(gl.getParameter(ex.UNMASKED_RENDERER_WEBGL))); } catch (e) { }
   const eco = !!save.eco || soft;
@@ -13,7 +13,7 @@ BI.createBeauty = function (G) {
   { const b = new BI.Batch(), C = 0x1c2a44, dx = -.83, dz = -.55;
     for (const T of W.trees) { const s = T.top / (T.kind === 'pine' ? 5 : 4), r = (T.kind === 'pine' ? 1.9 : 2.3) * s, L = T.top * .5; b.disc(T.x + dx * L, T.z + dz * L, r, .075, C, 10); }
     for (const q of W.boxes) { const w = q.x1 - q.x0, d = q.z1 - q.z0, h = Math.min(q.h || 6, 9); if (Math.min(w, d) < 3 || w * d < 16 || h < 3) continue; const L = h * .55; b.rect(q.x0 + dx * L, q.z0 + dz * L, q.x1 + dx * L, q.z1 + dz * L, .072, C); }
-    const m = b.mesh(shMat); m.frustumCulled = false; m.renderOrder = 1; scene.add(m); }
+    for (const m of BI.chunkMeshes(b, shMat)) { m.renderOrder = 1; scene.add(m); LOCAL.push(m); } }
 
   /* ---------- Wasser: zwei langsam laufende Wellen-Schichten ---------- */
   const waves = [];
@@ -30,14 +30,14 @@ BI.createBeauty = function (G) {
   /* ---------- Wiesenflecken (zwei zusätzliche Grüntöne) ---------- */
   if (!soft) { const b = new BI.Batch(), cols = [0x82c174, 0x9acf87, 0x77b869, 0x8cc77d, 0xa6d591];
     const put = [[], [], []]; for (let i = 0, n = 0; i < 400 && n < (eco ? 40 : 95); i++) { const a = rnd() * TAU, d = Math.sqrt(rnd()) * 150, x = Math.sin(a) * d, z = Math.cos(a) * d, r = 4 + rnd() * 10; if (put[n % 3].some(q => Math.hypot(q[0] - x, q[1] - z) < q[2] + r + .2)) continue; if (![[0, 0], [r * .8, 0], [-r * .8, 0], [0, r * .8], [0, -r * .8]].every(([ox, oz]) => !W.onRoad(x + ox, z + oz) && Math.hypot(x + ox, z + oz) < 158 && Math.hypot(x + ox - W.lake.x, z + oz - W.lake.z) > W.lake.r + 2)) continue; put[n % 3].push([x, z, r]); b.disc(x, z, r, .026 + (n % 3) * .001, cols[n % cols.length], 14); n++; }
-    const m = b.mesh(mat); m.frustumCulled = false; scene.add(m); }
+    for (const m of BI.chunkMeshes(b, mat)) { scene.add(m); LOCAL.push(m); } }
 
   /* ---------- Blumen und Grasbüschel (Instanzen) ---------- */
   const flowerPos = [];
   if (!soft) { const stem = new BI.Batch(), head = new BI.Batch(), tuft = new BI.Batch();
     stem.cyl(0, 0, 0, .02, .02, .34, 0x3fa84e, 4); for (let petal = 0; petal < 5; petal++) { const a = petal / 5 * BI.TAU; head.sph(Math.sin(a) * .105, .38, Math.cos(a) * .105, .095, 0xffffff, 0, 1, .45, 1); } head.sph(0, .405, 0, .065, 0xffd23f, 0, 1, .6, 1);
     for (let k = 0; k < 3; k++) tuft.cone(Math.sin(k * 2.1) * .07, 0, Math.cos(k * 2.1) * .07, .09, .42 + k * .05, 0x5cc04a, 4);
-    const NF = eco ? 120 : 330, NT = eco ? 200 : 520, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat, n); im.frustumCulled = false; scene.add(im); return im; };
+    const NF = eco ? 120 : 330, NT = eco ? 200 : 520, mk = (b, n) => { const g = b.mesh(mat).geometry, im = new THREE.InstancedMesh(g, mat, n); im.frustumCulled = false; scene.add(im); LOCAL.push(im); return im; };
     const iS = mk(stem, NF), iH = mk(head, NF), iT = mk(tuft, NT), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();
     const PAL = [0xff5a8a, 0xffd23f, 0xffffff, 0xb36bff, 0xff8a1f, 0x6ac0ff];
     let nf = 0, nt = 0;
@@ -53,7 +53,7 @@ BI.createBeauty = function (G) {
   { const b = new BI.Batch(), G1 = [0x3fa84e, 0x4cb85a, 0x2f9a3c], PAL = [0xff5a8a, 0xffd23f, 0xffffff, 0xff8a1f];
     for (const h of W.houses || []) for (const [sx, sz] of [[-1, 1], [1, 1], [-1, -1], [1, -1]]) { if (rnd() < .35) continue; const x = h.x + sx * (h.w / 2 + .9), z = h.z + sz * (h.d / 2 + .9); if (!ok(x, z, .8)) continue; const r = .55 + rnd() * .35; b.sph(x, r * .6, z, r, G1[(rnd() * 3) | 0], 1, 1, .8, 1);
       for (let k = 0; k < 5; k++) { const a = rnd() * TAU; b.sph(x + Math.sin(a) * r * .8, r * .6 + rnd() * r * .5, z + Math.cos(a) * r * .8, .09, PAL[(rnd() * 4) | 0], 0); } }
-    const m = b.mesh(mat); m.frustumCulled = false; scene.add(m); }
+    for (const m of BI.chunkMeshes(b, mat)) { scene.add(m); LOCAL.push(m); } }
 
   /* ---------- Vögel und Schmetterlinge ---------- */
   const birds = [], flies = [];
@@ -67,9 +67,11 @@ BI.createBeauty = function (G) {
 
   /* ---------- pro Bild ---------- */
   let anchorT = 0;
+  let LOCALFAR = false;
   K.update = function (dt, t, night, wx) {
     const day = (1 - night) * (1 - wx * .8);
     shMat.opacity = .26 * (1 - night * .8) * (1 - wx * .6);
+    { const far = Math.hypot(camera.position.x, camera.position.z) > 250; if (far !== LOCALFAR) { LOCALFAR = far; for (const m of LOCAL) m.visible = !far; } } /* Zierde der Hauptinsel nur zeichnen, wenn man in ihrer Nähe ist */
     for (const w of waves) { const mp = w.m.material.map; mp.offset.x += w.sp[0] * dt; mp.offset.y += w.sp[1] * dt; w.m.material.opacity = (w.m.material.opacity > .2 ? .24 : .16) * (1 - night * .6); }
     sunSp.position.copy(camera.position).addScaledVector(sunDir, 640); sunSp.material.opacity = Math.max(0, day); sunSp.visible = day > .02;
     const px = camera.position.x, pz = camera.position.z;
