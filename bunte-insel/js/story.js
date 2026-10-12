@@ -30,6 +30,8 @@ BI.createStory = function (G) {
   K.chapter = () => ST[S().c] || null;
   K.finished = () => S().c >= ST.length;
   K.index = () => S().c;
+  K.data = () => ST.map(c => ({ icon: c.icon, name: c.name, intro: c.intro, tasks: c.tasks.map(t => ({ icon: t[2], text: t[3] })) }));
+  K.finish = () => { S().c = ST.length; G.persist(); renderChip(); };
   const chip = $('questChip'); BI.injectLogCss();
   function next() { const c = K.chapter(); return c ? c.tasks.find(t => !done(t)) : null; }
   function renderChip() {

@@ -106,7 +106,7 @@ BI.createCombat = function (G) {
 
   /* ---------- Gegner verletzt den Spieler ---------- */
   function hurt(d) {
-    if (inv > 0 || hp <= 0) return; if (block) d *= .2; hp = Math.max(0, hp - d); inv = .7; A.hit && A.hit(); fx.burst(P.x, 1.4, P.z, 8, [BI.C.white, BI.C.blue], 3, 1, 24, 2); flashT = .25;
+    if (G.god && G.god()) return; if (inv > 0 || hp <= 0) return; if (block) d *= .2; hp = Math.max(0, hp - d); inv = .7; A.hit && A.hit(); fx.burst(P.x, 1.4, P.z, 8, [BI.C.white, BI.C.blue], 3, 1, 24, 2); flashT = .25;
     if (hp <= 0) onPlayerDown();
   }
   function onPlayerDown() {

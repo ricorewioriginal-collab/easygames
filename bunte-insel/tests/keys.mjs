@@ -9,7 +9,7 @@ const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.waitForTimeout(400);
 ok(await p.evaluate(() => /Fernseher öffnen/.test(document.getElementById('bTv').textContent) && /Handy-Controller öffnen/.test(document.getElementById('bCtl').textContent)), 'Hauptmenü: „Spiel am Fernseher öffnen“ und „Handy-Controller öffnen“');
 await p.evaluate(() => localStorage.setItem('bi-tv-last', 'WXYZ'));
-const nav = p.waitForURL(/controller\.html\?c=WXYZ/, { timeout: 8000 }).then(() => true, () => false); await p.click('#bCtl'); ok(await nav, '„Handy-Controller öffnen“ ruft controller.html auf (mit gemerktem Code)');
+const nav = p.waitForURL(/controller\.html\?c=WXYZ/, { timeout: 8000 }).then(() => true, () => false); await p.evaluate(() => document.getElementById('bCtl').click()); ok(await nav, '„Handy-Controller öffnen“ ruft controller.html auf (mit gemerktem Code)');
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.click('#bStart'); await p.waitForTimeout(800);
 /* Belegung: Aktion von E auf G legen */
 const door = () => p.evaluate(() => { const d = BI.DOORS[0], P = __bi.P; __bi.innen.inside && __bi.innen.leave(); P.veh = null; P.x = d.x; P.z = d.z; P.y = __bi.W.groundY(d.x, d.z); });

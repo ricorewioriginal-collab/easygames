@@ -14,6 +14,9 @@ BI.STORY_ISLES = [
   { key: 'ZOTIK', icon: '🦊', name: 'Zotik & Lunaris', req: ['karussell', 'schluesselreich', 'schwammi'] }, { key: 'RADIO', icon: '📻', name: 'Radio-Insel', req: ['raetsel', 'hoehle', 'kapsel'] },
   { key: 'ATLANTIS', icon: '🔱', name: 'Atlantis', req: ['turm_s', 'schmied', 'forscher20'] }
 ];
+/* Neue Insel registrieren (Story-Modus sperrt sie automatisch): BI.addStoryIsland({ key:'NEUE', icon:'🏝️', name:'…', req:['sticker1','sticker2','sticker3'] }).
+   Wer das vergisst: Jede Welt, die als BI.<NAME> mit x, z, R und Brücke existiert, wird trotzdem automatisch gesperrt und bekommt 3 noch unbenutzte Sticker als Aufgaben. */
+BI.addStoryIsland = d => { if (!BI.STORY_ISLES.some(q => q.key === d.key)) BI.STORY_ISLES.push(d); };
 BI.createStoryMode = function (G) {
   const { scene, W, A, fx, P, save, say, persist } = G, K = { list: [] };
   const S = () => { const s = save.storyMode || (save.storyMode = {}); s.unl = s.unl || {}; return s; };
@@ -36,8 +39,12 @@ BI.createStoryMode = function (G) {
     K.reqLines(I).forEach((r, k) => { const t = (r.ok ? '✅ ' : '⬜ ') + r.icon + ' ' + r.text; c.fillStyle = r.ok ? '#8dffb0' : '#ffffff'; fit(c, t, 590, 29); c.fillText(t, 320, 138 + k * 44); });
     I.tex.needsUpdate = true; I.paint = I.req.filter(got).join();
   }
+  function discover() { /* neue, noch nicht eingetragene Welten erkennen und mit Aufgaben versehen */
+    const used = new Set(BI.STORY_ISLES.flatMap(d => d.req)), pool = (G.stickerIds ? G.stickerIds() : []).filter(id => !used.has(id) && id !== 'hero');
+    for (const k of Object.keys(BI)) { const O = BI[k]; if (!/^[A-Z][A-Z0-9_]*$/.test(k) || !O || typeof O !== 'object' || BI.STORY_ISLES.some(d => d.key === k)) continue; if (typeof O.x === 'number' && typeof O.z === 'number' && typeof O.R === 'number' && O.bridge && O.entry && Math.hypot(O.x, O.z) > 150) { const req = pool.splice(0, 3); if (req.length === 3) { BI.STORY_ISLES.push({ key: k, icon: '🏝️', name: O.name || k.charAt(0) + k.slice(1).toLowerCase(), req, auto: true }); } } }
+  }
   function make() {
-    if (K.list.length) return;
+    if (K.list.length) return; discover();
     for (const d of BI.STORY_ISLES) {
       const O = BI[d.key]; if (!O || O.x == null) continue; const I = Object.assign({ O, r: O.R + 8, lock: { x: O.x, z: O.z, r: O.R + 8, on: false } }, d);
       glass.repeat.set(1, 1); const tex = glass.clone(); tex.needsUpdate = true; tex.repeat.set(Math.round(I.r * 6.28 / 9), 2);
@@ -46,7 +53,8 @@ BI.createStoryMode = function (G) {
       K.list.push(I); (W.lock = W.lock || []).push(I.lock);
     }
   }
-  K.open = I => !K.on() || !!S().unl[I.key] || ok(I);
+  K.open = I => !K.on() || !!S().unl[I.key] || ok(I) || !!(save.cheat && save.cheat.open);
+  K.islands = () => { make(); return K.list; };
   /* Liegt ein Punkt in einer noch gesperrten Welt? (für „Wohin?“, Wegweiser, Hinzaubern) */
   K.lockedAt = (x, z) => { if (!K.on()) return null; make(); for (const I of K.list) if (!K.open(I) && Math.hypot(x - I.O.x, z - I.O.z) < I.r + 14) return I; return null; };
   K.reqText = I => '🔒 ' + I.icon + ' ' + I.name + ' ist noch gesperrt. Schaffe: ' + K.reqLines(I).filter(r => !r.ok).map(r => r.icon + ' ' + r.text.split(':')[0]).join(' · ');
