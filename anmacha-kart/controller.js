@@ -45,9 +45,19 @@ window.startController = function () {
   function retry() { stopPlay(); clearInterval(joinT); clearTimeout(reT); if (tries++ >= 5) return screenJoin('Verbindung getrennt – tippe auf „Beitreten“, um zurückzukehren.'); put('<h2>Verbindung weg …</h2><div class="info">Verbinde neu – dein Kart wartet auf dich.</div>'); reT = setTimeout(() => connect(true), 600 + tries * 700); }
   document.addEventListener('visibilitychange', () => { if (!document.hidden && joined && !(conn && conn.open)) { tries = 0; connect(true); } });
   // Warte-Bildschirm mit Start-Knopf: so lässt sich das nächste Rennen vom Sofa aus starten (Fernseher braucht keine Maus)
-  function waitScreen(title, msg, go) { stopPlay(); put(`<h2>${title}</h2><div class="st">${esc(msg || '')}</div>${go ? `<button class="big" id="cgo">${go}</button><div class="info" style="text-align:center">Startet für alle – erst drücken, wenn alle dabei sind.</div>` : ''}`); if (go) $('cgo').onclick = () => tx({ t: 'go' }); }
+  function waitScreen(title, msg, go) { stopPlay(); put(`<h2>${title}</h2><div class="st">${esc(msg || '')}</div>${go ? `<div id="ccfg"></div><button class="big" id="cgo">${go}</button><div class="info" style="text-align:center">Startet für alle – erst drücken, wenn alle dabei sind.</div>` : ''}`); if (go) { $('cgo').onclick = () => tx({ t: 'go' }); showCfg(); } }
+  // Strecke und Runden für alle wählen (der Fernseher übernimmt die Auswahl und schickt sie an jedes Handy)
+  let cfg = null;
+  function showCfg() {
+    const el = $('ccfg'); if (!el || !cfg || !Array.isArray(cfg.opts)) return;
+    el.innerHTML = `<div class="info" style="text-align:center">Strecke</div><div class="row" style="justify-content:center">${cfg.opts.map(o => `<button class="chip ${o[0] === cfg.sel ? 'on' : ''}" data-s="${esc(o[0])}">${esc(o[1])}</button>`).join('')}</div>
+      <div class="info" style="text-align:center">Runden</div><div class="row" style="justify-content:center">${[2, 3, 5].map(n => `<button class="chip ${n === cfg.laps ? 'on' : ''}" data-l="${n}">${n}</button>`).join('')}</div>`;
+    el.querySelectorAll('[data-s]').forEach(b => b.onclick = () => tx({ t: 'cfg', sel: b.dataset.s, laps: cfg.laps }));
+    el.querySelectorAll('[data-l]').forEach(b => b.onclick = () => tx({ t: 'cfg', sel: cfg.sel, laps: +b.dataset.l }));
+  }
   function onData(m) {
     if (!m) return;
+    if (m.cfg) { cfg = m.cfg; if (m.t === 'cfg') return showCfg(); }
     if (m.t === 'wel') { clearInterval(joinT); if (joined && ph !== 'lobby') return; joined = true; tries = 0; waitScreen('Du bist dabei! 🎉', 'Warte, bis das Rennen startet …', m.race ? '' : '▶ RENNEN STARTEN'); }
     else if (m.t === 'full') { kicked = true; screenJoin(m.msg || 'Leider kein Platz mehr.'); try { conn.close(); } catch (e) {} }
     else if (m.t === 'ev') { if (m.e === 'hit' && navigator.vibrate) navigator.vibrate([120, 40, 120]); if (m.e === 'fin') hud('🏁 Ziel! Platz ' + m.pos); if (m.e === 'res') { waitScreen('Rennen beendet 🏁', 'Du wurdest ' + m.pos + '. – weiter geht’s mit dem nächsten Rennen.', '▶ WEITER'); } }
