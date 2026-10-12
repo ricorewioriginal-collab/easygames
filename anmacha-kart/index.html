@@ -195,7 +195,7 @@
     <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy – oder mit bis zu 4 Handys als Lenkrad vor einem großen Bildschirm.</p>
     <div class="mbtns"><button class="big" id="bSolo" disabled>LADEN …</button><button class="big alt" id="bMulti" disabled>MEHRSPIELER</button></div>
     <button class="sumc" id="selSum" type="button"></button>
-    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button></div>
+    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button></div>
     <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
     <div class="info" id="padInfo" hidden></div>
     <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Dieser Bildschirm zeigt das Rennen (Splitscreen), die Handys werden per Code oder QR-Code gekoppelt.</div></details>
@@ -217,7 +217,7 @@
 <div id="lobby" class="ov" hidden><div class="box">
   <h2>HANDYS KOPPELN</h2>
   <p class="sub">Handy-Kamera auf den QR-Code richten oder die Seite öffnen und den Code eingeben. Bis zu 4 Fahrer.</p>
-  <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div>
+  <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="tvHint" hidden style="color:var(--y);font-weight:800">📺 OK auf der Fernbedienung drücken = Vollbild · Strecke und Start wählt ihr am Handy</div>
   <div id="lobList" style="width:100%;max-width:420px"></div>
   <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button><button class="chip" id="padAdd">🎮 Gamepad-Spieler hinzufügen</button></div>
   <button class="big" id="bGo" disabled>RENNEN STARTEN</button>

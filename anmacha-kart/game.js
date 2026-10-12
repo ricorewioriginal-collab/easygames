@@ -2,7 +2,7 @@
 /* AnMaCha Kart Rush – Host/Solo: Menü, Rennablauf, Splitscreen-HUD, Handy-Kopplung (PeerJS). Controller: controller.js */
 const $ = id => document.getElementById(id);
 const qp = new URLSearchParams(location.search);
-const JOIN = (qp.get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6), PH = qp.get('ph') || '';
+const JOIN = (qp.get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6), PH = qp.get('ph') || '', TV = qp.has('tv');
 const NAMES = ['RicoReWi Music & Media', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!', 'RockRadio 24', 'ChristmasRadio 24', 'KultRadio 24', 'Zocker-FM', 'Special-Radio'];
 const CDN = { three: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', peer: 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js', qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js' };
 const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Laden fehlgeschlagen: ' + src)); document.head.appendChild(s); });
@@ -153,6 +153,10 @@ function initHost() {
   const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇 Ton aus' : '🔊 Ton an'; };
   const togSnd = () => { AUD.setMute(!AUD.muted); syncSnd(); if (!R && !AUD.muted) AUD.bed('menu'); };
   $('bSnd').onclick = $('bMenuSnd').onclick = togSnd; syncSnd();
+  $('bTv').onclick = () => { location.href = location.pathname + '?tv' + (PH ? '&ph=' + encodeURIComponent(PH) : ''); };
+  // TV-Modus: direkt in die Lobby; der erste Druck auf OK/Enter (oder ein Klick) schaltet in Vollbild – automatisch erlauben Browser das nicht
+  if (TV) { $('tvHint').hidden = false; const fs = () => { const d = document.documentElement; if (document.fullscreenElement || document.webkitFullscreenElement) return; try { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (r && r.catch) r.catch(() => {}); } catch (e) {} };
+    addEventListener('keydown', fs); addEventListener('pointerdown', fs); const sync = () => { $('tvHint').hidden = !!(document.fullscreenElement || document.webkitFullscreenElement); }; document.addEventListener('fullscreenchange', sync); document.addEventListener('webkitfullscreenchange', sync); }
   function renderTop() {
     $('topList').innerHTML = TR.map(t => { const b = save.best[t.id] || {}; return `<div class="brow" style="--sc:${t.sky[1]}"><span>${esc(t.name)}</span><b>${b.lap ? '⏱ ' + fmtT(b.lap) : '–'}</b></div>`; }).join('') + '<p class="info">Beste Runde je Strecke (lokal im Browser).</p>';
   }
@@ -165,7 +169,7 @@ function initHost() {
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
     lastT = performance.now(); loopOn = true; requestAnimationFrame(frame);
-    LD.finish(() => { LD.hide(); showView('title'); });
+    LD.finish(() => { LD.hide(); if (TV) { setupFor = 'multi'; renderMenu(); openLobby(); } else showView('title'); });
   }).catch(e => { LD.stop(); $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); if (R) R.dirty = true; } });
@@ -183,7 +187,7 @@ function initHost() {
   const randCode = n => Array.from({ length: n }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
   const remotes = () => players.filter(p => p.conn);
   async function openLobby() {
-    AUD.unlock(); $('menu').hidden = true; $('lobby').hidden = false; lobbyOpen = true; players = players.filter(p => p.conn && p.conn.open); if (save.kbOn === true || (save.kbOn !== false && !remotes().length)) addKbPlayer(save.kbOn !== true); updateLobby(); remotes().forEach(p => send(p.conn, { t: 'wel' }));
+    AUD.unlock(); $('menu').hidden = true; $('lobby').hidden = false; lobbyOpen = true; players = players.filter(p => p.conn && p.conn.open); if (save.kbOn === true || (!TV && save.kbOn !== false && !remotes().length)) addKbPlayer(save.kbOn !== true); updateLobby(); remotes().forEach(p => send(p.conn, { t: 'wel', cfg: cfgMsg() }));
     if (!peer) {
       $('code').textContent = '….'; $('pairUrl').textContent = 'Verbinde …';
       try { await Promise.all([window.Peer || loadScript(CDN.peer), window.qrcode || loadScript(CDN.qr)]); } catch (e) { $('pairUrl').textContent = 'Koppeln nicht möglich (Internet?)'; return; }
@@ -207,18 +211,24 @@ function initHost() {
     if (!m || typeof m !== 'object') return;
     if (m.t === 'join') {
       const old = players.find(p => p.conn === c); const nm = String(m.name || 'Gast').trim().slice(0, 14) || 'Gast', lg = Number.isInteger(m.logo) && m.logo >= 0 && m.logo < 13 ? m.logo : 6, ch = Number.isInteger(m.ch) && m.ch >= 0 && m.ch < CHARS.length ? m.ch : 1, kt = Number.isInteger(m.kt) && m.kt >= 0 && m.kt < KARTS.length ? m.kt : 0;
-      const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; send(c, { t: 'wel', race: racing }); return updateLobby(); }
+      const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
       // Dasselbe Handy kommt nach einem Abbruch zurück: altes Kart übernehmen statt neu anzumelden
       const cid = typeof m.cid === 'string' ? m.cid.slice(0, 16) : '', back = cid && players.find(p => p.cid === cid);
-      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing }); return updateLobby(); }
+      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
       if (racing) return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
       players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
-      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c) }); updateLobby();
+      players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c), cfg: cfgMsg() }); updateLobby();
     } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; p.inAt = performance.now(); } }
     // Start-Knopf am Handy: Lobby starten bzw. nach dem Rennen weiter
+    // Strecke/Cup und Runden vom Handy aus (Lobby oder Ergebnis-Bildschirm); alle Handys bekommen die neue Auswahl
+    else if (m.t === 'cfg' && players.some(p => p.conn === c) && (lobbyOpen || (R && R.ended))) {
+      const v = String(m.sel || ''), n = +v.slice(1); if (v[0] === 't' && TR[n]) { save.rmode = 'race'; save.track = n; } else if (v[0] === 'c' && Track.CUPS[n]) { save.rmode = 'gp'; save.cup = n; }
+      if ([2, 3, 5].includes(m.laps)) save.laps = m.laps; persist(); renderMenu(); const cm = cfgMsg(); remotes().forEach(p => send(p.conn, { t: 'cfg', cfg: cm }));
+    }
     else if (m.t === 'go' && players.some(p => p.conn === c)) { if (lobbyOpen && !$('bGo').disabled) $('bGo').click(); else if (R && R.ended && !$('res').hidden) $('bNext').click(); }
   }
+  const cfgMsg = () => ({ opts: TR.map((t, i) => ['t' + i, t.name]).concat(Track.CUPS.map((c, i) => ['c' + i, '🏆 ' + c.name])), sel: save.rmode === 'gp' ? 'c' + save.cup : 't' + save.track, laps: save.laps });
   function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else players.splice(i, 1); updateLobby(); }
   function updateLobby() {
     $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji}${KARTS[(p.kart || 0) % KARTS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? '📱 gekoppelt' : p.pad != null ? '🎮 Gamepad' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
@@ -328,7 +338,7 @@ function initHost() {
   }
   $('bNext').onclick = () => { $('res').hidden = true; const wasGp = GP.gp, fin = R.finalGp; if (wasGp && !fin) startRace(); else { players = players.filter(p => !p.gone); if (R.humans.length === 1 && !R.humans[0].conn && !R.humans[0].kbp) { players[0] = R.humans[0]; } beginSeries(); } };
   $('bMenu').onclick = toMenu;
-  function toMenu() { R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); }
+  function toMenu() { R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
   $('bPause').onclick = () => { if (R && !R.ended) { paused = true; R.dirty = true; $('pause').hidden = false; } }; $('bResume').onclick = () => { paused = false; $('pause').hidden = true; }; $('bQuit').onclick = toMenu;
 
   // ------------------------------------------------------------------ Hauptschleife
