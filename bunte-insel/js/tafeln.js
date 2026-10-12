@@ -4,6 +4,7 @@
    wird der Text laut vorgelesen (A.speak). Sparsam: alle Pfosten in einem Mesh, pro Tafel eine Fläche, weit entfernte Tafeln sind unsichtbar. */
 BI.TAFELN = {
   /* Welt-ID (wie in „Wohin?“) → [Bilder, kurzer Text, vorgelesener Satz] */
+  bade: ['🏖️🛝', 'Badestrand', 'Willkommen am Badestrand! Schwimm im Meer und rutsch von der Wasserrutsche ins Wasser.'],
   home: ['🏠🛏️', 'Mein Zuhause', 'Das ist dein Zuhause. Hier kannst du schlafen und umziehen.'],
   garden: ['🌻🥕', 'Mein Garten', 'Das ist dein Garten. Pflanze Blumen und Gemüse.'],
   shop: ['🧸⭐', 'Spielzeug kaufen', 'Im Spielzeugladen kaufst du Sachen mit Sternen.'],

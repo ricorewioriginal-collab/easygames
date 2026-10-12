@@ -366,3 +366,6 @@ Die Bunte Insel läuft am Fernseher/Computer, Handys und Tablets werden zum Cont
 
 ### 🛠️ Grafik-Diagnose (`?dbg=1`)
 Hängt man `?dbg=1` an die Adresse (`…/bunte-insel/?dbg=1`), zeigt das Spiel oben Daten der Grafikkarte (GPU, WebGL-Version, Tiefenpuffer-Bits, Nebel, Kamera) und unten Schalter, mit denen sich einzelne Dinge live ein-/ausschalten lassen (Nebel, Tiefenversatz, Sichtkegel-Test, Zotik-Insel, Wasser, Himmel, Kamera-Nahebene). So lassen sich Darstellungsfehler auf echten Geräten eingrenzen. Im normalen Spiel wird nichts davon geladen.
+
+### 🏖️ Badestrand & Wasserpark (Südosten der Hauptinsel)
+Sauberer Zugang: Holzsteg mit Torbogen und Tafel (🧭 „Badestrand & Wasserpark“) führt vom Gras über den Sand bis ins Meer. Im Meer kann man **schwimmen** (Schwimm-Pose, langsamer, Spritzer) – begrenzt durch eine Bojen-Leine. Strand: Schirme, Liegen, Eis-Kiosk 🍦, Bademeisterin Maja (Tipps). Wasserpark: Anlegesteg + Plattform, **Rutschen-Turm mit zwei Rutschen direkt ins Meer** (Riesenrutsche, Wellenrutsche; Leiter = Aktionsknopf), **Hüpfburg** 🏰 und **Luftkissen** (Riesen-Trampolin) zum Draufhüpfen, Hüpf-Pfad aus schwimmenden Platten. Sticker: Seepferdchen, Hüpfburg-Held, Wasserpark-Profi. Code: `js/badestrand.js` (`BI.BADE` Geometrie, `buildBadeGround`, `createBade`), Test: `tests/badestrand.mjs`.
