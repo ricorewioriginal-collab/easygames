@@ -263,6 +263,9 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       }
       this.seat = model.seat || null; this.lean = model.lean || 0;
       this.cols = this.spec.cols; this.r = this.spec.r;
+      const farthestAxle = this.cols.reduce((max, off) => Math.max(max, Math.abs(off)), 0);
+      this.interactReach = this.r * 1.3 + farthestAxle * .5;
+      this.collisionReach = this.r + farthestAxle;
       if (this.spec.scale) this.root.scale.setScalar(this.spec.scale);
       this.root.position.set(x, 0, z); this.root.rotation.y = this.h;
     }

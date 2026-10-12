@@ -362,7 +362,7 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
   <button class="abtn" id="bJump" data-k="B"><b>⤒</b><small>Springen</small></button>
   <button class="abtn" id="bHorn" data-k="Y"><b>👋</b><small>Hallo!</small></button>
   <button class="abtn" id="bAct" data-k="A" hidden><b>🚗</b><small>Einsteigen</small></button>
-  <div id="keys" class="kb">WASD/Pfeile laufen & fahren · E ein-/aussteigen · Leertaste Hupe/Sprung · Shift Rennen & Turbo · F Sirene/Hauen · 1–8 Spaß · B Bauen · V Ego-Kamera</div>
+  <div id="keys" class="kb">WASD/Pfeile laufen & fahren · E fahrende Autos anhalten, dann ein-/aussteigen · Leertaste Hupe/Sprung · Shift Rennen & Turbo · F Sirene/Hauen · 1–8 Spaß · B Bauen · V Ego-Kamera</div>
 </div>
 <div id="buildPanel" hidden>
   <div id="bTop"><div id="bTabs"></div><span id="bCount"></span><button id="bClear" aria-label="Alles wegräumen">🧹</button></div>
@@ -601,8 +601,8 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
 <section id="pause" class="screen" hidden>
   <div class="card">
     <div class="logo" style="font-size:40px">Pause</div>
-    <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Einsteigen</b> E · <b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
-    <p class="help tc"><b>Laufen/Fahren</b> Joystick links, auch daneben antippen (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Einsteigen, Reden, Einkaufen</b> großer Aktion-Knopf ✋ unten rechts<br><b>Springen, Hallo, Hupe, Sirene, Turbo</b> runde Knöpfe darüber<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
+    <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Auto anhalten/einsteigen</b> E am fahrenden Auto, dann noch einmal E am stehenden Auto<br><b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
+    <p class="help tc"><b>Laufen/Fahren</b> Joystick links, auch daneben antippen (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Auto anhalten/einsteigen, Reden, Einkaufen</b> großer Aktion-Knopf ✋ unten rechts (fahrendes Auto erst anhalten, dann einsteigen)<br><b>Springen, Hallo, Hupe, Sirene, Turbo</b> runde Knöpfe darüber<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Ego-Kamera</b> 📷 · <b>Tag/Nacht</b> 🌙<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
     <div class="lab" id="slotLab">💾 Spielstand</div><div class="row"><button class="pill" id="bSaveNow">💾 Jetzt speichern</button><button class="pill" id="bExport">📤 Sichern (Datei)</button></div>
     <div class="lab">⏰ Pausen-Erinnerung (für Eltern)</div><div class="row" id="breakOpts"></div>
     <button class="pill" id="bFriendsP" style="margin-top:6px">👥 Mitspielen</button> <button class="pill" id="bParent" style="margin-top:6px;position:relative;overflow:hidden">👪 Eltern (halten)</button><br><button class="big" id="bResume">▶ Weiter spielen</button><br><button class="pill" id="bToMenu" style="margin-top:8px">🏠 Zurück zum Hauptmenü</button>
@@ -621,7 +621,7 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
 <script src="js/town.js?v=town2" onload="__ld()"></script>
 <script src="js/world.js?v=nature3" onload="__ld()"></script>
 <script src="js/places.js" onload="__ld()"></script>
-<script src="js/vehicles.js?v=nature3" onload="__ld()"></script>
+<script src="js/vehicles.js?v=traffic2" onload="__ld()"></script>
 <script src="js/fun.js" onload="__ld()"></script>
 <script src="js/thumbs.js" onload="__ld()"></script>
 <script src="js/build.js" onload="__ld()"></script>
@@ -671,7 +671,7 @@ kbd{display:inline-block;min-width:22px;padding:2px 7px;border-radius:7px;backgr
 <script src="js/combat.js" onload="__ld()"></script>
 <script src="js/weather.js" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=ty1" onload="__ld()"></script>
+<script src="js/main.js?v=traffic2" onload="__ld()"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>

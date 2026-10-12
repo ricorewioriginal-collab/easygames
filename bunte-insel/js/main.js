@@ -11,10 +11,11 @@
   /* ---------- Renderer, Szene, Himmel ---------- */
   const canvas = $('cv'), dpr = window.devicePixelRatio || 1;
   let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: 'high-performance' }); }
   catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
-  let quality = save.gfx === 'eco' ? 2 : 0; // standardmäßig scharf; wird bei Ruckeln automatisch gesenkt
-  const QUAL = [Math.min(dpr, 2), Math.min(dpr, 1.5), 1, .75];
+  const baseQuality = () => save.eco || save.gfx === 'eco' ? 2 : save.gfx === 'sharp' ? 0 : coarse ? 1 : 0;
+  let quality = baseQuality();
+  const QUAL = [Math.min(dpr, 2), Math.min(dpr, coarse ? 1.35 : 1.5), Math.min(dpr, 1), .75];
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .8, 800);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
   sun.position.set(60, 100, 40); scene.add(hemi, sun, sun.target);
@@ -71,12 +72,17 @@
   const boatV = addVeh('boat', W.dock.x, W.dock.z, 0); boatV.setPose(W.dock.x, W.dock.z, 0);
   /* Mitspielen: diese Fahrzeuge stehen auf jedem Gerät gleich -> Nummer vi, damit ein Auto nur einmal existiert (fährt ein Freund, fährt es bei allen mit) */
   let ride = ''; /* Mitfahren: ID des Freundes, der gerade lenkt (leer = du fährst nicht mit) */
-  const VEH_SYNC = vehicles.length; vehicles.forEach((v, i) => { if (!v.spec.drake && !v.spec.remote) { v.vi = i; v.sx = v.x; v.sz = v.z; v.sh = v.h; } });
+  let VEH_SYNC = vehicles.length; vehicles.forEach((v, i) => { if (!v.spec.drake && !v.spec.remote) { v.vi = i; v.sx = v.x; v.sz = v.z; v.sh = v.h; } });
   const traffic = [];
   for (let i = 0; i < 9; i++) {
     const dir = i % 2 ? -1 : 1, lane = dir > 0 ? K.RB + 2.2 : K.RB - 2.2, v = addVeh('car', 0, lane, 0, { color: BI.PAINT[(i * 3 + 1) % BI.PAINT.length], ai: true });
-    traffic.push({ v, a: i / 9 * TAU * 1 + .4 + (i % 2) * .35, dir, lane, sp: 8 + (i % 3) * 1.5 }); v.ai = true;
+    const a = i / 9 * TAU + .4 + (i % 2) * .35;
+    const tr = { v, a, dir, lane, sp: 8 + (i % 3) * 1.5, stopUntil: 0, rejoinAt: 0 };
+    v.traffic = tr; v.vi = vehicles.length - 1;
+    v.setPose(Math.sin(a) * lane, Math.cos(a) * lane, Math.atan2(Math.cos(a) * dir, -Math.sin(a) * dir));
+    v.sx = v.x; v.sz = v.z; v.sh = v.h; traffic.push(tr);
   }
+  VEH_SYNC = vehicles.length; // nur feste Fahrzeuge und deterministischer Verkehr; zufällig geparkte Autos bleiben lokal
   /* mehr Fahrzeuge: am Straßenrand geparkt (nicht auf der Ringstraße, damit der Verkehr nicht blockiert) */
   for (let i = 0, made = 0; i < 160 && made < 14; i++) {
     const dir = (Math.random() * 4) | 0, d = 24 + Math.random() * 120, off = (Math.random() < .5 ? -1 : 1) * (6.4 + Math.random() * 1.2), x = [d, -d, off, off][dir], z = [off, off, d, -d][dir], r = Math.hypot(x, z);
@@ -184,14 +190,27 @@
   function nearVehicle() {
     let best = null, bd = 4.2;
     if (!P.veh && P.y < 3) {
-      for (const v of vehicles) { if (v.ai || v.netBy) continue; const d = Math.hypot(P.x - v.x, P.z - v.z) - v.r * 1.3 - Math.max(...v.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = v; } }
+      for (const v of vehicles) {
+        if (v.netBy || (v.ai && !v.traffic)) continue;
+        const d = Math.hypot(P.x - v.x, P.z - v.z) - v.interactReach;
+        const reach = v.ai && Math.abs(v.v) > .7 ? 7.2 : 4.2;
+        if (d < reach && (!best || d < bd)) { bd = d; best = v; }
+      }
       const dt_ = train.nearest(P.x, P.z); if (dt_ < 4.2 && dt_ < bd) best = trainVeh;
       if (!best) { let rd = 25; for (const q of vehicles) if (q.spec.remote && !q.netBy) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < rd) { rd = d; best = q; } } }
     }
     return best;
   }
   function enter(v) {
-    if (build.active) return;
+    if (build.active || v.netBy) return;
+    if (v.traffic && v.ai) {
+      if (Math.abs(v.v) > .7) {
+        v.traffic.stopUntil = t + 18;
+        A.pop(); say('✋ Das Auto hält an. Geh hin und steig ein!', 2400); updateButtons(true);
+        return;
+      }
+      v.ai = false; v.traffic.stopUntil = 0; v.traffic.rejoinAt = 0; v.v = 0;
+    }
     fun.setDance(false); P.veh = v; everDrove = true; meta.note('ride'); A.enter(); kids.earn(v.isTrain ? 'train' : v.spec.boat ? 'boat' : v.type === 'heli' || v.type === 'rcheli' ? 'heli' : 'ride');
     if (v.spec.remote) { v.driver = true; offer = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); say('🎮 ' + heroName() + ' steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
@@ -222,7 +241,7 @@
     let px = v.x + lx * rad, pz = v.z + lz * rad;
     if (v.isTrain) { const L = Math.hypot(v.x, v.z) || 1; px = v.x - v.x / L * 6; pz = v.z - v.z / L * 6; }
     if (v.spec.boat && !force) { px = .2; pz = 205.5; }
-    if (!v.isTrain) { v.driver = null; v.siren = false; if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
+    if (!v.isTrain) { v.driver = null; v.siren = false; if (v.traffic) { v.ai = false; v.v = 0; v.traffic.rejoinAt = t + 20; } if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
     if (!v.isTrain && v.vi != null && net.connected()) { v.v = 0; net.send({ t: 'vp', l: [[v.vi, Math.round(v.x * 100) / 100, Math.round(v.z * 100) / 100, Math.round(v.h * 100) / 100]] }); } /* Auto bleibt bei allen am selben Platz stehen */
     P.veh = null; char.group.visible = true;
     const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
@@ -365,7 +384,7 @@
   function updateButtons(force) {
     const v = P.veh, rideN = state === 'play' && !v && !ride && !build.active ? nearRide() : null, near = state === 'play' && !v && !ride && !rideN && !build.active ? nearVehicle() : null, spec = v ? v.spec : null;
     const tree = state === 'play' && !v && !build.active ? fun.nearTree() : null, shopNear = state === 'play' && !v && !build.active && !shopOpen && nearCounter(), rangeNear = state === 'play' && !rs.ui && nearRange(), flatN = state === 'play' && !rs.ui && !wardOpen ? flatNear() : null, placeN = state === 'play' ? placeNear() : null, driveIn = state === 'play' && v ? cinema.near() : null, chestNear = state === 'play' && !v && !build.active && !shopOpen && nearChest();
-    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : '')), isTouch()].join('|');
+    const sig = [!!v, ride, rideN && rideN.id, near && (near.isTrain ? 'train' : near.type + (near.ai && near.traffic && Math.abs(near.v) > .7 ? '-stop' : '')), spec && spec.kind, spec && (spec.siren || spec.water || spec.horn), spec && !!spec.fly, spec && !!spec.remote, !!driveIn, build.active, !!tree, shopNear, chestNear, rangeNear, flatN && flatN.k, placeN && (placeN.src + (placeN.n ? placeN.n.k : placeN.a ? placeN.a.k : placeN.npc ? placeN.npc.p.name : '')), isTouch()].join('|');
     if (sig === btnSig && !force) return; btnSig = sig;
     const act = $('bAct'), horn = $('bHorn'), aux = $('bAux'), jump = $('bJump');
     if (ride || rideN || v) act.classList.remove('idle');
@@ -381,7 +400,7 @@
       }
       jump.hidden = false; horn.hidden = false;
     } else {
-      const has = !!(near || shopNear || chestNear || rangeNear || flatN || placeN); act.hidden = !has && !isTouch(); act.classList.toggle('idle', !has); if (!has) act.innerHTML = '<b>✋</b><small>Aktion</small>'; else if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', has);
+      const has = !!(near || shopNear || chestNear || rangeNear || flatN || placeN); act.hidden = !has && !isTouch(); act.classList.toggle('idle', !has); if (!has) act.innerHTML = '<b>✋</b><small>Aktion</small>'; else if (near) act.innerHTML = near.spec.remote ? '<b>🎮</b><small>Fernsteuern</small>' : near.ai && near.traffic && Math.abs(near.v) > .7 ? '<b>✋</b><small>Anhalten</small>' : '<b>' + near.spec.icon + '</b><small>Einsteigen</small>'; else if (shopNear) act.innerHTML = '<b>🛒</b><small>Einkaufen</small>'; else if (chestNear) act.innerHTML = '<b>💰</b><small>Schatz</small>'; else if (rangeNear) act.innerHTML = '<b>🎯</b><small>Schießstand</small>'; else if (flatN) act.innerHTML = flatN.k === 'room' ? '<b>🛋️</b><small>Einrichten</small>' : flatN.k === 'bed' ? '<b>🛏️</b><small>Schlafen</small>' : flatN.k === 'ward' ? '<b>👕</b><small>Umziehen</small>' : '<b>💬</b><small>' + PARENT[flatN.f.i][flatN.k === 'mama' ? 0 : 1].name + '</small>'; else if (placeN) { const pl = placeLabel(placeN); act.innerHTML = '<b>' + pl[0] + '</b><small>' + pl[1] + '</small>'; } act.classList.toggle('pulse', has);
       jump.hidden = false; jump.innerHTML = '<b>⤒</b><small>Springen</small>'; horn.hidden = false; horn.innerHTML = '<b>👋</b><small>Hallo!</small>'; aux.hidden = !tree; if (tree) aux.innerHTML = '<b>👊</b><small>Baum hauen</small>';
     }
   }
@@ -734,7 +753,7 @@
       if (d.t === 'hk') { const a = remote.get(d.id); if (a && Math.hypot(a.x - P.x, a.z - P.z) < 40) honk(); return; }
       if (d.t === 'mi') { const a = remote.get(d.id), m = MTITLE[d.k]; if (a && m && ride === d.id) say(m[0] + ' ' + a.name + ' startet: ' + m[1] + ' – hilf mit! 👀', 3200); return; }
       if (d.t === 'ms') { if (ride === d.id) { const n = Math.max(1, Math.min(6, d.n | 0)); addStars(n); A.star(); if (n > 1) { A.fanfare(); say('🎉 Gemeinsam geschafft! +' + n + ' ⭐', 2800); } } return; }
-      if (d.t === 'vp') { if (Array.isArray(d.l)) for (const q of d.l) { const v = vehicles[q[0] | 0]; if (v && v.vi === (q[0] | 0) && v !== P.veh && (!v.netBy || v.netBy === d.id) && [q[1], q[2], q[3]].every(Number.isFinite)) { v.setPose(q[1], q[2], q[3]); v.v = 0; const a = remote.get(d.id); if (a && v.netBy === d.id) { a.x = a.tx = q[1]; a.z = a.tz = q[2]; a.h = a.th = q[3]; a.sp = 0; } } } return; }
+      if (d.t === 'vp') { if (Array.isArray(d.l)) for (const q of d.l) { const v = vehicles[q[0] | 0]; if (v && v.vi === (q[0] | 0) && v !== P.veh && (!v.netBy || v.netBy === d.id) && [q[1], q[2], q[3]].every(Number.isFinite)) { v.setPose(q[1], q[2], q[3]); v.v = 0; if (v.traffic) { v.ai = false; v.traffic.stopUntil = 0; v.traffic.rejoinAt = t + 20; } const a = remote.get(d.id); if (a && v.netBy === d.id) { a.x = a.tx = q[1]; a.z = a.tz = q[2]; a.h = a.th = q[3]; a.sp = 0; } } } return; }
       if (d.t !== 's') return;
       let a = remote.get(d.id);
       if (!a) {
@@ -794,7 +813,7 @@
   }
 
   /* ---- Mitfahren: zu zweit (oder zu viert) in einem Fahrzeug. Der Fahrer lenkt, alle anderen sitzen drin und fahren mit ---- */
-  function freeNetVeh(v, a) { v.driver = null; v.netBy = null; v.v = 0; if (v.spec.fly) { v.y = 0; v.vy = 0; } }
+  function freeNetVeh(v, a) { v.driver = null; v.netBy = null; v.v = 0; if (v.traffic) { v.ai = false; v.traffic.rejoinAt = t + 20; } if (v.spec.fly) { v.y = 0; v.vy = 0; } }
   /* Fahrzeug, in dem der Fahrer mit dieser ID sitzt (bei mir: mein eigenes) */
   function hostVeh(id) {
     if (id === selfId()) return P.veh && !P.veh.spec.remote && !P.veh.isTrain ? P.veh : null;
@@ -810,7 +829,7 @@
   }
   function nearRide() {
     if (P.veh || ride || P.y > 3 || !net.connected()) return null; let best = null, bd = 4.2;
-    for (const a of remote.values()) { const hv = hostVeh(a.id); if (!hv || hv.spec.remote) continue; const d = Math.hypot(P.x - hv.x, P.z - hv.z) - hv.r * 1.3 - Math.max(...hv.cols.map(Math.abs)) * .5; if (d < bd) { bd = d; best = a; } }
+    for (const a of remote.values()) { const hv = hostVeh(a.id); if (!hv || hv.spec.remote) continue; const d = Math.hypot(P.x - hv.x, P.z - hv.z) - hv.interactReach; if (d < bd) { bd = d; best = a; } }
     return best;
   }
   function startRide(id) {
@@ -836,7 +855,7 @@
   /* Neuer Mitspieler: ihm sagen, wo Autos inzwischen geparkt sind (sonst stünden sie bei ihm am alten Platz) */
   function shareVehicles(toId) {
     if (net.role !== 'host') return; const l = [], r2 = n => Math.round(n * 100) / 100;
-    for (let i = 0; i < VEH_SYNC; i++) { const v = vehicles[i]; if (v.vi !== i || v.netBy || v === P.veh) continue; if (Math.abs(v.x - v.sx) + Math.abs(v.z - v.sz) > .8) l.push([i, r2(v.x), r2(v.z), r2(v.h)]); }
+    for (let i = 0; i < VEH_SYNC; i++) { const v = vehicles[i]; if (v.vi !== i || v.netBy || v === P.veh || v.ai) continue; if (Math.abs(v.x - v.sx) + Math.abs(v.z - v.sz) > .8) l.push([i, r2(v.x), r2(v.z), r2(v.h)]); }
     if (l.length) net.sendTo(toId, { t: 'vp', l });
   }
 
@@ -1272,11 +1291,11 @@
   const SEASONS = [['auto', 'Auto'], ['spring', '🌸 Frühling'], ['summer', '☀️ Sommer'], ['autumn', '🍂 Herbst'], ['winter', '❄️ Winter']];
   const ecoOn = () => !!save.eco;
   function applyVolume() { A.setVolume(save.vol == null ? 1 : save.vol); }
-  function applyEco() { if (ecoOn()) quality = Math.max(quality, 2); resize(); }
+  function applyEco() { quality = baseQuality(); resize(); }
   function renderParent() {
     $('parVol').value = Math.round((save.vol == null ? 1 : save.vol) * 100); $('parMp').classList.toggle('sel', !save.mpOff); $('parMp').textContent = save.mpOff ? '👥 Mitspielen gesperrt' : '👥 Mitspielen erlaubt'; $('parEco').classList.toggle('sel', ecoOn()); $('parVoice').classList.toggle('sel', A.voiceOn);
     const sb = $('parSeason'); sb.innerHTML = ''; SEASONS.forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.season || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.season = k; persist(); if (typeof applySeason === 'function') applySeason(); renderParent(); }; sb.appendChild(b); });
-    const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = k === 'eco' ? 2 : 0; resize(); renderParent(); }; gb.appendChild(b); });
+    const gb = $('parGfx'); gb.innerHTML = ''; [['auto', '⚖️ Automatisch'], ['sharp', '✨ Scharf'], ['eco', '🔋 Sparsam']].forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'pill' + ((save.gfx || 'auto') === k ? ' sel' : ''); b.textContent = n; b.onclick = () => { save.gfx = k; persist(); quality = baseQuality(); resize(); renderParent(); }; gb.appendChild(b); });
     const bb = $('parBreak'); bb.innerHTML = ''; kids.breakOpts.forEach(m => { const b = document.createElement('button'); b.className = 'pill' + ((save.breakMin || 0) === m ? ' sel' : ''); b.textContent = m ? m + ' Min' : 'Aus'; b.onclick = () => { save.breakMin = m; persist(); kids.refreshBreak(); renderParent(); }; bb.appendChild(b); });
   }
   function renderYt() { $('parYtInfo').textContent = cinema.hasKey() ? '✅ Kino-Suche ist an (nur kindersichere, einbettbare Videos). Der Schlüssel bleibt nur auf diesem Gerät.' : 'Ohne Schlüssel ist die Suche im Kino aus. Einen kostenlosen Schlüssel gibt es in der Google Cloud Console („YouTube Data API v3“ aktivieren → API-Schlüssel erstellen). Pro Suche werden die Suchwörter an YouTube gesendet.'; $('parYtDel').hidden = !cinema.hasKey(); }
@@ -1585,6 +1604,8 @@
     let hit = false;
     for (const o of vehicles) {
       if (o === self) continue;
+      const reach = r + o.collisionReach;
+      if (Math.abs(x - o.x) > reach || Math.abs(z - o.z) > reach) continue;
       for (const off of o.cols) {
         const cx = o.x + Math.sin(o.h) * off, cz = o.z + Math.cos(o.h) * off, dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz), m = r + o.r;
         if (d < m && d > 1e-6) { x += dx / d * (m - d); z += dz / d * (m - d); hit = true; }
@@ -1774,18 +1795,31 @@
     // Parkende Fahrzeuge rollen aus
     updateHomeVeh(dt);
     for (const v of vehicles) if (!v.driver && !v.ai && Math.abs(v.v) > .05) { v.step(dt, { steer: 0, thr: 0 }, W, fx); }
+    // Verkehr
+    for (const tr of traffic) {
+      const v = tr.v;
+      if (!v.ai) {
+        if (tr.rejoinAt && t >= tr.rejoinAt && !v.driver && !v.netBy && P.veh !== v && Math.hypot(P.x - v.x, P.z - v.z) > 18) {
+          tr.a = Math.atan2(v.x, v.z); v.ai = true; tr.rejoinAt = 0; v.v = 0;
+          v.setPose(Math.sin(tr.a) * tr.lane, Math.cos(tr.a) * tr.lane, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
+        }
+        continue;
+      }
+      if (v.driver || v.netBy || P.veh === v) continue;
+      const waiting = tr.stopUntil > t; let sp = waiting ? 0 : tr.sp;
+      if (!waiting) tr.stopUntil = 0;
+      const sn = Math.sin(v.h), cs = Math.cos(v.h);
+      const ahead = (ox, oz) => { const dx = ox - v.x, dz = oz - v.z, f = dx * sn + dz * cs; return f > 0 && f < 12 && Math.abs(dx * cs - dz * sn) < 3.2; };
+      if (ahead(P.veh ? P.veh.x : P.x, P.veh ? P.veh.z : P.z)) sp = 0;
+      for (const o of vehicles) if (o !== v && ahead(o.x, o.z)) sp = 0;
+      const oldV = v.v;
+      v.v = waiting ? Math.max(0, v.v - 18 * dt) : BI.damp(v.v, sp, 2.5, dt);
+      v.acc = (v.v - oldV) / dt; tr.a += tr.dir * v.v / tr.lane * dt;
+      const x = Math.sin(tr.a) * tr.lane, z = Math.cos(tr.a) * tr.lane; v.setPose(x, z, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
+    }
     for (const v of vehicles) {
       if (v.driver || v === P.veh) { v.root.visible = true; v.visual(dt, t, fx); continue; }
       const far = Math.abs(v.x - qx) + Math.abs(v.z - qz) > 150; if (far === v.root.visible) v.root.visible = !far; if (!far) v.visual(dt, t, null);
-    }
-    // Verkehr
-    for (const tr of traffic) {
-      const v = tr.v; let sp = tr.sp;
-      const ahead = (ox, oz) => { const dx = ox - v.x, dz = oz - v.z, f = dx * Math.sin(v.h) + dz * Math.cos(v.h); return f > 0 && f < 14 && Math.abs(dx * Math.cos(v.h) - dz * Math.sin(v.h)) < 3.2; };
-      if (ahead(P.veh ? P.veh.x : P.x, P.veh ? P.veh.z : P.z)) sp = 0;
-      for (const o of vehicles) if (o !== v && ahead(o.x, o.z) && Math.hypot(o.x - v.x, o.z - v.z) < 12) sp = 0;
-      v.v = BI.damp(v.v, sp, 2.5, dt); tr.a += tr.dir * v.v / tr.lane * dt;
-      const x = Math.sin(tr.a) * tr.lane, z = Math.cos(tr.a) * tr.lane; v.setPose(x, z, Math.atan2(Math.cos(tr.a) * tr.dir, -Math.sin(tr.a) * tr.dir));
     }
     if (P.veh !== trainVeh) train.update(dt, null, fx);
     life.update(dt, t, !!save.eco, night);
@@ -1890,13 +1924,20 @@
     const w = innerWidth, h = innerHeight; renderer.setPixelRatio(QUAL[quality]); renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < .8 ? 74 : w / h < 1.2 ? 66 : 58; camera.updateProjectionMatrix(); if (rs.ui === 'play') rangeFov();
   }
   addEventListener('resize', resize); resize();
-  let last = performance.now(), fpsAcc = 0, fpsN = 0, lowCount = 0;
+  let last = performance.now(), fpsAcc = 0, fpsN = 0, lowCount = 0, fastCount = 0, hudTick = 0, miniTick = 0;
   P.veh = null; cam.x = 0; cam.z = 40; cam.y = 7; cam.shake = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > .1) dt = .1; if (dt <= 0) return;
     fpsAcc += dt; fpsN++;
-    if (fpsN >= 90) { const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0; if (avg > .027 && state === 'play') { if (++lowCount >= 2 && quality < (save.gfx === 'sharp' ? 1 : 3)) { quality++; lowCount = 0; resize(); } } else lowCount = 0; }
+    if (fpsN >= 45) {
+      const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0;
+      if (state === 'play' && save.gfx !== 'sharp') {
+        if (avg > .027) { fastCount = 0; if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } }
+        else if (avg < .0175 && quality > baseQuality()) { lowCount = 0; if (++fastCount >= 8) { quality--; fastCount = 0; resize(); } }
+        else { lowCount = 0; fastCount = 0; }
+      }
+    }
     if (state === 'pause') { updateParent(dt); renderer.render(scene, camera); return; } // Eltern-Knopf (gedrückt halten) liegt im Pause-Menü
     t += dt;
     if (mini.active) { mini.update(dt); updateGame(dt); kids.update(dt); sendNet(dt); if (state !== 'menu') A.music(dt, night > .5, (() => { const mg = mini.GAMES[mini.kind]; return mg && 'zone' in mg ? mg.zone : 'insel'; })()); return; }
@@ -1907,11 +1948,11 @@
     if (state === 'play') { fun.update(dt, t); combat.update(dt, t); } build.update(dt, t); vox.update(dt, t); atlantis.update(dt, t); zotik.update(dt, t); radio.update(dt, t); if (build.active && vox.count !== lastVC) { lastVC = vox.count; updateBuildCount(); }
     W.update(t, dt, night); fx.update(dt, renderer.domElement.height);
     updateCamera(dt);
-    if (state === 'play') { updateButtons(false); updateArrow(); updateGauge(); }
+    if (state === 'play') { hudTick -= dt; if (hudTick <= 0) { hudTick = .1; updateButtons(false); updateArrow(); updateGauge(); } }
     if (state !== 'menu') A.music(dt, night > .5, BI.zoneAt(P.x, P.z, { cinema: cinema.open, obby: obby.run }));
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
-    if (state === 'play' && ((t * 8) | 0) % 2 === 0) drawMini();
+    if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .2; drawMini(); } }
     renderer.render(scene, camera);
   }
   spawnRC(true); if (save.owned.includes('rcheli')) spawnRC(true, 'rcheli'); if (save.owned.includes('skate')) spawnRC(true, 'skate'); if (save.owned.includes('rollator')) spawnRC(true, 'rollator');
