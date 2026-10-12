@@ -302,7 +302,7 @@ function buildLevel(index, titleOnly = false) {
   island(0, 0, cfg.mainRadius || 27); island(37, 2, 7, 1); island(-36, -5, 6, 2);
   for (let i = 0; i < 4; i++) platform(0, -11 - i * 2.4, 5.5, 3, .75 * (i + 1)); platform(0, -20, 10, 6, 3);
   for (const [x, z, w, d, y] of cfg.extras) platform(x, z, w, d, y);
-  makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 2, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -5, 2, 12);
+  makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 6, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -1.2, 2, 12);
   if (index >= 3) makeUpdraft(0, 5, 0, 13);
   if (index === 4) { platform(-13, -4, 7, 7, 5); platform(12, -7, 7, 7, 7); makeUpdraft(-13, 1, 0, 14); makeUpdraft(12, -1, 0, 16); for (const [x, z] of [[-13, -4], [12, -7]]) for (let j = 0; j < 5; j++) mesh('gem', cfg.accent, x - 3 + j * 1.5, 1.2, z + 4, .65, 2.8, .65).rotation.z = (j - 2) * .15; }
   if (index === 5) { for (const sign of [-1, 1]) { for (let j = 0; j < 4; j++) platform(sign * (8 + j * 3), -2 - j * 2, 4, 4, .6 + j * .6); makeUpdraft(sign * 16, 2, 0, 14); } }
@@ -403,6 +403,8 @@ function inputDirection() {
   return {x, z, length, dx: x * Math.cos(camYaw) + z * Math.sin(camYaw), dz: -x * Math.sin(camYaw) + z * Math.cos(camYaw)};
 }
 const approach = (v, target, rate, dt) => v + (target - v) * (1 - Math.exp(-dt * rate));
+// Landehilfe (Handy): über einer Insel sinkt Aeru im Flug von selbst, solange er nicht steigt – die Mitte der Insel liegt frei von Aufwinden.
+function flightFloor(p) { return floorAt(p.x, p.z, p.y + .42); }
 function movePlayer(dt) {
   const input = inputDirection(), {dx, dz, length} = input;
   const jumpDown = jumpHeld || keys.has('Space'), shiftDown = keys.has('ShiftLeft') || keys.has('ShiftRight') || diveHeld;
@@ -416,7 +418,7 @@ function movePlayer(dt) {
   if (state.dodge > 0) { state.dodge -= dt; state.vx = state.dodgeX * 17; state.vz = state.dodgeZ * 17; }
   else {
     let speed, rate;
-    if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed; rate = length > .05 ? 3.4 : 1.8; }
+    if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed; rate = length > .05 ? 3.4 : 1.8; const ff = flightFloor(state); if (ff > -50 && state.y - ff < 12) { speed *= .75; rate = length > .05 ? 5 : 6; } }
     else if (gliding) { speed = 9; rate = 4; }
     else if (air) { speed = 8; rate = 6; }
     else { speed = shiftDown ? 10.5 : 7.4; rate = length > .05 ? 16 : 22; }
@@ -428,6 +430,7 @@ function movePlayer(dt) {
     if (shiftDown) state.vy = approach(state.vy, -7.5, 4, dt);
     else if (jumpDown && jumpHeldTime > .22 && state.stamina > 0) { state.vy = approach(state.vy, 4.2, 3, dt); state.stamina = Math.max(0, state.stamina - 16 * assist * dt); }
     // Ohne Steigen erholen sich die Flügel langsam, damit niemand ohne Kraft unter einer Insel festhängt.
+    else if (flightFloor(state) > -50 && state.y - flightFloor(state) < 12) { state.vy = approach(state.vy, -3.2, 3, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
     else { state.vy = approach(state.vy, state.stamina > 0 ? -1.4 : -2.6, 2.5, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
   } else if (gliding) { state.vy = Math.max(-2.2, state.vy - 5 * dt); state.stamina = Math.max(0, state.stamina - 10 * dt); }
   else {
