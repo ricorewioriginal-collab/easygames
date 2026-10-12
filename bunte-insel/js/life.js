@@ -72,7 +72,7 @@ BI.createLife = function (G) {
     { id: 'rainbow', x: -285, z: 20, R: 46, pad: 5, spec: [
       ['person', 12, { names: ['Pia', 'Jonas', 'Mika', 'Sam', 'Nele', 'Alex', 'Ronja', 'Eli'], shirts: [0xff3b3b, 0xff9a2e, 0xffe14a, 0x4cd07d, 0x3fa0ff, 0x9b4de0], hats: ['flowers', 'none', 'party'], look: { rainbow: true }, rad: 12, bursts: true, lines: ['bei uns darf jeder so sein, wie er ist! 🌈', 'Liebe ist Liebe – und alle gehören dazu.', 'Wir feiern heute bunt und laut!', 'Du bist toll, so wie du bist!'] }],
       ['critter', 3, { k: 'unicorn', rad: 10, scale: 1 }], ['float', 12, { k: 'butterfly', c: 0xb36bff, alt: [1, 2.6], amp: 4 }], ['fly', 8, { k: 'gull', alt: [8, 18], w: .15, scale: .8 }], ['pet', 3, { pet: 'mieze' }]] },
-    { id: 'dampf', x: -262, z: -150, R: 48, pad: 6, spec: [
+    { id: 'dampf', x: -262, z: -135, R: 48, pad: 6, spec: [
       ['person', 6, { names: ['Matrose Max', 'Matrosin Mia', 'Kapitän Kai', 'Smutje Sven', 'Steuerfrau Sia', 'Maat Moritz'], shirts: [0xf4f4f4, 0xdddddd, 0xc9c9c9], pants: [0x2a2a2e, 0x3a3a3e], hairs: [0x333333, 0x555555, 0xaaaaaa], skins: [0xdcdcdc, 0xc4c4c4, 0xe8e8e8], hats: ['cap', 'pirate'], rad: 14, lines: ['der Dampfer pfeift schon wieder! 🚢', 'Hier ist alles schwarz-weiß wie in einem alten Film.', 'Hast du die Kisten am Kran gesehen?', 'Ahoi, Landratte!'] }],
       ['person', 3, { names: ['Hafenarbeiter Hans', 'Hafenarbeiterin Hilde', 'Kranführer Karl'], shirts: [0xcfcfcf, 0xaaaaaa], pants: [0x2a2a2e], skins: [0xcfcfcf, 0xdcdcdc], hairs: [0x444444], hats: ['helmet'], rad: 10, lines: ['Kisten stapeln ist harte Arbeit! 📦', 'Pass auf beim Kran!', 'Feierabend ist, wenn die Pfeife tönt.'] }],
       ['willi', 6, {}], ['fly', 8, { k: 'gull', alt: [10, 22], w: .14, scale: .9 }]] },

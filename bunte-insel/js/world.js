@@ -99,6 +99,7 @@ BI.buildWorld = function (scene) {
     if (air) { /* hoch in der Luft: über dem Meer frei fliegen (keine unsichtbare Inselwand) */ const fl = W.flyLimit(), fr = Math.hypot(px, pz); if (fr > fl) { px *= fl / fr; pz *= fl / fr; hit = true; } }
     else if (rad > K.LIMIT - r) {
       if (alt == null && pz > 150 && pz < 207.5 && Math.abs(px) < 3.3) { const nx = BI.clamp(px, -2.1, 2.1), nz = Math.min(pz, 207.5); if (nx !== px || nz !== pz) hit = true; px = nx; pz = nz; } // Steg
+      else if (W.isles && isleWalk(px, pz, r)) { /* Brücke / kleine Inseln zuerst, damit die Sperrringe der älteren Inseln (Dampfer, Regenbogen, Park …) sie nicht verschlucken */ }
       else if (W.zotik && zotikWalk(px, pz, r, alt)) { /* Brücke / Zotik – Lunaris */ }
       else if (W.zotik && pz > 190 && Math.hypot(px - W.zotik.x, pz - W.zotik.z) < W.zotik.R + 40) { const dd = Math.hypot(px - W.zotik.x, pz - W.zotik.z) || 1, k = Math.min(1, (W.zotik.R - r) / dd); px = W.zotik.x + (px - W.zotik.x) * k; pz = W.zotik.z + (pz - W.zotik.z) * k; hit = true; }
       else if (W.city && cityWalk(px, pz, r)) { /* Brücke / Stadtinsel */ }

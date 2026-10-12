@@ -6,7 +6,7 @@
    alles andere ist frei erfunden (eigene Namen, eigene Geschichten, eigene Musik). Keine Verbindung zu irgendeiner Firma.
    Spielidee: Die Welt ist schwarz-weiß – bring die FARBE zurück (6 Farbeimer), spiel das Dampfer-Orchester (6 Instrumente), finde 8 Noten,
    zieh die Dampfpfeife, schau einen Stummfilm im Freiluftkino, spiel mit Willi und stapel Kisten am Kran (Mini-Spiel). */
-BI.DAMPF = { x: -262, z: -150, R: 48, bridge: { x0: -218, x1: -92, z0: -154.5, z1: -145.5 } };
+BI.DAMPF = { x: -262, z: -135, R: 48, bridge: { x0: -218, x1: -104, z0: -139.5, z1: -130.5 } }; /* 15 m weiter nördlich als früher: so kreuzt die Brücke nicht mehr die Märchenland-Brücke (beide begannen im selben Winkel am Inselrand) */
 BI.DAMPF_COL = [0xff4d4d, 0xff9a2e, 0xffe14a, 0x4cd07d, 0x3fa0ff, 0xa66bff];
 BI.DAMPF_INST = [['xylo', '🎹', 'Flaschen-Xylophon'], ['wasch', '🧺', 'Waschbrett'], ['trommel', '🥁', 'Blechtrommel'], ['ente', '🦆', 'Quietsch-Ente'], ['tuba', '🎺', 'Tuba'], ['pfeife', '📯', 'Dampfpfeife']];
 BI.DAMPF_NOTES = [[-30, -14], [-14, -33], [18, -30], [34, 12], [22, 30], [-8, 38], [-34, 24], [4, 14]];
