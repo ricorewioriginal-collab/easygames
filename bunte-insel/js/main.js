@@ -666,7 +666,23 @@
   /* Hauptmenü: Freie Welt oder Story-Modus wählen (gleicher Spielstand); neues Abenteuer: erst den Helden gestalten */
   function beginGame(mode) { smode.setMode(mode, true); syncMode(); if (needsCreate()) { creatorFirst = true; $('bHeroBack').innerHTML = '<b>▶</b><span>Los geht\'s!</span>'; menuView('hero'); } else startPlay(); }
   $('bStart').addEventListener('click', () => beginGame('free')); $('bStartStory').addEventListener('click', () => beginGame('story'));
-  $('bToMenu').addEventListener('click', () => { persist(); try { if (typeof net !== 'undefined' && net.close) net.close(); } catch (e) { } location.reload(); });
+  // Zurück ins Hauptmenü ohne kompletten Browser-Neustart: Die 3D-Welt und alle
+  // Module wurden beim ersten Laden bereits aufgebaut. Spielstand vor dem Wechsel sichern.
+  $('bToMenu').addEventListener('click', () => {
+    persist();
+    try { if (typeof net !== 'undefined' && net.close) net.close(); } catch (e) { }
+    try { if (P.veh) leave(true); } catch (e) { }
+    try { if (tv.on) tv.stop(); } catch (e) { }
+    releaseAll();
+    closeHudMenus();
+    A.stopAll();
+    state = 'menu';
+    $('pause').hidden = true;
+    $('hud').hidden = true;
+    $('menu').hidden = false;
+    menuView('home');
+    if (!isTouch()) $('bStart').focus({ preventScroll: true });
+  });
   $('bResume').addEventListener('click', () => pause(false)); $('bPause').addEventListener('click', () => pause(true));
   $('bNight').addEventListener('click', toggleNight); $('bSound').addEventListener('click', toggleSound); $('bMusic').addEventListener('click', toggleMusic);
   $('nightIcon').textContent = save.night ? '☀️' : '🌙'; $('soundIcon').textContent = save.sound ? '🔊' : '🔇'; $('bMusic').classList.toggle('off', !save.music);
