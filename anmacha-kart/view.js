@@ -346,11 +346,11 @@ const View = (() => {
   }
   function updateCam(c, S, dt) {
     const k = c.k, p = ip[c.ki] || k, tgt = p.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
-    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.75), dist = (7.4 + clamp(k.vf / 36, 0, 1.4) * 0.9) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
-    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y = 3.1 * (0.85 + 0.15 * af); c.cam.position.copy(c.pos);
+    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.55), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
+    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y = 5.0 * (0.9 + 0.1 * af); c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
     const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
-    c.cam.lookAt(p.x + Math.sin(c.ang) * 5, 1.6, p.z + Math.cos(c.ang) * 5);
+    c.cam.lookAt(p.x + Math.sin(c.ang) * 10, 1.35, p.z + Math.cos(c.ang) * 10);
   }
   function rects(n, w, h) {
     if (n <= 1) return [[0, 0, w, h]]; const hw = (w / 2) | 0, hh = (h / 2) | 0;
