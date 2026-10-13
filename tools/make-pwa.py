@@ -18,6 +18,7 @@ import json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EIGENE = {'prismrush', 'wobbel'}          # haben ein eigenes Manifest + eigenen Service Worker
+CACHE_VERSION = {'bunte-insel': 2}          # Versionssprung löscht veraltete Offline-Dateien dieses Spiels
 MARK = re.compile(r'\n?<!--pwa-->.*?<!--/pwa-->', re.S)
 
 
@@ -74,7 +75,7 @@ SW = r"""/* %(title)s – Service Worker (erzeugt von tools/make-pwa.py, nicht v
    Netz zuerst: jeder Start holt den aktuellen Stand (der Browser prüft per ETag, große Dateien kommen bei „unverändert“ nicht neu).
    Fällt das Netz aus oder antwortet es länger als 4 s, kommt die zuletzt geladene Fassung aus dem Cache – so läuft das Spiel auch offline,
    sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Neue Fassung = sofort aktiv (skipWaiting/claim), alte Zwischenspeicher werden gelöscht. */
-const CACHE = 'eg-%(id)s-v1';
+const CACHE = 'eg-%(id)s-v%(cache_version)s';
 self.addEventListener('install', e => { e.waitUntil(self.skipWaiting()); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('eg-%(id)s-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -199,7 +200,7 @@ def main():
             continue
         n += 1
         write(os.path.join(d, 'manifest.webmanifest'), json.dumps(manifest(g), ensure_ascii=False, indent=2) + '\n', check, problems)
-        write(os.path.join(d, 'sw.js'), SW % {'id': g['id'], 'title': g['title'].replace('*/', '')}, check, problems)
+        write(os.path.join(d, 'sw.js'), SW % {'id': g['id'], 'title': g['title'].replace('*/', ''), 'cache_version': CACHE_VERSION.get(g['id'], 1)}, check, problems)
         html = open(idx, encoding='utf-8').read()
         write(idx, patch_html(g, html), check, problems)
         need = [os.path.join(ROOT, 'pwa-icons', '%s-%s.png' % (g['id'], s)) for s in ('192', '512', '180', 'maskable-512')]
