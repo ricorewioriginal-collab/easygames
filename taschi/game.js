@@ -32,7 +32,7 @@ for(let region=0;region<12;region++)for(let i=0;i<16;i++){
  const base=originals[(i+region*3)%originals.length][1],id='form_'+region+'_'+i;
  const type=TYPES_LIST[(region+i)%TYPES_LIST.length],stage=i%3;
  const tint=new THREE.Color(base.color);tint.offsetHSL(((region+1)%7)*.045-.12,.08,(stage-1)*.09);
- const evo=i<14&&stage!==2?{to:'form_'+region+'_'+(i+1),lv:17+stage*15+region}:undefined;
+ const evo=i<14&&stage!==2?['form_'+region+'_'+(i+1),17+stage*15+region]:undefined;
  SPEC[id]={name:REGIONS[region]+ENDINGS[i],type,color:tint.getHex(),hp:base.hp+(region%4)*3+stage*20,atk:base.atk+(i%4)*2+stage*13,def:base.def+(i%5)*2+stage*12,speed:base.speed+(region%3)*3+stage*9,catch:Math.max(.12,base.catch-(region%4)*.025-stage*.1),moves:['stoss',TYPE_MOVE[type]],evo,bio:'Ein Wesen aus der Region '+REGIONS[region]+'. Seine Form entwickelt sich mit seiner Umgebung.'};
 }
 const MOVES={stoss:['Kugelstoß','normal',40],hieb:['Wirbelhieb','normal',65],funken:['Funkenschlag','elektro',48],glut:['Glutfunken','feuer',48],ranke:['Rankenhieb','pflanze',48],spritzer:['Wasserperlen','wasser',48],fluegel:['Windstoß','flug',48],stein:['Steinwurf','gestein',48],spuk:['Spukhauch','geist',48]};
