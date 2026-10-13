@@ -262,6 +262,7 @@ const ENV_COLORS={pflanze:0x53986b,wasser:0x4eafc5,elektro:0xe9c74d,flug:0x96c5d
 for(const r of regions){
  const mainType=REGION_TYPES[r.id][0],tone=mat(ENV_COLORS[mainType]);
  const root=new THREE.Group();root.position.set(r.x,0,r.z);scene.add(root);
+ const district=mesh(root,new THREE.CircleGeometry(12.5,32),new THREE.MeshStandardMaterial({color:ENV_COLORS[mainType],roughness:1,transparent:true,opacity:.38,depthWrite:false}),0,.019,0);district.rotation.x=-Math.PI/2;
  if(mainType==='wasser'){
   for(let j=0;j<4;j++){const rock=mesh(root,new THREE.CylinderGeometry(.45,.68,1.5,7),tone,Math.sin(j*1.6)*8,.75,Math.cos(j*1.6)*8);rock.rotation.z=.12}
  }else if(mainType==='feuer'){
@@ -327,7 +328,7 @@ for(let i=0;i<SHADOW_SITES.length;i++){
 }
 function shadowGuildEvent(site){
  save.guild ||= {};
- const idx=SHADOW_SITES.indexOf(site);
+ const idx=SHADOW_SITES.indexOf(site);if(idx<0)return;
  if(save.guild[idx]){dialog('Verlassener Ballon','Die Schattengilde ist aus dieser Region vertrieben. Schnurrik und die Forscher sind weitergezogen.',choice());return}
  dialog('Schattengilde · gestohlene Taschis','<p>Über dir schwebt ein violetter Heißluftballon. Zwei Mitglieder der Schattengilde und ihr listiges Katzentaschi Schnurrik versuchen, wilde Taschis für geheime Versuche einzufangen.</p><p>„Halt! Diese Taschis brauchen Hilfe!“</p>',[
  ['Gefangene Taschis retten',()=>battle(make('schnurrik',Math.min(55,15+idx*10)),false,200+idx)],
@@ -630,7 +631,7 @@ function summary(m){const s=SPEC[m.id];return '<b>'+TYPES[s.type]+' '+s.name+'</
 function first(){return save.team.find(m=>m.hp>0)}
 function start(){dialog('Kapitel 1 · Der Ruf der Lichter','<p>Du stehst in Sonnenhain vor Professor Ulmes gläserner Kuppel. Darin warten drei Taschibälle auf dich.</p><p>Sprich zuerst mit dem Professor links neben der Kuppel und untersuche danach einen der Bälle.</p>',[['Abenteuer beginnen',close]])}
 function chooseStarter(){dialog('Professor Ulmes Labor','<p>„Jedes Taschi ist etwas Besonderes. Entscheide mit dem Herzen! Du kannst später viele weitere Freunde finden.“</p>',[['🔥 Glutzahn · Feuer',()=>starter('glutzahn')],['💧 Plätscherchen · Wasser',()=>starter('plaetscher')],['🌱 Samenling · Pflanze',()=>starter('samenling')]])}
-function starter(id){save.team.push(make(id,5));save.dex[id]=2;updateFollower();stats();dialog('Dein Abenteuer beginnt!', '<p>'+SPEC[id].name+' begleitet dich! Bewege dich zum hohen Gras, entdecke Taschis und besiege die 16 Arenen. Im Heilhaus werden deine Freunde geheilt.</p>',choice())}
+function starter(id){if(save.team.length)return;save.team.push(make(id,5));save.dex[id]=2;updateFollower();stats();dialog('Dein Abenteuer beginnt!', '<p>'+SPEC[id].name+' begleitet dich! Bewege dich zum hohen Gras, entdecke Taschis und besiege die 16 Arenen. Im Heilhaus werden deine Freunde geheilt.</p>',choice())}
 
 const starterStation=[];
 const lab=new THREE.Group();lab.position.set(0,0,13);scene.add(lab);
@@ -849,7 +850,7 @@ function buy(cost,award){
  save.coins-=cost;award();stats();shop();
 }
 
-function interact(){if(gameState!==GAME_STATES.WORLD)return;if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}if(near.guild){shadowGuildEvent(SHADOW_SITES.find(g=>g.x===near.x&&g.z===near.z));return}if(near.introProfessor){professorIntroduction();return}if(near.starterBall!==undefined){inspectStarterBall(near.starterBall);return}if(!save.team.length){toast('Sprich erst mit Professor Ulme und wähle ein Starter-Taschi.');return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.npc!==undefined){regionalTalk(near)}else if(near.kind){regionAction(near)}else if(near.route!==undefined){routeInfo(near)}else if(near.trainer!==undefined){approachTrainer(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){shop()}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}if(!save.puzzles?.[i]){dialog('Arena verschlossen','Löse zunächst das Siegelrätsel dieser Stadt. Es befindet sich nahe der Arena.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
+function interact(){if(gameState!==GAME_STATES.WORLD)return;if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}if(near.guild){if(!save.team.length){toast('Wähle zuerst dein Starter-Taschi.');return}shadowGuildEvent(SHADOW_SITES.find(g=>g.x===near.x&&g.z===near.z));return}if(near.introProfessor){professorIntroduction();return}if(near.starterBall!==undefined){inspectStarterBall(near.starterBall);return}if(!save.team.length){toast('Sprich erst mit Professor Ulme und wähle ein Starter-Taschi.');return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.npc!==undefined){regionalTalk(near)}else if(near.kind){regionAction(near)}else if(near.route!==undefined){routeInfo(near)}else if(near.trainer!==undefined){approachTrainer(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){shop()}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}if(!save.puzzles?.[i]){dialog('Arena verschlossen','Löse zunächst das Siegelrätsel dieser Stadt. Es befindet sich nahe der Arena.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
 $('team').onclick=team;$('dex').onclick=dex;$('map').onclick=mapView;$('menu').onclick=mainMenu;$('sound').onclick=toggleSound;$('interact').onclick=interact;
 
 let soundOn=false,audioContext=null,nextNote=0,noteStep=0;
