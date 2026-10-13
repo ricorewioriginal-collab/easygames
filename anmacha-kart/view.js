@@ -82,8 +82,8 @@ const View = (() => {
     // Start/Ziel
     const p0 = { x: tr.P[0], z: tr.P[1] }, th0 = Math.atan2(tr.T[0], tr.T[1]);
     const chk = canvasTex(256, 32, (g, w, h) => { for (let x = 0; x < 16; x++) for (let y = 0; y < 2; y++) { g.fillStyle = (x + y) % 2 ? '#fff' : '#111'; g.fillRect(x * 16, y * 16, 16, 16); } });
-    const line = new T.Mesh(new T.PlaneGeometry(tr.W, 3), new T.MeshBasicMaterial({ map: chk })); line.position.set(p0.x, 0.06, p0.z); line.rotation.order = 'YXZ'; line.rotation.x = -Math.PI / 2; line.rotation.y = th0 + Math.PI; world.add(line);
-    const gantry = new T.Group(); gantry.position.set(p0.x, 0, p0.z); gantry.rotation.y = th0;
+    const line = new T.Mesh(new T.PlaneGeometry(tr.W, 3), new T.MeshBasicMaterial({ map: chk })); line.position.set(p0.x, 0.06 + tr.height(0), p0.z); line.rotation.order = 'YXZ'; line.rotation.x = -Math.PI / 2; line.rotation.y = th0 + Math.PI; world.add(line);
+    const gantry = new T.Group(); gantry.position.set(p0.x, tr.height(0), p0.z); gantry.rotation.y = th0;
     [-1, 1].forEach(s => { const p = new T.Mesh(new T.BoxGeometry(1, 9, 1), lam('#1a1d33')); p.position.set(s * (tr.wallD - 0.5), 4.5, 0); gantry.add(p); });
     const beam = new T.Mesh(new T.BoxGeometry(tr.wallD * 2, 2.6, 0.8), lam('#10143a')); beam.position.y = 9; gantry.add(beam);
     const bn = new T.Mesh(new T.PlaneGeometry(tr.wallD * 2 - 1, 2.2), new T.MeshBasicMaterial({ map: canvasTex(512, 64, (g, w, h) => { g.fillStyle = '#10143a'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffd24a'; g.font = '900 40px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('AnMaCha KART RUSH · START / ZIEL', w / 2, h / 2 + 2); }) })); bn.position.set(0, 9, 0.45); gantry.add(bn); const bn2 = bn.clone(); bn2.rotation.y = Math.PI; bn2.position.z = -0.45; gantry.add(bn2); world.add(gantry);
@@ -494,8 +494,8 @@ const View = (() => {
   // ------------------------------------------------------------------ Rennen: Aufbau und Einzelbild
   let boxes = [], padsM = [], hazM = { mine: [], banana: [] }, rocM = { rocket: [], rock: [] }, boomM = [];
   function setupRace(S, humanIdx) {
-    initSkid(); skidClear(); fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8, b.z); scene.add(m); return m; });
-    padsM.forEach(p => scene.remove(p)); padsM = S.pads.map(p => { const m = new T.Mesh(new T.PlaneGeometry(8, 12), padMat); m.rotation.order = 'YXZ'; m.rotation.x = -Math.PI / 2; m.rotation.y = p.th + Math.PI; m.position.set(p.x, 0.08, p.z); scene.add(m); return m; });
+    initSkid(); skidClear(); fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8 + tr.height(b.f), b.z); scene.add(m); return m; });
+    padsM.forEach(p => scene.remove(p)); padsM = S.pads.map(p => { const m = new T.Mesh(new T.PlaneGeometry(8, 12), padMat); m.rotation.order = 'YXZ'; m.rotation.x = -Math.PI / 2; m.rotation.y = p.th + Math.PI; m.position.set(p.x, 0.08 + tr.height(p.f), p.z); scene.add(m); return m; });
     [].concat(hazM.mine, hazM.banana, rocM.rocket, rocM.rock, boomM).forEach(m => scene.remove(m)); hazM = { mine: [], banana: [] }; rocM = { rocket: [], rock: [] }; boomM = [];
     cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66 }); });
   }
