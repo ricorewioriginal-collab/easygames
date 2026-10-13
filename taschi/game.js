@@ -272,7 +272,7 @@ const player=new THREE.Group();scene.add(player);ball(player,0,1.35,0,.43,mat(0x
 const follower=new THREE.Group();scene.add(follower);let currentFollower=null;function updateFollower(){follower.clear();if(save.team.length){currentFollower=creature(save.team[0].id,.6);follower.add(currentFollower)}}updateFollower();
 function stats(){ $('badge').textContent='✦ '+save.badges+'/16';$('count').textContent='◉ '+(save.team.length+save.box.length);$('coins').textContent='★ '+save.coins;$('location').textContent=save.badges===16?'Taschi-Meister':'Sonnenhain';persist()}
 function toast(t,sec=3){$('message').textContent=t;$('message').style.display='block';toastUntil=performance.now()+sec*1000}
-function dialog(title,desc,buttons){locked=true;$('panel').classList.remove('battle');$('title').textContent=title;$('desc').innerHTML=desc;$('options').replaceChildren();for(const [label,fn,disabled] of buttons){const b=document.createElement('button');b.className='option';b.textContent=label;b.disabled=!!disabled;b.addEventListener('click',fn);$('options').append(b)}$('panel').classList.add('show')}
+function dialog(title,desc,buttons){locked=true;gamepadFocus=0;$('panel').classList.remove('battle');$('title').textContent=title;$('desc').innerHTML=desc;$('options').replaceChildren();for(const [label,fn,disabled] of buttons){const b=document.createElement('button');b.className='option';b.textContent=label;b.disabled=!!disabled;b.addEventListener('click',fn);$('options').append(b)}$('panel').classList.add('show')}
 function close(){locked=!booted;$('panel').classList.remove('show','battle');combat=null;updateBattleScene();stats()}
 function choice(){return [['Weiter',close]]}
 function pct(m){return Math.max(0,Math.min(100,100*m.hp/maxHp(m)))}
@@ -457,7 +457,7 @@ function soundtrack(){
 // Shared configurable keyboard, touch and standard Gamepad API input.
 const INPUT_KEY='taschi.input.v2';
 const defaults={up:'w',down:'s',left:'a',right:'d',action:'e',menu:'escape',run:'shift',joystickSize:126,joystickOpacity:75,deadzone:.16,speed:1,camera:'follow',vibration:true,hand:'left'};
-let controls;try{controls={...defaults,...JSON.parse(localStorage.getItem(INPUT_KEY)||'{}')}}catch{controls={...defaults}}
+let gamepadFocus=0;let controls;try{controls={...defaults,...JSON.parse(localStorage.getItem(INPUT_KEY)||'{}')}}catch{controls={...defaults}}
 const keys=new Set(),joy=$('joy'),nub=$('nub');let joyX=0,joyY=0,gamepadX=0,gamepadY=0,gamepadLast={},remapping=null;
 const normKey=e=>(e.key===' '?'space':e.key.toLowerCase());
 function keyMatch(key,direction){return key===controls[direction]||({up:'arrowup',down:'arrowdown',left:'arrowleft',right:'arrowright'}[direction]===key)}
@@ -469,11 +469,14 @@ function gamepadPoll(){
  gamepadX=axis(pad.axes[0]||0);gamepadY=axis(pad.axes[1]||0);
  const pressed=i=>!!pad.buttons[i]?.pressed;
  const edge=(i,callback)=>{if(pressed(i)&&!gamepadLast[i])callback();gamepadLast[i]=pressed(i)};
- edge(0,()=>{if(!locked)interact();else if($('panel').classList.contains('show'))$('options').querySelector('button:not(:disabled)')?.click();else if(!booted)enterGame()});
+ edge(0,()=>{if(!locked)interact();else if($('panel').classList.contains('show')){const bs=[...$('options').querySelectorAll('button:not(:disabled)')];bs[Math.min(gamepadFocus,bs.length-1)]?.click()}else if(!booted)enterGame()});
  edge(1,()=>{if($('panel').classList.contains('show')&&!combat)close()});
  edge(9,()=>{if(booted){if(locked&&!combat)close();else if(!locked)mainMenu()}else enterGame()});
  edge(3,()=>{if(booted&&!locked)team()});
- if(pad.buttons[12]?.pressed)gamepadY=-1;if(pad.buttons[13]?.pressed)gamepadY=1;
+ const options=locked&&booted?[...$('options').querySelectorAll('button:not(:disabled)')]:[];
+ const moveSelection=(delta)=>{if(!options.length)return;gamepadFocus=(gamepadFocus+delta+options.length)%options.length;options[gamepadFocus]?.focus()};
+ edge(12,()=>moveSelection(-1));edge(13,()=>moveSelection(1));
+ if(!locked&&pad.buttons[12]?.pressed)gamepadY=-1;if(!locked&&pad.buttons[13]?.pressed)gamepadY=1;
  if(pad.buttons[14]?.pressed)gamepadX=-1;if(pad.buttons[15]?.pressed)gamepadX=1;
 }
 function applyControls(){
