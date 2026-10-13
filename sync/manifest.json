@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "16369b1e2a7b",
- "generated": "2026-10-13T21:38:29+02:00",
- "commit": "ce839351efb3f87f3c3fb00c2b5460ecfc73b938",
+ "version": "41122fefd913",
+ "generated": "2026-10-13T21:46:06+02:00",
+ "commit": "db0553936ab201c98303039ae156ded4d2860b33",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3938,8 +3938,8 @@
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 9707,
-   "h": "a9b58be255f5e0beecf143d346208a24a8e6ab156c397dcb7a3689e71ccacdcd"
+   "s": 18376,
+   "h": "6761dcdb340b41003b478708813d9f7d635596e014bf883e69ab754c8a8f65f7"
   },
   {
    "p": "bunte-insel/js/innen.js",
@@ -5009,7 +5009,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57146,
-   "h": "df7c0ff25e1bd6af57e14fa692c42f12e953645a3c1e96b7a2d3a44238e2ea43"
+   "h": "d4812a98849d9f6cf749fb2fce01f7553dff525d476cb5f40603615fc4e95577"
   },
   {
    "p": "taschi/game.js",
