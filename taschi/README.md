@@ -73,3 +73,7 @@ Als Referenz für die übergreifende Spielschleife wurde [Pokémon (Computerspie
 ## Verbundene Reisewege
 
 Die bestehende Region besitzt nun ein durchgängiges sichtbares Wegenetz vom Startpunkt über die 16 Arenastandorte, aufgestellte Wegweiser mit Zielhinweisen und einen **Reiseführer** unter ☰. Bereits errungene Siegel bleiben bestehen. Die Routen sind zunächst Wege innerhalb der bestehenden Welt, **keine 16 separat ausgearbeiteten großen Regionen**. Die dargestellten Prüfungen, Wege und Wegweiser wurden statisch geprüft; tatsächliche Laufwege, Kollisionen und grafische Darstellung müssen im Browser getestet werden.
+
+## Spielzustandsmaschine
+
+Die Eingabelogik unterscheidet nun ausdrücklich `boot`, `title`, `world`, `dialog`, `battle` und `result`. Die Erkundungsbewegung läuft nur im Weltzustand; beim Öffnen von Dialogen wird die Bewegung blockiert. Kämpfe werden separat aktiviert, Pausenbefehle während eines Kampfes unterdrückt, und Abschlussaktionen führen aus dem Ergebnis zurück in die Spielwelt. Die Implementierung befindet sich derzeit im bestehenden `game.js`, damit bestehende Datenschnittstellen und Speicherstände unverändert bleiben. Die JavaScript-Syntax wurde geprüft; browserbasierte End-to-End-Tests sind weiterhin erforderlich.
