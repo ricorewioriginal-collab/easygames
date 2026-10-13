@@ -56,7 +56,12 @@ BI.createSammeln = function (G) {
   K.event = () => { let a = 11; for (const c of dayKey()) a = (a * 17 + c.charCodeAt(0)) >>> 0; const e = EV[a % EV.length]; return { g: e[0], icon: e[1], name: e[2], text: e[3] }; };
   const EVT = K.event(), evBoost = g => EVT.g === g;
   const weighted = (list, g) => { const w = q => RW[q[3]] * (g && evBoost(g) && q[3] >= 1 ? 3 : 1); let t = 0; for (const q of list) t += w(q); let r = Math.random() * t; for (const q of list) { r -= w(q); if (r <= 0) return q; } return list[0]; };
-  const isle = () => { for (const q of [BI.CITY, BI.PARK, BI.RAINBOW, BI.PUPS, BI.DAMPF, BI.DRACHEN, BI.BAULAND, BI.FUSSBALL, BI.MAERCHEN, BI.SCHLUESSEL, BI.ZOTIK, BI.RADIO]) { if (!q || !q.R) continue; const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < q.R + 10) return { cx: q.x, cz: q.z, R: q.R, d }; } const d = Math.hypot(P.x, P.z); return d < 200 ? { cx: 0, cz: 0, R: 168, d } : null; };
+  const isle = () => {
+    let best = null;
+    for (const q of W.isles || []) { if (!q || !Number.isFinite(q.R)) continue; const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < q.R + 16 && (!best || d < best.d)) best = { cx: q.x, cz: q.z, R: q.R, d }; }
+    const d = Math.hypot(P.x, P.z); if (d < 219 && (!best || d < best.d)) best = { cx: 0, cz: 0, R: 203, d };
+    return best;
+  };
   const atInterior = (x, z) => W.interiors && W.interiors.some(q => x > q.x0 - 1 && x < q.x1 + 1 && z > q.z0 - 1 && z < q.z1 + 1);
   /* ---------- 🎣 Angeln ---------- */
   const Fi = { st: 'idle', t: 0, spot: null, lake: false, sp: null }, bob = new THREE.Group(), line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xffffff }));
@@ -65,7 +70,12 @@ BI.createSammeln = function (G) {
   function waterSpot() {
     if (!onFoot()) return null; const lk = W.lake;
     if (lk) { const d = Math.hypot(P.x - lk.x, P.z - lk.z); if (d < lk.r + 5) { const k = d > 4.6 ? 4.5 / d : 1; return { x: P.x + (lk.x - P.x) * k, z: P.z + (lk.z - P.z) * k, y: .07, lake: true }; } }
-    const h = isle(); if (h && h.d > h.R - 8) { const k = 5.5 / Math.max(.1, h.d); return { x: P.x + (P.x - h.cx) * k, z: P.z + (P.z - h.cz) * k, y: -.28, lake: false }; } return null;
+    const h = isle();
+    if (h && h.d > h.R - 5 && h.d < h.R + 10 && W.seaAt && !W.seaAt(P.x, P.z)) {
+      const dx = (P.x - h.cx) / Math.max(.1, h.d), dz = (P.z - h.cz) / Math.max(.1, h.d);
+      for (let edge = h.R + 10.8; edge <= h.R + 16; edge += 1.2) { const x = h.cx + dx * edge, z = h.cz + dz * edge; if (W.seaAt(x, z)) return { x, z, y: -.02, lake: false }; }
+    }
+    return null;
   }
   K.canFish = () => !!waterSpot();
   function cast() {
