@@ -212,6 +212,63 @@ for(let i=0;i<32;i++){
 for(const [x,z,col] of [[-14,16,0xf39ab2],[8,17,0xeeb864],[18,-24,0xc2a2fa],[-29,-23,0xb6cde9],[-5,35,0xf9a87b]])flowerBed(x,z,col);
 for(const [x,z] of [[-7,15],[7,15],[-7,-18],[7,-18],[-6,-39],[6,-39]])streetLamp(x,z);
 
+
+/* Sixteen regional destinations, each with its own city, healing house, arena,
+ * champion gate, quest puzzle and one-time item chest. Travel is deliberate,
+ * existing overworld and save coordinates are preserved. */
+const REGION_NAMES=['Moostal','Korallküste','Funkenfeld','Blütenhain','Käferwald','Sturmklippe','Glutland','Sternenau','Nebelmoor','Frosttal','Wipfelreich','Donnersteppe','Kristallberg','Mondbucht','Sonnenhöhe','Himmelskrone'];
+const regions=GYMS.map((g,i)=>({id:i,name:REGION_NAMES[i],gym:g[0],level:g[2],x:gyms[i].x,z:gyms[i].z}));
+const regionMarkers=[];
+for(let i=0;i<regions.length;i++){
+ const r=regions[i],root=new THREE.Group();root.position.set(r.x-5,0,r.z-5);scene.add(root);
+ const color=mat([0x8ecf93,0x8dbbd6,0xe0bb72,0xa8cd8c][i%4]);
+ box(root,0,1.5,0,4,3,3.6,color);
+ const cap=mesh(root,new THREE.ConeGeometry(3.1,1.7,4),roof,0,3.85,0);cap.rotation.y=Math.PI/4;
+ box(root,0,1,1.85,1.1,1.8,.15,wood);
+ const chest=new THREE.Group();chest.position.set(r.x+6,0,r.z-5);scene.add(chest);
+ box(chest,0,.54,0,1.4,.8,.92,mat(0x8b5b35));
+ box(chest,0,1,0,1.5,.26,1.05,mat(0xc9904b));
+ box(chest,0,.74,.49,.23,.33,.06,mat(0xffdc78,.25));
+ const switchGroup=new THREE.Group();switchGroup.position.set(r.x-6,0,r.z+5);scene.add(switchGroup);
+ cylinder(switchGroup,0,.35,0,1.2,1.2,.7,mat(0x6b7c8e));
+ ball(switchGroup,0,.91,0,.42,mat(0xf4bf65,.2));
+ regionMarkers.push({x:r.x-5,z:r.z-5,label:'Heilzentrum '+r.name,region:i,kind:'heal'},
+ {x:r.x+6,z:r.z-5,label:'Truhe '+r.name,region:i,kind:'chest'},
+ {x:r.x-6,z:r.z+5,label:'Siegelrätsel '+r.name,region:i,kind:'puzzle'});
+}
+function regionAction(p){
+ const r=regions[p.region];save.chests ||= {};save.puzzles ||= {};
+ if(p.kind==='heal'){
+  save.team.forEach(m=>{m.hp=maxHp(m);for(const id of SPEC[m.id].moves)ensurePP(m)[id]=maxPP(id)});
+  stats();dialog('Heilzentrum · '+r.name,'Deine Taschis sind vollständig geheilt. Auch alle Attackenpunkte wurden aufgefüllt.',choice());return;
+ }
+ if(p.kind==='chest'){
+  if(save.chests[r.id]){toast('Diese Schatztruhe wurde bereits geöffnet.');return}
+  save.chests[r.id]=true;save.balls+=4;save.potions+=2;save.coins+=80+r.id*10;stats();
+  dialog('Schatztruhe geöffnet!','Du findest 4 Taschibälle, 2 Tränke und '+(80+r.id*10)+' Sternmünzen.',choice());return;
+ }
+ if(save.puzzles[r.id]){toast('Dieses Rätsel wurde bereits gelöst.');return}
+ const answer=(r.id*3+2)%3;
+ const symbols=['Kristall','Flamme','Stern'];
+ dialog('Siegelrätsel · '+r.name,'Ein altes Steintor zeigt drei Runen. Hinweis: Der '+(r.id+1)+'. Pfad trägt das Zeichen „'+symbols[answer]+'“. Wähle die richtige Rune.',[
+ ...symbols.map((sym,i)=>[sym,()=>{
+  if(i!==answer){dialog('Die Rune erlischt','Nicht ganz! Beobachte den Hinweis und versuche es erneut.',[['Noch einmal',()=>regionAction(p)],['Zurück',close]]);return}
+  save.puzzles[r.id]=true;save.coins+=100;stats();
+  dialog('Rätsel gelöst!','Das Siegel leuchtet auf. Du erhältst 100 Sternmünzen und darfst die regionale Arena herausfordern.',choice());
+ }]),
+ ['Später',close]
+ ]);
+}
+function regionSelect(){
+ dialog('Taschi-Regionen','<p>Reise zwischen den sechzehn Städten. Jede Stadt besitzt ein Heilzentrum, einen Fundgegenstand, ein Rätsel und eine Arena.</p><p>Freigeschaltet sind die bisherigen und die jeweils nächste Region.</p>',[
+ ...regions.map(r=>[(r.id<save.badges?'✓ ':'➜ ')+(r.id+1)+'. '+r.name,()=>{
+  player.position.set(Math.max(-58,Math.min(58,r.x+9)),0,Math.max(-58,Math.min(58,r.z+7)));
+  save.x=player.position.x;save.z=player.position.z;stats();close();toast('Ankunft in '+r.name);
+ },r.id>save.badges]),
+ ['Zurück',mainMenu]
+ ]);
+}
+
 const routeTrainers=[];
 const trainSpecs=[
  ['Jule',-8,31,'flatterling',7],['Finn',8,27,'quappi',9],
@@ -581,7 +638,7 @@ async function toggleFullscreen(){
   else toast('Vollbild wird von diesem Browser nicht unterstützt.');
  }catch{toast('Vollbild ist hier nicht verfügbar.')}
 }
-function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Regionen & Schnellreise',regionSelect],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 
@@ -614,7 +671,7 @@ function buy(cost,award){
  save.coins-=cost;award();stats();shop();
 }
 
-function interact(){if(gameState!==GAME_STATES.WORLD)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.route!==undefined){routeInfo(near)}else if(near.trainer!==undefined){approachTrainer(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){shop()}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
+function interact(){if(gameState!==GAME_STATES.WORLD)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.kind){regionAction(near)}else if(near.route!==undefined){routeInfo(near)}else if(near.trainer!==undefined){approachTrainer(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){shop()}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}if(!save.puzzles?.[i]){dialog('Arena verschlossen','Löse zunächst das Siegelrätsel dieser Stadt. Es befindet sich nahe der Arena.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
 $('team').onclick=team;$('dex').onclick=dex;$('map').onclick=mapView;$('menu').onclick=mainMenu;$('sound').onclick=toggleSound;$('interact').onclick=interact;
 
 let soundOn=false,audioContext=null,nextNote=0,noteStep=0;
@@ -755,5 +812,5 @@ function drawMinimap(){
 
 const clock=new THREE.Clock();let time=0,walkPhase=0,wasMoving=false,battleStartedAt=0;
 function animate(){requestAnimationFrame(animate);const dt=Math.min(.05,clock.getDelta());time+=dt;gamepadPoll();wasMoving=false;if(gameState===GAME_STATES.WORLD){const dx=Number([...keys].some(k=>keyMatch(k,'right')))-Number([...keys].some(k=>keyMatch(k,'left')))+joyX+gamepadX,dz=Number([...keys].some(k=>keyMatch(k,'down')))-Number([...keys].some(k=>keyMatch(k,'up')))+joyY+gamepadY,len=Math.hypot(dx,dz);if(len>.12){const speed=7*controls.speed*(keys.has(controls.run)?1.45:1);const vx=dx/len*dt*speed,vz=dz/len*dt*speed,nx=Math.max(insideCave?270:-60,Math.min(insideCave?330:60,player.position.x+vx)),nz=Math.max(insideCave?-24:-60,Math.min(insideCave?24:60,player.position.z+vz));if(insideCave||!colliders.some(c=>Math.hypot(nx-c.x,nz-c.z)<c.r+.45)){player.position.x=nx;player.position.z=nz}player.rotation.y=Math.atan2(dx,dz);walkPhase+=dt*(keys.has(controls.run)?17:11);wasMoving=true;steps+=dt;if(steps>1.8){steps=0;if(!insideCave){save.x=player.position.x;save.z=player.position.z;persist()}if(insideCave&&Math.random()<.3)findWild(['geist','gestein','wasser','elektro'][caves.indexOf(insideCave)]);if(!insideCave){const habitat=grass.find(g=>Math.hypot(g.x-save.x,g.z-save.z)<g.r);if(habitat&&Math.random()<.38)findWild(habitat.type)}}}}follower.position.lerp(new THREE.Vector3(player.position.x-1.3,.12+Math.sin(time*3)*.12,player.position.z+1.5),Math.min(1,dt*5));player.children[1].rotation.z=wasMoving?Math.sin(walkPhase)*.06:0;player.children[2].rotation.x=wasMoving?Math.sin(walkPhase)*.33:0;player.children[3].rotation.x=wasMoving?-Math.sin(walkPhase)*.33:0;player.children[0].position.y=1.35+(wasMoving?Math.abs(Math.sin(walkPhase))*.055:0);follower.rotation.y=player.rotation.y;follower.visible=!combat;player.visible=!combat;if(combat){battleFriends.position.y=Math.sin(time*2)*.07;battleFoes.position.y=Math.sin(time*2.2+1)*.06;const entry=Math.min(1,(performance.now()-battleStartedAt)/600);battleFriends.scale.setScalar(Math.max(.04,entry));battleFoes.scale.setScalar(Math.max(.04,entry))}
-near=(insideCave?[{x:300,z:23,label:'Höhlenausgang',exit:true},...crystalLocations.map(([x,z],i)=>({x:300+x,z,label:'Kristall '+(i+1),crystal:i}))]:[...places,...gyms,...caves.map(c=>({...c,cave:true})),...villages.map(v=>({...v,label:v.name,village:true})),...routeTrainers.map(t=>({...t,label:'Trainer '+t.name})),...routeSignposts]).map(p=>({...p,dist:Math.hypot(p.x-player.position.x,p.z-player.position.z)})).sort((a,b)=>a.dist-b.dist)[0];if(near.dist>9)near=null;$('interact').textContent=near?'✦ '+(near.exit?'Verlassen':near.crystal!==undefined?'Kristall':near.route!==undefined?'Wegweiser':near.trainer!==undefined?'Trainer':near.cave?'Höhle':near.village?'Dorf':near.gym!==undefined?'Arena':near.label==='Heilhaus'?'Heilen':near.label==='Fangladen'?'Shop':'Reden'):'Aktion · E';if(combat){camera.position.lerp(new THREE.Vector3(191,9,17),Math.min(1,dt*4));camera.lookAt(180,1.5,0)}else{camera.position.lerp(new THREE.Vector3(player.position.x+(controls.camera==='classic'?12:6.5),controls.camera==='classic'?19:9,player.position.z+(controls.camera==='classic'?18:11)),Math.min(1,dt*3.5));camera.lookAt(player.position.x,1.35,player.position.z-(controls.camera==='classic'?3.5:4))}$('objective').textContent=insideCave?'Höhlenexpedition · Drei Kristalle finden':directionToNext();soundtrack();if(performance.now()>miniNext){drawMinimap();miniNext=performance.now()+400}if(toastUntil&&performance.now()>toastUntil){$('message').style.display='none';toastUntil=0}renderer.render(scene,camera)}
+near=(insideCave?[{x:300,z:23,label:'Höhlenausgang',exit:true},...crystalLocations.map(([x,z],i)=>({x:300+x,z,label:'Kristall '+(i+1),crystal:i}))]:[...places,...gyms,...caves.map(c=>({...c,cave:true})),...villages.map(v=>({...v,label:v.name,village:true})),...routeTrainers.map(t=>({...t,label:'Trainer '+t.name})),...routeSignposts,...regionMarkers]).map(p=>({...p,dist:Math.hypot(p.x-player.position.x,p.z-player.position.z)})).sort((a,b)=>a.dist-b.dist)[0];if(near.dist>9)near=null;$('interact').textContent=near?'✦ '+(near.exit?'Verlassen':near.crystal!==undefined?'Kristall':near.kind==='heal'?'Heilen':near.kind==='chest'?'Truhe':near.kind==='puzzle'?'Rätsel':near.route!==undefined?'Wegweiser':near.trainer!==undefined?'Trainer':near.cave?'Höhle':near.village?'Dorf':near.gym!==undefined?'Arena':near.label==='Heilhaus'?'Heilen':near.label==='Fangladen'?'Shop':'Reden'):'Aktion · E';if(combat){camera.position.lerp(new THREE.Vector3(191,9,17),Math.min(1,dt*4));camera.lookAt(180,1.5,0)}else{camera.position.lerp(new THREE.Vector3(player.position.x+(controls.camera==='classic'?12:6.5),controls.camera==='classic'?19:9,player.position.z+(controls.camera==='classic'?18:11)),Math.min(1,dt*3.5));camera.lookAt(player.position.x,1.35,player.position.z-(controls.camera==='classic'?3.5:4))}$('objective').textContent=insideCave?'Höhlenexpedition · Drei Kristalle finden':directionToNext();soundtrack();if(performance.now()>miniNext){drawMinimap();miniNext=performance.now()+400}if(toastUntil&&performance.now()>toastUntil){$('message').style.display='none';toastUntil=0}renderer.render(scene,camera)}
 stats();showTitle();animate();
