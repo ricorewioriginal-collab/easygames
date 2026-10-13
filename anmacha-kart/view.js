@@ -444,6 +444,16 @@ const View = (() => {
     c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y = 5.0 * (0.9 + 0.1 * af); c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
     const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
+    // Cinematic fly-in on the starting grid, then settle into the chase camera before GO.
+    if (S.state === 'grid') {
+      const progress = Math.max(0, Math.min(1, (3.2 - S.count) / 2.25));
+      const ease = progress * progress * (3 - 2 * progress);
+      const theta = c.ang + (1 - ease) * 0.7;
+      const startDistance = 35, startHeight = 17;
+      c.cam.position.x = p.x - Math.sin(theta) * (startDistance * (1 - ease)) + (c.pos.x - p.x) * ease;
+      c.cam.position.z = p.z - Math.cos(theta) * (startDistance * (1 - ease)) + (c.pos.z - p.z) * ease;
+      c.cam.position.y = startHeight * (1 - ease) + c.pos.y * ease;
+    }
     c.cam.lookAt(p.x + Math.sin(c.ang) * 10, 1.35, p.z + Math.cos(c.ang) * 10);
   }
   function rects(n, w, h) {
