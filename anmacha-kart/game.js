@@ -157,7 +157,60 @@ function initHost() {
   { const norm = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4), box = $('joinBox'), inp = $('joinIn'), msg = $('joinMsg');
     const go = () => { const c = norm(inp.value); if (c.length !== 4) { msg.textContent = 'Der Code hat 4 Zeichen 🙂'; return; } msg.textContent = 'Verbinde …'; location.href = location.pathname + '?join=' + c + (PH ? '&ph=' + encodeURIComponent(PH) : ''); };
     $('bJoin').onclick = () => { box.hidden = false; msg.textContent = ''; inp.value = ''; setTimeout(() => { try { inp.focus(); } catch (e) {} }, 50); };
-    $('joinBack').onclick = () => { box.hidden = true; }; $('joinGo').onclick = go; inp.oninput = () => { inp.value = norm(inp.value); }; inp.onkeydown = e => { if (e.key === 'Enter') go(); else if (e.key === 'Escape') box.hidden = true; e.stopPropagation(); }; }
+
+    let qrStream = null, qrFrame = 0, qrDetector = null, qrLibrary = null;
+    const qrPanel = $('scanPanel'), qrVideo = $('scanVideo'), qrStatus = $('scanStatus');
+    const closeCamera = () => { cancelAnimationFrame(qrFrame); qrFrame = 0; if (qrStream) qrStream.getTracks().forEach(track => track.stop()); qrStream = null; qrVideo.srcObject = null; qrPanel.hidden = true; };
+    const readCode = value => {
+      let code = '';
+      try {
+        const url = new URL(value);
+        if (url.origin !== location.origin || url.pathname !== location.pathname) return false;
+        code = norm(url.searchParams.get('join'));
+      } catch (e) { code = norm(value); }
+      if (code.length !== 4) return false;
+      closeCamera(); inp.value = code; msg.textContent = 'QR-Code erkannt'; go(); return true;
+    };
+    const openCamera = async () => {
+      box.hidden = false; closeCamera(); msg.textContent = '';
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.textContent = 'Kamera benötigt HTTPS und eine unterstützte Browserumgebung. Alternativ Code eingeben.'; return; }
+      qrPanel.hidden = false; qrStatus.textContent = 'Kamera wird vorbereitet …';
+      try {
+        if (typeof BarcodeDetector !== 'undefined') {
+          const supported = await BarcodeDetector.getSupportedFormats();
+          if (supported.includes('qr_code')) qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        }
+        if (!qrDetector) {
+          if (!window.jsQR) await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js');
+          qrLibrary = window.jsQR;
+          if (!qrLibrary) throw new Error('QR-Erkennung konnte nicht geladen werden');
+        }
+        qrStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 } } });
+        qrVideo.srcObject = qrStream; await qrVideo.play(); qrStatus.textContent = 'QR-Code in die Kamera halten …';
+        const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const detect = async () => {
+          if (!qrStream || box.hidden) return;
+          try {
+            if (qrDetector) {
+              const codes = await qrDetector.detect(qrVideo);
+              if (codes.some(code => readCode(code.rawValue))) return;
+            } else if (qrVideo.readyState >= 2 && qrVideo.videoWidth && ctx) {
+              canvas.width = Math.min(640, qrVideo.videoWidth);
+              canvas.height = Math.round(canvas.width * qrVideo.videoHeight / qrVideo.videoWidth);
+              ctx.drawImage(qrVideo, 0, 0, canvas.width, canvas.height);
+              const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const found = qrLibrary(pixels.data, canvas.width, canvas.height);
+              if (found && readCode(found.data)) return;
+            }
+          } catch (e) { qrStatus.textContent = 'Bitte QR-Code gut beleuchten und ruhig halten.'; }
+          if (qrStream && !box.hidden) qrFrame = requestAnimationFrame(detect);
+        };
+        qrFrame = requestAnimationFrame(detect);
+      } catch (e) { closeCamera(); msg.textContent = 'Kamera nicht verfügbar (' + (e.name === 'NotAllowedError' ? 'Berechtigung verweigert' : e.message) + '). Bitte Code eingeben.'; }
+    };
+    $('bScan').onclick = openCamera; $('joinScan').onclick = openCamera; $('scanStop').onclick = closeCamera;
+    document.addEventListener('visibilitychange', () => { if (document.hidden) closeCamera(); });
+    $('joinBack').onclick = () => { closeCamera(); box.hidden = true; }; $('joinGo').onclick = go; inp.oninput = () => { inp.value = norm(inp.value); }; inp.onkeydown = e => { if (e.key === 'Enter') go(); else if (e.key === 'Escape') box.hidden = true; e.stopPropagation(); }; }
   $('bTv').onclick = () => { location.href = location.pathname + '?tv' + (PH ? '&ph=' + encodeURIComponent(PH) : ''); };
   // TV-Modus: direkt in die Lobby; der erste Druck auf OK/Enter (oder ein Klick) schaltet in Vollbild – automatisch erlauben Browser das nicht
   if (TV) { $('tvHint').hidden = false; const fs = () => { const d = document.documentElement; if (document.fullscreenElement || document.webkitFullscreenElement) return; try { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (r && r.catch) r.catch(() => {}); } catch (e) {} };
