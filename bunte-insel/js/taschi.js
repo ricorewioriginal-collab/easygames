@@ -88,6 +88,10 @@ BI.taschiMesh = function (id, o) {
       b.sph(0, 1.2, .3, .08, c3, 0, 1, 1.2, .3); b.cyl(0, .5, -.5, .05, .08, .6, c1, 6, .5);
       break;
   }
+  { const hy = { mouse: 1.0, fox: .9, lizard: 1.02, frog: .8, turtle: .74, bird: .97, rock: .6, ghost: .82, tadpole: .62, bug: .46, bear: 1.12, cat: 1.0 }[S.shape] || .9;
+    if (S.horn) b.cone(0, hy + .26, .12, .09, .34, 0xfff0c0, 5);
+    if (S.crest && S.shape !== 'bird') for (let i = -1; i <= 1; i++) b.cone(i * .1, hy + .2, -.02, .05, .28 - Math.abs(i) * .06, c3, 4);
+    if (S.wings && S.shape !== 'lizard') for (const s2 of [-1, 1]) b.box(s2 * .52, hy - .35, -.1, .55, .05, .5, c3, 0, 0, s2 * .5); }
   const m = b.mesh(BI.mat()), g = new THREE.Group(); g.add(m); g.scale.setScalar(K); g.userData.id = id; return g;
 };
 /* Vorschaubild (Daten-URL) eines Taschis – zwischengespeichert */
