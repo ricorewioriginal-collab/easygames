@@ -238,8 +238,8 @@ function initHost() {
   if (coarse) $('kbToggle').textContent = '👆 Spieler an diesem Gerät';
   buildTouch($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('tiltBtn').classList.toggle('on', TILT.on); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; $('tiltInv').classList.toggle('on', TILT.inv); }; }
   function showView(v) {
-    menuView = v; $('menu').hidden = false; $('mTitle').hidden = v !== 'title'; $('mSetup').hidden = v !== 'setup'; $('menu').classList.toggle('title', v === 'title'); $('mBox').classList.toggle('wide', v === 'setup');
-    const el = v === 'title' ? $('mTitle') : $('mSetup'); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); $('menu').scrollTop = 0;
+    menuView = v; $('menu').hidden = false; $('mTitle').hidden = v !== 'title'; $('mMulti').hidden = v !== 'multi'; $('mSetup').hidden = v !== 'setup'; $('menu').classList.toggle('title', v === 'title'); $('mBox').classList.toggle('wide', v !== 'title');
+    const el = v === 'title' ? $('mTitle') : v === 'multi' ? $('mMulti') : $('mSetup'); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); $('menu').scrollTop = 0;
   }
   $('multiHost').onclick = () => openSetup('multi'); $('multiLocal').onclick = () => { setupFor = 'multi'; renderMenu(); openLobby(); }; $('multiBack').onclick = () => showView('title');
   const openSetup = mode => { if (!ready) return; setupFor = mode; AUD.sfx.select(); renderMenu(); showView('setup'); };
