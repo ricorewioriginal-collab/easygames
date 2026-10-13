@@ -762,6 +762,28 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
 <script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=82,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
+<script>
+/* Ladefehler sichtbar machen statt endloses Ladebild. Keine automatische zweite Spielinitialisierung. */
+(function(){
+  var errorText='';
+  window.addEventListener('error',function(e){
+    if(e.target&&e.target.tagName==='SCRIPT') errorText='Spieldatei konnte nicht geladen werden: '+(e.target.getAttribute('src')||'unbekannt');
+    else if(e.message&&!window.__bi) errorText='Startfehler: '+String(e.message).slice(0,160);
+  },true);
+  setTimeout(function(){
+    if(window.__bi)return;
+    var screen=document.getElementById('loading');if(!screen||screen.hidden)return;
+    var label=document.getElementById('ldTxt'),bar=document.getElementById('ldPct');
+    if(label)label.textContent=errorText||'Der Spielstart dauert ungewöhnlich lange.';
+    if(bar)bar.textContent='Start prüfen';
+    if(!document.getElementById('ldRetry')){
+      var b=document.createElement('button');b.id='ldRetry';b.textContent='🔄 Erneut laden';
+      b.style.cssText='padding:12px 20px;background:#fff;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer';
+      b.onclick=function(){location.reload()};screen.querySelector('.ldBox').appendChild(b);
+    }
+  },45000);
+})();
+</script>
 <script src="vendor/three.min.js?v=r128" onload="__ld()"></script>
 <script src="js/util.js?v=gfx1" onload="__ld()"></script>
 <script src="js/bugreport.js?v=1" onload="__ld()"></script>
