@@ -1,0 +1,16 @@
+[Unit]
+Description=easygames: Manifest aktualisieren und App bauen
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=easygames
+Group=easygames
+EnvironmentFile=/etc/easygames-build.env
+Environment=HOME=/var/lib/easygames-build
+WorkingDirectory=/opt/easygames
+ExecStart=/usr/bin/env bash /opt/easygames/android/server/run-build.sh
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=3h

@@ -1,0 +1,12 @@
+[Unit]
+Description=easygames: regelmäßig auf Änderungen prüfen
+
+[Timer]
+OnBootSec=3min
+# 10 Minuten nach dem Ende des letzten Laufs (kein Überlappen, kaum Last: ein git fetch, wenn nichts neu ist)
+OnUnitInactiveSec=10min
+Persistent=true
+Unit=easygames-build.service
+
+[Install]
+WantedBy=timers.target
