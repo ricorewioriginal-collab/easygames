@@ -99,6 +99,11 @@ BI.INSELSTORY = [
     { text: 'Zwei Aufgaben fehlen noch: fang 8 verschiedene Taschis für meinen Forscher-Orden – und schnapp dir Team Funke bei ihrem Heißluftballon!', hint: 'Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen)', goal: [{ log: 'taschi', row: 6 }, { log: 'taschi', row: 7 }], done: 'Der Ballon gehört dir!' },
     { text: 'Der letzte Orden: Fordere Meisterin Aurelia in der Arena heraus!', hint: 'Besiege Meisterin Aurelia (Meister-Orden)', goal: [{ log: 'taschi', row: 8 }], done: 'Alle 8 Orden!' }
   ], end: 'Professor Ulme verneigt sich: Du bist Taschi-Meister – und seine Statue strahlt für dich!' }
+  { key: 'PRISMA', icon: '🌀', npc: 'Nuri', title: 'Die drei Lichtsignale', acts: [
+    { text: 'Willkommen im Prisma-Archipel! Drei Bereiche haben ihr Signal verloren. Nuri zeigt dir den Ki-Garten.', hint: 'Löse die Lichtfolge im Ki-Garten', goal: ['prisma_ki'], done: 'Das erste Signal leuchtet wieder!' },
+    { text: 'In der Runen-Arena warten leuchtende Zeichen. Lies den Hinweis und tippe die drei Symbole in der richtigen Reihenfolge.', hint: 'Löse das Zeichenrätsel in der Runen-Arena', goal: ['prisma_runen'], done: 'Die Runen-Arena ist wieder aktiv!' },
+    { text: 'Im Datenhain sind die Wegweiser durcheinander. Stelle die Lichtfolge wieder her.', hint: 'Repariere die Signalfolge im Datenhain', goal: ['prisma_daten'], done: 'Alle drei Signale verbinden die Insel – gut gemacht!' }
+  ], end: 'Das Prisma-Archipel strahlt wieder. Nuri und Tavi feiern deine Entdeckerleistung!' },
 ];
 BI.createInselStory = function (G) {
   const { save, say, persist, P } = G, K = { cur: null }, ST = BI.INSELSTORY, got = id => (save.stk || []).includes(id);
