@@ -70,6 +70,12 @@
   applyNight();
   const miniC = $('mini'), miniS = 150, miniBase = document.createElement('canvas'); miniBase.width = miniBase.height = miniS * 2; world.minimap(miniBase.getContext('2d'), miniS * 2);
   miniC.width = miniC.height = miniS * 2;
+  /* Die Mini-Map klappt bei Berührung auf und nach einer kurzen Ruhe wieder zu. */
+  miniC.tabIndex = 0; miniC.setAttribute('role', 'button'); miniC.setAttribute('aria-label', 'Karte vergrößern');
+  let miniFoldTimer = 0;
+  const showMiniMap = () => { miniC.classList.add('zoomed'); miniC.setAttribute('aria-label', 'Karte geöffnet; sie klappt nach einer kurzen Pause wieder zu'); clearTimeout(miniFoldTimer); miniFoldTimer = setTimeout(() => { miniC.classList.remove('zoomed'); miniC.setAttribute('aria-label', 'Karte vergrößern'); }, 3200); };
+  miniC.addEventListener('pointerdown', e => { e.stopPropagation(); showMiniMap(); }, { passive: true });
+  miniC.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showMiniMap(); } });
 
   /* ---------- Fahrzeuge ---------- */
   const vehicles = [];
