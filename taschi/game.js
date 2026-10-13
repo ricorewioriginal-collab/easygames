@@ -463,15 +463,15 @@ const normKey=e=>(e.key===' '?'space':e.key.toLowerCase());
 function keyMatch(key,direction){return key===controls[direction]||({up:'arrowup',down:'arrowdown',left:'arrowleft',right:'arrowright'}[direction]===key)}
 function gamepadPoll(){
  const pads=navigator.getGamepads?.()||[];const pad=Array.from(pads).find(p=>p&&p.connected);
- if(!pad){gamepadX=gamepadY=0;$('padstate').textContent='Kein Controller';gamepadLast={};return}
- $('padstate').textContent=pad.id.slice(0,65);
+ if(!pad){gamepadX=gamepadY=0;($('padstate')||{textContent:''}).textContent='Kein Controller';gamepadLast={};return}
+ ($('padstate')||{textContent:''}).textContent=pad.id.slice(0,65);
  const axis=(v)=>Math.abs(v)<controls.deadzone?0:Math.sign(v)*(Math.abs(v)-controls.deadzone)/(1-controls.deadzone);
  gamepadX=axis(pad.axes[0]||0);gamepadY=axis(pad.axes[1]||0);
  const pressed=i=>!!pad.buttons[i]?.pressed;
  const edge=(i,callback)=>{if(pressed(i)&&!gamepadLast[i])callback();gamepadLast[i]=pressed(i)};
  edge(0,()=>{if(!locked)interact();else if($('panel').classList.contains('show'))$('options').querySelector('button:not(:disabled)')?.click();else if(!booted)enterGame()});
  edge(1,()=>{if($('panel').classList.contains('show')&&!combat)close()});
- edge(9,()=>booted?mainMenu():enterGame());
+ edge(9,()=>{if(booted){if(locked&&!combat)close();else if(!locked)mainMenu()}else enterGame()});
  edge(3,()=>{if(booted&&!locked)team()});
  if(pad.buttons[12]?.pressed)gamepadY=-1;if(pad.buttons[13]?.pressed)gamepadY=1;
  if(pad.buttons[14]?.pressed)gamepadX=-1;if(pad.buttons[15]?.pressed)gamepadX=1;
