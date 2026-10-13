@@ -31,8 +31,27 @@ const Track = (() => {
     });
     DEFS.push({ ...origin, ...e, pts, w: 20 });
   });
+  // Eigenständige Hommagen an allgemeine Fantasy-/JRPG-Motive; keine Fremdmarken, Figuren oder Original-Levels.
+  // ZOTIK und Bunte Insel sind hauseigene Themen. Alle Strecken erhalten neue Kontrollpunkte und eigene Rennmechaniken.
+  const themed = [
+    { id:'herzportal', name:'Herzportal-Boulevard', base:3, theme:'fantasia', sky:['#39286e','#d877db','#ffe5bf'], ground:'#5a468f', road:'#72629c', wall:['#ffc1f1','#72dfff'], fog:'#c6a9f4', fogR:[180,710], light:[0.78,0.68,'#ffddf8','#56337f'], props:['#e2a7ff','#fff4c4','#78d9f7'], mechanic:'portal' },
+    { id:'kristallsturm', name:'Kristallsturm-Pass', base:2, theme:'gruft', sky:['#213659','#729bd6','#e7f8ff'], ground:'#556e98', road:'#576b80', wall:['#80edff','#e4fbff'], fog:'#b8d7fa', fogR:[170,670], light:[0.73,0.78,'#e5ffff','#5879ab'], props:['#62dfff','#c9a7ff','#78aef7'], mechanic:'crystal' },
+    { id:'monsterfreunde', name:'Monsterfreunde-Safari', base:0, theme:'wiese', sky:['#4b9bd0','#baf4ff','#fffbc9'], ground:'#82b961', road:'#718365', wall:['#ffcb71','#ffffff'], fog:'#d7f3cc', fogR:[200,770], light:[0.83,0.72,'#ffffff','#5f8f48'], props:['#f6ba58','#72dca8','#c5e874'], mechanic:'safari' },
+    { id:'ahnenruinen', name:'Ahnenruinen-Ring', base:2, theme:'gruft', sky:['#263449','#74828b','#ddc89a'], ground:'#667665', road:'#666764', wall:['#d2bc8e','#f5e0b5'], fog:'#9da695', fogR:[150,600], light:[0.64,0.67,'#ffebc9','#4c5e53'], props:['#b7a079','#8da790','#d2c7a2'], mechanic:'ruins' },
+    { id:'drachenflug', name:'Drachenflug-Tal', base:3, theme:'fantasia', sky:['#326dc2','#9dcaf8','#fff0cf'], ground:'#78a983', road:'#79749e', wall:['#fcad63','#fff2b2'], fog:'#c1dcfa', fogR:[200,790], light:[0.79,0.75,'#fff2dc','#5d8d91'], props:['#f6a45a','#92d9c6','#bf8cf8'], mechanic:'dragon' },
+    { id:'splitterwelten', name:'Splitterwelten-Kurs', base:4, theme:'neon', sky:['#251054','#933cba','#f6aa63'], ground:'#302149', road:'#343351', wall:['#ff963d','#8debff'], fog:'#503876', fogR:[165,660], light:[0.7,0.8,'#ffca8c','#503c8b'], props:['#f89339','#6ad7e6','#bf79ff'], mechanic:'shards' },
+    { id:'farbeninsel', name:'Farbeninsel-Rundkurs', base:1, theme:'strand', sky:['#429ee6','#b6efff','#ffefbc'], ground:'#87d18a', road:'#82a5a1', wall:['#ff93c8','#ffffff'], fog:'#cbf9ef', fogR:[230,850], light:[0.82,0.76,'#ffffff','#75b2ac'], props:['#fd97cb','#fcd46c','#84e9ac'], mechanic:'island' }
+  ];
+  themed.forEach((theme, index) => {
+    const source = DEFS[theme.base], spin = 0.33 * (index + 1), cs = Math.cos(spin), sn = Math.sin(spin);
+    const pts = source.pts.map(([x,z], i) => {
+      const scale = 1.07 + 0.09 * Math.sin(i * 1.6 + index * 0.74);
+      return [Math.round((x * cs - z * sn) * scale), Math.round((x * sn + z * cs) * scale)];
+    });
+    DEFS.push({ ...source, ...theme, pts, w: index === 2 || index === 6 ? 23 : 20 });
+  });
   const CUPS = [{ name: 'Sonnen-Cup', tracks: [0, 1, 3] }, { name: 'Spuk-Cup', tracks: [2, 4, 3] },
-    { name: 'Elemente-Cup', tracks: [5, 6, 9] }, { name: 'Abenteuer-Cup', tracks: [7, 10, 8] }];
+    { name: 'Elemente-Cup', tracks: [5, 6, 9] }, { name: 'Abenteuer-Cup', tracks: [7, 10, 8] }, { name: 'Portal-Cup', tracks: [11, 12, 14] }, { name: 'Fantasy-Cup', tracks: [13, 15, 16] }, { name: 'RicoReWi-Cup', tracks: [17, 16, 11] }];
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
   function build(def) {
