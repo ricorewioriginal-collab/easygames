@@ -238,7 +238,39 @@ function starter(id){save.team.push(make(id,5));save.dex[id]=2;updateFollower();
 const wild=['flatterling','felsling','geisterchen','quappi','kaeferli','knister','funkli','schlummi','fellino','blitzi','glutzahn','samenling','plaetscher'];
 function findWild(habitat=null){if(!first()){toast('Dein Team braucht Heilung! Suche das Heilhaus.');return}const choices=habitat?Object.keys(SPEC).filter(id=>SPEC[id].type===habitat):Object.keys(SPEC);const pool=(Math.random()<.48&&habitat===null)?wild:choices;const id=pool[Math.floor(rand(0,pool.length))],lv=Math.max(2,Math.min(48,Math.floor(rand(3,8))+save.badges*3));battle(make(id,lv),false)}
 function battle(enemy,isGym=false){const me=first();if(!me){toast('Kein kampffähiges Taschi');return}save.dex[enemy.id] ||=1;const queue=isGym?Array.from({length:isGym<5?1:isGym<11?2:3},(_,i)=>make(wild[(isGym*3+i)%wild.length],Math.max(3,enemy.lv-2+i))):[];combat={enemy,isGym,turn:0,queue};updateBattleScene();battleMenu('Ein '+SPEC[enemy.id].name+' erscheint!')}
-function battleMenu(log='Was soll dein Taschi tun?'){const c=combat;if(!c)return;const me=first();if(!me){combat=null;updateBattleScene();save.team.forEach(m=>m.hp=maxHp(m));player.position.set(-18,0,16);save.x=-18;save.z=16;stats();dialog('Im Heilhaus erwacht','Dein Team wurde geheilt. Versuche es erneut!',choice());return}const e=c.enemy;dialog(c.isGym?'Arena-Herausforderung':'Wilde Begegnung','<p>'+log+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>'+summary(me)+'</div><div>'+summary(e)+'</div></div><p class="muted">Typen, Stufen, Angriff, Verteidigung und Element-Vorteile bestimmen den Schaden.</p>',[...SPEC[me.id].moves.map(id=>[TYPES[MOVES[id][1]]+' '+MOVES[id][0],()=>attack(id)]),['◉ Taschiball ('+save.balls+')',capture,save.balls===0||c.isGym],['🧪 Trank ('+save.potions+')',potion,save.potions===0],['🔁 Wechseln',battleSwitch],['🏃 Fliehen',()=>{if(c.isGym)toast('Aus der Arena zurückgezogen');close()}]]);$('panel').classList.add('battle')}
+function battleMenu(log='Was soll dein Taschi tun?'){
+ const c=combat;if(!c)return;
+ const me=first();
+ if(!me){
+  combat=null;updateBattleScene();save.team.forEach(m=>m.hp=maxHp(m));
+  player.position.set(-18,0,16);save.x=-18;save.z=16;stats();
+  dialog('Im Heilhaus erwacht','Dein Team wurde geheilt. Versuche es erneut!',choice());return;
+ }
+ const e=c.enemy;
+ const banner='<p>'+log+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>'+summary(me)+'</div><div>'+summary(e)+'</div></div>';
+ dialog(c.isGym?'Arena-Herausforderung':'Wilde Begegnung',banner,[
+ ['⚔️ Kampf',()=>attackMenu()],
+ ['◉ Fangbeutel',()=>bagMenu()],
+ ['🔁 Taschis',battleSwitch],
+ ['🏃 Flucht',()=>{if(c.isGym){battleMenu('Aus einem Arenakampf kannst du nicht fliehen.');return}close()}]
+ ]);
+ $('panel').classList.add('battle');
+}
+function attackMenu(){
+ const me=first();if(!me||!combat)return;
+ dialog('Attacke auswählen','<p>'+SPEC[me.id].name+' · Lv '+me.lv+'</p>',[
+ ...SPEC[me.id].moves.map(id=>[TYPES[MOVES[id][1]]+' '+MOVES[id][0]+' · Stärke '+MOVES[id][2],()=>attack(id)]),
+ ['↩ Zurück',()=>battleMenu()]
+ ]);$('panel').classList.add('battle');
+}
+function bagMenu(){
+ if(!combat)return;
+ dialog('Fangbeutel','<p>Setze deine Ausrüstung im Kampf ein.</p>',[
+ ['◉ Taschiball · '+save.balls,capture,save.balls===0||!!combat.isGym],
+ ['🧪 Trank · '+save.potions,potion,save.potions===0],
+ ['↩ Zurück',()=>battleMenu()]
+ ]);$('panel').classList.add('battle');
+}
 function damage(a,d,move){const [name,type,power]=MOVES[move],sa=SPEC[a.id],sd=SPEC[d.id];const mul=ADV[type]?.[sd.type]??1;return Math.max(mul===0?0:1,Math.floor(((2*a.lv/5+2)*power*(sa.atk+a.lv/2)/(sd.def+d.lv/2)/50+2)*(type===sa.type?1.4:1)*mul*rand(.85,1)))}
 function battleSwitch(){
  if(!combat)return;
