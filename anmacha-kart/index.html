@@ -226,6 +226,15 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 #mSetup .kcards button>b{font-size:clamp(23px,4vw,36px);margin-right:10px}
 #mSetup .cards{align-items:start}
 @media(max-width:700px){#mSetup .chars{grid-template-columns:repeat(3,minmax(0,1fr))}#mSetup .chars button{min-height:98px}#mSetup .kcards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.showcase{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(180px,.8fr);align-items:center;gap:16px;margin:14px auto 20px;padding:14px;background:linear-gradient(120deg,#141333ee,#2a2055df);border:1px solid #a6a1ff80;border-radius:26px;box-shadow:0 18px 60px #0007;max-width:980px}
+.showcase-stage{height:clamp(245px,42vw,410px);border-radius:18px;background:radial-gradient(ellipse at 50% 65%,#6652a34d,#15142be0 70%);overflow:hidden}
+.showcase-info{display:flex;flex-direction:column;align-items:flex-start;gap:12px;color:#fff;text-align:left}
+.showcase-info strong{font-size:clamp(23px,3.5vw,38px);line-height:1.1;text-shadow:0 2px 12px #ed6cf488}
+.showcase-kicker{font-size:11px;letter-spacing:.12em;font-weight:900;color:#7ce8ff}
+.showcase-info>span:not(.showcase-kicker){font-size:15px;color:#ffda8a}
+.showcase-info small{color:#bbbfda}
+@media(max-width:620px){.showcase{grid-template-columns:1fr;gap:5px}.showcase-stage{height:275px}.showcase-info{gap:6px;padding:6px 10px 10px}.showcase-info strong{font-size:24px}}
 </style>
 </head>
 <body>
@@ -276,6 +285,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <p><b>4. Items:</b> Itembox berühren, nach dem Auslosen die ITEM-Taste drücken. Schild schützt, Raketen greifen an.</p>
       <p><b>5. Freies Fahren:</b> Wähle „Freies Fahren“, um ohne Gegner, Platzierung oder Rundenzwang eine Strecke kennenzulernen. Über PAUSE kannst du zurück ins Menü.</p>
       <p><b>Profi-Tipp:</b> Fahre vor Kurven außen an, lenke früh ein und nutze Drift-Turbos beim Herausbeschleunigen.</p></div></details>
+    <div class="showcase"><div class="showcase-stage" id="kartStage"></div><div class="showcase-info"><span class="showcase-kicker">DEINE RENNBÜHNE · 3D-VORSCHAU</span><strong id="kartStageName">Figur und Kart auswählen</strong><span id="kartStageWorld">Cup- und Welten-Charaktere</span><small>Mit dem Finger auf der Bühne drehen · Veränderungen werden sofort angezeigt</small></div></div>
     <div class="cards">
       <div class="card"><h3>RENNEN</h3><div class="row" id="rmode"></div><h3>STRECKE</h3><div class="row" id="tracks"></div></div>
       <div class="card"><h3>FAHRER</h3><div class="pc" id="pcard"></div><h3>FIGUR</h3><div class="chars" id="chars"></div></div>
@@ -316,10 +326,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
 
 <script src="audio.js"></script>
-<script src="chars.js"></script>
+<script src="chars.js?v=20261013-stage2"></script>
 <script src="track.js?v=20261013-interactive1"></script>
 <script src="sim.js?v=20261013-interactive1"></script>
-<script src="game.js?v=20261013-raceui1"></script>
+<script src="game.js?v=20261013-stage2"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 </body>
 </html>
