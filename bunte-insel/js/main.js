@@ -1296,13 +1296,16 @@
   function refreshHomeStatue() {
     const f = myFlat(); if (!f) return;
     if (homeStatue) { scene.remove(homeStatue.group); homeStatue.dispose(); homeStatue = null; }
-    const candidates = [[f.cx + 4.8, f.zF + 4.5], [f.cx - 4.8, f.zF + 4.5], [f.cx, f.zF + 6.5], [f.cx + 4.8, f.zF - 3]];
-    let at = candidates.find(q => W.free(q[0], q[1], 1.15)) || candidates[0];
+    const candidates = [[f.cx + 4.4, f.zF + 5.2], [f.cx - 4.4, f.zF + 5.2], [f.cx, f.zF + 7.2], [f.cx + 5.2, f.zF - 3]];
+    let at = candidates.find(q => W.free(q[0], q[1], 1.2));
+    if (!at) at = [f.cx + 4.4, f.zF + 5.2];
     homeStatue = BI.makeChar(charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, heroName()));
-    homeStatue.group.name = 'homeStatue'; homeStatue.group.userData.homeStatueHero = save.hero; homeStatue.group.scale.multiplyScalar(.82);
+    homeStatue.group.name = 'homeStatue'; homeStatue.group.userData.homeStatueHero = save.hero; homeStatue.group.scale.multiplyScalar(1.08);
     const y = W.groundY(at[0], at[1]); homeStatue.group.position.set(at[0], y + .394, at[1]); homeStatue.group.rotation.y = Math.PI;
-    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(.72, .88, .48, 12), new THREE.MeshStandardMaterial({ color: 0xd3a83f, roughness: .72, metalness: .18 }));
-    plinth.position.set(0, -.24, 0); homeStatue.group.add(plinth); scene.add(homeStatue.group);
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(.82, 1.0, .5, 16), new THREE.MeshStandardMaterial({ color: 0xd3a83f, roughness: .72, metalness: .18 }));
+    plinth.position.set(0, -.25, 0); homeStatue.group.add(plinth);
+    const plaque = textSprite('⭐ ' + heroName(), 2.6, .58, 54); plaque.position.set(0, 3.05, 0); homeStatue.group.add(plaque);
+    scene.add(homeStatue.group);
   }
   charChangedHook = refreshHomeStatue;
   const PLINES = { mama: ['Hast du schon Hunger, mein Schatz?', 'Du bist mein Sonnenschein! ☀️', 'Räum bitte dein Zimmer auf, ja?', 'Gute Nacht, schlaf schön!', 'Spiel schön mit deinen Freunden!'], papa: ['Na, Abenteurer? Wo warst du heute?', 'Sollen wir später Ball spielen?', 'Pass beim Fahren gut auf!', 'Ich bin stolz auf dich!', 'Willst du mein Pferd… äh, Huckepack? 😄'] };
@@ -2090,9 +2093,15 @@
         dx = fx_ * jy + rx * jx; dz = fz_ * jy + rz * jx; const l = Math.hypot(dx, dz) || 1; const m = Math.min(1, Math.hypot(jx, jy));
         P.h += BI.angDiff(P.h, Math.atan2(dx, dz)) * Math.min(1, dt * 14); dx = dx / l * spd * m; dz = dz / l * spd * m;
       }
-      P.x += dx * dt; P.z += dz * dt; P.speed = Math.hypot(dx, dz); P.running = !!running;
+      /* Bewegung in kurzen Schritten auflösen: so kann auch ein langer Frame keine Wand überspringen.
+         Sprünge gehen weiter über niedrige Hindernisse, aber nicht durch Haus- oder Weltwände. */
+      const moveX = dx * dt, moveZ = dz * dt, moveSteps = Math.max(1, Math.ceil(Math.hypot(moveX, moveZ) / .22));
+      const moveAlt = P.y > .8 ? Math.min(P.y, 1.8) : undefined;
+      for (let step = 0; step < moveSteps; step++) {
+        const q = W.resolve(P.x + moveX / moveSteps, P.z + moveZ / moveSteps, .45, {}, moveAlt, false, true); P.x = q.x; P.z = q.z;
+      }
+      P.speed = Math.hypot(dx, dz); P.running = !!running;
       if (running && P.y < .1 && Math.random() < dt * 12) fx.burst(P.x - Math.sin(P.h) * .3, .12, P.z - Math.cos(P.h) * .3, 1, [BI.C.dust], 1.2, .4, 22, 2);
-      const q = W.resolve(P.x, P.z, .45, {}, P.y > .8 ? P.y : undefined, false, true); P.x = q.x; P.z = q.z;
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
       const vf = Math.max(vox.floorAt(P.x, P.z, P.y), atlantis.floor(P.x, P.z), W.floorAt(P.x, P.z, P.y)), pf = W.atlPit ? W.atlPit.floor(P.x, P.z) : null, gy = pf !== null ? pf : Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
       if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung
