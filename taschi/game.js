@@ -48,7 +48,7 @@ save ||= blankSave();
 const maxHp=m=>Math.floor(SPEC[m.id].hp*2*m.lv/100)+m.lv+10;
 const make=(id,lv)=>{const m={id,lv,xp:0,hp:1};m.hp=maxHp(m);return m};
 const persist=()=>{try{localStorage.setItem(saveKey(),JSON.stringify(save))}catch{}};
-let active=null,locked=false,near=null,combat=null,steps=0,toastUntil=0,caveSteps={},insideCave=null;
+let active=null,locked=true,near=null,combat=null,steps=0,toastUntil=0,caveSteps={},insideCave=null,booted=false;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
 const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,190);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.35:1.7));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.8;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xe9f9ff,0x7b9864,.85));const sun=new THREE.DirectionalLight(0xfff3d3,1.12);sun.position.set(28,46,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-75;sun.shadow.camera.right=75;sun.shadow.camera.top=75;sun.shadow.camera.bottom=-75;scene.add(sun);
@@ -227,7 +227,7 @@ const follower=new THREE.Group();scene.add(follower);let currentFollower=null;fu
 function stats(){ $('badge').textContent='✦ '+save.badges+'/16';$('count').textContent='◉ '+(save.team.length+save.box.length);$('coins').textContent='★ '+save.coins;$('location').textContent=save.badges===16?'Taschi-Meister':'Sonnenhain';persist()}
 function toast(t,sec=3){$('message').textContent=t;$('message').style.display='block';toastUntil=performance.now()+sec*1000}
 function dialog(title,desc,buttons){locked=true;$('panel').classList.remove('battle');$('title').textContent=title;$('desc').innerHTML=desc;$('options').replaceChildren();for(const [label,fn,disabled] of buttons){const b=document.createElement('button');b.className='option';b.textContent=label;b.disabled=!!disabled;b.addEventListener('click',fn);$('options').append(b)}$('panel').classList.add('show')}
-function close(){locked=false;$('panel').classList.remove('show','battle');combat=null;updateBattleScene();stats()}
+function close(){locked=!booted;$('panel').classList.remove('show','battle');combat=null;updateBattleScene();stats()}
 function choice(){return [['Weiter',close]]}
 function pct(m){return Math.max(0,Math.min(100,100*m.hp/maxHp(m)))}
 function hpbar(m){return '<div class="hp"><span style="width:'+pct(m)+'%"></span></div>'}
@@ -326,7 +326,7 @@ function restartGame(){
  ]);
 }
 
-function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Geschichte',chapterDialog],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Geschichte',chapterDialog],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 function mapView(){dialog('Reisekarte','<p>Die Reiseorte sind in der 3D-Welt an ihren Positionen markiert. Erkunde mit dem Joystick oder den Pfeiltasten.</p>'+[...gyms.map((p,i)=>({...p,name:(i+1)+'. Arena: '+GYMS[i][0]})),...villages,...caves,...places].map(p=>'<p>📍 '+(p.name||p.label)+' – '+Math.round(Math.hypot(p.x-player.position.x,p.z-player.position.z))+' m</p>').join(''),[['Abenteuerbuch',journalView],['Zurück',close]])}
@@ -378,7 +378,28 @@ function soundtrack(){
 const keys=new Set();addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.key.toLowerCase()==='e'&&!e.repeat)interact();if(e.key==='Escape'&&locked&&!combat)close();else if(e.key==='Escape'&&!locked)mainMenu()});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
 const joy=$('joy'),nub=$('nub');let joyX=0,joyY=0;function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/44);joyX=x/44/mag;joyY=y/44/mag;nub.style.transform='translate('+(joyX*40)+'px,'+(joyY*40)+'px)'}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);pointer(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))pointer(e)});function resetJoy(){joyX=joyY=0;nub.style.transform=''}joy.addEventListener('pointerup',resetJoy);joy.addEventListener('pointercancel',resetJoy);
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
+
+function showTitle(){
+ booted=false;locked=true;document.body.classList.remove('playing');
+ $('boot').classList.remove('hidden');$('boot').classList.add('ready');
+ $('slotinfo').textContent='Speicherplatz '+slot+' · '+save.badges+'/16 Orden · '+save.team.length+' im Team';
+ $('continue').textContent=save.team.length?'Abenteuer fortsetzen':'Abenteuer beginnen';
+}
+function enterGame(){
+ booted=true;locked=false;$('boot').classList.add('hidden');document.body.classList.add('playing');
+ if(!save.team.length)start();else toast('Willkommen zurück in der Taschi-Region!');
+}
+$('continue').onclick=enterGame;
+$('newgame').onclick=()=>{
+ if(save.team.length){$('boot').classList.add('hidden');document.body.classList.add('playing');booted=true;restartGame();return}
+ enterGame();
+};
+$('slotselect').onclick=()=>{
+ $('boot').classList.add('hidden');document.body.classList.add('playing');booted=true;
+ chooseSaveSlot();
+};
+
 const clock=new THREE.Clock();let time=0;
 function animate(){requestAnimationFrame(animate);const dt=Math.min(.05,clock.getDelta());time+=dt;if(!locked){const dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft'))+joyX,dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'))+joyY,len=Math.hypot(dx,dz);if(len>.12){const vx=dx/len*dt*7,vz=dz/len*dt*7,nx=Math.max(insideCave?270:-60,Math.min(insideCave?330:60,player.position.x+vx)),nz=Math.max(insideCave?-24:-60,Math.min(insideCave?24:60,player.position.z+vz));if(insideCave||!colliders.some(c=>Math.hypot(nx-c.x,nz-c.z)<c.r+.45)){player.position.x=nx;player.position.z=nz}player.rotation.y=Math.atan2(dx,dz);steps+=dt;if(steps>1.8){steps=0;if(!insideCave){save.x=player.position.x;save.z=player.position.z;persist()}if(insideCave&&Math.random()<.3)findWild(['geist','gestein','wasser','elektro'][caves.indexOf(insideCave)]);if(!insideCave){const habitat=grass.find(g=>Math.hypot(g.x-save.x,g.z-save.z)<g.r);if(habitat&&Math.random()<.38)findWild(habitat.type)}}}}follower.position.lerp(new THREE.Vector3(player.position.x-1.3,.12+Math.sin(time*3)*.12,player.position.z+1.5),Math.min(1,dt*5));follower.rotation.y=player.rotation.y;follower.visible=!combat;player.visible=!combat;if(combat){battleFriends.position.y=Math.sin(time*2)*.07;battleFoes.position.y=Math.sin(time*2.2+1)*.06}
 near=(insideCave?[{x:300,z:23,label:'Höhlenausgang',exit:true},...crystalLocations.map(([x,z],i)=>({x:300+x,z,label:'Kristall '+(i+1),crystal:i}))]:[...places,...gyms,...caves.map(c=>({...c,cave:true})),...villages.map(v=>({...v,label:v.name,village:true}))]).map(p=>({...p,dist:Math.hypot(p.x-player.position.x,p.z-player.position.z)})).sort((a,b)=>a.dist-b.dist)[0];if(near.dist>9)near=null;$('interact').textContent=near?'✦ '+(near.exit?'Verlassen':near.crystal!==undefined?'Kristall':near.cave?'Höhle':near.village?'Dorf':near.gym!==undefined?'Arena':near.label==='Heilhaus'?'Heilen':near.label==='Fangladen'?'Shop':'Reden'):'Aktion · E';if(combat){camera.position.lerp(new THREE.Vector3(191,9,17),Math.min(1,dt*4));camera.lookAt(180,1.5,0)}else{camera.position.lerp(new THREE.Vector3(player.position.x+13,17,player.position.z+20),Math.min(1,dt*3.5));camera.lookAt(player.position.x,1.3,player.position.z-3)}$('objective').textContent=insideCave?'Höhlenexpedition · Drei Kristalle finden':directionToNext();soundtrack();if(toastUntil&&performance.now()>toastUntil){$('message').style.display='none';toastUntil=0}renderer.render(scene,camera)}
-stats();if(!save.team.length)start();else toast('Willkommen zurück in Sonnenhain!');animate();
+stats();showTitle();animate();
