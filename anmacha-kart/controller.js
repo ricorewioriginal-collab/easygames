@@ -103,11 +103,11 @@ window.startController = function () {
     if (m.t === 's') return onSnap(m);
     if (m.t === 'race') return void onRace(m);
     if (m.t === 'wel' && Number.isInteger(m.slot)) root.style.setProperty('--acc', SLOTC[m.slot % 4]);
-    if (m.t === 'wel') { clearInterval(joinT); if (joined && ph !== 'lobby' && !m.race) return; joined = true; tries = 0; if (m.race) { ph = 'lobby'; tx({ t: 'need' }); } waitScreen('Du bist dabei! 🎉', 'Warte, bis das Rennen startet …', m.race ? '' : '▶ RENNEN STARTEN'); }
+    if (m.t === 'wel') { clearInterval(joinT); if (joined && ph !== 'lobby' && !m.race) return; joined = true; tries = 0; if (m.race) { ph = 'lobby'; waitScreen('Wieder verbunden!', 'Dein Kart fährt gleich weiter …', ''); tx({ t: 'need' }); } else waitScreen('Du bist dabei! 🎉', 'Warte, bis das Rennen startet …', '▶ RENNEN STARTEN'); }
     else if (m.t === 'full') { kicked = true; screenJoin(m.msg || 'Leider kein Platz mehr.'); try { conn.close(); } catch (e) {} }
     else if (m.t === 'ev') { if (m.e === 'hit' && navigator.vibrate) navigator.vibrate([120, 40, 120]); if (m.e === 'fin') hud('🏁 Ziel! Platz ' + m.pos); if (m.e === 'res') { waitScreen('Rennen beendet 🏁', 'Du wurdest ' + m.pos + '. – weiter geht’s mit dem nächsten Rennen.', '▶ WEITER'); } }
     else if (m.t === 'st') {
-      if (m.ph === 'lobby') { if (ph !== 'lobby') waitScreen('Zurück im Menü', 'Am Fernseher geht’s weiter …'); ph = 'lobby'; return; }
+      if (m.ph === 'lobby') { if (ph !== 'lobby') waitScreen('Zurück im Menü', 'Am Gastgeber-Gerät geht’s weiter …'); ph = 'lobby'; return; }
       if (m.ph === 'res') { ph = 'res'; return; }
       if (ph !== 'race') { startPlay(); ph = 'race'; }
       hud(`${m.ph === 'grid' ? 'Gleich geht’s los …' : ordinal(m.pos) + ' Platz / ' + m.n + ' · Runde ' + m.lap + '/' + m.laps} ${m.item ? ' · ' + m.item : ''}${m.roll ? ' · ❓' : ''}`);
