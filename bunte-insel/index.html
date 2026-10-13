@@ -84,7 +84,7 @@ body.touch #keys{display:none}
 .logo{font-size:clamp(38px,9vw,58px);font-weight:700;line-height:1;letter-spacing:.5px;background:linear-gradient(90deg,#ff4f9a,#ff8a1f,#ffd23f,#4cd07d,#2d8cff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #fff)}
 .sub{margin:8px 0 14px;font-size:18px;font-weight:600;opacity:.8}
 .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
-.hat.lbl{width:60px;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;line-height:1}.hat.lbl small{font-size:9px;font-weight:700;opacity:.75;margin-top:2px}.cact{display:flex;gap:6px;justify-content:center;margin:6px 0}.pill.warn{background:#ff8a7a;color:#fff}
+.hat.lbl{width:60px;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;line-height:1}.hat.lbl small{font-size:9px;font-weight:700;opacity:.75;margin-top:2px}.cact{display:flex;gap:6px;justify-content:center;margin:6px 0}.heroPreview{display:flex;align-items:center;justify-content:center;gap:12px;flex:none;height:118px;margin:3px 0 8px;padding:8px;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(223,241,255,.8));box-shadow:0 8px 22px rgba(31,78,140,.12);color:#19345c;font-weight:800}.heroPreview img{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(22,50,86,.2))}.heroPreview span{font-size:15px}#cloudLoginMount{margin:10px 0 0}.cloudLoginMount button{border-radius:18px!important;box-shadow:0 5px 16px rgba(23,60,117,.15)!important}.heroPreview{display:flex;align-items:center;justify-content:center;gap:12px;flex:none;height:118px;margin:3px 0 8px;padding:8px;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(223,241,255,.8));box-shadow:0 8px 22px rgba(31,78,140,.12);color:#19345c;font-weight:800}.heroPreview img{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(22,50,86,.2))}.heroPreview span{font-size:15px}#cloudLoginMount{margin:10px 0 0}.cloudLoginMount button{border-radius:18px!important;box-shadow:0 5px 16px rgba(23,60,117,.15)!important}.pill.warn{background:#ff8a7a;color:#fff}
 .sw{width:42px;height:42px;border-radius:50%;border:4px solid #fff;box-shadow:var(--shadow)}
 .sw.sel,.hat.sel{outline:4px solid var(--pri);outline-offset:2px}
 .hat{width:46px;height:46px;border-radius:14px;background:#fff;font-size:26px;box-shadow:var(--shadow)}
@@ -700,6 +700,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
           <button class="tile t3" id="bHero"><b>🎨</b><span>Mein Held<small>Aussehen &amp; Haustier</small></span></button>
         </div>
         <button class="slotbar" id="slotBar"></button>
+        <div id="cloudLoginMount" class="cloudLoginMount" aria-live="polite"></div>
         <div class="mini4">
           <button class="slotbar" id="bTv">📺 Spiel am Fernseher öffnen<small>Link &amp; Code zeigen</small></button>
           <button class="slotbar" id="bCtl">📱 Handy-Controller öffnen<small>Code eingeben</small></button>
@@ -852,7 +853,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
   var errorText='';
   window.addEventListener('error',function(e){
     if(e.target&&e.target.tagName==='SCRIPT') errorText='Spieldatei konnte nicht geladen werden: '+(e.target.getAttribute('src')||'unbekannt');
-    else if(e.message&&!window.__bi) errorText='Startfehler: '+String(e.message).slice(0,160);
+    else if(e.message&&!window.__bi){var where=e.filename?(' ('+e.filename.split('/').pop()+':'+(e.lineno||0)+')'):'';errorText='Startfehler: '+String(e.message).slice(0,120)+where;}
   },true);
   setTimeout(function(){
     if(window.__bi)return;
@@ -863,9 +864,9 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
     if(!document.getElementById('ldRetry')){
       var b=document.createElement('button');b.id='ldRetry';b.textContent='🔄 Erneut laden';
       b.style.cssText='padding:12px 20px;background:#fff;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer';
-      b.onclick=function(){location.reload()};screen.querySelector('.ldBox').appendChild(b);
+      b.onclick=function(){location.reload()};var box=screen.querySelector('.ldBox');if(box)box.appendChild(b);
     }
-  },45000);
+  },12000);
 })();
 </script>
 <script src="js/i18n.js?v=8"></script>
@@ -953,8 +954,8 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script src="js/combat.js?v=rz1" onload="__ld()"></script>
 <script src="js/weather.js?v=ins10" onload="__ld()"></script>
 <script src="js/talk.js" onload="__ld()"></script>
-<script src="js/main.js?v=vehicles8&cache=7" onload="__ld()"></script>
-<script src="../cloud/anmacha-cloud.js" data-save-btn="#bSaveNow" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
+<script src="js/main.js?v=start-fix10&cache=8" onload="__ld()"></script>
+<script src="../cloud/anmacha-cloud.js" data-mount="#cloudLoginMount" data-game="bunte-insel" data-prefix="bunteInsel" defer></script>
 </body>
 </html>
 

@@ -10,4 +10,6 @@ ok(withLd.length === all, 'Ladebalken: ' + withLd.length + ' Skripte mit __ld(),
 const files = readdirSync(join(dir, 'js')).filter(f => f.endsWith('.js') && f !== 'dbg.js').map(f => 'js/' + f), loaded = new Set(withLd), missing = files.filter(f => !loaded.has(f));
 ok(!missing.length, 'Alle js-Dateien sind eingebunden' + (missing.length ? ' – fehlt: ' + missing.join(', ') : ''));
 ok(new Set(withLd).size === withLd.length, 'Keine Skript-Datei doppelt eingebunden');
+ok(html.includes('if(box)box.appendChild(b)'), 'Startfehler-Button wird auch nach ausgetauschtem Ladebildschirm sicher eingefügt');
+ok(html.includes('data-mount="#cloudLoginMount"') && html.includes('id="cloudLoginMount"'), 'Google-Login sitzt im Hauptmenü statt als schwebender Knopf');
 console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);

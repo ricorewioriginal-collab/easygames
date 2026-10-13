@@ -1701,7 +1701,15 @@
   const LOOK = { shop: () => SPOT.shop, range: () => SPOT.range, hof: () => SPOT.farm.shop, arena: () => SPOT.arena.kai, forest: () => SPOT.forest, camp: () => SPOT.camp, lighthouse: () => SPOT.lighthouse, pool: () => ({ x: (SPOT.pool.x0 + SPOT.pool.x1) / 2, z: (SPOT.pool.z0 + SPOT.pool.z1) / 2 }), zoo: () => SPOT.pens[0], ship: () => ({ x: W.ship.cx, z: W.ship.cz }), cinema: () => BI.CINEMA.kino && { x: BI.CINEMA.kino.cx, z: BI.CINEMA.kino.cz }, city: () => ({ x: 0, z: -290 }), shops: () => ({ x: 0, z: -290 }), park: () => BI.PARK, rainbow: () => BI.RAINBOW, dampf: () => BI.DAMPF, drachen: () => BI.DRACHEN, bauland: () => BI.BAULAND, atlantis: () => W.spots.atlPortal, zotik: () => BI.ZOTIK, radio: () => BI.RADIO, pups: () => BI.PUPS };
   function beamTo(d) {
     { const q = d.at(), lk = smode && smode.lockedAt(q.x, q.z); if (lk) { say(smode.reqText(lk), 6000); return; } }
-    if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0; { const lk = d.id === 'home' ? null : (LOOK[d.id] && LOOK[d.id]()) || (d.look && d.look()) || { x: 0, z: 0 }; P.h = lk && Math.hypot(lk.x - P.x, lk.z - P.z) > 3 ? Math.atan2(lk.x - P.x, lk.z - P.z) : Math.PI; cam.yaw = P.h + Math.PI; } A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
+    if (P.veh) leave(); const p = d.at(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.gold, BI.C.pink], 4, 1, 28, 4); const q = W.resolve(p.x, p.z, .6, {}); P.x = q.x; P.z = q.z; P.y = 0; P.vy = 0;
+    { let lk = (LOOK[d.id] && LOOK[d.id]()) || (d.look && d.look()) || null;
+      if (!lk || !Number.isFinite(lk.x) || !Number.isFinite(lk.z) || Math.hypot(lk.x-P.x,lk.z-P.z)<3) {
+        let best=null,bd=Infinity; for (const fn of Object.values(LOOK)) { try { const c=fn(); if (!c || !Number.isFinite(c.x) || !Number.isFinite(c.z)) continue; const dist=Math.hypot(c.x-P.x,c.z-P.z); if(dist>3&&dist<bd&&dist<180){best=c;bd=dist;} } catch(e){} }
+        lk=best || {x:P.x+Math.sin(cam.yaw)*12,z:P.z+Math.cos(cam.yaw)*12};
+      }
+      P.h=Math.atan2(lk.x-P.x,lk.z-P.z); cam.yaw=P.h+Math.PI;
+    }
+    A.fanfare(); fx.burst(P.x, 1.2, P.z, 18, [BI.C.white, BI.C.pink], 4, 1, 28, 4); say('✨ Zack! Du bist da: ' + d.icon + ' ' + d.name, 2600); guide = null; kids.earn('guide'); updateHud();
   }
   function updateGuide(dt) { if (!guide) return; const p = guide.d.at(), px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z; if (Math.hypot(p.x - px, p.z - pz) < 7) { say('🎉 Angekommen: ' + guide.d.icon + ' ' + guide.d.name + '!', 3000); A.star(); kids.earn('guide'); guide = null; updateHud(); } }
   $('bStory').addEventListener('click', () => { closeGuide(); if (state === 'play') story.show(); });
@@ -1905,11 +1913,12 @@
   function syncChar() { if (Array.isArray(save.chars) && save.chars[save.cur]) { const c = save.chars[save.cur]; c.n = save.pname || ''; c.hero = save.hero; c.cu = clone(save.cu); c.shirt = save.shirt | 0; c.hat = save.hat | 0; c.eq = clone(save.equip); } }
   function applyChar(i) { const c = ensureChars()[i]; if (!c) return; syncChar(); save.cur = i; save.hero = c.hero || 'custom'; save.cu = clone(c.cu); save.shirt = c.shirt | 0; save.hat = c.hat | 0; save.equip = Object.assign({ hat: 'none', glasses: false, pack: false, teddy: false }, clone(c.eq)); save.pname = c.n || ''; persist(); buildChar(); refreshPickers(); }
   function buildHeroPicker(box) {
-    box.innerHTML = '<div class="lab">Wie heißt du?</div><input class="pn" maxlength="12" placeholder="Dein Name" autocomplete="off"><div class="ctabs"></div><div class="cbody"></div><div class="cact"></div>';
-    const pnI = box.querySelector('.pn'), tabsEl = box.querySelector('.ctabs'), body = box.querySelector('.cbody'), actEl = box.querySelector('.cact'), syncs = [], panels = [];
-    pnI.value = save.pname || ''; pnI.addEventListener('change', () => { save.pname = pnI.value.replace(/[<>&]/g, '').trim().slice(0, 12); persist(); buildChar(); refreshPickers(); A.pop(); });
+    box.innerHTML = '<div class="lab">Wie heißt du?</div><input class="pn" maxlength="12" placeholder="Dein Name" autocomplete="off"><div class="heroPreview"><img alt="Vorschau deines Charakters"><span>Dein Charakter</span></div><div class="ctabs"></div><div class="cbody"></div><div class="cact"></div>';
+    const pnI = box.querySelector('.pn'), tabsEl = box.querySelector('.ctabs'), body = box.querySelector('.cbody'), actEl = box.querySelector('.cact'), previewImg = box.querySelector('.heroPreview img'), syncs = [], panels = [];
+    const updateHeroPreview = () => { if (!previewImg || !BI.Thumb) return; const o = charOpts({ hero: save.hero || 'custom', cu: save.cu || {}, shirt: save.shirt | 0, hat: save.hat | 0, eq: save.eq || {} }, ''); const url = BI.Thumb.render(BI.makeChar(o).group, [-.05, 2.0], .38, .12); if (url) previewImg.src = url; };
+    pnI.value = save.pname || ''; updateHeroPreview(); pnI.addEventListener('change', () => { save.pname = pnI.value.replace(/[<>&]/g, '').trim().slice(0, 12); persist(); buildChar(); refreshPickers(); A.pop(); });
     const hex = c => '#' + c.toString(16).padStart(6, '0'), cu = () => save.cu || (save.cu = {}), CO = BI.CUO;
-    const edit = fn => { if (save.hero !== 'custom') { const r = BI.presetToCu(BI.heroById(save.hero).o); save.hero = 'custom'; save.cu = r.cu; save.shirt = r.shirt; save.hat = r.hat; } fn(); persist(); buildChar(); refreshPickers(); A.pop(); if (state === 'play') kids.earn('studio'); };
+    const edit = fn => { if (save.hero !== 'custom') { const r = BI.presetToCu(BI.heroById(save.hero).o); save.hero = 'custom'; save.cu = r.cu; save.shirt = r.shirt; save.hat = r.hat; } fn(); persist(); buildChar(); refreshPickers(); updateHeroPreview(); A.pop(); if (state === 'play') kids.earn('studio'); };
     const panel = () => { const d = document.createElement('div'); d.hidden = true; body.appendChild(d); panels.push(d); return d; };
     const lab = (p, t) => { const d = document.createElement('div'); d.className = 'lab'; d.textContent = t; p.appendChild(d); };
     /* eine Reihe Knöpfe: n Stück, mk(i) baut den Knopf, get() = aktuelle Wahl, set(i) ändert */
@@ -2327,7 +2336,7 @@
         }
         else { n.h += BI.angDiff(n.h, Math.atan2(dx, dz)) * Math.min(1, dt * 8); n.x += Math.sin(n.h) * n.spd * dt; n.z += Math.cos(n.h) * n.spd * dt; moving = true; }
       }
-      const q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) n.wait = 0, n.tx = n.x, n.tz = n.z; n.x = q.x; n.z = q.z;
+      const ox = n.x, oz = n.z, q = W.resolve(n.x, n.z, .4, {}); if (q.hit && Math.hypot(q.x - ox, q.z - oz) > .02) { n.x = q.x; n.z = q.z; n.wait = 0; let rerouted = false; for (let k = 0; k < 10; k++) { const a = Math.random() * TAU, r = 4 + Math.random() * (n.roam ? n.roam.r : 14), x = n.roam ? n.roam.x + Math.sin(a) * Math.min(r, n.roam.r) : n.x + Math.sin(a) * r, z = n.roam ? n.roam.z + Math.cos(a) * Math.min(r, n.roam.r) : n.z + Math.cos(a) * r; if (W.free(x, z, .45)) { n.tx = x; n.tz = z; rerouted = true; break; } } if (!rerouted) { n.tx = n.x; n.tz = n.z; n.wait = .6; } } else { n.x = q.x; n.z = q.z; }
       if (n.roam && !moving && n.wave <= 0 && Math.abs(n.x - P.x) + Math.abs(n.z - P.z) < 6 && Math.random() < dt * .08) n.wave = 1.3;
       n.phase += dt * (moving ? 7 : 0); const g = n.c.group; if (moving || n.gy === undefined || (n.gyT = (n.gyT || 0) - dt) < 0) { n.gy = W.groundY(n.x, n.z); n.gyT = 1.5; } /* Hügel/Decks: Figuren stehen auf dem Boden statt darin zu versinken */ g.position.set(n.x, n.gy + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .6 : 0), n.z); g.rotation.y = n.h;
       if (dancing) { n.c.dance(t + n.phase, n.style); g.position.y += Math.abs(Math.sin((t + n.phase) * 8)) * .15; } else n.c.pose(n.phase, moving ? .7 : 0, n.wave > 0 && (n.wave -= dt) > 0);

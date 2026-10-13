@@ -39,6 +39,7 @@
   function el(t) { return typeof t === 'string' ? document.querySelector(t) : t; }
   function find(id) { for (var i = 0; i < games.length; i++) if (games[i].id === id) return games[i]; return null; }
   function abs(p) { return new URL(p, base).href; }
+  function gameUrl(g) { var u = new URL(g.path, base); u.searchParams.set('eg_build', window.EASYGAMES_BUILD || 'current'); return u.href; }
 
   function frame(src, title, o) {
     var f = document.createElement('iframe');
@@ -92,11 +93,11 @@
   function multi(g) { var m = modesOf(g); return !!(m.pad || m.online || m.multi); }
   // Der richtige Link für TV-Gaming: öffentliche Spielseite (+ ?tv, wo das Spiel es kennt) – auch wenn diese Seite in einer App oder auf localhost läuft
   function tvUrl(g) { var D = window.EasyGamesDevice; return D ? D.tvUrl(g.path, modesOf(g).tvParam, base) : abs(g.path); }
-  function info(g) { return { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: abs(g.path), card: g.img ? abs(g.img) : null, multiplayer: multi(g), modes: modesOf(g), tvUrl: multi(g) ? tvUrl(g) : null }; }
+  function info(g) { return { id: g.id, title: g.title, desc: g.desc, icon: g.icon, url: gameUrl(g), card: g.img ? abs(g.img) : null, multiplayer: multi(g), modes: modesOf(g), tvUrl: multi(g) ? tvUrl(g) : null }; }
   EG.list = function () { return (games || []).map(info); };
   EG.get = function (id) { var g = games && find(id); return g ? info(g) : null; };
   EG.tvUrl = function (id) { var g = games && find(id); return g && multi(g) ? tvUrl(g) : null; };
-  EG.url = function (id) { var g = games && find(id); return g ? abs(g.path) : null; };
+  EG.url = function (id) { var g = games && find(id); return g ? gameUrl(g) : null; };
   EG.baseUrl = base;
   EG.device = function () { return window.EasyGamesDevice ? window.EasyGamesDevice.get() : null; };
   if (!window.EasyGamesDevice) load('device.js', function () {});
@@ -114,7 +115,7 @@
     EG.ready(function () {
       var g = find(o.game);
       if (!g) { console.error('EasyGames: unbekanntes Spiel "' + o.game + '"'); return; }
-      f = frame(abs(g.path), o.title || g.title, o);
+      f = frame(gameUrl(g), o.title || g.title, o);
       var node = wrap(f, o), row = tvRow(g, o);
       if (row) { var box = document.createElement('div'); box.style.cssText = 'width:' + (o.width || '100%') + ';max-width:' + (o.maxWidth || '960px'); node.style.width = '100%'; node.style.maxWidth = 'none'; box.appendChild(node); box.appendChild(row); node = box; }
       t.appendChild(node);

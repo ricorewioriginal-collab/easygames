@@ -18,7 +18,7 @@ import json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EIGENE = {'prismrush', 'wobbel'}          # haben ein eigenes Manifest + eigenen Service Worker
-CACHE_VERSION = {'bunte-insel': 7}          # Versionssprung löscht veraltete Offline-Dateien dieses Spiels
+CACHE_VERSION = {'bunte-insel': 8} # andere Spiele erhalten beim nächsten make-pwa-Lauf v2          # Versionssprung löscht veraltete Offline-Dateien dieses Spiels
 MARK = re.compile(r'\n?<!--pwa-->.*?<!--/pwa-->', re.S)
 
 
@@ -74,9 +74,9 @@ def manifest(g):
 SW = r"""/* %(title)s – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
    Netz zuerst: jeder Start holt den aktuellen Stand (der Browser prüft per ETag, große Dateien kommen bei „unverändert“ nicht neu).
    Fällt das Netz aus oder antwortet es länger als 4 s, kommt die zuletzt geladene Fassung aus dem Cache – so läuft das Spiel auch offline,
-   sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Neue Fassung = sofort aktiv (skipWaiting/claim), alte Zwischenspeicher werden gelöscht. */
+   sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Ein neues Spiel wird erst nach Klick aktiviert; alte Zwischenspeicher werden dann gelöscht. */
 const CACHE = 'eg-%(id)s-v%(cache_version)s';
-self.addEventListener('install', e => { e.waitUntil(self.skipWaiting()); });
+self.addEventListener('install', () => {});\nself.addEventListener('message', e => { if (e.data && e.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('eg-%(id)s-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
@@ -99,7 +99,7 @@ self.addEventListener('fetch', e => {
 REG = """<script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
 if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
 var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
-if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){var u=function(){try{r.update()}catch(e){}};document.addEventListener('visibilitychange',function(){if(!document.hidden)u()})}).catch(function(){})});
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
 var dp=null,K='egPwaHide';
 function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
@@ -200,7 +200,7 @@ def main():
             continue
         n += 1
         write(os.path.join(d, 'manifest.webmanifest'), json.dumps(manifest(g), ensure_ascii=False, indent=2) + '\n', check, problems)
-        write(os.path.join(d, 'sw.js'), SW % {'id': g['id'], 'title': g['title'].replace('*/', ''), 'cache_version': CACHE_VERSION.get(g['id'], 1)}, check, problems)
+        write(os.path.join(d, 'sw.js'), SW % {'id': g['id'], 'title': g['title'].replace('*/', ''), 'cache_version': CACHE_VERSION.get(g['id'], 2)}, check, problems)
         html = open(idx, encoding='utf-8').read()
         write(idx, patch_html(g, html), check, problems)
         need = [os.path.join(ROOT, 'pwa-icons', '%s-%s.png' % (g['id'], s)) for s in ('192', '512', '180', 'maskable-512')]

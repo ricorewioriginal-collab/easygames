@@ -22,7 +22,7 @@
     <script type="module" crossorigin src="./assets/index-Br18tWvY.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/three-BFNq9m3B.js">
     <link rel="stylesheet" crossorigin href="./assets/index-CFsflWko.css">
-  </head>
+  <script>(function(){if(!('serviceWorker'in navigator)||window.top!==window.self)return;var updating=false,offered=false;addEventListener('load',function(){navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button');d.style.cssText='position:fixed;z-index:99999;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:16px;background:#120b2c;color:#fff;font:600 14px system-ui';d.textContent='✨ Ein Update ist bereit ';b.textContent='Jetzt aktualisieren';b.style.cssText='padding:9px 12px;border:0;border-radius:10px;background:#ff8c24;color:#fff;font-weight:700';b.onclick=function(){updating=true;w.postMessage({type:'EG_SKIP_WAITING'})};d.appendChild(b);document.body.appendChild(d)}if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting);r.addEventListener('updatefound',function(){var w=r.installing;w&&w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(updating)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)r.update()})}).catch(function(){})})})()</script></head>
   <body>
     <div id="app">
       <canvas id="scene" aria-hidden="true"></canvas>

@@ -153,7 +153,7 @@ BI.createLife = function (G) {
       else { n.h += ang(n.h, Math.atan2(dx, dz)) * Math.min(1, dt * 7); n.x += Math.sin(n.h) * n.spd * dt; n.z += Math.cos(n.h) * n.spd * dt; moving = true; }
     }
     if (n.dance > 0) { n.dance -= dt; dancing = true; moving = false; }
-    const q = W.resolve(n.x, n.z, n.r, tmp); if (q.hit && Math.hypot(q.x - n.x, q.z - n.z) > .02) { n.tx = q.x; n.tz = q.z; n.wait = .3; } n.x = q.x; n.z = q.z;
+    const ox=n.x,oz=n.z,q=W.resolve(n.x,n.z,n.r,tmp);if(q.hit&&Math.hypot(q.x-ox,q.z-oz)>.02){n.x=q.x;n.z=q.z;n.wait=.2;let found=false;for(let k=0;k<8;k++){const a=rng()*Math.PI*2,rr=3+rng()*8,tx=n.x+Math.sin(a)*rr,tz=n.z+Math.cos(a)*rr;if(W.free(tx,tz,n.r)){n.tx=tx;n.tz=tz;found=true;break;}}if(!found)n.wait=.8;}else{n.x=q.x;n.z=q.z;}
     n.ph += dt * (moving ? 7 : 0); n.y = W.groundY(n.x, n.z);
     g.position.set(n.x, n.y + (n.hop > 0 ? Math.sin(n.hop / .6 * Math.PI) * .5 : 0), n.z); g.rotation.y = n.h + (n.side ? Math.PI / 2 : 0);
     if (dancing && n.c && n.c.dance) { n.c.dance(t + n.ph, 0); g.position.y += Math.abs(Math.sin((t + n.ph) * 8)) * .12; } else n.pose(moving ? n.ph : t * 1.2 + n.x, moving ? .7 : 0, false);
