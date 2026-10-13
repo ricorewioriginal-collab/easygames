@@ -242,6 +242,47 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 #mSetup button:focus-visible,#mMulti button:focus-visible{outline:3px solid #ffe77c;outline-offset:4px}
 #mSetup .chars button.on:after,#mSetup .kcards button.on:after{content:'✓';position:absolute;right:8px;top:7px;background:#ffcf46;color:#151323;font-weight:1000;border-radius:50%;height:24px;width:24px;display:grid;place-items:center;box-shadow:0 2px 9px #0007}
 @media(prefers-reduced-motion:reduce){#mSetup .chars button,#mSetup .kcards button{transition:none!important}}
+
+/* Real console-style screen navigation: never show a long combined setup form. */
+#mSetup{width:min(1100px,100%);margin:auto;text-align:center}
+#mSetup .console-head{margin:0 auto 18px}
+#mSetup .console-overline{display:block;letter-spacing:.3em;color:#84dfff;font-size:11px;font-weight:900}
+#mSetup #setTitle{font-size:clamp(26px,4.5vw,46px);margin:6px 0 16px;font-style:italic}
+#mSetup .console-stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(92vw,750px);margin:0 auto}
+#mSetup .console-stepper button{border-radius:12px;background:#20284bcf;border:1px solid #8a90bc74;color:#d1d8f6;padding:11px 4px;font-weight:800;font-size:clamp(10px,2.1vw,15px)}
+#mSetup .console-stepper button.on{background:linear-gradient(105deg,#02c7ef,#665ef4);color:#fff;box-shadow:0 3px 18px #23d9ff63;border-color:#a5f3ff}
+#mSetup .console-pane[hidden]{display:none!important}
+#mSetup .console-pane{animation:consoleEnter .25s ease-out;max-width:980px;margin:auto;min-height:min(55vh,470px)}
+@keyframes consoleEnter{from{opacity:.3;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+#mSetup .console-heading{letter-spacing:.17em;font-size:clamp(14px,2.5vw,20px);margin:16px 0 20px;color:#edf1ff}
+#mSetup .console-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;max-width:680px;margin:18px auto 24px}
+#mSetup .console-choices button{height:clamp(90px,18vw,145px);font-size:clamp(20px,3.5vw,30px);font-weight:900;border-radius:22px}
+#mSetup .console-choices button small{display:block;font-size:12px;opacity:.75}
+#mSetup .console-options{margin:18px auto;padding:15px;background:#121a37dc;border:1px solid #7b85b655;border-radius:20px;max-width:820px}
+#mSetup .console-options h3{font-size:12px;letter-spacing:.2em;color:#cdd5f3}
+#mSetup .console-options h4{font-size:11px;letter-spacing:.12em;color:#aebbe1;margin:9px 0}
+#mSetup .console-options-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#mSetup .console-options-grid .row{gap:5px;flex-wrap:wrap;justify-content:center}
+#mSetup .console-options-grid button{font-size:clamp(12px,1.6vw,17px);padding:10px 13px}
+#mSetup .console-track-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:13px;max-height:58vh;overflow:auto;overscroll-behavior:contain;padding:8px}
+#mSetup .console-track-grid button{min-height:100px;padding:15px;border-radius:17px;text-align:left;background:linear-gradient(120deg,#242549df,#131b36e8);font-size:clamp(18px,2.8vw,24px);font-weight:900}
+#mSetup .console-track-grid button small{display:block;font-size:12px;line-height:1.35;color:#b9c4e6;margin-top:9px;font-weight:500}
+#mSetup .console-showroom .showcase{margin:4px auto 16px;max-width:870px}
+#mSetup .console-showroom .showcase-stage{height:clamp(240px,34vh,390px)}
+#mSetup .console-showroom .chars{display:flex;gap:10px;overflow-x:auto;max-width:980px;padding:8px 12px 15px;scroll-snap-type:x proximity;justify-content:flex-start}
+#mSetup .console-showroom .chars button{flex:0 0 clamp(100px,16vw,145px);scroll-snap-align:center;min-height:114px}
+#mSetup .console-showroom .kcards{display:flex;overflow-x:auto;gap:12px;max-width:980px;padding:10px 10px 18px;scroll-snap-type:x proximity}
+#mSetup .console-showroom .kcards button{flex:0 0 clamp(180px,29vw,270px);scroll-snap-align:center;min-height:185px}
+#mSetup .console-player{max-width:480px;margin:10px auto}
+#mSetup .console-footer{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20;margin:16px auto 8px;padding:10px 14px;max-width:750px;border:1px solid #7176aa8c;border-radius:20px;background:#0f1737f4;box-shadow:0 -5px 30px #0007;backdrop-filter:blur(12px)}
+#mSetup .console-footer .big{min-width:150px;font-size:clamp(17px,3vw,23px);height:56px}
+#mSetup .console-footer .ghost{font-size:14px}
+#mSetup .console-progress{font-weight:900;color:#96e9ff;letter-spacing:.14em}
+#mSetup .console-help{margin:12px auto;max-width:750px;font-size:13px}
+#mTitle .sub{display:none}
+#mTitle .mbtns{margin-top:24px}
+#mTitle .info:not(#loadInfo):not(#padInfo){font-size:13px!important}
+@media(max-width:620px){#mSetup .console-options-grid{grid-template-columns:1fr;gap:0}#mSetup .console-choices{gap:10px}#mSetup .console-choices button{min-height:100px}#mSetup .console-stepper{gap:4px}#mSetup .console-footer{padding:8px;gap:5px}#mSetup .console-footer .big{min-width:116px}#mSetup .console-footer .ghost{padding:9px}}
 </style>
 </head>
 <body>
@@ -285,21 +326,27 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <button class="ghost" id="multiBack">← Hauptmenü</button>
   </section>
   <section class="mview" id="mSetup" hidden>
-    <h2 id="setTitle">RENNEN EINRICHTEN</h2>
-    <details class="help" open><summary>📖 Fahrtraining, Tutorial &amp; Tipps</summary><div class="info" style="text-align:left">
-      <b>1. Gas geben:</b> Am Handy unten rechts GAS halten, am PC W oder ↑. Mit dem linken Joystick bzw. A/D lenkst du.<p><b>2. Kurven und Drifts:</b> In einer Kurve DRIFT halten und beim Herausfahren loslassen – je länger der Drift, desto stärker der Turbo.</p>
-      <p><b>3. Überholen:</b> Nutze Boost-Felder, fahre kurz im Windschatten eines Gegners und ziehe dann seitlich vorbei.</p>
-      <p><b>4. Items:</b> Itembox berühren, nach dem Auslosen die ITEM-Taste drücken. Schild schützt, Raketen greifen an.</p>
-      <p><b>5. Freies Fahren:</b> Wähle „Freies Fahren“, um ohne Gegner, Platzierung oder Rundenzwang eine Strecke kennenzulernen. Über PAUSE kannst du zurück ins Menü.</p>
-      <p><b>Profi-Tipp:</b> Fahre vor Kurven außen an, lenke früh ein und nutze Drift-Turbos beim Herausbeschleunigen.</p></div></details>
-    <div class="showcase"><div class="showcase-stage" id="kartStage"></div><div class="showcase-info"><span class="showcase-kicker">DEINE RENNBÜHNE · 3D-VORSCHAU</span><strong id="kartStageName">Figur und Kart auswählen</strong><span id="kartStageWorld">Cup- und Welten-Charaktere</span><small>Mit dem Finger auf der Bühne drehen · Veränderungen werden sofort angezeigt</small></div></div>
-    <div class="cards">
-      <div class="card"><h3>RENNEN</h3><div class="row" id="rmode"></div><h3>STRECKE</h3><div class="row" id="tracks"></div></div>
-      <div class="card"><h3>FAHRER</h3><div class="pc" id="pcard"></div><h3>FIGUR</h3><div class="chars" id="chars"></div></div>
-      <div class="card"><h3>KART</h3><div class="kcards" id="kcards"></div></div>
-      <div class="card"><h3>RUNDEN</h3><div class="row" id="laps"></div><h3>GEGNER</h3><div class="row" id="skill"></div><h3>LENKHILFE</h3><div class="row" id="assist"></div></div>
+    <header class="console-head"><span class="console-overline">ANMACHA KART RUSH</span><h2 id="setTitle">RENNEN EINRICHTEN</h2><div class="console-stepper" id="stepNav" aria-label="Rennvorbereitung">
+      <button type="button" data-step="0">1 · Modus</button><button type="button" data-step="1">2 · Strecke</button><button type="button" data-step="2">3 · Fahrer</button><button type="button" data-step="3">4 · Kart</button>
+    </div></header>
+    <div class="console-pane" data-pane="0">
+      <h3 class="console-heading">WIE MÖCHTEST DU FAHREN?</h3><div class="console-choices" id="rmode"></div>
+      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div></div></div>
     </div>
-    <div class="sbar"><button class="ghost" id="bSetBack">← Zurück</button><button class="big" id="bGoSetup" disabled>LOS!</button></div>
+    <div class="console-pane" data-pane="1" hidden>
+      <h3 class="console-heading" id="trackHeading">DEINE RENNWELT</h3><div class="console-track-grid" id="tracks"></div>
+    </div>
+    <div class="console-pane console-showroom" data-pane="2" hidden>
+      <div class="showcase"><div class="showcase-stage" id="kartStage"></div><div class="showcase-info"><span class="showcase-kicker">DEINE 3D-RENNBÜHNE</span><strong id="kartStageName">Fahrer auswählen</strong><span id="kartStageWorld">Deine Welt</span><small>Mit dem Finger drehen</small></div></div>
+      <div class="pc console-player" id="pcard"></div>
+      <h3 class="console-heading">FAHRER AUSWÄHLEN</h3><div class="chars" id="chars"></div>
+    </div>
+    <div class="console-pane console-showroom" data-pane="3" hidden>
+      <div class="showcase" id="kartStageMount"><div class="showcase-stage" id="kartStageSlot"></div><div class="showcase-info"><span class="showcase-kicker">DEINE 3D-RENNBÜHNE</span><strong id="kartStageNameKart">Kart wählen</strong><span id="kartStageWorldKart">Tempo · Beschleunigung · Handling · Gewicht</span><small>Das Fahrzeug auf der Bühne drehen</small></div></div>
+      <h3 class="console-heading">FAHRZEUG AUSWÄHLEN</h3><div class="kcards" id="kcards"></div>
+    </div>
+    <footer class="console-footer"><button class="ghost" id="bSetBack">← ZURÜCK</button><span class="console-progress" id="setupProgress">1 / 4</span><button class="big" id="bGoSetup" disabled>WEITER →</button></footer>
+    <details class="console-help"><summary>🎮 Steuerung, Tutorial &amp; Tipps</summary><div class="info">Gas: W/↑ oder GAS · Lenken: A/D oder Joystick · DRIFT in der Kurve halten und am Ausgang loslassen. Boostfelder und Windschatten helfen beim Überholen. Im Freien Fahren kannst du in Ruhe trainieren.</div></details>
   </section>
 </div></div>
 
@@ -336,7 +383,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="chars.js?v=20261013-stage2"></script>
 <script src="track.js?v=20261013-interactive1"></script>
 <script src="sim.js?v=20261013-interactive1"></script>
-<script src="game.js?v=20261013-showroom3"></script>
+<script src="game.js?v=20261013-console-rebuild1"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 </body>
 </html>
