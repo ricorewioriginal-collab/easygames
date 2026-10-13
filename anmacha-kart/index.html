@@ -219,14 +219,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="menu" class="ov title" hidden><div class="box" id="mBox">
   <section class="mview" id="mTitle">
     <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha Kart Rush" hidden><small id="brandSub">KART RUSH</small></h1>
-    <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy – oder mit bis zu 4 Handys als Lenkrad vor einem großen Bildschirm.</p>
+    <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy, mit Freunden auf mehreren Handys (jeder mit eigenem Rennbild) oder am TV/PC mit Handys als Controller.</p>
     <div class="mbtns"><button class="big" id="bSolo" disabled>LADEN …</button><button class="big alt" id="bMulti" disabled>MEHRSPIELER</button></div>
     <button class="sumc" id="selSum" type="button"></button>
     <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div>
-    <div class="info" style="font-size:13px">📺 Am Fernseher: „TV-Modus“ öffnen. 📱 Am Handy: „Code eingeben“ – dein Handy wird das Lenkrad.</div>
+    <div class="info" style="font-size:13px">👥 Mehrspieler: Auf einem Handy/PC das Rennen eröffnen, auf den anderen per Code beitreten. Jeder kann sein eigenes Rennbild sehen. 📺 TV-Modus ist optional.</div>
     <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
     <div class="info" id="padInfo" hidden></div>
-    <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Dieser Bildschirm zeigt das Rennen (Splitscreen), die Handys werden per Code oder QR-Code gekoppelt.</div></details>
+    <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Auf TV/PC können mehrere Kameras im Splitscreen angezeigt werden; auf Handys ist auch ein eigenes Rennbild möglich.</div></details>
     <div class="info" id="loadInfo"></div>
     <a class="back" id="backLink" href="../">← Alle Spiele</a>
   </section>
@@ -252,7 +252,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 
 <div id="lobby" class="ov" hidden><div class="box">
   <h2>HANDYS KOPPELN</h2>
-  <p class="sub">Handy-Kamera auf den QR-Code richten – oder am Handy diese Seite öffnen, „🔑 Code eingeben“ tippen und den Code unten eintippen. Bis zu 4 Fahrer.</p>
+  <p class="sub">Mitspieler scannen den QR-Code oder öffnen dieses Spiel auf ihrem Handy und geben den Code ein. Jeder kann sein eigenes Rennbild und die Touchsteuerung verwenden. Bis zu 4 Fahrer, kein TV erforderlich.</p>
   <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="tvHint" hidden style="color:var(--y);font-weight:800">📺 OK auf der Fernbedienung drücken = Vollbild · Strecke und Start wählt ihr am Handy</div>
   <div id="lobList" style="width:100%;max-width:420px"></div>
   <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button><button class="chip" id="padAdd">🎮 Gamepad-Spieler hinzufügen</button></div>
