@@ -1332,7 +1332,10 @@
   const tv = BI.createTv({ scene, camera, renderer, W, P, inp, cam, A, fx, say, state: () => state, uiBusy, setStick, stars: () => save.stars, heroName, startGame: () => beginGame(save.mode === 'story' ? 'story' : 'free'), groundAt: (x, z, y) => Math.max(W.groundY(x, z), W.floorAt ? W.floorAt(x, z, y) : 0),
     makeMate: (i, name) => { const c = BI.makeChar(charOpts({ hero: 'custom', shirt: (i * 3 + 2) % BI.SHIRTS.length, hat: 0, eq: {}, cu: { skin: i % BI.SKINS.length, hair: (i * 2 + 1) % BI.HAIRS.length, pants: i, shoe: i, eye: i, mouth: 1 } }, name)); scene.add(c.group); return c; }, dragHold: on => { if (on) drag.id = -99; else if (drag.id === -99) drag.id = null; } });
   function tvButton() { if (tv.isPhone()) tv.openController(); else tv.start().catch(() => { }); } /* Handy: Controller öffnet sich direkt; Computer/Fernseher: Code + QR */
-  $('bTv').addEventListener('click', () => { tv.start().catch(() => { }); }); $('bCtl').addEventListener('click', () => tv.openController());
+  // Ein einziger Einstieg für TV/Handy: auf dem Smartphone direkt Controller,
+  // am Fernseher/Desktop das Gastgeber-Panel öffnen. Fehler zeigt tv.js selbst an.
+  $('bTv').addEventListener('click', tvButton);
+  $('bCtl').addEventListener('click', () => tv.openController());
   if (tv.isTvDevice()) { $('bCtl').hidden = true; tv.start().catch(() => { }); } /* am Fernseher ergibt „Handy-Controller öffnen“ keinen Sinn */
   $('albumBook').addEventListener('click', () => { kids.close(); sammeln.show(); });
   const tafeln = BI.createTafeln({ scene, W, A, P, say });
