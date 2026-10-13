@@ -53,3 +53,18 @@ test('explicit game modes and guarded world input',()=>{
  assert.match(js,/gameState===GAME_STATES\.WORLD/);
  assert.match(js,/function returnToWorld\(\)/);
 });
+
+test('three physical starter balls require professor interaction',()=>{
+ assert.match(js,/const starterStation=\[\]/);
+ assert.match(js,/function professorIntroduction\(\)/);
+ assert.match(js,/function inspectStarterBall\(i\)/);
+ assert.match(js,/if\(!save\.metProfessor\)/);
+ assert.match(js,/if\(save\.team\.length\)return/);
+});
+test('sixteen regional professors and original cat guild are present',()=>{
+ assert.match(js,/const PROF_NAMES=/);
+ assert.match(js,/for\(let j=0;j<7;j\+\+\)/);
+ assert.match(js,/SPEC\.schnurrik=/);
+ assert.match(js,/const SHADOW_SITES=/);
+ assert.match(js,/function shadowGuildEvent\(site\)/);
+});
