@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "294494c3eb5a",
- "generated": "2026-10-13T15:42:33+02:00",
- "commit": "0e4db1e2ff0c15fe1af169ca05c4c704a75aea11",
+ "version": "b800d5a311c1",
+ "generated": "2026-10-13T15:52:30+02:00",
+ "commit": "0446b9499c9f8d8d09f58c183020f2792b549f17",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4994,7 +4994,7 @@
   {
    "p": "sync/catalog.json",
    "s": 56641,
-   "h": "84165c76436689af38bbf5d5ad13d19784e7c4c0d32e8f1b0698663fc52450e2"
+   "h": "39869d85a1b39fa6ca636a2d2c19355ee798f9d9b3d370dbe0ba535ee7546196"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
@@ -5403,13 +5403,18 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 395757,
-   "h": "630740ccc0d651536be64c733e17a360d4e9bc295e14418a7a7fed37338be0bc"
+   "s": 395943,
+   "h": "f17816a5242de51310473518229dd4f2c05fc6c5868f6fa1f75dca2121623845"
   },
   {
    "p": "zotik/manifest.webmanifest",
    "s": 757,
    "h": "5b19c5de252513de7eee80b6812b99d06bfbdd39203319bb3b690ffee01e0808"
+  },
+  {
+   "p": "zotik/minigames.js",
+   "s": 10781,
+   "h": "74e1b15d729f96b6d4bcec7b43e8a81ba075c9cf7f1e72dd88070676b26c3ee3"
   },
   {
    "p": "zotik/sw.js",
