@@ -131,11 +131,14 @@
   function setup(){
     const css=document.createElement('style');
     css.textContent='#biLanguage{position:fixed;top:max(12px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));z-index:89999;display:flex;gap:3px;background:#101c31dc;border:1px solid #ffffff5c;border-radius:16px;padding:4px;box-shadow:0 3px 20px #0005}#biLanguage button{border:0;border-radius:11px;padding:7px 10px;background:transparent;color:#eaf3ff;font:700 12px system-ui;cursor:pointer}#biLanguage button.active{background:#267ed2;color:white}#biLanguage button:focus-visible{outline:2px solid #fff}';
+    css.textContent+='body:has(#hud:not([hidden])) #biLanguage{display:none}#biLangSettings{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:6px 0;padding:5px;border-radius:10px;background:#162641}#biLangSettings strong{margin-right:5px;font:700 13px system-ui;color:#fff}#biLangSettings button{font:700 12px system-ui;padding:6px 9px;border:1px solid #789bd0;border-radius:8px;background:#23385d;color:white}#biLangSettings button.active{background:#2284cf;border-color:#a2d8ff}';
     document.head.appendChild(css);
     const wrap=document.createElement('div');wrap.id='biLanguage';wrap.dataset.biI18nSkip='1';wrap.setAttribute('aria-label','Language / Sprache');
     wrap.innerHTML='<button data-bi-lang="de" type="button" aria-label="Deutsch">🇩🇪 DE</button><button data-bi-lang="en" type="button" aria-label="English">🇬🇧 EN</button>';
     wrap.addEventListener('click',e=>{const b=e.target.closest('[data-bi-lang]');if(b)setLanguage(b.dataset.biLang)});
     document.body.appendChild(wrap);
+    const settings=document.getElementById('toolPanel');
+    if(settings){const row=document.createElement('div');row.id='biLangSettings';row.dataset.biI18nSkip='1';row.innerHTML='<strong>🌐 Sprache / Language</strong><button type="button" data-bi-lang="de">🇩🇪 DE</button><button type="button" data-bi-lang="en">🇬🇧 EN</button>';row.addEventListener('click',e=>{const b=e.target.closest('[data-bi-lang]');if(b)setLanguage(b.dataset.biLang)});settings.appendChild(row)}
     observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:attrs});
     setLanguage(lang);
   }
