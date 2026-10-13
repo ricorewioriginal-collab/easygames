@@ -33,7 +33,8 @@ java -version 2>&1 | head -1; node -v
 say "2/7 Benutzer und Ordner"
 id easygames >/dev/null 2>&1 || useradd --system --create-home --home-dir "$STATE_DIR" --shell /usr/sbin/nologin easygames
 mkdir -p "$STATE_DIR" "$OUT_DIR" "$SDK_DIR" "$STATE_DIR/.ssh"
-chown -R easygames:easygames "$STATE_DIR" "$SDK_DIR" "$OUT_DIR"; chmod 700 "$STATE_DIR/.ssh"
+chown -R easygames:easygames "$STATE_DIR" "$SDK_DIR"; chmod 700 "$STATE_DIR/.ssh"
+chown easygames:easygames "$OUT_DIR"; chmod 755 "$OUT_DIR"   # nur dieser Ordner (nicht rekursiv): OUT_DIR sollte ein eigener Unterordner des Webordners sein
 
 say "3/7 Repository ($BRANCH)"
 if [ ! -d "$REPO_DIR/.git" ]; then
