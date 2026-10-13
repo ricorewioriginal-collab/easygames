@@ -479,7 +479,7 @@ async function toggleFullscreen(){
   else toast('Vollbild wird von diesem Browser nicht unterstützt.');
  }catch{toast('Vollbild ist hier nicht verfügbar.')}
 }
-function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 
@@ -512,7 +512,7 @@ function buy(cost,award){
  save.coins-=cost;award();stats();shop();
 }
 
-function interact(){if(locked)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.route!==undefined){routeInfo(near)}else if(near.trainer!==undefined){approachTrainer(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){shop()}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
+function interact(){if(gameState!==GAME_STATES.WORLD)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.route!==undefined){routeInfo(near)}else if(near.trainer!==undefined){approachTrainer(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){shop()}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
 $('team').onclick=team;$('dex').onclick=dex;$('map').onclick=mapView;$('menu').onclick=mainMenu;$('sound').onclick=toggleSound;$('interact').onclick=interact;
 
 let soundOn=false,audioContext=null,nextNote=0,noteStep=0;
@@ -556,7 +556,7 @@ function gamepadPoll(){
  gamepadX=axis(pad.axes[0]||0);gamepadY=axis(pad.axes[1]||0);
  const pressed=i=>!!pad.buttons[i]?.pressed;
  const edge=(i,callback)=>{if(pressed(i)&&!gamepadLast[i])callback();gamepadLast[i]=pressed(i)};
- edge(0,()=>{if(!locked)interact();else if($('panel').classList.contains('show')){const bs=[...$('options').querySelectorAll('button:not(:disabled)')];bs[Math.min(gamepadFocus,bs.length-1)]?.click()}else if(!booted)enterGame()});
+ edge(0,()=>{if(gameState===GAME_STATES.WORLD)interact();else if($('panel').classList.contains('show')){const bs=[...$('options').querySelectorAll('button:not(:disabled)')];bs[Math.min(gamepadFocus,bs.length-1)]?.click()}else if(!booted)enterGame()});
  edge(1,()=>{if($('panel').classList.contains('show')&&!combat)close()});
  edge(9,()=>{if(booted){if(locked&&!combat)close();else if(!locked)mainMenu()}else enterGame()});
  edge(3,()=>{if(booted&&!locked)team()});
@@ -595,7 +595,7 @@ addEventListener('keydown',e=>{
  if(['arrowup','arrowdown','arrowleft','arrowright','space'].includes(key))e.preventDefault();
  keys.add(key);
  if(!e.repeat&&key===controls.action)interact();
- if(!e.repeat&&key===controls.menu){if(locked&&!combat&&booted)close();else if(!locked&&booted)mainMenu()}
+ if(!e.repeat&&key===controls.menu){if(gameState===GAME_STATES.DIALOG&&!combat&&booted)close();else if(gameState===GAME_STATES.WORLD)mainMenu()}
 });
 addEventListener('keyup',e=>keys.delete(normKey(e)));addEventListener('blur',()=>{keys.clear();joyX=joyY=0});
 function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/(controls.joystickSize*.36));joyX=x/(controls.joystickSize*.36)/mag;joyY=y/(controls.joystickSize*.36)/mag;nub.style.transform='translate('+(joyX*controls.joystickSize*.31)+'px,'+(joyY*controls.joystickSize*.31)+'px)'}
