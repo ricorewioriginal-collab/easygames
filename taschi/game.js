@@ -320,8 +320,8 @@ function championSelect(){
  ]);
 }
 function regionSelect(){
- dialog('Taschi-Regionen','<p>Reise zwischen den sechzehn Städten. Jede Stadt besitzt ein Heilzentrum, einen Fundgegenstand, ein Rätsel und eine Arena.</p><p>Freigeschaltet sind die bisherigen und die jeweils nächste Region.</p>',[
- ...regions.map(r=>[(r.id<save.badges?'✓ ':'➜ ')+(r.id+1)+'. '+r.name,()=>{
+ dialog('Taschi-Regionen','<p>Jede Region besitzt zwei vorherrschende Taschi-Typen und eigene Begegnungen. Jede Stadt bietet Heilzentrum, Schatztruhe, Rätsel, Arena und Champion.</p><p>Freigeschaltet sind die bisherigen und die jeweils nächste Region.</p>',[
+ ...regions.map(r=>[(r.id<save.badges?'✓ ':'➜ ')+(r.id+1)+'. '+r.name+' · '+REGION_TYPES[r.id].map(t=>TYPES[t]).join(' '),()=>{
   player.position.set(Math.max(-58,Math.min(58,r.x+9)),0,Math.max(-58,Math.min(58,r.z+7)));
   save.x=player.position.x;save.z=player.position.z;stats();close();toast('Ankunft in '+r.name);
  },r.id>save.badges || (r.id>0&&r.id===save.badges&&!save.champions?.[r.id-1])]),
