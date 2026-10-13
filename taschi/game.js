@@ -270,12 +270,18 @@ function regionalChampion(i){
  ['Später',close]
  ]);
 }
+function championSelect(){
+ dialog('Regionale Champions','<p>Nach jedem Orden erwartet dich ein eigener Champion. Besiegte Champions sind dauerhaft vermerkt.</p>',[
+ ...regions.map(r=>[(save.champions?.[r.id]?'✓ ':'⚔ ')+REGION_CHAMPIONS[r.id]+' · '+r.name,()=>regionalChampion(r.id),save.badges<=r.id]),
+ ['Zurück',mainMenu]
+ ]);
+}
 function regionSelect(){
  dialog('Taschi-Regionen','<p>Reise zwischen den sechzehn Städten. Jede Stadt besitzt ein Heilzentrum, einen Fundgegenstand, ein Rätsel und eine Arena.</p><p>Freigeschaltet sind die bisherigen und die jeweils nächste Region.</p>',[
  ...regions.map(r=>[(r.id<save.badges?'✓ ':'➜ ')+(r.id+1)+'. '+r.name,()=>{
   player.position.set(Math.max(-58,Math.min(58,r.x+9)),0,Math.max(-58,Math.min(58,r.z+7)));
   save.x=player.position.x;save.z=player.position.z;stats();close();toast('Ankunft in '+r.name);
- },r.id>save.badges || (r.id>0&&!save.champions?.[r.id-1]&&r.id>=save.badges)]),
+ },r.id>save.badges || (r.id>0&&r.id===save.badges&&!save.champions?.[r.id-1])]),
  ['Zurück',mainMenu]
  ]);
 }
@@ -649,7 +655,7 @@ async function toggleFullscreen(){
   else toast('Vollbild wird von diesem Browser nicht unterstützt.');
  }catch{toast('Vollbild ist hier nicht verfügbar.')}
 }
-function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Regionen & Schnellreise',regionSelect],['Regionaler Champion',()=>{const i=Math.max(0,Math.min(15,(save.badges||1)-1));regionalChampion(i)}],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Regionen & Schnellreise',regionSelect],['Regionale Champions',championSelect],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 
