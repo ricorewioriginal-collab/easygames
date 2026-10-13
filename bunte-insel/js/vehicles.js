@@ -32,7 +32,11 @@ BI.VEH = {
   bobby:     { name: 'Rutschauto', icon: '🧸', max: 9, rev: 3, acc: 7, brake: 14, drag: 4, turn: 2.4, kind: 'cycle', horn: 'bell', cols: [-.55, .55], r: .62, open: true, cam: 6 },
   kart:      { name: 'Flitzer-Kart (Hüpfland)', icon: '🏎️', max: 20, rev: 6, acc: 14, brake: 26, drag: 5, turn: 2.5, kind: 'bike', horn: 'bike', open: true, offroad: 1, kart: true, cols: [-.7, .7], r: .85, cam: 7.5 },
   dino:      { name: 'Dino Tupfi (Hüpfland)', icon: '🦕', max: 14, rev: 4, acc: 10, brake: 18, drag: 5, turn: 2.6, kind: 'cycle', horn: 'bell', open: true, offroad: 1, dino: true, cols: [-.8, .8], r: .9, cam: 8.5 },
-  ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
+  ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 },
+  kiRoadster: { name: 'Ki-Blitz-Roadster', icon: '🏎️', max: 29, rev: 8, acc: 15, brake: 26, drag: 5, turn: 2.2, kind: 'car', horn: 'bike', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
+  runeCoupe: { name: 'Runen-Duell-Coupé', icon: '🚘', max: 27, rev: 7, acc: 13, brake: 25, drag: 5, turn: 2.1, kind: 'car', horn: 'car', cols: [-1.2, 1.2], r: 1.05, cam: 9 },
+  dataBuggy: { name: 'Datenhain-Buggy', icon: '🛻', max: 25, rev: 7, acc: 14, brake: 24, drag: 5, turn: 2.3, kind: 'car', horn: 'truck', offroad: 1, cols: [-1.2, 1.2], r: 1.1, cam: 9 }
+
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
 BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
@@ -282,6 +286,9 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     b.box(0, .2, 1.1, 1.5, .25, .8, 0xffd23f); b.box(0, .34, 1.1, 1.55, .05, .85, 0xc9a000); b.cyl(0, .3, -.9, .09, .09, .5, 0x555b66, 6);
     return { wheels: [[.55, .3, -.6, .3, .22, 0], [-.55, .3, -.6, .3, .22, 0], [.55, .22, 1.1, .22, .16, 1], [-.55, .22, 1.1, .22, .16, 1]], head: [[-.3, .5, 1.4], [.3, .5, 1.4]], tail: [[-.3, .6, -.9], [.3, .6, -.9]], seat: [0, .75, -.45] };
   };
+  MODELS.kiRoadster = function (b, o) { const m = MODELS.car(b, { color: 0xf0a928 }); b.box(0, 1.18, -.15, 1.18, .12, 1.2, 0x37d7ff); b.box(0, .48, 1.65, 1.95, .16, .46, 0xffd84a); b.sph(0, 1.32, -.2, .35, 0xfff29a, 1.3); return m; };
+  MODELS.runeCoupe = function (b, o) { const m = MODELS.car(b, { color: 0x7956ce }); b.box(0, 1.16, -.18, 1.2, .12, 1.25, 0x53dfbd); b.box(0, .5, 2.05, 1.7, .17, .25, 0xffd46a); b.box(0, 1.42, -.18, .28, .12, .3, 0xfff0a0); return m; };
+  MODELS.dataBuggy = function (b, o) { const m = MODELS.car(b, { color: 0x168e9d }); b.box(0, 1.05, -.65, 1.3, .12, 1.4, 0x87f2a7); b.box(0, 1.05, -1.7, 1.2, .8, .6, 0x4d657e); b.box(-.65, .7, .05, .08, .55, 2.8, 0x58d9ff); b.box(.65, .7, .05, .08, .55, 2.8, 0xff79c9); return m; };
   const PAINT = [0xe8453c, 0x3f8cff, 0xffc933, 0x4cd07d, 0xb36bff, 0xff8fc8, 0xff8a1f];
   BI.PAINT = PAINT;
 
