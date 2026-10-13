@@ -52,6 +52,8 @@ BI.THEMES = {
     drums: { k: 'x.......x.......', kv: .08, s: '....x.......x...', sv: .035, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'triangle', vol: .06, len: 1.6, bell: true, notes: 'G5 . B5 . D6 . B5 . G5 . . E5 . G5 . .  E5 . G5 . B5 . G5 . E5 . . C5 . E5 . .  C5 . E5 . G5 . E5 . C5 . . D5 . F5 . .  D5 . F5 . A5 . F5 . D5 . . A4 . D5 . .' } },
   maerchen: { name: 'Märchen-Zauber', bpm: 96, chords: ['C', 'Am', 'F', 'G', 'C', 'Em', 'F', 'G'], pad: { type: 'sine', vol: .05 }, arp: { pat: '1.3.5.3.1.3.5.3.', type: 'triangle', vol: .03, len: 1.8 }, bass: { pat: 'x.......x.......', type: 'sine', vol: .07, len: 4 },
     lead: { type: 'sine', vol: .07, len: 3, bell: true, notes: 'E5 . G5 . C6 . G5 . E5 . . . . . . .  F5 . A5 . C6 . A5 . F5 . . . . . . .  D5 . G5 . B5 . G5 . D5 . . . . . . .  E5 . G5 . C6 . E6 . C6 . . . . . . .' } },
+  huepf: { name: 'Hüpf-Galopp', bpm: 144, chords: ['C', 'Am', 'F', 'G', 'C', 'Am', 'Dm', 'G'], pad: { type: 'sine', vol: .03 }, arp: { pat: '1.3.5.3.1.3.5.3.', type: 'square', vol: .014, len: 1 }, bass: { pat: 'x...5...x...5...', type: 'triangle', vol: .09, len: 1.6 },
+    drums: { k: 'x.......x.......', kv: .09, s: '....x.......x...', sv: .04, h: 'x.x.x.x.x.x.x.x.', hv: .012 }, lead: { type: 'square', vol: .028, len: 1.4, bell: true, notes: 'G5 . E5 . G5 . C6 . . . A5 . G5 . . .  A5 . F5 . A5 . C6 . . . A5 . F5 . . .  D5 . F5 . A5 . D6 . . . C6 . A5 . . .  G5 . A5 . B5 . D6 . C6 . . . . . . .' } },
   fussball: { name: 'Stadion-Stimmung', bpm: 128, chords: ['C', 'F', 'G', 'C', 'Am', 'F', 'G', 'G'], pad: { type: 'sawtooth', vol: .018 }, arp: { pat: '1.2.3.2.1.2.3.5.', type: 'square', vol: .016, len: 1.2 }, bass: { pat: 'x..x..x.x..x..x.', type: 'triangle', vol: .08, len: 2 },
     drums: { k: 'x...x...x...x...', kv: .1, s: '....x.......x.x.', sv: .05, h: 'x.x.x.x.x.x.x.x.', hv: .014 }, lead: { type: 'triangle', vol: .06, len: 2, notes: 'E5 . E5 . G5 . E5 . C5 . . . . . . .  F5 . F5 . A5 . F5 . D5 . . . . . . .  G5 . G5 . B5 . G5 . D5 . . . G5 . A5 .  G5 . . . E5 . . . C5 . . . . . . .' } },
   bauland: { name: 'Bau-Spaß', bpm: 120, chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'Am', 'F'], pad: { type: 'sine', vol: .045 }, arp: { pat: '1.3.2.3.1.3.2.3.', type: 'square', vol: .018, len: 1.2 }, bass: { pat: 'x...x...x...x.5.', type: 'triangle', vol: .08, len: 2 },
@@ -85,6 +87,7 @@ BI.zoneAt = function (x, z, flags) {
   if (d(BI.DAMPF.x, BI.DAMPF.z) < BI.DAMPF.R + 8) return 'dampfer';
   if (d(BI.DRACHEN.x, BI.DRACHEN.z) < BI.DRACHEN.R + 8) return 'drachen';
   if (BI.BAULAND && d(BI.BAULAND.x, BI.BAULAND.z) < BI.BAULAND.R + 8) return 'bauland';
+  if (BI.HUEPF && d(BI.HUEPF.x, BI.HUEPF.z) < BI.HUEPF.R + 10) return 'huepf';
   if (BI.FUSSBALL && d(BI.FUSSBALL.x, BI.FUSSBALL.z) < BI.FUSSBALL.R + 8) return 'fussball';
   if (BI.TASCHI && d(BI.TASCHI.x, BI.TASCHI.z) < BI.TASCHI.R + 8) return 'fussball';
   if (BI.MAERCHEN && d(BI.MAERCHEN.x, BI.MAERCHEN.z) < BI.MAERCHEN.R + 8) return 'maerchen';

@@ -14,10 +14,11 @@
 8. 🌊 Weitere Welten
 9. 🔴 Taschi-Land: fangen, kämpfen, Orden
 10. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
-11. 📋 Alle Aufgaben der Welten
-12. 🏅 Alle Sticker
-13. 🔑 Geheimcodes
-14. 💡 Tipps und Tricks
+11. 🍄 Hüpfland (Insel im Westen)
+12. 📋 Alle Aufgaben der Welten
+13. 🏅 Alle Sticker
+14. 🔑 Geheimcodes
+15. 💡 Tipps und Tricks
 
 ---
 
@@ -199,11 +200,24 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 - 🎂 Partykind: Feiere mit Freunden eine Party
 - 👑 Waldheld: Besiege den Waldgeist
 
+### 🍄 Hüpfland
+
+- 🏆 Pokalsieger: Gewinne das Fußball-Turnier
+- 🎡 Freizeitpark-Fan: Fahr eine Attraktion im Freizeitpark
+- 🚀 Gadget-Fan: Kauf ein Gadget
+
 ---
 
 ## 📜 Inselgeschichten
 
 Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. Jeder Akt hat ein Ziel (ein Sticker); schon Geschafftes zählt gleich mit. Pro Akt +3 ⭐, am Ende +10 ⭐ und ein Sticker. Der Aufgaben-Chip oben zeigt den nächsten Akt, solange du auf der Insel bist.
+
+### 🍄 Der Sonnenstern – erzählt von Pia
+
+- Akt 1: Reite auf Dino Tupfi (Dino-Stall) → 🦕 Dino-Reiter
+- Akt 2: Reise durch eine Röhre und stoß alle Sternblöcke an → 🟢 Röhren-Reisender + ⭐ Blockstoßer
+- Akt 3: Fahr ein Kart-Rennen und schaffe das Hüpf-Abenteuer → 🏁 Kart-Flitzer + 🦖 Hüpf-Profi
+- Akt 4: Kitzle Felsenkönig Brocko in seiner Burg durch → 🪨 Brocko-Kitzler
 
 ### 🗿 Die Prüfung der Uralten – erzählt von Kapselmeisterin Pim
 
@@ -412,6 +426,20 @@ Steuerung im Kampf: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, 
 
 ---
 
+## 🍄 Hüpfland (Insel im Westen)
+
+Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). Pia und Pelle helfen dir, Flitzefuchs Ferdi fordert dich heraus, und in der Burg grummelt Felsenkönig Brocko. Alles hier ist selbst erfunden.
+
+- 🦕 Dino Tupfi (Dino-Stall): einsteigen wie bei einem Fahrzeug, Hupe-Knopf = Riesensprung. Verlassen trabt er nach einer Weile zurück in den Stall.
+- 🟢 Röhren: Vor einer Röhre „In die Röhre!“ drücken – du kommst bei der Röhre mit derselben Farbe wieder heraus. Die Kicher-Blume schaut nur zum Hallo-Sagen heraus.
+- ⭐ Sternblöcke: 12 goldene Blöcke schweben in Sprunghöhe. Stell dich darunter und spring – dein Kopf stößt sie an (+1 ⭐, alle 12 = +5 ⭐). Auf Tupfi geht es mit dem Riesensprung.
+- 🪙 Münzen: auf Wegen, Hügeln und vor der Burg – 20 Münzen = 1 ⭐. Sie kommen nach einer Weile wieder.
+- 🏁 Kart-Rennen: ins gelbe Flitzer-Kart steigen und durchs Start-Tor fahren (oder am Tor „Rennen starten“). 3 Runden gegen Ferdi, Pia und Pelle. Glitzerkisten ✦ geben Turbo, Münzen oder eine Kicher-Wolke, gelbe Pfeile machen schnell. Abkürzen über den Rasen zählt nicht. Platz 1 = 5 ⭐.
+- 🦖 Hüpf-Abenteuer: Automat am Platz – 2D-Level mit Röhren, Sternblöcken (von unten anstoßen) und Schnecken zum Draufhüpfen. Achtung, wenn die Kicher-Blume aus der Röhre schaut!
+- 🪨 Burg Felsenstein: Am Tor „Mutprobe starten“. Lauf auf den leuchtenden Knopf, dann auf den nächsten – Brocko lässt Kiesel rollen, über die du springst. Nach 3 Knöpfen lacht er und gibt den Sonnenstern zurück (+10 ⭐). Erwischen dich 3 Kiesel, fängst du einfach neu an.
+
+---
+
 ## 📋 Alle Aufgaben der Welten
 
 ### 🏖️ Badestrand
@@ -522,6 +550,17 @@ Steuerung im Kampf: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, 
 - ⚽ 5 Tore schießen: 0 von 5 (dann gibt es einen ⭐)
 - 🏆 25 Tore schießen: 0 von 25
 
+### 🍄 Hüpfland
+
+- 🍄 Das Hüpfland besuchen (Brücke im Westen)
+- 🦕 Auf Dino Tupfi reiten (Dino-Stall) – Hupe = Riesensprung
+- 🟢 Durch eine Röhre reisen
+- ⭐ Alle Sternblöcke von unten anstoßen: 0 von 12
+- 🏁 Ein Kart-Rennen fahren (gelbes Kart, durchs Start-Tor)
+- 🏆 Ein Kart-Rennen gewinnen
+- 🦖 Das Hüpf-Abenteuer am Automaten schaffen
+- 🪨 Felsenkönig Brocko durchkitzeln (Mutprobe in der Burg)
+
 ### 🔴 Taschi-Land
 
 - 🔬 Bei Professor Ulme dein erstes Taschi wählen
@@ -592,6 +631,7 @@ Steuerung im Kampf: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, 
 
 ### 📜 Inselgeschichten
 
+- 🍄 Der Sonnenstern – noch nicht begonnen (geh auf die Insel)
 - 🗿 Die Prüfung der Uralten – noch nicht begonnen (geh auf die Insel)
 - 🗝️ Das Licht der Schlüssel – noch nicht begonnen (geh auf die Insel)
 - 🧽 Das Geheimrezept der Knusper-Krabbe – noch nicht begonnen (geh auf die Insel)
@@ -720,6 +760,15 @@ So bekommst du jeden Sticker:
 | 🌑 Dunkelheits-Trotzer | Überstehe den Einbruch der Dunkelheit |
 | 🏟️ Schattenbezwinger | Besiege Umbra in der Schattenarena |
 | 🔴 Taschi-Held | Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister) |
+| 🍄 Hüpfland-Gast | Besuche das Hüpfland im Westen |
+| 🦕 Dino-Reiter | Reite auf Dino Tupfi |
+| 🟢 Röhren-Reisender | Reise durch eine Röhre im Hüpfland |
+| ⭐ Blockstoßer | Stoß alle Sternblöcke im Hüpfland von unten an |
+| 🏁 Kart-Flitzer | Fahr ein Kart-Rennen im Hüpfland |
+| 🏆 Kart-Champion | Gewinne ein Kart-Rennen im Hüpfland |
+| 🦖 Hüpf-Profi | Schaffe das Hüpf-Abenteuer am Automaten |
+| 🪨 Brocko-Kitzler | Kitzle Felsenkönig Brocko in seiner Burg durch |
+| 🌞 Hüpf-Held | Schaffe die Geschichte des Hüpflands (Der Sonnenstern) |
 | 📘 Taschi-Sammler | Fang 25 verschiedene Taschis |
 | 📚 Taschi-Profi | Fang 50 verschiedene Taschis |
 | 🌍 Weltforscher | Fang in jeder Welt 2 Taschis |
@@ -760,6 +809,7 @@ Eingabe über ⚙️ → „🔑 Code eingeben“ (Groß-/Kleinschreibung egal).
 | Eintrag | Beschreibung |
 |---|---|
 | 🌠 WUNSCHSTERN | Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel. |
+| 🍄 HUEPFHELD | Hüpfland: alle Aufgaben fertig – Sternblöcke, Dino, Röhre, Kart-Pokal, Hüpf-Abenteuer und Brocko durchgekitzelt. |
 | 🔴 TASCHIMEISTER | Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team). |
 | ♾️ UNENDLICHSTERNE | Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999). (nochmal eingeben = aus) |
 | 🔓 ALLESFREI | Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände. |

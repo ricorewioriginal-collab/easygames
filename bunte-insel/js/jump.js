@@ -8,16 +8,20 @@ BI.JUMP = {
   /* Pro Welt ein Thema: Farben, Emojis, Länge, Schwierigkeit (0..1) */
   THEMES: {
     jump_bucht: { name: 'Fellretter-Sprint', icon: '🐶', hero: '🐕‍🦺', help: 'Der schwerste Einsatz: Rette das Kätzchen am Ende! Wenig Fehler erlaubt.', len: 300, diff: .85, goal: 60,
-      sky: ['#46b4ff', '#d8f2ff'], ground: '#e0b46c', top: '#2d6be0', plat: '#ff7a1a', coin: '🦴', star: '⭐', walker: '🦀', flyer: '🦅', goal: '🐱', bg: 'sea' }
+      sky: ['#46b4ff', '#d8f2ff'], ground: '#e0b46c', top: '#2d6be0', plat: '#ff7a1a', coin: '🦴', star: '⭐', walker: '🦀', flyer: '🦅', goal: '🐱', bg: 'sea' },
+    /* Hüpfland 🍄: Röhren (mit Kicher-Blume, die ab und zu herausschaut) und Sternblöcke (von unten anstoßen = Münzen) – alles eigene Entwürfe */
+    jump_huepf: { name: 'Hüpf-Abenteuer', icon: '🦖', hero: '🦖', help: 'Hüpf mit Tupfi bis zur Burg! Stoß von unten gegen die ⭐-Blöcke, spring über die Röhren (Vorsicht, wenn die Kicher-Blume herausschaut) und hüpf auf die Schnecken.', len: 230, diff: .55, goal: 40,
+      sky: ['#5ac8ff', '#e6f7ff'], ground: '#9a6a3a', top: '#4cd07d', plat: '#e8a040', coin: '🪙', star: '⭐', walker: '🐌', flyer: '🐝', goal: '🏰', bg: 'hills', zone: 'huepf', pipes: true, blocks: true }
   },
+  onWin: null, /* (kind) => … wird aufgerufen, wenn ein Level geschafft ist (z. B. Sticker der Welt) */
   install(M, h) {
     const COLS = ['#ff3b3b', '#ff9a2e', '#ffe14a', '#4cd07d', '#3fa0ff', '#9b4de0'], A = h.A;
     const snd = n => { try { A[n] && A[n](); } catch (e) { } };
-    for (const kind of Object.keys(BI.JUMP.THEMES)) { const T = BI.JUMP.THEMES[kind]; h.register(kind, make(T), { icon: T.icon, name: T.name, help: T.help, dur: 150, goal: T.goal, zone: 'fellretter' }); }
+    for (const kind of Object.keys(BI.JUMP.THEMES)) { const T = BI.JUMP.THEMES[kind]; T.key = kind; h.register(kind, make(T), { icon: T.icon, name: T.name, help: T.help, dur: 150, goal: T.goal, zone: T.zone || 'fellretter' }); }
 
     /* ---------- Level aus dem Startwert bauen ---------- */
     function build(T) {
-      const rnd = h.rnd, L = T.len, cols = new Array(L + 24).fill(null), plats = [], haz = [], en = [], items = [], springs = [], cps = [];
+      const rnd = h.rnd, L = T.len, cols = new Array(L + 24).fill(null), plats = [], haz = [], en = [], items = [], springs = [], cps = [], pipes = [], pipeCols = new Set(), blocks = [];
       const R = (a, b) => a + rnd() * (b - a), RI = (a, b) => Math.floor(R(a, b + .999));
       let x = 0, gy = 8, stars = 0, hearts = 0, nextCp = 50;
       const flat = (n, y) => { for (let i = 0; i < n; i++) cols[x + i] = y; x += n; };
@@ -32,9 +36,10 @@ BI.JUMP = {
         let t = rnd();
         if (wantStar) t = t < .5 ? .92 : .8;
         else if (t < .13) t = .05; else if (t < .13 + .2) t = .2; else if (t < .13 + .2 + .1 * (1 - d)) t = .35; else t = .45 + rnd() * .5;
-        if (t < .1) { const n = RI(4, 7); flat(n, gy); coins(x - n, gy - 1.2, n); }
+        if (t < .1) { const n = RI(4, 7); flat(n, gy); if (T.blocks && n >= 5) { const bx = x - n + 1; for (let i = 0; i < 3; i++) { const b = { x: bx + i, y: gy - 3.4, hit: 0, bump: 0 }; blocks.push(b); plats.push({ x: b.x, y: b.y, w: 1, mv: false, ax: 0, sp: 0, ph: 0, ox: b.x, dx: 0, dy: 0, blk: b }); } } else coins(x - n, gy - 1.2, n); }
         else if (t < .3) { /* Lücke */ const w = Math.min(5, 2 + Math.floor(R(0, 1.3 + 3.3 * d))), ny = clampY(gy + RI(-1, 1)); const x0 = x; pit(w); flat(RI(3, 5), ny); coins(x0, gy - 1.5, w, 1.6); gy = ny; }
         else if (t < .4) { /* Treppe */ const up = rnd() < .5, n = RI(2, 3); for (let i = 0; i < n; i++) { const ny = clampY(gy + (up ? -1 : 1)); gy = ny; flat(RI(2, 3), gy); } coins(x - 3, gy - 1.2, 3); }
+        else if (t < .5 && T.pipes && rnd() < .6) { /* Röhre: 2 breit, 2–3 hoch; manchmal schaut die Kicher-Blume heraus */ flat(3, gy); const top = gy - RI(2, 3), px = x; for (let i = 0; i < 2; i++) { cols[x + i] = top; pipeCols.add(x + i); } x += 2; pipes.push({ x: px, top, fl: rnd() < .65 ? rnd() * 6 : null }); coins(px - 1, top - 1.6, 4, 1.4); flat(3, gy); }
         else if (t < .5) { /* Stacheln */ flat(3, gy); const sx = x; flat(8, gy); haz.push({ x: sx + 2.5, w: 2, y: gy }); coins(sx + 1.5, gy - 1.6, 4, 1.8); flat(2, gy); }
         else if (t < .62) { /* Läufer */ const sx = x; flat(11, gy); en.push({ k: 'w', x: sx + 5, y: gy, dir: 1, x0: sx + 1.5, x1: sx + 9.5, v: R(1.2, 2.0) * (1 + d * .4), ph: 0, dead: 0 }); coins(sx + 3, gy - 2.2, 5, 1.4); }
         else if (t < .72) { /* Flieger */ const sx = x; flat(10, gy); en.push({ k: 'f', x: sx + 5, y: gy - 2.6, by: gy - 2.6, amp: R(.8, 1.4), v: R(1.5, 2.4), x0: sx + 2, x1: sx + 8, dir: 1, ph: rnd() * 6, dead: 0 }); coins(sx + 2, gy - 1.2, 3); }
@@ -52,7 +57,7 @@ BI.JUMP = {
       }
       while (stars < 3) { items.push({ k: 's', x: L * (.2 * (stars + 1)) + 3, y: 4 }); stars++; }
       flat(16, gy); const goalX = x - 8;
-      return { L, cols, plats, haz, en, items, springs, cps, goalX };
+      return { L, cols, plats, haz, en, items, springs, cps, goalX, pipes, pipeCols, blocks };
     }
 
     /* ---------- Spiel ---------- */
@@ -66,7 +71,7 @@ BI.JUMP = {
       G.dbg = () => ({ lv, p, over, tm });
       const colTop = xi => (xi < 0 || xi >= lv.cols.length) ? null : lv.cols[xi];
       const say = (t, s) => { msg = t; msgT = s || 1.6; };
-      const finish = ok => { if (over) return; over = true; if (ok) { h.add(25, h.W() / 2, h.H() * .4); h.add(p.life * 3, h.W() / 2, h.H() * .46); h.add(Math.max(0, Math.floor((M.dur - M.t) * .2)), h.W() / 2, h.H() * .52); snd('fanfare'); say('🏁 Geschafft!', 99); } else { say('💔 Leider verloren – nochmal versuchen!', 99); snd('bonk'); } M.over = true; };
+      const finish = ok => { if (over) return; over = true; if (ok && BI.JUMP.onWin) { try { BI.JUMP.onWin(T.key, M.score); } catch (e) { } } if (ok) { h.add(25, h.W() / 2, h.H() * .4); h.add(p.life * 3, h.W() / 2, h.H() * .46); h.add(Math.max(0, Math.floor((M.dur - M.t) * .2)), h.W() / 2, h.H() * .52); snd('fanfare'); say('🏁 Geschafft!', 99); } else { say('💔 Leider verloren – nochmal versuchen!', 99); snd('bonk'); } M.over = true; };
       const hurt = () => { if (p.inv > 0 || over) return; p.life--; snd('bonk'); shake = .25; if (p.life <= 0) { finish(false); return; } p.inv = 1.6; p.vy = -9; p.vx = -p.face * 5; p.g = false; };
       const die = () => { p.life--; snd('bonk'); if (p.life <= 0) { finish(false); return; } const c = cpI >= 0 ? lv.cps[cpI] : { x: 2, y: lv.cols[2] }; p.x = c.x; p.y = c.y; p.vx = p.vy = 0; p.inv = 1.8; p.g = true; p.onP = null; say('Weiter geht’s! Noch ' + p.life + ' ❤️', 1.4); };
       const jump = () => { p.buf = .13; p.hold = true; };
@@ -92,6 +97,8 @@ BI.JUMP = {
         for (let xi = Math.floor(nx - hw); xi <= Math.floor(nx + hw); xi++) { const top = colTop(xi); if (top != null && top < p.y - .55) { nx = p.vx > 0 ? xi - hw - .001 : xi + 1 + hw + .001; p.vx = 0; } }
         nx = Math.max(hw, Math.min(lv.L + 20, nx)); p.x = nx;
         const prev = p.y; p.y += p.vy * dt; p.g = false; let sup = null, supP = null;
+        if (p.vy < 0) for (const b of lv.blocks) { const bot = b.y + 1; if (p.x + hw > b.x && p.x - hw < b.x + 1 && prev - 1 >= bot - 1e-6 && p.y - 1 < bot) { p.y = bot + 1.001; p.vy = 3; b.bump = .18; if (!b.hit) { b.hit = 1; h.add(2, sx(b.x + .5), sy(b.y) - 20); h.burst(sx(b.x + .5), sy(b.y), 10, ['#ffe27a', '#fff']); snd('ding'); } else snd('bonk'); break; } }
+        for (const pp of lv.pipes) { if (pp.fl == null) continue; const out = Math.sin(tm * 1.3 + pp.fl) > .35; pp.out = out; if (out && Math.abs(p.x - (pp.x + 1)) < .75 && p.y > pp.top - 1.5 && p.y <= pp.top + .05) hurt(); }
         if (p.vy >= 0) {
           for (let xi = Math.floor(p.x - hw); xi <= Math.floor(p.x + hw); xi++) { const top = colTop(xi); if (top != null && p.y >= top - 1e-6 && prev <= top + .6 && (sup == null || top < sup)) sup = top; }
           for (const pl of lv.plats) { if (p.x + hw > pl.x && p.x - hw < pl.x + pl.w && p.y >= pl.y - 1e-6 && prev <= pl.y + .3 + Math.abs(pl.dy) && (sup == null || pl.y < sup)) { sup = pl.y; supP = pl; } }
@@ -125,9 +132,14 @@ BI.JUMP = {
         const ctx = h.ctx(), W = h.W(), H = h.H(), S = H / 11; h.bg(T.sky[0], T.sky[1]);
         drawBg(ctx, W, H, S);
         const x0 = Math.floor(cam) - 1, x1 = Math.ceil(cam + W / S) + 1; ctx.save(); if (shake > 0) ctx.translate((Math.random() - .5) * 8, (Math.random() - .5) * 8);
-        for (let xi = x0; xi <= x1; xi++) { const top = colTop(xi); if (top == null) continue; const X = (xi - cam) * S, Y = top * S; ctx.fillStyle = T.ground; ctx.fillRect(X, Y, S + 1, H - Y); ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(X, Y + S * .5, S + 1, H); ctx.fillStyle = T.top === 'rainbow' ? COLS[((xi % 6) + 6) % 6] : T.top; ctx.fillRect(X, Y, S + 1, S * .3); }
+        for (let xi = x0; xi <= x1; xi++) { const top = colTop(xi); if (top == null) continue; const X = (xi - cam) * S, Y = top * S; if (lv.pipeCols.has(xi)) continue; ctx.fillStyle = T.ground; ctx.fillRect(X, Y, S + 1, H - Y); ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(X, Y + S * .5, S + 1, H); ctx.fillStyle = T.top === 'rainbow' ? COLS[((xi % 6) + 6) % 6] : T.top; ctx.fillRect(X, Y, S + 1, S * .3); }
         for (const z of lv.haz) { const X = (z.x - cam) * S; if (X < -S * 4 || X > W + S) continue; ctx.fillStyle = '#e6edf7'; for (let i = 0; i < z.w * 2; i++) { ctx.beginPath(); ctx.moveTo(X + i * S * .5, z.y * S); ctx.lineTo(X + i * S * .5 + S * .25, z.y * S - S * .55); ctx.lineTo(X + i * S * .5 + S * .5, z.y * S); ctx.closePath(); ctx.fill(); } ctx.fillStyle = '#e0382b'; ctx.fillRect(X, z.y * S - 3, z.w * S, 4); }
-        for (const pl of lv.plats) { const X = (pl.x - cam) * S; if (X < -S * 4 || X > W + S) continue; ctx.fillStyle = T.plat; rr(ctx, X, pl.y * S, pl.w * S, S * .4, 8); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.55)'; rr(ctx, X + 4, pl.y * S + 3, pl.w * S - 8, S * .09, 4); ctx.fill(); if (pl.mv) { ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(X + pl.w * S / 2 - 3, pl.y * S + S * .4, 6, 6); } }
+        for (const pp of lv.pipes) { const X = (pp.x - cam) * S, Y = pp.top * S; if (X < -S * 3 || X > W + S) continue;
+          if (pp.fl != null) { const k = Math.max(0, Math.min(1, (Math.sin(tm * 1.3 + pp.fl) - .1) * 1.6)); if (k > 0) { ctx.fillStyle = '#3a9a3a'; ctx.fillRect(X + S * .92, Y - S * 1.1 * k, S * .16, S * 1.1 * k); h.emoji('🌻', X + S, Y - S * 1.15 * k, S * 1.05); } }
+          ctx.fillStyle = '#2fb84a'; ctx.fillRect(X + S * .12, Y + S * .45, S * 1.76, H - Y); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(X + S * .3, Y + S * .5, S * .22, H - Y);
+          ctx.fillStyle = '#25a03e'; rr(ctx, X - S * .05, Y, S * 2.1, S * .55, 6); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(X + S * .15, Y + S * .08, S * .25, S * .38); ctx.strokeStyle = '#14602a'; ctx.lineWidth = 2; rr(ctx, X - S * .05, Y, S * 2.1, S * .55, 6); ctx.stroke(); }
+        for (const b of lv.blocks) { const X = (b.x - cam) * S, Y = (b.y - (b.bump > 0 ? b.bump : 0)) * S; b.bump = Math.max(0, b.bump - .012); if (X < -S || X > W + S) continue; ctx.fillStyle = b.hit ? '#a8763a' : '#ffc928'; rr(ctx, X + 1, Y + 1, S - 2, S - 2, 6); ctx.fill(); ctx.strokeStyle = b.hit ? '#6a4420' : '#c88a00'; ctx.lineWidth = 3; rr(ctx, X + 1, Y + 1, S - 2, S - 2, 6); ctx.stroke(); if (!b.hit) h.emoji('⭐', X + S / 2, Y + S / 2, S * .62); }
+        for (const pl of lv.plats) { if (pl.blk) continue; const X = (pl.x - cam) * S; if (X < -S * 4 || X > W + S) continue; ctx.fillStyle = T.plat; rr(ctx, X, pl.y * S, pl.w * S, S * .4, 8); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.55)'; rr(ctx, X + 4, pl.y * S + 3, pl.w * S - 8, S * .09, 4); ctx.fill(); if (pl.mv) { ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(X + pl.w * S / 2 - 3, pl.y * S + S * .4, 6, 6); } }
         for (const s of lv.springs) { const X = (s.x - cam) * S; ctx.fillStyle = '#ff8a1f'; rr(ctx, X - S * .4, s.y * S - S * (.35 - s.sq), S * .8, S * (.35 - s.sq), 6); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillRect(X - S * .3, s.y * S - S * (.35 - s.sq), S * .6, 4); }
         lv.cps.forEach(c => { const X = (c.x - cam) * S; if (X < -S || X > W + S) return; ctx.fillStyle = '#ddd'; ctx.fillRect(X - 2, c.y * S - S * 1.6, 4, S * 1.6); h.emoji(c.on ? '✅' : '🚩', X + S * .4, c.y * S - S * 1.3, S * .8); });
         { const X = (lv.goalX - cam) * S; if (X > -S * 3 && X < W + S * 3) { ctx.fillStyle = '#fff'; ctx.fillRect(X - 3, lv.cols[Math.floor(lv.goalX)] * S - S * 3, 6, S * 3); h.emoji(T.goal, X, lv.cols[Math.floor(lv.goalX)] * S - S * 1.2, S * 2.2); h.emoji('🏁', X + S * 1.6, lv.cols[Math.floor(lv.goalX)] * S - S * 1.0, S * 1.1); } }

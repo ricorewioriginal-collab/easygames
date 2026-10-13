@@ -507,6 +507,7 @@ BI.buildWorld = function (scene) {
   BI.buildMaerchenPlus({ W, st, lamp, ROADY });
   BI.buildSchluesselGround({ W, st, lamp, ROADY });
   if (BI.buildWunschGround) BI.buildWunschGround({ W, st, lamp, ROADY });
+  if (BI.buildHuepfGround) BI.buildHuepfGround({ W, st, lamp, ROADY }); /* Hüpfland (huepf.js) */
   BI.buildSchwammGround({ W, st, lamp, ROADY });
   BI.buildRaetselGround({ W, st, lamp, ROADY });
   BI.buildBadeGround({ W, st, lamp, ROADY });

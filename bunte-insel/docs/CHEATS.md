@@ -5,6 +5,7 @@
 | Code | Wirkung | Art |
 |---|---|---|
 | `WUNSCHSTERN` | 🌠 Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel. | einmalig |
+| `HUEPFHELD` | 🍄 Hüpfland: alle Aufgaben fertig – Sternblöcke, Dino, Röhre, Kart-Pokal, Hüpf-Abenteuer und Brocko durchgekitzelt. | einmalig |
 | `TASCHIMEISTER` | 🔴 Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team). | einmalig |
 | `UNENDLICHSTERNE` | ♾️ Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999). | Special (nochmal = aus) |
 | `ALLESFREI` | 🔓 Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände. | einmalig |

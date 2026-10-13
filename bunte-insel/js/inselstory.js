@@ -4,6 +4,12 @@
    Das Aufgaben-Buch (📋) zeigt „📜 Inselgeschichten“, oben im Aufgaben-Chip steht der nächste Akt, sobald man auf der Insel ist. Fertig = Sticker + Sterne.
    NEUE WELT? Hier einen Eintrag ergänzen (key = BI.<KEY>, goal = Sticker-IDs aus js/kids.js) und den Abschluss-Sticker 'geschichte_<key>' in kids.js anlegen (siehe docs/NEUE-INHALTE.md). */
 BI.INSELSTORY = [
+  { key: 'HUEPF', icon: '🍄', npc: 'Pia', title: 'Der Sonnenstern', acts: [
+    { text: 'Willkommen im Hüpfland! Felsenkönig Brocko hat unseren Sonnenstern in seine Burg geholt – seitdem ist hier alles ein bisschen grau. Lern erst die Insel kennen: Am Stall wartet Dino Tupfi auf dich!', hint: 'Reite auf Dino Tupfi (Dino-Stall)', goal: ['huepf_dino'], done: 'Tupfi hüpft vor Freude im Kreis!' },
+    { text: 'Die bunten Röhren bringen dich blitzschnell über die Insel, und überall schweben Sternblöcke. Stoß sie von unten an!', hint: 'Reise durch eine Röhre und stoß alle Sternblöcke an', goal: ['huepf_roehre', 'huepf_bloecke'], done: 'Alle Sternblöcke leuchten – die Insel wird wieder bunter!' },
+    { text: 'Flitzefuchs Ferdi fordert dich zum Kart-Rennen heraus! Und im Automaten am Platz wartet das Hüpf-Abenteuer bis zur Burg.', hint: 'Fahr ein Kart-Rennen und schaffe das Hüpf-Abenteuer', goal: ['huepf_kart', 'huepf_level'], done: 'Schnell und geschickt – du bist bereit für die Burg!' },
+    { text: 'Jetzt die Mutprobe: Brocko ist gar nicht böse, nur grummelig. Drück seine drei Kitzel-Knöpfe und weich den rollenden Kieseln aus!', hint: 'Kitzle Felsenkönig Brocko in seiner Burg durch', goal: ['huepf_brocko'], done: 'Brocko lacht und gibt den Sonnenstern zurück!' }
+  ], end: 'Die Sonne strahlt wieder über dem Hüpfland – Pia, Pelle, Ferdi und sogar Brocko feiern dich als Hüpf-Held!' },
   { key: 'RAETSEL', icon: '🗿', npc: 'Kapselmeisterin Pim', title: 'Die Prüfung der Uralten', acts: [
     { text: 'Willkommen, Held! Die Uralten schliefen tief – jetzt erwacht die schwebende Festung am Himmel. Nur wer die Prüfung im Turm besteht, darf sie betreten. Geh zum Prüfungsturm!', hint: 'Schaffe alle Rätsel im Prüfungsturm (Block, Pfeil, Bombe, Enterhaken)', goal: ['turm_s'], done: 'Der Turm ist bezwungen – das Siegel der Uralten bricht!' },
     { text: 'Du brauchst Verbündete: Am Kapsel-Schrein wartet ein Ei, und der Schmied macht dein Schwert stark.', hint: 'Wähle am Kapsel-Schrein ein Ei und schmiede ein Silberschwert', goal: ['kapsel', 'schmied'], done: 'Ein Kapselmonster an deiner Seite und ein scharfes Schwert – gut gerüstet!' },

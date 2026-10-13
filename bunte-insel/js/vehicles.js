@@ -30,6 +30,8 @@ BI.VEH = {
   nautilux:  { name: 'Nautilux (Luftschiff)', icon: '🚢', max: 20, rev: 6, turn: 1.35, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 3.2, cam: 17 },
   limo:      { name: 'Limousine', icon: '🚘', max: 26, rev: 6, acc: 9, brake: 22, drag: 5, turn: 1.55, kind: 'car', horn: 'car', cols: [-2.7, 0, 2.7], r: 1.15, cam: 11 },
   bobby:     { name: 'Rutschauto', icon: '🧸', max: 9, rev: 3, acc: 7, brake: 14, drag: 4, turn: 2.4, kind: 'cycle', horn: 'bell', cols: [-.55, .55], r: .62, open: true, cam: 6 },
+  kart:      { name: 'Flitzer-Kart (Hüpfland)', icon: '🏎️', max: 20, rev: 6, acc: 14, brake: 26, drag: 5, turn: 2.5, kind: 'bike', horn: 'bike', open: true, offroad: 1, kart: true, cols: [-.7, .7], r: .85, cam: 7.5 },
+  dino:      { name: 'Dino Tupfi (Hüpfland)', icon: '🦕', max: 14, rev: 4, acc: 10, brake: 18, drag: 5, turn: 2.6, kind: 'cycle', horn: 'bell', open: true, offroad: 1, dino: true, cols: [-.8, .8], r: .9, cam: 8.5 },
   ice:       { name: 'Eiswagen', icon: '🍦', max: 18, rev: 6, acc: 9, brake: 20, drag: 5, turn: 1.8, kind: 'car', horn: 'melody', cols: [-1.4, 1.4], r: 1.15, cam: 9.5 }
 };
 BI.headMat = new THREE.MeshBasicMaterial({ color: 0xfff6d0 });
@@ -235,6 +237,18 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     b.sph(-1.6, .35, -2.2, .16, 0xffffff, 0); b.sph(1.6, .35, -2.2, .16, 0xffffff, 0);
     return { wheels: [], head: [[0, .36, 3.9]], tail: [[0, .36, -3.4]], seat: [0, .36, -.4] };
   };
+  MODELS.kart = (b, o) => { /* Flitzer-Kart (Hüpfland): flacher Rohrrahmen, Seitenkästen, Motor hinten mit Auspuff, Heckflügel, dicke Räder */
+    const c = o.color || 0xffc933, DK = 0x23262d, GR = 0x8a94a6;
+    b.box(0, .18, .1, 1.25, .16, 2.5, DK); b.box(0, .3, .95, 1.1, .2, .7, c); b.box(0, .34, 1.45, 1.5, .14, .25, c);                 /* Bodenplatte, Nase, Frontstoßstange */
+    for (const sd of [-1, 1]) { b.box(sd * .78, .26, -.1, .3, .3, 1.3, c); b.box(sd * .93, .4, -.1, .04, .12, 1.1, 0xffffff); }       /* Seitenkästen mit Streifen */
+    b.box(0, .34, -.35, .7, .5, .55, DK); b.box(0, .62, -.6, .62, .5, .14, c);                                                     /* Sitz mit Lehne */
+    b.box(0, .3, -1.05, .9, .45, .6, GR); for (const sd of [-1, 1]) b.cyl(sd * .28, .55, -1.38, .07, .09, .25, 0x555a66, 6);          /* Motor + Auspuff */
+    for (const sd of [-1, 1]) b.box(sd * .45, .55, -1.35, .08, .5, .08, DK); b.box(0, 1.05, -1.38, 1.5, .08, .38, c); b.box(0, 1.1, -1.38, 1.5, .03, .4, 0xffffff); /* Heckflügel */
+    b.cyl(0, .4, .5, .04, .04, .45, DK, 6); b.cyl(0, .85, .38, .22, .22, .05, DK, 12, -.9);                                         /* Lenksäule + Lenkrad */
+    b.box(0, .48, 1.62, .55, .3, .04, 0xffffff); b.sph(0, .5, 1.64, .1, c, 0);                                                      /* Startnummer-Schild */
+    return { wheels: [[.78, .34, -.85, .34, .32, 0], [-.78, .34, -.85, .34, .32, 0], [.72, .28, 1.05, .28, .26, 1], [-.72, .28, 1.05, .28, .26, 1]], seat: [0, .66, -.38] };
+  };
+  MODELS.dino = b => { b.box(0, 0, 0, .02, .02, .02, 0); return { wheels: [], seat: [0, 1.62, -.05] }; }; /* Körper = Tupfi (BI.makeDino), im Konstruktor angebaut */
   MODELS.rcheli = b => MODELS.heli(b);
   MODELS.drake = b => { b.box(0, 0, 0, .02, .02, .02, 0); return { wheels: [], seat: [0, 3.35, .2] }; }; // Körper = Zündel-Figur (BI.makeDrache), im Konstruktor angebaut
   MODELS.rc = b => { // Jannis' rotes Rennauto: tiefer Keil, dunkle Scheiben, graue Felgen, Heckflügel, Aufkleber 38
@@ -298,6 +312,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(3.6, 18), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
       }
       if (type === 'keymobil') { this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.4, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow); }
+      if (type === 'dino' && BI.makeDino) { this.rig = BI.makeDino(); this.tilt.add(this.rig.root); this.hopY = 0; this.hvy = 0; this.walkPh = 0; }
       if (type === 'drake') { // Reit-Drache: Zündel-Figur dreifach groß, Schatten am Boden
         this.rig = BI.makeDrache({}); this.rig.root.scale.setScalar(3); this.tilt.add(this.rig.root);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.6, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
@@ -385,7 +400,13 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     }
     /* Optik: Räder, Neigung, Blaulicht */
     visual(dt, t, fx) {
-      const sp = this.spec; if (sp.boat) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; else if (!sp.fly) { /* Bodenfahrzeuge folgen Hügeln, Brücken und Decks (sonst versinken sie z. B. im Märchenland-Gebirge) */ const gy = BI.groundYFn ? Math.max(0, BI.groundYFn(this.x, this.z)) : 0; this.gy = this.gy === undefined || Math.abs(gy - this.gy) > 3 ? gy : BI.damp(this.gy, gy, 14, dt); this.y = this.gy; } this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      const sp = this.spec; if (sp.boat) this.y = -.28 + Math.sin(t * 1.8 + this.x * .1) * .05; else if (!sp.fly) { /* Bodenfahrzeuge folgen Hügeln, Brücken und Decks (sonst versinken sie z. B. im Märchenland-Gebirge) */ const gy = BI.groundYFn ? Math.max(0, BI.groundYFn(this.x, this.z)) : 0; this.gy = this.gy === undefined || Math.abs(gy - this.gy) > 3 ? gy : BI.damp(this.gy, gy, 14, dt); if (sp.dino) { this.hvy -= 22 * dt; this.hopY = Math.max(0, this.hopY + this.hvy * dt); if (this.hopY === 0 && this.hvy < 0) { if (this.hvy < -6 && fx) fx.burst(this.x, .2, this.z, 10, [BI.C.dust, BI.C.white], 3, .6, 30, 2); this.hvy = 0; } } this.y = this.gy + (this.hopY || 0); } this.root.position.set(this.x, this.y, this.z); this.root.rotation.y = this.h;
+      if (sp.dino && this.rig) { /* Tupfi: Beine im Galopp, Schwanz wedelt, Kopf nickt; in der Luft Beine angezogen */
+        const run = Math.min(1, Math.abs(this.v) / sp.max), air = this.hopY > .05; this.walkPh += dt * (3 + Math.abs(this.v) * 1.1); const w = Math.sin(this.walkPh) * .75 * run;
+        this.rig.legs.forEach((g, i) => { g.rotation.x = air ? (i < 2 ? -.6 : .6) : (i % 3 === 0 ? w : -w); }); this.rig.tail.rotation.y = Math.sin(t * 3 + this.walkPh * .5) * .35; this.rig.head.rotation.x = Math.sin(this.walkPh * 2) * .06 * run - (air ? .15 : 0);
+        this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, air ? -this.hvy * .02 : Math.abs(Math.sin(this.walkPh)) * -.05 * run, 8, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, -this.steerCur * run * .12, 6, dt); this.tilt.position.y = Math.abs(Math.sin(this.walkPh)) * .12 * run;
+        return;
+      }
       if (sp.boat) {
         this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, -this.steerCur * Math.abs(this.v) / sp.max * .22 + Math.sin(t * 1.3) * .03, 5, dt); this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.acc * .01, -.08, .08) + Math.sin(t * 1.1) * .02, 4, dt);
         if (fx && Math.abs(this.v) > 1.5 && Math.random() < dt * 40) fx.emit(this.x - Math.sin(this.h) * 2.2 + (Math.random() - .5), -.1, this.z - Math.cos(this.h) * 2.2 + (Math.random() - .5), (Math.random() - .5) * 1.4, .8, (Math.random() - .5) * 1.4, 1.1, 40, .95, .98, 1, 1, .8);
@@ -431,6 +452,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       } else if (this.beacons.length) this.beacons.forEach(bc => { bc.mat.color.setHex(0x402020); bc.m.scale.setScalar(1); });
       if (fx && Math.abs(this.v) > 8 && this.offroad && Math.random() < dt * 20) fx.emit(this.x - Math.sin(this.h) * 1.5, .3, this.z - Math.cos(this.h) * 1.5, (Math.random() - .5), 1.2, (Math.random() - .5), .7, 34, .85, .78, .55, 0, .6);
     }
+    hop(fx) { /* Dino-Sprung (Hupe-Knopf): nur vom Boden aus */ if (!this.spec.dino || this.hopY > .05) return false; this.hvy = 9.5; if (fx) fx.burst(this.x, .3, this.z, 8, [BI.C.dust, BI.C.white], 2.5, .5, 26, 2); return true; }
     breathe(dt, fx) { // Feuer aus dem Drachenmaul (Hupe)
       if (!fx) return; const sx = Math.sin(this.h), sz = Math.cos(this.h), x = this.x + sx * 2.6, z = this.z + sz * 2.6, y = this.y + 2.7;
       for (let i = 0; i < 3; i++) fx.emit(x, y, z, sx * (9 + Math.random() * 3) + (Math.random() - .5), -.3 + Math.random() * .8, sz * (9 + Math.random() * 3) + (Math.random() - .5), .7, 46, 1, .5 + Math.random() * .4, .1, 0, .9);
