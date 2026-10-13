@@ -500,6 +500,7 @@ BI.buildWorld = function (scene) {
   BI.buildPupsGround({ W, st, lamp, ROADY, GRASS, SAND });
   BI.buildDampfGround({ W, st, lamp, ROADY });
   BI.buildDrachenGround({ W, st, lamp, ROADY });
+  BI.buildPrismaGround({ W, st, lamp, ROADY });
   BI.buildBaulandGround({ W, st, lamp, ROADY });
   BI.buildFussballGround({ W, st, lamp, ROADY });
   if (BI.buildTaschiGround) BI.buildTaschiGround({ W, st, lamp, ROADY });
