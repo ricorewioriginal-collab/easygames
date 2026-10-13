@@ -1,4 +1,4 @@
-import * as THREE from 'https://esm.sh/three@0.180.0';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 const $=id=>document.getElementById(id), rand=(a,b)=>a+Math.random()*(b-a);
 const TYPES={normal:'⭐',feuer:'🔥',wasser:'💧',pflanze:'🌱',elektro:'⚡',gestein:'🪨',flug:'🪽',geist:'👻'};
 const SPEC={
@@ -20,11 +20,22 @@ const SPEC={
  funkli:{name:'Funkli',type:'feuer',color:0xff6d37,hp:38,atk:58,def:38,speed:70,catch:.64,moves:['glut','stoss']},
  schlummi:{name:'Schlummi',type:'normal',color:0x947052,hp:110,atk:85,def:70,speed:25,catch:.3,moves:['stoss','hieb']}
 };
+// 208 catalog entries total. New regional forms are procedurally derived from original Taschi species.
+// They have distinct game IDs, names, colors and stats; handcrafted 3D models remain future work.
+const REGIONS=['Moos','Polar','Glanz','Schatten','Korall','Sturm','Kristall','Sonnen','Nebel','Mond','Wald','Dünen'];
+const originals=Object.entries(SPEC);
+for(let region=0;region<12;region++)for(let i=0;i<16;i++){
+ const [baseId,base]=originals[(i+region*3)%originals.length];
+ const id='form_'+region+'_'+i;
+ const variations=['-Kind','-Schweif','-Funkel','-Hüter','-Läufer','-Wicht','-Herz','-Wächter','-Flitzer','-Traum','-Wirbel','-Licht','-Funke','-Flügel','-Kern','-König'];
+ const tint=new THREE.Color(base.color);tint.offsetHSL(((region+1)%7)*.045-.12,.02,(i%3-1)*.055);
+ SPEC[id]={...base,name:REGIONS[region]+variations[i]+' '+base.name,type:base.type,color:tint.getHex(),hp:base.hp+(region%4)*3,atk:base.atk+(i%4)*2,def:base.def+(i%5)*2,speed:base.speed+(region%3)*3,catch:Math.max(.17,base.catch-(region%4)*.025),evo:undefined};
+}
 const MOVES={stoss:['Kugelstoß','normal',40],hieb:['Wirbelhieb','normal',65],funken:['Funkenschlag','elektro',48],glut:['Glutfunken','feuer',48],ranke:['Rankenhieb','pflanze',48],spritzer:['Wasserperlen','wasser',48],fluegel:['Windstoß','flug',48],stein:['Steinwurf','gestein',48],spuk:['Spukhauch','geist',48]};
 const ADV={feuer:{pflanze:2,wasser:.5,gestein:.5},wasser:{feuer:2,gestein:2,pflanze:.5},pflanze:{wasser:2,gestein:2,feuer:.5,flug:.5},elektro:{wasser:2,flug:2,pflanze:.5},gestein:{feuer:2,flug:2},flug:{pflanze:2,gestein:.5},geist:{geist:2,normal:0},normal:{geist:0}};
-const GYMS=[['Fels-Fiete','felsling',8],['Perla','quappi',11],['Käpt’n Volt','blitzi',14],['Blüte','samenling',17],['Forscher Nilo','kaeferli',19],['Jette vom Team Funke','knister',21],['Kapitän Rumo','glutzahn',24],['Meisterin Aurelia','blitzor',27]];
+const GYMS=[['Fels-Fiete','felsling',8],['Perla','quappi',11],['Käpt’n Volt','blitzi',14],['Blüte','samenling',17],['Forscher Nilo','kaeferli',19],['Jette vom Team Funke','knister',21],['Kapitän Rumo','glutzahn',24],['Meisterin Aurelia','blitzor',27],['Kira vom Nebelpass','geisterchen',30],['Rokko vom Gletscher','panzerlon',32],['Taro vom Waldturm','bluetling',34],['Mira vom Sturmfeld','knister',36],['Nona der Kristallhöhle','felsling',38],['Lio der Mondbucht','funkli',40],['Sora vom Sonnenplateau','glutdrach',42],['Großmeisterin Aurelia','blitzor',45]];
 const SAVE='easygames.taschi.eight-lights.v1';
-function clean(s){if(!s||!Array.isArray(s.team))return null;s.team=s.team.filter(m=>SPEC[m.id]&&Number.isFinite(m.lv)&&Number.isFinite(m.hp)).slice(0,6);s.box=(s.box||[]).filter(m=>SPEC[m.id]).slice(0,100);s.badges=Math.max(0,Math.min(8,Number(s.badges)||0));s.balls=Math.max(0,Number(s.balls)||0);s.potions=Math.max(0,Number(s.potions)||0);s.dex=s.dex||{};s.x=Number.isFinite(s.x)?Math.max(-58,Math.min(58,s.x)):0;s.z=Number.isFinite(s.z)?Math.max(-58,Math.min(58,s.z)):6;return s;}
+function clean(s){if(!s||!Array.isArray(s.team))return null;s.team=s.team.filter(m=>SPEC[m.id]&&Number.isFinite(m.lv)&&Number.isFinite(m.hp)).slice(0,6);s.box=(s.box||[]).filter(m=>SPEC[m.id]).slice(0,100);s.badges=Math.max(0,Math.min(16,Number(s.badges)||0));s.balls=Math.max(0,Number(s.balls)||0);s.potions=Math.max(0,Number(s.potions)||0);s.dex=s.dex||{};s.x=Number.isFinite(s.x)?Math.max(-58,Math.min(58,s.x)):0;s.z=Number.isFinite(s.z)?Math.max(-58,Math.min(58,s.z)):6;return s;}
 let save;try{save=clean(JSON.parse(localStorage.getItem(SAVE)))}catch{}
 save ||= {team:[],box:[],badges:0,balls:8,potions:3,dex:{},x:0,z:6,wins:0};
 const maxHp=m=>Math.floor(SPEC[m.id].hp*2*m.lv/100)+m.lv+10;
@@ -49,13 +60,43 @@ for(let i=0;i<90;i++){const x=rand(-60,60),z=rand(-60,60);if(Math.abs(x)<8||Math
 function house(x,z,label,color){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);box(g,0,2,0,8,4,7,mat(color));const top=mesh(g,new THREE.ConeGeometry(6.6,3,4),roof,0,5.4,0);top.rotation.y=Math.PI/4;box(g,0,1,3.56,1.6,2,0.15,wood);for(let dx of [-2.7,2.7])box(g,dx,2.5,3.57,1.1,1.3,.2,mat(0x6fcce8));solid(x,z,5);return {x,z,label}};
 const places=[house(14,10,'Professor Ulmes Labor',0xf8e5c2),house(-18,10,'Heilhaus',0xf4a9b7),house(14,-32,'Fangladen',0x91cce1)];
 // Arena monuments: 8 stations around the valley, visible and approachable.
-const gyms=[];GYMS.forEach((g,i)=>{const x=-48+(i%4)*32,z=-44+Math.floor(i/4)*82;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i})});
+const gyms=[];GYMS.forEach((g,i)=>{const x=-48+(i%4)*32,z=-48+Math.floor(i/4)*30;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i})});
+// Additional villages and cave landscapes; cave sites are explorable above-ground rock caverns.
+const villages=[
+ {name:'Moosbach',x:-37,z:13,c:0xa4d89d},
+ {name:'Korallendorf',x:36,z:25,c:0x86c9df},
+ {name:'Nebelau',x:-37,z:-24,c:0xbea6db},
+ {name:'Sternental',x:36,z:-24,c:0xf9bf91},
+ {name:'Kristallhain',x:-8,z:41,c:0x9adcd5},
+ {name:'Winddorf',x:9,z:-50,c:0xe0cc96}
+];
+for(const v of villages){
+ for(let i=0;i<3;i++){
+ const h=new THREE.Group();h.position.set(v.x+(i-1)*5,0,v.z+(i%2)*5);scene.add(h);
+ box(h,0,1.25,0,3.7,2.5,3.5,mat(v.c));const roofMesh=mesh(h,new THREE.ConeGeometry(3.25,1.9,4),roof,0,3.3,0);roofMesh.rotation.y=Math.PI/4;
+ box(h,0,.85,1.8,.8,1.6,.1,wood);
+ }
+ const banner=new THREE.Group();banner.position.set(v.x,0,v.z-6);scene.add(banner);cylinder(banner,0,2,0,.12,.16,4,wood);box(banner,1.1,3.5,0,2,.65,.1,mat(v.c));
+}
+const caves=[
+ {name:'Flüsterhöhle',x:-51,z:0}, {name:'Bernsteingrotte',x:49,z:0},
+ {name:'Kristallgrotte',x:-52,z:49},{name:'Mondhöhle',x:52,z:48}
+];
+for(const cave of caves){
+ const group=new THREE.Group();group.position.set(cave.x,0,cave.z);scene.add(group);
+ for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;const rr=4.4+(j%3)*.35;
+ const rock=mesh(group,new THREE.DodecahedronGeometry(2.5+(j%3)*.55,0),mat(j%2?0x728797:0x536c75),Math.cos(angle)*rr,2,Math.sin(angle)*rr);rock.rotation.set(j*.4,j*.6,j*.2)}
+ for(let j=0;j<6;j++){
+ const x=(j%3-1)*2.4,z=Math.floor(j/3)*2.4-1.6;
+ const crystal=mesh(group,new THREE.ConeGeometry(.55,2+j%3,5),mat([0x71e8da,0x8da7ff,0xffd18c][j%3],.2),x,1,z);crystal.rotation.z=.2;
+ }
+}
 const flowerColors=[0xffdc72,0xfc9aa3,0xffffff,0xbc94ee];for(let i=0;i<310;i++){const x=rand(-60,60),z=rand(-60,60);if(Math.abs(x)<5||Math.abs(z+18)<4)continue;const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);cylinder(g,0,.22,0,.055,.065,.44,mat(0x418a49));ball(g,0,.48,0,.17,mat(flowerColors[i%4]))}
 const grass=[];for(const [x,z] of [[-29,-9],[30,-9],[-30,25],[31,28],[-8,-42]]){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);for(let i=0;i<42;i++){const a=rand(-7,7),b=rand(-7,7);const blade=mesh(g,new THREE.ConeGeometry(.22,rand(.7,1.4),3),mat(0x2e9e58),a,.5,b);blade.rotation.y=rand(0,6)}grass.push({x,z,r:8})}
 function creature(id,scale=1){const s=SPEC[id],g=new THREE.Group(),main=mat(s.color,.77),belly=mat(0xf6eee0),dark=mat(0x252d42,.32);const form=s.type;const body=ball(g,0,.84,0,.76,main);body.scale.set(1,1.12,.82);ball(g,0,1.77,.06,.62,main);ball(g,-.23,1.87,.58,.085,dark);ball(g,.23,1.87,.58,.085,dark);ball(g,0,1.58,.63,.105,belly);for(const xx of [-.49,.49]){ball(g,xx,.38,.3,.25,main);ball(g,xx,2.34,-.01,.27,main)}if(form==='pflanze'){const leaf=mesh(g,new THREE.ConeGeometry(.34,.8,5),mat(0x288e57),0,2.6,0);leaf.rotation.z=.4}else if(form==='feuer'){mesh(g,new THREE.ConeGeometry(.35,.8,6),mat(0xffe078),0,2.61,0)}else if(form==='elektro'){for(let xx of [-.75,.75])mesh(g,new THREE.ConeGeometry(.23,.8,4),mat(0xfff7a1),xx,2.42,0)}else if(form==='wasser'){ball(g,0,2.45,0,.3,mat(0x75dafa))}else if(form==='flug'){for(let xx of [-1,1]){const wing=ball(g,xx*.77,1.1,0,.55,main);wing.scale.set(1.3,.3,.6)}}else if(form==='gestein'){body.scale.set(1.2,.94,1);for(let xx of [-.65,.65])ball(g,xx,2.25,0,.34,mat(0xbcc0c8))}else if(form==='geist'){g.position.y=.38;body.scale.set(1,1.3,.9)}g.scale.setScalar(scale);return g}
 const player=new THREE.Group();scene.add(player);ball(player,0,1.35,0,.43,mat(0xf2caad));const torso=box(player,0,.84,0,.7,.9,.4,mat(0x294c82));box(player,-.21,.22,0,.25,.47,.29,mat(0x333f62));box(player,.21,.22,0,.25,.47,.29,mat(0x333f62));const hat=ball(player,0,1.72,0,.46,mat(0xd85f4a));hat.scale.y=.3;player.position.set(save.x,0,save.z);
 const follower=new THREE.Group();scene.add(follower);let currentFollower=null;function updateFollower(){follower.clear();if(save.team.length){currentFollower=creature(save.team[0].id,.6);follower.add(currentFollower)}}updateFollower();
-function stats(){ $('badge').textContent='✦ '+save.badges+'/8';$('count').textContent='◉ '+(save.team.length+save.box.length);$('location').textContent=save.badges===8?'Taschi-Meister':'Sonnenhain';persist()}
+function stats(){ $('badge').textContent='✦ '+save.badges+'/16';$('count').textContent='◉ '+(save.team.length+save.box.length);$('location').textContent=save.badges===16?'Taschi-Meister':'Sonnenhain';persist()}
 function toast(t,sec=3){$('message').textContent=t;$('message').style.display='block';toastUntil=performance.now()+sec*1000}
 function dialog(title,desc,buttons){locked=true;$('title').textContent=title;$('desc').innerHTML=desc;$('options').replaceChildren();for(const [label,fn,disabled] of buttons){const b=document.createElement('button');b.className='option';b.textContent=label;b.disabled=!!disabled;b.addEventListener('click',fn);$('options').append(b)}$('panel').classList.add('show')}
 function close(){locked=false;$('panel').classList.remove('show');combat=null;stats()}
@@ -64,10 +105,10 @@ function pct(m){return Math.max(0,Math.min(100,100*m.hp/maxHp(m)))}
 function hpbar(m){return '<div class="hp"><span style="width:'+pct(m)+'%"></span></div>'}
 function summary(m){const s=SPEC[m.id];return '<b>'+TYPES[s.type]+' '+s.name+'</b> · Lv '+m.lv+' · '+m.hp+'/'+maxHp(m)+' KP'+hpbar(m)}
 function first(){return save.team.find(m=>m.hp>0)}
-function start(){dialog('Willkommen in Sonnenhain!','<p>Professor Ulme lädt dich zu deiner Reise ein. Acht Licht-Siegel öffnen das Tor zum Sternengipfel. Wähle deinen ersten Begleiter!</p>',[['🔥 Glutzahn',()=>starter('glutzahn')],['💧 Plätscherchen',()=>starter('plaetscher')],['🌱 Samenling',()=>starter('samenling')]])}
-function starter(id){save.team.push(make(id,5));save.dex[id]=2;updateFollower();stats();dialog('Dein Abenteuer beginnt!', '<p>'+SPEC[id].name+' begleitet dich! Bewege dich zum hohen Gras, entdecke Taschis und besiege die acht Arenen. Im Heilhaus werden deine Freunde geheilt.</p>',choice())}
+function start(){dialog('Willkommen in Sonnenhain!','<p>Professor Ulme lädt dich zu deiner Reise ein. 16 Licht-Siegel öffnen das Tor zum Sternengipfel. Wähle deinen ersten Begleiter!</p>',[['🔥 Glutzahn',()=>starter('glutzahn')],['💧 Plätscherchen',()=>starter('plaetscher')],['🌱 Samenling',()=>starter('samenling')]])}
+function starter(id){save.team.push(make(id,5));save.dex[id]=2;updateFollower();stats();dialog('Dein Abenteuer beginnt!', '<p>'+SPEC[id].name+' begleitet dich! Bewege dich zum hohen Gras, entdecke Taschis und besiege die 16 Arenen. Im Heilhaus werden deine Freunde geheilt.</p>',choice())}
 const wild=['flatterling','felsling','geisterchen','quappi','kaeferli','knister','funkli','schlummi','fellino','blitzi','glutzahn','samenling','plaetscher'];
-function findWild(){if(!first()){toast('Dein Team braucht Heilung! Suche das Heilhaus.');return}const id=wild[Math.floor(rand(0,wild.length))],lv=Math.max(2,Math.min(27,Math.floor(rand(3,8))+save.badges*2));battle(make(id,lv),false)}
+function findWild(){if(!first()){toast('Dein Team braucht Heilung! Suche das Heilhaus.');return}const id=(Math.random()<.72?wild[Math.floor(rand(0,wild.length))]:Object.keys(SPEC)[Math.floor(rand(0,Object.keys(SPEC).length))]),lv=Math.max(2,Math.min(27,Math.floor(rand(3,8))+save.badges*2));battle(make(id,lv),false)}
 function battle(enemy,isGym=false){const me=first();if(!me){toast('Kein kampffähiges Taschi');return}save.dex[enemy.id] ||=1;combat={enemy,isGym,turn:0};battleMenu('Ein '+SPEC[enemy.id].name+' erscheint!')}
 function battleMenu(log='Was soll dein Taschi tun?'){const c=combat;if(!c)return;const me=first();if(!me){dialog('Kampf verloren','Alle Taschis brauchen eine Pause. Heile dein Team im Heilhaus.',choice());combat=null;return}const e=c.enemy;dialog(c.isGym?'Arena-Herausforderung':'Wilde Begegnung','<p>'+log+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>'+summary(me)+'</div><div>'+summary(e)+'</div></div><p class="muted">Typen, Stufen, Angriff, Verteidigung und Element-Vorteile bestimmen den Schaden.</p>',[...SPEC[me.id].moves.map(id=>[TYPES[MOVES[id][1]]+' '+MOVES[id][0],()=>attack(id)]),['◉ Taschiball ('+save.balls+')',capture,save.balls===0||c.isGym],['🧪 Trank ('+save.potions+')',potion,save.potions===0],['🏃 Fliehen',()=>{if(c.isGym)toast('Aus der Arena zurückgezogen');close()}]])}
 function damage(a,d,move){const [name,type,power]=MOVES[move],sa=SPEC[a.id],sd=SPEC[d.id];const mul=ADV[type]?.[sd.type]??1;return Math.max(mul===0?0:1,Math.floor(((2*a.lv/5+2)*power*(sa.atk+a.lv/2)/(sd.def+d.lv/2)/50+2)*(type===sa.type?1.4:1)*mul*rand(.85,1)))}
@@ -78,8 +119,8 @@ function capture(){const c=combat;if(!c||c.isGym||save.balls<=0)return;save.ball
 function potion(){if(!combat||save.potions<1)return;const m=first();save.potions--;m.hp=Math.min(maxHp(m),m.hp+35);enemyTurn(SPEC[m.id].name+' erhält bis zu 35 KP!')}
 function team(){dialog('Dein Taschi-Team','<p>Tippe auf ein Taschi, um es nach vorne zu stellen. Maximale Teamgröße: sechs.</p>'+save.team.map((m,i)=>'<p>'+(i?'':'⭐ ')+summary(m)+'</p>').join('')+'<p>Lager: '+save.box.length+' · Tränke: '+save.potions+' · Bälle: '+save.balls+'</p>',[...save.team.map((m,i)=>[SPEC[m.id].name+' führen',()=>{save.team.splice(i,1);save.team.unshift(m);updateFollower();close()}]),['Lager verwalten',storage],['Schließen',close]])}
 function storage(){dialog('Taschi-Lager','<p>Hier kannst du Team-Taschis und gelagerte Taschis tauschen.</p>',[...save.box.map((m,i)=>['Aufnehmen: '+SPEC[m.id].name,()=>{if(save.team.length>=6){toast('Team ist voll');return}save.box.splice(i,1);save.team.push(m);updateFollower();storage()}]),...save.team.map((m,i)=>['Einlagern: '+SPEC[m.id].name,()=>{if(save.team.length<2){toast('Behalte mindestens ein Taschi');return}save.team.splice(i,1);save.box.push(m);updateFollower();storage()}]),['Zurück',team]])}
-function dex(){dialog('Taschidex','<p>Entdecke die Arten in den Wiesen, Bergen und am Wasser.</p>'+Object.entries(SPEC).map(([id,s])=>'<div style="padding:7px;border-bottom:1px solid #ccd">'+(save.dex[id]?TYPES[s.type]+' '+s.name+(save.dex[id]===2?' ✓':' · gesehen'):'???')+'</div>').join(''),choice())}
-function interact(){if(locked)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die acht Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){dialog('Fangladen','<p>Reiseausrüstung auffüllen</p>',[['5 Taschibälle kaufen · gratis',()=>{save.balls+=5;close()}],['3 Tränke kaufen · gratis',()=>{save.potions+=3;close()}],['Schließen',close]])}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
+function dex(){dialog('Taschidex','<p>'+Object.keys(SPEC).length+' Arten: Entdecke regionale Taschis in Wiesen, Dörfern, Bergen und Höhlen.</p>'+Object.entries(SPEC).map(([id,s])=>'<div style="padding:7px;border-bottom:1px solid #ccd">'+(save.dex[id]?TYPES[s.type]+' '+s.name+(save.dex[id]===2?' ✓':' · gesehen'):'???')+'</div>').join(''),choice())}
+function interact(){if(locked)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){dialog('Fangladen','<p>Reiseausrüstung auffüllen</p>',[['5 Taschibälle kaufen · gratis',()=>{save.balls+=5;close()}],['3 Tränke kaufen · gratis',()=>{save.potions+=3;close()}],['Schließen',close]])}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
 $('team').onclick=team;$('dex').onclick=dex;$('interact').onclick=interact;
 const keys=new Set();addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.key.toLowerCase()==='e'&&!e.repeat)interact();if(e.key==='Escape'&&locked&&!combat)close()});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
 const joy=$('joy'),nub=$('nub');let joyX=0,joyY=0;function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/44);joyX=x/44/mag;joyY=y/44/mag;nub.style.transform='translate('+(joyX*40)+'px,'+(joyY*40)+'px)'}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);pointer(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))pointer(e)});function resetJoy(){joyX=joyY=0;nub.style.transform=''}joy.addEventListener('pointerup',resetJoy);joy.addEventListener('pointercancel',resetJoy);
