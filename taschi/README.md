@@ -15,6 +15,12 @@ python3 -m http.server 8080
 
 Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** eingebunden. Beim Deployment muss daher die entsprechende Verzeichnisstruktur samt dieser Vendor-Datei bestehen bleiben. Kein externes Three.js-CDN notwendig; die Spielstanddaten liegen im Browser.
 
+## Neuer Start- und Synchronisationsablauf
+
+Beim Laden erscheint jetzt zuerst ein eigener Titel-/Ladebildschirm. Danach gibt es **Abenteuer beginnen**, **Abenteuer fortsetzen**, **Neues Abenteuer** und die Auswahl der drei Speicherplätze. Das Hauptmenü integriert den vorhandenen gemeinsamen Cloud-Speicher aus `../cloud/anmacha-cloud.js` mit `data-game="taschi"` und dem lokalen Prefix `easygames.taschi.eight-lights.v1`. Bei Google-Anmeldung benutzt Taschi somit dieselbe Infrastruktur wie Bunte Insel. Cloud-Sync setzt eine erreichbare Firebase-Konfiguration, erfolgreiches Login und Netzwerk voraus; ohne Google-Anmeldung bleibt lokal gespeicherter Fortschritt verfügbar.
+
+Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert. Im Kampf gibt es ein vierteiliges Aktionsmenü und ein separates Attacken-/Gegenstandsmenü. Eine vollständige Geräteprüfung ist weiterhin erforderlich.
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
