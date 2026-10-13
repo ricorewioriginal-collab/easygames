@@ -199,6 +199,33 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   @media (prefers-reduced-motion:reduce){.ldstreaks,.ldlogo,.ldfill::after,.ldrider span,#mTitle .brand,.big::after,.vp .spl.on{animation:none}.mview.enter>*{animation-duration:.01s}}
   #err{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:24px;background:#05060f}
   @media (orientation:portrait){.tc .zone{height:22%}.tc .zb{bottom:calc(14px + 22% + 12px);width:30%}.tc .zl{width:20%}.tc .zr{left:calc(12px + 20% + 8px);width:20%}.tc .zd{width:22%}.tc .zi{right:calc(12px + 22% + 8px);width:21%}}
+
+/* Console-style game UI: large selections, compact secondary actions and polished transitions. */
+#raceLoad[hidden]{display:none!important}
+#raceLoad{position:fixed;inset:0;z-index:9998;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 30%,rgba(51,37,125,.92),rgba(8,10,31,.98));padding:24px;text-align:center;color:#fff;animation:raceReveal .32s both}
+.race-load-body{width:min(92vw,720px)}
+.race-load-kicker{font-weight:900;letter-spacing:.28em;color:#76edff;font-size:clamp(12px,2vw,17px)}
+.race-load-title{font-size:clamp(35px,8vw,86px);font-style:italic;line-height:1.02;font-weight:1000;text-shadow:0 5px 0 #19245d,0 0 35px #f428af;margin:25px auto 10px}
+.race-load-sub{color:#ffcb51;font-size:clamp(14px,3vw,25px);letter-spacing:.17em;font-weight:900}
+.race-load-line{overflow:hidden;margin:40px auto 22px;width:min(70vw,400px);height:9px;border-radius:50px;background:#273158}
+.race-load-line i{display:block;height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#00d8fb,#7973fa,#ff2d95);transform-origin:left;animation:raceProgress 1.3s ease-out both}
+.race-load-tip{color:#c7d0ee;font-size:clamp(13px,2.5vw,19px)}
+@keyframes raceReveal{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:scale(1)}}
+@keyframes raceProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+#mTitle .sub{max-width:650px;margin:12px auto 26px;font-size:clamp(14px,2.3vw,18px);line-height:1.5}
+#mTitle .mbtns{display:grid;gap:14px;width:min(92%,550px);margin:18px auto}
+#mTitle .mbtns .big{min-height:76px;font-size:clamp(20px,4vw,29px);font-weight:1000;letter-spacing:.045em;border-radius:20px}
+#mTitle #bTv{min-height:58px;border-radius:18px}
+#mSetup .chars{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px}
+#mSetup .chars button{min-height:115px;transition:transform .18s ease,box-shadow .18s ease;position:relative}
+#mSetup .chars button b{display:block;font-size:clamp(28px,5vw,47px);margin-bottom:5px}
+#mSetup .chars button.on{transform:translateY(-4px) scale(1.025);box-shadow:0 6px 28px #ff2d9570}
+#mSetup .kcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+#mSetup .kcards button{min-height:176px;transition:transform .18s ease,box-shadow .18s ease;text-align:left}
+#mSetup .kcards button.on{transform:translateY(-3px);box-shadow:0 6px 27px #ff2d9566}
+#mSetup .kcards button>b{font-size:clamp(23px,4vw,36px);margin-right:10px}
+#mSetup .cards{align-items:start}
+@media(max-width:700px){#mSetup .chars{grid-template-columns:repeat(3,minmax(0,1fr))}#mSetup .chars button{min-height:98px}#mSetup .kcards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -209,6 +236,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button></div>
 <div class="tc solo" id="tcSolo"></div>
 
+<div id="raceLoad" hidden aria-live="polite"><div class="race-load-body"><div class="race-load-kicker">ANMACHA KART RUSH · NEXT RACE</div><div class="race-load-title">STRECKE</div><div class="race-load-sub">ARCADE-RENNEN</div><div class="race-load-line"><i></i></div><div class="race-load-tip">Mach dich bereit!</div></div></div>
 <div id="loader"><div class="ldstreaks"></div><div class="ldbox">
   <img class="ldlogo" src="logo.png" alt="AnMaCha Kart Rush" onerror="this.hidden=true">
   <div class="ldbar"><div class="ldclip"><div class="ldfill"></div></div><div class="ldflag"></div><div class="ldrider"><span>🏎️</span></div></div>
@@ -291,7 +319,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="chars.js"></script>
 <script src="track.js?v=20261013-interactive1"></script>
 <script src="sim.js?v=20261013-interactive1"></script>
-<script src="game.js?v=20261013-interactive1"></script>
+<script src="game.js?v=20261013-raceui1"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 </body>
 </html>
