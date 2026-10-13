@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "74927c632102",
- "generated": "2026-10-13T22:48:31+02:00",
- "commit": "d52b5a977d7051e6336a88276a9fb351b4cd8199",
+ "version": "23e03cef1ad9",
+ "generated": "2026-10-13T22:50:15+02:00",
+ "commit": "66e7a2170e07379f089a00bf433b270aa077f23a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5012,17 +5012,17 @@
    "h": "e8e06bbde97e2aa1bf9aa6a3b9a3b7c513cecf8ef2a978e54b218d08fb759c53"
   },
   {
+   "p": "taschi/classic.html",
+   "s": 14389,
+   "h": "9571234acc3c796c429e58fe1076515b4bc39e5de24af249f80317b722b02309"
+  },
+  {
    "p": "taschi/game.js",
    "s": 85165,
    "h": "8672f87f0f02d77b018743a7481bea34bb34e77ea22e2f82e77c511ec932ea9d"
   },
   {
    "p": "taschi/index.html",
-   "s": 14389,
-   "h": "9571234acc3c796c429e58fe1076515b4bc39e5de24af249f80317b722b02309"
-  },
-  {
-   "p": "taschi/play.html",
    "s": 1385,
    "h": "03792eb11e03fd28766fb411ec66446c718f0dfc70f68291a0aa6cfb7273f442"
   },
