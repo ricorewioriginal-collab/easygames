@@ -231,7 +231,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261013-showroom4'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261013-unique-worlds1'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
