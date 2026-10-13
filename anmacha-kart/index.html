@@ -235,6 +235,13 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 .showcase-info>span:not(.showcase-kicker){font-size:15px;color:#ffda8a}
 .showcase-info small{color:#bbbfda}
 @media(max-width:620px){.showcase{grid-template-columns:1fr;gap:5px}.showcase-stage{height:275px}.showcase-info{gap:6px;padding:6px 10px 10px}.showcase-info strong{font-size:24px}}
+
+/* Dramatic showroom stage and card focus for mouse, touch and controllers */
+.showcase{background:radial-gradient(ellipse at 26% 18%,#53418acc,transparent 55%),linear-gradient(125deg,#121432f5,#251b47ed);border:1px solid #8884d799}
+.showcase-stage{box-shadow:inset 0 -28px 55px #141032aa,0 0 30px #653cbc29;border:1px solid #b5a3ff55}
+#mSetup button:focus-visible,#mMulti button:focus-visible{outline:3px solid #ffe77c;outline-offset:4px}
+#mSetup .chars button.on:after,#mSetup .kcards button.on:after{content:'✓';position:absolute;right:8px;top:7px;background:#ffcf46;color:#151323;font-weight:1000;border-radius:50%;height:24px;width:24px;display:grid;place-items:center;box-shadow:0 2px 9px #0007}
+@media(prefers-reduced-motion:reduce){#mSetup .chars button,#mSetup .kcards button{transition:none!important}}
 </style>
 </head>
 <body>
@@ -329,7 +336,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="chars.js?v=20261013-stage2"></script>
 <script src="track.js?v=20261013-interactive1"></script>
 <script src="sim.js?v=20261013-interactive1"></script>
-<script src="game.js?v=20261013-stage2"></script>
+<script src="game.js?v=20261013-showroom3"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 </body>
 </html>
