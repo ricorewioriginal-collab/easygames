@@ -786,7 +786,8 @@ BI.buildWorld = function (scene) {
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }
   W.flatRoof = roofB.mesh(BI.mat()); W.flatRoof.frustumCulled = false; scene.add(W.flatRoof);
   /* Insel in Kacheln (80 m): nur sichtbare Kacheln werden gezeichnet (vorher ~390 000 Dreiecke pro Bild, auch hinter der Kamera) */
-  for (const stMesh of BI.layerMeshes(st, 80)) { scene.add(stMesh); W.bigMeshes.push(stMesh); }
+  W.deco = new BI.HeightMap(); /* Oberkante der Bodenbeläge für W.groundY */
+  for (const stMesh of BI.layerMeshes(st, 80, W.deco)) { scene.add(stMesh); W.bigMeshes.push(stMesh); }
   W.winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff }); W.lampMat = new THREE.MeshBasicMaterial({ color: 0xdcdcdc });
   for (const m of [...BI.chunkMeshes(win, W.winMat, 96), ...BI.chunkMeshes(lamp, W.lampMat, 128)]) { scene.add(m); W.bigMeshes.push(m); }
   // Leuchtturm-Strahl (nur nachts)
@@ -818,7 +819,7 @@ BI.buildWorld = function (scene) {
     const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
     if (Math.abs(x) < 2.5 && z > 156 && z < 208) return .65;
     if (x * x + z * z > 203 * 203 && W.seaAt(x, z)) return -.05; /* Meer: man schwimmt knapp unter der Oberfläche */
-    return 0;
+    return W.deco ? W.deco.get(x, z) : 0; /* Gehweg/Platz/Straße: auf dem Belag stehen, nicht darin */
   };
   W.onDeck = (x, z) => { const S = W.ship; return x > S.deck.x0 && x < S.deck.x1 && z > S.deck.z0 && z < S.deck.z1; };
   W.update = function (t, dt, night) {

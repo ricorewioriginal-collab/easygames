@@ -157,16 +157,46 @@ BI.store = {
     for (const r of big.values()) { const m = r.mesh(mat); m.frustumCulled = true; out.push(m); }
     return out;
   };
-  const LAYERS = [.0005, .006, .016, .021, .0255, .0265, .0275, .0285, .035, .055, .065, .071, .075, .08, .09, .11, .2], lmats = [];
-  BI.layerMeshes = (b, chunk) => {
+  const LAYERS = [.0005, .006, .016, .021, .0255, .0265, .0275, .0285, .035, .055, .065, .071, .075, .08, .09, .11, .2], lmats = [], pmats = [];
+  const PAINT = !(typeof location !== 'undefined' && /[?&]zl=0/.test(location.search)); /* ?zl=0 = alte Schichten mit Polygon-Offset (zum Vergleichen) */
+  /* Höhenkarte der dünnen Bodenbeläge (Gehwege, Plätze, Straßen, Böden bis 20 cm): 0,5-m-Raster in 32×32-Kacheln, Höhe in mm (0–255).
+     W.groundY kannte bisher nur den Grundboden (0) – Figuren, Autos und Spieler standen auf Gehwegen mit den Schuhen im Belag. */
+  BI.HeightMap = class {
+    constructor(cell = .5) { this.s = cell; this.t = new Map(); }
+    tri(ax, ay, az, bx, bz, cx, cz) {
+      const h = Math.round(ay * 1000); if (h <= 0) return; const v = Math.min(255, h), s = this.s;
+      const det = (bz - cz) * (ax - cx) + (cx - bx) * (az - cz); if (Math.abs(det) < 1e-9) return;
+      const i0 = Math.ceil(Math.min(ax, bx, cx) / s - .5), i1 = Math.floor(Math.max(ax, bx, cx) / s - .5), j0 = Math.ceil(Math.min(az, bz, cz) / s - .5), j1 = Math.floor(Math.max(az, bz, cz) / s - .5);
+      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+        const px = (i + .5) * s, pz = (j + .5) * s, w0 = ((bz - cz) * (px - cx) + (cx - bx) * (pz - cz)) / det, w1 = ((cz - az) * (px - cx) + (ax - cx) * (pz - cz)) / det;
+        if (w0 < -1e-6 || w1 < -1e-6 || w0 + w1 > 1 + 1e-6) continue;
+        const k = (i >> 5) * 65536 + (j >> 5); let T = this.t.get(k); if (!T) this.t.set(k, T = new Uint8Array(1024)); const q = (i & 31) * 32 + (j & 31); if (v > T[q]) T[q] = v;
+      }
+    }
+    get(x, z) { const i = Math.floor(x / this.s), j = Math.floor(z / this.s), T = this.t.get((i >> 5) * 65536 + (j >> 5)); return T ? T[(i & 31) * 32 + (j & 31)] / 1000 : 0; }
+  };
+  BI.layerMeshes = (b, chunk, hmap) => {
     const p = b.p, n = b.n, c = b.c, L = LAYERS.map(() => new BI.Batch()), M = new BI.Batch();
     for (let i = 0; i < p.length; i += 9) {
       const y0 = p[i + 1]; let d = M;
-      if (n[i + 1] > .9 && y0 < .2 && Math.abs(p[i + 4] - y0) < 1e-4 && Math.abs(p[i + 7] - y0) < 1e-4) { for (let k = 0; k < LAYERS.length; k++) if (y0 <= LAYERS[k]) { d = L[k]; break; } }
+      if (n[i + 1] > .9 && y0 < .2 && Math.abs(p[i + 4] - y0) < 1e-4 && Math.abs(p[i + 7] - y0) < 1e-4) { for (let k = 0; k < LAYERS.length; k++) if (y0 <= LAYERS[k]) { d = L[k]; break; } if (hmap) hmap.tri(p[i], y0, p[i + 2], p[i + 3], p[i + 5], p[i + 6], p[i + 8]); }
       for (let j = 0; j < 9; j++) { d.p.push(p[i + j]); d.n.push(n[i + j]); d.c.push(c[i + j]); }
     }
     const mk = (bb, mt) => chunk ? BI.chunkMeshes(bb, mt, chunk) : [bb.mesh(mt)];
     const out = mk(M, BI.mat());
+    if (PAINT) {
+      /* Gegen Flackern: Bodenflächen werden wie von einem Maler von unten nach oben aufgetragen (zuerst gezeichnet, Tiefentest „immer“, nach Höhe sortiert).
+         Vorher lagen in einer Schicht Wege/Plätze/Markierungen 0–4 mm übereinander und kämpften um jedes Pixel. Das ist sicher, weil die Kamera
+         immer über dem Boden ist: ein Sehstrahl nach unten trifft die höhere Fläche zuerst – also gewinnt immer die zuletzt gemalte, höhere Fläche.
+         Die geschriebene Tiefe ist die der obersten Fläche, darum verdecken Boden und Wege weiterhin alles darunter (Wasser, Hänge). */
+      L.forEach((lb, k) => {
+        if (lb.empty) return; const q = lb.p, ord = []; for (let i = 0; i < q.length; i += 9) ord.push(i); ord.sort((x, y) => q[x + 1] - q[y + 1] || x - y);
+        const sb = new BI.Batch(); for (const i of ord) for (let j = 0; j < 9; j++) { sb.p.push(q[i + j]); sb.n.push(lb.n[i + j]); sb.c.push(lb.c[i + j]); }
+        const m = pmats[k] || (pmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, depthFunc: THREE.AlwaysDepth }));
+        for (const ms of mk(sb, m)) { ms.renderOrder = -100 + k; out.push(ms); }
+      });
+      return out;
+    }
     L.forEach((lb, k) => { if (lb.empty) return; if (!k) { out.push(...mk(lb, BI.mat())); return; } const m = lmats[k] || (lmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2 * k, polygonOffsetUnits: -2 * k })); out.push(...mk(lb, m)); });
     return out;
   };
