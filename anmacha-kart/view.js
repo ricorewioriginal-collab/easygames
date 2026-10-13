@@ -349,6 +349,36 @@ const View = (() => {
     const torso = new T.Group(); torso.position.set(0, P.seatY + 0.52, P.seatZ - 0.05); torso.scale.setScalar(1.28); body.add(torso); S_(torso, bodyM, 0, 0, 0, 0.5, 0.52, 0.38);
     [-1, 1].forEach(s => { const arm = new T.Group(); arm.position.set(s * 0.46, 0.2, 0.0); arm.rotation.set(-1.15, 0, s * 0.12); torso.add(arm); Y_(arm, bodyM, 0, -0.38, 0, 0.1, 0.78, null, 8); S_(arm, skinM, 0, -0.8, 0, 0.12); });
     const head = new T.Group(); head.position.set(0, 0.88, 0.02); torso.add(head); fn(head, torso, body, C);
+    // Eigenständige Cup-Silhouetten – nur originale Geometrie, kein fremdes Figurenasset.
+    if (C.model) {
+      const accent = lam(C.acc), secondary = lam(C.body);
+      const gem = (x,y,z,size,color) => {
+        const m = new T.Mesh(new T.OctahedronGeometry(size,0),color || accent);
+        m.position.set(x,y,z); head.add(m); return m;
+      };
+      if (C.id === 'lichtfunke') {
+        gem(0,1.2,0.05,0.32); [-1,1].forEach(q => gem(q*0.58,0.7,-0.12,0.21));
+        const halo = new T.Mesh(new T.TorusGeometry(0.54,0.075,6,20),accent);halo.position.y=1.05;halo.rotation.x=0.3;head.add(halo);
+      } else if (C.id === 'kristall') {
+        [-1,0,1].forEach(q=>{const m=gem(q*0.37,0.88,-0.1,0.31);m.scale.y=q===0?1.8:1.2;});
+        B_(head,secondary,0,0.25,0.52,0.68,0.25,0.13);
+      } else if (C.id === 'knospe') {
+        [-1,1].forEach(q=>{const m=new T.Mesh(new T.ConeGeometry(0.27,0.95,7),accent);m.position.set(q*0.37,0.94,-0.05);m.rotation.z=q*0.35;head.add(m);});
+        gem(0,1.18,0.1,0.2);
+      } else if (C.id === 'ruinen') {
+        const helm=new T.Mesh(new T.CylinderGeometry(0.66,0.56,0.4,7),secondary);helm.position.y=0.57;head.add(helm);
+        [-1,1].forEach(q=>gem(q*0.57,0.72,0.08,0.18));
+      } else if (C.id === 'flammenflug') {
+        for(let n=0;n<3;n++){const m=new T.Mesh(new T.ConeGeometry(0.22,0.76,7),accent);m.position.set((n-1)*0.33,1.0-n*0.1,-0.25);m.rotation.z=(n-1)*0.28;head.add(m);}
+      } else if (C.id === 'splitter') {
+        [-1,1].forEach(q=>{const m=gem(q*0.62,0.78,0,0.3);m.rotation.z=q*0.4;});
+        gem(0,1.22,-0.2,0.43);
+      } else if (C.id === 'insel') {
+        const flower = new T.Group();flower.position.set(0.6,0.65,0.22);head.add(flower);
+        for(let n=0;n<5;n++){const m=new T.Mesh(new T.SphereGeometry(0.17,7,5),accent);m.position.set(Math.cos(n*2*Math.PI/5)*0.24,Math.sin(n*2*Math.PI/5)*0.24,0);flower.add(m);}
+        const center=new T.Mesh(new T.SphereGeometry(0.17,7,5),lam('#ffe56f'));flower.add(center);
+      }
+    }
     // Räder
     const wheels = []; const wg_ = geo('wt', () => new T.CylinderGeometry(1, 1, 1, 16).rotateZ(Math.PI / 2));
     [[-1, wf], [1, wf], [-1, wr], [1, wr]].forEach((p, i) => { const q = p[1], front = i < 2, wg = new T.Group(); wg.position.set(p[0] * q[2], q[0], q[3]); const spin = new T.Group(); wg.add(spin);
@@ -508,7 +538,7 @@ const View = (() => {
       if (stage.racer) stage.scene.remove(stage.racer);
       const racer = makeKart({k:0,logo,char:character,kart});
       scene.remove(racer.g);
-      stage.racer = racer.g; stage.scene.add(racer.g);
+      stage.racer = racer.g; stage.scene.add(racer.g); stage.angle = 0;
       stage.key = key;
     }
   }
@@ -520,7 +550,7 @@ const View = (() => {
     if (stage.canvas.width!==Math.round(tw*stage.renderer.getPixelRatio()) || stage.canvas.height!==Math.round(th*stage.renderer.getPixelRatio())) stage.renderer.setSize(tw,th,false);
     stage.camera.aspect=tw/th; stage.camera.updateProjectionMatrix();
     if (!stage.drag) stage.angle+=Math.min(dt,0.08)*0.45;
-    if(stage.racer) stage.racer.rotation.y=stage.angle + 0.45;
+    if(stage.racer) { stage.racer.rotation.y=stage.angle + 0.45; stage.racer.position.y = Math.sin(performance.now()*0.0017)*0.065; }
     stage.camera.position.set(9.6,6.0,10.5); stage.camera.lookAt(0,1.65,0);
     stage.renderer.render(stage.scene,stage.camera);
   }
