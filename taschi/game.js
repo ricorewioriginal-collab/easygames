@@ -1,4 +1,5 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const THREE=globalThis.THREE;
+if(!THREE)throw Error('Lokale Three.js-Bibliothek konnte nicht geladen werden.');
 const $=id=>document.getElementById(id), rand=(a,b)=>a+Math.random()*(b-a);
 const TYPES={normal:'⭐',feuer:'🔥',wasser:'💧',pflanze:'🌱',elektro:'⚡',gestein:'🪨',flug:'🪽',geist:'👻'};
 const SPEC={
