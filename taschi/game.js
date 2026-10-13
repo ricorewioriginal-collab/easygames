@@ -49,11 +49,11 @@ const maxHp=m=>Math.floor(SPEC[m.id].hp*2*m.lv/100)+m.lv+10;
 const make=(id,lv)=>{const m={id,lv,xp:0,hp:1};m.hp=maxHp(m);return m};
 const persist=()=>{try{localStorage.setItem(saveKey(),JSON.stringify(save))}catch{}};
 let active=null,locked=false,near=null,combat=null,steps=0,toastUntil=0,caveSteps={},insideCave=null;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
-const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,190);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.35:1.7));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xe9f9ff,0x7b9864,2.5));const sun=new THREE.DirectionalLight(0xfff3d3,2.8);sun.position.set(28,46,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-75;sun.shadow.camera.right=75;sun.shadow.camera.top=75;sun.shadow.camera.bottom=-75;scene.add(sun);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
+const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,190);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.35:1.7));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.8;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xe9f9ff,0x7b9864,.85));const sun=new THREE.DirectionalLight(0xfff3d3,1.12);sun.position.set(28,46,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-75;sun.shadow.camera.right=75;sun.shadow.camera.top=75;sun.shadow.camera.bottom=-75;scene.add(sun);
 const mat=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness});
-const green=mat(0x74bb62),path=mat(0xefc98d),stone=mat(0xfbf0dd),roof=mat(0xec735e),wood=mat(0x836248);
+const green=mat(0x50965a),path=mat(0xc8a77e),stone=mat(0xc2c1b4),roof=mat(0xec735e),wood=mat(0x836248);
 function mesh(parent,geo,m,x=0,y=0,z=0){const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 function box(parent,x,y,z,w,h,d,m){return mesh(parent,new THREE.BoxGeometry(w,h,d),m,x,y,z)}
 function ball(parent,x,y,z,r,m){return mesh(parent,new THREE.SphereGeometry(r,14,10),m,x,y,z)}
@@ -163,7 +163,7 @@ function caveEnter(c){
 function caveLeave(){
  if(!insideCave)return;const old=insideCave;insideCave=null;
  player.position.set(old.x+4,0,old.z+5);
- scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
+ scene.background.setHex(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
  save.x=player.position.x;save.z=player.position.z;stats();toast('Du hast '+old.name+' verlassen.');
 }
 function caveInteract(target){
@@ -308,20 +308,20 @@ function importSave(){
  const file=input.files?.[0];if(!file||file.size>2e6)throw Error('Datei zu groß oder fehlt.');
  const payload=JSON.parse(await file.text());if(payload?.format!=='taschi-save'||payload.version!==1)throw Error('Kein passender Taschi-Spielstand.');
  const restored=clean(payload.state);if(!restored)throw Error('Ungültige Speicherdaten.');
- save=restored;insideCave=null;scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();close();toast('Spielstand erfolgreich wiederhergestellt.');
+ save=restored;insideCave=null;scene.background.setHex(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();close();toast('Spielstand erfolgreich wiederhergestellt.');
  }catch(error){dialog('Import fehlgeschlagen','<p>'+String(error.message||error).replace(/[<>]/g,'')+'</p>',choice())}
  };input.click();
 }
 
 function chooseSaveSlot(){
  dialog('Spielstände','<p>Wechsle zwischen drei voneinander unabhängigen Speicherplätzen. Der aktuelle Stand wird automatisch gesichert.</p>',[
- ...[1,2,3].map(n=>['Spielplatz '+n+(n===slot?' ✓ aktiv':''),()=>{persist();slot=n;localStorage.setItem(SELECTED,String(slot));try{save=clean(JSON.parse(localStorage.getItem(saveKey())))}catch{save=null}save ||= blankSave();insideCave=null;scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();if(!save.team.length)start();else{close();toast('Spielplatz '+n+' geladen!')}}]),
+ ...[1,2,3].map(n=>['Spielplatz '+n+(n===slot?' ✓ aktiv':''),()=>{persist();slot=n;localStorage.setItem(SELECTED,String(slot));try{save=clean(JSON.parse(localStorage.getItem(saveKey())))}catch{save=null}save ||= blankSave();insideCave=null;scene.background.setHex(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();if(!save.team.length)start();else{close();toast('Spielplatz '+n+' geladen!')}}]),
  ['Zurück',mainMenu]
  ]);
 }
 function restartGame(){
  dialog('Neues Abenteuer?','<p>Nur der aktuelle Speicherplatz '+slot+' wird neu gestartet. Der bisherige Stand kann nicht wiederhergestellt werden, außer du hast ihn exportiert.</p>',[
- ['Ja, dieses Spiel neu beginnen',()=>{localStorage.removeItem(saveKey());save=blankSave();insideCave=null;scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();start()}],
+ ['Ja, dieses Spiel neu beginnen',()=>{localStorage.removeItem(saveKey());save=blankSave();insideCave=null;scene.background.setHex(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();start()}],
  ['Abbrechen',mainMenu]
  ]);
 }
