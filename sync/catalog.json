@@ -10,15 +10,15 @@
    "title": "TASCHI – Die 16 Lichter",
    "desc": "Eigenständiges 3D-Taschi-Abenteuer: entdecke die Welt der 16 Lichter, sammle deine Taschis und erlebe die Reise direkt im Browser auf PC und Smartphone.",
    "icon": "✨",
-   "img": null,
+   "img": "taschi/card.svg",
    "bg": "linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)",
    "glow": "rgba(167,139,250,.48)",
    "path": "taschi/",
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 797211,
-   "files": 51,
+   "size": 800551,
+   "files": 52,
    "offline": true
   },
   {
@@ -956,7 +956,7 @@
      "Gekämpft wird nur in der Kampfarena und im Verbotenen Wald."
     ]
    },
-   "size": 4161021,
+   "size": 4173213,
    "files": 127,
    "offline": true
   }

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3b7e748b0c10",
- "generated": "2026-10-13T23:07:34+02:00",
- "commit": "b9b63dfe733218b30e509b04edac061ef17066fe",
+ "version": "8dde511ff2bc",
+ "generated": "2026-10-13T23:17:42+02:00",
+ "commit": "b117dd35b464facd16e42af16f6b0da6d3854413",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3789,7 +3789,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 98103,
-   "h": "02d8d1cfc62bbe9a577f3dd84aef56c1b96cda4d7c617c11792bf99faf5dad90"
+   "h": "e4b3ed48663e8af1ae9bdc1c64f58f4c0b467fb9a9fcf5f2fac79f186b13dfc4"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3938,8 +3938,8 @@
   },
   {
    "p": "bunte-insel/js/i18n-en.js",
-   "s": 264302,
-   "h": "92e9328d3ac5c4428de0b44d472bc8ae6a31c1c2cc8dbcdcd8525bcab9361706"
+   "s": 276494,
+   "h": "5e940eb1e18d8ca6dc5d04e246c9ad5da1aad13ed4e9fb8ede0681e5983d7fa6"
   },
   {
    "p": "bunte-insel/js/i18n.js",
@@ -4433,8 +4433,8 @@
   },
   {
    "p": "games.js",
-   "s": 13672,
-   "h": "d6fbc314771359c20eace1eaa28ca11054d6e3e5066819c8451b03584c10342a"
+   "s": 13696,
+   "h": "885d8e10397a6e813a8b0bbb1d67d6799a66d20babeedcc3912b07de33206f16"
   },
   {
    "p": "gay-life/index.html",
@@ -5013,8 +5013,13 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 57147,
-   "h": "ff40140f6f5378f59ab00d1a84652593ba319f1bc5bc58211b8f92437ad04704"
+   "s": 57160,
+   "h": "54d97af9b5d5e8e8981b21efdc8c52aeac66b7d87fa476dac021d1b463853ac1"
+  },
+  {
+   "p": "taschi/card.svg",
+   "s": 2177,
+   "h": "2fa2d6b39a4bb40615de46a0571efdd63b7cfed26f0673a719827d6cb297350f"
   },
   {
    "p": "taschi/classic.html",
@@ -5028,8 +5033,8 @@
   },
   {
    "p": "taschi/index.html",
-   "s": 1385,
-   "h": "03792eb11e03fd28766fb411ec66446c718f0dfc70f68291a0aa6cfb7273f442"
+   "s": 2371,
+   "h": "a48f90b50d7f964cf6fd34df0da18b8bd90e0ef8fc486a3ec7cd2203106ddbc6"
   },
   {
    "p": "taschi/src/core/audio.js",
@@ -5263,8 +5268,8 @@
   },
   {
    "p": "taschi/src/world/region-map.js",
-   "s": 23475,
-   "h": "8769f0a8e8cacae91e58eea495014ae2067ab67e2b99c202d6bb27766ffee4b7"
+   "s": 23652,
+   "h": "b6ca3ee9b523f47fdfed8aca8b3ac84821d2d99c83855aba8233b8f02e908758"
   },
   {
    "p": "taschi/vite.config.mjs",
