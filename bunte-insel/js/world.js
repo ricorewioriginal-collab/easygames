@@ -678,9 +678,17 @@ BI.buildWorld = function (scene) {
     const flat = g => { const n = g.toNonIndexed(); n.computeVertexNormals(); return n; };
     const geos = { trunk: flat(new THREE.CylinderGeometry(.3, .42, 1, 6).translate(0, .5, 0)), crown: flat(new THREE.IcosahedronGeometry(1, 1)), cone: flat(new THREE.ConeGeometry(1, 1, 7).translate(0, .5, 0)) };
     const mat = new THREE.MeshLambertMaterial({ color: 0xffffff }); W.treeMat = mat;
+    /* je 120-m-Kachel eine eigene Instanz-Gruppe mit passender Hülle (Platz für umfallende Bäume): unsichtbare Kacheln werden übersprungen */
+    const CELL = 120, PAD = 14;
     for (const k of ['trunk', 'crown', 'cone']) {
-      const list = IL[k]; if (!list.length) continue; const m = new THREE.InstancedMesh(geos[k], mat, list.length); m.frustumCulled = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      list.forEach((e, i) => { m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m); W.bigMeshes.push(m);
+      const cells = new Map(); for (const e of IL[k]) { const key = Math.floor(e.m.elements[12] / CELL) + ',' + Math.floor(e.m.elements[14] / CELL); (cells.get(key) || cells.set(key, []).get(key)).push(e); }
+      for (const list of cells.values()) {
+        const g = new THREE.BufferGeometry(); for (const a in geos[k].attributes) g.setAttribute(a, geos[k].attributes[a]);
+        const bb = new THREE.Box3(); for (const e of list) bb.expandByPoint(_ip.set(e.m.elements[12], e.m.elements[13], e.m.elements[14]));
+        g.boundingSphere = bb.getBoundingSphere(new THREE.Sphere()); g.boundingSphere.radius += PAD;
+        const m = new THREE.InstancedMesh(g, mat, list.length); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        list.forEach((e, i) => { e.i = i; m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m); W.bigMeshes.push(m);
+      }
     }
   }
   const _a = new THREE.Matrix4(), _r = new THREE.Matrix4(), _b = new THREE.Matrix4(), _ax = new THREE.Vector3(), _touch = new Set();
@@ -777,9 +785,10 @@ BI.buildWorld = function (scene) {
   /* ---------- Meshes ---------- */
   for (const q of W.interiors) { q.roof = q.roofB.mesh(BI.mat()); q.roof.frustumCulled = true; scene.add(q.roof); q.roofB = null; }
   W.flatRoof = roofB.mesh(BI.mat()); W.flatRoof.frustumCulled = false; scene.add(W.flatRoof);
-  for (const stMesh of BI.layerMeshes(st)) { stMesh.frustumCulled = false; scene.add(stMesh); W.bigMeshes.push(stMesh); }
+  /* Insel in Kacheln (80 m): nur sichtbare Kacheln werden gezeichnet (vorher ~390 000 Dreiecke pro Bild, auch hinter der Kamera) */
+  for (const stMesh of BI.layerMeshes(st, 80)) { scene.add(stMesh); W.bigMeshes.push(stMesh); }
   W.winMat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff }); W.lampMat = new THREE.MeshBasicMaterial({ color: 0xdcdcdc });
-  const winMesh = win.mesh(W.winMat), lampMesh = lamp.mesh(W.lampMat); winMesh.frustumCulled = lampMesh.frustumCulled = false; scene.add(winMesh, lampMesh); W.bigMeshes.push(winMesh, lampMesh);
+  for (const m of [...BI.chunkMeshes(win, W.winMat, 96), ...BI.chunkMeshes(lamp, W.lampMat, 128)]) { scene.add(m); W.bigMeshes.push(m); }
   // Leuchtturm-Strahl (nur nachts)
   { const bg = new THREE.ConeGeometry(14, 80, 12, 1, true); bg.translate(0, -40, 0); bg.rotateX(Math.PI / 2); // Spitze am Ursprung, Öffnung nach +z
     W.beamMat = new THREE.MeshBasicMaterial({ color: 0xfff3b0, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide });

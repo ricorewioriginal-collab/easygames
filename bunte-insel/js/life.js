@@ -105,18 +105,22 @@ BI.createLife = function (G) {
   /* ---------- Aufbau und Bewegung ---------- */
   function spot(reg, pad) { for (let i = 0; i < 70; i++) { const a = rng() * TAU, d = Math.sqrt(rng()) * (reg.R - reg.pad), x = reg.x + Math.sin(a) * d, z = reg.z + Math.cos(a) * d; if (reg.ok && !reg.ok(x, z)) continue; if (W.free(x, z, pad || .8)) return [x, z]; } return null; }
   function place(n, reg, x, z) { n.x = n.tx = x; n.z = n.tz = z; n.ax = x; n.az = z; n.y = W.groundY(x, z); n.root.position.set(x, n.y, z); }
-  function build(reg) {
-    reg.built = true; reg.list = [];
-    for (const [kind, count, o] of reg.spec) for (let i = 0; i < count; i++) {
+  /* Aufbau in kleinen Portionen (budget ms pro Bild): eine ganze Gegend auf einmal dauerte bis zu ~250 ms = sichtbarer Hänger beim Näherkommen */
+  function build(reg, budget) {
+    if (!reg.built) { reg.built = true; reg.list = []; reg.todo = []; for (const [kind, count, o] of reg.spec) for (let i = 0; i < count; i++) reg.todo.push([kind, o]); reg.ti = 0; }
+    const t0 = performance.now();
+    while (reg.ti < reg.todo.length) {
+      if (performance.now() - t0 > budget) return; const [kind, o] = reg.todo[reg.ti++];
       let n;
       if (kind === 'beach') { const a = rng() * TAU, r = R_(168, 175), x = Math.sin(a) * r, z = Math.cos(a) * r; if (!W.free(x, z, .5)) continue; n = F.critter(reg, { k: 'crab', rad: 5, spd: .5, side: true }); place(n, reg, x, z); n.beach = true; }
       else if (F[kind]) {
         n = F[kind](reg, o || {}); if (n.mode === 'fly') { n.root.position.set(reg.x, n.alt, reg.z); n.x = reg.x; n.z = reg.z; }
-        else { const s = spot(reg, n.r + .3); if (!s) { K.talkers.splice(K.talkers.indexOf(n), 1); continue; } place(n, reg, s[0], s[1]); }
+        else { const s = spot(reg, n.r + .3); if (!s) { const ti = K.talkers.indexOf(n); if (ti >= 0) K.talkers.splice(ti, 1); continue; } place(n, reg, s[0], s[1]); }
       } else continue;
       const sp = kind === 'beach' ? 'crab' : o && o.k; if (DAY[sp]) n.day = true; if (sp === 'owl') n.nite = true; if (o && o.awake) n.awake = true;
       n.reg = reg; n.root.visible = false; scene.add(n.root); reg.list.push(n);
     }
+    reg.todo = null;
   }
   const dist = (x, z, r) => Math.hypot(P.x - x, P.z - z) - (r || 0);
   function step(n, dt, t, reg) {
@@ -185,10 +189,10 @@ BI.createLife = function (G) {
   K.update = function (dt, t, eco, night) {
     const view = eco ? 62 : 88, nOn = (night || 0) > (nightOn ? .4 : .6); /* kleine Hysterese, damit es beim Umschalten nicht flackert */
     if (nOn !== nightOn) { if (nightOn != null && G.say) G.say(nOn ? '🌙 Es wird Nacht: Die Bewohner gehen schlafen, Eulen und Glühwürmchen kommen heraus.' : '☀️ Guten Morgen! Die Bewohner wachen auf.', 4200); nightOn = nOn; sleepy = nOn; }
-    flies(dt, t, eco);
+    flies(dt, t, eco); let budget = 3;
     for (const reg of REG) {
       const d = dist(reg.x, reg.z), act = d < reg.R + 110; if (!act) { if (reg.on) { reg.on = false; for (const n of reg.list) n.root.visible = false; } continue; }
-      if (!reg.built) { build(reg); } reg.on = true;
+      if (!reg.built || reg.todo) { const t0 = performance.now(); build(reg, d < reg.R + 20 ? Infinity : budget); budget = Math.max(0, budget - (performance.now() - t0)); } reg.on = true; /* schon mitten drin (z. B. hingebeamt): sofort alles */
       for (const n of reg.list) {
         const dd = Math.hypot(P.x - n.x, P.z - n.z), vis = dd < view && !(n.day && nightOn) && !(n.nite && !nightOn); if (n.root.visible !== vis) n.root.visible = vis; if (!vis) continue; step(n, dt, t, reg);
       }

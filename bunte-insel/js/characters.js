@@ -34,8 +34,12 @@
       this.add(g, x, y + h/2, z, 1, 1, 1, c, rx, ry, rz);
     }
     arc(cx, cy, cz, rx, ry, radius, color, start, end, segments = 10) {
-      const points = []; for (let i = 0; i <= segments; i++) { const a = start + (end-start)*i/segments; points.push(new T.Vector3(cx+Math.cos(a)*rx, cy+Math.sin(a)*ry, cz)); }
-      const g = new T.TubeGeometry(new T.CatmullRomCurve3(points), segments, radius, 5, false); const flat=g.toNonIndexed();this.add(flat,0,0,0,1,1,1,color);flat.dispose();g.dispose();
+      /* gleiche Bögen (Mund, Brauen) nur einmal berechnen – vorher bei jeder Figur neu, das war ein großer Teil der Bauzeit */
+      const g = geometry(['arc', cx, cy, cz, rx, ry, radius, start, end, segments].join(':'), () => {
+        const points = []; for (let i = 0; i <= segments; i++) { const a = start + (end-start)*i/segments; points.push(new T.Vector3(cx+Math.cos(a)*rx, cy+Math.sin(a)*ry, cz)); }
+        return new T.TubeGeometry(new T.CatmullRomCurve3(points), segments, radius, 5, false);
+      });
+      this.add(g,0,0,0,1,1,1,color);
     }
     profile(x,y,z,points,depth,color){
       const key='profile:'+JSON.stringify(points);const g=geometry(key,()=>new T.LatheGeometry(points.map(p=>new T.Vector2(p[0],p[1])),16));this.add(g,x,y,z,1,1,depth,color);

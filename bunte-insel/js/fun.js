@@ -186,7 +186,7 @@ BI.createFun = function (G) {
   const bubMat = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: .32, shininess: 140, specular: 0xffffff, emissive: 0x1c2a44, depthWrite: false });
   const bubMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 12, 10), bubMat, NBU); bubMesh.frustumCulled = false; scene.add(bubMesh);
   for (let i = 0; i < NBU; i++) { bub.push({ on: false, x: 0, y: -50, z: 0, vx: 0, vy: 0, vz: 0, r: .2, t: 0, ph: Math.random() * 6, big: false }); bubMesh.setColorAt(i, bc.setHex(TINT[i % TINT.length])); bubMesh.setMatrixAt(i, bdm.compose(bdp.set(0, -50, 0), bdq, bds.set(0, 0, 0))); }
-  bubMesh.instanceColor.needsUpdate = true; let pops = 0;
+  bubMesh.instanceColor.needsUpdate = true; let pops = 0; const bubSlot = new Int16Array(NBU).fill(-1); bubMesh.count = 0; bubMesh.visible = false;
   const popFx = (b, big) => { fx.burst(b.x, b.y, b.z, big ? 26 : 5, [RGB(COL[(Math.random() * COL.length) | 0]), BI.C.white, BI.C.blue], big ? 6 : 1.6, big ? 1 : .5, big ? 30 : 16 + b.r * 40, 3); };
   function spawnBubble(o, r, big) {
     const b = bub.find(q => !q.on); if (!b) return; const sx = Math.sin(o.h), sz = Math.cos(o.h), sp = big ? 1.2 + Math.random() * 1.2 : 1.2 + Math.random() * 2.8, a = (Math.random() - .5) * .9;
@@ -207,6 +207,7 @@ BI.createFun = function (G) {
   const _bm = new THREE.Matrix4(), _bp = new THREE.Vector3(), _bs = new THREE.Vector3(), _bq = new THREE.Quaternion();
   function updateBubbles(dt, t) {
     const P = G.P, px = P.veh ? P.veh.x : P.x, py = (P.veh ? (P.veh.y || 0) : P.y) + 1, pz = P.veh ? P.veh.z : P.z;
+    let nb = 0, colDirty = false;
     for (let i = 0; i < NBU; i++) {
       const b = bub[i];
       if (b.on) {
@@ -216,9 +217,10 @@ BI.createFun = function (G) {
         if (b.t <= 0) { b.on = false; popFx(b, b.big); if (b.big) A.bigpop(); else if (Math.random() < .4) A.bubblePop(); }
         else if (!F.ride && d < (b.big ? b.r * .55 : b.r + .55)) { b.on = false; popFx(b, b.big); if (b.big) { A.bigpop(); G.addStars(1); G.say('🫧 PLATSCH! Riesenblase! +1 ⭐', 1800); } else { A.bubblePop(); if (++pops % 25 === 0) { G.addStars(1); A.star(); G.say('🫧 Blasen-Meister! +1 ⭐', 2000); } } }
       }
-      if (b.on) { const w = 1 + Math.sin(t * 6 + b.ph) * .035; bubMesh.setMatrixAt(i, _bm.compose(_bp.set(b.x, b.y, b.z), _bq, _bs.set(b.r * w, b.r / w, b.r * w))); } else bubMesh.setMatrixAt(i, _bm.compose(_bp.set(0, -50, 0), _bq, _bs.set(0, 0, 0)));
+      /* nur fliegende Blasen nach vorn packen und zeichnen (vorher immer alle 140 – ~30 000 Dreiecke, auch ohne Blasen) */
+      if (b.on) { const w = 1 + Math.sin(t * 6 + b.ph) * .035; bubMesh.setMatrixAt(nb, _bm.compose(_bp.set(b.x, b.y, b.z), _bq, _bs.set(b.r * w, b.r / w, b.r * w))); if (bubSlot[nb] !== i) { bubSlot[nb] = i; bubMesh.setColorAt(nb, bc.setHex(TINT[i % TINT.length])); colDirty = true; } nb++; }
     }
-    bubMesh.instanceMatrix.needsUpdate = true;
+    bubMesh.count = nb; bubMesh.visible = nb > 0; if (nb) bubMesh.instanceMatrix.needsUpdate = true; if (colDirty) bubMesh.instanceColor.needsUpdate = true;
     const R = F.ride; if (R) {
       R.t -= dt; R.r = Math.min(2.1, R.r + dt * 1.8); P.wave = Math.max(P.wave || 0, .3);
       const w = Math.sin(t * 5) * .05; giant.position.set(P.x, P.y + 1.05, P.z); giant.scale.set(R.r * (1 + w), R.r * (1 - w), R.r * (1 + w)); if (R.t <= 0 || P.veh) endRide();
