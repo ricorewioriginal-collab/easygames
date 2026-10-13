@@ -37,7 +37,7 @@ const View = (() => {
     const N = tr.N, pos = [], uv = [], idx = [];
     for (let i = 0; i <= N; i++) {
       const j = i % N, nx = tr.Nm[j * 2], nz = tr.Nm[j * 2 + 1], px = tr.P[j * 2], pz = tr.P[j * 2 + 1], v = i * 3 / vs;
-      if (wall) { pos.push(px + nx * a, 0, pz + nz * a, px + nx * a, h, pz + nz * a); uv.push(0, v, 1, v); } else { pos.push(px + nx * a, y, pz + nz * a, px + nx * b, y, pz + nz * b); uv.push(0, v, 1, v); }
+      if (wall) { pos.push(px + nx * a, tr.height(j), pz + nz * a, px + nx * a, tr.height(j) + h, pz + nz * a); uv.push(0, v, 1, v); } else { pos.push(px + nx * a, tr.height(j) + y, pz + nz * a, px + nx * b, tr.height(j) + y, pz + nz * b); uv.push(0, v, 1, v); }
       if (i < N) { const k = i * 2; idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3); }
     }
     const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
@@ -87,6 +87,22 @@ const View = (() => {
     [-1, 1].forEach(s => { const p = new T.Mesh(new T.BoxGeometry(1, 9, 1), lam('#1a1d33')); p.position.set(s * (tr.wallD - 0.5), 4.5, 0); gantry.add(p); });
     const beam = new T.Mesh(new T.BoxGeometry(tr.wallD * 2, 2.6, 0.8), lam('#10143a')); beam.position.y = 9; gantry.add(beam);
     const bn = new T.Mesh(new T.PlaneGeometry(tr.wallD * 2 - 1, 2.2), new T.MeshBasicMaterial({ map: canvasTex(512, 64, (g, w, h) => { g.fillStyle = '#10143a'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffd24a'; g.font = '900 40px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('AnMaCha KART RUSH · START / ZIEL', w / 2, h / 2 + 2); }) })); bn.position.set(0, 9, 0.45); gantry.add(bn); const bn2 = bn.clone(); bn2.rotation.y = Math.PI; bn2.position.z = -0.45; gantry.add(bn2); world.add(gantry);
+    // Sichtbare Brückenkonstruktionen unter erhöhten Fahrbahnen.
+    if (d.mechanic) {
+      const pillarGeo=new T.CylinderGeometry(1.25,1.6,1,8), supportMat=lam(d.wall[0]);
+      for(let j=0;j<tr.N;j+=22){
+        const h=tr.height(j);
+        if(h<3)continue;
+        const g=new T.Group();
+        for(const side of [-1,1]){
+          const pillar=new T.Mesh(pillarGeo,supportMat);
+          pillar.position.set(tr.P[j*2]+tr.Nm[j*2]*side*(tr.half-1),h/2,tr.P[j*2+1]+tr.Nm[j*2+1]*side*(tr.half-1));
+          pillar.scale.set(1,Math.max(0.1,h),1);
+          g.add(pillar);
+        }
+        world.add(g);
+      }
+    }
     // Reklametafeln mit Sender-Logos
     const nb = 16; for (let k = 0; k < nb; k++) { const i = Math.floor(tr.N * (k + 0.3) / nb), s = k % 2 ? 1 : -1, nx = tr.Nm[i * 2], nz = tr.Nm[i * 2 + 1], lid = logos.length ? logos[k % logos.length].idx : 0, g = new T.Group(); g.position.set(tr.P[i * 2] + nx * s * (tr.wallD + 5), 0, tr.P[i * 2 + 1] + nz * s * (tr.wallD + 5)); g.rotation.y = Math.atan2(-nx * s, -nz * s);
       [-2.6, 2.6].forEach(x => { const p = new T.Mesh(new T.BoxGeometry(0.5, 7, 0.5), lam('#1a1d33')); p.position.set(x, 3.5, 0); g.add(p); }); const bd = new T.Mesh(new T.BoxGeometry(6.4, 4.2, 0.4), lam('#0a0f2a')); bd.position.y = 6; g.add(bd); const lg = new T.Mesh(new T.PlaneGeometry(4, 4), logoMat(lid)); lg.position.set(0, 6, 0.22); g.add(lg); world.add(g); }
@@ -488,7 +504,7 @@ const View = (() => {
   function interp(S, a) { S.karts.forEach((k, i) => { const p = ip[i] || (ip[i] = { x: 0, z: 0, th: 0 }); if (k.px == null || a >= 1) { p.x = k.x; p.z = k.z; p.th = k.th; } else { p.x = k.px + (k.x - k.px) * a; p.z = k.pz + (k.z - k.pz) * a; p.th = k.pth + wrap(k.th - k.pth) * a; } }); }
   function updateKarts(S, dt, time) {
     S.karts.forEach((k, i) => {
-      const m = kmesh[i]; if (!m) return; const p = ip[i]; m.g.position.set(p.x, 0, p.z); m.g.rotation.y = p.th;
+      const m = kmesh[i]; if (!m) return; const p = ip[i]; m.g.position.set(p.x, S.tr.height(k.f), p.z); m.g.rotation.y = p.th;
       if (dt > 0) { const ac = (k.vf - m.lvf) / dt; m.lvf = k.vf; m.pit += (clamp(-ac * 0.0035, -0.07, 0.07) - m.pit) * Math.min(1, dt * 6); m.body.rotation.x = m.pit;
         skidKart(i, k); const sn = Math.sin(k.th), cs = Math.cos(k.th);
         if (k.rough && k.vf > 7 && Math.random() < 0.4) burst(k.x - sn * 1.6 + (Math.random() - 0.5) * 2, 0.4, k.z - cs * 1.6, dustCol, 1, 1.4, 1.6);
@@ -524,7 +540,7 @@ const View = (() => {
   function updateCam(c, S, dt) {
     const k = c.k, p = ip[c.ki] || k, tgt = p.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
     const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.55), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
-    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y = 5.0 * (0.9 + 0.1 * af); c.cam.position.copy(c.pos);
+    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += ((5.0 * (0.9 + 0.1 * af) + S.tr.height(k.f)) - c.pos.y) * kk; c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
     const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
     // Cinematic fly-in on the starting grid, then settle into the chase camera before GO.
@@ -537,7 +553,7 @@ const View = (() => {
       c.cam.position.z = p.z - Math.cos(theta) * (startDistance * (1 - ease)) + (c.pos.z - p.z) * ease;
       c.cam.position.y = startHeight * (1 - ease) + c.pos.y * ease;
     }
-    c.cam.lookAt(p.x + Math.sin(c.ang) * 10, 1.35, p.z + Math.cos(c.ang) * 10);
+    c.cam.lookAt(p.x + Math.sin(c.ang) * 10, 1.35 + S.tr.height(k.f + 5), p.z + Math.cos(c.ang) * 10);
   }
   function rects(n, w, h) {
     if (n <= 1) return [[0, 0, w, h]]; const hw = (w / 2) | 0, hh = (h / 2) | 0;
