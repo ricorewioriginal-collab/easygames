@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8be72cd44055",
- "generated": "2026-10-13T08:59:56+02:00",
- "commit": "fd62ef16ee1ecd22e7b10d16fc14b3f08711b943",
+ "version": "735e4bc46dc8",
+ "generated": "2026-10-13T10:07:32+02:00",
+ "commit": "9e22af8a9e028b2297dec0e5e47c29ff52badb7d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4568,8 +4568,8 @@
   },
   {
    "p": "index.html",
-   "s": 50538,
-   "h": "ecb983ec527c01fe4e2669b64a29397570b8b20666d281c83c299701e1db216e"
+   "s": 51242,
+   "h": "badbbb89c5107a2b54acd7382cbc011394d9cc3e846a3ac1c5af2f071a4fc77c"
   },
   {
    "p": "modes.js",
