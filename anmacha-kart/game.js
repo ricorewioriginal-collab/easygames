@@ -220,7 +220,7 @@ function initHost() {
       const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; old.view = !!m.view; send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
       // Dasselbe Handy kommt nach einem Abbruch zurück: altes Kart übernehmen statt neu anzumelden
       const cid = typeof m.cid === 'string' ? m.cid.slice(0, 16) : '', back = cid && players.find(p => p.cid === cid);
-      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.view = !!m.view; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, slot: players.indexOf(back), cfg: cfgMsg() }); return updateLobby(); }
+      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.view = !!m.view; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, slot: players.indexOf(back), cfg: cfgMsg() }); if (racing && R && R.humans.includes(back)) { sendRace(back); send(c, { t: 'st', ph: R.S.state === 'grid' ? 'grid' : 'race', pos: R.S.karts[R.humans.indexOf(back)].rank, n: R.S.karts.length, lap: R.S.karts[R.humans.indexOf(back)].lap, laps: R.S.laps }); } return updateLobby(); }
       if (racing) return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
       if (!coarse) players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
