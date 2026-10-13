@@ -184,7 +184,7 @@ const Sim = (() => {
     // Fallen: Störsignal / Bananenschale
     for (let i = S.hazards.length - 1; i >= 0; i--) {
       const h = S.hazards[i]; h.t -= dt; h.arm -= dt; let used = h.t <= 0; const rr = h.kind === 'banana' ? 3.2 : 5;
-      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } });
+      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); if (ok) { used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } } });
       if (used) S.hazards.splice(i, 1);
     }
     // Geschosse: Raketen (zielsuchend) und Steine (prallen von Wänden ab)
