@@ -39,8 +39,16 @@
   `;document.head.appendChild(css);
   const $=id=>document.getElementById(id),canvas=$('zmCanvas'),ctx=canvas.getContext('2d');
   let active=null,raf=0,last=0,score=0,time=0,running=false,items=[],seq=[],turn=0,phase='',phaseUntil=0,player=360,hold=0,spawn=0;
+  // Canvas bleibt intern bei 720x420, wird aber proportional auf die komplette
+  // verfügbare Spielfläche skaliert. Touch-Koordinaten nutzen dieselbe Abbildung.
+  function fitStage(){
+    const box=canvas.getBoundingClientRect();
+    const sx=box.width/720,sy=box.height/420,scale=Math.min(sx,sy);
+    canvas.style.setProperty('--game-scale',String(scale));
+  }
+  window.addEventListener('resize',fitStage);
   const rnd=(a,b)=>a+Math.random()*(b-a);
-  function ui(){ $('zmList').innerHTML='';games.forEach(g=>{const b=document.createElement('button');b.className='zmCard';b.type='button';b.innerHTML='<span class="zmIcon">'+g.icon+'</span><b>'+g.name+'</b><span class="zmDesc">'+g.desc+'</span><span class="zmRecord">'+g.type+' · 🏆 Bestwert: '+(records[g.id]||0)+'</span>';b.onclick=()=>choose(g);$('zmList').appendChild(b)})}
+  function ui(){ $('zmList').innerHTML='';games.forEach(g=>{const b=document.createElement('button');b.className='zmCard';b.style.setProperty('--accent',g.color);b.type='button';b.innerHTML='<span class="zmIcon">'+g.icon+'</span><b>'+g.name+'</b><span class="zmDesc">'+g.desc+'</span><span class="zmRecord">'+g.type+' · 🏆 Bestwert: '+(records[g.id]||0)+'</span><span class="zmPlay">Jetzt spielen →</span>';b.onclick=()=>choose(g);$('zmList').appendChild(b)})}
   function drawBase(){ctx.clearRect(0,0,720,420);let grad=ctx.createLinearGradient(0,0,720,420);grad.addColorStop(0,'#16285d');grad.addColorStop(1,'#080d2b');ctx.fillStyle=grad;ctx.fillRect(0,0,720,420);ctx.strokeStyle='#ffffff0b';for(let x=0;x<720;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,420);ctx.stroke()}}
   function circle(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill()}
   function text(t,x,y,size=30,col='#fff'){ctx.fillStyle=col;ctx.font='700 '+size+'px Fredoka,system-ui';ctx.textAlign='center';ctx.fillText(t,x,y)}
@@ -48,8 +56,8 @@
   function end(){if(!running)return;running=false;hold=0;if(score>(records[active.id]||0)){records[active.id]=score;try{localStorage.setItem(key,JSON.stringify(records))}catch(_){}}$('zmAction').textContent='↻ Noch einmal';$('zmHint').textContent='Runde beendet! ⭐ '+score+' Punkte · Bestwert '+records[active.id];drawBase();text('Runde geschafft!',360,177,42,'#ffc861');text(score+' Punkte',360,239,35);ui()}
   function start(){if(!active)return;running=true;score=0;time=0;spawn=0;player=360;hold=0;items=[];seq=[];turn=0;phase='';phaseUntil=0;$('zmScore').textContent='⭐ 0';$('zmAction').textContent='↻ Neustart';$('zmHint').textContent=active.id==='sterne'?'Merke dir die Farben!':active.id==='riss'?'Mit ◀ ▶ oder A/D ausweichen':'Tippe die Ziele auf dem Spielfeld';if(active.id==='sterne')nextSeq()}
   function nextSeq(){seq.push(Math.floor(Math.random()*4));turn=0;phase='show';phaseUntil=time+1.3+seq.length*.62;$('zmHint').textContent='Merke: '+seq.map(n=>['🔴','🟡','🟢','🔵'][n]).join(' ')}
-  function choose(g){active=g;running=false;cancelAnimationFrame(raf);$('zmList').hidden=true;$('zmStage').hidden=false;$('zmTitle').textContent=g.icon+' '+g.name;$('zmScore').textContent='⭐ 0';$('zmHint').textContent=g.desc;$('zmAction').textContent='▶ Starten';const move=g.id==='riss';$('zmLeft').hidden=!move;$('zmRight').hidden=!move;drawBase();text(g.icon,360,205,98);last=performance.now();raf=requestAnimationFrame(frame)}
-  function leave(){running=false;cancelAnimationFrame(raf);active=null;$('zmStage').hidden=true;$('zmList').hidden=false;ui()}
+  function choose(g){active=g;running=false;cancelAnimationFrame(raf);root.classList.add('zmPlaying');$('zmList').hidden=true;$('zmStage').hidden=false;$('zmTitle').textContent=g.icon+' '+g.name;$('zmScore').textContent='⭐ 0';$('zmHint').textContent=g.desc;$('zmAction').textContent='▶ Starten';const move=g.id==='riss';$('zmLeft').hidden=!move;$('zmRight').hidden=!move;drawBase();text(g.icon,360,205,98);fitStage();last=performance.now();raf=requestAnimationFrame(frame)}
+  function leave(){running=false;cancelAnimationFrame(raf);root.classList.remove('zmPlaying');active=null;$('zmStage').hidden=true;$('zmList').hidden=false;ui()}
   function close(){leave();root.hidden=true;document.body.style.overflow=''}
   function frame(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;raf=requestAnimationFrame(frame);if(!active)return;if(!running)return;time+=dt;drawBase();
     if(active.id==='riss'){player=Math.max(32,Math.min(688,player+hold*dt*350));spawn+=dt;if(spawn>.44){spawn=0;items.push({x:rnd(28,692),y:-20,bad:Math.random()<.65})}for(let i=items.length-1;i>=0;i--){let o=items[i];o.y+=(185+time*7)*dt;text(o.bad?'✖':'✦',o.x,o.y,35,o.bad?'#ff617d':'#ffdc72');if(o.y>338&&o.y<400&&Math.abs(o.x-player)<32){if(o.bad){time+=3}else point();items.splice(i,1)}else if(o.y>445)items.splice(i,1)}circle(player,360,25,'#ff9e47');text('Z',player,369,25);text('Zeit: '+Math.max(0,Math.ceil(35-time)),360,45,22);if(time>=35)end()}
