@@ -274,7 +274,7 @@ parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
     <h3>So kommen Updates auf das Handy</h3>
     <ol>
       <li><b>Push auf GitHub:</b> Ein Spiel wird geändert oder ein neues kommt dazu.</li>
-      <li><b>Manifest:</b> Eine GitHub-Aktion (<code>.github/workflows/sync-manifest.yml</code>) berechnet <code>sync/manifest.json</code> neu: Liste aller Dateien mit Prüfsumme, dazu <code>sync/catalog.json</code> (Spiele, Handbuch, Größen).</li>
+      <li><b>Manifest:</b> Der Server-Job (<code>android/server/</code>, systemd-Timer, alle 10 Minuten) holt den neuesten Stand, berechnet <code>sync/manifest.json</code> neu (Liste aller Dateien mit Prüfsumme, dazu <code>sync/catalog.json</code> mit Spielen, Handbuch, Größen) und pusht es nach GitHub, falls sich etwas geändert hat. GitHub Actions werden nicht gebraucht.</li>
       <li><b>Sync in der App:</b> Sobald WLAN verbunden ist (und beim Start), lädt die App das Manifest, vergleicht Prüfsummen und lädt <b>nur geänderte Dateien</b>. Jede Datei wird geprüft, erst wenn alles da ist, wird der neue Stand aktiv. Ein Abbruch lässt den alten Stand unberührt.</li>
       <li><b>Aktivieren:</b> Mitten im Spiel passiert nichts. Danach zeigt die App „Update bereit – Neu laden“, spätestens beim nächsten Start ist alles aktuell.</li>
     </ol>
