@@ -30,6 +30,17 @@ Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert, u
 - Drei wählbare lokale Speicherplätze und automatisches Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
 - Import prüft Dateigröße und Spielstandsformat; beschädigte Eingaben werden abgewiesen.
 
+## Steuerung und Controller-Einstellungen (Oktober 2026)
+
+Im laufenden Spiel auf **☰ → Steuerung & Controller** tippen. Einstellbar sind:
+- Touch-Joystick links/rechts, Größe, Deckkraft und Totzone;
+- Bewegungstempo und Sprinttaste;
+- freie PC-Tastenbelegung für Vorwärts/Rückwärts/Links/Rechts, Interaktion, Pause und Sprint;
+- klassische höhere oder nähere Kameraperspektive;
+- Grafikqualität (Performance, Balanced, Quality) als Begrenzung der Render-Pixelratio.
+
+**Controller:** Browser-Gamepad-API für Standard-Controller (z. B. Xbox/PlayStation über Bluetooth, sofern Browser und Gerät die Eingabe erlauben): linker Stick/D-Pad bewegen; A/untere Haupttaste Interaktion bzw. Menü bestätigen; B/rechte Taste Menü zurück; Start Pause; Y/obere Taste Team. Steuerkreuz im Dialog wählt Menüeinträge. Ein tatsächlicher Hardwaretest mit unterschiedlichen Controller-Modellen ist noch ausstehend, ebenso ein allgemeiner Controller-Remapping-Editor. Die Nutzerbelegung wird lokal unter `taschi.input.v2` gesichert.
+
 ## Spielsysteme
 
 - 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
