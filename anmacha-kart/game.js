@@ -262,7 +262,7 @@ function initHost() {
     const S = Sim.create({ track: tr, laps: save.laps, racers, items: !GP.tt, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
-    humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; });
+    humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
     // Handys mit eigenem Rennbild brauchen kein Feld im Splitscreen; zeigt keiner ein eigenes Bild hier, bleiben alle sichtbar (Fernseher als Zuschauerbild)
     R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = humans.map((_, i) => i); R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
@@ -335,7 +335,7 @@ function initHost() {
   function readInputs() {
     const pads = Pads.list(), now = performance.now();
     return R.humans.map((p, i) => {
-      if (p.conn) { const k = R.S.karts[i]; const stale = now - (p.inAt || 0) > 5000; if (!k.finished) k.auto = !!p.gone || stale; const use = (p.itemPending || 0) > 0; if (use) p.itemPending--; return { ...p.input, g: stale ? 0 : p.input.g, b: stale ? 0 : p.input.b, s: stale ? 0 : p.input.s, i: use ? 1 : 0, itemPress: use }; }
+      if (p.conn) { const k = R.S.karts[i]; const stale = now - (p.inAt || 0) > 5000; if (!k.finished) k.auto = !!p.gone || stale; const use = (p.itemPending || 0) > 0 && !!k.item && k.itemT <= 0; if (use) p.itemPending--; return { ...p.input, g: stale ? 0 : p.input.g, b: stale ? 0 : p.input.b, s: stale ? 0 : p.input.s, i: use ? 1 : 0, itemPress: use }; }
       if (p.pad != null) return Pads.read(pads.find(x => x.index === p.pad));
       const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v;
       return { s: clampN(s, -1, 1), g: kb.g || tc.g || (p.local && pa.g) ? 1 : 0, b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
