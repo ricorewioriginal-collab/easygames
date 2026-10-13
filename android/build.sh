@@ -9,6 +9,8 @@
 #   APP_ID                            applicationId (Standard: de.ricorewi.easygames)
 #   SYNC_BASE                         Basis-URL des Inhalts (muss auf "/" enden)
 #   KEYSTORE_PATH, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD   Release-Signierung
+#   PUBLISH_DIR                       Zielordner für die Downloads-Seite (z. B. <Webroot>/downloads): legt dort easygames-Developer.apk
+#                                     und easygames-latest.json ab (nur FORMAT=apk)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -90,3 +92,11 @@ echo "Fertig:"
 echo "  Datei:   $ARTIFACT"
 echo "  Version: $VERSION_NAME ($VERSION_CODE)"
 echo "  SHA-256: $SHA"
+
+# ---- Auf der Downloads-Seite bereitstellen (ricorewi-radio.de/#apps) ----
+if [ -n "${PUBLISH_DIR:-}" ] && [ "$FORMAT" = "apk" ]; then
+  mkdir -p "$PUBLISH_DIR"
+  cp "$ARTIFACT" "$PUBLISH_DIR/easygames-Developer.apk.tmp" && mv "$PUBLISH_DIR/easygames-Developer.apk.tmp" "$PUBLISH_DIR/easygames-Developer.apk"
+  printf '{"version":"%s","version_code":%s,"sha256":"%s"}\n' "$VERSION_NAME" "$VERSION_CODE" "$SHA" > "$PUBLISH_DIR/easygames-latest.json"
+  echo "  Bereitgestellt: $PUBLISH_DIR/easygames-Developer.apk"
+fi
