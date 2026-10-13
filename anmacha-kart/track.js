@@ -13,7 +13,26 @@ const Track = (() => {
     { id: 'neon', name: 'Neon-City', theme: 'neon', w: 18, sky: ['#05030f', '#2a0a5a', '#ff1a8a'], ground: '#05040f', road: '#1c1c2c', wall: ['#7CFF6A', '#00e5ff'], fog: '#150a30', fogR: [120, 520], light: [0.75, 0.8, '#ffffff', '#303050'], props: ['#1a2a6a', '#5a1a6a', '#0a5a6a', '#6a1a3a'],
       pts: [[0, -210], [150, -210], [250, -130], [250, -10], [170, 60], [205, 165], [120, 255], [-5, 220], [-45, 135], [-170, 160], [-275, 100], [-275, -20], [-205, -105], [-185, -190], [-100, -235]] }
   ];
-  const CUPS = [{ name: 'Sonnen-Cup', tracks: [0, 1, 3] }, { name: 'Spuk-Cup', tracks: [2, 4, 3] }];
+  // Zusätzliche eigenständige Streckenlayouts mit eigenen Farbwelten und Kurvenprofilen.
+  // Die bestehenden fünf Strecken und ihre Indizes bleiben unverändert.
+  const extra = [
+    { id: 'vulkan', name: 'Lavasturm-Ring', base: 2, theme: 'neon', sky: ['#21080a','#9e2812','#f8a342'], ground:'#39201d', road:'#43383a', wall:['#ff5b17','#ffd36c'], fog:'#5b211a', fogR:[125,540], light:[0.6,0.85,'#ffb773','#692a21'], props:['#9e3e24','#f1712c','#6b2520'] },
+    { id: 'eis', name: 'Eiskristall-Piste', base: 1, theme: 'fantasia', sky: ['#316da8','#bbecff','#ffffff'], ground:'#c5eaf2', road:'#9fb4c9', wall:['#60c8ff','#ffffff'], fog:'#e6faff', fogR:[210,770], light:[0.75,0.8,'#ffffff','#9ad6e8'], props:['#ffffff','#87d8f5','#b0a4f6'] },
+    { id: 'dschungel', name: 'Dschungel-Express', base: 0, theme: 'wiese', sky:['#145f67','#65bba2','#e9ffa8'], ground:'#286a31', road:'#4a5241', wall:['#eacb47','#f8f5c6'], fog:'#b7e0a3', fogR:[150,630], light:[0.65,0.66,'#ffefbc','#214b2e'], props:['#176331','#34954b','#a2b83d'] },
+    { id: 'kosmos', name: 'Sternen-Highway', base: 4, theme: 'neon', sky:['#030418','#19105c','#ba55ff'], ground:'#100d29', road:'#29204c', wall:['#bc77ff','#40f4ff'], fog:'#1a1350', fogR:[130,640], light:[0.6,0.75,'#c8baff','#182255'], props:['#512ca0','#1366be','#bb31b0'] },
+    { id: 'wueste', name: 'Wüsten-Rallye', base: 1, theme: 'strand', sky:['#7d9ec1','#ffd49c','#fff4cb'], ground:'#ce985b', road:'#856c58', wall:['#eaa43c','#ffffff'], fog:'#ffe0af', fogR:[230,800], light:[0.75,0.85,'#ffe4b2','#8e5b38'], props:['#ab6e3d','#d29a52','#786049'] },
+    { id: 'regenbogen', name: 'Regenbogen-Boulevard', base: 3, theme: 'fantasia', sky:['#5a67e8','#ffb0dc','#fef5b2'], ground:'#5dcbae', road:'#6f6194', wall:['#fa65c5','#67fff2'], fog:'#f1d5ff', fogR:[250,850], light:[0.8,0.8,'#ffffff','#72b88a'], props:['#f56aac','#ffd850','#54ecba','#7f87ff'] }
+  ];
+  extra.forEach((e, index) => {
+    const origin = DEFS[e.base], angle = (index + 1) * 0.21, cs = Math.cos(angle), sn = Math.sin(angle);
+    const pts = origin.pts.map(([x,z], i) => {
+      const wave = 1 + 0.13 * Math.sin(i * 1.91 + index * 0.7);
+      return [Math.round((x * cs - z * sn) * wave * 1.1), Math.round((x * sn + z * cs) * wave * 1.1)];
+    });
+    DEFS.push({ ...origin, ...e, pts, w: 20 });
+  });
+  const CUPS = [{ name: 'Sonnen-Cup', tracks: [0, 1, 3] }, { name: 'Spuk-Cup', tracks: [2, 4, 3] },
+    { name: 'Elemente-Cup', tracks: [5, 6, 9] }, { name: 'Abenteuer-Cup', tracks: [7, 10, 8] }];
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
   function build(def) {
