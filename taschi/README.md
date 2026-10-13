@@ -53,7 +53,7 @@ Das HUD und die Kampfmenüs sind als kompakte, fokussierbare Spiel-Overlays gest
 - 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Im Kampf können eigene Begleiter gewechselt werden. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.
 - Eigenständige 3D-Kampfplattform mit sichtbaren Modellen beider Taschis.
 - 6 Dörfer mit eigenen Bewohnern, Aufgaben, Begegnungen, Belohnungen und Rastaktionen; 4 Höhlen mit **begehbarem einfachem 3D-Interieur**, Kristallsuche, Wildbegegnungen und Ausgang.
-- Fünf Story-Kapitel, Abenteuerbuch, Richtungsanzeige zur nächsten Arena, je nach Gebiet unterschiedliche wilde Taschi-Typen, freies Erkunden nach der 16. Herausforderung.
+- Fünf Story-Kapitel sowie eine nach 16 Orden freigeschaltete Sternenliga mit fünf aufeinanderfolgenden Prüfungen und eigenständigem Meistertitel, Abenteuerbuch, Richtungsanzeige zur nächsten Arena, je nach Gebiet unterschiedliche wilde Taschi-Typen, freies Erkunden nach der 16. Herausforderung.
 - Mobile Rendering-Auflösung begrenzt und Blüten per InstancedMesh zusammengefasst. Originale, synthetisch erzeugte Musik und Kampftöne (abschaltbar; keine lizenzierten Audiodateien).
 
 ## Aktuelle Qualitätsgrenzen
@@ -65,3 +65,7 @@ Die Welt nutzt eigene Kunst-/Figurenansätze. Keine Pokémon-Assets oder markenr
 ## Entwicklung
 
 Die Spielmechanik ist aktuell in `game.js` gebündelt und sollte mittelfristig modularisiert und mit Browser- und Gerätetests abgesichert werden. Bunte Insel darf dabei nicht überschrieben werden. Ein optionales **Vite-Entwicklungs- und Build-System** ist jetzt in `taschi/package.json` und `taschi/vite.config.mjs` vorhanden. Der ursprüngliche statische GitHub-Pages-Einstieg bleibt erhalten.\n\n```bash\ncd taschi\nnpm install\nnpm run dev     # Öffnet /taschi/\nnpm test        # Daten-/Syntaxregression (kein Browsertest)\nnpm run build   # Erzeugt dist/taschi plus lokalen Three.js-Vendor\n```\n\n**Wichtig:** Die oben genannten npm-Skripte wurden in dieser Sitzung nicht auf einem Build-Rechner ausgeführt. WebGL, Kamera, Ladezeiten und Mobilbedienung müssen weiterhin per Browser-/Gerätetest bestätigt werden.
+
+## Vorbildanalyse (Spielstruktur)
+
+Als Referenz für die übergreifende Spielschleife wurde [Pokémon (Computerspielreihe) – Spielprinzip](https://de.wikipedia.org/wiki/Pok%C3%A9mon_(Computerspielreihe)#Spielprinzip) gelesen: Starterwahl, Routen zwischen Städten, wilde Begegnungen und Trainer, Fang-/Team-/Lagersystem, EP und Entwicklung, Arenen sowie abschließende Meisterschaft. Für TASCHI gelten weiterhin **eigene** Namen, Figuren, Weltgestaltung und die abweichende Zahl von 16 Orden. Der aktuelle Code besitzt die angelegte Kernschleife und die Sternenliga; die Welt benötigt noch deutlich mehr zusammenhängende, gestaltete Wege und storygesteuerte Ereignisse.
