@@ -58,6 +58,20 @@ const Sim = (() => {
         });
       }
     }
+    // Hostautoritative Streckeninteraktionen für alle Spieler gleichermaßen.
+    S.portals = []; S.creatures = [];
+    if (mechanic === 'portal' || mechanic === 'shards') {
+      [[0.18,0.47], [0.57,0.81]].forEach(([from,to], idx) => {
+        tr.at(N * from, 0, tp);
+        S.portals.push({ x:tp.x, z:tp.z, from:N*from, to:N*to, id:idx });
+      });
+    }
+    if (mechanic === 'safari' || mechanic === 'dragon' || mechanic === 'island') {
+      [0.16,0.38,0.62,0.84].forEach((fraction, idx) => {
+        tr.at(N * fraction, (idx % 2 ? 1 : -1) * 5.2, tp);
+        S.creatures.push({ x:tp.x, z:tp.z, baseX:tp.x, baseZ:tp.z, seed:idx * 1.7, cd:0 });
+      });
+    }
     return S;
   }
   const emit = (S, e) => S.events.push(e);
@@ -236,6 +250,37 @@ const Sim = (() => {
       if (r.kind === 'rock') { S.tr.nearest(r.x, r.z, -1, tmp); if (Math.abs(tmp.d) > S.tr.wallD - 1.2) { const ta = Math.atan2(S.tr.T[tmp.i * 2], S.tr.T[tmp.i * 2 + 1]); r.th = 2 * ta - r.th; r.bounces++; S.tr.at(tmp.f, Math.sign(tmp.d) * (S.tr.wallD - 3), tp); r.x = tp.x; r.z = tp.z; emit(S, { t: 'rockBounce', x: r.x, z: r.z }); if (r.bounces > 3) dead = true; } }
       S.karts.forEach(k => { if (dead || k.spinT > 0 || (k.k === r.owner && r.arm > 0)) return; const vx = r.x - oldX, vz = r.z - oldZ, len2 = vx * vx + vz * vz, along = len2 > 0 ? clamp(((k.x - oldX) * vx + (k.z - oldZ) * vz) / len2, 0, 1) : 0, hx = oldX + vx * along, hz = oldZ + vz * along; if ((hx - k.x) ** 2 + (hz - k.z) ** 2 < (r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' ? 1.15 : 1.3, r.kind === 'rock' ? 0.3 : 0.25); dead = true; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
       if (dead) S.proj.splice(i, 1);
+    }
+    // Portale überspringen einen Streckenabschnitt und erhalten Rundenzählung/Rankings.
+    // Cooldown verhindert sofortiges erneutes Auslösen nach dem Versetzen.
+    for (const k of S.karts) {
+      k.portalCd = Math.max(0, (k.portalCd || 0) - dt);
+      if (S.state !== 'race' || k.finished || k.portalCd > 0) continue;
+      for (const p of S.portals || []) {
+        if ((k.x-p.x)**2 + (k.z-p.z)**2 > 28) continue;
+        const before = k.f, offset = k.d;
+        S.tr.at(p.to, Math.max(-S.tr.half+2, Math.min(S.tr.half-2, offset)), tp);
+        k.x = tp.x; k.z = tp.z; k.th = Math.atan2(tp.tx,tp.tz);
+        const speed = Math.max(18, k.vf);
+        k.vx = Math.sin(k.th)*speed; k.vz = Math.cos(k.th)*speed; k.vf = speed;
+        let jump = p.to - before; if (jump < 0) jump += S.tr.N;
+        k.rp += jump; k.prevF = p.to; k.f = p.to; k.i = Math.floor(p.to);
+        k.portalCd = 4; k.inv = Math.max(k.inv, 0.7); k.boostT = Math.max(k.boostT, 1.1);
+        emit(S, { t:'portal', k:k.k, x:k.x, z:k.z });
+        break;
+      }
+    }
+    // Freundliche eigene Fantasiewesen kreuzen die Fahrspur und geben einen leichten Stoß.
+    if (S.state === 'race') for (const c of S.creatures || []) {
+      c.cd = Math.max(0, c.cd - dt);
+      const phase = S.t * 0.7 + c.seed;
+      c.x = c.baseX + Math.sin(phase) * 2.2;
+      c.z = c.baseZ + Math.cos(phase) * 2.2;
+      if (c.cd > 0) continue;
+      for (const k of S.karts) {
+        if (k.finished || (k.x-c.x)**2+(k.z-c.z)**2 > 12 || k.inv > 0) continue;
+        if (hit(S,k,-1,'creature',0.6,0.7)) { c.cd = 2; emit(S,{t:'creature',k:k.k,x:c.x,z:c.z}); break; }
+      }
     }
     S.boxes.forEach(b => { if (b.cd > 0) b.cd -= dt; });
     if (S.humans > 0 && S.finishedHumans >= S.humans && S.state === 'race') { S.state = 'done'; emit(S, { t: 'done' }); }
