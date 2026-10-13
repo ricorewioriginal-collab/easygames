@@ -44,7 +44,7 @@ const make=(id,lv)=>{const m={id,lv,xp:0,hp:1};m.hp=maxHp(m);return m};
 const persist=()=>{try{localStorage.setItem(SAVE,JSON.stringify(save))}catch{}};
 let active=null,locked=false,near=null,combat=null,steps=0,toastUntil=0,caveSteps={},insideCave=null;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
-const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,190);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
+const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,190);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.35:1.7));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xe9f9ff,0x7b9864,2.5));const sun=new THREE.DirectionalLight(0xfff3d3,2.8);sun.position.set(28,46,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-75;sun.shadow.camera.right=75;sun.shadow.camera.top=75;sun.shadow.camera.bottom=-75;scene.add(sun);
 const mat=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness});
 const green=mat(0x74bb62),path=mat(0xefc98d),stone=mat(0xfbf0dd),roof=mat(0xec735e),wood=mat(0x836248);
@@ -136,7 +136,17 @@ function caveInteract(target){
  }
 }
 
-const flowerColors=[0xffdc72,0xfc9aa3,0xffffff,0xbc94ee];for(let i=0;i<310;i++){const x=rand(-60,60),z=rand(-60,60);if(Math.abs(x)<5||Math.abs(z+18)<4)continue;const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);cylinder(g,0,.22,0,.055,.065,.44,mat(0x418a49));ball(g,0,.48,0,.17,mat(flowerColors[i%4]))}
+// Two instanced meshes replace hundreds of separate draw calls on mobile GPUs.
+const flowerCount=300,stemInstances=new THREE.InstancedMesh(new THREE.CylinderGeometry(.052,.06,.44,5),mat(0x418a49),flowerCount);
+const flowerInstances=new THREE.InstancedMesh(new THREE.SphereGeometry(.18,7,5),mat(0xffffff),flowerCount);
+const flowerColors=[0xffdc72,0xfc9aa3,0xffffff,0xbc94ee],transform=new THREE.Object3D();
+for(let i=0;i<flowerCount;i++){
+ let x=rand(-60,60),z=rand(-60,60);if(Math.abs(x)<5)x+=x<0?-6:6;if(Math.abs(z+18)<4)z+=z<-18?-5:5;
+ transform.position.set(x,.22,z);transform.updateMatrix();stemInstances.setMatrixAt(i,transform.matrix);
+ transform.position.y=.48;transform.updateMatrix();flowerInstances.setMatrixAt(i,transform.matrix);
+ flowerInstances.setColorAt(i,new THREE.Color(flowerColors[i%4]));
+}
+stemInstances.instanceMatrix.needsUpdate=true;flowerInstances.instanceMatrix.needsUpdate=true;scene.add(stemInstances,flowerInstances);
 const grass=[];for(const [x,z] of [[-29,-9],[30,-9],[-30,25],[31,28],[-8,-42]]){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);for(let i=0;i<42;i++){const a=rand(-7,7),b=rand(-7,7);const blade=mesh(g,new THREE.ConeGeometry(.22,rand(.7,1.4),3),mat(0x2e9e58),a,.5,b);blade.rotation.y=rand(0,6)}grass.push({x,z,r:8})}
 function creature(id,scale=1){const s=SPEC[id],g=new THREE.Group(),main=mat(s.color,.77),belly=mat(0xf6eee0),dark=mat(0x252d42,.32);const form=s.type;const body=ball(g,0,.84,0,.76,main);body.scale.set(1,1.12,.82);ball(g,0,1.77,.06,.62,main);ball(g,-.23,1.87,.58,.085,dark);ball(g,.23,1.87,.58,.085,dark);ball(g,0,1.58,.63,.105,belly);for(const xx of [-.49,.49]){ball(g,xx,.38,.3,.25,main);ball(g,xx,2.34,-.01,.27,main)}if(form==='pflanze'){const leaf=mesh(g,new THREE.ConeGeometry(.34,.8,5),mat(0x288e57),0,2.6,0);leaf.rotation.z=.4}else if(form==='feuer'){mesh(g,new THREE.ConeGeometry(.35,.8,6),mat(0xffe078),0,2.61,0)}else if(form==='elektro'){for(let xx of [-.75,.75])mesh(g,new THREE.ConeGeometry(.23,.8,4),mat(0xfff7a1),xx,2.42,0)}else if(form==='wasser'){ball(g,0,2.45,0,.3,mat(0x75dafa))}else if(form==='flug'){for(let xx of [-1,1]){const wing=ball(g,xx*.77,1.1,0,.55,main);wing.scale.set(1.3,.3,.6)}}else if(form==='gestein'){body.scale.set(1.2,.94,1);for(let xx of [-.65,.65])ball(g,xx,2.25,0,.34,mat(0xbcc0c8))}else if(form==='geist'){g.position.y=.38;body.scale.set(1,1.3,.9)}
 // Deterministic modular silhouette traits make regional forms visually distinct.
