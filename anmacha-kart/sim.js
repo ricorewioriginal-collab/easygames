@@ -15,7 +15,7 @@ const Sim = (() => {
     opt.racers.forEach((r, k) => {
       const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5, tp); const kd = kartDef(r.kart || 0);
       const kt = { k, name: r.name, logo: r.logo, char: r.char, kart: r.kart || 0, assist: r.assist || 0, human: !!r.human, skill: r.skill == null ? 1 : r.skill, color: r.color, mv: kd.mv, ma: kd.ma, mt: kd.mt, mr: kd.mr, md: kd.md, mw: kd.mw,
-        x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
+        x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, draftT: 0, draftCharge: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
       if (kt.human) S.humans++; S.karts.push(kt);
     });
     if (S.items) for (let s = 0; s < 6; s++) for (let o = -1; o <= 1; o++) { const f = N * (s + 0.5) / 6; tr.at(f, o * 5.5, tp); S.boxes.push({ x: tp.x, z: tp.z, cd: 0, f }); }
@@ -74,17 +74,32 @@ const Sim = (() => {
     k.inv = Math.max(0, k.inv - dt); k.shieldT = Math.max(0, k.shieldT - dt); k.boostT = Math.max(0, k.boostT - dt);
     if (S.state === 'grid') inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 };
     if (k.spinT > 0) { k.spinT -= dt; inp = { s: 0, b: 0, d: false, i: false, gas: 0 }; k.th += dt * 11; }
-    const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (boost ? 1.38 : 1) * (k.rough ? k.mr : 1);
+    const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (boost ? 1.42 : 1) * (k.rough ? k.mr : 1);
+    // Windschatten: dicht hinter einem schnell fahrenden Rivalen liegt eine echte Überholchance.
+    let drafting = false;
+    if (!k.finished && S.state === 'race' && !k.rough && k.spinT <= 0 && k.vf > VMAX * 0.38) {
+      for (const other of S.karts) {
+        if (other === k || other.finished || other.vf < VMAX * 0.38) continue;
+        const dx = other.x - k.x, dz = other.z - k.z;
+        const forward = dx * Math.sin(k.th) + dz * Math.cos(k.th);
+        const sideways = Math.abs(dx * Math.cos(k.th) - dz * Math.sin(k.th));
+        if (forward > 2.4 && forward < 19 && sideways < 3.9) { drafting = true; break; }
+      }
+    }
+    k.draftCharge = clamp(k.draftCharge + dt * (drafting ? 1.3 : -1.7), 0, 1.1);
+    if (k.draftCharge >= 1.1 && k.draftT <= 0) { k.draftCharge = 0; k.draftT = 1.7; emit(S, { t: 'miniturbo', k: k.k, tier: 1 }); }
+    k.draftT = Math.max(0, k.draftT - dt);
     const fx = Math.sin(k.th), fz = Math.cos(k.th), rx = -Math.cos(k.th), rz = Math.sin(k.th);
     let vf = k.vx * fx + k.vz * fz, vl = k.vx * rx + k.vz * rz;
     const gas = k.human ? (inp.g ? 1 : 0) : (inp.gas == null ? 1 : inp.gas);
-    if (inp.b > 0.1) vf -= (vf > 0 ? BRAKE : 14) * dt * inp.b; else if (gas > 0.05) { if (vf < cap) vf += ACC * k.ma * (boost ? 2.4 : 1) * gas * Math.max(0.12, 1 - Math.max(0, vf) / cap) * dt * (vf < 0 ? 3 : 1); } else vf = vf > 0 ? Math.max(0, vf - 6 * dt) : Math.min(0, vf + 6 * dt);
-    if (vf > cap) vf -= (boost ? 22 : 34) * dt; vf = clamp(vf, -9, 60);
+    if (inp.b > 0.1) vf -= (vf > 0 ? BRAKE : 14) * dt * inp.b; else if (gas > 0.05) { if (vf < cap) vf += ACC * k.ma * (boost ? 2.5 : k.draftT > 0 ? 1.65 : drafting ? 1.17 : 1) * gas * Math.max(0.22, 1 - Math.max(0, vf) / cap) * dt * (vf < 0 ? 3 : 1); } else vf = vf > 0 ? Math.max(0, vf - 6 * dt) : Math.min(0, vf + 6 * dt);
+    if (vf > cap) vf -= (boost ? 18 : 28) * dt; vf = clamp(vf, -9, 62);
+    if (k.draftT > 0 && !boost && vf > 0) vf = Math.min(cap * 1.14, vf + 7 * dt);
     const steer = clamp(inp.s, -1, 1), sp = Math.abs(vf) / VMAX;
     if (inp.d && !k.drift && Math.abs(steer) > 0.3 && vf > VMAX * 0.5 && !k.rough) { k.drift = steer > 0 ? -1 : 1; k.driftT = 0; }
     if (k.drift) {
       k.driftT += dt * (0.75 + 0.35 * Math.abs(steer)) * k.md; k.dTier = k.driftT > 3.2 ? 3 : k.driftT > 1.9 ? 2 : k.driftT > 0.9 ? 1 : 0;
-      if (!inp.d || vf < VMAX * 0.35) { if (k.dTier) { k.boostT = Math.max(k.boostT, [0, 0.7, 1.3, 2.0][k.dTier]); emit(S, { t: 'miniturbo', k: k.k, tier: k.dTier }); } k.drift = 0; k.driftT = 0; k.dTier = 0; }
+      if (!inp.d || vf < VMAX * 0.35) { if (k.dTier) { k.boostT = Math.max(k.boostT, [0, 1.1, 1.9, 2.7][k.dTier]); emit(S, { t: 'miniturbo', k: k.k, tier: k.dTier }); } k.drift = 0; k.driftT = 0; k.dTier = 0; }
     }
     let om;   // k.drift = +1: Linksdrift (th steigt), -1: Rechtsdrift; Gegenlenken weitet, Reinlenken verengt
     if (k.drift) om = k.drift * (1.0 - 0.55 * (steer * k.drift)) * (0.9 + 0.1 * k.mt); else om = -steer * (2.05 - 0.85 * clamp(sp, 0, 1)) * k.mt * clamp(Math.abs(vf) / 9, 0, 1) * (vf < 0 ? -1 : 1);
@@ -122,10 +137,36 @@ const Sim = (() => {
       if (!k.auto && k.assist > 0 && !k.drift && S.state === 'race' && k.spinT <= 0 && !k.finished) { const bs = botInput(S, k).s; inp = Object.assign({}, inp, { s: clamp((inp.s || 0) + k.assist * bs * (1 - Math.min(1, Math.abs(inp.s || 0) * 1.3)), -1, 1) }); }
       if (k.auto && S.state === 'race' && !k.finished) rubber(S, k, inp); stepKart(S, k, inp, dt);
     });
-    // Kart-Kart-Kollision (Gewicht zählt)
+    // Arcade-Rammen: Kartgrößen trennen, Impulse gezielt gegen den Getroffenen geben.
+    // Erhält Vorwärtsenergie des Angreifers und erlaubt Überholen statt klebrigem Abbremsen.
     for (let a = 0; a < S.karts.length; a++) for (let b = a + 1; b < S.karts.length; b++) {
-      const p = S.karts[a], q = S.karts[b], dx = q.x - p.x, dz = q.z - p.z, d2 = dx * dx + dz * dz;
-      if (d2 < (2 * R) * (2 * R) && d2 > 1e-6) { const d = Math.sqrt(d2), nx = dx / d, nz = dz / d, ov = 2 * R - d, mt = p.mw + q.mw, fp = q.mw / mt, fq = p.mw / mt; p.x -= nx * ov * fp; p.z -= nz * ov * fp; q.x += nx * ov * fq; q.z += nz * ov * fq; const rv = (q.vx - p.vx) * nx + (q.vz - p.vz) * nz; if (rv < 0) { const j = -rv * 0.9; p.vx -= nx * j * fp; p.vz -= nz * j * fp; q.vx += nx * j * fq; q.vz += nz * j * fq; if (-rv > 4 && p.hitT <= 0 && q.hitT <= 0) { p.hitT = q.hitT = 0.25; const impact = -rv; p.vf *= clamp(1 - impact * fp * 0.011, 0.7, 1); q.vf *= clamp(1 - impact * fq * 0.011, 0.7, 1); emit(S, { t: 'bump', k: p.k, o: q.k, v: impact }); } } }
+      const p = S.karts[a], q = S.karts[b];
+      let dx = q.x - p.x, dz = q.z - p.z, d2 = dx * dx + dz * dz;
+      if (d2 >= (2 * R) ** 2) continue;
+      if (d2 < 1e-8) { dx = Math.sin(p.th) || 1; dz = Math.cos(p.th); d2 = dx * dx + dz * dz; }
+      const d = Math.sqrt(d2), nx = dx / d, nz = dz / d, total = p.mw + q.mw;
+      const fp = q.mw / total, fq = p.mw / total;
+      const overlap = Math.min(2 * R - d, 2 * R);
+      p.x -= nx * overlap * fp; p.z -= nz * overlap * fp;
+      q.x += nx * overlap * fq; q.z += nz * overlap * fq;
+      const incomingP = p.vx * nx + p.vz * nz, incomingQ = q.vx * nx + q.vz * nz;
+      const closing = incomingP - incomingQ;
+      if (closing <= 0.4) continue;
+      const shove = clamp(closing * 0.9 + 1.5, 1.5, 19);
+      p.vx -= nx * shove * fp * 0.55; p.vz -= nz * shove * fp * 0.55;
+      q.vx += nx * shove * fq; q.vz += nz * shove * fq;
+      // Lenkstöße werden als kurzer seitlicher Versatz sichtbar, ohne komplette Drehorgie.
+      const strongerP = incomingP > Math.max(3, incomingQ + 2);
+      const attacker = strongerP ? p : q, victim = strongerP ? q : p;
+      if (closing > 3.2 && attacker.hitT <= 0 && victim.hitT <= 0) {
+        const impact = clamp(closing, 0, 24);
+        attacker.hitT = victim.hitT = 0.34;
+        victim.vf = Math.max(4, victim.vf * (1 - 0.10 * (impact / 10)));
+        victim.vx += (victim === q ? nx : -nx) * impact * 0.42;
+        victim.vz += (victim === q ? nz : -nz) * impact * 0.42;
+        attacker.vf = Math.max(0, attacker.vf * 0.96);
+        emit(S, { t: 'bump', k: attacker.k, o: victim.k, v: impact });
+      }
     }
     // Fallen: Störsignal / Bananenschale
     for (let i = S.hazards.length - 1; i >= 0; i--) {
