@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bcc0874ea3f4",
- "generated": "2026-10-13T16:40:07+02:00",
- "commit": "6f47567700f528ea3d9fc30dfb2d4eb3f48ae3f1",
+ "version": "819142b2fcef",
+ "generated": "2026-10-13T16:57:20+02:00",
+ "commit": "7bd8cbfa191d3e432011515f7b38e59485e652d5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -732,14 +732,19 @@
    "h": "46af2f127d19c1de504a1b8e5d3f459cd3099913e9dd9e2d51ea81a0c96cabf7"
   },
   {
+   "p": "anmacha-funkparcours/commentary.js",
+   "s": 1860,
+   "h": "5c7b0bf8baae9df5b03292b99e3ee0d9308b70b63e0d7d9dcaa8432c2ceaa117"
+  },
+  {
    "p": "anmacha-funkparcours/controller.js",
    "s": 4693,
    "h": "495735e0044b66b7f68d02f9e1bfb0a3494f360fefa93a7413508c31f812b101"
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 13153,
-   "h": "10c54321757e8c7f0584593c15a778cae828f86407035dd0e74cc7cdf5574157"
+   "s": 13235,
+   "h": "2ed7fa11a2555f33fd355505d28351aa8485e325c564825379cbc33f1b775ef2"
   },
   {
    "p": "anmacha-funkparcours/index.html",
@@ -833,8 +838,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 21880,
-   "h": "9d44597f12cccf7dee9cec4c88bfa8204a1cec7eca10094ce8622f50b4d80fac"
+   "s": 24495,
+   "h": "b8fd7cecf0bdc907e8ce78ea946a34c79de90f3d64152ac769da9d961242ea1c"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -4994,7 +4999,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57146,
-   "h": "5c9f149a73c83cc911ceeca2b028a9fdfa2f27983fc5c5d92441be21e9b0d8fa"
+   "h": "550893c8ed0602bcd6f3fb2f10a4c10a8ef8e8d318141db7f971dc14d9509f43"
   },
   {
    "p": "taschi/game.js",
