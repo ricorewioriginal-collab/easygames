@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e8c08de991cc",
- "generated": "2026-10-13T11:40:57+02:00",
- "commit": "5301a8d72cf31cb294c68882860122c167aa09d6",
+ "version": "f3b3a3e4686b",
+ "generated": "2026-10-13T11:56:20+02:00",
+ "commit": "6d7e0a735afd4bdee65c2c761c217319d39dbb64",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1243,13 +1243,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 56828,
-   "h": "52d242edfc908b5ef030836145b03bceac4c75546fd90da8f60a26abef23a04b"
+   "s": 58169,
+   "h": "0033b36e25275b3c3c1541dd997d33a9002fd6abae558a7e8fadbfca9247b326"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 38443,
-   "h": "a40ea6d9fb23de394630e22ad8694fb39f297eec8d292d2d81c9e61283caa5e9"
+   "s": 46373,
+   "h": "300f622ba2b0e69aa674ecd788c06a6baa937290f22bf5ae9dc5f816bfdd08a0"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -4884,7 +4884,7 @@
   {
    "p": "sync/catalog.json",
    "s": 53936,
-   "h": "b814864965ae3b0b3cf8ef4323ef41bc88e1597f2ff5238b808280d2ef3c687f"
+   "h": "8ef29dd5897f1e60939b16076318bf18241e95693d374d0887f6dfcb3a5df5cf"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
