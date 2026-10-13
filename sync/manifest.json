@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "23e03cef1ad9",
- "generated": "2026-10-13T22:50:15+02:00",
- "commit": "66e7a2170e07379f089a00bf433b270aa077f23a",
+ "version": "3b7e748b0c10",
+ "generated": "2026-10-13T23:07:34+02:00",
+ "commit": "b9b63dfe733218b30e509b04edac061ef17066fe",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3788,8 +3788,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 98060,
-   "h": "5b8c3601aba2acf6ff51e3a198971aa7ccc704dac8c07b438ce298c5d5d119fa"
+   "s": 98103,
+   "h": "02d8d1cfc62bbe9a577f3dd84aef56c1b96cda4d7c617c11792bf99faf5dad90"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3803,8 +3803,8 @@
   },
   {
    "p": "bunte-insel/js/audio.js",
-   "s": 26796,
-   "h": "cdcfffe36bfee67a909c7b85b191aa5445700fcb586c2a99f6f3427cf598663e"
+   "s": 27016,
+   "h": "e136cc26cb1a188940bc2dea2e4a2872c7bc4c478136d23d842153ce1f0130ba"
   },
   {
    "p": "bunte-insel/js/badestrand.js",
@@ -3937,9 +3937,14 @@
    "h": "d1f4d035187903990b961f0fa6634cd3fd77425d0b63cd39048df8180bbfb9d3"
   },
   {
+   "p": "bunte-insel/js/i18n-en.js",
+   "s": 264302,
+   "h": "92e9328d3ac5c4428de0b44d472bc8ae6a31c1c2cc8dbcdcd8525bcab9361706"
+  },
+  {
    "p": "bunte-insel/js/i18n.js",
-   "s": 114531,
-   "h": "2e30e0e0b1c0874e4c98fc9e2af9780797fe3ce8e551ef5e60472b91420dcb26"
+   "s": 118482,
+   "h": "9441150bf408766621e8b814416553316240c10a7eb28fc585402ae780e3c708"
   },
   {
    "p": "bunte-insel/js/innen.js",
@@ -3988,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 301577,
-   "h": "505b155ddd0dfc388b4f6d2de000bfca6a9f0fa39215febdcc9972281297760e"
+   "s": 301703,
+   "h": "7cec234fbac70e9f724431e645e7ec60e17775683cd9eef4dd87c2fe3e2939f1"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5009,7 +5014,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57147,
-   "h": "e8e06bbde97e2aa1bf9aa6a3b9a3b7c513cecf8ef2a978e54b218d08fb759c53"
+   "h": "ff40140f6f5378f59ab00d1a84652593ba319f1bc5bc58211b8f92437ad04704"
   },
   {
    "p": "taschi/classic.html",
