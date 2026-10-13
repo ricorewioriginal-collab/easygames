@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "38513ea827b9",
- "generated": "2026-10-13T22:37:45+02:00",
- "commit": "00f2ba9e56b99ddd08b79e6c40b996458c30e3b5",
+ "version": "74927c632102",
+ "generated": "2026-10-13T22:48:31+02:00",
+ "commit": "d52b5a977d7051e6336a88276a9fb351b4cd8199",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3788,8 +3788,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 98052,
-   "h": "65111027a8c195eaf0e3dc30374f396bf4227e931e71b2ec953f60e792b20c18"
+   "s": 98060,
+   "h": "5b8c3601aba2acf6ff51e3a198971aa7ccc704dac8c07b438ce298c5d5d119fa"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3803,8 +3803,8 @@
   },
   {
    "p": "bunte-insel/js/audio.js",
-   "s": 25993,
-   "h": "44b1a46e0dea2b48ecdfddbb4d575b03f3850285a8ca4ad5b425f974a1566f63"
+   "s": 26796,
+   "h": "cdcfffe36bfee67a909c7b85b191aa5445700fcb586c2a99f6f3427cf598663e"
   },
   {
    "p": "bunte-insel/js/badestrand.js",
@@ -3933,13 +3933,13 @@
   },
   {
    "p": "bunte-insel/js/huepf.js",
-   "s": 46781,
-   "h": "925acadf5f6698963d2c6662893256af95be839f58c6fb943c6b0621da023320"
+   "s": 46923,
+   "h": "d1f4d035187903990b961f0fa6634cd3fd77425d0b63cd39048df8180bbfb9d3"
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 112315,
-   "h": "cc2744f9ecbd9d0bb7aacf91551db0f26c744e25976b37d8083a9bbe79998797"
+   "s": 114531,
+   "h": "2e30e0e0b1c0874e4c98fc9e2af9780797fe3ce8e551ef5e60472b91420dcb26"
   },
   {
    "p": "bunte-insel/js/innen.js",
@@ -5009,7 +5009,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57147,
-   "h": "208921fed438290a9cbd5cc0da7ab49edd9083b1be96ac223c80c30d306e83b0"
+   "h": "e8e06bbde97e2aa1bf9aa6a3b9a3b7c513cecf8ef2a978e54b218d08fb759c53"
   },
   {
    "p": "taschi/game.js",
@@ -5020,6 +5020,11 @@
    "p": "taschi/index.html",
    "s": 14389,
    "h": "9571234acc3c796c429e58fe1076515b4bc39e5de24af249f80317b722b02309"
+  },
+  {
+   "p": "taschi/play.html",
+   "s": 1385,
+   "h": "03792eb11e03fd28766fb411ec66446c718f0dfc70f68291a0aa6cfb7273f442"
   },
   {
    "p": "taschi/src/core/audio.js",
@@ -5152,9 +5157,14 @@
    "h": "5fc82127bfc126c70bec2213f86d7f7d59ccc62da104c0c4a254d6854ac033ef"
   },
   {
+   "p": "taschi/src/game/game.js",
+   "s": 56402,
+   "h": "391e8b1d41c751557128221d65fdbc9a4784198cc4a1c0078255a4cff4affe9c"
+  },
+  {
    "p": "taschi/src/game/world.js",
-   "s": 25871,
-   "h": "b95d93484ba6eecd5c944f68c55de1d2b5a972bf601f6dc5c03498c74c2d0616"
+   "s": 25993,
+   "h": "07b26ef8c875e90f16650b23fdd9a678710f832dccb4c855328973c6253232c7"
   },
   {
    "p": "taschi/src/logic/ai.js",
@@ -5207,19 +5217,34 @@
    "h": "7984e5b5416907db722aeca5f37889154aa564682e2b7c0fb7d15cf73a266faf"
   },
   {
+   "p": "taschi/src/main.js",
+   "s": 1487,
+   "h": "c86ee487efbc4e8decc4ac1a39a41f218525548f23da89032cf325d895d77a0e"
+  },
+  {
+   "p": "taschi/src/ui/hud.js",
+   "s": 8294,
+   "h": "e6c82e8e43d553dda8ad7a3448b41ffad7a91ed147f4e9ed9bb56411be719f9f"
+  },
+  {
    "p": "taschi/src/ui/menus.js",
    "s": 24216,
    "h": "7e1484ea93ab3b309ff8fdc825cce7a5ce52cf27d38ce126e805b66456c02b38"
   },
   {
+   "p": "taschi/src/ui/screens.js",
+   "s": 8972,
+   "h": "43dea83c72f1795aec2da6b3f31acfa5f09759cd3b06dab64931ac9139d84eeb"
+  },
+  {
    "p": "taschi/src/ui/style.css",
-   "s": 22223,
-   "h": "ff4c8e5440f174b7c6a6409ddf39b8bece432fdcd9af3859a94c90fa7ad097d6"
+   "s": 22404,
+   "h": "7faa1bf696acd6af06bc5af89cc7ac64ea4e078e1482fff84c03ad21056df1f3"
   },
   {
    "p": "taschi/src/ui/ui.js",
-   "s": 9812,
-   "h": "514f0a8c1342b82323192b1e0fb2ab44151b9e8557eeeae623975ffaf6d92ccf"
+   "s": 9896,
+   "h": "338f49263c4833db47c4be7465b4c84d841e68f79326289441ff4ef32b626ac6"
   },
   {
    "p": "taschi/src/world/interiors.js",
