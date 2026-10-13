@@ -110,7 +110,7 @@ const Sim = (() => {
       S.pads.forEach(p => { if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 < 20 && k.boostT < 1.1) { k.boostT = 1.2; emit(S, { t: 'pad', k: k.k }); } });
       if (k.itemPending && k.itemT <= 0) { k.itemPending = false; k.item = rollItem(S, k); k.itemN = k.item.endsWith('3') ? 3 : 1; emit(S, { t: 'got', k: k.k, item: k.item }); }
     }
-    if (inp.i && !k.itemPrev && S.state === 'race' && !k.finished) useItem(S, k); k.itemPrev = !!inp.i;
+    if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) useItem(S, k); k.itemPrev = !!inp.i && !inp.itemPress;
   }
 
   function step(S, dt, inputs) {
@@ -125,7 +125,7 @@ const Sim = (() => {
     // Kart-Kart-Kollision (Gewicht zählt)
     for (let a = 0; a < S.karts.length; a++) for (let b = a + 1; b < S.karts.length; b++) {
       const p = S.karts[a], q = S.karts[b], dx = q.x - p.x, dz = q.z - p.z, d2 = dx * dx + dz * dz;
-      if (d2 < (2 * R) * (2 * R) && d2 > 1e-6) { const d = Math.sqrt(d2), nx = dx / d, nz = dz / d, ov = 2 * R - d, mt = p.mw + q.mw, fp = q.mw / mt, fq = p.mw / mt; p.x -= nx * ov * fp; p.z -= nz * ov * fp; q.x += nx * ov * fq; q.z += nz * ov * fq; const rv = (q.vx - p.vx) * nx + (q.vz - p.vz) * nz; if (rv < 0) { const j = -rv * 0.9; p.vx -= nx * j * fp; p.vz -= nz * j * fp; q.vx += nx * j * fq; q.vz += nz * j * fq; if (-rv > 4) emit(S, { t: 'bump', k: p.k, o: q.k }); } }
+      if (d2 < (2 * R) * (2 * R) && d2 > 1e-6) { const d = Math.sqrt(d2), nx = dx / d, nz = dz / d, ov = 2 * R - d, mt = p.mw + q.mw, fp = q.mw / mt, fq = p.mw / mt; p.x -= nx * ov * fp; p.z -= nz * ov * fp; q.x += nx * ov * fq; q.z += nz * ov * fq; const rv = (q.vx - p.vx) * nx + (q.vz - p.vz) * nz; if (rv < 0) { const j = -rv * 0.9; p.vx -= nx * j * fp; p.vz -= nz * j * fp; q.vx += nx * j * fq; q.vz += nz * j * fq; if (-rv > 4 && p.hitT <= 0 && q.hitT <= 0) { p.hitT = q.hitT = 0.25; const impact = -rv; p.vf *= clamp(1 - impact * fp * 0.011, 0.7, 1); q.vf *= clamp(1 - impact * fq * 0.011, 0.7, 1); emit(S, { t: 'bump', k: p.k, o: q.k, v: impact }); } } }
     }
     // Fallen: Störsignal / Bananenschale
     for (let i = S.hazards.length - 1; i >= 0; i--) {
