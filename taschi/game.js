@@ -67,7 +67,7 @@ for(let i=0;i<90;i++){const x=rand(-60,60),z=rand(-60,60);if(Math.abs(x)<8||Math
 function house(x,z,label,color){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);box(g,0,2,0,8,4,7,mat(color));const top=mesh(g,new THREE.ConeGeometry(6.6,3,4),roof,0,5.4,0);top.rotation.y=Math.PI/4;box(g,0,1,3.56,1.6,2,0.15,wood);for(let dx of [-2.7,2.7])box(g,dx,2.5,3.57,1.1,1.3,.2,mat(0x6fcce8));solid(x,z,5);return {x,z,label}};
 const places=[house(14,10,'Professor Ulmes Labor',0xf8e5c2),house(-18,10,'Heilhaus',0xf4a9b7),house(14,-32,'Fangladen',0x91cce1)];
 // Arena monuments: 8 stations around the valley, visible and approachable.
-const gyms=[];GYMS.forEach((g,i)=>{const x=-51+(i%4)*34,z=-51+Math.floor(i/4)*31;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i})});
+const gyms=[];GYMS.forEach((g,i)=>{const x=-51+(i%4)*34,z=-51+Math.floor(i/4)*31;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i});townLabel((i+1)+'. Siegel',x,z,7)});
 // Additional villages and cave landscapes; cave sites are explorable above-ground rock caverns.
 
 const villageTasks={
@@ -108,6 +108,12 @@ const villages=[
  {name:'Winddorf',x:9,z:-50,c:0xe0cc96}
 ];
 for(const v of villages){townLabel(v.name,v.x,v.z,7);
+ const citizen=new THREE.Group();citizen.position.set(v.x+3.1,0,v.z-4);scene.add(citizen);
+ box(citizen,0,.9,0,.78,.95,.47,mat(v.c));
+ ball(citizen,0,1.78,0,.41,mat(0xe6b891));
+ const hair=ball(citizen,0,2.1,-.08,.41,mat(0x53372d));hair.scale.y=.4;
+ for(const side of [-1,1]){box(citizen,side*.25,.24,0,.26,.5,.3,mat(0x364a63));box(citizen,side*.56,1,0,.21,.7,.25,mat(0xe6b891))}
+
  for(let i=0;i<3;i++){
  const h=new THREE.Group();h.position.set(v.x+(i-1)*5,0,v.z+(i%2)*5);scene.add(h);
  box(h,0,1.25,0,3.7,2.5,3.5,mat(v.c));const roofMesh=mesh(h,new THREE.ConeGeometry(3.25,1.9,4),roof,0,3.3,0);roofMesh.rotation.y=Math.PI/4;
