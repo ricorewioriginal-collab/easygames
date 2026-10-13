@@ -213,17 +213,19 @@ BI.audio = (function () {
     voiceOn: true,
     speak(txt) {
       const ss = window.speechSynthesis; if (!A.voiceOn || muted || !ss || !txt || typeof SpeechSynthesisUtterance === 'undefined') return;
-      const clean = String(txt).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}→➤✔✖]/gu, ' ').replace(/[„“"]/g, '').replace(/\s+/g, ' ').trim(); if (clean.length < 4 || clean === A._said && ss.speaking) return;
-      A._said = clean; A._want = clean;
+      const currentLang = (window.BunteInselI18n && window.BunteInselI18n.language) || 'de';
+      const translated = currentLang === 'en' && window.BunteInselI18n ? window.BunteInselI18n.t(String(txt)) : String(txt);
+      const clean = String(translated).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}→➤✔✖]/gu, ' ').replace(/[„“"]/g, '').replace(/\s+/g, ' ').trim(); if (clean.length < 4 || clean === A._said && ss.speaking) return;
+      A._said = clean; A._want = clean; A._wantLang = currentLang;
       if (A._spT) return; /* mehrere Aufrufe kurz hintereinander: nur der letzte wird gesprochen (Chrome verschluckt speak() direkt nach cancel()) */
       A._spT = setTimeout(() => {
-        A._spT = 0; const t = A._want; A._want = ''; if (!t || !A.voiceOn || muted) return;
+        A._spT = 0; const t = A._want, voiceLang = A._wantLang === 'en' ? 'en-US' : 'de-DE'; A._want = ''; if (!t || !A.voiceOn || muted) return;
         try {
           if (ss.speaking || ss.pending) ss.cancel();
           if (ss.paused) ss.resume();
-          if (!A._v) { const vs = ss.getVoices().filter(v => /^de/i.test(v.lang)); if (vs.length) { const sc = v => (/natural|neural|online/i.test(v.name) ? 6 : 0) + (/google|anna|petra|katja|marlene|vicki|amala|seraphina|yannick/i.test(v.name) ? 3 : 0) + (v.lang === 'de-DE' ? 2 : 0) + (v.localService ? 1 : 0); A._v = vs.sort((a, b) => sc(b) - sc(a))[0]; } }
-          const u = new SpeechSynthesisUtterance(t); u.lang = 'de-DE'; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1;
-          u.onerror = e => { if (A._v && e && e.error !== 'canceled' && e.error !== 'interrupted') { A._v = null; A._bad = (A._bad || 0) + 1; if (A._bad < 3 && A.voiceOn) { const u2 = new SpeechSynthesisUtterance(t); u2.lang = 'de-DE'; try { ss.speak(u2); } catch (x) { } } } };
+          if (!A._v || !A._v.lang || !A._v.lang.toLowerCase().startsWith(voiceLang.slice(0,2))) { A._v = null; const vs = ss.getVoices().filter(v => v.lang && v.lang.toLowerCase().startsWith(voiceLang.slice(0,2))); if (vs.length) { const sc = v => (/natural|neural|online/i.test(v.name) ? 6 : 0) + (/google|anna|petra|katja|marlene|vicki|amala|seraphina|yannick/i.test(v.name) ? 3 : 0) + (v.lang === voiceLang ? 2 : 0) + (v.localService ? 1 : 0); A._v = vs.sort((a, b) => sc(b) - sc(a))[0]; } }
+          const u = new SpeechSynthesisUtterance(t); u.lang = voiceLang; if (A._v) u.voice = A._v; u.rate = .92; u.pitch = 1.12; u.volume = 1;
+          u.onerror = e => { if (A._v && e && e.error !== 'canceled' && e.error !== 'interrupted') { A._v = null; A._bad = (A._bad || 0) + 1; if (A._bad < 3 && A.voiceOn) { const u2 = new SpeechSynthesisUtterance(t); u2.lang = voiceLang; try { ss.speak(u2); } catch (x) { } } } };
           A._u = u; ss.speak(u); /* Referenz halten (sonst räumt Chrome die Äußerung manchmal vorzeitig weg) */
         } catch (e) { }
       }, 90);
@@ -235,6 +237,12 @@ BI.audio = (function () {
     },
     stopAll() { A.rain(false); A.engine('car', 0, false); A.horn('car', false); A.siren('police', false); A.water(false); if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } } }
   };
+  /* Sprachwechsel: laufende Ausgabe stoppen, gecachte Stimme neu wählen. */
+  document.addEventListener('bunteinsel:languagechange', () => {
+    if (A._spT) { clearTimeout(A._spT); A._spT = 0; }
+    A._want = ''; A._said = ''; A._v = null; A._bad = 0; A._u = null;
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (_) {}
+  });
   /* ---------- Echte Töne (Samples): lazy laden, bei Fehler bleibt der erzeugte Ton ---------- */
   const bank = {}; let sfxBase = '';
   try { const s = document.currentScript && document.currentScript.src; if (s) sfxBase = s.replace(/js\/audio\.js.*$/, 'sounds/'); } catch (e) { }
