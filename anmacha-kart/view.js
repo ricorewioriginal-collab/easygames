@@ -149,6 +149,42 @@ const View = (() => {
         world.add(group);
       }
     }
+    // Rennrelevante Weltenobjekte – an denselben Streckenkoordinaten wie in Sim.
+    if (d.mechanic === 'portal' || d.mechanic === 'shards') {
+      [0.18, 0.57].forEach((fraction, idx) => {
+        const i = Math.floor(tr.N * fraction), g = new T.Group();
+        g.position.set(tr.P[i * 2], 0, tr.P[i * 2 + 1]);
+        g.rotation.y = Math.atan2(tr.T[i * 2], tr.T[i * 2 + 1]);
+        const ring = new T.Mesh(new T.TorusGeometry(5.5, 0.65, 8, 24),
+          new T.MeshBasicMaterial({ color: idx ? 0xffbd72 : 0x76eaff, transparent: true, opacity: 0.8 }));
+        ring.position.y = 5.8; g.add(ring);
+        const core = new T.Mesh(new T.CircleGeometry(5.1, 24),
+          new T.MeshBasicMaterial({ color: idx ? 0xf16ba4 : 0x8076ef, transparent: true, opacity: 0.25, side: T.DoubleSide, depthWrite: false }));
+        core.position.y = 5.8; g.add(core); world.add(g);
+        anim.push(time => { ring.rotation.z = time * (idx ? -0.35 : 0.35); core.material.opacity = 0.19 + 0.12 * Math.sin(time * 3 + idx); });
+      });
+    }
+    if (d.mechanic === 'safari' || d.mechanic === 'dragon' || d.mechanic === 'island') {
+      [0.16, 0.38, 0.62, 0.84].forEach((fraction, idx) => {
+        const i = Math.floor(tr.N * fraction), side = idx % 2 ? 1 : -1;
+        const x = tr.P[i*2] + tr.Nm[i*2] * side * 5.2;
+        const z = tr.P[i*2+1] + tr.Nm[i*2+1] * side * 5.2;
+        const creature = new T.Group();
+        const mat = new T.MeshLambertMaterial({ color: ['#ffb05e','#a1ea8b','#b890ed','#6ddddd'][idx] });
+        const face = new T.MeshLambertMaterial({ color: 0x22243d });
+        const body = new T.Mesh(new T.IcosahedronGeometry(1.25, 1), mat);
+        body.position.y = 1.55; creature.add(body);
+        const head = new T.Mesh(new T.SphereGeometry(0.9, 8, 6), mat);
+        head.position.set(0, 2.7, 0.55); creature.add(head);
+        [-1,1].forEach(side => {
+          const eye = new T.Mesh(new T.SphereGeometry(0.13, 6, 4), face);
+          eye.position.set(side*0.3, 2.85, 1.3); creature.add(eye);
+        });
+        creature.position.set(x, 0, z); world.add(creature);
+        const seed = idx * 1.7;
+        anim.push(time => { creature.position.x = x + Math.sin(time * 0.7 + seed) * 2.2; creature.position.z = z + Math.cos(time * 0.7 + seed) * 2.2; creature.children[0].rotation.y = time * 0.4; });
+      });
+    }
     world.children.forEach(o => { if (o.userData.blink) blinkers.push(o); }); dustCol = new T.Color(d.ground).lerp(new T.Color(0xffffff), th === 'gruft' || th === 'neon' ? 0.25 : 0.4).getHex();
   }
 
