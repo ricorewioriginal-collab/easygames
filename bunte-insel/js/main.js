@@ -324,7 +324,7 @@
     if (!v.isTrain) { v.driver = null; v.siren = false; if (v.traffic) { v.ai = false; v.v = 0; v.traffic.rejoinAt = t + 20; } if (char.group.parent !== scene) { v.tilt.remove(char.group); scene.add(char.group); } char.group.rotation.set(0, 0, 0); }
     if (!v.isTrain && v.vi != null && net.connected()) { v.v = 0; net.send({ t: 'vp', l: [[v.vi, Math.round(v.x * 100) / 100, Math.round(v.z * 100) / 100, Math.round(v.h * 100) / 100]] }); } /* Auto bleibt bei allen am selben Platz stehen */
     P.veh = null; char.group.visible = true;
-    const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z); P.vy = 0;
+    const q = W.resolve(px, pz, .5, {}); P.x = q.x; P.z = q.z; P.h = v.h; P.y = W.groundY(P.x, P.z, P.y); P.vy = 0;
     if (v.spec.drake) { /* Abgestiegen: du bleibst dort (fällst nach unten), Zündel fliegt zurück zu seinem Platz */ if (Math.hypot(q.x - px, q.z - pz) < 2) P.y = Math.max(P.y, v.y); const hm = W.spots.drachenReit; v.setPose(hm.x, hm.z, hm.h); v.y = 0; v.vy = 0; v.v = 0; fx.burst(hm.x, 2, hm.z, 14, [BI.C.gold, BI.C.white, BI.C.pink], 4, 1, 28, 2); }
     mission = null; offer = null; clearMissionVisuals(); updateHud(); updateButtons(true);
   }
@@ -2142,7 +2142,7 @@
       P.speed = Math.hypot(dx, dz); P.running = !!running;
       if (running && P.y < .1 && Math.random() < dt * 12) fx.burst(P.x - Math.sin(P.h) * .3, .12, P.z - Math.cos(P.h) * .3, 1, [BI.C.dust], 1.2, .4, 22, 2);
       const o = vehicleObstacles(P.x, P.z, .45, null); P.x = o.x; P.z = o.z;
-      const vf = Math.max(vox.floorAt(P.x, P.z, P.y), atlantis.floor(P.x, P.z), W.floorAt(P.x, P.z, P.y)), pf = W.atlPit ? W.atlPit.floor(P.x, P.z) : null, gy = pf !== null ? pf : Math.max(W.groundY(P.x, P.z), obby.floorAt(P.x, P.z, P.y), vf);
+      const vf = Math.max(vox.floorAt(P.x, P.z, P.y), atlantis.floor(P.x, P.z), W.floorAt(P.x, P.z, P.y)), pf = W.atlPit ? W.atlPit.floor(P.x, P.z) : null, gy = pf !== null ? pf : Math.max(W.groundY(P.x, P.z, P.y), obby.floorAt(P.x, P.z, P.y), vf);
       if (P.y <= gy + .05) { P.dj = false; P.coy = P.vy > .5 ? 0 : .12; } else if (P.coy > 0) P.coy -= dt; // Sprung kurz nach der Kante + vorgemerkter Sprung kurz vor der Landung
       if (P.jbuf > 0) P.jbuf -= dt;
       if (inp.jump) { inp.jump = false; P.jbuf = .14; }
