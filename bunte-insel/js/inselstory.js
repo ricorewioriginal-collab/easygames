@@ -98,7 +98,7 @@ BI.INSELSTORY = [
     { text: 'Jetzt die Arena! Besiege Fels-Fiete, Perla, Käpt’n Volt und Blüte – du bekommst jedes Mal einen Orden.', hint: 'Besiege die 4 Arena-Leiter (4 Orden)', goal: [{ log: 'taschi', row: 2 }, { log: 'taschi', row: 3 }, { log: 'taschi', row: 4 }, { log: 'taschi', row: 5 }], done: 'Vier Orden – stark!' },
     { text: 'Zwei Aufgaben fehlen noch: fang 8 verschiedene Taschis für meinen Forscher-Orden – und schnapp dir Team Funke bei ihrem Heißluftballon!', hint: 'Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen)', goal: [{ log: 'taschi', row: 6 }, { log: 'taschi', row: 7 }], done: 'Der Ballon gehört dir!' },
     { text: 'Der letzte Orden: Fordere Meisterin Aurelia in der Arena heraus!', hint: 'Besiege Meisterin Aurelia (Meister-Orden)', goal: [{ log: 'taschi', row: 8 }], done: 'Alle 8 Orden!' }
-  ], end: 'Professor Ulme verneigt sich: Du bist Taschi-Meister – und seine Statue strahlt für dich!' }
+  ], end: 'Professor Ulme verneigt sich: Du bist Taschi-Meister – und seine Statue strahlt für dich!' },
   { key: 'PRISMA', icon: '🌀', npc: 'Nuri', title: 'Die drei Lichtsignale', acts: [
     { text: 'Willkommen im Prisma-Archipel! Drei Bereiche haben ihr Signal verloren. Nuri zeigt dir den Ki-Garten.', hint: 'Löse die Lichtfolge im Ki-Garten', goal: ['prisma_ki'], done: 'Das erste Signal leuchtet wieder!' },
     { text: 'In der Runen-Arena warten leuchtende Zeichen. Lies den Hinweis und tippe die drei Symbole in der richtigen Reihenfolge.', hint: 'Löse das Zeichenrätsel in der Runen-Arena', goal: ['prisma_runen'], done: 'Die Runen-Arena ist wieder aktiv!' },
