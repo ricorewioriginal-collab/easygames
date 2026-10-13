@@ -317,7 +317,7 @@ function initHost() {
   function startRace() {
     const tIdx = GP.order[GP.race], tr = getTrack(tIdx); if (curTrackIdx !== tIdx) { View.setTrack(tr); curTrackIdx = tIdx; }
     const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
-    const S = Sim.create({ track: tr, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, shuffle: true }), humans = players.slice();
+    const S = Sim.create({ track: tr, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, free: GP.free, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
