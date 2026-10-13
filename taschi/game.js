@@ -218,6 +218,42 @@ for(const [x,z] of [[-7,15],[7,15],[-7,-18],[7,-18],[-6,-39],[6,-39]])streetLamp
  * existing overworld and save coordinates are preserved. */
 const REGION_NAMES=['Moostal','Korallküste','Funkenfeld','Blütenhain','Käferwald','Sturmklippe','Glutland','Sternenau','Nebelmoor','Frosttal','Wipfelreich','Donnersteppe','Kristallberg','Mondbucht','Sonnenhöhe','Himmelskrone'];
 const regions=GYMS.map((g,i)=>({id:i,name:REGION_NAMES[i],gym:g[0],level:g[2],x:gyms[i].x,z:gyms[i].z}));
+
+// Each region has dominant habitats; rare ancient Taschis are unique catches.
+const REGION_TYPES=[
+ ['pflanze','normal'],['wasser','flug'],['elektro','normal'],['pflanze','geist'],
+ ['pflanze','flug'],['flug','elektro'],['feuer','gestein'],['geist','normal'],
+ ['geist','wasser'],['wasser','gestein'],['pflanze','flug'],['elektro','feuer'],
+ ['gestein','geist'],['geist','wasser'],['feuer','flug'],['flug','feuer']
+];
+const ANCIENTS=[
+ {id:'auraflamme',name:'Auraflamme',type:'feuer',color:0xff9654,hp:115,atk:125,def:94,speed:106,catch:.045,moves:['glut','hieb'],bio:'Ein uraltes Taschi des Sonnenfeuers.',region:14},
+ {id:'tiefenlied',name:'Tiefenlied',type:'wasser',color:0x478fc7,hp:120,atk:105,def:114,speed:91,catch:.045,moves:['spritzer','spuk'],bio:'Wächter der tiefsten Korallenströme.',region:1},
+ {id:'sturmkron',name:'Sturmkron',type:'elektro',color:0xf4d974,hp:103,atk:132,def:86,speed:124,catch:.04,moves:['funken','fluegel'],bio:'Der sagenumwobene Herrscher des Sturmwinds.',region:11},
+ {id:'mondhueter',name:'Mondhüter',type:'geist',color:0x9a8bd6,hp:111,atk:112,def:110,speed:105,catch:.04,moves:['spuk','ranke'],bio:'Ein stiller Beschützer des Mondlichts.',region:13}
+];
+for(const a of ANCIENTS)SPEC[a.id]={...a,ancient:true};
+function regionAtPosition(x=player.position.x,z=player.position.z){
+ return regions.reduce((best,r)=>Math.hypot(x-r.x,z-r.z)<Math.hypot(x-best.x,z-best.z)?r:best,regions[0]);
+}
+function regionalEncounter(regionId,habitat=null){
+ const focus=REGION_TYPES[regionId]||REGION_TYPES[0];
+ const type=habitat&&Math.random()<.2?habitat:focus[Math.random()<.76?0:1];
+ let pool=Object.keys(SPEC).filter(id=>!SPEC[id].ancient&&SPEC[id].type===type);
+ if(!pool.length)pool=Object.keys(SPEC).filter(id=>!SPEC[id].ancient);
+ const id=pool[Math.floor(Math.random()*pool.length)];
+ return make(id,Math.max(3,Math.min(59,(regions[regionId]?.level||8)-3+Math.floor(rand(-2,3)))));
+}
+function ancientEncounter(r){
+ const ancient=ANCIENTS.find(a=>a.region===r.id);
+ if(!ancient){toast('In dieser Region ist kein legendäres Taschi bekannt.');return}
+ if(save.badges<r.id+1){toast('Gewinne zuerst den regionalen Orden.');return}
+ if(save.dex[ancient.id]===2){toast(ancient.name+' wurde bereits gefangen.');return}
+ dialog('Legende von '+r.name,'<p>'+ancient.bio+'</p><p>Ein seltener Wächter erscheint nur nach Erringen des regionalen Siegels.</p>',[
+ ['Begegnung beginnen',()=>battle(make(ancient.id,50+r.id%10))],['Zurück',close]
+ ]);
+}
+
 const regionMarkers=[];
 for(let i=0;i<regions.length;i++){
  const r=regions[i],root=new THREE.Group();root.position.set(r.x-5,0,r.z-5);scene.add(root);
@@ -270,6 +306,13 @@ function regionalChampion(i){
  ['Später',close]
  ]);
 }
+function ancientMenu(){
+ dialog('Die vier uralten Taschis','<p>In besonderen Regionen erzählen sich Reisende Legenden über seltene Wächter.</p>',[
+ ...ANCIENTS.map(a=>[a.name+' · '+regions[a.region].name,()=>ancientEncounter(regions[a.region]),save.badges<=a.region]),
+ ['Zurück',mainMenu]
+ ]);
+}
+
 function championSelect(){
  dialog('Regionale Champions','<p>Nach jedem Orden erwartet dich ein eigener Champion. Besiegte Champions sind dauerhaft vermerkt.</p>',[
  ...regions.map(r=>[(save.champions?.[r.id]?'✓ ':'⚔ ')+REGION_CHAMPIONS[r.id]+' · '+r.name,()=>regionalChampion(r.id),save.badges<=r.id]),
@@ -508,7 +551,11 @@ function start(){dialog('Kapitel 1 · Der Ruf der Lichter','<p>Ein sanfter Licht
 function chooseStarter(){dialog('Professor Ulmes Labor','<p>„Jedes Taschi ist etwas Besonderes. Entscheide mit dem Herzen! Du kannst später viele weitere Freunde finden.“</p>',[['🔥 Glutzahn · Feuer',()=>starter('glutzahn')],['💧 Plätscherchen · Wasser',()=>starter('plaetscher')],['🌱 Samenling · Pflanze',()=>starter('samenling')]])}
 function starter(id){save.team.push(make(id,5));save.dex[id]=2;updateFollower();stats();dialog('Dein Abenteuer beginnt!', '<p>'+SPEC[id].name+' begleitet dich! Bewege dich zum hohen Gras, entdecke Taschis und besiege die 16 Arenen. Im Heilhaus werden deine Freunde geheilt.</p>',choice())}
 const wild=['flatterling','felsling','geisterchen','quappi','kaeferli','knister','funkli','schlummi','fellino','blitzi','glutzahn','samenling','plaetscher'];
-function findWild(habitat=null){if(!first()){toast('Dein Team braucht Heilung! Suche das Heilhaus.');return}const choices=habitat?Object.keys(SPEC).filter(id=>SPEC[id].type===habitat):Object.keys(SPEC);const pool=(Math.random()<.48&&habitat===null)?wild:choices;const id=pool[Math.floor(rand(0,pool.length))],lv=Math.max(2,Math.min(48,Math.floor(rand(3,8))+save.badges*3));battle(make(id,lv),false)}
+function findWild(habitat=null){
+ if(!first()){toast('Dein Team braucht Heilung! Suche das Heilzentrum.');return}
+ const r=regionAtPosition();
+ battle(regionalEncounter(r.id,habitat),false);
+}
 function battle(enemy,isGym=false,trainerId=null,leagueIndex=null,championIndex=null){const me=first();if(!me){toast('Kein kampffähiges Taschi');return}save.dex[enemy.id] ||=1;const queue=isGym?Array.from({length:isGym<5?1:isGym<11?2:3},(_,i)=>make(wild[(isGym*3+i)%wild.length],Math.max(3,enemy.lv-2+i))):[];transition(GAME_STATES.BATTLE);combat={enemy,isGym,turn:0,queue:leagueIndex!==null?[make(['felsling','geisterchen','knister','bluetling','blitzor'][leagueIndex],enemy.lv-2),...queue]:queue,trainerId,leagueIndex,championIndex};battleStartedAt=performance.now();updateBattleScene();battleMenu('Ein '+SPEC[enemy.id].name+' erscheint!')}
 function battleMenu(log='Was soll dein Taschi tun?'){transition(GAME_STATES.BATTLE);
  const c=combat;if(!c)return;
@@ -655,7 +702,7 @@ async function toggleFullscreen(){
   else toast('Vollbild wird von diesem Browser nicht unterstützt.');
  }catch{toast('Vollbild ist hier nicht verfügbar.')}
 }
-function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Regionen & Schnellreise',regionSelect],['Regionale Champions',championSelect],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){if(!booted||combat)return;dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Regionen & Schnellreise',regionSelect],['Regionale Champions',championSelect],['Regionale Legenden',ancientMenu],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 
