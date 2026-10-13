@@ -499,11 +499,49 @@
   function drawMini() {
     const c = miniC.getContext('2d'); c.clearRect(0, 0, miniC.width, miniC.height); c.drawImage(miniBase, 0, 0);
     const S = miniS * 2, k = S / (2 * K.MAP), X = x => S / 2 + x * k, Y = z => S / 2 + z * k;
-    if (mission) { const s = mission.steps[mission.i]; const tx = s.type === 'spray' ? s.fx : s.x, tz = s.type === 'spray' ? s.fz : s.z; if (s.type !== 'lap') { c.fillStyle = '#ff2d55'; c.beginPath(); c.arc(X(tx), Y(tz), 7, 0, TAU); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.stroke(); } }
-    c.fillStyle = '#ff4f9a'; for (const a of remote.values()) { c.beginPath(); c.arc(X(a.x), Y(a.z), 5, 0, TAU); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); }
-    if (guide) { const gp = guide.d.at(); c.fillStyle = 'rgba(255,210,63,.95)'; c.strokeStyle = '#ff7a1f'; c.lineWidth = 3; c.beginPath(); c.arc(X(gp.x), Y(gp.z), 8 + Math.sin(t * 6) * 2, 0, TAU); c.fill(); c.stroke(); }
-    c.fillStyle = '#7a5ce0'; for (const cr of train.cars) c.fillRect(X(cr.x) - 2, Y(cr.z) - 2, 4, 4);
     const px = P.veh ? P.veh.x : P.x, pz = P.veh ? P.veh.z : P.z, ph = P.veh ? P.veh.h : P.h;
+    let target = null;
+    if (guide) target = guide.d.at();
+    else if (mission) {
+      const s = mission.steps[mission.i];
+      if (s.type !== 'lap') target = { x: s.type === 'spray' ? s.fx : s.x, z: s.type === 'spray' ? s.fz : s.z };
+    }
+    /* Aktives Ziel samt Richtungslinie: Die Inselkarte bleibt nordfest, der Weg passt sich laufend an. */
+    if (target && Number.isFinite(target.x) && Number.isFinite(target.z)) {
+      c.save(); c.setLineDash([5, 5]); c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 2.5;
+      c.beginPath(); c.moveTo(X(px), Y(pz)); c.lineTo(X(target.x), Y(target.z)); c.stroke(); c.restore();
+      c.fillStyle = '#ff315b'; c.strokeStyle = '#fff'; c.lineWidth = 3;
+      c.beginPath(); c.arc(X(target.x), Y(target.z), 8 + Math.sin(t * 5) * 1.5, 0, TAU); c.fill(); c.stroke();
+    }
+    /* Nahe Orte als kleine, echte Karten-Highlights; die Auswahl folgt der Spielerposition. */
+    const nearby = [];
+    for (const d of DEST) {
+      if (!d || !d.at || (guide && d.id === guide.d.id)) continue;
+      try {
+        const q = d.at(), dist = Math.hypot(q.x - px, q.z - pz);
+        if (Number.isFinite(q.x) && Number.isFinite(q.z) && dist < 112 && Math.hypot(q.x, q.z) < K.MAP - 4) nearby.push({ d, q, dist });
+      } catch (_) { }
+    }
+    nearby.sort((a, b) => a.dist - b.dist);
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '16px sans-serif';
+    for (const o of nearby.slice(0, 10)) {
+      const x = X(o.q.x), y = Y(o.q.z);
+      c.fillStyle = 'rgba(255,255,255,.94)'; c.beginPath(); c.arc(x, y, 8.5, 0, TAU); c.fill();
+      c.fillStyle = '#173854'; c.fillText(o.d.icon || '📍', x, y + .5);
+    }
+    c.fillStyle = '#ff4f9a';
+    for (const a of remote.values()) { c.beginPath(); c.arc(X(a.x), Y(a.z), 5, 0, TAU); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); }
+    c.fillStyle = '#7a5ce0'; for (const cr of train.cars) c.fillRect(X(cr.x) - 2, Y(cr.z) - 2, 4, 4);
+    /* Questtext direkt auf der Karte, damit Aufgabe und Ziel beim Spielen zusammen sichtbar sind. */
+    const questIcon = $('mIcon').textContent, questText = $('mText').textContent;
+    if (questText && !$('mission').hidden) {
+      const label = (questIcon ? questIcon + ' ' : '⭐ ') + questText;
+      c.save(); c.font = 'bold 12px system-ui, sans-serif'; c.textAlign = 'left'; c.textBaseline = 'middle';
+      c.fillStyle = 'rgba(16,39,62,.88)'; c.fillRect(8, S - 34, S - 16, 25);
+      c.fillStyle = '#fff'; let shown = label;
+      while (shown.length > 4 && c.measureText(shown).width > S - 30) shown = shown.slice(0, -2) + '…';
+      c.fillText(shown, 14, S - 21); c.restore();
+    }
     c.save(); c.translate(X(px), Y(pz)); c.rotate(Math.PI - ph); c.fillStyle = '#fff'; c.strokeStyle = '#1b2a4a'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0, -9); c.lineTo(6.5, 7); c.lineTo(0, 3.5); c.lineTo(-6.5, 7); c.closePath(); c.fill(); c.stroke(); c.restore();
   }
   function updateArrow() {
@@ -2362,7 +2400,7 @@
     if (state !== 'menu') A.music(dt, night > .5, BI.zoneAt(P.x, P.z, { cinema: cinema.open, obby: obby.run }));
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
-    if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .2; drawMini(); } }
+    if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .08; drawMini(); } }
     if ((snapT -= dt) <= 0) { snapT = 2; snapFigures(); }
     updateContactShadows(); if (!tv.render()) renderer.render(scene, camera);
   }
