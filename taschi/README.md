@@ -1,37 +1,46 @@
-# TASCHI – Die acht Lichter
+# TASCHI – Die 16 Lichter
 
-Eigenständiges, browserbasiertes 3D-Sammelrollenspiel im easygames-Monorepo. Inspiriert von der **originalen Taschi-Land-Welt** in `bunte-insel/`, mit eigenen Wesen und einer separaten Speicherung. Andere Spiele werden nicht geändert.
+Eigenständiges 3D-Sammelrollenspiel im [easygames-Repository](https://github.com/ricorewioriginal-collab/easygames) nach der eigens entwickelten Taschi-Land-Idee aus Bunte Insel. Die Dateien liegen ausschließlich unter `taschi/`. Das Originalspiel wird nicht verändert.
 
-## Spielen
+## Spiel starten
 
-Öffne `taschi/index.html` über einen lokalen HTTP-Server oder über die GitHub-Pages-Auslieferung. Beispiel im Repo-Wurzelverzeichnis:
+Im GitHub-Pages-Repository: `https://ricorewioriginal-collab.github.io/easygames/taschi/`
+
+Alternativ aus dem Repository-Hauptverzeichnis:
 
 ```bash
 python3 -m http.server 8080
+# Im Browser: http://localhost:8080/taschi/
 ```
 
-Dann `http://localhost:8080/taschi/` aufrufen. Für `three` wird derzeit eine **externe ESM-CDN-Ressource** verwendet, d.h. zum ersten Laden ist eine Internetverbindung nötig. Vollständiger Offline-Betrieb und eine produktionsreife Asset-Pipeline sind **noch nicht implementiert**.
+Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** eingebunden. Beim Deployment muss daher die entsprechende Verzeichnisstruktur samt dieser Vendor-Datei bestehen bleiben. Kein externes Three.js-CDN notwendig; die Spielstanddaten liegen im Browser.
 
-## Steuerung
+## Steuerung und Menüs
 
-Desktop: **WASD/Pfeiltasten** bewegen, **E** interagiert, Team und Taschidex über die Schaltflächen. Handy: linker Touch-Joystick und rechte Aktionsschaltflächen.
+- PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
+- Handy: Touch-Joystick und Aktionsschaltflächen.
+- **Team**, **Taschidex**, **Karte**, **Pause** als sichtbare Schaltflächen.
+- Pause: Reisekarte, Abenteuerbuch, Geschichte, Spielstand als JSON exportieren oder importieren.
+- Automatisches lokales Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
+- Import prüft Dateigröße und Spielstandsformat; beschädigte Eingaben werden abgewiesen.
 
-## Aktuell implementiert
+## Spielsysteme
 
-- Begehbare 3D-Lichtung Sonnenhain mit Kamera, Bäumen, Häusern, Arenastelen und hohem Gras.\n- Sechs prozedurale Dorfstandorte mit Rast- und Wildbegegnungen; vier Felshöhlen mit textbasierten Erkundungsaktionen, Kristallfunden und Begegnungen.
-- Startauswahl: Glutzahn, Plätscherchen oder Samenling.
-- 209 Art-/Regionalform-Einträge (17 Ausgangsarten + 192 prozedural abgeleitete Regionalformen), 8 Elementtypen, 9 Attacken, Begegnungen im hohen Gras.
-- Rundenbasierte Kämpfe mit KP, Leveln, EP, Typenfaktoren und Entwicklungen einiger Arten.
-- Taschibälle, Fangwahrscheinlichkeit abhängig von Rest-KP, Team bis 6, Lager, Taschidex.
-- 16 aufeinanderfolgende Arena-Duelle, Licht-Siegel, Heilhaus, Fangladen, Tränke.
-- Lokale Spielstandspeicherung im Browser per `localStorage`, unabhängig von Bunte Insel.
+- 17 grundlegende Taschi-Arten plus **192 deterministisch generierte Regionalformen**, zusammen 209 Art-/Formeinträge im Taschidex. Die Regionalformen variieren Farbe, Werte und prozedurale 3D-Details, nutzen aber gemeinsame Grundkörper. Das sind **keine 209 einzeln modellierten Original-Kreaturen**.
+- Acht Elementtypen und elementbasierte Wirksamkeiten, Angriffs- und Verteidigungswerte, EP, Levelaufstiege und einige Entwicklungen.
+- Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Tränke.
+- 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.
+- Eigenständige 3D-Kampfplattform mit sichtbaren Modellen beider Taschis.
+- 6 Dörfer mit Begegnungen und Rastaktionen; 4 Höhlen mit **begehbarem einfachem 3D-Interieur**, Kristallsuche, Wildbegegnungen und Ausgang.
+- Fünf Story-Kapitel, Abenteuerbuch, Richtungsanzeige zur nächsten Arena, freies Erkunden nach der 16. Herausforderung.
+- Mobile Rendering-Auflösung begrenzt und Blüten per InstancedMesh zusammengefasst.
 
-## Wichtige Grenzen
+## Aktuelle Qualitätsgrenzen
 
-Dies ist **ein spielbarer erster Entwicklungsstand, kein vollwertiges Switch-/3DS-Konsolenspiel**. Insbesondere fehlen ausgearbeitete Charakteranimationen, hochwertige individuelle Kreaturenmodelle, Städte und Regionen, NPC-Dialogketten, vertonte Geschichte, Audio, Weltkarte, dichte Quests, Online-Modi, zeitgemäße Kamera-Kollisionslogik und automatisierte Browser-/Gerätetests. Die 16 Arenen sind derzeit einzelne Herausforderungen mit jeweils einem gegnerischen Taschi; der Spielstand ist derzeit **nur lokal**, ohne Sync. Die 3D-Modelle sind einfache prozedurale Platzhalter. Die 192 Regionalformen verwenden wiederverwendete Grundkörper mit Farbvarianten und veränderten Werten. Die Höhlen besitzen derzeit keine eigenständig begehbaren 3D-Innenräume, sondern Interaktionsdialoge und Kämpfe.
+Die komplette **Kernfortschrittskette vom Starter bis zum 16. Arena-Siegel ist im Code angelegt**, wurde aber noch nicht mit einem automatisierten End-to-End-Browserlauf auf einem realen Smartphone verifiziert. Das Produkt erreicht derzeit **noch nicht die Qualität und den Umfang eines kommerziellen Konsolen-RPGs**. Noch fehlen insbesondere handmodellierte individuelle Monster, echte begehbare Häuser und umfangreiche Innenräume, hunderte individuelle Attacken, Status-Effekte und taktische Gegner-KI, umfangreiche Cutscenes, professionelle Musik/Soundeffekte, große zusammenhängende Routen, mehrstufige Haupt- und Nebenquests, Multiplayer/Handel und Cross-Device-Synchronisierung.
 
-Bekannte technische Grenzen: Ein fehlgeschlagener Import wird nun sichtbar angezeigt statt nur eine leere Fläche zurückzulassen. Dies ersetzt keine Ursachenbehebung oder Browsertests. Es gibt noch kein reguläres Package-/Build-System für Taschi; die Three.js-ESM-Abhängigkeit wird über CDN geladen; Browser können lokale Module unter `file://` blockieren. Performance und vollständiges Mobilverhalten müssen auf echten Geräten geprüft werden.
+Die Welt nutzt eigene Kunst-/Figurenansätze. Keine Pokémon-Assets oder markenrechtlich geschützten Grafiken, Sounds, Charaktere oder konkreten Spieltexte übernehmen.
 
-## Weitere Entwicklung
+## Entwicklung
 
-Die bereits in `bunte-insel/js/taschi-data.js` vorhandenen umfassenderen Arten-/Attacken-/Trainerdaten können in einer weiteren Entwicklungsiteration in ein **geteiltes, versioniertes Datenmodul** überführt werden, statt die Originalwelt zu verändern. Dabei sollten Bunte Insel und Taschi ihre Spielstände voneinander getrennt halten. Kein Original-Pokémon-Branding, keine geschützten Figuren, Grafiken, Musik oder Spielressourcen kopieren.
+Die Spielmechanik ist aktuell in `game.js` gebündelt und sollte mittelfristig modularisiert und mit Browser- und Gerätetests abgesichert werden. Bunte Insel darf dabei nicht überschrieben werden. Ein zusätzliches Vite-Build-System ist **noch nicht** eingerichtet; die vorhandenen Dateien sind direkt statisch auslieferbar.
