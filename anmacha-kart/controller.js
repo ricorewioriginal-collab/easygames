@@ -4,7 +4,7 @@ window.startController = function () {
   let itemSeq = 0, prevItem = 0;
   let name = '', logo = 6, ch = 1, kt = 0; try { name = localStorage.getItem('akName') || ''; logo = +localStorage.getItem('akLogo'); if (!(logo >= 0 && logo < 13)) logo = 6; ch = +localStorage.getItem('akChar'); if (!(ch >= 0 && ch < CHARS.length)) ch = 1; kt = +localStorage.getItem('akKart'); if (!(kt >= 0 && kt < KARTS.length)) kt = 0; } catch (e) {}
   // Feste Geräte-Kennung: nach Verbindungsabbruch (Bildschirmsperre, WLAN-Wechsel) bekommt das Handy sein Kart zurück
-  let viewOn = false; try { viewOn = localStorage.getItem('akView') === '1'; } catch (e) {}
+  let viewOn = true; try { const pref = localStorage.getItem('akView'); if (pref !== null) viewOn = pref === '1'; } catch (e) {}
   let cid = ''; try { cid = localStorage.getItem('akCid') || ''; } catch (e) {} if (!/^[a-z0-9]{8,16}$/.test(cid)) { cid = Math.random().toString(36).slice(2, 12).padEnd(8, '0'); try { localStorage.setItem('akCid', cid); } catch (e) {} }
   const logoSrc = i => `logos/${String(i + 1).padStart(2, '0')}.png`, put = html => { root.classList.remove('play', 'view'); root.innerHTML = html; }, st = { s: 0, g: 0, b: 0, d: 0, i: 0 };
   const tx = m => { try { conn && conn.open && conn.send(m); } catch (e) {} };
