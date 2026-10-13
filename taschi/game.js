@@ -122,7 +122,25 @@ function house(x,z,label,color){
 }
 const places=[house(14,10,'Professor Ulmes Labor',0xf8e5c2),house(-18,10,'Heilhaus',0xf4a9b7),house(14,-32,'Fangladen',0x91cce1)];
 // Arena monuments: 8 stations around the valley, visible and approachable.
-const gyms=[];GYMS.forEach((g,i)=>{const x=-51+(i%4)*34,z=-51+Math.floor(i/4)*31;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i});townLabel((i+1)+'. Siegel',x,z,7)});
+const gyms=[];GYMS.forEach((g,i)=>{
+ const x=-51+(i%4)*34,z=-51+Math.floor(i/4)*31;
+ const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);
+ const theme=[0x8590a3,0x639db7,0xd4a95b,0x7cb982,0x9c91b9,0xcf7e82,0x82b6b4,0xe0bc73][i%8];
+ const base=mat(theme),pale=mat(0xfff1d4),dark=mat(0x374f65);
+ cylinder(group,0,.44,0,5.4,5.9,.88,mat(0x879994));
+ cylinder(group,0,.9,0,4.4,4.7,.24,base);
+ for(let j=0;j<6;j++){const angle=j*Math.PI/3;const px=Math.sin(angle)*3.6,pz=Math.cos(angle)*3.6;
+  cylinder(group,px,2.65,pz,.19,.26,3.8,pale);
+  const orb=ball(group,px,4.6,pz,.29,base);orb.scale.y=.8;
+ }
+ const canopy=mesh(group,new THREE.ConeGeometry(5.15,2.25,6),dark,0,5.7,0);canopy.rotation.y=Math.PI/6;
+ const roofTrim=mesh(group,new THREE.CylinderGeometry(4.8,4.8,.21,6),base,0,4.8,0);roofTrim.rotation.y=Math.PI/6;
+ const jewel=mesh(group,new THREE.OctahedronGeometry(.85),mat(theme,.18),0,7.2,0);
+ jewel.rotation.y=i*.2;
+ const emblem=mesh(group,new THREE.TorusGeometry(1.3,.13,8,32),pale,0,2.8,0);emblem.rotation.x=Math.PI/2;
+ for(const side of [-1,1]){box(group,side*4.3,2.3,0,.18,2.9,1.1,base)}
+ gyms.push({x,z,label:g[0],gym:i});townLabel((i+1)+'. Siegel',x,z,8.3);
+});
 // Additional villages and cave landscapes; cave sites are explorable above-ground rock caverns.
 
 
