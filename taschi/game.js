@@ -458,9 +458,22 @@ async function toggleFullscreen(){
   else toast('Vollbild wird von diesem Browser nicht unterstützt.');
  }catch{toast('Vollbild ist hier nicht verfügbar.')}
 }
-function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Vollbild an/aus',()=>{close();toggleFullscreen()}],['Geschichte',chapterDialog],['Reiseführer',journeyMenu],['Sternenliga',leagueMenu],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
+
+function journeyMenu(){
+ const next=Math.min(save.badges,15);
+ const list=GYMS.map((g,i)=>{
+  const done=i<save.badges,now=i===save.badges;
+  return '<p style="margin:7px 0;padding:8px;border-radius:9px;background:'+(now?'#ffe19b':'#eff5f8')+'"><b>'+(done?'✓':now?'➜':'◌')+' Route '+(i+1)+' · '+g[0]+'</b><br>Empfohlene Stufe '+g[2]+' · '+(done?'Siegel gewonnen':now?'Nächstes Ziel':'Noch nicht abgeschlossen')+'</p>';
+ }).join('');
+ dialog('Reiseführer · 16 Routen','<p>Von Sonnenhain bis zur Sternenliga. Sammle alle Licht-Siegel und qualifiziere dich für fünf Meisterprüfungen.</p><div style="max-height:42vh;overflow-y:auto">'+list+'</div><p>Sternenliga: '+(save.league||0)+'/5</p>',[
+ ['Nächstes Ziel',()=>{close();toast(save.badges<16?'Arena '+(next+1)+': '+GYMS[next][0]:'Sternenliga im Pausemenü')}],
+ ['Reisekarte',mapView],['Zurück',mainMenu]
+ ]);
+}
+
 function mapView(){dialog('Reisekarte','<p>Die Reiseorte sind in der 3D-Welt an ihren Positionen markiert. Erkunde mit dem Joystick oder den Pfeiltasten.</p>'+[...gyms.map((p,i)=>({...p,name:(i+1)+'. Arena: '+GYMS[i][0]})),...villages,...caves,...places].map(p=>'<p>📍 '+(p.name||p.label)+' – '+Math.round(Math.hypot(p.x-player.position.x,p.z-player.position.z))+' m</p>').join(''),[['Abenteuerbuch',journalView],['Zurück',close]])}
 function recordVisit(place){save.visited ||= {};save.visited[place.name||place.label]=true;persist()}
 
