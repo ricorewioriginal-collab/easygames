@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1cdda32f2711",
- "generated": "2026-10-13T15:22:52+02:00",
- "commit": "9256bf219e68881610ff863bf5410a6399a9090e",
+ "version": "294494c3eb5a",
+ "generated": "2026-10-13T15:42:33+02:00",
+ "commit": "0e4db1e2ff0c15fe1af169ca05c4c704a75aea11",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4994,7 +4994,7 @@
   {
    "p": "sync/catalog.json",
    "s": 56641,
-   "h": "7473b102830cd36117c6667da6eb3750a3e6770e52e45dc6301ebbe4e2e18821"
+   "h": "84165c76436689af38bbf5d5ad13d19784e7c4c0d32e8f1b0698663fc52450e2"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
@@ -5403,8 +5403,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 394358,
-   "h": "f0435ca3f397910640ed7ae6a299b80dd4770b7c5aacb2a0562531c9fed03b23"
+   "s": 395757,
+   "h": "630740ccc0d651536be64c733e17a360d4e9bc295e14418a7a7fed37338be0bc"
   },
   {
    "p": "zotik/manifest.webmanifest",
