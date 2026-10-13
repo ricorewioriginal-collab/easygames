@@ -631,7 +631,7 @@ addEventListener('keydown', e => {
     : document.querySelector('main');
   if (scope && spatial(e.key, scope)) e.preventDefault();
 });
-if (isTv && tiles[0]) tiles[0].querySelector('.tile').focus({ preventScroll: true });
+
 
 // ----- Weiterspielen (nur lokal gemerkt, rein zur Bequemlichkeit) -----
 function recents() { try { const a = JSON.parse(localStorage.getItem('eg-recent') || '[]'); return Array.isArray(a) ? a.filter(id => GAMES.some(g => g.id === id)) : []; } catch (e) { return []; } }
@@ -690,6 +690,8 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
   }
   addEventListener('easygames:app-state', render); render();
 })();
+
+if (isTv) { const f = heroOn ? $('hero').querySelector('.primary') : tiles[0] && tiles[0].querySelector('.tile'); if (f) f.focus({ preventScroll: true }); }   // TV: Fokus startet auf dem empfohlenen Spiel
 
 // Direktlink zur Spieleliste: ...#anmacha-flipper öffnet das Spiel gleich
 const start = GAMES.findIndex(g => '#' + g.id === location.hash);
