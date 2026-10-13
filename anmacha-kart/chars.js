@@ -11,7 +11,14 @@ const CHARS = [
   { id: 'roboter', name: 'Bolt', emoji: '🤖', kind: 'Fantasie', acc: '#00e5ff', skin: '#9aa8c8', body: '#6a7898' },
   { id: 'alien', name: 'Zorp', emoji: '👽', kind: 'Fantasie', acc: '#7cff6a', skin: '#9a5cff', body: '#5a3aa8' },
   { id: 'panda', name: 'Bao', emoji: '🐼', kind: 'Tier', acc: '#ffd24a', skin: '#fafafa', body: '#2a2a32' },
-  { id: 'hase', name: 'Hoppel', emoji: '🐰', kind: 'Tier', acc: '#ffa0c8', skin: '#fff0f6', body: '#ffd0e4' }
+  { id: 'hase', name: 'Hoppel', emoji: '🐰', kind: 'Tier', acc: '#ffa0c8', skin: '#fff0f6', body: '#ffd0e4' },
+  { id:'lichtfunke', model:'einhorn', name:'Lumina', emoji:'✨', kind:'Herzportal', cup:'Portal-Cup', acc:'#ec8dff', skin:'#fff0fd', body:'#97dafa' },
+  { id:'kristall', model:'roboter', name:'Kryon', emoji:'💎', kind:'Kristallsturm', cup:'Portal-Cup', acc:'#69d7ff', skin:'#8caadf', body:'#d2f5ff' },
+  { id:'knospe', model:'frosch', name:'Mozi', emoji:'🌿', kind:'Monsterfreunde', cup:'Fantasy-Cup', acc:'#8bdd59', skin:'#6dbc65', body:'#f6d78d' },
+  { id:'ruinen', model:'baer', name:'Granit', emoji:'🗿', kind:'Ahnenruinen', cup:'Portal-Cup', acc:'#d4ad6d', skin:'#a4957e', body:'#d8c7a7' },
+  { id:'flammenflug', model:'drache', name:'Flämmchen', emoji:'🔥', kind:'Drachenflug', cup:'Fantasy-Cup', acc:'#ffae48', skin:'#c76a40', body:'#ffde91' },
+  { id:'splitter', model:'alien', name:'Ziri', emoji:'🌠', kind:'Splitterwelten', cup:'RicoReWi-Cup', acc:'#ffa64c', skin:'#d581e8', body:'#5c4d9b' },
+  { id:'insel', model:'hase', name:'Kiki', emoji:'🌈', kind:'Farbeninsel', cup:'RicoReWi-Cup', acc:'#ff93ce', skin:'#fff1d8', body:'#8ee4d1' }
 ];
 
 /* Kart-Typen (Werte als Faktoren): mv Tempo, ma Beschleunigung, mt Lenken, mr Gelände (Tempo neben der Strecke), md Drift-Aufladung, mw Gewicht */
