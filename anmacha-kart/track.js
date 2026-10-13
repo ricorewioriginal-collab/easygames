@@ -45,7 +45,7 @@ const Track = (() => {
   themed.forEach((theme, index) => {
     const source = DEFS[theme.base], spin = 0.33 * (index + 1), cs = Math.cos(spin), sn = Math.sin(spin);
     const pts = source.pts.map(([x,z], i) => {
-      const scale = 1.07 + 0.09 * Math.sin(i * 1.6 + index * 0.74);
+      const scale = 1.07 + 0.09 * Math.sin(i * 1.6 + index * 0.74) + 0.12 * Math.sin(i * (index % 2 ? 2.1 : 1.3) + index);
       return [Math.round((x * cs - z * sn) * scale), Math.round((x * sn + z * cs) * scale)];
     });
     DEFS.push({ ...source, ...theme, pts, w: index === 2 || index === 6 ? 23 : 20 });
