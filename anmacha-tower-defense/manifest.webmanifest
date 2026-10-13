@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "AnMaCha Tower Defense",
+  "short_name": "Tower Defense",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#1e1436",
+  "theme_color": "#2c1d4e",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/anmacha-tower-defense-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/anmacha-tower-defense-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/anmacha-tower-defense-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

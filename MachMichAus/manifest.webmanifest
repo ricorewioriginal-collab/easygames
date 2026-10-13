@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "Mach mich aus!",
+  "short_name": "Mach mich aus!",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#050517",
+  "theme_color": "#080821",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "../pwa-icons/MachMichAus-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/MachMichAus-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../pwa-icons/MachMichAus-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
