@@ -81,7 +81,7 @@ BI.createTv = function (G) {
       s = slots[i] = { i, conn, id: conn.peer, cid: cid || '', rx: Date.now(), away: 0, name: i === 0 ? G.heroName() : 'Spieler ' + (i + 1), stick: [0, 0], held: {}, jump: false, act: false, wave: 0, dance: false, mate: null, ct: 0 }; bound = s;
       if (i > 0) spawnMate(s);
       welcome(s); T.stat = ''; renderPanel(); chip.hidden = false; G.say('📱 ' + s.name + ' ist dabei!', 2200); A.pop && A.pop();
-      if (T.split && players().length < 2) setSplit(false);
+      if (T.split) layout(); // neu verbundene Spieler sofort in eigene Ansichten aufnehmen
     };
     conn.on('open', () => { tm = setTimeout(() => bind(''), 2500); /* ältere Controller ohne Kennung */ });
     conn.on('data', d => { if (d && d.t === 'hi' && !bound) bind(String(d.cid || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 24)); const s = bound && bound.conn === conn ? bound : null; if (s) s.rx = Date.now(); onData(conn.peer, d); });
@@ -172,7 +172,14 @@ BI.createTv = function (G) {
     else if (k === 'H') { if (down) { inp.horn = true; inp.hornEdge = true; } else inp.horn = false; }
     else if (k === 'X') { if (down) { inp.aux = true; inp.down = true; } else inp.down = false; }
   }
-  function setSplit(on) { if (on && players().length < 2) { G.say('🪟 Splitscreen braucht mindestens 2 Handys', 2400); on = false; } T.split = on; layout(); renderPanel(); for (const s of slots) if (s) welcome(s); }
+  function setSplit(on) {
+    // Splitmodus schon vor dem Verbinden auswählen; Layout wird automatisch
+    // aktiviert, sobald mindestens zwei aktive Spieler vorhanden sind.
+    T.split = !!on;
+    if (T.split && players().length < 2) G.say('🪟 Splitscreen bereit – zweiten Controller verbinden', 2400);
+    layout(); renderPanel();
+    for (const s of slots) if (s) welcome(s);
+  }
   function onCmd(s, k) {
     if (k === 'start') { if (G.state() === 'menu') G.startGame(); return; }
     if (k === 'split') { setSplit(!T.split); return; }
