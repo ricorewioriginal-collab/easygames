@@ -91,6 +91,64 @@ const View = (() => {
     const nb = 16; for (let k = 0; k < nb; k++) { const i = Math.floor(tr.N * (k + 0.3) / nb), s = k % 2 ? 1 : -1, nx = tr.Nm[i * 2], nz = tr.Nm[i * 2 + 1], lid = logos.length ? logos[k % logos.length].idx : 0, g = new T.Group(); g.position.set(tr.P[i * 2] + nx * s * (tr.wallD + 5), 0, tr.P[i * 2 + 1] + nz * s * (tr.wallD + 5)); g.rotation.y = Math.atan2(-nx * s, -nz * s);
       [-2.6, 2.6].forEach(x => { const p = new T.Mesh(new T.BoxGeometry(0.5, 7, 0.5), lam('#1a1d33')); p.position.set(x, 3.5, 0); g.add(p); }); const bd = new T.Mesh(new T.BoxGeometry(6.4, 4.2, 0.4), lam('#0a0f2a')); bd.position.y = 6; g.add(bd); const lg = new T.Mesh(new T.PlaneGeometry(4, 4), logoMat(lid)); lg.position.set(0, 6, 0.22); g.add(lg); world.add(g); }
     (SC[th] || SC.wiese)(d);
+    // Sieben zusätzliche Themen: eigenständige, ressourcenschonende 3D-Silhouetten am Streckenrand.
+    if (d.mechanic) {
+      const palette = {
+        portal:['#ffb3ec','#74dbff'], crystal:['#a4edff','#bca2ff'],
+        safari:['#ffcb6c','#75cf92'], ruins:['#d5bc91','#92b8a1'],
+        dragon:['#ffa65f','#9ed4fd'], shards:['#ff993d','#a971fc'],
+        island:['#ff9cce','#70e6c4']
+      }[d.mechanic] || ['#ffffff','#88ccff'];
+      const crystalGeo = new T.ConeGeometry(1, 1, 5);
+      const pillarGeo = new T.BoxGeometry(1, 1, 1);
+      const ringGeo = new T.TorusGeometry(1, 0.16, 6, 18);
+      const orbGeo = new T.IcosahedronGeometry(1, 0);
+      for (let j = 0; j < 18; j++) {
+        const frac = (j + 0.45) / 18, i = Math.floor(frac * tr.N) % tr.N;
+        const side = j % 2 ? 1 : -1, distance = tr.wallD + 13 + (j % 3) * 6;
+        const group = new T.Group();
+        group.position.set(tr.P[i * 2] + tr.Nm[i * 2] * side * distance, 0,
+          tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * side * distance);
+        const color = palette[j % palette.length], mat = new T.MeshLambertMaterial({ color, emissive: color, emissiveIntensity: 0.16 });
+        const dark = new T.MeshLambertMaterial({ color: d.wall[0] });
+        const size = 3 + j % 4;
+        if (d.mechanic === 'portal') {
+          const portal = new T.Mesh(ringGeo, mat); portal.scale.set(size * 0.8, size * 1.35, size * 0.8);
+          portal.position.y = size * 1.6; portal.rotation.y = j * 0.6; group.add(portal);
+          const plinth = new T.Mesh(pillarGeo, dark); plinth.scale.set(size * 1.5, 1.1, size); plinth.position.y = 0.55; group.add(plinth);
+        } else if (d.mechanic === 'crystal' || d.mechanic === 'shards') {
+          for (let k = 0; k < 3; k++) {
+            const gem = new T.Mesh(crystalGeo, mat);
+            gem.scale.set(size * (0.4 + k * 0.13), size * (1.8 - k * 0.35), size * 0.5);
+            gem.position.set((k - 1) * size * 0.8, gem.scale.y * 0.5, (k % 2) * size * 0.5);
+            gem.rotation.z = (k - 1) * 0.25; group.add(gem);
+          }
+        } else if (d.mechanic === 'ruins') {
+          for (let k = -1; k <= 1; k += 2) {
+            const col = new T.Mesh(pillarGeo, dark); col.scale.set(size * 0.5, size * 2.9, size * 0.5);
+            col.position.set(k * size * 1.2, size * 1.45, 0); group.add(col);
+          }
+          const lintel = new T.Mesh(pillarGeo, mat); lintel.scale.set(size * 3, size * 0.55, size * 0.75);
+          lintel.position.y = size * 3; group.add(lintel);
+        } else if (d.mechanic === 'dragon') {
+          const peak = new T.Mesh(crystalGeo, dark); peak.scale.set(size * 2, size * 5, size * 2);
+          peak.position.y = size * 2.5; group.add(peak);
+          const beacon = new T.Mesh(orbGeo, mat); beacon.scale.setScalar(size * 0.6);
+          beacon.position.y = size * 4.8; group.add(beacon);
+        } else if (d.mechanic === 'safari') {
+          const trunk = new T.Mesh(pillarGeo, dark); trunk.scale.set(size * 0.4, size * 2, size * 0.4);
+          trunk.position.y = size; group.add(trunk);
+          const crown = new T.Mesh(orbGeo, mat); crown.scale.set(size * 1.45, size * 0.85, size * 1.3);
+          crown.position.y = size * 2.25; group.add(crown);
+        } else if (d.mechanic === 'island') {
+          const hut = new T.Mesh(pillarGeo, dark); hut.scale.set(size * 1.7, size * 1.4, size * 1.4);
+          hut.position.y = size * 0.7; group.add(hut);
+          const roof = new T.Mesh(crystalGeo, mat); roof.scale.set(size * 1.7, size * 1.1, size * 1.7);
+          roof.position.y = size * 1.85; group.add(roof);
+        }
+        world.add(group);
+      }
+    }
     world.children.forEach(o => { if (o.userData.blink) blinkers.push(o); }); dustCol = new T.Color(d.ground).lerp(new T.Color(0xffffff), th === 'gruft' || th === 'neon' ? 0.25 : 0.4).getHex();
   }
 
