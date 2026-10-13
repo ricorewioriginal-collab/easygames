@@ -409,6 +409,8 @@
    "path": "anmacha-kart/",
    "modes": {
     "pad": true,
+    "multi": true,
+    "online": true,
     "tvParam": true
    },
    "multiplayer": true,
@@ -423,7 +425,7 @@
      "Mit der Lenkhilfe (Aus, Leicht, Stark) wird das Fahren am Handy einfacher."
     ]
    },
-   "size": 1453415,
+   "size": 1455394,
    "files": 25,
    "offline": true
   },
