@@ -160,7 +160,20 @@ const Sim = (() => {
     if (!k.finished && k.rp >= S.laps * N) { k.finished = true; k.finT = S.t; k.auto = true; if (k.human) S.finishedHumans++; emit(S, { t: 'finish', k: k.k, time: S.t }); }
     if (S.state === 'race') {
       if (S.items) S.boxes.forEach(b => { if (b.cd > 0) return; if ((b.x - k.x) ** 2 + (b.z - k.z) ** 2 < 12 && !k.item && k.itemT <= 0 && !k.finished) { b.cd = 3.5; k.itemT = 0.9; k.itemPending = true; emit(S, { t: 'box', k: k.k }); } });
-      S.pads.forEach(p => { if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 < 20 && k.boostT < 1.1) { k.boostT = 1.2; emit(S, { t: 'pad', k: k.k }); } });
+      S.pads.forEach(p => {
+        if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 >= 20 || k.boostT >= 1.1) return;
+        const mechanic = S.tr.def.mechanic;
+        // Jede Welt bekommt ihre eigene Arcade-Wirkung ohne fremde Spielassets.
+        const duration = mechanic === 'dragon' ? 2.25 : mechanic === 'shards' ? 1.85 :
+          mechanic === 'portal' ? 1.65 : mechanic === 'crystal' ? 1.55 : 1.2;
+        k.boostT = duration;
+        if (mechanic === 'crystal') k.shieldT = Math.max(k.shieldT, 2);
+        if (mechanic === 'island') { k.slowT = 0; k.blindT = 0; }
+        if (mechanic === 'safari') k.draftCharge = Math.min(1.05, k.draftCharge + 0.35);
+        if (mechanic === 'ruins') k.inv = Math.max(k.inv, 0.65);
+        if (mechanic === 'portal') k.vf = Math.max(k.vf, VMAX * 0.9);
+        emit(S, { t: 'pad', k: k.k, mechanic });
+      });
       if (k.itemPending && k.itemT <= 0) { k.itemPending = false; k.item = rollItem(S, k); k.itemN = k.item.endsWith('3') ? 3 : 1; emit(S, { t: 'got', k: k.k, item: k.item }); }
     }
     if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) useItem(S, k); k.itemPrev = !!inp.i;
