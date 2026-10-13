@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5f1c99f2d94b",
- "generated": "2026-10-13T00:46:27+00:00",
- "commit": "021b5023dc7a5aa758e36ee782e9db9e66631dc2",
+ "version": "df32bf4171a8",
+ "generated": "2026-10-13T02:55:35+02:00",
+ "commit": "7571422950c5a0cfff90e004120bc1a5742ed8ab",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -48,8 +48,8 @@
   },
   {
    "p": "FunkhausReality/index.html",
-   "s": 5435,
-   "h": "924dc6f16df67e0aeaf15f45568d04dbeb0467a7ada902739af7b664c41ca1ef"
+   "s": 7807,
+   "h": "f0be659f0e7afb41500561361bffb0276161398e595394b8a433598e2086b5e3"
   },
   {
    "p": "FunkhausReality/logo.png",
@@ -142,6 +142,11 @@
    "h": "a32b10cb4b20612ba3a9685d87bec004e36ab2a6b9467e9443dc4bdb54d719a6"
   },
   {
+   "p": "FunkhausReality/manifest.webmanifest",
+   "s": 781,
+   "h": "2fc32e7df527249cb4993a9047e287f19963bcf77ac20c26d39ec9b68cc52714"
+  },
+  {
    "p": "FunkhausReality/pair.js",
    "s": 4716,
    "h": "9910bfcfaced2e2dbb5b54471a5d8bdd310d3ffc7dbeb8fb474f61f9b218c930"
@@ -155,6 +160,11 @@
    "p": "FunkhausReality/style.css",
    "s": 15228,
    "h": "d9ce555b2a4ee9cc1ecc799b31fc255012039c77d15d881e2b54cc98bb7a3878"
+  },
+  {
+   "p": "FunkhausReality/sw.js",
+   "s": 1912,
+   "h": "eaba84cda9258a6d9b854f75011b600cc830345c58863610d77c1794b36ebf06"
   },
   {
    "p": "FunkhausReality/views.js",
@@ -198,8 +208,8 @@
   },
   {
    "p": "MachMichAus/index.html",
-   "s": 5301,
-   "h": "2b4b38f8e4c90f244cb7dc6eab8c9707ac3137e78bdc1f845636f7f67841e2b0"
+   "s": 7667,
+   "h": "f8bff7532b71afdc2b8cec71acf1b036002a1ac73c0ef9fe923b338f3092cc35"
   },
   {
    "p": "MachMichAus/logo.png",
@@ -292,6 +302,11 @@
    "h": "f86fc7ca3e26bb705ad69717ab0531e9dbf622b58c65adefae6bfc1d2648e3ab"
   },
   {
+   "p": "MachMichAus/manifest.webmanifest",
+   "s": 765,
+   "h": "ef39b3bbd0adc19659c4ef0ea975d00b689dca72d32e6ce3434a455ca22a7740"
+  },
+  {
    "p": "MachMichAus/pair.js",
    "s": 4722,
    "h": "8d6320def11b7b2a6d0d18e7432d7080dd584dea94e54d09a4cddf71e446dcd4"
@@ -310,6 +325,11 @@
    "p": "MachMichAus/style.css",
    "s": 18698,
    "h": "9c99edab1a1cbea0f9462531977fa5a86f0d5b0eb678fcef9a8541ae2d99ec43"
+  },
+  {
+   "p": "MachMichAus/sw.js",
+   "s": 1902,
+   "h": "ba83c61aa0b1a3fddd2d58eabf2d64fceedaa86c423858af67dcf9e3143ed412"
   },
   {
    "p": "aeru/card.png",
@@ -333,8 +353,13 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 8871,
-   "h": "c1b48a934873c864a62640892e2565144c1264a256ca8f23a9ef28f987926fa0"
+   "s": 11220,
+   "h": "91b9983d773987cdabbffdcf1103277dee0203f6cc295b1a5f91d7d0c57bb25c"
+  },
+  {
+   "p": "aeru/manifest.webmanifest",
+   "s": 746,
+   "h": "53725bff31c3ab36690d8e2dad525f66859fc08b2bd8e197f53306d9a9b89dd5"
   },
   {
    "p": "aeru/quests.js",
@@ -352,6 +377,11 @@
    "h": "6cd4a030aa1a1797fd8cea27669fc44a19988d52104ae4380fc0bb71780bdef0"
   },
   {
+   "p": "aeru/sw.js",
+   "s": 1900,
+   "h": "bc65cd9c6f88e051f87fe941cdca025c09558803f37dbfe3f4c19fcfb48fbf21"
+  },
+  {
    "p": "aeru/vendor/three-compatible.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
@@ -363,8 +393,8 @@
   },
   {
    "p": "anmacha-beat-surfer/index.html",
-   "s": 59299,
-   "h": "6452143143ee9fcb51e6cca51c73dd0fc9dfdb0af8b4d96ca2cc91fcaadec227"
+   "s": 61670,
+   "h": "a2fa2aed86abcef7dd1103a650fc44b68bc50ff89f2f874a79bc9c5cef75b1c5"
   },
   {
    "p": "anmacha-beat-surfer/logo.png",
@@ -437,9 +467,19 @@
    "h": "c3d7d73173d2bf25765a3ec608b11c1517cde1397511f1b0cbc92f7f722b05e7"
   },
   {
+   "p": "anmacha-beat-surfer/manifest.webmanifest",
+   "s": 791,
+   "h": "710e7997d34c394452750b56bf478e66f0ab6c53570b607baf0d9f8815a9ecbe"
+  },
+  {
+   "p": "anmacha-beat-surfer/sw.js",
+   "s": 1923,
+   "h": "b7c0c134a2f5582608b3c3d1cceb4f2511f777d6c9cfacc074cd6c8e001cdbdf"
+  },
+  {
    "p": "anmacha-flipper/index.html",
-   "s": 77455,
-   "h": "4100cad5779136b0d80f071f4487dab618b0fbf77f0829ca1a0335a20f1a08bb"
+   "s": 79818,
+   "h": "648a559edfc9362e0e073ac6c6cb874a25269997579a1a3049b2efd0fb015401"
   },
   {
    "p": "anmacha-flipper/logo.png",
@@ -512,6 +552,16 @@
    "h": "c3d7d73173d2bf25765a3ec608b11c1517cde1397511f1b0cbc92f7f722b05e7"
   },
   {
+   "p": "anmacha-flipper/manifest.webmanifest",
+   "s": 771,
+   "h": "4ddc4fabb21b1ac83e4a36b5870f6156d64f45600b4232a962274a6ab5a02311"
+  },
+  {
+   "p": "anmacha-flipper/sw.js",
+   "s": 1911,
+   "h": "2be87dcba3e31dc5f2314b5b81d5faa84f33a2dcf742b7f9676f4a2440101489"
+  },
+  {
    "p": "anmacha-frequenzrad/audio.js",
    "s": 3151,
    "h": "4ee8b7594dfcd1de4dca6c4e1ee79bc3164444a49fb6bc5c60540de364b3bdd5"
@@ -533,8 +583,8 @@
   },
   {
    "p": "anmacha-frequenzrad/index.html",
-   "s": 5507,
-   "h": "70228996bcff1000404523ce51dcd81871f23b253ae9ada16a19aa910f41639a"
+   "s": 7878,
+   "h": "9289898eb12f112ff67eb1846c90e36e3f504fdc424361f3c88aa932d5a6407e"
   },
   {
    "p": "anmacha-frequenzrad/logo.png",
@@ -612,6 +662,11 @@
    "h": "097908763cee40b308c9a64c9a0f451053da3c4f3e125d3da1a119176dfac7b4"
   },
   {
+   "p": "anmacha-frequenzrad/manifest.webmanifest",
+   "s": 791,
+   "h": "491d051ecd52b56fefe8659c215c1d53edbdb770eb6d0c35815a230e29741d4d"
+  },
+  {
    "p": "anmacha-frequenzrad/pair.js",
    "s": 4498,
    "h": "d6e78ca0273ea1eedab03e483a78697913c8636a4cde63443273cf257703e39f"
@@ -645,6 +700,11 @@
    "p": "anmacha-frequenzrad/style.css",
    "s": 18209,
    "h": "57d1f9ec5d226cbc56ad2a70e2bf0162077a925483a42d768f27bc8a3fcabef4"
+  },
+  {
+   "p": "anmacha-frequenzrad/sw.js",
+   "s": 1923,
+   "h": "14390e1809174949e4209b1b34e114a71388d07df89739303d38eb2138e4bb34"
   },
   {
    "p": "anmacha-frequenzrad/wheel.js",
@@ -683,8 +743,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 7087,
-   "h": "7abf4fdf828a690c9cb8bb9d56c27b4958a3010e9257b7a04910ed82f0a60653"
+   "s": 9460,
+   "h": "d55e5f817085b4a189f508e80c428127ec5497500f247a2cfae59c15d9d243e9"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -777,6 +837,11 @@
    "h": "9d44597f12cccf7dee9cec4c88bfa8204a1cec7eca10094ce8622f50b4d80fac"
   },
   {
+   "p": "anmacha-funkparcours/manifest.webmanifest",
+   "s": 796,
+   "h": "3c1522d1ea9df7de806af3f8489aeffb1c6b32b32bc1120fbbaf1befb8904ab6"
+  },
+  {
    "p": "anmacha-funkparcours/menu.js",
    "s": 7486,
    "h": "635309de37bfb4a30370b880ab24a063b6fa451e98342e0aba83c3ded4c51fc7"
@@ -800,6 +865,11 @@
    "p": "anmacha-funkparcours/style.css",
    "s": 18869,
    "h": "d52d4be01e1283035b540b63f7cfc449ce3bfe3bc4903a588c10fd380034d478"
+  },
+  {
+   "p": "anmacha-funkparcours/sw.js",
+   "s": 1926,
+   "h": "f938a845affd4ff4a598be01a96c924cf2ff0f9dbeb8f7136307983dc550cff9"
   },
   {
    "p": "anmacha-gesucht/audio.js",
@@ -828,8 +898,8 @@
   },
   {
    "p": "anmacha-gesucht/index.html",
-   "s": 18523,
-   "h": "3526b620181f7c5ed2b29043519cdae8e974ea1c66496a69f2396965c8294950"
+   "s": 20895,
+   "h": "f22ceb0095ec5b5ed9010f8e57f37063ad4677736ff8122017027c23b94f7616"
   },
   {
    "p": "anmacha-gesucht/logo.png",
@@ -902,14 +972,24 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-gesucht/manifest.webmanifest",
+   "s": 791,
+   "h": "ee8f776dbbdc7845f522c6bf601018907fb5a7fab1e27c22974232c3279b0761"
+  },
+  {
    "p": "anmacha-gesucht/studio.js",
    "s": 26953,
    "h": "9563d7839d711fd3bc788567378199d4dcb9787a86c1b1c5f6a068fc49f7a42d"
   },
   {
+   "p": "anmacha-gesucht/sw.js",
+   "s": 1922,
+   "h": "ab1344a3e31864acb551bdb00eb1232c824d1b0e9651cc112c6787fc7f1786d9"
+  },
+  {
    "p": "anmacha-gold-reels/index.html",
-   "s": 29447,
-   "h": "2dd6cf004d6ba8688ddfcfc6f1d7771ea8982eb64ea57e720fa78a64cd3c6310"
+   "s": 31816,
+   "h": "051a1938e9ed4c3ca9d35c240aa9b4d834d017f40e890c26a05d344412d15991"
   },
   {
    "p": "anmacha-gold-reels/logos/01.png",
@@ -977,9 +1057,19 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-gold-reels/manifest.webmanifest",
+   "s": 786,
+   "h": "b385d5ee3788bd02c01a076832e1ea78b67f4bccfc55408e8d1edbc1e1bf955a"
+  },
+  {
    "p": "anmacha-gold-reels/slot.js",
    "s": 3149,
    "h": "04d097b0ca38e16b73026b583a8ff87e03cf4fbf6dd6999485e5a8a5c438e0d2"
+  },
+  {
+   "p": "anmacha-gold-reels/sw.js",
+   "s": 1920,
+   "h": "5474e6c84051468237736db365d6e528eeb12a4f619938c195b222af2f96b28d"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -1003,8 +1093,8 @@
   },
   {
    "p": "anmacha-hoererwahl/index.html",
-   "s": 7681,
-   "h": "25d665f4d5c377c182486929cfaa4a0cd39bdfb7f34d9bcd064d1ea429f02305"
+   "s": 10050,
+   "h": "5480c4039a5a7298c53869517eb587f2e15f0c56dd6c815f5e60ebd9fa91b262"
   },
   {
    "p": "anmacha-hoererwahl/logo.png",
@@ -1082,6 +1172,11 @@
    "h": "973d1f5d92af71d4ee4f0e9136e2d1b467cb6c88088ca4064233bc021befe853"
   },
   {
+   "p": "anmacha-hoererwahl/manifest.webmanifest",
+   "s": 786,
+   "h": "5f4938cfc09548946ee96ceb5a4d354e715d8f0b58dcc8f768a17d849052b5ea"
+  },
+  {
    "p": "anmacha-hoererwahl/matcher.js",
    "s": 3382,
    "h": "14b96a5d225a743f7b6de986da44590c6616aecad1dd6e288e6ee2115fab1b1b"
@@ -1122,6 +1217,11 @@
    "h": "1592ff103378285c9d0a8d2569b51435d9fa7d9d39e37b7521f6bc3b179cf637"
   },
   {
+   "p": "anmacha-hoererwahl/sw.js",
+   "s": 1920,
+   "h": "0016eccfb8297c71008203529e213357aec0c93c0f1d038d40e2a0861e66cfba"
+  },
+  {
    "p": "anmacha-kart/audio.js",
    "s": 10033,
    "h": "c61d157327a419c3e186943a03e814087d880a1c0be05b6649e1ef209ff623b4"
@@ -1148,8 +1248,8 @@
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 28112,
-   "h": "20521b3c3dfac68e01515b5549c501c912f479dba482541b87351db9d9dd810f"
+   "s": 30474,
+   "h": "72aa375038e7a127bf74a3cd9dacb4a11eacf8569b595cbf5c1f6c71e7627585"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -1222,9 +1322,19 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-kart/manifest.webmanifest",
+   "s": 766,
+   "h": "b0a0a8cc43df49af520d681b49f0747a66f808a593dc1ba7b3d81442592c866b"
+  },
+  {
    "p": "anmacha-kart/sim.js",
    "s": 15904,
    "h": "885b14b307f0a457c79cb7a6fd726f8a3524aaf8cfb7c62bf64f7b17feabbbd8"
+  },
+  {
+   "p": "anmacha-kart/sw.js",
+   "s": 1907,
+   "h": "4a7ee97d7d2c169db423d1af06b4bc7ce5bb1a567077c022750dc0b7b43fa109"
   },
   {
    "p": "anmacha-kart/track.js",
@@ -1253,8 +1363,8 @@
   },
   {
    "p": "anmacha-klotzfunk/index.html",
-   "s": 18940,
-   "h": "c605e0e32991681428ea57c7391a0b86f4545623d8dab79d2d5262de9eb9521c"
+   "s": 21310,
+   "h": "5fe45da1ffcad941d13b70dff6b9cb3ece07583835c676c3404d284326464f4d"
   },
   {
    "p": "anmacha-klotzfunk/logos/01.png",
@@ -1337,6 +1447,16 @@
    "h": "905e714b7bb3234930d19da214d6bc0a59a6dfb399d022de302db466e67e1ef6"
   },
   {
+   "p": "anmacha-klotzfunk/manifest.webmanifest",
+   "s": 779,
+   "h": "0f91cef4f604f56930d371490c54e64c57f5b56fd5a645520569ea3274d43053"
+  },
+  {
+   "p": "anmacha-klotzfunk/sw.js",
+   "s": 1912,
+   "h": "d77d6c2e53f463da7ca4f6ea824756c7ca39a145dd19509da055f319a48d6bc7"
+  },
+  {
    "p": "anmacha-koffer-dealer/audio.js",
    "s": 11963,
    "h": "101403ae0b91190b62b19bddc6193fddadda3e383732ce50057d4115faf4b7f5"
@@ -1358,8 +1478,8 @@
   },
   {
    "p": "anmacha-koffer-dealer/index.html",
-   "s": 18631,
-   "h": "d8c4f612d685e6307cc7765320c16decbcb65e6cc1b8994cc8a82f211a6d9451"
+   "s": 21006,
+   "h": "8afe8de009cfcf27f751514c7bbc6fa9cd8db37438bbd742f93b0b549a4f8478"
   },
   {
    "p": "anmacha-koffer-dealer/logo.png",
@@ -1432,9 +1552,19 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-koffer-dealer/manifest.webmanifest",
+   "s": 801,
+   "h": "c7eaaa52b42a2ca617b9986325b192163d78ae4e9b318add3f03ab31bc6083b4"
+  },
+  {
    "p": "anmacha-koffer-dealer/studio.js",
    "s": 34744,
    "h": "c0c467821b661269139ce781e9e1475a7519edc10093a1037a84444ec0f17636"
+  },
+  {
+   "p": "anmacha-koffer-dealer/sw.js",
+   "s": 1929,
+   "h": "4d64027b2dcbc2d1d46cafd9b685477b197781abe56cdc7e5d42b8e34ae54c1e"
   },
   {
    "p": "anmacha-markthalle/data.js",
@@ -1448,8 +1578,13 @@
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 29541,
-   "h": "abeea5dfab7f7ec290fe827fb6843695c3f1ab02c772632ea48e98c391dc15dd"
+   "s": 31913,
+   "h": "37605ec3ec9e72e0f8b42af6e35fedc7cd446a7ac2dd2a44a9466e505e689b4c"
+  },
+  {
+   "p": "anmacha-markthalle/manifest.webmanifest",
+   "s": 792,
+   "h": "b3623a98c31c27dbeee5e31c231428cb62cc3c789e44e9bc21ce9c3f274dfe8a"
   },
   {
    "p": "anmacha-markthalle/menu.js",
@@ -1462,14 +1597,19 @@
    "h": "6184ff9f389e9592e0534009dd3f0916ebd2b9e5a37a9d8e4680b5c6847f3fff"
   },
   {
+   "p": "anmacha-markthalle/sw.js",
+   "s": 1923,
+   "h": "8d08941ddb96a10f586d270c45a6efd851542340c5c57d7fc7e504c43ca35529"
+  },
+  {
    "p": "anmacha-markthalle/view3d.js",
    "s": 60611,
    "h": "9c61ffd9e34ca66bb46af9543727e5c703fc54dbb2909df1e54b2c9a0d6cdb91"
   },
   {
    "p": "anmacha-memory/index.html",
-   "s": 30650,
-   "h": "73783e72ec86e0dbd9e61ba23c3dc172b7615ec08effb2e593de96063311a4f0"
+   "s": 33011,
+   "h": "b8accf016a78f61ff6af0c3c3fade8fe198998a1ad1cc6618d3e2331edd13455"
   },
   {
    "p": "anmacha-memory/logo.png",
@@ -1557,6 +1697,16 @@
    "h": "f3970d1582337551e79ffb80b8ade73b77ccfdf7e7c7bcce0078f760deada10a"
   },
   {
+   "p": "anmacha-memory/manifest.webmanifest",
+   "s": 766,
+   "h": "1012406d8022d2d3fc88a5757e87a130d2d638fdc32040afbc22e07e1d84be78"
+  },
+  {
+   "p": "anmacha-memory/sw.js",
+   "s": 1908,
+   "h": "846105248dd1a5c49bc9c0e9c5ad53a9de9ffd760bc363d024f7bf71cba10ed4"
+  },
+  {
    "p": "anmacha-preisradar/audio.js",
    "s": 3151,
    "h": "4ee8b7594dfcd1de4dca6c4e1ee79bc3164444a49fb6bc5c60540de364b3bdd5"
@@ -1583,8 +1733,8 @@
   },
   {
    "p": "anmacha-preisradar/index.html",
-   "s": 6101,
-   "h": "31cdb697f74e6923b3e0ac99c1fcd2624151f33b1575943d491fa5e2bf246ccd"
+   "s": 8470,
+   "h": "607e46392253301a69a5e3573d3380e38dcbf1768ea865155fd91fbedabfa9dc"
   },
   {
    "p": "anmacha-preisradar/inputs.js",
@@ -1682,6 +1832,11 @@
    "h": "203c8cbe3bcc51a26627a958847785d69294a16d282bd0c45972a68fc4d1d948"
   },
   {
+   "p": "anmacha-preisradar/manifest.webmanifest",
+   "s": 786,
+   "h": "003795d6174803c386d6a5ff002ffa750556a69c14d8752a304abbab1277649e"
+  },
+  {
    "p": "anmacha-preisradar/pair.js",
    "s": 4719,
    "h": "28a1793eba0e750175af2ecc3726bb0f569896298ee640982748ff100adf3edf"
@@ -1715,6 +1870,11 @@
    "p": "anmacha-preisradar/style.css",
    "s": 19562,
    "h": "b60de18163d9546ed7219058bc069d1934c1036570fe9f657be9ad12dc34a727"
+  },
+  {
+   "p": "anmacha-preisradar/sw.js",
+   "s": 1920,
+   "h": "113c8ae608e8abb27cf72232f2fbc73a2d57721d2f535f6e344a67bb0d2bd129"
   },
   {
    "p": "anmacha-quest-rpg/anleitung.html",
@@ -2873,8 +3033,8 @@
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 6529,
-   "h": "e5c043cb406086f627894c03d5cf65b70d0e71e78fd1337f2dfbef260d3ca3aa"
+   "s": 8896,
+   "h": "05fa47d78c569bcf8c58694fb16ec7aacda19533d9206cc84bd402e0c90a60ac"
   },
   {
    "p": "anmacha-quest-rpg/index.icon.png",
@@ -2907,9 +3067,19 @@
    "h": "30cb03305840f2fa66db8eb71ec9f3403d9b552019467c1a3718f6cc17748373"
   },
   {
+   "p": "anmacha-quest-rpg/manifest.webmanifest",
+   "s": 781,
+   "h": "3c4462259d3c2e5f925769d3e88fcfdfb44fcff1f8db61c9cfd0617a246705df"
+  },
+  {
    "p": "anmacha-quest-rpg/pixelify.ttf",
    "s": 79160,
    "h": "9ba86cd010a4de309d263ceff8e8044092c9db7efda869620cb9ff1c4389e8a5"
+  },
+  {
+   "p": "anmacha-quest-rpg/sw.js",
+   "s": 1917,
+   "h": "2e0c34636c3469b792e85a71a27fb9cc90376db15a40a97a9bf72a932a55a428"
   },
   {
    "p": "anmacha-quiz/audio.js",
@@ -2933,8 +3103,8 @@
   },
   {
    "p": "anmacha-quiz/index.html",
-   "s": 22261,
-   "h": "7c002ad74eceaa617cc4353bec774d6ab56c0c5013394ae3ef2ec13e11b0a278"
+   "s": 24630,
+   "h": "188bf565471fa989ea58ba03ca4c312d12f1791bad4d878f36b77b1918c8c6e9"
   },
   {
    "p": "anmacha-quiz/logo.png",
@@ -3007,6 +3177,11 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-quiz/manifest.webmanifest",
+   "s": 788,
+   "h": "a7f4eaf5fef7fc8b6c0be21b9255a7509c898b64b5939e8e9f7d13ab95e2487c"
+  },
+  {
    "p": "anmacha-quiz/questions.js",
    "s": 75683,
    "h": "37f38a0f2d32a3bdfe27dd90a0eee9eee20a9be3a2e1b812d48fac23e6b59284"
@@ -3017,9 +3192,24 @@
    "h": "14eeaf708e575c5a05c9d4abdb59c9cb120187c28261017e28231977694fde9c"
   },
   {
+   "p": "anmacha-quiz/sw.js",
+   "s": 1922,
+   "h": "756b9a25a00098b4a338caccfaf5bc1f6881c92d6364fa51ca87bafa89278dbd"
+  },
+  {
    "p": "anmacha-radio-match/index.html",
-   "s": 35525,
-   "h": "31e9a26762b51d4f61003bc96d9eaaeb98550017003e9ef84c9921fc4da9bf13"
+   "s": 37899,
+   "h": "0b5c06da0a7d1e96c959c236178f9c1602dddb6014d7a02d5dee239c1ead599a"
+  },
+  {
+   "p": "anmacha-radio-match/manifest.webmanifest",
+   "s": 797,
+   "h": "8088388456047624819032758462d7873b27f05e74b174c403ea41b6d2096246"
+  },
+  {
+   "p": "anmacha-radio-match/sw.js",
+   "s": 1926,
+   "h": "0904d7c1e92ddd02c977b0b4b7ea2776aa2134ccff7d8d2a0782dc2dfa3de257"
   },
   {
    "p": "anmacha-radio-surfer/hindernisse/01.jpg",
@@ -3098,13 +3288,23 @@
   },
   {
    "p": "anmacha-radio-surfer/index.html",
-   "s": 57186,
-   "h": "76f4fd98004614ca0dbdd40665e79b6781591b95e5df67411c86f012fa27437e"
+   "s": 59559,
+   "h": "d6b374dd1366c44d892ac9c537432c07e19489e6733f324ba606eb0b75ab4980"
   },
   {
    "p": "anmacha-radio-surfer/logo.png",
    "s": 442226,
    "h": "163872661f3b985fd8d19b0ccd987d2d00c2fabf3a6772a2e70e4993073e3233"
+  },
+  {
+   "p": "anmacha-radio-surfer/manifest.webmanifest",
+   "s": 796,
+   "h": "6244f0c7a171e239b329f5fe3e220ebc2bc725beae6810e5a889bdb052632d88"
+  },
+  {
+   "p": "anmacha-radio-surfer/sw.js",
+   "s": 1926,
+   "h": "2296b86592f6e0271e73182241768df0ab81692affaaec53b76503c551253bc5"
   },
   {
    "p": "anmacha-showdown/audio.js",
@@ -3128,8 +3328,8 @@
   },
   {
    "p": "anmacha-showdown/index.html",
-   "s": 13988,
-   "h": "0d04463503b7926a04e145b90a87ff3c8fc37419484fc0b8fbc4e6ee05b34de7"
+   "s": 16353,
+   "h": "e1f6b69be998eb1ef1b962daf5b0b94fbc44cac4586b4cae30093021b538399a"
   },
   {
    "p": "anmacha-showdown/logo.png",
@@ -3202,14 +3402,24 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-showdown/manifest.webmanifest",
+   "s": 776,
+   "h": "d913c6826ee4f11aa4098eedc9ca3c776ee9247775c17029b469e6b40dc85668"
+  },
+  {
    "p": "anmacha-showdown/studio.js",
    "s": 23560,
    "h": "a06cc210697351dd9c911e87347ccfcf4378a0c415c5b365595b5d32f5fe9581"
   },
   {
+   "p": "anmacha-showdown/sw.js",
+   "s": 1914,
+   "h": "9f833ccea6d151e1984bf72283146b3f7d87fa5bb6a43fac557e673ff48d0537"
+  },
+  {
    "p": "anmacha-snake/index.html",
-   "s": 42584,
-   "h": "0801cd71a2789671535561fd0cdf9846f6a200658e41c70c598c8a3bfef83357"
+   "s": 44946,
+   "h": "ae06a9bf1bfddcac76985bec0c414ead8a6c77e9556986b199db99107eee89be"
   },
   {
    "p": "anmacha-snake/logo.png",
@@ -3282,14 +3492,44 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-snake/manifest.webmanifest",
+   "s": 767,
+   "h": "225816459e498f1d3b97dbdb5f364e5e06ea2238fcabfe21fa4502b48f8dd985"
+  },
+  {
+   "p": "anmacha-snake/sw.js",
+   "s": 1908,
+   "h": "ac94e483cf244f66b796d4069e24bad35d4e76e7cee1f554882db22b2e8fc150"
+  },
+  {
    "p": "anmacha-spielesammlung/index.html",
-   "s": 96393,
-   "h": "94df340c4322d783ea5f238212459fe2f235520dfe88a9045431c49dee042a82"
+   "s": 98772,
+   "h": "99045d750e0fd2edbf68f9ab7dfb8a5d1feef3e8f600b374eb046c29c6e70f93"
+  },
+  {
+   "p": "anmacha-spielesammlung/manifest.webmanifest",
+   "s": 811,
+   "h": "3436d3f1bab48daed5555d8d459e53bd9ed36d7510481da1533ad4593686c2ad"
+  },
+  {
+   "p": "anmacha-spielesammlung/sw.js",
+   "s": 1935,
+   "h": "3417029883bf932b8c745d5cb31e32e71c4c017d3ea95c413adbf0d5db1729e1"
   },
   {
    "p": "anmacha-stapelrausch/index.html",
-   "s": 48138,
-   "h": "3352a631867c0788ac56c5199218cbf65d3b96dacd00af04d5481664ac2d079f"
+   "s": 50514,
+   "h": "d304efb5b26d7801e856f032c724af5f3bdcec83c915b266880bd1ed37f8d370"
+  },
+  {
+   "p": "anmacha-stapelrausch/manifest.webmanifest",
+   "s": 802,
+   "h": "fff56abd106a15ff28364129405002d13b6a9c3afc0b32eebfddea48665f87d8"
+  },
+  {
+   "p": "anmacha-stapelrausch/sw.js",
+   "s": 1929,
+   "h": "1123b202207ed23000d0a20f045224b903284ee6b57fe53029154c38bca3269c"
   },
   {
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
@@ -3298,8 +3538,8 @@
   },
   {
    "p": "anmacha-tower-defense/index.html",
-   "s": 13773,
-   "h": "c2254cdc0a85c8fdca632cf069116ee5481ec2e2d2d9f874ee83527bf2e9ff8e"
+   "s": 16148,
+   "h": "880a20b4dc585fb4d726e51f7889bb8b56470147c586ac30b25ceba61907b0a9"
   },
   {
    "p": "anmacha-tower-defense/logos/01.png",
@@ -3367,6 +3607,16 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
+   "p": "anmacha-tower-defense/manifest.webmanifest",
+   "s": 801,
+   "h": "688a8086c9fb0e5b80ee9b5464d4dd96bf3395f9482a44b7887940b8c5913316"
+  },
+  {
+   "p": "anmacha-tower-defense/sw.js",
+   "s": 1929,
+   "h": "c52ed19baab14d64c02eda1c80b3fb19d6908724af2dc587f39f44f26027e9f8"
+  },
+  {
    "p": "anmacha-urwaldlager/audio.js",
    "s": 6324,
    "h": "7bc48157f77eb59ccf9310e92abeb9e2313eaf63822ed41393bf82be68b846e4"
@@ -3398,8 +3648,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 3056,
-   "h": "798437f520d9aa54852a0c3a27014bec3792d61e96533b63d1048e89d22f77d1"
+   "s": 5427,
+   "h": "fff6c81f05615947857266f8446f88f024182898f6fa5f829c9db84c34352e59"
   },
   {
    "p": "anmacha-urwaldlager/input.js",
@@ -3412,6 +3662,11 @@
    "h": "7d11f51515393e59f2d5f67698ce31731f84d0b87652c7850e917a100fd827d5"
   },
   {
+   "p": "anmacha-urwaldlager/manifest.webmanifest",
+   "s": 783,
+   "h": "69c54735e8ead921640a351c45e1e474da0ddc9b3d737e0e0dd7f6f87b2481dd"
+  },
+  {
    "p": "anmacha-urwaldlager/season.js",
    "s": 34999,
    "h": "f96533e2b8238bbd44d5648a63a1fefc348526f6fefd03de3f25f95047a0e6df"
@@ -3420,6 +3675,11 @@
    "p": "anmacha-urwaldlager/style.css",
    "s": 28270,
    "h": "3d9e8db86d2006fb7738d79071dfd96731d90c98a29233559c1a84367ccfb895"
+  },
+  {
+   "p": "anmacha-urwaldlager/sw.js",
+   "s": 1915,
+   "h": "54aae9f44b3a1ed36f4910839297bf59c9883d66d10f30557896bd9ed527fb8a"
   },
   {
    "p": "anmacha-urwaldlager/trials.js",
@@ -3523,8 +3783,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 94008,
-   "h": "d50544617ad9d4f544cdca8125bf617ed1d56bde63f2e75b56fc432561af63a4"
+   "s": 96534,
+   "h": "fbb5d803d5a50a68d20f810853549f135275cf2dcf7b7223a89d2cb3457e46f2"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3558,8 +3818,8 @@
   },
   {
    "p": "bunte-insel/js/buch-data.js",
-   "s": 23585,
-   "h": "9179b10a08ae187b639d4adb9557d17126713ed509b1a9bb8b6939a1b3ec1759"
+   "s": 24244,
+   "h": "f4d7523cb030e4773ce3273b41d7a66cbe12ac915c899e1a19c665fd97d1e5d8"
   },
   {
    "p": "bunte-insel/js/buch.js",
@@ -3688,8 +3948,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 26975,
-   "h": "0709a2622c31677086893900b11feccf7df2b93a32c5c1305421bbe3568d4f02"
+   "s": 27208,
+   "h": "0953ea762aabaf324bfb228329685b8612fdb78fdd68924ebee18daad1dab792"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -3713,8 +3973,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 297428,
-   "h": "bf619cf9874873ca5e8f3724abcb109fcf51e0425cb60e43e95e4323ff201002"
+   "s": 297687,
+   "h": "d84f0067ca3f34ff273d1f1052f4a7581473481b93e41477ecd90bbc9da8db3b"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -3848,18 +4108,23 @@
   },
   {
    "p": "bunte-insel/js/taschi-data.js",
-   "s": 14888,
-   "h": "fb1c1a6df2ecbf5b6f3cdc73f110faa1d6caf0057a59bcf4234e87a10991049b"
+   "s": 24863,
+   "h": "5496536db83c8bef81d22101c8f3df9a5f474450230d5bc5b12a0917696ff32f"
   },
   {
    "p": "bunte-insel/js/taschi-game.js",
-   "s": 37077,
-   "h": "6693cfe1202e896e95d96147d7787f10f5988dc3e6cfef6a4d1d641d44750d2f"
+   "s": 42592,
+   "h": "21efb0c723e7ca371a36a4a4c065a00143f2162c0a958f016edf642f137d06cc"
+  },
+  {
+   "p": "bunte-insel/js/taschi-welten.js",
+   "s": 2255,
+   "h": "62a13843609f81f734357fefc8dbb873b94b7fcb4e8e9a130ef29cdfe2d80469"
   },
   {
    "p": "bunte-insel/js/taschi.js",
-   "s": 19902,
-   "h": "2f158fce7ff01d23f7c14179dc924233bdff6025576464513062c39a211fbd47"
+   "s": 20409,
+   "h": "f0efc9a89970d1ce3efe555cbb357c810dade3e80a47acecaa7aa8297b5a1c2e"
   },
   {
    "p": "bunte-insel/js/tasklog.js",
@@ -3930,6 +4195,11 @@
    "p": "bunte-insel/js/zotik.js",
    "s": 34360,
    "h": "755081d69dc3bf617fb7f465f16ecd89aa9e17537b0935da8eb124541229457a"
+  },
+  {
+   "p": "bunte-insel/manifest.webmanifest",
+   "s": 759,
+   "h": "daa2cbe7439f2a38400c5aa090e22e60458a5a6cbc445bf5f6923e735ce1b0f2"
   },
   {
    "p": "bunte-insel/radio/lautfm.png",
@@ -4107,6 +4377,11 @@
    "h": "18d476b81e7152ec5cf839e0d517d45b04dcdf7c50a04314975409c01a900d02"
   },
   {
+   "p": "bunte-insel/sw.js",
+   "s": 1899,
+   "h": "593f31094f3ba38aa39f9988092da9be18cedd5243b865ee78202f1d77f8f553"
+  },
+  {
    "p": "bunte-insel/vendor/three.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
@@ -4143,8 +4418,8 @@
   },
   {
    "p": "gay-life/index.html",
-   "s": 24889,
-   "h": "243cc44966918fb430197957929104f4af0e520d879790802122bb2dcff71a77"
+   "s": 27247,
+   "h": "6ac6123a2050d3acd0bff9a1ceb6195e3f08e10d4b3b0cefe836ff79e59e92bd"
   },
   {
    "p": "gay-life/js/audio.js",
@@ -4275,6 +4550,16 @@
    "p": "gay-life/js/weather.js",
    "s": 4879,
    "h": "cd6c74bfbe676dd85eed43bc9740627bd6b8f49863e3b1cd33dee438fbeb98cc"
+  },
+  {
+   "p": "gay-life/manifest.webmanifest",
+   "s": 746,
+   "h": "85dda0095cadaf29527bab7bdaffa2fbf7404737a846e171443036717b266bb1"
+  },
+  {
+   "p": "gay-life/sw.js",
+   "s": 1891,
+   "h": "87b163f762eae0cf0e202ead990d32e31bb94ed974199a4931e214d142b8bfae"
   },
   {
    "p": "guides.js",
@@ -4513,8 +4798,8 @@
   },
   {
    "p": "partyverse/index.html",
-   "s": 553,
-   "h": "ab804e199ef9cf4c474b663eec84bf2716f6a0c79d66bee1244b0becc6d72568"
+   "s": 2957,
+   "h": "49dd32c905565dc476857c0c78219678e773ca80ae9f7cc3e7c7df33742e43df"
   },
   {
    "p": "partyverse/logo.png",
@@ -4522,9 +4807,19 @@
    "h": "2212550abc6c7a1f9fae6bce96a1e746fdbf31c94a12d9799f4c9301a8d6c849"
   },
   {
+   "p": "partyverse/manifest.webmanifest",
+   "s": 754,
+   "h": "87972d5a6776b24a2641117345f13e81cb171fac14e231743e3d797773ef5deb"
+  },
+  {
    "p": "partyverse/server/Dockerfile",
    "s": 544,
    "h": "1f50a65ba5096b129689b589aebc48a8244c98cc31cbe6c80133bab545041848"
+  },
+  {
+   "p": "partyverse/sw.js",
+   "s": 1896,
+   "h": "881d97093a9f52e163a79e0cc1a06b880ef304954c5249e05eb605c4e2c4dfa4"
   },
   {
    "p": "prismrush/assets/index-Br18tWvY.js",
@@ -4588,8 +4883,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 53896,
-   "h": "fc2e26368d0338bbae4ac0656552a50b2626fef8db3b024a3922e3ec31b44853"
+   "s": 53897,
+   "h": "72de66d16ec4a921133deba5689c2299d2c195c9bb3a3d92649be1ac4e7b95c3"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
@@ -4748,13 +5043,23 @@
   },
   {
    "p": "turbokick/index.html",
-   "s": 551,
-   "h": "23b76b8d735bdb932c5409e23041cb564daa0675e7e29679092eae8e021f4e88"
+   "s": 2953,
+   "h": "6002eeda2de4c787bf2b0426d796a3947e7b9f49556c68f1c3f4b0a08ca8547a"
   },
   {
    "p": "turbokick/logo.png",
    "s": 185541,
    "h": "6bb1095433a6c0a070670760f1ecb06f8750111cc4da3e68906a356ac48d79bd"
+  },
+  {
+   "p": "turbokick/manifest.webmanifest",
+   "s": 749,
+   "h": "47ac1b66fa38b40916829e531d26675867296d496193a949fb0cc383d1ae5b60"
+  },
+  {
+   "p": "turbokick/sw.js",
+   "s": 1893,
+   "h": "dbf2b214ebda6e098056d5edad92f7458a3081d77108017a4769a6a2597062f7"
   },
   {
    "p": "vendor/fonts/fredoka-latin-wght-normal.woff2",
@@ -4988,8 +5293,18 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 392007,
-   "h": "9a34c545989b1a981e3d5b6b53b7b50d2efe15e601eb140880c9b2772b7a0216"
+   "s": 394358,
+   "h": "f0435ca3f397910640ed7ae6a299b80dd4770b7c5aacb2a0562531c9fed03b23"
+  },
+  {
+   "p": "zotik/manifest.webmanifest",
+   "s": 757,
+   "h": "5b19c5de252513de7eee80b6812b99d06bfbdd39203319bb3b690ffee01e0808"
+  },
+  {
+   "p": "zotik/sw.js",
+   "s": 1909,
+   "h": "d45ffcc1024f9ce0b47ecd3b52ce1c336cf1b5bc22d5fb88097c16e470a76433"
   }
  ],
  "vendor": {
