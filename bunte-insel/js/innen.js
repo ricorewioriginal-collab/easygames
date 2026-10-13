@@ -37,7 +37,8 @@ BI.registerDoors = function (W) {
     lo(S, 34, -44, 0, 1, 'turm', 'Uhrturm', 'schluessel'); lo(S, -56, 18, 1, 0, 'huette', 'Strandhütte', 'schluessel'); lo(S, 58, 14, -1, 0, 'schloss', 'Kristall-Burg', 'schluessel');
     [[0, 0], [8, 3], [-7, 5], [3, -9], [-4, -8]].forEach(([da, db], i) => lo(S, -42 + da, -46 + db, 0, 1, 'pilz', 'Pilzhaus ' + (i + 1), 'schluessel'));
   }
-  if (BI.TASCHI) { const T = BI.TASCHI; lo(T, -38, 28, 0, -1, 'haus', 'Labor von Professor Ulme', 'taschi'); lo(T, -38, -28, 0, 1, 'haus', 'Taschi-Heilhaus', 'taschi'); lo(T, -16, -30, 0, 1, 'laden', 'Taschi-Fangladen', 'taschi'); }
+  if (BI.WUNSCH) { const Wn = BI.WUNSCH, h = Wn.P.hut; lo(Wn, h[0], h[1], -1, 0, 'huette', 'Strandhütte (Wunsch-Insel)', 'wunsch'); }
+  if (BI.TASCHI) { const T = BI.TASCHI; lo(T, -38, 28, 0, -1, 'haus', 'Labor von Professor Ulme', 'taschi'); lo(T, -38, -28, 0, 1, 'heil', 'Taschi-Heilhaus', 'taschi'); { const fd = lo(T, -16, -30, 0, 1, 'laden', 'Taschi-Fangladen', 'taschi'); if (fd) fd.tshop = true; } }
   if (M) { lo(M, 66, -16, -1, 0, 'huette', 'Strandhütte', 'maerchen'); [[5, -33], [19, -33], [5, -41], [19, -41]].forEach(([a, b], i) => lo(M, a, b, 0, 1, 'zelt', ['Wahrsager-Zelt', 'Teppich-Zelt', 'Gewürz-Zelt', 'Lampen-Zelt'][i], 'maerchen')); }
   if (Q) { lo(Q, 14, -32, 0, 1, 'frucht', 'Ananas-Haus', 'schwamm'); lo(Q, 26, -32, 0, 1, 'stein', 'Stein-Haus', 'schwamm'); lo(Q, 38, -32, 0, 1, 'kopf', 'Steinkopf-Haus', 'schwamm'); lo(Q, -14, 34, 0, -1, 'eimer', 'Eimerchen', 'schwamm'); lo(Q, -44, 34, 0, -1, 'held', 'Heldenheim', 'schwamm'); lo(Q, -56, -20, 1, 0, 'huette', 'Strandhütte', 'schwamm'); }
   if (B) { const t = B.at(194, -5.5), k = B.at(184, 12); BI.doorScan(W, t.x, t.z, -B.ux, -B.uz, 'turm', 'Bademeister-Turm', 'bade'); BI.doorScan(W, k.x, k.z, -B.ux, -B.uz, 'laden', 'Eis-Kiosk', 'bade'); }
@@ -74,6 +75,7 @@ BI.createInnen = function (G) {
     schloss: { w: 12, d: 10, wall: [0xe8d8f0, 0xc8d0f0], floor: [0xd8c8e8], title: '🏰' }, hoehle: { w: 10, d: 9, wall: [0x4a4658, 0x3a3648], floor: [0x6a6070], title: '🕳️' },
     pilz: { w: 7.4, d: 6.6, wall: [0xfff0d8, 0xffe0e8], floor: [0xf0c898], title: '🍄' }, frucht: { w: 9, d: 8, wall: [0xffe8a0, 0xffd080], floor: [0xd8a050], title: '🍍' },
     stein: { w: 7.4, d: 6.6, wall: [0xe8b0c0, 0xd89aaa], floor: [0xb88a7a], title: '🪨' }, kopf: { w: 8, d: 7, wall: [0x9ab8b0, 0x8aa8a0], floor: [0x6a8a80], title: '🗿' },
+    heil: { w: 12, d: 9, wall: [0xffd6e0, 0xfff0f4], floor: [0xf6e8ec], title: '💖' },
     eimer: { w: 8.4, d: 7.4, wall: [0xaab4c4, 0x8a96a8], floor: [0x6a7686], title: '🪣' }, held: { w: 9, d: 8, wall: [0xe8f0fa, 0xd0e0f8], floor: [0x6a8ad8], title: '🦸' }
   };
   const NAMEN = [['Oma Berta', ['Komm rein, ich habe Kekse gebacken! 🍪', 'Hier ist es immer gemütlich.']], ['Opa Fritz', ['Setz dich doch! Ich erzähle dir von früher.', 'Früher gab es hier nur Wiese – heute gibt es Abenteuer! 🌍']], ['Lotta', ['Das ist mein Zimmer! Schau, mein Bett ist ganz weich. 🛏️', 'Spielst du mit mir?']], ['Bruno', ['Brumm! Willkommen in meinem Haus!', 'Im Regal stehen spannende Bücher. 📚']], ['Mia', ['Hallo! Hast du die Truhe gesehen? Da ist bestimmt etwas Schönes drin! 🎁', 'Ich sammle Muscheln.']], ['Tilo', ['Pssst, hier drin ist es schön ruhig. 🤫', 'Wenn du Hunger hast: Auf dem Tisch liegt ein Snack!']], ['Frieda', ['Ich putze jeden Tag! Und trotzdem wird es wieder bunt. 🧹', 'Besuch mich gern wieder!']], ['Jonas', ['Cool, dass du da bist! 😎', 'Hier drin ist mein Geheimversteck.']]];
@@ -122,6 +124,14 @@ BI.createInnen = function (G) {
     } else if (kind === 'hoehle') {
       for (let k = 0; k < 9; k++) { const sx = (rng() - .5) * (K0.w - 2), sz = (rng() - .5) * (K0.d - 3) - 1; if (Math.hypot(sx, sz) < 2.4) continue; b.cone(X0 + sx, 0, Z0 + sz, .4 + rng() * .4, 1.2 + rng() * 1.8, 0x7a7488, 6); solid(X0 + sx, Z0 + sz, .8, .8, 2); } for (const [dx, dz, col] of [[-3.5, -2.5, 0x9ad8ff], [3.4, -3, 0xff9ad8], [-3, 2.5, 0x9affc8]]) { b.cone(X0 + dx, 0, Z0 + dz, .35, 1.4, col, 5); b.sph(X0 + dx, 1.5, Z0 + dz, .25, col, 1); solid(X0 + dx, Z0 + dz, .6, .6, 1.5); }
       box(X0, Z0 - 1.6, 3.2, 3.2, .05, 0x1a1a24, .02); box(X0, Z0 - 1.6, 2.4, 2.4, .06, 0x000000, .03); for (let k = 0; k < 4; k++) box(X0, Z0 - .4 - k * .55, 3.0 - k * .5, .5, .25, 0x8a8a98, 0); it('stairs', X0, Z0 + .6, 2.2, ['🕳️', 'Abstieg ins Mini-Spiel']); chest(X0 + hw - 1.3, Z0 + 2.4); R.npcAt = [X0 - 2.6, Z0 + 2.4, 1.2];
+    } else if (kind === 'heil') {
+      /* Taschi-Heilhaus: Tresen mit Heil-Automat (Ballregal), Betten, Team-Tisch */
+      fur(X0, Z0 - hd + 1.5, hw * 1.7, .9, 1.1, 0xffffff); box(X0, Z0 - hd + 1.5, hw * 1.75, 1.0, .12, 0xe8453c, 1.1); box(X0, Z0 - hd + 1.5, 1.2, .2, .14, 0xffffff, 1.2);
+      fur(X0 + hw * .5, Z0 - hd + 1.5, 2.4, .9, 1.7, 0xf4f4ff); for (let k = 0; k < 6; k++) { box(X0 + hw * .5 - 1.0 + (k % 3) * 1.0, Z0 - hd + 1.9, .5, .3, .5, [0xe8453c, 0x3f8cff, 0x4cc05a][k % 3], 1.95 - (k > 2 ? .6 : 0)); }
+      it('tcenter', X0 + hw * .5, Z0 - hd + 3.1, 2.6, ['💖', 'Taschis heilen']);
+      fur(X0 - hw * .5, Z0 - hd + 1.5, 2.2, .9, 1.0, 0xffe0ea); box(X0 - hw * .5, Z0 - hd + 1.5, 1.4, .3, .1, 0xff9ac0, 1.05); it('tteam', X0 - hw * .5, Z0 - hd + 3.1, 2.4, ['🎒', 'Team & Lager ansehen']);
+      bed(X0 - hw + 1.4, Z0 + 1.2); bed(X0 + hw - 1.4, Z0 + 1.2); plant(X0 - hw + 1, Z0 + hd - 1.2); plant(X0 + hw - 1, Z0 + hd - 1.2); lamp(X0, Z0 + hd - 1.2);
+      R.npcAt = [X0, Z0 - hd + 2.6, 0];
     } else {
       /* Wohnhaus, Hütte, Pilz, Frucht, Stein, Kopf, Eimer, Heldenheim */
       bed(X0 - hw + 1.4, Z0 - hd + 2); table(X0 + 1.2, Z0 - .6, true); shelf(X0 + hw - .7, Z0 - 1.6, 'e'); plant(X0 - hw + 1, Z0 + hd - 1.2); lamp(X0 + hw - 1, Z0 + hd - 1.2); chest(X0 + hw - 1.3, Z0 + 2.2);
@@ -131,7 +141,8 @@ BI.createInnen = function (G) {
       else if (kind === 'eimer') { fur(X0 - 2.2, Z0 + 1.8, 1.4, .8, .9, 0xc9d0e0); box(X0 - 2.2, Z0 + 1.8, .9, .6, .08, 0x3fae4a, .9); it('recipe', X0 - 2.2, Z0 + 2.9, 1.8, ['📜', 'Geheimrezept lesen']); }
       R.npcAt = [X0 - .6, Z0 + 1.2, 0.8];
     }
-    grp.add(b.mesh(mat)); const [nm, lines] = NAMEN[(idx * 3 + (d.name.length | 0)) % NAMEN.length]; R.res = [d.kind === 'laden' ? 'Verkäufer ' + nm.split(' ')[0] : d.kind === 'schloss' ? 'Wächter ' + nm.split(' ')[0] : nm, lines];
+    grp.add(b.mesh(mat)); const [nm, lines] = NAMEN[(idx * 3 + (d.name.length | 0)) % NAMEN.length]; if (d.tshop) it('tshop', X0 + hw * .5, Z0 - hd + 3.0, 2.6, ['🔴', 'Taschiball-Laden']);
+    R.res = d.kind === 'heil' ? ['Schwester Hanna', ['Willkommen im Heilhaus! Gib mir dein Team – im Nu sind alle Taschis wieder fit. 💖', 'Tipp: Wenn dein ganzes Team müde ist, wachst du hier wieder auf.']] : [d.kind === 'laden' ? 'Verkäufer ' + nm.split(' ')[0] : d.kind === 'schloss' ? 'Wächter ' + nm.split(' ')[0] : nm, lines];
     const sp = sprite((K0.title || '🏠') + ' ' + d.name, 3.1, 5.2, X0, Z0 - hd + .5); grp.add(sp);
     grp.visible = false; return R;
   }
@@ -171,6 +182,7 @@ BI.createInnen = function (G) {
     if (n.k === 'door') { K.enter(n.d); return; } if (n.k === 'inout') { K.leave(); return; }
     const i = n.i, R = K.inside, id = R.d.id;
     if (i.type === 'chest') { if (s.c[id]) { say('🎁 Die Truhe ist schon leer.', 1800); return; } s.c[id] = 1; i.open = true; const nn = Object.keys(s.c).length, big = ['schloss', 'hoehle', 'schmiede'].includes(R.d.kind); stars(big ? 3 : 1); const iv = G.inv && G.inv(), f = ['apple', 'cookie', 'banana', 'cakeslice', 'icecream'][(id + nn) % 5]; if (iv) iv[f] = (iv[f] || 0) + 1; A.fanfare && A.fanfare(); fx.burst(P.x, 1.6, P.z, 22, [[1, .9, .4], [1, 1, 1], [1, .5, .5]], 4, 1.2, 28, 3); say('🎁 Truhe: +' + (big ? 3 : 1) + ' ⭐ und etwas Leckeres für dein Kapselmonster! (' + nn + ' Truhen)', 4200); if (nn === 10) earn('truhen10'); persist(); return; }
+    if (i.type === 'tcenter') { G.taschiHeal && G.taschiHeal(); return; } if (i.type === 'tteam') { G.taschiTeam && G.taschiTeam(); return; } if (i.type === 'tshop') { G.taschiShop && G.taschiShop(); return; }
     if (i.type === 'bed') { fx.burst(P.x, 1.4, P.z, 12, [[.6, .7, 1], [1, 1, 1]], 2, .8, 30, 2); say('😴 Zzz … schön ausgeruht! Jetzt geht es weiter.', 2800); A.hello && A.hello(); return; }
     if (i.type === 'table') { const k = 't' + id; if (!s.o[k]) { s.o[k] = 1; const iv = G.inv && G.inv(); if (iv) iv.apple = (iv.apple || 0) + 1; stars(1); say('🍎 Lecker! Ein Apfel im Rucksack. +1 ⭐', 3000); persist(); } else say('🍽️ Der Tisch ist leer – du hast schon alles aufgegessen. 😋', 2400); A.buy && A.buy(); return; }
     if (i.type === 'shelf') { const t = TIPPS[(id + (s.o.r | 0)) % TIPPS.length]; s.o.r = (s.o.r | 0) + 1; say(t, 5200); A.speak && A.speak(t.replace('📚 ', '')); return; }

@@ -41,7 +41,7 @@ BI.createStoryMode = function (G) {
   }
   function discover() { /* neue, noch nicht eingetragene Welten erkennen und mit Aufgaben versehen */
     const used = new Set(BI.STORY_ISLES.flatMap(d => d.req)), pool = (G.stickerIds ? G.stickerIds() : []).filter(id => !used.has(id) && id !== 'hero');
-    for (const k of Object.keys(BI)) { const O = BI[k]; if (!/^[A-Z][A-Z0-9_]*$/.test(k) || !O || typeof O !== 'object' || BI.STORY_ISLES.some(d => d.key === k)) continue; if (typeof O.x === 'number' && typeof O.z === 'number' && typeof O.R === 'number' && O.bridge && O.entry && Math.hypot(O.x, O.z) > 150) { const req = pool.splice(0, 3); if (req.length === 3) { BI.STORY_ISLES.push({ key: k, icon: '🏝️', name: O.name || k.charAt(0) + k.slice(1).toLowerCase(), req, auto: true }); } } }
+    for (const k of Object.keys(BI)) { const O = BI[k]; if (!/^[A-Z][A-Z0-9_]*$/.test(k) || !O || typeof O !== 'object' || O.partOf || BI.STORY_ISLES.some(d => d.key === k)) continue; /* partOf: Teil-Insel einer anderen Welt (z. B. Wunsch-Insel gehört zum Schlüsselreich) */ if (typeof O.x === 'number' && typeof O.z === 'number' && typeof O.R === 'number' && O.bridge && O.entry && Math.hypot(O.x, O.z) > 150) { const req = pool.splice(0, 3); if (req.length === 3) { BI.STORY_ISLES.push({ key: k, icon: '🏝️', name: O.name || k.charAt(0) + k.slice(1).toLowerCase(), req, auto: true }); } } }
   }
   function make() {
     if (K.list.length) return; discover();
@@ -50,16 +50,17 @@ BI.createStoryMode = function (G) {
       glass.repeat.set(1, 1); const tex = glass.clone(); tex.needsUpdate = true; tex.repeat.set(Math.round(I.r * 6.28 / 9), 2);
       const m = new THREE.Mesh(new THREE.CylinderGeometry(I.r, I.r, 18, 64, 1, true), new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: .9, side: THREE.DoubleSide, depthWrite: false, color: 0xffffff })); m.position.set(O.x, 9, O.z); m.visible = false; m.renderOrder = 6; scene.add(m); I.mesh = m;
       const sp = signOf(I), l = Math.hypot(O.x, O.z) || 1, dx = -O.x / l, dz = -O.z / l; sp.position.set(O.x + dx * (I.r + 1), 4.8, O.z + dz * (I.r + 1)); sp.visible = false; scene.add(sp); I.sp = sp;
+      I.subs = Object.keys(BI).filter(k => BI[k] && BI[k].partOf === d.key).map(k => { const o = BI[k], l = { x: o.x, z: o.z, r: o.R + 8, on: false }; (W.lock = W.lock || []).push(l); return { o, l }; }); /* Teil-Inseln (z. B. Wunsch-Insel) sperren mit */
       K.list.push(I); (W.lock = W.lock || []).push(I.lock);
     }
   }
   K.open = I => !K.on() || !!S().unl[I.key] || ok(I) || !!(save.cheat && save.cheat.open);
   K.islands = () => { make(); return K.list; };
   /* Liegt ein Punkt in einer noch gesperrten Welt? (für „Wohin?“, Wegweiser, Hinzaubern) */
-  K.lockedAt = (x, z) => { if (!K.on()) return null; make(); for (const I of K.list) if (!K.open(I) && Math.hypot(x - I.O.x, z - I.O.z) < I.r + 14) return I; return null; };
+  K.lockedAt = (x, z) => { if (!K.on()) return null; make(); for (const I of K.list) if (!K.open(I) && (Math.hypot(x - I.O.x, z - I.O.z) < I.r + 14 || (I.subs || []).some(q => Math.hypot(x - q.o.x, z - q.o.z) < q.l.r + 14))) return I; return null; };
   K.reqText = I => '🔒 ' + I.icon + ' ' + I.name + ' ist noch gesperrt. Schaffe: ' + K.reqLines(I).filter(r => !r.ok).map(r => r.icon + ' ' + r.text.split(':')[0]).join(' · ');
   K.apply = function () {
-    make(); const st = K.on(); for (const I of K.list) { const lk = st && !K.open(I); I.lock.on = lk; I.mesh.visible = lk; I.sp.visible = lk; if (lk) paint(I); }
+    make(); const st = K.on(); for (const I of K.list) { const lk = st && !K.open(I); I.lock.on = lk; for (const q of I.subs || []) q.l.on = lk; I.mesh.visible = lk; I.sp.visible = lk; if (lk) paint(I); }
   };
   K.setMode = function (m, quiet) {
     if (m !== 'story') m = 'free'; if (save.mode === m && !quiet) return; save.mode = m; persist(); K.apply();

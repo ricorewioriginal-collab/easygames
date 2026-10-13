@@ -21,6 +21,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
   /* jeder Reiter hat Einträge, jeder Eintrag zwei Knöpfe; alle Ziele zusammen = DEST + Spielautomaten */
   const all = {};
   for (let i = 0; i < 5; i++) { await p.click('#guideTabs .gtab:nth-child(' + (i + 1) + ')'); all[i] = await p.evaluate(() => [...document.querySelectorAll('#guideGrid .grow')].map(r => ({ n: r.querySelector('span').textContent, b: r.querySelectorAll('.gbtn button').length }))); }
+  if (process.env.DEBUG) console.log(JSON.stringify(Object.entries(all).flatMap(([i, a]) => a.filter(r => i === '4' ? r.b < 1 : r.b !== 2))));
   const flat = Object.values(all).flat(); ok(Object.values(all).every(a => a.length >= 3) && Object.entries(all).every(([i, a]) => a.every(r => i === '4' ? r.b >= 1 : r.b === 2)), 'Jeder Reiter gefüllt, jeder Eintrag hat „Weg zeigen 👣“ und „Hinzaubern ✨“ – im Fahrzeug-Reiter „Herholen 🚗“ bzw. Weg (' + flat.length + ' Einträge)');
   const names = flat.map(r => r.n); const need = ['Freizeitpark', 'Fußball-Arena', 'Märchenland', 'Funkwelle', 'Zotik', 'Atlantis', 'Fellretter-Bucht', 'Regenbogenwelt', 'Bauland', 'Kino & Autokino', 'Spielplatz', 'Piratenschiff', 'Schatzmeister Piet', 'Fußball-Turnier', 'Wunschbrunnen', 'Schloss Sternenglanz', 'Park-Büro', 'Elfmeter', 'Sternschnuppen', 'Blasen-Pop', 'Noten-Fang'];
   const miss = need.filter(n => !names.some(x => x.includes(n))); ok(miss.length === 0, 'Alle Welten, Orte und Spiele sind verlinkt' + (miss.length ? ' – fehlt: ' + miss.join(', ') : ''));

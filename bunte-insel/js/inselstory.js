@@ -14,8 +14,13 @@ BI.INSELSTORY = [
     { text: 'Das Schlüsselreich versinkt im Schatten! Dunkelwichtel löschen die Laternen. Nur der Lichtschlüssel kann sie wieder entzünden.', hint: 'Zünde 12 Laternen mit dem Lichtschlüssel an', goal: ['laternen'], done: 'Die Laternen leuchten – die Dunkelwichtel weichen zurück!' },
     { text: 'Die Ringstraße und der Himmel gehören dem Licht. Sammle die Sterne und flieg mit dem Schlüsselschwert-Mobil.', hint: 'Sammle alle Sterne der Ringstraße und flieg mit dem Schlüsselschwert-Mobil', goal: ['rundfahrt', 'mobil_s'], done: 'Die ganze Insel strahlt wieder!' },
     { text: 'Fünf Schlüssellöcher hüten das Tor der Herzen. Öffne sie alle!', hint: 'Öffne das Tor der Herzen im Schlüsselreich', goal: ['herzentor'], done: 'Das Tor der Herzen steht offen – Feuerwerk!' },
-    { text: 'Doch im Verbotenen Wald lauert noch der Dunkelriese. Nur der Schlüsselträger kann ihn besiegen.', hint: 'Besiege den Dunkelriesen im Verbotenen Wald', goal: ['schluesseltraeger'], done: 'Der Dunkelriese ist besiegt!' }
-  ], end: 'Lio lächelt: Du bist der wahre Schlüsselträger!' },
+    { text: 'Doch im Verbotenen Wald lauert noch der Dunkelriese. Nur der Schlüsselträger kann ihn besiegen.', hint: 'Besiege den Dunkelriesen im Verbotenen Wald', goal: ['schluesseltraeger'], done: 'Der Dunkelriese ist besiegt!' },
+    { text: 'Hinter dem Schlüsselreich liegt die Wunsch-Insel. Geh über die Holzbrücke im Westen und sammle drei Wunschfrüchte – dann zeigt der große Baum ein geheimes Zeichen.', hint: 'Besuche die Wunsch-Insel, finde 3 Wunschfrüchte und das geheime Zeichen am Baum', goal: [{ log: 'wunsch', row: 0 }, { log: 'wunsch', row: 1 }, { log: 'wunsch', row: 2 }], done: 'Das Zeichen ist entdeckt!' },
+    { text: 'In der Schlucht schläft ein Licht, und am Strand wartet ein Floß, das noch gebaut werden muss!', hint: 'Öffne das Tor in der Schlucht, bau das Floß und mach die Probefahrt', goal: [{ log: 'wunsch', row: 3 }, { log: 'wunsch', row: 5 }, { log: 'wunsch', row: 6 }], done: 'Das Floß schwimmt!' },
+    { text: 'Die Insel hat Geheimnisse in der Höhe: Klettere auf den Aussichtsturm und finde die drei Truhen.', hint: 'Besteige den Aussichtsturm und öffne 3 Truhen', goal: [{ log: 'wunsch', row: 7 }, { log: 'wunsch', row: 8 }], done: 'Alle Truhen gefunden!' },
+    { text: 'Der Abend kommt … Schau dir den Sonnenuntergang an der Hängematte an – und halte durch, wenn die Dunkelheit einbricht!', hint: 'Überstehe den Einbruch der Dunkelheit (40 Sekunden)', goal: [{ log: 'wunsch', row: 9 }], done: 'Die Dunkelheit weicht!' },
+    { text: 'Aus dem dunklen Portal erwacht die Schattenarena. Besiege die Schattenwesen und den Schatten-Riesen Umbra!', hint: 'Gewinne 3 Runden in der Schattenarena und besiege Umbra', goal: [{ log: 'wunsch', row: 10 }, { log: 'wunsch', row: 11 }], done: 'Umbra ist besiegt!' }
+  ], extra: 'WUNSCH', end: 'Lio lächelt: Du bist der wahre Schlüsselträger – und der Held der Wunsch-Insel!' },
   { key: 'SCHWAMM', icon: '🧽', npc: 'Schwammi', title: 'Das Geheimrezept der Knusper-Krabbe', acts: [
     { text: 'Hihi, willkommen in der Bucht! Das Geheimrezept der Knusper-Krabbe ist verschwunden – und alle haben Hunger. Probier erst mal die Gerichte, dann ermitteln wir!', hint: 'Iss drei verschiedene Gerichte in der Knusper-Krabbe', goal: ['stammgast'], done: 'Lecker! Du hast jetzt eine Nase für das Rezept.' },
     { text: 'Im Quallenfeld und bei Sunny in der Luftkuppel gibt es Hinweise. Sei flink und stark!', hint: 'Fang 15 Quallen und übe zehnmal Karate bei Sunny', goal: ['qualler', 'karate_s'], done: 'Flink gefangen, fleißig geübt – die Spur ist heiß!' },
@@ -122,13 +127,13 @@ BI.createInselStory = function (G) {
     if (moved) persist(); return moved;
   }
   function finish(d, quiet) { const id = 'geschichte_' + d.key.toLowerCase(); if (!quiet) { G.addStars(10); setTimeout(() => say('🏆 ' + d.icon + ' „' + d.title + '“ geschafft! ' + d.end + ' +10 ⭐', 6200), 1200); if (G.speak) G.speak(d.end); } if (G.earn) G.earn(id); }
-  function announce(d) { const a = d.acts[S()[d.key]]; if (!a) return; say(d.icon + ' ' + d.npc + ': ' + a.text, 8200); if (G.speak) G.speak(a.text); }
+  function announce(d) { const a = d.acts[S()[d.key]]; if (!a) return; say(d.icon + ' ' + d.npc + ': „' + a.text + '“', 8200); if (G.speak) G.speak(a.text); }
   function start(d) { const s = S(); if (s[d.key] != null) return; s[d.key] = 0; persist(); if (!advance(d, true)) announce(d); else { const a = d.acts[s[d.key]]; if (a) announce(d); else say(d.icon + ' „' + d.title + '“ hast du schon geschafft! 🏆', 3600); } }
   let tmr = 0;
   K.update = function (dt) {
     tmr -= dt; if (tmr > 0) return; tmr = .8; K.cur = null; const x = P.veh ? P.veh.x : P.x, z = P.veh ? P.veh.z : P.z;
     for (const d of ST) {
-      const O = BI[d.key]; if (!O) continue; const on = Math.hypot(x - O.x, z - O.z) < O.R + 12 || !!(G.inside && G.inside(d.key)); /* Atlantis liegt unter Wasser: dort zählt „drinnen“ */
+      const O = BI[d.key]; if (!O) continue; const E = d.extra && BI[d.extra], on = Math.hypot(x - O.x, z - O.z) < O.R + 12 || !!(G.inside && G.inside(d.key)) || !!(E && Math.hypot(x - E.x, z - E.z) < E.R + 12); /* Atlantis liegt unter Wasser: dort zählt „drinnen“ */
       if (S()[d.key] != null) advance(d, false);
       if (on && !K.locked(d)) { if (S()[d.key] == null) start(d); const a = d.acts[S()[d.key]]; if (a) K.cur = { d, a, i: S()[d.key] }; }
     }
