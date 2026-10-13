@@ -387,6 +387,10 @@ Brücke im Osten. Hier leben Taschis – freundliche Taschenwesen. Ziel der Inse
 - 🎈 Team Funke (Jette, Jim, Mauzi) im Lager hinten: drei Kämpfe in Folge, dann gehört dir ihr Heißluftballon (Fahrzeug).
 - 💛 Freunde: Blitzi, Fellino, Flamino & Co. laufen auf dem Platz herum. Sie sind nie Gegner – streicheln erlaubt!
 
+- 🌍 Taschis gibt es in ALLEN Welten: überall liegt <b>Fanggras</b> (dunkle Flecken mit hohen Halmen), dort erscheinen die Taschis dieser Welt (3 Arten je Welt plus starke Entwicklungen). Wilde Taschis sind in späteren Welten stärker.
+- 🔴 Taschi-Menü überall: ☰ Mehr → „Taschis“ (Team, Taschidex nach Welten, Orden, Weltforscher, Flug zum Heilhaus). Dein vorderstes Taschi läuft als Begleiter hinter dir her.
+- 📘 Taschidex-Meilensteine: 25 und 50 Taschis, alle Taschis und „Weltforscher“ (in jeder Welt 2 Taschis) geben Sterne und Sticker. 12 Typen: dazu kommen 🐉 Drache, ❄️ Eis, 🌑 Dunkel und ✨ Licht.
+
 Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten · 📘 Forscher (8 Taschis) · 🎈 Ballon (Team Funke) · 👑 Meister. Alles hier ist selbst erfunden – inspiriert von klassischen Sammel-Rollenspielen.
 
 ---
@@ -527,6 +531,9 @@ Steuerung im Kampf: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, 
 - 📘 Taschidex: 8 verschiedene Taschis fangen (0 von 8)
 - 🎈 Team Funke (Jette, Jim, Mauzi) besiegen
 - 👑 Meisterin Aurelia besiegen (alle 7 Orden nötig)
+- 📘 Taschidex: 25 Taschis fangen (0 von 25) – wilde Taschis gibt es in jeder Welt im Fanggras
+- 📚 Taschidex: 50 Taschis fangen (0 von 50)
+- 🌍 Weltforscher: in jeder der 17 Welten 2 Taschis fangen (0 von 17)
 
 ### ✨ Märchenland
 
@@ -711,6 +718,9 @@ So bekommst du jeden Sticker:
 | 🌑 Dunkelheits-Trotzer | Überstehe den Einbruch der Dunkelheit |
 | 🏟️ Schattenbezwinger | Besiege Umbra in der Schattenarena |
 | 🔴 Taschi-Held | Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister) |
+| 📘 Taschi-Sammler | Fang 25 verschiedene Taschis |
+| 📚 Taschi-Profi | Fang 50 verschiedene Taschis |
+| 🌍 Weltforscher | Fang in jeder Welt 2 Taschis |
 | 🎯 Taschi-Fänger | Fang dein erstes wildes Taschi |
 | 👑 Taschi-Meister | Hol alle 8 Orden in Taschi-Land |
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |

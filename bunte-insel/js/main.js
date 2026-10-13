@@ -1300,7 +1300,8 @@
   const bauland = BI.createBauland({ scene, W, A, P, say, save, persist, build: () => toggleBuild() }); bauland.people(town.folk);
   dlg = BI.createDialog({ speak: t => A.speak && A.speak(t), pos: () => P });
   const wunsch = BI.createWunsch({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), setStick, addVeh: (t_, x, z, h) => addVeh(t_, x, z, h), getNightT: () => nightT, setNightT: v => { nightT = v; } });
-  const taschi = BI.createTaschi({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), fanfare: () => A.fanfare && A.fanfare(), setStick }); taschi.build();
+  const taschi = BI.createTaschi({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), fanfare: () => A.fanfare && A.fanfare(), setStick, indoors: () => !!(innen && innen.inside), beamHeil: () => { const d = DEST.find(x => x.id === 'ta_heil'); if (d) beamTo(d); } }); taschi.build();
+  $('bTaschiHub').addEventListener('click', () => { if (typeof closeHudMenus === 'function') closeHudMenus(); taschi.openHub(); });
   const fussball = BI.createFussball({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), net: () => net, me: () => selfId(), earn: id => kids.earn(id), humansAt: (x, z, r) => 1 + [...remote.values()].filter(a => Math.hypot(a.x - x, a.z - z) < r).length }); fussball.people(town.folk);
   const maerchen = BI.createMaerchen({ scene, renderer, W, A, fx, P, say, save, persist, addStars: n => addStars(n), mini: () => mini }); maerchen.people(town.folk);
   const schatz = BI.createSchatz({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), guide: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); } }); schatz.people(town.folk);

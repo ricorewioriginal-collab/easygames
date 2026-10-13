@@ -50,16 +50,16 @@ const r = await p.evaluate(async () => {
   P.x = T.entry.x; P.z = T.entry.z; D.S().orden = {}; t.cheatAll(); out.all = t.nOrden === undefined ? D.nOrden() === 8 : true; await sl(100);
   const I = b.istory, d = I.dbg.ST.find(x => x.key === 'TASCHI'); out.story = !!d && d.acts.length === 4; let w = 0; while (w++ < 80 && (b.save.inselstory || {}).TASCHI !== 4) { P.x = T.entry.x; P.z = T.entry.z; await sl(300); } out.sd = [(b.save.inselstory || {}).TASCHI, b.save.stk.includes('geschichte_taschi'), b.save.stk.includes('taschi_meister')]; out.storyDone = (b.save.inselstory || {}).TASCHI === 4 && b.save.stk.includes('geschichte_taschi') && b.save.stk.includes('taschi_meister');
   /* 13. Cheat + Log + Handbuch */
-  b.save.taschi = null; const cr = b.cheats.redeem('TASCHIMEISTER'); out.cheat = cr.ok && D.nOrden() === 8; out.log = t.log().rows.length === 9;
+  b.save.taschi = null; const cr = b.cheats.redeem('TASCHIMEISTER'); out.cheat = cr.ok && D.nOrden() === 8; out.log = t.log().rows.length === 12;
   const md = b.buch.toMarkdown('handbuch'), ml = b.buch.toMarkdown('loesung'); out.buch = /Taschi-Land/.test(md) && /Taschi-Land/.test(ml);
   return out;
 });
 console.log(JSON.stringify(r));
 ok(r.isle && r.bridge, 'Insel im Osten eingetragen, Brücke ohne Hindernis begehbar'); ok(r.doors, 'Labor, Heilhaus und Fangladen haben Türen'); ok(r.friends && r.npcs, '9 Freunde (Blitzi, Fellino …) und alle Leute (Professor, Leiter, Team Funke, Statue) da');
-ok(r.meshes && r.pics && r.species >= 28, 'Alle ' + r.species + ' Taschis haben 3D-Modell und Vorschaubild'); ok(r.heroes, 'Neue Spielfiguren (Kai, Ulme, Aurelia, Team Funke …) bauen');
+ok(r.meshes && r.pics && r.species >= 96, 'Alle ' + r.species + ' Taschis haben 3D-Modell und Vorschaubild'); ok(r.heroes, 'Neue Spielfiguren (Kai, Ulme, Aurelia, Team Funke …) bauen');
 ok(r.types && r.dmg, 'Typen-Tabelle und Schaden (Feuer > Pflanze, Normal wirkt nicht auf Geist)'); ok(r.nearProf && r.panel && r.starters && r.starter, 'Professor Ulme: Fenster, 3 Starter, Auswahl');
 ok(r.ui && r.fightEnd && r.xp, 'Wildes Taschi: Kampf-Oberfläche (4 Knöpfe), Kampf endet, Erfahrung'); ok(r.caught, 'Fangen: Taschiball, Team, Taschidex, Fang-Orden, Sticker');
 ok(r.evoLv && r.evoStone, 'Entwicklung per Level (Glutzahn → Glutdrach) und per Stein (Fellino → Wellino)'); ok(r.aureliaLocked && r.trainer && r.fels, 'Arena: Aurelia gesperrt, Fels-Fiete 2 Taschis, Orden + Sterne');
 ok(r.noBall, 'Gegen Trainer keine Fangbälle'); ok(r.funke, 'Team Funke: 3 Kämpfe in Folge → Ballon-Orden'); ok(r.lose, 'Niederlage: Team wird im Heilhaus geheilt'); ok(r.grass && r.run, 'Im hohen Gras erscheint ein wildes Taschi; Flucht klappt');
-ok(r.balloon && r.fly, 'Funken-Ballon steht im Lager und fliegt'); ok(r.story && r.storyDone, 'Inselgeschichte (4 Akte) fertig mit allen 8 Orden, Sticker Taschi-Held + Taschi-Meister'); ok(r.cheat && r.log, 'Geheimcode TASCHIMEISTER; Aufgabenliste 9 Zeilen'); ok(r.buch, 'Handbuch & Lösungsbuch kennen Taschi-Land');
+ok(r.balloon && r.fly, 'Funken-Ballon steht im Lager und fliegt'); ok(r.story && r.storyDone, 'Inselgeschichte (4 Akte) fertig mit allen 8 Orden, Sticker Taschi-Held + Taschi-Meister'); ok(r.cheat && r.log, 'Geheimcode TASCHIMEISTER; Aufgabenliste 12 Zeilen'); ok(r.buch, 'Handbuch & Lösungsbuch kennen Taschi-Land');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | ')); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); await browser.close(); process.exit(fails ? 1 : 0);

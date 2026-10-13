@@ -10,7 +10,7 @@ BI.createTaschi = function (G) {
   const mk = (id, lv) => { const m = { id, lv, xp: 0, mv: movesAt(id, lv) }; m.hp = hpMax(id, lv); return m; };
   const eff = (mt, dt) => (CH[mt] && CH[mt][dt] != null ? CH[mt][dt] : 1);
   const nOrden = () => Object.keys(S().orden).length, nameOf = m => SP[m.id].n, pic = id => BI.taschiPic(id) || '';
-  const seen = id => { const d = S().dex; if (!d[id]) { d[id] = 1; } }, got = id => { S().dex[id] = 2; };
+  const seen = id => { const d = S().dex; if (!d[id]) { d[id] = 1; } }, got = id => { const d = S().dex, was = d[id] === 2; d[id] = 2; if (!was) setTimeout(milestones, 50); };
   const flag = f => { (save.flags || (save.flags = {}))[f] = 1; };
   const damage = (att, def, mv) => { const a = SP[att.id], d = SP[def.id], e = eff(mv.t, d.t), crit = Math.random() < .06; let x = Math.floor(((2 * att.lv / 5 + 2) * mv.p * stat(a.at, att.lv) / stat(d.df, def.lv)) / 50) + 2; x = Math.floor(x * (a.t === mv.t ? 1.5 : 1) * e * (.85 + Math.random() * .15) * (crit ? 1.5 : 1)); return { d: e === 0 ? 0 : Math.max(1, x), eff: e, crit: crit && e > 0 }; };
   K.mk = mk; K.hpMax = hpMax; K.eff = eff; K.damage = damage; K.movesAt = movesAt; K.S = S;
@@ -19,7 +19,7 @@ BI.createTaschi = function (G) {
   const FR = ['blitzi', 'fellino', 'flamino', 'wellino', 'blitzino', 'laubino', 'glutzahn', 'samenling', 'plaetscher'], friends = [], npcs = [];
   const place = (g, a, b, h) => { const p = T.at(a, b); g.position.set(p.x, 0, p.z); g.rotation.y = h == null ? Math.atan2(-T.ux, -T.uz) : h; scene.add(g); return p; };
   K.build = function () {
-    if (K.ready) return; K.ready = true;
+    if (K.ready) return; K.ready = true; if (BI.buildTaschiZones) BI.buildTaschiZones({ W, scene });
     FR.forEach((id, i) => { const g = BI.taschiMesh(id, { s: .85 }), a = -34 + Math.cos(i / FR.length * TAU) * 11, b = Math.sin(i / FR.length * TAU) * 11, p = place(g, a, b, i); friends.push({ id, g, x: p.x, z: p.z, tx: p.x, tz: p.z, h: i, w: Math.random() * 3, hop: 0, hx: p.x, hz: p.z }); });
     const look = (o) => Object.assign({ hat: 'none', style: 'short', skin: 0xf3c9a0, pants: 0x4a4a5a, shoe: 0x333333 }, o);
     const mkN = (id, a, b, name, icon, o, h, label) => { BI.DLG_LOOKS[name] = look(o); const c = BI.makeChar(look(o)); const p = place(c.group, a, b, h); npcs.push({ id, c, x: p.x, z: p.z, name, icon, label, r: 3.2 }); return npcs[npcs.length - 1]; };
@@ -95,9 +95,11 @@ BI.createTaschi = function (G) {
   }
   function useHeal(k, m) { const s = S(); if (!s.items[k]) return false; const it = IT[k]; if (it.revive) { if (m.hp > 0) return false; m.hp = Math.ceil(hpMax(m.id, m.lv) / 2); } else { if (m.hp <= 0 || m.hp >= hpMax(m.id, m.lv)) return false; m.hp = Math.min(hpMax(m.id, m.lv), m.hp + it.heal); } s.items[k]--; return true; }
   function stoneEvolve(m, k) { const s = S(), to = IT[k].stone; if (!s.items[k] || !SP[m.id].st || !SP[m.id].st.includes(to)) return false; s.items[k]--; const r = m.hp / hpMax(m.id, m.lv); m.id = to; m.hp = Math.max(1, Math.round(hpMax(to, m.lv) * r)); m.mv = Array.from(new Set(m.mv.concat(movesAt(to, m.lv)))).slice(-4); got(to); say('✨ Wow! Dein Fellino ist jetzt ' + SP[to].n + '!', 3600); G.fanfare && G.fanfare(); return true; }
-  function dexPanel() {
-    openPanel('📘 Taschidex', bd => { const s = S(), ids = Object.keys(SP), n = ids.filter(i => s.dex[i] === 2).length; bd.appendChild($('div', 'tip', 'Gefangen: <b>' + n + ' / ' + ids.length + '</b> · Tippe auf ein Bild, um mehr zu erfahren.')); const g = $('div', 'grid');
-      for (const id of ids) { const st = s.dex[id] || 0, c = $('div', 'cell' + (st ? '' : ' no'), '<img alt="" src="' + pic(id) + '"><br>' + (st ? SP[id].n : '???') + (st === 2 ? ' ✔️' : '')); c.onclick = () => say(st ? TY[SP[id].t].i + ' ' + SP[id].n + ': ' + SP[id].dex : '❓ Dieses Taschi hast du noch nicht gesehen.', 4800); g.appendChild(c); } bd.appendChild(g); });
+  function dexPanel(world) {
+    openPanel('📘 Taschidex', bd => { const s = S(), all = Object.keys(SP), ids = world ? all.filter(i => SP[i].world === world) : all, n = all.filter(i => s.dex[i] === 2).length;
+      bd.appendChild($('div', 'tip', 'Gefangen: <b>' + n + ' / ' + all.length + '</b>' + (world ? ' · ' + BI.TWORLDS[world][0] : '') + ' · Tippe auf ein Bild.'));
+      const chips = $('div', 'tip'); for (const k of [null].concat(Object.keys(BI.TWORLDS))) { const b = $('button', 'tb', k ? (BI.TWORLDS[k][0].split(' ')[0]) : 'Alle'); b.style.cssText = 'margin:2px;padding:4px 8px;min-height:30px;font-size:13px' + (k === (world || null) ? ';background:#ffd23f' : ''); b.onclick = () => dexPanel(k); chips.appendChild(b); } bd.appendChild(chips);
+      const g = $('div', 'grid'); for (const id of ids) { const st = s.dex[id] || 0, c = $('div', 'cell' + (st ? '' : ' no'), '<img alt="" src="' + pic(id) + '"><br>' + (st ? SP[id].n : '???') + (st === 2 ? ' ✔️' : '')); c.onclick = () => say(st ? TY[SP[id].t].i + ' ' + SP[id].n + ': ' + SP[id].dex : '❓ Dieses Taschi hast du noch nicht gesehen.', 4800); g.appendChild(c); } bd.appendChild(g); });
   }
   function ordenPanel() {
     openPanel('🏅 Orden', bd => { const s = S(); bd.appendChild($('div', 'tip', 'Du hast <b>' + nOrden() + ' von 8</b> Orden. Löse die Aufgaben der Insel!')); for (const o of ORD) bd.appendChild(row(null, (s.orden[o.key] ? '✅ ' : '⬜ ') + o.icon + ' ' + o.n, o.t, [])); });
@@ -237,30 +239,63 @@ BI.createTaschi = function (G) {
   K.healVisit = function () { const s = S(); if (!s.team.length) { say('💖 Schwester Hanna: „Du hast noch kein Taschi – frag zuerst Professor Ulme!“', 4200); return; } const was = s.team.concat(s.box).some(m => m.hp < hpMax(m.id, m.lv)); heal(); G.fanfare && G.fanfare(); say(was ? '💖 Schwester Hanna: „Fertig! Alle deine Taschis sind wieder topfit.“' : '💖 Schwester Hanna: „Deine Taschis sind schon ganz fit – super!“', 4200); teamPanel(); };
   K.openTeam = teamPanel; K.openShop = shopPanel;
   K.act = K.interact; K.menu = menu;
-  let accum = 0, nextEnc = 9, zoneWas = null, hintT = 0; const zoneAt = (x, z) => { for (const Z of T.zones) { const p = T.at(Z.a, Z.b); if (Math.hypot(x - p.x, z - p.z) < Z.r - 1) return Z; } return null; };
+  let accum = 0, nextEnc = 9, zoneWas = null, hintT = 0; const zoneAt = (x, z) => { for (const Z of T.zones) { const p = T.at(Z.a, Z.b); if (Math.hypot(x - p.x, z - p.z) < Z.r - 1) { Z.world = 'TASCHI'; return Z; } } for (const Z of BI.TZONES || []) if (Math.hypot(x - Z.x, z - Z.z) < Z.r - 1) return Z; return null; };
   K.zoneAt = zoneAt;
   K.encounter = function (zone) {
-    const s = S(), pool = BI.TWILD[zone.id], tot = pool.reduce((a, p) => a + p[1], 0); let r = Math.random() * tot, id = pool[0][0]; for (const p of pool) { r -= p[1]; if (r <= 0) { id = p[0]; break; } } const lv = Math.max(3, Math.min(30, 3 + nOrden() * 2 + ((Math.random() * 3) | 0))); return K.wild(id, lv);
+    const s = S(), pool = zone.world === 'TASCHI' ? BI.TWILD[zone.id] : BI.TWILDW[zone.world], tot = pool.reduce((a, p) => a + p[1], 0); let r = Math.random() * tot, id = pool[0][0]; for (const p of pool) { r -= p[1]; if (r <= 0) { id = p[0]; break; } } const base = zone.world === 'TASCHI' ? 3 + nOrden() * 2 : BI.TWORLDS[zone.world][1] + Math.floor(nOrden() * 1.2), lv = Math.max(3, Math.min(40, base + ((Math.random() * 3) | 0))); return K.wild(id, lv);
   };
   let lx = null, lz = null;
   K.update = function (dt, t) {
-    if (!K.ready) return; const d = Math.hypot(P.x - T.x, P.z - T.z); if (d > T.R + 140) { lx = null; return; }
-    for (const f of friends) { f.w -= dt; if (f.w <= 0) { f.w = 2 + Math.random() * 4; const a = Math.random() * TAU, r = Math.random() * 11, c = T.at(T.statue.a, T.statue.b); f.tx = c.x + Math.sin(a) * (4.5 + r); f.tz = c.z + Math.cos(a) * (4.5 + r); }
+    if (!K.ready) return; const d = Math.hypot(P.x - T.x, P.z - T.z); followUpdate(dt, t);
+    if (d <= T.R + 140) { for (const f of friends) { f.w -= dt; if (f.w <= 0) { f.w = 2 + Math.random() * 4; const a = Math.random() * TAU, r = Math.random() * 11, c = T.at(T.statue.a, T.statue.b); f.tx = c.x + Math.sin(a) * (4.5 + r); f.tz = c.z + Math.cos(a) * (4.5 + r); }
       const dx = f.tx - f.x, dz = f.tz - f.z, l = Math.hypot(dx, dz); if (l > .15) { const k = Math.min(l, 1.6 * dt) / l; f.x += dx * k; f.z += dz * k; f.h = Math.atan2(dx, dz); } f.hop = Math.max(0, f.hop - dt * 2.2);
       f.g.position.set(f.x, Math.abs(Math.sin(t * (l > .15 ? 7 : 2) + f.w)) * (l > .15 ? .12 : .02) + Math.sin(f.hop * Math.PI) * .9, f.z); f.g.rotation.y = f.h; }
-    for (const n of npcs) if (n.c && n.c.group) { n.c.group.position.y = n.id === 'aurelia' ? .7 + Math.sin(t * 2) * .02 : Math.sin(t * 2 + n.x) * .02; }
+    for (const n of npcs) if (n.c && n.c.group) { n.c.group.position.y = n.id === 'aurelia' ? .7 + Math.sin(t * 2) * .02 : Math.sin(t * 2 + n.x) * .02; } }
     if (P.veh || B || panelOpen || P.y > 1.5) { lx = null; return; }
     const z = zoneAt(P.x, P.z); if (lx != null && z) { accum += Math.hypot(P.x - lx, P.z - lz); if (accum > nextEnc) { accum = 0; nextEnc = 7 + Math.random() * 9; if (S().team.some(m => m.hp > 0)) { K.encounter(z); } else if (hintT <= 0) { hintT = 12; say(S().team.length ? '💤 Dein Team ist müde – ab ins Heilhaus!' : '🔴 Im Gras raschelt es… Hol dir erst ein Taschi bei Professor Ulme!', 3600); } } } else if (!z) accum = Math.min(accum, 3);
     hintT -= dt; lx = P.x; lz = P.z; zoneWas = z;
   };
   K.busy = () => !!B || panelOpen;
+  /* ===== Begleiter: das vorderste Taschi läuft hinter dir her (überall, außer im Fahrzeug, drinnen und im Kampf) ===== */
+  let fol = null, folId = null;
+  function followUpdate(dt, t) {
+    const s = S(), lead = s.team.find(m => m.hp > 0) || s.team[0]; if (!lead || P.veh || B || (G.indoors && G.indoors())) { if (fol) fol.visible = false; return; }
+    if (!fol || folId !== lead.id) { if (fol) scene.remove(fol); fol = BI.taschiMesh(lead.id, { s: .62 }); folId = lead.id; fol.userData.p = { x: P.x - Math.sin(P.h) * 1.7, z: P.z - Math.cos(P.h) * 1.7, h: P.h }; scene.add(fol); }
+    const p = fol.userData.p, tx = P.x - Math.sin(P.h) * 1.8 + Math.cos(P.h) * .7, tz = P.z - Math.cos(P.h) * 1.8 - Math.sin(P.h) * .7, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);
+    if (d > 14) { p.x = tx; p.z = tz; } else if (d > .5) { const k = Math.min(d - .4, (P.speed || 0) * 1.1 * dt + d * dt * 2.5) / d; p.x += dx * k; p.z += dz * k; p.h = Math.atan2(dx, dz); }
+    fol.visible = true; fol.position.set(p.x, Math.max(0, W.groundY(p.x, p.z)) + (d > .6 ? Math.abs(Math.sin(t * 9)) * .14 : 0), p.z); fol.rotation.y = p.h;
+  }
+  /* ===== Meilensteine im Taschidex ===== */
+  const worldsCaught = () => { const s = S(), out = {}; for (const id of Object.keys(SP)) if (s.dex[id] === 2 && SP[id].world) out[SP[id].world] = (out[SP[id].world] || 0) + 1; return out; };
+  function milestones() {
+    const s = S(), n = Object.keys(SP).filter(i => s.dex[i] === 2).length, tot = Object.keys(SP).length, give = (k, st, sticker, txt) => { if (s.done[k]) return; s.done[k] = 1; G.addStars(st); G.fanfare && G.fanfare(); sticker && G.earn && G.earn(sticker); say(txt + ' +' + st + ' ⭐', 5200); persist(); };
+    if (n >= 25) give('d25', 5, 'taschi_dex25', '📘 25 Taschis im Taschidex!'); if (n >= 50) give('d50', 10, 'taschi_dex50', '📘 50 Taschis im Taschidex!'); if (n >= tot) give('dall', 25, null, '📘 ALLE ' + tot + ' Taschis gefangen – Meister-Forscher!');
+    const wc = worldsCaught(), full = Object.keys(BI.TWORLDS).filter(k => (wc[k] || 0) >= 2).length; if (full >= Object.keys(BI.TWORLDS).length) give('wforsch', 15, 'taschi_weltforscher', '🌍 In jeder Welt 2 Taschis gefangen – Weltforscher!');
+  }
+  K.milestones = milestones;
+  /* ===== Taschi-Menü (überall erreichbar) ===== */
+  function hubPanel() {
+    const s = S(), tot = Object.keys(SP).length, n = Object.keys(SP).filter(i => s.dex[i] === 2).length;
+    openPanel('🔴 Taschis', bd => {
+      bd.appendChild($('div', 'tip', s.team.length ? 'Dein Team: ' + s.team.map(m => SP[m.id].n + ' Lv ' + m.lv).join(' · ') : 'Du hast noch kein Taschi – Professor Ulme wartet in Taschi-Land (Insel im Osten, 🧭 Wohin?).'));
+      bd.appendChild(row(null, '🎒 Team & Beutel', s.team.length + ' im Team · ' + s.box.length + ' im Lager', [['Ansehen', teamPanel]])); bd.appendChild(row(null, '📘 Taschidex', n + ' von ' + tot + ' gefangen', [['Ansehen', () => dexPanel()]]));
+      bd.appendChild(row(null, '🏅 Orden', nOrden() + ' von 8', [['Ansehen', ordenPanel]])); bd.appendChild(row(null, '🌍 Weltforscher', 'Fang überall Taschis: in jeder Welt leben eigene Arten!', [['Ansehen', worldPanel]]));
+      if (G.beamHeil) bd.appendChild(row(null, '💖 Zum Heilhaus', 'Fliegt dich zu Schwester Hanna nach Taschi-Land', [['Los!', () => { closePanel(); G.beamHeil(); }]]));
+    });
+  }
+  function worldPanel() {
+    const wc = worldsCaught(); openPanel('🌍 Weltforscher', bd => { bd.appendChild($('div', 'tip', 'Fang in jeder Welt mindestens 2 Taschis. Wilde Taschis sitzen im <b>Fanggras</b> (dunkle Flecken mit hohen Halmen).')); for (const k of Object.keys(BI.TWORLDS)) { const have = Object.keys(SP).filter(i => SP[i].world === k && S().dex[i] === 2).length, all = Object.keys(SP).filter(i => SP[i].world === k).length; bd.appendChild(row(null, (wc[k] >= 2 ? '✅ ' : '⬜ ') + BI.TWORLDS[k][0], have + ' von ' + all + ' gefangen · Stufe ab ' + BI.TWORLDS[k][1], [['📘', () => dexPanel(k)]])); } });
+  }
+  K.openHub = hubPanel; K.worldPanel = worldPanel;
   K.log = () => { const s = S(), caught = Object.keys(SP).filter(i => s.dex[i] === 2).length; return { title: '🔴 Taschi-Land', count: nOrden() + ' von 8 Orden', rows: [
     { ok: !!s.team.length, icon: '🔬', text: 'Bei Professor Ulme dein erstes Taschi wählen', dest: 'taschi' },
     { ok: !!s.orden.fang, icon: '🔴', text: 'Im hohen Gras ein wildes Taschi fangen (Fang-Orden)', dest: 'taschi' },
     { ok: !!s.orden.fels, icon: '🪨', text: 'Fels-Fiete in der Arena besiegen', dest: 'taschi' }, { ok: !!s.orden.perle, icon: '💧', text: 'Perla in der Arena besiegen', dest: 'taschi' },
     { ok: !!s.orden.funke, icon: '⚡', text: "Käpt'n Volt in der Arena besiegen", dest: 'taschi' }, { ok: !!s.orden.bluete, icon: '🌿', text: 'Blüte in der Arena besiegen', dest: 'taschi' },
     { ok: !!s.orden.forscher, icon: '📘', text: 'Taschidex: 8 verschiedene Taschis fangen (' + Math.min(8, caught) + ' von 8)', dest: 'taschi' },
-    { ok: !!s.orden.team, icon: '🎈', text: 'Team Funke (Jette, Jim, Mauzi) besiegen', dest: 'taschi' }, { ok: !!s.orden.meister, icon: '👑', text: 'Meisterin Aurelia besiegen (alle 7 Orden nötig)', dest: 'taschi' }] }; };
+    { ok: !!s.orden.team, icon: '🎈', text: 'Team Funke (Jette, Jim, Mauzi) besiegen', dest: 'taschi' }, { ok: !!s.orden.meister, icon: '👑', text: 'Meisterin Aurelia besiegen (alle 7 Orden nötig)', dest: 'taschi' },
+    { ok: !!s.done.d25, icon: '📘', text: 'Taschidex: 25 Taschis fangen (' + Math.min(25, caught) + ' von 25) – wilde Taschis gibt es in jeder Welt im Fanggras', dest: 'taschi' }, { ok: !!s.done.d50, icon: '📚', text: 'Taschidex: 50 Taschis fangen (' + Math.min(50, caught) + ' von 50)', dest: 'taschi' },
+    { ok: !!s.done.wforsch, icon: '🌍', text: 'Weltforscher: in jeder der ' + Object.keys(BI.TWORLDS).length + ' Welten 2 Taschis fangen (' + Object.keys(BI.TWORLDS).filter(k => (worldsCaught()[k] || 0) >= 2).length + ' von ' + Object.keys(BI.TWORLDS).length + ')', dest: 'taschi' }] }; };
   K.dbg = { mk, hpMax, movesAt, award, heal, profPanel, teamPanel, dexPanel, shopPanel, starterPanel, ordenPanel, friends, npcs, S, nOrden, B: () => B, closePanel };
   K.cheatAll = function () { const s = S(); if (!s.team.length) s.team.push(mk('blitzi', 12)); for (const o of ORD) if (!s.orden[o.key]) s.orden[o.key] = 1; flag('ta_o4'); flag('ta_o8'); flag('ta_fang'); G.earn && (G.earn('taschi_meister'), G.earn('taschi_fang')); for (const k of Object.keys(SP)) s.dex[k] = 2; for (const k of Object.keys(IT)) s.items[k] = Math.max(s.items[k] || 0, 9); persist(); };
   return K;
