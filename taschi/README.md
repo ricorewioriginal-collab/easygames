@@ -19,7 +19,7 @@ Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** ein
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
 - Handy: Touch-Joystick und Aktionsschaltflächen.
-- **Team**, **Taschidex**, **Karte**, **Pause** als sichtbare Schaltflächen.
+- **Team**, **Taschidex**, **Karte**, **Pause** und **Musik an/aus** als sichtbare Schaltflächen.
 - Pause: Reisekarte, Abenteuerbuch, Geschichte, Spielstand als JSON exportieren oder importieren. Drei Speicherplätze und Neustart je Spielplatz.
 - Drei wählbare lokale Speicherplätze und automatisches Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
 - Import prüft Dateigröße und Spielstandsformat; beschädigte Eingaben werden abgewiesen.
@@ -33,11 +33,11 @@ Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** ein
 - Eigenständige 3D-Kampfplattform mit sichtbaren Modellen beider Taschis.
 - 6 Dörfer mit eigenen Bewohnern, Aufgaben, Begegnungen, Belohnungen und Rastaktionen; 4 Höhlen mit **begehbarem einfachem 3D-Interieur**, Kristallsuche, Wildbegegnungen und Ausgang.
 - Fünf Story-Kapitel, Abenteuerbuch, Richtungsanzeige zur nächsten Arena, je nach Gebiet unterschiedliche wilde Taschi-Typen, freies Erkunden nach der 16. Herausforderung.
-- Mobile Rendering-Auflösung begrenzt und Blüten per InstancedMesh zusammengefasst.
+- Mobile Rendering-Auflösung begrenzt und Blüten per InstancedMesh zusammengefasst. Originale, synthetisch erzeugte Musik und Kampftöne (abschaltbar; keine lizenzierten Audiodateien).
 
 ## Aktuelle Qualitätsgrenzen
 
-Die komplette **Kernfortschrittskette vom Starter bis zum 16. Arena-Siegel ist im Code angelegt**, wurde aber noch nicht mit einem automatisierten End-to-End-Browserlauf auf einem realen Smartphone verifiziert. Das Produkt erreicht derzeit **noch nicht die Qualität und den Umfang eines kommerziellen Konsolen-RPGs**. Noch fehlen insbesondere handmodellierte individuelle Monster, echte begehbare Häuser und umfangreiche Innenräume, hunderte individuelle Attacken, Status-Effekte und taktische Gegner-KI, umfangreiche Cutscenes, professionelle Musik/Soundeffekte, große zusammenhängende Routen, mehrstufige Haupt- und Nebenquests, Multiplayer/Handel und Cross-Device-Synchronisierung.
+Die komplette **Kernfortschrittskette vom Starter bis zum 16. Arena-Siegel ist im Code angelegt**, wurde aber noch nicht mit einem automatisierten End-to-End-Browserlauf auf einem realen Smartphone verifiziert. Das Produkt erreicht derzeit **noch nicht die Qualität und den Umfang eines kommerziellen Konsolen-RPGs**. Noch fehlen insbesondere handmodellierte individuelle Monster, echte begehbare Häuser und umfangreiche Innenräume, hunderte individuelle Attacken, Status-Effekte und anspruchsvolle Gegner-KI, umfangreiche Cutscenes, professionelle Musik/Soundeffekte, große zusammenhängende Routen, mehrstufige Haupt- und Nebenquests, Multiplayer/Handel und Cross-Device-Synchronisierung.
 
 Die Welt nutzt eigene Kunst-/Figurenansätze. Keine Pokémon-Assets oder markenrechtlich geschützten Grafiken, Sounds, Charaktere oder konkreten Spieltexte übernehmen.
 
