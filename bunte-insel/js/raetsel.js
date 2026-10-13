@@ -80,13 +80,13 @@ BI.buildRaetselGround = function (c) {
     M.pitC = dynChain(T.pit[0] + 2, T.b0 + 1.2, T.pit[0] + 2, T.b1 - 1.2, 1.6).concat(dynChain(T.pit[0] + 3.2, T.b0 + 1.2, T.pit[0] + 3.2, T.b1 - 1.2, 1.6));
     /* Tor-Hindernisse (bewegliche Kreise) */
     M.dyn.gateA = dynChain(T.r1 + .5, -T.door + .6, T.r1 + .5, T.door - .6, .9); M.dyn.gateB = dynChain(T.r2 + .5, -T.door + .6, T.r2 + .5, T.door - .6, .9);
-    M.dyn.wall = dynChain(T.wall[0] - 1.8, T.b0 + .5, T.wall[0] + 1.8, T.b0 + .5, .9);
+    M.dyn.wall = dynChain(T.wall[0] - 2.8, T.b0 + .5, T.wall[0] + 2.8, T.b0 + .5, 1.35);
     /* Alkoven hinter der rissigen Wand */
     { const al = T.alcove[0], A0 = al - 3.7, A1 = al + 3.7, B1 = -22.6; bx(al, (T.b0 + B1) / 2, 1, 5, A1 - A0, WL2, 0); bx(A0, (T.b0 - 1 + B1) / 2, T.b0 - 1 - B1, 5, 1, WL2, 0); bx(A1, (T.b0 - 1 + B1) / 2, T.b0 - 1 - B1, 5, 1, WL2, 0); bx(al, (T.b0 + B1) / 2, -(B1 - T.b0) - 1, .1, A1 - A0, 0xc8c0a8, 0); wallC(A0, T.b0 - .5, A0, B1); wallC(A1, T.b0 - .5, A1, B1); wallC(A0, B1, A1, B1); }
     M.roofIn = { a0: T.a0 + 1, a1: T.a1 - 1, b0: T.b0 + 1, b1: T.b1 - 1 };
   }
-  /* ---- Schwebende Titanen-Festung am Himmel (nur zum Staunen) ---- */
-  { const A = 2, B = 0, Y = 58; cyl(A, B, 24, 12, 14, 0x7a7a8a, Y, 20); cone(A, B, 12, 8, 0x5a5a6a, Y - 8, 20); for (let k = 0; k < 4; k++) { const g = k * 1.571 + .785, a = A + Math.sin(g) * 17, b = B + Math.cos(g) * 17; cyl(a, b, 2.4, 2.8, 18, [0xff6a3a, 0x4da3ff, 0x4cd07d, 0xb48aff][k], Y + 14, 10); cone(a, b, 3.4, 6, 0x3a3a4a, Y + 32, 10); glow(a, b, Y + 40, .8, [0xffb08a, 0x9fd0ff, 0xaaf0c0, 0xd8b8ff][k]); }
+  /* ---- Schwebende Titanen-Festung mit Lichtlift und begehbarer Plattform ---- */
+  { const A = 2, B = 0, Y = 58; const deck=L(A,B); M.skyBase=L(-10,0); M.skyDeck={x:deck.x,z:deck.z,y:72,r:22}; st.disc(deck.x,deck.z,22,72,0x777b8a,48); st.ring(deck.x,deck.z,20.8,22,.35,0xe9d9ff,48); st.disc(M.skyBase.x,M.skyBase.z,4.2,.08,0x8c78e8,24); st.ring(M.skyBase.x,M.skyBase.z,3.3,4.25,.22,0xb8aaff,24); for(let k=0;k<4;k++){const a=-10+Math.sin(k*Math.PI/2)*3.2,b=Math.cos(k*Math.PI/2)*3.2,q=L(a,b); cyl(a,b,.35,.55,3,[0x79dcff,0xc9a8ff,0xffdf75,0x8df0c0][k],.1,8); glow(a,b,2,.8,0xaedfff);} M.floor=(x,z)=>Math.hypot(x-deck.x,z-deck.z)<21.5?72:null; cyl(A, B, 24, 12, 14, 0x7a7a8a, Y, 20); cone(A, B, 12, 8, 0x5a5a6a, Y - 8, 20); for (let k = 0; k < 4; k++) { const g = k * 1.571 + .785, a = A + Math.sin(g) * 17, b = B + Math.cos(g) * 17; cyl(a, b, 2.4, 2.8, 18, [0xff6a3a, 0x4da3ff, 0x4cd07d, 0xb48aff][k], Y + 14, 10); cone(a, b, 3.4, 6, 0x3a3a4a, Y + 32, 10); glow(a, b, Y + 40, .8, [0xffb08a, 0x9fd0ff, 0xaaf0c0, 0xd8b8ff][k]); }
     cyl(A, B, 7, 8, 12, 0xc9d0e0, Y + 14, 14); cone(A, B, 8.4, 10, 0x2a2a3a, Y + 26, 14); sph(A, B, Y + 38, 1.4, 0xffd23f); glow(A, B, Y + 38, 2.2, 0xfff3b0); W.spots.rz_festung = { x: L(A, B).x, z: L(A, B).z, y: Y + 44 }; }
   /* ---- Wald, Wiese, Truhen-Plätze, Blumen ---- */
   for (let i = 0; i < 40; i++) { const a = rn() * TAU, d = 40 + rn() * 30, la = Math.sin(a) * d, lb = Math.cos(a) * d; if (Math.hypot(la - 36, lb) < 38 && la > -4 && la < 76) continue; if (Math.hypot(la + 44, lb) < 18 || Math.hypot(la + 20, lb - 34) < 12 || Math.hypot(la + 40, lb - 52) < 10 || Math.hypot(la + 20, lb + 36) < 10) continue; if (Math.hypot(la, lb) > M.R - 8) continue; if (BI.RAETSEL.CHESTS.some(c => Math.hypot(c.a - la, c.b - lb) < 6)) continue; tree(la, lb, 3 + rn() * 2.4, [0x4cb85a, 0x3fa84e, 0x5ac966, 0xe8b84a][i % 4]); }
@@ -121,6 +121,7 @@ BI.createRaetsel = function (G) {
   const stars = n => G.addStars(n), earn = id => G.earn && G.earn(id), nr = (o, r) => o && Math.hypot(P.x - o.x, P.z - o.z) < r, onIsle = () => Math.hypot(P.x - M.x, P.z - M.z) < M.R + 4;
   const sign = (txt, p, y, w) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 96; const c = cv.getContext('2d'); let f = 52; c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; const mw = c.measureText(txt).width; if (mw > 480) { f = Math.floor(f * 480 / mw); c.font = 'bold ' + f + 'px Fredoka, system-ui, sans-serif'; } c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 10; c.strokeStyle = '#2a2a5a'; c.strokeText(txt, 256, 50); c.fillStyle = '#ffe9a0'; c.fillText(txt, 256, 50); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })); sp.scale.set(w, w * 96 / 512, 1); sp.position.set(p.x, y, p.z); scene.add(sp); return sp; };
   { const g = L(-70, 0); sign('🗿 Rätsel-Insel der Uralten ⚔️', { x: g.x, z: g.z }, 11, 13); }
+  sign('✨ Lichtlift zur Himmelsfestung', M.skyBase, 5.2, 8);
   sign('🏯 Prüfungsturm', SP.rz_turm, 12, 9); sign('🧱 Block hierher schieben!', L(...T.plate), 4.2, 5); sign('🥚 Kapsel-Schrein', SP.rz_schrein, 7, 8); sign('⚒️ Schmiede', SP.rz_schmiede, 6.4, 6); sign('🕳️ Uralte Höhle', SP.rz_hoehle, 8, 8); sign('🦸 Held Milo', SP.rz_statue, 7.6, 6); sign('🏰 Titanen-Festung', { x: SP.rz_festung.x, z: SP.rz_festung.z }, SP.rz_festung.y, 12);
   /* ---------- Dach des Turms ---------- */
   const roof = M.roofB.mesh(mat); roof.frustumCulled = false; scene.add(roof); M.roofB = null; const RI = M.roofIn;
@@ -141,7 +142,7 @@ BI.createRaetsel = function (G) {
   const gateG = a => { const q = L(a + .5, 0), g = mk(b => { for (let k = -2; k <= 2; k++) b.box(k * 1.0, 0, 0, .25, 5.6, .3, 0x4a4a58); b.box(0, 5.2, 0, 5.4, .5, .5, 0xffd23f); b.box(0, 1.6, 0, 5.4, .3, .3, 0x6a6a78); }, q.x, q.z); g.rotation.y = Math.atan2(M.ux, M.uz); return g; };
   const gA = gateG(T.r1), gB = gateG(T.r2);
   /* Rissige Wand: leuchtende Platte an der INNENSEITE der Seitenwand von Raum 2 (vorher saß sie im Mauerwerk und war nicht zu sehen) + Schild */
-  const wlQ = L(...T.wall), wlV = L(T.wall[0], T.b0 + 1.15), crack = mk(b => { b.box(0, 0, 0, 4.6, 5.8, .3, 0xe0c9a0); b.box(0, 0, -.18, 4.8, .2, .1, 0xff8a2a); b.box(0, 5.6, -.18, 4.8, .2, .1, 0xff8a2a); b.box(-2.3, 0, -.18, .2, 5.8, .1, 0xff8a2a); b.box(2.3, 0, -.18, .2, 5.8, .1, 0xff8a2a); b.box(-.4, 1, -.2, .16, 3, .1, 0x2a1a1a); b.box(.5, 2.2, -.2, .16, 2.6, .1, 0x2a1a1a, 0, 0, .5); b.box(0, 3.6, -.2, 1.8, .16, .1, 0x2a1a1a); b.box(-.9, 2.2, -.2, 1.0, .16, .1, 0x2a1a1a, 0, 0, -.6); }, wlV.x, wlV.z); crack.rotation.y = Math.atan2(M.ux, M.uz) + Math.PI / 2; const crackSign = sign('💣 Rissige Wand – Bombe legen!', wlV, 6.9, 10);
+  const wlQ = L(...T.wall), wlV = L(T.wall[0], T.b0 + 2.25), crack = mk(b => { b.box(0, 0, 0, 4.6, 5.8, .3, 0x9b8564); b.box(0, 0, -.2, 4.9, .22, .14, 0xffb52e); b.box(0, 5.6, -.2, 4.9, .22, .14, 0xffb52e); b.box(-2.35, 0, -.2, .22, 5.8, .14, 0xffb52e); b.box(2.35, 0, -.2, .22, 5.8, .14, 0xffb52e); b.box(-.8, .7, -.3, .2, 3.9, .14, 0x241512); b.box(.7, 1.5, -.3, .2, 3.8, .14, 0x241512, 0, 0, .55); b.box(0, 3.4, -.3, 2.2, .2, .14, 0x241512); b.box(-.65, 2.4, -.3, 1.4, .2, .14, 0x241512, 0, 0, -.65); b.box(.55, 4.25, -.3, 1.1, .2, .14, 0xffe36d, 0, 0, -.5); }, wlV.x, wlV.z); crack.rotation.y = Math.atan2(M.ux, M.uz) + Math.PI / 2; const crackSign = sign('💣 Rissige Wand – Bombe legen!', wlV, 6.9, 10);
   const rkQ = L(-74, 20), rockCrack = (() => { const g = mk(b => { for (let k = 0; k < 7; k++) { const q = k / 7 * TAU; b.sph(Math.sin(q) * 2.6, 1.1, Math.cos(q) * 2.6, 1.7 + (k % 2) * .3, 0xa8a090, 1, .85, 1); b.box(Math.sin(q) * 3.9, .9, Math.cos(q) * 3.9, .1, 1.6, .1, 0x3a3a3a); } }, rkQ.x, rkQ.z); return g; })();
   const posts = [T.postN, T.postF].map(([a, b]) => { const q = L(a, b), g = mk(bb => { bb.cyl(0, 0, 0, .25, .3, 2.6, 0x6a4a2a, 6); bb.box(0, 2.4, 0, .15, .6, .15, 0xffd23f); bb.box(.35, 3.0, 0, .7, .12, .12, 0xffd23f); bb.sph(.7, 2.75, 0, .22, 0xffd23f); }, q.x, q.z); return { g, x: q.x, z: q.z }; });
   const altQ = L(...T.altar), altar = mk(b => { b.cyl(0, 0, 0, .9, 1.1, .7, 0xc9d0e0, 8); b.sph(0, 1.2, 0, .45, 0xb48aff); }, altQ.x, altQ.z);
@@ -236,7 +237,10 @@ BI.createRaetsel = function (G) {
   /* ---------- Aktionen ---------- */
   const nearChest = () => CH.find(c => !S().chests.includes(c.id) && nr(c, 2.6) && (!c.bomb || S().puz.rock));
   K.near = function () {
-    if (P.veh || P.y > 4 || ride || K.open || !onIsle()) return null; const s = S(), p = s.puz, tl = s.tools;
+    if (P.veh || ride || K.open) return null;
+    if (M.skyBase && P.y < 10 && nr(M.skyBase, 4.2)) return { k: 'rzsky', up: true, label: ['✨', 'Zur Himmelsfestung'] };
+    if (M.skyDeck && P.y > 20 && Math.hypot(P.x-M.skyDeck.x,P.z-M.skyDeck.z)<19) return { k: 'rzsky', up: false, label: ['⬇️', 'Zur Rätsel-Insel'] };
+    if (P.y > 4 || !onIsle()) return null; const s = S(), p = s.puz, tl = s.tools;
     const c = nearChest(); if (c) return { k: 'rzchest', c, label: ['🎁', c.kind === 'blue' ? 'Blaue Truhe öffnen' : 'Truhe öffnen'] };
     if (!p.block && nr({ x: blk.g.position.x, z: blk.g.position.z }, 2.7) && !blk.tw) return { k: 'rzblock', label: ['🧱', 'Block schieben'] };
     if (!p.crystal && nr(crQ, 17) && !bomb) { const lp = M.loc(P.x, P.z); if (lp.a > T.r2 - 14 && lp.a < T.pool[0] + .5) return tl.bow ? { k: 'rzcrystal', label: ['🏹', 'Pfeil auf den Kristall'] } : { k: 'rzhint', msg: '🔷 Der Kristall ist zu weit weg. Du brauchst einen Bogen (Truhe im 1. Raum)!', label: ['❓', 'Kristall ansehen'] }; }
@@ -252,6 +256,7 @@ BI.createRaetsel = function (G) {
   K.busy = () => !!ride || !!K.open;
   K.act = function (n) {
     if (!n) return; const s = S();
+    if (n.k === 'rzsky') { const q=n.up?M.skyDeck:M.skyBase; P.x=q.x; P.z=q.z; P.y=n.up?M.skyDeck.y+.35:.2; P.vy=0; P.speed=0; say(n.up?'✨ Der Lichtlift bringt dich zur schwebenden Festung!':'⬇️ Du bist zurück auf der Rätsel-Insel.',3000); return; }
     if (n.k === 'rzchest') chestReward(n.c);
     else if (n.k === 'rzhint') say(n.msg, 4200);
     else if (n.k === 'rzblock') pushBlock();
