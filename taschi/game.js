@@ -83,9 +83,43 @@ const ground=mesh(scene,new THREE.PlaneGeometry(132,132),green);ground.rotation.
 const trail=mesh(scene,new THREE.PlaneGeometry(9,124),path);trail.rotation.x=-Math.PI/2;trail.position.y=.012;
 const cross=mesh(scene,new THREE.PlaneGeometry(117,8),path);cross.rotation.x=-Math.PI/2;cross.position.y=.014;cross.position.z=-18;
 const colliders=[];function solid(x,z,r){colliders.push({x,z,r})}
-function tree(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);cylinder(g,0,1.3*s,0,.35*s,.5*s,2.6*s,wood);ball(g,0,3.2*s,0,1.65*s,mat([0x389c64,0x56a34c,0x65b95a][Math.floor(rand(0,3))]));ball(g,-1*s,2.7*s,.4*s,1.15*s,mat(0x62b467));solid(x,z,1.4*s)}
+function tree(x,z,s=1){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ const bark=mat(0x785a44),foliage=[0x3f925f,0x50985a,0x3a8665,0x74a75b].map(c=>mat(c));
+ cylinder(g,0,1.65*s,0,.27*s,.44*s,3.3*s,bark);
+ const style=Math.floor(Math.abs(x*17+z*11))%3;
+ if(style===0){
+  for(let j=0;j<3;j++){const f=ball(g,(j-1)*.58*s,(3.4+j%2*.5)*s,(j%2)*.35*s,1.18*s,foliage[j]);f.scale.set(1.05,.83,1.03)}
+ }else if(style===1){
+  for(let j=0;j<3;j++){const cone=mesh(g,new THREE.ConeGeometry((1.65-j*.28)*s,2*s,8),foliage[j],0,(2.7+j*.96)*s,0);cone.rotation.y=j*.3}
+ }else{
+  const crown=ball(g,0,3.45*s,0,1.7*s,foliage[3]);crown.scale.y=.76;
+  for(let j=0;j<5;j++){const a=j*Math.PI*2/5;ball(g,Math.sin(a)*1.13*s,3.3*s,Math.cos(a)*1.1*s,.65*s,foliage[j%4])}
+ }
+ solid(x,z,.85*s);
+}
 for(let i=0;i<90;i++){const x=rand(-60,60),z=rand(-60,60);if(Math.abs(x)<8||Math.abs(z+18)<7||Math.hypot(x-14,z-10)<12||Math.hypot(x+18,z+32)<13)continue;tree(x,z,rand(.7,1.3))}
-function house(x,z,label,color){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);box(g,0,2,0,8,4,7,mat(color));const top=mesh(g,new THREE.ConeGeometry(6.6,3,4),roof,0,5.4,0);top.rotation.y=Math.PI/4;box(g,0,1,3.56,1.6,2,0.15,wood);for(let dx of [-2.7,2.7])box(g,dx,2.5,3.57,1.1,1.3,.2,mat(0x6fcce8));solid(x,z,5);return {x,z,label}};
+function house(x,z,label,color){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ const wall=mat(color),trim=mat(0xfff6df),glass=mat(0x79c5e5,.18),roofing=mat(label.includes('Heil')?0xd95d76:label.includes('Fang')?0x487ba8:0xab6254);
+ box(g,0,2,0,8,4,7,wall);
+ box(g,0,.4,0,8.7,.65,7.6,mat(0x8c988a));
+ const top=mesh(g,new THREE.ConeGeometry(6.6,3,4),roofing,0,5.45,0);top.rotation.y=Math.PI/4;
+ box(g,0,1.23,3.61,1.8,2.45,.19,mat(0x77543f));
+ ball(g,.45,1.3,3.75,.08,mat(0xf0bd6a,.2));
+ for(const dx of [-2.7,2.7]){
+  box(g,dx,2.5,3.6,1.42,1.54,.14,trim);
+  box(g,dx,2.5,3.7,1.2,1.3,.09,glass);
+  box(g,dx,2.5,3.78,.11,1.3,.06,trim);
+  box(g,dx,2.5,3.79,1.2,.1,.06,trim);
+  box(g,dx,1.67,3.85,1.45,.22,.42,mat(0x6b9d69));
+ }
+ for(const dx of [-3.6,3.6])box(g,dx,2.2,3.56,.28,4.3,.22,trim);
+ box(g,0,4.2,3.58,8.1,.22,.25,trim);
+ cylinder(g,2.2,6.3,-.4,.39,.43,2.5,mat(0xc5bdae));
+ ball(g,2.2,7.55,-.4,.48,roofing);
+ solid(x,z,4.3);return {x,z,label};
+}
 const places=[house(14,10,'Professor Ulmes Labor',0xf8e5c2),house(-18,10,'Heilhaus',0xf4a9b7),house(14,-32,'Fangladen',0x91cce1)];
 // Arena monuments: 8 stations around the valley, visible and approachable.
 const gyms=[];GYMS.forEach((g,i)=>{const x=-51+(i%4)*34,z=-51+Math.floor(i/4)*31;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i});townLabel((i+1)+'. Siegel',x,z,7)});
