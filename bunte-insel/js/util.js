@@ -6,6 +6,17 @@ BI.clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 BI.lerp = (a, b, t) => a + (b - a) * t;
 BI.damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
 BI.angDiff = (a, b) => { let d = (b - a) % BI.TAU; if (d > Math.PI) d -= BI.TAU; if (d < -Math.PI) d += BI.TAU; return d; };
+/* Flüssiger: unsichtbare Teilbäume (Innenräume, andere Welten, ausgeblendete Figuren – meist ~3/4 der Szene) nicht jedes Bild neu durchrechnen.
+   Das Objekt merkt sich „muss neu“ und wird im ersten sichtbaren Bild samt Kindern frisch berechnet – vor dem Zeichnen, das Bild bleibt gleich.
+   ?mw=0 schaltet es zum Vergleichen ab. */
+if (THREE.Object3D && THREE.REVISION === '128' && !(typeof location !== 'undefined' && /[?&]mw=0/.test(location.search))) (function () {
+  /* wie three r128 Object3D.updateMatrixWorld, nur dass unsichtbare Kinder gar nicht erst aufgerufen werden */
+  THREE.Object3D.prototype.updateMatrixWorld = function (force) {
+    if (this.matrixAutoUpdate) this.updateMatrix();
+    if (this.matrixWorldNeedsUpdate || force) { if (this.parent === null) this.matrixWorld.copy(this.matrix); else this.matrixWorld.multiplyMatrices(this.parent.matrixWorld, this.matrix); this.matrixWorldNeedsUpdate = false; force = true; }
+    const ch = this.children; for (let i = 0, l = ch.length; i < l; i++) { const c = ch[i]; if (c.visible) c.updateMatrixWorld(force); else c.matrixWorldNeedsUpdate = true; }
+  };
+})();
 BI.rng = function (seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
 /* Schriftbilder brauchen auf WebGL 1 bei nicht-zweierpotenten Canvasgrößen lineare Filter ohne Mipmaps. */
 BI.labelTexture = function (canvas) {
@@ -123,16 +134,40 @@ BI.store = {
   BI.mat = () => shared || (shared = new THREE.MeshLambertMaterial({ vertexColors: true }));
   /* Bodenschichten (Wiese, Sand, Wege, Markierungen liegen nur Millimeter übereinander) trennen: jede Höhenstufe bekommt ein eigenes Mesh mit eigenem
      polygonOffset, damit nichts flackert – auch bei kleiner Tiefenpuffer-Genauigkeit (Handys). Gibt die Meshes zurück; der Rest bleibt im Haupt-Mesh. */
+  /* Großes Batch in Kacheln (cell × cell Meter, nach Dreiecks-Mittelpunkt) teilen: jede Kachel ist ein eigenes Mesh mit eigener Hülle,
+     so zeichnet die Grafikkarte nur, was die Kamera sieht. Gleiche Dreiecke, gleiches Material – das Bild bleibt identisch. Kleine Batches bleiben ein Mesh. */
+  BI.chunkMeshes = (b, mat, cell = 64, minTris = 12000, minCell = 3000) => {
+    const p = b.p, n = b.n, c = b.c;
+    if (p.length / 9 < minTris) { const m = b.mesh(mat); m.frustumCulled = true; return [m]; }
+    const cells = new Map();
+    for (let i = 0; i < p.length; i += 9) {
+      const key = Math.floor((p[i] + p[i + 3] + p[i + 6]) / 3 / cell) + ',' + Math.floor((p[i + 2] + p[i + 5] + p[i + 8]) / 3 / cell);
+      let d = cells.get(key); if (!d) cells.set(key, d = new BI.Batch());
+      for (let j = 0; j < 9; j++) { d.p.push(p[i + j]); d.n.push(n[i + j]); d.c.push(c[i + j]); }
+    }
+    /* Kacheln mit wenig Inhalt landen in einer 4× gröberen Nachbar-Kachel (nicht in einem Insel-weiten Rest, der nie weggelassen werden könnte) –
+       so bleiben die Zeichenaufrufe wenige und trotzdem fällt alles hinter der Kamera weg */
+    const out = [], big = new Map();
+    for (const [key, d] of cells) {
+      if (d.p.length / 9 >= minCell) { const m = d.mesh(mat); m.frustumCulled = true; out.push(m); continue; }
+      const [cx, cz] = key.split(',').map(Number), bk = Math.floor(cx / 4) + ',' + Math.floor(cz / 4);
+      let r = big.get(bk); if (!r) big.set(bk, r = new BI.Batch());
+      for (let j = 0; j < d.p.length; j++) { r.p.push(d.p[j]); r.n.push(d.n[j]); r.c.push(d.c[j]); }
+    }
+    for (const r of big.values()) { const m = r.mesh(mat); m.frustumCulled = true; out.push(m); }
+    return out;
+  };
   const LAYERS = [.0005, .006, .016, .021, .0255, .0265, .0275, .0285, .035, .055, .065, .071, .075, .08, .09, .11, .2], lmats = [];
-  BI.layerMeshes = (b) => {
+  BI.layerMeshes = (b, chunk) => {
     const p = b.p, n = b.n, c = b.c, L = LAYERS.map(() => new BI.Batch()), M = new BI.Batch();
     for (let i = 0; i < p.length; i += 9) {
       const y0 = p[i + 1]; let d = M;
       if (n[i + 1] > .9 && y0 < .2 && Math.abs(p[i + 4] - y0) < 1e-4 && Math.abs(p[i + 7] - y0) < 1e-4) { for (let k = 0; k < LAYERS.length; k++) if (y0 <= LAYERS[k]) { d = L[k]; break; } }
       for (let j = 0; j < 9; j++) { d.p.push(p[i + j]); d.n.push(n[i + j]); d.c.push(c[i + j]); }
     }
-    const out = [M.mesh(BI.mat())];
-    L.forEach((lb, k) => { if (lb.empty) return; if (!k) { out.push(lb.mesh(BI.mat())); return; } const m = lmats[k] || (lmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2 * k, polygonOffsetUnits: -2 * k })); out.push(lb.mesh(m)); });
+    const mk = (bb, mt) => chunk ? BI.chunkMeshes(bb, mt, chunk) : [bb.mesh(mt)];
+    const out = mk(M, BI.mat());
+    L.forEach((lb, k) => { if (lb.empty) return; if (!k) { out.push(...mk(lb, BI.mat())); return; } const m = lmats[k] || (lmats[k] = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2 * k, polygonOffsetUnits: -2 * k })); out.push(...mk(lb, m)); });
     return out;
   };
 })();
