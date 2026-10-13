@@ -27,6 +27,29 @@
     'Karte':'Map','Minikarte':'Mini-map','Weltkarte':'World map',
     'Tag':'Day','Nacht':'Night','Wetter':'Weather','Sprache':'Language',
     'Deutsch':'German','Englisch':'English',
+
+    'Ankommen':'Arrival','Unterwegs':'On the Move','Zuhause':'At Home','Im Ort':'In Town',
+    'Mutprobe':'Test of Courage','Spaß-Tag':'Fun Day','Parkdirektor':'Park Director',
+    'Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Schau dich um: Sag Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.':'Welcome to Colorful Island! I am Mayor Rosi. Take a look around: say hello, open your backpack, and find your way.',
+    'Auf der Insel gibt es viele Fahrzeuge. Steig ein, hilf den Leuten mit einem Auftrag – und fahr einmal mit dem Zug!':'There are lots of vehicles on the island. Hop in, help someone with a mission, and take a trip on the train!',
+    'Bauer Heinz braucht Hilfe! Streichle die Tiere, mäh ein Feld und koch etwas Leckeres in der Hofküche.':'Farmer Heinz needs your help! Pet the animals, mow a field, and cook something tasty in the farmhouse kitchen.',
+    'Jetzt wird es spannend! Hau einen Baum, such einen Schatz und schaff den Himmels-Parcours hoch über der Insel.':'The adventure starts now! Chop a tree, hunt for treasure, and complete the sky obstacle course above the island.',
+    'Zeig, wie mutig du bist: Gewinne einen Kampf in der Arena, segle aufs Meer und flieg mit dem Hubschrauber.':'Show how brave you are: win an arena battle, sail out to sea, and fly in a helicopter.',
+    'Du hast so viel geschafft – jetzt wird gefeiert! Fahr Karussell im Freizeitpark, schau einen Film und spring ins Freibad.':"You've accomplished so much – time to celebrate! Ride a theme park attraction, watch a movie, and take a dip in the pool.",
+    'Der Freizeitpark gehört jetzt dir! Geh ins Park-Büro am Eingang, bau Wege, Fahrgeschäfte und Buden – und mach deinen Park richtig beliebt.':'The theme park is yours now! Visit the park office near the entrance, build paths, rides and stalls, and make your park a hit.',
+    'Hau einen Baum (geh nah ran und tippe 🪓)':'Chop a tree (get close and tap 🪓)',
+    'Finde einen Schatz (🎉 → Spiele → Schatzsuche)':'Find a treasure (🎉 → Games → Treasure Hunt)',
+    'Schaffe den Himmels-Parcours':'Complete the sky obstacle course',
+    'Gewinne einen Kampf in der Arena':'Win a battle in the arena',
+    'Segle mit dem Boot':'Go sailing',
+    'Flieg mit dem Hubschrauber':'Fly a helicopter',
+    'Fahr eine Attraktion im Freizeitpark':'Ride an attraction at the theme park',
+    'Schau einen Film im Kino':'Watch a movie at the cinema',
+    'Spring ins Freibad':'Jump into the swimming pool',
+    'Baue etwas im Freizeitpark (Park-Büro am Eingang)':'Build something in the theme park (park office at the entrance)',
+    'Schließe eine Park-Mission ab':'Complete a park mission',
+    'Erreiche 3 Sterne Parkbewertung':'Reach a three-star park rating',
+    'Hof-Aufgabe':'Farm quest','Kapitel':'Chapter','Willkommen':'Welcome',
     'Speichern':'Save','Laden':'Load','Neustart':'Restart',
     'Weiter ▶':'Continue ▶','▶ Weiter':'▶ Continue',
     'Hauptmenü':'Main menu','Zum Hauptmenü':'Back to main menu',
@@ -73,7 +96,7 @@
   let lang='de',busy=false;
   try{lang=localStorage.getItem(KEY)||((navigator.language||'de').toLowerCase().startsWith('de')?'de':'en')}catch(_){}
   if(!['de','en'].includes(lang))lang='de';
-  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);return match&&en[match[2]]!==undefined?match[1]+en[match[2]]+match[3]:s}
+  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];return s}
   function textNode(n){
     if(!n.parentElement||skipped.has(n.parentElement.tagName)||n.parentElement.closest('[data-bi-i18n-skip]'))return;
     let base=originalText.get(n);
