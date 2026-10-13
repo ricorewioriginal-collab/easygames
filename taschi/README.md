@@ -41,6 +41,10 @@ Im laufenden Spiel auf **☰ → Steuerung & Controller** tippen. Einstellbar si
 
 **Controller:** Browser-Gamepad-API für Standard-Controller (z. B. Xbox/PlayStation über Bluetooth, sofern Browser und Gerät die Eingabe erlauben): linker Stick/D-Pad bewegen; A/untere Haupttaste Interaktion bzw. Menü bestätigen; B/rechte Taste Menü zurück; Start Pause; Y/obere Taste Team. Steuerkreuz im Dialog wählt Menüeinträge. Ein tatsächlicher Hardwaretest mit unterschiedlichen Controller-Modellen ist noch ausstehend, ebenso ein allgemeiner Controller-Remapping-Editor. Die Nutzerbelegung wird lokal unter `taschi.input.v2` gesichert.
 
+## Konsolenorientierte Präsentation
+
+Das HUD und die Kampfmenüs sind als kompakte, fokussierbare Spiel-Overlays gestaltet und passen sich im Hoch- und Querformat an. Die Kampfplattform zeigt Taschis mit Einblend- und Treffereaktionen, die Spielfigur besitzt eine einfache Laufanimation. Über das Pausenmenü kann optional Browser-Vollbild aktiviert werden, sofern vom Gerät unterstützt. Diese Präsentation ist weiterhin ein prozedural gestaltetes 3D-Spiel und **noch keine grafisch fertig produzierte Konsolenwelt**.
+
 ## Spielsysteme
 
 - 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
