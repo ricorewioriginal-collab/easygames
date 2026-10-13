@@ -326,7 +326,7 @@ function initHost() {
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
     humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
     document.body.classList.add('racing'); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
-    banner(TR[tIdx].name, GP.gp ? `${Track.CUPS[save.cup].name} ${GP.race + 1}/${GP.order.length}` : '', 1600); paused = false; push('grid');
+    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, 1350); paused = false;
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
   // HUD je Fahrer
@@ -415,7 +415,7 @@ function initHost() {
   }
   $('bNext').onclick = () => { $('res').hidden = true; const wasGp = GP.gp, fin = R.finalGp; if (wasGp && !fin) startRace(); else { players = players.filter(p => !p.gone); if (R.humans.length === 1 && !R.humans[0].conn && !R.humans[0].kbp) { players[0] = R.humans[0]; } beginSeries(); } };
   $('bMenu').onclick = toMenu;
-  function toMenu() { R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
+  function toMenu() { if (R && R.introTimer) clearTimeout(R.introTimer); $('raceLoad').hidden = true; R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
   $('bPause').onclick = () => { if (R && !R.ended) { paused = true; R.dirty = true; $('pause').hidden = false; } }; $('bResume').onclick = () => { paused = false; $('pause').hidden = true; }; $('bQuit').onclick = toMenu;
 
   // ------------------------------------------------------------------ Hauptschleife
@@ -429,9 +429,9 @@ function initHost() {
     const live = !paused && !R.ended;
     if (live) {
       const ff = window.__ffwd || 1; acc += dt * ff; let n = 0; const S = R.S;
-      while (acc >= 1 / 60 && n++ < 5 * ff) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
+      while (acc >= 1 / 60 && n++ < 5 * ff && !R.introLoading) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
       if (acc >= 1 / 60) acc = 0;        // Rückstand nach Hängern verwerfen statt aufzustauen
-      if (S.state === 'grid') { const c = Math.ceil(S.count - 0.2); if (c !== R.lastCount && c >= 1 && c <= 3) { R.lastCount = c; banner(String(c), '', 900, c === 1 ? '#ffd24a' : '#fff'); AUD.sfx.beep(false); } }
+      if (S.state === 'grid' && !R.introLoading) { const c = Math.ceil(S.count - 0.2); if (c !== R.lastCount && c >= 1 && c <= 3) { R.lastCount = c; banner(String(c), '', 900, c === 1 ? '#ffd24a' : '#fff'); AUD.sfx.beep(false); } }
       const k0 = S.karts[0]; AUD.engine(S.state !== 'done' && !paused, Math.max(0, k0.vf) / 36, k0.boostT > 0);
       updateHud(dt); if ((R.snapAt -= dt) <= 0) { R.snapAt = 0.05; sendSnap(); } R.pushAt -= dt; if (R.pushAt <= 0) { R.pushAt = 0.15; push(S.state === 'grid' ? 'grid' : 'race'); }
       if (S.state === 'done' && !GP.free) finishRace();
