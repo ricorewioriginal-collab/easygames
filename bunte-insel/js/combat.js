@@ -6,7 +6,7 @@ BI.createCombat = function (G) {
   const { scene, camera, W, A, fx, P, save, persist, say, addStars } = G, $ = id => document.getElementById(id), K = { dim: 0, panelOpen: false }, TAU = BI.TAU, mat = BI.mat();
   const AR = W.spots.arena, FO = W.spots.forest, rnd = Math.random, clamp = BI.clamp;
   const HPM = 100, EPM = 50;
-  let hp = HPM, ep = EPM, inv = 0, block = false, atk = null, mode = null, wasZone = null, spawnT = 3, flashT = 0, target = null, lastZone = null;
+  let hp = HPM, ep = EPM, inv = 0, block = false, blockSince = -Infinity, combatClock = 0, atk = null, mode = null, wasZone = null, spawnT = 3, flashT = 0, target = null, lastZone = null;
   const enemies = [], loot = [], S = () => save.fight || (save.fight = { k: 0, d: 0, b: 0, w: 0 });
 
   /* ---------- Monster-Modelle (eine Geometrie je Art) ---------- */
@@ -79,7 +79,7 @@ BI.createCombat = function (G) {
     let best = null, bd = 4; for (const e of targets()) { const d = Math.hypot(e.x - P.x, e.z - P.z); if (d < bd) { bd = d; best = e; } } if (best && kind !== 'special') P.h = Math.atan2(best.x - P.x, best.z - P.z);
     A.whoosh && A.whoosh();
   };
-  K.setBlock = on => { block = !!on && K.active() && !atk; };
+  K.setBlock = on => { const next = !!on && K.active() && !atk; if (next && !block) blockSince = combatClock; block = next; };
   K.key = function (code, down) {
     if (!K.active() && !K.panelOpen) return false; const map = { KeyJ: 'punch', KeyK: 'kick', KeyL: 'special' };
     if (map[code]) { if (down) K.attack(map[code]); return true; } if (code === 'KeyH') { K.setBlock(down); return true; } return false;
@@ -105,8 +105,8 @@ BI.createCombat = function (G) {
   let bossAlive = false; K.kills = 0; K.bossN = 0;
 
   /* ---------- Gegner verletzt den Spieler ---------- */
-  function hurt(d) {
-    if (G.god && G.god()) return; if (inv > 0 || hp <= 0) return; if (block) d *= .2; hp = Math.max(0, hp - d); inv = .7; A.hit && A.hit(); fx.burst(P.x, 1.4, P.z, 8, [BI.C.white, BI.C.blue], 3, 1, 24, 2); flashT = .25;
+  function hurt(d, source) {
+    if (G.god && G.god()) return; if (inv > 0 || hp <= 0) return; if (block && combatClock - blockSince <= .24) { if (source && !source.dead) { source.stun = Math.max(source.stun, 1.05); source.state = 'idle'; source.cool = .9; if (source.tele) source.tele.visible = false; } fx.burst(P.x, 1.1, P.z, 18, [BI.C.gold, BI.C.white, BI.C.blue], 4, 1.1, 28, 3); say('🛡️ Perfekt pariert!', 850); A.hit && A.hit(); return; } if (block) d *= .2; hp = Math.max(0, hp - d); inv = .7; A.hit && A.hit(); fx.burst(P.x, 1.4, P.z, 8, [BI.C.white, BI.C.blue], 3, 1, 24, 2); flashT = .25;
     if (hp <= 0) onPlayerDown();
   }
   function onPlayerDown() {
@@ -188,7 +188,7 @@ BI.createCombat = function (G) {
       e.cool -= dt; e.stun -= dt;
       if (e.stun <= 0 && canFight) {
         if (e.state === 'wind') { e.wind -= dt; const k = 1 - e.wind / e.windMax; e.g.scale.setScalar(T.base * (1 + k * .22)); body(e, 1 + k * .5);
-          if (e.wind <= 0) { e.state = 'idle'; e.cool = 1.2 + rnd() * .8; e.g.scale.setScalar(T.base); if (e.tele) e.tele.visible = false; const reach = e.tele ? 3.6 : T.reach + .5; if (d < reach) { hurt(T.dmg); } fx.burst(e.x, .4, e.z, 8, [BI.C.white, BI.C.dust], 3, .8, 22, 3); } }
+          if (e.wind <= 0) { e.state = 'idle'; e.cool = 1.2 + rnd() * .8; e.g.scale.setScalar(T.base); if (e.tele) e.tele.visible = false; const reach = e.tele ? 3.6 : T.reach + .5; if (d < reach) { hurt(T.dmg, e); } fx.burst(e.x, .4, e.z, 8, [BI.C.white, BI.C.dust], 3, .8, 22, 3); } }
         else if (d > T.reach * .85 && d < 26) { const sp = T.spd * dt; let nx = e.x + dx / d * sp, nz = e.z + dz / d * sp; const q = W.resolve(nx, nz, .55 * T.base, {}); e.x = q.x; e.z = q.z; }
         else if (e.cool <= 0 && d < 26) { e.state = 'wind'; e.windMax = e.wind = T.big ? .95 : .55; if (e.tele) { e.tele.visible = true; e.tele.scale.setScalar(3.6); e.tele.position.set(e.x, .08, e.z); } }
       }
@@ -237,7 +237,7 @@ BI.createCombat = function (G) {
 
   /* ---------- Frame ---------- */
   K.update = function (dt, t) {
-    const act = K.active(); inv = Math.max(0, inv - dt); atkCd = Math.max(0, atkCd - dt); freeze = Math.max(0, freeze - dt); flashT = Math.max(0, flashT - dt);
+    const act = K.active(); combatClock += dt; inv = Math.max(0, inv - dt); atkCd = Math.max(0, atkCd - dt); freeze = Math.max(0, freeze - dt); flashT = Math.max(0, flashT - dt);
     const fz = inForest(); if (fz !== wasZone) { wasZone = fz; if (fz) { resetStats(); K.kills = 0; K.nextBoss = 10; bossAlive = false; say('🌲 Verbotener Wald – hier wird gekämpft! (👊 Schlag, 🦵 Tritt, ✨ Spezial, 🛡️ Block)', 4800); } else if (!mode) { clearEnemies(); } }
     K.dim += ((fz ? .7 : 0) - K.dim) * Math.min(1, dt * 1.5);
     if (act && hp > 0) { ep = Math.min(EPM, ep + dt * (block ? 1 : 4)); if (!mode && Math.hypot(P.x - FO.x, P.z - FO.z) < FO.R && enemies.length === 0) hp = Math.min(HPM, hp + dt * 1.5); }
