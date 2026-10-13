@@ -128,7 +128,7 @@ function initHost() {
   function renderMenu() {
     $('rmode').innerHTML = [['race', 'Einzelrennen'], ['gp', 'Cup', '3 Strecken'], ['tt', 'Zeitfahren', 'allein, ohne Items'], ['free', 'Freies Fahren', 'ohne Zeitlimit, Gegner und Rundenzwang']].map(m => `<button class="chip ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}">${m[1]}${m[2] ? `<small>${m[2]}</small>` : ''}</button>`).join('');
     $('rmode').querySelectorAll('[data-m]').forEach(b => b.onclick = () => { save.rmode = b.dataset.m; persist(); renderMenu(); });
-    $('tracks').previousElementSibling.textContent = save.rmode === 'gp' ? 'CUP' : 'STRECKE';
+    $('trackHeading').textContent = save.rmode === 'gp' ? 'WÄHLE DEINEN CUP' : 'WÄHLE DEINE STRECKE';
     $('tracks').innerHTML = save.rmode === 'gp' ? Track.CUPS.map((c, i) => `<button class="chip ${save.cup === i ? 'on' : ''}" data-cup="${i}">${esc(c.name)}<small>${c.tracks.map(t => esc(TR[t].name)).join(' · ')}</small></button>`).join('') : TR.map((t, i) => `<button class="chip ${save.track === i ? 'on' : ''}" data-t="${i}">${esc(t.name)}</button>`).join('');
     $('tracks').querySelectorAll('[data-cup]').forEach(b => b.onclick = () => { save.cup = +b.dataset.cup; persist(); renderMenu(); });
     $('tracks').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { save.track = +b.dataset.t; persist(); renderMenu(); if (ready) { View.setTrack(getTrack(save.track)); curTrackIdx = save.track; } });
@@ -150,9 +150,9 @@ function initHost() {
     $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)} · ${kt.emoji} ${esc(kt.name)}<small>${esc(mode)} · ${esc(where)} · ${save.laps} Runden</small></span><i>✎ Ändern</i>`;
     $('bGoSetup').textContent = setupFor === 'multi' ? 'HANDYS KOPPELN ▶' : 'LOS! ▶'; $('setTitle').textContent = setupFor === 'multi' ? 'MEHRSPIELER EINRICHTEN' : 'RENNEN EINRICHTEN';
     if (ready && View.previewKart) {
-      View.previewKart($('kartStage'), save.char, save.kart, save.logo);
+      View.previewKart($(setupStep === 3 ? 'kartStageSlot' : 'kartStage'), save.char, save.kart, save.logo);
       $('kartStageName').textContent = CHARS[save.char].name + ' · ' + KARTS[save.kart].name;
-      $('kartStageWorld').textContent = CHARS[save.char].cup ? CHARS[save.char].cup + ' · ' + CHARS[save.char].kind : 'Original-Fahrer · ' + CHARS[save.char].kind;
+      $('kartStageWorld').textContent = CHARS[save.char].cup ? CHARS[save.char].cup + ' · ' + CHARS[save.char].kind : 'Original-Fahrer · ' + CHARS[save.char].kind; $('kartStageNameKart').textContent = KARTS[save.kart].name; $('kartStageWorldKart').textContent = KARTS[save.kart].desc;
     }
   }
   const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇 Ton aus' : '🔊 Ton an'; };
@@ -247,10 +247,22 @@ function initHost() {
     const el = v === 'title' ? $('mTitle') : v === 'multi' ? $('mMulti') : $('mSetup'); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); $('menu').scrollTop = 0;
   }
   $('multiHost').onclick = () => openSetup('multi'); $('multiLocal').onclick = () => { setupFor = 'multi'; renderMenu(); openLobby(); }; $('multiBack').onclick = () => showView('title');
-  const openSetup = mode => { if (!ready) return; setupFor = mode; AUD.sfx.select(); renderMenu(); showView('setup'); };
+  const openSetup = mode => { if (!ready) return; setupFor = mode; AUD.sfx.select(); renderMenu(); showView('setup'); setSetupStep(0); };
   $('bSolo').onclick = () => openSetup('solo'); $('bMulti').onclick = () => showView('multi'); $('selSum').onclick = () => openSetup('solo');
-  $('bSetBack').onclick = () => showView('title');
-  $('bGoSetup').onclick = () => { if (!ready) return; AUD.sfx.select(); if (setupFor === 'multi') return openLobby(); players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
+  let setupStep = 0;
+  function setSetupStep(step) {
+    setupStep = Math.max(0, Math.min(3, step));
+    document.querySelectorAll('#mSetup [data-pane]').forEach(p => { p.hidden = Number(p.dataset.pane) !== setupStep; });
+    document.querySelectorAll('#stepNav [data-step]').forEach(b => { b.classList.toggle('on', Number(b.dataset.step) === setupStep); b.setAttribute('aria-current', Number(b.dataset.step) === setupStep ? 'step' : 'false'); });
+    $('setupProgress').textContent = (setupStep + 1) + ' / 4';
+    $('bGoSetup').textContent = setupStep === 3 ? (setupFor === 'multi' ? 'LOBBY →' : 'RENNEN STARTEN ▶') : 'WEITER →';
+    $('bSetBack').textContent = setupStep === 0 ? '← MENÜ' : '← ZURÜCK';
+    if (ready && setupStep >= 2 && View.previewKart) View.previewKart($(setupStep === 2 ? 'kartStage' : 'kartStageSlot'), save.char, save.kart, save.logo);
+    $('menu').scrollTop = 0;
+  }
+  document.querySelectorAll('#stepNav [data-step]').forEach(b => b.onclick = () => setSetupStep(Number(b.dataset.step)));
+  $('bSetBack').onclick = () => setupStep ? setSetupStep(setupStep - 1) : showView(setupFor === 'multi' ? 'multi' : 'title');
+  $('bGoSetup').onclick = () => { if (!ready) return; AUD.sfx.select(); if (setupStep < 3) return setSetupStep(setupStep + 1); if (setupFor === 'multi') return openLobby(); players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
 
   // ------------------------------------------------------------------ Koppeln (PeerJS)
   const randCode = n => Array.from({ length: n }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
