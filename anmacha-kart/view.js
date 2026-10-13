@@ -301,7 +301,7 @@ const View = (() => {
   const bananaMesh = () => { const g = new T.Group(), y = lam('#ffe14a', { emissive: 0x5a4a00 }), br = lam('#6a4a1a'); for (let i = 0; i < 7; i++) { const a = -1.0 + i * (2.0 / 6), r = 0.3 - Math.abs(a) * 0.05; S_(g, y, Math.sin(a) * 1.15, (1 - Math.cos(a)) * 1.1 + 0.15, 0, r + 0.12, r + 0.12, r + 0.12); } S_(g, br, Math.sin(-1.08) * 1.15, (1 - Math.cos(1.08)) * 1.1 + 0.15, 0, 0.14); S_(g, br, Math.sin(1.08) * 1.15, (1 - Math.cos(1.08)) * 1.1 + 0.15, 0, 0.14); g.scale.setScalar(1.3); return g; };
   const rockMesh = (sc) => { const m = new T.Mesh(geo('rock', () => new T.IcosahedronGeometry(1, 0)), lam('#8a8f9a')); m.scale.set(0.9 * (sc || 1), 0.8 * (sc || 1), 1.0 * (sc || 1)); return m; };
   function makeKart(k) {
-    const C = CHARS[(k.char == null ? k.k : k.char) % CHARS.length], KD = KARTS[(k.kart || 0) % KARTS.length], P = KPAR[KD.id], fn = CH[C.id], g = new T.Group(), body = new T.Group(); g.add(body);
+    const C = CHARS[(k.char == null ? k.k : k.char) % CHARS.length], KD = KARTS[(k.kart || 0) % KARTS.length], P = KPAR[KD.id], fn = CH[C.model || C.id], g = new T.Group(), body = new T.Group(); g.add(body);
     const hull = lam(C.acc), dark = lam('#1c1f2e'), white = lam('#f4f6fb'), chrome = lam('#d0d8e8'), slot = lam(KCOL[k.k % 8]), skinM = lam(C.skin), bodyM = lam(C.body), tire = lam('#16161e'), rim = lam('#d8dff0');
     let wf = [0.5, 0.45, 1.0, 1.38], wr = [0.68, 0.7, 1.08, -1.15];   // [Radius, Breite, x, z]
     const id = KD.id;
@@ -479,6 +479,51 @@ const View = (() => {
     cams.forEach((c, i) => { updateCam(c, S, dt); const r = rs[i]; renderer.setViewport(r[0], r[1], r[2], r[3]); renderer.setScissor(r[0], r[1], r[2], r[3]); c.cam.aspect = r[2] / r[3]; c.cam.updateProjectionMatrix(); sky.position.copy(c.cam.position); if (skyGroup) skyGroup.position.copy(c.cam.position); renderer.render(scene, c.cam); });
     return rs;
   }
+  // Eine echte separate 3D-Auswahlbühne: verwendet dieselben Figuren- und Kartmodelle wie das Rennen.
+  const stage = { node:null, canvas:null, renderer:null, scene:null, camera:null, racer:null, key:'', angle:0, drag:false, px:0, frames:0 };
+  function previewKart(node, character, kart, logo) {
+    if (!node || !renderer) return;
+    if (!stage.renderer) {
+      stage.node = node;
+      stage.canvas = document.createElement('canvas');
+      stage.canvas.setAttribute('aria-label','Drehbare 3D-Vorschau deines Karts und Fahrers');
+      stage.canvas.style.cssText = 'width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab';
+      stage.renderer = new T.WebGLRenderer({ canvas:stage.canvas, antialias:true, alpha:true, powerPreference:'low-power' });
+      stage.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.4));
+      stage.renderer.setClearColor(0x000000,0);
+      stage.scene = new T.Scene();
+      stage.scene.add(new T.HemisphereLight(0xcfe9ff,0x493663,2));
+      const sun = new T.DirectionalLight(0xffffff,1.3); sun.position.set(-4,9,8); stage.scene.add(sun);
+      const side = new T.DirectionalLight(0xff77c8,0.8); side.position.set(5,4,-5); stage.scene.add(side);
+      const floor = new T.Mesh(new T.CylinderGeometry(4.4,4.8,0.42,40),new T.MeshPhongMaterial({color:0x282345,emissive:0x110c28,shininess:90}));
+      floor.position.y = -0.22; stage.scene.add(floor);
+      stage.camera = new T.PerspectiveCamera(38,1,0.1,100);
+      stage.canvas.addEventListener('pointerdown',e=>{stage.drag=true;stage.px=e.clientX;stage.canvas.setPointerCapture(e.pointerId);});
+      stage.canvas.addEventListener('pointermove',e=>{if(stage.drag){stage.angle+=(e.clientX-stage.px)*0.012;stage.px=e.clientX;}});
+      ['pointerup','pointercancel','lostpointercapture'].forEach(t=>stage.canvas.addEventListener(t,()=>{stage.drag=false;}));
+    }
+    if (stage.canvas.parentNode !== node) node.appendChild(stage.canvas);
+    const key = character+':'+kart+':'+logo;
+    if (key !== stage.key) {
+      if (stage.racer) stage.scene.remove(stage.racer);
+      const racer = makeKart({k:0,logo,char:character,kart});
+      scene.remove(racer.g);
+      stage.racer = racer.g; stage.scene.add(racer.g);
+      stage.key = key;
+    }
+  }
+  function previewFrame(dt) {
+    if (!stage.renderer || !stage.canvas || !stage.node || !stage.node.isConnected) return;
+    if (!stage.node.offsetWidth || !stage.node.offsetHeight) return;
+    const w=stage.node.clientWidth, h=stage.node.clientHeight;
+    const tw=Math.max(2,Math.round(w)), th=Math.max(2,Math.round(h));
+    if (stage.canvas.width!==Math.round(tw*stage.renderer.getPixelRatio()) || stage.canvas.height!==Math.round(th*stage.renderer.getPixelRatio())) stage.renderer.setSize(tw,th,false);
+    stage.camera.aspect=tw/th; stage.camera.updateProjectionMatrix();
+    if (!stage.drag) stage.angle+=Math.min(dt,0.08)*0.45;
+    if(stage.racer) stage.racer.rotation.y=stage.angle + 0.45;
+    stage.camera.position.set(9.6,6.0,10.5); stage.camera.lookAt(0,1.65,0);
+    stage.renderer.render(stage.scene,stage.camera);
+  }
   function warmup() {
     if (!fxPts) initFx(); initSkid(); const g = new T.Group(), m = makeKart({ k: 0, logo: logos.length ? logos[0].idx : 0, char: 0, kart: 0 }); scene.remove(m.g); g.add(m.g); m.flame.visible = m.shield.visible = m.sp.visible = m.stars.visible = true;
     g.add(bananaMesh(), rockMesh(1), new T.Mesh(shared.boxGeo, boxMat), new T.Mesh(new T.PlaneGeometry(8, 12), padMat), new T.Mesh(mineGeo, lam('#a020f0', { emissive: 0x4a0a6a })), new T.Mesh(rocketGeo, bas(0xff4a2a)));
@@ -486,10 +531,10 @@ const View = (() => {
   }
   const mcam = () => menuCam.cam || (menuCam.cam = new T.PerspectiveCamera(60, 1, 0.5, 1400));
   function renderMenu(dt, time) {
-    if (!tr) return; menuCam.f = (menuCam.f + dt * 9 / 3) % tr.N; const o = {}; tr.at(menuCam.f, 0, o); const c = mcam(), o2 = {}; tr.at(menuCam.f + 14, 0, o2);
+    if (!tr) return; previewFrame(dt); menuCam.f = (menuCam.f + dt * 9 / 3) % tr.N; const o = {}; tr.at(menuCam.f, 0, o); const c = mcam(), o2 = {}; tr.at(menuCam.f + 14, 0, o2);
     c.position.set(o.x - o.tx * 20 + o.tz * Math.sin(time * 0.23) * 5, 21 + Math.sin(time * 0.31) * 3, o.z - o.tz * 20 - o.tx * Math.sin(time * 0.23) * 5); c.lookAt(o2.x, 2, o2.z); c.aspect = W / H; c.updateProjectionMatrix(); sky.position.copy(c.position); if (skyGroup) skyGroup.position.copy(c.position);
     kmesh.forEach(m => scene.remove(m.g)); kmesh = []; boxes.forEach(b => scene.remove(b)); boxes = []; anim.forEach(f => f(time));
     renderer.setViewport(0, 0, W, H); renderer.setScissor(0, 0, W, H); renderer.render(scene, c);
   }
-  return { gallery, peek, burst, init, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
+  return { gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
 })();
