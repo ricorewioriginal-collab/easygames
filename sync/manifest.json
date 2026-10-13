@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "df32bf4171a8",
- "generated": "2026-10-13T02:55:35+02:00",
- "commit": "7571422950c5a0cfff90e004120bc1a5742ed8ab",
+ "version": "8be72cd44055",
+ "generated": "2026-10-13T08:59:56+02:00",
+ "commit": "fd62ef16ee1ecd22e7b10d16fc14b3f08711b943",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3783,8 +3783,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 96534,
-   "h": "fbb5d803d5a50a68d20f810853549f135275cf2dcf7b7223a89d2cb3457e46f2"
+   "s": 96550,
+   "h": "796e057e8fcbba43338410362fdee9aa9e8b590900b261a7e77b3bbae5148694"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3843,8 +3843,8 @@
   },
   {
    "p": "bunte-insel/js/characters.js",
-   "s": 8579,
-   "h": "29ed69b98a23df63a446678c582ecc52ca692f77e099abba6caeefd2ac092482"
+   "s": 8772,
+   "h": "a76f4d35d7d0e5f2e1576920e64b3e3584fadaae1b89ddbf1acf8bd424183fa2"
   },
   {
    "p": "bunte-insel/js/cheats.js",
@@ -3898,8 +3898,8 @@
   },
   {
    "p": "bunte-insel/js/fun.js",
-   "s": 21777,
-   "h": "145923166b405d1937ecd58746d619abdc9d7a25603de880920b90fee48e60ce"
+   "s": 22178,
+   "h": "212d268a10e6cad9463e63dc942eb53e649849285439a3ca0e11e5d83e6ab19a"
   },
   {
    "p": "bunte-insel/js/fussball.js",
@@ -3958,8 +3958,8 @@
   },
   {
    "p": "bunte-insel/js/life.js",
-   "s": 32592,
-   "h": "0cd7416c33d12530e29f3a8f4ccc85cebe21c10d31259bb88816b1e3e469215d"
+   "s": 33235,
+   "h": "c90caebd11a464c428fd5e304ab65761c92d5b1251589444f3cc5e405bd1afb2"
   },
   {
    "p": "bunte-insel/js/maerchen.js",
@@ -4158,8 +4158,8 @@
   },
   {
    "p": "bunte-insel/js/util.js",
-   "s": 67411,
-   "h": "404059dacad12aa979a9077c3489d4dda3b8cd61798a2e6d0d1cd2b634d77bfa"
+   "s": 70365,
+   "h": "531c3de64a3e09cedac5503a54654d30b828a23c8963989125c2ab1a1213bbd0"
   },
   {
    "p": "bunte-insel/js/vehicles.js",
@@ -4178,8 +4178,8 @@
   },
   {
    "p": "bunte-insel/js/world.js",
-   "s": 87380,
-   "h": "d254add0a5fe4f8bfbdf0a2fee3fb16d0bce65a6fea17bd879496784724cfb2e"
+   "s": 88168,
+   "h": "430d36150737972e7c922d88859411fcdb2a34e1a73ee864c1ce0aaa279e6760"
   },
   {
    "p": "bunte-insel/js/wunsch-game.js",
@@ -4884,7 +4884,7 @@
   {
    "p": "sync/catalog.json",
    "s": 53897,
-   "h": "72de66d16ec4a921133deba5689c2299d2c195c9bb3a3d92649be1ac4e7b95c3"
+   "h": "749c6e83c0009350af11e1ff6b2a407f26337503d2d796f1728b1cad0682b006"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
