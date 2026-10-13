@@ -291,7 +291,7 @@
       }
       v.ai = false; v.traffic.stopUntil = 0; v.traffic.rejoinAt = 0; v.v = 0;
     }
-    fun.setDance(false); P.veh = v; everDrove = true; meta.note('ride'); A.enter(); kids.earn(v.isTrain ? 'train' : v.spec.boat ? 'boat' : v.type === 'heli' || v.type === 'rcheli' ? 'heli' : 'ride');
+    fun.setDance(false); cam.ego = false; $('bCam').classList.remove('on'); cam.yaw = v.h + Math.PI; cam.idle = 0; P.veh = v; everDrove = true; meta.note('ride'); A.enter(); kids.earn(v.isTrain ? 'train' : v.spec.boat ? 'boat' : v.type === 'heli' || v.type === 'rcheli' ? 'heli' : 'ride');
     if (v.spec.remote) { v.driver = true; offer = null; mission = null; clearMissionVisuals(); updateHud(); updateButtons(true); say('🎮 ' + heroName() + ' steuert sein RC-Auto mit der Fernsteuerung!', 2400); return; }
     if (v.isTrain) { char.group.visible = false; v.siren = false; }
     else {
@@ -312,11 +312,11 @@
   }
   function leave(force) {
     const v = P.veh; if (!v) return;
-    if (v.spec.remote) { A.leave(); v.driver = null; v.v = 0; P.veh = null; mission = null; offer = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
+    if (v.spec.remote) { A.leave(); cam.ego = false; $('bCam').classList.remove('on'); v.driver = null; v.v = 0; P.veh = null; mission = null; offer = null; clearMissionVisuals(); updateHud(); updateButtons(true); return; }
     if (v.isTrain && train.v > 3) { say('Halte den Zug an zum Aussteigen 🚂', 2200); return; }
     if (!force && v.spec.boat && Math.hypot(v.x - W.dock.x, v.z - W.dock.z) > 10) { say('⚓ Erst am Steg anlegen!', 2000); return; }
     if (!force && v.spec && v.spec.fly && !v.spec.drake && v.y > 1.2) { say(isTouch() ? 'Erst landen! 🚁 Mit ⬇ sinken' : 'Erst landen! 🚁 Mit X sinken', 2200); return; }
-    A.leave(); A.horn('car', false); A.siren('police', false); A.water(false);
+    A.leave(); cam.ego = false; $('bCam').classList.remove('on'); A.horn('car', false); A.siren('police', false); A.water(false);
     const lx = Math.cos(v.h), lz = -Math.sin(v.h), rad = v.isTrain ? 5.5 : v.spec.drake ? 0 : v.r + 1.3;
     let px = v.x + lx * rad, pz = v.z + lz * rad;
     if (v.isTrain) { const L = Math.hypot(v.x, v.z) || 1; px = v.x - v.x / L * 6; pz = v.z - v.z / L * 6; }
@@ -1545,8 +1545,23 @@
   }
   /* Schwimmen: Körper im Wasser, Schwimmbewegung */
   function swimPose(sw, dt) {
-    const g = char.group; g.position.y = P.y - (sw === 2 ? .55 : .22); if (sw === 2) { g.rotation.x = .9; const ph = t * 6; char.armL.rotation.set(-2.3 + Math.sin(ph) * .9, 0, .25); char.armR.rotation.set(-2.3 - Math.sin(ph) * .9, 0, -.25); char.legL.rotation.x = Math.sin(ph * 2) * .6; char.legR.rotation.x = -Math.sin(ph * 2) * .6; }
-    if (P.speed > .3 && Math.random() < dt * 14) fx.emit(P.x - Math.sin(P.h) * .3, .2, P.z - Math.cos(P.h) * .3, (Math.random() - .5), .8, (Math.random() - .5), .6, 18, .6, .85, 1, 5, .9);
+    const g = char.group, ph = t * (4.8 + Math.min(1.4, P.speed * .18));
+    if (sw === 2) {
+      /* Ruhige Wasserlage: Oberkörper nach vorn, abwechselnde Armzüge und kleiner Beinschlag. */
+      g.rotation.x = 1.18 + Math.sin(ph * .5) * .035;
+      g.position.y = P.y - .3 + Math.sin(ph * 1.15) * .045;
+      const stroke = Math.sin(ph);
+      char.armL.rotation.set(-2.65 + Math.max(0, stroke) * .85, 0, .38 + Math.max(0, -stroke) * .18);
+      char.armR.rotation.set(-2.65 + Math.max(0, -stroke) * .85, 0, -.38 - Math.max(0, stroke) * .18);
+      char.legL.rotation.x = Math.sin(ph * 2) * .22;
+      char.legR.rotation.x = -Math.sin(ph * 2 + .7) * .22;
+      if (P.speed > .35 && Math.random() < dt * 4.5) fx.emit(P.x - Math.sin(P.h) * .65, -.02, P.z - Math.cos(P.h) * .65, (Math.random() - .5) * .35, .28, (Math.random() - .5) * .35, .28, 12, .35, .7, .6, 3, .8);
+    } else {
+      g.position.y = P.y - .12 + Math.sin(t * 2.2) * .025;
+      g.rotation.x = .03;
+      char.armL.rotation.x = char.armR.rotation.x = 0;
+      char.legL.rotation.x = char.legR.rotation.x = 0;
+    }
   }
 
   /* ---------- Orientierung (🧭 Wohin?) und Eltern-Bereich ---------- */
@@ -2365,7 +2380,7 @@
     const hit = W.resolve(x, z, .28, camProbe, y, false, false);
     return !!hit.hit && Math.hypot(hit.x - x, hit.z - z) > .02;
   }
-  const EYE = { rc: [0, .45, .2], car: [0, 1.2, .3], police: [0, 1.2, .3], ambulance: [0, 1.9, 1.7], fire: [0, 2.5, 2.9], bus: [0, 2.4, 3.4], tractor: [0, 2.3, -.6], ice: [0, 1.5, 1.0], bike: [0, 1.8, -.1], heli: [0, 1.9, 1.2], train: [0, 3.0, -1.7] };
+  const EYE = { rc: [0, .45, .2], car: [0, 1.2, .3], police: [0, 1.2, .3], ambulance: [0, 1.9, 1.7], fire: [0, 2.5, 2.9], bus: [0, 2.4, 3.4], tractor: [0, 2.3, -.6], ice: [0, 1.5, 1.0], bike: [0, 1.8, -.1], heli: [0, 1.55, -.25], train: [0, 3.0, -1.7] };
   function updateCamera(dt) {
     const v = P.veh || (ride ? rideHost() : null); let tx, ty, tz, dist, pitch = cam.pitch;
     if (rs.ui === 'play' && state === 'play') { camera.position.set(RG.x + .9, 2.25, RG.z + 2.7); camera.lookAt(RG.x, 1.75, -88); cam.x = RG.x; cam.y = 2.25; cam.z = RG.z + 2.7; sun.position.set(RG.x + 60, 100, RG.z + 40); sun.target.position.set(RG.x, 0, RG.z); sky.position.set(RG.x, 0, RG.z); return; }
@@ -2379,8 +2394,8 @@
         camera.position.set(ex, ey, ez); camera.lookAt(ex + Math.sin(yaw) * 10, ey - .9 + (v.isTrain ? 0 : 0), ez + Math.cos(yaw) * 10); cam.x = ex; cam.y = ey; cam.z = ez; cam.dist = 3; sun.position.set(ex + 60, 100, ez + 40); sun.target.position.set(ex, 0, ez); sky.position.set(ex, 0, ez); return;
       }
       if (v.spec.open) char.group.visible = true;
-      tx = v.x; tz = v.z; ty = (v.y || 0) + (v.isTrain ? 3 : 1.3); dist = (v.spec.cam || 9) * cam.zoom; if (v.isTrain) pitch = Math.max(pitch, .4);
-      if (drag.id == null) { cam.idle += dt; const want = v.h + Math.PI, speed = Math.abs(v.v) > .5 ? 3.2 : 1.2; cam.yaw += BI.angDiff(cam.yaw, want) * Math.min(1, dt * speed); }
+      tx = v.x; tz = v.z; ty = (v.y || 0) + (v.isTrain ? 3 : 1.3); dist = Math.max(v.type === 'heli' ? 20 : v.type === 'keymobil' ? 16 : v.type === 'drake' ? 17 : v.spec.remote ? 7 : v.isTrain ? 15 : v.r > 2 ? 13 : Math.max(7, v.r * 4), (v.spec.cam || 9) * cam.zoom); if (v.isTrain) pitch = Math.max(pitch, .4);
+      if (drag.id == null) { cam.idle += dt; if (cam.idle > 3.2) { const want = v.h + Math.PI, speed = Math.abs(v.v) > .5 ? 1.25 : .72; cam.yaw += BI.angDiff(cam.yaw, want) * Math.min(1, dt * speed); } }
       pitch = BI.lerp(pitch, Math.abs(v.v) > 12 ? .3 : .42, .02);
     } else { tx = P.x; ty = P.y + 1.3; tz = P.z; dist = 7.2 * cam.zoom; const sh = Math.max(build.shelter(P.x, P.z), W.shelter ? W.shelter(P.x, P.z) : 0); cam.sp = BI.damp(cam.sp || 0, sh === 2 ? 1.12 : sh === 1 ? .85 : 0, 3, dt); if (cam.sp > .04 && !build.active) pitch = Math.max(pitch, cam.sp); }
     { const L = !v && combat.lock(); if (L) { tx = L.x; tz = L.z; ty = 1.3; dist = 9; pitch = .3; cam.yaw += BI.angDiff(cam.yaw, L.yaw) * Math.min(1, dt * 3); } }
