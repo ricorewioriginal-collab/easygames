@@ -318,11 +318,11 @@ BI.makePet = function (kind, name) {
   };
 };
 BI.makeChar = function (o) {
-  o = o || {};
+  o = o || {}; const o0 = o;
   const J = o.preset === 'jannis'; // Jannis: blonder Pilzkopf, dunkles Marvel-Shirt, braune Hose, Fernsteuerung
   if (J) o = Object.assign({ shirt: 0x1d2342, pants: 0x7a5230, skin: 0xffd6b3, hair: 0xf3d98a, hat: 'none', shoe: 0x1d2a44 }, o);
   const shirt = o.shirt != null ? o.shirt : 0xff5a5a, pants = o.pants != null ? o.pants : 0x3d4a7a, skin = o.skin != null ? o.skin : 0xffd2a8, hair = o.hair != null ? o.hair : 0x6b4423, hat = o.hat || 'none';
-  const root = new THREE.Group(), body = new BI.CharacterBatch();
+  const root = new THREE.Group(), body = new BI.CharacterBatch(); root.userData.opts = o0;
   body.profile(0,.5,0,[[0,0],[.21,0],[.225,.035],[.225,.2],[.20,.22],[0,.22]],.62,pants);
   body.profile(0,.66,0,[[0,0],[.238,0],[.25,.035],[.245,.16],[.245,.37],[.228,.47],[.15,.50],[0,.50]],.66,shirt);
   if (J) { // bunter Aufdruck wie beim Marvel-Shirt

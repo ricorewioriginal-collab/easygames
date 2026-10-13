@@ -13,10 +13,11 @@
 7. 🎠 Märchenland
 8. 🌊 Weitere Welten
 9. 🔴 Taschi-Land: fangen, kämpfen, Orden
-10. 📋 Alle Aufgaben der Welten
-11. 🏅 Alle Sticker
-12. 🔑 Geheimcodes
-13. 💡 Tipps und Tricks
+10. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
+11. 📋 Alle Aufgaben der Welten
+12. 🏅 Alle Sticker
+13. 🔑 Geheimcodes
+14. 💡 Tipps und Tricks
 
 ---
 
@@ -217,6 +218,11 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 2: Sammle alle Sterne der Ringstraße und flieg mit dem Schlüsselschwert-Mobil → 🚗 Rundfahrer + 🛹 Schlüsselflieger
 - Akt 3: Öffne das Tor der Herzen im Schlüsselreich → 🌟 Lichtwanderer
 - Akt 4: Besiege den Dunkelriesen im Verbotenen Wald → 👑 Schlüsselträger
+- Akt 5: Besuche die Wunsch-Insel, finde 3 Wunschfrüchte und das geheime Zeichen am Baum → Aufgabe der Welt
+- Akt 6: Öffne das Tor in der Schlucht, bau das Floß und mach die Probefahrt → Aufgabe der Welt
+- Akt 7: Besteige den Aussichtsturm und öffne 3 Truhen → Aufgabe der Welt
+- Akt 8: Überstehe den Einbruch der Dunkelheit (40 Sekunden) → Aufgabe der Welt
+- Akt 9: Gewinne 3 Runden in der Schattenarena und besiege Umbra → Aufgabe der Welt
 
 ### 🧽 Das Geheimrezept der Knusper-Krabbe – erzählt von Schwammi
 
@@ -385,6 +391,21 @@ Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten
 
 ---
 
+## 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
+
+Eine lange Holzbrücke an der Westküste des Schlüsselreichs führt zur Wunsch-Insel. Hier leben Kira und Silvan – und hier geht der Abend nicht ohne Abenteuer zu Ende.
+
+- 🌟 Wunschfrüchte: 3 Stück – an der krummen Palme am Strand, hinter der Hütte und unter dem großen Baum. Danach leuchtet am Baum ein geheimes Zeichen: ☀️ → 🌙 → ⭐ → 💖 → 🗝️.
+- 🕳️ Geheime Schlucht: Erst den Kristall am Eingang berühren, dann die 5 Wandzeichen in der Reihenfolge vom Baum berühren – das Tor öffnet sich, du bekommst den Wunschschlüssel (im Wuschel-Laden wählbar).
+- 🛶 Floß: 3 Stämme 🪵, 2 Seile 🧵, 1 Segel ⛵ finden (auch auf Felsen und am Turm), am Bauplatz zusammensetzen, dann Probefahrt zur roten Boje.
+- 🗼 Aussichtsturm: Stufen hochklettern, durchs Fernrohr schauen. 📦 3 Truhen (Turm, zwei Felsen) und 5 Sternscherben auf den Felsen. Ein Holzsteg verbindet Turm und Felsen C.
+- 🌑 Einbruch der Dunkelheit: Wenn alles andere fertig ist, löst die Hängematte den Sonnenuntergang aus. 40 Sekunden gegen Schattenwesen durchhalten (⚔️ schlagen, 🌀 ausweichen, ✨ Lichtwelle).
+- 🏟️ Schattenarena: 3 Runden mit Krabblern, Springern, Schützen und Wirblern, dann Endgegner Umbra. Umbras Panzer hält jeden Treffer ab – lock ihn beim Sturmangriff gegen einen Pfeiler, dann ist er betäubt und verwundbar.
+
+Steuerung im Kampf: ⚔️ Angriff (J), 🌀 Ausweichen (K), ✨ Lichtwelle (L, lädt sich durch Treffer auf). Die dritte Angriffs-Kombo trifft doppelt. Wer verliert, verliert nichts und darf es gleich nochmal versuchen.
+
+---
+
 ## 📋 Alle Aufgaben der Welten
 
 ### 🏖️ Badestrand
@@ -444,13 +465,29 @@ Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten
 - 🚗 Alle Sterne auf der Ringstraße einsammeln (zu Fuß oder mit dem Auto)
 - 🗿 Den Schattenwächter am Tor der Herzen begrüßen
 
+### 🌠 Wunsch-Insel
+
+- 🌠 Wunsch-Insel besuchen (Holzbrücke an der Westküste des Schlüsselreichs)
+- 🌟 3 Wunschfrüchte finden: 0 von 3 (krumme Palme, hinter der Hütte, unter dem großen Baum)
+- 🌳 Das geheime Zeichen am großen Baum ansehen
+- 🕳️ Geheime Schlucht: Kristall wecken und die 5 Wandzeichen in der richtigen Reihenfolge berühren
+- 🪵 Floß-Teile finden: 🪵 0/3 · 🧵 0/2 · ⛵ 0/1
+- 🛶 Das Floß am Strand bauen
+- 🔴 Probefahrt mit dem Floß zur roten Boje
+- 🗼 Den Aussichtsturm besteigen und durchs Fernrohr schauen
+- 📦 3 versteckte Truhen öffnen: 0 von 3 (Turm, zwei Felsen)
+- 🌑 Der Einbruch der Dunkelheit: 40 Sekunden gegen die Schattenwesen durchhalten (Hängematte, wenn alles andere fertig ist)
+- 🏟️ Schattenarena: 3 Runden gewinnen
+- 👹 Endgegner Umbra besiegen (Pfeiler-Trick!)
+- ✨ 5 Sternscherben auf den Felsen sammeln: 0 von 5
+
 ### 📖 Sammelbuch & Fangen
 
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🌈 Heute: Regenbogen-Tag – Heute zeigt sich immer wieder ein Regenbogen mit bunten Sternen!
-- 🌟 Tagesglück: heute 🐠 Gold-Schnute fangen (+2 ⭐)
+- 🎪 Heute: Angelfest – Heute beißen die Fische besser – seltene sind dreimal so oft da, und die ersten 5 Fänge geben extra ⭐!
+- 🌟 Tagesglück: heute 🐡 Kugel-Bauch fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -540,7 +577,7 @@ Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten
 
 ### 🚪 Gebäude erkunden
 
-- 🚪 Gebäude betreten: 0 von 45 (5 für den Sticker)
+- 🚪 Gebäude betreten: 0 von 46 (5 für den Sticker)
 - 🏘️ 20 verschiedene Gebäude betreten
 - 🎁 Schatztruhen in Gebäuden öffnen: 0 von 10
 
@@ -667,6 +704,12 @@ So bekommst du jeden Sticker:
 | 🦊 Held von Lunaris | Schaffe die Geschichte von Zotik & Lunaris (Der Ruf des Kristalls) |
 | 📻 Funkmeister | Schaffe die Geschichte der Funkwelle (Die dreizehn Sender) |
 | 🔱 Hüter von Atlantis | Schaffe die Geschichte von Atlantis (Das Herz von Atlantis) |
+| 🌠 Wunschreisender | Besuche die Wunsch-Insel hinter dem Schlüsselreich |
+| 🕳️ Zeichendeuter | Öffne das Tor in der geheimen Schlucht |
+| 🛶 Floßkapitän | Mach die Probefahrt mit dem selbstgebauten Floß |
+| 📦 Truhenjäger | Finde alle 3 versteckten Truhen der Wunsch-Insel |
+| 🌑 Dunkelheits-Trotzer | Überstehe den Einbruch der Dunkelheit |
+| 🏟️ Schattenbezwinger | Besiege Umbra in der Schattenarena |
 | 🔴 Taschi-Held | Schaffe die Geschichte von Taschi-Land (Der Weg zum Meister) |
 | 🎯 Taschi-Fänger | Fang dein erstes wildes Taschi |
 | 👑 Taschi-Meister | Hol alle 8 Orden in Taschi-Land |
@@ -704,6 +747,7 @@ Eingabe über ⚙️ → „🔑 Code eingeben“ (Groß-/Kleinschreibung egal).
 
 | Eintrag | Beschreibung |
 |---|---|
+| 🌠 WUNSCHSTERN | Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel. |
 | 🔴 TASCHIMEISTER | Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team). |
 | ♾️ UNENDLICHSTERNE | Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999). (nochmal eingeben = aus) |
 | 🔓 ALLESFREI | Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände. |

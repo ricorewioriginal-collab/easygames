@@ -27,7 +27,7 @@ BI.SCHLUESSEL.floor = function (x, z) {
 };
 /* Die fünf Schlüssellöcher (Reihenfolge = Säulen am Platz) und die fünf Lichtschlüssel (Aussehen) */
 BI.SCHL_KEYS = [['strand', '🌴', 'Strand der Freunde'], ['stadt', '🕰️', 'Dämmerstadt'], ['burg', '🏰', 'Kristall-Burg'], ['wald', '🌲', 'Wald der Schatten'], ['turm', '🗼', 'Schleier-Turm']];
-BI.SCHL_BLADES = [['Sternenschlüssel', '⭐', 0, 0xffd23f, 0x4da3ff], ['Blütenschlüssel', '🌸', 5, 0xff8fc8, 0x4cd07d], ['Flammenschlüssel', '🔥', 8, 0xff7a1a, 0xe0382b], ['Eisschlüssel', '❄️', 10, 0xbfeaff, 0x6ac8ff], ['Mondschlüssel', '🌙', 12, 0xd8d8f0, 0x7a4ad8]];
+BI.SCHL_BLADES = [['Sternenschlüssel', '⭐', 0, 0xffd23f, 0x4da3ff], ['Blütenschlüssel', '🌸', 5, 0xff8fc8, 0x4cd07d], ['Flammenschlüssel', '🔥', 8, 0xff7a1a, 0xe0382b], ['Eisschlüssel', '❄️', 10, 0xbfeaff, 0x6ac8ff], ['Mondschlüssel', '🌙', 12, 0xd8d8f0, 0x7a4ad8], ['Wunschschlüssel', '🌠', 99, 0xfff3b0, 0x8a6ad8]];
 
 BI.buildSchluesselGround = function (c) {
   const { W, st, lamp, ROADY } = c, M = BI.SCHLUESSEL, TAU = Math.PI * 2, rn = BI.rng(1313), L = M.at, ry = Math.atan2(M.ux, M.uz), GOLD = 0xffd23f;

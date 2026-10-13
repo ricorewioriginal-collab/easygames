@@ -22,7 +22,7 @@ BI.createTaschi = function (G) {
     if (K.ready) return; K.ready = true;
     FR.forEach((id, i) => { const g = BI.taschiMesh(id, { s: .85 }), a = -34 + Math.cos(i / FR.length * TAU) * 11, b = Math.sin(i / FR.length * TAU) * 11, p = place(g, a, b, i); friends.push({ id, g, x: p.x, z: p.z, tx: p.x, tz: p.z, h: i, w: Math.random() * 3, hop: 0, hx: p.x, hz: p.z }); });
     const look = (o) => Object.assign({ hat: 'none', style: 'short', skin: 0xf3c9a0, pants: 0x4a4a5a, shoe: 0x333333 }, o);
-    const mkN = (id, a, b, name, icon, o, h, label) => { const c = BI.makeChar(look(o)); const p = place(c.group, a, b, h); npcs.push({ id, c, x: p.x, z: p.z, name, icon, label, r: 3.2 }); return npcs[npcs.length - 1]; };
+    const mkN = (id, a, b, name, icon, o, h, label) => { BI.DLG_LOOKS[name] = look(o); const c = BI.makeChar(look(o)); const p = place(c.group, a, b, h); npcs.push({ id, c, x: p.x, z: p.z, name, icon, label, r: 3.2 }); return npcs[npcs.length - 1]; };
     mkN('prof', -31, 19, 'Professor Ulme', '🔬', { shirt: 0xffffff, pants: 0x6a5a4a, hair: 0xc8c8d0, style: 'short', logo: 0xe8453c }, null, ['🔬', 'Mit Professor Ulme reden']);
     mkN('nurse', -32, -20, 'Schwester Hanna', '💖', { shirt: 0xff9ac0, pants: 0xffffff, hair: 0xff9ac0, style: 'bun' }, null, ['💖', 'Heilhaus: Taschis heilen']);
     mkN('shop', -14, -23, 'Fabi vom Fangladen', '🛒', { shirt: 0x3f8cff, pants: 0xffffff, hair: 0x4a3320, hat: 'cap', style: 'short' }, null, ['🛒', 'Fangladen: Taschibälle kaufen']);
@@ -227,13 +227,15 @@ BI.createTaschi = function (G) {
     const s = S(); if (!n) return;
     if (n.k === 'friend') { const f = n.f; f.hop = 1; fx && fx.burst && fx.burst(f.x, 1.2, f.z, 10, [0xff7ac0, 0xffd23f, 0xffffff], 5, 1.5, 12, 3); const line = { blitzi: 'Blitzi: „Bli-bli-blitz!“ ⚡ (schmiegt sich an dich)', fellino: 'Fellino: „Fell-fell!“ Es sieht dich mit großen Augen an.', flamino: 'Flamino wärmt dir die Hände. 🔥', wellino: 'Wellino spritzt dir ein bisschen Wasser auf die Schuhe. 💧', blitzino: 'Blitzino knistert fröhlich. ⚡', laubino: 'Laubino riecht nach frischem Gras. 🌿', glutzahn: 'Glutzahn wedelt mit der Flammen-Schwanzspitze. 🔥', samenling: 'Samenling quakt leise. Die Knolle wackelt! 🌿', plaetscher: 'Plätscherchen versteckt sich kurz im Panzer – und lugt dann wieder raus. 💧' }[f.id]; say(line, 3200); seen(f.id); return; }
     const id = n.id;
-    if (id === 'prof') return profPanel(); if (id === 'nurse') { heal(); G.fanfare && G.fanfare(); say('💖 Schwester Hanna: „Alle Taschis sind wieder fit!“', 3000); return teamPanel(); } if (id === 'shop') return shopPanel();
+    if (id === 'prof') return profPanel(); if (id === 'nurse') return K.healVisit(); if (id === 'shop') return shopPanel();
     if (id === 'statue') return say('🗿 Professor Ulme hat Taschi-Land entdeckt und schützt alle Freunde hier. Seine Statue hält den allerersten Taschiball!', 6200);
     if (id === 'table') return say('🔴🔵🟢 Drei Taschibälle – frag Professor Ulme, welcher Freund zu dir passt!', 4200);
     if (id === 'kai') { if (!s.team.length) return say('🧢 Kai: „Hol dir erst ein Taschi beim Professor – dann kämpfen wir!“ (Blitzi winkt dir zu)', 4400); return K.fightTrainer('kai'); }
     if (TR[id] && TR[id].orden && id !== 'mauzi') { if (id === 'aurelia' && nOrden() < 7) return say('👑 Aurelia: „Hol erst alle anderen 7 Orden – dann kämpfen wir!“ (Du hast ' + nOrden() + ')', 4800); if (!s.team.length) return say('Hol dir erst ein Taschi beim Professor!', 3000); return K.fightTrainer(id); }
     if (id === 'jette' || id === 'jim' || id === 'mauzi') { if (!s.team.length) return say('🎈 Jette: „Hihi, ohne Taschi? Komm später wieder!“', 3200); if (s.orden.team) return say('🎈 Team Funke: „Der Ballon gehört jetzt dir! Wir laufen wieder zu Fuß.“', 4200); const nx = ['jette', 'jim', 'mauzi'].find(k => !s.done[k]); return K.fightTrainer(nx, res => { if (res === 'win' && nx !== 'mauzi') setTimeout(() => say('🎈 Weiter geht’s – der Nächste von Team Funke wartet!', 3000), 300); }); }
   };
+  K.healVisit = function () { const s = S(); if (!s.team.length) { say('💖 Schwester Hanna: „Du hast noch kein Taschi – frag zuerst Professor Ulme!“', 4200); return; } const was = s.team.concat(s.box).some(m => m.hp < hpMax(m.id, m.lv)); heal(); G.fanfare && G.fanfare(); say(was ? '💖 Schwester Hanna: „Fertig! Alle deine Taschis sind wieder topfit.“' : '💖 Schwester Hanna: „Deine Taschis sind schon ganz fit – super!“', 4200); teamPanel(); };
+  K.openTeam = teamPanel; K.openShop = shopPanel;
   K.act = K.interact; K.menu = menu;
   let accum = 0, nextEnc = 9, zoneWas = null, hintT = 0; const zoneAt = (x, z) => { for (const Z of T.zones) { const p = T.at(Z.a, Z.b); if (Math.hypot(x - p.x, z - p.z) < Z.r - 1) return Z; } return null; };
   K.zoneAt = zoneAt;

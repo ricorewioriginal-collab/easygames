@@ -25,6 +25,7 @@ BI.VEH = {
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   wannenmobil: { name: 'Wannen-Mobil', icon: '🛁', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.0, kind: 'car', horn: 'bike', cols: [-1.1, 1.1], r: 1.4, cam: 9.5 },
   gleiter:   { name: 'Aqua-Gleiter', icon: '🛸', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.1, kind: 'car', horn: 'bike', hover: true, cols: [-1, 1], r: 1.3, cam: 9 },
+  floss:     { name: 'Floß (Wunsch-Insel)', icon: '🛶', max: 8, rev: 2.5, acc: 3.5, brake: 6, drag: 1.4, turn: 1.4, kind: 'tractor', horn: 'bike', boat: true, raft: true, open: true, cols: [0], r: 1.6, cam: 9 },
   funkenballon: { name: 'Funken-Ballon (Heißluftballon)', icon: '🎈', max: 14, rev: 5, turn: 1.3, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 2.6, cam: 16 },
   nautilux:  { name: 'Nautilux (Luftschiff)', icon: '🚢', max: 20, rev: 6, turn: 1.35, kind: 'heli', horn: 'bus', fly: true, airship: true, cols: [0], r: 3.2, cam: 17 },
   limo:      { name: 'Limousine', icon: '🚘', max: 26, rev: 6, acc: 9, brake: 22, drag: 5, turn: 1.55, kind: 'car', horn: 'car', cols: [-2.7, 0, 2.7], r: 1.15, cam: 11 },
@@ -114,6 +115,13 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       b.sph(0, .7, 0, 1.25, 0xeaf6fb, 1, .95, .42, 1.7); b.sph(0, 1.0, .35, .8, 0x7fe8ff, 1, .85, .6, 1.1); b.box(0, .55, -1.9, .12, .9, .9, 0x35d6e0); for (const x of [-.95, .95]) b.box(x, .45, -.6, .12, .35, 1.4, 0x35d6e0, 0, 0, x > 0 ? -.25 : .25);
       b.cyl(0, .06, 0, 1.15, 1.15, .1, 0x35e0ff, 18); b.cyl(0, .02, 0, 1.0, 1.0, .06, 0xffffff, 18);
       return { wheels: [], head: [[-.5, .55, 2.0], [.5, .55, 2.0]], tail: [[-.4, .6, -2.05], [.4, .6, -2.05]] };
+    },
+    floss(b) { // Floß (Wunsch-Insel): sechs Baumstämme, Querbalken, Seile, kleines Segel mit Stern
+      for (let i = 0; i < 6; i++) b.cyl(-1.2 + i * .48, .3, 0, .23, .23, 3.4, i & 1 ? 0x9a6a3a : 0xb07a44, 8, Math.PI / 2);
+      b.box(0, .62, -.9, 3.0, .12, .16, 0x6a4a2a); b.box(0, .62, .9, 3.0, .12, .16, 0x6a4a2a); for (const x of [-1.4, 1.4]) for (const z of [-.9, .9]) b.box(x, .58, z, .12, .1, .22, 0xe8d8b0);
+      b.cyl(0, .6, .6, .07, .07, 3.4, 0x7a4a2a, 6); b.prism(0, 1.2, .6, 2.0, 2.4, .06, 0xfff3d6, Math.PI / 2); b.box(0, 2.0, .64, .5, .5, .04, 0xffd23f); b.box(0, 4.0, .6, .05, .3, .6, 0xff5a5a);
+      b.box(.9, .65, -.2, .5, .3, .5, 0xc8903c);
+      return { wheels: [], head: [[0, .55, 1.9]], tail: [[0, .55, -1.9]], seat: [0, .62, -.3] };
     },
     funkenballon(b) { // Funken-Ballon (Taschi-Land): weißer Heißluftballon in Katzenkopf-Form mit rotem F, Goldmünze, Schnurrhaaren und Weidenkorb
       const WH = 0xfff4e0, RD = 0xe8453c, GD = 0xf0c038, BK = 0x2a2230, BR = 0x9a6a3a;
@@ -334,7 +342,18 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
       const Z = W.zotik && W.zotik.bridge; if (Z) { const cx = BI.clamp(this.x, Z.x0, Z.x1), cz = BI.clamp(this.z, Z.z0, Z.z1), ex = this.x - cx, ez = this.z - cz, e = Math.hypot(ex, ez); if (e < this.r) { if (e > 1e-6) { this.x += ex / e * (this.r - e); this.z += ez / e * (this.r - e); } else this.x += (this.x < 0 ? -1 : 1) * this.r; hit = 1; } }
       if (hit) this.v *= .6; return 0;
     }
+    /* Floß (Wunsch-Insel): wie ein Boot, aber frei auf dem Meer rund um die Wunsch-Insel (nicht an Land, nicht zu weit hinaus) */
+    stepRaft(dt, inp, W) {
+      const sp = this.spec, thr = inp.thr, want = thr > 0 ? thr * sp.max * (inp.turbo ? 1.35 : 1) : thr * sp.rev, v0 = this.v, I = W.wunsch;
+      const rate = Math.abs(thr) < .05 ? sp.drag : want * this.v < 0 ? sp.brake : Math.abs(want) > Math.abs(this.v) ? sp.acc : sp.drag * 1.4;
+      this.v += BI.clamp((Math.abs(thr) < .05 ? 0 : want) - this.v, -rate * dt, rate * dt); this.acc = (this.v - v0) / dt; this.steerCur = BI.damp(this.steerCur, inp.steer, 5, dt);
+      this.h -= this.steerCur * sp.turn * BI.clamp(Math.abs(this.v) / 2.5, .15, 1) * Math.sign(this.v || 1) * dt;
+      this.x += Math.sin(this.h) * this.v * dt; this.z += Math.cos(this.h) * this.v * dt;
+      if (I) { const dx = this.x - I.x, dz = this.z - I.z, d = Math.hypot(dx, dz) || 1, lo = I.R + 12 + this.r, hi = I.R + 95; let hit = 0; if (d < lo) { this.x = I.x + dx / d * lo; this.z = I.z + dz / d * lo; hit = 1; } else if (d > hi) { this.x = I.x + dx / d * hi; this.z = I.z + dz / d * hi; hit = 1; } if (hit) this.v *= .6; }
+      return 0;
+    }
     step(dt, inp, W, fx) {
+      if (this.spec.raft) return this.stepRaft(dt, inp, W);
       if (this.spec.boat) return this.stepBoat(dt, inp, W);
       if (this.spec.fly) return this.stepFly(dt, inp, W);
       const sp = this.spec, onRoad = W.onRoad(this.x, this.z); this.offroad = !onRoad;

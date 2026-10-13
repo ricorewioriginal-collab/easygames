@@ -10,7 +10,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
 const keys = await p.evaluate(() => BI.INSELSTORY.map(d => d.key));
 const res = await p.evaluate(async keys => {
   const b = __bi, I = b.istory, P = b.P, sl = ms => new Promise(r => setTimeout(r, ms)), out = {}, until = async (f, ms) => { for (let i = 0; i < (ms || 12000) / 150 && !f(); i++) await sl(150); return f(); };
-  const mods = { dampf: b.dampf, drachen: b.drachen, fussball: b.fussball, zotik: b.zotik, radio: b.radio, atlantis: b.atlantis, taschi: b.taschi };
+  const mods = { dampf: b.dampf, drachen: b.drachen, fussball: b.fussball, zotik: b.zotik, radio: b.radio, atlantis: b.atlantis, taschi: b.taschi, wunsch: b.wunsch };
   const sat = (g, key) => {
     const s = b.save; if (typeof g === 'string') { (s.stk = s.stk || []).includes(g) || s.stk.push(g); return; }
     if (g.log) { mods[g.log].log(); const m = s[g.log], r = g.row;
@@ -20,6 +20,7 @@ const res = await p.evaluate(async keys => {
       if (g.log === 'zotik') { if (r === 0) m.visit = 1; if (r >= 1 && r <= 4) m.q = Math.max(m.q, r); }
       if (g.log === 'radio') { if (r === 1) m.done = m.done.length ? m.done : ['a']; if (r === 2) { m.all = 1; m.done = Array.from({ length: 13 }, (_, i) => 'x' + i); } if (r === 3) m.visual = 1; }
       if (g.log === 'atlantis') { if (r === 1) m.holo = [1, 1, 1, 1, 1]; if (r === 2) m.herz = 1; if (r === 3) m.harp = 1; if (r === 4) m.lowg = 1; if (r === 5) m.glider = 1; }
+      if (g.log === 'wunsch') { m.visit = 1; if (r >= 1) m.fruit = [1, 1, 1]; if (r === 2) m.talk = { sym: 1 }; if (r === 3) m.cave = 1; if (r === 5 || r === 6) { m.raft = 1; m.trial = 1; m.parts = [1, 1, 1, 1, 1, 1]; } if (r === 7) m.tower = 1; if (r === 8) m.chests = [1, 1, 1]; if (r === 9) m.dark = 2; if (r === 10) m.rounds = 3; if (r === 11) m.boss = 1; }
       if (g.log === 'taschi') { const OK = ['', 'fang', 'fels', 'perle', 'funke', 'bluete', 'forscher', 'team', 'meister']; if (r === 0) m.team.push({ id: 'glutzahn', lv: 5, xp: 0, hp: 20, mv: ['kratzer'] }); else m.orden[OK[r]] = 1; }
       return; }
     if (g.talk) { const names = [...I.dbg.residents(g.talk)]; s.talked = s.talked || []; for (const n of names.slice(0, g.n)) if (!s.talked.includes(n)) s.talked.push(n); return; }
@@ -29,7 +30,7 @@ const res = await p.evaluate(async keys => {
   };
   for (const key of keys) {
     const d = BI.INSELSTORY.find(q => q.key === key), O = BI[key], r = { acts: d.acts.length, stages: [], fresh: true };
-    b.save.stk = []; b.save.talked = []; b.save.flags = {}; b.save.einsatz = { done: [], cur: null }; for (const k of ['dampf', 'drachen', 'fussball', 'zotik', 'radio', 'atlantis', 'taschi']) delete b.save[k]; delete b.save.inselstory;
+    b.save.stk = []; b.save.talked = []; b.save.flags = {}; b.save.einsatz = { done: [], cur: null }; for (const k of ['dampf', 'drachen', 'fussball', 'zotik', 'radio', 'atlantis', 'taschi', 'wunsch']) delete b.save[k]; delete b.save.inselstory;
     P.veh = null; if (key === 'ATLANTIS') { I.dbg.start(d); /* Atlantis liegt unter Wasser (Zugang über die Treppe, G.inside): Start im Test direkt auslösen */ } else { P.x = O.x + O.R * .4; P.z = O.z; P.y = 0; } r.started = await until(() => I.dbg.stage(d) === 0);
     await sl(900); r.noSkip = I.dbg.stage(d) === 0 && d.acts.every(a => !I.dbg.ST || true); r.fresh = d.acts.every((a, i) => i > 0 || !a.goal.every(I.goalDone));
     for (let i = 0; i < d.acts.length; i++) { for (const g of d.acts[i].goal) sat(g, key); r.stages.push(await until(() => I.dbg.stage(d) === i + 1)); }

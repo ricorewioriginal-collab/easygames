@@ -130,7 +130,7 @@ BI.buildWorld = function (scene) {
     }
     out.x = px; out.z = pz; out.hit = hit; return out;
   };
-  const isleWalk = (px, pz, r) => { for (const I of W.isles) { const b = I.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * I.ux + rz * I.uz, sd = -rx * I.uz + rz * I.ux; if (Math.hypot(px - I.x, pz - I.z) <= I.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3)) return true; } return false; };
+  const isleWalk = (px, pz, r) => { for (const I of W.isles) { const b = I.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * I.ux + rz * I.uz, sd = -rx * I.uz + rz * I.ux; if (Math.hypot(px - I.x, pz - I.z) <= I.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3) || (I.walkExtra && I.walkExtra(px, pz, r))) return true; } return false; };
   const isleClamp = (out, px, pz, r) => { for (const I of W.isles) { const dd = Math.hypot(px - I.x, pz - I.z); if (dd < I.R + 60 && dd < Math.hypot(px, pz)) { const k = Math.min(1, (I.R - r) / (dd || 1)); out.cx = I.x + (px - I.x) * k; out.cz = I.z + (pz - I.z) * k; return true; } } return false; };
   const baulandWalk = (px, pz, r) => { const C = W.bauland, b = C.bridge, rx = px - b.mx, rz = pz - b.mz, t = rx * C.ux + rz * C.uz, sd = -rx * C.uz + rz * C.ux; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (Math.abs(t) <= b.L / 2 && Math.abs(sd) <= b.w / 2 - .3); };
   const parkWalk = (px, pz, r) => { const C = W.park, b = C.bridge; return Math.hypot(px - C.x, pz - C.z) <= C.R - r || (px > b.x0 - 1 && px < b.x1 + 1 && pz > b.z0 + .2 && pz < b.z1 - .2); };
@@ -506,6 +506,7 @@ BI.buildWorld = function (scene) {
   BI.buildMaerchenGround({ W, st, lamp, ROADY });
   BI.buildMaerchenPlus({ W, st, lamp, ROADY });
   BI.buildSchluesselGround({ W, st, lamp, ROADY });
+  if (BI.buildWunschGround) BI.buildWunschGround({ W, st, lamp, ROADY });
   BI.buildSchwammGround({ W, st, lamp, ROADY });
   BI.buildRaetselGround({ W, st, lamp, ROADY });
   BI.buildBadeGround({ W, st, lamp, ROADY });
