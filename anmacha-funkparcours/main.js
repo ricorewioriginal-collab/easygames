@@ -54,7 +54,7 @@ if (JOIN) {
     if(section===lastSection||section<0)return;
     lastSection=section;
     const name=sections[section].n;
-    const tips={Stufensprung:'Jetzt kommen die Stufensprünge! Hier zählt jeder Absprung.',Fahrstuhl:'Das ist der Fahrstuhl. Timing ist jetzt alles!',Schiebebrücke:'Achtung, die Schiebebrücke bewegt sich!','Bruchplatten':'Die Bruchplatten geben nach. Bloß nicht stehen bleiben!','Abrissbirnen':'Jetzt die Abrissbirnen! Da ist Konzentration gefragt.',Hangelstangen:'An den Hangelstangen braucht es Griffkraft und einen sauberen Übergang!',Steilwand:'Die Steilwand! Jetzt kommt es auf den letzten kraftvollen Sprung an!'};
+    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Abrissbirnen':'Vorsicht, die Abrissbirnen schwingen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Schlusswand! Anlauf nehmen und hoch da!'};
     commentator.speak(tips[name]||('Jetzt folgt: '+name+'.'));
   }
   function abort() { commentator.stop();lastSection=-1;token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
@@ -116,8 +116,11 @@ if (JOIN) {
     push();
     const ph = hasPhone(pi);
     await A(ask(`<div class="card"><h2 style="color:${CSS[pi]}">${esc(G.players[pi].name)}</h2><div class="sub">${esc(course.name)}${G.mode === 'train' ? ' · Training' : ` · Lauf ${pi + 1} von ${G.players.length}`}</div>${runs.some(Boolean) ? `<div class="tbl">${rows(runs, G.players)}</div>` : ''}${ghost ? '<div class="hint">👻 Der Geist zeigt die Bestzeit.</div>' : ''}<div class="hint ${ph ? 'ph' : ''}">${ph ? '📱 Tippe am Handy auf „Bereit"' : 'Bereit? Leertaste oder Button'}</div><button class="btn green" id="bReady">Bereit!</button></div>`, ['bReady']));
+    // Die Vorstellung vor dem visuellen Countdown sprechen, nicht die Zahlen verzögert nachholen.
+    commentator.speak(G.players[pi].name+' ist am Start. '+course.name+'. Auf die Plätze!',true);
+    await A(sleep(1950));
+    commentator.stop();
     G.phase = 'count'; push(); keys = touchM = 0;
-    commentator.speak('Am Start: '+G.players[pi].name+'. Es geht auf den Parcours '+course.name+'. Drei, zwei, eins, los!',true);
     for (const n of [3, 2, 1]) { big(String(n), '', 700); SFX.count(); await A(sleep(800)); }
     big('LOS!', '', 800); SFX.go(); arena.fire(1); G.phase = 'run'; push();
     const sim = new Sim(course); G.sim = sim; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true;
@@ -134,7 +137,7 @@ if (JOIN) {
       };
     }));
     G.phase = 'done'; padOn(false); phoneM[pi] = 0;
-    if (res.finished) { commentator.speak('Im Ziel! '+G.players[pi].name+' schafft den Parcours in '+res.time.toFixed(1).replace('.',',')+' Sekunden. Starke Leistung!',true); res.why = ''; SFX.top(); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
+    if (res.finished) { commentator.speak('Im Ziel! '+G.players[pi].name+' mit '+res.time.toFixed(1).replace('.',',')+' Sekunden! Stark!',true); res.why = ''; SFX.top(); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
     else { commentator.speak(res.dead==='time'?'Die Zeit ist abgelaufen. Das war ein spannender Lauf!':'Oh nein! Ein Sturz ins Wasser. Der Lauf ist vorbei.',true); res.why = res.dead === 'time' ? 'Zeit ab' : `Baden · ${Math.round(res.dist)} m`; if (res.dead === 'time') SFX.buzz(); else { arena.splash(sim.x); SFX.splash(); SFX.sad(); } big(res.dead === 'time' ? 'ZEIT ABGELAUFEN' : 'PLATSCH!', 'bad sm', 1500); }
     res.g = rec; G.say = res.finished ? fmtTime(res.time) : res.why; push();
     await A(sleep(1700)); return res;
