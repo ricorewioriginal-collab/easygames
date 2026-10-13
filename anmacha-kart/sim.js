@@ -135,14 +135,14 @@ const Sim = (() => {
     }
     // Geschosse: Raketen (zielsuchend) und Steine (prallen von Wänden ab)
     for (let i = S.proj.length - 1; i >= 0; i--) {
-      const r = S.proj[i]; r.t -= dt; r.arm -= dt; let dead = r.t <= 0;
+      const r = S.proj[i]; r.t -= dt; r.arm -= dt; let dead = r.t <= 0; const oldX = r.x, oldZ = r.z;
       if (r.kind === 'rocket') {
         const tg = r.target >= 0 ? S.karts[r.target] : null;
         if (tg && !tg.finished) { const want = Math.atan2(tg.x - r.x, tg.z - r.z), df = wrap(want - r.th); r.th += clamp(df, -4.5 * dt, 4.5 * dt); } else { S.tr.nearest(r.x, r.z, -1, tmp); S.tr.at(tmp.f + 6, 0, tp); const df = wrap(Math.atan2(tp.x - r.x, tp.z - r.z) - r.th); r.th += clamp(df, -3 * dt, 3 * dt); }
       }
       r.x += Math.sin(r.th) * r.spd * dt; r.z += Math.cos(r.th) * r.spd * dt;
       if (r.kind === 'rock') { S.tr.nearest(r.x, r.z, -1, tmp); if (Math.abs(tmp.d) > S.tr.wallD - 1.2) { const ta = Math.atan2(S.tr.T[tmp.i * 2], S.tr.T[tmp.i * 2 + 1]); r.th = 2 * ta - r.th; r.bounces++; S.tr.at(tmp.f, Math.sign(tmp.d) * (S.tr.wallD - 3), tp); r.x = tp.x; r.z = tp.z; emit(S, { t: 'rockBounce', x: r.x, z: r.z }); if (r.bounces > 3) dead = true; } }
-      S.karts.forEach(k => { if (dead || k.spinT > 0 || (k.k === r.owner && r.arm > 0)) return; if ((r.x - k.x) ** 2 + (r.z - k.z) ** 2 < (r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' ? 1.15 : 1.3, r.kind === 'rock' ? 0.3 : 0.25); dead = true; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
+      S.karts.forEach(k => { if (dead || k.spinT > 0 || (k.k === r.owner && r.arm > 0)) return; const vx = r.x - oldX, vz = r.z - oldZ, len2 = vx * vx + vz * vz, along = len2 > 0 ? clamp(((k.x - oldX) * vx + (k.z - oldZ) * vz) / len2, 0, 1) : 0, hx = oldX + vx * along, hz = oldZ + vz * along; if ((hx - k.x) ** 2 + (hz - k.z) ** 2 < (r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' ? 1.15 : 1.3, r.kind === 'rock' ? 0.3 : 0.25); dead = true; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
       if (dead) S.proj.splice(i, 1);
     }
     S.boxes.forEach(b => { if (b.cd > 0) b.cd -= dt; });
