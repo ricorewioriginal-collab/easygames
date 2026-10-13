@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b58bf43043ce",
- "generated": "2026-10-14T01:18:17+02:00",
- "commit": "31bdb0dcba89db059cbb1ebee2b31daabfda8526",
+ "version": "cc0617e599c3",
+ "generated": "2026-10-14T01:34:01+02:00",
+ "commit": "ef1698474c56aa3ca1ce08fa84c9c9b544cd47d8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3788,8 +3788,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 104962,
-   "h": "6ce239b445a3c17199ddcd1ecd88b5d7e2ac01c4e89cfc4578387378e129a45b"
+   "s": 104965,
+   "h": "df85e018e3839dcaa0a74a58fafb6cc59c679b75d7aa143c8b6da3920d3b43b4"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3993,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 309802,
-   "h": "3c7e4cdff4da96e3dc59ab0655128d1cdf5ae961a638a2775a96cbe5047955d0"
+   "s": 310755,
+   "h": "2e2c03c6b9b12d4048be5904f5a1f89ffd998e395de5fc0026354b023adff53d"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4073,8 +4073,8 @@
   },
   {
    "p": "bunte-insel/js/raetsel.js",
-   "s": 54735,
-   "h": "52a23c9f7ae2a5543ac33be8557dd8a22432cbf44b7dcd583b85073e1a8d90de"
+   "s": 55968,
+   "h": "da5ced845dde25cee0dff458e72e335dfe7a97fcfd77fadd553a18d9f04866db"
   },
   {
    "p": "bunte-insel/js/rainbow.js",
@@ -4093,8 +4093,8 @@
   },
   {
    "p": "bunte-insel/js/sammeln.js",
-   "s": 27510,
-   "h": "9c40ebdde039e9ac8f0e4c29eb43f158a16bf86bcd5c5dff2016cdebf4ee2b88"
+   "s": 27708,
+   "h": "3c79f8eb9086083833996933e5d759431262cf1c41d17d3db1325a634442128d"
   },
   {
    "p": "bunte-insel/js/schatz.js",
@@ -4203,8 +4203,8 @@
   },
   {
    "p": "bunte-insel/js/world.js",
-   "s": 88492,
-   "h": "070e488cdf421b6741e26068bfc213585e4fa242f77b01a0e0e602191d877186"
+   "s": 88623,
+   "h": "3ad8fef1f72b259b3047a6c2614edbb4414b96e0d071f6258bffa79b3b7318bd"
   },
   {
    "p": "bunte-insel/js/wunsch-game.js",
@@ -4404,7 +4404,7 @@
   {
    "p": "bunte-insel/sw.js",
    "s": 1899,
-   "h": "032e7deeb68619d7719a19c37d9dc4dd7fba21f5e59a009b8a0c970af27520f2"
+   "h": "c0410e74d808235d2728f382e2f5645a909465c0f530611b9917dcdaad3191ef"
   },
   {
    "p": "bunte-insel/vendor/three.min.js",
@@ -5019,7 +5019,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57160,
-   "h": "e64fc1edf3a99cc2d860aa4a5f54e386344c1ab495487f336fa5c350ebc61c5c"
+   "h": "41ead5a917fe94f95010990390f81bd9958f5ac91c77d236fbc34be81921582a"
   },
   {
    "p": "taschi/card.svg",
