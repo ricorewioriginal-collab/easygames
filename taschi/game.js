@@ -154,6 +154,46 @@ function routeInfo(p){
  ]);
 }
 
+
+/* Distinct landscape landmarks: readable biomes, terrain detail and environmental props. */
+const gravel=mat(0x88939a),cliffStone=mat(0x697b85),sand=mat(0xdabf8a),pondWater=new THREE.MeshStandardMaterial({color:0x418caa,metalness:.1,roughness:.27,transparent:true,opacity:.89,side:THREE.DoubleSide});
+function rockFormation(x,z,r=1){
+ const root=new THREE.Group();root.position.set(x,0,z);scene.add(root);
+ for(let i=0;i<4;i++){
+  const a=i*1.8,pr=mesh(root,new THREE.DodecahedronGeometry((.9+i%3*.3)*r,0),i%2?gravel:cliffStone,Math.sin(a)*r, (.5+i%2*.15)*r,Math.cos(a)*r);
+  pr.rotation.set(i*.2,i*.45,i*.14);
+ }
+}
+function pond(x,z,rx,rz){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ const water=mesh(g,new THREE.CircleGeometry(1,40),pondWater,0,.06,0);water.rotation.x=-Math.PI/2;water.scale.set(rx,rz,1);
+ const shore=mesh(g,new THREE.RingGeometry(.88,1.13,48),sand,0,.04,0);shore.rotation.x=-Math.PI/2;shore.scale.set(rx,rz,1);
+ for(let i=0;i<13;i++){const angle=i*Math.PI*2/13;const xx=Math.cos(angle)*rx*1.06,zz=Math.sin(angle)*rz*1.06;
+  const reed=cylinder(g,xx,.42,zz,.04,.06,.8,mat(0x648f56));reed.rotation.z=Math.sin(angle)*.25;
+ }
+}
+function flowerBed(x,z,color){
+ const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);
+ for(let i=0;i<9;i++){const a=i*2.399,r=.35+Math.sqrt(i)*.38;
+  cylinder(group,Math.sin(a)*r,.17,Math.cos(a)*r,.04,.05,.34,mat(0x4d9255));
+  ball(group,Math.sin(a)*r,.39,Math.cos(a)*r,.15,mat(i%3?color:0xffe18b))}
+}
+function streetLamp(x,z){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ cylinder(g,0,2.3,0,.1,.19,4.6,mat(0x3e5a63));
+ ball(g,0,4.5,0,.37,mat(0xffe3a7,.18));
+ const shade=mesh(g,new THREE.ConeGeometry(.65,.45,8),mat(0x47616d),0,4.87,0);shade.rotation.z=Math.PI;
+}
+pond(-27,24,7,4);
+pond(29,38,6,3.5);
+for(let i=0;i<32;i++){
+ const a=i*2.399,x=Math.sin(a)*(20+i*.9),z=Math.cos(a)*(18+i*.84);
+ if(Math.abs(x)<9||Math.abs(z+18)<9)continue;
+ rockFormation(x,z,.45+(i%5)*.13);
+}
+for(const [x,z,col] of [[-14,16,0xf39ab2],[8,17,0xeeb864],[18,-24,0xc2a2fa],[-29,-23,0xb6cde9],[-5,35,0xf9a87b]])flowerBed(x,z,col);
+for(const [x,z] of [[-7,15],[7,15],[-7,-18],[7,-18],[-6,-39],[6,-39]])streetLamp(x,z);
+
 const routeTrainers=[];
 const trainSpecs=[
  ['Jule',-8,31,'flatterling',7],['Finn',8,27,'quappi',9],
