@@ -37,6 +37,10 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | KLOTZFUNK 3D – Voxel-Sandbox: prozedurale Welt, Abbauen/Setzen, Hotbar, Inventar, Radio-Logo-Blöcke, Spezial-Blöcke (Feder, Turbo, Aufwind, Radio-Beats, Regenbogen, Neon), Seilhaken, Gleiten, Minikarte, Tag/Nacht, 3 Speicherplätze, Touch-Steuerung (Three.js + Vite; Quelltext in [`anmacha-klotzfunk-src/`](anmacha-klotzfunk-src/), gebautes Ergebnis eingecheckt) | [`anmacha-klotzfunk/`](anmacha-klotzfunk/) |
 | Bunte Insel – Kinderspiel mit offener Welt: laufen, 10 Fahrzeuge inkl. Hubschrauber, Boot & Zug-Simulation, Piratenschiff, Schießbude (nur Attrappen), Mitspielen per Code/QR, 11 Mini-Spiele, 3 Spielstände, Kinder-Extras (Fotos, Musik, Malen), Garten, Bauernhof, Freibad, Vorlesen, Spielzeugladen, Bauen wie bei den Sims, Spaß-Aktionen (Three.js, Touch mit festem Joystick & Tastatur, Sounds werden im Browser erzeugt) | [`bunte-insel/`](bunte-insel/) |
 
+## Als App installieren (PWA)
+
+Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** auf dem Handy als App installieren (Chrome/Android: Hinweis „📲 Als App installieren“ oder Menü ▸ „App installieren“; iPhone: Teilen ▸ „Zum Home-Bildschirm“). Die App startet im Vollbild, läuft nach dem ersten Spielen auch offline und **aktualisiert sich automatisch** (Service Worker: Netz zuerst, bei Ausfall der Cache). Erzeugt von `tools/make-pwa.py` (siehe „Neues Spiel hinzufügen“); PRISMRUSH und Wobbel bringen eine eigene PWA mit.
+
 ## Spieleliste, Vollbild und Teilen
 
 Die Seite zeigt alle Spiele als App-Kacheln. Ein Klick öffnet das Spiel in einem App-Fenster, oben gibt es
@@ -73,7 +77,8 @@ Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigati
    - `multi: true` – Mehrspieler/Duell auf einem Gerät
    - `tvParam: true` (oder z. B. `'tv=1'`) – das Spiel kennt einen Parameter, der am TV direkt die Lobby mit QR-Code öffnet; die Übersicht hängt ihn am TV an
 4. Anleitung und Bedienung in `guides.js` ergänzen (`anleitung`, `steuerung`, `tipps`). Ohne Eintrag zeigt die Übersicht die Kurzbeschreibung.
-5. `node tools/check-games.js` ausführen: prüft IDs, Pfade, Bilder, Anleitungen und Modi (Fehler stoppen, Warnungen sind Hinweise).
+5. `python3 tools/make-pwa.py` ausführen (Python 3 + Pillow): legt Manifest, Service Worker, Symbole (`pwa-icons/`) und den Installations-Block im `index.html` an – danach lässt sich das Spiel über den Direktlink mobil als App installieren (Vollbild, offline nach dem ersten Spielen, Updates kommen automatisch: Netz zuerst). Nach einem Vite-Build einmal erneut ausführen; `--check` prüft nur.
+6. `node tools/check-games.js` ausführen: prüft IDs, Pfade, Bilder, Anleitungen und Modi (Fehler stoppen, Warnungen sind Hinweise).
 
 Bei Mehrspieler-Spielen (`pad`, `online` oder `multi`) zeigen Übersicht, Einbettung (`easygames.js`) und `EasyGamesKit.tvUrl()` automatisch den **Link für TV-Gaming**: immer die öffentliche Spielseite (bei Apps/`localhost` die Standardadresse oder `window.EASYGAMES_PUBLIC_BASE`), mit `tvParam`, falls vorhanden.
 

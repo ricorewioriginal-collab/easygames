@@ -26,6 +26,7 @@ GAMES.forEach((x, i) => {
   else if (!isUrl(x.path) && !fs.existsSync(path.join(root, x.path, 'index.html'))) err(`${n}: ${x.path}index.html nicht gefunden`);
   if (x.img && !isUrl(x.img) && !fs.existsSync(path.join(root, x.img))) err(`${n}: Bild ${x.img} nicht gefunden`);
   if (!x.img) warn(`${n}: kein Kartenbild (img) – es erscheint das Icon`);
+  if (!isUrl(x.path) && !fs.existsSync(path.join(root, x.path, 'manifest.webmanifest'))) warn(`${n}: keine PWA-Dateien – python3 tools/make-pwa.py ausführen (macht das Spiel mobil installierbar, mit automatischem Update)`);
   const gd = GUIDES[x.id];
   if (!gd) warn(`${n}: keine Anleitung in guides.js (es wird die Kurzbeschreibung gezeigt)`);
   else { if (!gd.anleitung) warn(`${n}: guides.js ohne "anleitung"`); if (!Array.isArray(gd.steuerung) || !gd.steuerung.length) warn(`${n}: guides.js ohne "steuerung"`); }
