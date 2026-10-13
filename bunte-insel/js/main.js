@@ -28,11 +28,11 @@
   /* Schärfe: Stufen 0–3. Untergrenze = nie gröber als der Bildschirm selbst (Handy/Tablet 1 Pixel pro CSS-Pixel, PC/TV 0,85) – vorher bis 0,35/0,75 = pixelig */
   const QUAL = [2, coarse ? 1.7 : 1.6, 1.25, 1], PIXEL_BUDGET = [4200000, 2800000, 2000000, 1500000];
   const pixelRatioFor = (w, h) => { const dpr = window.devicePixelRatio || 1, floor = Math.min(dpr, coarse ? 1 : .85); return Math.max(floor, Math.min(dpr, QUAL[quality], Math.sqrt(PIXEL_BUDGET[quality] / (w * h)))); };
-  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 1.4, 640);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .45, 640);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
   sun.position.set(60, 100, 40); scene.add(hemi, sun, sun.target);
   scene.fog = new THREE.Fog(0xcfe9ff, 130, 520);
-  const skyGeo = new THREE.SphereGeometry(700, 20, 10), skyCol = new Float32Array(skyGeo.attributes.position.count * 3);
+  const skyGeo = new THREE.SphereGeometry(700, 48, 24), skyCol = new Float32Array(skyGeo.attributes.position.count * 3);
   skyGeo.setAttribute('color', new THREE.BufferAttribute(skyCol, 3));
   const sky = new THREE.Mesh(skyGeo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })); sky.renderOrder = -1; scene.add(sky);
   const starPts = (() => { const n = 160, p = new Float32Array(n * 3), r = BI.rng(5); for (let i = 0; i < n; i++) { const a = r() * TAU, e = .15 + r() * 1.2, d = 650; p[i * 3] = Math.sin(a) * Math.cos(e) * d; p[i * 3 + 1] = Math.sin(e) * d; p[i * 3 + 2] = Math.cos(a) * Math.cos(e) * d; } const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); const m = new THREE.PointsMaterial({ color: 0xffffff, size: 2.4, sizeAttenuation: false, transparent: true, opacity: 0, fog: false, depthWrite: false }); const pts = new THREE.Points(g, m); scene.add(pts); return pts; })();
@@ -2312,7 +2312,12 @@
 
   /* ---------- Kamera ---------- */
   const camT = new THREE.Vector3();
-  function blockedByBuilding(x, z, y) { for (const b of W.boxes) if (y < b.h && x > b.x0 - .6 && x < b.x1 + .6 && z > b.z0 - .6 && z < b.z1 + .6) return true; return false; }
+  const camProbe = {};
+  function blockedByBuilding(x, z, y) {
+    /* W.resolve nutzt das Kollisionsraster und erkennt auch runde Hindernisse wie Baumstämme. */
+    const hit = W.resolve(x, z, .28, camProbe, y, false, false);
+    return !!hit.hit && Math.hypot(hit.x - x, hit.z - z) > .02;
+  }
   const EYE = { rc: [0, .45, .2], car: [0, 1.2, .3], police: [0, 1.2, .3], ambulance: [0, 1.9, 1.7], fire: [0, 2.5, 2.9], bus: [0, 2.4, 3.4], tractor: [0, 2.3, -.6], ice: [0, 1.5, 1.0], bike: [0, 1.8, -.1], heli: [0, 1.9, 1.2], train: [0, 3.0, -1.7] };
   function updateCamera(dt) {
     const v = P.veh || (ride ? rideHost() : null); let tx, ty, tz, dist, pitch = cam.pitch;
@@ -2336,7 +2341,7 @@
     if (keys.q) cam.yaw += dt * 1.6; if (keys.r) cam.yaw -= dt * 1.6;
     // Gebäude zwischen Kamera und Ziel -> näher heranholen
     let d = dist; const cp = Math.cos(pitch), sx = Math.sin(cam.yaw) * cp, sz = Math.cos(cam.yaw) * cp;
-    for (let i = 1; i <= 6; i++) { const f = i / 6; if (blockedByBuilding(tx + sx * dist * f, tz + sz * dist * f, Math.sin(pitch) * dist * f + ty)) { d = Math.max(2.8, dist * (f - 1 / 6)); break; } }
+    for (let i = 1; i <= 12; i++) { const f = i / 12; if (blockedByBuilding(tx + sx * dist * f, tz + sz * dist * f, Math.sin(pitch) * dist * f + ty)) { d = Math.max(1.7, dist * (f - 1 / 12)); break; } }
     cam.dist = BI.damp(cam.dist, d, d < cam.dist ? 12 : 3, dt);
     const gx = tx + sx * cam.dist, gz = tz + sz * cam.dist, gy = ty + Math.sin(pitch) * cam.dist;
     cam.x = BI.damp(cam.x, gx, 14, dt); cam.y = BI.damp(cam.y, gy, 14, dt); cam.z = BI.damp(cam.z, gz, 14, dt);
