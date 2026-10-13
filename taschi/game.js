@@ -405,7 +405,7 @@ function restartGame(){
  ]);
 }
 
-function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Geschichte',chapterDialog],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
+function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Zum Titelbildschirm',()=>{close();showTitle()}],['Steuerung & Controller',inputSettings],['Geschichte',chapterDialog],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 function mapView(){dialog('Reisekarte','<p>Die Reiseorte sind in der 3D-Welt an ihren Positionen markiert. Erkunde mit dem Joystick oder den Pfeiltasten.</p>'+[...gyms.map((p,i)=>({...p,name:(i+1)+'. Arena: '+GYMS[i][0]})),...villages,...caves,...places].map(p=>'<p>📍 '+(p.name||p.label)+' – '+Math.round(Math.hypot(p.x-player.position.x,p.z-player.position.z))+' m</p>').join(''),[['Abenteuerbuch',journalView],['Zurück',close]])}
@@ -454,8 +454,63 @@ function soundtrack(){
  noteStep++;nextNote=performance.now()+380;
 }
 
-const keys=new Set();addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.key.toLowerCase()==='e'&&!e.repeat)interact();if(e.key==='Escape'&&locked&&!combat)close();else if(e.key==='Escape'&&!locked)mainMenu()});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
-const joy=$('joy'),nub=$('nub');let joyX=0,joyY=0;function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/44);joyX=x/44/mag;joyY=y/44/mag;nub.style.transform='translate('+(joyX*40)+'px,'+(joyY*40)+'px)'}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);pointer(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))pointer(e)});function resetJoy(){joyX=joyY=0;nub.style.transform=''}joy.addEventListener('pointerup',resetJoy);joy.addEventListener('pointercancel',resetJoy);
+// Shared configurable keyboard, touch and standard Gamepad API input.
+const INPUT_KEY='taschi.input.v2';
+const defaults={up:'w',down:'s',left:'a',right:'d',action:'e',menu:'escape',run:'shift',joystickSize:126,joystickOpacity:75,deadzone:.16,speed:1,camera:'follow',vibration:true,hand:'left'};
+let controls;try{controls={...defaults,...JSON.parse(localStorage.getItem(INPUT_KEY)||'{}')}}catch{controls={...defaults}}
+const keys=new Set(),joy=$('joy'),nub=$('nub');let joyX=0,joyY=0,gamepadX=0,gamepadY=0,gamepadLast={},remapping=null;
+const normKey=e=>(e.key===' '?'space':e.key.toLowerCase());
+function keyMatch(key,direction){return key===controls[direction]||({up:'arrowup',down:'arrowdown',left:'arrowleft',right:'arrowright'}[direction]===key)}
+function gamepadPoll(){
+ const pads=navigator.getGamepads?.()||[];const pad=Array.from(pads).find(p=>p&&p.connected);
+ if(!pad){gamepadX=gamepadY=0;$('padstate').textContent='Kein Controller';gamepadLast={};return}
+ $('padstate').textContent=pad.id.slice(0,65);
+ const axis=(v)=>Math.abs(v)<controls.deadzone?0:Math.sign(v)*(Math.abs(v)-controls.deadzone)/(1-controls.deadzone);
+ gamepadX=axis(pad.axes[0]||0);gamepadY=axis(pad.axes[1]||0);
+ const pressed=i=>!!pad.buttons[i]?.pressed;
+ const edge=(i,callback)=>{if(pressed(i)&&!gamepadLast[i])callback();gamepadLast[i]=pressed(i)};
+ edge(0,()=>{if(!locked)interact();else if($('panel').classList.contains('show'))$('options').querySelector('button:not(:disabled)')?.click();else if(!booted)enterGame()});
+ edge(1,()=>{if($('panel').classList.contains('show')&&!combat)close()});
+ edge(9,()=>booted?mainMenu():enterGame());
+ edge(3,()=>{if(booted&&!locked)team()});
+ if(pad.buttons[12]?.pressed)gamepadY=-1;if(pad.buttons[13]?.pressed)gamepadY=1;
+ if(pad.buttons[14]?.pressed)gamepadX=-1;if(pad.buttons[15]?.pressed)gamepadX=1;
+}
+function applyControls(){
+ joy.style.width=joy.style.height=controls.joystickSize+'px';
+ nub.style.left=nub.style.top=(controls.joystickSize-48)/2+'px';
+ joy.style.opacity=String(controls.joystickOpacity/100);
+ document.body.dataset.hand=controls.hand;
+ localStorage.setItem(INPUT_KEY,JSON.stringify(controls));
+}
+function inputSettings(){
+ const options=[
+ ['Hand: '+(controls.hand==='left'?'Links':'Rechts'),()=>{controls.hand=controls.hand==='left'?'right':'left';applyControls();inputSettings()}],
+ ['Joystickgröße: '+controls.joystickSize+'px',()=>{controls.joystickSize=controls.joystickSize>=170?100:controls.joystickSize+14;applyControls();inputSettings()}],
+ ['Joystick-Sichtbarkeit: '+controls.joystickOpacity+'%',()=>{controls.joystickOpacity=controls.joystickOpacity>=100?40:controls.joystickOpacity+15;applyControls();inputSettings()}],
+ ['Joystick-Totzone: '+Math.round(controls.deadzone*100)+'%',()=>{controls.deadzone=controls.deadzone>=.3?.08:+(controls.deadzone+.04).toFixed(2);applyControls();inputSettings()}],
+ ['Lauftempo: '+controls.speed+'×',()=>{controls.speed=controls.speed>=1.5?.7:+(controls.speed+.2).toFixed(1);applyControls();inputSettings()}],
+ ...['up','down','left','right','action','menu','run'].map(action=>[{up:'Vorwärts',down:'Rückwärts',left:'Links',right:'Rechts',action:'Interaktion',menu:'Pause',run:'Sprinten'}[action]+': '+controls[action].toUpperCase(),()=>{remapping=action;dialog('Taste zuweisen','Drücke die gewünschte Tastaturtaste. Escape bricht die Belegung ab.',[['Abbrechen',()=>{remapping=null;inputSettings()}]])}]),
+ ['Standardbelegung',()=>{controls={...defaults};applyControls();inputSettings()}],
+ ['Zurück',mainMenu]
+ ];
+ dialog('Steuerung & Controller','<p>Tastatur, Touch-Joystick und Standard-Gamepads. Controller: linker Stick bewegen, A bestätigen, B zurück, Start Menü, Y Team.</p><p id="padstate">Controller werden automatisch erkannt.</p>',options);
+}
+addEventListener('keydown',e=>{
+ const key=normKey(e);
+ if(remapping){e.preventDefault();if(key==='escape'){remapping=null;inputSettings();return}controls[remapping]=key;remapping=null;applyControls();inputSettings();return}
+ if(['arrowup','arrowdown','arrowleft','arrowright','space'].includes(key))e.preventDefault();
+ keys.add(key);
+ if(!e.repeat&&key===controls.action)interact();
+ if(!e.repeat&&key===controls.menu){if(locked&&!combat&&booted)close();else if(!locked&&booted)mainMenu()}
+});
+addEventListener('keyup',e=>keys.delete(normKey(e)));addEventListener('blur',()=>{keys.clear();joyX=joyY=0});
+function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/(controls.joystickSize*.36));joyX=x/(controls.joystickSize*.36)/mag;joyY=y/(controls.joystickSize*.36)/mag;nub.style.transform='translate('+(joyX*controls.joystickSize*.31)+'px,'+(joyY*controls.joystickSize*.31)+'px)'}
+joy.addEventListener('pointerdown',e=>{e.preventDefault();joy.setPointerCapture(e.pointerId);pointer(e)});
+joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId)){e.preventDefault();pointer(e)}});
+function resetJoy(){joyX=joyY=0;nub.style.transform=''}
+joy.addEventListener('pointerup',resetJoy);joy.addEventListener('pointercancel',resetJoy);
+applyControls();
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
 
 function showTitle(){
@@ -504,6 +559,6 @@ function drawMinimap(){
 }
 
 const clock=new THREE.Clock();let time=0;
-function animate(){requestAnimationFrame(animate);const dt=Math.min(.05,clock.getDelta());time+=dt;if(!locked){const dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft'))+joyX,dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'))+joyY,len=Math.hypot(dx,dz);if(len>.12){const vx=dx/len*dt*7,vz=dz/len*dt*7,nx=Math.max(insideCave?270:-60,Math.min(insideCave?330:60,player.position.x+vx)),nz=Math.max(insideCave?-24:-60,Math.min(insideCave?24:60,player.position.z+vz));if(insideCave||!colliders.some(c=>Math.hypot(nx-c.x,nz-c.z)<c.r+.45)){player.position.x=nx;player.position.z=nz}player.rotation.y=Math.atan2(dx,dz);steps+=dt;if(steps>1.8){steps=0;if(!insideCave){save.x=player.position.x;save.z=player.position.z;persist()}if(insideCave&&Math.random()<.3)findWild(['geist','gestein','wasser','elektro'][caves.indexOf(insideCave)]);if(!insideCave){const habitat=grass.find(g=>Math.hypot(g.x-save.x,g.z-save.z)<g.r);if(habitat&&Math.random()<.38)findWild(habitat.type)}}}}follower.position.lerp(new THREE.Vector3(player.position.x-1.3,.12+Math.sin(time*3)*.12,player.position.z+1.5),Math.min(1,dt*5));follower.rotation.y=player.rotation.y;follower.visible=!combat;player.visible=!combat;if(combat){battleFriends.position.y=Math.sin(time*2)*.07;battleFoes.position.y=Math.sin(time*2.2+1)*.06}
+function animate(){requestAnimationFrame(animate);const dt=Math.min(.05,clock.getDelta());time+=dt;gamepadPoll();if(!locked){const dx=Number([...keys].some(k=>keyMatch(k,'right')))-Number([...keys].some(k=>keyMatch(k,'left')))+joyX+gamepadX,dz=Number([...keys].some(k=>keyMatch(k,'down')))-Number([...keys].some(k=>keyMatch(k,'up')))+joyY+gamepadY,len=Math.hypot(dx,dz);if(len>.12){const speed=7*controls.speed*(keys.has(controls.run)?1.45:1);const vx=dx/len*dt*speed,vz=dz/len*dt*speed,nx=Math.max(insideCave?270:-60,Math.min(insideCave?330:60,player.position.x+vx)),nz=Math.max(insideCave?-24:-60,Math.min(insideCave?24:60,player.position.z+vz));if(insideCave||!colliders.some(c=>Math.hypot(nx-c.x,nz-c.z)<c.r+.45)){player.position.x=nx;player.position.z=nz}player.rotation.y=Math.atan2(dx,dz);steps+=dt;if(steps>1.8){steps=0;if(!insideCave){save.x=player.position.x;save.z=player.position.z;persist()}if(insideCave&&Math.random()<.3)findWild(['geist','gestein','wasser','elektro'][caves.indexOf(insideCave)]);if(!insideCave){const habitat=grass.find(g=>Math.hypot(g.x-save.x,g.z-save.z)<g.r);if(habitat&&Math.random()<.38)findWild(habitat.type)}}}}follower.position.lerp(new THREE.Vector3(player.position.x-1.3,.12+Math.sin(time*3)*.12,player.position.z+1.5),Math.min(1,dt*5));follower.rotation.y=player.rotation.y;follower.visible=!combat;player.visible=!combat;if(combat){battleFriends.position.y=Math.sin(time*2)*.07;battleFoes.position.y=Math.sin(time*2.2+1)*.06}
 near=(insideCave?[{x:300,z:23,label:'Höhlenausgang',exit:true},...crystalLocations.map(([x,z],i)=>({x:300+x,z,label:'Kristall '+(i+1),crystal:i}))]:[...places,...gyms,...caves.map(c=>({...c,cave:true})),...villages.map(v=>({...v,label:v.name,village:true})),...routeTrainers.map(t=>({...t,label:'Trainer '+t.name}))]).map(p=>({...p,dist:Math.hypot(p.x-player.position.x,p.z-player.position.z)})).sort((a,b)=>a.dist-b.dist)[0];if(near.dist>9)near=null;$('interact').textContent=near?'✦ '+(near.exit?'Verlassen':near.crystal!==undefined?'Kristall':near.trainer!==undefined?'Trainer':near.cave?'Höhle':near.village?'Dorf':near.gym!==undefined?'Arena':near.label==='Heilhaus'?'Heilen':near.label==='Fangladen'?'Shop':'Reden'):'Aktion · E';if(combat){camera.position.lerp(new THREE.Vector3(191,9,17),Math.min(1,dt*4));camera.lookAt(180,1.5,0)}else{camera.position.lerp(new THREE.Vector3(player.position.x+8.5,11.5,player.position.z+14),Math.min(1,dt*3.5));camera.lookAt(player.position.x,1.4,player.position.z-4)}$('objective').textContent=insideCave?'Höhlenexpedition · Drei Kristalle finden':directionToNext();soundtrack();if(performance.now()>miniNext){drawMinimap();miniNext=performance.now()+400}if(toastUntil&&performance.now()>toastUntil){$('message').style.display='none';toastUntil=0}renderer.render(scene,camera)}
 stats();showTitle();animate();
