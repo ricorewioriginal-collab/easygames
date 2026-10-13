@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dab614d94829",
- "generated": "2026-10-14T00:16:35+02:00",
- "commit": "a0542e0561a702d447d325799756bf1f5ef7b0a1",
+ "version": "37d3f115b248",
+ "generated": "2026-10-14T00:28:50+02:00",
+ "commit": "45f0922e766fef27593fa96354634e5c97320823",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3789,7 +3789,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 98103,
-   "h": "e4b3ed48663e8af1ae9bdc1c64f58f4c0b467fb9a9fcf5f2fac79f186b13dfc4"
+   "h": "b4747298273744b8436eff89bac0468e357141649a4dcd9d7ee1a10f5b0ccda9"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3863,8 +3863,8 @@
   },
   {
    "p": "bunte-insel/js/combat.js",
-   "s": 35686,
-   "h": "fee5ef22880a203422c6ac29d4b5dd5144e7b45b61e5b0a3202691064708a6a7"
+   "s": 36178,
+   "h": "caa3137cade229f8b610176b2aead7abe911f0873590232a33b5e6971f373735"
   },
   {
    "p": "bunte-insel/js/dampfer.js",
@@ -3938,8 +3938,8 @@
   },
   {
    "p": "bunte-insel/js/i18n-en.js",
-   "s": 276494,
-   "h": "5e940eb1e18d8ca6dc5d04e246c9ad5da1aad13ed4e9fb8ede0681e5983d7fa6"
+   "s": 280029,
+   "h": "2539502e1dbb2d036c0f116188af92162a847316dfa09e3744a2713b50c247ee"
   },
   {
    "p": "bunte-insel/js/i18n.js",
@@ -3978,8 +3978,8 @@
   },
   {
    "p": "bunte-insel/js/life.js",
-   "s": 33235,
-   "h": "c90caebd11a464c428fd5e304ab65761c92d5b1251589444f3cc5e405bd1afb2"
+   "s": 36763,
+   "h": "52046bf32e6034e60542fa38c516c998847718c7ac71bbc09c55fd051033e2fc"
   },
   {
    "p": "bunte-insel/js/maerchen.js",
@@ -3993,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 305209,
-   "h": "86b7ce283b20ae6c7992fef75322eca6c4abb3291e71f001f3d6a1fa1b78a2a2"
+   "s": 305389,
+   "h": "f67590b45c5d2d9dcd9fd7d97db5f5e5c23e4234795e3ce08a685d69207a1421"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4043,8 +4043,8 @@
   },
   {
    "p": "bunte-insel/js/places.js",
-   "s": 21096,
-   "h": "d0f669c1dca97c23d4ae4de8da3949125dc112fbde506f09c18738cd084541f7"
+   "s": 22298,
+   "h": "0666a84a3276662028082ab4391c24985d33dffbcd766545930234cfb7a3c04a"
   },
   {
    "p": "bunte-insel/js/play.js",
@@ -5014,7 +5014,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57160,
-   "h": "ecc922f30d3fac179a5b815a64eedba851d982254577db7300d4bc9e5159594e"
+   "h": "861014e2a4fea6b78213c4751064410574acbf38e321453ca36842f6336e3566"
   },
   {
    "p": "taschi/card.svg",
