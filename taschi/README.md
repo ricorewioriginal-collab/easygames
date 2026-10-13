@@ -81,3 +81,9 @@ Die Eingabelogik unterscheidet nun ausdrücklich `boot`, `title`, `world`, `dial
 ## Landschafts-Überarbeitung (Oktober 2026)
 
 Die Spielwelt verwendet nun mehrere prozedurale Baum-Silhouetten, detailliertere Häuser mit Fenstern, Fenstersprossen, Türen und Fassadenelementen, Uferteiche, Felsen, Blumenbeete und Laternen. Die Spielerfigur besitzt zusätzliche Kleidung, Gesichtselemente und einen Rucksack. Die 16 bisherigen Arena-Säulen wurden durch sechseckige Pavillons mit eigenen Farbschemata und Schmuckdetails ersetzt. Die Positionen der Arena-Interaktionen sind unverändert. Dies sind prozedurale, noch nicht individuell handmodellierte 3D-Modelle; Geometrie und Laufwege müssen im Browser und auf echten Mobilgeräten geprüft werden.
+
+## Stadtregionen, Rätsel und Champions
+
+Es gibt jetzt **16 benannte Stadtregionen** innerhalb der vorhandenen zusammenhängenden 3D-Region: jeweils ein Heilzentrum (KP und AP auffüllen), eine einmalige Schatztruhe mit Items und Sternmünzen, ein lokales Runenrätsel als Voraussetzung für die Arena, die Arena selbst und einen anschließend separat herausforderbaren regionalen Champion. Nach dem Champion lässt sich die nächste Region im Menü **☰ → Regionen & Schnellreise** anwählen. Alle einmaligen Rätsel-, Truhen- und Champion-Ergebnisse werden im bisherigen Spielstand gespeichert. Unter **☰ → Regionale Champions** sind verfügbare Duelle direkt auswählbar. Die 16 Orden und die nachgelagerte Sternenliga bleiben erhalten.
+
+**Einschränkung:** Dies sind zunächst unterschiedliche Stadtbereiche **innerhalb einer einzigen 3D-Welt**, noch keine 16 vollständig eigenständigen Karten mit eigenem Streaming, komplexen Gebäudeeingängen oder individuellen Biomen. Die Rune-Aufgaben sind einfache Auswahlrätsel; umfangreiche Umgebungsrätsel müssen noch folgen. Die Syntax wurde geprüft, vollständige Browser-/Mobile-End-to-End-Tests fehlen.
