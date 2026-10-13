@@ -15,7 +15,7 @@ const r = await p.evaluate(async () => {
   const free = (a, bb, r) => { const q = at(a, bb), x = W.resolve(q.x, q.z, r || .45, {}); return Math.hypot(x.x - q.x, x.z - q.z) < .03; };
   out.zone = BI.worldAt(M.entry.x, M.entry.z) === 'raetsel' && BI.zoneAt(M.x, M.z, {}) === 'raetsel';
   const br = M.bridge; out.bridge = [-.4, -.2, 0, .2, .4].every(k => !W.resolve(br.mx + M.ux * br.L * k, br.mz + M.uz * br.L * k, .4, {}).hit);
-  { const base=M.skyBase; b.P.x=base.x; b.P.z=base.z; b.P.y=.1; const up=K.near(); out.skyLift=!!up&&up.k==='rzsky'&&up.up; if(out.skyLift)K.act(up); await sl(120); out.skyLanding=b.P.y>70&&W.groundY(M.skyDeck.x,M.skyDeck.z)===72; const down=K.near(); if(down&&down.k==='rzsky'&&!down.up)K.act(down); await sl(120); out.skyReturn=b.P.y<1; }
+  { const base=M.skyBase; b.P.x=base.x; b.P.z=base.z; b.P.y=.1; const up=K.near(); out.skyLift=!!up&&up.k==='rzsky'&&up.up; if(out.skyLift)K.act(up); await sl(120); out.skyLanding=b.P.y>70&&W.groundY(M.skyDeck.x,M.skyDeck.z,b.P.y)===72&&W.groundY(M.skyDeck.x,M.skyDeck.z,0)<1; const down=K.near(); if(down&&down.k==='rzsky'&&!down.up)K.act(down); await sl(120); out.skyReturn=b.P.y<1; }
   out.apart = [BI.CITY, BI.DAMPF, BI.BAULAND, BI.FUSSBALL, BI.MAERCHEN, BI.PARK, BI.RADIO, BI.SCHLUESSEL, BI.SCHWAMM, BI.ZOTIK, BI.PUPS, BI.DRACHEN].every(o => Math.hypot(o.x - M.x, o.z - M.z) > o.R + M.R + 6);
   const fo = b.town.folk.filter(f => f.p && Math.hypot(f.x - M.x, f.z - M.z) < M.R); out.folk = fo.length; out.folkIn = fo.every(f => Math.hypot(f.x - M.x, f.z - M.z) < M.R - 2 && !W.resolve(f.x, f.z, .3).hit);
   /* Dorf und Turm-Eingang erreichbar (Weg vom Eingang zur Turmtür, zum Schrein, zur Schmiede) */
