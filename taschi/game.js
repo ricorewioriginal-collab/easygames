@@ -35,13 +35,16 @@ for(let region=0;region<12;region++)for(let i=0;i<16;i++){
 const MOVES={stoss:['Kugelstoß','normal',40],hieb:['Wirbelhieb','normal',65],funken:['Funkenschlag','elektro',48],glut:['Glutfunken','feuer',48],ranke:['Rankenhieb','pflanze',48],spritzer:['Wasserperlen','wasser',48],fluegel:['Windstoß','flug',48],stein:['Steinwurf','gestein',48],spuk:['Spukhauch','geist',48]};
 const ADV={feuer:{pflanze:2,wasser:.5,gestein:.5},wasser:{feuer:2,gestein:2,pflanze:.5},pflanze:{wasser:2,gestein:2,feuer:.5,flug:.5},elektro:{wasser:2,flug:2,pflanze:.5},gestein:{feuer:2,flug:2},flug:{pflanze:2,gestein:.5},geist:{geist:2,normal:0},normal:{geist:0}};
 const GYMS=[['Fels-Fiete','felsling',8],['Perla','quappi',11],['Käpt’n Volt','blitzi',14],['Blüte','samenling',17],['Forscher Nilo','kaeferli',19],['Jette vom Team Funke','knister',21],['Kapitän Rumo','glutzahn',24],['Meisterin Aurelia','blitzor',27],['Kira vom Nebelpass','geisterchen',30],['Rokko vom Gletscher','panzerlon',32],['Taro vom Waldturm','bluetling',34],['Mira vom Sturmfeld','knister',36],['Nona der Kristallhöhle','felsling',38],['Lio der Mondbucht','funkli',40],['Sora vom Sonnenplateau','glutdrach',42],['Großmeisterin Aurelia','blitzor',45]];
-const SAVE='easygames.taschi.eight-lights.v1';
+const SAVE='easygames.taschi.eight-lights.v1',SELECTED=SAVE+'.selected';
+let slot=Number(localStorage.getItem(SELECTED)||1);if(![1,2,3].includes(slot))slot=1;
+const saveKey=()=>SAVE+'.slot'+slot;
+const blankSave=()=>({team:[],box:[],badges:0,balls:8,potions:3,dex:{},x:0,z:6,wins:0});
 function clean(s){if(!s||!Array.isArray(s.team))return null;s.team=s.team.filter(m=>SPEC[m.id]&&Number.isFinite(m.lv)&&Number.isFinite(m.hp)).slice(0,6);s.box=(s.box||[]).filter(m=>SPEC[m.id]).slice(0,100);s.badges=Math.max(0,Math.min(16,Number(s.badges)||0));s.balls=Math.max(0,Number(s.balls)||0);s.potions=Math.max(0,Number(s.potions)||0);s.dex=s.dex||{};s.x=Number.isFinite(s.x)?Math.max(-58,Math.min(58,s.x)):0;s.z=Number.isFinite(s.z)?Math.max(-58,Math.min(58,s.z)):6;return s;}
-let save;try{save=clean(JSON.parse(localStorage.getItem(SAVE)))}catch{}
-save ||= {team:[],box:[],badges:0,balls:8,potions:3,dex:{},x:0,z:6,wins:0};
+let save;try{save=clean(JSON.parse(localStorage.getItem(saveKey())||(slot===1?localStorage.getItem(SAVE):null)))}catch{}
+save ||= blankSave();
 const maxHp=m=>Math.floor(SPEC[m.id].hp*2*m.lv/100)+m.lv+10;
 const make=(id,lv)=>{const m={id,lv,xp:0,hp:1};m.hp=maxHp(m);return m};
-const persist=()=>{try{localStorage.setItem(SAVE,JSON.stringify(save))}catch{}};
+const persist=()=>{try{localStorage.setItem(saveKey(),JSON.stringify(save))}catch{}};
 let active=null,locked=false,near=null,combat=null,steps=0,toastUntil=0,caveSteps={},insideCave=null;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
 const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,190);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.35:1.7));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.prepend(renderer.domElement);
@@ -260,7 +263,21 @@ function importSave(){
  }catch(error){dialog('Import fehlgeschlagen','<p>'+String(error.message||error).replace(/[<>]/g,'')+'</p>',choice())}
  };input.click();
 }
-function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Geschichte',chapterDialog],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave]])}
+
+function chooseSaveSlot(){
+ dialog('Spielstände','<p>Wechsle zwischen drei voneinander unabhängigen Speicherplätzen. Der aktuelle Stand wird automatisch gesichert.</p>',[
+ ...[1,2,3].map(n=>['Spielplatz '+n+(n===slot?' ✓ aktiv':''),()=>{persist();slot=n;localStorage.setItem(SELECTED,String(slot));try{save=clean(JSON.parse(localStorage.getItem(saveKey())))}catch{save=null}save ||= blankSave();player.position.set(save.x,0,save.z);updateFollower();stats();if(!save.team.length)start();else{close();toast('Spielplatz '+n+' geladen!')}}]),
+ ['Zurück',mainMenu]
+ ]);
+}
+function restartGame(){
+ dialog('Neues Abenteuer?','<p>Nur der aktuelle Speicherplatz '+slot+' wird neu gestartet. Der bisherige Stand kann nicht wiederhergestellt werden, außer du hast ihn exportiert.</p>',[
+ ['Ja, dieses Spiel neu beginnen',()=>{localStorage.removeItem(saveKey());save=blankSave();insideCave=null;scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();start()}],
+ ['Abbrechen',mainMenu]
+ ]);
+}
+
+function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Geschichte',chapterDialog],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave],['Speicherplätze',chooseSaveSlot],['Neues Spiel',restartGame]])}
 
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 function mapView(){dialog('Reisekarte','<p>Die Reiseorte sind in der 3D-Welt an ihren Positionen markiert. Erkunde mit dem Joystick oder den Pfeiltasten.</p>'+[...gyms.map((p,i)=>({...p,name:(i+1)+'. Arena: '+GYMS[i][0]})),...villages,...caves,...places].map(p=>'<p>📍 '+(p.name||p.label)+' – '+Math.round(Math.hypot(p.x-player.position.x,p.z-player.position.z))+' m</p>').join(''),[['Abenteuerbuch',journalView],['Zurück',close]])}
