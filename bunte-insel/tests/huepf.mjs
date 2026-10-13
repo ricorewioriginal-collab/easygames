@@ -47,10 +47,10 @@ ok(r.coin, 'Münzen einsammeln');
 r = await sec(6, `const v = b.vehicles.find(x => x.type === 'kart'); tp(v.x - H.x + 1.5, v.z - H.z); await sl(100); b.enter(v); await sl(200);
   const g = D.posAt(D.TR.len - 2, 0); v.setPose(g.x, g.z, g.h); v.v = 8; await sl(60); out.started = await until(() => !!h.race, 2000); out.count = h.race && h.race.phase === 'count';
   await until(() => h.race && h.race.phase === 'run', 6000); out.run = !!h.race && h.race.phase === 'run';
-  /* Abkürzung über den Rasen zählt nicht: direkt zur Linie zurückspringen ohne Kontrollpunkte */
-  { const R = h.race, l0 = R.lap; const a = D.posAt(30, 0); v.setPose(a.x, a.z, a.h); await sl(80); const z = D.posAt(D.TR.len - 3, 0); v.setPose(z.x, z.z, z.h); await sl(80); const s0 = D.posAt(2, 0); v.setPose(s0.x, s0.z, s0.h); await sl(80); out.noCut = h.race.lap === l0; }
-  let s = 0; const L = D.TR.len; const t0 = performance.now(); let last = t0;
-  while (h.race && !h.race.done && performance.now() - t0 < 60000) { const now = performance.now(), dt = Math.min(.1, (now - last) / 1000); last = now; s += 26 * dt; const q = D.posAt(s, -1); v.setPose(q.x, q.z, q.h); v.v = 20; await sl(16); }
+  const fr = () => new Promise(res => requestAnimationFrame(() => res())); let s = 0; while (s < 6) { s += 2; const q = D.posAt(s, -1); v.setPose(q.x, q.z, q.h); await fr(); await fr(); }
+  /* Abkürzung über den Rasen zählt nicht: ohne Kontrollpunkte zurück über die Linie */
+  { const l0 = h.race.lap; const a = D.posAt(30, 0); v.setPose(a.x, a.z, a.h); await sl(150); const z = D.posAt(D.TR.len - 3, 0); v.setPose(z.x, z.z, z.h); await sl(150); const q = D.posAt(6, 0); v.setPose(q.x, q.z, q.h); await sl(150); out.noCut = h.race.lap === l0; }
+  const t0 = performance.now(); while (h.race && !h.race.done && performance.now() - t0 < 120000) { s += 4; const q = D.posAt(s, -1); v.setPose(q.x, q.z, q.h); v.v = 20; await fr(); }
   out.done = !!h.race && h.race.done; out.place = h.race ? h.race.place : 0; out.races = S().races; out.win = S().wins >= 1; out.stk = b.save.stk.includes('huepf_kart') && b.save.stk.includes('huepf_pokal');
   out.botsMoved = D.bots.every(x => x.lap >= 1); await sl(4500); out.cleared = !h.race; b.leave();`);
 ok(r.started && r.count && r.run, 'Kart-Rennen startet beim Durchfahren des Start-Tors (Ampel-Countdown)');

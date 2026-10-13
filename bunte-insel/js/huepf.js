@@ -210,17 +210,17 @@ BI.createHuepf = function (G) {
     K.race = { phase: 'count', t: 3.2, v, lap: -1, idx: idxOf(v.x, v.z).i, cp: 3, boost: 0, done: false, time: 0, place: 0 };
     hud.hidden = false; say('🏁 Gleich geht’s los! 3 Runden – Glitzerkisten ✦ geben Extras, gelbe Pfeile machen schnell!', 3600); A.speak && A.speak('Auf die Plätze!');
   }
-  function raceStop(quiet) { const R = K.race; if (!R) return; K.race = null; hud.hidden = true; setLights(0); for (const b of bots) b.v.root.visible = false; if (!quiet) say('🏁 Rennen beendet', 1600); }
+  function raceStop(quiet, why) { const R = K.race; if (!R) return; K.race = null; K.stopWhy = why || ''; hud.hidden = true; setLights(0); for (const b of bots) b.v.root.visible = false; if (!quiet) say('🏁 Rennen beendet', 1600); }
   const progOf = b => b.lap * TR.len + b.s;
   function raceUpdate(dt, t) {
-    const R = K.race, v = R.v; if (P.veh !== v) { raceStop(); return; }
+    const R = K.race, v = R.v; if (P.veh !== v) { raceStop(false, 'veh'); return; }
     if (R.phase === 'count') { R.t -= dt; v.v = 0; const n = R.t > 2.2 ? 1 : R.t > 1.2 ? 2 : 3; if (n !== R.n) { R.n = n; snd('ding'); } setLights(n); hud.textContent = ['', '🔴', '🔴🔴', '🔴🔴🔴'][n] + ' Achtung …'; if (R.t <= 0) { R.phase = 'run'; setLights('go'); snd('fanfare'); say('🟢 LOS!', 1200); } }
     else {
       R.time += dt; if (R.time > 1.5) setLights(0);
       /* Spieler-Fortschritt auf der Strecke */
       /* Fortschritt: nächster Streckenpunkt; Runde zählt nur nach allen drei Kontrollpunkten (¼, ½, ¾) – Abkürzen über den Rasen zählt nicht */
       let f = idxOf(v.x, v.z, R.idx); if (f.d > 10) f = idxOf(v.x, v.z);
-      if (R.cp < 3 && Math.abs(f.i - (R.cp + 1) * N / 4) < 12) R.cp++;
+      while (R.cp < 3 && f.i >= (R.cp + 1) * N / 4 && f.i < (R.cp + 1) * N / 4 + N / 6) R.cp++; /* überfahren zählt, auch bei großen Sprüngen pro Bild */
       if (f.i < 40 && R.idx > N - 40 && R.cp >= 3) { R.lap++; R.cp = 0; if (R.lap >= 1 && R.lap < LAPS) { say('🏁 Runde ' + (R.lap + 1) + ' von ' + LAPS + (R.lap === LAPS - 1 ? ' – letzte Runde!' : ''), 1800); snd('ding'); } }
       R.idx = f.i;
       if (f.d > k.w / 2 + 1.5) v.v *= Math.max(0, 1 - 1.6 * dt);                                     /* neben der Strecke bremst der Rasen */
@@ -242,7 +242,7 @@ BI.createHuepf = function (G) {
     const R = K.race; R.done = true; const s = S(), stars = [5, 3, 2, 1][place - 1] || 1; s.races++; if (place === 1) s.wins++; s.best = s.best ? Math.min(s.best, place) : place; G.addStars(stars); earn('huepf_kart'); if (place === 1) earn('huepf_pokal');
     fx.burst(R.v.x, 2.5, R.v.z, 40, [BI.C.gold, BI.C.white, BI.C.pink, BI.C.blue], 6, 1.5, 30, 6); A.fanfare && A.fanfare(); persist();
     say(['🏆 1. PLATZ – Pokal für dich!', '🥈 2. Platz – super gefahren!', '🥉 3. Platz – stark!', '🏁 Ins Ziel gekommen – beim nächsten Mal klappt’s!'][place - 1] + ' +' + stars + ' ⭐', 4600); A.speak && A.speak(place === 1 ? 'Gewonnen!' : 'Im Ziel!');
-    setTimeout(() => { if (K.race === R) raceStop(true); }, 4000);
+    setTimeout(() => { if (K.race === R) raceStop(true, 'ziel'); }, 4000);
   }
   /* ===== Burg-Mutprobe gegen Felsenkönig Brocko ===== */
   const C = W.spots.huepfCastle, brocko = BI.makeBrocko(); brocko.root.position.set(C.x0 + 3.4, .9, C.z); brocko.root.rotation.y = Math.PI / 2; brocko.root.scale.setScalar(1.25); scene.add(brocko.root);
@@ -278,7 +278,7 @@ BI.createHuepf = function (G) {
   /* ===== Jede Runde ===== */
   let seen = false;
   K.update = function (dt, t) {
-    if (!near(60)) { if (K.race) raceStop(true); if (B.on) bossStop(false); return; }
+    if (!near(60)) { if (K.race) raceStop(true, 'weg'); if (B.on) bossStop(false); return; }
     const s = S(); if (!seen && near(0) && Math.hypot(P.x - H.x, P.z - H.z) < H.R) { seen = true; if (!s.visit) { s.visit = 1; earn('huepf_insel'); persist(); say('🍄 Willkommen im Hüpfland! Pia am Platz erklärt dir alles.', 3600); } }
     /* Sternblöcke: Kopfstoß beim Springen (zu Fuß) oder auf Dino Tupfi */
     const v = P.veh, dv = v && v.type === 'dino' ? v : null;
