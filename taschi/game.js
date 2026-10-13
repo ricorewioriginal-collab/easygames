@@ -69,6 +69,36 @@ const places=[house(14,10,'Professor Ulmes Labor',0xf8e5c2),house(-18,10,'Heilha
 // Arena monuments: 8 stations around the valley, visible and approachable.
 const gyms=[];GYMS.forEach((g,i)=>{const x=-51+(i%4)*34,z=-51+Math.floor(i/4)*31;const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);cylinder(group,0,.8,0,2.6,3.2,1.6,stone);cylinder(group,0,3,0,1.1,1.7,3.5,mat([0x9199b5,0x66addf,0xe4b95c,0x8cc77b][i%4]));ball(group,0,5,0,1.25,mat(0xffd96a,.3));gyms.push({x,z,label:g[0],gym:i})});
 // Additional villages and cave landscapes; cave sites are explorable above-ground rock caverns.
+
+const villageTasks={
+ 'Moosbach':{type:'pflanze',person:'Waldhüterin Mira',story:'Die Pflanzen-Taschis bewahren unsere Waldwege. Zeige mir zwei verschiedene Pflanzen-Freunde.'},
+ 'Korallendorf':{type:'wasser',person:'Fischerin Nele',story:'Das Meer erzählt Geschichten. Entdecke und fange zwei verschiedene Wasser-Taschis.'},
+ 'Nebelau':{type:'geist',person:'Forscherin Noa',story:'Hier schweben sanfte Geister herum. Bringe zwei verschiedene Geist-Taschis mit.'},
+ 'Sternental':{type:'feuer',person:'Schmiedin Sira',story:'Unser Schmiedefeuer lebt von Mut. Zeige mir zwei verschiedene Feuer-Taschis.'},
+ 'Kristallhain':{type:'gestein',person:'Bergführer Bruno',story:'Die Kristalle summen. Finde und fange zwei verschiedene Fels-Taschis.'},
+ 'Winddorf':{type:'flug',person:'Pilotin Liv',story:'Ich möchte zwei Flug-Taschis sehen, die über den Hügeln leben.'}
+};
+function villageVisit(v){
+ const task=villageTasks[v.name],n=Object.keys(save.dex).filter(id=>save.dex[id]===2&&SPEC[id]?.type===task.type).length;
+ save.quests ||= {};const completed=!!save.quests[v.name];
+ const options=[
+  ['Im Dorf ausruhen',()=>{save.team.forEach(m=>m.hp=maxHp(m));close();toast('Deine Taschis sind ausgeruht!')}],
+  ['Wiese erkunden',()=>{close();findWild()}],
+ ];
+ if(!completed&&n>=2)options.unshift(['Aufgabe abschließen',()=>{save.quests[v.name]=true;save.balls+=8;save.potions+=4;stats();dialog('Nebenaufgabe erfüllt!',task.person+' schenkt dir 8 Taschibälle und 4 Tränke. Danke für deine Hilfe!',choice())}]);
+ options.push(['Weiterziehen',close]);
+ dialog('Willkommen in '+v.name,'<p><b>'+task.person+'</b>: '+task.story+'</p><p>Fangfortschritt: '+n+'/2 · '+(completed?'✓ Auftrag abgeschlossen':'Belohnung: 8 Taschibälle, 4 Tränke')+'</p>',options);
+}
+function townLabel(title,x,z,height=4){
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ ctx.fillStyle='#123148dd';ctx.beginPath();ctx.roundRect(12,18,488,92,21);ctx.fill();
+ ctx.strokeStyle='#fff7e0';ctx.lineWidth=5;ctx.stroke();
+ ctx.font='bold 39px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff9e4';ctx.fillText(title,256,64,460);
+ const tex=new THREE.CanvasTexture(canvas);const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+ sprite.position.set(x,height,z);sprite.scale.set(7.8,1.95,1);scene.add(sprite);
+}
+
 const villages=[
  {name:'Moosbach',x:-37,z:13,c:0xa4d89d},
  {name:'Korallendorf',x:36,z:25,c:0x86c9df},
@@ -77,7 +107,7 @@ const villages=[
  {name:'Kristallhain',x:-8,z:41,c:0x9adcd5},
  {name:'Winddorf',x:9,z:-50,c:0xe0cc96}
 ];
-for(const v of villages){
+for(const v of villages){townLabel(v.name,v.x,v.z,7);
  for(let i=0;i<3;i++){
  const h=new THREE.Group();h.position.set(v.x+(i-1)*5,0,v.z+(i%2)*5);scene.add(h);
  box(h,0,1.25,0,3.7,2.5,3.5,mat(v.c));const roofMesh=mesh(h,new THREE.ConeGeometry(3.25,1.9,4),roof,0,3.3,0);roofMesh.rotation.y=Math.PI/4;
@@ -89,7 +119,7 @@ const caves=[
  {name:'Flüsterhöhle',x:-51,z:0}, {name:'Bernsteingrotte',x:49,z:0},
  {name:'Kristallgrotte',x:-52,z:49},{name:'Mondhöhle',x:52,z:48}
 ];
-for(const cave of caves){
+for(const cave of caves){townLabel(cave.name,cave.x,cave.z,7);
  const group=new THREE.Group();group.position.set(cave.x,0,cave.z);scene.add(group);
  for(let j=0;j<9;j++){const angle=j/9*Math.PI*2;const rr=4.4+(j%3)*.35;
  const rock=mesh(group,new THREE.DodecahedronGeometry(2.5+(j%3)*.55,0),mat(j%2?0x728797:0x536c75),Math.cos(angle)*rr,2,Math.sin(angle)*rr);rock.rotation.set(j*.4,j*.6,j*.2)}
@@ -286,7 +316,7 @@ function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine
 function mapView(){dialog('Reisekarte','<p>Die Reiseorte sind in der 3D-Welt an ihren Positionen markiert. Erkunde mit dem Joystick oder den Pfeiltasten.</p>'+[...gyms.map((p,i)=>({...p,name:(i+1)+'. Arena: '+GYMS[i][0]})),...villages,...caves,...places].map(p=>'<p>📍 '+(p.name||p.label)+' – '+Math.round(Math.hypot(p.x-player.position.x,p.z-player.position.z))+' m</p>').join(''),[['Abenteuerbuch',journalView],['Zurück',close]])}
 function recordVisit(place){save.visited ||= {};save.visited[place.name||place.label]=true;persist()}
 
-function interact(){if(locked)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.village){dialog('Willkommen in '+near.name,'<p>Ein Dorf der Taschi-Region. Erkunde die Umgebung und entdecke neue Taschis!</p>',[['Erkunden',()=>{close();findWild()}],['Ausruhen',()=>{save.team.forEach(m=>m.hp=maxHp(m));close();toast('Dein Team hat sich ausgeruht!')}],['Weiterziehen',close]])}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){dialog('Fangladen','<p>Reiseausrüstung auffüllen</p>',[['5 Taschibälle kaufen · gratis',()=>{save.balls+=5;close()}],['3 Tränke kaufen · gratis',()=>{save.potions+=3;close()}],['Schließen',close]])}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
+function interact(){if(locked)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}if(insideCave){caveInteract(near);return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.village){villageVisit(near)}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){dialog('Fangladen','<p>Reiseausrüstung auffüllen</p>',[['5 Taschibälle kaufen · gratis',()=>{save.balls+=5;close()}],['3 Tränke kaufen · gratis',()=>{save.potions+=3;close()}],['Schließen',close]])}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
 $('team').onclick=team;$('dex').onclick=dex;$('map').onclick=mapView;$('menu').onclick=mainMenu;$('interact').onclick=interact;
 const keys=new Set();addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.key.toLowerCase()==='e'&&!e.repeat)interact();if(e.key==='Escape'&&locked&&!combat)close();else if(e.key==='Escape'&&!locked)mainMenu()});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
 const joy=$('joy'),nub=$('nub');let joyX=0,joyY=0;function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/44);joyX=x/44/mag;joyY=y/44/mag;nub.style.transform='translate('+(joyX*40)+'px,'+(joyY*40)+'px)'}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);pointer(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))pointer(e)});function resetJoy(){joyX=joyY=0;nub.style.transform=''}joy.addEventListener('pointerup',resetJoy);joy.addEventListener('pointercancel',resetJoy);
