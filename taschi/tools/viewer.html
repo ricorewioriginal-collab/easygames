@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TASCHI Asset-Viewer</title>
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden;font:14px system-ui;color:#fff}#c{width:100vw;height:100vh;display:block}#info{position:fixed;left:8px;top:8px;background:#0008;padding:6px 10px;border-radius:8px;white-space:pre}</style>
+</head><body><canvas id="c"></canvas><div id="info">lädt …</div>
+<script src="../../bunte-insel/vendor/three.min.js"></script>
+<script>addEventListener('error', e => window.__error = e.message);</script><script type="module">
+import { THREE } from '../src/engine/three.js';
+import { Renderer, PROFILES } from '../src/engine/renderer.js';
+import { buildLayout } from '../src/logic/layout.js';
+import { buildRegionMap } from '../src/world/region-map.js';
+import { Sky } from '../src/engine/sky.js';
+import { globalUniforms } from '../src/engine/materials.js';
+import { createCreature, displayScale } from '../src/engine/creatures.js';
+import { createCharacter, PLAYER_PRESETS, lookForRole } from '../src/engine/characters.js';
+import { SPECIES_IDS } from '../src/data/species.js';
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'map';
+const R = new Renderer(document.getElementById('c'), q.get('q') || 'medium');
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xcfeaf2, PROFILES[R.profileName].drawDistance * 0.45, PROFILES[R.profileName].drawDistance * 1.25);
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 800);
+R.onResize = (w, h) => { camera.aspect = w / h; camera.updateProjectionMatrix(); };
+R.resize();
+const sky = new Sky(scene, PROFILES[R.profileName]);
+const info = document.getElementById('info');
+let map = null, things = [];
+const cam = (q.get('cam') || '0,30,70,0,0,10').split(',').map(Number);
+camera.position.set(cam[0], cam[1], cam[2]);
+const target = new THREE.Vector3(cam[3], cam[4], cam[5]);
+camera.lookAt(target);
+const time = Number(q.get('time') || 600);
+async function main() {
+  if (mode === 'map') {
+    const r = Number(q.get('region') || 0);
+    const t0 = performance.now();
+    const L = buildLayout(r);
+    map = await buildRegionMap(L, { quality: PROFILES[R.profileName], save: { flags: {}, chests: {} } });
+    scene.add(map.root);
+    sky.setPalette(map.palette, ['meadow-night', 'bay-night'].includes(L.biome));
+    sky.setWeather(q.get('weather') || 'clear');
+    info.textContent = 'Region ' + r + ' ' + L.biome + ' build ' + Math.round(performance.now() - t0) + 'ms';
+  } else if (mode === 'creatures') {
+    sky.setPalette({ sky: [0x7fc4ec, 0xe7f6ff], fog: 0xcfeaf2, grass: 0x6fb35a }, false);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshLambertMaterial({ color: 0x7fbf6a })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+    const start = Number(q.get('start') || 0), count = Number(q.get('count') || 24), cols = 6;
+    for (let i = 0; i < count && start + i < SPECIES_IDS.length; i++) {
+      const id = SPECIES_IDS[start + i];
+      const c = createCreature(id);
+      c.root.scale.setScalar(displayScale(id, 'battle') * 0.8);
+      c.root.position.set((i % cols - (cols - 1) / 2) * 3.2, 0, -Math.floor(i / cols) * 3.6);
+      scene.add(c.root); things.push(c);
+    }
+    camera.position.set(0, 9, 12); camera.lookAt(0, 0.5, -5);
+    info.textContent = 'Taschis ' + start + '–' + (start + count - 1);
+  } else if (mode === 'chars') {
+    sky.setPalette({ sky: [0x7fc4ec, 0xe7f6ff], fog: 0xcfeaf2, grass: 0x6fb35a }, false);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshLambertMaterial({ color: 0x7fbf6a })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+    const looks = [...Object.values(PLAYER_PRESETS), ...['forscher', 'haendler', 'trainer', 'reisender', 'kind', 'familie', 'handwerker', 'professor', 'nurse', 'grunt', 'varga', 'selma', 'brix', 'twin'].map((r, i) => lookForRole(r, 'N' + i))];
+    const anims = ['idle', 'walk', 'run', 'talk', 'wave', 'cheer', 'throw', 'defeat'];
+    looks.forEach((l, i) => {
+      const c = createCharacter(l, { outline: true });
+      c.root.position.set((i % 6 - 2.5) * 1.6, 0, -Math.floor(i / 6) * 2.2);
+      const a = anims[i % anims.length];
+      if (a === 'walk') c.setLocomotion(2); else if (a === 'run') c.setLocomotion(6); else if (a === 'talk') c.setTalking(true); else if (a !== 'idle') c.hold(a);
+      scene.add(c.root); things.push(c);
+    });
+    camera.position.set(0, 2.6, 6.5); camera.lookAt(0, 0.9, -1.5);
+    info.textContent = 'Figuren';
+  }
+  window.__ready = true;
+}
+const clock = new THREE.Clock();
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, clock.getDelta());
+  globalUniforms.uTime.value += dt;
+  for (const t of things) t.update(dt);
+  sky.update(dt, time, target, camera);
+  if (map) map.update(globalUniforms.uTime.value, dt, camera, camera.position);
+  R.adapt(dt);
+  R.render(scene, camera);
+  if (map) info.textContent = info.textContent.split('\n')[0] + '\nfps ' + R.stats.fps + ' calls ' + R.stats.calls + ' tris ' + R.stats.tris;
+}
+main().catch(e => { window.__error = e.message; info.textContent = 'Fehler: ' + e.message + '\n' + e.stack; console.error(e); });
+loop();
+</script></body></html>
