@@ -4,7 +4,7 @@
 //   multi  = Mehrspieler/Duell/Splitscreen auf einem Gerät
 //   tvParam = Das Spiel kennt den Parameter ?tv (öffnet direkt die Lobby mit QR-Code für den Fernseher)
 window.EASYGAMES_MODES = {
-  'anmacha-kart': { pad: true, tvParam: true },
+  'anmacha-kart': { pad: true, multi: true, online: true, tvParam: true },
   'anmacha-quiz': { pad: true, multi: true },
   'anmacha-koffer-dealer': { pad: true },
   'anmacha-hoererwahl': { pad: true },
