@@ -222,13 +222,23 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy, mit Freunden auf mehreren Handys (jeder mit eigenem Rennbild) oder am TV/PC mit Handys als Controller.</p>
     <div class="mbtns"><button class="big" id="bSolo" disabled>LADEN …</button><button class="big alt" id="bMulti" disabled>MEHRSPIELER</button></div>
     <button class="sumc" id="selSum" type="button"></button>
-    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button><button class="ghost" id="bScan">📷 QR scannen</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div>
+    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button></div><div class="row"><button class="big alt" id="bTv">📺 TV-MODUS</button></div>
     <div class="info" style="font-size:13px">👥 Mehrspieler: Auf einem Handy/PC das Rennen eröffnen, auf den anderen per Code beitreten. Jeder kann sein eigenes Rennbild sehen. 📺 TV-Modus ist optional.</div>
     <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
     <div class="info" id="padInfo" hidden></div>
     <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Auf TV/PC können mehrere Kameras im Splitscreen angezeigt werden; auf Handys ist auch ein eigenes Rennbild möglich.</div></details>
     <div class="info" id="loadInfo"></div>
     <a class="back" id="backLink" href="../">← Alle Spiele</a>
+  </section>
+  <section class="mview" id="mMulti" hidden>
+    <h2>👥 MEHRSPIELER</h2>
+    <p class="sub">Gemeinsam fahren – auch ohne Fernseher. Wähle, was du machen möchtest.</p>
+    <div class="cards">
+      <div class="card"><h3>RENNEN ERÖFFNEN</h3><p class="sub">Dieses Handy, Tablet oder der PC eröffnet den Raum. Freunde verbinden sich und fahren auf ihrem eigenen Bildschirm.</p><button class="big" id="multiHost">🏁 Rennen erstellen</button></div>
+      <div class="card"><h3>BEI FREUNDEN MITFAHREN</h3><p class="sub">Scanne den QR-Code eines Freundes oder gib den vierstelligen Raumcode ein.</p><div class="row"><button class="big alt" id="bScan">📷 QR-CODE SCANNEN</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div></div>
+      <div class="card"><h3>GEMEINSAM AN EINEM BILDSCHIRM</h3><p class="sub">Lokaler Splitscreen mit Tastatur und/oder verbundenen Gamepads. Keine QR-Kopplung erforderlich.</p><button class="ghost" id="multiLocal">🎮 Lokalen Splitscreen öffnen</button></div>
+    </div>
+    <button class="ghost" id="multiBack">← Hauptmenü</button>
   </section>
   <section class="mview" id="mSetup" hidden>
     <h2 id="setTitle">RENNEN EINRICHTEN</h2>
@@ -275,7 +285,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="chars.js"></script>
 <script src="track.js"></script>
 <script src="sim.js"></script>
-<script src="game.js?v=2"></script>
+<script src="game.js?v=20261013-qr2"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 </body>
 </html>
