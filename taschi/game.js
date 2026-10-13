@@ -371,7 +371,7 @@ function chapterDialog(){
  dialog('Kapitel '+(chapterIndex()+1)+' · '+c[0],'<p>'+c[1]+'</p><p>Aktuelle Aufgabe: '+(save.badges===16?'Bestehe die fünf Prüfungen der Sternenliga.':'Fordere '+GYMS[save.badges][0]+' heraus und gewinne das nächste Licht-Siegel.')+'</p>',[['Weiter',close],['Reisekarte',mapView]]);
 }
 function directionToNext(){
- if(save.badges>=16)return 'Alle 16 Licht-Siegel gesammelt';
+ if(save.badges>=16)return save.league>=5?'Sternenmeister · Region abgeschlossen':'Sternenliga · '+(save.league||0)+'/5 Meisterprüfungen (☰ Menü)';
  const g=gyms[save.badges],dx=g.x-player.position.x,dz=g.z-player.position.z,dist=Math.round(Math.hypot(dx,dz));
  const ang=Math.atan2(dx,-dz);
  const dirs=['N','NO','O','SO','S','SW','W','NW'];
@@ -384,14 +384,14 @@ const journal=[
  ['Der erste Fang','Fange ein wildes Taschi im hohen Gras.'],
  ['Die sechzehn Lichter','Fordere die 16 Arena-Meister der Reihe nach heraus.'],
  ['Reise durch Sonnenhain','Entdecke die sechs Dörfer und vier Höhlen.'],
- ['Der Sternengipfel','Besiege Großmeisterin Aurelia und werde Taschi-Meister.']
+ ['Der Sternengipfel','Sammle 16 Licht-Siegel und besiege anschließend alle fünf Prüfungen der Sternenliga.']
 ];
 function questStatus(){const caught=Object.values(save.dex).filter(v=>v===2).length;return [
  save.team.length>0,
  caught>=2,
  save.badges>=16,
  (save.visited&&Object.keys(save.visited).length>=10)||false,
- save.badges>=16
+ save.badges>=16 && save.league>=5
 ]}
 
 function exportSave(){
