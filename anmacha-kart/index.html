@@ -283,6 +283,40 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 #mTitle .mbtns{margin-top:24px}
 #mTitle .info:not(#loadInfo):not(#padInfo){font-size:13px!important}
 @media(max-width:620px){#mSetup .console-options-grid{grid-template-columns:1fr;gap:0}#mSetup .console-choices{gap:10px}#mSetup .console-choices button{min-height:100px}#mSetup .console-stepper{gap:4px}#mSetup .console-footer{padding:8px;gap:5px}#mSetup .console-footer .big{min-width:116px}#mSetup .console-footer .ghost{padding:9px}}
+
+/* Mobile layout correction: no horizontal document overflow or covered selection controls. */
+#menu,#mBox,#mSetup,#mSetup .console-pane{box-sizing:border-box;max-width:100%;min-width:0}
+#menu .box.wide{width:100%;max-width:min(1100px,100%);min-width:0}
+#mSetup{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+#mSetup .console-head,#mSetup .console-pane,#mSetup .console-footer,#mSetup .console-help{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#mSetup .console-pane>*{max-width:100%;min-width:0;box-sizing:border-box}
+#mSetup .console-showroom .showcase{width:100%;max-width:100%;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,.7fr);box-sizing:border-box}
+#mSetup .console-showroom .showcase-stage,#mSetup .console-showroom .showcase-info{min-width:0;max-width:100%;box-sizing:border-box}
+#mSetup .showcase-stage canvas{max-width:100%;width:100%!important;display:block}
+#mSetup .console-showroom .chars,#mSetup .console-showroom .kcards{width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-x:auto;overscroll-behavior-x:contain}
+#mSetup .console-showroom .chars button,#mSetup .console-showroom .kcards button{box-sizing:border-box;min-width:0}
+#mSetup .console-footer{position:relative;bottom:auto;flex-shrink:0;margin:18px auto 12px;padding:10px;gap:8px}
+#mSetup .console-footer button{min-width:0;white-space:normal;line-height:1.1}
+#mSetup .console-footer .big{height:auto;min-height:54px;flex:1;max-width:290px;padding:10px}
+#mSetup .console-footer .ghost{flex:0 1 auto;max-width:125px}
+#mSetup .console-progress{flex:0 0 auto;white-space:nowrap}
+@media(max-width:700px){
+ #menu{padding:12px 10px calc(18px + env(safe-area-inset-bottom,0px))}
+ #mSetup .console-head{margin-bottom:10px}
+ #mSetup .console-showroom .showcase{display:flex;flex-direction:column;gap:9px;padding:10px;border-radius:19px;margin:2px auto 12px}
+ #mSetup .console-showroom .showcase-stage{width:100%;height:min(45vh,320px);min-height:225px;flex:none}
+ #mSetup .console-showroom .showcase-info{width:100%;align-items:center;text-align:center;padding:4px 8px 9px;gap:4px}
+ #mSetup .console-showroom .showcase-info strong{font-size:clamp(18px,5.4vw,28px)}
+ #mSetup .console-showroom .chars{gap:8px;padding:5px 2px 12px}
+ #mSetup .console-showroom .chars button{flex-basis:104px;min-height:100px}
+ #mSetup .console-showroom .kcards{padding:5px 2px 14px}
+ #mSetup .console-showroom .kcards button{flex-basis:min(66vw,235px);min-height:170px}
+ #mSetup .console-footer{margin:13px auto 10px;border-radius:16px}
+ #mSetup .console-footer .ghost{font-size:12px;padding:11px 10px;max-width:102px}
+ #mSetup .console-footer .big{font-size:clamp(14px,4vw,19px);min-height:52px}
+ #mSetup .console-progress{font-size:12px;letter-spacing:0}
+ #mSetup .console-stepper{width:100%}
+}
 </style>
 </head>
 <body>
