@@ -21,12 +21,12 @@ Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** ein
 - Handy: Touch-Joystick und Aktionsschaltflächen.
 - **Team**, **Taschidex**, **Karte**, **Pause** als sichtbare Schaltflächen.
 - Pause: Reisekarte, Abenteuerbuch, Geschichte, Spielstand als JSON exportieren oder importieren.
-- Automatisches lokales Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
+- Drei wählbare lokale Speicherplätze und automatisches Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
 - Import prüft Dateigröße und Spielstandsformat; beschädigte Eingaben werden abgewiesen.
 
 ## Spielsysteme
 
-- 17 grundlegende Taschi-Arten plus **192 deterministisch generierte Regionalformen**, zusammen 209 Art-/Formeinträge im Taschidex. Die Regionalformen variieren Farbe, Werte und prozedurale 3D-Details, nutzen aber gemeinsame Grundkörper. Das sind **keine 209 einzeln modellierten Original-Kreaturen**.
+- 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
 - Acht Elementtypen und elementbasierte Wirksamkeiten, Angriffs- und Verteidigungswerte, EP, Levelaufstiege und einige Entwicklungen.
 - Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Tränke.
 - 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.
@@ -43,4 +43,4 @@ Die Welt nutzt eigene Kunst-/Figurenansätze. Keine Pokémon-Assets oder markenr
 
 ## Entwicklung
 
-Die Spielmechanik ist aktuell in `game.js` gebündelt und sollte mittelfristig modularisiert und mit Browser- und Gerätetests abgesichert werden. Bunte Insel darf dabei nicht überschrieben werden. Ein zusätzliches Vite-Build-System ist **noch nicht** eingerichtet; die vorhandenen Dateien sind direkt statisch auslieferbar.
+Die Spielmechanik ist aktuell in `game.js` gebündelt und sollte mittelfristig modularisiert und mit Browser- und Gerätetests abgesichert werden. Bunte Insel darf dabei nicht überschrieben werden. Ein optionales **Vite-Entwicklungs- und Build-System** ist jetzt in `taschi/package.json` und `taschi/vite.config.mjs` vorhanden. Der ursprüngliche statische GitHub-Pages-Einstieg bleibt erhalten.\n\n```bash\ncd taschi\nnpm install\nnpm run dev     # Öffnet /taschi/\nnpm test        # Daten-/Syntaxregression (kein Browsertest)\nnpm run build   # Erzeugt dist/taschi plus lokalen Three.js-Vendor\n```\n\n**Wichtig:** Die oben genannten npm-Skripte wurden in dieser Sitzung nicht auf einem Build-Rechner ausgeführt. WebGL, Kamera, Ladezeiten und Mobilbedienung müssen weiterhin per Browser-/Gerätetest bestätigt werden.
