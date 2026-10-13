@@ -90,7 +90,7 @@ const View = (() => {
     // Reklametafeln mit Sender-Logos
     const nb = 16; for (let k = 0; k < nb; k++) { const i = Math.floor(tr.N * (k + 0.3) / nb), s = k % 2 ? 1 : -1, nx = tr.Nm[i * 2], nz = tr.Nm[i * 2 + 1], lid = logos.length ? logos[k % logos.length].idx : 0, g = new T.Group(); g.position.set(tr.P[i * 2] + nx * s * (tr.wallD + 5), 0, tr.P[i * 2 + 1] + nz * s * (tr.wallD + 5)); g.rotation.y = Math.atan2(-nx * s, -nz * s);
       [-2.6, 2.6].forEach(x => { const p = new T.Mesh(new T.BoxGeometry(0.5, 7, 0.5), lam('#1a1d33')); p.position.set(x, 3.5, 0); g.add(p); }); const bd = new T.Mesh(new T.BoxGeometry(6.4, 4.2, 0.4), lam('#0a0f2a')); bd.position.y = 6; g.add(bd); const lg = new T.Mesh(new T.PlaneGeometry(4, 4), logoMat(lid)); lg.position.set(0, 6, 0.22); g.add(lg); world.add(g); }
-    (SC[th] || SC.wiese)(d);
+    if (d.mechanic) themedLandscape(d); else (SC[th] || SC.wiese)(d);
     // Sieben zusätzliche Themen: eigenständige, ressourcenschonende 3D-Silhouetten am Streckenrand.
     if (d.mechanic) {
       const palette = {
@@ -189,6 +189,59 @@ const View = (() => {
   }
 
   // ------------------------------------------------------------------ Kulissen je Welt
+  // Dedizierte Kulissen statt wiederverwendeter Basiswelt: jede Themenwelt bekommt eine eigene Skyline.
+  function themedLandscape(d) {
+    const type=d.mechanic, seed=['portal','crystal','safari','ruins','dragon','shards','island'].indexOf(type);
+    const box=new T.BoxGeometry(1,1,1), cone=new T.ConeGeometry(1,1,6), sphere=new T.IcosahedronGeometry(1,1);
+    const cyl=new T.CylinderGeometry(1,1,1,8), torus=new T.TorusGeometry(1,0.17,5,20);
+    const mat=(col,glow=0)=>new T.MeshLambertMaterial({color:col,emissive:col,emissiveIntensity:glow});
+    const m1=mat(d.props[0],0.10),m2=mat(d.props[1],0.13),m3=mat(d.props[2],0.06),stone=mat(d.wall[0],0.02);
+    function add(parent,geometry,material,x,y,z,sx,sy,sz){const o=new T.Mesh(geometry,material);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o;}
+    // Instanzierte Kulissenobjekte in drei Tiefenlagen, mit eigener Silhouette je Welt.
+    for(let j=0;j<82;j++){
+      const i=Math.floor((j+0.38)*tr.N/82)%tr.N,side=j%2?1:-1;
+      const depth=tr.wallD+22+(j%4)*16, x=tr.P[i*2]+tr.Nm[i*2]*side*depth,z=tr.P[i*2+1]+tr.Nm[i*2+1]*side*depth;
+      const g=new T.Group();g.position.set(x,0,z);
+      const h=8+(j*7+seed*11)%18;
+      if(type==='portal'){
+        add(g,cyl,stone,0,h/2,0,2,h,2);
+        add(g,torus,m1,0,h+4,0,5,6,5).rotation.y=j*0.2;
+        add(g,sphere,m2,0,h+4,0,1.7,1.7,1.7);
+      }else if(type==='crystal'){
+        for(let q=0;q<4;q++){const o=add(g,cone,q%2?m2:m1,(q-1.5)*4,h*(0.6+q*0.1),q%2*4,4,h*(1.2+q*0.2),4);o.rotation.z=(q-1.5)*0.12;}
+        add(g,sphere,m3,0,h*1.6,0,4,2,4);
+      }else if(type==='safari'){
+        add(g,cyl,stone,0,h/2,0,1.8,h,1.8);
+        add(g,sphere,j%2?m1:m2,0,h+5,0,12,7,11);
+        if(j%4===0) add(g,sphere,m3,8,3,0,4,3,4);
+      }else if(type==='ruins'){
+        [-1,1].forEach(q=>add(g,box,stone,q*6,h/2,0,3,h,3));
+        add(g,box,m1,0,h,0,15,2.5,4);
+        if(j%3===0) add(g,cone,m3,0,h+7,0,5,12,5);
+      }else if(type==='dragon'){
+        add(g,cone,stone,0,h*1.5,0,15,h*3,15);
+        add(g,cone,m1,0,h*3.1,0,6,h,6);
+        if(j%3===0) add(g,sphere,m2,7,h*2,3,3,3,3);
+      }else if(type==='shards'){
+        for(let q=0;q<3;q++){const o=add(g,cone,q%2?m2:m1,(q-1)*7,h*(0.8+q*0.2),q*4,4,h*(1.6+q*0.3),4);o.rotation.z=0.25*(q-1);}
+        if(j%4===0) add(g,torus,m3,0,h*2,0,7,7,7).rotation.y=0.6;
+      }else if(type==='island'){
+        if(j%3===0){add(g,box,stone,0,h*0.35,0,12,h*0.7,10);add(g,cone,m1,0,h*0.9,0,10,h*0.65,9);}
+        else{add(g,cyl,stone,0,h*0.6,0,1.4,h*1.2,1.4);add(g,sphere,m2,0,h*1.35,0,8,3,8);}
+      }
+      world.add(g);
+    }
+    if(type==='island') {
+      // Weite türkisfarbene Wasserfläche statt der Strand-Vorlage.
+      const water=new T.Mesh(new T.PlaneGeometry(3000,3000),new T.MeshLambertMaterial({color:0x3cc9cf,transparent:true,opacity:0.48}));
+      water.rotation.x=-Math.PI/2;water.position.y=-0.065;world.add(water);
+    }
+    if(type==='shards'||type==='portal'){
+      // Leuchtende übergroße Himmelskörper, weit von der Strecke entfernt.
+      const orb=new T.Mesh(sphere,mat(type==='shards'?'#f181e5':'#ffd5fa',0.25));
+      orb.position.set(CX+R0*0.55,130,CZ-R0*0.32);orb.scale.set(48,48,48);world.add(orb);
+    }
+  }
   const SC = {
     wiese(d) {
       const tl = spots(240, 10, 0, R0 + 380); const h = tl.map(() => rr(6, 15));
