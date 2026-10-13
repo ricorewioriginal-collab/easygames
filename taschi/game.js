@@ -373,6 +373,16 @@ function updateBattleScene(){
 }
 
 const player=new THREE.Group();scene.add(player);ball(player,0,1.35,0,.43,mat(0xf2caad));const torso=box(player,0,.84,0,.7,.9,.4,mat(0x294c82));box(player,-.21,.22,0,.25,.47,.29,mat(0x333f62));box(player,.21,.22,0,.25,.47,.29,mat(0x333f62));const hat=ball(player,0,1.72,0,.46,mat(0xd85f4a));hat.scale.y=.3;player.position.set(save.x,0,save.z);
+
+/* Adventurer design: face, hair, backpack, clothing details and gear. */
+const skin=mat(0xf2c5a7),hairMat=mat(0x483831),cloth=mat(0xf3e3cb),pack=mat(0xbe764a);
+const hairCap=ball(player,0,1.53,-.11,.45,hairMat);hairCap.scale.set(1,.52,.75);
+for(const side of [-1,1]){ball(player,side*.155,1.43,.399,.052,mat(0x24384c,.25));ball(player,side*.157,1.445,.441,.018,mat(0xffffff,.15))}
+box(player,0,.87,-.35,.68,.8,.26,pack);
+box(player,0,.89,-.5,.34,.28,.06,cloth);
+for(const side of [-1,1])box(player,side*.38,.89,.08,.13,.7,.22,mat(0xf1d19c));
+box(player,0,.88,.24,.23,.28,.03,mat(0xffd47c));
+
 const follower=new THREE.Group();scene.add(follower);let currentFollower=null;function updateFollower(){follower.clear();if(save.team.length){currentFollower=creature(save.team[0].id,.6);follower.add(currentFollower)}}updateFollower();
 function stats(){ $('badge').textContent='✦ '+save.badges+'/16';$('count').textContent='◉ '+(save.team.length+save.box.length);$('coins').textContent='★ '+save.coins;$('location').textContent=save.badges===16?'Taschi-Meister':'Sonnenhain';persist()}
 function toast(t,sec=3){$('message').textContent=t;$('message').style.display='block';toastUntil=performance.now()+sec*1000}
