@@ -19,7 +19,20 @@ const Sim = (() => {
       if (kt.human) S.humans++; S.karts.push(kt);
     });
     if (S.items) for (let s = 0; s < 6; s++) for (let o = -1; o <= 1; o++) { const f = N * (s + 0.5) / 6; tr.at(f, o * 5.5, tp); S.boxes.push({ x: tp.x, z: tp.z, cd: 0, f }); }
-    [0.22, 0.47, 0.72, 0.9].forEach(fr => { tr.at(N * fr, 0, tp); S.pads.push({ x: tp.x, z: tp.z, f: N * fr, th: Math.atan2(tp.tx, tp.tz) }); });
+    // Boost-Linien in Kurvenausgängen und auf langen Geraden. Mehrere Spuren fördern Überholmanöver.
+    [0.12, 0.24, 0.36, 0.49, 0.61, 0.74, 0.86, 0.95].forEach((fr, idx) => {
+      const lane = idx % 3 === 0 ? -4.2 : idx % 3 === 1 ? 4.2 : 0;
+      tr.at(N * fr, lane, tp);
+      S.pads.push({ x: tp.x, z: tp.z, f: N * fr, th: Math.atan2(tp.tx, tp.tz) });
+    });
+    // Fest platzierte Hindernisse: auf allen Strecken, mit freier Ausweichspur.
+    // In Zeitfahren ohne Items bleibt die Ideallinie für Bestzeiten frei.
+    if (S.items) for (let idx = 0; idx < 9; idx++) {
+      const fr = (idx + 0.63) / 10;
+      const lane = idx % 2 ? 5.0 : -5.0;
+      tr.at(N * fr, lane, tp);
+      S.hazards.push({ kind: idx % 3 === 0 ? 'mine' : 'banana', x: tp.x, z: tp.z, t: 1e9, owner: -1, arm: -1, fixed: true });
+    }
     return S;
   }
   const emit = (S, e) => S.events.push(e);
@@ -171,7 +184,7 @@ const Sim = (() => {
     // Fallen: Störsignal / Bananenschale
     for (let i = S.hazards.length - 1; i >= 0; i--) {
       const h = S.hazards[i]; h.t -= dt; h.arm -= dt; let used = h.t <= 0; const rr = h.kind === 'banana' ? 3.2 : 5;
-      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); used = true; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } });
+      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } });
       if (used) S.hazards.splice(i, 1);
     }
     // Geschosse: Raketen (zielsuchend) und Steine (prallen von Wänden ab)
