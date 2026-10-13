@@ -131,7 +131,9 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
       ball.position.set(wx, H(L.dome.podium.x, L.dome.podium.z) + 1.35, wz);
       ball.rotation.y = L.dome.yaw;
       root.add(ball); balls.push(ball);
-      interact.push({ id: 'starter:' + i, kind: 'starter', idx: i, species: id, x: wx + Math.sin(L.dome.yaw) * 1.6, z: wz + Math.cos(L.dome.yaw) * 1.6, r: 1.0, label: 'Taschiball', prompt: 'Untersuchen' });
+      // interaction points fan out around the podium so each ball has its own spot
+      const fa = L.dome.yaw + (i - 1) * 0.75;
+      interact.push({ id: 'starter:' + i, kind: 'starter', idx: i, species: id, x: L.dome.podium.x + Math.sin(fa) * 2.3, z: L.dome.podium.z + Math.cos(fa) * 2.3, r: 0.9, label: ['Roter', 'Blauer', 'Grüner'][i] + ' Taschiball', prompt: 'Untersuchen' });
     });
     dynamic.push({ kind: 'starterBalls', balls });
     animators.push((t) => balls.forEach((b, i) => { b.visible = !(save?.flags?.starterChosen && save.flags.starter === ['glutzahn', 'plaetscher', 'samenling'][i]); b.position.y = H(L.dome.podium.x, L.dome.podium.z) + 1.35 + Math.sin(t * 2 + i) * 0.04; }));

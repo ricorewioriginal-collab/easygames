@@ -23,7 +23,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     await shot('02-creator');
     await page.getByText('So starte ich').click();
     step('Charaktererstellung');
-    for (let i = 0; i < 4; i++) { await page.waitForTimeout(250); await page.keyboard.press('Enter'); }
+    for (let i = 0; i < 40 && !(await G(page, () => window.__taschi.state === 'loading' || window.__taschi.state === 'world')); i++) { await page.keyboard.press('Enter'); await page.waitForTimeout(700); }
     await waitState(page, 'world');
     await page.waitForTimeout(1500);
     await shot('03-sonnenhain');
@@ -86,7 +86,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     await interactWith(page, (e) => e.kind === 'shop');
     await page.waitForSelector('.panel');
     const coins0 = await G(page, () => window.__taschi.save.coins);
-    await page.locator('.row', { hasText: 'Trank' }).first().locator('button', { hasText: '×1' }).click();
+    await page.locator('.row', { hasText: 'Trank' }).first().getByRole('button', { name: '×1', exact: true }).click();
     await page.waitForTimeout(200);
     await shot('09-shop');
     const coins1 = await G(page, () => window.__taschi.save.coins);

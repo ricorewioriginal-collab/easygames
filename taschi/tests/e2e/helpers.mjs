@@ -36,7 +36,7 @@ export async function advance(page, { max = 200, until = null, choose = null } =
       if (idx >= 0) { await page.locator('.choice').nth(idx).click(); await page.waitForTimeout(150); continue; }
     }
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(st.state === 'battle' ? 250 : 120);
+    await page.waitForTimeout(st.state === 'battle' ? 450 : 350);
   }
   throw new Error('advance(): kein Fortschritt');
 }
@@ -57,7 +57,11 @@ export async function interactWith(page, pred) {
     return true;
   }, pred.toString());
   if (!ok) throw new Error('Interaktion nicht gefunden: ' + pred);
-  await page.waitForTimeout(300);
-  await page.keyboard.press('KeyE');
-  await page.waitForTimeout(300);
+  for (let k = 0; k < 6; k++) {
+    await page.waitForTimeout(700);
+    await page.keyboard.press('KeyE');
+    await page.waitForTimeout(500);
+    if (await page.evaluate(() => { const g = window.__taschi; return g.busy > 0 || g.ui.blocking || g.state !== 'world'; })) return;
+  }
+  throw new Error('Interaktion ohne Wirkung: ' + pred);
 }
