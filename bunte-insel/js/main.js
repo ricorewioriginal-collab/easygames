@@ -1,8 +1,8 @@
 'use strict';
 /* Bunte Insel – Spielschleife, Steuerung, Kamera, Missionen, Figuren, Tiere, Verkehr, Tag/Nacht */
-if (window.__biInitializing || window.__bi) return; /* verhindert doppelte Spiel- und Menü-Initialisierung */
-window.__biInitializing = true;
 (function () {
+  if (window.__biInitializing || window.__bi) return; /* verhindert doppelte Spiel- und Menü-Initialisierung */
+  window.__biInitializing = true;
   const $ = id => document.getElementById(id), K = BI.WORLD, A = BI.audio, clamp = BI.clamp, TAU = BI.TAU;
   const save = Object.assign({ stars: 0, shirt: 0, hat: 0, pname: '', cu: { skin: 0, hair: 1, style: 1, pants: 0 }, sound: true, music: true, mpIcon: '🐶', night: false, intro: false, hero: 'jannis', pet: 'blitz', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
   let saveOk = true; const persist = () => { try { syncChar(); } catch (e) { } save.ts = Date.now(); saveOk = BI.store.set('save', save); };
