@@ -77,3 +77,7 @@ Die bestehende Region besitzt nun ein durchgängiges sichtbares Wegenetz vom Sta
 ## Spielzustandsmaschine
 
 Die Eingabelogik unterscheidet nun ausdrücklich `boot`, `title`, `world`, `dialog`, `battle` und `result`. Die Erkundungsbewegung läuft nur im Weltzustand; beim Öffnen von Dialogen wird die Bewegung blockiert. Kämpfe werden separat aktiviert, Pausenbefehle während eines Kampfes unterdrückt, und Abschlussaktionen führen aus dem Ergebnis zurück in die Spielwelt. Die Implementierung befindet sich derzeit im bestehenden `game.js`, damit bestehende Datenschnittstellen und Speicherstände unverändert bleiben. Die JavaScript-Syntax wurde geprüft; browserbasierte End-to-End-Tests sind weiterhin erforderlich.
+
+## Landschafts-Überarbeitung (Oktober 2026)
+
+Die Spielwelt verwendet nun mehrere prozedurale Baum-Silhouetten, detailliertere Häuser mit Fenstern, Fenstersprossen, Türen und Fassadenelementen, Uferteiche, Felsen, Blumenbeete und Laternen. Die Spielerfigur besitzt zusätzliche Kleidung, Gesichtselemente und einen Rucksack. Die 16 bisherigen Arena-Säulen wurden durch sechseckige Pavillons mit eigenen Farbschemata und Schmuckdetails ersetzt. Die Positionen der Arena-Interaktionen sind unverändert. Dies sind prozedurale, noch nicht individuell handmodellierte 3D-Modelle; Geometrie und Laufwege müssen im Browser und auf echten Mobilgeräten geprüft werden.
