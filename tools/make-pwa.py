@@ -18,7 +18,7 @@ import json, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EIGENE = {'prismrush', 'wobbel'}          # haben ein eigenes Manifest + eigenen Service Worker
-CACHE_VERSION = {'bunte-insel': 2}          # Versionssprung löscht veraltete Offline-Dateien dieses Spiels
+CACHE_VERSION = {'bunte-insel': 3}          # Versionssprung löscht veraltete Offline-Dateien dieses Spiels
 MARK = re.compile(r'\n?<!--pwa-->.*?<!--/pwa-->', re.S)
 
 
