@@ -19,7 +19,7 @@ Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** ein
 
 Beim Laden erscheint jetzt zuerst ein eigener Titel-/Ladebildschirm. Danach gibt es **Abenteuer beginnen**, **Abenteuer fortsetzen**, **Neues Abenteuer** und die Auswahl der drei Speicherplätze. Das Hauptmenü integriert den vorhandenen gemeinsamen Cloud-Speicher aus `../cloud/anmacha-cloud.js` mit `data-game="taschi"` und dem lokalen Prefix `easygames.taschi.eight-lights.v1`. Bei Google-Anmeldung benutzt Taschi somit dieselbe Infrastruktur wie Bunte Insel. Cloud-Sync setzt eine erreichbare Firebase-Konfiguration, erfolgreiches Login und Netzwerk voraus; ohne Google-Anmeldung bleibt lokal gespeicherter Fortschritt verfügbar.
 
-Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert. Im Kampf gibt es ein vierteiliges Aktionsmenü und ein separates Attacken-/Gegenstandsmenü. Eine vollständige Geräteprüfung ist weiterhin erforderlich.
+Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert, und die Oberwelt besitzt prozedurale Texturen für Gras und Wege, acht speicherbare Trainer-Duelle sowie eine kreisrunde Live-Minikarte. Im Kampf gibt es ein vierteiliges Aktionsmenü (Kampf / Fangbeutel / Taschis / Flucht) und ein separates Attacken-/Gegenstandsmenü. Beim Start führt Professor Ulme durch die Einführung und die Starterwahl. Eine vollständige Geräteprüfung ist weiterhin erforderlich.
 
 ## Steuerung und Menüs
 
