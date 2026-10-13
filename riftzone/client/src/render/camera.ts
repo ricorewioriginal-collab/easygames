@@ -43,7 +43,11 @@ export class ThirdPersonCamera {
     } else if (vehicle) {
       // Schulter/Höhe wie zu Fuß, damit Beifahrer genau zielen können
       wantDist = aiming ? 2.2 : 6.5;
-    } else if (mode === Mode.Bus || mode === Mode.Dead) {
+    } else if (mode === Mode.Bus) {
+      wantDist = 46;
+      wantShoulder = 0;
+      wantH = 10;
+    } else if (mode === Mode.Dead) {
       wantDist = 12;
       wantShoulder = 0;
       wantH = 2;

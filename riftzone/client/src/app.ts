@@ -153,7 +153,7 @@ export class App {
     this.stage.setCosmetics(profile.data.cos);
     this.stage.setMates(this.party ? this.party.members.filter((m) => m.id !== this.online.myId).map((m) => m.cos ?? { ...profile.data.cos, outfit: 1 }) : []);
     this.stage.offsetX = -0.2;
-    this.stage.holding = 100;
+    this.stage.holding = -1;
     this.stage.start();
     const m = this.mode;
     const chals = profile.challenges();

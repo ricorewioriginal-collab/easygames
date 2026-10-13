@@ -264,6 +264,18 @@ window.EASYGAMES_GUIDES = {
    "Die vollständige Tastentabelle steht im Spiel unter Anleitung."
   ]
  },
+ "riftzone": {
+  "anleitung": "Battle Royale in 3D: Bis zu 100 Teilnehmer springen aus der Riftfähre über der Insel Aurelia ab, gleiten zu einem der 14 Orte und suchen Waffen, Heilung, Munition und Material. Der Riftsturm zieht sich in sieben Phasen zusammen – wer außerhalb steht, verliert Leben. Wer als Letzte·r (oder letztes Team) übrig ist, gewinnt. Mit der Spitzhacke sammelst du Holz, Stein und Metall und baust Wände, Böden und Rampen (oder spielst im Modus „Ohne Bauen“). Riftkisten enthalten immer eine Waffe, Rift-Buggys bringen dich schnell durch die Zone, Sprungpads schleudern dich in die Luft. Im Duo und Squad werden Teamkameraden zuerst niedergeschlagen und können wiederbelebt werden. Offline gegen Bots (leicht/normal/schwer) oder online über einen eigenen Server mit Gruppen, öffentlichen und privaten Lobbys.",
+  "steuerung": [
+   "PC: WASD laufen, Maus zielen, Linksklick feuern, Rechtsklick zielen, Leertaste springen/Gleiter, Strg ducken/rutschen, Umschalt sprinten, E interagieren (halten = wiederbeleben), R nachladen, 1–5 Waffen, F Spitzhacke, Q Baumodus, Z/X/C Wand/Boden/Rampe, V Material, M Karte, Tab Inventar, B Emotes, Esc Pause – alle Tasten sind belegbar.",
+   "Touch: linker Daumen = Bewegungs-Stick (am Rand sprinten), rechte Seite wischen = umsehen, große Feuertaste halten und gleichzeitig wischen = zielen und schießen, Tasten für Springen, Ducken, Zielen, Nachladen, Bauen; „Aufheben/Öffnen“ erscheint bei Bedarf; Schnellzugriff unten antippen.",
+   "Gamepad: linker Stick laufen, rechter Stick zielen, RT feuern, LT zielen, A springen, B ducken, X interagieren, Y nachladen, LB/RB Waffe wechseln, rechter Stick drücken = Baumodus, Start = Pause, Select = Karte."
+  ],
+  "tipps": [
+   "Für Online-Matches in den Einstellungen unter „Online“ die Adresse deines RIFTZONE-Servers eintragen (Anleitung in riftzone/README.md).",
+   "Grafikqualität „Automatisch“ passt sich der Bildrate an; auf älteren Handys hilft eine niedrigere Auflösung und eine Bildratenbegrenzung."
+  ]
+ },
  "partyverse": {
   "anleitung": "3D-Brett-Partyspiel: Jede Runde würfelt jeder, zieht Feld für Feld und wählt an Weggabelungen den Weg. Glimmer sind die Währung; am Chrono-Altar kostet ein Siegpunkt-Splitter 20 Glimmer. Nach jeder Runde spielen alle ein Minispiel (22 Stück), die Besten bekommen Glimmer. Wer nach der letzten Runde (inkl. Bonus-Splitter) die meisten Splitter hat, gewinnt. Modi: gegen Bots, lokal auf einem Gerät (2 bis 4), online per QR-Code/Text-Code.",
   "steuerung": [

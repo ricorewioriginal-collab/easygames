@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "708807f6f19f",
- "generated": "2026-10-13T12:05:59+02:00",
- "commit": "06a8dc5680043db98e9a3ef221c0afa69eed6661",
+ "version": "1e0493eb03eb",
+ "generated": "2026-10-13T12:30:36+02:00",
+ "commit": "58d45246f5ed00cf52015fcf0798230535af33ed",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4413,8 +4413,8 @@
   },
   {
    "p": "games.js",
-   "s": 12859,
-   "h": "53b310598a497be7665a5ebd460cef52610ec71359bbfd72b07950f584f151ec"
+   "s": 13329,
+   "h": "20200791c89db40f5a8c50b84040c48e9e9fa7c3c2f1b6ed8cfc6855ac8d81c6"
   },
   {
    "p": "gay-life/index.html",
@@ -4563,8 +4563,8 @@
   },
   {
    "p": "guides.js",
-   "s": 35547,
-   "h": "14b78a771a80718138d09afc04e54c9d0fcc741ffa2e100c8671c7f59dfec142"
+   "s": 37604,
+   "h": "c26b0ab425f372f3aa1571750a08cd818d3af3d98adfd9b33e8e642cd48ca7fe"
   },
   {
    "p": "index.html",
@@ -4573,8 +4573,8 @@
   },
   {
    "p": "modes.js",
-   "s": 1300,
-   "h": "1c9310fe72e940072cd80ed22ea8967a5c005874b825e89fabc6e8ee5d640fe6"
+   "s": 1332,
+   "h": "50b5169781cf8745fbbc6baf26d4db2d77d301024a44bbaad5e8a2257fcf1f42"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -4882,9 +4882,119 @@
    "h": "56722b2de33defc8a4a0c35723670c4216e4e306530c31ec17307a9111830afd"
   },
   {
+   "p": "riftzone/app/assets/index-4d1af4a3fa.css",
+   "s": 23254,
+   "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
+  },
+  {
+   "p": "riftzone/app/assets/index-5ddd79a703.js",
+   "s": 783488,
+   "h": "5ddd79a7032640d6a2356edd703796de7e02eeb067a42301c19c4adfce9f55e4"
+  },
+  {
+   "p": "riftzone/app/assets/worker-bf3f9c0f50.js",
+   "s": 97698,
+   "h": "bf3f9c0f509f9a89acfcfe436389c73e67aa33318028c9ad4cdebeaa125b2e88"
+  },
+  {
+   "p": "riftzone/app/favicon.svg",
+   "s": 421,
+   "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
+  },
+  {
+   "p": "riftzone/app/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
+   "p": "riftzone/app/index.html",
+   "s": 971,
+   "h": "5ab620775b209ca58610b78f12647489d90e3cad520f1337d40701139459b6b8"
+  },
+  {
+   "p": "riftzone/card.png",
+   "s": 152446,
+   "h": "30cd40bd48ea4ac0029729ae93ac6bc5a301db13f80ec1914e910a59349163db"
+  },
+  {
+   "p": "riftzone/client/index.html",
+   "s": 863,
+   "h": "42bcdd64106f23f1d4be2699a322cef40b3f03ed7876f526bd3d0522f0d95be8"
+  },
+  {
+   "p": "riftzone/client/public/favicon.svg",
+   "s": 421,
+   "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
+  },
+  {
+   "p": "riftzone/client/src/ui/styles.css",
+   "s": 29432,
+   "h": "a6ec1dadfd937ef56e133b7c9ace0a776b2d2c9969db190ec575a5a47b011fca"
+  },
+  {
+   "p": "riftzone/deploy/Caddyfile.example",
+   "s": 129,
+   "h": "a8c9af6d9ea10b818913f50692b223130a22e496f3aece02d581f5bb2b2d4e93"
+  },
+  {
+   "p": "riftzone/deploy/nginx.conf.example",
+   "s": 569,
+   "h": "885481ee8c8ad583290e0110d0fe811daf8db9d0c8c0472e0e296eb33d6ffd33"
+  },
+  {
+   "p": "riftzone/deploy/riftzone.env.example",
+   "s": 715,
+   "h": "50c0a31f1f574311068cb792241e466f2a429fe26ace3cef5ebe44a5204d74bf"
+  },
+  {
+   "p": "riftzone/deploy/riftzone.service",
+   "s": 622,
+   "h": "4ccacfcaa7220fe86a3ce1279a8f8fc28cd03f12a4aee422e165f7c6410dc60d"
+  },
+  {
+   "p": "riftzone/e2e/online.mjs",
+   "s": 5621,
+   "h": "a4866ea87fa1cb4240e93f2a012288890b6ddc678ff3700322103ca7b9c0bae9"
+  },
+  {
+   "p": "riftzone/e2e/smoke.mjs",
+   "s": 4914,
+   "h": "f4e47c254351fc17f3043435d46e52d4fcb5f7aa90cd0a075621362de8f14500"
+  },
+  {
+   "p": "riftzone/index.html",
+   "s": 3029,
+   "h": "e85dd30ac1d1ef3c1fea4de2a28b101343146a3e94ed5aa6e262d2c9885667c2"
+  },
+  {
+   "p": "riftzone/manifest.webmanifest",
+   "s": 744,
+   "h": "7d09805e7f41b4414ac2dedcfd6755e24d175b34c1f9b06892e317611869c0d1"
+  },
+  {
+   "p": "riftzone/scripts/build.mjs",
+   "s": 3826,
+   "h": "d6090a5b49eadf110466029e98a6bd15f3f46a943625a21e06ebde8c016c0258"
+  },
+  {
+   "p": "riftzone/scripts/serve.mjs",
+   "s": 1559,
+   "h": "2ddcffa0d68143f1ce691e5b0178150894cf7c436857072aaef3829d7f75f4d8"
+  },
+  {
+   "p": "riftzone/server/Dockerfile",
+   "s": 651,
+   "h": "c986d776f3e0bbda7391fe7645b7c7c42c3f139b8da9f86009f872b8291e31d9"
+  },
+  {
+   "p": "riftzone/sw.js",
+   "s": 1890,
+   "h": "ad2405b9c25b822c7140f42d4ca836889668c3ad12021ca62319319158b95456"
+  },
+  {
    "p": "sync/catalog.json",
-   "s": 53936,
-   "h": "f46a3c27d2343dededbacea558186d8633a13a0e06de1242241168c1b875cb5c"
+   "s": 56641,
+   "h": "0953c2f89df836a85c6f8c65e24f5bcf8bf2192a5f9f796575cb82224d4f2e41"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",

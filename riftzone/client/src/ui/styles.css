@@ -536,6 +536,8 @@ table.stats th {
   background: #14506a;
 }
 .zoneinfo {
+  width: max-content;
+  max-width: 62vw;
   margin-top: 6px;
   font-size: 0.85rem;
   padding: 5px 8px;
@@ -1296,7 +1298,7 @@ table.stats th {
 }
 .t-sprint {
   left: calc(max(14px, env(safe-area-inset-left)) + 6px);
-  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 150px * var(--t-scale));
+  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 4px);
   width: calc(50px * var(--t-scale));
   height: calc(50px * var(--t-scale));
 }
@@ -1359,7 +1361,7 @@ body.is-touch .hotbar .slot {
 }
 
 /* ---------- Kleine Bildschirme ---------- */
-@media (max-width: 900px), (max-height: 520px) {
+@media (max-width: 700px) {
   .lobby {
     grid-template-columns: 1fr;
     overflow-y: auto;
@@ -1367,6 +1369,34 @@ body.is-touch .hotbar .slot {
   .lobby .preview-spacer {
     display: none;
   }
+}
+@media (max-height: 520px) and (min-width: 701px) {
+  .lobby {
+    grid-template-columns: minmax(200px, 260px) 1fr minmax(200px, 260px);
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .topbar .btn {
+    padding: 8px 12px;
+    min-height: 36px;
+    font-size: 0.8rem;
+  }
+  .player-chip {
+    padding: 4px 10px;
+  }
+  .mode-card .big {
+    font-size: 1.1rem;
+  }
+  .btn.primary {
+    font-size: 1.1rem;
+    padding: 12px 28px;
+  }
+  .lobby .left,
+  .lobby .right {
+    overflow-y: auto;
+  }
+}
+@media (max-width: 900px), (max-height: 520px) {
   .content {
     flex-direction: column;
     overflow-y: auto;
@@ -1405,7 +1435,19 @@ body.is-touch .hotbar .slot {
 }
 body.is-touch .mats {
   bottom: auto;
-  top: calc(max(12px, env(safe-area-inset-top)) + 100px);
+  right: auto;
+  left: 50%;
+  top: max(8px, env(safe-area-inset-top));
+  transform: translateX(-50%);
+  flex-direction: row;
+  font-size: 0.75rem;
+}
+body.is-touch .mats .mat {
+  min-width: 0;
+  padding: 3px 8px;
+}
+body.is-touch .compass {
+  display: none;
 }
 body.is-touch .bottom {
   bottom: max(6px, env(safe-area-inset-bottom));

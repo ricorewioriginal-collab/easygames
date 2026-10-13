@@ -38,9 +38,9 @@ export const CLIMB_MAX = 2.4;
 export const CLIMB_TIME = 0.42;
 
 // Absprung und Gleiter
-export const BUS_HEIGHT = 230;
+export const BUS_HEIGHT = 300;
 export const BUS_SPEED = 42;
-export const FREEFALL_SPEED = 34;
+export const FREEFALL_SPEED = 29;
 export const FREEFALL_DIVE_SPEED = 52;
 export const FREEFALL_HSPEED = 22;
 export const GLIDE_FALL_SPEED = 7;

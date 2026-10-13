@@ -141,9 +141,11 @@ export class Hud {
     // Zone
     const z = d.zone;
     const zs = E.zone.lastElementChild as HTMLElement;
-    if (d.phase === Phase.Bus) {
+    if (d.phase === Phase.Bus && (!s || s.body.mode === Mode.Bus)) {
       zs.textContent = d.busCanJump ? (d.touch ? 'Tippe „Abspringen“' : `${keyLabel(settings.data.keys.jump)}: Abspringen`) : 'Riftfähre startet …';
       E.zone.classList.remove('shrinking');
+    } else if (d.phase === Phase.Bus) {
+      zs.textContent = 'Sturm bildet sich nach dem Überflug';
     } else if (z) {
       const out = Math.hypot(d.x - z.cx, d.z - z.cz) > z.r;
       const dist = Math.max(0, Math.hypot(d.x - z.tx, d.z - z.tz) - z.tr);

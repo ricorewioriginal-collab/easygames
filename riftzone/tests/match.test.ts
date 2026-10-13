@@ -114,3 +114,71 @@ test('Fortschritt: Stufen und Herausforderungen', () => {
   assert.deepEqual(a.map((c) => c.id), b.map((c) => c.id));
   assert.equal(a.length, 5);
 });
+
+test('Kampf: Gegenstand aufheben, zielen, treffen, ernten, bauen, wiederbeleben', async () => {
+  const { DropKind } = await import('../shared/src/items');
+  const { packAct, Act, Btn } = await import('../shared/src/types');
+  const { Kind } = await import('../shared/src/pieces');
+  const w = new World(flatTerrain(10));
+  const m = new Match(defaultConfig({ seed: 1, teamSize: 2, maxPlayers: 3 }), w, { loot: [], vehicles: [], decor: [], buildings: [] });
+  const me = m.addPlayer('Ich', 0, false, defaultCosmetics());
+  const mate = m.addPlayer('Mate', 0, false, defaultCosmetics());
+  const foe = m.addPlayer('Feind', 1, false, defaultCosmetics());
+  m.start();
+  m.phase = Phase.Play;
+  for (const [p, x, z] of [[me, 500, 500], [mate, 503, 500], [foe, 500, 480]] as const) {
+    p.body.mode = Mode.Ground;
+    p.body.x = x;
+    p.body.z = z;
+    p.body.y = 10;
+  }
+  let seq = 0;
+  const send = (p: typeof me, buttons = 0, actions: number[] = [], yaw = 0, pitch = 0): void => {
+    m.pushInput(p.id, { seq: ++seq, mx: 0, mz: 0, yaw, pitch, buttons, actions, viewTick: m.tick });
+    m.step();
+  };
+  // Sturmgewehr vor die Füße legen und aufheben
+  m.spawnItem({ kind: DropKind.Item, id: 2, rarity: 2, qty: 30 }, 500, 10.05, 499);
+  m.spawnItem({ kind: DropKind.Ammo, id: 1, rarity: 0, qty: 60 }, 500.5, 10.05, 500);
+  send(me, 0, [packAct(Act.InteractPress)]);
+  for (let i = 0; i < 4; i++) send(me);
+  assert.equal(me.slots[1]!.id, 2);
+  assert.equal(me.sel, 1);
+  assert.ok(me.ammo[1]! >= 60, 'Munition nicht automatisch aufgesammelt');
+  // Auf den Gegner (20 m nördlich, yaw 0 blickt nach -z) schießen
+  let hit = false;
+  for (let i = 0; i < 20; i++) {
+    send(me, Btn.Fire | Btn.Aim, [], 0.0275, -0.032);
+    if (m.events.some((e) => e.t === "dmg" && e.to === me.id)) hit = true;
+    if (hit) break; // Gegner am Leben lassen, sonst endet das Match
+  }
+  assert.ok(hit, 'kein Treffer');
+  send(me, 0); // Feuer loslassen (der Server wiederholt sonst die letzte Eingabe)
+  assert.ok(foe.hp + foe.shield < 100 || foe.body.mode === Mode.Dead);
+  // Ernten: Baum direkt vor dem Mitspieler
+  const tree = makeTreeAt(w, 503, 498);
+  mate.sel = 0;
+  for (let i = 0; i < 40; i++) send(mate, Btn.Fire, [], 0, 0.3);
+  assert.ok(mate.mats[0]! > 0, 'kein Holz ' + JSON.stringify({ mode: mate.body.mode, x: mate.body.x, z: mate.body.z, sel: mate.sel, cd: mate.fireCd, tree: w.pieces[tree], alive: mate.alive }));
+  void tree;
+  // Bauen
+  mate.mats[0] = 100;
+  send(mate, 0, [packAct(Act.BuildPiece, 0)]);
+  const before = w.pieces.length;
+  for (let i = 0; i < 20; i++) send(mate, Btn.Fire, [], Math.PI, 0);
+  assert.equal(w.pieces.length, before + 1);
+  assert.equal(w.pieces.at(-1)!.kind, Kind.BWall);
+  // Niederschlagen und wiederbeleben
+  m.damage(me, 500, foe.id, 2, false, 0, 500, 480);
+  assert.equal(me.body.mode, Mode.Downed);
+  mate.build = false;
+  mate.body.x = 501.6; // in Reichweite gehen
+  for (let i = 0; i < 30 * 6; i++) send(mate, Btn.Interact);
+  assert.equal(me.body.mode, Mode.Ground);
+  assert.equal(me.hp, 30);
+});
+
+function makeTreeAt(w: World, x: number, z: number): number {
+  const p = { id: -1, kind: 2, x, y: 14, z, hx: 0.35, hy: 4, hz: 0.35, dir: 0, mat: 0, style: 0, hp: 260, maxHp: 260, alive: true, state: 0, group: -1, team: -1, destructible: true };
+  return w.add(p);
+}

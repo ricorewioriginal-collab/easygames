@@ -49,8 +49,8 @@ const G = {
   wing: new THREE.BoxGeometry(0.5, 0.3, 0.03),
   quiver: new THREE.CylinderGeometry(0.08, 0.06, 0.48, 6),
   shard: new THREE.OctahedronGeometry(0.06, 0),
-  canopy: new THREE.SphereGeometry(1.6, 16, 6, 0, Math.PI * 2, 0, 0.75),
-  bar: new THREE.CylinderGeometry(0.015, 0.015, 1.4, 4),
+  wingSeg: new THREE.BoxGeometry(0.62, 0.08, 1.2),
+  bar: new THREE.CylinderGeometry(0.012, 0.012, 1.4, 4),
 };
 
 export interface CharState {
@@ -175,11 +175,19 @@ export class CharacterRig {
     head.position.y = 0.1;
     this.headG.add(head);
     for (const sx of [-0.075, 0.075]) {
+      const w = new THREE.Mesh(G.eye, mat(0xffffff));
+      w.position.set(sx, 0.13, -0.178);
+      w.scale.set(1.35, 1.6, 0.6);
+      this.headG.add(w);
       const e = new THREE.Mesh(G.eye, mEye);
-      e.position.set(sx, 0.13, -0.185);
-      e.scale.set(1, 1.3, 0.6);
+      e.position.set(sx, 0.125, -0.2);
+      e.scale.set(0.7, 1.0, 0.4);
       this.headG.add(e);
     }
+    const mouth = new THREE.Mesh(G.visor, mat(0x7a3a3a));
+    mouth.scale.set(0.25, 0.25, 0.3);
+    mouth.position.set(0, 0.03, -0.19);
+    this.headG.add(mouth);
     this.addHat(cos.hat, mPrim, mAcc);
     // Arme
     this.armL = this.limb(this.spine, -0.27, 0.48, G.upper, G.lower, mPrim, mSkin, 0.17, 0.17);
@@ -203,17 +211,28 @@ export class CharacterRig {
       l.joint.add(b);
     }
     this.addBack(cos.back, mSec, mAcc);
-    // Gleiter
+    // Gleiter: gewölbter Flügel aus Segmenten mit Streifen, Leinen zu den Händen
     const gl = GLIDERS[cos.glider] ?? GLIDERS[0]!;
-    const can = new THREE.Mesh(G.canopy, new THREE.MeshLambertMaterial({ color: gl.color, side: THREE.DoubleSide }));
-    can.scale.set(1, 0.55, 0.7);
-    can.position.y = 2.6;
-    this.glider.add(can);
-    for (const sx of [-0.6, 0.6]) {
-      const b = new THREE.Mesh(G.bar, mat(0x333333));
-      b.position.set(sx, 2.05, 0);
-      b.rotation.z = sx > 0 ? -0.35 : 0.35;
-      this.glider.add(b);
+    const segs = 7;
+    for (let i = 0; i < segs; i++) {
+      const a = ((i - (segs - 1) / 2) / segs) * 1.9;
+      const seg = new THREE.Mesh(G.wingSeg, mat(i % 2 ? gl.color : 0xf2f2f2));
+      seg.position.set(Math.sin(a) * 1.9, 2.15 + Math.cos(a) * 0.9, 0);
+      seg.rotation.z = -a;
+      this.glider.add(seg);
+    }
+    for (const sx of [-1, 1]) {
+      for (const k of [0.6, 1.5]) {
+        const line = new THREE.Mesh(G.bar, mat(0x222233));
+        const tx = sx * k,
+          ty = 2.4;
+        const hx = sx * 0.28,
+          hy = 1.62;
+        line.position.set((tx + hx) / 2, (ty + hy) / 2, 0);
+        line.scale.y = Math.hypot(tx - hx, ty - hy) / 1.4;
+        line.rotation.z = Math.atan2(hx - tx, ty - hy);
+        this.glider.add(line);
+      }
     }
     this.glider.visible = false;
     this.root.add(this.glider);
@@ -242,7 +261,14 @@ export class CharacterRig {
 
   private addHat(id: number, mPrim: THREE.Material, mAcc: THREE.Material): void {
     const def = HATS[id];
-    if (!def || id === 0) return;
+    if (!def || id === 0) {
+      // Frisur, wenn keine Kopfbedeckung
+      const hair = new THREE.Mesh(G.beanie, mat(0x3a2a22));
+      hair.position.set(0, 0.13, 0.02);
+      hair.scale.set(1.02, 0.85, 1.04);
+      this.headG.add(hair);
+      return;
+    }
     const m = mat(def.color);
     const g = this.headG;
     switch (id) {

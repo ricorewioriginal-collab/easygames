@@ -54,6 +54,14 @@ export class ColorMap {
             bl = 0.3;
           }
         }
+        if (b === Biome.Town) {
+          // Pflasterplatten und Fugen
+          const gx = ((x % 8) + 8) % 8,
+            gz = ((z % 8) + 8) % 8;
+          if (gx < 0.6 || gz < 0.6) v *= 0.82;
+          else v *= ((Math.floor(x / 8) + Math.floor(z / 8)) & 1) === 0 ? 1.04 : 0.96;
+        }
+        if (b === Biome.Road) v *= Math.abs((x + z) % 12) < 1 ? 1.25 : 1;
         if (b === Biome.Meadow || b === Biome.Forest) {
           // dunklere Hänge, hellere Gipfel
           v *= 1 - slope * 0.35 + Math.min(0.12, h / 400);

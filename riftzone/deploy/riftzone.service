@@ -1,0 +1,24 @@
+# systemd-Dienst für den RIFTZONE-Spielserver
+#   sudo cp deploy/riftzone.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable --now riftzone
+[Unit]
+Description=RIFTZONE Spielserver
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=riftzone
+WorkingDirectory=/opt/riftzone
+EnvironmentFile=-/etc/riftzone.env
+ExecStart=/usr/bin/node /opt/riftzone/server/dist/server.mjs
+Restart=always
+RestartSec=3
+# Härtung
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/riftzone/data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

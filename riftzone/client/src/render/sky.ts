@@ -177,6 +177,7 @@ export class Sky {
     }
     (u.top!.value as THREE.Color).copy(this.topC);
     (u.horizon!.value as THREE.Color).copy(this.horC);
+    (u.bottom!.value as THREE.Color).copy(this.horC).multiplyScalar(0.8);
     u.time!.value = this.time;
     // Sonnenstand: Aufgang 6 Uhr im Osten, Untergang 20 Uhr im Westen
     const day = (h - 6) / 14;
@@ -205,7 +206,8 @@ export class Sky {
     mixHex(a.ground, b.ground, t, this.hemi.groundColor);
     this.fog.color.copy(this.horC);
     const fogMul = this.weather === 2 ? 0.35 : this.weather === 1 ? 0.7 : 1;
-    this.fog.far = this.viewDistance * fogMul;
+    // In großer Höhe (Fähre, Gleiter) weiter sehen
+    this.fog.far = this.viewDistance * fogMul + Math.max(0, cam.y - 40) * 1.8;
     this.fog.near = Math.min(this.fog.far * 0.3, 120 * fogMul);
     this.dome.position.copy(cam);
     if (this.rain && this.rainPos) {

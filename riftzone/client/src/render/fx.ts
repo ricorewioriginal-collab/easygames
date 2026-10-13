@@ -246,7 +246,7 @@ export class StormWall {
 
 export function makeAirship(): THREE.Group {
   const g = new THREE.Group();
-  const hull = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), new THREE.MeshLambertMaterial({ color: 0x3a2d6a }));
+  const hull = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), new THREE.MeshLambertMaterial({ color: 0x7a6ad8 }));
   hull.scale.set(9, 6, 26);
   g.add(hull);
   const band = new THREE.Mesh(new THREE.TorusGeometry(9.1, 0.5, 6, 32), new THREE.MeshLambertMaterial({ color: 0x3ff2ff, emissive: 0x1aa6c9 }));
@@ -268,6 +268,13 @@ export function makeAirship(): THREE.Group {
     fin.position.set(x, y, 22);
     fin.rotation.z = rz;
     g.add(fin);
+  }
+  for (const zz of [-14, 0, 14]) {
+    const stripe = new THREE.Mesh(new THREE.TorusGeometry(1, 0.05, 6, 32), new THREE.MeshLambertMaterial({ color: 0xffb02e, emissive: 0x6a4000 }));
+    const k = Math.sqrt(1 - (zz / 26) ** 2);
+    stripe.scale.set(9.05 * k, 6.05 * k, 1);
+    stripe.position.z = zz;
+    g.add(stripe);
   }
   const prop = new THREE.Mesh(new THREE.BoxGeometry(8, 0.5, 0.4), new THREE.MeshLambertMaterial({ color: 0x222233 }));
   prop.position.set(0, 0, 27);

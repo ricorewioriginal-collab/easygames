@@ -16,9 +16,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.server.json --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "node e2e/smoke.mjs",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "check": "npm run typecheck && npm test && npm run build:esbuild && npm run test:e2e"
+    "check": "npm run typecheck && npm test && npm run build:esbuild && npm run test:e2e",
+    "prebuild": "tsx scripts/gen-heightmap.ts",
+    "predev": "tsx scripts/gen-heightmap.ts"
   },
   "engines": {
     "node": ">=20.19"

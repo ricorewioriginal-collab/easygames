@@ -14,7 +14,7 @@ export class LobbyStage {
   yaw = Math.PI + 0.35;
   emote = -1;
   emoteUntil = 0;
-  holding = 100;
+  holding = -1;
   private running = false;
   private raf = 0;
   private last = 0;

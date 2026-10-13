@@ -1,6 +1,6 @@
 // Ein laufendes Match auf dem Client: Darstellung, Eingabe (fester 30-Hz-Takt), Effekte, Klang, HUD, Overlays.
 import * as THREE from 'three';
-import { BUILD_COST, DT, MAP_SIZE, PLAYER_HEIGHT, TICK_RATE, WATER_LEVEL } from '../../../shared/src/constants';
+import { BUILD_COST, BUS_HEIGHT, DT, MAP_SIZE, PLAYER_HEIGHT, TICK_RATE, WATER_LEVEL } from '../../../shared/src/constants';
 import { computePlacement } from '../../../shared/src/building';
 import { GRENADE_ID, WEAPONS, consumable, itemName, weapon } from '../../../shared/src/items';
 import { Sfx, type MatchEvent } from '../../../shared/src/match';
@@ -10,7 +10,7 @@ import { Kind } from '../../../shared/src/pieces';
 import { PF, type Frame, type NetPlayer } from '../../../shared/src/protocol';
 import { getTerrain } from '../../../shared/src/terrain';
 import { Act, Btn, Mode, Phase, packAct, type PlacementResult, type PlayerInput } from '../../../shared/src/types';
-import { OUTFITS } from '../../../shared/src/cosmetics';
+import { EMOTES, OUTFITS, VICTORY_POSES } from '../../../shared/src/cosmetics';
 import { audio, type SoundName } from '../audio/audio';
 import { h, isTouchDevice } from '../core/dom';
 import { profile } from '../core/profile';
@@ -28,6 +28,7 @@ import type { Renderer3D } from '../render/renderer';
 import { Sky } from '../render/sky';
 import { StructureView } from '../render/structures';
 import { ColorMap, TerrainView } from '../render/terrain';
+import { DecorView } from '../render/decor';
 import { Vegetation } from '../render/vegetation';
 import { Hud, type MateInfo } from '../ui/hud';
 import { renderMapImage } from '../ui/mapimage';
@@ -93,6 +94,7 @@ export class Game {
   private terrainView: TerrainView | null = null;
   private structures: StructureView | null = null;
   private vegetation: Vegetation | null = null;
+  private decor: DecorView | null = null;
   private readonly items = new ItemViews();
   private sky: Sky;
   private readonly storm = new StormWall();
@@ -201,6 +203,8 @@ export class Game {
     this.scene.add(this.structures.group);
     this.vegetation = new Vegetation(getTerrain(), w);
     this.scene.add(this.vegetation.group);
+    this.decor = new DecorView(s.content!.decor);
+    this.scene.add(this.decor.group);
     const mapImg = renderMapImage(this.opts.colors, getTerrain(), w, 1024);
     this.hud = new Hud(mapImg);
     this.hud.onSlotTap = (n) => this.pendingActs.push(packAct(Act.Slot, n));
@@ -530,6 +534,7 @@ export class Game {
     this.structures!.update(camPos);
     this.structures!.night = this.sky.night;
     this.vegetation!.update(dt, camPos);
+    this.decor!.update(dt, this.sky.night, camPos);
     this.items.update(dt, camPos);
     this.sky.update(dt, camPos);
     // Sturm
@@ -583,7 +588,7 @@ export class Game {
   private busPos(f: Frame): [number, number, number] {
     const b = this.session.bus;
     const t = clamp((f.busT + (this.session.serverTick() - f.tick) / TICK_RATE) / b.duration, 0, 1);
-    return [b.x0 + (b.x1 - b.x0) * t, 230, b.z0 + (b.z1 - b.z0) * t];
+    return [b.x0 + (b.x1 - b.x0) * t, BUS_HEIGHT, b.z0 + (b.z1 - b.z0) * t];
   }
 
   private updateCharacters(dt: number, frame: Frame, cx: number, cy: number, cz: number): void {
@@ -878,7 +883,8 @@ export class Game {
     const moving = self ? Math.hypot(self.body.vx, self.body.vz) > 1 : false;
     let spread = w && !self?.build ? (this.input.state.aim ? w.spreadAim : w.spreadHip) + (moving ? w.spreadMove : 0) : 0.01;
     if (mode === Mode.Air) spread += 0.03;
-    const canJump = frame.phase === Phase.Bus && frame.busT > 3;
+    const [bjx, , bjz] = this.busPos(frame);
+    const canJump = frame.phase === Phase.Bus && frame.busT > 3 && bjx > 60 && bjz > 60 && bjx < MAP_SIZE - 60 && bjz < MAP_SIZE - 60;
     if (canJump && !this.announcedJump && mode === Mode.Bus) {
       this.announcedJump = true;
       hud.big('Abspringen möglich', this.isTouch ? 'Tippe auf „Abspringen“' : `${keyLabel(settings.data.keys.jump)} drücken`, 3);
@@ -1085,7 +1091,11 @@ export class Game {
           const win = e.winnerTeam === s.team;
           this.hud?.big(win ? 'SIEG IN DER RIFTZONE!' : 'Match beendet', win ? 'Du hast als Letzte·r überlebt' : `Gewonnen hat ${this.teamName(e.winnerTeam)}`, 6);
           audio.play(win ? 'victory' : 'defeat');
-          if (win) this.selfEmote = 9;
+          if (win) {
+            // Siegerpose aus dem Spind
+            const anim = VICTORY_POSES[profile.data.cos.victory]?.anim ?? 'cheer';
+            this.selfEmote = EMOTES.find((x) => x.anim === anim)?.id ?? 9;
+          }
           break;
         }
         default:

@@ -1227,15 +1227,18 @@ export class Match {
     if (t >= this.tick - 0.001) return [p.body.x, p.body.y, p.body.z, bodyHeight(p.body)];
     const t0 = Math.floor(t),
       f = t - t0;
-    const i0 = ((t0 % HIST) + HIST) % HIST,
-      i1 = (((t0 + 1) % HIST) + HIST) % HIST;
-    if (this.tick - t0 >= HIST - 1) return [p.body.x, p.body.y, p.body.z, bodyHeight(p.body)];
-    const x = p.hx[i0]! + (p.hx[i1]! - p.hx[i0]!) * f;
-    const y = p.hy[i0]! + (p.hy[i1]! - p.hy[i0]!) * f;
-    const z = p.hz[i0]! + (p.hz[i1]! - p.hz[i0]!) * f;
+    if (this.tick - t0 >= HIST - 1 || t0 < 1) return [p.body.x, p.body.y, p.body.z, bodyHeight(p.body)];
+    // Der aktuelle Tick ist erst am Ende von step() im Verlauf – bis dahin gilt der Körperzustand
+    const at = (k: number): [number, number, number, number] => {
+      if (k >= this.tick) return [p.body.x, p.body.y, p.body.z, bodyHeight(p.body)];
+      const i = ((k % HIST) + HIST) % HIST;
+      return [p.hx[i]!, p.hy[i]!, p.hz[i]!, p.hh[i]!];
+    };
+    const a = at(t0),
+      b = at(t0 + 1);
     // Sprünge (Teleport) nicht interpolieren
-    if (Math.abs(p.hx[i1]! - p.hx[i0]!) > 8) return [p.hx[i1]!, p.hy[i1]!, p.hz[i1]!, p.hh[i1]!];
-    return [x, y, z, p.hh[i1]!];
+    if (Math.abs(b[0] - a[0]) > 8 || Math.abs(b[2] - a[2]) > 8) return b;
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f, b[3]];
   }
 
   private swing(p: Player): void {

@@ -1,0 +1,4 @@
+# Caddy als TLS-Reverse-Proxy (holt automatisch Let's-Encrypt-Zertifikate)
+riftzone.example.de {
+	reverse_proxy 127.0.0.1:2610
+}
