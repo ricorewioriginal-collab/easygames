@@ -57,7 +57,7 @@ body.touch .abtn::after{display:none}
 #bHorn{right:calc(var(--cx) + var(--r) - var(--u)/2);bottom:calc(var(--cy) - var(--u)/2)}
 #bJump{right:calc(var(--cx) - var(--r) - var(--u)/2);bottom:calc(var(--cy) - var(--u)/2)}
 #bAux{right:calc(var(--cx) - var(--u)/2);bottom:calc(var(--cy) + var(--r) - var(--u)/2)}
-#toast{position:fixed;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 124px);transform:translate(-50%,16px);opacity:0;z-index:40;background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-size:18px;font-weight:600;pointer-events:none;transition:.3s;max-width:calc(100% - 28px);text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 124px);transform:translate(-50%,16px);opacity:0;z-index:40;background:rgba(26,32,58,.9);color:#fff;padding:8px 14px;border-radius:12px;border:1.5px solid rgba(120,140,210,.45);font-size:14px;line-height:1.3;font-weight:500;pointer-events:none;transition:.3s;width:max-content;max-width:min(86vw,440px);text-align:left;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #keys{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));font-size:13px;font-weight:600;opacity:.8;background:var(--glass);padding:6px 12px;border-radius:12px;max-width:calc(100% - 340px);pointer-events:none}
 body.touch #keys{display:none}
@@ -443,6 +443,7 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
     </div>
     <div id="toolPanel" class="hud-popover" hidden>
       <strong>Einstellungen</strong>
+      <button class="tb" id="bSteer" aria-label="Touch-Steuerung"><span class="setting-icon" id="steerIcon">🕹️</span><span id="steerTxt">Stick</span></button>
       <button class="tb" id="bNight" aria-label="Tag und Nacht"><span class="setting-icon" id="nightIcon">🌙</span><span>Tag &amp; Nacht</span></button>
       <button class="tb" id="bVoice" aria-label="Vorlesen">🗣️ <span>Vorlesen</span></button>
       <button class="tb" id="bMusic" aria-label="Musik">🎵 <span>Musik</span></button>

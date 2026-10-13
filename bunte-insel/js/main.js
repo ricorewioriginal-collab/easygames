@@ -524,14 +524,15 @@
   /* Stick links: Fangbereich ist die ganze untere linke Ecke. Wer neben den Ring tippt, bekommt den Stick unter den Finger (schwebend),
      damit es beim Anfassen nicht ruckt; beim Loslassen springt er zurück. Kleine Totzone gegen Zittern. */
   const zone = $('zone'), joy = $('joy'), sKnob = $('joyKnob'); const stick = { id: null, cx: 0, cy: 0, R: 48, ox: 0, oy: 0 }, drag = { id: null, x: 0, y: 0 };
-  function stickArea(x, y) { const r = joy.getBoundingClientRect(); if (!r.width) return null; const hx = r.left + r.width / 2, hy = r.top + r.height / 2, m = r.width * .6; return x < Math.min(hx + r.width * .5 + m, innerWidth * .45) && y > hy - r.height * .5 - m ? { hx, hy, w: r.width } : null; }
+  function stickArea(x, y) { const r = joy.getBoundingClientRect(); if (!r.width) return null; const hx = r.left + r.width / 2, hy = r.top + r.height / 2, m = r.width * .6; if (save.steer === 'swipe') return stick.id == null ? { hx, hy, w: r.width } : null; /* Wisch-Modus: Finger irgendwo auflegen = Stick, zweiter Finger = Kamera */
+    return x < innerWidth * .5 && y > innerHeight * .22 ? { hx, hy, w: r.width } : null; }
   function startStick(e, a) {
-    const w = a.w, d = Math.hypot(e.clientX - a.hx, e.clientY - a.hy); stick.id = e.pointerId; stick.R = w * .36;
+    const w = a.w, d = Math.hypot(e.clientX - a.hx, e.clientY - a.hy); stick.id = e.pointerId; stick.R = w * .36; stick.t0 = performance.now(); stick.moved = 0; stick.x0 = e.clientX; stick.y0 = e.clientY; goTo = null;
     stick.cx = a.hx; stick.cy = a.hy; stick.ox = stick.oy = 0;
     if (d > w * .3) { stick.cx = clamp(e.clientX, w / 2 + 4, innerWidth - w / 2 - 4); stick.cy = clamp(e.clientY, w / 2 + 4, innerHeight - w / 2 - 4); stick.ox = stick.cx - a.hx; stick.oy = stick.cy - a.hy; }
     joy.style.transform = stick.ox || stick.oy ? 'translate(' + stick.ox + 'px,' + stick.oy + 'px)' : ''; joy.classList.add('on'); moveStick(e);
   }
-  function moveStick(e) { let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; if (l < R * .12) setStick(0, 0); else setStick(dx / R, -dy / R); }
+  function moveStick(e) { stick.moved = Math.max(stick.moved || 0, Math.abs(e.clientX - stick.x0) + Math.abs(e.clientY - stick.y0)); let dx = e.clientX - stick.cx, dy = e.clientY - stick.cy; const R = stick.R, l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } sKnob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; if (l < R * .12) setStick(0, 0); else setStick(dx / R, -dy / R); }
   function endStick() { stick.id = null; setStick(0, 0); sKnob.style.transform = ''; joy.style.transform = ''; joy.classList.remove('on'); }
   zone.addEventListener('pointerdown', e => {
     A.resume(); if (state !== 'play') return; if (rs.ui === 'play') { rangeAim(e.clientX, e.clientY); rs.down = true; rangeShoot(); try { zone.setPointerCapture(e.pointerId); } catch (x) { } return; } closeHudMenus();
@@ -551,8 +552,17 @@
   });
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   function tapGround(cx, cy) { ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (voxTab) { vox.aim(o, d); return; } if (d.y < -.01) { const k = -o.y / d.y; build.setCursor(o.x + d.x * k, o.z + d.z * k); } }
+  /* Tippen = dorthin gehen (zu Fuß): Punkt auf dem Boden anpeilen, der Held läuft hin, bis man den Stick anfasst */
+  let goTo = null;
+  function tapGo(cx, cy) {
+    if (state !== 'play' || P.veh || build.active || rs.ui || uiBusy() || sl.t >= 0) return; ndc.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera); const o = ray.ray.origin, d = ray.ray.direction; if (d.y > -.02) return;
+    const k = (P.y - o.y) / d.y, x = o.x + d.x * k, z = o.z + d.z * k; if (Math.hypot(x - P.x, z - P.z) > 60) return; goTo = { x, z, t: performance.now(), best: 1e9, bt: performance.now() }; fx.burst(x, .3, z, 8, [BI.C.green, BI.C.white], 1.6, .5, 24, 2);
+  }
+  { const b = $('bSteer'), up = () => { $('steerIcon').textContent = save.steer === 'swipe' ? '👆' : '🕹️'; $('steerTxt').textContent = save.steer === 'swipe' ? 'Wischen' : 'Stick'; };
+    b.addEventListener('click', () => { save.steer = save.steer === 'swipe' ? 'stick' : 'swipe'; persist(); up(); A.pop && A.pop(); say(save.steer === 'swipe' ? '👆 Wischen: Finger irgendwo auflegen und ziehen = laufen · kurz tippen = dorthin gehen · zweiter Finger = Kamera' : '🕹️ Stick: links ziehen = laufen · rechts wischen = Kamera · kurz tippen = dorthin gehen', 5200); }); up(); }
   const endPtr = e => { rs.down = false; if (e.pointerId === drag.id && build.active && drag.moved < 12 && performance.now() - drag.t0 < 500) tapGround(e.clientX, e.clientY);
-    if (e.pointerId === stick.id) endStick(); if (e.pointerId === drag.id) drag.id = null; };
+    if (e.pointerId === stick.id) { const tap = e.type === 'pointerup' && stick.moved < 12 && performance.now() - stick.t0 < 260; endStick(); if (tap) tapGo(e.clientX, e.clientY); }
+    if (e.pointerId === drag.id) { const tap = e.type === 'pointerup' && drag.moved < 12 && performance.now() - drag.t0 < 260 && !build.active; drag.id = null; if (tap) tapGo(e.clientX, e.clientY); } };
   zone.addEventListener('pointerup', endPtr); zone.addEventListener('pointercancel', endPtr); zone.addEventListener('lostpointercapture', e => { if (e.pointerId === stick.id) endStick(); if (e.pointerId === drag.id) drag.id = null; });
   // App-Wechsel, Anruf, Benachrichtigung: alles loslassen, sonst läuft die Figur allein weiter
   function releaseAll() { if (stick.id != null) endStick(); drag.id = null; rs.down = false; inp.horn = inp.turbo = inp.up = inp.down = false; for (const b of document.querySelectorAll('.abtn.down')) b.classList.remove('down'); }
@@ -1931,7 +1941,9 @@
   function uiBusy() { return !!(buch.open || cheats.panelOpen || bugs.open || shopOpen || rs.ui || mpOpen || wardOpen || gamesOpen || guideOpen || parentOpen || kids.busy() || radio.open || garden.open || farm.bookOpen || kitchen.open || tycoon.open || room.open || schluessel.open || sammeln.open || camp.open || cinema.open || story.open || town.open || combat.panelOpen || pack.open || pack.tradeOpen() || park.busy() || pool.busy() || bade.busy() || mplus.busy() || schwamm.busy() || raetsel.busy() || taschi.busy() || innen.busy() || play.busy() || sl.t >= 0 || (gm && gm.k === 'hide' && gm.phase === 'count' && gm.it === selfId())); }
   function axes() {
     let jx = (keys.r ? 1 : 0) - (keys.l ? 1 : 0), jy = (keys.u ? 1 : 0) - (keys.d ? 1 : 0);
-    jx += inp.sx; jy += inp.sy; const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
+    jx += inp.sx; jy += inp.sy;
+    if (goTo) { if (jx || jy || P.veh || uiBusy()) goTo = null; else { const dx = goTo.x - P.x, dz = goTo.z - P.z, d = Math.hypot(dx, dz), now = performance.now(); if (d < goTo.best - .15) { goTo.best = d; goTo.bt = now; } if (d < .8 || now - goTo.t > 12000 || now - goTo.bt > 1500) goTo = null; else { const fz = -Math.cos(cam.yaw), fx2 = -Math.sin(cam.yaw), wx = dx / d, wz = dz / d; jy = wx * fx2 + wz * fz; jx = wx * -fz + wz * fx2; jx *= .9; jy *= .9; } } }
+    const l = Math.hypot(jx, jy); if (l > 1) { jx /= l; jy /= l; }
     if (uiBusy()) return [0, 0];
     if (l < .12) { jx = jy = 0; } return [jx, jy];
   }
