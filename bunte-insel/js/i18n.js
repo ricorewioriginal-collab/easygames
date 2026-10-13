@@ -96,7 +96,78 @@
   let lang='de',busy=false;
   try{lang=localStorage.getItem(KEY)||((navigator.language||'de').toLowerCase().startsWith('de')?'de':'en')}catch(_){}
   if(!['de','en'].includes(lang))lang='de';
-  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];return s}
+  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(cache[t])return match[1]+cache[t]+match[3];enqueue(t);if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];return s}
+
+  // Live translation: browser's built-in Translator API first, optional configured
+  // server endpoint second. Never hardcode credentials or send gameplay/save data.
+  const CACHE_KEY='bunteInsel_translation_cache_v1';
+  const cache=(()=>{try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}')}catch(_){return {}}})();
+  let translatorPromise=null,endpoint='',queue=[],queued=new Set(),working=false,lastFailure=0;
+  try{endpoint=String(window.BUNTE_INSEL_TRANSLATE_ENDPOINT||'')}catch(_){}
+  function eligible(t){
+    return lang==='en'&&t.length>=5&&t.length<=340&&/[a-zäöüß]{2}/i.test(t)
+      &&(/[äöüß]/i.test(t)||/\b(der|die|das|und|mit|du|ein|eine|dein|deine|jetzt|hier|nicht|auf|zum|zur|für|ist|sind|hast|kannst|wird|wurde|weiter|bitte|kapitel|aufgabe)\b/i.test(t))
+      &&!/[{<>}]/.test(t);
+  }
+  async function engine(){
+    if(!navigator.onLine)return null;
+    if(!translatorPromise)translatorPromise=(async()=>{
+      try{
+        const api=window.Translator;
+        if(!api||typeof api.create!=='function')return null;
+        if(typeof api.availability==='function'){
+          const status=await api.availability({sourceLanguage:'de',targetLanguage:'en'});
+          if(status==='unavailable')return null;
+        }
+        return await api.create({sourceLanguage:'de',targetLanguage:'en'});
+      }catch(_){return null}
+    })();
+    return translatorPromise;
+  }
+  async function fetchTranslation(t){
+    const e=await engine();
+    if(e){try{return await e.translate(t)}catch(_){}}
+    if(!endpoint)return null;
+    // Endpoint must be provided by the site owner; no public API keys in the game.
+    try{
+      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),6000);
+      try{
+        const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({text:t,source:'de',target:'en'}),signal:ctl.signal});
+        if(!r.ok)return null;
+        const data=await r.json();return typeof data.translation==='string'?data.translation:null;
+      }finally{clearTimeout(timer)}
+    }catch(_){return null}
+  }
+  function saveCache(){
+    try{
+      const keys=Object.keys(cache);
+      if(keys.length>500)for(const k of keys.slice(0,keys.length-500))delete cache[k];
+      localStorage.setItem(CACHE_KEY,JSON.stringify(cache))
+    }catch(_){}
+  }
+  function enqueue(t){
+    if(!eligible(t)||en[t]!==undefined||cache[t]||queued.has(t)||Date.now()-lastFailure<30000)return;
+    if(queue.length>100)return;
+    queue.push(t);queued.add(t);if(!working)void processQueue();
+  }
+  async function processQueue(){
+    working=true;
+    while(queue.length){
+      if(lang!=='en'){queue.length=0;queued.clear();break}
+      const t=queue.shift();queued.delete(t);
+      const result=await fetchTranslation(t);
+      if(typeof result==='string'&&result.trim()&&result.length<1100&&result.trim()!==t){
+        cache[t]=result.trim();saveCache();
+        if(lang==='en')walk(document.body);
+      }else if(!window.Translator&&!endpoint){
+        lastFailure=Date.now();queue.length=0;queued.clear();break;
+      }else{
+        lastFailure=Date.now();
+      }
+    }
+    working=false;
+  }
   function textNode(n){
     if(!n.parentElement||skipped.has(n.parentElement.tagName)||n.parentElement.closest('[data-bi-i18n-skip]'))return;
     let base=originalText.get(n);
@@ -165,6 +236,6 @@
     observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:attrs});
     setLanguage(lang);
   }
-  window.BunteInselI18n={get language(){return lang},setLanguage,t:key=>translate(key),dictionary:en};
+  window.BunteInselI18n={get language(){return lang},setLanguage,t:key=>translate(key),dictionary:en,get liveTranslationAvailable(){return !!(window.Translator||endpoint)},get configuredEndpoint(){return !!endpoint}};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
