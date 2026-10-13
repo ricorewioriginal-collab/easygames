@@ -72,7 +72,7 @@ BI.createInnen = function (G) {
     haus: { w: 9, d: 8, wall: [0xf6e6c8, 0xe8d0b0, 0xd8e8d0, 0xf0d8e0], floor: [0xc89a5a, 0xb88a4a], title: '🏠' }, labor: { w: 11, d: 9, wall: [0xd8e8f0, 0xd8f0e0], floor: [0x9aa8b8], title: '🧪' }, kapitaen: { w: 10, d: 9, wall: [0xe8d8b8, 0xc8b090], floor: [0x8a5a3a], title: '⚓' }, werkstatt: { w: 10, d: 8, wall: [0xd0d8e0, 0xaeb8c4], floor: [0x888c94], title: '🛠️' }, huette: { w: 7, d: 6.4, wall: [0xc8a070, 0xb89060], floor: [0x9a6a3a], title: '🛖' },
     laden: { w: 11, d: 8, wall: [0xfff0c8, 0xd8f0e8], floor: [0xd0c8b0], title: '🛍️' }, schmiede: { w: 10, d: 8, wall: [0x9a9aa8, 0xb0a898], floor: [0x6a6a78], title: '⚒️' },
     turm: { w: 7.4, d: 7.4, wall: [0xc8c8d8, 0xd8c8c0], floor: [0xa8a8b8], title: '🗼' }, zelt: { w: 8.4, d: 7.4, wall: [0xff9ac0, 0xffb04a, 0x9a7af0], floor: [0xc84a6a], title: '⛺' },
-    schloss: { w: 12, d: 10, wall: [0xe8d8f0, 0xc8d0f0], floor: [0xd8c8e8], title: '🏰' }, hoehle: { w: 10, d: 9, wall: [0x4a4658, 0x3a3648], floor: [0x6a6070], title: '🕳️' },
+    schloss: { w: 48, d: 38, wall: [0xe8d8f0, 0xc8d0f0], floor: [0xd8c8e8], title: '🏰' }, hoehle: { w: 10, d: 9, wall: [0x4a4658, 0x3a3648], floor: [0x6a6070], title: '🕳️' },
     pilz: { w: 7.4, d: 6.6, wall: [0xfff0d8, 0xffe0e8], floor: [0xf0c898], title: '🍄' }, frucht: { w: 9, d: 8, wall: [0xffe8a0, 0xffd080], floor: [0xd8a050], title: '🍍' },
     stein: { w: 7.4, d: 6.6, wall: [0xe8b0c0, 0xd89aaa], floor: [0xb88a7a], title: '🪨' }, kopf: { w: 8, d: 7, wall: [0x9ab8b0, 0x8aa8a0], floor: [0x6a8a80], title: '🗿' },
     heil: { w: 12, d: 9, wall: [0xffd6e0, 0xfff0f4], floor: [0xf6e8ec], title: '💖' },
@@ -136,7 +136,47 @@ BI.createInnen = function (G) {
       fur(X0, Z0 - 1.3, 1.3, 1.3, .9, 0x6a3a8a); box(X0, Z0 - 1.3, .9, .9, .6, 0xbfeaff, .9); it('ball', X0, Z0 + .3, 1.9, ['🔮', 'Kristallkugel']); for (const sx of [-1, 1]) for (const sz of [-1, 1]) box(X0 + sx * 2.2, Z0 + sz * 1.8 + .8, .9, .9, .35, [0xff5a8a, 0xffd23f, 0x35d6e0, 0xb48aff][(sx + 1 + (sz + 1) / 2) | 0], .02);
       shelf(X0 - hw + .7, Z0 - 1.5, 'w'); chest(X0 + hw - 1.2, Z0 + 2); lamp(X0 + hw - 1, Z0 - hd + 1.2); plant(X0 - hw + 1, Z0 + hd - 1.2); R.npcAt = [X0 + 1.8, Z0 - .5, 4.2];
     } else if (kind === 'schloss') {
-      box(X0, Z0 - hd + 1.9, 3.4, 2.2, .45, 0xc23a8a); fur(X0, Z0 - hd + 1.3, 1.3, 1.0, 1.0, 0xffd23f); box(X0, Z0 - hd + 1.0, 1.4, .3, 1.9, 0xffd23f, 1.0); for (const sx of [-1, 1]) for (const sz of [0, 1]) { fur(X0 + sx * (hw - 1), Z0 - 1 + sz * 3.4, .9, .9, 3, 0xf6ecff); box(X0 + sx * (hw - 1), Z0 - 1 + sz * 3.4, 1.2, 1.2, .4, 0xffd23f, 3); } box(X0, Z0 + 1, 2, hd * 1.2, .03, 0xc23a3a, .03); chest(X0 + hw - 1.4, Z0 + 3); it('throne', X0, Z0 - hd + 2.9, 1.9, ['👑', 'Auf den Thron setzen']); R.npcAt = [X0 - 2.6, Z0, 4.7];
+      /* Große Kristall-Burg: zentraler Thronsaal, zwei Seitenflügel, Galerie und hohe Fenster. */
+      const stone = 0xded4ec, gold = 0xffd45b, rose = 0x9d4e9f, glass = 0x8fd8ff;
+      box(X0, Z0 - hd + 4, 9, 5, .65, 0xc23a8a); fur(X0, Z0 - hd + 2.2, 3.2, 2.2, 1.2, rose); box(X0, Z0 - hd + 1.4, 2.2, .45, 2.2, gold, 1.2); box(X0, Z0 - hd + .5, 5.4, .28, 2.0, gold, 2.8);
+      box(X0, Z0 + 5, 3.4, 18, .05, 0xc23a3a, .03); box(X0, Z0 + 5, 2.4, 16, .06, 0xffe9b0, .04);
+      /* Teilwände lassen breite Tore offen und teilen Thronsaal, Schatzraum und Musikflügel. */
+      for (const side of [-1, 1]) {
+        const sx = X0 + side * 12;
+        box(sx, Z0, 1.1, 27, 5.6, stone);
+        box(sx, Z0, 1.25, 27.2, .2, rose, 5.6);
+        W.addBox(sx - .6, Z0 - 13.5, sx + .6, Z0 - 4.2, false, 5.7);
+        W.addBox(sx - .6, Z0 + 4.2, sx + .6, Z0 + 13.5, false, 5.7);
+      }
+      for (const sx of [-19, -15, 15, 19]) for (const sz of [-13, -5, 4, 13]) {
+        fur(X0 + sx, Z0 + sz, 1.25, 1.25, 8.5, stone);
+        box(X0 + sx, Z0 + sz, 1.55, 1.55, .35, gold, 8.5);
+      }
+      for (const side of [-1, 1]) for (const sz of [-11, 0, 11]) {
+        const wx = X0 + side * 23.7;
+        box(wx, Z0 + sz, .12, 5.4, 3.3, glass, 4.1);
+        box(wx, Z0 + sz, .24, 5.6, .14, gold, 4.1);
+        box(wx, Z0 + sz, .24, .14, 3.5, gold, 4.1);
+      }
+      for (let i = 0; i < 9; i++) {
+        const y = .25 + i * .32, z = Z0 - 7 - i * .72;
+        box(X0 - 19 + i * .7, z, 3.4, .34, 1.5, stone, y);
+        box(X0 + 19 - i * .7, z, 3.4, .34, 1.5, stone, y);
+      }
+      box(X0, Z0 - 14, 2.6, 12, .22, gold, 5.5);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        const tx = X0 + sx * 22, tz = Z0 + sz * 16;
+        fur(tx, tz, 6.8, 6.8, 15, stone);
+        const tower = new THREE.Mesh(new THREE.ConeGeometry(4.8, 9, 8), new THREE.MeshBasicMaterial({ color: ((sx * sz) > 0 ? 0x9b78d1 : 0x668ad6) }));
+        tower.position.set(tx, 18, tz); grp.add(tower);
+        box(tx, tz, 2.3, 2.3, .5, gold, 10);
+      }
+      chest(X0 + 18, Z0 - 5); shelf(X0 - 18, Z0 - 5, 'w');
+      for (let i = 0; i < 5; i++) { const cx = X0 + (i - 2) * 3, cz = Z0 + 13; box(cx, cz, .6, .6, 1.8 + i % 2, [0xff687f,0xffd34d,0x55b8ff,0x62cf8e,0xb882ff][i]); }
+      lamp(X0, Z0 - 4);
+      it('throne', X0, Z0 - hd + 6, 2.2, ['👑', 'Auf den Thron setzen']);
+      it('stairs', X0 - 16, Z0 - 5, 2.8, ['🪜', 'Galerie erkunden']);
+      R.npcAt = [X0 - 3.6, Z0, 4.8];
     } else if (kind === 'hoehle') {
       for (let k = 0; k < 9; k++) { const sx = (rng() - .5) * (K0.w - 2), sz = (rng() - .5) * (K0.d - 3) - 1; if (Math.hypot(sx, sz) < 2.4) continue; b.cone(X0 + sx, 0, Z0 + sz, .4 + rng() * .4, 1.2 + rng() * 1.8, 0x7a7488, 6); solid(X0 + sx, Z0 + sz, .8, .8, 2); } for (const [dx, dz, col] of [[-3.5, -2.5, 0x9ad8ff], [3.4, -3, 0xff9ad8], [-3, 2.5, 0x9affc8]]) { b.cone(X0 + dx, 0, Z0 + dz, .35, 1.4, col, 5); b.sph(X0 + dx, 1.5, Z0 + dz, .25, col, 1); solid(X0 + dx, Z0 + dz, .6, .6, 1.5); }
       box(X0, Z0 - 1.6, 3.2, 3.2, .05, 0x1a1a24, .02); box(X0, Z0 - 1.6, 2.4, 2.4, .06, 0x000000, .03); for (let k = 0; k < 4; k++) box(X0, Z0 - .4 - k * .55, 3.0 - k * .5, .5, .25, 0x8a8a98, 0); it('stairs', X0, Z0 + .6, 2.2, ['🕳️', 'Abstieg ins Mini-Spiel']); chest(X0 + hw - 1.3, Z0 + 2.4); R.npcAt = [X0 - 2.6, Z0 + 2.4, 1.2];
