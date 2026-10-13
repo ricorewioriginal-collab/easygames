@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f3b3a3e4686b",
- "generated": "2026-10-13T11:56:20+02:00",
- "commit": "6d7e0a735afd4bdee65c2c761c217319d39dbb64",
+ "version": "708807f6f19f",
+ "generated": "2026-10-13T12:05:59+02:00",
+ "commit": "06a8dc5680043db98e9a3ef221c0afa69eed6661",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1243,13 +1243,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 58169,
-   "h": "0033b36e25275b3c3c1541dd997d33a9002fd6abae558a7e8fadbfca9247b326"
+   "s": 58168,
+   "h": "246de9b8d037cc1e34ebf067c378da56d3d7b22b979578aabeaa58bbbd3feb79"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 46373,
-   "h": "300f622ba2b0e69aa674ecd788c06a6baa937290f22bf5ae9dc5f816bfdd08a0"
+   "s": 46361,
+   "h": "debbdd7f1d5941e7c6a5229173aa5b5016352abaef3df54adddc29bf7dd9a2c4"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -1338,13 +1338,13 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 12189,
-   "h": "21c4ab92e86feddf667b8b58c960dcb63633dc548428100c2f1067ba67e95dad"
+   "s": 13473,
+   "h": "6e02865924a013cee69aa20ff7e77360d837f1e86bedb3b6ca6d3609195d5a0c"
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 78448,
-   "h": "7b1a42009a5b0381e817c66d50f9167ca47bf206b33d7ca866813cf01dc372e9"
+   "s": 82630,
+   "h": "800e11cea9fa4100e3034f836a73390b04dca5c7cb384c84deda8e380599f548"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-BzgDj7WR.css",
@@ -4884,7 +4884,7 @@
   {
    "p": "sync/catalog.json",
    "s": 53936,
-   "h": "8ef29dd5897f1e60939b16076318bf18241e95693d374d0887f6dfcb3a5df5cf"
+   "h": "f46a3c27d2343dededbacea558186d8633a13a0e06de1242241168c1b875cb5c"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
