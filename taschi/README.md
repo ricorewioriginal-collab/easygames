@@ -69,3 +69,7 @@ Die Spielmechanik ist aktuell in `game.js` gebündelt und sollte mittelfristig m
 ## Vorbildanalyse (Spielstruktur)
 
 Als Referenz für die übergreifende Spielschleife wurde [Pokémon (Computerspielreihe) – Spielprinzip](https://de.wikipedia.org/wiki/Pok%C3%A9mon_(Computerspielreihe)#Spielprinzip) gelesen: Starterwahl, Routen zwischen Städten, wilde Begegnungen und Trainer, Fang-/Team-/Lagersystem, EP und Entwicklung, Arenen sowie abschließende Meisterschaft. Für TASCHI gelten weiterhin **eigene** Namen, Figuren, Weltgestaltung und die abweichende Zahl von 16 Orden. Der aktuelle Code besitzt die angelegte Kernschleife und die Sternenliga; die Welt benötigt noch deutlich mehr zusammenhängende, gestaltete Wege und storygesteuerte Ereignisse.
+
+## Verbundene Reisewege
+
+Die bestehende Region besitzt nun ein durchgängiges sichtbares Wegenetz vom Startpunkt über die 16 Arenastandorte, aufgestellte Wegweiser mit Zielhinweisen und einen **Reiseführer** unter ☰. Bereits errungene Siegel bleiben bestehen. Die Routen sind zunächst Wege innerhalb der bestehenden Welt, **keine 16 separat ausgearbeiteten großen Regionen**. Die dargestellten Prüfungen, Wege und Wegweiser wurden statisch geprüft; tatsächliche Laufwege, Kollisionen und grafische Darstellung müssen im Browser getestet werden.
