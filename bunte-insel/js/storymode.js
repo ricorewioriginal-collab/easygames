@@ -13,7 +13,8 @@ BI.STORY_ISLES = [
   { key: 'SCHWAMM', icon: '🧽', name: 'Schwammi-Bucht', req: ['seepferd', 'slide', 'kaefer'] }, { key: 'RAETSEL', icon: '🗿', name: 'Rätsel-Insel', req: ['forest', 'sammel', 'quiz'] },
   { key: 'ZOTIK', icon: '🦊', name: 'Zotik & Lunaris', req: ['karussell', 'schluesselreich', 'schwammi'] }, { key: 'RADIO', icon: '📻', name: 'Radio-Insel', req: ['raetsel', 'hoehle', 'kapsel'] },
   { key: 'ATLANTIS', icon: '🔱', name: 'Atlantis', req: ['turm_s', 'schmied', 'forscher20'] }, { key: 'TASCHI', icon: '🔴', name: 'Taschi-Land', req: ['eat', 'party', 'boss'] },
-  { key: 'HUEPF', icon: '🍄', name: 'Hüpfland', req: ['cupwin', 'park', 'gadget'] }
+  { key: 'HUEPF', icon: '🍄', name: 'Hüpfland', req: ['cupwin', 'park', 'gadget'] },
+  { key: 'PRISMA', icon: '🌀', name: 'Prisma-Archipel', req: ['fight', 'gadget', 'chat'] }
 ];
 /* Neue Insel registrieren (Story-Modus sperrt sie automatisch): BI.addStoryIsland({ key:'NEUE', icon:'🏝️', name:'…', req:['sticker1','sticker2','sticker3'] }).
    Wer das vergisst: Jede Welt, die als BI.<NAME> mit x, z, R und Brücke existiert, wird trotzdem automatisch gesperrt und bekommt 3 noch unbenutzte Sticker als Aufgaben. */
