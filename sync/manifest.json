@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e828654b2ce4",
- "generated": "2026-10-13T02:22:38+02:00",
- "commit": "a68eac83936e02ceae78b0ad9135a9566762ff84",
+ "version": "5f1c99f2d94b",
+ "generated": "2026-10-13T00:46:27+00:00",
+ "commit": "021b5023dc7a5aa758e36ee782e9db9e66631dc2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4118,8 +4118,8 @@
   },
   {
    "p": "device.js",
-   "s": 7605,
-   "h": "7ec5f96fc26fd02c320ad786651d90079cdc19f61882b34e135beb850ca30e14"
+   "s": 7705,
+   "h": "95fecd269846858bb661fbb8d319cd797a1835aeb6279e1a529909c5ae9c900f"
   },
   {
    "p": "easygames.js",
@@ -4128,8 +4128,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 35313,
-   "h": "aeeb5980a9ef2813ef4a4f9b32ce0bdaa1fa718356a7e6810b61730a69efd94a"
+   "s": 37677,
+   "h": "cf3e3948e76651dd64ce09fa56795f88332c13623542b16a4a87818c51837597"
   },
   {
    "p": "gamekit.js",
@@ -4283,8 +4283,8 @@
   },
   {
    "p": "index.html",
-   "s": 33090,
-   "h": "db9ed305f31b8f2501bdff4decba32957353ee678f875edd90759079a22d6dc0"
+   "s": 50538,
+   "h": "ecb983ec527c01fe4e2669b64a29397570b8b20666d281c83c299701e1db216e"
   },
   {
    "p": "modes.js",
