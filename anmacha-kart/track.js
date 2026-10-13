@@ -64,6 +64,29 @@ const Track = (() => {
     for (let i = 0; i < N; i++) { const a = (i + N - 1) % N, b = (i + 1) % N, dx = P[b * 2] - P[a * 2], dz = P[b * 2 + 1] - P[a * 2 + 1], l = Math.hypot(dx, dz) || 1; T[i * 2] = dx / l; T[i * 2 + 1] = dz / l; Nm[i * 2] = dz / l; Nm[i * 2 + 1] = -dx / l; }
     for (let i = 0; i < N; i++) { const a = (i + N - 2) % N, b = (i + 2) % N; let da = Math.atan2(T[b * 2], T[b * 2 + 1]) - Math.atan2(T[a * 2], T[a * 2 + 1]); while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; K[i] = Math.abs(da) / (4 * len / N); }
     const tr = { def, N, len, P, T, Nm, K, W: def.w, half: def.w / 2, wallD: def.w / 2 + 4, roughD: def.w / 2 + 1.2 };
+    // Höhenprofil ist Teil der Streckendaten und damit für Host, Clients und Renderer identisch.
+    // Weiche Rampen statt harter Sprünge; Brücken sind echte Abschnitte der Fahrbahn.
+    const profile = {
+      portal: [[0,0],[.12,0],[.18,7],[.31,7],[.38,0],[.57,0],[.67,9],[.78,9],[.86,0],[1,0]],
+      crystal: [[0,0],[.10,0],[.22,11],[.34,11],[.44,2],[.56,0],[.68,15],[.81,15],[.91,0],[1,0]],
+      safari: [[0,0],[.16,0],[.29,5],[.42,5],[.53,0],[.69,0],[.80,6],[.9,6],[1,0]],
+      ruins: [[0,0],[.12,0],[.24,8],[.36,8],[.46,0],[.61,0],[.71,11],[.84,11],[.93,0],[1,0]],
+      dragon: [[0,0],[.10,0],[.27,18],[.40,18],[.58,0],[.70,0],[.82,12],[.90,12],[1,0]],
+      shards: [[0,0],[.13,0],[.25,12],[.37,12],[.49,0],[.61,0],[.72,16],[.84,16],[.95,0],[1,0]],
+      island: [[0,0],[.12,0],[.21,5],[.32,5],[.42,0],[.62,0],[.73,7],[.84,7],[.93,0],[1,0]]
+    }[def.mechanic] || [[0,0],[1,0]];
+    tr.height = f => {
+      const u = ((f % N) + N) % N / N;
+      for (let i=1;i<profile.length;i++) {
+        if (u <= profile[i][0]) {
+          const a=profile[i-1],b=profile[i], t=Math.max(0,Math.min(1,(u-a[0])/(b[0]-a[0])));
+          const smooth=t*t*(3-2*t);
+          return a[1]+(b[1]-a[1])*smooth;
+        }
+      }
+      return 0;
+    };
+    tr.bridge = f => tr.height(f)>3;
     // nächster Punkt: lokale Suche um hint (hint < 0 = alles absuchen); out = {i,f,d}
     tr.nearest = (x, z, hint, out) => {
       let bi = 0, bd = 1e18; const lo = hint < 0 ? 0 : -14, hi = hint < 0 ? N - 1 : 14;
