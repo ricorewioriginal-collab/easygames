@@ -252,8 +252,8 @@ BI.createTaschi = function (G) {
     followUpdate(dt, t, off);
     if (d <= T.R + 140) { for (const f of friends) { f.w -= dt; if (f.w <= 0) { f.w = 2 + Math.random() * 4; const a = Math.random() * TAU, r = Math.random() * 11, c = T.at(T.statue.a, T.statue.b); f.tx = c.x + Math.sin(a) * (4.5 + r); f.tz = c.z + Math.cos(a) * (4.5 + r); }
       const dx = f.tx - f.x, dz = f.tz - f.z, l = Math.hypot(dx, dz); if (l > .15) { const k = Math.min(l, 1.6 * dt) / l; f.x += dx * k; f.z += dz * k; f.h = Math.atan2(dx, dz); } f.hop = Math.max(0, f.hop - dt * 2.2);
-      f.g.position.set(f.x, Math.abs(Math.sin(t * (l > .15 ? 7 : 2) + f.w)) * (l > .15 ? .12 : .02) + Math.sin(f.hop * Math.PI) * .9, f.z); f.g.rotation.y = f.h; }
-    for (const n of npcs) if (n.c && n.c.group) { n.c.group.position.y = n.id === 'aurelia' ? .7 + Math.sin(t * 2) * .02 : Math.sin(t * 2 + n.x) * .02; } }
+      f.g.position.set(f.x, W.groundY(f.x, f.z) + Math.abs(Math.sin(t * (l > .15 ? 7 : 2) + f.w)) * (l > .15 ? .12 : .02) + Math.sin(f.hop * Math.PI) * .9, f.z); f.g.rotation.y = f.h; }
+    for (const n of npcs) if (n.c && n.c.group) { const gp = n.c.group.position; if (n.gy == null) n.gy = W.groundY(gp.x, gp.z); gp.y = n.id === 'aurelia' ? .7 + Math.sin(t * 2) * .02 : n.gy + Math.sin(t * 2 + n.x) * .02 + .02; } }
     if (P.veh || B || panelOpen || P.y > 1.5) { lx = null; return; }
     let z = zoneAt(P.x, P.z); if (z && K.off() && z.world !== 'TASCHI') z = null; if (lx != null && z) { accum += Math.hypot(P.x - lx, P.z - lz); if (accum > nextEnc) { accum = 0; nextEnc = 7 + Math.random() * 9; if (S().team.some(m => m.hp > 0)) { K.encounter(z); } else if (hintT <= 0) { hintT = 12; say(S().team.length ? '💤 Dein Team ist müde – ab ins Heilhaus!' : '🔴 Im Gras raschelt es… Hol dir erst ein Taschi bei Professor Ulme!', 3600); } } } else if (!z) accum = Math.min(accum, 3);
     hintT -= dt; lx = P.x; lz = P.z; zoneWas = z;

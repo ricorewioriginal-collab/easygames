@@ -103,7 +103,7 @@ BI.createRainbow = function (G) {
   /* Tanzende Menge + Künstler (eigene Animation, nur in der Nähe) */
   const crowd = [], rr = BI.rng(77), SKN = BI.SKINS.slice(0, 9), HRC = BI.HAIRS, STY = BI.STYLES.filter(q => q !== 'bald' && q !== 'none'), SH = [0xff3b3b, 0xff9a2e, 0xffe14a, 0x4cd07d, 0x3fa0ff, 0x9b4de0, 0xff8fc8, 0xffffff, 0x7de0d0], pk = a => a[(rr() * a.length) | 0];
   const lookOf = kid => ({ shirt: pk(SH), pants: pk([0x3d4a7a, 0x16335e, 0x7a5ce0, 0x23262d, 0xffffff]), hair: pk(HRC), skin: pk(SKN), style: pk(STY), dress: rr() < .3, hat: rr() < .2 ? 'party' : 'none', scale: kid ? .62 + rr() * .08 : .92 + rr() * .1 });
-  const person = (x, z, y, kid, h) => { const c = BI.makeChar(lookOf(kid)); c.group.position.set(x, y, z); c.group.rotation.y = h; scene.add(c.group); crowd.push({ c, y, ph: rr() * 6, st: (rr() * 3) | 0, x, z }); };
+  const person = (x, z, y, kid, h) => { if (!y) y = W.groundY(x, z); /* auf der Tanzfläche stehen, nicht darin */ const c = BI.makeChar(lookOf(kid)); c.group.position.set(x, y, z); c.group.rotation.y = h; scene.add(c.group); crowd.push({ c, y, ph: rr() * 6, st: (rr() * 3) | 0, x, z }); };
   for (let i = 0; i < 30; i++) { const x = R.x - 31 + 1.3 + (i % 5) * 2.6 + (rr() - .5) * 1.2, z = R.z - 7.8 + 1.3 + ((i / 5) | 0) * 2.6 + (rr() - .5) * 1.2; person(x, z, 0, i % 6 === 0, Math.atan2(ST.x - x, ST.z - z)); }
   for (let i = 0; i < 4; i++) person(ST.x + 1.5 - (i % 2) * 2.2, ST.z - 4.5 + i * 3, ST.y, false, Math.PI / 2);
   /* ===== Pride-Parade: Trucks, Anhänger und Menschen, die friedlich feiern und hinterherlaufen – dreht rund um den Brunnen ===== */
@@ -163,7 +163,7 @@ BI.createRainbow = function (G) {
     const dP = Math.hypot(P.x - R.x, P.z - R.z), onP = dP < 90;
     if (onP !== pLive) { pLive = onP; for (const v of parade) v.g.visible = onP; for (const w of walkers) w.c.group.visible = onP; }
     if (onP) { ps += dt * PR.v; for (const v of parade) { const [x, z, h] = pAt(v.d, 0); v.g.position.set(x, 0, z); v.g.rotation.y = h; for (const q of v.dancers) { q.c.dance(t + q.ph, q.st); q.c.group.position.y = (v.dancers.length === 3 ? .85 : 1.2) + Math.abs(Math.sin((t + q.ph) * 8)) * .1; } }
-      for (const w of walkers) { const [x, z, h] = pAt(w.d, w.off); w.c.group.position.set(x, Math.abs(Math.sin(t * 7 + w.ph)) * .05, z); w.c.group.rotation.y = h; w.c.pose(t * 7 + w.ph, .7, false); } }
+      for (const w of walkers) { const [x, z, h] = pAt(w.d, w.off); w.c.group.position.set(x, W.groundY(x, z) + Math.abs(Math.sin(t * 7 + w.ph)) * .05, z); w.c.group.rotation.y = h; w.c.pose(t * 7 + w.ph, .7, false); } }
     if (on !== live) { live = on; for (const q of crowd) q.c.group.visible = on; scr.visible = on; }
     if (on) { const i = ((t / 12) | 0) % SONGS.length; if (i !== song) paint(i); for (const q of crowd) { q.c.dance(t + q.ph, q.st); q.c.group.position.y = q.y + Math.abs(Math.sin((t + q.ph) * 8)) * .14; } ts -= dt; if (ts <= 0 && dS < 50) { ts = 1.1; fx.burst(ST.x + 4, 9, ST.z + (Math.random() - .5) * 12, 4, COLS, 3, 1.6, 22, 2); } }
     if (Math.hypot(P.x - R.x, P.z - R.z) > R.R + 30) return; tk -= dt; if (tk > 0) return; tk = 1.3; fx.burst(R.x, 3.6, R.z, 4, COLS, 2.4, 1.6, 22, 2); };

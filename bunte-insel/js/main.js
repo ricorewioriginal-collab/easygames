@@ -23,8 +23,9 @@
   canvas.addEventListener('webglcontextrestored', () => { graphicsLost = false; graphicsNotice.hidden = true; if (graphicsReady) { resize(); applyNight(); } }, false);
   const baseQuality = () => save.eco || save.gfx === 'eco' ? 2 : save.gfx === 'sharp' ? 0 : coarse ? 1 : 0;
   let quality = baseQuality();
-  const QUAL = [2, coarse ? 1.7 : 1.6, 1, .75], PIXEL_BUDGET = [4200000, 2800000, 1700000, 1000000];
-  const pixelRatioFor = (w, h) => Math.max(.35, Math.min(window.devicePixelRatio || 1, QUAL[quality], Math.sqrt(PIXEL_BUDGET[quality] / (w * h))));
+  /* Schärfe: Stufen 0–3. Untergrenze = nie gröber als der Bildschirm selbst (Handy/Tablet 1 Pixel pro CSS-Pixel, PC/TV 0,85) – vorher bis 0,35/0,75 = pixelig */
+  const QUAL = [2, coarse ? 1.7 : 1.6, 1.25, 1], PIXEL_BUDGET = [4200000, 2800000, 2000000, 1500000];
+  const pixelRatioFor = (w, h) => { const dpr = window.devicePixelRatio || 1, floor = Math.min(dpr, coarse ? 1 : .85); return Math.max(floor, Math.min(dpr, QUAL[quality], Math.sqrt(PIXEL_BUDGET[quality] / (w * h)))); };
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 1.4, 640);
   const hemi = new THREE.HemisphereLight(0xdff0ff, 0x8fb06a, .85), sun = new THREE.DirectionalLight(0xfff2d8, .75);
   sun.position.set(60, 100, 40); scene.add(hemi, sun, sun.target);
@@ -405,7 +406,7 @@
       if (d < s.r && inp.horn && v.spec.water) { s.prog += dt / 3; flame.scale.setScalar(Math.max(.05, 1 - s.prog)); fx.emit(s.fx + (Math.random() - .5) * 2, 1 + Math.random() * 3, s.fz + (Math.random() - .5) * 2, 0, 2, 0, 1, 70, .6, .6, .6, -1, .6); if (s.prog >= 1) { flame.visible = false; stepDone(); } }
       else if (flame.visible) { flame.scale.y = 1 - s.prog * .9 + Math.sin(t * 14) * .08; if (Math.random() < dt * 12) fx.emit(s.fx + (Math.random() - .5) * 1.5, 3, s.fz + (Math.random() - .5) * 1.5, 0, 3, 0, 1.1, 60, .3, .3, .3, -1, .5); }
     }
-    if (mNpc) { mNpc.c.pose(t * 6, .2, true); mNpc.c.group.position.y = Math.abs(Math.sin(t * 5)) * .25; }
+    if (mNpc) { mNpc.c.pose(t * 6, .2, true); mNpc.c.group.position.y = W.groundY(mNpc.x, mNpc.z) + Math.abs(Math.sin(t * 5)) * .25; }
     beacon.material.opacity = .26 + Math.sin(t * 4) * .08; beaconRing.scale.setScalar((beaconRing.userData.k || 1) * (1 + (t * 1.3 % 1) * .6)); beaconRing.material.opacity = .7 * (1 - (t * 1.3 % 1));
   }
   function setPhase(s, p) { s.phase = p; updateHud(); }
@@ -2303,6 +2304,13 @@
   addEventListener('resize', resize); resize(); graphicsReady = true;
   let last = performance.now(), fpsAcc = 0, fpsN = 0, lowCount = 0, fastCount = 0, hudTick = 0, miniTick = 0;
   P.veh = null; cam.x = 0; cam.z = 40; cam.y = 7; cam.shake = 0;
+  /* Figuren, die beim Aufbau fest auf Höhe 0 gestellt wurden (Mama/Papa, Ladenbesitzer, Bademeister …), einmal auf den Bodenbelag stellen.
+     Bewegte Figuren rechnen ihre Höhe selbst über W.groundY; wer später wieder auf 0 gesetzt wird, bleibt einfach wie bisher. */
+  let snapT = 0; const _sp = new THREE.Vector3();
+  function snapFigures() {
+    scene.traverse(g => { const u = g.userData; if (!u || !u.opts || u.gSnap) return; u.gSnap = true; const pa = g.parent; if (!pa) return;
+      g.getWorldPosition(_sp); if (Math.abs(_sp.y) > .002 || Math.abs(pa.matrixWorld.elements[5] - 1) > 1e-3) return; const gy = W.groundY(_sp.x, _sp.z); if (gy > .005 && gy < .25) g.position.y += gy; });
+  }
   function frame(now) {
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > .1) dt = .1; if (dt <= 0) return;
@@ -2312,8 +2320,9 @@
     if (fpsN >= 45) {
       const avg = fpsAcc / fpsN; fpsAcc = fpsN = 0;
       if (state === 'play' && save.gfx !== 'sharp') {
-        if (avg > .027) { fastCount = 0; if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } }
-        else if (avg < .0175 && quality > baseQuality()) { lowCount = 0; if (++fastCount >= 8) { quality--; fastCount = 0; resize(); } }
+        /* erst unter ~28 Bildern/s gröber, schon ab ~42 Bildern/s wieder schärfer (vorher: gröber ab 37, schärfer erst ab 57 – viele Geräte blieben dauerhaft pixelig) */
+        if (avg > .036) { fastCount = 0; if (++lowCount >= 2 && quality < 3) { quality++; lowCount = 0; resize(); } }
+        else if (avg < .024 && quality > baseQuality()) { lowCount = 0; if (++fastCount >= 4) { quality--; fastCount = 0; resize(); } }
         else { lowCount = 0; fastCount = 0; }
       }
     }
@@ -2332,6 +2341,7 @@
     if (toastT > 0) { toastT -= dt * 1000; if (toastT <= 0) $('toast').classList.remove('show'); }
     if (saveT > 0) { saveT -= dt; if (saveT <= 0) persist(); }
     if (state === 'play') { miniTick -= dt; if (miniTick <= 0) { miniTick = .2; drawMini(); } }
+    if ((snapT -= dt) <= 0) { snapT = 2; snapFigures(); }
     updateContactShadows(); if (!tv.render()) renderer.render(scene, camera);
   }
   spawnRC(true); for (const tv of BI.TOYVEH) if (save.owned.includes(tv)) spawnRC(true, tv);
