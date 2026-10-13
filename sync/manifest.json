@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5a3959a61528",
- "generated": "2026-10-13T16:05:32+02:00",
- "commit": "46b2b0026533079f4923381624cc4ad5ecfeb55f",
+ "version": "d622dd6111e7",
+ "generated": "2026-10-13T16:12:38+02:00",
+ "commit": "aef46888137f906829ca4155fac0d201f07c63d3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4413,8 +4413,8 @@
   },
   {
    "p": "games.js",
-   "s": 13329,
-   "h": "20200791c89db40f5a8c50b84040c48e9e9fa7c3c2f1b6ed8cfc6855ac8d81c6"
+   "s": 13672,
+   "h": "d6fbc314771359c20eace1eaa28ca11054d6e3e5066819c8451b03584c10342a"
   },
   {
    "p": "gay-life/index.html",
@@ -4993,8 +4993,23 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 56641,
-   "h": "90cc4726569f0ea2c578499ef42e901405be0bed89b6dde32f372352fdccc928"
+   "s": 57146,
+   "h": "24a024c87721b286a20763b0b74894117c7eba97103c5bbdb06a85314a261df6"
+  },
+  {
+   "p": "taschi/game.js",
+   "s": 85165,
+   "h": "8672f87f0f02d77b018743a7481bea34bb34e77ea22e2f82e77c511ec932ea9d"
+  },
+  {
+   "p": "taschi/index.html",
+   "s": 14389,
+   "h": "9571234acc3c796c429e58fe1076515b4bc39e5de24af249f80317b722b02309"
+  },
+  {
+   "p": "taschi/vite.config.mjs",
+   "s": 929,
+   "h": "722bcf0e7eabd6475f355575a277281e7e06f4b502f56bec7941107073f113e2"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",

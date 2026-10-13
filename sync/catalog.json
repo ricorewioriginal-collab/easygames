@@ -6,6 +6,22 @@
  },
  "games": [
   {
+   "id": "taschi",
+   "title": "TASCHI – Die 16 Lichter",
+   "desc": "Eigenständiges 3D-Taschi-Abenteuer: entdecke die Welt der 16 Lichter, sammle deine Taschis und erlebe die Reise direkt im Browser auf PC und Smartphone.",
+   "icon": "✨",
+   "img": null,
+   "bg": "linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)",
+   "glow": "rgba(167,139,250,.48)",
+   "path": "taschi/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": null,
+   "size": 100483,
+   "files": 3,
+   "offline": true
+  },
+  {
    "id": "zotik",
    "title": "ZOTIK – Die Splitter der Welten",
    "desc": "Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik reist durch 10 Welten, Kämpfe, Quests, Bosskämpfe, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.",
