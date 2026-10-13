@@ -100,7 +100,7 @@ class ContentStore(private val root: File, private val baseline: BaselineSource?
 
     fun newTmpFile(): File {
         tmpDir.mkdirs()
-        return File.createTempFile("dl", ".part", tmpDir)
+        return File.createTempFile("download-", ".part", tmpDir)
     }
 
     /** Löscht übrig gebliebene Arbeitsdateien (nur aufrufen, wenn kein Sync läuft). */

@@ -211,6 +211,7 @@ class SyncEngine(
         }
         val cs = ExecutorCompletionService<Unit>(pool)
         var firstError: Throwable? = null
+        var finished = false
         try {
             for (e in files) cs.submit(Callable { fetchFile(run, e) })
             for (i in files.indices) {
@@ -223,12 +224,12 @@ class SyncEngine(
                     if (cause !is SyncCancelledException) break
                 } catch (ex: InterruptedException) {
                     Thread.currentThread().interrupt()
-                    run.aborted.set(true)
                     throw SyncCancelledException()
                 }
             }
+            finished = firstError == null && !run.aborted.get()
         } finally {
-            run.aborted.set(true)           // laufende Worker stoppen beim nächsten Block
+            if (!finished) run.aborted.set(true)   // verbleibende Worker stoppen beim nächsten Block
             pool.shutdownNow()
             try {
                 pool.awaitTermination(10, TimeUnit.SECONDS)
