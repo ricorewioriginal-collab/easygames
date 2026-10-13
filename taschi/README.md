@@ -20,7 +20,7 @@ Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** ein
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
 - Handy: Touch-Joystick und Aktionsschaltflächen.
 - **Team**, **Taschidex**, **Karte**, **Pause** als sichtbare Schaltflächen.
-- Pause: Reisekarte, Abenteuerbuch, Geschichte, Spielstand als JSON exportieren oder importieren.
+- Pause: Reisekarte, Abenteuerbuch, Geschichte, Spielstand als JSON exportieren oder importieren. Drei Speicherplätze und Neustart je Spielplatz.
 - Drei wählbare lokale Speicherplätze und automatisches Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
 - Import prüft Dateigröße und Spielstandsformat; beschädigte Eingaben werden abgewiesen.
 
@@ -28,11 +28,11 @@ Die Three.js-Version wird **lokal aus `../bunte-insel/vendor/three.min.js`** ein
 
 - 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
 - Acht Elementtypen und elementbasierte Wirksamkeiten, Angriffs- und Verteidigungswerte, EP, Levelaufstiege und einige Entwicklungen.
-- Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Tränke.
-- 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.
+- Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Tränke. Sternmünzen aus Kämpfen und ein kaufbasierter Fangladen.
+- 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Im Kampf können eigene Begleiter gewechselt werden. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.
 - Eigenständige 3D-Kampfplattform mit sichtbaren Modellen beider Taschis.
-- 6 Dörfer mit Begegnungen und Rastaktionen; 4 Höhlen mit **begehbarem einfachem 3D-Interieur**, Kristallsuche, Wildbegegnungen und Ausgang.
-- Fünf Story-Kapitel, Abenteuerbuch, Richtungsanzeige zur nächsten Arena, freies Erkunden nach der 16. Herausforderung.
+- 6 Dörfer mit eigenen Bewohnern, Aufgaben, Begegnungen, Belohnungen und Rastaktionen; 4 Höhlen mit **begehbarem einfachem 3D-Interieur**, Kristallsuche, Wildbegegnungen und Ausgang.
+- Fünf Story-Kapitel, Abenteuerbuch, Richtungsanzeige zur nächsten Arena, je nach Gebiet unterschiedliche wilde Taschi-Typen, freies Erkunden nach der 16. Herausforderung.
 - Mobile Rendering-Auflösung begrenzt und Blüten per InstancedMesh zusammengefasst.
 
 ## Aktuelle Qualitätsgrenzen
