@@ -478,7 +478,32 @@ $('slotselect').onclick=()=>{
  chooseSaveSlot();
 };
 
+
+const mini=$('minimap'),mctx=mini.getContext('2d');
+let miniNext=0;
+function drawMinimap(){
+ if(!mctx)return;
+ const w=mini.width,h=mini.height,scale=1.13;
+ mctx.clearRect(0,0,w,h);
+ mctx.save();mctx.beginPath();mctx.arc(w/2,h/2,72,0,Math.PI*2);mctx.clip();
+ mctx.fillStyle=insideCave?'#374759':'#65a575';mctx.fillRect(0,0,w,h);
+ if(insideCave){mctx.strokeStyle='#d1d5cf';mctx.strokeRect(11,11,128,128);}
+ else{
+ const convert=(x,z)=>[w/2+(x-player.position.x)*scale,h/2+(z-player.position.z)*scale];
+ mctx.strokeStyle='#d4c291';mctx.lineWidth=10;mctx.beginPath();
+ let a=convert(0,-60),b=convert(0,60);mctx.moveTo(...a);mctx.lineTo(...b);mctx.stroke();
+ a=convert(-60,-18);b=convert(60,-18);mctx.beginPath();mctx.moveTo(...a);mctx.lineTo(...b);mctx.stroke();
+ for(const item of villages){const [x,y]=convert(item.x,item.z);mctx.fillStyle='#fff5cb';mctx.fillRect(x-4,y-4,8,8)}
+ for(const item of caves){const [x,y]=convert(item.x,item.z);mctx.fillStyle='#8d86be';mctx.beginPath();mctx.arc(x,y,5,0,Math.PI*2);mctx.fill()}
+ for(const item of gyms){const [x,y]=convert(item.x,item.z);mctx.fillStyle=item.gym<save.badges?'#f7cf70':'#e7eeee';mctx.beginPath();mctx.arc(x,y,4,0,Math.PI*2);mctx.fill()}
+ }
+ mctx.restore();
+ mctx.beginPath();mctx.arc(75,75,7,0,Math.PI*2);mctx.fillStyle='#f95a49';mctx.fill();
+ mctx.lineWidth=2;mctx.strokeStyle='#fff';mctx.stroke();
+ mctx.fillStyle='#fff';mctx.font='bold 13px sans-serif';mctx.fillText('N',71,12);
+}
+
 const clock=new THREE.Clock();let time=0;
 function animate(){requestAnimationFrame(animate);const dt=Math.min(.05,clock.getDelta());time+=dt;if(!locked){const dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft'))+joyX,dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'))+joyY,len=Math.hypot(dx,dz);if(len>.12){const vx=dx/len*dt*7,vz=dz/len*dt*7,nx=Math.max(insideCave?270:-60,Math.min(insideCave?330:60,player.position.x+vx)),nz=Math.max(insideCave?-24:-60,Math.min(insideCave?24:60,player.position.z+vz));if(insideCave||!colliders.some(c=>Math.hypot(nx-c.x,nz-c.z)<c.r+.45)){player.position.x=nx;player.position.z=nz}player.rotation.y=Math.atan2(dx,dz);steps+=dt;if(steps>1.8){steps=0;if(!insideCave){save.x=player.position.x;save.z=player.position.z;persist()}if(insideCave&&Math.random()<.3)findWild(['geist','gestein','wasser','elektro'][caves.indexOf(insideCave)]);if(!insideCave){const habitat=grass.find(g=>Math.hypot(g.x-save.x,g.z-save.z)<g.r);if(habitat&&Math.random()<.38)findWild(habitat.type)}}}}follower.position.lerp(new THREE.Vector3(player.position.x-1.3,.12+Math.sin(time*3)*.12,player.position.z+1.5),Math.min(1,dt*5));follower.rotation.y=player.rotation.y;follower.visible=!combat;player.visible=!combat;if(combat){battleFriends.position.y=Math.sin(time*2)*.07;battleFoes.position.y=Math.sin(time*2.2+1)*.06}
-near=(insideCave?[{x:300,z:23,label:'Höhlenausgang',exit:true},...crystalLocations.map(([x,z],i)=>({x:300+x,z,label:'Kristall '+(i+1),crystal:i}))]:[...places,...gyms,...caves.map(c=>({...c,cave:true})),...villages.map(v=>({...v,label:v.name,village:true})),...routeTrainers.map(t=>({...t,label:'Trainer '+t.name}))]).map(p=>({...p,dist:Math.hypot(p.x-player.position.x,p.z-player.position.z)})).sort((a,b)=>a.dist-b.dist)[0];if(near.dist>9)near=null;$('interact').textContent=near?'✦ '+(near.exit?'Verlassen':near.crystal!==undefined?'Kristall':near.trainer!==undefined?'Trainer':near.cave?'Höhle':near.village?'Dorf':near.gym!==undefined?'Arena':near.label==='Heilhaus'?'Heilen':near.label==='Fangladen'?'Shop':'Reden'):'Aktion · E';if(combat){camera.position.lerp(new THREE.Vector3(191,9,17),Math.min(1,dt*4));camera.lookAt(180,1.5,0)}else{camera.position.lerp(new THREE.Vector3(player.position.x+8.5,11.5,player.position.z+14),Math.min(1,dt*3.5));camera.lookAt(player.position.x,1.4,player.position.z-4)}$('objective').textContent=insideCave?'Höhlenexpedition · Drei Kristalle finden':directionToNext();soundtrack();if(toastUntil&&performance.now()>toastUntil){$('message').style.display='none';toastUntil=0}renderer.render(scene,camera)}
+near=(insideCave?[{x:300,z:23,label:'Höhlenausgang',exit:true},...crystalLocations.map(([x,z],i)=>({x:300+x,z,label:'Kristall '+(i+1),crystal:i}))]:[...places,...gyms,...caves.map(c=>({...c,cave:true})),...villages.map(v=>({...v,label:v.name,village:true})),...routeTrainers.map(t=>({...t,label:'Trainer '+t.name}))]).map(p=>({...p,dist:Math.hypot(p.x-player.position.x,p.z-player.position.z)})).sort((a,b)=>a.dist-b.dist)[0];if(near.dist>9)near=null;$('interact').textContent=near?'✦ '+(near.exit?'Verlassen':near.crystal!==undefined?'Kristall':near.trainer!==undefined?'Trainer':near.cave?'Höhle':near.village?'Dorf':near.gym!==undefined?'Arena':near.label==='Heilhaus'?'Heilen':near.label==='Fangladen'?'Shop':'Reden'):'Aktion · E';if(combat){camera.position.lerp(new THREE.Vector3(191,9,17),Math.min(1,dt*4));camera.lookAt(180,1.5,0)}else{camera.position.lerp(new THREE.Vector3(player.position.x+8.5,11.5,player.position.z+14),Math.min(1,dt*3.5));camera.lookAt(player.position.x,1.4,player.position.z-4)}$('objective').textContent=insideCave?'Höhlenexpedition · Drei Kristalle finden':directionToNext();soundtrack();if(performance.now()>miniNext){drawMinimap();miniNext=performance.now()+400}if(toastUntil&&performance.now()>toastUntil){$('message').style.display='none';toastUntil=0}renderer.render(scene,camera)}
 stats();showTitle();animate();
