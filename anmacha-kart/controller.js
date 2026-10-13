@@ -1,6 +1,7 @@
 /* Handy-Controller: koppelt per Code/QR und lenkt das Kart auf dem Host-Bildschirm. Gas per Knopf. */
 window.startController = function () {
   const root = $('ctl'); let peer = null, conn = null, ph = 'lobby', tries = 0, sendT = 0, last = '', lastAt = 0, wake = null, joined = false, kicked = false, joinT = 0, reT = 0;
+  let itemSeq = 0, prevItem = 0;
   let name = '', logo = 6, ch = 1, kt = 0; try { name = localStorage.getItem('akName') || ''; logo = +localStorage.getItem('akLogo'); if (!(logo >= 0 && logo < 13)) logo = 6; ch = +localStorage.getItem('akChar'); if (!(ch >= 0 && ch < CHARS.length)) ch = 1; kt = +localStorage.getItem('akKart'); if (!(kt >= 0 && kt < KARTS.length)) kt = 0; } catch (e) {}
   // Feste Geräte-Kennung: nach Verbindungsabbruch (Bildschirmsperre, WLAN-Wechsel) bekommt das Handy sein Kart zurück
   let viewOn = false; try { viewOn = localStorage.getItem('akView') === '1'; } catch (e) {}
@@ -38,7 +39,7 @@ window.startController = function () {
     // Fehler des Vermittlungs-Servers stören eine laufende Verbindung nicht – dann einfach weiterfahren
     pe.on('error', e => { if (pe !== peer || (conn && conn.open)) return; if (!joined) screenJoin(e.type === 'peer-unavailable' ? 'Raum ' + JOIN + ' nicht gefunden. Ist die Lobby offen?' : 'Verbindungsfehler (' + e.type + ').'); else retry(); });
     pe.on('open', () => {
-      const c = conn = pe.connect('amk-' + JOIN, { reliable: false, serialization: 'json' }); const to = setTimeout(() => { if (c === conn && !c.open) { if (joined) retry(); else screenJoin('Keine Antwort vom Spiel. Code richtig?'); } }, 9000);
+      const c = conn = pe.connect('amk-' + JOIN, { reliable: false, serialization: 'json' , reliable: true }); const to = setTimeout(() => { if (c === conn && !c.open) { if (joined) retry(); else screenJoin('Keine Antwort vom Spiel. Code richtig?'); } }, 9000);
       // Beitritt wiederholen, bis das Spiel antwortet (der Kanal ist bewusst unzuverlässig = schnell)
       c.on('open', () => { clearTimeout(to); tries = 0; const j = () => tx({ t: 'join', name, logo, ch, kt, cid, view: viewOn }); j(); clearInterval(joinT); joinT = setInterval(j, 1000); });
       c.on('data', onData);
@@ -118,9 +119,9 @@ window.startController = function () {
   function startPlay() {
     root.classList.add('play'); root.innerHTML = '<div class="hudline"></div><div class="tc" id="cz" style="display:block"></div>'; buildTouch($('cz'), st); $('cz').addEventListener('pointerdown', full); if (viewOn && M && M.ok) viewStart();
     try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { wake = w; }).catch(() => {}); } catch (e) {}
-    clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const msg = { t: 'in', s: Math.round(s * 100) / 100, g: st.g | pa.g, b: st.b | pa.b, d: st.d | pa.d, i: st.i | pa.i }, k = msg.s + '|' + msg.g + msg.b + msg.d + msg.i, now = Date.now(); if (k !== last || now - lastAt > 250) { last = k; lastAt = now; tx(msg); } }, 33);
+    clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const pressed = st.i | pa.i; if (pressed && !prevItem) itemSeq++; prevItem = pressed; const msg = { t: 'in', s: Math.round(s * 100) / 100, g: st.g | pa.g, b: st.b | pa.b, d: st.d | pa.d, i: pressed, n: itemSeq }, k = msg.s + '|' + msg.g + msg.b + msg.d + msg.i, now = Date.now(); if (k !== last || now - lastAt > 250) { last = k; lastAt = now; tx(msg); } }, 33);
     try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {}
   }
-  function stopPlay() { viewStop(); clearInterval(sendT); sendT = 0; ph = 'lobby'; try { touchReset && touchReset(); } catch (e) {} for (const k in st) st[k] = 0; last = ''; try { wake && wake.release(); } catch (e) {} wake = null; }
+  function stopPlay() { viewStop(); clearInterval(sendT); sendT = 0; ph = 'lobby'; try { touchReset && touchReset(); } catch (e) {} for (const k in st) st[k] = 0; prevItem = 0; last = ''; try { wake && wake.release(); } catch (e) {} wake = null; }
   screenJoin();
 };
