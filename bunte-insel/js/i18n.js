@@ -130,7 +130,44 @@
   let lang='de',busy=false;
   try{lang=localStorage.getItem(KEY)||((navigator.language||'de').toLowerCase().startsWith('de')?'de':'en')}catch(_){}
   if(!['de','en'].includes(lang))lang='de';
-  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(cache[t])return match[1]+cache[t]+match[3];if(t.endsWith('“ hast du schon geschafft! 🏆'))return match[1]+t.slice(0,-'“ hast du schon geschafft! 🏆'.length)+'” is already complete! 🏆'+match[3];enqueue(t);if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];const counter=t.match(/^(.*?)\s+(\d+\/\d+)$/);if(counter&&en[counter[1]])return match[1]+en[counter[1]]+' '+counter[2]+match[3];const suffixed=t.match(/^(.*?)(\s*[·•]\s*\d+)$/);if(suffixed&&en[suffixed[1]])return match[1]+en[suffixed[1]]+suffixed[2]+match[3];const qualified=t.match(/^(.*?)\s*(\(.*\))$/);if(qualified&&en[qualified[1]])return match[1]+en[qualified[1]]+' '+(en[qualified[2]]||qualified[2])+match[3];const emojiCounter=t.match(/^(\S+\s+)(.*?)\s+(\d+\/\d+)$/);if(emojiCounter&&en[emojiCounter[2]])return match[1]+emojiCounter[1]+en[emojiCounter[2]]+' '+emojiCounter[3]+match[3];return s}
+  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(cache[t])return match[1]+cache[t]+match[3];if(t.endsWith('“ hast du schon geschafft! 🏆'))return match[1]+t.slice(0,-'“ hast du schon geschafft! 🏆'.length)+'” is already complete! 🏆'+match[3];enqueue(t);if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];const counter=t.match(/^(.*?)\s+(\d+\/\d+)$/);if(counter&&en[counter[1]])return match[1]+en[counter[1]]+' '+counter[2]+match[3];const suffixed=t.match(/^(.*?)(\s*[·•]\s*\d+)$/);if(suffixed&&en[suffixed[1]])return match[1]+en[suffixed[1]]+suffixed[2]+match[3];const qualified=t.match(/^(.*?)\s*(\(.*\))$/);if(qualified&&en[qualified[1]])return match[1]+en[qualified[1]]+' '+(en[qualified[2]]||qualified[2])+match[3];const emojiCounter=t.match(/^(\S+\s+)(.*?)\s+(\d+\/\d+)$/);if(emojiCounter&&en[emojiCounter[2]])return match[1]+emojiCounter[1]+en[emojiCounter[2]]+' '+emojiCounter[3]+match[3];const fr=fragment(t);if(fr)return match[1]+fr+match[3];return s}
+  /* Zusammengesetzte Texte („Bauer Heinz: “ + Satz, Zähler mit Zahlen …): bekannte Teilstücke
+     ersetzen, längste zuerst, nur an Wortgrenzen. Ergebnis wird gecacht. */
+  const fragCache=new Map();let fragIndex=null,numIndex=null;
+  const isL=c=>!!c&&/\p{L}/u.test(c);
+  function buildIndex(){
+    fragIndex=new Map();numIndex=new Map();
+    for(const k in en){const v=en[k];if(typeof v!=='string'||v===k||k.length<3||!/\p{L}/u.test(k))continue;
+      if(/\d/.test(k)){const nk=k.replace(/\d+/g,'#');if(!numIndex.has(nk))numIndex.set(nk,k)}
+      if(/^[A-Za-z]{1,4}$/.test(k))continue; /* kurze Wörter wie „Rock“, „Kind“ wären auch Englisch */
+      const h=k.slice(0,2);let l=fragIndex.get(h);if(!l)fragIndex.set(h,l=[]);l.push(k)}
+    for(const l of fragIndex.values())l.sort((a,b)=>b.length-a.length);
+    fragCache.clear();
+  }
+  function fragment(t){
+    if(t.length>600||!/\p{L}{2}/u.test(t))return null;
+    let r=fragCache.get(t);if(r!==undefined)return r;
+    if(!fragIndex)buildIndex();
+    r=null;
+    if(/\d/.test(t)){const k=numIndex.get(t.replace(/\d+/g,'#'));if(k){const nums=t.match(/\d+/g),kn=k.match(/\d+/g),v=en[k];let i=0;if((v.match(/\d+/g)||[]).length===kn.length)r=v.replace(/\d+/g,()=>nums[i++])}}
+    if(r===null){
+      let out='',i=0,changed=false;
+      while(i<t.length){
+        let hit=null;const l=fragIndex.get(t.substr(i,2));
+        if(l&&!(isL(t[i])&&isL(t[i-1])))for(const k of l){if(t.startsWith(k,i)&&!(isL(k[k.length-1])&&isL(t[i+k.length]))){hit=k;break}}
+        if(hit){out+=en[hit];i+=hit.length;changed=true}else{out+=t[i];i++}
+      }
+      if(changed)r=out.replace(/(\d+) von (\d+)/g,'$1 of $2').replace(/\bvon (\d+)/g,'of $1');
+    }
+    if(fragCache.size>4000)fragCache.clear();
+    fragCache.set(t,r);return r;
+  }
+  function looksGerman(s){return /[äöüßÄÖÜ]/.test(s)||/\b(der|die|das|und|mit|du|ein|eine|dein|deine|ich|ist|nicht|auf|zum|zur|für|hast|kannst|wird|noch|bitte|schon)\b/i.test(s)}
+  function addDictionary(obj){if(!obj)return;Object.assign(en,obj);fragIndex=null;canvasCache.clear();if(lang==='en'&&document.body)walk(document.body)}
+  /* Canvas-Texte (Schilder, Sprechblasen, Mini-Spiele) ebenfalls übersetzen. */
+  const canvasCache=new Map();
+  function canvasText(s){let r=canvasCache.get(s);if(r===undefined){r=translate(s);if(canvasCache.size>3000)canvasCache.clear();canvasCache.set(s,r)}return r}
+  try{const P=window.CanvasRenderingContext2D&&CanvasRenderingContext2D.prototype;if(P)for(const m of ['fillText','strokeText','measureText']){const o=P[m];if(typeof o!=='function')continue;P[m]=function(s){if(lang==='en'&&typeof s==='string'&&s.length>1){const a=Array.prototype.slice.call(arguments);a[0]=canvasText(s);return o.apply(this,a)}return o.apply(this,arguments)}}}catch(_){}
 
   // Live translation: browser's built-in Translator API first, optional configured
   // server endpoint second. Never hardcode credentials or send gameplay/save data.
@@ -270,6 +307,14 @@
     observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:attrs});
     setLanguage(lang);
   }
-  window.BunteInselI18n={get language(){return lang},setLanguage,t:key=>translate(key),dictionary:en,get liveTranslationAvailable(){return !!(window.Translator||endpoint)},get configuredEndpoint(){return !!endpoint}};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+  window.BunteInselI18n={get language(){return lang},setLanguage,t:key=>translate(key),dictionary:en,addDictionary,looksGerman,get liveTranslationAvailable(){return !!(window.Translator||endpoint)},get configuredEndpoint(){return !!endpoint}};
+  if(window.BI_EN_EXTRA){addDictionary(window.BI_EN_EXTRA);window.BI_EN_EXTRA=null}
+  /* 3D-Schilder werden beim Laden gemalt: im Hauptmenü kurz neu laden, im Spiel einen Hinweis zeigen. */
+  document.addEventListener('bunteinsel:languagechange',()=>{canvasCache.clear();
+    if(!setupDone)return;
+    const hud=document.getElementById('hud'),menu=document.getElementById('menu'),inGame=hud&&!hud.hidden;
+    if(!inGame&&menu&&!menu.hidden){setTimeout(()=>{try{location.reload()}catch(_){}},150);return}
+    try{const n=document.createElement('div');n.dataset.biI18nSkip='1';n.textContent=lang==='en'?'🌐 English! Signs in the world switch after the next restart.':'🌐 Deutsch! Schilder in der Welt wechseln nach dem nächsten Neustart.';n.style.cssText='position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:99999;background:#101c31ee;color:#fff;padding:10px 16px;border-radius:14px;font:700 15px system-ui;pointer-events:none';document.body.appendChild(n);setTimeout(()=>n.remove(),3500)}catch(_){}});
+  let setupDone=false;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setup();setupDone=true},{once:true});else{setup();setupDone=true}
 })();

@@ -216,7 +216,7 @@ BI.audio = (function () {
       const currentLang = (window.BunteInselI18n && window.BunteInselI18n.language) || 'de';
       const translated = currentLang === 'en' && window.BunteInselI18n ? window.BunteInselI18n.t(String(txt)) : String(txt);
       const clean = String(translated).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}→➤✔✖]/gu, ' ').replace(/[„“"]/g, '').replace(/\s+/g, ' ').trim(); if (clean.length < 4 || clean === A._said && ss.speaking) return;
-      A._said = clean; A._want = clean; A._wantLang = currentLang;
+      A._said = clean; A._want = clean; A._wantLang = currentLang === 'en' && window.BunteInselI18n && BunteInselI18n.looksGerman && translated === String(txt) && BunteInselI18n.looksGerman(clean) ? 'de' : currentLang; /* nichts übersetzt → lieber deutsche Stimme als Kauderwelsch */
       if (A._spT) return; /* mehrere Aufrufe kurz hintereinander: nur der letzte wird gesprochen (Chrome verschluckt speak() direkt nach cancel()) */
       A._spT = setTimeout(() => {
         A._spT = 0; const t = A._want, voiceLang = A._wantLang === 'en' ? 'en-US' : 'de-DE'; A._want = ''; if (!t || !A.voiceOn || muted) return;

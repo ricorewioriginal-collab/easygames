@@ -1009,6 +1009,7 @@
   /* Sprechblase über dem Kopf (NPC): kurz sichtbar, wächst auf, blendet aus – ersetzt die große Textzeile */
   const bubbles = [];
   function showBubble(n, txt, ms) {
+    try { if (window.BunteInselI18n && BunteInselI18n.language === 'en') txt = BunteInselI18n.t(String(txt)); } catch (e) { }
     let b = bubbles.find(q => q.n === n); if (b) { b.sp.material.map.dispose(); b.sp.material.dispose(); scene.remove(b.sp); bubbles.splice(bubbles.indexOf(b), 1); }
     if (bubbles.length > 5) { const o = bubbles.shift(); o.sp.material.map.dispose(); o.sp.material.dispose(); scene.remove(o.sp); }
     const cv = document.createElement('canvas'), W0 = 300, c = cv.getContext('2d'); let fs = txt.length > 70 ? 21 : txt.length > 40 ? 24 : 28, lines;
