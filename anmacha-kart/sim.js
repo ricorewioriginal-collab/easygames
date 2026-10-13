@@ -10,7 +10,7 @@ const Sim = (() => {
   const kartDef = i => (typeof KARTS !== 'undefined' && KARTS[i % KARTS.length]) || { mv: 1, ma: 1, mt: 1, mr: 0.55, md: 1, mw: 1 };
 
   function create(opt) {                                   // opt: {track, laps, racers:[{name,logo,char,kart,human,skill,assist}], items:bool}
-    const tr = opt.track, N = tr.N, S = { tr, laps: opt.laps || 3, items: opt.items !== false, t: 0, state: 'grid', count: 3.2, karts: [], boxes: [], hazards: [], proj: [], pads: [], events: [], finishedHumans: 0, humans: 0 };
+    const tr = opt.track, N = tr.N, S = { tr, laps: opt.laps || 3, items: opt.items !== false, free: !!opt.free, t: 0, state: 'grid', count: 3.2, karts: [], boxes: [], hazards: [], proj: [], pads: [], events: [], finishedHumans: 0, humans: 0 };
     const slot = opt.racers.map((_, k) => k); if (opt.shuffle) for (let a = slot.length - 1; a > 0; a--) { const b = Math.floor(Math.random() * (a + 1)), t = slot[a]; slot[a] = slot[b]; slot[b] = t; }
     opt.racers.forEach((r, k) => {
       const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5, tp); const kd = kartDef(r.kart || 0);
@@ -201,7 +201,7 @@ const Sim = (() => {
     }
     S.boxes.forEach(b => { if (b.cd > 0) b.cd -= dt; });
     if (S.humans > 0 && S.finishedHumans >= S.humans && S.state === 'race') { S.state = 'done'; emit(S, { t: 'done' }); }
-    if (S.state === 'race' && S.t > 60 * 12) S.state = 'done';
+    if (!S.free && S.state === 'race' && S.t > 60 * 12) S.state = 'done';
   }
   function rubber(S, k, inp) {
     const hs = S.karts.filter(h => h.human); if (!hs.length) return; const ref = hs.reduce((m, h) => Math.max(m, h.rp), -1e9), gap = k.rp - ref;
