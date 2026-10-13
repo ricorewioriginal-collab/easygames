@@ -28,6 +28,20 @@
     'Tag':'Day','Nacht':'Night','Wetter':'Weather','Sprache':'Language',
     'Deutsch':'German','Englisch':'English',
 
+
+    'Rucksack':'Backpack','Tasche':'Bag','Spaß':'Fun','Mehr':'More',
+    'Essen':'Food','Kleidung':'Clothing','Spielzeug':'Toys','Zimmer':'Room',
+    'Tiere':'Animals','Hilfe':'Help','Helm':'Helmet','Partyhut':'Party hat',
+    'Zauberhut':'Wizard hat','Krone':'Crown','Umhang':'Cape','Kopfhörer':'Headphones',
+    'Zylinder':'Top hat','Wikingerhelm':'Viking helmet','Blumenkranz':'Flower crown',
+    'Weihnachtsmütze':'Santa hat','Ninja-Stirnband':'Ninja headband',
+    'Schal':'Scarf','Fliege':'Bow tie','Medaille':'Medal','Feenflügel':'Fairy wings',
+    'Hasenohren':'Bunny ears','Bärenohren':'Bear ears','Katzenohren':'Cat ears',
+    'Piratenhut':'Pirate hat','Kochmütze':"Chef's hat",'Cowboyhut':'Cowboy hat',
+    'Sonnenbrille':'Sunglasses','Augenklappe':'Eye patch',
+    'Armbanduhr':'Wristwatch','Fuchs-Look':'Fox look',
+    'Angeln':'Fishing','Springen':'Jump','Sternenstaul':'Stardust',
+    'Felder mähen':'Mow fields','Hof-Aufgabe':'Farm quest','Hof-Aufgaben':'Farm quests',
     'Ankommen':'Arrival','Unterwegs':'On the Move','Zuhause':'At Home','Im Ort':'In Town',
     'Mutprobe':'Test of Courage','Spaß-Tag':'Fun Day','Parkdirektor':'Park Director',
     'Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Schau dich um: Sag Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.':'Welcome to Colorful Island! I am Mayor Rosi. Take a look around: say hello, open your backpack, and find your way.',
@@ -96,7 +110,7 @@
   let lang='de',busy=false;
   try{lang=localStorage.getItem(KEY)||((navigator.language||'de').toLowerCase().startsWith('de')?'de':'en')}catch(_){}
   if(!['de','en'].includes(lang))lang='de';
-  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(cache[t])return match[1]+cache[t]+match[3];enqueue(t);if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];return s}
+  function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(cache[t])return match[1]+cache[t]+match[3];enqueue(t);if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];const counter=t.match(/^(.*?)\s+(\d+\/\d+)$/);if(counter&&en[counter[1]])return match[1]+en[counter[1]]+' '+counter[2]+match[3];const emojiCounter=t.match(/^(\S+\s+)(.*?)\s+(\d+\/\d+)$/);if(emojiCounter&&en[emojiCounter[2]])return match[1]+emojiCounter[1]+en[emojiCounter[2]]+' '+emojiCounter[3]+match[3];return s}
 
   // Live translation: browser's built-in Translator API first, optional configured
   // server endpoint second. Never hardcode credentials or send gameplay/save data.
@@ -202,7 +216,7 @@
       for(const m of changes){
         if(m.type==='characterData'){
           const node=m.target,prior=originalText.get(node);
-          if(prior!==undefined&&node.nodeValue!==translate(prior))originalText.set(node,node.nodeValue);
+          if(prior!==undefined&&node.nodeValue!==translate(prior)&&node.nodeValue!==prior)originalText.set(node,node.nodeValue);
           walk(node);
         }else if(m.type==='childList'){
           for(const n of m.addedNodes)walk(n);
