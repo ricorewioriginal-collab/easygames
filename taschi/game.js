@@ -45,8 +45,10 @@ const blankSave=()=>({team:[],box:[],badges:0,balls:8,potions:3,coins:120,dex:{}
 function clean(s){if(!s||!Array.isArray(s.team))return null;s.team=s.team.filter(m=>SPEC[m.id]&&Number.isFinite(m.lv)&&Number.isFinite(m.hp)).slice(0,6);s.box=(s.box||[]).filter(m=>SPEC[m.id]).slice(0,100);s.badges=Math.max(0,Math.min(16,Number(s.badges)||0));s.coins=Math.max(0,Math.min(999999,Number(s.coins??120)||0));s.balls=Math.max(0,Number(s.balls)||0);s.potions=Math.max(0,Number(s.potions)||0);s.dex=s.dex||{};s.x=Number.isFinite(s.x)?Math.max(-58,Math.min(58,s.x)):0;s.z=Number.isFinite(s.z)?Math.max(-58,Math.min(58,s.z)):6;return s;}
 let save;try{save=clean(JSON.parse(localStorage.getItem(saveKey())||(slot===1?localStorage.getItem(SAVE):null)))}catch{}
 save ||= blankSave();
+const maxPP=id=>MOVES[id]?.[2]>=60?12:20;
+const ensurePP=m=>{m.pp ||= {};for(const id of SPEC[m.id].moves)if(!Number.isFinite(m.pp[id]))m.pp[id]=maxPP(id);return m.pp};
 const maxHp=m=>Math.floor(SPEC[m.id].hp*2*m.lv/100)+m.lv+10;
-const make=(id,lv)=>{const m={id,lv,xp:0,hp:1};m.hp=maxHp(m);return m};
+const make=(id,lv)=>{const m={id,lv,xp:0,hp:1,pp:{}};for(const move of SPEC[id].moves)m.pp[move]=maxPP(move);m.hp=maxHp(m);return m};
 const persist=()=>{try{localStorage.setItem(saveKey(),JSON.stringify(save))}catch{}};
 let active=null,locked=true,near=null,combat=null,steps=0,toastUntil=0,caveSteps={},insideCave=null,booted=false;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x83b7d4);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);
@@ -156,7 +158,7 @@ function villageVisit(v){
  const task=villageTasks[v.name],n=Object.keys(save.dex).filter(id=>save.dex[id]===2&&SPEC[id]?.type===task.type).length;
  save.quests ||= {};const completed=!!save.quests[v.name];
  const options=[
-  ['Im Dorf ausruhen',()=>{save.team.forEach(m=>m.hp=maxHp(m));close();toast('Deine Taschis sind ausgeruht!')}],
+  ['Im Dorf ausruhen',()=>{save.team.forEach(m=>{m.hp=maxHp(m);for(const move of SPEC[m.id].moves)ensurePP(m)[move]=maxPP(move)});close();toast('Deine Taschis sind ausgeruht!')}],
   ['Wiese erkunden',()=>{close();findWild(task.type)}],
  ];
  if(!completed&&n>=2)options.unshift(['Aufgabe abschließen',()=>{save.quests[v.name]=true;save.balls+=8;save.potions+=4;stats();dialog('Nebenaufgabe erfüllt!',task.person+' schenkt dir 8 Taschibälle und 4 Tränke. Danke für deine Hilfe!',choice())}]);
@@ -334,7 +336,7 @@ function battleMenu(log='Was soll dein Taschi tun?'){
 function attackMenu(){
  const me=first();if(!me||!combat)return;
  dialog('Attacke auswählen','<p>'+SPEC[me.id].name+' · Lv '+me.lv+'</p>',[
- ...SPEC[me.id].moves.map(id=>[TYPES[MOVES[id][1]]+' '+MOVES[id][0]+' · Stärke '+MOVES[id][2],()=>attack(id)]),
+ ...SPEC[me.id].moves.map(id=>[TYPES[MOVES[id][1]]+' '+MOVES[id][0]+' · '+ensurePP(me)[id]+'/'+maxPP(id)+' AP',()=>attack(id),ensurePP(me)[id]<=0]),
  ['↩ Zurück',()=>battleMenu()]
  ]);$('panel').classList.add('battle');
 }
@@ -358,7 +360,7 @@ function battleSwitch(){
  $('panel').classList.add('battle');
 }
 function enemyTurn(log){const c=combat;if(!c)return;const me=first(),enemy=c.enemy,id=SPEC[enemy.id].moves[Math.floor(rand(0,SPEC[enemy.id].moves.length))];if(me){me.hp=Math.max(0,me.hp-damage(enemy,me,id));log+=' '+SPEC[enemy.id].name+' nutzt '+MOVES[id][0]+'!';if(me.hp===0){log+=' '+SPEC[me.id].name+' ist erschöpft!';if(!first()){dialog('Kampf verloren',log+'<p>Heile deine Taschis im Heilhaus.</p>',choice());combat=null;updateBattleScene();return}updateFollower()}}persist();updateBattleScene();battleMenu(log)}
-function attack(id){const c=combat;if(!c)return;audioTone(260+MOVES[id][2]*4,.18,.05,'sawtooth');const me=first(),e=c.enemy;const dmg=damage(me,e,id);e.hp=Math.max(0,e.hp-dmg);battleFoes.rotation.z=dmg?-.13:0;setTimeout(()=>{battleFoes.rotation.z=0},230);const log=SPEC[me.id].name+' nutzt '+MOVES[id][0]+'! '+dmg+' Schaden.';if(e.hp<=0){win(log);return}enemyTurn(log)}
+function attack(id){const c=combat;if(!c)return;const me=first();if(!me||ensurePP(me)[id]<=0){attackMenu();return}me.pp[id]--;persist();audioTone(260+MOVES[id][2]*4,.18,.05,'sawtooth');const e=c.enemy;const dmg=damage(me,e,id);e.hp=Math.max(0,e.hp-dmg);battleFoes.rotation.z=dmg?-.13:0;setTimeout(()=>{battleFoes.rotation.z=0},230);const log=SPEC[me.id].name+' nutzt '+MOVES[id][0]+'! '+dmg+' Schaden.';if(e.hp<=0){win(log);return}enemyTurn(log)}
 function win(log){audioTone(784,.3,.07);const c=combat,me=first();const xp=35+c.enemy.lv*24;save.coins+=10+Math.floor(c.enemy.lv/2);me.xp+=xp;let extra=' +'+xp+' EP.';while(me.xp>=me.lv*me.lv*.9+12&&me.lv<60){me.xp-=Math.floor(me.lv*me.lv*.9+12);me.lv++;const old=maxHp({...me,lv:me.lv-1});me.hp+=maxHp(me)-old;extra+=' Level '+me.lv+'!';const evo=SPEC[me.id].evo;if(evo&&me.lv>=evo[1]){me.id=evo[0];save.dex[me.id]=2;extra+=' Entwicklung zu '+SPEC[me.id].name+'!'}}if(c.queue?.length){const next=c.queue.shift();c.enemy=next;updateBattleScene();persist();battleMenu(log+' '+SPEC[me.id].name+' bekommt '+xp+' EP. '+(c.queue.length+1)+' gegnerische Taschis warten noch.');return}if(c.leagueIndex!==null){save.league=Math.max(Number(save.league)||0,c.leagueIndex+1);save.coins+=250;extra+=' Sternenliga-Prüfung '+save.league+'/5 gewonnen!';if(save.league===5)extra+=' Du bist Sternenmeister der Taschi-Region!';}if(c.trainerId!==null){save.trainers ||= {};save.trainers[c.trainerId]=1;save.coins+=70;extra+=' Trainerduell gewonnen! ★70';}if(c.isGym){save.team.forEach(m=>m.hp=Math.max(m.hp,Math.round(maxHp(m)*.7)));save.badges=Math.max(save.badges,c.isGym);save.balls+=3;save.potions+=1;save.coins+=65+c.enemy.lv*3;extra+=' Licht-Siegel '+save.badges+'/16 verdient!';if(save.badges===16)extra+=' Alle 16 Siegel errungen! Die Sternenliga ist nun im Menü verfügbar.';if(save.badges%4===0)extra+=' Ein neues Storykapitel wurde freigeschaltet!'}save.wins++;updateFollower();combat=null;updateBattleScene();stats();dialog('Gewonnen!','<p>'+log+extra+'</p>',c.isGym&&save.badges%4===0?[['Neues Storykapitel',chapterDialog],['Weiterspielen',close]]:choice())}
 function capture(){audioTone(510,.12,.06);const c=combat;if(!c||c.isGym||save.balls<=0)return;save.balls--;const e=c.enemy;const rate=Math.min(.94,SPEC[e.id].catch*(.65+1.5*(1-e.hp/maxHp(e))));if(Math.random()<rate){save.dex[e.id]=2;if(save.team.length<6)save.team.push(e);else save.box.push(e);combat=null;updateFollower();updateBattleScene();stats();dialog('Gefangen!','<p>'+SPEC[e.id].name+' ist jetzt dein Freund! '+(save.team.includes(e)?'Im Team.':'Im Lager.')+'</p>',choice())}else enemyTurn('Der Taschiball wackelt … oh nein, entwischt!')}
 function potion(){if(!combat||save.potions<1)return;const m=first();save.potions--;m.hp=Math.min(maxHp(m),m.hp+35);enemyTurn(SPEC[m.id].name+' erhält bis zu 35 KP!')}
