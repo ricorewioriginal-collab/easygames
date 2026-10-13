@@ -136,13 +136,31 @@ function questStatus(){const caught=Object.values(save.dex).filter(v=>v===2).len
  (save.visited&&Object.keys(save.visited).length>=10)||false,
  save.badges>=16
 ]}
+
+function exportSave(){
+ persist();
+ const blob=new Blob([JSON.stringify({format:'taschi-save',version:1,created:new Date().toISOString(),state:save},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='taschi-spielstand.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Spielstand exportiert.');
+}
+function importSave(){
+ const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{
+ try{
+ const file=input.files?.[0];if(!file||file.size>2e6)throw Error('Datei zu groß oder fehlt.');
+ const payload=JSON.parse(await file.text());if(payload?.format!=='taschi-save'||payload.version!==1)throw Error('Kein passender Taschi-Spielstand.');
+ const restored=clean(payload.state);if(!restored)throw Error('Ungültige Speicherdaten.');
+ save=restored;player.position.set(save.x,0,save.z);updateFollower();stats();close();toast('Spielstand erfolgreich wiederhergestellt.');
+ }catch(error){dialog('Import fehlgeschlagen','<p>'+String(error.message||error).replace(/[<>]/g,'')+'</p>',choice())}
+ };input.click();
+}
+function mainMenu(){dialog('Taschi · Pause','<p>Dein Abenteuer wird automatisch gespeichert. Du kannst zusätzlich eine Backup-Datei sichern.</p>',[['Weiterspielen',close],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Spielstand exportieren',exportSave],['Spielstand importieren',importSave]])}
+
 function journalView(){const done=questStatus();dialog('Abenteuerbuch','<p>Deine Reise durch die Taschi-Region.</p>'+journal.map((q,i)=>'<p><b>'+(done[i]?'✓ ':'□ ')+q[0]+'</b><br>'+q[1]+'</p>').join('')+'<p>Siegel: '+save.badges+'/16 · Gefangene Arten: '+Object.values(save.dex).filter(v=>v===2).length+'/'+Object.keys(SPEC).length+'</p>',[['Zurück',close]])}
 function mapView(){dialog('Reisekarte','<p>Die Reiseorte sind in der 3D-Welt an ihren Positionen markiert. Erkunde mit dem Joystick oder den Pfeiltasten.</p>'+[...villages,...caves,...places].map(p=>'<p>📍 '+(p.name||p.label)+' – '+Math.round(Math.hypot(p.x-player.position.x,p.z-player.position.z))+' m</p>').join(''),[['Abenteuerbuch',journalView],['Zurück',close]])}
 function recordVisit(place){save.visited ||= {};save.visited[place.name||place.label]=true;persist()}
 
 function interact(){if(locked)return;if(!save.team.length){start();return}if(!near){toast('Erkunde die Lichtung und das hohe Gras.');return}recordVisit(near);if(near.cave){enterCave(near)}else if(near.village){dialog('Willkommen in '+near.name,'<p>Ein Dorf der Taschi-Region. Erkunde die Umgebung und entdecke neue Taschis!</p>',[['Erkunden',()=>{close();findWild()}],['Ausruhen',()=>{save.team.forEach(m=>m.hp=maxHp(m));close();toast('Dein Team hat sich ausgeruht!')}],['Weiterziehen',close]])}else if(near.label==='Professor Ulmes Labor'){dialog('Professor Ulme','<p>Die 16 Licht-Siegel machen dich zum Meister. Deine Reise beginnt im Sonnenhain. Sprich mit den Arena-Meistern!</p><p>Entdeckte Taschis: '+Object.keys(save.dex).length+'</p>',choice())}else if(near.label==='Heilhaus'){save.team.forEach(m=>m.hp=maxHp(m));stats();dialog('Schwester Hanna','<p>Alle Taschis sind wieder topfit! Pass gut auf sie auf.</p>',choice())}else if(near.label==='Fangladen'){dialog('Fangladen','<p>Reiseausrüstung auffüllen</p>',[['5 Taschibälle kaufen · gratis',()=>{save.balls+=5;close()}],['3 Tränke kaufen · gratis',()=>{save.potions+=3;close()}],['Schließen',close]])}else if(near.gym!==undefined){const i=near.gym;if(i>save.badges){toast('Besiege zuerst die vorherige Arena!');return}if(i<save.badges){dialog(near.label,'Du besitzt dieses Licht-Siegel bereits.',choice());return}dialog('Arena: '+near.label,'<p>Fordere '+near.label+' heraus? Stufe '+GYMS[i][2]+'. Ein Sieg verleiht Licht-Siegel '+(i+1)+'.</p>',[['Kämpfen',()=>battle(make(GYMS[i][1],GYMS[i][2]),i+1)],['Später',close]])}}
-$('team').onclick=team;$('dex').onclick=dex;$('map').onclick=mapView;$('interact').onclick=interact;
-const keys=new Set();addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.key.toLowerCase()==='e'&&!e.repeat)interact();if(e.key==='Escape'&&locked&&!combat)close()});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
+$('team').onclick=team;$('dex').onclick=dex;$('map').onclick=mapView;$('menu').onclick=mainMenu;$('interact').onclick=interact;
+const keys=new Set();addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.toLowerCase());if(e.key.toLowerCase()==='e'&&!e.repeat)interact();if(e.key==='Escape'&&locked&&!combat)close();else if(e.key==='Escape'&&!locked)mainMenu()});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
 const joy=$('joy'),nub=$('nub');let joyX=0,joyY=0;function pointer(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,mag=Math.max(1,Math.hypot(x,y)/44);joyX=x/44/mag;joyY=y/44/mag;nub.style.transform='translate('+(joyX*40)+'px,'+(joyY*40)+'px)'}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);pointer(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))pointer(e)});function resetJoy(){joyX=joyY=0;nub.style.transform=''}joy.addEventListener('pointerup',resetJoy);joy.addEventListener('pointercancel',resetJoy);
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
 const clock=new THREE.Clock();let time=0;
