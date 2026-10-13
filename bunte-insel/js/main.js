@@ -1296,9 +1296,15 @@
   function refreshHomeStatue() {
     const f = myFlat(); if (!f) return;
     if (homeStatue) { scene.remove(homeStatue.group); homeStatue.dispose(); homeStatue = null; }
-    const candidates = [[f.cx + 4.4, f.zF + 5.2], [f.cx - 4.4, f.zF + 5.2], [f.cx, f.zF + 7.2], [f.cx + 5.2, f.zF - 3]];
-    let at = candidates.find(q => W.free(q[0], q[1], 1.2));
-    if (!at) at = [f.cx + 4.4, f.zF + 5.2];
+    const candidates = [];
+    /* W.free prüft Gebäude, aber keine Gleise oder Straßen. Suche deshalb rund ums Haus
+       einen freien Bauplatz – niemals auf Bahntrasse, Straße oder Wasser. */
+    for (const radius of [5, 8, 11, 14, 18, 24, 32]) for (let i = 0; i < 24; i++) {
+      const a = i * Math.PI * 2 / 24;
+      candidates.push([f.cx + Math.cos(a) * radius, f.zF + 5 + Math.sin(a) * radius]);
+    }
+    const at = candidates.find(q => W.canBuild(q[0], q[1], 1.6) && W.free(q[0], q[1], 1.2));
+    if (!at) { console.warn('Kein sicherer Platz für das Haus-Denkmal gefunden.'); return; }
     homeStatue = BI.makeChar(charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, heroName()));
     homeStatue.group.name = 'homeStatue'; homeStatue.group.userData.homeStatueHero = save.hero; homeStatue.group.scale.multiplyScalar(1.08);
     const y = W.groundY(at[0], at[1]); homeStatue.group.position.set(at[0], y + .394, at[1]); homeStatue.group.rotation.y = Math.PI;
