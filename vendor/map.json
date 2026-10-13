@@ -1,0 +1,8 @@
+{
+  "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js": "vendor/three-r128.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
+  "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js": "vendor/qrcode-generator-1.4.4.js",
+  "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js": "vendor/qrcode-generator-1.4.4.js",
+  "https://fonts.googleapis.com/fredoka-latin-wght-normal.woff2": "vendor/fonts/fredoka-latin-wght-normal.woff2"
+}

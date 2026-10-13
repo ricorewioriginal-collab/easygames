@@ -55,7 +55,7 @@
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
-    <a href="#geraet">Geräteerkennung</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
+    <a href="#geraet">Geräteerkennung</a><a href="#android">Android-App</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
   <section id="wahl">
@@ -266,6 +266,27 @@ parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
 // Bei gleicher Herkunft steht es auch als window.EASYGAMES_DEVICE bereit.</pre>
     <h3>Filter in der Übersicht</h3>
     <p>Karten zeigen Abzeichen (📱 Handy-Controller, 🌐 Online, 👥 Mehrspieler), und Filterknöpfe zeigen nur diese Spiele. Die Zuordnung steht in <code>modes.js</code>.</p>
+  </section>
+
+  <section id="android">
+    <h2>Android-App mit Offline-Sync</h2>
+    <p>Die App ist eine native Android-Hülle (Kotlin) um die easygames-Oberfläche. Sie speichert alle Spiele samt Bibliotheken auf dem Gerät und hält sie über GitHub aktuell – ohne neues APK.</p>
+    <h3>So kommen Updates auf das Handy</h3>
+    <ol>
+      <li><b>Push auf GitHub:</b> Ein Spiel wird geändert oder ein neues kommt dazu.</li>
+      <li><b>Manifest:</b> Der Server-Job (<code>android/server/</code>, systemd-Timer, alle 10 Minuten) holt den neuesten Stand, berechnet <code>sync/manifest.json</code> neu (Liste aller Dateien mit Prüfsumme, dazu <code>sync/catalog.json</code> mit Spielen, Handbuch, Größen) und pusht es nach GitHub, falls sich etwas geändert hat. GitHub Actions werden nicht gebraucht.</li>
+      <li><b>Sync in der App:</b> Sobald WLAN verbunden ist (und beim Start), lädt die App das Manifest, vergleicht Prüfsummen und lädt <b>nur geänderte Dateien</b>. Jede Datei wird geprüft, erst wenn alles da ist, wird der neue Stand aktiv. Ein Abbruch lässt den alten Stand unberührt.</li>
+      <li><b>Aktivieren:</b> Mitten im Spiel passiert nichts. Danach zeigt die App „Update bereit – Neu laden“, spätestens beim nächsten Start ist alles aktuell.</li>
+    </ol>
+    <h3>Offline</h3>
+    <ul>
+      <li>Das APK enthält einen Start-Stand aller Spiele, die App läuft also sofort ohne Internet.</li>
+      <li>Bibliotheken, die Spiele von CDNs laden (three.js, PeerJS, QR-Code, Schrift Fredoka), liegen in <code>vendor/</code>. Die App fängt die Anfragen ab und liefert die lokale Datei – die Spiele selbst bleiben unverändert. Die Zuordnung steht in <code>vendor/map.json</code>.</li>
+      <li><code>node tools/offline-audit.js</code> prüft, dass jedes Spiel nur mit dem Offline-Paket lädt. <code>node tools/build-sync.js --strict</code> meldet neue, noch nicht lokal vorhandene CDN-Bibliotheken.</li>
+      <li><b>Braucht weiter Internet:</b> Online-Mehrspieler (PeerJS-Kopplung), Radio-Streams, Cloud-Speicherstand und Links wie das RicoReWi Radio.</li>
+    </ul>
+    <h3>Bauen</h3>
+    <p>Die App wird auf eurem Server gebaut (<code>android/build.sh</code>, Anleitung in <code>android/README.md</code>). Ein neues APK ist nur für App-Änderungen nötig, nicht für Spiele-Updates.</p>
   </section>
 
   <section id="tvlink">

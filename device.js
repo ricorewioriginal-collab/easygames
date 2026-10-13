@@ -99,6 +99,7 @@
       var x = new URL(u), h = x.hostname;
       if (!/^https?:$/.test(x.protocol)) return false;
       if (h === 'localhost' || /\.local$/.test(h) || h.indexOf(':') >= 0 || h.indexOf('.') < 0) return false;
+      if (h === 'appassets.androidplatform.net') return false;   // interne Adresse der Android-App
       return !/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
     } catch (e) { return false; }
   }

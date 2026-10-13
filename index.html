@@ -64,15 +64,66 @@
   .help{position:absolute;top:10px;right:10px;z-index:3;height:32px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3);
     background:rgba(8,11,18,.62);backdrop-filter:blur(6px);font-size:12.5px;font-weight:700;color:#fff;transition:background .2s,border-color .2s}
   .help:hover,.help:focus-visible{background:rgba(0,229,255,.28);border-color:var(--cy);outline:0}
-  #guide{position:fixed;inset:0;z-index:40;display:flex;padding:16px;background:rgba(4,6,12,.8);overflow:auto}
-  #guide .box{margin:auto;width:100%;max-width:640px;background:#0c1220;border:1px solid rgba(0,229,255,.4);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:6px}
-  #guide h3{margin:0;font-size:22px}
-  #guide h4{margin:14px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)}
-  #guide p{margin:0;color:#d5e2ee}
-  #guide ul{margin:0;padding-left:20px;color:#d5e2ee}
-  #guide li{margin:3px 0}
-  .snip{margin-top:10px}
-  .snip h4{margin:12px 0 4px;font-size:13px;color:#9fb4c8;font-weight:700}
+  /* Kopf, Links, App-Leiste */
+  .topnav{display:flex;align-items:center;justify-content:space-between;gap:14px 20px;flex-wrap:wrap}
+  .links{display:flex;gap:8px;flex-wrap:wrap}
+  a.pill{display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+  .appbar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-top:16px;padding:10px 14px;border-radius:14px;border:1px solid rgba(0,229,255,.3);background:rgba(0,229,255,.07);font-size:14px;color:#cfe0ee}
+  .appbar .grow{flex:1;min-width:180px}
+  .appbar button{height:36px;padding:0 14px;border-radius:999px;border:1px solid rgba(0,229,255,.5);background:rgba(255,255,255,.06);font-weight:700;font-size:13px}
+  .appbar progress{width:120px;height:8px;accent-color:var(--cy)}
+  /* Empfohlen (Hero) */
+  .hero{position:relative;margin-top:22px;border-radius:26px;overflow:hidden;min-height:clamp(260px,42vw,380px);display:flex;align-items:flex-end;border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 60px var(--g,rgba(0,229,255,.25))}
+  .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,11,18,.92) 0%,rgba(8,11,18,.55) 55%,rgba(8,11,18,.1) 100%),linear-gradient(0deg,rgba(8,11,18,.8),transparent 55%)}
+  .hero .hbig{position:absolute;right:6%;top:50%;transform:translateY(-50%);font-size:clamp(90px,18vw,180px);filter:drop-shadow(0 8px 20px rgba(0,0,0,.5));z-index:1}
+  .hbody{position:relative;z-index:2;padding:clamp(18px,4vw,36px);max-width:640px}
+  .kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--cy)}
+  .hbody h2{margin:4px 0 6px;font-size:clamp(26px,5vw,44px);line-height:1.1}
+  .hbody p{margin:8px 0 14px;color:#d5e2ee;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  /* Weiterspielen / Ähnliche Spiele */
+  .rowsec{margin-top:26px}
+  .rowsec h2,.related h3{margin:0 0 10px;font-size:19px}
+  .rowscroll{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  .mini{flex:0 0 auto;width:150px;scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;padding:0;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.05);text-align:left}
+  .mini .micon{position:relative;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden}
+  .mini .micon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .mini span.mt{padding:0 10px 10px;font-size:13px;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+  .mini:hover{border-color:rgba(255,255,255,.32)}
+  .sectitle{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 12px}
+  .sectitle h2{margin:0;font-size:21px}
+  /* Spiel-Details (Store-Seite) */
+  #detail{position:fixed;inset:0;z-index:40;background:#080B12;overflow:auto;overscroll-behavior:contain}
+  .dsheet{max-width:860px;margin:0 auto;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+  .dhero{position:relative;width:100%;aspect-ratio:16/8;max-height:46vh;display:flex;align-items:center;justify-content:center;font-size:clamp(70px,16vw,130px);overflow:hidden}
+  .dhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .dhero::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#080B12 0%,rgba(8,11,18,0) 55%)}
+  .dhero .ib{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;z-index:3;background:rgba(8,11,18,.7)}
+  .dhero span{position:relative;z-index:1;filter:drop-shadow(0 6px 16px rgba(0,0,0,.5))}
+  .dhead{padding:0 18px;margin-top:-34px;position:relative;z-index:2}
+  .dhead h2{margin:0 0 8px;font-size:clamp(24px,5vw,36px);line-height:1.15}
+  .dhead .badges i{font-size:12.5px;padding:3px 10px}
+  .dactions{margin-top:14px}
+  .tabs{display:flex;gap:6px;margin:18px 18px 0;border-bottom:1px solid rgba(255,255,255,.12);overflow-x:auto}
+  .tabs button{height:44px;padding:0 16px;border:0;border-bottom:3px solid transparent;background:none;font-weight:800;font-size:15px;color:#9fb4c8;white-space:nowrap}
+  .tabs button[aria-selected=true]{color:#fff;border-bottom-color:var(--cy)}
+  .dbody{padding:16px 18px 6px}
+  .dbody h4{margin:18px 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)}
+  .dbody h4:first-child{margin-top:0}
+  .dbody p{margin:0 0 8px;color:#d5e2ee;line-height:1.6}
+  .dbody ul{margin:0;padding-left:20px;color:#d5e2ee}
+  .dbody li{margin:4px 0}
+  .ctrl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:baseline;color:#d5e2ee}
+  .ctrl b{font-size:12.5px;padding:2px 10px;border-radius:999px;background:rgba(0,229,255,.16);color:var(--cy);white-space:nowrap}
+  .facts{display:grid;grid-template-columns:minmax(110px,auto) 1fr;gap:0;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden}
+  .facts dt,.facts dd{margin:0;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .facts dt{color:#9fb4c8;font-size:13.5px;background:rgba(255,255,255,.03)}
+  .facts dd{color:#e8f0f7;overflow-wrap:anywhere}
+  .facts dt:last-of-type,.facts dd:last-of-type{border-bottom:0}
+  .tvbox{margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(139,92,246,.5);background:rgba(139,92,246,.1)}
+  .tvbox input{width:100%;margin:6px 0;font:13px ui-monospace,Menlo,Consolas,monospace;padding:10px;border-radius:10px;border:1px solid rgba(0,229,255,.3);background:#04070d;color:#9ff}
+  .related{padding:6px 18px 0}
+  .dbody .note{margin:10px 0 0;padding:10px 14px;border-left:4px solid var(--cy);background:rgba(0,229,255,.07);border-radius:0 10px 10px 0;color:#cfe0ee;font-size:14px}
   footer{margin-top:44px;text-align:center;color:#6f8399;font-size:13px}
   @media (max-width:480px){.help{font-size:0;width:40px;padding:0;top:8px;right:8px}.help::before{content:'📖';font-size:17px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.info{padding:10px 12px 12px}.tile b{font-size:15px}.tile small{-webkit-line-clamp:2;font-size:12px}.icon{aspect-ratio:1}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -120,6 +171,13 @@
   html.tv main{max-width:none;padding:4vh 5vw 8vh}
   html.tv .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
   html.tv .help{display:none}
+  html.tv .hbody{max-width:60%}
+  html.tv .hbody p{font-size:1rem}
+  html.tv .dsheet{max-width:1100px}
+  html.tv .dbody,html.tv .dbody p,html.tv .dbody li,html.tv .ctrl{font-size:1.05rem}
+  html.tv .tabs button{height:56px;font-size:1.05rem}
+  html.tv .mini{width:200px}
+  html.tv .appbar{font-size:1rem}
   html.tv .tile b{font-size:1.2rem}
   html.tv .tile small{font-size:.9rem}
   html.tv .play{font-size:1rem}
@@ -132,7 +190,7 @@
   body.embed-mode .tvhint{display:none}
 
   /* Teilen */
-  #share{position:fixed;inset:0;z-index:30;display:flex;padding:16px;background:rgba(4,6,12,.8);overflow:auto}
+  #share{position:fixed;inset:0;z-index:50;display:flex;padding:16px;background:rgba(4,6,12,.8);overflow:auto}
   #share .box{margin:auto;width:100%;max-width:520px;background:#0c1220;border:1px solid rgba(0,229,255,.4);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
   #share h3{margin:0;font-size:20px}
   #share label{font-size:13px;color:#9fb4c8}
@@ -145,12 +203,20 @@
 <body>
 <main>
   <header class="hide-embed">
-    <div class="brandrow"><img id="brandImg" class="brand" alt="Logo" hidden><div><h1>easygames</h1><p class="sub">Kleine Spiele für Browser und Handy – antippen und loslegen.</p></div></div>
+    <div class="topnav">
+      <div class="brandrow"><img id="brandImg" class="brand" alt="Logo" hidden><div><h1>easygames</h1><p class="sub">Kleine Spiele für Browser, Handy und TV – antippen und loslegen.</p></div></div>
+      <nav class="links" aria-label="Verknüpfungen">
+        <a class="pill" id="lRadio" href="https://www.ricorewi-radio.de" target="_blank" rel="noopener">📻 RicoReWi Radio</a>
+        <a class="pill" id="lGh" href="https://ricorewioriginal-collab.github.io/easygames/" target="_blank" rel="noopener">🌐 easygames im Web</a>
+        <a class="pill" href="einbinden.html">❓ Einbinden &amp; Hilfe</a>
+      </nav>
+    </div>
+    <div class="appbar hidden" id="appBar"></div>
+    <section class="hero hidden" id="hero" aria-label="Empfohlenes Spiel"></section>
     <div class="bar2">
       <label class="search"><input id="q" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" autocomplete="off"></label>
       <span class="count" id="count"></span>
-      <button class="pill" id="libBtn">&lt;/&gt; Alle Spiele einbetten</button>
-      <a class="pill" href="einbinden.html" style="display:inline-flex;align-items:center;text-decoration:none">❓ Einbinden &amp; Hilfe</a>
+      <button class="pill" id="libBtn">&lt;/&gt; Einbetten</button>
     </div>
     <div class="chips" id="chips" role="group" aria-label="Spielarten">
       <button class="chip2" data-f="" aria-pressed="true">Alle</button>
@@ -159,9 +225,10 @@
       <button class="chip2" data-f="multi" aria-pressed="false">👥 Mehrspieler</button>
     </div>
     <p class="devhint" id="devHint"></p>
-    </div>
   </header>
 
+  <section class="rowsec hidden" id="recent"><h2>Weiterspielen</h2><div class="rowscroll" id="recentRow"></div></section>
+  <div class="sectitle"><h2 id="gridTitle">Alle Spiele</h2></div>
   <div class="grid" id="grid"></div>
   <p class="empty hidden" id="empty">Kein Spiel gefunden.</p>
 
@@ -176,8 +243,8 @@
     <textarea id="jsCode" readonly style="height:260px"></textarea>
     <div class="row" style="margin-top:8px"><button class="primary" data-copy="jsCode">Code kopieren</button></div>
   </section>
-  <footer class="hide-embed">easygames · von RicoReWi</footer>
-  <div class="tvhint hide-embed">◀ ▲ ▼ ▶ auswählen · OK spielen · Taste „i“ oder Gelb: Anleitung · Zurück: schließen</div>
+  <footer class="hide-embed">easygames · von RicoReWi · <a href="https://www.ricorewi-radio.de" target="_blank" rel="noopener" style="color:inherit">RicoReWi Radio</a> · <a href="https://ricorewioriginal-collab.github.io/easygames/" target="_blank" rel="noopener" style="color:inherit">easygames im Web</a> · <a href="einbinden.html" style="color:inherit">Einbinden &amp; Hilfe</a></footer>
+  <div class="tvhint hide-embed">◀ ▲ ▼ ▶ auswählen · OK spielen · Taste „i“ oder Gelb: Handbuch · Zurück: schließen</div>
 </main>
 
 <div id="viewer" class="hidden">
@@ -189,7 +256,7 @@
       <div class="t" id="vTitle"></div>
       <button class="ib" id="vNext" aria-label="Nächstes Spiel">▶</button>
       <button class="ib" id="vFs" aria-label="Vollbild">⛶<span class="l">&nbsp;Vollbild</span></button>
-      <button class="ib" id="vHelp" aria-label="Anleitung">📖<span class="l">&nbsp;Anleitung</span></button>
+      <button class="ib" id="vHelp" aria-label="Handbuch und Details">📖<span class="l">&nbsp;Handbuch</span></button>
       <button class="ib" id="vShare" aria-label="Teilen">⤴<span class="l">&nbsp;Teilen</span></button>
     </div>
     <iframe id="frame" allow="fullscreen; autoplay" title="Spiel"></iframe>
@@ -212,12 +279,21 @@
   </div>
 </div>
 
-<div id="guide" class="hidden" role="dialog" aria-modal="true" aria-labelledby="gTitle">
-  <div class="box">
-    <h3 id="gTitle"></h3>
-    <div id="gBody"></div>
-    <div id="gTvBox" class="hidden"><h4 style="margin:14px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)">📺 Am TV spielen</h4><p id="gTvText" style="margin:0 0 6px"></p><input id="gTv" readonly style="width:100%;font:13px ui-monospace,Menlo,Consolas,monospace;padding:10px;border-radius:10px;border:1px solid rgba(0,229,255,.3);background:#04070d;color:#9ff"><div class="row" style="margin-top:6px"><button class="primary" data-copy="gTv">TV-Link kopieren</button></div></div>
-    <div class="row" style="margin-top:14px"><button class="primary" id="gPlay">Spielen ▶</button><button class="ib" id="gClose" style="margin-left:auto">Schließen</button></div>
+<div id="detail" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+  <div class="dsheet">
+    <div class="dhero" id="dHero"><button class="ib" id="dClose" aria-label="Schließen">◀<span class="l">&nbsp;Zurück</span></button></div>
+    <div class="dhead">
+      <h2 id="dTitle"></h2>
+      <div class="badges" id="dBadges"></div>
+      <div class="row dactions"><button class="primary" id="dPlay">▶ Spielen</button><button class="pill" id="dShare">⤴ Teilen</button><button class="pill" id="dTv">📺 TV-Link</button></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Spielinfos">
+      <button role="tab" data-tab="info" aria-selected="true">Übersicht</button>
+      <button role="tab" data-tab="manual" aria-selected="false">Handbuch</button>
+      <button role="tab" data-tab="facts" aria-selected="false">Details</button>
+    </div>
+    <div class="dbody" id="dBody" role="tabpanel"></div>
+    <div class="related hidden" id="dRelated"><h3>Ähnliche Spiele</h3><div class="rowscroll" id="dRelRow"></div></div>
   </div>
 </div>
 
@@ -262,19 +338,22 @@ GAMES.forEach((g, i) => {
   c.dataset.m = Object.keys(m).filter(k => m[k]).join(' ');
   b.addEventListener('click', () => openGame(i));
   const h = document.createElement('button');
-  h.className = 'help'; h.textContent = '📖 Anleitung'; h.setAttribute('aria-label', 'Anleitung: ' + g.title);
-  h.addEventListener('click', () => openGuide(i));
+  h.className = 'help'; h.textContent = '📖 Details'; h.setAttribute('aria-label', 'Handbuch und Details: ' + g.title);
+  h.addEventListener('click', () => openDetail(i, 'info'));
   if (isTv) h.tabIndex = -1;
   c.append(b, h);
   $('grid').appendChild(c);
 });
 const tiles = [...$('grid').children];
-let modeF = '';
+let modeF = '', heroOn = false, recentOn = false;
 function filt() {
   const q = $('q').value.trim().toLowerCase(); let n = 0;
   tiles.forEach(t => { const m = (!q || t.dataset.s.includes(q)) && (!modeF || (' ' + t.dataset.m + ' ').includes(' ' + modeF + ' ')); t.hidden = !m; if (m) n++; });
   $('count').textContent = n + (n === 1 ? ' Spiel' : ' Spiele');
   $('empty').classList.toggle('hidden', n > 0);
+  const filtering = !!(q || modeF);
+  $('hero').classList.toggle('hidden', filtering || !heroOn); $('recent').classList.toggle('hidden', filtering || !recentOn);
+  $('gridTitle').textContent = filtering ? 'Ergebnisse' : 'Alle Spiele';
 }
 $('q').addEventListener('input', filt);
 $('chips').querySelectorAll('.chip2[data-f]').forEach(b => { if (b.dataset.f && !tiles.some(t => (' ' + t.dataset.m + ' ').includes(' ' + b.dataset.f + ' '))) b.hidden = true; });   // Arten ohne Spiel ausblenden
@@ -288,6 +367,7 @@ const HINTS = {
   tablet: '📱 Tablet erkannt – Spiele direkt spielen oder per QR-Code als Controller zu einem TV oder PC dazukommen.',
   desktop: '💻 Computer erkannt – Spiele mit 📱 Handy-Controller lassen sich mit Handys koppeln: QR-Code im Spiel scannen.'
 };
+const BADGES = [['pad', '📱 Handy-Controller'], ['online', '🌐 Online per Code/QR'], ['multi', '👥 Mehrspieler']];
 $('devHint').textContent = HINTS[DEV.type] || '';
 filt();
 const jsSnippet = (id) => `<!-- 1. Script einbinden (einmal pro Seite) -->
@@ -342,6 +422,7 @@ EasyGamesDevice.on(() => { if (cur >= 0) sendDevice(); });
 function openGame(i, fromHash) {
   const wasOpen = cur >= 0;
   if (!wasOpen) ret = document.activeElement;
+  remember(GAMES[(i + GAMES.length) % GAMES.length].id);
   cur = (i + GAMES.length) % GAMES.length;
   const g = GAMES[cur], url = gameUrl(g);
   $('vTitle').textContent = g.title;
@@ -401,41 +482,107 @@ $('vFs').addEventListener('click', () => {
 });
 
 // ----- Teilen -----
-function openShare() {
-  const g = GAMES[cur], url = abs(g.path);
+let shareI = -1;
+function openShare(i) {
+  shareI = i === undefined ? cur : i;
+  const g = GAMES[shareI], url = abs(g.path);
   $('sTitle').textContent = g.title + ' teilen';
   $('sLink').value = url; $('sCode').value = iframeCode(url, g.title); $('sJs').value = jsSnippet(g.id); $('sOpen').href = url;
   $('sTvBox').classList.toggle('hidden', !isMulti(g)); if (isMulti(g)) $('sTv').value = tvLink(g);
   $('sNative').classList.toggle('hidden', !navigator.share);
   $('share').classList.remove('hidden');
 }
-$('vShare').addEventListener('click', openShare);
+$('vShare').addEventListener('click', () => openShare());
+// ----- Spiel-Details: Übersicht, Handbuch, Details (wie eine Store-Seite) -----
 const GUIDES = window.EASYGAMES_GUIDES || {};
-let gi = -1, ret2 = null;
-const li = a => '<ul>' + a.map(x => '<li></li>').join('') + '</ul>';
-function fill(h, arr) { const d = document.createElement('div'); d.innerHTML = li(arr); [...d.querySelectorAll('li')].forEach((n, k) => n.textContent = arr[k]); h.appendChild(d.firstChild); }
-function openGuide(i) {
-  if (gi < 0) ret2 = document.activeElement;
-  gi = i; const g = GAMES[i], d = GUIDES[g.id], body = $('gBody');
-  $('gTitle').textContent = g.title; body.textContent = '';
-  const sec = (t, node) => { const h = document.createElement('h4'); h.textContent = t; body.append(h, node); };
-  const p = document.createElement('p'); p.textContent = d ? d.anleitung : g.desc; sec('Spielanleitung', p);
-  if (d && d.steuerung && d.steuerung.length) { const w = document.createElement('div'); fill(w, d.steuerung); sec('Bedienung', w.firstChild); }
-  if (d && d.tipps && d.tipps.length) { const w = document.createElement('div'); fill(w, d.tipps); sec('Tipps', w.firstChild); }
-  const mm = modesOf(g), mult = isMulti(g); $('gTvBox').classList.toggle('hidden', !mult);
-  if (mult) {
-    $('gTv').value = tvLink(g);
-    $('gTvText').textContent = mm.pad ? 'Diesen Link am TV öffnen (z. B. im TV-Browser). Handys scannen dann den QR-Code im Spiel und werden zu Controllern.' : mm.online ? 'Diesen Link am TV öffnen. Weitere Geräte treten per Code oder QR-Code im Spiel bei.' : 'Diesen Link am TV öffnen, um das Spiel dort mit mehreren Spielern zu spielen.';
-  }
-  $('guide').classList.remove('hidden'); $('gClose').focus();
+let CAT = {}, di = -1, dtab = 'info', ret2 = null;           // CAT: Katalog aus sync/catalog.json (Größen, Offline-Info), optional
+const el = (t, cls, txt) => { const e = document.createElement(t); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+function modeBadges(g, target) { const m = modesOf(g); BADGES.forEach(([k, t]) => { if (m[k]) target.appendChild(el('i', '', t)); }); }
+const MODE_TEXT = {
+  pad: 'Handys koppeln sich per QR-Code als Controller. Gespielt wird am großen Bildschirm (PC oder TV), die Handys sind Lenkrad, Antwort-Pad oder Steuerung.',
+  online: 'Mehrere Geräte spielen zusammen: Ein Gerät eröffnet das Spiel, die anderen treten per Code oder QR-Code bei (Internet nötig).',
+  multi: 'Mehrere Spieler oder ein Duell – je nach Spiel an einem Gerät, im Splitscreen oder mit Computer-Gegnern.'
+};
+// Bedienung: Zeilen wie "PC: …", "Touch: …" werden nach Eingabeart gruppiert
+function controls(d) {
+  return (d && d.steuerung || []).map(line => { const m = /^([A-Za-zÄÖÜäöüß\/ +-]{2,16}):\s*(.+)$/.exec(line); return m ? [m[1], m[2]] : ['', line]; });
 }
-function closeGuide() { $('guide').classList.add('hidden'); gi = -1; if (ret2 && document.contains(ret2)) ret2.focus({ preventScroll: true }); }
-$('vHelp').addEventListener('click', () => openGuide(cur));
-$('gClose').addEventListener('click', closeGuide);
-$('gPlay').addEventListener('click', () => { const i = gi; closeGuide(); openGame(i); });
-$('guide').addEventListener('click', e => { if (e.target === $('guide')) closeGuide(); });
+function inputKinds(d) {
+  const set = new Set(); controls(d).forEach(([k]) => { const x = k.toLowerCase(); if (/pc|tast|maus/.test(x)) set.add('Tastatur &amp; Maus'); if (/touch|handy|tablet/.test(x)) set.add('Touch'); if (/pad|controller/.test(x)) set.add('Gamepad'); });
+  return [...set].map(t => t.replace('&amp;', '&'));
+}
+function renderTab(g, tab) {
+  const body = $('dBody'), d = GUIDES[g.id], m = modesOf(g), c = CAT[g.id]; body.textContent = '';
+  const h4 = t => body.appendChild(el('h4', '', t));
+  if (tab === 'info') {
+    h4('Über das Spiel'); body.appendChild(el('p', '', g.desc));
+    if (d && d.anleitung) { h4('So funktioniert es'); body.appendChild(el('p', '', d.anleitung)); }
+    const kinds = BADGES.filter(([k]) => m[k]);
+    if (kinds.length) { h4('Mehrspieler'); const ul = el('ul'); kinds.forEach(([k, t]) => { const li = el('li'); li.appendChild(el('b', '', t + ': ')); li.appendChild(document.createTextNode(MODE_TEXT[k])); ul.appendChild(li); }); body.appendChild(ul); }
+    if (isMulti(g)) {
+      const box = el('div', 'tvbox'); box.appendChild(el('b', '', '📺 Am TV spielen'));
+      box.appendChild(el('p', '', m.pad ? 'Diesen Link am TV öffnen (z. B. im TV-Browser). Handys scannen dann den QR-Code im Spiel und werden zu Controllern.' : m.online ? 'Diesen Link am TV öffnen. Weitere Geräte treten per Code oder QR-Code im Spiel bei.' : 'Diesen Link am TV öffnen, um das Spiel dort mit mehreren Spielern zu spielen.'));
+      const inp = el('input'); inp.readOnly = true; inp.id = 'dTvLink'; inp.value = tvLink(g); inp.setAttribute('aria-label', 'TV-Link');
+      const b = el('button', 'primary', 'TV-Link kopieren'); b.dataset.copy = 'dTvLink';
+      box.append(inp, b); body.appendChild(box);
+    }
+    if (window.EasyGamesApp) body.appendChild(el('p', 'note', c && c.offline === false ? 'Dieses Spiel braucht eine Internetverbindung.' : '✓ Offline spielbar: Das Spiel und seine Bibliotheken liegen auf diesem Gerät.'));
+  } else if (tab === 'manual') {
+    h4('Spielanleitung'); body.appendChild(el('p', '', d && d.anleitung ? d.anleitung : g.desc));
+    const cs = controls(d);
+    if (cs.length) { h4('Bedienung'); const grid = el('div', 'ctrl'); cs.forEach(([k, t]) => { grid.appendChild(k ? el('b', '', k) : el('span')); grid.appendChild(el('span', '', t)); }); body.appendChild(grid); }
+    if (d && d.tipps && d.tipps.length) { h4('Tipps'); const ul = el('ul'); d.tipps.forEach(t => ul.appendChild(el('li', '', t))); body.appendChild(ul); }
+    if (!d) body.appendChild(el('p', 'note', 'Für dieses Spiel gibt es noch kein ausführliches Handbuch.'));
+  } else {
+    h4('Alle Details');
+    const dl = el('dl', 'facts'), row = (k, v, link) => { dl.appendChild(el('dt', '', k)); const dd = el('dd'); if (link) { const a = el('a', '', v); a.href = link; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'var(--cy)'; dd.appendChild(a); } else dd.textContent = v; dl.appendChild(dd); };
+    row('Titel', g.title);
+    row('Spielart', isMulti(g) ? 'Mehrspieler' + (m.pad || m.online || m.multi ? ' · ' + BADGES.filter(([k]) => m[k]).map(([, t]) => t.replace(/^\S+\s/, '')).join(', ') : '') : 'Einzelspiel');
+    const kinds = inputKinds(d); if (kinds.length) row('Steuerung', kinds.join(', '));
+    if (c && c.size) row('Größe', fmtSize(c.size) + (c.files ? ' · ' + c.files + ' Dateien' : ''));
+    if (window.EasyGamesApp || (c && c.offline !== undefined)) row('Offline', c && c.offline === false ? 'Nein – braucht Internet' : window.EasyGamesApp ? 'Ja – auf diesem Gerät gespeichert' : 'In der App spielbar');
+    row('Direktlink', abs(g.path), abs(g.path));
+    if (isMulti(g)) row('TV-Link', tvLink(g), tvLink(g));
+    row('Spiel-ID', g.id);
+    body.appendChild(dl);
+    const more = el('p'); more.style.marginTop = '14px'; const bt = el('button', 'pill', '</> Einbetten & Teilen'); bt.onclick = () => openShare(di); more.appendChild(bt); body.appendChild(more);
+  }
+}
+function setTab(tab) {
+  dtab = tab; document.querySelectorAll('#detail .tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === tab));
+  if (di >= 0) renderTab(GAMES[di], tab);
+}
+function miniCard(j, onOpen) {
+  const g = GAMES[j], b = el('button', 'mini'), ic = el('div', 'micon'); ic.style.background = g.bg || '#222';
+  if (g.img) { const im = el('img'); im.src = g.img; im.alt = ''; im.loading = 'lazy'; ic.appendChild(im); } else ic.appendChild(el('span', '', g.icon || '🎮'));
+  b.append(ic, el('span', 'mt', g.title)); b.addEventListener('click', () => onOpen(j)); return b;
+}
+function openDetail(i, tab) {
+  if (di < 0) ret2 = document.activeElement;
+  di = i; const g = GAMES[i];
+  const hero = $('dHero'); [...hero.querySelectorAll('img,span')].forEach(n => n.remove());
+  hero.style.background = g.bg || '#222';
+  if (g.img) { const im = el('img'); im.src = g.img; im.alt = ''; hero.appendChild(im); } else hero.appendChild(el('span', '', g.icon || '🎮'));
+  $('dTitle').textContent = g.title; $('dBadges').textContent = ''; modeBadges(g, $('dBadges'));
+  $('dTv').classList.toggle('hidden', !isMulti(g));
+  // ähnliche Spiele: gleiche Spielart
+  const m = modesOf(g), rel = GAMES.map((x, j) => j).filter(j => j !== i && BADGES.some(([k]) => m[k] && modesOf(GAMES[j])[k])).slice(0, 8);
+  $('dRelated').classList.toggle('hidden', !rel.length); $('dRelRow').textContent = '';
+  rel.forEach(j => $('dRelRow').appendChild(miniCard(j, k => openDetail(k, 'info'))));
+  $('detail').classList.remove('hidden'); $('detail').scrollTop = 0; document.body.style.overflow = 'hidden';
+  setTab(tab || 'info'); $('dPlay').focus({ preventScroll: true });
+}
+function closeDetail() { $('detail').classList.add('hidden'); di = -1; if (cur < 0) document.body.style.overflow = ''; if (ret2 && document.contains(ret2)) ret2.focus({ preventScroll: true }); }
+const openGuide = i => openDetail(i, 'manual');         // bisherige Aufrufe (Taste i, 📖 im Spielfenster) öffnen das Handbuch
+$('vHelp').addEventListener('click', () => openDetail(cur, 'manual'));
+$('dClose').addEventListener('click', closeDetail);
+$('dPlay').addEventListener('click', () => { const i = di; closeDetail(); openGame(i); });
+$('dShare').addEventListener('click', () => openShare(di));
+$('dTv').addEventListener('click', () => { setTab('info'); const x = $('dTvLink'); if (x) { x.scrollIntoView({ block: 'center' }); x.focus(); } });
+document.querySelectorAll('#detail .tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
 $('sClose').addEventListener('click', () => $('share').classList.add('hidden'));
-$('sNative').addEventListener('click', () => navigator.share({ title: GAMES[cur].title, url: abs(GAMES[cur].path) }).catch(() => {}));
+$('sNative').addEventListener('click', () => navigator.share({ title: GAMES[shareI].title, url: abs(GAMES[shareI].path) }).catch(() => {}));
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-copy]'); if (!t) return;
   const ta = $(t.dataset.copy); ta.focus(); ta.select();
@@ -443,8 +590,8 @@ document.addEventListener('click', e => {
   const old = t.textContent; t.textContent = 'Kopiert ✓'; setTimeout(() => t.textContent = old, 1500);
 });
 function back() {
-  if (!$('guide').classList.contains('hidden')) closeGuide();
-  else if (!$('share').classList.contains('hidden')) $('share').classList.add('hidden');
+  if (!$('share').classList.contains('hidden')) $('share').classList.add('hidden');
+  else if (!$('detail').classList.contains('hidden')) closeDetail();
   else if (cur >= 0) closeGame();
 }
 // Räumliche Navigation (Pfeiltasten/D-Pad) für TV und Tastatur
@@ -471,19 +618,80 @@ addEventListener('keydown', e => {
   if (e.key === 'Escape' || isBack(e)) { if (e.key !== 'Escape') e.preventDefault(); back(); return; }
   const t = e.target;
   if ((e.key === 'i' || e.key === 'I' || e.keyCode === 405) && !t.matches('input,textarea')) {
-    if (cur >= 0) { openGuide(cur); e.preventDefault(); return; }
-    const c = t.closest && t.closest('.card'); if (c) { openGuide(+c.dataset.i); e.preventDefault(); }
+    if (!$('detail').classList.contains('hidden')) { setTab('manual'); e.preventDefault(); return; }
+    if (cur >= 0) { openDetail(cur, 'manual'); e.preventDefault(); return; }
+    const c = t.closest && t.closest('.card'); if (c) { openDetail(+c.dataset.i, 'manual'); e.preventDefault(); }
     return;
   }
   if (!/^Arrow(Up|Down|Left|Right)$/.test(e.key) || e.altKey || e.ctrlKey || e.metaKey || t.matches('textarea')) return;
   if (t.matches('input') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return;
-  const scope = !$('guide').classList.contains('hidden') ? $('guide')
-    : !$('share').classList.contains('hidden') ? $('share')
+  const scope = !$('share').classList.contains('hidden') ? $('share')
+    : !$('detail').classList.contains('hidden') ? $('detail')
     : cur >= 0 ? ($('viewer').classList.contains('bar-on') ? $('bar') : null)
     : document.querySelector('main');
   if (scope && spatial(e.key, scope)) e.preventDefault();
 });
-if (isTv && tiles[0]) tiles[0].querySelector('.tile').focus({ preventScroll: true });
+
+
+// ----- Weiterspielen (nur lokal gemerkt, rein zur Bequemlichkeit) -----
+function recents() { try { const a = JSON.parse(localStorage.getItem('eg-recent') || '[]'); return Array.isArray(a) ? a.filter(id => GAMES.some(g => g.id === id)) : []; } catch (e) { return []; } }
+function remember(id) { try { localStorage.setItem('eg-recent', JSON.stringify([id, ...recents().filter(x => x !== id)].slice(0, 8))); } catch (e) {} }
+function renderRecent() {
+  const ids = recents(), row = $('recentRow'); row.textContent = '';
+  ids.forEach(id => row.appendChild(miniCard(GAMES.findIndex(g => g.id === id), j => openGame(j))));
+  recentOn = ids.length > 0; filt();
+}
+
+// ----- Empfohlen: täglich wechselndes Spiel mit Bild -----
+(function hero() {
+  const withImg = GAMES.map((g, i) => i).filter(i => GAMES[i].img);
+  if (!withImg.length || embedMode) return;
+  const day = Math.floor(Date.now() / 864e5), i = withImg[day % withImg.length], g = GAMES[i], h = $('hero');
+  h.style.setProperty('--g', g.glow || 'rgba(0,229,255,.3)'); h.style.background = g.bg || '#222';
+  const im = el('img'); im.src = g.img; im.alt = ''; h.appendChild(im);
+  const b = el('div', 'hbody'); b.appendChild(el('span', 'kicker', 'Empfohlen heute')); b.appendChild(el('h2', '', g.title));
+  const bd = el('div', 'badges'); modeBadges(g, bd); if (bd.children.length) b.appendChild(bd);
+  b.appendChild(el('p', '', g.desc));
+  const row = el('div', 'row'), play = el('button', 'primary', '▶ Spielen'), more = el('button', 'pill', '📖 Details & Handbuch');
+  play.onclick = () => openGame(i); more.onclick = () => openDetail(i, 'info'); row.append(play, more); b.appendChild(row); h.appendChild(b);
+  h.classList.remove('hidden'); heroOn = true; filt();
+})();
+renderRecent();
+
+// ----- Katalog (Größen, Offline-Info, Links) – optional; die Seite funktioniert auch ohne -----
+fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(c => {
+  if (!c) return;
+  (c.games || []).forEach(x => { CAT[x.id] = x; });
+  if (c.links) { if (c.links.radio) $('lRadio').href = c.links.radio; if (c.links.githubPage) $('lGh').href = c.links.githubPage; }
+}).catch(() => {});
+
+// ----- Android-App: Status der Offline-Inhalte (Brücke EasyGamesApp, nur in der App vorhanden) -----
+(function appBar() {
+  const A = window.EasyGamesApp; if (!A || embedMode) return;
+  document.documentElement.classList.add('is-app');
+  const bar = $('appBar'); bar.classList.remove('hidden');
+  const info = () => { try { return JSON.parse(A.getInfo()); } catch (e) { return null; } };
+  const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch (e) { return ''; } };
+  function render() {
+    const i = info(); if (!i) return; bar.textContent = '';
+    const txt = el('span', 'grow');
+    let status = '✓ Inhalte aktuell';
+    if (i.state === 'checking') status = '⟳ Suche nach Updates …';
+    else if (i.state === 'downloading') status = '⬇ Update wird geladen' + (i.bytesTotal ? ' (' + Math.round((i.progress || 0) * 100) + ' %)' : '');
+    else if (i.pending) status = '⬆ Update bereit';
+    else if (i.state === 'offline') status = '✈ Offline – gespeicherte Inhalte';
+    else if (i.state === 'error') status = '⚠ Update fehlgeschlagen – später erneut';
+    txt.textContent = '📲 App ' + (i.appVersion || '') + ' · ' + status + (i.contentDate ? ' · Stand ' + fmtDate(i.contentDate) : '');
+    bar.appendChild(txt);
+    if (i.state === 'downloading') { const p = el('progress'); p.max = 1; p.value = i.progress || 0; bar.appendChild(p); }
+    if (i.pending) { const b = el('button', '', 'Neu laden'); b.onclick = () => A.reload(); bar.appendChild(b); }
+    else if (i.state !== 'downloading' && i.state !== 'checking') { const b = el('button', '', 'Jetzt aktualisieren'); b.onclick = () => A.syncNow(); bar.appendChild(b); }
+    const s = el('button', '', '⚙'); s.setAttribute('aria-label', 'App-Einstellungen'); s.onclick = () => A.openSettings(); bar.appendChild(s);
+  }
+  addEventListener('easygames:app-state', render); render();
+})();
+
+if (isTv) { const f = heroOn ? $('hero').querySelector('.primary') : tiles[0] && tiles[0].querySelector('.tile'); if (f) f.focus({ preventScroll: true }); }   // TV: Fokus startet auf dem empfohlenen Spiel
 
 // Direktlink zur Spieleliste: ...#anmacha-flipper öffnet das Spiel gleich
 const start = GAMES.findIndex(g => '#' + g.id === location.hash);
