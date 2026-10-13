@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0f1a30">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>TASCHI · Die 16 Lichter</title>
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="src/ui/style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="ui"></div>
+<div id="boot" class="layer" style="position:fixed;inset:0;z-index:60">
+  <div class="logo">
+    <div class="orb"></div>
+    <h1>TASCHI</h1>
+    <p class="sub">DIE 16 LICHTER</p>
+    <div class="loadbar"><i id="bootbar"></i></div>
+    <div class="loadtext" id="boottext">Lädt …</div>
+    <div class="tip" id="boottip"></div>
+  </div>
+</div>
+<div id="cloudHolder" style="display:none"><div id="cloudMount"></div></div>
+<noscript>TASCHI benötigt JavaScript und WebGL.</noscript>
+<script src="../cloud/anmacha-cloud.js" data-game="taschi" data-prefix="easygames.taschi.eight-lights.v1,taschi.settings.v3" data-mount="#cloudMount" data-hint="Mit Google anmelden und Spielstände auf allen Geräten synchronisieren" defer></script>
+<script src="../bunte-insel/vendor/three.min.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

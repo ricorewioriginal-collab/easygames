@@ -16,7 +16,7 @@ const logs = [];
 page.on('console', m => logs.push(m.type() + ': ' + m.text()));
 page.on('pageerror', e => logs.push('pageerror: ' + e.message));
 await page.goto(`http://localhost:${port}/taschi/${path}`);
-await page.waitForFunction(() => window.__ready === true || !!window.__error, null, { timeout: 90000 }).catch(e => logs.push('timeout ' + e.message));
+await page.waitForFunction(() => window.__ready === true || !!window.__error || (window.__taschi && window.__taschi.state === "title"), null, { timeout: 90000 }).catch(e => logs.push('timeout ' + e.message));
 await page.waitForTimeout(Number(wait));
 await page.screenshot({ path: out });
 console.log(logs.filter(l => !l.includes('GPU stall')).slice(0, 30).join('\n'));

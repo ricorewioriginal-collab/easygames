@@ -4,8 +4,11 @@
 import { TYPES } from '../data/types.js';
 
 export function h(tag, attrs = {}, ...kids) {
-  const [t, ...cls] = tag.split('.');
+  let [t, ...cls] = tag.split('.');
+  let id = null;
+  if (t.includes('#')) [t, id] = t.split('#');
   const el = document.createElement(t || 'div');
+  if (id) el.id = id;
   if (cls.length) el.className = cls.join(' ');
   for (const [k, v] of Object.entries(attrs || {})) {
     if (v === undefined || v === null || v === false) continue;

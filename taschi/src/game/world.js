@@ -125,6 +125,7 @@ export class World {
   }
   setWeather(w) { this.weather = w; this.game.sky.setWeather(w); }
   placePlayer(x, z, ry) {
+    if (!this.player) this.buildPlayer();
     const p = this.player.root;
     p.position.set(x, this.current.height(x, z), z); p.rotation.y = ry;
     this.cam.yaw = ry + Math.PI; this.cam.target.copy(p.position);
@@ -280,7 +281,7 @@ export class World {
     const c = this.current; if (!c) return [];
     const list = c.type === 'region' ? c.map.interact.slice() : c.interior.interact.slice();
     if (c.type === 'interior') list.push({ id: 'exit', kind: 'exit', x: c.interior.exit.x, z: c.interior.exit.z, r: 1.8, label: 'Ausgang', prompt: 'Hinausgehen' });
-    for (const p of this.puzzles) { list.push(...p.interact.filter(e => !e.hidden)); list.push(...p.dynamicInteract()); }
+    for (const p of this.puzzles) { list.push(...p.interact.filter(e => !e.hidden).map(e => ({ ...e, pv: p }))); list.push(...p.dynamicInteract().map(e => ({ ...e, pv: p }))); }
     for (const n of this.npcs) list.push({ id: 'npc:' + n.id, kind: 'npc', npc: n, x: n.ch.root.position.x, z: n.ch.root.position.z, r: 1.9, label: n.name, prompt: n.trainer && !this.save.trainers[n.trainer] ? 'Herausfordern' : 'Sprechen' });
     return list.filter(e => !this.isConsumed(e));
   }
@@ -439,7 +440,7 @@ export class World {
     // story trigger: Ulme calls the player in Sonnenhain
     if (this.current.type === 'region' && this.current.region === 0 && !this.save.flags.metUlme && !this.game.busy) {
       const ulme = this.npcs.find(n => n.id === 'ulme');
-      if (ulme && ulme.ch.root.position.distanceTo(this.player.root.position) < 3.2) this.game.talkToNPC(ulme);
+      if (ulme && ulme.ch.root.position.distanceTo(this.player.root.position) < 3.2) this.game.script(() => this.game.talkToNPC(ulme));
     }
   }
   updateGates() {

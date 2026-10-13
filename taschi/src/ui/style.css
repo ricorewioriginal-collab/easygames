@@ -206,3 +206,5 @@ input.name { pointer-events: auto; font: inherit; padding: 9px 12px; border-radi
 .slides h2 { font-size: clamp(24px, 4vw, 40px); margin: 0 0 12px; color: var(--gold); }
 .slides p { font-size: 1.1em; line-height: 1.55; text-shadow: 0 2px 8px #000a; }
 .evo { position: absolute; inset: 0; display: grid; place-items: end center; padding-bottom: 12vh; pointer-events: auto; }
+#cloudSlot:not(:empty) { background: rgba(255,253,246,.94); border-radius: 16px; padding: 8px 10px; color: var(--ink); box-shadow: var(--shadow); }
+#cloudSlot * { color: inherit; }
