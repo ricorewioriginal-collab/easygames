@@ -1,0 +1,15 @@
+# Build-Ausgaben und Caches
+build/
+.gradle/
+.kotlin/
+local.properties
+*.iml
+.idea/
+
+# Schlüssel niemals einchecken
+*.jks
+*.keystore
+keystore*
+
+# Start-Inhalt (Baseline) wird von tools/build-sync.js erzeugt
+app/src/main/assets/easygames/
