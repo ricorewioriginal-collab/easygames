@@ -39,8 +39,8 @@ window.startController = function () {
     // Fehler des Vermittlungs-Servers stören eine laufende Verbindung nicht – dann einfach weiterfahren
     pe.on('error', e => { if (pe !== peer || (conn && conn.open)) return; if (!joined) screenJoin(e.type === 'peer-unavailable' ? 'Raum ' + JOIN + ' nicht gefunden. Ist die Lobby offen?' : 'Verbindungsfehler (' + e.type + ').'); else retry(); });
     pe.on('open', () => {
-      const c = conn = pe.connect('amk-' + JOIN, { reliable: false, serialization: 'json' , reliable: true }); const to = setTimeout(() => { if (c === conn && !c.open) { if (joined) retry(); else screenJoin('Keine Antwort vom Spiel. Code richtig?'); } }, 9000);
-      // Beitritt wiederholen, bis das Spiel antwortet (der Kanal ist bewusst unzuverlässig = schnell)
+      const c = conn = pe.connect('amk-' + JOIN, { reliable: true, serialization: 'json' }); const to = setTimeout(() => { if (c === conn && !c.open) { if (joined) retry(); else screenJoin('Keine Antwort vom Spiel. Code richtig?'); } }, 9000);
+      // Beitritt wiederholen, bis der Host den Platz bestätigt.
       c.on('open', () => { clearTimeout(to); tries = 0; const j = () => tx({ t: 'join', name, logo, ch, kt, cid, view: viewOn }); j(); clearInterval(joinT); joinT = setInterval(j, 1000); });
       c.on('data', onData);
       c.on('close', () => { if (c !== conn || kicked) return; if (joined) retry(); else screenJoin('Verbindung getrennt.'); });
