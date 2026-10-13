@@ -110,7 +110,7 @@ const Sim = (() => {
       S.pads.forEach(p => { if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 < 20 && k.boostT < 1.1) { k.boostT = 1.2; emit(S, { t: 'pad', k: k.k }); } });
       if (k.itemPending && k.itemT <= 0) { k.itemPending = false; k.item = rollItem(S, k); k.itemN = k.item.endsWith('3') ? 3 : 1; emit(S, { t: 'got', k: k.k, item: k.item }); }
     }
-    if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) useItem(S, k); k.itemPrev = !!inp.i && !inp.itemPress;
+    if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) useItem(S, k); k.itemPrev = !!inp.i;
   }
 
   function step(S, dt, inputs) {
