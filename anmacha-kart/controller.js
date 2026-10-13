@@ -103,7 +103,7 @@ window.startController = function () {
     if (m.t === 's') return onSnap(m);
     if (m.t === 'race') return void onRace(m);
     if (m.t === 'wel' && Number.isInteger(m.slot)) root.style.setProperty('--acc', SLOTC[m.slot % 4]);
-    if (m.t === 'wel') { clearInterval(joinT); if (joined && ph !== 'lobby') return; joined = true; tries = 0; waitScreen('Du bist dabei! 🎉', 'Warte, bis das Rennen startet …', m.race ? '' : '▶ RENNEN STARTEN'); }
+    if (m.t === 'wel') { clearInterval(joinT); if (joined && ph !== 'lobby' && !m.race) return; joined = true; tries = 0; if (m.race) { ph = 'lobby'; tx({ t: 'need' }); } waitScreen('Du bist dabei! 🎉', 'Warte, bis das Rennen startet …', m.race ? '' : '▶ RENNEN STARTEN'); }
     else if (m.t === 'full') { kicked = true; screenJoin(m.msg || 'Leider kein Platz mehr.'); try { conn.close(); } catch (e) {} }
     else if (m.t === 'ev') { if (m.e === 'hit' && navigator.vibrate) navigator.vibrate([120, 40, 120]); if (m.e === 'fin') hud('🏁 Ziel! Platz ' + m.pos); if (m.e === 'res') { waitScreen('Rennen beendet 🏁', 'Du wurdest ' + m.pos + '. – weiter geht’s mit dem nächsten Rennen.', '▶ WEITER'); } }
     else if (m.t === 'st') {
@@ -119,7 +119,7 @@ window.startController = function () {
   function startPlay() {
     root.classList.add('play'); root.innerHTML = '<div class="hudline"></div><div class="tc" id="cz" style="display:block"></div>'; buildTouch($('cz'), st); $('cz').addEventListener('pointerdown', full); if (viewOn && M && M.ok) viewStart();
     try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { wake = w; }).catch(() => {}); } catch (e) {}
-    clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const pressed = st.i | pa.i; if (pressed && !prevItem) itemSeq++; prevItem = pressed; const msg = { t: 'in', s: Math.round(s * 100) / 100, g: st.g | pa.g, b: st.b | pa.b, d: st.d | pa.d, i: pressed, n: itemSeq }, k = msg.s + '|' + msg.g + msg.b + msg.d + msg.i, now = Date.now(); if (k !== last || now - lastAt > 250) { last = k; lastAt = now; tx(msg); } }, 33);
+    clearInterval(sendT); sendT = setInterval(() => { const pa = Pads.any(); let s = clampN(st.s + pa.s, -1, 1); if (TILT.on && !s) s = TILT.v; const pressed = st.i | pa.i; if (pressed && !prevItem) itemSeq++; prevItem = pressed; const msg = { t: 'in', s: Math.round(s * 100) / 100, g: st.g | pa.g, b: st.b | pa.b, d: st.d | pa.d, i: pressed, n: itemSeq }, k = msg.s + '|' + msg.g + msg.b + msg.d + msg.i + '|' + msg.n, now = Date.now(); if (k !== last || now - lastAt > 250) { last = k; lastAt = now; tx(msg); } }, 25);
     try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {}
   }
   function stopPlay() { viewStop(); clearInterval(sendT); sendT = 0; ph = 'lobby'; try { touchReset && touchReset(); } catch (e) {} for (const k in st) st[k] = 0; prevItem = 0; last = ''; try { wake && wake.release(); } catch (e) {} wake = null; }
