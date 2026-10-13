@@ -19,7 +19,7 @@ if (JOIN) {
   const FAST = () => window.__mmFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
   const rnd = a => a[(Math.random() * a.length) | 0], fmt = (t, v) => String(t).replace(/\{(\w)\}/g, (m, k) => (v[k] != null ? v[k] : m));
   const CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], PHL = { look: 'Erster Eindruck', steck: 'Steckbrief', talent: 'Talent', quiz: 'Quiz' };
-  const S0 = { n: 1, humans: store.get('mmHumans', []), tts: store.get('mmTts', false), snd: store.get('mmSnd', true) };
+  const S0 = { n: 1, humans: store.get('mmHumans', []), tts: store.get('mmTts', true), snd: store.get('mmSnd', true) };
   const randProfile = () => { const t = TAGS.slice().sort(() => Math.random() - 0.5); return { likes: t.slice(0, 3), nogos: t.slice(3, 5), style: rnd(STYLES) }; };
   for (let i = 0; i < 4; i++) { const h = S0.humans[i] || (S0.humans[i] = {}); h.name = h.name || 'Spieler ' + (i + 1); h.g = h.g || ['f', 'm', 'd', 'f'][i]; if (!h.likes || h.likes.length !== 3 || !h.nogos || h.nogos.length !== 2) Object.assign(h, randProfile()); h.style = h.style || rnd(STYLES); }
   let S = null, token = 0, pending = null, say = '', logHist = [], asks = {}, pend = {}, askId = 0, curAsk = null, cardData = null, humanSeatOn = {};
@@ -31,10 +31,52 @@ if (JOIN) {
   function card(html, ids) { $('dlgBox').innerHTML = html; $('dlg').hidden = false; return new Promise(res => { pending = { res, ids }; }); }
   function fire(id) { if (pending && pending.ids.includes(id)) { const p = pending; pending = null; $('dlg').hidden = true; p.res(id); } }
   $('dlgBox').addEventListener('click', e => { const b = e.target.closest('button[id]'); if (b) { SFX.click(); fire(b.id); } });
-  function abort() { token++; const p = pending; pending = null; $('dlg').hidden = true; for (const k in pend) { try { pend[k].res(null); } catch (e) {} } pend = {}; asks = {}; if (curAsk) { curAsk.destroy(); curAsk = null; } S = null; $('clip').hidden = true; $('cardc').innerHTML = ''; if (p) p.res('abort'); push(); }
+  function abort() { stopMod(); token++; const p = pending; pending = null; $('dlg').hidden = true; for (const k in pend) { try { pend[k].res(null); } catch (e) {} } pend = {}; asks = {}; if (curAsk) { curAsk.destroy(); curAsk = null; } S = null; $('clip').hidden = true; $('cardc').innerHTML = ''; if (p) p.res('abort'); push(); }
   function addLog(text, cls) { logHist.push(text); if (logHist.length > 100) logHist.shift(); const el = document.createElement('div'); el.className = 'tl ' + (cls || ''); el.textContent = text; $('ticker').appendChild(el); while ($('ticker').children.length > 3) $('ticker').firstChild.remove(); setTimeout(() => el.remove(), 7000 / FAST()); }
   $('bLog').onclick = () => { SFX.click(); $('dlgBox').innerHTML = `<div class="dc"><h2>📜 Live-Ticker</h2><div class="tbl" style="max-height:55vh;overflow:auto">${logHist.slice().reverse().map(l => `<div class="tr"><b style="white-space:normal">${esc(l)}</b></div>`).join('') || '<div class="info">Noch nichts passiert.</div>'}</div><button class="btn" id="dClose">Schließen</button></div>`; $('dlg').hidden = false; pending = { res() {}, ids: ['dClose'] }; };
-  let vt = 0; function voice(key, vars) { if (!VOICE[key]) return ''; const t = fmt(rnd(VOICE[key]), vars || {}); say = t; $('voiceTxt').textContent = t; $('voice').hidden = false; clearTimeout(vt); vt = setTimeout(() => { $('voice').hidden = true; }, Math.max(3200, t.length * 55) / FAST()); if (S0.tts && window.speechSynthesis) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'de-DE'; u.pitch = 0.8; u.rate = 1; speechSynthesis.speak(u); } catch (e) {} } push(); return t; }
+  // Moderation läuft über EINEN Sprecher mit serieller Warteschlange.
+  // Keine parallelen Stimmen; beim Abbruch werden alte Ansagen zuverlässig verworfen.
+  let vt=0, modQueue=[],modBusy=false,modGen=0;
+  const speechSupported=!!(window.speechSynthesis&&window.SpeechSynthesisUtterance);
+  let modVoice=null;
+  function chooseModVoice(){
+    if(!speechSupported)return;
+    const voices=speechSynthesis.getVoices();
+    modVoice=voices.find(v=>/^de[-_]/i.test(v.lang)&&/natural|neural|premium|google/i.test(v.name))
+      ||voices.find(v=>/^de[-_]/i.test(v.lang))||null;
+  }
+  if(speechSupported){chooseModVoice();speechSynthesis.addEventListener?.('voiceschanged',chooseModVoice)}
+  function stopMod(){
+    modGen++;modQueue.length=0;modBusy=false;
+    if(speechSupported)try{speechSynthesis.cancel()}catch(e){}
+  }
+  function modSpeakNext(){
+    if(modBusy||!S0.tts||!speechSupported||!modQueue.length)return;
+    const item=modQueue.shift(),generation=modGen;modBusy=true;
+    try{
+      const utter=new SpeechSynthesisUtterance(item);
+      utter.lang='de-DE';utter.rate=.96;utter.pitch=.92;
+      if(modVoice)utter.voice=modVoice;
+      let done=false;
+      const finish=()=>{if(done||generation!==modGen)return;done=true;clearTimeout(watchdog);modBusy=false;modSpeakNext()};
+      utter.onend=finish;utter.onerror=finish;
+      // Browser/WebView melden gelegentlich kein onend: keine ewige Blockade.
+      const watchdog=setTimeout(()=>{if(generation!==modGen)return;try{speechSynthesis.cancel()}catch(e){}finish()},Math.max(4500,item.length*125+3000));
+      speechSynthesis.speak(utter);
+    }catch(e){modBusy=false;modSpeakNext()}
+  }
+  function voice(key,vars){
+    if(!VOICE[key])return '';
+    const t=fmt(rnd(VOICE[key]),vars||{});
+    say=t;$('voiceTxt').textContent=t;$('voice').hidden=false;
+    clearTimeout(vt);vt=setTimeout(()=>{$('voice').hidden=true},Math.max(3200,t.length*55)/FAST());
+    if(S0.tts&&speechSupported){
+      // Durchlaufende Ansagen niemals überschneiden; alte Warteansagen begrenzen.
+      if(modQueue.length>=2)modQueue.shift();
+      modQueue.push(t);modSpeakNext();
+    }
+    push();return t;
+  }
   function banner(t, sub) { $('banner').innerHTML = esc(t) + (sub ? `<small>${esc(sub)}</small>` : ''); $('banner').hidden = false; $('banner').style.animation = 'none'; void $('banner').offsetWidth; $('banner').style.animation = ''; setTimeout(() => { $('banner').hidden = true; }, 1700 / FAST()); }
   async function clip(title, html, ms = 4200) { $('clip').innerHTML = `<h3>${esc(title)}</h3>${html}`; $('clip').hidden = false; await sleep(ms); $('clip').hidden = true; }
   const setLamps = n => { const el = $('hLamps'); if (+el.textContent !== n) { el.textContent = n; $('hLamps').parentElement.classList.remove('pulse'); void el.offsetWidth; $('hLamps').parentElement.classList.add('pulse'); } };
@@ -156,7 +198,7 @@ if (JOIN) {
   $('bPairMenu').onclick = $('bPairSetup').onclick = () => { SFX.click(); pair.open(); };
   $('bMenu').onclick = () => { SFX.click(); if (confirm('Show wirklich beenden?')) { abort(); show('menu'); studio.setSeats(Array.from({ length: 20 }, (_, k) => { const p = PULTE[k % PULTE.length]; return { p, look: look(p, k), human: false }; })); studio.focus('all'); studio.setCandidate(null); } };
   $('bRules').onclick = () => { SFX.click(); $('rules').hidden = false; }; $('rulesOk').onclick = () => { $('rules').hidden = true; };
-  $('bSound').onclick = $('bSnd').onclick = toggleSnd; $('bVoice').onclick = () => { S0.tts = !S0.tts; store.set('mmTts', S0.tts); setSnd(); if (!S0.tts) try { speechSynthesis.cancel(); } catch (e) {} };
+  $('bSound').onclick = $('bSnd').onclick = toggleSnd; $('bVoice').onclick = () => { S0.tts = !S0.tts; store.set('mmTts', S0.tts); setSnd(); if (!S0.tts) stopMod(); else if (speechSupported) voice('intro', { a: 'unsere Show' }); };
   let last = performance.now(); (function loop(now) { studio.frame((now - last) / 1000); last = now; requestAnimationFrame(loop); })(last);
   window.__mm = { get S() { return S; }, S0, studio };
 }
