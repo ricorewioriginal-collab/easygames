@@ -18,19 +18,19 @@ Desktop: **WASD/Pfeiltasten** bewegen, **E** interagiert, Team und Taschidex üb
 
 ## Aktuell implementiert
 
-- Begehbare 3D-Lichtung Sonnenhain mit Kamera, Bäumen, Häusern, Arenastelen und hohem Gras.
+- Begehbare 3D-Lichtung Sonnenhain mit Kamera, Bäumen, Häusern, Arenastelen und hohem Gras.\n- Sechs prozedurale Dorfstandorte mit Rast- und Wildbegegnungen; vier Felshöhlen mit textbasierten Erkundungsaktionen, Kristallfunden und Begegnungen.
 - Startauswahl: Glutzahn, Plätscherchen oder Samenling.
-- 17 Arten, 8 Elementtypen, 9 Attacken, Begegnungen im hohen Gras.
+- 209 Art-/Regionalform-Einträge (17 Ausgangsarten + 192 prozedural abgeleitete Regionalformen), 8 Elementtypen, 9 Attacken, Begegnungen im hohen Gras.
 - Rundenbasierte Kämpfe mit KP, Leveln, EP, Typenfaktoren und Entwicklungen einiger Arten.
 - Taschibälle, Fangwahrscheinlichkeit abhängig von Rest-KP, Team bis 6, Lager, Taschidex.
-- Acht aufeinanderfolgende Arena-Duelle, Licht-Siegel, Heilhaus, Fangladen, Tränke.
+- 16 aufeinanderfolgende Arena-Duelle, Licht-Siegel, Heilhaus, Fangladen, Tränke.
 - Lokale Spielstandspeicherung im Browser per `localStorage`, unabhängig von Bunte Insel.
 
 ## Wichtige Grenzen
 
-Dies ist **ein spielbarer erster Entwicklungsstand, kein vollwertiges Switch-/3DS-Konsolenspiel**. Insbesondere fehlen ausgearbeitete Charakteranimationen, hochwertige individuelle Kreaturenmodelle, Städte und Regionen, NPC-Dialogketten, vertonte Geschichte, Audio, Weltkarte, dichte Quests, Online-Modi, zeitgemäße Kamera-Kollisionslogik und automatisierte Browser-/Gerätetests. Die acht Arenen sind derzeit einzelne Herausforderungen mit jeweils einem gegnerischen Taschi; der Spielstand ist derzeit **nur lokal**, ohne Sync. Die 3D-Modelle sind einfache prozedurale Platzhalter.
+Dies ist **ein spielbarer erster Entwicklungsstand, kein vollwertiges Switch-/3DS-Konsolenspiel**. Insbesondere fehlen ausgearbeitete Charakteranimationen, hochwertige individuelle Kreaturenmodelle, Städte und Regionen, NPC-Dialogketten, vertonte Geschichte, Audio, Weltkarte, dichte Quests, Online-Modi, zeitgemäße Kamera-Kollisionslogik und automatisierte Browser-/Gerätetests. Die 16 Arenen sind derzeit einzelne Herausforderungen mit jeweils einem gegnerischen Taschi; der Spielstand ist derzeit **nur lokal**, ohne Sync. Die 3D-Modelle sind einfache prozedurale Platzhalter. Die 192 Regionalformen verwenden wiederverwendete Grundkörper mit Farbvarianten und veränderten Werten. Die Höhlen besitzen derzeit keine eigenständig begehbaren 3D-Innenräume, sondern Interaktionsdialoge und Kämpfe.
 
-Bekannte technische Grenzen: Es gibt noch kein reguläres Package-/Build-System für Taschi; die Three.js-ESM-Abhängigkeit wird über CDN geladen; Browser können lokale Module unter `file://` blockieren. Performance und vollständiges Mobilverhalten müssen auf echten Geräten geprüft werden.
+Bekannte technische Grenzen: Ein fehlgeschlagener Import wird nun sichtbar angezeigt statt nur eine leere Fläche zurückzulassen. Dies ersetzt keine Ursachenbehebung oder Browsertests. Es gibt noch kein reguläres Package-/Build-System für Taschi; die Three.js-ESM-Abhängigkeit wird über CDN geladen; Browser können lokale Module unter `file://` blockieren. Performance und vollständiges Mobilverhalten müssen auf echten Geräten geprüft werden.
 
 ## Weitere Entwicklung
 
