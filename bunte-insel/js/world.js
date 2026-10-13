@@ -808,14 +808,14 @@ BI.buildWorld = function (scene) {
       return { x, z };
     } return { x: 0, z: 30 };
   };
-  W.groundY = (x, z) => {
+  W.groundY = (x, z, maxY = Infinity) => {
     if (x > 2800) return 0;
-    if (W.atlPit) { const h = W.atlPit.floor(x, z); if (h !== null) return h; }
-    if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h) return h; }
-    if (W.zotik) { const h = W.zotik.floor(x, z); if (h) return h; }
-    if (W.radio) { const h = W.radio.floor(x, z); if (h) return h; }
-    if (W.bade) { const h = W.bade.floor(x, z); if (h !== null) return h; } /* Badestrand: Meer (schwimmen) und Plattformen */
-    if (W.isles) for (const I of W.isles) if (I.floor) { const h = I.floor(x, z); if (h) return h; } /* begehbare Hügel/Decks kleiner Inseln (Märchenland …) */
+    if (W.atlPit) { const h = W.atlPit.floor(x, z); if (h !== null && h <= maxY + .65) return h; }
+    if (W.atlantis) { const h = W.atlantis.floor(x, z); if (h && h <= maxY + .65) return h; }
+    if (W.zotik) { const h = W.zotik.floor(x, z); if (h && h <= maxY + .65) return h; }
+    if (W.radio) { const h = W.radio.floor(x, z); if (h && h <= maxY + .65) return h; }
+    if (W.bade) { const h = W.bade.floor(x, z); if (h !== null && h <= maxY + .65) return h; } /* Badestrand: Meer (schwimmen) und Plattformen */
+    if (W.isles) for (const I of W.isles) if (I.floor) { const h = I.floor(x, z); if (h && h <= maxY + .65) return h; } /* begehbare Hügel/Decks kleiner Inseln (Märchenland …) */
     { const D = W.dampfShip; if (D && z > D.z0 - 1 && z < D.z1 + 1 && x > D.x0 - 1 && x < D.r1 + 1) { if (x > D.x0 && x < D.x1 && z > D.z0 && z < D.z1) return D.y; if (x >= D.x1 && x < D.r1 && z > D.rz0 && z < D.rz1) return D.y * (D.r1 - x) / (D.r1 - D.x1 - 0); } }
     for (const t of W.stations) if (x > t.plat[0] && x < t.plat[2] && z > t.plat[1] && z < t.plat[3]) return .2;
     const S = W.ship; if (S) { const d = S.deck, r = S.ramp; if (x > d.x0 && x < d.x1 && z > d.z0 && z < d.z1) return d.y; if (x > r.x0 && x < r.x1 && z > r.z0 && z < r.z1) return d.y * (x - r.x0) / (r.x1 - r.x0); }
