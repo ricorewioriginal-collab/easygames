@@ -596,7 +596,7 @@
     if (e.code === 'Escape' && state === 'play' && !$('questPanel').hidden) { $('questClose').click(); e.preventDefault(); return; }
     if (e.code === 'Escape' && (!$('toolPanel').hidden || !$('leftExtra').hidden || !$('funBar').hidden)) { closeHudMenus(); e.preventDefault(); return; }
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pause(true); else if (state === 'pause') pause(false); return; }
-    if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu' && !(e.target && e.target.closest && e.target.closest('#menu button'))) { startPlay(); e.preventDefault(); } return; }
+    if (state !== 'play') { if ((e.code === 'Enter' || e.code === 'Space') && state === 'menu' && !tv.open && !(e.target && e.target.closest && e.target.closest('#menu button, button, a, input, textarea, select'))) { startPlay(); e.preventDefault(); } return; } /* Knöpfe/Links (z. B. im Fernseher-Fenster) bekommen Enter selbst */
     if (KMAP[e.code]) { keys[KMAP[e.code]] = true; e.preventDefault(); }
     if (rs.ui) { if (rs.ui === 'play' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); rangeShoot(); } else if (e.code === 'KeyE' && rs.ui !== 'play') inp.act = true; return; }
     switch (e.code) {
@@ -1302,6 +1302,10 @@
   const wunsch = BI.createWunsch({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), setStick, addVeh: (t_, x, z, h) => addVeh(t_, x, z, h), getNightT: () => nightT, setNightT: v => { nightT = v; } });
   const taschi = BI.createTaschi({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), fanfare: () => A.fanfare && A.fanfare(), setStick, indoors: () => !!(innen && innen.inside), beamHeil: () => { const d = DEST.find(x => x.id === 'ta_heil'); if (d) beamTo(d); } }); taschi.build();
   $('bTaschiHub').addEventListener('click', () => { if (typeof closeHudMenus === 'function') closeHudMenus(); taschi.openHub(); });
+  /* Taschis an/aus (⚙️ Einstellungen, pro Spielstand): aus = kein Begleiter, kein Fanggras, keine wilden Taschis und kein 🔴-Knopf außerhalb von Taschi-Land */
+  { const up = () => { $('taschiIcon').textContent = save.taschiOff ? '⚪' : '🔴'; $('taschiTxt').textContent = 'Taschis: ' + (save.taschiOff ? 'aus' : 'an'); };
+    $('bTaschiOn').addEventListener('click', () => { save.taschiOff = !save.taschiOff; persist(); up(); A.pop && A.pop(); say(save.taschiOff ? '⚪ Taschis aus: kein Begleiter, kein Fanggras. In Taschi-Land geht alles weiter.' : '🔴 Taschis an: Begleiter und Fanggras in allen Welten.', 4200); });
+    taschi.syncToggle = up; up(); }
   const fussball = BI.createFussball({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), net: () => net, me: () => selfId(), earn: id => kids.earn(id), humansAt: (x, z, r) => 1 + [...remote.values()].filter(a => Math.hypot(a.x - x, a.z - z) < r).length }); fussball.people(town.folk);
   const maerchen = BI.createMaerchen({ scene, renderer, W, A, fx, P, say, save, persist, addStars: n => addStars(n), mini: () => mini }); maerchen.people(town.folk);
   const schatz = BI.createSchatz({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), guide: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); } }); schatz.people(town.folk);
@@ -1328,7 +1332,7 @@
     makeMate: (i, name) => { const c = BI.makeChar(charOpts({ hero: 'custom', shirt: (i * 3 + 2) % BI.SHIRTS.length, hat: 0, eq: {}, cu: { skin: i % BI.SKINS.length, hair: (i * 2 + 1) % BI.HAIRS.length, pants: i, shoe: i, eye: i, mouth: 1 } }, name)); scene.add(c.group); return c; }, dragHold: on => { if (on) drag.id = -99; else if (drag.id === -99) drag.id = null; } });
   function tvButton() { if (tv.isPhone()) tv.openController(); else tv.start().catch(() => { }); } /* Handy: Controller öffnet sich direkt; Computer/Fernseher: Code + QR */
   $('bTv').addEventListener('click', () => { tv.start().catch(() => { }); }); $('bCtl').addEventListener('click', () => tv.openController());
-  if (tv.isTvDevice()) tv.start().catch(() => { });
+  if (tv.isTvDevice()) { $('bCtl').hidden = true; tv.start().catch(() => { }); } /* am Fernseher ergibt „Handy-Controller öffnen“ keinen Sinn */
   $('albumBook').addEventListener('click', () => { kids.close(); sammeln.show(); });
   const tafeln = BI.createTafeln({ scene, W, A, P, say });
   const atlantis = BI.createAtlantis({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), cam, fade: cb => { fadeEl.firstElementChild.textContent = '🔱'; fadeEl.classList.add('on'); setTimeout(() => { cb(); fadeEl.classList.remove('on'); fadeEl.firstElementChild.textContent = '💤'; }, 900); }, mood: on => setAtlMood(on) }); atlantis.people(town.folk);
@@ -2333,13 +2337,15 @@
   spawnRC(true); for (const tv of BI.TOYVEH) if (save.owned.includes(tv)) spawnRC(true, tv);
   $('loading').hidden = true; $('menu').hidden = false; if (!document.body.classList.contains('touch')) $('bStart').focus({ preventScroll: true });
   /* Konsolen-Steuerung im Startmenü: Pfeiltasten / Steuerkreuz wählen, Enter / A öffnet, Esc / B geht zurück */
-  { const btns = () => [...$('menu').querySelectorAll('[data-v]:not([hidden]) button')].filter(b => !b.disabled && b.offsetParent), live = () => state === 'menu' && !$('menu').hidden && !mpOpen && !creating;
+  { const btns = () => [...$('menu').querySelectorAll('[data-v]:not([hidden]) button')].filter(b => !b.disabled && b.offsetParent), live = () => state === 'menu' && !$('menu').hidden && !mpOpen && !creating && !tv.open; /* Fernseher-Fenster offen: Pfeile gehören dem Fenster */
     const move = d => { const l = btns(); if (!l.length) return; const i = l.indexOf(document.activeElement); l[(i < 0 ? 0 : (i + d + l.length) % l.length)].focus({ preventScroll: true }); A.pop && A.pop(); };
     const back = () => { const v = $('menu').dataset.v; if (v === 'slots') menuView('home'); };
-    addEventListener('keydown', e => { if (!live() || (e.target && e.target.tagName === 'INPUT')) return; const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.code]; if (k) { A.resume(); move(k); e.preventDefault(); } else if (e.code === 'Escape') { back(); e.preventDefault(); } });
+    addEventListener('keydown', e => { if (tv.open && state === 'menu') { const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.code]; if (k) { tv.panelNav(k); e.preventDefault(); } return; }
+      if (!live() || (e.target && e.target.tagName === 'INPUT')) return; const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.code]; if (k) { A.resume(); move(k); e.preventDefault(); } else if (e.code === 'Escape') { back(); e.preventDefault(); } });
     const pad = {}; setInterval(() => {
-      if (!live() || !navigator.getGamepads) return; const gp = [...navigator.getGamepads()].find(Boolean); if (!gp) return;
+      const tvo = tv.open && state === 'menu'; if ((!live() && !tvo) || !navigator.getGamepads) return; const gp = [...navigator.getGamepads()].find(Boolean); if (!gp) return;
       const on = (n, v) => { const was = pad[n]; pad[n] = v; return v && !was; }, b = i => !!(gp.buttons[i] && gp.buttons[i].pressed), ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
+      if (tvo) { if (on('l', b(14) || b(12) || ax < -.6 || ay < -.6)) tv.panelNav(-1); if (on('r', b(15) || b(13) || ax > .6 || ay > .6)) tv.panelNav(1); if (on('a', b(0))) tv.panelPress(); return; }
       if (on('l', b(14) || b(12) || ax < -.6 || ay < -.6)) move(-1); if (on('r', b(15) || b(13) || ax > .6 || ay > .6)) move(1);
       if (on('a', b(0))) { const f = document.activeElement; if (f && f.closest('#menu')) f.click(); } if (on('b', b(1))) back();
     }, 100); }

@@ -391,6 +391,8 @@ Brücke im Osten. Hier leben Taschis – freundliche Taschenwesen. Ziel der Inse
 - 🔴 Taschi-Menü überall: ☰ Mehr → „Taschis“ (Team, Taschidex nach Welten, Orden, Weltforscher, Flug zum Heilhaus). Dein vorderstes Taschi läuft als Begleiter hinter dir her.
 - 📘 Taschidex-Meilensteine: 25 und 50 Taschis, alle Taschis und „Weltforscher“ (in jeder Welt 2 Taschis) geben Sterne und Sticker. 12 Typen: dazu kommen 🐉 Drache, ❄️ Eis, 🌑 Dunkel und ✨ Licht.
 
+> 💡 Taschis an/aus: ⚙️ Einstellungen → „🔴 Taschis: an“. Aus = kein Begleiter, kein Fanggras, keine wilden Taschis und kein Taschi-Knopf in den anderen Welten. In Taschi-Land selbst geht alles weiter, dein Team bleibt erhalten.
+
 Die 8 Orden: 🔴 Fang · 🪨 Fels · 💧 Perlen · ⚡ Funken · 🌿 Blüten · 📘 Forscher (8 Taschis) · 🎈 Ballon (Team Funke) · 👑 Meister. Alles hier ist selbst erfunden – inspiriert von klassischen Sammel-Rollenspielen.
 
 ---

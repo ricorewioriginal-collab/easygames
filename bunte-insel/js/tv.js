@@ -18,7 +18,7 @@ BI.createTv = function (G) {
   #tvPanel .box{margin:auto;display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,4vw,56px);align-items:center;max-width:min(1100px,94vw);padding:clamp(16px,3vw,40px)}
   #tvPanel h1{margin:0 0 8px;font-size:clamp(28px,5vw,56px)}#tvPanel p{margin:6px 0;font-size:clamp(15px,2.2vw,26px);color:#c9cff5}
   #tvQr{background:#fff;border-radius:24px;padding:14px;width:clamp(180px,30vw,340px);aspect-ratio:1;display:flex;align-items:center;justify-content:center}#tvQr img{width:100%;height:100%;image-rendering:pixelated}
-  #tvLink{display:inline-block;max-width:100%;word-break:break-all;background:rgba(255,255,255,.14);border:2px dashed rgba(255,255,255,.55);border-radius:14px;padding:8px 16px;font-weight:800;font-size:clamp(16px,2.6vw,32px);color:#ffe27a;margin:2px 0 8px}
+  #tvLink{text-decoration:none;cursor:pointer;display:inline-block;max-width:100%;word-break:break-all;background:rgba(255,255,255,.14);border:2px dashed rgba(255,255,255,.55);border-radius:14px;padding:8px 16px;font-weight:800;font-size:clamp(16px,2.6vw,32px);color:#ffe27a;margin:2px 0 8px}#tvLink:focus-visible{outline:4px solid #fff}
   #tvStat{font-weight:700;font-size:clamp(14px,2vw,22px);margin:2px 0 6px;padding:4px 12px;border-radius:12px;display:inline-block;background:rgba(255,255,255,.1)}#tvStat.ok{color:#7dffb0}#tvStat.wait{color:#ffe27a}#tvStat.err{color:#ff9a9a}
   #tvCode{font-size:clamp(44px,9vw,110px);font-weight:800;letter-spacing:.12em;line-height:1;margin:6px 0 10px}
   #tvPl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
@@ -35,7 +35,7 @@ BI.createTv = function (G) {
   #tvSplit .emp{position:absolute;display:flex;align-items:center;justify-content:center;background:#10142e;color:#c9cff5;font:700 clamp(14px,2vw,24px) Fredoka,system-ui,sans-serif;text-align:center}`);
   document.head.appendChild(st);
   const panel = el('div'); panel.id = 'tvPanel'; panel.hidden = true;
-  panel.innerHTML = '<div class="box"><div id="tvQr">…</div><div><h1>📺 Handy = Controller</h1><p>1️⃣ Öffne <b>auf dem Handy</b> diesen Link:</p><div id="tvLink"></div><p>2️⃣ Tippe dort diesen <b>Code</b> ein – oder scanne den QR-Code:</p><div id="tvCode">----</div><div id="tvStat" class="wait">…</div><div id="tvPl"></div><p id="tvMsg">Bis zu 4 Spieler. Spieler 1 steuert alles, die anderen laufen mit. 🎮 Oder einfach einen Controller (Xbox, PlayStation, Switch) am Fernseher anschließen und eine Taste drücken – wird automatisch erkannt.</p><button class="tvb g" id="tvOk">▶ OK – los geht’s</button><button class="tvb g" id="tvRetry" hidden>🔄 Nochmal verbinden</button><button class="tvb" id="tvSplitB">🪟 Splitscreen: aus</button><button class="tvb" id="tvOff">✖ TV-Modus beenden</button></div></div>';
+  panel.innerHTML = '<div class="box"><div id="tvQr">…</div><div><h1>📺 Spiel am Fernseher</h1><p>1️⃣ Öffne <b>auf dem Handy</b> diesen Link:</p><a id="tvLink" target="_blank" rel="noopener"></a><p>2️⃣ Tippe dort diesen <b>Code</b> ein – oder scanne den QR-Code:</p><div id="tvCode">----</div><div id="tvStat" class="wait">…</div><div id="tvPl"></div><p id="tvMsg">Bis zu 4 Spieler. Spieler 1 steuert alles, die anderen laufen mit. 🎮 Oder einfach einen Controller (Xbox, PlayStation, Switch) am Fernseher anschließen und eine Taste drücken – wird automatisch erkannt.</p><button class="tvb g" id="tvOk">▶ OK – los geht’s</button><button class="tvb g" id="tvRetry" hidden>🔄 Nochmal verbinden</button><button class="tvb" id="tvSplitB">🪟 Splitscreen: aus</button><button class="tvb" id="tvOff">✖ TV-Modus beenden</button></div></div>';
   document.body.appendChild(panel);
   const chip = el('div'); chip.id = 'tvChip'; chip.hidden = true; chip.tabIndex = 0; document.body.appendChild(chip);
   const ptrEl = el('div'); ptrEl.id = 'tvPtr'; ptrEl.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34"><path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#10142e" stroke-width="1.6" stroke-linejoin="round"/></svg>'; document.body.appendChild(ptrEl);
@@ -46,16 +46,24 @@ BI.createTv = function (G) {
   const sleep = ms => new Promise(r => setTimeout(r, ms)), withTimeout = (pr, ms, err) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error(err)), ms))]);
   function newPeer(id) { return new Promise((res, rej) => { let done = false, q = null; const to = setTimeout(() => { if (done) return; done = true; try { q && q.destroy(); } catch (e) { } rej(Object.assign(new Error('timeout'), { type: 'timeout' })); }, 9000); try { q = new Peer(id); } catch (e) { clearTimeout(to); rej(e); return; } q.on('open', () => { if (done) return; done = true; clearTimeout(to); res(q); }); q.on('error', e => { if (done) return; done = true; clearTimeout(to); try { q.destroy(); } catch (x) { } rej(e || new Error('err')); }); }); }
   function renderPanel() {
-    $('tvCode').textContent = T.code || '----'; $('tvLink').textContent = location.host + location.pathname.replace(/[^/]*$/, '') + 'controller.html'; if (T.on && !T.stat) setStat('ok', players().some(s => !s.away) ? '🟢 ' + players().filter(s => !s.away).length + ' Handy verbunden' : '🟢 Bereit – warte auf das Handy');
+    $('tvCode').textContent = T.code || '----'; { const l = $('tvLink'), u = new URL('controller.html' + (T.code ? '?c=' + T.code : ''), location.href); l.textContent = location.host + location.pathname.replace(/[^/]*$/, '') + 'controller.html'; l.href = u.href; } if (T.on && !T.stat) setStat('ok', players().some(s => !s.away) ? '🟢 ' + players().filter(s => !s.away).length + ' Handy verbunden' : '🟢 Bereit – warte auf das Handy');
     const pl = $('tvPl'); pl.innerHTML = ''; for (let i = 0; i < 4; i++) { const s = slots[i], d = el('div', 'color:' + COL[i]); d.className = 'tvp' + (s ? ' on' : ''); d.innerHTML = '<i style="background:' + COL[i] + '"></i><span style="color:#fff">' + (s ? s.name : '<em>wartet …</em>') + '</span>'; pl.appendChild(d); }
     $('tvSplitB').textContent = '🪟 Splitscreen: ' + (T.split ? 'an' : 'aus'); chip.textContent = '📺 ' + T.code + ' · ' + players().length + ' Spieler';
   }
-  function openPanel(on) { T.open = on; panel.hidden = !on; if (on) { renderPanel(); try { $('tvOk').focus({ preventScroll: true }); } catch (e) { } } }
+  function openPanel(on) { const was = T.open; T.open = on; panel.hidden = !on; if (on) { renderPanel(); try { $('tvOk').focus({ preventScroll: true }); } catch (e) { } } else if (was && G.state() === 'menu') { const m = document.getElementById('bStart'); try { m && m.offsetParent && m.focus({ preventScroll: true }); } catch (e) { } } }
   $('tvOk').onclick = () => { A.resume && A.resume(); openPanel(false); };
   $('tvSplitB').onclick = () => { setSplit(!T.split); };
   $('tvOff').onclick = () => { T.stop(); };
   chip.onclick = () => openPanel(!T.open);
   chip.addEventListener('keydown', e => { if (e.key === 'Enter') openPanel(!T.open); });
+  /* Fernbedienung/Tastatur im Fenster: Pfeiltasten wählen Link und Knöpfe, OK/Enter drückt (vorher wanderte der Fokus ins Menü dahinter) */
+  const panelBtns = () => [...panel.querySelectorAll('#tvLink,.tvb')].filter(b => !b.hidden && b.offsetParent);
+  T.panelNav = d => { const l = panelBtns(); if (!l.length) return; const i = l.indexOf(document.activeElement); l[i < 0 ? 0 : (i + d + l.length) % l.length].focus({ preventScroll: false }); };
+  T.panelPress = () => { const f = document.activeElement; if (f && panel.contains(f)) f.click(); else { const l = panelBtns(); if (l[0]) l[0].focus(); } };
+  panel.addEventListener('keydown', e => {
+    const d = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.code || e.key]; if (!d) return; const l = panelBtns(); if (!l.length) return;
+    const i = l.indexOf(document.activeElement); l[i < 0 ? 0 : (i + d + l.length) % l.length].focus({ preventScroll: false }); e.preventDefault(); e.stopPropagation();
+  });
 
   /* ---------- Verbindung ---------- */
   const lib = (src, ok) => new Promise((res, rej) => { if (ok()) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('lib')); document.head.appendChild(s); });

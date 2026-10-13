@@ -94,7 +94,7 @@ Controller werden automatisch erkannt (erst eine Taste drücken). Unbekannte Con
 
 Das Spiel kann auf einem Fernseher oder großen Bildschirm laufen, während Handys (bis 4 Spieler) die Controller sind.
 
-- Am Fernseher/Computer: Hauptmenü → „📺 Spiel am Fernseher öffnen“. Es erscheinen ein Link, ein 4-stelliger Code und ein QR-Code.
+- Am Fernseher/Computer: Hauptmenü → „📺 Spiel am Fernseher öffnen“. Es erscheinen ein Link, ein 4-stelliger Code und ein QR-Code. Mit der Fernbedienung wählen die Pfeiltasten die Knöpfe, OK drückt.
 - Am Handy: Hauptmenü → „📱 Handy-Controller öffnen“ (oder den Link öffnen / QR scannen) und den Code eingeben.
 - Spieler 1 steuert die Hauptfigur (auch Menüs per Zeiger), Spieler 2–4 sind Mitspieler-Figuren. Optional Splitscreen (🪟).
 - Bricht die Verbindung ab, verbindet sich das Handy automatisch neu und bekommt seinen Platz zurück (30 Sekunden reserviert).

@@ -17,5 +17,5 @@ BI.buildTaschiZones = function (c) {
       for (let i = 0; i < 46; i++) { const g = rn() * TAU, dd = Math.sqrt(rn()) * (Z.r - .5), h = .7 + rn() * .6; st.cone(x + Math.sin(g) * dd, 0, z + Math.cos(g) * dd, .2, h, [0x2f9a3f, 0x3fb04a, 0x58c050][i % 3], 4); }
     }
   }
-  scene.add(st.mesh(BI.mat()));
+  const m = st.mesh(BI.mat()); scene.add(m); BI.TZONES.mesh = m; /* Taschis aus (Einstellungen): Fanggras außerhalb von Taschi-Land wird ausgeblendet */
 };
