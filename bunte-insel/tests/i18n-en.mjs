@@ -8,7 +8,7 @@ const ctx = await browser.newContext({ viewport: { width: 900, height: 600 } });
 await ctx.addInitScript(() => {
   try { localStorage.setItem('bunteInsel_language', 'en'); } catch (e) { }
   window.__said = []; window.__canvas = [];
-  const fake = { speaking: false, pending: false, paused: false, cancel() { }, resume() { }, getVoices: () => [{ name: 'Test EN', lang: 'en-US', localService: true }, { name: 'Test DE', lang: 'de-DE', localService: true }], speak(u) { window.__said.push({ t: u.text, l: u.lang }); } };
+  const fake = { speaking: false, pending: false, paused: false, cancel() { }, resume() { }, getVoices: () => [], speak(u) { window.__said.push({ t: u.text, l: u.lang }); } };
   Object.defineProperty(window, 'speechSynthesis', { value: fake, configurable: true });
 });
 const p = await ctx.newPage(); const errs = []; let fails = 0;
@@ -29,7 +29,7 @@ console.log(r);
 ok(/Farmer Heinz/.test(r.a) && /Chapter/.test(r.b) && /Catch 15 jellyfish/.test(r.c) && /3 of 5/.test(r.d) && r.e === 'Horse', 'zusammengesetzte Texte werden übersetzt');
 await p.click('#bStart'); await p.waitForTimeout(1500);
 left = await scan(); console.log('HUD – deutsch geblieben:', left);
-ok(left.length <= 2, 'HUD englisch');
+ok(left.length === 0, 'HUD englisch');
 const sp = await p.evaluate(async () => { const b = window.__bi; __said.length = 0; BI.audio && BI.audio.speak ? BI.audio.speak('Willkommen auf der Bunten Insel') : (window.A || {}).speak && A.speak('Willkommen auf der Bunten Insel'); await new Promise(r => setTimeout(r, 300)); return __said.slice(); });
 console.log('Vorlesen:', sp);
 ok(sp.length && sp[0].l === 'en-US' && /Colorful Island/.test(sp[0].t), 'Vorlesen: englische Stimme mit englischem Text');
