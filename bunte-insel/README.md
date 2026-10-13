@@ -334,7 +334,7 @@ Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Welt
 
 ### 🐾 Mehr Leben in jeder Welt
 
-Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wird eine Welt erst, wenn man ihr nahekommt; bewegt und gezeichnet wird nur, was in der Nähe ist (Sparmodus: kürzere Sichtweite). Bewohner mit Menschengestalt kann man ansprechen.
+Jede Welt hat jetzt eigene Bewohner und Tiere passend zum Thema – gefüllt wird eine Welt erst, wenn man ihr nahekommt; bewegt und gezeichnet wird nur, was in der Nähe ist (Sparmodus: kürzere Sichtweite). Bewohner mit Menschengestalt kann man ansprechen. Zusätzlich kommen je Themenwelt zwei eigene, ansprechbare Bewohner mit zweisprachigen Dialogen dazu; sie werden wie die übrigen Figuren erst in der Nähe geladen.
 - 🏝️ **Hauptinsel:** Jogger, Wanderer, Gärtner, Hunde, Katzen, Hoppel-Hasen, Eichhörnchen, Igel, Tauben, Schmetterlinge, Möwen, Strandkrabben.
 - 🏙️ **Stadt:** Geschäftsleute, Touristen, Straßenmusiker, Tauben, Katzen, Hunde.
 - 🎡 **Freizeitpark:** Kinder, Clowns, Bärchen-Maskottchen, Tauben, Eichhörnchen, Schmetterlinge.
