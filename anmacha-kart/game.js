@@ -217,10 +217,10 @@ function initHost() {
     if (!m || typeof m !== 'object') return;
     if (m.t === 'join') {
       const old = players.find(p => p.conn === c); const nm = String(m.name || 'Gast').trim().slice(0, 14) || 'Gast', lg = Number.isInteger(m.logo) && m.logo >= 0 && m.logo < 13 ? m.logo : 6, ch = Number.isInteger(m.ch) && m.ch >= 0 && m.ch < CHARS.length ? m.ch : 1, kt = Number.isInteger(m.kt) && m.kt >= 0 && m.kt < KARTS.length ? m.kt : 0;
-      const racing = !!(R && R.S.state !== 'done'); if (old) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; old.view = !!m.view; send(c, { t: 'wel', race: racing, cfg: cfgMsg() }); return updateLobby(); }
+      const racing = !!(R && R.S.state !== 'done'); if (old) { if (!racing) { old.name = nm; old.logo = lg; old.char = ch; old.kart = kt; } old.view = !!m.view; send(c, { t: 'wel', race: racing, slot: players.indexOf(old), cfg: cfgMsg() }); if (racing && R && R.humans.includes(old)) { if (old.view) sendRace(old); send(c, { t: 'st', ph: R.S.state === 'grid' ? 'grid' : 'race', pos: R.S.karts[R.humans.indexOf(old)].rank, n: R.S.karts.length, lap: Math.max(1, R.S.karts[R.humans.indexOf(old)].lap), laps: R.S.laps }); } return updateLobby(); }
       // Dasselbe Handy kommt nach einem Abbruch zurück: altes Kart übernehmen statt neu anzumelden
       const cid = typeof m.cid === 'string' ? m.cid.slice(0, 16) : '', back = cid && players.find(p => p.cid === cid);
-      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.view = !!m.view; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, slot: players.indexOf(back), cfg: cfgMsg() }); if (racing && R && R.humans.includes(back)) { sendRace(back); send(c, { t: 'st', ph: R.S.state === 'grid' ? 'grid' : 'race', pos: R.S.karts[R.humans.indexOf(back)].rank, n: R.S.karts.length, lap: R.S.karts[R.humans.indexOf(back)].lap, laps: R.S.laps }); } return updateLobby(); }
+      if (back) { const oc = back.conn; back.conn = c; back.gone = false; back.input = { s: 0, g: 0, b: 0, d: 0, i: 0 }; back.itemPending = 0; back.view = !!m.view; back.inAt = performance.now(); try { if (oc && oc !== c) oc.close(); } catch (e) {} if (!racing) { back.name = nm; back.logo = lg; back.char = ch; back.kart = kt; } send(c, { t: 'wel', race: racing, slot: players.indexOf(back), cfg: cfgMsg() }); if (racing && R && R.humans.includes(back)) { if (back.view) sendRace(back); send(c, { t: 'st', ph: R.S.state === 'grid' ? 'grid' : 'race', pos: R.S.karts[R.humans.indexOf(back)].rank, n: R.S.karts.length, lap: R.S.karts[R.humans.indexOf(back)].lap, laps: R.S.laps }); } return updateLobby(); }
       if (racing) return send(c, { t: 'full', msg: 'Das Rennen läuft schon – bitte nach dem Rennen beitreten.' });
       if (!coarse) players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
@@ -236,7 +236,7 @@ function initHost() {
     else if (m.t === 'go' && players.some(p => p.conn === c)) { if (lobbyOpen && !$('bGo').disabled) $('bGo').click(); else if (R && R.ended && !$('res').hidden) $('bNext').click(); }
   }
   const cfgMsg = () => ({ opts: TR.map((t, i) => ['t' + i, t.name]).concat(Track.CUPS.map((c, i) => ['c' + i, '🏆 ' + c.name])), sel: save.rmode === 'gp' ? 'c' + save.cup : 't' + save.track, laps: save.laps });
-  function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else players.splice(i, 1); updateLobby(); }
+  function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else { players.splice(i, 1); } updateLobby(); }
   function updateLobby() {
     $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji}${KARTS[(p.kart || 0) % KARTS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? (p.view ? '📱 eigenes Bild' : '📱 gekoppelt') : p.pad != null ? '🎮 Gamepad' : coarse ? '👆 dieses Gerät' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
     $('bGo').disabled = !players.length; $('kbToggle').classList.toggle('on', players.some(p => p.kbp));
@@ -264,7 +264,7 @@ function initHost() {
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
     // Handys mit eigenem Rennbild brauchen kein Feld im Splitscreen; zeigt keiner ein eigenes Bild hier, bleiben alle sichtbar (Fernseher als Zuschauerbild)
-    R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = humans.map((_, i) => i); R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
+    R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = [0]; R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
     humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
     document.body.classList.add('racing'); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
