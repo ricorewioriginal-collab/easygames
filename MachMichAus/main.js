@@ -198,7 +198,7 @@ if (JOIN) {
   $('bPairMenu').onclick = $('bPairSetup').onclick = () => { SFX.click(); pair.open(); };
   $('bMenu').onclick = () => { SFX.click(); if (confirm('Show wirklich beenden?')) { abort(); show('menu'); studio.setSeats(Array.from({ length: 20 }, (_, k) => { const p = PULTE[k % PULTE.length]; return { p, look: look(p, k), human: false }; })); studio.focus('all'); studio.setCandidate(null); } };
   $('bRules').onclick = () => { SFX.click(); $('rules').hidden = false; }; $('rulesOk').onclick = () => { $('rules').hidden = true; };
-  $('bSound').onclick = $('bSnd').onclick = toggleSnd; $('bVoice').onclick = () => { S0.tts = !S0.tts; store.set('mmTts', S0.tts); setSnd(); if (!S0.tts) stopMod(); else if (speechSupported) voice('intro', { a: 'unsere Show' }); };
+  $('bSound').onclick = $('bSnd').onclick = toggleSnd; $('bVoice').onclick = () => { S0.tts = !S0.tts; store.set('mmTts', S0.tts); setSnd(); if (!S0.tts) stopMod(); };
   let last = performance.now(); (function loop(now) { studio.frame((now - last) / 1000); last = now; requestAnimationFrame(loop); })(last);
   window.__mm = { get S() { return S; }, S0, studio };
 }
