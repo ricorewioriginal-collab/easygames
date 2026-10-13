@@ -46,3 +46,10 @@ test('local engine and mobile controls are present',()=>{
 test('saving, dungeons and battlegrounds are included',()=>{
  for(const marker of ['function exportSave','function importSave','function caveEnter','function caveLeave','function updateBattleScene','function chooseSaveSlot'])assert.ok(js.includes(marker),marker);
 });
+
+test('explicit game modes and guarded world input',()=>{
+ for(const state of ['BOOT','TITLE','WORLD','DIALOG','BATTLE','RESULT'])assert.match(js,new RegExp(state+":'"));
+ assert.match(js,/function transition\(next\)/);
+ assert.match(js,/gameState===GAME_STATES\.WORLD/);
+ assert.match(js,/function returnToWorld\(\)/);
+});
