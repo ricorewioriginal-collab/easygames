@@ -61,6 +61,14 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
+## Android-App (offline, mit Sync über GitHub)
+
+Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle Spiele und ihre Bibliotheken (three.js, PeerJS, QR-Code, Schrift) liegen auf dem Gerät; im WLAN lädt die App geänderte Dateien selbst von GitHub – ohne neues APK.
+
+- Dateiliste mit Prüfsummen: `sync/manifest.json`, Spielekatalog mit Handbuch: `sync/catalog.json` (erzeugt von `node tools/build-sync.js`)
+- Bibliotheken für Offline: `vendor/` (`node tools/fetch-vendor.js`), Zuordnung `vendor/map.json`; Prüfung aller Spiele: `node tools/offline-audit.js`
+- Server (Timer, Manifest-Push, APK-Bau): `android/server/` und `android/README.md`
+
 ## Neues Spiel hinzufügen
 
 Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigation) ergibt sich aus den Einträgen:
