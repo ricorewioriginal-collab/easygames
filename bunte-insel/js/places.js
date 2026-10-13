@@ -84,9 +84,19 @@ BI.addPlaces = function (W, st) {
   /* ---------- Verbotener Wald (Nordwesten): dunkler Wald mit Zaun, hier – und nur hier – wird gekämpft ---------- */
   { const fx0 = 40, fz0 = -148, R = 16, rnd = BI.rng(77), gd = Math.atan2(-fx0, -fz0), gx = fx0 + Math.sin(gd) * R, gz = fz0 + Math.cos(gd) * R; W.pads.push([fx0 - R - 2, fz0 - R - 2, fx0 + R + 2, fz0 + R + 2]);
     W.spots.forest = { x: fx0, z: fz0, R, gate: { x: gx - Math.sin(gd) * 4, z: gz - Math.cos(gd) * 4 }, gx, gz, ang: gd };
-    st.disc(fx0, fz0, R, .03, 0x33432e, 36); st.disc(fx0, fz0, R * .55, .04, 0x2a3a2a, 28); st.disc(fx0, fz0, 4, .05, 0x4a3a52, 20); st.ring(fx0, fz0, 4, 4.4, .06, 0xb36bff, 20);
-    for (let i = 0; i < 30; i++) { const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * (R - 2.2), x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; if (d < 5.5) continue; const ga = Math.abs(BI.angDiff(a, gd)); if (ga < .4 && d > R * .3) continue;
-      const h = 3 + rnd() * 2.4; st.cyl(x, 0, z, .22, .34, h * .5, 0x4a3426, 6); st.cone(x, h * .35, z, 1.5 + rnd() * .5, h * .7, [0x1f4a3a, 0x2a5a46, 0x24433f][i % 3], 7); st.cone(x, h * .75, z, 1.1, h * .55, [0x2a5a46, 0x1f4a3a][i % 2], 7); W.addCircle(x, z, .75, false, 3); }
+    st.disc(fx0, fz0, R, .03, 0x4d6040, 40); st.disc(fx0, fz0, R * .72, .04, 0x526542, 36);
+    // Natürliche Kampflichtung: erdiger Boden, Moosränder und flache Steine statt eines leuchtenden Bühnenrings.
+    st.disc(fx0, fz0, 4.7, .05, 0x75634b, 32); st.disc(fx0, fz0, 3.8, .058, 0x827052, 28);
+    for (let k = 0; k < 18; k++) { const a = k / 18 * BI.TAU, d = 5.1 + Math.sin(k * 2.4) * .35, x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; st.sph(x, .12, z, .42 + (k % 3) * .08, k % 2 ? 0x53664b : 0x72715b, 1, 1, .38, 1); }
+    for (let i = 0; i < 30; i++) { const a = rnd() * BI.TAU, d = Math.sqrt(rnd()) * (R - 2.2), x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; if (d < 6.3) continue; const ga = Math.abs(BI.angDiff(a, gd)); if (ga < .4 && d > R * .3) continue;
+      const h = 3.4 + rnd() * 2.8, trunk = .2 + rnd() * .12, crown = [0x24533c, 0x2d6245, 0x355a3e, 0x3b6847][i % 4]; st.cyl(x, 0, z, trunk, trunk * 1.35, h * .55, i % 3 ? 0x65452d : 0x725033, 7);
+      for (const side of [-1, 1]) st.cyl(x + side * (.48 + rnd() * .28), .18, z + .25, .06, .1, .62, 0x65452d, 5);
+      st.cone(x, h * .48, z, 1.05 + rnd() * .35, h * .32, crown, 9);
+      for (let q = 0; q < 4; q++) { const ca = q * Math.PI / 2 + rnd() * .5, spread = .42 + rnd() * .28; st.sph(x + Math.sin(ca) * spread, h * (.58 + rnd() * .13), z + Math.cos(ca) * spread, .82 + rnd() * .28, crown, 1, 1.1, .82, 1); }
+      st.sph(x, h * .78, z, .78 + rnd() * .22, crown, 1, 1.15, .82, 1); W.addCircle(x, z, .78, false, 3.4);
+    }
+    // Farnbüsche und junge Triebe füllen den Waldboden und geben der Lichtung Tiefe.
+    for (let i = 0; i < 26; i++) { const a = rnd() * BI.TAU, d = 6 + rnd() * 8.5, x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; if (d > R - 1) continue; for (let q = 0; q < 3; q++) st.cone(x + (q - 1) * .22, .18, z + (q % 2) * .18, .13, .42 + rnd() * .22, [0x507a3b, 0x63884a, 0x3d6938][q], 5); }
     for (let i = 0; i < 10; i++) { const a = rnd() * BI.TAU, d = 5 + rnd() * (R - 7), x = fx0 + Math.sin(a) * d, z = fz0 + Math.cos(a) * d; st.cyl(x, 0, z, .05, .08, .3, 0xe8e0d0, 5); st.sph(x, .35, z, .22, [0xb36bff, 0x3fe0c0, 0xff8fc8][i % 3], 1, 1, .6, 1); }
     for (let k = 0; k < 30; k++) { const a = k / 30 * BI.TAU; if (Math.abs(BI.angDiff(a, gd)) < .2) continue; const x = fx0 + Math.sin(a) * R, z = fz0 + Math.cos(a) * R; st.box(x, 0, z, .3, 1.5, .3, k % 2 ? 0xe0382b : 0xffffff); W.addCircle(x, z, .34, false, 1.5); if (k % 2) st.box(fx0 + Math.sin(a + .105) * R, .9, fz0 + Math.cos(a + .105) * R, 2.4, .1, .1, 0xe0382b, a + Math.PI / 2); }
     for (const s of [-1, 1]) { const x = gx + Math.cos(gd) * 2.6 * s, z = gz - Math.sin(gd) * 2.6 * s; st.box(x, 0, z, .3, 2.6, .3, 0x4a3426); st.sph(x, 2.8, z, .24, 0xe0382b, 1); }
