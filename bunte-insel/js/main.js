@@ -1,5 +1,7 @@
 'use strict';
 /* Bunte Insel – Spielschleife, Steuerung, Kamera, Missionen, Figuren, Tiere, Verkehr, Tag/Nacht */
+if (window.__biInitializing || window.__bi) return; /* verhindert doppelte Spiel- und Menü-Initialisierung */
+window.__biInitializing = true;
 (function () {
   const $ = id => document.getElementById(id), K = BI.WORLD, A = BI.audio, clamp = BI.clamp, TAU = BI.TAU;
   const save = Object.assign({ stars: 0, shirt: 0, hat: 0, pname: '', cu: { skin: 0, hair: 1, style: 1, pants: 0 }, sound: true, music: true, mpIcon: '🐶', night: false, intro: false, hero: 'jannis', pet: 'blitz', owned: [], equip: { hat: 'none', glasses: false, pack: false, teddy: false } }, BI.store.get('save', {}));
@@ -14,7 +16,7 @@
   /* Zum Eingrenzen von Darstellungsfehlern: ?gl=1 erzwingt WebGL 1, ?gl=2 WebGL 2, ?aa=0 schaltet die Kantenglättung ab (sonst wählt der Browser selbst) */
   const glQ = (location.search.match(/[?&]gl=([12])/) || [])[1], aaQ = (location.search.match(/[?&]aa=([01])/) || [])[1];
   try { const ro = { canvas, antialias: aaQ ? aaQ === '1' : (!coarse || (navigator.deviceMemory || 4) >= 3), powerPreference: 'high-performance' }; if (glQ) { const c = canvas.getContext(glQ === '2' ? 'webgl2' : 'webgl', { antialias: ro.antialias, powerPreference: ro.powerPreference }); if (c) ro.context = c; } renderer = new THREE.WebGLRenderer(ro); }
-  catch (e) { $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
+  catch (e) { window.__biInitializing = false; $('loading').innerHTML = '<b>Dein Gerät kann die 3D-Welt leider nicht zeigen.</b><br>Bitte probiere einen anderen Browser aus.'; return; }
   let graphicsLost = false, graphicsReady = false;
   const graphicsNotice = document.createElement('div'); graphicsNotice.id = 'graphicsNotice'; graphicsNotice.hidden = true;
   graphicsNotice.innerHTML = '<strong>Die Grafikverbindung wird neu gestartet …</strong><button type="button">Spiel neu laden</button>';
@@ -680,7 +682,23 @@
     if (e.code === 'KeyQ') keys.q = false; if (e.code === 'KeyR') keys.r = false;
   });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; releaseAll(); if (state === 'play' && !cinema.open && !radio.open) pause(true); }); // Klick in den Film-Player löst blur aus → dann nicht pausieren
-  document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); if (document.hidden && state === 'play') pause(true); });
+  const RESUME_KEY = 'bi_resume_v1';
+  function rememberSession() {
+    if (state !== 'play') return;
+    try { sessionStorage.setItem(RESUME_KEY, JSON.stringify({ at: Date.now(), x: P.veh ? P.veh.x : P.x, z: P.veh ? P.veh.z : P.z, h: P.veh ? P.veh.h : P.h, mode: save.mode })); } catch (e) { }
+  }
+  function takeRecentSession() {
+    try {
+      const raw = sessionStorage.getItem(RESUME_KEY); sessionStorage.removeItem(RESUME_KEY);
+      const s = raw && JSON.parse(raw);
+      if (!s || Date.now() - s.at > 8 * 60 * 1000 || !Number.isFinite(s.x) || !Number.isFinite(s.z) || !Number.isFinite(s.h)) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (state === 'play') rememberSession(); releaseAll(); if (state === 'play') pause(true); }
+    else { try { sessionStorage.removeItem(RESUME_KEY); } catch (e) { } }
+  });
 
   /* ---------- Menüs ---------- */
   function toggleNight() { nightT = nightT > .5 ? 0 : 1; save.night = nightT === 1; persist(); $('nightIcon').textContent = save.night ? '☀️' : '🌙'; }
@@ -693,6 +711,7 @@
   function toggleMusic() { save.music = !save.music; A.setMusic(save.music); persist(); $('bMusic').classList.toggle('off', !save.music); }
   function pause(on) { if (state === 'menu') return; if (on) closeHudMenus(); state = on ? 'pause' : 'play'; $('pause').hidden = !on; if (on) { A.stopAll(); } releaseAll(); }
   function startPlay() {
+    if (state === 'play') return; /* Doppeltipp/Doppelklick startet keine zweite Spielrunde */
     A.resume(); try { window.focus(); } catch (e) { } state = 'play'; $('menu').hidden = true; $('hud').hidden = false; P.h = Math.PI; { const f = myFlat(); P.x = f.door.x; P.z = f.door.z + 1.2; P.y = 0; P.vy = 0; } /* Start: vor der eigenen Haustür */ cam.yaw = 0; cam.pitch = .42; updateHud(); updateButtons(true); updateFriends();
     setTimeout(() => { if (state === 'play' && !kids.open) kids.daily(); }, 3500);
     story.start(); if (smode && smode.on()) setTimeout(() => { if (state === 'play') smode.intro(); }, 500);
@@ -707,6 +726,7 @@
   // Zurück ins Hauptmenü ohne kompletten Browser-Neustart: Die 3D-Welt und alle
   // Module wurden beim ersten Laden bereits aufgebaut. Spielstand vor dem Wechsel sichern.
   $('bToMenu').addEventListener('click', () => {
+    try { sessionStorage.removeItem(RESUME_KEY); } catch (e) { }
     persist();
     try { if (typeof net !== 'undefined' && net.close) net.close(); } catch (e) { }
     try { if (P.veh) leave(true); } catch (e) { }
@@ -1983,7 +2003,7 @@
   $('slotBar').addEventListener('click', () => { slotMsg(''); renderSlots(); menuView('slots'); }); $('slotBack').addEventListener('click', () => menuView('home'));
   $('bSaveNow').addEventListener('click', () => saveNow()); $('bExport').addEventListener('click', () => { say(exportSlot(SLOT) ? '📤 Sicherungsdatei gespeichert' : 'Nichts zu sichern', 2200); });
   setInterval(() => { if (state !== 'menu') flushAll(); }, 20000);
-  addEventListener('pagehide', flushAll); document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
+  addEventListener('pagehide', () => { rememberSession(); flushAll(); }); document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
   slotBarRefresh();
 
   $('bHero').addEventListener('click', () => menuView('hero')); $('bHeroBack').addEventListener('click', () => { save.created = true; persist(); if (creatorFirst) { creatorFirst = false; $('bHeroBack').innerHTML = '<b>✔</b><span>Fertig</span>'; menuView('home'); startPlay(); return; } menuView('home'); slotBarRefresh(); });
@@ -2406,6 +2426,11 @@
   }
   spawnRC(true); for (const tv of BI.TOYVEH) if (save.owned.includes(tv)) spawnRC(true, tv);
   $('loading').hidden = true; $('menu').hidden = false; if (!document.body.classList.contains('touch')) $('bStart').focus({ preventScroll: true });
+  const resume = takeRecentSession();
+  if (resume) {
+    if (resume.mode === 'story' || resume.mode === 'free') { smode.setMode(resume.mode, true); syncMode(); }
+    startPlay(); P.x = clamp(resume.x, -420, 420); P.z = clamp(resume.z, -420, 420); P.h = resume.h; P.y = 0; P.vy = 0; cam.yaw = P.h + Math.PI; updateHud(); say('🌈 Du bist wieder da!', 2200);
+  }
   /* Konsolen-Steuerung im Startmenü: Pfeiltasten / Steuerkreuz wählen, Enter / A öffnet, Esc / B geht zurück */
   { const btns = () => [...$('menu').querySelectorAll('[data-v]:not([hidden]) button')].filter(b => !b.disabled && b.offsetParent), live = () => state === 'menu' && !$('menu').hidden && !mpOpen && !creating && !tv.open; /* Fernseher-Fenster offen: Pfeile gehören dem Fenster */
     const move = d => { const l = btns(); if (!l.length) return; const i = l.indexOf(document.activeElement); l[(i < 0 ? 0 : (i + d + l.length) % l.length)].focus({ preventScroll: true }); A.pop && A.pop(); };
@@ -2423,7 +2448,7 @@
   // Test-/Debug-Zugriff
   /* In der App eingebettet und im Vollbild liegt oben rechts deren Schließen-Knopf über unseren Knöpfen → Leiste etwas nach unten */
   { const hostFix = () => { let emb = false; try { emb = window.parent !== window; } catch (e) { emb = true; } document.body.classList.toggle('hostfs', emb && innerHeight > (screen.height || 0) * .88); }; hostFix(); addEventListener('resize', hostFix); }
-  window.__bi = { taschi, wunsch, huepf, dlg: () => dlg, openShop, shopItems: () => SHOP, buyItem, setEq, callVeh, vehicleList, kids, istory, setPet, pup, setPetHome, cheats, buch, bugs, kb, pad, smode, footNow, innen, tv, bade, mplus, schwamm, raetsel, schluessel, sammeln, gotHeart, giveHeart, remoteRooms, remote, get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, fussball, maerchen, schatz, DEST, tafeln, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, tycoon, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer };
+  window.__bi = { taschi, wunsch, huepf, dlg: () => dlg, openShop, shopItems: () => SHOP, buyItem, setEq, callVeh, vehicleList, kids, istory, setPet, pup, setPetHome, cheats, buch, bugs, kb, pad, smode, footNow, innen, tv, bade, mplus, schwamm, raetsel, schluessel, sammeln, gotHeart, giveHeart, remoteRooms, remote, get ride() { return ride; }, startRide, endRide, nearRide, life, home, radio, zotik, atlantis, vox, bauland, fussball, maerchen, schatz, DEST, tafeln, drachen, dampf, arcade, einsatz, pups, rainbow, story, cinema, charOpts, park, tycoon, pack, meta, gadgets, parcours, obby, express, answerOffer, get offer() { return offer; }, fun, fx, starMesh, play, npcLine, talkNpc, get bubbles() { return bubbles; }, W, scene, buildChar, npcs, sendParty, visitFlat, parties, weather: () => weather, kitchen, town, camp, combat, boardTrain, nearStation, room, flatNear, flatAct, flats, kids, cam, openGuide, setGuide, beamTo, get guide() { return guide; }, openParent, closeParent, applyEco, DEST, garden, farm, pool, placeNear, placeAct, saveNow, switchSlot, exportSlot, SLOT, get t() { return t; }, kids, mini, openGames, closeGames, startGame, get gamesOpen() { return gamesOpen; }, get emosN() { return emos.length; }, sendEmoji, startGame, get gm() { return gm; }, showEmoji, flats, FB, flatNear, flatAct, startSleep, goHome, openWard, closeWard, get sl() { return sl; }, get wardOpen() { return wardOpen; }, mySlot, setPet, pup, refreshPickers, net, remote, openMp, mpShow, say, range, rs, RG, nearRange, openRange, beginRange, exitRange, rangeShoot, hannes, SHIP, onDeck, nearChest, openChest, chestCd: () => chestCd, boat: boatV, renderQuick, closeQuick, pap, SHOP, buyItem, openShop, closeShop, get shopOpen() { return shopOpen; }, nearCounter, inShop, spawnRC, pup, fun, build, doPunch, platPeople, trainDoors, get pax() { return pax; }, toggleBuild: () => toggleBuild(), toggleEgo: () => toggleEgo(), doFun: k => doFun(k), P, W, cam, inp, keys, vehicles, train, trainVeh, stars, npcs, animals, get state() { return state; }, get mission() { return mission; }, get save() { return save; }, enter, leave, nearVehicle, startPlay, pause, setNight: n => { nightT = n; }, get quality() { return quality; }, renderer }; window.__biInitializing = false;
   if (/[?&]dbg=1\b/.test(location.search)) { const sc = document.createElement('script'); sc.src = 'js/dbg.js?v=1'; document.head.appendChild(sc); }
 })();
 
