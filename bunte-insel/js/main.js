@@ -1300,9 +1300,9 @@
     let at = candidates.find(q => W.free(q[0], q[1], 1.15)) || candidates[0];
     homeStatue = BI.makeChar(charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, heroName()));
     homeStatue.group.name = 'homeStatue'; homeStatue.group.userData.homeStatueHero = save.hero; homeStatue.group.scale.multiplyScalar(.82);
-    const y = W.groundY(at[0], at[1]); homeStatue.group.position.set(at[0], y + .48, at[1]); homeStatue.group.rotation.y = Math.PI;
+    const y = W.groundY(at[0], at[1]); homeStatue.group.position.set(at[0], y + .394, at[1]); homeStatue.group.rotation.y = Math.PI;
     const plinth = new THREE.Mesh(new THREE.CylinderGeometry(.72, .88, .48, 12), new THREE.MeshStandardMaterial({ color: 0xd3a83f, roughness: .72, metalness: .18 }));
-    plinth.position.set(0, .24, 0); homeStatue.group.add(plinth); scene.add(homeStatue.group);
+    plinth.position.set(0, -.24, 0); homeStatue.group.add(plinth); scene.add(homeStatue.group);
   }
   charChangedHook = refreshHomeStatue;
   const PLINES = { mama: ['Hast du schon Hunger, mein Schatz?', 'Du bist mein Sonnenschein! ☀️', 'Räum bitte dein Zimmer auf, ja?', 'Gute Nacht, schlaf schön!', 'Spiel schön mit deinen Freunden!'], papa: ['Na, Abenteurer? Wo warst du heute?', 'Sollen wir später Ball spielen?', 'Pass beim Fahren gut auf!', 'Ich bin stolz auf dich!', 'Willst du mein Pferd… äh, Huckepack? 😄'] };
