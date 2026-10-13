@@ -432,6 +432,42 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
   #menu[data-v=home] .tile.main{min-height:clamp(230px,20vh,350px)}
   #menu[data-v=home] .tile:not(.main){min-height:clamp(185px,16vh,280px)}
 }
+
+/* Pause menu: compact groups, collapsible help and a dedicated scroll area. */
+.pauseScreen{padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));}
+.pauseCard{width:min(620px,100%);height:min(900px,calc(100dvh - max(20px,env(safe-area-inset-top)) - max(20px,env(safe-area-inset-bottom))));max-height:calc(100vh - 20px);padding:0;display:flex;flex-direction:column;overflow:hidden;text-align:left;border:1px solid rgba(255,255,255,.8);border-radius:28px;background:linear-gradient(155deg,rgba(249,252,255,.97),rgba(234,246,255,.95) 53%,rgba(237,255,239,.93));}
+.pauseHead{flex:none;padding:12px 20px 8px;text-align:center;border-bottom:1px solid rgba(22,51,94,.1);}
+.pauseHead .logo{font-size:clamp(32px,8vw,42px)!important;margin:0;}
+.pauseScroll{min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:10px 18px 14px;scrollbar-width:thin;}
+.pauseHelp{margin:2px 0 12px;border-radius:16px;background:rgba(255,255,255,.72);box-shadow:0 3px 10px rgba(20,50,100,.08);overflow:hidden;}
+.pauseHelp summary{cursor:pointer;list-style:none;padding:11px 14px;font-weight:700;color:#315477;display:flex;align-items:center;gap:8px;min-height:44px;}
+.pauseHelp summary::-webkit-details-marker{display:none;}
+.pauseHelp summary:after{content:'＋';margin-left:auto;font-size:19px;color:#4f7898;}
+.pauseHelp[open] summary:after{content:'−';}
+.pauseHelpBody{padding:0 12px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pauseHelp .help{margin:0;padding:10px 12px;border-radius:12px;background:rgba(230,242,252,.72);font-size:13px;line-height:1.48;}
+.pauseHelp .help b{min-width:0;color:#183c65;}
+.pauseGroup{margin:10px 0 0;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.73);box-shadow:0 4px 12px rgba(20,50,100,.08);}
+.pauseGroup .lab{margin:0 0 8px;text-align:left;color:#526986;font-size:14px;}
+#pause .row{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:8px;margin:0;}
+#pause .pill{padding:9px 14px;font-size:15px;box-shadow:0 3px 10px rgba(20,50,100,.13);}
+.pauseModes .pill{flex:1;min-width:130px;}
+.pauseSave .pill{flex:1;min-width:145px;}
+.pauseBreak .pill{min-width:76px;}
+.pauseTools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.pauseTools .pill{min-height:44px;line-height:1.15;}
+.pauseTools #bKeys,.pauseTools #bParent{grid-column:1/-1;}
+.pauseTools .parentHold{position:relative;overflow:hidden;}
+.pauseActions{flex:none;position:sticky;bottom:0;display:grid;grid-template-columns:1fr;gap:8px;padding:12px 18px max(12px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(241,249,255,.72),rgba(241,249,255,.98) 24%);border-top:1px solid rgba(22,51,94,.1);}
+.pauseActions #bResume{width:100%;margin:0;padding:12px 18px;font-size:23px;box-shadow:0 5px 0 #c25400,0 9px 18px rgba(0,0,0,.18);}
+.pauseActions #bToMenu{width:100%;margin:0;padding:9px 14px;background:#eaf1f8;}
+#pause .pauseSave{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+#pause .pauseSave #bSaveNow{grid-area:1/1;}
+#pause .pauseSave #bExport{grid-area:1/2;}
+#pause .pauseSave .anmacha-gbtn{grid-area:2/1/3/3;width:100%;}
+#pause .pauseSave .anmacha-gbtn-h{grid-area:3/1/4/3;text-align:center;}
+@media(max-width:620px){.pauseCard{width:min(560px,100%);border-radius:24px;}.pauseHead{padding:10px 16px 7px;}.pauseScroll{padding:8px 12px 12px;}.pauseGroup{padding:10px 11px;margin-top:8px;}.pauseHelpBody{grid-template-columns:1fr;}.pauseHelp .help{font-size:12px;}.pauseTools{gap:7px;}.pauseTools .pill{font-size:14px;padding:8px 9px;}}
+@media(max-height:700px){.pauseCard{height:calc(100dvh - 16px);}.pauseHead{padding-top:7px;padding-bottom:5px;}.pauseScroll{padding-top:6px;padding-bottom:8px;}.pauseGroup{padding:8px 10px;margin-top:6px;}.pauseActions{padding-top:8px;padding-bottom:max(8px,env(safe-area-inset-bottom));}.pauseActions #bResume{padding:9px 15px;font-size:21px;}}
 </style>
 </head>
 <body>
@@ -743,17 +779,45 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
   </div>
 </section>
 
-<section id="pause" class="screen" hidden>
-  <div class="card">
-    <div class="logo" style="font-size:40px">Pause</div>
-    <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Auto anhalten/einsteigen</b> E am fahrenden Auto, dann noch einmal E am stehenden Auto<br><b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
-    <p class="help tc"><b>Laufen/Fahren</b> Joystick links, auch daneben antippen (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Auto anhalten/einsteigen, Reden, Einkaufen</b> großer Aktion-Knopf ✋ unten rechts (fahrendes Auto erst anhalten, dann einsteigen)<br><b>Springen, Hallo, Hupe, Sirene, Turbo</b> runde Knöpfe darüber<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Menüs</b> 🎉 Spaß nach Themen · ☰ Bauen, Kamera &amp; Wegweiser · ⚙️ Ton &amp; Tag/Nacht<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
-    <p class="help" id="gpHelp" hidden></p>
-    <div class="lab">🎮 Spielmodus (Stand bleibt gleich)</div><div class="row"><button class="pill" id="bModeFree">🌍 Freie Welt</button><button class="pill" id="bModeStory">📖 Story</button></div>
-    <div class="lab" id="slotLab">💾 Spielstand</div><div class="row"><button class="pill" id="bSaveNow">💾 Jetzt speichern</button><button class="pill" id="bExport">📤 Sichern (Datei)</button></div>
-    <div class="lab">⏰ Pausen-Erinnerung (für Eltern)</div><div class="row" id="breakOpts"></div>
-    <button class="pill" id="bBuchP" style="margin-top:6px">📚 Handbuch &amp; Lösungen</button> <button class="pill" id="bCodeP" style="margin-top:6px">🔑 Code eingeben</button> <button class="pill" id="bBugP" style="margin-top:6px">🐞 Fehler melden</button><br>
-    <button class="pill" id="bKeys" style="margin-top:6px">⌨️ Tasten &amp; Controller belegen</button> <button class="pill" id="bFriendsP" style="margin-top:6px">👥 Mitspielen</button> <button class="pill" id="bParent" style="margin-top:6px;position:relative;overflow:hidden">👪 Eltern (halten)</button><br><button class="big" id="bResume">▶ Weiter spielen</button><br><button class="pill" id="bToMenu" style="margin-top:8px">🏠 Zurück zum Hauptmenü</button>
+<section id="pause" class="screen pauseScreen" hidden>
+  <div class="card pauseCard">
+    <header class="pauseHead"><div class="logo">Pause</div></header>
+    <div class="pauseScroll">
+      <details class="pauseHelp">
+        <summary>🎮 Hilfe</summary>
+        <div class="pauseHelpBody">
+          <p class="help kb"><b>Laufen/Fahren</b> WASD oder Pfeile<br><b>Kamera</b> Maus ziehen · Mausrad Abstand · Q/R drehen<br><b>Auto anhalten/einsteigen</b> E am fahrenden Auto, dann noch einmal E am stehenden Auto<br><b>Hupe</b> Leertaste · <b>Turbo</b> Shift<br><b>Sirene</b> F (Polizei, Krankenwagen, Feuerwehr)<br><b>Hubschrauber</b> ⬆ Leertaste · ⬇ X<br><b>Zug</b> Türen F · Pfeife Leertaste<br><b>Ego-Kamera</b> V · <b>Tag/Nacht</b> N · <b>Ton</b> M<br><b>Spaß</b> 1 Tanzen · 2 Kaugummi · 3 Ball · 4 Feuerwerk · 5 Ballons<br><b>Baum hauen</b> F oder 6 · <b>Blitz</b> 7 Wuff · 8 Such<br><b>Bauen</b> B · G bauen · O drehen · K Farbe · Entf löschen</p>
+          <p class="help tc"><b>Laufen/Fahren</b> Joystick links, auch daneben antippen (ganz außen = rennen 🏃)<br><b>Kamera</b> rechts wischen<br><b>Auto anhalten/einsteigen, Reden, Einkaufen</b> großer Aktion-Knopf ✋ unten rechts (fahrendes Auto erst anhalten, dann einsteigen)<br><b>Springen, Hallo, Hupe, Sirene, Turbo</b> runde Knöpfe darüber<br><b>Hubschrauber</b> ⬆ Steigen · ⬇ Sinken<br><b>Zug</b> 🚪 Türen · 📣 Pfeife<br><b>Menüs</b> 🎉 Spaß nach Themen · ☰ Bauen, Kamera &amp; Wegweiser · ⚙️ Ton &amp; Tag/Nacht<br><b>Spaß</b> 🎉 Tanzen, Kaugummi, Ball, Feuerwerk, Ballons<br><b>Baum hauen</b> 👊 · <b>Blitz</b> 🐶 Wuff, 🔎 Such<br><b>Bauen</b> 🏗️ – Boden antippen, Teil wählen, ✔</p>
+          <p class="help" id="gpHelp" hidden></p>
+        </div>
+      </details>
+      <section class="pauseGroup">
+        <div class="lab">🎮 Spielmodus (Stand bleibt gleich)</div>
+        <div class="row pauseModes"><button class="pill" id="bModeFree">🌍 Freie Welt</button><button class="pill" id="bModeStory">📖 Story</button></div>
+      </section>
+      <section class="pauseGroup">
+        <div class="lab" id="slotLab">💾 Spielstand</div>
+        <div class="row pauseSave"><button class="pill" id="bSaveNow">💾 Jetzt speichern</button><button class="pill" id="bExport">📤 Sichern (Datei)</button></div>
+      </section>
+      <section class="pauseGroup">
+        <div class="lab">⏰ Pausen-Erinnerung (für Eltern)</div>
+        <div class="row pauseBreak" id="breakOpts"></div>
+      </section>
+      <section class="pauseGroup">
+        <div class="pauseTools">
+          <button class="pill" id="bBuchP">📚 Handbuch &amp; Lösungen</button>
+          <button class="pill" id="bCodeP">🔑 Code eingeben</button>
+          <button class="pill" id="bBugP">🐞 Fehler melden</button>
+          <button class="pill" id="bKeys">⌨️ Tasten &amp; Controller belegen</button>
+          <button class="pill" id="bFriendsP">👥 Mitspielen</button>
+          <button class="pill parentHold" id="bParent">👪 Eltern (halten)</button>
+        </div>
+      </section>
+    </div>
+    <footer class="pauseActions">
+      <button class="big" id="bResume">▶ Weiter spielen</button>
+      <button class="pill" id="bToMenu">🏠 Zurück zum Hauptmenü</button>
+    </footer>
   </div>
 </section>
 
