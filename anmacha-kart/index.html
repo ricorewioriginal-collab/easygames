@@ -222,7 +222,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy, mit Freunden auf mehreren Handys (jeder mit eigenem Rennbild) oder am TV/PC mit Handys als Controller.</p>
     <div class="mbtns"><button class="big" id="bSolo" disabled>LADEN …</button><button class="big alt" id="bMulti" disabled>MEHRSPIELER</button></div>
     <button class="sumc" id="selSum" type="button"></button>
-    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div>
+    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button><button class="ghost" id="bTv">📺 TV-Modus</button><button class="ghost" id="bScan">📷 QR scannen</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div>
     <div class="info" style="font-size:13px">👥 Mehrspieler: Auf einem Handy/PC das Rennen eröffnen, auf den anderen per Code beitreten. Jeder kann sein eigenes Rennbild sehen. 📺 TV-Modus ist optional.</div>
     <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
     <div class="info" id="padInfo" hidden></div>
@@ -243,10 +243,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 </div></div>
 
 <div id="joinBox" class="ov" hidden><div class="box">
-  <h2>🔑 CODE VOM FERNSEHER</h2>
-  <p class="sub">Gib den 4-stelligen Code ein, der am Fernseher steht. Dann wird dein Handy das Lenkrad.</p>
+  <h2>🔑 SPIEL BEITRETEN</h2>
+  <p class="sub">Scanne den QR-Code des Gastgebers oder gib den Raumcode ein. TV ist nicht erforderlich.</p>
   <input id="joinIn" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD" style="font:900 clamp(40px,12vw,64px) 'Trebuchet MS',sans-serif;letter-spacing:.2em;text-align:center;text-transform:uppercase;width:min(80vw,320px);border-radius:16px;border:3px solid var(--y);background:rgba(0,0,0,.4);color:var(--y)">
   <div class="info" id="joinMsg"></div>
+  <div class="row"><button class="chip" id="joinScan">📷 QR-Code scannen</button></div>
+  <div id="scanPanel" hidden style="width:min(90vw,430px)"><video id="scanVideo" playsinline muted autoplay style="display:block;width:100%;max-height:45vh;object-fit:cover;border:2px solid var(--c);border-radius:16px"></video><p class="info" id="scanStatus" aria-live="polite"></p><button class="ghost" id="scanStop">Kamera schließen</button></div>
   <div class="row"><button class="big" id="joinGo">VERBINDEN ▶</button><button class="ghost" id="joinBack">Zurück</button></div>
 </div></div>
 
