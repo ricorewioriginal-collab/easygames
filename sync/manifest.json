@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "79673d99c63b",
- "generated": "2026-10-13T12:59:55+02:00",
- "commit": "aa2187b9da77af88a47f1827a01312cf73f9041e",
+ "version": "9d982a6f8743",
+ "generated": "2026-10-13T15:17:20+02:00",
+ "commit": "332a5c8fd845022a02b9418731724e985dd1beb4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3783,8 +3783,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 96729,
-   "h": "73698266787f85048b52a37ab8fe7345b18243221cc8a57cd9801866f040c0e8"
+   "s": 97935,
+   "h": "d448fb45fb6ea88b6eae5ff34b1a868da2b11cba8b607ffeb95c3320ea21970d"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3973,8 +3973,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 300278,
-   "h": "32759d85b04840713eaeb258593aed47662db92e86b603f53109f6c342325173"
+   "s": 300415,
+   "h": "f40a6afa697121cb43f2b696a6758c48137b5037fdac88ee71d940d49121e103"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4148,8 +4148,8 @@
   },
   {
    "p": "bunte-insel/js/tv.js",
-   "s": 31917,
-   "h": "99fee20c1cc375123540e4a40e6931270cd0a70ab1bf2db373399af23f0560cd"
+   "s": 32120,
+   "h": "368a3d25ce753f4196f8aa597ece2fb705532a29fccfe07b5e305fa788f166b2"
   },
   {
    "p": "bunte-insel/js/tycoon.js",
@@ -4994,7 +4994,7 @@
   {
    "p": "sync/catalog.json",
    "s": 56641,
-   "h": "6d4d7594475c200ef4ac47ca8336ef3b69c286234f70b0e3862ddef3ad0bbe8e"
+   "h": "4ec80b177426acfb88e190cf7377c986cd444a86feb7cc98da03597c75ea1a9c"
   },
   {
    "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
