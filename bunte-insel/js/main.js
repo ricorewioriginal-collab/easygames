@@ -1434,11 +1434,12 @@
   }
   function npcNear() { let best = null, bd = 2.3 * 2.3; if (P.veh) return null; const scan = group => { for (const n of group) { if (!n.c.group.visible || !n.p) continue; const dx = P.x - n.x, dz = P.z - n.z, d = dx * dx + dz * dz; if (d < bd) { bd = d; best = n; } } }; scan(npcs); scan(town.folk); scan(life.talkers); return best; }
   /* Satz für das Gespräch: beim ersten Mal persönliche Begrüßung, danach bunt gemischt (eigene Sätze, Plausch, Tageszeit/Wetter/Sterne) – ohne Wiederholung hintereinander */
+  const localizeNpc = s => window.BunteInselI18n && window.BunteInselI18n.t ? window.BunteInselI18n.t(s) : s;
   function npcLine(p) {
-    if (!(save.talked || []).includes(p.name)) { p.last = 0; return 'Hallo ' + heroName() + '! ' + p.lines[0]; }
-    const r = Math.random(); if (r < .2) return BI.TALK.ctx({ night: night > .5, kind: weather && weather.kind, stars: save.stars });
-    if (r < .4) { const c = BI.TALK.chat; return c[(Math.random() * c.length) | 0]; }
-    let k = 0; if (p.lines.length > 1) do { k = (Math.random() * p.lines.length) | 0; } while (k === p.last); p.last = k; return p.lines[k];
+    if (!(save.talked || []).includes(p.name)) { p.last = 0; return localizeNpc('Hallo') + ' ' + heroName() + '! ' + localizeNpc(p.lines[0]); }
+    const r = Math.random(); if (r < .2) return localizeNpc(BI.TALK.ctx({ night: night > .5, kind: weather && weather.kind, stars: save.stars }));
+    if (r < .4) { const c = BI.TALK.chat; return localizeNpc(c[(Math.random() * c.length) | 0]); }
+    let k = 0; if (p.lines.length > 1) do { k = (Math.random() * p.lines.length) | 0; } while (k === p.last); p.last = k; return localizeNpc(p.lines[k]);
   }
   function talkNpc(n) {
     meta.note('talk');
