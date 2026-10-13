@@ -126,7 +126,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Menü
   function renderMenu() {
-    $('rmode').innerHTML = [['race', 'Einzelrennen'], ['gp', 'Cup', '3 Strecken'], ['tt', 'Zeitfahren', 'allein, ohne Items']].map(m => `<button class="chip ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}">${m[1]}${m[2] ? `<small>${m[2]}</small>` : ''}</button>`).join('');
+    $('rmode').innerHTML = [['race', 'Einzelrennen'], ['gp', 'Cup', '3 Strecken'], ['tt', 'Zeitfahren', 'allein, ohne Items'], ['free', 'Freies Fahren', 'ohne Zeitlimit, Gegner und Rundenzwang']].map(m => `<button class="chip ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}">${m[1]}${m[2] ? `<small>${m[2]}</small>` : ''}</button>`).join('');
     $('rmode').querySelectorAll('[data-m]').forEach(b => b.onclick = () => { save.rmode = b.dataset.m; persist(); renderMenu(); });
     $('tracks').previousElementSibling.textContent = save.rmode === 'gp' ? 'CUP' : 'STRECKE';
     $('tracks').innerHTML = save.rmode === 'gp' ? Track.CUPS.map((c, i) => `<button class="chip ${save.cup === i ? 'on' : ''}" data-cup="${i}">${esc(c.name)}<small>${c.tracks.map(t => esc(TR[t].name)).join(' · ')}</small></button>`).join('') : TR.map((t, i) => `<button class="chip ${save.track === i ? 'on' : ''}" data-t="${i}">${esc(t.name)}</button>`).join('');
@@ -146,7 +146,7 @@ function initHost() {
     $('assist').innerHTML = ['Aus', 'Leicht', 'Stark'].map((s, i) => `<button class="chip ${assistLvl() === i ? 'on' : ''}" data-a="${i}">${s}</button>`).join(''); $('assist').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { save.assist = +b.dataset.a; persist(); renderMenu(); });
     const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 Gamepad erkannt: ' + pads.map(p => p.id.slice(0, 28)).join(' · ');
     $('bSolo').disabled = $('bMulti').disabled = $('bGoSetup').disabled = !ready; $('bSolo').textContent = ready ? '▶ SOLO FAHREN' : 'LADEN …';
-    const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren' }[save.rmode] || '';
+    const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren', free: 'Freies Fahren' }[save.rmode] || '';
     $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)} · ${kt.emoji} ${esc(kt.name)}<small>${esc(mode)} · ${esc(where)} · ${save.laps} Runden</small></span><i>✎ Ändern</i>`;
     $('bGoSetup').textContent = setupFor === 'multi' ? 'HANDYS KOPPELN ▶' : 'LOS! ▶'; $('setTitle').textContent = setupFor === 'multi' ? 'MEHRSPIELER EINRICHTEN' : 'RENNEN EINRICHTEN';
   }
@@ -307,17 +307,17 @@ function initHost() {
 
   // ------------------------------------------------------------------ Serie / Rennen
   function beginSeries() {
-    const multi = players.length > 1 || players.some(p => p.conn), tt = save.rmode === 'tt' && players.length === 1;
+    const multi = players.length > 1 || players.some(p => p.conn), free = save.rmode === 'free' && players.length === 1, tt = (save.rmode === 'tt' || free) && players.length === 1;
     const total = tt ? 1 : 8, specs = players.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, kart: p.kart == null ? save.kart : p.kart, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
     const pool = Array.from({ length: 13 }, (_, i) => i).filter(i => !used.has(i)).sort(() => Math.random() - 0.5);
     for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
-    GP = { specs, tt, race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
+    GP = { specs, tt, free, race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
     startRace();
   }
   function startRace() {
     const tIdx = GP.order[GP.race], tr = getTrack(tIdx); if (curTrackIdx !== tIdx) { View.setTrack(tr); curTrackIdx = tIdx; }
     const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
-    const S = Sim.create({ track: tr, laps: save.laps, racers, items: !GP.tt, shuffle: true }), humans = players.slice();
+    const S = Sim.create({ track: tr, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
@@ -434,7 +434,7 @@ function initHost() {
       if (S.state === 'grid') { const c = Math.ceil(S.count - 0.2); if (c !== R.lastCount && c >= 1 && c <= 3) { R.lastCount = c; banner(String(c), '', 900, c === 1 ? '#ffd24a' : '#fff'); AUD.sfx.beep(false); } }
       const k0 = S.karts[0]; AUD.engine(S.state !== 'done' && !paused, Math.max(0, k0.vf) / 36, k0.boostT > 0);
       updateHud(dt); if ((R.snapAt -= dt) <= 0) { R.snapAt = 0.05; sendSnap(); } R.pushAt -= dt; if (R.pushAt <= 0) { R.pushAt = 0.15; push(S.state === 'grid' ? 'grid' : 'race'); }
-      if (S.state === 'done') finishRace();
+      if (S.state === 'done' && !GP.free) finishRace();
     }
     if (paused) { if (!R.dirty) return; R.dirty = false; View.renderRace(R.S, 0, tAll, nVp, 1); return; }
     dtAcc += dt; if (!live && (skip = (skip + 1) % 2)) return;
