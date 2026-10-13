@@ -1,0 +1,917 @@
+{
+ "schema": 1,
+ "links": {
+  "radio": "https://www.ricorewi-radio.de",
+  "githubPage": "https://ricorewioriginal-collab.github.io/easygames/"
+ },
+ "games": [
+  {
+   "id": "zotik",
+   "title": "ZOTIK – Die Splitter der Welten",
+   "desc": "Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik reist durch 10 Welten, Kämpfe, Quests, Bosskämpfe, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.",
+   "icon": "💠",
+   "img": "zotik/card.png",
+   "bg": "linear-gradient(145deg,#7a3cff,#19f0ff)",
+   "glow": "rgba(25,240,255,.45)",
+   "path": "zotik/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Zotik ist ein 3D-Action-Rollenspiel mit zehn Welten von Lunaris bis Elyndra und einem Endspiel im Weltenriss. Du erkundest die Welten, sprichst mit Figuren, erfüllst Quests (Hauptgeschichte und Nebenaufgaben), löst Rätsel, kämpfst mit deinen Gefährten gegen Gegner und Bosse und sammelst Rissplitter, Heiltränke und Erfahrung. Rote Kreise am Boden zeigen Angriffe an, denen du rechtzeitig ausweichen musst. Im Menü findest du Quests, Weltreise, Inventar, Fähigkeiten, Steuerung mit Optionen und Koop; das Spiel speichert automatisch, zusätzlich über das Menü.",
+    "steuerung": [
+     "PC: WASD bewegen, Maus ziehen = Kamera, J oder Klick = Angriff (3-Hieb-Kombo), Shift = Ausweichen, 1 / 2 = Fähigkeiten (Funkenwirbel, Lichtstoß), 3 oder R = Heiltrank, E = Sprechen/Öffnen, Esc = Menü, Antworten in Gesprächen mit 1–9, Befehlsleiste mit ↑ ↓ Enter, Q = Ziel erfassen, F = Reaktion, T = Team-Angriff, G = Rissform, 4/5/6 = IP-Techniken, C/X = Werkzeug benutzen/wechseln",
+     "PC (Nautilux, sobald freigeschaltet): V = ein-/aussteigen, B = Form wechseln",
+     "Touch: Stick links = Bewegen, rechts wischen = Kamera, Tasten für Angriff und Ausweichen, Fähigkeit-Taste (tippen = einsetzen, halten = wechseln), Aktion-Taste (Sprechen, Öffnen, Einsteigen), Menü-Taste ☰ oben links"
+    ],
+    "tipps": [
+     "Treffer laden Mana auf, nutze Fähigkeiten also im Kampf.",
+     "Erscheint ▲ über dem Kampf, drücke F (Handy: Aktion-Taste) für einen Konter.",
+     "Felli ist dein Kapselmonster: füttere es im Menü, dann entwickelt es sich.",
+     "Die Uralte Höhle in Lunaris startet immer bei Stufe 1 – nur blaue Truhen behältst du.",
+     "Heiltränke gibt es im Laden gegen Rissplitter."
+    ]
+   },
+   "size": 483336,
+   "files": 2,
+   "offline": true
+  },
+  {
+   "id": "aeru",
+   "title": "AERU – Die Sterneninseln",
+   "desc": "3D-Drachenabenteuer mit durchgehender Geschichte: 6 Kapitel, zwei Bosskämpfe, Tagebuch und Zielkompass, Flug mit Aufwinden, 144 Splitter. Tastatur oder Touch.",
+   "icon": "🐉",
+   "img": "aeru/card.png",
+   "bg": "linear-gradient(145deg,#15374f,#65bcae 55%,#efcb93)",
+   "glow": "rgba(101,188,174,.5)",
+   "path": "aeru/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Aeru ist ein 3D-Drachenabenteuer über sechs Sterneninseln: Der Wind ist verstummt und du folgst der Spur durch die Geschichte (Kapitel, Quests, Bosse wie Vesper und Die Stille). Du läufst, springst, fliegst und kämpfst mit Windstößen gegen Gegner. Optional kannst du 144 Himmelssplitter sammeln, die Upgrades freischalten. Bei Tod geht es zurück zum letzten Rastpunkt, der Questfortschritt bleibt.",
+    "steuerung": [
+     "PC: WASD/Pfeile = Bewegen, Maus ziehen/Q/E/Mausrad = Kamera (C = hinter Aeru), Leertaste = Springen/Flügelschlag (halten = höher, in der Luft halten = gleiten), G = Flug ein/aus (im Flug Leertaste halten = steigen), Umschalt = Ausweichen bzw. im Flug sinken, F = Windstoß, R oder Enter = Sprechen/Tor, J = Tagebuch, Esc oder P = Pause",
+     "Touch: linker Stick = Bewegen, rechts wischen = Kamera, Tasten SPRUNG, FLUG, WIND, ROLLE, REDEN (nur wenn jemand in der Nähe ist), ☰ = Tagebuch, Ⅱ = Pause"
+    ],
+    "tipps": [
+     "Türkise Aufwinde und der Boden laden die Flügelkraft wieder auf.",
+     "Das Tagebuch zeigt das aktuelle Ziel; ein Kompass und ein Lichtstrahl weisen den Weg."
+    ]
+   },
+   "size": 1431136,
+   "files": 10,
+   "offline": true
+  },
+  {
+   "id": "anmacha-radio-surfer",
+   "title": "AnMaCha Radio Surfer",
+   "desc": "3D-Runner durchs Internet: springen, rutschen, ausweichen – 10 Level.",
+   "icon": "📻",
+   "img": null,
+   "bg": "linear-gradient(145deg,#00ff66,#19f0ff)",
+   "glow": "rgba(0,255,150,.5)",
+   "path": "anmacha-radio-surfer/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Du surfst durch das Internet und weichst Hindernissen aus. Es gibt 10 Level, du hast 3 Leben, und ab Level 4 wird es schneller. Hindernisse sind farbig markiert: niedrige (gelb) überspringst du, hängende (pink) unterrutschst du, hohe (blau) umgehst du durch Spurwechsel. Am Ende kannst du dich in die Top 10 eintragen.",
+    "steuerung": [
+     "PC: Pfeil links/rechts oder A/D = Spur wechseln, Pfeil hoch/W/Leertaste = Springen, Pfeil runter/S = Rutschen, P oder Esc = Pause, Enter/Leertaste = Start bzw. Weiter",
+     "Touch: Wischen links/rechts = Spur wechseln, Wischen nach oben oder Tippen = Springen, Wischen nach unten = Rutschen, Pause-Knopf oben rechts"
+    ],
+    "tipps": []
+   },
+   "size": 3048010,
+   "files": 17,
+   "offline": true
+  },
+  {
+   "id": "anmacha-radio-match",
+   "title": "AnMaCha Radio-Match 3D",
+   "desc": "3D-Match-3 mit Radio-Bauteilen: 100 Level mit wachsendem Raster, Power-ups und 6 Herausforderungen.",
+   "icon": "📡",
+   "img": null,
+   "bg": "linear-gradient(145deg,#19f0ff,#00ff66 55%,#ff2e88)",
+   "glow": "rgba(25,240,255,.5)",
+   "path": "anmacha-radio-match/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Ein 3D-Match-3-Spiel mit 100 Leveln. Du tauschst zwei benachbarte Bauteile, drei gleiche in einer Reihe verschwinden. Jedes Level hat ein Ziel, etwa Punkte, bestimmte Bauteile sammeln, Rausch-Felder entstören, Power-ups erzeugen oder Kombo-Ketten schaffen, meist in begrenzten Zügen, manchmal in begrenzter Zeit. Geschaffte Level bringen Sterne und schalten das nächste Level frei.",
+    "steuerung": [
+     "PC: Mit der Maus ein Bauteil anklicken und dann ein benachbartes anklicken, oder zum Nachbarn ziehen, um zu tauschen. Oben rechts: Hinweis (Glühbirne), Ton, Menü",
+     "Touch: Bauteil antippen und danach das Nachbarfeld antippen, oder in die gewünschte Richtung wischen. Knöpfe für Hinweis, Ton und Menü"
+    ],
+    "tipps": [
+     "Vierer-Reihe: Wellen-Teil räumt Reihe oder Spalte; L/T-Form: Funkenbombe räumt 3x3; Fünfer: Frequenzkugel, mit einem Teil tauschen entfernt alle davon.",
+     "Der Hinweis-Knopf zeigt einen möglichen Zug."
+    ]
+   },
+   "size": 35525,
+   "files": 1,
+   "offline": true
+  },
+  {
+   "id": "anmacha-flipper",
+   "title": "AnMaCha Pinball",
+   "desc": "3D-Pinball mit 13 Tischen: Kampagne mit steigender Schwierigkeit oder freies Spiel.",
+   "icon": "🎱",
+   "img": null,
+   "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)",
+   "glow": "rgba(139,92,246,.55)",
+   "path": "anmacha-flipper/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Ein 3D-Flipper mit 13 Tischen (jeder mit eigenem Layout und Schwierigkeit). In der Kampagne musst du auf jedem Tisch das Punkteziel erreichen, dann geht es zum nächsten Tisch; alle 3 Tische gibt es eine Extra-Kugel. Im Freien Spiel wählst du einen beliebigen Tisch und sammelst mit 5 Kugeln möglichst viele Punkte. Bumper (ON AIR, HIT ZONE, BASS BOOST, Lautsprecher) bringen Punkte, Störsender pendeln vor den Flippern.",
+    "steuerung": [
+     "PC: Pfeil links/rechts oder A/D = linker/rechter Flipper, Leertaste halten und loslassen = Kugel starten, P = Pause, R = Neustart, M = Ton",
+     "Touch: Tasten LINKS und RECHTS für die Flipper, Taste START (halten und loslassen) zum Abschuss; Pause, Ton und Neustart oben rechts"
+    ],
+    "tipps": [
+     "Die Start-Taste halten und erst zum Abschuss loslassen."
+    ]
+   },
+   "size": 2936393,
+   "files": 15,
+   "offline": true
+  },
+  {
+   "id": "anmacha-beat-surfer",
+   "title": "AnMaCha Beat Surfer",
+   "desc": "3D-Rhythmusspiel: Triff die Noten im Takt – 13 Songs, steigende Schwierigkeit.",
+   "icon": "🎧",
+   "img": null,
+   "bg": "linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)",
+   "glow": "rgba(255,45,149,.5)",
+   "path": "anmacha-beat-surfer/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer.",
+    "steuerung": [
+     "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts = die vier Spuren treffen, P/Esc = Pause, R = Neustart, M = Ton, Enter/Leertaste = Start bzw. Weiter",
+     "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts"
+    ],
+    "tipps": [
+     "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
+    ]
+   },
+   "size": 2543798,
+   "files": 15,
+   "offline": true
+  },
+  {
+   "id": "prismrush",
+   "title": "PRISMRUSH",
+   "desc": "Hypnotisches 3D-Rhythmusspiel aus Licht und synthetischem Klang: 32 Level in 4 Welten, 12 Spielmodi von Endlos über Turbo bis Blindflug, Combos, Overdrive und 19 freischaltbare Effekte. Tastatur, Maus oder Touch.",
+   "icon": "🔺",
+   "img": "prismrush/card.png",
+   "bg": "linear-gradient(145deg,#ff3df2,#8a3dff 55%,#3df2ff)",
+   "glow": "rgba(255,61,242,.55)",
+   "path": "prismrush/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Ein 3D-Rhythmusspiel auf 3 Spuren: Kristalle fliegen im Takt der im Browser erzeugten Musik heran. Triff sie genau, wenn sie den Ring unter deinem Gleiter erreichen (Perfekt, Super, Gut). Orbs sammelst du, indem du in ihrer Spur bist, Prismenwänden weichst du aus. Combos erhöhen den Multiplikator bis ×4, volle Energie zündet den Overdrive für doppelte Punkte. Kampagne mit 32 Leveln in 4 Welten und 4 Schwierigkeitsgraden, dazu Endlos (Bestzeiten), Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf und ein Tutorial.",
+    "steuerung": [
+     "PC: Pfeil links/rechts = eine Spur wechseln (trifft dort gleich mit), A, S, D oder J, K, L = Spur direkt wählen und treffen, Leertaste/Pfeil hoch/runter = in aktueller Spur treffen, E/Umschalt = Overdrive, Mausklick = Spur unter dem Zeiger treffen, Esc/P = Pause",
+     "Touch: Die drei großen Spurtasten unten antippen oder mit dem Finger darüber gleiten, Tippen = treffen, links/rechts wischen = Spur wechseln, nach oben wischen oder ⚡ = Overdrive, II = Pause"
+    ],
+    "tipps": [
+     "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In den Einstellungen gibt es eine Latenz-Kalibrierung."
+    ]
+   },
+   "size": 785426,
+   "files": 12,
+   "offline": true
+  },
+  {
+   "id": "anmacha-memory",
+   "title": "AnMaCha Memory",
+   "desc": "Memory mit unseren Sender-Logos: 10 Level mit Mischer & Zeitlimit, freies Spiel und Duell.",
+   "icon": "🃏",
+   "img": null,
+   "bg": "linear-gradient(145deg,#FF9A1F,#FF2D95 55%,#8B5CF6)",
+   "glow": "rgba(255,45,149,.5)",
+   "path": "anmacha-memory/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Finde die zusammengehörigen Logo-Paare, indem du immer zwei Karten aufdeckst. Treffer in Folge bauen eine Combo auf und bringen mehr Punkte; am Ende gibt es bis zu 3 Sterne je nach Anzahl der Züge. Die Kampagne hat 10 Level (teils mit Mischer oder Zeitlimit), im Freien Spiel wählst du die Anzahl der Paare, 1 Spieler oder Duell zu zweit und die Mischer-Stufe. Der Mischer tauscht nach Fehlzügen verdeckte Karten.",
+    "steuerung": [
+     "PC: Karten mit der Maus anklicken, P oder Esc = Pause, M = Ton",
+     "Touch: Karten antippen; Knöpfe für Menü, Hinweis (Auge), Pause und Ton"
+    ],
+    "tipps": [
+     "Der Hinweis (Auge) zeigt kurz alle Karten, kostet aber 150 Punkte und ist begrenzt."
+    ]
+   },
+   "size": 1758866,
+   "files": 18,
+   "offline": true
+  },
+  {
+   "id": "anmacha-quest-rpg",
+   "title": "AnMaCha Quest RPG",
+   "desc": "3D-Rollenspiel (Godot): 5 Helden, animierte Monster, Oberwelt, Dungeons mit Schlüsseln, Bosse.",
+   "icon": "⚔️",
+   "img": null,
+   "bg": "linear-gradient(145deg,#2a3cff,#8B5CF6 55%,#FF9A1F)",
+   "glow": "rgba(80,100,255,.55)",
+   "path": "anmacha-quest-rpg/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Ein 16-Bit-Rollenspiel in 3D-Optik mit Rundenkämpfen (ca. 1,5 bis 2,5 Stunden). Du durchquerst vier Reiche (Rap, Schlager, Weihnachten, Rock), besiegst deren Bosse und am Ende im Rauschen-Turm Das Große Rauschen. Dabei gewinnst du neue Mitstreiter (Andrew, Marco, Teresa, Rico, Andy). In der Stadt Funkhafen heilst du am Brunnen und kaufst bei Tonia Items und Ausrüstung. Der Spielstand wird lokal im Browser gespeichert.",
+    "steuerung": [
+     "PC: Pfeiltasten oder WASD = Laufen, Leertaste/Enter/Z = Bestätigen und Weiterlesen, Esc/X/Backspace = Zurück, Esc/M/Tab = Menü; gegen Personen, Truhen, Tore oder Bosse laufen löst die Aktion aus",
+     "Touch: Steuerkreuz unten links (Finger aufsetzen und in die Richtung schieben), Textfeld antippen = Weiterlesen, Taste MENÜ oben rechts, Menüpunkte antippen",
+     "Kampf: Kreuzmenü mit Angriff, Fertigkeit (kostet SP), Spezial (kostet IP), Item, Wache und Flucht"
+    ],
+    "tipps": [
+     "Vor jedem Boss am Heilbrunnen in Funkhafen heilen und den Spielstand sichern.",
+     "Nutze Wache in der Runde, in der ein Boss seinen Spezialangriff ausführt."
+    ]
+   },
+   "size": 72036060,
+   "files": 239,
+   "offline": true
+  },
+  {
+   "id": "anmacha-snake",
+   "title": "AnMaCha Snake 3D",
+   "desc": "3D-Snake: friss Sender-Logos, 13 Welten, Power-ups, Portal-Modus, zwei Kameras.",
+   "icon": "🐍",
+   "img": null,
+   "bg": "linear-gradient(145deg,#00e5ff,#2a6cff 55%,#FF2D95)",
+   "glow": "rgba(0,229,255,.5)",
+   "path": "anmacha-snake/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Steuere die Schlange über das Spielfeld, sammle die Sender-Logos und werde länger. Weiche den Rauschen-Blöcken aus. Jedes Level bringt einen neuen Sender, mehr Tempo und neue Hindernisse. Im Menü wählst du Modus (Klassisch oder Portal, bei dem Wände wrappen) und Kamera (Schräg 3D oder Verfolger). Spezielle Logos geben zeitlich begrenzte Effekte wie Turbo, Chill, Geist, Punkte x3 oder Kürzer.",
+    "steuerung": [
+     "PC: Pfeiltasten oder WASD zum Lenken; C Kamera wechseln, P oder Esc Pause, M Ton an/aus; Enter oder Leertaste im Menü startet das Spiel",
+     "Touch: In der Kamera Schräg 3D in die gewünschte Richtung wischen; in der Verfolger-Kamera links oder rechts auf den Bildschirm tippen (oder wischen), um abzubiegen",
+     "Knöpfe oben: Menü, Kamera, Pause, Ton"
+    ],
+    "tipps": [
+     "In der Verfolger-Kamera lenkst du nur nach links oder rechts aus Sicht der Schlange."
+    ]
+   },
+   "size": 1433805,
+   "files": 15,
+   "offline": true
+  },
+  {
+   "id": "anmacha-tower-defense",
+   "title": "AnMaCha Tower Defense",
+   "desc": "3D-Tower-Defense: 8 Sender-Logo-Türme, 25 Wellen Rauschen, 3 Karten, Ausbau & Boss-Wellen.",
+   "icon": "🗼",
+   "img": null,
+   "bg": "linear-gradient(145deg,#8B5CF6,#2a6cff 50%,#00FFC8)",
+   "glow": "rgba(139,92,246,.55)",
+   "path": "anmacha-tower-defense/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Das Große Rauschen greift an: Stelle Sender-Logo-Türme neben den Weg und halte die Rauschen-Blöcke von deinem Senderturm fern. Es gibt 25 Wellen, 8 Turm-Arten und 3 Karten (Funkhafen, Frequenz-Spirale, Zickzack-Studio) sowie die Schwierigkeiten Leicht, Normal und Schwer. Für abgeschossene Gegner gibt es Geld, mit dem du neue Türme baust oder vorhandene ausbaust. Verlierst du alle Leben der Basis, ist das Spiel vorbei.",
+    "steuerung": [
+     "PC: Turm unten wählen (oder Tasten 1 bis 8), dann auf ein freies Feld klicken; Turm anklicken für Ausbau oder Verkauf",
+     "PC-Tasten: Leertaste oder Enter startet die nächste Welle, U Ausbau, S oder Entf Verkauf, F Tempo x1/x2, P Pause, M Ton, Esc Auswahl aufheben",
+     "Touch: Turm unten antippen, Feld antippen zeigt die Vorschau, zweites Tippen auf dasselbe Feld baut den Turm; gebauten Turm antippen für Ausbau, Zielwahl und Verkauf"
+    ],
+    "tipps": [
+     "Die Türme haben unterschiedliche Aufgaben, zum Beispiel Flächenschaden, Verlangsamen, Kettenblitz, große Reichweite, Geld pro Welle oder Verstärkung für Türme in der Nähe."
+    ]
+   },
+   "size": 1774663,
+   "files": 15,
+   "offline": true
+  },
+  {
+   "id": "anmacha-quiz",
+   "title": "Machst du mich an? – Das Quiz!",
+   "desc": "TV-Quizshow im 3D-Studio: Leiter bis 1 Mio €, Quiznight, ~600 Fragen, Joker, bis 4 Spieler (auch per Handy gekoppelt).",
+   "icon": "🎤",
+   "img": "anmacha-quiz/card.png",
+   "bg": "linear-gradient(145deg,#1b2fb3,#8B5CF6 50%,#FF9A1F)",
+   "glow": "rgba(255,154,31,.55)",
+   "path": "anmacha-quiz/",
+   "modes": {
+    "pad": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Eine Quizshow im TV-Studio. Im Modus Leiter beantwortest du 15 Fragen auf dem Weg zur Million, mit vier Antworten A bis D und vier Jokern (50:50, Publikum, Telefon, Tausch). Es gibt Sicherheitsstufen bei Frage 5 und 10, und du kannst jederzeit aussteigen und deinen aktuellen Gewinn mitnehmen. Im Modus Quiznight wählst du Kategorien und spielst 10 Fragen pro Kategorie auf Punkte. Spielformen: Solo, Reihum (2 bis 4 Spieler), Duell und Teams (Rot gegen Blau), wahlweise mit 60 Sekunden pro Frage. Handys lassen sich per Code oder QR-Code koppeln.",
+    "steuerung": [
+     "PC: Antwort mit Taste A, B, C oder D wählen, dann Enter, J oder Leertaste für Ja (endgültig), N für Nein; Joker mit Taste 1 bis 4; P oder Esc Pause, M Ton",
+     "Touch/Maus: Antwort antippen oder anklicken, dann Ja, final! oder Nein bestätigen; Joker über die Knöpfe; Aussteigen über den Knopf Aussteigen",
+     "Handy-Kopplung: im Menü Handys koppeln wählen, QR-Code scannen oder Code eingeben, dann dient das Handy als Eingabegerät"
+    ],
+    "tipps": [
+     "Jeder Joker kann pro Spieler nur einmal eingesetzt werden."
+    ]
+   },
+   "size": 1522706,
+   "files": 21,
+   "offline": true
+  },
+  {
+   "id": "anmacha-koffer-dealer",
+   "title": "AnMaCha Koffer DEALER",
+   "desc": "Dealer-Show: 13 Koffer mit Sender-Logos, Funkspruch-Angebote, Handeln – Deal oder Funkstille?",
+   "icon": "💼",
+   "img": "anmacha-koffer-dealer/card.png",
+   "bg": "linear-gradient(145deg,#00c9a7,#7a5cff 55%,#ff2d95)",
+   "glow": "rgba(0,201,167,.5)",
+   "path": "anmacha-koffer-dealer/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "13 Koffer mit Beträgen von 1 Euro bis 1.000.000 Euro. Zuerst wählst du deinen eigenen Koffer, der dir bis zum Schluss gehört. Danach öffnest du in Runden weitere Koffer, und nach jeder Runde macht der Dealer ein Angebot: Du nimmst das Geld (Deal) oder spielst weiter. Du kannst auch handeln und den Dealer um +10, +25 oder +50 Prozent bitten. Solo gibt es am Ende die Option, den eigenen Koffer zu tauschen. Spielformen: Solo, Reihum (2 bis 4 Spieler) und Duell; der Dealer ist Freundlich, Normal oder Gnadenlos.",
+    "steuerung": [
+     "PC/Maus: Koffer in der 3D-Ansicht anklicken, um ihn zu wählen oder zu öffnen; beim Angebot Knöpfe benutzen oder Taste D bzw. Enter für Deal, W oder N für Weiter; bei der Tauschoption T zum Tauschen, B zum Behalten; P oder Esc Pause, M Ton",
+     "Touch: Koffer antippen; Angebote über die Knöpfe unten beantworten",
+     "Handy-Kopplung: im Menü Handys koppeln, bis zu 4 Spieler"
+    ],
+    "tipps": []
+   },
+   "size": 1418971,
+   "files": 20,
+   "offline": true
+  },
+  {
+   "id": "anmacha-showdown",
+   "title": "AnMaCha Showdown",
+   "desc": "Das Mikro-Duell: 7 Mini-Spiele gegen den Moderator oder zu zweit – wer zuerst 15 Punkte hat, gewinnt.",
+   "icon": "🎤",
+   "img": "anmacha-showdown/card.png",
+   "bg": "linear-gradient(145deg,#00e5ff,#7a5cff 50%,#ff2d95)",
+   "glow": "rgba(122,92,255,.55)",
+   "path": "anmacha-showdown/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Das Mikro-Duell: Sieben zufällig gewählte Mini-Spiele werden nacheinander gespielt, jedes zählt mehr Punkte als das vorige (1 bis 7). Wer zuerst 15 Punkte erreicht, gewinnt. Du spielst gegen den Moderator (Stärke Anfänger, Normal oder Profi) oder zu zweit abwechselnd an einem Gerät. Bei Gleichstand gibt es ein Stechen im Tipp-Fieber. Mini-Spiele sind zum Beispiel Reaktionstest, Schätzduell, Logo-Gedächtnis, Tipp-Fieber, Zielscheibe, Farb-Verwirrung, Kopfrechnen und Sortier-Blitz; vor jedem Spiel wird die Regel angezeigt.",
+    "steuerung": [
+     "PC/Maus: Mini-Spiele per Klick bedienen; Enter oder Leertaste bestätigt Hinweise, Enter im Menü startet; im Schätzduell Zahl eintippen und Enter; M Ton",
+     "Touch: Knöpfe, Felder und Flächen der Mini-Spiele antippen",
+     "Zu zweit spielen beide abwechselnd am selben Gerät"
+    ],
+    "tipps": []
+   },
+   "size": 1400934,
+   "files": 20,
+   "offline": true
+  },
+  {
+   "id": "anmacha-gesucht",
+   "title": "AnMaCha Gesucht & Gefunden",
+   "desc": "Das Ratestudio: Hinweis-Raten, Fragen-Raten, Gesichter-Radar und Stirnband-Party – allein oder mit bis zu 4 Spielern.",
+   "icon": "🔎",
+   "img": "anmacha-gesucht/card.png",
+   "bg": "linear-gradient(145deg,#c4143f,#7a3dff 55%,#00e5ff)",
+   "glow": "rgba(196,20,63,.5)",
+   "path": "anmacha-gesucht/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Ein Ratestudio mit vier Spielarten, allein oder mit bis zu 4 Spielern an einem Gerät. Hinweis-Raten: Bis zu 5 Hinweise werden aufgedeckt, je früher du die Lösung triffst, desto mehr Punkte (5 bis 1); ein falscher Tipp scheidet dich aus der Runde aus. Fragen-Raten: Stelle Ja/Nein-Fragen (maximal 15) und rate die Lösung; falsch raten kostet 3 Punkte. Gesichter-Radar: Allein gegen den Moderator findest du sein geheimes Gesicht, während er deins sucht. Stirnband-Party: Halte das Gerät mit dem Bildschirm nach außen an die Stirn, die anderen beschreiben dir das Wort, 60 Sekunden pro Runde. Themen und Rundenzahl wählst du im Menü.",
+    "steuerung": [
+     "PC/Maus: Antworten, Fragen und Gesichter anklicken; Stirnband-Party: Pfeil rechts oder Enter für Richtig, Pfeil links oder Leertaste für Weiter; M Ton",
+     "Touch: Knöpfe und Gesichter antippen; bei der Stirnband-Party die Knöpfe Richtig und Weiter antippen",
+     "Gesichter-Radar: Gesicht antippen und nochmal antippen gibt den Tipp ab"
+    ],
+    "tipps": []
+   },
+   "size": 1413166,
+   "files": 21,
+   "offline": true
+  },
+  {
+   "id": "anmacha-kart",
+   "title": "AnMaCha Kart Rush",
+   "desc": "Arcade-Kartrennen in 3D: 5 Welten (Strand, Geistergruft, Fantasia …), 6 Karts, 12 Figuren, Bananen, Steine & Blitze – solo am Handy oder mit bis zu 4 Handys als Lenkrad.",
+   "icon": "🏎️",
+   "img": "anmacha-kart/card.png",
+   "bg": "linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)",
+   "glow": "rgba(42,120,232,.55)",
+   "path": "anmacha-kart/",
+   "modes": {
+    "pad": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Items wie Boost, Banane, Stein, Mine, Rakete, Schild, Blitz und Nebel. Du fährst solo am Handy oder im Mehrspieler-Modus mit bis zu 4 Handys als Lenkrad vor einem großen Bildschirm (Splitscreen). Modi: Einzelrennen, Cup (3 Strecken) und Zeitfahren (allein, ohne Items). Du wählst Strecke, Figur, Kart, Rundenzahl, Gegnerstärke und Lenkhilfe; Bestzeiten werden gespeichert.",
+    "steuerung": [
+     "PC: Pfeil hoch oder W Gas, Pfeil links/rechts oder A/D lenken, Pfeil runter oder S bremsen, Shift oder Z driften, Leertaste, Enter oder X Item; Esc Pause, M Ton",
+     "Touch: links Joystick zum Lenken; rechts 4 Tasten (unten Gas, links Bremse, rechts Drift, oben Item); der Daumen zwischen Gas und Drift drückt beide; optional Kippen zum Lenken",
+     "Gamepad: Stick oder Steuerkreuz lenken, A oder RT Gas, RB oder X driften, Y oder LB Item, B oder LT bremsen"
+    ],
+    "tipps": [
+     "Mit der Lenkhilfe (Aus, Leicht, Stark) wird das Fahren am Handy einfacher."
+    ]
+   },
+   "size": 1448380,
+   "files": 23,
+   "offline": true
+  },
+  {
+   "id": "wobbel",
+   "title": "Wobbel",
+   "desc": "Das Schiebe-Puzzle in 3D von RicoReWi: Kisten auf Ziele schieben – mit Wasser, Farben, Eis und Schlüsseln in 5 Welten.",
+   "icon": "🟣",
+   "img": "wobbel/card.png",
+   "bg": "linear-gradient(145deg,#4ab8ff,#ff6fb0 60%,#ffb347)",
+   "glow": "rgba(74,184,255,.55)",
+   "path": "wobbel/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Wobbel, ein kleiner rosa Blob, schiebt Kisten auf Zielfelder. Kisten können nur geschoben werden, nicht gezogen und nicht zwei auf einmal. Ein Level ist geschafft, wenn jedes Zielfeld eine passende Kiste trägt. Es gibt 55 Level in mehreren Welten mit neuen Elementen wie Wasser, Farben, Eis, Schlüssel und Türen, Pfeilfelder und brüchiger Boden. Sterne gibt es je nach Zahl der Züge; das nächste Level wird nach dem vorigen freigeschaltet. Zusätzlich gibt es Bonusspiele, einen Laden, Erfolge, ein Tageslevel und einen Level-Editor.",
+    "steuerung": [
+     "PC: Pfeiltasten oder WASD zum Bewegen; Klick auf ein Feld läuft dorthin; Z oder Backspace Zug zurück, R Neustart, Q/E Kamera drehen, Esc Menü",
+     "Touch: Auf dem Spielfeld wischen oder ziehen zum Bewegen (optional Steuerkreuz); Feld antippen läuft dorthin; Knöpfe oben für Zug zurück, Neustart, Kamera drehen und Menü",
+     "Die Richtungen beziehen sich auf den Bildschirm, auch nach dem Drehen der Kamera."
+    ],
+    "tipps": [
+     "Mit dem Tipp-Knopf (kostet Muscheln) zeigt der Löser die nächsten Züge als Pfeile."
+    ]
+   },
+   "size": 1020233,
+   "files": 40,
+   "offline": true
+  },
+  {
+   "id": "anmacha-hoererwahl",
+   "title": "AnMaCha Hörerwahl",
+   "desc": "Das große Umfrage-Duell: Was haben 100 Hörer geantwortet? Zwei Teams oder gegen das Funkhaus-Team – mit Strikes, Klauen und Hörer-Finale. 120 Fragen.",
+   "icon": "🎙️",
+   "img": "anmacha-hoererwahl/card.png",
+   "bg": "linear-gradient(145deg,#00e5ff,#8b5cf6 50%,#ff2d95)",
+   "glow": "rgba(139,92,246,.55)",
+   "path": "anmacha-hoererwahl/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Umfrage-Duell: 100 Hörer wurden befragt, an der Tafel stehen die häufigsten Antworten, und je öfter genannt, desto mehr Punkte. Im Duell nennen beide Teams eine Antwort; wer die höhere trifft, entscheidet, ob sein Team spielt oder weitergibt. In der Runde wandern Treffer in die Bank, nach drei Fehlern (X) darf der Gegner mit einer Antwort die ganze Bank klauen. Das Siegerteam spielt zum Schluss das Hörer-Finale: 5 Schnellfragen, 100 Punkte nötig.",
+    "steuerung": [
+     "PC: Antwort im Eingabefeld eintippen und mit Enter abschicken; Tippfehler, Artikel und Mehrzahl sind egal. Knöpfe per Maus anklicken (Wir spielen, Weitergeben, Weiter).",
+     "Touch: Antwort eintippen und senden, Knöpfe antippen.",
+     "Handys koppeln: Per QR-Code oder Code wird jedes Handy zum Antwort-Pad für Team 1 oder Team 2 (bis zu 3 Handys pro Team); wer dran ist, tippt die Antwort am Handy."
+    ],
+    "tipps": [
+     "In späteren Runden zählt die Bank doppelt oder dreifach.",
+     "Im Menü sind 2 Teams oder der Modus gegen das Funkhaus-Team, Rundenzahl, Gegner-Stufe und Antwortzeit einstellbar."
+    ]
+   },
+   "size": 1462208,
+   "files": 28,
+   "offline": true
+  },
+  {
+   "id": "anmacha-frequenzrad",
+   "title": "AnMaCha Frequenzrad",
+   "desc": "Das Buchstaben-Rätsel: Rad drehen, Konsonanten raten, Vokale kaufen, Rätsel lösen – bis zu 4 Spieler, Computer-Gegner und Handys als Pads. 150 Rätsel.",
+   "icon": "🎡",
+   "img": "anmacha-frequenzrad/card.png",
+   "bg": "linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#ffd24a)",
+   "glow": "rgba(255,45,149,.55)",
+   "path": "anmacha-frequenzrad/",
+   "modes": {
+    "pad": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Buchstaben-Rätsel: Auf der Tafel steckt ein Satz oder Begriff. Wer dran ist, dreht das Rad und nennt einen Konsonanten; kommt er vor, gibt es die Zahl für jedes Vorkommen und man bleibt dran, sonst ist der Nächste an der Reihe. Vokale kosten 250 Punkte, Bankrott löscht die Rundenpunkte, Aussetzen gibt den Zug weiter. Wer richtig löst, bekommt seine Rundenpunkte plus 500 Bonus, die anderen verlieren ihre Rundenpunkte.",
+    "steuerung": [
+     "PC: Rad per Klick auf den Dreh-Knopf oder mit Enter drehen; Buchstaben per Tastatur eingeben oder anklicken; Lösung eintippen (Tippfehler sind okay).",
+     "Touch: Rad drehen, Buchstaben wählen, Vokale kaufen und lösen durch Antippen der Knöpfe.",
+     "Handys koppeln: Jedes Handy wird das Pad eines Spielers (bis zu 4); drehen, Buchstaben wählen, Vokale kaufen und lösen geht dann am Handy."
+    ],
+    "tipps": [
+     "Ein Gratis-Vokal ist kostenlos.",
+     "Falsch gelöst bedeutet, der Zug ist weg."
+    ]
+   },
+   "size": 1379641,
+   "files": 28,
+   "offline": true
+  },
+  {
+   "id": "anmacha-preisradar",
+   "title": "AnMaCha Preisradar",
+   "desc": "Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.",
+   "icon": "💶",
+   "img": "anmacha-preisradar/card.png",
+   "bg": "linear-gradient(145deg,#1a1a6a,#8b5cf6 50%,#ff9a1f)",
+   "glow": "rgba(255,154,31,.55)",
+   "path": "anmacha-preisradar/",
+   "modes": {
+    "pad": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Preis-Schätzspiel in mehreren Disziplinen: Gebotsduell (geheim bieten, am nächsten dran ohne drüber, 3 Punkte), Frequenz-Skala (Nadel auf den Preis stellen, bis 5 Punkte), Teurer oder billiger (drei Vergleiche, Bonus bei allen richtig), Einkaufswagen (8 Artikel so packen, dass die Summe das Ziel trifft, nicht drüber, 45 Sekunden) und das Preisfinale mit einem Paket aus drei Produkten (5 Punkte, nicht drüber). Gespielt wird mit 1 bis 4 Menschen und bis zu 2 Computer-Gegnern.",
+    "steuerung": [
+     "PC: Preis per Eingabe bzw. Schieberegler einstellen und mit Festlegen bestätigen; Knöpfe per Maus anklicken.",
+     "Touch: Schieberegler ziehen, Knöpfe antippen.",
+     "Handys koppeln: Jedes Handy ist das geheime Pad eines Spielers (bis zu 4) für Gebote, Skala und Einkaufswagen. Ohne Handy wird das Gerät herumgereicht (Bereit?-Schirm)."
+    ],
+    "tipps": [
+     "Bei Gebotsduell und Finale verliert, wer über dem Preis liegt.",
+     "Alle Preise sind Durchschnittswerte ohne Gewähr."
+    ]
+   },
+   "size": 1741224,
+   "files": 32,
+   "offline": true
+  },
+  {
+   "id": "anmacha-funkparcours",
+   "title": "AnMaCha Funkparcours",
+   "desc": "Das Hindernis-Zeitspiel in 3D: springen, hangeln, Wand erklimmen – jeder Läufer allein, die Zeiten werden verglichen. 3 Parcours, Geist der Bestzeit, bis zu 4 Läufer, Handys als Pads.",
+   "icon": "🏃",
+   "img": "anmacha-funkparcours/card.png",
+   "bg": "linear-gradient(145deg,#1a1a6a,#00b8d9 55%,#ff2d95)",
+   "glow": "rgba(0,184,217,.55)",
+   "path": "anmacha-funkparcours/",
+   "modes": {
+    "pad": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Hindernis-Zeitspiel: Jeder Läufer rennt allein über den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus und wird nach der Strecke gewertet. Die Show hat Vorrunde, Halbfinale und Finale (3 Parcours, 1 bis 4 Läufer), Platz 1 bekommt die meisten Punkte. Im Training jagst du auf einem Parcours deine Bestzeit; ein Geist zeigt den bisher Schnellsten.",
+    "steuerung": [
+     "PC: Laufen mit A/D oder Pfeil links/rechts; Springen mit Leertaste, Pfeil hoch oder W (länger halten = höher); Menü mit Esc; im Menü Pfeiltasten, Enter, Esc.",
+     "Touch: Stick links ziehen zum Laufen, Knopf Springen.",
+     "Gamepad: Stick oder Steuerkreuz zum Laufen, A/X/Y zum Springen; im Menü A = OK, B = Zurück, Start.",
+     "Handys koppeln: Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4) und meldet Bereit."
+    ],
+    "tipps": [
+     "An der Steilwand zählt Tempo: voll anlaufen, kurz vor der Wand springen.",
+     "An Hangelstangen greift der Läufer von selbst; mit Sprung kannst du früher abspringen."
+    ]
+   },
+   "size": 1830345,
+   "files": 30,
+   "offline": true
+  },
+  {
+   "id": "FunkhausReality",
+   "title": "Funkhaus Reality",
+   "desc": "Die Live-WG im Radiostudio: Allianzen schmieden, Gerüchte streuen, im Beichtstuhl nominieren – die Hörer entscheiden, wer geht. 3D-Haus, Wochenaufgaben, 1–4 Menschen mit privaten Handy-Pads gegen KI-Mitbewohner.",
+   "icon": "🏠",
+   "img": "FunkhausReality/card.png",
+   "bg": "linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#00e5ff)",
+   "glow": "rgba(255,45,149,.55)",
+   "path": "FunkhausReality/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Live-WG im Radiostudio: Du ziehst mit 5 bis 7 Mitbewohnern (Menschen und KI) ins Funkhaus ein, die Hörer schauen zu. Jede Woche hat drei Tage mit je 3 Aktionen (plaudern, kochen, Allianz schmieden, sticheln, Geheimnisse anvertrauen, Gerüchte streuen, Studio-Auftritt, entspannen), dann folgen Wochenaufgabe (Sieger ist immun), geheime Nominierung im Beichtstuhl und das Hörervotum, wer ausziehen muss. Bei den letzten Drei wählen die Hörer den Liebling der Staffel.",
+    "steuerung": [
+     "PC: Maus, Aktionen und Knöpfe anklicken.",
+     "Touch: Aktionen und Knöpfe antippen.",
+     "Handys koppeln: Jeder Mensch (bis zu 4) bekommt ein privates Pad für Tagesplan, Nominierung und Wochenaufgabe. Ohne Handy wird das Gerät herumgereicht (Bereit?-Schirm)."
+    ],
+    "tipps": [
+     "Wer beliebt ist, bleibt im Haus."
+    ]
+   },
+   "size": 1805247,
+   "files": 31,
+   "offline": true
+  },
+  {
+   "id": "MachMichAus",
+   "title": "Mach mich aus!",
+   "desc": "Die Funk-Dating-Show: 20 Pulte, 20 Lampen – wer passt zum Kandidaten? Als Kandidat oder am Pult spielen, Talent im Takt, Quiz, Anmach-Joker, bis zu 4 Menschen mit privaten Handy-Pads.",
+   "icon": "💡",
+   "img": "MachMichAus/card.png",
+   "bg": "linear-gradient(145deg,#1a1a6a,#00b8d9 50%,#ff2d95)",
+   "glow": "rgba(0,184,217,.55)",
+   "path": "MachMichAus/",
+   "modes": {
+    "pad": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Funk-Dating-Show mit 20 Pulten und 20 Lampen: Ein Kandidat betritt die Bühne, jedes Pult macht seine Lampe aus, wenn der Kandidat nicht passt. Es gibt vier Enthüllungen (Stil, Steckbrief, Talent, Quiz), nach jeder entscheiden die Pulte neu. Am Ende wählt der Kandidat ein Pult mit brennender Lampe; je höher die Passgenauigkeit, desto mehr Punkte. Jeder Mensch (1 bis 4) ist einmal Kandidat.",
+    "steuerung": [
+     "PC: Maus, Lampe an lassen oder ausmachen, Antworten und Knöpfe anklicken.",
+     "Touch: Lampe, Antworten und Knöpfe antippen.",
+     "Handys koppeln: Jedes Handy ist das private Pad eines Menschen (bis zu 4) für Lampe, Quiz, Talent und Wahl. Ohne Handy wird das Gerät herumgereicht."
+    ],
+    "tipps": [
+     "Als Kandidat kann der Anmach-Joker eine Lampe wieder einschalten.",
+     "Flunkern im Quiz hilft kurz, schadet aber beim Date."
+    ]
+   },
+   "size": 1809519,
+   "files": 30,
+   "offline": true
+  },
+  {
+   "id": "turbokick",
+   "title": "TURBOKICK",
+   "desc": "3D-Auto-Fußball mit Nitro: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 5 Karosserien, Tastatur, Gamepad und Touch.",
+   "icon": "🚗",
+   "img": "turbokick/card.png",
+   "bg": "linear-gradient(145deg,#07070f,#ff7a1a 55%,#19c8ff)",
+   "glow": "rgba(255,122,26,.55)",
+   "path": "turbokick/",
+   "modes": {
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "3D-Auto-Fußball: Fahre mit deinem Boliden, nutze Nitro und Sprünge und schieße die große Plasmakugel ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
+    "steuerung": [
+     "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Nitro (halten), Q Handbremse/Drift, Strg oder E Air-Roll, C Ball-Kamera, Esc oder P Pause.",
+     "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Nitro, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Ball-Kamera.",
+     "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Nitro, B Handbremse, RB Air-Roll, Y Ball-Kamera, Start Pause.",
+     "Touch: Stick (hoch/runter Gas, seitlich Lenken), Knöpfe SPRUNG, BOOST, DRIFT, BALL, II für Pause."
+    ],
+    "tipps": [
+     "Nitro gibt es am Boden und in der Luft.",
+     "Die vollständige Tastentabelle steht im Spiel unter Anleitung."
+    ]
+   },
+   "size": 1267829,
+   "files": 33,
+   "offline": true
+  },
+  {
+   "id": "partyverse",
+   "title": "PARTYVERSE",
+   "desc": "3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online (eigener Server nötig). Handy und PC.",
+   "icon": "🎲",
+   "img": "partyverse/card.png",
+   "bg": "linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)",
+   "glow": "rgba(255,62,157,.55)",
+   "path": "partyverse/",
+   "modes": {
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "3D-Brett-Partyspiel: Jede Runde würfelt jeder, zieht Feld für Feld und wählt an Weggabelungen den Weg. Glimmer sind die Währung; am Chrono-Altar kostet ein Siegpunkt-Splitter 20 Glimmer. Nach jeder Runde spielen alle ein Minispiel (22 Stück), die Besten bekommen Glimmer. Wer nach der letzten Runde (inkl. Bonus-Splitter) die meisten Splitter hat, gewinnt. Modi: gegen Bots, lokal auf einem Gerät (2 bis 4), online per QR-Code/Text-Code.",
+    "steuerung": [
+     "PC: Würfeln per Knopf, Leertaste oder Enter; Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad = Zoom; Esc oder Menü-Knopf für Pause.",
+     "Touch: Knöpfe und Felder antippen; Wischen = Kamera drehen, Zwei-Finger = Zoom; Minispiele mit virtuellem Stick und Knöpfen A/B bzw. Antippen.",
+     "Minispiele am PC: je nach Spiel WASD/Pfeile, Leertaste oder Maus; die Anleitung erscheint vor jedem Minispiel."
+    ],
+    "tipps": [
+     "Bei Mautbrücken zahlst du 3 Glimmer oder ein Schlüsselfragment.",
+     "Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelt): vorausplanen."
+    ]
+   },
+   "size": 1551675,
+   "files": 47,
+   "offline": true
+  },
+  {
+   "id": "anmacha-gold-reels",
+   "title": "AnMaCha Gold Reels",
+   "desc": "Moderner Video-Slot (nur Spielgeld): 5 Walzen, 20 Linien, Casino-Symbole & Sender-Logos, Wild, Bonus-Sterne mit Freispielen, Big Wins.",
+   "icon": "🎰",
+   "img": null,
+   "bg": "linear-gradient(145deg,#ffb11f,#ff2d95 55%,#8b5cf6)",
+   "glow": "rgba(255,177,31,.55)",
+   "path": "anmacha-gold-reels/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Spielautomat mit 5 Walzen, 3 Reihen und 20 Gewinnlinien, gespielt nur mit Spielgeld (Startguthaben 10.000). Stelle den Einsatz ein und starte einen Dreh; ab 3 gleichen Symbolen von links nach rechts gibt es einen Gewinn. Wild ersetzt alle Symbole außer Bonus, 3 oder mehr Bonus-Sterne lösen 10 Freispiele mit doppeltem Gewinn aus. Die Gewinntabelle öffnest du mit dem Info-Knopf.",
+    "steuerung": [
+     "PC: Leertaste oder Enter = SPIN; läuft der Dreh schon, stoppt dieselbe Taste die Walzen schneller. Einsatz mit den Knöpfen − und + oder MAX, AUTO startet Automatikspiel, ⚡ schaltet Turbo ein oder aus.",
+     "Touch: Dieselben Knöpfe antippen (SPIN, AUTO, ⚡, −, +, MAX); ℹ️ zeigt die Gewinntabelle, 🔊 schaltet den Ton, Tippen schließt die Gewinn-Anzeige."
+    ],
+    "tipps": [
+     "Der Einsatz lässt sich während Freispielen und laufendem Dreh nicht ändern.",
+     "Fällt das Guthaben unter den kleinsten Einsatz, wird es wieder auf 10.000 Spielgeld gesetzt."
+    ]
+   },
+   "size": 1223819,
+   "files": 15,
+   "offline": true
+  },
+  {
+   "id": "anmacha-markthalle",
+   "title": "AnMaCha Markthalle 24",
+   "desc": "Supermarkt-Simulator in 3D für PC und Handy: Kartons einräumen, Preise machen, an der Kasse scannen, Rückgeld geben und Kartenbeträge tippen, Großhandel-Angebote, Vorbestellungen, Personal, Ausbau – mit eigenem Radiosender, Preis-Duell und Wetter.",
+   "icon": "🛒",
+   "img": null,
+   "bg": "linear-gradient(145deg,#43e08a,#00e5ff 50%,#ff9a1f)",
+   "glow": "rgba(67,224,138,.5)",
+   "path": "anmacha-markthalle/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Du führst deinen eigenen Supermarkt: Kartons von der Rampe holen, Regale einräumen, Preise prüfen, den Laden öffnen und die Kunden an der Kasse bedienen. Mit dem Gewinn bestellst du am Bestell-PC nach und baust den Laden mit Lizenzen, Personal, Ausbauten und Anbau aus. Ein Tag dauert 12 Minuten, gespeichert wird automatisch.",
+    "steuerung": [
+     "PC: W A S D oder Pfeiltasten laufen, Shift rennen; Maus ziehen = umsehen (Q fängt die Maus ein, Esc gibt sie frei). E oder Leertaste = Aktion (Karton nehmen, einräumen, scannen; gedrückt halten = schnell). Klick oder F zeigt Infos und Preise. V wechselt Draufsicht und Ego-Ansicht, Mausrad zoomt, R dreht beim Bauen.",
+     "PC Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster.",
+     "Touch: Linke Bildschirmhälfte ziehen = laufen (Joystick unter dem Daumen), rechte Hälfte wischen = umsehen. Antippen von Regal, Kasse oder Rampe benutzt sie oder zeigt Infos; gelber Knopf = Aktion (halten = schnell). 👁️ Draufsicht mit Zwei-Finger-Zoom, Tempo-Knopf oben rechts, ☰ Mehr für Laden, Personal, Ziele und weitere Fenster."
+    ],
+    "tipps": [
+     "Bar bezahlt: Rückgeld = Gegeben minus Summe. Kartenzahlung: Betrag ohne Komma ins Terminal tippen (1249 für 12,49 €).",
+     "Der Marktpreis plus 8 % gilt als fair; zu teure Preise vertreiben Kunden."
+    ]
+   },
+   "size": 281659,
+   "files": 6,
+   "offline": true
+  },
+  {
+   "id": "anmacha-urwaldlager",
+   "title": "Urwaldlager",
+   "desc": "Die große Wildnis-Show in 3D: Lauf durchs Dschungelcamp, sammle Holz, hol Wasser, koch am Feuer, schließ Freundschaften und besteh zwölf echte Prüfungen – bis das simulierte Publikum den Champion kürt. Für PC und Handy.",
+   "icon": "🌴",
+   "img": null,
+   "bg": "linear-gradient(145deg,#0f3a2a,#2ea84d 50%,#ffcf4a)",
+   "glow": "rgba(120,255,100,.5)",
+   "path": "anmacha-urwaldlager/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Ein begehbares 3D-Dschungelcamp mit erfundenen Mitcampern. Du hältst das Camp am Laufen (Holz, Wasser, Feuer, Kochen, Schlafen), pflegst Beziehungen und bestehst täglich Prüfungen. Eine simulierte Publikumsgunst aus Sympathie, Leistung und Unterhaltung entscheidet über Ausscheidungen und den Champion am Ende der Staffel.",
+    "steuerung": [
+     "PC: W A S D laufen, Shift rennen; Maus ziehen oder Klick ins Bild = umsehen (Esc gibt die Maus frei), Mausrad = Zoom. E = Aktion (zeigt immer, was gerade geht), Q = Frucht essen, Tab = Übersicht (Buschtrommel), P oder Esc = Pause, 1 bis 4 oder Klick = Antworten im Gespräch.",
+     "Touch: Links ziehen = virtueller Joystick (ganz außen = rennen), rechts wischen = umsehen. Große grüne Kontext-Taste = Aktion, Taste Essen, 🥁 oben rechts = Übersicht, ❚❚ = Pause, Antworten antippen."
+    ],
+    "tipps": [
+     "Jede Prüfung erklärt vor dem Start ihre eigene Steuerung für PC und Touch.",
+     "Auf schwachen Handys in den Einstellungen Grafik: Niedrig wählen."
+    ]
+   },
+   "size": 1326649,
+   "files": 28,
+   "offline": true
+  },
+  {
+   "id": "anmacha-spielesammlung",
+   "title": "AnMaCha Spielesammlung 3D",
+   "desc": "7 Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle – gegen den Computer oder zu mehreren.",
+   "icon": "🎲",
+   "img": null,
+   "bg": "linear-gradient(145deg,#ff2d95,#8B5CF6 50%,#00c9a7)",
+   "glow": "rgba(255,45,149,.5)",
+   "path": "anmacha-spielesammlung/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Sammlung von sieben 3D-Brettspielen: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle. Du spielst gegen den Computer (leicht, mittel, schwer) oder zu mehreren an einem Gerät. Wähle im Menü ein Spiel, lege die Plätze fest (Mensch, Computer oder nicht dabei) und starte; die Regeln stehen bei jedem Spiel unter Regeln (?).",
+    "steuerung": [
+     "PC: Mit der Maus auf Figuren, Felder, Würfel oder Spalten klicken. Ziehen mit gedrückter Maus dreht die Ansicht, Mausrad zoomt; ↻ dreht die Ansicht um 90 Grad.",
+     "Touch: Figur, Feld, Würfel oder Spalte antippen (Schach: Figur antippen, mögliche Züge leuchten grün, Schlagen rot). Mit einem Finger wischen = Ansicht drehen, mit zwei Fingern zusammenziehen = zoomen."
+    ],
+    "tipps": [
+     "Würfelfieber: Würfel antippen, um sie zu halten; danach ein Feld auf dem Zettel wählen.",
+     "Dame: Bei Mehrfachsprüngen direkt das letzte Zielfeld antippen."
+    ]
+   },
+   "size": 96393,
+   "files": 1,
+   "offline": true
+  },
+  {
+   "id": "anmacha-stapelrausch",
+   "title": "AnMaCha Stapelrausch 3D",
+   "desc": "3D-Kartenspiel: Zahlentürme von 1 bis 12 bauen und den Zielstapel zuerst leeren – gegen den Computer, an einem Gerät oder online per Code/QR.",
+   "icon": "🃏",
+   "img": null,
+   "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)",
+   "glow": "rgba(139,92,246,.55)",
+   "path": "anmacha-stapelrausch/",
+   "modes": {
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Kartenspiel nach dem Prinzip Skip-Bo: Wer zuerst den eigenen Zielstapel (15 oder 30 Karten) leert, gewinnt. In der Mitte stehen 4 Türme, die der Reihe nach von 1 bis 12 gebaut werden; Sterne sind Joker. Du spielst gegen 1 bis 3 Computer-Gegner, zu 2 bis 4 an einem Gerät oder online mit Code oder QR (bis 4 Spieler).",
+    "steuerung": [
+     "PC: Karte anklicken, dann das Ziel anklicken: einen Turm in der Mitte oder (bei einer Handkarte) einen eigenen Ablagestapel. Karten spielst du von der Hand, vom Zielstapel oder von den Ablagestapeln (jeweils oberste Karte).",
+     "Touch: Karte antippen, dann Ziel antippen. Beim Spielen an einem Gerät erscheint nach jedem Zug ein Übergabe-Bildschirm; die Karten bleiben bis zum Aufdecken verborgen. ? zeigt die Regeln, ☰ das Menü."
+    ],
+    "tipps": [
+     "Ein Zug endet, wenn du eine Handkarte auf einen deiner 4 Ablagestapel legst.",
+     "Sind alle Handkarten gespielt, ziehst du sofort 5 neue."
+    ]
+   },
+   "size": 48138,
+   "files": 1,
+   "offline": true
+  },
+  {
+   "id": "gay-life",
+   "title": "Gay Life!",
+   "desc": "Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.",
+   "icon": "🏳️‍🌈",
+   "img": null,
+   "bg": "linear-gradient(145deg,#ff3b6b,#9b5cff 55%,#2ea8ff)",
+   "glow": "rgba(255,59,107,.55)",
+   "path": "gay-life/",
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "GayLife ist eine 3D-Lebenssimulation in der Stadt Rainbow City (Regenbogenkiez und weitere Viertel) für Erwachsene. Du achtest auf Essen, Schlaf, Dusche und Menschen, verdienst Geld mit Jobs, lernst Bewohner kennen, gehst auf Dates, richtest deine Wohnung ein und spielst Minispiele und eine Hauptgeschichte. Alle Figuren sind frei erfunden; bis zu 4 Spieler können sich per PIN oder QR-Code besuchen.",
+    "steuerung": [
+     "PC: W A S D oder Pfeiltasten laufen; Kamera mit Maus ziehen oder Q/R drehen. E, Enter oder Leertaste = Aktion (sprechen, Orte betreten). P oder Tab = Handy, M = Karte/Orte, F = Vollbild, Esc = Pause. Im Startmenü Pfeiltasten, Enter und Esc.",
+     "Touch: Fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild."
+    ],
+    "tipps": [
+     "Dein Spielstand liegt auf dem Gerät; im Pausenmenü kannst du jederzeit speichern.",
+     "Ein Nein von Figuren wird im Spiel respektiert."
+    ]
+   },
+   "size": 456627,
+   "files": 27,
+   "offline": true
+  },
+  {
+   "id": "anmacha-klotzfunk",
+   "title": "KLOTZFUNK 3D",
+   "desc": "Voxel-Sandbox in 3D: 15 Biome mit Höhlen, Erzen und Funkkristallen, Dörfer mit Bewohnern und Handel, verlassene Minen, Tiere, Weizenfelder, Rauschlinge, Höhlenwesen und Drohnen, Story „Das große Rauschen“ in 6 Kapiteln, Funknetz mit Sendern, Relais und Maschinen, Werkzeuge, Schwerter und Rüstung, Bauformen, Werkbank und Schmelzofen, Herzen und Hunger im Überlebensmodus, 16 Radio-Logo-Blöcke, Federn, Turbo, Aufwind, Radio-Beats, Seilhaken und Gleiten, Minikarte, Tag und Nacht. Maus und Tastatur oder Touch am Handy, Grafik passt sich dem Gerät an.",
+   "icon": "🧱",
+   "img": null,
+   "bg": "linear-gradient(145deg,#4c9a3a,#865f43 55%,#4aa3ff)",
+   "glow": "rgba(76,154,58,.55)",
+   "path": "anmacha-klotzfunk/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Klotzfunk 3D ist eine Voxel-Sandbox: Blöcke abbauen und setzen, bauen und erkunden. Es gibt die Modi Überleben (Werkzeuge herstellen, Hunger und Herzen, Tiere, Dörfer mit Handel), Kreativ (alle Blöcke unbegrenzt, Fliegen) und Story (Das große Rauschen mit Aufträgen). Dazu kommen ein Funknetz mit Schaltern und Radio-Blöcken, eine Weltkarte und Mehrspieler für bis zu 4 Gäste.",
+    "steuerung": [
+     "PC: W A S D oder Pfeiltasten laufen, Maus = umschauen (Klick ins Bild fängt die Maus), Leertaste springen, Strg oder Umschalt rennen. Linksklick abbauen, Rechtsklick setzen (halten wiederholt). 1 bis 9 oder Mausrad = Block wählen, E = Inventar, Q = Seilhaken, M = Weltkarte, B = Wegpunkt, G = Bauform wechseln, J = Aufträge (Story). Kreativ: F oder doppelt Leertaste = Fliegen, Umschalt = runter.",
+     "Touch: Linke Bildschirmhälfte wischen = laufen (weit ziehen = rennen), rechte Hälfte wischen = umschauen. Tasten Sprung, Abbauen, Setzen, Haken (halten wiederholt), Hotbar antippen, 🎒 Inventar, 🗺 Karte, 📍 Wegpunkt, ▦ Bauform. Touch-Tasten lassen sich in den Einstellungen verschieben.",
+     "Gamepad: Linker Stick laufen, rechter Stick umschauen, A springen, B runter und Fenster schließen, X Seilhaken, Y Inventar, LB/RB Hotbar-Platz, RT abbauen, LT setzen, L3 rennen, Select Weltkarte, Start Pause."
+    ],
+    "tipps": [
+     "Überleben: Erst Holz sammeln, dann Bretter, Werkbank und Werkzeuge herstellen.",
+     "Die Tastenbelegung lässt sich in den Einstellungen ändern."
+    ]
+   },
+   "size": 1160166,
+   "files": 20,
+   "offline": true
+  },
+  {
+   "id": "bunte-insel",
+   "title": "Bunte Insel",
+   "desc": "Kinderspiel mit offener Insel-Welt: laufen, 9 Fahrzeuge (auch Hubschrauber & Zug-Simulation), Spielzeugladen, Bauen wie bei den Sims, Tanzparty, Seifenblasen, Baum hauen, Polizeihund Blitz und Pappnase. Touch mit festem Joystick und Tastatur.",
+   "icon": "🚓",
+   "img": "bunte-insel/card.png",
+   "bg": "linear-gradient(145deg,#4ab8ff,#4cd07d 55%,#ffd23f)",
+   "glow": "rgba(76,208,125,.55)",
+   "path": "bunte-insel/",
+   "modes": {
+    "online": true,
+    "pad": true,
+    "multi": true,
+    "tvParam": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Kinderspiel mit einer kleinen offenen Insel-Welt: Du läufst mit Held und Haustier umher, fährst Fahrzeuge, besuchst Läden, Bauernhof, Freibad, Kino und Spielplätze, sammelst Sterne und spielst Mini-Spiele. Die Inselreise mit Bürgermeisterin Rosi führt in 8 Kapiteln mit kleinen Zielen durch das Spiel, nichts ist gesperrt. Mitspielen geht mit bis zu 4 Geräten über einen Code oder QR-Code.",
+    "steuerung": [
+     "PC: W A S D oder Pfeile laufen/fahren, Shift rennen/Turbo, Leertaste springen/hupen (Hubschrauber: steigen, X sinken), E = Aktion (fahrende Autos anhalten, dann einsteigen), F Sirene/Türen/Baum hauen, 1 bis 8 Spaß-Aktionen, B Bauen, V Ego-Kamera, N Nacht, M Ton, P oder Esc Pause. Kamera: Maus ziehen, Mausrad Abstand, Q/R drehen.",
+     "Touch: Joystick links zum Laufen/Lenken (ganz außen = rennen), rechts wischen = Kamera. Rechts eine Knopf-Raute: unten der große Aktion-Knopf, rechts Springen/Turbo/Steigen, links Hallo/Hupe, oben Sirene/Türen/Sinken (nur wenn passend)."
+    ],
+    "tipps": [
+     "Der Knopf 🧭 Wohin? zeigt mit Pfeil und Leuchtsäule den Weg zu einem Ziel.",
+     "Gekämpft wird nur in der Kampfarena und im Verbotenen Wald."
+    ]
+   },
+   "size": 3676520,
+   "files": 121,
+   "offline": true
+  }
+ ]
+}

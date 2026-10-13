@@ -1,0 +1,53 @@
+# Hält sync/manifest.json (Dateiliste mit Prüfsummen für die Android-App) und sync/catalog.json aktuell.
+# Nach jedem Push auf main wird neu berechnet; nur bei Änderungen entsteht ein Commit.
+name: Sync-Manifest
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['sync/**', 'android/**']
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-manifest-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Spiele prüfen (IDs, Pfade, Bilder, Anleitungen, Modi)
+        run: node tools/check-games.js
+      - name: Offline-Paket berechnen (Bibliotheken von CDNs müssen in vendor/map.json stehen)
+        run: node tools/build-sync.js --strict --check || node tools/build-sync.js --strict
+
+  manifest:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node tools/check-games.js
+      - name: Manifest erzeugen
+        run: node tools/build-sync.js
+      - name: Änderungen committen
+        run: |
+          if [ -n "$(git status --porcelain sync)" ]; then
+            git config user.name "easygames-sync"
+            git config user.email "easygames-sync@users.noreply.github.com"
+            git add sync
+            git commit -m "Sync-Manifest aktualisiert [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "Manifest unverändert"
+          fi
