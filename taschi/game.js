@@ -24,13 +24,16 @@ const SPEC={
 // 208 catalog entries total. New regional forms are procedurally derived from original Taschi species.
 // They have distinct game IDs, names, colors and stats; handcrafted 3D models remain future work.
 const REGIONS=['Moos','Polar','Glanz','Schatten','Korall','Sturm','Kristall','Sonnen','Nebel','Mond','Wald','Dünen'];
+const ENDINGS=['ling','dorn','feder','zahn','glut','wisp','pfote','horn','stern','floss','wirbel','blitz','drache','golem','schweif','geist'];
+const TYPES_LIST=Object.keys(TYPES);
+const TYPE_MOVE={normal:'stoss',feuer:'glut',wasser:'spritzer',pflanze:'ranke',elektro:'funken',gestein:'stein',flug:'fluegel',geist:'spuk'};
 const originals=Object.entries(SPEC);
 for(let region=0;region<12;region++)for(let i=0;i<16;i++){
- const [baseId,base]=originals[(i+region*3)%originals.length];
- const id='form_'+region+'_'+i;
- const variations=['-Kind','-Schweif','-Funkel','-Hüter','-Läufer','-Wicht','-Herz','-Wächter','-Flitzer','-Traum','-Wirbel','-Licht','-Funke','-Flügel','-Kern','-König'];
- const tint=new THREE.Color(base.color);tint.offsetHSL(((region+1)%7)*.045-.12,.02,(i%3-1)*.055);
- SPEC[id]={...base,name:REGIONS[region]+variations[i]+' '+base.name,type:base.type,color:tint.getHex(),hp:base.hp+(region%4)*3,atk:base.atk+(i%4)*2,def:base.def+(i%5)*2,speed:base.speed+(region%3)*3,catch:Math.max(.17,base.catch-(region%4)*.025),evo:undefined};
+ const base=originals[(i+region*3)%originals.length][1],id='form_'+region+'_'+i;
+ const type=TYPES_LIST[(region+i)%TYPES_LIST.length],stage=i%3;
+ const tint=new THREE.Color(base.color);tint.offsetHSL(((region+1)%7)*.045-.12,.08,(stage-1)*.09);
+ const evo=i<14&&stage!==2?{to:'form_'+region+'_'+(i+1),lv:17+stage*15+region}:undefined;
+ SPEC[id]={name:REGIONS[region]+ENDINGS[i],type,color:tint.getHex(),hp:base.hp+(region%4)*3+stage*20,atk:base.atk+(i%4)*2+stage*13,def:base.def+(i%5)*2+stage*12,speed:base.speed+(region%3)*3+stage*9,catch:Math.max(.12,base.catch-(region%4)*.025-stage*.1),moves:['stoss',TYPE_MOVE[type]],evo,bio:'Ein Wesen aus der Region '+REGIONS[region]+'. Seine Form entwickelt sich mit seiner Umgebung.'};
 }
 const MOVES={stoss:['Kugelstoß','normal',40],hieb:['Wirbelhieb','normal',65],funken:['Funkenschlag','elektro',48],glut:['Glutfunken','feuer',48],ranke:['Rankenhieb','pflanze',48],spritzer:['Wasserperlen','wasser',48],fluegel:['Windstoß','flug',48],stein:['Steinwurf','gestein',48],spuk:['Spukhauch','geist',48]};
 const ADV={feuer:{pflanze:2,wasser:.5,gestein:.5},wasser:{feuer:2,gestein:2,pflanze:.5},pflanze:{wasser:2,gestein:2,feuer:.5,flug:.5},elektro:{wasser:2,flug:2,pflanze:.5},gestein:{feuer:2,flug:2},flug:{pflanze:2,gestein:.5},geist:{geist:2,normal:0},normal:{geist:0}};
@@ -259,14 +262,14 @@ function importSave(){
  const file=input.files?.[0];if(!file||file.size>2e6)throw Error('Datei zu groß oder fehlt.');
  const payload=JSON.parse(await file.text());if(payload?.format!=='taschi-save'||payload.version!==1)throw Error('Kein passender Taschi-Spielstand.');
  const restored=clean(payload.state);if(!restored)throw Error('Ungültige Speicherdaten.');
- save=restored;player.position.set(save.x,0,save.z);updateFollower();stats();close();toast('Spielstand erfolgreich wiederhergestellt.');
+ save=restored;insideCave=null;scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();close();toast('Spielstand erfolgreich wiederhergestellt.');
  }catch(error){dialog('Import fehlgeschlagen','<p>'+String(error.message||error).replace(/[<>]/g,'')+'</p>',choice())}
  };input.click();
 }
 
 function chooseSaveSlot(){
  dialog('Spielstände','<p>Wechsle zwischen drei voneinander unabhängigen Speicherplätzen. Der aktuelle Stand wird automatisch gesichert.</p>',[
- ...[1,2,3].map(n=>['Spielplatz '+n+(n===slot?' ✓ aktiv':''),()=>{persist();slot=n;localStorage.setItem(SELECTED,String(slot));try{save=clean(JSON.parse(localStorage.getItem(saveKey())))}catch{save=null}save ||= blankSave();player.position.set(save.x,0,save.z);updateFollower();stats();if(!save.team.length)start();else{close();toast('Spielplatz '+n+' geladen!')}}]),
+ ...[1,2,3].map(n=>['Spielplatz '+n+(n===slot?' ✓ aktiv':''),()=>{persist();slot=n;localStorage.setItem(SELECTED,String(slot));try{save=clean(JSON.parse(localStorage.getItem(saveKey())))}catch{save=null}save ||= blankSave();insideCave=null;scene.background.setHex(0x8dd0ee);scene.fog=new THREE.FogExp2(0xb4e1e7,.009);player.position.set(save.x,0,save.z);updateFollower();stats();if(!save.team.length)start();else{close();toast('Spielplatz '+n+' geladen!')}}]),
  ['Zurück',mainMenu]
  ]);
 }
