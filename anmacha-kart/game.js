@@ -225,7 +225,7 @@ function initHost() {
       if (!coarse) players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
       players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, view: !!m.view, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c), cfg: cfgMsg() }); updateLobby();
-    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; p.inAt = performance.now(); } }
+    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; if (Number.isSafeInteger(m.n) && m.n >= 0) { if (p.itemSeq == null) p.itemSeq = m.n - (m.i ? 1 : 0); if (m.n > p.itemSeq) { p.itemPending = Math.min(3, (p.itemPending || 0) + m.n - p.itemSeq); p.itemSeq = m.n; } } p.inAt = performance.now(); } }
     // Start-Knopf am Handy: Lobby starten bzw. nach dem Rennen weiter
     // Strecke/Cup und Runden vom Handy aus (Lobby oder Ergebnis-Bildschirm); alle Handys bekommen die neue Auswahl
     else if (m.t === 'cfg' && players.some(p => p.conn === c) && (lobbyOpen || (R && R.ended))) {
@@ -335,7 +335,7 @@ function initHost() {
   function readInputs() {
     const pads = Pads.list(), now = performance.now();
     return R.humans.map((p, i) => {
-      if (p.conn) { const k = R.S.karts[i]; if (!k.finished) k.auto = !!p.gone || now - (p.inAt || 0) > 1500; return p.input; }
+      if (p.conn) { const k = R.S.karts[i]; const stale = now - (p.inAt || 0) > 5000; if (!k.finished) k.auto = !!p.gone || stale; const use = (p.itemPending || 0) > 0; if (use) p.itemPending--; return { ...p.input, g: stale ? 0 : p.input.g, b: stale ? 0 : p.input.b, s: stale ? 0 : p.input.s, i: use ? 1 : 0, itemPress: use }; }
       if (p.pad != null) return Pads.read(pads.find(x => x.index === p.pad));
       const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v;
       return { s: clampN(s, -1, 1), g: kb.g || tc.g || (p.local && pa.g) ? 1 : 0, b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
