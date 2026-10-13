@@ -850,24 +850,33 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script>
 /* Ladefehler sichtbar machen statt endloses Ladebild. Keine automatische zweite Spielinitialisierung. */
 (function(){
-  var errorText='';
-  window.addEventListener('error',function(e){
-    if(e.target&&e.target.tagName==='SCRIPT') errorText='Spieldatei konnte nicht geladen werden: '+(e.target.getAttribute('src')||'unbekannt');
-    else if(e.message&&!window.__bi){var where=e.filename?(' ('+e.filename.split('/').pop()+':'+(e.lineno||0)+')'):'';errorText='Startfehler: '+String(e.message).slice(0,120)+where;}
-  },true);
-  setTimeout(function(){
+  var errorText='', errorStack='';
+  function showStartError(){
     if(window.__bi)return;
     var screen=document.getElementById('loading');if(!screen||screen.hidden)return;
     var label=document.getElementById('ldTxt'),bar=document.getElementById('ldPct');
     if(label)label.textContent=errorText||'Der Spielstart dauert ungewöhnlich lange.';
     if(bar)bar.textContent='Start prüfen';
+    var target=screen.querySelector('.ldBox')||screen;
+    if(errorStack&&target&&!document.getElementById('ldDebug')){
+      var details=document.createElement('details'),summary=document.createElement('summary'),pre=document.createElement('pre');
+      details.id='ldDebug';details.style.cssText='max-width:min(92vw,620px);max-height:32vh;overflow:auto;margin:10px auto;padding:9px 12px;border-radius:12px;background:rgba(4,20,48,.72);color:#fff;text-align:left;font:12px/1.35 system-ui';
+      summary.textContent='Technische Details anzeigen';summary.style.cssText='cursor:pointer;font-weight:700';
+      pre.textContent=errorStack.slice(0,1800);pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0 0;font:11px/1.4 ui-monospace,monospace';
+      details.append(summary,pre);target.appendChild(details);
+    }
     if(!document.getElementById('ldRetry')){
       var b=document.createElement('button');b.id='ldRetry';b.textContent='🔄 Erneut laden';
-      b.style.cssText='padding:12px 20px;background:#fff;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer';
-      b.onclick=function(){location.reload()};var box=screen.querySelector('.ldBox');if(box)box.appendChild(b);
+      b.style.cssText='padding:12px 20px;margin:10px auto;background:#fff;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer;display:block';
+      b.onclick=function(){location.reload()};target.appendChild(b);
     }
-  },12000);
-})();
+  }
+  window.addEventListener('error',function(e){
+    if(e.target&&e.target.tagName==='SCRIPT')errorText='Spieldatei konnte nicht geladen werden: '+(e.target.getAttribute('src')||'unbekannt');
+    else if(e.message&&!window.__bi){var where=e.filename?(' ('+e.filename.split('/').pop()+':'+(e.lineno||0)+')'):'';errorText='Startfehler: '+String(e.message).slice(0,120)+where;errorStack=e.error&&e.error.stack?String(e.error.stack):'';}
+    if(errorText)setTimeout(showStartError,0);
+  },true);
+  setTimeout(showStartError,12000);
 </script>
 <script src="js/i18n.js?v=8"></script>
 <script src="js/i18n-en.js?v=4"></script>
