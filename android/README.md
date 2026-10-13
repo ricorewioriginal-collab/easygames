@@ -100,6 +100,8 @@ BUNDLE_CONTENT=0 ./android/build.sh     # ohne mitgelieferten Start-Inhalt (klei
 VERSION_NAME=1.2.0 VERSION_CODE=42 ./android/build.sh
 ```
 
+Mit `PUBLISH_DIR=<Webroot>/downloads` legt `build.sh` das APK zusätzlich als `easygames-Developer.apk` (plus `easygames-latest.json`) auf der Downloads-Seite von ricorewi-radio.de ab; der Download-Knopf unter `/#apps` erscheint, sobald die Datei dort liegt.
+
 Das Skript prüft Java 17+, Node und `ANDROID_HOME`, erzeugt den Start-Inhalt
 (`node tools/build-sync.js --stage android/app/src/main/assets/easygames`), baut mit Gradle und gibt
 **Pfad und SHA-256** des Ergebnisses aus. Ohne Angabe wird der Versionscode aus `git rev-list --count HEAD` abgeleitet.
