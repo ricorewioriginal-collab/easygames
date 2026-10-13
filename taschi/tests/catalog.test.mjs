@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const js=readFileSync(resolve(root,'game.js'),'utf8');
-const html=readFileSync(resolve(root,'index.html'),'utf8');
+const html=readFileSync(resolve(root,'classic.html'),'utf8');
 const prelude=js.slice(js.indexOf('const TYPES='),js.indexOf('const MOVES='));
 class MockColor {
  constructor(value){this.value=value;}

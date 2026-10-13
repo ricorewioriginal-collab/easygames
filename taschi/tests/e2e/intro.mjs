@@ -11,7 +11,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
   const steps = [];
   const step = (s) => { steps.push(s); console.log('  ✓ ' + s); };
   try {
-    await page.goto(t.base + 'play.html');
+    await page.goto(t.base);
     await waitState(page, 'title');
     await shot('01-title');
     step('Lade- und Titelbildschirm');
