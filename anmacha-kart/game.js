@@ -176,16 +176,20 @@ function initHost() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.textContent = 'Kamera benötigt HTTPS und eine unterstützte Browserumgebung. Alternativ Code eingeben.'; return; }
       qrPanel.hidden = false; qrStatus.textContent = 'Kamera wird vorbereitet …';
       try {
+        // Kamerazugriff direkt aus der Nutzerinteraktion starten (insbesondere Android).
+        qrStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 } } });
         if (typeof BarcodeDetector !== 'undefined') {
-          const supported = await BarcodeDetector.getSupportedFormats();
-          if (supported.includes('qr_code')) qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
+          try {
+            const supported = await BarcodeDetector.getSupportedFormats();
+            if (supported.includes('qr_code')) qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
+          } catch (e) { qrDetector = null; }
         }
         if (!qrDetector) {
+          qrStatus.textContent = 'QR-Erkennung wird geladen …';
           if (!window.jsQR) await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js');
           qrLibrary = window.jsQR;
-          if (!qrLibrary) throw new Error('QR-Erkennung konnte nicht geladen werden');
+          if (!qrLibrary) throw new Error('QR-Erkennung nicht verfügbar');
         }
-        qrStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 } } });
         qrVideo.srcObject = qrStream; await qrVideo.play(); qrStatus.textContent = 'QR-Code in die Kamera halten …';
         const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
         const detect = async () => {
@@ -237,8 +241,9 @@ function initHost() {
     menuView = v; $('menu').hidden = false; $('mTitle').hidden = v !== 'title'; $('mSetup').hidden = v !== 'setup'; $('menu').classList.toggle('title', v === 'title'); $('mBox').classList.toggle('wide', v === 'setup');
     const el = v === 'title' ? $('mTitle') : $('mSetup'); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); $('menu').scrollTop = 0;
   }
+  $('multiHost').onclick = () => openSetup('multi'); $('multiLocal').onclick = () => { setupFor = 'multi'; renderMenu(); openLobby(); }; $('multiBack').onclick = () => showView('title');
   const openSetup = mode => { if (!ready) return; setupFor = mode; AUD.sfx.select(); renderMenu(); showView('setup'); };
-  $('bSolo').onclick = () => openSetup('solo'); $('bMulti').onclick = () => openSetup('multi'); $('selSum').onclick = () => openSetup('solo');
+  $('bSolo').onclick = () => openSetup('solo'); $('bMulti').onclick = () => showView('multi'); $('selSum').onclick = () => openSetup('solo');
   $('bSetBack').onclick = () => showView('title');
   $('bGoSetup').onclick = () => { if (!ready) return; AUD.sfx.select(); if (setupFor === 'multi') return openLobby(); players = [{ name: (save.name || '').trim() || 'Fahrer', logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, local: true }]; beginSeries(); };
 
