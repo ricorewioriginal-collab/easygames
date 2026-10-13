@@ -33,6 +33,31 @@ const Sim = (() => {
       tr.at(N * fr, lane, tp);
       S.hazards.push({ kind: idx % 3 === 0 ? 'mine' : 'banana', x: tp.x, z: tp.z, t: 1e9, owner: -1, arm: -1, fixed: true });
     }
+    // Eigenständige Streckenmechaniken: mehr Boosts und verschiedene Gefahrzonen,
+    // mit freier Fahrspur und ohne zusätzliche Assets/Netzwerkabhängigkeiten.
+    const mechanic = tr.def.mechanic;
+    if (mechanic) {
+      const patterns = {
+        portal: { pads: [0.08,0.32,0.68,0.89], hazards: [0.26,0.58] },
+        crystal: { pads: [0.14,0.43,0.78], hazards: [0.19,0.37,0.62,0.84] },
+        safari: { pads: [0.18,0.46,0.72,0.91], hazards: [0.34,0.63] },
+        ruins: { pads: [0.11,0.49,0.83], hazards: [0.22,0.35,0.53,0.69,0.87] },
+        dragon: { pads: [0.09,0.29,0.55,0.81], hazards: [0.44,0.69] },
+        shards: { pads: [0.05,0.27,0.48,0.76,0.93], hazards: [0.21,0.54,0.85] },
+        island: { pads: [0.16,0.39,0.65,0.88], hazards: [0.3,0.74] }
+      };
+      const pattern = patterns[mechanic];
+      if (pattern) {
+        pattern.pads.forEach((fraction, i) => {
+          const f = N * fraction; tr.at(f, (i % 2 ? 5 : -5), tp);
+          S.pads.push({ x:tp.x, z:tp.z, f, th:Math.atan2(tp.tx,tp.tz) });
+        });
+        if (S.items) pattern.hazards.forEach((fraction, i) => {
+          tr.at(N * fraction, i % 2 ? 6 : -6, tp);
+          S.hazards.push({ kind: i % 2 ? 'mine' : 'banana', x:tp.x, z:tp.z, t:1e9, owner:-1, arm:-1, fixed:true });
+        });
+      }
+    }
     return S;
   }
   const emit = (S, e) => S.events.push(e);
