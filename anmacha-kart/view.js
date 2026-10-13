@@ -532,6 +532,8 @@ const View = (() => {
       stage.canvas.addEventListener('pointermove',e=>{if(stage.drag){stage.angle+=(e.clientX-stage.px)*0.012;stage.px=e.clientX;}});
       ['pointerup','pointercancel','lostpointercapture'].forEach(t=>stage.canvas.addEventListener(t,()=>{stage.drag=false;}));
     }
+    // Nach Wechsel zwischen Fahrer- und Kart-Reiter muss die aktive Bühne mitwandern.
+    stage.node = node;
     if (stage.canvas.parentNode !== node) node.appendChild(stage.canvas);
     const key = character+':'+kart+':'+logo;
     if (key !== stage.key) {
