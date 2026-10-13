@@ -105,11 +105,11 @@
   const trainVeh = { isTrain: true, spec: { name: 'Zug', icon: '🚂', max: 24, kind: 'train', horn: 'train', cam: 17 }, get x() { return train.cars[0].x; }, get z() { return train.cars[0].z; }, get h() { return train.cars[0].h; }, get v() { return train.v; }, siren: false, r: 3 };
 
   /* ---------- Spielfigur, Menschen, Tiere ---------- */
-  let char = null;
+  let char = null, charChangedHook = null;
   const heroName = () => (save.pname || '').trim() || (save.hero === 'custom' ? 'Held' : BI.heroById(save.hero).name);
   function buildChar() {
     if (char) { char.dispose(); }
-    char = BI.makeChar(charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, heroName())); scene.add(char.group); return char;
+    char = BI.makeChar(charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, heroName())); scene.add(char.group); if (charChangedHook) charChangedHook(); return char;
   }
   /* Aussehen aus Held + Schrank (gekaufte Sachen gewinnen gegenüber dem Helden-Kostüm) */
   function charOpts(l, name) {
@@ -1292,6 +1292,19 @@
     if (homeFlat) { const txt = '🏠 ' + myName(); if (txt !== homeFlat.signTxt) { homeFlat.signTxt = txt; const old = homeFlat.sign; homeFlat.sign = textSprite(txt, 4.6, 1.0, 62); homeFlat.sign.position.copy(old.position); freeObj(old); scene.add(homeFlat.sign); } }
     flats.forEach((f, i) => { const txt = names[i] ? '🏠 ' + names[i] : 'Frei'; if (txt !== f.signTxt) { f.signTxt = txt; const old = f.sign; f.sign = textSprite(txt, 4.6, 1.0, 62); f.sign.position.copy(old.position); freeObj(old); scene.add(f.sign); } });
   }
+  let homeStatue = null;
+  function refreshHomeStatue() {
+    const f = myFlat(); if (!f) return;
+    if (homeStatue) { scene.remove(homeStatue.group); homeStatue.dispose(); homeStatue = null; }
+    const candidates = [[f.cx + 4.8, f.zF + 4.5], [f.cx - 4.8, f.zF + 4.5], [f.cx, f.zF + 6.5], [f.cx + 4.8, f.zF - 3]];
+    let at = candidates.find(q => W.free(q[0], q[1], 1.15)) || candidates[0];
+    homeStatue = BI.makeChar(charOpts({ hero: save.hero, shirt: save.shirt, hat: save.hat, eq: save.equip, cu: save.cu }, heroName()));
+    homeStatue.group.name = 'homeStatue'; homeStatue.group.userData.homeStatueHero = save.hero; homeStatue.group.scale.multiplyScalar(.82);
+    const y = W.groundY(at[0], at[1]); homeStatue.group.position.set(at[0], y + .48, at[1]); homeStatue.group.rotation.y = Math.PI;
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(.72, .88, .48, 12), new THREE.MeshStandardMaterial({ color: 0xd3a83f, roughness: .72, metalness: .18 }));
+    plinth.position.set(0, .24, 0); homeStatue.group.add(plinth); scene.add(homeStatue.group);
+  }
+  charChangedHook = refreshHomeStatue;
   const PLINES = { mama: ['Hast du schon Hunger, mein Schatz?', 'Du bist mein Sonnenschein! ☀️', 'Räum bitte dein Zimmer auf, ja?', 'Gute Nacht, schlaf schön!', 'Spiel schön mit deinen Freunden!'], papa: ['Na, Abenteurer? Wo warst du heute?', 'Sollen wir später Ball spielen?', 'Pass beim Fahren gut auf!', 'Ich bin stolz auf dich!', 'Willst du mein Pferd… äh, Huckepack? 😄'] };
   let kissCd = 0;
   function flatNear() {
@@ -1332,10 +1345,10 @@
   }
 
   /* ---------- Umziehen (Baumenü): die eigene Wohnung an einen beliebigen Ort stellen; Limousine, Rutschauto und Hubschrauber ziehen mit ---------- */
-  const home = BI.createHome({ scene, W, fx, say, save, persist, A, slot: () => mySlot(), vehs: () => homeVeh, riding: () => !!P.veh, initFlat, dropFlat, setHome: f => { homeFlat = f; } });
+  const home = BI.createHome({ scene, W, fx, say, save, persist, A, slot: () => mySlot(), vehs: () => homeVeh, riding: () => !!P.veh, initFlat, dropFlat, setHome: f => { homeFlat = f; if (charChangedHook) charChangedHook(); } });
   G.homeValid = (x, z) => home.valid(x, z);
   G.moveHome = (mode, x, z) => { const ok = home.move(mode, x, z); if (ok) { exitBuild(); goHome(); } return ok; };
-  home.load();
+  home.load(); refreshHomeStatue();
   /* ---------- Garten, Bauernhof, Freibad ---------- */
   const garden = BI.createGarden({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), mySlot: () => mySlot(), earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f) });
   const farm = BI.createFarm({ scene, W, A, fx, P, save, persist, say, addStars: n => addStars(n), animals, inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, showEmoji: (e, a) => showEmoji(e, a), earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f) });
