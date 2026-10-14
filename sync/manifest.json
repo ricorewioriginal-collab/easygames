@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "7d71fd2710fe",
- "generated": "2026-10-14T23:17:16.408Z",
+ "version": "a72a0747611c",
+ "generated": "2026-10-14T23:34:49.475Z",
  "commit": "2cb8d974dc58415916e3fe0bc6de3a83efa70654",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 14859,
-   "h": "278350cfeacf09867b56eea3ca4a1a8761964966f811e8f41a0713e887b3a29c"
+   "s": 15261,
+   "h": "ef18e9601fdf0be8df298af02dd5c4b9872454211df87c9ee798330f265c17f2"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 39261,
-   "h": "2efa68c2e1ae5af36b4e36665226ea9afecc105c9dc6f26de21f93d4e3c6443e"
+   "s": 40187,
+   "h": "bfe2db1b7a815a9381d6e02d0a98e8f58923a9a5cf87dc07f87b1d8019c2e469"
   },
   {
    "p": "index.html",
@@ -5102,6 +5102,31 @@
    "h": "266b918ebe0f06d955d7d6e7786b8c61ebbabf0a1c65987ab5c474a62b98d08d"
   },
   {
+   "p": "pufi-farbwind/card.svg",
+   "s": 1809,
+   "h": "fbbac7e368226b588481902222e6f581b3f84c6b1cbbe8701da8ca4e41acd6a5"
+  },
+  {
+   "p": "pufi-farbwind/game.js",
+   "s": 19119,
+   "h": "4ca027b9c2cf75c78f638f89e20dffd189baf1beff6ff8c8313f34ec43a41fa1"
+  },
+  {
+   "p": "pufi-farbwind/index.html",
+   "s": 7533,
+   "h": "413ff0052eb684f77f2c588b8c163cef5b55ee4c45dd30df48cca194be2dbbf0"
+  },
+  {
+   "p": "pufi-farbwind/manifest.webmanifest",
+   "s": 416,
+   "h": "dd8d539cd3a944c47403ae1cb411482195afae025cedfa573918c6ce6aebc8ba"
+  },
+  {
+   "p": "pufi-farbwind/sw.js",
+   "s": 752,
+   "h": "8823fad80e7814fe0c2b5989165cf3a68bed68c162874451c2a2caa7f922e1e4"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5218,8 +5243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 60199,
-   "h": "63ec5bc6d724acf1b31fe8db7d3e14b88acff677dbd33548cfbb9bc32f3150cd"
+   "s": 61752,
+   "h": "805a57774b5b21152418aee359e8d31ddcc61a5f82953bef524a5b72bfdf8216"
   },
   {
    "p": "taschi/card.svg",
