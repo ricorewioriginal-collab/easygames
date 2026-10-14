@@ -8,7 +8,7 @@
   {
    "id": "pufi-farbwind",
    "title": "Pufi & der Farbwind",
-   "desc": "Eigenständiges handgezeichnetes Retro-Jump-and-Run mit sechs Insel-Leveln, Farbblüten, Luftgleiten, Farbkugel-Würfen, Ansaugen, Stampfattacke, Gegnern, zwei Bosskämpfen, Geheimnissen und PC-/Touch-Steuerung. Auch offline spielbar.",
+   "desc": "Eigenständiges SNES-inspiriertes Retro-Jump-and-Run mit Pufi und dem reitbaren Wolkentaps Tamo, sechs Inseln, Gleiten, Farbwürfen, Gegnern, Geheimnissen, zwei Bosskämpfen und Touch-/PC-Steuerung. Offline spielbar.",
    "icon": "🎨",
    "img": "pufi-farbwind/card.svg",
    "bg": "linear-gradient(145deg,#dc95b8,#84d8ee)",
@@ -17,16 +17,16 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Begleite Pufi auf sechs eigenständige Farbwind-Inseln. Springe über Schluchten, schwebe kurze Strecken, wirf Farbkugeln auf Gegner und versteckte Schalter und sammle Farbblüten. Ansaugen gibt Munition, mit Stampfen kannst du versteckte Schalter aktivieren. Bei Game Over beginnt der Versuch ganz von vorn; abgeschlossene Inseln bleiben gespeichert.",
+    "anleitung": "Pufi reitet auf dem eigenständigen Wolkentaps Tamo über sechs Inseln. R oder 🐾 steigt auf/ab: Tamo ist schneller, schwebt länger und schützt vor dem ersten Treffer. Danach folgt er Pufi, bis du wieder aufsteigst. Sammle Farbblüten, sauge Energie ein, wirf Farbkugeln und aktiviere verborgene Schalter. Bei Game Over beginnt das Level von vorn; abgeschlossene Inseln bleiben frei.",
     "steuerung": [
-     "PC: A/D oder Pfeiltasten bewegen, Leertaste/W springen (halten zum Schweben), K/X halten und zum Werfen loslassen, C/J/E ansaugen, S/Pfeil runter für Luftstampfer, P/Escape pausieren.",
-     "Handy: Richtungstasten, Sprung, Werfen, Saugen und Stampfen unten im Bildschirm; Querformat empfohlen."
+     "PC: Pfeile oder A/D laufen · R/V auf Tamo auf-/absteigen · Leertaste/W springen und halten zum Schweben · K/X halten und loslassen zum Werfen · C/J/E ansaugen · Pfeil runter/S Stampfen · P/Esc Pause.",
+     "Mobil: links Richtungstasten, rechts 🐾 zum Reiten, Saugen, Werfen und Springen. Querformat empfohlen."
     ],
     "tipps": [
-     "Gleiten hilft besonders bei breiten Lücken.",
-     "Werfe Farbkugeln auf Gegner, Schalter und Bosse.",
-     "Nimm neue Munition aus goldenen Fruchtkapseln auf.",
-     "Jede Insel lässt sich wiederholen, um weitere Farbblüten zu finden."
+     "Tamo beschleunigt und lässt dich länger schweben.",
+     "Wirst du auf Tamo getroffen, schützt er dich und läuft anschließend nebenher.",
+     "Drücke R oder 🐾 in seiner Nähe, um wieder aufzusteigen.",
+     "Farbkugeln treffen Feinde, Schalter und die beiden Bosse."
     ]
    },
    "size": 29634,

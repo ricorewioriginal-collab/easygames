@@ -11,9 +11,13 @@ function boot(saved){
 }
 const b=boot(),a=b.game;
 assert.equal(a.state().mode,'title');assert.equal(b.els.primary.textContent,'START GAME ▶');
-a.start(0);assert.equal(a.state().world.segments.length,5);
+a.start(0);assert.equal(a.state().world.segments.length,5);assert.equal(a.state().hero.mounted,true);
+a.action('mount',true);assert.equal(a.state().hero.mounted,false);for(let i=0;i<22;i++)a.tick(1/60);
+a.action('mount',true);assert.equal(a.state().hero.mounted,true);
+a.state().hero.inv=0;a.hurt();assert.equal(a.state().hero.hp,3);assert.equal(a.state().hero.mounted,false);
+a.start(0);
 for(let i=0;i<90;i++)a.tick(1/60);
-assert.equal(a.state().hero.ground,true);
+assert.equal(a.state().hero.ground,true);assert.equal(a.state().hero.mounted,true);
 a.action('jump',true);a.tick(1/60);assert(a.state().hero.vy<0);a.action('jump',false);
 a.action('throw',true);for(let i=0;i<14;i++)a.tick(1/60);a.action('throw',false);
 assert.equal(a.state().hero.ammo,3);

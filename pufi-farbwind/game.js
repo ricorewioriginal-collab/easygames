@@ -37,17 +37,17 @@ for(let j=1;j<4;j++)gems.push({x:start+(b.x-start)*j/4,y:a.y-115-Math.sin(j*Math
 gems.push({x:440,y:93,kind:'flower',got:false});
 const goal=segments.at(-1).x+segments.at(-1).w-48,boss=LEVELS[n].boss?{x:goal-335,y:148,w:66,h:65,hp:LEVELS[n].boss,max:LEVELS[n].boss,phase:0,cool:1.9}:null;
 world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0};
-hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.05,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0};
-cam=t=aim=0;frameN=0;particles=[];Object.keys(input).forEach(k=>input[k]=false);hud();
+hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.5,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0,mounted:true,pet:{x:0,y:165},rideCd:0};
+hero.pet.x=hero.x-40;hero.pet.y=hero.y;cam=t=aim=0;frameN=0;particles=[];Object.keys(input).forEach(k=>input[k]=false);hud();
 }
-function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/6 · '+LEVELS[level].name;$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score}
+function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/6 · '+LEVELS[level].name;$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score;$('mountStatus').textContent=hero.mounted?'🐾 TAMO AN BORD':'🐾 R: TAMO RUFEN'}
 function overlay(type,title,description,primary,secondary){
 mode=type;$('overlay').hidden=false;$('overlay').dataset.view=type;
 $('heading').textContent=title;$('description').textContent=description;$('primary').textContent=primary;
 $('secondary').hidden=!secondary;if(secondary)$('secondary').textContent=secondary;
 $('stageList').hidden=type!=='map';if(type==='map')renderMap();$('touch').hidden=true;hud();
 }
-function title(){overlay('title','PUFI & DER FARBWIND','Ein handgezeichnetes Retro-Abenteuer! Rette sechs bunte Inseln mit Sprüngen, schwebenden Ohren und deiner Farbkugel.','START GAME ▶','INSELKARTE')}
+function title(){overlay('title','PUFI & DER FARBWIND','Pufi und sein Wolkentaps Tamo retten sechs bunte Inseln! Reite, springe, schwebe und wirf Farbkugeln in einem eigenständigen Retro-Abenteuer.','START GAME ▶','INSELKARTE')}
 function renderMap(){const list=$('stageList');list.replaceChildren();LEVELS.forEach((l,i)=>{const b=document.createElement('button');b.className='island'+(selected===i?' picked':'');b.disabled=i>=save.unlocked;const r=save.records[i];b.textContent=(i<save.unlocked?'✦ ':'🔒 ')+(i+1)+'. '+l.name+(r?' · ❀ '+r.flowers:'');b.addEventListener('click',()=>{selected=i;renderMap();tone(650)});list.appendChild(b)})}
 function openMap(){selected=Math.min(level,save.unlocked-1);overlay('map','DIE FARBWIND-INSELN','Wähle eine freigeschaltete Insel. Finde versteckte Farbblüten und sammle einen neuen Rekord.','INSEL SPIELEN ▶','ZUM TITEL')}
 function start(n=level){build(n);mode='play';$('overlay').hidden=true;$('touch').hidden=false;tone(560);hud()}
@@ -61,9 +61,23 @@ $('primary').addEventListener('click',()=>{tone(600);if(mode==='title')start(0);
 $('secondary').addEventListener('click',()=>{tone(540);if(mode==='map')title();else if(mode==='title'||mode==='pause'||mode==='clear'||mode==='gameover')openMap();else if(mode==='win')start(0)});
 $('pause').addEventListener('click',()=>{if(mode==='play')pause();else if(mode==='pause')resume()});
 $('sound').textContent=save.sound?'♪ AN':'♪ AUS';$('sound').addEventListener('click',()=>{save.sound=!save.sound;persist();$('sound').textContent=save.sound?'♪ AN':'♪ AUS';if(save.sound)tone(600)});
+// Tamo is an original cloud-tapir companion: his broad padded feet and fins make
+// riding faster and give one additional hit before Pufi loses a heart.
+function toggleMount(){
+if(mode!=='play'||!hero||hero.rideCd>0)return;
+const p=hero;
+if(p.mounted){
+p.mounted=false;p.rideCd=.32;p.pet.x=p.x-33;p.pet.y=p.y;p.hover=Math.min(p.hover,1.0);
+tone(370);splash(p.x,p.y+18,'#a9e7dc',7);
+}else if(Math.hypot(p.pet.x-p.x,p.pet.y-p.y)<90){
+p.mounted=true;p.rideCd=.32;p.hover=Math.max(p.hover,1.3);
+tone(740);splash(p.x,p.y+18,'#fff3c0',10);
+}
+hud();
+}
 function absorb(){
 if(!hero||mode!=='play'||hero.grabCd>0)return;hero.grabCd=.3;
-let closest=null,best=49;
+let closest=null,best=hero.mounted?67:49;
 for(const a of world.pods){if(!a.used){const d=Math.hypot(a.x-(hero.x+12),a.y-(hero.y+13));if(d<best){best=d;closest=a}}}
 for(const a of world.enemies){if(a.alive){const d=Math.hypot(a.x-(hero.x+12),a.y-(hero.y+13));if(d<best){best=d;closest=a}}}
 if(closest){if('alive'in closest)closest.alive=false;else closest.used=true;hero.ammo=Math.min(6,hero.ammo+2);world.score+=35;splash(closest.x,closest.y,'#d3ffb6');tone(670)}else tone(270,.05);
@@ -71,36 +85,39 @@ if(closest){if('alive'in closest)closest.alive=false;else closest.used=true;hero
 function throwPaint(){
 if(mode!=='play'||hero.ammo<1)return;
 hero.ammo--;const angle=aim>.3?clamp(.52+Math.sin(t*3.2)*.55,.04,1.12):.23;
-world.bullets.push({x:hero.x+11+hero.face*13,y:hero.y+12,w:10,h:10,vx:hero.face*Math.cos(angle)*330,vy:-Math.sin(angle)*330,life:2.2,bounces:1});
+world.bullets.push({x:hero.x+11+hero.face*(hero.mounted?22:13),y:hero.y+(hero.mounted?9:12),w:10,h:10,vx:hero.face*Math.cos(angle)*330,vy:-Math.sin(angle)*330,life:2.2,bounces:1});
 aim=0;splash(hero.x+12,hero.y+9,'#ffe3ab',5);tone(480);
 }
 function action(key,on){
 if(key==='pause'){if(on){if(mode==='play')pause();else if(mode==='pause')resume()}return}
 if(mode!=='play')return;
+if(key==='mount'){if(on)toggleMount();return}
 if(key==='jump'&&on&&!input.jump)hero.jumpBuffer=.13;
 if(key==='throw'){if(on&&!input.throw)aim=.01;else if(!on&&input.throw)throwPaint()}
 if(key==='grab'&&on&&!input.grab)absorb();
 if(key==='down'&&on&&!input.down&&!hero.ground){hero.dive=true;hero.vy=Math.max(420,hero.vy);tone(280)}
 input[key]=on;
 }
-const keymap={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',KeyW:'jump',ArrowUp:'jump',KeyK:'throw',KeyX:'throw',KeyJ:'grab',KeyC:'grab',KeyE:'grab',ArrowDown:'down',KeyS:'down',Escape:'pause',KeyP:'pause'};
+const keymap={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',KeyW:'jump',ArrowUp:'jump',KeyK:'throw',KeyX:'throw',KeyJ:'grab',KeyC:'grab',KeyE:'grab',ArrowDown:'down',KeyS:'down',KeyR:'mount',KeyV:'mount',Escape:'pause',KeyP:'pause'};
 window.addEventListener('keydown',e=>{const key=keymap[e.code];if(key){e.preventDefault();if(!e.repeat)action(key,true)}if(e.code==='Enter'&&mode==='title')start(0)});
 window.addEventListener('keyup',e=>{const key=keymap[e.code];if(key){e.preventDefault();action(key,false)}});
 window.addEventListener('blur',()=>{if(mode==='play')pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause()});
 document.querySelectorAll('[data-action]').forEach(b=>{const key=b.dataset.action;b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}action(key,true);b.classList.add('pressed')});for(const kind of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(kind,e=>{if(e.cancelable)e.preventDefault();action(key,false);b.classList.remove('pressed')})});
-function hurt(){if(mode!=='play'||hero.inv>0)return;hero.hp--;hero.inv=1.5;hero.vy=-250;splash(hero.x,hero.y,'#ffa5c6',20);tone(155,.24);if(hero.hp<=0)gameover('Pufi hat seine Farbenergie verloren.')}
+function hurt(){if(mode!=='play'||hero.inv>0)return;
+if(hero.mounted){hero.mounted=false;hero.pet.x=hero.x-43;hero.pet.y=hero.y;hero.rideCd=.9;hero.inv=1.5;hero.vy=-185;hero.hover=.7;splash(hero.x,hero.y,'#a9ecdd',18);tone(230,.18);hud();return}
+hero.hp--;hero.inv=1.5;hero.vy=-250;splash(hero.x,hero.y,'#ffa5c6',20);tone(155,.24);if(hero.hp<=0)gameover('Pufi hat seine Farbenergie verloren.')}
 function defeat(e){e.alive=false;hero.ammo=Math.min(6,hero.ammo+1);world.score+=80;splash(e.x,e.y,'#beffd3',15);tone(770)}
 function tick(dt){
 if(mode!=='play')return;dt=Math.min(dt,.04);t+=dt;frameN++;const p=hero;
-p.inv=Math.max(0,p.inv-dt);p.grabCd=Math.max(0,p.grabCd-dt);p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);p.coyote=Math.max(0,p.coyote-dt);if(input.throw)aim+=dt;
-const dir=Number(input.right)-Number(input.left);p.vx+=(dir*188-p.vx)*Math.min(1,dt*(p.ground?17:10));if(dir)p.face=dir;
-if(p.jumpBuffer>0&&(p.ground||p.coyote>0)){p.vy=-370;p.ground=false;p.coyote=0;p.jumpBuffer=0;p.hover=1.05;p.dive=false;tone(530);splash(p.x,p.y+p.h,'#fff1d4',6)}
+p.inv=Math.max(0,p.inv-dt);p.grabCd=Math.max(0,p.grabCd-dt);p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);p.coyote=Math.max(0,p.coyote-dt);p.rideCd=Math.max(0,p.rideCd-dt);if(input.throw)aim+=dt;
+const dir=Number(input.right)-Number(input.left);p.vx+=(dir*(p.mounted?215:184)-p.vx)*Math.min(1,dt*(p.ground?17:10));if(dir)p.face=dir;
+if(p.jumpBuffer>0&&(p.ground||p.coyote>0)){p.vy=-370;p.ground=false;p.coyote=0;p.jumpBuffer=0;p.hover=p.mounted?1.5:1.05;p.dive=false;tone(530);splash(p.x,p.y+p.h,'#fff1d4',6)}
 if(input.jump&&!input.down&&!p.ground&&p.vy>0&&p.hover>0){p.vy=Math.min(p.vy,74);p.hover-=dt}
 p.vy=Math.min(p.dive?565:420,p.vy+(p.dive?1140:790)*dt);p.x=Math.max(0,p.x+p.vx*dt);
 const previousBottom=p.y+p.h;p.y+=p.vy*dt;
 let onGround=false;
 for(const f of world.segments.concat(world.ledges)){if(p.x+p.w<=f.x+2||p.x>=f.x+f.w-2)continue;if(p.vy>=0&&previousBottom<=f.y+9&&p.y+p.h>=f.y){p.y=f.y-p.h;p.vy=0;onGround=true;if(p.dive){splash(p.x,f.y,'#fff1b7',12);tone(340)}p.dive=false}}
-if(onGround){p.ground=true;p.coyote=.11;p.hover=1.05}else if(p.ground){p.ground=false;p.coyote=.1}
+if(onGround){p.ground=true;p.coyote=.11;p.hover=p.mounted?1.5:1.05}else if(p.ground){p.ground=false;p.coyote=.1}
 for(const s of world.springs){if(p.vy>=0&&previousBottom<=s.y+10&&hit(p,s)){p.y=s.y-p.h;p.vy=-450;p.ground=false;p.hover=1;splash(s.x,s.y,'#ffdaf1');tone(880)}}
 for(const it of world.gems){if(it.got||it.kind==='secret'&&!world.switches.some(s=>s.on))continue;
 if(Math.hypot(it.x-(p.x+12),it.y-(p.y+13))<19){it.got=true;world.score+=it.kind==='drop'?10:it.kind==='flower'?250:400;if(it.kind==='flower')world.flowers++;splash(it.x,it.y,it.kind==='flower'?'#ffd6e6':'#fff2a6',9);tone(it.kind==='flower'?1100:820)}}
@@ -119,6 +136,14 @@ world.bullets=world.bullets.filter(b=>b.life>0&&b.y<H+35);
 for(const b of world.hazards){b.x+=b.vx*dt;b.y+=b.vy*dt;b.vy+=190*dt;b.life-=dt;if(hit(p,b)){b.life=0;hurt()}}
 world.hazards=world.hazards.filter(b=>b.life>0&&b.y<H+50);
 if(p.y>H+90){gameover('Pufi ist ins Wolkenmeer gefallen.');return}
+// When dismounted, Tamo follows along the nearest platform without spawning in mid-air.
+if(p.mounted){p.pet.x=p.x;p.pet.y=p.y}
+else{
+const followX=p.x-38,dx=followX-p.pet.x;
+p.pet.x+=Math.abs(dx)>360?dx:clamp(dx,-130*dt,130*dt);
+const platform=world.segments.find(s=>p.pet.x+15>=s.x&&p.pet.x+9<s.x+s.w);
+p.pet.y=platform?platform.y-30:p.y;
+}
 if(p.x>world.goal&&(!boss||boss.hp<=0)){finished();return}
 const far=world.segments.at(-1);cam=clamp(p.x-180,0,far.x+far.w-W);
 for(const q of particles){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=220*dt;q.life-=dt}particles=particles.filter(q=>q.life>0);
@@ -126,6 +151,23 @@ if(frameN%12===0)hud();
 }
 const rect=(x,y,w,h,col)=>{ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),Math.ceil(w),Math.ceil(h))};
 function oval(x,y,rx,ry,col,border='#62536f',width=2){ctx.beginPath();ctx.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();if(border){ctx.strokeStyle=border;ctx.lineWidth=width;ctx.stroke()}}
+function drawTamo(x,y,face=1){
+ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(face,1);
+const foot=Math.sin(t*16)*1.8,tail=Math.sin(t*8)*3;
+oval(-21,tail-2,10,7,'#86d9cb','#506678',2);oval(-28,tail-8,7,8,'#86d9cb','#506678',2);
+oval(-13,13+foot,9,6,'#6282ad','#506678',2);oval(13,13-foot,10,6,'#6282ad','#506678',2);
+oval(0,0,24,19,'#78c7bf','#4d687a',2.5);
+oval(-4,4,13,9,'#bae6cf',null);
+oval(-16,-12,10,9,'#a3dfd6','#4d687a',1.5);
+oval(-13,-21,7,9,'#87cabc','#4d687a',1.5);
+oval(17,-14,12,12,'#89d7ce','#4d687a',2);
+oval(13,-23,5,12,'#78c7bf','#4d687a',1.7);
+oval(27,-3,11,10,'#89d7ce','#4d687a',2);
+oval(22,-6,5,6,'#fff9e3',null);oval(23,-6,2,3,'#3e5469',null);
+oval(34,1,2,2,'#4d687a',null);oval(12,1,4,3,'#f2b8b4',null);
+oval(-3,-17,10,4,'#f7d9a7','#766482',1);
+ctx.restore();
+}
 function draw(){
 if(!world)return;const q=LEVELS[level],grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,q.sky[0]);grad.addColorStop(1,q.sky[1]);ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
 oval(381-cam*.02%45,51,28,28,'#fff0b9',null);
@@ -150,9 +192,15 @@ for(let i=0;i<7;i++){const a=i*Math.PI*2/7+t*.3;oval(boss.x+33+Math.cos(a)*34,bo
 oval(boss.x+21,boss.y+27,7,10,'#fff7e5',null);oval(boss.x+48,boss.y+27,7,10,'#fff7e5',null);oval(boss.x+24,boss.y+30,3,5,'#45415c',null);oval(boss.x+51,boss.y+30,3,5,'#45415c',null);
 rect(boss.x+4,boss.y-17,58*boss.hp/boss.max,5,'#fbe3a0')}
 for(const b of world.bullets)oval(b.x+5,b.y+5,6,6,'#fdd9a7','#87687b');for(const b of world.hazards)oval(b.x+6,b.y+6,7,7,'#8d72b4','#ffbcb8');
+// Tamo always exists as a distinct, animated creature, even when Pufi hops off.
+if(hero.mounted)drawTamo(hero.x+13,hero.y+17,hero.face);
+else if(hero.pet){
+drawTamo(hero.pet.x+13,hero.pet.y+16,hero.face);
+if(Math.abs(hero.pet.x-hero.x)<90){oval(hero.pet.x+12,hero.pet.y-33,9,9,'#fff6d6','#73617e',1);ctx.fillStyle='#5b5576';ctx.font='bold 11px sans-serif';ctx.fillText('R',hero.pet.x+9,hero.pet.y-29)}
+}
 rect(world.goal,128,5,92,'#fff2dc');ctx.fillStyle='#f5a9ba';ctx.beginPath();ctx.moveTo(world.goal+5,131);ctx.lineTo(world.goal+45,145);ctx.lineTo(world.goal+5,156);ctx.fill();
 if(!(hero.inv>0&&Math.floor(t*12)%2)){
-const p=hero;ctx.save();ctx.translate(Math.round(p.x)+(p.face<0?p.w:0),Math.round(p.y));ctx.scale(p.face,1);
+const p=hero;ctx.save();ctx.translate(Math.round(p.x)+(p.face<0?p.w:0),Math.round(p.y)-(p.mounted?17:0));ctx.scale(p.face,1);
 oval(-4,20,11,7,'#f6afa9','#6b526c');oval(12,18,13,12,'#ef91ad','#765872');
 oval(5,4,6,16,'#e58daf','#765872');oval(20,3,6,17,'#e58daf','#765872');
 oval(12,10,15,12,'#f39bb9','#765872');oval(12,11,11,9,'#ffe6cb',null);
@@ -169,5 +217,5 @@ ctx.restore();
 let prev=0,accum=0;function frame(ms){const dt=prev?Math.min(.05,(ms-prev)/1000):0;prev=ms;accum+=dt;while(accum>=1/60){tick(1/60);accum-=1/60}draw();requestAnimationFrame(frame)}
 build(0);title();requestAnimationFrame(frame);
 // Test seam; does not affect gameplay.
-window.PufiTest={state:()=>({mode,level,hero,world,save}),start,tick,finished,gameover,action,absorb,throwPaint,draw};
+window.PufiTest={state:()=>({mode,level,hero,world,save}),start,tick,finished,gameover,action,absorb,throwPaint,draw,toggleMount,hurt};
 })();
