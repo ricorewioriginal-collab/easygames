@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "909d90945dcd",
- "generated": "2026-10-14T03:06:26+02:00",
- "commit": "71a70314783821cf868663123d4e9d697f0061db",
+ "version": "e209a2d47b4f",
+ "generated": "2026-10-14T12:40:45+02:00",
+ "commit": "0e7e912c9f9b788e1c3eb7564725ca6e7a55f834",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5019,7 +5019,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57160,
-   "h": "56c786ff3353e54faac9a53ae96f2e60bf7b8d75b47749d648ce4f76027f7458"
+   "h": "a13fbe65e723661c0f65ad23f3f51a157f7f1da081f592623eb51b224e745ee5"
   },
   {
    "p": "taschi/card.svg",
@@ -5168,8 +5168,8 @@
   },
   {
    "p": "taschi/src/game/battle-scene.js",
-   "s": 39575,
-   "h": "5fc82127bfc126c70bec2213f86d7f7d59ccc62da104c0c4a254d6854ac033ef"
+   "s": 39599,
+   "h": "bf32bf50886e27d384e300323b63e1a4aa959dc3a73fba65f955738052df2e99"
   },
   {
    "p": "taschi/src/game/game.js",
@@ -5178,8 +5178,8 @@
   },
   {
    "p": "taschi/src/game/world.js",
-   "s": 25993,
-   "h": "07b26ef8c875e90f16650b23fdd9a678710f832dccb4c855328973c6253232c7"
+   "s": 27254,
+   "h": "7bfaf93172286cd8387b9cc4a8d645803acc72e815f498b5eb7b05555303062f"
   },
   {
    "p": "taschi/src/logic/ai.js",
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "taschi/src/ui/menus.js",
-   "s": 24216,
-   "h": "7e1484ea93ab3b309ff8fdc825cce7a5ce52cf27d38ce126e805b66456c02b38"
+   "s": 24206,
+   "h": "92d3b69092d844c97c72497cf5699220ffe945b194b7de45b1753eb2b8b43613"
   },
   {
    "p": "taschi/src/ui/screens.js",
