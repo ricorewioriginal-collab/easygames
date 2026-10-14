@@ -19,7 +19,7 @@ export function pathTo(id: string, tx: number, tz: number, w: number, color: num
 }
 
 /** Einsammelbarer Gegenstand (einmalig). */
-export function pickup(ctx: WorldCtx, id: string, x: number, z: number, item: string, opts: { y?: number; label?: string; when?: () => boolean; n?: number; glow?: number } = {}): void {
+export function pickup(ctx: WorldCtx, id: string, x: number, z: number, item: string, opts: { y?: number; label?: string; when?: () => unknown; n?: number; glow?: number } = {}): void {
   const api = ctx.api;
   const key = 'pick:' + id;
   if (api.isCollected(key)) return;
@@ -31,8 +31,8 @@ export function pickup(ctx: WorldCtx, id: string, x: number, z: number, item: st
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.7, 20).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: opts.glow ?? 0xffe14a, transparent: true, opacity: 0.6, depthWrite: false }));
   (ring.material as THREE.Material).userData.disposeWithWorld = true;
   ring.position.set(x, y + 0.06, z); ctx.add(ring);
-  ctx.onUpdate((_dt, t) => { if (!spr.visible) return; spr.position.y = y + 0.9 + Math.sin(t * 2.5 + x) * 0.15; spr.visible = !opts.when || opts.when(); ring.visible = spr.visible; });
-  ctx.interact({ id: key, x, y, z, r: 2.2, icon: itemIcon(item), label: opts.label ?? 'Aufheben: ' + itemName(item), priority: 2, when: () => !api.isCollected(key) && (!opts.when || opts.when()),
+  ctx.onUpdate((_dt, t) => { if (!spr.visible) return; spr.position.y = y + 0.9 + Math.sin(t * 2.5 + x) * 0.15; spr.visible = !opts.when || !!opts.when(); ring.visible = spr.visible; });
+  ctx.interact({ id: key, x, y, z, r: 2.2, icon: itemIcon(item), label: opts.label ?? 'Aufheben: ' + itemName(item), priority: 2, when: () => !api.isCollected(key) && (!opts.when || !!opts.when()),
     act: () => { if (!api.collectOnce(key)) return; spr.visible = false; ring.visible = false; api.give(item, opts.n ?? 1); api.burst(x, y + 1, z, [0xffe14a, 0xffffff], 14); api.events.emit('interact', { id: key, kind: 'pickup' }); } });
 }
 const texCache = new Map<string, THREE.CanvasTexture>();
@@ -132,4 +132,18 @@ export function lever(ctx: WorldCtx, id: string, x: number, z: number, label: st
 export function spot(ctx: WorldCtx, id: string, x: number, z: number, icon: string, label: string | (() => string), act?: () => void, opts: { r?: number; y?: number; when?: () => boolean; priority?: number } = {}): void {
   const y = opts.y ?? ctx.h(x, z);
   ctx.interact({ id, x, y, z, r: opts.r ?? 2.6, icon, label, priority: opts.priority ?? 1, when: opts.when, act: () => { act?.(); ctx.api.events.emit('interact', { id, kind: 'spot' }); } });
+}
+
+/** Ankunftspunkt auf einer Insel an der Seite der Brücke von `fromId`, Blick zur Inselmitte. */
+export function spawnFrom(id: string, fromId: string, inset = 14): { x: number; z: number; yaw: number } {
+  const I = ISLES[id], F = ISLES[fromId];
+  const dx = F.x - I.x, dz = F.z - I.z, L = Math.hypot(dx, dz) || 1;
+  const x = I.x + dx / L * (I.r - inset), z = I.z + dz / L * (I.r - inset);
+  return { x, z, yaw: Math.atan2(I.x - x, I.z - z) };
+}
+
+/** Kurzschreibweise für Bewohner. */
+import type { NpcDef } from '../gameplay/npc.ts';
+export function npc(world: string, id: string, name: string, icon: string, role: string, x: number, z: number, greet: string[], chat: string[], extra: Partial<NpcDef> = {}): NpcDef {
+  return { id, name, world, x, z, icon, role, greet, chat, wander: 5, ...extra };
 }

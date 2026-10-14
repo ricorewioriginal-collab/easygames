@@ -84,7 +84,7 @@ export class Player {
       this.kiCharge = 0;
     }
     // Gleiten: in der Luft Springen halten
-    this.gliding = !this.grounded && !this.swimming && this.vy < 0 && this.abil.has('gleiten') && input.isHeld('jump') && allowMove;
+    this.gliding = !this.grounded && !this.swimming && this.vy < 0 && (this.abil.has('gleiten') || this.abil.has('feenstaub')) && input.isHeld('jump') && allowMove;
     // Schwerkraft
     if (!this.swimming) {
       this.vy -= (this.gliding ? 6 : 24) * dt;

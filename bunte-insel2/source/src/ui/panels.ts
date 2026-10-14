@@ -74,4 +74,6 @@ export function installPanels(g: Game, deps: { bossAltar: () => void }): void {
     setTimeout(() => { g.teleport(w.spawn.x, w.spawn.z, w.spawn.yaw); setTimeout(() => { fade.classList.remove('on'); (fade as HTMLElement).style.background = ''; }, 200); }, 450);
   };
   g.panels.bossAltar = () => deps.bossAltar();
+  /** Welt neu aufbauen (z. B. wenn die Farbe in den Dampfer-Hafen zurückkehrt). */
+  g.panels.reloadWorld = arg => { const id = String(arg); if (!g.worlds.loaded.has(id)) return; g.worlds.unload(id); g.worlds.load(id); };
 }

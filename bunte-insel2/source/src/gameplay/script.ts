@@ -43,6 +43,7 @@ export interface ScriptCtx {
 }
 export function check(c: Cond | undefined, x: ScriptCtx): boolean {
   if (!c) return true;
+  if (!x.save) return false;
   const s = x.save, q = (id: string) => s.quests[id];
   if (c.flag && !(s.flags[c.flag] > 0)) return false;
   if (c.noflag && s.flags[c.noflag] > 0) return false;

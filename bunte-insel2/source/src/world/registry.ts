@@ -184,7 +184,7 @@ export class WorldManager {
       if (m.geometry) {
         m.geometry.dispose();
         const mat = m.material as THREE.Material;
-        if (mat && (mat as THREE.Material & { userData: Record<string, any> }).userData?.disposeWithWorld) mat.dispose();
+        if (mat && (mat as THREE.Material & { userData: Record<string, any> }).userData?.disposeWithWorld) { (mat as THREE.MeshBasicMaterial).map?.dispose(); mat.dispose(); }
       }
     });
     this.physics.removeTag(id);

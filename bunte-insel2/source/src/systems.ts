@@ -28,6 +28,7 @@ import { Story } from './story/story.ts';
 import { Minigames } from './minigames/index.ts';
 import { FOREST } from './world/worlds/hub.ts';
 import { installPanels } from './ui/panels.ts';
+import { installPrismaPanels } from './ui/prismaPanels.ts';
 import type { Emote } from './characters/avatar.ts';
 
 export interface Systems {
@@ -120,7 +121,7 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
   ev.on('interact', e => quests.event('interact', e.id));
   ev.on('item', e => { quests.event('collect', e.id, e.count); quests.recheck(); });
   ev.on('defeat', e => { quests.event('defeat', e.enemy); quests.event('defeat', '*'); });
-  ev.on('minigame', e => { if (e.win) quests.event('minigame', e.id); });
+  ev.on('minigame', e => { if (!e.win) return; quests.event('minigame', e.id); if (e.id === 'pixelplan' && g.currentWorld?.id === 'park') g.setFlag('park_memory'); });
   ev.on('flag', e => quests.event('flag', e.id));
   ev.on('vehicle', e => { quests.event('vehicle', e.type); quests.event('vehicle', '*'); });
   ev.on('enterWorld', e => quests.event('enter', e.world));
@@ -207,6 +208,7 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
   const combat = g.addSystem(new Combat(g, audio));
   ev.on('defeat', e => { if (g.save.fight.defeated >= 10) achieve('waldlaeufer'); if (e.boss) achieve('waldheld'); if (g.save.fight.bosses.length >= 4) achieve('wald_held'); });
   installPanels(g, { bossAltar: () => combat.bossAltarPanel() });
+  installPrismaPanels(g);
   const sammeln = g.addSystem(new Sammeln(g));
   ev.on('fish', () => { if (Object.keys(g.save.sammel.fish).length >= 5) achieve('angler'); });
   ev.on('collect', e => { if (e.kind === 'bug' && Object.keys(g.save.sammel.bugs).length >= 5) achieve('kaeferfreund'); if (e.kind === 'find' && Object.keys(g.save.sammel.finds).length >= 5) achieve('schatzgraeber'); });
@@ -382,6 +384,7 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
     pauseExtras: () => [
       { label: '📖 Tagebuch', act: () => g.openPanel('journal') },
       { label: '🗺️ Karte & Schnellreise', act: () => g.openPanel('map') },
+      { label: '🐾 Begleiter wählen', act: () => g.openPanel('companions') },
       { label: '🏠 Nach Hause', act: () => { const hw = g.worlds.byId('hub')!; if (vehicles.inVehicle) vehicles.exit(true); g.teleport(-50, 50, Math.atan2(hw.shape.x + 50, hw.shape.z - 50)); companions.teleportAll(); } },
       ...story.pauseExtras()
     ],
