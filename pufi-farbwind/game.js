@@ -11,7 +11,7 @@ const LEVELS=[
 ];
 const KEY='easygames.pufi-farbwind.v1',input={left:false,right:false,jump:false,throw:false,grab:false,down:false};
 const holds=Object.fromEntries(Object.keys(input).map(k=>[k,new Set()]));
-function clearInputs(){Object.keys(input).forEach(k=>{input[k]=false;holds[k].clear()});aim=0}
+function clearInputs(){Object.keys(input).forEach(k=>{input[k]=false;holds[k].clear()});aim=0;if(typeof swipePointer!=='undefined'){swipePointer=null;swipeStart=null;const c=$('swipeCursor');if(c)c.style.transform='translate(0,0)'}}
 let save={unlocked:1,records:{},sound:true,controls:'dpad'};
 try{const x=JSON.parse(localStorage.getItem(KEY));if(x){save.unlocked=Math.min(6,Math.max(1,+x.unlocked||1));save.records=x.records||{};save.sound=x.sound!==false;save.controls=x.controls==='swipe'?'swipe':'dpad'}}catch(_){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(_){}};
