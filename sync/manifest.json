@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5d7e381c5349",
- "generated": "2026-10-14T14:02:14+02:00",
- "commit": "6f58cd3b5dea309eeb7e8cf74835d873ad6d4791",
+ "version": "e870bb1852f3",
+ "generated": "2026-10-14T20:42:44+02:00",
+ "commit": "36dda5bc85251723b57ceed9fe2e19fbf830f97c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5650,6 +5650,11 @@
    "p": "vendor/jsqr-1.4.0.js",
    "s": 256885,
    "h": "bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859"
+  },
+  {
+   "p": "vendor/licenses/jsqr-MIT.txt",
+   "s": 11358,
+   "h": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
   },
   {
    "p": "vendor/peerjs-1.5.4.min.js",

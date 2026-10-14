@@ -17,6 +17,7 @@ function fixture() {
   write('demo/assets/_helper.js', 'export const answer = 42;');
   write('demo/assets/duplicate.js', 'export const answer = 42;');
   write('vendor/map.json', '{}'); write('vendor/fonts/fredoka.css', 'body{}');
+  write('vendor/licenses/jsqr-MIT.txt', 'Test license');
   const run = (...args) => spawnSync(process.execPath, ['tools/build-sync.js', ...args], { cwd: dir, encoding: 'utf8' });
   return { dir, write, run, read: p => fs.readFileSync(path.join(dir, p), 'utf8'), cleanup: () => fs.rmSync(dir, { recursive: true, force: true }) };
 }

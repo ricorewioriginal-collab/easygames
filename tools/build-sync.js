@@ -67,6 +67,7 @@ for (const [p, who] of owner) { if (who === '_shell') continue; sizes[who] = (si
 const vendorMap = JSON.parse(fs.readFileSync(path.join(root, 'vendor', 'map.json'), 'utf8'));
 const vendorFiles = new Set(Object.values(vendorMap));
 vendorFiles.add('vendor/fonts/fredoka.css');
+vendorFiles.add('vendor/licenses/jsqr-MIT.txt');
 for (const f of vendorFiles) { if (!fs.existsSync(path.join(root, f))) errors.push(`vendor: ${f} fehlt (node tools/fetch-vendor.js)`); else add(f, '_vendor'); }
 // Google-Fonts-Stylesheets (Fredoka) → lokales CSS
 const TEXT = /\.(html?|js|mjs|css|json)$/i, URL_RE = /https?:\/\/[A-Za-z0-9._-]+(?::\d+)?(?:\/[^\s"'`)<>\\]*)?/g;
