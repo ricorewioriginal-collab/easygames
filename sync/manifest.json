@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "56f13a8f1025",
- "generated": "2026-10-14T02:45:34+02:00",
- "commit": "fe8ae242059eb539fd7bb06b8a227e9191da22a1",
+ "version": "8410ff9d80dd",
+ "generated": "2026-10-14T02:56:54+02:00",
+ "commit": "0a39ee33716f06a5dd2e60e291a014b558bdd9ad",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3788,8 +3788,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109305,
-   "h": "f0b0fd2168b5452f40be126159a4ee83d3b7918b2b6f841365acdf0cf2f8f735"
+   "s": 109324,
+   "h": "aeed1d2c4996ebe8601881bd1ea21fb5fe8932832b1930659fb718eb321a23b2"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3968,8 +3968,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 28316,
-   "h": "f907a3ec6e545891318f4f529e1e8a8ed141d97133110998a6e94c713b34235c"
+   "s": 28317,
+   "h": "4c1c7e97374e5e72223adc47675c64e998e651643efa1bf7f1a8cb6dd45ef21f"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -3993,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 312094,
-   "h": "e9ed334bc593ae3e48c4f69097c0786377b4898e979b94580f9e1a15ffa38544"
+   "s": 312152,
+   "h": "85784dc4e6314e1a09041b5ad1a3ea238ff6656cb3d566116df06e4cf99a7680"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4183,8 +4183,8 @@
   },
   {
    "p": "bunte-insel/js/util.js",
-   "s": 73322,
-   "h": "3e37df088215d720e3ef30c06caead66a028f3ac3641f8762ebaa1c54f7c87d2"
+   "s": 73370,
+   "h": "f2134494aeefe3bb36488c23094d7d25df851d6304e154b6dd8ddfbfe3586069"
   },
   {
    "p": "bunte-insel/js/vehicles.js",
@@ -5019,7 +5019,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57160,
-   "h": "838434935f2c5e978d256d0055afd1c342da4ee824f4598726bf9376d36113a0"
+   "h": "fa92448e76cdea64fc7ad924c6420505f90e03cdc6a5c5197967aba41aac67b5"
   },
   {
    "p": "taschi/card.svg",
