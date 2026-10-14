@@ -133,7 +133,7 @@ export class Sammeln implements GameSystem {
           const id = 'bug' + Math.floor(this.rng() * 1e9);
           const bug: Bug = { def, sprite: sp, x, z, y: gr.y, t: 0, vx: 0, vz: 0 };
           this.bugs.push(bug);
-          g.interact.add({ id, tag: '_samm', x, y: gr.y, z, r: 2.4, icon: def.icon, label: () => g.has('kescher') ? 'Käfer fangen: ' + def.name : 'Kescher nötig (Spielzeugladen)', priority: 1,
+          g.interact.add({ id, tag: '_samm', meta: { ev: 'kaefer' }, x, y: gr.y, z, r: 2.4, icon: def.icon, label: () => g.has('kescher') ? 'Käfer fangen: ' + def.name : 'Kescher nötig (Spielzeugladen)', priority: 1,
             act: () => {
               if (!g.has('kescher')) { g.toast('Mit einem Kescher könntest du ' + def.name + ' fangen!', '🥅'); return; }
               if (def.rare === 3 && this.rng() < 0.3) { g.toast(def.name + ' ist entwischt!', '💨'); this.removeBug(bug, id); return; }
@@ -171,7 +171,7 @@ export class Sammeln implements GameSystem {
           const id = 'dig' + Math.floor(this.rng() * 1e9);
           const spot: Spot = { x, z, mesh: sp, id };
           this.spots.push(spot);
-          g.interact.add({ id, tag: '_samm', x, y: gr.y, z, r: 2.2, icon: '✨', label: () => g.has('schaufel') ? 'Buddeln' : 'Hier glitzert etwas … (Schaufel nötig)', priority: 1,
+          g.interact.add({ id, tag: '_samm', meta: { ev: 'buddeln' }, x, y: gr.y, z, r: 2.2, icon: '✨', label: () => g.has('schaufel') ? 'Buddeln' : 'Hier glitzert etwas … (Schaufel nötig)', priority: 1,
             act: () => {
               if (!g.has('schaufel')) { g.toast('Mit einer Schaufel könntest du hier graben.', '⛏️'); return; }
               const def = this.pick(FINDS);

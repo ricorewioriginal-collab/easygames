@@ -40,6 +40,20 @@ Legende: ✅ umgesetzt und automatisch getestet · 🟢 umgesetzt, nur von Hand 
 | Karte, Tagebuch, Rucksack, Läden, Gesten, Schlafen, Schnellreise über Weltensteine | 🟢 | Figur schaut nach der Schnellreise zum Ziel |
 | Tag und Nacht | 🟢 | |
 
+## Arbeitsstand 14.10.2026, 14 Uhr (Fokus: Inhalte & Spielbarkeit)
+
+Erledigt in dieser Runde:
+- Neuer Bot-Test `source/e2e/autoplay.mjs`: spielt den Story-Modus automatisch und meldet, wo eine Quest feststeckt.
+- Neuer Test `source/e2e/targets.mjs`: prüft, ob jedes Quest-Ziel einen Ort hat (Lichtsäule/Minikarte).
+- Zielmarkierung neu (`src/gameplay/targets.ts`): findet Ziele jetzt auch über Gegenstände, Minispiel-Automaten, Rätsel, Hebel, Truhen und Fotostellen. Wartet die Hauptgeschichte auf eine Weltgeschichte, zeigt die Lichtsäule auf deren Auftraggeber bzw. nächstes Ziel. Ist man auf der falschen Insel, zeigt sie erst zur richtigen Insel.
+- Ergebnis: Ziele ohne Markierung von 66 auf etwa 30 reduziert.
+
+Nächste Schritte (genau hier weitermachen):
+1. Restliche ~30 Ziele ohne Ort mit `via:`/`at:` versehen – Liste mit `node e2e/targets.mjs` (z. B. w_stadt „Uhr stellen“ → via 'uhr', Drachenflug → 'himmelstor', Elfmeter-Turnier → 'pokal', Märchen → 'wunschbrunnen', Floß → 'flossbau', Atlantis-Herz → 'herz', Wand → 'rissige_wand', Ki-Turnier → 'gong', Runen → 'runen_pult', Datenhain → 'datennest', Zuhause → 'home_wardrobe'/'home_bed', Angeln → Ententeich, Training/Wald → FOREST).
+2. Bot (`autoplay.mjs`) nach jeder Korrektur laufen lassen, bis die Story bis zum Finale durchläuft. Zuletzt hing er in der Stadt beim Uhr-Rätsel (fehlende Markierung, siehe 1).
+3. Spielbarkeit: Intro-Text blockiert am Anfang; Startpunkt ist leer (Rosi 52 m entfernt) – Start näher an Rosi setzen. Auf dem Handy ist die Auflösung zu niedrig (pixelig).
+4. Inhalte: Welten wirken leer – mehr Bewohner, Nebenaufgaben und Details je Welt.
+
 ## Geplant / offen
 
 - ⏳ Unit-Tests (Spielstand-Migration, Quest-Engine, Physik) mit `node --test`

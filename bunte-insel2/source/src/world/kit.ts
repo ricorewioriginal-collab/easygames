@@ -32,7 +32,7 @@ export function pickup(ctx: WorldCtx, id: string, x: number, z: number, item: st
   (ring.material as THREE.Material).userData.disposeWithWorld = true;
   ring.position.set(x, y + 0.06, z); ctx.add(ring);
   ctx.onUpdate((_dt, t) => { if (!spr.visible) return; spr.position.y = y + 0.9 + Math.sin(t * 2.5 + x) * 0.15; spr.visible = !opts.when || !!opts.when(); ring.visible = spr.visible; });
-  ctx.interact({ id: key, x, y, z, r: 2.2, icon: itemIcon(item), label: opts.label ?? 'Aufheben: ' + itemName(item), priority: 2, when: () => !api.isCollected(key) && (!opts.when || !!opts.when()),
+  ctx.interact({ id: key, x, y, z, r: 2.2, icon: itemIcon(item), label: opts.label ?? 'Aufheben: ' + itemName(item), priority: 2, meta: { item }, when: () => !api.isCollected(key) && (!opts.when || !!opts.when()),
     act: () => { if (!api.collectOnce(key)) return; spr.visible = false; ring.visible = false; api.give(item, opts.n ?? 1); api.burst(x, y + 1, z, [0xffe14a, 0xffffff], 14); api.events.emit('interact', { id: key, kind: 'pickup' }); } });
 }
 const texCache = new Map<string, THREE.CanvasTexture>();
@@ -57,7 +57,7 @@ export function chest(ctx: WorldCtx, id: string, x: number, z: number, rot: numb
   let open = api.isCollected(key) ? 1 : 0;
   lidPivot.rotation.x = -open * 1.9;
   ctx.onUpdate(dt => { const want = api.isCollected(key) ? 1 : 0; open += (want - open) * Math.min(1, dt * 5); lidPivot.rotation.x = -open * 1.9; });
-  ctx.interact({ id: key, x, y, z, r: 2.3, icon: '🧰', label: () => when && !when() ? 'Verschlossene Truhe' : 'Truhe öffnen', priority: 2, when: () => !api.isCollected(key),
+  ctx.interact({ id: key, meta: loot.item ? { item: loot.item[0] } : undefined, x, y, z, r: 2.3, icon: '🧰', label: () => when && !when() ? 'Verschlossene Truhe' : 'Truhe öffnen', priority: 2, when: () => !api.isCollected(key),
     act: () => {
       if (when && !when()) { api.toast('Die Truhe ist fest verschlossen. Vielleicht gibt es irgendwo einen Hinweis …', '🔒'); return; }
       if (!api.collectOnce(key)) return;
@@ -81,7 +81,7 @@ export function sequencePuzzle(ctx: WorldCtx, id: string, pads: { x: number; z: 
     const m = new THREE.Mesh(new THREE.SphereGeometry(opts.style === 'pad' ? 0.5 : 0.38, 14, 10), new THREE.MeshBasicMaterial({ color: p.color, transparent: true, opacity: 0.35 }));
     (m.material as THREE.Material).userData.disposeWithWorld = true;
     m.position.set(p.x, y + top, p.z); ctx.add(m); lights.push(m);
-    ctx.interact({ id: id + ':' + i, x: p.x, y, z: p.z, r: 2.4, icon: p.icon, label: () => api.flag(flag) ? p.name + ' (gelöst ✅)' : 'Berühren: ' + p.name, priority: 2,
+    ctx.interact({ id: id + ':' + i, x: p.x, y, z: p.z, r: 2.4, icon: p.icon, meta: i === order[0] ? { flag } : undefined, label: () => api.flag(flag) ? p.name + ' (gelöst ✅)' : 'Berühren: ' + p.name, priority: 2,
       act: () => {
         if (api.flag(flag)) { api.burst(p.x, y + top, p.z, [p.color], 10); return; }
         api.sfx('note' + Math.min(7, i * 2), 0.7);
@@ -114,7 +114,7 @@ export function arcade(ctx: WorldCtx, id: string, x: number, z: number, rot: num
   ctx.glow.sph(x, y + 2.35, z, 0.18, 0xffd23f);
   ctx.box(x, z, 1.3, 1.0, y, y + 2.2, rot);
   floatLabel(ctx, x, y + 3.0, z, label, icon, 0.55);
-  ctx.interact({ id: 'arcade:' + id, x: x + Math.sin(rot) * 1.4, y, z: z + Math.cos(rot) * 1.4, r: 2.6, icon, label: 'Spielen: ' + label, priority: 1, act: () => ctx.api.startMinigame(game) });
+  ctx.interact({ id: 'arcade:' + id, x: x + Math.sin(rot) * 1.4, y, z: z + Math.cos(rot) * 1.4, r: 2.6, icon, label: 'Spielen: ' + label, priority: 1, meta: { game }, act: () => ctx.api.startMinigame(game) });
 }
 
 /** Hebel/Schalter mit Zustand (Flag). */
@@ -125,13 +125,13 @@ export function lever(ctx: WorldCtx, id: string, x: number, z: number, label: st
   (arm.material as THREE.Material).userData.disposeWithWorld = true;
   arm.position.set(x, y + 1.1, z); ctx.add(arm);
   ctx.onUpdate(() => { arm.rotation.z = api.flag(flag) ? -0.7 : 0.7; });
-  ctx.interact({ id: 'lever:' + id, x, y, z, r: 2, icon: '🕹️', label: () => api.flag(flag) ? label + ' ✅' : label, priority: 2, act: () => { if (api.flag(flag)) return; if (when && !when()) { api.toast('Es tut sich nichts … noch nicht.', '🤔'); return; } api.setFlag(flag); api.sfx('bump'); onUse(); api.events.emit('interact', { id: 'lever:' + id, kind: 'lever' }); } });
+  ctx.interact({ id: 'lever:' + id, x, y, z, r: 2, icon: '🕹️', meta: { flag }, label: () => api.flag(flag) ? label + ' ✅' : label, priority: 2, act: () => { if (api.flag(flag)) return; if (when && !when()) { api.toast('Es tut sich nichts … noch nicht.', '🤔'); return; } api.setFlag(flag); api.sfx('bump'); onUse(); api.events.emit('interact', { id: 'lever:' + id, kind: 'lever' }); } });
 }
 
 /** Einfaches Interaktions-Objekt, das ein Ereignis meldet (für Quest-Ziele). */
-export function spot(ctx: WorldCtx, id: string, x: number, z: number, icon: string, label: string | (() => string), act?: () => void, opts: { r?: number; y?: number; when?: () => boolean; priority?: number } = {}): void {
+export function spot(ctx: WorldCtx, id: string, x: number, z: number, icon: string, label: string | (() => string), act?: () => void, opts: { r?: number; y?: number; when?: () => boolean; priority?: number; meta?: import('../gameplay/interact.ts').Interactable['meta'] } = {}): void {
   const y = opts.y ?? ctx.h(x, z);
-  ctx.interact({ id, x, y, z, r: opts.r ?? 2.6, icon, label, priority: opts.priority ?? 1, when: opts.when, act: () => { act?.(); ctx.api.events.emit('interact', { id, kind: 'spot' }); } });
+  ctx.interact({ id, x, y, z, r: opts.r ?? 2.6, icon, label, priority: opts.priority ?? 1, when: opts.when, meta: opts.meta, act: () => { act?.(); ctx.api.events.emit('interact', { id, kind: 'spot' }); } });
 }
 
 /** Ankunftspunkt auf einer Insel an der Seite der Brücke von `fromId`, Blick zur Inselmitte. */

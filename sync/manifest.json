@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "532fa1f5e04c",
- "generated": "2026-10-14T13:01:05+02:00",
- "commit": "84e8abb96ba0427c738b2bd52080cfa787943e44",
+ "version": "5a0cafb6d299",
+ "generated": "2026-10-14T13:06:19+02:00",
+ "commit": "f85504dd78cbfc9fdd1cf49e7541abd41827e078",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4412,9 +4412,9 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
-   "p": "bunte-insel2/assets/app-FG2RWQYP.js",
-   "s": 517996,
-   "h": "9e55c5804296503f9aded036eb2903d03d7e3dfb9e5846ae00bc0564328ec34c"
+   "p": "bunte-insel2/assets/app-VHOU2L74.js",
+   "s": 519751,
+   "h": "3e0c491b704d6f7c1bb46275b079f7689504a08eceb6e10340cb25674a721e68"
   },
   {
    "p": "bunte-insel2/assets/chunk-O2XFH626.js",
@@ -4427,9 +4427,9 @@
    "h": "6d2fb32b4867f4ad9e0227b55bd4eebf4e01cc82b2503cf4883943e5618fde4f"
   },
   {
-   "p": "bunte-insel2/assets/main-GBNLPV3W.js",
+   "p": "bunte-insel2/assets/main-OPM7Z6YQ.js",
    "s": 397,
-   "h": "56f98d12d79d598a8e84d35bffd15d259becfe21b2b19e845a157b2d545acb68"
+   "h": "a853323b7c19c1029ef19d227a048596fe96dbdb947fefc2d3b66baed14391a2"
   },
   {
    "p": "bunte-insel2/audio/bonk.mp3",
@@ -4564,7 +4564,7 @@
   {
    "p": "bunte-insel2/index.html",
    "s": 5326,
-   "h": "b7c97fa7355a1c7cbb9686d2d79a6ac953cd3fa4feb069adaf9cb2f50f65bd26"
+   "h": "958f83c0c433e4056d3d0e8512fdb4d9e2f4c1f53984d73f60eb655153fec47f"
   },
   {
    "p": "bunte-insel2/manifest.webmanifest",
@@ -4574,7 +4574,7 @@
   {
    "p": "bunte-insel2/sw.js",
    "s": 1968,
-   "h": "8113b632de8951ccd171b16e5819fed7496dc4c71c6e53b3dbc019fb7970fd54"
+   "h": "0099d8faf7ec6175a03ae95365ba6f8e2206e461bb585d0c8e25acad5f5c791a"
   },
   {
    "p": "bunte-insel2/vendor/three.min.js",
@@ -4584,7 +4584,7 @@
   {
    "p": "bunte-insel2/version.json",
    "s": 49,
-   "h": "2c94b92b1bbc2515d325e516ba57ba981c336e8750a14597baf3cd33169a89d7"
+   "h": "03763b0752bdccdd196ee3684829f3d4efcca9f35737c20d0ca89fed3763f595"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -5194,7 +5194,7 @@
   {
    "p": "sync/catalog.json",
    "s": 59632,
-   "h": "e793a659404ad5947367b4a93a11f7ef6b0de487626017a2975e84a6c8d09a41"
+   "h": "8eb925f05f89021a9108db2b5b647e9946ea278ab4311017e932ad7c72237383"
   },
   {
    "p": "taschi/card.svg",

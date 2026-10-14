@@ -12,6 +12,8 @@ export interface Objective {
   n?: number;              // Anzahl (sammeln, besiegen)
   label: string;
   at?: { x: number; z: number; r?: number };
+  /** Interaktions-ID (oder Anfang davon), auf die die Zielmarkierung zeigt. */
+  via?: string;
   optional?: boolean;
 }
 export interface DialogTree { [node: string]: DNode }

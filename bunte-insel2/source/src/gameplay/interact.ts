@@ -17,6 +17,8 @@ export interface Interactable {
   alt?: { icon: string; label: string; act: () => void; when?: () => boolean };
   /** Wird vom Wasserstrahl der Feuerwehr getroffen. */
   onWater?: () => void;
+  /** Wofür diese Stelle gut ist – damit Zielmarkierungen sie finden (Gegenstand, Minispiel, gesetztes Flag, Foto-Motiv, Angelplatz). */
+  meta?: { item?: string; game?: string; flag?: string; photo?: string; fish?: boolean; defeat?: string; ev?: string };
 }
 
 export class InteractSystem {

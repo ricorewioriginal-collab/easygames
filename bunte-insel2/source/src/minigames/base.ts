@@ -43,6 +43,7 @@ export interface RunOpts { onEnd(r: MgResult): void }
 /** Startet ein Minispiel im Fenster. */
 export function runMinigame(g: Game, game: Minigame, onEnd: (r: MgResult) => void): void {
   g.busy++;
+  (window as unknown as { __mg?: Minigame }).__mg = game;   // für automatische Tests
   const prevPaused = g.paused;
   g.paused = true;
   const cv = h('canvas', { width: W, height: H }) as HTMLCanvasElement;

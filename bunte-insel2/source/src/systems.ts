@@ -28,6 +28,7 @@ import { Story } from './story/story.ts';
 import { Minigames } from './minigames/index.ts';
 import { FOREST } from './world/worlds/hub.ts';
 import { installPanels } from './ui/panels.ts';
+import { resolveObjective, interactFor, type Target } from './gameplay/targets.ts';
 import { installPrismaPanels } from './ui/prismaPanels.ts';
 import type { Emote } from './characters/avatar.ts';
 
@@ -37,6 +38,9 @@ export interface Systems {
   npcs: NpcSystem; quests: QuestEngine; dialogue: Dialogue; vehicles: Vehicles; combat: Combat; story: Story;
   run(a: Action[] | undefined, npc?: string): void;
   check(c: Cond | undefined): boolean;
+  targetOf(): Target | null;
+  targetFor(qid: string): Target | null;
+  interactFor(o: import('./gameplay/quests.ts').Objective): import('./gameplay/interact.ts').Interactable | null;
 }
 
 export function installSystems(g: Game, audio: AudioEngine): Systems {
@@ -269,20 +273,26 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
   /* ---------- Zielmarkierung in der Welt ---------- */
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.9, 60, 12, 1, true), new THREE.MeshBasicMaterial({ color: 0xffe14a, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide }));
   beam.renderOrder = 4; g.scene.add(beam); beam.visible = false;
-  const targetOf = (): { x: number; z: number; y?: number } | null => {
+  const targetFor = (qid: string, depth = 0): Target | null => {
+    const q = quests.defs.get(qid), stt = quests.state(qid);
+    if (!q || !stt || stt.done) return null;
+    const st = q.stages[stt.stage];
+    const o = st.objectives.find(x => !x.optional && !quests.objDone(qid, x)) ?? null;
+    // Hauptgeschichte wartet auf eine Weltgeschichte → deren Ziel zeigen
+    if (o && o.type === 'flag' && o.target.startsWith('done_') && depth < 2) {
+      const wq = [...quests.defs.values()].find(x => x.kind === 'world' && x.rewards.flag === o.target);
+      if (wq) {
+        if (quests.isActive(wq.id)) return targetFor(wq.id, depth + 1);
+        if (wq.giver) { const live = npcs.live.get(wq.giver), d = npcs.defs.get(wq.giver); if (live) return { x: live.pos.x, z: live.pos.z, precise: true }; if (d) return { x: d.x, z: d.z, precise: g.currentWorld?.id === d.world }; }
+      }
+    }
+    return resolveObjective(g, npcs, q, st, o);
+  };
+  const targetOf = (): Target | null => {
     const t = story.overrideTarget() ?? null;
-    if (t) return t;
-    const tr = quests.trackedObjective();
-    if (!tr?.o) return null;
-    const o = tr.o;
-    if (o.at) return o.at;
-    if (o.type === 'talk') { const live = npcs.live.get(o.target); if (live) return { x: live.pos.x, z: live.pos.z }; const d = npcs.defs.get(o.target); if (d) return { x: d.x, z: d.z }; }
-    if (o.type === 'interact') { const i = g.interact.get(o.target); if (i) return { x: i.x, z: i.z }; }
-    if (o.type === 'enter') { const w = g.worlds.byId(o.target); if (w) return { x: w.spawn.x, z: w.spawn.z }; }
-    // Gespräch mit Quest-Dialog: Auftraggeber
-    const dlgNpc = tr.st.dialog ? Object.keys(tr.st.dialog)[0] : null;
-    if (dlgNpc) { const live = npcs.live.get(dlgNpc); if (live) return { x: live.pos.x, z: live.pos.z }; const d = npcs.defs.get(dlgNpc); if (d) return { x: d.x, z: d.z }; }
-    return null;
+    if (t) return { ...t, precise: true };
+    const id = g.save?.tracked;
+    return id ? targetFor(id) : null;
   };
   g.addSystem({
     id: 'marker', update: (_dt, t) => {
@@ -380,7 +390,7 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
 
   void FOREST;
   return {
-    npcs, quests, dialogue, vehicles, combat, story, run, check: cond,
+    npcs, quests, dialogue, vehicles, combat, story, run, check: cond, targetOf, targetFor, interactFor: (o: import('./gameplay/quests.ts').Objective) => interactFor(g, o),
     pauseExtras: () => [
       { label: '📖 Tagebuch', act: () => g.openPanel('journal') },
       { label: '🗺️ Karte & Schnellreise', act: () => g.openPanel('map') },
