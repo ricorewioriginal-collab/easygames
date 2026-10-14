@@ -1,7 +1,7 @@
 # easygames – Android-App
 
 Native Kotlin-Hülle um eine WebView. Die Spiele-Oberfläche (`index.html` und alle Spiele) ist statisches HTML/JS und
-wird **aus einem lokalen Inhaltsspeicher** ausgeliefert – die App funktioniert deshalb komplett offline.
+wird **aus einem lokalen Inhaltsspeicher** ausgeliefert. Die mitgelieferten Spieldateien und Bibliotheken sind offline verfügbar; Online-Modi, Radio und Cloud brauchen Internet.
 Spieländerungen kommen per **Sync von GitHub** auf das Gerät, ohne neues APK.
 
 ```
@@ -13,22 +13,22 @@ android/
 
 ## So fließen Updates
 
-1. Du pushst Änderungen nach GitHub. `node tools/build-sync.js` erzeugt `sync/manifest.json`
+1. Du pushst Änderungen nach GitHub. Der Workflow `Android offline build` prüft und baut die App und aktualisiert anschließend auf `main` automatisch den Sync-Katalog. `node tools/build-sync.js` erzeugt `sync/manifest.json`
    (Dateiliste mit Größe + SHA-256, Vendor-Map für CDN-Bibliotheken) und wird mit eingecheckt.
 2. Die App holt `${syncBase}sync/manifest.json` (mit ETag – ohne Änderung kostet das fast keine Daten).
 3. Sie lädt **nur Dateien, die sie noch nicht hat** (Hash weder im Speicher noch im mitgelieferten Start-Inhalt),
    je Datei geprüft (Größe + SHA-256), 4 parallel, mit Wiederholungen und Wiederaufnahme.
 4. Erst wenn **alles** vollständig und korrekt da ist, gilt der Stand als „bereit“ (`pending`). Ein Fehler oder
    Abbruch lässt den aktiven Stand unverändert.
-5. Aktiviert wird der neue Stand **nie mitten im Spiel**: beim nächsten App-Start automatisch, oder wenn die
+5. Aktiviert wird der neue Stand **nie mitten im Spiel**: beim App-Start oder automatisch in der Spieleübersicht/nach dem Schließen des Spiels, oder wenn die
    Web-Oberfläche „Neu laden“ anbietet (`EasyGamesApp.reload()`).
 6. Danach werden nicht mehr benötigte Dateien gelöscht.
 
 Wann wird synchronisiert?
 
 - beim App-Start (im WLAN; im Mobilfunk nur, wenn der Nutzer „Nur im WLAN aktualisieren“ ausgeschaltet hat),
-- sobald ein WLAN verbunden wird, solange die App läuft,
-- alle 6 Stunden im Hintergrund (WorkManager, nur WLAN, nicht bei schwachem Akku),
+- sobald eine erlaubte Internetverbindung verfügbar wird, solange die App läuft,
+- alle 6 Stunden im Hintergrund (WorkManager, WLAN oder nach Freigabe Mobilfunk, nicht bei schwachem Akku),
 - ein Einmal-Job holt Verpasstes nach, sobald WLAN da ist,
 - manuell über „Jetzt aktualisieren“ (Einstellungsdialog, `EasyGamesApp.syncNow()`).
 
@@ -57,7 +57,7 @@ sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
 ## Einmalig: Gradle-Wrapper erzeugen
 
-Das Repo enthält `gradle/wrapper/gradle-wrapper.properties`, aber bewusst kein Wrapper-JAR:
+Das Repo enthält den vollständigen Gradle-Wrapper. Nur wenn er ersetzt werden muss:
 
 ```bash
 cd android
@@ -135,10 +135,16 @@ gradle :core:test
 
 Ohne `ANDROID_HOME` (oder mit `-PcoreOnly=true`) bindet Gradle nur `:core` ein und fasst das Google-Repository nicht an.
 
-## Automatische Builds (Idee)
+## Automatische Builds
 
 Ein neues APK ist nur bei Änderungen an der **Hülle** nötig (Kotlin-Code, Icons, Berechtigungen) – Spiele laufen per Sync.
-Sinnvoll ist daher ein Build bei Änderungen unter `android/`:
+Pakettests: `node tools/test-sync-build.js`. Offline-App-Starttest (Playwright + Chromium): `node tools/android-runtime-audit.js`.
+
+Der Workflow `.github/workflows/android.yml` baut bei Pull Requests und Pushes ein Test-APK (Actions → Android offline build → Artefakt). Für das Installationsupdate der vorhandenen Release-App muss weiterhin der bisherige Signierschlüssel über `build.sh` verwendet werden.
+
+Auch direkte Android-Studio-/Gradle-Builds erzeugen jetzt den vollständigen Start-Inhalt mit Node.js. Dieser liegt unter `assets/easygames/content/<sha256>`; so bleiben auch Vite-Module mit Unterstrich im Dateinamen erhalten. Die PWA-Caches werden beim Start/Übernehmen eines Updates bereinigt, Speicherstände in localStorage/IndexedDB bleiben bestehen. Neue Spiele werden nach einem Eintrag in `games.js` automatisch mit synchronisiert.
+
+Alternative Server-Auslöser:
 
 - **Cron** (nachts): `0 4 * * *  cd /srv/easygames && git pull -q && ./android/build.sh >> /var/log/easygames-build.log 2>&1`
   (mit `git diff --quiet HEAD@{1} -- android` davor, um nur bei Änderungen zu bauen).
@@ -161,7 +167,5 @@ Sinnvoll ist daher ein Build bei Änderungen unter `android/`:
 - Online-Funktionen der Spiele brauchen weiterhin Internet, z. B. PeerJS-Kopplung zwischen Geräten, Radio-Streams
   und Cloud-Speicherstände. Nur die Programmdateien und die in der Vendor-Map eingetragenen Bibliotheken sind offline.
 - Fremde Bibliotheken (CDN-URLs) müssen in der Vendor-Map des Manifests stehen; unbekannte externe URLs gehen ins Netz.
-- Dateien, die mit `.` beginnen, und Ordner, die mit `_` beginnen, werden von Androids Asset-Packer ignoriert. Sie fehlen dann
-  im mitgelieferten Start-Inhalt und kommen erst per Sync aufs Gerät.
 - Medien-Dateien werden ohne HTTP-Range-Unterstützung ausgeliefert (Abspielen geht, Springen in langen Audio-/Videodateien evtl. nicht).
 - Der Hintergrund-Sync läuft laut Android-Vorgabe frühestens alle 15 Minuten und nur nach Systemlaune (Doze, Energiesparmodus).

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5a0cafb6d299",
- "generated": "2026-10-14T13:06:19+02:00",
- "commit": "f85504dd78cbfc9fdd1cf49e7541abd41827e078",
+ "version": "5d7e381c5349",
+ "generated": "2026-10-14T14:02:14+02:00",
+ "commit": "6f58cd3b5dea309eeb7e8cf74835d873ad6d4791",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4768,8 +4768,8 @@
   },
   {
    "p": "index.html",
-   "s": 51242,
-   "h": "badbbb89c5107a2b54acd7382cbc011394d9cc3e846a3ac1c5af2f071a4fc77c"
+   "s": 51695,
+   "h": "851ef7ad92061e1e7e14c969af325971510d748316a3d1edcddd87368d6b1097"
   },
   {
    "p": "modes.js",
@@ -5190,6 +5190,11 @@
    "p": "riftzone/sw.js",
    "s": 1971,
    "h": "325d7caebcb1e3771703747516ae85f4539aa71fa933ea75093ae62f87d879c8"
+  },
+  {
+   "p": "show-voice.js",
+   "s": 3181,
+   "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
   },
   {
    "p": "sync/catalog.json",
@@ -5642,6 +5647,11 @@
    "h": "cefe635cb60c143ba66c041b05fdeaaf688d20e52f933f5bdfbe6b42d8104721"
   },
   {
+   "p": "vendor/jsqr-1.4.0.js",
+   "s": 256885,
+   "h": "bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859"
+  },
+  {
    "p": "vendor/peerjs-1.5.4.min.js",
    "s": 92865,
    "h": "ad5d8870d1e389914f9cba8d35be313c4327c69ee0a221e482e9bf7621136fe5"
@@ -5883,6 +5893,7 @@
   }
  ],
  "vendor": {
+  "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js": "vendor/jsqr-1.4.0.js",
   "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js": "vendor/qrcode-generator-1.4.4.js",
   "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",

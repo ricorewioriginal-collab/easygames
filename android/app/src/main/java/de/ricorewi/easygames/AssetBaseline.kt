@@ -17,11 +17,12 @@ class AssetBaseline private constructor(
 ) : BaselineSource {
 
     override fun open(path: String): InputStream? {
-        if (manifest.fileFor(path) == null) return null     // nur Pfade aus dem Manifest
+        val entry = manifest.fileFor(path) ?: return null
         return try {
-            assets.open("$ROOT/$path")
+            assets.open("$ROOT/content/${entry.h}")
         } catch (e: IOException) {
-            null
+            // Kompatibilität mit älteren APKs, die die originalen Pfade verwenden.
+            try { assets.open("$ROOT/$path") } catch (legacy: IOException) { null }
         }
     }
 

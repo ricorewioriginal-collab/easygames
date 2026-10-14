@@ -99,3 +99,13 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 }
+
+// Auch Android Studio / direkte Gradle-Builds müssen vollständige Offline-Inhalte
+// enthalten. build.sh darf nicht der einzige Weg zur Asset-Erzeugung sein.
+if (bundleContent) {
+    val stageOfflineContent = tasks.register<Exec>("stageOfflineContent") {
+        workingDir(rootProject.projectDir.parentFile)
+        commandLine("node", "tools/build-sync.js", "--strict", "--stage", "android/app/src/main/assets/easygames")
+    }
+    tasks.named("preBuild").configure { dependsOn(stageOfflineContent) }
+}

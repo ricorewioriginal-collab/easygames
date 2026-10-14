@@ -30,6 +30,7 @@ class RealManifestTest {
             "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js",
             "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js",
             "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js",
+            "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js",
             "https://fonts.googleapis.com/fredoka-latin-wght-normal.woff2"
         )
         for (u in urls) {

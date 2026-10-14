@@ -446,6 +446,7 @@ function closeUi() {
   clearTimeout(barT);
   $('viewer').classList.add('hidden'); $('viewer').classList.remove('bar-on'); $('frame').src = 'about:blank';
   document.body.style.overflow = ''; cur = -1;
+  dispatchEvent(new Event('easygames:library-idle'));
   if (ret && document.contains(ret)) ret.focus({ preventScroll: true });
 }
 function closeGame() {
@@ -675,15 +676,20 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
   const A = window.EasyGamesApp; if (!A || embedMode) return;
   document.documentElement.classList.add('is-app');
   const bar = $('appBar'); bar.classList.remove('hidden');
+  let applying = false;
   const info = () => { try { return JSON.parse(A.getInfo()); } catch (e) { return null; } };
   const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch (e) { return ''; } };
   function render() {
     const i = info(); if (!i) return; bar.textContent = '';
+    // Neue Spiele und Updates sofort in der Bibliothek anzeigen; laufende Spiele behalten ihren Stand.
+    if (i.pending && i.state === 'ready' && cur < 0 && !applying) {
+      applying = true; bar.textContent = '⬆ Spielebibliothek wird aktualisiert …'; A.reload(); return;
+    }
     const txt = el('span', 'grow');
     let status = '✓ Inhalte aktuell';
     if (i.state === 'checking') status = '⟳ Suche nach Updates …';
     else if (i.state === 'downloading') status = '⬇ Update wird geladen' + (i.bytesTotal ? ' (' + Math.round((i.progress || 0) * 100) + ' %)' : '');
-    else if (i.pending) status = '⬆ Update bereit';
+    else if (i.pending) status = '⬆ Update bereit – wird nach dem Spiel übernommen';
     else if (i.state === 'offline') status = '✈ Offline – gespeicherte Inhalte';
     else if (i.state === 'error') status = '⚠ Update fehlgeschlagen – später erneut';
     txt.textContent = '📲 App ' + (i.appVersion || '') + ' · ' + status + (i.contentDate ? ' · Stand ' + fmtDate(i.contentDate) : '');
@@ -693,7 +699,8 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
     else if (i.state !== 'downloading' && i.state !== 'checking') { const b = el('button', '', 'Jetzt aktualisieren'); b.onclick = () => A.syncNow(); bar.appendChild(b); }
     const s = el('button', '', '⚙'); s.setAttribute('aria-label', 'App-Einstellungen'); s.onclick = () => A.openSettings(); bar.appendChild(s);
   }
-  addEventListener('easygames:app-state', render); render();
+  addEventListener('easygames:app-state', render);
+  addEventListener('easygames:library-idle', render); render();
 })();
 
 if (isTv) { const f = heroOn ? $('hero').querySelector('.primary') : tiles[0] && tiles[0].querySelector('.tile'); if (f) f.focus({ preventScroll: true }); }   // TV: Fokus startet auf dem empfohlenen Spiel

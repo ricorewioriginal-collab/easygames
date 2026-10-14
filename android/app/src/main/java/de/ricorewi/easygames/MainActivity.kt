@@ -19,6 +19,11 @@ import android.webkit.ConsoleMessage
 import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.ServiceWorkerClient
+import android.webkit.ServiceWorkerController
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import de.ricorewi.easygames.core.NativeHtml
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -116,6 +121,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         coordinator.removeListener(stateListener)
         pendingPermission?.deny()
         pendingPermission = null
+        if (webView != null) ServiceWorkerController.getInstance().setServiceWorkerClient(null)
         hideCustomView()
         destroyWebView()
         super.onDestroy()
@@ -178,7 +184,11 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         s.setGeolocationEnabled(false)
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
-        wv.webViewClient = ContentWebViewClient(coordinator.store, this)
+        val client = ContentWebViewClient(coordinator.store, this)
+        wv.webViewClient = client
+        ServiceWorkerController.getInstance().setServiceWorkerClient(object : ServiceWorkerClient() {
+            override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse? = client.intercept(request)
+        })
         wv.webChromeClient = GameChromeClient()
         wv.addJavascriptInterface(WebBridge(this, coordinator), "EasyGamesApp")
 
@@ -204,7 +214,12 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         contentStarted = true
         pageLoaded = false
         overlay.visibility = View.GONE
-        wv.loadUrl(Origin.START_URL)
+        loadPreparedContent(wv)
+    }
+
+    private fun loadPreparedContent(wv: WebView) {
+        wv.clearCache(true)
+        wv.loadDataWithBaseURL(Origin.PREPARE_URL, NativeHtml.bootstrap(Origin.START_URL), "text/html", "utf-8", Origin.PREPARE_URL)
     }
 
     private fun dispatchStateEvent() {
@@ -225,7 +240,8 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         pageLoaded = false
     }
 
-    override fun onPageFinished() {
+    override fun onPageFinished(url: String?) {
+        if (url == Origin.PREPARE_URL) return
         pageLoaded = true
         if (clearHistoryPending) {
             clearHistoryPending = false
@@ -241,7 +257,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         createWebView()
         if (contentStarted) {
             pageLoaded = false
-            webView?.loadUrl(Origin.START_URL)
+            webView?.let { loadPreparedContent(it) }
         }
     }
 
@@ -262,7 +278,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
                 if (!isFinishing && !isDestroyed) {
                     clearHistoryPending = true
                     pageLoaded = false
-                    webView?.loadUrl(Origin.START_URL)
+                    webView?.let { loadPreparedContent(it) }
                 }
             }
         }

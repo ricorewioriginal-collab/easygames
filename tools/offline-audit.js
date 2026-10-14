@@ -28,8 +28,8 @@ const server = http.createServer((req, res) => {      // liefert NUR Dateien aus
   let bad = 0; const online = new Map();
   for (const g of todo) {
     if (/^[a-z]+:\/\//i.test(g.path)) continue;
-    const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } }), page = await ctx.newPage();
-    const miss = [], errs = [], ext = new Set(), hits = new Set();
+    const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 720 } }), page = await ctx.newPage();
+    const miss = [], optional = [], errs = [], ext = new Set(), hits = new Set();
     await page.route(u => !u.href.startsWith(base), route => {
       const url = route.request().url(), noq = url.split('?')[0], v = manifest.vendor[url] || manifest.vendor[noq];
       if (v && inPack.has(v)) { hits.add(v.replace(/^vendor\//, '')); return route.fulfill({ status: 200, contentType: mime(v), headers: { 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(root, v)) }); }
@@ -37,15 +37,21 @@ const server = http.createServer((req, res) => {      // liefert NUR Dateien aus
       ext.add(new URL(url).host); return route.abort('internetdisconnected');   // wie ohne Netz
     });
     // logo.png/.jpg/…: Spiele fragen optionale Logos ab, ein 404 ist dort gewollt
-    page.on('response', r => { if (r.url().startsWith(base) && r.status() >= 400 && !/(^|\/)logo\.(png|jpe?g|svg|webp)$/.test(r.url())) miss.push(r.url().slice(base.length)); });
+    page.on('response', r => {
+      if (!r.url().startsWith(base) || r.status() < 400) return;
+      const rel = r.url().slice(base.length);
+      // Documented optional image probes try several formats or render placeholders.
+      if (/(^|\/)logo\.(png|jpe?g|svg|webp)$/.test(rel) || /\/(?:logos|hindernisse)\/\d+\.(png|jpe?g|webp)$/.test(rel)) optional.push(rel);
+      else miss.push(rel);
+    });
     page.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));
     await page.goto(base + g.path, { waitUntil: 'load', timeout: 60000 }).catch(e => errs.push('goto: ' + e.message.slice(0, 80)));
     await page.waitForTimeout(g.id === 'anmacha-quest-rpg' ? 12000 : 3500);
     await ctx.close();
     const uniq = [...new Set(miss)];
     ext.forEach(h => { if (!online.has(h)) online.set(h, []); online.get(h).push(g.id); });
-    if (uniq.length) bad++;
-    console.log((uniq.length ? 'FEHLT ' : 'ok    ') + g.id.padEnd(26) + (uniq.length ? ' 404: ' + uniq.slice(0, 6).join(', ') : '') + (hits.size ? '  vendor: ' + [...hits].join(', ') : '') + (errs.length ? '  [JS-Fehler: ' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''));
+    if (uniq.length || errs.length) bad++;
+    console.log((uniq.length || errs.length ? 'FEHLT ' : 'ok    ') + g.id.padEnd(26) + (uniq.length ? ' 404: ' + uniq.slice(0, 6).join(', ') : '') + (hits.size ? '  vendor: ' + [...hits].join(', ') : '') + (optional.length ? '  optionale Bildvarianten: ' + optional.length : '') + (errs.length ? '  [JS-Fehler: ' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''));
   }
   console.log('\nBraucht Internet (nicht offline ersetzbar):'); online.forEach((ids, h) => console.log('  ' + h + ' ← ' + [...new Set(ids)].join(', ')));
   console.log(`\n${todo.length} Spiele geprüft, ${bad} mit fehlenden Dateien`);
