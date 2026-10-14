@@ -1638,7 +1638,7 @@
       ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte']
     ];
     for (const [id, icon, name, at, cat] of more) DEST.push({ id, icon, name, at, cat });
-    const CATS = { inseln: ['park', 'dampf', 'drachen', 'atlantis', 'zotik', 'radio', 'maerchen', 'schluessel', 'schwamm', 'raetsel', 'fussball', 'huepf', 'taschi', 'wunschinsel', 'bauland', 'pups', 'rainbow', 'city'], haupt: ['bade', 'home', 'garden', 'shop', 'range', 'hof', 'fields', 'arena', 'forest', 'obby', 'lighthouse', 'camp', 'zoo', 'pool', 'station', 'hospital', 'playground', 'cinema', 'shops'], fahr: ['heli', 'pier', 'ship'] };
+    const CATS = { inseln: ['park', 'dampf', 'drachen', 'prisma', 'atlantis', 'zotik', 'radio', 'maerchen', 'schluessel', 'schwamm', 'raetsel', 'fussball', 'huepf', 'taschi', 'wunschinsel', 'bauland', 'pups', 'rainbow', 'city'], haupt: ['bade', 'home', 'garden', 'shop', 'range', 'hof', 'fields', 'arena', 'forest', 'obby', 'lighthouse', 'camp', 'zoo', 'pool', 'station', 'hospital', 'playground', 'cinema', 'shops'], fahr: ['heli', 'pier', 'ship'] };
     for (const [c, ids] of Object.entries(CATS)) for (const id of ids) { const d = DEST.find(x => x.id === id); if (d) d.cat = c; }
     for (const d of DEST) if (!d.cat) d.cat = 'haupt'; /* nichts geht im Menü verloren */
   }
