@@ -20,7 +20,7 @@ const nameOf = (m) => m.nick || SPECIES[m.id].name;
 
 function panel(game, title, body, { tabs = null, active = null, onTab = null, hints = [['confirm', 'Wählen'], ['back', 'Zurück']], small = false } = {}) {
   const el = h('div.screen', {}, h('div.panel' + (small ? '.small' : ''), {},
-    h('div.panel-head', {}, h('h2', {}, title), h('button.closebtn.focusable', { 'aria-label': 'Schließen', onclick: () => game.ui.pop() }, '✕')),
+    h('div.panel-head', {}, h('h2', {}, title), h('button.closebtn', { 'aria-label': 'Schließen', onclick: () => game.ui.pop() }, '✕')),
     tabs ? h('div.tabs', {}, tabs.map(([id, label]) => h('button.tab' + (id === active ? '.active' : ''), { onclick: () => onTab(id) }, label))) : null,
     h('div.panel-body', {}, body),
     game.ui.hintsBar(hints)));

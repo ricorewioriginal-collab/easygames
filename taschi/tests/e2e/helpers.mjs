@@ -65,3 +65,29 @@ export async function interactWith(page, pred) {
   }
   throw new Error('Interaktion ohne Wirkung: ' + pred);
 }
+
+// Build a ready-made save (logic layer) and return localStorage entries.
+export async function seededStorage(mutate = () => {}, slot = 1) {
+  const { newSave, serialize, keys } = await import('../../src/logic/save.js');
+  const { makeMonster } = await import('../../src/logic/monster.js');
+  const { createRng } = await import('../../src/core/rng.js');
+  const rng = createRng('seed');
+  const s = newSave({ name: 'Testi', look: { body: 'teen', hair: 'ponytail', skin: 1, hairColor: 2, top: 'hoodie', topColor: 2, backpack: 0xf2c94a } });
+  Object.assign(s.flags, { introDone: true, metUlme: true, starterChosen: true, firstBattle: true, firstQuest: true, travelStarted: true, starter: 'plaetscher' });
+  s.team.push(makeMonster('plaetscher', 12, rng), makeMonster('fellino', 10, rng));
+  s.dex.plaetscher = 2; s.dex.fellino = 2;
+  s.bag = { taschiball: 20, trank: 5, supertrank: 3 };
+  s.location = { map: 'region:0', x: 0, z: 30, ry: Math.PI };
+  mutate(s, { makeMonster, rng });
+  return { [keys.v2(slot)]: serialize(s), [keys.selected]: String(slot) };
+}
+export async function startSeeded(opts = {}, mutate) {
+  const storage = await seededStorage(mutate);
+  const t = await launch({ ...opts, storage });
+  await t.page.goto(t.base);
+  await waitState(t.page, 'title');
+  await t.page.getByText('Fortsetzen').click();
+  await waitState(t.page, 'world');
+  await waitIdle(t.page);
+  return t;
+}

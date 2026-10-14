@@ -194,7 +194,7 @@ export class BattleScene {
     const dir = entry.side === 0 ? new THREE.Vector3(2.2, 1.4, -2.6) : new THREE.Vector3(-3, 1.6, 3.4);
     this.camTarget = { pos: p.clone().add(dir.multiplyScalar(1.4 * dist)).setY(p.y + 2), look: p.clone().setY(1), speed: 4 };
   }
-  defaultCam() { this.camTarget = { pos: new THREE.Vector3(-7.2, 3.6, 9.2), look: new THREE.Vector3(0.7, 1, -0.7), speed: 2.5 }; }
+  defaultCam() { this.camTarget = { pos: new THREE.Vector3(-9.6, 4.4, 11.8), look: new THREE.Vector3(0.9, 0.9, -1.1), speed: 2.5 }; }
 
   // ------------------------------------------------------------------ HUD
   buildHUD() {
@@ -219,13 +219,13 @@ export class BattleScene {
   fillHud(el, m, side, shownHp = m.hp, shownXp = null) {
     const sp = SPECIES[m.id], max = maxHp(m);
     const caught = side === 1 && this.b.kind === 'wild' && this.game.save.dex[m.id] === 2;
-    el.replaceChildren(
+    el.replaceChildren(...[
       h('div.top', {}, h('span.nm', {}, (caught ? '◉ ' : '') + (m.nick || sp.name)), m.status ? h('span.status', { style: { background: STATUS[m.status].color } }, STATUS[m.status].short) : null, h('span.lv', {}, 'Lv ' + m.lv)),
       h('div', {}, typeBadge(sp.type), sp.type2 ? typeBadge(sp.type2) : null),
       hpBar(shownHp, max),
       side === 0 ? h('div.hpnum', {}, Math.max(0, Math.round(shownHp)) + ' / ' + max + ' KP') : null,
       side === 0 ? h('div.bar.xp', { style: { height: '5px' } }, h('i', { style: { width: Math.min(100, (shownXp ?? m.xp) / xpToNext(m.lv) * 100) + '%' } })) : null
-    );
+    ].filter(Boolean));
   }
   tweenHp(m, from, to) {
     const el = this.huds.get(m.uid); if (!el) return Promise.resolve();

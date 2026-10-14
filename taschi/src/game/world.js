@@ -96,7 +96,8 @@ export class World {
     if (I.puzzleArea) this.addPuzzle(I.puzzleArea, 0, Math.floor(region / 4), paletteFor(region));
     for (const n of I.npcs) { if (n.hidden) continue; this.addNPC({ ...n, name: n.name || TRAINERS[n.trainer]?.name, role: n.role, x: n.x, z: n.z, ry: n.ry, interior: true }); }
     this.placePlayer(I.spawn.x, I.spawn.z, I.spawn.ry);
-    this.cam.yaw = Math.PI; this.cam.dist = Math.min(this.cam.dist, kind === 'arena' || kind === 'league' || kind === 'cave' ? 9 : 7);
+    this.cam.dist = kind === 'arena' || kind === 'league' || kind === 'cave' ? 9 : 7; this.cam.pitch = 0.7;
+    this.snapCamera();
     return this.current;
   }
   unload() {
@@ -257,6 +258,18 @@ export class World {
     this.player.setLocomotion(speed);
     return speed;
   }
+  cameraObstruction(t, cx, cy, cz) {
+    const L = this.current.layout;
+    for (let k = 1; k <= 12; k++) {
+      const u = k / 12, x = t.x + (cx - t.x) * u, y = t.y + (cy - t.y) * u, z = t.z + (cz - t.z) * u;
+      for (const b of L.buildings) {
+        const rot = Math.abs(Math.sin(b.yaw)) > 0.5, hw = (rot ? b.d : b.w) / 2 + 0.6, hd = (rot ? b.w : b.d) / 2 + 0.6;
+        const top = this.current.height(b.x, b.z) + (b.kind === 'arena' ? 11 : b.kind === 'pavilion' ? 0 : 7);
+        if (Math.abs(x - b.x) < hw && Math.abs(z - b.z) < hd && y < top) return Math.max(0.15, u - 1 / 12);
+      }
+    }
+    return 1;
+  }
   snapCamera() { this.updateCamera(1, { x: 0, y: 0, zoom: 0 }, true); }
   updateCamera(dt, look, snap = false) {
     const c = this.cam, p = this.player.root.position;
@@ -270,8 +283,18 @@ export class World {
     const cx = c.target.x + Math.sin(c.yaw) * Math.cos(c.pitch) * d, cz = c.target.z + Math.cos(c.yaw) * Math.cos(c.pitch) * d;
     let cy = c.target.y + Math.sin(c.pitch) * d;
     if (this.current?.type === 'region') cy = Math.max(cy, this.current.height(cx, cz) + 1.2);
-    if (this.current?.type === 'interior') cy = Math.min(cy, (this.current.interior.h || 5) - 0.4);
-    this.camera.position.set(cx, cy, cz);
+    let px = cx, pz = cz;
+    if (this.current?.type === 'interior') {
+      // keep the camera inside the room; walls behind it are culled anyway
+      const I = this.current.interior;
+      px = Math.max(-I.w / 2 + 0.5, Math.min(I.w / 2 - 0.5, cx)); pz = Math.max(-I.d / 2 + 0.5, Math.min(I.d / 2 - 0.5, cz));
+      cy = Math.min(cy + (Math.hypot(cx - px, cz - pz)) * 0.6, (I.h || 5) - 0.3);
+    } else if (this.current?.type === 'region') {
+      // pull the camera in front of buildings that would hide the player
+      const d = this.cameraObstruction(c.target, cx, cy, cz);
+      if (d < 1) { px = c.target.x + (cx - c.target.x) * d; pz = c.target.z + (cz - c.target.z) * d; cy = c.target.y + (cy - c.target.y) * d + (1 - d) * 1.5; }
+    }
+    this.camera.position.set(px, cy, pz);
     if (c.shake > 0) { c.shake -= dt; this.camera.position.x += (Math.random() - 0.5) * c.shake; this.camera.position.y += (Math.random() - 0.5) * c.shake; }
     this.camera.lookAt(c.target);
   }
