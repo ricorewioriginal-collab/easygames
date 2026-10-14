@@ -6,6 +6,22 @@
  },
  "games": [
   {
+   "id": "lumo",
+   "title": "Lumo – Wolkenpfad",
+   "desc": "Farbiges Pixel-Jump-and-Run mit eigener Figur, vier zunehmend kniffligen Welten, Kristallen und Checkpoints. Tastatur oder Touch.",
+   "icon": "🌤️",
+   "img": "lumo/card.svg",
+   "bg": "linear-gradient(145deg,#287c83,#83d4e1)",
+   "glow": null,
+   "path": "lumo/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": null,
+   "size": 9412,
+   "files": 3,
+   "offline": true
+  },
+  {
    "id": "taschi",
    "title": "TASCHI – Die 16 Lichter",
    "desc": "Eigenständiges 3D-Taschi-Abenteuer: entdecke die Welt der 16 Lichter, sammle deine Taschis und erlebe die Reise direkt im Browser auf PC und Smartphone.",
