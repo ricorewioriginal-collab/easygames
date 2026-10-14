@@ -37,7 +37,7 @@ for(let j=1;j<4;j++)gems.push({x:start+(b.x-start)*j/4,y:a.y-115-Math.sin(j*Math
 gems.push({x:440,y:93,kind:'flower',got:false});
 const goal=segments.at(-1).x+segments.at(-1).w-48,boss=LEVELS[n].boss?{x:goal-335,y:148,w:66,h:65,hp:LEVELS[n].boss,max:LEVELS[n].boss,phase:0,cool:1.9}:null;
 world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0};
-hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:.72,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0};
+hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.05,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0};
 cam=t=aim=0;frameN=0;particles=[];Object.keys(input).forEach(k=>input[k]=false);hud();
 }
 function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/6 · '+LEVELS[level].name;$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score}
@@ -93,14 +93,14 @@ function defeat(e){e.alive=false;hero.ammo=Math.min(6,hero.ammo+1);world.score+=
 function tick(dt){
 if(mode!=='play')return;dt=Math.min(dt,.04);t+=dt;frameN++;const p=hero;
 p.inv=Math.max(0,p.inv-dt);p.grabCd=Math.max(0,p.grabCd-dt);p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);p.coyote=Math.max(0,p.coyote-dt);if(input.throw)aim+=dt;
-const dir=Number(input.right)-Number(input.left);p.vx+=(dir*174-p.vx)*Math.min(1,dt*(p.ground?17:10));if(dir)p.face=dir;
-if(p.jumpBuffer>0&&(p.ground||p.coyote>0)){p.vy=-345;p.ground=false;p.coyote=0;p.jumpBuffer=0;p.hover=.8;p.dive=false;tone(530);splash(p.x,p.y+p.h,'#fff1d4',6)}
+const dir=Number(input.right)-Number(input.left);p.vx+=(dir*188-p.vx)*Math.min(1,dt*(p.ground?17:10));if(dir)p.face=dir;
+if(p.jumpBuffer>0&&(p.ground||p.coyote>0)){p.vy=-370;p.ground=false;p.coyote=0;p.jumpBuffer=0;p.hover=1.05;p.dive=false;tone(530);splash(p.x,p.y+p.h,'#fff1d4',6)}
 if(input.jump&&!input.down&&!p.ground&&p.vy>0&&p.hover>0){p.vy=Math.min(p.vy,74);p.hover-=dt}
 p.vy=Math.min(p.dive?565:420,p.vy+(p.dive?1140:790)*dt);p.x=Math.max(0,p.x+p.vx*dt);
 const previousBottom=p.y+p.h;p.y+=p.vy*dt;
 let onGround=false;
 for(const f of world.segments.concat(world.ledges)){if(p.x+p.w<=f.x+2||p.x>=f.x+f.w-2)continue;if(p.vy>=0&&previousBottom<=f.y+9&&p.y+p.h>=f.y){p.y=f.y-p.h;p.vy=0;onGround=true;if(p.dive){splash(p.x,f.y,'#fff1b7',12);tone(340)}p.dive=false}}
-if(onGround){p.ground=true;p.coyote=.11;p.hover=.8}else if(p.ground){p.ground=false;p.coyote=.1}
+if(onGround){p.ground=true;p.coyote=.11;p.hover=1.05}else if(p.ground){p.ground=false;p.coyote=.1}
 for(const s of world.springs){if(p.vy>=0&&previousBottom<=s.y+10&&hit(p,s)){p.y=s.y-p.h;p.vy=-450;p.ground=false;p.hover=1;splash(s.x,s.y,'#ffdaf1');tone(880)}}
 for(const it of world.gems){if(it.got||it.kind==='secret'&&!world.switches.some(s=>s.on))continue;
 if(Math.hypot(it.x-(p.x+12),it.y-(p.y+13))<19){it.got=true;world.score+=it.kind==='drop'?10:it.kind==='flower'?250:400;if(it.kind==='flower')world.flowers++;splash(it.x,it.y,it.kind==='flower'?'#ffd6e6':'#fff2a6',9);tone(it.kind==='flower'?1100:820)}}
