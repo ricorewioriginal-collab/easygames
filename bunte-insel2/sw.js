@@ -2,7 +2,7 @@
    damit er nie mit Bunte Insel 1 (eg-bunte-insel-…) kollidiert.
    Strategie: Seite & version.json netzwerk-zuerst (Updates werden erkannt), gehashte Dateien und Engine cache-zuerst.
    Eine neue Version wartet, bis der Spieler „Jetzt aktualisieren“ tippt (kontrollierte Übernahme). */
-const VERSION = '202610140232';
+const VERSION = '202610141036';
 const CACHE = 'eg-bunte-insel2-' + VERSION;
 const CORE = ['./', './index.html', './manifest.webmanifest', './vendor/three.min.js?v=r128', './fonts/fredoka-latin-wght-normal.woff2', './icons/icon.svg'];
 self.addEventListener('install', e => {

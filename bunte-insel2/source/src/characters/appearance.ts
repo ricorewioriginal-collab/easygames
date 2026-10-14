@@ -64,19 +64,19 @@ export const SHOES: OptionDef[] = [
 ];
 export const HATS: OptionDef[] = [
   { id: 'none', name: 'Ohne', icon: '🚫' }, { id: 'cap', name: 'Cap', icon: '🧢' }, { id: 'muetze', name: 'Bommelmütze', icon: '🧶' },
-  { id: 'krone', name: 'Krone', icon: '👑', unlock: 'insel_fest' }, { id: 'zauberhut', name: 'Zauberhut', icon: '🎩', unlock: 'maerchen_held' },
-  { id: 'piratenhut', name: 'Piratenhut', icon: '🏴‍☠️' }, { id: 'hasenohren', name: 'Hasenohren', icon: '🐰' }, { id: 'katzenohren', name: 'Katzenohren', icon: '🐱' },
-  { id: 'helm', name: 'Fahrradhelm', icon: '⛑️' }, { id: 'cowboy', name: 'Cowboyhut', icon: '🤠' }, { id: 'stirnband', name: 'Ki-Stirnband', icon: '🎽', unlock: 'ki_meister' },
-  { id: 'drachenhelm', name: 'Drachenhelm', icon: '🐲', unlock: 'drachen_freund' }, { id: 'blume', name: 'Blumenkranz', icon: '🌼' }
+  { id: 'krone', name: 'Krone', icon: '👑', unlock: 'hat:krone' }, { id: 'zauberhut', name: 'Zauberhut', icon: '🎩', unlock: 'maerchen_held' },
+  { id: 'piratenhut', name: 'Piratenhut', icon: '🏴‍☠️', unlock: 'hat:piratenhut' }, { id: 'hasenohren', name: 'Hasenohren', icon: '🐰', unlock: 'hat:hasenohren' }, { id: 'katzenohren', name: 'Katzenohren', icon: '🐱', unlock: 'hat:katzenohren' },
+  { id: 'helm', name: 'Fahrradhelm', icon: '⛑️', unlock: 'hat:helm' }, { id: 'cowboy', name: 'Cowboyhut', icon: '🤠', unlock: 'hat:cowboy' }, { id: 'stirnband', name: 'Ki-Stirnband', icon: '🎽', unlock: 'ki_meister' },
+  { id: 'drachenhelm', name: 'Drachenhelm', icon: '🐲', unlock: 'drachen_freund' }, { id: 'blume', name: 'Blumenkranz', icon: '🌼', unlock: 'hat:blume' }
 ];
 export const ACCS: OptionDef[] = [
-  { id: 'none', name: 'Ohne', icon: '🚫' }, { id: 'rucksack', name: 'Rucksack', icon: '🎒' }, { id: 'umhang', name: 'Umhang', icon: '🦸' },
+  { id: 'none', name: 'Ohne', icon: '🚫' }, { id: 'rucksack', name: 'Rucksack', icon: '🎒' }, { id: 'umhang', name: 'Umhang', icon: '🦸', unlock: 'acc:umhang' },
   { id: 'schal', name: 'Schal', icon: '🧣' }, { id: 'fluegel', name: 'Feenflügel', icon: '🧚', unlock: 'feenstaub' },
   { id: 'drachenfluegel', name: 'Drachenflügel', icon: '🐉', unlock: 'gleiten' }, { id: 'fuchs', name: 'Fuchsschwanz', icon: '🦊', unlock: 'lunaris' }
 ];
 export const GLASSES: OptionDef[] = [
-  { id: 'none', name: 'Ohne', icon: '🚫' }, { id: 'rund', name: 'Rund', icon: '👓' }, { id: 'sonne', name: 'Sonnenbrille', icon: '🕶️' },
-  { id: 'herz', name: 'Herzbrille', icon: '😍' }, { id: 'stern', name: 'Sternbrille', icon: '🤩', unlock: 'insel_fest' }
+  { id: 'none', name: 'Ohne', icon: '🚫' }, { id: 'rund', name: 'Rund', icon: '👓' }, { id: 'sonne', name: 'Sonnenbrille', icon: '🕶️', unlock: 'glasses:sonne' },
+  { id: 'herz', name: 'Herzbrille', icon: '😍', unlock: 'glasses:herz' }, { id: 'stern', name: 'Sternbrille', icon: '🤩', unlock: 'insel_fest' }
 ];
 
 export const DEFAULT_APPEARANCE: Appearance = {

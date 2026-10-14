@@ -4,6 +4,7 @@ import type { WorldDef, WorldCtx } from '../registry.ts';
 import type { IslandShape, PathSeg } from '../terrain.ts';
 import { ISLES } from '../layout.ts';
 import { arch, bench, fence, floatLabel, fountain, frame, furniture, house, lamp, rock, sign, stall, statue, tower } from '../props.ts';
+import { chest, emojiTex, spot } from '../kit.ts';
 
 const I = ISLES.hub;
 const H = 1.2;
@@ -101,6 +102,13 @@ export const hub: WorldDef = {
     atlantis_treppe: { x: 96, z: 102, name: 'Treppe zur Tiefe (Atlantis)', icon: '🔱' }
   },
   groundCover: { grass: 1, flowers: [0xff6fb5, 0xfff07a, 0xffffff, 0x8fd3ff, 0xff8a1f] },
+  vehicles: [
+    { type: 'auto', x: 12, z: 46, yaw: 0.4, color: 0x3f8cff }, { type: 'auto', x: -44, z: 44, yaw: 2.2, color: 0xff6fb5 },
+    { type: 'polizei', x: -40, z: -36, yaw: 0.75 }, { type: 'feuerwehr', x: 40, z: -38, yaw: -0.75 }, { type: 'krankenwagen', x: 46, z: 8, yaw: -1.6 },
+    { type: 'bus', x: -6, z: 58, yaw: 1.57 }, { type: 'eiswagen', x: -28, z: 42, yaw: 2.6 }, { type: 'traktor', x: 86, z: 52, yaw: -2 },
+    { type: 'fahrrad', x: HOME.x + 9, z: HOME.z + 4, yaw: 2.3 }, { type: 'roller', x: HOME.x + 10, z: HOME.z + 6, yaw: 2.3 },
+    { type: 'heli', x: 52, z: 22, yaw: 0 }, { type: 'segelboot', x: 34, z: 160, yaw: 0 }, { type: 'zug', x: 0, z: 96, yaw: 0, id: 'hub:zug' }
+  ],
   build: buildHub,
   proxy: (b, h) => { b.cyl(LIGHTHOUSE.x, h(LIGHTHOUSE.x, LIGHTHOUSE.z), LIGHTHOUSE.z, 2.6, 3.2, 18, 0xffffff, 10); b.cone(LIGHTHOUSE.x, h(LIGHTHOUSE.x, LIGHTHOUSE.z) + 20, LIGHTHOUSE.z, 3, 3, 0xe8453c, 10); }
 };
@@ -311,4 +319,36 @@ function buildHub(ctx: WorldCtx): void {
   // Gärten um Wohnhäuser
   for (const [x, z] of [[-50, -8], [50, -6], [-48, 26], [62, 30]] as const) for (let k = 0; k < 3; k++) ctx.tree('busch', x + (k - 1) * 3, z + (x > 0 ? -6 : 6), 0.8, false);
   statue(ctx, -7, -18, Math.PI, 0xffc83d, 1.6, 'hund');
+  questObjects(ctx);
+}
+
+/* Objekte für die Abenteuer der Hauptinsel (erscheinen nur, solange sie gebraucht werden). */
+function questObjects(ctx: WorldCtx): void {
+  const api = ctx.api, st = (q: string) => api.questStage(q);
+  // Hühner
+  ([['huhn1', -76, 24, 'Gackerlotte'], ['huhn2', -112, 82, 'Federica'], ['huhn3', 30, 48, 'Eierlinde']] as const).forEach(([id, x, z, nm]) => {
+    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: emojiTex('🐔'), transparent: true }));
+    (spr.material as THREE.Material).userData.disposeWithWorld = true;
+    spr.scale.setScalar(1.1); const y = ctx.h(x, z); spr.position.set(x, y + 0.6, z); ctx.add(spr);
+    const show = () => st('h_huehner') === 0 && !api.flag('huhn_' + id);
+    ctx.onUpdate((_d, t) => { spr.visible = show(); spr.position.y = y + 0.6 + Math.abs(Math.sin(t * 6 + x)) * 0.2; });
+    spot(ctx, id, x, z, '🐔', 'Huhn ' + nm + ' nach Hause scheuchen', () => { api.setFlag('huhn_' + id); api.sfx('chicken'); api.burst(x, y + 1, z, [0xffffff, 0xffd23f], 12); api.toast(nm + ' flattert zurück zum Hof!', '🐔'); }, { when: show, priority: 2 });
+  });
+  // Feuer im Camp
+  ([[1, -94, 72], [2, -106, 74], [3, -98, 86]] as const).forEach(([n, x, z]) => {
+    const y = ctx.h(x, z), key = 'feuer_aus_' + n;
+    const fl = new THREE.Mesh(new THREE.ConeGeometry(0.9, 2.2, 8), new THREE.MeshBasicMaterial({ color: 0xff7a1f, transparent: true, opacity: 0.85 }));
+    (fl.material as THREE.Material).userData.disposeWithWorld = true;
+    fl.position.set(x, y + 1.1, z); ctx.add(fl);
+    const burning = () => st('h_feuer') === 0 && !api.flag(key);
+    ctx.onUpdate((_d, t) => { fl.visible = burning(); fl.scale.set(1 + Math.sin(t * 12 + n) * 0.15, 1 + Math.sin(t * 9 + n) * 0.25, 1); if (fl.visible && Math.random() < 0.3) api.burst(x, y + 2, z, [0x555555], 1); });
+    ctx.interact({ id: 'feuer:' + n, x, y, z, r: 3, icon: '🔥', label: 'Glutnest – dafür brauchst du das Löschfahrzeug!', priority: 1, vehicleOk: false, when: burning,
+      act: () => api.toast('Zu heiß! Hol das Löschfahrzeug von der Feuerwache und spritze mit ⤓ / ✦.', '🔥', 3500),
+      onWater: () => { api.setFlag(key); api.sfx('splash'); api.burst(x, y + 1, z, [0x9fe8ff, 0xffffff], 20); api.events.emit('interact', { id: 'feuer:' + n, kind: 'fire' }); api.toast('Feuer ' + n + ' gelöscht!', '💦'); } });
+  });
+  // Piets Truhen
+  chest(ctx, 'piet1', 150, -14, 0.4, { stars: 6, item: ['feder', 1] }, () => st('h_schatz') >= 0);
+  chest(ctx, 'piet2', -54, 144, 0.3, { stars: 10, item: ['muschel', 2] }, () => st('h_schatz') >= 1);
+  // Herz des Waldes: Boss-Altar
+  spot(ctx, 'boss_altar', -182, -150, '🌑', 'Steinkreis: Wächter herausfordern', () => api.openPanel('bossAltar'), { r: 4, priority: 2 });
 }

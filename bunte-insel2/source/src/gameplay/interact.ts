@@ -15,6 +15,8 @@ export interface Interactable {
   vehicleOk?: boolean;
   /** Zweite Aktion (Taste F / X). */
   alt?: { icon: string; label: string; act: () => void; when?: () => boolean };
+  /** Wird vom Wasserstrahl der Feuerwehr getroffen. */
+  onWater?: () => void;
 }
 
 export class InteractSystem {

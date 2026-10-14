@@ -28,9 +28,6 @@ export async function start(): Promise<void> {
   boot.set(68, 'Baue Inseln und Brücken …');
   await nextFrame();
   g.registerWorlds(ALL_WORLDS);
-  boot.set(78, 'Pflanze Bäume auf der Hauptinsel …');
-  await nextFrame();
-  g.worlds.stream(0, 0, true);
   boot.set(90, 'Lade Klänge …');
   await nextFrame();
   const audio = new AudioEngine('./');
@@ -42,6 +39,9 @@ export async function start(): Promise<void> {
   window.addEventListener('keydown', unlockAudio, { passive: true });
 
   const sys = installSystems(g, audio);
+  boot.set(80, 'Pflanze Bäume auf der Hauptinsel …');
+  await nextFrame();
+  g.worlds.stream(0, 0, true);
   const menus: Menus = new Menus(g, {
     play: (save: SaveData) => play(save),
     toTitle: () => toTitle(),
@@ -70,7 +70,7 @@ export async function start(): Promise<void> {
   g.panels.editor = () => {
     if (g.phase !== 'play') return;
     hud?.show(false);
-    openEditor(g, { look: g.save.look, name: g.save.name, owned: [...g.save.cosmetics.map(c => c.replace(/^\w+:/, '')), ...g.save.achievements, ...g.save.abilities], askName: true, title: 'Kleiderschrank', done: (look, name) => { g.save.look = look; g.save.name = name; g.avatar.setLook(look); g.events.emit('flag', { id: 'outfit' }); hud?.show(true); g.persist(); }, cancel: () => hud?.show(true) });
+    openEditor(g, { look: g.save.look, name: g.save.name, owned: [...g.save.cosmetics, ...g.save.achievements, ...g.save.abilities], askName: true, title: 'Kleiderschrank', done: (look, name) => { g.save.look = look; g.save.name = name; g.avatar.setLook(look); g.setFlag('outfit'); hud?.show(true); g.persist(); }, cancel: () => hud?.show(true) });
   };
   g.panels.pause = pause;
   g.onFrame = dt => {

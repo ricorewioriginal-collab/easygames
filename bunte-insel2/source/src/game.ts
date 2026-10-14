@@ -293,7 +293,7 @@ export class Game implements GameApi {
     this.events.emit('itemUsed', { id: item });
     return true;
   }
-  has(item: string, n = 1): boolean { return (this.save.inventory[item] ?? 0) >= n; }
+  has(item: string, n = 1): boolean { return (this.save?.inventory[item] ?? 0) >= n; }
   count(item: string): number { return this.save.inventory[item] ?? 0; }
   addStars(n: number, why?: string): void {
     if (n === 0) return;
@@ -319,7 +319,7 @@ export class Game implements GameApi {
       this.events.emit('levelUp', { level: after });
     }
   }
-  flag(id: string): number { return this.save.flags[id] ?? 0; }
+  flag(id: string): number { return this.save?.flags[id] ?? 0; }
   setFlag(id: string, v = 1): void { this.save.flags[id] = v; this.events.emit('flag', { id }); }
   hasAbility(id: string): boolean { return !!this.save?.abilities.includes(id); }
   unlockAbility(id: string): void {
@@ -337,11 +337,11 @@ export class Game implements GameApi {
     if (yaw !== undefined) this.rig.snapBehind(yaw);
   }
   startMinigame(id: string, opts?: Record<string, unknown>): void { this.panels['minigame']?.({ id, ...opts }); }
-  collectOnce(id: string): boolean { if (this.save.collected.includes(id)) return false; this.save.collected.push(id); return true; }
-  isCollected(id: string): boolean { return this.save.collected.includes(id); }
+  collectOnce(id: string): boolean { if (!this.save || this.save.collected.includes(id)) return false; this.save.collected.push(id); return true; }
+  isCollected(id: string): boolean { return !!this.save?.collected.includes(id); }
   achieve(id: string): void { this.panels.achieve?.(id); }
-  questStage(id: string): number { return this.save.quests[id]?.stage ?? -1; }
-  questDone(id: string): boolean { return !!this.save.quests[id]?.done; }
+  questStage(id: string): number { const q = this.save?.quests[id]; return q ? (q.done ? 999 : q.stage) : -1; }
+  questDone(id: string): boolean { return !!this.save?.quests[id]?.done; }
   startQuest(id: string): void { this.panels.startQuest?.(id); }
   focusCamera(x: number, y: number, z: number, sec: number): void { this.rig.showPoint(x, y, z, sec); }
   setNight(night: boolean): void { this.env.t = night ? 0.86 : 0.3; }

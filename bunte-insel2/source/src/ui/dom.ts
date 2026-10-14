@@ -49,7 +49,7 @@ export function modal(o: ModalOpts): Modal {
   m.wrap = h('div', { class: 'modal-wrap', onpointerdown: (e: Event) => { if (e.target === m.wrap && o.closable !== false) m.close(); } }, box);
   uiRoot().append(m.wrap);
   openModals.push(m);
-  if (o.tabs) m.setTab(o.tab ?? o.tabs[0].id);
+  if (o.tabs) queueMicrotask(() => m.setTab(o.tab ?? o.tabs![0].id));
   return m;
 }
 export const topModal = (): Modal | null => openModals[openModals.length - 1] ?? null;

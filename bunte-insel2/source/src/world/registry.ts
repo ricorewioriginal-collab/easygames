@@ -31,6 +31,7 @@ export interface WorldDef {
   /** Unterirdisch: kein Meer/Himmel. */
   underground?: boolean;
   groundCover?: { grass: number; flowers: number[] };
+  vehicles?: import('../gameplay/vehicles.ts').VSpawn[];
 }
 
 export interface WorldCtx {
