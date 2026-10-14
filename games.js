@@ -1,5 +1,6 @@
-window.EASYGAMES_BUILD = '20261014.4'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.\n// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
+window.EASYGAMES_BUILD = '20261015.1'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.\n// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
+  {id:'pufi-farbwind',title:'Pufi & der Farbwind',icon:'🎨',img:'pufi-farbwind/card.svg',path:'pufi-farbwind/',bg:'linear-gradient(145deg,#dc95b8,#84d8ee)',desc:'Eigenständiges handgezeichnetes Retro-Jump-and-Run mit sechs Insel-Leveln, Farbblüten, Luftgleiten, Farbkugel-Würfen, Ansaugen, Stampfattacke, Gegnern, zwei Bosskämpfen, Geheimnissen und PC-/Touch-Steuerung. Auch offline spielbar.'},
   {id:'lumo',title:'Lumo – Wolkenpfad',icon:'🌤️',img:'lumo/card.svg',path:'lumo/',bg:'linear-gradient(145deg,#287c83,#83d4e1)',desc:'Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 abwechslungsreichen Leveln, vier Landschaften, vier Gegnerarten, fünf Hindernisarten und vier Bonusrunden. Retro-Musik, Effekte, Countdown, Bestzeiten, Vollbild, Touch und Google-Speicherung.'},
   { id: 'taschi', title: 'TASCHI – Die 16 Lichter', icon: '✨', img: 'taschi/card.svg', bg: 'linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)', glow: 'rgba(167,139,250,.48)',
     path: 'taschi/', desc: 'Eigenständiges 3D-Taschi-Abenteuer: entdecke die Welt der 16 Lichter, sammle deine Taschis und erlebe die Reise direkt im Browser auf PC und Smartphone.' },

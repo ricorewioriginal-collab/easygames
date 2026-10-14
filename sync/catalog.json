@@ -6,6 +6,34 @@
  },
  "games": [
   {
+   "id": "pufi-farbwind",
+   "title": "Pufi & der Farbwind",
+   "desc": "Eigenständiges handgezeichnetes Retro-Jump-and-Run mit sechs Insel-Leveln, Farbblüten, Luftgleiten, Farbkugel-Würfen, Ansaugen, Stampfattacke, Gegnern, zwei Bosskämpfen, Geheimnissen und PC-/Touch-Steuerung. Auch offline spielbar.",
+   "icon": "🎨",
+   "img": "pufi-farbwind/card.svg",
+   "bg": "linear-gradient(145deg,#dc95b8,#84d8ee)",
+   "glow": null,
+   "path": "pufi-farbwind/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Begleite Pufi auf sechs eigenständige Farbwind-Inseln. Springe über Schluchten, schwebe kurze Strecken, wirf Farbkugeln auf Gegner und versteckte Schalter und sammle Farbblüten. Ansaugen gibt Munition, mit Stampfen kannst du versteckte Schalter aktivieren. Bei Game Over beginnt der Versuch ganz von vorn; abgeschlossene Inseln bleiben gespeichert.",
+    "steuerung": [
+     "PC: A/D oder Pfeiltasten bewegen, Leertaste/W springen (halten zum Schweben), K/X halten und zum Werfen loslassen, C/J/E ansaugen, S/Pfeil runter für Luftstampfer, P/Escape pausieren.",
+     "Handy: Richtungstasten, Sprung, Werfen, Saugen und Stampfen unten im Bildschirm; Querformat empfohlen."
+    ],
+    "tipps": [
+     "Gleiten hilft besonders bei breiten Lücken.",
+     "Werfe Farbkugeln auf Gegner, Schalter und Bosse.",
+     "Nimm neue Munition aus goldenen Fruchtkapseln auf.",
+     "Jede Insel lässt sich wiederholen, um weitere Farbblüten zu finden."
+    ]
+   },
+   "size": 29624,
+   "files": 5,
+   "offline": true
+  },
+  {
    "id": "lumo",
    "title": "Lumo – Wolkenpfad",
    "desc": "Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 abwechslungsreichen Leveln, vier Landschaften, vier Gegnerarten, fünf Hindernisarten und vier Bonusrunden. Retro-Musik, Effekte, Countdown, Bestzeiten, Vollbild, Touch und Google-Speicherung.",

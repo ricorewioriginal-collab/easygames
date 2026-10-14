@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#353857"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Pufi & der Farbwind – eigenständiges handgezeichnetes Retro-Jump-and-Run mit sechs Inseln.">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./card.svg" type="image/svg+xml">
+<title>Pufi & der Farbwind – Die Farbwind-Inseln</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#303552;color:#fff8e4;font-family:system-ui,Arial,sans-serif}
+body{height:100dvh;touch-action:none;-webkit-user-select:none;user-select:none}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #ffeba4;outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.42}
+main{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#adc0c8 0%,#323658 83%)}
+canvas{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges}
+#top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:calc(8px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));background:linear-gradient(#34364bdc,#34364b00);font-weight:900;font-size:13px;text-shadow:0 2px 2px #32394b}
+#where{margin-right:auto;white-space:nowrap}#top span:not(#where){background:#323d64bd;border:1px solid #faf2d063;border-radius:9px;padding:4px 8px}#hearts{color:#ffbfd2}#top button{padding:5px 9px;background:#535476ba;border:1px solid #ffefd38a;border-radius:9px;font-size:12px}
+#overlay{position:absolute;inset:0;z-index:7;display:grid;place-items:center;overflow:auto;padding:66px 15px 22px;background:linear-gradient(135deg,#3d3d61d4,#263956b8);backdrop-filter:blur(5px)}[hidden]{display:none!important}
+#sheet{max-height:100%;overflow:auto;width:min(530px,100%);padding:21px 25px;border:4px solid #ffe6b3;border-radius:23px;background:linear-gradient(154deg,#7184a9,#424260 65%,#363951);box-shadow:0 7px 0 #6f5678,0 23px 50px #121632b0;text-align:center}
+#seal{font-size:clamp(28px,5vw,42px);line-height:1.1;text-shadow:3px 4px 0 #685a78}
+#subtitle{letter-spacing:3px;font-size:12px;font-weight:900;color:#ffe7b3;margin:10px 0}
+h1{margin:0;font-size:clamp(28px,6vw,44px);line-height:1.06;color:#ffe1a4;text-shadow:3px 4px #6c5479}
+#description{font-size:14px;line-height:1.55;color:#f5f2eb;margin:15px auto;max-width:465px}
+#actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 0 12px}
+#actions button{min-width:0;padding:13px 11px;font-weight:900;border:2px solid #fff5d6;border-radius:12px;background:#d18aaa;box-shadow:0 4px 0 #76536f}
+#actions button:first-child{background:#ffdb90;color:#4f4661;border-color:#fff8d8}
+#stageList{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px}
+.island{padding:11px 9px;text-align:left;font-size:12px;background:#59638a;border:1px solid #eee4ff83;border-radius:9px}
+.island.picked{background:#a97a9e;border-color:#fff0c5;box-shadow:0 0 0 2px #ffecb3}
+#help{font-size:11px;line-height:1.5;opacity:.86}
+#overlay[data-view="gameover"]{background:#3c203ed9}
+#overlay[data-view="gameover"] #sheet{border-color:#ffb1ae;background:linear-gradient(145deg,#6d3b67,#332b50);box-shadow:0 8px 0 #9a557a,0 24px 70px #120e28}
+#overlay[data-view="gameover"] h1{color:#ffc0b4;font-size:clamp(38px,8vw,56px);letter-spacing:2px}
+#overlay[data-view="clear"] #sheet,#overlay[data-view="win"] #sheet{border-color:#ffdf91}
+#touch{position:absolute;z-index:5;inset:auto 0 0;display:flex;justify-content:space-between;align-items:flex-end;gap:9px;padding:0 max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));pointer-events:none}
+.pad,.rightpad{display:flex;align-items:end;gap:6px;pointer-events:none}.rightpad{justify-content:flex-end;max-width:56%;flex-wrap:wrap}
+#touch button{pointer-events:auto;height:62px;width:60px;border:3px solid #ffefd8a8;border-radius:15px;background:#555d82c9;box-shadow:0 5px #2a2b4fb0;touch-action:none;font-weight:900;font-size:21px}
+#touch [data-action="jump"]{width:75px;height:75px;border-radius:50%;background:#ffcd88;color:#4b4260}
+#touch [data-action="throw"]{background:#c98aaf}#touch [data-action="grab"]{background:#7ab8ac}
+#touch button small{font-size:8px;display:block;letter-spacing:.2px}
+#touch button.pressed{transform:translateY(4px);box-shadow:0 1px #2a2b4fb0}
+@media (pointer:fine){#touch{opacity:.3}#touch:hover{opacity:.93}}
+@media(max-width:700px){#where{font-size:10px}#top{gap:4px;font-size:11px}#top span:not(#where){padding:3px 5px}#touch button{width:47px;height:52px;font-size:18px;border-width:2px;border-radius:12px}#touch [data-action="jump"]{width:62px;height:65px}.pad,.rightpad{gap:4px}}
+@media(max-width:440px){#sheet{padding:15px}#actions{grid-template-columns:1fr}#stageList{grid-template-columns:1fr 1fr}}
+@media(max-height:520px){#overlay{padding:41px 14px 13px}#sheet{padding:12px}#seal{font-size:24px}#subtitle{margin:3px}h1{font-size:25px}#description{font-size:12px;margin:7px auto}#actions button{padding:8px}#help{font-size:10px}#touch button{width:48px;height:48px}#touch [data-action="jump"]{width:57px;height:59px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<main><canvas id="stage" width="480" height="270" aria-label="Pufi Retro-Plattformspiel"></canvas></main>
+<header id="top"><span id="where">1/6 · Blütenbucht</span><span id="hearts">♥♥♥</span><span id="ammo">● 4/6</span><span id="flowers">❀ 0</span><span id="score">✦ 0</span><button id="sound" aria-label="Ton umschalten">♪ AN</button><button id="pause" aria-label="Pause">Ⅱ</button></header>
+<div id="touch" hidden aria-label="Touch-Steuerung"><div class="pad"><button data-action="left" aria-label="Links">◀</button><button data-action="right" aria-label="Rechts">▶</button><button data-action="down" aria-label="Stampfen">▼<small>STAMPF</small></button></div><div class="rightpad"><button data-action="grab" aria-label="Farbenergie einsammeln">✦<small>SAUGEN</small></button><button data-action="throw" aria-label="Farbkugel werfen">●<small>WERFEN</small></button><button data-action="jump" aria-label="Springen">↑<small>SPRUNG</small></button></div></div>
+<div id="overlay" data-view="title"><section id="sheet"><div id="seal" aria-hidden="true">✿ ☁ ✦</div><div id="subtitle">DIE FARBWIND-INSELN</div><h1 id="heading">PUFI & DER FARBWIND</h1><p id="description">Handgezeichnetes Retro-Abenteuer</p><div id="stageList" hidden></div><div id="actions"><button id="primary">START GAME ▶</button><button id="secondary">INSELKARTE</button></div><div id="help">PC: ← → / A D laufen · Leertaste / W springen und halten zum Schweben · K / X halten, loslassen zum Werfen · C / J ansaugen · ↓ / S Luftstampfer · Esc / P Pause.<br>Handy: Steuerung direkt auf dem Bildschirm; Querformat empfohlen.</div></section></div>
+<script src="./game.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+</body></html>
