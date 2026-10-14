@@ -75,9 +75,14 @@ h1{margin:0;font-size:clamp(28px,6vw,44px);line-height:1.06;color:#ffe1a4;text-s
 @media(max-width:390px){.crosspad{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(3,35px)}#faceControls{grid-template-columns:repeat(3,39px);grid-template-rows:repeat(3,35px)}#faceControls .face{width:39px;height:38px}#swipeZone{width:114px;height:108px}}
 @media(max-height:420px){.crosspad{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(3,35px)}#faceControls{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,35px)}#faceControls .face{width:40px;height:37px}#swipeZone{width:115px;height:105px}}
 
+/* Timed rescue warning – readable over mobile gameplay, never blocks touch */
+#rescueStatus{position:absolute;z-index:4;top:calc(45px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);pointer-events:none;background:#5a315ddd;border:3px solid #fbe19b;box-shadow:3px 4px 0 #262943;color:#fff5c6;padding:7px 12px;font:900 clamp(11px,2.5vw,16px) 'Courier New',monospace;letter-spacing:.4px;white-space:nowrap;animation:rescuePulse 1s steps(2) infinite}
+@keyframes rescuePulse{50%{background:#9a4f70}}
+@media(max-height:410px){#rescueStatus{top:calc(36px + env(safe-area-inset-top));padding:3px 8px;font-size:10px}}
 </style></head><body>
-<main><canvas id="stage" width="480" height="270" aria-label="Pufi Retro-Plattformspiel"></canvas></main>
+<main><canvas id="stage" width="480" height="270" aria-label="Pufi und Tamo – Retro-Abenteuer mit schwebendem Begleiter und Entführer-Countdown"></canvas></main>
 <header id="top"><span id="where">1/6 · Blütenbucht</span><span id="mountStatus">🐾 TAMO AN BORD</span><span id="hearts">♥♥♥</span><span id="ammo">● 4/6</span><span id="flowers">❀ 0</span><span id="score">✦ 0</span><button id="sound" aria-label="Ton umschalten">♪ AN</button><button id="options" aria-label="Controller-Optionen">⚙</button><button id="pause" aria-label="Pause">Ⅱ</button></header>
+<div id="rescueStatus" role="status" aria-live="polite" hidden>TAMO RETTEN!</div>
 <div id="touch" hidden aria-label="Konsolensteuerung">
 <div id="leftControls">
   <div id="dpadControls" class="crosspad" aria-label="Steuerkreuz">
@@ -109,7 +114,7 @@ h1{margin:0;font-size:clamp(28px,6vw,44px);line-height:1.06;color:#ffe1a4;text-s
 <p class="controlHelp">RECHTS: A SPRINGEN · B WERFEN · X SAUGEN · Y REITEN<br>
 PC: PFEILE/WASD, A=LEERTASTE, B=K/X, X=C/J, Y=R/V</p>
 </div>
-<div id="actions"><button id="primary">START GAME ▶</button><button id="secondary">INSELKARTE</button></div><div id="help">PC: ← → / A D laufen · R/V reiten · A = Leertaste springen · B = K/X werfen · X = C/J saugen · ↓/S stampfen · Esc/P Pause.<br>Handy: links Steuerkreuz oder Wischfeld, rechts A/B/X/Y. Wechsel über ⚙ OPTIONEN.</div></section></div>
+<div id="actions"><button id="primary">START GAME ▶</button><button id="secondary">INSELKARTE</button></div><div id="help">PC: ← → / A D laufen · R/V reiten · A = Leertaste springen · B = K/X werfen · X = C/J saugen · ↓/S stampfen · Esc/P Pause.<br>Handy: links Steuerkreuz oder Wischfeld, rechts A/B/X/Y. Wechsel über ⚙ OPTIONEN. Wird Tamo getroffen, rette ihn binnen 15 Sekunden vor den Nebelgreifern!</div></section></div>
 <script src="./game.js"></script>
 <script>if('serviceWorker' in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
 </body></html>
