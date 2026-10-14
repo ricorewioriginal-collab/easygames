@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "09a0ff597950",
- "generated": "2026-10-15T00:37:53+02:00",
- "commit": "4bf7c05f7279938fc6090be97077969cdafc55dd",
+ "version": "8c2f0fbd8957",
+ "generated": "2026-10-15T00:40:02+02:00",
+ "commit": "da457c5d8bcb342ba50454951ebacc717c0eb3d3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 14746,
-   "h": "6ad524a8e609e8ca3d35b1fafd5ba90cf8bdcb6212e09593c0c671dbb52a0812"
+   "s": 14779,
+   "h": "065ea03488fc43f4d2e6ebb27748d691b6156e2e2b3ac10a60105f5d91ce5910"
   },
   {
    "p": "gay-life/index.html",
@@ -4778,13 +4778,13 @@
   },
   {
    "p": "lumo/game.js",
-   "s": 5847,
-   "h": "21cb647b325786649bc751f084c24e1547b22d757d0fada729ec2ddcd6ccd05d"
+   "s": 7853,
+   "h": "4cd47d703b440516f58b3d634e1967dc18e159ccfcd64abee140106fdfcb61f1"
   },
   {
    "p": "lumo/index.html",
-   "s": 2737,
-   "h": "6065cc0222f1d74b4d002af878d8b74682705b86d10f2f00b96f90b85d56857c"
+   "s": 3474,
+   "h": "82de54e6864493b603806d7d038222041ffd6baa10346ff210cd56b181a36fe6"
   },
   {
    "p": "modes.js",
@@ -5213,8 +5213,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 60085,
-   "h": "40880acaa638529edeb43b9df7e4d3f9b4f6daf2f4a059ad61e78abe5bdb24cb"
+   "s": 60119,
+   "h": "bc8ef104a28fb3af6a4fb3d8129bbbc90de8d35e2383724f20a5a4e3de37f76d"
   },
   {
    "p": "taschi/card.svg",

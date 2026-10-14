@@ -8,7 +8,7 @@
   {
    "id": "lumo",
    "title": "Lumo – Wolkenpfad",
-   "desc": "Farbiges Pixel-Jump-and-Run mit eigener Figur, vier zunehmend kniffligen Welten, Kristallen und Checkpoints. Tastatur oder Touch.",
+   "desc": "Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 zunehmend kniffligen Leveln in vier Welten, Kristallen, Checkpoints und Google-Speicherung. Tastatur oder Touch.",
    "icon": "🌤️",
    "img": "lumo/card.svg",
    "bg": "linear-gradient(145deg,#287c83,#83d4e1)",
@@ -17,7 +17,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 9412,
+   "size": 12155,
    "files": 3,
    "offline": true
   },
