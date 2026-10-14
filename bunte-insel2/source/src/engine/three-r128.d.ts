@@ -117,6 +117,7 @@ declare namespace THREE {
     r: number; g: number; b: number;
     set(c: number | string | Color): this;
     setHex(h: number): this;
+    setScalar(s: number): this;
     setRGB(r: number, g: number, b: number): this;
     setHSL(h: number, s: number, l: number): this;
     getHSL(t: { h: number; s: number; l: number }): { h: number; s: number; l: number };
@@ -163,6 +164,7 @@ declare namespace THREE {
     rotateX(a: number): this; rotateY(a: number): this; rotateZ(a: number): this;
     translateX(d: number): this; translateY(d: number): this; translateZ(d: number): this;
     localToWorld(v: Vector3): Vector3;
+    clone(recursive?: boolean): this;
     worldToLocal(v: Vector3): Vector3;
   }
   class Group extends Object3D { constructor(); }
