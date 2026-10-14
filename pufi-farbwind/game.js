@@ -38,11 +38,11 @@ ledges.push({x:start-30,y:a.y-62,w:62,h:11,one:true},{x:b.x-34,y:b.y-78,w:66,h:1
 for(let j=1;j<4;j++)gems.push({x:start+(b.x-start)*j/4,y:a.y-115-Math.sin(j*Math.PI/4)*11,kind:'drop',got:false})}
 gems.push({x:440,y:93,kind:'flower',got:false});
 const goal=segments.at(-1).x+segments.at(-1).w-48,boss=LEVELS[n].boss?{x:goal-335,y:148,w:66,h:65,hp:LEVELS[n].boss,max:LEVELS[n].boss,phase:0,cool:1.9}:null;
-world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0};
+world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0,rescue:null};
 hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.5,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0,mounted:true,pet:{x:0,y:165},rideCd:0};
 hero.pet.x=hero.x-40;hero.pet.y=hero.y;cam=t=aim=0;frameN=0;particles=[];clearInputs();hud();
 }
-function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/6 · '+LEVELS[level].name;$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score;$('mountStatus').textContent=hero.mounted?'🐾 TAMO AN BORD':'🐾 R: TAMO RUFEN'}
+function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/6 · '+LEVELS[level].name;$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score;$('mountStatus').textContent=world.rescue?'⚠ TAMO RETTEN! '+Math.ceil(world.rescue.remaining)+'s':hero.mounted?'🐾 TAMO AN BORD':'🐾 R: TAMO RUFEN';$('rescueStatus').hidden=!world.rescue;if(world.rescue){$('rescueStatus').textContent='TAMO! '+Math.ceil(world.rescue.remaining)+' SEK. · BERÜHREN ODER Y DRÜCKEN';$('rescueStatus').setAttribute('aria-label','Rette Tamo in '+Math.ceil(world.rescue.remaining)+' Sekunden')}}
 function overlay(type,title,description,primary,secondary){
 mode=type;$('overlay').hidden=false;$('overlay').dataset.view=type;
 $('heading').textContent=title;$('description').textContent=description;$('primary').textContent=primary;
@@ -88,9 +88,53 @@ $('chooseSwipe').addEventListener('click',()=>setControls('swipe'));
 $('sound').textContent=save.sound?'♪ AN':'♪ AUS';$('sound').addEventListener('click',()=>{save.sound=!save.sound;persist();$('sound').textContent=save.sound?'♪ AN':'♪ AUS';if(save.sound)tone(600)});
 // Tamo is an original cloud-tapir companion: his broad padded feet and fins make
 // riding faster and give one additional hit before Pufi loses a heart.
+function restoreTamo(){
+const r=world&&world.rescue;if(!r||!hero)return false;
+if(r.grace>0||Math.hypot(hero.x+12-r.x,hero.y+14-r.y)>42)return false;
+hero.mounted=true;hero.rideCd=.48;hero.inv=Math.max(hero.inv,.75);
+hero.hover=1.5;hero.pet.x=hero.x;hero.pet.y=hero.y;
+world.rescue=null;world.score+=150;
+splash(hero.x+10,hero.y+12,'#e3ffbb',28);tone(980,.19);tone(660,.17);
+hud();return true;
+}
+function startTamoRescue(){
+const p=hero;if(!world||world.rescue)return;
+p.mounted=false;p.rideCd=1.0;p.inv=1.25;p.vy=-188;p.hover=.9;
+const x=p.x+43,y=p.y-12;
+p.pet.x=x;p.pet.y=y;
+world.rescue={x,y,originalY:y,remaining:15,grace:1.0,cry:.18,carried:false,
+thief:{x:x+155,y:y-44,stun:0,wing:0}};
+splash(x,y,'#b8e6f0',20);tone(820,.14);tone(470,.26);
+hud();
+}
+function updateTamoRescue(dt){
+const r=world.rescue;if(!r||mode!=='play')return;
+r.grace=Math.max(0,r.grace-dt);r.remaining=Math.max(0,r.remaining-dt);r.cry-=dt;
+if(r.cry<=0){r.cry=1.45; // audible two-note distress, not a borrowed Nintendo sample
+tone(760,.13);tone(490,.23)}
+const thief=r.thief;
+thief.wing+=dt*16;
+if(thief.stun>0){thief.stun-=dt;r.carried=false;r.y+=((r.originalY+Math.sin(t*6)*5)-r.y)*Math.min(1,dt*5);}
+else if(!r.carried){
+const dx=r.x-thief.x,dy=(r.y-27)-thief.y;
+thief.x+=Math.sign(dx)*Math.min(Math.abs(dx),72*dt);
+thief.y+=Math.sign(dy)*Math.min(Math.abs(dy),63*dt);
+if(Math.hypot(dx,dy)<18)r.carried=true;
+}else{
+const speed=Math.min(78,24+(15-r.remaining)*4);
+r.x+=speed*dt;r.y-=Math.min(36,12+(15-r.remaining)*2)*dt;
+thief.x=r.x;thief.y=r.y-27;
+}
+if(!r.carried&&thief.stun<=0)r.y=r.originalY+Math.sin(t*5)*4;
+hero.pet.x=r.x;hero.pet.y=r.y;
+if(r.grace<=0&&restoreTamo())return;
+if(r.remaining<=0){world.rescue=null;gameover('Die Nebelgreifer haben Tamo entführt!');return;}
+hud();
+}
 function toggleMount(){
 if(mode!=='play'||!hero||hero.rideCd>0)return;
 const p=hero;
+if(world.rescue){restoreTamo();return}
 if(p.mounted){
 p.mounted=false;p.rideCd=.32;p.pet.x=p.x-33;p.pet.y=p.y;p.hover=Math.min(p.hover,1.0);
 tone(370);splash(p.x,p.y+18,'#a9e7dc',7);
@@ -156,7 +200,7 @@ swipeZone.addEventListener('pointermove',e=>{if(swipePointer===e.pointerId){e.pr
 for(const kind of ['pointerup','pointercancel','lostpointercapture'])swipeZone.addEventListener(kind,stopSwipe);
 
 function hurt(){if(mode!=='play'||hero.inv>0)return;
-if(hero.mounted){hero.mounted=false;hero.pet.x=hero.x-43;hero.pet.y=hero.y;hero.rideCd=.9;hero.inv=1.5;hero.vy=-185;hero.hover=.7;splash(hero.x,hero.y,'#a9ecdd',18);tone(230,.18);hud();return}
+if(hero.mounted){startTamoRescue();return}
 hero.hp--;hero.inv=1.5;hero.vy=-250;splash(hero.x,hero.y,'#ffa5c6',20);tone(155,.24);if(hero.hp<=0)gameover('Pufi hat seine Farbenergie verloren.')}
 function defeat(e){e.alive=false;hero.ammo=Math.min(6,hero.ammo+1);world.score+=80;splash(e.x,e.y,'#beffd3',15);tone(770)}
 function tick(dt){
@@ -183,14 +227,19 @@ for(const b of world.bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.vy+=350*dt;b.life-=dt;
 for(const f of world.segments.concat(world.ledges))if(hit(b,f)){if(b.bounces>0){b.bounces--;b.y=f.y-b.h-1;b.vy=-Math.abs(b.vy)*.6}else b.life=0;break}
 for(const e of world.enemies)if(e.alive&&hit(b,e)){defeat(e);b.life=0;break}
 for(const sw of world.switches)if(!sw.on&&hit(b,sw)){sw.on=true;world.score+=120;b.life=0;splash(sw.x,sw.y,'#ffedab');tone(970)}
-if(boss&&boss.hp>0&&hit(b,boss)){boss.hp--;world.score+=130;b.life=0;splash(boss.x,boss.y,'#fdd5f2',23);tone(265)}}
+if(boss&&boss.hp>0&&hit(b,boss)){boss.hp--;world.score+=130;b.life=0;splash(boss.x,boss.y,'#fdd5f2',23);tone(265)}
+const rescue=world.rescue;if(rescue&&hit(b,{x:rescue.thief.x-13,y:rescue.thief.y-9,w:27,h:22})){
+rescue.thief.stun=2.2;rescue.carried=false;rescue.remaining=Math.min(18,rescue.remaining+2.5);b.life=0;splash(rescue.thief.x,rescue.thief.y,'#e9b6fa',19);tone(1050,.14);
+}}
 world.bullets=world.bullets.filter(b=>b.life>0&&b.y<H+35);
 for(const b of world.hazards){b.x+=b.vx*dt;b.y+=b.vy*dt;b.vy+=190*dt;b.life-=dt;if(hit(p,b)){b.life=0;hurt()}}
 world.hazards=world.hazards.filter(b=>b.life>0&&b.y<H+50);
 if(p.y>H+90){gameover('Pufi ist ins Wolkenmeer gefallen.');return}
+updateTamoRescue(dt);if(mode!=='play')return;
+// The recovering mount is not a standard follower until the rescue ends.
 // When dismounted, Tamo follows along the nearest platform without spawning in mid-air.
 if(p.mounted){p.pet.x=p.x;p.pet.y=p.y}
-else{
+else if(!world.rescue){
 const followX=p.x-38,dx=followX-p.pet.x;
 p.pet.x+=Math.abs(dx)>360?dx:clamp(dx,-130*dt,130*dt);
 const platform=world.segments.find(s=>p.pet.x+15>=s.x&&p.pet.x+9<s.x+s.w);
@@ -220,6 +269,29 @@ oval(34,1,2,2,'#4d687a',null);oval(12,1,4,3,'#f2b8b4',null);
 oval(-3,-17,10,4,'#f7d9a7','#766482',1);
 ctx.restore();
 }
+function drawRescue(){
+const r=world.rescue;if(!r)return;
+const thief=r.thief;
+ctx.save();
+ctx.translate(Math.round(thief.x),Math.round(thief.y));
+const flap=Math.sin(thief.wing)*7;
+oval(-12,flap,13,6,'#667192','#30385e',1.4);
+oval(12,-flap,13,6,'#667192','#30385e',1.4);
+oval(0,0,11,10,thief.stun>0?'#ba9edd':'#3d456b','#252941',2);
+oval(-4,-2,2.6,3.5,'#ffe090',null);
+oval(4,-2,2.6,3.5,'#ffe090',null);
+oval(0,6,4,2,'#f0a1a9',null);
+ctx.restore();
+oval(r.x+12,r.y+14,29,27,'#d7eaff55','#ffdf9b',2.5);
+if(Math.floor(t*2.2)%2===0){
+ctx.font='bold 12px monospace';ctx.fillStyle='#fff8cc';
+ctx.strokeStyle='#4d5278';ctx.lineWidth=3;ctx.strokeText('PIU! PIU!',r.x-10,r.y-37);
+ctx.fillText('PIU! PIU!',r.x-10,r.y-37);
+}
+drawTamo(r.x+13,r.y+16,hero.face);
+ctx.font='bold 12px monospace';ctx.fillStyle='#fff4c5';ctx.strokeStyle='#5e3b6e';ctx.lineWidth=3;
+ctx.strokeText(Math.ceil(r.remaining)+'s',r.x+1,r.y-52);ctx.fillText(Math.ceil(r.remaining)+'s',r.x+1,r.y-52);
+}
 function draw(){
 if(!world)return;const q=LEVELS[level],grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,q.sky[0]);grad.addColorStop(1,q.sky[1]);ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
 oval(381-cam*.02%45,51,28,28,'#fff0b9',null);
@@ -246,6 +318,7 @@ rect(boss.x+4,boss.y-17,58*boss.hp/boss.max,5,'#fbe3a0')}
 for(const b of world.bullets)oval(b.x+5,b.y+5,6,6,'#fdd9a7','#87687b');for(const b of world.hazards)oval(b.x+6,b.y+6,7,7,'#8d72b4','#ffbcb8');
 // Tamo always exists as a distinct, animated creature, even when Pufi hops off.
 if(hero.mounted)drawTamo(hero.x+13,hero.y+17,hero.face);
+else if(world.rescue)drawRescue();
 else if(hero.pet){
 drawTamo(hero.pet.x+13,hero.pet.y+16,hero.face);
 if(Math.abs(hero.pet.x-hero.x)<90){oval(hero.pet.x+12,hero.pet.y-33,9,9,'#fff6d6','#73617e',1);ctx.fillStyle='#5b5576';ctx.font='bold 11px sans-serif';ctx.fillText('R',hero.pet.x+9,hero.pet.y-29)}
@@ -269,5 +342,5 @@ ctx.restore();
 let prev=0,accum=0;function frame(ms){const dt=prev?Math.min(.05,(ms-prev)/1000):0;prev=ms;accum+=dt;while(accum>=1/60){tick(1/60);accum-=1/60}draw();requestAnimationFrame(frame)}
 build(0);title();syncControls();requestAnimationFrame(frame);
 // Test seam; does not affect gameplay.
-window.PufiTest={state:()=>({mode,level,hero,world,save}),start,tick,finished,gameover,action,absorb,throwPaint,draw,toggleMount,hurt,openOptions,setControls,closeOptions};
+window.PufiTest={state:()=>({mode,level,hero,world,save}),start,tick,finished,gameover,action,absorb,throwPaint,draw,toggleMount,hurt,openOptions,setControls,closeOptions,startTamoRescue,updateTamoRescue,restoreTamo};
 })();
