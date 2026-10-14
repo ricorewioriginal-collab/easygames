@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e209a2d47b4f",
- "generated": "2026-10-14T12:40:45+02:00",
- "commit": "0e7e912c9f9b788e1c3eb7564725ca6e7a55f834",
+ "version": "532fa1f5e04c",
+ "generated": "2026-10-14T13:01:05+02:00",
+ "commit": "84e8abb96ba0427c738b2bd52080cfa787943e44",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4412,6 +4412,181 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
+   "p": "bunte-insel2/assets/app-FG2RWQYP.js",
+   "s": 517996,
+   "h": "9e55c5804296503f9aded036eb2903d03d7e3dfb9e5846ae00bc0564328ec34c"
+  },
+  {
+   "p": "bunte-insel2/assets/chunk-O2XFH626.js",
+   "s": 180,
+   "h": "d9cad469beb0997cded3780659461d023f24353d6a947fe77434f079536af5f9"
+  },
+  {
+   "p": "bunte-insel2/assets/main-DCL6DUIW.css",
+   "s": 20184,
+   "h": "6d2fb32b4867f4ad9e0227b55bd4eebf4e01cc82b2503cf4883943e5618fde4f"
+  },
+  {
+   "p": "bunte-insel2/assets/main-GBNLPV3W.js",
+   "s": 397,
+   "h": "56f98d12d79d598a8e84d35bffd15d259becfe21b2b19e845a157b2d545acb68"
+  },
+  {
+   "p": "bunte-insel2/audio/bonk.mp3",
+   "s": 4125,
+   "h": "df75516285c32078d2f4ee2a3f2f9b3955d815fe0060e25cdaaf9d62781c957e"
+  },
+  {
+   "p": "bunte-insel2/audio/bump.mp3",
+   "s": 2829,
+   "h": "f6387ed280d4a5bd65a935bf901b55ea131e406318473ab87c91c047e6fb98f3"
+  },
+  {
+   "p": "bunte-insel2/audio/buy.mp3",
+   "s": 5277,
+   "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
+  },
+  {
+   "p": "bunte-insel2/audio/cat.mp3",
+   "s": 6861,
+   "h": "dcc2c89455aaaf312bd6e50cd7390806bbb888d6d2729809b45b32863ef68c84"
+  },
+  {
+   "p": "bunte-insel2/audio/chicken.mp3",
+   "s": 10893,
+   "h": "b4bbaa95bd08f3eb9b4a9f30f7d76372e8f16dae36092efb45b29dd54e4394c9"
+  },
+  {
+   "p": "bunte-insel2/audio/chop.mp3",
+   "s": 1965,
+   "h": "1c5d0096227491654efb8ae151eae5b8c71a3e5f7f8318ca834ca56001999f07"
+  },
+  {
+   "p": "bunte-insel2/audio/coins.mp3",
+   "s": 2253,
+   "h": "9cac9f1ad4b4be66fb96e955effdd9ff4d0a67a9d5232e5fe99e3abeb7cbc107"
+  },
+  {
+   "p": "bunte-insel2/audio/cow.mp3",
+   "s": 9453,
+   "h": "12022a2615d45b2badc034372291a2dbc683252cfe10bd5aa15171ce7087336e"
+  },
+  {
+   "p": "bunte-insel2/audio/dog.mp3",
+   "s": 7725,
+   "h": "a6e48ad48049e070df1f6384967331c2495d7df6e3968de385fc5f7b0b5db826"
+  },
+  {
+   "p": "bunte-insel2/audio/donkey.mp3",
+   "s": 10173,
+   "h": "572ae6da2052c1821ea0ec9fe4d796fc28f0e89ea42a84524bed95ab1ca08ddc"
+  },
+  {
+   "p": "bunte-insel2/audio/duck.mp3",
+   "s": 9021,
+   "h": "a04a426764b748f5079edaf5a6bc0a24d14d162123508469f31d93fa430e11b7"
+  },
+  {
+   "p": "bunte-insel2/audio/enter.mp3",
+   "s": 5277,
+   "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
+  },
+  {
+   "p": "bunte-insel2/audio/goat.mp3",
+   "s": 9597,
+   "h": "645ecbe8afd7a7135f390a9d6637632b4dc17112952f7f85f25ee5b81913f4cb"
+  },
+  {
+   "p": "bunte-insel2/audio/hit.mp3",
+   "s": 3117,
+   "h": "3377d85a2b13c115f7eb61774504455c20436bdb0bc0b65ed54ec81f61d52493"
+  },
+  {
+   "p": "bunte-insel2/audio/horse.mp3",
+   "s": 13773,
+   "h": "db75edb20672b617af47fd5b4a663e4453e6689897ae471f2d5e3e4ca43abb1e"
+  },
+  {
+   "p": "bunte-insel2/audio/kick.mp3",
+   "s": 4557,
+   "h": "f6f990d31156d316933f3ede75cdfe846510b603ef4ef2bbbff6beb46592cce4"
+  },
+  {
+   "p": "bunte-insel2/audio/leave.mp3",
+   "s": 4557,
+   "h": "892226922e191bac77cd2cc7c198edd15f8ad37267384d38b050af1b29a4b189"
+  },
+  {
+   "p": "bunte-insel2/audio/pig.mp3",
+   "s": 9191,
+   "h": "b3df5fc22cd206ca9eac842793ea0be82c62d2a2935b9878330e39d228507636"
+  },
+  {
+   "p": "bunte-insel2/audio/sheep.mp3",
+   "s": 9597,
+   "h": "ecb6eba17aa33b239a0cd6d5d2e3dbcd8aa8b76c0c9fd5402f0d688eb5054729"
+  },
+  {
+   "p": "bunte-insel2/audio/thwack.mp3",
+   "s": 2541,
+   "h": "18d476b81e7152ec5cf839e0d517d45b04dcdf7c50a04314975409c01a900d02"
+  },
+  {
+   "p": "bunte-insel2/card.png",
+   "s": 167690,
+   "h": "9d37666b14c1e1c99e57fcc6cd397e82ffc2789143cafe0912061950214f3830"
+  },
+  {
+   "p": "bunte-insel2/fonts/fredoka-latin-wght-normal.woff2",
+   "s": 29732,
+   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
+  },
+  {
+   "p": "bunte-insel2/icons/icon-192.png",
+   "s": 19845,
+   "h": "ce223f06a76ea42354da0f38dd04b38359ffc84cec47472e176d8da17bd235a9"
+  },
+  {
+   "p": "bunte-insel2/icons/icon-512.png",
+   "s": 57148,
+   "h": "b0906ad7317dafd48a842d631a2406b00bc720d8b4d7a83b4cedcb214b3ae81b"
+  },
+  {
+   "p": "bunte-insel2/icons/icon-maskable-512.png",
+   "s": 47603,
+   "h": "e81177486fb13496a8437e28460bc5d583b38da2cf4caa9ba803f922084f886e"
+  },
+  {
+   "p": "bunte-insel2/icons/icon.svg",
+   "s": 1400,
+   "h": "eaf9955f61f35bae4f67cc4656ab1d137656b28b06acc96a362e1ff2ac2e3845"
+  },
+  {
+   "p": "bunte-insel2/index.html",
+   "s": 5326,
+   "h": "b7c97fa7355a1c7cbb9686d2d79a6ac953cd3fa4feb069adaf9cb2f50f65bd26"
+  },
+  {
+   "p": "bunte-insel2/manifest.webmanifest",
+   "s": 846,
+   "h": "a3b2121931e05b425622f67fb52bfc1e3798c3e6ff60ecf856be73a09d460b39"
+  },
+  {
+   "p": "bunte-insel2/sw.js",
+   "s": 1968,
+   "h": "8113b632de8951ccd171b16e5819fed7496dc4c71c6e53b3dbc019fb7970fd54"
+  },
+  {
+   "p": "bunte-insel2/vendor/three.min.js",
+   "s": 603445,
+   "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "bunte-insel2/version.json",
+   "s": 49,
+   "h": "2c94b92b1bbc2515d325e516ba57ba981c336e8750a14597baf3cd33169a89d7"
+  },
+  {
    "p": "cloud/anmacha-cloud.js",
    "s": 28218,
    "h": "91eaf165358ccf7531fb04556ed6e9094e8b2c3f5a3c6e1194db9917c86f1792"
@@ -4438,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 13810,
-   "h": "cc3172c5d93f450041a7f11c6ad09f841d30401810f540344434c9a117a4616c"
+   "s": 14473,
+   "h": "589d7b0c4ff98d81fefdb13c0a33ad23a6ed4abfb855be1fa01ecf0157e93d0f"
   },
   {
    "p": "gay-life/index.html",
@@ -4588,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 37604,
-   "h": "c26b0ab425f372f3aa1571750a08cd818d3af3d98adfd9b33e8e642cd48ca7fe"
+   "s": 39261,
+   "h": "2efa68c2e1ae5af36b4e36665226ea9afecc105c9dc6f26de21f93d4e3c6443e"
   },
   {
    "p": "index.html",
@@ -5018,8 +5193,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 57160,
-   "h": "a13fbe65e723661c0f65ad23f3f51a157f7f1da081f592623eb51b224e745ee5"
+   "s": 59632,
+   "h": "e793a659404ad5947367b4a93a11f7ef6b0de487626017a2975e84a6c8d09a41"
   },
   {
    "p": "taschi/card.svg",

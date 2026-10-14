@@ -377,5 +377,17 @@ window.EASYGAMES_GUIDES = {
    "Der Knopf 🧭 Wohin? zeigt mit Pfeil und Leuchtsäule den Weg zu einem Ziel.",
    "Gekämpft wird nur in der Kampfarena und im Verbotenen Wald."
   ]
+ },
+ "bunte-insel2": {
+  "anleitung": "DEMO TEST – das Spiel ist noch in Entwicklung, es kann Fehler geben. Fortsetzung von Bunte Insel: Du gestaltest deine Figur und erkundest eine große Inselwelt mit 20 Welten. Im Story-Modus hilfst du der einsamen Wolke Flick und öffnest Kapitel für Kapitel neue Welten, in der freien Welt ist alles sofort offen (beide haben getrennte Spielstände). Bewohner geben dir Aufgaben, das Tagebuch zeigt Ziele und bis zu drei Hinweise. Gespeichert wird lokal in drei Spielständen, ein Spielstand aus Bunte Insel 1 kann übernommen werden, ohne ihn zu verändern.",
+  "steuerung": [
+   "PC: W A S D oder Pfeile laufen/fahren, Maus ziehen = Kamera, Mausrad Abstand, Leertaste springen (zweimal = Doppelsprung, Fahrzeug: steigen), Umschalt rennen, E reden/einsteigen/aussteigen, F zweite Aktion, X sinken, H hupen, M Karte, Q Tagebuch, I oder Tab Rucksack, G Gesten, Y Hinweis, Esc oder P Pause. Nur im Verbotenen Wald: J Angriff, K Ausweichen, L Abwehr, U Lichtwelle, T Ziel erfassen. Tasten lassen sich in den Einstellungen ändern.",
+   "Touch: Joystick links laufen/lenken, rechts wischen = Kamera, Knöpfe rechts für Springen, Aktion und Rennen; im Wald erscheinen Kampfknöpfe.",
+   "Gamepad: Linker Stick laufen, rechter Stick Kamera, A Aktion, B springen, X Angriff, Y zweite Aktion, RT rennen, LT sinken, Steuerkreuz Karte/Rucksack/Gesten, Select Tagebuch, Start Pause."
+  ],
+  "tipps": [
+   "Die Weltensteine auf jeder Insel sind Schnellreise-Punkte: einmal berühren, danach über die Karte hinreisen.",
+   "Gekämpft wird nur im Verbotenen Wald – überall sonst wird geholfen, gerätselt und gespielt."
+  ]
  }
 };
