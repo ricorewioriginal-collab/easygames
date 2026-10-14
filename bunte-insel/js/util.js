@@ -88,7 +88,7 @@ BI.store = {
     }
     cone(x, y, z, r, h, color, seg = 6, jit = 0) { this.cyl(x, y, z, 0, r, h, color, seg, 0, 0, 0, jit); }
     sph(x, y, z, r, color, detail = 1, sx = 1, sy = 1, sz = 1, jit = 0) {
-      this._push(base('ico' + detail, () => nonIdx(new THREE.IcosahedronGeometry(1, detail))), x, y, z, 0, 0, 0, r * sx, r * sy, r * sz, color, jit);
+      this._push(base('sphere' + detail, () => nonIdx(new THREE.SphereGeometry(1, Math.max(8, 8 + detail * 4), Math.max(6, 6 + detail * 2)))), x, y, z, 0, 0, 0, r * sx, r * sy, r * sz, color, jit);
     }
     /* Dachprisma: Breite w (x), Höhe h, Länge len (z); ry=π/2 dreht den First */
     prism(x, y, z, w, h, len, color, ry = 0, jit = 0) {
