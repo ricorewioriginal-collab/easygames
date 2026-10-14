@@ -848,35 +848,28 @@ body.building #leftTools{top:calc(var(--hud-top) + 150px)}
 <script>(function(){var b=document.body;if(matchMedia('(pointer:coarse)').matches||'ontouchstart' in window)b.classList.add('touch');addEventListener('touchstart',function(){b.classList.add('touch')},{once:true,passive:true})})()</script>
 <script>(function(){var T=['Tipp: Mit einem Freund im selben Auto fahren – einer lenkt, der andere fährt mit! 🚗','Tipp: Sammle Sterne ⭐ und kaufe damit tolle Sachen im Spielzeugladen.','Tipp: Mit Hubschrauber 🚁 und Segelboot ⛵ kannst du die ganze Insel entdecken.','Tipp: Unter „Mein Held“ änderst du Aussehen, Namen und Haustier.','Tipp: Mini-Spiele machen zu zweit am meisten Spaß! 🎮','Tipp: Im Bauland 🧱 kannst du eigene Häuser aus Blöcken bauen.'],ld=document.getElementById('ldTip'),b=document.getElementById('ldBar'),p=document.getElementById('ldPct'),tx=document.getElementById('ldTxt'),all=83,k=0;if(ld)ld.textContent=T[(Math.random()*T.length)|0];window.__ld=function(){k++;var v=Math.min(96,Math.round(k/all*100));if(b)b.style.width=v+'%';if(p)p.textContent=v+' %';if(tx)tx.textContent=v<50?'Lade Spielwelt …':v<90?'Baue die Insel …':'Gleich geht’s los!'}})()</script>
 <script>
-/* Ladefehler sichtbar machen statt endloses Ladebild. Keine automatische zweite Spielinitialisierung. */
+/* Startdiagnose: sichtbar auch wenn die Engine ein Teilobjekt bereits angelegt hat. */
 (function(){
-  var errorText='', errorStack='';
-  function showStartError(){
-    if(window.__bi)return;
-    var screen=document.getElementById('loading');if(!screen||screen.hidden)return;
-    var label=document.getElementById('ldTxt'),bar=document.getElementById('ldPct');
-    if(label)label.textContent=errorText||'Der Spielstart dauert ungewöhnlich lange.';
-    if(bar)bar.textContent='Start prüfen';
-    var target=screen.querySelector('.ldBox')||screen;
-    if(errorStack&&target&&!document.getElementById('ldDebug')){
-      var details=document.createElement('details'),summary=document.createElement('summary'),pre=document.createElement('pre');
-      details.id='ldDebug';details.style.cssText='max-width:min(92vw,620px);max-height:32vh;overflow:auto;margin:10px auto;padding:9px 12px;border-radius:12px;background:rgba(4,20,48,.72);color:#fff;text-align:left;font:12px/1.35 system-ui';
-      summary.textContent='Technische Details anzeigen';summary.style.cssText='cursor:pointer;font-weight:700';
-      pre.textContent=errorStack.slice(0,1800);pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0 0;font:11px/1.4 ui-monospace,monospace';
-      details.append(summary,pre);target.appendChild(details);
-    }
-    if(!document.getElementById('ldRetry')){
-      var b=document.createElement('button');b.id='ldRetry';b.textContent='🔄 Erneut laden';
-      b.style.cssText='padding:12px 20px;margin:10px auto;background:#fff;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer;display:block';
-      b.onclick=function(){location.reload()};target.appendChild(b);
-    }
+  var errors=[], startAt=Date.now(), lastPhase='Skripte laden', finished=false;
+  window.__biStartPhase=function(phase){lastPhase=String(phase);};
+  function visible(){var el=document.getElementById('loading');return el&&!el.hidden&&getComputedStyle(el).display!=='none';}
+  function report(reason){
+    if(!visible()) {finished=true;return;}
+    var screen=document.getElementById('loading'), target=screen.querySelector('.ldBox')||screen;
+    var label=document.getElementById('ldTxt'), pct=document.getElementById('ldPct');
+    if(label)label.textContent=errors.length?'Startfehler: '+errors[0].message:'Spielstart dauert zu lange – Phase: '+lastPhase;
+    if(pct)pct.textContent='Start prüfen';
+    var details=document.getElementById('ldDebug');
+    if(!details){details=document.createElement('details');details.id='ldDebug';details.style.cssText='max-width:min(92vw,620px);max-height:32vh;overflow:auto;margin:10px auto;padding:9px 12px;border-radius:12px;background:rgba(4,20,48,.72);color:white;text-align:left;font:12px/1.35 system-ui';var summary=document.createElement('summary');summary.textContent='Technische Details anzeigen';details.appendChild(summary);var pre=document.createElement('pre');pre.id='ldDebugText';pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';details.appendChild(pre);target.appendChild(details);}
+    document.getElementById('ldDebugText').textContent='Phase: '+lastPhase+' | Laufzeit: '+Math.round((Date.now()-startAt)/1000)+'s | Grund: '+reason+'\n'+errors.map(function(e){return e.message+'\n'+e.stack;}).join('\n---\n');
+    if(!document.getElementById('ldRetry')){var btn=document.createElement('button');btn.id='ldRetry';btn.textContent='🔄 Erneut laden';btn.style.cssText='padding:12px 20px;margin:10px auto;background:white;color:#173c75;border:0;border-radius:16px;font:bold 17px system-ui;cursor:pointer;display:block';btn.onclick=function(){location.reload()};target.appendChild(btn);}
   }
-  window.addEventListener('error',function(e){
-    if(e.target&&e.target.tagName==='SCRIPT')errorText='Spieldatei konnte nicht geladen werden: '+(e.target.getAttribute('src')||'unbekannt');
-    else if(e.message&&!window.__bi){var where=e.filename?(' ('+e.filename.split('/').pop()+':'+(e.lineno||0)+')'):'';errorText='Startfehler: '+String(e.message).slice(0,120)+where;errorStack=e.error&&e.error.stack?String(e.error.stack):'';}
-    if(errorText)setTimeout(showStartError,0);
-  },true);
-  setTimeout(showStartError,12000);
+  function record(message,stack){errors.push({message:String(message).slice(0,300),stack:String(stack||'').slice(0,4000)});report('JavaScript-Fehler');}
+  addEventListener('error',function(e){if(e.target&&e.target.tagName==='SCRIPT')record('Spieldatei fehlt: '+e.target.getAttribute('src'),'');else if(e.message)record(e.message,e.error&&e.error.stack||((e.filename||'')+':'+(e.lineno||0)+':'+(e.colno||0)));},true);
+  addEventListener('unhandledrejection',function(e){record('Promise: '+String(e.reason&&e.reason.message||e.reason),e.reason&&e.reason.stack);});
+  setTimeout(function(){if(!finished&&visible())report('12-Sekunden-Watchdog');},12000);
+  setInterval(function(){if(!finished&&visible()&&Date.now()-startAt>12000)report('Start-Watchdog');else if(!visible())finished=true;},4000);
+})();
 </script>
 <script src="js/i18n.js?v=8"></script>
 <script src="js/i18n-en.js?v=4"></script>
