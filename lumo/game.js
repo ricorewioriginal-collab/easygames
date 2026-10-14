@@ -4,6 +4,8 @@ const TOTAL_LEVELS=20, SAVE_KEY='easygames.lumo.v1';
 const names=['Sonnenwiese','Bernsteinhöhen','Abendwind','Sternengipfel'],skies=['#83d4e1','#efbb91','#9c9bda','#425b91'];
 let level=0,score=0,deaths=0,active=false,done=false,platforms=[],gems=[],enemies=[],p,cam=0,t=0,coyote=0,buffer=0,checkpoint=40,shield=0;
 let obstacles=[],blocks=[],coins=0,bonus=null,bonusClock=0,effects=[];
+// Rewards become permanent only when a level is finished.
+let attemptBaseScore=0,attemptBaseCoins=0,deathReason='';
 const Audio=window.LumoAudio||{unlock(){},play(){},tick(){},toggle(){},isMuted(){return true;}};
 const levelNames=['Taufrischer Pfad','Blütenbrücken','Wurzelwald','Hüpfhügel','Waldtor','Kupferklippen','Sandsteinpass','Federfelsen','Dünenlauf','Sonnentor','Kristallufer','Frosttreppen','Polarlichter','Eiswind','Frosttor','Nebelzinnen','Schwebegarten','Sternenstaub','Mitternachtslauf','Himmelstor'];
 const themes=[
@@ -17,7 +19,7 @@ const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motio
 function limit(){return 120+Math.floor(level/5)*20;}
 function formatTime(seconds){return Math.max(0,seconds).toFixed(2)+' s';}
 function burst(x,y,color,count=14){if(reduced)return;for(let i=0;i<count;i++){const a=i*2.399;particles.push({x,y,vx:Math.cos(a)*(35+i%4*20),vy:-30-Math.abs(Math.sin(a))*95,life:.45+i%4*.12,color});}if(particles.length>180)particles.splice(0,particles.length-180);}
-function intro(){pending=null;document.body.classList.remove('celebrate');show('Level '+(level+1)+' · '+levelNames[level],names[Math.floor(level/5)]+' · '+limit()+' Sekunden. '+['Krabbler und Tunnel: Springe auf Gegner und über Hindernisse.','Hüpfer und Felsen: Achte auf den Sprungrhythmus.','Flatterer und Eiskristalle: Landungen gut planen.','Flitzer und Sternendornen: Timing zählt!'][Math.floor(level/5)]+' Bestzeit: '+(bests[level]?formatTime(bests[level]):'noch keine')+'.','Level starten →');}
+function intro(){pending=null;document.body.classList.remove('celebrate');show('Level '+(level+1)+' · '+levelNames[level],names[Math.floor(level/5)]+' · '+limit()+' Sekunden. '+['Krabbler und Tunnel: Springe auf Gegner und über Hindernisse.','Hüpfer und Felsen: Achte auf den Sprungrhythmus.','Flatterer und Eiskristalle: Landungen gut planen.','Flitzer und Sternendornen: Timing zählt!'][Math.floor(level/5)]+' Bestzeit: '+(bests[level]?formatTime(bests[level]):'noch keine')+'.','START GAME ▶');}
 function finishLevel(){
 const previous=bests[level];recordNotice=!previous||elapsed<previous;
 if(recordNotice)bests[level]=Math.max(.01,elapsed);
@@ -26,11 +28,20 @@ show('Level '+(level+1)+' geschafft!',formatTime(elapsed)+(recordNotice?' · Neu
 document.body.classList.add('celebrate');
 }
 function die(reason){
-if(deathTimer>0)return;deaths++;elapsed+=5;deathTimer=.7;flash=.35;
-burst(p.x+11,p.y+15,'#ff9c98',26);Audio.play('death');effects.push({x:p.x-20,y:p.y-12,text:reason+' · +5 s',life:1.3});clear();save();
+if(!active||deathTimer>0)return;
+deaths++;deathReason=reason;pending='gameover';deathTimer=.7;flash=.35;
+score=attemptBaseScore;coins=attemptBaseCoins;
+burst(p.x+11,p.y+15,'#ff9c98',26);Audio.play('death');
+effects.push({x:p.x-20,y:p.y-12,text:reason,life:1.3});clear();save();
 }
+function gameOver(reason){
+score=attemptBaseScore;coins=attemptBaseCoins;load();
+pending='gameover';deathReason=reason;save();
+show('GAME OVER',reason+'! Alle Belohnungen dieses Versuchs sind verloren. Starte Level '+(level+1)+' komplett von vorne.','LEVEL NEU STARTEN →');
+}
+
 const keys={left:false,right:false,jump:false};
-function load(){elapsed=0;runClock=0;pending=null;deathTimer=0;particles=[];flash=0;bonus=null;obstacles=[];blocks=[];effects=[];platforms=[];gems=[];enemies=[];checkpoint=40;cam=0;let x=0;
+function load(){attemptBaseScore=score;attemptBaseCoins=coins;deathReason='';elapsed=0;runClock=0;pending=null;deathTimer=0;particles=[];flash=0;bonus=null;obstacles=[];blocks=[];effects=[];platforms=[];gems=[];enemies=[];checkpoint=40;cam=0;let x=0;
 const difficulty=level/19, count=9+Math.floor(level/5);
 for(let i=0;i<count;i++){
 const w=i===0?340:Math.round(240-difficulty*60+((i+level)%3-1)*14);
@@ -58,9 +69,17 @@ e.kind=level<2?'crawler':['crawler','hopper','flyer','dasher'][(Math.floor(level
 e.baseY=e.y;e.phase=enemies.indexOf(e)*1.7;
 }
 respawn();done=false;}
-function checkpointPlatform(){return platforms[Math.floor(platforms.length/2)];}
 function save(){
-try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:1,elapsed,bests,pending,level,score,deaths,done,coins,blocks:blocks.map(b=>!!b.used),bonus:bonus?{remaining:bonus.remaining,collected:gems.map(g=>!!g.got)}:null,checkpoint:checkpoint>40,gems:gems.map(g=>!!g.got),enemies:enemies.map(e=>!!e.dead)}));
+try{
+const failed=pending==='gameover';
+localStorage.setItem(SAVE_KEY,JSON.stringify({
+version:1,elapsed:failed?0:elapsed,bests,pending,level,score,deaths,done,coins,
+attemptBaseScore,attemptBaseCoins,deathReason:failed?deathReason:null,
+blocks:blocks.map(b=>!failed&&!!b.used),
+bonus:bonus?{remaining:bonus.remaining,collected:gems.map(g=>!!g.got)}:null,
+gems:gems.map(g=>!failed&&!!g.got),
+enemies:enemies.map(e=>!failed&&!!e.dead)
+}));
 document.getElementById('saveStatus').textContent='Fortschritt auf diesem Gerät gespeichert. Mit Google auch geräteübergreifend.';}
 catch(e){document.getElementById('saveStatus').textContent='Speichern auf diesem Gerät nicht verfügbar.';}
 }
@@ -68,40 +87,54 @@ function restore(){
 try{
 const s=JSON.parse(localStorage.getItem(SAVE_KEY));
 if(!s||s.version!==1||!Number.isInteger(s.level)||s.level<0||s.level>=TOTAL_LEVELS||!Number.isSafeInteger(s.score)||s.score<0||!Number.isSafeInteger(s.deaths)||s.deaths<0)return;
-level=s.level;score=s.score;deaths=s.deaths;load();
-if(s.checkpoint===true)checkpoint=checkpointPlatform().x+25;
-gems.forEach((g,i)=>g.got=Array.isArray(s.gems)&&s.gems[i]===true);
+level=s.level;score=s.score;deaths=s.deaths;coins=Number.isSafeInteger(s.coins)&&s.coins>=0?s.coins:0;
+load();
+bests={};if(s.bests&&typeof s.bests==='object')for(let i=0;i<TOTAL_LEVELS;i++)if(Number.isFinite(s.bests[i])&&s.bests[i]>0&&s.bests[i]<=240)bests[i]=s.bests[i];
+const failed=s.pending==='gameover';
+const savedBonus=s.bonus&&[4,9,14,19].includes(level)&&Number.isFinite(s.bonus.remaining)&&s.bonus.remaining>=0&&s.bonus.remaining<=20;
+if(savedBonus&&!failed){makeBonus();bonus.remaining=s.bonus.remaining;}
+if(!failed){
+gems.forEach((g,i)=>g.got=Array.isArray(savedBonus?s.bonus.collected:s.gems)&&(savedBonus?s.bonus.collected:s.gems)[i]===true);
 enemies.forEach((e,i)=>e.dead=Array.isArray(s.enemies)&&s.enemies[i]===true);
-elapsed=Number.isFinite(s.elapsed)&&s.elapsed>=0?Math.min(s.elapsed,limit()):0;
-bests={};if(s.bests&&typeof s.bests==='object')for(let i=0;i<20;i++)if(Number.isFinite(s.bests[i])&&s.bests[i]>0&&s.bests[i]<=240)bests[i]=s.bests[i];
-coins=Number.isSafeInteger(s.coins)&&s.coins>=0?s.coins:0;
 blocks.forEach((b,i)=>b.used=Array.isArray(s.blocks)&&s.blocks[i]===true);
-if(s.bonus&&[4,9,14,19].includes(level)&&Number.isFinite(s.bonus.remaining)&&s.bonus.remaining>=0&&s.bonus.remaining<=20){
-makeBonus();bonus.remaining=s.bonus.remaining;gems.forEach((g,i)=>g.got=Array.isArray(s.bonus.collected)&&s.bonus.collected[i]===true);
+elapsed=Number.isFinite(s.elapsed)&&s.elapsed>=0?Math.min(s.elapsed,limit()):0;
 }
-pending=['level','bonus'].includes(s.pending)?s.pending:null;
-done=s.done===true&&level===TOTAL_LEVELS-1;respawn();cam=Math.max(0,p.x-180);
-show(done?'Wolkenpfad geschafft!':'Willkommen zurück!',done?'Alle 20 Tore sind offen. '+score+' Kristalle gesammelt.':bonus?'Dein Münzgarten wartet: noch '+Math.ceil(bonus.remaining)+' Sekunden.':'Weiter bei Level '+(level+1)+' – '+names[Math.floor(level/5)]+'. Dein Checkpoint und deine Kristalle sind gespeichert.',done?'Noch einmal spielen':'Weiterspielen →');
+const collectedGems=gems.filter(g=>g.got).length;
+const collectedBoxes=blocks.filter(b=>b.used&&b.kind==='coin').length;
+const collectedBonus=savedBonus?collectedGems:0;
+attemptBaseScore=Number.isSafeInteger(s.attemptBaseScore)&&s.attemptBaseScore>=0&&s.attemptBaseScore<=score?s.attemptBaseScore:Math.max(0,score-(savedBonus?0:collectedGems));
+attemptBaseCoins=Number.isSafeInteger(s.attemptBaseCoins)&&s.attemptBaseCoins>=0&&s.attemptBaseCoins<=coins?s.attemptBaseCoins:Math.max(0,coins-collectedBoxes-collectedBonus);
+pending=['level','bonus','gameover'].includes(s.pending)?s.pending:null;
+done=s.done===true&&level===TOTAL_LEVELS-1;
+if(failed){
+score=attemptBaseScore;coins=attemptBaseCoins;load();pending='gameover';
+deathReason=typeof s.deathReason==='string'&&s.deathReason.length<60?s.deathReason:'Versuch gescheitert';
+respawn();
+show('GAME OVER',deathReason+'! Das gesamte Level beginnt bei null – ohne eingesammelte Belohnungen aus dem verlorenen Versuch.','LEVEL NEU STARTEN →');
+}else{
+respawn();cam=0;
+show(done?'Wolkenpfad geschafft!':'Willkommen zurück!',done?'Alle 20 Tore sind offen. '+score+' Kristalle gesammelt.':bonus?'Dein Münzgarten wartet: noch '+Math.ceil(bonus.remaining)+' Sekunden.':'Weiter bei Level '+(level+1)+' – '+names[Math.floor(level/5)]+'. Der laufende Versuch ist gespeichert.',done?'Noch einmal spielen':'Weiterspielen →');
 if(pending){show(pending==='level'?'Level abgeschlossen!':'Bonus abgeschlossen!','Dein Ergebnis ist gespeichert. Weiter zum nächsten Abschnitt.','Weiter →');document.body.classList.add('celebrate');}
+}
 }catch(e){}
 }
-function respawn(){let s=platforms.find(q=>checkpoint>=q.x&&checkpoint<q.x+q.w)||platforms[0];p={x:checkpoint,y:s.y-32,w:22,h:30,vx:0,vy:0,face:1};coyote=0;buffer=0;shield=1.5;}
+function respawn(){const s=platforms[0];p={x:40,y:s.y-32,w:22,h:30,vx:0,vy:0,face:1};coyote=0;buffer=0;shield=1.5;}
 function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 function clear(){Object.keys(keys).forEach(k=>keys[k]=false);buffer=0;}
-function show(title,message,label){active=false;clear();document.body.classList.add('menu-open');panel.style.display='grid';document.getElementById('title').textContent=title;document.getElementById('message').textContent=message;document.getElementById('start').textContent=label;document.getElementById('retry').disabled=!!bonus;}
+function show(title,message,label){active=false;clear();document.body.classList.toggle('game-over',pending==='gameover');document.body.classList.add('menu-open');panel.style.display='grid';document.getElementById('title').textContent=title;document.getElementById('message').textContent=message;document.getElementById('start').textContent=label;document.getElementById('retry').disabled=!!bonus;}
 document.getElementById('start').onclick=()=>{
 Audio.unlock();document.body.classList.remove('celebrate');
 if(pending==='level'){pending=null;if((level+1)%5===0)enterBonus();else{advance();intro();}return;}
 if(pending==='bonus'){pending=null;advance();if(!done)intro();return;}
 if(done){level=0;score=0;deaths=0;coins=0;load();save();intro();return;}
-Audio.play('start');active=true;document.body.classList.remove('menu-open');panel.style.display='none';
+Audio.play('start');pending=null;active=true;document.body.classList.remove('game-over','menu-open');panel.style.display='none';
 };
-document.getElementById('retry').onclick=()=>{if(bonus)return;Audio.unlock();load();save();intro();};
+document.getElementById('retry').onclick=()=>{if(bonus)return;Audio.unlock();score=attemptBaseScore;coins=attemptBaseCoins;load();save();intro();};
 function updateSoundButtons(){for(const id of ['sound','soundMenu']){const b=document.getElementById(id);b.textContent=Audio.isMuted()?'♫ Aus':'♫ An';b.setAttribute('aria-pressed',String(!Audio.isMuted()));}}
 for(const id of ['sound','soundMenu'])document.getElementById(id).onclick=()=>{Audio.toggle();updateSoundButtons();};
 updateSoundButtons();
 function pause(){if(active){save();show('Hauptmenü',bonus?'Bonus pausiert – deine verbleibende Zeit bleibt erhalten.':'Fortschritt gespeichert. Laufen: ← → / A D · Springen: Leertaste / W / ↑. Goldblöcke von unten treffen, über Tunnel springen.','Weiterspielen →');}}
-document.getElementById('menu').onclick=()=>{if(active)pause();else show('Hauptmenü','20 Level, vier Bonusrunden und dein gespeicherter Fortschritt.',done?'Noch einmal spielen':'Weiterspielen →');};
+document.getElementById('menu').onclick=()=>{if(active)pause();else if(pending!=='gameover')show('Hauptmenü','20 Level, vier Bonusrunden und dein gespeicherten Fortschritt.',done?'Noch einmal spielen':'Weiterspielen →');};
 document.getElementById('fullscreen').onclick=async()=>{
 try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else throw Error();}
 catch(e){document.getElementById('screenStatus').textContent='Bildschirmfüllende Ansicht aktiv. Dieser Browser erlaubt hier keinen echten Vollbildmodus.';}
@@ -142,7 +175,6 @@ if(p.x+p.w<=q.x||p.x>=q.x+q.w)continue;
 if(p.vy>=0&&old+p.h<=q.y+.1&&p.y+p.h>=q.y){
 p.y=q.y-p.h;p.vy=0;coyote=.1;
 if(q.kind==='spring'){p.vy=-510;coyote=0;Audio.play('jump');burst(p.x+11,q.y,'#a8fff0');}
-if(!bonus&&q===checkpointPlatform()&&checkpoint===40){checkpoint=q.x+25;burst(q.x+25,q.y-40,'#a8fff0',22);Audio.play('shield');save();}
 }else if(p.vy<0&&old>=q.y+q.h-.1&&p.y<=q.y+q.h){
 p.y=q.y+q.h;p.vy=0;if(blocks.includes(q))hitBlock(q);
 }
@@ -150,8 +182,8 @@ p.y=q.y+q.h;p.vy=0;if(blocks.includes(q))hitBlock(q);
 }
 function update(dt){
 if(!active)return;
-if(deathTimer>0){deathTimer=Math.max(0,deathTimer-dt);if(deathTimer===0)respawn();return;}
-if(!bonus){elapsed+=dt;runClock+=dt;if(runClock>=1){runClock=0;save();}if(elapsed>=limit()){Audio.play('death');load();save();show('Zeit abgelaufen!','Neuer Versuch ab Levelbeginn. Deine Bestzeiten bleiben erhalten.','Level neu starten →');return;}}
+if(deathTimer>0){deathTimer=Math.max(0,deathTimer-dt);if(deathTimer===0)gameOver(deathReason);return;}
+if(!bonus){elapsed+=dt;runClock+=dt;if(runClock>=1){runClock=0;save();}if(elapsed>=limit()){die('Zeit abgelaufen');return;}}
 t+=dt;shield=Math.max(0,shield-dt);buffer-=dt;coyote-=dt;
 effects.forEach(e=>{e.life-=dt;e.y-=22*dt;});effects=effects.filter(e=>e.life>0);
 const old=p.y;movePlayer(dt);
@@ -206,8 +238,7 @@ rect(e.x,e.y+7,24,13,'#483d65');rect(e.x+3,e.y,18,15,color);
 rect(e.x+4,e.y+5,5,5,'#fff0dd');rect(e.x+15,e.y+5,5,5,'#fff0dd');rect(e.x+6,e.y+7,2,3,'#26304b');rect(e.x+16,e.y+7,2,3,'#26304b');
 rect(e.x+2,e.y+19,6,3,color);rect(e.x+16,e.y+19,6,3,color);
 }
-if(!bonus){const cp=checkpointPlatform();rect(cp.x+25,cp.y-48,3,48,'#fff2d5');rect(cp.x+28,cp.y-48,23,15,checkpoint>40?'#ffdf83':'#92ccde');
-const last=platforms[platforms.length-1],gx=last.x+last.w-55;rect(gx,last.y-65,38,65,'#f8e1a6');rect(gx+7,last.y-56,24,56,'#527a9d');rect(gx+13,last.y-49,12,49,'#a2f0d5');
+if(!bonus){const last=platforms[platforms.length-1],gx=last.x+last.w-55;rect(gx,last.y-65,38,65,'#f8e1a6');rect(gx+7,last.y-56,24,56,'#527a9d');rect(gx+13,last.y-49,12,49,'#a2f0d5');
 }
 // Original Lumo sprite: turquoise hood, amber scarf, dark boots.
 let x=Math.round(p.x-3),y=Math.round(p.y-4-(deathTimer>0?Math.sin(deathTimer/.7*Math.PI)*25:0)),step=p.vx&&p.vy===0?Math.sin(t*18)*2:0;

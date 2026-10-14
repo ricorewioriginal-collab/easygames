@@ -38,21 +38,27 @@ for(let l=0;l<20;l++){
  b.run('load()');JSON.parse(b.run('JSON.stringify(enemies.map(e=>e.kind))')).forEach(k=>kinds.add(k));
 }
 assert.equal(layouts.size,20);assert.equal(hazards.size,5);assert.equal(kinds.size,4);
-// Enemy death animation, penalty and sound; no duplicate death during animation.
-b=boot();b.run('active=true;shield=0;var e=enemies[0];p.x=e.x;p.y=e.y;p.vy=0;update(1/120)');assert.equal(b.run('deaths'),1);assert(b.run('deathTimer>0'));assert(b.sounds.includes('death'));assert(b.run('elapsed>=5'));
-b.run('update(.1)');assert.equal(b.run('deaths'),1);b.run('for(let i=0;i<120;i++)update(1/120)');assert.equal(b.run('deathTimer'),0);
-// Fall and spikes use the same feedback.
-b.run('p.y=450;update(1/120)');assert.equal(b.run('deaths'),2);
-b.run("level=3;load();active=true;shield=0;var o=obstacles.find(o=>o.kind==='spikes');p.x=o.x+3;p.y=o.y;p.vy=0;update(1/120)");assert(b.run('deathTimer>0'));
-// Timer expiry starts a fresh attempt; bests preserved.
-b.run('load();active=true;bests[level]=22;elapsed=limit()-.001;update(1/120)');assert.equal(b.run('elapsed'),0);assert.equal(b.run('bests[level]'),22);assert(!b.run('active'));
-// Better record wins, slower finish does not overwrite.
-b.run('elapsed=20;finishLevel()');assert.equal(b.run('bests[level]'),20);b.run('elapsed=25;finishLevel()');assert.equal(b.run('bests[level]'),20);
-b.els.retry.onclick();assert.equal(b.run('bests[level]'),20);assert.equal(b.run('pending'),null);
-// Bonus state, timer and records round-trip; completed bonus resumes at next screen.
+// Game Over must reset the *entire* attempt, including items, enemies and position.
+b=boot();assert.match(b.els.start.textContent,/START GAME/);b.els.start.onclick();
+b.run('hitBlock(blocks[0]);gems[0].got=true;score++;enemies[0].dead=true;shield=0;die("Erwischt")');
+assert.equal(b.run('deaths'),1);assert(b.sounds.includes('death'));assert.equal(b.run('coins'),0);assert.equal(b.run('score'),0);
+b.run('for(let i=0;i<120;i++)update(1/120)');
+assert.equal(b.run('pending'),'gameover');assert(!b.run('active'));assert.match(b.els.title.textContent,/GAME OVER/);
+assert.equal(b.run('p.x'),40);assert(!b.run('gems[0].got'));assert(!b.run('blocks[0].used'));assert(!b.run('enemies[0].dead'));
+let over=boot(b.storage.get('easygames.lumo.v1'));assert.equal(over.run('pending'),'gameover');assert.equal(over.run('coins'),0);
+over.els.start.onclick();assert(over.run('active'));assert.equal(over.run('pending'),null);
+over.run('p.y=450;update(1/120);for(let i=0;i<120;i++)update(1/120)');assert.equal(over.run('pending'),'gameover');assert.equal(over.run('deaths'),2);
+over.els.start.onclick();over.run("level=3;load();active=true;shield=0;var o=obstacles.find(o=>o.kind==='spikes');p.x=o.x+3;p.y=o.y;p.vy=0;update(1/120)");
+assert(over.run('deathTimer>0'));over.run('for(let i=0;i<120;i++)update(1/120)');assert.equal(over.run('pending'),'gameover');
+over.els.start.onclick();over.run('bests[level]=22;elapsed=limit()-.001;update(1/120);for(let i=0;i<120;i++)update(1/120)');
+assert.equal(over.run('elapsed'),0);assert.equal(over.run('bests[level]'),22);assert.equal(over.run('pending'),'gameover');
+b=boot();b.els.start.onclick();b.run('hitBlock(blocks[0]);score=2;save();pause()');assert.equal(b.run('coins'),1);
+b.els.retry.onclick();assert.equal(b.run('coins'),0);assert.equal(b.run('score'),0);
+b.run('active=true;score=3;coins=4;elapsed=20;finishLevel()');assert.equal(b.run('pending'),'level');assert.equal(b.run('bests[level]'),20);
+b.els.retry.onclick();assert.equal(b.run('score'),0);assert.equal(b.run('coins'),0);
 b.run('level=9;load();enterBonus();active=true;gems[0].got=true;coins=11;bonus.remaining=12.5;save()');
 let r=boot(b.storage.get('easygames.lumo.v1'));assert.equal(r.run('bonus.remaining'),12.5);assert.equal(r.run('coins'),11);assert(r.run('gems[0].got'));r.run('update(1)');assert.equal(r.run('bonus.remaining'),12.5);assert.equal(r.writes(),0);
 b.run("bonus.remaining=0;pending='bonus';save()");r=boot(b.storage.get('easygames.lumo.v1'));assert.equal(r.run('pending'),'bonus');r.els.start.onclick();assert.equal(r.run('level'),10);
-// Previous saves still load.
-r=boot(JSON.stringify({version:1,level:8,score:45,deaths:3,checkpoint:true,gems:[true],enemies:[]}));assert.equal(r.run('level'),8);assert.equal(r.run('elapsed'),0);assert(r.run('checkpoint>40'));
-console.log('PASS: 20 unique reachable layouts; five obstacles/four enemies; start/finish screens; four bonuses; timers, penalties, records, migration, saves, sound events, particles, render.');
+r=boot(JSON.stringify({version:1,level:8,score:45,coins:4,deaths:3,checkpoint:true,gems:[true],blocks:[true],enemies:[]}));
+assert.equal(r.run('level'),8);assert.equal(r.run('checkpoint'),40);assert.equal(r.run('attemptBaseScore'),44);
+console.log('PASS: all 20 layouts, bonuses, records; GAME OVER, full resets, timeouts and legacy saves.');
