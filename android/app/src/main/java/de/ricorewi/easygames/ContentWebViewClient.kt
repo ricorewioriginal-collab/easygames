@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import de.ricorewi.easygames.core.ContentStore
 import de.ricorewi.easygames.core.Mime
+import de.ricorewi.easygames.core.NativeHtml
 import java.io.ByteArrayInputStream
 
 /** Der (künstliche) Ursprung, unter dem die lokalen Inhalte ausgeliefert werden. */
@@ -17,6 +18,7 @@ object Origin {
     const val HOST = "appassets.androidplatform.net"
     const val PATH_PREFIX = "/easygames/"
     const val START_URL = "https://$HOST${PATH_PREFIX}index.html"
+    const val PREPARE_URL = "https://$HOST${PATH_PREFIX}__prepare__.html"
 
     fun isOwn(uri: Uri): Boolean = uri.scheme == "https" && HOST.equals(uri.host, ignoreCase = true)
 }
@@ -32,7 +34,7 @@ class ContentWebViewClient(
 
     interface Callbacks {
         fun onPageStarted()
-        fun onPageFinished()
+        fun onPageFinished(url: String?)
 
         /** Der Renderer-Prozess ist abgestürzt/beendet; die WebView muss neu aufgebaut werden. */
         fun onRendererGone(view: WebView)
@@ -51,7 +53,8 @@ class ContentWebViewClient(
         }
     }
 
-    private fun intercept(req: WebResourceRequest): WebResourceResponse? {
+    // Also used by ServiceWorkerClient: its fetches bypass WebViewClient.
+    fun intercept(req: WebResourceRequest): WebResourceResponse? {
         val uri = req.url
         val scheme = uri.scheme
         if (scheme != "https" && scheme != "http") return null
@@ -60,6 +63,8 @@ class ContentWebViewClient(
         // (1) Unser Ursprung -> Inhaltsspeicher
         if (Origin.isOwn(uri)) {
             if (method == "OPTIONS") return status(204, "No Content")
+            if (method != "GET" && method != "HEAD") return status(405, "Method Not Allowed")
+            if (req.requestHeaders.any { (key, value) -> key.equals("Service-Worker", true) && value == "script" }) return notFound()
             val path = uri.path ?: ""
             if (!path.startsWith(Origin.PATH_PREFIX)) return notFound()
             var rel = path.substring(Origin.PATH_PREFIX.length)      // Query und Hash sind nicht Teil von path
@@ -78,6 +83,9 @@ class ContentWebViewClient(
         val data = if (method == "HEAD") {
             content.stream.close()
             ByteArrayInputStream(ByteArray(0))
+        } else if (content.mime == "text/html") {
+            val html = content.stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            ByteArrayInputStream(NativeHtml.prepare(html).toByteArray(Charsets.UTF_8))
         } else {
             content.stream
         }
@@ -107,7 +115,7 @@ class ContentWebViewClient(
     }
 
     override fun onPageFinished(view: WebView?, url: String?) {
-        callbacks.onPageFinished()
+        callbacks.onPageFinished(url)
     }
 
     override fun onRenderProcessGone(view: WebView?, detail: RenderProcessGoneDetail?): Boolean {

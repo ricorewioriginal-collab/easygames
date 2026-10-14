@@ -15,7 +15,7 @@ const args = process.argv.slice(2), has = f => args.includes(f), val = f => { co
 
 const LINKS = { radio: 'https://www.ricorewi-radio.de', githubPage: 'https://ricorewioriginal-collab.github.io/easygames/' };
 const SHELL = ['index.html', 'einbinden.html', 'games.js', 'modes.js', 'guides.js', 'device.js', 'gamekit.js', 'easygames.js'];
-const SHELL_OPTIONAL = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'cloud/anmacha-cloud.js'];
+const SHELL_OPTIONAL = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'cloud/anmacha-cloud.js', 'show-voice.js'];
 // Nicht ins Offline-Paket: Quellcode, Doku, Tests, Build-Hilfen
 const SKIP_DIRS = new Set(['node_modules', '.git', '.github', '.vscode', 'docs', 'doc', 'test', 'tests', '__tests__', 'tools', 'coverage', 'source']);   // source: Quellcode von bunte-insel2 (gebaut liegt das Spiel daneben)
 const SKIP_FILE = /(^|\/)(README[^/]*|[^/]*\.md|package(-lock)?\.json|tsconfig[^/]*\.json|eslint\.config\.[^/]*|\.[^/]*|THIRD_PARTY[^/]*|LICENSE[^/]*)$|\.(map|ts|tsx|sh|py|psd|blend|log)$/i;
@@ -67,6 +67,7 @@ for (const [p, who] of owner) { if (who === '_shell') continue; sizes[who] = (si
 const vendorMap = JSON.parse(fs.readFileSync(path.join(root, 'vendor', 'map.json'), 'utf8'));
 const vendorFiles = new Set(Object.values(vendorMap));
 vendorFiles.add('vendor/fonts/fredoka.css');
+vendorFiles.add('vendor/licenses/jsqr-MIT.txt');
 for (const f of vendorFiles) { if (!fs.existsSync(path.join(root, f))) errors.push(`vendor: ${f} fehlt (node tools/fetch-vendor.js)`); else add(f, '_vendor'); }
 // Google-Fonts-Stylesheets (Fredoka) → lokales CSS
 const TEXT = /\.(html?|js|mjs|css|json)$/i, URL_RE = /https?:\/\/[A-Za-z0-9._-]+(?::\d+)?(?:\/[^\s"'`)<>\\]*)?/g;
@@ -106,7 +107,6 @@ const catalog = {
 const catalogText = JSON.stringify(catalog, null, 1) + '\n';
 fs.mkdirSync(path.join(root, 'sync'), { recursive: true });
 const catalogPath = 'sync/catalog.json';
-fs.writeFileSync(path.join(root, catalogPath), catalogText);
 files.set(catalogPath, { p: catalogPath, s: Buffer.byteLength(catalogText), h: sha256(Buffer.from(catalogText)) }); owner.set(catalogPath, '_shell');
 
 const list = [...files.values()].sort((a, b) => a.p < b.p ? -1 : 1);
@@ -127,17 +127,24 @@ errors.forEach(e => console.error('FEHLER:  ' + e));
 
 if (has('--check')) {
   if (errors.length) process.exit(1);
+  if (!fs.existsSync(path.join(root, catalogPath)) || fs.readFileSync(path.join(root, catalogPath), 'utf8') !== catalogText) {
+    console.error('sync/catalog.json ist veraltet. Bitte "node tools/build-sync.js" ausführen.'); process.exit(1);
+  }
   if (oldVersion !== version) { console.error(`sync/manifest.json ist veraltet (${oldVersion} ≠ ${version}). Bitte "node tools/build-sync.js" ausführen.`); process.exit(1); }
   console.log('sync/manifest.json ist aktuell (' + version + ')'); process.exit(0);
 }
 if (errors.length) process.exit(1);
+fs.writeFileSync(path.join(root, catalogPath), catalogText);
 if (oldVersion !== version) fs.writeFileSync(manPath, JSON.stringify(manifest, null, 1) + '\n');   // sonst unverändert lassen (kein Commit-Rauschen)
 console.log(`${list.length} Dateien, ${(total / 1048576).toFixed(1)} MB, Version ${version}${oldVersion === version ? ' (unverändert)' : ' (neu)'}`);
 
 const stage = val('--stage');
 if (stage) {
   const out = path.resolve(root, stage); fs.rmSync(out, { recursive: true, force: true });
-  for (const f of list) { const d = path.join(out, f.p); fs.mkdirSync(path.dirname(d), { recursive: true }); fs.copyFileSync(path.join(root, f.p), d); }
+  // Androids Asset-Packer überspringt Namen mit "_"/".". Hash-Namen erhalten
+  // auch Vite-Hilfsmodule unverändert und packen gleiche Inhalte nur einmal.
+  fs.mkdirSync(path.join(out, 'content'), { recursive: true });
+  for (const f of list) { const d = path.join(out, 'content', f.h); if (!fs.existsSync(d)) fs.copyFileSync(path.join(root, f.p), d); }
   fs.mkdirSync(path.join(out, 'sync'), { recursive: true });
   fs.copyFileSync(manPath, path.join(out, 'sync', 'manifest.json'));
   console.log('Start-Inhalt nach ' + stage + ' kopiert');

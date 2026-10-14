@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.SystemClock
 import android.util.Log
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -80,6 +79,9 @@ class SyncCoordinator(
         get() = prefs.getBoolean(KEY_WIFI_ONLY, true)
         set(value) {
             prefs.edit().putBoolean(KEY_WIFI_ONLY, value).apply()
+            schedulePeriodic()
+            scheduleCatchUp(replace = true)
+            requestSync(Trigger.MANUAL)
             notifyListeners()
         }
 
@@ -140,9 +142,9 @@ class SyncCoordinator(
      */
     fun requestSync(trigger: Trigger) {
         val now = SystemClock.elapsedRealtime()
-        if (trigger == Trigger.NETWORK && lastAttemptMs != 0L && now - lastAttemptMs < NETWORK_RETRY_MS) return
-        // Der Netzwerk-Callback garantiert selbst ein ungemessenes Netz, die Abfrage käme evtl. zu früh.
-        val net = if (trigger == Trigger.NETWORK) Net.UNMETERED else networkStatus()
+        if (trigger == Trigger.NETWORK && current.state != State.OFFLINE && current.state != State.ERROR &&
+            lastAttemptMs != 0L && now - lastAttemptMs < NETWORK_RETRY_MS) return
+        val net = networkStatus()
         if (net == Net.NONE) {
             setBlocked(null)
             scheduleCatchUp()
@@ -252,26 +254,24 @@ class SyncCoordinator(
         val cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return Net.NONE
         val network = cm.activeNetwork ?: return Net.NONE
         val caps = cm.getNetworkCapabilities(network) ?: return Net.NONE
-        if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) return Net.NONE
+        if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ||
+            !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) return Net.NONE
         return if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)) Net.UNMETERED else Net.METERED
     }
 
-    /** Solange die App sichtbar ist: bei neu verbundenem WLAN (ungemessenes Netz) einen Sync anstoßen. */
+    /** Solange die App sichtbar ist: bei einer erlaubten, validierten Verbindung synchronisieren. */
     @Synchronized
     fun startNetworkWatch() {
         if (netCallback != null) return
         val cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
         val cb = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
+            override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) {
+                if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) return
                 requestSync(Trigger.NETWORK)
             }
         }
-        val request = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
-            .build()
         try {
-            cm.registerNetworkCallback(request, cb)
+            cm.registerDefaultNetworkCallback(cb)
             netCallback = cb
         } catch (e: RuntimeException) {
             Log.w(TAG, "Netzwerk-Callback nicht registrierbar", e)
@@ -295,7 +295,7 @@ class SyncCoordinator(
     private fun schedulePeriodic() {
         try {
             WorkManager.getInstance(app).enqueueUniquePeriodicWork(
-                WORK_PERIODIC, ExistingPeriodicWorkPolicy.KEEP, SyncWorker.periodicRequest()
+                WORK_PERIODIC, ExistingPeriodicWorkPolicy.UPDATE, SyncWorker.periodicRequest(wifiOnly)
             )
         } catch (e: IllegalStateException) {
             Log.w(TAG, "WorkManager nicht verfügbar", e)
@@ -303,10 +303,10 @@ class SyncCoordinator(
     }
 
     /** Einmal-Job (eindeutig, KEEP): läuft, sobald WLAN verbunden ist, auch wenn die App geschlossen ist. */
-    private fun scheduleCatchUp() {
+    private fun scheduleCatchUp(replace: Boolean = false) {
         try {
             WorkManager.getInstance(app).enqueueUniqueWork(
-                WORK_CATCHUP, ExistingWorkPolicy.KEEP, SyncWorker.oneTimeRequest()
+                WORK_CATCHUP, if (replace) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP, SyncWorker.oneTimeRequest(wifiOnly)
             )
         } catch (e: IllegalStateException) {
             Log.w(TAG, "WorkManager nicht verfügbar", e)

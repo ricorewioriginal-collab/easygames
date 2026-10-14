@@ -34,19 +34,19 @@ class SyncWorker(context: Context, params: WorkerParameters) : Worker(context, p
     }
 
     companion object {
-        private fun constraints(): Constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.UNMETERED)          // WLAN
+        private fun constraints(wifiOnly: Boolean): Constraints = Constraints.Builder()
+            .setRequiredNetworkType(if (wifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED)
             .setRequiresBatteryNotLow(true)
             .build()
 
-        fun periodicRequest(): PeriodicWorkRequest =
+        fun periodicRequest(wifiOnly: Boolean = true): PeriodicWorkRequest =
             PeriodicWorkRequest.Builder(SyncWorker::class.java, 6L, TimeUnit.HOURS)
-                .setConstraints(constraints())
+                .setConstraints(constraints(wifiOnly))
                 .build()
 
-        fun oneTimeRequest(): OneTimeWorkRequest =
+        fun oneTimeRequest(wifiOnly: Boolean = true): OneTimeWorkRequest =
             OneTimeWorkRequest.Builder(SyncWorker::class.java)
-                .setConstraints(constraints())
+                .setConstraints(constraints(wifiOnly))
                 .build()
     }
 }

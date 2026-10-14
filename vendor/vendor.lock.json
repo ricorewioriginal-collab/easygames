@@ -1,6 +1,8 @@
 {
   "fonts/fredoka-latin-wght-normal.woff2": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2",
   "fonts/fredoka.css": "cefe635cb60c143ba66c041b05fdeaaf688d20e52f933f5bdfbe6b42d8104721",
+  "jsqr-1.4.0.js": "bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859",
+  "licenses/jsqr-MIT.txt": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",
   "peerjs-1.5.4.min.js": "ad5d8870d1e389914f9cba8d35be313c4327c69ee0a221e482e9bf7621136fe5",
   "qrcode-generator-1.4.4.js": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780",
   "three-r128.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
