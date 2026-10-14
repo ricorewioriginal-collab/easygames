@@ -10,10 +10,12 @@ const LEVELS=[
 {name:'Farbwind-Finale',sky:['#e4a4cc','#fbedc8'],hill:'#b28fca',soil:'#80638c',grass:'#e4b4cb',gap:110,boss:7}
 ];
 const KEY='easygames.pufi-farbwind.v1',input={left:false,right:false,jump:false,throw:false,grab:false,down:false};
-let save={unlocked:1,records:{},sound:true};
-try{const x=JSON.parse(localStorage.getItem(KEY));if(x){save.unlocked=Math.min(6,Math.max(1,+x.unlocked||1));save.records=x.records||{};save.sound=x.sound!==false}}catch(_){}
+const holds=Object.fromEntries(Object.keys(input).map(k=>[k,new Set()]));
+function clearInputs(){Object.keys(input).forEach(k=>{input[k]=false;holds[k].clear()});aim=0}
+let save={unlocked:1,records:{},sound:true,controls:'dpad'};
+try{const x=JSON.parse(localStorage.getItem(KEY));if(x){save.unlocked=Math.min(6,Math.max(1,+x.unlocked||1));save.records=x.records||{};save.sound=x.sound!==false;save.controls=x.controls==='swipe'?'swipe':'dpad'}}catch(_){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(_){}};
-let level=0,selected=0,mode='title',world=null,hero=null,cam=0,t=0,aim=0,particles=[],audio=null,frameN=0;
+let level=0,selected=0,mode='title',world=null,hero=null,cam=0,t=0,aim=0,particles=[],audio=null,frameN=0,previousMenu=null;
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 function tone(f=440,d=.1){if(!save.sound)return;try{const X=window.AudioContext||window.webkitAudioContext;if(!X)return;audio=audio||new X();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),v=audio.createGain();o.type='triangle';o.frequency.setValueAtTime(f,audio.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(80,f*.68),audio.currentTime+d);v.gain.setValueAtTime(.06,audio.currentTime);v.gain.exponentialRampToValueAtTime(.0005,audio.currentTime+d);o.connect(v);v.connect(audio.destination);o.start();o.stop(audio.currentTime+d+.01)}catch(_){}}
 function splash(x,y,color,n=12){for(let i=0;i<n;i++){const a=i*2.4;particles.push({x,y,vx:Math.cos(a)*(40+i%5*23),vy:Math.sin(a)*(40+i%5*23)-65,life:.35+i%5*.12,color})}if(particles.length>200)particles.splice(0,particles.length-200)}
@@ -38,28 +40,51 @@ gems.push({x:440,y:93,kind:'flower',got:false});
 const goal=segments.at(-1).x+segments.at(-1).w-48,boss=LEVELS[n].boss?{x:goal-335,y:148,w:66,h:65,hp:LEVELS[n].boss,max:LEVELS[n].boss,phase:0,cool:1.9}:null;
 world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0};
 hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.5,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0,mounted:true,pet:{x:0,y:165},rideCd:0};
-hero.pet.x=hero.x-40;hero.pet.y=hero.y;cam=t=aim=0;frameN=0;particles=[];Object.keys(input).forEach(k=>input[k]=false);hud();
+hero.pet.x=hero.x-40;hero.pet.y=hero.y;cam=t=aim=0;frameN=0;particles=[];clearInputs();hud();
 }
 function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/6 · '+LEVELS[level].name;$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score;$('mountStatus').textContent=hero.mounted?'🐾 TAMO AN BORD':'🐾 R: TAMO RUFEN'}
 function overlay(type,title,description,primary,secondary){
 mode=type;$('overlay').hidden=false;$('overlay').dataset.view=type;
 $('heading').textContent=title;$('description').textContent=description;$('primary').textContent=primary;
 $('secondary').hidden=!secondary;if(secondary)$('secondary').textContent=secondary;
-$('stageList').hidden=type!=='map';if(type==='map')renderMap();$('touch').hidden=true;hud();
+$('stageList').hidden=type!=='map';$('optionSection').hidden=type!=='options';if(type==='map')renderMap();clearInputs();$('touch').hidden=true;hud();
 }
+function syncControls(){
+$('dpadControls').hidden=save.controls!=='dpad';
+$('swipeControls').hidden=save.controls!=='swipe';
+$('chooseDpad').classList.toggle('selected',save.controls==='dpad');
+$('chooseSwipe').classList.toggle('selected',save.controls==='swipe');
+$('controlLabel').textContent=save.controls==='dpad'?'STEUERKREUZ AKTIV':'WISCH-TOUCHFELD AKTIV';
+}
+function setControls(value){
+if(value!=='dpad'&&value!=='swipe')return;
+clearInputs();save.controls=value;persist();syncControls();tone(620);
+}
+function openOptions(){
+if(mode==='options')return;
+if(mode==='play')pause();
+previousMenu={type:mode,title:$('heading').textContent,description:$('description').textContent,
+primary:$('primary').textContent,secondary:$('secondary').hidden?'':$('secondary').textContent};
+overlay('options','CONTROLLER-OPTIONEN','Wähle links das Steuerkreuz oder das Wisch-Touchfeld. Rechts bleiben die vier Konsolentasten A, B, X und Y.','ZURÜCK ◀','');
+syncControls();
+}
+function closeOptions(){if(previousMenu){const m=previousMenu;previousMenu=null;overlay(m.type,m.title,m.description,m.primary,m.secondary);}else title()}
 function title(){overlay('title','PUFI & DER FARBWIND','Pufi und sein Wolkentaps Tamo retten sechs bunte Inseln! Reite, springe, schwebe und wirf Farbkugeln in einem eigenständigen Retro-Abenteuer.','START GAME ▶','INSELKARTE')}
 function renderMap(){const list=$('stageList');list.replaceChildren();LEVELS.forEach((l,i)=>{const b=document.createElement('button');b.className='island'+(selected===i?' picked':'');b.disabled=i>=save.unlocked;const r=save.records[i];b.textContent=(i<save.unlocked?'✦ ':'🔒 ')+(i+1)+'. '+l.name+(r?' · ❀ '+r.flowers:'');b.addEventListener('click',()=>{selected=i;renderMap();tone(650)});list.appendChild(b)})}
 function openMap(){selected=Math.min(level,save.unlocked-1);overlay('map','DIE FARBWIND-INSELN','Wähle eine freigeschaltete Insel. Finde versteckte Farbblüten und sammle einen neuen Rekord.','INSEL SPIELEN ▶','ZUM TITEL')}
-function start(n=level){build(n);mode='play';$('overlay').hidden=true;$('touch').hidden=false;tone(560);hud()}
+function start(n=level){build(n);mode='play';$('overlay').hidden=true;$('touch').hidden=false;syncControls();tone(560);hud()}
 function pause(){if(mode==='play')overlay('pause','PAUSE','Dein Abenteuer wartet. Drücke Weiter, sobald du bereit bist.','WEITERSPIELEN ▶','INSELKARTE')}
-function resume(){mode='play';$('overlay').hidden=true;$('touch').hidden=false;Object.keys(input).forEach(k=>input[k]=false)}
+function resume(){mode='play';$('overlay').hidden=true;$('touch').hidden=false;clearInputs();syncControls()}
 function gameover(reason){if(mode!=='play')return;tone(130,.35);overlay('gameover','GAME OVER',reason+' Der gesamte Abschnitt startet wieder von vorne.','LEVEL NEU STARTEN ▶','INSELKARTE')}
 function finished(){if(mode!=='play')return;const old=save.records[level]||{flowers:0,score:0};save.records[level]={flowers:Math.max(old.flowers,world.flowers),score:Math.max(old.score,world.score)};save.unlocked=Math.max(save.unlocked,Math.min(6,level+2));persist();tone(980,.38);splash(hero.x,hero.y,'#ffeab5',40);
 if(level===5)overlay('win','FARBWIND GERETTET!','Alle sechs Inseln geschafft! Du kannst jetzt zurückkehren und nach Geheimnissen suchen.','ZUR INSELKARTE','NEUES ABENTEUER');
 else overlay('clear','INSEL GESCHAFFT!','Du hast '+world.score+' Farbpunkte und '+world.flowers+' Farbblüten gefunden. Die nächste Insel wurde freigeschaltet.','NÄCHSTE INSEL ▶','INSELKARTE')}
-$('primary').addEventListener('click',()=>{tone(600);if(mode==='title')start(0);else if(mode==='map')start(selected);else if(mode==='gameover')start(level);else if(mode==='pause')resume();else if(mode==='clear')start(level+1);else if(mode==='win')openMap()});
+$('primary').addEventListener('click',()=>{tone(600);if(mode==='options')closeOptions();else if(mode==='title')start(0);else if(mode==='map')start(selected);else if(mode==='gameover')start(level);else if(mode==='pause')resume();else if(mode==='clear')start(level+1);else if(mode==='win')openMap()});
 $('secondary').addEventListener('click',()=>{tone(540);if(mode==='map')title();else if(mode==='title'||mode==='pause'||mode==='clear'||mode==='gameover')openMap();else if(mode==='win')start(0)});
 $('pause').addEventListener('click',()=>{if(mode==='play')pause();else if(mode==='pause')resume()});
+$('options').addEventListener('click',openOptions);
+$('chooseDpad').addEventListener('click',()=>setControls('dpad'));
+$('chooseSwipe').addEventListener('click',()=>setControls('swipe'));
 $('sound').textContent=save.sound?'♪ AN':'♪ AUS';$('sound').addEventListener('click',()=>{save.sound=!save.sound;persist();$('sound').textContent=save.sound?'♪ AN':'♪ AUS';if(save.sound)tone(600)});
 // Tamo is an original cloud-tapir companion: his broad padded feet and fins make
 // riding faster and give one additional hit before Pufi loses a heart.
@@ -88,21 +113,48 @@ hero.ammo--;const angle=aim>.3?clamp(.52+Math.sin(t*3.2)*.55,.04,1.12):.23;
 world.bullets.push({x:hero.x+11+hero.face*(hero.mounted?22:13),y:hero.y+(hero.mounted?9:12),w:10,h:10,vx:hero.face*Math.cos(angle)*330,vy:-Math.sin(angle)*330,life:2.2,bounces:1});
 aim=0;splash(hero.x+12,hero.y+9,'#ffe3ab',5);tone(480);
 }
-function action(key,on){
+function action(key,on,source='default'){
 if(key==='pause'){if(on){if(mode==='play')pause();else if(mode==='pause')resume()}return}
 if(mode!=='play')return;
 if(key==='mount'){if(on)toggleMount();return}
-if(key==='jump'&&on&&!input.jump)hero.jumpBuffer=.13;
-if(key==='throw'){if(on&&!input.throw)aim=.01;else if(!on&&input.throw)throwPaint()}
-if(key==='grab'&&on&&!input.grab)absorb();
-if(key==='down'&&on&&!input.down&&!hero.ground){hero.dive=true;hero.vy=Math.max(420,hero.vy);tone(280)}
-input[key]=on;
+const group=holds[key];if(!group)return;
+const before=group.size>0;
+if(on)group.add(source);else group.delete(source);
+const next=group.size>0;if(next===before)return;
+if(key==='jump'&&next)hero.jumpBuffer=.13;
+if(key==='throw'){if(next)aim=.01;else throwPaint()}
+if(key==='grab'&&next)absorb();
+if(key==='down'&&next&&!hero.ground){hero.dive=true;hero.vy=Math.max(420,hero.vy);tone(280)}
+input[key]=next;
 }
 const keymap={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',KeyW:'jump',ArrowUp:'jump',KeyK:'throw',KeyX:'throw',KeyJ:'grab',KeyC:'grab',KeyE:'grab',ArrowDown:'down',KeyS:'down',KeyR:'mount',KeyV:'mount',Escape:'pause',KeyP:'pause'};
-window.addEventListener('keydown',e=>{const key=keymap[e.code];if(key){e.preventDefault();if(!e.repeat)action(key,true)}if(e.code==='Enter'&&mode==='title')start(0)});
-window.addEventListener('keyup',e=>{const key=keymap[e.code];if(key){e.preventDefault();action(key,false)}});
-window.addEventListener('blur',()=>{if(mode==='play')pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause()});
-document.querySelectorAll('[data-action]').forEach(b=>{const key=b.dataset.action;b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}action(key,true);b.classList.add('pressed')});for(const kind of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(kind,e=>{if(e.cancelable)e.preventDefault();action(key,false);b.classList.remove('pressed')})});
+window.addEventListener('keydown',e=>{const key=keymap[e.code];if(key){e.preventDefault();if(!e.repeat)action(key,true,'keyboard:'+e.code)}if(e.code==='Enter'&&mode==='title')start(0)});
+window.addEventListener('keyup',e=>{const key=keymap[e.code];if(key){e.preventDefault();action(key,false,'keyboard:'+e.code)}});
+window.addEventListener('blur',()=>{if(mode==='play')pause();clearInputs()});document.addEventListener('visibilitychange',()=>{if(document.hidden){if(mode==='play')pause();clearInputs()}});
+document.querySelectorAll('[data-action]').forEach(b=>{const key=b.dataset.action;
+b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}action(key,true,'touch:'+e.pointerId);b.classList.add('pressed')});
+for(const kind of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(kind,e=>{if(e.cancelable)e.preventDefault();action(key,false,'touch:'+e.pointerId);b.classList.remove('pressed')});
+});
+const swipeZone=$('swipeZone');
+let swipePointer=null,swipeStart=null;
+function moveSwipe(e){
+if(!swipeStart||swipePointer!==e.pointerId||mode!=='play'||save.controls!=='swipe')return;
+const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y,vertical=Math.abs(dy)>Math.abs(dx)*1.1;
+action('left',dx< -18&&!vertical,'swipe');
+action('right',dx>18&&!vertical,'swipe');
+action('jump',vertical&&dy< -29,'swipe');
+action('down',vertical&&dy>29,'swipe');
+$('swipeCursor').style.transform='translate('+clamp(dx,-43,43)+'px,'+clamp(dy,-36,36)+'px)';
+}
+function stopSwipe(e){
+if(swipePointer!==e.pointerId)return;
+for(const k of ['left','right','jump','down'])action(k,false,'swipe');
+swipePointer=null;swipeStart=null;$('swipeCursor').style.transform='translate(0,0)';
+}
+swipeZone.addEventListener('pointerdown',e=>{if(mode!=='play'||save.controls!=='swipe'||swipePointer!==null)return;e.preventDefault();swipePointer=e.pointerId;swipeStart={x:e.clientX,y:e.clientY};try{swipeZone.setPointerCapture(e.pointerId)}catch(_){}moveSwipe(e)});
+swipeZone.addEventListener('pointermove',e=>{if(swipePointer===e.pointerId){e.preventDefault();moveSwipe(e)}});
+for(const kind of ['pointerup','pointercancel','lostpointercapture'])swipeZone.addEventListener(kind,stopSwipe);
+
 function hurt(){if(mode!=='play'||hero.inv>0)return;
 if(hero.mounted){hero.mounted=false;hero.pet.x=hero.x-43;hero.pet.y=hero.y;hero.rideCd=.9;hero.inv=1.5;hero.vy=-185;hero.hover=.7;splash(hero.x,hero.y,'#a9ecdd',18);tone(230,.18);hud();return}
 hero.hp--;hero.inv=1.5;hero.vy=-250;splash(hero.x,hero.y,'#ffa5c6',20);tone(155,.24);if(hero.hp<=0)gameover('Pufi hat seine Farbenergie verloren.')}
@@ -215,7 +267,7 @@ for(const b of particles)rect(b.x,b.y,3,3,b.color);
 ctx.restore();
 }
 let prev=0,accum=0;function frame(ms){const dt=prev?Math.min(.05,(ms-prev)/1000):0;prev=ms;accum+=dt;while(accum>=1/60){tick(1/60);accum-=1/60}draw();requestAnimationFrame(frame)}
-build(0);title();requestAnimationFrame(frame);
+build(0);title();syncControls();requestAnimationFrame(frame);
 // Test seam; does not affect gameplay.
-window.PufiTest={state:()=>({mode,level,hero,world,save}),start,tick,finished,gameover,action,absorb,throwPaint,draw,toggleMount,hurt};
+window.PufiTest={state:()=>({mode,level,hero,world,save}),start,tick,finished,gameover,action,absorb,throwPaint,draw,toggleMount,hurt,openOptions,setControls,closeOptions};
 })();
