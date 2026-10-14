@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cc0617e599c3",
- "generated": "2026-10-14T01:34:01+02:00",
- "commit": "ef1698474c56aa3ca1ce08fa84c9c9b544cd47d8",
+ "version": "fb6f338a995a",
+ "generated": "2026-10-14T01:59:03+02:00",
+ "commit": "8a0cac6aa7274f84070b10a699d5c22e8c3c2d2b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -48,8 +48,8 @@
   },
   {
    "p": "FunkhausReality/index.html",
-   "s": 7807,
-   "h": "f0be659f0e7afb41500561361bffb0276161398e595394b8a433598e2086b5e3"
+   "s": 9229,
+   "h": "d113d6e75fd1d8333c97fbe5c382c18fbc9b5da0244eb5f1e1098d361e02a1d6"
   },
   {
    "p": "FunkhausReality/logo.png",
@@ -163,8 +163,8 @@
   },
   {
    "p": "FunkhausReality/sw.js",
-   "s": 1912,
-   "h": "eaba84cda9258a6d9b854f75011b600cc830345c58863610d77c1794b36ebf06"
+   "s": 1993,
+   "h": "3883f3a0ef26100db8060e51bf2af311a388a7b6f9aaf938828fbf7d37913f5d"
   },
   {
    "p": "FunkhausReality/views.js",
@@ -208,8 +208,8 @@
   },
   {
    "p": "MachMichAus/index.html",
-   "s": 7667,
-   "h": "f8bff7532b71afdc2b8cec71acf1b036002a1ac73c0ef9fe923b338f3092cc35"
+   "s": 9089,
+   "h": "a9237f42b13a6a0b2459f3491006d0c00ff808a62a3e7cd0388761978fffd003"
   },
   {
    "p": "MachMichAus/logo.png",
@@ -328,8 +328,8 @@
   },
   {
    "p": "MachMichAus/sw.js",
-   "s": 1902,
-   "h": "ba83c61aa0b1a3fddd2d58eabf2d64fceedaa86c423858af67dcf9e3143ed412"
+   "s": 1983,
+   "h": "b268cb9367f82df99f532b378c487cd6587adc82a4a26f8e60fd0c63a3b7055a"
   },
   {
    "p": "aeru/card.png",
@@ -353,8 +353,8 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 11220,
-   "h": "91b9983d773987cdabbffdcf1103277dee0203f6cc295b1a5f91d7d0c57bb25c"
+   "s": 12642,
+   "h": "c7b10e29940cc0b20091743aeb0ccf0ef4532ccb905b1804544ce4f93a272556"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -378,8 +378,8 @@
   },
   {
    "p": "aeru/sw.js",
-   "s": 1900,
-   "h": "bc65cd9c6f88e051f87fe941cdca025c09558803f37dbfe3f4c19fcfb48fbf21"
+   "s": 1981,
+   "h": "b2ae154b0746905abffe23ba2985dace865b194e3c8205e9a776f7a77bfbe45c"
   },
   {
    "p": "aeru/vendor/three-compatible.min.js",
@@ -393,8 +393,8 @@
   },
   {
    "p": "anmacha-beat-surfer/index.html",
-   "s": 61670,
-   "h": "a2fa2aed86abcef7dd1103a650fc44b68bc50ff89f2f874a79bc9c5cef75b1c5"
+   "s": 63092,
+   "h": "263b7eebd6b2d6378f367499a4accf0bb0dc0d63de4806d1275d1664fd7ceb51"
   },
   {
    "p": "anmacha-beat-surfer/logo.png",
@@ -473,13 +473,13 @@
   },
   {
    "p": "anmacha-beat-surfer/sw.js",
-   "s": 1923,
-   "h": "b7c0c134a2f5582608b3c3d1cceb4f2511f777d6c9cfacc074cd6c8e001cdbdf"
+   "s": 2004,
+   "h": "8357562ea22f20f241a4459dfbfaa250341487b0075d700b0b485658f5b1bdba"
   },
   {
    "p": "anmacha-flipper/index.html",
-   "s": 79818,
-   "h": "648a559edfc9362e0e073ac6c6cb874a25269997579a1a3049b2efd0fb015401"
+   "s": 81240,
+   "h": "dbcd87376e97994c660d59ff1175525b680ce9a495b3d2665feda9d8f0c0670e"
   },
   {
    "p": "anmacha-flipper/logo.png",
@@ -558,8 +558,8 @@
   },
   {
    "p": "anmacha-flipper/sw.js",
-   "s": 1911,
-   "h": "2be87dcba3e31dc5f2314b5b81d5faa84f33a2dcf742b7f9676f4a2440101489"
+   "s": 1992,
+   "h": "ae21553c26d0691d62705a7d51215bb0a8821af992cdff65c3229bb3266f940c"
   },
   {
    "p": "anmacha-frequenzrad/audio.js",
@@ -583,8 +583,8 @@
   },
   {
    "p": "anmacha-frequenzrad/index.html",
-   "s": 7923,
-   "h": "f5538339cdba0a8fcdf926d097336a843f768a22e84ead5199e411e733fe4599"
+   "s": 9345,
+   "h": "972558cdef272907347e6811f1e76675ab69651fe75830f436a922e885446c79"
   },
   {
    "p": "anmacha-frequenzrad/logo.png",
@@ -703,8 +703,8 @@
   },
   {
    "p": "anmacha-frequenzrad/sw.js",
-   "s": 1923,
-   "h": "14390e1809174949e4209b1b34e114a71388d07df89739303d38eb2138e4bb34"
+   "s": 2004,
+   "h": "94499df75c522cacd9c4c321923b81ca322d744de2723a5af90e21fbec092eff"
   },
   {
    "p": "anmacha-frequenzrad/wheel.js",
@@ -748,8 +748,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 9460,
-   "h": "d55e5f817085b4a189f508e80c428127ec5497500f247a2cfae59c15d9d243e9"
+   "s": 10882,
+   "h": "a8885f44f244665dd6f06ac2d44540460400c331088110f9763c8d1972ad44fa"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -873,8 +873,8 @@
   },
   {
    "p": "anmacha-funkparcours/sw.js",
-   "s": 1926,
-   "h": "f938a845affd4ff4a598be01a96c924cf2ff0f9dbeb8f7136307983dc550cff9"
+   "s": 2007,
+   "h": "2615a76c1ed00429dd8dbaeeece11a7e4715f966c3e053574151c5f7c84dbb17"
   },
   {
    "p": "anmacha-gesucht/audio.js",
@@ -903,8 +903,8 @@
   },
   {
    "p": "anmacha-gesucht/index.html",
-   "s": 20895,
-   "h": "f22ceb0095ec5b5ed9010f8e57f37063ad4677736ff8122017027c23b94f7616"
+   "s": 22317,
+   "h": "f8220e9847fa4b11a84ab429738463b4d6af303154b6233af2acc2d11760773a"
   },
   {
    "p": "anmacha-gesucht/logo.png",
@@ -988,13 +988,13 @@
   },
   {
    "p": "anmacha-gesucht/sw.js",
-   "s": 1922,
-   "h": "ab1344a3e31864acb551bdb00eb1232c824d1b0e9651cc112c6787fc7f1786d9"
+   "s": 2003,
+   "h": "0be0f978fb0fdb1061c272912b420d089c44d9d30d6b0c8e156675cbdffc46a4"
   },
   {
    "p": "anmacha-gold-reels/index.html",
-   "s": 31816,
-   "h": "051a1938e9ed4c3ca9d35c240aa9b4d834d017f40e890c26a05d344412d15991"
+   "s": 33238,
+   "h": "5f615da0ed386b301cbf37e95463ecdab51a0863889097fcc68f466c260a2dcd"
   },
   {
    "p": "anmacha-gold-reels/logos/01.png",
@@ -1073,8 +1073,8 @@
   },
   {
    "p": "anmacha-gold-reels/sw.js",
-   "s": 1920,
-   "h": "5474e6c84051468237736db365d6e528eeb12a4f619938c195b222af2f96b28d"
+   "s": 2001,
+   "h": "5dba68c29812c30724f6e3d67231f29d051b7f4ee349c78b35a7c6de7e5356bf"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -1098,8 +1098,8 @@
   },
   {
    "p": "anmacha-hoererwahl/index.html",
-   "s": 10095,
-   "h": "9df78d9d1c907ffceb6ef093f835a558bfbd7277b79d64621e4693133491f0c2"
+   "s": 11517,
+   "h": "728b43d7dcdf192387d804feea41930cd6e81e77ebd54ae6bf7df85ed7a377d3"
   },
   {
    "p": "anmacha-hoererwahl/logo.png",
@@ -1223,8 +1223,8 @@
   },
   {
    "p": "anmacha-hoererwahl/sw.js",
-   "s": 1920,
-   "h": "0016eccfb8297c71008203529e213357aec0c93c0f1d038d40e2a0861e66cfba"
+   "s": 2001,
+   "h": "e9892da09b8687318fc2307a0e4985ad997d295c6dad138e1503000440abca1b"
   },
   {
    "p": "anmacha-kart/audio.js",
@@ -1253,8 +1253,8 @@
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 46361,
-   "h": "debbdd7f1d5941e7c6a5229173aa5b5016352abaef3df54adddc29bf7dd9a2c4"
+   "s": 47783,
+   "h": "df4cf231ce2261dc3bbf6d9415ece1bb2032243c062a3265d7234cad7f646e03"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -1338,8 +1338,8 @@
   },
   {
    "p": "anmacha-kart/sw.js",
-   "s": 1907,
-   "h": "4a7ee97d7d2c169db423d1af06b4bc7ce5bb1a567077c022750dc0b7b43fa109"
+   "s": 1988,
+   "h": "7c49987a794c51e83af94e401673f6121df3ad7ef5f00b9d022068c3a72fa82b"
   },
   {
    "p": "anmacha-kart/track.js",
@@ -1368,8 +1368,8 @@
   },
   {
    "p": "anmacha-klotzfunk/index.html",
-   "s": 21310,
-   "h": "5fe45da1ffcad941d13b70dff6b9cb3ece07583835c676c3404d284326464f4d"
+   "s": 22732,
+   "h": "4cbf26c1e0a9b040be32ac0b269942f9d4cbbba2e5576126c106d614b357de85"
   },
   {
    "p": "anmacha-klotzfunk/logos/01.png",
@@ -1458,8 +1458,8 @@
   },
   {
    "p": "anmacha-klotzfunk/sw.js",
-   "s": 1912,
-   "h": "d77d6c2e53f463da7ca4f6ea824756c7ca39a145dd19509da055f319a48d6bc7"
+   "s": 1993,
+   "h": "dcd0a01517009558fee792898a4062430b78f46285d373b5258bdefe52152e65"
   },
   {
    "p": "anmacha-koffer-dealer/audio.js",
@@ -1483,8 +1483,8 @@
   },
   {
    "p": "anmacha-koffer-dealer/index.html",
-   "s": 21006,
-   "h": "8afe8de009cfcf27f751514c7bbc6fa9cd8db37438bbd742f93b0b549a4f8478"
+   "s": 22428,
+   "h": "c6dd59a4d03593e6e9deb47093f70c966cfa67052ba4d79833c886fe0cd93930"
   },
   {
    "p": "anmacha-koffer-dealer/logo.png",
@@ -1568,8 +1568,8 @@
   },
   {
    "p": "anmacha-koffer-dealer/sw.js",
-   "s": 1929,
-   "h": "4d64027b2dcbc2d1d46cafd9b685477b197781abe56cdc7e5d42b8e34ae54c1e"
+   "s": 2010,
+   "h": "95261dbdb0a744b2ebd592c8f1e2d308c30a51a7c9cb691f081ddc86fc50cc02"
   },
   {
    "p": "anmacha-markthalle/data.js",
@@ -1583,8 +1583,8 @@
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 31913,
-   "h": "37605ec3ec9e72e0f8b42af6e35fedc7cd446a7ac2dd2a44a9466e505e689b4c"
+   "s": 33335,
+   "h": "529728bbf5187ad2f6fa82d687064b7f0d929bfade5696ddeebc9379e56cdf62"
   },
   {
    "p": "anmacha-markthalle/manifest.webmanifest",
@@ -1603,8 +1603,8 @@
   },
   {
    "p": "anmacha-markthalle/sw.js",
-   "s": 1923,
-   "h": "8d08941ddb96a10f586d270c45a6efd851542340c5c57d7fc7e504c43ca35529"
+   "s": 2004,
+   "h": "dc8faa61dead3913d3368075c05034d5b14bef5e330690cdcc20a2d0bc3d7456"
   },
   {
    "p": "anmacha-markthalle/view3d.js",
@@ -1613,8 +1613,8 @@
   },
   {
    "p": "anmacha-memory/index.html",
-   "s": 33011,
-   "h": "b8accf016a78f61ff6af0c3c3fade8fe198998a1ad1cc6618d3e2331edd13455"
+   "s": 34433,
+   "h": "b8f91c71c4133e3b73fa20227f0c9cbc631015a5e1f45ac17903e23d0cd8b8d8"
   },
   {
    "p": "anmacha-memory/logo.png",
@@ -1708,8 +1708,8 @@
   },
   {
    "p": "anmacha-memory/sw.js",
-   "s": 1908,
-   "h": "846105248dd1a5c49bc9c0e9c5ad53a9de9ffd760bc363d024f7bf71cba10ed4"
+   "s": 1989,
+   "h": "9c68774522090b7e2bef1caad41dea0222180be6cfe247df5c133ad66236eb2d"
   },
   {
    "p": "anmacha-preisradar/audio.js",
@@ -1738,8 +1738,8 @@
   },
   {
    "p": "anmacha-preisradar/index.html",
-   "s": 8515,
-   "h": "e8e3ca4ba2cd1e0221feb14dc46403799d52f09023fdf44b3112ae820bcaa3e3"
+   "s": 9937,
+   "h": "068576eab962371297685f30ffda45ca805e770b7970c564eb803a2d2cada72c"
   },
   {
    "p": "anmacha-preisradar/inputs.js",
@@ -1878,8 +1878,8 @@
   },
   {
    "p": "anmacha-preisradar/sw.js",
-   "s": 1920,
-   "h": "113c8ae608e8abb27cf72232f2fbc73a2d57721d2f535f6e344a67bb0d2bd129"
+   "s": 2001,
+   "h": "ce2026f3ba8f9e88eb31f2abea84ab67019f3bfb302445fa3e27bf7bf68867e7"
   },
   {
    "p": "anmacha-quest-rpg/anleitung.html",
@@ -3038,8 +3038,8 @@
   },
   {
    "p": "anmacha-quest-rpg/index.html",
-   "s": 8896,
-   "h": "05fa47d78c569bcf8c58694fb16ec7aacda19533d9206cc84bd402e0c90a60ac"
+   "s": 10318,
+   "h": "e4d8894d7c28402cfb5454c95933376ebe870388f98e3200bc5cc6ad657fcc6c"
   },
   {
    "p": "anmacha-quest-rpg/index.icon.png",
@@ -3083,8 +3083,8 @@
   },
   {
    "p": "anmacha-quest-rpg/sw.js",
-   "s": 1917,
-   "h": "2e0c34636c3469b792e85a71a27fb9cc90376db15a40a97a9bf72a932a55a428"
+   "s": 1998,
+   "h": "e0e6f584b575f805bf760c6810b2ac9c193c84ae66354c2318f28ed89dc9a7d0"
   },
   {
    "p": "anmacha-quiz/audio.js",
@@ -3108,8 +3108,8 @@
   },
   {
    "p": "anmacha-quiz/index.html",
-   "s": 24630,
-   "h": "188bf565471fa989ea58ba03ca4c312d12f1791bad4d878f36b77b1918c8c6e9"
+   "s": 26052,
+   "h": "36fcf963cba91e6125e9d212cb4f5dbdc0a2c688127256a0165aea9c4707abad"
   },
   {
    "p": "anmacha-quiz/logo.png",
@@ -3198,13 +3198,13 @@
   },
   {
    "p": "anmacha-quiz/sw.js",
-   "s": 1922,
-   "h": "756b9a25a00098b4a338caccfaf5bc1f6881c92d6364fa51ca87bafa89278dbd"
+   "s": 2003,
+   "h": "b06ce3fdc396f565545336661523e11f08e36ec26fc14719337104f788cfa090"
   },
   {
    "p": "anmacha-radio-match/index.html",
-   "s": 37899,
-   "h": "0b5c06da0a7d1e96c959c236178f9c1602dddb6014d7a02d5dee239c1ead599a"
+   "s": 39321,
+   "h": "24796636c19b2580df243af403b1f1fd6969be46e28ad5e279414c1b449b40b0"
   },
   {
    "p": "anmacha-radio-match/manifest.webmanifest",
@@ -3213,8 +3213,8 @@
   },
   {
    "p": "anmacha-radio-match/sw.js",
-   "s": 1926,
-   "h": "0904d7c1e92ddd02c977b0b4b7ea2776aa2134ccff7d8d2a0782dc2dfa3de257"
+   "s": 2007,
+   "h": "d9ada23bdc1185b179fad25b8797e9a1d7d65ede024a9ef9ffde448aaf4284a2"
   },
   {
    "p": "anmacha-radio-surfer/hindernisse/01.jpg",
@@ -3293,8 +3293,8 @@
   },
   {
    "p": "anmacha-radio-surfer/index.html",
-   "s": 59559,
-   "h": "d6b374dd1366c44d892ac9c537432c07e19489e6733f324ba606eb0b75ab4980"
+   "s": 60981,
+   "h": "cabc84c4fc15d1b6822a6b0fea017e1d6a48eaa3bd11666cfad794fd5a002bad"
   },
   {
    "p": "anmacha-radio-surfer/logo.png",
@@ -3308,8 +3308,8 @@
   },
   {
    "p": "anmacha-radio-surfer/sw.js",
-   "s": 1926,
-   "h": "2296b86592f6e0271e73182241768df0ab81692affaaec53b76503c551253bc5"
+   "s": 2007,
+   "h": "171778706605c660ec69f8038da0cea398bb14f438d546775fbda88ccbe75443"
   },
   {
    "p": "anmacha-showdown/audio.js",
@@ -3333,8 +3333,8 @@
   },
   {
    "p": "anmacha-showdown/index.html",
-   "s": 16353,
-   "h": "e1f6b69be998eb1ef1b962daf5b0b94fbc44cac4586b4cae30093021b538399a"
+   "s": 17775,
+   "h": "0fdb03e64dbf9eb18c2786f83ece2c8c7ce31041eaae823eec1ef54a46b040e4"
   },
   {
    "p": "anmacha-showdown/logo.png",
@@ -3418,13 +3418,13 @@
   },
   {
    "p": "anmacha-showdown/sw.js",
-   "s": 1914,
-   "h": "9f833ccea6d151e1984bf72283146b3f7d87fa5bb6a43fac557e673ff48d0537"
+   "s": 1995,
+   "h": "a516d914b0d3ee916c2b52da30941756ee5f9ac29ee2dc7d74c16776f20c638a"
   },
   {
    "p": "anmacha-snake/index.html",
-   "s": 44946,
-   "h": "ae06a9bf1bfddcac76985bec0c414ead8a6c77e9556986b199db99107eee89be"
+   "s": 46368,
+   "h": "5404620f433e6857b843ef4343314484ddcbfe4ba79fb7986afefdaed6343aea"
   },
   {
    "p": "anmacha-snake/logo.png",
@@ -3503,13 +3503,13 @@
   },
   {
    "p": "anmacha-snake/sw.js",
-   "s": 1908,
-   "h": "ac94e483cf244f66b796d4069e24bad35d4e76e7cee1f554882db22b2e8fc150"
+   "s": 1989,
+   "h": "0012e0c308970589162e9e4cce6e7fa99225a535adaa12036089099169defa81"
   },
   {
    "p": "anmacha-spielesammlung/index.html",
-   "s": 98772,
-   "h": "99045d750e0fd2edbf68f9ab7dfb8a5d1feef3e8f600b374eb046c29c6e70f93"
+   "s": 100194,
+   "h": "6695da7457c55ecf688d7ace89f31758aa14efd9094dcddc545dbad6fc733a55"
   },
   {
    "p": "anmacha-spielesammlung/manifest.webmanifest",
@@ -3518,13 +3518,13 @@
   },
   {
    "p": "anmacha-spielesammlung/sw.js",
-   "s": 1935,
-   "h": "3417029883bf932b8c745d5cb31e32e71c4c017d3ea95c413adbf0d5db1729e1"
+   "s": 2016,
+   "h": "e73bb4974954b46fe51674f85ccc2e208e95c87b9c9d15c939e51837b64a0e69"
   },
   {
    "p": "anmacha-stapelrausch/index.html",
-   "s": 50514,
-   "h": "d304efb5b26d7801e856f032c724af5f3bdcec83c915b266880bd1ed37f8d370"
+   "s": 51936,
+   "h": "7a4e977a52caad3a6b4c6d6b79a2e27fee551a27e547165a006102c29f3305e1"
   },
   {
    "p": "anmacha-stapelrausch/manifest.webmanifest",
@@ -3533,8 +3533,8 @@
   },
   {
    "p": "anmacha-stapelrausch/sw.js",
-   "s": 1929,
-   "h": "1123b202207ed23000d0a20f045224b903284ee6b57fe53029154c38bca3269c"
+   "s": 2010,
+   "h": "346ad2e600442f9a68e895bce19a988673a284c6fe629787fec0a486953012c9"
   },
   {
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
@@ -3543,8 +3543,8 @@
   },
   {
    "p": "anmacha-tower-defense/index.html",
-   "s": 16148,
-   "h": "880a20b4dc585fb4d726e51f7889bb8b56470147c586ac30b25ceba61907b0a9"
+   "s": 17570,
+   "h": "ba1bfaf7ccada4253c9afe12cb9357dbe9970a2745a82090ba6cd5baf5e7fa68"
   },
   {
    "p": "anmacha-tower-defense/logos/01.png",
@@ -3618,8 +3618,8 @@
   },
   {
    "p": "anmacha-tower-defense/sw.js",
-   "s": 1929,
-   "h": "c52ed19baab14d64c02eda1c80b3fb19d6908724af2dc587f39f44f26027e9f8"
+   "s": 2010,
+   "h": "9c01e0b634000908eb50c62a810d2fe40a67fa06968c972ae3696caa6fdb6e88"
   },
   {
    "p": "anmacha-urwaldlager/audio.js",
@@ -3653,8 +3653,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 5427,
-   "h": "fff6c81f05615947857266f8446f88f024182898f6fa5f829c9db84c34352e59"
+   "s": 6849,
+   "h": "d3fb1af5855d2f276f5eccaaa76306cdd6d9875ab7423520e19ac5b67178c1f5"
   },
   {
    "p": "anmacha-urwaldlager/input.js",
@@ -3683,8 +3683,8 @@
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
-   "s": 1915,
-   "h": "54aae9f44b3a1ed36f4910839297bf59c9883d66d10f30557896bd9ed527fb8a"
+   "s": 1996,
+   "h": "179f8a202fe898ed883ea484b08ee70306043f7c28e18ed84f4226c403dcba76"
   },
   {
    "p": "anmacha-urwaldlager/trials.js",
@@ -3788,8 +3788,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 104965,
-   "h": "df85e018e3839dcaa0a74a58fafb6cc59c679b75d7aa143c8b6da3920d3b43b4"
+   "s": 108710,
+   "h": "833de4d64b7eccc57dd1eef3c6225c26bbd6adb7c156cf7f8214f336ff2f7f23"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3978,8 +3978,8 @@
   },
   {
    "p": "bunte-insel/js/life.js",
-   "s": 43777,
-   "h": "a150a1a34d152a6d16e631f2b98cbc910944af2f2d2417aa1c34177715b09ea0"
+   "s": 43955,
+   "h": "9d61846a034deca86fdd78c7871a2f8b3d6654182209a87bd46552da6b4ebb82"
   },
   {
    "p": "bunte-insel/js/maerchen.js",
@@ -3993,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 310755,
-   "h": "2e2c03c6b9b12d4048be5904f5a1f89ffd998e395de5fc0026354b023adff53d"
+   "s": 312094,
+   "h": "e9ed334bc593ae3e48c4f69097c0786377b4898e979b94580f9e1a15ffa38544"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4403,8 +4403,8 @@
   },
   {
    "p": "bunte-insel/sw.js",
-   "s": 1899,
-   "h": "c0410e74d808235d2728f382e2f5645a909465c0f530611b9917dcdaad3191ef"
+   "s": 1980,
+   "h": "087cb320e7f56e877aeb5a91dd980d9f185a3f2c183645fbb8aab219700508f4"
   },
   {
    "p": "bunte-insel/vendor/three.min.js",
@@ -4423,8 +4423,8 @@
   },
   {
    "p": "easygames.js",
-   "s": 8997,
-   "h": "07e5a349d986ced5c34f6856e8d4036d40befd9628dea09a36949436d8d30624"
+   "s": 9135,
+   "h": "8fa3827020b12cfe7c5f7343ffa5eaaabf1ab2f354141d4ddc6a25c6593820eb"
   },
   {
    "p": "einbinden.html",
@@ -4438,13 +4438,13 @@
   },
   {
    "p": "games.js",
-   "s": 13696,
-   "h": "885d8e10397a6e813a8b0bbb1d67d6799a66d20babeedcc3912b07de33206f16"
+   "s": 13810,
+   "h": "cc3172c5d93f450041a7f11c6ad09f841d30401810f540344434c9a117a4616c"
   },
   {
    "p": "gay-life/index.html",
-   "s": 27247,
-   "h": "6ac6123a2050d3acd0bff9a1ceb6195e3f08e10d4b3b0cefe836ff79e59e92bd"
+   "s": 28669,
+   "h": "951ab13a003f4a2a8ff155725d29a28929450165cc10c40e0e6c12076d299b67"
   },
   {
    "p": "gay-life/js/audio.js",
@@ -4583,8 +4583,8 @@
   },
   {
    "p": "gay-life/sw.js",
-   "s": 1891,
-   "h": "87b163f762eae0cf0e202ead990d32e31bb94ed974199a4931e214d142b8bfae"
+   "s": 1972,
+   "h": "235c8aa5b029968d89c479dc2c15a0e740f09bfedbd9c1bb1e5c733456698333"
   },
   {
    "p": "guides.js",
@@ -4823,8 +4823,8 @@
   },
   {
    "p": "partyverse/index.html",
-   "s": 2957,
-   "h": "49dd32c905565dc476857c0c78219678e773ca80ae9f7cc3e7c7df33742e43df"
+   "s": 4379,
+   "h": "bec5c8ea1aa9257550c77c92506a22633c69aaa85adf090a7082820ba5bd5fb0"
   },
   {
    "p": "partyverse/logo.png",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "partyverse/sw.js",
-   "s": 1896,
-   "h": "881d97093a9f52e163a79e0cc1a06b880ef304954c5249e05eb605c4e2c4dfa4"
+   "s": 1977,
+   "h": "88d3efb75b21243d792adb3adc818117d38b8edbc064e72b872929c6de21c9f3"
   },
   {
    "p": "prismrush/assets/index-Br18tWvY.js",
@@ -4893,8 +4893,8 @@
   },
   {
    "p": "prismrush/index.html",
-   "s": 1396,
-   "h": "7d289d477f1b9a6d951be917b76582be2c63943b919c2324b49e5bbf5ebf3ff0"
+   "s": 2772,
+   "h": "7bfacb9840f0cc4fb5de384e9834d10be5cb9b08b8fc41bddda97b6a1d592f37"
   },
   {
    "p": "prismrush/manifest.webmanifest",
@@ -4903,8 +4903,8 @@
   },
   {
    "p": "prismrush/sw.js",
-   "s": 1573,
-   "h": "56722b2de33defc8a4a0c35723670c4216e4e306530c31ec17307a9111830afd"
+   "s": 1687,
+   "h": "266b918ebe0f06d955d7d6e7786b8c61ebbabf0a1c65987ab5c474a62b98d08d"
   },
   {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
@@ -4988,8 +4988,8 @@
   },
   {
    "p": "riftzone/index.html",
-   "s": 3029,
-   "h": "e85dd30ac1d1ef3c1fea4de2a28b101343146a3e94ed5aa6e262d2c9885667c2"
+   "s": 4451,
+   "h": "75cb80bd24105933505f019645708edecd3559f1f6db9c882af75605385d669a"
   },
   {
    "p": "riftzone/manifest.webmanifest",
@@ -5013,13 +5013,13 @@
   },
   {
    "p": "riftzone/sw.js",
-   "s": 1890,
-   "h": "ad2405b9c25b822c7140f42d4ca836889668c3ad12021ca62319319158b95456"
+   "s": 1971,
+   "h": "325d7caebcb1e3771703747516ae85f4539aa71fa933ea75093ae62f87d879c8"
   },
   {
    "p": "sync/catalog.json",
    "s": 57160,
-   "h": "41ead5a917fe94f95010990390f81bd9958f5ac91c77d236fbc34be81921582a"
+   "h": "dd3a153a8e330cffaad6d0807ac5eb01604feef7507ac1972a9f8f3979282774"
   },
   {
    "p": "taschi/card.svg",
@@ -5438,8 +5438,8 @@
   },
   {
    "p": "turbokick/index.html",
-   "s": 2953,
-   "h": "6002eeda2de4c787bf2b0426d796a3947e7b9f49556c68f1c3f4b0a08ca8547a"
+   "s": 4375,
+   "h": "28150df10b3b4887956ae6e67c25583dbf7a9da2ba0e5bcc39e3d39ebdb3cab3"
   },
   {
    "p": "turbokick/logo.png",
@@ -5453,8 +5453,8 @@
   },
   {
    "p": "turbokick/sw.js",
-   "s": 1893,
-   "h": "dbf2b214ebda6e098056d5edad92f7458a3081d77108017a4769a6a2597062f7"
+   "s": 1974,
+   "h": "d8644dbd2b7a3da94a767bd3c5af476d01a9fc83498d783d409c0dec39524a81"
   },
   {
    "p": "vendor/fonts/fredoka-latin-wght-normal.woff2",
@@ -5508,8 +5508,8 @@
   },
   {
    "p": "wobbel/index.html",
-   "s": 10866,
-   "h": "88145ec13b383410422d700162d5ea8a0e235390b59aabea24aa48ade5d1b685"
+   "s": 12269,
+   "h": "1e9898d85e0906e034432082e55210f504ae0974114744b47eb56ee7f4ab760b"
   },
   {
    "p": "wobbel/js/audio.js",
@@ -5673,8 +5673,8 @@
   },
   {
    "p": "wobbel/sw.js",
-   "s": 1355,
-   "h": "1a7301a47e15a9392284118a4e5ee63b15c8fc9278f94b9e722425ea2b703214"
+   "s": 1453,
+   "h": "6ea7cde11b9c8b9542229b256724b2e72c3a499868bae9861cf94ba6297c9a70"
   },
   {
    "p": "wobbel/vendor/three.min.js",
@@ -5688,8 +5688,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 395943,
-   "h": "f0958544afe8a2906bda3053a6eb95ac39f4e15b59f4dea852b23c7b9a51c037"
+   "s": 397365,
+   "h": "f9f1bd9392d5dd131947b9ffb5a5c1dca91752cb8ac8ce66778c659f63abb30e"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -5703,8 +5703,8 @@
   },
   {
    "p": "zotik/sw.js",
-   "s": 1909,
-   "h": "d45ffcc1024f9ce0b47ecd3b52ce1c336cf1b5bc22d5fb88097c16e470a76433"
+   "s": 1990,
+   "h": "61c4c032262f13bc88d34e5f2b1a86d13adb421b5be0a5613aba2122b1fa434f"
   }
  ],
  "vendor": {
