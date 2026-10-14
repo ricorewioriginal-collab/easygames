@@ -21,5 +21,5 @@ a.gameover('Test');assert.equal(a.state().mode,'gameover');
 a.start(0);assert.equal(a.state().hero.ammo,4);assert.equal(a.state().world.score,0);
 a.finished();assert.equal(a.state().save.unlocked,2);
 assert.equal(boot(b.storage.get('easygames.pufi-farbwind.v1')).game.state().save.unlocked,2);
-for(let i=0;i<6;i++){a.start(i);const w=a.state().world;assert(w.goal<w.segments.at(-1).x+w.segments.at(-1).w);assert.equal(!!w.boss,i===2||i===5)}
+for(let i=0;i<6;i++){a.start(i);const w=a.state().world;assert(w.goal<w.segments.at(-1).x+w.segments.at(-1).w);assert.equal(!!w.boss,i===2||i===5);a.draw()}
 console.log('PASS: menu, walk, jump, throw, game over, complete reset, unlock, persistence, six stages and two bosses.');

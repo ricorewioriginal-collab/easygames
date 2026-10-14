@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "a72a0747611c",
- "generated": "2026-10-14T23:34:49.475Z",
+ "version": "4e1e1886c781",
+ "generated": "2026-10-14T23:35:30.273Z",
  "commit": "2cb8d974dc58415916e3fe0bc6de3a83efa70654",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -5108,8 +5108,8 @@
   },
   {
    "p": "pufi-farbwind/game.js",
-   "s": 19119,
-   "h": "4ca027b9c2cf75c78f638f89e20dffd189baf1beff6ff8c8313f34ec43a41fa1"
+   "s": 19124,
+   "h": "29ce78a632707851fd05e5c48fb301da3fc979f3427533082d4185a57bc11f27"
   },
   {
    "p": "pufi-farbwind/index.html",
@@ -5244,7 +5244,7 @@
   {
    "p": "sync/catalog.json",
    "s": 61752,
-   "h": "805a57774b5b21152418aee359e8d31ddcc61a5f82953bef524a5b72bfdf8216"
+   "h": "568221a96b39522f70d71a35ca902161aef6c4edfd6d2417311eb1fd48d95697"
   },
   {
    "p": "taschi/card.svg",
