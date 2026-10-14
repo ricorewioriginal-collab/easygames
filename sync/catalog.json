@@ -8,7 +8,7 @@
   {
    "id": "lumo",
    "title": "Lumo – Wolkenpfad",
-   "desc": "Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 Leveln, Tunnel-Hindernissen, Münz- und Schutzblöcken sowie vier Bonusrunden. Vollbild, Touch-Controller und Google-Speicherung.",
+   "desc": "Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 abwechslungsreichen Leveln, vier Landschaften, vier Gegnerarten, fünf Hindernisarten und vier Bonusrunden. Retro-Musik, Effekte, Countdown, Bestzeiten, Vollbild, Touch und Google-Speicherung.",
    "icon": "🌤️",
    "img": "lumo/card.svg",
    "bg": "linear-gradient(145deg,#287c83,#83d4e1)",
@@ -17,8 +17,8 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 19572,
-   "files": 3,
+   "size": 32591,
+   "files": 4,
    "offline": true
   },
   {
