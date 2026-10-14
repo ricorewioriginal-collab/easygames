@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8410ff9d80dd",
- "generated": "2026-10-14T02:56:54+02:00",
- "commit": "0a39ee33716f06a5dd2e60e291a014b558bdd9ad",
+ "version": "909d90945dcd",
+ "generated": "2026-10-14T03:06:26+02:00",
+ "commit": "71a70314783821cf868663123d4e9d697f0061db",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3788,8 +3788,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109324,
-   "h": "aeed1d2c4996ebe8601881bd1ea21fb5fe8932832b1930659fb718eb321a23b2"
+   "s": 109328,
+   "h": "c995b24b8043082c2382e671f8cc33a39547cfbfcaa0699429b2ec105fb219f2"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3993,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 312152,
-   "h": "85784dc4e6314e1a09041b5ad1a3ea238ff6656cb3d566116df06e4cf99a7680"
+   "s": 312162,
+   "h": "db76605a4660825be0556320e6e9a7dcb46ac2176fa5e8a6be0dfc7ac66bc95d"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5019,7 +5019,7 @@
   {
    "p": "sync/catalog.json",
    "s": 57160,
-   "h": "fa92448e76cdea64fc7ad924c6420505f90e03cdc6a5c5197967aba41aac67b5"
+   "h": "56c786ff3353e54faac9a53ae96f2e60bf7b8d75b47749d648ce4f76027f7458"
   },
   {
    "p": "taschi/card.svg",
