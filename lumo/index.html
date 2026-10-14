@@ -1,26 +1,50 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101d32"><title>Lumo – Wolkenpfad</title>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#5c94fc"><title>Lumo – Wolkenpfad</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#18334c;color:#fff8df;font:16px system-ui}body{height:100dvh}button,a{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:1px solid #91c5ce66;background:#19394fe8;border-radius:12px;padding:10px 14px;touch-action:manipulation}button:hover{background:#315b6a}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #ffdc80;outline-offset:3px}header{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));background:linear-gradient(#102238dd,#10223800)}.brand{font-weight:900;letter-spacing:3px;color:#ffe6a7}#hud{margin-left:auto;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;text-shadow:1px 2px #18334c}main{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse,#3d7887,#18334c)}canvas{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-#panel{position:absolute;inset:0;z-index:5;display:grid;align-items:center;justify-items:center;overflow:auto;padding:70px 18px 24px;background:#102339bf;backdrop-filter:blur(5px)}.sheet{width:min(520px,100%);max-height:100%;overflow:auto;padding:24px;border:1px solid #acd8d644;border-radius:24px;background:#142d42f2;box-shadow:0 18px 80px #07172388;text-align:center}h1{font-size:12px;letter-spacing:4px;color:#97d9c6}h2{font-size:clamp(24px,5vw,38px);line-height:1.1;color:#ffdf93;margin:14px 0}#message{line-height:1.6;color:#d4e4df;font-size:14px}.menu-actions{display:grid;gap:10px}#retry:disabled{opacity:.4;cursor:default}#start{background:#ffce71;color:#243348;border-color:#fff0ba;font-weight:800;padding:14px}.home{display:block;padding:12px;text-decoration:none;border:1px solid #91c5ce66;border-radius:12px;background:#24465a}#screenStatus,#saveStatus{font-size:12px;color:#b4cbd6}details{text-align:left;margin-top:16px}summary{padding:10px;cursor:pointer;font-size:14px}
-.controls{position:absolute;inset:auto 0 0;z-index:4;display:flex;align-items:end;justify-content:space-between;padding:18px max(22px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left));pointer-events:none;user-select:none;-webkit-user-select:none;touch-action:none}.dpad{display:grid;grid-template-columns:60px 38px 60px;grid-template-rows:24px 60px 24px;filter:drop-shadow(0 6px 0 #102738);opacity:.94}.dpad button{pointer-events:auto;background:#29495c;border:2px solid #7294a2;font-size:25px;padding:0;touch-action:none}.dpad button:first-of-type{grid-column:1;grid-row:2;border-radius:12px 0 0 12px;border-right:0}.dpad button:last-of-type{grid-column:3;grid-row:2;border-radius:0 12px 12px 0;border-left:0}.dpad span{grid-column:2;grid-row:1/4;background:#29495c;border:2px solid #7294a2;border-radius:7px;display:grid;place-items:center;color:#8daeb9}.jump{pointer-events:auto;width:92px;height:92px;border-radius:50%;background:#e9ad59;border:4px solid #ffe7a6;box-shadow:0 7px 0 #8c6039,0 0 0 6px #18364d99;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#24384a;touch-action:none;font-weight:900}.jump b{font-size:34px;line-height:1}.jump small{font-size:10px;letter-spacing:1px;margin-top:5px}.controls button:active{transform:translateY(4px);filter:brightness(1.2)}body.menu-open .controls{visibility:hidden}
-@media(max-width:480px){.brand{display:none}header{gap:6px}header button{padding:9px 10px}#hud{font-size:12px}.dpad{grid-template-columns:52px 30px 52px;grid-template-rows:20px 54px 20px}.jump{width:82px;height:82px}.sheet{padding:20px}}
-@media(max-height:480px){.controls{padding-bottom:max(12px,env(safe-area-inset-bottom))}.dpad{grid-template-columns:48px 30px 48px;grid-template-rows:15px 48px 15px}.jump{width:74px;height:74px}.sheet{padding:16px}#panel{padding-top:58px}h2{font-size:25px}}
-
-.timebox{display:flex;flex-direction:column;align-items:center;min-width:80px;color:#fff1b5;font-variant-numeric:tabular-nums}.timebox small{font-size:10px;color:#deefe9}.urgent{color:#ff9a92;animation:blink 1s steps(2) infinite}.finish-medal{display:none;font-size:62px;color:#ffda79;text-shadow:0 0 25px #ffc250;line-height:1.2}.celebrate .finish-medal{display:block;animation:medal 1.2s ease-in-out infinite alternate}.celebrate .sheet{border-color:#ffda79;animation:arrival .45s ease-out}.sheet{position:relative}.celebrate .sheet:before{content:'✦  ·  ✧  ·  ✦';display:block;position:absolute;top:15px;left:0;width:100%;color:#ffe7a5;letter-spacing:20px;animation:confetti 1.5s ease-in-out infinite;pointer-events:none}
-@keyframes medal{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-7px) rotate(8deg)}}@keyframes arrival{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}@keyframes confetti{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(20px)}}@keyframes blink{50%{opacity:.65}}
-@media(max-width:650px){.brand{display:none}#hud{font-size:11px;max-width:90px}.timebox{min-width:66px;font-size:12px}header{gap:5px}header button{padding:9px 8px}}
-@media(prefers-reduced-motion:reduce){*,*:before{animation:none!important}}
-.gameover-symbol{display:none}
-.game-over #panel{background:radial-gradient(ellipse at center,#6b3144d9,#180e28ee);backdrop-filter:blur(7px)}
-.game-over .sheet{border:3px solid #ef896e;box-shadow:0 0 0 5px #391e35,0 22px 80px #090b1c;animation:gameoverPop .35s steps(5)}
-.game-over .sheet h2{font-size:clamp(34px,8vw,60px);letter-spacing:3px;color:#ffb38c;text-shadow:4px 5px #5d2940}
-.game-over .gameover-symbol{display:grid;place-items:center;margin:0 auto 8px;width:62px;height:62px;background:#9e4350;border:5px solid #ffa18b;border-radius:12px;box-shadow:6px 6px 0 #421d36;color:#fff1c8;font:900 43px monospace}
-.game-over #start{background:#ffbd84;border-color:#ffe0ac;box-shadow:0 4px 0 #a8504e}
-.game-over #retry{display:none}
-@keyframes gameoverPop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
-</style></head><body class="menu-open">
-<header><button id="menu" aria-label="Zurück zum Hauptmenü">‹ Menü</button><span class="brand">LUMO</span><div id="hud"></div><div class="timebox"><strong id="timer">⏱ 120 s</strong><small id="best">BEST —</small></div><button id="sound" aria-label="Spielton umschalten" aria-pressed="true">♫ An</button><button id="pause" aria-label="Pause">Ⅱ</button><button id="fullscreen" aria-label="Vollbild umschalten">⛶</button></header>
-<main><canvas id="game" width="640" height="360" aria-label="Lumo Jump und Run"></canvas><div id="panel"><div class="sheet"><div class="finish-medal" aria-hidden="true">★</div><div class="gameover-symbol" aria-hidden="true">✖</div><h1>LUMO · WOLKENPFAD</h1><h2 id="title">Kleine Sprünge.<br>Große Abenteuer.</h2><p id="message">20 Level, vier Landschaften, vier Gegnerarten und persönliche Bestzeiten! Springe von unten gegen die Blöcke. Blaue Blöcke schenken kurz Schutz. Nach jedem fünften Level wartet ein Münzgarten.<br>← → / A D laufen · Leertaste / ↑ / W springen</p><div class="menu-actions"><button id="start">Abenteuer starten →</button><button id="retry">Level von vorn / Rekord versuchen</button><button id="soundMenu" aria-label="Musik und Effekte umschalten" aria-pressed="true">♫ An</button><a class="home" href="../" target="_top">← Zur Spieleübersicht</a></div><p id="screenStatus">Bildschirmfüllend auf Handy und PC · ⛶ aktiviert Vollbild, sofern unterstützt.</p><details id="cloudDetails"><summary>☁ Google-Speicher & Spielstand</summary><p id="saveStatus">Dein Fortschritt wird automatisch lokal gespeichert.</p><div id="cloudMount"></div></details></div></div></main>
-<div class="controls" aria-label="Spielsteuerung"><div class="dpad" role="group" aria-label="Steuerkreuz"><button data-key="left" aria-label="Zurück laufen">◀</button><span aria-hidden="true">●</span><button data-key="right" aria-label="Vorwärts laufen">▶</button></div><button class="jump" data-key="jump" aria-label="Springen"><b>A</b><small>SPRINGEN</small></button></div>
-<script src="audio.js"></script><script src="game.js"></script><script src="../cloud/anmacha-cloud.js" data-game="lumo" data-prefix="easygames.lumo.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden: abgeschlossene Level, Bestzeiten, Münzen und Bonusrunden geräteübergreifend speichern." defer></script></body></html>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font:16px system-ui;touch-action:none;user-select:none;-webkit-user-select:none}
+body{height:100dvh}
+main{position:absolute;inset:0;display:grid;place-items:center;background:#000}
+canvas{display:block;width:min(100vw,calc(100dvh * 256 / 240));height:auto;aspect-ratio:256/240;image-rendering:pixelated}
+button,a{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;border:2px solid #fff;background:#1d2b53;border-radius:6px;padding:8px 12px;touch-action:manipulation}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #ffec27;outline-offset:3px}
+#bar{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:6px 8px;background:linear-gradient(#000a,#0000)}
+#bar button{font-size:13px;padding:6px 10px;background:#000c}
+#bar a{font-size:13px;padding:6px 10px;border:2px solid #fff;border-radius:6px;background:#000c;text-decoration:none}
+#panel{position:absolute;inset:auto 0 0;z-index:4;display:none;justify-content:center;padding:10px;background:#000d}
+#panel.show{display:flex}
+#panel .box{width:min(560px,100%);display:grid;gap:8px;text-align:center}
+#panel p{margin:0;font-size:13px;line-height:1.5;color:#e8e8e8}
+#panel details{text-align:left;font-size:13px}
+#panel summary{cursor:pointer;padding:6px}
+#cloudMount{margin-top:6px}
+.controls{position:absolute;inset:auto 0 0;z-index:2;display:flex;align-items:end;justify-content:space-between;padding:14px max(18px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));pointer-events:none}
+.dpad{display:flex;gap:10px}
+.dpad button,.jump{pointer-events:auto;font-size:26px;font-weight:900;background:#ffffff33;border:3px solid #ffffffaa;color:#fff;width:72px;height:72px;padding:0;border-radius:50%;touch-action:none}
+.jump{width:88px;height:88px;background:#e52521aa;border-color:#ffffffcc}
+.controls button:active{filter:brightness(1.4)}
+body.playing .controls{display:flex}
+body:not(.playing) .controls{display:none}
+@media(max-height:480px){.dpad button,.jump{width:58px;height:58px;font-size:20px}.jump{width:70px;height:70px}}
+</style></head>
+<body>
+<main>
+  <canvas id="game" width="256" height="240" aria-label="Lumo Wolkenpfad"></canvas>
+</main>
+<div id="bar">
+  <button id="sound" aria-pressed="true" aria-label="Ton umschalten">♫ An</button>
+  <button id="pause" aria-label="Pause">Ⅱ Pause</button>
+  <button id="fullscreen" aria-label="Vollbild">⛶</button>
+  <a href="../" target="_top">← Spiele</a>
+</div>
+<div id="panel" role="dialog" aria-live="polite"><div class="box">
+  <p id="message"></p>
+  <details id="cloudDetails"><summary>☁ Google-Speicher &amp; Spielstand</summary><p id="saveStatus">Dein Fortschritt wird automatisch lokal gespeichert.</p><div id="cloudMount"></div></details>
+</div></div>
+<div class="controls" aria-label="Spielsteuerung">
+  <div class="dpad" role="group" aria-label="Steuerkreuz"><button data-key="left" aria-label="Links">◀</button><button data-key="right" aria-label="Rechts">▶</button></div>
+  <button class="jump" data-key="jump" aria-label="Springen">A</button>
+</div>
+<script src="audio.js"></script><script src="game.js"></script><script src="../cloud/anmacha-cloud.js" data-game="lumo" data-prefix="easygames.lumo.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden: Fortschritt, Bestwerte und Leben geräteübergreifend speichern." defer></script>
+</body></html>
