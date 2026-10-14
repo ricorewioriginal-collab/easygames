@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "4e1e1886c781",
- "generated": "2026-10-14T23:35:30.273Z",
+ "version": "35012e395ad0",
+ "generated": "2026-10-14T23:45:49.186Z",
  "commit": "2cb8d974dc58415916e3fe0bc6de3a83efa70654",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15261,
-   "h": "ef18e9601fdf0be8df298af02dd5c4b9872454211df87c9ee798330f265c17f2"
+   "s": 15243,
+   "h": "1633b31476979544bf325eb3fed0de5f88cb4a77b7e908d09057c1202622f6de"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 40187,
-   "h": "bfe2db1b7a815a9381d6e02d0a98e8f58923a9a5cf87dc07f87b1d8019c2e469"
+   "s": 40557,
+   "h": "b5720048dd4fad1ebf12b32dcd623218a24912e1727a2f4cbe285abd167d7849"
   },
   {
    "p": "index.html",
@@ -5103,18 +5103,18 @@
   },
   {
    "p": "pufi-farbwind/card.svg",
-   "s": 1809,
-   "h": "fbbac7e368226b588481902222e6f581b3f84c6b1cbbe8701da8ca4e41acd6a5"
+   "s": 2632,
+   "h": "b3432523e5c0523d136976adb03ae398984c1a2f34de1582c085b82a447444a8"
   },
   {
    "p": "pufi-farbwind/game.js",
-   "s": 19124,
-   "h": "29ce78a632707851fd05e5c48fb301da3fc979f3427533082d4185a57bc11f27"
+   "s": 25144,
+   "h": "646327bdb1c96e04760381a0fbf1986d494c824ce9da2518c292d8caf7deee4c"
   },
   {
    "p": "pufi-farbwind/index.html",
-   "s": 7533,
-   "h": "413ff0052eb684f77f2c588b8c163cef5b55ee4c45dd30df48cca194be2dbbf0"
+   "s": 14115,
+   "h": "5c923b7edd7276393dd671e470dee57472d11408f6bcef36a6844bb0c403a9f7"
   },
   {
    "p": "pufi-farbwind/manifest.webmanifest",
@@ -5124,7 +5124,7 @@
   {
    "p": "pufi-farbwind/sw.js",
    "s": 752,
-   "h": "8823fad80e7814fe0c2b5989165cf3a68bed68c162874451c2a2caa7f922e1e4"
+   "h": "4e4713cf3454b57c1e90ac27030534b0c650d544c969b63732f84d78215aa433"
   },
   {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 61752,
-   "h": "568221a96b39522f70d71a35ca902161aef6c4edfd6d2417311eb1fd48d95697"
+   "s": 62104,
+   "h": "0e570c24ff4a87c18491900c722c13cdd62ed190ab29f9ed10436d8438df5918"
   },
   {
    "p": "taschi/card.svg",

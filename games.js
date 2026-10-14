@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261015.2'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.\n// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
+window.EASYGAMES_BUILD = '20261015.3'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.\n// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   {id:'pufi-farbwind',title:'Pufi & der Farbwind',icon:'🎨',img:'pufi-farbwind/card.svg',path:'pufi-farbwind/',bg:'linear-gradient(145deg,#dc95b8,#84d8ee)',desc:'Eigenständiges SNES-inspiriertes Retro-Jump-and-Run mit Pufi und dem reitbaren Wolkentaps Tamo, sechs Inseln, Gleiten, Farbwürfen, Gegnern, Geheimnissen, zwei Bosskämpfen und Touch-/PC-Steuerung. Offline spielbar.'},
   {id:'lumo',title:'Lumo – Wolkenpfad',icon:'🌤️',img:'lumo/card.svg',path:'lumo/',bg:'linear-gradient(145deg,#287c83,#83d4e1)',desc:'Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 abwechslungsreichen Leveln, vier Landschaften, vier Gegnerarten, fünf Hindernisarten und vier Bonusrunden. Retro-Musik, Effekte, Countdown, Bestzeiten, Vollbild, Touch und Google-Speicherung.'},

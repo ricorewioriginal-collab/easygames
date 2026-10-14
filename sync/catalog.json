@@ -17,19 +17,19 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pufi reitet auf dem eigenständigen Wolkentaps Tamo über sechs Inseln. R oder 🐾 steigt auf/ab: Tamo ist schneller, schwebt länger und schützt vor dem ersten Treffer. Danach folgt er Pufi, bis du wieder aufsteigst. Sammle Farbblüten, sauge Energie ein, wirf Farbkugeln und aktiviere verborgene Schalter. Bei Game Over beginnt das Level von vorn; abgeschlossene Inseln bleiben frei.",
+    "anleitung": "Pufi und der eigenständige Wolkentaps Tamo erleben sechs Farbwind-Inseln. Tamo ist reitbar, schneller als Pufi und kann länger schweben. Wird Tamo getroffen, wirft er Pufi ab und verhindert einmal Schaden. Über ⚙ OPTIONEN kannst du jederzeit zwischen Steuerkreuz und Wisch-Touchfeld wechseln. Rechts liegen vier Konsolentasten in einer Raute: A Springen, B Werfen, X Saugen, Y Reiten. Die Einstellung bleibt beim nächsten Start erhalten.",
     "steuerung": [
-     "PC: Pfeile oder A/D laufen · R/V auf Tamo auf-/absteigen · Leertaste/W springen und halten zum Schweben · K/X halten und loslassen zum Werfen · C/J/E ansaugen · Pfeil runter/S Stampfen · P/Esc Pause.",
-     "Mobil: links Richtungstasten, rechts 🐾 zum Reiten, Saugen, Werfen und Springen. Querformat empfohlen."
+     "PC: Pfeile oder A/D laufen; Leertaste/W springen und halten zum Schweben; K/X werfen (halten und loslassen); C/J saugen; R/V reiten/absteigen; S/↓ stampfen; P/Esc Pause; ⚙ Controller-Einstellungen.",
+     "Handy: Links per Steuerkreuz (↑ Springen, ↓ Stampfen, ◀▶ Laufen) oder im Touchfeld wischen; rechts A Springen, B Farbkugel werfen, X Farbenergie aufsaugen, Y Tamo reiten/absteigen. Multi-Touch: Bewegen und gleichzeitig springen/werfen."
     ],
     "tipps": [
-     "Tamo beschleunigt und lässt dich länger schweben.",
-     "Wirst du auf Tamo getroffen, schützt er dich und läuft anschließend nebenher.",
-     "Drücke R oder 🐾 in seiner Nähe, um wieder aufzusteigen.",
-     "Farbkugeln treffen Feinde, Schalter und die beiden Bosse."
+     "Wechsle über ⚙ jederzeit die linke Steuerungsart; die Wahl wird gespeichert.",
+     "Halte B (Werfen), um in einem Bogen zu zielen; loslassen wirft die Farbkugel.",
+     "Auf Tamo bist du schneller und kannst länger schweben; nach dem ersten Treffer steigt Pufi ab.",
+     "Bei Game Over setzt das Level zurück, zuvor abgeschlossene Inseln bleiben frei."
     ]
    },
-   "size": 29634,
+   "size": 43059,
    "files": 5,
    "offline": true
   },
