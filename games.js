@@ -1,6 +1,6 @@
-window.EASYGAMES_BUILD = '20261014.1'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.\n// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
+window.EASYGAMES_BUILD = '20261014.2'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.\n// Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
-  {id:'lumo',title:'Lumo – Wolkenpfad',icon:'🌤️',img:'lumo/card.svg',path:'lumo/',bg:'linear-gradient(145deg,#287c83,#83d4e1)',desc:'Farbiges Pixel-Jump-and-Run mit eigener Figur, vier zunehmend kniffligen Welten, Kristallen und Checkpoints. Tastatur oder Touch.'},
+  {id:'lumo',title:'Lumo – Wolkenpfad',icon:'🌤️',img:'lumo/card.svg',path:'lumo/',bg:'linear-gradient(145deg,#287c83,#83d4e1)',desc:'Farbiges Pixel-Jump-and-Run mit eigener Figur, 20 zunehmend kniffligen Leveln in vier Welten, Kristallen, Checkpoints und Google-Speicherung. Tastatur oder Touch.'},
   { id: 'taschi', title: 'TASCHI – Die 16 Lichter', icon: '✨', img: 'taschi/card.svg', bg: 'linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)', glow: 'rgba(167,139,250,.48)',
     path: 'taschi/', desc: 'Eigenständiges 3D-Taschi-Abenteuer: entdecke die Welt der 16 Lichter, sammle deine Taschis und erlebe die Reise direkt im Browser auf PC und Smartphone.' },
   { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', img: 'zotik/card.png', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)',
