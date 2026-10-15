@@ -8,17 +8,17 @@
   {
    "id": "zeitsprung-radio",
    "title": "ZEITSPRUNG RADIO",
-   "desc": "Moderiertes 3D-Musikzeitspiel mit Vito: 300 verschiedene Songs und Jahresfragen in 10 Kategorien, 1–4 Spieler, chronologische Zeitleiste, Sprachmoderation, TV-Modus, Handy-Controller mit WR-Code/PIN und YouTube-Musik.",
+   "desc": "Moderierte 3D-Musikshow mit Vito: 430 Quizfragen zu Charts, ESC, Stars und Castingshows, Musik-Zeitleiste, direkte Deezer/Spotify-Clips, TV-Modus und Handy-Controller per WR-Code/PIN. Google-Speicherung und App-Installation.",
    "icon": "💿",
-   "img": null,
+   "img": "zeitsprung-radio/card.png",
    "bg": "linear-gradient(145deg,#19142a,#ff4c93 55%,#ffcb61)",
    "glow": "rgba(255,76,147,.5)",
    "path": "zeitsprung-radio/",
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 60304,
-   "files": 5,
+   "size": 262184,
+   "files": 12,
    "offline": true
   },
   {
