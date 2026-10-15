@@ -17,7 +17,7 @@ const GROUND=rowFrom({0:'##########',1:'##########',2:'##########',3:'   #######
 const GROUND2=rowFrom({0:'##########',1:'##########',2:'    ######',3:'##########',4:'##########',5:'   #######',6:'##########',7:'##########',8:'   #######',9:'##########',10:'  ########',11:'##########'});
 const GROUND3=rowFrom({0:'##########',1:'######   #',2:'##########',3:'##########',4:'     #####',5:'##########',6:'##########',7:'  ########',8:'##########',9:'######    ',10:'##########',11:'##########'});
 const GROUND4=rowFrom({0:'##########',1:'##########',2:'##########',3:'##########',4:'  ########',5:'##########',6:'##########',7:'   #######',8:'##########',9:'##########',10:'##########',11:'##########'});
-const STAGES=[
+const HAND_LEVELS=[
   {name:'1-1',title:'Wolkenwiese',theme:0,time:300,rows:[
     rowFrom({}),rowFrom({}),rowFrom({}),rowFrom({}),
     rowFrom({11:'..F.......'}),rowFrom({11:'..F.......'}),rowFrom({11:'..F.......'}),
@@ -62,6 +62,76 @@ const STAGES=[
     GROUND4,GROUND4,GROUND4
   ]}
 ];
+
+// ---------- Prozedurale Level: 20 Level in 4 Welten + 4 Münzgärten (Bonus) ----------
+// Jede Welt beginnt mit einem handgebauten Level; die übrigen werden deterministisch erzeugt.
+function rng(seed){let s=(seed>>>0)||1;return()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296;};}
+function genLevel(L){
+  const R=rng((L+1)*97531+5),d=L/19,W=120;
+  const g=Array.from({length:16},()=>Array(W).fill('.'));
+  const pit=Array(W).fill(false);
+  let c=6;
+  while(c<W-16){ // Gruben: 1–3 Kacheln breit, immer mit festem Boden dazwischen
+    c+=3+Math.floor(R()*7);
+    if(c>=W-16)break;
+    const pw=1+Math.floor(R()*(d>0.4?3:2));
+    for(let k=0;k<pw&&c+k<W-16;k++)pit[c+k]=true;
+    c+=pw+1;
+  }
+  for(let x=0;x<W;x++)if(!pit[x]){g[13][x]='#';g[14][x]='#';g[15][x]='#';}
+  const free=(x,y)=>x>=0&&x<W&&y>=0&&y<16&&g[y][x]==='.';
+  const put=(x,y,ch)=>{if(free(x,y))g[y][x]=ch;};
+  const groundOK=x=>x>=0&&x<W&&!pit[x]&&x<W-16;
+  const nearPit=x=>pit[x-1]||pit[x]||pit[x+1];
+  const enemy=()=>{const q=R();if(q<d*0.35)return 'S';if(q<0.35+d*0.35)return 'H';if(q<0.5+d*0.2)return 'V';return 'K';};
+  for(let x=8;x<W-18;){
+    const roll=R();
+    if(roll<0.2){ // Plattform mit Münzen darüber
+      const row=R()<0.5?9:10,len=3+Math.floor(R()*3);
+      for(let k=0;k<len;k++)put(x+k,row,'=');
+      if(R()<0.8)for(let k=0;k<len;k++)put(x+k,row-2,'C');
+    }else if(roll<0.34){ // Fragezeilen mit Münze, Schutzpilz oder Stern
+      put(x,9,'?');put(x+1,9,R()<0.3?'M':'B');put(x+2,9,'?');
+      if(d>0.4&&R()<0.25)put(x+3,9,'Q');
+    }else if(roll<0.42){ // Münzreihe knapp über dem Boden
+      for(let k=0;k<3;k++)put(x+k,11,'C');
+    }else if(roll<0.5){ // Stacheln oder Röhre am Boden
+      if(groundOK(x)&&!nearPit(x)&&free(x,12)){
+        if(R()<0.6+d*0.2)g[12][x]='X';else{put(x,11,'P');put(x,12,'P');}
+      }
+    }else if(roll<0.56){ // bewegliche Plattform
+      for(let k=0;k<3;k++)put(x+k,10,'O');
+    }else if(roll<0.82){ // Gegner
+      const kind=enemy();
+      if(kind==='V')put(x,9,'V');
+      else if(groundOK(x)&&free(x,12))put(x,12,kind);
+    }else if(roll<0.86){
+      put(x,9,'J');
+    }
+    x+=5+Math.floor(R()*6);
+  }
+  // Ein Stern pro Level in Welt-Mitte, damit der Stern nicht selten bleibt
+  for(let t=0;t<40;t++){const x=20+Math.floor(R()*80);if(groundOK(x)&&free(x,12)){g[12][x]='R';break;}}
+  for(let r=4;r<=12;r++)g[r][W-6]='F';
+  return g.map(row=>row.join(''));
+}
+function genBonus(){ // Münzgarten: keine Gegner, nur Münzen auf Stufen
+  const g=Array.from({length:16},()=>Array(120).fill('.'));
+  for(let x=0;x<120;x++){g[13][x]='#';g[14][x]='#';g[15][x]='#';}
+  for(let i=0;i<6;i++){const x0=8+i*18,row=i%2?10:12;for(let k=0;k<4;k++){g[row][x0+k]='=';g[row-2][x0+k]='C';}}
+  for(let x=6;x<112;x+=3)g[7][x]='C';
+  return g.map(row=>row.join(''));
+}
+const WORLD_TITLES=['Wolkenwiese','Bernsteinhöhlen','Frostgipfel','Sternenschloss'];
+const STAGES=[];
+for(let w=0;w<4;w++){
+  for(let k=0;k<5;k++){
+    const L=w*5+k;
+    if(k===0){const h=HAND_LEVELS[w];STAGES.push({name:h.name,title:WORLD_TITLES[w],theme:w,time:h.time,rows:h.rows,bonus:false});}
+    else STAGES.push({name:`${w+1}-${k+1}`,title:WORLD_TITLES[w],theme:w,time:Math.round(300-(L/19)*40),rows:genLevel(L),bonus:false});
+  }
+  STAGES.push({name:`${w+1}-B`,title:'Münzgarten',theme:w,time:20,rows:genBonus(),bonus:true});
+}
 
 // ---------- Welt-Farben (Himmel, Berge, Boden, Oberkante, Ziegel) ----------
 const THEMES=[
@@ -153,6 +223,7 @@ function loadStage(i){
     }
   }
   stage.flagX=flagCol<0?levelWidth*TILE:flagCol*TILE;
+  if(stage.bonus)stage.flagX=Infinity; // Münzgarten endet mit der Zeit, nicht mit einer Fahne
   timeLeft=stage.time;camX=0;
   player=newPlayer(24);
 }
@@ -488,7 +559,7 @@ function update(){
       if(takePress('pause')){pauseGame();break;}
       frameNo++;
       timeLeft-=1/60;
-      if(timeLeft<=0){die('Zeit abgelaufen');break;}
+      if(timeLeft<=0){if(stage.bonus)startClear();else die('Zeit abgelaufen');break;}
       updateMovers();
       updatePlayer();
       updateEnemies();
