@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "409c72c2d859",
- "generated": "2026-10-15T07:25:10+02:00",
- "commit": "529d0ba00483c899a643372097518d63ae838996",
+ "version": "c518b152f42a",
+ "generated": "2026-10-15T07:25:40+02:00",
+ "commit": "766f3c7bd61de338ffb3deb9bfaf5fae357306ae",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 16384,
-   "h": "2ef9a9709e24ed6dc9f083e173a7ec430db8b96b2aee0c78faa1c161311c9d23"
+   "h": "b109acd26dbad3f049899f01ace256a65674e3d0908b45405620244de2f7542e"
   },
   {
    "p": "gay-life/index.html",
@@ -6064,7 +6064,7 @@
   {
    "p": "zeitsprung-radio/sw.js",
    "s": 1226,
-   "h": "7f320fb0765074413c6b4db73b2e8ee2861ed6a804bc7c977bee26a69dde18a8"
+   "h": "0bedb647fb2c7858bf5a571dfe4996a5feebd0cefa8ef9efc8527b346a728a91"
   },
   {
    "p": "zeitsprung-radio/tracks.js",
