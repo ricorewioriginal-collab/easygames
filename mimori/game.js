@@ -5,6 +5,7 @@ const state={busy:false,fx:0,activity:'idle',spin:0,orbit:0,mini:0,renderer:null
 const sound=window.MimoriSound||{play:()=>{},toggle:()=>false,isEnabled:()=>false};
 const stats=[['hunger','Satt','🍓'],['joy','Freude','💗'],['energy','Energie','🌙'],['clean','Sauber','🫧'],['health','Gesundheit','💚']];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(pet))}catch(_){}};
+const themeStyles=['linear-gradient(160deg,#8b829f,#4c496b 72%,#343855)','linear-gradient(160deg,#709aa0,#3d6b78 72%,#2b4558)','linear-gradient(160deg,#9d7987,#6c4975 72%,#37314e)'];
 let lastSaveAt=Date.now();
 const say=(msg)=>{$('speech').textContent=msg;$('speech').classList.remove('pop');void $('speech').offsetWidth;$('speech').classList.add('pop')};
 const time=(n)=>Math.max(0,Math.round(n));
@@ -14,6 +15,16 @@ function ui(){
  $('foodCount').textContent=pet.inventory.berry;$('soapCount').textContent=pet.inventory.soap;
  for(const [key]of stats){const n=time(pet[key]);$(key+'Val').textContent=n+' %';$(key+'Fill').style.width=n+'%';$(key+'Fill').classList.toggle('low',n<=35)}
  $('careLevel').textContent='Fürsorge '+pet.care;
+ $('coins').textContent='⭐ '+pet.coins;
+ $('dailyBtn').disabled=pet.lastDaily===new Date().toISOString().slice(0,10);
+ $('dailyBtn').textContent=$('dailyBtn').disabled?'🎁 Heute abgeholt':'🎁 Tagesgeschenk';
+ document.querySelectorAll('[data-shop]').forEach(b=>{
+  const [kind,idText]=b.dataset.shop.split(':');const id=Number(idText);
+  const owned=pet.owns[kind].includes(id),active=pet[kind]===id,cost=M.prices[kind][id];
+  b.classList.toggle('shopOwned',owned);b.classList.toggle('shopActive',active);
+  b.querySelector('small').textContent=active?'✓ Ausgewählt':owned?'✓ Bereits gekauft':'⭐ '+cost;
+ });
+
  $('speciesName').textContent=M.species[pet.species]||M.species[0];
  document.querySelectorAll('[data-species]').forEach(b=>{const active=Number(b.dataset.species)===pet.species;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
  $('stageBadge').textContent=['Wolkenbaby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
@@ -103,47 +114,87 @@ $('soundToggle').addEventListener('click',()=>{
  effects(on?'color':'sleep');
 });
 
-let minigameTimer=0,minigameScore=0;
-function miniDraw(){
- const area=$('miniArea');area.replaceChildren();
- const ball=document.createElement('button');ball.className='catchBall';ball.type='button';
- ball.textContent='⭐';ball.style.left=(10+Math.random()*74)+'%';ball.style.top=(10+Math.random()*64)+'%';
- ball.setAttribute('aria-label','Stern einsammeln');ball.addEventListener('click',()=>{
-  if(!state.mini)return;minigameScore++;$('miniScore').textContent='Sterne: '+minigameScore+'/5';
-  sound.play('star');effects('play');if(minigameScore>=5){stopMinigame(true);return}miniDraw()
- });area.appendChild(ball)
-}
-function stopMinigame(success){
- clearTimeout(minigameTimer);state.mini=0;$('miniOverlay').hidden=true;
- if(success)act('minigame');else{say('Fast! Noch einmal versuchen?');sound.play('error')}
-}
+// The old one-button star chase is replaced by five complete arcade games.
 function startMinigame(){
- if(state.mini)return;state.mini=1;minigameScore=0;
- $('miniOverlay').hidden=false;$('miniScore').textContent='Sterne: 0/5';
- miniDraw();minigameTimer=setTimeout(()=>stopMinigame(false),14000);
+ if(!window.MimoriArcade){say('Die Spielhalle wird noch geladen.');return}
+ window.MimoriArcade.open({
+  records:()=>pet.records||{},
+  sound:k=>sound.play(k,pet.species),
+  onReward:(id,points,won)=>{
+   const result=M.rewardMini(pet,id,points,won,Date.now());
+   if(!result.ok)return null;
+   pet=result.pet;save();ui();effects(won?'evolve':'play');
+   if(result.evolved)paint();
+   say((won?'Gewonnen! ':'Gut gespielt! ')+'⭐ '+result.coins+' Sterne erhalten!');
+   return result;
+  }
+ });
 }
-$('miniExit').addEventListener('click',()=>stopMinigame(false));
+$('dailyBtn').addEventListener('click',()=>{
+ const result=M.claimDaily(pet,Date.now());
+ pet=result.pet;save();ui();
+ if(result.ok){sound.play('minigame');effects('evolve')}
+ else sound.play('error');
+ say(result.ok?pet.lastAction:result.reason);
+});
+document.querySelectorAll('[data-shop]').forEach(b=>b.addEventListener('click',()=>{
+ const [kind,id]=b.dataset.shop.split(':');const result=M.shop(pet,kind,Number(id));
+ pet=result.pet;if(result.ok){
+  save();ui();if(kind==='accessory')paint();
+  else if(state.applyRoom)state.applyRoom();
+  sound.play('color');effects('color');
+ }
+ else sound.play('error');
+ say(result.ok?(result.purchased?'Neuer Schatz freigeschaltet!':'Dein neues Design ist aktiv!'):result.reason);
+}));
+$('photoBtn').addEventListener('click',()=>{
+ const renderer=state.renderer;
+ if(!renderer){say('3D ist noch nicht bereit.');return}
+ try{
+  const url=renderer.domElement.toDataURL('image/png'),a=document.createElement('a');
+  a.href=url;a.download='mimori-'+M.species[pet.species].toLowerCase()+'.png';
+  document.body.appendChild(a);a.click();a.remove();
+  say('Dein Mimori-Foto ist bereit! 📷');sound.play('star');
+ }catch(_){say('Foto nicht möglich – bitte Screenshot erstellen.')}
+});
 function make3D(){
  const THREE=window.THREE;
  if(!THREE){$('webglError').hidden=false;return}
  let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
- renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.outputEncoding=THREE.sRGBEncoding;
- renderer.setClearColor(0x000000,0);renderer.shadowMap.enabled=false;}
+ renderer.setPixelRatio(Math.min(1.8,window.devicePixelRatio||1));
+ renderer.outputEncoding=THREE.sRGBEncoding;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=.83;
+ renderer.setClearColor(0x000000,0);
+ renderer.shadowMap.enabled=false;}
  catch(_){$('webglError').hidden=false;return}
  state.renderer=renderer;
  const target=$('viewport');target.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interaktives 3D-Haustier');
- const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xf7e2dc,13,29);
+ const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x817790,12,23);
  const camera=new THREE.PerspectiveCamera(37,1,.1,50);camera.position.set(0,3.45,8.6);camera.lookAt(0,1.15,0);
- scene.add(new THREE.HemisphereLight(0xfef3ef,0xa9a2c7,1.55));
- const key=new THREE.DirectionalLight(0xfff7df,1.65);key.position.set(-4,7,6);scene.add(key);
- const rim=new THREE.PointLight(0xbadfff,.9,18);rim.position.set(4,5,-2);scene.add(rim);
- const material=(c,r=.55)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:.02});
+ scene.add(new THREE.HemisphereLight(0xe9e3ed,0x51466e,.69));
+ const key=new THREE.DirectionalLight(0xffe7d5,.87);key.position.set(-4,7,6);scene.add(key);
+ const rim=new THREE.PointLight(0x98aacf,.31,12);rim.position.set(4,4,-2);scene.add(rim);
+ const material=(c,r=.72)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:0});
  const mesh=(parent,geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o};
  const sphere=new THREE.SphereGeometry(1,28,20),cyl=new THREE.CylinderGeometry(1,1,1,32),box=new THREE.BoxGeometry(1,1,1);
  const room=new THREE.Group();scene.add(room);state.room=room;
- mesh(room,new THREE.CircleGeometry(5.7,72),material('#f0d8ca'),0,-.08,0).rotation.x=-Math.PI/2;
- mesh(room,cyl,material('#ead0c9'),0,-.04,0,3.7,.12,3.7);
- mesh(room,cyl,material('#fff6e6'),0,.01,0,3.22,.08,3.22);
+ const floorBack=material('#736c91');
+ const floorOuter=material('#a18aa4');
+ const floorInner=material('#b8abb7');
+ mesh(room,new THREE.CircleGeometry(5.7,72),floorBack,0,-.08,0).rotation.x=-Math.PI/2;
+ mesh(room,cyl,floorOuter,0,-.04,0,3.7,.12,3.7);
+ mesh(room,cyl,floorInner,0,.01,0,3.22,.08,3.22);
+ // Soft contact shadow grounds the figure without washing out the floor.
+ const shadow=new THREE.MeshBasicMaterial({color:0x3c2f53,transparent:true,opacity:.24,depthWrite:false});
+ mesh(room,new THREE.CircleGeometry(.82,36),shadow,0,.055,.1,1,.52,1).rotation.x=-Math.PI/2;
+ state.applyRoom=()=>{
+  const t=pet.theme||0;
+  $('viewport').style.background=themeStyles[t]||themeStyles[0];
+  const tones=[['#736c91','#a18aa4','#b8abb7'],['#4b777d','#789c8e','#a8bbb0'],['#6f5077','#957294','#bba1b0']][t]||[];
+  [floorBack,floorOuter,floorInner].forEach((mat,i)=>{if(mat.color?.set)mat.color.set(tones[i])});
+ };
+ state.applyRoom();
  // Cozy pieces: little flower, bowl, bed and hanging stars.
  mesh(room,cyl,material('#eeb996'),-2.45,.25,1.45,.45,.25,.45);
  mesh(room,new THREE.TorusGeometry(.44,.08,12,32),material('#a5c1a8'),-2.45,.48,1.45).rotation.x=Math.PI/2;
@@ -158,10 +209,10 @@ function make3D(){
  }
  const petGroup=new THREE.Group();scene.add(petGroup);state.model=petGroup;
  const palettes=[
-  ['#e8adc7','#fff0e6','#c887a8'],
-  ['#a1d6cb','#fff3df','#64ada6'],
-  ['#c6b4e9','#fff3ed','#997fd3'],
-  ['#f7cd8f','#fff3df','#e4ab68']
+  ['#c9799f','#e5c3c4','#a65784'],
+  ['#69aaa3','#c2dad1','#4c8588'],
+  ['#a18bcc','#ded1de','#765faf'],
+  ['#d2a66a','#e6d0a9','#a98356']
  ];
  let body,faceParts=[],horns=[];
  const buildPet=()=>{
@@ -171,8 +222,8 @@ function make3D(){
   }
   faceParts=[];
   const [base,belly,accent]=palettes[pet.color],skin=material(base),light=material(belly),dark=material(accent),
-    white=material('#fffaf4'),eyes=material('#30304b',.18),blush=material('#ef93a9'),mouth=material('#ae6978'),
-    shine=material('#fff0a9'),scale=material('#8ebcb8');
+    white=material('#e8e1dd'),eyes=material('#25243f',.18),blush=material('#d57d95'),mouth=material('#955468'),
+    shine=material('#e9d1a0'),scale=material('#6f9b9b');
   const growth=1+M.evolve(pet)*.1,id=pet.species||0;
   const oval=(mat,x,y,z,sx,sy,sz,par=petGroup)=>mesh(par,sphere,mat,x,y,z,sx,sy,sz);
   const cone=(mat,x,y,z,rad,len,down=false)=>{
@@ -250,6 +301,19 @@ function make3D(){
    const tail=oval(skin,.67,.67,-.83,.38,.29,.71);tail.rotation.y=-.38;
    cone(dark,1.03,.77,-1.26,.23,.44);
    face(1.60,.74,.31,.135);
+  }
+  if(pet.accessory===1){
+   // A tiny bell collar around the neck.
+   mesh(petGroup,new THREE.TorusGeometry(.55,.07,10,34),material('#d7a469'),0,.82,.54).rotation.x=.28;
+   oval(shine,0,.69,1.03,.14,.14,.10);
+  }else if(pet.accessory===2){
+   const bow=material('#bf6491');
+   oval(bow,-.18,2.59,.13,.23,.15,.12);oval(bow,.18,2.59,.13,.23,.15,.12);
+   oval(shine,0,2.60,.24,.10,.1,.09);
+  }else if(pet.accessory===3){
+   const ring=mesh(petGroup,new THREE.TorusGeometry(.57,.08,10,30),shine,0,2.83,.02);
+   ring.rotation.x=.12;
+   for(let i=0;i<4;i++)oval(shine,Math.cos(i*Math.PI/2)*.57,2.83+Math.sin(i*Math.PI/2)*.5,.02,.11,.11,.1);
   }
   // Shared stage growth still changes the silhouette of every species.
   petGroup.scale.setScalar(.86+M.evolve(pet)*.055);
@@ -385,5 +449,5 @@ setInterval(()=>{
  if(!document.hidden&&Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!');
 },60000);
 ui();make3D();remindersUi();
-window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model};
+window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,startMinigame};
 })();
