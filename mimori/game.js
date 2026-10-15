@@ -824,5 +824,5 @@ setInterval(()=>{
  if(!document.hidden&&Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!');
 },60000);
 ui();try{make3D()}catch(err){startLowGraphics(err)}remindersUi();
-window.MimoriDebug={household:()=>JSON.parse(JSON.stringify(house)),openWorld:()=>showWorld(true),switchMember,enterRoom,get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,graphicsMode:()=>state.useFallback?'2d':'3d',startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
+window.MimoriDebug={household:()=>JSON.parse(JSON.stringify(house)),openWorld:()=>showWorld(true),switchMember,enterRoom,get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,partnerCount:()=>state.partnerCount||0,graphicsMode:()=>state.useFallback?'2d':'3d',startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
 })();

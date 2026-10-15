@@ -89,7 +89,7 @@ assert(sw.includes("'./sound.js'")&&sw.includes("'../cloud/anmacha-cloud.js'"));
 assert(!sw.includes("addEventListener('push'"));
 
 const ui={},ls=new Map(),events={window:{}},notifications=[],noop=()=>{};
-let renderFrame=null;const speciesButtons=[],appearanceButtons=[],careButtons=[];
+let renderFrame=null;const speciesButtons=[],appearanceButtons=[],colorButtons=[],careButtons=[];
 function element(){
  return {textContent:'',hidden:false,clientWidth:570,clientHeight:500,dataset:{},children:[],
   style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},focus:noop,setPointerCapture:noop,querySelector:()=>element(),
@@ -117,11 +117,12 @@ const serviceWorker={getRegistration:async()=>({showNotification:async(t,d)=>not
 const win={MimoriModel:M,MimoriHome:Home,MimoriRooms3D:Rooms3D,MimoriRadio:{mount:noop,stop:noop},MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
 for(let i=0;i<4;i++){const b=element();b.dataset.species=String(i);speciesButtons.push(b)}
 for(let i=0;i<3;i++){const b=element();b.dataset.appearance=String(i);appearanceButtons.push(b)}
+for(let i=0;i<4;i++){const b=element();b.dataset.color=String(i);colorButtons.push(b)}
 for(const kind of ['feed','toilet','cleanup','medicine','light','sleep']){
  const b=element();b.dataset.care=kind;careButtons.push(b);
 }
 const document={getElementById:id=>ui[id]??=element(),
- querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:sel==='[data-appearance]'?appearanceButtons:sel==='[data-care]'?careButtons:[],
+ querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:sel==='[data-appearance]'?appearanceButtons:sel==='[data-color]'?colorButtons:sel==='[data-care]'?careButtons:[],
  addEventListener:noop,createElement:element,hidden:false,body:{classList:{add:noop,remove:noop,toggle:noop}}};
 const localStorage={getItem:k=>ls.get(k)||null,setItem:(k,v)=>ls.set(k,v)};
 const context={window:win,document,localStorage,navigator:{serviceWorker},Notification:mockNotification,
@@ -165,6 +166,12 @@ assert.equal(win.MimoriDebug.get().appearance,0,'appearance variant not applied'
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).appearance,0);
 assert.equal(win.MimoriDebug.household().members.length,1);
 assert.equal(win.MimoriDebug.household().room,0);
+assert.equal(ui.miniJoy.textContent,'82');
+assert.equal(ui.miniHunger.textContent,'82');
+colorButtons[3].handlers.click[0]();
+assert.equal(win.MimoriDebug.get().color,3);
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,3);
+assert.equal(ui.radioHotspot.hidden,false);
 ui.worldOpen.handlers.click[0]();
 assert.equal(ui.worldOverlay.hidden,false);
 assert.equal(ui.roomTiles.children.length,12,'No 12-room selection grid');
@@ -177,11 +184,22 @@ ui.addPet.handlers.click[0]();
 assert.equal(win.MimoriDebug.household().members.length,2,'Add Mimori does not work');
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).household.members.length,2,'Household not saved with Google-sync key');
 assert.equal(ui.familyCards.children.length,2,'Family cards not updated');
+ui.partnerChoices.querySelectorAll=(sel)=>sel==='input:checked'?
+ ui.partnerChoices.children.flatMap(label=>label.children.filter(el=>el.type==='checkbox'&&el.checked)):[];
+ui.partnerChoices.children[0].children[0].checked=true;
+ui.datePartners.handlers.click[0]();ui.datePartners.handlers.click[0]();
+ui.marryPartners.handlers.click[0]();
+assert.equal(win.MimoriDebug.household().weddings.length,1,'Wedding not saved');
+assert.equal(win.MimoriDebug.partnerCount(),1,'Spouse not visible in 3D');
+assert.equal(ui.partnerNameTags.children.length,1,'Partner name missing');
+ui.radioHotspot.handlers.click[0]();
+assert.equal(win.MimoriDebug.household().room,0);
+assert.equal(ui.worldOverlay.hidden,false);
 ui.worldClose.handlers.click[0]();assert.equal(ui.worldOverlay.hidden,true);
 
 // Each of four species retains the selected color on model reconstruction.
 ui.changeColor.handlers.click[0]();
-assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,1);
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,0);
 // Touch/swipe rotation and the visible turn controls must change actual 3D model orientation.
 const canvas=ui.viewport.children[0],oldOrbit=win.MimoriDebug.orbit();
 const fire=(type,e)=>canvas.handlers[type][0]({pointerId:77,clientX:130,preventDefault:noop,...e});
