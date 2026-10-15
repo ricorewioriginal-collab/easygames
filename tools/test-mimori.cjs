@@ -199,7 +199,7 @@ ui.worldClose.handlers.click[0]();assert.equal(ui.worldOverlay.hidden,true);
 
 // Each of four species retains the selected color on model reconstruction.
 ui.changeColor.handlers.click[0]();
-assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,0);
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,1);
 // Touch/swipe rotation and the visible turn controls must change actual 3D model orientation.
 const canvas=ui.viewport.children[0],oldOrbit=win.MimoriDebug.orbit();
 const fire=(type,e)=>canvas.handlers[type][0]({pointerId:77,clientX:130,preventDefault:noop,...e});
