@@ -1,6 +1,9 @@
 import { COLLECTIONS, TRACKS, VIDEOS, questionFor } from './tracks.js';
 import { KNOWLEDGE, SPECIAL_CATEGORIES } from './knowledge.js';
 import { sourcesFor } from './trailer.js';
+import { SOUNDTRACKS, audioChoices } from './soundtracks.js';
+import { VISUALS, visualChoices } from './visual.js';
+import { resolveDeezer, musicSources } from './music.js';
 import { yearChoices } from './year.js';
 import { IS_CONTROLLER, startController, startHost } from './pair.js';
 
@@ -24,7 +27,9 @@ const filmQuestions = TRACKS.map((film, index) => {
 });
 const quizBank = [...KNOWLEDGE, ...studioQuestions, ...filmQuestions];
 const quizById = new Map(quizBank.map(question => [question.id, question]));
-const state = { players: [], active: 0, rounds: 0, clipDeck: [], quizDeck: [], current: null, starter: null, solved: false, lastCorrect: false, voice: true, playing: false, pair: null, result: '', filter: 'all', musicMode: 'choice', finished: false, sourceList: [], sourceIndex: 0 };
+const audioById = new Map(SOUNDTRACKS.map(item => [item.id, item]));
+const visualById = new Map(VISUALS.map(item => [item.id, item]));
+const state = { players: [], active: 0, rounds: 0, clipDeck: [], quizDeck: [], audioDeck: [], visualDeck: [], current: null, starter: null, solved: false, lastCorrect: false, voice: true, playing: false, pair: null, result: '', filter: 'all', musicMode: 'choice', finished: false, sourceList: [], sourceIndex: 0 };
 let audioContext;
 
 function shuffle(items) { const a=[...items]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -45,9 +50,11 @@ function currentPlayer() { return state.players[state.active]; }
 function sortedTimeline(player=currentPlayer()) { return [...player.timeline].sort((a,b) => a.year-b.year || a.title.localeCompare(b.title)); }
 function clipPool(filter=state.filter) { return SPECIAL_CATEGORIES.includes(filter) ? [] : filter === 'all' ? playable : playable.filter(track => track.category === filter); }
 function quizPool(filter=state.filter) { return filter === 'all' ? quizBank : quizBank.filter(q => q.category === filter); }
+function audioPool(filter=state.filter) { return filter === 'all' ? SOUNDTRACKS : SOUNDTRACKS.filter(item => item.category === filter); }
+function visualPool(filter=state.filter) { return filter === 'all' ? VISUALS : VISUALS.filter(item => item.category === filter); }
 function saveSession() {
   if (!state.current || state.finished) return;
-  const saved = { version: 2, savedAt: Date.now(), filter: state.filter, musicMode: state.musicMode, active: state.active, rounds: state.rounds, solved: state.solved, lastCorrect: state.lastCorrect, result: state.result, starter: state.starter?.id, current: state.current.type === 'quiz' ? { type: 'quiz', id: state.current.question.id, options: state.current.options } : { type: state.current.type, id: state.current.track.id, options: state.current.options }, players: state.players.map(p => ({ name: p.name, score: p.score, timeline: p.timeline.map(t => t.id) })), clipDeck: state.clipDeck.map(t => t.id), quizDeck: state.quizDeck.map(q => q.id) };
+  const saved = { version: 2, savedAt: Date.now(), filter: state.filter, musicMode: state.musicMode, active: state.active, rounds: state.rounds, solved: state.solved, lastCorrect: state.lastCorrect, result: state.result, starter: state.starter?.id, current: { type: state.current.type, id: state.current.question?.id || state.current.track?.id || state.current.item?.id, options: state.current.options }, players: state.players.map(p => ({ name: p.name, score: p.score, timeline: p.timeline.map(t => t.id) })), clipDeck: state.clipDeck.map(t => t.id), quizDeck: state.quizDeck.map(q => q.id), audioDeck: state.audioDeck.map(item => item.id), visualDeck: state.visualDeck.map(item => item.id) };
   safeStorage(() => localStorage.setItem(SAVE_KEY, JSON.stringify(saved)));
   ui.resume.classList.remove('hidden');
 }
@@ -57,9 +64,10 @@ function loadSaved() {
     const saved=JSON.parse(raw); if (saved.version!==2 || !saved.current || !Array.isArray(saved.players) || !saved.players.length || saved.players.length>4) return false;
     const players=saved.players.map(p => ({ name:String(p.name).slice(0,22), score:Number(p.score)||0, timeline:p.timeline.map(id=>trackById.get(id)).filter(Boolean) }));
     const starter=trackById.get(saved.starter); if (!starter || players.some(p=>!p.timeline.length)) return false;
-    const current=saved.current.type==='quiz' ? { type:'quiz', question:quizById.get(saved.current.id), options:saved.current.options } : { type:saved.current.type==='year'?'year':'timeline', track:trackById.get(saved.current.id), options:saved.current.options };
-    if (!current.track && !current.question) return false;
-    Object.assign(state,{players,starter,current,active:Math.min(Math.max(0,Number(saved.active)||0),players.length-1),rounds:Number(saved.rounds)||1,solved:!!saved.solved,lastCorrect:!!saved.lastCorrect,result:String(saved.result||''),filter:saved.filter||'all',musicMode:saved.musicMode==='choice'?'choice':'timeline',clipDeck:(saved.clipDeck||[]).map(id=>trackById.get(id)).filter(Boolean),quizDeck:(saved.quizDeck||[]).map(id=>quizById.get(id)).filter(Boolean),playing:false,finished:false,sourceList:[],sourceIndex:0});
+    const type=saved.current.type;
+    const current=type==='quiz' ? {type,question:quizById.get(saved.current.id),options:saved.current.options} : type==='audio'||type==='visual' ? {type,item:(type==='audio'?audioById:visualById).get(saved.current.id),options:saved.current.options} : {type:type==='year'?'year':'timeline',track:trackById.get(saved.current.id),options:saved.current.options};
+    if (!current.track && !current.question && !current.item) return false;
+    Object.assign(state,{players,starter,current,active:Math.min(Math.max(0,Number(saved.active)||0),players.length-1),rounds:Number(saved.rounds)||1,solved:!!saved.solved,lastCorrect:!!saved.lastCorrect,result:String(saved.result||''),filter:saved.filter||'all',musicMode:saved.musicMode==='choice'?'choice':'timeline',clipDeck:(saved.clipDeck||[]).map(id=>trackById.get(id)).filter(Boolean),quizDeck:(saved.quizDeck||[]).map(id=>quizById.get(id)).filter(Boolean),audioDeck:(saved.audioDeck||[]).map(id=>audioById.get(id)).filter(Boolean),visualDeck:(saved.visualDeck||[]).map(id=>visualById.get(id)).filter(Boolean),playing:false,finished:false,sourceList:[],sourceIndex:0});
     return true;
   } catch (_) { return false; }
 }
@@ -77,7 +85,7 @@ function init() {
   setBoot(18,'Fragen und Trailer werden sortiert …');
   if (IS_CONTROLLER) { startController(); finishBoot(true); return; }
   state.players=[{name:'Spieler 1',score:0,timeline:[]}]; playerInputs();
-  for (const category of [...Object.keys(COLLECTIONS),...SPECIAL_CATEGORIES]) { const option=document.createElement('option'); option.value=category; option.textContent=`${category} · ${quizPool(category).length} Fragen`; ui.category.append(option); }
+  for (const category of [...Object.keys(COLLECTIONS),...SPECIAL_CATEGORIES]) { const option=document.createElement('option'); option.value=category; option.textContent=`${category} · ${quizPool(category).length+audioPool(category).length+visualPool(category).length} Fragen`; ui.category.append(option); }
   ui.addPlayer.onclick=()=>{if(state.players.length<4){state.players.push({name:`Spieler ${state.players.length+1}`,score:0,timeline:[]});playerInputs();}};
   ui.start.onclick=startGame;
   ui.resume.onclick=()=>{if(loadSaved()){ui.category.value=state.filter;ui.musicMode.value=state.musicMode;playerInputs();showGame();renderRound();state.pair?.broadcast();say(`Willkommen zurück! ${currentPlayer().name}, deine Show geht weiter.`);}else{ui.resume.classList.add('hidden');}};
@@ -109,11 +117,11 @@ function openPair() {
     },
     onLeave(){},
     onAnswer(slot,position){if(slot===state.active&&state.current?.type==='timeline'&&!state.solved&&!ui.game.classList.contains('hidden')){const timeline=sortedTimeline();if(position>=0&&position<=timeline.length)answerTimeline(position,timeline);}},
-    onChoice(slot,choice){if(slot===state.active&&!state.solved&&!ui.game.classList.contains('hidden')&&choice>=0&&choice<4){if(state.current?.type==='quiz')answerQuiz(choice);else if(state.current?.type==='year')answerYear(choice);}},
-    onPlay(slot){if(slot===state.active&&state.current?.type!=='quiz'&&!state.solved)playMusic();},
-    onSource(slot){if(slot===state.active&&state.current?.type!=='quiz'&&!state.solved)switchSource();},
+    onChoice(slot,choice){if(slot===state.active&&!state.solved&&!ui.game.classList.contains('hidden')&&choice>=0&&choice<4){if(state.current?.type==='quiz')answerQuiz(choice);else if(state.current?.type==='year')answerYear(choice);else if(['audio','visual'].includes(state.current?.type))answerFeature(choice);}},
+    onPlay(slot){if(slot===state.active&&['timeline','year','audio'].includes(state.current?.type)&&!state.solved)playMusic();},
+    onSource(slot){if(slot===state.active&&['timeline','year','audio'].includes(state.current?.type)&&!state.solved)switchSource();},
     onNext(slot){if(slot===state.active&&state.solved&&!ui.next.classList.contains('hidden'))ui.next.click();},
-    snapshot(){const timeline=currentPlayer()?sortedTimeline():[];const slots=Array.from({length:timeline.length+1},(_,i)=>i===0?`Vor ${timeline[0]?.year||'allen Filmen'}`:i===timeline.length?`Nach ${timeline[i-1].year}`:`Zwischen ${timeline[i-1].year} und ${timeline[i].year}`);return{phase:ui.game.classList.contains('hidden')?'setup':'game',players:state.players.map(p=>({name:p.name,score:p.score})),active:state.active,round:state.rounds,solved:state.solved,playing:state.playing,slots,result:state.result,type:state.current?.type||'',prompt:state.current?.type==='quiz'?state.current.question.prompt:'Aus welchem Jahr stammt dieser Film?',options:state.current?.type==='quiz'||state.current?.type==='year'?state.current.options:[],category:state.current?.type==='quiz'?state.current.question.category:state.current?.track?.category||''};}
+    snapshot(){const timeline=currentPlayer()?sortedTimeline():[];const slots=Array.from({length:timeline.length+1},(_,i)=>i===0?`Vor ${timeline[0]?.year||'allen Filmen'}`:i===timeline.length?`Nach ${timeline[i-1].year}`:`Zwischen ${timeline[i-1].year} und ${timeline[i].year}`);return{phase:ui.game.classList.contains('hidden')?'setup':'game',players:state.players.map(p=>({name:p.name,score:p.score})),active:state.active,round:state.rounds,solved:state.solved,playing:state.playing,slots,result:state.result,type:state.current?.type||'',prompt:state.current?.type==='quiz'?state.current.question.prompt:state.current?.type==='audio'?'Zu welchem Film oder welcher Serie gehört die Musik?':state.current?.type==='visual'?'Welcher Film oder welche Serie passt zu den Symbolen?':'Aus welchem Jahr stammt dieser Film?',options:['quiz','year','audio','visual'].includes(state.current?.type)?state.current.options:[],category:state.current?.question?.category||state.current?.track?.category||state.current?.item?.category||'',symbols:state.current?.type==='visual'?state.current.item.symbols:[]};}
   });state.pair.open();
 }
 function startGame() {
@@ -121,7 +129,7 @@ function startGame() {
   state.filter=ui.category.value;state.musicMode=ui.musicMode.value;state.active=0;state.rounds=0;state.finished=false;state.solved=false;state.result='';
   const starters=state.filter==='all'||SPECIAL_CATEGORIES.includes(state.filter)?TRACKS:TRACKS.filter(t=>t.category===state.filter);
   state.starter=shuffle(starters)[0];state.players.forEach(p=>p.timeline.push(state.starter));
-  state.clipDeck=shuffle(clipPool().filter(track=>track.id!==state.starter.id));state.quizDeck=shuffle(quizPool());
+  state.clipDeck=shuffle(clipPool().filter(track=>track.id!==state.starter.id));state.quizDeck=shuffle(quizPool());state.audioDeck=shuffle(audioPool());state.visualDeck=shuffle(visualPool());
   showGame();tone(523,.18);setTimeout(()=>tone(784,.3),130);
   say(state.musicMode==='timeline'
     ? `Willkommen bei Zeitsprung Movie! Ich bin Vito. Der Startfilm ist ${state.starter.title} von ${state.starter.studio}, aus ${state.starter.year}. Acht Punkte bringen den Sieg!`
@@ -141,30 +149,53 @@ function pickQuiz() {
 }
 function musicRound(track) { return state.musicMode==='choice'?{type:'year',track,options:yearChoices(track.year)}:{type:'timeline',track}; }
 function pickTrailer() { if(!state.clipDeck.length)state.clipDeck=shuffle(clipPool().filter(track=>!state.players.some(player=>player.timeline.some(card=>card.id===track.id))));const track=state.clipDeck.pop();return track?musicRound(track):pickQuiz(); }
+function pickFeature(type) {
+  const pool=type==='audio'?audioPool():visualPool();const key=type==='audio'?'audioDeck':'visualDeck';
+  if(!state[key].length)state[key]=shuffle(pool);
+  const item=state[key].pop();if(!item)return pickQuiz();
+  const options=type==='audio'?audioChoices(item,SOUNDTRACKS):visualChoices(item,VISUALS);
+  return options.length===4?{type,item,options}:pickQuiz();
+}
 function nextRound(announce=true) {
   stopPlayer();state.playing=false;state.solved=false;state.lastCorrect=false;state.result='';state.sourceList=[];state.sourceIndex=0;state.rounds++;
-  const canTrailer=clipPool().length>0;
-  state.current=canTrailer&&(state.rounds===1||Math.random()<.42)?pickTrailer():pickQuiz();
-  renderRound();if(announce)say(`${currentPlayer().name}, du bist dran! ${state.current.type==='timeline'?'Schau den Trailer und setze den Film auf deine Zeitleiste.':state.current.type==='year'?'Schau den Trailer und wähle das richtige Jahr aus A bis D.':'Hier kommt deine Filmfrage.'}`);
+  const kinds=['quiz'];if(clipPool().length)kinds.push('trailer');if(audioPool().length)kinds.push('audio');if(visualPool().length)kinds.push('visual');
+  const kind=state.rounds===1&&clipPool().length?'trailer':shuffle(kinds)[0];
+  state.current=kind==='trailer'?pickTrailer():kind==='quiz'?pickQuiz():pickFeature(kind);
+  renderRound();if(announce)say(`${currentPlayer().name}, du bist dran! ${state.current.type==='timeline'?'Schau den Trailer und setze den Film auf deine Zeitleiste.':state.current.type==='year'?'Schau den Trailer und wähle das richtige Jahr aus A bis D.':state.current.type==='audio'?'Hör genau hin: Zu welchem Film oder welcher Serie gehört dieser Song?':state.current.type==='visual'?'Schau auf die Symbole. Welcher Film oder welche Serie ist gemeint?':'Hier kommt deine Filmfrage.'}`);
   saveSession();state.pair?.broadcast();
 }
 function stopPlayer() { ui.playerBox.replaceChildren(); }
 function playerPlaceholder(symbol,message) { stopPlayer();ui.playerBox.dataset.provider='';const div=document.createElement('div');div.className='player-placeholder';div.textContent=symbol;const small=document.createElement('small');small.textContent=message;div.append(small);ui.playerBox.append(div); }
 function renderRound() {
   if(!state.current)return;
-  const quiz=state.current.type==='quiz',year=state.current.type==='year';ui.turnName.textContent=currentPlayer().name;ui.roundLabel.textContent=`RUNDE ${state.rounds}`;ui.deckLabel.textContent=`${quizBank.length} QUIZFRAGEN · ${playable.length} TRAILER`;
-  ui.modeBadge.textContent=quiz?'QUIZRUNDE':'TRAILERRUNDE';ui.catLabel.textContent=(quiz?state.current.question.category:state.current.track.category).toUpperCase();ui.questionCategory.textContent=ui.catLabel.textContent;
-  ui.mysteryTitle.textContent=quiz?'VITO HAT EINE FRAGE':'ERKENNST DU DIESEN FILM?';
-  ui.timelineWrap.classList.toggle('hidden',quiz||year);ui.quizOptions.classList.toggle('hidden',!quiz&&!year);
-  ui.playMusic.classList.toggle('hidden',quiz);ui.switchSource.classList.add('hidden');ui.swapTrailer.classList.toggle('hidden',quiz);
-  ui.musicInfo.classList.toggle('hidden',quiz);
-  ui.questionTitle.textContent=quiz?state.current.question.prompt:year?'In welchem Jahr startete dieser Film im Kino?':'In welche Zeit gehört dieser Film?';
-  ui.questionHint.textContent=quiz?'Wähle eine der vier Antworten. Vito löst danach auf.':year?'Starte den Trailer und wähle das Jahr mit A, B, C oder D.':'Schau den Trailer und tippe auf die passende Lücke deiner Zeitleiste.';
+  const type=state.current.type, quiz=type==='quiz', year=type==='year', audio=type==='audio', visual=type==='visual', trailer=year||type==='timeline';
+  ui.turnName.textContent=currentPlayer().name;ui.roundLabel.textContent=`RUNDE ${state.rounds}`;
+  ui.deckLabel.textContent=`${quizBank.length+SOUNDTRACKS.length+VISUALS.length} FRAGEN · ${playable.length} TRAILER`;
+  ui.modeBadge.textContent=quiz?'QUIZRUNDE':audio?'HÖRRUNDE':visual?'BILDRUNDE':'TRAILERRUNDE';
+  ui.catLabel.textContent=(state.current.question?.category||state.current.track?.category||state.current.item?.category||'').toUpperCase();ui.questionCategory.textContent=ui.catLabel.textContent;
+  ui.mysteryTitle.textContent=quiz?'VITO HAT EINE FRAGE':audio?'HÖRST DU DEN FILM?':visual?'ERKENNST DU DIE SYMBOLE?':'ERKENNST DU DIESEN FILM?';
+  ui.timelineWrap.classList.toggle('hidden',type!=='timeline');ui.quizOptions.classList.toggle('hidden',type==='timeline');
+  ui.playMusic.classList.toggle('hidden',quiz||visual);ui.switchSource.classList.add('hidden');ui.swapTrailer.classList.toggle('hidden',quiz||visual);
+  ui.swapTrailer.textContent=audio?'↻ Anderer Song':'↻ Anderer Film';ui.musicInfo.classList.toggle('hidden',quiz||visual);
+  ui.musicInfo.textContent=audio?'Musik läuft direkt hier über Deezer oder Spotify. Tippe im Player auf Play.':'Trailer läuft direkt hier im Studio. Wenn ein Video gesperrt ist, wähle einen anderen Film.';
+  ui.questionTitle.textContent=quiz?state.current.question.prompt:audio?'Zu welchem Film oder welcher Serie gehört diese Musik?':visual?'Welcher Film oder welche Serie passt zu diesen Symbolen?':year?'In welchem Jahr startete dieser Film im Kino?':'In welche Zeit gehört dieser Film?';
+  ui.questionHint.textContent=quiz?'Wähle eine der vier Antworten. Vito löst danach auf.':audio?'Starte den Song im Player und tippe auf A, B, C oder D.':visual?'Sieh dir die Symbole an und wähle A, B, C oder D.':year?'Starte den Trailer und wähle das Jahr mit A, B, C oder D.':'Schau den Trailer und tippe auf die passende Lücke deiner Zeitleiste.';
   ui.result.className='result hidden';ui.result.replaceChildren();ui.next.classList.add('hidden');
   if(quiz){playerPlaceholder('★','DIE QUIZFRAGE IST LIVE');ui.mediaState.textContent='QUIZRUNDE';renderQuiz();}
-  else{playerPlaceholder('▶','TRAILER DIREKT IM STUDIO');ui.mediaState.textContent='BEREIT';ui.playMusic.disabled=false;ui.playMusic.textContent='▶ Trailer abspielen';if(year)renderYearChoices();else renderTimeline();}
-  if(state.solved){showSolvedState();}
-  renderScores();
+  else if(visual){renderVisual();ui.mediaState.textContent='BILDRÄTSEL';renderFeature();}
+  else if(audio){playerPlaceholder('♫','FILMMUSIK UND SERIENINTROS');ui.mediaState.textContent='BEREIT';ui.playMusic.disabled=false;ui.playMusic.textContent='▶ Musik abspielen';renderFeature();}
+  else if(trailer){playerPlaceholder('▶','TRAILER DIREKT IM STUDIO');ui.mediaState.textContent='BEREIT';ui.playMusic.disabled=false;ui.playMusic.textContent='▶ Trailer abspielen';if(year)renderYearChoices();else renderTimeline();}
+  if(state.solved)showSolvedState();renderScores();
+}
+function renderVisual() {
+  stopPlayer();ui.playerBox.dataset.provider='visual';
+  const panel=document.createElement('div');panel.className='visual-riddle';panel.setAttribute('role','img');panel.setAttribute('aria-label','Drei Bildsymbole als Filmrätsel');
+  for(const symbol of state.current.item.symbols){const tile=document.createElement('span');tile.textContent=symbol;panel.append(tile);}
+  ui.playerBox.append(panel);
+}
+function renderFeature() {
+  ui.quizOptions.replaceChildren();
+  state.current.options.forEach((option,index)=>{const button=document.createElement('button');button.type='button';const badge=document.createElement('b');badge.textContent='ABCD'[index];button.append(badge,document.createTextNode(option));button.disabled=state.solved;button.onclick=()=>answerFeature(index);ui.quizOptions.append(button);});
 }
 function renderQuiz() {
   ui.quizOptions.replaceChildren();const current=state.current;
@@ -180,30 +211,57 @@ function renderYearChoices() {
   });
 }
 function renderTimeline() {
-  const timeline=sortedTimeline();ui.timelineCount.textContent=`${timeline.length} ${timeline.length===1?'SONG':'SONGS'}`;ui.timeline.replaceChildren();
+  const timeline=sortedTimeline();ui.timelineCount.textContent=`${timeline.length} ${timeline.length===1?'FILM':'FILME'}`;ui.timeline.replaceChildren();
   for(let i=0;i<=timeline.length;i++){
     const slot=document.createElement('button');slot.type='button';slot.className='slot';slot.textContent='+';slot.setAttribute('aria-label',`Film an Position ${i+1} einordnen`);slot.disabled=state.solved;slot.onclick=()=>answerTimeline(i,timeline);ui.timeline.append(slot);
     if(i<timeline.length){const card=document.createElement('div');card.className='time-card';const year=document.createElement('span');year.className='year';year.textContent=timeline[i].year;const title=document.createElement('strong');title.textContent=timeline[i].title;const studio=document.createElement('small');studio.textContent=timeline[i].studio;card.append(year,title,studio);ui.timeline.append(card);}
   }
 }
-function playMusic() {
-  if(!['timeline','year'].includes(state.current?.type)||state.solved)return;
-  state.sourceList=sourcesFor(state.current.track);
+async function playMusic() {
+  const current=state.current;if(!['timeline','year','audio'].includes(current?.type)||state.solved)return;
+  if(current.type==='audio'){
+    ui.playMusic.disabled=true;ui.mediaState.textContent='MUSIK WIRD GESUCHT';
+    const id=await resolveDeezer(current.item);
+    if(state.current!==current||state.solved)return;
+    state.sourceList=musicSources(current.item,id);
+    if(!state.sourceList.length){playerPlaceholder('!', 'Musik gerade nicht verfügbar. Anderen Song wählen.');ui.mediaState.textContent='KEIN AUDIO';ui.playMusic.disabled=false;return;}
+  }else state.sourceList=sourcesFor(current.track);
   if(!state.sourceList.length){playerPlaceholder('!', 'Dieser Trailer ist nicht verfügbar. Anderen Film wählen.');ui.mediaState.textContent='KEIN TRAILER';return;}
-  state.playing=true;ui.playMusic.disabled=false;
-  renderSource();state.pair?.broadcast();
+  state.sourceIndex=0;state.playing=true;ui.playMusic.disabled=false;renderSource();state.pair?.broadcast();
 }
 function renderSource() {
   const source=state.sourceList[state.sourceIndex];if(!source)return;
-  stopPlayer();ui.playerBox.dataset.provider=source.name.toLowerCase();const iframe=document.createElement('iframe');iframe.src=source.src;iframe.title=`${source.name} Filmtrailer`;iframe.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';ui.playerBox.append(iframe);
-  ui.mediaState.textContent='TRAILER LIVE';ui.playMusic.textContent='↻ Trailer neu laden';
-  ui.hostText.textContent='Der Trailer läuft direkt im Studio. Tippe im Video auf Play. Falls er gesperrt ist, wähle einen anderen Film.';
+  const audio=state.current.type==='audio';stopPlayer();ui.playerBox.dataset.provider=source.name.toLowerCase();
+  const iframe=document.createElement('iframe');iframe.src=source.src;iframe.title=`${source.name} ${audio?'Musikplayer':'Filmtrailer'}`;iframe.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';ui.playerBox.append(iframe);
+  ui.mediaState.textContent=audio?`${source.name.toUpperCase()} IM STUDIO`:'TRAILER LIVE';ui.playMusic.textContent=audio?'↻ Musik neu laden':'↻ Trailer neu laden';
+  ui.switchSource.classList.toggle('hidden',state.sourceList.length<2);ui.switchSource.textContent=`↔ ${state.sourceList[(state.sourceIndex+1)%state.sourceList.length].name}`;
+  ui.hostText.textContent=audio?'Die Musik ist im Studio bereit. Tippe im Player auf Play und rate mit A bis D.':'Der Trailer läuft direkt im Studio. Tippe im Video auf Play.';
 }
-function switchSource() { if(!['timeline','year'].includes(state.current?.type)||state.solved)return;playMusic(); }
-function swapTrailer() { if(!['timeline','year'].includes(state.current?.type)||state.solved)return;const pool=clipPool();if(!pool.length)return;const alternatives=pool.filter(t=>t.id!==state.current.track.id&&!state.players.some(player=>player.timeline.some(card=>card.id===t.id)));if(!alternatives.length)return;state.current=musicRound(shuffle(alternatives)[0]);state.playing=false;state.sourceList=[];state.sourceIndex=0;renderRound();saveSession();state.pair?.broadcast();say('Neuer Film, neue Chance! Schau dir den Trailer direkt hier im Studio an.'); }
+function switchSource() {
+  if(state.solved||!['timeline','year','audio'].includes(state.current?.type))return;
+  if(state.sourceList.length>1){state.sourceIndex=(state.sourceIndex+1)%state.sourceList.length;renderSource();}
+  else playMusic();
+}
+function swapTrailer() {
+  if(state.solved)return;
+  const audio=state.current?.type==='audio';if(!audio&&!['timeline','year'].includes(state.current?.type))return;
+  const pool=audio?audioPool():clipPool();
+  const alternatives=pool.filter(item=>item.id!==(audio?state.current.item.id:state.current.track.id)&& (audio||!state.players.some(player=>player.timeline.some(card=>card.id===item.id))));
+  if(!alternatives.length)return;
+  state.current=audio?{type:'audio',item:shuffle(alternatives)[0],options:[]} :musicRound(shuffle(alternatives)[0]);
+  if(audio)state.current.options=audioChoices(state.current.item,SOUNDTRACKS);
+  state.playing=false;state.sourceList=[];state.sourceIndex=0;renderRound();saveSession();state.pair?.broadcast();say(audio?'Neuer Song, neue Chance!':'Neuer Film, neue Chance!');
+}
 function answerTimeline(position,timeline=sortedTimeline()) { if(state.solved||state.current?.type!=='timeline')return;const track=state.current.track,previous=timeline[position-1],following=timeline[position];const correct=(!previous||previous.year<=track.year)&&(!following||track.year<=following.year);if(correct){currentPlayer().timeline.push(track);currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Treffer! ${track.title} von ${track.studio} erschien ${track.year}.`:`Nicht ganz. ${track.title} von ${track.studio} erschien ${track.year}.`,`${questionFor(track)} Antwort: ${track.year}.`); }
 function answerYear(index) { if(state.solved||state.current?.type!=='year'||index<0||index>3)return;const track=state.current.track,correct=state.current.options[index]===track.year;if(correct){currentPlayer().timeline.push(track);currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Richtig! ${track.title} von ${track.studio} erschien ${track.year}.`:`Nicht ganz. ${track.title} von ${track.studio} erschien ${track.year}.`,`Gesucht war das Veröffentlichungsjahr ${track.year}.`); }
 function answerQuiz(index) { if(state.solved||state.current?.type!=='quiz'||index<0||index>3)return;const {question,options}=state.current,correct=options[index]===question.answer;if(correct){currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Richtig, ${currentPlayer().name}! ${question.answer} ist die Antwort.`:`Leider falsch. Die richtige Antwort lautet ${question.answer}.`,question.prompt); }
+function answerFeature(index) {
+  if(state.solved||!['audio','visual'].includes(state.current?.type)||index<0||index>3)return;
+  const {item,options,type}=state.current,correct=options[index]===item.work;
+  if(correct){currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');
+  const intro=correct?'Richtig':'Leider falsch';
+  completeRound(correct,`${intro}! ${item.work} ist die Antwort.`,type==='audio'?`${item.title} von ${item.artist} gehört zu ${item.work}.`:`Die Symbole stehen für ${item.work}.`);
+}
 function completeRound(correct,message,detail) {
   state.solved=true;state.lastCorrect=correct;state.result=message;stopPlayer();ui.mediaState.textContent='AUFGELÖST';say(message);
   ui.result.className=`result ${correct?'good':'bad'}`;const heading=document.createElement('h3');heading.textContent=correct?'✓ Punkt für dich!':'✕ Aufgelöst';const p=document.createElement('p');p.textContent=`${detail} ${correct?'+1 Punkt':'Kein Punkt in dieser Runde.'}`;ui.result.append(heading,p);
@@ -212,7 +270,7 @@ function completeRound(correct,message,detail) {
   ui.next.classList.remove('hidden');ui.next.textContent=state.players.length>1?`Weiter: ${state.players[(state.active+1)%state.players.length].name} →`:'Nächste Runde →';ui.next.onclick=()=>{state.active=(state.active+1)%state.players.length;nextRound();};
   saveSession();state.pair?.broadcast();
 }
-function markQuizAnswer(){const buttons=[...ui.quizOptions.querySelectorAll('button')];buttons.forEach((button,index)=>{button.disabled=true;const correct=state.current.type==='year'?state.current.track.year:state.current.question.answer;if(state.current.options[index]===correct)button.classList.add('correct');});}
+function markQuizAnswer(){const buttons=[...ui.quizOptions.querySelectorAll('button')];buttons.forEach((button,index)=>{button.disabled=true;const correct=state.current.type==='year'?state.current.track.year:state.current.item?.work||state.current.question.answer;if(state.current.options[index]===correct)button.classList.add('correct');});}
 function showSolvedState() { ui.result.className=`result ${state.lastCorrect?'good':'bad'}`;const p=document.createElement('p');p.textContent=state.result;ui.result.append(p);if(state.current.type==='timeline')renderTimeline();else markQuizAnswer();ui.next.classList.remove('hidden');ui.next.textContent=state.players.length>1?`Weiter: ${state.players[(state.active+1)%state.players.length].name} →`:'Nächste Runde →';ui.next.onclick=()=>{state.active=(state.active+1)%state.players.length;nextRound();};ui.mediaState.textContent='AUFGELÖST'; }
 function renderScores() { ui.scoreboard.replaceChildren();state.players.forEach((player,index)=>{const chip=document.createElement('div');chip.className=`score-chip${index===state.active?' active':''}`;chip.textContent=player.name;const score=document.createElement('b');score.textContent=`${player.score}/8`;chip.append(score);ui.scoreboard.append(chip);}); }
 function finishGame() {state.finished=true;safeStorage(()=>localStorage.removeItem(SAVE_KEY));ui.resume.classList.add('hidden');ui.next.classList.remove('hidden');ui.next.textContent='Neue Show starten ↻';ui.next.onclick=()=>{showMenu();state.current=null;state.players.forEach(p=>{p.score=0;p.timeline=[];});playerInputs();};say(`${currentPlayer().name} gewinnt Zeitsprung Movie! Acht Punkte, was für eine Show!`);state.pair?.broadcast();}

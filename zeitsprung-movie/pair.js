@@ -137,9 +137,10 @@ export function startController() {
       const button = document.createElement('button'); button.className = 'primary'; button.textContent = 'Nächste Runde →'; button.onclick = () => send({ t: 'next' }); root.append(button); return;
     }
     const prompt = document.createElement('p'); prompt.textContent = submittedRound === s.round ? 'Antwort gesendet. Warte auf die Auflösung am TV.' : s.type === 'timeline' ? 'Spiele den Trailer am TV ab und tippe auf die passende Lücke.' : s.prompt; root.append(prompt);
-    if (s.type === 'timeline' || s.type === 'year') {
-      const play = document.createElement('button'); play.className = 'secondary'; play.textContent = '▶ Trailer am TV starten'; play.onclick = () => send({ t: 'play' }); root.append(play);
-      const source = document.createElement('button'); source.className = 'secondary'; source.textContent = '↻ Trailer am TV neu laden'; source.onclick = () => send({ t: 'source' }); root.append(source);
+    if (s.type === 'visual') { const symbols=document.createElement('div');symbols.className='controller-symbols';symbols.textContent=(s.symbols||[]).join('  ');root.append(symbols); }
+    if (s.type === 'timeline' || s.type === 'year' || s.type === 'audio') {
+      const play = document.createElement('button'); play.className = 'secondary'; play.textContent = s.type === 'audio' ? '▶ Musik am TV starten' : '▶ Trailer am TV starten'; play.onclick = () => send({ t: 'play' }); root.append(play);
+      const source = document.createElement('button'); source.className = 'secondary'; source.textContent = s.type === 'audio' ? '↔ Deezer / Spotify wechseln' : '↻ Trailer am TV neu laden'; source.onclick = () => send({ t: 'source' }); root.append(source);
     }
     const choices = document.createElement('div'); choices.className = 'controller-choices';
     const items = s.type === 'timeline' ? (s.slots || []) : (s.options || []);
