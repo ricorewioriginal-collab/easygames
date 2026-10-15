@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c518b152f42a",
- "generated": "2026-10-15T07:25:40+02:00",
- "commit": "766f3c7bd61de338ffb3deb9bfaf5fae357306ae",
+ "version": "300a18d3e6a7",
+ "generated": "2026-10-15T07:31:17+02:00",
+ "commit": "04a2e4892b1bf9a2cb53bf4448b200bee0b22c00",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 16384,
-   "h": "b109acd26dbad3f049899f01ace256a65674e3d0908b45405620244de2f7542e"
+   "s": 16416,
+   "h": "b032f6eb3d3192933985991f5bb10164d00bf552e90ad094475883d32de6b3df"
   },
   {
    "p": "gay-life/index.html",
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 70585,
-   "h": "68e91b725de3a3bd5c93fcbd0d2dfcb064dd77c4893b100826c9b278298da8cf"
+   "s": 70617,
+   "h": "27ee2c1282c2dbb851ed25da60beb2f9f5c5cb89c212b7456d2c5540c95eaa87"
   },
   {
    "p": "taschi/card.svg",
@@ -6023,8 +6023,8 @@
   },
   {
    "p": "zeitsprung-radio/game.js",
-   "s": 28803,
-   "h": "9b9afe91f634590f7e0e658f124dc159868d4d3e9b7f3965f9826fdabfd1d3f4"
+   "s": 31441,
+   "h": "e36c982d174c2f2620f4690a42f83e7908032e75edc9aa9ce7e40c7c34fef21f"
   },
   {
    "p": "zeitsprung-radio/icon.svg",
@@ -6033,8 +6033,8 @@
   },
   {
    "p": "zeitsprung-radio/index.html",
-   "s": 7692,
-   "h": "eaa7e62682277bfde18e541c114b1408b15117a81f98579f8c35c2330b014775"
+   "s": 8208,
+   "h": "76bde8430b06df9da368a4b2f76aab4f40ea621080373732ffbaf23524c6697d"
   },
   {
    "p": "zeitsprung-radio/knowledge.js",
@@ -6053,23 +6053,28 @@
   },
   {
    "p": "zeitsprung-radio/pair.js",
-   "s": 11591,
-   "h": "aebbf294f52ffcd975406351c47ed16066ecc844b39acd83b9e516f9646190fe"
+   "s": 11628,
+   "h": "b5b1d146694c479077c49d61863c82371a62a002f134100fddd760905f7c16e2"
   },
   {
    "p": "zeitsprung-radio/style.css",
-   "s": 18317,
-   "h": "2597571beb24200fc6c0e351e83f7f5e82d3e17bc483388adf1bdd6386b0e4dc"
+   "s": 20356,
+   "h": "28eb25db9702b56bc01402857d50b1375efb86a1d3df8eb6fcf80afd15490ae3"
   },
   {
    "p": "zeitsprung-radio/sw.js",
-   "s": 1226,
-   "h": "0bedb647fb2c7858bf5a571dfe4996a5feebd0cefa8ef9efc8527b346a728a91"
+   "s": 1239,
+   "h": "213e7c43398943438e336d194ac9b100e5471e865025dec6251e265442834637"
   },
   {
    "p": "zeitsprung-radio/tracks.js",
    "s": 12037,
    "h": "aa471632b10d554746c0bfbcbb03386331a5c1fb05de5216cb0cf497b8613d11"
+  },
+  {
+   "p": "zeitsprung-radio/year.js",
+   "s": 644,
+   "h": "88648943e5ce6d12286b60e50677973673ce05ce900eb5905d949228ae163fc7"
   },
   {
    "p": "zotik/card.png",
