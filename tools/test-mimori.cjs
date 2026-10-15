@@ -114,7 +114,7 @@ const THREE={WebGLRenderer:Renderer,Scene:Shape,Fog:class{},PerspectiveCamera:Ca
 const C={playCalls:[],enabled:true,play(k){this.playCalls.push(k)},isEnabled(){return this.enabled},toggle(){return this.enabled=!this.enabled}};
 const mockNotification={permission:'default',requestPermission:async()=>{mockNotification.permission='granted';return 'granted'}};
 const serviceWorker={getRegistration:async()=>({showNotification:async(t,d)=>notifications.push({title:t,...d})})};
-const win={MimoriModel:M,MimoriHome:Home,MimoriRooms3D:Rooms3D,MimoriRadio:Radio,MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
+const win={MimoriModel:M,MimoriHome:Home,MimoriRooms3D:Rooms3D,MimoriRadio:{mount:noop,stop:noop},MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
 for(let i=0;i<4;i++){const b=element();b.dataset.species=String(i);speciesButtons.push(b)}
 for(let i=0;i<3;i++){const b=element();b.dataset.appearance=String(i);appearanceButtons.push(b)}
 for(const kind of ['feed','toilet','cleanup','medicine','light','sleep']){
