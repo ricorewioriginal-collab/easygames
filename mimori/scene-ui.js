@@ -85,11 +85,14 @@ function switchWorldTab(id){
  worldPanel.scrollTop=0;
 }
 function showWorldTab(id){
- if(id==='radio'&&$('radioLaunch')?.hidden){
-  window.MimoriWorldActions?.showLivingRoomRadio?.();
- }
+ // Radio is physically located in the living room. Switch room and open its
+ // panel on every tap, even if the user is currently in the garden or kitchen.
  closeOther();worldTab=id;
- if(world.hidden)prevOpen?.click();
+ if(id==='radio'&&window.MimoriWorldActions?.showLivingRoomRadio){
+  window.MimoriWorldActions.showLivingRoomRadio();
+ }else if(world.hidden){
+  prevOpen?.click();
+ }
  if(world.hidden)return;
  switchWorldTab(id);current=id;syncDock();
 }
@@ -116,7 +119,7 @@ prevOpen?.addEventListener('click',()=>{
  if(world.hidden){current='';syncDock();return}
  switchWorldTab('rooms');current='rooms';syncDock();
 });
-$('radioLaunch')?.addEventListener('click',()=>{if(!world.hidden){switchWorldTab('radio');current='radio';syncDock()}});
+$('radioLaunch')?.addEventListener('click',()=>showWorldTab('radio'));
 const vitals=$('miniVitals');
 if(vitals){
  vitals.tabIndex=0;vitals.setAttribute('role','button');

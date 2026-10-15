@@ -186,12 +186,12 @@ $('nextRoom').addEventListener('click',()=>roomStep(1));
 function showWorld(open,radio=false){
  worldOpen=open;$('worldOverlay').hidden=!open;
  document.body.classList.toggle('drawerOpen',open);
- if(open){renderWorld();if(radio)$('radioSection').scrollIntoView?.({behavior:'smooth',block:'start'})}
+ if(open){renderWorld();if(radio&&!window.MimoriSceneUI)$('radioSection').scrollIntoView?.({behavior:'smooth',block:'start'})}
  else $('worldOpen').focus();
 }
 $('worldOpen').addEventListener('click',()=>showWorld(true));
 $('worldClose').addEventListener('click',()=>showWorld(false));
-$('radioLaunch').addEventListener('click',()=>{if(house.room===0)showWorld(true,true)});
+$('radioLaunch').addEventListener('click',()=>{if(!window.MimoriSceneUI)showLivingRoomRadio()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&worldOpen)showWorld(false)});
 function button(cls,emoji,label,small,click){
  const b=document.createElement('button');b.className=cls;
