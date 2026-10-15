@@ -59,15 +59,18 @@ function build(THREE,parent,id=0,decor=[]){
    for(let i=0;i<4;i++)S('#b2f1ca',1.4+(i-2)*.3,1.55+i%2*.28,-2.37,.12,.12,.12)}
  function gameCab(){B('#524b82',1.5,1.3,-2.68,1.2,2.3,.75);B('#9bd0df',1.5,1.77,-2.24,.91,.85,.11);
    B('#e7a8c3',1.5,.85,-2.24,.9,.18,.14)}
- function fixedRadio(){ // large vintage receiver on a dedicated console, visible in the 3D scene
-   B('#594458',-2.20,.38,-1.9,1.38,.73,.8); // freestanding cabinet
-   B('#382a50',-2.20,.94,-1.72,1.52,.82,.66);
-   B('#dfb887',-2.20,1.02,-1.365,1.35,.65,.08);
-   B('#9bd8ce',-2.20,1.17,-1.308,.68,.23,.07); // bright lit frequency display
-   for(let i=0;i<7;i++)B(i%2?'#9c779d':'#51385e',-2.72+i*.155,.81,-1.303,.07,.18,.04);
-   C('#3d2d50',-1.68,1.16,-1.30,.12,.08,.12).rotation.x=Math.PI/2;
-   B('#dfc394',-2.76,1.64,-1.80,.04,.95,.04); // aerial
-   S('#f5d98a',-2.76,2.11,-1.80,.085,.085,.085);
+ function fixedRadio(){ // Positioned to the left of Mimori and towards the camera.
+   const B0=(c,x,y,z,w,h,d)=>{const o=B(c,x+.7,y,z+2.5,w,h,d);o.userData={mimoriRadio:true};return o};
+   const C0=(c,x,y,z,w,h,d)=>{const o=C(c,x+.7,y,z+2.5,w,h,d);o.userData={mimoriRadio:true};return o};
+   const S0=(c,x,y,z,w,h,d)=>{const o=S(c,x+.7,y,z+2.5,w,h,d);o.userData={mimoriRadio:true};return o};
+   B0('#594458',-2.20,.38,-1.9,1.38,.73,.8);
+   B0('#382a50',-2.20,.94,-1.72,1.52,.82,.66);
+   B0('#dfb887',-2.20,1.02,-1.365,1.35,.65,.08);
+   B0('#9bd8ce',-2.20,1.17,-1.308,.68,.23,.07);
+   for(let i=0;i<7;i++)B0(i%2?'#9c779d':'#51385e',-2.72+i*.155,.81,-1.303,.07,.18,.04);
+   C0('#3d2d50',-1.68,1.16,-1.30,.12,.08,.12).rotation.x=Math.PI/2;
+   B0('#dfc394',-2.76,1.64,-1.80,.04,.95,.04);
+   S0('#f5d98a',-2.76,2.11,-1.80,.085,.085,.085);
  }
  switch(id){
  case 0:sofa();rug();plant(-2.6,-3.0);fixedRadio();break;
