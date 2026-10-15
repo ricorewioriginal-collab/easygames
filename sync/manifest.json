@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "844cfa1870f6",
- "generated": "2026-10-15T02:49:51+02:00",
+ "version": "c5bc255d598f",
+ "generated": "2026-10-15T01:38:58.296Z",
  "commit": "13f05f4d8693c5faf39e357822a03ff5d4c2fd2a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15337,
-   "h": "c8c623c1340004c7291d071f4513a065fc70d6b79484cbe4b4fb3c49905391c7"
+   "s": 15780,
+   "h": "ca50db13c3239f812def8e93506d96f3845b9b5d1419ed4ec5d3304559160aed"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 40939,
-   "h": "80a5422c5c6932af6393a5f7e0a7fd20ef4a32fcd11bee1c40b7de42ddcd0c99"
+   "s": 42225,
+   "h": "64a3e8fc5e55223b8294fb1609177768285af56e7425a289cd516fb1f6cce51f"
   },
   {
    "p": "index.html",
@@ -4790,6 +4790,41 @@
    "p": "lumo/index.html",
    "s": 3815,
    "h": "333eb14a9bef54adf6ab95baabb6dac23f1ce9b2de53ce2fd1e99561f776cf7e"
+  },
+  {
+   "p": "mimori/game.js",
+   "s": 15030,
+   "h": "a257f59bc1a9592afaa07e5a0ece0861736752f928cfd1523c57ddd5cf361e70"
+  },
+  {
+   "p": "mimori/icon.svg",
+   "s": 1629,
+   "h": "65c61029901e6eb2e7cb214e9c58db5426feb51a6c82917b6a1e7063f118d8b6"
+  },
+  {
+   "p": "mimori/index.html",
+   "s": 12059,
+   "h": "fb8a79064514499d7bc97441f7afc054970d57bd584561fe159977d131251afe"
+  },
+  {
+   "p": "mimori/manifest.webmanifest",
+   "s": 401,
+   "h": "baf4eeb0c92ad2793dd2c6e0f290bf5335aa7080b278f06053c72aca5ebbceef"
+  },
+  {
+   "p": "mimori/model.js",
+   "s": 3840,
+   "h": "01b53a22c16e07f8911d0324a5426af3364bee385a1e2507849e54697fe2161b"
+  },
+  {
+   "p": "mimori/push-config.json",
+   "s": 20,
+   "h": "a9f26f55438f40957b751d555868c4431da404941ff6a2e0dc34b23d52844afa"
+  },
+  {
+   "p": "mimori/sw.js",
+   "s": 1855,
+   "h": "a73ee98431c5b6f54efbd28803e445e3c276ac3d8423069b9fb8d52b958141f2"
   },
   {
    "p": "modes.js",
@@ -5243,8 +5278,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 62586,
-   "h": "d6ab6702acc280038b0ca839a00d0f808fa48fb5a6cd928a392e6a2eab9f2885"
+   "s": 64553,
+   "h": "65bd1d1fc7476eea6b1ffb0cf134e222e82720532e1f8d40a4bb22f897baf506"
   },
   {
    "p": "taschi/card.svg",
