@@ -6,6 +6,22 @@
  },
  "games": [
   {
+   "id": "kiko-sterneninseln",
+   "title": "KIKO – Das Geheimnis der Sterneninseln",
+   "desc": "Liebevolles 3D-Abenteuer mit acht Leveln in vier Welten: Kristalle, Rätsel, Schattenwesen, Sternenportale und ein Finale. Mit Kiko auf PC, Smartphone oder Gamepad spielen; der Fortschritt bleibt lokal gespeichert.",
+   "icon": "✨",
+   "img": "kiko-sterneninseln/card.svg",
+   "bg": "linear-gradient(145deg,#18345b,#49bbcb 55%,#ffdc82)",
+   "glow": "rgba(117,231,227,.52)",
+   "path": "kiko-sterneninseln/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": null,
+   "size": 642535,
+   "files": 13,
+   "offline": true
+  },
+  {
    "id": "kraterkommando",
    "title": "Kraterkommando 3D",
    "desc": "App-artiges 3D-Artilleriespiel für Hoch- und Querformat: zwei Teams mit sechs Figuren, Computer oder lokales Duell, verformbares Gelände, Wind, neun Waffen, vier sichtbar wählbare Welten, zerstörbare Deckung, Feinzielen, Kampf-Effekte, Spielsound, freche Figuren-Sprüche, Touch-Steuerung und Google-Spielstand.",

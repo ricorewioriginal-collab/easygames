@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9a37de98b169",
- "generated": "2026-10-15T09:28:28+02:00",
- "commit": "ca509d9330e6260b52faaa9db104c92138860bc9",
+ "version": "1c3b1718ead6",
+ "generated": "2026-10-15T19:44:23+02:00",
+ "commit": "43475ca36238528dcecda1df43b13dd5c1ecc44a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 17889,
-   "h": "d8f2052b5f3be7025ab7c6d28ff19e9ffdb132a02de22c832c7dc2a650dcbd7a"
+   "s": 18364,
+   "h": "f77031a97001689de9486c5281db21a705cde9989b8b1a2d15bc2f55865927ef"
   },
   {
    "p": "gay-life/index.html",
@@ -4770,6 +4770,71 @@
    "p": "index.html",
    "s": 51695,
    "h": "851ef7ad92061e1e7e14c969af325971510d748316a3d1edcddd87368d6b1097"
+  },
+  {
+   "p": "kiko-sterneninseln/card.svg",
+   "s": 2380,
+   "h": "a78a9b427c4f9c64ea7dd4e6cab45a6c07f0c61e6351dcd3b3d9a273f32ec8d8"
+  },
+  {
+   "p": "kiko-sterneninseln/index.html",
+   "s": 759,
+   "h": "2ca42395d6dde57219b28dff4165f7ae259b1e47867e7caeec25ab50fd5f3892"
+  },
+  {
+   "p": "kiko-sterneninseln/src/audio.js",
+   "s": 992,
+   "h": "f2ecbd7754fdb97d4eaec6d7fe48eadc2719d0e27a67e1c969865cce75190f9d"
+  },
+  {
+   "p": "kiko-sterneninseln/src/data.js",
+   "s": 2429,
+   "h": "74e9583c98b50e646ce5cdc97cca86e83fc6409e479be4ef9e478dc3c714a55f"
+  },
+  {
+   "p": "kiko-sterneninseln/src/input.js",
+   "s": 2841,
+   "h": "55c929a4d9e4df65e98d75512cedc48ed642201307dd17613c4ed77e95bd51f9"
+  },
+  {
+   "p": "kiko-sterneninseln/src/main.js",
+   "s": 7270,
+   "h": "5f8f39eea5b7cfd6a62b4777c67ca5fadd3e3a24a132e6ad038173bb04310f7d"
+  },
+  {
+   "p": "kiko-sterneninseln/src/physics.js",
+   "s": 1988,
+   "h": "ad458974070d007162493fc214675352b939d5a46b1871970f41ed4cc18b7105"
+  },
+  {
+   "p": "kiko-sterneninseln/src/save.js",
+   "s": 1230,
+   "h": "aea0aad1a63540dfb2adbfc28fff2bf533f9f718350af3b2b5babbb27b25341d"
+  },
+  {
+   "p": "kiko-sterneninseln/src/scene.js",
+   "s": 8006,
+   "h": "31190a4d68f6a3a9e8003381788948272460f25d16d9bcea39854e73a38508f3"
+  },
+  {
+   "p": "kiko-sterneninseln/src/ui.js",
+   "s": 7440,
+   "h": "b6174363b6fac5b67b5b5a7a027a1b9394f162c56a4b2cc9cdb2199ac3b392ee"
+  },
+  {
+   "p": "kiko-sterneninseln/style.css",
+   "s": 3541,
+   "h": "44f0a45ddec9701068f3aa3a52315c0cb969ee23a8ecd80ad6943920dafd14a0"
+  },
+  {
+   "p": "kiko-sterneninseln/vendor/three.min.js",
+   "s": 603445,
+   "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+  },
+  {
+   "p": "kiko-sterneninseln/vite.config.js",
+   "s": 214,
+   "h": "455543146b29d9a6f7943ac05350b9e95f9dfdf2f100babff20a2f6a4802f316"
   },
   {
    "p": "kraterkommando/card.svg",
@@ -5413,8 +5478,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 73727,
-   "h": "05bafe744b9aa238bed807e743b78a8e048775c15c67140d2a243708682b62b7"
+   "s": 74358,
+   "h": "249fe1699d6abb06ed094dba4a8c7494d30dd923312f3b2272d824ab102dd460"
   },
   {
    "p": "taschi/card.svg",
