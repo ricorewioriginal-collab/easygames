@@ -1,70 +1,32 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b0b1a">
-  <meta name="description" content="ZEITSPRUNG RADIO: Das moderierte 3D-Musik-Zeitspiel mit 300 Songs und Fragen.">
-  <title>ZEITSPRUNG RADIO · 3D-Musikzeitspiel</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="../vendor/three-r128.min.js"></script>
-  <script type="module" src="game.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b20">
+<meta name="description" content="ZEITSPRUNG RADIO: Die moderierte 3D-Musikshow für TV, Smartphone und PC. Mit Musikclips, Charts, Eurovision und Castingshows.">
+<meta property="og:title" content="ZEITSPRUNG RADIO – Die Live-Musikshow">
+<meta property="og:description" content="Spiele mit Freunden am TV oder direkt auf deinem Handy. Musik hören, Quizfragen beantworten und die Zeitreise gewinnen.">
+<meta property="og:image" content="https://ricorewioriginal-collab.github.io/easygames/zeitsprung-radio/card.png">
+<title>ZEITSPRUNG RADIO · Die Live-Musikshow</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="../pwa-icons/zeitsprung-radio-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+<script defer src="../vendor/three-r128.min.js"></script>
+<script type="module" src="game.js"></script>
 </head>
 <body>
-  <canvas id="stage" aria-hidden="true"></canvas>
-  <div class="grain" aria-hidden="true"></div>
-  <main class="shell" id="appShell">
-    <header class="topbar">
-      <a class="back" href="../" aria-label="Zurück zu easygames">← easygames</a>
-      <span class="eyebrow"><span class="live-dot"></span> DAS MUSIK-ZEITSPIEL</span>
-      <div class="header-actions"><button id="tvToggle" class="sound-toggle" type="button" aria-pressed="false">📺 TV-Modus</button><button id="pairToggle" class="sound-toggle" type="button">📱 Handys koppeln</button><button id="soundToggle" class="sound-toggle" type="button" aria-pressed="true">🔊 Vito an</button></div>
-    </header>
-
-    <section class="hero" id="setup">
-      <div class="hero-copy">
-        <span class="kicker">300 SONGS · 10 KATEGORIEN · 1 ZEITLEISTE</span>
-        <h1>ZEIT<span>SPRUNG</span><small>RADIO</small></h1>
-        <p class="lead">Hör hin. Schätz das Jahr. Setz den Song an die richtige Stelle deiner Musikgeschichte.</p>
-        <div class="intro-grid">
-          <div><b>01</b><span>Song abspielen</span></div>
-          <div><b>02</b><span>Jahr einordnen</span></div>
-          <div><b>03</b><span>Zeitreise gewinnen</span></div>
-        </div>
-      </div>
-      <div class="setup-card">
-        <div class="card-head"><span class="small-label">NEUE SESSION</span><span class="pill">● LIVE IM STUDIO</span></div>
-        <h2>Wer spielt mit?</h2>
-        <p>Ein bis vier Spieler am selben Gerät. Wer zuerst acht richtige Songs einordnet, gewinnt.</p>
-        <div id="players" class="player-inputs"></div>
-        <button id="addPlayer" class="text-btn" type="button">＋ Spieler hinzufügen</button>
-        <label class="small-label filter-label" for="category">MUSIKAUSWAHL</label>
-        <select id="category"><option value="all">Alle 10 Kategorien · 300 Fragen</option></select>
-        <button id="start" class="primary" type="button">▶  Spiel starten</button>
-        <div class="tiny-note">Fürs gemeinsame Spielen am Fernseher: TV-Modus einschalten, Handys mit WR-Code und PIN verbinden. <a href="?controller=1">Dieses Gerät als Handy-Controller verwenden</a>. Mit Klick auf Start aktivierst du Ton und die Stimme von Vito.</div>
-      </div>
-    </section>
-
-    <section class="game hidden" id="game" aria-live="polite">
-      <div class="game-top"><div><span class="small-label">JETZT AM MIKROFON</span><h2 id="turnName">Spieler 1</h2></div><div class="round-indicator"><span id="roundLabel">RUNDE 1</span><strong id="deckLabel">300 FRAGEN</strong></div></div>
-      <div class="game-grid">
-        <div class="left-col">
-          <div class="mystery-card" id="mysteryCard"><div class="record-center"><span>?</span></div><div class="mystery-bottom"><span id="catLabel">KATEGORIE</span><strong>DER NÄCHSTE TRACK</strong></div></div>
-          <div class="media-card"><div class="media-heading"><span class="small-label">🎧 HÖRSTATION</span><span id="mediaState">BEREIT</span></div><div id="playerBox" class="player-box"><div class="player-placeholder">▶<small>Klicke auf „Musik starten“</small></div></div><div class="media-actions"><button id="playMusic" class="secondary" type="button">▶ Musik starten</button><a id="openYoutube" target="_blank" rel="noopener noreferrer">↗ Auf YouTube öffnen</a></div><p class="media-note">YouTube kann einzelne Videos oder Einbettungen sperren. Der Link öffnet die Suche nach dem aktuellen Song.</p></div>
-        </div>
-        <div class="right-col">
-          <div class="host-card"><div class="host-avatar" aria-hidden="true">V</div><div><span class="small-label">VITO · MODERATOR</span><p id="hostText">Willkommen im Studio!</p></div></div>
-          <div class="challenge"><span class="small-label">DIE FRAGE</span><h3>In welchem Jahr erschien dieser Song?</h3><p>Hör zu und tippe auf die Lücke deiner Zeitleiste. Bei gleichem Jahr zählt jede passende Position.</p></div>
-          <div class="timeline-heading"><span class="small-label">DEINE ZEITLEISTE</span><span id="timelineCount">1 SONG</span></div>
-          <div id="timeline" class="timeline"></div>
-          <div id="result" class="result hidden"></div>
-          <button id="next" class="primary hidden" type="button">Nächster Song →</button>
-        </div>
-      </div>
-      <div class="scoreboard" id="scoreboard"></div>
-    </section>
-    <footer>ZEITSPRUNG RADIO · Ein eigenständiges Musik-Zeitspiel · Videos: YouTube Privacy Enhanced Mode</footer>
-  </main>
-  <div id="pairPanel" class="pair-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pairTitle"><div class="pair-card"><div class="pair-head"><span class="small-label">HANDYS KOPPELN · WEBRTC</span><button id="pairClose" type="button" aria-label="Schließen">✕</button></div><h2 id="pairTitle">Mit dem Fernseher verbinden</h2><p>Auf dem Handy QR-Code scannen oder die Spieladresse öffnen und „Handy-Controller“ wählen. Dann WR-Code und PIN eingeben.</p><div class="pair-data"><div><span>WR-CODE</span><strong id="roomCode">…</strong></div><div><span>PIN</span><strong id="roomPin">••••</strong></div></div><div id="pairQr" class="pair-qr" aria-label="QR-Code zum Beitreten"></div><a id="pairLink" target="_blank" rel="noopener noreferrer"></a><p id="pairStatus" class="pair-status">Kopplung wird vorbereitet …</p><p id="pairMembers">Noch kein Handy verbunden</p><button id="pairDone" class="primary" type="button">Zurück zum Spiel</button></div></div>
-  <main id="controller" class="controller hidden"></main>
+<div id="boot" class="boot" role="status" aria-live="polite"><div class="boot-inner"><img src="icon.svg" alt="ZEITSPRUNG RADIO Logo"><span class="overline">DIE SHOW WIRD VORBEREITET</span><h1>ZEITSPRUNG <em>RADIO</em></h1><div class="load-track"><div id="loadBar"></div></div><p id="bootStatus">Studio wird geöffnet …</p></div></div>
+<canvas id="stage" aria-hidden="true"></canvas><div class="grain" aria-hidden="true"></div>
+<div id="appShell" class="shell">
+<header class="app-header"><a class="brand" href="../" aria-label="easygames Startseite"><img src="icon.svg" alt=""><span><strong>ZEITSPRUNG</strong><small>RADIO · LIVE SHOW</small></span></a><div class="header-actions"><span class="on-air"><i></i> ON AIR</span><button id="menuButton" class="icon-button" type="button" aria-label="Hauptmenü" title="Hauptmenü">⌂</button><button id="tvToggle" class="icon-button" type="button" aria-label="TV-Modus" aria-pressed="false" title="TV-Modus">▣</button><button id="pairToggle" class="icon-button" type="button" aria-label="Handys koppeln" title="Handys koppeln">♧</button><button id="soundToggle" class="icon-button" type="button" aria-label="Vito an oder aus" aria-pressed="true" title="Moderation ein oder aus">♫</button></div></header>
+<main>
+<section id="setup" class="menu-view"><div class="menu-hero"><div class="hero-mark"><img src="icon.svg" alt="ZEITSPRUNG RADIO App-Logo"><span class="hero-badge">DIE GROSSE MUSIKSHOW</span></div><h1>ZEITSPRUNG<br><em>RADIO</em></h1><p class="hero-lead">Hör den Hit. Kenn die Story. Gewinne die Show.</p><div class="feature-pills"><span>♫ DIREKTE MUSIKCLIPS</span><span>★ 430+ FRAGEN</span><span>▣ TV + HANDY</span></div><div class="menu-ctas"><button id="start" class="primary big" type="button">▶ Neue Show starten</button><button id="resume" class="secondary big hidden" type="button">↺ Show fortsetzen</button></div><p class="menu-foot">Solo am Smartphone oder PC. Für die Party: TV-Modus einschalten und bis zu vier Handys verbinden.</p></div><aside class="lobby-card"><div class="lobby-top"><span class="overline">DEIN SPIELSTUDIO</span><span class="live-chip">● BEREIT</span></div><h2>Show vorbereiten</h2><p class="muted">Wähle deine Musikrichtung und die Spieler.</p><label class="field-label" for="category">KATEGORIE</label><select id="category"><option value="all">Große Mischung · alle Themen</option></select><div class="section-label"><span>SPIELER</span><span>BIS ZU 4</span></div><div id="players" class="player-inputs"></div><button id="addPlayer" class="add-player" type="button">＋ Spieler hinzufügen</button><div class="lobby-hint">Im TV-Modus meldet sich jedes Handy mit WR-Code und PIN an. Ein verbundenes Handy übernimmt automatisch einen Spielerplatz.</div><div id="cloudMount" class="cloud-mount"></div><a class="controller-entry" href="?controller=1">📱 Dieses Gerät als Handy-Controller verwenden</a></aside></section>
+<section id="game" class="game-view hidden" aria-live="polite"><div class="broadcast-head"><div><span class="overline"><i class="red-dot"></i> LIVE AUS DEM ZEITSPRUNG-STUDIO</span><div class="turn-row"><h2 id="turnName">Spieler 1</h2><span id="modeBadge" class="mode-badge">MUSIKRUNDE</span></div></div><div class="round-indicator"><strong id="roundLabel">RUNDE 1</strong><small id="deckLabel">FRAGEN ÜBRIG</small></div></div><div id="scoreboard" class="scoreboard"></div><div class="stage-window" aria-hidden="true"><span>● LIVE AUS DEM STUDIO</span><b>♪</b></div><div class="show-layout"><div class="studio-col"><div class="studio-portal"><div class="portal-top"><span>● LIVE CLIP</span><span id="mediaState">BEREIT</span></div><div id="playerBox" class="player-box"><div class="player-placeholder">♪<small>Die Musik startet hier</small></div></div><div class="portal-bottom"><button id="playMusic" class="primary" type="button">▶ Musik abspielen</button><button id="switchSource" class="secondary" type="button">♫ Quelle wechseln</button><button id="swapClip" class="secondary" type="button">↻ Anderer Song</button></div></div><div id="mysteryCard" class="mystery-card"><div class="record-center"><span>?</span></div><div class="mystery-bottom"><span id="catLabel">KATEGORIE</span><strong id="mysteryTitle">WER KENNT DIESEN HIT?</strong></div></div><div class="music-info" id="musicInfo">Musik läuft direkt hier im Studio. Wenn ein Anbieter den Clip sperrt, wechsle die Quelle oder den Song.</div></div><div class="play-col"><div class="host-card"><div class="host-avatar" aria-hidden="true"><span>V</span></div><div><span class="overline">VITO · DEIN MODERATOR</span><p id="hostText">Willkommen in der Show!</p></div></div><div class="challenge"><span class="overline" id="questionCategory">DIE FRAGE</span><h3 id="questionTitle">In welchem Jahr erschien dieser Song?</h3><p id="questionHint">Hör zu und setze den Song an die richtige Stelle.</p></div><div id="timelineWrap"><div class="timeline-heading"><span>DEINE ZEITLEISTE</span><span id="timelineCount">1 SONG</span></div><div id="timeline" class="timeline"></div></div><div id="quizOptions" class="quiz-options hidden"></div><div id="result" class="result hidden"></div><button id="next" class="primary next-button hidden" type="button">Nächste Runde →</button></div></div></section>
+</main><footer>ZEITSPRUNG RADIO · Eine eigenständige Musikshow in easygames · Musikvideos im Privacy-Enhanced-Modus</footer></div>
+<div id="pairPanel" class="pair-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pairTitle"><div class="pair-card"><div class="pair-head"><span class="overline">HANDYS KOPPELN · WEBRTC</span><button id="pairClose" type="button" aria-label="Schließen">✕</button></div><h2 id="pairTitle">Dein TV-Studio verbinden</h2><p>QR-Code scannen oder am Handy den Controller öffnen. Anschließend WR-Code und PIN eingeben.</p><div class="pair-data"><div><span>WR-CODE</span><strong id="roomCode">…</strong></div><div><span>PIN</span><strong id="roomPin">••••</strong></div></div><div id="pairQr" class="pair-qr" aria-label="QR-Code zum Beitreten"></div><a id="pairLink" target="_blank" rel="noopener noreferrer"></a><p id="pairStatus" class="pair-status">Kopplung wird vorbereitet …</p><p id="pairMembers">Noch kein Handy verbunden</p><button id="pairDone" class="primary" type="button">Zurück zur Show</button></div></div>
+<main id="controller" class="controller hidden"></main>
+<script src="../cloud/anmacha-cloud.js" data-game="zeitsprung-radio" data-prefix="zr-save-v2" data-mount="#cloudMount" defer></script>
 </body>
 </html>

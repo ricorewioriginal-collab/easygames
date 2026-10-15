@@ -5,7 +5,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 | Spiel | Verzeichnis |
 |---|---|
-| ZEITSPRUNG RADIO – moderiertes 3D-Musikzeitspiel für 1–4 Spieler mit 300 Songs/Jahresfragen, 10 Kategorien, Web-Audio-Signalen, Browser-Stimme Vito, TV-Modus, Handy-Controller mit WR-Code/PIN und YouTube-Musik | [`zeitsprung-radio/`](zeitsprung-radio/) |
+| ZEITSPRUNG RADIO – moderierte 3D-Musikshow für TV, Smartphone und PC: 430 Quizfragen zu Charts, Jahrescharts, Künstlern, ESC, DSDS, Popstars und The Voice; Musik-Zeitleiste mit Deezer/Spotify-Playern, WebRTC-Handys per WR-Code/PIN, Google-Speicherung und installierbare App. | [`zeitsprung-radio/`](zeitsprung-radio/) |
 | ZOTIK – Die Splitter der Welten – neues 3D-Action-Rollenspiel mit 10 Kapiteln plus Endspiel, Begleitern, Rätseln, Zwischensequenzen, drei Enden, Casino, Halle der 100, Neuem Spiel+ und verwandelbarer Nautilux (Einzeldatei, Three.js; Quelle: Repo `ricorewioriginal-collab/zotik`, Ordner `zotik/`) | [`zotik/`](zotik/) |
 | AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
 | AnMaCha Radio-Match 3D – Match-3 mit Radio-Bauteilen, 100 Level, wachsendes Raster, Power-ups (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-radio-match/`](anmacha-radio-match/) |

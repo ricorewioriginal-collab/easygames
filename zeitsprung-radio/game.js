@@ -1,269 +1,217 @@
-import { COLLECTIONS, TRACKS, VIDEOS, questionFor, youtubeSearch } from './tracks.js';
+import { COLLECTIONS, TRACKS, VIDEOS, questionFor } from './tracks.js';
+import { KNOWLEDGE, SPECIAL_CATEGORIES } from './knowledge.js';
+import { resolveDeezer, sourcesFor } from './music.js';
 import { IS_CONTROLLER, startController, startHost } from './pair.js';
 
 const $ = id => document.getElementById(id);
-const ui = Object.fromEntries(['setup','game','players','addPlayer','category','start','soundToggle','tvToggle','pairToggle','pairPanel','pairClose','pairDone','turnName','roundLabel','deckLabel','catLabel','playerBox','playMusic','openYoutube','mediaState','hostText','timelineCount','timeline','result','next','scoreboard'].map(id => [id, $(id)]));
-const palette = ['#ff4c93','#77e7ff','#ffcb61','#ae92ff'];
-const state = { players: [], active: 0, rounds: 0, deck: [], current: null, starter: null, solved: false, voice: true, playing: false, pair: null, result: '' };
+const ids = ['boot','loadBar','bootStatus','setup','game','players','addPlayer','category','start','resume','menuButton','soundToggle','tvToggle','pairToggle','pairPanel','pairClose','pairDone','turnName','roundLabel','deckLabel','modeBadge','catLabel','mysteryTitle','playerBox','playMusic','switchSource','swapClip','mediaState','hostText','questionCategory','questionTitle','questionHint','timelineWrap','timelineCount','timeline','quizOptions','result','next','scoreboard','musicInfo'];
+const ui = Object.fromEntries(ids.map(id => [id, $(id)]));
+const colors = ['#ff6aab','#70ebff','#ffce72','#aa91ff'];
+const SAVE_KEY = 'zr-save-v2';
+const trackById = new Map(TRACKS.map(track => [track.id, track]));
+const playable = TRACKS.filter(track => VIDEOS[track.title]);
+const artistQuestions = TRACKS.map((track, index) => {
+  const same = TRACKS.filter(other => other.category === track.category && other.artist !== track.artist);
+  const artists = [...new Set(same.map(other => other.artist))];
+  const wrong = [artists[(index + 3) % artists.length], artists[(index + 11) % artists.length], artists[(index + 19) % artists.length]];
+  if (new Set(wrong).size < 3) {
+    for (const artist of artists) if (!wrong.includes(artist)) wrong[wrong.findIndex((x,i) => wrong.indexOf(x) !== i)] = artist;
+  }
+  return { id: `artist:${track.id}`, category: track.category, prompt: `Wer veröffentlichte „${track.title}“?`, answer: track.artist, options: [track.artist, ...wrong] };
+});
+const quizBank = [...KNOWLEDGE, ...artistQuestions];
+const quizById = new Map(quizBank.map(question => [question.id, question]));
+const state = { players: [], active: 0, rounds: 0, clipDeck: [], quizDeck: [], current: null, starter: null, solved: false, lastCorrect: false, voice: true, playing: false, pair: null, result: '', filter: 'all', finished: false, sourceList: [], sourceIndex: 0, deezerId: null };
 let audioContext;
 
-function shuffle(items) {
-  const a = [...items];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
+function shuffle(items) { const a=[...items]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function setBoot(percent, message) { ui.loadBar.style.width=`${percent}%`; ui.bootStatus.textContent=message; }
+function finishBoot() { setBoot(100,'Die Show kann beginnen!'); setTimeout(() => { ui.boot.classList.add('done'); setTimeout(() => ui.boot.remove(),600); },350); }
+function safeStorage(action) { try { return action(); } catch (_) { return null; } }
+function currentPlayer() { return state.players[state.active]; }
+function sortedTimeline(player=currentPlayer()) { return [...player.timeline].sort((a,b) => a.year-b.year || a.title.localeCompare(b.title)); }
+function clipPool(filter=state.filter) { return SPECIAL_CATEGORIES.includes(filter) ? [] : filter === 'all' ? playable : playable.filter(track => track.category === filter); }
+function quizPool(filter=state.filter) { return filter === 'all' ? quizBank : quizBank.filter(q => q.category === filter); }
+function saveSession() {
+  if (!state.current || state.finished) return;
+  const saved = { version: 2, savedAt: Date.now(), filter: state.filter, active: state.active, rounds: state.rounds, solved: state.solved, lastCorrect: state.lastCorrect, result: state.result, starter: state.starter?.id, current: state.current.type === 'timeline' ? { type: 'timeline', id: state.current.track.id } : { type: 'quiz', id: state.current.question.id, options: state.current.options }, players: state.players.map(p => ({ name: p.name, score: p.score, timeline: p.timeline.map(t => t.id) })), clipDeck: state.clipDeck.map(t => t.id), quizDeck: state.quizDeck.map(q => q.id) };
+  safeStorage(() => localStorage.setItem(SAVE_KEY, JSON.stringify(saved)));
+  ui.resume.classList.remove('hidden');
 }
-
+function loadSaved() {
+  const raw = safeStorage(() => localStorage.getItem(SAVE_KEY)); if (!raw) return false;
+  try {
+    const saved=JSON.parse(raw); if (saved.version!==2 || !saved.current || !Array.isArray(saved.players) || !saved.players.length || saved.players.length>4) return false;
+    const players=saved.players.map(p => ({ name:String(p.name).slice(0,22), score:Number(p.score)||0, timeline:p.timeline.map(id=>trackById.get(id)).filter(Boolean) }));
+    const starter=trackById.get(saved.starter); if (!starter || players.some(p=>!p.timeline.length)) return false;
+    const current=saved.current.type==='timeline' ? { type:'timeline', track:trackById.get(saved.current.id) } : { type:'quiz', question:quizById.get(saved.current.id), options:saved.current.options };
+    if (!current.track && !current.question) return false;
+    Object.assign(state,{players,starter,current,active:Math.min(Math.max(0,Number(saved.active)||0),players.length-1),rounds:Number(saved.rounds)||1,solved:!!saved.solved,lastCorrect:!!saved.lastCorrect,result:String(saved.result||''),filter:saved.filter||'all',clipDeck:(saved.clipDeck||[]).map(id=>trackById.get(id)).filter(Boolean),quizDeck:(saved.quizDeck||[]).map(id=>quizById.get(id)).filter(Boolean),playing:false,finished:false,sourceList:[],sourceIndex:0,deezerId:null});
+    return true;
+  } catch (_) { return false; }
+}
 function playerInputs() {
   ui.players.replaceChildren();
-  state.players.forEach((p, i) => {
-    const wrap = document.createElement('label'); wrap.className = 'player-input';
-    const number = document.createElement('span'); number.textContent = i + 1; number.style.background = palette[i];
-    const input = document.createElement('input'); input.maxLength = 22; input.value = p.name; input.placeholder = `Spieler ${i + 1}`; input.setAttribute('aria-label', `Name Spieler ${i + 1}`);
-    input.addEventListener('input', () => p.name = input.value);
-    wrap.append(number, input); ui.players.append(wrap);
+  state.players.forEach((player,index) => {
+    const label=document.createElement('label'); label.className='player-input';
+    const dot=document.createElement('span'); dot.textContent=index+1; dot.style.background=colors[index];
+    const input=document.createElement('input'); input.value=player.name; input.maxLength=22; input.placeholder=`Spieler ${index+1}`; input.setAttribute('aria-label',`Name Spieler ${index+1}`);
+    input.oninput=()=>{player.name=input.value;}; label.append(dot,input); ui.players.append(label);
   });
-  ui.addPlayer.hidden = state.players.length >= 4;
+  ui.addPlayer.hidden=state.players.length>=4;
 }
-
-function setup() {
-  if (IS_CONTROLLER) { startController(); return; }
-  state.players = [{ name: 'Spieler 1', score: 0, timeline: [] }];
-  playerInputs();
-  for (const [category, block] of Object.entries(COLLECTIONS)) {
-    const option = document.createElement('option'); option.value = category; option.textContent = `${category} · ${block.trim().split('\n').length} Fragen`; ui.category.append(option);
-  }
-  ui.addPlayer.addEventListener('click', () => { if (state.players.length < 4) { state.players.push({ name: `Spieler ${state.players.length + 1}`, score: 0, timeline: [] }); playerInputs(); } });
-  ui.start.addEventListener('click', start);
-  ui.playMusic.addEventListener('click', playMusic);
-  ui.tvToggle.addEventListener('click', () => {
-    const enabled = !document.body.classList.contains('tv-mode');
-    document.body.classList.toggle('tv-mode', enabled);
-    ui.tvToggle.setAttribute('aria-pressed', String(enabled));
-    ui.tvToggle.textContent = enabled ? '📺 TV-Modus an' : '📺 TV-Modus';
-    if (enabled) openPair();
-    else { state.pair?.destroy(); state.pair = null; ui.pairPanel.classList.add('hidden'); }
-  });
-  ui.pairToggle.addEventListener('click', () => {
-    if (!document.body.classList.contains('tv-mode')) { document.body.classList.add('tv-mode'); ui.tvToggle.setAttribute('aria-pressed', 'true'); ui.tvToggle.textContent = '📺 TV-Modus an'; }
-    openPair();
-  });
-  ui.pairClose.addEventListener('click', () => ui.pairPanel.classList.add('hidden'));
-  ui.pairDone.addEventListener('click', () => ui.pairPanel.classList.add('hidden'));
-  ui.soundToggle.addEventListener('click', () => {
-    state.voice = !state.voice;
-    if (!state.voice && 'speechSynthesis' in window) speechSynthesis.cancel();
-    ui.soundToggle.textContent = state.voice ? '🔊 Vito an' : '🔇 Vito aus';
-    ui.soundToggle.setAttribute('aria-pressed', String(state.voice));
-    if (state.voice) say('Vito ist wieder am Mikrofon.');
-  });
-  window.addEventListener('keydown', event => {
-    if (ui.game.classList.contains('hidden') || state.solved) return;
-    const n = Number(event.key);
-    if (n >= 1 && n <= 9) ui.timeline.querySelectorAll('.slot')[n - 1]?.click();
-  });
-  initStage();
+function init() {
+  setBoot(18,'Fragen und Musik werden sortiert …');
+  if (IS_CONTROLLER) { startController(); finishBoot(); return; }
+  state.players=[{name:'Spieler 1',score:0,timeline:[]}]; playerInputs();
+  for (const category of [...Object.keys(COLLECTIONS),...SPECIAL_CATEGORIES]) { const option=document.createElement('option'); option.value=category; option.textContent=`${category} · ${quizPool(category).length} Fragen`; ui.category.append(option); }
+  ui.addPlayer.onclick=()=>{if(state.players.length<4){state.players.push({name:`Spieler ${state.players.length+1}`,score:0,timeline:[]});playerInputs();}};
+  ui.start.onclick=startGame;
+  ui.resume.onclick=()=>{if(loadSaved()){ui.category.value=state.filter;playerInputs();showGame();renderRound();state.pair?.broadcast();say(`Willkommen zurück! ${currentPlayer().name}, deine Show geht weiter.`);}else{ui.resume.classList.add('hidden');}};
+  ui.menuButton.onclick=showMenu;
+  ui.playMusic.onclick=playMusic;
+  ui.switchSource.onclick=switchSource;
+  ui.swapClip.onclick=swapClip;
+  ui.soundToggle.onclick=()=>{state.voice=!state.voice;ui.soundToggle.setAttribute('aria-pressed',String(state.voice));ui.soundToggle.textContent=state.voice?'♫':'♪';if(!state.voice&&'speechSynthesis'in window)speechSynthesis.cancel();if(state.voice)say('Vito ist wieder live!');};
+  ui.tvToggle.onclick=()=>{const enabled=!document.body.classList.contains('tv-mode');document.body.classList.toggle('tv-mode',enabled);ui.tvToggle.setAttribute('aria-pressed',String(enabled));if(enabled)openPair();else{state.pair?.destroy();state.pair=null;ui.pairPanel.classList.add('hidden');}};
+  ui.pairToggle.onclick=()=>{document.body.classList.add('tv-mode');ui.tvToggle.setAttribute('aria-pressed','true');openPair();};
+  ui.pairClose.onclick=ui.pairDone.onclick=()=>ui.pairPanel.classList.add('hidden');
+  addEventListener('keydown',event=>{if(ui.game.classList.contains('hidden')||state.solved)return;const index='123456789'.indexOf(event.key);if(index<0)return;if(state.current.type==='timeline')ui.timeline.querySelectorAll('.slot')[index]?.click();else ui.quizOptions.querySelectorAll('button')[index]?.click();});
+  addEventListener('pagehide',saveSession);
+  setBoot(56,'Spielstand wird geprüft …');
+  if (safeStorage(()=>localStorage.getItem(SAVE_KEY))) ui.resume.classList.remove('hidden');
+  setBoot(78,'Licht und Kamera werden eingeschaltet …'); initStage(); finishBoot();
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {});
 }
-
+function showMenu() { if(!ui.game.classList.contains('hidden'))saveSession();stopPlayer();ui.game.classList.add('hidden');ui.setup.classList.remove('hidden');playerInputs();scrollTo({top:0,behavior:'smooth'});state.pair?.broadcast(); }
+function showGame() { ui.setup.classList.add('hidden');ui.game.classList.remove('hidden');scrollTo({top:0,behavior:'smooth'}); }
+function tone(freq,duration,type='sine') { if(!state.voice)return;try{audioContext||=new(window.AudioContext||window.webkitAudioContext)();audioContext.resume();const o=audioContext.createOscillator(),g=audioContext.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.035,audioContext.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);o.connect(g).connect(audioContext.destination);o.start();o.stop(audioContext.currentTime+duration);}catch(_){}}
+function say(message) { ui.hostText.textContent=message;if(!state.voice||!('speechSynthesis'in window))return;speechSynthesis.cancel();const line=new SpeechSynthesisUtterance(message);line.lang='de-DE';line.rate=1.04;line.pitch=.88;const de=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de'));line.voice=de.find(v=>/male|männ|daniel|markus|stefan|vito/i.test(v.name))||de[0]||null;speechSynthesis.speak(line); }
 function openPair() {
   state.pair ||= startHost({
     allocate(name) {
-      let slot = state.players.findIndex((_, index) => !state.pair.has(index));
-      if (slot < 0 && state.players.length < 4) {
-        slot = state.players.length;
-        state.players.push({ name, score: 0, timeline: state.starter ? [state.starter] : [] });
-      }
-      if (slot < 0) return -1;
-      state.players[slot].name = name;
-      if (ui.game.classList.contains('hidden')) playerInputs();
-      else { renderScores(); if (slot === state.active) ui.turnName.textContent = name; }
-      return slot;
+      let slot=state.players.findIndex((_,i)=>!state.pair.has(i));
+      if(slot<0&&state.players.length<4){slot=state.players.length;state.players.push({name,score:0,timeline:state.starter?[state.starter]:[]});}
+      if(slot<0)return -1;state.players[slot].name=name;if(ui.game.classList.contains('hidden'))playerInputs();else{renderScores();if(slot===state.active)ui.turnName.textContent=name;}saveSession();return slot;
     },
-    onLeave() {},
-    onAnswer(slot, position) {
-      if (slot !== state.active || state.solved || ui.game.classList.contains('hidden')) return;
-      const timeline = [...state.players[slot].timeline].sort((a,b) => a.year - b.year || a.title.localeCompare(b.title));
-      if (position < 0 || position > timeline.length) return;
-      answer(position, timeline);
-    },
-    onPlay(slot) { if (slot === state.active && !state.solved) playMusic(); },
-    onNext(slot) { if (slot === state.active && state.solved && !ui.next.classList.contains('hidden')) ui.next.click(); },
-    snapshot() {
-      const active = state.players[state.active];
-      const timeline = [...(active?.timeline || [])].sort((a,b) => a.year - b.year || a.title.localeCompare(b.title));
-      const slots = Array.from({ length: timeline.length + 1 }, (_, i) => i === 0 ? `Vor ${timeline[0]?.year || 'allen Songs'}` : i === timeline.length ? `Nach ${timeline[i-1].year}` : `Zwischen ${timeline[i-1].year} und ${timeline[i].year}`);
-      return { phase: ui.game.classList.contains('hidden') ? 'setup' : 'game', players: state.players.map(p => ({ name: p.name, score: p.score })), active: state.active, round: state.rounds, solved: state.solved, playing: state.playing, slots, result: state.result, songUrl: state.current ? youtubeSearch(state.current) : '' };
-    }
-  });
-  state.pair.open();
+    onLeave(){},
+    onAnswer(slot,position){if(slot===state.active&&state.current?.type==='timeline'&&!state.solved&&!ui.game.classList.contains('hidden')){const timeline=sortedTimeline();if(position>=0&&position<=timeline.length)answerTimeline(position,timeline);}},
+    onChoice(slot,choice){if(slot===state.active&&state.current?.type==='quiz'&&!state.solved&&!ui.game.classList.contains('hidden')&&choice>=0&&choice<4)answerQuiz(choice);},
+    onPlay(slot){if(slot===state.active&&state.current?.type==='timeline'&&!state.solved)playMusic();},
+    onSource(slot){if(slot===state.active&&state.current?.type==='timeline'&&!state.solved)switchSource();},
+    onNext(slot){if(slot===state.active&&state.solved&&!ui.next.classList.contains('hidden'))ui.next.click();},
+    snapshot(){const timeline=currentPlayer()?sortedTimeline():[];const slots=Array.from({length:timeline.length+1},(_,i)=>i===0?`Vor ${timeline[0]?.year||'allen Songs'}`:i===timeline.length?`Nach ${timeline[i-1].year}`:`Zwischen ${timeline[i-1].year} und ${timeline[i].year}`);return{phase:ui.game.classList.contains('hidden')?'setup':'game',players:state.players.map(p=>({name:p.name,score:p.score})),active:state.active,round:state.rounds,solved:state.solved,playing:state.playing,slots,result:state.result,type:state.current?.type||'',prompt:state.current?.type==='quiz'?state.current.question.prompt:'In welches Jahr gehört der Song?',options:state.current?.type==='quiz'?state.current.options:[],category:state.current?.type==='quiz'?state.current.question.category:state.current?.track?.category||''};}
+  });state.pair.open();
 }
-
-function tone(frequency, duration, type = 'sine', gain = .04) {
-  if (!state.voice) return;
-  try {
-    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-    if (audioContext.state === 'suspended') audioContext.resume();
-    const oscillator = audioContext.createOscillator(), volume = audioContext.createGain();
-    oscillator.type = type; oscillator.frequency.value = frequency;
-    volume.gain.setValueAtTime(gain, audioContext.currentTime);
-    volume.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + duration);
-    oscillator.connect(volume).connect(audioContext.destination);
-    oscillator.start(); oscillator.stop(audioContext.currentTime + duration);
-  } catch (_) { /* Audio ist optional. */ }
-}
-
-function say(message) {
-  ui.hostText.textContent = message;
-  if (!state.voice || !('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(message);
-  utterance.lang = 'de-DE'; utterance.rate = 1.04; utterance.pitch = .85; utterance.volume = .95;
-  const voices = speechSynthesis.getVoices();
-  const de = voices.filter(v => v.lang.toLowerCase().startsWith('de'));
-  utterance.voice = de.find(v => /male|männ|daniel|markus|stefan|vito/i.test(v.name)) || de[0] || null;
-  speechSynthesis.speak(utterance);
-}
-
-function start() {
-  state.players.forEach((player, i) => { player.name = player.name.trim() || `Spieler ${i + 1}`; player.score = 0; player.timeline = []; });
-  const category = ui.category.value;
-  state.deck = shuffle(category === 'all' ? TRACKS : TRACKS.filter(track => track.category === category));
-  state.active = 0; state.rounds = 0; state.solved = false;
-  // Jede Person bekommt dieselbe Referenzkarte. Danach wird sie aus dem Deck entfernt.
-  const starter = state.deck.pop(); state.starter = starter;
-  state.players.forEach(player => player.timeline.push(starter));
-  ui.setup.classList.add('hidden'); ui.game.classList.remove('hidden');
-  tone(523,.18); setTimeout(() => tone(784,.3), 130);
-  say(`Willkommen bei Zeitsprung Radio! Ich bin Vito. Euer Startsong ist ${starter.title} von ${starter.artist}, aus dem Jahr ${starter.year}. Wer zuerst acht Treffer hat, gewinnt!`);
+function startGame() {
+  state.players.forEach((p,i)=>{p.name=p.name.trim()||`Spieler ${i+1}`;p.score=0;p.timeline=[];});
+  state.filter=ui.category.value;state.active=0;state.rounds=0;state.finished=false;state.solved=false;state.result='';
+  const starters=state.filter==='all'||SPECIAL_CATEGORIES.includes(state.filter)?TRACKS:TRACKS.filter(t=>t.category===state.filter);
+  state.starter=shuffle(starters)[0];state.players.forEach(p=>p.timeline.push(state.starter));
+  state.clipDeck=shuffle(clipPool().filter(track=>track.id!==state.starter.id));state.quizDeck=shuffle(quizPool());
+  showGame();tone(523,.18);setTimeout(()=>tone(784,.3),130);
+  say(`Willkommen bei Zeitsprung Radio! Ich bin Vito. Der Startsong ist ${state.starter.title} von ${state.starter.artist}, aus ${state.starter.year}. Acht Punkte bringen den Sieg!`);
   nextRound(false);
-  state.pair?.broadcast();
-  scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-function nextRound(announce = true) {
-  if (!state.deck.length) { state.deck = shuffle(TRACKS.filter(track => !state.players.some(p => p.timeline.some(t => t.id === track.id)))); }
-  if (!state.deck.length) { finish(); return; }
-  state.current = state.deck.pop(); state.solved = false; state.playing = false; state.result = ''; state.rounds++;
-  ui.result.className = 'result hidden'; ui.result.replaceChildren(); ui.next.classList.add('hidden');
-  ui.playerBox.replaceChildren();
-  const placeholder = document.createElement('div'); placeholder.className = 'player-placeholder'; placeholder.innerHTML = '▶<small>Klicke auf „Musik starten“</small>'; ui.playerBox.append(placeholder);
-  ui.playMusic.disabled = false; ui.playMusic.textContent = '▶ Musik starten'; ui.mediaState.textContent = 'BEREIT';
-  ui.catLabel.textContent = state.current.category.toUpperCase();
-  ui.openYoutube.href = youtubeSearch(state.current);
-  ui.turnName.textContent = state.players[state.active].name;
-  ui.roundLabel.textContent = `RUNDE ${state.rounds}`;
-  ui.deckLabel.textContent = `${state.deck.length + 1} FRAGEN ÜBRIG`;
-  renderTimeline(); renderScores();
-  if (announce) say(`${state.players[state.active].name}, du bist dran! Hör dir den Song an und setze ihn in deine Zeitleiste.`);
-  else ui.hostText.textContent = `${state.players[state.active].name}, du beginnst! Starte die Musik und wähle eine Lücke.`;
-  state.pair?.broadcast();
+function pickQuiz() { if(!state.quizDeck.length)state.quizDeck=shuffle(quizPool());const question=state.quizDeck.pop();return{type:'quiz',question,options:shuffle(question.options)}; }
+function pickClip() { if(!state.clipDeck.length)state.clipDeck=shuffle(clipPool().filter(track=>!state.players.some(player=>player.timeline.some(card=>card.id===track.id))));const track=state.clipDeck.pop();return track?{type:'timeline',track}:pickQuiz(); }
+function nextRound(announce=true) {
+  stopPlayer();state.playing=false;state.solved=false;state.lastCorrect=false;state.result='';state.sourceList=[];state.sourceIndex=0;state.deezerId=null;state.rounds++;
+  const canClip=clipPool().length>0;
+  state.current=canClip&&(state.rounds===1||Math.random()<.42)?pickClip():pickQuiz();
+  renderRound();if(announce)say(`${currentPlayer().name}, du bist dran! ${state.current.type==='timeline'?'Hör den Song und setze ihn auf deine Zeitleiste.':'Hier kommt deine Musikfrage.'}`);
+  saveSession();state.pair?.broadcast();
 }
-
-function playMusic() {
-  if (state.playing || state.solved) return;
-  state.playing = true; ui.playMusic.disabled = true; ui.playMusic.textContent = '♫ Musik läuft';
-  const video = VIDEOS[state.current.title];
-  ui.playerBox.replaceChildren();
-  if (video) {
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube-nocookie.com/embed/${video}?autoplay=1&playsinline=1&rel=0`;
-    iframe.title = 'YouTube-Musikvideo zum aktuellen Song'; iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share'; iframe.allowFullscreen = true; iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    ui.playerBox.append(iframe); ui.mediaState.textContent = 'YOUTUBE NO COOKIE';
-    say('Musik ab! Wenn das Video gesperrt ist, öffne den YouTube-Link darunter. Danach wähle deine Position.');
-  } else {
-    const msg = document.createElement('div'); msg.className = 'player-placeholder'; msg.innerHTML = '↗<small>Für diesen Song: YouTube-Suche öffnen</small>'; ui.playerBox.append(msg);
-    ui.mediaState.textContent = 'EXTERNER SONG';
-    say('Für diesen Song öffne bitte die YouTube-Suche. Spiele ihn dort ab und tippe anschließend auf die richtige Lücke.');
-  }
-  state.pair?.broadcast();
+function stopPlayer() { ui.playerBox.replaceChildren(); }
+function playerPlaceholder(symbol,message) { stopPlayer();ui.playerBox.dataset.provider='';const div=document.createElement('div');div.className='player-placeholder';div.textContent=symbol;const small=document.createElement('small');small.textContent=message;div.append(small);ui.playerBox.append(div); }
+function renderRound() {
+  if(!state.current)return;
+  const quiz=state.current.type==='quiz';ui.turnName.textContent=currentPlayer().name;ui.roundLabel.textContent=`RUNDE ${state.rounds}`;ui.deckLabel.textContent=`${quizBank.length} QUIZFRAGEN · ${playable.length} CLIPS`;
+  ui.modeBadge.textContent=quiz?'QUIZRUNDE':'MUSIKRUNDE';ui.catLabel.textContent=(quiz?state.current.question.category:state.current.track.category).toUpperCase();ui.questionCategory.textContent=ui.catLabel.textContent;
+  ui.mysteryTitle.textContent=quiz?'VITO HAT EINE FRAGE':'WER KENNT DIESEN HIT?';
+  ui.timelineWrap.classList.toggle('hidden',quiz);ui.quizOptions.classList.toggle('hidden',!quiz);
+  ui.playMusic.classList.toggle('hidden',quiz);ui.switchSource.classList.toggle('hidden',quiz);ui.swapClip.classList.toggle('hidden',quiz);
+  ui.musicInfo.classList.toggle('hidden',quiz);
+  ui.questionTitle.textContent=quiz?state.current.question.prompt:'In welcher Zeit gehört dieser Song?';
+  ui.questionHint.textContent=quiz?'Wähle eine der vier Antworten. Vito löst danach auf.':'Hör den Clip im Studio und tippe auf die passende Lücke deiner Zeitleiste.';
+  ui.result.className='result hidden';ui.result.replaceChildren();ui.next.classList.add('hidden');
+  if(quiz){playerPlaceholder('★','DIE QUIZFRAGE IST LIVE');ui.mediaState.textContent='QUIZRUNDE';renderQuiz();}
+  else{playerPlaceholder('♪','MUSIK DIREKT IM STUDIO');ui.mediaState.textContent='BEREIT';ui.playMusic.disabled=false;ui.playMusic.textContent='▶ Musik abspielen';renderTimeline();}
+  if(state.solved){showSolvedState();}
+  renderScores();
 }
-
+function renderQuiz() {
+  ui.quizOptions.replaceChildren();const current=state.current;
+  current.options.forEach((option,index)=>{const button=document.createElement('button');button.type='button';const badge=document.createElement('b');badge.textContent='ABCD'[index];button.append(badge,document.createTextNode(option));button.disabled=state.solved;button.onclick=()=>answerQuiz(index);ui.quizOptions.append(button);});
+}
 function renderTimeline() {
-  const timeline = [...state.players[state.active].timeline].sort((a,b) => a.year - b.year || a.title.localeCompare(b.title));
-  ui.timelineCount.textContent = `${timeline.length} ${timeline.length === 1 ? 'SONG' : 'SONGS'}`;
-  ui.timeline.replaceChildren();
-  for (let i = 0; i <= timeline.length; i++) {
-    const slot = document.createElement('button'); slot.type = 'button'; slot.className = 'slot'; slot.textContent = '+'; slot.title = `Song an Position ${i + 1} einordnen`;
-    slot.setAttribute('aria-label', `Vor ${timeline[i]?.title || 'dem Ende'} einordnen, Position ${i + 1}`);
-    slot.disabled = state.solved; slot.addEventListener('click', () => answer(i, timeline)); ui.timeline.append(slot);
-    if (i < timeline.length) {
-      const card = document.createElement('div'); card.className = 'time-card';
-      const year = document.createElement('span'); year.className = 'year'; year.textContent = timeline[i].year;
-      const title = document.createElement('strong'); title.textContent = timeline[i].title;
-      const artist = document.createElement('small'); artist.textContent = timeline[i].artist;
-      card.append(year, title, artist); ui.timeline.append(card);
-    }
+  const timeline=sortedTimeline();ui.timelineCount.textContent=`${timeline.length} ${timeline.length===1?'SONG':'SONGS'}`;ui.timeline.replaceChildren();
+  for(let i=0;i<=timeline.length;i++){
+    const slot=document.createElement('button');slot.type='button';slot.className='slot';slot.textContent='+';slot.setAttribute('aria-label',`Song an Position ${i+1} einordnen`);slot.disabled=state.solved;slot.onclick=()=>answerTimeline(i,timeline);ui.timeline.append(slot);
+    if(i<timeline.length){const card=document.createElement('div');card.className='time-card';const year=document.createElement('span');year.className='year';year.textContent=timeline[i].year;const title=document.createElement('strong');title.textContent=timeline[i].title;const artist=document.createElement('small');artist.textContent=timeline[i].artist;card.append(year,title,artist);ui.timeline.append(card);}
   }
 }
-
-function answer(position, timeline) {
-  if (state.solved) return;
-  state.solved = true;
-  const track = state.current;
-  const previous = timeline[position - 1], following = timeline[position];
-  const right = (!previous || previous.year <= track.year) && (!following || track.year <= following.year);
-  const player = state.players[state.active];
-  if (right) { player.timeline.push(track); player.score++; tone(660,.23); setTimeout(() => tone(880,.4), 170); }
-  else { tone(240,.4,'triangle'); }
-  // Der Embed wird entfernt, damit der Titel beim Auflösen nicht weiterspielt.
-  ui.playerBox.replaceChildren();
-  const done = document.createElement('div'); done.className = 'player-placeholder'; done.innerHTML = '♫<small>Runde beendet</small>'; ui.playerBox.append(done);
-  ui.mediaState.textContent = 'AUFGELÖST';
-  const message = right ? `Volltreffer, ${player.name}! ${track.title} erschien ${track.year}. Dein Punkt ist sicher.` : `Knapp daneben, ${player.name}! ${track.title} von ${track.artist} erschien ${track.year}.`;
-  state.result = message;
-  say(message);
-  ui.result.className = `result ${right ? 'good' : 'bad'}`;
-  const heading = document.createElement('h3'); heading.textContent = right ? '✓ Richtig eingeordnet!' : '✕ Nicht ganz!';
-  const detail = document.createElement('p'); detail.textContent = `${questionFor(track)} Antwort: ${track.year}. ${right ? '+1 Punkt' : 'Kein Punkt in dieser Runde.'}`;
-  ui.result.append(heading, detail);
-  renderTimeline(); renderScores();
-  if (player.score >= 8) { finish(player); state.pair?.broadcast(); return; }
-  ui.next.classList.remove('hidden');
-  ui.next.textContent = state.players.length > 1 ? `Weiter: ${state.players[(state.active + 1) % state.players.length].name} →` : 'Nächster Song →';
-  ui.next.onclick = () => { state.active = (state.active + 1) % state.players.length; nextRound(); };
-  state.pair?.broadcast();
+async function playMusic() {
+  if(state.current?.type!=='timeline'||state.solved)return;
+  if(state.playing){if(state.sourceList.length)renderSource();return;}
+  state.playing=true;ui.playMusic.disabled=true;ui.playMusic.textContent='♫ Player öffnen';ui.mediaState.textContent='QUELLE WIRD GELADEN';playerPlaceholder('◌','Deezer wird gesucht …');state.pair?.broadcast();
+  const roundTrack=state.current.track;const deezerId=await resolveDeezer(roundTrack);
+  if(state.current?.track?.id!==roundTrack.id||state.solved)return;
+  state.deezerId=deezerId;state.sourceList=sourcesFor(roundTrack,deezerId);state.sourceIndex=0;
+  if(!state.sourceList.length){playerPlaceholder('!', 'Kein Player für diesen Song. Anderen Song wählen.');ui.mediaState.textContent='KEIN CLIP';ui.playMusic.textContent='↻ Erneut versuchen';ui.playMusic.disabled=false;state.playing=false;return;}
+  renderSource();state.pair?.broadcast();
 }
-
-function renderScores() {
-  ui.scoreboard.replaceChildren();
-  state.players.forEach((player, i) => {
-    const chip = document.createElement('div'); chip.className = `score-chip${i === state.active ? ' active' : ''}`;
-    chip.textContent = player.name; const score = document.createElement('b'); score.textContent = `${player.score}/8`; chip.append(score); ui.scoreboard.append(chip);
-  });
+function renderSource() {
+  const source=state.sourceList[state.sourceIndex];if(!source)return;
+  stopPlayer();ui.playerBox.dataset.provider=source.name.toLowerCase();const iframe=document.createElement('iframe');iframe.src=source.src;iframe.title=`${source.name} Musikplayer`;iframe.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';ui.playerBox.append(iframe);
+  ui.mediaState.textContent=source.name.toUpperCase();ui.playMusic.textContent='♫ Im Player auf Play tippen';ui.switchSource.disabled=state.sourceList.length<2;
+  ui.hostText.textContent=`Der ${source.name}-Player ist im Studio. Tippe darin auf Play. Wenn der Anbieter den Clip sperrt, wechsle die Quelle.`;
 }
-
-function finish(winner) {
-  ui.next.classList.remove('hidden'); ui.next.textContent = 'Noch einmal spielen ↻';
-  ui.next.onclick = () => { ui.game.classList.add('hidden'); ui.setup.classList.remove('hidden'); ui.players.querySelectorAll('input').forEach((input, i) => state.players[i].name = input.value); playerInputs(); scrollTo({top:0,behavior:'smooth'}); };
-  if (winner) say(`${winner.name} gewinnt Zeitsprung Radio mit acht richtigen Songs! Was für eine Zeitreise!`);
-  else say('Das Songdeck ist leer. Danke fürs Mitspielen bei Zeitsprung Radio!');
+function switchSource() { if(state.current?.type!=='timeline'||state.solved)return;if(!state.playing){playMusic();return;}if(state.sourceList.length<2){ui.hostText.textContent='Für diesen Song gibt es gerade nur eine Quelle. Wähle bei Bedarf einen anderen Song.';return;}state.sourceIndex=(state.sourceIndex+1)%state.sourceList.length;renderSource(); }
+function swapClip() { if(state.current?.type!=='timeline'||state.solved)return;const pool=clipPool();if(!pool.length)return;const alternatives=pool.filter(t=>t.id!==state.current.track.id&&!state.players.some(player=>player.timeline.some(card=>card.id===t.id)));if(!alternatives.length)return;state.current={type:'timeline',track:shuffle(alternatives)[0]};state.playing=false;state.sourceList=[];state.sourceIndex=0;state.deezerId=null;renderRound();saveSession();state.pair?.broadcast();say('Neuer Song, neue Chance! Spiele ihn direkt hier im Studio ab.'); }
+function answerTimeline(position,timeline=sortedTimeline()) { if(state.solved||state.current?.type!=='timeline')return;const track=state.current.track,previous=timeline[position-1],following=timeline[position];const correct=(!previous||previous.year<=track.year)&&(!following||track.year<=following.year);if(correct){currentPlayer().timeline.push(track);currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Treffer! ${track.title} von ${track.artist} erschien ${track.year}.`:`Nicht ganz. ${track.title} von ${track.artist} erschien ${track.year}.`,`${questionFor(track)} Antwort: ${track.year}.`); }
+function answerQuiz(index) { if(state.solved||state.current?.type!=='quiz'||index<0||index>3)return;const {question,options}=state.current,correct=options[index]===question.answer;if(correct){currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Richtig, ${currentPlayer().name}! ${question.answer} ist die Antwort.`:`Leider falsch. Die richtige Antwort lautet ${question.answer}.`,question.prompt); }
+function completeRound(correct,message,detail) {
+  state.solved=true;state.lastCorrect=correct;state.result=message;stopPlayer();ui.mediaState.textContent='AUFGELÖST';say(message);
+  ui.result.className=`result ${correct?'good':'bad'}`;const heading=document.createElement('h3');heading.textContent=correct?'✓ Punkt für dich!':'✕ Aufgelöst';const p=document.createElement('p');p.textContent=`${detail} ${correct?'+1 Punkt':'Kein Punkt in dieser Runde.'}`;ui.result.append(heading,p);
+  if(state.current.type==='timeline')renderTimeline();else markQuizAnswer();renderScores();
+  if(currentPlayer().score>=8){finishGame();return;}
+  ui.next.classList.remove('hidden');ui.next.textContent=state.players.length>1?`Weiter: ${state.players[(state.active+1)%state.players.length].name} →`:'Nächste Runde →';ui.next.onclick=()=>{state.active=(state.active+1)%state.players.length;nextRound();};
+  saveSession();state.pair?.broadcast();
 }
+function markQuizAnswer(){const buttons=[...ui.quizOptions.querySelectorAll('button')];buttons.forEach((button,index)=>{button.disabled=true;if(state.current.options[index]===state.current.question.answer)button.classList.add('correct');});}
+function showSolvedState() { ui.result.className=`result ${state.lastCorrect?'good':'bad'}`;const p=document.createElement('p');p.textContent=state.result;ui.result.append(p);if(state.current.type==='quiz')markQuizAnswer();else renderTimeline();ui.next.classList.remove('hidden');ui.next.textContent=state.players.length>1?`Weiter: ${state.players[(state.active+1)%state.players.length].name} →`:'Nächste Runde →';ui.next.onclick=()=>{state.active=(state.active+1)%state.players.length;nextRound();};ui.mediaState.textContent='AUFGELÖST'; }
+function renderScores() { ui.scoreboard.replaceChildren();state.players.forEach((player,index)=>{const chip=document.createElement('div');chip.className=`score-chip${index===state.active?' active':''}`;chip.textContent=player.name;const score=document.createElement('b');score.textContent=`${player.score}/8`;chip.append(score);ui.scoreboard.append(chip);}); }
+function finishGame() {state.finished=true;safeStorage(()=>localStorage.removeItem(SAVE_KEY));ui.resume.classList.add('hidden');ui.next.classList.remove('hidden');ui.next.textContent='Neue Show starten ↻';ui.next.onclick=()=>{showMenu();state.current=null;state.players.forEach(p=>{p.score=0;p.timeline=[];});playerInputs();};say(`${currentPlayer().name} gewinnt Zeitsprung Radio! Acht Punkte, was für eine Show!`);state.pair?.broadcast();}
 
 function initStage() {
-  if (!window.THREE) return;
+  if(!window.THREE)return;
   try {
-    const canvas = $('stage');
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.7));
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, .1, 100); camera.position.set(0, 1.8, 10); camera.lookAt(0, 0, 0);
-    scene.add(new THREE.AmbientLight(0xffffff, .65));
-    const pink = new THREE.PointLight(0xff4c93, 2, 14); pink.position.set(-4, 3, 3); scene.add(pink);
-    const blue = new THREE.PointLight(0x77e7ff, 2, 14); blue.position.set(4, -2, 3); scene.add(blue);
-    const group = new THREE.Group(); group.position.set(2.9, .05, -1.5); scene.add(group);
-    const vinyl = new THREE.Mesh(new THREE.TorusGeometry(2.3, .11, 16, 90), new THREE.MeshStandardMaterial({ color: 0x19142a, metalness: .7, roughness: .2 })); group.add(vinyl);
-    const disc = new THREE.Mesh(new THREE.CylinderGeometry(2.28, 2.28, .055, 96), new THREE.MeshStandardMaterial({ color: 0x10101c, metalness: .65, roughness: .2 })); disc.rotation.x = Math.PI / 2; group.add(disc);
-    for (let r = .56; r < 2.2; r += .17) { const groove = new THREE.Mesh(new THREE.TorusGeometry(r, .006, 5, 90), new THREE.MeshBasicMaterial({ color: r % .34 < .17 ? 0x66537d : 0x302642, transparent: true, opacity: .7 })); groove.position.z = .04; group.add(groove); }
-    const label = new THREE.Mesh(new THREE.CircleGeometry(.5, 48), new THREE.MeshBasicMaterial({ color: 0xffcb61 })); label.position.z = .06; group.add(label);
-    const center = new THREE.Mesh(new THREE.CircleGeometry(.08, 32), new THREE.MeshBasicMaterial({ color: 0x281526 })); center.position.z = .07; group.add(center);
-    const particles = new THREE.BufferGeometry(); const positions = new Float32Array(240 * 3);
-    for (let i=0;i<positions.length;i+=3) { positions[i] = (Math.random()-.5)*20; positions[i+1]=(Math.random()-.5)*12; positions[i+2]=(Math.random()-.5)*8-2; }
-    particles.setAttribute('position', new THREE.BufferAttribute(positions, 3)); scene.add(new THREE.Points(particles, new THREE.PointsMaterial({ color: 0xffcb61, size: .025, transparent: true, opacity: .7 })));
-    function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w,h,false); camera.aspect = w/h; camera.updateProjectionMatrix(); group.position.x = w < 850 ? 1.5 : 2.9; group.scale.setScalar(w < 600 ? .7 : 1); }
-    addEventListener('resize', resize); resize();
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function frame() { if (!document.hidden) { if (!reduced) { group.rotation.z -= .0025; group.rotation.y = Math.sin(performance.now()*.00025)*.18; } renderer.render(scene,camera); } requestAnimationFrame(frame); }
-    frame();
-  } catch (error) { console.warn('3D-Bühne konnte nicht geladen werden.', error); }
+    const T=window.THREE,canvas=$('stage'),renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<650?1.15:1.6));
+    const scene=new T.Scene(),camera=new T.PerspectiveCamera(47,1,.1,100);camera.position.set(0,3.2,15);camera.lookAt(0,1.8,-4);
+    scene.add(new T.AmbientLight(0x8ca0ff,.9));const pink=new T.PointLight(0xff4b9b,2.6,25);pink.position.set(-5,7,2);scene.add(pink);const cyan=new T.PointLight(0x4befff,2.4,25);cyan.position.set(5,6,1);scene.add(cyan);
+    const mat=(color,metal=.15,rough=.55)=>new T.MeshStandardMaterial({color,metalness:metal,roughness:rough});
+    const box=(w,h,d,color,x,y,z)=>{const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),mat(color));mesh.position.set(x,y,z);scene.add(mesh);return mesh;};
+    box(22,.35,12,0x141a36,0,-.2,-4);box(17,.1,5,0x362459,0,.02,-5);box(14,.16,.15,0xff649d,0,.15,-2.5);
+    for(let i=-6;i<=6;i++){box(.05,4,.08,i%2?0x3a3d79:0x63418b,i*1.2,2.8,-9);box(1.05,.06,.12,0x7deeff,i*1.2,5.1,-9);}
+    box(11.4,3.6,.22,0x111a3d,0,3,-9.2);box(10.5,2.8,.08,0x3e286c,0,3,-9.05);
+    const led=document.createElement('canvas');led.width=1024;led.height=320;const ctx=led.getContext('2d');const texture=new T.CanvasTexture(led);
+    const screen=new T.Mesh(new T.PlaneGeometry(10.3,2.65),new T.MeshBasicMaterial({map:texture,transparent:false}));screen.position.set(0,3.05,-8.95);scene.add(screen);
+    const desk=box(4.5,.7,1.2,0x1b2148,0,.5,-4.5);box(4.3,.18,1.3,0xffc36d,0,.89,-4.5);box(4.1,.13,.12,0x64eeff,0,.54,-3.87);
+    const host=new T.Group();host.position.set(-2.8,.96,-4.7);scene.add(host);
+    const body=new T.Mesh(new T.CylinderGeometry(.43,.55,1.15,12),mat(0x5131a0));body.position.y=.66;host.add(body);
+    const head=new T.Mesh(new T.SphereGeometry(.35,18,14),mat(0xe8a177));head.position.y=1.52;host.add(head);
+    const hair=new T.Mesh(new T.SphereGeometry(.36,18,8,0,Math.PI*2,0,Math.PI*.46),mat(0x251630));hair.position.y=1.61;host.add(hair);
+    const mic=new T.Mesh(new T.CylinderGeometry(.045,.05,.75,8),mat(0x9c9cb4,.7,.25));mic.position.set(.55,.91,.1);mic.rotation.z=-.45;host.add(mic);
+    const neon=[];for(let i=0;i<10;i++){const bulb=new T.Mesh(new T.SphereGeometry(.06,8,8),new T.MeshBasicMaterial({color:i%2?0xff68ae:0x66eaff}));bulb.position.set((i-4.5)*1.6,.28,-1.2);scene.add(bulb);neon.push(bulb);}
+    for(let row=0;row<3;row++)for(let col=-7;col<=7;col++){const audience=new T.Mesh(new T.SphereGeometry(.11,7,6),mat((row+col)%3?0x394681:0xc44b8b));audience.position.set(col*1.05,.15+row*.1,1.4+row*.65);scene.add(audience);}
+    const beamMat=new T.MeshBasicMaterial({color:0x77e9ff,transparent:true,opacity:.065,depthWrite:false,side:T.DoubleSide});const beams=[];
+    for(const x of [-5,5]){const cone=new T.Mesh(new T.ConeGeometry(1.8,7,20,1,true),beamMat.clone());cone.position.set(x,3.5,-4);cone.rotation.z=x<0?-.3:.3;scene.add(cone);beams.push(cone);}
+    function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.position.x=w<650?2:0;camera.updateProjectionMatrix();}addEventListener('resize',resize);resize();
+    let frame=0;const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function draw(){requestAnimationFrame(draw);if(document.hidden)return;frame++;if(frame%4===0||reduced){const t=frame*.015;ctx.fillStyle='#141b49';ctx.fillRect(0,0,1024,320);const gradient=ctx.createLinearGradient(0,0,1024,0);gradient.addColorStop(0,'#74efff');gradient.addColorStop(.5,'#ffd679');gradient.addColorStop(1,'#ff70aa');ctx.fillStyle=gradient;ctx.font='900 110px Impact, Arial Black, sans-serif';ctx.textAlign='center';ctx.fillText('ZEITSPRUNG',512,145);ctx.font='900 72px Impact, Arial Black, sans-serif';ctx.fillText('RADIO  •  LIVE',512,243);for(let i=0;i<40;i++){const h=8+Math.abs(Math.sin(t+i*.62))*26;ctx.fillRect(i*27,294-h,10,h);}texture.needsUpdate=true;}
+      if(!reduced){host.rotation.y=Math.sin(frame*.012)*.08;beams.forEach((b,i)=>b.rotation.z=(i?1:-1)*(.2+Math.sin(frame*.008+i)*.08));neon.forEach((b,i)=>b.scale.setScalar(.8+Math.sin(frame*.04+i)*.2));}renderer.render(scene,camera);}
+    draw();
+  } catch (error) { console.warn('3D-Studio nicht verfügbar:',error); }
 }
-
-setup();
+init();

@@ -50,7 +50,9 @@ export function startHost(handlers) {
     const slot = clients.get(connection);
     if (slot === undefined) return;
     if (message.t === 'answer' && Number.isInteger(message.position)) handlers.onAnswer(slot, message.position);
+    if (message.t === 'choice' && Number.isInteger(message.choice)) handlers.onChoice(slot, message.choice);
     if (message.t === 'play') handlers.onPlay(slot);
+    if (message.t === 'source') handlers.onSource(slot);
     if (message.t === 'next') handlers.onNext(slot);
   }
   function create() {
@@ -132,15 +134,18 @@ export function startController() {
     if (s.active !== s.me) { const p = document.createElement('p'); p.textContent = `${s.players?.[s.active]?.name || 'Jemand anderes'} ist am Zug. Schau auf den Fernseher!`; root.append(p); return; }
     if (s.solved) {
       const p = document.createElement('p'); p.textContent = s.result || 'Runde beendet.'; root.append(p);
-      const button = document.createElement('button'); button.className = 'primary'; button.textContent = 'Nächster Song →'; button.onclick = () => send({ t: 'next' }); root.append(button); return;
+      const button = document.createElement('button'); button.className = 'primary'; button.textContent = 'Nächste Runde →'; button.onclick = () => send({ t: 'next' }); root.append(button); return;
     }
-    const prompt = document.createElement('p'); prompt.textContent = submittedRound === s.round ? 'Antwort gesendet. Warte auf die Auflösung am TV.' : 'Spiele den Song am TV ab und tippe auf die passende Lücke.'; root.append(prompt);
-    const play = document.createElement('button'); play.className = 'secondary'; play.textContent = '▶ Musik am TV starten'; play.onclick = () => send({ t: 'play' }); root.append(play);
-    const songLink = document.createElement('a'); songLink.href = s.songUrl || '#'; songLink.target = '_blank'; songLink.rel = 'noopener noreferrer'; songLink.className = 'controller-song-link'; songLink.textContent = '↗ Falls nötig: Song auf YouTube suchen'; root.append(songLink);
+    const prompt = document.createElement('p'); prompt.textContent = submittedRound === s.round ? 'Antwort gesendet. Warte auf die Auflösung am TV.' : s.type === 'quiz' ? s.prompt : 'Spiele den Song am TV ab und tippe auf die passende Lücke.'; root.append(prompt);
+    if (s.type === 'timeline') {
+      const play = document.createElement('button'); play.className = 'secondary'; play.textContent = '▶ Musik am TV starten'; play.onclick = () => send({ t: 'play' }); root.append(play);
+      const source = document.createElement('button'); source.className = 'secondary'; source.textContent = '♫ Quelle am TV wechseln'; source.onclick = () => send({ t: 'source' }); root.append(source);
+    }
     const choices = document.createElement('div'); choices.className = 'controller-choices';
-    (s.slots || []).forEach((label, position) => {
-      const button = document.createElement('button'); button.textContent = `${position + 1}. ${label}`; button.disabled = submittedRound === s.round;
-      button.onclick = () => { submittedRound = s.round; send({ t: 'answer', position }); renderState(); };
+    const items = s.type === 'quiz' ? (s.options || []) : (s.slots || []);
+    items.forEach((label, position) => {
+      const button = document.createElement('button'); button.textContent = `${s.type === 'quiz' ? 'ABCD'[position] : position + 1}. ${label}`; button.disabled = submittedRound === s.round;
+      button.onclick = () => { submittedRound = s.round; send(s.type === 'quiz' ? { t: 'choice', choice: position } : { t: 'answer', position }); renderState(); };
       choices.append(button);
     });
     root.append(choices);

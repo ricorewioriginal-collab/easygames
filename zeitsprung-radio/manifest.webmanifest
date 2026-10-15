@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "ZEITSPRUNG RADIO – Die große Musikshow",
+  "short_name": "ZEITSPRUNG",
+  "description": "Moderierte 3D-Musikshow mit Live-Studio, Musikclips, Quiz und TV-Multiplayer.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07091b",
+  "theme_color": "#090b20",
+  "categories": ["games", "music", "entertainment"],
+  "icons": [
+    {"src":"../pwa-icons/zeitsprung-radio-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"../pwa-icons/zeitsprung-radio-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"../pwa-icons/zeitsprung-radio-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ],
+  "screenshots": [{"src":"./card.png","sizes":"1200x630","type":"image/png","form_factor":"wide","label":"ZEITSPRUNG RADIO Live-Musikshow"}]
+}
