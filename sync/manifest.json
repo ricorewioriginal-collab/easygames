@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "29d5466cd770",
- "generated": "2026-10-15T02:43:41.773Z",
- "commit": "13f05f4d8693c5faf39e357822a03ff5d4c2fd2a",
+ "version": "9508fb2a6c9b",
+ "generated": "2026-10-15T04:48:19+02:00",
+ "commit": "cd3a008c95320bde159b0df78ab0530d029340b0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4833,8 +4833,8 @@
   },
   {
    "p": "mimori/model.js",
-   "s": 10305,
-   "h": "91ac8e1fa2b718d27f2b886a2b97db24bb56df7f5e5a8a3509f4cf6c609a15a6"
+   "s": 10557,
+   "h": "8b8a6182248ac03f93c015a58fd888e021e10fa7ddd719f1165db75d607f2de8"
   },
   {
    "p": "mimori/sound.js",
@@ -5299,7 +5299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 65451,
-   "h": "40fcea0c2feabac000354c073012864a683b608c9856efbdd8d861c737a3d9bf"
+   "h": "4f4e075727df040040ad96d7c227115e75be1bcb07d158d6b033d13066a3b6cc"
   },
   {
    "p": "taschi/card.svg",
