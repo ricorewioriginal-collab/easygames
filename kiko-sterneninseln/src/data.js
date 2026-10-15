@@ -15,7 +15,7 @@ export const levels=[
  make('Das Rätsel der Lichtsteine',1,[[0,0,8,7,0],[0,6,7,5,0],[1,12,7,5,.4],[-1,18,7,5,.4],[0,24,9,8,.4]],'sequence',[['hopper',2]],'Berühre Lichtsteine in der Reihenfolge 1 → 2 → 3.'),
  make('Der eisige Aufstieg',2,[[0,0,8,7,0],[1,6,7,5,.4],[2,12,7,5,.8],[1,18,7,5,1.2],[0,24,9,8,1.2]],'none',[['flyer',2],['hopper',3]],'Auf Eis rutscht Kiko länger. Der Leuchtstein ist ein Checkpoint.'),
  make('Die Kristallhöhle',2,[[0,0,8,7,0],[0,6,7,5,0],[-1,12,7,5,.4],[0,18,7,5,.8],[0,24,9,8,.8]],'key',[['flyer',3]],'Finde den Schlüssel und öffne das Tor.'),
- make('Die zerbrochene Himmelsstraße',3,[[0,0,8,7,0],[2,6,6,4,.3],[0,12,6,4,.6],[-2,18,6,4,.9],[0,24,9,8,.9]],'dual',[['hopper',1],['flyer',3]],'Zwei Schalter laden das Himmelstor.'),
+ make('Die zerbrochene Himmelsstraße',3,[[0,0,8,7,0],[2,6,6,4,.3],[0,12,6,4,.6],[-2,18,6,4,.9],[0,24,9,8,.9]],'dual',[['hopper',1],['flyer',3]],'Zwei Schalter laden das Himmelstor. Ein Seitenweg verbirgt einen Bonusstern.'),
  make('Das Herz der Sterne',3,[[0,0,8,7,0],[0,6,7,5,0],[1,12,7,5,.3],[0,18,8,6,.6],[0,25,12,11,.6]],'boss',[['flyer',2]],'Sammle alle Kristalle und triff das Herz dreimal, wenn es blau leuchtet.')
 ];
 export function validateLevels(){return levels.every(l=>l.path.length===5&&l.crystals.length===5&&l.stars.length===3&&l.path.every((p,i)=>i===0||Math.hypot(p[0]-l.path[i-1][0],p[1]-l.path[i-1][1])<8));}
