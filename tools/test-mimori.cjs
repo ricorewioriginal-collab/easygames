@@ -13,6 +13,19 @@ assert.equal(M.act({...pet,energy:0},'play',epoch+6*3600000).ok,false);
 for(let i=0;i<65;i++)pet=M.act(pet,'cuddle',epoch+6*3600000+i*1000).pet;
 assert(M.evolve(pet)>=1);
 assert.equal(M.rename(pet,'<Mimi>').name,'Mimi');
+assert.equal(M.fresh(epoch).coins,0);
+assert.equal(M.load(M.fresh(epoch),epoch).accessory,0);
+const earned=M.rewardMini(M.fresh(epoch),'catch',500,true,epoch);
+assert(earned.ok&&earned.coins>0&&earned.xp>0);
+assert.equal(earned.pet.records.catch,500);
+assert.equal(M.rewardMini(earned.pet,'catch',200,false,epoch).pet.records.catch,500);
+const daily=M.claimDaily(earned.pet,epoch);
+assert(daily.ok);assert.equal(M.claimDaily(daily.pet,epoch).ok,false);
+const purchase=M.shop({...daily.pet,coins:300},'accessory',2);
+assert(purchase.ok&&purchase.pet.accessory===2);
+assert.equal(M.load(purchase.pet,epoch+1000).accessory,2);
+assert.equal(M.shop(M.fresh(epoch),'theme',2).ok,false);
+
 assert.deepEqual(M.species,['Fluffi','Nubbi','Foxi','Drachi']);
 assert.equal(M.fresh(epoch).species,0);
 for(let i=0;i<4;i++){
@@ -59,7 +72,7 @@ class Renderer{
 class Camera extends Shape{lookAt(){}updateProjectionMatrix(){}}
 const THREE={WebGLRenderer:Renderer,Scene:Shape,Fog:class{},PerspectiveCamera:Camera,
  HemisphereLight:Shape,DirectionalLight:Shape,PointLight:Shape,Group:Shape,Mesh:Shape,
- MeshStandardMaterial:class{dispose(){}},SphereGeometry:Geometry,CylinderGeometry:Geometry,
+ MeshStandardMaterial:class{dispose(){}},MeshBasicMaterial:class{dispose(){}},SphereGeometry:Geometry,CylinderGeometry:Geometry,
  BoxGeometry:Geometry,CircleGeometry:Geometry,TorusGeometry:Geometry,ConeGeometry:Geometry,sRGBEncoding:3001};
 const C={playCalls:[],enabled:true,play(k){this.playCalls.push(k)},isEnabled(){return this.enabled},toggle(){return this.enabled=!this.enabled}};
 const mockNotification={permission:'default',requestPermission:async()=>{mockNotification.permission='granted';return 'granted'}};
