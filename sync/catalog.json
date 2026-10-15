@@ -10,7 +10,7 @@
    "title": "Mimori – Dein 3D-Haustier",
    "desc": "Mimori – Dein 3D-Haustier mit vier niedlichen Figuren, richtiger Toilette/Hygiene, Medizin bei Krankheit, Schlaf mit Lichtsteuerung, Hilferuf, fünf spannenden Minigames, Sternen, Belohnungen und Google-Speicherung. Offline und mobil spielbar.",
    "icon": "🐣",
-   "img": "mimori/cover.svg",
+   "img": "mimori/cover.png",
    "bg": "linear-gradient(145deg,#bfb4df,#eeaeca)",
    "glow": null,
    "path": "mimori/",
@@ -32,8 +32,8 @@
      "Google-Speichern bleibt optional; lokale Pflege- und Minigame-Daten bleiben erhalten."
     ]
    },
-   "size": 107010,
-   "files": 10,
+   "size": 457965,
+   "files": 11,
    "offline": true
   },
   {

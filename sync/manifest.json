@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "9fc8ea1bf0f4",
- "generated": "2026-10-15T02:39:57.037Z",
+ "version": "29d5466cd770",
+ "generated": "2026-10-15T02:43:41.773Z",
  "commit": "13f05f4d8693c5faf39e357822a03ff5d4c2fd2a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15738,
-   "h": "04edbc7181c58b3d108a5e4fc9847084264a82f0f66fadf3681a1d4286d1e5bb"
+   "s": 15739,
+   "h": "ccb332f450fdad40d0ff84c4f33403f45e110e638ecf9c14cd9cedfddb09f42b"
   },
   {
    "p": "gay-life/index.html",
@@ -4802,6 +4802,11 @@
    "h": "bd9777d3a9352ac15a34432b09c0f404e8aa41de4403c389d73d6c8d228f277c"
   },
   {
+   "p": "mimori/cover.png",
+   "s": 350945,
+   "h": "39c64bd35c19c73e399ed6ddd0df59cd11a463adcdc279d556df6838a7f7cad0"
+  },
+  {
    "p": "mimori/cover.svg",
    "s": 7159,
    "h": "c744e03051efb6d9dd65b0379c6c770234772db0ac99ead46027f1adc0670170"
@@ -4819,12 +4824,12 @@
   {
    "p": "mimori/index.html",
    "s": 28671,
-   "h": "7273376ac473f549edf678a2d50406873cb14c5e1848b651eb6800023558697d"
+   "h": "84bda6a91dec8f87ad09612cb898a9db3d7f8aa34a0513c021648b74764d0f18"
   },
   {
    "p": "mimori/manifest.webmanifest",
-   "s": 681,
-   "h": "04538a61eb1673fa2ed06b4f922ef8eda1df75da1250b232c98ca222a1b994a3"
+   "s": 677,
+   "h": "47c1dfd88064e64c779f1dbad29c33a2d470f8c0295a2b83d40ed83c80efeaae"
   },
   {
    "p": "mimori/model.js",
@@ -4838,8 +4843,8 @@
   },
   {
    "p": "mimori/sw.js",
-   "s": 1674,
-   "h": "8581a2d8424301ab0a5adc66d9ae45ac81ba7865a601824d006fd408c7ada8b3"
+   "s": 1688,
+   "h": "8e71dce866cd3a9e4cdccd5cbc03248539038e441486d7192f1be6f6b0a25169"
   },
   {
    "p": "modes.js",
@@ -5294,7 +5299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 65451,
-   "h": "830d8429a0b42accb7bb85a1b7c1043232bdceb5e9cb94048dc2e74bd5b2af7c"
+   "h": "40fcea0c2feabac000354c073012864a683b608c9856efbdd8d861c737a3d9bf"
   },
   {
    "p": "taschi/card.svg",
