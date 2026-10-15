@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "AnMaCha Radio Maze 3D",
+  "short_name": "Radio Maze",
+  "description": "60 3D-Radio-Labyrinthe mit 13 Senderlogos, Geisterjagd und Google-Spielständen.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#070c1b",
+  "theme_color": "#080d20",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
