@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1bdf5170f39e",
- "generated": "2026-10-15T08:45:40+02:00",
- "commit": "1cf4d209cfef519a9a3bddd2ac887a927f36b246",
+ "version": "b185c93c4d9a",
+ "generated": "2026-10-15T08:52:12+02:00",
+ "commit": "9287daf1ba58b79d3e428422889adb9b922b7a4f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 17802,
-   "h": "9899c51498cd38dc22a93189d1a7843dddccc224507c7c361ec7d14335a06702"
+   "h": "00c9fc8061b26606ca3fc0dddb9bbb925fe1fe9462836608af8633ccabeac607"
   },
   {
    "p": "gay-life/index.html",
@@ -4777,14 +4777,19 @@
    "h": "714d0d8fae0378c3d125a0295244231ab7de44c984499c645a7ec91f77b408c3"
   },
   {
+   "p": "kraterkommando/controls.css",
+   "s": 2310,
+   "h": "dcca2e5207f877233746efd2e4be6e51292b1cea02d7567acd46e0c83bf0ecb7"
+  },
+  {
    "p": "kraterkommando/game.js",
-   "s": 41662,
-   "h": "f9829a7607681b669d5f5de1b5b3854038c4a3afaac8a1ebe3cbc59a7776674e"
+   "s": 44691,
+   "h": "b5501970e32e9fb86fd9fe155c24b7fdcf9fd986fc16eddd84692fd95ca41267"
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 6183,
-   "h": "d188aaff04e3c6978aa335ccca3e5636bf88f10c7b9877173a052772c7284106"
+   "s": 6476,
+   "h": "1e40382c921469d7c2cde94ea87fb4e1bd9fbeeb8b1383cb0ecc215c127801f0"
   },
   {
    "p": "kraterkommando/manifest.webmanifest",
@@ -4798,8 +4803,8 @@
   },
   {
    "p": "kraterkommando/sw.js",
-   "s": 1048,
-   "h": "a7d5b0eb7e740cb0244076625e437361a2b2301cb502c2048269b3a0ff1efa3a"
+   "s": 1066,
+   "h": "1d9b8634b9f48ec04cdbcc7034ae6e98b6fc311b1fc7aee4321d7be52372f811"
   },
   {
    "p": "lumo/audio.js",
@@ -5409,7 +5414,7 @@
   {
    "p": "sync/catalog.json",
    "s": 73639,
-   "h": "facfda58843fed6ec593e5994588eb4c34b35cbcb9fc8f37b66078536717a6b5"
+   "h": "5d19fc198c6810cdb6e020f77babbd2edf940397d289f6ecfa29779a499bde79"
   },
   {
    "p": "taschi/card.svg",
