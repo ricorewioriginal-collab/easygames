@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3b79082e565a",
- "generated": "2026-10-15T03:59:03.303Z",
- "commit": "cd3a008c95320bde159b0df78ab0530d029340b0",
+ "version": "40845d9da741",
+ "generated": "2026-10-15T05:59:17+02:00",
+ "commit": "575a112b1c73d48e7333a652f4c45a63f8d80b43",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5334,7 +5334,7 @@
   {
    "p": "sync/catalog.json",
    "s": 68282,
-   "h": "c7b870f5a483426e8d7185d62f19d7a88a8d8a2a2c79755583311124a37d5260"
+   "h": "14a3d502ffb6ed49066b1f6c32ba5406de9bc3d32cc78776946f80f2e8b610f7"
   },
   {
    "p": "taschi/card.svg",

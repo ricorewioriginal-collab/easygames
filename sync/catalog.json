@@ -10,7 +10,7 @@
    "title": "Mimori – Dein 3D-Haustier",
    "desc": "Mimori: großes interaktives 3D-Hauptfenster mit kompakter In-Game-Steuerung für Pflege, Familie, 12 Räume, 13 laut.fm-Sender und fünf im Hauptfenster integrierte Minigames. WebGL-Fallback für Android, drei Erscheinungsvarianten, Hochzeiten mit bis zu drei Partnern, freischaltbare Dekoration, Google-Speicherung und Offline-Modus.",
    "icon": "🐣",
-   "img": "mimori/cover.png",
+   "img": "mimori/cover.svg",
    "bg": "linear-gradient(145deg,#bfb4df,#eeaeca)",
    "glow": null,
    "path": "mimori/",
