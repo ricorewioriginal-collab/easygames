@@ -1,0 +1,38 @@
+/* Lesbare Touch-Ziele und ein eigener Zustand, wenn der Computer spielt. */
+.aim-hint.faded{opacity:.7}
+.game-dock{min-height:calc(155px + env(safe-area-inset-bottom))}
+.small-tools button{height:47px;font-size:22px}
+.small-tools small{font-size:9px;letter-spacing:.025em}
+.tool-weapon{height:47px}
+.tool-weapon small{font-size:13px}
+.battle-status{bottom:calc(165px + env(safe-area-inset-bottom))}
+.bot-banner{display:none;position:absolute;z-index:3;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 24px));min-height:78px;align-items:center;gap:13px;padding:11px 16px;border:2px solid #c4eff2;border-radius:19px;background:#183c52ed;box-shadow:0 9px 27px #09243799;color:#fff;backdrop-filter:blur(10px)}
+.bot-avatar{width:49px;height:49px;flex:none;display:grid;place-items:center;font-size:26px;border-radius:15px;background:#8bd3e8;color:#143a50}
+.bot-banner strong,.bot-banner span{display:block}.bot-banner strong{font-size:15px}.bot-banner span{font-size:11px;color:#bfe4ed;margin-top:3px}
+.bot-banner i{margin-left:auto;font-size:19px;font-style:normal;letter-spacing:2px;color:#a8e7ed;animation:botpulse 1s infinite alternate}
+.bot-turn .game-dock{visibility:hidden;pointer-events:none}
+.bot-turn .bot-banner{display:flex}
+.bot-turn .battle-status{bottom:calc(105px + env(safe-area-inset-bottom))}
+.bot-turn .aim-hint{display:none}
+@keyframes botpulse{to{opacity:.3}}
+@media(max-width:390px){
+  .game-dock{min-height:calc(142px + env(safe-area-inset-bottom))}
+  .tool-weapon{height:43px}
+  .small-tools button{height:41px;font-size:18px}
+  .small-tools small{font-size:8px}
+  .battle-status{bottom:calc(149px + env(safe-area-inset-bottom))}
+}
+@media(orientation:landscape){
+  .game-dock{min-height:0}
+  .tool-weapon{height:36px}
+  .small-tools button{height:31px;font-size:15px}
+  .battle-status{bottom:calc(13px + env(safe-area-inset-bottom))}
+  .bot-banner{left:auto;right:calc(12px + env(safe-area-inset-right));transform:none;width:min(390px,55vw)}
+  .bot-turn .battle-status{bottom:calc(13px + env(safe-area-inset-bottom))}
+}
+@media(max-height:400px) and (orientation:landscape){
+  .tool-weapon{height:29px}
+  .small-tools button{height:23px}
+  .bot-banner{min-height:61px;padding:6px 10px}
+  .bot-avatar{height:40px;width:40px}
+}

@@ -14,7 +14,7 @@
     airstrike: { radius: 3.4, damage: 34, ammo: 2 },
     teleport: { radius: 0, damage: 0, ammo: 2 }
   };
-  let scene, camera, renderer, terrain, aimLine, selection, impactRing, clock;
+  let scene, camera, renderer, terrain, aimLine, selection, impactRing, clock, raycaster;
   let S = null, active = false, paused = false, busy = false, projectile = null, particles = [], botTimeout = 0;
   let bodies = [], deco = [], cameraAz = .72, camDistance = 26, cameraFocus = null, stickX = 0, stickY = 0, charging = false;
   const pressed = new Set();
@@ -91,6 +91,7 @@
     scene.background = new THREE.Color(0xa9d9df);
     scene.fog = new THREE.Fog(0xa9d9df, 42, 95);
     camera = new THREE.PerspectiveCamera(59, 1, .1, 180);
+    raycaster = new THREE.Raycaster();
     renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.7));
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -190,10 +191,10 @@
     smile.position.set(0, 1.30, -.625); smile.rotation.z = Math.PI; g.add(smile);
     const launcher = new THREE.Mesh(new THREE.CylinderGeometry(.17, .21, .73, 10), new THREE.MeshStandardMaterial({ color: 0x415265, metalness: .18, roughness: .65 }));
     launcher.rotation.x = Math.PI / 2; launcher.position.set(.54, 1.02, -.3); launcher.castShadow = true; g.add(launcher);
-    const barBack = new THREE.Mesh(new THREE.PlaneGeometry(1.44, .17), new THREE.MeshBasicMaterial({ color: 0x14283d, side: THREE.DoubleSide }));
-    barBack.position.y = 2.18; g.add(barBack);
-    const bar = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .13), new THREE.MeshBasicMaterial({ color: u.team ? 0x79d6ff : 0xff8b92, side: THREE.DoubleSide }));
-    bar.position.set(0, 2.18, .01); g.add(bar); g.userData.bar = bar;
+    const barBack = new THREE.Mesh(new THREE.PlaneGeometry(1.5, .2), new THREE.MeshBasicMaterial({ color: 0x14283d, side: THREE.DoubleSide, depthTest: false }));
+    barBack.position.set(0, 2.18, -.09); barBack.renderOrder = 20; g.add(barBack);
+    const bar = new THREE.Mesh(new THREE.PlaneGeometry(1.44, .14), new THREE.MeshBasicMaterial({ color: u.team ? 0x48d8ff : 0xff756d, side: THREE.DoubleSide, depthTest: false }));
+    bar.position.set(0, 2.18, -.11); bar.renderOrder = 21; g.add(bar); g.userData.bar = bar;
     const label = document.createElement('canvas'); label.width = 256; label.height = 64;
     const ctx = label.getContext('2d'); ctx.fillStyle = 'rgba(15,42,61,.88)';
     ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(10, 4, 236, 52, 21); else ctx.rect(10, 4, 236, 52); ctx.fill();
@@ -201,6 +202,7 @@
     const tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(label), depthTest: false, transparent: true }));
     tag.position.y = 2.65; tag.scale.set(2.35, .59, 1); g.add(tag);
     g.scale.setScalar(1.2);
+    g.userData.unitIndex = S.units.indexOf(u);
     scene.add(g); return g;
   }
   function syncBodies() {
@@ -214,7 +216,7 @@
       b.visible = u.hp > 0;
       b.position.set(u.x, height(u.x, u.z), u.z);
       b.userData.bar.scale.x = clamp(u.hp / 100, .001, 1);
-      b.userData.bar.position.x = -(1 - b.userData.bar.scale.x) * .7;
+      b.userData.bar.position.x = -(1 - b.userData.bar.scale.x) * .72;
       b.rotation.y = cameraAz + Math.PI;
     });
     const u = S.units[S.current];
@@ -409,6 +411,7 @@
       S.power = clamp((Math.sqrt(range) - 10) / .245 + rand(-err * 2, err * 2), 25, 100);
       S.weapon = u.ammo.cluster > 0 && dist < 13 && Math.random() < .3 ? 'cluster' : 'rocket';
       syncControls(); updateAim();
+      $('botAction').textContent = u.name + ' visiert ' + target.name + ' an';
       // Bot führt dieselbe Waffenaktion wie der Mensch aus.
       fire(true);
     }, 1500);
@@ -428,6 +431,8 @@
     const u = S.units[S.current], bot = isBotTurn();
     $('teamHud').innerHTML = [0, 1].map(t => `<div class="team-card ${t ? 'blue' : 'red'}"><strong>${t ? '🔵 BLAU' : '🔴 ROT'} ${S.team === t ? '●' : ''}</strong><span>${S.units.filter(v => v.team === t && v.hp > 0).length} Figuren · ${teamHealth(t)} LP</span></div>`).join('');
     $('game').classList.toggle('blue-turn', S.team === 1);
+    $('game').classList.toggle('bot-turn', bot && active);
+    if (bot && !busy) $('botAction').textContent = u.name + ' sucht ein Ziel …';
     $('turnInfo').textContent = 'RUNDE ' + S.round + (bot ? ' · COMPUTER' : ' · ' + (S.team ? 'BLAU' : 'ROT'));
     $('unitName').textContent = u.name; $('unitHp').textContent = u.hp + ' LP';
     $('wind').textContent = (S.wind < 0 ? '← ' : '→ ') + Math.abs(S.wind).toFixed(1);
@@ -462,6 +467,51 @@
     impactRing.visible = !!hit && !busy;
     impactRing.material.color.setHex(S.weapon === 'teleport' ? 0x8fe9ff : 0xffd375);
     if (hit) impactRing.position.set(hit[0], height(hit[0], hit[1]) + .11, hit[1]);
+  }
+  function aimAtPoint(x, z, name) {
+    if (!active || paused || busy || isBotTurn()) return;
+    const u = S.units[S.current], dx = x - u.x, dz = z - u.z;
+    if (Math.hypot(dx, dz) < 1.8) return;
+    const azimuth = Math.atan2(dx, -dz) * 180 / Math.PI;
+    let best = { error: Infinity, yaw: azimuth, angle: 45, power: S.power };
+    if (S.weapon === 'airstrike' || S.weapon === 'teleport') {
+      const base = S.weapon === 'airstrike' ? 5 : 4, slope = S.weapon === 'airstrike' ? .2 : .12;
+      best.power = clamp((Math.hypot(dx, dz) - base) / slope, 25, 100);
+    } else {
+      for (const yawOffset of [-6, 0, 6]) for (const angle of [30, 39, 48, 57]) for (let power = 25; power <= 100; power += 3) {
+        const d = dir(azimuth + yawOffset, angle), p = new THREE.Vector3(u.x, height(u.x, u.z) + 1.5, u.z).addScaledVector(d, 1.15);
+        const v = d.multiplyScalar(10 + power * .245);
+        for (let i = 0; i < 120; i++) {
+          v.x += S.wind * .65 * .045; v.y -= 13 * .045; p.addScaledVector(v, .045);
+          if (p.y <= height(p.x, p.z) || Math.abs(p.x) > 20 || Math.abs(p.z) > 20) break;
+        }
+        const error = Math.hypot(p.x - x, p.z - z);
+        if (error < best.error) best = { error, yaw: azimuth + yawOffset, angle, power };
+      }
+    }
+    S.yaw = clamp(best.yaw, -180, 180); S.angle = best.angle; S.power = best.power;
+    syncControls(); updateAim(); save();
+    announce(name ? name + ' anvisiert · Ziehen für Feinkorrektur' : 'Zielpunkt gesetzt · Ziehen für Feinkorrektur', 2400);
+    $('aimHint').classList.add('faded');
+  }
+  function tapTarget(clientX, clientY) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const pointer = new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -((clientY - rect.top) / rect.height * 2 - 1));
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(bodies, true);
+    for (const hit of hits) {
+      let node = hit.object;
+      while (node && node.userData.unitIndex === undefined) node = node.parent;
+      if (!node) continue;
+      const target = S.units[node.userData.unitIndex];
+      if (target && target.hp > 0 && target.team !== S.team) {
+        aimAtPoint(target.x, target.z, target.name); return;
+      }
+    }
+    if (terrain) {
+      const ground = raycaster.intersectObject(terrain, false)[0];
+      if (ground) aimAtPoint(ground.point.x, ground.point.z, '');
+    }
   }
   function startGame(continued) {
     matchId++;
@@ -576,13 +626,14 @@
     renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
     renderer.domElement.addEventListener('pointerdown', e => {
       if (!active || paused || busy || isBotTurn()) return;
-      e.preventDefault(); drag = { id: e.pointerId, x: e.clientX, y: e.clientY, mode: e.button === 2 ? 'camera' : 'aim' };
+      e.preventDefault(); drag = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: 0, mode: e.button === 2 ? 'camera' : 'aim' };
       renderer.domElement.setPointerCapture(e.pointerId);
       $('aimHint').classList.add('faded');
     });
     renderer.domElement.addEventListener('pointermove', e => {
       if (!drag || drag.id !== e.pointerId || !active || paused || busy) return;
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+      drag.moved += Math.hypot(dx, dy);
       if (drag.mode === 'camera') cameraAz -= dx * .008;
       else {
         S.yaw = ((S.yaw + dx * .55 + 540) % 360) - 180;
@@ -590,7 +641,12 @@
         syncControls(); updateAim();
       }
     });
-    const stopDrag = e => { if (drag && drag.id === e.pointerId) { drag = null; save(); } };
+    const stopDrag = e => {
+      if (drag && drag.id === e.pointerId) {
+        if (e.type === 'pointerup' && drag.mode === 'aim' && drag.moved < 9) tapTarget(e.clientX, e.clientY);
+        drag = null; save();
+      }
+    };
     renderer.domElement.addEventListener('pointerup', stopDrag);
     renderer.domElement.addEventListener('pointercancel', stopDrag);
     renderer.domElement.addEventListener('wheel', e => {

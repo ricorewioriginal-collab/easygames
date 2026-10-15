@@ -11,6 +11,7 @@
 <link rel="icon" type="image/svg+xml" href="card.svg">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="controls.css">
 </head>
 <body>
 <div id="loading" class="screen active" role="status"><div class="load-art"><span>💥</span></div><div class="load-copy"><div class="eyebrow">EASYGAMES ORIGINAL</div><h1>KRATER<br><span>KOMMANDO</span></h1><p>Die Insel wird gebaut …</p><div class="load-track"><i id="progress"></i></div><small id="loadStatus">Initialisiere 3D-Welt</small></div></div>
@@ -36,13 +37,14 @@
   <header class="topbar"><div class="brand"><span class="brand-icon">✦</span><span>KRATER<br>KOMMANDO</span></div><div class="turn-pill"><span id="turnInfo">Runde 1</span><strong id="timer">45</strong></div><button id="pauseBtn" aria-label="Pause">Ⅱ</button></header>
   <div id="teamHud" class="team-hud"></div>
   <div id="message" class="message" aria-live="polite"></div>
-  <div class="aim-hint" id="aimHint">↔ Wischen: Richtung · ↕ Wischen: Winkel</div>
+  <div class="aim-hint" id="aimHint">Gegner oder Boden antippen = zielen · Ziehen = korrigieren</div>
   <div class="battle-status"><div class="active-unit"><span id="unitName">—</span><small id="unitHp">100 LP</small></div><div class="aim-readout"><span id="yawVal">0°</span><span id="angleVal">45°</span></div><div class="wind">WIND <span id="wind">→ 0</span></div></div>
   <div class="game-dock">
     <div class="stick-area"><div id="stick" class="stick" aria-label="Bewegungsstick" role="group"><div id="stickThumb" class="stick-thumb"></div></div><small>BEWEGEN</small></div>
     <div class="tool-area"><button id="weaponBtn" class="tool-weapon"><span id="weaponIcon">🚀</span><small id="weaponName">Rakete</small></button><div class="small-tools"><button id="jumpBtn" aria-label="Springen">↥<small>SPRUNG</small></button><button id="aimBtn" aria-label="Präzises Zielen">⌖<small>ZIELEN</small></button><button id="skipBtn" aria-label="Zug beenden">»<small>PASS</small></button></div></div>
-    <div class="fire-area"><div class="charge-ring"><button id="fireBtn" aria-label="Feuern, halten für mehr Kraft"><span>🚀</span><strong>FEUER</strong></button></div><small>KRAFT <span id="powerVal">70%</span></small></div>
+    <div class="fire-area"><div class="charge-ring"><button id="fireBtn" aria-label="Feuern, halten für mehr Kraft"><span>🚀</span><strong>FEUER</strong></button></div><small>HALTEN = <span id="powerVal">70%</span></small></div>
   </div>
+  <div id="botBanner" class="bot-banner" aria-live="polite"><div class="bot-avatar">🤖</div><div><strong>Computer ist am Zug</strong><span id="botAction">Gegner überlegt …</span></div><i aria-hidden="true">•••</i></div>
   <div id="weaponPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Waffe wählen</h2><button id="closeWeapon" aria-label="Schließen">✕</button></div><div id="weaponGrid" class="weapon-grid"></div></div></div>
   <div id="aimPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Präzise zielen</h2><button id="closeAim" aria-label="Schließen">✕</button></div><p>Zieh auch direkt im Spielfeld, um Richtung und Winkel zu ändern.</p><label>RICHTUNG<input id="yaw" type="range" min="-180" max="180" value="0"></label><label>WINKEL<input id="angle" type="range" min="10" max="80" value="45"></label><label>KRAFT<input id="power" type="range" min="25" max="100" value="70"></label></div></div>
   <select id="weapon" hidden><option value="rocket">Rakete</option><option value="grenade">Granate</option><option value="cluster">Streubombe</option><option value="airstrike">Luftschlag</option><option value="teleport">Teleport</option></select>
