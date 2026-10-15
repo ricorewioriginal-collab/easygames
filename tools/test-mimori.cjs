@@ -1,6 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const M=require('../mimori/model.js');
+const M=require('../mimori/model.js'),Home=require('../mimori/household.js'),
+ Rooms3D=require('../mimori/rooms3d.js'),Radio=require('../mimori/radio.js');
 const epoch=Date.UTC(2026,9,15,12);
 let pet=M.fresh(epoch);
 assert.equal(pet.hunger,82);assert.equal(M.evolve(pet),0);
@@ -88,12 +89,12 @@ assert(sw.includes("'./sound.js'")&&sw.includes("'../cloud/anmacha-cloud.js'"));
 assert(!sw.includes("addEventListener('push'"));
 
 const ui={},ls=new Map(),events={window:{}},notifications=[],noop=()=>{};
-let renderFrame=null;const speciesButtons=[],careButtons=[];
+let renderFrame=null;const speciesButtons=[],appearanceButtons=[],careButtons=[];
 function element(){
  return {textContent:'',hidden:false,clientWidth:570,clientHeight:500,dataset:{},children:[],
   style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},focus:noop,setPointerCapture:noop,querySelector:()=>element(),
   addEventListener(type,fn){(this.handlers[type]??=[]).push(fn)},
-  appendChild(child){this.children.push(child)},replaceChildren(){this.children=[]},
+  appendChild(child){this.children.push(child)},append(...items){this.children.push(...items)},replaceChildren(){this.children=[]},querySelectorAll:()=>[],
   setAttribute:noop,getContext:()=>({})};
 }
 class Shape{
@@ -113,13 +114,14 @@ const THREE={WebGLRenderer:Renderer,Scene:Shape,Fog:class{},PerspectiveCamera:Ca
 const C={playCalls:[],enabled:true,play(k){this.playCalls.push(k)},isEnabled(){return this.enabled},toggle(){return this.enabled=!this.enabled}};
 const mockNotification={permission:'default',requestPermission:async()=>{mockNotification.permission='granted';return 'granted'}};
 const serviceWorker={getRegistration:async()=>({showNotification:async(t,d)=>notifications.push({title:t,...d})})};
-const win={MimoriModel:M,MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
+const win={MimoriModel:M,MimoriHome:Home,MimoriRooms3D:Rooms3D,MimoriRadio:Radio,MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
 for(let i=0;i<4;i++){const b=element();b.dataset.species=String(i);speciesButtons.push(b)}
+for(let i=0;i<3;i++){const b=element();b.dataset.appearance=String(i);appearanceButtons.push(b)}
 for(const kind of ['feed','toilet','cleanup','medicine','light','sleep']){
  const b=element();b.dataset.care=kind;careButtons.push(b);
 }
 const document={getElementById:id=>ui[id]??=element(),
- querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:sel==='[data-care]'?careButtons:[],
+ querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:sel==='[data-appearance]'?appearanceButtons:sel==='[data-care]'?careButtons:[],
  addEventListener:noop,createElement:element,hidden:false,body:{classList:{add:noop,remove:noop}}};
 const localStorage={getItem:k=>ls.get(k)||null,setItem:(k,v)=>ls.set(k,v)};
 const context={window:win,document,localStorage,navigator:{serviceWorker},Notification:mockNotification,
@@ -158,6 +160,11 @@ for(let i=0;i<4;i++){
 }
 assert.equal(new Set(meshCounts).size,4,'all creatures share the same geometry');
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).species,3,'species not persisted to Google-synced save');
+appearanceButtons[0].handlers.click[0]();
+assert.equal(win.MimoriDebug.get().appearance,0,'appearance variant not applied');
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).appearance,0);
+assert.equal(win.MimoriDebug.household().members.length,1);
+assert.equal(win.MimoriDebug.household().room,0);
 // Each of four species retains the selected color on model reconstruction.
 ui.changeColor.handlers.click[0]();
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,1);
