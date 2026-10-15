@@ -3,8 +3,10 @@ const levels={hunger:'Hunger',joy:'Langeweile',energy:'Müdigkeit',clean:'Sauber
 function clamp(x,a,b){return Math.min(b,Math.max(a,Number.isFinite(x)?x:a))}
 function projected(p,now){
  const hours=clamp((now-(Number(p.updated)||now))/3600000,0,24*14);
- return {hunger:clamp(Number(p.hunger)-hours*8,0,100),joy:clamp(Number(p.joy)-hours*4.5,0,100),
+ const vals={hunger:clamp(Number(p.hunger)-hours*8,0,100),joy:clamp(Number(p.joy)-hours*4.5,0,100),
  energy:clamp(Number(p.energy)-hours*5.5,0,100),clean:clamp(Number(p.clean)-hours*5,0,100)};
+ const low=[vals.hunger,vals.joy,vals.energy,vals.clean].filter(x=>x<20).length;
+ return {...vals,health:clamp(Number(p.health??92)+hours*(low?-1.4*low:.3),10,100)};
 }
 function quiet(now,options){
  const offset=clamp(Number(options?.offsetMinutes??0),-720,840),
@@ -18,9 +20,9 @@ function selectReminder(entry,now){
  if(quiet(now,opts))return null;
  const threshold=clamp(Number(opts.threshold)||35,20,60),
  cooldown=clamp(Number(opts.cooldownHours)||5,2,24)*3600000;
- const candidates=Object.entries(p).filter(([key,value])=>value<=threshold)
+ const candidates=Object.entries(p).filter(([key,value])=>value<=(key==='health'?25:threshold))
  .sort((a,b)=>a[1]-b[1]);
- const names={hunger:['🍓 Hunger','braucht etwas Leckeres!'],joy:['💗 Langeweile','möchte mit dir spielen!'],energy:['🌙 Müde','braucht eine kleine Pause!'],clean:['🫧 Badetag','wünscht sich ein Bad!']};
+ const names={hunger:['🍓 Hunger','braucht etwas Leckeres!'],joy:['💗 Langeweile','möchte mit dir spielen!'],energy:['🌙 Müde','braucht eine kleine Pause!'],clean:['🫧 Badetag','wünscht sich ein Bad!'],health:['💚 Fürsorge','fühlt sich nicht wohl und braucht Hilfe!']};
  for(const [key]of candidates){
  const last=Number(entry.lastSent?.[key])||0;
  if(now-last<cooldown)continue;

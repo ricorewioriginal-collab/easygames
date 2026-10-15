@@ -2,7 +2,7 @@
 const $=id=>document.getElementById(id),M=window.MimoriModel,KEY='easygames.mimori.v1',DEVICE='easygames.mimori.device.v1';
 let pet;try{pet=M.load(JSON.parse(localStorage.getItem(KEY)),Date.now())}catch(_){pet=M.fresh()}
 const state={busy:false,fx:0,activity:'idle',spin:0,orbit:0,mini:0,renderer:null,model:null,room:null,balls:[],pushBase:'',pushKey:'',pushEnabled:false,pushBusy:false};
-const stats=[['hunger','Satt','🍓'],['joy','Freude','💗'],['energy','Energie','🌙'],['clean','Sauber','🫧']];
+const stats=[['hunger','Satt','🍓'],['joy','Freude','💗'],['energy','Energie','🌙'],['clean','Sauber','🫧'],['health','Gesundheit','💚']];
 let deviceId='';try{deviceId=localStorage.getItem(DEVICE)||crypto.randomUUID();localStorage.setItem(DEVICE,deviceId)}catch(_){deviceId=String(Math.random()).slice(2)}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(pet))}catch(_){}};
 const say=(msg)=>{$('speech').textContent=msg;$('speech').classList.remove('pop');void $('speech').offsetWidth;$('speech').classList.add('pop')};
@@ -22,6 +22,7 @@ function act(kind){
  if(!response.ok){say(response.reason);ui();return}
  state.fx=1.2;state.activity=kind;say(response.evolved?'Wow! Ich bin größer geworden! ✨':pet.lastAction);
  if(kind==='minigame')state.fx=2;
+ if(response.evolved)paint();
  save();ui();syncPush().catch(()=>{});
 }
 document.querySelectorAll('[data-care]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.care;if(k==='minigame'){startMinigame();return}act(k)}));
