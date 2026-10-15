@@ -17,7 +17,7 @@
   let scene, camera, renderer, terrain, aimLine, selection, clock;
   let S = null, active = false, paused = false, busy = false, projectile = null, particles = [], botTimeout = 0;
   let bodies = [], deco = [], keys = {}, heldMove = '', cameraAz = .72, camDistance = 47;
-  let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0;
+  let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0, matchId = 0;
   const materials = {};
   const updateLoad = (v, s) => { $('progress').style.width = v + '%'; $('loadStatus').textContent = s; };
   function announce(s, ms = 2200) {
@@ -288,6 +288,7 @@
     if (kind !== 'rocket' && (u.ammo[kind] || 0) <= 0) { announce('Diese Waffe ist aufgebraucht'); return; }
     if (kind !== 'rocket') u.ammo[kind]--;
     busy = true; updateHud(); save();
+    const thisMatch = matchId;
     if (kind === 'teleport') {
       const d = dir(S.yaw, 0);
       const tx = clamp(u.x + d.x * (4 + S.power * .12), -18, 18);
@@ -300,12 +301,12 @@
       const d = dir(S.yaw, 0), cx = clamp(u.x + d.x * (5 + S.power * .2), -18, 18), cz = clamp(u.z + d.z * (5 + S.power * .2), -18, 18);
       announce('Luftschlag im Anflug!');
       for (let i = -1; i <= 1; i++) setTimeout(function strike() {
-        if (!active) return;
+        if (!active || thisMatch !== matchId) return;
         if (paused) { setTimeout(strike, 250); return; }
         const x = clamp(cx + d.z * i * 2.7, -19, 19), z = clamp(cz - d.x * i * 2.7, -19, 19);
         explode(x, height(x, z) + .2, z, 'airstrike');
       }, (i + 1) * 420);
-      setTimeout(finishAction, 1500); return;
+      setTimeout(() => { if (thisMatch === matchId) finishAction(); }, 1500); return;
     }
     launch(kind);
   }
@@ -384,6 +385,7 @@
     aimLine.visible = S.weapon !== 'airstrike' && S.weapon !== 'teleport' && !busy;
   }
   function startGame(continued) {
+    matchId++;
     clearTimeout(botTimeout); clearTimeout(nextTurnTimer); removeProjectile();
     S = continued ? read() : newState();
     if (!S) return;
@@ -434,13 +436,14 @@
             const x = clamp(p.pos.x, -19.8, 19.8), z = clamp(p.pos.z, -19.8, 19.8), y = Math.max(height(x, z), p.pos.y);
             const kind = p.kind; removeProjectile();
             if (kind === 'cluster') {
+              const thisMatch = matchId;
               explode(x, y, z, 'cluster', .8);
               for (let i = 0; i < 5; i++) setTimeout(() => {
-                if (!active) return;
+                if (!active || thisMatch !== matchId) return;
                 const xx = clamp(x + rand(-3.2, 3.2), -19, 19), zz = clamp(z + rand(-3.2, 3.2), -19, 19);
                 explode(xx, height(xx, zz) + .2, zz, 'cluster', .7);
               }, 130 + i * 115);
-              setTimeout(finishAction, 850);
+              setTimeout(() => { if (thisMatch === matchId) finishAction(); }, 850);
             } else { explode(x, y, z, kind); finishAction(); }
           }
           if (p && projectile && p.kind === 'grenade' && p.age > 3.1) {
