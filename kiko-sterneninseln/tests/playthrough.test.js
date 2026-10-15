@@ -9,8 +9,8 @@ const context={};vm.runInNewContext(readFileSync(new URL('../vendor/three.min.js
 globalThis.window={THREE:context.THREE,__worlds:worlds};
 globalThis.document={querySelector:()=>({})};
 const {Game}=await import('../src/game.js');
-const {Kiko}=await import('../src/scene.js?v=7');
-const {Player}=await import('../src/physics.js?v=7');
+const {Kiko}=await import('../src/scene.js?v=8');
+const {Player}=await import('../src/physics.js?v=8');
 function setup(){const storage=new Map;globalThis.localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};const g=Object.create(Game.prototype);g.save=new SaveManager;g.renderer={scene:new context.THREE.Scene,world(){},snapFollow(){}};g.kiko=new Kiko;g.player=new Player(g.kiko);g.ui={playing(){},updateHud(){},updateObjective(){},message(){},pause(){},complete(){},gameOver(){},error(e){throw e}};g.audio={tone(){}};g.introShown=true;g.raw={x:0,z:0,jump:false,interact:false,look:0};g.input={reset(){g.raw={x:0,z:0,jump:false,interact:false,look:0}},sample(){return g.raw}};g.start(0);return g}
 test('real Game start, pause, resume, death, checkpoint and locked levels',()=>{const g=setup();assert.equal(g.state,'PLAYING');g.pause();assert.equal(g.state,'PAUSED');g.resume();assert.equal(g.state,'PLAYING');g.start(7);assert.equal(g.index,0);g.player.hearts=0;g.state='GAME_OVER';g.retryCheckpoint();assert.equal(g.player.hearts,3);assert.equal(g.state,'PLAYING');g.view.dispose()});
 for(const hz of [30,60])test(`all eight levels finish through actual movement, pickup, switches and portals at ${hz} FPS`,()=>{

@@ -1,6 +1,6 @@
 # KIKO – Das Geheimnis der Sterneninseln
 
-Ein eigenständiges Three.js-Abenteuer mit acht Leveln in vier Welten. Sämtliche Modelle, Effekte und Klänge entstehen im Browser. Das Spiel speichert Fortschritt und Einstellungen lokal.
+Ein eigenständiges Three.js-Abenteuer mit acht Leveln in vier Welten. Sämtliche Modelle, Effekte und Klänge entstehen im Browser. Das Spiel speichert Fortschritt und Einstellungen lokal und auf Wunsch über den bestehenden Google-Cloud-Speicher von EasyGames.
 
 ## Starten
 
@@ -16,9 +16,9 @@ Sammle pro Level fünf Kristalle. Drei versteckte Sterne sind optional. Bei Rät
 
 ## Technik
 
-Three.js r128 liegt lokal unter `vendor/three.min.js` (MIT-Lizenz, siehe `vendor/LICENSE.three.txt`). Vite 5.4.21 ist nur für Entwicklung und Build nötig. Es gibt keine Cloud-Abhängigkeit und keinen Server für Spielstände.
+Three.js r128 liegt lokal unter `vendor/three.min.js` (MIT-Lizenz, siehe `vendor/LICENSE.three.txt`). Vite 5.4.21 ist nur für Entwicklung und Build nötig. Das Spiel funktioniert ohne Anmeldung. Der optionale Google-Cloud-Speicher nutzt dieselbe Firebase-Anbindung wie die anderen EasyGames-Spiele.
 
-Die Level werden in `src/data.js` definiert. `src/scene.js` baut die 3D-Welt, `src/physics.js` bewegt Kiko, `src/input.js` liest Tastatur, Touch und Gamepad, `src/ui.js` verwaltet Menüs, `src/save.js` speichert lokal, `src/audio.js` erzeugt Töne, `src/main.js` verbindet die Systeme.
+Die Level werden in `src/data.js` definiert. `src/scene.js` baut die 3D-Welt, `src/physics.js` bewegt Kiko, `src/input.js` liest Tastatur, Touch und Gamepad, `src/ui.js` verwaltet Menüs, `src/save.js` speichert lokal, `src/audio.js` erzeugt Töne, `src/game.js` verbindet die Systeme; `src/main.js` startet das Spiel.
 
 ## Überarbeitung – Fassung 7
 
@@ -27,6 +27,16 @@ Die Bewegung folgt der tatsächlichen Blickrichtung der Kamera. Links/rechts wur
 Touchflächen unterbinden Browsergesten während der Steuerung. Joystick, Sprung und Kamerawischen besitzen getrennte Pointer. Aktionen enden auch nach einem Abbruch oder dem Loslassen außerhalb der Taste. Eine in eingebetteten Frames gesperrte Gamepad API blockiert die übrige Steuerung nicht.
 
 Ein Missionsfenster erklärt den Einstieg. Während des Spielens zeigt ein dauerhafter Zielkompass den nächsten Kristall, notwendigen Schalter oder das Portal. Pflichtschalter werden vor späteren Kristallen hinter einem Tor angefordert. Sprung und Aktion sind beschriftet. Blaue Kristalle tragen sichtbare Lichtmarkierungen; Bonussterne und Kikos Abzeichen haben eine Sternform. Die Farben der Standardmaterialien werden für Three.js r128 korrekt aus sRGB umgerechnet.
+
+## Google-Spielstand – Fassung 8
+
+Im Hauptmenü, in der Pause, in den Einstellungen und nach einem Levelabschluss gibt es die aufklappbare Karte **Google-Spielstand**. Dort stehen Anmeldung, Kontoprofil, manuelles Sichern, Wiederherstellung des Cloud-Stands, die vorhandene ältere Sicherung und Abmeldung zur Verfügung. Während des Spiels wird die Karte ausgeblendet.
+
+Die Datei `vendor/anmacha-cloud.js` ist eine unveränderte lokale Kopie des vorhandenen EasyGames-Moduls `cloud/anmacha-cloud.js` (Git-Blob `bf9fa7a5d110224d4938e08701d15b3f4d7d34c7`). Sie wird mit `data-game="kiko-sterneninseln"` und `data-prefix="kiko-sterneninseln-v1"` eingebunden. Dadurch nutzt Kiko die vorhandene Google/Firebase-Konfiguration und einen eigenen Spielstand unter `users/<uid>/saves/kiko-sterneninseln`. An Firebase-Konfiguration und Firestore-Regeln wurde nichts geändert. Bei zukünftigen Änderungen des gemeinsamen Cloud-Moduls sollte diese Kopie mit aktualisiert werden.
+
+Gesichert werden die freigeschalteten Level, Bonussterne, Bestwerte, Einstellungen und Tastenbelegung. Lokales Spielen bleibt ohne Konto möglich. Das Cloud-Modul lädt das Firebase-SDK in der vorhandenen Version 10.12.2 erst für die Anmeldung bzw. eine bereits aktivierte Verbindung. Es behält die bisherige Regel bei: Der neuere gespeicherte Stand gewinnt. Bei einem geladenen Stand übernimmt Kiko die validierten Daten auch im geöffneten Menü; Spielstände anderer Spiele werden nicht mit hochgeladen.
+
+Die lokale Kopie ermöglicht dieselbe Anmeldung sowohl aus dem EasyGames-Ordner als auch beim eigenständigen Start mit Vite oder aus `dist/`. Der vorhandene Vite-Kopierschritt übernimmt `vendor/` vollständig. Für die Anmeldung ist Netzwerkzugriff auf Google/Firebase erforderlich. Ein Zurücksetzen des Spielstands fragt ausdrücklich nach und weist auf die Synchronisierung des zurückgesetzten Stands hin.
 
 ## Durchgeführte Prüfungen
 

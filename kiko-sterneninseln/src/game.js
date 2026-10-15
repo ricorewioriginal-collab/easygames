@@ -1,11 +1,11 @@
-import {levels,worlds,validateLevels} from './data.js?v=7';
-import {SaveManager} from './save.js?v=7';
-import {Input} from './input.js?v=7';
-import {Audio} from './audio.js?v=7';
-import {Renderer,Kiko,LevelView} from './scene.js?v=7';
-import {Player} from './physics.js?v=7';
-import {UI} from './ui.js?v=7';
-import {cameraRelative} from './controls.js?v=7';
+import {levels,worlds,validateLevels} from './data.js?v=8';
+import {SaveManager} from './save.js?v=8';
+import {Input} from './input.js?v=8';
+import {Audio} from './audio.js?v=8';
+import {Renderer,Kiko,LevelView} from './scene.js?v=8';
+import {Player} from './physics.js?v=8';
+import {UI} from './ui.js?v=8';
+import {cameraRelative} from './controls.js?v=8';
 window.__worlds=worlds;
 export class Game{
  constructor(){if(!window.THREE)throw Error('Three.js konnte nicht geladen werden.');if(!validateLevels())throw Error('Leveldaten sind ungültig.');this.state='BOOT';this.save=new SaveManager;this.renderer=new Renderer(document.querySelector('#stage'),this.save);this.input=new Input(this.save,this.renderer.renderer.domElement,()=>this.state==='PLAYING');this.audio=new Audio(this.save);this.kiko=new Kiko;this.renderer.scene.add(this.kiko.root);this.player=new Player(this.kiko);this.view=new LevelView(this.renderer,levels[0]);this.kiko.root.position.set(0,0,-1);this.index=0;this.time=0;this.yaw=0;this.count=0;this.bonus=0;this.puzzle=0;this.bossHits=0;this.lastInteract=false;this.lastJump=false;this.ui=new UI(this);document.addEventListener('visibilitychange',()=>{if(document.hidden&&this.state==='PLAYING')this.pause()});this.fpsFrames=0;this.fpsTime=0;this.clock=performance.now();requestAnimationFrame(t=>this.frame(t))}

@@ -1,1 +1,27 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111c38"><title>KIKO – Das Geheimnis der Sterneninseln</title><link rel="stylesheet" href="./style.css?v=7"></head><body><div id="app"><div id="stage"></div><div id="hud" hidden><div id="hud-left"></div><div id="hud-right"></div><button id="pause" aria-label="Pause">Ⅱ</button></div><div id="objective" hidden></div><div id="hint"></div><div id="screen"></div><div id="touch" hidden><div id="stick"><div id="knob"></div></div><button id="jump" aria-label="Springen">↥<small>SPRUNG</small></button><button id="interact" aria-label="Interagieren">✦<small>AKTION</small></button></div></div><script src="./vendor/three.min.js"></script><script type="module" src="./src/main.js?v=7"></script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#111c38">
+ <title>KIKO – Das Geheimnis der Sterneninseln</title>
+ <link rel="stylesheet" href="./style.css?v=8">
+</head>
+<body>
+ <div id="app">
+  <div id="stage"></div>
+  <div id="hud" hidden><div id="hud-left"></div><div id="hud-right"></div><button id="pause" aria-label="Pause">Ⅱ</button></div>
+  <div id="objective" hidden></div><div id="hint"></div><div id="screen"></div>
+  <div id="touch" hidden><div id="stick"><div id="knob"></div></div><button id="jump" aria-label="Springen">↥<small>SPRUNG</small></button><button id="interact" aria-label="Interagieren">✦<small>AKTION</small></button></div>
+  <details id="cloudAccount" class="cloud-account" open hidden>
+   <summary><span class="cloud-icon" aria-hidden="true">☁</span><span><strong>Google-Spielstand</strong><small>Deine Sternenreise auf all deinen Geräten</small></span><span class="cloud-chevron" aria-hidden="true">⌄</span></summary>
+   <div id="cloudMount"></div>
+   <p id="cloudUnavailable" hidden>Google ist gerade nicht erreichbar. Dein Spielstand bleibt auf diesem Gerät gespeichert. Öffne das Spiel später erneut.</p>
+   <p class="cloud-note">Dein Fortschritt, Bonussterne, Bestwerte und Einstellungen reisen mit. Ohne Anmeldung speichert Kiko lokal.</p>
+  </details>
+ </div>
+ <script src="./vendor/three.min.js"></script>
+ <script src="./vendor/anmacha-cloud.js?v=8" data-game="kiko-sterneninseln" data-prefix="kiko-sterneninseln-v1" data-mount="#cloudMount" data-hint="Melde dich mit deinem Google-Konto an und setze Kikos Reise auf einem anderen Gerät fort." onerror="document.getElementById('cloudUnavailable').hidden=false" defer></script>
+ <script type="module" src="./src/main.js?v=8"></script>
+</body>
+</html>

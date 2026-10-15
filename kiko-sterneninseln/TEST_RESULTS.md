@@ -1,8 +1,8 @@
-# Testergebnisse – Fassung 7, 15. Oktober 2026
+# Testergebnisse – Fassung 8, 15. Oktober 2026
 
 ## Automatisch geprüft
 
-`npm test`: fünf Testdateien erfolgreich. Die Dateien enthalten insgesamt 26 Testfälle.
+`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 33 Testfälle.
 
 - Echte Kameraachse gegen WASD/Joystick: Vorwärts und Rechts stimmen mit der dargestellten Ansicht überein. Der Zielkompass nutzt dieselbe Orientierung.
 - Physik: Landung, keine Luft-Mehrfachsprünge, feste höhere Kanten, Sprünge auf Kanten, Hindernisse, Deckenkollision, Sprungpuffer und dauerhafter Bodenkontakt bei 15/30/60/120 Hz.
@@ -13,6 +13,14 @@
 - Vollständige Runde mit `Game.update`: Die Teststeuerung läuft und springt durch alle acht Level, sammelt alle 40 Pflichtkristalle, löst Brücke, Lichtsteinfolge, Schlüssel und beide Himmelsschalter, beendet drei Bossphasen und betritt jedes aktive Portal. Bei 30 Hz: 1502 Simulationsschritte; bei 60 Hz: 2993. In beiden Runden war ein regulärer Checkpoint-Neustart im Endkampf nötig. Gegner und Schaden bleiben aktiv. Die Teststeuerung setzt Kiko nicht auf Zielplattformen und schaltet keine Level künstlich frei.
 - Fortschritt: Freischaltung bis Level acht, beste Ergebnisse und erneutes Laden des lokalen Spielstands.
 - Syntaxprüfung aller Quell- und Testdateien mit `node --check`.
+
+## Google-Cloud-Prüfungen
+
+Fünf neue Testfälle führen das unveränderte EasyGames-Cloud-Modul mit simuliertem Storage und simulierten Auth-/Firestore-Antworten aus: Ohne Anmeldung gibt es keine Cloud-Anfragen; ein angemeldeter Testnutzer erhält den eigenen Kiko-Stand; geänderter Fortschritt wird nur unter dem Kiko-Dokument hochgeladen; ein Netzausfall erhält den lokalen Stand; geladene Daten werden von SaveManager validiert und übernommen. Die HTML-Anbindung wird auf Spiel-ID, Speicherpräfix und Menü-Mount geprüft.
+
+Zwei weitere Fälle prüfen die Menüintegration mit modellierten DOM-Elementen: Derselbe Google-Bereich bleibt beim Menüwechsel erhalten, ist im Spiel ausgeblendet und aktualisiert Freischaltungen nach einem empfangenen Cloud-Stand ohne Rückschreiben veralteter Daten.
+
+Es wurden keine echten Google-Zugangsdaten verwendet und keine echten Firebase-Spielstände verändert. Das interaktive Google-Anmeldefenster sowie der Abgleich mit dem produktiven Firebase-Projekt wurden in dieser Umgebung nicht live geprüft.
 
 ## Grenzen dieser Prüfung
 
