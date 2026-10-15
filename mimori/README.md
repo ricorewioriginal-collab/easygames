@@ -1,4 +1,4 @@
-# Mimori – Dein 3D-Haustier mit Spielhalle
+# Mimori – Dein 3D-Haustier mit klassischer Pflege und Spielhalle
 
 Eigenständige, kostenlose Mobile-First-Haustier-App in EasyGames. Entwickelt für Android-Browser, installierte PWA, Tablet und Desktop.
 
@@ -50,3 +50,19 @@ node tools/build-sync.js --check
 ```
 
 Die automatisierten Tests decken Pflege und alte Spielstände, 3D-Modellinitialisierung im Mock, vier Arten, Farbwechsel, Sternkonto, Tagesbonus, Einkäufe, Arcade-Spielzustände, Timer, Touch-/Button-Eingaben, Ergebnis- und Einmal-Belohnungen ab. Ein echter Test auf verschiedenen Mobilgeräten bleibt erforderlich, insbesondere Farben/Belichtung, Audio, Download und Google-Login. Wenn JavaScript bei geschlossener PWA pausiert, erfolgen auch keine Benachrichtigungen.
+
+## Klassische Tamagotchi-Pflege
+
+- **Toilette:** Der Harndrang steigt mit der vergangenen Zeit. Regelmäßige Toilettengänge verschieben den nächsten Unfall. Unangekündigte Unfälle entstehen in bewusst unregelmäßigen Abständen; auch beim nächsten Öffnen nach einer Pause werden versäumte Ereignisse nachgerechnet.
+- **Aufräumen:** Hinterlassenschaften erscheinen sichtbar im Zimmer. Werden sie längere Zeit nicht entfernt, sinken Hygiene und Gesundheit; später kann das Tier krank werden. Aufräumen ist jederzeit möglich und kostet keine Ingame-Währung.
+- **Medizin:** Bei Krankheit oder schwacher Gesundheit kann das Haustier direkt behandelt werden – ohne Echtgeld oder Spielwährung. Medizin allein ersetzt das Saubermachen nicht.
+- **Licht:** Schlafen ist ein anhaltender Zustand; nur mit ausgeschaltetem Licht erholt sich Mimori zügig. Licht lässt sich separat umschalten, und der Raum verdunkelt sich sichtbar.
+- **Hilferuf:** Bedürfnisse lösen eine sichtbare, blinkende Glocke aus. Die kurzen Pieptöne können unabhängig von den Browser-Benachrichtigungen aktiv ein-/ausgeschaltet werden; mobile Browser erlauben Sound erst nach Nutzerinteraktion.
+
+Alle neuen Zustandsfelder gehören zum bestehenden Spielstand unter `easygames.mimori.v1` und werden damit auch vom vorhandenen Google-Sync erfasst. Alte Spielstände ohne diese Felder werden beim Laden ergänzt.
+
+## Cover / Drittanbieter
+
+- **`cover.svg`** ist ein eigens illustriertes, hochauflösendes 1200×630-Katalogmotiv mit allen vier Figuren.
+- **`og:image`**, Twitter-Card, Beschreibung und kanonische URL liegen auf der direkt spielbaren `mimori/index.html`. `games.js` und `sync/catalog.json` verweisen auf das Cover statt des App-Icons.
+- Der Workflow `.github/workflows/mimori-cover.yml` erstellt auf `main` zusätzlich `mimori/cover.png` für Anbieter, die SVG-Vorschauen nicht unterstützen. Nach erfolgreicher Workflow-Ausführung sollte `og:image` auf die verifizierte PNG-Adresse zeigen. Nicht automatisch auf ein möglicherweise fehlendes Bild verlinken.

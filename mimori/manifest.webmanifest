@@ -6,13 +6,22 @@
   "display": "standalone",
   "background_color": "#29233c",
   "theme_color": "#332b50",
-  "description": "Pflege dein eigenes kleines 3D-Wesen, auch offline.",
+  "description": "Interaktives 3D-Haustier: Füttern, Hygiene, Toilette, Medizin, Schlaf und Licht, vier Wesen und fünf Minigames. Offline spielbar.",
   "icons": [
     {
       "src": "./icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./cover.svg",
+      "sizes": "1200x630",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Mimori – Das 3D-Haustierspiel"
     }
   ]
 }
