@@ -19,3 +19,11 @@ Sammle pro Level fünf Kristalle. Drei versteckte Sterne sind optional. Bei Rät
 Three.js r128 liegt lokal unter `vendor/three.min.js` (MIT-Lizenz, siehe `vendor/LICENSE.three.txt`). Vite 5.4.21 ist nur für Entwicklung und Build nötig. Es gibt keine Cloud-Abhängigkeit und keinen Server für Spielstände.
 
 Die Level werden in `src/data.js` definiert. `src/scene.js` baut die 3D-Welt, `src/physics.js` bewegt Kiko, `src/input.js` liest Tastatur, Touch und Gamepad, `src/ui.js` verwaltet Menüs, `src/save.js` speichert lokal, `src/audio.js` erzeugt Töne, `src/main.js` verbindet die Systeme.
+
+## Durchgeführte Prüfungen
+
+- `npm test`: erfolgreich. Geprüft wurden acht Leveldefinitionen, 3D-Aufbau und Freigabe aller Welten, Sprung und Landung, ein simulierter Physikpfad über sämtliche Plattformen bis zum Zielbereich jedes Levels sowie Spielstandvalidierung und Fortschritt.
+- `node --check` für alle Quell- und Testdateien: erfolgreich.
+- `npm install --package-lock-only --offline`: erfolgreich; die Lockdatei ist mit der festgelegten Vite-Version konsistent.
+- `npm run build`: in dieser Ausführungsumgebung nicht möglich, weil Vite nicht installiert ist und der Netzwerkzugriff auf das npm-Archiv gesperrt ist.
+- Browserdurchlauf: nicht durchgeführt. Chromium und ein lokaler HTTP-Server werden in dieser Ausführungsumgebung durch Socket-Beschränkungen blockiert. Daher sind grafische Darstellung, Touchbedienung und der vollständige manuelle Spieldurchlauf noch nicht im Browser bestätigt.
