@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1c3b1718ead6",
- "generated": "2026-10-15T19:44:23+02:00",
- "commit": "43475ca36238528dcecda1df43b13dd5c1ecc44a",
+ "version": "8a884f0f30a8",
+ "generated": "2026-10-15T19:44:53+02:00",
+ "commit": "b8d327f9e779fcc9c4fb5c524a134dd581725976",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4798,8 +4798,8 @@
   },
   {
    "p": "kiko-sterneninseln/src/main.js",
-   "s": 7270,
-   "h": "5f8f39eea5b7cfd6a62b4777c67ca5fadd3e3a24a132e6ad038173bb04310f7d"
+   "s": 7685,
+   "h": "974f49e428f75b1ddb2e213377ccb21427c713cc1a59c4bc58ce61895c816476"
   },
   {
    "p": "kiko-sterneninseln/src/physics.js",
@@ -4823,8 +4823,8 @@
   },
   {
    "p": "kiko-sterneninseln/style.css",
-   "s": 3541,
-   "h": "44f0a45ddec9701068f3aa3a52315c0cb969ee23a8ecd80ad6943920dafd14a0"
+   "s": 3696,
+   "h": "55c482200b07091ec5cb73e49a5d2268e96c7f101dfe3b735097f4ab538aab02"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5479,7 +5479,7 @@
   {
    "p": "sync/catalog.json",
    "s": 74358,
-   "h": "249fe1699d6abb06ed094dba4a8c7494d30dd923312f3b2272d824ab102dd460"
+   "h": "30e163b4059b69df656c6e841084f7e0f9c92151284ac8d913017fc95cf39b43"
   },
   {
    "p": "taschi/card.svg",
