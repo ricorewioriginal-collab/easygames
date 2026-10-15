@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1530">
+<title>Kraterkommando 3D · easygames</title>
+<link rel="icon" type="image/svg+xml" href="card.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loading" class="screen active" role="status"><div class="load-symbol">✦</div><h1>KRATER<span>KOMMANDO</span></h1><p>Die Insel wird gebaut …</p><div class="load-track"><i id="progress"></i></div><small id="loadStatus">Initialisiere 3D-Welt</small></div>
+<div id="menu" class="screen">
+  <div class="menu-backdrop"></div><main class="menu-card">
+    <span class="eyebrow">EASYGAMES ORIGINAL · 3D ARTILLERIE</span>
+    <h1>KRATER<br><span>KOMMANDO</span></h1>
+    <p class="lead">Zwei Trupps. Eine Insel. Jeder Schuss verändert das Schlachtfeld.</p>
+    <div class="menu-actions">
+      <button id="newGame" class="primary">Neues Gefecht <b>→</b></button>
+      <button id="continueGame" hidden>Gefecht fortsetzen</button>
+      <div class="options"><label>Gegner <select id="opponent"><option value="cpu">Computer</option><option value="local">Zwei Spieler am Gerät</option></select></label><label>Schwierigkeit <select id="difficulty"><option value="easy">Locker</option><option value="normal" selected>Normal</option><option value="hard">Knifflig</option></select></label></div>
+    </div>
+    <p class="controls">WASD / Pfeile bewegen · Q/E Kamera · Maus ziehen Kamera · Winkel und Richtung im HUD · Leertaste feuern</p>
+    <div id="cloudMount"></div>
+    <a class="back" href="../">← Zur Spielesammlung</a>
+  </main>
+</div>
+<div id="game" class="screen">
+  <div id="viewport"></div>
+  <header class="topbar"><div class="brand">✦ KRATER<span>KOMMANDO</span></div><div id="turnInfo">Runde 1</div><button id="pauseBtn" aria-label="Pause">Ⅱ</button></header>
+  <div id="teamHud" class="team-hud"></div>
+  <div id="message" class="message" aria-live="polite"></div>
+  <div class="aim-marker" aria-hidden="true">＋</div>
+  <div class="hud">
+    <div class="hud-row"><div class="active-unit"><span id="unitName">—</span><small id="unitHp">100 LP</small></div><div class="wind">WIND <span id="wind">→ 0</span></div><div class="timer" id="timer">45</div></div>
+    <div class="hud-row controls-row">
+      <label>WAFFE<select id="weapon"><option value="rocket">🚀 Rakete</option><option value="grenade">💣 Granate</option><option value="cluster">✨ Streubombe</option><option value="airstrike">✈️ Luftschlag</option><option value="teleport">🌀 Teleport</option></select></label>
+      <label>RICHTUNG <span id="yawVal">0°</span><input id="yaw" type="range" min="-180" max="180" value="0"></label>
+      <label>WINKEL <span id="angleVal">45°</span><input id="angle" type="range" min="10" max="80" value="45"></label>
+      <label>KRAFT <span id="powerVal">70%</span><input id="power" type="range" min="25" max="100" value="70"></label>
+    </div>
+    <div class="hud-row action-row"><div class="dpad"><button data-move="forward" aria-label="Vorwärts">▲</button><div><button data-move="left" aria-label="Links">◀</button><button data-move="backward" aria-label="Zurück">▼</button><button data-move="right" aria-label="Rechts">▶</button></div></div><button id="jumpBtn">↥ Sprung</button><button id="skipBtn">Zug beenden</button><button id="fireBtn" class="primary">FEUER <span>➤</span></button></div>
+  </div>
+</div>
+<div id="pause" class="overlay" hidden><div class="dialog"><span class="eyebrow">PAUSE</span><h2>Kurze Atempause?</h2><button id="resumeBtn" class="primary">Weiter spielen</button><button id="saveQuitBtn">Speichern & Hauptmenü</button><button id="restartBtn">Neues Gefecht</button></div></div>
+<div id="result" class="overlay" hidden><div class="dialog"><span class="eyebrow">GEFECHT BEENDET</span><h2 id="resultTitle">Sieg!</h2><p id="resultText"></p><button id="againBtn" class="primary">Noch ein Gefecht</button><button id="resultMenuBtn">Hauptmenü</button></div></div>
+<script src="../cloud/anmacha-cloud.js" data-game="kraterkommando" data-prefix="easygames.kraterkommando." data-mount="#cloudMount" data-hint="Mit Google anmelden und Spielstände geräteübergreifend sichern" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>if(!window.THREE){document.write('<script src="../bunte-insel/vendor/three.min.js"><\/script>')}</script>
+<script src="game.js" defer></script>
+</body>
+</html>
