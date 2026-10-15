@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8a884f0f30a8",
- "generated": "2026-10-15T19:44:53+02:00",
- "commit": "b8d327f9e779fcc9c4fb5c524a134dd581725976",
+ "version": "e99d93b0a6c2",
+ "generated": "2026-10-15T19:46:13+02:00",
+ "commit": "d8100013473b623163ba78e04532587c659b060c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4792,6 +4792,11 @@
    "h": "74e9583c98b50e646ce5cdc97cca86e83fc6409e479be4ef9e478dc3c714a55f"
   },
   {
+   "p": "kiko-sterneninseln/src/i18n.js",
+   "s": 5858,
+   "h": "e1a1c35c8d5f87faf81cbb707b2c4b1e5c24aeabb12fb7639318faf2a58b9ddb"
+  },
+  {
    "p": "kiko-sterneninseln/src/input.js",
    "s": 2841,
    "h": "55c929a4d9e4df65e98d75512cedc48ed642201307dd17613c4ed77e95bd51f9"
@@ -4808,8 +4813,8 @@
   },
   {
    "p": "kiko-sterneninseln/src/save.js",
-   "s": 1230,
-   "h": "aea0aad1a63540dfb2adbfc28fff2bf533f9f718350af3b2b5babbb27b25341d"
+   "s": 1531,
+   "h": "ed037795f532815b7515490d09d72a38091656c9b67ada5dd6dafb70970dd1ef"
   },
   {
    "p": "kiko-sterneninseln/src/scene.js",
@@ -4818,8 +4823,8 @@
   },
   {
    "p": "kiko-sterneninseln/src/ui.js",
-   "s": 7440,
-   "h": "b6174363b6fac5b67b5b5a7a027a1b9394f162c56a4b2cc9cdb2199ac3b392ee"
+   "s": 7873,
+   "h": "2e805cab9663b3e804914c84d6e3f8e500739fb42c8d64b9720de11211983140"
   },
   {
    "p": "kiko-sterneninseln/style.css",
@@ -5479,7 +5484,7 @@
   {
    "p": "sync/catalog.json",
    "s": 74358,
-   "h": "30e163b4059b69df656c6e841084f7e0f9c92151284ac8d913017fc95cf39b43"
+   "h": "5815e2193652ba06e3d16bff9120ea7ecfa9bf569ff426f4ae6dd6f94fc84bfa"
   },
   {
    "p": "taschi/card.svg",
