@@ -1,0 +1,78 @@
+/* Mimori Arcade: illustrated, tactile mobile games – no external image assets. */
+body.arcadeOpen{overflow:hidden;touch-action:none}
+.arcadeShell[hidden],.arcadeShell [hidden]{display:none!important}
+.arcadeShell{position:fixed;inset:0;z-index:90;display:grid;place-items:center;
+ background:rgba(16,13,38,.88);backdrop-filter:blur(12px);padding:0;color:#fff5eb}
+.arcadePanel{display:flex;flex-direction:column;width:min(100%,520px);
+ height:min(100dvh,900px);background:linear-gradient(152deg,#332e62 0%,#252447 62%,#30254d 100%);
+ border:1px solid #a38fd4;box-shadow:0 0 60px #0a082b;overflow:hidden}
+.arcadeTop{padding:18px 19px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+ background:linear-gradient(120deg,#655091,#3a3469);flex:none}
+.arcadeTop small{font-weight:900;letter-spacing:.15em;color:#f4d9ad;font-size:10px}
+.arcadeTop h2{font-size:26px;letter-spacing:-.05em;margin:3px 0 0;color:#fff6ec}
+.arcadeClose{width:43px;height:43px;border:1px solid #ecdae8;border-radius:14px;color:#fff;
+ background:#443968;box-shadow:0 4px #24203e;font-size:23px;flex:none}
+.arcadeLobby{padding:13px 15px 24px;overflow-y:auto;overscroll-behavior:contain}
+.arcadeIntro{font-size:14px;line-height:1.45;background:#56457688;border:1px solid #9882ba;border-radius:13px;
+ padding:13px 15px;margin-bottom:12px;color:#f5e4e7}
+.arcadeCards{display:grid;gap:10px}
+.arcadeCard{display:flex;align-items:center;text-align:left;gap:12px;min-height:104px;width:100%;border:2px solid #baa4d6;
+ border-radius:19px;padding:10px;background:linear-gradient(125deg,#75578e,#453c74);color:white;
+ box-shadow:0 5px #1d1a3b}
+.arcadeCard.theme-berry{background:linear-gradient(120deg,#b25374,#593b6c)}
+.arcadeCard.theme-memory{background:linear-gradient(120deg,#8a69b9,#4b427c)}
+.arcadeCard.theme-rhythm{background:linear-gradient(120deg,#435cb0,#8a4a91)}
+.arcadeCard.theme-runner{background:linear-gradient(120deg,#4c9797,#366482)}
+.arcadeCard.theme-bubbles{background:linear-gradient(120deg,#348cab,#5854a2)}
+.arcadeCard:active{transform:translateY(3px);box-shadow:0 2px #1d1a3b}
+.arcadeIllustration{display:grid;place-items:center;width:80px;height:77px;flex:none;border-radius:17px;
+ font-size:44px;background:#ffffff2c;border:1px solid #ffffff6b;box-shadow:inset 0 0 16px #ffffff2b}
+.arcadeCardText{min-width:0;display:flex;flex-direction:column;gap:4px;flex:1}
+.arcadeCardText strong{font-size:19px;line-height:1.1;letter-spacing:-.04em}
+.arcadeCardText small{font-size:12px;line-height:1.25;color:#f3e2ee}
+.arcadeCardText em{font-style:normal;color:#ffe9ad;font-size:11px;font-weight:800}
+.arcadeArrow{font-size:35px;font-weight:900;color:#f6dfa8}
+#arcadePlay{min-height:0;display:flex;flex-direction:column;flex:1;padding:12px 13px 15px;gap:8px;overflow:auto}
+.arcadeHud{display:flex;justify-content:space-between;gap:7px}
+.arcadeHud strong{background:#514876;border:1px solid #b8a3d0;padding:8px 10px;border-radius:12px;
+ text-align:center;font-size:14px;min-width:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.arcadeBar{height:6px;background:#1b1a3b;border-radius:5px;overflow:hidden}
+.arcadeBar span{height:100%;display:block;width:0;background:linear-gradient(90deg,#8fdcc5,#ffe5a2)}
+.arcadeHint{font-size:12px;line-height:1.3;margin:0;text-align:center;color:#ebd7e8;min-height:28px}
+.arcadeScreen{position:relative;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;
+ border:2px solid #988bc9;border-radius:18px;overflow:hidden;background:#1d2548}
+#arcadeCanvas{height:auto;max-height:100%;width:auto;max-width:100%;aspect-ratio:6/7;object-fit:fill;
+ display:block;touch-action:none}
+.arcadeControls{display:flex;gap:9px;flex:none}
+.arcadeControls button,.arcadeAgain,.arcadeBackBtn{border:1px solid #eadbc7;border-radius:13px;
+ background:#69538a;color:#fff8eb;font-weight:850;padding:10px 14px;min-height:47px;flex:1}
+#arcadeAction{background:#e1b171;color:#342747;border-color:#ffe8be}
+#arcadeLaneButtons{position:absolute;bottom:10px;left:3px;right:3px;display:flex;gap:5px;height:65px;align-items:stretch}
+.arcadeLane{flex:1;border:2px solid #ffffff99;border-radius:14px;font-weight:950;
+ color:#272343;font-size:19px;touch-action:manipulation;box-shadow:0 4px #18172b}
+.lane-0{background:#f3a4bd}.lane-1{background:#a1e5d9}.lane-2{background:#f5dba4}.lane-3{background:#b4aaf6}
+.arcadeMemoryGrid{width:100%;height:100%;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);
+ grid-template-rows:repeat(4,minmax(0,1fr));gap:9px;background:radial-gradient(circle at top,#725496,#29284d)}
+.memoryCard{font-size:38px;color:#fff6d7;border:2px solid #e4c4ed;border-radius:13px;
+ background:linear-gradient(145deg,#9f75b1,#625187);box-shadow:inset 0 0 10px #f7e0ef33,0 3px #271c47;
+ transition:background .13s,transform .14s}
+.memoryCard.flipped{background:linear-gradient(145deg,#fff1d5,#c6b2da);color:#523c76;transform:scale(.98)}
+.memoryCard.matched{background:linear-gradient(145deg,#b8efc8,#79b8b8);border-color:#f7ecc4}
+#arcadeResult{position:absolute;inset:0;z-index:5;background:#171632d8;backdrop-filter:blur(6px);
+ display:grid;place-items:center;padding:18px;overflow-y:auto}
+.arcadeResultCard{text-align:center;background:linear-gradient(145deg,#69518c,#413869);border:2px solid #ffe0ae;
+ border-radius:23px;box-shadow:0 14px 40px #10102c88;padding:24px 18px;width:100%}
+.arcadeWinIcon{font-size:64px;filter:drop-shadow(0 6px 5px #292345)}
+.arcadeResultCard h3{font-size:26px;margin:12px 0 8px}
+.arcadeResultCard p{font-size:14px;color:#f1e5f4;line-height:1.4}
+.arcadeFinalScore{font-size:24px!important;font-weight:950;color:#ffe4a6!important}
+.arcadeResultCard button{display:block;width:100%;margin-top:10px}
+.arcadeAgain{background:#ddbb80;color:#3e3151}
+@media(min-width:650px){.arcadePanel{height:min(95dvh,900px);border-radius:26px}}
+@media(max-height:680px){.arcadeTop{padding:8px 13px}.arcadeTop h2{font-size:19px}
+ .arcadeHud strong{padding:5px 7px}.arcadeHint{min-height:14px}
+ #arcadePlay{gap:5px;padding:6px 10px 8px}
+ .arcadeControls button{min-height:39px;padding:7px 8px}
+ #arcadeLaneButtons{height:47px}
+}
+@media(prefers-reduced-motion:reduce){.memoryCard{transition:none}}
