@@ -13,6 +13,14 @@ assert.equal(M.act({...pet,energy:0},'play',epoch+6*3600000).ok,false);
 for(let i=0;i<65;i++)pet=M.act(pet,'cuddle',epoch+6*3600000+i*1000).pet;
 assert(M.evolve(pet)>=1);
 assert.equal(M.rename(pet,'<Mimi>').name,'Mimi');
+assert.deepEqual(M.species,['Fluffi','Nubbi','Foxi','Drachi']);
+assert.equal(M.fresh(epoch).species,0);
+for(let i=0;i<4;i++){
+ const animal=M.changeSpecies(pet,i);assert.equal(animal.species,i);
+ assert.equal(M.load(JSON.parse(JSON.stringify(animal)),epoch+6*3600000).species,i);
+ for(let color=0;color<4;color++)assert.equal(M.load({...animal,color},epoch+6*3600000).color,color);
+}
+assert.equal(M.load({version:1,name:'Alt',born:epoch,updated:epoch,color:2,hunger:70,joy:70,energy:70,clean:70,health:70,inventory:{berry:2,soap:1}},epoch+10).species,0);
 
 const html=fs.readFileSync(path.join(__dirname,'../mimori/index.html'),'utf8');
 assert(html.includes('data-game="mimori"'));
@@ -20,15 +28,21 @@ assert(html.includes('data-prefix="easygames.mimori.v1"'));
 assert(html.includes('data-mount="#cloudMount"'));
 assert(html.includes('src="./sound.js"'));
 assert(html.includes('id="fxLayer"'));
+for(const id of ['settingsDrawer','settingsShortcut','settingsClose','settingsBackdrop','turnLeft','turnRight','resetView','speciesName']){
+ assert(html.includes('id="'+id+'"'),'missing '+id);
+}
+for(let i=0;i<4;i++)assert(html.includes('data-species="'+i+'"'));
+assert(html.includes('grid-template-areas:"scene" "care" "stats"'),'mobile pet-first layout missing');
 assert(!html.includes('Push-Server')&&!html.includes('Web-Push'));
 const sw=fs.readFileSync(path.join(__dirname,'../mimori/sw.js'),'utf8');
 assert(sw.includes("'./sound.js'")&&sw.includes("'../cloud/anmacha-cloud.js'"));
 assert(!sw.includes("addEventListener('push'"));
 
 const ui={},ls=new Map(),events={window:{}},notifications=[],noop=()=>{};
+let renderFrame=null;const speciesButtons=[];
 function element(){
  return {textContent:'',hidden:false,clientWidth:570,clientHeight:500,dataset:{},children:[],
-  style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},
+  style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},focus:noop,setPointerCapture:noop,
   addEventListener(type,fn){(this.handlers[type]??=[]).push(fn)},
   appendChild(child){this.children.push(child)},replaceChildren(){this.children=[]},
   setAttribute:noop,getContext:()=>({})};
@@ -51,11 +65,14 @@ const C={playCalls:[],enabled:true,play(k){this.playCalls.push(k)},isEnabled(){r
 const mockNotification={permission:'default',requestPermission:async()=>{mockNotification.permission='granted';return 'granted'}};
 const serviceWorker={getRegistration:async()=>({showNotification:async(t,d)=>notifications.push({title:t,...d})})};
 const win={MimoriModel:M,MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
-const document={getElementById:id=>ui[id]??=element(),querySelectorAll:()=>[],addEventListener:noop,createElement:element,hidden:false};
+for(let i=0;i<4;i++){const b=element();b.dataset.species=String(i);speciesButtons.push(b)}
+const document={getElementById:id=>ui[id]??=element(),
+ querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:[],
+ addEventListener:noop,createElement:element,hidden:false,body:{classList:{add:noop,remove:noop}}};
 const localStorage={getItem:k=>ls.get(k)||null,setItem:(k,v)=>ls.set(k,v)};
 const context={window:win,document,localStorage,navigator:{serviceWorker},Notification:mockNotification,
  location:{href:'https://example.org/easygames/mimori/'},URL,performance:{now:()=>100},Date,Math,console,
- requestAnimationFrame:noop,setInterval:noop,clearTimeout:noop,setTimeout:noop};
+ requestAnimationFrame:cb=>{if(!renderFrame)renderFrame=cb},setInterval:noop,clearTimeout:noop,setTimeout:noop};
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../mimori/game.js'),'utf8'),context);
 assert(win.MimoriDebug,'3D scene failed to start');
@@ -66,6 +83,31 @@ assert(C.playCalls.includes('feed'));
 assert(ui.fxLayer.children.length>0,'missing animated care effects');
 assert.equal(ui.petname.textContent,'Mimori');
 assert(!ui.webglError||ui.webglError.hidden!==false,'failed WebGL mock init');
+// Four models must truly change shape and not just color.
+const meshCounts=[];
+for(let i=0;i<4;i++){
+ win.MimoriDebug.switchSpecies(i);
+ assert.equal(win.MimoriDebug.get().species,i);
+ meshCounts.push(win.MimoriDebug.model().children.length);
+}
+assert.equal(new Set(meshCounts).size,4,'all creatures share the same geometry');
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).species,3,'species not persisted to Google-synced save');
+// Each of four species retains the selected color on model reconstruction.
+ui.changeColor.handlers.click[0]();
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,1);
+// Touch/swipe rotation and the visible turn controls must change actual 3D model orientation.
+const canvas=ui.viewport.children[0],oldOrbit=win.MimoriDebug.orbit();
+const fire=(type,e)=>canvas.handlers[type][0]({pointerId:77,clientX:130,preventDefault:noop,...e});
+fire('pointerdown',{});fire('pointermove',{clientX:330});fire('pointerup',{clientX:330});
+assert(win.MimoriDebug.orbit()>oldOrbit+1.0,'touch drag did not rotate');
+assert.equal(typeof renderFrame,'function');
+renderFrame(240);assert(win.MimoriDebug.model().rotation.y>0,'render did not rotate creature');
+const last=win.MimoriDebug.orbit();ui.turnLeft.handlers.click[0]();
+assert(win.MimoriDebug.orbit()<last,'turn-left button did nothing');
+ui.resetView.handlers.click[0]();assert.equal(win.MimoriDebug.orbit(),0);
+ui.settingsShortcut.handlers.click[0]();assert.equal(ui.settingsDrawer.hidden,false);
+speciesButtons[2].handlers.click[0]();assert.equal(win.MimoriDebug.get().species,2);
+assert.equal(ui.settingsDrawer.hidden,true);
 async function testNotifications(){
  const toggle=ui.pushToggle.handlers.click[0];
  await toggle();assert.equal(win.MimoriDebug.reminders().enabled,true);
@@ -74,5 +116,5 @@ async function testNotifications(){
  await toggle();assert.equal(win.MimoriDebug.reminders().enabled,false);
  assert.equal(ui.pushTest.disabled,true);
 }
-testNotifications().then(()=>console.log('PASS Mimori: sounds, FX, 3D, local reminders, care progression, Google markup and offline SW'))
+testNotifications().then(()=>console.log('PASS Mimori: 4 real 3D species and colors, touch/arrow rotation, app layout, sounds, FX, cloud markup, opt-in reminders'))
 .catch(e=>{console.error(e);process.exitCode=1});
