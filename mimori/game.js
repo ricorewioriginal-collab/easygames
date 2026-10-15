@@ -489,17 +489,18 @@ function make3D(){
    for(let i=0;i<4;i++)oval(shine,Math.cos(i*Math.PI/2)*.57,2.83+Math.sin(i*Math.PI/2)*.5,.02,.11,.11,.1);
   }
   // Distinct opt-in appearance sets for every species, independent of sex/relationship rules.
+  const eyeHeight=[1.63,1.39,1.76,1.60][id],eyeDepth=[.69,.86,.53,.74][id];
   if(pet.appearance===0){ // masculine silhouette: short angular fringe and raised brows
-   oval(dark,-.29,2.03,.49,.24,.075,.065);oval(dark,.29,2.03,.49,.24,.075,.065);
+   oval(dark,-.29,eyeHeight+.37,eyeDepth+.13,.24,.075,.065);oval(dark,.29,eyeHeight+.37,eyeDepth+.13,.24,.075,.065);
    cone(dark,-.28,2.60,.03,.18,.31);
   }else if(pet.appearance===1){ // feminine silhouette: side flower and soft eye accents
-   for(const sign of [-1,1]){oval(eyes,sign*.49,1.99,.77,.10,.065,.04)}
+   for(const sign of [-1,1]){oval(eyes,sign*.45,eyeHeight+.19,eyeDepth+.20,.11,.065,.05)}
    for(let i=0;i<5;i++){const a=i*Math.PI*2/5;
     oval(blush,.77+Math.cos(a)*.18,2.26+Math.sin(a)*.17,.33,.15,.17,.10)}
    oval(shine,.77,2.26,.47,.13,.13,.10);
   }else{ // androgynous silhouette: sweeping asymmetric crest and star details
    const tuft=oval(dark,-.22,2.43,.08,.39,.23,.27);tuft.rotation.z=.40;
-   oval(shine,.79,1.78,.54,.10,.12,.07);
+   oval(shine,.79,eyeHeight+.19,eyeDepth+.14,.10,.12,.07);
   }
   // Shared stage growth still changes the silhouette of every species.
   petGroup.scale.setScalar(.86+M.evolve(pet)*.055);

@@ -34,16 +34,24 @@ function restore(source,current,model,now=Date.now()){
   date:Number(w.date)||now
  })).filter(w=>w.ids.length>=2);
  const room=unlocked.includes(raw?.room)?raw.room:0;
- return {members,active,room,rooms:unlocked,decor:upgrades,bonds,weddings,nextId:Math.max(Number(raw?.nextId)||members.length+1,members.length+1)};
+ const personalRooms={};for(const [id,selected] of Object.entries(raw?.personalRooms||{})){
+ if(members.some(m=>m.memberId===id)&&unlocked.includes(selected))personalRooms[id]=selected;
+}
+return {members,active,room,rooms:unlocked,personalRooms,decor:upgrades,bonds,weddings,nextId:Math.max(Number(raw?.nextId)||members.length+1,members.length+1)};
 }
 function select(house,index,current,model,now=Date.now()){
  if(!Number.isInteger(index)||index<0||index>=house.members.length)return null;
  house.members[house.active]=rawPet({...current,memberId:house.members[house.active].memberId});
+ house.personalRooms=house.personalRooms||{};
+ house.personalRooms[house.members[house.active].memberId]=house.room;
  house.active=index;
+ house.room=house.rooms.includes(house.personalRooms[house.members[index].memberId])?house.personalRooms[house.members[index].memberId]:house.room;
  return model.load(house.members[index],now);
 }
 function persist(house,activePet){
  house.members[house.active]=rawPet({...activePet,memberId:house.members[house.active].memberId});
+ house.personalRooms=house.personalRooms||{};
+ house.personalRooms[house.members[house.active].memberId]=house.room;
  return {...rawPet(activePet),household:house};
 }
 function create(house,model,name,species,look,now=Date.now()){
