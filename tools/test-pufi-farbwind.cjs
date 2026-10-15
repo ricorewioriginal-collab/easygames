@@ -8,7 +8,7 @@ function boot(saved){
   return {id,hidden:false,textContent:'',style:{},dataset:{},handlers:{},
    classList:{add:noop,remove:noop,toggle:noop},
    addEventListener(type,fn){(this.handlers[type]??=[]).push(fn)},
-   replaceChildren:noop,setPointerCapture:noop,setAttribute:noop,getContext:()=>ctx2d};
+   replaceChildren:noop,appendChild:noop,setPointerCapture:noop,setAttribute:noop,getContext:()=>ctx2d};
  }
  for(const key of ['left','right','down','grab','mount','jump','throw']){
   const b=element('control-'+key);b.dataset.action=key;buttons.push(b);
