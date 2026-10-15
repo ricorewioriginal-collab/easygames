@@ -1,0 +1,14 @@
+{
+  "name": "Kraterkommando 3D",
+  "short_name": "Kraterkommando",
+  "description": "Rundenbasierte 3D-Artillerie für Handy, Tablet und PC.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#172a3d",
+  "theme_color": "#172a3d",
+  "icons": [
+    { "src": "card.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
