@@ -6,7 +6,7 @@ import {levels,worlds} from '../src/data.js';
 
 const context={};vm.runInNewContext(readFileSync(new URL('../vendor/three.min.js',import.meta.url),'utf8'),context);
 globalThis.window={THREE:context.THREE,__worlds:worlds};
-const {Kiko,LevelView}=await import('../src/scene.js');
+const {Kiko,LevelView,Renderer}=await import('../src/scene.js');
 const {Player}=await import('../src/physics.js');
 
 test('all eight 3D worlds build with active objects and dispose cleanly',()=>{
@@ -32,4 +32,14 @@ test('sun meadow decoration and switch bridge have real 3D meshes and collision'
  assert.equal(bridge.bridge.visible,true);
  assert.equal(bridge.bridgeFloor.active,true);
  bridge.dispose();
+});
+test('camera reset and view direction agree with camera relative movement',()=>{
+ const camera=new context.THREE.PerspectiveCamera(60,1,0.1,100);
+ for(const yaw of [0,Math.PI/2,Math.PI]){
+  Renderer.prototype.snapFollow.call({camera},new context.THREE.Vector3(0,0,0),yaw);
+  const forward=new context.THREE.Vector3();camera.getWorldDirection(forward);
+  const flat=new context.THREE.Vector2(forward.x,forward.z).normalize();
+  assert.ok(Math.abs(flat.x-Math.sin(yaw))<.001);
+  assert.ok(Math.abs(flat.y-Math.cos(yaw))<.001);
+ }
 });
