@@ -8,7 +8,7 @@
   {
    "id": "zeitsprung-movie",
    "title": "ZEITSPRUNG MOVIE",
-   "desc": "Moderierte 3D-Filmshow mit 318 Fragen in 19 Kategorien: Disney, Marvel, Pixar, Kinderfilme, Kinderserien, Serien, Streaming und Kino. 12 Trailer direkt im Spiel, A–D-Jahreswahl oder Zeitleiste, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
+   "desc": "Moderierte 3D-Filmshow mit 398 Fragen: 318 Film- und Serienquizfragen, 38 Hörfragen mit Deezer/Spotify-Musik und 42 Bildrätsel. Dazu 12 Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
    "icon": "🎬",
    "img": "zeitsprung-movie/card.png",
    "bg": "linear-gradient(145deg,#241248,#74418e 55%,#ffd37c)",
@@ -17,8 +17,8 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 308156,
-   "files": 13,
+   "size": 323964,
+   "files": 16,
    "offline": true
   },
   {
