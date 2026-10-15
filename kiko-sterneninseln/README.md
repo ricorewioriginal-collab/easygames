@@ -1,6 +1,6 @@
 # KIKO – Das Geheimnis der Sterneninseln
 
-Ein eigenständiges Three.js-Abenteuer mit acht Leveln in vier Welten. Sämtliche Modelle, Effekte und Klänge entstehen im Browser. Das Spiel speichert Fortschritt und Einstellungen lokal und auf Wunsch über den bestehenden Google-Cloud-Speicher von EasyGames.
+Ein eigenständiges Three.js-Abenteuer mit 20 unterschiedlichen Leveln in vier Welten. Sämtliche Modelle, Effekte und Klänge entstehen im Browser. Das Spiel speichert Fortschritt und Einstellungen lokal und auf Wunsch über den bestehenden Google-Cloud-Speicher von EasyGames.
 
 ## Starten
 
@@ -43,7 +43,7 @@ Bonussterne heilen jeweils ein Herz, Checkpoints füllen beim ersten Erreichen a
 
 Die Landschaft besitzt abgerundete Inselkanten, geschwungene Bodenwege, Felsunterbauten, schwebende Hintergrundinseln, Wolken und Lichtpartikel mit unterschiedlichen Weltfarben. Die ersten passenden Übergänge erhalten begehbare, sanft gekrümmte Aufgänge. Deren sichtbare Geometrie und Kollisionshöhe werden aus denselben Terrainfunktionen erzeugt. Wald und Frostwelt haben zusätzliche Seiteninseln für Bonussterne. Blinkende Zeitplattformen warnen vor dem Verschwinden. Niedrige Grafikqualität und die automatische Leistungsreduktion schalten Schatten ab.
 
-Die **Abenteuer-Anleitung** bietet vier Kapitel: Mission, Geräte-Steuerung mit der aktuellen Tastenbelegung, Überlebensregeln und ein Tagebuch zu allen acht Inselrätseln. Beim ersten Einstieg gibt es eine dreiseitige Einführung und Spieltipps, die auf Bewegung, Sammeln und Springen reagieren. Die Einführung kann direkt übersprungen werden.
+Die **Abenteuer-Anleitung** bietet vier Kapitel: Mission, Geräte-Steuerung mit der aktuellen Tastenbelegung, Überlebensregeln und ein Tagebuch zu allen 20 Inselrätseln. Beim ersten Einstieg gibt es eine dreiseitige Einführung und Spieltipps, die auf Bewegung, Sammeln und Springen reagieren. Die Einführung kann direkt übersprungen werden.
 
 ## Google-Spielstand – Fassung 8
 
@@ -55,6 +55,26 @@ Gesichert werden die freigeschalteten Level, Bonussterne, Bestwerte, Einstellung
 
 Die lokale Kopie ermöglicht dieselbe Anmeldung sowohl aus dem EasyGames-Ordner als auch beim eigenständigen Start mit Vite oder aus `dist/`. Der vorhandene Vite-Kopierschritt übernimmt `vendor/` vollständig. Für die Anmeldung ist Netzwerkzugriff auf Google/Firebase erforderlich. Ein Zurücksetzen des Spielstands fragt ausdrücklich nach und weist auf die Synchronisierung des zurückgesetzten Stands hin.
 
+## 20 Level – Fassung 10
+
+Die Kampagne besitzt vier Welten mit je fünf Leveln und insgesamt 100 Pflichtkristallen und 60 optionalen Bonussternen. Alle 20 Level besitzen eigene Namen, explizit definierte Inselanordnungen und eigene Aufgaben. Die zusätzlichen Level haben sieben oder acht Hauptinseln, unterschiedlich verlaufende Höhenprofile und kombinieren die Mechaniken in verschiedenen Reihenfolgen. [LEVELS.md](LEVELS.md) führt alle Abschnitte mit ihren Aufgaben auf.
+
+Neue Funktionen:
+
+- **Sternenplatten:** rund 0,65 Sekunden ununterbrochen darauf stehen, bis die Platte dauerhaft aufleuchtet.
+- **Leuchtfeuer:** mit dem Sternenpuls entzünden. Bereits aktive Feuer zählen nicht erneut.
+- **Uhrtore:** ein Schalter öffnet das Tor für 18 oder 26 Sekunden. Ein sichtbarer Countdown zeigt die Restzeit. Nach Ablauf kann der Schalter erneut gestartet werden.
+- **Bröckelnde Inseln:** verschwinden 1,5 Sekunden nach dem Betreten und erscheinen nach 3 Sekunden wieder. Die Oberfläche warnt durch oranges Blinken.
+- **Federpilze:** geben automatisch einen hohen Sprung; eine kurze Sperre verhindert mehrfaches Auslösen im selben Sprung.
+- **Windzonen:** sichtbare Windfahnen und lokale Böen, gegen die gegengesteuert werden kann.
+- **Energiebahnen:** bewegliche magentafarbene Strahlen, die übersprungen werden können.
+
+Der Kompass führt auf längeren, verschlungenen Wegen über die jeweils nächste Insel. Schlüssel, Schalter, Platten und Leuchtfeuer werden vor späteren Kristallen eingeplant. Das Finale folgt erst nach Level 20. Die vier Figuren und die Google-Cloud-Anmeldung bleiben verfügbar.
+
+### Vorhandene Spielstände
+
+Das Datenformat wird auf Version 2 erweitert, der lokale Schlüssel `kiko-sterneninseln-v1` und das Cloud-Dokument bleiben stabil. Alte Acht-Level-Spielstände werden anhand der ursprünglichen Levelidentitäten auf die neuen Plätze **1, 2, 6, 7, 11, 12, 16 und 20** übertragen. Sterne, Bestwerte, Medaillen, Zeiten, Figurenwahl, Einstellungen und Tasten bleiben erhalten. Bereits verfügbare alte Abschnitte bleiben erreichbar. „Spielen“ setzt bei der ersten noch nicht abgeschlossenen verfügbaren Insel an, sodass die neu eingefügten Level angeboten werden.
+
 ## Durchgeführte Prüfungen
 
-Siehe [TEST_RESULTS.md](TEST_RESULTS.md) für die ausgeführten Prüfungen und ihre Grenzen. Die vollständige Spiellogik wurde bei 30 und 60 simulierten Bildern pro Sekunde bis zum achten Portal geprüft. Eine grafische Browserprüfung und ein Produktionsbuild konnten in dieser Ausführungsumgebung wegen ihrer Prozess- und Netzwerkbeschränkungen nicht abgeschlossen werden.
+Siehe [TEST_RESULTS.md](TEST_RESULTS.md) für die ausgeführten Prüfungen und ihre Grenzen. Die vollständige Spiellogik wurde bei 30 und 60 simulierten Bildern pro Sekunde bis zum zwanzigsten Portal geprüft. Eine grafische Browserprüfung und ein Produktionsbuild konnten in dieser Ausführungsumgebung wegen ihrer Prozess- und Netzwerkbeschränkungen nicht abgeschlossen werden.

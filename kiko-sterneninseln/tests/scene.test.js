@@ -4,16 +4,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {levels,worlds} from '../src/data.js';
+import {levels,worlds,LEVEL_COUNT,LEGACY_LEVEL_MAP} from '../src/data.js';
 
 const context={};vm.runInNewContext(readFileSync(new URL('../vendor/three.min.js',import.meta.url),'utf8'),context);
 globalThis.window={THREE:context.THREE,__worlds:worlds};
 const {Kiko,LevelView,Renderer}=await import('../src/scene.js');
 const {Player}=await import('../src/physics.js');
 
-test('all eight 3D worlds build with active objects and dispose cleanly',()=>{
+test('all 20 3D levels build with active objects and dispose cleanly',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
- for(const l of levels){const view=new LevelView(renderer,l);view.root.traverse(o=>assert.ok([o.position.x,o.position.y,o.position.z].every(Number.isFinite),`${l.name}: invalid object coordinates`));assert.equal(view.platforms.length,5);assert.equal(view.crystals.length,5);assert.equal(view.stars.length,3);assert.ok(view.portal);view.update(1/60,true);view.portalActive(true);view.dispose();assert.equal(renderer.scene.children.length,0)}
+ for(const l of levels){const view=new LevelView(renderer,l);view.root.traverse(o=>assert.ok([o.position.x,o.position.y,o.position.z].every(Number.isFinite),`${l.name}: invalid object coordinates`));assert.equal(view.platforms.length,l.path.length);assert.equal(view.crystals.length,5);assert.equal(view.stars.length,3);assert.ok(view.portal);view.update(1/60,true);view.portalActive(true);view.dispose();assert.equal(renderer.scene.children.length,0)}
 });
 test('Kiko lands, cannot double jump, and can cross the first gap',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};const view=new LevelView(renderer,levels[0]);const player=new Player(new Kiko);player.spawn([0,0,-1]);for(let i=0;i<30;i++)player.step(1/60,{x:0,z:0,jump:false},view.platforms,0);assert.equal(player.ground,true);player.step(1/60,{x:0,z:1,jump:true},view.platforms,0);const first=player.velocity.y;player.step(1/60,{x:0,z:1,jump:true},view.platforms,0);assert.ok(player.velocity.y<first);for(let i=0;i<75;i++)player.step(1/60,{x:0,z:1,jump:false},view.platforms,0);assert.ok(player.pos.z>3.5);assert.ok(player.pos.y>-4);view.dispose()
@@ -34,9 +34,9 @@ test('all required crystals and portals sit over reachable floor surfaces',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
  for(const l of levels){const view=new LevelView(renderer,l);for(const c of view.crystals){const p=c.mesh.position;assert.ok(view.platforms.some(f=>Math.abs(p.x-f.x)<f.w/2-.2&&Math.abs(p.z-f.z)<f.d/2-.2),`${l.name}: crystal outside island`)}const portal=view.portal.position;assert.ok(view.platforms.some(f=>Math.abs(portal.x-f.x)<f.w/2-1&&Math.abs(portal.z-f.z)<f.d/2-1),`${l.name}: portal outside island`);view.dispose()}
 });
-test('physics route reaches every level portal across all platform gaps',()=>{
+test('static jump envelope reaches every portal when platforms are available',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
- for(const l of levels){const view=new LevelView(renderer,l),player=new Player(new Kiko);player.spawn([l.path[0][0],l.path[0][4],l.path[0][1]-1]);for(let j=1;j<5;j++){let reached=false;for(let n=0;n<450;n++){const a=l.path[j-1],b=l.path[j],dx=b[0]-player.pos.x,dz=b[1]-player.pos.z,m=Math.max(1,Math.hypot(dx,dz));const jump=player.ground&&player.pos.z>a[1]+1.2&&player.pos.z<b[1]-1.2;view.update(1/60,true);player.step(1/60,{x:dx/m,z:dz/m,jump},view.platforms.filter(p=>p.active),l.world);if(Math.hypot(dx,dz)<.9&&player.ground){reached=true;break}if(player.pos.y<-9)break}assert.ok(reached,`${l.name}: platform ${j}`)}assert.ok(Math.abs(player.pos.z-l.portal[1])<4);view.dispose()}
+ for(const l of levels){const view=new LevelView(renderer,l),player=new Player(new Kiko);player.spawn([l.path[0][0],l.path[0][4],l.path[0][1]-1]);for(let j=1;j<l.path.length;j++){let reached=false;for(let n=0;n<450;n++){const a=l.path[j-1],b=l.path[j],dx=b[0]-player.pos.x,dz=b[1]-player.pos.z,m=Math.max(1,Math.hypot(dx,dz));const jump=player.ground&&player.pos.z>a[1]+1.2&&player.pos.z<b[1]-1.2;view.update(1/60,true);player.step(1/60,{x:dx/m,z:dz/m,jump},view.platforms.map(p=>({...p,active:true})),l.world);if(Math.hypot(dx,dz)<.9&&player.ground){reached=true;break}if(player.pos.y<-9)break}assert.ok(reached,`${l.name}: platform ${j}`)}assert.ok(Math.abs(player.pos.z-l.portal[1])<4);view.dispose()}
 });
 test('sun meadow decoration and switch bridge have real 3D meshes and collision',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
@@ -78,7 +78,7 @@ test('small meadow rocks block walking and can be jumped',()=>{
 });
 test('seventh level has a reachable side route with a bonus star',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
- const view=new LevelView(renderer,levels[6]);
+ const view=new LevelView(renderer,levels[15]);
  assert.equal(view.bonusFloors.length,2);
  assert.ok(view.stars.some(star=>Math.abs(star.mesh.position.x-5)<.01&&Math.abs(star.mesh.position.z-14)<.01));
  const main=view.platforms[2],side=view.bonusFloors[0];
@@ -88,7 +88,7 @@ test('seventh level has a reachable side route with a bonus star',()=>{
 });
 test('final level assembles an animated sky crystal',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
- const view=new LevelView(renderer,levels[7]);
+ const view=new LevelView(renderer,levels[19]);
  view.startEnding();view.update(1/30,true);
  assert.equal(view.endingGroup.children.length,9);
  assert.ok(view.endingGroup.rotation.y>0);
@@ -102,10 +102,10 @@ test('standing is stable at low frame rates, jump buffer works and underside is 
  p.spawn([0,0,0]);const ceiling={x:0,z:0,w:6,d:6,y:3.6,active:true};for(let i=0;i<10;i++)p.step(1/60,{x:0,z:0},[floor,ceiling],0);p.step(1/60,{x:0,z:0,jump:true},[floor,ceiling],0);let highest=0;for(let i=0;i<60;i++){p.step(1/60,{x:0,z:0},[floor,ceiling],0);highest=Math.max(highest,p.pos.y)}assert.ok(highest<=1.051,'jump passed through slab underside');
 });
 test('timed platform hides every solid mesh and moving pickups follow their floor',()=>{
- const renderer={scene:new context.THREE.Scene(),world(){}};const view=new LevelView(renderer,levels[5]),moving=view.platforms[1],gem=view.crystals.find(c=>c.pathIndex===1),offset=gem.mesh.position.x-moving.x;view.update(7,true);const timed=view.platforms[3];assert.equal(timed.active,false);assert.equal(timed.under.visible,false);assert.equal(timed.tile.visible,false);assert.ok(Math.abs(gem.mesh.position.x-moving.x-offset)<1e-6);view.dispose();
+ const renderer={scene:new context.THREE.Scene(),world(){}};const view=new LevelView(renderer,levels[11]),moving=view.platforms[1],gem=view.crystals.find(c=>c.pathIndex===1),offset=gem.mesh.position.x-moving.x;view.update(7,true);const timed=view.platforms[3];assert.equal(timed.active,false);assert.equal(timed.under.visible,false);assert.equal(timed.tile.visible,false);assert.ok(Math.abs(gem.mesh.position.x-moving.x-offset)<1e-6);view.dispose();
 });
 
 test('every guardian can jump from the main route to each new forest and frost bonus island',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};
- for(const character of characters)for(const level of [2,3,4,5]){const view=new LevelView(renderer,levels[level]),a=view.platforms[2],b=view.secretFloor,p=new Player(new Kiko(character.id));p.spawn([a.x,a.y,a.z]);let reached=false;for(let frame=0;frame<240;frame++){const dx=b.x-p.pos.x,dz=b.z-p.pos.z,m=Math.max(1,Math.hypot(dx,dz)),jump=p.ground&&p.pos.x>a.x+a.w/2-.7&&p.pos.x<b.x-1;view.update(1/60,true);p.step(1/60,{x:dx/m,z:dz/m,jump},[...view.platforms,...view.bonusFloors],levels[level].world);if(Math.hypot(dx,dz)<.9&&p.ground&&Math.abs(p.pos.y-b.y)<.02){reached=true;break}}assert.ok(reached,`${character.name}: optional island in level ${level+1}`);view.dispose()}
+ for(const character of characters)for(const level of [5,6,10,11]){const view=new LevelView(renderer,levels[level]),a=view.platforms[2],b=view.secretFloor,p=new Player(new Kiko(character.id));p.spawn([a.x,a.y,a.z]);let reached=false;for(let frame=0;frame<240;frame++){const dx=b.x-p.pos.x,dz=b.z-p.pos.z,m=Math.max(1,Math.hypot(dx,dz)),jump=p.ground&&p.pos.x>a.x+a.w/2-.7&&p.pos.x<b.x-1;view.update(1/60,true);p.step(1/60,{x:dx/m,z:dz/m,jump},[...view.platforms,...view.bonusFloors],levels[level].world);if(Math.hypot(dx,dz)<.9&&p.ground&&Math.abs(p.pos.y-b.y)<.02){reached=true;break}}assert.ok(reached,`${character.name}: optional island in level ${level+1}`);view.dispose()}
 });

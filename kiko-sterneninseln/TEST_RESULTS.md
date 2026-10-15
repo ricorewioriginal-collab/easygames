@@ -1,29 +1,33 @@
-# Testergebnisse – Fassung 9, 15. Oktober 2026
+# Testergebnisse – Fassung 10, 15. Oktober 2026
 
 ## Automatisch geprüft
 
-`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 47 Testfälle.
+`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 54 Testfälle.
 
 - Echte Kameraachse gegen WASD/Joystick: Vorwärts und Rechts stimmen mit der dargestellten Ansicht überein. Der Zielkompass nutzt dieselbe Orientierung.
 - Physik: Landung, keine Luft-Mehrfachsprünge, feste höhere Kanten, Sprünge auf Kanten, Hindernisse, Deckenkollision, Sprungpuffer und dauerhafter Bodenkontakt bei 15/30/60/120 Hz.
-- Weltaufbau: alle acht Level, fünf Pflichtkristalle und drei Bonussterne pro Level mit gültigen Koordinaten; Kristalle und Portale liegen über erreichbaren Bodenflächen. Aufbau und Freigabe der 3D-Szenen werden geprüft.
+- Weltaufbau: alle 20 Level, fünf Pflichtkristalle und drei Bonussterne pro Level mit gültigen Koordinaten; Kristalle und Portale liegen über erreichbaren Bodenflächen. Aufbau und Freigabe der 3D-Szenen werden geprüft.
 - Bewegliche Plattformen nehmen ihre Sammelobjekte mit. Inaktive Zeitplattformen blenden ihren Unterbau aus.
 - Eingabe: Tastatur, gleichzeitiger Touch-Joystick und Sprung, Pointer-Abbruch, Loslassen außerhalb einer Taste, Kamerafinger, Fokusverlust, Gamepad und Controller-Abbruch. Eine gesperrte Gamepad API im Iframe darf Touch und Tastatur nicht abschalten.
 - Zustände: Start, Level-Sperren, Pause, Fortsetzen, Game Over und Checkpoint-Neustart.
-- Vollständige Runden mit `Game.update`: Alle vier Figuren laufen und springen bei 30 und 60 Hz durch alle acht Level, sammeln die 40 Pflichtkristalle, lösen Brücke, Lichtsteinfolge, Schlüssel und Himmelsschalter, beenden drei Bossphasen und betreten jedes aktive Portal. Gegner und Schaden bleiben aktiv. Kein Versetzen auf Zielplattformen und kein künstliches Freischalten von Leveln. Kiko benötigt 1572/3129, Mira 1615/3220, Boro 1493/2970 und Lumi 1515/3015 Schritte bei 30/60 Hz. Je Runde war bei Kiko, Mira und Lumi ein regulärer Checkpoint-Neustart im Endkampf nötig; Boro schaffte die Runde ohne Neustart.
+- Vollständige Runden mit `Game.update`: Alle vier Figuren laufen und springen bei 30 und 60 Hz durch alle 20 Level, sammeln die 100 Pflichtkristalle, lösen alle vorhandenen Rätsel und betreten jedes aktive Portal. Alle Gegner, Windzonen, Zeitfenster, Federpilze, Strahlen und einstürzenden Inseln bleiben aktiv. Die Teststeuerung plant Sprünge und wartet auf Plattformen. Sie versetzt Kiko nicht auf Zielinseln und schaltet keine Level künstlich frei. Reguläre Game-Over-Neustarts am Checkpoint sind erlaubt. In den Runden werden bei Bedarf reguläre Checkpoint-Neustarts verwendet. Alle 20 Ziele werden mit allen vier Figuren und beiden Zeitschritten erreicht.
 - Neue Mechaniken: Pulsreichweite, Betäubung, Aufladezeit, Vorrang eines Schalters vor dem Puls, Sprungangriff, einmaliges Heilen durch Sterne und Checkpoints, Schutzschild ohne Nachladen durch Figurenwechsel, Medaillen, Bestzeiten und Speicherung der gewählten Figur.
+- Neue Kampagnenfunktionen: Druckplatten brauchen kontinuierlichen Bodenkontakt; Leuchtfeuer werden durch den echten Puls aktiviert und nicht doppelt gezählt; Uhrtore laufen ab und können neu gestartet werden; bröckelnde Inseln verschwinden samt Unterbau und kehren zurück; Federpilze, lokale Windkräfte und der Sprung über Strahlen werden geprüft.
+- Spielstandmigration: Ein alter Acht-Level-Spielstand wird auf die ursprünglichen Abschnitte im neuen 20-Level-Plan übertragen; Ergebnisse, Figur und Steuerung bleiben erhalten, ein erneutes Laden bleibt stabil.
 - Terrain: begehbarer Aufgang ohne Sprung und ohne Verlust des Bodenkontakts; alle vier Figuren erreichen jede neue Bonusinsel in Wald und Frostwelt.
-- Oberfläche: Auswahl von vier Figuren in der Pause erhält den Fortschritt. Die Anleitung erklärt acht Levelrätsel, Fähigkeiten und die tatsächliche Tastenbelegung.
-- Fortschritt: Freischaltung bis Level acht, beste Ergebnisse und erneutes Laden des lokalen Spielstands.
+- Oberfläche: Auswahl von vier Figuren in der Pause erhält den Fortschritt. Die Anleitung erklärt 20 Levelrätsel, Fähigkeiten und die tatsächliche Tastenbelegung.
+- Fortschritt: Freischaltung bis Level 20, beste Ergebnisse und erneutes Laden des lokalen Spielstands.
 - Syntaxprüfung aller Quell- und Testdateien mit `node --check`.
 
 ## Google-Cloud-Prüfungen
 
 Fünf neue Testfälle führen das unveränderte EasyGames-Cloud-Modul mit simuliertem Storage und simulierten Auth-/Firestore-Antworten aus: Ohne Anmeldung gibt es keine Cloud-Anfragen; ein angemeldeter Testnutzer erhält den eigenen Kiko-Stand; geänderter Fortschritt wird nur unter dem Kiko-Dokument hochgeladen; ein Netzausfall erhält den lokalen Stand; geladene Daten werden von SaveManager validiert und übernommen. Die HTML-Anbindung wird auf Spiel-ID, Speicherpräfix und Menü-Mount geprüft.
 
-Drei weitere Fälle prüfen die Menüintegration und Figurenauswahl mit modellierten DOM-Elementen: Derselbe Google-Bereich bleibt beim Menüwechsel erhalten, ist im Spiel ausgeblendet und aktualisiert Freischaltungen nach einem empfangenen Cloud-Stand ohne Rückschreiben veralteter Daten.
+Vier weitere Fälle prüfen die Menüintegration und Figurenauswahl mit modellierten DOM-Elementen: Derselbe Google-Bereich bleibt beim Menüwechsel erhalten, ist im Spiel ausgeblendet und aktualisiert Freischaltungen nach einem empfangenen Cloud-Stand ohne Rückschreiben veralteter Daten.
 
 Es wurden keine echten Google-Zugangsdaten verwendet und keine echten Firebase-Spielstände verändert. Das interaktive Google-Anmeldefenster sowie der Abgleich mit dem produktiven Firebase-Projekt wurden in dieser Umgebung nicht live geprüft.
+
+Die geometrische Sprungprüfung betrachtet alle Plattformen als verfügbar und prüft die reine Erreichbarkeit. Der vollständige Durchlauf darüber hinaus verwendet die wirklichen zeitgesteuerten und bröckelnden Plattformzustände.
 
 ## Grenzen dieser Prüfung
 

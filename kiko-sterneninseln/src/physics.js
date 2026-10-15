@@ -1,5 +1,5 @@
-import {characterById} from './characters.js?v=9';
-import {floorHeight,insideFloor} from './terrain.js?v=9';
+import {characterById} from './characters.js?v=10';
+import {floorHeight,insideFloor} from './terrain.js?v=10';
 export class Player{
  constructor(kiko){this.kiko=kiko;this.pos=kiko.root.position;this.velocity={x:0,y:0,z:0};this.ground=false;this.hearts=3;this.invincible=0;this.checkpoint={x:0,y:0,z:0};this.facing=0;this.jumpBuffer=0;this.coyote=0;this.profile=characterById(kiko.characterId);this.shield=0;this.shieldUsed=false;this.lastHit=''}
  setCharacter(id){this.profile=characterById(id);this.shield=this.profile.shield&&!this.shieldUsed?1:0}
@@ -14,7 +14,7 @@ export class Player{
   this.jumpBuffer=Math.max(0,this.jumpBuffer-dt);this.coyote=this.ground?.08:Math.max(0,this.coyote-dt);this.invincible=Math.max(0,this.invincible-dt);
   const speed=this.profile.speed*(world===2?.945:1),accel=this.ground?(world===2?3:13):6;
   this.velocity.x+=(input.x*speed-this.velocity.x)*Math.min(1,accel*dt);
-  this.velocity.z+=(input.z*speed-this.velocity.z)*Math.min(1,accel*dt);
+  this.velocity.z+=(input.z*speed-this.velocity.z)*Math.min(1,accel*dt);this.velocity.x+=(input.windX||0)*dt;
   if(this.jumpBuffer>0&&this.coyote>0){this.velocity.y=this.profile.jump;this.ground=false;this.coyote=0;this.jumpBuffer=0}
   this.velocity.y-=25*dt;
   const old={x:this.pos.x,y:this.pos.y,z:this.pos.z},wasGround=this.ground,radius=.32;
