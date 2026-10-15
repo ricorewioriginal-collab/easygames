@@ -270,9 +270,12 @@ function startLevel(level,resume=false,score=0,lives=4) {
     mode:'playing',level,maze,theme:Math.floor((level-1)/10),score,lives,used,remaining:maze.pellets.length+maze.power.length+maze.logos.length-used.size,
     player:{x,z,oldX:x,oldZ:z,dir:1,want:1},ghostElapsed:0,moveElapsed:0,power:0,invul:2.8,elapsed:0,pelletIndex:null
   };
-  save.lastLevel=level;saveLocal();
+  save.lastLevel=level;
+  if(!resume)save.progress=null;
+  saveLocal();
   $('menu').hidden=true;$('picker').hidden=true;$('overlay').hidden=true;
   hud.hidden=false;pad.hidden=false;buildBoard();lastFrame=performance.now();lastSave=0;
+  checkpoint(true);
   if(state.remaining===0){finishLevel();return;}
   say('♪ '+WORLD[state.theme].name+' · Level '+level);
 }
