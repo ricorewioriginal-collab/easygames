@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "19c971e6dbd9",
- "generated": "2026-10-15T20:44:28+02:00",
- "commit": "f49604eca8c0a95987a64e5c2abc328af4214e28",
+ "version": "6f24e7ede5c5",
+ "generated": "2026-10-15T21:09:08+02:00",
+ "commit": "61e7d2408fe6a25a08eebff9aa4bac06cb17a833",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 18363,
-   "h": "d4b315b40e3f9a48d3e3e970eb18ba0f7d0b830869d3ce3b6bcd1a0d34c32674"
+   "h": "37e60c407af568ed1f0ae3a9dcf4c4cf11ad9ef9c5ddca327ca9fa49aca16d7a"
   },
   {
    "p": "gay-life/index.html",
@@ -4779,12 +4779,17 @@
   {
    "p": "kiko-sterneninseln/index.html",
    "s": 1894,
-   "h": "26ecd39fc2d355799975443898000bc77f67368536186c29bd3d25036adbc02d"
+   "h": "fec31d38db89bc0f9d7b3c168bafa0d44d5b820fe5dda18d7e8c0cbf73db5086"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
    "s": 1209,
    "h": "6249eda8702f5c39213549ecf63681e4e619a450febd25716b540bef475e04c1"
+  },
+  {
+   "p": "kiko-sterneninseln/src/characters.js",
+   "s": 2767,
+   "h": "604866865dec2a4a04edd0d3177cc64ea0de47f2ab76a6be8eef3ad856d29cb4"
   },
   {
    "p": "kiko-sterneninseln/src/controls.js",
@@ -4793,18 +4798,23 @@
   },
   {
    "p": "kiko-sterneninseln/src/data.js",
-   "s": 2522,
-   "h": "34b9da7683a5ff9aead0989c94971067d6abc556da0069e66f1d33bb3f7c839c"
+   "s": 2638,
+   "h": "8a432829c90046f7f3c5aa72cf1766ac79c657527122fff6f9437595da0f5594"
   },
   {
    "p": "kiko-sterneninseln/src/game.js",
-   "s": 9041,
-   "h": "8d1610d392ebb787625245f5ee7dbd0f12932aa17b1641818e74344d080345e6"
+   "s": 11918,
+   "h": "2dfbb700d3753188418bbb72893ecf5bc9ffef377fc9d03b6a3a5a9da12af5cf"
+  },
+  {
+   "p": "kiko-sterneninseln/src/guide.js",
+   "s": 6777,
+   "h": "df71e5763dbe3a05380922ca91c41100ced5ccc9422e2dcdc8b308da4ce1dccc"
   },
   {
    "p": "kiko-sterneninseln/src/i18n.js",
-   "s": 6722,
-   "h": "eac70077974e53de2c82823ed4d2d1a6a157057ac7d195fadc32dbd1894376ce"
+   "s": 7513,
+   "h": "c663401cf11898c8fd02ae24580f0cb88a9aba3cf1012877b8a8f0a5f36aa9e7"
   },
   {
    "p": "kiko-sterneninseln/src/input.js",
@@ -4814,37 +4824,42 @@
   {
    "p": "kiko-sterneninseln/src/main.js",
    "s": 302,
-   "h": "f31e60d2710c6a101ec68a1a7e5e83f745c163308c6d4eb0e915a3733aa195c2"
+   "h": "c050ecf0ce9c07bf45f6acf03978e6ec346912187549416e994a86dea477eea9"
   },
   {
    "p": "kiko-sterneninseln/src/objectives.js",
-   "s": 2443,
-   "h": "1aa431e844e7ed2950c6d1919290bb52da03afb60b457a7a606a0056ee3941db"
+   "s": 3224,
+   "h": "08b12c4a0c5fa11504c298e4ef0372e3eba78eef88ba0dd91c767f5099272e5a"
   },
   {
    "p": "kiko-sterneninseln/src/physics.js",
-   "s": 3427,
-   "h": "ac932ea0953b862c81270184e4e1c3967276e64f3e2110224fbc56c23021283b"
+   "s": 4531,
+   "h": "e1903b0d51e8076448268946e85a41e7c823255c225f96864863b14c8cfd8d87"
   },
   {
    "p": "kiko-sterneninseln/src/save.js",
-   "s": 2059,
-   "h": "e1ec324c8c93589ab4f90c92f7f79e673dc4de7a5ed601f96a8c1f6698a2c6a7"
+   "s": 2842,
+   "h": "691e725e5ef9dfd0c8076ee3854890b201e9eb5baff6d7ecd23aa7396fbc2d7c"
   },
   {
    "p": "kiko-sterneninseln/src/scene.js",
-   "s": 17165,
-   "h": "8bdf802e8fa3a821ddbbd8deca60d84345750b5bb0638ca98084f857d861c6bb"
+   "s": 24069,
+   "h": "436b10af93543f805b4b626a223e8d065b830a92b7ce58c0cee677cb3cf9c94c"
+  },
+  {
+   "p": "kiko-sterneninseln/src/terrain.js",
+   "s": 834,
+   "h": "f0a9b1486b764b42ec0ae4514c1fd12b743da8183389b58733326d2b514938b3"
   },
   {
    "p": "kiko-sterneninseln/src/ui.js",
-   "s": 10607,
-   "h": "937073d9cacd7a9209a33606c928681b6a66d249bab5d42fd73677d776deb1f7"
+   "s": 13518,
+   "h": "2828c670655568086345ed7b9aa6e90196a62e297d0539b5ce87e18e0f60f752"
   },
   {
    "p": "kiko-sterneninseln/style.css",
-   "s": 6705,
-   "h": "96fbfc9130b4fb0b0eab96ad6a6ec12e5d125935725b47b3ac1fd49269069677"
+   "s": 8459,
+   "h": "64340349f8bf6c14a9a4c090f008f0e028c41a3d14155587b86c0cdecea60159"
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
@@ -5504,7 +5519,7 @@
   {
    "p": "sync/catalog.json",
    "s": 74358,
-   "h": "38c45c3c95822a56abd5b2f78f8f8c8f361a1aff65e10eb787e1f9f71e43138e"
+   "h": "1a234285c90a6e4ff8911357ad4cc618c1ce03db56e8c4cbf772bebaefc55c08"
   },
   {
    "p": "taschi/card.svg",
