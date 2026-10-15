@@ -77,7 +77,7 @@ function overlay(type,title,description,primary,secondary){
 mode=type;$('overlay').hidden=false;$('overlay').dataset.view=type;
 $('heading').textContent=title;$('description').textContent=description;$('primary').textContent=primary;
 $('secondary').hidden=!secondary;if(secondary)$('secondary').textContent=secondary;
-$('stageList').hidden=type!=='map';$('optionSection').hidden=type!=='options';if(type==='map')renderMap();clearInputs();$('touch').hidden=true;hud();
+$('stageList').hidden=type!=='map';$('worldMap').hidden=type!=='map';$('optionSection').hidden=type!=='options';if(type==='map')renderMap();clearInputs();$('touch').hidden=true;hud();
 }
 function syncControls(){
 $('dpadControls').hidden=save.controls!=='dpad';
@@ -100,7 +100,32 @@ syncControls();
 }
 function closeOptions(){if(previousMenu){const m=previousMenu;previousMenu=null;overlay(m.type,m.title,m.description,m.primary,m.secondary);}else title()}
 function title(){overlay('title','PUFI & DER FARBWIND','Pufi und sein Wolkentaps Tamo retten sechs bunte Inseln! Reite, springe, schwebe und wirf Farbkugeln in einem eigenständigen Retro-Abenteuer.','START GAME ▶','INSELKARTE')}
-function renderMap(){const list=$('stageList');list.replaceChildren();LEVELS.forEach((l,i)=>{const b=document.createElement('button');b.className='island'+(selected===i?' picked':'');b.disabled=i>=save.unlocked;const r=save.records[i];b.textContent=(i<save.unlocked?'✦ ':'🔒 ')+(i+1)+'. '+l.name+(r?' · ❀ '+r.flowers:'');b.addEventListener('click',()=>{selected=i;renderMap();tone(650)});list.appendChild(b)})}
+function drawIslandMap(){
+const c=$('worldMap'),z=c.getContext('2d'),w=c.width,h=c.height;
+z.clearRect(0,0,w,h);const ocean=z.createLinearGradient(0,0,0,h);
+ocean.addColorStop(0,'#82d5ea');ocean.addColorStop(1,'#2d77a5');z.fillStyle=ocean;z.fillRect(0,0,w,h);
+const marks=[
+[75,45,39,26,'#89cba3','✿'],
+[223,42,36,28,'#e4c486','◈'],
+[378,42,41,27,'#9c89bc','♠'],
+[100,125,43,26,'#e4eff4','☁'],
+[254,130,38,25,'#7798b4','◆'],
+[405,123,40,28,'#b67fa3','✦']
+];
+z.lineWidth=3;z.setLineDash([5,5]);z.strokeStyle='#fff9de';
+z.beginPath();z.moveTo(75,45);z.lineTo(223,42);z.lineTo(378,42);z.lineTo(405,123);z.lineTo(254,130);z.lineTo(100,125);z.stroke();z.setLineDash([]);
+for(let i=0;i<marks.length;i++){const [x,y,rx,ry,color,icon]=marks[i];
+z.globalAlpha=i<save.unlocked?1:.52;
+z.fillStyle='#e8d9a1';z.beginPath();z.ellipse(x,y+5,rx+5,ry+4,0,0,Math.PI*2);z.fill();
+z.fillStyle=color;z.beginPath();z.ellipse(x,y,rx,ry,0,0,Math.PI*2);z.fill();
+z.fillStyle='#ffffff77';z.beginPath();z.ellipse(x-10,y-6,rx*.45,ry*.32,0,0,Math.PI*2);z.fill();
+z.font='bold 22px monospace';z.textAlign='center';z.fillStyle='#51496d';z.fillText(i<save.unlocked?icon:'?',x,y+8);
+z.fillStyle='#fff9e0';z.strokeStyle='#4f5370';z.lineWidth=3;z.font='bold 12px monospace';
+z.strokeText(''+(i+1),x,y+ry+13);z.fillText(''+(i+1),x,y+ry+13);
+z.globalAlpha=1;}
+z.textAlign='left';
+}
+function renderMap(){drawIslandMap();const list=$('stageList');list.replaceChildren();LEVELS.forEach((l,i)=>{const b=document.createElement('button');b.className='island'+(selected===i?' picked':'');b.disabled=i>=save.unlocked;const r=save.records[i];b.textContent=(i<save.unlocked?'✦ ':'🔒 ')+(i+1)+'. '+l.name+(r?' · ❀ '+r.flowers:'');b.addEventListener('click',()=>{selected=i;renderMap();tone(650)});list.appendChild(b)})}
 function openMap(){selected=Math.min(level,save.unlocked-1);overlay('map','DIE FARBWIND-INSELN','Wähle eine freigeschaltete Insel. Finde versteckte Farbblüten und sammle einen neuen Rekord.','INSEL SPIELEN ▶','ZUM TITEL')}
 function start(n=level){build(n);mode='play';$('overlay').hidden=true;$('touch').hidden=false;syncControls();tone(560);hud()}
 function pause(){if(mode==='play')overlay('pause','PAUSE','Dein Abenteuer wartet. Drücke Weiter, sobald du bereit bist.','WEITERSPIELEN ▶','INSELKARTE')}
