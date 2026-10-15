@@ -160,7 +160,7 @@ $('photoBtn').addEventListener('click',()=>{
 function make3D(){
  const THREE=window.THREE;
  if(!THREE){$('webglError').hidden=false;return}
- let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
+ let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power',preserveDrawingBuffer:true});
  renderer.setPixelRatio(Math.min(1.8,window.devicePixelRatio||1));
  renderer.outputEncoding=THREE.sRGBEncoding;
  renderer.toneMapping=THREE.ACESFilmicToneMapping;
