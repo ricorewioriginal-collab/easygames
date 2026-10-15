@@ -142,3 +142,6 @@ header{height:46px;margin-bottom:8px;gap:8px}
  .worldPanel{max-width:720px}
 }
 @media(prefers-reduced-motion:reduce){.sceneDock *,#petAlert{animation:none!important}}
+
+/* Hidden panels must win over the explicit active-panel display rule. */
+.sceneSheet .carePanel[hidden],.sceneSheet .statusPanel[hidden]{display:none!important}
