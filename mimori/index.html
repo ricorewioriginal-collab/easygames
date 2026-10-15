@@ -70,19 +70,89 @@ h2{font-size:19px;margin:0 0 14px;letter-spacing:-.35px}.sub{font-size:12px;colo
 .layout,.stack{display:flex;flex-direction:column;gap:12px}.scene{min-height:390px;height:50dvh;max-height:560px}.panel{border-radius:17px}
 section.bodyPanel{padding:17px}.settings{padding:16px}#speech{font-size:13px}.care{min-height:80px}.nameBox h1{font-size:23px}}
 @media(prefers-reduced-motion:reduce){*,*:after{animation:none!important;transition:none!important}}
+
+/* Mimori 2.0: mobile-first pet console, replacing the prior dashboard layout */
+:root{color-scheme:dark}
+html,body{min-height:100%;overscroll-behavior-y:contain}
+body{background:radial-gradient(ellipse at 40% 0%,#68577c 0,#2f2547 58%,#1b152b 100%)}
+body.drawerOpen{overflow:hidden}
+#app{max-width:650px;margin:0 auto;padding:10px max(12px,env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+header{height:50px;margin-bottom:10px;gap:7px}
+.brand{gap:8px}.logo{width:39px;height:39px;border-radius:13px;font-size:23px;box-shadow:0 3px #513951}
+.brand b{font-size:21px}.brand small{font-size:9px;letter-spacing:.3px}
+.topright{gap:6px;flex-wrap:nowrap}.topright .tag{font-size:10px;padding:7px 9px}
+.iconbtn{padding:8px 10px;font-size:12px;border-radius:12px;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"scene" "care" "stats";gap:11px}
+.stack{display:contents}
+.scene{grid-area:scene;height:clamp(365px,57dvh,660px);min-height:350px;border-radius:26px;touch-action:none}
+#viewport,#viewport canvas{touch-action:none;user-select:none;-webkit-user-select:none}
+.sceneTop{top:11px;left:11px;right:11px;align-items:flex-start;gap:9px;z-index:3}
+.sceneButtons{display:flex;align-items:flex-start;gap:7px;justify-content:end}
+.nameBox{padding:10px 12px;background:#fff9f0eb;box-shadow:0 5px #67527955}
+.nameBox h1{font-size:clamp(20px,5vw,25px);max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nameBox small{margin-top:3px;font-size:10px}
+.speciesName{font-weight:900;color:#a85d7f!important;letter-spacing:.4px}
+.stage{font-size:10px;padding:10px 9px;max-width:105px;text-align:center;line-height:1.2}
+.cornerBtn{width:43px;height:42px;border-radius:14px;border:1px solid #f3d6dc;color:#fff8ec;background:#4e3d66ed;font-size:23px;box-shadow:0 3px #312543;flex:none}
+.cornerBtn:active{transform:scale(.94)}
+.turnControls{position:absolute;left:10px;right:10px;bottom:90px;display:flex;justify-content:space-between;z-index:3;pointer-events:none}
+.turnControls button{pointer-events:auto;width:46px;height:46px;border-radius:15px;border:1px solid #fff4e7a0;background:#fff6e4ae;color:#4b4469;font-size:29px;font-weight:900;box-shadow:0 3px #614b6b66}
+.turnControls button:nth-child(2){width:32px;height:32px;align-self:flex-end;margin-bottom:6px;font-size:15px;opacity:.75}
+.turnControls button:active{transform:translateY(2px)}
+#speech{bottom:15px;left:12px;right:12px;max-width:470px;padding:10px 14px;font-size:13px}
+.tip{bottom:63px;color:#554c70;font-weight:700;font-size:11px;z-index:1;padding:0 40px}
+.carePanel{grid-area:care}
+.statusPanel{grid-area:stats}
+.panel{border-radius:19px}
+section.bodyPanel{padding:13px}
+.carePanel h2{font-size:17px;margin:0 2px 11px}
+.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.care{min-height:80px;padding:10px 3px 8px;border-radius:15px;touch-action:manipulation;box-shadow:0 3px #25203b}
+.care b{font-size:27px;margin:0 0 2px}.care span{font-size:12px;letter-spacing:-.2px}
+.statusPanel h2{margin:1px 0 10px;font-size:16px}
+.stats{gap:11px 12px}.meter{height:9px}
+.statTitle{font-size:11px;margin-bottom:5px}
+.inventory{margin-top:10px}
+#settingsDrawer{position:fixed;inset:0;z-index:25;display:grid;justify-items:center;align-items:end}
+.drawerBackdrop{position:absolute;inset:0;background:#161324b8;backdrop-filter:blur(7px)}
+.drawerPanel{position:relative;z-index:1;width:min(650px,100%);max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(145deg,#403353,#252039);border:1px solid #c6a1c5;border-radius:24px 24px 0 0;box-shadow:0 -20px 45px #141126ad;padding:16px 14px calc(22px + env(safe-area-inset-bottom))}
+.drawerHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.drawerHead h2{font-size:22px;margin:0}.drawerHead .cornerBtn{width:39px;height:39px;font-size:19px}
+.drawerPanel .panel{box-shadow:none;margin:12px 0}
+.speciesSection h3{font-size:17px;margin:0}
+.speciesSection p{color:#e4d0e3;font-size:12px;margin:7px 0 11px}
+.speciesGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.speciesChoice{display:flex;flex-direction:column;align-items:center;min-height:115px;justify-content:center;gap:3px;color:#ffeef6;border:2px solid #ad94c9;background:#645070;border-radius:15px;padding:8px}
+.speciesChoice b{font-size:31px;line-height:1.1}.speciesChoice strong{font-size:13px}.speciesChoice small{font-size:10px;color:#f0d9e7;line-height:1.25}
+.speciesChoice.selected{background:#82638d;border-color:#ffe5a2;box-shadow:0 0 0 2px #ffe5a233}
+.cloudSection{padding:0!important}
+.cloudSection details{margin:0}
+@media(max-width:420px){
+ #app{padding:6px 9px calc(22px + env(safe-area-inset-bottom))}
+ header{height:45px}.brand small{display:none}.brand b{font-size:19px}
+ .topright .tag{display:none}.scene{height:clamp(355px,55dvh,550px);min-height:340px}
+ .care{min-height:73px}.care b{font-size:25px}
+ .sceneTop{top:9px;left:9px;right:9px}
+}
+@media(max-height:600px) and (orientation:landscape){
+ .scene{height:80dvh;min-height:275px}.turnControls{bottom:60px}.tip{bottom:51px}
+}
+@media(prefers-reduced-motion:reduce){.fx-particle{animation:none!important}}
+
 </style></head>
 <body><div id="app">
 <header><div class="brand"><div class="logo" aria-hidden="true">✿</div><div><b>MIMORI</b><small>DEIN KLEINES 3D-WESEN</small></div></div>
 <div class="topright"><span class="tag" id="careLevel">Fürsorge 0</span><button id="soundToggle" class="iconbtn" aria-label="Ton ein- oder ausschalten">🔊 Ton an</button><button id="infoBtn" class="iconbtn" aria-label="Spielhilfe öffnen">?</button></div></header>
 <div class="layout">
 <div class="panel scene"><div id="viewport" aria-label="Dreidimensionaler Raum mit Mimori"></div><div id="fxLayer" aria-hidden="true"></div>
-<div class="sceneTop"><div class="nameBox"><h1 id="petname">Mimori</h1><small id="age">Baby · 0 Stunden</small></div><div class="stage" id="stageBadge">Eiweiß-Baby</div></div>
-<p class="tip">Tippe auf Mimori zum Kuscheln · Ziehe zum Drehen</p>
+<div class="sceneTop"><div class="nameBox"><h1 id="petname">Mimori</h1><small id="age">Baby · 0 Stunden</small><small id="speciesName" class="speciesName">Fluffi</small></div><div class="sceneButtons"><span class="stage" id="stageBadge">Wolkenbaby</span><button id="settingsShortcut" class="cornerBtn" title="Wesen und Einstellungen" aria-label="Einstellungen und Wesen auswählen">⚙</button></div></div>
+<div class="turnControls" aria-label="Haustier drehen"><button id="turnLeft" title="Nach links drehen" aria-label="Mimori nach links drehen">↶</button><button id="resetView" title="Zur Vorderansicht" aria-label="Vorderansicht">●</button><button id="turnRight" title="Nach rechts drehen" aria-label="Mimori nach rechts drehen">↷</button></div>
+<p class="tip">↔ Mit dem Finger drehen · Tippen zum Kuscheln</p>
 <div id="webglError" hidden>3D konnte nicht gestartet werden. Prüfe, ob dein Browser WebGL unterstützt. Deine gespeicherten Werte und Pflegetasten funktionieren trotzdem.</div>
 <p id="speech" role="status" aria-live="polite">Hallo! Wie schön, dass du da bist!</p>
 </div>
 <div class="stack">
-<section class="panel bodyPanel"><h2>Wie geht es Mimori? <span class="sub" id="mood">Zufrieden</span></h2>
+<section class="panel bodyPanel statusPanel"><h2>Wie geht es Mimori? <span class="sub" id="mood">Zufrieden</span></h2>
 <div class="stats">
 <div><div class="statTitle"><span>🍓 Satt</span><span id="hungerVal">82 %</span></div><div class="meter"><div id="hungerFill" class="fill"></div></div></div>
 <div><div class="statTitle"><span>💗 Freude</span><span id="joyVal">82 %</span></div><div class="meter"><div id="joyFill" class="fill"></div></div></div>
@@ -90,7 +160,7 @@ section.bodyPanel{padding:17px}.settings{padding:16px}#speech{font-size:13px}.ca
 <div><div class="statTitle"><span>🫧 Sauber</span><span id="cleanVal">88 %</span></div><div class="meter"><div id="cleanFill" class="fill"></div></div></div>
 <div><div class="statTitle"><span>💚 Gesundheit</span><span id="healthVal">92 %</span></div><div class="meter"><div id="healthFill" class="fill"></div></div></div>
 </div><div class="inventory"><span>🍓 Beeren: <b id="foodCount">7</b></span><span>🧼 Seife: <b id="soapCount">5</b></span><span id="xp">0 XP</span></div></section>
-<section class="panel bodyPanel"><h2>Zusammen etwas machen</h2>
+<section class="panel bodyPanel carePanel"><h2>Was machen wir heute?</h2>
 <div class="actions">
 <button class="care" data-care="feed"><b>🍓</b><span>Füttern</span></button>
 <button class="care" data-care="play"><b>🪀</b><span>Spielen</span></button>
@@ -98,6 +168,16 @@ section.bodyPanel{padding:17px}.settings{padding:16px}#speech{font-size:13px}.ca
 <button class="care" data-care="sleep"><b>🌙</b><span>Schlafen</span></button>
 <button class="care" data-care="cuddle"><b>💞</b><span>Kuscheln</span></button>
 <button class="care" data-care="minigame"><b>⭐</b><span>Sternfang</span></button>
+</div></section>
+</div></div>
+<div id="settingsDrawer" hidden role="dialog" aria-modal="true" aria-label="Mimori-Einstellungen">
+<div id="settingsBackdrop" class="drawerBackdrop" aria-hidden="true"></div>
+<div class="drawerPanel"><div class="drawerHead"><h2>Dein Mimori</h2><button id="settingsClose" class="cornerBtn" aria-label="Einstellungen schließen">✕</button></div>
+<section class="speciesSection"><h3>Welches Wesen möchtest du?</h3><p>Vier unterschiedliche Figuren – jede lässt sich in vier Farben gestalten.</p><div class="speciesGrid">
+<button data-species="0" class="speciesChoice selected" aria-pressed="true"><b>🐰</b><strong>Fluffi</strong><small>Langohren &amp; Puschelschwanz</small></button>
+<button data-species="1" class="speciesChoice" aria-pressed="false"><b>🦦</b><strong>Nubbi</strong><small>Kugelbauch &amp; Panzer</small></button>
+<button data-species="2" class="speciesChoice" aria-pressed="false"><b>🦊</b><strong>Foxi</strong><small>Spitzohren &amp; Flauschschweif</small></button>
+<button data-species="3" class="speciesChoice" aria-pressed="false"><b>🐉</b><strong>Drachi</strong><small>Flügel &amp; Hörnchen</small></button>
 </div></section>
 <section class="panel settings"><h2>Dein Zuhause</h2>
 <div class="settingsButtons"><button id="rename" class="secondary">✏️ Name ändern</button><button id="changeColor" class="secondary">🎨 Fellfarbe ändern</button><button id="installBtn" class="secondary">📱 App-Hinweis</button></div>
