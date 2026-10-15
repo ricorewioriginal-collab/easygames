@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "35012e395ad0",
- "generated": "2026-10-14T23:45:49.186Z",
+ "version": "4a34bd71caff",
+ "generated": "2026-10-15T00:06:50.100Z",
  "commit": "2cb8d974dc58415916e3fe0bc6de3a83efa70654",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15243,
-   "h": "1633b31476979544bf325eb3fed0de5f88cb4a77b7e908d09057c1202622f6de"
+   "s": 15330,
+   "h": "763d80761777a5755a3e8836fbfa4dc56f829b1ec622a71483ba899724099e2f"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 40557,
-   "h": "b5720048dd4fad1ebf12b32dcd623218a24912e1727a2f4cbe285abd167d7849"
+   "s": 40939,
+   "h": "80a5422c5c6932af6393a5f7e0a7fd20ef4a32fcd11bee1c40b7de42ddcd0c99"
   },
   {
    "p": "index.html",
@@ -5108,13 +5108,13 @@
   },
   {
    "p": "pufi-farbwind/game.js",
-   "s": 25144,
-   "h": "646327bdb1c96e04760381a0fbf1986d494c824ce9da2518c292d8caf7deee4c"
+   "s": 39526,
+   "h": "2857029e385b3b052d51c02f5764a24af31960ba4e0b53d3052e16f8bbb1b4ae"
   },
   {
    "p": "pufi-farbwind/index.html",
-   "s": 14115,
-   "h": "5c923b7edd7276393dd671e470dee57472d11408f6bcef36a6844bb0c403a9f7"
+   "s": 15249,
+   "h": "2e0c2b146fb34b0f8d7712b78c7a4c0353c281bc0fbe05d0f5e2e720f85599f5"
   },
   {
    "p": "pufi-farbwind/manifest.webmanifest",
@@ -5124,7 +5124,7 @@
   {
    "p": "pufi-farbwind/sw.js",
    "s": 752,
-   "h": "4e4713cf3454b57c1e90ac27030534b0c650d544c969b63732f84d78215aa433"
+   "h": "59326dd06d3f0bdf7684b8fd369e8c693464ae6e7849cacefa86522b0858c1ba"
   },
   {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 62104,
-   "h": "0e570c24ff4a87c18491900c722c13cdd62ed190ab29f9ed10436d8438df5918"
+   "s": 62579,
+   "h": "f64ff51cee6b7905928954bd8f5cda68e6be113d8b103fb5193deb46b706355d"
   },
   {
    "p": "taschi/card.svg",
