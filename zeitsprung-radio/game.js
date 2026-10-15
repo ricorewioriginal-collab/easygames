@@ -1,9 +1,10 @@
 import { COLLECTIONS, TRACKS, VIDEOS, questionFor, youtubeSearch } from './tracks.js';
+import { IS_CONTROLLER, startController, startHost } from './pair.js';
 
 const $ = id => document.getElementById(id);
-const ui = Object.fromEntries(['setup','game','players','addPlayer','category','start','soundToggle','turnName','roundLabel','deckLabel','catLabel','playerBox','playMusic','openYoutube','mediaState','hostText','timelineCount','timeline','result','next','scoreboard'].map(id => [id, $(id)]));
+const ui = Object.fromEntries(['setup','game','players','addPlayer','category','start','soundToggle','tvToggle','pairToggle','pairPanel','pairClose','pairDone','turnName','roundLabel','deckLabel','catLabel','playerBox','playMusic','openYoutube','mediaState','hostText','timelineCount','timeline','result','next','scoreboard'].map(id => [id, $(id)]));
 const palette = ['#ff4c93','#77e7ff','#ffcb61','#ae92ff'];
-const state = { players: [], active: 0, rounds: 0, deck: [], current: null, solved: false, voice: true, playing: false };
+const state = { players: [], active: 0, rounds: 0, deck: [], current: null, starter: null, solved: false, voice: true, playing: false, pair: null, result: '' };
 let audioContext;
 
 function shuffle(items) {
@@ -25,6 +26,7 @@ function playerInputs() {
 }
 
 function setup() {
+  if (IS_CONTROLLER) { startController(); return; }
   state.players = [{ name: 'Spieler 1', score: 0, timeline: [] }];
   playerInputs();
   for (const [category, block] of Object.entries(COLLECTIONS)) {
@@ -33,6 +35,20 @@ function setup() {
   ui.addPlayer.addEventListener('click', () => { if (state.players.length < 4) { state.players.push({ name: `Spieler ${state.players.length + 1}`, score: 0, timeline: [] }); playerInputs(); } });
   ui.start.addEventListener('click', start);
   ui.playMusic.addEventListener('click', playMusic);
+  ui.tvToggle.addEventListener('click', () => {
+    const enabled = !document.body.classList.contains('tv-mode');
+    document.body.classList.toggle('tv-mode', enabled);
+    ui.tvToggle.setAttribute('aria-pressed', String(enabled));
+    ui.tvToggle.textContent = enabled ? '📺 TV-Modus an' : '📺 TV-Modus';
+    if (enabled) openPair();
+    else { state.pair?.destroy(); state.pair = null; ui.pairPanel.classList.add('hidden'); }
+  });
+  ui.pairToggle.addEventListener('click', () => {
+    if (!document.body.classList.contains('tv-mode')) { document.body.classList.add('tv-mode'); ui.tvToggle.setAttribute('aria-pressed', 'true'); ui.tvToggle.textContent = '📺 TV-Modus an'; }
+    openPair();
+  });
+  ui.pairClose.addEventListener('click', () => ui.pairPanel.classList.add('hidden'));
+  ui.pairDone.addEventListener('click', () => ui.pairPanel.classList.add('hidden'));
   ui.soundToggle.addEventListener('click', () => {
     state.voice = !state.voice;
     if (!state.voice && 'speechSynthesis' in window) speechSynthesis.cancel();
@@ -46,6 +62,39 @@ function setup() {
     if (n >= 1 && n <= 9) ui.timeline.querySelectorAll('.slot')[n - 1]?.click();
   });
   initStage();
+}
+
+function openPair() {
+  state.pair ||= startHost({
+    allocate(name) {
+      let slot = state.players.findIndex((_, index) => !state.pair.has(index));
+      if (slot < 0 && state.players.length < 4) {
+        slot = state.players.length;
+        state.players.push({ name, score: 0, timeline: state.starter ? [state.starter] : [] });
+      }
+      if (slot < 0) return -1;
+      state.players[slot].name = name;
+      if (ui.game.classList.contains('hidden')) playerInputs();
+      else { renderScores(); if (slot === state.active) ui.turnName.textContent = name; }
+      return slot;
+    },
+    onLeave() {},
+    onAnswer(slot, position) {
+      if (slot !== state.active || state.solved || ui.game.classList.contains('hidden')) return;
+      const timeline = [...state.players[slot].timeline].sort((a,b) => a.year - b.year || a.title.localeCompare(b.title));
+      if (position < 0 || position > timeline.length) return;
+      answer(position, timeline);
+    },
+    onPlay(slot) { if (slot === state.active && !state.solved) playMusic(); },
+    onNext(slot) { if (slot === state.active && state.solved && !ui.next.classList.contains('hidden')) ui.next.click(); },
+    snapshot() {
+      const active = state.players[state.active];
+      const timeline = [...(active?.timeline || [])].sort((a,b) => a.year - b.year || a.title.localeCompare(b.title));
+      const slots = Array.from({ length: timeline.length + 1 }, (_, i) => i === 0 ? `Vor ${timeline[0]?.year || 'allen Songs'}` : i === timeline.length ? `Nach ${timeline[i-1].year}` : `Zwischen ${timeline[i-1].year} und ${timeline[i].year}`);
+      return { phase: ui.game.classList.contains('hidden') ? 'setup' : 'game', players: state.players.map(p => ({ name: p.name, score: p.score })), active: state.active, round: state.rounds, solved: state.solved, playing: state.playing, slots, result: state.result, songUrl: state.current ? youtubeSearch(state.current) : '' };
+    }
+  });
+  state.pair.open();
 }
 
 function tone(frequency, duration, type = 'sine', gain = .04) {
@@ -80,19 +129,20 @@ function start() {
   state.deck = shuffle(category === 'all' ? TRACKS : TRACKS.filter(track => track.category === category));
   state.active = 0; state.rounds = 0; state.solved = false;
   // Jede Person bekommt dieselbe Referenzkarte. Danach wird sie aus dem Deck entfernt.
-  const starter = state.deck.pop();
+  const starter = state.deck.pop(); state.starter = starter;
   state.players.forEach(player => player.timeline.push(starter));
   ui.setup.classList.add('hidden'); ui.game.classList.remove('hidden');
   tone(523,.18); setTimeout(() => tone(784,.3), 130);
   say(`Willkommen bei Zeitsprung Radio! Ich bin Vito. Euer Startsong ist ${starter.title} von ${starter.artist}, aus dem Jahr ${starter.year}. Wer zuerst acht Treffer hat, gewinnt!`);
   nextRound(false);
+  state.pair?.broadcast();
   scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function nextRound(announce = true) {
   if (!state.deck.length) { state.deck = shuffle(TRACKS.filter(track => !state.players.some(p => p.timeline.some(t => t.id === track.id)))); }
   if (!state.deck.length) { finish(); return; }
-  state.current = state.deck.pop(); state.solved = false; state.playing = false; state.rounds++;
+  state.current = state.deck.pop(); state.solved = false; state.playing = false; state.result = ''; state.rounds++;
   ui.result.className = 'result hidden'; ui.result.replaceChildren(); ui.next.classList.add('hidden');
   ui.playerBox.replaceChildren();
   const placeholder = document.createElement('div'); placeholder.className = 'player-placeholder'; placeholder.innerHTML = '▶<small>Klicke auf „Musik starten“</small>'; ui.playerBox.append(placeholder);
@@ -105,6 +155,7 @@ function nextRound(announce = true) {
   renderTimeline(); renderScores();
   if (announce) say(`${state.players[state.active].name}, du bist dran! Hör dir den Song an und setze ihn in deine Zeitleiste.`);
   else ui.hostText.textContent = `${state.players[state.active].name}, du beginnst! Starte die Musik und wähle eine Lücke.`;
+  state.pair?.broadcast();
 }
 
 function playMusic() {
@@ -123,6 +174,7 @@ function playMusic() {
     ui.mediaState.textContent = 'EXTERNER SONG';
     say('Für diesen Song öffne bitte die YouTube-Suche. Spiele ihn dort ab und tippe anschließend auf die richtige Lücke.');
   }
+  state.pair?.broadcast();
 }
 
 function renderTimeline() {
@@ -157,16 +209,18 @@ function answer(position, timeline) {
   const done = document.createElement('div'); done.className = 'player-placeholder'; done.innerHTML = '♫<small>Runde beendet</small>'; ui.playerBox.append(done);
   ui.mediaState.textContent = 'AUFGELÖST';
   const message = right ? `Volltreffer, ${player.name}! ${track.title} erschien ${track.year}. Dein Punkt ist sicher.` : `Knapp daneben, ${player.name}! ${track.title} von ${track.artist} erschien ${track.year}.`;
+  state.result = message;
   say(message);
   ui.result.className = `result ${right ? 'good' : 'bad'}`;
   const heading = document.createElement('h3'); heading.textContent = right ? '✓ Richtig eingeordnet!' : '✕ Nicht ganz!';
   const detail = document.createElement('p'); detail.textContent = `${questionFor(track)} Antwort: ${track.year}. ${right ? '+1 Punkt' : 'Kein Punkt in dieser Runde.'}`;
   ui.result.append(heading, detail);
   renderTimeline(); renderScores();
-  if (player.score >= 8) { finish(player); return; }
+  if (player.score >= 8) { finish(player); state.pair?.broadcast(); return; }
   ui.next.classList.remove('hidden');
   ui.next.textContent = state.players.length > 1 ? `Weiter: ${state.players[(state.active + 1) % state.players.length].name} →` : 'Nächster Song →';
   ui.next.onclick = () => { state.active = (state.active + 1) % state.players.length; nextRound(); };
+  state.pair?.broadcast();
 }
 
 function renderScores() {

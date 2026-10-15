@@ -13,11 +13,11 @@
 <body>
   <canvas id="stage" aria-hidden="true"></canvas>
   <div class="grain" aria-hidden="true"></div>
-  <main class="shell">
+  <main class="shell" id="appShell">
     <header class="topbar">
       <a class="back" href="../" aria-label="Zurück zu easygames">← easygames</a>
       <span class="eyebrow"><span class="live-dot"></span> DAS MUSIK-ZEITSPIEL</span>
-      <button id="soundToggle" class="sound-toggle" type="button" aria-pressed="true">🔊 Vito an</button>
+      <div class="header-actions"><button id="tvToggle" class="sound-toggle" type="button" aria-pressed="false">📺 TV-Modus</button><button id="pairToggle" class="sound-toggle" type="button">📱 Handys koppeln</button><button id="soundToggle" class="sound-toggle" type="button" aria-pressed="true">🔊 Vito an</button></div>
     </header>
 
     <section class="hero" id="setup">
@@ -40,7 +40,7 @@
         <label class="small-label filter-label" for="category">MUSIKAUSWAHL</label>
         <select id="category"><option value="all">Alle 10 Kategorien · 300 Fragen</option></select>
         <button id="start" class="primary" type="button">▶  Spiel starten</button>
-        <div class="tiny-note">Mit Klick auf Start aktivierst du Ton und die Stimme von Moderator Vito. Musikvideos werden erst nach deinem Klick geladen.</div>
+        <div class="tiny-note">Fürs gemeinsame Spielen am Fernseher: TV-Modus einschalten, Handys mit WR-Code und PIN verbinden. <a href="?controller=1">Dieses Gerät als Handy-Controller verwenden</a>. Mit Klick auf Start aktivierst du Ton und die Stimme von Vito.</div>
       </div>
     </section>
 
@@ -64,5 +64,7 @@
     </section>
     <footer>ZEITSPRUNG RADIO · Ein eigenständiges Musik-Zeitspiel · Videos: YouTube Privacy Enhanced Mode</footer>
   </main>
+  <div id="pairPanel" class="pair-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pairTitle"><div class="pair-card"><div class="pair-head"><span class="small-label">HANDYS KOPPELN · WEBRTC</span><button id="pairClose" type="button" aria-label="Schließen">✕</button></div><h2 id="pairTitle">Mit dem Fernseher verbinden</h2><p>Auf dem Handy QR-Code scannen oder die Spieladresse öffnen und „Handy-Controller“ wählen. Dann WR-Code und PIN eingeben.</p><div class="pair-data"><div><span>WR-CODE</span><strong id="roomCode">…</strong></div><div><span>PIN</span><strong id="roomPin">••••</strong></div></div><div id="pairQr" class="pair-qr" aria-label="QR-Code zum Beitreten"></div><a id="pairLink" target="_blank" rel="noopener noreferrer"></a><p id="pairStatus" class="pair-status">Kopplung wird vorbereitet …</p><p id="pairMembers">Noch kein Handy verbunden</p><button id="pairDone" class="primary" type="button">Zurück zum Spiel</button></div></div>
+  <main id="controller" class="controller hidden"></main>
 </body>
 </html>
