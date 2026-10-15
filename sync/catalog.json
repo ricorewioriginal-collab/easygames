@@ -6,14 +6,14 @@
  },
  "games": [
   {
-   "id": "spielename",
+   "id": "kraterkommando",
    "title": "Kraterkommando 3D",
    "desc": "Eigenständiges 3D-Artilleriespiel: zwei Teams mit sechs Figuren, rundenbasierte Kämpfe gegen Computer oder lokal zu zweit, verformbares Gelände, Wind, fünf Waffen, Touch-/PC-Steuerung und Google-Spielstand.",
    "icon": "🚀",
-   "img": "spielename/card.svg",
+   "img": "kraterkommando/card.svg",
    "bg": "linear-gradient(145deg,#112c53,#194e58 55%,#74efce)",
    "glow": "rgba(116,239,206,.55)",
-   "path": "spielename/",
+   "path": "kraterkommando/",
    "modes": {},
    "multiplayer": false,
    "guide": null,

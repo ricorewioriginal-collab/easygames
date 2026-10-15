@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5c9859f4f3ca",
- "generated": "2026-10-15T08:30:10+02:00",
- "commit": "480a8a3879863282fc2b55cfbb9fec321418c07b",
+ "version": "2d30a884ba89",
+ "generated": "2026-10-15T08:32:29+02:00",
+ "commit": "f9af0d6aa7227a763cd50e0003473ae39f256051",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 17772,
-   "h": "9109ff674d2b18afd7363ff2bf464cf470ee341f8bd5718110d6276770b27ff7"
+   "s": 17784,
+   "h": "5993160cc396a382bc982e2f9d3dbe8a77284e8bc93718dd55f20d03b1eb003c"
   },
   {
    "p": "gay-life/index.html",
@@ -4770,6 +4770,26 @@
    "p": "index.html",
    "s": 51695,
    "h": "851ef7ad92061e1e7e14c969af325971510d748316a3d1edcddd87368d6b1097"
+  },
+  {
+   "p": "kraterkommando/card.svg",
+   "s": 1195,
+   "h": "8ef8fea4eee3d1a502143509ac7ae14e54dc155d2ebbac5592c60cee1291f0f6"
+  },
+  {
+   "p": "kraterkommando/game.js",
+   "s": 30030,
+   "h": "efe5eaabdb9ddd875107968eded4d1aadb89cfb876ee795a4cabe3e96f1c1543"
+  },
+  {
+   "p": "kraterkommando/index.html",
+   "s": 4578,
+   "h": "97ce7c215e4d2efc6bbd56434e2091b07bfa65e8daf158eb5ec3437ff5e3ebe4"
+  },
+  {
+   "p": "kraterkommando/style.css",
+   "s": 6706,
+   "h": "7b57318c6d1e4d0240abf6f22ff18e688508a1a69d7a83dc96d83d7790563937"
   },
   {
    "p": "lumo/audio.js",
@@ -5377,29 +5397,9 @@
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
   },
   {
-   "p": "spielename/card.svg",
-   "s": 1195,
-   "h": "8ef8fea4eee3d1a502143509ac7ae14e54dc155d2ebbac5592c60cee1291f0f6"
-  },
-  {
-   "p": "spielename/game.js",
-   "s": 30030,
-   "h": "efe5eaabdb9ddd875107968eded4d1aadb89cfb876ee795a4cabe3e96f1c1543"
-  },
-  {
-   "p": "spielename/index.html",
-   "s": 4578,
-   "h": "97ce7c215e4d2efc6bbd56434e2091b07bfa65e8daf158eb5ec3437ff5e3ebe4"
-  },
-  {
-   "p": "spielename/style.css",
-   "s": 6706,
-   "h": "7b57318c6d1e4d0240abf6f22ff18e688508a1a69d7a83dc96d83d7790563937"
-  },
-  {
    "p": "sync/catalog.json",
-   "s": 73609,
-   "h": "395ff9b8ac9defbc7e8ec051c9cf8e487c0824aab0ce513fcadfb66dc3612a68"
+   "s": 73621,
+   "h": "0a8280c822f26baa034af4376be48dd4cf5048d4e964021ef80786c58992962a"
   },
   {
    "p": "taschi/card.svg",
