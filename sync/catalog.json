@@ -6,6 +6,33 @@
  },
  "games": [
   {
+   "id": "radio-maze",
+   "title": "AnMaCha Radio Maze 3D",
+   "desc": "Modernes 3D-Radio-Labyrinth mit 60 Leveln in 6 Radiowelten, 13 originalen Senderlogos, Geistern, Verstärkern, Leben und Highscore. Vollbild, Handy-/PC-Steuerung, Offline-PWA und optionaler Google-Cloud-Spielstand.",
+   "icon": "📻",
+   "img": "radio-maze/card.svg",
+   "bg": "linear-gradient(145deg,#0a183d,#1c5fa3 52%,#b82d89)",
+   "glow": "rgba(75,233,255,.55)",
+   "path": "radio-maze/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "AnMaCha Radio Maze 3D ist ein 3D-Arcade-Labyrinthspiel mit 60 nachspielbaren Leveln in sechs Radiowelten. Sammle alle Frequenzpunkte, Verstärker und Senderlogos, während dich bis zu vier Geister verfolgen. Leuchtende Verstärker machen die Geister acht Sekunden lang fangbar. Es gibt vier Startleben, Bonuspunkte und dauerhaft freischaltbare Level. Hauptmenü, Pause, Vollbild und Levelauswahl sind integriert. Der laufende Spielstand wird lokal gespeichert, optional über die vorhandene Google-Cloud-Verbindung synchronisiert.",
+    "steuerung": [
+     "PC: Pfeiltasten oder WASD zum Steuern, P oder Esc für Pause, F für Vollbild.",
+     "Smartphone und Tablet: Steuerkreuz oder Fingerwisch in Spielrichtung; die Buttons oben steuern Pause, Ton und Vollbild.",
+     "Sammle alle Punkte, Power-Ups und Senderlogos, um das Level abzuschließen. Bei aktivem Verstärker können Geister gefangen werden."
+    ],
+    "tipps": [
+     "Grüne, goldene und neonfarbene Labyrinthwelten werden mit fortschreitenden Leveln anspruchsvoller.",
+     "Bei Google-Anmeldung wird zusätzlich in Firebase gespeichert; Offline-Nutzung bleibt lokal möglich."
+    ]
+   },
+   "size": 51041,
+   "files": 8,
+   "offline": true
+  },
+  {
    "id": "zeitsprung-movie",
    "title": "ZEITSPRUNG MOVIE",
    "desc": "Moderierte 3D-Filmshow mit 398 Fragen: 318 Film- und Serienquizfragen, 38 Hörfragen mit Deezer/Spotify-Musik und 42 Bildrätsel. Dazu 12 Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
