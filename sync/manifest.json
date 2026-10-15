@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "be49c7c0a0a4",
- "generated": "2026-10-15T04:29:25.616Z",
+ "version": "b409256c6af5",
+ "generated": "2026-10-15T04:41:28.749Z",
  "commit": "575a112b1c73d48e7333a652f4c45a63f8d80b43",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4818,8 +4818,8 @@
   },
   {
    "p": "mimori/game.js",
-   "s": 44902,
-   "h": "ca73b514a8850f39db5348f2cbc255d20ffa3c59f9543a83f7ce4a5dec5c5d0a"
+   "s": 44933,
+   "h": "b5c987839e0f5dbebd5ab5d74bd1cd4235187576685500cc9533912f24ce961d"
   },
   {
    "p": "mimori/home.css",
@@ -4873,8 +4873,8 @@
   },
   {
    "p": "mimori/scene-ui.js",
-   "s": 7197,
-   "h": "1e45f9d2af0bb0de49a66846e7d25d8ffab68a84d31da61476ce53e78657b56f"
+   "s": 7333,
+   "h": "46fbbcdbb64a7009114852f8f2f3f65385e8d75eba2bef7c702aa7765133383b"
   },
   {
    "p": "mimori/sound.js",
@@ -4884,7 +4884,7 @@
   {
    "p": "mimori/sw.js",
    "s": 1811,
-   "h": "64ca81c048d8535cda0e4e8e74699fd4d591a312c965fb2738c69593bfb836dd"
+   "h": "310074ec48175ad3ae7e04d8c61ba339e6c9d6075689fc5f9b2f10a60edf012c"
   },
   {
    "p": "modes.js",
@@ -5339,7 +5339,7 @@
   {
    "p": "sync/catalog.json",
    "s": 69933,
-   "h": "27b1efe3fa880d504bae325b136ed4e356f1fbb3b9525dbd4c14e561c72feecb"
+   "h": "2ab80a230cdbcdbbc451e41f446ceffa6722ab469c64fc1f21c463da2bf03eaf"
   },
   {
    "p": "taschi/card.svg",
