@@ -1,0 +1,88 @@
+/* Mimori scene refinements – all controls visible and tappable in one game window. */
+:root{--roomnav-height:43px}
+.layout>.scene{position:relative}
+#familyRoomBar{top:8px!important;left:50%;right:auto;width:min(490px,calc(100% - 15px));
+ height:var(--roomnav-height);padding:4px 6px;z-index:26!important;transform:translateX(-50%);
+ background:#342648ee;backdrop-filter:blur(14px);box-shadow:0 3px 17px #20132b5c}
+#familyRoomBar .worldLabel{font-size:clamp(11px,2.5vw,14px);font-weight:850}
+#familyRoomBar button{min-width:37px;min-height:32px;height:34px;border-radius:10px}
+.sceneTop{top:58px!important;z-index:18!important;left:10px;right:10px}
+.sceneTop .nameBox{padding:7px 9px}
+.miniVitals{position:absolute;z-index:19;top:124px;left:9px;right:9px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+ gap:4px;min-height:37px;padding:5px;border:1px solid #e4d0e4a6;border-radius:12px;
+ background:#302445e8;box-shadow:0 4px 14px #140f2d57;backdrop-filter:blur(10px)}
+.miniVitals>span{display:flex;flex-wrap:wrap;gap:3px;align-items:center;justify-content:center;
+ color:#fff5ec;font-size:11px;line-height:1.2;min-width:0}
+.miniVitals b{font-size:11px;font-variant-numeric:tabular-nums}
+.miniVitals i{flex:0 0 100%;height:3px;border-radius:10px;overflow:hidden;background:#e5e1e35a}
+.miniVitals em{display:block;width:82%;height:100%;border-radius:10px;background:#8ee3af;transition:width .25s}
+.miniVitals span.low{color:#ffd0c1}.miniVitals span.low em{background:#ff927f}
+#petAlert{top:173px!important;right:8px!important;left:auto!important}
+#sleepStatus{top:173px!important}
+#worldOverlay{z-index:34!important}
+#settingsDrawer{z-index:37!important}
+#settingsDrawer .drawerPanel{max-height:calc(100% - 65px);overflow-y:auto;overscroll-behavior:contain;
+ padding-bottom:calc(15px + env(safe-area-inset-bottom))}
+#settingsDrawer .drawerHead{position:sticky;top:-13px;z-index:3;background:#39304ef2;backdrop-filter:blur(14px);
+ padding:8px 8px;border-radius:10px}
+.sceneSheet{z-index:23!important}
+.sceneDock{z-index:22!important}
+#familyRoomBar button:active,.radioHotspot:active{transform:scale(.95)}
+.radioHotspot{position:absolute;z-index:14;left:3%;top:40%;background:#e9d8a8dd;color:#35274c;
+ border:2px solid #fff7df;border-radius:15px;padding:7px 9px;display:flex;gap:4px;align-items:center;
+ box-shadow:0 5px 13px #291b3d88;font-weight:900;font-size:12px;animation:radioBreath 2.9s ease-in-out infinite}
+.radioHotspot[hidden],.partnerNameTags[hidden]{display:none!important}
+.partnerNameTags{position:absolute;z-index:14;top:59%;left:0;right:0;pointer-events:none;
+ display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.partnerNameTags span{color:#fff7ef;background:#68406cdd;border:1px solid #e0b4ce;border-radius:15px;
+ font-size:10px;padding:4px 8px;max-width:31%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@keyframes radioBreath{50%{box-shadow:0 3px 24px #e6c691bb}}
+.settingsButtons [data-appearance]{flex:1;min-width:0;border:2px solid #a88da9!important;color:#f9e9ec;
+ border-radius:12px;background:#59476d!important;font-size:12px;font-weight:850;padding:13px 5px!important;
+ box-shadow:none!important;transition:transform .12s,background .15s,border-color .15s,box-shadow .15s}
+.settingsButtons [data-appearance].selected,.settingsButtons [data-appearance][aria-pressed="true"]{
+ border-color:#ffdf8c!important;background:#826a9f!important;color:#fff7df!important;
+ box-shadow:0 0 0 3px #efc9854d,0 0 20px #edcfa081!important;transform:translateY(-2px)}
+.colorPicker{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 18px}
+.colorPicker button{width:100%;height:54px;background:var(--fur);border:3px solid #e3d1ed;border-radius:14px;
+ box-shadow:inset 0 -9px 9px #0002,0 3px 1px #2d294b66;position:relative;cursor:pointer}
+.colorPicker button span{display:none;position:absolute;inset:0;place-items:center;color:#242139;
+ font-size:23px;font-weight:1000;text-shadow:0 1px #fff}
+.colorPicker button.selected{border:4px solid #ffdfa0;box-shadow:0 0 0 3px #8b6bc8,0 0 18px #ffe4ab;
+ transform:scale(1.035)}.colorPicker button.selected span{display:grid}
+#changeColor{border-color:#bda1de}
+.shopGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.shopGrid button{min-height:80px;font-size:10px;padding:7px 2px;overflow-wrap:anywhere;box-shadow:none}
+.shopGrid button b{font-size:25px}.shopGrid button small{font-size:9px}
+.shopGrid button.shopActive{box-shadow:0 0 0 3px #e9ce88,0 0 16px #ead397ab}
+.worldRoomGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.worldTile{min-height:72px;padding:6px 3px}.worldTile strong{font-size:10px}
+.worldTile b{font-size:23px}
+.worldPanel h3{font-size:15px}
+.worldPanel section>p{margin:3px 0 7px}
+.worldTabs button.selected{box-shadow:inset 0 -3px #f2d7a0}
+#radioSection .radioStations{gap:6px}
+@media (max-width:420px){
+ #familyRoomBar{top:4px!important;--roomnav-height:39px}
+ #familyRoomBar button{min-width:33px;min-height:30px;height:32px}
+ .sceneTop{top:51px!important}
+ .miniVitals{top:112px;padding:4px;min-height:35px}
+ .miniVitals>span{font-size:10px}.miniVitals b{font-size:10px}
+ #petAlert,#sleepStatus{top:159px!important}
+ .shopGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .worldRoomGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .radioHotspot{font-size:11px;left:2%;top:41%;padding:5px 7px}
+ .radioHotspot span{display:none}
+ .partnerNameTags{top:60%}
+}
+@media(max-height:590px) and (orientation:landscape){
+ #familyRoomBar{top:3px!important;left:50%;width:min(370px,56%);height:31px;--roomnav-height:30px}
+ #familyRoomBar button{height:25px;min-height:25px}
+ .sceneTop{top:37px!important}
+ .miniVitals{top:auto;bottom:calc(var(--mimori-dock-h) + 2px);left:50%;
+ transform:translateX(-50%);width:min(370px,57%);min-height:25px;padding:3px}
+ #petAlert{top:83px!important}
+ .radioHotspot{top:34%}
+ .shopGrid{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){.radioHotspot{animation:none}}
