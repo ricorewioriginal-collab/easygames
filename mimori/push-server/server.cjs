@@ -36,10 +36,10 @@ function stripPet(p){
  return fresh;
 }
 function stripSettings(s){
- s=s||{};return {threshold:Math.max(20,Math.min(60,Number(s.threshold)||35)),
- cooldownHours:Math.max(2,Math.min(24,Number(s.cooldownHours)||5)),
- quietStart:Math.max(0,Math.min(23,Number(s.quietStart)||22)),
- quietEnd:Math.max(0,Math.min(23,Number(s.quietEnd)??8)),
+ s=s||{};return {threshold:Math.max(20,Math.min(60,Number(s.threshold??35)||35)),
+ cooldownHours:Math.max(2,Math.min(24,Number(s.cooldownHours??5)||5)),
+ quietStart:Math.max(0,Math.min(23,Number(s.quietStart??22))),
+ quietEnd:Math.max(0,Math.min(23,Number(s.quietEnd??8))),
  offsetMinutes:Math.max(-720,Math.min(840,Number(s.offsetMinutes)||0))};
 }
 async function persist(){
@@ -74,7 +74,7 @@ function rateLimit(req){
  return r.count<=45;
 }
 async function handler(req,res){
- if(req.url==='/api/health'){reply(res,200,{ok:true,service:'Mimori Push',devices:Object.keys(db).length});return}
+ if(req.url==='/api/health'){reply(res,200,{ok:true,service:'Mimori Push'});return}
  if(!cors(req,res)){reply(res,403,{error:'origin not allowed'});return}
  if(req.method==='OPTIONS'){res.writeHead(204);res.end();return}
  if(req.method==='GET'&&req.url==='/api/config'){reply(res,200,{publicKey});return}
