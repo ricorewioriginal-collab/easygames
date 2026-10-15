@@ -25,11 +25,32 @@
     shotgun: { radius: 1.8, damage: 32, ammo: 3 }
   };
   const weaponLabels = { rocket: ['🚀', 'Rakete'], grenade: ['💣', 'Granate'], cluster: ['✨', 'Streubombe'], airstrike: ['✈️', 'Luftschlag'], teleport: ['🌀', 'Teleport'], homing: ['🎯', 'Lenkrakete'], dynamite: ['🧨', 'Dynamit'], drill: ['🌀', 'Bohrer'], shotgun: ['🔫', 'Schrotflinte'] };
+  const quips = {
+    turn: ['So. Wer möchte heute enttäuscht werden?', 'Ich hab einen Plan. Er ist nur nicht gut.', 'Kurze Frage: Wer von euch kann schwimmen?', 'Keine Sorge, ich ziele nur ungefähr.', 'Ich bin dran. Eure Lebensentscheidungen auch.'],
+    fire: ['Liefere jetzt schlechte Nachrichten per Express!', 'Das ist keine Rakete, das ist Kritik.', 'Bitte lächeln. Für den Krater.', 'Ich nenne das diplomatische Eskalation.', 'Kopf hoch. Noch.'],
+    hit: ['Sogar dein Schatten ist jetzt beleidigt.', 'Treffer! Dein Schutzengel hat gekündigt.', 'Das war Absicht. Ausnahmsweise.', 'Du hast gerade Bodenhaftung beantragt.', 'Die Landschaft steht dir besser als Deckung.'],
+    hurt: ['Wow. Und ich mochte dieses Körperteil.', 'War das ein Angriff oder eine Charakterstudie?', 'Okay, das war unhöflich präzise.', 'Mein Anwalt hört von dir. Wenn ich einen finde.', 'Ich hab schon sanftere Autotüren erlebt.'],
+    death: ['Ich geh dann mal… sehr weit nach unten.', 'Sagt meiner Deckung, sie war nutzlos.', 'Das war strategischer Rückzug. Für immer.', 'War schön. Für euch offenbar.'],
+    miss: ['Der Boden hat sich wenigstens erschrocken.', 'Mein Ziel war die Atmosphäre. Getroffen.', 'Nur ein Warnschuss. Für die Physik.', 'Die Rakete hatte eigene Pläne.', 'Nicht verfehlt. Weiträumig beleidigt.'],
+    victory: ['Ich nehme Dankesreden in bar.', 'Taktik? Nein. Aber es sah teuer aus.', 'Der Krater bekommt meinen Namen.', 'Für euch war das Lernen. Für mich Dienstag.'],
+    pass: ['Ich schenke euch einen Zug. Bereut ihn.', 'Großzügigkeit ist meine gefährlichste Waffe.'],
+    timeout: ['Die Uhr ist eindeutig gegen mich.', 'Zu spät? Ich nenne das dramatisch.'],
+    teleport: ['Ich bin dann mal woanders besser.', 'Überraschung! Ich kann auch weglaufen.']
+  };
+  const signatureQuips = {
+    Nova: 'Ich bin nicht aggressiv. Nur sehr überzeugend bewaffnet.',
+    Keks: 'Man hat mich unterschätzt. Ausnahmsweise ein Fehler.',
+    Pixel: 'Ich ziele in 4K. Du weichst in 144p aus.',
+    Funk: 'Ist das Mikro an? Gut, gleich wird’s peinlich.',
+    Momo: 'Ich schieße erst und lese dann die Anleitung.',
+    Komet: 'Mein Auftritt wird einschlagen. Wortwörtlich.'
+  };
   let scene, camera, renderer, terrain, aimLine, selection, impactRing, clock, raycaster, water, base;
   let S = null, active = false, paused = false, busy = false, projectile = null, particles = [], botTimeout = 0;
   let bodies = [], deco = [], coverMeshes = [], cameraAz = .72, camDistance = 26, cameraFocus = null, overview = false, stickX = 0, stickY = 0, charging = false;
   const pressed = new Set();
-  let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0, matchId = 0, shake = 0, audioContext = null, soundEnabled = true, musicAcc = 0, musicStep = 0, lastFlash = 0;
+  let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0, matchId = 0, shake = 0, audioContext = null, soundEnabled = true, musicAcc = 0, musicStep = 0, lastFlash = 0, actionDamage = 0, actionFired = false;
+  const speeches = [], lastQuip = new Map();
   const materials = {};
   function sound(freq, duration = .16, type = 'square', gain = .035) {
     if (!soundEnabled) return;
@@ -78,6 +99,40 @@
   function announce(s, ms = 2200) {
     $('message').textContent = s; $('message').classList.add('show');
     clearTimeout(messageTimer); messageTimer = setTimeout(() => $('message').classList.remove('show'), ms);
+  }
+  function clearSpeeches() {
+    for (const item of speeches) item.el.remove();
+    speeches.length = 0;
+  }
+  function say(unit, event) {
+    if (!unit || !quips[event] || !active) return;
+    const key = unit.name + ':' + event, lines = quips[event];
+    const previous = lastQuip.get(key);
+    const choices = lines.filter(line => line !== previous);
+    const line = event === 'turn' && Math.random() < .42 ? signatureQuips[unit.name] || choices[0] : choices[Math.floor(Math.random() * choices.length)];
+    lastQuip.set(key, line);
+    for (let i = speeches.length - 1; i >= 0; i--) if (speeches[i].unit === unit) { speeches[i].el.remove(); speeches.splice(i, 1); }
+    if (speeches.length >= 2) speeches.shift().el.remove();
+    const el = document.createElement('div'); el.className = 'speech-bubble ' + (unit.team ? 'blue' : 'red');
+    const speaker = document.createElement('strong'), words = document.createElement('span');
+    speaker.textContent = unit.name; words.textContent = line; el.append(speaker, words); $('game').appendChild(el);
+    speeches.push({ unit, el, expires: performance.now() + (event === 'death' || event === 'victory' ? 3800 : 2700) });
+    const pitch = 450 + S.units.indexOf(unit) * 45;
+    sound(pitch, .08, 'triangle', .012);
+    setTimeout(() => sound(pitch * .86, .07, 'triangle', .009), 85);
+    updateSpeeches(performance.now());
+  }
+  function updateSpeeches(now) {
+    for (let i = speeches.length - 1; i >= 0; i--) {
+      const item = speeches[i];
+      if (now > item.expires || !active) { item.el.remove(); speeches.splice(i, 1); continue; }
+      const u = item.unit, point = new THREE.Vector3(u.x, height(u.x, u.z) + 3.1, u.z).project(camera);
+      const x = (point.x + 1) * innerWidth / 2, y = (1 - point.y) * innerHeight / 2;
+      const offscreen = point.z < -1 || point.z > 1 || x < 20 || x > innerWidth - 20 || y < 110 || y > innerHeight - 150;
+      item.el.classList.toggle('offscreen', offscreen);
+      item.el.style.left = (offscreen ? innerWidth / 2 : clamp(x, 105, innerWidth - 105)) + 'px';
+      item.el.style.top = (offscreen ? 145 + i * 66 : y - 4) + 'px';
+    }
   }
   function save() {
     if (!S) return;
@@ -345,7 +400,7 @@
     });
   }
   function damageBlast(x, y, z, radius, maxDamage) {
-    let total = 0;
+    let total = 0, biggest = null, biggestAmount = 0;
     for (const u of S.units) {
       if (u.hp <= 0) continue;
       const d = Math.hypot(u.x - x, u.z - z, height(u.x, u.z) + .7 - y);
@@ -355,10 +410,11 @@
         amount = Math.min(u.hp, amount);
         u.hp = Math.max(0, u.hp - amount);
         total += amount;
+        if (amount > biggestAmount) { biggest = u; biggestAmount = amount; }
         if (amount > 0) damageNumber(u, amount);
       }
     }
-    return total;
+    return { total, biggest, biggestAmount };
   }
   function damageNumber(u, amount) {
     const point = new THREE.Vector3(u.x, height(u.x, u.z) + 2.3, u.z).project(camera);
@@ -404,8 +460,13 @@
       const flash = $('impactFlash'); flash.classList.remove('active'); void flash.offsetWidth; flash.classList.add('active'); lastFlash = performance.now();
     }
     if (navigator.vibrate) navigator.vibrate(70);
-    const total = damageBlast(x, y, z, w.radius * factor, w.damage * factor);
-    if (total > 0) sound(310, .19, 'triangle', .045);
+    const hit = damageBlast(x, y, z, w.radius * factor, w.damage * factor);
+    actionDamage += hit.total;
+    if (hit.total > 0) {
+      sound(310, .19, 'triangle', .045);
+      if (hit.biggestAmount >= 5) say(hit.biggest, hit.biggest.hp <= 0 ? 'death' : 'hurt');
+      if (hit.biggest && hit.biggest.team !== S.team) say(S.units[S.current], 'hit');
+    }
     damageCovers(x, z, w.radius * factor, w.damage * factor);
     crater(x, z, w.radius * .75 * factor, w.radius * .75 * factor);
     // Stürze durch frische Krater richten zusätzlichen Schaden an.
@@ -455,6 +516,8 @@
     projectile = null;
   }
   function finishAction() {
+    if (actionFired && actionDamage === 0) say(S.units[S.current], 'miss');
+    actionFired = false;
     busy = true; updateAim(); save();
     clearTimeout(nextTurnTimer);
     nextTurnTimer = setTimeout(function advance() {
@@ -465,7 +528,7 @@
     }, 1350);
   }
   function nextTurn() {
-    clearTimeout(botTimeout); busy = false;
+    clearTimeout(botTimeout); busy = false; actionDamage = 0; actionFired = false;
     let team = 1 - S.team;
     let choices = S.units.map((u, i) => ({ u, i })).filter(o => o.u.team === team && o.u.hp > 0);
     if (!choices.length) return endMatch(1 - team);
@@ -479,13 +542,16 @@
     S.yaw = team ? -90 : 90; S.angle = 45; S.power = 70; S.weapon = 'rocket';
     syncControls(); updateHud(); updateAim(); save();
     announce((team ? 'Blau' : 'Rot') + ' ist am Zug: ' + S.units[S.current].name);
+    say(S.units[S.current], 'turn');
     scheduleBot();
   }
   function endMatch(winner) {
     active = false; busy = true; clearTimeout(botTimeout); clearTimeout(nextTurnTimer);
     S.winner = winner; save();
     $('resultTitle').textContent = winner === 0 ? 'Team Rot gewinnt!' : 'Team Blau gewinnt!';
-    $('resultText').textContent = `Nach ${S.round} Runden steht der Sieger fest. Rot: ${teamHealth(0)} LP · Blau: ${teamHealth(1)} LP.`;
+    const champion = S.units.find(u => u.team === winner && u.hp > 0);
+    const victory = quips.victory[Math.floor(Math.random() * quips.victory.length)];
+    $('resultText').textContent = `Nach ${S.round} Runden steht der Sieger fest. Rot: ${teamHealth(0)} LP · Blau: ${teamHealth(1)} LP. ${champion?.name || 'Das Team'}: „${victory}“`;
     $('result').hidden = false;
   }
   function fire(allowBot = false) {
@@ -495,6 +561,8 @@
     const kind = S.weapon;
     if (kind !== 'rocket' && (u.ammo[kind] || 0) <= 0) { announce('Diese Waffe ist aufgebraucht'); return; }
     if (kind !== 'rocket') u.ammo[kind]--;
+    actionDamage = 0; actionFired = kind !== 'teleport';
+    say(u, kind === 'teleport' ? 'teleport' : 'fire');
     busy = true; updateHud(); updateAim(); save();
     sound(kind === 'shotgun' ? 240 : 510, .12, 'sawtooth', .04);
     const thisMatch = matchId;
@@ -739,10 +807,11 @@
     if (!S) return;
     sound(660, .18, 'triangle', .032);
     if (!continued) save();
+    clearSpeeches(); actionDamage = 0; actionFired = false;
     active = true; paused = false; busy = false; charging = false; overview = false; $('viewBtn').classList.remove('selected'); stickX = stickY = 0; cameraFocus = null;
     $('pause').hidden = true; $('result').hidden = true; $('weaponPanel').hidden = true; $('aimPanel').hidden = true;
     applyWorld(); meshTerrain(); rebuildCovers(); syncBodies(); syncControls(); updateHud(); updateAim(); show('game');
-    S.winner == null ? (announce(worlds[S.world].name + ' · Team ' + (S.team ? 'Blau' : 'Rot') + ' beginnt!'), scheduleBot()) : endMatch(S.winner);
+    S.winner == null ? (announce(worlds[S.world].name + ' · Team ' + (S.team ? 'Blau' : 'Rot') + ' beginnt!'), say(S.units[S.current], 'turn'), scheduleBot()) : endMatch(S.winner);
   }
   function resize() {
     if (!renderer) return;
@@ -769,6 +838,7 @@
     const dt = Math.min(.04, last ? (time - last) / 1000 : .016); last = time;
     if (S) {
       cameraUpdate(dt);
+      updateSpeeches(time);
       musicTick(dt);
       if (active && !paused) {
         const inputX = stickX + (pressed.has('d') || pressed.has('arrowright') ? 1 : 0) - (pressed.has('a') || pressed.has('arrowleft') ? 1 : 0);
@@ -786,7 +856,7 @@
         if (timerAcc >= .1 && !busy) {
           S.seconds = Math.max(0, S.seconds - timerAcc); timerAcc = 0;
           $('timer').textContent = Math.ceil(S.seconds); $('timer').classList.toggle('urgent', S.seconds <= 10);
-          if (S.seconds <= 0) { announce('Zeit abgelaufen!'); finishAction(); }
+          if (S.seconds <= 0) { announce('Zeit abgelaufen!'); say(S.units[S.current], 'timeout'); finishAction(); }
         }
         if (projectile) {
           const p = projectile; p.age += dt; flightTime += dt;
@@ -977,7 +1047,7 @@
     $('againBtn').onclick = () => startGame(false);
     $('resultMenuBtn').onclick = () => { $('result').hidden = true; show('menu'); $('continueGame').hidden = true; };
     $('jumpBtn').onclick = jump;
-    $('skipBtn').onclick = () => { if (!busy && !isBotTurn()) { announce('Zug beendet'); finishAction(); } };
+    $('skipBtn').onclick = () => { if (!busy && !isBotTurn()) { announce('Zug beendet'); say(S.units[S.current], 'pass'); finishAction(); } };
     $('weaponBtn').onclick = () => { if (active && !busy) { $('aimPanel').hidden = true; $('weaponPanel').hidden = false; } };
     $('aimBtn').onclick = () => { if (active && !busy) { $('weaponPanel').hidden = true; $('aimPanel').hidden = false; } };
     $('targetSelect').onchange = () => {
