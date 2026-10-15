@@ -19,7 +19,7 @@ function start({target,getPet,getHouse,onCuddle,onError}){
  const box=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h)};
  function render(ms){
   if(closed)return;
-  const w=target.clientWidth||360,h=target.clientHeight||590,pix=clamp(root.devicePixelRatio||1,1,1.5);
+  const w=target.clientWidth||360,h=target.clientHeight||590,pix=clamp((typeof window!=='undefined'?window.devicePixelRatio:1)||1,1,1.5);
   if(canvas.width!==Math.floor(w*pix)||canvas.height!==Math.floor(h*pix)){canvas.width=Math.floor(w*pix);canvas.height=Math.floor(h*pix)}
   c.setTransform(pix,0,0,pix,0,0);
   const pet=getPet(),room=clamp(getHouse().room||0,0,11);
