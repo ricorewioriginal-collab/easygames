@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "c5bc255d598f",
- "generated": "2026-10-15T01:38:58.296Z",
+ "version": "c451d638c037",
+ "generated": "2026-10-15T01:41:36.858Z",
  "commit": "13f05f4d8693c5faf39e357822a03ff5d4c2fd2a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 42225,
-   "h": "64a3e8fc5e55223b8294fb1609177768285af56e7425a289cd516fb1f6cce51f"
+   "s": 42488,
+   "h": "6cd3d8672307c5c8b2d5e6933cec9a57a9f8360e71a3ebe6b3e49706009d4b16"
   },
   {
    "p": "index.html",
@@ -4793,8 +4793,8 @@
   },
   {
    "p": "mimori/game.js",
-   "s": 15030,
-   "h": "a257f59bc1a9592afaa07e5a0ece0861736752f928cfd1523c57ddd5cf361e70"
+   "s": 15369,
+   "h": "3b07b9c925176acf213a7af1baa9052f59d465276467716092e06e0fffe4f52a"
   },
   {
    "p": "mimori/icon.svg",
@@ -4803,8 +4803,8 @@
   },
   {
    "p": "mimori/index.html",
-   "s": 12059,
-   "h": "fb8a79064514499d7bc97441f7afc054970d57bd584561fe159977d131251afe"
+   "s": 12225,
+   "h": "67107b7f41f1ff546658e28a3c9d2dbb4ee8fe6cbe8725aae1f8ffe528eb8eb4"
   },
   {
    "p": "mimori/manifest.webmanifest",
@@ -4824,7 +4824,7 @@
   {
    "p": "mimori/sw.js",
    "s": 1855,
-   "h": "a73ee98431c5b6f54efbd28803e445e3c276ac3d8423069b9fb8d52b958141f2"
+   "h": "ec3fb414c121ab6940446ea9cc5c9300e39d87e93293499d6b9fa52231b3ce6a"
   },
   {
    "p": "modes.js",
@@ -5278,8 +5278,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 64553,
-   "h": "65bd1d1fc7476eea6b1ffb0cf134e222e82720532e1f8d40a4bb22f897baf506"
+   "s": 64822,
+   "h": "326fc57f94263e1e78a93ba9d00d814d64616861e939e5efa8aeaf55007ee97a"
   },
   {
    "p": "taschi/card.svg",

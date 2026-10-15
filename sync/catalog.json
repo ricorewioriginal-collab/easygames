@@ -17,7 +17,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Mimori ist dein selbst gestaltetes 3D-Haustier! Sorge dafür, dass es satt, glücklich, ausgeruht und sauber bleibt. Das Spiel rechnet die vergangene Zeit auch bei geschlossenem Browser nach. Füttere es, spiele, wasche und kuschle. Im Sternfang-Minispiel gibt es neue Beeren und Seife. Mit Erfahrung und Fürsorge entwickelt es sich zu neuen Formen. Es gibt keinen Zwang zu Käufen und keinen permanenten Tod.",
+    "anleitung": "Mimori ist dein selbst gestaltetes 3D-Haustier! Sorge dafür, dass es satt, glücklich, ausgeruht und sauber bleibt. Das Spiel rechnet die vergangene Zeit auch bei geschlossenem Browser nach. Füttere es, spiele, wasche und kuschle. Im Sternfang-Minispiel gibt es neue Beeren und Seife. Mit Erfahrung und Fürsorge entwickelt es sich zu neuen Formen. Es gibt keinen Zwang zu Käufen und keinen permanenten Tod. Mimori besitzt außerdem einen Gesundheitswert: Werden mehrere Bedürfnisse zu lange vernachlässigt, sinkt die Gesundheit langsam. Fürsorge kann sie wieder verbessern.",
     "steuerung": [
      "PC: Aktionen über die sechs großen Pflegetasten. Im 3D-Zimmer mit gedrückter Maustaste ziehen, um die Perspektive zu drehen. Auf Mimori klicken zum Kuscheln.",
      "Smartphone: Aktionen antippen, das 3D-Wesen mit dem Finger drehen. Sternfang: fünf Sterne innerhalb von 14 Sekunden einsammeln. Über Name ändern und Fellfarbe ändern individualisieren."
@@ -27,10 +27,11 @@
      "Beachte die vier Bedürfnisse: Hunger, Freude, Energie und Sauberkeit. Das Wesen wächst abhängig von Erfahrung und Alter.",
      "Web-Push ist optional und wird erst nach ausdrücklicher Zustimmung und Einrichtung eines externen Push-Dienstes aktiv.",
      "Auf iPhone/iPad ist für Web-Push eine zum Home-Bildschirm hinzugefügte Web-App erforderlich.",
-     "Du kannst Mimori auch vollständig offline nutzen."
+     "Du kannst Mimori auch vollständig offline nutzen.",
+     "Achte auch auf die grüne Gesundheitsanzeige. Ruhe und Kuscheln verbessern die Gesundheit."
     ]
    },
-   "size": 34834,
+   "size": 35339,
    "files": 7,
    "offline": true
   },

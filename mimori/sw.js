@@ -1,5 +1,5 @@
 'use strict';
-const CACHE='mimori-v1';
+const CACHE='mimori-v2';
 const CORE=['./','./index.html','./model.js','./game.js','./icon.svg','./manifest.webmanifest','./push-config.json','../vendor/three-r128.min.js'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mimori-v')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
