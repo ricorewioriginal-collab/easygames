@@ -54,7 +54,7 @@ const win={MimoriModel:M,MimoriSound:C,THREE,Notification:mockNotification,isSec
 const document={getElementById:id=>ui[id]??=element(),querySelectorAll:()=>[],addEventListener:noop,createElement:element,hidden:false};
 const localStorage={getItem:k=>ls.get(k)||null,setItem:(k,v)=>ls.set(k,v)};
 const context={window:win,document,localStorage,navigator:{serviceWorker},Notification:mockNotification,
- location:{href:'https://example.org/easygames/mimori/'},performance:{now:()=>100},Date,Math,console,
+ location:{href:'https://example.org/easygames/mimori/'},URL,performance:{now:()=>100},Date,Math,console,
  requestAnimationFrame:noop,setInterval:noop,clearTimeout:noop,setTimeout:noop};
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../mimori/game.js'),'utf8'),context);
