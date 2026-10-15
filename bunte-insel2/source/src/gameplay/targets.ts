@@ -26,20 +26,20 @@ export function interactFor(g: Game, o: Objective): Interactable | null {
     }
   };
   const p = g.player.pos;
-  let best: Interactable | null = null, bd = Infinity, bestOff: Interactable | null = null, bo = Infinity;
+  let best: Interactable | null = null, bd = Infinity;
   for (const i of g.interact.all) {
     if (!match(i)) continue;
     const d = Math.hypot(i.x - p.x, i.z - p.z);
-    if (!i.when || i.when()) { if (d < bd) { bd = d; best = i; } } else if (d < bo) { bo = d; bestOff = i; }
+    if (!i.when || i.when()) { if (d < bd) { bd = d; best = i; } }
   }
-  return best ?? bestOff;
+  return best;
 }
 
 export function resolveObjective(g: Game, npcs: NpcSystem, q: QuestDef, st: Stage, o: Objective | null): Target | null {
   const npcPos = (id: string): Target | null => { const live = npcs.live.get(id); if (live) return { x: live.pos.x, z: live.pos.z, precise: true }; const d = npcs.defs.get(id); return d ? { x: d.x, z: d.z, precise: true } : null; };
   if (o) {
     if (o.at) return { x: o.at.x, z: o.at.z, precise: true };
-    if (o.type === 'talk') { const n = npcPos(o.target); if (n) return n; }
+    if (o.type === 'talk' || o.via) { const n = npcPos(o.via ?? o.target); if (n) return n; }
     if (o.type === 'enter') { const w = g.worlds.byId(o.target); if (w) return { x: w.spawn.x, z: w.spawn.z, precise: true }; }
     if (o.type === 'discover') { const [w, k] = o.target.split(':'); const poi = g.worlds.byId(w)?.pois[k]; if (poi) return { x: poi.x, z: poi.z, precise: true }; }
     const i = interactFor(g, o);

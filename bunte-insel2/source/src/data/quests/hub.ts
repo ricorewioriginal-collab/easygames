@@ -20,7 +20,7 @@ export const HUB_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Kennst du die Kunst des Angelns? Ich leih dir meine alte Angel. Fang einen Fisch für meine Katze Mimi, dann darfst du sie behalten!', choices: [{ t: '🎣 Abgemacht!', do: [{ give: ['angel', 1] }, { start: 'h_angeln' }] }, { t: 'Später vielleicht.' }] } },
     stages: [
       { text: 'Fang einen Fisch: stell dich ans Wasser, drück „Angeln“ und dann im richtigen Moment, wenn es beißt.', hints: ['Am Ententeich oder am Strand geht es am besten.', 'Schau direkt aufs Wasser. Dann erscheint „🎣 Angeln“.', 'Warte, bis „❗ Es beißt!“ erscheint – dann sofort drücken.'],
-        objectives: [{ id: 'f', type: 'fish', target: '*', label: 'Fang einen Fisch' }] },
+        objectives: [{ id: 'f', type: 'fish', target: '*', at: { x: -62, z: 46 }, label: 'Fang einen Fisch' }] },
       { text: 'Bring Herrn Fischer den Fisch.', hints: ['Herr Fischer ist am Freibad.', 'Freibad im Süden.', 'Sprich mit ihm.'],
         objectives: [{ id: 't', type: 'talk', target: 'fischer', label: 'Sprich mit Herrn Fischer' }],
         dialog: { fischer: { start: { t: 'Ein Prachtexemplar! Mimi wird schnurren. Die Angel gehört jetzt dir – das Sammelbuch hat noch viele Seiten!', do: [{ take: ['fisch', 1] }, { friend: 2 }], end: false } } } }
@@ -33,7 +33,7 @@ export const HUB_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Siehst du das Glitzern im Sand? Der Sturm hat lauter Sachen angespült. Hier, eine Schaufel – grab zwei Dinge aus!', choices: [{ t: '⛏️ Los geht’s!', do: [{ give: ['schaufel', 1] }, { start: 'h_strand' }] }, { t: 'Später.' }] } },
     stages: [
       { text: 'Grab an zwei glitzernden Stellen am Strand.', hints: ['Glitzernde Stellen erscheinen am Sandstrand rund um die Insel.', 'Lauf am Ufer entlang und achte auf funkelnde Punkte.', 'Stell dich darauf und drück „Buddeln“.'],
-        objectives: [{ id: 'b', type: 'interact', target: 'buddeln', n: 2, label: 'Buddle zwei Fundstücke aus' }] },
+        objectives: [{ id: 'b', type: 'interact', target: 'buddeln', at: { x: 78, z: 134 }, n: 2, label: 'Buddle zwei Fundstücke aus' }] },
       { text: 'Zeig Maja deine Funde.', hints: ['Maja ist am Badestrand.', 'Im Südosten.', 'Sprich mit Maja.'],
         objectives: [{ id: 't', type: 'talk', target: 'maja', label: 'Sprich mit Maja' }],
         dialog: { maja: { start: { t: 'Wow! Du hast ein echtes Schatzsucher-Händchen. Behalt die Schaufel – auf jeder Insel gibt es Strände!', do: [{ friend: 2 }], end: false } } } }
@@ -74,9 +74,9 @@ export const HUB_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Wer in den Verbotenen Wald will, muss vorbereitet sein. Erst die Puppen, dann echte Monster. Bereit?', choices: [{ t: '🥋 Bereit!', do: [{ start: 'h_training' }] }, { t: 'Noch nicht.' }] } },
     stages: [
       { text: 'Triff die Trainingspuppen auf der Lichtung 10 Mal (Schlag: J / ⚔️ – dreimal hintereinander für die Kombo).', hints: ['Die Puppen stehen im Kreis um Kai.', 'Lauf nah an eine Puppe heran und schlage zu.', 'Drei Schläge schnell nacheinander = Wirbel-Kombo!'],
-        objectives: [{ id: 'p', type: 'interact', target: 'puppe', n: 10, label: 'Triff die Trainingspuppen' }] },
+        objectives: [{ id: 'p', type: 'interact', target: 'puppe', at: { x: -168, z: -93 }, n: 10, label: 'Triff die Trainingspuppen' }] },
       { text: 'Besiege drei Wald-Monster. Weiche mit der Rolle (K / 🌀) aus, wenn sie ausholen!', hints: ['Geh tiefer in den Wald – Monster tauchen von selbst auf.', 'Wenn ein Monster wackelt, holt es aus: Jetzt ausweichen!', 'Herzen ❤️ von besiegten Monstern heilen dich.'],
-        objectives: [{ id: 'm', type: 'defeat', target: '*', n: 3, label: 'Besiege Wald-Monster' }] },
+        objectives: [{ id: 'm', type: 'defeat', target: '*', at: { x: -150, z: -120 }, n: 3, label: 'Besiege Wald-Monster' }] },
       { text: 'Geh zurück zu Kai.', hints: ['Kai ist auf der Trainings-Lichtung.', 'Westlich vom Waldtor.', 'Sprich mit Kai.'],
         objectives: [{ id: 't', type: 'talk', target: 'kai', label: 'Sprich mit Kai' }],
         dialog: { kai: { start: { t: 'Stark! Jetzt bist du bereit für die Lichtwelle: Sie schiebt alle Monster um dich herum zurück. Taste U oder 🌟 – sie braucht Energie 💠.', do: [{ ability: 'lichtwelle' }, { friend: 3 }], end: false } } } }
@@ -91,7 +91,7 @@ export const HUB_QUESTS: QuestDef[] = [
       { text: 'Frag Rosi, Polizist Paul und Doktor Hilde nach der Eissorte.', hints: ['Alle drei sind rund um den Ortsplatz.', 'Rosi am Rathaus, Paul an der Polizei, Hilde am Krankenhaus.', 'Sprich alle drei an – jeder erinnert sich an eine Zutat.'],
         objectives: [{ id: 'r', type: 'talk', target: 'rosi', label: 'Rosi: „Es war … rosa!“' }, { id: 'p', type: 'talk', target: 'paul', label: 'Paul: „Ich schmeckte Honig!“' }, { id: 'h', type: 'talk', target: 'hilde', label: 'Hilde: „Mit knackigen Apfelstückchen!“' }] },
       { text: 'Erzähl Emma die Zutaten.', hints: ['Emma ist in der Eisdiele.', 'Südlich vom Brunnen.', 'Sprich mit Emma und wähle die richtigen Zutaten.'],
-        objectives: [{ id: 'e', type: 'flag', target: 'eis_richtig', label: 'Sag Emma die richtige Mischung' }],
+        objectives: [{ id: 'e', type: 'flag', target: 'eis_richtig', via: 'emma_eis', label: 'Sag Emma die richtige Mischung' }],
         dialog: { emma_eis: {
           start: { t: 'Und? Was war drin?', choices: [
             { t: 'Rosa Erdbeere, Honig und Apfel!', do: [{ flag: 'eis_richtig' }, { friend: 3 }, { give: ['eis', 3] }], to: 'ok' },
@@ -109,7 +109,7 @@ export const HUB_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Du siehst müde aus, Schatz. Zieh dich im Kleiderschrank um und ruh dich im Bett aus – dann hast du wieder Kraft für Abenteuer.', choices: [{ t: '😴 Okay, Mama.', do: [{ start: 'h_zuhause' }] }, { t: 'Gleich!' }] } },
     stages: [
       { text: 'Zieh dich im Kleiderschrank um und schlaf in deinem Bett.', hints: ['Beides ist im Haus Sonnenschein.', 'Der Kleiderschrank steht an der hinteren Wand, das Bett links.', 'Drück an beiden die Aktionstaste.'],
-        objectives: [{ id: 'k', type: 'flag', target: 'outfit', label: 'Zieh dich um' }, { id: 's', type: 'flag', target: 'geschlafen', label: 'Schlaf im Bett' }] }
+        objectives: [{ id: 'k', type: 'flag', target: 'outfit', via: 'home_wardrobe', label: 'Zieh dich um' }, { id: 's', type: 'flag', target: 'geschlafen', via: 'home_bed', label: 'Schlaf im Bett' }] }
     ],
     rewards: { stars: 6, xp: 30, items: [['kuchen', 1]], text: 'Ausgeruht und schick – und Mama hat dir Kuchen eingepackt.' }
   }

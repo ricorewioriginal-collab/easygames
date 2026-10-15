@@ -19,8 +19,8 @@ export interface QualityProfile {
 }
 
 export const PROFILES: Record<QualityName, QualityProfile> = {
-  low: { name: 'low', maxDpr: 1, minDpr: 0.6, shadows: false, shadowSize: 0, shadowSoft: false, far: 300, fogNear: 90, foliage: 0.3, npcRange: 45, terrainStep: 4, particles: 0.4, water: 'simple' },
-  medium: { name: 'medium', maxDpr: 1.5, minDpr: 0.75, shadows: true, shadowSize: 1024, shadowSoft: false, far: 460, fogNear: 140, foliage: 0.65, npcRange: 70, terrainStep: 3, particles: 0.75, water: 'waves' },
+  low: { name: 'low', maxDpr: 1.5, minDpr: 1, shadows: false, shadowSize: 0, shadowSoft: false, far: 300, fogNear: 90, foliage: 0.3, npcRange: 45, terrainStep: 4, particles: 0.4, water: 'simple' },
+  medium: { name: 'medium', maxDpr: 1.75, minDpr: 1, shadows: true, shadowSize: 1024, shadowSoft: false, far: 460, fogNear: 140, foliage: 0.65, npcRange: 70, terrainStep: 3, particles: 0.75, water: 'waves' },
   high: { name: 'high', maxDpr: 2, minDpr: 1, shadows: true, shadowSize: 2048, shadowSoft: true, far: 640, fogNear: 190, foliage: 1, npcRange: 95, terrainStep: 2, particles: 1, water: 'waves' }
 };
 

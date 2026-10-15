@@ -7,7 +7,7 @@ import { LIGHTHOUSE } from '../../world/worlds/hub.ts';
 const toLasse = (text: string, lines: string[], next: number): QuestDef['stages'][number] => ({
   text, hints: ['Lasse wartet am Leuchtturm im Osten der Hauptinsel.', 'Der Leuchtturm ist rot-weiß gestreift. Folge der gelben Lichtsäule.', 'Geh zu Lasse am Fuß des Leuchtturms und sprich mit ihm.'],
   objectives: [{ id: 'lasse', type: 'talk', target: 'lasse', label: 'Bring die Splitter zu Leuchtturmwärter Lasse' }],
-  dialog: { lasse: { start: { t: lines[0], next: 'b' }, b: { t: lines[1], next: 'c' }, c: { t: lines[2], do: [{ take: ['splitter', 99] }, { chapter: next }, { burst: true }], end: false } } }
+  dialog: { lasse: { start: { t: lines[0], next: 'b' }, b: { t: lines[1], next: 'c' }, c: { t: lines[2], do: [{ take: ['splitter', next === 4 || next === 6 ? 2 : next === 7 ? 3 : 1] }, { chapter: next }, { burst: true }], end: false } } }
 });
 
 export const MAIN_QUESTS: QuestDef[] = [
@@ -26,7 +26,7 @@ export const MAIN_QUESTS: QuestDef[] = [
       { text: 'Geh zum Leuchtturm im Osten und sprich mit Lasse.', hints: ['Der Leuchtturm steht auf dem Hügel im Osten.', 'Folge der breiten Straße nach Osten und dann dem Weg zum Hügel.', 'Lasse steht am Fuß des Leuchtturms.'],
         objectives: [{ id: 'lasse', type: 'talk', target: 'lasse', label: 'Sprich mit Leuchtturmwärter Lasse' }],
         dialog: { lasse: {
-          start: { t: 'Moin, {name}. Gut, dass du kommst. Der Regenbogen-Kompass da oben … er ist in tausend Stücke gesprungen. Na ja – in neun.', next: 'b' },
+          start: { t: 'Moin, {name}. Gut, dass du kommst. Der Regenbogen-Kompass da oben … er ist in tausend Stücke gesprungen. Na ja – in zwölf.', next: 'b' },
           b: { t: 'Lauf die Wendeltreppe hoch und schau ihn dir selbst an. Aber halt dich am Geländer fest!', end: false }
         } } },
       { text: 'Steig die Wendeltreppe des Leuchtturms hinauf und untersuche den Kompass.', hints: ['Die Treppe windet sich außen um den Turm.', 'Springe die Holzstufen hinauf – mit Doppelsprung geht es schneller.', 'Ganz oben auf der Galerie steht der Kompass. Drück dort die Aktionstaste.'],
@@ -35,7 +35,7 @@ export const MAIN_QUESTS: QuestDef[] = [
         objectives: [{ id: 'rosi2', type: 'talk', target: 'rosi', label: 'Berichte Rosi' }],
         dialog: { rosi: {
           start: { t: 'Und? Was hast du gefunden?', next: 'b' },
-          b: { who: 'player', t: 'Der Kompass ist zerbrochen. Neun Splitter sind über alle Inseln verstreut – und es lag graue Wolkenwatte herum.', next: 'c' },
+          b: { who: 'player', t: 'Der Kompass ist zerbrochen. Zwölf Splitter sind über die Inseln verstreut – und es lag graue Wolkenwatte herum.', next: 'c' },
           c: { t: 'Wolkenwatte? Seltsam … Dann hilft nur eins: Wir müssen die Splitter zurückholen! Der erste Hinweis kommt aus der Stadtinsel im Norden – dort ist die Uhr stehen geblieben.', next: 'd' },
           d: { t: 'Hier, nimm diese Karte. Neue Brücken öffnen sich, wenn der Kompass wieder ein bisschen leuchtet. Viel Glück!', do: [{ chapter: 1 }, { stars: 10 }], end: false }
         } } }
@@ -84,8 +84,8 @@ export const MAIN_QUESTS: QuestDef[] = [
           start: { t: 'Flick hat die Erinnerungen nicht gestohlen – er hat sie sich nur „ausgeliehen“, um nicht allein zu sein. Was denkst du, wie sollen wir ihm begegnen?', choices: [
             { t: '🤝 Wir laden ihn ein, unser Freund zu sein.', do: [{ choice: ['flick', 'freund'] }], to: 'f' },
             { t: '🌈 Wir zeigen ihm, dass alle zum Himmel hochschauen.', do: [{ choice: ['flick', 'himmel'] }], to: 'h' }] },
-          f: { t: 'Ein großes Herz hast du. Merk dir das – am Ende zählt es.', do: [{ take: ['splitter', 99] }, { chapter: 5 }], end: false },
-          h: { t: 'Eine schöne Idee: ein Regenbogen, den jeder sieht. Merk dir das – am Ende zählt es.', do: [{ take: ['splitter', 99] }, { chapter: 5 }], end: false }
+          f: { t: 'Ein großes Herz hast du. Merk dir das – am Ende zählt es.', do: [{ take: ['splitter', 2] }, { chapter: 5 }], end: false },
+          h: { t: 'Eine schöne Idee: ein Regenbogen, den jeder sieht. Merk dir das – am Ende zählt es.', do: [{ take: ['splitter', 2] }, { chapter: 5 }], end: false }
         } } }
     ],
     rewards: { stars: 20, xp: 140, text: 'Die Erinnerungen kehren zurück – und du hast entschieden, wie du Flick begegnen willst.' }
@@ -115,13 +115,13 @@ export const MAIN_QUESTS: QuestDef[] = [
     summary: 'Auf der Prisma-Insel hütet jedes Gebiet ein Stück des letzten Splitters.',
     stages: [
       { text: 'Meistere den Ki-Garten, die Runen-Arena und den Datenhain.', hints: ['Die Prisma-Insel liegt ganz im Nordosten, hinter dem Bauland.', 'Meisterin Ama im Ki-Garten, Runenmeister Rune in der Arena, Forscherin Bit im Datenhain.', 'Gewinne das Ki-Turnier, das Runen-Turnier und hilf einem Datenwesen, sich zu entwickeln.'],
-        objectives: [{ id: 'k', type: 'flag', target: 'done_ki', label: 'Ki-Garten: das Turnier' }, { id: 'r', type: 'flag', target: 'done_runen', label: 'Runen-Arena: das Turnier' }, { id: 'd', type: 'flag', target: 'done_daten', label: 'Datenhain: ein Freund entwickelt sich' }] },
+        objectives: [{ id: 'k', type: 'flag', target: 'done_ki', label: 'Ki-Garten: das Turnier' }, { id: 'r', type: 'flag', target: 'done_runen', label: 'Runen-Arena: das Turnier' }, { id: 'd', type: 'flag', target: 'done_daten', label: 'Datenhain: ein Freund entwickelt sich' }, { id: 'splitter_prisma', type: 'have', target: 'splitter', via: 'pick:pr_splitter', label: 'Nimm den letzten Splitter auf der Prisma-Insel' }] },
       { text: 'Bring den letzten Splitter zu Lasse.', hints: ['Lasse am Leuchtturm.', 'Folge der Lichtsäule.', 'Sprich mit Lasse.'],
         objectives: [{ id: 'l', type: 'talk', target: 'lasse', label: 'Sprich mit Lasse' }],
         dialog: { lasse: {
           start: { t: 'Der Kompass ist ganz! Aber schau – er leuchtet nur grau. Etwas fehlt.', next: 'b' },
           b: { t: 'Flicks Traurigkeit hat sich im Verbotenen Wald zu einem riesigen Grauschleier zusammengeballt. Solange der dort wütet, kann der Kompass nicht strahlen.', next: 'c' },
-          c: { t: 'Kampfmeister Kai hat dich gut trainiert. Geh ins Herz des Waldes – und befreie Flick von seinem Grauschleier. Ich glaube an dich!', do: [{ chapter: 8 }], end: false }
+          c: { t: 'Kampfmeister Kai hat dich gut trainiert. Geh ins Herz des Waldes – und befreie Flick von seinem Grauschleier. Ich glaube an dich!', do: [{ take: ['splitter', 1] }, { chapter: 8 }], end: false }
         } } }
     ],
     rewards: { stars: 30, xp: 200, text: 'Alle Splitter sind gefunden. Jetzt fehlt nur noch Flick.' }
@@ -131,7 +131,7 @@ export const MAIN_QUESTS: QuestDef[] = [
     summary: 'Im Herz des Verbotenen Waldes wartet der Grauschleier-Riese.',
     stages: [
       { text: 'Besiege den Grauschleier-Riesen im Herz des Verbotenen Waldes.', hints: ['Das Herz des Waldes liegt ganz im Nordwesten des Waldes.', 'Nimm Essen mit! Achte auf die roten Kreise und weiche mit der Rolle aus.', 'Am Steinkreis „Herz des Waldes“ die Aktion drücken und den Grauschleier-Riesen herausfordern.'],
-        objectives: [{ id: 'boss', type: 'defeat', target: 'boss:grauschleier', label: 'Besiege den Grauschleier-Riesen' }] },
+        objectives: [{ id: 'boss', type: 'defeat', target: 'boss:grauschleier', at: { x: -182, z: -150 }, label: 'Besiege den Grauschleier-Riesen' }] },
       { text: 'Ein kleines graues Wölkchen bleibt zurück. Sprich mit Flick.', hints: ['Flick schwebt im Herz des Waldes.', 'Es ist ganz klein und schaut traurig.', 'Sprich mit Flick.'],
         objectives: [{ id: 'flick', type: 'talk', target: 'flick', label: 'Sprich mit Flick' }],
         dialog: { flick: {

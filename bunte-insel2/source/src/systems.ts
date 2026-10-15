@@ -21,6 +21,9 @@ import { mats } from './engine/materials.ts';
 import type { WorldDef } from './world/registry.ts';
 import { levelFromXp } from './persistence/save.ts';
 import { Companions } from './gameplay/companions.ts';
+import { Neighborhoods } from './gameplay/neighborhoods.ts';
+import { Building } from './gameplay/building.ts';
+import { Rides } from './gameplay/rides.ts';
 import { Vehicles } from './gameplay/vehicles.ts';
 import { Combat } from './gameplay/combat.ts';
 import { Sammeln } from './gameplay/sammeln.ts';
@@ -205,6 +208,8 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
 
   /* ---------- Begleiter, Fahrzeuge, Kampf, Sammeln, Geschichte, Minispiele ---------- */
   const companions = g.addSystem(new Companions(g));
+  g.addSystem(new Rides(g));
+  g.addSystem(new Building(g));
   const vehicles = g.addSystem(new Vehicles(g, audio));
   g.vehicleCheck = () => vehicles.inVehicle;
   g.panels.enterVehicle = id => vehicles.enterById(id as string);
@@ -217,6 +222,7 @@ export function installSystems(g: Game, audio: AudioEngine): Systems {
   ev.on('fish', () => { if (Object.keys(g.save.sammel.fish).length >= 5) achieve('angler'); });
   ev.on('collect', e => { if (e.kind === 'bug' && Object.keys(g.save.sammel.bugs).length >= 5) achieve('kaeferfreund'); if (e.kind === 'find' && Object.keys(g.save.sammel.finds).length >= 5) achieve('schatzgraeber'); });
   const story = g.addSystem(new Story(g, { quests, npcs, run, check: cond, achieve, dialogue }));
+  g.addSystem(new Neighborhoods(g, npcs, quests));
   const minis = new Minigames(g, audio);
   g.panels.minigame = arg => { const a = arg as { id: string }; dialogue.end(); minis.start(a.id, a as Record<string, unknown>); };
 

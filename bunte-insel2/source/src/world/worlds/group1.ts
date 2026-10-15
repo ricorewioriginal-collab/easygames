@@ -85,7 +85,7 @@ export const STADT_QUESTS: QuestDef[] = [
           moritz: { start: { t: 'Mein Fest-Lied hat drei Strophen – eine für jede Stunde nach dem Mittag! Dann geht’s los!', emote: 'dance', end: false } }
         } },
       { text: 'Stell das Uhrwerk am Fuß des Uhrturms auf die richtige Zeit.', hints: ['Nach dem Mittag, kleiner Zeiger ganz rechts, drei Strophen.', 'Mittag ist 12 Uhr. Drei Stunden später …', 'Wähle 3 Uhr am Uhrwerk.'],
-        objectives: [{ id: 'u', type: 'flag', target: 'uhr_gestellt', label: 'Stell die Uhr richtig' }, { id: 's', type: 'have', target: 'splitter', label: 'Heb den Kompass-Splitter auf' }] },
+        objectives: [{ id: 'u', type: 'flag', target: 'uhr_gestellt', via: 'uhr', label: 'Stell die Uhr richtig' }, { id: 's', type: 'have', target: 'splitter', label: 'Heb den Kompass-Splitter auf' }] },
       { text: 'Erzähl Otto, dass die Uhr wieder läuft.', hints: ['Otto steht neben dem Uhrturm.', 'Am Brunnenplatz.', 'Sprich mit Otto.'],
         objectives: [{ id: 'o', type: 'talk', target: 'otto', label: 'Sprich mit Otto' }],
         dialog: { otto: { start: { t: 'Sie tickt! Sie TICKT! Und schau – alle erinnern sich wieder an ihre Pläne. Danke! Und diesen leuchtenden Splitter … den bringst du am besten Lasse, ja?', do: [{ friend: 3 }], end: false } } } }
@@ -95,7 +95,7 @@ export const STADT_QUESTS: QuestDef[] = [
     summary: 'Moritz traut sich nicht, Bruno zu sagen, dass er ihn mag. Ein Blumenstrauß könnte helfen.',
     offer: { start: { t: 'Psst … Bruno aus der Bücherei ist mein bester Freund, aber er ist seit dem Sturm so still. Bringst du ihm einen Blumenstrauß von mir? Florian verkauft welche.', choices: [{ t: '💐 Klar!', do: [{ start: 's_stadt_brief' }] }, { t: 'Später.' }] } },
     stages: [
-      { text: 'Kauf im Blumenladen einen Blumenstrauß.', hints: ['Der Blumenladen ist in der Einkaufsstraße.', 'Florian verkauft Sträuße für 6 ⭐.', 'Sprich mit Florian und kauf einen Strauß.'], objectives: [{ id: 'b', type: 'have', target: 'blume', label: 'Besorge einen Blumenstrauß' }] },
+      { text: 'Kauf im Blumenladen einen Blumenstrauß.', hints: ['Der Blumenladen ist in der Einkaufsstraße.', 'Florian verkauft Sträuße für 6 ⭐.', 'Sprich mit Florian und kauf einen Strauß.'], objectives: [{ id: 'b', type: 'have', target: 'blume', via: 'florian', label: 'Besorge einen Blumenstrauß' }] },
       { text: 'Bring den Strauß zu Bruno.', hints: ['Bruno ist in der Bücherei.', 'Gegenüber vom Blumenladen.', 'Sprich mit Bruno.'], objectives: [{ id: 't', type: 'talk', target: 'bruno', label: 'Gib Bruno den Strauß' }],
         dialog: { bruno: { start: { t: 'Von Moritz? Für mich? … Oh. Das ist das Schönste, was mir seit dem Sturm passiert ist. Sag ihm, ich komme heute Abend zum Brunnen!', do: [{ take: ['blume', 1] }, { friend: 3 }], end: false } } } }
     ],
@@ -230,7 +230,7 @@ export const DRACHEN_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Alle Fackeln sind aus und das Himmelstor ist zu! Die Großen sagen, ich bin zu klein, um sie anzuzünden. Hilfst du mir? Gemeinsam schaffen wir das!', choices: [{ t: '🔥 Gemeinsam!', do: [{ start: 'w_drachen' }, { companion: 'zuendel' }] }, { t: 'Später.' }] } },
     stages: [
       { text: 'Lies das Wandbild und entzünde die sechs Fackeln in der richtigen Reihenfolge.', hints: ['Die Hinweis-Tafel steht südlich vom Drachenplatz.', 'Die Reihenfolge sind die Farben des Regenbogens.', 'Rot, Orange, Gelb, Grün, Blau, Violett.'], objectives: [{ id: 'f', type: 'flag', target: 'puzzle_fackeln', label: 'Entzünde die sechs Fackeln' }] },
-      { text: 'Flieg durch das Himmelstor (Drachenflug gewinnen).', hints: ['Das Tor steht nördlich vom Platz.', 'Halten = steigen. Durch die goldenen Ringe!', 'Weiche den Gewitterwolken aus.'], objectives: [{ id: 'm', type: 'minigame', target: 'drachenflug', label: 'Gewinne den Drachenflug' }] },
+      { text: 'Flieg durch das Himmelstor (Drachenflug gewinnen).', hints: ['Das Tor steht nördlich vom Platz.', 'Halten = steigen. Durch die goldenen Ringe!', 'Weiche den Gewitterwolken aus.'], objectives: [{ id: 'm', type: 'minigame', target: 'drachenflug', via: 'himmelstor', label: 'Gewinne den Drachenflug' }] },
       { text: 'Hinter dem Himmelstor glitzert etwas. Heb es auf und erzähl Flora davon.', hints: ['Direkt hinter dem Tor.', 'Flora ist bei der Drachenhöhle.', 'Splitter nehmen, dann mit Flora sprechen.'],
         objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 'f', type: 'talk', target: 'flora', label: 'Sprich mit Flora' }],
         dialog: { flora: { start: { t: 'Das Himmelstor ist wieder offen! Weißt du was? Wer durch das Tor geflogen ist, bekommt die Drachenflügel. In der Luft Springen gedrückt halten – und gleiten!', do: [{ ability: 'gleiten' }, { cosmetic: 'acc:drachenfluegel' }, { achieve: 'drachen_freund' }, { friend: 3 }], end: false } } } }

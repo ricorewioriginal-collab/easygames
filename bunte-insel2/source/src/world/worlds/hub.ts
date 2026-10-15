@@ -66,7 +66,7 @@ const shape: IslandShape = {
 export const hub: WorldDef = {
   id: 'hub', name: 'Hauptinsel Sonnenhafen', icon: '🏝️', desc: 'Der Mittelpunkt der Bunten Insel: Ort, Haus Sonnenschein, Bauernhof, Freibad, Leuchtturm – und der Verbotene Wald.',
   shape, theme: 'insel', chapter: 0,
-  spawn: { x: 0, z: 30, yaw: Math.PI },
+  spawn: { x: 7, z: -12, yaw: Math.PI },
   zones: [
     { id: 'wald', name: 'Verbotener Wald', x: FOREST.x, z: FOREST.z, r: FOREST.r - 6, theme: 'wald', combat: true, icon: '🌲' },
     { id: 'hof', name: 'Bauernhof', x: 92, z: 62, r: 30, theme: 'farm', icon: '🚜' },

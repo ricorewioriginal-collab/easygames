@@ -1,5 +1,6 @@
 /* Spiel-Kern: Szene, Schleife, Welt-Streaming, Spieler, Kamera, Spielstand, Schnittstelle für alle Systeme. */
 import type { GameApi, Vec3 } from './core/api.ts';
+import { anyModal } from './ui/dom.ts';
 import { EventBus } from './core/events.ts';
 import { logError } from './core/log.ts';
 import { clamp } from './core/math.ts';
@@ -25,6 +26,7 @@ export interface GameSystem {
   id: string;
   update?(dt: number, t: number): void;
   onStart?(): void;
+  onStop?(): void;
   onWorldLoad?(w: LoadedWorld): void;
   onWorldUnload?(id: string): void;
   onEnterWorld?(w: WorldDef): void;
@@ -145,6 +147,7 @@ export class Game implements GameApi {
   }
   /** Titelbildschirm: die Hauptinsel dreht sich im Hintergrund. */
   enterTitle(): void {
+    for (const s of this.systems) s.onStop?.();
     this.phase = 'title';
     this.paused = false;
     if (this.avatar) this.avatar.root.visible = false;
@@ -207,7 +210,7 @@ export class Game implements GameApi {
     if (this.phase !== 'play') { this.renderer.gl.render(this.scene, this.camera); this.input.endFrame(); return; }
     const playing = !this.paused;
     if (playing) {
-      const free = this.busy === 0 && !this.rig.inCinematic;
+      const free = this.busy === 0 && !this.rig.inCinematic && !anyModal();
       this.save.playTime += dt;
       const inVeh = this.vehicleCheck();
       if (!inVeh) this.player.update(dt, this.input, this.rig.yaw, free);

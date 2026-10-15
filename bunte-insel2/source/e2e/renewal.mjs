@@ -1,0 +1,75 @@
+// Prüft die gebaute Neuauflage im Browser, einschließlich Inselwechsel, Speichern und echter Mitfahrt.
+import assert from 'node:assert/strict';
+import { mkdirSync } from 'node:fs';
+import { chromium } from 'playwright';
+const BASE = process.env.BASE || 'http://localhost:8090/bunte-insel2/';
+const OUT = process.env.OUT || '/tmp/bi2-review'; mkdirSync(OUT, { recursive: true });
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+try {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  await page.goto(BASE + '?test=1'); await page.waitForFunction(() => window.__bi2);
+  await page.click('#btn-slots'); await page.click('#slot-3 .btn.green'); await page.click('#mode-free .btn');
+  await page.getByRole('button', { name: '✔ Fertig', exact: true }).click();
+  await page.waitForFunction(() => window.__bi2.g.phase === 'play');
+  const start = await page.evaluate(() => { const g = window.__bi2.g; return { pos: { x: g.player.pos.x, z: g.player.pos.z }, dialogue: !!document.querySelector('.dialog') }; });
+  assert.ok(Math.hypot(start.pos.x - 4, start.pos.z + 18) < 8); assert.equal(start.dialogue, false);
+  await page.screenshot({ path: OUT + '/01-ortsplatz.png' });
+  const worlds = await page.evaluate(() => window.__bi2.g.worlds.defs.map(w => w.id));
+  for (const id of worlds) {
+    await page.evaluate(id => { const g = window.__bi2.g, w = g.worlds.byId(id); g.teleport(w.spawn.x, w.spawn.z); }, id);
+    await page.waitForFunction(id => window.__bi2.g.worlds.loaded.has(id), id);
+    const scene = await page.evaluate(id => { const g = window.__bi2.g; return { activity: id === 'bauland' ? !!g.interact.get('freie_baukiste') : !!g.system('neighborhoods').sites.get(id), npc: id === 'bauland' || window.__bi2.sys.npcs.live.has('nachbar_' + id) }; }, id);
+    assert.ok(scene.activity && scene.npc, 'Aktivität und Bewohner in ' + id);
+  }
+  // Garten: drei Beete säen und gießen, dann die Insel verlassen und wiederkehren.
+  await page.evaluate(() => { const g = window.__bi2.g; g.teleport(100, 70); for (let i = 0; i < 3; i++) { const a = g.interact.get('ort:hub:beet' + i); a.act(); a.act(); } g.save.playTime += 15; g.teleport(600, -420); g.teleport(100, 70); for (let i = 0; i < 3; i++) g.interact.get('ort:hub:beet' + i).act(); });
+  assert.ok(await page.evaluate(() => window.__bi2.g.flag('ort:hub:fertig')));
+  await page.evaluate(() => { const g = window.__bi2.g, s = g.system('neighborhoods').sites.get('hub'); g.teleport(s.x, s.z + 8, Math.PI); });
+  await page.screenshot({ path: OUT + '/02-hof.png' });
+  // Kochvorgang über die tatsächlichen Knöpfe, Zutaten erst bei erfolgreichem Timing verbrauchen.
+  await page.evaluate(() => { const g = window.__bi2.g; g.give('karotte', 2); g.openPanel('hofkueche'); });
+  const before = await page.evaluate(() => window.__bi2.g.count('karotte'));
+  await page.getByRole('button', { name: '🔪 Zutaten schneiden', exact: true }).click();
+  await page.getByRole('button', { name: '🥣 Rühren', exact: true }).click();
+  await page.waitForFunction(() => { const i = document.querySelector('.cooking-meter i'); const n = parseFloat(i?.style.left ?? '0'); return n > 43 && n < 60; });
+  await page.getByRole('button', { name: '🍳 Jetzt herausnehmen', exact: true }).click();
+  await page.getByRole('button', { name: '✔ Fertig', exact: true }).click();
+  assert.equal(await page.evaluate(() => window.__bi2.g.count('karotte')), before - 2);
+  // Freies Bauen über die Rasteroberfläche. Rückgängig und Abtragen müssen dasselbe Bauwerk verändern.
+  await page.evaluate(() => { const g = window.__bi2.g, w = g.worlds.byId('bauland'); g.teleport(w.shape.x + 62, w.shape.z + 43); });
+  await page.waitForFunction(() => window.__bi2.g.currentWorld?.id === 'bauland');
+  await page.evaluate(() => window.__bi2.g.openPanel('freebuild'));
+  await page.getByRole('button', { name: 'Spalte 1, Reihe 1, Höhe 0', exact: true }).click();
+  await page.getByRole('button', { name: 'Spalte 1, Reihe 1, Höhe 1', exact: true }).click();
+  await page.getByRole('button', { name: '↶ Rückgängig', exact: true }).click();
+  assert.equal(await page.evaluate(() => window.__bi2.g.flag('bau:0:0:1')), 0);
+  await page.getByRole('button', { name: '✔ Anschauen', exact: true }).click();
+  await page.screenshot({ path: OUT + '/03-bauwiese.png' });
+  // Riesenrad: Figur bewegt sich tatsächlich mit und kehrt beim Aussteigen zum Einstieg zurück.
+  await page.evaluate(() => { const g = window.__bi2.g, w = g.worlds.byId('park'); g.teleport(w.spawn.x, w.spawn.z); g.setFlag('park_laeuft'); const a = g.interact.get('fahrt:riesenrad'); g.teleport(a.x, a.z); a.act(); });
+  await page.waitForSelector('.ride-controls');
+  const riding = await page.evaluate(() => window.__bi2.g.player.pos.y);
+  await page.waitForTimeout(2000);
+  assert.ok(Math.abs(await page.evaluate(() => window.__bi2.g.player.pos.y) - riding) > 0.5);
+  assert.ok(await page.evaluate(() => window.__bi2.g.persist()));
+  const stored = await page.evaluate(() => window.__bi2.store.load(3).data.pos);
+  assert.ok(stored.y < 4, 'Spielstand speichert den Einstieg, keine Gondel in der Luft');
+  await page.screenshot({ path: OUT + '/04-riesenrad.png' });
+  await page.getByRole('button', { name: '⏏ Aussteigen', exact: true }).click();
+  assert.equal(await page.evaluate(() => window.__bi2.g.busy), 0);
+  // Bauwerk bleibt auch nach einem vollständigen Neuladen erhalten.
+  await page.reload(); await page.waitForFunction(() => window.__bi2);
+  assert.equal(await page.evaluate(() => window.__bi2.store.load(3).data.flags['bau:0:0:0']), 1);
+  assert.deepEqual(errors, []);
+  console.log('Neuauflage: 20 Welten, Hof, Küche, Bauwiese, Mitfahrt und Speichern bestanden.');
+  // Touch-Viewport: sichtbare Steuerung, keine horizontale Überbreite.
+  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await mobile.goto(BASE + '?test=1'); await mobile.waitForFunction(() => window.__bi2);
+  await mobile.click('#btn-slots'); await mobile.click('#slot-3 .btn.green'); await mobile.click('#mode-free .btn');
+  await mobile.getByRole('button', { name: '✔ Fertig', exact: true }).click();
+  await mobile.waitForFunction(() => window.__bi2.g.phase === 'play');
+  assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await mobile.screenshot({ path: OUT + '/05-touch.png' });
+} finally { await browser.close(); }
