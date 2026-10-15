@@ -68,6 +68,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         coordinator = (application as EasyGamesApplication).coordinator
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val lp = window.attributes
             lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -167,6 +168,9 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
             return
         }
         wv.setBackgroundColor(getColor(R.color.bg))
+        // Ensure GPU-backed layers for Three.js/WebGL games (Mimori, 3D worlds).
+        // JavaScript and DOM storage were already enabled below.
+        wv.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         wv.isFocusable = true
         wv.isFocusableInTouchMode = true
         wv.overScrollMode = View.OVER_SCROLL_NEVER
