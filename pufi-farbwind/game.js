@@ -10,8 +10,12 @@ const LEVELS=[
 {name:'Farbwind-Finale',sky:['#673d74','#d58d9f'],hill:'#a16d9c',soil:'#6a456e',grass:'#d7a1b4',gap:110,boss:7}
 ];
 // 6 Inseln (Welten) × 8 Level = 48 Level. Jede Insel hat eigene Farben, Gefahren und Bosskampf am achten Level.
-const wIdx=()=>Math.floor(level/8);
-const levelName=n=>(Math.floor(n/8)+1)+'-'+(n%8+1)+' '+LEVELS[Math.floor(n/8)].name;
+// Level 0–47: Hauptlevel (Insel = n/8, Stufe = n%8). Level 48–59: zwei Bonuslevel pro Insel.
+const meta=n=>n>=48?{w:Math.floor((n-48)/2),k:8+((n-48)%2),bonus:true}:{w:Math.floor(n/8),k:n%8,bonus:false};
+const perfectWorld=w=>{for(let i=0;i<8;i++)if(!(save.records[w*8+i]&&save.records[w*8+i].perfect))return false;return true;};
+const unlockedLevel=n=>n>=48?perfectWorld(meta(n).w):n<save.unlocked;
+const wIdx=()=>meta(level).w;
+const levelName=n=>{const m=meta(n);return m.bonus?"Bonus "+(m.w+1)+"-"+(m.k-7)+" "+LEVELS[m.w].name:(m.w+1)+"-"+(m.k+1)+" "+LEVELS[m.w].name};
 const KEY='easygames.pufi-farbwind.v1',input={left:false,right:false,jump:false,throw:false,grab:false,down:false};
 const holds=Object.fromEntries(Object.keys(input).map(k=>[k,new Set()]));
 function clearInputs(){Object.keys(input).forEach(k=>{input[k]=false;holds[k].clear()});aim=0;if(typeof swipePointer!=='undefined'){swipePointer=null;swipeStart=null;const c=$('swipeCursor');if(c)c.style.transform='translate(0,0)'}}
@@ -23,7 +27,7 @@ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b
 function tone(f=440,d=.1){if(!save.sound)return;try{const X=window.AudioContext||window.webkitAudioContext;if(!X)return;audio=audio||new X();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),v=audio.createGain();o.type='triangle';o.frequency.setValueAtTime(f,audio.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(80,f*.68),audio.currentTime+d);v.gain.setValueAtTime(.06,audio.currentTime);v.gain.exponentialRampToValueAtTime(.0005,audio.currentTime+d);o.connect(v);v.connect(audio.destination);o.start();o.stop(audio.currentTime+d+.01)}catch(_){}}
 function splash(x,y,color,n=12){for(let i=0;i<n;i++){const a=i*2.4;particles.push({x,y,vx:Math.cos(a)*(40+i%5*23),vy:Math.sin(a)*(40+i%5*23)-65,life:.35+i%5*.12,color})}if(particles.length>200)particles.splice(0,particles.length-200)}
 function build(n){
-level=n;const wi=Math.floor(n/8),k=n%8;let segments=[],ledges=[],gems=[],enemies=[],pods=[],springs=[],switches=[],x=0;
+level=n;const M=meta(n),wi=M.w,k=M.k;let segments=[],ledges=[],gems=[],enemies=[],pods=[],springs=[],switches=[],x=0;
 for(let i=0;i<5;i++){
 const shape=[[222,214,220,210,219],[223,202,225,207,223],[218,223,207,225,218],
 [224,221,216,225,218],[227,209,227,215,228],[224,215,229,205,226]][wi];
@@ -70,12 +74,14 @@ const a=segments[i],b=segments[i+1],mid=a.x+a.w+(b.x-a.x-a.w)/2,px=mid-39,py=Mat
 movers.push({x:px,y:py,w:80,h:11,baseX:px,baseY:py,oldX:px,oldY:py,phase:i*1.9,one:true});
 }}
 
+// Fünf rote Münzen pro Level, verteilt über die Inseln, auf Höhe der Stufen.
+for(let i=0;i<5;i++){const s=segments[Math.min(i,segments.length-1)];gems.push({x:s.x+s.w*(0.3+i*0.07),y:s.y-64-(i%2)*18,kind:'red',got:false})}
 const goal=segments.at(-1).x+segments.at(-1).w-48,boss=(k===7?3+wi:0)?{x:goal-335,y:148,w:66,h:65,hp:(k===7?3+wi:0),max:(k===7?3+wi:0),phase:0,cool:1.9}:null;
-world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0,rescue:null,movers,traps,water,windZones};
+world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0,red:0,totalFlowers:gems.filter(g=>g.kind==="flower").length,rescue:null,movers,traps,water,windZones};
 hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.5,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0,mounted:true,pet:{x:0,y:165},rideCd:0};
 hero.pet.x=hero.x-40;hero.pet.y=hero.y;cam=t=aim=0;frameN=0;particles=[];clearInputs();hud();
 }
-function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/48 · '+levelName(level);$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers;$('score').textContent='✦ '+world.score;$('mountStatus').textContent=world.rescue?'⚠ TAMO RETTEN! '+Math.ceil(world.rescue.remaining)+'s':hero.mounted?'🐾 TAMO AN BORD':'🐾 R: TAMO RUFEN';$('rescueStatus').hidden=!world.rescue;if(world.rescue){$('rescueStatus').textContent='TAMO! '+Math.ceil(world.rescue.remaining)+' SEK. · BERÜHREN ODER Y DRÜCKEN';$('rescueStatus').setAttribute('aria-label','Rette Tamo in '+Math.ceil(world.rescue.remaining)+' Sekunden')}}
+function hud(){if(!hero||!world)return;$('where').textContent=(level+1)+'/48 · '+levelName(level);$('hearts').textContent='♥'.repeat(hero.hp)+'♡'.repeat(3-hero.hp);$('ammo').textContent='● '+hero.ammo+'/6';$('flowers').textContent='❀ '+world.flowers+'  ● '+world.red+'/5';$('score').textContent='✦ '+world.score;$('mountStatus').textContent=world.rescue?'⚠ TAMO RETTEN! '+Math.ceil(world.rescue.remaining)+'s':hero.mounted?'🐾 TAMO AN BORD':'🐾 R: TAMO RUFEN';$('rescueStatus').hidden=!world.rescue;if(world.rescue){$('rescueStatus').textContent='TAMO! '+Math.ceil(world.rescue.remaining)+' SEK. · BERÜHREN ODER Y DRÜCKEN';$('rescueStatus').setAttribute('aria-label','Rette Tamo in '+Math.ceil(world.rescue.remaining)+' Sekunden')}}
 function overlay(type,title,description,primary,secondary){
 mode=type;$('overlay').hidden=false;$('overlay').dataset.view=type;
 $('heading').textContent=title;$('description').textContent=description;$('primary').textContent=primary;
@@ -128,16 +134,24 @@ z.strokeText(''+(i+1),x,y+ry+13);z.fillText(''+(i+1),x,y+ry+13);
 z.globalAlpha=1;}
 z.textAlign='left';
 }
-function renderMap(){drawIslandMap();const list=$('stageList');list.replaceChildren();Array.from({length:48},(_,i)=>{const l={name:levelName(i)};const b=document.createElement('button');b.className='island'+(selected===i?' picked':'');b.disabled=i>=save.unlocked;const r=save.records[i];b.textContent=(i*8<save.unlocked?'✦ ':'🔒 ')+(i+1)+'. '+l.name+(r?' · ❀ '+r.flowers:'');b.addEventListener('click',()=>{selected=i;renderMap();tone(650)});list.appendChild(b)})}
+function renderMap(){drawIslandMap();const list=$('stageList');list.replaceChildren();Array.from({length:60},(_,i)=>{const l={name:levelName(i)};const b=document.createElement('button');b.className='island'+(selected===i?' picked':'');b.disabled=!unlockedLevel(i);const r=save.records[i];b.textContent=(i*8<save.unlocked?'✦ ':'🔒 ')+(i+1)+'. '+l.name+(r?' · ❀ '+r.flowers:'');b.addEventListener('click',()=>{selected=i;renderMap();tone(650)});list.appendChild(b)})}
 function openMap(){selected=Math.min(level,save.unlocked-1);overlay('map','DIE FARBWIND-INSELN','Wähle eine freigeschaltete Insel. Finde versteckte Farbblüten und sammle einen neuen Rekord.','INSEL SPIELEN ▶','ZUM TITEL')}
 function start(n=level){build(n);mode='play';$('overlay').hidden=true;$('touch').hidden=false;syncControls();tone(560);hud()}
 function pause(){if(mode==='play')overlay('pause','PAUSE','Dein Abenteuer wartet. Drücke Weiter, sobald du bereit bist.','WEITERSPIELEN ▶','INSELKARTE')}
 function resume(){mode='play';$('overlay').hidden=true;$('touch').hidden=false;clearInputs();syncControls()}
 function gameover(reason){if(mode!=='play')return;tone(130,.35);overlay('gameover','GAME OVER',reason+' Der gesamte Abschnitt startet wieder von vorne.','LEVEL NEU STARTEN ▶','INSELKARTE')}
-function finished(){if(mode!=='play')return;const old=save.records[level]||{flowers:0,score:0};save.records[level]={flowers:Math.max(old.flowers,world.flowers),score:Math.max(old.score,world.score)};save.unlocked=Math.max(save.unlocked,Math.min(48,level+2));persist();tone(980,.38);splash(hero.x,hero.y,'#ffeab5',40);
-if(level===47)overlay('win','FARBWIND GERETTET!','Alle sechs Inseln geschafft! Du kannst jetzt zurückkehren und nach Geheimnissen suchen.','ZUR INSELKARTE','NEUES ABENTEUER');
-else overlay('clear','INSEL GESCHAFFT!','Du hast '+world.score+' Farbpunkte und '+world.flowers+' Farbblüten gefunden. Die nächste Insel wurde freigeschaltet.','NÄCHSTE INSEL ▶','INSELKARTE')}
-$('primary').addEventListener('click',()=>{tone(600);if(mode==='options')closeOptions();else if(mode==='title')start(0);else if(mode==='map')start(selected);else if(mode==='gameover')start(level);else if(mode==='pause')resume();else if(mode==='clear')start(level+1);else if(mode==='win')openMap()});
+function finished(){
+if(mode!=='play')return;
+const old=save.records[level]||{flowers:0,score:0,red:0,perfect:false};
+const perfect=world.red>=5&&world.flowers>=world.totalFlowers;
+save.records[level]={flowers:Math.max(old.flowers,world.flowers),score:Math.max(old.score,world.score),red:Math.max(old.red||0,world.red),perfect:!!(old.perfect||perfect)};
+if(level<48)save.unlocked=Math.max(save.unlocked,Math.min(48,level+2));
+persist();tone(980,.38);splash(hero.x,hero.y,'#ffeab5',40);
+if(level===47)overlay('win','FARBWIND GERETTET!','Alle 48 Level geschafft! Die Bonuslevel öffnen sich, sobald eine Insel perfekt ist.','ZUR INSELKARTE','NEUES ABENTEUER');
+else if(level>=48)overlay('clear','BONUS GESCHAFFT!','Du hast '+world.score+' Punkte und '+world.red+'/5 rote Münzen gesammelt.','ZUR INSELKARTE',null);
+else overlay('clear','LEVEL GESCHAFFT!','Du hast '+world.score+' Punkte, '+world.flowers+' Blüten und '+world.red+'/5 rote Münzen gefunden.'+(perfect?' Perfekt!':''),'NÄCHSTES LEVEL ▶','INSELKARTE');
+}
+$('primary').addEventListener('click',()=>{tone(600);if(mode==='options')closeOptions();else if(mode==='title')start(0);else if(mode==='map')start(selected);else if(mode==='gameover')start(level);else if(mode==='pause')resume();else if(mode==='clear')(level>=48?openMap():start(level+1));else if(mode==='win')openMap()});
 $('secondary').addEventListener('click',()=>{tone(540);if(mode==='map')title();else if(mode==='title'||mode==='pause'||mode==='clear'||mode==='gameover')openMap();else if(mode==='win')start(0)});
 $('pause').addEventListener('click',()=>{if(mode==='play')pause();else if(mode==='pause')resume()});
 $('options').addEventListener('click',openOptions);
@@ -301,7 +315,7 @@ const active=hazard.type!=='fire'||Math.sin(t*3.4+hazard.phase)>-.12;
 if(active&&hit(p,hazard))hurt();
 }
 for(const it of world.gems){if(it.got||it.kind==='secret'&&!world.switches.some(s=>s.on))continue;
-if(Math.hypot(it.x-(p.x+12),it.y-(p.y+13))<19){it.got=true;world.score+=it.kind==='drop'?10:it.kind==='flower'?250:400;if(it.kind==='flower')world.flowers++;splash(it.x,it.y,it.kind==='flower'?'#ffd6e6':'#fff2a6',9);tone(it.kind==='flower'?1100:820)}}
+if(Math.hypot(it.x-(p.x+12),it.y-(p.y+13))<19){it.got=true;world.score+=it.kind==='drop'?10:it.kind==='flower'?250:it.kind==='red'?300:400;if(it.kind==='red')world.red++;if(it.kind==='flower')world.flowers++;splash(it.x,it.y,it.kind==='flower'?'#ffd6e6':'#fff2a6',9);tone(it.kind==='flower'?1100:820)}}
 for(const e of world.enemies){if(!e.alive)continue;e.phase+=dt;e.x+=e.v*dt;if(e.x<e.min||e.x>e.max){e.x=clamp(e.x,e.min,e.max);e.v=-e.v}e.y=e.base+(e.kind===0?0:Math.sin(e.phase*4)*(e.kind===1?12:19));
 if(hit(p,e)){if(p.vy>55&&previousBottom<=e.y+12){defeat(e);p.vy=-280;p.dive=false}else hurt()}}
 for(const s of world.switches)if(!s.on&&p.dive&&hit(p,s)){s.on=true;world.score+=120;tone(900);splash(s.x,s.y,'#ffeaa9')}
@@ -521,7 +535,7 @@ for(const f of world.pods)if(!f.used){oval(f.x,f.y,10,11,'#e5ac76','#765b76');ov
 for(const sw of world.switches){oval(sw.x+10,sw.y+11,11,12,sw.on?'#f5dfab':'#b0a0d5','#5f5876');oval(sw.x+10,sw.y+11,5,6,sw.on?'#fff':'#686191',null)}
 for(const item of world.gems)if(!item.got&&!(item.kind==='secret'&&!world.switches.some(s=>s.on))){
 const y=item.y+Math.sin(t*4+item.x)*3;if(item.kind==='flower'){for(let z=0;z<5;z++){const a=z*2*Math.PI/5;oval(item.x+Math.cos(a)*9,y+Math.sin(a)*9,6,7,'#f6b6ca','#866880',1)}oval(item.x,y,5,5,'#fff1ac',null)}
-else{oval(item.x,y,item.kind==='secret'?10:6,item.kind==='secret'?11:7,item.kind==='secret'?'#b1f1df':'#ffe5a1','#937077',1);oval(item.x-2,y-2,2,3,'#fffdf2',null)}}
+else if(item.kind==="red"){oval(item.x,y,7,7,"#ff5a5a","#7a1f2e",1);oval(item.x-2,y-2,2,2,"#ffd0d0",null)}else{oval(item.x,y,item.kind==="secret"?10:6,item.kind==='secret'?11:7,item.kind==='secret'?'#b1f1df':'#ffe5a1','#937077',1);oval(item.x-2,y-2,2,3,'#fffdf2',null)}}
 for(const e of world.enemies)if(e.alive){oval(e.x+12,e.y+13,12,10,['#d897c1','#e6b26c','#a8addf'][e.kind],'#60516c');if(e.kind===2){oval(e.x-2,e.y+10,9,5,'#d7c9fa',null);oval(e.x+26,e.y+10,9,5,'#d7c9fa',null)}
 oval(e.x+7,e.y+10,3,4,'#fff9dc',null);oval(e.x+18,e.y+10,3,4,'#fff9dc',null);rect(e.x+7,e.y+10,2,3,'#44415a');rect(e.x+18,e.y+10,2,3,'#44415a')}
 const boss=world.boss;if(boss&&boss.hp>0)drawBoss(boss);
