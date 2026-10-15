@@ -56,3 +56,21 @@ test('small meadow rocks block walking and can be jumped',()=>{
  assert.ok(player.pos.z>rock.z+.6);
  view.dispose();
 });
+test('seventh level has a reachable side route with a bonus star',()=>{
+ const renderer={scene:new context.THREE.Scene(),world(){}};
+ const view=new LevelView(renderer,levels[6]);
+ assert.equal(view.bonusFloors.length,2);
+ assert.ok(view.stars.some(star=>Math.abs(star.mesh.position.x-5)<.01&&Math.abs(star.mesh.position.z-14)<.01));
+ const main=view.platforms[2],side=view.bonusFloors[0];
+ const gap=Math.max(0,Math.abs(main.x-side.x)-(main.w+side.w)/2);
+ assert.ok(gap<2);
+ view.dispose();
+});
+test('final level assembles an animated sky crystal',()=>{
+ const renderer={scene:new context.THREE.Scene(),world(){}};
+ const view=new LevelView(renderer,levels[7]);
+ view.startEnding();view.update(1/30,true);
+ assert.equal(view.endingGroup.children.length,9);
+ assert.ok(view.endingGroup.rotation.y>0);
+ view.dispose();
+});
