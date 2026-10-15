@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9ccb4b1ebe8f",
- "generated": "2026-10-15T06:17:06.305Z",
- "commit": "4dccbc6282333b1193268df843a1bce5fc55bef2",
+ "version": "71d3e1ca6cc9",
+ "generated": "2026-10-15T08:17:44+02:00",
+ "commit": "8e6a842a97922b312164f418b703386dc6371860",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5228,8 +5228,8 @@
   },
   {
    "p": "radio-maze/game.js",
-   "s": 25286,
-   "h": "0c10a91834bf619d680344b2f6adbb5135c6eef1392336a1a512939fa91b87d3"
+   "s": 25342,
+   "h": "9759b5fe62ade24a5c289f6b838237732000c2e1da514e040ef16974e2708cc4"
   },
   {
    "p": "radio-maze/icon.svg",
@@ -5379,7 +5379,7 @@
   {
    "p": "sync/catalog.json",
    "s": 73030,
-   "h": "68a22fadac266d79e5be5464ae6d639d95c7e518a27a6669794f26e7e74ee93e"
+   "h": "62f293f48cd1b6f03afdb95f223ce3f5817a460ca890b861bb84b7f5bc69e875"
   },
   {
    "p": "taschi/card.svg",
