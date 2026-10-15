@@ -40,7 +40,7 @@
      "Bei fehlender WebGL-Grafik schaltet Mimori automatisch auf eine einfache, aber drehbare 2D-Ansicht um. Die volle 3D-Szene benötigt eine WebGL-fähige App/WebView."
     ]
    },
-   "size": 516444,
+   "size": 516422,
    "files": 18,
    "offline": true
   },

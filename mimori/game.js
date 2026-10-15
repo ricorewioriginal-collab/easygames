@@ -341,7 +341,7 @@ function startLowGraphics(reason){
  if(state.fallback)return;
  const out=$('webglError');
  out.hidden=false;
- out.textContent='3D-Grafik auf diesem Gerät nicht verfügbar – Mimori läuft im sparsamen 2D-Modus weiter. Räume und Pflege funktionieren.';
+ out.textContent='2D-Sparmodus: WebGL nicht verfügbar. Mimori bleibt spielbar.';
  if(window.console&&console.warn)console.warn('[Mimori] 3D-Start fehlgeschlagen:',reason);
  state.useFallback=true;
  state.fallback=window.MimoriFallback?.start({

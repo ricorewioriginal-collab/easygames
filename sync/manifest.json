@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "02a04ea51be1",
- "generated": "2026-10-15T03:45:33.860Z",
+ "version": "3b79082e565a",
+ "generated": "2026-10-15T03:59:03.303Z",
  "commit": "cd3a008c95320bde159b0df78ab0530d029340b0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 15829,
-   "h": "a9b0a18cfaa61a7a9523ca8db22ace6d7b7ac47932f47551a26f40e02ccbaa55"
+   "h": "6a94aa5500c5485358afb38305df7a56caf01969e9667905d2bf6eca19a4a52f"
   },
   {
    "p": "gay-life/index.html",
@@ -4818,8 +4818,8 @@
   },
   {
    "p": "mimori/game.js",
-   "s": 38596,
-   "h": "179a2588e509c2741939de4702f116fb0bac3bf42f1c09751475a26dbfd84258"
+   "s": 38532,
+   "h": "ae05c9af1e1d0cce38686eaf9bb2418e3be862531c952adbef7cbac58a18ced1"
   },
   {
    "p": "mimori/home.css",
@@ -4863,8 +4863,8 @@
   },
   {
    "p": "mimori/scene-ui.css",
-   "s": 10432,
-   "h": "fc8ce0054012e1edcbdc349a939bd9ac26a27d14326bc93f8c8c7cc342bdd2b2"
+   "s": 10474,
+   "h": "3a5bbf22e9a41b780b86e81632ef5fecf303790c1d91972991b7ec7248b43c75"
   },
   {
    "p": "mimori/scene-ui.js",
@@ -4879,7 +4879,7 @@
   {
    "p": "mimori/sw.js",
    "s": 1796,
-   "h": "f37e31c7553c111560cce4453a01015dc5f4acfe5b05b6c7ced40eb5aec09940"
+   "h": "17d59a1fb4eb04a22782f426a5f83f49a5e43ae66f02bccae63d567cc3f3120c"
   },
   {
    "p": "modes.js",
@@ -5334,7 +5334,7 @@
   {
    "p": "sync/catalog.json",
    "s": 68282,
-   "h": "374c6ecff8a437711e706f8ce13aa097ccac11687e94520cec0dcf6c30c41aa3"
+   "h": "c7b870f5a483426e8d7185d62f19d7a88a8d8a2a2c79755583311124a37d5260"
   },
   {
    "p": "taschi/card.svg",
