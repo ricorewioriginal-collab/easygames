@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "40845d9da741",
- "generated": "2026-10-15T05:59:17+02:00",
+ "version": "be49c7c0a0a4",
+ "generated": "2026-10-15T04:29:25.616Z",
  "commit": "575a112b1c73d48e7333a652f4c45a63f8d80b43",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15829,
-   "h": "6a94aa5500c5485358afb38305df7a56caf01969e9667905d2bf6eca19a4a52f"
+   "s": 15888,
+   "h": "e338b39d8790a0ba429f269afa1825c494f6a85435e423e963452399eb214451"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 45844,
-   "h": "f49912652ffc6509cea8de519e5f45b06e2c632967175af4c0039ee2979e4488"
+   "s": 47406,
+   "h": "a95d50cc8edf26807da98dae8ad0c5af7871a4c352b643192b15f5e0c409cc03"
   },
   {
    "p": "index.html",
@@ -4818,8 +4818,8 @@
   },
   {
    "p": "mimori/game.js",
-   "s": 38532,
-   "h": "ae05c9af1e1d0cce38686eaf9bb2418e3be862531c952adbef7cbac58a18ced1"
+   "s": 44902,
+   "h": "ca73b514a8850f39db5348f2cbc255d20ffa3c59f9543a83f7ce4a5dec5c5d0a"
   },
   {
    "p": "mimori/home.css",
@@ -4828,8 +4828,8 @@
   },
   {
    "p": "mimori/household.js",
-   "s": 6637,
-   "h": "9740523f9fbcbdcf6d8dae0d3f3a50043318c0f3a5bf01ad46a078a0a58d8bd3"
+   "s": 7097,
+   "h": "2f581142617251159f605c6d02296592237581877c3c38eef815e4ef86bf7696"
   },
   {
    "p": "mimori/icon.svg",
@@ -4838,8 +4838,8 @@
   },
   {
    "p": "mimori/index.html",
-   "s": 32452,
-   "h": "0f6ec7b17d6b39f9033695d00d4bc215d80e62e67b2554077a5e882df4a8b887"
+   "s": 35413,
+   "h": "2aafeef972afa3daba44774dfb0f7265921111de99b4dc629fa7e9629e536afc"
   },
   {
    "p": "mimori/manifest.webmanifest",
@@ -4848,8 +4848,13 @@
   },
   {
    "p": "mimori/model.js",
-   "s": 10799,
-   "h": "2d091e91e231e48d1e915b62371d201a335416dc672bfce48b2d7a9884d2ff9d"
+   "s": 10886,
+   "h": "03f3934dccf597fdcba45a3bbc1062b1aff82b076761cf7e9e57e82233704182"
+  },
+  {
+   "p": "mimori/polish.css",
+   "s": 6664,
+   "h": "dc2f16296fac53c86aabdb8e6460671f5a83e185b48725ebbd7e4702764de92c"
   },
   {
    "p": "mimori/radio.js",
@@ -4858,8 +4863,8 @@
   },
   {
    "p": "mimori/rooms3d.js",
-   "s": 6811,
-   "h": "abba58130084337d0fda6a4cb856ddeda815454e6d29b8c6c516eb5c2ba11b43"
+   "s": 8922,
+   "h": "5a3a34e1dd770c2f94e1e6cfe657c5e1385d85585a3ba2ad9347ea332c477f2c"
   },
   {
    "p": "mimori/scene-ui.css",
@@ -4868,8 +4873,8 @@
   },
   {
    "p": "mimori/scene-ui.js",
-   "s": 5545,
-   "h": "5cb22030ffedbfbb08c087e1d026031cf3e12e5fe5d453055cb78df324ba6e81"
+   "s": 7197,
+   "h": "1e45f9d2af0bb0de49a66846e7d25d8ffab68a84d31da61476ce53e78657b56f"
   },
   {
    "p": "mimori/sound.js",
@@ -4878,8 +4883,8 @@
   },
   {
    "p": "mimori/sw.js",
-   "s": 1796,
-   "h": "17d59a1fb4eb04a22782f426a5f83f49a5e43ae66f02bccae63d567cc3f3120c"
+   "s": 1811,
+   "h": "64ca81c048d8535cda0e4e8e74699fd4d591a312c965fb2738c69593bfb836dd"
   },
   {
    "p": "modes.js",
@@ -5333,8 +5338,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 68282,
-   "h": "14a3d502ffb6ed49066b1f6c32ba5406de9bc3d32cc78776946f80f2e8b610f7"
+   "s": 69933,
+   "h": "27b1efe3fa880d504bae325b136ed4e356f1fbb3b9525dbd4c14e561c72feecb"
   },
   {
    "p": "taschi/card.svg",

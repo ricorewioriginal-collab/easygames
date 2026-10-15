@@ -134,3 +134,7 @@ Geräten sollte im Browser nach der Veröffentlichung kontrolliert werden.
 Die fünf Minigames starten nun **innerhalb des bestehenden Mimori-Fensters** und kehren nach dem Schließen zur selben 3D-Szene zurück. Im Querformat stehen kompakte Spielkarten und ein responsiver Arcade-Bereich zur Verfügung. Ein separater ganzseitiger App-Wechsel ist dafür nicht mehr erforderlich.
 
 Zusätzlich prüft `tools/test-mimori-scene.cjs` die tatsächliche In-Scene-Navigation, die sechs Menüs, zwölf Hintergründe und vier Tierfiguren im WebGL-freien Canvas-Fallback sowie die Touch-Interaktion. Es ersetzt keinen echten Geräte- oder WebGL-Test.
+
+## 2026-10-15: Politur des Ein-Fenster-Spiels
+
+Die Raumnavigation sitzt nun ganz oben und die fünf Bedürfnisse (Freude, Hunger, Energie, Hygiene, Gesundheit) erscheinen jederzeit als Kurzstatus in der 3D-Szene. Der Status ist antippbar. Über den Styling-Dock öffnet sich eine aufgeräumte Auswahl mit drei Registern: **Figur**, **Kleidung**, **Optionen**. Vier Fellfarben und drei Figurenvarianten haben gut sichtbare aktiv markierte Knöpfe. Der Shop besitzt nun **20 echte 3D-Accessoires**. Die zwölf Räume können um **24 unterschiedliche 3D-Möbel und Dekorationen** erweitert werden. Hochzeitspartner stehen als eigene Figuren sichtbar näher zur Kamera und erhalten Namensschilder. Das sichtbare antippbare 3D-Radiomöbel im Wohnzimmer ist größer und der untere Radio-Knopf öffnet die Senderliste. Die bisherigen Spielstände, Preise der alten Artikel und Google-Synchronisierung bleiben kompatibel.
