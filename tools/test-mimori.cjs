@@ -25,6 +25,33 @@ const purchase=M.shop({...daily.pet,coins:300},'accessory',2);
 assert(purchase.ok&&purchase.pet.accessory===2);
 assert.equal(M.load(purchase.pet,epoch+1000).accessory,2);
 assert.equal(M.shop(M.fresh(epoch),'theme',2).ok,false);
+// Classic pet-care tests: accidents, care, medicine and sleep.
+let messy=M.advance(M.fresh(epoch),epoch+6*3600000);
+assert(messy.mess>0,'No surprise toilet accident');
+assert.equal(messy.sick,true,'Long unattended waste should cause sickness');
+assert(M.needs(messy).includes('mess')&&M.needs(messy).includes('sick'));
+const beforeCure=messy.health;
+let treated=M.act(messy,'medicine',epoch+6*3600000);
+assert(treated.ok&&!treated.pet.sick&&treated.pet.health>beforeCure);
+assert(M.act(treated.pet,'medicine',epoch+6*3600000).ok!==undefined);
+const removed=M.act(treated.pet,'cleanup',epoch+6*3600000);
+assert(removed.ok&&removed.pet.mess===0);
+assert.equal(M.act(removed.pet,'cleanup',epoch+6*3600000).ok,false);
+let tired={...M.fresh(epoch),energy:22,hunger:85},withLights=M.act(tired,'sleep',epoch).pet;
+assert(withLights.sleeping);
+const lightOnRecovery=M.advance(withLights,epoch+3600000).energy;
+let dark=M.act(withLights,'light',epoch).pet;
+assert(dark.lightsOff);
+const deepSleep=M.advance(dark,epoch+3600000);
+assert(deepSleep.energy>lightOnRecovery+20,'Dark room did not improve sleeping recovery');
+assert(M.load(JSON.parse(JSON.stringify(deepSleep)),epoch+3600000).lightsOff);
+const needsToilet={...M.fresh(epoch),toiletNeed:83,nextAccident:epoch+3600000};
+const bathroom=M.act(needsToilet,'toilet',epoch);
+assert(bathroom.ok&&bathroom.pet.toiletNeed===0);
+assert(bathroom.pet.nextAccident>epoch+3600000);
+const legacy=M.load({version:1,born:epoch,updated:epoch,name:'Alt',hunger:80,energy:70,joy:70,clean:70,health:70},epoch+1);
+assert.equal(legacy.mess,0);assert.equal(legacy.sick,false);assert(legacy.nextAccident>epoch);
+
 
 assert.deepEqual(M.species,['Fluffi','Nubbi','Foxi','Drachi']);
 assert.equal(M.fresh(epoch).species,0);
@@ -40,8 +67,10 @@ assert(html.includes('data-game="mimori"'));
 assert(html.includes('data-prefix="easygames.mimori.v1"'));
 assert(html.includes('data-mount="#cloudMount"'));
 assert(html.includes('src="./sound.js"'));
+assert(html.includes('property="og:image"')&&html.includes('mimori/cover.svg'),'Mimori OG preview metadata missing');
+assert(html.includes('name="twitter:card"')&&html.includes('summary_large_image'));
 assert(html.includes('id="fxLayer"'));
-for(const id of ['settingsDrawer','settingsShortcut','settingsClose','settingsBackdrop','turnLeft','turnRight','resetView','speciesName','danceBtn','voiceBtn','surpriseBtn']){
+for(const id of ['settingsDrawer','settingsShortcut','settingsClose','settingsBackdrop','turnLeft','turnRight','resetView','speciesName','danceBtn','voiceBtn','surpriseBtn','toiletBtn','cleanupBtn','medicineBtn','lightBtn','alertSoundToggle','petAlert','petAlertText','nightShade','messScene','toiletNeed','messLabel','sickLabel','lightLabel']){
  assert(html.includes('id="'+id+'"'),'missing '+id);
 }
 for(let i=0;i<4;i++)assert(html.includes('data-species="'+i+'"'));
@@ -55,7 +84,7 @@ const ui={},ls=new Map(),events={window:{}},notifications=[],noop=()=>{};
 let renderFrame=null;const speciesButtons=[];
 function element(){
  return {textContent:'',hidden:false,clientWidth:570,clientHeight:500,dataset:{},children:[],
-  style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},focus:noop,setPointerCapture:noop,
+  style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},focus:noop,setPointerCapture:noop,querySelector:()=>element(),
   addEventListener(type,fn){(this.handlers[type]??=[]).push(fn)},
   appendChild(child){this.children.push(child)},replaceChildren(){this.children=[]},
   setAttribute:noop,getContext:()=>({})};
@@ -95,6 +124,9 @@ assert.equal(win.MimoriDebug.get().inventory.berry,6);
 assert(C.playCalls.includes('feed'));
 assert(ui.fxLayer.children.length>0,'missing animated care effects');
 assert.equal(ui.petname.textContent,'Mimori');
+assert.equal(ui.messScene.children.length,0);
+assert.equal(ui.lightBtn.handlers.click?.length||0,0,'care button should be bound through data-care delegation');
+
 assert(!ui.webglError||ui.webglError.hidden!==false,'failed WebGL mock init');
 // Four models must truly change shape and not just color.
 const meshCounts=[];
