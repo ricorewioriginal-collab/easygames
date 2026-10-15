@@ -1,10 +1,15 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id),M=window.MimoriModel,KEY='easygames.mimori.v1',REMIND='easygames.mimori.reminders.v1';
-let pet;try{pet=M.load(JSON.parse(localStorage.getItem(KEY)),Date.now())}catch(_){pet=M.fresh()}
+const $=id=>document.getElementById(id),M=window.MimoriModel,Home=window.MimoriHome,
+ Rooms3D=window.MimoriRooms3D,Radio=window.MimoriRadio,
+ KEY='easygames.mimori.v1',REMIND='easygames.mimori.reminders.v1';
+let pet,priorSave=null;
+try{priorSave=JSON.parse(localStorage.getItem(KEY));pet=M.load(priorSave,Date.now())}catch(_){pet=M.fresh()}
+const house=Home.restore(priorSave,pet,M,Date.now());
+pet=M.load(house.members[house.active],Date.now());
 const state={busy:false,fx:0,activity:'idle',spin:0,orbit:0,mini:0,renderer:null,model:null,room:null,balls:[],speciesName:'Fluffi'};
 const sound=window.MimoriSound||{play:()=>{},toggle:()=>false,isEnabled:()=>false};
 const stats=[['hunger','Satt','🍓'],['joy','Freude','💗'],['energy','Energie','🌙'],['clean','Sauber','🫧'],['health','Gesundheit','💚']];
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(pet))}catch(_){}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(Home.persist(house,pet)))}catch(_){}};
 const themeStyles=['linear-gradient(160deg,#8b829f,#4c496b 72%,#343855)','linear-gradient(160deg,#709aa0,#3d6b78 72%,#2b4558)','linear-gradient(160deg,#9d7987,#6c4975 72%,#37314e)'];
 let lastSaveAt=Date.now();
 let alertSoundsEnabled=false,alertLastAt=0,alertLastCause='';
@@ -53,6 +58,14 @@ function ui(){
  $('speciesName').textContent=M.species[pet.species]||M.species[0];
  document.querySelectorAll('[data-species]').forEach(b=>{const active=Number(b.dataset.species)===pet.species;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
  $('stageBadge').textContent=['Wolkenbaby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
+ document.querySelectorAll('[data-appearance]').forEach(btn=>{
+  const active=Number(btn.dataset.appearance)===(pet.appearance??2);
+  btn.classList.toggle('selected',active);btn.setAttribute('aria-pressed',String(active));
+ });
+ $('roomLabel').textContent=Home.rooms[house.room][1]+' '+Home.rooms[house.room][0];
+ $('radioLaunch').hidden=house.room!==0;
+ $('newPetName').disabled=house.members.length>=4;
+ $('addPet').disabled=house.members.length>=4;
  $('toiletNeed').textContent=Math.round(pet.toiletNeed)+'%';
  $('messLabel').textContent=pet.mess?pet.mess+'× Dreck':'Sauber';
  $('sickLabel').textContent=pet.sick?'Krank':'Gesund';
@@ -112,6 +125,130 @@ function switchSpecies(id){
  say('Hallo! Ich bin '+M.species[pet.species]+'!');showSettings(false);
 }
 document.querySelectorAll('[data-species]').forEach(btn=>btn.addEventListener('click',()=>switchSpecies(Number(btn.dataset.species))));
+document.querySelectorAll('[data-appearance]').forEach(btn=>btn.addEventListener('click',()=>{
+ pet=M.changeAppearance(pet,Number(btn.dataset.appearance));
+ save();paint();ui();sound.play('color',pet.species);
+ say('Neue Mimori-Variante: '+Home.looks[pet.appearance]);
+}));
+// Household, weddings and rooms share the existing pet save key, so Google sync transports all residents.
+let worldOpen=false;
+function switchMember(index){
+ const next=Home.select(house,index,pet,M,Date.now());
+ if(!next)return;
+ pet=next;state.orbit=0;
+ save();paint();state.applyRoom?.();state.applyLight?.();ui();renderWorld();
+ say('Hallo, ich bin '+pet.name+'! 💗');
+}
+function enterRoom(id){
+ if(!Home.rooms[id])return;
+ const answer=Home.buyRoom(house,pet,id);
+ if(!answer.ok){say(answer.reason);$('weddingResult').textContent=answer.reason;return}
+ if(house.room!==0)Radio.stop();
+ save();state.applyRoom?.();ui();renderWorld();
+ say(Home.rooms[id][1]+' Willkommen im '+Home.rooms[id][0]+'!');
+}
+function roomStep(dir){
+ const unlocked=house.rooms.slice().sort((a,b)=>a-b),idx=unlocked.indexOf(house.room);
+ enterRoom(unlocked[(idx+dir+unlocked.length)%unlocked.length]);
+}
+$('prevRoom').addEventListener('click',()=>roomStep(-1));
+$('nextRoom').addEventListener('click',()=>roomStep(1));
+function showWorld(open,radio=false){
+ worldOpen=open;$('worldOverlay').hidden=!open;
+ document.body.classList.toggle('drawerOpen',open);
+ if(open){renderWorld();if(radio)$('radioSection').scrollIntoView?.({behavior:'smooth',block:'start'})}
+ else $('worldOpen').focus();
+}
+$('worldOpen').addEventListener('click',()=>showWorld(true));
+$('worldClose').addEventListener('click',()=>showWorld(false));
+$('radioLaunch').addEventListener('click',()=>{if(house.room===0)showWorld(true,true)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&worldOpen)showWorld(false)});
+function button(cls,emoji,label,small,click){
+ const b=document.createElement('button');b.className=cls;
+ const i=document.createElement('b');i.textContent=emoji;
+ const title=document.createElement('strong');title.textContent=label;
+ const sub=document.createElement('small');sub.textContent=small;
+ b.append(i,title,sub);b.addEventListener('click',click);return b;
+}
+function renderWorld(){
+ if(!worldOpen)return;
+ const rooms=$('roomTiles');rooms.replaceChildren();
+ Home.rooms.forEach(([name,icon,cost],id)=>{
+  const owned=house.rooms.includes(id),selected=house.room===id;
+  const b=button('worldTile'+(owned?'':' locked')+(selected?' selected':''),
+    icon,name,selected?'✓ Aktueller Raum':owned?'✓ Freigeschaltet':'⭐ '+cost,()=>enterRoom(id));
+  rooms.appendChild(b);
+ });
+ const dec=$('decorTiles');dec.replaceChildren();
+ Home.decorations.forEach(([name,icon,cost],id)=>{
+  const owned=(house.decor[house.room]||[]).includes(id);
+  dec.appendChild(button('worldTile'+(owned?' selected':''),
+   icon,name,owned?'✓ Aufgestellt':'⭐ '+cost,()=>{
+    const result=Home.buyDecor(house,pet,id);
+    if(!result.ok){say(result.reason);return}
+    save();state.applyRoom?.();ui();renderWorld();say(name+' steht jetzt im Zimmer!');sound.play('color');
+   }));
+ });
+ const list=$('familyCards');list.replaceChildren();
+ house.members.forEach((member,i)=>{
+  const latest=i===house.active?pet:M.load(member,Date.now());
+  const needs=M.needs(latest);
+  const b=button('familyCard'+(i===house.active?' active':''),
+   ['🐰','🦦','🦊','🐉'][latest.species],latest.name,
+   Home.looks[latest.appearance??2]+' · '+M.species[latest.species]+' · '+(needs.length?needs.length+' Bedürfnisse':'Zufrieden'),
+   ()=>switchMember(i));
+  b.querySelector('small').classList.toggle('familyAlert',needs.length>0);
+  list.appendChild(b);
+ });
+ $('familyStatus').textContent=house.members.length+' / 4 Mimoris im Haushalt · '+house.weddings.length+' Hochzeit(en)';
+ const partners=$('partnerChoices');const selected=Array.from(partners.querySelectorAll('input:checked')).map(c=>c.value);
+ partners.replaceChildren();
+ house.members.forEach((member,i)=>{
+  if(i===house.active)return;
+  const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';
+  check.value=member.memberId;check.checked=selected.includes(check.value);
+  const score=house.bonds[Home.pairKey(house.members[house.active].memberId,member.memberId)]||0;
+  const title=document.createElement('span');title.textContent=member.name+' · 💗 '+score+'/100';
+  label.append(check,title);partners.appendChild(label);
+ });
+ $('radioSection').hidden=house.room!==0;
+}
+function selectedPartners(){
+ return Array.from($('partnerChoices').querySelectorAll('input:checked')).map(x=>x.value);
+}
+$('addPet').addEventListener('click',()=>{
+ const r=Home.create(house,M,$('newPetName').value,$('newPetSpecies').value,$('newPetAppearance').value);
+ if(!r.ok){say(r.reason);return}
+ save();renderWorld();switchMember(r.index);sound.play('evolve');
+ say('Willkommen in unserer Familie, '+pet.name+'! ❤️');
+});
+$('datePartners').addEventListener('click',()=>{
+ const selected=selectedPartners();if(!selected.length){$('weddingResult').textContent='Wähle erst einen Partner aus.';return}
+ const anchor=house.members[house.active].memberId;
+ selected.forEach(id=>Home.addBond(house,anchor,id,35));
+ save();renderWorld();effects('cuddle');sound.play('cuddle');
+ $('weddingResult').textContent='Ein schönes Date! Eure Beziehung ist gewachsen. 💗';
+});
+$('marryPartners').addEventListener('click',()=>{
+ const result=Home.marry(house,house.members[house.active].memberId,selectedPartners());
+ if(!result.ok){$('weddingResult').textContent=result.reason;return}
+ save();state.paint?.();renderWorld();effects('evolve');sound.play('evolve');
+ $('weddingResult').textContent='💍 Hochzeit! '+result.ids.length+' Mimoris feiern ihre Partnerschaft!';
+ say('Heute wird geheiratet! 💍');
+});
+$('familyParty').addEventListener('click',()=>{
+ if(!house.weddings.length){$('weddingResult').textContent='Lade zuerst die Familie zur Hochzeit ein!';return}
+ const result=Home.careAll(house,pet,M,'cuddle',Date.now());
+ pet=result.pet;save();ui();renderWorld();sound.play('dance');effects('play');
+ $('weddingResult').textContent='🎉 Familienfest! Alle '+result.helped+' Mimoris freuen sich.';
+});
+document.querySelectorAll('[data-family-care]').forEach(b=>b.addEventListener('click',()=>{
+ const result=Home.careAll(house,pet,M,b.dataset.familyCare,Date.now());
+ pet=result.pet;save();paint();ui();renderWorld();
+ say(result.helped+' von '+result.total+' Mimoris versorgt!');sound.play('cuddle');
+}));
+Radio.mount($('mimoriRadio'));
+
 function turnBy(rad){state.orbit+=rad;state.activity='turn';state.fx=.22}
 $('turnLeft').addEventListener('click',()=>turnBy(-Math.PI/3));
 $('turnRight').addEventListener('click',()=>turnBy(Math.PI/3));
@@ -228,6 +365,7 @@ function make3D(){
  const mesh=(parent,geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o};
  const sphere=new THREE.SphereGeometry(1,28,20),cyl=new THREE.CylinderGeometry(1,1,1,32),box=new THREE.BoxGeometry(1,1,1);
  const room=new THREE.Group();scene.add(room);state.room=room;
+ const roomScene=new THREE.Group();room.add(roomScene);
  const floorBack=material('#736c91');
  const floorOuter=material('#a18aa4');
  const floorInner=material('#b8abb7');
@@ -238,24 +376,10 @@ function make3D(){
  const shadow=new THREE.MeshBasicMaterial({color:0x3c2f53,transparent:true,opacity:.24,depthWrite:false});
  mesh(room,new THREE.CircleGeometry(.82,36),shadow,0,.055,.1,1,.52,1).rotation.x=-Math.PI/2;
  state.applyRoom=()=>{
-  const t=pet.theme||0;
-  $('viewport').style.background=themeStyles[t]||themeStyles[0];
-  const tones=[['#736c91','#a18aa4','#b8abb7'],['#4b777d','#789c8e','#a8bbb0'],['#6f5077','#957294','#bba1b0']][t]||[];
-  [floorBack,floorOuter,floorInner].forEach((mat,i)=>{if(mat.color?.set)mat.color.set(tones[i])});
+  $('viewport').style.background=Rooms3D.css(house.room);
+  Rooms3D.build(THREE,roomScene,house.room,house.decor[house.room]||[]);
  };
  state.applyRoom();
- // Cozy pieces: little flower, bowl, bed and hanging stars.
- mesh(room,cyl,material('#eeb996'),-2.45,.25,1.45,.45,.25,.45);
- mesh(room,new THREE.TorusGeometry(.44,.08,12,32),material('#a5c1a8'),-2.45,.48,1.45).rotation.x=Math.PI/2;
- const bed=mesh(room,cyl,material('#bb9fd0'),2.25,.15,-.85,.95,.17,.72);
- mesh(room,sphere,material('#ffedf6'),2.25,.27,-.85,.87,.19,.63);
- for(let i=0;i<7;i++){const ang=i*Math.PI*2/7;mesh(room,sphere,material(i%2?'#f5c9d6':'#b4d2e8'),2.25+Math.cos(ang)*.88,.32,-.85+Math.sin(ang)*.62,.13,.13,.13)}
- for(let i=0;i<4;i++){
-  const x=-2.85+(i%2)*.6,z=-1.4-Math.floor(i/2)*.7;
-  mesh(room,cyl,material('#a9c2a0'),x,.28,z,.06,.5,.06);
-  for(let j=0;j<5;j++){const a=j*Math.PI*2/5;mesh(room,sphere,material(i%2?'#edb6bc':'#d6bee2'),x+Math.cos(a)*.2,.57+Math.sin(a)*.2,z,.13,.18,.10)}
-  mesh(room,sphere,material('#fff1a9'),x,.57,z,.13,.13,.11);
- }
  const petGroup=new THREE.Group();scene.add(petGroup);state.model=petGroup;
  const palettes=[
   ['#c9799f','#e5c3c4','#a65784'],
@@ -364,11 +488,50 @@ function make3D(){
    ring.rotation.x=.12;
    for(let i=0;i<4;i++)oval(shine,Math.cos(i*Math.PI/2)*.57,2.83+Math.sin(i*Math.PI/2)*.5,.02,.11,.11,.1);
   }
+  // Distinct opt-in appearance sets for every species, independent of sex/relationship rules.
+  if(pet.appearance===0){ // masculine silhouette: short angular fringe and raised brows
+   oval(dark,-.29,2.03,.49,.24,.075,.065);oval(dark,.29,2.03,.49,.24,.075,.065);
+   cone(dark,-.28,2.60,.03,.18,.31);
+  }else if(pet.appearance===1){ // feminine silhouette: side flower and soft eye accents
+   for(const sign of [-1,1]){oval(eyes,sign*.49,1.99,.77,.10,.065,.04)}
+   for(let i=0;i<5;i++){const a=i*Math.PI*2/5;
+    oval(blush,.77+Math.cos(a)*.18,2.26+Math.sin(a)*.17,.33,.15,.17,.10)}
+   oval(shine,.77,2.26,.47,.13,.13,.10);
+  }else{ // androgynous silhouette: sweeping asymmetric crest and star details
+   const tuft=oval(dark,-.22,2.43,.08,.39,.23,.27);tuft.rotation.z=.40;
+   oval(shine,.79,1.78,.54,.10,.12,.07);
+  }
   // Shared stage growth still changes the silhouette of every species.
   petGroup.scale.setScalar(.86+M.evolve(pet)*.055);
   state.speciesName=M.species[id]||M.species[0];
  };
- state.paint=buildPet;buildPet();
+ const familyGroup=new THREE.Group();scene.add(familyGroup);
+ function family3D(){
+  while(familyGroup.children.length){const o=familyGroup.children[0];familyGroup.remove(o);
+   o.traverse?.(n=>{if(n.geometry?.dispose)n.geometry.dispose();n.material?.dispose?.()})}
+  const activeId=house.members[house.active].memberId;
+  const partners=house.weddings.filter(w=>w.ids.includes(activeId)).flatMap(w=>w.ids)
+   .filter(id=>id!==activeId);
+  const unique=Array.from(new Set(partners));
+  unique.slice(0,3).forEach((id,i)=>{
+   const p=house.members.find(p=>p.memberId===id);if(!p)return;
+   const group=new THREE.Group();group.position.set([-1.85,1.85,-2.4][i],.13,-.68-i*.2);
+   const color=palettes[p.color][0],m=material(color),wh=material('#e8e1dd'),eye=material('#25243f');
+   mesh(group,sphere,m,0,.83,0,.53,.67,.48);
+   if(p.species===0||p.species===2){
+    for(const d of [-1,1])mesh(group,p.species===2?new THREE.ConeGeometry(.20,.61,10):sphere,
+      m,d*.34,1.55,0,.17,p.species===2?.68:.40,.20);
+   }else if(p.species===3){
+    mesh(group,new THREE.ConeGeometry(.23,.5,12),m,-.22,1.55,.02);
+    mesh(group,new THREE.ConeGeometry(.23,.5,12),m,.22,1.55,.02);
+   }else mesh(group,sphere,m,0,1.40,0,.68,.25,.51);
+   for(const d of [-1,1]){
+    mesh(group,sphere,wh,d*.19,1.06,.39,.16,.23,.075);
+    mesh(group,sphere,eye,d*.19,1.06,.44,.085,.14,.055)}
+   group.scale.set(.65,.65,.65);familyGroup.add(group);
+  });
+ }
+ state.paint=()=>{buildPet();family3D()};state.paint();
  // Entire 3D surface rotates via touch, mouse or pen. A small tap still cuddles.
  let pointer=null,originX=0,lastX=0,dragged=false;
  renderer.domElement.style.touchAction='none';
@@ -499,5 +662,5 @@ setInterval(()=>{
  if(!document.hidden&&Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!');
 },60000);
 ui();make3D();remindersUi();
-window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
+window.MimoriDebug={household:()=>JSON.parse(JSON.stringify(house)),openWorld:()=>showWorld(true),switchMember,enterRoom,get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
 })();
