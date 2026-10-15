@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9fc8ea1bf0f4",
- "generated": "2026-10-15T02:39:57.037Z",
- "commit": "13f05f4d8693c5faf39e357822a03ff5d4c2fd2a",
+ "version": "30b8462ebbd6",
+ "generated": "2026-10-15T02:41:36Z",
+ "commit": "a471b7f03f8b6073226b0d1a1d6cce2cf518aa7a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4802,6 +4802,11 @@
    "h": "bd9777d3a9352ac15a34432b09c0f404e8aa41de4403c389d73d6c8d228f277c"
   },
   {
+   "p": "mimori/cover.png",
+   "s": 350945,
+   "h": "39c64bd35c19c73e399ed6ddd0df59cd11a463adcdc279d556df6838a7f7cad0"
+  },
+  {
    "p": "mimori/cover.svg",
    "s": 7159,
    "h": "c744e03051efb6d9dd65b0379c6c770234772db0ac99ead46027f1adc0670170"
@@ -5294,7 +5299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 65451,
-   "h": "830d8429a0b42accb7bb85a1b7c1043232bdceb5e9cb94048dc2e74bd5b2af7c"
+   "h": "d4ef7cc736731d75b2f33288ea194e838a5af420385994cb6764fe70a7671337"
   },
   {
    "p": "taschi/card.svg",
