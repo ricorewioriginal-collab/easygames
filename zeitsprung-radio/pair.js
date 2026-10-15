@@ -136,16 +136,16 @@ export function startController() {
       const p = document.createElement('p'); p.textContent = s.result || 'Runde beendet.'; root.append(p);
       const button = document.createElement('button'); button.className = 'primary'; button.textContent = 'Nächste Runde →'; button.onclick = () => send({ t: 'next' }); root.append(button); return;
     }
-    const prompt = document.createElement('p'); prompt.textContent = submittedRound === s.round ? 'Antwort gesendet. Warte auf die Auflösung am TV.' : s.type === 'quiz' ? s.prompt : 'Spiele den Song am TV ab und tippe auf die passende Lücke.'; root.append(prompt);
-    if (s.type === 'timeline') {
+    const prompt = document.createElement('p'); prompt.textContent = submittedRound === s.round ? 'Antwort gesendet. Warte auf die Auflösung am TV.' : s.type === 'timeline' ? 'Spiele den Song am TV ab und tippe auf die passende Lücke.' : s.prompt; root.append(prompt);
+    if (s.type === 'timeline' || s.type === 'year') {
       const play = document.createElement('button'); play.className = 'secondary'; play.textContent = '▶ Musik am TV starten'; play.onclick = () => send({ t: 'play' }); root.append(play);
       const source = document.createElement('button'); source.className = 'secondary'; source.textContent = '♫ Quelle am TV wechseln'; source.onclick = () => send({ t: 'source' }); root.append(source);
     }
     const choices = document.createElement('div'); choices.className = 'controller-choices';
-    const items = s.type === 'quiz' ? (s.options || []) : (s.slots || []);
+    const items = s.type === 'timeline' ? (s.slots || []) : (s.options || []);
     items.forEach((label, position) => {
-      const button = document.createElement('button'); button.textContent = `${s.type === 'quiz' ? 'ABCD'[position] : position + 1}. ${label}`; button.disabled = submittedRound === s.round;
-      button.onclick = () => { submittedRound = s.round; send(s.type === 'quiz' ? { t: 'choice', choice: position } : { t: 'answer', position }); renderState(); };
+      const button = document.createElement('button'); button.textContent = `${s.type === 'timeline' ? position + 1 : 'ABCD'[position]}. ${label}`; button.disabled = submittedRound === s.round;
+      button.onclick = () => { submittedRound = s.round; send(s.type === 'timeline' ? { t: 'answer', position } : { t: 'choice', choice: position }); renderState(); };
       choices.append(button);
     });
     root.append(choices);

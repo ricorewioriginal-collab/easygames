@@ -4,7 +4,7 @@ Eigenständige Musikshow für easygames: 3D-Live-Studio, responsive App-Oberflä
 
 ## Spielablauf
 
-- Musikrunden: Einen Song direkt im eingebetteten Player hören und auf der eigenen Zeitleiste einordnen. Bei gleichem Jahr zählen alle chronologisch passenden Lücken.
+- Musikrunden: Im Hauptmenü zwischen **Jahr aus A–D wählen** (Voreinstellung) und **Zeitleiste** wählen. In beiden Modi den Song direkt im eingebetteten Player hören. Bei der Zeitleiste zählen bei gleichem Jahr alle chronologisch passenden Lücken.
 - Quizrunden: Vier Antwortmöglichkeiten zu Charts, Jahrescharts, Künstlern/Bands, Songtiteln, Biografien, gemeinfreien Songtexten, ESC, DSDS, Popstars, The Voice of Germany und Musikwissen.
 - Acht richtige Antworten gewinnen. Ein bis vier Spieler können lokal oder per Handy-Controller mitspielen.
 - 300 Songs/Jahresfragen in `tracks.js`, 300 daraus abgeleitete Interpretenfragen, 300 Songtitelfragen und 190 redaktionelle Zusatzfragen, darunter 40 Biografiefragen und 20 Lückentexte aus gemeinfreien Liedern in `knowledge.js`. Für Musikrunden sind 28 kuratierte Songs mit konkreten YouTube-IDs verfügbar.
@@ -19,7 +19,7 @@ Quellen: [Deezer Widget](https://newsroom-deezer.com/2021/04/deezers-new-embedda
 
 Am TV **TV-Modus** oder **Handys koppeln** wählen. Der Gastgeber zeigt einen zufälligen sechsstelligen WR-Code, eine separate vierstellige PIN und einen QR-Code. Am Handy QR-Code scannen oder auf der Spielseite **Dieses Gerät als Handy-Controller verwenden** wählen. Jedes von bis zu vier Handys übernimmt einen Spielerplatz. Der aktive Spieler startet am TV den Player, wechselt bei Bedarf die Quelle, beantwortet die Musik- oder Quizrunde und schaltet weiter. Die TV-Oberfläche bleibt auch direkt bedienbar.
 
-Die Verbindung nutzt PeerJS über WebRTC und die vorhandenen Bibliotheken in `../vendor/`. PeerJS benötigt den Signalisierungsdienst; je nach Firewall oder NAT kann eine direkte WebRTC-Verbindung scheitern. Die PIN wird am Gastgeber geprüft und steht nicht im QR-Link.
+Die Verbindung nutzt PeerJS über WebRTC und die vorhandenen Bibliotheken in `../vendor/`. Die Handy-Controller zeigen in der einfachen Musikrunde dieselben vier Jahreszahlen A–D wie der TV. PeerJS benötigt den Signalisierungsdienst; je nach Firewall oder NAT kann eine direkte WebRTC-Verbindung scheitern. Die PIN wird am Gastgeber geprüft und steht nicht im QR-Link.
 
 ## App und Speicher
 

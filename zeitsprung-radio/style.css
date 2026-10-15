@@ -5,3 +5,22 @@
 .tv-mode .shell{max-width:1680px}.tv-mode .menu-view{grid-template-columns:1.2fr .8fr}.tv-mode .show-layout{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.tv-mode .broadcast-head h2{font-size:clamp(40px,4vw,65px)}.tv-mode .host-card p{font-size:20px}.tv-mode .challenge h3{font-size:clamp(28px,3vw,42px)}.tv-mode .time-card{flex-basis:145px}.tv-mode .quiz-options button{min-height:80px;font-size:18px}@media(max-width:980px){.tv-mode .menu-view,.tv-mode .show-layout{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .player-box[data-provider="deezer"],.player-box[data-provider="spotify"]{height:300px;aspect-ratio:auto}.player-box[data-provider="spotify"]{height:235px}@media(max-width:650px){.player-box[data-provider="deezer"]{height:278px}.player-box[data-provider="spotify"]{height:200px}}
 .stage-window{height:145px;margin:0 0 16px;border:1px solid #8e78d777;border-radius:18px;background:linear-gradient(90deg,#12194144,#10112e0a 45%,#21103e44);box-shadow:inset 0 0 35px #a269ff20,0 10px 35px #0007;display:flex;align-items:flex-start;justify-content:space-between;padding:14px 18px;overflow:hidden}.stage-window span{font-size:10px;font-weight:900;letter-spacing:.14em;color:#ffd36c;text-shadow:0 1px 8px #000}.stage-window b{font-size:27px;color:#71eaff;text-shadow:0 0 14px #61ecff}@media(max-width:650px){.stage-window{height:82px;margin-bottom:10px;border-radius:12px;padding:9px 11px}.stage-window span{font-size:8px}}
+
+/* Konsolenstart und klares Hauptmenü */
+.boot{background:radial-gradient(ellipse at 50% 20%,#513177 0,#171637 42%,#050713 85%)}
+.boot:before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 42px,#ffffff09 43px 44px),repeating-linear-gradient(90deg,transparent 0 42px,#ffffff09 43px 44px);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent)}
+.boot-inner{position:relative;width:min(92vw,520px);padding:34px 30px 30px;border:1px solid #e8d8ff48;border-radius:25px;background:linear-gradient(145deg,#20204fcc,#0a0d23ed);box-shadow:0 30px 100px #000c,0 0 80px #a84cff3d}
+.boot img{width:130px;height:130px}
+.boot .load-track{height:14px;border:1px solid #ffffff40;margin:18px 0 12px;box-shadow:inset 0 2px 10px #0008}
+.boot-start{display:block;width:100%;margin-top:22px;font-size:19px;min-height:61px;animation:bootpulse 2s ease-in-out infinite}
+.boot-help{display:block;margin-top:18px;color:#bbb7d7;font-size:11px;font-weight:900;letter-spacing:.24em}
+@keyframes bootpulse{50%{box-shadow:0 0 25px #ff8bc7aa,0 0 50px #8b5cf66b}}
+.menu-caption{display:block;margin:27px 0 10px;color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.22em}
+.menu-ctas{display:grid;grid-template-columns:minmax(0,1fr);max-width:510px;gap:9px}
+.menu-ctas button{text-align:left;width:100%;border-radius:11px;padding-left:22px;box-shadow:0 8px 20px #0005}
+.menu-ctas button:focus-visible,.menu-ctas button:hover{outline:2px solid var(--gold);outline-offset:2px;transform:translateX(4px)}
+.menu-ctas #start{background:linear-gradient(100deg,#ffd575,#ff5f9f)}
+.menu-ctas #menuTv{border-color:#80eaff99;background:linear-gradient(100deg,#223754,#29224e)}
+.lobby-card{border-color:#bb8bfd70;box-shadow:0 22px 65px #0009,0 0 45px #b64eff18}
+.lobby-card select:focus{border-color:var(--gold)}
+@media(max-width:650px){.boot-inner{padding:24px 19px}.boot img{width:100px;height:100px}.boot-start{font-size:16px}.menu-caption{margin-top:19px}.menu-ctas button{min-height:54px}}
