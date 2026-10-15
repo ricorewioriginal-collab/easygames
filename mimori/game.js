@@ -62,6 +62,22 @@ function turnBy(rad){state.orbit+=rad;state.activity='turn';state.fx=.22}
 $('turnLeft').addEventListener('click',()=>turnBy(-Math.PI/3));
 $('turnRight').addEventListener('click',()=>turnBy(Math.PI/3));
 $('resetView').addEventListener('click',()=>{state.orbit=0;state.activity='turn';state.fx=.22});
+$('danceBtn').addEventListener('click',()=>{
+ state.activity='dance';state.fx=3.3;
+ sound.play('dance',pet.species);effects('play');
+ say(M.species[pet.species]+' tanzt vor Freude! 💃');
+});
+$('voiceBtn').addEventListener('click',()=>{
+ state.activity='greet';state.fx=.65;sound.play('species',pet.species);effects('cuddle');
+ say(['Piep! Ich mag dich!','Brummel, brummel!','Fiiip! Komm spielen!','Rrrr! Kleiner Drache!'][pet.species]);
+});
+$('surpriseBtn').addEventListener('click',()=>{
+ const kinds=['wash','feed','cuddle','evolve','play'];
+ const kind=kinds[Math.floor(Math.random()*kinds.length)];
+ state.activity='surprise';state.fx=2;sound.play(kind,pet.species);effects(kind);
+ say(['Ein kleines Geschenk! ✨','Huch! Ein Zauber! 🌈','Hihi, du hast mich überrascht! 🎉'][Math.floor(Math.random()*3)]);
+});
+
 
 function effects(kind){
  const layer=$('fxLayer');if(!layer)return;
@@ -273,9 +289,9 @@ function make3D(){
   state.fx=Math.max(0,state.fx-dt);petGroup.rotation.y+=(state.orbit-petGroup.rotation.y)*Math.min(1,dt*18);
   const mood=M.mood(pet);
   const energy=pet.energy/100;
-  petGroup.position.y=.04+Math.sin(t*(mood==='Schläfrig'?1.2:2.25))*.06+(jumping?Math.abs(Math.sin(t*14))*Math.min(1,state.fx)*.33:0);
+  petGroup.position.y=.04+Math.sin(t*(mood==='Schläfrig'?1.2:2.25))*.06+(jumping?Math.abs(Math.sin(t*(state.activity==='dance'?20:14)))*Math.min(1,state.fx)*.33:0);
   const pulse=state.fx>0?Math.min(1,state.fx):0;
-  petGroup.rotation.z=Math.sin(t*2.2)*.04+(state.activity==='play'?Math.sin(t*16)*.13*pulse:0);
+  petGroup.rotation.z=Math.sin(t*2.2)*.04+(state.activity==='play'?Math.sin(t*16)*.13*pulse:0)+(state.activity==='dance'?Math.sin(t*15)*.20*pulse:0);
   petGroup.rotation.x=state.activity==='sleep'?Math.sin(t*1.2)*.13*pulse:state.activity==='cuddle'?-Math.sin(t*7)*.08*pulse:0;
   petGroup.scale.setScalar((.81+M.evolve(pet)*.05)*(1+Math.sin(t*11)*.055*pulse));
   if(faceParts.length){const blink=(t%4.4)<.11;faceParts.forEach(({obj,height})=>obj.scale.y=blink?.04:height)}

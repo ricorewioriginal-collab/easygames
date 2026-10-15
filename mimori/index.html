@@ -106,6 +106,9 @@ header{height:50px;margin-bottom:10px;gap:7px}
 .panel{border-radius:19px}
 section.bodyPanel{padding:13px}
 .carePanel h2{font-size:17px;margin:0 2px 11px}
+.extras{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.extras button{min-height:43px;border:1px solid #b9a7d3;border-radius:13px;background:#554367;color:#fff3df;font-size:12px;font-weight:850;padding:8px 4px}
+.extras button:active{transform:translateY(2px);background:#80668c}
 .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
 .care{min-height:80px;padding:10px 3px 8px;border-radius:15px;touch-action:manipulation;box-shadow:0 3px #25203b}
 .care b{font-size:27px;margin:0 0 2px}.care span{font-size:12px;letter-spacing:-.2px}
@@ -168,7 +171,9 @@ section.bodyPanel{padding:13px}
 <button class="care" data-care="sleep"><b>🌙</b><span>Schlafen</span></button>
 <button class="care" data-care="cuddle"><b>💞</b><span>Kuscheln</span></button>
 <button class="care" data-care="minigame"><b>⭐</b><span>Sternfang</span></button>
-</div></section>
+</div>
+<div class="extras"><button id="danceBtn">🎵 Tanzen</button><button id="voiceBtn">🎶 Stimme</button><button id="surpriseBtn">🎁 Überraschung</button></div>
+</section>
 </div></div>
 <div id="settingsDrawer" hidden role="dialog" aria-modal="true" aria-label="Mimori-Einstellungen">
 <div id="settingsBackdrop" class="drawerBackdrop" aria-hidden="true"></div>
