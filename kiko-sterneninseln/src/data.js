@@ -6,7 +6,7 @@ export const worlds=[
 ];
 // Each path is a sequence of traversable rectangles (x, z, width, depth, top y).
 const make=(name,world,path,puzzle='none',enemies=[],notes='')=>({name,world,path,puzzle,enemies,notes,
- crystals:[[0,0],[1,1],[2,0],[3,-1],[4,0]],stars:[[0,-2.2],[2,2.2],[4,2.2]],
+ crystals:[[0,1.4,1.5],[1,-1,0],[2,0,0],[3,-1,0],[4,0,0]],stars:[[0,-2.2],[2,2.2],[4,2.2]],
  start:[path[0][0],path[0][4]],portal:[path.at(-1)[0],path.at(-1)[1]+1.2]});
 export const levels=[
  make('Das erste Sternenlicht',0,[[0,0,8,7,0],[0,6,7,5,0],[1,12,7,5,.4],[0,18,7,5,.5],[0,24,9,8,.5]],'none',[],'Joystick nach oben oder W: vorwärts. Sammle fünf Kristalle und springe über die Lücken.'),

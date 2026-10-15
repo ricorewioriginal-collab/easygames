@@ -1,4 +1,5 @@
 const pairs=[
+ ['Fassung 7','Revision 7'],['Zurück auf sicherem Boden. Springe über die Lücken.','Back on safe ground. Jump across the gaps.'],
  ['Das Geheimnis der Sterneninseln · Acht Abenteuer in vier Welten','The Secret of the Star Islands · Eight adventures in four worlds'],
  ['Der Himmelskristall ist zerbrochen. Hilf Kiko, seine Splitter zu sammeln und die Sterneninseln wieder zu verbinden.','The sky crystal has shattered. Help Kiko collect its pieces and reconnect the star islands.'],
  ['Spielen','Play'],['Levelauswahl','Choose a level'],['Einstellungen','Settings'],['Spielanleitung','How to play'],['Über das Spiel','About the game'],['Zurück','Back'],['Fortsetzen','Resume'],['Level neu starten','Restart level'],['Steuerung','Controls'],['Hauptmenü','Main menu'],['Vollbild','Fullscreen'],['Spielstand zurücksetzen','Reset progress'],['Weiter','Next'],['Wiederholen','Replay'],['Am Checkpoint neu starten','Restart at checkpoint'],['Noch einmal spielen','Play again'],

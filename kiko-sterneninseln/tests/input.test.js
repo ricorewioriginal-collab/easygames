@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {Input} from '../src/input.js';
+
+class Element{
+ constructor(){this.events=new Map;this.style={};this.captured=null}
+ addEventListener(type,fn){const list=this.events.get(type)||[];list.push(fn);this.events.set(type,list)}
+ emit(type,fields={}){const event={pointerId:1,clientX:66,clientY:66,preventDefault(){},...fields};for(const fn of this.events.get(type)||[])fn(event)}
+ setPointerCapture(id){this.captured=id}
+ getBoundingClientRect(){return {left:0,top:0,width:132,height:132}}
+ focus(){}
+}
+function setup(){const win=new Element,canvas=new Element,elements=Object.fromEntries(['stick','knob','jump','interact'].map(id=>['#'+id,new Element]));globalThis.window=win;globalThis.document={querySelector:s=>elements[s]};globalThis.innerWidth=800;let pad=null;Object.defineProperty(globalThis,'navigator',{configurable:true,value:{maxTouchPoints:2,getGamepads:()=>[pad]}});let enabled=true;const input=new Input({data:{keys:{up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD',jump:'Space',interact:'KeyE'}}},canvas,()=>enabled);return {input,canvas,win,elements,setPad:p=>pad=p,setEnabled:v=>enabled=v}}
+test('keyboard movement, jump and pause are read and released',()=>{const {input,win}=setup();win.emit('keydown',{code:'KeyW'});win.emit('keydown',{code:'Space'});assert.equal(input.sample().z,-1);assert.equal(input.sample().jump,true);win.emit('keyup',{code:'KeyW'});win.emit('keyup',{code:'Space'});assert.equal(input.sample().z,0);assert.equal(input.sample().jump,false);win.emit('keydown',{code:'Escape',repeat:false});assert.equal(input.sample().pause,true);assert.equal(input.sample().pause,false)});
+test('joystick and jump support simultaneous fingers with captured release',()=>{const {input,elements}=setup();elements['#stick'].emit('pointerdown',{pointerId:7,clientX:66,clientY:10});elements['#jump'].emit('pointerdown',{pointerId:8});assert.equal(elements['#jump'].captured,8);let s=input.sample();assert.ok(s.z<-.95);assert.equal(s.jump,true);elements['#jump'].emit('pointerup',{pointerId:8,clientX:700});assert.equal(input.sample().jump,false);assert.ok(input.sample().z<0);elements['#stick'].emit('pointercancel',{pointerId:7});assert.equal(input.sample().z,0)});
+test('camera accepts only its own finger and stops on cancellation',()=>{const {input,canvas}=setup();canvas.emit('pointerdown',{pointerId:9,pointerType:'touch',clientX:700});canvas.emit('pointermove',{pointerId:8,clientX:750});assert.equal(input.sample().look,0);canvas.emit('pointermove',{pointerId:9,clientX:750});assert.ok(input.sample().look<0);canvas.emit('pointercancel',{pointerId:9});canvas.emit('pointermove',{pointerId:9,clientX:770});assert.equal(input.sample().look,0)});
+test('blur and disabled gameplay clear actions and reject menu touches',()=>{const {input,win,elements,setEnabled}=setup();elements['#interact'].emit('pointerdown',{pointerId:4});win.emit('keydown',{code:'KeyD'});win.emit('blur');assert.equal(input.sample().interact,false);assert.equal(input.sample().x,0);setEnabled(false);elements['#jump'].emit('pointerdown',{pointerId:5});win.emit('keydown',{code:'KeyW'});setEnabled(true);assert.equal(input.sample().jump,false);assert.equal(input.sample().z,0)});
+test('gamepad uses held buttons, frame based camera time and disconnect resets',()=>{const {input,setPad}=setup();setPad({connected:true,axes:[0,-1,.5,0],buttons:[{pressed:true},{pressed:false},{pressed:true}]});const first=input.sample(1/30);assert.equal(first.z,-1);assert.equal(first.jump,true);assert.equal(first.interact,true);assert.equal(input.sample().jump,true);setPad(null);assert.equal(input.sample().z,0);assert.equal(input.sample().jump,false)});
+
+test('blocked Gamepad API in an embedded frame cannot disable keyboard or touch',()=>{const {input,win,elements}=setup();navigator.getGamepads=()=>{throw new Error('Gamepad blocked by permissions policy')};win.emit('keydown',{code:'KeyW'});elements['#jump'].emit('pointerdown',{pointerId:8});assert.equal(input.sample().z,-1);assert.equal(input.sample().jump,true)});

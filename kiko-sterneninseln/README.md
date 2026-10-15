@@ -20,10 +20,14 @@ Three.js r128 liegt lokal unter `vendor/three.min.js` (MIT-Lizenz, siehe `vendor
 
 Die Level werden in `src/data.js` definiert. `src/scene.js` baut die 3D-Welt, `src/physics.js` bewegt Kiko, `src/input.js` liest Tastatur, Touch und Gamepad, `src/ui.js` verwaltet Menüs, `src/save.js` speichert lokal, `src/audio.js` erzeugt Töne, `src/main.js` verbindet die Systeme.
 
+## Überarbeitung – Fassung 7
+
+Die Bewegung folgt der tatsächlichen Blickrichtung der Kamera. Links/rechts wurde anhand ihrer Matrix geprüft. Die Physik nutzt Teilzeitschritte bis 1/120 Sekunde, feste Plattformoberseiten, seitliche Kollisionen und Kollisionen an der Unterseite. Ein kurzer Sprungpuffer und eine kleine Kulanz an Kanten machen Sprünge verlässlicher. Nach einem Absturz erscheint Kiko wieder am sicheren Start oder Checkpoint.
+
+Touchflächen unterbinden Browsergesten während der Steuerung. Joystick, Sprung und Kamerawischen besitzen getrennte Pointer. Aktionen enden auch nach einem Abbruch oder dem Loslassen außerhalb der Taste. Eine in eingebetteten Frames gesperrte Gamepad API blockiert die übrige Steuerung nicht.
+
+Ein Missionsfenster erklärt den Einstieg. Während des Spielens zeigt ein dauerhafter Zielkompass den nächsten Kristall, notwendigen Schalter oder das Portal. Pflichtschalter werden vor späteren Kristallen hinter einem Tor angefordert. Sprung und Aktion sind beschriftet. Blaue Kristalle tragen sichtbare Lichtmarkierungen; Bonussterne und Kikos Abzeichen haben eine Sternform. Die Farben der Standardmaterialien werden für Three.js r128 korrekt aus sRGB umgerechnet.
+
 ## Durchgeführte Prüfungen
 
-- `npm test`: erfolgreich. Geprüft wurden acht Leveldefinitionen, 3D-Aufbau und Freigabe aller Welten, Sprung und Landung, ein simulierter Physikpfad über sämtliche Plattformen bis zum Zielbereich jedes Levels sowie Spielstandvalidierung und Fortschritt.
-- `node --check` für alle Quell- und Testdateien: erfolgreich.
-- `npm install --package-lock-only --offline`: erfolgreich; die Lockdatei ist mit der festgelegten Vite-Version konsistent.
-- `npm run build`: in dieser Ausführungsumgebung nicht möglich, weil Vite nicht installiert ist und der Netzwerkzugriff auf das npm-Archiv gesperrt ist.
-- Browserdurchlauf: nicht durchgeführt. Chromium und ein lokaler HTTP-Server werden in dieser Ausführungsumgebung durch Socket-Beschränkungen blockiert. Daher sind grafische Darstellung, Touchbedienung und der vollständige manuelle Spieldurchlauf noch nicht im Browser bestätigt.
+Siehe [TEST_RESULTS.md](TEST_RESULTS.md) für die ausgeführten Prüfungen und ihre Grenzen. Die vollständige Spiellogik wurde bei 30 und 60 simulierten Bildern pro Sekunde bis zum achten Portal geprüft. Eine grafische Browserprüfung und ein Produktionsbuild konnten in dieser Ausführungsumgebung wegen ihrer Prozess- und Netzwerkbeschränkungen nicht abgeschlossen werden.
