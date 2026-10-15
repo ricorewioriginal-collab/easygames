@@ -13,7 +13,7 @@ function ui(){
  $('foodCount').textContent=pet.inventory.berry;$('soapCount').textContent=pet.inventory.soap;
  for(const [key]of stats){const n=time(pet[key]);$(key+'Val').textContent=n+' %';$(key+'Fill').style.width=n+'%';$(key+'Fill').classList.toggle('low',n<=35)}
  $('careLevel').textContent='Fürsorge '+pet.care;
- $('stageBadge').textContent=['Eiweiß-Baby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
+ $('stageBadge').textContent=['Wolkenbaby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
 }
 function persist(){pet=M.advance(pet,Date.now());save();ui()}
 function act(kind){
@@ -96,7 +96,7 @@ function make3D(){
  ];
  let body,faceParts=[],horns=[];
  const buildPet=()=>{
-  while(petGroup.children.length){const o=petGroup.children[0];petGroup.remove(o);o.geometry?.dispose();if(o.material?.dispose)o.material.dispose()}
+  while(petGroup.children.length){const o=petGroup.children[0];petGroup.remove(o);if(o.material?.dispose)o.material.dispose()}
   const [c,belly,accent]=palettes[pet.color],skin=material(c),light=material(belly),dark=material(accent),
    white=material('#fffafa'),eye=material('#262641',.1),cheek=material('#ff9caf'),mouth=material('#a86b87'),spark=material('#fff3bb');
   const growth=1+M.evolve(pet)*.12;
@@ -181,16 +181,19 @@ async function togglePush(){
  if(state.pushBusy)return;
  state.pushBusy=true;$('pushToggle').disabled=true;
  try{
- if(!state.pushBase||!state.pushKey)throw Error('Bitte zuerst den Push-Server einrichten. Die App allein kann keine Erinnerungen im Hintergrund verschicken.');
  if(!('PushManager'in window)||!('Notification'in window))throw Error('Browser unterstützt Web Push nicht.');
- // Start the browser permission request inside the click gesture, before awaiting SW readiness.
+ if(!state.pushEnabled&&(!state.pushBase||!state.pushKey))throw Error('Bitte zuerst den Push-Server einrichten. Die App allein kann keine Erinnerungen im Hintergrund verschicken.');
+ // Start the permission request synchronously in the click gesture, before awaiting SW readiness.
  const permissionRequest=state.pushEnabled?null:Notification.requestPermission();
  const reg=await navigator.serviceWorker.ready;
  if(state.pushEnabled){
-  const s=await reg.pushManager.getSubscription();
-  if(s)await api('/api/unsubscribe',payload({endpoint:s.endpoint}));
-  if(s)await s.unsubscribe();state.pushEnabled=false;
-  $('pushInfo').textContent='Ausgeschaltet. Es werden keine weiteren Erinnerungen verschickt.';
+  const subscription=await reg.pushManager.getSubscription();
+  let serverRemoved=true;
+  if(subscription&&state.pushBase){try{await api('/api/unsubscribe',payload({endpoint:subscription.endpoint}))}catch(_){serverRemoved=false}}
+  if(subscription)await subscription.unsubscribe();
+  state.pushEnabled=false;
+  $('pushInfo').textContent=serverRemoved?'Ausgeschaltet. Es werden keine weiteren Erinnerungen verschickt.':
+  'Im Browser abgemeldet. Der Server war nicht erreichbar; das abgemeldete Push-Abo kann keine weiteren Nachrichten empfangen.';
  }else{
   const permission=await permissionRequest;
   if(permission!=='granted')throw Error('Benachrichtigungsberechtigung nicht erteilt.');
