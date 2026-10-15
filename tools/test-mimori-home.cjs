@@ -46,6 +46,12 @@ for(const [a,b] of [[0,1],[1,2],[0,3]]){
 const wallet={...active,coins:500};
 assert.equal(H.buyRoom(house,wallet,8).ok,true);
 assert.equal(house.room,8);assert(house.rooms.includes(8));
+// Each resident remembers their own room; first visit to another pet defaults to the living room.
+const other=H.select(house,1,wallet,M,now);
+assert.equal(house.room,0);
+const back=H.select(house,0,other,M,now);
+assert.equal(house.room,8);
+
 assert.equal(wallet.coins,375);
 assert.equal(H.buyDecor(house,wallet,4).ok,true);
 assert(house.decor[8].includes(4));assert.equal(wallet.coins,305);

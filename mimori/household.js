@@ -45,7 +45,7 @@ function select(house,index,current,model,now=Date.now()){
  house.personalRooms=house.personalRooms||{};
  house.personalRooms[house.members[house.active].memberId]=house.room;
  house.active=index;
- house.room=house.rooms.includes(house.personalRooms[house.members[index].memberId])?house.personalRooms[house.members[index].memberId]:house.room;
+ house.room=house.rooms.includes(house.personalRooms[house.members[index].memberId])?house.personalRooms[house.members[index].memberId]:0;
  return model.load(house.members[index],now);
 }
 function persist(house,activePet){
