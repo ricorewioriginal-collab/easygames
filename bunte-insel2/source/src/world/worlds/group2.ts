@@ -77,7 +77,7 @@ export const REGENBOGEN_QUESTS: QuestDef[] = [
           papa_tom: { start: { t: 'Die Bögen! Hier hat Sam ihre ersten Schritte gemacht – genau hier! Und es waren WAFFELN, Ben! Waffeln! Danke, danke!', emote: 'cheer', do: [{ friend: 3 }], end: false } }
         } },
       { text: 'Feiert zusammen! Tanz bei der Regenbogen-Disco an der Bühne – dann zeigt sich etwas im Brunnen.', hints: ['Der Spielautomat steht an der Bühne.', 'Pfeiltasten oder auf die Bahnen tippen.', 'Danach liegt im Brunnen ein Splitter.'],
-        objectives: [{ id: 'd', type: 'minigame', target: 'disco', label: 'Tanz bei der Regenbogen-Disco' }, { id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter aus dem Brunnen' }] }
+        objectives: [{ id: 'd', type: 'minigame', target: 'disco', label: 'Tanz bei der Regenbogen-Disco' }, { id: 's', type: 'interact', target: 'pick:rb_splitter', label: 'Nimm den Splitter aus dem Brunnen' }] }
     ],
     rewards: { stars: 25, xp: 120, flag: 'done_regenbogen', text: 'Die Familien erinnern sich wieder an ihre schönsten Momente.' } }
 ];
@@ -132,7 +132,11 @@ export const park: WorldDef = {
     // Mitfahren (wenn der Park läuft)
     for (const [id, p, nm] of [['riesenrad', rr, 'Riesenrad'], ['karussell', kr, 'Karussell'], ['achterbahn', ab, 'Achterbahn']] as const) spot(ctx, 'fahrt:' + id, p.x - 8, p.z + 6, '🎟️', () => running() ? 'Mitfahren: ' + nm : nm + ' steht still …', () => {
       if (!running()) { api.toast('Das ' + nm + ' bewegt sich nicht. Parkdirektorin Paula braucht Hilfe!', '⚙️'); return; }
-      api.focusCamera(p.x, ctx.h(p.x, p.z) + 8, p.z, 3); api.sfx('whoosh'); api.burst(p.x, ctx.h(p.x, p.z) + 6, p.z, RB, 30);
+      api.openPanel('ride', { name: nm, duration: id === 'riesenrad' ? 42 : 16, seat: () => {
+        if (id === 'riesenrad') { const p = gond[6].position; return { x: p.x, y: p.y + 0.65, z: p.z, yaw: Math.PI / 2 }; }
+        if (id === 'karussell') { const a = karu.rotation.y; return { x: kr.x + Math.cos(a) * 5, y: ky + 2.4, z: kr.z - Math.sin(a) * 5, yaw: -a }; }
+        return { x: coaster.position.x, y: coaster.position.y + 0.6, z: coaster.position.z, yaw: coaster.rotation.y };
+      } });
       if (api.collectOnce('fahrt_' + id)) api.addStars(3); api.toast('Juhuuu! Was für eine Fahrt!', '🎢');
     }, { r: 4 });
     // Zahnräder
@@ -163,7 +167,7 @@ export const PARK_QUESTS: QuestDef[] = [
         objectives: [{ id: 'p', type: 'talk', target: 'paula', label: 'Gib Paula die Zahnräder' }, { id: 'h', type: 'interact', target: 'lever:park', label: 'Leg den Hauptschalter um' }],
         dialog: { paula: { start: { t: 'Alle drei! Klick, klack, klick – eingesetzt! Jetzt nur noch den großen roten Hebel neben dem Brunnen!', do: [{ take: ['zahnrad', 3] }, { friend: 3 }], end: false } } } },
       { text: 'Der Park läuft! Fahr mit dem Riesenrad – und schau, was am Brunnen glitzert.', hints: ['Beim Riesenrad „Mitfahren“ drücken.', 'Danach zum Brunnen.', 'Splitter aufheben.'],
-        objectives: [{ id: 'f', type: 'interact', target: 'fahrt:riesenrad', label: 'Fahr mit dem Riesenrad' }, { id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter am Brunnen' }] }
+        objectives: [{ id: 'f', type: 'interact', target: 'fahrt:riesenrad', label: 'Fahr mit dem Riesenrad' }, { id: 's', type: 'interact', target: 'pick:pk_splitter', label: 'Nimm den Splitter am Brunnen' }] }
     ],
     rewards: { stars: 25, xp: 120, flag: 'done_park', text: 'Der Freizeitpark dreht sich wieder!' } }
 ];
@@ -200,7 +204,7 @@ export const FUSSBALL_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Du willst den Pokal? Dann erst mal Training: Mach im Elfmeter-Training mindestens 3 von 5 Toren!', choices: [{ t: '⚽ Los!', do: [{ start: 'w_fussball' }] }, { t: 'Später.' }] } },
     stages: [
       { text: 'Gewinne das Elfmeter-Training (3 von 5 Toren).', hints: ['Spielautomat links vom Pokal.', 'Erst Richtung, dann Kraft festlegen.', 'Nicht zu fest – sonst geht’s drüber!'], objectives: [{ id: 'e', type: 'minigame', target: 'elfmeter', label: 'Gewinne das Elfmeter-Training' }] },
-      { text: 'Starte am Pokal das Elfmeter-Turnier und gewinne es.', hints: ['Geh zum Pokal-Podest.', 'Der Torwart ist jetzt schneller.', 'Ecken, Ecken, Ecken!'], objectives: [{ id: 't', type: 'minigame', target: 'elfmeter_turnier', label: 'Gewinne das Elfmeter-Turnier' }] }
+      { text: 'Starte am Pokal das Elfmeter-Turnier und gewinne es.', hints: ['Geh zum Pokal-Podest.', 'Der Torwart ist jetzt schneller.', 'Ecken, Ecken, Ecken!'], objectives: [{ id: 't', type: 'minigame', target: 'elfmeter_turnier', via: 'pokal', label: 'Gewinne das Elfmeter-Turnier' }] }
     ],
     rewards: { stars: 25, xp: 100, flag: 'done_fussball', cosmetic: 'hat:cap', text: 'Pokalsieger der Bunten Insel!' } }
 ];
@@ -271,9 +275,9 @@ export const MAERCHEN_QUESTS: QuestDef[] = [
       { text: 'Hol dir bei Fee Glimmer im Nimmerland Feenstaub.', hints: ['Nimmerland ist der Mondhügel im Südosten.', 'Glimmer schwebt beim Baumhaus.', 'Sprich mit Glimmer.'], objectives: [{ id: 'g', type: 'talk', target: 'glimmer', label: 'Sprich mit Fee Glimmer' }],
         dialog: { glimmer: { start: { t: 'Denk an etwas Schönes … an Eis, an Freunde, an Pappnase … PLING! Jetzt kannst du in der Luft schweben – Springen gedrückt halten!', do: [{ ability: 'feenstaub' }], end: false } } } },
       { text: 'Kletter auf den Frostgipfel und berühre den Frostkristall.', hints: ['Der Frostgipfel ist der verschneite Berg im Nordwesten.', 'Spring die Stufen hoch und schwebe mit Feenstaub über Lücken.', 'Ganz oben steht ein leuchtender Kristall.'], objectives: [{ id: 'f', type: 'interact', target: 'frostgipfel', label: 'Berühre den Frostkristall' }] },
-      { text: 'Flüstere am Wunschbrunnen deinen Wunsch.', hints: ['Der Wunschbrunnen ist mitten auf dem Platz.', 'Stell dich davor.', 'Aktion drücken.'], objectives: [{ id: 'w', type: 'flag', target: 'schloss_wach', label: 'Wecke das Schloss' }] },
+      { text: 'Flüstere am Wunschbrunnen deinen Wunsch.', hints: ['Der Wunschbrunnen ist mitten auf dem Platz.', 'Stell dich davor.', 'Aktion drücken.'], objectives: [{ id: 'w', type: 'flag', target: 'schloss_wach', via: 'wunschbrunnen', label: 'Wecke das Schloss' }] },
       { text: 'Sprich mit Prinzessin Lilia – an der Schlosstür glitzert etwas.', hints: ['Lilia steht vor dem Schloss.', 'Der Splitter liegt vor der Schlosstür.', 'Splitter aufheben, dann Lilia ansprechen.'],
-        objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 'l', type: 'talk', target: 'lilia', label: 'Sprich mit Lilia' }],
+        objectives: [{ id: 's', type: 'interact', target: 'pick:ma_splitter', label: 'Nimm den Splitter' }, { id: 'l', type: 'talk', target: 'lilia', label: 'Sprich mit Lilia' }],
         dialog: { lilia: { start: { t: 'Das Schloss ist wach! Die Glocken, die Türme, alles leuchtet! Du bist ab heute Ehrenritterin, Ehrenritter des Märchenlands. Hier – der Zauberhut!', emote: 'cheer', do: [{ achieve: 'maerchen_held' }, { friend: 4 }], end: false } } } }
     ],
     rewards: { stars: 30, xp: 130, flag: 'done_maerchen', text: 'Schloss Sternenglanz ist erwacht!' } }
@@ -345,7 +349,7 @@ export const SCHLUESSEL_QUESTS: QuestDef[] = [
       { text: 'Entzünde mit dem Lichtzauber die fünf Laternen und sammle die Lichtschlüssel.', hints: ['Die Laternen stehen in den fünf Gebieten: Strand, Dämmerstadt, Kristall-Burg, Wald der Schatten, Schleier-Turm.', 'Über jeder Laterne schwebt ihr Name.', 'Bei jeder Laterne Aktion drücken, dann den Schlüssel aufheben.'],
         objectives: [{ id: 'k', type: 'have', target: 'lichtschluessel', n: 5, label: 'Sammle die Lichtschlüssel' }] },
       { text: 'Öffne mit den fünf Schlüsseln das Tor der Herzen.', hints: ['Das Tor steht nördlich der Lio-Statue.', 'Stell dich davor.', 'Aktion drücken.'], objectives: [{ id: 't', type: 'flag', target: 'tor_herzen', label: 'Öffne das Tor der Herzen' }] },
-      { text: 'Hinter dem Tor leuchtet etwas. Erzähl Luma davon.', hints: ['Direkt hinter dem Tor.', 'Luma ist bei der Statue.', 'Splitter nehmen, dann Luma.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 'l', type: 'talk', target: 'luma', label: 'Sprich mit Luma' }],
+      { text: 'Hinter dem Tor leuchtet etwas. Erzähl Luma davon.', hints: ['Direkt hinter dem Tor.', 'Luma ist bei der Statue.', 'Splitter nehmen, dann Luma.'], objectives: [{ id: 's', type: 'interact', target: 'pick:ks_splitter', label: 'Nimm den Splitter' }, { id: 'l', type: 'talk', target: 'luma', label: 'Sprich mit Luma' }],
         dialog: { luma: { start: { t: 'Das Tor der Herzen ist offen und das Reich leuchtet wieder. Du bist jetzt eine Lichtwanderin, ein Lichtwanderer – wie Lio!', do: [{ friend: 4 }], end: false } } } }
     ],
     rewards: { stars: 30, xp: 130, flag: 'done_schluessel', text: 'Das Schlüsselreich leuchtet wieder.' } }
@@ -395,7 +399,7 @@ export const WUNSCH_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Die Wunschfrucht erfüllt einen Wunsch – aber nur für jemand anderen, nie für sich selbst. Löst du das Rätsel der Felswand? Und bau doch auch ein Floß!', choices: [{ t: '🌠 Mach ich!', do: [{ start: 'w_wunsch' }] }, { t: 'Später.' }] } },
     stages: [
       { text: 'Löse das Rätsel der Wandzeichen und pflücke die Wunschfrucht. Bau außerdem ein Floß aus 6 Teilen.', hints: ['Die Hinweis-Tafel steht vor der Schlucht. Die Floß-Teile liegen am Strand.', 'Kiras Lied nennt die Reihenfolge: Sonne, Mond, Stern, Welle, Blatt.', 'Zeichen berühren in dieser Folge. Floß am Bauplatz bauen.'],
-        objectives: [{ id: 'f', type: 'have', target: 'wunschfrucht', label: 'Pflücke die Wunschfrucht' }, { id: 'b', type: 'flag', target: 'floss_gebaut', label: 'Bau das Floß' }] },
+        objectives: [{ id: 'f', type: 'have', target: 'wunschfrucht', label: 'Pflücke die Wunschfrucht' }, { id: 'b', type: 'flag', target: 'floss_gebaut', via: 'flossbau', label: 'Bau das Floß' }] },
       { text: 'Wem schenkst du deinen Wunsch? Sprich mit Kira.', hints: ['Kira ist bei ihrer Hütte.', 'Es gibt keine falsche Antwort.', 'Sprich mit Kira.'], objectives: [{ id: 'k', type: 'talk', target: 'kira', label: 'Sprich mit Kira' }],
         dialog: { kira: { start: { t: 'Du hast sie! Für wen wünschst du dir etwas?', choices: [
           { t: '☁️ Für das traurige Wölkchen – dass es Freunde findet.', do: [{ take: ['wunschfrucht', 1] }, { choice: ['wunsch', 'flick'] }, { flag: 'wunsch_flick' }], to: 'a' },

@@ -66,9 +66,9 @@ export const SCHWAMM_QUESTS: QuestDef[] = [
         dialog: { schwammi: { start: { t: 'Die Bestellungen? Natürlich! Brötchen, Patty, Käse, Salat, Tomate – in genau der Reihenfolge, die der Gast sagt! Ich zeig’s dir am Grill!', emote: 'cheer', end: false } } } },
       { text: 'Brate Burger nach Bestellung (am Grill in der Krabbe oder am Automaten).', hints: ['Der Grill steht hinten in der Knusper-Krabbe.', 'Merke dir die Reihenfolge der Zutaten und tippe sie nach.', 'Schaffe 6 Zutaten am Stück.'], objectives: [{ id: 'b', type: 'minigame', target: 'burger', label: 'Brate eine perfekte Bestellung' }] },
       { text: 'Tadeus möchte für die Eröffnung Klarinette spielen – bring ihm 3 Quallen-Gelee (sanft mit dem Kescher fangen).', hints: ['Die Quallen schweben im Quallenfeld im Osten.', 'Du brauchst einen Kescher (Spielzeugladen oder Maja).', 'Qualle anstupsen, Gelee einsammeln, zu Tadeus bringen.'],
-        objectives: [{ id: 'q', type: 'have', target: 'qualle', n: 3, label: 'Sammle Quallen-Gelee' }, { id: 't', type: 'talk', target: 'tadeus', label: 'Gib Tadeus das Gelee' }],
+        objectives: [{ id: 'q', type: 'have', target: 'qualle', via: 'qualle', n: 3, label: 'Sammle Quallen-Gelee' }, { id: 't', type: 'talk', target: 'tadeus', label: 'Gib Tadeus das Gelee' }],
         dialog: { tadeus: { start: { t: 'Hmpf. Danke. … Wirklich, danke. Ich spiele heute Abend zur Eröffnung. Du darfst zuhören. Wenn du willst.', do: [{ take: ['qualle', 3] }, { friend: 3 }, { flag: 'krabbe_offen' }], end: false } } } },
-      { text: 'Die Knusper-Krabbe ist offen! Im ersten Burger steckt … etwas Leuchtendes.', hints: ['Vor der Knusper-Krabbe.', 'Heb den Splitter auf.', 'Sprich danach mit Zangenfuß.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 'z', type: 'talk', target: 'zangenfuss', label: 'Sprich mit Zangenfuß' }],
+      { text: 'Die Knusper-Krabbe ist offen! Im ersten Burger steckt … etwas Leuchtendes.', hints: ['Vor der Knusper-Krabbe.', 'Heb den Splitter auf.', 'Sprich danach mit Zangenfuß.'], objectives: [{ id: 's', type: 'interact', target: 'pick:sw_splitter', label: 'Nimm den Splitter' }, { id: 'z', type: 'talk', target: 'zangenfuss', label: 'Sprich mit Zangenfuß' }],
         dialog: { zangenfuss: { start: { t: 'ARR! Die Krabbe ist offen, die Gäste sind da! Ab heute ist jeder fünfte Burger für dich gratis!', do: [{ give: ['burger', 2] }, { friend: 3 }], end: false } } } }
     ],
     rewards: { stars: 25, xp: 130, flag: 'done_schwamm', text: 'Die Knusper-Krabbe brutzelt wieder!' } }
@@ -137,8 +137,8 @@ export const ATLANTIS_QUESTS: QuestDef[] = [
     stages: [
       { text: 'Spiel die Melodie an der Kristall-Harfe nach und sammle 5 Orichalcum-Splitter am äußeren Ring.', hints: ['Die Harfe steht im Westen, das Orichalcum am äußersten Ring.', 'Die Harfe: Hör zu und tippe die Kristalle in derselben Reihenfolge.', 'Merke dir 7 Töne – und lauf einmal den äußeren Ring ab.'],
         objectives: [{ id: 'h', type: 'minigame', target: 'harfe', label: 'Spiel die Kristall-Harfe' }, { id: 'o', type: 'have', target: 'orichalcum', n: 5, label: 'Sammle Orichalcum' }], onDone: [{ flag: 'harfe_gespielt' }] },
-      { text: 'Leg das Orichalcum ins Herz im Tempel.', hints: ['Der Tempel steht in der Mitte auf dem Stufenberg.', 'Das Herz schwebt zwischen den Säulen.', 'Aktion drücken.'], objectives: [{ id: 'h', type: 'flag', target: 'herz_atlantis', label: 'Wecke das Herz von Atlantis' }] },
-      { text: 'Im Licht des Herzens schwebt ein Splitter. Danach zu Thalassa.', hints: ['Direkt neben dem Herzen.', 'Thalassa ist am Tempel.', 'Splitter nehmen, Thalassa ansprechen.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 't', type: 'talk', target: 'thalassa', label: 'Sprich mit Thalassa' }],
+      { text: 'Leg das Orichalcum ins Herz im Tempel.', hints: ['Der Tempel steht in der Mitte auf dem Stufenberg.', 'Das Herz schwebt zwischen den Säulen.', 'Aktion drücken.'], objectives: [{ id: 'h', type: 'flag', target: 'herz_atlantis', via: 'herz', label: 'Wecke das Herz von Atlantis' }] },
+      { text: 'Im Licht des Herzens schwebt ein Splitter. Danach zu Thalassa.', hints: ['Direkt neben dem Herzen.', 'Thalassa ist am Tempel.', 'Splitter nehmen, Thalassa ansprechen.'], objectives: [{ id: 's', type: 'interact', target: 'pick:at_splitter', label: 'Nimm den Splitter' }, { id: 't', type: 'talk', target: 'thalassa', label: 'Sprich mit Thalassa' }],
         dialog: { thalassa: { start: { t: 'Atlantis leuchtet wieder! Nimm diese Taucherblase – damit schwimmst du schneller als jeder Fisch.', do: [{ ability: 'taucherblase' }, { friend: 4 }], end: false } } } }
     ],
     rewards: { stars: 30, xp: 140, flag: 'done_atlantis', text: 'Das Herz von Atlantis schlägt wieder.' } }
@@ -185,7 +185,7 @@ export const FUNKWELLE_QUESTS: QuestDef[] = [
       { text: 'Stell am Frequenz-Dreher die Sender wieder ein und bring Lumi die Noten.', hints: ['Der Automat steht vor dem Funkturm.', 'Stoppe die Nadel im grünen Bereich – 5 von 8.', 'Danach mit Lumi sprechen.'],
         objectives: [{ id: 'f', type: 'minigame', target: 'frequenz', label: 'Gewinne den Frequenz-Dreher' }, { id: 'l', type: 'talk', target: 'lumi', label: 'Gib Lumi die Noten' }],
         dialog: { lumi: { start: { t: 'Wahnsinn, alle Sender klingen wieder glasklar! Hörst du? Auf dem Sternenkanal läuft gerade das Lied vom traurigen Wölkchen …', do: [{ take: ['note', 6] }, { friend: 3 }], end: false } } } },
-      { text: 'Am Fuß des Funkturms leuchtet ein Splitter.', hints: ['Direkt am Turm.', 'Mitte der Insel.', 'Aufheben.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }] }
+      { text: 'Am Fuß des Funkturms leuchtet ein Splitter.', hints: ['Direkt am Turm.', 'Mitte der Insel.', 'Aufheben.'], objectives: [{ id: 's', type: 'interact', target: 'pick:fw_splitter', label: 'Nimm den Splitter' }] }
     ],
     rewards: { stars: 25, xp: 120, flag: 'done_funkwelle', cosmetic: 'hat:katzenohren', text: 'Die Funkwelle sendet wieder auf allen Kanälen.' } }
 ];
@@ -232,7 +232,7 @@ export const LUNARIS_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Der Mondkristall hat seine Melodie verloren. Wenn du sie nachspielst und Felli hilfst, wieder fröhlich zu werden, erstrahlt Lunaris wieder.', choices: [{ t: '🌙 Ich versuche es!', do: [{ start: 'w_lunaris' }] }, { t: 'Später.' }] } },
     stages: [
       { text: 'Spiel am Mondkristall-Brunnen die Melodie der Mondphasen nach.', hints: ['Der Brunnen ist mitten auf dem Platz.', 'Hör zu und tippe die Monde nach.', '6 Töne schaffen.'], objectives: [{ id: 'm', type: 'minigame', target: 'mondkristall', label: 'Spiel die Mondkristall-Melodie' }] },
-      { text: 'Felli ist traurig, weil der Sturm sein Moos zerzaust hat. Schenk ihm etwas Leckeres (Apfel oder Karotte).', hints: ['Felli hüpft auf dem Platz herum.', 'Sprich ihn an und wähle „Etwas schenken“.', 'Ein Apfel oder eine Karotte reicht.'], objectives: [{ id: 'f', type: 'flag', target: 'felli_froh', label: 'Mach Felli froh' }],
+      { text: 'Felli ist traurig, weil der Sturm sein Moos zerzaust hat. Schenk ihm etwas Leckeres (Apfel oder Karotte).', hints: ['Felli hüpft auf dem Platz herum.', 'Sprich ihn an und wähle „Etwas schenken“.', 'Ein Apfel oder eine Karotte reicht.'], objectives: [{ id: 'f', type: 'flag', target: 'felli_froh', via: 'felli_npc', label: 'Mach Felli froh' }],
         dialog: { felli_npc: { start: { t: '(Felli schaut dich mit großen Augen an.)', choices: [{ t: '🍎 Apfel schenken', if: { has: 'apfel' }, do: [{ take: ['apfel', 1] }, { flag: 'felli_froh' }, { companion: 'felli' }], to: 'ok' }, { t: '🥕 Karotte schenken', if: { has: 'karotte' }, do: [{ take: ['karotte', 1] }, { flag: 'felli_froh' }, { companion: 'felli' }], to: 'ok' }, { t: 'Ich hab gerade nichts …' }] }, ok: { t: '(Felli hüpft vor Freude – überall wachsen Blümchen! Er möchte dich begleiten.)', end: false } } } },
       { text: 'Erzähl Mira davon.', hints: ['Mira steht am Brunnen.', 'Mitte.', 'Sprich mit Mira.'], objectives: [{ id: 'm', type: 'talk', target: 'mira', label: 'Sprich mit Mira' }],
         dialog: { mira: { start: { t: 'Hörst du? Der Kristall singt! Und Felli hat eine neue Freundin, einen neuen Freund gefunden. Lunaris dankt dir. Hier – der Fuchsschwanz der Wanderer!', do: [{ achieve: 'lunaris' }, { friend: 4 }], end: false } } } }
@@ -280,7 +280,7 @@ export const taschi: WorldDef = {
         api.setFlag('vertrauen_' + t.id, trust);
         if (trust >= 2) { api.setFlag(flag); api.burst(p.x, ctx.h(p.x, p.z) + 1, p.z, [t.color, 0xffffff], 24); api.toast(t.name + ' vertraut dir jetzt! Es zieht in deinen Taschiball ein.', '💗', 3500); api.events.emit('interact', { id: 'taschi_freund', kind: 'taschi' }); }
         else api.toast(t.name + ' schnuppert neugierig … noch ein Leckerli, dann traut es sich!', '🍬', 3000);
-      }, { r: 3.2 });
+      }, { r: 3.2, when: () => !api.flag(flag) });
     }
   }
 };
@@ -294,7 +294,7 @@ export const TASCHI_QUESTS: QuestDef[] = [
     summary: 'Seit dem Sturm sind die wilden Taschis scheu geworden. Professor Ulme zeigt dir, wie man ihr Vertrauen gewinnt.',
     offer: { start: { t: 'Die Taschis haben Angst vor dem grauen Wetter. Wir kämpfen nicht mit ihnen – wir gewinnen ihr Vertrauen! Hier, drei Leckerli für den Anfang. Freunde dich mit drei Taschis an!', choices: [{ t: '🔴 Wird gemacht!', do: [{ start: 'w_taschi' }, { give: ['taschileckerli', 3] }] }, { t: 'Später.' }] } },
     stages: [
-      { text: 'Gewinne das Vertrauen von drei wilden Taschis (je zwei Leckerli).', hints: ['Taschis leben im dunklen hohen Gras.', 'Mehr Leckerli gibt es im Fangladen bei Schwester Hanna.', 'Bei jedem Taschi zweimal ein Leckerli anbieten.'], objectives: [{ id: 't', type: 'interact', target: 'taschi_freund', n: 3, label: 'Freunde dich mit Taschis an' }] },
+      { text: 'Gewinne das Vertrauen von drei wilden Taschis (je zwei Leckerli).', hints: ['Taschis leben im dunklen hohen Gras.', 'Mehr Leckerli gibt es im Fangladen bei Schwester Hanna.', 'Bei jedem Taschi zweimal ein Leckerli anbieten.'], objectives: [{ id: 't', type: 'interact', target: 'taschi_freund', via: 'taschi:', n: 3, label: 'Freunde dich mit Taschis an' }] },
       { text: 'Erzähl Professor Ulme davon.', hints: ['Ulme ist am Labor.', 'Nordwestlich der Statue.', 'Sprich mit ihm.'], objectives: [{ id: 'u', type: 'talk', target: 'ulme', label: 'Sprich mit Professor Ulme' }],
         dialog: { ulme: { start: { t: 'Drei Freunde! Großartig. Glutzahn möchte dich übrigens begleiten – wenn du magst. Du kannst es in der Begleiter-Liste wählen.', do: [{ companion: 'taschi' }, { friend: 3 }, { achieve: 'taschi_freund' }], end: false } } } }
     ],
@@ -367,6 +367,12 @@ export const bauland: WorldDef = {
     b.box(wb.x, y, wb.z, 3, 1, 1.5, 0x8a5a33); ctx.box(wb.x, wb.z, 3, 1.5, y, y + 1);
     for (let i = 0; i < 30; i++) b.box(wb.x - 8 + (i % 6) * 1.05, y + Math.floor(i / 6) * 1.05, wb.z - 6, 1, 1, 1, [0xe8453c, 0x3f8cff, 0xffd23f, 0x4cd07d, 0xb36bff][i % 5]);
     ctx.box(wb.x - 5.4, wb.z - 6, 6.3, 1, y, y + 5.2);
+    // Eigene Bauwiese neben den Bauplan-Plätzen: kein vorgegebenes Fertighaus.
+    const frei = bla(62, 30), fy = ctx.h(frei.x, frei.z);
+    b.box(frei.x, fy - 0.08, frei.z, 22, 0.08, 22, 0xe8d3a3);
+    for (let i = 0; i < 11; i++) { b.box(frei.x - 10 + i * 2, fy + 0.01, frei.z, 0.04, 0.025, 20, 0xc5aa7e); b.box(frei.x, fy + 0.01, frei.z - 10 + i * 2, 20, 0.025, 0.04, 0xc5aa7e); }
+    b.box(frei.x, fy, frei.z + 13, 2.6, 1, 1.2, 0xffc85a);
+    floatLabel(ctx, frei.x, fy + 4, frei.z + 13, 'Deine Bauwiese', '🧱', 0.7);
     arcade(ctx, 'bauturm', bla(6, -4).x, bla(6, -4).z, Math.PI, 'bauturm', 'Bauland-Turm', '🧱', 0xffd23f);
     arcade(ctx, 'pixel', bla(-6, -4).x, bla(-6, -4).z, Math.PI, 'pixelplan', 'Pixel-Plan', '🧩', 0x3f8cff);
     BAUPLAETZE.forEach(([dx, dz, nm, c], i) => {
@@ -397,7 +403,7 @@ export const BAULAND_QUESTS: QuestDef[] = [
     stages: [
       { text: 'Beweis dein Geschick am Bauland-Turm (mindestens 8 Kisten hoch).', hints: ['Der Automat steht an der Werkbank.', 'Im richtigen Moment loslassen.', 'Genau auf den Stapel – Perfekt-Treffer bringen Kombos.'], objectives: [{ id: 't', type: 'minigame', target: 'bauturm', label: 'Schaff den Bauland-Turm' }] },
       { text: 'Bau auf allen drei Bauplätzen (je 10 Bauklötze).', hints: ['Bauklötze gibt es bei Bea (Lager).', 'Die Bauplätze sind mit orangen Hütchen markiert.', 'Mit 10 Klötzen auf einen Bauplatz stellen und Aktion drücken.'],
-        objectives: BAUPLAETZE.map(([, , nm], i) => ({ id: 'b' + i, type: 'flag' as const, target: 'gebaut_' + i, label: 'Baue: ' + nm })) }
+        objectives: BAUPLAETZE.map(([, , nm], i) => ({ id: 'b' + i, type: 'flag' as const, target: 'gebaut_' + i, via: 'bauplatz' + i, label: 'Baue: ' + nm })) }
     ],
     rewards: { stars: 30, xp: 120, flag: 'done_bauland', text: 'Brücke, Leuchtturm und Spielplatz stehen!' } }
 ];
@@ -453,7 +459,7 @@ export const RAETSEL_QUESTS: QuestDef[] = [
     offer: { start: { t: 'Der Prüfungsturm! Drinnen: Steinköpfe, eine rissige Wand und eine Truhe der Uralten. Ich bin zu ungeduldig dafür. Versuchst du es?', choices: [{ t: '🏯 Ich versuche es!', do: [{ start: 'w_raetsel' }] }, { t: 'Später.' }] } },
     stages: [
       { text: 'Berühre im Prüfungsturm die Steinköpfe in der richtigen Reihenfolge.', hints: ['Die Hinweis-Tafel steht im Turm.', 'Wasser, dann Erde, dann Feuer.', 'Blau, Grün, Rot.'], objectives: [{ id: 'p', type: 'flag', target: 'puzzle_turm', label: 'Löse das Steinkopf-Rätsel' }] },
-      { text: 'Spreng die rissige Wand mit einer Knallbeere und öffne die Truhe dahinter.', hints: ['Knallbeeren liegen in der Truhe vor dem Turm.', 'Die Wand ist an der Seite im Turm.', 'Knallbeere einsetzen, dann Truhe öffnen.'], objectives: [{ id: 'w', type: 'flag', target: 'wand_gesprengt', label: 'Spreng die Wand' }, { id: 'h', type: 'have', target: 'enterhaken', label: 'Finde den Schatz der Uralten' }] },
+      { text: 'Spreng die rissige Wand mit einer Knallbeere und öffne die Truhe dahinter.', hints: ['Knallbeeren liegen in der Truhe vor dem Turm.', 'Die Wand ist an der Seite im Turm.', 'Knallbeere einsetzen, dann Truhe öffnen.'], objectives: [{ id: 'w', type: 'flag', target: 'wand_gesprengt', via: 'rissige_wand', label: 'Spreng die Wand' }, { id: 'h', type: 'have', target: 'enterhaken', label: 'Finde den Schatz der Uralten' }] },
       { text: 'Zeig Milo den Enterhaken.', hints: ['Milo steht am Dorfplatz.', 'Mitte.', 'Sprich mit Milo.'], objectives: [{ id: 'm', type: 'talk', target: 'milo', label: 'Sprich mit Milo' }],
         dialog: { milo: { start: { t: 'Der Enterhaken der Uralten! Du hast die Prüfung bestanden. Ab jetzt bist du eine Heldin, ein Held wie ich!', do: [{ ability: 'enterhaken' }, { friend: 3 }], end: false } } } }
     ],

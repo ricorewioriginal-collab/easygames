@@ -23,7 +23,7 @@ export function installPanels(g: Game, deps: { bossAltar: () => void }): void {
     const wrap = h('div', { style: 'display:grid;place-items:center' });
     const svg = '<svg viewBox="0 0 200 200" width="220" height="220">' + colors.map((c, i) => { const a0 = (i / 9) * Math.PI * 2, a1 = ((i + 1) / 9) * Math.PI * 2; const on = i < ch; const p = (a: number, r: number) => (100 + Math.cos(a) * r).toFixed(1) + ',' + (100 + Math.sin(a) * r).toFixed(1); return '<path d="M100,100 L' + p(a0, 90) + ' A90,90 0 0,1 ' + p(a1, 90) + ' Z" fill="' + (on ? c : '#c8c8d0') + '" stroke="#fff" stroke-width="3" opacity="' + (on ? 1 : 0.5) + '"/>'; }).join('') + '<circle cx="100" cy="100" r="22" fill="#fff6dc" stroke="#2a1f4a" stroke-width="3"/><text x="100" y="108" text-anchor="middle" font-size="22">🧭</text></svg>';
     wrap.innerHTML = svg;
-    m.body.append(wrap, h('p', { style: 'text-align:center' }, s.mode === 'story' ? (ch >= 9 ? 'Der Kompass strahlt in allen Farben! Alle Brücken leuchten.' : ch === 0 ? 'Der Kompass ist zerbrochen. Neun Splitter fehlen, und überall klebt graue Wolkenwatte …' : (ch) + ' von 9 Farben leuchten wieder.') : 'In der Freien Welt leuchtet der Kompass in allen Farben – alle Wege sind offen.'));
+    m.body.append(wrap, h('p', { style: 'text-align:center' }, s.mode === 'story' ? (ch >= 9 ? 'Der Kompass strahlt in allen Farben! Alle Brücken leuchten.' : ch === 0 ? 'Der Kompass ist zerbrochen. Zwölf Splitter fehlen, und überall klebt graue Wolkenwatte …' : (ch) + ' von 9 Farben leuchten wieder.') : 'In der Freien Welt leuchtet der Kompass in allen Farben – alle Wege sind offen.'));
   };
   g.panels.cinema = () => {
     const m = modal({ title: 'Kino Sonnenhafen', icon: '🎬' });

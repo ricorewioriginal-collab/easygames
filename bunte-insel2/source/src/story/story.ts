@@ -58,7 +58,7 @@ export class Story implements GameSystem {
     this.ensureMain();
     if (this.g.save.mode === 'story' && !this.g.save.story.seen.includes('intro')) {
       this.g.save.story.seen.push('intro');
-      setTimeout(() => this.intro(), 600);
+      setTimeout(() => this.intro(), 900);
     }
     if (this.g.save.mode === 'free' && !this.g.save.story.seen.includes('free_intro')) {
       this.g.save.story.seen.push('free_intro');
@@ -72,12 +72,8 @@ export class Story implements GameSystem {
     if (c?.quest && !s.quests[c.quest]) this.host.quests.start(c.quest);
   }
   private intro(): void {
-    const tree = {
-      start: { t: 'Eines Abends zieht ein seltsamer grauer Sturm über die Bunte Insel. Ein Blitz trifft den alten Leuchtturm – und oben zerspringt etwas mit einem hellen Klirren in viele bunte Splitter …', next: 'b' },
-      b: { t: 'Am nächsten Morgen ist alles ein bisschen anders. Die Brücken flimmern, manche Bewohner wissen plötzlich nicht mehr, was sie gestern gemacht haben. Und Bürgermeisterin Rosi sucht dich schon überall!', next: 'c' },
-      c: { t: 'Tipp: Oben links steht immer dein nächstes Ziel. Die gelbe Lichtsäule zeigt dir den Weg. Viel Spaß, {name}!', end: false }
-    };
-    this.host.dialogue.runTree(tree, 'start');
+    if (this.g.phase !== 'play') return;
+    this.g.bark('Rosi', 'Da bist du! Der Sturm hat den Leuchtturm getroffen. Komm kurz zu mir!', '👩‍💼');
   }
   /** Lichtschleier vor den Brücken zu gesperrten Welten. */
   buildVeils(): void {

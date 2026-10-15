@@ -1,0 +1,60 @@
+name: Bunte Insel 2 – Spielbarkeit
+on:
+  push:
+    branches: [codex/bunte-insel2-neuauflage]
+    paths: ['bunte-insel2/source/**', '.github/workflows/bunte-insel2.yml']
+  pull_request:
+    paths: ['bunte-insel2/source/**', '.github/workflows/bunte-insel2.yml']
+permissions:
+  contents: read
+jobs:
+  game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Werkzeuge installieren
+        working-directory: bunte-insel2/source
+        run: npm install --no-audit --no-fund
+      - name: Typen und Weltlogik prüfen
+        working-directory: bunte-insel2/source
+        run: |
+          npm run typecheck
+          node --experimental-transform-types tests/worlds.test.mjs
+      - name: Spiel bauen
+        working-directory: bunte-insel2/source
+        run: npm run build:offline && npm run deploy
+      - name: Chromium vorbereiten
+        working-directory: bunte-insel2/source
+        run: npx playwright install --with-deps chromium
+      - name: Spielfluss im Browser prüfen
+        working-directory: bunte-insel2/source
+        run: |
+          python3 -m http.server 8090 --directory ../.. > /tmp/bi2-server.log 2>&1 &
+          node e2e/renewal.mjs
+      - name: Gebaute Spieldateien auf dem Arbeitsbranch aktualisieren
+        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/bunte-insel2-neuauflage'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p bunte-insel2/docs/review
+          cp /tmp/bi2-review/*.png bunte-insel2/docs/review/
+          git add bunte-insel2/docs/review bunte-insel2/assets bunte-insel2/index.html bunte-insel2/sw.js bunte-insel2/version.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Build geprüfte Bunte Insel 2 Neuauflage'
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bunte-insel2-review
+          path: |
+            /tmp/bi2-review
+            bunte-insel2/source/dist

@@ -181,8 +181,8 @@ export class WorldManager {
     this.scene.remove(w.root);
     w.root.traverse(o => {
       const m = o as THREE.Mesh;
-      if (m.geometry) {
-        m.geometry.dispose();
+      if (m.geometry || o instanceof THREE.Sprite) {
+        m.geometry?.dispose();
         const mat = m.material as THREE.Material;
         if (mat && (mat as THREE.Material & { userData: Record<string, any> }).userData?.disposeWithWorld) { (mat as THREE.MeshBasicMaterial).map?.dispose(); mat.dispose(); }
       }

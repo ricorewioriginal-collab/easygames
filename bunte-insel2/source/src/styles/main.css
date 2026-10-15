@@ -238,3 +238,9 @@ input[type=range] { width: 100%; accent-color: var(--grape); min-height: 32px; }
   .dialog .line { font-size: 1.02rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+.ride-controls{position:fixed;z-index:80;bottom:max(24px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:18px;padding:12px 18px;border-radius:20px;background:#fff6e7;color:#2a1f4a;box-shadow:0 8px 32px #21134455}.ride-controls .btn{white-space:nowrap}
+
+.build-panel{justify-content:flex-end;align-items:center}.build-panel .modal{max-width:410px}.build-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}.build-grid .btn{padding:0;min-height:28px;border-radius:5px;font-size:12px;color:#28364b;background:#e3ebdc}.build-palette{display:flex;gap:6px;flex-wrap:wrap}.build-palette .btn{width:32px;min-height:32px;padding:0;border:3px solid transparent}.build-palette .selected{border-color:#26364a;box-shadow:0 0 0 2px white}
+
+.activity-intro{font-size:1.1rem;line-height:1.6}.cooking-meter{height:36px;background:#f0d0a9;border-radius:10px;position:relative;margin:18px 0;overflow:hidden}.cooking-meter .good{position:absolute;left:34%;width:44%;height:100%;background:#78cb94}.cooking-meter i{position:absolute;top:0;height:100%;width:5px;background:#27364a}

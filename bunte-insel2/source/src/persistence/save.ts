@@ -74,7 +74,7 @@ export function newSave(slot: number, mode: GameMode, name: string, look: Appear
   const now = Date.now();
   return {
     version: SAVE_VERSION, slot, created: now, updated: now, playTime: 0, mode, name: name.slice(0, 16) || 'Held', look,
-    pos: { world: 'hub', x: 0, y: 2, z: 34, yaw: Math.PI },
+    pos: { world: 'hub', x: 7, y: 2, z: -12, yaw: Math.PI },
     stars: 10, xp: 0, hp: 5, inventory: { apfel: 2 }, equip: { sword: 'holz', tool: 'none' }, cosmetics: [], abilities: ['doppelsprung'],
     quests: {}, tracked: null, story: { chapter: 0, choices: {}, seen: [] }, flags: {}, discovered: [], visited: ['hub'], collected: [],
     npcs: {}, achievements: [], sammel: { fish: {}, bugs: {}, finds: {} }, companion: 'blitz', companions: ['blitz', 'pappnase'],
