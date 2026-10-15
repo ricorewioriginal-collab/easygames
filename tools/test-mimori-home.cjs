@@ -8,7 +8,7 @@ assert.equal(house.members.length,1);assert.equal(house.rooms.length,5);assert.e
 assert.equal(M.load(M.changeAppearance(original,0),now).appearance,0);
 assert.equal(M.load(M.changeAppearance(original,1),now).appearance,1);
 assert.equal(M.load(M.changeAppearance(original,2),now).appearance,2);
-assert.equal(H.rooms.length,12);assert.equal(H.decorations.length,8);
+assert.equal(H.rooms.length,12);assert.equal(H.decorations.length,24);
 assert.equal(Radio.stations.length,13);
 const expected=['ricorewi','yourtime-fm','rapradio24','schlagerpop24','chartradio24','clubradio24','anmacha24',
 'radiofloh','rockradio24','christmasradio24','kultradio24','zockerfm','special-radio'];

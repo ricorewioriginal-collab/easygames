@@ -168,7 +168,7 @@ assert.equal(win.MimoriDebug.household().room,0);
 ui.worldOpen.handlers.click[0]();
 assert.equal(ui.worldOverlay.hidden,false);
 assert.equal(ui.roomTiles.children.length,12,'No 12-room selection grid');
-assert.equal(ui.decorTiles.children.length,8,'No decoration catalog');
+assert.equal(ui.decorTiles.children.length,24,'24 decoration choices must be available');
 ui.roomTiles.children[2].handlers.click[0]();
 assert.equal(win.MimoriDebug.household().room,2,'Room tap did not change visible 3D room');
 ui.prevRoom.handlers.click[0]();
