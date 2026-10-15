@@ -42,10 +42,10 @@ header{height:46px;margin-bottom:8px;gap:8px}
 .turnControls{bottom:calc(var(--mimori-dock-h) + 55px);z-index:3}
 .turnControls button{height:38px;width:38px;border-radius:13px;background:#fff2dec9;font-size:21px}
 .turnControls button:nth-child(2){height:28px;width:28px}
-#webglError{inset:auto 16px calc(var(--mimori-dock-h) + 125px);
+#webglError{inset:auto 10px calc(var(--mimori-dock-h) + 87px) auto;max-width:250px;
  z-index:4;background:#362c55e8;border:1px solid #e7bfd2;color:#fff9f0;
  padding:9px 14px;text-align:center;font-size:12px;line-height:1.4}
-.sceneDock{position:absolute;z-index:10;bottom:max(5px,env(safe-area-inset-bottom));left:7px;right:7px;
+.sceneDock{position:absolute;z-index:20;bottom:max(5px,env(safe-area-inset-bottom));left:7px;right:7px;
  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;
  min-height:var(--mimori-dock-h);padding:6px;border:1px solid #bcabd9aa;border-radius:17px;
  background:#352b57e6;backdrop-filter:blur(13px);box-shadow:0 5px 25px #170b30aa}
