@@ -37,7 +37,7 @@
   {
    "id": "lumo",
    "title": "Lumo – Wolkenpfad",
-   "desc": "Retro-Jump-and-Run im 16-Bit-Stil: Titelbildschirm, vier Welten, Leben, Game-Over-Anzeige, Sternpilze, Münzen, Zeitbonus, Chiptune-Musik, Touch-Steuerung und Google-Speicherung.",
+   "desc": "Retro-Jump-and-Run im 16-Bit-Stil: Titelbildschirm, 20 Level in vier Welten mit Münzgärten als Bonusrunden, Gegner, Stacheln, bewegliche Plattformen, Sterne, Herzen, Leben, Game-Over-Anzeige, Chiptune-Musik, Touch-Steuerung und Google-Speicherung.",
    "icon": "🌤️",
    "img": "lumo/card.svg",
    "bg": "linear-gradient(145deg,#287c83,#83d4e1)",

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "687a305e39c2",
- "generated": "2026-10-15T02:09:41+02:00",
- "commit": "fecbf288d2235beb1e02c7bc470bbe1a1faa8016",
+ "version": "79d57cc17bb7",
+ "generated": "2026-10-15T02:12:08+02:00",
+ "commit": "8b0cd9a2dce7d3e319c35fe314efedd97bf161ab",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15266,
-   "h": "588df594fe775a37eb03651e52171751cc1061a298e2c7a4b7f31544e6fbec82"
+   "s": 15337,
+   "h": "c8c623c1340004c7291d071f4513a065fc70d6b79484cbe4b4fb3c49905391c7"
   },
   {
    "p": "gay-life/index.html",
@@ -5243,8 +5243,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 62515,
-   "h": "1c744e41fb9d78319063d5802975933bd84e2703d6d7d78ad3e2fb40bc9fc554"
+   "s": 62586,
+   "h": "b9768415f3edf6be7f5013117dcfefcb87c96a4e61add6743f535b5d3cbdb105"
   },
   {
    "p": "taschi/card.svg",
