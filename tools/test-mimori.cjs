@@ -165,6 +165,20 @@ assert.equal(win.MimoriDebug.get().appearance,0,'appearance variant not applied'
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).appearance,0);
 assert.equal(win.MimoriDebug.household().members.length,1);
 assert.equal(win.MimoriDebug.household().room,0);
+ui.worldOpen.handlers.click[0]();
+assert.equal(ui.worldOverlay.hidden,false);
+assert.equal(ui.roomTiles.children.length,12,'No 12-room selection grid');
+assert.equal(ui.decorTiles.children.length,8,'No decoration catalog');
+ui.roomTiles.children[2].handlers.click[0]();
+assert.equal(win.MimoriDebug.household().room,2,'Room tap did not change visible 3D room');
+ui.prevRoom.handlers.click[0]();
+assert.equal(win.MimoriDebug.household().room,1,'Room arrow did not navigate');
+ui.addPet.handlers.click[0]();
+assert.equal(win.MimoriDebug.household().members.length,2,'Add Mimori does not work');
+assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).household.members.length,2,'Household not saved with Google-sync key');
+assert.equal(ui.familyCards.children.length,2,'Family cards not updated');
+ui.worldClose.handlers.click[0]();assert.equal(ui.worldOverlay.hidden,true);
+
 // Each of four species retains the selected color on model reconstruction.
 ui.changeColor.handlers.click[0]();
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,1);
