@@ -6,6 +6,22 @@
  },
  "games": [
   {
+   "id": "spielename",
+   "title": "Kraterkommando 3D",
+   "desc": "Eigenständiges 3D-Artilleriespiel: zwei Teams mit sechs Figuren, rundenbasierte Kämpfe gegen Computer oder lokal zu zweit, verformbares Gelände, Wind, fünf Waffen, Touch-/PC-Steuerung und Google-Spielstand.",
+   "icon": "🚀",
+   "img": "spielename/card.svg",
+   "bg": "linear-gradient(145deg,#112c53,#194e58 55%,#74efce)",
+   "glow": "rgba(116,239,206,.55)",
+   "path": "spielename/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": null,
+   "size": 42509,
+   "files": 4,
+   "offline": true
+  },
+  {
    "id": "radio-maze",
    "title": "AnMaCha Radio Maze 3D",
    "desc": "Modernes 3D-Radio-Labyrinth mit 60 Leveln in 6 Radiowelten, 13 originalen Senderlogos, Geistern, Verstärkern, Leben und Highscore. Vollbild, Handy-/PC-Steuerung, Offline-PWA und optionaler Google-Cloud-Spielstand.",

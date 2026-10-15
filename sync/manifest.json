@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "71d3e1ca6cc9",
- "generated": "2026-10-15T06:18:22.919Z",
- "commit": "8e6a842a97922b312164f418b703386dc6371860",
+ "version": "5c9859f4f3ca",
+ "generated": "2026-10-15T08:30:10+02:00",
+ "commit": "480a8a3879863282fc2b55cfbb9fec321418c07b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 17347,
-   "h": "6391419a021f277e85b4e27842417e1f5c6bf1c7d65e636a5957c218744dd8f5"
+   "s": 17772,
+   "h": "9109ff674d2b18afd7363ff2bf464cf470ee341f8bd5718110d6276770b27ff7"
   },
   {
    "p": "gay-life/index.html",
@@ -5377,9 +5377,29 @@
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
   },
   {
+   "p": "spielename/card.svg",
+   "s": 1195,
+   "h": "8ef8fea4eee3d1a502143509ac7ae14e54dc155d2ebbac5592c60cee1291f0f6"
+  },
+  {
+   "p": "spielename/game.js",
+   "s": 30030,
+   "h": "efe5eaabdb9ddd875107968eded4d1aadb89cfb876ee795a4cabe3e96f1c1543"
+  },
+  {
+   "p": "spielename/index.html",
+   "s": 4578,
+   "h": "97ce7c215e4d2efc6bbd56434e2091b07bfa65e8daf158eb5ec3437ff5e3ebe4"
+  },
+  {
+   "p": "spielename/style.css",
+   "s": 6706,
+   "h": "7b57318c6d1e4d0240abf6f22ff18e688508a1a69d7a83dc96d83d7790563937"
+  },
+  {
    "p": "sync/catalog.json",
-   "s": 73030,
-   "h": "62f293f48cd1b6f03afdb95f223ce3f5817a460ca890b861bb84b7f5bc69e875"
+   "s": 73609,
+   "h": "395ff9b8ac9defbc7e8ec051c9cf8e487c0824aab0ce513fcadfb66dc3612a68"
   },
   {
    "p": "taschi/card.svg",
