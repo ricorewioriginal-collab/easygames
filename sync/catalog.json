@@ -8,7 +8,7 @@
   {
    "id": "mimori",
    "title": "Mimori – Dein 3D-Haustier",
-   "desc": "3D-Haustier Mimori mit eigener Soundwelt, sichtbaren Herz-/Stern-/Blasen-Effekten, Fellfarben, 4 Entwicklungsstufen, Füttern, Spielen, Baden, Schlafen, Sternfang, Google-Speicher und freiwilligen Browser-Erinnerungen während das Spiel läuft. Mobil, PC und offline.",
+   "desc": "Mimori als mobile 3D-Haustier-App: 4 wirklich verschiedene Figuren (Fluffi, Nubbi, Foxi, Drachi), je 4 Fellfarben, frei per Touch drehbar, 6 Pflegetasten, Tanzen, eigene Tierstimmen, überraschende Effekte und echtes Schnurren beim Kuscheln. Google-Speicher, offline und freiwillige Erinnerungen.",
    "icon": "🐣",
    "img": "mimori/icon.svg",
    "bg": "linear-gradient(145deg,#bfb4df,#eeaeca)",
@@ -17,20 +17,20 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Mimori ist dein eigenes 3D-Haustier! Pflege dein Wesen mit Füttern, Spielen, Baden, Kuscheln und Schlaf. Seine Werte entwickeln sich anhand echter Zeit, auch wenn du gerade nicht spielst. Sternfang bringt frische Beeren und Seife. Mit Erfahrung entstehen bis zu vier Entwicklungsstufen. Eigene Töne und Stern-/Herz-/Blaseneffekte reagieren auf deine Aktionen. Du kannst die Töne jederzeit ausschalten. Lokal speichern funktioniert immer; über den vorhandenen EasyGames-Google-Speicher kannst du den Spielstand freiwillig mit deinem Google-Konto synchronisieren.",
+    "anleitung": "Mimori ist jetzt wie eine eigene mobile Haustier-App aufgebaut: großes interaktives 3D-Wesen, darunter sechs Pflegetasten, kompakte Statusanzeige und oben rechts das Zahnrad. Du kannst zwischen Fluffi (Langohren), Nubbi (kugeliger Otter), Foxi (Fuchs mit Flauschschweif) und Drachi (kleiner Drache) wechseln. Alle vier besitzen eine eigene 3D-Struktur und jeweils vier Fellfarben. Füttere, spiele, bade, lass es schlafen oder kuschle. Tanzen, die eigene Stimme und kleine Überraschungen sind zusätzliche Spielereien. Beim Kuscheln schnurrt das Wesen; Füttern und Baden haben andere Geräusche. Dein Spielstand bleibt lokal gespeichert und ist optional mit dem bestehenden EasyGames-Google-Speicher synchronisierbar.",
     "steuerung": [
-     "PC: Pflegetasten anklicken, das 3D-Wesen mit gedrückter Maustaste drehen, ein einfacher Klick kuschelt. Ton rechts oben an/aus. Im Abschnitt „Google-Speicher & Spielstand“ anmelden und synchronisieren.",
-     "Handy: Aktionen tippen, mit dem Finger das 3D-Wesen drehen, beim Sternfang fünf Sterne in 14 Sekunden finden. Benachrichtigungen nur nach eigener Aktivierung während die Browserseite oder PWA läuft."
+     "Smartphone: Auf der großen 3D-Figur nach links/rechts wischen, um sie zu drehen. Mit ↶ / ↷ eine feste Drehung machen; ● setzt die Vorderansicht zurück. Tippen kuschelt. Darunter die sechs großen Pflegetasten und die drei kleinen Extras.",
+     "PC: Linke Maustaste halten und ziehen zum Drehen. Pfeiltasten links/rechts drehen ebenfalls, oder die ↶ / ↷ Buttons verwenden. Im Zahnrad-Menü 3D-Figuren, Farben, Name, Benachrichtigungen und Google-Speicher einstellen."
     ],
     "tipps": [
-     "Beim Sternfang kannst du wieder Beeren und Seife sammeln.",
-     "Halte Hunger, Freude, Energie, Sauberkeit und Gesundheit im Blick.",
-     "Google-Speichern erfordert Internet und Google-Anmeldung; ohne Google bleiben deine Daten lokal.",
-     "Erinnerungen sind freiwillig, mit Ruhezeit 22–8 Uhr und begrenzter Häufigkeit. Vollständig geschlossene Apps bekommen keine Meldungen.",
-     "Töne können oben über 🔊/🔇 ein- und ausgeschaltet werden."
+     "Fluffi, Nubbi, Foxi und Drachi haben unterschiedliche Körperformen und behalten beim Wechsel deine bisherigen Pflegewerte und Erfahrung.",
+     "Die Fellfarbe lässt sich bei jeder Figur in vier Varianten einstellen. Auch Google-Speicher sichert die Figurenauswahl.",
+     "Kuscheln löst ein eigenes Schnurren aus, Füttern klingt nach Schmatzen, Baden nach Blubbern und Schlafen nach leisem Ausatmen.",
+     "Neue Extras: Tanzen, Stimme und Überraschung. Sternfang liefert weiterhin Futter und Seife.",
+     "Erinnerungen kommen nur nach Zustimmung, solange Browser oder PWA tatsächlich läuft; keine Hintergrund-Push-Garantie bei geschlossenem Spiel."
     ]
    },
-   "size": 40285,
+   "size": 55651,
    "files": 7,
    "offline": true
   },

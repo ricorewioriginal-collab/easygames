@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "807b29b5bfec",
- "generated": "2026-10-15T01:54:35.422Z",
+ "version": "4bff1f4beec2",
+ "generated": "2026-10-15T02:09:31.492Z",
  "commit": "13f05f4d8693c5faf39e357822a03ff5d4c2fd2a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15759,
-   "h": "fb79791b301411f8743671356457e748e8258e4c4e3d46e18f7b3255811bc0da"
+   "s": 15788,
+   "h": "a8724b86458a57be8cdd58e7cfe34d4b03098b62d260838e00ed800893ea962d"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 42407,
-   "h": "6519fd13662efa10494eb58d6d966f0f745ff890cbbf4fe94b2ffc48e9ea7350"
+   "s": 42822,
+   "h": "baf164eb44ceb588ea805304e27ef4c7ed4844219e18604c92da5e5fff8512b8"
   },
   {
    "p": "index.html",
@@ -4793,8 +4793,8 @@
   },
   {
    "p": "mimori/game.js",
-   "s": 16621,
-   "h": "254b8a3f2098dca6a1afa8a73a29547106c050b669a1f6f99b2b4c0020c751da"
+   "s": 22279,
+   "h": "b88804bc81fa5d2dc7ff637f7a153d9018ce42cfc92a541bacb5a6ad53f5c812"
   },
   {
    "p": "mimori/icon.svg",
@@ -4803,8 +4803,8 @@
   },
   {
    "p": "mimori/index.html",
-   "s": 13961,
-   "h": "cfba2257614184d920ae844001d4f4ebf028550667e6d17d90b1100ef597079e"
+   "s": 21476,
+   "h": "ffb4338b614997f87d36c2c9892d63237b2d55f6fdb5df74d2c92981f76d46f0"
   },
   {
    "p": "mimori/manifest.webmanifest",
@@ -4813,18 +4813,18 @@
   },
   {
    "p": "mimori/model.js",
-   "s": 3840,
-   "h": "01b53a22c16e07f8911d0324a5426af3364bee385a1e2507849e54697fe2161b"
+   "s": 4136,
+   "h": "a56f967410cfc369deaf994c4118d1adf692e1ee00c2383c80e221411e98194d"
   },
   {
    "p": "mimori/sound.js",
-   "s": 2202,
-   "h": "17f960322d853792f3290e8f06b5929f4e28a95df15e4d9096f05877d41e7143"
+   "s": 4099,
+   "h": "d165bd9eb8542b083c14e1c837db363b6605b3d076dcbeab5962eb2d17ccff15"
   },
   {
    "p": "mimori/sw.js",
    "s": 1631,
-   "h": "17ef02d33b10a2c3896ae816ba5236dbbe5319128a07b649b44e936fc21c8591"
+   "h": "2cd282e6109985822fbcc47a49f259c4f4c0d7fd3495b2f0bd92abdec7302976"
   },
   {
    "p": "modes.js",
@@ -5278,8 +5278,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 64714,
-   "h": "df3d92c7499c1bbb9e69a0e33871bc72ec0ca96be51394bbb6d0d90f0b92a55b"
+   "s": 65158,
+   "h": "5ed1f30a7ca67fa0aecb02742c0f95f78eb6b3e92d9fd9d29be13d366d19473d"
   },
   {
    "p": "taschi/card.svg",
