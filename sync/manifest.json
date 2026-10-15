@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "9508fb2a6c9b",
- "generated": "2026-10-15T04:48:19+02:00",
+ "version": "6a9e63f4e67a",
+ "generated": "2026-10-15T02:49:00.844Z",
  "commit": "cd3a008c95320bde159b0df78ab0530d029340b0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 15739,
-   "h": "ccb332f450fdad40d0ff84c4f33403f45e110e638ecf9c14cd9cedfddb09f42b"
+   "h": "194d9f3ca5ee9c59ac24dd6e2cd3bc9d0ab6397598b9e199291ce68ba423dde1"
   },
   {
    "p": "gay-life/index.html",
@@ -4844,7 +4844,7 @@
   {
    "p": "mimori/sw.js",
    "s": 1688,
-   "h": "8e71dce866cd3a9e4cdccd5cbc03248539038e441486d7192f1be6f6b0a25169"
+   "h": "9ac223101ee6495bea660baab10ebc5b67c8ecc8e6ae858e175a3d419544f01a"
   },
   {
    "p": "modes.js",
