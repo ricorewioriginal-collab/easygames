@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fa3c34d57d9b",
- "generated": "2026-10-15T01:59:31+02:00",
- "commit": "5220c1b8bda856408402c0e044058c58d23241e7",
+ "version": "d31b3ea59b61",
+ "generated": "2026-10-15T02:07:21+02:00",
+ "commit": "0067d462d56242a82c3a0312b11cb0738c7470b5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4783,13 +4783,13 @@
   },
   {
    "p": "lumo/game.js",
-   "s": 25201,
-   "h": "d59ec720ceead81b5f12fcf2571443e7da2aebbdf93ca959c4a8ad67de9de5db"
+   "s": 32285,
+   "h": "573f5ff1e488cc99d191908c38c345ca291a6b9147a21aa10ca4486484aae8d3"
   },
   {
    "p": "lumo/index.html",
    "s": 3815,
-   "h": "b0eaa1dbd3728dcce671b23c759726ecbf9bdab80d0e96889d3d123419874121"
+   "h": "333eb14a9bef54adf6ab95baabb6dac23f1ce9b2de53ce2fd1e99561f776cf7e"
   },
   {
    "p": "modes.js",
@@ -5244,7 +5244,7 @@
   {
    "p": "sync/catalog.json",
    "s": 62040,
-   "h": "1bc9d1f5dcbcf75fb29dfd8134024af8232ea2a86abb08a43d5ba835e846108e"
+   "h": "9fd7fc0b1db21f4fe849bd1efb2e700da88f584d8a9c1936df06faaa056c01cf"
   },
   {
    "p": "taschi/card.svg",
