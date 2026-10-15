@@ -8,7 +8,7 @@
   {
    "id": "kiko-sterneninseln",
    "title": "KIKO – Das Geheimnis der Sterneninseln",
-   "desc": "Liebevolles 3D-Abenteuer mit acht Leveln in vier Welten: Kristalle, Rätsel, Schattenwesen, Sternenportale und ein Finale. Mit Kiko auf PC, Smartphone oder Gamepad spielen; der Fortschritt bleibt lokal gespeichert.",
+   "desc": "3D-Abenteuer mit 20 unterschiedlichen Leveln in vier Welten und vier wählbaren Figuren: Sternenpuls, Rätsel, Wind, Federpilze, bröckelnde Inseln, Uhrtore und Endgegner. PC, Touch und Gamepad; lokale Spielstände und optionaler Google-Speicher.",
    "icon": "✨",
    "img": "kiko-sterneninseln/card.svg",
    "bg": "linear-gradient(145deg,#18345b,#49bbcb 55%,#ffdc82)",
@@ -17,8 +17,8 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 731215,
-   "files": 21,
+   "size": 745909,
+   "files": 22,
    "offline": true
   },
   {
