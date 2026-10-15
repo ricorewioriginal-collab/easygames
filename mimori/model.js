@@ -1,9 +1,10 @@
 (function(root,make){const api=make();if(typeof module!=='undefined'&&module.exports)module.exports=api;root.MimoriModel=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const VERSION=1,DAY=86400000,stages=['Baby','Jungtier','Freund','Sternenwesen'];
+const species=['Fluffi','Nubbi','Foxi','Drachi'];
 const bound=(x,lo=0,hi=100)=>Math.max(lo,Math.min(hi,Number.isFinite(x)?x:lo));
 function fresh(now=Date.now()){
- return {version:VERSION,name:'Mimori',born:now,updated:now,hunger:82,joy:82,energy:82,clean:88,health:92,xp:0,care:0,color:0,lastAction:'Willkommen zu Hause!',inventory:{berry:7,soap:5}};
+ return {version:VERSION,name:'Mimori',born:now,updated:now,hunger:82,joy:82,energy:82,clean:88,health:92,xp:0,care:0,color:0,species:0,lastAction:'Willkommen zu Hause!',inventory:{berry:7,soap:5}};
 }
 function evolve(p){
 const age=Math.max(0,(p.updated-p.born)/DAY);
@@ -26,6 +27,7 @@ p.updated=bound(Number(raw.updated),0,now)||now;
 for(const k of ['hunger','joy','energy','clean','health'])p[k]=bound(Number(raw[k]),0,100);
 p.xp=bound(Number(raw.xp),0,100000);p.care=bound(Number(raw.care),0,100000);
 p.color=Math.floor(bound(Number(raw.color),0,3));
+p.species=Math.floor(bound(Number(raw.species??0),0,3));
 p.lastAction=String(raw.lastAction||p.lastAction).slice(0,100);
 p.inventory={berry:Math.floor(bound(Number(raw.inventory?.berry),0,999)),soap:Math.floor(bound(Number(raw.inventory?.soap),0,999))};
 return advance(p,now);
@@ -60,6 +62,7 @@ const min=Math.min(p.hunger,p.joy,p.clean,p.energy);
 return p.health<25||min<25?'Braucht dich':p.energy<35?'Schläfrig':p.joy>75&&min>55?'Überglücklich':'Zufrieden';
 }
 function needs(p,threshold=35){return ['hunger','joy','energy','clean'].filter(k=>p[k]<=threshold)}
+function changeSpecies(p,id){const next=Math.floor(Number(id));if(!Number.isInteger(next)||next<0||next>=species.length)return p;return {...p,species:next}}
 function rename(p,name){const safe=String(name||'').replace(/[<>]/g,'').trim().slice(0,18);return {...p,name:safe||p.name}}
-return {VERSION,DAY,stages,fresh,load,advance,act,evolve,mood,needs,rename};
+return {VERSION,DAY,stages,species,fresh,load,advance,act,evolve,mood,needs,rename,changeSpecies};
 });
