@@ -631,29 +631,53 @@ function make3D(){
  };
  const familyGroup=new THREE.Group();scene.add(familyGroup);
  function family3D(){
-  while(familyGroup.children.length){const o=familyGroup.children[0];familyGroup.remove(o);
-   o.traverse?.(n=>{if(n.geometry?.dispose)n.geometry.dispose();n.material?.dispose?.()})}
-  const activeId=house.members[house.active].memberId;
-  const partners=house.weddings.filter(w=>w.ids.includes(activeId)).flatMap(w=>w.ids)
-   .filter(id=>id!==activeId);
-  const unique=Array.from(new Set(partners));
-  unique.slice(0,3).forEach((id,i)=>{
-   const p=house.members.find(p=>p.memberId===id);if(!p)return;
-   const group=new THREE.Group();group.position.set([-1.85,1.85,-2.4][i],.13,-.68-i*.2);
-   const color=palettes[p.color][0],m=material(color),wh=material('#e8e1dd'),eye=material('#25243f');
-   mesh(group,sphere,m,0,.83,0,.53,.67,.48);
-   if(p.species===0||p.species===2){
-    for(const d of [-1,1])mesh(group,p.species===2?new THREE.ConeGeometry(.20,.61,10):sphere,
-      m,d*.34,1.55,0,.17,p.species===2?.68:.40,.20);
-   }else if(p.species===3){
-    mesh(group,new THREE.ConeGeometry(.23,.5,12),m,-.22,1.55,.02);
-    mesh(group,new THREE.ConeGeometry(.23,.5,12),m,.22,1.55,.02);
-   }else mesh(group,sphere,m,0,1.40,0,.68,.25,.51);
-   for(const d of [-1,1]){
-    mesh(group,sphere,wh,d*.19,1.06,.39,.16,.23,.075);
-    mesh(group,sphere,eye,d*.19,1.06,.44,.085,.14,.055)}
-   group.scale.set(.65,.65,.65);familyGroup.add(group);
+  // Separate meshes and materials from the active pet so wedding partners are visible.
+  while(familyGroup.children.length){
+   const node=familyGroup.children[0];familyGroup.remove(node);
+   node.traverse?.(part=>{
+    if(part.geometry&&part.geometry!==sphere&&part.geometry!==cyl&&part.geometry!==box)part.geometry.dispose?.();
+    const mats=Array.isArray(part.material)?part.material:[part.material];for(const mat of mats)mat?.dispose?.();
+   });
+  }
+  const me=house.members[house.active].memberId;
+  const ids=Array.from(new Set(house.weddings.filter(w=>w.ids.includes(me)).flatMap(w=>w.ids).filter(id=>id!==me))).slice(0,3);
+  // The partners stand closer to the camera, rather than hidden behind the oversized pet.
+  const positions=ids.length===1?[[-.98,1.35]]:
+   ids.length===2?[[-1.12,1.28],[1.12,1.28]]:
+   [[-1.15,1.30],[1.15,1.30],[0,2.62]];
+  ids.forEach((id,i)=>{
+   const p=house.members.find(m=>m.memberId===id);if(!p)return;
+   const [x,z]=positions[i],character=new THREE.Group();
+   character.position.set(x,.13,z);
+   const [base,belly,accent]=palettes[p.color%4],skin=material(base),light=material(belly),
+     dark=material(accent),eye=material('#29223d'),shine=material('#faf2ed');
+   const spherePart=(mat,x,y,z,a,b,c)=>mesh(character,sphere,mat,x,y,z,a,b,c);
+   spherePart(skin,0,1.1,0,.58,p.species===1?.61:.73,.53);
+   spherePart(light,0,.99,.43,.36,.43,.15);
+   for(const dir of [-1,1]){
+    if(p.species===0){
+     const ear=spherePart(skin,dir*.36,1.97,.06,.15,.46,.15);ear.rotation.z=-dir*.2;
+    }else if(p.species===2){
+     mesh(character,new THREE.ConeGeometry(.19,.51,9),skin,dir*.34,1.91,.02);
+    }else if(p.species===3){
+     mesh(character,new THREE.ConeGeometry(.17,.37,9),light,dir*.33,1.89,.01);
+     spherePart(dark,dir*.62,1.10,-.36,.37,.31,.12);
+    }else spherePart(skin,dir*.48,1.46,-.1,.29,.20,.25);
+    spherePart(shine,dir*.24,1.42,.44,.15,.21,.09);
+    spherePart(eye,dir*.24,1.42,.52,.085,.12,.055);
+    spherePart(light,dir*.25,.32,.17,.24,.14,.25);
+   }
+   if(p.species===2)spherePart(skin,.58,.95,-.52,.25,.56,.23);
+   if(p.appearance===1)spherePart(material('#e9a2d4'),.49,1.89,.15,.15,.15,.10);
+   if(p.appearance===0)spherePart(dark,-.25,1.70,.46,.24,.07,.06);
+   if(p.appearance===2)spherePart(light,0,1.97,.09,.18,.18,.12);
+   if(p.accessory===3)mesh(character,new THREE.TorusGeometry(.35,.06,8,24),light,0,2.00,.07);
+   // Third partner is foreground-scaled so all three fit, the first two are clearly larger.
+   const scaleValue=ids.length===3&&i===2?.64:.90;
+   character.scale.setScalar(scaleValue);
+   familyGroup.add(character);
   });
+  state.partnerCount=familyGroup.children.length;
  }
  state.paint=()=>{buildPet();family3D()};state.paint();
  // Entire 3D surface rotates via touch, mouse or pen. A small tap still cuddles.
