@@ -249,7 +249,7 @@ document.querySelectorAll('[data-family-care]').forEach(b=>b.addEventListener('c
 }));
 Radio.mount($('mimoriRadio'));
 
-function turnBy(rad){state.orbit+=rad;state.activity='turn';state.fx=.22}
+function turnBy(rad){state.orbit+=rad;state.fallback?.turn?.(rad);state.activity='turn';state.fx=.22}
 $('turnLeft').addEventListener('click',()=>turnBy(-Math.PI/3));
 $('turnRight').addEventListener('click',()=>turnBy(Math.PI/3));
 $('resetView').addEventListener('click',()=>{state.orbit=0;state.activity='turn';state.fx=.22});
@@ -337,18 +337,50 @@ $('photoBtn').addEventListener('click',()=>{
   say('Dein Mimori-Foto ist bereit! 📷');sound.play('star');
  }catch(_){say('Foto nicht möglich – bitte Screenshot erstellen.')}
 });
+function startLowGraphics(reason){
+ if(state.fallback)return;
+ const out=$('webglError');
+ out.hidden=false;
+ out.textContent='3D-Grafik auf diesem Gerät nicht verfügbar – Mimori läuft im sparsamen 2D-Modus weiter. Räume und Pflege funktionieren.';
+ if(window.console&&console.warn)console.warn('[Mimori] 3D-Start fehlgeschlagen:',reason);
+ state.useFallback=true;
+ state.fallback=window.MimoriFallback?.start({
+  target:$('viewport'),getPet:()=>pet,getHouse:()=>house,onCuddle:()=>act('cuddle'),
+  onError:()=>{out.textContent='Darstellung auf diesem Gerät nicht möglich. Die Pflege funktioniert weiterhin.'}
+ });
+ if(state.fallback){
+  state.renderer={domElement:state.fallback.canvas};
+  state.paint=()=>state.fallback.redraw();
+  state.applyRoom=()=>state.fallback.redraw();
+  state.applyLight=()=>state.fallback.redraw();
+ }
+}
 function make3D(){
  const THREE=window.THREE;
- if(!THREE){$('webglError').hidden=false;return}
- let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power',preserveDrawingBuffer:true});
- renderer.setPixelRatio(Math.min(1.8,window.devicePixelRatio||1));
- renderer.outputEncoding=THREE.sRGBEncoding;
- renderer.toneMapping=THREE.ACESFilmicToneMapping;
- renderer.toneMappingExposure=.83;
- renderer.setClearColor(0x000000,0);
- renderer.shadowMap.enabled=false;}
- catch(_){$('webglError').hidden=false;return}
+ if(!THREE){startLowGraphics('Three.js konnte nicht geladen werden');return}
+ let renderer,lastRendererError=null;
+ const modes=[
+  {antialias:true,alpha:true,powerPreference:'low-power',preserveDrawingBuffer:true},
+  {antialias:false,alpha:false,powerPreference:'low-power',preserveDrawingBuffer:false,stencil:false},
+  {antialias:false,alpha:false,powerPreference:'default',preserveDrawingBuffer:false,stencil:false}
+ ];
+ for(const mode of modes){
+  try{renderer=new THREE.WebGLRenderer(mode);break}
+  catch(err){lastRendererError=err;renderer=null}
+ }
+ if(!renderer){startLowGraphics(lastRendererError||'Kein WebGL-Kontext');return}
+ try{
+  renderer.setPixelRatio(Math.min(1.6,window.devicePixelRatio||1));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=.83;
+  renderer.setClearColor(0x000000,0);
+  renderer.shadowMap.enabled=false;
+ }catch(err){renderer.dispose?.();startLowGraphics(err);return}
  state.renderer=renderer;
+ renderer.domElement.addEventListener?.('webglcontextlost',e=>{
+  e.preventDefault?.();startLowGraphics('WebGL-Kontext verloren');
+ });
  const target=$('viewport');target.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interaktives 3D-Haustier');
  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x817790,12,23);
  const camera=new THREE.PerspectiveCamera(37,1,.1,50);camera.position.set(0,3.45,8.6);camera.lookAt(0,1.15,0);
@@ -561,6 +593,7 @@ function make3D(){
  ['pointerup','pointercancel','lostpointercapture'].forEach(type=>renderer.domElement.addEventListener(type,releasePointer));
  let previous=performance.now();
  function frame(ms){
+  if(state.useFallback)return;
   const dt=Math.min(.06,Math.max(0,(ms-previous)/1000));previous=ms;const t=ms*.001;
   const jumping=state.fx>0;
   state.fx=Math.max(0,state.fx-dt);petGroup.rotation.y+=(state.orbit-petGroup.rotation.y)*Math.min(1,dt*18);
@@ -575,7 +608,7 @@ function make3D(){
   if(state.activity==='sleep'&&state.fx>0)petGroup.rotation.z=.22;
   room.rotation.y=Math.sin(t*.12)*.025;
   const w=$('viewport').clientWidth,h=$('viewport').clientHeight;
-  if(w&&h){if(renderer.domElement.width!==Math.floor(w*renderer.getPixelRatio())||renderer.domElement.height!==Math.floor(h*renderer.getPixelRatio())){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}renderer.render(scene,camera)}
+  if(w&&h){if(renderer.domElement.width!==Math.floor(w*renderer.getPixelRatio())||renderer.domElement.height!==Math.floor(h*renderer.getPixelRatio())){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}try{renderer.render(scene,camera)}catch(err){startLowGraphics(err);return}}
   requestAnimationFrame(frame);
  }
  requestAnimationFrame(frame);
@@ -662,6 +695,6 @@ setInterval(()=>{
  persist();if(reminders.enabled)checkReminders().catch(()=>{});
  if(!document.hidden&&Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!');
 },60000);
-ui();make3D();remindersUi();
-window.MimoriDebug={household:()=>JSON.parse(JSON.stringify(house)),openWorld:()=>showWorld(true),switchMember,enterRoom,get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
+ui();try{make3D()}catch(err){startLowGraphics(err)}remindersUi();
+window.MimoriDebug={household:()=>JSON.parse(JSON.stringify(house)),openWorld:()=>showWorld(true),switchMember,enterRoom,get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,graphicsMode:()=>state.useFallback?'2d':'3d',startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
 })();
