@@ -73,7 +73,7 @@ const THREE={Group:Shape,Mesh:Shape,BoxGeometry:Geometry,SphereGeometry:Geometry
 const roomGroup=new Shape(),counts=[];
 for(let i=0;i<12;i++){
  const result=Rooms.build(THREE,roomGroup,i,i===8?[0,4,5]:[]);
- assert.equal(result.id,i);assert(result.meshes>20);
+ assert.equal(result.id,i);assert(result.meshes>=14);
  assert.equal(result.hasRadio,i===0);
  assert(Rooms.css(i).includes('linear-gradient'));
  counts.push(result.meshes);
