@@ -703,7 +703,20 @@ function make3D(){
  function releasePointer(e){
   if(pointer!==e.pointerId)return;
   const wasDragged=dragged;pointer=null;dragged=false;
-  if(e.type==='pointerup'&&!wasDragged)act('cuddle');
+  if(e.type==='pointerup'&&!wasDragged){
+   if(house.room===0&&THREE.Raycaster&&THREE.Vector2){
+    try{
+     const rect=renderer.domElement.getBoundingClientRect();
+     const point=new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-((e.clientY-rect.top)/rect.height*2-1));
+     const ray=new THREE.Raycaster();ray.setFromCamera(point,camera);
+     const radioMeshes=roomScene.children.filter(item=>item.userData?.mimoriRadio);
+     if(radioMeshes.length&&ray.intersectObjects(radioMeshes,false).length){
+      showLivingRoomRadio();return;
+     }
+    }catch(_){}
+   }
+   act('cuddle');
+  }
  }
  ['pointerup','pointercancel','lostpointercapture'].forEach(type=>renderer.domElement.addEventListener(type,releasePointer));
  let previous=performance.now();
