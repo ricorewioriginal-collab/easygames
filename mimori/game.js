@@ -56,6 +56,28 @@ function ui(){
  });
 
  $('speciesName').textContent=M.species[pet.species]||M.species[0];
+ document.querySelectorAll('[data-color]').forEach(btn=>{
+  const selected=Number(btn.dataset.color)===pet.color;
+  btn.classList.toggle('selected',selected);
+  btn.setAttribute('aria-pressed',String(selected));
+ });
+ const miniKeys=[['Joy','joy'],['Hunger','hunger'],['Energy','energy'],['Clean','clean'],['Health','health']];
+ for(const [part,key] of miniKeys){
+   const value=Math.max(0,Math.round(pet[key]));
+   $('mini'+part).textContent=String(value);
+   $('mini'+part+'Fill').style.width=value+'%';
+   const parent=$('mini'+part).closest?.('[data-mini]');
+   parent?.classList.toggle('low',value<=35);
+ }
+ const memberId=house.members[house.active].memberId;
+ const spouseIds=[...new Set(house.weddings.filter(w=>w.ids.includes(memberId)).flatMap(w=>w.ids).filter(id=>id!==memberId))].slice(0,3);
+ $('partnerNameTags').replaceChildren();
+ for(const id of spouseIds){
+  const spouse=house.members.find(m=>m.memberId===id);if(!spouse)continue;
+  const badge=document.createElement('span');badge.textContent='💍 '+spouse.name;
+  $('partnerNameTags').appendChild(badge);
+ }
+ $('partnerNameTags').hidden=!spouseIds.length;
  document.querySelectorAll('[data-species]').forEach(b=>{const active=Number(b.dataset.species)===pet.species;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
  $('stageBadge').textContent=['Wolkenbaby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
  document.querySelectorAll('[data-appearance]').forEach(btn=>{
@@ -63,7 +85,8 @@ function ui(){
   btn.classList.toggle('selected',active);btn.setAttribute('aria-pressed',String(active));
  });
  $('roomLabel').textContent=Home.rooms[house.room][1]+' '+Home.rooms[house.room][0];
- $('radioLaunch').hidden=house.room!==0;
+ $('radioLaunch').hidden=false;
+ $('radioHotspot').hidden=house.room!==0;
  $('newPetName').disabled=house.members.length>=4;
  $('addPet').disabled=house.members.length>=4;
  $('toiletNeed').textContent=Math.round(pet.toiletNeed)+'%';
@@ -101,7 +124,14 @@ $('rename').addEventListener('click',()=>{
  const name=window.prompt('Wie soll dein Wesen heißen?',pet.name);
  if(name===null)return;pet=M.rename(pet,name);save();ui();sound.play('cuddle',pet.species);effects('cuddle');say('Hallo! Ich bin '+pet.name+'!');
 });
-$('changeColor').addEventListener('click',()=>{pet.color=(pet.color+1)%4;save();paint();sound.play('color',pet.species);effects('color');say('Ein neues Lieblingsfell!')});
+function chooseColor(color){
+ const next=Number(color);if(!Number.isInteger(next)||next<0||next>=4)return;
+ pet.color=next;save();paint();ui();
+ sound.play('color',pet.species);effects('color');
+ say('Deine Fellfarbe ist jetzt '+['Rosa','Mint','Lavendel','Gold'][next]+'!');
+}
+$('changeColor').addEventListener('click',()=>chooseColor((pet.color+1)%4));
+document.querySelectorAll('[data-color]').forEach(btn=>btn.addEventListener('click',()=>chooseColor(btn.dataset.color)));
 $('infoBtn').addEventListener('click',()=>{$('help').hidden=!$('help').hidden});
 $('helpClose').addEventListener('click',()=>{$('help').hidden=true});
 $('installBtn').addEventListener('click',()=>{$('installInfo').hidden=!$('installInfo').hidden});
@@ -127,7 +157,7 @@ function switchSpecies(id){
 document.querySelectorAll('[data-species]').forEach(btn=>btn.addEventListener('click',()=>switchSpecies(Number(btn.dataset.species))));
 document.querySelectorAll('[data-appearance]').forEach(btn=>btn.addEventListener('click',()=>{
  pet=M.changeAppearance(pet,Number(btn.dataset.appearance));
- save();paint();ui();sound.play('color',pet.species);
+ save();paint();ui();sound.play('color',pet.species);effects('color');
  say('Neue Mimori-Variante: '+Home.looks[pet.appearance]);
 }));
 // Household, weddings and rooms share the existing pet save key, so Google sync transports all residents.
@@ -232,7 +262,7 @@ $('datePartners').addEventListener('click',()=>{
 $('marryPartners').addEventListener('click',()=>{
  const result=Home.marry(house,house.members[house.active].memberId,selectedPartners());
  if(!result.ok){$('weddingResult').textContent=result.reason;return}
- save();state.paint?.();renderWorld();effects('evolve');sound.play('evolve');
+ save();state.paint?.();ui();renderWorld();effects('evolve');sound.play('evolve');
  $('weddingResult').textContent='💍 Hochzeit! '+result.ids.length+' Mimoris feiern ihre Partnerschaft!';
  say('Heute wird geheiratet! 💍');
 });
@@ -248,6 +278,13 @@ document.querySelectorAll('[data-family-care]').forEach(b=>b.addEventListener('c
  say(result.helped+' von '+result.total+' Mimoris versorgt!');sound.play('cuddle');
 }));
 Radio.mount($('mimoriRadio'));
+function showLivingRoomRadio(){
+ // The bottom Radio button always works, including when another room is selected.
+ if(house.room!==0)enterRoom(0);
+ showWorld(true,true);
+}
+$('radioHotspot').addEventListener('click',showLivingRoomRadio);
+window.MimoriWorldActions={showLivingRoomRadio,selectColor:chooseColor,refresh:ui};
 
 function turnBy(rad){state.orbit+=rad;state.fallback?.turn?.(rad);state.activity='turn';state.fx=.22}
 $('turnLeft').addEventListener('click',()=>turnBy(-Math.PI/3));
@@ -507,6 +544,7 @@ function make3D(){
    cone(dark,1.03,.77,-1.26,.23,.44);
    face(1.60,.74,.31,.135);
   }
+  const eyeHeight=[1.63,1.39,1.76,1.60][id],eyeDepth=[.69,.86,.53,.74][id];
   if(pet.accessory===1){
    // A tiny bell collar around the neck.
    mesh(petGroup,new THREE.TorusGeometry(.55,.07,10,34),material('#d7a469'),0,.82,.54).rotation.x=.28;
@@ -519,9 +557,62 @@ function make3D(){
    const ring=mesh(petGroup,new THREE.TorusGeometry(.57,.08,10,30),shine,0,2.83,.02);
    ring.rotation.x=.12;
    for(let i=0;i<4;i++)oval(shine,Math.cos(i*Math.PI/2)*.57,2.83+Math.sin(i*Math.PI/2)*.5,.02,.11,.11,.1);
+  }else if(pet.accessory>=4&&pet.accessory<=19){
+   const idWear=pet.accessory;
+   const gold=material('#e6c783'),pink=material('#db7eae'),blue=material('#80bfd4'),black=material('#3c354d');
+   const side=(m,y,z,sz=.18)=>{for(const dir of [-1,1])oval(m,dir*.46,y,z,sz,.14,.10)};
+   switch(idWear){
+    case 4: // sunglasses
+     side(black,eyeHeight+.06,eyeDepth+.27,.26);
+     mesh(petGroup,box,black,0,eyeHeight+.08,eyeDepth+.31,.45,.065,.09);
+     break;
+    case 5: // top hat
+     mesh(petGroup,cyl,black,0,2.78,0,.45,.48,.45);
+     mesh(petGroup,cyl,gold,0,2.56,0,.67,.06,.64);break;
+    case 6: // flower crown
+     for(let k=0;k<6;k++)oval(k%2?pink:shine,Math.cos(k)*.45,2.49+Math.sin(k)*.10,.30,.14,.14,.10);break;
+    case 7: // scarf
+     mesh(petGroup,new THREE.TorusGeometry(.63,.13,8,25),pink,0,.88,.58).rotation.x=.33;
+     oval(pink,.31,.50,.80,.13,.42,.12);break;
+    case 8: // headphones
+     mesh(petGroup,new THREE.TorusGeometry(.64,.11,9,24,Math.PI),black,0,2.23,.12).rotation.z=.1;
+     side(blue,1.75,.13,.21);break;
+    case 9: // straw hat
+     mesh(petGroup,cyl,gold,0,2.59,0,.55,.23,.55);
+     mesh(petGroup,cyl,pink,0,2.49,0,.83,.065,.78);break;
+    case 10: // crystal headband
+     mesh(petGroup,new THREE.TorusGeometry(.48,.055,7,27,Math.PI),blue,0,2.33,.1);
+     oval(shine,0,2.67,.33,.15,.26,.11);break;
+    case 11: // cap
+     oval(blue,0,2.59,.02,.58,.20,.44);
+     oval(black,0,2.51,.49,.44,.045,.32);break;
+    case 12: // rainbow winglets
+     for(const dir of [-1,1]){oval(pink,dir*.95,1.49,-.24,.31,.49,.16);oval(blue,dir*1.13,1.31,-.13,.29,.33,.12)}
+     break;
+    case 13: // antennae
+     for(const dir of [-1,1]){const stem=oval(black,dir*.45,2.66,.1,.055,.35,.05);stem.rotation.z=dir*.36;oval(pink,dir*.61,2.91,.13,.17,.17,.13)}
+     break;
+    case 14: // wand
+     mesh(petGroup,cyl,black,.92,.97,.71,.045,.75,.045).rotation.z=-.35;
+     oval(shine,1.11,1.38,.71,.22,.19,.11);break;
+    case 15: // mask
+     side(pink,eyeHeight+.12,eyeDepth+.27,.29);
+     mesh(petGroup,box,pink,0,eyeHeight+.14,eyeDepth+.28,.44,.065,.07);break;
+    case 16: // medal
+     mesh(petGroup,new THREE.TorusGeometry(.35,.055,8,20),blue,0,.96,.80);
+     oval(gold,0,.74,1.04,.17,.22,.09);break;
+    case 17: // winter hat
+     oval(pink,0,2.64,.02,.57,.36,.46);oval(white,0,2.42,.25,.65,.11,.51);
+     oval(white,0,3.01,.04,.14,.14,.12);break;
+    case 18: // lightning
+     oval(gold,.62,2.15,.45,.13,.30,.08);
+     oval(shine,.68,2.46,.48,.11,.13,.09);break;
+    case 19: // feather crown
+     for(let k=-2;k<=2;k++){const v=oval(k%2?blue:gold,k*.23,2.72,.15,.12,.34+(.2-Math.abs(k)*.07),.08);v.rotation.z=-k*.21}
+     break;
+   }
   }
   // Distinct opt-in appearance sets for every species, independent of sex/relationship rules.
-  const eyeHeight=[1.63,1.39,1.76,1.60][id],eyeDepth=[.69,.86,.53,.74][id];
   if(pet.appearance===0){ // masculine silhouette: short angular fringe and raised brows
    oval(dark,-.29,eyeHeight+.37,eyeDepth+.13,.24,.075,.065);oval(dark,.29,eyeHeight+.37,eyeDepth+.13,.24,.075,.065);
    cone(dark,-.28,2.60,.03,.18,.31);
