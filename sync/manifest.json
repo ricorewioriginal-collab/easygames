@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "75377560963c",
- "generated": "2026-10-15T03:39:08.930Z",
+ "version": "6111434d17a3",
+ "generated": "2026-10-15T03:55:08.982Z",
  "commit": "cd3a008c95320bde159b0df78ab0530d029340b0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 15801,
-   "h": "51452ebf3dc4810a19982ecd3e92e06b0b96be888d316d606010e2592b0e236f"
+   "h": "1c54c01a109b1f5ef7f9480a639fcfd98ba6c7dbfcd1876d75d63cf9c449deb6"
   },
   {
    "p": "gay-life/index.html",
@@ -4793,13 +4793,13 @@
   },
   {
    "p": "mimori/arcade.css",
-   "s": 6163,
-   "h": "56b5ebeb90140000eb9d1208b8bcddc1c400b057e65965a571a0dc9bf01081da"
+   "s": 7573,
+   "h": "7556f1abc5421171e3b1d3ed9b58a60019f50e182e2f7344f8793d9388d2d048"
   },
   {
    "p": "mimori/arcade.js",
-   "s": 18032,
-   "h": "bd9777d3a9352ac15a34432b09c0f404e8aa41de4403c389d73d6c8d228f277c"
+   "s": 18130,
+   "h": "6c5a2e98aefb1e992ff615843b6cf0584c14a7c1be4144168604b96c12953c57"
   },
   {
    "p": "mimori/cover.png",
@@ -4818,8 +4818,8 @@
   },
   {
    "p": "mimori/game.js",
-   "s": 38596,
-   "h": "179a2588e509c2741939de4702f116fb0bac3bf42f1c09751475a26dbfd84258"
+   "s": 38532,
+   "h": "ae05c9af1e1d0cce38686eaf9bb2418e3be862531c952adbef7cbac58a18ced1"
   },
   {
    "p": "mimori/home.css",
@@ -4863,8 +4863,8 @@
   },
   {
    "p": "mimori/scene-ui.css",
-   "s": 8788,
-   "h": "b3c80d779c99594a9a84e61786a2a7128bdd2bdc9eab65d4a91fcd189846b739"
+   "s": 9072,
+   "h": "eb5b7b8eb5b0f6a508fce0128b07cbe53ff48317a4213bd0717a129f34e139ab"
   },
   {
    "p": "mimori/scene-ui.js",
@@ -4879,7 +4879,7 @@
   {
    "p": "mimori/sw.js",
    "s": 1796,
-   "h": "4ab2f7e646a94633348e2b273098b2beeb16b664a1a24f667b389704a8301b6f"
+   "h": "f37e31c7553c111560cce4453a01015dc5f4acfe5b05b6c7ced40eb5aec09940"
   },
   {
    "p": "modes.js",
@@ -5334,7 +5334,7 @@
   {
    "p": "sync/catalog.json",
    "s": 68254,
-   "h": "5cfe6ffef3f62eb38dd78a3dc81c83a890afde09ec8dcbece3a6bf33e5094795"
+   "h": "f0e32b2182a66d776ecc60e06bf11a32db585967ab33b9d07d95d01adec465b7"
   },
   {
    "p": "taschi/card.svg",

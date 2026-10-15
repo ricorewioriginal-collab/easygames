@@ -128,3 +128,9 @@ Geräten sollte im Browser nach der Veröffentlichung kontrolliert werden.
 - `scene-ui.js` und `scene-ui.css` integrieren die Oberfläche, `fallback.js` zeichnet die Ersatzfigur. Offline-Kernressourcen und Android-Manifest-Prüfsummen wurden aktualisiert.
 
 Über das EasyGames-Android-Projekt wird der WebView explizit GPU-gerendert; in `ricorewi-radio` sind Manifest und GameActivity ebenfalls auf Hardwarebeschleunigung eingestellt. Quellcodeänderungen in Android benötigen einen neuen APK-Build und eine Installation; bestehende APKs ändern sich dadurch nicht automatisch.
+
+## Ein großes Hauptfenster für alle Funktionen
+
+Pflege, Werte, Räume, Familie, Radio und die fünf Minigames öffnen sich jetzt als integrierte Panels innerhalb einer fast bildschirmfüllenden Mimori-Spielszene. Der Hilferuf bleibt eine kleine antippbare Glocke. Das Layout berücksichtigt Mobilgeräte im Hoch- und Querformat.
+
+Bei fehlendem WebGL probiert Mimori zunächst sparsame Renderer-Einstellungen und zeichnet das Haustier andernfalls in einer interaktiven Canvas-2D-Ersatzansicht. Der neue Test `node tools/test-mimori-scene.cjs` prüft Navigation, eingebettete Spielhalle und die Touch-Eingaben des Fallbacks. Echte APK-/Gerätetests stehen noch aus.
