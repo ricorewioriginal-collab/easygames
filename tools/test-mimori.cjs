@@ -122,7 +122,7 @@ for(const kind of ['feed','toilet','cleanup','medicine','light','sleep']){
 }
 const document={getElementById:id=>ui[id]??=element(),
  querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:sel==='[data-appearance]'?appearanceButtons:sel==='[data-care]'?careButtons:[],
- addEventListener:noop,createElement:element,hidden:false,body:{classList:{add:noop,remove:noop}}};
+ addEventListener:noop,createElement:element,hidden:false,body:{classList:{add:noop,remove:noop,toggle:noop}}};
 const localStorage={getItem:k=>ls.get(k)||null,setItem:(k,v)=>ls.set(k,v)};
 const context={window:win,document,localStorage,navigator:{serviceWorker},Notification:mockNotification,
  location:{href:'https://example.org/easygames/mimori/'},URL,performance:{now:()=>100},Date,Math,console,
