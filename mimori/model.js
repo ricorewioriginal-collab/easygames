@@ -74,12 +74,12 @@ p.lightsOff=raw.lightsOff===true;
 p.coins=Math.floor(bound(Number(raw.coins??0),0,1000000));
 p.records={};for(const id of ['catch','memory','rhythm','runner','bubbles'])p.records[id]=Math.floor(bound(Number(raw.records?.[id]??0),0,1000000));
 p.lastDaily=typeof raw.lastDaily==='string'?raw.lastDaily.slice(0,12):'';
-p.accessory=Math.floor(bound(Number(raw.accessory??0),0,3));
+p.accessory=Math.floor(bound(Number(raw.accessory??0),0,19));
 p.theme=Math.floor(bound(Number(raw.theme??0),0,2));
 p.owns={accessory:[0],theme:[0]};
 for(const kind of ['accessory','theme'])for(const value of raw.owns?.[kind]||[]){
  const id=Math.floor(Number(value));
- if(Number.isFinite(id)&&id>=0&&id<=(kind==='accessory'?3:2)&&!p.owns[kind].includes(id))p.owns[kind].push(id);
+ if(Number.isFinite(id)&&id>=0&&id<=(kind==='accessory'?prices.accessory.length-1:2)&&!p.owns[kind].includes(id))p.owns[kind].push(id);
 }
 if(!p.owns.accessory.includes(p.accessory))p.accessory=0;
 if(!p.owns.theme.includes(p.theme))p.theme=0;
@@ -130,7 +130,7 @@ default:return {ok:false,pet:p,reason:'Unbekannte Aktion'};
 }
 p.xp+=reward;p.care++;p.lastAction=message;return {ok:true,pet:p,reward,evolved:evolve(p)>old};
 }
-const prices={accessory:[0,60,110,180],theme:[0,80,140]};
+const prices={accessory:[0,60,110,180,90,95,120,145,170,190,210,230,255,280,315,350,380,410,445,480],theme:[0,80,140]};
 function rewardMini(raw,id,score,won,now=Date.now()){
  if(!['catch','memory','rhythm','runner','bubbles'].includes(id))return {ok:false,pet:raw};
  const p=advance(raw,now),old=evolve(p);

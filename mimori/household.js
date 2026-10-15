@@ -8,7 +8,23 @@ const rooms=[
  ['Winterhütte','❄️',125],['Wolkeninsel','☁️',145],['Zauberlabor','🧪',165],['Spielzimmer','🎮',185]];
 const decorations=[
  ['Pflanzen & Blumen','🌼',25],['Wandbilder','🖼️',35],['Lichterkette','✨',45],
- ['Teppich','🧶',55],['Aquarium','🐠',70],['Kamin','🔥',85],['Sternenmobile','🌟',100],['Sitzgruppe','🪑',115]];
+ ['Teppich','🧶',55],['Aquarium','🐠',70],['Kamin','🔥',85],['Sternenmobile','🌟',100],['Sitzgruppe','🪑',115],
+["Hängesessel","🪑",120],
+["Leselampe","🕯️",75],
+["Bücherregal","📚",95],
+["Kuschelbett","🛏️",145],
+["Fernsehkonsole","📺",185],
+["Plattenspieler","💿",180],
+["Musikbox","🎼",135],
+["Blumentopf-Set","🪴",80],
+["Spielzeugkiste","🧸",105],
+["Bodenkissen","🛋️",65],
+["Wolkenlampe","🌥️",155],
+["Discokugel","🪩",220],
+["Pokalvitrine","🏆",195],
+["Pinnwand","📌",70],
+["Globus","🌐",110],
+["Katzenkratzbaum","🐈",125]];
 const idString=(x)=>String(x||'').slice(0,30).replace(/[^a-z0-9_-]/gi,'');
 const rawPet=p=>{const o={...p};delete o.household;return o};
 const pairKey=(a,b)=>[a,b].sort().join(':');
