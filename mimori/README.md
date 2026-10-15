@@ -63,6 +63,6 @@ Alle neuen Zustandsfelder gehören zum bestehenden Spielstand unter `easygames.m
 
 ## Cover / Drittanbieter
 
-- **`cover.svg`** ist ein eigens illustriertes, hochauflösendes 1200×630-Katalogmotiv mit allen vier Figuren.
+- **`cover.svg`** ist die bearbeitbare Vektorvorlage des eigens illustrierten 1200×630-Katalogmotivs mit allen vier Figuren.
 - **`og:image`**, Twitter-Card, Beschreibung und kanonische URL liegen auf der direkt spielbaren `mimori/index.html`. `games.js` und `sync/catalog.json` verweisen auf das Cover statt des App-Icons.
-- Der Workflow `.github/workflows/mimori-cover.yml` erstellt auf `main` zusätzlich `mimori/cover.png` für Anbieter, die SVG-Vorschauen nicht unterstützen. Nach erfolgreicher Workflow-Ausführung sollte `og:image` auf die verifizierte PNG-Adresse zeigen. Nicht automatisch auf ein möglicherweise fehlendes Bild verlinken.
+- Der GitHub-Workflow `.github/workflows/mimori-cover.yml` hat das **echte 1200×630-PNG** `mimori/cover.png` erfolgreich erstellt. Die Katalogkarte in `games.js` und `sync/catalog.json`, Open Graph, Twitter-Card und die PWA-Screenshot-Angabe zeigen nun auf dieses PNG. Die Vektorvorlage bleibt weiterhin vorhanden.
