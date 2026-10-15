@@ -1,10 +1,11 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id),M=window.MimoriModel,KEY='easygames.mimori.v1',DEVICE='easygames.mimori.device.v1';
+const $=id=>document.getElementById(id),M=window.MimoriModel,KEY='easygames.mimori.v1',REMIND='easygames.mimori.reminders.v1';
 let pet;try{pet=M.load(JSON.parse(localStorage.getItem(KEY)),Date.now())}catch(_){pet=M.fresh()}
-const state={busy:false,fx:0,activity:'idle',spin:0,orbit:0,mini:0,renderer:null,model:null,room:null,balls:[],pushBase:'',pushKey:'',pushEnabled:false,pushBusy:false};
+const state={busy:false,fx:0,activity:'idle',spin:0,orbit:0,mini:0,renderer:null,model:null,room:null,balls:[]};
+const sound=window.MimoriSound||{play:()=>{},toggle:()=>false,isEnabled:()=>false};
 const stats=[['hunger','Satt','🍓'],['joy','Freude','💗'],['energy','Energie','🌙'],['clean','Sauber','🫧'],['health','Gesundheit','💚']];
-let deviceId='';try{deviceId=localStorage.getItem(DEVICE)||crypto.randomUUID();localStorage.setItem(DEVICE,deviceId)}catch(_){deviceId=String(Math.random()).slice(2)}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(pet))}catch(_){}};
+let lastSaveAt=Date.now();
 const say=(msg)=>{$('speech').textContent=msg;$('speech').classList.remove('pop');void $('speech').offsetWidth;$('speech').classList.add('pop')};
 const time=(n)=>Math.max(0,Math.round(n));
 function ui(){
@@ -15,25 +16,50 @@ function ui(){
  $('careLevel').textContent='Fürsorge '+pet.care;
  $('stageBadge').textContent=['Wolkenbaby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
 }
-function persist(){pet=M.advance(pet,Date.now());save();ui()}
+function persist(force=false){pet=M.advance(pet,Date.now());if(force||Date.now()-lastSaveAt>300000){save();lastSaveAt=Date.now()}ui()}
 function act(kind){
  if(state.busy)return;
  const response=M.act(pet,kind,Date.now());pet=response.pet;
- if(!response.ok){say(response.reason);ui();return}
+ if(!response.ok){say(response.reason);sound.play('error');ui();return}
  state.fx=1.2;state.activity=kind;say(response.evolved?'Wow! Ich bin größer geworden! ✨':pet.lastAction);
+ sound.play(response.evolved?'evolve':kind);effects(response.evolved?'evolve':kind);
  if(kind==='minigame')state.fx=2;
  if(response.evolved)paint();
- save();ui();syncPush().catch(()=>{});
+ save();ui();
 }
 document.querySelectorAll('[data-care]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.care;if(k==='minigame'){startMinigame();return}act(k)}));
 $('rename').addEventListener('click',()=>{
  const name=window.prompt('Wie soll dein Wesen heißen?',pet.name);
- if(name===null)return;pet=M.rename(pet,name);save();ui();syncPush().catch(()=>{});say('Hallo! Ich bin '+pet.name+'!');
+ if(name===null)return;pet=M.rename(pet,name);save();ui();sound.play('cuddle');effects('cuddle');say('Hallo! Ich bin '+pet.name+'!');
 });
-$('changeColor').addEventListener('click',()=>{pet.color=(pet.color+1)%4;save();paint();say('Ein neues Lieblingsfell!')});
+$('changeColor').addEventListener('click',()=>{pet.color=(pet.color+1)%4;save();paint();sound.play('color');effects('color');say('Ein neues Lieblingsfell!')});
 $('infoBtn').addEventListener('click',()=>{$('help').hidden=!$('help').hidden});
 $('helpClose').addEventListener('click',()=>{$('help').hidden=true});
 $('installBtn').addEventListener('click',()=>{$('installInfo').hidden=!$('installInfo').hidden});
+function effects(kind){
+ const layer=$('fxLayer');if(!layer)return;
+ layer.replaceChildren();
+ const icons={feed:['🍓','✨','💗'],play:['⭐','✨','🎉'],wash:['🫧','💧','🫧'],sleep:['💤','🌙','✨'],
+ cuddle:['💖','💕','💗'],minigame:['⭐','✨','🌟'],evolve:['✨','🌟','💫','✨'],color:['🎨','✨']};
+ const arr=icons[kind]||icons.play,count=kind==='evolve'?24:kind==='wash'?18:12;
+ for(let i=0;i<count;i++){
+  const p=document.createElement('span');p.className='fx-particle';
+  p.textContent=arr[i%arr.length];p.style.left=(19+Math.random()*62)+'%';
+  p.style.top=(27+Math.random()*42)+'%';
+  p.style.setProperty('--dx',((Math.random()-.5)*180)+'px');
+  p.style.setProperty('--dy',(-55-Math.random()*155)+'px');
+  p.style.setProperty('--delay',(Math.random()*.24)+'s');
+  p.style.fontSize=(18+Math.random()*18)+'px';
+  layer.appendChild(p);
+ }
+ setTimeout(()=>layer.replaceChildren(),1750);
+}
+$('soundToggle').textContent=sound.isEnabled()?'🔊 Ton an':'🔇 Ton aus';
+$('soundToggle').addEventListener('click',()=>{
+ const on=sound.toggle();$('soundToggle').textContent=on?'🔊 Ton an':'🔇 Ton aus';
+ effects(on?'color':'sleep');
+});
+
 let minigameTimer=0,minigameScore=0;
 function miniDraw(){
  const area=$('miniArea');area.replaceChildren();
@@ -41,12 +67,12 @@ function miniDraw(){
  ball.textContent='⭐';ball.style.left=(10+Math.random()*74)+'%';ball.style.top=(10+Math.random()*64)+'%';
  ball.setAttribute('aria-label','Stern einsammeln');ball.addEventListener('click',()=>{
   if(!state.mini)return;minigameScore++;$('miniScore').textContent='Sterne: '+minigameScore+'/5';
-  if(minigameScore>=5){stopMinigame(true);return}miniDraw()
+  sound.play('star');effects('play');if(minigameScore>=5){stopMinigame(true);return}miniDraw()
  });area.appendChild(ball)
 }
 function stopMinigame(success){
  clearTimeout(minigameTimer);state.mini=0;$('miniOverlay').hidden=true;
- if(success)act('minigame');else say('Fast! Noch einmal versuchen?');
+ if(success)act('minigame');else{say('Fast! Noch einmal versuchen?');sound.play('error')}
 }
 function startMinigame(){
  if(state.mini)return;state.mini=1;minigameScore=0;
@@ -137,8 +163,10 @@ function make3D(){
   const mood=M.mood(pet);
   const energy=pet.energy/100;
   petGroup.position.y=.04+Math.sin(t*(mood==='Schläfrig'?1.2:2.25))*.06+(jumping?Math.abs(Math.sin(t*14))*Math.min(1,state.fx)*.33:0);
-  petGroup.rotation.z=Math.sin(t*2.2)*.04;
-  petGroup.scale.setScalar(.81+M.evolve(pet)*.05);
+  const pulse=state.fx>0?Math.min(1,state.fx):0;
+  petGroup.rotation.z=Math.sin(t*2.2)*.04+(state.activity==='play'?Math.sin(t*16)*.13*pulse:0);
+  petGroup.rotation.x=state.activity==='sleep'?Math.sin(t*1.2)*.13*pulse:state.activity==='cuddle'?-Math.sin(t*7)*.08*pulse:0;
+  petGroup.scale.setScalar((.81+M.evolve(pet)*.05)*(1+Math.sin(t*11)*.055*pulse));
   if(faceParts.length){const blink=(t%4.4)<.11;faceParts.forEach(o=>o.scale.y=blink?.04:.25)}
   if(state.activity==='sleep'&&state.fx>0)petGroup.rotation.z=.22;
   room.rotation.y=Math.sin(t*.12)*.025;
@@ -149,71 +177,86 @@ function make3D(){
  requestAnimationFrame(frame);
 }
 function paint(){if(state.paint)state.paint()}
-async function readConfig(){
- try{const r=await fetch('./push-config.json',{cache:'no-cache'});if(!r.ok)throw Error('no config');
- const config=await r.json();if(config.apiBase&&/^https:\/\//.test(config.apiBase)){
- state.pushBase=config.apiBase.replace(/\/+$/,'');
- const x=await fetch(state.pushBase+'/api/config',{cache:'no-store'});if(!x.ok)throw Error('server offline');
- const obj=await x.json();if(!obj.publicKey)throw Error('missing VAPID public key');state.pushKey=obj.publicKey;
- $('pushInfo').textContent='Push-Server erreichbar. Benachrichtigungen sind freiwillig.';
- }else $('pushInfo').textContent='Push-Server noch nicht verbunden. Spielstand und Erinnerung im geöffneten Spiel funktionieren trotzdem.';
- }catch(_){$('pushInfo').textContent='Push-Server nicht erreichbar. Hintergrundbenachrichtigungen sind noch nicht verfügbar.'}
- if(!('serviceWorker'in navigator)||!('PushManager'in window)||!('Notification'in window)){
- $('pushInfo').textContent+=' Dieser Browser unterstützt Web Push hier nicht.';$('pushToggle').disabled=true;return}
- try{const reg=await navigator.serviceWorker.ready;state.pushEnabled=!!(await reg.pushManager.getSubscription());pushLabel()}catch(_){}
+/* Local browser/PWA reminders: no push server, no background delivery guarantee. */
+let reminders={enabled:false,lastSent:{},day:-1,dayCount:0};
+try{const stored=JSON.parse(localStorage.getItem(REMIND)||'null');if(stored&&typeof stored==='object'){
+ reminders.enabled=stored.enabled===true;
+ reminders.lastSent=stored.lastSent&&typeof stored.lastSent==='object'?stored.lastSent:{};
+ reminders.day=Number(stored.day)||-1;reminders.dayCount=Number(stored.dayCount)||0;
+}}catch(_){}
+function saveReminders(){try{localStorage.setItem(REMIND,JSON.stringify(reminders))}catch(_){}}
+function remindersUi(message){
+ $('pushToggle').textContent=reminders.enabled?'🔔 Erinnerungen an':'🔕 Erinnerungen aus';
+ $('pushToggle').setAttribute('aria-pressed',String(reminders.enabled));
+ $('pushTest').disabled=!reminders.enabled;
+ $('pushInfo').textContent=message||(
+  reminders.enabled?'Aktiv: Mimori meldet sich bei dir, solange das Spiel oder die PWA läuft.':
+  'Ausgeschaltet. Aktiviere die Erinnerungen nur, wenn du sie möchtest.');
 }
-function pushLabel(){
- $('pushToggle').textContent=state.pushEnabled?'Benachrichtigungen ausschalten':'Benachrichtigungen einschalten';
- $('pushTest').disabled=!state.pushEnabled||!state.pushBase;
+function quietTime(d=new Date()){const h=d.getHours();return h>=22||h<8}
+function reminderCandidates(){
+ return ['hunger','joy','energy','clean','health'].filter(k=>pet[k]<=(k==='health'?25:35))
+ .sort((a,b)=>pet[a]-pet[b]);
 }
-const urlBytes=b64=>Uint8Array.from(atob(b64.replace(/-/g,'+').replace(/_/g,'/').padEnd(Math.ceil(b64.length/4)*4,'=')),c=>c.charCodeAt(0));
-async function api(path,body){
- if(!state.pushBase)throw Error('Kein Push-Server konfiguriert.');
- const r=await fetch(state.pushBase+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
- if(!r.ok)throw Error('Push-Dienst meldet Fehler '+r.status);return r.json()
-}
-function payload(extra={}){return {deviceId,pet:{name:pet.name,updated:pet.updated,hunger:pet.hunger,joy:pet.joy,energy:pet.energy,clean:pet.clean,health:pet.health},settings:{threshold:35,cooldownHours:5,quietStart:22,quietEnd:8,offsetMinutes:-new Date().getTimezoneOffset()},...extra}}
-async function syncPush(){
- if(!state.pushEnabled||!state.pushBase)return;
- try{await api('/api/state',payload())}catch(_){}
-}
-async function togglePush(){
- if(state.pushBusy)return;
- state.pushBusy=true;$('pushToggle').disabled=true;
+const reminderLines={
+ hunger:'hat Hunger und möchte etwas essen 🍓',joy:'möchte mit dir spielen 💗',
+ energy:'ist müde und braucht Schlaf 🌙',clean:'wünscht sich ein Bad 🫧',
+ health:'braucht deine Fürsorge 💚'
+};
+async function notify(title,body){
+ if(!('Notification'in window)||Notification.permission!=='granted')return false;
+ // Running page triggers this, not a remotely delivered push event.
  try{
- if(!('PushManager'in window)||!('Notification'in window))throw Error('Browser unterstützt Web Push nicht.');
- if(!state.pushEnabled&&(!state.pushBase||!state.pushKey))throw Error('Bitte zuerst den Push-Server einrichten. Die App allein kann keine Erinnerungen im Hintergrund verschicken.');
- // Start the permission request synchronously in the click gesture, before awaiting SW readiness.
- const permissionRequest=state.pushEnabled?null:Notification.requestPermission();
- const reg=await navigator.serviceWorker.ready;
- if(state.pushEnabled){
-  const subscription=await reg.pushManager.getSubscription();
-  let serverRemoved=true;
-  if(subscription&&state.pushBase){try{await api('/api/unsubscribe',payload({endpoint:subscription.endpoint}))}catch(_){serverRemoved=false}}
-  if(subscription)await subscription.unsubscribe();
-  state.pushEnabled=false;
-  $('pushInfo').textContent=serverRemoved?'Ausgeschaltet. Es werden keine weiteren Erinnerungen verschickt.':
-  'Im Browser abgemeldet. Der Server war nicht erreichbar; das abgemeldete Push-Abo kann keine weiteren Nachrichten empfangen.';
- }else{
-  const permission=await permissionRequest;
-  if(permission!=='granted')throw Error('Benachrichtigungsberechtigung nicht erteilt.');
-  let sub=await reg.pushManager.getSubscription();
-  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBytes(state.pushKey)});
-  await api('/api/subscribe',payload({subscription:sub.toJSON()}));
-  state.pushEnabled=true;$('pushInfo').textContent='Aktiv! Auch bei geschlossenem Spiel sind Erinnerungen möglich, solange der Push-Server läuft.';
- }
- }catch(e){$('pushInfo').textContent=String(e.message||e).slice(0,240)}
- finally{state.pushBusy=false;$('pushToggle').disabled=false;pushLabel()}
+  if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration){
+   const reg=await navigator.serviceWorker.getRegistration();
+   if(reg&&reg.showNotification){
+    await reg.showNotification(title,{body,tag:'mimori-reminder',icon:'./icon.svg',
+      data:{url:new URL('./',location.href).href}});
+    return true;
+   }
+  }
+  const n=new Notification(title,{body,icon:'./icon.svg',tag:'mimori-reminder'});
+  if(n&&n.onclick)n.onclick=()=>window.focus&&window.focus();
+  return true;
+ }catch(_){return false}
 }
-$('pushToggle').addEventListener('click',togglePush);
-$('pushTest').addEventListener('click',async()=>{
- try{await api('/api/test',payload());$('pushInfo').textContent='Testbenachrichtigung wurde an den Push-Dienst übergeben.'}
- catch(e){$('pushInfo').textContent='Test fehlgeschlagen: '+String(e.message||e)}
+async function checkReminders(force=false){
+ if(!reminders.enabled||!('Notification'in window)||Notification.permission!=='granted')return false;
+ const now=Date.now(),day=Math.floor(now/86400000);
+ if(day!==reminders.day){reminders.day=day;reminders.dayCount=0}
+ if(!force&&(quietTime()||reminders.dayCount>=3))return false;
+ const needs=force?['test']:reminderCandidates();
+ for(const key of needs){
+  if(!force&&now-(Number(reminders.lastSent[key])||0)<4*3600000)continue;
+  const message=key==='test'?'Die Erinnerung funktioniert! 🐣':pet.name+' '+reminderLines[key];
+  const delivered=await notify(pet.name+' braucht dich!',message);
+  if(delivered&&!force){reminders.lastSent[key]=now;reminders.dayCount++;saveReminders()}
+  return delivered;
+ }
+ return false;
+}
+$('pushToggle').addEventListener('click',async()=>{
+ if(reminders.enabled){reminders.enabled=false;saveReminders();remindersUi();sound.play('color');return}
+ if(!('Notification'in window)||!window.isSecureContext){
+  remindersUi('Dein Browser kann hier keine Benachrichtigungen anzeigen. Im sicheren Browserfenster erneut versuchen.');return;
+ }
+ let permission=Notification.permission;
+ if(permission!=='granted'){try{permission=await Notification.requestPermission()}catch(_){permission='denied'}}
+ if(permission==='granted'){reminders.enabled=true;saveReminders();remindersUi();sound.play('color')}
+ else remindersUi('Benachrichtigungen wurden im Browser nicht erlaubt. Du kannst die Berechtigung später in den Browser-Einstellungen ändern.');
 });
-window.addEventListener('focus',()=>{persist();syncPush().catch(()=>{})});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)persist();else save()});
+$('pushTest').addEventListener('click',async()=>{
+ const ok=await checkReminders(true);
+ remindersUi(ok?'Test-Erinnerung gesendet.':'Benachrichtigung konnte nicht angezeigt werden – prüfe die Browser-Berechtigung.');
+ if(ok)sound.play('reminder');
+});
+window.addEventListener('focus',()=>{persist();checkReminders().catch(()=>{})});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){persist();checkReminders().catch(()=>{})}else save()});
 window.addEventListener('pagehide',save);
-setInterval(()=>{if(document.hidden)return;persist();if(Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!')},60000);
-ui();make3D();readConfig();
-window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet)};
+setInterval(()=>{
+ persist();if(reminders.enabled)checkReminders().catch(()=>{});
+ if(!document.hidden&&Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!');
+},60000);
+ui();make3D();remindersUi();
+window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects};
 })();
