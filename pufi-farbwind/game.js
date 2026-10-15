@@ -22,7 +22,11 @@ function splash(x,y,color,n=12){for(let i=0;i<n;i++){const a=i*2.4;particles.pus
 function build(n){
 level=n;let segments=[],ledges=[],gems=[],enemies=[],pods=[],springs=[],switches=[],x=0;
 for(let i=0;i<5;i++){
-const w=(!i?560:500)+(i%2)*85, y=222-((i+n)%3===2?7:0);
+const shape=[[222,214,220,210,219],[223,202,225,207,223],[218,223,207,225,218],
+[224,221,216,225,218],[227,209,227,215,228],[224,215,229,205,226]][n];
+const widths=[[580,520,490,575,520],[540,520,545,570,535],[520,575,490,540,565],
+[545,515,540,535,565],[560,550,530,520,575],[550,540,570,545,555]][n];
+const w=widths[i],y=shape[i];
 segments.push({x,y,w,h:220});
 for(let j=0;j<4;j++){let cx=x+90+j*105;if(cx<x+w-40)gems.push({x:cx,y:y-39-j%2*24,kind:'drop',got:false})}
 if(i){for(let j=0;j<2;j++){let xx=x+75+j*150;ledges.push({x:xx,y:y-75-(j%2)*25,w:72,h:12,one:true});gems.push({x:xx+30,y:y-107-j%2*25,kind:j===0?'flower':'drop',got:false})}
@@ -37,8 +41,34 @@ for(let i=0;i<4;i++){const a=segments[i],b=segments[i+1],start=a.x+a.w;
 ledges.push({x:start-30,y:a.y-62,w:62,h:11,one:true},{x:b.x-34,y:b.y-78,w:66,h:11,one:true});
 for(let j=1;j<4;j++)gems.push({x:start+(b.x-start)*j/4,y:a.y-115-Math.sin(j*Math.PI/4)*11,kind:'drop',got:false})}
 gems.push({x:440,y:93,kind:'flower',got:false});
+const movers=[],traps=[],water=[],windZones=[];
+for(let i=0;i<segments.length;i++){
+const a=segments[i],ix=a.x,fy=a.y;
+if(n===0&&i>0){
+ledges.push({x:ix+240,y:fy-137,w:78,h:12,one:true});
+gems.push({x:ix+275,y:fy-170,kind:'flower',got:false});
+}
+if(n===1){
+if(i>0){const f=ledges.find(l=>l.x===ix+75);if(f){f.crumble=0;f.cooldown=0}}
+if(i>0)traps.push({type:'thorn',x:ix+330,y:fy-9,w:32,h:9});
+}
+if(n===2){
+if(i>0){ledges.push({x:ix+260,y:fy-148,w:98,h:13,one:true,mushroom:true});
+gems.push({x:ix+306,y:fy-177,kind:'flower',got:false})}
+if(i>1)traps.push({type:'spore',x:ix+365,y:fy-23,w:24,h:23,phase:i});
+}
+if(n===3){if(i>0)windZones.push({x:ix+220,y:40,w:180,h:fy-50,force:i%2?76:-64})}
+if(n===4){if(i>0){water.push({x:ix+235,y:fy-19,w:100,h:19});traps.push({type:'crystal',x:ix+423,y:fy-18,w:26,h:18})}}
+if(n===5){if(i>0)traps.push({type:'fire',x:ix+300,y:fy-22,w:24,h:22,phase:i*1.15});
+if(i>1)traps.push({type:'fire',x:ix+412,y:fy-22,w:24,h:22,phase:i*.83})}
+}
+if(n===3||n===4){for(let i=0;i<4;i++){
+const a=segments[i],b=segments[i+1],mid=a.x+a.w+(b.x-a.x-a.w)/2,px=mid-39,py=Math.min(a.y,b.y)-85;
+movers.push({x:px,y:py,w:80,h:11,baseX:px,baseY:py,oldX:px,oldY:py,phase:i*1.9,one:true});
+}}
+
 const goal=segments.at(-1).x+segments.at(-1).w-48,boss=LEVELS[n].boss?{x:goal-335,y:148,w:66,h:65,hp:LEVELS[n].boss,max:LEVELS[n].boss,phase:0,cool:1.9}:null;
-world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0,rescue:null};
+world={segments,ledges,gems,enemies,pods,springs,switches,bullets:[],hazards:[],goal,boss,score:0,flowers:0,rescue:null,movers,traps,water,windZones};
 hero={x:38,y:165,w:23,h:30,vx:0,vy:0,ground:false,coyote:0,jumpBuffer:0,hover:1.5,face:1,hp:3,inv:1,ammo:4,dive:false,grabCd:0,mounted:true,pet:{x:0,y:165},rideCd:0};
 hero.pet.x=hero.x-40;hero.pet.y=hero.y;cam=t=aim=0;frameN=0;particles=[];clearInputs();hud();
 }
@@ -203,18 +233,42 @@ function hurt(){if(mode!=='play'||hero.inv>0)return;
 if(hero.mounted){startTamoRescue();return}
 hero.hp--;hero.inv=1.5;hero.vy=-250;splash(hero.x,hero.y,'#ffa5c6',20);tone(155,.24);if(hero.hp<=0)gameover('Pufi hat seine Farbenergie verloren.')}
 function defeat(e){e.alive=false;hero.ammo=Math.min(6,hero.ammo+1);world.score+=80;splash(e.x,e.y,'#beffd3',15);tone(770)}
+function solidPlatforms(){return world.segments.concat(world.ledges.filter(f=>!f.cooldown),world.movers)}
 function tick(dt){
 if(mode!=='play')return;dt=Math.min(dt,.04);t+=dt;frameN++;const p=hero;
 p.inv=Math.max(0,p.inv-dt);p.grabCd=Math.max(0,p.grabCd-dt);p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);p.coyote=Math.max(0,p.coyote-dt);p.rideCd=Math.max(0,p.rideCd-dt);if(input.throw)aim+=dt;
-const dir=Number(input.right)-Number(input.left);p.vx+=(dir*(p.mounted?215:184)-p.vx)*Math.min(1,dt*(p.ground?17:10));if(dir)p.face=dir;
+const dir=Number(input.right)-Number(input.left);
+p.vx+=(dir*(p.mounted?215:184)-p.vx)*Math.min(1,dt*(p.ground?17:10));
+for(const zone of world.windZones)if(hit(p,zone))p.vx+=zone.force*dt*2.2;
+for(const m of world.movers){
+m.oldX=m.x;m.oldY=m.y;
+m.x=m.baseX+Math.sin(t*1.5+m.phase)*19;
+m.y=m.baseY+Math.sin(t*1.25+m.phase)*10;
+if(p.ground&&p.x+p.w>m.oldX+6&&p.x<m.oldX+m.w-6&&Math.abs(p.y+p.h-m.oldY)<4){p.x+=m.x-m.oldX;p.y+=m.y-m.oldY}
+}
+for(const f of world.ledges)if(f.crumble!==undefined){
+if(f.crumble>0){f.crumble-=dt;if(f.crumble<=0){f.crumble=0;f.cooldown=2.1}}
+else if(f.cooldown>0)f.cooldown=Math.max(0,f.cooldown-dt);
+}
+if(dir)p.face=dir;
 if(p.jumpBuffer>0&&(p.ground||p.coyote>0)){p.vy=-370;p.ground=false;p.coyote=0;p.jumpBuffer=0;p.hover=p.mounted?1.5:1.05;p.dive=false;tone(530);splash(p.x,p.y+p.h,'#fff1d4',6)}
 if(input.jump&&!input.down&&!p.ground&&p.vy>0&&p.hover>0){p.vy=Math.min(p.vy,74);p.hover-=dt}
 p.vy=Math.min(p.dive?565:420,p.vy+(p.dive?1140:790)*dt);p.x=Math.max(0,p.x+p.vx*dt);
 const previousBottom=p.y+p.h;p.y+=p.vy*dt;
 let onGround=false;
-for(const f of world.segments.concat(world.ledges)){if(p.x+p.w<=f.x+2||p.x>=f.x+f.w-2)continue;if(p.vy>=0&&previousBottom<=f.y+9&&p.y+p.h>=f.y){p.y=f.y-p.h;p.vy=0;onGround=true;if(p.dive){splash(p.x,f.y,'#fff1b7',12);tone(340)}p.dive=false}}
+for(const f of solidPlatforms()){if(p.x+p.w<=f.x+2||p.x>=f.x+f.w-2)continue;if(p.vy>=0&&previousBottom<=f.y+9&&p.y+p.h>=f.y){
+p.y=f.y-p.h;p.vy=0;onGround=true;
+if(f.crumble===0&&f.cooldown===0)f.crumble=.85;
+if(f.mushroom){p.vy=-445;p.hover=1.4;onGround=false;tone(880);splash(p.x,f.y,'#d5ffc2',18)}
+if(p.dive){splash(p.x,f.y,'#fff1b7',12);tone(340)}p.dive=false
+}}
 if(onGround){p.ground=true;p.coyote=.11;p.hover=p.mounted?1.5:1.05}else if(p.ground){p.ground=false;p.coyote=.1}
 for(const s of world.springs){if(p.vy>=0&&previousBottom<=s.y+10&&hit(p,s)){p.y=s.y-p.h;p.vy=-450;p.ground=false;p.hover=1;splash(s.x,s.y,'#ffdaf1');tone(880)}}
+for(const pool of world.water)if(hit(p,pool)){p.vx*=.9;if(p.vy>0)p.vy=Math.min(p.vy,65);if(input.jump&&p.jumpBuffer>0)p.vy=-260}
+for(const hazard of world.traps){
+const active=hazard.type!=='fire'||Math.sin(t*3.4+hazard.phase)>-.12;
+if(active&&hit(p,hazard))hurt();
+}
 for(const it of world.gems){if(it.got||it.kind==='secret'&&!world.switches.some(s=>s.on))continue;
 if(Math.hypot(it.x-(p.x+12),it.y-(p.y+13))<19){it.got=true;world.score+=it.kind==='drop'?10:it.kind==='flower'?250:400;if(it.kind==='flower')world.flowers++;splash(it.x,it.y,it.kind==='flower'?'#ffd6e6':'#fff2a6',9);tone(it.kind==='flower'?1100:820)}}
 for(const e of world.enemies){if(!e.alive)continue;e.phase+=dt;e.x+=e.v*dt;if(e.x<e.min||e.x>e.max){e.x=clamp(e.x,e.min,e.max);e.v=-e.v}e.y=e.base+(e.kind===0?0:Math.sin(e.phase*4)*(e.kind===1?12:19));
@@ -224,7 +278,7 @@ const boss=world.boss;
 if(boss&&boss.hp>0){boss.phase+=dt;boss.y=151+Math.sin(boss.phase*2.1)*18;boss.cool-=dt;if(boss.cool<=0&&Math.abs(p.x-boss.x)<520){boss.cool=2.05;world.hazards.push({x:boss.x+25,y:boss.y+25,w:13,h:13,vx:p.x<boss.x?-175:175,vy:-42,life:3})}
 if(hit(p,boss)){if(p.vy>65&&previousBottom<=boss.y+14){boss.hp--;p.vy=-315;p.dive=false;splash(boss.x,boss.y,'#ffd0df',25);tone(290)}else hurt()}}
 for(const b of world.bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.vy+=350*dt;b.life-=dt;
-for(const f of world.segments.concat(world.ledges))if(hit(b,f)){if(b.bounces>0){b.bounces--;b.y=f.y-b.h-1;b.vy=-Math.abs(b.vy)*.6}else b.life=0;break}
+for(const f of solidPlatforms())if(hit(b,f)){if(b.bounces>0){b.bounces--;b.y=f.y-b.h-1;b.vy=-Math.abs(b.vy)*.6}else b.life=0;break}
 for(const e of world.enemies)if(e.alive&&hit(b,e)){defeat(e);b.life=0;break}
 for(const sw of world.switches)if(!sw.on&&hit(b,sw)){sw.on=true;world.score+=120;b.life=0;splash(sw.x,sw.y,'#ffedab');tone(970)}
 if(boss&&boss.hp>0&&hit(b,boss)){boss.hp--;world.score+=130;b.life=0;splash(boss.x,boss.y,'#fdd5f2',23);tone(265)}
