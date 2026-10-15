@@ -1,48 +1,61 @@
 # Mimori – Dein 3D-Haustier
 
-Eigenständiges, kostenloses 3D-Haustierspiel für die EasyGames-Sammlung (Web, Android-Browser und Desktop).
-Das Spiel lädt Three.js aus dem bestehenden lokalen `vendor/three-r128.min.js` des EasyGames-Repositories und speichert seinen Fortschritt lokal im Browser.
+Eigenständiges, kostenloses 3D-Haustierspiel in der EasyGames-Sammlung, optimiert für Smartphone, PWA und PC.
 
-## Funktionen
+## Was ist enthalten?
 
-- 3D-Wesen mit drehbarer Ansicht, vier Fellfarben und vier Entwicklungsstufen.
-- Füttern, Spielen, Baden, Schlafen, Kuscheln und Sternfang-Minispiel (Vorräte gewinnen).
-- Hunger, Freude, Energie, Sauberkeit und Gesundheit verändern sich anhand echter vergangener Zeit.
-- Kein Pay-to-win, kein Nutzerkonto notwendig. Keine permanente Bestrafung durch Tod.
-- Als Web-App installierbar, offline spielbar, responsive für Smartphone/Tablet/PC.
-- **Web Push nur nach expliziter Zustimmung**; Push-Server wird getrennt betrieben.
+- 3D-Wesen mit vier Fellfarben, drehbarer Kamera und vier Entwicklungsstufen
+- Füttern, Spielen, Baden, Schlafen, Kuscheln, Sternfang-Minispiel
+- Synthesizer-Töne und niedliche kleine Soundmelodien für jede Pflegeaktion – ohne externe Audiodateien
+- Animationen, Partikel, Sterne, Herzchen und Blasen bei den Aktionen sowie Wachstumseffekt
+- Ein/Aus-Schalter für Sounds (auf dem jeweiligen Gerät gespeichert)
+- Bedürfnisse, Gesundheit und Entwicklung auf Basis der tatsächlich vergangenen Zeit
+- Offline-PWA mit lokalem Spielstand
+- **Google-Synchronisierung** über den bereits vorhandenen `../cloud/anmacha-cloud.js` und das Firebase/Firestore-Projekt `ricorewi-games-save`, analog zu Lumo und Taschi
+- **Freiwillige Erinnerungen**, solange Mimori im Browser oder als PWA läuft – ohne externen Push-Dienst
 
-## Benachrichtigungen richtig aktivieren
+## Google-Speicherung
 
-GitHub Pages kann allein **keine** zeitgesteuerten Pushnachrichten senden. Die GitHub-Version enthält daher bewusst
-keine vorgetäuschten Push-Alerts bei geschlossenem Browser. Die Benachrichtigungsschaltfläche funktioniert erst,
-wenn ein echter Push-Dienst konfiguriert ist.
+Unter **„☁ Google-Speicher & Spielstand“** kannst du dich mit dem gleichen Google-System anmelden wie
+in anderen EasyGames-Spielen. Der lokale Schlüssel `easygames.mimori.v1` wird über
+`data-game="mimori"` und `data-prefix="easygames.mimori.v1"` synchronisiert.
+Dein Spielstand bleibt auch ohne Login lokal erhalten. Google-Sync benötigt Internet und eine erfolgreiche
+Google-/Firebase-Anmeldung; in Android-WebViews kann die bereits vorhandene Geräte-Kopplung nötig sein.
+Die Einrichtung und Firestore-Regeln sind in `../cloud/README.md` beschrieben.
 
-1. Einen HTTPS-Push-Server nach `push-server/README.md` einrichten (zum Beispiel auf einem eigenen VPS).
-2. In **`mimori/push-config.json`** den tatsächlich erreichbaren Push-Endpunkt eintragen:
-   `{"apiBase":"https://push.example.de"}`.
-3. Die Spielversion aktualisieren/veröffentlichen. Im Spiel auf **Benachrichtigungen einschalten** tippen.
-   Der Browser fragt erst dann um Erlaubnis; mit **Test** kann eine Testnachricht ausgelöst werden.
-4. Ausschalten ist jederzeit im Spiel möglich; dabei werden der Servereintrag und das Browser-Push-Abo gelöscht.
+Beim ersten Cloud-Abgleich entscheidet das bestehende EasyGames-Sync-Skript anhand des Zeitstempels.
+Bei einem aktualisierten Cloud-Spielstand lädt es das Spiel zum Übernehmen neu. Eine ältere Kopie
+kann über den vorhandenen Menüpunkt wiederhergestellt werden. Dies ist eine bereits vorhandene
+Funktion des EasyGames-Cloudsystems und keine zweite, eigenständige Firebase-Konfiguration.
 
-Der Service Worker wird für Offline und für Nachrichten verwendet. Er stellt eingehende Push-Nachrichten über
-`showNotification` sichtbar dar und öffnet das Spiel beim Antippen. Im Browser wird der Zeitpunkt anhand
-der letzten Pflegewerte auf dem Server berechnet, daher kann auch bei geschlossenem Spiel gesendet werden.
+## Erinnerungen im Browser / in der PWA
 
-**Unterstützung:** Android/Chrome und Desktop-Browser mit Web Push und HTTPS; Apple verlangt für iOS/iPadOS
-eine zum Home-Bildschirm hinzugefügte Web-App (mindestens iOS 16.4). Das Spiel funktioniert auch ohne Push.
-Im eingebetteten iframe eines fremden Ursprungs ist das Anfordern der Berechtigung möglicherweise blockiert;
-in diesem Fall Spiel direkt als eigene Webseite öffnen.
+Unter **„🔔 Erinnerungen“** freiwillig einschalten; erst dann wird die Browser-Berechtigung angefragt.
+Bei mindestens einem besonders niedrigen Bedürfnis kann Mimori eine Benachrichtigung anzeigen.
+Standardmäßig gelten Ruhezeit **22:00–08:00**, maximal **drei Meldungen pro Tag**
+und mindestens **vier Stunden Abstand pro Bedürfnis**. Die Einstellung wird nur lokal gespeichert.
 
-## Spielen / Testen
+Dies sind **lokal ausgelöste Browser-/PWA-Benachrichtigungen**, kein Remote Web Push:
+Der JavaScript-Code muss laufen. Ist die Browserseite vollständig geschlossen oder pausiert
+das Betriebssystem die PWA, kann **keine** verlässliche Benachrichtigung erfolgen.
+In einer eingebetteten Spielansicht (iframe) kann der Browser die Berechtigungsanfrage blockieren;
+nutze dann die direkt geöffnete Spielseite. Auf manchen Smartphones erfordert das Anzeigen
+einer Notification eine installierte PWA. Ohne Berechtigung läuft das Spiel uneingeschränkt weiter.
 
-Öffne `mimori/index.html` über HTTPS und idealerweise `easygames` als öffentliche Webseite.
-`node tools/test-mimori.cjs` prüft Pflegewerte, Persistenz, Zeitfortschritt, Benachrichtigungsbedingungen
-und den Spielstart mit einer simulierten DOM/WebGL-Umgebung.
+Es werden **keine** Push-Endpunkte, Gerätekennungen, privaten Schlüssel oder Spielwerte
+an einen externen Mimori-Pushserver übertragen. Nur bei freiwilligem Google-Login werden
+die eigenen Spielstände über die bereits vorhandene Firebase/Firestore-Integration synchronisiert.
 
-WebGL-Grafik, echte Benachrichtigungszustellung und Berechtigungsdialoge müssen zusätzlich in realen Browsern
-getestet werden. Bis ein Push-Server installiert wurde, ist das Versenden echter Hintergrund-Pushs nicht aktiv.
+## Testen
 
-**Datenschutz:** Ohne Push bleiben Spieldaten ausschließlich im jeweiligen Browser. Nach Zustimmung erhält der
-Push-Server die Push-Endpunktinformationen und die minimalen Statuswerte. Es werden keine E-Mails,
-Kontakte oder Standortinformationen abgefragt. Das Abo ist pro Gerät und kann gelöscht werden.
+```bash
+node tools/test-mimori.cjs
+node tools/build-sync.js --check
+```
+
+Für einen echten Funktionstest zusätzlich am Android-Smartphone/Desktop im Browser:
+Sounds nach erster Nutzerinteraktion, Pflegeeffekte, 3D-Animation, PWA-Offline,
+Google-Anmeldung/Cloud-Speichern/Wiederherstellen und Benachrichtigungs-Berechtigung prüfen.
+
+Die Testdatei simuliert das DOM und den 3D-Renderer. Sie beweist **keine** erfolgreiche
+externe Google-Anmeldung oder Browser-/Betriebssystembenachrichtigung.
