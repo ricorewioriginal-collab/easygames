@@ -130,7 +130,7 @@ const context={window:win,document,localStorage,navigator:{serviceWorker},Notifi
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../mimori/game.js'),'utf8'),context);
 assert(win.MimoriDebug,'3D scene failed to start');
-assert.equal(win.MimoriDebug.get().hunger,82);
+assert(Math.abs(win.MimoriDebug.get().hunger-82)<.03,'Initial hunger should be approximately 82 after elapsed milliseconds');
 win.MimoriDebug.act('feed');
 assert.equal(win.MimoriDebug.get().inventory.berry,6);
 assert(C.playCalls.includes('feed'));
