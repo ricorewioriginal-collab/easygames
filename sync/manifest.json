@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c2e133ee32a0",
- "generated": "2026-10-15T21:26:11+02:00",
- "commit": "db59df87c20a227eb033a6ccd97fb0eab7cb1b16",
+ "version": "0b7d434e7576",
+ "generated": "2026-10-15T21:47:44+02:00",
+ "commit": "9276d68fa31c022af14df5d4a1eaa61e5cd52fe2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4614,7 +4614,7 @@
   {
    "p": "games.js",
    "s": 18395,
-   "h": "37a32edf85756715fc534496e82d4333eba48fd94aa9a5764be7a69545985127"
+   "h": "4c32ff4026a09f7d62d2669ace155f6b83535e37487cf0034c34b47f64e9edbc"
   },
   {
    "p": "gay-life/index.html",
@@ -4779,12 +4779,17 @@
   {
    "p": "kiko-sterneninseln/index.html",
    "s": 1897,
-   "h": "ab1224917e3f4b76b5792f2ac1c7dc90037cad25b57479e4c84f52f150754cb8"
+   "h": "73e3ae19eb66d6d5922fe60c94bc256a05f7238b625beb14db6ce23c8b260144"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
    "s": 1209,
    "h": "6249eda8702f5c39213549ecf63681e4e619a450febd25716b540bef475e04c1"
+  },
+  {
+   "p": "kiko-sterneninseln/src/boss.js",
+   "s": 1781,
+   "h": "19a481074a280d2f510d9b5c7ea7e8b9daf667887ecaaf8875b5e9d02be4c646"
   },
   {
    "p": "kiko-sterneninseln/src/characters.js",
@@ -4803,18 +4808,18 @@
   },
   {
    "p": "kiko-sterneninseln/src/game.js",
-   "s": 12769,
-   "h": "801e11a9e8749c42f145f131fdc56e6ec3a9de440d51df96bd2f29949f7e71cc"
+   "s": 12644,
+   "h": "69112856c90b7542b1d956df7d0c81732a2049ab1b76c60bddbb420ceed5e2e4"
   },
   {
    "p": "kiko-sterneninseln/src/guide.js",
-   "s": 7225,
-   "h": "508c40e93211f71c79b5794b746322f9deb1bb71d7c5e151b35d56097107aaf2"
+   "s": 7904,
+   "h": "19975cb3204965405eb43115347e498480420d6488324c925f34978c42f91239"
   },
   {
    "p": "kiko-sterneninseln/src/i18n.js",
-   "s": 8182,
-   "h": "31e6993d2ecae87893033bbd99af9d7f77170a13f94840e2590e0fb9dc002093"
+   "s": 8477,
+   "h": "c0003d3bdc7662af03a8ef5528edbc8bf705ab9935a43bd4bef94e6be58583f6"
   },
   {
    "p": "kiko-sterneninseln/src/input.js",
@@ -4824,7 +4829,7 @@
   {
    "p": "kiko-sterneninseln/src/main.js",
    "s": 303,
-   "h": "22d65f9e9cc16f353c888b41ee17f9df83c4fb040c5e73602175741b506b6ff6"
+   "h": "ad348a797b7462875e67bdbdae5bce8f4a8b8d3ce426ba3d2a192a9a05f7dfa6"
   },
   {
    "p": "kiko-sterneninseln/src/mechanics.js",
@@ -4833,23 +4838,23 @@
   },
   {
    "p": "kiko-sterneninseln/src/objectives.js",
-   "s": 3900,
-   "h": "d2a673aea08889ced48c8cc72455d4c803d80ac2d8fbe9f9899f465ee8aadeb0"
+   "s": 4736,
+   "h": "488cceb202be2d0afdc110205dfc075549da069fafbde141a9e8cada55aea381"
   },
   {
    "p": "kiko-sterneninseln/src/physics.js",
    "s": 4570,
-   "h": "193056691a5a82e4f02de5c4ab7ee8701fe6f2cf3fae540976219c23c3bdbed5"
+   "h": "ff29091d97b1b06d32b0804db51ef2be3439b62707c7de1d04c57b3a256876b9"
   },
   {
    "p": "kiko-sterneninseln/src/save.js",
    "s": 3465,
-   "h": "1dbbf069ed60875dab82ea5d748e869ba54ecc31fdec914257514df8ec3540c6"
+   "h": "df537fdd365b259b11493899cd8393905fe4481399ec2fc5a205205224863215"
   },
   {
    "p": "kiko-sterneninseln/src/scene.js",
-   "s": 26888,
-   "h": "ca292ab8ac1ba241480c210a4641dda912d362dc81a20c9a16fe0c3f18010466"
+   "s": 27226,
+   "h": "7d4b12993870489279143c4f9f19b543d2ab54912ebffe1c92b700594c076531"
   },
   {
    "p": "kiko-sterneninseln/src/terrain.js",
@@ -4859,7 +4864,7 @@
   {
    "p": "kiko-sterneninseln/src/ui.js",
    "s": 13763,
-   "h": "5fd3034b1b9c5609076692da7f4111853f3df57f22ad4e61b6bee8942f2ff37c"
+   "h": "de661dfa35e822cf59a9e1d14647bcfafdb735250b413d0d0700f6ec7a767d41"
   },
   {
    "p": "kiko-sterneninseln/style.css",
@@ -5524,7 +5529,7 @@
   {
    "p": "sync/catalog.json",
    "s": 74390,
-   "h": "eee9e3bf2bc0f3ef9993e729665cde7280e3bb08d37e7d4f6dfe5d95fec57162"
+   "h": "79436b3ba353d05a1cb8225c33cf8c48a4572ea4831e7d6578483ebf157b4f88"
   },
   {
    "p": "taschi/card.svg",
