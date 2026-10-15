@@ -7,16 +7,27 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const rand = (a, b) => a + Math.random() * (b - a);
   const names = [['Nova', 'Keks', 'Pixel'], ['Funk', 'Momo', 'Komet']];
+  const worlds = {
+    island: { name: 'Smaragdinsel', sky: 0xa9d9df, water: 0x3a88a0, base: 0x65543b, ground: [.285, .36, .39], low: [.105, .43, .49], high: [.25, .36, .43], trunk: 0x745340, leaf: 0x4b986d, rock: 0x8a9a87 },
+    desert: { name: 'Staub-Canyon', sky: 0xf7ae82, water: 0xa15d47, base: 0x72513a, ground: [.09, .62, .57], low: [.075, .56, .5], high: [.06, .53, .47], trunk: 0x866646, leaf: 0x668361, rock: 0xb07551 },
+    snow: { name: 'Frostfestung', sky: 0x9ac6db, water: 0x53869e, base: 0x617d8a, ground: [.55, .26, .77], low: [.54, .32, .62], high: [.57, .3, .87], trunk: 0x596575, leaf: 0xb7d8d6, rock: 0x8fa9b4 },
+    volcano: { name: 'Lava-Krater', sky: 0x573f54, water: 0xef6139, base: 0x352c33, ground: [.75, .16, .31], low: [.035, .75, .43], high: [.74, .2, .38], trunk: 0x514047, leaf: 0xa2694d, rock: 0x615059 }
+  };
   const weapons = {
     rocket: { radius: 4.1, damage: 48, ammo: Infinity },
     grenade: { radius: 4.7, damage: 55, ammo: 3 },
     cluster: { radius: 2.6, damage: 26, ammo: 2 },
     airstrike: { radius: 3.4, damage: 34, ammo: 2 },
-    teleport: { radius: 0, damage: 0, ammo: 2 }
+    teleport: { radius: 0, damage: 0, ammo: 2 },
+    homing: { radius: 3.1, damage: 42, ammo: 2 },
+    dynamite: { radius: 5.5, damage: 72, ammo: 2 },
+    drill: { radius: 3.3, damage: 37, ammo: 2 },
+    shotgun: { radius: 1.8, damage: 32, ammo: 3 }
   };
-  let scene, camera, renderer, terrain, aimLine, selection, impactRing, clock, raycaster;
+  const weaponLabels = { rocket: ['🚀', 'Rakete'], grenade: ['💣', 'Granate'], cluster: ['✨', 'Streubombe'], airstrike: ['✈️', 'Luftschlag'], teleport: ['🌀', 'Teleport'], homing: ['🎯', 'Lenkrakete'], dynamite: ['🧨', 'Dynamit'], drill: ['🌀', 'Bohrer'], shotgun: ['🔫', 'Schrotflinte'] };
+  let scene, camera, renderer, terrain, aimLine, selection, impactRing, clock, raycaster, water, base;
   let S = null, active = false, paused = false, busy = false, projectile = null, particles = [], botTimeout = 0;
-  let bodies = [], deco = [], cameraAz = .72, camDistance = 26, cameraFocus = null, stickX = 0, stickY = 0, charging = false;
+  let bodies = [], deco = [], coverMeshes = [], cameraAz = .72, camDistance = 26, cameraFocus = null, overview = false, stickX = 0, stickY = 0, charging = false;
   const pressed = new Set();
   let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0, matchId = 0, shake = 0, audioContext = null;
   const materials = {};
@@ -43,6 +54,13 @@
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || 'null');
       if (!s || s.version !== 1 || !Array.isArray(s.heights) || s.heights.length !== (GRID + 1) ** 2 || !Array.isArray(s.units) || s.units.length !== 6) return null;
+      s.world = worlds[s.world] ? s.world : 'island';
+      if (!Array.isArray(s.covers)) s.covers = [];
+      for (const u of s.units) {
+        u.ammo ||= {};
+        for (const [id, w] of Object.entries(weapons)) if (id !== 'rocket' && u.ammo[id] === undefined) u.ammo[id] = w.ammo;
+      }
+      if (!weapons[s.weapon]) s.weapon = 'rocket';
       return s;
     } catch (_) { return null; }
   }
@@ -55,12 +73,16 @@
     const c = Math.cos(x * .15 - z * .47 + seed * .3) * .65;
     return a + b + c;
   }
-  function generatedHeights(seed) {
+  function generatedHeights(seed, world = 'island') {
     const h = [];
     for (let z = 0; z <= GRID; z++) for (let x = 0; x <= GRID; x++) {
       const wx = x - GRID / 2, wz = z - GRID / 2;
       const edge = Math.max(Math.abs(wx), Math.abs(wz));
-      h.push(clamp(4.2 + noise(wx, wz, seed) * .78 - Math.max(0, edge - 14) * .55, .25, 7.5));
+      let y = 4.2 + noise(wx, wz, seed) * (world === 'desert' ? 1.2 : world === 'snow' ? .95 : .78) - Math.max(0, edge - 14) * .55;
+      if (world === 'desert') y += Math.sin(wx * .23 + seed) * .7;
+      if (world === 'snow') y += Math.max(0, 7 - Math.hypot(wx + 5, wz - 3)) * .18;
+      if (world === 'volcano') y += Math.sin(Math.hypot(wx, wz) * .65) * .36 + Math.max(0, 8 - Math.hypot(wx, wz)) * .13;
+      h.push(clamp(y, .25, 8.2));
     }
     return h;
   }
@@ -74,15 +96,22 @@
       (at(ix, iz + 1) * (1 - tx) + at(ix + 1, iz + 1) * tx) * tz;
   }
   function newState() {
-    const seed = rand(0, 1000), opts = { opponent: $('opponent').value, difficulty: $('difficulty').value };
+    const seed = rand(0, 1000), world = worlds[$('world').value] ? $('world').value : 'island';
+    const opts = { opponent: $('opponent').value, difficulty: $('difficulty').value };
     const units = [];
     const slots = [[[-12, -11], [-14, 1], [-10, 11]], [[12, -11], [14, 1], [10, 11]]];
     for (let team = 0; team < 2; team++) for (let n = 0; n < 3; n++) {
       const p = slots[team][n];
       units.push({ team, name: names[team][n], x: p[0] + rand(-1, 1), z: p[1] + rand(-1, 1), hp: 100,
-        ammo: { grenade: 3, cluster: 2, airstrike: 2, teleport: 2 } });
+        ammo: Object.fromEntries(Object.entries(weapons).filter(([id]) => id !== 'rocket').map(([id, w]) => [id, w.ammo])) });
     }
-    return { version: 1, seed, heights: generatedHeights(seed), units, team: 0, current: 0, lastByTeam: [0, 2], round: 1,
+    const covers = [];
+    for (let i = 0; i < 13; i++) {
+      const x = rand(-15, 15), z = rand(-15, 15);
+      if (units.some(u => Math.hypot(u.x - x, u.z - z) < 2.9) || covers.some(c => Math.hypot(c.x - x, c.z - z) < 3)) continue;
+      covers.push({ x, z, hp: world === 'snow' ? 75 : 90, r: 1.15 + rand(0, .35) });
+    }
+    return { version: 1, seed, world, covers, heights: generatedHeights(seed, world), units, team: 0, current: 0, lastByTeam: [0, 2], round: 1,
       wind: rand(-2, 2), seconds: TURN_SECONDS, opts, yaw: 90, angle: 45, power: 70, weapon: 'rocket', winner: null };
   }
   function init3D() {
@@ -104,9 +133,9 @@
     Object.assign(sun.shadow.camera, { left: -35, right: 35, top: 35, bottom: -35, near: 1, far: 100 });
     sun.shadow.camera.updateProjectionMatrix();
     scene.add(sun);
-    const water = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshPhongMaterial({ color: 0x3a88a0, shininess: 95, transparent: true, opacity: .78 }));
+    water = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshPhongMaterial({ color: 0x3a88a0, shininess: 95, transparent: true, opacity: .78 }));
     water.rotation.x = -Math.PI / 2; water.position.y = .15; scene.add(water);
-    const base = new THREE.Mesh(new THREE.BoxGeometry(SIZE, 1.5, SIZE), new THREE.MeshLambertMaterial({ color: 0x65543b }));
+    base = new THREE.Mesh(new THREE.BoxGeometry(SIZE, 1.5, SIZE), new THREE.MeshLambertMaterial({ color: 0x65543b }));
     base.position.y = -.75; base.receiveShadow = true; scene.add(base);
     materials.terrain = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
     materials.red = new THREE.MeshStandardMaterial({ color: 0xff8777, roughness: .68 });
@@ -122,29 +151,62 @@
     impactRing = new THREE.Mesh(new THREE.RingGeometry(.5, .65, 32), new THREE.MeshBasicMaterial({ color: 0xffd375, side: THREE.DoubleSide, transparent: true, opacity: .9 }));
     impactRing.rotation.x = -Math.PI / 2; scene.add(impactRing);
     clock = new THREE.Clock();
-    addDecor();
     addInput();
     resize(); window.addEventListener('resize', resize);
     requestAnimationFrame(frame);
   }
   function addDecor() {
+    const world = S.world, palette = worlds[world];
+    for (const item of deco) scene.remove(item);
+    deco = [];
     const rng = n => { const v = Math.sin(n * 124.287 + 31.33) * 43758.54; return v - Math.floor(v); };
-    for (let i = 0; i < 23; i++) {
+    materials.trunk.color.setHex(palette.trunk); materials.leaf.color.setHex(palette.leaf);
+    for (let i = 0; i < (world === 'desert' ? 16 : world === 'volcano' ? 12 : 23); i++) {
       const x = (rng(i + 1) - .5) * 36, z = (rng(i + 81) - .5) * 36;
       if (Math.abs(x) > 8 && Math.abs(z) < 13) continue;
       const group = new THREE.Group();
-      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.12, .17, 1.1, 6), materials.trunk);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(world === 'desert' ? .2 : .12, .17, 1.1, 6), materials.trunk);
       trunk.position.y = .55; trunk.castShadow = true; group.add(trunk);
-      const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(.75 + rng(i + 65) * .4, 0), materials.leaf);
-      crown.position.y = 1.5; crown.castShadow = true; group.add(crown);
+      if (world === 'desert') {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(.7, .14, .16), materials.leaf);
+        arm.position.set(.31, .76, 0); group.add(arm);
+        trunk.material = materials.leaf;
+      } else if (world === 'volcano') {
+        const crystal = new THREE.Mesh(new THREE.ConeGeometry(.43, 1.35, 5), materials.leaf);
+        crystal.position.y = 1.32; crystal.castShadow = true; group.add(crystal);
+      } else {
+        const crown = new THREE.Mesh(world === 'snow' ? new THREE.ConeGeometry(.75, 1.55, 6) : new THREE.IcosahedronGeometry(.75 + rng(i + 65) * .4, 0), materials.leaf);
+        crown.position.y = world === 'snow' ? 1.43 : 1.5; crown.castShadow = true; group.add(crown);
+      }
       group.position.set(x, 0, z); scene.add(group); deco.push(group);
     }
-    const rockMat = new THREE.MeshLambertMaterial({ color: 0x8a9a87, flatShading: true });
+    const rockMat = new THREE.MeshLambertMaterial({ color: palette.rock, flatShading: true });
     for (let i = 0; i < 20; i++) {
       const x = (rng(i + 215) - .5) * 36, z = (rng(i + 514) - .5) * 36;
       const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(.25 + rng(i + 415) * .4, 0), rockMat);
       rock.scale.y = .62; rock.rotation.y = rng(i + 65) * Math.PI; rock.position.set(x, 0, z); rock.castShadow = true; scene.add(rock); deco.push(rock);
     }
+  }
+  function rebuildCovers() {
+    for (const mesh of coverMeshes) { scene.remove(mesh); mesh.traverse(m => { if (m.geometry) m.geometry.dispose(); if (m.material) m.material.dispose(); }); }
+    coverMeshes = [];
+    const color = worlds[S.world].rock;
+    for (const c of S.covers) {
+      const group = new THREE.Group();
+      const block = new THREE.Mesh(S.world === 'desert' ? new THREE.CylinderGeometry(c.r * .9, c.r, 2.2, 7) : new THREE.DodecahedronGeometry(c.r, 0),
+        new THREE.MeshLambertMaterial({ color, flatShading: true }));
+      block.scale.y = S.world === 'desert' ? 1 : 1.3;
+      block.castShadow = true; block.receiveShadow = true; group.add(block);
+      group.position.set(c.x, height(c.x, c.z) + (S.world === 'desert' ? 1.1 : c.r * .85), c.z);
+      scene.add(group); coverMeshes.push(group);
+    }
+  }
+  function applyWorld() {
+    const palette = worlds[S.world];
+    scene.background.setHex(palette.sky); scene.fog.color.setHex(palette.sky);
+    water.material.color.setHex(palette.water); water.material.opacity = S.world === 'volcano' ? .97 : .78;
+    base.material.color.setHex(palette.base);
+    addDecor();
   }
   function meshTerrain() {
     if (terrain) { scene.remove(terrain); terrain.geometry.dispose(); }
@@ -153,8 +215,9 @@
     for (let z = 0; z <= GRID; z++) for (let x = 0; x <= GRID; x++) {
       const y = S.heights[z * (GRID + 1) + x];
       pos.push(x - SIZE / 2, y, z - SIZE / 2);
-      const hue = y < 1.7 ? .105 : y > 6 ? .25 : .285;
-      color.setHSL(hue, y < 1.7 ? .43 : .36, y < 1.7 ? .49 : .39 + y * .007);
+      const palette = worlds[S.world] || worlds.island;
+      const shade = y < 1.7 ? palette.low : y > 6 ? palette.high : palette.ground;
+      color.setHSL(shade[0], shade[1], shade[2] + (y > 1.7 && y < 6 ? y * .007 : 0));
       col.push(color.r, color.g, color.b);
     }
     for (let z = 0; z < GRID; z++) for (let x = 0; x < GRID; x++) {
@@ -167,6 +230,10 @@
     g.setIndex(idx); g.computeVertexNormals();
     terrain = new THREE.Mesh(g, materials.terrain); terrain.castShadow = true; terrain.receiveShadow = true; scene.add(terrain);
     for (const tree of deco) tree.position.y = height(tree.position.x, tree.position.z);
+    for (let i = 0; i < coverMeshes.length; i++) {
+      const c = S.covers[i], mesh = coverMeshes[i];
+      if (c && mesh) mesh.position.y = height(c.x, c.z) + (S.world === 'desert' ? 1.1 : c.r * .85);
+    }
   }
   function makeUnit(u) {
     const g = new THREE.Group();
@@ -235,15 +302,35 @@
   }
   function alive(team) { return S.units.some(u => u.team === team && u.hp > 0); }
   function teamHealth(team) { return S.units.filter(u => u.team === team).reduce((n, u) => n + Math.max(0, u.hp), 0); }
+  function sheltered(u, x, y, z) {
+    const ux = u.x - x, uz = u.z - z, len = Math.hypot(ux, uz);
+    if (len < .1) return false;
+    return S.covers.some(c => {
+      if (c.hp <= 0) return false;
+      const t = clamp(((c.x - x) * ux + (c.z - z) * uz) / (len * len), 0, 1);
+      return t > .12 && t < .92 && Math.hypot(c.x - x - ux * t, c.z - z - uz * t) < c.r * .8 && y < height(c.x, c.z) + 2.6;
+    });
+  }
   function damageBlast(x, y, z, radius, maxDamage) {
     for (const u of S.units) {
       if (u.hp <= 0) continue;
       const d = Math.hypot(u.x - x, u.z - z, height(u.x, u.z) + .7 - y);
       if (d < radius + .6) {
-        let amount = Math.round(maxDamage * (1 - d / (radius + .6)));
+        let amount = Math.round(maxDamage * (1 - d / (radius + .6)) * (sheltered(u, x, y, z) ? .25 : 1));
         if (amount < 1) amount = 1;
         u.hp = Math.max(0, u.hp - amount);
       }
+    }
+  }
+  function damageCovers(x, z, radius, damage) {
+    let changed = false;
+    for (const c of S.covers) {
+      const d = Math.hypot(c.x - x, c.z - z);
+      if (d < radius + c.r) { c.hp -= Math.ceil(damage * (1 - d / (radius + c.r))); if (c.hp <= 0) changed = true; }
+    }
+    if (changed) {
+      S.covers = S.covers.filter(c => c.hp > 0);
+      rebuildCovers(); announce('Deckung zerstört!');
     }
   }
   function burst(x, y, z, color = 0xffce76) {
@@ -263,6 +350,7 @@
     sound(110, .3, 'sawtooth', .045);
     if (navigator.vibrate) navigator.vibrate(70);
     damageBlast(x, y, z, w.radius * factor, w.damage * factor);
+    damageCovers(x, z, w.radius * factor, w.damage * factor);
     crater(x, z, w.radius * .75 * factor, w.radius * .75 * factor);
     // Stürze durch frische Krater richten zusätzlichen Schaden an.
     for (const u of S.units) {
@@ -274,9 +362,9 @@
   }
   function projectileMesh(kind) {
     const group = new THREE.Group(), steel = new THREE.MeshStandardMaterial({ color: kind === 'grenade' ? 0x4a5961 : 0xf1eee0, metalness: .35, roughness: .4 });
-    if (kind === 'rocket') {
+    if (['rocket', 'homing', 'drill'].includes(kind)) {
       const tube = new THREE.Mesh(new THREE.CylinderGeometry(.17, .22, .75, 10), steel);
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(.17, .28, 10), new THREE.MeshStandardMaterial({ color: 0xff755f }));
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(.17, .28, 10), new THREE.MeshStandardMaterial({ color: kind === 'homing' ? 0x76e4e3 : kind === 'drill' ? 0xcabbee : 0xff755f }));
       tip.position.y = .5; group.add(tube, tip);
       for (let i = 0; i < 4; i++) {
         const fin = new THREE.Mesh(new THREE.BoxGeometry(.07, .25, .33), new THREE.MeshLambertMaterial({ color: 0xdf8672 }));
@@ -302,7 +390,7 @@
     projectile = { kind, pos, vel: d.multiplyScalar(speed), mesh: projectileMesh(kind), age: 0, bounces: 0, trail: 0 };
     projectile.mesh.position.copy(pos); flightTime = 0;
     sound(kind === 'grenade' ? 290 : 550, .18, 'sawtooth', .025);
-    announce(kind === 'grenade' ? 'Granate fliegt!' : 'Feuer frei!');
+    announce(kind === 'grenade' ? 'Granate fliegt!' : kind === 'homing' ? 'Lenkrakete gestartet!' : 'Feuer frei!');
   }
   function removeProjectile() {
     if (!projectile) return;
@@ -372,6 +460,36 @@
       }, (i + 1) * 420);
       setTimeout(() => { if (thisMatch === matchId) finishAction(); }, 1500); return;
     }
+    if (kind === 'dynamite') {
+      const d = dir(S.yaw, 0), x = clamp(u.x + d.x * 1.5, -18.5, 18.5), z = clamp(u.z + d.z * 1.5, -18.5, 18.5);
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, .65, 8), new THREE.MeshStandardMaterial({ color: 0xd44944 }));
+      stick.position.set(x, height(x, z) + .33, z); scene.add(stick); announce('Dynamit! Drei Sekunden …');
+      const detonate = () => {
+        if (thisMatch !== matchId || !active) { scene.remove(stick); stick.geometry.dispose(); stick.material.dispose(); return; }
+        if (paused) { setTimeout(detonate, 200); return; }
+        scene.remove(stick); stick.geometry.dispose(); stick.material.dispose();
+        explode(x, height(x, z) + .25, z, 'dynamite'); finishAction();
+      };
+      setTimeout(detonate, 3000); return;
+    }
+    if (kind === 'shotgun') {
+      const target = impactRing.position, vx = target.x - u.x, vz = target.z - u.z, length = Math.max(.01, Math.hypot(vx, vz));
+      let distance = Math.min(length, 20);
+      for (const c of S.covers) {
+        const t = ((c.x - u.x) * vx + (c.z - u.z) * vz) / (length * length);
+        const miss = Math.hypot(c.x - u.x - vx * t, c.z - u.z - vz * t);
+        if (t > 0 && t < 1 && miss < c.r) distance = Math.min(distance, Math.max(1, length * t - c.r));
+      }
+      const x = clamp(u.x + vx / length * distance, -19, 19), z = clamp(u.z + vz / length * distance, -19, 19);
+      announce('Doppelschuss!'); sound(180, .15, 'sawtooth', .05);
+      explode(x, height(x, z) + .7, z, 'shotgun');
+      const secondShot = () => {
+        if (thisMatch !== matchId || !active) return;
+        if (paused) { setTimeout(secondShot, 250); return; }
+        explode(x + .5, height(x + .5, z) + .7, z, 'shotgun'); finishAction();
+      };
+      setTimeout(secondShot, 380); return;
+    }
     launch(kind);
   }
   function move(dx, dz) {
@@ -379,6 +497,7 @@
     const u = S.units[S.current], x = clamp(u.x + dx * .34, -18.4, 18.4), z = clamp(u.z + dz * .34, -18.4, 18.4);
     if (Math.abs(height(x, z) - height(u.x, u.z)) > 1.15) return;
     if (S.units.some(v => v !== u && v.hp > 0 && Math.hypot(v.x - x, v.z - z) < 1.2)) return;
+    if (S.covers.some(c => Math.hypot(c.x - x, c.z - z) < c.r + .55)) return;
     u.x = x; u.z = z; updateBodies(); updateAim();
     if (Date.now() - lastMoveSave > 1200) { lastMoveSave = Date.now(); save(); }
   }
@@ -387,6 +506,7 @@
     const u = S.units[S.current], d = dir(S.yaw, 0);
     const x = clamp(u.x + d.x * 1.6, -18.4, 18.4), z = clamp(u.z + d.z * 1.6, -18.4, 18.4);
     if (S.units.some(v => v !== u && v.hp > 0 && Math.hypot(v.x - x, v.z - z) < 1.2)) return;
+    if (S.covers.some(c => Math.hypot(c.x - x, c.z - z) < c.r + .55)) return;
     const drop = height(u.x, u.z) - height(x, z);
     u.x = x; u.z = z;
     sound(420, .11, 'triangle', .025);
@@ -403,13 +523,13 @@
       const u = S.units[S.current], targets = S.units.filter(v => v.team === 0 && v.hp > 0);
       if (!targets.length) return endMatch(1);
       targets.sort((a, b) => Math.hypot(a.x - u.x, a.z - u.z) - Math.hypot(b.x - u.x, b.z - u.z));
-      const target = targets[0], dx = target.x - u.x, dz = target.z - u.z, dist = Math.hypot(dx, dz);
-      const err = S.opts.difficulty === 'hard' ? 1 : S.opts.difficulty === 'easy' ? 5 : 2.8;
-      S.yaw = Math.atan2(dx, -dz) * 180 / Math.PI + rand(-err * 2, err * 2);
-      S.angle = clamp(30 + dist * .36 + rand(-err, err), 20, 65);
-      const range = dist * 13 / Math.max(.2, Math.sin(2 * S.angle * Math.PI / 180));
-      S.power = clamp((Math.sqrt(range) - 10) / .245 + rand(-err * 2, err * 2), 25, 100);
-      S.weapon = u.ammo.cluster > 0 && dist < 13 && Math.random() < .3 ? 'cluster' : 'rocket';
+      const target = targets[0], dist = Math.hypot(target.x - u.x, target.z - u.z);
+      const best = solveAim(target.x, target.z);
+      const err = S.opts.difficulty === 'hard' ? .3 : S.opts.difficulty === 'easy' ? 2.2 : .9;
+      S.yaw = clamp(best.yaw + rand(-err, err), -180, 180);
+      S.angle = clamp(best.angle + rand(-err, err), 10, 80);
+      S.power = clamp(best.power + rand(-err * 1.5, err * 1.5), 25, 100);
+      S.weapon = u.ammo.homing > 0 && Math.random() < .2 ? 'homing' : u.ammo.drill > 0 && Math.random() < .17 ? 'drill' : u.ammo.cluster > 0 && dist < 13 && Math.random() < .3 ? 'cluster' : 'rocket';
       syncControls(); updateAim();
       $('botAction').textContent = u.name + ' visiert ' + target.name + ' an';
       // Bot führt dieselbe Waffenaktion wie der Mensch aus.
@@ -422,8 +542,8 @@
     $('yawVal').textContent = Math.round(S.yaw) + '°';
     $('angleVal').textContent = Math.round(S.angle) + '°';
     $('powerVal').textContent = Math.round(S.power) + '%';
-    $('weaponIcon').textContent = { rocket: '🚀', grenade: '💣', cluster: '✨', airstrike: '✈️', teleport: '🌀' }[S.weapon];
-    $('weaponName').textContent = { rocket: 'Rakete', grenade: 'Granate', cluster: 'Streubombe', airstrike: 'Luftschlag', teleport: 'Teleport' }[S.weapon];
+    $('weaponIcon').textContent = weaponLabels[S.weapon][0];
+    $('weaponName').textContent = weaponLabels[S.weapon][1];
     document.querySelector('.charge-ring').style.setProperty('--charge', Math.round(S.power) + '%');
   }
   function updateHud() {
@@ -439,11 +559,10 @@
     $('timer').textContent = Math.ceil(S.seconds); $('timer').classList.toggle('urgent', S.seconds <= 10);
     for (const [id, w] of Object.entries(weapons)) {
       const o = $('weapon').querySelector(`option[value="${id}"]`);
-      o.textContent = { rocket: '🚀 Rakete', grenade: '💣 Granate', cluster: '✨ Streubombe', airstrike: '✈️ Luftschlag', teleport: '🌀 Teleport' }[id] + (id === 'rocket' ? ' · ∞' : ' · ' + (u.ammo[id] || 0));
+      o.textContent = weaponLabels[id].join(' ') + (id === 'rocket' ? ' · ∞' : ' · ' + (u.ammo[id] || 0));
       o.disabled = id !== 'rocket' && !u.ammo[id];
     }
-    const labels = { rocket: ['🚀', 'Rakete'], grenade: ['💣', 'Granate'], cluster: ['✨', 'Streubombe'], airstrike: ['✈️', 'Luftschlag'], teleport: ['🌀', 'Teleport'] };
-    $('weaponGrid').innerHTML = Object.keys(weapons).map(id => `<button data-weapon="${id}" class="${S.weapon === id ? 'chosen' : ''}" ${id !== 'rocket' && !u.ammo[id] ? 'disabled' : ''}><span>${labels[id][0]}</span><div>${labels[id][1]}<small>${id === 'rocket' ? 'Unbegrenzt' : (u.ammo[id] || 0) + ' übrig'}</small></div></button>`).join('');
+    $('weaponGrid').innerHTML = Object.keys(weapons).map(id => `<button data-weapon="${id}" class="${S.weapon === id ? 'chosen' : ''}" ${id !== 'rocket' && !u.ammo[id] ? 'disabled' : ''}><span>${weaponLabels[id][0]}</span><div>${weaponLabels[id][1]}<small>${id === 'rocket' ? 'Unbegrenzt' : (u.ammo[id] || 0) + ' übrig'}</small></div></button>`).join('');
     for (const id of ['weapon', 'yaw', 'angle', 'power', 'fireBtn', 'jumpBtn', 'skipBtn', 'weaponBtn', 'aimBtn']) $(id).disabled = bot || busy || !active;
   }
   function updateAim() {
@@ -458,24 +577,26 @@
       }
     }
     aimLine.geometry.dispose(); aimLine.geometry = new THREE.BufferGeometry().setFromPoints(pts); aimLine.computeLineDistances();
-    aimLine.visible = S.weapon !== 'airstrike' && S.weapon !== 'teleport' && !busy;
+    aimLine.visible = !['airstrike', 'teleport', 'dynamite'].includes(S.weapon) && !busy;
     if (S.weapon === 'airstrike' || S.weapon === 'teleport') {
       const groundDir = dir(S.yaw, 0);
       const distance = S.weapon === 'airstrike' ? 5 + S.power * .2 : 4 + S.power * .12;
       hit = [clamp(u.x + groundDir.x * distance, -18, 18), clamp(u.z + groundDir.z * distance, -18, 18)];
     }
+    if (S.weapon === 'dynamite') {
+      const groundDir = dir(S.yaw, 0);
+      hit = [clamp(u.x + groundDir.x * 1.5, -18.5, 18.5), clamp(u.z + groundDir.z * 1.5, -18.5, 18.5)];
+    }
     impactRing.visible = !!hit && !busy;
     impactRing.material.color.setHex(S.weapon === 'teleport' ? 0x8fe9ff : 0xffd375);
     if (hit) impactRing.position.set(hit[0], height(hit[0], hit[1]) + .11, hit[1]);
   }
-  function aimAtPoint(x, z, name) {
-    if (!active || paused || busy || isBotTurn()) return;
+  function solveAim(x, z) {
     const u = S.units[S.current], dx = x - u.x, dz = z - u.z;
-    if (Math.hypot(dx, dz) < 1.8) return;
     const azimuth = Math.atan2(dx, -dz) * 180 / Math.PI;
     let best = { error: Infinity, yaw: azimuth, angle: 45, power: S.power };
-    if (S.weapon === 'airstrike' || S.weapon === 'teleport') {
-      const base = S.weapon === 'airstrike' ? 5 : 4, slope = S.weapon === 'airstrike' ? .2 : .12;
+    if (S.weapon === 'airstrike' || S.weapon === 'teleport' || S.weapon === 'dynamite') {
+      const base = S.weapon === 'airstrike' ? 5 : S.weapon === 'teleport' ? 4 : 1.5, slope = S.weapon === 'airstrike' ? .2 : S.weapon === 'teleport' ? .12 : 1;
       best.power = clamp((Math.hypot(dx, dz) - base) / slope, 25, 100);
     } else {
       for (const yawOffset of [-6, 0, 6]) for (const angle of [30, 39, 48, 57]) for (let power = 25; power <= 100; power += 3) {
@@ -489,7 +610,15 @@
         if (error < best.error) best = { error, yaw: azimuth + yawOffset, angle, power };
       }
     }
+    return best;
+  }
+  function aimAtPoint(x, z, name) {
+    if (!active || paused || busy || isBotTurn()) return;
+    const u = S.units[S.current];
+    if (Math.hypot(x - u.x, z - u.z) < 1.8) return;
+    const best = solveAim(x, z);
     S.yaw = clamp(best.yaw, -180, 180); S.angle = best.angle; S.power = best.power;
+    overview = false; $('viewBtn').classList.remove('selected');
     syncControls(); updateAim(); save();
     announce(name ? name + ' anvisiert · Ziehen für Feinkorrektur' : 'Zielpunkt gesetzt · Ziehen für Feinkorrektur', 2400);
     $('aimHint').classList.add('faded');
@@ -497,6 +626,19 @@
   function tapTarget(clientX, clientY) {
     const rect = renderer.domElement.getBoundingClientRect();
     const pointer = new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -((clientY - rect.top) / rect.height * 2 - 1));
+    // Auf kleinen Displays ist das sichtbare Gesicht deutlich leichter zu treffen als die 3D-Mesh-Hitbox.
+    let nearest = null, distance = Infinity;
+    S.units.forEach(u => {
+      if (u.hp <= 0 || u.team === S.team) return;
+      const point = new THREE.Vector3(u.x, height(u.x, u.z) + 1.7, u.z).project(camera);
+      if (point.z < -1 || point.z > 1) return;
+      const px = rect.left + (point.x + 1) * rect.width / 2, py = rect.top + (1 - point.y) * rect.height / 2;
+      const d = Math.hypot(px - clientX, py - clientY);
+      if (d < distance) { nearest = u; distance = d; }
+    });
+    if (nearest && distance < Math.max(48, Math.min(rect.width, rect.height) * .09)) {
+      aimAtPoint(nearest.x, nearest.z, nearest.name); return;
+    }
     raycaster.setFromCamera(pointer, camera);
     const hits = raycaster.intersectObjects(bodies, true);
     for (const hit of hits) {
@@ -519,10 +661,10 @@
     S = continued ? read() : newState();
     if (!S) return;
     if (!continued) save();
-    active = true; paused = false; busy = false; charging = false; stickX = stickY = 0; cameraFocus = null;
+    active = true; paused = false; busy = false; charging = false; overview = false; $('viewBtn').classList.remove('selected'); stickX = stickY = 0; cameraFocus = null;
     $('pause').hidden = true; $('result').hidden = true; $('weaponPanel').hidden = true; $('aimPanel').hidden = true;
-    meshTerrain(); syncBodies(); syncControls(); updateHud(); updateAim(); show('game');
-    S.winner == null ? (announce('Team ' + (S.team ? 'Blau' : 'Rot') + ' beginnt!'), scheduleBot()) : endMatch(S.winner);
+    applyWorld(); meshTerrain(); rebuildCovers(); syncBodies(); syncControls(); updateHud(); updateAim(); show('game');
+    S.winner == null ? (announce(worlds[S.world].name + ' · Team ' + (S.team ? 'Blau' : 'Rot') + ' beginnt!'), scheduleBot()) : endMatch(S.winner);
   }
   function resize() {
     if (!renderer) return;
@@ -533,12 +675,12 @@
   function cameraUpdate(dt) {
     if (!S) return;
     const u = S.units[S.current], aim = dir(S.yaw, 0), subject = projectile ? projectile.pos : null;
-    const desired = subject
+    const desired = overview && !subject ? new THREE.Vector3(0, 3, 0) : subject
       ? new THREE.Vector3(subject.x, Math.max(2.7, subject.y * .52), subject.z)
       : new THREE.Vector3(u.x + aim.x * 2.2, height(u.x, u.z) + 1.35, u.z + aim.z * 2.2);
     if (!cameraFocus) cameraFocus = desired.clone();
     cameraFocus.lerp(desired, Math.min(1, dt * (projectile ? 3.4 : 4.7)));
-    const dist = projectile ? Math.max(18, camDistance * .9) : camDistance;
+    const dist = overview && !subject ? (innerWidth < innerHeight ? 49 : 43) : projectile ? Math.max(18, camDistance * .9) : camDistance;
     camera.position.set(cameraFocus.x + Math.sin(cameraAz) * dist, cameraFocus.y + dist * .48, cameraFocus.z + Math.cos(cameraAz) * dist);
     if (shake > 0) { camera.position.x += rand(-shake, shake); camera.position.y += rand(-shake, shake); shake = Math.max(0, shake - dt * 1.3); }
     camera.lookAt(cameraFocus);
@@ -569,6 +711,14 @@
         }
         if (projectile) {
           const p = projectile; p.age += dt; flightTime += dt;
+          if (p.kind === 'homing' && p.age > .25) {
+            const owner = S.units[S.current], candidates = S.units.filter(u => u.hp > 0 && u.team !== owner.team);
+            candidates.sort((a, b) => Math.hypot(a.x - p.pos.x, a.z - p.pos.z) - Math.hypot(b.x - p.pos.x, b.z - p.pos.z));
+            if (candidates.length) {
+              const target = candidates[0], desired = new THREE.Vector3(target.x - p.pos.x, height(target.x, target.z) + 1 - p.pos.y, target.z - p.pos.z).normalize().multiplyScalar(p.vel.length());
+              p.vel.lerp(desired, Math.min(.9, dt * 1.25));
+            }
+          }
           p.vel.x += S.wind * .65 * dt; p.vel.y -= 13 * dt; p.pos.addScaledVector(p.vel, dt);
           p.mesh.position.copy(p.pos);
           p.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), p.vel.clone().normalize());
@@ -583,9 +733,10 @@
           const unitHit = S.units.some((u, i) => u.hp > 0 && !(i === S.current && p.age < .25) &&
             Math.hypot(u.x - p.pos.x, u.z - p.pos.z, height(u.x, u.z) + .9 - p.pos.y) < .75);
           const floorHit = p.pos.y <= height(p.pos.x, p.pos.z) + .18;
+          const coverHit = S.covers.some(c => Math.hypot(c.x - p.pos.x, c.z - p.pos.z) < c.r && p.pos.y < height(c.x, c.z) + 2.5);
           if (p.kind === 'grenade' && floorHit && p.bounces < 2 && p.age < 2.6) {
             p.pos.y = height(p.pos.x, p.pos.z) + .23; p.vel.y = Math.abs(p.vel.y) * .46; p.vel.x *= .65; p.vel.z *= .65; p.bounces++;
-          } else if (unitHit || (floorHit && p.kind !== 'grenade') || p.age > (p.kind === 'grenade' ? 3.1 : 7) ||
+          } else if (unitHit || coverHit || (floorHit && p.kind !== 'grenade') || p.age > (p.kind === 'grenade' ? 3.1 : 7) ||
             Math.abs(p.pos.x) > 24 || Math.abs(p.pos.z) > 24 || p.pos.y < -3) {
             const x = clamp(p.pos.x, -19.8, 19.8), z = clamp(p.pos.z, -19.8, 19.8), y = Math.max(height(x, z), p.pos.y);
             const kind = p.kind; removeProjectile();
@@ -598,7 +749,7 @@
                 explode(xx, height(xx, zz) + .2, zz, 'cluster', .7);
               }, 130 + i * 115);
               setTimeout(() => { if (thisMatch === matchId) finishAction(); }, 850);
-            } else { explode(x, y, z, kind); finishAction(); }
+            } else { explode(x, y, z, kind); if (kind === 'drill') crater(x, z, 2.6, 2.8); finishAction(); }
           }
           if (p && projectile && p.kind === 'grenade' && p.age > 3.1) {
             const x = p.pos.x, z = p.pos.z; removeProjectile(); explode(x, height(x, z), z, 'grenade'); finishAction();
@@ -678,9 +829,10 @@
       pressed.add(k);
       if (k === 'q') cameraAz -= .13;
       if (k === 'e') cameraAz += .13;
+      if (k === 'v' && !e.repeat) { overview = !overview; $('viewBtn').classList.toggle('selected', overview); }
       if (k === ' ' && !e.repeat) fire();
       if (k === 'shift' && !e.repeat) jump();
-      if ('12345'.includes(k) && k.length === 1 && !e.repeat) {
+      if ('123456789'.includes(k) && k.length === 1 && !e.repeat) {
         const id = Object.keys(weapons)[+k - 1], u = S.units[S.current];
         if (id && (id === 'rocket' || u.ammo[id] > 0)) { S.weapon = id; syncControls(); updateHud(); updateAim(); }
       }
@@ -712,16 +864,18 @@
       const settings = JSON.parse(localStorage.getItem(SETTINGS) || '{}');
       if (settings.opponent) $('opponent').value = settings.opponent;
       if (settings.difficulty) $('difficulty').value = settings.difficulty;
+      if (settings.world && worlds[settings.world]) $('world').value = settings.world;
     } catch (_) {}
     init3D();
-    updateLoad(80, 'Baue Insel');
+    updateLoad(80, 'Baue Welten');
     $('newGame').onclick = () => {
       if (read() && !confirm('Das gespeicherte Gefecht durch ein neues ersetzen?')) return;
-      try { localStorage.setItem(SETTINGS, JSON.stringify({ opponent: $('opponent').value, difficulty: $('difficulty').value })); } catch (_) {}
+      try { localStorage.setItem(SETTINGS, JSON.stringify({ opponent: $('opponent').value, difficulty: $('difficulty').value, world: $('world').value })); } catch (_) {}
       startGame(false);
     };
     $('continueGame').onclick = () => startGame(true);
     $('pauseBtn').onclick = () => togglePause();
+    $('viewBtn').onclick = () => { if (!active) return; overview = !overview; $('viewBtn').classList.toggle('selected', overview); };
     $('resumeBtn').onclick = () => togglePause(false);
     $('saveQuitBtn').onclick = () => { save(); paused = false; active = false; clearTimeout(botTimeout); $('pause').hidden = true; $('continueGame').hidden = false; show('menu'); };
     $('restartBtn').onclick = () => { if (confirm('Ein neues Gefecht starten?')) startGame(false); };

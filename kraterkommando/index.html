@@ -24,9 +24,9 @@
       <div class="menu-actions">
         <button id="continueGame" class="primary" hidden>Gefecht fortsetzen <b>▶</b></button>
         <button id="newGame" class="primary">Neues Gefecht <b>▶</b></button>
-        <div class="options"><label>SPIELMODUS <select id="opponent"><option value="cpu">Gegen den Computer</option><option value="local">Zu zweit an einem Gerät</option></select></label><label>SCHWIERIGKEIT <select id="difficulty"><option value="easy">Locker</option><option value="normal" selected>Normal</option><option value="hard">Knifflig</option></select></label></div>
+        <div class="options"><label>SPIELMODUS <select id="opponent"><option value="cpu">Gegen den Computer</option><option value="local">Zu zweit an einem Gerät</option></select></label><label>SCHWIERIGKEIT <select id="difficulty"><option value="easy">Locker</option><option value="normal" selected>Normal</option><option value="hard">Knifflig</option></select></label><label class="world-option">WELT <select id="world"><option value="island">🌴 Smaragdinsel</option><option value="desert">🏜️ Staub-Canyon</option><option value="snow">❄️ Frostfestung</option><option value="volcano">🌋 Lava-Krater</option></select></label></div>
       </div>
-      <p class="controls">Touch: Stick bewegen · Spielfeld ziehen zum Zielen · Feuer halten für Kraft.<br>PC: WASD bewegen · Maus ziehen zum Zielen · Leertaste schießen.</p>
+      <p class="controls">Touch: 👁 zeigt die ganze Arena · Gegner antippen zum Zielen · Feuer halten für Kraft.<br>PC: WASD bewegen · Maus ziehen zum Zielen · V Übersicht · Leertaste schießen.</p>
       <div id="cloudMount"></div>
       <a class="back" href="../">← Alle Spiele</a>
     </div>
@@ -34,10 +34,10 @@
 </div>
 <div id="game" class="screen">
   <div id="viewport"></div>
-  <header class="topbar"><div class="brand"><span class="brand-icon">✦</span><span>KRATER<br>KOMMANDO</span></div><div class="turn-pill"><span id="turnInfo">Runde 1</span><strong id="timer">45</strong></div><button id="pauseBtn" aria-label="Pause">Ⅱ</button></header>
+  <header class="topbar"><div class="brand"><span class="brand-icon">✦</span><span>KRATER<br>KOMMANDO</span></div><div class="turn-pill"><span id="turnInfo">Runde 1</span><strong id="timer">45</strong></div><button id="viewBtn" aria-label="Kameraübersicht umschalten" title="Kameraübersicht">👁</button><button id="pauseBtn" aria-label="Pause">Ⅱ</button></header>
   <div id="teamHud" class="team-hud"></div>
   <div id="message" class="message" aria-live="polite"></div>
-  <div class="aim-hint" id="aimHint">Gegner oder Boden antippen = zielen · Ziehen = korrigieren</div>
+  <div class="aim-hint" id="aimHint">👁 = Übersicht · Gegner antippen = zielen · Ziehen = korrigieren</div>
   <div class="battle-status"><div class="active-unit"><span id="unitName">—</span><small id="unitHp">100 LP</small></div><div class="aim-readout"><span id="yawVal">0°</span><span id="angleVal">45°</span></div><div class="wind">WIND <span id="wind">→ 0</span></div></div>
   <div class="game-dock">
     <div class="stick-area"><div id="stick" class="stick" aria-label="Bewegungsstick" role="group"><div id="stickThumb" class="stick-thumb"></div></div><small>BEWEGEN</small></div>
@@ -47,7 +47,7 @@
   <div id="botBanner" class="bot-banner" aria-live="polite"><div class="bot-avatar">🤖</div><div><strong>Computer ist am Zug</strong><span id="botAction">Gegner überlegt …</span></div><i aria-hidden="true">•••</i></div>
   <div id="weaponPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Waffe wählen</h2><button id="closeWeapon" aria-label="Schließen">✕</button></div><div id="weaponGrid" class="weapon-grid"></div></div></div>
   <div id="aimPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Präzise zielen</h2><button id="closeAim" aria-label="Schließen">✕</button></div><p>Zieh auch direkt im Spielfeld, um Richtung und Winkel zu ändern.</p><label>RICHTUNG<input id="yaw" type="range" min="-180" max="180" value="0"></label><label>WINKEL<input id="angle" type="range" min="10" max="80" value="45"></label><label>KRAFT<input id="power" type="range" min="25" max="100" value="70"></label></div></div>
-  <select id="weapon" hidden><option value="rocket">Rakete</option><option value="grenade">Granate</option><option value="cluster">Streubombe</option><option value="airstrike">Luftschlag</option><option value="teleport">Teleport</option></select>
+  <select id="weapon" hidden><option value="rocket">Rakete</option><option value="grenade">Granate</option><option value="cluster">Streubombe</option><option value="airstrike">Luftschlag</option><option value="teleport">Teleport</option><option value="homing">Lenkrakete</option><option value="dynamite">Dynamit</option><option value="drill">Bohrer</option><option value="shotgun">Schrotflinte</option></select>
 </div>
 <div id="pause" class="overlay" hidden><div class="dialog"><span class="eyebrow">PAUSE</span><h2>Kurze Atempause?</h2><button id="resumeBtn" class="primary">Weiter spielen</button><button id="saveQuitBtn">Speichern & Hauptmenü</button><button id="restartBtn">Neues Gefecht</button></div></div>
 <div id="result" class="overlay" hidden><div class="dialog"><span class="eyebrow">GEFECHT BEENDET</span><h2 id="resultTitle">Sieg!</h2><p id="resultText"></p><button id="againBtn" class="primary">Noch ein Gefecht</button><button id="resultMenuBtn">Hauptmenü</button></div></div>

@@ -36,3 +36,9 @@
   .bot-banner{min-height:61px;padding:6px 10px}
   .bot-avatar{height:40px;width:40px}
 }
+.options .world-option{grid-column:1/-1}
+.options .world-option select{font-size:14px;background:#edf6ed;border-color:#a7cbb8}
+.weapon-grid button{min-height:59px}
+#viewBtn{width:38px;height:38px;flex:none;border-radius:12px;background:#173447cb;border:1px solid #ffffff5a;font-size:20px}
+#viewBtn.selected{background:#eaf5ed;color:#173447}
+@media(max-width:390px){.topbar{gap:5px}.brand{min-width:80px;font-size:9px}.brand-icon{font-size:20px}.turn-pill{gap:4px;padding-left:7px}.turn-pill span{font-size:10px}#viewBtn,#pauseBtn{width:33px;height:33px}}
