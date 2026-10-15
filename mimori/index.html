@@ -26,6 +26,14 @@ header{display:flex;align-items:center;gap:14px;justify-content:space-between;ma
 .stage{font-size:12px;font-weight:850;padding:11px;border-radius:13px;background:#46365cdd;border:1px solid #f7dfc9}
 #speech{position:absolute;z-index:2;bottom:22px;left:18px;right:18px;text-align:center;margin:auto;max-width:420px;padding:13px 18px;border-radius:17px;background:#fff8ecf2;color:#684962;font-weight:800;box-shadow:0 6px #5f47685c;pointer-events:none}
 #speech.pop{animation:pop .28s ease-out}@keyframes pop{from{transform:translateY(7px) scale(.96)}to{transform:translateY(0) scale(1)}}
+#fxLayer{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.fx-particle{position:absolute;display:block;opacity:0;filter:drop-shadow(0 3px 2px #51436188);will-change:transform,opacity;animation:fxFloat 1.55s cubic-bezier(.18,.75,.39,1) var(--delay,0s) both}
+@keyframes fxFloat{0%{opacity:0;transform:translate3d(0,22px,0) scale(.35) rotate(-20deg)}16%{opacity:1}65%{opacity:1}100%{opacity:0;transform:translate3d(var(--dx,40px),var(--dy,-100px),0) scale(1.2) rotate(35deg)}}
+.cloudSection{padding:16px 22px}.cloudSection details{border:1px solid #b59ccb80;background:#362d50;border-radius:13px;padding:10px 13px}
+.cloudSection summary{cursor:pointer;font-weight:850;color:#fff2ce}
+.cloudSection p{font-size:12px;color:#dec9e0;line-height:1.5}
+#cloudMount{min-height:8px}
+@media(prefers-reduced-motion:reduce){.fx-particle{animation:none!important;opacity:.8}}
 #webglError{position:absolute;inset:35% 20px auto;z-index:4;padding:18px;color:#4c375c;background:#fff1e9f0;border-radius:14px;text-align:center}
 .tip{position:absolute;bottom:88px;left:0;right:0;text-align:center;color:#54496f;opacity:.88;font-size:12px;pointer-events:none}
 .stack{display:flex;flex-direction:column;gap:16px}
@@ -65,9 +73,9 @@ section.bodyPanel{padding:17px}.settings{padding:16px}#speech{font-size:13px}.ca
 </style></head>
 <body><div id="app">
 <header><div class="brand"><div class="logo" aria-hidden="true">✿</div><div><b>MIMORI</b><small>DEIN KLEINES 3D-WESEN</small></div></div>
-<div class="topright"><span class="tag" id="careLevel">Fürsorge 0</span><button id="infoBtn" class="iconbtn" aria-label="Spielhilfe öffnen">?</button></div></header>
+<div class="topright"><span class="tag" id="careLevel">Fürsorge 0</span><button id="soundToggle" class="iconbtn" aria-label="Ton ein- oder ausschalten">🔊 Ton an</button><button id="infoBtn" class="iconbtn" aria-label="Spielhilfe öffnen">?</button></div></header>
 <div class="layout">
-<div class="panel scene"><div id="viewport" aria-label="Dreidimensionaler Raum mit Mimori"></div>
+<div class="panel scene"><div id="viewport" aria-label="Dreidimensionaler Raum mit Mimori"></div><div id="fxLayer" aria-hidden="true"></div>
 <div class="sceneTop"><div class="nameBox"><h1 id="petname">Mimori</h1><small id="age">Baby · 0 Stunden</small></div><div class="stage" id="stageBadge">Eiweiß-Baby</div></div>
 <p class="tip">Tippe auf Mimori zum Kuscheln · Ziehe zum Drehen</p>
 <div id="webglError" hidden>3D konnte nicht gestartet werden. Prüfe, ob dein Browser WebGL unterstützt. Deine gespeicherten Werte und Pflegetasten funktionieren trotzdem.</div>
@@ -93,14 +101,19 @@ section.bodyPanel{padding:17px}.settings{padding:16px}#speech{font-size:13px}.ca
 </div></section>
 <section class="panel settings"><h2>Dein Zuhause</h2>
 <div class="settingsButtons"><button id="rename" class="secondary">✏️ Name ändern</button><button id="changeColor" class="secondary">🎨 Fellfarbe ändern</button><button id="installBtn" class="secondary">📱 App-Hinweis</button></div>
-<div id="installInfo" hidden>Auf Android oder Desktop kannst du die Webseite über das Browsermenü installieren. Auf iPhone/iPad öffne sie in Safari und wähle „Zum Home-Bildschirm“. Für Push auf iOS ist diese Installation notwendig.</div>
-<h2 style="margin-top:19px">Erinnerungen <span class="sub">nur auf Wunsch</span></h2>
-<p id="pushInfo">Push-Verbindung wird geprüft …</p><div class="settingsButtons"><button id="pushToggle" class="secondary">Benachrichtigungen einschalten</button><button id="pushTest" class="secondary" disabled>🔔 Test</button></div>
-<p class="footnote">Nur nach Zustimmung. Erinnerungen bei Hunger, Müdigkeit, schlechter Laune oder mangelnder Sauberkeit, mit Ruhezeit von 22–8 Uhr. Für geschlossene Browser ist ein eingerichteter Push-Server notwendig.</p>
+<div id="installInfo" hidden>Auf Android und Desktop kannst du Mimori über das Browsermenü als App installieren. Auf iPhone und iPad: in Safari „Zum Home-Bildschirm“ wählen. Deine Pflegewerte werden lokal gespeichert und können optional mit Google synchronisiert werden.</div>
+<h2 style="margin-top:19px">🔔 Erinnerungen <span class="sub">freiwillig</span></h2>
+<p id="pushInfo">Ausgeschaltet. Auf Wunsch erinnert dich Mimori, solange das Spiel geöffnet ist.</p>
+<div class="settingsButtons"><button id="pushToggle" class="secondary" aria-pressed="false">🔕 Erinnerungen aus</button><button id="pushTest" class="secondary" disabled>🔔 Test</button></div>
+<p class="footnote">Erinnerungen zu Hunger, Müdigkeit, Stimmung und Pflege. Ruhezeit von 22 bis 8 Uhr. Sie funktionieren während die Browserseite oder installierte PWA läuft; bei vollständig geschlossener Anwendung gibt es keine Hintergrundmeldungen.</p>
 <div id="help" hidden><b>So funktioniert's:</b> Dein Wesen braucht Futter, Aufmerksamkeit, Schlaf und Pflege. Auch wenn du nicht spielst, vergeht Zeit. Beim Sternfang verdienst du neue Beeren und Seife. Mit Erfahrung wächst Mimori zum Sternenwesen. Du kannst alles kostenlos und ohne Anmeldung spielen.<p><button id="helpClose" class="secondary">Schließen</button></p></div>
 </section>
+<section class="panel cloudSection"><details id="cloudDetails" open><summary>☁ Google-Speicher &amp; Spielstand</summary>
+<p>Dein Mimori bleibt immer lokal gespeichert. Optional mit Google anmelden und auf deinen Geräten synchronisieren – wie bei den anderen EasyGames-Spielen.</p>
+<div id="cloudMount"></div></details></section>
 </div></div></div>
 <div id="miniOverlay" hidden role="dialog" aria-modal="true" aria-label="Sternfang-Spiel"><div class="miniCard"><h2>⭐ Sternfang</h2><p>Sammle fünf Sterne innerhalb von 14 Sekunden und gewinne Vorräte!</p><b id="miniScore">Sterne: 0/5</b><div id="miniArea"></div><button id="miniExit" class="secondary">Zurück</button></div></div>
-<script src="../vendor/three-r128.min.js"></script><script src="./model.js"></script><script src="./game.js"></script>
+<script src="../vendor/three-r128.min.js"></script><script src="./model.js"></script><script src="./sound.js"></script><script src="./game.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="mimori" data-prefix="easygames.mimori.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden und Mimori auf allen Geräten weiterpflegen." defer></script>
 <script>if('serviceWorker'in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
 </body></html>
