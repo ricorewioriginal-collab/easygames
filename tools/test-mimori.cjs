@@ -48,7 +48,7 @@ function element(){
   setAttribute:noop,getContext:()=>({})};
 }
 class Shape{
- constructor(){this.position={set:noop};this.rotation={};this.scale={set:noop,setScalar:noop};this.children=[];this.geometry={dispose:noop};this.material={dispose:noop}}
+ constructor(){this.position={set:noop};this.rotation={x:0,y:0,z:0};this.scale={set:noop,setScalar:noop};this.children=[];this.geometry={dispose:noop};this.material={dispose:noop}}
  add(a){this.children.push(a)}remove(a){this.children=this.children.filter(v=>v!==a)}
 }
 class Geometry{dispose(){}}
