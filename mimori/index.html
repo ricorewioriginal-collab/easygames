@@ -215,11 +215,20 @@ section.bodyPanel{padding:13px}
 <div id="sleepStatus" class="sleepStatus" hidden>💤 Licht aus – erholsamer Schlaf</div>
 <div id="petAlert" class="petAlert" hidden role="status" aria-live="polite"><span class="alertBell">🔔</span><span id="petAlertText">Mimori braucht dich!</span></div>
 <div class="sceneTop"><div class="nameBox"><h1 id="petname">Mimori</h1><small id="age">Baby · 0 Stunden</small><small id="speciesName" class="speciesName">Fluffi</small></div><div class="sceneButtons"><span class="stage" id="stageBadge">Wolkenbaby</span><button id="settingsShortcut" class="cornerBtn" title="Wesen und Einstellungen" aria-label="Einstellungen und Wesen auswählen">⚙</button></div></div>
+<div class="miniVitals" id="miniVitals" aria-label="Aktuelle Mimori-Bedürfnisse">
+<span data-mini="joy" title="Zufriedenheit">💗 <b id="miniJoy">82</b><i><em id="miniJoyFill"></em></i></span>
+<span data-mini="hunger" title="Sättigung">🍓 <b id="miniHunger">82</b><i><em id="miniHungerFill"></em></i></span>
+<span data-mini="energy" title="Energie">🌙 <b id="miniEnergy">82</b><i><em id="miniEnergyFill"></em></i></span>
+<span data-mini="clean" title="Hygiene">🫧 <b id="miniClean">88</b><i><em id="miniCleanFill"></em></i></span>
+<span data-mini="health" title="Gesundheit">💚 <b id="miniHealth">92</b><i><em id="miniHealthFill"></em></i></span>
+</div>
 <nav id="familyRoomBar" aria-label="Zimmernavigation">
 <button id="prevRoom" aria-label="Vorheriger Raum">‹</button><span class="worldLabel" id="roomLabel">🛋️ Wohnzimmer</span>
 <button id="nextRoom" aria-label="Nächster Raum">›</button>
 <button id="worldOpen" aria-label="Wohnung, Familie und Einrichtung">🏠</button>
 <button id="radioLaunch" class="radioLaunch" aria-label="Wohnzimmer-Radio öffnen">📻</button></nav>
+<button id="radioHotspot" class="radioHotspot" title="3D-Wohnzimmer-Radio einschalten" aria-label="Radio im Wohnzimmer öffnen">📻 <span>Radio</span></button>
+<div id="partnerNameTags" class="partnerNameTags" hidden aria-label="Ehepartner im Raum"></div>
 <div class="turnControls" aria-label="Haustier drehen"><button id="turnLeft" title="Nach links drehen" aria-label="Mimori nach links drehen">↶</button><button id="resetView" title="Zur Vorderansicht" aria-label="Vorderansicht">●</button><button id="turnRight" title="Nach rechts drehen" aria-label="Mimori nach rechts drehen">↷</button></div>
 <p class="tip">↔ Mit dem Finger drehen · Tippen zum Kuscheln</p>
 <div id="webglError" hidden>3D konnte nicht gestartet werden. Prüfe, ob dein Browser WebGL unterstützt. Deine gespeicherten Werte und Pflegetasten funktionieren trotzdem.</div>
@@ -261,6 +270,13 @@ section.bodyPanel{padding:13px}
 <button data-species="2" class="speciesChoice" aria-pressed="false"><b>🦊</b><strong>Foxi</strong><small>Spitzohren &amp; Flauschschweif</small></button>
 <button data-species="3" class="speciesChoice" aria-pressed="false"><b>🐉</b><strong>Drachi</strong><small>Flügel &amp; Hörnchen</small></button>
 </div>
+<h3 style="margin:15px 0 8px">Fellfarbe</h3>
+<div class="colorPicker" role="group" aria-label="Fellfarbe auswählen">
+<button data-color="0" aria-label="Rosa" aria-pressed="false" style="--fur:#cf85b1"><span>✓</span></button>
+<button data-color="1" aria-label="Mintgrün" aria-pressed="false" style="--fur:#70c6b7"><span>✓</span></button>
+<button data-color="2" aria-label="Lavendel" aria-pressed="false" style="--fur:#b1a0e6"><span>✓</span></button>
+<button data-color="3" aria-label="Gold" aria-pressed="false" style="--fur:#e2bc84"><span>✓</span></button>
+</div>
 <h3 style="margin:15px 0 8px">Erscheinungsvariante</h3>
 <div class="settingsButtons" id="appearanceChoices">
 <button data-appearance="0" class="secondary">♂ Männlich</button>
@@ -275,6 +291,22 @@ section.bodyPanel{padding:13px}
 <button data-shop="accessory:1"><b>🔔</b> Glöckchen <small>⭐ 60</small></button>
 <button data-shop="accessory:2"><b>🎀</b> Schleife <small>⭐ 110</small></button>
 <button data-shop="accessory:3"><b>👑</b> Sternkrone <small>⭐ 180</small></button>
+<button data-shop="accessory:4"><b>🕶️</b> Sonnenbrille <small>⭐</small></button>
+<button data-shop="accessory:5"><b>🎩</b> Zauberhut <small>⭐</small></button>
+<button data-shop="accessory:6"><b>🌺</b> Blütenkranz <small>⭐</small></button>
+<button data-shop="accessory:7"><b>🧣</b> Schal <small>⭐</small></button>
+<button data-shop="accessory:8"><b>🎧</b> Kopfhörer <small>⭐</small></button>
+<button data-shop="accessory:9"><b>👒</b> Strohhut <small>⭐</small></button>
+<button data-shop="accessory:10"><b>💎</b> Diamantenstirnband <small>⭐</small></button>
+<button data-shop="accessory:11"><b>🧢</b> Sportkappe <small>⭐</small></button>
+<button data-shop="accessory:12"><b>🌈</b> Regenbogenflügel <small>⭐</small></button>
+<button data-shop="accessory:13"><b>🦋</b> Schmetterlingsfühler <small>⭐</small></button>
+<button data-shop="accessory:14"><b>🪄</b> Zauberstab <small>⭐</small></button>
+<button data-shop="accessory:15"><b>🎭</b> Maskenball <small>⭐</small></button>
+<button data-shop="accessory:16"><b>🏵️</b> Orden <small>⭐</small></button>
+<button data-shop="accessory:17"><b>🎄</b> Wintermütze <small>⭐</small></button>
+<button data-shop="accessory:18"><b>⚡</b> Blitzsymbol <small>⭐</small></button>
+<button data-shop="accessory:19"><b>🪶</b> Federkrone <small>⭐</small></button>
 </div><h3 class="shopHeadline">Zimmerwelten</h3><div class="shopGrid">
 <button data-shop="theme:0"><b>🏡</b> Kuschelzimmer <small>✓</small></button>
 <button data-shop="theme:1"><b>🌿</b> Waldtraum <small>⭐ 80</small></button>
