@@ -1,0 +1,61 @@
+/* Mimori's mobile-first household, rooms and integrated radio. */
+#worldOverlay[hidden],#worldOverlay [hidden],#familyRoomBar[hidden]{display:none!important}
+#familyRoomBar{position:absolute;z-index:5;top:130px;left:12px;right:12px;display:flex;gap:6px;align-items:center;justify-content:space-between;
+ background:#37284cdb;border:1px solid #c0a7d5;border-radius:13px;padding:7px 8px;box-shadow:0 4px 18px #17132b66}
+#familyRoomBar button{border:1px solid #e4cfdb;color:#fff6ea;border-radius:9px;background:#61507f;min-width:35px;min-height:37px;font-weight:850;padding:5px 8px;font-size:15px}
+#familyRoomBar .worldLabel{font-size:12px;line-height:1.25;text-align:center;font-weight:900;flex:1;color:#ffebd3}
+#familyRoomBar .radioLaunch{background:#94713e;border-color:#f2d398}
+#worldOverlay{position:fixed;z-index:65;inset:0;background:#140f29da;backdrop-filter:blur(10px);display:flex;align-items:end;justify-content:center}
+.worldPanel{position:relative;display:flex;flex-direction:column;width:min(680px,100%);max-height:95dvh;
+ background:linear-gradient(155deg,#41345f,#292844 65%,#22243b);color:#fff5ee;
+ border:2px solid #ad94ca;border-radius:23px 23px 0 0;box-shadow:0 -12px 55px #090618aa;
+ padding:15px 13px calc(18px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+.worldHead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.worldHead h2{margin:0;font-size:22px}
+.worldHead button{border:1px solid #dbc5d9;color:#fff;background:#5b4a71;padding:9px 12px;border-radius:12px}
+.worldPanel section{padding:12px 0;border-bottom:1px solid #9984ae7a}
+.worldPanel h3{margin:0 0 6px;font-size:17px;color:#ffe6bc}
+.worldPanel p,.worldPanel small{font-size:12px;line-height:1.4;color:#e1d8ed}
+.worldRoomGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.worldTile{background:linear-gradient(140deg,#695581,#443e70);border:1px solid #b8a3d2;color:#fff;
+ border-radius:13px;min-height:79px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center}
+.worldTile strong{font-size:11px}.worldTile b{font-size:24px}.worldTile small{font-size:10px;color:#eedbbd}
+.worldTile.selected{border:2px solid #ffe0a5;background:#795b84}
+.worldTile.locked{background:#3f395a;border-style:dashed}
+.worldTile:active{transform:scale(.97)}
+.worldFamilyCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:9px 0}
+.familyCard{border:1px solid #a8a2cb;border-radius:13px;background:#51446b;padding:11px;min-width:0;color:#fff8ee;text-align:left}
+.familyCard.active{border:2px solid #ffdba8;background:#76618b}
+.familyCard strong{display:block;margin:4px 0;font-size:14px}
+.familyCard small{display:block;font-size:11px}
+.familyCard b{font-size:25px}
+.familyAlert{color:#ffc6bb!important}
+.homeControlRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.worldPanel input,.worldPanel select{width:100%;min-width:0;background:#f4eff7;color:#342c51;border:1px solid #b8a2ce;
+ border-radius:10px;padding:10px;font-size:13px}
+.worldPanel label{font-size:11px;font-weight:750;color:#e9d4eb;display:flex;flex-direction:column;gap:4px}
+.worldPanel .worldBtn{border:1px solid #dac4dc;background:#6e5687;color:#fff7ed;border-radius:11px;
+ padding:9px 10px;min-height:43px;font-weight:820;font-size:12px}
+.worldPanel .worldBtn.primary{background:#d4b27a;color:#342741;border-color:#ffefd3}
+.worldPanel .worldBtn:disabled{opacity:.4}
+.worldPanel .familyQuick{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}
+.worldPanel .partnerList{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.worldPanel .partnerList label{display:flex;flex-direction:row;align-items:center;
+ background:#5a4b73;padding:9px;border-radius:10px;font-size:12px;gap:8px}
+.worldPanel .partnerList input{width:auto;accent-color:#efc5d7}
+#familyStatus,#weddingResult{font-size:12px;color:#ffdfb4;margin-top:7px}
+.radioStations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:11px 0}
+.radioStation{display:flex;align-items:center;text-align:left;gap:8px;border-radius:12px;border:1px solid #aa9ed2;background:#50496e;color:#fff;
+ padding:9px;min-width:0;min-height:60px}
+.radioStation>b{font-size:17px;color:#e7d0a4}
+.radioStation span{display:flex;flex-direction:column;min-width:0;gap:4px}
+.radioStation strong{font-size:12px;line-height:1.2}
+.radioStation small{font-size:10px;color:#e7d8e9}
+.radioStation.active{background:#3d746f;border:2px solid #d8efca}
+.radioSource{color:#fff2c9!important;font-weight:750}
+#radioStop{background:#71465e;border:1px solid #e2b6c7;color:white;padding:10px 14px;border-radius:12px}
+#radioNow{font-size:12px;margin:8px 0;color:#e9e4ee}
+#radioSection[hidden]{display:none!important}
+@media(max-width:390px){#familyRoomBar{top:121px;left:8px;right:8px}#familyRoomBar button{min-width:29px;padding:4px}
+ .worldRoomGrid{grid-template-columns:repeat(3,1fr)}.radioStations{grid-template-columns:1fr}
+ .worldPanel{padding:11px 9px calc(14px + env(safe-area-inset-bottom))}}
