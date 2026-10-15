@@ -117,3 +117,14 @@ Netzwerk- oder Streamserver-Bedingungen abhängen.
 Die zusätzlichen Browser-Simulationen sind keine echten Smartphone- oder
 Streaming-Tests. Vor allem die Darstellung komplexerer Kulissen auf schwächeren
 Geräten sollte im Browser nach der Veröffentlichung kontrolliert werden.
+
+## 2026-10-15 – Ein großes Spielfenster für Browser und Android
+
+- Ein einziges fast bildschirmfüllendes 3D-Spielfeld statt 3D oben plus separaten Pflege-/Status-Karten darunter.
+- Sechs integrierte Navigationsbereiche im selben Feld: Pflege, Werte, Räume, Familie, Radio, Spielhalle. Pflege-/Status-Karten werden mit ihren bestehenden Event-Handlern ins eingeblendete Bottom-Sheet versetzt, nicht dupliziert.
+- Raum-/Familien-/Radio-Funktionen erscheinen als einzelne Register im Spielfeld. Einstellungs-Drawer ist ebenfalls in den Spielbereich integriert. Warnungen sind eine einklappbare, antippbare Glocke.
+- Eigene Abmessungen für Android-Hochformat, Querformat und Desktop mit großen Touchflächen. Die 3D-Figur bleibt sichtbar und drehbar.
+- Robustere WebGL-Initialisierung: drei Grafikprofile von normal bis ressourcenschonend. Bei fehlendem Three.js, nicht möglichem WebGL-Kontext oder Context-Loss zeigt die Anwendung eine eigene, dreh- und streichelbare 2D-Ersatzfigur statt des leeren Felds. Das ist **kein 3D-Ersatz**; echtes WebGL bleibt von Browser und GPU abhängig.
+- `scene-ui.js` und `scene-ui.css` integrieren die Oberfläche, `fallback.js` zeichnet die Ersatzfigur. Offline-Kernressourcen und Android-Manifest-Prüfsummen wurden aktualisiert.
+
+Über das EasyGames-Android-Projekt wird der WebView explizit GPU-gerendert; in `ricorewi-radio` sind Manifest und GameActivity ebenfalls auf Hardwarebeschleunigung eingestellt. Quellcodeänderungen in Android benötigen einen neuen APK-Build und eine Installation; bestehende APKs ändern sich dadurch nicht automatisch.

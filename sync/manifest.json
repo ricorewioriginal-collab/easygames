@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "version": "d83518c15d0b",
- "generated": "2026-10-15T03:17:37.798Z",
+ "version": "75377560963c",
+ "generated": "2026-10-15T03:39:08.930Z",
  "commit": "cd3a008c95320bde159b0df78ab0530d029340b0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 15809,
-   "h": "b337372c672af83f716f0c3a5ba2c375e31edec28435af0e96f115c009f6b043"
+   "s": 15801,
+   "h": "51452ebf3dc4810a19982ecd3e92e06b0b96be888d316d606010e2592b0e236f"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 44971,
-   "h": "f57b0dd29b4aef81bd226bb3637ce21304fb99b94193c2fb31b9e1f08d721c67"
+   "s": 45844,
+   "h": "f49912652ffc6509cea8de519e5f45b06e2c632967175af4c0039ee2979e4488"
   },
   {
    "p": "index.html",
@@ -4812,9 +4812,14 @@
    "h": "c744e03051efb6d9dd65b0379c6c770234772db0ac99ead46027f1adc0670170"
   },
   {
+   "p": "mimori/fallback.js",
+   "s": 5195,
+   "h": "991612a997eb132fd6440135b17daa1fc54fafb3d1d5763700fb58d96a931d66"
+  },
+  {
    "p": "mimori/game.js",
-   "s": 36955,
-   "h": "b583e589d6a0be4cb4fe1f8b6de83502813d9d741b98027b427a954ee7d1776e"
+   "s": 38596,
+   "h": "179a2588e509c2741939de4702f116fb0bac3bf42f1c09751475a26dbfd84258"
   },
   {
    "p": "mimori/home.css",
@@ -4833,8 +4838,8 @@
   },
   {
    "p": "mimori/index.html",
-   "s": 32333,
-   "h": "9ad63344781d4e028e69f9c7f08620dfa58efe0ca24bcd82c6dbfc412c2e4a9f"
+   "s": 32452,
+   "h": "0f6ec7b17d6b39f9033695d00d4bc215d80e62e67b2554077a5e882df4a8b887"
   },
   {
    "p": "mimori/manifest.webmanifest",
@@ -4857,14 +4862,24 @@
    "h": "abba58130084337d0fda6a4cb856ddeda815454e6d29b8c6c516eb5c2ba11b43"
   },
   {
+   "p": "mimori/scene-ui.css",
+   "s": 8788,
+   "h": "b3c80d779c99594a9a84e61786a2a7128bdd2bdc9eab65d4a91fcd189846b739"
+  },
+  {
+   "p": "mimori/scene-ui.js",
+   "s": 5545,
+   "h": "5cb22030ffedbfbb08c087e1d026031cf3e12e5fe5d453055cb78df324ba6e81"
+  },
+  {
    "p": "mimori/sound.js",
    "s": 4530,
    "h": "186884330521aa284c1a30ed6a20e76a3b96f0a7099961a828a7339ad98a3989"
   },
   {
    "p": "mimori/sw.js",
-   "s": 1746,
-   "h": "678a1d361756d3ecd7ad01ae8d762a5ff6b18a483cb073c1a95b3956da2a465d"
+   "s": 1796,
+   "h": "4ab2f7e646a94633348e2b273098b2beeb16b664a1a24f667b389704a8301b6f"
   },
   {
    "p": "modes.js",
@@ -5318,8 +5333,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 67377,
-   "h": "1380ea69d663a4e6de547319357c9885080042a3506baad7cf7dd5db8d0a883e"
+   "s": 68254,
+   "h": "5cfe6ffef3f62eb38dd78a3dc81c83a890afde09ec8dcbece3a6bf33e5094795"
   },
   {
    "p": "taschi/card.svg",
