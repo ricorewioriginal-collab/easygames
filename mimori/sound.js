@@ -70,6 +70,11 @@
   if(!enabled)return;
   switch(kind){
    case 'cuddle':purr();break;
+   case 'toilet':chirp([[450,0,.12,380],[650,.14,.12,690],[820,.27,.2,900]],'sine');break;
+   case 'cleanup':bath();chirp([[400,.2,.12,600],[650,.35,.16,830]]);break;
+   case 'medicine':chirp([[410,0,.16,540],[530,.18,.17,720],[760,.38,.22,1010]],'sine');break;
+   case 'light':chirp([[770,0,.13,580],[550,.16,.16,410]],'triangle');break;
+   case 'alert':chirp([[860,0,.11,900],[860,.2,.12,920],[1020,.48,.18,1100]],'sine');break;
    case 'feed':munch();break;
    case 'wash':bath();break;
    case 'sleep':sleepy();break;
