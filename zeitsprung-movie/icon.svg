@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ZEITSPRUNG MOVIE">
+ <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#2c1759"/><stop offset=".55" stop-color="#121431"/><stop offset="1" stop-color="#090b1e"/></linearGradient><linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff3a0"/><stop offset=".5" stop-color="#ffc36b"/><stop offset="1" stop-color="#f86b8e"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="13"/></filter></defs>
+ <rect x="8" y="8" width="496" height="496" rx="105" fill="url(#bg)" stroke="#ad80e8" stroke-width="10"/>
+ <circle cx="256" cy="222" r="154" fill="#8f4be0" opacity=".3" filter="url(#glow)"/>
+ <circle cx="256" cy="220" r="147" fill="#1b1a42" stroke="url(#gold)" stroke-width="16"/>
+ <circle cx="256" cy="220" r="103" fill="#332259" stroke="#ffe49d" stroke-width="6"/>
+ <g fill="#100f2b" stroke="#ffd78b" stroke-width="5"><circle cx="256" cy="137" r="27"/><circle cx="335" cy="195" r="27"/><circle cx="306" cy="290" r="27"/><circle cx="206" cy="290" r="27"/><circle cx="177" cy="195" r="27"/></g>
+ <circle cx="256" cy="220" r="31" fill="url(#gold)"/>
+ <path d="M256 220V105M256 220l79 35" stroke="#fff0bd" stroke-width="10" stroke-linecap="round"/>
+ <path d="M71 350h370v65H71z" fill="#0e122e" stroke="#ffce73" stroke-width="8"/>
+ <path d="M89 365h25v34H89zm48 0h25v34h-25zm48 0h25v34h-25zm118 0h25v34h-25zm48 0h25v34h-25zm48 0h25v34h-25z" fill="#ffcb78"/>
+ <text x="256" y="470" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="51" font-weight="900" letter-spacing="7" fill="url(#gold)">MOVIE</text>
+</svg>
