@@ -43,7 +43,10 @@ function advance(raw,now=Date.now()){
  const dirtyHours=p.mess?Math.max(0,(until-Math.max(start,p.messSince||start))/HOUR):0;
  const distressed=[p.hunger,p.joy,p.energy,p.clean].filter(v=>v<20).length;
  const hygienePenalty=p.mess?Math.min(3,p.mess)*1.8*dirtyHours:0;
- p.health=bound(p.health+hours*(distressed?-1.4*distressed:.3)-hygienePenalty,10,100);
+ // From six days of age, older pets become gradually more fragile.
+ // Medical care restores health and remains available without payment or game over.
+ const ageingHours=Math.max(0,(until-Math.max(start,(p.born||start)+6*DAY))/HOUR);
+ p.health=bound(p.health+hours*(distressed?-1.4*distressed:.3)-hygienePenalty-ageingHours*.65,10,100);
  p.sick=Boolean(p.sick||p.health<42||(p.mess>0&&dirtyHours>=3));
  if(p.sick)p.joy=bound(p.joy-hours*1.7);
  p.updated=end;

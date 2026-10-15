@@ -51,6 +51,13 @@ assert(bathroom.ok&&bathroom.pet.toiletNeed===0);
 assert(bathroom.pet.nextAccident>epoch+3600000);
 const legacy=M.load({version:1,born:epoch,updated:epoch,name:'Alt',hunger:80,energy:70,joy:70,clean:70,health:70},epoch+1);
 assert.equal(legacy.mess,0);assert.equal(legacy.sick,false);assert(legacy.nextAccident>epoch);
+const young={...M.fresh(epoch),hunger:90,joy:90,energy:90,clean:90,health:90,nextAccident:epoch+36000000};
+const older={...young,born:epoch-7*M.DAY};
+const youngLater=M.advance(young,epoch+3600000);
+const oldLater=M.advance(older,epoch+3600000);
+assert(oldLater.health<youngLater.health,'Ageing did not increase health vulnerability');
+assert(oldLater.health>=10,'Mimori should never permanently die of age');
+
 
 
 assert.deepEqual(M.species,['Fluffi','Nubbi','Foxi','Drachi']);
