@@ -1,5 +1,5 @@
 // Redaktionell geschriebene, zeitstabile Musikfragen. Format: Frage | richtig | 3 Ablenker.
-// Die 300 Interpretenfragen werden zusätzlich aus tracks.js erzeugt.
+// 300 Interpretenfragen und 300 Songtitelfragen werden aus tracks.js erzeugt.
 const sets = {
   'Charts & Rekorde': `Welches Album von Michael Jackson gilt als eines der meistverkauften Alben aller Zeiten?|Thriller|Bad|Dangerous|Off the Wall
 Welcher Song von PSY erreichte als erstes YouTube-Video eine Milliarde Aufrufe?|Gangnam Style|Gentleman|Daddy|That That
@@ -130,7 +130,67 @@ Was ist ein Remix?|Eine neu bearbeitete Version eines Musikstücks|Eine Aufnahme
 Welche Sendung wurde von Stefan Raab als Wettbewerb zwischen deutschen Bundesländern initiiert?|Bundesvision Song Contest|Eurovision Song Contest|The Voice Kids|Popstars
 Bei welcher Musikshow stimmen Länder mit Punkten über Beiträge ab?|Eurovision Song Contest|DSDS|Popstars|The Voice of Germany
 Welche Sendung zeigt Coaches, die bei einer Blind Audition mit dem Rücken zur Bühne sitzen?|The Voice of Germany|DSDS|Popstars|ZDF-Fernsehgarten
-Was ist ein Soundcheck?|Eine Probe zur Prüfung von Ton und Technik|Die Veröffentlichung eines Albums|Eine Preisverleihung|Der Ticketverkauf`
+Was ist ein Soundcheck?|Eine Probe zur Prüfung von Ton und Technik|Die Veröffentlichung eines Albums|Eine Preisverleihung|Der Ticketverkauf`,
+  'Künstlerbiografien': `In welchem Land wurde Rihanna geboren?|Barbados|Jamaika|USA|Kanada
+In welcher Stadt wurde Adele geboren?|London|Liverpool|Manchester|Birmingham
+Aus welchem Land stammt Shakira?|Kolumbien|Mexiko|Spanien|Argentinien
+Mit welcher Gruppe begann Beyoncé ihre Karriere?|Destiny's Child|TLC|Spice Girls|En Vogue
+Mit welcher Boyband wurde Harry Styles bekannt?|One Direction|Take That|Westlife|NSYNC
+Mit welcher Boyband wurde Justin Timberlake bekannt?|NSYNC|Backstreet Boys|One Direction|Boyzone
+Bei welcher Band spielte Phil Collins Schlagzeug und sang später?|Genesis|The Police|Queen|U2
+Bei welcher Band spielte Paul McCartney vor seiner Solokarriere?|The Beatles|The Rolling Stones|The Who|The Kinks
+Auf welcher Insel wurde Freddie Mercury geboren?|Sansibar|Kreta|Sizilien|Malta
+Wie lautete David Bowies Geburtsname?|David Jones|Robert Plant|Brian May|John Lennon
+Welche US-Stadt ist besonders mit Prince verbunden?|Minneapolis|Seattle|Atlanta|Boston
+In welchem Land wurde Bob Marley geboren?|Jamaika|Barbados|Trinidad und Tobago|Kuba
+Aus welcher britischen Stadt stammte Amy Winehouse?|London|Bristol|Liverpool|Leeds
+Als Frontmann welcher Band wurde Kurt Cobain bekannt?|Nirvana|Pearl Jam|Soundgarden|Foo Fighters
+In welcher Familiengruppe sang Michael Jackson als Kind?|The Jackson 5|The Temptations|The Osmonds|The Supremes
+In welchem US-Bundesstaat wurde Elvis Presley geboren?|Mississippi|Tennessee|Kalifornien|Texas
+Mit welchem US-Bundesstaat wird Bruce Springsteen besonders verbunden?|New Jersey|Florida|Nevada|Oregon
+Bei welcher Band war Sting vor seiner Solokarriere Sänger?|The Police|U2|Dire Straits|The Cure
+In welchem Land wurde Sia geboren?|Australien|Neuseeland|Kanada|Irland
+Aus welchem Land stammt Céline Dion?|Kanada|Frankreich|Belgien|Schweiz
+Aus welchem Land stammt die Popgruppe ABBA?|Schweden|Norwegen|Dänemark|Finnland
+Aus welchem Land stammt a-ha?|Norwegen|Schweden|Island|Dänemark
+Aus welchem Land stammt die Band Måneskin?|Italien|Spanien|Portugal|Frankreich
+In welcher deutschen Stadt wurde Kraftwerk gegründet?|Düsseldorf|Hamburg|München|Leipzig
+In welcher Stadt wurde die Band Oasis gegründet?|Manchester|London|Liverpool|Bristol
+Welche Sängerin wurde als Mitglied der Spice Girls als „Sporty Spice“ bekannt?|Melanie C|Emma Bunton|Geri Halliwell|Victoria Beckham
+Welche Spice-Girls-Sängerin war als „Ginger Spice“ bekannt?|Geri Halliwell|Melanie C|Emma Bunton|Melanie B
+Wer war Sänger der Band Linkin Park?|Chester Bennington|Kurt Cobain|Chris Martin|Billie Joe Armstrong
+Welcher Künstler war vor seiner Solokarriere Mitglied von Wham!?|George Michael|Robbie Williams|Elton John|Rick Astley
+In welcher Band sang Robbie Williams zuerst?|Take That|One Direction|Westlife|Boyzone
+Mit welcher Band wurde Gwen Stefani bekannt?|No Doubt|The Cranberries|Garbage|Paramore
+Welche Sängerin war Frontfrau der Band The Cranberries?|Dolores O'Riordan|Shirley Manson|Alanis Morissette|Dido
+Wer gründete Foo Fighters nach dem Ende von Nirvana?|Dave Grohl|Kurt Cobain|Eddie Vedder|Chris Cornell
+Welche Sängerin war Teil des Duos Eurythmics?|Annie Lennox|Cyndi Lauper|Dolly Parton|Tina Turner
+Welche Sängerin wurde mit dem Album „Back to Black“ bekannt?|Amy Winehouse|Adele|Duffy|Lana Del Rey
+Mit welcher Band trat Bono weltweit auf?|U2|Coldplay|R.E.M.|Oasis
+Welche deutsche Sängerin gewann 1982 den ESC?|Nicole|Nena|Lena|Katja Ebstein
+Welche Sängerin gewann 2010 den ESC für Deutschland?|Lena Meyer-Landrut|Nicole|Cascada|Sarah Connor
+Welche Sängerin gewann 2013 die Castingshow DSDS?|Beatrice Egli|Ivy Quainoo|Lena Meyer-Landrut|Sarah Connor
+Mit welcher Girlgroup wurde Sandy Mölling bekannt?|No Angels|Monrose|Queensberry|LaVive`,
+  'Songtexte ergänzen': `„Alle meine Entchen schwimmen auf dem …“ – welches Wort fehlt?|See|Fluss|Meer|Teich
+„Hänschen klein ging allein in die weite … hinein“ – was fehlt?|Welt|Stadt|Nacht|Zeit
+„Backe, backe Kuchen, der … hat gerufen“ – was fehlt?|Bäcker|Koch|Vater|König
+„Bruder Jakob, Bruder Jakob, schläfst du …?“ – was fehlt?|noch|schon|gut|lang
+„Ein Männlein steht im Walde ganz still und …“ – was fehlt?|stumm|klein|fein|krumm
+„Fuchs, du hast die Gans gestohlen, gib sie wieder …“ – was fehlt?|her|frei|fort|hin
+„Grün, grün, grün sind alle meine …“ – was fehlt?|Kleider|Blätter|Wiesen|Augen
+„Hänsel und Gretel verliefen sich im …“ – was fehlt?|Wald|Haus|Dorf|Tal
+„Hoppe, hoppe, Reiter, wenn er fällt, dann … er“ – was fehlt?|schreit|lacht|singt|weint
+„Laterne, Laterne, Sonne, Mond und …“ – was fehlt?|Sterne|Wolken|Regen|Nebel
+„O Tannenbaum, o Tannenbaum, wie treu sind deine …“ – was fehlt?|Blätter|Zweige|Nadeln|Wurzeln
+„Die Gedanken sind frei, wer kann sie …?“ – was fehlt?|erraten|verraten|erkennen|verstehen
+„Es klappert die Mühle am rauschenden …“ – was fehlt?|Bach|Fluss|See|Meer
+„Der Mond ist aufgegangen, die goldnen Sternlein …“ – was fehlt?|prangen|tanzen|strahlen|wandern
+„Der Kuckuck und der Esel, die hatten einen …“ – was fehlt?|Streit|Traum|Plan|Tanz
+„Freude, schöner Götterfunken, Tochter aus …“ – was fehlt?|Elysium|Olympus|Athen|Arkadia
+„Stille Nacht, heilige Nacht, alles schläft, einsam …“ – was fehlt?|wacht|lacht|ruht|singt
+„Sah ein Knab ein Röslein stehn, Röslein auf der …“ – was fehlt?|Heiden|Wiesen|Erden|Halde
+„Am Brunnen vor dem Tore, da steht ein …“ – was fehlt?|Lindenbaum|Apfelbaum|Birnbaum|Rosenstrauch
+„Bunt sind schon die Wälder, gelb die …“ – was fehlt?|Stoppelfelder|Sonnenstrahlen|Blumenfelder|Abendhimmel`
 };
 
 export const KNOWLEDGE = Object.entries(sets).flatMap(([category, block]) =>

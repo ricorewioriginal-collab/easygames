@@ -19,7 +19,12 @@ const artistQuestions = TRACKS.map((track, index) => {
   }
   return { id: `artist:${track.id}`, category: track.category, prompt: `Wer veröffentlichte „${track.title}“?`, answer: track.artist, options: [track.artist, ...wrong] };
 });
-const quizBank = [...KNOWLEDGE, ...artistQuestions];
+const songQuestions = TRACKS.map((track, index) => {
+  const otherTitles = [...new Set(TRACKS.filter(other => other.artist !== track.artist && other.title !== track.title).map(other => other.title))];
+  const wrong = [otherTitles[(index + 7) % otherTitles.length], otherTitles[(index + 31) % otherTitles.length], otherTitles[(index + 59) % otherTitles.length]];
+  return { id: `song:${track.id}`, category: track.category, prompt: `Welcher dieser Songs stammt von ${track.artist}?`, answer: track.title, options: [track.title, ...wrong] };
+});
+const quizBank = [...KNOWLEDGE, ...artistQuestions, ...songQuestions];
 const quizById = new Map(quizBank.map(question => [question.id, question]));
 const state = { players: [], active: 0, rounds: 0, clipDeck: [], quizDeck: [], current: null, starter: null, solved: false, lastCorrect: false, voice: true, playing: false, pair: null, result: '', filter: 'all', finished: false, sourceList: [], sourceIndex: 0, deezerId: null };
 let audioContext;
@@ -113,7 +118,17 @@ function startGame() {
   say(`Willkommen bei Zeitsprung Radio! Ich bin Vito. Der Startsong ist ${state.starter.title} von ${state.starter.artist}, aus ${state.starter.year}. Acht Punkte bringen den Sieg!`);
   nextRound(false);
 }
-function pickQuiz() { if(!state.quizDeck.length)state.quizDeck=shuffle(quizPool());const question=state.quizDeck.pop();return{type:'quiz',question,options:shuffle(question.options)}; }
+function pickQuiz() {
+  if(!state.quizDeck.length)state.quizDeck=shuffle(quizPool());
+  let index=state.quizDeck.length-1;
+  if(state.filter==='all') {
+    const kind=shuffle(['artist:','song:','k:Künstlerbiografien:','k:Songtexte ergänzen:','k:'])[0];
+    const matches=state.quizDeck.map((question,i)=>({question,i})).filter(({question})=>question.id.startsWith(kind));
+    if(matches.length)index=matches[Math.floor(Math.random()*matches.length)].i;
+  }
+  const [question]=state.quizDeck.splice(index,1);
+  return{type:'quiz',question,options:shuffle(question.options)};
+}
 function pickClip() { if(!state.clipDeck.length)state.clipDeck=shuffle(clipPool().filter(track=>!state.players.some(player=>player.timeline.some(card=>card.id===track.id))));const track=state.clipDeck.pop();return track?{type:'timeline',track}:pickQuiz(); }
 function nextRound(announce=true) {
   stopPlayer();state.playing=false;state.solved=false;state.lastCorrect=false;state.result='';state.sourceList=[];state.sourceIndex=0;state.deezerId=null;state.rounds++;

@@ -5,9 +5,9 @@ Eigenständige Musikshow für easygames: 3D-Live-Studio, responsive App-Oberflä
 ## Spielablauf
 
 - Musikrunden: Einen Song direkt im eingebetteten Player hören und auf der eigenen Zeitleiste einordnen. Bei gleichem Jahr zählen alle chronologisch passenden Lücken.
-- Quizrunden: Vier Antwortmöglichkeiten zu Charts, Jahrescharts, Künstlern/Bands, ESC, DSDS, Popstars, The Voice of Germany und Musikwissen.
+- Quizrunden: Vier Antwortmöglichkeiten zu Charts, Jahrescharts, Künstlern/Bands, Songtiteln, Biografien, gemeinfreien Songtexten, ESC, DSDS, Popstars, The Voice of Germany und Musikwissen.
 - Acht richtige Antworten gewinnen. Ein bis vier Spieler können lokal oder per Handy-Controller mitspielen.
-- 300 Songs/Jahresfragen in `tracks.js`, 300 daraus abgeleitete Interpretenfragen und 130 redaktionelle Zusatzfragen in `knowledge.js`. Für Musikrunden sind 28 kuratierte Songs mit konkreten YouTube-IDs verfügbar.
+- 300 Songs/Jahresfragen in `tracks.js`, 300 daraus abgeleitete Interpretenfragen, 300 Songtitelfragen und 190 redaktionelle Zusatzfragen, darunter 40 Biografiefragen und 20 Lückentexte aus gemeinfreien Liedern in `knowledge.js`. Für Musikrunden sind 28 kuratierte Songs mit konkreten YouTube-IDs verfügbar.
 
 ## Musikquellen
 
