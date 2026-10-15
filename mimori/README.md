@@ -1,54 +1,52 @@
-# Mimori – Deine 3D-Haustier-App
+# Mimori – Dein 3D-Haustier mit Spielhalle
 
-Mobile-first-Tamagotchi-Spiel innerhalb von EasyGames für Android-Browser, PWA, Tablet und Desktop.
+Eigenständige, kostenlose Mobile-First-Haustier-App in EasyGames. Entwickelt für Android-Browser, installierte PWA, Tablet und Desktop.
 
-## Bedienung
+## Was ist neu?
 
-- **Großes 3D-Wesen:** direkt auf dem Bildschirm mit dem Finger nach links/rechts wischen und frei herumdrehen. Maus ziehen funktioniert ebenfalls. Mit ↶ / ↷ kannst du auch über große Tasten drehen, ● richtet das Wesen wieder nach vorne aus.
-- **Darunter die Pflegetasten:** Füttern 🍓, Spielen 🪀, Baden 🫧, Schlafen 🌙, Kuscheln 💞 und Sternfang ⭐.
-- **Weitere Spielereien:** Tanzen 🎵, eine eigene Stimme 🎶 und Überraschungen 🎁, jeweils mit eigens programmierten Sounds und Effekten.
-- **Oben links:** Name, Alter und Figurenart. **Oben rechts:** Entwicklungsstufe und ⚙ Einstellungen.
-- **Einstellungen (mobiler Drawer):** Figurenwechsel, Fellfarbe, Ton ein/aus, Name, optionale Erinnerungen, Spielanleitung und Google-Speicherung.
+**3D-Grafik:** Auf mobilen Geräten waren die weißen Lichtflächen teils ausgebrannt. Die Szene verwendet jetzt warmes, deutlich zurückgenommenes Licht, eine niedrigere Belichtung (ACES Filmic Tone Mapping bei Exposure 0,83), matte/sattere Materialien und einen sichtbaren Kontakt-Schatten. Drei Zimmerstile passen die Farben an. Die vier eigenständig geformten Mimoris (Fluffi, Nubbi, Foxi, Drachi) bleiben frei drehbar und in vier Fellfarben verfügbar.
 
-## Vier eigenständige 3D-Wesen
+**Spielhalle:** Statt des sehr einfachen Sternfangs gibt es fünf unterschiedliche Minigames mit eigenständiger Steuerung, Punkten, Zeitlimit und Sieg-/Niederlage-Bedingungen:
 
-Jeder der vier Typen hat eine eigene Modellstruktur, nicht bloß dieselbe Figur in anderen Farben.
+1. **🍓 Beerensturm:** Fruchtfang mit horizontal bewegtem Korb und Bomben. Touch zum Bewegen oder Pfeiltasten. Drei Leben, Kombos und seltene Bonusfrüchte.
+2. **🃏 Zauber-Memory:** Sechs versteckte Paare in einem 3×4-Raster. Karten aufdecken, Paare merken, in 50 Sekunden schaffen. Treffer werden belohnt.
+3. **🎵 Beat-Party:** Vier Notenspuren mit Treffzone. Im richtigen Rhythmus auf die vier Touch-Flächen tippen oder D/F/J/K drücken. Kombos und Trefferwertung.
+4. **☁️ Wolken-Sprint:** Ein automatisch laufender Hindernisparcours. Springe per Touch / Leertaste / Pfeil hoch, sammle Sterne und weiche Hindernissen aus.
+5. **🫧 Blasenlabor:** Helle Seifenblasen einsammeln, roten Schleim vermeiden, drei Leben und Kombos. Die Blasen bewegen sich und werden schneller.
 
-| Wesen | Körperbau |
-|---|---|
-| **Fluffi** | Runder Langohren-Hase mit Puschelschwanz |
-| **Nubbi** | Niedriger kugeliger Otter mit Rückenpanzer und Antennen |
-| **Foxi** | Schlanker kleiner Fuchs mit spitzen Ohren, längerer Schnauze und buschigem Schweif |
-| **Drachi** | Kleiner Drache mit Schnauze, Hörnern, Rückenstacheln, Flügeln und Schwanz |
+Die Spiele werden nicht als reine Dekoration ausgegeben: Jedes hat einen eigenen Spielzustand, Gameplay, Eingaben, Kollision/Zuordnung, Ende und Belohnung. Bestwerte werden im normalen Spielstand gespeichert.
 
-Alle Typen unterstützen vier Fellfarben. Beim Wechsel bleiben Futter, Erfahrung, Alter und die anderen Werte des bisherigen Haustiers erhalten. Die ausgewählte Figurenart wird im normalen Spielstand gespeichert, auch bei älteren vorhandenen Spielständen funktioniert der Standardtyp Fluffi.
+**Belohnungen und Accessoires:** Für die Resultate gibt es Sterne und Erfahrung. Ein Tagesgeschenk bringt einmal pro Tag zusätzliche Sterne, Beeren und Seife. Im Shop kannst du ein Glöckchen, eine Schleife oder eine Sternkrone sowie zwei alternative Zimmerwelten freischalten. Kein Echtgeld, keine Werbung und kein Pay-to-win.
 
-## Unterschiedliche Sounds und Animationen
+**Foto:** Über „Mimori-Foto“ kann der 3D-Inhalt, wenn der Browser es erlaubt, als PNG gespeichert werden.
 
-Alle Töne werden mit Web Audio lokal synthetisiert, ohne Audio-Dateien oder fremde Samples:
-- Kuscheln: mehrstimmiges tiefes, rhythmisch modulierendes **Schnurren**
-- Füttern: kleine Kau-/Schmatzgeräusche
-- Baden: Blubbern und aufsteigende Blasenklänge
-- Schlafen: leises, langsames Ausatmen
-- Spielen: schnelle, hüpfende Töne
-- Tanzen: kleine rhythmische Tonfolge
-- Jedes Wesen hat eine charakteristische Begrüßungsstimme
+## Weiterhin enthalten
 
-Beim Spielen gibt es unterschiedliche Sterne/Herzen/Blasen-Partikel, Bewegungen und Wachstumseffekte.
+- Füttern, Spielen, Baden, Schlafen, Kuscheln, Tanzen und Überraschungen
+- Selbst erzeugte Sounds, einschließlich Schnurren beim Kuscheln
+- Langfristiges Wachstum und Bedürfnisse basierend auf vergangener Zeit
+- Vier unterschiedliche 3D-Wesen, vier Farbvarianten
+- Opt-in-Erinnerungen, solange Browser/PWA laufen (keine zuverlässige Zustellung bei geschlossener App)
+- Lokaler Spielstand unter `easygames.mimori.v1`
+- Bestehende Google-Speicherintegration über `../cloud/anmacha-cloud.js` und `data-game="mimori"`, freiwillig. Der Google-Abgleich erfordert Internet und Anmeldung und wird nicht als offline verfügbar behauptet
+- Offline-PWA mit Service Worker
 
-## Speicherstand und Google
+## Technische Dateiliste
 
-Mimori speichert `easygames.mimori.v1` automatisch lokal. Google-Sync nutzt das **bereits vorhandene** `cloud/anmacha-cloud.js` mit `data-game="mimori"` und dem vorhandenen Firebase-Projekt; zusätzliche Zugangsdaten werden nicht benötigt. Die Anmeldung bleibt freiwillig. Funktioniert bei vorhandenem Google-Login und Onlinezugang gemäß `cloud/README.md`. Die Cloud-Synchronisation wird bei einem anderen Gerät aus der gespeicherten Figur inklusive Typ und Farbe wiederhergestellt.
+- `index.html` – App-Oberfläche
+- `game.js` – 3D-Haustier, Pflege, Shop, Google-kompatibler Spielstand, App-Aktionen
+- `model.js` – Pflegewerte, Sternkonto, Bestwerte, Belohnungen, Tagesbonus, Besitz und Shop
+- `sound.js` – lokale Web-Audio-Effekte
+- `arcade.js`, `arcade.css` – eigenständige Canvas-/DOM-Minispiele und responsives Spielhallen-Design
+- `sw.js` – Offline-/PWA-Cache, ohne externen Push-Server
+- `icon.svg`, `manifest.webmanifest`
 
-## Erinnerungen
+## Tests
 
-Freiwillige lokale Browser-/PWA-Benachrichtigungen. Die Anwendung muss laufen; eine vollständig geschlossene oder vom Betriebssystem pausierte App verschickt **keine** Meldungen. Ruhezeit 22–8 Uhr, maximal drei Meldungen/Tag, zeitlicher Mindestabstand. Ein Push-Server ist nicht nötig. Die Browser-Berechtigung wird erst angefragt, wenn jemand die Erinnerungen aktiv einschaltet.
-
-## Testen
-
-```bash
+```sh
 node tools/test-mimori.cjs
+node tools/test-mimori-arcade.cjs
 node tools/build-sync.js --check
 ```
 
-Die Regressionstests prüfen u. a. vier voneinander abweichende Modellgeometrien, gespeicherte Figuren-/Farbauswahl, Touch-Rotation, Pfeiltasten, Pflegeaktionen, Bonusaktionen, lokale Erinnerungen und die Cloud-Einbindung. Die automatisierte WebGL-Simulation ersetzt **keinen echten Test** auf Android, iOS und Desktop; Google-Login und echte Audioausgabe müssen auf Geräten geprüft werden.
+Die automatisierten Tests decken Pflege und alte Spielstände, 3D-Modellinitialisierung im Mock, vier Arten, Farbwechsel, Sternkonto, Tagesbonus, Einkäufe, Arcade-Spielzustände, Timer, Touch-/Button-Eingaben, Ergebnis- und Einmal-Belohnungen ab. Ein echter Test auf verschiedenen Mobilgeräten bleibt erforderlich, insbesondere Farben/Belichtung, Audio, Download und Google-Login. Wenn JavaScript bei geschlossener PWA pausiert, erfolgen auch keine Benachrichtigungen.
