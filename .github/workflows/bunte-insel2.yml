@@ -44,7 +44,9 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add bunte-insel2/assets bunte-insel2/index.html bunte-insel2/sw.js bunte-insel2/version.json
+          mkdir -p bunte-insel2/docs/review
+          cp /tmp/bi2-review/*.png bunte-insel2/docs/review/
+          git add bunte-insel2/docs/review bunte-insel2/assets bunte-insel2/index.html bunte-insel2/sw.js bunte-insel2/version.json
           if ! git diff --cached --quiet; then
             git commit -m 'Build geprüfte Bunte Insel 2 Neuauflage'
             git push

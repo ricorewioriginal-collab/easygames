@@ -85,3 +85,20 @@ test('jedes ursprüngliche Quest-Ziel hat einen konkreten Ort oder einen nachwei
   }
   assert.deepEqual(missing, []);
 });
+test('ein Splitter aus einer anderen Welt erfüllt kein neues Sammelziel; der echte Fund bleibt gespeichert', () => {
+  const { g, quests } = fixture();
+  g.save.quests.w_drachen = { stage: 2, progress: {}, done: false, started: 0, hints: 0 };
+  g.save.inventory.splitter = 1; quests.recheck();
+  assert.equal(g.save.quests.w_drachen.progress.s ?? 0, 0);
+  g.save.collected.push('pick:dr_splitter'); quests.recheck();
+  assert.equal(g.save.quests.w_drachen.progress.s, 1);
+});
+test('Zielsuche überspringt verbrauchte Fundstellen und folgt der aktuellen NPC-Position', () => {
+  const { g, npcs } = fixture();
+  g.interact.add({ id: 'pick:alt', tag: 'hub', x: 0, y: 1, z: 0, r: 2, icon: '💎', label: 'alt', meta: { item: 'kristall' }, when: () => false, act() {} });
+  g.interact.add({ id: 'pick:neu', tag: 'hub', x: 10, y: 1, z: 0, r: 2, icon: '💎', label: 'neu', meta: { item: 'kristall' }, act() {} });
+  assert.equal(interactFor(g, { id: 'k', type: 'have', target: 'kristall', label: 'Kristall' }).id, 'pick:neu');
+  npcs.live.set('florian', { pos: { x: 42, z: -300 } });
+  const q = ALL_QUESTS.find(q => q.id === 's_stadt_brief');
+  assert.deepEqual(resolveObjective(g, npcs, q, q.stages[0], q.stages[0].objectives[0]), { x: 42, z: -300, precise: true });
+});

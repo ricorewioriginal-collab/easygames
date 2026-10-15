@@ -68,7 +68,7 @@ export const SCHWAMM_QUESTS: QuestDef[] = [
       { text: 'Tadeus möchte für die Eröffnung Klarinette spielen – bring ihm 3 Quallen-Gelee (sanft mit dem Kescher fangen).', hints: ['Die Quallen schweben im Quallenfeld im Osten.', 'Du brauchst einen Kescher (Spielzeugladen oder Maja).', 'Qualle anstupsen, Gelee einsammeln, zu Tadeus bringen.'],
         objectives: [{ id: 'q', type: 'have', target: 'qualle', via: 'qualle', n: 3, label: 'Sammle Quallen-Gelee' }, { id: 't', type: 'talk', target: 'tadeus', label: 'Gib Tadeus das Gelee' }],
         dialog: { tadeus: { start: { t: 'Hmpf. Danke. … Wirklich, danke. Ich spiele heute Abend zur Eröffnung. Du darfst zuhören. Wenn du willst.', do: [{ take: ['qualle', 3] }, { friend: 3 }, { flag: 'krabbe_offen' }], end: false } } } },
-      { text: 'Die Knusper-Krabbe ist offen! Im ersten Burger steckt … etwas Leuchtendes.', hints: ['Vor der Knusper-Krabbe.', 'Heb den Splitter auf.', 'Sprich danach mit Zangenfuß.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 'z', type: 'talk', target: 'zangenfuss', label: 'Sprich mit Zangenfuß' }],
+      { text: 'Die Knusper-Krabbe ist offen! Im ersten Burger steckt … etwas Leuchtendes.', hints: ['Vor der Knusper-Krabbe.', 'Heb den Splitter auf.', 'Sprich danach mit Zangenfuß.'], objectives: [{ id: 's', type: 'interact', target: 'pick:sw_splitter', label: 'Nimm den Splitter' }, { id: 'z', type: 'talk', target: 'zangenfuss', label: 'Sprich mit Zangenfuß' }],
         dialog: { zangenfuss: { start: { t: 'ARR! Die Krabbe ist offen, die Gäste sind da! Ab heute ist jeder fünfte Burger für dich gratis!', do: [{ give: ['burger', 2] }, { friend: 3 }], end: false } } } }
     ],
     rewards: { stars: 25, xp: 130, flag: 'done_schwamm', text: 'Die Knusper-Krabbe brutzelt wieder!' } }
@@ -138,7 +138,7 @@ export const ATLANTIS_QUESTS: QuestDef[] = [
       { text: 'Spiel die Melodie an der Kristall-Harfe nach und sammle 5 Orichalcum-Splitter am äußeren Ring.', hints: ['Die Harfe steht im Westen, das Orichalcum am äußersten Ring.', 'Die Harfe: Hör zu und tippe die Kristalle in derselben Reihenfolge.', 'Merke dir 7 Töne – und lauf einmal den äußeren Ring ab.'],
         objectives: [{ id: 'h', type: 'minigame', target: 'harfe', label: 'Spiel die Kristall-Harfe' }, { id: 'o', type: 'have', target: 'orichalcum', n: 5, label: 'Sammle Orichalcum' }], onDone: [{ flag: 'harfe_gespielt' }] },
       { text: 'Leg das Orichalcum ins Herz im Tempel.', hints: ['Der Tempel steht in der Mitte auf dem Stufenberg.', 'Das Herz schwebt zwischen den Säulen.', 'Aktion drücken.'], objectives: [{ id: 'h', type: 'flag', target: 'herz_atlantis', via: 'herz', label: 'Wecke das Herz von Atlantis' }] },
-      { text: 'Im Licht des Herzens schwebt ein Splitter. Danach zu Thalassa.', hints: ['Direkt neben dem Herzen.', 'Thalassa ist am Tempel.', 'Splitter nehmen, Thalassa ansprechen.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 't', type: 'talk', target: 'thalassa', label: 'Sprich mit Thalassa' }],
+      { text: 'Im Licht des Herzens schwebt ein Splitter. Danach zu Thalassa.', hints: ['Direkt neben dem Herzen.', 'Thalassa ist am Tempel.', 'Splitter nehmen, Thalassa ansprechen.'], objectives: [{ id: 's', type: 'interact', target: 'pick:at_splitter', label: 'Nimm den Splitter' }, { id: 't', type: 'talk', target: 'thalassa', label: 'Sprich mit Thalassa' }],
         dialog: { thalassa: { start: { t: 'Atlantis leuchtet wieder! Nimm diese Taucherblase – damit schwimmst du schneller als jeder Fisch.', do: [{ ability: 'taucherblase' }, { friend: 4 }], end: false } } } }
     ],
     rewards: { stars: 30, xp: 140, flag: 'done_atlantis', text: 'Das Herz von Atlantis schlägt wieder.' } }
@@ -185,7 +185,7 @@ export const FUNKWELLE_QUESTS: QuestDef[] = [
       { text: 'Stell am Frequenz-Dreher die Sender wieder ein und bring Lumi die Noten.', hints: ['Der Automat steht vor dem Funkturm.', 'Stoppe die Nadel im grünen Bereich – 5 von 8.', 'Danach mit Lumi sprechen.'],
         objectives: [{ id: 'f', type: 'minigame', target: 'frequenz', label: 'Gewinne den Frequenz-Dreher' }, { id: 'l', type: 'talk', target: 'lumi', label: 'Gib Lumi die Noten' }],
         dialog: { lumi: { start: { t: 'Wahnsinn, alle Sender klingen wieder glasklar! Hörst du? Auf dem Sternenkanal läuft gerade das Lied vom traurigen Wölkchen …', do: [{ take: ['note', 6] }, { friend: 3 }], end: false } } } },
-      { text: 'Am Fuß des Funkturms leuchtet ein Splitter.', hints: ['Direkt am Turm.', 'Mitte der Insel.', 'Aufheben.'], objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }] }
+      { text: 'Am Fuß des Funkturms leuchtet ein Splitter.', hints: ['Direkt am Turm.', 'Mitte der Insel.', 'Aufheben.'], objectives: [{ id: 's', type: 'interact', target: 'pick:fw_splitter', label: 'Nimm den Splitter' }] }
     ],
     rewards: { stars: 25, xp: 120, flag: 'done_funkwelle', cosmetic: 'hat:katzenohren', text: 'Die Funkwelle sendet wieder auf allen Kanälen.' } }
 ];

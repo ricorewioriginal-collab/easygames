@@ -33,8 +33,13 @@ try {
   const before = await page.evaluate(() => window.__bi2.g.count('karotte'));
   await page.getByRole('button', { name: '🔪 Zutaten schneiden', exact: true }).click();
   await page.getByRole('button', { name: '🥣 Rühren', exact: true }).click();
-  await page.waitForFunction(() => { const i = document.querySelector('.cooking-meter i'); const n = parseFloat(i?.style.left ?? '0'); return n > 43 && n < 60; });
-  await page.getByRole('button', { name: '🍳 Jetzt herausnehmen', exact: true }).click();
+  let cooked = false;
+  for (let attempt = 0; attempt < 8 && !cooked; attempt++) {
+    await page.waitForFunction(() => { const i = document.querySelector('.cooking-meter i'); const n = parseFloat(i?.style.left ?? '0'); return n > 44 && n < 58; });
+    await page.getByRole('button', { name: '🍳 Jetzt herausnehmen', exact: true }).click();
+    cooked = await page.getByRole('button', { name: '✔ Fertig', exact: true }).isVisible();
+  }
+  assert.ok(cooked, 'Kochen lässt sich über das sichtbare Timing abschließen');
   await page.getByRole('button', { name: '✔ Fertig', exact: true }).click();
   assert.equal(await page.evaluate(() => window.__bi2.g.count('karotte')), before - 2);
   // Freies Bauen über die Rasteroberfläche. Rückgängig und Abtragen müssen dasselbe Bauwerk verändern.

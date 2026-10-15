@@ -115,7 +115,7 @@ export const MAIN_QUESTS: QuestDef[] = [
     summary: 'Auf der Prisma-Insel hütet jedes Gebiet ein Stück des letzten Splitters.',
     stages: [
       { text: 'Meistere den Ki-Garten, die Runen-Arena und den Datenhain.', hints: ['Die Prisma-Insel liegt ganz im Nordosten, hinter dem Bauland.', 'Meisterin Ama im Ki-Garten, Runenmeister Rune in der Arena, Forscherin Bit im Datenhain.', 'Gewinne das Ki-Turnier, das Runen-Turnier und hilf einem Datenwesen, sich zu entwickeln.'],
-        objectives: [{ id: 'k', type: 'flag', target: 'done_ki', label: 'Ki-Garten: das Turnier' }, { id: 'r', type: 'flag', target: 'done_runen', label: 'Runen-Arena: das Turnier' }, { id: 'd', type: 'flag', target: 'done_daten', label: 'Datenhain: ein Freund entwickelt sich' }, { id: 'splitter_prisma', type: 'have', target: 'splitter', via: 'pick:pr_splitter', label: 'Nimm den letzten Splitter auf der Prisma-Insel' }] },
+        objectives: [{ id: 'k', type: 'flag', target: 'done_ki', label: 'Ki-Garten: das Turnier' }, { id: 'r', type: 'flag', target: 'done_runen', label: 'Runen-Arena: das Turnier' }, { id: 'd', type: 'flag', target: 'done_daten', label: 'Datenhain: ein Freund entwickelt sich' }, { id: 'splitter_prisma', type: 'interact', target: 'pick:pr_splitter', label: 'Nimm den letzten Splitter auf der Prisma-Insel' }] },
       { text: 'Bring den letzten Splitter zu Lasse.', hints: ['Lasse am Leuchtturm.', 'Folge der Lichtsäule.', 'Sprich mit Lasse.'],
         objectives: [{ id: 'l', type: 'talk', target: 'lasse', label: 'Sprich mit Lasse' }],
         dialog: { lasse: {

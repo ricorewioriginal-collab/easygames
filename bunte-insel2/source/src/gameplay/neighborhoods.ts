@@ -159,10 +159,10 @@ export class Neighborhoods implements GameSystem {
     showButton('🔪 Zutaten schneiden', () => { g.sfx('chop'); text.textContent = '2 · Alles gut vermischen'; showButton('🥣 Rühren', () => {
       text.textContent = '3 · Im grünen Bereich stoppen. Zu früh oder zu spät? Du kannst es ohne Zutatenverlust wiederholen.';
       m.body.append(bar); started = performance.now();
-      const value = () => (Math.sin((performance.now() - started) / 900 - Math.PI / 2) + 1) / 2;
+      const value = () => (Math.sin((performance.now() - started) / 1800 - Math.PI / 2) + 1) / 2;
       const animate = () => { if (!document.body.contains(bar) || stopped) return; pointer.style.left = (value() * 100) + '%'; raf = requestAnimationFrame(animate); }; animate();
       showButton('🍳 Jetzt herausnehmen', () => {
-        const v = value(); if (v < 0.38 || v > 0.72) { started = performance.now(); g.sfx('bump', 0.3); text.textContent = 'Fast! Versuch es noch einmal im grünen Bereich.'; return; }
+        const v = parseFloat(pointer.style.left || '0') / 100; if (v < 0.34 || v > 0.78) { started = performance.now(); g.sfx('bump', 0.3); text.textContent = 'Fast! Versuch es noch einmal im grünen Bereich.'; return; }
         if (!available()) { text.textContent = 'Die Zutaten sind nicht mehr im Rucksack.'; return; }
         stopped = true; cancelAnimationFrame(raf); for (const [id, n] of needs) g.take(id, n);
         g.give(d.reward); done?.(); g.sfx('success'); text.textContent = 'Geschafft! ' + itemName(d.reward) + ' ist im Rucksack.'; showButton('✔ Fertig', () => m.close());

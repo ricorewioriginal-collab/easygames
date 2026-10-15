@@ -85,7 +85,7 @@ export const STADT_QUESTS: QuestDef[] = [
           moritz: { start: { t: 'Mein Fest-Lied hat drei Strophen – eine für jede Stunde nach dem Mittag! Dann geht’s los!', emote: 'dance', end: false } }
         } },
       { text: 'Stell das Uhrwerk am Fuß des Uhrturms auf die richtige Zeit.', hints: ['Nach dem Mittag, kleiner Zeiger ganz rechts, drei Strophen.', 'Mittag ist 12 Uhr. Drei Stunden später …', 'Wähle 3 Uhr am Uhrwerk.'],
-        objectives: [{ id: 'u', type: 'flag', target: 'uhr_gestellt', via: 'uhr', label: 'Stell die Uhr richtig' }, { id: 's', type: 'have', target: 'splitter', label: 'Heb den Kompass-Splitter auf' }] },
+        objectives: [{ id: 'u', type: 'flag', target: 'uhr_gestellt', via: 'uhr', label: 'Stell die Uhr richtig' }, { id: 's', type: 'interact', target: 'pick:stadt_splitter', label: 'Heb den Kompass-Splitter auf' }] },
       { text: 'Erzähl Otto, dass die Uhr wieder läuft.', hints: ['Otto steht neben dem Uhrturm.', 'Am Brunnenplatz.', 'Sprich mit Otto.'],
         objectives: [{ id: 'o', type: 'talk', target: 'otto', label: 'Sprich mit Otto' }],
         dialog: { otto: { start: { t: 'Sie tickt! Sie TICKT! Und schau – alle erinnern sich wieder an ihre Pläne. Danke! Und diesen leuchtenden Splitter … den bringst du am besten Lasse, ja?', do: [{ friend: 3 }], end: false } } } }
@@ -171,7 +171,7 @@ export const FELLRETTER_QUESTS: QuestDef[] = [
       { text: 'Folge Blitz’ goldener Duftspur und finde alle vier Welpen.', hints: ['Blitz läuft voraus und hinterlässt goldenen Glitzer.', 'Ein Welpe ist unter Palmen, einer am Leuchtturm, einer hinter der Bellwarte, einer im Café-Garten.', 'Drück bei jedem Welpen die Aktionstaste.'],
         objectives: [0, 1, 2, 3].map(i => ({ id: 'w' + i, type: 'interact' as const, target: 'welpe' + i, label: 'Welpe ' + WELPEN[i][2] + ' (' + WELPEN[i][3] + ')' })) },
       { text: 'Bring die Welpen zur Bellwarte – im Welpenkorb liegt etwas Leuchtendes.', hints: ['Die Bellwarte ist das große weiße Gebäude mit den bunten Toren.', 'Vor den Toren steht der Korb.', 'Heb den Splitter auf und sprich mit Pia.'],
-        objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter aus dem Korb' }, { id: 'p', type: 'talk', target: 'pia_hund', label: 'Sprich mit Pia' }],
+        objectives: [{ id: 's', type: 'interact', target: 'pick:fr_splitter', label: 'Nimm den Splitter aus dem Korb' }, { id: 'p', type: 'talk', target: 'pia_hund', label: 'Sprich mit Pia' }],
         dialog: { pia_hund: { start: { t: 'Alle vier! Du bist eine echte Fellretterin, ein echter Fellretter! Und die Welpen sagen, das Wölkchen wollte nur spielen. Es war ganz traurig, als sie weggelaufen sind.', do: [{ friend: 4 }, { achieve: 'fellretter' }], end: false } } } }
     ],
     rewards: { stars: 25, xp: 100, flag: 'done_fellretter', text: 'Alle Welpen sind zurück in der Bellwarte!' } }
@@ -232,7 +232,7 @@ export const DRACHEN_QUESTS: QuestDef[] = [
       { text: 'Lies das Wandbild und entzünde die sechs Fackeln in der richtigen Reihenfolge.', hints: ['Die Hinweis-Tafel steht südlich vom Drachenplatz.', 'Die Reihenfolge sind die Farben des Regenbogens.', 'Rot, Orange, Gelb, Grün, Blau, Violett.'], objectives: [{ id: 'f', type: 'flag', target: 'puzzle_fackeln', label: 'Entzünde die sechs Fackeln' }] },
       { text: 'Flieg durch das Himmelstor (Drachenflug gewinnen).', hints: ['Das Tor steht nördlich vom Platz.', 'Halten = steigen. Durch die goldenen Ringe!', 'Weiche den Gewitterwolken aus.'], objectives: [{ id: 'm', type: 'minigame', target: 'drachenflug', via: 'himmelstor', label: 'Gewinne den Drachenflug' }] },
       { text: 'Hinter dem Himmelstor glitzert etwas. Heb es auf und erzähl Flora davon.', hints: ['Direkt hinter dem Tor.', 'Flora ist bei der Drachenhöhle.', 'Splitter nehmen, dann mit Flora sprechen.'],
-        objectives: [{ id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter' }, { id: 'f', type: 'talk', target: 'flora', label: 'Sprich mit Flora' }],
+        objectives: [{ id: 's', type: 'interact', target: 'pick:dr_splitter', label: 'Nimm den Splitter' }, { id: 'f', type: 'talk', target: 'flora', label: 'Sprich mit Flora' }],
         dialog: { flora: { start: { t: 'Das Himmelstor ist wieder offen! Weißt du was? Wer durch das Tor geflogen ist, bekommt die Drachenflügel. In der Luft Springen gedrückt halten – und gleiten!', do: [{ ability: 'gleiten' }, { cosmetic: 'acc:drachenfluegel' }, { achieve: 'drachen_freund' }, { friend: 3 }], end: false } } } }
     ],
     rewards: { stars: 25, xp: 110, flag: 'done_drachen', cosmetic: 'hat:drachenhelm', text: 'Die Fackeln brennen, das Himmelstor ist offen – und du kannst gleiten!' } }
@@ -296,7 +296,7 @@ export const DAMPFER_QUESTS: QuestDef[] = [
       { text: 'Bring die Eimer zu Willi.', hints: ['Willi steht neben seiner Statue.', 'Auf der Schachbrett-Plaza.', 'Sprich mit Willi.'], objectives: [{ id: 'w', type: 'talk', target: 'willi', label: 'Gib Willi die Farbeimer' }],
         dialog: { willi: { start: { t: '(Willi schwingt einen riesigen Pinsel – SPLASH! Rot, Gelb, Blau … der ganze Hafen leuchtet!) „DANKE!!!“', do: [{ take: ['farbeimer', 6] }, { flag: 'dampfer_farbe' }, { panel: 'reloadWorld', panelArg: 'dampfer' }, { burst: true }], end: false } } } },
       { text: 'Jetzt kann das Orchester wieder spielen! Spiel beim Dampfer-Orchester mit.', hints: ['Der Pavillon ist im Westen der Plaza.', 'Der Spielautomat steht vor dem Pavillon.', 'Triff mindestens 60 % der Noten.'],
-        objectives: [{ id: 'o', type: 'minigame', target: 'orchester', label: 'Spiel beim Orchester mit' }, { id: 's', type: 'have', target: 'splitter', label: 'Nimm den Splitter aus dem Notenständer' }] }
+        objectives: [{ id: 'o', type: 'minigame', target: 'orchester', label: 'Spiel beim Orchester mit' }, { id: 's', type: 'interact', target: 'pick:dm_splitter', label: 'Nimm den Splitter aus dem Notenständer' }] }
     ],
     rewards: { stars: 25, xp: 110, flag: 'done_dampfer', text: 'Der Hafen ist wieder kunterbunt – und das Orchester spielt!' } }
 ];

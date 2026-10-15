@@ -40,7 +40,7 @@ Die Weltgeschichten bleiben bestehen. Jede Insel erhält zusätzlich eine Tätig
 
 ## Prüfung
 
-`node --experimental-transform-types tests/worlds.test.mjs` prüft alle 20 Weltaufbauten, freie und stabile Standorte, sämtliche ursprünglichen Quest-Zielorte, Beete nach einem Inselwechsel, echte Tore, Baukollisionen und erhaltene Spielstände. Dieser Test nutzt echte Three.js-Geometrie und Physik; er bewertet keine Grafik.
+`node --experimental-transform-types tests/worlds.test.mjs` prüft alle 20 Weltaufbauten, freie und stabile Standorte, sämtliche ursprünglichen Quest-Zielorte, die Zuordnung einzelner Splitter, verbrauchte Fundstellen, Beete nach einem Inselwechsel, echte Tore, Baukollisionen und erhaltene Spielstände. Dieser Test nutzt echte Three.js-Geometrie und Physik; er bewertet keine Grafik.
 
 `npm run typecheck && npm run build:offline && npm run deploy` baut die auslieferbare Fassung. `node e2e/renewal.mjs` prüft sie mit Chromium, einschließlich Küche, Bauen, Mitfahrt, Speichern und Touch-Viewport. Bilder landen in `/tmp/bi2-review`.
 

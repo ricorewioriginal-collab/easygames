@@ -178,6 +178,8 @@ export class QuestEngine {
             const have = this.save.inventory[item] ?? 0;
             if (have > (s.progress[o.id] ?? 0)) this.progress(q.id, o.id, have, true);
           }
+        } else if (o.type === 'interact' && (o.target.startsWith('pick:') || o.target.startsWith('chest:'))) {
+          if (this.save.collected.includes(o.target)) this.progress(q.id, o.id, 1, true);
         } else if (o.type === 'flag') {
           if ((this.save.flags[o.target] ?? 0) > 0) this.progress(q.id, o.id, o.n ?? 1, true);
         } else if (o.type === 'reach' && o.at) {
