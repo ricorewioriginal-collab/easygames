@@ -1,5 +1,5 @@
-import {levels,worlds} from './data.js';
-import {translate} from './i18n.js';
+import {levels,worlds} from './data.js?v=2';
+import {translate} from './i18n.js?v=2';
 const screen=document.querySelector('#screen'),hud=document.querySelector('#hud'),left=document.querySelector('#hud-left'),right=document.querySelector('#hud-right'),hint=document.querySelector('#hint'),touch=document.querySelector('#touch');
 const button=(label,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;return b};
 export class UI{
@@ -14,7 +14,7 @@ export class UI{
  about(){const p=this.panel('Über das Spiel','Kiko ist ein eigenständiges kleines 3D-Abenteuer. Alle Figuren und Welten werden aus geometrischen Formen im Browser erzeugt. Musik und Effekte entstehen mit Web Audio. Der Fortschritt bleibt lokal auf deinem Gerät.');this.actions(p,[['Zurück',()=>this.menu()]])}
  playing(){screen.replaceChildren();hud.hidden=false;touch.hidden=!this.game.input.touch;this.updateHud()}
  updateHud(){const g=this.game;if(g.state!=='PLAYING')return;left.textContent=`${g.index+1}/8 · ${translate(levels[g.index].name,g.save.data.settings.language)}  ${'♥'.repeat(g.player.hearts)}${'♡'.repeat(3-g.player.hearts)}`;right.textContent=`💎 ${g.count}/5   ★ ${g.bonus}/3`}
- message(s){hint.textContent=translate(s,this.game.save.data.settings.language);clearTimeout(this.timer);this.timer=setTimeout(()=>hint.textContent='',3000)}
+ message(s,duration=3000){hint.textContent=translate(s,this.game.save.data.settings.language);clearTimeout(this.timer);this.timer=setTimeout(()=>hint.textContent='',duration)}
  pause(){const p=this.panel('Pause',levels[this.game.index].name);this.actions(p,[['Fortsetzen',()=>this.game.resume()],['Level neu starten',()=>this.game.start(this.game.index)],['Steuerung',()=>this.help(()=>this.pause())],['Einstellungen',()=>this.settings(()=>this.pause())],['Hauptmenü',()=>this.menu()]])}
  gameOver(){const p=this.panel('Kiko braucht eine Pause','Drei Herzen verloren. Versuche es ab dem letzten Checkpoint erneut.');this.actions(p,[['Am Checkpoint neu starten',()=>this.game.retryCheckpoint()],['Level neu starten',()=>this.game.start(this.game.index)],['Levelauswahl',()=>this.levels()]])}
  complete(){const g=this.game,p=this.panel('Sternenportal aktiviert! ✨',`Level ${g.index+1} geschafft · 5/5 Kristalle · ${g.bonus}/3 Bonussterne · ${g.score} Punkte`);this.actions(p,[['Weiter',()=>g.index===7?this.ending():g.start(g.index+1)],['Wiederholen',()=>g.start(g.index)],['Levelauswahl',()=>this.levels()]])}
