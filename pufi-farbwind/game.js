@@ -187,7 +187,7 @@ if(!r.carried&&thief.stun<=0)r.y=r.originalY+Math.sin(t*5)*4;
 hero.pet.x=r.x;hero.pet.y=r.y;
 if(r.grace<=0&&restoreTamo())return;
 if(r.remaining<=0){world.rescue=null;gameover('Die Nebelgreifer haben Tamo entführt!');return;}
-hud();
+if(frameN%12===0)hud();
 }
 function toggleMount(){
 if(mode!=='play'||!hero||hero.rideCd>0)return;
@@ -545,6 +545,21 @@ ctx.setLineDash([4,5]);ctx.strokeStyle='#fff8d0';ctx.lineWidth=1.5;ctx.beginPath
 }
 for(const b of particles)rect(b.x,b.y,3,3,b.color);
 ctx.restore();
+// Off-screen companion direction, visible even while the camera follows Pufi.
+if(world.rescue){
+const rx=world.rescue.x-cam;
+if(rx<18||rx>W-24){
+ctx.font='bold 13px monospace';ctx.fillStyle='#fff4b3';
+ctx.strokeStyle='#503a63';ctx.lineWidth=3;
+const message=rx<18?'◀ TAMO':'TAMO ▶',xx=rx<18?15:W-94;
+ctx.strokeText(message,xx,95);ctx.fillText(message,xx,95);
+}}
+if(mode==='play'&&t<2.6){
+const alpha=Math.min(1,Math.max(0,(2.6-t)*.7));
+ctx.fillStyle='rgba(45,47,82,'+(alpha*.82)+')';ctx.fillRect(127,116,228,33);
+ctx.fillStyle='#fff0c6';ctx.font='bold 13px monospace';
+ctx.textAlign='center';ctx.fillText((level+1)+' · '+LEVELS[level].name,241,138);ctx.textAlign='start';
+}
 }
 let prev=0,accum=0;function frame(ms){const dt=prev?Math.min(.05,(ms-prev)/1000):0;prev=ms;accum+=dt;while(accum>=1/60){tick(1/60);accum-=1/60}draw();requestAnimationFrame(frame)}
 build(0);title();syncControls();requestAnimationFrame(frame);
