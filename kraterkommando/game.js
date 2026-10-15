@@ -29,9 +29,10 @@
   let S = null, active = false, paused = false, busy = false, projectile = null, particles = [], botTimeout = 0;
   let bodies = [], deco = [], coverMeshes = [], cameraAz = .72, camDistance = 26, cameraFocus = null, overview = false, stickX = 0, stickY = 0, charging = false;
   const pressed = new Set();
-  let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0, matchId = 0, shake = 0, audioContext = null;
+  let last = 0, timerAcc = 0, messageTimer = 0, nextTurnTimer = 0, flightTime = 0, lastMoveSave = 0, matchId = 0, shake = 0, audioContext = null, soundEnabled = true, musicAcc = 0, musicStep = 0, lastFlash = 0;
   const materials = {};
   function sound(freq, duration = .16, type = 'square', gain = .035) {
+    if (!soundEnabled) return;
     try {
       audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
       if (audioContext.state === 'suspended') audioContext.resume();
@@ -40,6 +41,38 @@
       vol.gain.setValueAtTime(gain, t); vol.gain.exponentialRampToValueAtTime(.001, t + duration);
       osc.connect(vol).connect(audioContext.destination); osc.start(t); osc.stop(t + duration);
     } catch (_) {}
+  }
+  function noiseSound(duration = .3, volume = .08) {
+    if (!soundEnabled) return;
+    try {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === 'suspended') audioContext.resume();
+      const length = Math.ceil(audioContext.sampleRate * duration), buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+      const source = audioContext.createBufferSource(), filter = audioContext.createBiquadFilter(), gain = audioContext.createGain();
+      source.buffer = buffer; filter.type = 'lowpass'; filter.frequency.value = 750;
+      gain.gain.value = volume; source.connect(filter); filter.connect(gain); gain.connect(audioContext.destination); source.start();
+    } catch (_) {}
+  }
+  function explosionSound(kind) {
+    sound(kind === 'shotgun' ? 175 : 95, .34, 'sawtooth', kind === 'shotgun' ? .045 : .07);
+    noiseSound(kind === 'shotgun' ? .18 : .43, kind === 'shotgun' ? .055 : .085);
+  }
+  function musicTick(dt) {
+    if (!active || paused || !soundEnabled) return;
+    musicAcc += dt;
+    if (musicAcc < .36) return;
+    musicAcc = 0;
+    const notes = [196, 0, 247, 0, 294, 0, 247, 0, 220, 0, 262, 0, 330, 0, 262, 0];
+    const note = notes[musicStep++ % notes.length];
+    if (note) sound(note, .22, 'triangle', .008);
+  }
+  function setSound(enabled) {
+    soundEnabled = enabled;
+    for (const id of ['menuSoundBtn', 'pauseSoundBtn']) $(id).textContent = enabled ? '🔊 Spielsound an' : '🔇 Spielsound aus';
+    try { localStorage.setItem('easygames.kraterkommando.sound', enabled ? '1' : '0'); } catch (_) {}
+    if (enabled) sound(520, .1, 'triangle', .03);
   }
   const updateLoad = (v, s) => { $('progress').style.width = v + '%'; $('loadStatus').textContent = s; };
   function announce(s, ms = 2200) {
@@ -312,15 +345,27 @@
     });
   }
   function damageBlast(x, y, z, radius, maxDamage) {
+    let total = 0;
     for (const u of S.units) {
       if (u.hp <= 0) continue;
       const d = Math.hypot(u.x - x, u.z - z, height(u.x, u.z) + .7 - y);
       if (d < radius + .6) {
         let amount = Math.round(maxDamage * (1 - d / (radius + .6)) * (sheltered(u, x, y, z) ? .25 : 1));
         if (amount < 1) amount = 1;
+        amount = Math.min(u.hp, amount);
         u.hp = Math.max(0, u.hp - amount);
+        total += amount;
+        if (amount > 0) damageNumber(u, amount);
       }
     }
+    return total;
+  }
+  function damageNumber(u, amount) {
+    const point = new THREE.Vector3(u.x, height(u.x, u.z) + 2.3, u.z).project(camera);
+    if (point.z < -1 || point.z > 1) return;
+    const el = document.createElement('div'); el.className = 'damage-number'; el.textContent = '−' + amount;
+    el.style.left = ((point.x + 1) * innerWidth / 2) + 'px'; el.style.top = ((1 - point.y) * innerHeight / 2) + 'px';
+    $('game').appendChild(el); setTimeout(() => el.remove(), 1100);
   }
   function damageCovers(x, z, radius, damage) {
     let changed = false;
@@ -342,14 +387,25 @@
     const ring = new THREE.Mesh(new THREE.RingGeometry(.2, .35, 32), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .85, side: THREE.DoubleSide, depthWrite: false }));
     ring.rotation.x = -Math.PI / 2; ring.position.set(x, y + .1, z); scene.add(ring);
     particles.push({ mesh: ring, ring: true, life: .48 });
+    const shock = new THREE.Mesh(new THREE.SphereGeometry(.65, 12, 8), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .42, depthWrite: false, blending: THREE.AdditiveBlending }));
+    shock.position.set(x, y, z); scene.add(shock); particles.push({ mesh: shock, shock: true, life: .38 });
+    for (let i = 0; i < 12; i++) {
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(rand(.25, .48), 0), new THREE.MeshBasicMaterial({ color: S.world === 'snow' ? 0xe7f4f2 : 0x5b5b59, transparent: true, opacity: .65, depthWrite: false }));
+      m.position.set(x + rand(-.55, .55), y + rand(0, .6), z + rand(-.55, .55)); scene.add(m);
+      particles.push({ mesh: m, vx: rand(-2.3, 2.3), vy: rand(1, 3.8), vz: rand(-2.3, 2.3), life: rand(.8, 1.4), smoke: true });
+    }
   }
   function explode(x, y, z, kind = 'rocket', factor = 1) {
     const w = weapons[kind];
-    burst(x, y, z, kind === 'cluster' ? 0xffe197 : 0xffab6c);
+    burst(x, y, z, S.world === 'snow' ? 0xb8efff : S.world === 'volcano' ? 0xff774b : kind === 'cluster' ? 0xffe197 : 0xffab6c);
     shake = .42;
-    sound(110, .3, 'sawtooth', .045);
+    explosionSound(kind);
+    if (performance.now() - lastFlash > 250) {
+      const flash = $('impactFlash'); flash.classList.remove('active'); void flash.offsetWidth; flash.classList.add('active'); lastFlash = performance.now();
+    }
     if (navigator.vibrate) navigator.vibrate(70);
-    damageBlast(x, y, z, w.radius * factor, w.damage * factor);
+    const total = damageBlast(x, y, z, w.radius * factor, w.damage * factor);
+    if (total > 0) sound(310, .19, 'triangle', .045);
     damageCovers(x, z, w.radius * factor, w.damage * factor);
     crater(x, z, w.radius * .75 * factor, w.radius * .75 * factor);
     // Stürze durch frische Krater richten zusätzlichen Schaden an.
@@ -440,6 +496,7 @@
     if (kind !== 'rocket' && (u.ammo[kind] || 0) <= 0) { announce('Diese Waffe ist aufgebraucht'); return; }
     if (kind !== 'rocket') u.ammo[kind]--;
     busy = true; updateHud(); updateAim(); save();
+    sound(kind === 'shotgun' ? 240 : 510, .12, 'sawtooth', .04);
     const thisMatch = matchId;
     if (kind === 'teleport') {
       const d = dir(S.yaw, 0);
@@ -537,11 +594,14 @@
     }, 1500);
   }
   function syncControls() {
-    $('yaw').value = Math.round(S.yaw); $('angle').value = Math.round(S.angle);
-    $('power').value = Math.round(S.power); $('weapon').value = S.weapon;
-    $('yawVal').textContent = Math.round(S.yaw) + '°';
-    $('angleVal').textContent = Math.round(S.angle) + '°';
-    $('powerVal').textContent = Math.round(S.power) + '%';
+    $('yaw').value = S.yaw.toFixed(1); $('angle').value = S.angle.toFixed(1);
+    $('power').value = S.power.toFixed(1); $('weapon').value = S.weapon;
+    $('yawVal').textContent = S.yaw.toFixed(1) + '°';
+    $('angleVal').textContent = S.angle.toFixed(1) + '°';
+    $('powerVal').textContent = S.power.toFixed(1) + '%';
+    $('fineYaw').textContent = S.yaw.toFixed(1) + '°';
+    $('fineAngle').textContent = S.angle.toFixed(1) + '°';
+    $('finePower').textContent = S.power.toFixed(1) + '%';
     $('weaponIcon').textContent = weaponLabels[S.weapon][0];
     $('weaponName').textContent = weaponLabels[S.weapon][1];
     document.querySelector('.charge-ring').style.setProperty('--charge', Math.round(S.power) + '%');
@@ -554,7 +614,15 @@
     $('game').classList.toggle('bot-turn', bot && active);
     if (bot && !busy) $('botAction').textContent = u.name + ' sucht ein Ziel …';
     $('turnInfo').textContent = 'RUNDE ' + S.round + (bot ? ' · COMPUTER' : ' · ' + (S.team ? 'BLAU' : 'ROT'));
+    $('worldHud').textContent = worlds[S.world].name;
     $('unitName').textContent = u.name; $('unitHp').textContent = u.hp + ' LP';
+    const targets = S.units.map((v, i) => ({ v, i })).filter(o => o.v.hp > 0 && o.v.team !== S.team);
+    if (!targets.some(o => o.i === S.target)) {
+      targets.sort((a, b) => Math.hypot(a.v.x - u.x, a.v.z - u.z) - Math.hypot(b.v.x - u.x, b.v.z - u.z));
+      S.target = targets[0]?.i ?? -1;
+    }
+    $('targetSelect').innerHTML = targets.map(o => `<option value="${o.i}">${o.v.name} · ${o.v.hp} LP</option>`).join('');
+    $('targetSelect').value = String(S.target);
     $('wind').textContent = (S.wind < 0 ? '← ' : '→ ') + Math.abs(S.wind).toFixed(1);
     $('timer').textContent = Math.ceil(S.seconds); $('timer').classList.toggle('urgent', S.seconds <= 10);
     for (const [id, w] of Object.entries(weapons)) {
@@ -569,10 +637,11 @@
     if (!S || !aimLine) return;
     const u = S.units[S.current], d = dir(S.yaw, S.angle), sp = 10 + S.power * .245;
     let p = new THREE.Vector3(u.x, height(u.x, u.z) + 1.5, u.z).addScaledVector(d, 1.1);
-    let v = d.multiplyScalar(sp), pts = [], hit = null;
+    let v = d.multiplyScalar(sp), pts = [], hit = null, blocked = false;
     for (let i = 0; i < 95; i++) {
       pts.push(p.clone()); v.x += S.wind * .65 * .045; v.y -= 13 * .045; p.addScaledVector(v, .045);
-      if (p.y < height(p.x, p.z) || Math.abs(p.x) > 20 || Math.abs(p.z) > 20) {
+      blocked = S.covers.some(c => Math.hypot(c.x - p.x, c.z - p.z) < c.r && p.y < height(c.x, c.z) + 2.5);
+      if (blocked || p.y < height(p.x, p.z) || Math.abs(p.x) > 20 || Math.abs(p.z) > 20) {
         hit = [clamp(p.x, -19.7, 19.7), clamp(p.z, -19.7, 19.7)]; break;
       }
     }
@@ -589,7 +658,14 @@
     }
     impactRing.visible = !!hit && !busy;
     impactRing.material.color.setHex(S.weapon === 'teleport' ? 0x8fe9ff : 0xffd375);
-    if (hit) impactRing.position.set(hit[0], height(hit[0], hit[1]) + .11, hit[1]);
+    if (hit) impactRing.position.set(hit[0], height(hit[0], hit[1]) + (blocked ? 2.6 : .11), hit[1]);
+    const target = S.units[S.target], feedback = $('aimFeedback');
+    if (target && target.hp > 0 && target.team !== S.team && hit) {
+      const miss = Math.hypot(hit[0] - target.x, hit[1] - target.z);
+      const radius = weapons[S.weapon].radius;
+      feedback.textContent = S.weapon === 'teleport' ? `Teleport-Ziel: ${miss.toFixed(1)} m von ${target.name}` : `${target.name}: ${miss.toFixed(1)} m Abstand · ${blocked ? 'Deckung getroffen' : miss < radius ? 'im Trefferbereich' : 'daneben'}`;
+      feedback.classList.toggle('good', !blocked && miss < radius && S.weapon !== 'teleport');
+    } else { feedback.textContent = 'Gegner wählen und anvisieren'; feedback.classList.remove('good'); }
   }
   function solveAim(x, z) {
     const u = S.units[S.current], dx = x - u.x, dz = z - u.z;
@@ -604,7 +680,7 @@
         const v = d.multiplyScalar(10 + power * .245);
         for (let i = 0; i < 120; i++) {
           v.x += S.wind * .65 * .045; v.y -= 13 * .045; p.addScaledVector(v, .045);
-          if (p.y <= height(p.x, p.z) || Math.abs(p.x) > 20 || Math.abs(p.z) > 20) break;
+          if (S.covers.some(c => Math.hypot(c.x - p.x, c.z - p.z) < c.r && p.y < height(c.x, c.z) + 2.5) || p.y <= height(p.x, p.z) || Math.abs(p.x) > 20 || Math.abs(p.z) > 20) break;
         }
         const error = Math.hypot(p.x - x, p.z - z);
         if (error < best.error) best = { error, yaw: azimuth + yawOffset, angle, power };
@@ -617,6 +693,7 @@
     const u = S.units[S.current];
     if (Math.hypot(x - u.x, z - u.z) < 1.8) return;
     const best = solveAim(x, z);
+    if (name) S.target = S.units.findIndex(v => v.name === name && v.team !== S.team && v.hp > 0);
     S.yaw = clamp(best.yaw, -180, 180); S.angle = best.angle; S.power = best.power;
     overview = false; $('viewBtn').classList.remove('selected');
     syncControls(); updateAim(); save();
@@ -660,6 +737,7 @@
     clearTimeout(botTimeout); clearTimeout(nextTurnTimer); removeProjectile();
     S = continued ? read() : newState();
     if (!S) return;
+    sound(660, .18, 'triangle', .032);
     if (!continued) save();
     active = true; paused = false; busy = false; charging = false; overview = false; $('viewBtn').classList.remove('selected'); stickX = stickY = 0; cameraFocus = null;
     $('pause').hidden = true; $('result').hidden = true; $('weaponPanel').hidden = true; $('aimPanel').hidden = true;
@@ -691,6 +769,7 @@
     const dt = Math.min(.04, last ? (time - last) / 1000 : .016); last = time;
     if (S) {
       cameraUpdate(dt);
+      musicTick(dt);
       if (active && !paused) {
         const inputX = stickX + (pressed.has('d') || pressed.has('arrowright') ? 1 : 0) - (pressed.has('a') || pressed.has('arrowleft') ? 1 : 0);
         const inputY = stickY + (pressed.has('s') || pressed.has('arrowdown') ? 1 : 0) - (pressed.has('w') || pressed.has('arrowup') ? 1 : 0);
@@ -760,6 +839,9 @@
           if (p.ring) {
             p.mesh.scale.setScalar(1 + (1 - p.life / .48) * 12);
             p.mesh.material.opacity = Math.max(0, p.life / .48) * .85;
+          } else if (p.shock) {
+            p.mesh.scale.setScalar(1 + (1 - p.life / .38) * 6);
+            p.mesh.material.opacity = Math.max(0, p.life / .38) * .42;
           } else {
             p.vy -= p.smoke ? 0 : 12 * dt;
             p.mesh.position.x += p.vx * dt; p.mesh.position.y += p.vy * dt; p.mesh.position.z += p.vz * dt;
@@ -860,12 +942,25 @@
   }
   function boot() {
     updateLoad(30, 'Lade Spielregeln');
+    try { setSound(localStorage.getItem('easygames.kraterkommando.sound') !== '0'); } catch (_) {}
     try {
       const settings = JSON.parse(localStorage.getItem(SETTINGS) || '{}');
       if (settings.opponent) $('opponent').value = settings.opponent;
       if (settings.difficulty) $('difficulty').value = settings.difficulty;
       if (settings.world && worlds[settings.world]) $('world').value = settings.world;
     } catch (_) {}
+    const markWorld = () => document.querySelectorAll('[data-world]').forEach(b => {
+      const chosen = b.dataset.world === $('world').value;
+      b.classList.toggle('selected', chosen); b.setAttribute('aria-pressed', String(chosen));
+    });
+    markWorld();
+    $('worldCards').onclick = e => {
+      const b = e.target.closest('[data-world]'); if (!b) return;
+      $('world').value = b.dataset.world; markWorld();
+      sound(520, .09, 'triangle', .022);
+    };
+    $('menuSoundBtn').onclick = () => setSound(!soundEnabled);
+    $('pauseSoundBtn').onclick = () => setSound(!soundEnabled);
     init3D();
     updateLoad(80, 'Baue Welten');
     $('newGame').onclick = () => {
@@ -885,6 +980,20 @@
     $('skipBtn').onclick = () => { if (!busy && !isBotTurn()) { announce('Zug beendet'); finishAction(); } };
     $('weaponBtn').onclick = () => { if (active && !busy) { $('aimPanel').hidden = true; $('weaponPanel').hidden = false; } };
     $('aimBtn').onclick = () => { if (active && !busy) { $('weaponPanel').hidden = true; $('aimPanel').hidden = false; } };
+    $('targetSelect').onchange = () => {
+      S.target = +$('targetSelect').value;
+      const u = S.units[S.target]; if (u) aimAtPoint(u.x, u.z, u.name);
+    };
+    $('autoAim').onclick = () => {
+      const u = S.units[S.target]; if (u) aimAtPoint(u.x, u.z, u.name);
+    };
+    $('aimPanel').addEventListener('click', e => {
+      const b = e.target.closest('[data-adjust]'); if (!b || !active || paused || busy || isBotTurn()) return;
+      const [field, amount] = b.dataset.adjust.split(':');
+      const bounds = { yaw: [-180, 180], angle: [10, 80], power: [25, 100] }[field];
+      S[field] = Math.round(clamp(S[field] + Number(amount), ...bounds) * 10) / 10;
+      syncControls(); updateAim(); save();
+    });
     $('closeWeapon').onclick = () => $('weaponPanel').hidden = true;
     $('closeAim').onclick = () => $('aimPanel').hidden = true;
     $('weaponPanel').addEventListener('click', e => { if (e.target === $('weaponPanel')) $('weaponPanel').hidden = true; });

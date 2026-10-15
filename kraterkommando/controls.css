@@ -36,9 +36,19 @@
   .bot-banner{min-height:61px;padding:6px 10px}
   .bot-avatar{height:40px;width:40px}
 }
-.options .world-option{grid-column:1/-1}
-.options .world-option select{font-size:14px;background:#edf6ed;border-color:#a7cbb8}
+.menu-hero{height:clamp(125px,19dvh,180px)}
+.menu-content{padding-top:18px}.menu-content h1{font-size:clamp(38px,9vw,57px);margin-bottom:9px}.lead{font-size:14px;margin-bottom:11px}
+.world-picker{margin:11px 0}.world-heading{display:flex;justify-content:space-between;align-items:baseline;gap:5px;margin-bottom:8px}.world-heading strong{font-size:11px;letter-spacing:.09em}.world-heading span{font-size:10px;color:#5f7c86;text-align:right}
+.world-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}.world-card{min-width:0;height:75px;border-radius:15px;padding:8px 10px;display:flex;align-items:center;gap:9px;text-align:left;color:#fff;border:3px solid transparent;box-shadow:inset 0 -22px 22px #10232b50,0 3px 7px #142e3c33}.world-card.selected{border-color:#fff4be;box-shadow:0 0 0 2px #ef8768,inset 0 -22px 22px #10232b50}.world-card b{font-size:27px;flex:none}.world-card span{font-weight:1000;font-size:12px;line-height:1.05}.world-card small{display:block;font-size:9px;font-weight:700;margin-top:4px;color:#fffdf2}.world-card.island{background:linear-gradient(145deg,#74cdbc 0 36%,#5da577 37%,#2c7460)}.world-card.desert{background:linear-gradient(145deg,#f6b57a 0 36%,#bd7b50 37%,#745140)}.world-card.snow{background:linear-gradient(145deg,#89bbdc 0 36%,#b4d6e2 37%,#6f9fae)}.world-card.volcano{background:linear-gradient(145deg,#9d6874 0 36%,#74505a 37%,#f16b42)}
+.menu-actions{margin-top:11px}.menu-actions>button{padding:13px 18px}.controls{font-size:11px}
+.brand small{display:block;color:#ffdf9a;font-size:9px;line-height:1.2;margin-top:3px;white-space:nowrap}
+.target-row{display:flex;gap:7px}.target-row select{min-width:0;flex:1;border:1px solid #c2d3d6;border-radius:12px;padding:9px;color:#17394b;background:#fff;font-weight:900}.target-row button{border-radius:12px;padding:9px 12px;background:#ff8d73;color:#17394b;font-weight:1000;font-size:11px}.aim-feedback{padding:7px 10px;margin:8px 0;border-radius:11px;background:#dfece7;color:#315667;font-size:11px;font-weight:900}.aim-feedback.good{background:#c8f1d7;color:#256344}.fine-aim{display:grid;gap:5px}.fine-aim>div{display:grid;grid-template-columns:minmax(90px,1fr) repeat(4,36px);align-items:center;gap:4px}.fine-aim span{font-size:10px;font-weight:1000}.fine-aim b{display:block;font-size:13px}.fine-aim button{height:34px;border-radius:9px;background:#e0ebe7;color:#244557;font-size:18px;font-weight:1000}.fine-aim button:active{background:#ffbb9d}.sheet-card>label{margin:6px 0}.sheet-card input{height:24px}
 .weapon-grid button{min-height:59px}
 #viewBtn{width:38px;height:38px;flex:none;border-radius:12px;background:#173447cb;border:1px solid #ffffff5a;font-size:20px}
 #viewBtn.selected{background:#eaf5ed;color:#173447}
 @media(max-width:390px){.topbar{gap:5px}.brand{min-width:80px;font-size:9px}.brand-icon{font-size:20px}.turn-pill{gap:4px;padding-left:7px}.turn-pill span{font-size:10px}#viewBtn,#pauseBtn{width:33px;height:33px}}
+@media(orientation:landscape){.menu-hero{height:100%;min-height:100dvh}.world-card{height:66px}.world-heading span{display:none}}
+.sound-toggle{padding:7px 10px;border-radius:9px;background:#deebe6;color:#285063;font-size:11px;font-weight:900}
+.impact-flash{position:absolute;z-index:2;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 45%,#fff7dc8f,#ff9f5d44 45%,transparent 78%)}.impact-flash.active{animation:impactflash .38s ease-out forwards}@keyframes impactflash{0%{opacity:.72}100%{opacity:0}}
+.damage-number{position:absolute;z-index:5;pointer-events:none;color:#fff6bc;font-size:22px;font-weight:1000;text-shadow:0 3px 0 #7c3d36,0 5px 8px #102330;animation:damagefloat 1.1s ease-out forwards}@keyframes damagefloat{0%{opacity:0;transform:translate(-50%,-15px) scale(.6)}15%{opacity:1;transform:translate(-50%,-25px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-65px) scale(.9)}}
+.world-note{display:block;margin-top:5px;color:#67818b;font-size:10px;line-height:1.3}
