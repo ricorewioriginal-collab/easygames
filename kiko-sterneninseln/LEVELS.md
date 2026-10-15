@@ -23,4 +23,4 @@ Jeder Abschnitt hat fünf Pflichtkristalle und drei freiwillige Bonussterne. All
 | 17 | Sternenhimmel | Der Orbitgarten | 8 | Lade drei Orbitplatten. Bewege dich mit den Inseln und achte auf den Sternenwind. |
 | 18 | Sternenhimmel | Die Sekunden der Zeit | 8 | Der frühe Uhrschalter startet 26 Sekunden. Überquere die beiden Zeitinseln bis zum Portal. |
 | 19 | Sternenhimmel | Der letzte Funke | 8 | Sichere drei Sternenflammen. Bröckelnde Wege und zwei Energiebahnen bewachen den letzten Funken. |
-| 20 | Sternenhimmel | Das Herz der Sterne | 8 | Alle Splitter führen zum Sternenherz. Triff es bei Blau und bestehe die drei Angriffsphasen. |
+| 20 | Sternenhimmel | Das Herz der Sterne | 8 | Sammle alle Splitter. Überspringe Ring, Drehbalken und schnellen Ring. Nach jedem Angriff: 3,2 Sekunden sichere blaue Phase, herangehen und AKTION drücken. |

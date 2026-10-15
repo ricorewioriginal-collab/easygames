@@ -1,5 +1,5 @@
-import {characterById} from './characters.js?v=10';
-import {LEVEL_COUNT,LEGACY_LEVEL_MAP} from './data.js?v=10';
+import {characterById} from './characters.js?v=11';
+import {LEVEL_COUNT,LEGACY_LEVEL_MAP} from './data.js?v=11';
 // The storage key stays stable so existing Google saves are found and migrated.
 export const KEY='kiko-sterneninseln-v1';
 export const defaults={version:2,unlocked:1,character:'kiko',tutorialDone:false,records:Array.from({length:LEVEL_COUNT},()=>({medal:0,time:0,runs:0})),stars:Array(LEVEL_COUNT).fill(0),best:Array(LEVEL_COUNT).fill(0),settings:{music:.4,sfx:.6,quality:'auto',language:'de',sensitivity:1},keys:{up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD',jump:'Space',interact:'KeyE'}};

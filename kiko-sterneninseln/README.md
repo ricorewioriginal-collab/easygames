@@ -12,7 +12,7 @@ Mit Node.js 18 oder neuer: `npm ci`, `npm run dev`, `npm test`, `npm run build`.
 
 WASD oder Pfeiltasten bewegen Kiko. Leertaste springt, E interagiert, Maus ziehen dreht die Kamera, Esc pausiert. Auf dem Smartphone: linker Joystick, rechts Sprung- und Interaktionstasten, rechts wischen für die Kamera. Am Gamepad: linker und rechter Stick, A, X und Start. Das Spiel ist für Querformat ausgelegt.
 
-Sammle pro Level fünf Kristalle. Drei versteckte Sterne sind optional. Bei Rätseln aktivierst du Schalter mit E oder der Interaktionstaste. Im letzten Level leuchtet das Sternenherz abwechselnd blau; nur dann kannst du es treffen. Das aktive Portal beendet das Level.
+Sammle pro Level fünf Kristalle. Drei versteckte Sterne sind optional. Bei Rätseln aktivierst du Schalter mit E oder der Interaktionstaste. Im letzten Level kündigt Violett den Angriff an. Überspringe Ring oder Drehbalken. Nach jedem Angriff leuchtet das Sternenherz 3,2 Sekunden blau: Gehe heran und drücke einmal AKTION. In dieser Zeit ist es sicher. Das aktive Portal beendet das Level.
 
 ## Technik
 
@@ -74,6 +74,12 @@ Der Kompass führt auf längeren, verschlungenen Wegen über die jeweils nächst
 ### Vorhandene Spielstände
 
 Das Datenformat wird auf Version 2 erweitert, der lokale Schlüssel `kiko-sterneninseln-v1` und das Cloud-Dokument bleiben stabil. Alte Acht-Level-Spielstände werden anhand der ursprünglichen Levelidentitäten auf die neuen Plätze **1, 2, 6, 7, 11, 12, 16 und 20** übertragen. Sterne, Bestwerte, Medaillen, Zeiten, Figurenwahl, Einstellungen und Tasten bleiben erhalten. Bereits verfügbare alte Abschnitte bleiben erreichbar. „Spielen“ setzt bei der ersten noch nicht abgeschlossenen verfügbaren Insel an, sodass die neu eingefügten Level angeboten werden.
+
+## Bosskampf – Fassung 11
+
+Die bisherige Trefferprüfung des Bossbalkens ignorierte die Sprunghöhe. Dieser Fehler ist behoben: Ring und Drehbalken sind niedrige Hindernisse, die jede Figur mit ihrem normalen Sprung überwinden kann. Sichtbare Angriffe und Kollisionen verwenden denselben zeitlichen Ablauf und dieselbe Geometrie aus `src/boss.js`. Der Ring trifft nur an seinem wachsenden Rand, der Balken entlang seiner tatsächlichen Drehung und Länge.
+
+Jede der drei Phasen hat eine 1,2 Sekunden lange violette Vorwarnung, einen Angriff und anschließend ein **3,2 Sekunden langes blaues Aktionsfenster ohne Bossangriffe**. Ein Treffer startet die nächste Phase wieder mit einer vollständigen Vorwarnung. Die Aktionsreichweite beträgt 2,5 Schritte. Herangehen und einmal **E / X / AKTION** drücken; die Säule selbst muss nicht angeklickt werden. Der Zielkompass zeigt Warnzeit, einen positionsabhängigen Hinweis **JETZT SPRINGEN** und die verbleibende sichere Zeit bei Blau. Die Sprungwerte der Figuren bleiben erhalten.
 
 ## Durchgeführte Prüfungen
 

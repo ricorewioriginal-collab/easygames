@@ -1,9 +1,9 @@
-import {characters,characterById,characterPortrait} from './characters.js?v=10';
-import {guidePages,formatTime} from './guide.js?v=10';
-import {KEY} from './save.js?v=10';
-import {nextObjective} from './objectives.js?v=10';
-import {levels,worlds,LEVEL_COUNT} from './data.js?v=10';
-import {translate} from './i18n.js?v=10';
+import {characters,characterById,characterPortrait} from './characters.js?v=11';
+import {guidePages,formatTime} from './guide.js?v=11';
+import {KEY} from './save.js?v=11';
+import {nextObjective} from './objectives.js?v=11';
+import {levels,worlds,LEVEL_COUNT} from './data.js?v=11';
+import {translate} from './i18n.js?v=11';
 const screen=document.querySelector('#screen'),hud=document.querySelector('#hud'),left=document.querySelector('#hud-left'),right=document.querySelector('#hud-right'),hint=document.querySelector('#hint'),touch=document.querySelector('#touch'),objective=document.querySelector('#objective');
 const button=(label,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;return b};
 export class UI{
@@ -28,7 +28,7 @@ export class UI{
   pages.forEach((chapter,i)=>{const b=button(`${i+1}. ${chapter.title}`,()=>this.help(back,i));b.setAttribute('aria-current',page===i?'page':'false');tabs.append(b)});p.append(tabs);const cards=document.createElement('div');cards.className='guide-cards';
   for(const [title,text] of item.cards){const card=document.createElement('article'),h=document.createElement('h3'),body=document.createElement('p');h.textContent=title;body.textContent=text;card.append(h,body);cards.append(card)}p.append(cards);this.actions(p,[[en?'Back':'Zurück',back],...(page<3?[[en?'Next chapter':'Nächstes Kapitel',()=>this.help(back,page+1)]]:[])])
  }
- about(){const p=this.panel('Über das Spiel','Fassung 10 · Kiko ist ein eigenständiges kleines 3D-Abenteuer. Alle Figuren und Welten werden aus geometrischen Formen im Browser erzeugt. Musik und Effekte entstehen mit Web Audio. Ohne Anmeldung bleibt der Fortschritt auf deinem Gerät. Mit Google kannst du ihn auf anderen Geräten fortsetzen.');this.actions(p,[['Zurück',()=>this.menu()]])}
+ about(){const p=this.panel('Über das Spiel','Fassung 11 · Kiko ist ein eigenständiges kleines 3D-Abenteuer. Alle Figuren und Welten werden aus geometrischen Formen im Browser erzeugt. Musik und Effekte entstehen mit Web Audio. Ohne Anmeldung bleibt der Fortschritt auf deinem Gerät. Mit Google kannst du ihn auf anderen Geräten fortsetzen.');this.actions(p,[['Zurück',()=>this.menu()]])}
  playing(){if(this.cloudAccount)this.cloudAccount.hidden=true;screen.replaceChildren();hud.hidden=false;touch.hidden=!this.game.input.touch;objective.hidden=false;const en=this.game.save.data.settings.language==='en';document.querySelector('#jump small').textContent=en?'JUMP':'SPRUNG';document.querySelector('#interact small').textContent=en?'ACTION':'AKTION';this.updateHud()}
  updateHud(){const g=this.game;if(g.state!=='PLAYING')return;left.textContent=`${g.index+1}/${LEVEL_COUNT} · ${characterById(g.save.data.character).name}  ${'♥'.repeat(g.player.hearts)}${'♡'.repeat(3-g.player.hearts)}`;right.textContent=`💎 ${g.count}/5   ★ ${g.bonus}/3`;this.updateObjective()}
  updateObjective(){const g=this.game;if(g.state!=='PLAYING')return;const o=nextObjective(g),text=`${o.arrow} ${o.title} · ${o.distance} m`;if(!this.objectiveTitle){this.objectiveTitle=document.createElement('strong');this.objectiveDetail=document.createElement('span');this.objectiveAbility=document.createElement('small');this.objectiveAbility.className='ability-status';objective.replaceChildren(this.objectiveTitle,this.objectiveDetail,this.objectiveAbility)}this.objectiveTitle.textContent=text;this.objectiveDetail.textContent=o.detail;const en=g.save.data.settings.language==='en',nearSwitch=g.view.switches.some(s=>!['beacons','plates'].includes(g.view.level.puzzle)&&g.near?.(g.player.pos,s.mesh.position,1.9)),label=document.querySelector('#interact small');if(label)label.textContent=nearSwitch?(en?'USE':'AKTION'):(en?'PULSE':'PULS');const wait=Math.max(0,(g.pulseReadyAt||0)-(g.time||0));this.objectiveAbility.textContent=nearSwitch?(en?'Approach · press ACTION / E / X':'Hingehen · AKTION / E / X drücken'):(wait>0?(en?'Pulse recharging: ':'Puls lädt: ')+wait.toFixed(1)+' s':(en?'Star pulse ready · ACTION / E / X':'Sternenpuls bereit · AKTION / E / X'))+(g.player.shield?(en?' · shield ready':' · Schild bereit'):'')+(g.timerUntil>g.time?' · ⏱ '+Math.ceil(g.timerUntil-g.time)+' s':'')}

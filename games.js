@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261015.38'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261015.39'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'kiko-sterneninseln', title: 'KIKO – Das Geheimnis der Sterneninseln', icon: '✨', img: 'kiko-sterneninseln/card.svg', bg: 'linear-gradient(145deg,#18345b,#49bbcb 55%,#ffdc82)', glow: 'rgba(117,231,227,.52)', path: 'kiko-sterneninseln/', desc: '3D-Abenteuer mit 20 unterschiedlichen Leveln in vier Welten und vier wählbaren Figuren: Sternenpuls, Rätsel, Wind, Federpilze, bröckelnde Inseln, Uhrtore und Endgegner. PC, Touch und Gamepad; lokale Spielstände und optionaler Google-Speicher.' },

@@ -1,4 +1,5 @@
 import {updateMechanics,windAt} from '../src/mechanics.js';
+import {bossFrame,bossTouchesPlayer,bossJumpSoon} from '../src/boss.js';
 import {characters} from '../src/characters.js';
 import {makeApproach,floorHeight} from '../src/terrain.js';
 import {guidePages} from '../src/guide.js';
@@ -13,9 +14,50 @@ const context={};vm.runInNewContext(readFileSync(new URL('../vendor/three.min.js
 globalThis.window={THREE:context.THREE,__worlds:worlds};
 globalThis.document={querySelector:()=>({})};
 const {Game}=await import('../src/game.js');
-const {Kiko}=await import('../src/scene.js?v=10');
-const {Player}=await import('../src/physics.js?v=10');
+const {Kiko}=await import('../src/scene.js?v=11');
+const {Player}=await import('../src/physics.js?v=11');
 function setup(character='kiko'){const storage=new Map;globalThis.localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};const g=Object.create(Game.prototype);g.save=new SaveManager;g.save.data.character=character;g.renderer={scene:new context.THREE.Scene,world(){},snapFollow(){}};g.kiko=new Kiko(character);g.player=new Player(g.kiko);g.ui={playing(){},updateHud(){},updateObjective(){},message(){},pause(){},complete(){},gameOver(){},error(e){throw e}};g.audio={tone(){}};g.introShown=true;g.raw={x:0,z:0,jump:false,interact:false,look:0};g.input={reset(){g.raw={x:0,z:0,jump:false,interact:false,look:0}},sample(){return g.raw}};g.start(0);return g}
+test('boss beam cannot hit a guardian jumping above it',()=>{
+ const g=setup();g.save.data.unlocked=LEVEL_COUNT;g.start(LEVEL_COUNT-1);g.count=5;g.bossHits=1;g.bossStartedAt=0;g.time=1.95;
+ const sw=g.view.switches[0].mesh.position;g.player.pos.set(sw.x,sw.y+1,sw.z-1.6);g.player.invincible=0;
+ g.updateBoss();assert.equal(g.player.hearts,3,'beam damage must respect the feet height');assert.equal(g.view.bossBeam.visible,true);
+ g.player.pos.y=sw.y;g.updateBoss();assert.equal(g.player.hearts,2,'the same beam must still hit a grounded guardian');g.view.dispose()
+});
+test('blue boss windows are safe, reach 2.5 units, and restart each phase with a warning',()=>{
+ const g=setup();g.save.data.unlocked=LEVEL_COUNT;g.start(LEVEL_COUNT-1);g.count=5;for(const c of g.view.crystals)c.got=true;g.bossStartedAt=0;const sw=g.view.switches[0].mesh.position;
+ for(let phase=0;phase<3;phase++){
+  const start=g.bossStartedAt;g.player.pos.set(sw.x,sw.y,sw.z-2.4);g.time=start+.6;g.interact();assert.equal(g.bossHits,phase,'purple cannot accept a hit');
+  for(let t=2.71;t<5.49;t+=.1){g.time=start+t;g.updateBoss();assert.equal(g.view.bossBeam.visible,false);assert.equal(g.view.bossWarning.visible,false);assert.match(nextObjective(g).detail,/BLAU/);assert.equal(g.hits,0)}
+  g.interact();assert.equal(g.bossHits,phase+1);assert.equal(g.hits,0);assert.notEqual(bossFrame(g).mode,'attack','no instant attack after changing phases');g.interact();assert.equal(g.bossHits,phase+1,'one blue window cannot skip phases');
+ }
+ assert.ok(g.puzzleDone());g.updateBoss();assert.equal(g.view.bossBeam.visible,false);assert.equal(g.view.bossWarning.visible,false);g.view.dispose()
+});
+for(const character of characters)for(const hz of [30,60])test(`${character.name}: jump all three boss attacks and finish without damage at ${hz} FPS`,()=>{
+ const g=setup(character.id);g.save.data.unlocked=LEVEL_COUNT;g.start(LEVEL_COUNT-1);g.count=5;for(const c of [...g.view.crystals,...g.view.stars]){c.got=true;c.mesh.visible=false}
+ const sw=g.view.switches[0].mesh.position;g.player.pos.set(sw.x,sw.y,sw.z-1.6);let jumps=0,groundThreats=0;
+ for(let step=0;step<hz*30&&!g.puzzleDone();step++){
+  const f=bossFrame(g),jump=bossJumpSoon(g)&&!g.lastJump;if(jump){jumps++;assert.match(nextObjective(g).detail,/JETZT SPRINGEN/)}
+  if(bossTouchesPlayer(f,{pos:{x:g.player.pos.x,y:sw.y,z:g.player.pos.z}},sw))groundThreats++;
+  g.raw={x:0,z:0,look:0,jump,interact:f.weak&&!g.lastInteract};g.update(1/hz);
+  assert.equal(g.hits,0,`phase ${g.bossHits+1}, time ${g.time}, height ${g.player.pos.y-sw.y}`);assert.equal(g.state,'PLAYING');
+ }
+ assert.equal(g.bossHits,3);assert.equal(jumps,3);assert.ok(groundThreats>3,'the jumps really cross damaging attacks');assert.equal(g.player.hearts,3);assert.equal(g.player.shield,character.shield);
+ // Finish by walking from the heart to the portal through the normal Game update.
+ for(let step=0;step<hz*10&&g.state==='PLAYING';step++){const p=g.player.pos,t=g.view.portal.position,d=Math.max(.7,Math.hypot(t.x-p.x,t.z-p.z));g.raw={x:-(t.x-p.x)/d,z:-(t.z-p.z)/d,look:0,jump:false,interact:false};g.update(1/hz)}
+ assert.equal(g.state,'LEVEL_COMPLETE');assert.equal(g.hits,0);g.view.dispose()
+});
+test('boss beam collision follows its rendered rotation and finite length',()=>{
+ const g=setup();g.save.data.unlocked=LEVEL_COUNT;g.start(LEVEL_COUNT-1);g.count=5;g.bossHits=1;g.bossStartedAt=0;
+ const center=g.view.switches[0].mesh.position;
+ for(const time of [1.3,1.7,2.2,2.6]){
+  g.time=time;const f=bossFrame(g);g.view.setBossState(f);assert.equal(g.view.bossBeam.rotation.y,f.angle);assert.equal(g.view.bossBeam.position.y,center.y+f.height);
+  for(const [along,across,hit] of [[2,0,true],[2,.8,false],[4.8,0,false]]){
+   g.player.pos.set(center.x+along*Math.sin(f.angle)+across*Math.cos(f.angle),center.y,center.z+along*Math.cos(f.angle)-across*Math.sin(f.angle));
+   assert.equal(bossTouchesPlayer(f,g.player,center),hit,`angle ${f.angle}, local ${along}/${across}`);
+  }
+ }
+ g.bossHits=0;g.time=2;const ring=bossFrame(g);g.player.pos.copy(center);assert.equal(bossTouchesPlayer(ring,g.player,center),false,'the empty center of a ring is safe');g.player.pos.x+=ring.radius;assert.equal(bossTouchesPlayer(ring,g.player,center),true);g.view.dispose()
+});
 test('real Game start, pause, resume, death, checkpoint and locked levels',()=>{const g=setup();assert.equal(g.state,'PLAYING');g.pause();assert.equal(g.state,'PAUSED');g.resume();assert.equal(g.state,'PLAYING');g.start(7);assert.equal(g.index,0);g.player.hearts=0;g.state='GAME_OVER';g.retryCheckpoint();assert.equal(g.player.hearts,3);assert.equal(g.state,'PLAYING');g.view.dispose()});
 for(const character of characters)for(const hz of [30,60])test(`${character.name}: all 20 levels finish through actual movement, pickup, switches and portals at ${hz} FPS`,()=>{
  const g=setup(character.id);let frames=0,retries=0;

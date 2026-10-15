@@ -1,8 +1,8 @@
-# Testergebnisse – Fassung 10, 15. Oktober 2026
+# Testergebnisse – Fassung 11, 15. Oktober 2026
 
 ## Automatisch geprüft
 
-`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 54 Testfälle.
+`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 65 Testfälle.
 
 - Echte Kameraachse gegen WASD/Joystick: Vorwärts und Rechts stimmen mit der dargestellten Ansicht überein. Der Zielkompass nutzt dieselbe Orientierung.
 - Physik: Landung, keine Luft-Mehrfachsprünge, feste höhere Kanten, Sprünge auf Kanten, Hindernisse, Deckenkollision, Sprungpuffer und dauerhafter Bodenkontakt bei 15/30/60/120 Hz.
@@ -18,6 +18,18 @@
 - Oberfläche: Auswahl von vier Figuren in der Pause erhält den Fortschritt. Die Anleitung erklärt 20 Levelrätsel, Fähigkeiten und die tatsächliche Tastenbelegung.
 - Fortschritt: Freischaltung bis Level 20, beste Ergebnisse und erneutes Laden des lokalen Spielstands.
 - Syntaxprüfung aller Quell- und Testdateien mit `node --check`.
+
+## Korrektur des Bosskampfs
+
+Der neue Regressionstest wurde zuerst gegen die alte Spiellogik ausgeführt und schlug wie gemeldet fehl: Ein Bossbalken nahm trotz einer Fußhöhe von einem Schritt über dem Boden ein Herz ab (`2 !== 3`). Nach der Korrektur bleibt die springende Figur ungetroffen; dieselbe Position am Boden wird weiterhin getroffen.
+
+Elf zusätzliche Testfälle prüfen den Fehler und den überarbeiteten Ablauf:
+
+- Alle vier Figuren überspringen bei 30 und 60 Hz sämtliche drei Bossangriffe mit normaler Sprungphysik und dem im HUD angezeigten Sprunghinweis. Anschließend treffen sie das Herz dreimal und laufen zum Portal. **Keine Treffer, keine Herzverluste, keine verbrauchten Schutzschilde und keine Checkpoint-Neustarts** in diesen acht gezielten Bossdurchläufen. Die Ausgangslage auf der Bossinsel mit fünf Kristallen wird für diese Tests eingerichtet; während des Kampfes werden Position und Herzen nicht korrigiert.
+- Das gesamte blaue Fenster ist ohne Ring- oder Balkenangriff. Die Aktion funktioniert aus 2,4 Schritten Entfernung, außerhalb der alten Reichweite. Violette Phasen akzeptieren keinen Treffer. Jeder Phasenwechsel startet wieder mit einer Vorwarnung; mehrfaches Drücken überspringt keine Phase.
+- Die Balkenkollision folgt der sichtbaren Drehung und hat dieselbe endliche Länge. Positionen seitlich und hinter den Enden bleiben sicher. Die Mitte eines auseinanderlaufenden Rings ist sicher.
+
+Die vollständigen 20-Level-Runden mit allen Figuren bei beiden Bildraten bestehen ebenfalls erneut.
 
 ## Google-Cloud-Prüfungen
 

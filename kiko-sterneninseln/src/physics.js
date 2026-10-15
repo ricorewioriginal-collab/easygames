@@ -1,5 +1,5 @@
-import {characterById} from './characters.js?v=10';
-import {floorHeight,insideFloor} from './terrain.js?v=10';
+import {characterById} from './characters.js?v=11';
+import {floorHeight,insideFloor} from './terrain.js?v=11';
 export class Player{
  constructor(kiko){this.kiko=kiko;this.pos=kiko.root.position;this.velocity={x:0,y:0,z:0};this.ground=false;this.hearts=3;this.invincible=0;this.checkpoint={x:0,y:0,z:0};this.facing=0;this.jumpBuffer=0;this.coyote=0;this.profile=characterById(kiko.characterId);this.shield=0;this.shieldUsed=false;this.lastHit=''}
  setCharacter(id){this.profile=characterById(id);this.shield=this.profile.shield&&!this.shieldUsed?1:0}

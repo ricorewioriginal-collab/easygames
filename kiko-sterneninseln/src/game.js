@@ -1,13 +1,14 @@
-import {puzzleComplete,activateLight,windAt,updateMechanics} from './mechanics.js?v=10';
-import {levels,worlds,validateLevels,LEVEL_COUNT} from './data.js?v=10';
-import {SaveManager} from './save.js?v=10';
-import {Input} from './input.js?v=10';
-import {Audio} from './audio.js?v=10';
-import {Renderer,Kiko,LevelView} from './scene.js?v=10';
-import {Player} from './physics.js?v=10';
-import {UI} from './ui.js?v=10';
-import {cameraRelative} from './controls.js?v=10';
-import {characterById} from './characters.js?v=10';
+import {puzzleComplete,activateLight,windAt,updateMechanics} from './mechanics.js?v=11';
+import {levels,worlds,validateLevels,LEVEL_COUNT} from './data.js?v=11';
+import {SaveManager} from './save.js?v=11';
+import {Input} from './input.js?v=11';
+import {Audio} from './audio.js?v=11';
+import {Renderer,Kiko,LevelView} from './scene.js?v=11';
+import {Player} from './physics.js?v=11';
+import {UI} from './ui.js?v=11';
+import {cameraRelative} from './controls.js?v=11';
+import {characterById} from './characters.js?v=11';
+import {bossFrame,bossTouchesPlayer,BOSS_ACTION_RADIUS} from './boss.js?v=11';
 window.__worlds=worlds;
 export class Game{
  constructor(){
@@ -23,7 +24,7 @@ export class Game{
   try{
    this.view?.dispose();this.index=i;this.view=new LevelView(this.renderer,levels[i]);this.kiko.setCharacter(this.save.data.character);const p=levels[i].start;this.player.spawn([p[0],p[1],levels[i].path[0][1]-1]);this.kiko.root.visible=true;
    this.count=0;this.bonus=0;this.puzzle=0;this.bossHits=0;this.score=0;this.yaw=0;this.time=0;this.hits=0;this.falls=0;this.deaths=0;this.stomps=0;this.lastPickup=-99;this.combo=0;this.pulseReadyAt=0;this.checkpointReached=false;this.routeIndex=0;this.timerUntil=0;this.lesson=i===0&&!this.save.data.tutorialDone?{moved:false,collected:false,jumped:false}:null;
-   this.lastInteract=false;this.lastJump=false;this.lastBossHit=-9;this.lastBossAttack=-9;this.renderer.snapFollow(this.player.pos,this.yaw);this.state='PLAYING';this.ui.playing();
+   this.lastInteract=false;this.lastJump=false;this.bossStartedAt=null;this.renderer.snapFollow(this.player.pos,this.yaw);this.state='PLAYING';this.ui.playing();
    if(this.lesson&&!this.introShown){this.introShown=true;this.ui.intro()}else this.ui.message(levels[i].notes,5000)
   }catch(e){console.error(e);this.state='ERROR';this.ui.error(e)}
  }
@@ -48,13 +49,12 @@ export class Game{
  interact(){
   const l=levels[this.index],p=this.player.pos;
   for(const s of this.view.switches){
-   if(!this.near(p,s.mesh.position,1.9))continue;
+   if(!this.near(p,s.mesh.position,l.puzzle==='boss'?BOSS_ACTION_RADIUS:1.9))continue;
    if(l.puzzle==='boss'){
     if(this.bossHits>=3)return true;
     if(this.count<5){this.ui.message('Sammle zuerst alle fünf Kristalle.');return true}
-    if(Math.sin(this.time*(2.2+this.bossHits*.4))<=.2){this.ui.message('Warte, bis das Herz blau leuchtet.');return true}
-    if(this.time-this.lastBossHit<1.3)return true;
-    this.lastBossHit=this.time;this.bossHits++;this.kiko.react('collect');this.audio.tone(180+this.bossHits*140,.3,'triangle',.4);this.view.burst(s.mesh.position,0x8bedff);this.ui.message(['Phase 2: Dem Lichtstrahl seitlich ausweichen!','Phase 3: Über die Schattenwelle springen!','Das Sternenherz ist gereinigt!'][this.bossHits-1]);return true
+    if(!bossFrame(this).weak){this.ui.message('Warte, bis das Herz blau leuchtet.');return true}
+    this.bossHits++;this.bossStartedAt=this.time;this.updateBoss();this.kiko.react('collect');this.audio.tone(180+this.bossHits*140,.3,'triangle',.4);this.view.burst(s.mesh.position,0x8bedff);this.ui.message(['Phase 2: Über den niedrigen Balken springen oder seitlich ausweichen. Bei Blau AKTION!','Phase 3: Über die schnellere Schattenwelle springen. Bei Blau AKTION!','Das Sternenherz ist gereinigt!'][this.bossHits-1]);return true
    }
    if(l.puzzle==='beacons')return this.pulse();if(l.puzzle==='plates'){this.ui.message('Bleibe kurz auf der Sternenplatte stehen.');return true}if(l.puzzle==='timed'){this.timerUntil=this.time+(l.timer||18);this.puzzle=1;s.active=true;s.mesh.children[1].material.color.set(0x7cfff3);this.view.setPuzzle(true);this.ui.message('Zeitfenster geöffnet – folge dem Weg zum Portal!');return true}
    if(s.active){this.ui.message('Dieser Lichtstein ist bereits aktiviert.');return true}
@@ -81,10 +81,10 @@ export class Game{
  }
  updateBoss(){
   if(levels[this.index].puzzle!=='boss')return;
-  const sw=this.view.switches[0],phase=this.bossHits,cycle=Math.sin(this.time*(2.2+phase*.4)),p=this.player.pos,near=Math.hypot(p.x-sw.mesh.position.x,p.z-sw.mesh.position.z);
-  this.view.setBossState(phase,cycle,this.count===5&&phase<3);const onGround=p.y<levels[this.index].path.at(-1)[4]+.45;
-  const danger=phase===0?near<2.3&&onGround:phase===1?Math.abs(p.x-(sw.mesh.position.x+Math.sin(this.time*3)*2.7))<.65&&near<4:near<3.2&&onGround;
-  if(this.count===5&&phase<3&&danger&&cycle<-.6&&this.time-this.lastBossAttack>1.3){this.lastBossAttack=this.time;this.damage('boss')}
+  const sw=this.view.switches[0];
+  if(this.count===5&&this.bossHits<3&&this.bossStartedAt==null&&this.near(this.player.pos,sw.mesh.position,6))this.bossStartedAt=this.time;
+  const frame=bossFrame(this);this.view.setBossState(frame);
+  if(bossTouchesPlayer(frame,this.player,sw.mesh.position)&&this.player.invincible<=0)this.damage('boss');
  }
  update(dt){
   const raw=this.input.sample(dt);if(raw.pause){this.pause();return}this.time+=dt;this.yaw+=raw.look*this.save.data.settings.sensitivity;
