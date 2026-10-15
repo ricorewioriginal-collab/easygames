@@ -1,5 +1,5 @@
 'use strict';
-const CACHE='mimori-v3';
+const CACHE='mimori-v4';
 const CORE=['./','./index.html','./model.js','./sound.js','./game.js','./icon.svg','./manifest.webmanifest','../vendor/three-r128.min.js','../cloud/anmacha-cloud.js'];
 self.addEventListener('install',event=>event.waitUntil(
  caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())

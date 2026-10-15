@@ -1,50 +1,48 @@
-# Mimori – Dein 3D-Haustier
+# Mimori – Deine 3D-Haustier-App
 
-Eigenständiges, kostenloses 3D-Haustierspiel in der EasyGames-Sammlung, optimiert für Smartphone, PWA und PC.
+Mobile-first-Tamagotchi-Spiel innerhalb von EasyGames für Android-Browser, PWA, Tablet und Desktop.
 
-## Was ist enthalten?
+## Bedienung
 
-- 3D-Wesen mit vier Fellfarben, drehbarer Kamera und vier Entwicklungsstufen
-- Füttern, Spielen, Baden, Schlafen, Kuscheln, Sternfang-Minispiel
-- Synthesizer-Töne und niedliche kleine Soundmelodien für jede Pflegeaktion – ohne externe Audiodateien
-- Animationen, Partikel, Sterne, Herzchen und Blasen bei den Aktionen sowie Wachstumseffekt
-- Ein/Aus-Schalter für Sounds (auf dem jeweiligen Gerät gespeichert)
-- Bedürfnisse, Gesundheit und Entwicklung auf Basis der tatsächlich vergangenen Zeit
-- Offline-PWA mit lokalem Spielstand
-- **Google-Synchronisierung** über den bereits vorhandenen `../cloud/anmacha-cloud.js` und das Firebase/Firestore-Projekt `ricorewi-games-save`, analog zu Lumo und Taschi
-- **Freiwillige Erinnerungen**, solange Mimori im Browser oder als PWA läuft – ohne externen Push-Dienst
+- **Großes 3D-Wesen:** direkt auf dem Bildschirm mit dem Finger nach links/rechts wischen und frei herumdrehen. Maus ziehen funktioniert ebenfalls. Mit ↶ / ↷ kannst du auch über große Tasten drehen, ● richtet das Wesen wieder nach vorne aus.
+- **Darunter die Pflegetasten:** Füttern 🍓, Spielen 🪀, Baden 🫧, Schlafen 🌙, Kuscheln 💞 und Sternfang ⭐.
+- **Weitere Spielereien:** Tanzen 🎵, eine eigene Stimme 🎶 und Überraschungen 🎁, jeweils mit eigens programmierten Sounds und Effekten.
+- **Oben links:** Name, Alter und Figurenart. **Oben rechts:** Entwicklungsstufe und ⚙ Einstellungen.
+- **Einstellungen (mobiler Drawer):** Figurenwechsel, Fellfarbe, Ton ein/aus, Name, optionale Erinnerungen, Spielanleitung und Google-Speicherung.
 
-## Google-Speicherung
+## Vier eigenständige 3D-Wesen
 
-Unter **„☁ Google-Speicher & Spielstand“** kannst du dich mit dem gleichen Google-System anmelden wie
-in anderen EasyGames-Spielen. Der lokale Schlüssel `easygames.mimori.v1` wird über
-`data-game="mimori"` und `data-prefix="easygames.mimori.v1"` synchronisiert.
-Dein Spielstand bleibt auch ohne Login lokal erhalten. Google-Sync benötigt Internet und eine erfolgreiche
-Google-/Firebase-Anmeldung; in Android-WebViews kann die bereits vorhandene Geräte-Kopplung nötig sein.
-Die Einrichtung und Firestore-Regeln sind in `../cloud/README.md` beschrieben.
+Jeder der vier Typen hat eine eigene Modellstruktur, nicht bloß dieselbe Figur in anderen Farben.
 
-Beim ersten Cloud-Abgleich entscheidet das bestehende EasyGames-Sync-Skript anhand des Zeitstempels.
-Bei einem aktualisierten Cloud-Spielstand lädt es das Spiel zum Übernehmen neu. Eine ältere Kopie
-kann über den vorhandenen Menüpunkt wiederhergestellt werden. Dies ist eine bereits vorhandene
-Funktion des EasyGames-Cloudsystems und keine zweite, eigenständige Firebase-Konfiguration.
+| Wesen | Körperbau |
+|---|---|
+| **Fluffi** | Runder Langohren-Hase mit Puschelschwanz |
+| **Nubbi** | Niedriger kugeliger Otter mit Rückenpanzer und Antennen |
+| **Foxi** | Schlanker kleiner Fuchs mit spitzen Ohren, längerer Schnauze und buschigem Schweif |
+| **Drachi** | Kleiner Drache mit Schnauze, Hörnern, Rückenstacheln, Flügeln und Schwanz |
 
-## Erinnerungen im Browser / in der PWA
+Alle Typen unterstützen vier Fellfarben. Beim Wechsel bleiben Futter, Erfahrung, Alter und die anderen Werte des bisherigen Haustiers erhalten. Die ausgewählte Figurenart wird im normalen Spielstand gespeichert, auch bei älteren vorhandenen Spielständen funktioniert der Standardtyp Fluffi.
 
-Unter **„🔔 Erinnerungen“** freiwillig einschalten; erst dann wird die Browser-Berechtigung angefragt.
-Bei mindestens einem besonders niedrigen Bedürfnis kann Mimori eine Benachrichtigung anzeigen.
-Standardmäßig gelten Ruhezeit **22:00–08:00**, maximal **drei Meldungen pro Tag**
-und mindestens **vier Stunden Abstand pro Bedürfnis**. Die Einstellung wird nur lokal gespeichert.
+## Unterschiedliche Sounds und Animationen
 
-Dies sind **lokal ausgelöste Browser-/PWA-Benachrichtigungen**, kein Remote Web Push:
-Der JavaScript-Code muss laufen. Ist die Browserseite vollständig geschlossen oder pausiert
-das Betriebssystem die PWA, kann **keine** verlässliche Benachrichtigung erfolgen.
-In einer eingebetteten Spielansicht (iframe) kann der Browser die Berechtigungsanfrage blockieren;
-nutze dann die direkt geöffnete Spielseite. Auf manchen Smartphones erfordert das Anzeigen
-einer Notification eine installierte PWA. Ohne Berechtigung läuft das Spiel uneingeschränkt weiter.
+Alle Töne werden mit Web Audio lokal synthetisiert, ohne Audio-Dateien oder fremde Samples:
+- Kuscheln: mehrstimmiges tiefes, rhythmisch modulierendes **Schnurren**
+- Füttern: kleine Kau-/Schmatzgeräusche
+- Baden: Blubbern und aufsteigende Blasenklänge
+- Schlafen: leises, langsames Ausatmen
+- Spielen: schnelle, hüpfende Töne
+- Tanzen: kleine rhythmische Tonfolge
+- Jedes Wesen hat eine charakteristische Begrüßungsstimme
 
-Es werden **keine** Push-Endpunkte, Gerätekennungen, privaten Schlüssel oder Spielwerte
-an einen externen Mimori-Pushserver übertragen. Nur bei freiwilligem Google-Login werden
-die eigenen Spielstände über die bereits vorhandene Firebase/Firestore-Integration synchronisiert.
+Beim Spielen gibt es unterschiedliche Sterne/Herzen/Blasen-Partikel, Bewegungen und Wachstumseffekte.
+
+## Speicherstand und Google
+
+Mimori speichert `easygames.mimori.v1` automatisch lokal. Google-Sync nutzt das **bereits vorhandene** `cloud/anmacha-cloud.js` mit `data-game="mimori"` und dem vorhandenen Firebase-Projekt; zusätzliche Zugangsdaten werden nicht benötigt. Die Anmeldung bleibt freiwillig. Funktioniert bei vorhandenem Google-Login und Onlinezugang gemäß `cloud/README.md`. Die Cloud-Synchronisation wird bei einem anderen Gerät aus der gespeicherten Figur inklusive Typ und Farbe wiederhergestellt.
+
+## Erinnerungen
+
+Freiwillige lokale Browser-/PWA-Benachrichtigungen. Die Anwendung muss laufen; eine vollständig geschlossene oder vom Betriebssystem pausierte App verschickt **keine** Meldungen. Ruhezeit 22–8 Uhr, maximal drei Meldungen/Tag, zeitlicher Mindestabstand. Ein Push-Server ist nicht nötig. Die Browser-Berechtigung wird erst angefragt, wenn jemand die Erinnerungen aktiv einschaltet.
 
 ## Testen
 
@@ -53,9 +51,4 @@ node tools/test-mimori.cjs
 node tools/build-sync.js --check
 ```
 
-Für einen echten Funktionstest zusätzlich am Android-Smartphone/Desktop im Browser:
-Sounds nach erster Nutzerinteraktion, Pflegeeffekte, 3D-Animation, PWA-Offline,
-Google-Anmeldung/Cloud-Speichern/Wiederherstellen und Benachrichtigungs-Berechtigung prüfen.
-
-Die Testdatei simuliert das DOM und den 3D-Renderer. Sie beweist **keine** erfolgreiche
-externe Google-Anmeldung oder Browser-/Betriebssystembenachrichtigung.
+Die Regressionstests prüfen u. a. vier voneinander abweichende Modellgeometrien, gespeicherte Figuren-/Farbauswahl, Touch-Rotation, Pfeiltasten, Pflegeaktionen, Bonusaktionen, lokale Erinnerungen und die Cloud-Einbindung. Die automatisierte WebGL-Simulation ersetzt **keinen echten Test** auf Android, iOS und Desktop; Google-Login und echte Audioausgabe müssen auf Geräten geprüft werden.
