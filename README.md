@@ -5,6 +5,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 | Spiel | Verzeichnis |
 |---|---|
+| AnMaCha Radio Maze 3D – 60 3D-Level, Geisterjagd, 13 Radio-Senderlogos, Google-Spielstand, Vollbild, Offline-PWA (Three.js) | [`radio-maze/`](radio-maze/) |
 | ZEITSPRUNG MOVIE – moderierte 3D-Filmshow mit 398 Fragen: 318 Quizfragen, 38 Filmmusik- und Serienintro-Hörfragen über Deezer/Spotify sowie 42 Bildrätsel; 12 eingebettete Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Handys per WR-Code/PIN und Google-Speicherung | [`zeitsprung-movie/`](zeitsprung-movie/) |
 | ZEITSPRUNG RADIO – moderierte 3D-Musikshow für TV, Smartphone und PC: 790 Quizfragen zu Charts, Jahrescharts, Künstlern, Songtiteln, Biografien, gemeinfreien Songtexten, ESC, DSDS, Popstars und The Voice; Musikrunden mit A–D-Jahreswahl oder Zeitleiste und Deezer/Spotify-Playern, WebRTC-Handys per WR-Code/PIN, Google-Speicherung und installierbare App. | [`zeitsprung-radio/`](zeitsprung-radio/) |
 | ZOTIK – Die Splitter der Welten – neues 3D-Action-Rollenspiel mit 10 Kapiteln plus Endspiel, Begleitern, Rätseln, Zwischensequenzen, drei Enden, Casino, Halle der 100, Neuem Spiel+ und verwandelbarer Nautilux (Einzeldatei, Three.js; Quelle: Repo `ricorewioriginal-collab/zotik`, Ordner `zotik/`) | [`zotik/`](zotik/) |
