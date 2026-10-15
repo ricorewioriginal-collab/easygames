@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2d30a884ba89",
- "generated": "2026-10-15T08:32:29+02:00",
- "commit": "f9af0d6aa7227a763cd50e0003473ae39f256051",
+ "version": "5f7529c6c5f1",
+ "generated": "2026-10-15T08:44:28+02:00",
+ "commit": "37bc928f65c5501d86407ee080e9268c2ee59ab5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 17784,
-   "h": "5993160cc396a382bc982e2f9d3dbe8a77284e8bc93718dd55f20d03b1eb003c"
+   "s": 17802,
+   "h": "9899c51498cd38dc22a93189d1a7843dddccc224507c7c361ec7d14335a06702"
   },
   {
    "p": "gay-life/index.html",
@@ -4773,23 +4773,33 @@
   },
   {
    "p": "kraterkommando/card.svg",
-   "s": 1195,
-   "h": "8ef8fea4eee3d1a502143509ac7ae14e54dc155d2ebbac5592c60cee1291f0f6"
+   "s": 3253,
+   "h": "714d0d8fae0378c3d125a0295244231ab7de44c984499c645a7ec91f77b408c3"
   },
   {
    "p": "kraterkommando/game.js",
-   "s": 30030,
-   "h": "efe5eaabdb9ddd875107968eded4d1aadb89cfb876ee795a4cabe3e96f1c1543"
+   "s": 41264,
+   "h": "bf29c41b32745ae3472a0998cd528ce858fb35c849bd630604e507cc2932adf8"
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 4578,
-   "h": "97ce7c215e4d2efc6bbd56434e2091b07bfa65e8daf158eb5ec3437ff5e3ebe4"
+   "s": 6183,
+   "h": "d188aaff04e3c6978aa335ccca3e5636bf88f10c7b9877173a052772c7284106"
+  },
+  {
+   "p": "kraterkommando/manifest.webmanifest",
+   "s": 397,
+   "h": "7d7016187d5a68a755b0995c8b3a07aa0a89b305d76cf7b53bf525fec32be94f"
   },
   {
    "p": "kraterkommando/style.css",
-   "s": 6706,
-   "h": "7b57318c6d1e4d0240abf6f22ff18e688508a1a69d7a83dc96d83d7790563937"
+   "s": 14583,
+   "h": "9ec2fe24a542cf799288c30433d5b1781a6c834b18fccaee9696db306c53f953"
+  },
+  {
+   "p": "kraterkommando/sw.js",
+   "s": 1048,
+   "h": "a7d5b0eb7e740cb0244076625e437361a2b2301cb502c2048269b3a0ff1efa3a"
   },
   {
    "p": "lumo/audio.js",
@@ -5398,8 +5408,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 73621,
-   "h": "0a8280c822f26baa034af4376be48dd4cf5048d4e964021ef80786c58992962a"
+   "s": 73639,
+   "h": "cfb3af6d44cc0dec28979e8d5f0af1342faddd8b6614d16add388e7e79a66163"
   },
   {
    "p": "taschi/card.svg",
