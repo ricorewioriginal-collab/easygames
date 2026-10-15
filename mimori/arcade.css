@@ -76,3 +76,29 @@ body.arcadeOpen{overflow:hidden;touch-action:none}
  #arcadeLaneButtons{height:47px}
 }
 @media(prefers-reduced-motion:reduce){.memoryCard{transition:none}}
+
+/* Embedded arcade occupies the same Mimori stage, not an external fullscreen overlay. */
+.scene .arcadeShell{position:absolute;inset:0;z-index:30;padding:0;border-radius:inherit;overflow:hidden;backdrop-filter:blur(8px)}
+.scene .arcadePanel{height:100%;max-height:none;width:100%;max-width:100%;border-radius:inherit}
+.scene .arcadeTop{padding:9px 13px 8px}
+.scene .arcadeTop h2{font-size:19px}
+.scene .arcadeClose{width:36px;height:36px}
+.scene .arcadeLobby{padding:9px 12px;min-height:0}
+.scene .arcadeCard{min-height:76px;padding:8px}
+.scene .arcadeIllustration{height:52px;width:60px;font-size:30px}
+.scene #arcadePlay{min-height:0;padding:7px 10px 9px;gap:5px}
+.scene #arcadeCanvas{max-width:100%;max-height:100%;object-fit:contain}
+@media(orientation:landscape) and (max-height:600px){
+.scene .arcadeTop{padding:4px 8px}
+.scene .arcadeTop small{display:none}
+.scene .arcadeTop h2{font-size:15px}
+.scene .arcadeLobby{padding:4px 8px}
+.scene .arcadeCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.scene .arcadeCard{min-height:55px;padding:3px 7px}
+.scene .arcadeCardText strong{font-size:12px}
+.scene .arcadeCardText small,.scene .arcadeIntro{font-size:10px}
+.scene .arcadeIllustration{width:40px;height:39px;font-size:23px}
+.scene .arcadeHud strong{font-size:11px;padding:4px}
+.scene .arcadeScreen{min-height:95px}
+.scene .arcadeControls button{min-height:32px;padding:5px}
+}

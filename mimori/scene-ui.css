@@ -145,3 +145,6 @@ header{height:46px;margin-bottom:8px;gap:8px}
 
 /* Hidden panels must win over the explicit active-panel display rule. */
 .sceneSheet .carePanel[hidden],.sceneSheet .statusPanel[hidden]{display:none!important}
+
+/* Respect hidden state even when base rules set display:flex. */
+#petAlert[hidden],#sleepStatus[hidden],#webglError[hidden],#worldOverlay[hidden],#settingsDrawer[hidden],#sceneSheet[hidden],.sceneSheet .panel[hidden]{display:none!important}
