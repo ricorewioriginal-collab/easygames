@@ -44,6 +44,7 @@ for(const [id,label] of [['rooms','🏡 Zimmer'],['family','💞 Familie'],['rad
 }
 if(worldHead)worldHead.after(tabs);
 const prevOpen=document.querySelector('#worldOpen');
+function markWorldTab(id){worldTab=id;}
 function syncDock(){
  dock.querySelectorAll('[data-scene-nav]').forEach(b=>{
   const chosen=b.dataset.sceneNav===current;
@@ -64,7 +65,9 @@ function switchWorldTab(id){
  worldPanel.scrollTop=0;
 }
 function showWorldTab(id){
- if(id==='radio'&&$('radioLaunch')?.hidden){navigate('rooms');return}
+ if(id==='radio'&&$('radioLaunch')?.hidden){
+  window.MimoriWorldActions?.showLivingRoomRadio?.();
+ }
  closeOther();worldTab=id;
  if(world.hidden)prevOpen?.click();
  if(world.hidden)return;
@@ -103,5 +106,5 @@ document.addEventListener('keydown',e=>{
  if(!world.hidden||!settings.hidden)return;
  if(!sheet.hidden){current='';hideSheet();syncDock()}
 });
-window.MimoriSceneUI={navigate,close:()=>{current='';closeOther();syncDock()},getState:()=>({current,sheetOpen:!sheet.hidden,worldOpen:!world.hidden})};
+window.MimoriSceneUI={navigate,openRadio:()=>showWorldTab('radio'),close:()=>{current='';closeOther();syncDock()},getState:()=>({current,sheetOpen:!sheet.hidden,worldOpen:!world.hidden})};
 })();
