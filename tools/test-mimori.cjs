@@ -28,7 +28,7 @@ assert(html.includes('data-prefix="easygames.mimori.v1"'));
 assert(html.includes('data-mount="#cloudMount"'));
 assert(html.includes('src="./sound.js"'));
 assert(html.includes('id="fxLayer"'));
-for(const id of ['settingsDrawer','settingsShortcut','settingsClose','settingsBackdrop','turnLeft','turnRight','resetView','speciesName']){
+for(const id of ['settingsDrawer','settingsShortcut','settingsClose','settingsBackdrop','turnLeft','turnRight','resetView','speciesName','danceBtn','voiceBtn','surpriseBtn']){
  assert(html.includes('id="'+id+'"'),'missing '+id);
 }
 for(let i=0;i<4;i++)assert(html.includes('data-species="'+i+'"'));
@@ -108,6 +108,9 @@ ui.resetView.handlers.click[0]();assert.equal(win.MimoriDebug.orbit(),0);
 ui.settingsShortcut.handlers.click[0]();assert.equal(ui.settingsDrawer.hidden,false);
 speciesButtons[2].handlers.click[0]();assert.equal(win.MimoriDebug.get().species,2);
 assert.equal(ui.settingsDrawer.hidden,true);
+ui.danceBtn.handlers.click[0]();assert(C.playCalls.includes('dance'),'dance sound absent');
+ui.voiceBtn.handlers.click[0]();assert(C.playCalls.includes('species'),'species voice absent');
+ui.surpriseBtn.handlers.click[0]();assert(ui.fxLayer.children.length>0,'surprise effects absent');
 async function testNotifications(){
  const toggle=ui.pushToggle.handlers.click[0];
  await toggle();assert.equal(win.MimoriDebug.reminders().enabled,true);
@@ -116,5 +119,5 @@ async function testNotifications(){
  await toggle();assert.equal(win.MimoriDebug.reminders().enabled,false);
  assert.equal(ui.pushTest.disabled,true);
 }
-testNotifications().then(()=>console.log('PASS Mimori: 4 real 3D species and colors, touch/arrow rotation, app layout, sounds, FX, cloud markup, opt-in reminders'))
+testNotifications().then(()=>console.log('PASS Mimori: four unique models, working touch rotation, app layout, dancing/voices/surprises, clouds and notifications'))
 .catch(e=>{console.error(e);process.exitCode=1});
