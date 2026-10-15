@@ -309,7 +309,7 @@
     projectile = null;
   }
   function finishAction() {
-    busy = true; save();
+    busy = true; updateAim(); save();
     clearTimeout(nextTurnTimer);
     nextTurnTimer = setTimeout(function advance() {
       if (!active) return;
@@ -342,14 +342,14 @@
     $('resultText').textContent = `Nach ${S.round} Runden steht der Sieger fest. Rot: ${teamHealth(0)} LP · Blau: ${teamHealth(1)} LP.`;
     $('result').hidden = false;
   }
-  function fire() {
-    if (!active || paused || busy || isBotTurn()) return;
+  function fire(allowBot = false) {
+    if (!active || paused || busy || (isBotTurn() && !allowBot)) return;
     const u = S.units[S.current];
     if (!u || u.hp <= 0) return;
     const kind = S.weapon;
     if (kind !== 'rocket' && (u.ammo[kind] || 0) <= 0) { announce('Diese Waffe ist aufgebraucht'); return; }
     if (kind !== 'rocket') u.ammo[kind]--;
-    busy = true; updateHud(); save();
+    busy = true; updateHud(); updateAim(); save();
     const thisMatch = matchId;
     if (kind === 'teleport') {
       const d = dir(S.yaw, 0);
@@ -387,6 +387,7 @@
     if (S.units.some(v => v !== u && v.hp > 0 && Math.hypot(v.x - x, v.z - z) < 1.2)) return;
     const drop = height(u.x, u.z) - height(x, z);
     u.x = x; u.z = z;
+    sound(420, .11, 'triangle', .025);
     if (drop > 2.2) u.hp = Math.max(0, u.hp - Math.round((drop - 2.2) * 8));
     updateBodies(); updateHud(); updateAim(); save();
     if (u.hp <= 0) { announce(u.name + ' ist ausgeschieden!'); finishAction(); }
@@ -409,7 +410,7 @@
       S.weapon = u.ammo.cluster > 0 && dist < 13 && Math.random() < .3 ? 'cluster' : 'rocket';
       syncControls(); updateAim();
       // Bot führt dieselbe Waffenaktion wie der Mensch aus.
-      const was = S.opts.opponent; S.opts.opponent = 'local'; fire(); S.opts.opponent = was;
+      fire(true);
     }, 1500);
   }
   function syncControls() {
@@ -453,7 +454,13 @@
     }
     aimLine.geometry.dispose(); aimLine.geometry = new THREE.BufferGeometry().setFromPoints(pts); aimLine.computeLineDistances();
     aimLine.visible = S.weapon !== 'airstrike' && S.weapon !== 'teleport' && !busy;
-    impactRing.visible = !!hit && aimLine.visible;
+    if (S.weapon === 'airstrike' || S.weapon === 'teleport') {
+      const groundDir = dir(S.yaw, 0);
+      const distance = S.weapon === 'airstrike' ? 5 + S.power * .2 : 4 + S.power * .12;
+      hit = [clamp(u.x + groundDir.x * distance, -18, 18), clamp(u.z + groundDir.z * distance, -18, 18)];
+    }
+    impactRing.visible = !!hit && !busy;
+    impactRing.material.color.setHex(S.weapon === 'teleport' ? 0x8fe9ff : 0xffd375);
     if (hit) impactRing.position.set(hit[0], height(hit[0], hit[1]) + .11, hit[1]);
   }
   function startGame(continued) {
