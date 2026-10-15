@@ -31,7 +31,7 @@ function getSave() {
 let save = getSave(), state = null, scene = null, camera = null, renderer = null, board = null;
 let playerMesh = null, pelletMesh = null, extras = [], ghosts = [], logoTextures = [];
 let lastFrame = 0, lastSave = 0, toastTimeout = 0, selectedWorld = 0, audioCtx = null, initialized = false;
-const temp = new THREE.Matrix4();
+const temp = THREE ? new THREE.Matrix4() : null; // fehlende WebGL-Bibliothek wird im Startbildschirm gemeldet
 const hud = $('hud'), pad = $('pad'), stage = $('stage');
 const directionKeys = { ArrowUp:0, KeyW:0, ArrowRight:1, KeyD:1, ArrowDown:2, KeyS:2, ArrowLeft:3, KeyA:3 };
 function updateLoader(value, message) {
