@@ -17,9 +17,9 @@
   ],
   "screenshots": [
     {
-      "src": "./cover.svg",
+      "src": "./cover.png",
       "sizes": "1200x630",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "form_factor": "wide",
       "label": "Mimori – Das 3D-Haustierspiel"
     }

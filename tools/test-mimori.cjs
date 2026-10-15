@@ -67,7 +67,7 @@ assert(html.includes('data-game="mimori"'));
 assert(html.includes('data-prefix="easygames.mimori.v1"'));
 assert(html.includes('data-mount="#cloudMount"'));
 assert(html.includes('src="./sound.js"'));
-assert(html.includes('property="og:image"')&&html.includes('mimori/cover.svg'),'Mimori OG preview metadata missing');
+assert(html.includes('property="og:image"')&&html.includes('mimori/cover.png'),'Mimori OG preview metadata missing');
 assert(html.includes('name="twitter:card"')&&html.includes('summary_large_image'));
 assert(html.includes('id="fxLayer"'));
 for(const id of ['settingsDrawer','settingsShortcut','settingsClose','settingsBackdrop','turnLeft','turnRight','resetView','speciesName','danceBtn','voiceBtn','surpriseBtn','toiletBtn','cleanupBtn','medicineBtn','lightBtn','alertSoundToggle','petAlert','petAlertText','nightShade','messScene','toiletNeed','messLabel','sickLabel','lightLabel']){
