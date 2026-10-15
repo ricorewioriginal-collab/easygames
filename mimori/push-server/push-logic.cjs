@@ -7,9 +7,9 @@ function projected(p,now){
  energy:clamp(Number(p.energy)-hours*5.5,0,100),clean:clamp(Number(p.clean)-hours*5,0,100)};
 }
 function quiet(now,options){
- const offset=clamp(Number(options?.offsetMinutes)||0,-720,840),
- start=clamp(Number(options?.quietStart)??22,0,23),
- end=clamp(Number(options?.quietEnd)??8,0,23);
+ const offset=clamp(Number(options?.offsetMinutes??0),-720,840),
+ start=clamp(Number(options?.quietStart??22),0,23),
+ end=clamp(Number(options?.quietEnd??8),0,23);
  const hour=new Date(now+offset*60000).getUTCHours();
  return start>end?(hour>=start||hour<end):(hour>=start&&hour<end);
 }

@@ -182,6 +182,8 @@ async function togglePush(){
  try{
  if(!state.pushBase||!state.pushKey)throw Error('Bitte zuerst den Push-Server einrichten. Die App allein kann keine Erinnerungen im Hintergrund verschicken.');
  if(!('PushManager'in window)||!('Notification'in window))throw Error('Browser unterstützt Web Push nicht.');
+ // Start the browser permission request inside the click gesture, before awaiting SW readiness.
+ const permissionRequest=state.pushEnabled?null:Notification.requestPermission();
  const reg=await navigator.serviceWorker.ready;
  if(state.pushEnabled){
   const s=await reg.pushManager.getSubscription();
@@ -189,7 +191,7 @@ async function togglePush(){
   if(s)await s.unsubscribe();state.pushEnabled=false;
   $('pushInfo').textContent='Ausgeschaltet. Es werden keine weiteren Erinnerungen verschickt.';
  }else{
-  const permission=await Notification.requestPermission();
+  const permission=await permissionRequest;
   if(permission!=='granted')throw Error('Benachrichtigungsberechtigung nicht erteilt.');
   let sub=await reg.pushManager.getSubscription();
   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBytes(state.pushKey)});
