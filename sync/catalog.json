@@ -8,7 +8,7 @@
   {
    "id": "mimori",
    "title": "Mimori – Dein 3D-Haustier",
-   "desc": "Mimori: großes interaktives 3D-Hauptfenster mit kompakter In-Game-Steuerung für Pflege, Familie, 12 Räume, 13 laut.fm-Sender und fünf Minigames. WebGL-Fallback für Android, drei Erscheinungsvarianten, Hochzeiten mit bis zu drei Partnern, freischaltbare Dekoration, Google-Speicherung und Offline-Modus.",
+   "desc": "Mimori: großes interaktives 3D-Hauptfenster mit kompakter In-Game-Steuerung für Pflege, Familie, 12 Räume, 13 laut.fm-Sender und fünf im Hauptfenster integrierte Minigames. WebGL-Fallback für Android, drei Erscheinungsvarianten, Hochzeiten mit bis zu drei Partnern, freischaltbare Dekoration, Google-Speicherung und Offline-Modus.",
    "icon": "🐣",
    "img": "mimori/cover.png",
    "bg": "linear-gradient(145deg,#bfb4df,#eeaeca)",
@@ -40,7 +40,7 @@
      "Bei fehlender WebGL-Grafik schaltet Mimori automatisch auf eine einfache, aber drehbare 2D-Ansicht um. Die volle 3D-Szene benötigt eine WebGL-fähige App/WebView."
     ]
    },
-   "size": 514681,
+   "size": 516444,
    "files": 18,
    "offline": true
   },

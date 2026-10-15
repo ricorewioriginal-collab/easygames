@@ -128,3 +128,9 @@ Geräten sollte im Browser nach der Veröffentlichung kontrolliert werden.
 - `scene-ui.js` und `scene-ui.css` integrieren die Oberfläche, `fallback.js` zeichnet die Ersatzfigur. Offline-Kernressourcen und Android-Manifest-Prüfsummen wurden aktualisiert.
 
 Über das EasyGames-Android-Projekt wird der WebView explizit GPU-gerendert; in `ricorewi-radio` sind Manifest und GameActivity ebenfalls auf Hardwarebeschleunigung eingestellt. Quellcodeänderungen in Android benötigen einen neuen APK-Build und eine Installation; bestehende APKs ändern sich dadurch nicht automatisch.
+
+### Ein-Fenster-Spielhalle und Tests
+
+Die fünf Minigames starten nun **innerhalb des bestehenden Mimori-Fensters** und kehren nach dem Schließen zur selben 3D-Szene zurück. Im Querformat stehen kompakte Spielkarten und ein responsiver Arcade-Bereich zur Verfügung. Ein separater ganzseitiger App-Wechsel ist dafür nicht mehr erforderlich.
+
+Zusätzlich prüft `tools/test-mimori-scene.cjs` die tatsächliche In-Scene-Navigation, die sechs Menüs, zwölf Hintergründe und vier Tierfiguren im WebGL-freien Canvas-Fallback sowie die Touch-Interaktion. Es ersetzt keinen echten Geräte- oder WebGL-Test.
