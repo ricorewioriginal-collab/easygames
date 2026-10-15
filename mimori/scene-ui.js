@@ -20,7 +20,7 @@ head.append(heading,close);sheet.append(head,care,status);
 scene.append(sheet,dock,world,settings);stack.hidden=true;
 let current='',worldTab='rooms';
 const nav=[
- ['care','🫶','Pflege'],['status','💚','Werte'],['rooms','🏡','Räume'],
+ ['care','🫶','Pflege'],['style','🎨','Styling'],['rooms','🏡','Räume'],
  ['family','💞','Familie'],['radio','📻','Radio'],['games','🎮','Spiele']
 ];
 function makeButton([id,icon,title]){
@@ -44,6 +44,26 @@ for(const [id,label] of [['rooms','🏡 Zimmer'],['family','💞 Familie'],['rad
 }
 if(worldHead)worldHead.after(tabs);
 const prevOpen=document.querySelector('#worldOpen');
+const drawer=settings.querySelector('.drawerPanel');
+const drawerHead=drawer?.querySelector('.drawerHead');
+const drawerSections=Array.from(drawer?.querySelectorAll(':scope > section')||[]);
+const styleTabs=document.createElement('nav');styleTabs.className='styleTabs';
+styleTabs.setAttribute('aria-label','Styling und Einstellungen');
+function showStyleTab(tab){
+ const panes={figure:[0],clothes:[1],options:[2,3]};
+ drawerSections.forEach((part,i)=>part.hidden=!(panes[tab]||panes.figure).includes(i));
+ styleTabs.querySelectorAll('button').forEach(b=>{
+  const active=b.dataset.styleTab===tab;
+  b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));
+ });
+ drawer.scrollTop=0;
+}
+for(const [id,title]of [['figure','🐣 Figur'],['clothes','👑 Kleidung'],['options','⚙ Optionen']]){
+ const btn=document.createElement('button');btn.type='button';btn.dataset.styleTab=id;
+ btn.textContent=title;btn.addEventListener('click',()=>showStyleTab(id));styleTabs.appendChild(btn);
+}
+drawerHead?.after(styleTabs);
+showStyleTab('figure');
 function markWorldTab(id){worldTab=id;}
 function syncDock(){
  dock.querySelectorAll('[data-scene-nav]').forEach(b=>{
@@ -76,6 +96,10 @@ function showWorldTab(id){
 function navigate(id){
  if(id===current&&id!=='games'){current='';closeOther();syncDock();return}
  if(id==='games'){current='';closeOther();syncDock();const game=care.querySelector('[data-care="minigame"]');game?.click();return}
+ if(id==='style'){
+  closeOther();showStyleTab('figure');
+  $('settingsShortcut')?.click();current='style';syncDock();return;
+ }
  if(id==='rooms'||id==='family'||id==='radio'){showWorldTab(id);return}
  closeOther();
  if(id==='care'||id==='status'){
@@ -93,6 +117,13 @@ prevOpen?.addEventListener('click',()=>{
  switchWorldTab('rooms');current='rooms';syncDock();
 });
 $('radioLaunch')?.addEventListener('click',()=>{if(!world.hidden){switchWorldTab('radio');current='radio';syncDock()}});
+const vitals=$('miniVitals');
+if(vitals){
+ vitals.tabIndex=0;vitals.setAttribute('role','button');
+ vitals.setAttribute('aria-label','Alle Mimori-Werte anzeigen');
+ vitals.addEventListener('click',()=>navigate('status'));
+ vitals.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('status')}});
+}
 const attention=$('petAlert');
 if(attention){
  attention.tabIndex=0;attention.setAttribute('role','button');
@@ -106,5 +137,5 @@ document.addEventListener('keydown',e=>{
  if(!world.hidden||!settings.hidden)return;
  if(!sheet.hidden){current='';hideSheet();syncDock()}
 });
-window.MimoriSceneUI={navigate,openRadio:()=>showWorldTab('radio'),close:()=>{current='';closeOther();syncDock()},getState:()=>({current,sheetOpen:!sheet.hidden,worldOpen:!world.hidden})};
+window.MimoriSceneUI={navigate,showStyleTab,openRadio:()=>showWorldTab('radio'),close:()=>{current='';closeOther();syncDock()},getState:()=>({current,sheetOpen:!sheet.hidden,worldOpen:!world.hidden})};
 })();

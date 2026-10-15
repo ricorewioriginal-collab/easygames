@@ -86,3 +86,12 @@
  .shopGrid{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){.radioHotspot{animation:none}}
+
+.styleTabs{position:sticky;top:53px;z-index:3;background:#39304ff5;display:grid;grid-template-columns:repeat(3,1fr);
+ gap:7px;padding:7px 0 11px;border-bottom:1px solid #a890ba60}
+.styleTabs button{border:1px solid #bba4cc;background:#5d5072;color:#fff9ef;border-radius:12px;
+ min-height:39px;padding:8px 5px;font-size:12px;font-weight:850}
+.styleTabs button.selected{border:2px solid #f6df9a;background:#8b6897;box-shadow:0 0 13px #e6c9aa70}
+#settingsDrawer .drawerPanel>section[hidden]{display:none!important}
+#miniVitals{cursor:pointer}
+#miniVitals:focus-visible,.sceneDock button:focus-visible,.colorPicker button:focus-visible{outline:3px solid #ffe4ad;outline-offset:2px}
