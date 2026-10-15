@@ -1,3 +1,4 @@
+import {characters} from '../src/characters.js';
 import {cameraRelative} from '../src/controls.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -102,4 +103,9 @@ test('standing is stable at low frame rates, jump buffer works and underside is 
 });
 test('timed platform hides every solid mesh and moving pickups follow their floor',()=>{
  const renderer={scene:new context.THREE.Scene(),world(){}};const view=new LevelView(renderer,levels[5]),moving=view.platforms[1],gem=view.crystals.find(c=>c.pathIndex===1),offset=gem.mesh.position.x-moving.x;view.update(7,true);const timed=view.platforms[3];assert.equal(timed.active,false);assert.equal(timed.under.visible,false);assert.equal(timed.tile.visible,false);assert.ok(Math.abs(gem.mesh.position.x-moving.x-offset)<1e-6);view.dispose();
+});
+
+test('every guardian can jump from the main route to each new forest and frost bonus island',()=>{
+ const renderer={scene:new context.THREE.Scene(),world(){}};
+ for(const character of characters)for(const level of [2,3,4,5]){const view=new LevelView(renderer,levels[level]),a=view.platforms[2],b=view.secretFloor,p=new Player(new Kiko(character.id));p.spawn([a.x,a.y,a.z]);let reached=false;for(let frame=0;frame<240;frame++){const dx=b.x-p.pos.x,dz=b.z-p.pos.z,m=Math.max(1,Math.hypot(dx,dz)),jump=p.ground&&p.pos.x>a.x+a.w/2-.7&&p.pos.x<b.x-1;view.update(1/60,true);p.step(1/60,{x:dx/m,z:dz/m,jump},[...view.platforms,...view.bonusFloors],levels[level].world);if(Math.hypot(dx,dz)<.9&&p.ground&&Math.abs(p.pos.y-b.y)<.02){reached=true;break}}assert.ok(reached,`${character.name}: optional island in level ${level+1}`);view.dispose()}
 });

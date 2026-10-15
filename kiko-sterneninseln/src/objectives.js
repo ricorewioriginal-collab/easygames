@@ -13,10 +13,15 @@ export function nextObjective(game){
   target=crystal.mesh.position;title=en?`Collect blue crystals · ${game.count}/5`:`Blaue Kristalle sammeln · ${game.count}/5`;
   detail=en?'Walk into the blue crystal. Gold stars are optional.':'Laufe in den blauen Kristall. Goldene Sterne sind freiwillig.';
  }else if(!game.puzzleDone()){
-  target=view.switches[0]?.mesh.position;title=en?`Purify the star heart · ${game.bossHits}/3`:`Sternenherz reinigen · ${game.bossHits}/3`;
+  target=view.switches[0]?.mesh.position;title=en?`Star heart · phase ${Math.min(3,game.bossHits+1)}/3`:`Sternenherz · Phase ${Math.min(3,game.bossHits+1)}/3`;
   detail=en?`When blue: press ${action}. When purple: move away!`:`Bei Blau ${action} drücken. Bei Violett Abstand halten!`;
  }else{target=view.portal.position;title=en?'Enter the glowing portal':'Ins leuchtende Portal gehen';detail=en?'All pieces found. This island can reconnect!':'Alle Splitter gefunden. Verbinde diese Insel wieder!'}
  if(target&&crystal&&target===crystal.mesh.position){const floor=view.platforms.find(p=>p.active&&Math.abs(player.pos.x-p.x)<p.w/2&&Math.abs(player.pos.z-p.z)<p.d/2&&Math.abs(player.pos.y-p.y)<.15);if(floor&&crystal.pathIndex>floor.index&&player.pos.z>floor.z+floor.d/2-1.4)detail=en?'Gap ahead: keep moving and press JUMP / Space / A.':'Lücke voraus: weiterlaufen und SPRUNG / Leertaste / A drücken.'}
+ const lesson=game.lesson;
+ if(lesson&&!lesson.moved)detail=en?'Tip 1/3: move with the left stick or WASD.':'Tipp 1/3: Bewege dich mit dem linken Joystick oder WASD.';
+ else if(lesson&&!lesson.collected)detail=en?'Tip 2/3: follow the arrow into the large blue crystal.':'Tipp 2/3: Folge dem Pfeil in den großen blauen Kristall.';
+ else if(lesson&&!lesson.jumped)detail=en?'Tip 3/3: keep moving and tap JUMP at a gap or rock.':'Tipp 3/3: Laufe weiter und tippe an einer Lücke oder einem Felsen auf SPRUNG.';
+ const timed=view.platforms.find(f=>f.timed&&!f.active&&target&&target.z>=f.z-1);if(timed&&player.pos.z<timed.z&&player.pos.z>timed.z-6)detail=en?'Wait for the orange platform to become solid again.':'Warte, bis die orange Plattform wieder fest ist.';
  const dx=(target?.x||0)-player.pos.x,dz=(target?.z||0)-player.pos.z,angle=game.yaw-Math.atan2(dx,dz);
  const arrow=['↑','↗','→','↘','↓','↙','←','↖'][((Math.round(angle/(Math.PI/4))%8)+8)%8];
  return {target,title,detail,arrow,distance:Math.round(Math.hypot(dx,dz))}

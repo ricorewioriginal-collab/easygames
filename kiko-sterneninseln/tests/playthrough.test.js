@@ -1,3 +1,6 @@
+import {characters} from '../src/characters.js';
+import {makeApproach,floorHeight} from '../src/terrain.js';
+import {guidePages} from '../src/guide.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -9,12 +12,12 @@ const context={};vm.runInNewContext(readFileSync(new URL('../vendor/three.min.js
 globalThis.window={THREE:context.THREE,__worlds:worlds};
 globalThis.document={querySelector:()=>({})};
 const {Game}=await import('../src/game.js');
-const {Kiko}=await import('../src/scene.js?v=8');
-const {Player}=await import('../src/physics.js?v=8');
-function setup(){const storage=new Map;globalThis.localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};const g=Object.create(Game.prototype);g.save=new SaveManager;g.renderer={scene:new context.THREE.Scene,world(){},snapFollow(){}};g.kiko=new Kiko;g.player=new Player(g.kiko);g.ui={playing(){},updateHud(){},updateObjective(){},message(){},pause(){},complete(){},gameOver(){},error(e){throw e}};g.audio={tone(){}};g.introShown=true;g.raw={x:0,z:0,jump:false,interact:false,look:0};g.input={reset(){g.raw={x:0,z:0,jump:false,interact:false,look:0}},sample(){return g.raw}};g.start(0);return g}
+const {Kiko}=await import('../src/scene.js?v=9');
+const {Player}=await import('../src/physics.js?v=9');
+function setup(character='kiko'){const storage=new Map;globalThis.localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};const g=Object.create(Game.prototype);g.save=new SaveManager;g.save.data.character=character;g.renderer={scene:new context.THREE.Scene,world(){},snapFollow(){}};g.kiko=new Kiko(character);g.player=new Player(g.kiko);g.ui={playing(){},updateHud(){},updateObjective(){},message(){},pause(){},complete(){},gameOver(){},error(e){throw e}};g.audio={tone(){}};g.introShown=true;g.raw={x:0,z:0,jump:false,interact:false,look:0};g.input={reset(){g.raw={x:0,z:0,jump:false,interact:false,look:0}},sample(){return g.raw}};g.start(0);return g}
 test('real Game start, pause, resume, death, checkpoint and locked levels',()=>{const g=setup();assert.equal(g.state,'PLAYING');g.pause();assert.equal(g.state,'PAUSED');g.resume();assert.equal(g.state,'PLAYING');g.start(7);assert.equal(g.index,0);g.player.hearts=0;g.state='GAME_OVER';g.retryCheckpoint();assert.equal(g.player.hearts,3);assert.equal(g.state,'PLAYING');g.view.dispose()});
-for(const hz of [30,60])test(`all eight levels finish through actual movement, pickup, switches and portals at ${hz} FPS`,()=>{
- const g=setup();let frames=0,retries=0;
+for(const character of characters)for(const hz of [30,60])test(`${character.name}: all eight levels finish through actual movement, pickup, switches and portals at ${hz} FPS`,()=>{
+ const g=setup(character.id);let frames=0,retries=0;
  for(let level=0;level<8;level++){
   if(level)g.start(level);
   for(let frame=0;frame<10000&&g.state!=='LEVEL_COMPLETE';frame++){
@@ -33,8 +36,25 @@ for(const hz of [30,60])test(`all eight levels finish through actual movement, p
   assert.equal(g.count,5);assert.ok(g.puzzleDone());assert.equal(g.save.data.unlocked,Math.min(8,level+2));
  }
  const restored=new SaveManager;assert.equal(restored.data.unlocked,8);assert.ok(restored.data.best.every(s=>s>=500));
- console.log(`Simulated full round at ${hz} FPS: ${frames} frames, ${retries} checkpoint retries`);g.view.dispose()
+ console.log(`${character.name}: simulated full round at ${hz} FPS: ${frames} frames, ${retries} checkpoint retries`);g.view.dispose()
 });
 test('guidance requests a required switch before a crystal behind its gate',()=>{const g=setup();g.save.data.unlocked=8;for(const i of [1,3,5,6]){g.start(i);const sw=g.view.switches[0];for(const c of g.view.crystals)if(c.pathIndex<=sw.pathIndex){c.got=true;g.count++}const o=nextObjective(g);assert.equal(o.target,sw.mesh.position,levels[i].name)}g.view.dispose()});
 
 test('objective arrows point to the actual screen side',()=>{const g=setup();g.player.pos.set(0,0,0);const crystal=g.view.crystals[0];crystal.mesh.position.set(-4,1,0);assert.equal(nextObjective(g).arrow,'→');crystal.mesh.position.set(4,1,0);assert.equal(nextObjective(g).arrow,'←');g.view.dispose()});
+
+test('star pulse stuns enemies, respects cooldown, and never blocks a nearby switch',()=>{
+ const g=setup();g.save.data.unlocked=8;g.start(1);const e=g.view.enemies[0];g.player.pos.set(e.mesh.position.x+1,e.mesh.position.y,e.mesh.position.z);assert.equal(g.pulse(),true);assert.ok(e.stunned>3);const score=g.score;assert.equal(g.pulse(),false);assert.equal(g.score,score);const x=e.mesh.position.x;g.view.update(1,true);assert.equal(e.mesh.position.x,x);const sw=g.view.switches[0];g.player.pos.copy(sw.mesh.position);g.pulseReadyAt=99;assert.equal(g.interact(),true);assert.equal(sw.active,true);assert.equal(g.puzzle,1);g.view.dispose()
+});
+test('jump attack stuns hoppers and bonus stars heal only once',()=>{
+ const g=setup();g.save.data.unlocked=8;g.start(1);const e=g.view.enemies[0];g.player.pos.set(e.mesh.position.x,e.mesh.position.y+.5,e.mesh.position.z);g.player.velocity.y=-2;g.updateEnemies();assert.ok(e.stunned>0);assert.ok(g.player.velocity.y>0);assert.equal(g.stomps,1);assert.equal(g.player.hearts,3);g.start(0);const star=g.view.stars[0];g.player.pos.set(star.mesh.position.x,0,star.mesh.position.z);g.player.hearts=2;g.collect();assert.equal(g.player.hearts,3);assert.equal(g.bonus,1);g.player.hearts=2;g.collect();assert.equal(g.player.hearts,2);assert.equal(g.bonus,1);g.view.dispose()
+});
+test('Boro shield is granted once per level and cannot be farmed by switching figures',()=>{
+ const g=setup('boro'),root=g.kiko.root;assert.equal(g.player.shield,1);g.damage();assert.equal(g.player.hearts,3);assert.equal(g.player.shield,0);g.selectCharacter('mira');g.selectCharacter('boro');assert.equal(g.player.shield,0);assert.equal(g.kiko.root,root);assert.equal(g.player.pos,root.position);g.player.invincible=0;g.damage();assert.equal(g.player.hearts,2);g.start(0);assert.equal(g.player.shield,1);g.view.dispose()
+});
+test('a sloped approach is traversable without jumping and without leaving its surface',()=>{
+ const a=[0,0,6,6,0],b=[0,6.5,6,6,.6],ramp=makeApproach(a,b),floors=[{x:0,z:0,w:6,d:6,y:0,active:true},ramp,{x:0,z:6.5,w:6,d:6,y:.6,active:true}],p=new Player(new Kiko);p.spawn([0,0,0]);let reached=false;for(let i=0;i<160;i++){p.step(1/60,{x:0,z:1,jump:false},floors,0);if(p.pos.z>ramp.z0&&p.pos.z<ramp.z1)assert.ok(Math.abs(p.pos.y-floorHeight(ramp,p.pos.x,p.pos.z))<.025);if(p.pos.z>5.5){reached=true;break}}assert.ok(reached);assert.equal(p.pos.y,.6);assert.ok(p.ground)
+});
+test('checkpoints heal once, medals keep their best result and chosen figures persist',()=>{
+ const g=setup('mira'),mid=levels[0].path[2];g.player.pos.set(mid[0]+2,mid[4],mid[1]);g.player.hearts=1;g.update(1/60);assert.ok(g.checkpointReached);assert.equal(g.player.hearts,3);g.player.hearts=2;g.update(1/60);assert.equal(g.player.hearts,2);g.save.finish(0,3,750,{time:42,hits:0,deaths:0});g.save.finish(0,2,700,{time:60,hits:1,deaths:0});const restored=new SaveManager;assert.equal(restored.data.character,'mira');assert.equal(restored.data.records[0].medal,3);assert.equal(restored.data.records[0].time,42);assert.equal(restored.data.records[0].runs,2);assert.ok(restored.data.tutorialDone);g.view.dispose()
+});
+test('guide explains all eight puzzles, active key bindings and character abilities',()=>{const g=setup('mira');g.save.data.keys.jump='KeyJ';const pages=guidePages(g);assert.equal(pages.length,4);assert.equal(pages[3].cards.length,8);assert.match(pages[1].cards[0][1],/J springt/);assert.match(pages[2].intro,/Mira/);g.view.dispose()});

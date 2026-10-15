@@ -28,6 +28,23 @@ Touchflächen unterbinden Browsergesten während der Steuerung. Joystick, Sprung
 
 Ein Missionsfenster erklärt den Einstieg. Während des Spielens zeigt ein dauerhafter Zielkompass den nächsten Kristall, notwendigen Schalter oder das Portal. Pflichtschalter werden vor späteren Kristallen hinter einem Tor angefordert. Sprung und Aktion sind beschriftet. Blaue Kristalle tragen sichtbare Lichtmarkierungen; Bonussterne und Kikos Abzeichen haben eine Sternform. Die Farben der Standardmaterialien werden für Three.js r128 korrekt aus sRGB umgerechnet.
 
+## Figuren, Spielmechaniken und Landschaft – Fassung 9
+
+Über **Figur wählen** im Hauptmenü oder **Figur wechseln** in der Pause stehen vier vollständig modellierte Figuren bereit. Ihre Wahl wird lokal und mit dem Google-Spielstand gespeichert. Ein Wechsel in der Pause erhält Position, Herzen und Levelzustand.
+
+- Kiko: ausgeglichen; besonders weiter Sternenpuls.
+- Mira: Mondohren und höhere Sprünge.
+- Boro: Felsenhörner; ein Schutzschild pro Level. Figurenwechsel laden einen verbrauchten Schild nicht neu auf.
+- Lumi: kleine Flügel; höheres Lauftempo und kürzere Pulsaufladung.
+
+Abseits von Rätselobjekten löst **E / X / AKTION** einen Sternenpuls aus, der nahe Schattenwesen für 3,5 Sekunden betäubt. Eine Anzeige zeigt die Aufladung. In der Nähe eines Schalters betätigt dieselbe Taste das Rätselobjekt. Schattenhüpfer können auch durch eine Landung von oben betäubt werden; die Figur federt dabei ab. Fliegern muss ausgewichen werden oder der Puls hilft.
+
+Bonussterne heilen jeweils ein Herz, Checkpoints füllen beim ersten Erreichen alle Herzen auf. Schnelle Kristallketten geben Zusatzpunkte. Pro Level werden Bestzeit, Anzahl Abschlüsse und beste Medaille gespeichert: Gold für drei Sterne ohne Schaden und Sturz, Silber für mindestens zwei Sterne, sonst Bronze.
+
+Die Landschaft besitzt abgerundete Inselkanten, geschwungene Bodenwege, Felsunterbauten, schwebende Hintergrundinseln, Wolken und Lichtpartikel mit unterschiedlichen Weltfarben. Die ersten passenden Übergänge erhalten begehbare, sanft gekrümmte Aufgänge. Deren sichtbare Geometrie und Kollisionshöhe werden aus denselben Terrainfunktionen erzeugt. Wald und Frostwelt haben zusätzliche Seiteninseln für Bonussterne. Blinkende Zeitplattformen warnen vor dem Verschwinden. Niedrige Grafikqualität und die automatische Leistungsreduktion schalten Schatten ab.
+
+Die **Abenteuer-Anleitung** bietet vier Kapitel: Mission, Geräte-Steuerung mit der aktuellen Tastenbelegung, Überlebensregeln und ein Tagebuch zu allen acht Inselrätseln. Beim ersten Einstieg gibt es eine dreiseitige Einführung und Spieltipps, die auf Bewegung, Sammeln und Springen reagieren. Die Einführung kann direkt übersprungen werden.
+
 ## Google-Spielstand – Fassung 8
 
 Im Hauptmenü, in der Pause, in den Einstellungen und nach einem Levelabschluss gibt es die aufklappbare Karte **Google-Spielstand**. Dort stehen Anmeldung, Kontoprofil, manuelles Sichern, Wiederherstellung des Cloud-Stands, die vorhandene ältere Sicherung und Abmeldung zur Verfügung. Während des Spiels wird die Karte ausgeblendet.

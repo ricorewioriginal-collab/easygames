@@ -1,8 +1,8 @@
-# Testergebnisse – Fassung 8, 15. Oktober 2026
+# Testergebnisse – Fassung 9, 15. Oktober 2026
 
 ## Automatisch geprüft
 
-`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 33 Testfälle.
+`npm test`: sieben Testdateien erfolgreich. Die Dateien enthalten insgesamt 47 Testfälle.
 
 - Echte Kameraachse gegen WASD/Joystick: Vorwärts und Rechts stimmen mit der dargestellten Ansicht überein. Der Zielkompass nutzt dieselbe Orientierung.
 - Physik: Landung, keine Luft-Mehrfachsprünge, feste höhere Kanten, Sprünge auf Kanten, Hindernisse, Deckenkollision, Sprungpuffer und dauerhafter Bodenkontakt bei 15/30/60/120 Hz.
@@ -10,7 +10,10 @@
 - Bewegliche Plattformen nehmen ihre Sammelobjekte mit. Inaktive Zeitplattformen blenden ihren Unterbau aus.
 - Eingabe: Tastatur, gleichzeitiger Touch-Joystick und Sprung, Pointer-Abbruch, Loslassen außerhalb einer Taste, Kamerafinger, Fokusverlust, Gamepad und Controller-Abbruch. Eine gesperrte Gamepad API im Iframe darf Touch und Tastatur nicht abschalten.
 - Zustände: Start, Level-Sperren, Pause, Fortsetzen, Game Over und Checkpoint-Neustart.
-- Vollständige Runde mit `Game.update`: Die Teststeuerung läuft und springt durch alle acht Level, sammelt alle 40 Pflichtkristalle, löst Brücke, Lichtsteinfolge, Schlüssel und beide Himmelsschalter, beendet drei Bossphasen und betritt jedes aktive Portal. Bei 30 Hz: 1502 Simulationsschritte; bei 60 Hz: 2993. In beiden Runden war ein regulärer Checkpoint-Neustart im Endkampf nötig. Gegner und Schaden bleiben aktiv. Die Teststeuerung setzt Kiko nicht auf Zielplattformen und schaltet keine Level künstlich frei.
+- Vollständige Runden mit `Game.update`: Alle vier Figuren laufen und springen bei 30 und 60 Hz durch alle acht Level, sammeln die 40 Pflichtkristalle, lösen Brücke, Lichtsteinfolge, Schlüssel und Himmelsschalter, beenden drei Bossphasen und betreten jedes aktive Portal. Gegner und Schaden bleiben aktiv. Kein Versetzen auf Zielplattformen und kein künstliches Freischalten von Leveln. Kiko benötigt 1572/3129, Mira 1615/3220, Boro 1493/2970 und Lumi 1515/3015 Schritte bei 30/60 Hz. Je Runde war bei Kiko, Mira und Lumi ein regulärer Checkpoint-Neustart im Endkampf nötig; Boro schaffte die Runde ohne Neustart.
+- Neue Mechaniken: Pulsreichweite, Betäubung, Aufladezeit, Vorrang eines Schalters vor dem Puls, Sprungangriff, einmaliges Heilen durch Sterne und Checkpoints, Schutzschild ohne Nachladen durch Figurenwechsel, Medaillen, Bestzeiten und Speicherung der gewählten Figur.
+- Terrain: begehbarer Aufgang ohne Sprung und ohne Verlust des Bodenkontakts; alle vier Figuren erreichen jede neue Bonusinsel in Wald und Frostwelt.
+- Oberfläche: Auswahl von vier Figuren in der Pause erhält den Fortschritt. Die Anleitung erklärt acht Levelrätsel, Fähigkeiten und die tatsächliche Tastenbelegung.
 - Fortschritt: Freischaltung bis Level acht, beste Ergebnisse und erneutes Laden des lokalen Spielstands.
 - Syntaxprüfung aller Quell- und Testdateien mit `node --check`.
 
@@ -18,7 +21,7 @@
 
 Fünf neue Testfälle führen das unveränderte EasyGames-Cloud-Modul mit simuliertem Storage und simulierten Auth-/Firestore-Antworten aus: Ohne Anmeldung gibt es keine Cloud-Anfragen; ein angemeldeter Testnutzer erhält den eigenen Kiko-Stand; geänderter Fortschritt wird nur unter dem Kiko-Dokument hochgeladen; ein Netzausfall erhält den lokalen Stand; geladene Daten werden von SaveManager validiert und übernommen. Die HTML-Anbindung wird auf Spiel-ID, Speicherpräfix und Menü-Mount geprüft.
 
-Zwei weitere Fälle prüfen die Menüintegration mit modellierten DOM-Elementen: Derselbe Google-Bereich bleibt beim Menüwechsel erhalten, ist im Spiel ausgeblendet und aktualisiert Freischaltungen nach einem empfangenen Cloud-Stand ohne Rückschreiben veralteter Daten.
+Drei weitere Fälle prüfen die Menüintegration und Figurenauswahl mit modellierten DOM-Elementen: Derselbe Google-Bereich bleibt beim Menüwechsel erhalten, ist im Spiel ausgeblendet und aktualisiert Freischaltungen nach einem empfangenen Cloud-Stand ohne Rückschreiben veralteter Daten.
 
 Es wurden keine echten Google-Zugangsdaten verwendet und keine echten Firebase-Spielstände verändert. Das interaktive Google-Anmeldefenster sowie der Abgleich mit dem produktiven Firebase-Projekt wurden in dieser Umgebung nicht live geprüft.
 

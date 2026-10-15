@@ -1,8 +1,8 @@
 export const worlds=[
- {name:'Sonnenwiesen',sky:0x65c4e8,fog:0x9fddde,ground:0x42a66b,trim:0x3a7553,accent:0xffd56e},
- {name:'Glitzerwald',sky:0x203758,fog:0x314f67,ground:0x43866d,trim:0x344f54,accent:0xb5ffce},
- {name:'Frosthöhen',sky:0x7299c1,fog:0xb6cadb,ground:0xaacfd8,trim:0x587da4,accent:0xb1edff},
- {name:'Sternenhimmel',sky:0x101631,fog:0x202b4d,ground:0x6b70a5,trim:0x3b406c,accent:0xffce80}
+ {name:'Sonnenwiesen',sky:0x65c4e8,fog:0x9fddde,ground:0x42a66b,trim:0x627c59,rock:0x6d7768,trail:0xb4b57a,accent:0xffd56e},
+ {name:'Glitzerwald',sky:0x203758,fog:0x314f67,ground:0x43866d,trim:0x415c62,rock:0x3d4c60,trail:0x7a987d,accent:0xb5ffce},
+ {name:'Frosthöhen',sky:0x7299c1,fog:0xb6cadb,ground:0xaacfd8,trim:0x7394b4,rock:0x6784a0,trail:0xc3e2e5,accent:0xb1edff},
+ {name:'Sternenhimmel',sky:0x101631,fog:0x202b4d,ground:0x6b70a5,trim:0x4e507d,rock:0x424362,trail:0x9390b7,accent:0xffce80}
 ];
 // Each path is a sequence of traversable rectangles (x, z, width, depth, top y).
 const make=(name,world,path,puzzle='none',enemies=[],notes='')=>({name,world,path,puzzle,enemies,notes,
