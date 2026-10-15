@@ -1,6 +1,6 @@
 'use strict';
-const CACHE='mimori-v8';
-const CORE=['./','./index.html','./model.js','./sound.js','./game.js','./arcade.js','./arcade.css','./cover.png','./cover.svg','./icon.svg','./manifest.webmanifest','../vendor/three-r128.min.js','../cloud/anmacha-cloud.js'];
+const CACHE='mimori-v9';
+const CORE=['./','./index.html','./model.js','./household.js','./rooms3d.js','./radio.js','./home.css','./sound.js','./game.js','./arcade.js','./arcade.css','./cover.png','./cover.svg','./icon.svg','./manifest.webmanifest','../vendor/three-r128.min.js','../cloud/anmacha-cloud.js'];
 self.addEventListener('install',event=>event.waitUntil(
  caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())
 ));

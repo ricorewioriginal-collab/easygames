@@ -66,3 +66,54 @@ Alle neuen Zustandsfelder gehören zum bestehenden Spielstand unter `easygames.m
 - **`cover.svg`** ist die bearbeitbare Vektorvorlage des eigens illustrierten 1200×630-Katalogmotivs mit allen vier Figuren.
 - **`og:image`**, Twitter-Card, Beschreibung und kanonische URL liegen auf der direkt spielbaren `mimori/index.html`. `games.js` und `sync/catalog.json` verweisen auf das Cover statt des App-Icons.
 - Der GitHub-Workflow `.github/workflows/mimori-cover.yml` hat das **echte 1200×630-PNG** `mimori/cover.png` erfolgreich erstellt. Die Katalogkarte in `games.js` und `sync/catalog.json`, Open Graph, Twitter-Card und die PWA-Screenshot-Angabe zeigen nun auf dieses PNG. Die Vektorvorlage bleibt weiterhin vorhanden.
+
+## Mimori Wohnwelt und Familie
+
+Das große 3D-Fenster enthält **12 eigene, geometrisch gebaute Kulissen**:
+Wohnzimmer, Schlafzimmer, Badezimmer, Küche und Garten (kostenlos);
+Partyraum, Musikstudio, Sternwarte, Winterhütte, Wolkeninsel, Zauberlabor und Spielzimmer (mit erspielten Sternen freischalten).
+Jede Kulisse besitzt andere Möbel, Farben und Einrichtungsobjekte. Im Zimmermenü
+lassen sich zusätzlich acht Arten von 3D-Dekoration kaufen, z. B. Pflanzen,
+Bilder, Lichterketten, Teppiche, Aquarium, Kamin, Sternenmobile und Sitzgruppe.
+Die Bauausgaben und die pro Zimmer eingerichteten Möbel werden lokal und über
+den vorhandenen Google-Spielstand unter `easygames.mimori.v1` mitgesichert.
+Jeder Bewohner merkt sich außerdem seinen zuletzt ausgewählten Raum.
+
+**Erscheinungsvarianten:** Alle vier Tierarten unterstützen unabhängig von der
+Fellfarbe drei per Einstellungen wählbare Looks: männlich, weiblich sowie
+divers/androgyn. Die Varianten verändern tatsächlich sichtbare 3D-Details
+(z. B. Stirn, Augenakzente, Blumen oder asymmetrischen Schopf).
+
+**Familie und Hochzeit:** Bis zu vier Bewohner einschließlich des ersten
+Mimoris können angelegt werden. Jeder besitzt eigene Pflegewerte, Gesundheit,
+Fellfarbe, Erscheinungsvariante und Inventar. Über die Familienübersicht kann
+jeder Bewohner einzeln oder der komplette Haushalt über Schnellpflege versorgt
+werden. Durch wiederholte Dates wächst die Beziehung; ab 60 Herzen pro gewähltem
+Partner kann eine Hochzeit zwischen zwei, drei oder vier Mimoris gefeiert werden.
+Es gibt keine Einschränkungen hinsichtlich der gewählten Geschlechter oder
+Erscheinungsvarianten. Nach einer Hochzeit werden Partner als zusätzliche
+kleinere 3D-Wesen in der Szene angezeigt. Alle Familieninformationen liegen im
+bestehenden `household`-Feld desselben Google-synchronisierten Spielstands.
+
+**Radio:** Im Wohnzimmer steht dauerhaft ein modelliertes 3D-Radio.
+Die Radio-Schaltfläche öffnet 13 Sender, jeweils mit Mimori-Fantasienamen,
+dem realen Sendernamen und der deutlich sichtbaren Quellenangabe **laut.fm**.
+Die Stationsliste stammt aus dem Repository `ricorewi-radio`,
+`Hörerbot/stations.json`, mit entsprechenden Anzeigenamen aus `Stations.java`.
+Die Streams werden erst nach bewusstem Antippen abgespielt, unter
+`https://stream.laut.fm/<stationskennung>`; sie benötigen Internet,
+werden nicht in den Offline-Spielstand aufgenommen und können von Browser-,
+Netzwerk- oder Streamserver-Bedingungen abhängen.
+
+### Zusätzliche Dateien und Tests
+
+- `household.js`: zusätzliche Bewohner, eigene Zimmer, Beziehungen, Hochzeit, Shop und Schnellpflege
+- `rooms3d.js`: zwölf vollständig aus Three.js-Geometrien gerenderte Raumkulissen
+- `radio.js`: Auswahl der 13 echten laut.fm-Sender und sichere Bedienung von HTML-Audio
+- `home.css`: mobile Familien-/Zimmereinrichtung und Radiobedienung
+- `tools/test-mimori-home.cjs`: Persistenz, Familien-/Hochzeitsvarianten, 3D-Räume und Kaufregeln
+- `tools/test-mimori-radio.cjs`: Start/Wechsel/Stop von Streams mit simuliertem HTMLAudioElement
+
+Die zusätzlichen Browser-Simulationen sind keine echten Smartphone- oder
+Streaming-Tests. Vor allem die Darstellung komplexerer Kulissen auf schwächeren
+Geräten sollte im Browser nach der Veröffentlichung kontrolliert werden.
