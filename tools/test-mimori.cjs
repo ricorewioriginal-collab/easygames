@@ -81,7 +81,7 @@ assert(sw.includes("'./sound.js'")&&sw.includes("'../cloud/anmacha-cloud.js'"));
 assert(!sw.includes("addEventListener('push'"));
 
 const ui={},ls=new Map(),events={window:{}},notifications=[],noop=()=>{};
-let renderFrame=null;const speciesButtons=[];
+let renderFrame=null;const speciesButtons=[],careButtons=[];
 function element(){
  return {textContent:'',hidden:false,clientWidth:570,clientHeight:500,dataset:{},children:[],
   style:{setProperty:noop},handlers:{},classList:{add:noop,remove:noop,toggle:noop},focus:noop,setPointerCapture:noop,querySelector:()=>element(),
@@ -108,8 +108,11 @@ const mockNotification={permission:'default',requestPermission:async()=>{mockNot
 const serviceWorker={getRegistration:async()=>({showNotification:async(t,d)=>notifications.push({title:t,...d})})};
 const win={MimoriModel:M,MimoriSound:C,THREE,Notification:mockNotification,isSecureContext:true,addEventListener:noop,prompt:()=>null};
 for(let i=0;i<4;i++){const b=element();b.dataset.species=String(i);speciesButtons.push(b)}
+for(const kind of ['feed','toilet','cleanup','medicine','light','sleep']){
+ const b=element();b.dataset.care=kind;careButtons.push(b);
+}
 const document={getElementById:id=>ui[id]??=element(),
- querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:[],
+ querySelectorAll:sel=>sel==='[data-species]'?speciesButtons:sel==='[data-care]'?careButtons:[],
  addEventListener:noop,createElement:element,hidden:false,body:{classList:{add:noop,remove:noop}}};
 const localStorage={getItem:k=>ls.get(k)||null,setItem:(k,v)=>ls.set(k,v)};
 const context={window:win,document,localStorage,navigator:{serviceWorker},Notification:mockNotification,
@@ -126,6 +129,17 @@ assert(ui.fxLayer.children.length>0,'missing animated care effects');
 assert.equal(ui.petname.textContent,'Mimori');
 assert.equal(ui.messScene.children.length,0);
 assert.equal(ui.lightBtn.handlers.click?.length||0,0,'care button should be bound through data-care delegation');
+const lightCare=careButtons.find(b=>b.dataset.care==='light'),sleepCare=careButtons.find(b=>b.dataset.care==='sleep');
+assert(lightCare.handlers.click.length===1&&sleepCare.handlers.click.length===1);
+lightCare.handlers.click[0]();assert.equal(win.MimoriDebug.get().lightsOff,true);
+assert.equal(ui.lightLabel.textContent,'Aus');
+sleepCare.handlers.click[0]();assert.equal(win.MimoriDebug.get().sleeping,true);
+assert.equal(ui.sleepStatus.hidden,false);
+lightCare.handlers.click[0]();assert.equal(ui.lightLabel.textContent,'An');
+assert.equal(ui.sleepStatus.hidden,true);
+sleepCare.handlers.click[0]();assert.equal(win.MimoriDebug.get().sleeping,false);
+ui.alertSoundToggle.handlers.click[0]();assert.equal(win.MimoriDebug.alertSound(),true);
+
 
 assert(!ui.webglError||ui.webglError.hidden!==false,'failed WebGL mock init');
 // Four models must truly change shape and not just color.
