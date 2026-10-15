@@ -11,6 +11,7 @@ class Node{
  toggle:(x,force)=>{const yes=force===undefined?!this.classes.has(x):force;yes?this.classes.add(x):this.classes.delete(x);return yes}};
  }
  append(...children){this.children.push(...children)}
+ appendChild(child){this.children.push(child)}
  replaceChildren(...children){this.children=children}
  addEventListener(type,fn){(this.handlers[type]??=[]).push(fn)}
  setAttribute(name,value){this.attributes[name]=String(value)}
