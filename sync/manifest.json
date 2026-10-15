@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5f7529c6c5f1",
- "generated": "2026-10-15T08:44:28+02:00",
- "commit": "37bc928f65c5501d86407ee080e9268c2ee59ab5",
+ "version": "1bdf5170f39e",
+ "generated": "2026-10-15T08:45:40+02:00",
+ "commit": "1cf4d209cfef519a9a3bddd2ac887a927f36b246",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4778,8 +4778,8 @@
   },
   {
    "p": "kraterkommando/game.js",
-   "s": 41264,
-   "h": "bf29c41b32745ae3472a0998cd528ce858fb35c849bd630604e507cc2932adf8"
+   "s": 41662,
+   "h": "f9829a7607681b669d5f5de1b5b3854038c4a3afaac8a1ebe3cbc59a7776674e"
   },
   {
    "p": "kraterkommando/index.html",
@@ -5409,7 +5409,7 @@
   {
    "p": "sync/catalog.json",
    "s": 73639,
-   "h": "cfb3af6d44cc0dec28979e8d5f0af1342faddd8b6614d16add388e7e79a66163"
+   "h": "facfda58843fed6ec593e5994588eb4c34b35cbcb9fc8f37b66078536717a6b5"
   },
   {
    "p": "taschi/card.svg",
