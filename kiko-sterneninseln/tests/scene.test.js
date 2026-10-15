@@ -43,3 +43,16 @@ test('camera reset and view direction agree with camera relative movement',()=>{
   assert.ok(Math.abs(flat.y-Math.cos(yaw))<.001);
  }
 });
+test('small meadow rocks block walking and can be jumped',()=>{
+ const renderer={scene:new context.THREE.Scene(),world(){}};
+ const view=new LevelView(renderer,levels[0]),player=new Player(new Kiko);
+ const rock=view.blockers[0];
+ player.spawn([rock.x,rock.y,rock.z-1.4]);
+ for(let i=0;i<25;i++)player.step(1/60,{x:0,z:0,jump:false},view.platforms,0,view.blockers);
+ for(let i=0;i<35;i++)player.step(1/60,{x:0,z:1,jump:false},view.platforms,0,view.blockers);
+ assert.ok(player.pos.z<rock.z-.6);
+ player.step(1/60,{x:0,z:1,jump:true},view.platforms,0,view.blockers);
+ for(let i=0;i<50;i++)player.step(1/60,{x:0,z:1,jump:false},view.platforms,0,view.blockers);
+ assert.ok(player.pos.z>rock.z+.6);
+ view.dispose();
+});
