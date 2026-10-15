@@ -79,8 +79,20 @@ h1{margin:0;font-size:clamp(28px,6vw,44px);line-height:1.06;color:#ffe1a4;text-s
 #rescueStatus{position:absolute;z-index:4;top:calc(45px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);pointer-events:none;background:#5a315ddd;border:3px solid #fbe19b;box-shadow:3px 4px 0 #262943;color:#fff5c6;padding:7px 12px;font:900 clamp(11px,2.5vw,16px) 'Courier New',monospace;letter-spacing:.4px;white-space:nowrap;animation:rescuePulse 1s steps(2) infinite}
 @keyframes rescuePulse{50%{background:#9a4f70}}
 @media(max-height:410px){#rescueStatus{top:calc(36px + env(safe-area-inset-top));padding:3px 8px;font-size:10px}}
+/* Painterly high-resolution presentation: a warm paper palette rather than hard pixel scaling. */
+canvas{image-rendering:auto;image-rendering:high-quality}
+#overlay{background:radial-gradient(ellipse at 50% 42%,#27395666,#26304ad9),repeating-linear-gradient(13deg,#fff7dc08 0 2px,#0000 2px 8px);backdrop-filter:blur(2px)}
+#sheet{font-family:'Trebuchet MS',system-ui,sans-serif;border:4px solid #f5dfb2;outline:2px solid #856879;border-radius:23px;background:radial-gradient(ellipse at 12% 7%,#fff5d433,transparent 43%),repeating-linear-gradient(106deg,#ffffff08 0 2px,#0000 2px 9px),linear-gradient(145deg,#717f9b,#4c5679 67%,#414260);box-shadow:inset 0 0 0 2px #fff0c2,0 8px 0 #60495f,0 26px 62px #14162cd9}
+#seal{filter:drop-shadow(2px 3px 0 #7b5878)}
+#subtitle{font-family:Georgia,serif;letter-spacing:2.4px}
+h1{font-family:'Trebuchet MS',system-ui,sans-serif;font-weight:1000;letter-spacing:.3px;text-shadow:2px 3px 0 #674e70,0 0 12px #fff2c433}
+#actions button{border:2px solid #fff2ce;border-radius:14px;box-shadow:inset 0 2px #ffffff80,0 5px 0 #76546d;transition:transform .12s,filter .12s}
+#actions button:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.island{border-radius:12px;box-shadow:inset 0 1px #ffffff56,0 3px 0 #353b5d}
+#worldMap{image-rendering:auto;border-radius:12px}
+#touch button{border-radius:18px!important;box-shadow:inset 0 2px #ffffff70,0 5px #2a2b4fb0}
 </style></head><body>
-<main><canvas id="stage" width="480" height="270" aria-label="Pufi und Tamo – Retro-Abenteuer mit schwebendem Begleiter und Entführer-Countdown"></canvas></main>
+<main><canvas id="stage" width="960" height="540" aria-label="Pufi und Tamo – handgemaltes Retro-Abenteuer mit Reitbegleiter, Schwebe-Sprung und Farb-Samen"></canvas></main>
 <header id="top"><span id="where">1/6 · Blütenbucht</span><span id="mountStatus">🐾 TAMO AN BORD</span><span id="hearts">♥♥♥</span><span id="ammo">● 4/6</span><span id="flowers">❀ 0</span><span id="score">✦ 0</span><button id="sound" aria-label="Ton umschalten">♪ AN</button><button id="options" aria-label="Controller-Optionen">⚙</button><button id="pause" aria-label="Pause">Ⅱ</button></header>
 <div id="rescueStatus" role="status" aria-live="polite" hidden>TAMO RETTEN!</div>
 <div id="touch" hidden aria-label="Konsolensteuerung">

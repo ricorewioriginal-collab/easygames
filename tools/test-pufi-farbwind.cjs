@@ -87,12 +87,13 @@ assert.equal(a.state().hero.mounted,true);
 assert.equal(a.state().world.score,0);
 a.finished();assert.equal(a.state().save.unlocked,2);
 assert.equal(boot(b.storage.get('easygames.pufi-farbwind.v1')).api.state().save.unlocked,2);
-// All original stages still load, draw, and preserve the two boss locations.
-for(let i=0;i<6;i++){
+// Every main and bonus stage loads and draws; boss encounters close each main island.
+for(let i=0;i<60;i++){
  a.start(i);const w=a.state().world;
+ assert(b.els.where.textContent.includes((i+1)+'/60'));
  assert.equal(w.segments.length,5);
  assert(w.goal<w.segments.at(-1).x+w.segments.at(-1).w);
- assert.equal(!!w.boss,i===2||i===5);
+ assert.equal(!!w.boss,i<48&&i%8===7);
  a.draw();
 }
 
@@ -113,16 +114,16 @@ a.state().hero.inv=0;a.hurt();const stealing=a.state().world.rescue;
 stealing.thief.x=230;stealing.thief.y=140;
 a.state().world.bullets.push({x:230,y:140,w:10,h:10,vx:0,vy:0,life:1,bounces:0});
 a.tick(1/60);assert(stealing.thief.stun>1.5);assert(stealing.remaining>15);
-a.start(1);assert(a.state().world.traps.some(x=>x.type==='thorn'));assert(a.state().world.ledges.some(x=>x.crumble===0));
-a.start(2);assert(a.state().world.ledges.some(x=>x.mushroom));
-a.start(3);assert.equal(a.state().world.movers.length,4);assert(a.state().world.windZones.length>0);
-a.start(4);assert.equal(a.state().world.movers.length,4);assert(a.state().world.water.length>0);
-a.start(5);assert(a.state().world.traps.some(x=>x.type==='fire'));
+a.start(8);assert(a.state().world.traps.some(x=>x.type==='thorn'));assert(a.state().world.ledges.some(x=>x.crumble===0));
+a.start(16);assert(a.state().world.ledges.some(x=>x.mushroom));
+a.start(24);assert.equal(a.state().world.movers.length,4);assert(a.state().world.windZones.length>0);
+a.start(32);assert.equal(a.state().world.movers.length,4);assert(a.state().world.water.length>0);
+a.start(40);assert(a.state().world.traps.some(x=>x.type==='fire'));
 a.gameover('Test');b.emit(b.els.secondary,'click');
 assert.equal(a.state().mode,'map');assert.equal(b.els.worldMap.hidden,false);
 
 // Every gap in every stage must be traversable with the normal mounted jump/glide.
-for(let level=0;level<6;level++){
+for(let level of [0,8,16,24,32,40]){
  a.start(level);const w=a.state().world;
  w.enemies.forEach(e=>e.alive=false);w.traps.length=0;w.boss=null;
  for(let i=0;i<w.segments.length-1;i++){
@@ -140,4 +141,13 @@ for(let level=0;level<6;level++){
  }
 }
 
-console.log('PASS: six worlds, 15-second kidnapping, chase, projectile stun, map, touch/controller and records.');
+a.start(0);
+const tonguePod=a.state().world.pods[0],tongueHero=a.state().hero;
+tongueHero.x=tonguePod.x-12;tongueHero.y=tonguePod.y-13;tongueHero.ground=true;
+a.absorb();
+assert.equal(tonguePod.used,true);assert(tongueHero.grabAnim>0);assert(tongueHero.grabTarget);
+a.draw();
+for(let i=0;i<30;i++)a.tick(1/60);
+assert.equal(tongueHero.grabAnim,0);assert.equal(tongueHero.grabTarget,null);
+
+console.log('PASS: 60 stages, island mechanics, 15-second rescue, animated tongue, map, touch/controller and records.');
