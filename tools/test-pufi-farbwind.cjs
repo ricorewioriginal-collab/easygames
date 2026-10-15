@@ -95,4 +95,30 @@ for(let i=0;i<6;i++){
  assert.equal(!!w.boss,i===2||i===5);
  a.draw();
 }
-console.log('PASS: 6 stages, 2 bosses, Start/Options/Pause/Game Over, Tamo, gamepad A/B/Y, swipe/dpad, simultaneous pointers, persistence.');
+
+a.start(0);for(let i=0;i<90;i++)a.tick(1/60);
+a.state().hero.inv=0;a.hurt();
+assert(a.state().world.rescue);assert.equal(a.state().hero.mounted,false);
+assert(a.state().world.rescue.x-a.state().hero.x>70);
+for(let i=0;i<930&&a.state().mode==='play';i++)a.tick(1/60);
+assert.equal(a.state().mode,'gameover');assert.equal(a.state().world.rescue,null);
+a.start(0);for(let i=0;i<90;i++)a.tick(1/60);
+a.state().hero.inv=0;a.hurt();const chase=a.state().world.rescue;
+a.state().hero.x=chase.x-14;a.state().hero.y=chase.y;
+for(let i=0;i<105;i++)a.tick(1/60);
+assert.equal(a.state().world.rescue,null);assert.equal(a.state().hero.mounted,true);
+assert(a.state().world.score>=150);
+a.start(0);for(let i=0;i<90;i++)a.tick(1/60);
+a.state().hero.inv=0;a.hurt();const stealing=a.state().world.rescue;
+stealing.thief.x=230;stealing.thief.y=140;
+a.state().world.bullets.push({x:230,y:140,w:10,h:10,vx:0,vy:0,life:1,bounces:0});
+a.tick(1/60);assert(stealing.thief.stun>1.5);assert(stealing.remaining>15);
+a.start(1);assert(a.state().world.traps.some(x=>x.type==='thorn'));assert(a.state().world.ledges.some(x=>x.crumble===0));
+a.start(2);assert(a.state().world.ledges.some(x=>x.mushroom));
+a.start(3);assert.equal(a.state().world.movers.length,4);assert(a.state().world.windZones.length>0);
+a.start(4);assert.equal(a.state().world.movers.length,4);assert(a.state().world.water.length>0);
+a.start(5);assert(a.state().world.traps.some(x=>x.type==='fire'));
+a.gameover('Test');b.emit(b.els.secondary,'click');
+assert.equal(a.state().mode,'map');assert.equal(b.els.worldMap.hidden,false);
+
+console.log('PASS: six worlds, 15-second kidnapping, chase, projectile stun, map, touch/controller and records.');
