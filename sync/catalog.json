@@ -6,6 +6,22 @@
  },
  "games": [
   {
+   "id": "zeitsprung-radio",
+   "title": "ZEITSPRUNG RADIO",
+   "desc": "Moderiertes 3D-Musikzeitspiel mit Vito: 300 verschiedene Songs und Jahresfragen in 10 Kategorien, 1–4 Spieler, chronologische Zeitleiste, Sprachmoderation und YouTube-Musik.",
+   "icon": "💿",
+   "img": null,
+   "bg": "linear-gradient(145deg,#19142a,#ff4c93 55%,#ffcb61)",
+   "glow": "rgba(255,76,147,.5)",
+   "path": "zeitsprung-radio/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": null,
+   "size": 41459,
+   "files": 4,
+   "offline": true
+  },
+  {
    "id": "mimori",
    "title": "Mimori – Dein 3D-Haustier",
    "desc": "Mimori: große interaktive 3D-Wohnwelt mit Raumwechsel ganz oben und fünf Live-Statuswerten, 20 stylbaren Accessoires und 24 ausbaubaren Möbeln. Vier Tierarten, individuelle Fellfarben und drei Varianten, Hochzeit mit bis zu drei Partnern samt sichtbaren 3D-Ehepartnern, zwölf 3D-Räume und 13 echte laut.fm-Streams im Wohnzimmer. Pflege, fünf Minigames, Google-Speicherung und Offline-PWA.",
