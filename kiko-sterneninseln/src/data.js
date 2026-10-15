@@ -1,15 +1,15 @@
 export const worlds=[
- {name:'Sonnenwiesen',sky:0x90d9ef,fog:0xc7f0e5,ground:0x75c774,trim:0x477d53,accent:0xffd56e},
- {name:'Glitzerwald',sky:0x223d64,fog:0x3c6b78,ground:0x4a9b82,trim:0x304b5a,accent:0xb5ffce},
- {name:'Frosthöhen',sky:0x87b9da,fog:0xd4eafa,ground:0xd7f1f5,trim:0x719abc,accent:0xb1edff},
- {name:'Sternenhimmel',sky:0x101632,fog:0x252d54,ground:0x7275ad,trim:0x42476f,accent:0xffce80}
+ {name:'Sonnenwiesen',sky:0x65c4e8,fog:0x9fddde,ground:0x42a66b,trim:0x3a7553,accent:0xffd56e},
+ {name:'Glitzerwald',sky:0x203758,fog:0x314f67,ground:0x43866d,trim:0x344f54,accent:0xb5ffce},
+ {name:'Frosthöhen',sky:0x7299c1,fog:0xb6cadb,ground:0xaacfd8,trim:0x587da4,accent:0xb1edff},
+ {name:'Sternenhimmel',sky:0x101631,fog:0x202b4d,ground:0x6b70a5,trim:0x3b406c,accent:0xffce80}
 ];
 // Each path is a sequence of traversable rectangles (x, z, width, depth, top y).
 const make=(name,world,path,puzzle='none',enemies=[],notes='')=>({name,world,path,puzzle,enemies,notes,
  crystals:[[0,0],[1,1],[2,0],[3,-1],[4,0]],stars:[[0,-2.2],[2,2.2],[4,2.2]],
  start:[path[0][0],path[0][4]],portal:[path.at(-1)[0],path.at(-1)[1]+1.2]});
 export const levels=[
- make('Das erste Sternenlicht',0,[[0,0,8,7,0],[0,6,7,5,0],[1,12,7,5,.4],[0,18,7,5,.5],[0,24,9,8,.5]],'none',[],'Laufe zu den Kristallen und springe über die Lücken.'),
+ make('Das erste Sternenlicht',0,[[0,0,8,7,0],[0,6,7,5,0],[1,12,7,5,.4],[0,18,7,5,.5],[0,24,9,8,.5]],'none',[],'Joystick nach oben oder W: vorwärts. Sammle fünf Kristalle und springe über die Lücken.'),
  make('Die vergessene Brücke',0,[[0,0,8,7,0],[0,6,7,4,0],[1,12,6,4,0],[1,18,7,4,.4],[0,24,9,8,.4]],'bridge',[['hopper',1]],'Aktiviere den Schalter, um die Brücke zu öffnen.'),
  make('Der tanzende Wald',1,[[0,0,8,7,0],[1,6,5,4,.4],[-1,12,5,4,.9],[1,18,5,4,1.2],[0,24,9,8,1.2]],'none',[['flyer',2]],'Die großen Pilze tragen Kiko sicher.'),
  make('Das Rätsel der Lichtsteine',1,[[0,0,8,7,0],[0,6,7,5,0],[1,12,7,5,.4],[-1,18,7,5,.4],[0,24,9,8,.4]],'sequence',[['hopper',2]],'Berühre Lichtsteine in der Reihenfolge 1 → 2 → 3.'),
