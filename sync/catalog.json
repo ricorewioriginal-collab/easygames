@@ -8,7 +8,7 @@
   {
    "id": "mimori",
    "title": "Mimori – Dein 3D-Haustier",
-   "desc": "3D-Haustier-Simulation: eigenes süßes Wesen füttern, spielen, waschen, schlafen und kuscheln; Entwicklung in vier Stufen, Sternfang-Minispiel, Fellfarben, lokale Speicherstände und offline spielbar. Optionale Web-Push-Erinnerungen nach Zustimmung (separater Push-Server erforderlich).",
+   "desc": "3D-Haustier Mimori mit eigener Soundwelt, sichtbaren Herz-/Stern-/Blasen-Effekten, Fellfarben, 4 Entwicklungsstufen, Füttern, Spielen, Baden, Schlafen, Sternfang, Google-Speicher und freiwilligen Browser-Erinnerungen während das Spiel läuft. Mobil, PC und offline.",
    "icon": "🐣",
    "img": "mimori/icon.svg",
    "bg": "linear-gradient(145deg,#bfb4df,#eeaeca)",
@@ -17,21 +17,20 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Mimori ist dein selbst gestaltetes 3D-Haustier! Sorge dafür, dass es satt, glücklich, ausgeruht und sauber bleibt. Das Spiel rechnet die vergangene Zeit auch bei geschlossenem Browser nach. Füttere es, spiele, wasche und kuschle. Im Sternfang-Minispiel gibt es neue Beeren und Seife. Mit Erfahrung und Fürsorge entwickelt es sich zu neuen Formen. Es gibt keinen Zwang zu Käufen und keinen permanenten Tod. Mimori besitzt außerdem einen Gesundheitswert: Werden mehrere Bedürfnisse zu lange vernachlässigt, sinkt die Gesundheit langsam. Fürsorge kann sie wieder verbessern.",
+    "anleitung": "Mimori ist dein eigenes 3D-Haustier! Pflege dein Wesen mit Füttern, Spielen, Baden, Kuscheln und Schlaf. Seine Werte entwickeln sich anhand echter Zeit, auch wenn du gerade nicht spielst. Sternfang bringt frische Beeren und Seife. Mit Erfahrung entstehen bis zu vier Entwicklungsstufen. Eigene Töne und Stern-/Herz-/Blaseneffekte reagieren auf deine Aktionen. Du kannst die Töne jederzeit ausschalten. Lokal speichern funktioniert immer; über den vorhandenen EasyGames-Google-Speicher kannst du den Spielstand freiwillig mit deinem Google-Konto synchronisieren.",
     "steuerung": [
-     "PC: Aktionen über die sechs großen Pflegetasten. Im 3D-Zimmer mit gedrückter Maustaste ziehen, um die Perspektive zu drehen. Auf Mimori klicken zum Kuscheln.",
-     "Smartphone: Aktionen antippen, das 3D-Wesen mit dem Finger drehen. Sternfang: fünf Sterne innerhalb von 14 Sekunden einsammeln. Über Name ändern und Fellfarbe ändern individualisieren."
+     "PC: Pflegetasten anklicken, das 3D-Wesen mit gedrückter Maustaste drehen, ein einfacher Klick kuschelt. Ton rechts oben an/aus. Im Abschnitt „Google-Speicher & Spielstand“ anmelden und synchronisieren.",
+     "Handy: Aktionen tippen, mit dem Finger das 3D-Wesen drehen, beim Sternfang fünf Sterne in 14 Sekunden finden. Benachrichtigungen nur nach eigener Aktivierung während die Browserseite oder PWA läuft."
     ],
     "tipps": [
-     "Die Beeren- und Seifenvorräte füllst du beim Sternfang wieder auf.",
-     "Beachte die vier Bedürfnisse: Hunger, Freude, Energie und Sauberkeit. Das Wesen wächst abhängig von Erfahrung und Alter.",
-     "Web-Push ist optional und wird erst nach ausdrücklicher Zustimmung und Einrichtung eines externen Push-Dienstes aktiv.",
-     "Auf iPhone/iPad ist für Web-Push eine zum Home-Bildschirm hinzugefügte Web-App erforderlich.",
-     "Du kannst Mimori auch vollständig offline nutzen.",
-     "Achte auch auf die grüne Gesundheitsanzeige. Ruhe und Kuscheln verbessern die Gesundheit."
+     "Beim Sternfang kannst du wieder Beeren und Seife sammeln.",
+     "Halte Hunger, Freude, Energie, Sauberkeit und Gesundheit im Blick.",
+     "Google-Speichern erfordert Internet und Google-Anmeldung; ohne Google bleiben deine Daten lokal.",
+     "Erinnerungen sind freiwillig, mit Ruhezeit 22–8 Uhr und begrenzter Häufigkeit. Vollständig geschlossene Apps bekommen keine Meldungen.",
+     "Töne können oben über 🔊/🔇 ein- und ausgeschaltet werden."
     ]
    },
-   "size": 35339,
+   "size": 40285,
    "files": 7,
    "offline": true
   },
