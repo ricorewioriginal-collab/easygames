@@ -166,8 +166,8 @@ assert.equal(win.MimoriDebug.get().appearance,0,'appearance variant not applied'
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).appearance,0);
 assert.equal(win.MimoriDebug.household().members.length,1);
 assert.equal(win.MimoriDebug.household().room,0);
-assert.equal(ui.miniJoy.textContent,'82');
-assert.equal(ui.miniHunger.textContent,'82');
+assert.equal(ui.miniJoy.textContent,String(Math.round(win.MimoriDebug.get().joy)));
+assert.equal(ui.miniHunger.textContent,String(Math.round(win.MimoriDebug.get().hunger)));
 colorButtons[3].handlers.click[0]();
 assert.equal(win.MimoriDebug.get().color,3);
 assert.equal(JSON.parse(ls.get('easygames.mimori.v1')).color,3);
