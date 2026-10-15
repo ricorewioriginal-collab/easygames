@@ -1,0 +1,144 @@
+/* Mimori single-scene shell: all pet interactions remain inside one large stage. */
+:root{--mimori-dock-h:68px}
+#app{max-width:1100px;margin:auto;padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+header{height:46px;margin-bottom:8px;gap:8px}
+.layout{display:block!important}
+.layout>.scene{width:100%;height:calc(100dvh - 73px - env(safe-area-inset-bottom));min-height:490px;max-height:none!important;
+ border-radius:22px;overflow:hidden;isolation:isolate;background:#524963}
+#viewport{inset:0!important;touch-action:none;background:#615472}
+#viewport canvas{display:block;width:100%;height:100%;touch-action:none}
+#app>.layout>.stack{display:none!important}
+.scene:after{height:145px;background:linear-gradient(transparent,#241a40b8);z-index:1}
+.sceneTop{z-index:4;top:11px;left:11px;right:11px;pointer-events:none}
+.sceneTop>*{pointer-events:auto}
+.nameBox{padding:7px 10px;border-radius:13px;max-width:152px;background:#fff7efd9;backdrop-filter:blur(8px)}
+.nameBox h1{font-size:clamp(16px,2.8vw,23px);max-width:132px}
+.nameBox small{font-size:10px}
+.sceneButtons{align-items:flex-start}
+.stage{padding:7px 8px;font-size:10px;max-width:101px}
+.cornerBtn{width:37px;height:37px;font-size:19px}
+#familyRoomBar{top:85px;left:50%;right:auto;transform:translateX(-50%);
+ width:min(450px,calc(100% - 20px));height:45px;padding:4px 6px;z-index:4;
+ border-radius:15px;background:#362c58cd;backdrop-filter:blur(8px)}
+#familyRoomBar button{height:35px;min-height:35px;min-width:38px;font-size:21px;background:#5a4874}
+#familyRoomBar .worldLabel{font-size:12px}
+#familyRoomBar .radioLaunch{background:#74557f}
+#petAlert{left:auto;right:10px;top:145px;width:auto;max-width:calc(100% - 20px);
+ min-width:44px;min-height:44px;border-radius:24px;padding:5px 9px;gap:5px;
+ z-index:6;box-shadow:0 3px 14px #27182d66;cursor:pointer;user-select:none;
+ background:#713d62e5}
+#petAlert .alertBell{font-size:23px}
+#petAlertText{display:none;max-width:220px;line-height:1.35}
+#petAlert.expanded{border-radius:15px}
+#petAlert.expanded #petAlertText{display:block}
+#sleepStatus{z-index:3;top:143px;left:12px;right:auto;font-size:11px;padding:7px;max-width:190px}
+#speech{z-index:3;bottom:calc(var(--mimori-dock-h) + 11px);
+ left:50%;right:auto;transform:translateX(-50%);font-size:12px;
+ width:min(85%,390px);max-width:calc(100% - 48px);padding:8px 14px;
+ background:#fff9f0e0;box-shadow:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#speech.pop{animation:none}
+.tip{z-index:2;bottom:calc(var(--mimori-dock-h) + 51px);
+ color:#fff6f4;text-shadow:0 2px 4px #332144;font-size:11px}
+.turnControls{bottom:calc(var(--mimori-dock-h) + 55px);z-index:3}
+.turnControls button{height:38px;width:38px;border-radius:13px;background:#fff2dec9;font-size:21px}
+.turnControls button:nth-child(2){height:28px;width:28px}
+#webglError{inset:auto 16px calc(var(--mimori-dock-h) + 125px);
+ z-index:4;background:#362c55e8;border:1px solid #e7bfd2;color:#fff9f0;
+ padding:9px 14px;text-align:center;font-size:12px;line-height:1.4}
+.sceneDock{position:absolute;z-index:10;bottom:max(5px,env(safe-area-inset-bottom));left:7px;right:7px;
+ display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;
+ min-height:var(--mimori-dock-h);padding:6px;border:1px solid #bcabd9aa;border-radius:17px;
+ background:#352b57e6;backdrop-filter:blur(13px);box-shadow:0 5px 25px #170b30aa}
+.sceneDock button{min-width:0;border:1px solid #d8c0e2a3;border-radius:11px;padding:5px 0;
+ background:#5a4775;color:#fff7ed;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:2px;min-height:52px;font-size:10px;font-weight:850}
+.sceneDock button b{font-size:23px;line-height:1.2}
+.sceneDock button.selected{background:#93719f;border-color:#ffe3b1}
+.sceneDock button:active{transform:scale(.95)}
+.sceneSheet{position:absolute;z-index:9;left:7px;right:7px;bottom:calc(var(--mimori-dock-h) + max(7px,env(safe-area-inset-bottom)));
+ max-height:clamp(235px,55%,560px);overflow-y:auto;overscroll-behavior:contain;
+ background:#302647ee;color:#fff6f0;border:1px solid #ac97c8;border-radius:18px 18px 12px 12px;
+ box-shadow:0 -6px 26px #150d2db3;backdrop-filter:blur(15px);padding:11px}
+.sceneSheet[hidden],.sceneDock[hidden]{display:none!important}
+.sceneSheetTop{position:sticky;top:-11px;z-index:2;background:#352847f2;
+ border-radius:12px;margin:-2px -1px 8px;padding:7px 9px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sceneSheetTop h2{margin:0;font-size:16px}
+.sceneSheetTop button{border:1px solid #d3bdd4;background:#6b517d;border-radius:10px;color:white;padding:6px 12px}
+.sceneSheet>.panel{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+.sceneSheet .bodyPanel h2{display:none}
+.sceneSheet .carePanel{display:block!important}
+.sceneSheet .actions{gap:6px}
+.sceneSheet .care{min-height:65px;border-radius:12px;box-shadow:none}
+.sceneSheet .care b{font-size:22px}
+.sceneSheet .classicCare{gap:6px}
+.sceneSheet .classicAction{min-height:68px;padding:5px}
+.sceneSheet .classicAction>span{font-size:21px}
+.sceneSheet .arcadePromo{display:none}
+.sceneSheet .extras{margin-top:8px}
+.sceneSheet .statusPanel .stats{gap:10px}
+#worldOverlay{position:absolute!important;inset:0!important;z-index:12!important;
+ background:#1b143e6b;display:flex;justify-content:center;align-items:end;backdrop-filter:none}
+#worldOverlay[hidden]{display:none!important}
+.worldPanel{height:auto;max-height:calc(100% - 138px);width:100%;max-width:100%;
+ border-radius:17px 17px 0 0;padding:10px 12px calc(var(--mimori-dock-h) + 13px);
+ background:#352944f5;backdrop-filter:blur(12px);border-color:#ac9bce;box-shadow:0 -8px 28px #201833a5}
+.worldHead{position:sticky;top:-10px;z-index:4;background:#3c2d53;padding:8px 0 7px}
+.worldHead h2{font-size:17px}
+.worldPanel section{padding:9px 0;border:0}
+.worldPanel section[hidden]{display:none!important}
+.worldTabs{display:flex;gap:6px;position:sticky;top:43px;z-index:4;background:#3c2d53;padding:5px 0 8px}
+.worldTabs button{flex:1;border:1px solid #b6a0c8;background:#5d4877;color:#fff5eb;
+ border-radius:11px;font-size:12px;padding:9px 3px}
+.worldTabs button.selected{border-color:#f4dfaa;background:#866895}
+.worldRoomGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+#settingsDrawer{position:absolute;inset:0;z-index:13;display:flex;align-items:end}
+.drawerPanel{height:auto;max-height:calc(100% - 60px);border-radius:17px 17px 0 0;
+ padding-bottom:calc(var(--mimori-dock-h) + 9px)}
+.drawerBackdrop{position:absolute;inset:0}
+#webglError[hidden],#worldOverlay[hidden],#settingsDrawer[hidden],.sceneSheet[hidden]{display:none!important}
+@media(max-width:570px){
+ #app{padding:5px 5px calc(5px + env(safe-area-inset-bottom))}
+ header{height:43px;margin-bottom:5px}
+ .layout>.scene{height:calc(100dvh - 57px - env(safe-area-inset-bottom));min-height:405px;border-radius:14px}
+ #familyRoomBar{top:75px;width:calc(100% - 16px)}
+ #petAlert{top:128px}
+ #sleepStatus{top:127px}
+ .nameBox h1{font-size:18px}
+ .nameBox{max-width:128px}
+ .stage{font-size:9px;padding:5px}
+ .sceneDock{left:4px;right:4px;gap:3px;padding:5px}
+ .sceneDock button{font-size:9px}
+ .sceneDock button b{font-size:21px}
+ .worldPanel{max-height:calc(100% - 132px)}
+}
+@media(max-height:590px) and (orientation:landscape){
+ :root{--mimori-dock-h:55px}
+ header{height:34px;margin-bottom:3px}
+ .brand .logo{height:31px;width:31px}
+ .layout>.scene{height:calc(100dvh - 44px);min-height:250px;border-radius:12px}
+ .sceneTop{top:5px;left:6px;right:6px}
+ .nameBox{padding:4px 7px}
+ .nameBox h1{font-size:14px}
+ .nameBox small{font-size:8px}
+ .stage{font-size:9px;padding:5px}
+ #familyRoomBar{top:42px;width:min(380px,56%);height:35px}
+ #familyRoomBar button{min-height:25px;height:27px;min-width:27px;padding:2px}
+ #familyRoomBar .worldLabel{font-size:10px}
+ #petAlert{top:80px;right:10px}
+ #sleepStatus{top:80px}
+ .sceneDock{width:min(540px,75%);left:50%;transform:translateX(-50%);
+  min-height:var(--mimori-dock-h);padding:3px}
+ .sceneDock button{min-height:43px}
+ .sceneDock button b{font-size:17px}
+ .turnControls{bottom:calc(var(--mimori-dock-h) + 14px)}
+ .tip{display:none}
+ #speech{bottom:calc(var(--mimori-dock-h) + 5px);font-size:10px;width:260px;opacity:.84}
+ .sceneSheet{max-height:65%}
+ .worldPanel{max-height:calc(100% - 79px)}
+}
+@media(min-width:760px){#app{max-width:100%;padding:10px max(20px,3vw)}
+ .layout>.scene{height:calc(100dvh - 92px);border-radius:25px}
+ .sceneSheet{width:min(650px,90%);left:50%;right:auto;transform:translateX(-50%)}
+ .worldPanel{max-width:720px}
+}
+@media(prefers-reduced-motion:reduce){.sceneDock *,#petAlert{animation:none!important}}
