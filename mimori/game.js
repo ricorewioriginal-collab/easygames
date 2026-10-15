@@ -7,6 +7,31 @@ const stats=[['hunger','Satt','🍓'],['joy','Freude','💗'],['energy','Energie
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(pet))}catch(_){}};
 const themeStyles=['linear-gradient(160deg,#8b829f,#4c496b 72%,#343855)','linear-gradient(160deg,#709aa0,#3d6b78 72%,#2b4558)','linear-gradient(160deg,#9d7987,#6c4975 72%,#37314e)'];
 let lastSaveAt=Date.now();
+let alertSoundsEnabled=false,alertLastAt=0,alertLastCause='';
+try{alertSoundsEnabled=localStorage.getItem('easygames.mimori.alerts.sound.v1')==='on'}catch(_){}
+const careNames={toilet:'🚽 Mimori muss aufs Klo!',mess:'💩 Bitte die Hinterlassenschaften entfernen!',
+ sick:'💊 Mimori ist krank und braucht Medizin!',light:'💡 Licht ausschalten, damit Mimori schlafen kann!',
+ hunger:'🍓 Mimori hat Hunger!',joy:'💗 Mimori ist unzufrieden!',
+ energy:'🌙 Mimori ist müde!',clean:'🫧 Mimori braucht Pflege!'};
+function refreshAttention(){
+ const needs=M.needs(pet,35);
+ const main=needs[0]||'';
+ $('petAlert').hidden=!main;
+ if(main)$('petAlertText').textContent=careNames[main]||'Mimori braucht dich!';
+ $('alertSoundToggle').textContent=alertSoundsEnabled?'🔔 Hilferuf-Ton an':'🔕 Hilferuf-Ton aus';
+ $('alertSoundToggle').setAttribute('aria-pressed',String(alertSoundsEnabled));
+ if(main&&alertSoundsEnabled&&sound.isEnabled()&&(main!==alertLastCause||Date.now()-alertLastAt>4*60000)){
+  alertLastAt=Date.now();alertLastCause=main;sound.play('alert',pet.species);
+ }
+ if(!main)alertLastCause='';
+}
+$('alertSoundToggle').addEventListener('click',()=>{
+ alertSoundsEnabled=!alertSoundsEnabled;
+ try{localStorage.setItem('easygames.mimori.alerts.sound.v1',alertSoundsEnabled?'on':'off')}catch(_){}
+ alertLastAt=0;alertLastCause='';
+ refreshAttention();
+});
+
 const say=(msg)=>{$('speech').textContent=msg;$('speech').classList.remove('pop');void $('speech').offsetWidth;$('speech').classList.add('pop')};
 const time=(n)=>Math.max(0,Math.round(n));
 function ui(){
@@ -28,6 +53,23 @@ function ui(){
  $('speciesName').textContent=M.species[pet.species]||M.species[0];
  document.querySelectorAll('[data-species]').forEach(b=>{const active=Number(b.dataset.species)===pet.species;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
  $('stageBadge').textContent=['Wolkenbaby','Kleines Wesen','Mutiger Freund','Sternenwesen'][M.evolve(pet)];
+ $('toiletNeed').textContent=Math.round(pet.toiletNeed)+'%';
+ $('messLabel').textContent=pet.mess?pet.mess+'× Dreck':'Sauber';
+ $('sickLabel').textContent=pet.sick?'Krank':'Gesund';
+ $('lightLabel').textContent=pet.lightsOff?'Aus':'An';
+ $('lightBtn').querySelector('b').textContent=pet.lightsOff?'Licht an':'Licht aus';
+ $('sleepBtn').querySelector('span').textContent=pet.sleeping?'Aufwecken':'Schlafen';
+ $('cleanupBtn').classList.toggle('needsCare',pet.mess>0);
+ $('medicineBtn').classList.toggle('needsCare',pet.sick);
+ $('toiletBtn').classList.toggle('needsCare',pet.toiletNeed>=70);
+ $('lightBtn').classList.toggle('needsCare',pet.sleeping&&!pet.lightsOff);
+ $('messScene').replaceChildren();
+ for(let i=0;i<Math.min(4,pet.mess||0);i++){
+  const poop=document.createElement('span');poop.textContent='💩';$('messScene').appendChild(poop);
+ }
+ $('nightShade').classList.toggle('active',pet.lightsOff);
+ $('sleepStatus').hidden=!(pet.sleeping&&pet.lightsOff);
+ refreshAttention();
 }
 function persist(force=false){pet=M.advance(pet,Date.now());if(force||Date.now()-lastSaveAt>300000){save();lastSaveAt=Date.now()}ui()}
 function act(kind){
@@ -38,6 +80,7 @@ function act(kind){
  sound.play(response.evolved?'evolve':kind,pet.species);effects(response.evolved?'evolve':kind);
  if(kind==='minigame')state.fx=2;
  if(response.evolved)paint();
+ if(kind==='light'&&state.applyLight)state.applyLight();
  save();ui();
 }
 document.querySelectorAll('[data-care]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.care;if(k==='minigame'){startMinigame();return}act(k)}));
@@ -175,6 +218,12 @@ function make3D(){
  scene.add(new THREE.HemisphereLight(0xe9e3ed,0x51466e,.69));
  const key=new THREE.DirectionalLight(0xffe7d5,.87);key.position.set(-4,7,6);scene.add(key);
  const rim=new THREE.PointLight(0x98aacf,.31,12);rim.position.set(4,4,-2);scene.add(rim);
+ state.applyLight=()=>{
+  const dark=pet.lightsOff;
+  key.intensity=dark?.19:.87;
+  rim.intensity=dark?.08:.31;
+ };
+ state.applyLight();
  const material=(c,r=.72)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:0});
  const mesh=(parent,geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o};
  const sphere=new THREE.SphereGeometry(1,28,20),cyl=new THREE.CylinderGeometry(1,1,1,32),box=new THREE.BoxGeometry(1,1,1);
@@ -386,13 +435,14 @@ function remindersUi(message){
 }
 function quietTime(d=new Date()){const h=d.getHours();return h>=22||h<8}
 function reminderCandidates(){
- return ['hunger','joy','energy','clean','health'].filter(k=>pet[k]<=(k==='health'?25:35))
+ return ['hunger','joy','energy','clean','health','mess','sick','toiletNeed'].filter(k=>k==='mess'?pet.mess>0:k==='sick'?pet.sick:k==='toiletNeed'?pet.toiletNeed>=75:pet[k]<=(k==='health'?25:35))
  .sort((a,b)=>pet[a]-pet[b]);
 }
 const reminderLines={
  hunger:'hat Hunger und möchte etwas essen 🍓',joy:'möchte mit dir spielen 💗',
  energy:'ist müde und braucht Schlaf 🌙',clean:'wünscht sich ein Bad 🫧',
- health:'braucht deine Fürsorge 💚'
+ health:'braucht deine Fürsorge 💚',mess:'hat Dreck gemacht und braucht Hilfe 💩',
+ sick:'ist krank und braucht Medizin 💊',toiletNeed:'muss dringend aufs Klo 🚽'
 };
 async function notify(title,body){
  if(!('Notification'in window)||Notification.permission!=='granted')return false;
@@ -419,7 +469,7 @@ async function checkReminders(force=false){
  const needs=force?['test']:reminderCandidates();
  for(const key of needs){
   if(!force&&now-(Number(reminders.lastSent[key])||0)<4*3600000)continue;
-  const message=key==='test'?'Die Erinnerung funktioniert! 🐣':pet.name+' '+reminderLines[key];
+  const message=key==='test'?'Die Erinnerung funktioniert! 🐣':pet.name+' '+(reminderLines[key]||'braucht dich!');
   const delivered=await notify(pet.name+' braucht dich!',message);
   if(delivered&&!force){reminders.lastSent[key]=now;reminders.dayCount++;saveReminders()}
   return delivered;
@@ -449,5 +499,5 @@ setInterval(()=>{
  if(!document.hidden&&Math.min(pet.hunger,pet.energy,pet.clean,pet.joy)<35)say(M.mood(pet)+' – kümmere dich um mich!');
 },60000);
 ui();make3D();remindersUi();
-window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,startMinigame};
+window.MimoriDebug={get:()=>({...pet}),act,advance:()=>{persist();return pet},stage:()=>M.evolve(pet),reminders:()=>({...reminders}),checkReminders,effects,switchSpecies,turnBy,orbit:()=>state.orbit,model:()=>state.model,startMinigame,attention:()=>M.needs(pet),alertSound:()=>alertSoundsEnabled};
 })();
