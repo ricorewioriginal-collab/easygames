@@ -10,7 +10,7 @@ function accidentInterval(seed,index){const n=(Math.sin(seed/1231+index*71.13)*4
  return (1.5+Math.abs(n)*2.2)*HOUR;
 }
 function fresh(now=Date.now()){
- return {version:VERSION,name:'Mimori',born:now,updated:now,hunger:82,joy:82,energy:82,clean:88,health:92,xp:0,care:0,color:0,species:0,coins:0,records:{},lastDaily:'',accessory:0,theme:0,owns:{accessory:[0],theme:[0]},lastAction:'Willkommen zu Hause!',toiletNeed:12,mess:0,messSince:0,accidents:0,
+ return {version:VERSION,name:'Mimori',born:now,updated:now,hunger:82,joy:82,energy:82,clean:88,health:92,xp:0,care:0,color:0,species:0,appearance:2,coins:0,records:{},lastDaily:'',accessory:0,theme:0,owns:{accessory:[0],theme:[0]},lastAction:'Willkommen zu Hause!',toiletNeed:12,mess:0,messSince:0,accidents:0,
  nextAccident:now+accidentInterval(now,0),sick:false,sleeping:false,lightsOff:false,
  inventory:{berry:7,soap:5}};
 }
@@ -62,6 +62,7 @@ for(const k of ['hunger','joy','energy','clean','health'])p[k]=bound(Number(raw[
 p.xp=bound(Number(raw.xp),0,100000);p.care=bound(Number(raw.care),0,100000);
 p.color=Math.floor(bound(Number(raw.color),0,3));
 p.species=Math.floor(bound(Number(raw.species??0),0,3));
+p.appearance=Math.floor(bound(Number(raw.appearance??2),0,2));
 p.toiletNeed=bound(Number(raw.toiletNeed??12));
 p.mess=Math.floor(bound(Number(raw.mess??0),0,4));
 p.accidents=Math.floor(bound(Number(raw.accidents??0),0,100000));
@@ -174,7 +175,8 @@ function needs(p,threshold=35){
  if(p.sleeping&&!p.lightsOff)basic.unshift('light');
  return basic;
 }
+function changeAppearance(p,id){const next=Math.floor(Number(id));if(!Number.isInteger(next)||next<0||next>2)return p;return {...p,appearance:next}}
 function changeSpecies(p,id){const next=Math.floor(Number(id));if(!Number.isInteger(next)||next<0||next>=species.length)return p;return {...p,species:next}}
 function rename(p,name){const safe=String(name||'').replace(/[<>]/g,'').trim().slice(0,18);return {...p,name:safe||p.name}}
-return {VERSION,DAY,stages,species,fresh,load,advance,act,evolve,mood,needs,rename,changeSpecies,rewardMini,claimDaily,shop,prices};
+return {VERSION,DAY,stages,species,fresh,load,advance,act,evolve,mood,needs,rename,changeSpecies,changeAppearance,rewardMini,claimDaily,shop,prices};
 });
