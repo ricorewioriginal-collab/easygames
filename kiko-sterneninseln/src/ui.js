@@ -1,5 +1,5 @@
-import {levels,worlds} from './data.js?v=3';
-import {translate} from './i18n.js?v=3';
+import {levels,worlds} from './data.js?v=4';
+import {translate} from './i18n.js?v=4';
 const screen=document.querySelector('#screen'),hud=document.querySelector('#hud'),left=document.querySelector('#hud-left'),right=document.querySelector('#hud-right'),hint=document.querySelector('#hint'),touch=document.querySelector('#touch');
 const button=(label,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;return b};
 export class UI{
@@ -18,6 +18,6 @@ export class UI{
  pause(){const p=this.panel('Pause',levels[this.game.index].name);this.actions(p,[['Fortsetzen',()=>this.game.resume()],['Level neu starten',()=>this.game.start(this.game.index)],['Steuerung',()=>this.help(()=>this.pause())],['Einstellungen',()=>this.settings(()=>this.pause())],['Hauptmenü',()=>this.menu()]])}
  gameOver(){const p=this.panel('Kiko braucht eine Pause','Drei Herzen verloren. Versuche es ab dem letzten Checkpoint erneut.');this.actions(p,[['Am Checkpoint neu starten',()=>this.game.retryCheckpoint()],['Level neu starten',()=>this.game.start(this.game.index)],['Levelauswahl',()=>this.levels()]])}
  complete(){const g=this.game,p=this.panel('Sternenportal aktiviert! ✨',`Level ${g.index+1} geschafft · 5/5 Kristalle · ${g.bonus}/3 Bonussterne · ${g.score} Punkte`);this.actions(p,[['Weiter',()=>g.index===7?this.ending():g.start(g.index+1)],['Wiederholen',()=>g.start(g.index)],['Levelauswahl',()=>this.levels()]])}
- ending(){this.game.state='ENDING';const p=this.panel('Der Himmelskristall leuchtet wieder!','Kiko hat die acht Sterneninseln verbunden. Die Schatten weichen und alle Portale strahlen erneut.');p.classList.add('ending');const c=document.createElement('p');c.className='credits';c.textContent='Danke fürs Spielen · KIKO – Das Geheimnis der Sterneninseln';p.append(c);this.actions(p,[['Noch einmal spielen',()=>this.game.start(0)],['Levelauswahl',()=>this.levels()],['Hauptmenü',()=>this.menu()]])}
+ ending(){this.game.endSequence();const p=this.panel('Der Himmelskristall leuchtet wieder!','Kiko hat die acht Sterneninseln verbunden. Die Schatten weichen und alle Portale strahlen erneut.');p.classList.add('ending');const c=document.createElement('p');c.className='credits';c.textContent='Danke fürs Spielen · KIKO – Das Geheimnis der Sterneninseln';p.append(c);this.actions(p,[['Noch einmal spielen',()=>this.game.start(0)],['Levelauswahl',()=>this.levels()],['Hauptmenü',()=>this.menu()]])}
  error(e){const p=this.panel('Ein Fehler ist aufgetreten',String(e?.message||e));this.actions(p,[['Erneut versuchen',()=>this.game.start(this.game.index||0)],['Hauptmenü',()=>this.menu()]])}
 }
