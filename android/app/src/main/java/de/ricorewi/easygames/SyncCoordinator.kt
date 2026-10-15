@@ -81,7 +81,7 @@ class SyncCoordinator(
             prefs.edit().putBoolean(KEY_WIFI_ONLY, value).apply()
             schedulePeriodic()
             scheduleCatchUp(replace = true)
-            requestSync(Trigger.MANUAL)
+            requestSync(Trigger.APP_START)
             notifyListeners()
         }
 
@@ -150,7 +150,7 @@ class SyncCoordinator(
             scheduleCatchUp()
             return
         }
-        if (net == Net.METERED && wifiOnly) {
+        if (net == Net.METERED && wifiOnly && trigger != Trigger.MANUAL) {
             setBlocked(app.getString(R.string.boot_wait_wifi))
             scheduleCatchUp()
             return
