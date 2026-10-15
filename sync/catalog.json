@@ -8,7 +8,7 @@
   {
    "id": "pufi-farbwind",
    "title": "Pufi & der Farbwind",
-   "desc": "Eigenständiges SNES-inspiriertes Retro-Jump-and-Run mit Pufi und dem reitbaren Wolkentaps Tamo, sechs Inseln, Gleiten, Farbwürfen, Gegnern, Geheimnissen, zwei Bosskämpfen und Touch-/PC-Steuerung. Offline spielbar.",
+   "desc": "Eigenständiges, detailreicher gestaltetes Retro-Jump-and-Run mit Pufi und Tamo: sechs abwechslungsreiche Inseln, Nebelgreifer-Entführung mit 15-Sekunden-Rettung, Farbwürfe, bewegliche Wolken, bröckelnde Klippen, Pilze, Wind, Kristallgrotten, Feuergefahren und zwei Bosse. PC/Touch, offline spielbar.",
    "icon": "🎨",
    "img": "pufi-farbwind/card.svg",
    "bg": "linear-gradient(145deg,#dc95b8,#84d8ee)",
@@ -17,19 +17,20 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pufi und der eigenständige Wolkentaps Tamo erleben sechs Farbwind-Inseln. Tamo ist reitbar, schneller als Pufi und kann länger schweben. Wird Tamo getroffen, wirft er Pufi ab und verhindert einmal Schaden. Über ⚙ OPTIONEN kannst du jederzeit zwischen Steuerkreuz und Wisch-Touchfeld wechseln. Rechts liegen vier Konsolentasten in einer Raute: A Springen, B Werfen, X Saugen, Y Reiten. Die Einstellung bleibt beim nächsten Start erhalten.",
+    "anleitung": "Pufi reitet auf seinem eigens entworfenen Wolkentaps Tamo durch sechs verschiedenartige Inseln. Landet ein Treffer auf Tamo, ruft er laut um Hilfe. Ein Nebelgreifer versucht, ihn zu entführen. Du hast 15 Sekunden, um Tamo zu erreichen (berühren oder Y/R drücken). Wirf Farbkugeln auf den Entführer, um ihn zu betäuben und mehr Zeit zu erhalten. Gelingt die Rettung nicht, beginnt das Level nach Game Over neu. Jede Welt besitzt eigene Hindernisse: Blumenpfade, bröckelnde Felsplattformen, hüpfende Pilze, Wolkenaufzüge und Wind, Kristallgrotten mit Wasser sowie Feuerfallen und Festung. Geschaffte Inseln und Rekorde bleiben erhalten.",
     "steuerung": [
-     "PC: Pfeile oder A/D laufen; Leertaste/W springen und halten zum Schweben; K/X werfen (halten und loslassen); C/J saugen; R/V reiten/absteigen; S/↓ stampfen; P/Esc Pause; ⚙ Controller-Einstellungen.",
-     "Handy: Links per Steuerkreuz (↑ Springen, ↓ Stampfen, ◀▶ Laufen) oder im Touchfeld wischen; rechts A Springen, B Farbkugel werfen, X Farbenergie aufsaugen, Y Tamo reiten/absteigen. Multi-Touch: Bewegen und gleichzeitig springen/werfen."
+     "PC: Pfeile oder A/D bewegen. Leertaste oder W = A (springen, halten zum Schweben); K/X = B (Farbkugel zielen/werfen); C/J = X (Farbenergie saugen); R/V = Y (Tamo reiten/retten). ↓/S = Stampfen; Esc/P = Pause. ⚙ öffnet Controller-Optionen.",
+     "Mobil: Links Steuerkreuz oder Wisch-Touchfeld, auswählbar in ⚙; rechts vier A/B/X/Y-Tasten in Konsolenanordnung. Mehrere Tasten gleichzeitig möglich. Bei Entführung schnell zu Tamo laufen und ihn berühren oder Y drücken."
     ],
     "tipps": [
-     "Wechsle über ⚙ jederzeit die linke Steuerungsart; die Wahl wird gespeichert.",
-     "Halte B (Werfen), um in einem Bogen zu zielen; loslassen wirft die Farbkugel.",
-     "Auf Tamo bist du schneller und kannst länger schweben; nach dem ersten Treffer steigt Pufi ab.",
-     "Bei Game Over setzt das Level zurück, zuvor abgeschlossene Inseln bleiben frei."
+     "Wenn Tamo getroffen wird, folgt dem Hilferuf und der Countdown-Einblendung. Ein Pfeil zeigt an, wenn Tamo außerhalb der Kamera ist.",
+     "Mit Farbkugeln lassen sich Nebelgreifer betäuben; die Rettungszeit verlängert sich.",
+     "Windböen tragen dich durch die Wolkenwelt; rote Feuerfallen im Finale flammen rhythmisch auf.",
+     "Pilzplattformen katapultieren dich nach oben, Sandsteinplattformen können einbrechen.",
+     "Wirst du endgültig besiegt oder entführt man Tamo, startet das Level vollständig neu."
     ]
    },
-   "size": 43059,
+   "size": 58575,
    "files": 5,
    "offline": true
   },
