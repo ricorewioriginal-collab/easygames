@@ -36,7 +36,8 @@ function init(){
   '<div class="arcadeControls"><button id="arcadeBack">← Spielauswahl</button>'+
   '<button id="arcadeAction" hidden>SPRINGEN ↑</button></div></div>'+
   '</section>';
- document.body.appendChild(rootEl);
+ // Keep the playable arcade inside the existing 3D window, including landscape.
+ (document.querySelector?.('.scene')||document.body).appendChild(rootEl);
  canvas=rootEl.querySelector('#arcadeCanvas');ctx=canvas.getContext('2d');
  display=rootEl.querySelector('#arcadeLobby');title=rootEl.querySelector('#arcadeTitle');
  line=rootEl.querySelector('#arcadeHint');bar=rootEl.querySelector('#arcadeProgress');
