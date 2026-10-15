@@ -121,4 +121,23 @@ a.start(5);assert(a.state().world.traps.some(x=>x.type==='fire'));
 a.gameover('Test');b.emit(b.els.secondary,'click');
 assert.equal(a.state().mode,'map');assert.equal(b.els.worldMap.hidden,false);
 
+// Every gap in every stage must be traversable with the normal mounted jump/glide.
+for(let level=0;level<6;level++){
+ a.start(level);const w=a.state().world;
+ w.enemies.forEach(e=>e.alive=false);w.traps.length=0;w.boss=null;
+ for(let i=0;i<w.segments.length-1;i++){
+  const before=w.segments[i],after=w.segments[i+1],p=a.state().hero;
+  p.x=before.x+before.w-90;p.y=before.y-p.h;p.ground=true;p.vy=0;p.inv=99;p.mounted=true;
+  a.action('right',true,'autoplay');a.action('jump',true,'autoplay');
+  let reached=false;
+  for(let f=0;f<240;f++){
+   a.tick(1/60);
+   if(a.state().mode!=='play')break;
+   if(p.x>after.x+60){reached=true;break}
+  }
+  a.action('right',false,'autoplay');a.action('jump',false,'autoplay');
+  assert(reached,'unreachable gap '+level+':'+i);
+ }
+}
+
 console.log('PASS: six worlds, 15-second kidnapping, chase, projectile stun, map, touch/controller and records.');
