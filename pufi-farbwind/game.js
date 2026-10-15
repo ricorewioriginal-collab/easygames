@@ -130,7 +130,10 @@ hud();return true;
 function startTamoRescue(){
 const p=hero;if(!world||world.rescue)return;
 p.mounted=false;p.rideCd=1.0;p.inv=1.25;p.vy=-188;p.hover=.9;
-const x=p.x+43,y=p.y-12;
+// Place the distressed Tamo far enough away to require a deliberate rescue.
+const ground=world.segments.find(q=>p.x>=q.x&&p.x<q.x+q.w);
+const x=ground?(p.x+115<ground.x+ground.w-50?p.x+115:Math.max(ground.x+50,p.x-105)):p.x+105;
+const y=p.y-12;
 p.pet.x=x;p.pet.y=y;
 world.rescue={x,y,originalY:y,remaining:15,grace:1.0,cry:.18,carried:false,
 thief:{x:x+155,y:y-44,stun:0,wing:0}};
