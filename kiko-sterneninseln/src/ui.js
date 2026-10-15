@@ -1,5 +1,5 @@
-import {levels,worlds} from './data.js?v=2';
-import {translate} from './i18n.js?v=2';
+import {levels,worlds} from './data.js?v=3';
+import {translate} from './i18n.js?v=3';
 const screen=document.querySelector('#screen'),hud=document.querySelector('#hud'),left=document.querySelector('#hud-left'),right=document.querySelector('#hud-right'),hint=document.querySelector('#hint'),touch=document.querySelector('#touch');
 const button=(label,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;return b};
 export class UI{
