@@ -31,7 +31,7 @@ function element(){
 class Shape {constructor(){this.position={set:noop};this.rotation={};this.scale={set:noop,setScalar:noop};this.children=[];this.geometry={dispose:noop};this.material={dispose:noop}}
  add(a){this.children.push(a)}remove(a){this.children=this.children.filter(v=>v!==a)}}
 class Geometry{dispose(){}}
-class Renderer{constructor(){this.domElement=element();this.domElement.width=570;this.domElement.height=500}
+class Renderer{constructor(){this.domElement=element();this.domElement.width=570;this.domElement.height=500;this.shadowMap={enabled:false}}
  setPixelRatio(){}getPixelRatio(){return 1}setClearColor(){}setSize(){}render(){}}
 class Camera extends Shape{lookAt(){}updateProjectionMatrix(){}}
 const fakeThree={WebGLRenderer:Renderer,Scene:Shape,Fog:class{},PerspectiveCamera:Camera,
