@@ -3,7 +3,8 @@
    Fällt das Netz aus oder antwortet es länger als 4 s, kommt die zuletzt geladene Fassung aus dem Cache – so läuft das Spiel auch offline,
    sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Neue Fassung = sofort aktiv (skipWaiting/claim), alte Zwischenspeicher werden gelöscht. */
 const CACHE = 'eg-anmacha-beat-surfer-v2';
-self.addEventListener('install', () => {});\nself.addEventListener('message', e => { if (e.data && e.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
+self.addEventListener('install', () => {});
+self.addEventListener('message', e => { if (e.data && e.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('eg-anmacha-beat-surfer-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
