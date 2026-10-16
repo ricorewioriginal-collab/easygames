@@ -12,6 +12,9 @@ import { bridge, NeighborApi, SocialError } from './social/api';
 import { helpable, msgName, toPublic, validMsg, visitState, type InboxMsg, type PublicCity } from './social/codec';
 import { fmtDur, fmtTime, h, num } from './ui/dom';
 
+/** Öffentliche Adresse des Spiels (GitHub Pages von easygames), für Links, die man weitergibt. */
+export const PUBLIC_URL = 'https://ricorewioriginal-collab.github.io/easygames/ricoville/';
+
 type Tool = 'normal' | 'build' | 'road' | 'move' | 'rotate' | 'demolish' | 'info' | 'expand';
 
 interface Settings {
@@ -1328,8 +1331,9 @@ export class App {
     // Erledigtes von gestern und früher aufräumen (die Regeln erlauben Löschen erst ab dem Folgetag)
     for (const m of all.filter((x) => (x.done || !validMsg(x, Date.now())) && x.day < today).slice(0, 20)) void api.remove(m.id).catch(() => undefined);
   }
+  /** Immer die öffentliche easygames-Seite, auch in den Apps (dort wäre location z. B. appassets.local). */
   private inviteLink(uid: string): string {
-    return `${location.origin}${location.pathname}?nachbar=${encodeURIComponent(uid)}`;
+    return `${PUBLIC_URL}?nachbar=${encodeURIComponent(uid)}`;
   }
 
   private async neighborsPanel(tab: 'mine' | 'post' | 'find' = 'mine'): Promise<void> {

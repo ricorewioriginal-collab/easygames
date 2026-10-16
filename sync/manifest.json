@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "80dcdbfd75c4",
- "generated": "2026-10-17T00:11:05+02:00",
- "commit": "0d444c5dafa61e05dd2c5e3984c2b7f1955e6902",
+ "version": "c74d1d1308c1",
+ "generated": "2026-10-16T22:19:44+00:00",
+ "commit": "46fbc3fb6893c548a2d2b9e0e47aa9d41a6539d8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5702,9 +5702,9 @@
    "h": "5a546b7fabd07f81167f1a0e48885e0acd7695dfe84280668cfe38763c0187fd"
   },
   {
-   "p": "ricoville/assets/index-BjaU-MNg.js",
-   "s": 189887,
-   "h": "15289e51810cea3cd6cf126a0f2409e059e4014eaf56a47cbbddc0a6286a6745"
+   "p": "ricoville/assets/index-BHhCjln5.js",
+   "s": 189922,
+   "h": "171a8da6ef3a6cf7c3161c4e2ccda109a105c6b837a549eb0ffa1231ab6488d1"
   },
   {
    "p": "ricoville/assets/three-DaP6-81L.js",
@@ -5743,8 +5743,8 @@
   },
   {
    "p": "ricoville/index.html",
-   "s": 1940,
-   "h": "e55afca471b0595dd6efc260fdbe5e0244cb28814fb4e293670355b848bf62f6"
+   "s": 1957,
+   "h": "0f64efa6b15cc47022543358c1ff3db956360dff5ac512bcc597a53dcc4f9c17"
   },
   {
    "p": "ricoville/manifest.webmanifest",
@@ -5874,7 +5874,7 @@
   {
    "p": "sync/catalog.json",
    "s": 93655,
-   "h": "489d9ad46b498df093376d291a857ba4cf56ebd096a9eeb4f05e7c01ad201359"
+   "h": "597d91d81b859402cd2d95571e25f30ffbb74e51dd3cd48c74692d5abd6f481c"
   },
   {
    "p": "taschi/card.svg",
