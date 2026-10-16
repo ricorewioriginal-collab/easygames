@@ -18,7 +18,9 @@ self.addEventListener('install', (event) => {
   );
 });
 
-self.addEventListener('message', (event) => { if (event.data && event.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });\n\nself.addEventListener('activate', (event) => {
+self.addEventListener('message', (event) => { if (event.data && event.data.type === 'EG_SKIP_WAITING') self.skipWaiting(); });
+
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
