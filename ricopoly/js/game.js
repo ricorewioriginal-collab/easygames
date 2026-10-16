@@ -51,11 +51,11 @@
     document.addEventListener('keydown', onKey);
     setInterval(clockTick, 1000);
     bindPadCamera();
-    window.addEventListener('beforeunload', function () { if (M && !M.client && M.s.phase !== 'over') autosave(true); });
+    window.addEventListener('beforeunload', function () { if (M && M.s && !M.client && M.s.phase !== 'over') autosave(true); });
   }
   function hasWebGL() { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch (e) { return false; } }
   function musicFor(world) { var wd = W.get(world || prof.world); if (world) { A.playSong(wd.music); A.ambience(wd.ambience); } else { A.playSong({ root: 52, scale: [0, 2, 4, 7, 9, 11], tempo: 96, wave: 'triangle' }); A.ambience(null); } }
-  function rebuildScene() { if (M) { stage.buildBoard(M.s.world, S.lang); stage.setPlayers(M.s.players); stage.sync(M.s); } else { stage.buildMenu(prof.world); stage.showcase(prof.char, prof.look); } }
+  function rebuildScene() { if (M && M.s) { stage.buildBoard(M.s.world, S.lang); stage.setPlayers(M.s.players); stage.sync(M.s); } else { stage.buildMenu(prof.world); stage.showcase(prof.char, prof.look); } }
 
   // ---------- Bildschirme ----------
   function hideAll() { document.querySelectorAll('.screen').forEach(function (s) { s.hidden = true; }); }
@@ -394,7 +394,7 @@
     }, true);
   }
   function clockTick() {
-    if (!M || M.client || M.s.phase === 'over') return;
+    if (!M || M.client || !M.s || M.s.phase === 'over') return;
     var s = M.s;
     // Zeitlimit Schnellspiel
     if (s.cfg.timeLimit && !M.busy) {
@@ -641,6 +641,8 @@
     var me = M.client || M.host ? M.seat : M.me;
     var gained = M.spectator ? [] : PF.recordGame(prof, s, me, { ms: ms, tutorial: M.tutorial });
     if (M.client || M.host) rememberFriends(s);
+    // Weltweite Rangliste (Firebase): nur echte Partien des Profilinhabers, Fehler still ignorieren
+    if (!M.spectator && !M.tutorial && me >= 0 && s.players[me] && window.RicoFire) window.RicoFire.submit(prof.name || t('guest'), prof.char, s.winner === me).catch(function () {});
     if (!M.client) { if (M.host) PF.deleteSave('host'); else PF.deleteSave(M.slot || 'auto'); }
     var order = R.ranking(s);
     setTimeout(function () {
@@ -791,7 +793,7 @@
   function myNet() { prof.netToken = prof.netToken || PF.rid() + PF.rid(); saveProf(); return { name: prof.name || t('guest'), char: prof.char, look: prof.look, token: prof.netToken }; }
   function openOnline() {
     panel(t('menu.online'), function (b) {
-      if (!window.Peer) { b.appendChild(h('p', 'warn', t('net.nopeer'))); return; }
+      if (!window.Peer && !(window.RicoFire && window.RTCPeerConnection)) { b.appendChild(h('p', 'warn', t('net.nopeer'))); return; }
       b.appendChild(h('p', 'muted', t('net.intro')));
       var r = h('div', 'col');
       r.appendChild(btn('🔒 ' + t('net.createPrivate'), 'btn primary', function () { hostRoom({ isPublic: false }); }));
@@ -976,6 +978,16 @@
     panel(t('menu.rank'), function (b) {
       var st = prof.stats, rows = [{ name: prof.name || t('guest'), wins: st.wins, games: st.games, me: true }];
       prof.friends.forEach(function (f) { rows.push({ name: f.name, wins: null, games: f.games }); });
+      var gl = h('div', null, '<p class="muted small">' + t('rank.loading') + '</p>');
+      b.appendChild(h('h3', null, '🌍 ' + t('rank.global'))); b.appendChild(gl);
+      if (window.RicoFire) window.RicoFire.top(25).then(function (rows) {
+        if (!rows.length) { gl.innerHTML = '<p class="muted small">' + t('rank.globalEmpty') + '</p>'; return; }
+        var my = window.RicoFire.myUid(), g = '<table class="rank"><tr><th>#</th><th>' + t('profile.name') + '</th><th>' + t('stats.wins') + '</th><th>' + t('stats.games') + '</th><th>' + t('stats.rate') + '</th></tr>';
+        rows.forEach(function (r, k) { g += '<tr' + (r.uid === my ? ' class="me"' : '') + '><td>' + (k + 1) + '</td><td>' + esc(r.name) + ' <small>' + esc(charName(r.char)) + '</small></td><td>' + r.wins + '</td><td>' + r.games + '</td><td>' + (r.games ? Math.round(r.wins / r.games * 100) + ' %' : '–') + '</td></tr>'; });
+        gl.innerHTML = g + '</table><p class="muted small">' + t('rank.globalNote') + '</p>';
+      }, function () { gl.innerHTML = '<p class="muted small">' + t('rank.globalOff') + '</p>'; });
+      else gl.innerHTML = '<p class="muted small">' + t('rank.globalOff') + '</p>';
+      b.appendChild(h('h3', null, '👥 ' + t('rank.local')));
       b.appendChild(h('p', 'muted small', t('rank.note')));
       var tbl = '<table class="rank"><tr><th>#</th><th>' + t('profile.name') + '</th><th>' + t('stats.wins') + '</th><th>' + t('stats.games') + '</th><th>' + t('stats.rate') + '</th></tr>';
       rows.sort(function (a, b) { return (b.wins || 0) - (a.wins || 0); }).forEach(function (r, k) { tbl += '<tr' + (r.me ? ' class="me"' : '') + '><td>' + (k + 1) + '</td><td>' + esc(r.name) + '</td><td>' + (r.wins == null ? '–' : r.wins) + '</td><td>' + r.games + '</td><td>' + (r.wins == null || !r.games ? '–' : Math.round(r.wins / r.games * 100) + ' %') + '</td></tr>'; });
@@ -1028,9 +1040,9 @@
     }, inGame ? { back: overlayBack } : null);
     function changed(key) {
       saveProf();
-      if (key === 'lang') { applyLang(); if (M) { stage.buildBoard(M.s.world, S.lang); stage.setPlayers(M.s.players); stage.sync(M.s); } openSettings(inGame); }
+      if (key === 'lang') { applyLang(); if (M && M.s) { stage.buildBoard(M.s.world, S.lang); stage.setPlayers(M.s.players); stage.sync(M.s); } openSettings(inGame); }
       if (/quality|shadows|particles|reduced|saver/.test(key)) stage.setOptions({ quality: S.quality, shadows: S.shadows, particles: S.particles, reduced: S.reduced, saver: S.saver });
-      if (key === 'quality' && M) { stage.buildBoard(M.s.world, S.lang); stage.setPlayers(M.s.players); stage.sync(M.s); }
+      if (key === 'quality' && M && M.s) { stage.buildBoard(M.s.world, S.lang); stage.setPlayers(M.s.players); stage.sync(M.s); }
       if (/master|music|sfx|mute/.test(key)) A.set({ master: S.master, music: S.music, sfx: S.sfx, mute: S.mute });
       if (key === 'speed') stage.speed = S.speed;
     }
@@ -1100,7 +1112,8 @@
   }
 
   // Für automatisierte Browser-Tests: lesender Zugriff auf den Spielstand
-  window.RicoPolyDebug = { state: function () { return M && M.s; }, busy: function () { return !!(M && M.busy); }, act: function (a) { act(a); }, skip: skipAnims, profile: function () { return prof; }, stage: function () { return stage; } };
+  window.RicoPolyDebug = { state: function () { return M && M.s; }, busy: function () { return !!(M && M.busy); }, act: function (a) { act(a); }, skip: skipAnims, profile: function () { return prof; }, stage: function () { return stage; },
+    net: function () { return M && (M.host ? { role: 'host', fire: M.host.fire, conns: Object.keys(M.host.conns) } : M.client ? { role: 'guest', via: M.client.via, seat: M.seat } : null); } };
 
   document.addEventListener('DOMContentLoaded', function () { wire(); boot(); });
 })();

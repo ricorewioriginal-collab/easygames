@@ -20,5 +20,66 @@ service cloud.firestore {
         && request.resource.data.rt.size() < 2000;
       allow list, update: if false;
     }
+
+    // ---------- RicoPoly 3D (ricopoly/js/fire.js) ----------
+    // Weltweite Rangliste: ein Eintrag je Konto (auch anonym), nur der Besitzer schreibt. Jede Partie zählt
+    // höchstens einmal pro Minute und erhöht Partien um genau 1 und Siege um 0 oder 1.
+    match /ricopoly_board/{uid} {
+      allow get: if request.auth != null;
+      allow list: if request.auth != null && request.query.limit <= 50;
+      allow create: if request.auth != null && request.auth.uid == uid && rpBoard(request.resource.data)
+        && request.resource.data.g == 1 && request.resource.data.w <= 1;
+      allow update: if request.auth != null && request.auth.uid == uid && rpBoard(request.resource.data)
+        && request.resource.data.g == resource.data.g + 1
+        && request.resource.data.w >= resource.data.w && request.resource.data.w <= resource.data.w + 1
+        && request.time > resource.data.t + duration.value(60, 's');
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    function rpBoard(d) {
+      return d.keys().hasOnly(['n', 'c', 'w', 'g', 't']) && d.keys().hasAll(['n', 'c', 'w', 'g', 't'])
+        && d.n is string && d.n.size() > 0 && d.n.size() <= 24 && d.c is string && d.c.size() <= 16
+        && d.w is int && d.g is int && d.w >= 0 && d.w <= d.g && d.t == request.time;
+    }
+
+    // Online-Räume: Firebase vermittelt nur den Verbindungsaufbau (WebRTC-Angebot/Antwort), gespielt wird direkt.
+    // Ein Raum gehört seinem Gastgeber; private Räume lassen sich nicht auflisten (Schutz ist der Code).
+    match /ricopoly_rooms/{code} {
+      allow get: if request.auth != null;
+      allow create: if request.auth != null && code.matches('^[A-Z0-9]{6}$') && rpRoom(request.resource.data);
+      allow update: if request.auth != null && resource.data.h == request.auth.uid && rpRoom(request.resource.data);
+      allow delete: if request.auth != null && resource.data.h == request.auth.uid;
+
+      // Beitritt: Der Gast legt sein Angebot unter seiner Konto-Kennung ab, nur der Gastgeber trägt die Antwort ein.
+      match /join/{uid} {
+        allow get: if request.auth != null && (request.auth.uid == uid || rpHost(code));
+        allow list: if request.auth != null && request.query.limit <= 20 && rpHost(code);
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && exists(/databases/$(database)/documents/ricopoly_rooms/$(code))
+          && request.resource.data.keys().hasOnly(['o', 'a', 't']) && request.resource.data.keys().hasAll(['o', 'a', 't'])
+          && request.resource.data.o is string && request.resource.data.o.size() < 20000
+          && request.resource.data.a == '' && request.resource.data.t == request.time;
+        allow update: if request.auth != null && rpHost(code)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['a', 't'])
+          && request.resource.data.a is string && request.resource.data.a.size() < 20000 && request.resource.data.t == request.time;
+        allow delete: if request.auth != null && (request.auth.uid == uid || rpHost(code));
+      }
+    }
+    function rpRoom(d) {
+      return d.keys().hasOnly(['h', 't']) && d.h == request.auth.uid && d.t == request.time;
+    }
+    function rpHost(code) {
+      return get(/databases/$(database)/documents/ricopoly_rooms/$(code)).data.h == request.auth.uid;
+    }
+    // Öffentliche Räume: kleine Liste mit Name, Welt, Modus und Belegung, nur vom Gastgeber des Raums gepflegt.
+    match /ricopoly_pub/{code} {
+      allow list: if request.auth != null && request.query.limit <= 20;
+      allow get: if request.auth != null;
+      allow create, update: if request.auth != null && rpHost(code)
+        && request.resource.data.keys().hasOnly(['h', 'n', 'w', 'm', 'c', 'x', 't']) && request.resource.data.h == request.auth.uid
+        && request.resource.data.n is string && request.resource.data.n.size() <= 24
+        && request.resource.data.w in ['metropolis', 'fantasy', 'future'] && request.resource.data.m in ['classic', 'quick', 'custom']
+        && request.resource.data.c is int && request.resource.data.x is int && request.resource.data.t == request.time;
+      allow delete: if request.auth != null && resource.data.h == request.auth.uid;
+    }
   }
 }

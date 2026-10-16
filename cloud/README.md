@@ -30,3 +30,7 @@ Google sperrt die Anmeldung in App-Fenstern. Deshalb koppelt sich die App über 
 ## Ältere Sicherung (genau eine je Nutzer und Spiel)
 
 Ersetzt beim ersten Abgleich einer Sitzung (Start oder Anmeldung) der neuere Stand einen abweichenden älteren (egal ob lokal oder in der Cloud), wird der ersetzte Eintrag im Dokument `users/<uid>/saves/<spiel>__alt` aufgehoben und überschreibt dabei die vorherige Sicherung. Im Cloud-Fenster stellt „Älteren Stand wiederherstellen“ sie zurück und tauscht sie mit dem aktuellen Stand, es bleibt also immer genau eine ältere Sicherung. Die Firestore-Regeln decken das Dokument bereits ab (`{game}` ist ein Platzhalter), es ist nichts neu zu veröffentlichen. Apps mit eigenem Abgleich (Favoriten in Android/Windows, ZOTIK-Apps) haben das noch nicht.
+
+## RicoPoly 3D: Rangliste und Online-Räume
+
+`firestore.rules` enthält zusätzlich einen Abschnitt für RicoPoly (`ricopoly_board`, `ricopoly_rooms`, `ricopoly_pub`). Er braucht die **anonyme Anmeldung** (Authentication → Anmeldemethode → Anonym). Details, Verbrauch und Grenzen: `ricopoly/FIREBASE_SETUP.md`. Andere Spiele sind davon nicht betroffen.
