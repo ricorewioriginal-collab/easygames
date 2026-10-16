@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9a8a6c8e40e0",
- "generated": "2026-10-16T23:18:28+00:00",
- "commit": "48ebc4bbbd4625a15fde3d8e63a1c4290951ea1b",
+ "version": "e0110af9afee",
+ "generated": "2026-10-17T01:29:55+02:00",
+ "commit": "a0402784907d4d1239dbaba56cebeb698ba8a479",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -392,6 +392,11 @@
    "h": "57bf8f9f062349ed05116bf375972004ac130d084e4fefd3fb4fc433304560fa"
   },
   {
+   "p": "anmacha-beat-surfer/card.jpg",
+   "s": 33678,
+   "h": "5700a4c4508915bacdd54b29a01c9ee7dc05fa6e0d118e5598da4ccf2189a7bf"
+  },
+  {
    "p": "anmacha-beat-surfer/index.html",
    "s": 63183,
    "h": "319789719ede9906a1555f328712225b1cc5ef19fcd817870a1a21af65106a92"
@@ -475,6 +480,11 @@
    "p": "anmacha-beat-surfer/sw.js",
    "s": 2003,
    "h": "a66b2b70779f14ea9aea5147703cb2d4bf2921a8f109f874d3695b3362893f69"
+  },
+  {
+   "p": "anmacha-flipper/card.jpg",
+   "s": 31662,
+   "h": "5f57b69899fd4d5c143eb234a9f376180048be98c4a19f53b9232521a8811a3d"
   },
   {
    "p": "anmacha-flipper/index.html",
@@ -1417,6 +1427,11 @@
    "h": "19c96d5db110219244398e53e0d5607cf6f16302dadf2f7590e62a713912125f"
   },
   {
+   "p": "anmacha-klotzfunk/card.jpg",
+   "s": 37076,
+   "h": "eb26af9fdf0b149c0a13e3d9851dfd9831dcdb9d2124703abb1016e3a7c05945"
+  },
+  {
    "p": "anmacha-klotzfunk/index.html",
    "s": 22732,
    "h": "4cbf26c1e0a9b040be32ac0b269942f9d4cbbba2e5576126c106d614b357de85"
@@ -1622,6 +1637,11 @@
    "h": "92a676d688d0a82a0712c9173290f85b4c60f6470c7ac3c9d202c2a96eeec445"
   },
   {
+   "p": "anmacha-markthalle/card.jpg",
+   "s": 33382,
+   "h": "3b18079f101267a5b057d38fff38a3640c68c900e28192a75d89c22dc97094c1"
+  },
+  {
    "p": "anmacha-markthalle/data.js",
    "s": 24900,
    "h": "6a6fea9d3b8e7ac96e675d6d1aecdc81d2c9692866e3e715bc0b6d037807cbc9"
@@ -1660,6 +1680,11 @@
    "p": "anmacha-markthalle/view3d.js",
    "s": 60611,
    "h": "9c61ffd9e34ca66bb46af9543727e5c703fc54dbb2909df1e54b2c9a0d6cdb91"
+  },
+  {
+   "p": "anmacha-memory/card.jpg",
+   "s": 37261,
+   "h": "b3e77765a1f7d3881127af6bf90c6ebe04124a3fa68181461f22750be553c2c0"
   },
   {
    "p": "anmacha-memory/index.html",
@@ -1935,6 +1960,11 @@
    "p": "anmacha-quest-rpg/anleitung.html",
    "s": 14217,
    "h": "ba09efc290b2a3f49dff4940b132bc7c88319b6180de3e2be441feeb50dcf444"
+  },
+  {
+   "p": "anmacha-quest-rpg/card.jpg",
+   "s": 37527,
+   "h": "047d7f62200270dd8c94b2fee96beab67bc8b0af32ac4c6db13df1ff9afbe0c1"
   },
   {
    "p": "anmacha-quest-rpg/godot/assets/buildings/1Story_GableRoof_Mat.fbx",
@@ -3252,6 +3282,11 @@
    "h": "cabd93032cced69fd8f06a5163e8680b45b3d9d02b470db2ce7b54459db137d2"
   },
   {
+   "p": "anmacha-radio-match/card.jpg",
+   "s": 37262,
+   "h": "dfb2d371a0de4f131ea1971ad5aaa608e5ddd06be3bd28feb00d81581aab3a7c"
+  },
+  {
    "p": "anmacha-radio-match/index.html",
    "s": 39384,
    "h": "7656defa073bf46c7b2366ac86811c064bb2c808e75f7b4b32dd2bc57f16f4bc"
@@ -3265,6 +3300,11 @@
    "p": "anmacha-radio-match/sw.js",
    "s": 2006,
    "h": "dca086b93da9c2ca9c4001b574d0832f3accbc728065e55ee593b2aef7ca4bf4"
+  },
+  {
+   "p": "anmacha-radio-surfer/card.jpg",
+   "s": 37995,
+   "h": "54e55b2ecb48e29a211aab989bdf765676e273a86bbef188268437f233a78726"
   },
   {
    "p": "anmacha-radio-surfer/hindernisse/01.jpg",
@@ -3472,6 +3512,11 @@
    "h": "5d54699fef7be0991eb0407ce64b1fc3ee54f492f91e53247e7464f0bad7d748"
   },
   {
+   "p": "anmacha-snake/card.jpg",
+   "s": 35204,
+   "h": "86c9096362e2d3274f25cfb907d28f1968a9d8f9051f7167609ada93b284bb17"
+  },
+  {
    "p": "anmacha-snake/index.html",
    "s": 46430,
    "h": "56e620eca59a130098de1a2f7d3d3241ea99c99c005f82d1b1988e1282033ee8"
@@ -3557,6 +3602,11 @@
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
   },
   {
+   "p": "anmacha-spielesammlung/card.jpg",
+   "s": 38707,
+   "h": "45429164a23751826bcd27dcf79d104890ce01ebce8c3150418fae3c2f1ec61c"
+  },
+  {
    "p": "anmacha-spielesammlung/index.html",
    "s": 100257,
    "h": "72fec69de20770f4fa9c1c3d7fd7968a06bc0ebb797be2626d5da3e344ee0858"
@@ -3570,6 +3620,11 @@
    "p": "anmacha-spielesammlung/sw.js",
    "s": 2015,
    "h": "cc3282742cc195b1608ea98bf2e26891fb12e39db0d9d840a75ea67c21619232"
+  },
+  {
+   "p": "anmacha-stapelrausch/card.jpg",
+   "s": 40214,
+   "h": "b794fc90e2566163497d5fe996199773542417a0c78ae395da39e03c244092b8"
   },
   {
    "p": "anmacha-stapelrausch/index.html",
@@ -3590,6 +3645,11 @@
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
    "s": 569667,
    "h": "6ad02b2fcb9487f96b629ca1e37b1278608b3f505f021e542da2a6ce34bf828a"
+  },
+  {
+   "p": "anmacha-tower-defense/card.jpg",
+   "s": 38534,
+   "h": "529c5d51d925beeb7a6394c2f2a7c251ac8142d871ae7c58595d28ce687e71d5"
   },
   {
    "p": "anmacha-tower-defense/index.html",
@@ -3685,6 +3745,11 @@
    "p": "anmacha-urwaldlager/camp.js",
    "s": 53134,
    "h": "b1f40c9ad29833aeef040230cdda2262998a43d3b17ad205ecf6695173abf64b"
+  },
+  {
+   "p": "anmacha-urwaldlager/card.jpg",
+   "s": 37177,
+   "h": "313d74b6833e290c3bc3440c6d5e5752b0d7cc2ad2f004ecbfd72e94c063fce3"
   },
   {
    "p": "anmacha-urwaldlager/data.js",
@@ -4683,13 +4748,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 20908,
-   "h": "70e8f431a71bc2ce258e5d097c7a796be88bf5ecbc6d7b2b695d426c74db0459"
+   "s": 20948,
+   "h": "84fc5c04033a93c1c938c6efd25d0417f797634cf2a8c933b39fd2e660d0f9a4"
   },
   {
    "p": "einbinden.html",
-   "s": 70674,
-   "h": "b8901c693ad34c9bfbd39e8c1568eb3b68ca5dab3d8adaa8e9533d63a5b6118b"
+   "s": 70732,
+   "h": "233e14007a3245f777712b196b7febffd26cf8ad284e6a99206ffe45be4879b1"
   },
   {
    "p": "erfolge.html",
@@ -4713,8 +4778,13 @@
   },
   {
    "p": "games.js",
-   "s": 22177,
-   "h": "52f46c1f3a749588711d8b0805919c6f266118655c4005af36b528655f08dfca"
+   "s": 22671,
+   "h": "f98ed1cff22032d05b0c86f73663eb37a189ae7b0dfc57b8c91dfe0f90582257"
+  },
+  {
+   "p": "gay-life/card.jpg",
+   "s": 33659,
+   "h": "0c5dae33eff85d76ea62bbe01576566dd31559677a8fa024347f4838e3214fa2"
   },
   {
    "p": "gay-life/index.html",
@@ -5407,9 +5477,9 @@
    "h": "12104851142e53032234ae3794bf3c11bbe186c27306c58da443dc4618498abe"
   },
   {
-   "p": "partyverse/card.png",
-   "s": 26999,
-   "h": "9f5ae647cd2c80f12a981cb7ccaa5fcf772bb07a313448bea579a717aade0e44"
+   "p": "partyverse/card.jpg",
+   "s": 37365,
+   "h": "24c0d4daa7a42dbb7454f7538799d451e183863f4c78cde754c0be7ea34cb5a8"
   },
   {
    "p": "partyverse/client/index.html",
@@ -5893,8 +5963,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 93990,
-   "h": "916977a1cf7415d6026b0040c81d11ec8bfba4117f73c1f5dd2187d498e18cc3"
+   "s": 94330,
+   "h": "0e13b0dedb7031998bf103d11367bc67951dc82a3fd6fea3fabd64b73ffb8141"
   },
   {
    "p": "taschi/card.svg",
