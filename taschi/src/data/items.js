@@ -1,13 +1,22 @@
 // Items. Every item has a working, testable effect in logic/items.js.
-// category: ball | heal | status | battle | evo | key
+// category: ball | heal | status | battle | evo | growth | key
 export const ITEMS = {
-  taschiball:   { name: 'Taschiball', category: 'ball', price: 40, rate: 1, desc: 'Standardball zum Fangen wilder Taschis.' },
-  superball:    { name: 'Superball', category: 'ball', price: 120, rate: 1.5, desc: 'Fängt besser als ein Taschiball.', unlock: 4 },
-  sternball:    { name: 'Sternball', category: 'ball', price: 300, rate: 2.2, desc: 'Hochwertiger Ball für erfahrene Trainer.', unlock: 9 },
+  taschiball:   { name: 'Taschiball', category: 'ball', price: 40, rate: 1, color: 0xe9523f, desc: 'Standardball zum Fangen wilder Taschis.' },
+  heilball:     { name: 'Heilball', category: 'ball', price: 60, rate: 1, color: 0xf48fb8, healOnCatch: true, desc: 'Gefangene Taschis sind sofort vollständig geheilt.' },
+  superball:    { name: 'Superball', category: 'ball', price: 120, rate: 1.5, color: 0x3a7fd0, desc: 'Fängt besser als ein Taschiball.', unlock: 1 },
+  netzball:     { name: 'Netzball', category: 'ball', price: 150, rate: 1, color: 0x2fb7a8, bonusTypes: ['wasser', 'pflanze'], bonus: 3, desc: 'Dreifache Fangchance bei Wasser- und Pflanzen-Taschis.', unlock: 2 },
+  flinkball:    { name: 'Flinkball', category: 'ball', price: 180, rate: 1, color: 0xffc83a, firstTurn: 4, desc: 'In der ersten Kampfrunde vierfache Fangchance, danach schwach.', unlock: 2 },
+  daemmerball:  { name: 'Dämmerball', category: 'ball', price: 160, rate: 1, color: 0x3d4a3a, dark: 3, desc: 'Dreifache Fangchance nachts und in Höhlen.', unlock: 3 },
+  freundball:   { name: 'Freundball', category: 'ball', price: 150, rate: 1, color: 0x7ccf5a, friendship: 160, desc: 'Gefangene Taschis vertrauen dir sofort. Freundschaft beschleunigt das Lernen.', unlock: 4 },
+  levelball:    { name: 'Levelball', category: 'ball', price: 200, rate: 1, color: 0xf07a2a, levelBased: true, desc: 'Je höher dein Taschi im Vergleich zum Gegner, desto besser (bis vierfach).', unlock: 5 },
+  timerball:    { name: 'Timerball', category: 'ball', price: 200, rate: 1, color: 0xf2f2f2, timer: true, desc: 'Wird mit jeder Kampfrunde besser (bis vierfach).', unlock: 6 },
+  sternball:    { name: 'Sternball', category: 'ball', price: 300, rate: 2.2, color: 0x3a3048, desc: 'Hochwertiger Ball für erfahrene Trainer.', unlock: 7 },
+  meisterball:  { name: 'Meisterball', category: 'ball', price: 0, rate: 255, color: 0x8a4ad0, master: true, noSell: true, desc: 'Fängt jedes wilde Taschi ohne Fehlschlag. Ein einmaliges Geschenk.' },
   trank:        { name: 'Trank', category: 'heal', price: 30, heal: 35, desc: 'Stellt 35 KP wieder her.' },
   supertrank:   { name: 'Supertrank', category: 'heal', price: 90, heal: 90, desc: 'Stellt 90 KP wieder her.', unlock: 5 },
   vitaltrank:   { name: 'Vitaltrank', category: 'heal', price: 220, heal: 9999, desc: 'Stellt alle KP wieder her.', unlock: 10 },
   belebungskraut: { name: 'Belebungskraut', category: 'heal', price: 280, revive: 0.5, desc: 'Belebt ein erschöpftes Taschi mit halben KP.', unlock: 3 },
+  levelbonbon:  { name: 'EP-Bonbon', category: 'growth', price: 0, sell: 300, desc: 'Ein Taschi steigt sofort um ein Level auf.' },
   heilkraut:    { name: 'Heilkraut', category: 'status', price: 60, cure: 'all', desc: 'Heilt jede Statusveränderung.' },
   apfelsaft:    { name: 'Apfelsaft', category: 'heal', price: 0, heal: 20, sellOnly: true, desc: 'Süßer Saft, stellt 20 KP wieder her.' },
   aetherperle:  { name: 'Ätherperle', category: 'heal', price: 180, pp: 10, desc: 'Füllt bei allen Attacken eines Taschis 10 AP auf.', unlock: 6 },
@@ -25,11 +34,12 @@ export const ITEMS = {
 };
 
 export const ITEM_ORDER = Object.keys(ITEMS);
-export const CATEGORY_NAMES = { ball: 'Bälle', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', key: 'Basis-Items' };
+export const BALL_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'ball');
+export const CATEGORY_NAMES = { ball: 'Bälle', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', key: 'Basis-Items' };
 
 export function sellPrice(id) {
   const it = ITEMS[id];
-  if (!it || it.category === 'key') return 0;
+  if (!it || it.category === 'key' || it.noSell) return 0;
   if (it.sell) return it.sell;
   return Math.floor((it.price || 20) / 2);
 }

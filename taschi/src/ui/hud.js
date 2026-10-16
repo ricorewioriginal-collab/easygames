@@ -105,7 +105,7 @@ export class HUD {
       x.strokeStyle = '#e8d8a8'; x.lineCap = 'round';
       for (const rd of L.roads) { x.lineWidth = rd.width * sc * 0.8; x.beginPath(); rd.pts.forEach(([a, b], i) => { const [px, pz] = P(a, b); i ? x.lineTo(px, pz) : x.moveTo(px, pz); }); x.stroke(); }
       x.fillStyle = '#2f6a3a';
-      for (const gr of L.grass) { const [gx, gz] = P(gr.x - gr.w / 2, gr.z - gr.d / 2); x.fillRect(gx, gz, gr.w * sc, gr.d * sc); }
+      for (const gr of L.grass) { const [gx, gz] = P(gr.x, gr.z); x.beginPath(); x.ellipse(gx, gz, gr.rx * sc, gr.rz * sc, 0, 0, Math.PI * 2); x.fill(); }
       for (const b of L.buildings) { const [bx, bz] = P(b.x, b.z); x.fillStyle = { heal: '#e0566e', shop: '#3f7fc4', arena: '#f5cd77', lab: '#ffffff', pavilion: '#f5cd77', station: '#7d4fa3', league: '#ffd27a' }[b.kind] || '#c89a6a'; x.fillRect(bx - 3, bz - 3, 6, 6); }
       // objective marker
       const obj = this.game.objectiveTarget();

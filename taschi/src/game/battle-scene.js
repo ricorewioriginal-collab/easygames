@@ -7,7 +7,7 @@ import { MOVES, STATUS } from '../data/moves.js';
 import { TYPES, effectiveness } from '../data/types.js';
 import { ITEMS } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
-import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor } from '../logic/battle.js';
+import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
 import { maxHp, xpToNext, evolve, replaceMove } from '../logic/monster.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
 import { createCharacter, lookForRole } from '../engine/characters.js';
@@ -257,7 +257,7 @@ export class BattleScene {
     this.menuEl = null; this.logEl = null;
     const indoor = !!opts.indoor;
     this.buildStage(opts.region, indoor);
-    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(),
+    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor,
       player: { team: save.team, bag: save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) } } });
     this.b = b; this.opts = opts;
     for (const m of opts.foeTeam) save.dex[m.id] ||= 1;
@@ -481,7 +481,7 @@ export class BattleScene {
     this.playerCh?.play('throw', 0.8);
     await wait(380);
     this.audio.sfx('throw');
-    const ball = ballModel([0xe9523f, 0x3a7fd0, 0x3a3048][['taschiball', 'superball', 'sternball'].indexOf(e.item)] ?? 0xe9523f, 0.22);
+    const ball = ballModel(ITEMS[e.item]?.color ?? 0xe9523f, 0.22);
     this.root.add(ball);
     const from = new THREE.Vector3(-5, 1.8, 5), to = foe.c.root.position.clone().setY(1.2);
     await new Promise(res => { const t0 = performance.now(); const step = () => { const u = Math.min(1, (performance.now() - t0) / 600); ball.position.lerpVectors(from, to, u); ball.position.y += Math.sin(u * Math.PI) * 2.2; ball.rotation.x += 0.4; if (u < 1) requestAnimationFrame(step); else res(); }; step(); });
@@ -513,11 +513,8 @@ export class BattleScene {
     this.ui.pop(waitS);
     // learn requests
     for (const req of b.learnRequests) {
-      const m = save.team.find(x => x.uid === req.uid); if (!m || m.moves.some(x => x.id === req.move)) continue;
-      const mv = MOVES[req.move];
-      const pick = await this.ui.ask([{ who: SPECIES[m.id].name, text: (m.nick || SPECIES[m.id].name) + ' möchte ' + mv.name + ' (' + TYPES[mv.type].name + ', Stärke ' + (mv.power || '–') + ') lernen, kennt aber schon vier Attacken. Welche soll es vergessen?' }],
-        [...m.moves.map(x => 'Vergessen: ' + MOVES[x.id].name), mv.name + ' nicht lernen'], { cancelIndex: 4 });
-      if (pick < 4) { const old = MOVES[m.moves[pick].id].name; replaceMove(m, pick, req.move); this.ui.toast(old + ' vergessen – ' + mv.name + ' gelernt!', '✦'); }
+      const m = save.team.find(x => x.uid === req.uid); if (!m) continue;
+      await this.game.offerMove(m, req.move);
     }
     // evolutions (visible sequence)
     if (result.outcome !== 'lose') for (const evo of b.pendingEvolutions) {
@@ -546,7 +543,7 @@ export class BattleScene {
       await wait(Math.max(60, 180 - i * 8));
     }
     await this.game.ui.fade(true, true);
-    evolve(m, to);
+    const { learned, offers } = evolve(m, to);
     this.game.save.dex[to] = 2;
     this.removeModel(m.uid);
     const ne = this.spawnModel(m, 0, 0, false);
@@ -557,6 +554,8 @@ export class BattleScene {
     this.audio.sfx('catch'); ne.c.play('happy', 1.2);
     this.burst(new THREE.Vector3(0, 1.2, 0), 0xffe080, 60, 1.6, 'star', 1.4, 2);
     await this.ui.say([{ text: 'Glückwunsch! Dein ' + SPECIES[from].name + ' hat sich zu ' + SPECIES[to].name + ' entwickelt!' }]);
+    for (const id of learned) await this.ui.say([{ text: (m.nick || SPECIES[to].name) + ' hat ' + MOVES[id].name + ' gelernt!' }]);
+    for (const id of offers) await this.game.offerMove(m, id);
   }
   cleanup() {
     this.active = false;
@@ -595,6 +594,6 @@ function shadeCss(hex) { const c = new THREE.Color(hex); c.multiplyScalar(0.72);
 function catchHint(scene, ball) {
   const foe = scene.b.sides[1].team.find(m => m.hp > 0);
   if (!foe) return '';
-  const r = SPECIES[foe.id].catch * ITEMS[ball].rate * (1 + 1.7 * (1 - foe.hp / maxHp(foe)));
-  return r > 0.9 ? 'sehr hoch' : r > 0.5 ? 'hoch' : r > 0.25 ? 'mittel' : 'gering';
+  const r = catchChance(scene.b, foe, ball);
+  return r >= 1 ? 'sicher' : r > 0.55 ? 'sehr hoch' : r > 0.3 ? 'hoch' : r > 0.15 ? 'mittel' : 'gering';
 }

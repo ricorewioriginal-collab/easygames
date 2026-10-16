@@ -60,8 +60,8 @@ export async function interactWith(page, pred) {
   for (let k = 0; k < 6; k++) {
     await page.waitForTimeout(700);
     await page.keyboard.press('KeyE');
-    await page.waitForTimeout(500);
-    if (await page.evaluate(() => { const g = window.__taschi; return g.busy > 0 || g.ui.blocking || g.state !== 'world'; })) return;
+    // E also confirms dialogs, so wait long enough for a slow frame before pressing again
+    try { await page.waitForFunction(() => { const g = window.__taschi; return g.busy > 0 || g.ui.blocking || g.state !== 'world'; }, null, { timeout: 2500 }); return; } catch {}
   }
   throw new Error('Interaktion ohne Wirkung: ' + pred);
 }

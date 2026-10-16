@@ -93,10 +93,16 @@ export function paintTerrain(L, pal, res = 1024) {
     x.fillStyle = 'rgba(25,25,20,0.22)'; x.fillRect(px, py, w * S, d * S);
   }
   // tall grass underlay
+  x.fillStyle = 'rgba(30,70,25,0.32)';
   for (const g of L.grass) {
-    const [px, py] = P(g.x - g.w / 2, g.z - g.d / 2);
-    x.fillStyle = 'rgba(30,70,25,0.32)';
-    x.beginPath(); x.roundRect ? x.roundRect(px, py, g.w * S, g.d * S, 2 * S) : x.rect(px, py, g.w * S, g.d * S); x.fill();
+    const [px, py] = P(g.x, g.z);
+    x.beginPath();
+    for (let i = 0; i <= 48; i++) {
+      const a = i / 48 * Math.PI * 2, wob = 1 + 0.12 * Math.sin(a * 3 + g.seed) + 0.06 * Math.sin(a * 7 + g.seed * 2);
+      const ex = px + Math.cos(a) * g.rx * wob * S, ey = py + Math.sin(a) * g.rz * wob * S;
+      i ? x.lineTo(ex, ey) : x.moveTo(ex, ey);
+    }
+    x.fill();
   }
   // roads
   const dirt = C.dirt;

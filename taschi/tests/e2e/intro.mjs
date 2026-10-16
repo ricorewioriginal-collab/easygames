@@ -95,21 +95,22 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     step('Laden: Kauf');
     await interactWith(page, (e) => e.kind === 'exit');
     await page.waitForFunction(() => window.__taschi.world.current?.type === 'region' && !window.__taschi.busy);
-    // wild battle with capture (forced encounter)
-    await G(page, () => { window.__taschi.script(() => window.__taschi.randomEncounter('grass')); });
+    // wild battle with capture (forced encounter); throws can fail, so a lost fight gets a fresh encounter
+    let caught = false;
+    for (let fightNo = 0; fightNo < 3 && !caught; fightNo++) {
+    await G(page, () => { const g = window.__taschi; g.script(() => g.randomEncounter('grass')); });
     await waitState(page, 'battle');
     await advance(page, { until: () => !!document.querySelector('.bact.fight') });
-    let caught = false;
     for (let k = 0; k < 25 && !caught; k++) {
       if (!(await G(page, () => window.__taschi.state === 'battle'))) break;
-      if (await page.locator('.bact.bag').count()) {
-        await page.locator('.bact.bag').click(); await page.waitForTimeout(150);
-        await page.locator('.bact.bag', { hasText: 'Taschiball' }).first().click();
-      }
+      // click in-page: a slow frame can swap the menu between locate and click
+      const opened = await G(page, () => { document.querySelector('.bact.backbtn')?.click(); const b = document.querySelector('.bact.bag'); b?.click(); return !!b; });
+      if (opened) { await page.waitForTimeout(200); await G(page, () => [...document.querySelectorAll('.bact.bag')].find(x => x.textContent.includes('Taschiball'))?.click()); }
       await advance(page, { max: 80, until: () => window.__taschi.state !== 'battle' || !!document.querySelector('.bact.fight') });
       caught = await G(page, () => window.__taschi.save.team.length + window.__taschi.save.box.length > 1);
     }
     await advance(page);
+    }
     assert.ok(caught, 'wildes Taschi gefangen');
     step('Wilde Begegnung und Fangen');
     // pause menu tabs

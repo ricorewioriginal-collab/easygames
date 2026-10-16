@@ -21,6 +21,17 @@ Beim Laden erscheint jetzt zuerst ein eigener Titel-/Ladebildschirm. Danach gibt
 
 Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert, und die Oberwelt besitzt prozedurale Texturen für Gras und Wege, acht speicherbare Trainer-Duelle sowie eine kreisrunde Live-Minikarte. Im Kampf gibt es ein vierteiliges Aktionsmenü (Kampf / Fangbeutel / Taschis / Flucht) und ein separates Attacken-/Gegenstandsmenü. Beim Start führt Professor Ulme durch die Einführung und die Starterwahl. Eine vollständige Geräteprüfung ist weiterhin erforderlich.
 
+## Großes Spielupdate (16. Oktober 2026)
+
+- **Wiesen mit hohem Gras:** Jede Region hat jetzt 6 bis 12 große, unregelmäßige Wiesen entlang der Routen und in den Seitenfeldern (vorher nur wenige kleine Flecken). Wege und Wasser schneiden das Gras aus, sodass man wie im Vorbild wählen kann: über den Weg oder durchs Gras. Am Ufer wachsen Schilfwiesen mit Wasser-Taschis, Blumenwiesen haben eigene Bewohner. Grasdichte richtet sich nach der Grafikstufe.
+- **Größere begehbare Welt:** Die Regionen sind fast doppelt so groß (260 statt 200 Einheiten, gleiche Geländeauflösung). Tore liegen weiter außen, dazwischen neue Routenabschnitte mit Wiesen. Alte Spielstände bleiben gültig; landet eine gespeicherte Position in einem Baum, startet man am Heilzentrum.
+- **11 Ballsorten:** Taschiball, Heilball (heilt das gefangene Taschi), Superball, Netzball (×3 bei Wasser/Pflanze), Flinkball (×4 in Runde 1), Dämmerball (×3 nachts und in Höhlen), Freundball (sofort hohe Freundschaft), Levelball (bis ×4, wenn dein Taschi höher ist), Timerball (wird pro Runde besser), Sternball und ein einmaliger Meisterball (Geschenk von Brix). Heil- und Taschibälle gibt es ab Start, die übrigen mit den ersten Siegeln. Jeder Ball hat seine eigene Farbe im Kampf.
+- **Drei Entwicklungsstufen:** Alle Starter und Original-Linien haben jetzt drei Stufen (z. B. Glutzahn → Glutdrach → Magmadrach, Plätscherchen → Panzerlon → Gezeitenlon, Samenling → Blütling → Florakron, Fellino → Fellisto → Fellmajor). Dazu acht neue Familien mit je drei Stufen (Flöckchen, Buddelmaus, Wollini, Glimmstein, Tröpfli, Laternchen, Summsel, Pilzling). **260 Arten**, 81 Linien mit drei Stufen.
+- **Leveln und Attacken:** 28 neue Attacken, jede Art lernt über die Level eine vollständige Typ-Reihe plus Attacken ihres zweiten Typs. EP skalieren wie im Vorbild nach Levelunterschied (schwächere Taschis holen schneller auf), gute Freundschaft gibt 20 % mehr EP, Level-ups zeigen die Wertzuwächse. Bei vier Attacken fragt das Spiel, welche vergessen werden soll – auch nach Entwicklungen, die neue Attacken mitbringen. Unter **Team → Taschi → Attacken verwalten** lassen sich Attacken vergessen und beim **Attacken-Erinnerer** (★80) früher verpasste Attacken neu lernen. Neues Item **EP-Bonbon** (ein Level, inklusive Entwicklung).
+- **Rivale Rian:** Rian wählt das Taschi, das gegen deinen Starter im Vorteil ist, und fordert dich bei Ankunft in Korallküste, Käferwald, Nebelmoor, Kristallberg und Himmelskrone heraus. Das Team wächst mit, die Geschichte führt von Konkurrenz über die Schattengilde bis zum gemeinsamen Weg zum Sternengipfel.
+
+Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmeister) sowie die Browsertests `tests/e2e/intro.mjs` und `tests/e2e/expansion.mjs` (Gras-Begegnung, Ballauswahl, Attacken vergessen/erinnern, EP-Bonbon mit Entwicklung, Rivalenkampf) ohne Browserfehler. Ein Test auf echten Handys steht weiterhin aus.
+
 ## Steuerung und Menüs
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
@@ -47,7 +58,7 @@ Das HUD und die Kampfmenüs sind als kompakte, fokussierbare Spiel-Overlays gest
 
 ## Spielsysteme
 
-- 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
+- (Stand vor dem Update vom 16. Oktober 2026, siehe oben) 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
 - Acht Elementtypen und elementbasierte Wirksamkeiten, Angriffs- und Verteidigungswerte, EP, Levelaufstiege und einige Entwicklungen.
 - Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Tränke. Sternmünzen aus Kämpfen und ein kaufbasierter Fangladen.
 - 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Im Kampf können eigene Begleiter gewechselt werden. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.

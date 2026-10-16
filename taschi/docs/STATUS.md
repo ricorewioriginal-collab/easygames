@@ -1,12 +1,22 @@
 # TASCHI v2 – Arbeitsstand und nächste Schritte
 
-Stand: 14. Oktober 2026. Diese Datei ist der Übergabepunkt für die nächste Arbeitssitzung.
+Stand: 16. Oktober 2026. Diese Datei ist der Übergabepunkt für die nächste Arbeitssitzung.
 
 ## Live
 
 - `taschi/index.html` startet **TASCHI v2** (Einstieg `src/main.js`).
 - Die bisherige Version bleibt unter `taschi/classic.html` spielbar (`game.js` unverändert).
 - Alte Spielstände (lokal und AnMaCha-Cloud, Präfix `easygames.taschi.eight-lights.v1`) werden beim Laden automatisch migriert. Version-1-Daten werden nie gelöscht.
+
+## Update 16. Oktober 2026
+
+- Wiesen (`grassAt()` in `src/logic/layout.js`) steuern Grasdarstellung, Begegnungen und Minikarte gemeinsam. Regionen 260×260, Tore bei z = ±122.
+- Bälle: Effekte in `ballRate()` (`src/logic/items.js`), Fangchance in `catchChance()` (`src/logic/battle.js`).
+- Arten: 260, Erweiterung im Block `EXTENDED` in `src/data/species.js` (hinten angehängt, Dex-Nummern unverändert). Lernsets aus `TYPE_LEARN` (`src/data/moves.js`).
+- Attacken-Verwaltung: `forgetMove`, `relearnableMoves`, `teachMove`, `levelUp` in `src/logic/monster.js`; UI `openMoveManager` in `src/ui/menus.js`; Abfrage beim Lernen `game.offerMove()`.
+- Rivale: `RIVAL_STAGES`/`rivalTrainer` in `src/data/trainers.js`, Texte `RIVAL` in `src/data/story.js`, Auslöser `game.maybeRival()` nach jeder Regionsreise.
+- Browsertest `node tests/e2e/expansion.mjs [screenshot-ordner]` (Playwright z. B. über `NODE_PATH=/opt/node-tools/node_modules`).
+- Offener Fehler 1 behoben: Beim Reiterwechsel wurde die Einblend-Animation neu gestartet und blieb im Test bei Deckkraft 0 hängen. Neu gerenderte Menüs erscheinen jetzt ohne Animation (`.screen.noanim`).
 
 ## Erledigt und geprüft
 

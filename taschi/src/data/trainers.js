@@ -174,3 +174,30 @@ G.forEach((list, site) => list.forEach((t, i) => reg({
 
 export function trainerById(id) { return TRAINERS[id]; }
 export function regionTrainers(r, kind) { return Object.values(TRAINERS).filter(t => t.region === r && (!kind || t.kind === kind)); }
+
+// ---------------------------------------------------------------- rival
+// Rian meets the player when arriving in these regions. The team grows with
+// every meeting and always leads with the starter that beats the player's.
+export const RIVAL_STAGES = [
+  { region: 1, level: 10, size: 2, ai: 1 },
+  { region: 4, level: 20, size: 3, ai: 2 },
+  { region: 8, level: 31, size: 4, ai: 2 },
+  { region: 12, level: 40, size: 5, ai: 3 },
+  { region: 15, level: 48, size: 6, ai: 3 }
+];
+const RIVAL_STARTER = { glutzahn: 'plaetscher', plaetscher: 'samenling', samenling: 'glutzahn' };
+const RIVAL_PARTNERS = ['flatterling', 'knister', 'felsling', 'laternchen', 'floeckchen'];
+
+export function rivalTrainer(stage, playerStarter) {
+  const st = RIVAL_STAGES[stage];
+  if (!st) return null;
+  const ace = RIVAL_STARTER[playerStarter] || 'samenling';
+  const team = [];
+  for (let i = 0; i < st.size - 1; i++) {
+    const lv = Math.max(3, st.level - 2 - ((st.size - 2 - i) % 3));
+    team.push({ id: fitSpecies(RIVAL_PARTNERS[i], lv), lv });
+  }
+  team.push({ id: fitSpecies(ace, st.level), lv: st.level });
+  return { id: 'rival_' + stage, region: st.region, kind: 'rival', cls: 'Rivale', name: 'Rian', team, ai: st.ai,
+    reward: 200 + stage * 250, items: stage >= 2 ? { supertrank: stage >= 4 ? 2 : 1 } : {}, intro: '', defeat: '' };
+}

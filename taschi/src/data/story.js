@@ -2,10 +2,10 @@
 // dialogue animation (talk, happy, worried, angry, surprised, sad).
 
 export const CHAPTERS = [
-  { title: 'Das Erwachen', text: 'Über Sonnenhain verblasst das uralte Himmelslicht. Professor Ulme bittet dich, die sechzehn Licht-Siegel zusammenzuführen – und die Schattengilde stiehlt Taschis in allen Regionen.' },
+  { title: 'Das Erwachen', text: 'Über Sonnenhain verblasst das uralte Himmelslicht. Professor Ulme bittet dich, die sechzehn Licht-Siegel zusammenzuführen – und die Schattengilde stiehlt Taschis in allen Regionen. Dein Rivale Rian will dir dabei unbedingt zuvorkommen.' },
   { title: 'Funken im Feld', text: 'Im Funkenfeld hast du die Schattengilde zum ersten Mal gestellt. Ihre Fanggeräte saugen Energie aus wilden Taschis. Was haben sie vor?' },
   { title: 'Die Station im Glutkegel', text: 'In der Forschungsstation im Glutland arbeitet der Tüftler Brix an einer Maschine, die Licht speichern soll. Kommandantin Varga treibt das Projekt voran.' },
-  { title: 'Risse im Nebel', text: 'Brix zweifelt. Varga will die sechzehn Lichter in Kristallen bündeln und kontrollieren. Die Professoren der Regionen schließen sich zusammen.' },
+  { title: 'Risse im Nebel', text: 'Brix zweifelt. Varga will die sechzehn Lichter in Kristallen bündeln und kontrollieren. Die Professoren der Regionen schließen sich zusammen – und auch Rian hat erfahren, wie skrupellos die Gilde ist.' },
   { title: 'Der Weg zum Sternengipfel', text: 'Mit Brix’ Zugangskarte kannst du die Sperre am Sternengipfel lösen. Varga wartet dort mit ihrer Maschine.' },
   { title: 'Die Sternenliga', text: 'Die Lichter leuchten wieder. Nun warten die fünf Meisterprüfungen der Sternenliga auf dich.' },
   { title: 'Sternenmeister', text: 'Du bist Sternenmeister. Die Legenden der vier Wächter, stärkere Champions und ein vollständiger Taschidex warten.' }
@@ -33,7 +33,7 @@ export const ULME = {
   ],
   afterBattle: [
     { who: 'Professor Ulme', text: 'Großartig gemacht! Du hast ein echtes Gespür für Taschis.', mood: 'happy' },
-    { who: 'Professor Ulme', text: 'Hier sind fünf Taschibälle, drei Tränke und die Pfadkarte. Die Karte zeigt dir alle Regionen.', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Hier sind fünf Taschibälle, zwei Heilbälle, drei Tränke und die Pfadkarte. Im Laden gibt es mit jedem Siegel neue Ballsorten – jede hat ihre Stärke.', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Dein erster Auftrag: Löse das Mühlstein-Rätsel an der alten Wassermühle, dann öffnet Fels-Fiete seine Arena. Und fang unterwegs ein paar Taschis für deinen Taschidex!', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Wenn du Hilfe brauchst: Im Heilzentrum werden deine Taschis versorgt, im Laden gibt es Ausrüstung. Viel Glück!', mood: 'happy' }
   ]
@@ -194,3 +194,56 @@ export const CREDITS = [
   'Schrift: Fredoka (SIL Open Font License)',
   'Danke fürs Spielen!'
 ];
+
+// Rivale Rian: grew up with the player in Sonnenhain, takes the starter that
+// beats the player's and meets them five times on the journey. The arc runs
+// from pure rivalry to teaming up against the Schattengilde.
+export const RIVAL = {
+  name: 'Rian',
+  ulme: { who: 'Professor Ulme', text: 'Ach, und noch etwas: Rian, mein anderer Schützling, hat sich gerade das Taschi vom Podest geschnappt, das gegen deins im Vorteil ist. Rian will unbedingt als Erstes alle Siegel sammeln – ihr werdet euch unterwegs bestimmt begegnen!', mood: 'happy' },
+  stages: [
+    { // Korallküste
+      before: [
+        { text: 'Da bist du ja endlich! Ich warte hier schon seit Stunden. Na gut, seit zehn Minuten.', mood: 'happy' },
+        { text: 'Ich hab mein Taschi extra so gewählt, dass es deins schlägt. Taktik nennt man das! Zeig mal, was du draufhast!', mood: 'talk' }
+      ],
+      win: [{ text: 'Was?! Das war … nur Glück. Beim nächsten Mal bin ich vorbereitet. Wir sehen uns im Käferwald!', mood: 'angry' }],
+      lose: [{ text: 'Ha! Ich wusste es. Aber keine Sorge – du hast ja noch fünfzehn Siegel Zeit, um aufzuholen.', mood: 'happy' }]
+    },
+    { // Käferwald
+      before: [
+        { text: 'Hast du es auch gehört? Im Wald verschwinden Taschis aus ihren Nestern. Diese Schattengilde steckt dahinter, da bin ich sicher.', mood: 'worried' },
+        { text: 'Ich nehme es mit denen allein auf. Aber vorher will ich sehen, ob mein Team stärker geworden ist als deins!', mood: 'talk' }
+      ],
+      win: [{ text: 'Mist. Du wirst richtig gut … Pass im Wald auf dich auf, ja? Die Gilde ist nicht so fair wie ich.', mood: 'sad' }],
+      lose: [{ text: 'Mein Team ist bereit für die Gilde. Und deins … bald vielleicht auch.', mood: 'happy' }]
+    },
+    { // Nebelmoor
+      before: [
+        { text: 'Gut, dass du da bist. Die Gilde hat mir im Nebel mein erstes gefangenes Taschi abgenommen. Einfach so.', mood: 'sad' },
+        { text: 'Ich war zu leichtsinnig. Kämpf gegen mich – ich muss wissen, ob ich stark genug bin, um es zurückzuholen!', mood: 'angry' }
+      ],
+      win: [{ text: 'Du hast recht, allein schaffe ich das nicht. Wenn du die Gilde hier vertreibst … holst du es für mich zurück? Danke.', mood: 'sad' }],
+      lose: [{ text: 'Das gibt mir Mut. Trotzdem: Wenn du der Gilde begegnest, gib ihnen auch einen von mir mit.', mood: 'talk' }]
+    },
+    { // Kristallberg
+      before: [
+        { text: 'Mein Taschi ist wieder bei mir! Die Gilde hat in den Kristallen nach Energie gesucht und die gefangenen Taschis zurückgelassen.', mood: 'happy' },
+        { text: 'Das verdanke ich dir. Und deshalb kämpfe ich jetzt mit allem, was ich habe – das bin ich dir schuldig!', mood: 'happy' }
+      ],
+      win: [{ text: 'Unglaublich. Du bist wirklich die beste Person, gegen die ich je verloren habe. Bis zur Himmelskrone!', mood: 'happy' }],
+      lose: [{ text: 'Gewonnen! Aber ehrlich gesagt war das der knappste Kampf meines Lebens.', mood: 'surprised' }]
+    },
+    { // Himmelskrone
+      before: [
+        { text: 'Hier oben endet die Reise. Varga wartet am Sternengipfel, und die Lichter flackern immer stärker.', mood: 'worried' },
+        { text: 'Ein letzter Kampf zwischen uns. Kein Taktieren, keine Ausreden. Danach stoppen wir Varga – zusammen!', mood: 'angry' }
+      ],
+      win: [
+        { text: 'Das war unser bester Kampf. Ich trete zurück und passe auf die Region auf, während du hinaufsteigst.', mood: 'happy' },
+        { text: 'Nimm meine Ausrüstung. Ich glaube an dich – seit Sonnenhain.', mood: 'happy' }
+      ],
+      lose: [{ text: 'Ich habe gewonnen … aber Varga ist ein anderes Kaliber. Trainiere noch ein bisschen, dann gehen wir gemeinsam hinauf.', mood: 'worried' }]
+    }
+  ]
+};

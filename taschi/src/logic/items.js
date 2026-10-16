@@ -3,7 +3,7 @@
 // battle engine, which calls back into this module for healing items).
 import { ITEMS, sellPrice, shopStock } from '../data/items.js';
 import { SPECIES } from '../data/species.js';
-import { maxHp, maxPP, evolutionTarget, evolve } from './monster.js';
+import { maxHp, maxPP, evolutionTarget, evolve, levelUp, MAX_LEVEL } from './monster.js';
 
 export function count(bag, id) { return Math.max(0, bag[id] | 0); }
 export function add(bag, id, n = 1) {
@@ -21,7 +21,7 @@ export function remove(bag, id, n = 1) {
 // Which items can be used on a monster from the field/bag menu.
 export function usableOutside(id) {
   const it = ITEMS[id];
-  return !!it && ['heal', 'status', 'evo'].includes(it.category) && id !== 'sternsplitter';
+  return !!it && ['heal', 'status', 'evo', 'growth'].includes(it.category) && id !== 'sternsplitter';
 }
 export function usableInBattle(id) {
   const it = ITEMS[id];
@@ -63,6 +63,11 @@ export function applyItem(id, m, { inBattle = false } = {}) {
     if (!to) return { ok: false, text: 'Bei ' + name + ' zeigt das keine Wirkung.' };
     return { ok: true, text: name + ' reagiert auf ' + it.name + '!', evolveTo: to };
   }
+  if (it.category === 'growth') {
+    if (inBattle) return { ok: false, text: 'Das geht im Kampf nicht.' };
+    if (m.lv >= MAX_LEVEL) return { ok: false, text: name + ' hat bereits das Höchstlevel erreicht.' };
+    return { ok: true, text: name + ' nascht das ' + it.name + '.', growth: true };
+  }
   if (it.category === 'battle') {
     if (!inBattle) return { ok: false, text: 'Kann nur im Kampf eingesetzt werden.' };
     return { ok: true, text: '', boost: { stat: it.stat, stages: it.stages } };
@@ -77,7 +82,8 @@ export function useFromBag(bag, id, m) {
   const res = applyItem(id, m);
   if (res.ok) {
     remove(bag, id);
-    if (res.evolveTo) { const from = m.id; evolve(m, res.evolveTo); res.evolved = { from, to: res.evolveTo }; }
+    if (res.growth) res.events = levelUp(m);
+    if (res.evolveTo) { const from = m.id; const { offers } = evolve(m, res.evolveTo); res.evolved = { from, to: res.evolveTo, offers }; }
   }
   return res;
 }
@@ -106,4 +112,17 @@ export function sell(state, id, qty = 1) {
   return { ok: true, gain: price * qty, text: qty + '× ' + ITEMS[id].name + ' für ★' + price * qty + ' verkauft.' };
 }
 
-export function ballRate(id) { return ITEMS[id]?.category === 'ball' ? ITEMS[id].rate : 0; }
+// Catch multiplier of a ball. ctx: { foe, turn, night, dark, ownLevel }.
+// Special balls only shine in their situation, so the choice of ball matters.
+export function ballRate(id, ctx = {}) {
+  const it = ITEMS[id];
+  if (!it || it.category !== 'ball') return 0;
+  let r = it.rate;
+  const foe = ctx.foe ? SPECIES[ctx.foe.id] : null;
+  if (it.bonusTypes && foe && (it.bonusTypes.includes(foe.type) || it.bonusTypes.includes(foe.type2))) r *= it.bonus;
+  if (it.firstTurn) r = (ctx.turn || 1) <= 1 ? it.firstTurn : 0.5;
+  if (it.dark && (ctx.night || ctx.dark)) r *= it.dark;
+  if (it.timer) r = Math.min(4, 1 + Math.max(0, (ctx.turn || 1) - 1) * 0.3);
+  if (it.levelBased && ctx.foe && ctx.ownLevel) r = ctx.ownLevel >= ctx.foe.lv * 2 ? 4 : ctx.ownLevel > ctx.foe.lv ? 2 : 1;
+  return r;
+}

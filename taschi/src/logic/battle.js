@@ -11,6 +11,7 @@ import { chooseAction, chooseReplacement } from './ai.js';
 
 const STAGE = (s) => s >= 0 ? (2 + s) / 2 : 2 / (2 - s);
 const nameOf = (m) => SPECIES[m.id].name;
+export const gainsText = (g) => g ? '(KP +' + g.hp + ', Ang +' + g.atk + ', Vert +' + g.def + ', Init +' + g.speed + ')' : '';
 
 export function createBattle(o) {
   const rng = o.rng;
@@ -29,7 +30,7 @@ export function createBattle(o) {
     sides: [mkSide(o.player, true), mkSide(o.foe, false)],
     bag: o.player.bag || {}, vol: {}, participants: {}, runAttempts: 0,
     pendingEvolutions: [], learnRequests: [], night: !!o.night, expShare: o.expShare ?? true,
-    needReplace: [], fainted: new Set()
+    needReplace: [], fainted: new Set(), dark: !!o.dark
   };
   for (const side of b.sides) for (const i of side.active) initVol(b, side.team[i]);
   markParticipants(b);
@@ -182,12 +183,18 @@ function doItem(b, a, ev) {
   } else ev.push({ t: 'text', text: res.text });
 }
 
+export function catchContext(b, foe) {
+  const own = activeList(b, 0)[0]?.m;
+  return { foe, turn: b.turnNo || 1, night: b.night, dark: b.dark, ownLevel: own ? own.lv : 0 };
+}
+
 export function catchChance(b, foe, ball) {
+  if (ITEMS[ball]?.master) return 1;
   const s = SPECIES[foe.id];
   const hpFactor = 1 + 1.7 * (1 - foe.hp / maxHp(foe));
   const statusBonus = foe.status === 'schlaf' || foe.status === 'frost' ? 1.6 : foe.status ? 1.25 : 1;
   const levelPenalty = foe.lv > 40 ? 0.85 : 1;
-  return Math.min(0.97, s.catch * ballRate(ball) * hpFactor * statusBonus * levelPenalty * 0.62);
+  return Math.min(0.97, s.catch * ballRate(ball, catchContext(b, foe)) * hpFactor * statusBonus * levelPenalty * 0.62);
 }
 
 function doCatch(b, a, ev) {
@@ -204,6 +211,9 @@ function doCatch(b, a, ev) {
   if (caught) {
     ev.push({ t: 'caught', uid: foe.uid, text: 'Geschafft! ' + nameOf(foe) + ' wurde gefangen!' });
     foe.status = foe.status || null;
+    const ball = ITEMS[a.item];
+    if (ball.healOnCatch) { foe.hp = maxHp(foe); foe.status = null; for (const mv of foe.moves) mv.pp = maxPP(mv.id); }
+    if (ball.friendship) foe.friendship = Math.max(foe.friendship || 0, ball.friendship);
     b.result = { outcome: 'caught', caught: foe, ball: a.item };
     b.phase = 'end';
     awardXpFor(b, foe, ev, 0.7);
@@ -384,16 +394,16 @@ function checkFaints(b, ev) {
 }
 
 function awardXpFor(b, foe, ev, factor) {
-  const base = Math.floor(xpReward(foe, { trainer: b.sides[1].trainer }) * factor);
   const part = b.participants[foe.uid] || new Set();
   for (const m of b.sides[0].team) {
     if (m.hp <= 0) continue;
     const share = part.has(m.uid) ? 1 : (b.expShare ? 0.5 : 0);
     if (!share) continue;
+    const base = xpReward(foe, { trainer: b.sides[1].trainer, level: m.lv, friendship: m.friendship }) * factor;
     const amount = Math.max(1, Math.floor(base * share));
     ev.push({ t: 'xp', uid: m.uid, amount, text: nameOf(m) + ' erhält ' + amount + ' EP.' });
     for (const e of gainXp(m, amount, { night: b.night })) {
-      if (e.type === 'levelup') ev.push({ t: 'levelup', uid: m.uid, level: e.level, hp: m.hp, max: maxHp(m), text: nameOf(m) + ' erreicht Level ' + e.level + '!' });
+      if (e.type === 'levelup') ev.push({ t: 'levelup', uid: m.uid, level: e.level, hp: m.hp, max: maxHp(m), gains: e.gains, text: nameOf(m) + ' erreicht Level ' + e.level + '! ' + gainsText(e.gains) });
       if (e.type === 'learn') ev.push({ t: 'learn', uid: m.uid, move: e.move, text: nameOf(m) + ' lernt ' + MOVES[e.move].name + '!' });
       if (e.type === 'learnFull') { b.learnRequests.push({ uid: m.uid, move: e.move }); ev.push({ t: 'learnFull', uid: m.uid, move: e.move, text: nameOf(m) + ' möchte ' + MOVES[e.move].name + ' lernen.' }); }
       if (e.type === 'evolve' && !b.pendingEvolutions.some(x => x.uid === m.uid)) b.pendingEvolutions.push({ uid: m.uid, to: e.to });

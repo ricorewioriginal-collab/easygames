@@ -7,7 +7,7 @@ import { TYPES } from '../data/types.js';
 import { ITEMS, ITEM_ORDER, CATEGORY_NAMES, sellPrice, shopStock } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
 import { CHAPTERS } from '../data/story.js';
-import { maxHp, statOf, xpToNext, evolutionChain, describeEvolution } from '../logic/monster.js';
+import { maxHp, statOf, xpToNext, evolutionChain, describeEvolution, forgetMove, relearnableMoves } from '../logic/monster.js';
 import * as Items from '../logic/items.js';
 import * as P from '../logic/progress.js';
 import { habitatsOf } from '../logic/encounters.js';
@@ -48,7 +48,7 @@ export function openPauseMenu(game, tab = 'team') {
     const v = screen.el.querySelector('#cardview');
     if (v) { game.preview.attach(v); game.preview.showCharacter(game.save.player.look).hold('wave'); } else game.preview.detach();
   });
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); post(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); post(); };
   screen.el = render();
   post();
   screen.onBack = () => ui.pop(screen);
@@ -198,12 +198,47 @@ export function openStatus(game, m, after) {
       h('p.muted', {}, describeEvolution(m.id) ? 'Nächste Stufe ' + describeEvolution(m.id) : 'Letzte Entwicklungsstufe.'),
       h('div.optrow', {},
         h('button.chip.focusable', { onclick: () => { const i = s.team.indexOf(m); if (i > 0) { s.team.splice(i, 1); s.team.unshift(m); game.world.refreshFollower(); game.ui.toast(nameOf(m) + ' führt jetzt das Team an.'); } } }, 'An die Spitze'),
+        h('button.chip.focusable', { onclick: () => openMoveManager(game, m, () => { game.ui.pop(screen); openStatus(game, m, after); }) }, 'Attacken verwalten'),
         h('button.chip.focusable', { onclick: async () => { const n = prompt('Spitzname für ' + sp.name + ' (leer = keiner):', m.nick || ''); if (n !== null) { m.nick = n.trim().slice(0, 14) || undefined; game.ui.toast('Gespeichert'); } } }, 'Spitzname'))));
   const screen = { el: panel(game, nameOf(m) + ' · Lv ' + m.lv, body) };
   screen.onBack = () => game.ui.pop(screen);
   screen.onClose = () => { game.preview.detach(); after && after(); };
   game.ui.push(screen);
   requestAnimationFrame(() => { const v = screen.el.querySelector('#statusview'); if (v) { game.preview.attach(v); game.preview.showCreature(m.id); } });
+}
+
+// Move manager: forget moves and let the move reminder teach moves this
+// Taschi (or an earlier stage) has already passed by.
+export const RELEARN_PRICE = 80;
+export function openMoveManager(game, m, onDone) {
+  const s = game.save;
+  const screen = { el: null };
+  const moveInfo = (mv) => h('div.grow', {}, typeBadge(mv.type), ' ', h('b', {}, mv.name), h('div.muted', {}, (mv.power ? 'Stärke ' + mv.power + ' · ' : 'Status · ') + 'Genauigkeit ' + Math.round(mv.acc * 100) + '%' + (mv.desc ? ' · ' + mv.desc : '')));
+  const render = () => {
+    const known = m.moves.map((x, i) => h('div.row', {}, moveInfo(MOVES[x.id]),
+      h('button.chip.focusable', { disabled: m.moves.length <= 1, onclick: async () => {
+        const ok = await game.ui.ask([{ text: nameOf(m) + ' soll ' + MOVES[x.id].name + ' vergessen?' }], ['Ja, vergessen', 'Nein'], { cancelIndex: 1 });
+        if (ok === 0 && forgetMove(m, i)) { game.audio.sfx('back'); game.ui.toast(MOVES[x.id].name + ' vergessen.'); }
+        rerender();
+      } }, 'Vergessen')));
+    const options = relearnableMoves(m);
+    return panel(game, 'Attacken · ' + nameOf(m), h('div', {},
+      h('h3', {}, 'Bekannte Attacken (' + m.moves.length + '/4)'), h('div.list', {}, known),
+      h('h3', {}, 'Attacken-Erinnerer'),
+      h('p.muted', {}, 'Bringt ' + nameOf(m) + ' Attacken bei, die es bis Level ' + m.lv + ' hätte lernen können. Preis je Attacke: ★' + RELEARN_PRICE + ' (du hast ★' + s.coins + ').'),
+      options.length ? h('div.list', {}, options.map(id => h('div.row', {}, moveInfo(MOVES[id]),
+        h('button.chip.focusable', { onclick: async () => {
+          if (s.coins < RELEARN_PRICE) { game.audio.sfx('error'); game.ui.toast('Nicht genug Sternmünzen.'); return; }
+          if (await game.offerMove(m, id)) { s.coins -= RELEARN_PRICE; game.audio.sfx('item'); }
+          rerender();
+        } }, 'Lernen ★' + RELEARN_PRICE)))) : h('p', {}, 'Im Moment gibt es nichts zu erinnern.')), { small: true });
+  };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
+  screen.el = render();
+  screen.onBack = () => game.ui.pop(screen);
+  screen.onMenu = () => game.ui.pop(screen);
+  screen.onClose = () => onDone && onDone();
+  game.ui.push(screen);
 }
 
 export function openDexEntry(game, id) {
@@ -233,7 +268,8 @@ function useItemFlow(game, id, rerender) {
     const res = Items.useFromBag(s.bag, id, m);
     game.audio.sfx(res.ok ? 'heal' : 'error');
     game.ui.pop(screen);
-    if (res.evolved) game.evolveInWorld(m, res.evolved);
+    if (res.evolved) { (async () => { await game.evolveInWorld(m, res.evolved); for (const mv of res.evolved.offers || []) await game.offerMove(m, mv); rerender(); })().catch(e => console.error(e)); }
+    else if (res.events) { game.ui.toast(res.text); (async () => { await game.processGrowth(m, res.events); rerender(); })().catch(e => console.error(e)); }
     else game.ui.toast(res.text);
     rerender();
   })))), { small: true }) };
@@ -256,7 +292,7 @@ export function openShop(game, clerkName) {
         : h('div.list', {}, sellable.length ? sellable.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), h('div.muted', {}, '×' + s.bag[id])), h('span.right', {}, '★' + sellPrice(id)), h('button.chip.focusable', { onclick: () => { const r = Items.sell(s, id, 1); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text); rerender(); } }, 'Verkaufen'))) : h('p', {}, 'Nichts zu verkaufen.')));
     return panel(game, 'Laden · ' + clerkName, body);
   };
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
   screen.el = render();
   return new Promise(res => { screen.onBack = () => game.ui.pop(screen); screen.onClose = res; game.ui.push(screen); });
 }
@@ -270,7 +306,7 @@ export function openStorage(game) {
     h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => { if (s.team.length <= 1) { game.ui.toast('Mindestens ein Taschi muss im Team bleiben.'); return; } s.team.splice(i, 1); s.box.unshift(m); game.world.refreshFollower(); rerender(); }))),
     h('h3', {}, 'Lager (' + s.box.length + ') – antippen zum Aufnehmen'),
     s.box.length ? h('div.grid', {}, s.box.map((m, i) => monCard(game, m, 1, () => { if (s.team.length >= 6) { game.ui.toast('Dein Team ist voll.'); return; } s.box.splice(i, 1); s.team.push(m); game.world.refreshFollower(); rerender(); }))) : h('p.muted', {}, 'Das Lager ist leer.')));
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
   screen.el = render();
   return new Promise(res => { screen.onBack = () => game.ui.pop(screen); screen.onClose = res; game.ui.push(screen); });
 }

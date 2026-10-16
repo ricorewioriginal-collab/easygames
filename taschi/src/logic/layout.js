@@ -6,7 +6,12 @@ import { REGIONS } from '../data/regions.js';
 import { createRng } from '../core/rng.js';
 import { createNoise, smoothstep, distToPolyline, smoothPath } from '../core/noise.js';
 
-export const SIZE = 200, HALF = 100, CELLS = 160, CELL = SIZE / CELLS;
+// The walkable land reaches ~108 units from the centre; the outer ring beyond
+// the town (routes, meadows and side fields) makes every region roughly twice
+// as large as before while keeping the 1.25-unit terrain cell size.
+export const SIZE = 260, HALF = 130, CELLS = 208, CELL = SIZE / CELLS;
+// Gate/spawn distance from the centre along the north-south axis.
+export const GATE_Z = 122, SPAWN_Z = 114;
 
 export const BIOMES = {
   valley: { hill: 7, ground: 'grass', water: 'river', trees: { oak: 5, pine: 1, bush: 3 }, density: 1, rocks: 0.6, flowers: 1 },
@@ -46,7 +51,7 @@ export function buildLayout(r) {
   // --- water bodies ------------------------------------------------------
   const W = biome.water;
   if (W === 'river' || W === 'canyon' || W === 'lava') {
-    const pts = smoothPath([[X(-104), -30 + jit(10)], [X(-64), -2 + jit(6)], [X(-52), 34 + jit(6)], [X(-68), 70], [X(-80), 104]], 4);
+    const pts = smoothPath([[X(-134), -38 + jit(10)], [X(-104), -30], [X(-64), -2 + jit(6)], [X(-52), 34 + jit(6)], [X(-68), 70], [X(-80), 104], [X(-86), 134]], 4);
     L.water.push({ kind: W === 'lava' ? 'lava' : 'river', pts, width: W === 'canyon' ? 7 : 8, depth: W === 'canyon' ? 6 : 2.2 });
   }
   if (W === 'sea') L.water.push({ kind: 'sea', side: M, line: 64, wobble: 6, depth: 4 });
@@ -99,7 +104,7 @@ export function buildLayout(r) {
     if (region.guild === 2) { L.guild.station = true; B('station', gx * M, gz - 18, 's', { id: 'station', label: 'Forschungsstation', enter: 'station' }); }
   }
   if (region.cave) {
-    const [cx, cz] = choose([[-86, 34], [-86, -56], [86, -60]], 6);
+    const [cx, cz] = choose([[-114, 34], [-114, -56], [114, -60]], 6);
     L.cave = { x: cx, z: cz, name: region.cave };
   }
   if (region.legend) {
@@ -113,8 +118,8 @@ export function buildLayout(r) {
 
   // --- roads ---------------------------------------------------------------
   const road = (pts, kind = 'dirt', width = 4.4, smooth = true) => { L.roads.push({ pts: smooth ? smoothPath(pts, 3) : pts, kind, width }); };
-  const south = [[0, 104], [jit(4), 86], [X(6 + jit(6)), 64], [X(jit(3)), 42], [0, plaza.z + plaza.r - 1]];
-  const north = [[0, plaza.z - plaza.r + 1], [X(4), -6], [X(10 + jit(5)), -26], [X(-6 + jit(6)), -54], [X(4 + jit(5)), -76], [0, -104]];
+  const south = [[0, 134], [X(-5), 112], [jit(4), 86], [X(6 + jit(6)), 64], [X(jit(3)), 42], [0, plaza.z + plaza.r - 1]];
+  const north = [[0, plaza.z - plaza.r + 1], [X(4), -6], [X(10 + jit(5)), -26], [X(-6 + jit(6)), -54], [X(4 + jit(5)), -76], [X(-7), -100], [0, -134]];
   if (r > 0) road(south, 'dirt', 5); else road(south.slice(1), 'dirt', 5);
   road(north, 'dirt', 5);
   // town streets (cobbled)
@@ -153,25 +158,22 @@ export function buildLayout(r) {
   if (W === 'swamp') for (const rd of L.roads) if (rd.kind === 'dirt') rd.kind = 'boardwalk';
 
   // --- gates -----------------------------------------------------------------
-  if (r > 0) L.gates.push({ id: 'south', x: 0, z: 96, yaw: 0, to: r - 1, label: 'Nach ' + REGIONS[r - 1].name });
-  L.gates.push({ id: 'north', x: 0, z: -96, yaw: Math.PI, to: r === 15 ? 16 : r + 1, label: r === 15 ? 'Zum Sternengipfel' : 'Nach ' + REGIONS[r + 1].name });
+  if (r > 0) L.gates.push({ id: 'south', x: 0, z: GATE_Z, yaw: 0, to: r - 1, label: 'Nach ' + REGIONS[r - 1].name });
+  L.gates.push({ id: 'north', x: 0, z: -GATE_Z, yaw: Math.PI, to: r === 15 ? 16 : r + 1, label: r === 15 ? 'Zum Sternengipfel' : 'Nach ' + REGIONS[r + 1].name });
 
   // --- spawn points -----------------------------------------------------------
   const heal = L.buildings.find(b => b.kind === 'heal');
-  L.spawn.south = { x: 0, z: 88, ry: Math.PI };
-  L.spawn.north = { x: 0, z: -88, ry: 0 };
+  L.spawn.south = { x: 0, z: SPAWN_Z, ry: Math.PI };
+  L.spawn.north = { x: 0, z: -SPAWN_Z, ry: 0 };
   L.spawn.heal = { x: heal.door.x + Math.sin(heal.yaw) * 1.5, z: heal.door.z, ry: heal.yaw };
   L.spawn.start = r === 0 ? { x: X(6), z: 10, ry: -M * Math.PI / 2 } : L.spawn.south;
   if (r === 0) L.ulme = { x: X(-6), z: 2.5 };
   if (r === 0) L.firstWild = { x: X(-6), z: -7 };
 
-  // --- tall grass ---------------------------------------------------------------
-  const G = (x, z, w, d, habitat = 'grass') => L.grass.push({ x: X(x), z, w, d, habitat });
-  G(12, 72, 12, 16); G(-12, 60, 10, 14); G(16, -64, 12, 14); G(-15, -80, 10, 12); G(30, -54, 10, 8, 'flowers');
-  G(-60, 44, 12, 9); G(28, 60, 8, 8); G(-30, 70, 10, 10, 'flowers');
-  if (r === 0) G(-6, -8, 7, 5);
-  // remove grass that ended in water or on roads
-  L.grass = L.grass.filter(g => !inWater(g.x, g.z, Math.max(g.w, g.d) / 2 + 2) && L.roads.every(rd => distToPolyline(g.x, g.z, rd.pts) > Math.min(g.w, g.d) / 2 + 2 || (r === 0 && g.w === 7)));
+  // --- meadows (tall grass) -------------------------------------------------------
+  // Large, irregular meadows along both routes and in the side fields. Roads
+  // cut through them, so every route forces a choice: path or grass.
+  addMeadows(L, r, X, inWater);
 
   // --- NPCs with daily routines -------------------------------------------------
   const homes = L.buildings.filter(b => b.kind === 'house' || b.kind === 'shop' || b.kind === 'lab');
@@ -194,7 +196,7 @@ export function buildLayout(r) {
   // --- items -----------------------------------------------------------------------
   const lost = (region.quests || []).find(q => q.kind === 'find');
   const itemSpots = [[-70, -40], [72, 10], [-30, 72], [60, 76], [-74, -80]].map(([x, z]) => [X(x), z]).filter(([x, z]) => !inWater(x, z, 3));
-  const loot = ['trank', 'taschiball', 'heilkraut', 'superball', 'aetherperle', 'supertrank', 'belebungskraut', 'sternsplitter'];
+  const loot = ['trank', 'netzball', 'heilkraut', 'superball', 'flinkball', 'supertrank', 'daemmerball', 'sternsplitter', 'timerball', 'aetherperle', 'levelbonbon'];
   itemSpots.slice(0, 4).forEach(([x, z], i) => L.items.push({ id: 'hidden:' + r + ':' + i, x, z, item: loot[(r + i * 3) % loot.length], count: 1 + (i % 2), hidden: true }));
   const landSpot = (x, z) => {
     for (let k = 0; k < 40; k++) {
@@ -216,8 +218,8 @@ export function buildLayout(r) {
 
   // --- signs ---------------------------------------------------------------------
   L.signs.push({ x: X(4), z: 46, text: region.town + ' · ' + region.name });
-  if (r > 0) L.signs.push({ x: X(4), z: 84, text: '↓ ' + REGIONS[r - 1].name });
-  L.signs.push({ x: X(5), z: -84, text: '↑ ' + (r === 15 ? 'Sternengipfel' : REGIONS[r + 1].name) });
+  if (r > 0) L.signs.push({ x: X(4), z: 108, text: '↓ ' + REGIONS[r - 1].name });
+  L.signs.push({ x: X(5), z: -108, text: '↑ ' + (r === 15 ? 'Sternengipfel' : REGIONS[r + 1].name) });
   L.signs.push({ x: X(-14), z: -6, text: '← ' + region.gym.theme });
   L.signs.push({ x: X(10), z: -48, text: '→ Champion-Pavillon' });
 
@@ -227,6 +229,59 @@ export function buildLayout(r) {
   // --- vegetation and rocks (deterministic scatter) ----------------------------------
   scatter(L, rng, noise);
   return L;
+}
+
+// Meadow candidates (x before mirroring, z, radius x, radius z, habitat).
+const MEADOWS = [
+  [14, 98, 15, 10], [-17, 112, 13, 8], [14, 68, 9, 13], [-14, 58, 9, 12],
+  [18, -104, 15, 10], [-20, -114, 13, 7], [18, -64, 10, 12], [-17, -80, 10, 9],
+  [-102, 8, 13, 24], [102, -22, 13, 24], [96, 72, 15, 12, 'flowers'], [-96, -92, 13, 13, 'flowers'],
+  [34, -58, 9, 7, 'flowers'], [-32, 72, 10, 9, 'flowers'], [78, -96, 12, 9], [-78, 100, 12, 9]
+];
+
+function addMeadows(L, r, X, inWater) {
+  const add = (x, z, rx, rz, habitat = 'grass', extra = {}) => L.grass.push({ x, z, rx, rz, w: rx * 2, d: rz * 2, habitat, seed: L.grass.length * 1.7 + r, ...extra });
+  for (const [mx, mz, rx, rz, hab] of MEADOWS) {
+    const x = X(mx), z = mz;
+    if (inWater(x, z, Math.min(rx, rz) * 0.6 + 2)) continue;
+    if (Math.abs(x) + rx > HALF - 18 || Math.abs(z) + rz > HALF - 12) continue;
+    const pad = 3;
+    if (L.buildings.some(b => Math.abs(x - b.x) < b.w / 2 + rx + pad && Math.abs(z - b.z) < b.d / 2 + rz + pad)) continue;
+    if (L.areas.some(a => Math.hypot(x - a.x, z - a.z) < a.r + Math.min(rx, rz) * 0.6)) continue;
+    if (Math.hypot(x - L.plaza.x, z - L.plaza.z) < L.plaza.r + Math.max(rx, rz)) continue;
+    // reed meadows on the shore hold water Taschis
+    const habitat = hab || (waterDistance(L, x, z) < Math.max(rx, rz) + 5 ? 'water' : 'grass');
+    add(x, z, rx, rz, habitat);
+  }
+  // Moostal: the flower bed in front of the dome used by the first battle
+  if (r === 0) add(X(-6), -8, 3.6, 2.6, 'grass', { nocut: true });
+  for (const rd of L.roads) rd.bb = rd.pts.reduce((b, [x, z]) => [Math.min(b[0], x), Math.max(b[1], x), Math.min(b[2], z), Math.max(b[3], z)], [Infinity, -Infinity, Infinity, -Infinity]);
+}
+
+// The meadow covering (x, z), or null. Roads and water cut holes into meadows;
+// the same test drives encounters, grass rendering and the minimap.
+export function grassAt(L, x, z) {
+  for (const g of L.grass) {
+    const dx = (x - g.x) / g.rx, dz = (z - g.z) / g.rz;
+    const k = dx * dx + dz * dz;
+    if (k > 1.3) continue;
+    const wob = 1 + 0.12 * Math.sin(Math.atan2(dz, dx) * 3 + g.seed) + 0.06 * Math.sin(Math.atan2(dz, dx) * 7 + g.seed * 2);
+    if (k > wob * wob) continue;
+    if (g.nocut) return g;
+    if (onRoad(L, x, z, 0.4)) return null;
+    if (L.water.length && waterDistance(L, x, z) < 0.8) return null;
+    return g;
+  }
+  return null;
+}
+
+export function onRoad(L, x, z, pad = 0) {
+  for (const rd of L.roads) {
+    const bb = rd.bb;
+    if (bb && (x < bb[0] - 8 || x > bb[1] + 8 || z < bb[2] - 8 || z > bb[3] + 8)) continue;
+    if (distToPolyline(x, z, rd.pts) < rd.width / 2 + pad) return true;
+  }
+  return false;
 }
 
 function landmarkCandidates(kind) {
@@ -350,7 +405,7 @@ function scatter(L, rng, noise) {
   const types = Object.entries(L.cfg.trees);
   const total = types.reduce((a, [, w]) => a + w, 0);
   const pickType = () => { let v = rng.next() * total; for (const [t, w] of types) { v -= w; if (v <= 0) return t; } return types[0][0]; };
-  const target = Math.round(420 * L.cfg.density);
+  const target = Math.round(600 * L.cfg.density);
   let tries = 0;
   while (L.trees.length + L.bushes.length < target && tries++ < target * 12) {
     const x = (rng.next() - 0.5) * (SIZE - 8), z = (rng.next() - 0.5) * (SIZE - 8);
@@ -365,7 +420,7 @@ function scatter(L, rng, noise) {
     if (list.some(o => Math.abs(o.x - x) < minD && Math.abs(o.z - z) < minD)) continue;
     list.push({ type: t, x, z, s: t === 'giant' ? 1.4 + rng.next() * 0.4 : 0.8 + rng.next() * 0.55, ry: rng.next() * Math.PI * 2, y: heightAt(L, x, z) });
   }
-  const rockTarget = Math.round(70 * L.cfg.rocks);
+  const rockTarget = Math.round(100 * L.cfg.rocks);
   tries = 0;
   while (L.rocks.length < rockTarget && tries++ < rockTarget * 15) {
     const x = (rng.next() - 0.5) * (SIZE - 6), z = (rng.next() - 0.5) * (SIZE - 6);

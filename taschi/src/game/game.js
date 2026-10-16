@@ -19,9 +19,12 @@ import { BattleScene } from './battle-scene.js';
 import { REGIONS } from '../data/regions.js';
 import { SPECIES } from '../data/species.js';
 import { ITEMS } from '../data/items.js';
-import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS } from '../data/trainers.js';
-import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, professorLines } from '../data/story.js';
-import { makeMonster, healMonster, maxHp, evolve } from '../logic/monster.js';
+import { MOVES } from '../data/moves.js';
+import { TYPES } from '../data/types.js';
+import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer } from '../data/trainers.js';
+import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
+import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
+import { gainsText } from '../logic/battle.js';
 import { rollEncounter, levelRange } from '../logic/encounters.js';
 import { createStore, newSave, exportJSON, importJSON } from '../logic/save.js';
 import * as P from '../logic/progress.js';
@@ -169,7 +172,10 @@ export class Game {
       else { await this.world.loadRegion(r, 'heal', prog); }
     }, kind === 'region' ? (r === 16 ? 'Sternengipfel' : REGIONS[r].name) : 'Unterwegs …');
     this.world.buildPlayer();
-    const sp = loc.spawn ? (this.world.current.layout.spawn[loc.spawn] || this.world.current.layout.spawn.start) : loc;
+    let sp = loc.spawn ? (this.world.current.layout.spawn[loc.spawn] || this.world.current.layout.spawn.start) : loc;
+    // saves from before the map expansion may point at a spot that is now
+    // blocked (a tree or rock) – fall back to the heal centre then
+    if (!loc.spawn && this.world.current.type === 'region' && this.world.blocked(sp.x, sp.z)) sp = this.world.current.layout.spawn.heal || this.world.current.layout.spawn.start;
     this.world.placePlayer(sp.x, sp.z, sp.ry ?? 0);
     this.world.player.root.visible = true;
     this.afterRegionLoaded();
@@ -193,6 +199,35 @@ export class Game {
       this.setState(STATES.WORLD);
     } finally { await this.ui.fade(false); this.busy--; }
     this.saveNow();
+    await this.maybeRival();
+  }
+  // Rivale Rian waits on arrival in selected regions (see RIVAL_STAGES).
+  async maybeRival() {
+    const s = this.save, c = this.world.current;
+    if (c?.type !== 'region') return;
+    const stage = RIVAL_STAGES.findIndex(x => x.region === c.region);
+    if (stage < 0 || s.trainers['rival_' + stage] || !s.flags.starter || !s.team.some(m => m.hp > 0)) return;
+    const t = rivalTrainer(stage, s.flags.starter), lines = RIVAL.stages[stage];
+    const p = this.world.player.root.position, ry = this.world.player.root.rotation.y;
+    let sx = p.x + Math.sin(ry) * 7, sz = p.z + Math.cos(ry) * 7;
+    if (this.world.blocked(sx, sz)) { sx = p.x + 2; sz = p.z + 2; }
+    const n = this.world.addNPC({ id: 'rival', role: 'trainer', name: RIVAL.name, x: sx, z: sz, ry: ry + Math.PI, talk: 'rival' });
+    const say = async (arr) => { const live = this.world.npcs.includes(n); for (const l of arr) { if (live) n.ch.setTalking(true, l.mood); await this.ui.say([{ who: 'Rivale ' + RIVAL.name, text: l.text }]); } if (live) n.ch.setTalking(false); };
+    try {
+      this.busy++;
+      this.audio.sfx('encounter');
+      await new Promise(res => { n.walkTo = { x: p.x + Math.sin(ry) * 1.6, z: p.z + Math.cos(ry) * 1.6, speed: 4, done: res }; });
+      await say(lines.before);
+      const res = await this.trainerBattle(t, n, { music: stage === 4 ? 'champion' : 'trainer' });
+      if (res.outcome === 'win') {
+        await say(lines.win);
+        if (stage === 4) { P.grantReward(s, { items: { vitaltrank: 3, sternball: 3, levelbonbon: 2 } }); this.ui.toast('Von Rian erhalten: 3× Vitaltrank, 3× Sternball, 2× EP-Bonbon', '🎒'); }
+      } else if (res.outcome === 'lose') await say(lines.lose);
+    } finally {
+      this.busy--;
+      if (this.world.npcs.includes(n)) n.walkTo = { x: n.ch.root.position.x + 25, z: n.ch.root.position.z + 25, speed: 5, done: () => { this.world.scene.remove(n.ch.root); this.world.npcs = this.world.npcs.filter(x => x !== n); } };
+      this.saveNow();
+    }
   }
   async enterInterior(kind) {
     const c = this.world.current;
@@ -496,6 +531,7 @@ export class Game {
         if (q) await this.questTalk(n, P.questById(q.id));
         return;
       }
+      if (n.talk === 'rival') { ch.setTalking(true, 'happy'); await this.ui.say([{ who: 'Rivale ' + RIVAL.name, text: 'Wir sehen uns weiter oben auf dem Weg!' }]); ch.setTalking(false); return; }
       if (n.talk === 'family') { ch.setTalking(true); await this.ui.say([{ who: n.name, text: 'Schön, dass du vorbeischaust! Setz dich, wir haben gerade Tee gekocht. Hast du schon ' + REGIONS[Math.min(15, r)].landmark.name + ' gesehen?' }]); ch.setTalking(false); return; }
       if (n.talk === 'assistant') { ch.setTalking(true); await this.ui.say([{ who: n.name, text: 'Der Professor ist so stolz auf dich! Wusstest du, dass Taschis schneller wachsen, wenn sie im Team mitkämpfen?' }]); ch.setTalking(false); return; }
       if (n.talk === 'brix') { ch.setTalking(true, 'happy'); await this.ui.say([{ who: 'Brix', text: s.league >= 5 ? 'Sternenmeister! Schnurrik und ich bauen jetzt Nistkästen statt Fangmaschinen.' : 'Die Lichter sind frei. Viel Glück in der Sternenliga!' }]); ch.setTalking(false); return; }
@@ -560,13 +596,13 @@ export class Game {
   }
   async ulmeFinish(ulme) {
     const s = this.save;
-    for (const l of ULME.afterBattle) { ulme.ch.setTalking(true, l.mood); await this.ui.say([l]); }
+    for (const l of [...ULME.afterBattle, RIVAL.ulme]) { ulme.ch.setTalking(true, l.mood); await this.ui.say([l]); }
     ulme.ch.setTalking(false);
-    P.grantReward(s, { items: { taschiball: 5, trank: 3 }, keyItem: 'pfadkarte' });
+    P.grantReward(s, { items: { taschiball: 5, heilball: 2, trank: 3 }, keyItem: 'pfadkarte' });
     this.audio.sfx('item');
     s.flags.firstQuest = true; s.flags.travelStarted = true;
     for (const q of P.regionQuests(0)) if (q.id === 'q0_lost') P.acceptQuest(s, q);
-    this.ui.toast('Erhalten: 5× Taschiball, 3× Trank, Pfadkarte', '🎒');
+    this.ui.toast('Erhalten: 5× Taschiball, 2× Heilball, 3× Trank, Pfadkarte', '🎒');
     // Ulme walks back to his lab
     const lab = this.world.current.layout.buildings.find(b => b.kind === 'lab');
     ulme.facePlayer = false;
@@ -642,7 +678,7 @@ export class Game {
     const res = await this.trainerBattle(t, n, { indoor: true });
     if (res.outcome !== 'win') return;
     s.badges = r + 1;
-    P.grantReward(s, { items: r < 5 ? { superball: 3 } : r < 10 ? { supertrank: 3 } : { vitaltrank: 2 } });
+    P.grantReward(s, { items: { levelbonbon: 1, ...(r < 5 ? { superball: 3 } : r < 10 ? { supertrank: 3 } : { vitaltrank: 2 }) } });
     this.audio.sfx('levelup'); this.world.player.play('cheer', 1.6);
     await this.ui.say([{ text: 'Du erhältst das Licht-Siegel von ' + region.name + '! (' + s.badges + '/16)' }, { who, text: 'Jetzt wartet ' + region.champion.name + ' im Champion-Pavillon. Erst wer den Champion besiegt, darf weiterreisen.' }]);
     this.saveNow(true);
@@ -707,7 +743,7 @@ export class Game {
     s.guild[site] = 'done';
     await this.ui.say(scene.win, { guild: true });
     P.grantReward(s, { coins: 300 + site * 150, items: { superball: 3 + site, trank: 2 } });
-    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); }
+    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterball. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterball', '◉'); } }
     if (site === 7) return this.summitFinale();
     this.ui.toast('Die Schattengilde ist aus der Region vertrieben! Gefangene Taschis befreit.', '✦');
     for (const npc of this.world.npcs.filter(x => x.guild)) { npc.walkTo = { x: npc.ch.root.position.x + 30, z: npc.ch.root.position.z + 30, speed: 5, done: () => { this.world.scene.remove(npc.ch.root); this.world.npcs = this.world.npcs.filter(x => x !== npc); } }; }
@@ -888,11 +924,41 @@ export class Game {
     await this.ui.say([{ text: 'Du bist mit deinen erschöpften Taschis zum Heilzentrum geeilt. Sie sind wieder fit. (Verloren: ★' + lost + ')' }]);
     this.saveNow();
   }
+  // Asks whether `m` should learn `moveId` when four moves are known; returns
+  // true when the move was learned. Used after battles, evolutions, EP candy
+  // and the move reminder.
+  async offerMove(m, moveId) {
+    if (m.moves.some(x => x.id === moveId)) return false;
+    const mv = MOVES[moveId], name = m.nick || SPECIES[m.id].name;
+    if (m.moves.length < 4) { teachMove(m, moveId); this.ui.toast(name + ' hat ' + mv.name + ' gelernt!', '✦'); return true; }
+    const pick = await this.ui.ask([{ who: SPECIES[m.id].name, text: name + ' möchte ' + mv.name + ' (' + TYPES[mv.type].name + ', ' + (mv.power ? 'Stärke ' + mv.power : 'Status') + ') lernen, kennt aber schon vier Attacken. Welche soll es vergessen?' }],
+      [...m.moves.map(x => 'Vergessen: ' + MOVES[x.id].name + ' (' + (MOVES[x.id].power || 'Status') + ')'), mv.name + ' nicht lernen'], { cancelIndex: 4 });
+    if (pick >= 0 && pick < 4) { const old = MOVES[m.moves[pick].id].name; teachMove(m, moveId, pick); this.ui.toast('1, 2 und … schwupp! ' + old + ' vergessen – ' + mv.name + ' gelernt!', '✦'); return true; }
+    this.ui.toast(name + ' hat ' + mv.name + ' nicht gelernt.');
+    return false;
+  }
+  // Applies level-up events outside of battle (EP candy): moves and evolution.
+  async processGrowth(m, events) {
+    for (const e of events) {
+      if (e.type === 'levelup') this.ui.toast((m.nick || SPECIES[m.id].name) + ' erreicht Level ' + e.level + '! ' + gainsText(e.gains), '▲');
+      if (e.type === 'learn') this.ui.toast((m.nick || SPECIES[m.id].name) + ' hat ' + MOVES[e.move].name + ' gelernt!', '✦');
+      if (e.type === 'learnFull') await this.offerMove(m, e.move);
+    }
+    const evo = events.find(e => e.type === 'evolve');
+    if (evo) {
+      const from = m.id;
+      const ok = await this.ui.ask([{ text: 'Nanu? ' + (m.nick || SPECIES[from].name) + ' entwickelt sich!' }], ['Entwicklung zulassen', 'Abbrechen'], { cancelIndex: 1 });
+      if (ok !== 0) { await this.ui.say([{ text: (m.nick || SPECIES[from].name) + ' hat sich nicht entwickelt.' }]); return; }
+      const { offers } = evolve(m, evo.to);
+      await this.evolveInWorld(m, { from, to: evo.to });
+      for (const id of offers) await this.offerMove(m, id);
+    }
+  }
   evolveInWorld(m, ev) {
     this.audio.sfx('evolve');
     this.save.dex[ev.to] = 2;
     this.world.refreshFollower();
-    this.ui.say([{ text: 'Was? ' + SPECIES[ev.from].name + ' entwickelt sich … zu ' + SPECIES[ev.to].name + '!' }]);
+    return this.ui.say([{ text: 'Was? ' + SPECIES[ev.from].name + ' entwickelt sich … zu ' + SPECIES[ev.to].name + '!' }]);
   }
 }
 
