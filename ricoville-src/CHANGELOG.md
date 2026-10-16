@@ -2,7 +2,7 @@
 
 ## 0.2.1 – 2026-10-16
 
-- Rangliste „Höchstes Level“ und „Meiste Einwohner“ (easygames-Ranglisten, nur mit Freigabe). Knopf 🏆 im Menü und im Profil; der schwebende 🏆-Knopf ist bei RicoVille aus (`data-board-button="off"`), weil er die Spielleiste verdeckt.
+- Rangliste „Höchstes Level“ und „Meiste Einwohner“ (easygames-Ranglisten, nur mit Freigabe). Knopf 🏆 im Menü und im Profil öffnet die zentrale easygames-Ranglisten-Seite (`ranglisten.html`) eingebettet, mit RicoVille vorgewählt.
 - Einladungslink zeigt in den Apps auf die öffentliche Seite.
 
 ## 0.2.0 – 2026-10-16

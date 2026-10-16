@@ -23,6 +23,12 @@
  *      EasyGames.open('zotik');  EasyGames.open('all', { close: false });   // per JavaScript; EasyGames.close() schließt
  *    Overlay: ✕-Knopf, Zurück-Taste, Esc (wenn der Fokus nicht im Spiel liegt) und das Schließen aus dem Spiel (easygames:close) beenden es; Browser-Vollbild wird angefordert.
  *
+ * Ranglisten (alle Spiele, Freigabe/Spitzname inklusive; Spiel optional vorwählen):
+ *      <div data-easygames="ranglisten" data-game="anmacha-snake"></div>                     // eingebettet (iframe)
+ *      <button data-easygames="ranglisten" data-mode="overlay">🏆 Ranglisten</button>        // Klick öffnet sie vollflächig
+ *      EasyGames.open('ranglisten', { game: 'anmacha-snake' });  EasyGames.leaderboard('#ziel', { game: '…' });
+ *    Oder direkt per iframe: https://…/easygames/ranglisten.html?embed=1[&game=<spiel-id>]
+ *
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
@@ -115,17 +121,19 @@
   }
   // Bibliothek-Adresse; layout "apps" = App-Kachel-Ansicht (nur Symbole mit Namen)
   function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : ''); }
+  // Zentrale Ranglisten-Seite (alle Spiele); game = Spiel-ID aus games.js zum Vorwählen
+  function boardUrl(o) { return base + 'ranglisten.html?embed=1' + (o && o.game ? '&game=' + encodeURIComponent(o.game) : ''); }
   var current = null;
   EG.close = function () { if (current) current(false); };
   // EasyGames.open('zotik' | 'all', { close:false, fullscreen:false, title, onClose })
   EG.open = function (game, o) {
     o = o || {};
     EG.ready(function () {
-      var g = game && game !== 'all' ? find(game) : null;
-      if (game && game !== 'all' && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
+      var board = game === 'ranglisten', g = game && game !== 'all' && !board ? find(game) : null;
+      if (game && game !== 'all' && !board && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
       var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
-      var title = o.title || (g ? g.title : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : libUrl(o), title);
+      var title = o.title || (g ? g.title : board ? 'easygames – Ranglisten' : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : board ? boardUrl(o) : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
@@ -236,13 +244,24 @@
     return t;
   };
 
+  // EasyGames.leaderboard(ziel, { game, mode: 'page'|'overlay', … }) – Ranglisten aller Spiele (game = Spiel-ID vorwählen)
+  EG.leaderboard = function (target, o) {
+    o = o || {};
+    var t = el(target);
+    if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.mode === 'overlay') { bindOpen(t, 'ranglisten', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, boardUrl(o), o.title || 'easygames – Ranglisten'); return t; }
+    t.appendChild(frame(boardUrl(o), o.title || 'easygames – Ranglisten', o));
+    return t;
+  };
+
   function scan() {
     var nodes = document.querySelectorAll('[data-easygames]');
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
       var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
-      if (d.easygames === 'all') EG.library(n, o); else { o.game = d.easygames; EG.embed(n, o); }
+      if (d.easygames === 'all') EG.library(n, o); else if (d.easygames === 'ranglisten') { o.game = d.game; EG.leaderboard(n, o); } else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
   EG.scan = scan;

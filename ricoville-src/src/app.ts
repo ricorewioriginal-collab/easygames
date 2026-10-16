@@ -527,11 +527,10 @@ export class App {
     const pop = Math.max(old.pop ?? 0, this.city.population());
     if (level !== old.level || pop !== old.pop) saveJSON(BOARD_KEY, { level, pop });
   }
+  /** Zentrale easygames-Ranglisten-Seite eingebettet, RicoVille vorgewählt (funktioniert auch in den Apps, gleicher Ordner-Aufbau). */
   private openBoard(): void {
-    const board = (window as unknown as { AnMaChaBoard?: { toggle?: () => void } }).AnMaChaBoard;
-    if (!board?.toggle) return this.toast('Die Rangliste gibt es in der easygames-Fassung.');
-    this.closePanel();
-    board.toggle();
+    const frame = h('iframe', { src: '../ranglisten.html?embed=1&game=ricoville', title: 'Ranglisten', class: 'board-frame', loading: 'lazy' });
+    this.openPanel('🏆 Rangliste', frame, true, true);
   }
   private conflict(): void {
     this.syncState = 'conflict';

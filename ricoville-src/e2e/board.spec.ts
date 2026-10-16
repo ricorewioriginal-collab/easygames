@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test';
 import { boot, newCity, watchErrors } from './helpers';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// Rangliste über das easygames-Skript (cloud/anmacha-board.js): Bestwerte der Hauptstadt, eigener Knopf statt schwebendem 🏆.
+// Rangliste über das easygames-Skript (cloud/anmacha-board.js): Bestwerte der Hauptstadt, Ansicht über die zentrale Ranglisten-Seite.
 
-test('Rangliste: Bestwerte werden gemerkt, Knopf im Menü öffnet sie, kein schwebender Knopf', async ({ page }) => {
+test('Rangliste: Bestwerte werden gemerkt, Knopf im Menü öffnet die Ranglisten-Seite', async ({ page }) => {
   const errs = watchErrors(page);
   await newCity(page);
   await page.evaluate(() => (window as any).__rv.save());
@@ -17,9 +17,9 @@ test('Rangliste: Bestwerte werden gemerkt, Knopf im Menü öffnet sie, kein schw
 
   await boot(page);
   await expect(page.locator('#btn-menu-board')).toBeVisible();
-  await expect(page.locator('button[aria-label="Rangliste"]')).toHaveCount(0);
   await page.click('#btn-menu-board');
-  await expect(page.getByText('🏆 Rangliste', { exact: true })).toBeVisible();
-  await expect(page.locator('option', { hasText: 'Meiste Einwohner' })).toHaveCount(1);
+  const frame = page.frameLocator('.panel iframe.board-frame');
+  await expect(frame.locator('#game')).toHaveValue('ricoville');
+  await expect(frame.getByText('Meiste Einwohner').first()).toBeAttached();
   expect(errs).toEqual([]);
 });

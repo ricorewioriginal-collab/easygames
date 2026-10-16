@@ -197,3 +197,4 @@ input[type=text] { width: 100%; }
 #visitbar .ok { background: var(--good); }
 #visitbar .msg { max-width: 300px; }
 .row input.f { min-width: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid #d9d2c3; font: inherit; font-size: 13px; background: #fff; }
+.board-frame { display: block; width: 100%; height: min(70vh, 640px); border: 0; border-radius: 12px; background: #fff; }
