@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0bc94358e29c",
- "generated": "2026-10-17T01:02:41+02:00",
- "commit": "8ba86c0c2b1c3b95d18c640c8755d1eea519b19d",
+ "version": "26d8bf9e5dbe",
+ "generated": "2026-10-16T23:05:35+00:00",
+ "commit": "5fb0d563e76b4d8dd34b45d7d51954245c6fe947",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4657,9 +4657,14 @@
    "h": "cd9e1426ee54852ddbce25c1ba5dec843d84ef6cac4304084c4d3d7eaf4ef948"
   },
   {
+   "p": "cloud/anmacha-ach.js",
+   "s": 10431,
+   "h": "1d25162f86e2c0cd686df8325fecf11d994ad45bed4a49ee86a8ef5cf85a62f7"
+  },
+  {
    "p": "cloud/anmacha-board.js",
-   "s": 25229,
-   "h": "e355e3c9226fe6624800ff29aa915b9d19480456dc5c517d0753ca03e202c7c1"
+   "s": 28298,
+   "h": "640a1fffddd3cb3fe8538d9e3f9ed19801e1508f3a97dc3459a84bc272f07411"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -4678,13 +4683,18 @@
   },
   {
    "p": "easygames.js",
-   "s": 19835,
-   "h": "5bc7110251005eb8557a5975df825c89aa2ad254192f8bd06ec263b2b847d669"
+   "s": 20908,
+   "h": "70e8f431a71bc2ce258e5d097c7a796be88bf5ecbc6d7b2b695d426c74db0459"
   },
   {
    "p": "einbinden.html",
    "s": 59799,
    "h": "256afc9cace107845310de309d2b4b8d64fbf876bef47b3933f611afedb29e80"
+  },
+  {
+   "p": "erfolge.html",
+   "s": 11309,
+   "h": "6b4ede713beb373221edb85b24e19c0e49a799413fd2fe0c72c853f141ad2e37"
   },
   {
    "p": "favicon.ico",
@@ -4858,8 +4868,8 @@
   },
   {
    "p": "index.html",
-   "s": 57701,
-   "h": "0d04285ce8816ca762939433bdd0c5f0b01e64d58dc78167b90264e8e472ae2a"
+   "s": 57772,
+   "h": "230e76d4cec7e8ca4b0794b88e5726bdfb4fdf81b9cd443e038b24f75778e7af"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
