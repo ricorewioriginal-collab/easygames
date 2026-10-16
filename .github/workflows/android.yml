@@ -44,6 +44,8 @@ jobs:
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-ranglisten.cjs
       - name: Verify cross-game achievements page and embedding
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-erfolge.cjs
+      - name: Verify back link from embedded games
+        run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-embed-back.cjs
       - run: ./android/gradlew -p android :core:test :app:assembleDebug --console=plain
       - uses: actions/upload-artifact@v4
         with:
