@@ -746,19 +746,19 @@ fetch('sync/catalog.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : nu
     const i = info(); if (!i) return; bar.textContent = '';
     // Neue Spiele und Updates sofort in der Bibliothek anzeigen; laufende Spiele behalten ihren Stand.
     if (i.pending && i.state === 'ready' && cur < 0 && !applying) {
-      applying = true; bar.textContent = '⬆ Spielebibliothek wird aktualisiert …'; A.reload(); return;
+      applying = true; bar.textContent = '⬆ Neue Spiele-Inhalte werden übernommen …'; A.reload(); return;
     }
     const txt = el('span', 'grow');
-    let status = '✓ Inhalte aktuell';
+    let status = '✓ Spiele-Inhalte aktuell';
     if (i.state === 'checking') status = '⟳ Suche nach Updates …';
     else if (i.state === 'downloading') status = '⬇ Update wird geladen' + (i.bytesTotal ? ' (' + Math.round((i.progress || 0) * 100) + ' %)' : '');
-    else if (i.pending) status = '⬆ Update bereit – wird nach dem Spiel übernommen';
+    else if (i.pending) status = '⬆ Neue Spiele-Inhalte bereit – werden nach dem Spiel übernommen';
     else if (i.state === 'offline') status = '✈ Offline – gespeicherte Inhalte';
     else if (i.state === 'error') status = '⚠ Update fehlgeschlagen – später erneut';
     txt.textContent = '📲 App ' + (i.appVersion || '') + ' · ' + status + (i.contentDate ? ' · Stand ' + fmtDate(i.contentDate) : '');
     bar.appendChild(txt);
     if (i.state === 'downloading') { const p = el('progress'); p.max = 1; p.value = i.progress || 0; bar.appendChild(p); }
-    if (i.pending) { const b = el('button', '', 'Neu laden'); b.onclick = () => A.reload(); bar.appendChild(b); }
+    if (i.pending) { const b = el('button', '', 'Jetzt übernehmen'); b.onclick = () => A.reload(); bar.appendChild(b); }
     else if (i.state !== 'downloading' && i.state !== 'checking') { const b = el('button', '', 'Jetzt aktualisieren'); b.onclick = () => A.syncNow(); bar.appendChild(b); }
     const s = el('button', '', '⚙'); s.setAttribute('aria-label', 'App-Einstellungen'); s.onclick = () => A.openSettings(); bar.appendChild(s);
   }
