@@ -34,6 +34,8 @@ interface Profile {
 
 const SETTINGS_KEY = 'ricoville.settings';
 const PROFILE_KEY = 'ricoville.profile';
+/** Bestwerte der Hauptstadt für die easygames-Rangliste (cloud/anmacha-board.js liest level und pop). */
+const BOARD_KEY = 'ricoville.profile.best';
 const CRESTS = ['🏰', '🦁', '🦅', '🌻', '⚓', '🍀', '⭐', '🐻', '🦊', '🌊', '🍎', '🎡'];
 const CAT_ICON: Record<Category, string> = {
   residential: '🏠', business: '🏪', farm: '🌾', community: '🏛️', production: '🏭', storage: '📦', transport: '🚂', decoration: '🌳', special: '🗼',
@@ -214,7 +216,8 @@ export class App {
         h('span', { class: 'ic' }, '✨'), h('span', {}, 'Neue Stadt', h('small', {}, main ? 'Ersetzt deine Stadt (eine Sicherung bleibt)' : 'Als Gast starten – ganz ohne Konto'))),
       h('button', { class: 'big-btn', id: 'btn-creative', onclick: () => this.enter(creative ?? newCityState('Sandkasten', 'creative', this.clock()), 'creative') },
         h('span', { class: 'ic' }, '🎨'), h('span', {}, 'Kreativ-Sandkasten', h('small', {}, 'Frei bauen, eigener Speicherplatz, ohne Wertung'))),
-      h('div', { class: 'menu-row' },
+      h('div', { class: 'menu-row four' },
+        h('button', { class: 'big-btn', id: 'btn-menu-board', onclick: () => this.openBoard() }, h('span', { class: 'ic' }, '🏆'), 'Rangliste'),
         h('button', { class: 'big-btn', id: 'btn-menu-neighbors', onclick: () => (main ? (this.enter(this.loadSlot('main')!, 'main'), void this.neighborsPanel()) : this.newCityDialog()) }, h('span', { class: 'ic' }, '👥'), 'Nachbarn'),
         h('button', { class: 'big-btn', onclick: () => this.profilePanel() }, h('span', { class: 'ic' }, this.profile.crest), 'Profil'),
         h('button', { class: 'big-btn', onclick: () => this.settingsPanel() }, h('span', { class: 'ic' }, '⚙️'), 'Einstellungen'),
@@ -507,6 +510,7 @@ export class App {
     const r = this.saves.save(this.city.s, this.clock());
     if (r.ok) {
       this.syncState = 'ok';
+      this.recordBest();
       if (manual) this.toast('💾 Gespeichert.');
     } else if (r.msg === 'conflict') this.conflict();
     else {
@@ -514,6 +518,19 @@ export class App {
       this.toast('Speichern fehlgeschlagen: ' + r.msg, 'bad');
     }
     this.hud();
+  }
+  /** Nur die Hauptstadt zählt (nicht der Kreativ-Sandkasten); Bestwerte sinken nie. */
+  private recordBest(): void {
+    if (this.slot !== 'main' || this.city.creative) return;
+    const old = loadJSON<{ level?: number; pop?: number }>(BOARD_KEY, {});
+    const level = Math.max(old.level ?? 0, this.city.s.level);
+    const pop = Math.max(old.pop ?? 0, this.city.population());
+    if (level !== old.level || pop !== old.pop) saveJSON(BOARD_KEY, { level, pop });
+  }
+  /** Zentrale easygames-Ranglisten-Seite eingebettet, RicoVille vorgewählt (funktioniert auch in den Apps, gleicher Ordner-Aufbau). */
+  private openBoard(): void {
+    const frame = h('iframe', { src: '../ranglisten.html?embed=1&game=ricoville', title: 'Ranglisten', class: 'board-frame', loading: 'lazy' });
+    this.openPanel('🏆 Rangliste', frame, true, true);
   }
   private conflict(): void {
     this.syncState = 'conflict';
@@ -1612,6 +1629,7 @@ export class App {
           this.closePanel();
           this.hud();
         } }, 'Speichern'),
+        h('button', { class: 'btn alt', id: 'btn-profile-board', onclick: () => this.openBoard() }, '🏆 Rangliste'),
         h('button', { class: 'btn alt', onclick: () => this.exportData() }, '⬇️ Daten exportieren'),
         h('button', { class: 'btn bad', onclick: () => this.deleteData() }, '🗑️ Lokale Daten löschen')));
     this.openPanel('Profil', body);
