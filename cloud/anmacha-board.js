@@ -1,5 +1,5 @@
 /*! AnMaCha Ranglisten – öffentliche Bestenlisten je Spiel (Firebase Firestore, nur mit Freigabe des Spielers).
- * Wird von cloud/anmacha-cloud.js automatisch nachgeladen (data-board="off" schaltet es ab). Ohne Eintrag in REG für das Spiel tut es nichts.
+ * Wird von cloud/anmacha-cloud.js automatisch nachgeladen (data-board="off" schaltet es ab). Spiele ohne Eintrag in REG bekommen automatisch Ranglisten (Highscore, Gesamtpunkte, Bestzeit, Siege, Sterne, XP), sofern ihr Spielstand passende Felder enthält (detect()).
  * Freigabe: Der Spieler meldet sich mit Google an (☁), wählt einen Spitzname und gibt seine Bestwerte frei. Öffentlich sind NUR Spitzname,
  * Bestwert und Zeitpunkt – keine Google-Daten. Die Freigabe lässt sich jederzeit beenden; dabei werden alle eigenen Einträge gelöscht.
  * Daten: boards/<spiel>[__<modus>]/e/<uid> = { n: Spitzname, s: Wert, o: 'desc'|'asc', t: ms } (Regeln: cloud/firestore.rules).
@@ -95,6 +95,16 @@
     'gold-reels': [
       { id: 'main', title: 'Größter Einzelgewinn', key: 'agrCasino', path: 'best', order: 'desc', unit: '€' }
     ],
+    // Leerer Eintrag = bewusst keine Rangliste (Sandbox/Story, deren „Sterne“ o. Ä. eine ausgebbare Währung sind)
+    'bunte-insel': [],
+    'bunte-insel2': [],
+    'klotzfunk': [],
+    'showdown': [
+      { id: 'main', title: 'Siege gegen den Bot', key: 'asdSave', path: 'stats.*.0', agg: 'sum', order: 'desc', unit: 'Siege' }
+    ],
+    'zotik2': [
+      { id: 'main', title: 'Minispiele – Gesamtpunkte', key: 'zotik_mini_records_v1', path: '*', agg: 'sum', order: 'desc', unit: 'Punkte', local: true }
+    ],
     'urwaldlager': [
       { id: 'main', title: 'Sterne gesamt', key: 'ul_best', path: 'stars', order: 'desc', unit: '★' }
     ],
@@ -150,13 +160,86 @@
     return { fields: { n: { stringValue: name }, s: { doubleValue: value }, o: { stringValue: order }, t: { integerValue: String(Date.now()) } } };
   }
 
-  var game = Cloud && Cloud.game, boards = game ? cfgFor(game) : null;
-  var T = { readValue: readValue, walk: walk, better: better, fmt: fmt, cleanName: cleanName, boardId: boardId, entryFields: entryFields };
+  // ---- Automatische Erkennung für Spiele OHNE Eintrag in REG (auch neue Spiele): feste Ranglisten, Werte aus den synchronisierten Spielständen ----
+  var SLOTS = [
+    { id: 'hi', title: 'Highscore', order: 'desc', unit: 'Punkte' },
+    { id: 'sum', title: 'Gesamtpunkte', order: 'desc', unit: 'Punkte' },
+    { id: 'time', title: 'Bestzeit', order: 'asc', fmt: 'sec' },
+    { id: 'wins', title: 'Siege', order: 'desc', unit: 'Siege' },
+    { id: 'stars', title: 'Sterne', order: 'desc', unit: '★' },
+    { id: 'xp', title: 'Erfahrung', order: 'desc', unit: 'XP' }
+  ];
+  var N_HI = /^(hiscore|highscore|bestscore|topscore|best|record|highest|bestpoints|recordscore|rekord|rekordpunkte)$/;
+  var N_TIME = /^(besttime|bestlap|bestzeit|rekordzeit|lap|time|zeit|t)$/, BAD_TIME = /play|elapsed|total|session|remain|left|duration|age|cur|now|start|end|last|ms$/;
+  var N_WINS = /^(wins|totalwins|siege|victories|won|gewonnen)$/, N_XP = /^(xp|totalxp|exp|experience|erfahrung)$/, N_STARS = /^(stars|totalstars|sterne)$/;
+  var N_CONT = /^(best|records?|scores|points|highscores|hiscores|rekorde|bestscores|bestpoints)$/, N_LIST = /rank|hof|top|score|best|leader|ruhm|liste|highscore/;
+  function norm(k) { return String(k).toLowerCase().replace(/[^a-z]/g, ''); }
+  function isNum(v) { return typeof v === 'number' && isFinite(v) && v > 0 && v <= 1e12; }
+  function entryScore(el) {
+    var i, f;
+    if (Array.isArray(el)) return typeof el[0] === 'string' && isNum(el[1]) ? el[1] : null;
+    if (el && typeof el === 'object') {
+      for (i = 0, f = ['n', 'name', 'player', 'spieler']; i < f.length; i++) if (typeof el[f[i]] === 'string') break;
+      if (i === f.length) return null;
+      for (i = 0, f = ['s', 'v', 'score', 'points', 'punkte', 'pts']; i < f.length; i++) if (isNum(el[f[i]])) return el[f[i]];
+    }
+    return null;
+  }
+  // pairs = [[localStorage-Schlüssel, Rohwert], …] -> { hi, sum, time, wins, stars, xp } (nur gefundene)
+  function detect(pairs) {
+    var C = { hi: [], sum: [], time: [], wins: [], stars: [], xp: [] }, count = 0;
+    function leaf(path, v) {
+      if (!isNum(v)) return;
+      var last = norm(path[path.length - 1]), parent = path.slice(0, -1).map(norm).join('/');
+      if (N_HI.test(last)) C.hi.push(v);
+      else if (N_TIME.test(last) && !BAD_TIME.test(last) && (/best|record|top|rekord/.test(parent) || /^best/.test(last))) C.time.push(v);
+      else if (N_WINS.test(last)) C.wins.push(v);
+      else if (N_XP.test(last)) C.xp.push(v);
+      else if (N_STARS.test(last)) C.stars.push(v);
+    }
+    function visit(v, path, depth) {
+      if (++count > 6000) return;
+      if (typeof v === 'number') { leaf(path, v); return; }
+      if (!v || typeof v !== 'object' || depth > 5) return;
+      var arr = Array.isArray(v), keys = arr ? v.map(function (x, i) { return i; }) : Object.keys(v), name = path.length ? norm(path[path.length - 1]) : '', i, nums, sc, best;
+      if (N_CONT.test(name) || N_STARS.test(name)) {
+        nums = keys.map(function (k) { return v[k]; }).filter(function (x) { return typeof x === 'number' && isFinite(x) && x >= 0 && x <= 1e12; });
+        sc = nums.reduce(function (a, b) { return a + b; }, 0);
+        if (nums.length >= 2 && nums.length >= keys.length * 0.7 && sc > 0) (N_STARS.test(name) ? C.stars : C.sum).push(sc);
+      }
+      if (arr && v.length && path.some(function (x) { return N_LIST.test(norm(x)); })) {
+        best = null;
+        for (i = 0; i < v.length; i++) { sc = entryScore(v[i]); if (sc != null && (best == null || sc > best)) best = sc; }
+        if (best != null) C.hi.push(best);
+      }
+      for (i = 0; i < keys.length; i++) visit(v[keys[i]], path.concat([String(keys[i])]), depth + 1);
+    }
+    (pairs || []).forEach(function (kv) {
+      var key = kv[0], raw = kv[1], v, nk = norm(key);
+      if (raw == null) return;
+      raw = String(raw).trim();
+      if (raw.length > 300000) return;
+      if (raw.charAt(0) === '{' || raw.charAt(0) === '[') { try { v = JSON.parse(raw); } catch (e) { return; } visit(v, [], 0); return; }
+      v = Number(raw);
+      if (!isNum(v)) return;
+      if (/(hiscore|highscore|bestscore|best|record)$/.test(nk)) C.hi.push(v);
+      else if (/wins$/.test(nk)) C.wins.push(v);
+      else if (/xp$/.test(nk)) C.xp.push(v);
+      else if (/(besttime|bestlap)$/.test(nk)) C.time.push(v);
+    });
+    var out = {};
+    ['hi', 'sum', 'wins', 'stars', 'xp'].forEach(function (k) { if (C[k].length) out[k] = Math.max.apply(null, C[k]); });
+    if (C.time.length) out.time = Math.min.apply(null, C.time);
+    return out;
+  }
+
+  var game = Cloud && Cloud.game, auto = !!game && !cfgFor(game), boards = game ? (cfgFor(game) || SLOTS) : null;
+  var T = { readValue: readValue, walk: walk, detect: detect, SLOTS: SLOTS, better: better, fmt: fmt, cleanName: cleanName, boardId: boardId, entryFields: entryFields };
   window.AnMaChaBoard = { _t: T, REG: REG };
   if (!Cloud || !boards || !boards.length || !LS) return;
 
   var FS = Cloud.FS, KEY_SHARE = 'anmacha-board-share', KEY_NICK = 'anmacha-board-nick', KEY_SENT = 'anmacha-board-sent:';
-  var uidNow = '', panel = null, btn = null, sel = 0, msg = '', rows = null, loading = false;
+  var uidNow = '', panel = null, btn = null, sel = 0, msg = '', rows = null, loading = false, shown = auto ? [] : boards, probedAt = 0, probed = !auto;
   function get(k) { try { return LS.getItem(k); } catch (e) { return null; } }
   function put(k, v) { try { LS.setItem(k, v); } catch (e) {} }
   function user() { return Cloud.user ? Cloud.user() : null; }
@@ -173,14 +256,37 @@
   }
   function docUrl(id, uid) { return FS + 'boards/' + id + '/e/' + uid; }
 
+  // Alle synchronisierten Spielstand-Schlüssel dieses Spiels (für die automatische Erkennung)
+  function localPairs() {
+    var out = [], i, k;
+    try { for (i = 0; i < LS.length; i++) { k = LS.key(i); if (k && k.indexOf('anmacha-') !== 0 && (!Cloud.mine || Cloud.mine(k))) out.push([k, LS.getItem(k)]); } } catch (e) {}
+    return out;
+  }
+  // Automatische Spiele: welche Ranglisten gibt es (Einträge vorhanden oder eigener Wert erkannt)? Je Rangliste eine kleine Abfrage, 60 s zwischengespeichert.
+  function probe() {
+    if (!auto || (probed && Date.now() - probedAt < 60000)) return Promise.resolve();
+    var det = detect(localPairs());
+    return Promise.all(SLOTS.map(function (b) {
+      var q = { structuredQuery: { from: [{ collectionId: 'e' }], orderBy: [{ field: { fieldPath: 's' }, direction: b.order === 'asc' ? 'ASCENDING' : 'DESCENDING' }], limit: 1 } };
+      return fetch(FS + 'boards/' + boardId(game, b) + ':runQuery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(q) })
+        .then(function (r) { if (r.status === 403) { msg = 'Ranglisten sind noch nicht freigeschaltet.'; return false; } return r.ok ? r.json() : false; })
+        .then(function (j) { return det[b.id] != null || !!(j && j.some && j.some(function (x) { return x.document; })); }).catch(function () { return det[b.id] != null; });
+    })).then(function (has) {
+      shown = SLOTS.filter(function (b, i) { return has[i]; });
+      if (sel >= shown.length) sel = 0;
+      probed = true; probedAt = Date.now();
+    });
+  }
+
   // ---- Einreichen: bessere Bestwerte (oder neuer Spitzname) in die Cloud schreiben ----
   var sending = false;
   function submit() {
     var u = user();
     if (!u || !shared() || sending) return Promise.resolve();
     var name = cleanName(get(KEY_NICK)), jobs = [];
+    var det = auto ? detect(localPairs()) : null;
     boards.forEach(function (b) {
-      var v = readValue(get(b.key), b.path || '', b.agg);
+      var v = auto ? (det[b.id] != null ? det[b.id] : null) : readValue(get(b.key), b.path || '', b.agg);
       if (v == null || (b.order === 'asc' && v <= 0)) return;
       jobs.push({ b: b, v: v, id: boardId(game, b) });
     });
@@ -211,7 +317,9 @@
 
   // ---- Lesen: Top 25 einer Rangliste (ohne Anmeldung möglich) ----
   function load() {
-    var b = boards[sel], id = boardId(game, b);
+    var b = shown[sel];
+    if (!b) { rows = []; loading = false; draw(); return; }
+    var id = boardId(game, b);
     loading = true; rows = null; draw();
     var q = { structuredQuery: { from: [{ collectionId: 'e' }], orderBy: [{ field: { fieldPath: 's' }, direction: b.order === 'asc' ? 'ASCENDING' : 'DESCENDING' }], limit: 25 } };
     fetch(FS + 'boards/' + id + ':runQuery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(q) }).then(function (r) {
@@ -234,6 +342,8 @@
       uidNow = u.uid || uidNow;
       var all = [];
       Object.keys(REG).forEach(function (g) { (REG[g] || []).forEach(function (b) { all.push(boardId(g, b)); }); });
+      SLOTS.forEach(function (b) { all.push(boardId(game, b)); });
+      try { for (var i = 0, k, pre = KEY_SENT + uidNow + ':'; i < LS.length; i++) { k = LS.key(i); if (k && k.indexOf(pre) === 0 && all.indexOf(k.slice(pre.length)) < 0) all.push(k.slice(pre.length)); } } catch (e) {}   // Ranglisten anderer Spiele, die dieses Gerät eingereicht hat
       return all.reduce(function (p, id) { return p.then(function () { return authFetch(docUrl(id, uidNow), { method: 'DELETE' }).catch(function () {}); }); }, Promise.resolve());
     }).then(function () {
       try { for (var i = LS.length - 1; i >= 0; i--) { var k = LS.key(i); if (k && k.indexOf(KEY_SENT) === 0) LS.removeItem(k); } } catch (e) {}
@@ -246,15 +356,15 @@
   function button(label, fn) { var b = el('button', BS, label); b.type = 'button'; b.onclick = fn; panel.appendChild(b); return b; }
   function draw() {
     if (!panel) return;
-    var b = boards[sel], u = user(), mine = shared();
+    var b = shown[sel] || boards[0], u = user(), mine = shared();
     panel.textContent = '';
     panel.appendChild(el('b', 'font-size:15px', '🏆 Rangliste'));
-    if (boards.length > 1) {
+    if (shown.length > 1) {
       var s = el('select', 'display:block;width:100%;margin:8px 0 0;padding:8px;border-radius:8px;border:1px solid #5f6368;background:#202124;color:#fff;font:14px system-ui,sans-serif');
-      boards.forEach(function (x, i) { var o = el('option', '', x.title); o.value = String(i); if (i === sel) o.selected = true; s.appendChild(o); });
+      shown.forEach(function (x, i) { var o = el('option', '', x.title); o.value = String(i); if (i === sel) o.selected = true; s.appendChild(o); });
       s.onchange = function () { sel = +s.value; load(); };
       panel.appendChild(s);
-    } else panel.appendChild(el('div', 'opacity:.75;font-size:12px;margin-top:2px', b.title));
+    } else if (shown.length) panel.appendChild(el('div', 'opacity:.75;font-size:12px;margin-top:2px', b.title));
     var list = el('ol', 'list-style:none;margin:10px 0 0;padding:0;max-height:min(40vh,260px);overflow:auto');
     if (loading) list.appendChild(el('li', 'opacity:.7', 'Lade …'));
     else if (rows && rows.length) rows.forEach(function (r, i) {
@@ -265,7 +375,7 @@
       li.appendChild(el('span', 'flex:none;font-variant-numeric:tabular-nums', fmt(b.fmt, r.s) + (b.fmt ? '' : (b.unit ? ' ' + b.unit : ''))));
       list.appendChild(li);
     });
-    else list.appendChild(el('li', 'opacity:.7', msg || 'Noch keine Einträge – sei der Erste!'));
+    else list.appendChild(el('li', 'opacity:.7', msg || (shown.length ? 'Noch keine Einträge – sei der Erste!' : (probed ? 'Für dieses Spiel gibt es noch keine Rangliste – spiele ein paar Runden, dann erscheint sie automatisch.' : 'Lade …'))));
     panel.appendChild(list);
     if (msg && rows && rows.length) panel.appendChild(el('div', 'margin-top:6px;font-size:12px;color:#f28b82', msg));
     var hr = el('div', 'margin:12px 0 0;padding-top:10px;border-top:1px solid rgba(255,255,255,.2)');
@@ -283,7 +393,7 @@
         var n = cleanName(inp.value);
         if (!n) { msg = 'Bitte einen Spitznamen mit 2–20 Zeichen wählen.'; rows = rows || []; draw(); return; }
         put(KEY_NICK, n); put(KEY_SHARE, '1'); msg = '';
-        submit().then(load);
+        probedAt = 0; submit().then(probe).then(load);
       };
     } else {
       hr.appendChild(el('div', 'font-size:13px;color:#81c995', '● Freigegeben als „' + (get(KEY_NICK) || '') + '“'));
@@ -297,7 +407,7 @@
   function toggle() {
     var open = panel.style.display === 'none';
     panel.style.display = open ? 'block' : 'none';
-    if (open) { submit().then(load); }
+    if (open) { submit().then(probe).then(load); }
   }
   function ui() {
     if (!document.body) return;
