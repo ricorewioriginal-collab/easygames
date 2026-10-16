@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b286f8add44c",
- "generated": "2026-10-16T22:28:22+02:00",
- "commit": "3f66dfc6027bba28e217d8374b3e87c96d13862e",
+ "version": "7ceba442dcf0",
+ "generated": "2026-10-16T20:44:21+00:00",
+ "commit": "6570059e7d0c65a0d720ad38ec6b177b59e3764e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5043,8 +5043,8 @@
   },
   {
    "p": "krawallvoegel/sim.js",
-   "s": 16802,
-   "h": "6f9aec7c01827b7cca270226a3b0fcf3e79ba027e93a42f0c4b3d7f566bb287c"
+   "s": 16936,
+   "h": "fbae4712dade30ed19665f42cdd435ceccc96d75a4a539c8cf32e704b345fa1e"
   },
   {
    "p": "krawallvoegel/style.css",
@@ -5719,7 +5719,7 @@
   {
    "p": "sync/catalog.json",
    "s": 84306,
-   "h": "c3ff5498fb687cbf73e018022d876567f581112e87f952d1c671fdcabcd15b69"
+   "h": "4d8adbb2817e59a42bbf4e39329c70896587d5df6935337e72609ee9de12e08d"
   },
   {
    "p": "taschi/card.svg",

@@ -258,7 +258,8 @@ function createSim(level, opts) {
       // Nach dem ersten Aufprall rollt ein Vogel nicht ewig weiter; außerhalb des Levels ist sein Zug vorbei
       if (b.hit && !b.damped) { b.damped = true; b.body.setLinearDamping(0.8); b.body.setAngularDamping(2); }
       const p = b.body.getPosition(), out = p.x > level.width + 8 || p.x < -12;
-      if ((b.slowSince && S.time - b.slowSince > 0.7) || age > 8 || out || (!b.hit && age > 1.5 && sp < 0.3)) { b.done = true; kill(b); }
+      const fuse = b.type === 'black' && !b.used && b.hit && !out;   // Bumm explodiert 1,6 s nach dem Aufprall von selbst
+      if (!fuse && ((b.slowSince && S.time - b.slowSince > 0.7) || age > 8 || out || (!b.hit && age > 1.5 && sp < 0.3))) { b.done = true; kill(b); }
     }
     if (S.state === 'flying' && S.active.every(b => b.done || b.dead)) {
       S.active = [];
