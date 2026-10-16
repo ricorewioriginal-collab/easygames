@@ -2,9 +2,25 @@
 // Anwesenheit von Freunden. Unabhängig vom WebSocket-Paket (Socket-Schnittstelle), damit sie testbar ist.
 import { PROTOCOL_VERSION, TICK_RATE } from '../../shared/src/constants';
 import { MatchRoom, type Human, type RoomClient } from '../../shared/src/room';
-import { defaultConfig, defaultCosmetics, type Cosmetics, type MatchConfig, type TeamSize } from '../../shared/src/types';
-import type { ServerConfig } from './config';
-import type { StatsStore } from './stats';
+import { defaultConfig, defaultCosmetics, type Cosmetics, type MatchConfig, type PlacementResult, type TeamSize } from '../../shared/src/types';
+
+/** Was die Lobby von der Server-Konfiguration braucht (ServerConfig erfüllt das; der Gastgeber im Browser übergibt ein festes Objekt). */
+export interface LobbyConfig {
+  publicSize: number;
+  queueWait: number;
+  maxMatches: number;
+  snapshotEvery: number;
+  botSkill: number;
+  minHumans: number;
+}
+
+/** Ranglisten-Speicher (StatsStore auf dem Server; im Browser-Gastgeber keiner) */
+export interface LobbyStats {
+  totalMatches: number;
+  matchPlayed(): void;
+  record(id: string, name: string, level: number, r: PlacementResult): void;
+  top(n: number): { name: string; wins: number; kills: number; matches: number; level: number }[];
+}
 
 export interface Socket {
   send(data: string | ArrayBuffer): void;
@@ -84,8 +100,8 @@ export class Lobby {
   private secTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(
-    private readonly cfg: ServerConfig,
-    private readonly stats: StatsStore | null,
+    private readonly cfg: LobbyConfig,
+    private readonly stats: LobbyStats | null,
   ) {}
 
   start(): void {
@@ -166,7 +182,7 @@ export class Lobby {
         }
         return;
       case 'private.create':
-        return this.createPriv(c, m.cfg as Record<string, unknown>);
+        return this.createPriv(c, m.cfg as Record<string, unknown>, m.code);
       case 'private.join':
         return this.joinPriv(c, String(m.code ?? '').toUpperCase());
       case 'private.leave':
@@ -401,13 +417,14 @@ export class Lobby {
 
   // ---------- Private Lobbys ----------
 
-  private createPriv(c: Conn, cfg: Record<string, unknown> | undefined): void {
+  /** want: gewünschter Code (z. B. der Raumcode beim Spiel ohne Server), sonst ein zufälliger */
+  private createPriv(c: Conn, cfg: Record<string, unknown> | undefined, want?: unknown): void {
     this.leavePriv(c);
     this.leaveQueue(c);
     const o = cfg ?? {};
     const teamSize = (o.teamSize === 2 || o.teamSize === 4 ? o.teamSize : 1) as TeamSize;
     const p: Priv = {
-      code: this.code((s) => this.privs.has(s) || this.parties.has(s)),
+      code: typeof want === 'string' && /^[A-Z2-9]{5}$/.test(want) && !this.privs.has(want) && !this.parties.has(want) ? want : this.code((s) => this.privs.has(s) || this.parties.has(s)),
       host: c,
       members: [c],
       cfg: {

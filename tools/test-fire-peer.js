@@ -72,7 +72,7 @@ async function browser() {
     await H.evaluate(room => new Promise((res, rej) => {
       const p = window.hp = new Peer(room); window.got = []; window.peers = [];
       p.on('open', id => res(id)); p.on('error', e => rej(e.type));
-      p.on('connection', c => { window.peers.push(c.peer); c.on('data', d => { window.got.push(d); c.send({ echo: d, big: 'x'.repeat(50000) }); }); });
+      p.on('connection', c => { window.peers.push(c.peer); c.on('data', d => { if (d instanceof ArrayBuffer) return c.send(d); window.got.push(d); c.send({ echo: d, big: 'x'.repeat(50000) }); }); });
     }), room);
     assert.equal(await H.evaluate(() => hp.via), 'firebase'); ok('Gastgeber offen über Firebase');
     await G2.evaluate(room => new Promise((res, rej) => { const p = new Peer(room); p.on('open', () => rej('doppelt')); p.on('error', e => e.type === 'unavailable-id' ? res() : rej(e.type)); }), room);
@@ -81,11 +81,17 @@ async function browser() {
     const r = await G.evaluate(room => new Promise((res, rej) => {
       const p = window.gp = new Peer(); setTimeout(() => rej('Zeitüberschreitung'), 25000);
       p.on('error', e => rej(e.type));
-      p.on('open', () => { const c = p.connect(room, { reliable: true, metadata: { n: 'Gast' } }); c.on('open', () => c.send({ t: 'join', name: 'Ä😀' })); c.on('data', d => res({ d, peer: c.peer, len: d.big.length })); });
+      p.on('open', () => { const c = p.connect(room, { reliable: true, metadata: { n: 'Gast' } }); c.on('open', () => c.send({ t: 'join', name: 'Ä😀' })); c.on('data', d => { if (d && d.big) res({ d, peer: c.peer, len: d.big.length }); }); });
     }), room);
     assert.deepEqual(r.d.echo, { t: 'join', name: 'Ä😀' }); assert.equal(r.peer, room); assert.equal(r.len, 50000);
     ok('Gast verbunden, Nachricht hin und große Nachricht (50 kB, gestückelt) zurück in ' + (Date.now() - t0) + ' ms');
     assert.equal((await H.evaluate(() => window.peers[0])), await G.evaluate(() => gp.id)); ok('conn.peer beim Gastgeber = Kennung des Gasts');
+    const bin = await G.evaluate(() => new Promise((res, rej) => {
+      const c = gp._conns[0], sizes = [100, 150000], back = []; setTimeout(() => rej('keine Binärantwort'), 15000);
+      c.on('data', d => { if (!(d instanceof ArrayBuffer)) return; const u = new Uint8Array(d); back.push(u.length + ':' + u.every((v, i) => v === (i * 7) % 251)); if (back.length === sizes.length) res(back); });
+      for (const n of sizes) { const u = new Uint8Array(n); for (let i = 0; i < n; i++) u[i] = (i * 7) % 251; c.send(u.buffer); }
+    }));
+    assert.deepEqual(bin, ['100:true', '150000:true']); ok('Binärdaten hin und zurück (100 B direkt, 150 kB in Teilen)');
     const miss = await G2.evaluate(() => new Promise(res => { const p = new Peer(); p.on('open', () => p.connect('gibtsnicht-' + Date.now())); p.on('error', e => res(e.type)); setTimeout(() => res('keine Meldung'), 30000); }));
     // Ohne Firebase-Eintrag fragt der Gast zur Sicherheit noch PeerJS (Gastgeber im Rückfall); ist dessen Server nicht erreichbar, kommt ein Netzfehler
     assert.ok(['peer-unavailable', 'server-error', 'network', 'socket-error'].includes(miss), miss); ok('unbekannter Raum: Fehler ' + miss + ' (über den PeerJS-Rückfall)');

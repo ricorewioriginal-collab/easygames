@@ -147,7 +147,7 @@
   Conn.prototype._channel = function (pc, dc) {
     var self = this; this.peerConnection = pc;
     function wire(d) {
-      self.dataChannel = d;
+      self.dataChannel = d; d.binaryType = 'arraybuffer';
       d.onopen = function () { if (self.done) return; self.open = true; self.emit('open'); };
       d.onmessage = function (e) { self._recv(e.data); };
       d.onclose = function () { self.close(); };
@@ -164,7 +164,18 @@
     rc.on('error', function (e) { self.emit('error', e); });
   };
   Conn.prototype._recv = function (s) {
-    if (typeof s !== 'string') return;
+    var b = this._bin;
+    if (typeof s !== 'string') {   // Binärdaten (ArrayBuffer) kommen unverändert an, große in Teilen nach einer Ankündigung
+      if (!(s instanceof ArrayBuffer)) return;
+      if (!b) { this.emit('data', s); return; }
+      b.l.push(new Uint8Array(s)); b.size += s.byteLength;
+      if (b.l.length < b.n) return;
+      this._bin = null;
+      var all = new Uint8Array(b.size), o = 0;
+      b.l.forEach(function (x) { all.set(x, o); o += x.byteLength; });
+      this.emit('data', all.buffer); return;
+    }
+    if (s.charCodeAt(0) === 2) { var k = +s.slice(1); this._bin = k > 0 && k < 4096 ? { n: k, l: [], size: 0 } : null; return; }
     if (s.charCodeAt(0) === 1) {   // Teilstück großer Nachrichten: \x01id,i,n,Daten
       var a = s.indexOf(','), b = s.indexOf(',', a + 1), c = s.indexOf(',', b + 1);
       var id = s.slice(1, a), i = +s.slice(a + 1, b), n = +s.slice(b + 1, c), p = this._parts[id] || (this._parts[id] = { n: 0, l: [] });
@@ -179,10 +190,18 @@
   Conn.prototype.send = function (d) {
     if (this._rc) return this._rc.send(d);
     var dc = this.dataChannel; if (!this.open || !dc || dc.readyState !== 'open') return;
+    if (d instanceof ArrayBuffer || ArrayBuffer.isView(d)) {   // Binär: direkt, über 60 kB angekündigt und in Teilen
+      var u = d instanceof ArrayBuffer ? new Uint8Array(d) : new Uint8Array(d.buffer, d.byteOffset, d.byteLength), BIN = 60000;
+      if (u.byteLength <= BIN) { dc.send(u.byteOffset || u.byteLength !== u.buffer.byteLength ? u.slice() : u.buffer); return; }
+      dc.send('\u0002' + Math.ceil(u.byteLength / BIN));
+      for (var j = 0; j < u.byteLength; j += BIN) dc.send(u.slice(j, j + BIN));
+      return;
+    }
     var s = JSON.stringify(d === undefined ? null : d);
     if (s.length <= CHUNK) { dc.send(s); return; }
     for (var id = rnd(6), n = Math.ceil(s.length / CHUNK), i = 0; i < n; i++) dc.send('\u0001' + id + ',' + i + ',' + n + ',' + s.slice(i * CHUNK, (i + 1) * CHUNK));
   };
+  Object.defineProperty(Conn.prototype, 'bufferSize', { get: function () { return this._rc ? this._rc.bufferSize : this.dataChannel ? this.dataChannel.bufferedAmount : 0; } });
   Conn.prototype.close = function () {
     if (this.done) return; this.done = true;
     var was = this.open; this.open = false;
