@@ -30,3 +30,12 @@ Google sperrt die Anmeldung in App-Fenstern. Deshalb koppelt sich die App über 
 ## Ältere Sicherung (genau eine je Nutzer und Spiel)
 
 Ersetzt beim ersten Abgleich einer Sitzung (Start oder Anmeldung) der neuere Stand einen abweichenden älteren (egal ob lokal oder in der Cloud), wird der ersetzte Eintrag im Dokument `users/<uid>/saves/<spiel>__alt` aufgehoben und überschreibt dabei die vorherige Sicherung. Im Cloud-Fenster stellt „Älteren Stand wiederherstellen“ sie zurück und tauscht sie mit dem aktuellen Stand, es bleibt also immer genau eine ältere Sicherung. Die Firestore-Regeln decken das Dokument bereits ab (`{game}` ist ein Platzhalter), es ist nichts neu zu veröffentlichen. Apps mit eigenem Abgleich (Favoriten in Android/Windows, ZOTIK-Apps) haben das noch nicht.
+
+## Ranglisten (öffentliche Bestenlisten, nur mit Freigabe)
+`cloud/anmacha-board.js` wird von `anmacha-cloud.js` automatisch nachgeladen und zeigt neben dem ☁-Knopf einen 🏆-Knopf: Top 25 je Spiel (auch ohne Anmeldung lesbar). Mitmachen:
+Google-Anmeldung → Spitzname (2–20 Zeichen) wählen → „Bestwerte öffentlich zeigen“. Öffentlich sind **nur Spitzname, Bestwert und Zeitpunkt** (keine Google-Daten). „Freigabe beenden“ löscht alle eigenen Einträge in allen Spielen.
+- Daten: `boards/<spiel>[__<modus>]/e/<uid>` = `{ n, s, o, t }`. Regeln: jeder schreibt nur seinen eigenen Eintrag, ein Eintrag wird nur besser (nie schlechter), Löschen jederzeit.
+- Welche Spiele/Werte: Registry `REG` oben in `cloud/anmacha-board.js` (Schlüssel = `data-game`; `key`/`path` zeigen auf den localStorage-Wert, `agg: 'sum'|'max'|'min'` + `*` fasst z. B. Punkte aller Level zusammen). Neues Spiel: Eintrag ergänzen, `node tools/test-board.mjs` prüft Schlüssel, Präfix und Skriptpfad.
+- Spiele mit abweichendem Skriptpfad (Kiko: `vendor/`) setzen `data-board-src`; `data-board="off"` schaltet die Rangliste eines Spiels ab.
+- **Einmalig in der Firebase-Konsole:** Firestore → Regeln → den neuen Inhalt von `cloud/firestore.rules` einfügen und veröffentlichen (sonst zeigen die Ranglisten „noch nicht freigeschaltet“).
+- Die Werte kommen vom Gerät des Spielers und sind **nicht manipulationssicher** (Spaß-Ranglisten). Unpassende Spitznamen/Einträge entfernst du in der Konsole unter `boards/…/e/…`.

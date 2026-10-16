@@ -58,7 +58,6 @@ const probe = makeEnv('__none__');
 const REG = probe.ctx.window.AnMaChaBoard.REG;
 const T = probe.ctx.window.AnMaChaBoard._t;
 const ids = new Set(catalog.map(g => g.id));
-const dirOf = g => path.join(root, catalog.find(c => c.id === g)?.path ?? '__nope__');
 const cloudTag = html => { const m = /<script[^>]*anmacha-cloud\.js[^>]*>/.exec(html); return m ? m[0] : ''; };
 
 ok('Registry: mindestens ein Spiel, gültige Einträge', () => {
@@ -75,22 +74,53 @@ ok('Registry: mindestens ein Spiel, gültige Einträge', () => {
     }
   }
 });
-ok('Registry: Spiele existieren und der Schlüssel liegt im synchronisierten Präfix', () => {
+// data-game -> Spielordner und Cloud-Tags (Spiele mit gebautem Client haben den Tag in app/index.html bzw. client/index.html)
+const games = new Map();
+for (const g of catalog) {
+  const dir = path.join(root, g.path);
+  const stack = [dir]; const files = [];
+  while (stack.length) {
+    const d = stack.pop();
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      if (e.name === 'node_modules' || e.name.startsWith('.')) continue;
+      const f = path.join(d, e.name);
+      if (e.isDirectory()) stack.push(f); else files.push(f);
+    }
+  }
+  for (const f of files.filter(f => f.endsWith('index.html'))) {
+    const tag = cloudTag(fs.readFileSync(f, 'utf8'));
+    const dg = /data-game="([^"]+)"/.exec(tag)?.[1];
+    if (dg && !games.has(dg)) games.set(dg, { id: g.id, dir, files, tag, html: f });
+  }
+}
+const sourceText = files => files.filter(f => /\.(js|mjs|ts|html)$/.test(f) && fs.statSync(f).size < 6e6).map(f => fs.readFileSync(f, 'utf8')).join('\n');
+
+ok('Registry: jedes Spiel hat ein Cloud-Skript mit passendem data-game, Schlüssel liegt im synchronisierten Präfix', () => {
   for (const [g, list] of Object.entries(REG)) {
-    const dir = dirOf(g);
-    assert(fs.existsSync(path.join(dir, 'index.html')), g + ': Spielordner fehlt (Spiel-ID = data-game?)');
+    const info = games.get(g);
+    assert(info, g + ': kein Spiel mit data-game="' + g + '" gefunden (REG-Schlüssel = data-game)');
+    const prefixes = (/data-prefix="([^"]*)"/.exec(info.tag)?.[1] ?? '').split(',').map(x => x.trim()).filter(Boolean);
+    for (const b of list) assert(prefixes.some(p => b.key.startsWith(p)), g + '/' + b.id + ': Schlüssel "' + b.key + '" nicht von data-prefix gedeckt (' + prefixes.join(',') + ')');
   }
 });
-ok('Registry: data-game des Spiels stimmt mit dem REG-Schlüssel überein, Schlüssel gedeckt durch data-prefix', () => {
+ok('Registry: Schlüsselnamen kommen im Spielcode vor (Tippfehler-Schutz)', () => {
   for (const [g, list] of Object.entries(REG)) {
-    const html = fs.readFileSync(path.join(dirOf(g), 'index.html'), 'utf8');
-    const tag = cloudTag(html);
-    assert(tag, g + ': kein Cloud-Skript im Spiel');
-    const dg = /data-game="([^"]+)"/.exec(tag)?.[1];
-    const prefixes = (/data-prefix="([^"]*)"/.exec(tag)?.[1] ?? '').split(',').map(x => x.trim()).filter(Boolean);
-    assert(dg, g + ': data-game fehlt');
-    assert(REG[dg] || dg === g, g + ': REG-Schlüssel muss data-game "' + dg + '" sein');
-    for (const b of list) assert(prefixes.some(p => b.key.startsWith(p)), g + '/' + b.id + ': Schlüssel "' + b.key + '" nicht von data-prefix gedeckt (' + prefixes.join(',') + ')');
+    const info = games.get(g), text = sourceText(info.files);
+    const prefixes = (/data-prefix="([^"]*)"/.exec(info.tag)?.[1] ?? '').split(',').map(x => x.trim()).filter(Boolean);
+    for (const b of list) {
+      const literal = text.includes(b.key);
+      const rest = prefixes.some(p => b.key.startsWith(p) && text.includes(b.key.slice(p.length)));   // Schlüssel aus Präfix + Namen gebaut (Vite-Spiele)
+      assert(literal || rest, g + '/' + b.id + ': Schlüssel "' + b.key + '" im Spielcode nicht gefunden');
+    }
+  }
+});
+ok('Registry: Spiele mit abweichendem Skriptpfad (Kiko) laden das Board-Skript', () => {
+  for (const [g, info] of games) {
+    if (!REG[g]) continue;
+    const src = /src="([^"]+)"/.exec(info.tag)?.[1] ?? '';
+    const bs = /data-board-src="([^"]+)"/.exec(info.tag)?.[1];
+    const base = bs ?? src.replace(/[^/?#]*([?#].*)?$/, 'anmacha-board.js');
+    assert(fs.existsSync(path.join(path.dirname(info.html), base)), g + ': ' + base + ' existiert nicht relativ zu ' + path.relative(root, info.html));
   }
 });
 
@@ -105,6 +135,15 @@ ok('readValue: Zahl, JSON-Pfad, ungültig', () => {
   assert.equal(T.readValue(null, ''), null);
   assert.equal(T.readValue('{"a":1}', 'a.b'), null);
   assert.equal(T.readValue('{"x":"7"}', 'x'), 7);
+  assert.equal(T.readValue('{"lv":{"0":[3,1000],"1":[2,500],"2":[0,0]}}', 'lv.*.1', 'sum'), 1500);
+  assert.equal(T.readValue('[100,0,250,null,300]', '*', 'sum'), 650);
+  assert.equal(T.readValue('{"levels":{"a":{"stars":3},"b":{"stars":2}}}', 'levels.*.stars', 'sum'), 5);
+  assert.equal(T.readValue('{"r":{"a":5,"b":9}}', 'r.*', 'max'), 9);
+  assert.equal(T.readValue('{"rank":[{"n":"A","s":90},{"n":"B","s":10}]}', 'rank.0.s'), 90);
+  assert.equal(T.readValue('{"top":{"hint":[["A",77,"d"]]}}', 'top.hint.0.1'), 77);
+  assert.equal(T.readValue('{"records":{"endless:endless:normal":{"bestScore":4200}}}', 'records.endless:endless:normal.bestScore'), 4200);
+  assert.equal(T.readValue('{"lv":{}}', 'lv.*.1', 'sum'), null);
+  assert.equal(T.readValue('{"a":[1,2]}', 'a.*'), null);
 });
 ok('better / fmt / cleanName / entryFields', () => {
   assert(T.better('desc', 5, 3) && !T.better('desc', 3, 5) && T.better('asc', 3, 5) && !T.better('asc', 5, 3) && T.better('asc', 1, null));
@@ -112,7 +151,7 @@ ok('better / fmt / cleanName / entryFields', () => {
   assert.equal(T.fmt('sec', 75.5), '1:15,5');
   assert.equal(T.fmt('sec', 9.25), '9,25 s');
   assert.equal(T.fmt('ms', 61000), '1:01,0');
-  assert.equal(T.cleanName('  Rico  <b>Re</b> '), 'Rico bRe/b'.replace('/', '') === 'Rico bRe/b' ? T.cleanName('  Rico  <b>Re</b> ') : '');
+  assert.equal(T.cleanName('  Rico   Re  '), 'Rico Re');
   assert.equal(T.cleanName('A'), ''); assert.equal(T.cleanName('x'.repeat(21)), ''); assert.equal(T.cleanName('Ab'), 'Ab');
   assert(!/[<>&"']/.test(T.cleanName('A<b>"c\'d&e')));
   const e = T.entryFields('Rico', 12.5, 'desc').fields;

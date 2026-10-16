@@ -14,25 +14,124 @@
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
   // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden)
   var REG = {
-    /*REG*/
+    'ricopoly': [
+      { id: 'main', title: 'Höchster Kontostand', key: 'ricopoly.v1.profile', path: 'stats.highestMoney', order: 'desc', unit: '€' }
+    ],
+    'krawallvoegel': [
+      { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.krawallvoegel.v1', path: 'lv.*.1', agg: 'sum', order: 'desc', unit: 'Punkte' }
+    ],
+    'rico-flap': [
+      { id: 'main', title: 'Endlos-Rekord', key: 'easygames.rico-flap.v1', path: 'endless', order: 'desc', unit: 'Punkte' }
+    ],
+    'kiko-sterneninseln': [
+      { id: 'main', title: 'Gesamtpunkte (20 Level)', key: 'kiko-sterneninseln-v1', path: 'best.*', agg: 'sum', order: 'desc', unit: 'Punkte' }
+    ],
+    'radio-maze': [
+      { id: 'main', title: 'Highscore', key: 'easygames.radio-maze.v1', path: 'best', order: 'desc', unit: 'Punkte' }
+    ],
+    'pufi-farbwind': [
+      { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.pufi-farbwind.v2', path: 'best.*', agg: 'sum', order: 'desc', unit: 'Punkte' }
+    ],
+    'lumo': [
+      { id: 'main', title: 'Highscore', key: 'easygames.lumo.v1', path: 'hiscore', order: 'desc', unit: 'Punkte' }
+    ],
+    'riftzone': [
+      { id: 'main', title: 'Siege gesamt', key: 'riftzone.profile', path: 'totals.wins', order: 'desc', unit: 'Siege' }
+    ],
+    'radio-surfer': [
+      { id: 'main', title: 'Highscore', key: 'anmachaRadioSurferBest', order: 'desc', unit: 'Punkte' }
+    ],
+    'flipper': [
+      { id: 'main', title: 'Highscore', key: 'anmachaFlipperBest', order: 'desc', unit: 'Punkte' }
+    ],
+    'beat-surfer': [
+      { id: 'main', title: 'Gesamtpunkte (alle Tracks)', key: 'anmachaBeatBest', path: '*', agg: 'sum', order: 'desc', unit: 'Punkte' }
+    ],
+    'prismrush': [
+      { id: 'main', title: 'Endlos (normal) – Highscore', key: 'prismrush.save.v1', path: 'records.endless:endless:normal.bestScore', order: 'desc', unit: 'Punkte' }
+    ],
+    'snake': [
+      { id: 'main', title: 'Highscore', key: 'anmachaSnake3d', path: 'best', order: 'desc', unit: 'Punkte' }
+    ],
+    'tower-defense': [
+      { id: 'main', title: 'Highscore', key: 'anmachaTD3d', path: 'rank.0.s', order: 'desc', unit: 'Punkte' }
+    ],
+    'quiz': [
+      { id: 'ladder', title: 'Leiter – Gewinn', key: 'amqSave', path: 'hof.ladder.0.v', order: 'desc', unit: '€' },
+      { id: 'night', title: 'Quiznacht – Punkte', key: 'amqSave', path: 'hof.night.0.v', order: 'desc', unit: 'Punkte' }
+    ],
+    'koffer-dealer': [
+      { id: 'main', title: 'Höchster Gewinn', key: 'akdSave', path: 'hof.0.v', order: 'desc', unit: '€' }
+    ],
+    'gesucht': [
+      { id: 'hint', title: 'Hinweis-Modus – Punkte', key: 'ggSave', path: 'top.hint.0.1', order: 'desc', unit: 'Punkte' },
+      { id: 'ask', title: 'Frage-Modus – Punkte', key: 'ggSave', path: 'top.ask.0.1', order: 'desc', unit: 'Punkte' },
+      { id: 'band', title: 'Band-Modus – Punkte', key: 'ggSave', path: 'top.band.0.1', order: 'desc', unit: 'Punkte' }
+    ],
+    'kart': [
+      { id: 'wiese', title: 'Beste Runde – Wiese', key: 'akSave', path: 'best.wiese.lap', order: 'asc', fmt: 'sec' },
+      { id: 'strand', title: 'Beste Runde – Strand', key: 'akSave', path: 'best.strand.lap', order: 'asc', fmt: 'sec' },
+      { id: 'gruft', title: 'Beste Runde – Gruft', key: 'akSave', path: 'best.gruft.lap', order: 'asc', fmt: 'sec' },
+      { id: 'fantasia', title: 'Beste Runde – Fantasia', key: 'akSave', path: 'best.fantasia.lap', order: 'asc', fmt: 'sec' },
+      { id: 'neon', title: 'Beste Runde – Neon', key: 'akSave', path: 'best.neon.lap', order: 'asc', fmt: 'sec' },
+      { id: 'vulkan', title: 'Beste Runde – Vulkan', key: 'akSave', path: 'best.vulkan.lap', order: 'asc', fmt: 'sec' },
+      { id: 'eis', title: 'Beste Runde – Eis', key: 'akSave', path: 'best.eis.lap', order: 'asc', fmt: 'sec' },
+      { id: 'dschungel', title: 'Beste Runde – Dschungel', key: 'akSave', path: 'best.dschungel.lap', order: 'asc', fmt: 'sec' },
+      { id: 'kosmos', title: 'Beste Runde – Kosmos', key: 'akSave', path: 'best.kosmos.lap', order: 'asc', fmt: 'sec' },
+      { id: 'wueste', title: 'Beste Runde – Wüste', key: 'akSave', path: 'best.wueste.lap', order: 'asc', fmt: 'sec' }
+    ],
+    'wobbel': [
+      { id: 'main', title: 'Sterne gesamt', key: 'wobbelSave1', path: 'levels.*.stars', agg: 'sum', order: 'desc', unit: '★' }
+    ],
+    'funkparcours': [
+      { id: 'main', title: 'Finale – Bestzeit', key: 'fpBest1', path: '2.t', order: 'asc', fmt: 'sec' }
+    ],
+    'turbokick': [
+      { id: 'main', title: 'Siege gesamt', key: 'turbokick.save', path: 'stats.wins', order: 'desc', unit: 'Siege' }
+    ],
+    'partyverse': [
+      { id: 'main', title: 'Siege gesamt', key: 'partyverse.save', path: 'stats.wins', order: 'desc', unit: 'Siege' }
+    ],
+    'gold-reels': [
+      { id: 'main', title: 'Größter Einzelgewinn', key: 'agrCasino', path: 'best', order: 'desc', unit: '€' }
+    ],
+    'urwaldlager': [
+      { id: 'main', title: 'Sterne gesamt', key: 'ul_best', path: 'stars', order: 'desc', unit: '★' }
+    ],
+    'gay-life': [
+      { id: 'main', title: 'Gesamt-XP', key: 'anmachaGayLife', path: 'xp', order: 'desc', unit: 'XP' }
+    ]
   };
 
   function cfgFor(game) { return REG[game] || null; }
 
   // ---- reine Hilfsfunktionen (getestet in tools/test-board.mjs) ----
-  function readValue(raw, path) {
+  // path: Punkt-getrennt, '*' = alle Kinder (Objekt/Array); agg ('sum'|'max'|'min') fasst die Treffer zusammen (z. B. Punkte über alle Level)
+  function walk(v, parts) {
+    if (!parts.length) return [v];
+    var k = parts[0], rest = parts.slice(1), kids, out = [], i;
+    if (v == null || typeof v !== 'object') return out;
+    if (k === '*') { kids = Array.isArray(v) ? v : Object.keys(v).map(function (x) { return v[x]; }); for (i = 0; i < kids.length; i++) out = out.concat(walk(kids[i], rest)); return out; }
+    return walk(v[k], rest);
+  }
+  function num(v) { v = typeof v === 'number' ? v : (typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN); return isFinite(v) && v >= 0 && v <= 1e12 ? v : null; }
+  function readValue(raw, path, agg) {
+    if (raw == null) return null;
     var v = raw;
-    if (v == null) return null;
-    if (path) {
-      try { v = JSON.parse(raw); } catch (e) { return null; }
-      var parts = path.split('.');
-      for (var i = 0; i < parts.length; i++) { if (v == null || typeof v !== 'object') return null; v = v[parts[i]]; }
-    } else if (typeof v === 'string') {
+    if (path || agg) { try { v = JSON.parse(raw); } catch (e) { return null; } }
+    else if (typeof v === 'string') {
       v = v.trim();
       if (v.charAt(0) === '{' || v.charAt(0) === '[' || v.charAt(0) === '"') { try { v = JSON.parse(v); } catch (e) { return null; } }
     }
-    v = typeof v === 'number' ? v : (typeof v === 'string' && v !== '' ? Number(v) : NaN);
-    return isFinite(v) && v >= 0 && v <= 1e12 ? v : null;
+    if (path) {
+      var hits = walk(v, path.split('.')).map(num).filter(function (x) { return x != null; });
+      if (!agg) return hits.length === 1 && path.indexOf('*') < 0 ? hits[0] : null;
+      if (!hits.length) return null;
+      var r = hits[0];
+      for (var i = 1; i < hits.length; i++) r = agg === 'sum' ? r + hits[i] : agg === 'max' ? Math.max(r, hits[i]) : Math.min(r, hits[i]);
+      return r;
+    }
+    return num(v);
   }
   function better(order, a, b) { return b == null ? true : (order === 'asc' ? a < b : a > b); }
   function fmt(kind, v) {
@@ -52,7 +151,7 @@
   }
 
   var game = Cloud && Cloud.game, boards = game ? cfgFor(game) : null;
-  var T = { readValue: readValue, better: better, fmt: fmt, cleanName: cleanName, boardId: boardId, entryFields: entryFields };
+  var T = { readValue: readValue, walk: walk, better: better, fmt: fmt, cleanName: cleanName, boardId: boardId, entryFields: entryFields };
   window.AnMaChaBoard = { _t: T, REG: REG };
   if (!Cloud || !boards || !boards.length || !LS) return;
 
@@ -81,7 +180,7 @@
     if (!u || !shared() || sending) return Promise.resolve();
     var name = cleanName(get(KEY_NICK)), jobs = [];
     boards.forEach(function (b) {
-      var v = readValue(get(b.key), b.path || '');
+      var v = readValue(get(b.key), b.path || '', b.agg);
       if (v == null || (b.order === 'asc' && v <= 0)) return;
       jobs.push({ b: b, v: v, id: boardId(game, b) });
     });
