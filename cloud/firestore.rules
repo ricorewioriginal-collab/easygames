@@ -165,5 +165,38 @@ service cloud.firestore {
         && request.resource.data.c is int && request.resource.data.x is int && request.resource.data.t == request.time;
       allow delete: if request.auth != null && resource.data.h == request.auth.uid;
     }
+
+    // ---------- Online-Kopplung aller Spiele (cloud/fire-peer.js) ----------
+    // Firebase vermittelt nur den Verbindungsaufbau (WebRTC-Angebot/Antwort), gespielt wird direkt Gerät zu Gerät.
+    // p2p/<Kennung> gehört dem Gastgeber (h = uid, t = Lebenszeichen alle 5 min); verwaist nach 15 min, dann darf ein anderer sie übernehmen.
+    // Angebote liegen unter p2p/<Kennung>/in_<Gastgeber-uid>/<Gast-uid>_<Zufall>: nur der Gastgeber listet sie (ohne Zusatz-Lesezugriff)
+    // und trägt die Antwort ein, der Gast liest nur sein eigenes Angebot. Kein Auflisten der Räume.
+    function p2pHostDoc(d) {
+      return d.keys().hasOnly(['h', 't']) && d.h == request.auth.uid && d.t == request.time;
+    }
+    match /p2p/{id} {
+      allow get: if signedIn();
+      allow create: if signedIn() && id.matches('^[A-Za-z0-9_-]{3,64}$') && p2pHostDoc(request.resource.data);
+      allow update: if signedIn() && p2pHostDoc(request.resource.data)
+        && (resource.data.h == request.auth.uid || request.time > resource.data.t + duration.value(15, 'm'));
+      allow delete: if signedIn() && resource.data.h == request.auth.uid;
+
+      match /{box}/{rid} {
+        allow get: if signedIn() && (box == 'in_' + request.auth.uid || rid.matches('^' + request.auth.uid + '_[a-z0-9]{4,20}$'));
+        allow list: if signedIn() && box == 'in_' + request.auth.uid && request.query.limit <= 20;
+        allow create: if signedIn() && rid.matches('^' + request.auth.uid + '_[a-z0-9]{4,20}$')
+          && box == 'in_' + get(/databases/$(database)/documents/p2p/$(id)).data.h
+          && request.resource.data.keys().hasOnly(['o', 'a', 'p', 'm', 'l', 't']) && request.resource.data.keys().hasAll(['o', 'a', 'p', 't'])
+          && request.resource.data.o is string && request.resource.data.o.size() > 0 && request.resource.data.o.size() < 20000
+          && request.resource.data.a == '' && request.resource.data.t == request.time
+          && request.resource.data.p is string && request.resource.data.p.size() <= 64
+          && (!('m' in request.resource.data) || (request.resource.data.m is string && request.resource.data.m.size() <= 2000))
+          && (!('l' in request.resource.data) || (request.resource.data.l is string && request.resource.data.l.size() <= 40));
+        allow update: if signedIn() && box == 'in_' + request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['a', 't'])
+          && request.resource.data.a is string && request.resource.data.a.size() < 20000 && request.resource.data.t == request.time;
+        allow delete: if signedIn() && (box == 'in_' + request.auth.uid || rid.matches('^' + request.auth.uid + '_[a-z0-9]{4,20}$'));
+      }
+    }
   }
 }

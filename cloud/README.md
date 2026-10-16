@@ -47,3 +47,18 @@ Google-Anmeldung → Spitzname (2–20 Zeichen) wählen → „Bestwerte öffent
 ## RicoPoly 3D: Rangliste und Online-Räume
 
 `firestore.rules` enthält zusätzlich einen Abschnitt für RicoPoly (`ricopoly_board`, `ricopoly_rooms`, `ricopoly_pub`). Er braucht die **anonyme Anmeldung** (Authentication → Anmeldemethode → Anonym). Details, Verbrauch und Grenzen: `ricopoly/FIREBASE_SETUP.md`. Andere Spiele sind davon nicht betroffen.
+
+## Online-Kopplung aller Spiele über Firebase (`cloud/fire-peer.js`)
+
+Alle Spiele mit Handy-Kopplung oder Online-Modus über PeerJS (Funkhaus Reality, Mach mich aus!, Frequenzrad, Funkparcours, Hörerwahl, Kart Rush, Koffer DEALER, Preisradar, Quiz, Stapelrausch, Bunte Insel, Gay Life, ZEITSPRUNG Movie/Radio/Wissen, ZOTIK) verbinden sich jetzt wie RicoPoly über Firebase. Eingebunden ist das mit einer Zeile vor dem Spielcode:
+```html
+<script src="../cloud/fire-peer.js"></script>
+```
+Die Datei stellt `window.Peer` mit derselben Schnittstelle wie PeerJS bereit, am Spielcode ändert sich nichts. Firebase (gleiches Projekt `ricorewi-games-save`, anonyme Anmeldung, nur REST, ohne SDK) vermittelt nur den Verbindungsaufbau; gespielt wird wie bisher direkt Gerät zu Gerät (WebRTC, dieselben STUN/TURN-Server wie PeerJS).
+
+- Daten: `p2p/<Kennung>` = Gastgeber (`h` = uid, `t` = Lebenszeichen alle 5 min, nach 15 min ohne Lebenszeichen verwaist), Angebote der Gäste unter `p2p/<Kennung>/in_<Gastgeber-uid>/<Gast-uid>_<Zufall>`. Der Gast räumt sein Angebot nach dem Verbinden weg, der Gastgeber gibt die Kennung beim Schließen frei.
+- **Rückfall:** Ist Firebase nicht erreichbar, das Kontingent aufgebraucht oder sind die Regeln noch nicht veröffentlicht, läuft alles still über PeerJS weiter (wird erst dann aus `vendor/` geladen). Findet ein Gast den Raum nicht in Firebase, fragt er zur Sicherheit auch PeerJS. Mit `?p2p=peerjs` in der Adresse lässt sich PeerJS erzwingen.
+- **Einmalig in der Firebase-Konsole:** Firestore → Regeln → den kompletten Inhalt von `cloud/firestore.rules` einfügen und veröffentlichen (Abschnitt „Online-Kopplung“). Die anonyme Anmeldung ist für RicoPoly schon eingeschaltet.
+- **Verbrauch (Spark-Tarif, gratis 50.000 Lese- und 20.000 Schreibzugriffe pro Tag):** Ein offener Gastgeber fragt 10 Minuten nach dem Öffnen und nach jedem Beitritt alle 2 s nach Beitrittswünschen, sonst alle 4 s, im Hintergrund-Tab alle 15 s (je 1 Lesezugriff, also etwa 900–1.800 pro Stunde). Beitritt je Gerät: etwa 3 Schreib- und bis zu 10 Lesezugriffe. Grob reicht das für 30–50 Spielstunden mit offenem Gastgeber pro Tag; danach greift automatisch PeerJS.
+- **Tests:** `node tools/test-fire-peer.js` (Regeln, 27 Prüfungen) und `node tools/test-fire-peer.js --browser` (zwei Chromium-Seiten verbinden sich echt, große Nachrichten, Fehlerfälle) gegen den Emulator (`firebase emulators:start --only auth,firestore`).
+- RicoPoly behält seine eigene Anbindung (`ricopoly/js/fire.js`), RicoVille nutzt Firestore für die Nachbarn. Nicht umgestellt: RIFTZONE und der Raumcode-Modus von PARTYVERSE (eigener Spielserver) sowie die QR-/Text-Code-Verbindung von TURBOKICK und PARTYVERSE (kommt ganz ohne Vermittler aus).

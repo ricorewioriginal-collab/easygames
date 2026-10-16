@@ -53,6 +53,10 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** auf dem Handy als App installieren (Chrome/Android: Hinweis „📲 Als App installieren“ oder Menü ▸ „App installieren“; iPhone: Teilen ▸ „Zum Home-Bildschirm“). Die App startet im Vollbild, läuft nach dem ersten Spielen auch offline und **aktualisiert sich automatisch** (Service Worker: Netz zuerst, bei Ausfall der Cache). Erzeugt von `tools/make-pwa.py` (siehe „Neues Spiel hinzufügen“); PRISMRUSH und Wobbel bringen eine eigene PWA mit.
 
+## Online-Kopplung über Firebase
+
+Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein. Details, Verbrauch und die einmalige Freischaltung in der Firebase-Konsole: [`cloud/README.md`](cloud/README.md#online-kopplung-aller-spiele-über-firebase-cloudfire-peerjs).
+
 ## Gamecontroller
 
 Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …, per USB oder Bluetooth) spielen.
