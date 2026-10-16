@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a7e5e10cf993",
- "generated": "2026-10-16T18:19:33+02:00",
- "commit": "b2cc1a46dfc8bdcd0790163ad2599cdffaec2e30",
+ "version": "f9c0151b0588",
+ "generated": "2026-10-16T18:41:47+02:00",
+ "commit": "4bb8254567ab02969fcfa6f96d91c0feecd1ec59",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3772,6 +3772,26 @@
    "h": "7263f09ae3d0d49870b730b0aaf77f27d347f481544a68d870c038ec44630bfb"
   },
   {
+   "p": "branding/easygames-apple-touch-icon.png",
+   "s": 17166,
+   "h": "8b3edcc8f3ddf30a39eeb5eb3370805c675a1bed2a7d7c5d9c8d2610e5697aa0"
+  },
+  {
+   "p": "branding/easygames-icon-192.png",
+   "s": 20697,
+   "h": "ce9d6829b6abc34676ad9847b8d09f09d0d401b9eb3c0aa24f439b40641c00e3"
+  },
+  {
+   "p": "branding/easygames-icon-512-maskable.png",
+   "s": 87926,
+   "h": "fbc48bb24c2c656df91ee5ed3ce7f65c582db7d3ec740e678735f792a0df95bd"
+  },
+  {
+   "p": "branding/easygames-icon-512.png",
+   "s": 111036,
+   "h": "4c9536af9fe70cc484c808f1723a2513c0c281e5658a35c8846cbb275f2f22e8"
+  },
+  {
    "p": "bunte-insel/card.png",
    "s": 116908,
    "h": "a8b67e74057b3fb5836c2697b8e3d935084b67aaabc904eb092437e64da57dd7"
@@ -4598,13 +4618,18 @@
   },
   {
    "p": "easygames.js",
-   "s": 17528,
-   "h": "18c04128ba8d43d51bc06ab491eb9bcf1650978dd1b8ea44f478327d8b636bc0"
+   "s": 18303,
+   "h": "699a4d11c8107425db218f48d80a1786b2e8488d0f1c4daa21cb689b817cb82e"
   },
   {
    "p": "einbinden.html",
-   "s": 58123,
-   "h": "a964bad95001a96030161f0715cbc6960f54ac6d3fbcb60b62ff07d09345d24e"
+   "s": 59779,
+   "h": "f10363e1aef9099a2ba91f222a7518a50c188a385e347fc8bcce670a653a4506"
+  },
+  {
+   "p": "favicon.ico",
+   "s": 12090,
+   "h": "d5ef61cb780ac29613e137e3f5e2103928d9b1b102772d90cfe3551b52e5c6da"
   },
   {
    "p": "gamekit.js",
@@ -4773,8 +4798,8 @@
   },
   {
    "p": "index.html",
-   "s": 54582,
-   "h": "1b4dbf5de5c48fa8007abfefe95bc2c1ae0a05b93d9862685213d2ceaa98d61e"
+   "s": 55829,
+   "h": "9dcb66205fb922e351a3a3f9b71adfb852b7492c3a1c23ff34fe19b9eb2ea164"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -4950,6 +4975,11 @@
    "p": "lumo/index.html",
    "s": 3910,
    "h": "814e4ffc32ac5b9a5eb730cd084df82fb3e74e2a9fea94aae09a97952b78c3fb"
+  },
+  {
+   "p": "manifest.webmanifest",
+   "s": 715,
+   "h": "8d3c54ea2493b87a40bd61e7f59e677dec0a1aa91f5483a7a595be4e7f24bbc0"
   },
   {
    "p": "mimori/arcade.css",
