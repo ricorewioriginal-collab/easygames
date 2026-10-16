@@ -4,7 +4,7 @@
 const P = root.planck || require('../vendor/planck-1.4.2.min.js');
 const K = root.KVLevels || require('./levels.js');
 const DT = 1 / 60, GRAVITY = 10;
-const DMG = 0.1, PIG_DMG = 0.3, MIN_V = 1.0;   // Schaden = Aufprallenergie über MIN_V × Faktor
+const DMG = 0.1, PIG_DMG = 0.4, MIN_V = 1.0;   // Schaden = Aufprallenergie über MIN_V × Faktor
 const V = (x, y) => P.Vec2(x, y);
 
 function pullToShot(dx, dy, vmax) {
@@ -67,7 +67,7 @@ function createSim(level, opts) {
     if (other) {
       if (other.kind === 'bird') f *= (e.kind === 'block' && K.BIRDS[other.type].mult[e.m]) || 1.2, f *= other.power || 1;
       else if (other.kind === 'eagle') f *= 4;
-      else if (other.kind === 'terrain' && e.kind === 'pig') f *= 0.6;
+      else if (other.kind === 'terrain' && e.kind === 'pig') f *= 1.5;   // Stürze sind für Schweine gefährlich
     }
     const dmg = E * f;
     if (dmg < 0.02) return;
@@ -254,8 +254,11 @@ function createSim(level, opts) {
         b.body.destroyFixture(fx); b.body.createFixture(new P.Circle(T.r), { density:T.density, friction:0.6, restitution:0.25, userData:b });
         ev({ type:'deflate', ent:b });
       }
-      if (b.hit && sp < 0.5) { if (!b.slowSince) b.slowSince = S.time; } else b.slowSince = 0;
-      if ((b.slowSince && S.time - b.slowSince > 0.9) || age > 11 || (!b.hit && age > 1.5 && sp < 0.3)) { b.done = true; kill(b); }
+      if (b.hit && sp < 1.2) { if (!b.slowSince) b.slowSince = S.time; } else b.slowSince = 0;
+      // Nach dem ersten Aufprall rollt ein Vogel nicht ewig weiter; außerhalb des Levels ist sein Zug vorbei
+      if (b.hit && !b.damped) { b.damped = true; b.body.setLinearDamping(0.8); b.body.setAngularDamping(2); }
+      const p = b.body.getPosition(), out = p.x > level.width + 8 || p.x < -12;
+      if ((b.slowSince && S.time - b.slowSince > 0.7) || age > 8 || out || (!b.hit && age > 1.5 && sp < 0.3)) { b.done = true; kill(b); }
     }
     if (S.state === 'flying' && S.active.every(b => b.done || b.dead)) {
       S.active = [];
