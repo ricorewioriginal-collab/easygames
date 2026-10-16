@@ -11,7 +11,7 @@ import { buildingGeometry, carGeometry, cropGeometry, Parts, personGeometry, sca
 export type Quality = 'low' | 'medium' | 'high';
 
 const ICONS: Record<string, string> = {
-  rent: '💰', cash: '💵', harvest: '🌾', supply: '📦', ready: '✅', materials: '🧱', noroad: '🚧', plant: '🌱',
+  rent: '💰', cash: '💵', harvest: '🌾', supply: '📦', ready: '✅', materials: '🧱', noroad: '🚧', plant: '🌱', help: '🤝',
 };
 
 function emojiTexture(emoji: string, bubble = true): THREE.Texture {
@@ -178,6 +178,9 @@ export class World {
     this.scene.add(this.train, this.ship, this.plane);
     this.setCity(city);
   }
+
+  /** Beim Nachbarbesuch: eigene Symbole statt des Spielzustands (z. B. 🤝 an Gebäuden, denen man helfen kann). */
+  statusFor: ((b: Building) => string | undefined) | null = null;
 
   setCity(city: City): void {
     this.city = city;
@@ -474,7 +477,7 @@ export class World {
   }
 
   private updateStatus(b: Building, bm: BMesh, def: BuildingDef): void {
-    const st = this.city.status(b);
+    const st = this.statusFor ? { kind: this.statusFor(b) ?? 'none' } : this.city.status(b);
     let kind: string | undefined = ICONS[st.kind] ? st.kind : undefined;
     if (kind === 'plant' && b.state !== 'done') kind = undefined;
     if (kind === 'harvest' && b.job) kind = b.job;

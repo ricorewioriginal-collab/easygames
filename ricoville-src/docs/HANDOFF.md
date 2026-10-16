@@ -16,12 +16,12 @@ Lies das zuerst, wenn du an RicoVille weiterarbeitest (Mensch oder neue Sitzung)
 
 ## Regeln, die bleiben müssen
 - Keine Namen, Texte, Grafiken, Klänge oder Logos von CityVille/Zynga; keine Behauptung einer Verbindung.
-- Keine Geheimnisse im Repo oder Client. Alles, was andere Spieler betrifft, nur über Server-Funktionen.
+- Keine Geheimnisse im Repo oder Client. Alles, was andere Spieler betrifft, muss durch die Firestore-Regeln begrenzt sein (Spark-Tarif, keine Cloud Functions); Regeländerungen immer mit `firebase/` testen.
 - Nichts als getestet bezeichnen, was nicht getestet wurde.
 - Andere Spiele, deren Caches und Spielstände nicht anfassen.
 
 ## Nächste sinnvolle Schritte
 1. Auf echten Geräten spielen (iPhone/Safari, Android), Balancing der ersten Stunde nachschärfen.
 2. Eigene Symbole je Gebäude im Baumenü (aus den 3D-Modellen gerendert).
-3. Nachbarn: Firebase-Zugang klären, Cloud Functions nach FIREBASE_SETUP.md, Emulator-Tests.
+3. Nachbarn mit zwei echten Google-Konten ausprobieren (Regeln vorher in der Konsole veröffentlichen, siehe FIREBASE_SETUP.md).
 4. Mehr Abwechslung: Ereignisse (Feste, Jahreszeiten), weitere Aufgabenketten.

@@ -2,7 +2,7 @@
 import { BUILDING, ROAD_COST } from '../catalogs/buildings';
 import { CROP, ITEM, MARKET, ORDER, RECIPE } from '../catalogs/items';
 import { ACHIEVEMENTS, QUEST, QUESTS, TASK_TEMPLATES } from '../catalogs/quests';
-import type { Building, BuildingDef, CityState, GameEvent, GoalSpec, Mode, QuestDef, Result, Rot, TaskState } from './types';
+import type { Building, BuildingDef, CityState, GameEvent, GoalSpec, Mode, QuestDef, Result, Rot, SocialState, TaskState } from './types';
 
 export const MAP = 48;
 export const SECTOR = 8;
@@ -12,6 +12,18 @@ export const BASE_STORAGE = 50;
 export const BASE_POPCAP = 0;
 export const ENERGY_REGEN_S = 180;
 export const MAX_LEVEL = 60;
+/** Nachbarn: so viele Gebäude darf man je Nachbar und Tag helfen; Belohnungen sind feste kleine Werte. */
+export const NEIGHBOR_HELPS = 5;
+export const HELP_REWARD = { coins: 10, xp: 1 };
+export const VISIT_REWARD_PER_HELP = { coins: 15, xp: 1 };
+export const GIFT_ITEMS = ['bretter', 'ziegel', 'glas', 'stahl', 'holz'] as const;
+export const GIFT_AMOUNT = 2;
+
+/** UTC-Tag als Zahl JJJJMMTT – dieselbe Rechnung wie in den Firestore-Regeln (request.time). */
+export function utcDay(ms: number): number {
+  const d = new Date(ms);
+  return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
+}
 
 const ok: Result = { ok: true };
 const fail = (msg: string): Result => ({ ok: false, msg });
@@ -881,6 +893,59 @@ export class City {
   }
 
   /** Simulationsschritt: Bauzeiten, Energie, Aufgaben. Unabhängig vom Rendering. */
+  // ------------------------------------------------------------ Nachbarn
+  private socialToday(): SocialState {
+    const day = utcDay(this.now());
+    if (!this.s.social || this.s.social.day !== day) this.s.social = { day, helped: {}, gifted: [] };
+    return this.s.social;
+  }
+  helpsLeft(nid: string): number {
+    return Math.max(0, NEIGHBOR_HELPS - (this.socialToday().helped[nid]?.length ?? 0));
+  }
+  helpedToday(nid: string, uid: number): boolean {
+    return this.socialToday().helped[nid]?.includes(uid) ?? false;
+  }
+  /** Beim Besuch einem Gebäude des Nachbarn helfen: kleine feste Belohnung für den Besucher. */
+  helpNeighbor(nid: string, uid: number): Result {
+    if (this.creative) return fail('Im Kreativ-Modus gibt es keine Nachbarn.');
+    const st = this.socialToday();
+    const list = (st.helped[nid] ??= []);
+    if (list.includes(uid)) return fail('Hier hast du heute schon geholfen.');
+    if (list.length >= NEIGHBOR_HELPS) return fail(`Heute hast du hier schon ${NEIGHBOR_HELPS}× geholfen. Morgen wieder!`);
+    list.push(uid);
+    this.earn(HELP_REWARD.coins, HELP_REWARD.xp);
+    this.stat('helped');
+    return ok;
+  }
+  canGift(nid: string): boolean {
+    return !this.creative && !this.socialToday().gifted.includes(nid);
+  }
+  markGifted(nid: string): void {
+    const st = this.socialToday();
+    if (!st.gifted.includes(nid)) st.gifted.push(nid);
+    this.stat('gifts');
+  }
+  /** Ein Nachbar hat geholfen (n Gebäude, höchstens NEIGHBOR_HELPS). */
+  receiveVisit(n: number): Result {
+    if (this.creative) return fail('Im Kreativ-Modus gibt es keine Nachbarn.');
+    const k = Math.max(1, Math.min(NEIGHBOR_HELPS, Math.floor(n)));
+    this.earn(VISIT_REWARD_PER_HELP.coins * k, VISIT_REWARD_PER_HELP.xp * k);
+    return ok;
+  }
+  canReceiveGift(item: string): Result {
+    if (this.creative) return fail('Im Kreativ-Modus gibt es keine Nachbarn.');
+    if (!(GIFT_ITEMS as readonly string[]).includes(item)) return fail('Unbekanntes Geschenk.');
+    if (!this.canStore({ [item]: GIFT_AMOUNT })) return fail('Dein Lager ist voll. Mach erst Platz.');
+    return ok;
+  }
+  receiveGift(item: string): Result {
+    const r = this.canReceiveGift(item);
+    if (!r.ok) return r;
+    this.addItems({ [item]: GIFT_AMOUNT });
+    this.emit({ type: 'gift', id: item, n: GIFT_AMOUNT });
+    return ok;
+  }
+
   update(): void {
     const now = this.now();
     this.regen();

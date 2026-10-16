@@ -23,8 +23,8 @@
 | Google-Speicher (easygames-Cloud-Skript) | 🟡 | Einbindung getestet, echte Anmeldung nicht |
 | PWA, offline, Update-Hinweis | 🟡 | Dateien gebaut; Installation/Update nicht automatisch getestet |
 | Musik, Klänge, Umgebung | 🟡 | erzeugt, nicht automatisch geprüft |
-| Nachbarn, Besuche, Geschenke | ⛔ | braucht Cloud Functions und Firebase-Zugang; Fenster sagt das ehrlich |
-| Server-seitige Prüfung | ⛔ | siehe SECURITY.md |
+| Nachbarn, Besuche, Helfen, Geschenke, Post | 🟡 | Regeln im Firestore-Emulator getestet, Spiel per E2E mit nachgebildetem Firestore; gegen echtes Firebase nicht getestet, Regeln müssen in der Konsole veröffentlicht werden |
+| Server-seitige Prüfung | ⛔ | nur Firestore-Regeln (Spark), siehe SECURITY.md |
 
 ## Bekannte Schwächen
 - Rückgängig einer Straße nimmt Aufgaben-Fortschritt („Straßen bauen") nicht zurück.

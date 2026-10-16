@@ -8,5 +8,5 @@
 
 ## Grenzen (ehrlich)
 - Ein Einzelspieler-Stand im Browser lässt sich mit Entwicklerwerkzeugen verändern. Die Prüfsumme erkennt Beschädigung, nicht Absicht. Für ein Einzelspiel ohne Bestenliste ist das vertretbar.
-- **Server-seitige Prüfung gibt es noch nicht.** Sobald Nachbarn, Geschenke oder Ranglisten kommen, müssen alle Werte, die andere Spieler betreffen, über Cloud Functions geprüft und geschrieben werden. Entwurf: `firebase/firestore.rules` (nicht ausgerollt).
+- **Nachbarn ohne Server-Funktionen** (Spark-Tarif): Was andere Spieler betrifft, begrenzen allein die Firestore-Regeln in `cloud/firestore.rules` (eine Nachricht je Absender, Art und Tag; nur kleine, feste Geschenke; öffentliche Kurzansicht ohne Münzen und Lager, Größe begrenzt). Das Spiel prüft alles Fremde noch einmal (`src/social/codec.ts`) und setzt fremde Texte nur als Text. Den Google-Namen veröffentlicht das Spiel nicht, nur den Stadtnamen. Eine Bestenliste wäre so nicht fälschungssicher und gibt es deshalb nicht.
 - Cloud-Abgleich zwischen Geräten: das Cloud-Skript arbeitet pro Schlüssel nach „neuester gewinnt" und hebt eine ältere Fassung auf. Spielt man gleichzeitig auf zwei Geräten, kann der ältere Fortschritt verloren gehen. Innerhalb eines Geräts schützt `rev` vor zwei Tabs.

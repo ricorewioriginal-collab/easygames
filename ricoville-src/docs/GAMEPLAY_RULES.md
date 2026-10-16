@@ -39,6 +39,12 @@ Alle Regeln stehen in `src/core/city.ts` und sind ohne Grafik testbar (`tests/ci
 - 32 Hauptaufgaben bilden die Stadtgeschichte (jede schaltet die nächste frei), 52 Nebenaufgaben öffnen sich nach dem Tutorial (m08). Ziele: Ereignisse zählen (bauen, ernten, kassieren, liefern), Besitz, Einwohner, Level, Gebiete. Belohnung wird genau einmal ausgezahlt.
 - Tagesziele (3 je Tag) und ein Wochenziel aus Vorlagen; 18 Erfolge.
 
+## Nachbarn
+- Nur mit Google-Anmeldung und nicht im Kreativ-Sandkasten. Tage zählen nach UTC.
+- Beim Besuch kann man je Nachbar und Tag an 5 verschiedenen Häusern, Läden, Feldern oder Betrieben helfen (je +10 Münzen, +1 Erfahrung). Deko und Gemeinschaftsgebäude zählen nicht.
+- Je Nachbar und Tag ein Geschenk: 2× Bretter, Ziegel, Glas, Stahl oder Holz. Kommt es an und das Lager ist voll, bleibt es in der Post.
+- Wer besucht wurde, bekommt beim Annehmen je Hilfe +15 Münzen und +1 Erfahrung.
+
 ## Zeit und Schutz
 - Die Uhr ist injiziert. Wird die Systemzeit zurückgestellt, merkt sich der Stand die höchste gesehene Zeit (`seen`); Timer laufen dann nicht rückwärts und es entsteht kein Doppel-Ertrag.
 - Offline-Fortschritt: Wachstum, Bau und Mietzeit laufen weiter; abgeholt wird beim nächsten Spielen.

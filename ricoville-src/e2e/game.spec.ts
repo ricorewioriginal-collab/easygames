@@ -1,48 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-/** Echte Fehler sammeln; Netzfehler des optionalen Google-/Firebase-Skripts zählen nicht (Testumgebung offline). */
-function watchErrors(page: Page): string[] {
-  const list: string[] = [];
-  page.on('pageerror', (e) => list.push(`pageerror: ${e.message}`));
-  page.on('console', (m) => {
-    if (m.type() !== 'error') return;
-    const t = m.text();
-    if (/Failed to load resource|firebase|gstatic|googleapis|ERR_|net::/i.test(t)) return;
-    list.push(t);
-  });
-  return list;
-}
-
-async function boot(page: Page): Promise<void> {
-  await page.goto('/ricoville/?e2e=1');
-  await expect(page.locator('#boot')).toHaveCount(0, { timeout: 45_000 });
-  await expect(page.locator('#btn-new')).toBeVisible();
-}
-
-async function newCity(page: Page, name = 'Testhausen'): Promise<void> {
-  await boot(page);
-  await page.click('#btn-new');
-  await page.fill('#cityname', name);
-  await page.click('#btn-found');
-  await expect(page.locator('#tb-build')).toBeVisible();
-  // Begrüßungsfenster der Bürgermeisterin schließen
-  await page.locator('.panel .x').first().click();
-  await expect(page.locator('.panel')).toHaveCount(0);
-}
-
-const city = (page: Page) => page.evaluate(() => (window as any).__rv.city.s);
-
-async function tapTile(page: Page, x: number, y: number, mobile: boolean): Promise<void> {
-  await page.evaluate(([tx, ty]) => (window as any).__rv.look(tx! + 0.5, ty! + 0.5), [x, y]);
-  const p = await page.evaluate(([tx, ty]) => (window as any).__rv.screen(tx, ty) as { x: number; y: number }, [x, y]);
-  if (mobile) await page.touchscreen.tap(p.x, p.y);
-  else await page.mouse.click(p.x, p.y);
-  await page.waitForTimeout(150);
-}
-
-const advance = (page: Page, sec: number) => page.evaluate((s) => (window as any).__rv.advance(s), sec);
+import { expect, test } from '@playwright/test';
+import { advance, boot, city, newCity, tapTile, watchErrors } from './helpers';
 
 test('Startmenü lädt ohne Fehler und ohne fremde Markennamen', async ({ page }) => {
   const errs = watchErrors(page);

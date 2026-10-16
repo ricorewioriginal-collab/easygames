@@ -20,5 +20,68 @@ service cloud.firestore {
         && request.resource.data.rt.size() < 2000;
       allow list, update: if false;
     }
+    // ---- RicoVille-Nachbarn (Spark-Tarif, ohne Server). Der Schutz liegt allein in diesen Regeln:
+    //  - Jeder schreibt nur seine eigene Stadtansicht und seine eigene Nachbarliste.
+    //  - In fremde Posteingänge passen nur kleine, fest geformte Nachrichten: höchstens eine je Absender, Art und Tag
+    //    (Dokument-ID = Absender_Tag_Art; Ändern und Löschen am selben Tag ist verboten).
+    //  - Der Empfänger darf eine Nachricht nur als erledigt markieren und erst ab dem Folgetag löschen.
+    //  Tests: ricoville-src/firebase (npm test, lokaler Emulator).
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    // Heutiger Tag in UTC als Zahl JJJJMMTT (dieselbe Rechnung macht das Spiel)
+    function today() { return request.time.year() * 10000 + request.time.month() * 100 + request.time.day(); }
+    function shortText(v, max) { return v is string && v.size() <= max; }
+
+    // Öffentliche Kurzansicht einer Stadt: angemeldete Spieler können sie ansehen (besuchen) und die neuesten auflisten.
+    match /ricoville_cities/{uid} {
+      allow get: if signedIn();
+      allow list: if signedIn() && request.query.limit <= 30;
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['v', 'name', 'crest', 'slogan', 'level', 'pop', 't', 'layout'])
+        && request.resource.data.keys().hasAll(['v', 'name', 'level', 'pop', 't', 'layout'])
+        && request.resource.data.v == 1
+        && shortText(request.resource.data.name, 24) && request.resource.data.name.size() > 0
+        && (!('crest' in request.resource.data) || shortText(request.resource.data.crest, 8))
+        && (!('slogan' in request.resource.data) || shortText(request.resource.data.slogan, 60))
+        && request.resource.data.level is int && request.resource.data.level >= 1 && request.resource.data.level <= 999
+        && request.resource.data.pop is int && request.resource.data.pop >= 0 && request.resource.data.pop <= 1000000
+        && request.resource.data.t is int
+        && shortText(request.resource.data.layout, 60000);
+      allow delete: if isOwner(uid);
+
+      // Eigene Nachbarliste (nur der Besitzer sieht und ändert sie)
+      match /neighbors/{nid} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && nid != uid
+          && request.resource.data.keys().hasOnly(['name', 't'])
+          && shortText(request.resource.data.name, 24)
+          && request.resource.data.t is int;
+      }
+
+      // Posteingang: Besuch, Geschenk oder „Hallo, Nachbar!"
+      match /inbox/{mid} {
+        allow read: if isOwner(uid);
+        allow create: if signedIn() && request.auth.uid != uid
+          && exists(/databases/$(database)/documents/ricoville_cities/$(uid))
+          && request.resource.data.keys().hasOnly(['from', 'name', 'type', 'day', 'item', 'n', 'done'])
+          && request.resource.data.keys().hasAll(['from', 'name', 'type', 'day', 'done'])
+          && request.resource.data.from == request.auth.uid
+          && shortText(request.resource.data.name, 24)
+          && request.resource.data.type in ['visit', 'gift', 'hello']
+          && request.resource.data.day == today()
+          && request.resource.data.done == false
+          && mid == request.auth.uid + '_' + string(today()) + '_' + request.resource.data.type
+          && (request.resource.data.type == 'gift'
+                ? request.resource.data.item in ['bretter', 'ziegel', 'glas', 'stahl', 'holz']
+                : !('item' in request.resource.data))
+          && (request.resource.data.type == 'visit'
+                ? request.resource.data.n is int && request.resource.data.n >= 1 && request.resource.data.n <= 5
+                : !('n' in request.resource.data));
+        allow update: if isOwner(uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['done'])
+          && request.resource.data.done == true;
+        allow delete: if isOwner(uid) && resource.data.day < today();
+      }
+    }
   }
 }

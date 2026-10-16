@@ -188,3 +188,11 @@ input[type=text] { width: 100%; }
   .logo span, .pulse { animation: none; }
 }
 .update { position: fixed; left: 50%; top: calc(10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 98; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 16px; background: #1d5d99; color: #fff; border-radius: 18px; box-shadow: 0 8px 28px rgba(0,0,0,.3); font-weight: 700; }
+/* ---------- Nachbarbesuch */
+#ui.visiting #bar, #ui.visiting #tools, #ui.visiting #questfab, #ui.visiting #placebar { display: none !important; }
+#visitbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(12px + var(--sab)); display: flex; gap: 8px; align-items: center; background: rgba(35,49,61,.92); color: #fff; padding: 8px 10px; border-radius: 18px; font-weight: 700; font-size: 14px; max-width: calc(100vw - 16px); flex-wrap: wrap; justify-content: center; pointer-events: auto; }
+#visitbar button { min-width: 48px; height: 44px; border-radius: 12px; background: rgba(255,255,255,.14); font-weight: 800; padding: 0 12px; }
+#visitbar button:disabled { opacity: .45; }
+#visitbar .ok { background: var(--good); }
+#visitbar .msg { max-width: 300px; }
+.row input.f { min-width: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid #d9d2c3; font: inherit; font-size: 13px; background: #fff; }

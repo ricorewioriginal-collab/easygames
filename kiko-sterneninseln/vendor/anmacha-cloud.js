@@ -452,5 +452,14 @@
   }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   if (wanted()) sync();
-  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder };
+  // Für Spiele mit Online-Funktionen (z. B. RicoVille-Nachbarn): angemeldeter Nutzer mit frischem ID-Token, sonst null.
+  function account() {
+    if (!wanted()) return Promise.resolve(null);
+    return loadSdk().then(function (u) {
+      u = u || user;
+      if (!u) return null;
+      return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
+    }).catch(function () { return null; });
+  }
+  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, signIn: signIn };
 })();
