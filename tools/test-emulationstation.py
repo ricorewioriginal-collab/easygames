@@ -81,6 +81,11 @@ class Install(Base):
         self.assertEqual([s.findtext('name') for s in syst], ['easygames'])
         self.assertTrue(os.path.isfile(os.path.join(esde, 'gamelists', 'easygames', 'gamelist.xml')))
         self.assertEqual(len(os.listdir(os.path.join(esde, 'downloaded_media', 'easygames', 'covers'))), len(self.games))
+        # Branding: Logo als Marquee je Spiel (gamelist.xml und ES-DE-Medienordner)
+        for g in games:
+            with open(os.path.join(rom, g.findtext('marquee')), 'rb') as f:
+                self.assertEqual(f.read(8), b'\x89PNG\r\n\x1a\n')
+        self.assertEqual(len(os.listdir(os.path.join(esde, 'downloaded_media', 'easygames', 'marquees'))), len(self.games))
 
     def test_idempotent_and_keeps_other_systems(self):
         esde = os.path.join(self.home, 'ES-DE')
