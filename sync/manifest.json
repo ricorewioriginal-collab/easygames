@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7eb7a7a26a05",
- "generated": "2026-10-16T14:59:15+02:00",
- "commit": "aa5088c1842cabe942b8d1d740c8aba6cf838ece",
+ "version": "2c582b45aea6",
+ "generated": "2026-10-16T15:36:20+02:00",
+ "commit": "759c934324772e7179c40fc05c536e007c6a6c07",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3789,7 +3789,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 109325,
-   "h": "743be31eabbf75386146c7359f427bc0b863bfdde8d01052efd80fbdce5c9721"
+   "h": "dafcbcd5c019add7b0ffeb4f6486e5bce6b0676a396def83842fd8780df1442a"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -3823,8 +3823,8 @@
   },
   {
    "p": "bunte-insel/js/buch-data.js",
-   "s": 26447,
-   "h": "821a7e51e7d3dabf641141f847dac256c70d6f9ea598d4ea624cdf2b7328e421"
+   "s": 27129,
+   "h": "2d07561adc2b62804b7943cd658c99937b947e6f789fdeba8dae7dcf0166bb9f"
   },
   {
    "p": "bunte-insel/js/buch.js",
@@ -3938,8 +3938,8 @@
   },
   {
    "p": "bunte-insel/js/i18n-en.js",
-   "s": 285437,
-   "h": "b9a69ba9ce0fe8f668af54bed7d1a68c984a39040591b322449ae2803350fdaa"
+   "s": 292819,
+   "h": "050802a20e7685eb52cfe23e208327521f2124bb2f14543502e9852ce8c5e6fb"
   },
   {
    "p": "bunte-insel/js/i18n.js",
@@ -3953,8 +3953,8 @@
   },
   {
    "p": "bunte-insel/js/inselstory.js",
-   "s": 24881,
-   "h": "429907a18a8e9848b2183104b971e691c165826f1eea2e3c93729a0bac6d62d1"
+   "s": 25655,
+   "h": "5e14213dc338b5ef98556b02964848d15bbd29676b484ebeab053eff10d8a5ca"
   },
   {
    "p": "bunte-insel/js/jump.js",
@@ -3968,8 +3968,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 28328,
-   "h": "1f2d456f795e1694f9d59e8d5e29a48a82fd9be26a315492050980955fa76c49"
+   "s": 28819,
+   "h": "81103c158d0616742e1dc2f68d7e8d369b6fff85e1f6797336db71ce9da1275c"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -3993,8 +3993,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 312347,
-   "h": "6084cb0a35b8f4eac0fb1e7685521321a2799ccaca405a3794bfc29ac4647359"
+   "s": 313547,
+   "h": "77cdb640f83bfa2910fd44e98dfed7b780ddcb66df6f791fdb00552a3412a4ad"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4058,8 +4058,8 @@
   },
   {
    "p": "bunte-insel/js/prisma.js",
-   "s": 7625,
-   "h": "3b3739afa80316c560374c430d59a2e2e4da8f3bc4fb653809f8af1a57124fcd"
+   "s": 49084,
+   "h": "e88093150fda7cc8680c7e62c78cb4132b731b1b607ebb3dadc70396f2ad1325"
   },
   {
    "p": "bunte-insel/js/pups.js",
@@ -4078,8 +4078,8 @@
   },
   {
    "p": "bunte-insel/js/rainbow.js",
-   "s": 25216,
-   "h": "1d1c9687a742b7239024615817e4c3a0a641d17d606ddefb4c1607e82f256f57"
+   "s": 27784,
+   "h": "742d314129cdfa6afb3cf3b8b0b5e34d8d428dce0bfe18213c8e57fc243fbf07"
   },
   {
    "p": "bunte-insel/js/range.js",
@@ -4188,8 +4188,8 @@
   },
   {
    "p": "bunte-insel/js/vehicles.js",
-   "s": 57815,
-   "h": "91c0fc72dff26fffd27d16346498daeb04cad4732b315d6414528141663af6e4"
+   "s": 58692,
+   "h": "2ec26fac9d69e3ffda2e4b54e6c63f9ef798b16d5495974cb9c3bdf7ad620e0d"
   },
   {
    "p": "bunte-insel/js/voxel.js",
@@ -5534,7 +5534,7 @@
   {
    "p": "sync/catalog.json",
    "s": 77208,
-   "h": "c816ab4bbe2da3cfb54f5404a32b65a3da3378425dc4b110f62a3671a83d3cc9"
+   "h": "7f15af479e49fc470e5db38bb9264cee98fe4f943a3de2ef4e62ec00293f15a5"
   },
   {
    "p": "taschi/card.svg",
@@ -6448,8 +6448,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 397365,
-   "h": "f9f1bd9392d5dd131947b9ffb5a5c1dca91752cb8ac8ce66778c659f63abb30e"
+   "s": 397473,
+   "h": "a3f559739424faa70ec30359a99eb792b543c4a76c57041917b2102b4590e175"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -6458,13 +6458,13 @@
   },
   {
    "p": "zotik/minigames.js",
-   "s": 16758,
-   "h": "91859de35f8556650b39fb42c333eb52940041d2116f9a2d1a81f442151d0b4f"
+   "s": 16830,
+   "h": "7d51b7d741029c44c3cb73d2f3ada3b6a497932a2a7d71ff7736332cb60f27b3"
   },
   {
    "p": "zotik/sw.js",
-   "s": 1990,
-   "h": "61c4c032262f13bc88d34e5f2b1a86d13adb421b5be0a5613aba2122b1fa434f"
+   "s": 1989,
+   "h": "069d6a57061e66365460a8c39b1b00f8429c2b6b6a7d07aa3e3155372474e9d5"
   }
  ],
  "vendor": {
