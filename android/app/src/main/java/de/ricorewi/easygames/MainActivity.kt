@@ -25,6 +25,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import de.ricorewi.easygames.core.NativeHtml
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -50,6 +51,10 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
     private lateinit var progressBar: ProgressBar
     private lateinit var retryButton: Button
     private lateinit var settingsButton: Button
+
+    // Start-Splash (Logo auf dunklem Grund): liegt über allem, bis die erste Seite steht (mindestens kurz, höchstens ~2 s)
+    private var splashView: View? = null
+    private var splashSince = 0L
 
     private var contentStarted = false      // Start-URL wurde geladen
     private var pageLoaded = false          // Seite fertig geladen (JS-Events erlaubt)
@@ -81,6 +86,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         buildOverlay()
         applyImmersive()
         createWebView()
+        showSplash()
 
         coordinator.addListener(stateListener)
         updateOverlay()
@@ -94,6 +100,28 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
                 }
             }
         }
+    }
+
+    private fun showSplash() {
+        val v = ImageView(this)
+        v.setBackgroundColor(getColor(R.color.bg))
+        v.setImageResource(R.drawable.splash_logo)
+        v.scaleType = ImageView.ScaleType.FIT_CENTER
+        v.setPadding(48, 48, 48, 48)
+        v.isClickable = true            // fängt Berührungen ab, solange sichtbar
+        root.addView(v, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        splashView = v
+        splashSince = android.os.SystemClock.uptimeMillis()
+        v.postDelayed({ dismissSplash() }, 2000)
+    }
+
+    private fun dismissSplash() {
+        val v = splashView ?: return
+        splashView = null
+        val wait = (600 - (android.os.SystemClock.uptimeMillis() - splashSince)).coerceAtLeast(0)
+        v.postDelayed({
+            v.animate().alpha(0f).setDuration(250).withEndAction { (v.parent as? ViewGroup)?.removeView(v) }.start()
+        }, wait)
     }
 
     override fun onStart() {
@@ -247,6 +275,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
     override fun onPageFinished(url: String?) {
         if (url == Origin.PREPARE_URL) return
         pageLoaded = true
+        dismissSplash()
         if (clearHistoryPending) {
             clearHistoryPending = false
             webView?.clearHistory()

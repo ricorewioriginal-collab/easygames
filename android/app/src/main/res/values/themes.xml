@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dunkles Theme ohne Titelleiste; Hintergrund = Seitenhintergrund, damit beim Start nichts blitzt. -->
+    <!-- Dunkles Theme ohne Titelleiste; Start-Hintergrund = Splash (Logo auf dunklem Grund), danach deckt die Seite ab. -->
     <style name="Theme.EasyGames" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:windowBackground">@drawable/splash</item>
         <item name="android:colorBackground">@color/bg</item>
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:navigationBarColor">@color/bg</item>
