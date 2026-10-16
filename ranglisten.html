@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Ranglisten – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78;--me:#2b4d9b}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+header h1{font-size:22px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+label{display:block;font-size:12px;letter-spacing:.08em;color:var(--mut);margin:0 0 5px;text-transform:uppercase}
+select,input{width:100%;min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;padding:0 12px}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.tab{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:99px;padding:8px 14px;font:600 13px system-ui;cursor:pointer;min-height:38px}
+.tab[aria-pressed=true]{background:var(--acc);color:#10140a;border-color:var(--acc)}
+ol{list-style:none;margin:14px 0 0;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+li{display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+li.me{background:var(--me);font-weight:700}
+li .rk{width:28px;text-align:right;color:var(--mut);flex:none;font-variant-numeric:tabular-nums}
+li:nth-child(-n+3) .rk{color:var(--acc);font-weight:800}
+li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li .sc{flex:none;font-variant-numeric:tabular-nums}
+li.empty{color:var(--mut);justify-content:center;padding:22px 14px}
+.note{color:var(--mut);font-size:13px;margin:10px 2px 0}
+.card{margin:20px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:16px;margin:0 0 6px}
+.card p{margin:6px 0;color:var(--mut);font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.btn{flex:1 1 180px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 14px system-ui;cursor:pointer;padding:0 14px}
+.btn.pri{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.btn.dan{border-color:#ff7b8f;color:#ffb3bf}
+.ok{color:#81c995;font-weight:600}
+.err{color:#f28b82}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🏆 Ranglisten</h1>
+    <a class="back" id="back" href="index.html">← Spiele</a>
+  </header>
+
+  <label for="game">Spiel</label>
+  <select id="game" aria-label="Spiel wählen"><option>Lade …</option></select>
+  <div class="tabs" id="tabs" role="group" aria-label="Ranglisten des Spiels"></div>
+  <ol id="list" aria-live="polite"><li class="empty">Lade …</li></ol>
+  <p class="note" id="note"></p>
+
+  <section class="card" id="me" aria-labelledby="meTitle"></section>
+</main>
+
+<!-- Nur Anmeldung (kein Spielstand-Abgleich, kein Knopf, keine Ranglisten-Laufzeit): data-ui/data-sync/data-board = off -->
+<script src="cloud/anmacha-cloud.js" data-game="ranglisten" data-prefix="anmacha-ranglisten-ohne-spielstand" data-ui="off" data-sync="off" data-board="off" defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var B = window.AnMaChaBoard, Cloud = window.AnMaChaCloud;
+  var qs = new URLSearchParams(location.search), $ = function (id) { return document.getElementById(id); };
+  if (qs.get('embed') === '1') document.body.classList.add('embed');
+  var APP = location.hostname === 'appassets.local' || location.hostname === 'appassets.androidplatform.net' || !!window.EasyGamesApp || /(RicoReWi|EasyGames)App\//.test(navigator.userAgent);
+  var games = [], cur = null, boards = [], bi = 0, rows = [], loading = false, msg = '', myUid = '', gen = 0, busy = false, status = '';
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function user() { return Cloud && Cloud.user ? Cloud.user() : null; }
+  function prefixes(g) { return String((g.cloud && g.cloud.prefix) || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+
+  function draw() {
+    var b = boards[bi];
+    $('tabs').innerHTML = boards.length > 1 ? boards.map(function (x, i) { return '<button type="button" class="tab" data-i="' + i + '" aria-pressed="' + (i === bi) + '">' + esc(x.title) + '</button>'; }).join('') : '';
+    var h = '';
+    if (loading) h = '<li class="empty">Lade …</li>';
+    else if (!boards.length) h = '<li class="empty">Für dieses Spiel gibt es noch keine Rangliste.</li>';
+    else if (!rows.length) h = '<li class="empty">Noch keine Einträge – sei der Erste!</li>';
+    else h = rows.map(function (r, i) {
+      var v = B.fmt(b.fmt || 'int', r.s) + (b.fmt ? '' : (b.unit ? ' ' + b.unit : ''));
+      return '<li' + (myUid && r.uid === myUid ? ' class="me"' : '') + '><span class="rk">' + (i + 1) + '</span><span class="nm">' + esc(r.n) + '</span><span class="sc">' + esc(v) + '</span></li>';
+    }).join('');
+    $('list').innerHTML = h;
+    $('note').textContent = boards.length && !loading ? (b.title + ' – Top ' + Math.max(rows.length, 0)) + (msg ? ' · ' + msg : '') : msg;
+  }
+  function loadBoard() {
+    var my = ++gen;
+    if (!boards.length) { rows = []; loading = false; draw(); return; }
+    loading = true; draw();
+    B.query(cur.cloud.game, boards[bi], 25).then(function (r) { if (my === gen) { rows = r; msg = ''; } }).catch(function (e) { if (my === gen) { rows = []; msg = e.message || 'Rangliste gerade nicht erreichbar.'; } })
+      .then(function () { if (my === gen) { loading = false; draw(); } });
+  }
+  function selectGame(id) {
+    cur = games.filter(function (g) { return g.id === id; })[0] || games[0];
+    if (!cur) return;
+    try { localStorage.setItem('anmacha-board-last', cur.id); } catch (e) {}
+    $('game').value = cur.id; boards = []; bi = 0; rows = []; loading = true; msg = ''; draw();
+    var my = ++gen;
+    B.probe(cur.cloud.game, B.localPairs(prefixes(cur))).then(function (bs) { if (my !== gen) return; boards = bs; bi = 0; loadBoard(); }).catch(function () { boards = []; loading = false; draw(); });
+  }
+
+  // ---- Meine Freigabe ----
+  function drawMe() {
+    var u = user(), h = '<h2 id="meTitle">Mitmachen</h2>';
+    if (!u) {
+      h += '<p>Mit Google anmelden, einen Spitznamen wählen und deine Bestwerte freigeben. Öffentlich sind <b>nur Spitzname und Bestwert</b> – keine Google-Daten. Du kannst die Freigabe jederzeit beenden, dann werden alle deine Einträge gelöscht.</p>';
+      h += APP ? '<p>In der App: Öffne ein Spiel, tippe auf ☁ und verbinde dein Google-Konto – danach erscheint es hier.</p>' : '<div class="row"><button class="btn pri" id="bIn" type="button">Mit Google anmelden</button></div>';
+    } else if (!B.shared()) {
+      h += '<p>Andere sehen nur deinen Spitznamen und deinen Bestwert – keine Google-Daten. Jederzeit widerrufbar.</p><label for="nick">Spitzname (2–20 Zeichen)</label><input id="nick" type="text" maxlength="20" autocomplete="off" value="' + esc(B.nick()) + '">';
+      h += '<div class="row"><button class="btn pri" id="bShare" type="button"' + (busy ? ' disabled' : '') + '>Bestwerte öffentlich zeigen</button></div>';
+    } else {
+      h += '<p class="ok">● Freigegeben als „' + esc(B.nick()) + '“</p><p>Deine Bestwerte werden beim Spielen automatisch eingetragen und erscheinen in den Ranglisten.</p>';
+      h += '<div class="row"><button class="btn" id="bName" type="button">Spitzname ändern</button><button class="btn dan" id="bOff" type="button"' + (busy ? ' disabled' : '') + '>Freigabe beenden &amp; Einträge löschen</button></div>';
+    }
+    if (u) h += '<div class="row"><button class="btn" id="bOut" type="button">Abmelden</button></div>';
+    if (status) h += '<p class="' + (/^⚠/.test(status) ? 'err' : 'ok') + '">' + esc(status) + '</p>';
+    $('me').innerHTML = h;
+  }
+  function afterAuth() {
+    var u = user(); if (!u) { drawMe(); return Promise.resolve(); }
+    return u.getIdToken().then(function () { myUid = u.uid || ''; return B.loadProfile(true); }).then(function () { drawMe(); draw(); });
+  }
+  function act(fn, okText) {
+    busy = true; status = ''; drawMe();
+    return Promise.resolve().then(fn).then(function () { status = okText || ''; }).catch(function (e) { status = '⚠ ' + (e && e.message ? e.message : 'Fehlgeschlagen'); })
+      .then(function () { busy = false; drawMe(); return loadBoard(); });
+  }
+  $('me').addEventListener('click', function (e) {
+    var id = e.target && e.target.id;
+    if (id === 'bIn') { Cloud.signIn().then(afterAuth); }
+    else if (id === 'bOut') { Cloud.signOut().then(function () { myUid = ''; status = ''; drawMe(); draw(); }); }
+    else if (id === 'bShare') { var n = $('nick').value; act(function () { return B.saveProfile(true, n).then(function () { return B.submitLocal(games); }); }, '✓ Freigegeben. Deine Bestwerte werden eingetragen.'); }
+    else if (id === 'bName') { var nn = window.prompt('Neuer Spitzname (2–20 Zeichen):', B.nick()); if (nn != null) act(function () { return B.saveProfile(true, nn).then(function () { return B.submitLocal(games); }); }, '✓ Spitzname geändert.'); }
+    else if (id === 'bOff') { if (window.confirm('Alle deine Ranglisten-Einträge in allen Spielen löschen und die Freigabe beenden?')) act(function () { return B.saveProfile(false, '').then(function () { return B.removeAll(games); }); }, '✓ Freigabe beendet, Einträge gelöscht.'); }
+  });
+  $('tabs').addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('.tab'); if (t) { bi = +t.dataset.i; loadBoard(); } });
+  $('game').addEventListener('change', function () { selectGame(this.value); });
+
+  if (!B || !Cloud) { $('list').innerHTML = '<li class="empty">Ranglisten sind gerade nicht verfügbar.</li>'; return; }
+  drawMe();
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (c) {
+    games = (c.games || []).filter(function (g) { return g.cloud && g.cloud.game && !B.isOptOut(g.cloud.game); }).sort(function (a, b) { return a.title.localeCompare(b.title, 'de'); });
+    $('game').innerHTML = games.map(function (g) { return '<option value="' + esc(g.id) + '">' + esc((g.icon ? g.icon + ' ' : '') + g.title) + '</option>'; }).join('');
+    var last = ''; try { last = localStorage.getItem('anmacha-board-last') || ''; } catch (e) {}
+    selectGame(qs.get('game') || last || (games[0] && games[0].id));
+  }).catch(function () { $('list').innerHTML = '<li class="empty">Spieleliste gerade nicht erreichbar.</li>'; });
+  // Angemeldeten Nutzer wiederherstellen (ohne Spielstand-Abgleich)
+  if (Cloud.account) Cloud.account().then(afterAuth); else drawMe();
+});
+</script>
+</body>
+</html>

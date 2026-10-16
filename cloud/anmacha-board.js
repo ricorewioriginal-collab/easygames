@@ -1,7 +1,12 @@
 /*! AnMaCha Ranglisten – öffentliche Bestenlisten je Spiel (Firebase Firestore, nur mit Freigabe des Spielers).
- * Wird von cloud/anmacha-cloud.js automatisch nachgeladen (data-board="off" schaltet es ab). Spiele ohne Eintrag in REG bekommen automatisch Ranglisten (Highscore, Gesamtpunkte, Bestzeit, Siege, Sterne, XP), sofern ihr Spielstand passende Felder enthält (detect()).
- * Freigabe: Der Spieler meldet sich mit Google an (☁), wählt einen Spitzname und gibt seine Bestwerte frei. Öffentlich sind NUR Spitzname,
- * Bestwert und Zeitpunkt – keine Google-Daten. Die Freigabe lässt sich jederzeit beenden; dabei werden alle eigenen Einträge gelöscht.
+ * Zwei Teile in einer Datei:
+ *  1) Bibliothek `window.AnMaChaBoard` (Registry, Erkennung, Lesen, Profil, Einreichen) – genutzt von der zentralen Seite ranglisten.html.
+ *  2) Stille Laufzeit in den Spielen (wird von cloud/anmacha-cloud.js nachgeladen, data-board="off" schaltet ab): reicht Bestwerte ein, sobald
+ *     der Spieler sie freigegeben hat. KEINE Oberfläche im Spiel – Ansicht, Freigabe, Spitzname und Löschen liegen auf der Ranglisten-Seite
+ *     (ranglisten.html, einbettbar per iframe oder EasyGames.open('ranglisten')).
+ * Spiele ohne Eintrag in REG bekommen automatisch Ranglisten (Highscore, Gesamtpunkte, Bestzeit, Siege, Sterne, XP), sofern ihr Spielstand
+ * passende Felder enthält (detect()). Öffentlich sind NUR Spitzname, Bestwert und Zeitpunkt – keine Google-Daten. Freigabe jederzeit
+ * widerrufbar (löscht alle eigenen Einträge). Die Freigabe liegt zusätzlich im eigenen Profil users/<uid>/saves/__board und gilt so auf allen Geräten.
  * Daten: boards/<spiel>[__<modus>]/e/<uid> = { n: Spitzname, s: Wert, o: 'desc'|'asc', t: ms } (Regeln: cloud/firestore.rules).
  * Hinweis: Werte kommen vom Gerät des Spielers und sind nicht manipulationssicher (Spaß-Ranglisten). */
 (function () {
@@ -9,7 +14,6 @@
   var Cloud = window.AnMaChaCloud;
   var LS = null;
   try { LS = window.localStorage; } catch (e) {}
-  var NS = '/' + 'anmacha-board';
 
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
   // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden)
@@ -112,8 +116,6 @@
       { id: 'main', title: 'Gesamt-XP', key: 'anmachaGayLife', path: 'xp', order: 'desc', unit: 'XP' }
     ]
   };
-
-  function cfgFor(game) { return REG[game] || null; }
 
   // ---- reine Hilfsfunktionen (getestet in tools/test-board.mjs) ----
   // path: Punkt-getrennt, '*' = alle Kinder (Objekt/Array); agg ('sum'|'max'|'min') fasst die Treffer zusammen (z. B. Punkte über alle Level)
@@ -233,196 +235,170 @@
     return out;
   }
 
-  var game = Cloud && Cloud.game, auto = !!game && !cfgFor(game), boards = game ? (cfgFor(game) || SLOTS) : null;
   var T = { readValue: readValue, walk: walk, detect: detect, SLOTS: SLOTS, better: better, fmt: fmt, cleanName: cleanName, boardId: boardId, entryFields: entryFields };
-  window.AnMaChaBoard = { _t: T, REG: REG };
-  if (!Cloud || !boards || !boards.length || !LS) return;
-
-  var FS = Cloud.FS, KEY_SHARE = 'anmacha-board-share', KEY_NICK = 'anmacha-board-nick', KEY_SENT = 'anmacha-board-sent:';
-  var uidNow = '', panel = null, btn = null, sel = 0, msg = '', rows = null, loading = false, shown = auto ? [] : boards, probedAt = 0, probed = !auto;
+  var KEY_SHARE = 'anmacha-board-share', KEY_NICK = 'anmacha-board-nick', KEY_SENT = 'anmacha-board-sent:', KEY_PROF = 'anmacha-board-prof:';
   function get(k) { try { return LS.getItem(k); } catch (e) { return null; } }
   function put(k, v) { try { LS.setItem(k, v); } catch (e) {} }
-  function user() { return Cloud.user ? Cloud.user() : null; }
+  function C() { return window.AnMaChaCloud || Cloud || null; }
+  function FSb() { var c = C(); return c && c.FS; }
+  function user() { var c = C(); return c && c.user ? c.user() : null; }
   function shared() { return get(KEY_SHARE) === '1' && !!cleanName(get(KEY_NICK)); }
+  function isOptOut(game) { return !!REG[game] && REG[game].length === 0; }
+  function boardsFor(game) { return REG[game] || SLOTS; }
+  function isAuto(game) { return !REG[game]; }
 
   function authFetch(url, opt) {
     var u = user();
     if (!u) return Promise.reject(new Error('login'));
     return u.getIdToken().then(function (t) {
-      uidNow = u.uid || uidNow;
       opt = opt || {}; opt.headers = Object.assign({ Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, opt.headers || {});
       return fetch(url, opt);
     });
   }
-  function docUrl(id, uid) { return FS + 'boards/' + id + '/e/' + uid; }
+  function uidOf(u) { return u.getIdToken().then(function () { return u.uid || ''; }); }
+  function docUrl(id, uid) { return FSb() + 'boards/' + id + '/e/' + uid; }
+  function profUrl(uid) { return FSb() + 'users/' + uid + '/saves/__board'; }
 
-  // Alle synchronisierten Spielstand-Schlüssel dieses Spiels (für die automatische Erkennung)
-  function localPairs() {
-    var out = [], i, k;
-    try { for (i = 0; i < LS.length; i++) { k = LS.key(i); if (k && k.indexOf('anmacha-') !== 0 && (!Cloud.mine || Cloud.mine(k))) out.push([k, LS.getItem(k)]); } } catch (e) {}
-    return out;
+  // ---- Lesen: Top-Liste (ohne Anmeldung möglich) ----
+  function query(game, b, limit) {
+    var q = { structuredQuery: { from: [{ collectionId: 'e' }], orderBy: [{ field: { fieldPath: 's' }, direction: b.order === 'asc' ? 'ASCENDING' : 'DESCENDING' }], limit: limit || 25 } };
+    return fetch(FSb() + 'boards/' + boardId(game, b) + ':runQuery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(q) }).then(function (r) {
+      if (r.status === 403) throw new Error('Ranglisten sind noch nicht freigeschaltet.');
+      if (!r.ok) throw new Error('Rangliste gerade nicht erreichbar.');
+      return r.json();
+    }).then(function (j) {
+      return (j || []).filter(function (x) { return x.document; }).map(function (x) {
+        var f = x.document.fields || {}, nm = x.document.name || '';
+        return { uid: nm.slice(nm.lastIndexOf('/') + 1), n: cleanName(f.n && f.n.stringValue) || '–', s: Number(f.s && (f.s.doubleValue != null ? f.s.doubleValue : f.s.integerValue)) };
+      });
+    });
   }
-  // Automatische Spiele: welche Ranglisten gibt es (Einträge vorhanden oder eigener Wert erkannt)? Je Rangliste eine kleine Abfrage, 60 s zwischengespeichert.
-  function probe() {
-    if (!auto || (probed && Date.now() - probedAt < 60000)) return Promise.resolve();
-    var det = detect(localPairs());
-    return Promise.all(SLOTS.map(function (b) {
-      var q = { structuredQuery: { from: [{ collectionId: 'e' }], orderBy: [{ field: { fieldPath: 's' }, direction: b.order === 'asc' ? 'ASCENDING' : 'DESCENDING' }], limit: 1 } };
-      return fetch(FS + 'boards/' + boardId(game, b) + ':runQuery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(q) })
-        .then(function (r) { if (r.status === 403) { msg = 'Ranglisten sind noch nicht freigeschaltet.'; return false; } return r.ok ? r.json() : false; })
-        .then(function (j) { return det[b.id] != null || !!(j && j.some && j.some(function (x) { return x.document; })); }).catch(function () { return det[b.id] != null; });
-    })).then(function (has) {
-      shown = SLOTS.filter(function (b, i) { return has[i]; });
-      if (sel >= shown.length) sel = 0;
-      probed = true; probedAt = Date.now();
+  // Welche Ranglisten eines Spiels gibt es? Kuratierte: alle; automatische: nur mit Einträgen oder eigenem Wert (pairs = lokale Spielstand-Schlüssel).
+  function probe(game, pairs) {
+    var list = boardsFor(game);
+    if (isOptOut(game)) return Promise.resolve([]);
+    if (!isAuto(game)) return Promise.resolve(list);
+    var det = detect(pairs || []);
+    return Promise.all(list.map(function (b) {
+      return query(game, b, 1).then(function (r) { return det[b.id] != null || r.length > 0; }).catch(function () { return det[b.id] != null; });
+    })).then(function (has) { return list.filter(function (b, i) { return has[i]; }); });
+  }
+
+  // ---- Profil: Freigabe und Spitzname (lokal und im eigenen Firestore-Profil, damit sie auf allen Geräten/Ursprüngen gelten) ----
+  function loadProfile(force) {
+    var u = user();
+    if (!u || !FSb()) return Promise.resolve(shared());
+    return uidOf(u).then(function (uid) {
+      var at = Number(get(KEY_PROF + uid)) || 0;
+      if (!force && Date.now() - at < 600000) return shared();
+      return authFetch(profUrl(uid)).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        var v = d && d.fields && d.fields.d && d.fields.d.stringValue, p = null;
+        if (v) { try { p = JSON.parse(v); } catch (e) {} }
+        if (p) { put(KEY_SHARE, p.s ? '1' : '0'); if (cleanName(p.n)) put(KEY_NICK, cleanName(p.n)); }
+        put(KEY_PROF + uid, String(Date.now()));
+        return shared();
+      });
+    }).catch(function () { return shared(); });
+  }
+  function saveProfile(share, nick) {
+    var u = user(), n = cleanName(nick);
+    if (!u) return Promise.reject(new Error('login'));
+    if (share && !n) return Promise.reject(new Error('Bitte einen Spitznamen mit 2–20 Zeichen wählen.'));
+    put(KEY_SHARE, share ? '1' : '0'); if (n) put(KEY_NICK, n);
+    return uidOf(u).then(function (uid) {
+      var body = { fields: { d: { stringValue: JSON.stringify({ s: share ? 1 : 0, n: n || cleanName(get(KEY_NICK)) || '' }) }, t: { integerValue: String(Date.now()) } } };
+      return authFetch(profUrl(uid), { method: 'PATCH', body: JSON.stringify(body) }).then(function () { put(KEY_PROF + uid, String(Date.now())); });
     });
   }
 
   // ---- Einreichen: bessere Bestwerte (oder neuer Spitzname) in die Cloud schreiben ----
-  var sending = false;
-  function submit() {
+  var sending = false, lastMsg = '';
+  function submitGame(game, pairs) {
     var u = user();
-    if (!u || !shared() || sending) return Promise.resolve();
-    var name = cleanName(get(KEY_NICK)), jobs = [];
-    var det = auto ? detect(localPairs()) : null;
-    boards.forEach(function (b) {
-      var v = auto ? (det[b.id] != null ? det[b.id] : null) : readValue(get(b.key), b.path || '', b.agg);
+    if (!u || !shared() || sending || isOptOut(game)) return Promise.resolve();
+    var name = cleanName(get(KEY_NICK)), jobs = [], auto = isAuto(game), det = auto ? detect(pairs || []) : null;
+    boardsFor(game).forEach(function (b) {
+      var v = auto ? (det[b.id] != null ? det[b.id] : null) : readValue(pairsGet(pairs, b.key), b.path || '', b.agg);
       if (v == null || (b.order === 'asc' && v <= 0)) return;
       jobs.push({ b: b, v: v, id: boardId(game, b) });
     });
     if (!jobs.length) return Promise.resolve();
     sending = true;
-    return u.getIdToken().then(function () {
-      uidNow = u.uid || uidNow;
+    return uidOf(u).then(function (uid) {
       return jobs.reduce(function (p, j) {
         return p.then(function () {
-          var sk = KEY_SENT + uidNow + ':' + j.id, sent = get(sk), prev = null, sentName = '';
+          var sk = KEY_SENT + uid + ':' + j.id, sent = get(sk), prev = null, sentName = '';
           if (sent) { try { var o = JSON.parse(sent); prev = o.v; sentName = o.n; } catch (e) {} }
           if (prev != null && !better(j.b.order, j.v, prev) && sentName === name) return;
           var send = prev != null && !better(j.b.order, j.v, prev) ? prev : j.v;   // nur Namenswechsel: alten Bestwert behalten
-          return authFetch(docUrl(j.id, uidNow), { method: 'PATCH', body: JSON.stringify(entryFields(name, send, j.b.order)) }).then(function (r) {
+          return authFetch(docUrl(j.id, uid), { method: 'PATCH', body: JSON.stringify(entryFields(name, send, j.b.order)) }).then(function (r) {
             if (r.ok) { put(sk, JSON.stringify({ v: send, n: name })); return; }
             if (r.status !== 403) return;
             // Abgelehnt: entweder kennt der Server schon einen besseren Wert (z. B. neues Gerät) oder die Regeln sind noch nicht veröffentlicht.
-            return authFetch(docUrl(j.id, uidNow)).then(function (g) { return g.ok ? g.json() : null; }).then(function (d) {
+            return authFetch(docUrl(j.id, uid)).then(function (g) { return g.ok ? g.json() : null; }).then(function (d) {
               var sv = d && d.fields && d.fields.s ? Number(d.fields.s.doubleValue != null ? d.fields.s.doubleValue : d.fields.s.integerValue) : null;
               if (sv != null && isFinite(sv)) put(sk, JSON.stringify({ v: sv, n: name }));
-              else msg = 'Ranglisten sind noch nicht freigeschaltet.';
+              else lastMsg = 'Ranglisten sind noch nicht freigeschaltet.';
             });
           });
         });
       }, Promise.resolve());
     }).catch(function () {}).then(function () { sending = false; });
   }
+  function pairsGet(pairs, key) { for (var i = 0; i < (pairs || []).length; i++) if (pairs[i][0] === key) return pairs[i][1]; return null; }
 
-  // ---- Lesen: Top 25 einer Rangliste (ohne Anmeldung möglich) ----
-  function load() {
-    var b = shown[sel];
-    if (!b) { rows = []; loading = false; draw(); return; }
-    var id = boardId(game, b);
-    loading = true; rows = null; draw();
-    var q = { structuredQuery: { from: [{ collectionId: 'e' }], orderBy: [{ field: { fieldPath: 's' }, direction: b.order === 'asc' ? 'ASCENDING' : 'DESCENDING' }], limit: 25 } };
-    fetch(FS + 'boards/' + id + ':runQuery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(q) }).then(function (r) {
-      if (r.status === 403) throw new Error('Ranglisten sind noch nicht freigeschaltet.');
-      if (!r.ok) throw new Error('Rangliste gerade nicht erreichbar.');
-      return r.json();
-    }).then(function (j) {
-      rows = (j || []).filter(function (x) { return x.document; }).map(function (x) {
-        var f = x.document.fields || {}, nm = x.document.name || '';
-        return { uid: nm.slice(nm.lastIndexOf('/') + 1), n: cleanName(f.n && f.n.stringValue) || '–', s: Number(f.s && (f.s.doubleValue != null ? f.s.doubleValue : f.s.integerValue)) };
+  // Lokale Spielstände eines Spiels (Schlüssel passend zu den Präfixen bzw. – in einem Spiel – laut Cloud-Skript)
+  function localPairs(prefixes) {
+    var out = [], i, k, c = C();
+    try {
+      for (i = 0; i < LS.length; i++) {
+        k = LS.key(i);
+        if (!k || k.indexOf('anmacha-') === 0) continue;
+        if (prefixes ? prefixes.some(function (p) { return k.indexOf(p) === 0; }) : (c && c.mine && c.mine(k))) out.push([k, LS.getItem(k)]);
+      }
+    } catch (e) {}
+    return out;
+  }
+  // Zentrale Seite: alle auf diesem Ursprung gespeicherten Spiele einreichen (games = Katalog-Einträge mit cloud: {game, prefix})
+  function submitLocal(games) {
+    return (games || []).reduce(function (p, g) {
+      return p.then(function () {
+        if (!g.cloud) return;
+        var pre = String(g.cloud.prefix || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+        return pre.length ? submitGame(g.cloud.game, localPairs(pre)) : undefined;
       });
-      msg = '';
-    }).catch(function (e) { rows = []; msg = e.message || 'Rangliste gerade nicht erreichbar.'; }).then(function () { loading = false; draw(); });
+    }, Promise.resolve());
   }
 
-  function removeAll() {
+  // Freigabe beenden: alle eigenen Einträge löschen (Registry, automatische Ranglisten aller Katalogspiele und auf diesem Gerät eingereichte)
+  function removeAll(games) {
     var u = user();
     if (!u) return Promise.resolve();
-    return u.getIdToken().then(function () {
-      uidNow = u.uid || uidNow;
+    return uidOf(u).then(function (uid) {
       var all = [];
-      Object.keys(REG).forEach(function (g) { (REG[g] || []).forEach(function (b) { all.push(boardId(g, b)); }); });
-      SLOTS.forEach(function (b) { all.push(boardId(game, b)); });
-      try { for (var i = 0, k, pre = KEY_SENT + uidNow + ':'; i < LS.length; i++) { k = LS.key(i); if (k && k.indexOf(pre) === 0 && all.indexOf(k.slice(pre.length)) < 0) all.push(k.slice(pre.length)); } } catch (e) {}   // Ranglisten anderer Spiele, die dieses Gerät eingereicht hat
-      return all.reduce(function (p, id) { return p.then(function () { return authFetch(docUrl(id, uidNow), { method: 'DELETE' }).catch(function () {}); }); }, Promise.resolve());
-    }).then(function () {
-      try { for (var i = LS.length - 1; i >= 0; i--) { var k = LS.key(i); if (k && k.indexOf(KEY_SENT) === 0) LS.removeItem(k); } } catch (e) {}
-    });
-  }
-
-  // ---- Oberfläche ----
-  function el(t, css, txt) { var e = document.createElement(t); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
-  var BS = 'display:block;width:100%;margin:8px 0 0;padding:9px 12px;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font:500 14px system-ui,sans-serif;cursor:pointer;box-sizing:border-box';
-  function button(label, fn) { var b = el('button', BS, label); b.type = 'button'; b.onclick = fn; panel.appendChild(b); return b; }
-  function draw() {
-    if (!panel) return;
-    var b = shown[sel] || boards[0], u = user(), mine = shared();
-    panel.textContent = '';
-    panel.appendChild(el('b', 'font-size:15px', '🏆 Rangliste'));
-    if (shown.length > 1) {
-      var s = el('select', 'display:block;width:100%;margin:8px 0 0;padding:8px;border-radius:8px;border:1px solid #5f6368;background:#202124;color:#fff;font:14px system-ui,sans-serif');
-      shown.forEach(function (x, i) { var o = el('option', '', x.title); o.value = String(i); if (i === sel) o.selected = true; s.appendChild(o); });
-      s.onchange = function () { sel = +s.value; load(); };
-      panel.appendChild(s);
-    } else if (shown.length) panel.appendChild(el('div', 'opacity:.75;font-size:12px;margin-top:2px', b.title));
-    var list = el('ol', 'list-style:none;margin:10px 0 0;padding:0;max-height:min(40vh,260px);overflow:auto');
-    if (loading) list.appendChild(el('li', 'opacity:.7', 'Lade …'));
-    else if (rows && rows.length) rows.forEach(function (r, i) {
-      var me = uidNow && r.uid === uidNow;
-      var li = el('li', 'display:flex;gap:8px;padding:5px 6px;border-radius:6px;' + (me ? 'background:rgba(66,133,244,.35);font-weight:600' : ''));
-      li.appendChild(el('span', 'width:22px;opacity:.7;text-align:right;flex:none', String(i + 1)));
-      li.appendChild(el('span', 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap', r.n));
-      li.appendChild(el('span', 'flex:none;font-variant-numeric:tabular-nums', fmt(b.fmt, r.s) + (b.fmt ? '' : (b.unit ? ' ' + b.unit : ''))));
-      list.appendChild(li);
-    });
-    else list.appendChild(el('li', 'opacity:.7', msg || (shown.length ? 'Noch keine Einträge – sei der Erste!' : (probed ? 'Für dieses Spiel gibt es noch keine Rangliste – spiele ein paar Runden, dann erscheint sie automatisch.' : 'Lade …'))));
-    panel.appendChild(list);
-    if (msg && rows && rows.length) panel.appendChild(el('div', 'margin-top:6px;font-size:12px;color:#f28b82', msg));
-    var hr = el('div', 'margin:12px 0 0;padding-top:10px;border-top:1px solid rgba(255,255,255,.2)');
-    panel.appendChild(hr);
-    if (!u) {
-      hr.appendChild(el('div', 'font-size:13px;opacity:.85', 'Zum Mitmachen mit Google anmelden (☁). Öffentlich sind nur Spitzname und Bestwert.'));
-      if (Cloud.signIn) button('Mit Google anmelden', function () { Cloud.signIn(); });
-    } else if (!mine) {
-      hr.appendChild(el('div', 'font-size:13px;opacity:.85', 'Bestwerte freigeben: Andere sehen nur deinen Spitzname und deinen Bestwert – keine Google-Daten. Jederzeit widerrufbar.'));
-      var inp = el('input', 'display:block;width:100%;margin:8px 0 0;padding:9px 10px;border-radius:8px;border:1px solid #5f6368;background:#202124;color:#fff;font:14px system-ui,sans-serif;box-sizing:border-box');
-      inp.type = 'text'; inp.maxLength = 20; inp.placeholder = 'Spitzname (2–20 Zeichen)'; inp.value = get(KEY_NICK) || ''; inp.setAttribute('aria-label', 'Spitzname');
-      hr.appendChild(inp);
-      var go = el('button', BS, 'Bestwerte öffentlich zeigen'); go.type = 'button'; hr.appendChild(go);
-      go.onclick = function () {
-        var n = cleanName(inp.value);
-        if (!n) { msg = 'Bitte einen Spitznamen mit 2–20 Zeichen wählen.'; rows = rows || []; draw(); return; }
-        put(KEY_NICK, n); put(KEY_SHARE, '1'); msg = '';
-        probedAt = 0; submit().then(probe).then(load);
-      };
-    } else {
-      hr.appendChild(el('div', 'font-size:13px;color:#81c995', '● Freigegeben als „' + (get(KEY_NICK) || '') + '“'));
-      button('Spitzname ändern', function () { var n = cleanName(window.prompt('Neuer Spitzname (2–20 Zeichen):', get(KEY_NICK) || '')); if (n) { put(KEY_NICK, n); submit().then(load); } });
-      button('Freigabe beenden & meine Einträge löschen', function () {
-        if (!window.confirm('Alle deine Ranglisten-Einträge in allen Spielen löschen und die Freigabe beenden?')) return;
-        put(KEY_SHARE, '0'); removeAll().then(function () { msg = ''; load(); });
+      function add(id) { if (all.indexOf(id) < 0) all.push(id); }
+      Object.keys(REG).forEach(function (g) { (REG[g] || []).forEach(function (b) { add(boardId(g, b)); }); });
+      (games || []).forEach(function (g) { if (g.cloud && !REG[g.cloud.game]) SLOTS.forEach(function (b) { add(boardId(g.cloud.game, b)); }); });
+      var cg = C() && C().game; if (cg && !REG[cg]) SLOTS.forEach(function (b) { add(boardId(cg, b)); });
+      try { for (var i = 0, k, pre = KEY_SENT + uid + ':'; i < LS.length; i++) { k = LS.key(i); if (k && k.indexOf(pre) === 0) add(k.slice(pre.length)); } } catch (e) {}
+      return all.reduce(function (p, id) { return p.then(function () { return authFetch(docUrl(id, uid), { method: 'DELETE' }).catch(function () {}); }); }, Promise.resolve()).then(function () {
+        try { for (var i = LS.length - 1, k; i >= 0; i--) { k = LS.key(i); if (k && k.indexOf(KEY_SENT) === 0) LS.removeItem(k); } } catch (e) {}
       });
-    }
+    });
   }
-  function toggle() {
-    var open = panel.style.display === 'none';
-    panel.style.display = open ? 'block' : 'none';
-    if (open) { submit().then(probe).then(load); }
-  }
-  function ui() {
-    if (!document.body) return;
-    btn = el('button', 'position:fixed;left:56px;bottom:8px;z-index:2147483000;width:40px;height:40px;padding:0;border:2px solid #dadce0;border-radius:50%;background:#fff;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.4)', '🏆');
-    btn.type = 'button'; btn.setAttribute('aria-label', 'Rangliste');
-    panel = el('div', 'position:fixed;left:8px;bottom:56px;z-index:2147483001;width:min(300px,calc(100vw - 16px));padding:14px;border-radius:12px;background:rgba(20,20,30,.97);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none;box-sizing:border-box');
-    btn.onclick = toggle;
-    document.body.appendChild(panel); document.body.appendChild(btn);
-  }
-  if (document.body) ui(); else document.addEventListener('DOMContentLoaded', ui);
 
-  // Bestwerte regelmäßig prüfen und bei Verbesserung einreichen (nur mit Freigabe und Anmeldung)
-  setTimeout(submit, 4000);
-  setInterval(function () { if (!document.hidden) submit(); }, 20000);
-  document.addEventListener('visibilitychange', function () { if (document.hidden) submit(); });
-  window.addEventListener('pagehide', submit);
-  window.AnMaChaBoard.submit = submit; window.AnMaChaBoard.removeAll = removeAll;
+  var API = { _t: T, REG: REG, SLOTS: SLOTS, boardsFor: boardsFor, isOptOut: isOptOut, isAuto: isAuto, query: query, probe: probe, loadProfile: loadProfile, saveProfile: saveProfile,
+    shared: shared, nick: function () { return cleanName(get(KEY_NICK)); }, submitGame: submitGame, submitLocal: submitLocal, removeAll: removeAll, localPairs: localPairs,
+    fmt: fmt, cleanName: cleanName, message: function () { return lastMsg; } };
+  window.AnMaChaBoard = API;
+
+  // ---- Stille Laufzeit im Spiel: nur Einreichen, keine Oberfläche ----
+  var game = Cloud && Cloud.game;
+  if (!game || !LS || isOptOut(game)) return;
+  function run() { return loadProfile(false).then(function () { return submitGame(game, localPairs(null)); }); }
+  API.submit = run;
+  setTimeout(run, 4000);
+  setInterval(function () { if (!document.hidden) run(); }, 20000);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) run(); });
+  window.addEventListener('pagehide', run);
 })();

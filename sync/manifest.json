@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0ca1c5793f42",
- "generated": "2026-10-16T22:19:59+00:00",
- "commit": "bc1dbcbc2a307bc6be61c3edb651d29886d086aa",
+ "version": "fbdeb61dcd50",
+ "generated": "2026-10-16T22:33:24+00:00",
+ "commit": "db819fe49db03fb0136e063b14a34660ad16cd53",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4657,14 +4657,19 @@
    "h": "cd9e1426ee54852ddbce25c1ba5dec843d84ef6cac4304084c4d3d7eaf4ef948"
   },
   {
+   "p": "cloud/anmacha-board.js",
+   "s": 24954,
+   "h": "fe99de63bc80147bf844aa217ad85fac5d37317c5879d91d37065d08eb529f6a"
+  },
+  {
    "p": "cloud/anmacha-cloud.js",
-   "s": 30895,
-   "h": "bc39ac594a83f6c8b3b42c8fc1ba955cae9e30a5de7c646ef23d039580f4e3ea"
+   "s": 31101,
+   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
   },
   {
    "p": "cloud/fire-peer.js",
-   "s": 24325,
-   "h": "1f14e3cb26889583004f199765385b3a518759c53757a1984e715d966ae5b73b"
+   "s": 25692,
+   "h": "4a97a25ed51a6dfa7782f7fa2178d6f801d022a25041c4c66ab5b274861ca2cc"
   },
   {
    "p": "device.js",
@@ -4673,8 +4678,8 @@
   },
   {
    "p": "easygames.js",
-   "s": 18303,
-   "h": "699a4d11c8107425db218f48d80a1786b2e8488d0f1c4daa21cb689b817cb82e"
+   "s": 19841,
+   "h": "6434e6c4e74586dc452e076f3a4daf7685db00de01274d0fc0863b96cee442a0"
   },
   {
    "p": "einbinden.html",
@@ -4853,8 +4858,8 @@
   },
   {
    "p": "index.html",
-   "s": 57622,
-   "h": "43b6940350b95057387aaee789d62db448b94d229c8027392f8b2983fe95420e"
+   "s": 57701,
+   "h": "0d04285ce8816ca762939433bdd0c5f0b01e64d58dc78167b90264e8e472ae2a"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -4958,8 +4963,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 30895,
-   "h": "bc39ac594a83f6c8b3b42c8fc1ba955cae9e30a5de7c646ef23d039580f4e3ea"
+   "s": 31101,
+   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5567,6 +5572,11 @@
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
   },
   {
+   "p": "ranglisten.html",
+   "s": 11518,
+   "h": "1ab9d8b422865c6f03b1cf8e15b64a6c5c68c980c530c9fd7a0986256950dfad"
+  },
+  {
    "p": "rico-flap/card.png",
    "s": 16335,
    "h": "0598f334975a0e4831111bbce9b52c023847d29bc16d9dacdd0a1a4ade9ba242"
@@ -5752,19 +5762,19 @@
    "h": "6a1eb89b45d06d87ca4bd966e069db7305b926dfbab9ae6bdc5587437bd669a1"
   },
   {
+   "p": "riftzone/app/assets/index-4483c6bf45.js",
+   "s": 791824,
+   "h": "4483c6bf4556281ab30238135d427a9f9cb103655f85165f227485cc4c5f2539"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
   },
   {
-   "p": "riftzone/app/assets/index-5ddd79a703.js",
-   "s": 783488,
-   "h": "5ddd79a7032640d6a2356edd703796de7e02eeb067a42301c19c4adfce9f55e4"
-  },
-  {
-   "p": "riftzone/app/assets/worker-bf3f9c0f50.js",
-   "s": 97698,
-   "h": "bf3f9c0f509f9a89acfcfe436389c73e67aa33318028c9ad4cdebeaa125b2e88"
+   "p": "riftzone/app/assets/worker-2e5e107c3d.js",
+   "s": 110383,
+   "h": "2e5e107c3d63ff1ee6b25118aebabb9d4a7bf7975623eb2eddca6c5634de6c78"
   },
   {
    "p": "riftzone/app/favicon.svg",
@@ -5779,7 +5789,7 @@
   {
    "p": "riftzone/app/index.html",
    "s": 1131,
-   "h": "9ed04482a5d0104a9c3f21dc5b7447b15241c0cf918d7071ffb2264f845aadf7"
+   "h": "22f32d8a6bc5e019d6b7bedb862d5155d286eb04da9f2dbe39288374c2d13067"
   },
   {
    "p": "riftzone/card.png",
@@ -5795,6 +5805,11 @@
    "p": "riftzone/client/public/favicon.svg",
    "s": 421,
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
+  },
+  {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
   },
   {
    "p": "riftzone/client/src/ui/styles.css",
@@ -5825,6 +5840,11 @@
    "p": "riftzone/e2e/online.mjs",
    "s": 5621,
    "h": "a4866ea87fa1cb4240e93f2a012288890b6ddc678ff3700322103ca7b9c0bae9"
+  },
+  {
+   "p": "riftzone/e2e/p2p.mjs",
+   "s": 5659,
+   "h": "7d891f3bd215af5ac72177348e1f622577e19cba399c1ae3722dfc85fb7b332d"
   },
   {
    "p": "riftzone/e2e/smoke.mjs",
@@ -5858,8 +5878,8 @@
   },
   {
    "p": "riftzone/sw.js",
-   "s": 1970,
-   "h": "f9a6f528059a7d229b931952f3f28f3b44e921e2ddff7c4331e6eb7c96b0f58a"
+   "s": 1974,
+   "h": "237ee1b872f39422b6b7945a01ed5953c9a09f1cf7c870b7757d7ec39a077617"
   },
   {
    "p": "show-voice.js",
@@ -5868,8 +5888,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 89678,
-   "h": "2a8140a6e609d77f2fc2f6ab3d91941b9b65ee5b7ad9514908213c22724e2441"
+   "s": 93655,
+   "h": "890b8adf4a94ebf739b849a5cf8b431ac940b41b57193531591b33b00d9f047c"
   },
   {
    "p": "taschi/card.svg",
