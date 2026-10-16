@@ -162,6 +162,47 @@ const CHUNKS = {
     '   ===              ',
     '                    ',
     '              g     '] },
+  meadowHills: { t: 0, w: [0], p: '0001112221110000122100000', o: [
+    '     o o o         o o   ',
+    '                         ',
+    '                         ',
+    '  g          g           '] },
+  honeySteps: { t: 1, w: [1], p: '000                0000', o: [
+    '         o o o         ',
+    '                       ',
+    '        xxx  xxx       ',
+    '                       ',
+    '    xxx         xx     ',
+    '                    g  '] },
+  mushroomBounce: { t: 1, w: [2], p: '00000   000   000000000', o: [
+    '       *     *         ',
+    '                       ',
+    '                       ',
+    '                       ',
+    '                       ',
+    '                       ',
+    '                       ',
+    ' oo   ooo   ooo  oooo  ',
+    '                       ',
+    '   J     J      h      '] },
+  cloudHop: { t: 1, w: [3], p: '000                 000', o: [
+    '        oo   *         ',
+    '        ==             ',
+    '            ==         ',
+    '    ==          ==     ',
+    '                     f '] },
+  caveLow: { t: 1, w: [4], p: '000000000000000000000000', o: [
+    '      o  r  o  o        ',
+    '                        ',
+    '     ##############     ',
+    '                        ',
+    '      o o o o o o       ',
+    '            g           '] },
+  castleLava: { t: 2, w: [5], p: '000~~~~~~~~~~~~~~~000', o: [
+    '      ooo   ooo      ',
+    '                     ',
+    '     m     m         ',
+    '                  k  '] },
   flyerGap: { t: 1, p: '000000      000000000', o: [
     '        f            ',
     '                     ',
@@ -186,9 +227,10 @@ function chunkList(n) {
   const boss = l === PER_WORLD - 1, count = boss ? 4 : 6 + Math.min(2, Math.floor(w / 2)) + (l > 0 ? 1 : 0);
   const picks = [];
   for (let i = 0; i < count; i++) {
-    const from = favoured.length && rand() < 0.45 ? favoured : generic.concat(favoured);
-    let k, guard = 0;
-    do { k = from[Math.floor(rand() * from.length)]; } while ((k === picks[picks.length - 1] || (picks.filter(x => x === k).length >= 2)) && guard++ < 20);
+    const ok = k => k !== picks[picks.length - 1] && picks.filter(x => x === k).length < 2;
+    const fav = favoured.filter(ok), all = generic.concat(favoured).filter(ok);
+    const from = fav.length && rand() < 0.6 ? fav : all.length ? all : generic;
+    const k = from[Math.floor(rand() * from.length)];
     picks.push(k);
   }
   const mid = Math.ceil(picks.length / 2);
@@ -227,6 +269,11 @@ function build(n) {
     x += cw;
   }
   const cols = x;
+  // Kreidegrotten: unregelmäßige Höhlendecke mit Tropfsteinen.
+  if (w === 4) for (let c = 0; c < cols; c++) {
+    const h = (c * 2654435761 >>> 0) % 97;
+    grid[0][c] = '#'; if (h % 3) grid[1][c] = '#'; if (h % 7 === 0) grid[2][c] = '#';
+  }
   // Gegner passend zur Insel variieren.
   let gi = 0;
   for (const s of spawns) if (s.ch === 'g') {

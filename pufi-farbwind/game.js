@@ -19,13 +19,14 @@ const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h 
 
 // ---------- Spielstand ----------
 const KEY = 'easygames.pufi-farbwind.v2', OLD_KEY = 'easygames.pufi-farbwind.v1';
-const save = { unlocked: 1, best: {}, sound: true, music: true, controls: 'stick', touch: 'auto' };
+const save = { unlocked: 1, best: {}, sound: true, music: true, controls: 'stick', touch: 'auto', bank: { lives: 0, coins: 0 } };
 try {
   const x = JSON.parse(localStorage.getItem(KEY) || 'null');
   if (x) {
     save.unlocked = clamp(+x.unlocked || 1, 1, COUNT); save.best = x.best && typeof x.best === 'object' ? x.best : {};
     save.sound = x.sound !== false; save.music = x.music !== false;
     save.controls = x.controls === 'dpad' ? 'dpad' : 'stick'; save.touch = ['on', 'off'].includes(x.touch) ? x.touch : 'auto';
+    if (x.bank) save.bank = { lives: clamp(+x.bank.lives || 0, 0, 9), coins: clamp(+x.bank.coins || 0, 0, 99) };
   } else {
     const old = JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
     if (old && old.unlocked) save.unlocked = clamp(Math.floor((+old.unlocked - 1) / 8) * PER + 1, 1, COUNT);
@@ -128,6 +129,7 @@ function action(key, on, source = 'kbd') {
   const before = set.size > 0; if (on) set.add(source); else set.delete(source);
   const now = set.size > 0; if (now === before) return;
   input[key] = now;
+  if (mode === 'bonus') { if (now) bonusPress(key); return; }
   if (mode !== 'play' || !P || P.dead) return;
   if (now) press(key); else release(key);
 }
@@ -162,7 +164,7 @@ function build(n, keep) {
         if (!lvl.collected.has(key)) lvl.items.push({ type: { o: 'coin', r: 'red', F: 'flower', '*': 'star' }[s.ch], x: x + 2, y: y + 2, w: 12, h: 12, key, ph: s.c * 0.7 });
         break;
       case 'W': case 'V': lvl.clouds.push({ x: x - 4, y, baseY: y, w: 24, h: 16, kind: s.ch === 'V' && !lvl.collected.has('V' + key) ? 'flower' : 'stars', key: 'V' + key, ph: s.c, popped: false }); break;
-      case 'x': lvl.crumbles.push({ x, y, w: T * 3, h: 8, t: 0, state: 0, oneWay: true }); break;
+      case 'x': lvl.crumbles.push({ x, y, w: T, h: 8, t: 0, state: 0, oneWay: true }); break;
       case 'm': lvl.movers.push({ x, y, w: T * 3, h: 8, baseX: x, range: 32, ph: s.c * 0.4, dx: 0, dy: 0, oneWay: true }); break;
       case 'J': lvl.springs.push({ x: x + 1, y: y + T - 10, w: 14, h: 10, sq: 0 }); break;
       case 'B': lvl.bossSpawn = { x, y }; break;
@@ -361,8 +363,9 @@ function tick(dt) {
     return;
   }
   if (L.clearT >= 0) {
-    L.clearT += dt; P.vx = 60; P.face = 1; P.vy += GRAV * dt; moveBody(P, dt);
-    if (L.clearT > 1.6) showClear();
+    L.clearT += dt; P.vx = L.roulette ? 0 : 60; P.face = 1; P.vy += GRAV * dt; moveBody(P, dt);
+    if (L.clearT > 1.3 && !L.roulette) startRoulette();
+    if (L.roulette && !L.roulette.finished) updateRoulette(dt);
     return;
   }
   updateMovers(dt);
@@ -691,17 +694,27 @@ function oval(x, y, rx, ry, fill, stroke = '#5e4a66', lw = 1.5) {
 }
 function rect(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); }
 const skyCache = {};
+function mix(a, b, f) {
+  const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), A = p(a), B = p(b);
+  return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * f).toString(16).padStart(2, '0')).join('');
+}
+// Tageszeit je Level einer Insel: Morgen, Nachmittag, Abend, Burg-Dämmerung.
+const MOODS = [null, ['#ffb37a', '#ffe2b0', 0.35], ['#2f2d66', '#f0a08f', 0.55], ['#3b2a55', '#9a6688', 0.5]];
 function skyGradient(w) {
-  const k = w + ':' + VH; if (skyCache[k]) return skyCache[k];
-  const g = ctx.createLinearGradient(0, 0, 0, VH); g.addColorStop(0, WORLDS[w].sky[0]); g.addColorStop(1, WORLDS[w].sky[1]);
+  const st = L.data.stage, k = w + ':' + st + ':' + VH; if (skyCache[k]) return skyCache[k];
+  let [a, b] = WORLDS[w].sky; const m = MOODS[st];
+  if (m && w !== 4) { a = mix(a, m[0], m[2]); b = mix(b, m[1], m[2]); }
+  if (m && w === 4) { a = mix(a, ['#2a5a60', '#4a2f60', '#20203a'][st - 1], 0.5); }
+  const g = ctx.createLinearGradient(0, 0, 0, VH); g.addColorStop(0, a); g.addColorStop(1, b);
   return (skyCache[k] = g);
 }
 
 function drawBackground() {
   const wd = L.wd, w = L.w;
   ctx.fillStyle = skyGradient(w); ctx.fillRect(0, 0, VW, VH);
-  if (w === 4) { for (let i = 0; i < 26; i++) { const x = ((i * 97 - cam.x * 0.1) % (VW + 40) + VW + 40) % (VW + 40) - 20; oval(x, 20 + (i * 53) % 150, 1.4, 1.4, '#dff7ff', null); } }
-  else { oval(VW * 0.78, 52, 26, 26, w === 5 ? '#ffd7a8' : '#fff4c0', null); }
+  const night = L.data.stage >= 2;
+  if (w === 4 || night) { for (let i = 0; i < 26; i++) { const x = ((i * 97 - cam.x * 0.1) % (VW + 40) + VW + 40) % (VW + 40) - 20; oval(x, 20 + (i * 53) % 150, 1.4, 1.4, '#dff7ff', null); } }
+  if (w !== 4) { if (night) { oval(VW * 0.78, 48, 18, 18, '#fff6dc', null); oval(VW * 0.78 + 7, 44, 15, 15, mix(WORLDS[w].sky[0], MOODS[L.data.stage][0], 0.55), null); } else oval(VW * 0.78, 52, 26, 26, w === 5 || L.data.stage === 1 ? '#ffd7a8' : '#fff4c0', null); }
   // Wolken
   if (w !== 4) for (let i = 0; i < 7; i++) {
     const x = ((i * 157 - cam.x * 0.08) % (VW + 120) + VW + 120) % (VW + 120) - 60, y = 26 + (i * 41) % 90 - cam.y * 0.05;
@@ -725,6 +738,8 @@ function drawBackground() {
     else if (w === 4) { ctx.fillStyle = idx % 2 ? '#7fc9c4' : '#a49ee0'; ctx.beginPath(); ctx.moveTo(x - 10, gy + 6); ctx.lineTo(x, gy - 34); ctx.lineTo(x + 10, gy + 6); ctx.fill(); }
     else { rect(x - 22, gy - 50, 44, 60, '#5d4269'); for (let k = 0; k < 4; k++) rect(x - 22 + k * 12, gy - 58, 8, 8, '#5d4269'); rect(x - 5, gy - 34, 10, 14, '#ffc69a'); }
   }
+  if (L.data.stage >= 2 && w !== 4) { ctx.fillStyle = 'rgba(40,30,90,0.16)'; ctx.fillRect(0, 0, VW, VH); }
+  else if (L.data.stage === 1 && w !== 4) { ctx.fillStyle = 'rgba(255,170,90,0.08)'; ctx.fillRect(0, 0, VW, VH); }
 }
 
 function drawTiles() {
@@ -733,23 +748,9 @@ function drawTiles() {
   const r0 = Math.max(0, Math.floor(cam.y / T)), r1 = Math.min(L.rows - 1, Math.ceil((cam.y + VH) / T));
   for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
     const ch = L.grid[r][c], x = c * T, y = r * T;
-    if (ch === '#') {
-      const topOpen = r > 0 && !isSolid(L.grid[r - 1][c]);
-      rect(x, y, T, T, wd.soil);
-      if ((c * 7 + r * 13) % 5 === 0) rect(x + 4, y + 7, 3, 2, wd.soilDark);
-      if ((c * 11 + r * 3) % 7 === 0) rect(x + 10, y + 11, 2, 2, wd.soilDark);
-      if (c > 0 && !isSolid(L.grid[r][c - 1])) rect(x, y, 2, T, wd.soilDark);
-      if (c < L.cols - 1 && !isSolid(L.grid[r][c + 1])) rect(x + T - 2, y, 2, T, wd.soilDark);
-      if (topOpen) {
-        rect(x, y, T, 5, wd.grass); rect(x, y, T, 1.5, wd.grassLight);
-        oval(x + 4 + (c % 3), y + 5, 3.5, 2.2, wd.grass, null); oval(x + 12 - (c % 2), y + 5, 3, 2, wd.grass, null);
-        if (L.w !== 5 && c % 4 === 1) { ctx.strokeStyle = wd.grass; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x + 6, y); ctx.lineTo(x + 4, y - 4); ctx.moveTo(x + 8, y); ctx.lineTo(x + 10, y - 5); ctx.stroke(); }
-        if (L.w === 5) rect(x, y + 5, T, 1, wd.soilDark);
-      }
-    } else if (ch === '=') {
-      rect(x, y, T, 5, wd.plat); rect(x, y + 5, T, 2, '#00000022'); rect(x, y, T, 1.5, '#ffffff99');
-      if (L.w === 3) { oval(x + 8, y + 3, 9, 5, '#ffffff', '#b8d6e8', 1); }
-    } else if (ch === 'Q') {
+    if (ch === '#') paintSolid(c, r, x, y);
+    else if (ch === '=') paintLedge(x, y, c);
+    else if (ch === 'Q') {
       const k = c + ',' + r, b = L.bumps[k] ? Math.sin(L.bumps[k] / 0.25 * Math.PI) * 4 : 0;
       rect(x + 1, y + 1 - b, T - 2, T - 2, '#ffe9b8'); ctx.strokeStyle = '#8a6a6f'; ctx.lineWidth = 1.5; ctx.strokeRect(x + 1.5, y + 1.5 - b, T - 3, T - 3);
       oval(x + 8, y + 8 - b, 4, 5, '#fffaf0', '#a07e86', 1); oval(x + 7, y + 7 - b, 1.2, 1.2, '#f39bbb', null); oval(x + 9.5, y + 10 - b, 1, 1, '#9ad3b8', null);
@@ -763,6 +764,59 @@ function drawTiles() {
   }
 }
 
+// Jede Insel hat eigene Bodenkacheln: Wiese, Sandstein mit Honig, Moos mit Leuchtpilzen, Wolken, Kreidefels, Burgziegel.
+function paintSolid(c, r, x, y) {
+  const wd = L.wd, w = L.w, g = L.grid, solidAt = (cc, rr) => rr < 0 || rr >= L.rows || cc < 0 || cc >= L.cols ? (rr < 0) : isSolid(g[rr][cc]);
+  const top = !solidAt(c, r - 1), bottom = r < L.rows - 1 && !solidAt(c, r + 1), left = !solidAt(c - 1, r), right = !solidAt(c + 1, r);
+  const h = (c * 73856093 ^ r * 19349663) >>> 0;
+  if (w === 3) { // Wolkenboden
+    rect(x, y, T, T, '#f4f8ff'); if (r % 2) rect(x, y + 10, T, 6, '#e3edfb');
+    if (top) { oval(x + 4, y + 2, 6, 5, '#ffffff', null); oval(x + 12, y + 1, 6, 5, '#ffffff', null); rect(x, y + 2, T, 3, '#ffffff'); }
+    if (left) oval(x + 2, y + 8, 4, 7, '#ffffff', null); if (right) oval(x + 14, y + 8, 4, 7, '#ffffff', null);
+    if (bottom) oval(x + 8, y + 14, 9, 4, '#d5e3f6', null);
+    return;
+  }
+  if (w === 5) { // Burgziegel
+    rect(x, y, T, T, wd.soil); const off = r % 2 ? 8 : 0;
+    rect(x, y + 7, T, 1, wd.soilDark); rect(x + off, y, 1, 7, wd.soilDark); rect(x + (off + 8) % 16, y + 8, 1, 8, wd.soilDark);
+    if (h % 9 === 0) rect(x + 3, y + 2, 4, 2, '#8a6d8c');
+    if (top) { rect(x, y, T, 4, wd.grass); rect(x, y, T, 1, wd.grassLight); }
+    if (left) rect(x, y, 2, T, wd.soilDark); if (right) rect(x + T - 2, y, 2, T, wd.soilDark);
+    return;
+  }
+  rect(x, y, T, T, wd.soil);
+  if (w === 1) { rect(x, y + 4, T, 3, '#c08a68'); rect(x, y + 11, T, 2, wd.soilDark); }
+  else if (w === 4) { if (h % 4 === 0) { ctx.strokeStyle = wd.soilDark; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x + 3, y + 3); ctx.lineTo(x + 8, y + 9); ctx.lineTo(x + 6, y + 14); ctx.stroke(); } }
+  else { if (h % 5 === 0) rect(x + 4, y + 7, 3, 2, wd.soilDark); if (h % 7 === 0) rect(x + 10, y + 11, 2, 2, wd.soilDark); }
+  if (w === 2 && h % 11 === 0) oval(x + 8, y + 9, 1.5, 1.5, '#d7f7a8', null);
+  if (left) rect(x, y, 2, T, wd.soilDark); if (right) rect(x + T - 2, y, 2, T, wd.soilDark);
+  if (bottom && w === 4) { ctx.fillStyle = wd.soil; ctx.beginPath(); ctx.moveTo(x + 2, y + T); ctx.lineTo(x + 6 + h % 4, y + T + 6 + h % 7); ctx.lineTo(x + 11, y + T); ctx.fill(); }
+  if (!top) return;
+  if (w === 0) {
+    rect(x, y, T, 5, wd.grass); rect(x, y, T, 1.5, wd.grassLight);
+    oval(x + 4 + (c % 3), y + 5, 3.5, 2.2, wd.grass, null); oval(x + 12 - (c % 2), y + 5, 3, 2, wd.grass, null);
+    if (h % 5 === 1) { rect(x + 7, y - 4, 1, 4, '#5f9a6a'); oval(x + 7.5, y - 5, 2.2, 2.2, ['#ff9cc0', '#ffd27a', '#ffffff'][h % 3], null); }
+  } else if (w === 1) {
+    rect(x, y, T, 4, wd.grass); rect(x, y, T, 1.5, wd.grassLight);
+    if (h % 3 === 0) { rect(x + 5, y + 4, 3, 3 + h % 4, '#f2c45a'); oval(x + 6.5, y + 7 + h % 4, 1.6, 1.8, '#f2c45a', null); }
+  } else if (w === 2) {
+    rect(x, y, T, 4, wd.grass); rect(x, y, T, 1, wd.grassLight);
+    if (h % 4 === 0) { rect(x + 7, y - 4, 2, 4, '#efe1d0'); oval(x + 8, y - 4, 4, 2.5, h % 8 ? '#ff9fd0' : '#b9f0ff', null); }
+  } else if (w === 4) {
+    rect(x, y, T, 3, wd.grass); rect(x, y, T, 1, wd.grassLight);
+    if (h % 6 === 0) { ctx.fillStyle = h % 12 ? '#9fe8de' : '#c2b6ff'; ctx.beginPath(); ctx.moveTo(x + 4, y); ctx.lineTo(x + 7, y - 7); ctx.lineTo(x + 10, y); ctx.fill(); }
+  }
+}
+function paintLedge(x, y, c) {
+  const w = L.w, wd = L.wd;
+  if (w === 3) { oval(x + 8, y + 3, 9, 5, '#ffffff', '#b8d6e8', 1); return; }
+  if (w === 2) { oval(x + 8, y + 3, 9, 4, c % 2 ? '#c597dd' : '#f0a6c8', '#7d6599', 1); oval(x + 5, y + 2, 1.5, 1.5, '#fff3d6', null); return; }
+  if (w === 1) { for (let i = 0; i < 2; i++) { ctx.fillStyle = '#f4c24e'; ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; ctx.lineTo(x + 4 + i * 8 + Math.cos(a) * 4, y + 3 + Math.sin(a) * 3.5); } ctx.fill(); } rect(x, y + 6, T, 1, '#b07b3a'); return; }
+  if (w === 4) { rect(x, y, T, 4, '#8fd8cf'); rect(x, y, T, 1, '#e5fff9'); ctx.fillStyle = '#6fb9b2'; ctx.beginPath(); ctx.moveTo(x + 3, y + 4); ctx.lineTo(x + 8, y + 9); ctx.lineTo(x + 13, y + 4); ctx.fill(); return; }
+  if (w === 5) { rect(x, y, T, 4, '#9a8aa8'); for (let k = 0; k < 4; k++) rect(x + k * 4 + 1, y + 4, 2, 3, '#6d5d7c'); rect(x, y, T, 1, '#d8cce6'); return; }
+  rect(x, y, T, 5, wd.plat); rect(x, y + 5, T, 2, '#00000022'); rect(x, y, T, 1.5, '#ffffff99'); rect(x + 7, y + 1, 1, 3, '#b98760');
+}
+
 function drawPlatforms() {
   const wd = L.wd;
   for (const m of L.movers) {
@@ -772,7 +826,7 @@ function drawPlatforms() {
   for (const c of L.crumbles) {
     if (c.state === 2 && c.fall > 60) continue;
     const y = c.y + (c.state === 2 ? c.fall : 0), jig = c.state === 1 ? Math.sin(t * 60) * 1 : 0;
-    for (let i = 0; i < 3; i++) { rect(c.x + i * T + 1 + jig, y, T - 2, 7, '#d6ae8a'); rect(c.x + i * T + 1 + jig, y, T - 2, 2, '#f6dcb4'); rect(c.x + i * T + 5 + jig, y + 3, 4, 1, '#94705c'); }
+    rect(c.x + 1 + jig, y, T - 2, 7, '#d6ae8a'); rect(c.x + 1 + jig, y, T - 2, 2, '#f6dcb4'); rect(c.x + 5 + jig, y + 3, 4, 1, '#94705c');
   }
   for (const s of L.springs) {
     const sq = s.sq * 4;
@@ -1010,11 +1064,12 @@ function drawHUDCanvas() {
   if (L.intro > 0) { ctx.globalAlpha = Math.min(1, L.intro); banner((L.w + 1) + '-' + (L.data.stage + 1) + '  ' + L.data.name + (L.data.boss ? ' · Burg' : ''), VH * 0.38, 18); ctx.globalAlpha = 1; }
   if (L.msg) { ctx.globalAlpha = Math.min(1, L.msg.t * 2); banner(L.msg.text, VH * 0.3, 15); ctx.globalAlpha = 1; }
   if (P.dead) banner(P.dead.reason, VH * 0.45, 14);
-  if (L.clearT >= 0) banner('GESCHAFFT!', VH * 0.4, 24);
+  if (L.clearT >= 0 && !L.roulette) banner('GESCHAFFT!', VH * 0.4, 24);
+  if (L.roulette) drawRoulette();
 }
 
 function draw() {
-  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.lineJoin = 'round';
   if (!L) { ctx.fillStyle = '#303552'; ctx.fillRect(0, 0, VW, VH); return; }
   drawBackground();
   const sx = shake ? (Math.random() - 0.5) * shake : 0, sy = shake ? (Math.random() - 0.5) * shake : 0;
@@ -1027,11 +1082,211 @@ function draw() {
   drawEggTrail();
   for (const e of L.eggsFly) drawEgg(e.x + 5, e.y + 6, e.spin);
   for (const s of L.spits) { ctx.save(); const e = { kind: { g: 'walker', h: 'hopper', f: 'flyer' }[s.ch] || 'walker', x: s.x, y: s.y, w: 12, h: 12, face: Math.sign(s.vx), t: t * 3 }; ctx.translate(0, 0); drawEnemy(e); ctx.restore(); }
-  drawHero(); drawAim(); drawBaby();
+  if (!L.attract) { drawHero(); drawAim(); drawBaby(); }
   for (const q of particles) rect(q.x - 1.5, q.y - 1.5, 3, 3, q.color);
   ctx.restore();
   drawHUDCanvas();
 }
+
+// ---------- Blüten-Roulette am Ziel ----------
+// Zehn Felder; jede gefundene Farbblüte färbt zwei Felder. Landet der Zeiger auf einer Blüte, startet ein Bonusspiel.
+function startRoulette() {
+  const fl = L.counts.flowers, segs = [];
+  for (let i = 0; i < 10; i++) segs.push(i % 5 < fl);
+  const win = fl > 0 && Math.random() < fl / 5;
+  const pick = [...segs.keys()].filter(i => segs[i] === win);
+  const target = pick[Math.floor(Math.random() * pick.length)];
+  L.roulette = { t: 0, segs, win, target, ang: 0, done: false, wait: 0, from: 0, total: Math.PI * 2 * 4 + (target + 0.5) * Math.PI / 5 };
+  Sound.play('ring');
+}
+function updateRoulette(dt) {
+  const R = L.roulette;
+  if (!R.done) {
+    R.t += dt; const k = Math.min(1, R.t / 2.4), ease = 1 - Math.pow(1 - k, 3);
+    const before = Math.floor(R.ang / (Math.PI / 5)); R.ang = R.total * ease;
+    if (Math.floor(R.ang / (Math.PI / 5)) !== before) Sound.play('tick');
+    if (k >= 1) { R.done = true; Sound.play(R.win ? 'flower' : 'bonk'); }
+  } else {
+    R.wait += dt;
+    if (R.wait > 1.1) { L.roulette.finished = true; if (R.win) startBonus(BONUS_KINDS[Math.floor(Math.random() * BONUS_KINDS.length)], true); else showClear(); }
+  }
+}
+function drawRoulette() {
+  const R = L.roulette, cx = VW / 2, cy = VH * 0.47, rad = 64;
+  ctx.fillStyle = 'rgba(30,24,56,0.55)'; ctx.fillRect(0, 0, VW, VH);
+  for (let i = 0; i < 10; i++) {
+    const a0 = -Math.PI / 2 + i * Math.PI / 5 - R.ang, a1 = a0 + Math.PI / 5;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rad, a0, a1); ctx.closePath();
+    ctx.fillStyle = R.segs[i] ? (i % 2 ? '#ffb3cf' : '#ffd6e6') : (i % 2 ? '#7d7fa8' : '#9a9cc2'); ctx.fill(); ctx.strokeStyle = '#fff3d8'; ctx.lineWidth = 2; ctx.stroke();
+    const am = (a0 + a1) / 2, ix = cx + Math.cos(am) * rad * 0.66, iy = cy + Math.sin(am) * rad * 0.66;
+    if (R.segs[i]) { for (let k = 0; k < 5; k++) { const a = k * 1.2566; oval(ix + Math.cos(a) * 4, iy + Math.sin(a) * 4, 3, 3, '#ff7fae', null); } oval(ix, iy, 2.4, 2.4, '#ffe08a', null); }
+    else oval(ix, iy, 3, 3, '#5b5d86', null);
+  }
+  oval(cx, cy, 10, 10, '#fff3d8', '#5b4a6e', 2);
+  ctx.fillStyle = '#ff6f9e'; ctx.beginPath(); ctx.moveTo(cx - 8, cy - rad - 12); ctx.lineTo(cx + 8, cy - rad - 12); ctx.lineTo(cx, cy - rad + 4); ctx.closePath(); ctx.fill();
+  ctx.font = '900 15px "Trebuchet MS",system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = '#3e2c54';
+  const txt = !R.done ? 'BLÜTEN-ROULETTE' : R.win ? 'BONUSSPIEL!' : 'DIESMAL NICHT …';
+  ctx.strokeText(txt, cx, cy + rad + 26); ctx.fillStyle = '#fff1c4'; ctx.fillText(txt, cx, cy + rad + 26); ctx.textAlign = 'left';
+}
+
+// ---------- Bonusspiele ----------
+const BONUS_KINDS = ['balloons', 'cards', 'wheel'];
+const BONUS_NAMES = { balloons: 'BALLONJAGD', cards: 'GLÜCKSKARTEN', wheel: 'FARBRAD' };
+const BONUS_HELP = {
+  balloons: 'Lauf links und rechts und wirf mit A oder B Farbeier nach oben. Platzt ein Ballon, bekommst du seinen Preis. 25 Sekunden!',
+  cards: 'Deck Karten auf (Pfeile oder Stick, A oder antippen). Sammle Preise – aber der zweite Nebelgreifer beendet die Runde.',
+  wheel: 'Drücke A oder tippe, um die drei Walzen nacheinander anzuhalten. Drei gleiche Bilder bringen den Hauptgewinn.'
+};
+let BG = null;
+function startBonus(kind, fromLevel) {
+  BG = { kind, fromLevel, t: 0, prizes: { lives: 0, coins: 0 }, over: false, overT: 0, msg: '', cool: 0 };
+  if (kind === 'balloons') Object.assign(BG, { x: VW / 2, vx: 0, balloons: [], eggs: [], spawn: 0, time: 25 });
+  if (kind === 'cards') {
+    const deck = ['life', 'life', 'c10', 'c10', 'c10', 'c10', 'c20', 'c20', 'x2', 'x2', 'bad', 'bad'];
+    for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+    Object.assign(BG, { cards: deck.map(k => ({ k, open: 0, flip: 0 })), cur: 0, bad: 0, mult: 1 });
+  }
+  if (kind === 'wheel') Object.assign(BG, { reels: [0, 1, 2].map(i => ({ pos: Math.random() * 5, speed: 7 + i * 1.6, stopped: false })), stopIdx: 0 });
+  mode = 'bonus'; hideOverlay(); $('hud').hidden = true; showTouch(true); clearInputs(); dirty = true;
+  Sound.startMusic(5 - (BONUS_KINDS.indexOf(kind) % 3));
+}
+function bonusPrize(kind, el) {
+  if (kind === 'life') { BG.prizes.lives += el || 1; Sound.play('flower'); }
+  else { BG.prizes.coins += el; Sound.play('coin'); }
+}
+function bonusPress(key) {
+  if (!BG || BG.over) return;
+  if (BG.kind === 'balloons') {
+    if ((key === 'jump' || key === 'throw' || key === 'tongue') && BG.cool <= 0) { BG.eggs.push({ x: BG.x, y: VH - 58, vy: -330 }); BG.cool = 0.22; Sound.play('throw'); }
+  } else if (BG.kind === 'cards') {
+    const c = BG.cur;
+    if (key === 'left') BG.cur = (c + 11) % 12; else if (key === 'right') BG.cur = (c + 1) % 12;
+    else if (key === 'up') BG.cur = (c + 8) % 12; else if (key === 'down') BG.cur = (c + 4) % 12;
+    else if (key === 'jump' || key === 'throw' || key === 'tongue') flipCard(c);
+    if (['left', 'right', 'up', 'down'].includes(key)) Sound.play('menu');
+  } else if (BG.kind === 'wheel') {
+    if (key === 'jump' || key === 'throw' || key === 'tongue' || key === 'down') stopReel();
+  }
+}
+function flipCard(i) {
+  const c = BG.cards[i]; if (!c || c.open) return;
+  c.open = 1; c.flip = 0; BG.cur = i;
+  if (c.k === 'bad') { BG.bad++; Sound.play('hurt'); if (BG.bad >= 2) endBonus('Der Nebelgreifer hat zugeschnappt!'); }
+  else if (c.k === 'life') bonusPrize('life', BG.mult);
+  else if (c.k === 'x2') { BG.mult = 2; Sound.play('ring'); }
+  else bonusPrize('coin', (c.k === 'c20' ? 20 : 10) * BG.mult);
+  if (!BG.over && BG.cards.every(x => x.open || x.k === 'bad')) endBonus('Alle Preise gefunden!');
+}
+const WHEEL = ['flower', 'star', 'heart', 'coin', 'egg'];
+function stopReel() {
+  const r = BG.reels[BG.stopIdx]; if (!r) return;
+  r.stopped = true; r.pos = Math.round(r.pos) % 5; BG.stopIdx++; Sound.play('block');
+  if (BG.stopIdx === 3) {
+    const sy = BG.reels.map(x => WHEEL[(Math.round(x.pos) % 5 + 5) % 5]);
+    const same = sy[0] === sy[1] && sy[1] === sy[2], pair = sy[0] === sy[1] || sy[1] === sy[2] || sy[0] === sy[2];
+    if (same && sy[0] === 'heart') { bonusPrize('life', 3); endBonus('HAUPTGEWINN: +3 Leben!'); }
+    else if (same) { bonusPrize('life', 2); bonusPrize('coin', 20); endBonus('Drei gleiche: +2 Leben und 20 Münzen!'); }
+    else if (pair) { bonusPrize('life', 1); endBonus('Zwei gleiche: +1 Leben!'); }
+    else { bonusPrize('coin', 5); endBonus('Trostpreis: 5 Münzen.'); }
+  }
+}
+function endBonus(msg) { if (BG.over) return; BG.over = true; BG.overT = 0; BG.msg = msg; }
+function tickBonus(dt) {
+  const b = BG; b.t += dt; b.cool = Math.max(0, b.cool - dt);
+  if (b.over) { b.overT += dt; if (b.overT > 1.6) finishBonus(); return; }
+  if (b.kind === 'balloons') {
+    const dir = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    b.vx = approach(b.vx, dir * 150, 900 * dt); b.x = clamp(b.x + b.vx * dt, 16, VW - 16);
+    b.time -= dt; b.spawn -= dt;
+    if (b.spawn <= 0) { b.spawn = 0.55 + Math.random() * 0.5; const r = Math.random(); b.balloons.push({ x: 24 + Math.random() * (VW - 48), y: VH + 20, vy: 28 + Math.random() * 30, k: r < 0.16 ? 'life' : r < 0.55 ? 'c5' : 'c1', col: ['#ff8fb1', '#8fd2ff', '#ffe08a', '#b9f0a8', '#d6a8ff'][Math.floor(Math.random() * 5)], ph: Math.random() * 6 }); }
+    for (const e of b.eggs) e.y += e.vy * dt;
+    for (const bl of b.balloons) {
+      bl.y -= bl.vy * dt; bl.x += Math.sin(b.t * 2 + bl.ph) * 12 * dt;
+      for (const e of b.eggs) if (!bl.pop && !e.hit && Math.hypot(e.x - bl.x, e.y - bl.y) < 16) { bl.pop = true; e.hit = true; burst(bl.x, bl.y, bl.col, 12); bonusPrize(bl.k === 'life' ? 'life' : 'coin', bl.k === 'life' ? 1 : bl.k === 'c5' ? 5 : 1); }
+    }
+    b.eggs = b.eggs.filter(e => e.y > -20 && !e.hit); b.balloons = b.balloons.filter(x => !x.pop && x.y > -40);
+    if (b.time <= 0) endBonus('Zeit um!');
+  } else if (b.kind === 'cards') {
+    for (const c of b.cards) if (c.open && c.flip < 1) c.flip = Math.min(1, c.flip + dt * 5);
+  } else if (b.kind === 'wheel') {
+    for (const r of b.reels) if (!r.stopped) r.pos = (r.pos + r.speed * dt) % 5;
+  }
+  for (const p of particles) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 320 * dt; p.life -= dt; }
+  if (particles.length) particles = particles.filter(p => p.life > 0);
+}
+function finishBonus() {
+  const b = BG; BG = null; particles = [];
+  if (b.fromLevel) { session.lives += b.prizes.lives; for (let i = 0; i < b.prizes.coins; i++) { session.coins++; if (session.coins % 100 === 0) session.lives++; } }
+  else { save.bank.lives = Math.min(9, save.bank.lives + b.prizes.lives); save.bank.coins = Math.min(99, save.bank.coins + b.prizes.coins); persist(); }
+  const text = BONUS_NAMES[b.kind] + ': ' + b.msg + ' Gewinn: ' + (b.prizes.lives ? '+' + b.prizes.lives + ' Leben ' : '') + (b.prizes.coins ? '+' + b.prizes.coins + ' Münzen' : '') + (!b.prizes.lives && !b.prizes.coins ? 'leider nichts.' : b.fromLevel ? '' : ' – gutgeschrieben für deine nächste Runde.');
+  showOverlay('bonusdone', 'BONUS VORBEI', text, [{ label: 'WEITER ▶', primary: true, fn: () => b.fromLevel && L ? showClear() : openBonusMenu() }]);
+}
+function drawPrizeIcon(k, x, y, s = 1) {
+  if (k === 'life' || k === 'heart') { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.fillStyle = '#ff6f8e'; ctx.beginPath(); ctx.moveTo(0, 5); ctx.bezierCurveTo(-9, -2, -5, -9, 0, -4); ctx.bezierCurveTo(5, -9, 9, -2, 0, 5); ctx.fill(); ctx.restore(); }
+  else if (k === 'star') { ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = (i % 2 ? 3 : 7) * s; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fillStyle = '#ffe36a'; ctx.fill(); }
+  else if (k === 'flower') { for (let i = 0; i < 5; i++) { const a = i * 1.2566; oval(x + Math.cos(a) * 5 * s, y + Math.sin(a) * 5 * s, 3.6 * s, 3.6 * s, ['#ff9cc0', '#ffd27a', '#9fd8ff', '#b9f0a8', '#d6a8ff'][i], null); } oval(x, y, 3 * s, 3 * s, '#fff7d0', null); }
+  else if (k === 'egg') { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); drawEgg(0, 0, 0); ctx.restore(); }
+  else { oval(x, y, 6 * s, 6 * s, '#ffd96a', '#a57a3e', 1.4); oval(x, y, 2.5 * s, 3.5 * s, '#fff1b0', null); }
+}
+function drawBonus() {
+  const b = BG; ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.lineJoin = 'round';
+  const g = ctx.createLinearGradient(0, 0, 0, VH); g.addColorStop(0, b.kind === 'wheel' ? '#4a3a78' : b.kind === 'cards' ? '#2f5a6e' : '#86d3f0'); g.addColorStop(1, b.kind === 'balloons' ? '#fff1d0' : '#c48fb8');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+  for (let i = 0; i < 18; i++) oval((i * 73 + b.t * 8) % (VW + 20) - 10, 20 + (i * 47) % (VH - 60), 1.6, 1.6, '#ffffffaa', null);
+  const banner = (text, y, size) => { ctx.font = '900 ' + size + 'px "Trebuchet MS",system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.lineWidth = 5; ctx.strokeStyle = '#3e2c54'; ctx.strokeText(text, VW / 2, y); ctx.fillStyle = '#fff1c4'; ctx.fillText(text, VW / 2, y); ctx.textAlign = 'left'; };
+  banner(BONUS_NAMES[b.kind], 26, 18);
+  ctx.font = '900 12px "Trebuchet MS",system-ui,sans-serif'; ctx.fillStyle = '#fff6dc';
+  ctx.fillText('♥ +' + b.prizes.lives + '   ● +' + b.prizes.coins, 10, 20);
+  if (b.kind === 'balloons') {
+    ctx.textAlign = 'right'; ctx.fillText('⏱ ' + Math.max(0, Math.ceil(b.time)), VW - 10, 20); ctx.textAlign = 'left';
+    rect(0, VH - 30, VW, 30, '#8fd38f'); rect(0, VH - 30, VW, 4, '#c9f0a8');
+    for (const bl of b.balloons) {
+      ctx.strokeStyle = '#ffffff88'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bl.x, bl.y + 14); ctx.lineTo(bl.x + Math.sin(b.t * 3 + bl.ph) * 3, bl.y + 30); ctx.stroke();
+      oval(bl.x, bl.y, 12, 14, bl.col, '#5e4a66', 1.5); oval(bl.x - 4, bl.y - 5, 3, 4, '#ffffffaa', null);
+      drawPrizeIcon(bl.k === 'life' ? 'life' : 'coin', bl.x, bl.y + 1, bl.k === 'c1' ? 0.6 : 0.8);
+    }
+    for (const e of b.eggs) drawEgg(e.x, e.y, b.t * 10);
+    drawPufi(b.x, VH - 30, b.vx < -1 ? -1 : 1, { run: Math.min(1, Math.abs(b.vx) / 120), phase: b.t * 16, baby: true, mouth: b.cool > 0.1 });
+  } else if (b.kind === 'cards') {
+    const cw = 52, ch = 62, gx = VW / 2 - (4 * cw + 3 * 10) / 2, gy = 46;
+    b.layout = { cw, ch, gx, gy };
+    b.cards.forEach((c, i) => {
+      const x = gx + (i % 4) * (cw + 10), y = gy + Math.floor(i / 4) * (ch + 8), sw = c.open ? Math.abs(Math.cos(c.flip * Math.PI)) : 1, face = c.open && c.flip > 0.5;
+      ctx.save(); ctx.translate(x + cw / 2, y + ch / 2); ctx.scale(sw || 0.05, 1);
+      rect(-cw / 2, -ch / 2, cw, ch, face ? '#fff6e2' : '#6f7fb8'); ctx.strokeStyle = i === b.cur && !b.over ? '#ffe08a' : '#fff3d8'; ctx.lineWidth = i === b.cur ? 3 : 1.5; ctx.strokeRect(-cw / 2 + 1, -ch / 2 + 1, cw - 2, ch - 2);
+      if (!face) { for (let k = 0; k < 5; k++) { const a = k * 1.2566; oval(Math.cos(a) * 7, Math.sin(a) * 7, 5, 5, '#8f9fd8', null); } oval(0, 0, 4, 4, '#ffe08a', null); }
+      else if (c.k === 'bad') { oval(-9, -6, 8, 4, '#667192', '#30385e', 1); oval(9, -6, 8, 4, '#667192', '#30385e', 1); oval(0, -2, 10, 9, '#3d456b', '#252941', 1.5); oval(-3, -3, 2, 3, '#ffe090', null); oval(3, -3, 2, 3, '#ffe090', null); }
+      else if (c.k === 'x2') { ctx.font = '900 20px "Trebuchet MS",sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = '#c4508a'; ctx.fillText('×2', 0, 7); ctx.textAlign = 'left'; }
+      else { drawPrizeIcon(c.k === 'life' ? 'life' : 'coin', 0, -6, 1.6); ctx.font = '900 11px "Trebuchet MS",sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = '#5b4a6e'; ctx.fillText(c.k === 'life' ? '1UP' : c.k === 'c20' ? '20' : '10', 0, 22); ctx.textAlign = 'left'; }
+      ctx.restore();
+    });
+    ctx.font = '900 11px "Trebuchet MS",sans-serif'; ctx.fillStyle = '#fff6dc'; ctx.textAlign = 'center';
+    ctx.fillText('Nebelgreifer: ' + b.bad + '/2' + (b.mult > 1 ? '   ×2 aktiv' : ''), VW / 2, VH - 12); ctx.textAlign = 'left';
+  } else if (b.kind === 'wheel') {
+    const rw = 62, rh = 120, gx = VW / 2 - (3 * rw + 2 * 12) / 2, gy = 50;
+    rect(gx - 12, gy - 12, 3 * rw + 2 * 12 + 24, rh + 24, '#2b2244'); ctx.strokeStyle = '#ffd98e'; ctx.lineWidth = 3; ctx.strokeRect(gx - 12, gy - 12, 3 * rw + 2 * 12 + 24, rh + 24);
+    b.reels.forEach((r, i) => {
+      const x = gx + i * (rw + 12); rect(x, gy, rw, rh, '#fff6e2');
+      ctx.save(); ctx.beginPath(); ctx.rect(x, gy, rw, rh); ctx.clip();
+      for (let k = -1; k <= 2; k++) { const idx = ((Math.floor(r.pos) + k) % 5 + 5) % 5, frac = r.pos - Math.floor(r.pos), y = gy + rh / 2 + (k - frac) * 44; drawPrizeIcon(WHEEL[idx], x + rw / 2, y, 1.8); }
+      ctx.restore();
+      if (i === b.stopIdx && !b.over) { ctx.strokeStyle = '#ff6f9e'; ctx.lineWidth = 3; ctx.strokeRect(x - 2, gy - 2, rw + 4, rh + 4); }
+    });
+    rect(gx - 12, gy + rh / 2 - 1, 3 * rw + 48, 2, '#ff6f9e88');
+    ctx.font = '900 11px "Trebuchet MS",sans-serif'; ctx.fillStyle = '#fff6dc'; ctx.textAlign = 'center'; ctx.fillText('A / Tippen: Walze ' + Math.min(3, b.stopIdx + 1) + ' anhalten', VW / 2, VH - 14); ctx.textAlign = 'left';
+  }
+  for (const q of particles) rect(q.x - 1.5, q.y - 1.5, 3, 3, q.color);
+  if (b.over) { ctx.fillStyle = 'rgba(30,24,56,0.45)'; ctx.fillRect(0, 0, VW, VH); banner(b.msg, VH / 2, 16); }
+}
+C.addEventListener('pointerdown', e => {
+  if (mode !== 'bonus' || !BG || BG.over) return;
+  if (BG.kind === 'wheel') { stopReel(); return; }
+  if (BG.kind === 'cards' && BG.layout) {
+    const r = C.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * VW, y = (e.clientY - r.top) / r.height * VH, Lo = BG.layout;
+    const col = Math.floor((x - Lo.gx) / (Lo.cw + 10)), row = Math.floor((y - Lo.gy) / (Lo.ch + 8));
+    if (col >= 0 && col < 4 && row >= 0 && row < 3) flipCard(row * 4 + col);
+  }
+});
 
 // ---------- HUD (DOM, nur bei Änderung) ----------
 function setText(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; const el = $(id); if (el) el.textContent = v; } }
@@ -1049,7 +1304,7 @@ function hud() {
 
 // ---------- Menüs ----------
 function showOverlay(view, title, text, buttons, extra) {
-  mode = view; $('overlay').hidden = false; $('overlay').dataset.view = view;
+  endBoot(); mode = view; $('overlay').hidden = false; $('overlay').dataset.view = view;
   $('heading').textContent = title; $('description').textContent = text || '';
   const box = $('extra'); box.replaceChildren(); if (extra) extra(box);
   const list = $('buttons'); list.replaceChildren();
@@ -1064,18 +1319,59 @@ function showOverlay(view, title, text, buttons, extra) {
   setTimeout(() => { const f = $('overlay').querySelector('button.primary') || $('overlay').querySelector('button:not([disabled])'); if (f && !lastTouch) f.focus({ preventScroll: true }); }, 0);
   if (view !== 'pause') Sound.stopMusic();
 }
-function hideOverlay() { $('overlay').hidden = true; $('hud').hidden = false; }
+function hideOverlay() { endBoot(); $('overlay').hidden = true; $('hud').hidden = false; }
 function title() {
-  if (!L) previewLevel(0);
-  showOverlay('title', 'PUFI & DER FARBWIND', 'Der Farbwind hat Tamo, Pufis kleinen Wolkentapir, auf den Rücken gepustet – und die Nebelgreifer wollen ihn stehlen. Trag Tamo über sechs Inseln, flattere über Abgründe, fang Wuschel mit der Zunge und wirf Farbeier!', [
-    { label: save.unlocked > 1 ? 'WEITERSPIELEN ▶' : 'SPIEL STARTEN ▶', primary: true, fn: () => begin(Math.min(save.unlocked - 1, COUNT - 1)) },
+  if (!L || !L.attract) previewLevel(attractWorld * PER);
+  const bank = save.bank.lives || save.bank.coins ? 'Bonus-Guthaben: ♥ +' + save.bank.lives + '  ● +' + save.bank.coins : 'Trag Tamo über sechs Inseln und rette ihn vor den Nebelgreifern!';
+  showOverlay('title', 'PUFI & DER FARBWIND', bank, [
+    { label: save.unlocked > 1 ? 'WEITERSPIELEN' : 'SPIEL STARTEN', primary: true, fn: () => begin(Math.min(save.unlocked - 1, COUNT - 1)) },
     { label: 'INSELKARTE', fn: openMap },
+    { label: 'BONUSSPIELE', fn: openBonusMenu },
     { label: 'OPTIONEN', fn: openOptions },
-    { label: 'STEUERUNG', fn: openHelp }
+    { label: 'STEUERUNG', fn: openHelp },
+    { label: 'GOOGLE-SPEICHER', fn: openCloud }
   ]);
 }
-function previewLevel(n) { L = build(n); P = newHero(L.startX, L.startY); L.baby = { on: true }; L.intro = 0; cam.x = 0; cam.y = L.rows * T - VH; dirty = true; }
-function begin(n) { session = { lives: 5, coins: 0 }; autoFullscreen(); startLevel(n); }
+// Bonusspiele aus dem Hauptmenü: Ballonjagd sofort, die anderen nach Insel 1 bzw. 2.
+const BONUS_NEED = { balloons: 1, cards: PER + 1, wheel: PER * 2 + 1 };
+function openBonusMenu() {
+  if (!L || !L.attract) previewLevel(attractWorld * PER);
+  showOverlay('bonusmenu', 'BONUSSPIELE', 'Gewinne Leben und Münzen für deine nächste Runde. Im Level startet ein Bonusspiel, wenn das Blüten-Roulette am Ziel auf einer Blüte landet.', [
+    ...BONUS_KINDS.map(k => {
+      const open = save.unlocked >= BONUS_NEED[k];
+      return { label: open ? BONUS_NAMES[k] : '🔒 ' + BONUS_NAMES[k] + ' · nach Insel ' + Math.round((BONUS_NEED[k] - 1) / PER), fn: () => startBonus(k, false) };
+    }),
+    { label: 'ZURÜCK', fn: title }
+  ], box => {
+    box.innerHTML = '<p class="tip">' + BONUS_KINDS.map(k => '<b>' + BONUS_NAMES[k] + ':</b> ' + BONUS_HELP[k]).join('<br>') + '</p>';
+  });
+  const list = $('buttons').children; BONUS_KINDS.forEach((k, i) => { if (save.unlocked < BONUS_NEED[k]) list[i].disabled = true; });
+}
+function openCloud() {
+  showOverlay('cloud', 'GOOGLE-SPEICHER', 'Melde dich mit Google an, dann werden Inseln, Bestwerte und Einstellungen auf allen deinen Geräten gesichert. Ohne Anmeldung bleibt alles nur auf diesem Gerät.', [
+    { label: 'ZURÜCK', primary: true, fn: title }
+  ]);
+  if (!$('cloudMount').firstChild) $('cloudMount').textContent = 'Der Google-Speicher ist gerade nicht erreichbar (offline?).';
+}
+// Lade- und Startbildschirm: kurzer Ladebalken, dann wartet das Spiel auf einen Tastendruck (schaltet auch den Ton frei).
+let booted = false, bootReady = false, attractWorld = 0, attractT = 0;
+function bootScreen() {
+  mode = 'boot'; previewLevel(0); $('overlay').hidden = true; $('hud').hidden = true;
+  const start = performance.now();
+  const ready = () => setTimeout(() => { bootReady = true; $('boot').classList.add('ready'); $('bootPrompt').textContent = lastTouch || matchMedia('(pointer:coarse)').matches ? 'TIPPEN ZUM STARTEN' : 'DRÜCKE START ODER ENTER'; }, Math.max(0, 1100 - (performance.now() - start)));
+  if (document.readyState === 'complete') ready(); else window.addEventListener('load', ready, { once: true });
+}
+function endBoot() {
+  if (booted) return; booted = true;
+  const b = $('boot'); b.classList.add('gone'); setTimeout(() => { b.hidden = true; }, 450);
+}
+function pressStart() {
+  if (mode !== 'boot' || !bootReady) return;
+  Sound.ensure(); Sound.play('ring'); title();
+}
+$('boot').addEventListener('pointerdown', e => { e.preventDefault(); if (e.pointerType === 'touch') lastTouch = true; pressStart(); });
+function previewLevel(n) { L = build(n); P = newHero(L.startX, L.startY); L.baby = { on: true }; L.intro = 0; L.attract = true; L.dir = 1; cam.x = 0; cam.y = L.rows * T - VH; dirty = true; }
+function begin(n) { session = { lives: 5 + save.bank.lives, coins: save.bank.coins }; save.bank = { lives: 0, coins: 0 }; persist(); autoFullscreen(); startLevel(n); }
 function openMap() {
   showOverlay('map', 'DIE FARBWIND-INSELN', 'Wähle ein freigeschaltetes Level. Bestwerte bis 100 Punkte: Sterne, rote Münzen und Farbblüten zählen.', [
     { label: 'ZURÜCK', fn: title }
@@ -1198,7 +1494,8 @@ window.addEventListener('keydown', e => {
   lastTouch = false;
   if (e.code === 'KeyF' && !e.repeat) { toggleFullscreen(); return; }
   if (e.code === 'KeyM' && !e.repeat) { save.music = !save.music; persist(); if (save.music && mode === 'play') Sound.startMusic(L.w); else Sound.stopMusic(); return; }
-  if (mode !== 'play') {
+  if (mode === 'boot') { if (!/^F\d+$/.test(e.code) && !e.repeat) { e.preventDefault(); pressStart(); } return; }
+  if (mode !== 'play' && mode !== 'bonus') {
     if (e.code === 'Escape') { e.preventDefault(); menuBack(); return; }
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) { e.preventDefault(); menuMove(e.code.replace('Arrow', '').toLowerCase()); }
     return;
@@ -1228,7 +1525,7 @@ function menuMove(dir) {
 function menuBack() {
   if (mode === 'pause') resume();
   else if (mode === 'options' && previousView) previousView();
-  else if (mode === 'map' || mode === 'help' || mode === 'options') title();
+  else if (['map', 'help', 'options', 'bonusmenu', 'cloud'].includes(mode)) title();
 }
 
 // ---------- Touch ----------
@@ -1236,7 +1533,7 @@ let lastTouch = false, stickPointer = null, stickOrigin = null;
 function touchWanted() { return save.touch === 'on' || (save.touch === 'auto' && (lastTouch || matchMedia('(pointer:coarse)').matches)); }
 function showTouch(on) { $('touch').hidden = !(on && touchWanted()); syncTouchLayout(); }
 function syncTouchLayout() { $('stickZone').hidden = save.controls !== 'stick'; $('dpad').hidden = save.controls !== 'dpad'; }
-window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { if (!lastTouch) { lastTouch = true; if (mode === 'play') showTouch(true); } } else if (e.pointerType === 'mouse') { /* Maus zählt nicht als Touch */ } }, { capture: true, passive: true });
+window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { if (!lastTouch) { lastTouch = true; if (mode === 'play' || mode === 'bonus') showTouch(true); } } else if (e.pointerType === 'mouse') { /* Maus zählt nicht als Touch */ } }, { capture: true, passive: true });
 document.querySelectorAll('[data-action]').forEach(b => {
   const key = b.dataset.action;
   b.addEventListener('pointerdown', e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (_) {} b.classList.add('pressed'); action(key, true, 'touch:' + e.pointerId); });
@@ -1288,7 +1585,9 @@ function pollPad(dt) {
     left: btn(14) || ax < -0.4, right: btn(15) || ax > 0.4, up: btn(12) || ay < -0.6, down: btn(13) || ay > 0.6 || btn(3),
     jump: btn(0), tongue: btn(2) || btn(4) || btn(6), throw: btn(1) || btn(5) || btn(7), start: btn(9), back: btn(8)
   };
-  if (mode === 'play') {
+  if (mode === 'boot') { if ((st.jump && !padPrev.jump) || (st.start && !padPrev.start)) pressStart(); }
+  else if (mode === 'bonus') { for (const k of ['left', 'right', 'up', 'down', 'jump', 'tongue', 'throw']) if (st[k] !== !!padPrev[k]) action(k, st[k], 'pad'); }
+  else if (mode === 'play') {
     for (const k of ['left', 'right', 'up', 'down', 'jump', 'tongue', 'throw']) if (st[k] !== !!padPrev[k]) action(k, st[k], 'pad');
     if (st.start && !padPrev.start) togglePause();
     const mag = Math.hypot(rx, ry);
@@ -1326,15 +1625,35 @@ function frame(ms) {
     while (acc >= STEP && n++ < 6) { tick(STEP); acc -= STEP; if (mode !== 'play') break; }
     if (acc > STEP * 6) acc = 0;
     if (mode === 'play' || dirty) { draw(); dirty = false; }
+  } else if (mode === 'bonus' && BG) {
+    acc += dt; let n = 0;
+    while (acc >= STEP && n++ < 6 && BG) { tickBonus(STEP); acc -= STEP; }
+    if (acc > STEP * 6) acc = 0;
+    if (BG) drawBonus();
+  } else if (L && L.attract && (mode === 'boot' || !$('overlay').hidden) && !document.hidden) {
+    // Vorspann hinter dem Menü: langsamer Kameraflug mit 30 Bildern/s, danach die nächste Insel.
+    attractT += dt;
+    if (attractT >= 1 / 30 || dirty) {
+      const max = Math.max(0, L.cols * T - VW); cam.x += 26 * attractT * L.dir; attractT = 0; t += 1 / 30;
+      if (cam.x >= max) { cam.x = max; L.dir = -1; } else if (cam.x <= 0 && L.dir < 0) { attractWorld = (attractWorld + 1) % WORLDS.length; previewLevel(attractWorld * PER); }
+      draw(); if (mode === 'boot') drawBootArt(); dirty = false;
+    }
   } else if (dirty) { draw(); dirty = false; }
   requestAnimationFrame(frame);
 }
 
-resize(); updateSoundButton(); syncTouchLayout(); title(); requestAnimationFrame(frame);
+function drawBootArt() {
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, VH); g.addColorStop(0, 'rgba(28,32,56,0.15)'); g.addColorStop(1, 'rgba(28,32,56,0.55)'); ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+  const bob = Math.sin(t * 3) * 4;
+  ctx.save(); ctx.translate(VW / 2, VH * 0.74 + bob); ctx.scale(2.2, 2.2); drawPufi(0, 0, 1, { baby: true, blink: Math.floor(t * 2) % 7 === 0 }); ctx.restore();
+}
+resize(); updateSoundButton(); syncTouchLayout(); bootScreen(); requestAnimationFrame(frame);
 
 // Testschnittstelle (verändert das Spiel nicht).
 window.PufiTest = {
   state: () => ({ mode, L, P, cam, save, session, VW, SCALE }),
-  start: n => begin(n), startLevel, tick, draw, action, press, hurt, die, throwEgg, layEgg, showClear, levelScore, hitBoss, activePlatforms, openOptions, openMap, title, resume, togglePause, build
+  start: n => begin(n), startLevel, tick, draw, action, press, hurt, die, throwEgg, layEgg, showClear, levelScore, hitBoss, activePlatforms, openOptions, openMap, title, resume, togglePause, build,
+  startBonus, bonusPress, tickBonus, flipCard, stopReel, openBonusMenu, openCloud, pressStart, bonus: () => BG
 };
 })();
