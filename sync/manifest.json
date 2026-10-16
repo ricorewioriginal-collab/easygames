@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "08aad576eac9",
- "generated": "2026-10-16T16:26:21+02:00",
- "commit": "90926cb507777b8cb1bcc4044c895726a70b7e7e",
+ "version": "e292f5c49a52",
+ "generated": "2026-10-16T17:14:55+02:00",
+ "commit": "5888476c1dd4605b5b7d7fb1df3ab9f01101244a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4603,8 +4603,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 37677,
-   "h": "cf3e3948e76651dd64ce09fa56795f88332c13623542b16a4a87818c51837597"
+   "s": 43039,
+   "h": "07401f552bed7431e9de70497081d481e17c6e3ccdb336a97e7b4bc50d910354"
   },
   {
    "p": "gamekit.js",
@@ -4768,8 +4768,8 @@
   },
   {
    "p": "index.html",
-   "s": 51695,
-   "h": "851ef7ad92061e1e7e14c969af325971510d748316a3d1edcddd87368d6b1097"
+   "s": 52769,
+   "h": "110a8b66e54c2e50b89ebc2368f833e0ed094cf8986d98fad52f8f20d51c75ad"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
