@@ -24,7 +24,7 @@
   {
    "id": "kraterkommando",
    "title": "Kraterkommando 3D",
-   "desc": "App-artiges 3D-Artilleriespiel für Hoch- und Querformat: zwei Teams mit sechs Figuren, Computer oder lokales Duell, verformbares Gelände, Wind, neun Waffen, vier sichtbar wählbare Welten, zerstörbare Deckung, Feinzielen, Kampf-Effekte, Spielsound, freche Figuren-Sprüche, Touch-Steuerung und Google-Spielstand.",
+   "desc": "Worms-artiges 3D-Artilleriespiel für Handy und PC: Feldzug mit Leveln, in denen beide Trupps wachsen und der Computer stärker wird, tödliches Wasser, Rückstoß und Fallschaden, Rückzugszeit nach dem Schuss, 14 Waffen von Bazooka bis Schaf und Heiliger Granate, Minen, Ölfässer, Kisten, Sudden Death und vier Kartentypen (Inselgruppe, Canyon, Festung, Vulkan). Gegen den Computer oder zu zweit an einem Gerät.",
    "icon": "🚀",
    "img": "kraterkommando/card.svg",
    "bg": "linear-gradient(145deg,#112c53,#194e58 55%,#74efce)",
@@ -33,7 +33,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 103845,
+   "size": 142393,
    "files": 7,
    "offline": true
   },
