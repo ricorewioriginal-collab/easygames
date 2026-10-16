@@ -19,4 +19,11 @@ head -c 500 /dev/urandom > "$OUT_DIR/easygames-1.0.8.apk"; ln -sfn easygames-1.0
 publish_download >/dev/null; cmp -s "$OUT_DIR/easygames-1.0.8.apk" "$PUBLISH_DIR/easygames-Developer.apk" || fail "neues APK nicht übernommen"
 PUBLISH_DIR=$T/gibtsnicht; publish_download >/dev/null && fail "fehlender Ordner muss Fehlercode liefern" || true
 PUBLISH_DIR=; publish_download || fail "ohne PUBLISH_DIR muss stumm erfolgreich sein"
+# find_artifact: findet das Ergebnis auch ohne neuere Datei (Gradle up-to-date) und bevorzugt Release
+eval "$(sed -n '/^find_artifact() {/,/^}/p' "$HERE/run-build.sh")"
+( cd "$T" && mkdir -p android/app/build/outputs/apk/debug android/app/build/outputs/apk/release \
+  && echo d > android/app/build/outputs/apk/debug/app-debug.apk && sleep 1 && echo r > android/app/build/outputs/apk/release/app-release.apk \
+  && [ "$(find_artifact apk)" = "android/app/build/outputs/apk/release/app-release.apk" ] ) || fail "find_artifact: Release nicht gefunden"
+( cd "$T" && rm -rf android/app/build/outputs/apk/release && [ "$(find_artifact apk)" = "android/app/build/outputs/apk/debug/app-debug.apk" ] ) || fail "find_artifact: Fallback fehlt"
+( cd "$T" && rm -rf android && [ -z "$(find_artifact apk)" ] ) || fail "find_artifact: ohne Ergebnis muss leer sein"
 echo "OK: publish_download"
