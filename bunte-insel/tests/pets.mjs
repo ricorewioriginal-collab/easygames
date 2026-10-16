@@ -28,7 +28,7 @@ ok(r.kinds && r.models, 'Kapselmonster-Arten sind Haustiere; alle ' + r.unlockN 
 const v = await p.evaluate(async () => { const b = __bi; b.save.stk = []; const vis = () => [...document.querySelectorAll('.row.pets .pill')].filter(x => !x.hidden).map(x => x.textContent.trim()).join('|'); document.getElementById('bHero') && 0; const hide0 = BI.PETS.filter(q => q.unlock).every(q => !(b.save.stk || []).includes(q.unlock)); b.save.stk = ['schluesselreich', 'schwammi', 'karussell', 'forscher5']; const unlocked = BI.PETS.filter(q => q.unlock && b.save.stk.includes(q.unlock)).length; return { hide0, unlocked }; });
 ok(v.hide0 && v.unlocked === 4, 'Neue Begleiter hängen an Stickern (Fuchs ← Schlüsselreich, Waschbär ← Schwammi-Bucht, Einhorn ← Karussell, Bär ← Türöffner)');
 /* Rissige Wand sichtbar im Raum 2 (an der Innenseite) */
-const w = await p.evaluate(() => { const M = BI.RAETSEL, T = M.T, q = M.at(T.wall[0], T.b0 + 1.15); let found = false; __bi.scene.traverse(o => { if (o.isGroup && Math.hypot(o.position.x - q.x, o.position.z - q.z) < .05) found = o.visible; }); return found; });
+const w = await p.evaluate(() => { const M = BI.RAETSEL, T = M.T, q = M.at(T.wall[0], T.b0 + 2.25); let found = false; __bi.scene.traverse(o => { if (o.isGroup && Math.hypot(o.position.x - q.x, o.position.z - q.z) < .05) found = o.visible; }); /* Platte steht seit dem Umbau etwas weiter im Raum (raetsel.js wlV) */ return found; });
 ok(w, 'Rissige Wand: sichtbare Platte an der Innenseite der Wand in Raum 2');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | '));
 await browser.close(); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); process.exit(fails ? 1 : 0);
