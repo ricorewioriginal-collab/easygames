@@ -13,6 +13,14 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
+    <!-- Android 11+: ohne diese Angabe sieht die App keine Sprachausgabe-Engine (Paket-Sichtbarkeit),
+         und speechSynthesis in den Spielen (Moderation, Kommentatoren) bleibt stumm. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".EasyGamesApplication"
         android:allowBackup="false"
