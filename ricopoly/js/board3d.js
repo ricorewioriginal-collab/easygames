@@ -199,14 +199,14 @@
   Stage.prototype.buildMenu = function (world) {
     this.clearScene();
     var wd = W.get(world || 'metropolis'); this.world = wd.id; this.mode = 'menu';
-    this.scene.background = skyTexture(wd); this.scene.fog = new T.Fog(wd.sky[1], 14, 40);
+    this.scene.background = skyTexture(wd); this.scene.fog = new T.Fog(wd.sky[1], 18, 55);
     this.lights(wd);
     var ped = new T.Mesh(new T.CylinderGeometry(1.25, 1.4, 0.3, 40), new T.MeshStandardMaterial({ color: wd.accent, roughness: 0.35, metalness: 0.3 })); ped.userData.own = true; ped.material.userData.own = true;
     ped.position.y = -0.15; ped.receiveShadow = true; this.scene.add(ped);
     var ring = new T.Mesh(new T.TorusGeometry(1.3, 0.04, 8, 60), new T.MeshBasicMaterial({ color: 0xffffff })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.01; ring.userData.own = true; ring.material.userData.own = true; this.scene.add(ring);
     var ground = new T.Mesh(new T.CircleGeometry(30, 48), new T.MeshStandardMaterial({ color: wd.ground, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.3; ground.receiveShadow = true; ground.userData.own = true; ground.material.userData.own = true; this.scene.add(ground);
-    this.decorate(wd, 3.2, 14, 0.6);
-    this.cam = { theta: 0.35, phi: 1.28, r: 4.4, tx: 0, tz: 0, ty: 0.55, goal: null, shake: 0, mode: 'menu', userUntil: 0 };
+    this.decorate(wd, 11.5, 24, 0.6);
+    this.cam = { theta: 0.35, phi: 1.32, r: 5.6, tx: 0, tz: 0, ty: 1.15, goal: null, shake: 0, mode: 'menu', userUntil: 0 };
     this.particles();
   };
   Stage.prototype.showcase = function (id, look, anim) {
@@ -595,9 +595,10 @@
     // Kamera darf das Brett nicht verlieren
     var lim = this.mode === 'menu' ? 0.5 : B * 0.42; c.tx = Math.max(-lim, Math.min(lim, c.tx)); c.tz = Math.max(-lim, Math.min(lim, c.tz));
     var sh = c.shake > 0 ? (Math.random() - 0.5) * c.shake * 0.3 : 0; c.shake = Math.max(0, c.shake - dt);
-    var ty = c.ty || 0;
-    this.camera.position.set(c.tx + Math.sin(c.theta) * Math.sin(c.phi) * c.r + sh, ty + Math.cos(c.phi) * c.r, c.tz + Math.cos(c.theta) * Math.sin(c.phi) * c.r);
-    this.camera.lookAt(c.tx, ty, c.tz);
+    var ty = c.ty || 0, portrait = this.mode === 'menu' && this.camera.aspect < 0.9, rr = c.r * (portrait ? 1.35 : 1);
+    this.camera.position.set(c.tx + Math.sin(c.theta) * Math.sin(c.phi) * rr + sh, ty + Math.cos(c.phi) * rr, c.tz + Math.cos(c.theta) * Math.sin(c.phi) * rr);
+    // Hochformat-Menü: Figur in die obere Bildhälfte rücken (unten liegt das Menü)
+    this.camera.lookAt(c.tx, ty - (portrait ? 1.9 : 0), c.tz);
   };
 
   // ---------- Eingabe: Maus, Touch (Wischen, Pinch), Tastatur ----------

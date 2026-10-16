@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>RicoPoly 3D – Baue dein Imperium!</title>
+<meta name="description" content="RicoPoly 3D – Würfeln. Kaufen. Handeln. Herrschen! Das Grundstücks-Brettspiel in 3D mit drei Welten, 16 Figuren, Computergegnern, Spiel an einem Gerät und Online-Räumen.">
+<meta name="theme-color" content="#14102b">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="./style.css?v=1">
+</head>
+<body>
+<canvas id="stage" aria-label="3D-Spielbrett"></canvas>
+
+<div id="loader" role="status">
+  <div class="logo"><span class="l1">RICO</span><span class="l2">POLY</span><span class="l3">3D</span></div>
+  <div class="loadbar"><i id="loadBar"></i></div>
+  <p id="loadText">…</p>
+</div>
+
+<!-- Hauptmenü -->
+<section id="menu" class="screen" hidden>
+  <div class="menu-col">
+    <div class="logo"><span class="l1">RICO</span><span class="l2">POLY</span><span class="l3">3D</span></div>
+    <p class="motto" data-t="motto">Würfeln. Kaufen. Handeln. Herrschen!</p>
+    <div id="menuHello" class="hello"></div>
+    <button type="button" id="btnPlay" class="btn primary big" data-t="menu.play">Spielen</button>
+    <div class="menu-grid">
+      <button type="button" id="btnContinue" class="btn" data-t="menu.continue">Fortsetzen</button>
+      <button type="button" id="btnSingle" class="btn" data-t="menu.single">Einzelspieler</button>
+      <button type="button" id="btnLocal" class="btn" data-t="menu.local">Lokal</button>
+      <button type="button" id="btnOnline" class="btn" data-t="menu.online">Online</button>
+      <button type="button" id="btnFriends" class="btn" data-t="menu.friends">Freunde</button>
+      <button type="button" id="btnChars" class="btn" data-t="menu.chars">Charaktere</button>
+      <button type="button" id="btnWorlds" class="btn" data-t="menu.worlds">Welten</button>
+      <button type="button" id="btnAch" class="btn" data-t="menu.ach">Erfolge</button>
+      <button type="button" id="btnRank" class="btn" data-t="menu.rank">Rangliste</button>
+      <button type="button" id="btnProfile" class="btn" data-t="menu.profile">Profil</button>
+      <button type="button" id="btnSettings" class="btn" data-t="menu.settings">Einstellungen</button>
+      <button type="button" id="btnRules" class="btn" data-t="menu.rules">Regeln</button>
+    </div>
+    <div id="cloudHome" class="cloudbox"><div id="cloudMount" class="cloud"></div></div>
+    <a class="home" href="../">← easygames</a>
+  </div>
+</section>
+
+<!-- Unterseiten (Einrichtung, Profil, Einstellungen …) -->
+<section id="panel" class="screen panel-screen" hidden>
+  <div class="panel-card">
+    <header><button type="button" id="panelBack" class="icon" aria-label="Zurück">←</button><h2 id="panelTitle"></h2></header>
+    <div id="panelBody"></div>
+  </div>
+</section>
+
+<!-- Spiel -->
+<div id="hud" hidden>
+  <div class="hud-top">
+    <button type="button" id="hudMenu" class="icon" aria-label="Menü">☰</button>
+    <span id="hudWorld" class="chip"></span>
+    <span id="hudRound" class="chip"></span>
+    <span id="hudClock" class="chip" aria-live="off"></span>
+    <span id="hudTimer" class="chip warn" hidden></span>
+    <span class="grow"></span>
+    <button type="button" id="hudLog" class="icon" aria-label="Protokoll">📜</button>
+    <button type="button" id="hudCam" class="icon" aria-label="Übersicht">🎥</button>
+  </div>
+  <div id="players" class="players"></div>
+  <div id="diceResult" class="dice-result" aria-live="polite"></div>
+  <div id="thinking" class="thinking" hidden><span></span><span></span><span></span></div>
+  <div class="bottom">
+    <div id="status" class="status" aria-live="polite"></div>
+    <div id="dock" class="dock"></div>
+  </div>
+  <div id="tutorial" class="tutorial" hidden></div>
+  <aside id="logPanel" class="logpanel" hidden>
+    <header><b data-t="log">Protokoll</b><button type="button" id="logClose" class="icon" aria-label="Schließen">✕</button></header>
+    <ul id="logList"></ul>
+  </aside>
+</div>
+<div id="floats" class="floats" aria-hidden="true"></div>
+<div id="tip" class="tip" hidden role="status"></div>
+<div id="card" class="card3d" hidden role="dialog"></div>
+<div id="netState" class="netstate" hidden data-t="netLost">Verbindung unterbrochen …</div>
+<div id="modal" class="modal" hidden>
+  <div id="modalBg" class="modal-bg"></div>
+  <div id="modalBody" class="modal-body" role="dialog" aria-modal="true"></div>
+</div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/peerjs-1.5.4.min.js" defer></script>
+<script src="./js/rules.js?v=1"></script>
+<script src="./js/ai.js?v=1"></script>
+<script src="./js/worlds.js?v=1"></script>
+<script src="./js/i18n.js?v=1"></script>
+<script src="./js/characters.js?v=1"></script>
+<script src="./js/board3d.js?v=1"></script>
+<script src="./js/audio.js?v=1"></script>
+<script src="./js/profile.js?v=1"></script>
+<script src="./js/net.js?v=1"></script>
+<script src="./js/game.js?v=1"></script>
+<script src="../gamepad.js" data-pad="a=Enter x=KeyS y=KeyO start=KeyP select=KeyM" defer></script>
+<script src="../cloud/anmacha-cloud.js" data-game="ricopoly" data-prefix="ricopoly.v1." data-mount="#cloudMount" data-hint="Mit Google anmelden und Profil, Erfolge und Spielstände auf allen Geräten speichern." defer></script>
+</body>
+</html>
