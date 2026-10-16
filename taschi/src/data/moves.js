@@ -64,7 +64,35 @@ const LIST = [
   M('schlammwurf', 'Schlammwurf', 'erde', 45, 1, 25, 'quake', { status: 'gift', chance: 0.2 }),
   M('erdstoss', 'Erdstoß', 'erde', 70, 0.95, 15, 'quake'),
   M('beben', 'Beben', 'erde', 95, 0.9, 10, 'quake'),
-  M('sandschleier', 'Sandschleier', 'erde', 0, 1, 20, 'debuff', { stat: 'atk', stages: -1, target: 'foe' })
+  M('sandschleier', 'Sandschleier', 'erde', 0, 1, 20, 'debuff', { stat: 'atk', stages: -1, target: 'foe' }),
+  // expansion: a fuller progression per type (early, mid, late, finisher, utility)
+  M('kratzer', 'Kratzer', 'normal', 40, 1, 35, 'slash', { desc: 'Schnelle Krallen.' }),
+  M('kopfnuss', 'Kopfnuss', 'normal', 80, 0.95, 15, 'impact', { desc: 'Ein harter Kopfstoß.' }),
+  M('gaehnen', 'Gähnen', 'normal', 0, 0.6, 10, 'debuff', { status: 'schlaf', chance: 1, target: 'foe', desc: 'Ansteckendes Gähnen, das einschläfern kann.' }),
+  M('gigastoss', 'Gigastoß', 'normal', 120, 0.85, 5, 'impact', { recoil: 0.25, desc: 'Alles auf eine Karte. Trifft auch den Anwender.' }),
+  M('flammenbiss', 'Flammenbiss', 'feuer', 60, 1, 20, 'flame', { status: 'brand', chance: 0.1, crit: 0.1 }),
+  M('lavawoge', 'Lavawoge', 'feuer', 105, 0.88, 6, 'flame', { status: 'brand', chance: 0.3, desc: 'Eine Welle aus glühendem Gestein.' }),
+  M('blubberstrahl', 'Blubberstrahl', 'wasser', 55, 1, 25, 'water'),
+  M('aquaschweif', 'Aquaschweif', 'wasser', 80, 0.95, 12, 'water'),
+  M('springflut', 'Springflut', 'wasser', 110, 0.85, 5, 'water', { desc: 'Eine gewaltige Flutwelle.' }),
+  M('rasierblatt', 'Rasierblatt', 'pflanze', 55, 0.95, 25, 'leaf', { crit: 0.2 }),
+  M('lichtsammler', 'Lichtsammler', 'pflanze', 0, 1, 10, 'heal', { heal: 0.5, target: 'self', desc: 'Sammelt Sonnenlicht und heilt die Hälfte der KP.' }),
+  M('sonnenspross', 'Sonnenspross', 'pflanze', 110, 0.9, 5, 'leaf', { desc: 'Ein gebündelter Strahl aus Sonnenlicht.' }),
+  M('funkenbiss', 'Funkenbiss', 'elektro', 60, 1, 20, 'spark', { status: 'paralyse', chance: 0.15 }),
+  M('magnetfeld', 'Magnetfeld', 'elektro', 0, 1, 20, 'buff', { stat: 'speed', stages: 2, target: 'self' }),
+  M('kieselhagel', 'Kieselhagel', 'gestein', 55, 0.95, 20, 'rock'),
+  M('meteorbrocken', 'Meteorbrocken', 'gestein', 110, 0.85, 5, 'rock', { desc: 'Ein glühender Brocken fällt vom Himmel.' }),
+  M('flatterhieb', 'Flatterhieb', 'flug', 55, 1, 25, 'wind'),
+  M('luftschnitt', 'Luftschnitt', 'flug', 75, 0.95, 15, 'wind', { crit: 0.15 }),
+  M('himmelssturz', 'Himmelssturz', 'flug', 110, 0.85, 5, 'wind', { recoil: 0.2 }),
+  M('nachtschatten', 'Nachtschatten', 'geist', 60, 1, 15, 'shadow'),
+  M('seelenraub', 'Seelenraub', 'geist', 75, 1, 10, 'shadow', { drain: 0.5, desc: 'Entzieht Lebenskraft und heilt den Anwender.' }),
+  M('eiszahn', 'Eiszahn', 'eis', 60, 0.95, 20, 'ice', { status: 'frost', chance: 0.1 }),
+  M('gletscherhieb', 'Gletscherhieb', 'eis', 85, 0.9, 12, 'ice'),
+  M('eisschild', 'Eisschild', 'eis', 0, 1, 20, 'buff', { stat: 'def', stages: 2, target: 'self' }),
+  M('sandwirbel', 'Sandwirbel', 'erde', 55, 1, 25, 'quake'),
+  M('erdkralle', 'Erdkralle', 'erde', 75, 0.95, 15, 'quake', { crit: 0.15 }),
+  M('tektonik', 'Tektonik', 'erde', 110, 0.85, 5, 'quake', { desc: 'Die Erdplatten selbst geraten in Bewegung.' })
 ];
 
 export const MOVES = Object.fromEntries(LIST.map(m => [m.id, m]));
@@ -81,6 +109,21 @@ export const TYPE_MOVESET = {
   geist: ['spuk', 'schattenklaue', 'albtraum', 'schauderblick'],
   eis: ['frosthauch', 'eissplitter', 'blizzard', 'raureif'],
   erde: ['schlammwurf', 'erdstoss', 'beben', 'sandschleier']
+};
+
+// Level-up progression per type: [level, move]. Early, mid and late attacks
+// plus the type's support moves. Used by learnset() in species.js.
+export const TYPE_LEARN = {
+  normal: [[1, 'kratzer'], [6, 'bruellen'], [11, 'hieb'], [17, 'konzentration'], [23, 'kopfnuss'], [31, 'ansturm'], [38, 'gaehnen'], [45, 'gigastoss']],
+  feuer: [[1, 'glut'], [6, 'aufheizen'], [10, 'flammenbiss'], [16, 'flammenrad'], [29, 'feuersturm'], [42, 'lavawoge']],
+  wasser: [[1, 'spritzer'], [6, 'schaumschild'], [10, 'blubberstrahl'], [16, 'gischtwelle'], [24, 'aquaschweif'], [32, 'flutstrahl'], [44, 'springflut']],
+  pflanze: [[1, 'ranke'], [6, 'sporenwolke'], [10, 'rasierblatt'], [16, 'blattwirbel'], [22, 'saugwurzel'], [30, 'bluetensturm'], [36, 'lichtsammler'], [44, 'sonnenspross']],
+  elektro: [[1, 'funken'], [6, 'spannungsfeld'], [10, 'funkenbiss'], [17, 'donnerkeil'], [26, 'magnetfeld'], [32, 'gewitterzorn']],
+  gestein: [[1, 'stein'], [6, 'steinpanzer'], [10, 'kieselhagel'], [17, 'felssturz'], [29, 'kristallspeer'], [43, 'meteorbrocken']],
+  flug: [[1, 'fluegel'], [6, 'rueckenwind'], [10, 'flatterhieb'], [16, 'sturzflug'], [24, 'luftschnitt'], [31, 'orkan'], [44, 'himmelssturz']],
+  geist: [[1, 'spuk'], [6, 'schauderblick'], [10, 'nachtschatten'], [17, 'schattenklaue'], [25, 'seelenraub'], [32, 'albtraum']],
+  eis: [[1, 'frosthauch'], [6, 'raureif'], [10, 'eiszahn'], [16, 'eissplitter'], [24, 'eisschild'], [28, 'gletscherhieb'], [34, 'blizzard']],
+  erde: [[1, 'schlammwurf'], [6, 'sandschleier'], [10, 'sandwirbel'], [17, 'erdstoss'], [24, 'erdkralle'], [32, 'beben'], [44, 'tektonik']]
 };
 
 export const STATUS = {

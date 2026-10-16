@@ -1,5 +1,5 @@
 // Items. Every item has a working, testable effect in logic/items.js.
-// category: ball | heal | status | battle | evo | key
+// category: ball | heal | status | battle | evo | growth | key
 export const ITEMS = {
   taschiball:   { name: 'Taschiball', category: 'ball', price: 40, rate: 1, color: 0xe9523f, desc: 'Standardball zum Fangen wilder Taschis.' },
   heilball:     { name: 'Heilball', category: 'ball', price: 60, rate: 1, color: 0xf48fb8, healOnCatch: true, desc: 'Gefangene Taschis sind sofort vollständig geheilt.' },
@@ -16,6 +16,7 @@ export const ITEMS = {
   supertrank:   { name: 'Supertrank', category: 'heal', price: 90, heal: 90, desc: 'Stellt 90 KP wieder her.', unlock: 5 },
   vitaltrank:   { name: 'Vitaltrank', category: 'heal', price: 220, heal: 9999, desc: 'Stellt alle KP wieder her.', unlock: 10 },
   belebungskraut: { name: 'Belebungskraut', category: 'heal', price: 280, revive: 0.5, desc: 'Belebt ein erschöpftes Taschi mit halben KP.', unlock: 3 },
+  levelbonbon:  { name: 'EP-Bonbon', category: 'growth', price: 0, sell: 300, desc: 'Ein Taschi steigt sofort um ein Level auf.' },
   heilkraut:    { name: 'Heilkraut', category: 'status', price: 60, cure: 'all', desc: 'Heilt jede Statusveränderung.' },
   apfelsaft:    { name: 'Apfelsaft', category: 'heal', price: 0, heal: 20, sellOnly: true, desc: 'Süßer Saft, stellt 20 KP wieder her.' },
   aetherperle:  { name: 'Ätherperle', category: 'heal', price: 180, pp: 10, desc: 'Füllt bei allen Attacken eines Taschis 10 AP auf.', unlock: 6 },
@@ -34,7 +35,7 @@ export const ITEMS = {
 
 export const ITEM_ORDER = Object.keys(ITEMS);
 export const BALL_IDS = ITEM_ORDER.filter(id => ITEMS[id].category === 'ball');
-export const CATEGORY_NAMES = { ball: 'Bälle', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', key: 'Basis-Items' };
+export const CATEGORY_NAMES = { ball: 'Bälle', heal: 'Heilung', status: 'Status', battle: 'Kampf', evo: 'Entwicklung', growth: 'Wachstum', key: 'Basis-Items' };
 
 export function sellPrice(id) {
   const it = ITEMS[id];

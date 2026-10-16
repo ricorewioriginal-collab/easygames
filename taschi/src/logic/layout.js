@@ -196,7 +196,7 @@ export function buildLayout(r) {
   // --- items -----------------------------------------------------------------------
   const lost = (region.quests || []).find(q => q.kind === 'find');
   const itemSpots = [[-70, -40], [72, 10], [-30, 72], [60, 76], [-74, -80]].map(([x, z]) => [X(x), z]).filter(([x, z]) => !inWater(x, z, 3));
-  const loot = ['trank', 'netzball', 'heilkraut', 'superball', 'flinkball', 'supertrank', 'daemmerball', 'sternsplitter', 'timerball', 'aetherperle'];
+  const loot = ['trank', 'netzball', 'heilkraut', 'superball', 'flinkball', 'supertrank', 'daemmerball', 'sternsplitter', 'timerball', 'aetherperle', 'levelbonbon'];
   itemSpots.slice(0, 4).forEach(([x, z], i) => L.items.push({ id: 'hidden:' + r + ':' + i, x, z, item: loot[(r + i * 3) % loot.length], count: 1 + (i % 2), hidden: true }));
   const landSpot = (x, z) => {
     for (let k = 0; k < 40; k++) {

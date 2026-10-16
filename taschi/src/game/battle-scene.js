@@ -513,11 +513,8 @@ export class BattleScene {
     this.ui.pop(waitS);
     // learn requests
     for (const req of b.learnRequests) {
-      const m = save.team.find(x => x.uid === req.uid); if (!m || m.moves.some(x => x.id === req.move)) continue;
-      const mv = MOVES[req.move];
-      const pick = await this.ui.ask([{ who: SPECIES[m.id].name, text: (m.nick || SPECIES[m.id].name) + ' möchte ' + mv.name + ' (' + TYPES[mv.type].name + ', Stärke ' + (mv.power || '–') + ') lernen, kennt aber schon vier Attacken. Welche soll es vergessen?' }],
-        [...m.moves.map(x => 'Vergessen: ' + MOVES[x.id].name), mv.name + ' nicht lernen'], { cancelIndex: 4 });
-      if (pick < 4) { const old = MOVES[m.moves[pick].id].name; replaceMove(m, pick, req.move); this.ui.toast(old + ' vergessen – ' + mv.name + ' gelernt!', '✦'); }
+      const m = save.team.find(x => x.uid === req.uid); if (!m) continue;
+      await this.game.offerMove(m, req.move);
     }
     // evolutions (visible sequence)
     if (result.outcome !== 'lose') for (const evo of b.pendingEvolutions) {
@@ -546,7 +543,7 @@ export class BattleScene {
       await wait(Math.max(60, 180 - i * 8));
     }
     await this.game.ui.fade(true, true);
-    evolve(m, to);
+    const { learned, offers } = evolve(m, to);
     this.game.save.dex[to] = 2;
     this.removeModel(m.uid);
     const ne = this.spawnModel(m, 0, 0, false);
@@ -557,6 +554,8 @@ export class BattleScene {
     this.audio.sfx('catch'); ne.c.play('happy', 1.2);
     this.burst(new THREE.Vector3(0, 1.2, 0), 0xffe080, 60, 1.6, 'star', 1.4, 2);
     await this.ui.say([{ text: 'Glückwunsch! Dein ' + SPECIES[from].name + ' hat sich zu ' + SPECIES[to].name + ' entwickelt!' }]);
+    for (const id of learned) await this.ui.say([{ text: (m.nick || SPECIES[to].name) + ' hat ' + MOVES[id].name + ' gelernt!' }]);
+    for (const id of offers) await this.game.offerMove(m, id);
   }
   cleanup() {
     this.active = false;

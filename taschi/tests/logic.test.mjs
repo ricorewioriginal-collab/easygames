@@ -13,9 +13,9 @@ import * as Items from '../src/logic/items.js';
 import { obtainableSpecies, rollEncounter } from '../src/logic/encounters.js';
 import * as P from '../src/logic/progress.js';
 
-test('catalogue keeps all 214 species with unique names and valid data', () => {
-  assert.equal(SPECIES_IDS.length, 214);
-  assert.equal(new Set(SPECIES_IDS.map(id => SPECIES[id].name)).size, 214);
+test('catalogue keeps all 260 species with unique names and valid data', () => {
+  assert.equal(SPECIES_IDS.length, 260);
+  assert.equal(new Set(SPECIES_IDS.map(id => SPECIES[id].name)).size, 260);
   for (const id of ['schnurrik', 'auraflamme', 'tiefenlied', 'sturmkron', 'mondhueter', 'glutzahn', 'plaetscher', 'samenling']) assert.ok(SPECIES[id], id);
   for (const id of SPECIES_IDS) {
     const s = SPECIES[id];
@@ -160,9 +160,12 @@ test('items: every item has a working effect, shop buy/sell', () => {
   assert.ok(Items.useFromBag(bag, 'aetherperle', m).ok && m.moves[0].pp > 0);
   m.hp = 0;
   assert.ok(Items.useFromBag(bag, 'belebungskraut', m).ok && m.hp > 0);
+  const lv = m.lv, candy = { levelbonbon: 1 };
+  const grow = Items.useFromBag(candy, 'levelbonbon', m);
+  assert.ok(grow.ok && m.lv === lv + 1 && grow.events.some(e => e.type === 'levelup') && !candy.levelbonbon);
   for (const id of Object.keys(ITEMS)) {
     const it = ITEMS[id];
-    const handled = it.category === 'ball' || it.category === 'key' || it.category === 'battle' || it.heal || it.revive || it.pp || it.cure || it.category === 'evo';
+    const handled = it.category === 'ball' || it.category === 'key' || it.category === 'battle' || it.heal || it.revive || it.pp || it.cure || it.category === 'evo' || it.category === 'growth';
     assert.ok(handled, 'item without effect: ' + id);
   }
   const state = { coins: 1000, badges: 0, bag: {} };

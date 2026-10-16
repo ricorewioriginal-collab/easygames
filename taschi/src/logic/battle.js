@@ -11,6 +11,7 @@ import { chooseAction, chooseReplacement } from './ai.js';
 
 const STAGE = (s) => s >= 0 ? (2 + s) / 2 : 2 / (2 - s);
 const nameOf = (m) => SPECIES[m.id].name;
+export const gainsText = (g) => g ? '(KP +' + g.hp + ', Ang +' + g.atk + ', Vert +' + g.def + ', Init +' + g.speed + ')' : '';
 
 export function createBattle(o) {
   const rng = o.rng;
@@ -393,16 +394,16 @@ function checkFaints(b, ev) {
 }
 
 function awardXpFor(b, foe, ev, factor) {
-  const base = Math.floor(xpReward(foe, { trainer: b.sides[1].trainer }) * factor);
   const part = b.participants[foe.uid] || new Set();
   for (const m of b.sides[0].team) {
     if (m.hp <= 0) continue;
     const share = part.has(m.uid) ? 1 : (b.expShare ? 0.5 : 0);
     if (!share) continue;
+    const base = xpReward(foe, { trainer: b.sides[1].trainer, level: m.lv, friendship: m.friendship }) * factor;
     const amount = Math.max(1, Math.floor(base * share));
     ev.push({ t: 'xp', uid: m.uid, amount, text: nameOf(m) + ' erhält ' + amount + ' EP.' });
     for (const e of gainXp(m, amount, { night: b.night })) {
-      if (e.type === 'levelup') ev.push({ t: 'levelup', uid: m.uid, level: e.level, hp: m.hp, max: maxHp(m), text: nameOf(m) + ' erreicht Level ' + e.level + '!' });
+      if (e.type === 'levelup') ev.push({ t: 'levelup', uid: m.uid, level: e.level, hp: m.hp, max: maxHp(m), gains: e.gains, text: nameOf(m) + ' erreicht Level ' + e.level + '! ' + gainsText(e.gains) });
       if (e.type === 'learn') ev.push({ t: 'learn', uid: m.uid, move: e.move, text: nameOf(m) + ' lernt ' + MOVES[e.move].name + '!' });
       if (e.type === 'learnFull') { b.learnRequests.push({ uid: m.uid, move: e.move }); ev.push({ t: 'learnFull', uid: m.uid, move: e.move, text: nameOf(m) + ' möchte ' + MOVES[e.move].name + ' lernen.' }); }
       if (e.type === 'evolve' && !b.pendingEvolutions.some(x => x.uid === m.uid)) b.pendingEvolutions.push({ uid: m.uid, to: e.to });

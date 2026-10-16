@@ -19,9 +19,12 @@ import { BattleScene } from './battle-scene.js';
 import { REGIONS } from '../data/regions.js';
 import { SPECIES } from '../data/species.js';
 import { ITEMS } from '../data/items.js';
+import { MOVES } from '../data/moves.js';
+import { TYPES } from '../data/types.js';
 import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS } from '../data/trainers.js';
 import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, professorLines } from '../data/story.js';
-import { makeMonster, healMonster, maxHp, evolve } from '../logic/monster.js';
+import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
+import { gainsText } from '../logic/battle.js';
 import { rollEncounter, levelRange } from '../logic/encounters.js';
 import { createStore, newSave, exportJSON, importJSON } from '../logic/save.js';
 import * as P from '../logic/progress.js';
@@ -642,7 +645,7 @@ export class Game {
     const res = await this.trainerBattle(t, n, { indoor: true });
     if (res.outcome !== 'win') return;
     s.badges = r + 1;
-    P.grantReward(s, { items: r < 5 ? { superball: 3 } : r < 10 ? { supertrank: 3 } : { vitaltrank: 2 } });
+    P.grantReward(s, { items: { levelbonbon: 1, ...(r < 5 ? { superball: 3 } : r < 10 ? { supertrank: 3 } : { vitaltrank: 2 }) } });
     this.audio.sfx('levelup'); this.world.player.play('cheer', 1.6);
     await this.ui.say([{ text: 'Du erhältst das Licht-Siegel von ' + region.name + '! (' + s.badges + '/16)' }, { who, text: 'Jetzt wartet ' + region.champion.name + ' im Champion-Pavillon. Erst wer den Champion besiegt, darf weiterreisen.' }]);
     this.saveNow(true);
@@ -888,11 +891,41 @@ export class Game {
     await this.ui.say([{ text: 'Du bist mit deinen erschöpften Taschis zum Heilzentrum geeilt. Sie sind wieder fit. (Verloren: ★' + lost + ')' }]);
     this.saveNow();
   }
+  // Asks whether `m` should learn `moveId` when four moves are known; returns
+  // true when the move was learned. Used after battles, evolutions, EP candy
+  // and the move reminder.
+  async offerMove(m, moveId) {
+    if (m.moves.some(x => x.id === moveId)) return false;
+    const mv = MOVES[moveId], name = m.nick || SPECIES[m.id].name;
+    if (m.moves.length < 4) { teachMove(m, moveId); this.ui.toast(name + ' hat ' + mv.name + ' gelernt!', '✦'); return true; }
+    const pick = await this.ui.ask([{ who: SPECIES[m.id].name, text: name + ' möchte ' + mv.name + ' (' + TYPES[mv.type].name + ', ' + (mv.power ? 'Stärke ' + mv.power : 'Status') + ') lernen, kennt aber schon vier Attacken. Welche soll es vergessen?' }],
+      [...m.moves.map(x => 'Vergessen: ' + MOVES[x.id].name + ' (' + (MOVES[x.id].power || 'Status') + ')'), mv.name + ' nicht lernen'], { cancelIndex: 4 });
+    if (pick >= 0 && pick < 4) { const old = MOVES[m.moves[pick].id].name; teachMove(m, moveId, pick); this.ui.toast('1, 2 und … schwupp! ' + old + ' vergessen – ' + mv.name + ' gelernt!', '✦'); return true; }
+    this.ui.toast(name + ' hat ' + mv.name + ' nicht gelernt.');
+    return false;
+  }
+  // Applies level-up events outside of battle (EP candy): moves and evolution.
+  async processGrowth(m, events) {
+    for (const e of events) {
+      if (e.type === 'levelup') this.ui.toast((m.nick || SPECIES[m.id].name) + ' erreicht Level ' + e.level + '! ' + gainsText(e.gains), '▲');
+      if (e.type === 'learn') this.ui.toast((m.nick || SPECIES[m.id].name) + ' hat ' + MOVES[e.move].name + ' gelernt!', '✦');
+      if (e.type === 'learnFull') await this.offerMove(m, e.move);
+    }
+    const evo = events.find(e => e.type === 'evolve');
+    if (evo) {
+      const from = m.id;
+      const ok = await this.ui.ask([{ text: 'Nanu? ' + (m.nick || SPECIES[from].name) + ' entwickelt sich!' }], ['Entwicklung zulassen', 'Abbrechen'], { cancelIndex: 1 });
+      if (ok !== 0) { await this.ui.say([{ text: (m.nick || SPECIES[from].name) + ' hat sich nicht entwickelt.' }]); return; }
+      const { offers } = evolve(m, evo.to);
+      await this.evolveInWorld(m, { from, to: evo.to });
+      for (const id of offers) await this.offerMove(m, id);
+    }
+  }
   evolveInWorld(m, ev) {
     this.audio.sfx('evolve');
     this.save.dex[ev.to] = 2;
     this.world.refreshFollower();
-    this.ui.say([{ text: 'Was? ' + SPECIES[ev.from].name + ' entwickelt sich … zu ' + SPECIES[ev.to].name + '!' }]);
+    return this.ui.say([{ text: 'Was? ' + SPECIES[ev.from].name + ' entwickelt sich … zu ' + SPECIES[ev.to].name + '!' }]);
   }
 }
 
