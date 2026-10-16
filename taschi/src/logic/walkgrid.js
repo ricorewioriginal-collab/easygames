@@ -37,9 +37,12 @@ export function buildWalkGrid(L) {
       const k = idx(x + 0.5, z + 0.5); if (k >= 0) g[k] = v;
     }
   };
+  // marks every cell the circle overlaps (not only cells whose centre lies
+  // inside), so thin objects such as signposts, lamps and young trees block too
   const circle = (cx, cz, r, v = BLOCK) => {
-    for (let z = Math.floor(cz - r); z <= Math.ceil(cz + r); z++) for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x++) {
-      if (Math.hypot(x + 0.5 - cx, z + 0.5 - cz) <= r) { const k = idx(x + 0.5, z + 0.5); if (k >= 0) g[k] = v; }
+    for (let z = Math.floor(cz - r); z <= Math.floor(cz + r); z++) for (let x = Math.floor(cx - r); x <= Math.floor(cx + r); x++) {
+      const nx = Math.max(x, Math.min(x + 1, cx)) - cx, nz = Math.max(z, Math.min(z + 1, cz)) - cz;
+      if (nx * nx + nz * nz < r * r) { const k = idx(x + 0.5, z + 0.5); if (k >= 0) g[k] = v; }
     }
   };
   for (const b of L.buildings) {
@@ -57,7 +60,8 @@ export function buildWalkGrid(L) {
     }
     circle(L.dome.podium.x, L.dome.podium.z, 1.6);
   }
-  for (const t of L.trees) circle(t.x, t.z, t.type === 'giant' ? 3.2 * t.s : t.type === 'mushroom' ? 0.9 * t.s : 0.55 * t.s);
+  // trees the quality preset leaves out are not drawn, so they must not block
+  for (const t of L.trees) if (!t.hidden) circle(t.x, t.z, t.type === 'giant' ? 3.2 * t.s : t.type === 'mushroom' ? 0.9 * t.s : 0.55 * t.s);
   for (const r of L.rocks) circle(r.x, r.z, 0.8 * r.s);
   for (const s of L.signs) circle(s.x, s.z, 0.35);
   if (L.landmark) {
@@ -65,6 +69,7 @@ export function buildWalkGrid(L) {
     if (rr) circle(L.landmark.x, L.landmark.z, rr);
   }
   if (L.guild) circle(L.guild.x, L.guild.z - 4, 1.8);
+  for (const p of L.props) if (p.r) circle(p.x, p.z, p.r);
   if (L.chest) circle(L.chest.x, L.chest.z, 0.7);
   if (L.obstacle) circle(L.obstacle.x, L.obstacle.z, 1.4);
   // gates: walls left and right of the opening

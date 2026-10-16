@@ -130,6 +130,10 @@ export function buildInterior(kind, regionId, save) {
       bed(b, -4.4, -2.2, OUTFIT[(regionId * 3) % OUTFIT.length]); out.grid.block(-4.4, -2.2, 0.7, 1.2);
       b.box(3, 1, 0.7, 0xe8e0d0, 3.5, 0.5, -3.9); b.box(0.8, 0.6, 0.6, 0x3a3d45, 4.6, 1.3, -3.9); out.grid.block(3.5, -3.9, 1.6, 0.5);
       plant(b, -5.2, 3.2, 0.8); b.cyl(0.9, 0.9, 0.04, 0xd84a4a, -1.5, 0.02, 1.8, 20);
+      // wardrobe: change clothes here as well as in the menu
+      b.box(1.8, 2.2, 0.6, 0x8a6444, -1.4, 1.1, -4.1); b.box(0.04, 2, 0.02, 0x5a4030, -1.4, 1.1, -3.79); for (const sx of [-1, 1]) b.box(0.06, 0.25, 0.05, 0xd8c070, -1.4 + sx * 0.12, 1.2, -3.77);
+      out.grid.block(-1.4, -4.1, 0.9, 0.4);
+      out.interact.push({ id: 'wardrobe', kind: 'wardrobe', x: -1.4, z: -3.3, r: 1.3, label: 'Kleiderschrank', prompt: 'Umkleiden' });
       door(b, 0, d / 2 - 0.1);
       out.spawn = { x: 0, z: d / 2 - 1.5, ry: Math.PI }; out.exit = { x: 0, z: d / 2 - 0.5 };
       const fam = region.npcs.find(n => n.role === 'familie') || region.npcs[0];

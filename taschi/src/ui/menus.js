@@ -35,13 +35,18 @@ function monCard(game, m, i, onclick, extra = {}) {
       hpBar(m.hp, max), h('div.sub', {}, m.hp + ' / ' + max + ' KP')));
 }
 
-export function openPauseMenu(game, tab = 'team') {
+// From the title screen only the settings are shown (there may be no
+// adventure loaded yet): openPauseMenu(game, 'options', { only: true }).
+export function openPauseMenu(game, tab = 'team', { only = false } = {}) {
   const ui = game.ui;
   let cur = tab;
+  const tabs = only ? TABS.filter(t => t[0] === tab) : TABS;
   const screen = { el: null };
   const render = () => {
     const body = TAB_RENDER[cur](game, rerender);
-    const el = panel(game, 'Menü', body, { tabs: TABS, active: cur, onTab: (id) => { cur = id; rerender(); }, hints: [['tabPrev', 'Reiter'], ['tabNext', ''], ['confirm', 'Wählen'], ['back', 'Schließen']] });
+    const el = only
+      ? panel(game, tabs[0][1] === 'Optionen' ? 'Einstellungen' : tabs[0][1], body, { hints: [['confirm', 'Wählen'], ['back', 'Schließen']] })
+      : panel(game, 'Menü', body, { tabs, active: cur, onTab: (id) => { cur = id; rerender(); }, hints: [['tabPrev', 'Reiter'], ['tabNext', ''], ['confirm', 'Wählen'], ['back', 'Schließen']] });
     return el;
   };
   const post = () => requestAnimationFrame(() => {
@@ -53,7 +58,7 @@ export function openPauseMenu(game, tab = 'team') {
   post();
   screen.onBack = () => ui.pop(screen);
   screen.onMenu = () => ui.pop(screen);
-  screen.onTab = (d) => { const i = TABS.findIndex(t => t[0] === cur); cur = TABS[(i + d + TABS.length) % TABS.length][0]; rerender(); };
+  screen.onTab = (d) => { const i = tabs.findIndex(t => t[0] === cur); cur = tabs[(i + d + tabs.length) % tabs.length][0]; rerender(); };
   screen.onClose = () => game.preview.detach();
   ui.push(screen);
   return screen;
@@ -112,11 +117,12 @@ const TAB_RENDER = {
       h('h3', {}, 'Championübersicht'),
       h('div.list', {}, REGIONS.map(r => h('div.row', {}, h('div.grow', {}, h('b', {}, (r.id + 1) + '. ' + r.name), ' ', h('span.muted', {}, 'Arena: ' + r.gym.leader + ' · Champion: ' + r.champion.name)), h('span.right', {}, (s.badges > r.id ? '✦' : '◌') + ' ' + (s.champions[r.id] ? '♛' : '◌'))))));
   },
-  card(game) {
+  card(game, rerender) {
     const s = game.save;
     const badges = REGIONS.map((r, i) => h('div.badge' + (s.badges > i ? '.won' : ''), { style: s.badges > i ? { background: TYPES[r.types[0]].color } : {}, title: r.name }, TYPES[r.types[0]].icon));
     return h('div.split', {},
-      h('div', {}, h('div.viewport3d', { id: 'cardview' }), h('p', { style: { textAlign: 'center' } }, h('b', {}, s.player.name))),
+      h('div', {}, h('div.viewport3d', { id: 'cardview' }), h('p', { style: { textAlign: 'center' } }, h('b', {}, s.player.name)),
+        h('div.optrow', { style: { justifyContent: 'center' } }, h('button.bigbtn.focusable', { onclick: async () => { await game.openWardrobe(); rerender(); } }, h('span.ic', {}, '👕'), 'Umkleiden'))),
       h('div', {}, h('div.statgrid', {},
         'Spielzeit', h('span'), h('b', {}, fmtTime(s.playTime)),
         'Taschidex', h('span'), h('b', {}, P.caughtCount(s) + ' / ' + SPECIES_IDS.length),

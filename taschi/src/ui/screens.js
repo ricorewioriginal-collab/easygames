@@ -3,7 +3,7 @@ import { h, FocusNav } from './ui.js';
 import { SPECIES } from '../data/species.js';
 import { REGIONS } from '../data/regions.js';
 import { INTRO_SLIDES } from '../data/story.js';
-import { PLAYER_PRESETS, SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS, HAIR_STYLES } from '../engine/characters.js';
+import { PLAYER_PRESETS, GENDERS, BODY_FOR_GENDER, SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS, HAIR_STYLES } from '../engine/characters.js';
 import { fmtTime } from './menus.js';
 
 const hex = (c) => '#' + c.toString(16).padStart(6, '0');
@@ -47,39 +47,89 @@ export function slotScreen(game) {
   });
 }
 
-// Character creation: 4 presets + customisation, live 3D preview.
-export function creatorScreen(game) {
+// Character creation and wardrobe with a live 3D preview.
+// mode 'new': gender, name and look for a new adventure.
+// mode 'upgrade': the same for an older save (name is pre-filled).
+// mode 'wardrobe': change clothes, hair and body later; resolves null on cancel.
+const CAP_COLORS = [0xd8483a, 0x3a7fd0, 0x2fa07a, 0xf0a030, 0x7d4fa3, 0xe86aa0, 0x2a2d36, 0xf2efe6];
+const PANT_COLORS = [0x34465f, 0x2f3e55, 0x4a3a2a, 0x5a5a62, 0x2a2d36, 0x6a4a3a, 0x3a5a3a, 0xc8b490];
+const GLOVE_COLORS = [null, 0x2fa07a, 0xd8483a, 0x3a7fd0, 0x2a2d36, 0xf2efe6, 0xf0a030];
+const BAG_COLORS = [0xf09a3a, 0xf2c94a, 0x3a7fd0, 0x2fa07a, 0xd8483a, 0x7d4fa3];
+export function creatorScreen(game, { mode = 'new', player = null } = {}) {
   return new Promise(resolve => {
-    let preset = 'rio';
-    let look = { ...PLAYER_PRESETS.rio };
-    let name = PLAYER_PRESETS.rio.name;
+    const start = player?.look && Object.keys(player.look).length ? player.look : null;
+    let gender = player?.gender || 'm';
+    let look = start ? { ...start } : { ...PLAYER_PRESETS[gender] };
+    // older saves have no gender yet: start from the new trainer look and keep skin and hair colour
+    if (start && !player?.gender) look = { ...PLAYER_PRESETS.m, skin: start.skin ?? PLAYER_PRESETS.m.skin, hairColor: start.hairColor ?? PLAYER_PRESETS.m.hairColor };
+    let name = player?.name || PLAYER_PRESETS[gender].name;
+    delete look.name; delete look.gender;
     const screen = { el: null };
     const update = () => { game.preview.showCharacter(look).hold('wave'); };
-    const sw = (key, list, val) => h('div.optrow', {}, h('span.lbl', {}, { skin: 'Haut', hairColor: 'Haarfarbe', topColor: 'Kleidung', backpack: 'Rucksack' }[key]),
-      list.map((c, i) => h('button.swatch.focusable' + ((typeof look[key] === 'number' && look[key] === (val === 'index' ? i : c)) ? '.sel' : ''), { style: { background: hex(c) }, onclick: () => { look[key] = val === 'index' ? i : c; rerender(); } })));
-    const chips = (key, list, labels) => h('div.optrow', {}, h('span.lbl', {}, { hair: 'Frisur', hat: 'Kopfbedeckung', top: 'Oberteil', bottom: 'Hose' }[key]),
-      list.map((v, i) => h('button.chip.focusable' + (look[key] === v ? '.sel' : ''), { onclick: () => { look[key] = v; rerender(); } }, labels[i])));
+    const same = (a, b) => a === b || (a == null && b == null);
+    const row = (label, ...items) => h('div.optrow', {}, h('span.lbl', {}, label), ...items);
+    const sw = (label, key, list, byIndex = false) => row(label, list.map((c, i) => {
+      const v = byIndex ? i : c;
+      return h('button.swatch.focusable' + (same(look[key] ?? null, v) ? '.sel' : ''), { 'aria-label': label, style: c == null ? { background: 'repeating-linear-gradient(45deg,#fff 0 5px,#d8dee6 5px 10px)' } : { background: hex(c) }, onclick: () => { look[key] = v; rerender(); } });
+    }));
+    const chips = (label, key, values, labels) => row(label, values.map((v, i) => h('button.chip.focusable' + (same(look[key] ?? null, v) ? '.sel' : ''), { onclick: () => { look[key] = v; rerender(); } }, labels[i])));
+    const pickGender = (g) => {
+      gender = g;
+      if (mode === 'wardrobe') look.body = BODY_FOR_GENDER[g];
+      else { look = { ...PLAYER_PRESETS[g] }; delete look.name; delete look.gender; if (!player?.name && (!name.trim() || Object.values(PLAYER_PRESETS).some(p => p.name === name))) name = PLAYER_PRESETS[g].name; }
+      rerender();
+    };
+    const finish = (ok) => {
+      game.ui.pop(screen); game.preview.detach();
+      if (!ok) return resolve(null);
+      const n = name.trim().slice(0, 12) || PLAYER_PRESETS[gender].name;
+      resolve({ name: n, gender, preset: gender, look: { ...look, body: look.body || BODY_FOR_GENDER[gender] } });
+    };
+    const title = mode === 'wardrobe' ? 'Kleiderschrank' : 'Wer bist du?';
     const render = () => h('div.screen', {}, h('div.panel', {},
-      h('div.panel-head', {}, h('h2', {}, 'Wer bist du?')),
+      h('div.panel-head', {}, h('h2', {}, title), mode === 'wardrobe' ? h('button.closebtn.focusable', { 'aria-label': 'Abbrechen', onclick: () => finish(false) }, '✕') : null),
       h('div.panel-body', {}, h('div.creator', {},
-        h('div', {}, h('div.viewport3d', { id: 'creatorview' }),
-          h('div.optrow', { style: { justifyContent: 'center' } }, Object.entries(PLAYER_PRESETS).map(([k, p]) => h('button.chip.focusable' + (preset === k ? '.sel' : ''), { onclick: () => { preset = k; look = { ...p }; name = p.name; rerender(); } }, p.name)))),
+        h('div.creatorview', {}, h('div.viewport3d', { id: 'creatorview' })),
         h('div', {},
-          h('div.optrow', {}, h('span.lbl', {}, 'Name'), h('input.name', { value: name, maxlength: 12, oninput: (e) => { name = e.target.value; } })),
-          sw('skin', SKIN_TONES, 'index'),
-          chips('hair', HAIR_STYLES, ['Kurz', 'Stachelig', 'Zopf', 'Lang', 'Dutt', 'Bob', 'Locken', 'Zöpfe']),
-          sw('hairColor', HAIR_COLORS, 'index'),
-          chips('top', ['jacket', 'hoodie', 'vest', 'tshirt'], ['Jacke', 'Hoodie', 'Weste', 'Shirt']),
-          sw('topColor', OUTFIT_COLORS, 'index'),
-          chips('bottom', ['pants', 'shorts', 'skirt'], ['Hose', 'Shorts', 'Rock']),
-          chips('hat', [null, 'cap', 'beanie', 'beret', 'sunhat'], ['Keine', 'Kappe', 'Mütze', 'Barett', 'Sonnenhut']),
-          sw('backpack', [0xf09a3a, 0xf2c94a, 0x3a7fd0, 0x2fa07a, 0xd8483a, 0x7d4fa3], 'value'),
-          h('div.optrow', { style: { marginTop: '14px' } }, h('button.bigbtn.primary.focusable', { onclick: () => { const n = name.trim().slice(0, 12) || 'Rio'; game.ui.pop(screen); game.preview.detach(); resolve({ name: n, preset, look: { ...look, body: 'teen' } }); } }, '✓ So starte ich!'))))),
-      game.ui.hintsBar([['confirm', 'Wählen']])));
-    const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); attach(); };
+          mode === 'wardrobe' ? h('p.muted', {}, 'Zieh dich um, wie du willst. Deine Taschis erkennen dich trotzdem!') : h('p.muted', {}, 'Wähle, wer du bist, und gib dir einen Namen. Danach kannst du dein Trainer-Outfit anpassen.'),
+          row('Ich bin', GENDERS.map(([g, label]) => h('button.chip.focusable' + (gender === g ? '.sel' : ''), { onclick: () => pickGender(g), 'data-autofocus': gender === g ? '' : undefined }, label))),
+          mode === 'wardrobe' ? null : row('Name', h('input.name', { value: name, maxlength: 12, placeholder: 'Dein Name', oninput: (e) => { name = e.target.value; } })),
+          h('h3', {}, 'Aussehen'),
+          sw('Haut', 'skin', SKIN_TONES, true),
+          chips('Frisur', 'hair', HAIR_STYLES, ['Kurz', 'Stachelig', 'Zopf', 'Lang', 'Dutt', 'Bob', 'Locken', 'Zöpfe']),
+          sw('Haarfarbe', 'hairColor', HAIR_COLORS, true),
+          chips('Augen', 'lashes', [false, true], ['Schlicht', 'Wimpern']),
+          h('h3', {}, 'Outfit'),
+          chips('Kopf', 'hat', ['trainercap', 'cap', 'beanie', 'beret', 'sunhat', null], ['Trainerkappe', 'Kappe', 'Mütze', 'Barett', 'Sonnenhut', 'Keine']),
+          look.hat ? sw('Kappenfarbe', 'hatColor', CAP_COLORS) : null,
+          look.hat === 'trainercap' ? sw('Kappe vorne', 'capFront', CAP_COLORS) : null,
+          chips('Oberteil', 'top', ['trainer', 'jacket', 'hoodie', 'vest', 'tshirt', 'dress'], ['Trainerjacke', 'Jacke', 'Hoodie', 'Weste', 'Shirt', 'Kleid']),
+          sw('Farbe', 'topColor', OUTFIT_COLORS, true),
+          ['trainer', 'jacket', 'vest', 'uniform'].includes(look.top) ? sw(look.top === 'trainer' ? 'Ärmel & Kragen' : 'Akzent', 'accent', CAP_COLORS) : null,
+          look.top === 'trainer' ? sw('Shirt', 'inner', CAP_COLORS) : null,
+          look.top === 'dress' ? null : chips('Unten', 'bottom', ['pants', 'shorts', 'skirt'], ['Hose', 'Shorts', 'Rock']),
+          look.top === 'dress' ? null : sw('Hosenfarbe', 'bottomColor', PANT_COLORS),
+          sw('Handschuhe', 'gloves', GLOVE_COLORS),
+          sw('Schuhe', 'shoes', [0x3a3330, 0xd8483a, 0x3a7fd0, 0xf2efe6, 0x2fa07a, 0xe86aa0]),
+          chips('Gürtel', 'belt', [0x5a4030, 0x2a2d36, 0x3a3048, null], ['Braun', 'Schwarz', 'Lila', 'Keiner']),
+          sw('Rucksack', 'backpack', [...BAG_COLORS, null]),
+          h('div.optrow', { style: { marginTop: '14px' } },
+            mode === 'wardrobe' ? h('button.bigbtn.focusable', { onclick: () => finish(false) }, 'Abbrechen') : null,
+            h('button.bigbtn.primary.focusable', { onclick: () => finish(true) }, mode === 'wardrobe' ? '✓ Fertig' : '✓ So starte ich!'))))),
+      game.ui.hintsBar([['confirm', 'Wählen']].concat(mode === 'wardrobe' ? [['back', 'Abbrechen']] : []))));
+    const rerender = () => {
+      // keep scroll position and the focused control (by position in the list)
+      const old = screen.el, y = old.querySelector('.panel-body')?.scrollTop || 0, at = screen.nav ? screen.nav.items().indexOf(screen.nav.current) : -1;
+      screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el);
+      screen.el.querySelector('.panel-body').scrollTop = y;
+      screen.nav = new FocusNav(screen.el);
+      const items = screen.nav.items();
+      if (at >= 0 && items.length) screen.nav.focus(items[Math.min(at, items.length - 1)]); else screen.nav.ensure();
+      attach();
+    };
     const attach = () => requestAnimationFrame(() => { const v = screen.el.querySelector('#creatorview'); if (v) { game.preview.attach(v); update(); } });
     screen.el = render();
-    screen.onBack = () => {};
+    screen.onBack = () => { if (mode === 'wardrobe') finish(false); };
     game.ui.push(screen);
     attach();
   });

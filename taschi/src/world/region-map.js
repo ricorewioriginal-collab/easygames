@@ -147,15 +147,13 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
     interact.push({ id: 'fountain', kind: 'look', x: L.plaza.x, z: L.plaza.z, r: 4.2, label: 'Brunnen', text: 'Das Wasser des Brunnens glitzert im Licht. Eine Inschrift: „' + region.town + ' – gegründet von Menschen und Taschis.“' });
     const benches = new Builder(), lampB = new Builder(), lampGlow = new Builder();
     const lamp = BLD.streetLamp();
-    for (let i = 0; i < 6; i++) {
-      const a = i / 6 * Math.PI * 2 + 0.26, x = L.plaza.x + Math.cos(a) * (L.plaza.r - 0.8), z = L.plaza.z + Math.sin(a) * (L.plaza.r - 0.8);
-      lampB.add(lamp.geo.clone(), null, matrix(x, H(x, z), z));
-      lampGlow.add(lamp.glow.clone(), null, matrix(x, H(x, z), z));
-      const ba = a + Math.PI / 6, bx = L.plaza.x + Math.cos(ba) * (L.plaza.r - 2.2), bz = L.plaza.z + Math.sin(ba) * (L.plaza.r - 2.2);
-      benches.add(BLD.bench(), null, matrix(bx, H(bx, bz), bz, 0, -ba + Math.PI / 2 + Math.PI, 0));
+    // positions come from L.props (addProps in layout.js), which also makes them solid
+    for (const p of L.props) {
+      const x = p.x, z = p.z, a = p.a;
+      if (p.kind === 'lamp') { lampB.add(lamp.geo.clone(), null, matrix(x, H(x, z), z)); lampGlow.add(lamp.glow.clone(), null, matrix(x, H(x, z), z)); }
+      else if (p.kind === 'bench') benches.add(BLD.bench(), null, matrix(x, H(x, z), z, 0, -a + Math.PI / 2 + Math.PI, 0));
+      else if (p.kind === 'flowerbed') { benches.box(2.2, 0.35, 1.2, 0x8a6a4a, x, H(x, z) + 0.17, z, -a); for (let k = 0; k < 6; k++) benches.sphere(0.18, [0xf47a8a, 0xffd25a, 0xffffff, 0xc58af0, 0xff9a5a][k % 5], x + Math.cos(-a) * (k - 2.5) * 0.33, H(x, z) + 0.5, z + Math.sin(-a) * (k - 2.5) * 0.33, 1, 0.8, 1, 6); }
     }
-    // flower beds around the plaza
-    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 + 0.6, x = L.plaza.x + Math.cos(a) * (L.plaza.r + 2.2), z = L.plaza.z + Math.sin(a) * (L.plaza.r + 2.2); if (L.roads.some(rd => distToPolyline(x, z, rd.pts) < rd.width / 2 + 1.2)) continue; benches.box(2.2, 0.35, 1.2, 0x8a6a4a, x, H(x, z) + 0.17, z, -a); for (let k = 0; k < 6; k++) benches.sphere(0.18, [0xf47a8a, 0xffd25a, 0xffffff, 0xc58af0, 0xff9a5a][k % 5], x + Math.cos(-a) * (k - 2.5) * 0.33, H(x, z) + 0.5, z + Math.sin(-a) * (k - 2.5) * 0.33, 1, 0.8, 1, 6); }
     const bm = new THREE.Mesh(benches.build(), envMaterial()); bm.castShadow = true; bm.receiveShadow = true; root.add(bm);
     const lm = new THREE.Mesh(lampB.build(), envMaterial()); lm.castShadow = true; root.add(lm);
     root.add(new THREE.Mesh(lampGlow.build(), BLD.windowMaterial));
@@ -260,7 +258,7 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   const rng = createRng('veg:' + r);
   const types = new Set();
   const densityKeep = quality.vegetation;
-  for (const t of L.trees) { if (rng.next() > densityKeep && t.type !== 'giant') continue; const tint = new THREE.Color(1, 1, 1).offsetHSL((rng.next() - 0.5) * 0.04, 0, (rng.next() - 0.5) * 0.14).getHex(); field.add(t.type, t.x, t.y - 0.1, t.z, t.s, t.ry, tint); types.add(t.type); }
+  for (const t of L.trees) { t.hidden = rng.next() > densityKeep && t.type !== 'giant'; if (t.hidden) continue; const tint = new THREE.Color(1, 1, 1).offsetHSL((rng.next() - 0.5) * 0.04, 0, (rng.next() - 0.5) * 0.14).getHex(); field.add(t.type, t.x, t.y - 0.1, t.z, t.s, t.ry, tint); types.add(t.type); }
   for (const b of L.bushes) { if (rng.next() > densityKeep) continue; field.add('bush', b.x, b.y - 0.05, b.z, b.s, b.ry, new THREE.Color(1, 1, 1).offsetHSL(0, 0, (rng.next() - 0.5) * 0.15).getHex()); types.add('bush'); }
   for (const k of L.rocks) { field.add('rock_' + k.kind, k.x, k.y - 0.15, k.z, k.s, k.ry, new THREE.Color(1, 1, 1).offsetHSL(0, 0, (rng.next() - 0.5) * 0.15).getHex()); types.add('rock_' + k.kind); }
   // tall grass patches

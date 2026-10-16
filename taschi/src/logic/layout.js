@@ -146,8 +146,11 @@ export function buildLayout(r) {
   for (const w of L.water.filter(w => w.kind === 'river' || w.kind === 'lava')) {
     for (const rd of L.roads) {
       for (let i = 1; i < rd.pts.length; i++) {
-        const [x, z] = rd.pts[i];
-        const d = distToPolyline(x, z, w.pts);
+        // sample the segment every metre: road points can lie further apart
+        // than the river's centre band, which used to skip the bridge
+        const [ax, az] = rd.pts[i - 1], [bx, bz] = rd.pts[i], n = Math.max(1, Math.ceil(Math.hypot(bx - ax, bz - az)));
+        let x = bx, z = bz, d = Infinity;
+        for (let k = 1; k <= n && d >= 1.2; k++) { x = ax + (bx - ax) * k / n; z = az + (bz - az) * k / n; d = distToPolyline(x, z, w.pts); }
         if (d < 1.2) {
           const [px, pz] = rd.pts[Math.max(0, i - 3)], [nx, nz] = rd.pts[Math.min(rd.pts.length - 1, i + 3)];
           if (!L.bridges.some(b => Math.hypot(b.x - x, b.z - z) < 10)) L.bridges.push({ x, z, yaw: Math.atan2(nx - px, nz - pz), len: w.width + 6, width: rd.width + 1 });
@@ -222,6 +225,7 @@ export function buildLayout(r) {
   L.signs.push({ x: X(5), z: -108, text: '↑ ' + (r === 15 ? 'Sternengipfel' : REGIONS[r + 1].name) });
   L.signs.push({ x: X(-14), z: -6, text: '← ' + region.gym.theme });
   L.signs.push({ x: X(10), z: -48, text: '→ Champion-Pavillon' });
+  addProps(L);
 
   // --- terrain heights -----------------------------------------------------------
   computeHeights(L, noise);
@@ -282,6 +286,33 @@ export function onRoad(L, x, z, pad = 0) {
     if (distToPolyline(x, z, rd.pts) < rd.width / 2 + pad) return true;
   }
   return false;
+}
+
+// Solid town and camp props (drawn in region-map.js, blocking in walkgrid.js).
+// r is the collision radius.
+function addProps(L) {
+  const P = L.plaza, add = (kind, x, z, r, extra = {}) => L.props.push({ kind, x, z, r, ...extra });
+  add('fountain', P.x, P.z, 3.4);
+  for (let i = 0; i < 6; i++) {
+    const a = i / 6 * Math.PI * 2 + 0.26, ba = a + Math.PI / 6;
+    add('lamp', P.x + Math.cos(a) * (P.r - 0.8), P.z + Math.sin(a) * (P.r - 0.8), 0.3);
+    add('bench', P.x + Math.cos(ba) * (P.r - 2.2), P.z + Math.sin(ba) * (P.r - 2.2), 0.9, { a: ba });
+  }
+  for (let i = 0; i < 8; i++) {
+    const a = i / 8 * Math.PI * 2 + 0.6, x = P.x + Math.cos(a) * (P.r + 2.2), z = P.z + Math.sin(a) * (P.r + 2.2);
+    if (L.roads.some(rd => distToPolyline(x, z, rd.pts) < rd.width / 2 + 1.2)) continue;
+    add('flowerbed', x, z, 1.1, { a });
+  }
+  if (L.cave) {
+    // the two legs of the rock arch; the opening between them stays free
+    const yaw = Math.atan2(-L.cave.x, -L.cave.z);
+    for (const lx of [-3.4, 3.4]) add('caveRock', L.cave.x + Math.cos(yaw) * lx, L.cave.z - Math.sin(yaw) * lx, 1.8);
+  }
+  if (L.legend) add('shrine', L.legend.x, L.legend.z, 2);
+  if (L.guild) {
+    const { x, z } = L.guild;
+    for (const [dx, dz, r] of [[-5, 2, 1.8], [5, 1, 1.8], [-3, 5.5, 0.9], [0, 5.5, 0.9], [3, 5.5, 0.9], [6.5, -2.2, 0.9], [-6, -3, 0.8]]) add('camp', x + dx, z + dz, r);
+  }
 }
 
 function landmarkCandidates(kind) {
@@ -444,6 +475,7 @@ function buildSummitLayout() {
   L.spawn = { south: { x: 0, z: 56, ry: Math.PI }, heal: { x: 6, z: 18, ry: Math.PI }, start: { x: 0, z: 56, ry: Math.PI } };
   L.signs.push({ x: 6, z: 40, text: 'Sternengipfel' });
   L.healStation = { x: 10, z: 16 };
+  L.props.push({ kind: 'healStation', x: 10, z: 16, r: 2 });
   L.waterLevel = -0.55;
   const n = CELLS + 1, H = new Float32Array(n * n), noise = createNoise('summit');
   for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {

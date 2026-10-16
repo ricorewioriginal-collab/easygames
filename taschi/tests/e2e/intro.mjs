@@ -17,7 +17,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     step('Lade- und Titelbildschirm');
     await page.getByText('Neues Abenteuer').click();
     await page.waitForSelector('#creatorview canvas', { timeout: 30000 });
-    await page.getByText('Mila', { exact: true }).click();
+    await page.getByText('Weiblich', { exact: true }).click();
     await page.locator('input.name').fill('Testi');
     await page.waitForTimeout(500);
     await shot('02-creator');

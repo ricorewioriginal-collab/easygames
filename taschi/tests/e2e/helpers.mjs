@@ -72,7 +72,7 @@ export async function seededStorage(mutate = () => {}, slot = 1) {
   const { makeMonster } = await import('../../src/logic/monster.js');
   const { createRng } = await import('../../src/core/rng.js');
   const rng = createRng('seed');
-  const s = newSave({ name: 'Testi', look: { body: 'teen', hair: 'ponytail', skin: 1, hairColor: 2, top: 'hoodie', topColor: 2, backpack: 0xf2c94a } });
+  const s = newSave({ name: 'Testi', gender: 'w', look: { body: 'teenF', hair: 'ponytail', skin: 1, hairColor: 2, top: 'trainer', topColor: 2, hat: 'trainercap', gloves: 0xf2efe6, belt: 0x3a3048, backpack: 0xf2c94a } });
   Object.assign(s.flags, { introDone: true, metUlme: true, starterChosen: true, firstBattle: true, firstQuest: true, travelStarted: true, starter: 'plaetscher' });
   s.team.push(makeMonster('plaetscher', 12, rng), makeMonster('fellino', 10, rng));
   s.dex.plaetscher = 2; s.dex.fellino = 2;
