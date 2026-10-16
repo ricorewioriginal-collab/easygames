@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "494a84677ef9",
- "generated": "2026-10-16T17:30:03+02:00",
- "commit": "1646c0362a797e578c636a0a2b931d32c1d6087b",
+ "version": "158972661922",
+ "generated": "2026-10-16T17:58:39+02:00",
+ "commit": "0c4b819fa370a471c13f1d2b5409a0e83419390c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4603,8 +4603,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 45510,
-   "h": "07352bb25df98fc3dfae4c8dc616def44460aca21bfebd4f5a54b1620061b4a9"
+   "s": 50425,
+   "h": "50b7660509cb6f4b2b72385a6c31edf1d638189c3e5d29515698c1e9f3821db9"
   },
   {
    "p": "gamekit.js",
