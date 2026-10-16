@@ -40,7 +40,7 @@ ok(r.guideLock, '„Wohin?“: gesperrte Orte mit Schloss und Aufgaben, ohne Weg
 ok(r.cityOpen && r.stillLocked && r.walkIn, 'Aufgaben geschafft → Stadtinsel öffnet sich, Rest bleibt zu'); ok(r.dest, 'Orte in gesperrten Welten werden erkannt');
 ok(r.backFree && r.saved, 'Zurück zur freien Welt: alles offen, Modus gespeichert'); ok(r.again, 'Wieder Story: Fortschritt bleibt, Rest gesperrt');
 /* nach Neuladen: Modus + Stand bleiben */
-await p.waitForTimeout(500); await boot(true);
+await p.waitForTimeout(500); await ctx.addInitScript(() => { try { sessionStorage.removeItem('bi_resume_v1'); } catch (e) { } }); /* frisch starten statt „gleich weiterspielen“ nach Neuladen */ await boot(true);
 const sub0 = await p.evaluate(() => document.getElementById('storySub').textContent); await p.click('#bStartStory'); await p.waitForTimeout(1500);
 const r2 = await p.evaluate(() => { const K = __bi.smode; return { on: K.on(), locked: K.dbg.list.filter(I => I.lock.on).length, city: !K.dbg.list.find(I => I.key === 'CITY').lock.on }; });
 ok(/Weiter/.test(sub0) && r2.on && r2.locked === N - 1 && r2.city, 'Nach Neuladen: „Weiter“ im Story-Menü, Stand (Stadtinsel offen) bleibt gespeichert');

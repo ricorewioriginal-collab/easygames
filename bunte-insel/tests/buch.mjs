@@ -26,7 +26,8 @@ await p.keyboard.press('Escape'); await sl(200); ok(await p.evaluate(() => !docu
 const md = await p.evaluate(() => ({ h: __bi.buch.toMarkdown('handbuch').length, l: __bi.buch.toMarkdown('loesung').length })); ok(md.h > 8000 && md.l > 8000, 'Markdown-Export für docs/ (' + md.h + ' / ' + md.l + ' Zeichen)');
 /* docs/ aktuell? */
 { const fs = await import('fs'); const D = new URL('../docs/', import.meta.url).pathname; const cur = await p.evaluate(() => ({ h: __bi.buch.toMarkdown('handbuch'), l: __bi.buch.toMarkdown('loesung'), c: BI.CHEATS.length }));
-  ok(fs.readFileSync(D + 'HANDBUCH.md', 'utf8') === cur.h && fs.readFileSync(D + 'LOESUNGSBUCH.md', 'utf8') === cur.l, 'docs/HANDBUCH.md und docs/LOESUNGSBUCH.md sind aktuell (sonst: node bunte-insel/tools/gen-docs.mjs)'); ok(fs.readFileSync(D + 'CHEATS.md', 'utf8').split('\n').filter(x => x.startsWith('| `')).length === cur.c, 'docs/CHEATS.md enthält alle Codes'); }
+  const day = t => t.split('\n').filter(x => !/^- \S+ Heute: |^- 🌟 Tagesglück: /u.test(x)).join('\n'); /* Tages-Ereignis wechselt täglich */
+  ok(day(fs.readFileSync(D + 'HANDBUCH.md', 'utf8')) === day(cur.h) && day(fs.readFileSync(D + 'LOESUNGSBUCH.md', 'utf8')) === day(cur.l), 'docs/HANDBUCH.md und docs/LOESUNGSBUCH.md sind aktuell (sonst: node bunte-insel/tools/gen-docs.mjs)'); ok(fs.readFileSync(D + 'CHEATS.md', 'utf8').split('\n').filter(x => x.startsWith('| `')).length === cur.c, 'docs/CHEATS.md enthält alle Codes'); }
 /* 2. Cheats */
 const c = await p.evaluate(async () => {
   const b = __bi, C = b.cheats, P = b.P, out = {}, sl = ms => new Promise(r => setTimeout(r, ms));

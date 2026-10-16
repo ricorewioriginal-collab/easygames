@@ -197,7 +197,7 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 ### 🔴 Taschi-Land
 
 - 😋 Feinschmecker: Iss etwas aus dem Rucksack
-- 🎂 Partykind: Feiere mit Freunden eine Party
+- 🐾 Haustierfreund: Füttere dein Haustier
 - 👑 Waldheld: Besiege den Waldgeist
 
 ### 🍄 Hüpfland
@@ -205,6 +205,12 @@ Für jede Welt müssen 3 Sticker geschafft werden. Die Aufgaben stehen auch an d
 - 🏆 Pokalsieger: Gewinne das Fußball-Turnier
 - 🎡 Freizeitpark-Fan: Fahr eine Attraktion im Freizeitpark
 - 🚀 Gadget-Fan: Kauf ein Gadget
+
+### 🌀 Prisma-Archipel
+
+- 🥊 Kämpfer: Gewinne einen Kampf in der Arena
+- 🚀 Gadget-Fan: Kauf ein Gadget
+- 💬 Plaudertasche: Sprich mit 5 Leuten auf der Insel
 
 ---
 
@@ -323,6 +329,12 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 2: Besiege die 4 Arena-Leiter (4 Orden) → Aufgabe der Welt
 - Akt 3: Forscher-Orden (8 Taschis) und Ballon-Orden (Team Funke besiegen) → Aufgabe der Welt
 - Akt 4: Besiege Meisterin Aurelia (Meister-Orden) → Aufgabe der Welt
+
+### 🌀 Die drei Lichtsignale – erzählt von Nuri
+
+- Akt 1: Löse die Lichtfolge im Ki-Garten → 🥋 Ki-Prüfung
+- Akt 2: Löse das Zeichenrätsel in der Runen-Arena → 🃏 Runenmeister
+- Akt 3: Repariere die Signalfolge im Datenhain → 💠 Datenhüter
 
 ---
 
@@ -520,8 +532,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🎪 Heute: Angelfest – Heute beißen die Fische besser – seltene sind dreimal so oft da, und die ersten 5 Fänge geben extra ⭐!
-- 🌟 Tagesglück: heute 🐡 Kugel-Bauch fangen (+2 ⭐)
+- 🌈 Heute: Regenbogen-Tag – Heute zeigt sich immer wieder ein Regenbogen mit bunten Sternen!
+- 🌟 Tagesglück: heute 🐲 Drachen-Karpfen fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -625,7 +637,7 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 
 ### 🚪 Gebäude erkunden
 
-- 🚪 Gebäude betreten: 0 von 46 (5 für den Sticker)
+- 🚪 Gebäude betreten: 0 von 47 (5 für den Sticker)
 - 🏘️ 20 verschiedene Gebäude betreten
 - 🎁 Schatztruhen in Gebäuden öffnen: 0 von 10
 
@@ -648,6 +660,7 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 📻 Die dreizehn Sender – noch nicht begonnen (geh auf die Insel)
 - 🔱 Das Herz von Atlantis – noch nicht begonnen (geh auf die Insel)
 - 🔴 Der Weg zum Meister – noch nicht begonnen (geh auf die Insel)
+- 🌀 Die drei Lichtsignale – noch nicht begonnen (geh auf die Insel)
 
 ---
 
@@ -799,6 +812,10 @@ So bekommst du jeden Sticker:
 | 🏰 Hüpfburg-Held | Hüpf auf der Hüpfburg oder dem Luftkissen |
 | 🌊 Wasserpark-Profi | Rutsch von der Riesenrutsche ins Meer |
 | 🛝 Rutschmeister | Rutsch die Wasserrutsche |
+| 🥋 Ki-Prüfung | Löse die Lichtfolge im Ki-Garten |
+| 🃏 Runenmeister | Löse das Zeichenrätsel in der Runen-Arena |
+| 💠 Datenhüter | Repariere die Signalfolge im Datenhain |
+| 🌀 Prisma-Chronik | Schließe die Geschichte des Prisma-Archipels ab |
 
 ---
 

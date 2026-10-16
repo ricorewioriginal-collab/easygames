@@ -10,7 +10,7 @@ await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/c
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.click('#bStart'); await p.waitForTimeout(800);
 const res = await p.evaluate(async () => { const b = window.__bi, sl = ms => new Promise(r => setTimeout(r, ms)), bad = [];
   for (const d of b.DEST) { const e = errsLen(); try { const a = d.at(); b.P.veh = null; b.P.x = a.x; b.P.z = a.z; b.P.y = 0; } catch (x) { bad.push(d.id + ' at(): ' + x.message); continue; } await sl(350);
-    const P = b.P, y = b.W.groundY(P.x, P.z); if (![P.x, P.y, P.z].every(Number.isFinite)) bad.push(d.id + ' NaN'); else if (P.y < y - 3 || P.y < -5) bad.push(d.id + ' unter Welt y=' + P.y.toFixed(1) + ' g=' + y.toFixed(1)); else if (b.W.resolve(P.x, P.z, .4, {}).hit && P.y < .5) bad.push(d.id + ' steckt in Wand'); if (b.renderer.info.render.calls > 900) bad.push(d.id + ' calls ' + b.renderer.info.render.calls); }
+    const P = b.P, y = b.W.groundY(P.x, P.z, P.y); if (![P.x, P.y, P.z].every(Number.isFinite)) bad.push(d.id + ' NaN'); else if (P.y < y - 3 || P.y < -5) bad.push(d.id + ' unter Welt y=' + P.y.toFixed(1) + ' g=' + y.toFixed(1)); else if (b.W.resolve(P.x, P.z, .4, {}).hit && P.y < .5) bad.push(d.id + ' steckt in Wand'); if (b.renderer.info.render.calls > 900) bad.push(d.id + ' calls ' + b.renderer.info.render.calls); }
   function errsLen() { return 0; }
   return { n: b.DEST.length, bad }; });
 console.log('Ziele:', res.n); res.bad.forEach(x => console.log('BAD ', x)); errs.slice(0, 15).forEach(x => console.log('ERR ', x));

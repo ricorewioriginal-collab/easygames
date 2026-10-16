@@ -12,7 +12,7 @@ BI.STORY_ISLES = [
   { key: 'MAERCHEN', icon: '🎠', name: 'Märchenland', req: ['story', 'reader', 'dance'] }, { key: 'SCHLUESSEL', icon: '🗝️', name: 'Schlüsselreich', req: ['angler', 'graeber', 'treasure'] },
   { key: 'SCHWAMM', icon: '🧽', name: 'Schwammi-Bucht', req: ['seepferd', 'slide', 'kaefer'] }, { key: 'RAETSEL', icon: '🗿', name: 'Rätsel-Insel', req: ['forest', 'sammel', 'quiz'] },
   { key: 'ZOTIK', icon: '🦊', name: 'Zotik & Lunaris', req: ['karussell', 'schluesselreich', 'schwammi'] }, { key: 'RADIO', icon: '📻', name: 'Radio-Insel', req: ['raetsel', 'hoehle', 'kapsel'] },
-  { key: 'ATLANTIS', icon: '🔱', name: 'Atlantis', req: ['turm_s', 'schmied', 'forscher20'] }, { key: 'TASCHI', icon: '🔴', name: 'Taschi-Land', req: ['eat', 'party', 'boss'] },
+  { key: 'ATLANTIS', icon: '🔱', name: 'Atlantis', req: ['turm_s', 'schmied', 'forscher20'] }, { key: 'TASCHI', icon: '🔴', name: 'Taschi-Land', req: ['eat', 'petfeed', 'boss'] },
   { key: 'HUEPF', icon: '🍄', name: 'Hüpfland', req: ['cupwin', 'park', 'gadget'] },
   { key: 'PRISMA', icon: '🌀', name: 'Prisma-Archipel', req: ['fight', 'gadget', 'chat'] }
 ];
@@ -91,7 +91,7 @@ BI.createStoryMode = function (G) {
   /* Quest-Log: Welten freischalten (nur Story-Modus) */
   K.worldLog = function () {
     if (!K.on()) return null; make(); const n = K.list.filter(I => K.open(I)).length;
-    return { count: n + ' von ' + K.list.length, n, total: K.list.length, worlds: K.list.map(I => ({ icon: I.icon, name: I.name, open: K.open(I), p: K.open(I) ? I.req.length : prog(I), of: I.req.length, reqs: K.reqLines(I).map(r => ({ ok: r.ok, icon: r.icon, text: r.text })) })) };
+    return { count: n + ' von ' + K.list.length, n, total: K.list.length, worlds: K.list.map(I => ({ key: I.key, icon: I.icon, name: I.name, open: K.open(I), p: K.open(I) ? I.req.length : prog(I), of: I.req.length, reqs: K.reqLines(I).map(r => ({ ok: r.ok, icon: r.icon, text: r.text })) })) };
   };
   K.dbg = { list: K.list, ok, S, info };
   return K;

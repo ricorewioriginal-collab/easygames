@@ -9,7 +9,7 @@ const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.click('#bStart'); await p.waitForTimeout(600);
 const r = await p.evaluate(async () => {
   const b = __bi, I = b.istory, P = b.P, out = {}, sl = ms => new Promise(r => setTimeout(r, ms)), ST = BI.INSELSTORY, until = async (f, ms) => { for (let i = 0; i < (ms || 9000) / 150 && !f(); i++) await sl(150); return f(); }, R0 = () => ST.find(d => d.key === 'RAETSEL');
-  out.n = ST.length; const ids = new Set(b.kids.all().map(q => q[0])); out.known = ST.every(d => !!BI[d.key] && ids.has('geschichte_' + d.key.toLowerCase()) && d.acts.every(a => a.goal.every(id => ids.has(id))));
+  out.n = ST.length; const ids = new Set(b.kids.all().map(q => q[0])); out.known = ST.every(d => !!BI[d.key] && ids.has('geschichte_' + d.key.toLowerCase()) && d.acts.every(a => a.goal.every(id => typeof id !== 'string' || ids.has(id))) /* Ziele können auch Log-Zeilen oder Einsätze sein */);
   const M = BI.RAETSEL; b.save.stk = []; P.veh = null; P.x = M.x + M.R * .5; P.z = M.z; P.y = 0; await until(() => I.dbg.stage(R0()) === 0); await sl(900);
   out.started = I.dbg.stage(R0()) === 0; out.goal = I.goal() && /Prüfung/.test(I.goal().title) && /Akt 1\/4/.test(I.goal().title); out.chip = /Prüfung der Uralten/.test(document.getElementById('questChip').textContent);
   b.save.stk = ['turm_s']; await until(() => I.dbg.stage(R0()) === 1); out.act2 = I.dbg.stage(ST.find(d => d.key === 'RAETSEL')) === 1 && /Akt 2/.test(I.goal().title);

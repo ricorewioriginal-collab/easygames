@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),T=require(path.resolve(__dirname,'../../aeru/vendor/three.min.js'));
+const root=path.resolve(__dirname,'..'),T=require(path.resolve(__dirname,'../vendor/three.min.js'));
 const cx=new Proxy({},{get:(o,k)=>o[k]||(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
 const context={THREE:T,console,window:{},document:{createElement:()=>({width:0,height:0,getContext:()=>cx})},localStorage:{getItem:()=>null},sessionStorage:{getItem:()=>null}};context.window=context;vm.createContext(context);for(const f of ['util.js','characters.js'])vm.runInContext(fs.readFileSync(path.join(root,'js',f),'utf8'),context);
 const BI=context.BI;

@@ -818,7 +818,7 @@
   function buyItem(it) {
     if (save.owned.includes(it.id) || save.stars < it.price) return;
     save.stars -= it.price; save.owned.push(it.id); $('starN').textContent = save.stars; A.buy(); fx.burst(P.x, 1.6, P.z, 18, [BI.C.gold, BI.C.pink, BI.C.blue], 5, 1, 28, 6);
-    if (BI.TOYVEH.includes(it.slot)) spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
+    if (BI.TOYVEH.includes(it.slot)) spawnRC(true, it.slot); else if (it.slot !== 'deco') setEq(it, true); persist(); kids.earn('shopper'); say('🛍️ Gekauft: ' + it.name + '! Liegt jetzt im Rucksack 🎒', 2400); renderShop();
   }
   function openShop() { if (!nearCounter()) return; shopOpen = true; setStick(0, 0); shopPanel.hidden = false; document.body.classList.add('shopping'); renderShop(); }
   function closeShop() { shopOpen = false; shopPanel.hidden = true; document.body.classList.remove('shopping'); updateButtons(true); }
@@ -1050,7 +1050,7 @@
   function endRide(msg) {
     const hv = rideHost(); ride = ''; const g = char.group; g.visible = true; g.rotation.set(0, 0, 0); A.leave();
     if (hv) { const lx = -Math.cos(hv.h), lz = Math.sin(hv.h), rad = (hv.r || 1) + 1.3, q = W.resolve(hv.x + lx * rad, hv.z + lz * rad, .5, {}); P.x = q.x; P.z = q.z; P.h = hv.h; }
-    P.y = W.groundY(P.x, P.z); P.vy = 0; if (msg) say(msg, 2400); updateHud(); updateButtons(true); netT = 0;
+    P.y = W.groundY(P.x, P.z, hv ? (hv.y || 0) + 1 : 1); P.vy = 0; if (msg) say(msg, 2400); /* nicht auf hohe Ebenen darüber (z. B. Festung über dem Prüfungsturm) */ updateHud(); updateButtons(true); netT = 0;
   }
   function rideStep() {
     const hv = rideHost(); if (!hv) { const a = remote.get(ride); endRide(a ? a.name + ' ist ausgestiegen – du auch! 🚪' : 'Die Fahrt ist zu Ende 🚪'); return; }
@@ -1457,7 +1457,7 @@
   const life = BI.createLife({ scene, W, P, say });
   const zotik = BI.createZotik({ scene, W, A, fx, P, say, save, persist, playing: () => state === 'play', addStars: n => addStars(n), cam, takeMascot: id => takeMascot(id), start: k => startGame(k, true), go: id => { const d = DEST.find(x => x.id === id); if (d) beamTo(d); } });
   const vox = BI.createVoxels({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n) });
-  const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play' });
+  const einsatz = BI.createEinsatz({ scene, W, A, fx, P, say, save, persist, cam, addStars: n => addStars(n), playing: () => state === 'play', lockedAt: (x, z) => smode ? smode.lockedAt(x, z) : null });
   { const a = BI.PARK.arena; [[a.x0 + 3, a.z0 + 3], [a.x1 - 4, a.z0 + 3], [a.x0 + 3, a.z1 - 3], [a.x1 - 5, a.z1 - 3]].forEach((q, k) => addVeh('bumper', q[0], q[1], k * 1.5, { color: BI.PAINT[k] })); }
   for (const q of W.interiors) if (q.sign && q.sign.text) { const sp = textSprite(q.sign.text, 3.4, .72, 54); sp.position.set(q.sign.x, q.sign.y + 1.3, q.sign.z); scene.add(sp); }
   { const g = W.spots.cityGate; if (g) { const sp = textSprite('🏙️ Willkommen in der Stadt!', 6.4, 1.1, 54); sp.position.set(g.x, g.y + 1.6, g.z + .4); scene.add(sp); } }
@@ -1483,7 +1483,7 @@
     meta.note('talk');
     const p = n.p, line = npcLine(p); n.wait = 5; n.h = Math.atan2(P.x - n.x, P.z - n.z); n.c.group.rotation.y = n.h; n.hop = .4;
     dlg.show({ name: p.name, icon: n.kid ? '🧒' : '🙂', look: n.c && n.c.group.userData.opts, text: line });
-    { const iv = garden.inv(); if ((iv.bouquet || 0) > 0) { iv.bouquet--; addStars(3); A.fanfare(); fx.burst(n.x, 2, n.z, 16, [BI.C.pink, BI.C.red, BI.C.white], 4, 1.2, 28, 4); say('💐 ' + p.name + ': „Oh, danke für die Blumen!“ +3 ⭐', 3200); kids.earn('gift'); } }
+    { const iv = garden.inv(); if ((iv.bouquet || 0) > 0) { iv.bouquet--; addStars(3); A.fanfare(); fx.burst(n.x, 2, n.z, 16, [BI.C.pink, BI.C.red, BI.C.white], 4, 1.2, 28, 4); say('💐 ' + p.name + ': „Oh, danke für die Blumen!“ +3 ⭐', 3200); kids.earn('bouquet'); } }
     const T = save.talked || (save.talked = []); if (!T.includes(p.name)) { T.push(p.name); persist(); if (T.length >= 5) kids.earn('chat'); }
   }
   function placeNear() {
