@@ -36,16 +36,7 @@ const city = (page: Page) => page.evaluate(() => (window as any).__rv.city.s);
 
 async function tapTile(page: Page, x: number, y: number, mobile: boolean): Promise<void> {
   await page.evaluate(([tx, ty]) => (window as any).__rv.look(tx! + 0.5, ty! + 0.5), [x, y]);
-  // Warten, bis die Kamera angekommen ist (sie gleitet weich zum Ziel)
-  const at = () => page.evaluate(([tx, ty]) => (window as any).__rv.screen(tx, ty) as { x: number; y: number }, [x, y]);
-  let p = await at();
-  for (let i = 0; i < 30; i++) {
-    await page.waitForTimeout(100);
-    const q = await at();
-    const still = Math.hypot(q.x - p.x, q.y - p.y) < 0.5;
-    p = q;
-    if (still) break;
-  }
+  const p = await page.evaluate(([tx, ty]) => (window as any).__rv.screen(tx, ty) as { x: number; y: number }, [x, y]);
   if (mobile) await page.touchscreen.tap(p.x, p.y);
   else await page.mouse.click(p.x, p.y);
   await page.waitForTimeout(150);
@@ -79,7 +70,8 @@ test('Neue Stadt: Haus bauen, fertigstellen, Miete kassieren, Spielstand bleibt 
   });
   expect(spot).not.toBeNull();
   await tapTile(page, spot!.x, spot!.y, isMobile);
-  if (isMobile) await page.click('#place-ok');
+  // Auf Touch-Geräten setzt das Tippen den Platz, ✓ baut (war der Platz schon gewählt, baut bereits das Tippen)
+  if (isMobile && (await city(page)).buildings.length === before.buildings.length) await page.click('#place-ok');
   await expect.poll(async () => (await city(page)).buildings.length).toBe(before.buildings.length + 1);
   let s = await city(page);
   expect(s.coins).toBe(before.coins - 120);

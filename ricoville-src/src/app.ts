@@ -145,7 +145,7 @@ export class App {
       stats: () => this.world.stats(),
       /** Nur für Tests: Bildschirmpunkt der Feldmitte und Kamera auf ein Feld richten. */
       screen: (x: number, y: number) => this.world.project(x + 0.5, 0, y + 0.5),
-      look: (x: number, y: number) => this.world.target.set(x, 0, y),
+      look: (x: number, y: number) => (this.world.target.set(x, 0, y), this.world.placeCamera()),
       save: () => this.saveNow(),
     };
     (window as unknown as { __rvApp: App }).__rvApp = this;

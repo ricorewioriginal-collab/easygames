@@ -141,6 +141,7 @@ export class World {
   private cars: { w: Walker; m: THREE.Mesh }[] = [];
   private people: Person[] = [];
   private clouds: THREE.Mesh[] = [];
+  private cloudMat: THREE.MeshLambertMaterial | null = null;
   private birds: { g: THREE.Group; a: number; r: number; c: THREE.Vector3 }[] = [];
   private train: THREE.Group;
   private ship: THREE.Group;
@@ -352,6 +353,7 @@ export class World {
       this.clouds.push(m);
       this.scene.add(m);
     }
+    this.cloudMat = cm;
     const wing = new Parts().add(new THREE.BoxGeometry(0.25, 0.02, 0.06), '#37474f', 0.12, 0, 0, 0, 0, 0.3).add(new THREE.BoxGeometry(0.25, 0.02, 0.06), '#37474f', -0.12, 0, 0, 0, 0, -0.3).build();
     for (let i = 0; i < 4; i++) {
       const g = new THREE.Group();
@@ -799,6 +801,12 @@ export class World {
   }
 
   private updateAmbient(dt: number): void {
+    // Nah herangezoomt würden die Wolken die Stadt verdecken: dann blenden sie aus.
+    if (this.cloudMat) {
+      const span = Math.min(this.camera.right - this.camera.left, this.camera.top - this.camera.bottom);
+      this.cloudMat.opacity = 0.92 * Math.max(0, Math.min(1, (span - 10) / 6));
+      for (const c of this.clouds) c.visible = this.cloudMat.opacity > 0.02;
+    }
     for (const c of this.clouds) {
       c.position.x += dt * 0.4;
       if (c.position.x > MAP + 40) c.position.x = -40;
@@ -848,13 +856,18 @@ export class World {
       this.updateAmbient(dt);
     }
     this.yawShown += (this.yaw - this.yawShown) * Math.min(1, dt * 8);
+    this.placeCamera();
+    this.sun.position.set(this.target.x - 18, 40, this.target.z + 14);
+    this.sun.target.position.copy(this.target);
+    this.renderer.render(this.scene, this.camera);
+  }
+  /** Kamera sofort auf das Ziel stellen (auch zwischen zwei Bildern, z. B. direkt nach einem Kamerasprung). */
+  placeCamera(): void {
     const a = this.yawShown + Math.PI / 4;
     const d = 40;
     this.camera.position.set(this.target.x + Math.sin(a) * d, d * 0.9, this.target.z + Math.cos(a) * d);
     this.camera.lookAt(this.target);
-    this.sun.position.set(this.target.x - 18, 40, this.target.z + 14);
-    this.sun.target.position.copy(this.target);
-    this.renderer.render(this.scene, this.camera);
+    this.camera.updateMatrixWorld();
   }
 
   stats(): { cars: number; people: number; buildings: number; calls: number } {
