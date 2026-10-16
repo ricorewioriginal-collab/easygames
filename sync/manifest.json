@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "487c81e43d60",
- "generated": "2026-10-16T21:41:10+00:00",
- "commit": "189669da5b56c47cca90075e7333c8ff2697b727",
+ "version": "edf43f42ab75",
+ "generated": "2026-10-16T21:53:41Z",
+ "commit": "efe75af9c0556df2f2a883da86fe29d31790a98e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4658,8 +4658,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 30395,
-   "h": "34af4c636347ac641aa1cbbb75313bc9b6a8307927e4f9964073bf792ac9efc8"
+   "s": 30883,
+   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
   },
   {
    "p": "device.js",
@@ -4694,7 +4694,7 @@
   {
    "p": "games.js",
    "s": 22176,
-   "h": "89eaa80eb3bb05d559eb5b4b40796eaeb56809823cf8e1ee062913feef3b0562"
+   "h": "d7068176356e896deef6da41738f6ed76c85fc41c1177023bcb3faf36b221d4e"
   },
   {
    "p": "gay-life/index.html",
@@ -4953,8 +4953,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 30395,
-   "h": "34af4c636347ac641aa1cbbb75313bc9b6a8307927e4f9964073bf792ac9efc8"
+   "s": 30883,
+   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5687,14 +5687,14 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricoville/assets/index-3QQqM-UI.js",
-   "s": 171766,
-   "h": "dc86b209d21c24254969e4a1cace71bf97668464d8e9efc64c6c5e52fa40bb43"
+   "p": "ricoville/assets/index-Adn5OBPf.css",
+   "s": 13269,
+   "h": "5a546b7fabd07f81167f1a0e48885e0acd7695dfe84280668cfe38763c0187fd"
   },
   {
-   "p": "ricoville/assets/index-BJwfMcR4.css",
-   "s": 12493,
-   "h": "997c25bd46194defb4d5cfdd267fe1cf949e90b037123607245bf1ec757d1cd3"
+   "p": "ricoville/assets/index-BjaU-MNg.js",
+   "s": 189887,
+   "h": "15289e51810cea3cd6cf126a0f2409e059e4014eaf56a47cbbddc0a6286a6745"
   },
   {
    "p": "ricoville/assets/three-DaP6-81L.js",
@@ -5734,7 +5734,7 @@
   {
    "p": "ricoville/index.html",
    "s": 1940,
-   "h": "3b8f0a1dc0ed180660a6decbffbf6e170f654debd7838da37c1e2ad93fd65e4d"
+   "h": "e55afca471b0595dd6efc260fdbe5e0244cb28814fb4e293670355b848bf62f6"
   },
   {
    "p": "ricoville/manifest.webmanifest",
@@ -5743,8 +5743,8 @@
   },
   {
    "p": "ricoville/sw.js",
-   "s": 1946,
-   "h": "e112835945788cf36256cecd51cb2c06e961871734493daf155ec81ecd88a1a0"
+   "s": 2296,
+   "h": "6a1eb89b45d06d87ca4bd966e069db7305b926dfbab9ae6bdc5587437bd669a1"
   },
   {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
@@ -5864,7 +5864,7 @@
   {
    "p": "sync/catalog.json",
    "s": 89678,
-   "h": "6944afa160f81d5bd756a6e13c49c897369e5ae1116df750f2e80b7c94690b0d"
+   "h": "fea38433945e8f4abd955f7148d6bec43b835a63a47264ff2088f3f5513883c6"
   },
   {
    "p": "taschi/card.svg",
