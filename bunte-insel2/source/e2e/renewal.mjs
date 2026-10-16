@@ -5,6 +5,7 @@ import { chromium, devices } from 'playwright';
 const BASE = process.env.BASE || 'http://localhost:8090/bunte-insel2/';
 const OUT = process.env.OUT || '/tmp/bi2-review'; mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const reviewShot = async (p, name) => { await p.waitForFunction(() => !document.querySelector('.banner,.toast')); await p.screenshot({ path: OUT + '/' + name }); };
 let page;
 try {
   page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
@@ -18,7 +19,7 @@ try {
   await page.waitForFunction(() => window.__bi2.g.phase === 'play');
   const start = await page.evaluate(() => { const g = window.__bi2.g; return { pos: { x: g.player.pos.x, z: g.player.pos.z }, dialogue: !!document.querySelector('.dialog') }; });
   assert.ok(Math.hypot(start.pos.x - 4, start.pos.z + 18) < 8); assert.equal(start.dialogue, false);
-  await page.screenshot({ path: OUT + '/01-ortsplatz.png' });
+  await reviewShot(page, '01-ortsplatz.png');
   const worlds = await page.evaluate(() => window.__bi2.g.worlds.defs.map(w => w.id));
   for (const id of worlds) {
     await page.evaluate(id => { const g = window.__bi2.g, w = g.worlds.byId(id); g.teleport(w.spawn.x, w.spawn.z); }, id);
@@ -31,7 +32,7 @@ try {
   await page.evaluate(() => { const g = window.__bi2.g; g.teleport(100, 70); for (let i = 0; i < 3; i++) { const a = g.interact.get('ort:hub:beet' + i); a.act(); a.act(); } g.save.playTime += 15; g.teleport(600, -420); g.teleport(100, 70); for (let i = 0; i < 3; i++) g.interact.get('ort:hub:beet' + i).act(); });
   assert.ok(await page.evaluate(() => window.__bi2.g.flag('ort:hub:fertig')));
   await page.evaluate(() => { const g = window.__bi2.g, s = g.system('neighborhoods').sites.get('hub'); g.teleport(s.x, s.z + 8, Math.PI); });
-  await page.screenshot({ path: OUT + '/02-hof.png' });
+  await reviewShot(page, '02-hof.png');
   console.log('Prüfe Hof und Küche …');
   // Kochvorgang über die tatsächlichen Knöpfe, Zutaten erst bei erfolgreichem Timing verbrauchen.
   await page.evaluate(() => { const g = window.__bi2.g; g.give('karotte', 2); g.openPanel('hofkueche'); });
@@ -57,7 +58,7 @@ try {
   await page.getByRole('button', { name: '↶ Rückgängig', exact: true }).click();
   assert.equal(await page.evaluate(() => window.__bi2.g.flag('bau:0:0:1')), 0);
   await page.getByRole('button', { name: '✔ Anschauen', exact: true }).click();
-  await page.screenshot({ path: OUT + '/03-bauwiese.png' });
+  await reviewShot(page, '03-bauwiese.png');
   console.log('Prüfe Mitfahrt …');
   // Riesenrad: Figur bewegt sich tatsächlich mit und kehrt beim Aussteigen zum Einstieg zurück.
   await page.evaluate(() => { const g = window.__bi2.g, w = g.worlds.byId('park'); g.teleport(w.spawn.x, w.spawn.z); g.setFlag('park_laeuft'); const a = g.interact.get('fahrt:riesenrad'); g.teleport(a.x, a.z); a.act(); });
@@ -70,7 +71,7 @@ try {
   assert.ok(await page.evaluate(() => window.__bi2.g.persist()));
   const stored = await page.evaluate(() => window.__bi2.store.load(3).data.pos);
   assert.ok(stored.y < 4, 'Spielstand speichert den Einstieg, keine Gondel in der Luft');
-  await page.screenshot({ path: OUT + '/04-riesenrad.png' });
+  await reviewShot(page, '04-riesenrad.png');
   await page.getByRole('button', { name: '⏏ Aussteigen', exact: true }).click();
   assert.equal(await page.evaluate(() => window.__bi2.g.busy), 0);
   // Bauwerk bleibt auch nach einem vollständigen Neuladen erhalten.
@@ -92,7 +93,16 @@ try {
   await mobile.waitForFunction(() => window.__bi2.g.phase === 'play');
   await mobile.waitForSelector('.touch:not(.hidden)');
   assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-  await mobile.screenshot({ path: OUT + '/05-touch.png' });
+  const touchLayout = await mobile.evaluate(() => {
+    const stats = document.querySelector('.hud-tl > .statline').getBoundingClientRect();
+    const menus = document.querySelector('.hud-tr').getBoundingClientRect();
+    const jump = document.querySelector('.tb.jump small').getBoundingClientRect();
+    return { separate: stats.right <= menus.left, promptHidden: getComputedStyle(document.querySelector('.prompt')).display === 'none', jumpVisible: jump.bottom <= innerHeight };
+  });
+  assert.ok(touchLayout.separate, 'Status und Menü überlappen im Hochformat nicht');
+  assert.ok(touchLayout.promptHidden, 'Touch-Aktion braucht keinen überlagernden Tastaturhinweis');
+  assert.ok(touchLayout.jumpVisible, 'Die Sprungbeschriftung bleibt im Bildschirm');
+  await reviewShot(mobile, '05-touch.png');
   assert.deepEqual(errors, []);
 } catch (error) {
   if (page && !page.isClosed()) console.error('Fehlerzustand:', await page.evaluate(() => ({ phase: window.__bi2?.g.phase, busy: window.__bi2?.g.busy, editor: !!document.querySelector('.editor'), text: document.body.innerText.slice(-1200) })).catch(() => null));
