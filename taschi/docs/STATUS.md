@@ -8,6 +8,16 @@ Stand: 16. Oktober 2026. Diese Datei ist der Übergabepunkt für die nächste Ar
 - Die bisherige Version bleibt unter `taschi/classic.html` spielbar (`game.js` unverändert).
 - Alte Spielstände (lokal und AnMaCha-Cloud, Präfix `easygames.taschi.eight-lights.v1`) werden beim Laden automatisch migriert. Version-1-Daten werden nie gelöscht.
 
+## Update 16. Oktober 2026 (Trainer-Figur)
+
+- Charaktererstellung: Männlich, Weiblich oder Divers wählen, eigener Name, Trainer-Outfit (Trainerkappe, kurzärmelige Trainerjacke über Shirt, fingerlose Handschuhe, Ballgürtel, Rucksack). Vorlagen `PLAYER_PRESETS` (m/w/d) und Körperformen `teenM`/`teenF`/`teen` in `src/engine/characters.js`; Bildschirm `creatorScreen()` in `src/ui/screens.js` (Modi `new`, `upgrade`, `wardrobe`).
+- Umkleiden: Menü › Trainer › Umkleiden oder Kleiderschrank im Wohnhaus (`game.openWardrobe()`). Das Geschlecht steht in `save.player.gender`.
+- Alte Spielstände ohne Geschlecht bekommen beim ersten Laden einmal die Charaktererstellung angeboten (`game.offerLookUpdate()`, Merker `flags.lookOffered`).
+- Kollision: Kreise im Laufgitter markieren jetzt jede berührte Zelle (vorher blieben Schilder, Laternen und dünne Bäume begehbar). Brunnen, Bänke, Laternen, Blumenbeete, Höhlenbogen, Schreine und Gildenlager sind fest (`L.props`, `addProps()` in `src/logic/layout.js`). Draußen prüft die Spielfigur einen Ring um die Füße. Bäume, die das Grafikprofil weglässt, blockieren nicht mehr.
+- Brücken: Straßen werden metergenau auf Flüsse geprüft. Vorher fehlte in Region 4 die Brücke, die Flüsterhöhle war unerreichbar. `tests/walkgrid.test.mjs` prüft jetzt alle Regionen auf Erreichbarkeit.
+- Titelmenü: Die Einstellungen öffnen sich über dem Titel und zeigen nur die Optionen. Dialoge liegen über Menüs.
+- Browsertest `node tests/e2e/character.mjs [screenshot-ordner]`.
+
 ## Update 16. Oktober 2026
 
 - Wiesen (`grassAt()` in `src/logic/layout.js`) steuern Grasdarstellung, Begegnungen und Minikarte gemeinsam. Regionen 260×260, Tore bei z = ±122.

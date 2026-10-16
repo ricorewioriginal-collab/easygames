@@ -102,3 +102,10 @@ test('simulated playthrough reaches the end of the game', () => {
   assert.ok(stats.wild + stats.trainer < 600, 'battle count reasonable');
   assert.match(stats.objective, /Postgame/);
 });
+
+test('player gender survives saving and invalid values are dropped', () => {
+  const s = newSave({ name: 'Kim', gender: 'd', look: { top: 'trainer', hat: 'trainercap' } });
+  assert.equal(validate(JSON.parse(JSON.stringify(s))).player.gender, 'd');
+  assert.equal(validate({ ...s, player: { ...s.player, gender: 'x' } }).player.gender, undefined);
+  assert.equal(newSave().player.gender, undefined);
+});

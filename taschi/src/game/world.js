@@ -18,6 +18,7 @@ import { createRng } from '../core/rng.js';
 import { makeMonster } from '../logic/monster.js';
 import { globalUniforms } from '../engine/materials.js';
 
+const RING = Array.from({ length: 8 }, (_, i) => [Math.sin(i * Math.PI / 4) * 0.32, Math.cos(i * Math.PI / 4) * 0.32]);
 const TMP = new THREE.Vector3();
 const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
@@ -39,8 +40,11 @@ export class World {
 
   // ------------------------------------------------------------------ player
   buildPlayer() {
-    if (this.player) { this.scene.remove(this.player.root); disposeTree(this.player.root); }
+    const prev = this.player?.root;
+    if (prev) { this.scene.remove(prev); disposeTree(prev); }
     this.player = createCharacter(this.save.player.look, { outline: this.game.quality.outlines });
+    // rebuilt after changing clothes: stay where the old model stood
+    if (prev) { this.player.root.position.copy(prev.position); this.player.root.rotation.y = prev.rotation.y; this.player.root.visible = prev.visible; }
     this.scene.add(this.player.root);
     this.refreshFollower();
   }
@@ -244,9 +248,16 @@ export class World {
       speed = maxSpeed * mag;
       const step = speed * dt;
       let nx = p.position.x + dx / len * step, nz = p.position.z + dz / len * step;
-      // slide along obstacles
+      // slide along obstacles. Outdoors the whole body (a ring around the
+      // feet) must stay clear of the collision grid, not just the centre, so
+      // the player cannot sink into walls, trees and props. If a saved
+      // position already overlaps something, the old lenient test lets the
+      // player walk free instead of getting stuck.
       const r = 0.38;
-      const ok = (x, z) => !this.blocked(x + Math.sign(dx) * r * 0.6, z) && !this.blocked(x, z + Math.sign(dz) * r * 0.6) && !this.blocked(x, z);
+      const lenient = (x, z) => !this.blocked(x + Math.sign(dx) * r * 0.6, z) && !this.blocked(x, z + Math.sign(dz) * r * 0.6) && !this.blocked(x, z);
+      const grid = this.current.type === 'region' ? this.current.map.grid : null;
+      const body = (x, z) => { for (const [ox, oz] of RING) if (grid.at(x + ox, z + oz) !== FREE) return false; return true; };
+      const ok = grid && body(p.position.x, p.position.z) ? (x, z) => body(x, z) && !this.blocked(x, z) : lenient;
       if (ok(nx, nz)) { p.position.x = nx; p.position.z = nz; }
       else if (ok(nx, p.position.z)) p.position.x = nx;
       else if (ok(p.position.x, nz)) p.position.z = nz;

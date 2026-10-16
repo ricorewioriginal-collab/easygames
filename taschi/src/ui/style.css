@@ -32,7 +32,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .loadtext { color: #cfe0f0; font-size: 14px; text-align: center; min-height: 1.3em; }
 .tip { color: #9fbbd8; font-size: 13px; text-align: center; margin-top: 18px; max-width: 520px; padding: 0 20px; }
 
-#title { pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; background: linear-gradient(180deg, rgba(10, 24, 48, .15), rgba(10, 24, 48, .55) 70%, rgba(10,24,48,.85)); z-index: 40; padding: max(16px, var(--safe-t)) 16px max(16px, var(--safe-b)); }
+#title { pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; background: linear-gradient(180deg, rgba(10, 24, 48, .15), rgba(10, 24, 48, .55) 70%, rgba(10,24,48,.85)); z-index: 29; padding: max(16px, var(--safe-t)) 16px max(16px, var(--safe-b)); }
 #title .menu { display: grid; gap: 10px; width: min(380px, 88vw); }
 .bigbtn { pointer-events: auto; display: flex; align-items: center; gap: 12px; padding: 15px 20px; border-radius: 16px; background: var(--panel); color: var(--ink); font-size: 1.1em; font-weight: 600; box-shadow: 0 5px 0 rgba(0,0,0,.25), var(--shadow); text-align: left; }
 .bigbtn .ic { width: 1.6em; text-align: center; }
@@ -100,7 +100,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .mapview svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* ---------------------------------------------------------- dialog */
-#dialog { position: absolute; left: 50%; bottom: max(14px, var(--safe-b)); transform: translateX(-50%); width: min(920px, calc(100% - 20px)); z-index: 25; pointer-events: auto; animation: rise .2s ease; }
+#dialog { position: absolute; left: 50%; bottom: max(14px, var(--safe-b)); transform: translateX(-50%); width: min(920px, calc(100% - 20px)); z-index: 35; pointer-events: auto; animation: rise .2s ease; }
 .dlg { position: relative; background: var(--panel); border-radius: 20px; padding: 22px 22px 18px; min-height: 104px; box-shadow: 0 0 0 4px rgba(255,255,255,.6), 0 0 0 7px rgba(30,50,80,.55), var(--shadow); font-size: 1.05em; line-height: 1.45; }
 .dlg .name { position: absolute; top: -18px; left: 20px; padding: 5px 16px; border-radius: 12px; background: linear-gradient(90deg, #26446a, #3e6a9a); color: #fff; font-weight: 600; font-size: .9em; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
 .dlg .name.guild { background: linear-gradient(90deg, #5e3a7c, #e0884a); }
@@ -196,7 +196,7 @@ body[data-hand="right"] .tbtns { right: auto; left: calc(22px + var(--safe-l)); 
 
 /* character creator */
 .creator { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
-@media (max-width: 720px), (orientation: portrait) { .creator { grid-template-columns: 1fr; } .creator .viewport3d { aspect-ratio: 16/10; } }
+@media (max-width: 720px), (orientation: portrait) { .creator { grid-template-columns: 1fr; } .creator .viewport3d { aspect-ratio: 16/10; max-height: 34vh; } .creatorview { position: sticky; top: -14px; z-index: 2; background: var(--panel); padding-top: 2px; } }
 .optrow { display: flex; align-items: center; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
 .optrow .lbl { width: 92px; font-weight: 600; font-size: .9em; }
 .swatch { pointer-events: auto; width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 -3px 0 rgba(0,0,0,.2), 0 0 0 2px #fff; }

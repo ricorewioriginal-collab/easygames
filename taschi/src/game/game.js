@@ -108,7 +108,7 @@ export class Game {
         this.newGame();
       },
       onSlots: async () => { const n = await slotScreen(this); if (n) { this.slot = n; this.store.select(n); this.showTitle(); } },
-      onSettings: () => { openPauseMenu(this, 'options'); }
+      onSettings: () => { openPauseMenu(this, 'options', { only: true }); }
     });
     this.ui.push(scr);
     this.titleScreenRef = scr;
@@ -127,6 +127,32 @@ export class Game {
     await this.enterLocation(save.location);
     this.setState(STATES.WORLD);
     this.ui.toast('Willkommen zurück, ' + save.player.name + '!');
+    if (!save.player.gender && !save.flags.lookOffered) await this.offerLookUpdate();
+  }
+  // Saves from before the character update: offer the new creator once.
+  async offerLookUpdate() {
+    const s = this.save;
+    s.flags.lookOffered = true;
+    const c = await this.ui.ask([{ text: 'Neu: Du kannst jetzt wählen, ob du männlich, weiblich oder divers bist, dir einen neuen Namen geben und dein Trainer-Outfit gestalten. Möchtest du das jetzt tun?' }], ['Jetzt gestalten', 'Später (Menü › Trainer › Umkleiden)'], { cancelIndex: 1 });
+    if (c === 0) {
+      const p = await creatorScreen(this, { mode: 'upgrade', player: s.player });
+      if (p) { s.player.name = p.name; this.applyLook(p); }
+    }
+    this.saveNow(true);
+  }
+  applyLook(p) {
+    const s = this.save;
+    s.player.look = p.look; s.player.gender = p.gender; s.player.preset = p.preset;
+    if (this.world.player) this.world.buildPlayer();
+  }
+  async openWardrobe() {
+    const p = await creatorScreen(this, { mode: 'wardrobe', player: this.save.player });
+    if (!p) return false;
+    this.applyLook(p);
+    this.audio.sfx('item');
+    this.ui.toast('Neues Outfit!', '👕');
+    this.saveNow(true);
+    return true;
   }
   async newGame() {
     this.stashCloud();
@@ -418,6 +444,7 @@ export class Game {
       case 'exit': return this.leaveInterior();
       case 'knock': { const reg = REGIONS[Math.min(15, r)]; const n = reg.npcs[(e.id.length + r) % reg.npcs.length]; return this.ui.say([{ text: 'Du klopfst. Von drinnen ruft jemand: „Komm später wieder, ich backe gerade!“' }, { who: n.name, text: 'Übrigens: ' + n.lines.pre[0] }]); }
       case 'look': return this.ui.say([{ text: e.text }]);
+      case 'wardrobe': return this.openWardrobe();
       case 'landmark': return this.ui.say([{ text: e.label + '. ' + landmarkText(r, this.world.current.layout.landmark.kind) }]);
       case 'gate': return this.useGate(e);
       case 'chest': return this.openChest(e);

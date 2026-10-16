@@ -77,7 +77,7 @@ export class UI {
     this.dialogEl = null;
     document.addEventListener('pointerdown', (e) => {
       const f = e.target.closest?.('.focusable');
-      if (f && this.top?.nav) this.top.nav.focus(f);
+      if (f && this.top?.nav && this.top.el.contains(f)) this.top.nav.focus(f);
     }, true);
   }
   get top() { return this.stack[this.stack.length - 1] || null; }

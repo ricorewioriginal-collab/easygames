@@ -16,15 +16,19 @@ export const HAIR_COLORS = [0x3b2a22, 0x6b4128, 0xa86a3a, 0xe0b35a, 0x1d1d26, 0x
 export const OUTFIT_COLORS = [0xd8483a, 0x3a7fd0, 0x2fa07a, 0xf0a030, 0x7d4fa3, 0xe86aa0, 0x3a4a5a, 0xf2efe6];
 export const HAIR_STYLES = ['short', 'spiky', 'ponytail', 'long', 'bun', 'bob', 'curly', 'twin'];
 
+// Player trainer looks, one per gender choice in the character creator.
+// Cap, short-sleeved jacket over a shirt, fingerless gloves, ball belt and
+// backpack: the classic travelling-trainer silhouette in TASCHI's own colours.
+export const GENDERS = [['m', 'Männlich'], ['w', 'Weiblich'], ['d', 'Divers']];
+export const BODY_FOR_GENDER = { m: 'teenM', w: 'teenF', d: 'teen' };
 export const PLAYER_PRESETS = {
-  rio: { name: 'Rio', body: 'teen', skin: 1, hair: 'spiky', hairColor: 1, top: 'jacket', topColor: 0, bottom: 'pants', bottomColor: 0x34465f, hat: 'cap', hatColor: 0xd8483a, backpack: 0xf09a3a },
-  mila: { name: 'Mila', body: 'teen', skin: 0, hair: 'ponytail', hairColor: 2, top: 'hoodie', topColor: 2, bottom: 'shorts', bottomColor: 0x2f3e55, hat: null, backpack: 0xf2c94a },
-  juna: { name: 'Juna', body: 'teen', skin: 3, hair: 'bob', hairColor: 8, top: 'vest', topColor: 4, bottom: 'skirt', bottomColor: 0x3a3048, hat: 'beret', hatColor: 0x2fa07a, backpack: 0x3a7fd0 },
-  tavi: { name: 'Tavi', body: 'teen', skin: 2, hair: 'curly', hairColor: 4, top: 'tshirt', topColor: 1, bottom: 'pants', bottomColor: 0x4a3a2a, hat: 'beanie', hatColor: 0xf0a030, backpack: 0x2fa07a }
+  m: { name: 'Rio', gender: 'm', body: 'teenM', skin: 1, hair: 'spiky', hairColor: 4, top: 'trainer', topColor: 1, accent: 0xf2efe6, inner: 0x2a2d36, bottom: 'pants', bottomColor: 0x34465f, hat: 'trainercap', hatColor: 0xd8483a, capFront: 0xf2efe6, gloves: 0x2fa07a, belt: 0x5a4030, backpack: 0x2fa07a, shoes: 0x3a3330 },
+  w: { name: 'Mila', gender: 'w', body: 'teenF', skin: 0, hair: 'ponytail', hairColor: 2, top: 'trainer', topColor: 5, accent: 0xf2efe6, inner: 0x3a4a5a, bottom: 'skirt', bottomColor: 0x2f3e55, hat: 'trainercap', hatColor: 0xf2efe6, capFront: 0xe86aa0, gloves: 0xf2efe6, belt: 0x3a3048, backpack: 0xf2c94a, shoes: 0xe86aa0, lashes: true },
+  d: { name: 'Juna', gender: 'd', body: 'teen', skin: 3, hair: 'bob', hairColor: 8, top: 'trainer', topColor: 2, accent: 0xf0a030, inner: 0xf2efe6, bottom: 'shorts', bottomColor: 0x3a3048, hat: 'beanie', hatColor: 0xf0a030, gloves: 0x3a4a5a, belt: 0x4a3a2a, backpack: 0x3a7fd0, shoes: 0x3a3330 }
 };
 
 const BODY = {
-  teen: { h: 1.55, w: 1, head: 1.08 }, adult: { h: 1.72, w: 1.05, head: 1 }, slim: { h: 1.78, w: 0.88, head: 0.98 },
+  teen: { h: 1.55, w: 1, head: 1.08 }, teenM: { h: 1.58, w: 1.05, head: 1.06 }, teenF: { h: 1.53, w: 0.93, head: 1.08, hips: 1.12 }, adult: { h: 1.72, w: 1.05, head: 1 }, slim: { h: 1.78, w: 0.88, head: 0.98 },
   stocky: { h: 1.62, w: 1.3, head: 1.02 }, elder: { h: 1.6, w: 1.05, head: 1, stoop: 0.18 }, child: { h: 1.15, w: 0.9, head: 1.25 }
 };
 
@@ -35,7 +39,8 @@ export function resolveLook(look = {}) {
     body: look.body || 'adult', skin: pick(look.skin, SKIN_TONES, SKIN_TONES[1]), hair: look.hair || 'short', hairColor: pick(look.hairColor, HAIR_COLORS, HAIR_COLORS[0]),
     top: look.top || 'tshirt', topColor: pick(look.topColor, OUTFIT_COLORS, OUTFIT_COLORS[1]), accent: look.accent ?? 0xf2efe6, bottom: look.bottom || 'pants', bottomColor: look.bottomColor ?? 0x34465f,
     shoes: look.shoes ?? 0x3a3330, hat: look.hat || null, hatColor: look.hatColor ?? 0xd8483a, glasses: !!look.glasses, beard: look.beard ? (look.beardColor ?? null) || true : false,
-    backpack: look.backpack ?? null, bag: look.bag ?? null, scarf: look.scarf ?? null, apron: look.apron ?? null, goggles: !!look.goggles, mask: !!look.mask, feather: look.feather ?? null, gloves: look.gloves ?? null
+    backpack: look.backpack ?? null, bag: look.bag ?? null, scarf: look.scarf ?? null, apron: look.apron ?? null, goggles: !!look.goggles, mask: !!look.mask, feather: look.feather ?? null, gloves: look.gloves ?? null,
+    inner: look.inner ?? 0x2a2d36, capFront: look.capFront ?? 0xf2efe6, belt: look.belt ?? null, lashes: !!look.lashes
   };
 }
 
@@ -48,7 +53,7 @@ export function lookForRole(role, name = '', regionPal = null) {
     case 'kind': return { ...base, body: 'child', top: rng.pick(['tshirt', 'hoodie', 'dress']), bottom: rng.pick(['shorts', 'pants']), hat: rng.next() < 0.4 ? 'cap' : null, hatColor: OUTFIT_COLORS[rng.int(0, 5)] };
     case 'forscher': return { ...base, top: 'labcoat', glasses: rng.next() < 0.7, bag: rng.next() < 0.5 ? 0x8a6a4a : null };
     case 'haendler': return { ...base, top: 'tshirt', apron: [0x7a5a3a, 0x3a7fd0, 0x2fa07a][rng.int(0, 2)], body: rng.pick(['stocky', 'adult']) };
-    case 'trainer': return { ...base, top: 'jacket', hat: rng.pick(['cap', 'cap', 'beanie', null]), hatColor: OUTFIT_COLORS[rng.int(0, 7)], backpack: [0xf09a3a, 0x3a7fd0, 0x7d4fa3][rng.int(0, 2)] };
+    case 'trainer': return { ...base, top: rng.pick(['jacket', 'trainer']), gloves: rng.next() < 0.4 ? OUTFIT_COLORS[rng.int(0, 7)] : null, hat: rng.pick(['cap', 'cap', 'beanie', null]), hatColor: OUTFIT_COLORS[rng.int(0, 7)], backpack: [0xf09a3a, 0x3a7fd0, 0x7d4fa3][rng.int(0, 2)] };
     case 'reisender': return { ...base, top: 'coat', hat: rng.pick(['sunhat', 'beret', null]), hatColor: 0x8a6a4a, bag: 0x7a5a3a, scarf: rng.next() < 0.5 ? OUTFIT_COLORS[rng.int(0, 7)] : null };
     case 'familie': return { ...base, body: rng.pick(['adult', 'elder', 'stocky']), top: rng.pick(['tshirt', 'vest', 'dress', 'coat']), beard: rng.next() < 0.3 };
     case 'handwerker': return { ...base, top: 'overalls', body: rng.pick(['stocky', 'adult']), gloves: 0x8a6a4a, hat: rng.next() < 0.4 ? 'beanie' : null, hatColor: 0x6a5a4a };
@@ -97,7 +102,7 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   const armL = pivot('armL', torso, shoulderX, shoulderY, 0), armR = pivot('armR', torso, -shoulderX, shoulderY, 0);
   const upperArm = 0.28 * s, foreArm = 0.26 * s;
   const elbowL = pivot('elbowL', armL, 0, -upperArm, 0), elbowR = pivot('elbowR', armR, 0, -upperArm, 0);
-  const legX = 0.09 * s * w;
+  const hipW = P.hips || 1, legX = 0.09 * s * w * hipW;
   const thighL = pivot('thighL', hips, legX, 0, 0), thighR = pivot('thighR', hips, -legX, 0, 0);
   const thigh = legLen * 0.5, shin = legLen * 0.48;
   const kneeL = pivot('kneeL', thighL, 0, -thigh, 0), kneeR = pivot('kneeR', thighR, 0, -thigh, 0);
@@ -107,9 +112,19 @@ export function createCharacter(lookIn, { outline = false } = {}) {
 
   // --- hips / pelvis
   const hb = new Builder();
-  hb.add(capsule(0.15 * s * w, 0.05 * s, 10, 3), L.bottom === 'skirt' || L.top === 'dress' ? top : L.bottomColor, matrix(0, -0.02 * s, 0, 0, 0, Math.PI / 2, 1, 1, 0.75));
+  hb.add(capsule(0.15 * s * w * hipW, 0.05 * s, 10, 3), L.bottom === 'skirt' || L.top === 'dress' ? top : L.bottomColor, matrix(0, -0.02 * s, 0, 0, 0, Math.PI / 2, 1, 1, 0.75));
   if (L.bottom === 'skirt' || L.top === 'dress') hb.add(new THREE.CylinderGeometry(0.16 * s * w, 0.27 * s * w, 0.34 * s, 12, 1, true), L.top === 'dress' ? top : L.bottomColor, matrix(0, -0.16 * s, 0));
   if (L.apron) hb.box(0.26 * s * w, 0.38 * s, 0.02, L.apron, 0, -0.12 * s, 0.13 * s * w);
+  if (L.belt) {
+    // belt with three ball pouches on the front
+    hb.add(new THREE.TorusGeometry(0.15 * s * w * hipW, 0.022 * s, 4, 18), L.belt, matrix(0, 0.03 * s, 0, Math.PI / 2, 0, 0, 1, 0.76, 1));
+    hb.box(0.06 * s, 0.05 * s, 0.02 * s, 0xd8c070, 0, 0.03 * s, 0.12 * s * w * hipW);
+    for (const k of [-1, 0, 1]) {
+      const a = 0.9 + k * 0.32, bx = Math.sin(a) * 0.155 * s * w * hipW, bz = Math.cos(a) * 0.12 * s * w * hipW;
+      hb.add(new THREE.SphereGeometry(0.03 * s, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2), 0xe9523f, matrix(bx, 0.03 * s, bz));
+      hb.add(new THREE.SphereGeometry(0.03 * s, 8, 4, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), 0xf2efe6, matrix(bx, 0.03 * s, bz));
+    }
+  }
   hips.add(partMesh(hb, outline));
 
   // --- torso
@@ -119,6 +134,14 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   if (L.top === 'jacket' || L.top === 'coat' || L.top === 'labcoat' || L.top === 'uniform') {
     tb.box(0.03 * s, 0.5 * s, 0.02, shade(top, 0.75), 0, 0.27 * s, chestR * 0.72);
     tb.box(0.24 * s * w, 0.06 * s, 0.25 * s * w * 0.7, accent, 0, 0.52 * s, 0);
+  }
+  if (L.top === 'trainer') {
+    // open short-sleeved jacket: shirt visible in front, collar, hem band
+    tb.box(0.17 * s * w, 0.44 * s, 0.03, L.inner, 0, 0.3 * s, chestR * 0.71);
+    for (const sx of [-1, 1]) tb.box(0.022 * s, 0.46 * s, 0.03, accent, sx * 0.095 * s * w, 0.3 * s, chestR * 0.72);
+    tb.add(new THREE.TorusGeometry(0.11 * s, 0.035 * s, 5, 14, Math.PI * 1.4), accent, matrix(0, 0.57 * s, -0.01, Math.PI / 2 - 0.3, 0, Math.PI * 0.8));
+    tb.add(new THREE.CylinderGeometry(0.15 * s * w, 0.14 * s * w, 0.06 * s, 14, 1, true), shade(top, 0.78), matrix(0, 0.04 * s, 0, 0, 0, 0, 1, 1, 0.74));
+    for (const sx of [-1, 1]) tb.box(0.06 * s, 0.05 * s, 0.02, shade(top, 0.82), sx * 0.12 * s * w, 0.16 * s, chestR * 0.64);
   }
   if (L.top === 'hoodie') { tb.add(new THREE.TorusGeometry(0.11 * s, 0.04 * s, 5, 14), shade(top, 0.9), matrix(0, 0.56 * s, -0.02, Math.PI / 2, 0, 0)); tb.box(0.18 * s, 0.1 * s, 0.03, shade(top, 0.85), 0, 0.18 * s, chestR * 0.7); }
   if (L.top === 'vest') { tb.box(0.08 * s, 0.5 * s, 0.02, accent, 0.05 * s, 0.28 * s, chestR * 0.72); tb.box(0.08 * s, 0.5 * s, 0.02, accent, -0.05 * s, 0.28 * s, chestR * 0.72); }
@@ -163,6 +186,7 @@ export function createCharacter(lookIn, { outline = false } = {}) {
     eb.add(new THREE.SphereGeometry(headR * 0.17, 10, 8), 0xffffff, matrix(sx * headR * 0.36, 0, 0, 0, 0, 0, 0.9, 1.15, 0.5));
     eb.add(new THREE.SphereGeometry(headR * 0.12, 10, 8), 0x2c3a4e, matrix(sx * headR * 0.36, -headR * 0.01, headR * 0.05, 0, 0, 0, 0.9, 1.05, 0.5));
     eb.add(new THREE.SphereGeometry(headR * 0.045, 6, 4), 0xffffff, matrix(sx * headR * 0.36 + headR * 0.04, headR * 0.05, headR * 0.11));
+    if (L.lashes) { eb.box(headR * 0.22, headR * 0.035, headR * 0.03, 0x1d1d26, sx * headR * 0.38, headR * 0.19, headR * 0.06); eb.box(headR * 0.08, headR * 0.035, headR * 0.03, 0x1d1d26, sx * headR * 0.52, headR * 0.17, headR * 0.06, sx * 0.5); }
   }
   const eyes = new THREE.Mesh(eb.build(), toonVertexMaterial());
   eyes.position.set(0, headR * 1.1, headR * 0.86);
@@ -174,15 +198,18 @@ export function createCharacter(lookIn, { outline = false } = {}) {
   // --- arms
   for (const [side, arm, elbow] of [[1, armL, elbowL], [-1, armR, elbowR]]) {
     const ub = new Builder();
-    ub.add(capsule(0.055 * s * w, upperArm * 0.75, 8, 3), L.top === 'vest' || L.top === 'overalls' || L.top === 'dress' ? L.skin : top, matrix(0, -upperArm / 2, 0));
-    ub.add(new THREE.SphereGeometry(0.07 * s * w, 8, 6), top, matrix(0, 0, 0));
+    ub.add(capsule(0.055 * s * w, upperArm * 0.75, 8, 3), L.top === 'vest' || L.top === 'overalls' || L.top === 'dress' ? L.skin : L.top === 'trainer' ? accent : top, matrix(0, -upperArm / 2, 0));
+    ub.add(new THREE.SphereGeometry(0.07 * s * w, 8, 6), L.top === 'trainer' ? accent : top, matrix(0, 0, 0));
+    if (L.top === 'trainer') ub.cyl(0.062 * s * w, 0.062 * s * w, 0.035 * s, top, 0, -upperArm * 0.62, 0, 8);
     arm.add(partMesh(ub, outline));
     const fb = new Builder();
     const sleeve = ['coat', 'labcoat', 'jacket', 'hoodie', 'uniform', 'robe'].includes(L.top);
     fb.add(capsule(0.048 * s * w, foreArm * 0.75, 8, 3), sleeve ? top : L.skin, matrix(0, -foreArm / 2, 0));
     if (sleeve) fb.cyl(0.055 * s * w, 0.055 * s * w, 0.04 * s, accent, 0, -foreArm * 0.85, 0, 8);
     fb.add(new THREE.SphereGeometry(0.058 * s, 8, 6), L.gloves || L.skin, matrix(0, -foreArm - 0.03 * s, 0.005, 0, 0, 0, 0.85, 1.1, 0.7));
-    fb.add(new THREE.SphereGeometry(0.025 * s, 5, 4), L.gloves || L.skin, matrix(side * -0.03 * s, -foreArm - 0.01 * s, 0.04 * s));
+    // fingerless gloves: cuff in a darker shade, thumb and fingertips bare
+    fb.add(new THREE.SphereGeometry(0.025 * s, 5, 4), L.skin, matrix(side * -0.03 * s, -foreArm - 0.01 * s, 0.04 * s));
+    if (L.gloves) { fb.cyl(0.052 * s, 0.05 * s, 0.045 * s, shade(L.gloves, 0.72), 0, -foreArm + 0.01 * s, 0.005, 8); fb.add(new THREE.SphereGeometry(0.04 * s, 6, 4), L.skin, matrix(0, -foreArm - 0.085 * s, 0.012 * s, 0, 0, 0, 1, 0.6, 0.8)); }
     elbow.add(partMesh(fb, outline));
     bones['hand' + (side > 0 ? 'L' : 'R')] = (() => { const h = new THREE.Group(); h.position.set(0, -foreArm - 0.04 * s, 0.03 * s); elbow.add(h); return h; })();
   }
@@ -208,12 +235,19 @@ export function createCharacter(lookIn, { outline = false } = {}) {
 }
 
 function hairFor(hd, L, r) {
-  const c = L.hairColor;
+  const c = L.hairColor, capped = ['cap', 'trainercap', 'beanie'].includes(L.hat);
   const cap = (sx = 1, sy = 1, sz = 1, y = r * 1.1) => hd.add(new THREE.SphereGeometry(r * 1.05, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), c, matrix(0, y, -r * 0.05, -0.15, 0, 0, sx, sy, sz));
   switch (L.hair) {
     case 'bald': break;
     case 'short': cap(1, 0.95, 1.02); break;
-    case 'spiky': cap(); for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; hd.add(new THREE.ConeGeometry(r * 0.22, r * 0.55, 5), c, matrix(Math.cos(a) * r * 0.55, r * 1.85, Math.sin(a) * r * 0.5 - r * 0.15, Math.sin(a) * 0.7, 0, -Math.cos(a) * 0.7)); } hd.add(new THREE.ConeGeometry(r * 0.25, r * 0.5, 5), c, matrix(0, r * 1.62, r * 0.82, 1.2, 0, 0)); break;
+    case 'spiky': if (capped) {
+      // spikes stick out under the cap at the back and sides, bangs under the brim
+      cap(1.02, 0.9, 1.02);
+      for (let i = 0; i < 7; i++) { const a = Math.PI * (0.45 + i * 0.183); hd.add(new THREE.ConeGeometry(r * 0.22, r * 0.75, 5), c, matrix(Math.sin(a) * r * 1.0, r * 1.05, Math.cos(a) * r * 0.98, Math.cos(a) * 2.0, 0, -Math.sin(a) * 2.0)); }
+      for (const bx of [-0.32, 0, 0.32]) hd.add(new THREE.ConeGeometry(r * 0.16, r * 0.42, 5), c, matrix(bx * r, r * 1.42, r * 0.88, 2.5, 0, -bx * 0.8));
+      break;
+    }
+    cap(); for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; hd.add(new THREE.ConeGeometry(r * 0.22, r * 0.55, 5), c, matrix(Math.cos(a) * r * 0.55, r * 1.85, Math.sin(a) * r * 0.5 - r * 0.15, Math.sin(a) * 0.7, 0, -Math.cos(a) * 0.7)); } hd.add(new THREE.ConeGeometry(r * 0.25, r * 0.5, 5), c, matrix(0, r * 1.62, r * 0.82, 1.2, 0, 0)); break;
     case 'ponytail': cap(1.02, 1, 1.05); hd.add(capsule(r * 0.22, r * 0.7, 8, 3), c, matrix(0, r * 1.15, -r * 1.1, -0.6, 0, 0)); hd.add(new THREE.SphereGeometry(r * 0.16, 6, 5), L.hatColor || 0xd8483a, matrix(0, r * 1.45, -r * 0.92)); break;
     case 'long': cap(1.05, 1, 1.08); hd.add(new THREE.CylinderGeometry(r * 0.95, r * 1.05, r * 1.6, 14, 1, true, Math.PI * 0.25, Math.PI * 1.5), c, matrix(0, r * 0.55, -r * 0.08)); break;
     case 'bun': cap(1, 0.95, 1.02); hd.add(new THREE.SphereGeometry(r * 0.38, 10, 8), c, matrix(0, r * 1.85, -r * 0.5)); break;
@@ -226,6 +260,16 @@ function hatFor(hd, L, r) {
   const c = L.hatColor;
   switch (L.hat) {
     case 'cap': hd.add(new THREE.SphereGeometry(r * 1.1, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), c, matrix(0, r * 1.18, -r * 0.03, -0.12, 0, 0)); hd.add(new THREE.CylinderGeometry(r * 0.75, r * 0.75, r * 0.06, 16, 1, false, -Math.PI * 0.5, Math.PI), shade(c, 0.85), matrix(0, r * 1.38, r * 0.62, -0.12, 0, 0, 1, 1, 0.9)); hd.add(new THREE.SphereGeometry(r * 0.1, 6, 4), 0xffffff, matrix(0, r * 2.25, -r * 0.1)); break;
+    case 'trainercap': {
+      const m = matrix(0, r * 1.18, -r * 0.03, -0.12, 0, 0);
+      hd.add(new THREE.SphereGeometry(r * 1.1, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), c, m);
+      hd.add(new THREE.SphereGeometry(r * 1.115, 10, 8, Math.PI / 2 - 0.75, 1.5, 0.12, Math.PI * 0.38), L.capFront, m);
+      hd.add(new THREE.CylinderGeometry(r * 0.78, r * 0.78, r * 0.06, 16, 1, false, -Math.PI * 0.5, Math.PI), c, matrix(0, r * 1.38, r * 0.64, -0.14, 0, 0, 1, 1, 0.95));
+      // TASCHI's own emblem: a small upright leaf-diamond on the front panel
+      hd.add(new THREE.OctahedronGeometry(r * 0.2, 0), shade(c, 0.85), matrix(0, r * 1.76, r * 0.98, -0.75, 0, 0, 0.75, 1, 0.3));
+      hd.add(new THREE.SphereGeometry(r * 0.1, 6, 4), c, matrix(0, r * 2.25, -r * 0.1));
+      break;
+    }
     case 'beanie': hd.add(new THREE.SphereGeometry(r * 1.1, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.52), c, matrix(0, r * 1.18, -r * 0.03, -0.1, 0, 0, 1, 1.08, 1)); hd.add(new THREE.SphereGeometry(r * 0.2, 7, 5), shade(c, 1.2), matrix(0, r * 2.4, -r * 0.1)); break;
     case 'sunhat': hd.add(new THREE.CylinderGeometry(r * 1.7, r * 1.75, r * 0.07, 18), c, matrix(0, r * 1.55, 0, -0.08, 0, 0)); hd.add(new THREE.CylinderGeometry(r * 0.8, r * 0.95, r * 0.6, 14), c, matrix(0, r * 1.85, 0, -0.08, 0, 0)); if (L.feather) hd.add(new THREE.ConeGeometry(r * 0.12, r * 1.4, 5), L.feather, matrix(r * 0.7, r * 2.2, -r * 0.2, 0.3, 0, -0.6)); break;
     case 'beret': hd.add(new THREE.SphereGeometry(r * 1.12, 14, 6), c, matrix(r * 0.12, r * 1.6, -r * 0.05, -0.25, 0, 0.18, 1, 0.38, 1)); break;

@@ -25,10 +25,13 @@ export const keys = {
   selected: PREFIX + '.selected'
 };
 
+// m = männlich, w = weiblich, d = divers (chosen in the character creator)
+export const GENDER_IDS = ['m', 'w', 'd'];
+
 export function newSave(player = {}) {
   return {
     format: 'taschi-save', version: SAVE_VERSION, created: new Date().toISOString(), updated: null, playTime: 0,
-    player: { name: player.name || 'Rio', preset: player.preset || 'rio', look: { ...(player.look || {}) } },
+    player: { name: player.name || 'Rio', preset: player.preset || 'rio', look: { ...(player.look || {}) }, ...(GENDER_IDS.includes(player.gender) ? { gender: player.gender } : {}) },
     team: [], box: [], bag: { taschiball: 5, trank: 3 }, coins: 300, badges: 0, champions: {}, dex: {},
     location: { map: 'region:0', x: 0, z: 34, ry: Math.PI }, lastHeal: { map: 'region:0', x: 0, z: 34 },
     visited: { 0: true }, flags: {}, quests: {}, trainers: {}, puzzles: {}, chests: {}, found: {}, guild: {}, league: 0,
@@ -70,6 +73,7 @@ export function validate(s) {
   const base = newSave(s.player);
   const out = { ...base, ...s };
   out.player = { name: String(s.player?.name || 'Rio').slice(0, 14), preset: String(s.player?.preset || 'rio'), look: obj(s.player?.look) };
+  if (GENDER_IDS.includes(s.player?.gender)) out.player.gender = s.player.gender;
   out.team = (Array.isArray(s.team) ? s.team : []).map(cleanMonster).filter(Boolean).slice(0, 6);
   out.box = (Array.isArray(s.box) ? s.box : []).map(cleanMonster).filter(Boolean).slice(0, 600);
   const seen = new Set();
