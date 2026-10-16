@@ -43,7 +43,7 @@ try {
   await page.getByRole('button', { name: '✔ Fertig', exact: true }).click();
   assert.equal(await page.evaluate(() => window.__bi2.g.count('karotte')), before - 2);
   // Freies Bauen über die Rasteroberfläche. Rückgängig und Abtragen müssen dasselbe Bauwerk verändern.
-  await page.evaluate(() => { const g = window.__bi2.g, w = g.worlds.byId('bauland'); g.teleport(w.shape.x + 62, w.shape.z + 43); });
+  await page.evaluate(() => { const g = window.__bi2.g, w = g.worlds.byId('bauland'); g.teleport(w.spawn.x, w.spawn.z); const a = g.interact.get('freie_baukiste'); g.teleport(a.x, a.z); });
   await page.waitForFunction(() => window.__bi2.g.currentWorld?.id === 'bauland');
   await page.evaluate(() => window.__bi2.g.openPanel('freebuild'));
   await page.getByRole('button', { name: 'Spalte 1, Reihe 1, Höhe 0', exact: true }).click();
@@ -55,9 +55,11 @@ try {
   // Riesenrad: Figur bewegt sich tatsächlich mit und kehrt beim Aussteigen zum Einstieg zurück.
   await page.evaluate(() => { const g = window.__bi2.g, w = g.worlds.byId('park'); g.teleport(w.spawn.x, w.spawn.z); g.setFlag('park_laeuft'); const a = g.interact.get('fahrt:riesenrad'); g.teleport(a.x, a.z); a.act(); });
   await page.waitForSelector('.ride-controls');
-  const riding = await page.evaluate(() => window.__bi2.g.player.pos.y);
+  await page.waitForFunction(() => { const g = window.__bi2.g; return g.busy === 1 && g.player.pos.y > g.field.height(g.player.pos.x, g.player.pos.z) + 0.5; });
+  const riding = await page.evaluate(() => { const p = window.__bi2.g.player.pos; return { x: p.x, y: p.y, z: p.z }; });
   await page.waitForTimeout(2000);
-  assert.ok(Math.abs(await page.evaluate(() => window.__bi2.g.player.pos.y) - riding) > 0.5);
+  const moved = await page.evaluate(() => { const p = window.__bi2.g.player.pos; return { x: p.x, y: p.y, z: p.z }; });
+  assert.ok(Math.hypot(moved.x - riding.x, moved.y - riding.y, moved.z - riding.z) > 0.5, 'Die Gondel bewegt die Figur entlang der Kreisbahn');
   assert.ok(await page.evaluate(() => window.__bi2.g.persist()));
   const stored = await page.evaluate(() => window.__bi2.store.load(3).data.pos);
   assert.ok(stored.y < 4, 'Spielstand speichert den Einstieg, keine Gondel in der Luft');

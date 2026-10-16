@@ -4,7 +4,7 @@ import type { NpcDef } from '../../gameplay/npc.ts';
 import type { QuestDef } from '../../gameplay/quests.ts';
 import { at, arcade, chest, isle, lever, npc, pathTo, pickup, sequencePuzzle, spawnFrom, spot, emojiTex } from '../kit.ts';
 import { arch, floatLabel, fountain, furniture, house, rock, stall, statue, tower } from '../props.ts';
-import { ISLES } from '../layout.ts';
+import { ISLES, FREE_BUILD_SITE } from '../layout.ts';
 
 /* =====================================================================  SCHWAMMI-BUCHT  */
 const swa = (dx: number, dz: number) => at('schwamm', dx, dz);
@@ -356,10 +356,10 @@ const BAUPLAETZE = [[-24, -18, 'Brücke', 0x8a5a33], [24, -20, 'Leuchtturm', 0xf
 export const bauland: WorldDef = {
   id: 'bauland', name: 'Bauland', icon: '🧱', chapter: 7, theme: 'bauland',
   desc: 'Die große Bau-Insel: Werkbank, Bauplätze und bunte Klötze.',
-  shape: isle('bauland', { height: 1.1, grass: 0x7fd65a, grass2: 0x72c94e, beach: 7, bumps: 0.2, flats: [{ x: BL.x, z: BL.z, r: 60, y: 1.1 }], paths: [pathTo('bauland', 0, 0, 6, 0xc9b48a), pathTo('bauland', 525, -405, 6, 0xc9b48a)],
+  shape: isle('bauland', { height: 1.1, grass: 0x7fd65a, grass2: 0x72c94e, beach: 7, bumps: 0.2, flats: [{ x: BL.x, z: BL.z, r: 60, y: 1.1 }], paths: [{ ax: BL.x, az: BL.z, bx: BL.x + FREE_BUILD_SITE.dx, bz: BL.z + FREE_BUILD_SITE.dz + 13, w: 4, color: 0xc9b48a }, pathTo('bauland', 0, 0, 6, 0xc9b48a), pathTo('bauland', 525, -405, 6, 0xc9b48a)],
     colorFn: (x, z) => (Math.abs(x - BL.x) < 50 && Math.abs(z - BL.z) < 50 && (Math.floor(x / 4) + Math.floor(z / 4)) % 2 === 0 ? 0x86dc62 : null) }),
   spawn: spawnFrom('bauland', 'hub'),
-  pois: { werkbank: { ...bla(0, 0), name: 'Werkbank', icon: '🔨' }, ...Object.fromEntries(BAUPLAETZE.map(([dx, dz, nm], i) => ['b' + i, { ...bla(dx, dz), name: 'Bauplatz: ' + nm, icon: '🏗️' }])) },
+  pois: { freie_bauwiese: { ...bla(FREE_BUILD_SITE.dx, FREE_BUILD_SITE.dz + 13), name: 'Deine Bauwiese', icon: '🧱' }, werkbank: { ...bla(0, 0), name: 'Werkbank', icon: '🔨' }, ...Object.fromEntries(BAUPLAETZE.map(([dx, dz, nm], i) => ['b' + i, { ...bla(dx, dz), name: 'Bauplatz: ' + nm, icon: '🏗️' }])) },
   vehicles: [{ type: 'traktor', ...bla(10, 10), yaw: 0 }],
   build: (ctx: WorldCtx) => {
     const { b, api } = ctx;
@@ -368,7 +368,7 @@ export const bauland: WorldDef = {
     for (let i = 0; i < 30; i++) b.box(wb.x - 8 + (i % 6) * 1.05, y + Math.floor(i / 6) * 1.05, wb.z - 6, 1, 1, 1, [0xe8453c, 0x3f8cff, 0xffd23f, 0x4cd07d, 0xb36bff][i % 5]);
     ctx.box(wb.x - 5.4, wb.z - 6, 6.3, 1, y, y + 5.2);
     // Eigene Bauwiese neben den Bauplan-Plätzen: kein vorgegebenes Fertighaus.
-    const frei = bla(62, 30), fy = ctx.h(frei.x, frei.z);
+    const frei = bla(FREE_BUILD_SITE.dx, FREE_BUILD_SITE.dz), fy = ctx.h(frei.x, frei.z);
     b.box(frei.x, fy - 0.08, frei.z, 22, 0.08, 22, 0xe8d3a3);
     for (let i = 0; i < 11; i++) { b.box(frei.x - 10 + i * 2, fy + 0.01, frei.z, 0.04, 0.025, 20, 0xc5aa7e); b.box(frei.x, fy + 0.01, frei.z - 10 + i * 2, 20, 0.025, 0.04, 0xc5aa7e); }
     b.box(frei.x, fy, frei.z + 13, 2.6, 1, 1.2, 0xffc85a);

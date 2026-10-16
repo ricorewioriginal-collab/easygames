@@ -39,14 +39,16 @@ jobs:
         run: |
           python3 -m http.server 8090 --directory ../.. > /tmp/bi2-server.log 2>&1 &
           node e2e/renewal.mjs
+          OUT=/tmp/bi2-review node e2e/flow.mjs
       - name: Gebaute Spieldateien auf dem Arbeitsbranch aktualisieren
         if: github.event_name == 'push' && github.ref == 'refs/heads/codex/bunte-insel2-neuauflage'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p bunte-insel2/docs/review
-          cp /tmp/bi2-review/*.png bunte-insel2/docs/review/
-          git add bunte-insel2/docs/review bunte-insel2/assets bunte-insel2/index.html bunte-insel2/sw.js bunte-insel2/version.json
+          cp /tmp/bi2-review/0[1-5]-*.png bunte-insel2/docs/review/
+          node tools/build-sync.js
+          git add sync/manifest.json sync/catalog.json bunte-insel2/docs/review bunte-insel2/assets bunte-insel2/index.html bunte-insel2/sw.js bunte-insel2/version.json
           if ! git diff --cached --quiet; then
             git commit -m 'Build geprüfte Bunte Insel 2 Neuauflage'
             git push

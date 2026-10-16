@@ -67,4 +67,5 @@ await page.reload(); await page.waitForFunction(() => window.__bi2, null, { time
 const info = await page.evaluate(() => window.__bi2.store.info(1));
 ok(info.exists && info.chapter === 1 && info.name === 'Testi', 'Spielstand nach Neuladen vorhanden (Kapitel ' + info.chapter + ')');
 console.log(errs.slice(0, 15).join('\n') || 'keine Fehler im Browser');
+ok(errs.length === 0, 'Keine Fehler im Browser');
 await browser.close();

@@ -58,9 +58,10 @@ test('Ball trifft das echte Tor auf dem Spielfeld; drei Tore schließen die Aufg
   assert.ok(g.flag('ort:fussball:fertig')); assert.ok(quests.isDone('ort_fussball'));
 });
 test('freies Bauwerk wird geladen, erhält Kollision und wird beim Inselwechsel entfernt', () => {
-  const { g } = fixture(); const w = g.worlds.byId('bauland'); g.save.flags['bau:0:0:0'] = 1; g.save.flags['bau:0:0:1'] = 2;
+  const { g } = fixture(); g.save.flags['bau:0:0:0'] = 1; g.save.flags['bau:0:0:1'] = 2;
   g.worlds.load('bauland');
-  const x = w.shape.x + 62 - 9, z = w.shape.z + 30 - 9;
+  const entry = g.interact.get('freie_baukiste'); const x = entry.x - 9, z = entry.z - 13 - 9;
+  for (let cx = 0; cx < 10; cx++) for (let cz = 0; cz < 10; cz++) assert.ok(g.field.height(x + cx * 2, z + cz * 2) >= 1, 'Die gesamte Baufläche muss auf trockenem, ebenem Land liegen');
   assert.equal(g.physics.ground(x, z, 200).y, g.field.height(x, z) + 4);
   g.worlds.unload('bauland'); assert.equal(g.physics.ground(x, z, 200).solid, null);
   g.worlds.load('bauland'); assert.equal(g.physics.ground(x, z, 200).y, g.field.height(x, z) + 4); g.worlds.unload('bauland');
