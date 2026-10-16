@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c295a93b499d",
- "generated": "2026-10-16T20:59:58+00:00",
- "commit": "d6bd8e50684788aef273b0a002617cd4a67a8acd",
+ "version": "c8667b7a9cd3",
+ "generated": "2026-10-16T21:36:35+00:00",
+ "commit": "0a6bb2f95368e503347dbbe196cf3678a7d0dcb2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4658,8 +4658,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 30243,
-   "h": "1869e951eb79c96bba99d3ea1cdbdf8149d0c8f647ce76f395d6e42c518d9a6b"
+   "s": 30883,
+   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
   },
   {
    "p": "device.js",
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 21438,
-   "h": "f6ec56b3c421c49620eb20f1dfecf1e8d4db70f2abeaa126c5eaa0754d3d236c"
+   "s": 22176,
+   "h": "89eaa80eb3bb05d559eb5b4b40796eaeb56809823cf8e1ee062913feef3b0562"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 57279,
-   "h": "919c09ddf7fe17ff70bb14f1f7f11e2763d7efc4c96cce2d3478c3de4608c7c1"
+   "s": 59026,
+   "h": "a366c5ffda5c8b858f7bd7056aadc326cec00406d935387e2fb3f65771121937"
   },
   {
    "p": "index.html",
@@ -4858,8 +4858,8 @@
   },
   {
    "p": "kiko-sterneninseln/index.html",
-   "s": 1897,
-   "h": "855014139aff472a3e7112edf68cd2ce05ae0ef6d92231765490a0e0317bc920"
+   "s": 1940,
+   "h": "15223788e1f1419798bd0e1b0ffa4a14aa567a8f044e04b7c9ab13c77549e0fa"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
@@ -4953,8 +4953,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 30243,
-   "h": "1869e951eb79c96bba99d3ea1cdbdf8149d0c8f647ce76f395d6e42c518d9a6b"
+   "s": 30883,
+   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5183,8 +5183,8 @@
   },
   {
    "p": "modes.js",
-   "s": 1332,
-   "h": "50b5169781cf8745fbbc6baf26d4db2d77d301024a44bbaad5e8a2257fcf1f42"
+   "s": 1377,
+   "h": "010afaea2013514ca289f96d9dc021d612f61725fcc82c642a9a8aeb58083e6d"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -5602,6 +5602,86 @@
    "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
   },
   {
+   "p": "ricopoly/card.jpg",
+   "s": 107716,
+   "h": "bfd67047d33387c074dd4e476fc4c9b708da743ae26ac6382c83c8fb630a624c"
+  },
+  {
+   "p": "ricopoly/card.png",
+   "s": 81162,
+   "h": "7d383dc20057c9775a361ca188d6694d3856a40cb1db258e10b27618b178e9de"
+  },
+  {
+   "p": "ricopoly/index.html",
+   "s": 9288,
+   "h": "c58ec0616c3e89c2237a731b5dd046419251726d8e9de33475275a6b12b023e1"
+  },
+  {
+   "p": "ricopoly/js/ai.js",
+   "s": 12219,
+   "h": "bf3a708d643fb082079c3a6dc250d19907af543ebed307a647005888b0af6620"
+  },
+  {
+   "p": "ricopoly/js/audio.js",
+   "s": 8127,
+   "h": "e77ff4237b100ae28d76658c86fca9c17ad8784883f331acafa175455ab4922a"
+  },
+  {
+   "p": "ricopoly/js/board3d.js",
+   "s": 54419,
+   "h": "ea71e3069a62980e25042690f3667825d3ce80168bb215db82368dc580bd749b"
+  },
+  {
+   "p": "ricopoly/js/characters.js",
+   "s": 43043,
+   "h": "57c403ffd523f1599a4f2001022145ee4d165978623516f4fcecdffbf0f81444"
+  },
+  {
+   "p": "ricopoly/js/game.js",
+   "s": 83047,
+   "h": "d7d92cfd9d015272a45cf8483e4169cb841f12be31af96ad838563dead7a25d0"
+  },
+  {
+   "p": "ricopoly/js/i18n.js",
+   "s": 50874,
+   "h": "8347143e996243744837462b9e00f29f5c768a73eb24239d12077305898c0b36"
+  },
+  {
+   "p": "ricopoly/js/net.js",
+   "s": 18701,
+   "h": "be5a62ddeb934167ea5ab1f444f692f0fbf104b8e231732e91281d7f559be006"
+  },
+  {
+   "p": "ricopoly/js/profile.js",
+   "s": 6874,
+   "h": "a358ac5e4b973abc1292f1c6b0cab8c1d2afbcf16a7beb9fea3cb3da1fd794fc"
+  },
+  {
+   "p": "ricopoly/js/rules.js",
+   "s": 40551,
+   "h": "6e5aebe3b88aa2a1338a8992401d8152c534f581c27324c1ff76aa41b4faf607"
+  },
+  {
+   "p": "ricopoly/js/worlds.js",
+   "s": 19221,
+   "h": "e28bf37a55d38e59e888f356d39961e6cc4da6dc88eec36f665e839a8527a434"
+  },
+  {
+   "p": "ricopoly/manifest.webmanifest",
+   "s": 774,
+   "h": "ac3790825eb3f839b9b6cf92232b82bb2dc645c75029e7701e8403313e25fd9b"
+  },
+  {
+   "p": "ricopoly/style.css",
+   "s": 23961,
+   "h": "8c08051318081b4b16f2a5b372daf86821f8c7c8765983a38a438f446e381350"
+  },
+  {
+   "p": "ricopoly/sw.js",
+   "s": 2001,
+   "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
+  },
+  {
    "p": "ricoville/assets/index-Adn5OBPf.css",
    "s": 13269,
    "h": "5a546b7fabd07f81167f1a0e48885e0acd7695dfe84280668cfe38763c0187fd"
@@ -5778,8 +5858,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 86956,
-   "h": "e70d98cd527f3c8aba93b3e2ba41f4fde76fe409464d6e13e2222c18f7ab07c5"
+   "s": 89678,
+   "h": "45e0f737c4b4a3ef9df391a97c31264ab774c51e75b707506e253ae50f52f486"
   },
   {
    "p": "taschi/card.svg",

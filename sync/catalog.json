@@ -34,6 +34,37 @@
    "offline": true
   },
   {
+   "id": "ricopoly",
+   "title": "RicoPoly 3D – Baue dein Imperium!",
+   "desc": "Würfeln. Kaufen. Handeln. Herrschen! Das Grundstücks-Brettspiel in 3D mit allen klassischen Regeln: Kaufen, Versteigern, Miete, Häuser und Hotels, Hypotheken, Handel, Gefängnis und Bankrott. Drei Welten (Metropolis, Fantasy Kingdom, Future City) mit eigenen Straßen, Karten und Musik, 16 animierte Figuren mit Editor, Computergegner in drei Stufen, Spiel an einem Gerät für 2–6 und Online-Räume per Code oder Link. Klassisch, Schnell oder eigene Regeln; Deutsch und Englisch; optionaler Google-Speicher.",
+   "icon": "🎩",
+   "img": "ricopoly/card.jpg",
+   "bg": "linear-gradient(145deg,#14102b,#6f5cff 55%,#ffc53d)",
+   "glow": "rgba(255,197,61,.5)",
+   "path": "ricopoly/",
+   "modes": {
+    "online": true,
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "RicoPoly 3D ist ein Grundstücks-Brettspiel für 2 bis 6 Spieler. Reihum würfelst du und ziehst über 40 Felder. Freie Grundstücke darfst du kaufen; lehnst du ab, werden sie versteigert. Wer auf einem fremden Grundstück landet, zahlt Miete. Mit einer ganzen Farbgruppe verdoppelt sich die Miete und du darfst gleichmäßig Häuser und Hotels bauen; die Bank hat nur 32 Häuser und 12 Hotels. Geldnot löst du mit Hypotheken, Hausverkäufen und Handel. Ereignis- und Gemeinschaftskarten, Steuern und das Gefängnis sorgen für Überraschungen. Wer nicht mehr zahlen kann, ist bankrott. Klassisch gewinnt der Letzte, im Schnellmodus (20 Runden) das größte Vermögen. Gespielt wird gegen Computergegner (leicht, mittel, schwer), zu mehreren an einem Gerät oder online: Der Ersteller eines Raums ist Gastgeber, die anderen treten per Code oder Link bei. Profil, Erfolge und Spielstände werden lokal gespeichert, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Smartphone und Tablet: Knöpfe unten antippen, mit einem Finger die Kamera drehen, mit zwei Fingern zoomen, ein Feld antippen für die Besitzurkunde.",
+     "PC: Leertaste oder Enter für die Hauptaktion (Würfeln, Kaufen, Zug beenden), Q/E oder Pfeiltasten drehen, +/− zoomen, O Übersicht, S Animation überspringen, M Ton, Esc oder P Pause.",
+     "Controller: A Hauptaktion, LB/RB drehen, Trigger zoomen, X überspringen, Y Übersicht, Start Pause; rechter Stick als Zeiger für alle anderen Knöpfe."
+    ],
+    "tipps": [
+     "Die beiden Farbgruppen direkt hinter dem Gefängnis werden besonders oft betreten.",
+     "Drei Häuser pro Straße bringen im Verhältnis am meisten Miete.",
+     "Ein fairer Tausch, der beiden eine Farbgruppe bringt, lohnt sich fast immer."
+    ]
+   },
+   "size": 561978,
+   "files": 16,
+   "offline": true
+  },
+  {
    "id": "krawallvoegel",
    "title": "Krawallvögel 3D",
    "desc": "Schleuder-Physikspiel nach dem Vogel-gegen-Schweine-Klassiker in 3D: 150 Level in 10 Senderwelten mit Boss-Burgen, 8 Vögel mit Fähigkeiten (Teilen, Turbo, Bombe, Ei, Bumerang, Riese, Aufblasen), 6 Schweinetypen, Glas, Holz, Stein und TNT. Sterne, Power-ups mit Mega-Adler, goldene Sender-Kisten für die Senderwand. Handy, PC und Controller, Vollbild, Konsolen-Menü und Google-Spielstand.",
@@ -103,7 +134,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 751738,
+   "size": 752421,
    "files": 23,
    "offline": true
   },

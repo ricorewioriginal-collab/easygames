@@ -5,7 +5,7 @@
  * data-idb / data-idb-files = optional für Godot-Exporte: IndexedDB-Pfad (z.B. /userfs) und Dateinamen-Anfang der Speicherdateien
  * data-save-btn = CSS-Selektor(en) der spieleigenen Speichern-Knöpfe: daneben erscheint „Mit Google speichern“ samt Hinweis, dass sonst nur lokal gespeichert wird
  * data-mount  = CSS-Selektor: Anmelde-Bereich dort einbetten statt schwebendem Knopf; data-hint = Einleitungstext dazu
- * data-ui="off" blendet den Cloud-Knopf aus.
+ * data-ui="off" blendet den Cloud-Knopf aus. data-board="off" schaltet die Ranglisten (anmacha-board.js) ab.
  * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer (gzip ab 20 KB). Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
 (function () {
   'use strict';
@@ -461,5 +461,10 @@
       return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
     }).catch(function () { return null; });
   }
-  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, signIn: signIn };
+  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, signIn: signIn, user: function () { return wanted() && user ? user : null; } };
+  // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
+  if (s.dataset.board !== 'off') {
+    var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');
+    try { if (bsrc) { var bt = document.createElement('script'); bt.src = bsrc; bt.defer = true; (document.head || document.documentElement).appendChild(bt); } } catch (e) {}   // optional: darf das Speichern nie stören
+  }
 })();
