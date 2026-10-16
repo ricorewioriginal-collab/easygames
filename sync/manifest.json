@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "edf43f42ab75",
- "generated": "2026-10-16T21:53:41Z",
- "commit": "efe75af9c0556df2f2a883da86fe29d31790a98e",
+ "version": "1a008b0ab840",
+ "generated": "2026-10-17T00:02:24+02:00",
+ "commit": "08ca783d2f73d682d0bd3205d81995aaf022e523",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4658,8 +4658,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 30883,
-   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
+   "s": 30895,
+   "h": "bc39ac594a83f6c8b3b42c8fc1ba955cae9e30a5de7c646ef23d039580f4e3ea"
   },
   {
    "p": "device.js",
@@ -4953,8 +4953,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 30883,
-   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
+   "s": 30895,
+   "h": "bc39ac594a83f6c8b3b42c8fc1ba955cae9e30a5de7c646ef23d039580f4e3ea"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5864,7 +5864,7 @@
   {
    "p": "sync/catalog.json",
    "s": 89678,
-   "h": "fea38433945e8f4abd955f7148d6bec43b835a63a47264ff2088f3f5513883c6"
+   "h": "2706cac4f8f99a3e94ec7477bd87e6e1f5d1dc7b4af5b092ba7f7bc1db58987e"
   },
   {
    "p": "taschi/card.svg",
