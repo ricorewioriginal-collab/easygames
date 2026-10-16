@@ -456,6 +456,6 @@
   // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
   if (s.dataset.board !== 'off') {
     var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');
-    if (bsrc) { var bt = document.createElement('script'); bt.src = bsrc; bt.defer = true; (document.head || document.documentElement).appendChild(bt); }
+    try { if (bsrc) { var bt = document.createElement('script'); bt.src = bsrc; bt.defer = true; (document.head || document.documentElement).appendChild(bt); } } catch (e) {}   // optional: darf das Speichern nie stören
   }
 })();
