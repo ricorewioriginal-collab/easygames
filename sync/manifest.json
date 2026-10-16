@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9b5b49e8a288",
- "generated": "2026-10-16T18:44:09+02:00",
- "commit": "6bc000428884c15455b22298437e0af511b4899e",
+ "version": "150575b47cd3",
+ "generated": "2026-10-16T17:40:01+00:00",
+ "commit": "0a1f3e4b38efd783679b306ac5d3079449894876",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1103,8 +1103,8 @@
   },
   {
    "p": "anmacha-gold-reels/overlay.js",
-   "s": 5480,
-   "h": "9d10672ea15a1668fc8c36a6f923f273bbd4c7b20d29d884c9d8bdf26821d84c"
+   "s": 5863,
+   "h": "e5176051d1d5627de1bdfd7223752d9d713e14a821dc45d2532cb0bff887a86b"
   },
   {
    "p": "anmacha-gold-reels/slot3d.js",
@@ -1123,8 +1123,8 @@
   },
   {
    "p": "anmacha-gold-reels/tables.js",
-   "s": 49455,
-   "h": "62b0ff99e97ba3c4dc8f4ba3d1198809463b162fbe26514261ae33c30596f148"
+   "s": 51027,
+   "h": "37d13b34a67e7f257cd8aaccade6872669a613bf06c04f73ff1c0e63edf0a660"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -5624,7 +5624,7 @@
   {
    "p": "sync/catalog.json",
    "s": 78229,
-   "h": "4c94aa13a1d45bf35d33d485799f226d0611e47e5f6d4c5110d8afb34574b296"
+   "h": "ddfe840aa1577fc49bcaa19a1cd11cb2df5386aa91af8211d03733b794944aa4"
   },
   {
    "p": "taschi/card.svg",

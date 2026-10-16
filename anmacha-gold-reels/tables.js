@@ -6,6 +6,7 @@
   const CHIPS = [10, 50, 100, 500, 1000, 5000];
   const CHIP_COL = { 10: '#2563eb', 50: '#dc2626', 100: '#16a34a', 500: '#7c3aed', 1000: '#f59e0b', 5000: '#0f172a' };
   const ease = { out: k => 1 - Math.pow(1 - k, 3), inOut: k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2), lin: k => k };
+  const never = () => new Promise(() => {}); // bleibt offen und wird mit dem Tisch freigegeben: hält Abläufe nach dem Verlassen an
 
   // ---------- Karten ----------
   const CW = 0.9, CH = 1.26;
@@ -62,6 +63,7 @@
     }
     setCard(grp, c) { grp.userData.c = c; grp.userData.front.material.map = this.cardTex(c); grp.userData.front.material.needsUpdate = true; }
     tween(obj, to, dur, opt) {
+      if (this.dead) return never();
       opt = opt || {};
       return new Promise(res => this.tw.push({ obj, to, dur: dur * (C.data.turbo ? 0.55 : 1), t: -(opt.delay || 0), e: ease[opt.ease || 'out'], res, from: null, arc: opt.arc || 0 }));
     }
@@ -106,9 +108,11 @@
       bar.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; this.chip = +b.dataset.v; C.data.chip = CHIPS.indexOf(this.chip); C.save(); sel(); sound.play('chip'); onPick && onPick(); });
       return bar;
     }
-    celebrate(win, x) { if (x < 8) return Promise.resolve(); sound.play('big'); this.shower.start(Math.min(1, x / 40), new THREE.Vector3(0, 0.5, 1.5)); return this.app.bigWin(x >= 30 ? 'MEGA WIN' : 'BIG WIN', win, this.theme).then(() => this.shower.stop()); }
+    celebrate(win, x) { if (this.dead) return never(); if (x < 8) return Promise.resolve(); sound.play('big'); this.shower.start(Math.min(1, x / 40), new THREE.Vector3(0, 0.5, 1.5)); return this.app.bigWin(x >= 30 ? 'MEGA WIN' : 'BIG WIN', win, this.theme).then(() => this.shower.stop()); }
     baseUpdate(dt, t) { let b = this.runTweens(dt); if (this.shower.update(dt)) b = true; this.bg.update(t); return b; }
-    leave() { this.dead = true; if (this.scene) Gfx.dispose(this.scene); this.texCache.forEach(t => t.dispose()); this.texCache.clear(); }
+    // Nach dem Verlassen bleiben laufende Abläufe an der nächsten Pause stehen; settle() rechnet die Runde sofort ab.
+    pause(ms) { return wait(ms).then(() => (this.dead ? never() : undefined)); }
+    leave() { this.dead = true; this.tw.length = 0; if (this.settle) this.settle(); if (this.scene) Gfx.dispose(this.scene); this.texCache.forEach(t => t.dispose()); this.texCache.clear(); }
     topH() { return document.getElementById('top').getBoundingClientRect().bottom || 56; }
   }
 
@@ -322,7 +326,7 @@
       if (this.shoe.low()) { this.shoe.fill(); C.toast('Neuer Kartenschlitten'); }
       if (!wallet.take(this.betAmt)) { this.app.noMoney(this.betAmt); return; }
       C.data.bjBet = this.betAmt; C.save();
-      this.clearTable(); this.state = 'deal'; this.refresh();
+      this.clearTable(); this.state = 'deal'; this.paid = false; this.refresh();
       this.hands = [{ cards: [], bet: this.betAmt, meshes: [], split: false }]; this.hi = 0; this.dealer = []; this.dMesh = [];
       this.stack = this.chipStack(this.betAmt, 0, 2.55); this.objs.push(this.stack);
       const h = this.hands[0];
@@ -348,7 +352,7 @@
       h.meshes.push(await this.dealCard(c, this.handX(this.hi, this.hands.length, h.cards.length - 1), 1.35 - (h.cards.length - 1) * 0.02 + (h.cards.length - 1) * 0.0, true));
       this.relayHand(this.hi);
       const v = L.bjValue(h.cards).total; this.showTotals();
-      if (v > 21) { this.say('Überkauft!'); sound.play('lose'); await wait(500); return this.nextHand(); }
+      if (v > 21) { this.say('Überkauft!'); sound.play('lose'); await this.pause(500); return this.nextHand(); }
       if (v === 21 || h.aces) return this.nextHand();
       this.state = 'play'; this.refresh(); this.say('Karte ziehen oder halten?');
     }
@@ -359,7 +363,7 @@
       h.bet *= 2; h.doubled = true; this.refreshStack();
       this.state = 'anim'; this.refresh(); const c = this.shoe.draw(); h.cards.push(c);
       const m = await this.dealCard(c, this.handX(this.hi, this.hands.length, 2), 1.33, true); m.rotation.z = Math.PI / 2; h.meshes.push(m);
-      this.showTotals(); await wait(300); this.nextHand();
+      this.showTotals(); await this.pause(300); this.nextHand();
     }
     async split() {
       const h = this.hands[this.hi]; if (this.state !== 'play' || !L.bjCanSplit(h, this.hands) || !wallet.take(h.bet)) return;
@@ -380,22 +384,31 @@
       await this.reveal();
       const allBust = this.hands.every(h => L.bjValue(h.cards).total > 21);
       while (!allBust && L.bjDealerShouldHit(this.dealer)) {
-        const c = this.shoe.draw(); this.dealer.push(c); this.dMesh.push(await this.dealCard(c, (this.dealer.length - 1) * 0.6 - 0.3, -1.7, true)); this.showTotals(true); await wait(250);
+        const c = this.shoe.draw(); this.dealer.push(c); this.dMesh.push(await this.dealCard(c, (this.dealer.length - 1) * 0.6 - 0.3, -1.7, true)); this.showTotals(true); await this.pause(250);
       }
       this.finish();
     }
     async reveal() { const m = this.dMesh[1]; if (m && m.rotation.x > 0) { sound.play('card'); await this.tween(m, { rx: -Math.PI / 2 }, 0.35, { arc: 0.3 }); } this.showTotals(true); }
+    // Spiel verlassen mitten in der Hand: offene Hände bleiben stehen, die Bank zieht zu Ende, Auszahlung sofort.
+    settle() {
+      if (this.paid !== false) return;
+      for (const h of this.hands) while (h.cards.length < 2) h.cards.push(this.shoe.draw());
+      while (this.dealer.length < 2) this.dealer.push(this.shoe.draw());
+      if (!this.hands.every(h => L.bjValue(h.cards).total > 21)) while (L.bjDealerShouldHit(this.dealer)) this.dealer.push(this.shoe.draw());
+      this.paid = true; wallet.give(this.hands.reduce((a, h) => a + L.bjSettle(h, this.dealer).ret, 0));
+    }
     async finish() {
+      if (this.paid !== false) return;
       this.state = 'anim';
       let ret = 0, bet = 0; const res = [];
       for (const h of this.hands) { const r = L.bjSettle(h, this.dealer); ret += r.ret; bet += h.bet; res.push(r.res); }
-      wallet.give(ret);
+      this.paid = true; wallet.give(ret);
       const word = { bj: 'BLACKJACK!', win: 'Gewonnen', push: 'Unentschieden', lose: 'Verloren' };
       this.showTotals(true);
       this.say(`<span class="big">${res.map(r => word[r]).join(' · ')}</span>` + (ret ? ` &nbsp;+${fmt(ret)}` : ''));
       sound.play(ret > bet ? 'win' : ret === bet ? 'click' : 'lose');
       await this.celebrate(ret, ret / Math.max(1, bet) * 3);
-      await wait(1400);
+      await this.pause(1400);
       if (this.dead) return;
       this.state = 'bet'; this.totals = ''; if (this.betAmt > wallet.bal) this.betAmt = 0; this.refresh(); this.say('Neue Runde: Einsatz wählen und AUSTEILEN.');
     }
@@ -458,11 +471,11 @@
       if (this.state === 'anim') return;
       if (this.state !== 'hold') {
         if (!wallet.take(this.bet)) { this.app.noMoney(this.bet); return; }
-        this.state = 'anim'; this.held = [false, false, false, false, false]; this.refresh(); this.say('');
+        this.state = 'anim'; this.paid = this.drawn = false; this.held = [false, false, false, false, false]; this.refresh(); this.say('');
         const deck = L.shuffle([...Array(52).keys()]); this.deck = deck; this.cards = deck.splice(0, 5);
         await Promise.all(this.meshes.map((m, i) => this.tween(m, { rx: Math.PI / 2, z: 0.2, y: 0.02 }, 0.2)));
         for (let i = 0; i < 5; i++) { this.setCard(this.meshes[i], this.cards[i]); sound.play('card'); this.tween(this.meshes[i], { rx: -Math.PI / 2 }, 0.3, { arc: 0.4, delay: i * 0.08 }); }
-        await wait(700 * (C.data.turbo ? 0.55 : 1));
+        await this.pause(700 * (C.data.turbo ? 0.55 : 1));
         const ev = L.pokerEval(this.cards);
         this.state = 'hold'; this.refresh(ev.id); this.say(ev.id ? `<b>${ev.name}</b> – Karten halten und ZIEHEN` : 'Karten halten und ZIEHEN');
         return;
@@ -470,11 +483,12 @@
       this.state = 'anim'; this.refresh();
       const flips = [];
       for (let i = 0; i < 5; i++) if (!this.held[i]) { this.cards[i] = this.deck.pop(); flips.push(i); }
+      this.drawn = true;
       await Promise.all(flips.map(i => this.tween(this.meshes[i], { rx: Math.PI / 2 }, 0.18)));
       flips.forEach((i, k) => { this.setCard(this.meshes[i], this.cards[i]); sound.play('card'); this.tween(this.meshes[i], { rx: -Math.PI / 2 }, 0.3, { arc: 0.4, delay: k * 0.08 }); });
-      await wait(450 + flips.length * 80);
+      await this.pause(450 + flips.length * 80);
       const ev = L.pokerEval(this.cards), ret = ev.mult * this.bet;
-      wallet.give(ret);
+      this.paid = true; wallet.give(ret);
       this.say(ev.id ? `<span class="big">${ev.name}</span> &nbsp;+${fmt(ret)}` : 'Kein Gewinn – nochmal?');
       sound.play(ret ? 'win' : 'lose');
       this.held = [false, false, false, false, false]; this.meshes.forEach(m => this.tween(m, { z: 0.2, y: 0.02 }, 0.2));
@@ -495,6 +509,12 @@
       this.holds.querySelectorAll('.hold').forEach((b, i) => { const p = Gfx.project(this.camera, this.cx(i), 0, 0.2); b.style.left = (p.x - bw / 2) + 'px'; b.style.width = bw + 'px'; });
     }
     update(dt, t) { return this.baseUpdate(dt, t); }
+    // Spiel verlassen mitten in der Runde: mit den gehaltenen Karten ziehen und sofort auszahlen.
+    settle() {
+      if (this.paid !== false) return;
+      if (!this.drawn) for (let i = 0; i < 5; i++) if (!this.held[i]) this.cards[i] = this.deck.pop();
+      this.paid = true; wallet.give(L.pokerEval(this.cards).mult * this.bet);
+    }
     leave() { document.getElementById('gl').removeEventListener('click', this.onCanvas); super.leave(); }
   }
 
