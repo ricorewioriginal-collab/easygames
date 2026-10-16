@@ -65,6 +65,30 @@
    "offline": true
   },
   {
+   "id": "zeitsprung-wissen",
+   "title": "ZEITSPRUNG WISSEN",
+   "desc": "Moderierte 3D-Wissensshow nach dem Zeitstrahl-Prinzip: 236 Ereignisse aus Geschichte, Politik, Erdkunde, Wissenschaft und Kultur von 776 v. Chr. bis heute, dazu 377 Wissensfragen, „Was war zuerst?“-Runden, 38 Bildrätsel, 16 historische Clips und 25 Songs zu den Ereignissen. A–D-Jahreswahl oder Zeitstrahl, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
+   "icon": "🌍",
+   "img": "zeitsprung-wissen/card.png",
+   "bg": "linear-gradient(145deg,#0f2f55,#1f6f8b 55%,#ffd37c)",
+   "glow": "rgba(124,240,216,.5)",
+   "path": "zeitsprung-wissen/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "ZEITSPRUNG WISSEN funktioniert wie Hitster, nur mit Weltgeschehen statt Hits: Jeder Spieler startet mit einem Ereignis auf seinem Zeitstrahl. In Zeitstrahlrunden ordnest du ein neues Ereignis zeitlich ein – entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke deines Zeitstrahls. Zu vielen Ereignissen gibt es einen historischen Clip von Wikimedia Commons oder einen passenden Song über Deezer. Dazwischen kommen Wissensfragen zu Geschichte, Politik, Erdkunde, Wissenschaft und Allgemeinwissen, „Was war zuerst?“-Runden, Songrunden und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
+    "steuerung": [
+     "Maus/Touch: Antwort A–D oder Lücke im Zeitstrahl antippen",
+     "Tastatur: A–D bzw. 1–4 für Antworten, 1–9 für Lücken im Zeitstrahl",
+     "▶ Clip / ♫ Song startet die Medien zum Ereignis, ↻ wählt ein anderes Ereignis",
+     "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
+    ]
+   },
+   "size": 239416,
+   "files": 15,
+   "offline": true
+  },
+  {
    "id": "zeitsprung-movie",
    "title": "ZEITSPRUNG MOVIE",
    "desc": "Moderierte 3D-Filmshow mit 398 Fragen: 318 Film- und Serienquizfragen, 38 Hörfragen mit Deezer/Spotify-Musik und 42 Bildrätsel. Dazu 12 Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",

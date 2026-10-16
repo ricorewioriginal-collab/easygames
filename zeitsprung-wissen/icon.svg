@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ZEITSPRUNG WISSEN">
+ <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#14406a"/><stop offset=".55" stop-color="#0c1f3c"/><stop offset="1" stop-color="#06122a"/></linearGradient><linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff3a0"/><stop offset=".5" stop-color="#ffc36b"/><stop offset="1" stop-color="#ff8f6b"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="13"/></filter></defs>
+ <rect x="8" y="8" width="496" height="496" rx="105" fill="url(#bg)" stroke="#5fd9c4" stroke-width="10"/>
+ <circle cx="256" cy="210" r="150" fill="#2c9be0" opacity=".3" filter="url(#glow)"/>
+ <circle cx="256" cy="208" r="140" fill="#123a63" stroke="url(#gold)" stroke-width="16"/>
+ <g fill="none" stroke="#7cf0d8" stroke-width="7" opacity=".85"><ellipse cx="256" cy="208" rx="62" ry="140"/><path d="M124 208h264M143 140h226M143 276h226"/></g>
+ <path d="M256 208V112M256 208l66 38" stroke="#fff0bd" stroke-width="12" stroke-linecap="round"/>
+ <circle cx="256" cy="208" r="22" fill="url(#gold)"/>
+ <path d="M66 384h380" stroke="#ffce73" stroke-width="10" stroke-linecap="round"/>
+ <g fill="#0e1f3c" stroke="#ffd78b" stroke-width="6"><circle cx="110" cy="384" r="18"/><circle cx="200" cy="384" r="18"/><circle cx="312" cy="384" r="18"/><circle cx="402" cy="384" r="18"/></g>
+ <text x="256" y="470" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="51" font-weight="900" letter-spacing="7" fill="url(#gold)">WISSEN</text>
+</svg>
