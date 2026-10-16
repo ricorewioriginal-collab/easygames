@@ -15,6 +15,7 @@ const PACKAGES = [
   { pkg: 'peerjs@1.5.4', files: { 'package/dist/peerjs.min.js': 'peerjs-1.5.4.min.js' } },
   { pkg: 'qrcode-generator@1.4.4', files: { 'package/qrcode.js': 'qrcode-generator-1.4.4.js' } },
   { pkg: 'jsqr@1.4.0', files: { 'package/dist/jsQR.js': 'jsqr-1.4.0.js', 'package/LICENSE': 'licenses/jsqr-MIT.txt' } },
+  { pkg: 'planck@1.4.2', files: { 'package/dist/planck.min.js': 'planck-1.4.2.min.js', 'package/LICENSE.txt': 'licenses/planck-MIT.txt' } },
   { pkg: '@fontsource-variable/fredoka@5.3.0', files: { 'package/files/fredoka-latin-wght-normal.woff2': 'fonts/fredoka-latin-wght-normal.woff2' } }
 ];
 const FREDOKA_CSS = `/* Fredoka (lokal, ersetzt Google Fonts) – SIL Open Font License */

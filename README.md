@@ -9,6 +9,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 |---|---|
 | Rico Flap 3D – Flatter-Klassiker in 3D: Rico im RicoReWi-Hoodie, 10 Level in 5 Welten, bewegliche Türme, Noten und Sterne, Endlos-Modus mit Rekord; Touch, Tastatur, Maus und Gamecontroller, Google-Spielstand (Three.js, Sounds im Browser erzeugt) | [`rico-flap/`](rico-flap/) |
 | KIKO – Das Geheimnis der Sterneninseln – acht 3D-Level in vier Welten, Kristalle, Rätsel, Endgegner, Touch und Gamepad, lokaler Spielstand | [`kiko-sterneninseln/`](kiko-sterneninseln/) |
+| Krawallvögel 3D – Schleuder-Physikspiel mit 150 Leveln in 10 Sender-Welten, 8 Vogelarten mit Fähigkeiten, 6 Schweinetypen, Glas/Holz/Stein/TNT, Endgegner König Grunz, Power-ups, goldene Sender-Kisten und Senderwand; Touch, Maus, Tastatur, Gamecontroller, Google-Spielstand, Offline-PWA (Three.js + planck.js, Sounds und Musik im Browser erzeugt; Tests: `node tools/test-krawallvoegel.cjs`) | [`krawallvoegel/`](krawallvoegel/) |
 | AnMaCha Radio Maze 3D – Arcade-Labyrinth-Klassiker in 3D mit Original-Regeln, 60 Level, Senderlogos als Bonus, Google-Spielstand, Offline-PWA (Three.js) | [`radio-maze/`](radio-maze/) |
 | ZEITSPRUNG WISSEN – moderierte 3D-Wissensshow nach dem Zeitstrahl-Prinzip: 236 Ereignisse aus Geschichte, Politik, Erdkunde, Wissenschaft und Kultur (776 v. Chr. bis heute), 377 Wissensfragen, „Was war zuerst?“-Runden, 38 Bildrätsel, 16 historische Clips von Wikimedia Commons und 25 Songs zu Ereignissen über Deezer; A–D-Jahreswahl oder Zeitstrahl, TV-Handys per WR-Code/PIN, Google-Speicherung | [`zeitsprung-wissen/`](zeitsprung-wissen/) |
 | ZEITSPRUNG MOVIE – moderierte 3D-Filmshow mit 398 Fragen: 318 Quizfragen, 38 Filmmusik- und Serienintro-Hörfragen über Deezer/Spotify sowie 42 Bildrätsel; 12 eingebettete Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Handys per WR-Code/PIN und Google-Speicherung | [`zeitsprung-movie/`](zeitsprung-movie/) |
@@ -407,6 +408,18 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Inhalte:** `content.js` (18 Kandidaten, 40 Pult-Besetzungen, 14 Quizfragen, Moderator- und Date-Texte) – prüfen mit `node MachMichAus/tests/check-content.js`.
 - **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `studio.js` (Three.js), `panel.js`/`games.js` (Eingaben und Talent-Spiel, gleich am Gastgeber und Handy), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
 - **Tests:** `node MachMichAus/tests/engine-tests.js` (Passgenauigkeit, Phasen, Joker, Blackout, 400 KI-Runden mit Balance), Browser-Tests `tests/e2e.mjs` (ganze Show) und `tests/e2e-pair.mjs` (2 Handys).
+
+## Krawallvögel 3D
+
+Eigenes Schleuder-Physikspiel nach dem bekannten Prinzip, mit eigenen Figuren, Grafiken und Sounds:
+
+- 150 Level in 10 Welten, jede Welt von einem Sender präsentiert, mit Endgegner König Grunz am Ende.
+- 8 Vögel (Rudi, Blitz-Trio, Zisch, Bumm, Mathilde, Kurvi, Brocken, Pustebacke) mit Fähigkeiten, 6 Schweinetypen, Glas, Holz, Stein und TNT.
+- Sender-Kisten geben 3.000 Bonuspunkte; die goldene Kiste jeder Welt schaltet das Senderlogo auf der Senderwand frei, weitere Logos gibt es für Sterne.
+- Power-ups: Zielfernrohr, Superschleuder, Krawallsamen, Erdbeben, Mega-Adler.
+- Steuerung per Touch, Maus, Tastatur und Gamecontroller; Spielstand lokal und über Google gesichert.
+- Physik mit planck.js (`vendor/planck-1.4.2.min.js`), Level werden deterministisch erzeugt (`krawallvoegel/levels.js`).
+- Test ohne Browser: `node tools/test-krawallvoegel.cjs` (mit `--all` spielt ein Zielbot alle 150 Level).
 
 ## Logo & Branding
 Logo, App-Symbol (auch maskable), Apple-Touch-Icon und Lockup „easygames by RicoReWi × AnMaCha“ liegen in [`branding/`](branding/); `logo.png` erscheint automatisch im Seitenkopf, `favicon.ico` als Browser-Symbol. Dateien nur in place austauschen (Namen nicht ändern).
