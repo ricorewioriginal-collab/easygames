@@ -92,6 +92,16 @@ let fails = 0; const t = (n, ok, extra) => { console.log((ok ? 'OK    ' : 'FEHLE
   t('Einzelspiel-Kachel zeigt Namen', /\S/.test(await p.textContent('#tl button')));
   await p.click('#tl button'); await dlg().waitFor(); t('Kachel öffnet Spiel im Vollbild', /\/wobbel\//.test(await p.getAttribute('[role=dialog] iframe', 'src')));
   await p.evaluate(() => EasyGames.close());
+  // Startseite: App-Kacheln als Standard, Umschalter merkt sich die Wahl, Einbettung bleibt bei Karten, Infokarten stehen unter der Spieleliste
+  await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('eg-test-clean')) { localStorage.removeItem('easygames.view'); sessionStorage.setItem('eg-test-clean', '1'); } } catch (e) {} });
+  await p.goto(base + '/index.html'); await p.waitForSelector('#grid .tile');
+  t('Startseite: App-Kacheln sind Standard', await p.evaluate(() => document.body.classList.contains('view-apps')));
+  await p.click('#viewBtn'); t('Umschalter wechselt zu Karten', await p.evaluate(() => !document.body.classList.contains('view-apps')));
+  await p.reload(); await p.waitForSelector('#grid .tile'); t('Gewählte Ansicht bleibt nach dem Neuladen', await p.evaluate(() => !document.body.classList.contains('view-apps')));
+  await p.goto(base + '/index.html?embed=1'); await p.waitForSelector('#grid .tile'); t('Einbettung (?embed=1) bleibt bei Karten', await p.evaluate(() => !document.body.classList.contains('view-apps')));
+  await p.goto(base + '/index.html?view=apps'); await p.waitForSelector('#grid .tile'); t('?view=apps erzwingt App-Kacheln', await p.evaluate(() => document.body.classList.contains('view-apps')));
+  t('Infokarten (Android, EmulationStation, Einbinden) stehen unter der Spieleliste', await p.evaluate(() => document.getElementById('more').getBoundingClientRect().top + scrollY > document.getElementById('grid').getBoundingClientRect().top + scrollY));
+  await p.evaluate(() => localStorage.removeItem('easygames.view'));
   t('keine Skriptfehler', errs.length === 0, errs.join('|'));
   await b.close(); srv.close(); process.exit(fails ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });
