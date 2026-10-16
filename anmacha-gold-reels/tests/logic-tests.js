@@ -67,6 +67,41 @@ t('Buch-Sondersymbol dehnt sich aus', () => {
   assert(r.expand && r.expand.n === 2 && r.expand.amt === 10 * 100 * 10, 'Mikrofon auf 2 Walzen zahlt 10 × 10 Linien');
 });
 
+t('Freispiel-Upgrade wertet niedrige Symbole auf', () => {
+  const m = L.compile(MACHINES.find(c => c.id === 'eye-of-ra'));
+  let seen = 0;
+  for (let i = 0; i < 4000 && seen < 20; i++) {
+    const r = L.playRound(m, 1000); let lvl = 0;
+    for (const s of r.steps) {
+      if (s.mode === 'free') {
+        for (let k = 0; k < lvl; k++) s.grid.forEach(col => assert(!col.includes(m.upOrder[k]), 'aufgewertetes Symbol darf nicht mehr erscheinen'));
+        if (s.upgrade) { assert.strictEqual(s.upgrade.level, lvl + 1); lvl = s.upgrade.level; seen++; }
+      }
+    }
+  }
+  assert(seen > 0, 'kein Upgrade gesehen');
+});
+t('Klebende Wilds bleiben bis zum Ende', () => {
+  const m = L.compile(MACHINES.find(c => c.id === 'sticky-fire'));
+  let ok = 0;
+  for (let i = 0; i < 4000 && ok < 10; i++) {
+    const r = L.playRound(m, 1000); const stuck = [];
+    for (const s of r.steps) if (s.mode === 'free') { stuck.forEach(([x, y]) => assert.strictEqual(s.grid[x][y], m.wild)); (s.newSticky || []).forEach(c => stuck.push(c)); if (stuck.length) ok++; }
+  }
+  assert(ok > 0);
+});
+t('Bonusspiele: Wahl und Rad zahlen den angezeigten Betrag', () => {
+  for (const id of ['pirate-pick', 'fortune-wheel', 'gold-reels']) {
+    const m = L.compile(MACHINES.find(c => c.id === id)); let n = 0;
+    for (let i = 0; i < 20000 && n < 30; i++) {
+      const r = L.playRound(m, 1000); const b = r.steps.find(s => s.type === 'pick' || s.type === 'wheel'); if (!b) continue; n++;
+      if (b.type === 'pick') { assert.strictEqual(b.vals.length + b.rest.length, b.items); assert.strictEqual(b.win, Math.round(b.vals.reduce((a, v) => a + v, 0) * b.unit)); }
+      else { const sg = b.segs[b.idx]; assert.strictEqual(b.win, sg.x ? Math.round(sg.x * b.unit) : 0); if (sg.free) assert(r.steps.some(s => s.type === 'freeStart' && s.count === sg.free)); }
+    }
+    assert(n > 0, id + ' ohne Bonus');
+  }
+});
+
 // --- Karten ---
 t('Blackjack-Werte und Abrechnung', () => {
   const c = (r, s = 0) => s * 13 + r;   // r: 0 = Ass

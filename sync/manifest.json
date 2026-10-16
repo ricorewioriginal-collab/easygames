@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "921e16ae68f2",
- "generated": "2026-10-16T20:37:13+02:00",
- "commit": "fe4372168b8232219cdf4121f111573910f76a46",
+ "version": "0704f6c0608a",
+ "generated": "2026-10-16T18:36:15+00:00",
+ "commit": "25294b60edf23a90d287e530c62b83479388ca68",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -993,8 +993,8 @@
   },
   {
    "p": "anmacha-gold-reels/app.js",
-   "s": 13145,
-   "h": "02269fc609cffbc8506a37f7a39bf36ecc1d2578f6579c4063432c951f2ad843"
+   "s": 15033,
+   "h": "74544d887925190164a1091c2c6031ed70756ddb766000b6b3ac418b48142c8e"
   },
   {
    "p": "anmacha-gold-reels/card.png",
@@ -1003,13 +1003,13 @@
   },
   {
    "p": "anmacha-gold-reels/casino.css",
-   "s": 19072,
-   "h": "f7578c75a45df8a787af6f61841c25bce404d190c9100f838f54997bcb2989ec"
+   "s": 21427,
+   "h": "547994f2f09b5bdc992f180151308fccef99f7a7ed6312408449f29778b21461"
   },
   {
    "p": "anmacha-gold-reels/core.js",
-   "s": 14953,
-   "h": "88bd584f0e11b59cf0d6678a882945355eced7372fef094e17e0113890f4184b"
+   "s": 15925,
+   "h": "5f40519d7558f43435fda4b2818850ee3c116c7a7020941ed32894ed9a5f50e9"
   },
   {
    "p": "anmacha-gold-reels/gfx.js",
@@ -1018,13 +1018,13 @@
   },
   {
    "p": "anmacha-gold-reels/index.html",
-   "s": 5507,
-   "h": "3030d2e5449563d8c00e63f8602acb9c466d0664a391613f511f342991e1f832"
+   "s": 5540,
+   "h": "8fae19e9706e073b594fcd721eedddfdb06fd714ee403e59c4b4c14275fbce91"
   },
   {
    "p": "anmacha-gold-reels/logic.js",
-   "s": 16294,
-   "h": "7b0f766c57776cc2e276f9e72595d3d5877eb432ba0adbd53cf8d4cc4a4389c1"
+   "s": 19489,
+   "h": "bff7a4a0fe1d3633b525b63e11e4aeea801312581632b59a1c74441642bec908"
   },
   {
    "p": "anmacha-gold-reels/logos/01.png",
@@ -1093,8 +1093,8 @@
   },
   {
    "p": "anmacha-gold-reels/machines.js",
-   "s": 11425,
-   "h": "69f6a5ac652e2e3ebb9507490791c2ef2eaf64d1c63eb44bbe3dee24322b1922"
+   "s": 18172,
+   "h": "21378c4d03d1099c53b9a560d2ffbc24b53bca86a754be3a219ef65164674c7f"
   },
   {
    "p": "anmacha-gold-reels/manifest.webmanifest",
@@ -1103,13 +1103,13 @@
   },
   {
    "p": "anmacha-gold-reels/overlay.js",
-   "s": 5863,
-   "h": "e5176051d1d5627de1bdfd7223752d9d713e14a821dc45d2532cb0bff887a86b"
+   "s": 11074,
+   "h": "a264f4432dbf74e269c442022b7c5356aaee46c6c7670eff5de883cd2d35dbed"
   },
   {
    "p": "anmacha-gold-reels/slot3d.js",
-   "s": 33396,
-   "h": "6cef9ebb1bb69d9b14ece19328a0d1f64b4337efee5d66e1b061da005b7a7df0"
+   "s": 36123,
+   "h": "cebefd7c12f7d71c46aff86a8a0ed1a95de249b551759a0646760c73229817f3"
   },
   {
    "p": "anmacha-gold-reels/sw.js",
@@ -1118,13 +1118,13 @@
   },
   {
    "p": "anmacha-gold-reels/symbols.js",
-   "s": 17680,
-   "h": "14e71d85c82e322d576602a0efe9bb94d67a4cc4eeaeee194d41813772e6f387"
+   "s": 19648,
+   "h": "a1c21a2070303ab0d8b25dcf0c26e28d3c1d93479660e1d0e4b64f9f85c62da9"
   },
   {
    "p": "anmacha-gold-reels/tables.js",
-   "s": 51027,
-   "h": "37d13b34a67e7f257cd8aaccade6872669a613bf06c04f73ff1c0e63edf0a660"
+   "s": 51070,
+   "h": "283834d5c63bb00e04ba6f1e1ae3375238c8ecc83be7ab2b93f7a3ee3371464f"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 19536,
-   "h": "02f4549ce17250e4bd1ef9206dfc6cd51789754a7562560aac5860888a31aa79"
+   "s": 19641,
+   "h": "275d9a9fd6404a07a0eb1e70456f4b29bc28351a6a219a0d9a6705c946e0237e"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 51065,
-   "h": "a192329af0844370f235c906610942f8ba52a78a8ac5aa487a3fec0dba86d38a"
+   "s": 51644,
+   "h": "2b52bf7ef5423080d629a69c0166844ed0327ab8de5b9ad9f14ce33e1b700364"
   },
   {
    "p": "index.html",
@@ -5623,8 +5623,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 78229,
-   "h": "3992e9d95ebdfcdabab060074e00827ea31194ee5ebab5dfc90ccd2bed5ec69f"
+   "s": 78917,
+   "h": "bb8f8719b517bef0436d24748edfd943a0d9a435e46971818a63c43f21d73d9b"
   },
   {
    "p": "taschi/card.svg",

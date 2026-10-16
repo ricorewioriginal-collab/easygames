@@ -45,6 +45,9 @@
     m.idx = {}; cfg.symbols.forEach((s, i) => { m.idx[s.id] = i; });
     const id = k => (k && k in m.idx ? m.idx[k] : -1);
     m.wild = id(cfg.wild); m.scat = cfg.scatter ? id(cfg.scatter.id) : -1; m.coin = cfg.holdwin ? id(cfg.holdwin.coin) : -1;
+    m.bon = cfg.bonus ? id(cfg.bonus.id) : -1;
+    m.ff = cfg.freeFeature || null;                            // Freispiel-Besonderheit: upgrade | sticky | multUp
+    if (m.ff && m.ff.type === 'upgrade') m.upOrder = m.ff.order.map(id);
     m.book = !!cfg.book && m.wild >= 0 && m.wild === m.scat;
     m.lines = cfg.lines === 'ways' ? null : L.LINESETS[cfg.lines];
     m.nLines = m.lines ? m.lines.length : 0;
@@ -56,7 +59,7 @@
       cfg.symbols.forEach((s, i) => { const w = Array.isArray(s.w) ? s.w[r] : s.w; if (w > 0) { tot += w; t.push([tot, i]); } });
       m.tables.push({ t, tot });
     }
-    m.paying = cfg.symbols.map((s, i) => (s.pay && i !== m.wild && i !== m.scat && i !== m.coin) ? i : -1).filter(i => i >= 0);
+    m.paying = cfg.symbols.map((s, i) => (s.pay && i !== m.wild && i !== m.scat && i !== m.coin && i !== m.bon) ? i : -1).filter(i => i >= 0);
     return m;
   };
   const pickSym = (m, r) => { const T = m.tables[r]; const x = rand() * T.tot; for (const [c, i] of T.t) if (x < c) return i; return T.t[T.t.length - 1][1]; };
@@ -132,9 +135,19 @@
   }
   L.evaluate = evaluate;
 
-  function spinStep(m, bet, mode, mult, special, held) {
+  // fx (nur Freispiele): up = Upgrade-Stufe, sticky = Set klebender Wild-Felder 'r,y'
+  function spinStep(m, bet, mode, mult, special, held, fx) {
     const g = randomGrid(m);
     if (held) held.forEach(r => { g[r] = held.grid[r].slice(); });
+    let upMap = null, stuck = null;
+    if (fx && fx.up > 0) {                                     // niedrige Symbole werden zur aktuellen Stufe aufgewertet
+      const to = m.upOrder[fx.up]; upMap = {}; for (let i = 0; i < fx.up; i++) upMap[m.upOrder[i]] = to;
+      g.forEach(col => col.forEach((v, y) => { if (v in upMap) col[y] = upMap[v]; }));
+    }
+    if (fx && fx.sticky) {
+      stuck = [...fx.sticky].map(k => k.split(',').map(Number));
+      stuck.forEach(([r, y]) => { g[r][y] = m.wild; });
+    }
     let vals = null;
     if (m.coin >= 0) { vals = g.map(col => col.map(v => (v === m.coin ? pickCoin(m.holdwin) : null))); }
     let expandReels = null;
@@ -144,7 +157,8 @@
     }
     const ev = evaluate(m, g, bet, mult, special);
     const coins = vals ? vals.reduce((a, c) => a + c.filter(Boolean).length, 0) : 0;
-    return Object.assign({ type: held ? 'respin' : 'spin', mode, grid: g, vals, expandReels, held: held ? held.slice() : null, mult, coins }, ev);
+    let bonusN = 0; if (m.bon >= 0) g.forEach(col => col.forEach(v => { if (v === m.bon) bonusN++; }));
+    return Object.assign({ type: held ? 'respin' : 'spin', mode, grid: g, vals, expandReels, held: held ? held.slice() : null, mult, coins, bonusN, stuck }, ev);
   }
 
   function holdWin(m, bet, base) {
@@ -164,6 +178,22 @@
     return { type: 'holdwin', start: base.vals, final: lock, rounds, full, win: Math.round(win) };
   }
 
+  const wpick = list => { let tot = 0; for (const v of list) tot += v[0]; let x = rand() * tot; for (const v of list) { if ((x -= v[0]) < 0) return v; } return list[list.length - 1]; };
+
+  // Bonusspiel „Schatzwahl“: n Felder aufdecken, jedes zeigt einen Gewinn (× Einsatz)
+  function pickBonus(m, bet, n) {
+    const B = m.bonus, picks = Math.min(B.items || 12, B.picks[Math.min(n, Math.max(...Object.keys(B.picks).map(Number)))] || 3);
+    const vals = []; for (let i = 0; i < picks; i++) vals.push(wpick(B.prizes)[1]);
+    const rest = []; for (let i = picks; i < (B.items || 12); i++) rest.push(wpick(B.prizes)[1]);
+    const win = Math.round(vals.reduce((a, v) => a + v, 0) * bet * m.scale);
+    return { type: 'pick', items: B.items || 12, vals, rest, win, unit: bet * m.scale };
+  }
+  // Bonusrad: ein Feld zeigt × Einsatz oder Freispiele
+  function wheelBonus(m, bet) {
+    const segs = m.bonus.segs, i = randInt(segs.length), s = segs[i];
+    return { type: 'wheel', segs, idx: i, free: s.free || 0, win: s.x ? Math.round(s.x * bet * m.scale) : 0, unit: bet * m.scale };
+  }
+
   // Eine komplette Runde (Grunddreh + Features). Die Grafik spielt die Schritte nacheinander ab.
   L.playRound = (m, bet) => {
     const steps = []; let total = 0;
@@ -174,14 +204,28 @@
     }
     if (m.holdwin && base.coins >= m.holdwin.trigger) { const h = holdWin(m, bet, base); steps.push(h); total += h.win; }
     let fs = base.free;
+    if (m.bonus && base.bonusN >= (m.bonus.trigger || 3)) {
+      const b = m.bonus.type === 'wheel' ? wheelBonus(m, bet) : pickBonus(m, bet, base.bonusN);
+      steps.push(b); total += b.win; if (b.free) fs += b.free;
+    }
     if (fs > 0) {
-      const special = m.book ? m.paying[randInt(m.paying.length)] : null;
-      steps.push({ type: 'freeStart', count: fs, special });
-      let played = 0, fwin = 0; const max = m.maxFree || 100;
+      const special = m.book ? m.paying[randInt(m.paying.length)] : null, ff = m.ff;
+      steps.push({ type: 'freeStart', count: fs, special, ff: ff ? ff.type : null });
+      let played = 0, fwin = 0, mult = m.freeMult || 1; const max = m.maxFree || 100;
+      const fx = { up: 0, sticky: ff && ff.type === 'sticky' ? new Set() : null };
       while (fs > 0 && played < max) {
         fs--; played++;
-        const s = spinStep(m, bet, 'free', m.freeMult || 1, special, null);
+        const s = spinStep(m, bet, 'free', mult, special, null, fx);
         if (s.free) fs = Math.min(fs + (m.scatter.retrigger || s.free), max - played);
+        if (ff) {
+          const wc = []; s.grid.forEach((col, r) => col.forEach((v, y) => { if (v === m.wild) wc.push([r, y]); }));
+          if (ff.type === 'upgrade' && wc.length && fx.up < m.upOrder.length - 1) {
+            fx.up++; s.upgrade = { level: fx.up, from: m.upOrder.slice(0, fx.up), to: m.upOrder[fx.up] };
+            if (ff.extra) { const add = Math.min(ff.extra, max - played - fs); fs += add; s.extra = add; }
+          }
+          if (ff.type === 'sticky') { const fresh = wc.filter(([r, y]) => !fx.sticky.has(r + ',' + y)); fresh.forEach(([r, y]) => fx.sticky.add(r + ',' + y)); s.newSticky = fresh; }
+          if (ff.type === 'multUp' && s.win > 0 && mult < ff.max) { mult = Math.min(ff.max, mult + (ff.step || 1)); s.nextMult = mult; }
+        }
         s.freeLeft = fs; s.freeNo = played; steps.push(s); total += s.win; fwin += s.win;
       }
       steps.push({ type: 'freeEnd', played, win: fwin });

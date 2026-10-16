@@ -12,7 +12,7 @@
   ];
 
   const MACHINES = [
-    { id: 'gold-reels', title: 'AnMaCha Gold Reels', scale: 1.01022, tag: 'Sender-Logos · 20 Linien · Freispiele', reels: 5, rows: 3, lines: 'l20', cover: ['logo:04', 'seven', 'logo:09'],
+    { id: 'gold-reels', title: 'AnMaCha Gold Reels', scale: 1.00937, tag: 'Sender-Logos · 20 Linien · Freispiele', reels: 5, rows: 3, lines: 'l20', cover: ['logo:04', 'seven', 'logo:09'],
       theme: { a: '#ffb11f', b: '#ff2d95', c: '#8b5cf6', bg: '#170a2e', tile: ['#241a46', '#120c26'] },
       symbols: [
         { id: 'seven', w: 3, pay: { 3: 137, 4: 685, 5: 3425 } },
@@ -25,10 +25,13 @@
         { id: 'logo4', art: 'logo:06', w: 12, pay: { 3: 11, 4: 34, 5: 123 } },
         { id: 'logo5', art: 'logo:12', w: 12, pay: { 3: 8, 4: 27, 5: 103 } },
         { id: 'wild', w: [0, 3, 3, 3, 0], name: 'Wild' },
-        { id: 'scatter', art: 'bonus', w: 2, name: 'Bonus' }
+        { id: 'scatter', art: 'bonus', w: 2, name: 'Bonus' },
+        { id: 'studio', art: 'mic', w: [3.4, 0, 3.4, 0, 3.4], name: 'Studio-Bonus' }
       ],
       wild: 'wild', scatter: { id: 'scatter', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 10, 4: 10, 5: 10 }, retrigger: 5 }, freeMult: 2,
-      info: 'Wild ersetzt alle Symbole außer Bonus. 3 oder mehr Bonus-Symbole lösen 10 Freispiele mit doppeltem Gewinn aus (erneut auslösbar: +5).' },
+      bonus: { id: 'studio', type: 'pick', trigger: 3, picks: { 3: 3 }, items: 12, faces: ['logo:01', 'logo:04', 'logo:06', 'logo:09', 'logo:12'],
+        prizes: [[30, 2], [25, 3], [18, 5], [12, 8], [8, 10], [4, 15], [2, 25], [0.8, 50], [0.2, 100]] },
+      info: 'Wild ersetzt alle Symbole außer Bonus und Mikrofon. 3 oder mehr Bonus-Symbole lösen 10 Freispiele mit doppeltem Gewinn aus (erneut auslösbar: +5). 3 Mikrofone auf Walze 1, 3 und 5 starten den Studio-Bonus: Wähle 3 von 12 Sender-Logos, jedes verbirgt einen Gewinn.' },
 
     { id: 'fruit-blaze', title: 'Fruit Blaze', scale: 0.96925, tag: 'Klassik · 5 Linien · Früchte', reels: 5, rows: 3, lines: 'l5',
       theme: { a: '#ff5a1f', b: '#ffd23f', c: '#ff1f4b', bg: '#2a0606', tile: ['#3a0d0d', '#1a0404'] },
@@ -146,6 +149,88 @@
       ],
       wild: 'wild', respin: { reel: 1 },
       info: 'Landet das Feuer-Wild auf der mittleren Walze, füllt es die ganze Walze und du bekommst einen Gratis-Respin, bei dem sie stehen bleibt.' },
+
+    { id: 'eye-of-ra', title: 'Eye of Ra', scale: 0.80122, tag: '10 Linien · Freispiele mit Symbol-Upgrade', reels: 5, rows: 3, lines: 'l10',
+      theme: { a: '#ffd24a', b: '#1e9bff', c: '#e0a630', bg: '#06142a', tile: ['#0e2346', '#050d1e'] },
+      symbols: [
+        { id: 'falcon', art: 'emoji:🦅', w: 3, pay: { 2: 10, 3: 100, 4: 1000, 5: 5000 } },
+        { id: 'scarab', art: 'emoji:🪲', w: 4, pay: { 2: 5, 3: 40, 4: 400, 5: 2000 } },
+        { id: 'vase', art: 'emoji:🏺', w: 5, pay: { 3: 30, 4: 100, 5: 750 } },
+        ...LET([7, 7, 8, 8, 8], true),
+        { id: 'wild', art: 'ew:👁️', w: [0, 1.5, 1.5, 1.5, 0], name: 'Auge des Ra (Wild)' },
+        { id: 'pyramid', w: 1.3, name: 'Pyramide (Scatter)' }
+      ],
+      wild: 'wild', scatter: { id: 'pyramid', pay: { 3: 2, 4: 20, 5: 200 }, free: { 3: 12, 4: 12, 5: 12 }, retrigger: 12 }, maxFree: 60,
+      freeFeature: { type: 'upgrade', order: ['T', 'J', 'Q', 'K'], extra: 1 },
+      info: 'Das Auge ist Wild. 3 Pyramiden bringen 12 Freispiele. Jeder Freispiel mit Auge wertet das niedrigste Symbol auf (10 → B → D → K) und bringt einen Freispiel extra.' },
+
+    { id: 'lady-luna', title: 'Lady Luna', scale: 0.48408, tag: '10 Linien · 15 Freispiele ×3', reels: 5, rows: 3, lines: 'l10',
+      theme: { a: '#f0abfc', b: '#7c3aed', c: '#38bdf8', bg: '#120826', tile: ['#24104a', '#0e061e'] },
+      symbols: [
+        { id: 'ring', art: 'emoji:💍', w: 3, pay: { 2: 10, 3: 100, 4: 1000, 5: 5000 } },
+        { id: 'ladybug', art: 'emoji:🐞', w: 4, pay: { 2: 2, 3: 25, 4: 125, 5: 750 } },
+        { id: 'horseshoe', w: 4, pay: { 2: 2, 3: 25, 4: 125, 5: 750 } },
+        { id: 'clover', w: 5, pay: { 3: 15, 4: 100, 5: 400 } },
+        ...LET([7, 7, 8, 8, 8]),
+        { id: 'wild', art: 'ew:🌙', w: [2, 2, 2, 2, 2], pay: { 2: 10, 3: 250, 4: 2500, 5: 9000 }, name: 'Mond (Wild, verdoppelt)' },
+        { id: 'crystal', art: 'eb:🔮|BONUS', w: 2, name: 'Kristallkugel (Scatter)' }
+      ],
+      wild: 'wild', wildMult: 2, scatter: { id: 'crystal', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 15, 4: 15, 5: 15 }, retrigger: 15 }, freeMult: 3, maxFree: 180,
+      info: 'Der Mond ist Wild und verdoppelt jeden Gewinn, an dem er beteiligt ist. 3 oder mehr Kristallkugeln bringen 15 Freispiele, in denen alle Gewinne dreifach zählen – erneut auslösbar.' },
+
+    { id: 'pirate-pick', title: 'Pirate Treasure', scale: 1.44496, tag: '20 Linien · Schatzkisten-Bonus', reels: 5, rows: 3, lines: 'l20',
+      theme: { a: '#fbbf24', b: '#0ea5e9', c: '#dc2626', bg: '#04121c', tile: ['#0b2536', '#030c14'] },
+      symbols: [
+        { id: 'parrot', art: 'emoji:🦜', w: 3, pay: { 3: 50, 4: 250, 5: 1000 } },
+        { id: 'anchor', art: 'emoji:⚓', w: 4, pay: { 3: 40, 4: 150, 5: 500 } },
+        { id: 'ship', art: 'emoji:⛵', w: 5, pay: { 3: 30, 4: 100, 5: 300 } },
+        { id: 'gem', art: 'gem:#ff3355', w: 6, pay: { 3: 20, 4: 60, 5: 200 } },
+        ...LET([8, 8, 9, 9, 9]),
+        { id: 'wild', art: 'ew:☠️', w: [0, 3, 3, 3, 0], name: 'Totenkopf (Wild)' },
+        { id: 'chest', art: 'eb:💰|BONUS', w: [3, 0, 3, 0, 3], name: 'Schatzkiste (Bonus)' }
+      ],
+      wild: 'wild',
+      bonus: { id: 'chest', type: 'pick', trigger: 3, picks: { 3: 4 }, items: 12, faces: ['emoji:🧰'],
+        prizes: [[30, 3], [25, 5], [18, 8], [12, 12], [8, 15], [4, 25], [2, 40], [0.8, 75], [0.2, 200]] },
+      info: '3 Schatzkisten auf Walze 1, 3 und 5 starten den Bonus: Wähle 4 von 12 Kisten, jede birgt einen Gewinn von bis zu 200 × Einsatz. Der Totenkopf ersetzt alle Symbole außer der Schatzkiste.' },
+
+    { id: 'fortune-wheel', title: 'Fortune Wheel 7', scale: 0.68435, tag: '20 Linien · Bonusrad · Multiplikator-Freispiele', reels: 5, rows: 3, lines: 'l20',
+      theme: { a: '#ffd24a', b: '#ef4444', c: '#22c55e', bg: '#1c0610', tile: ['#38101f', '#16040b'] },
+      symbols: [
+        { id: 'seven', w: 3, pay: { 3: 100, 4: 500, 5: 2500 } },
+        { id: 'bell', w: 4, pay: { 3: 50, 4: 200, 5: 750 } },
+        { id: 'bar3', w: 5, pay: { 3: 30, 4: 100, 5: 400 } },
+        { id: 'melon', w: 6, pay: { 3: 25, 4: 80, 5: 300 } },
+        { id: 'grapes', w: 6, pay: { 3: 25, 4: 80, 5: 300 } },
+        { id: 'plum', w: 8, pay: { 3: 10, 4: 40, 5: 150 } },
+        { id: 'lemon', w: 8, pay: { 3: 10, 4: 40, 5: 150 } },
+        { id: 'cherry', w: 8, pay: { 3: 10, 4: 40, 5: 150 } },
+        { id: 'wild', w: [0, 3, 3, 3, 0], name: 'Wild' },
+        { id: 'wheel', art: 'wheelBonus', w: [3, 0, 3, 0, 3], name: 'Bonusrad' }
+      ],
+      wild: 'wild',
+      bonus: { id: 'wheel', type: 'wheel', trigger: 3,
+        segs: [{ x: 10 }, { free: 8 }, { x: 20 }, { x: 5 }, { free: 10 }, { x: 50 }, { x: 10 }, { free: 12 }, { x: 25 }, { x: 5 }, { free: 15 }, { x: 100 }] },
+      freeFeature: { type: 'multUp', step: 1, max: 10 },
+      info: '3 Bonusräder auf Walze 1, 3 und 5 drehen das Glücksrad: bis zu 100 × Einsatz oder 8 bis 15 Freispiele. In den Freispielen steigt der Multiplikator nach jedem Gewinn um 1, bis ×10.' },
+
+    { id: 'sticky-fire', title: 'Sticky Fire Fruits', scale: 0.78558, tag: '20 Linien · Freispiele mit klebenden Wilds', reels: 5, rows: 3, lines: 'l20',
+      theme: { a: '#ff7a1a', b: '#ffd23f', c: '#e11d48', bg: '#220703', tile: ['#3a1006', '#170402'] },
+      symbols: [
+        { id: 'seven', w: 3, pay: { 3: 100, 4: 400, 5: 2000 } },
+        { id: 'star', art: 'diamond', w: 4, pay: { 3: 50, 4: 150, 5: 600 } },
+        { id: 'melon', w: 6, pay: { 3: 25, 4: 75, 5: 250 } },
+        { id: 'grapes', w: 6, pay: { 3: 25, 4: 75, 5: 250 } },
+        { id: 'plum', w: 8, pay: { 3: 10, 4: 30, 5: 120 } },
+        { id: 'orange', w: 8, pay: { 3: 10, 4: 30, 5: 120 } },
+        { id: 'lemon', w: 9, pay: { 3: 10, 4: 30, 5: 120 } },
+        { id: 'cherry', w: 9, pay: { 3: 10, 4: 30, 5: 120 } },
+        { id: 'wild', art: 'fireWild', w: [0, 2, 2, 2, 0], name: 'Feuer-Wild' },
+        { id: 'scatter', art: 'bonus', w: 2, name: 'Bonus (Scatter)' }
+      ],
+      wild: 'wild', scatter: { id: 'scatter', pay: { 3: 2, 4: 10, 5: 50 }, free: { 3: 10, 4: 12, 5: 15 }, retrigger: 5 },
+      freeFeature: { type: 'sticky' },
+      info: '3 oder mehr Bonus-Symbole bringen 10 bis 15 Freispiele. Jedes Feuer-Wild, das in den Freispielen landet, bleibt bis zum Ende kleben.' },
 
     { id: 'joker-star', title: 'Joker Star', scale: 0.8082, tag: '10 Linien · Joker · Freispiele ×2', reels: 5, rows: 3, lines: 'l10',
       theme: { a: '#c084fc', b: '#f43f5e', c: '#fde047', bg: '#14061f', tile: ['#26103a', '#10051a'] },

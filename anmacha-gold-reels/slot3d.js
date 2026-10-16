@@ -199,6 +199,7 @@
         <button class="ib" data-nav data-act="turbo" aria-label="Turbo">⚡</button></div>
         <button class="spin" data-nav data-default data-act="spin" aria-label="Drehen"><span>SPIN</span></button>`;
       hud.appendChild(bar); this.bar = bar;
+      hud.appendChild(el('div', 'rothint', '📱 Quer halten für Vollbild'));
       this.q = s => bar.querySelector(s);
       bar.addEventListener('click', e => {
         const b = e.target.closest('[data-act]'); if (!b || b.disabled) return; sound.play('click');
@@ -211,7 +212,7 @@
       ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => sp.addEventListener(ev, () => { if (hold > 0) clearTimeout(hold); }));
       sp.addEventListener('click', e => { if (hold === -1) { hold = 0; e.stopImmediatePropagation(); } }, true);
       this.fx = document.getElementById('fx'); this.fxg = this.fx.getContext('2d');
-      this.refreshHud();
+      this.refreshHud(); this.setWin(0);
     }
     refreshHud() {
       const q = this.q; if (!q) return;
@@ -251,12 +252,13 @@
         for (const st of round.steps) {
           if (this.dead) return;
           if (st.type === 'spin' || st.type === 'respin') {
-            if (st.mode === 'free') this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (this.m.freeMult > 1 ? ` · ×${this.m.freeMult}` : ''));
+            if (st.mode === 'free') this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft}` + (st.mult > 1 ? ` · ×${st.mult}` : '') + (this.upLevel ? ' · ⬆ ' + this.upLabel : ''));
             if (st.type === 'respin') this.setBanner('RESPIN – Wild bleibt stehen');
             await this.animSpin(st); await this.showWins(st);
             if (st.type === 'respin') this.banner.hidden = true;
-            if (st.mode === 'free' && st.free) { sound.play('feature'); C.toast(`+${this.m.scatter.retrigger || st.free} Freispiele!`); }
+            if (st.mode === 'free') await this.freeExtras(st);
           }
+          else if (st.type === 'pick' || st.type === 'wheel') await this.playBonus(st);
           else if (st.type === 'holdwin') await this.playHoldWin(st);
           else if (st.type === 'freeStart') await this.freeStart(st);
           else if (st.type === 'freeEnd') await this.freeEnd(st);
@@ -278,7 +280,7 @@
     quick() { this.quickStop = true; this.reels && this.reels.forEach(R => { if (R.anim) R.anim.scale = 3.5; }); }
     onStop(r) {
       sound.play('stop');
-      const st = this.cur; if (st && st.grid && this.m.scat >= 0) { const n = st.grid[r].filter(v => v === this.m.scat).length; if (n) sound.play('coin'); }
+      const st = this.cur; if (st && st.grid && (this.m.scat >= 0 || this.m.bon >= 0)) { const n = st.grid[r].filter(v => v === this.m.scat || v === this.m.bon).length; if (n) sound.play('coin'); }
       if (this.reels.every(R => !R.anim)) { sound.whirr(false); const w = this.stopWaiters; this.stopWaiters = []; w.forEach(f => f()); }
     }
     allStopped() { return new Promise(res => { if (this.reels.every(R => !R.anim)) res(); else this.stopWaiters.push(res); }); }
@@ -367,15 +369,47 @@
 
     // ---------- Freispiele ----------
     async freeStart(st) {
-      this.free = true; this.refreshHud(); sound.play('feature');
+      this.free = true; this.refreshHud(); sound.play('feature'); this.upLevel = 0; this.upLabel = '';
       const sp = st.special != null ? this.m.symbols[st.special] : null;
+      const FF = { upgrade: 'Jeder Freispiel mit Wild wertet die niedrigsten Symbole auf und bringt +1 Freispiel', sticky: 'Wilds bleiben bis zum Ende kleben', multUp: 'Der Multiplikator steigt nach jedem Gewinn – bis ×' + (this.m.ff && this.m.ff.max) };
       this.drawMarquee('FREISPIELE');
-      await this.app.splash(`<h2>${st.count} FREISPIELE</h2>` + (this.m.freeMult > 1 ? `<p>Alle Gewinne ×${this.m.freeMult}</p>` : '') +
+      await this.app.splash(`<h2>${st.count} FREISPIELE</h2>` + (this.m.freeMult > 1 ? `<p>Alle Gewinne ×${this.m.freeMult}</p>` : '') + (st.ff ? `<p>${FF[st.ff]}</p>` : '') +
         (sp ? `<p>Sondersymbol:</p><canvas class="splashsym" data-art="${sp.art || sp.id}"></canvas>` : ''), this.theme, 2200 * this.speed);
       this.freeTotal = st.count;
     }
+    symName(i) { const s = this.m.symbols[i]; return ({ T: '10', J: 'B', Q: 'D' })[s.id] || (s.id.length < 3 ? s.id : (s.name || s.id)); }
+    // nach jedem Freispiel: Retrigger, Upgrade, klebende Wilds, steigender Multiplikator
+    async freeExtras(st) {
+      const m = this.m;
+      if (st.free) { sound.play('feature'); C.toast(`+${m.scatter.retrigger || st.free} Freispiele!`); }
+      if (st.newSticky && st.newSticky.length) {
+        for (const [r, y] of st.newSticky) { this.setLockKey(r, y, this.key(m.wild, null, true), true); sound.play('lock'); await wait(140 * this.speed); }
+      }
+      if (st.upgrade) {
+        this.upLevel = st.upgrade.level; this.upLabel = this.symName(st.upgrade.to);
+        sound.play('feature'); C.toast(`⬆ ${st.upgrade.from.map(i => this.symName(i)).join(', ')} → ${this.upLabel}` + (st.extra ? ` · +${st.extra} Freispiel` : ''), 1600);
+        this.setBanner(`FREISPIEL <b>${st.freeNo}</b> / ${st.freeNo + st.freeLeft} · ⬆ ${this.upLabel}`);
+        await wait(500 * this.speed);
+      }
+      if (st.nextMult) { sound.play('lock'); C.toast(`Multiplikator ×${st.nextMult}`, 1200); }
+    }
+    setLockKey(r, y, key, fresh) { const lk = this.lock(r, y); lk.material.map = this.lockTex(key); lk.material.needsUpdate = true; lk.visible = true; if (fresh) { lk.scale.setScalar(1.3); lk.userData.pop = this.t; } Gfx.kick(); }
+
+    // ---------- Bonusspiele (Schatzwahl, Bonusrad) ----------
+    async playBonus(st) {
+      this.free = true; this.refreshHud(); sound.play('feature');
+      this.drawMarquee(st.type === 'wheel' ? 'BONUSRAD' : 'BONUS');
+      const cells = []; this.cur.grid.forEach((col, r) => col.forEach((v, y) => { if (v === this.m.bon) cells.push([r, y]); }));
+      cells.forEach(c => this.flash(c[0], c[1])); await wait(900 * this.speed); this.clearFlash();
+      const opt = { auto: this.auto, faces: this.m.bonus.faces };
+      if (st.type === 'wheel') await this.app.bonusWheel(st, this.theme, opt); else await this.app.pickBonus(st, this.theme, opt);
+      if (this.dead) return;
+      if (st.win) { const from = this.winSum; this.winSum += st.win; await this.countUp(from, this.winSum, 900 * this.speed); wallet.reveal(st.win); }
+      this.drawMarquee('');
+    }
     async freeEnd(st) {
-      this.banner.hidden = true; this.drawMarquee('');
+      this.banner.hidden = true; this.drawMarquee(''); this.upLevel = 0;
+      if (this.m.ff && this.m.ff.type === 'sticky') this.locks.forEach(l => { l.visible = false; });
       await this.app.splash(`<h2>FREISPIELE BEENDET</h2><p>${st.played} Freispiele</p><p class="big">${fmt(st.win)}</p>`, this.theme, 2400 * this.speed);
     }
     setBanner(html) { this.banner.innerHTML = html; this.banner.hidden = false; }
@@ -386,7 +420,7 @@
       this.free = true; this.refreshHud(); sound.play('feature'); this.drawMarquee('HOLD & WIN');
       await this.app.splash('<h2>HOLD &amp; WIN</h2><p>Münzen bleiben liegen – 3 Respins!</p>', this.theme, 1800 * this.speed);
       const locked = st.start.map(c => c.slice());
-      const setLock = (r, y, v, fresh) => { const lk = this.lock(r, y); lk.material.map = this.lockTex(this.key(m.coin, v, true)); lk.material.needsUpdate = true; lk.visible = true; if (fresh) { lk.scale.setScalar(1.3); lk.userData.pop = this.t; } };
+      const setLock = (r, y, v, fresh) => this.setLockKey(r, y, this.key(m.coin, v, true), fresh);
       locked.forEach((col, r) => col.forEach((v, y) => { if (v) setLock(r, y, v); }));
       const blank = 'blank', coinFill = () => (Math.random() < 0.18 ? this.key(m.coin, this.randCoin()) : blank);
       let respins = hw.respins || 3;
@@ -477,7 +511,7 @@
       this.texCache.forEach(t => t.dispose()); this.texCache.clear(); this.tiles.clear();
     }
   }
-  function coinLabel(m, v, bet) { return typeof v[1] === 'string' ? v[1] : C.short(v[1] * bet); }
+  function coinLabel(m, v, bet) { return typeof v[1] === 'string' ? v[1] : C.short(v[1] * bet, true); }
 
   G.CasinoSlot = { SlotScreen, BETS };
 })(window);

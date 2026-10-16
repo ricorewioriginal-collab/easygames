@@ -62,7 +62,8 @@
     const items = [...MACHINES.map(m => ({ def: m, kind: 'slot' })), ...TABLES.map(t => ({ def: t, kind: 'table' }))];
     lobbyEl.innerHTML = `
       <div class="hero"><div class="logo"><span>AnMaCha</span><b>CASINO</b></div>
-        <div class="heroBtns"><button class="pill gold" data-nav id="daily">🎁 Tagesbonus</button><button class="pill" data-nav id="refill" hidden>💰 Spielgeld nachfüllen</button></div></div>
+        <div class="heroBtns"><button class="pill gold" data-nav id="daily">🎁 Tagesbonus</button><button class="pill" data-nav id="refill" hidden>💰 Spielgeld nachfüllen</button>
+          <button class="pill" data-nav id="cur" title="Währung der Anzeige (nur Spielgeld)"></button><button class="pill" data-nav id="autofs" title="Spiele automatisch im Vollbild öffnen"></button></div></div>
       <div class="tabs" role="tablist"><button class="tab" data-nav data-f="all">Alle</button><button class="tab" data-nav data-f="slot">🎰 Slots</button><button class="tab" data-nav data-f="table">🃏 Tischspiele</button></div>
       <div class="grid"></div>
       <div id="cloudMount" class="cloudbox"></div>
@@ -81,16 +82,20 @@
     $('#daily').onclick = () => {
       const today = new Date().toISOString().slice(0, 10);
       if (C.data.daily === today) { C.toast('Der Tagesbonus ist heute schon abgeholt – morgen wieder!'); return; }
-      C.data.daily = today; wallet.give(2500); C.save(); sound.play('big'); C.toast('🎁 +2.500 Spielgeld'); refreshLobby();
+      C.data.daily = today; wallet.give(2500); C.save(); sound.play('big'); C.toast('🎁 +' + fmt(2500) + ' Spielgeld'); refreshLobby();
     };
-    $('#refill').onclick = () => { wallet.refill(); sound.play('coin'); C.toast('💰 +10.000 Spielgeld'); refreshLobby(); };
+    $('#cur').onclick = () => { C.setCurrency(C.data.cur === 'USD' ? 'EUR' : 'USD'); sound.play('click'); balEl.textContent = fmt(wallet.shown); shownBal = wallet.shown; refreshLobby(); };
+    $('#autofs').onclick = () => { C.data.autoFs = !C.data.autoFs; C.save(); sound.play('click'); refreshLobby(); };
+    $('#refill').onclick = () => { wallet.refill(); sound.play('coin'); C.toast('💰 +' + fmt(wallet.START) + ' Spielgeld'); refreshLobby(); };
     applyFilter(); refreshLobby();
   }
   function applyFilter() { lobbyEl.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.f === filter)); lobbyEl.querySelectorAll('.gcard').forEach(c => { c.hidden = filter !== 'all' && c.dataset.kind !== filter; }); }
   function refreshLobby() {
     const today = new Date().toISOString().slice(0, 10);
-    $('#daily').classList.toggle('done', C.data.daily === today); $('#daily').textContent = C.data.daily === today ? '✓ Bonus abgeholt' : '🎁 Tagesbonus +2.500';
+    $('#daily').classList.toggle('done', C.data.daily === today); $('#daily').textContent = C.data.daily === today ? '✓ Bonus abgeholt' : '🎁 Tagesbonus +' + fmt(2500);
     $('#refill').hidden = wallet.bal >= 1000;
+    $('#cur').textContent = C.data.cur === 'USD' ? '💲 Dollar' : '💶 Euro';
+    $('#autofs').textContent = '⛶ Vollbild ' + (C.data.autoFs ? 'an' : 'aus'); $('#autofs').hidden = !document.fullscreenEnabled;
   }
   wallet.on(() => { if (!current) refreshLobby(); });
 
@@ -124,6 +129,14 @@
     hud.innerHTML = '';
     if (!def) { showLobby(); return; }
     if (!Gfx.ok) { C.toast('3D wird von diesem Gerät nicht unterstützt'); location.hash = ''; return; }
+    // Spiele im Vollbild: klappt nur direkt nach einer Berührung/einem Klick, sonst bleibt die Ansicht wie sie ist
+    if (C.data.autoFs && document.fullscreenEnabled) {
+      // Slots wie in der Spielhalle quer (geht nur im Vollbild, z. B. Android); Tischspiele dürfen auch hochkant
+      const lock = () => { try { if (kind === 'slot' && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) { /* nicht unterstützt */ } };
+      if (document.fullscreenElement) lock();
+      else { try { const p = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (p && p.then) p.then(lock, () => {}); } catch (e) { /* nicht erlaubt */ } }
+    }
+    if (kind !== 'slot') unlockOrientation();
     lobbyEl.hidden = true; document.body.classList.add('ingame'); document.body.classList.remove('inlobby');
     topTitle.textContent = def.title; document.title = def.title + ' – AnMaCha Casino';
     if (lobbyScene) { lobbyScene.dispose(); lobbyScene = null; }
@@ -131,7 +144,9 @@
     await current.enter(hud);
     if (current && current.resize) current.resize(innerWidth, innerHeight);
   }
+  function unlockOrientation() { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) { /* nicht unterstützt */ } }
   function showLobby() {
+    unlockOrientation();
     lobbyEl.hidden = false; document.body.classList.remove('ingame'); document.body.classList.add('inlobby');
     topTitle.textContent = 'AnMaCha Casino'; document.title = 'AnMaCha Casino';
     if (!lobbyScene) lobbyScene = lobby3d();
@@ -152,10 +167,12 @@
       sound.play('lose');
       const low = wallet.bal < 1000;
       const r = await C.modal(`<h2>Zu wenig Spielgeld</h2><p>Für diesen Einsatz (${fmt(need)}) reicht dein Guthaben von ${fmt(wallet.bal)} nicht.</p>` + (low ? '<p>Du kannst dir kostenlos neues Spielgeld holen.</p>' : '<p>Verringere den Einsatz.</p>'),
-        { buttons: low ? [{ label: '💰 +10.000 Spielgeld', value: 'refill' }, { label: 'Schließen', value: null, cls: ' ' }] : [{ label: 'OK', value: null }] });
+        { buttons: low ? [{ label: '💰 +' + fmt(wallet.START) + ' Spielgeld', value: 'refill' }, { label: 'Schließen', value: null, cls: ' ' }] : [{ label: 'OK', value: null }] });
       if (r === 'refill') { wallet.refill(); sound.play('coin'); }
     },
-    gamble: amount => G.CasinoOverlay.gamble(amount)
+    gamble: amount => G.CasinoOverlay.gamble(amount),
+    pickBonus: (st, theme, opt) => G.CasinoOverlay.pickBonus(st, theme, opt),
+    bonusWheel: (st, theme, opt) => G.CasinoOverlay.bonusWheel(st, theme, opt)
   };
   G.Casino = App;
 

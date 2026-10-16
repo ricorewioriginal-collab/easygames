@@ -95,14 +95,14 @@
       this.chipMats = this.chipMats || {}; if (this.chipMats[v]) return this.chipMats[v];
       const c = Gfx.canvas(128, 128), g = c.getContext('2d'); g.fillStyle = CHIP_COL[v]; g.beginPath(); g.arc(64, 64, 64, 0, 7); g.fill();
       g.strokeStyle = '#fff'; g.lineWidth = 10; g.setLineDash([14, 14]); g.beginPath(); g.arc(64, 64, 54, 0, 7); g.stroke(); g.setLineDash([]);
-      g.fillStyle = '#fff'; g.beginPath(); g.arc(64, 64, 34, 0, 7); g.fill(); S.text(g, C.short(v), 64, 66, v >= 1000 ? 22 : 28, CHIP_COL[v]);
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(64, 64, 34, 0, 7); g.fill(); S.text(g, C.short(v, true), 64, 66, v >= 1000 ? 22 : 28, CHIP_COL[v]);
       const side = new THREE.MeshStandardMaterial({ color: new THREE.Color(CHIP_COL[v]), roughness: 0.5 }), top = new THREE.MeshStandardMaterial({ map: Gfx.canvasTex(c), roughness: 0.5 });
       return (this.chipMats[v] = [side, top, top]);
     }
     removeObj(o) { if (!o) return; this.scene.remove(o); Gfx.dispose(o); }
     chipBar(onPick) {
       const bar = el('div', 'chips');
-      CHIPS.forEach(v => { const b = el('button', 'chip', C.short(v)); b.style.setProperty('--c', CHIP_COL[v]); b.dataset.v = v; b.setAttribute('data-nav', ''); bar.appendChild(b); });
+      CHIPS.forEach(v => { const b = el('button', 'chip', C.short(v, true)); b.style.setProperty('--c', CHIP_COL[v]); b.dataset.v = v; b.setAttribute('data-nav', ''); bar.appendChild(b); });
       const sel = () => bar.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', +b.dataset.v === this.chip));
       this.chip = CHIPS[C.data.chip] || 10; sel();
       bar.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; this.chip = +b.dataset.v; C.data.chip = CHIPS.indexOf(this.chip); C.save(); sel(); sound.play('chip'); onPick && onPick(); });
@@ -199,14 +199,14 @@
     place(key, remove) {
       if (this.spinning) return;
       if (remove) { if (this.bets[key]) { this.bets[key] = Math.max(0, this.bets[key] - this.chip); if (!this.bets[key]) delete this.bets[key]; sound.play('chip'); } }
-      else { if (this.total() + this.chip > wallet.bal) { C.toast('Nicht genug Guthaben für diesen Chip'); return; } if (this.total() + this.chip > 50000) { C.toast('Höchsteinsatz 50.000 je Runde'); return; } this.bets[key] = (this.bets[key] || 0) + this.chip; sound.play('chip'); }
+      else { if (this.total() + this.chip > wallet.bal) { C.toast('Nicht genug Guthaben für diesen Chip'); return; } if (this.total() + this.chip > 50000) { C.toast('Höchsteinsatz ' + fmt(50000) + ' je Runde'); return; } this.bets[key] = (this.bets[key] || 0) + this.chip; sound.play('chip'); }
       this.clearMarks(); this.refresh();
     }
     clear() { if (this.spinning) return; this.bets = {}; this.refresh(); }
     rebet() { if (this.spinning || !this.last) return; let t = 0; for (const k in this.last) t += this.last[k]; if (t > wallet.bal) { C.toast('Nicht genug Guthaben'); return; } this.bets = Object.assign({}, this.last); this.refresh(); }
     refresh() {
       if (!this.board) return;
-      this.board.querySelectorAll('[data-bet]').forEach(b => { const v = this.bets[b.dataset.bet], i = b.querySelector('.bchip'); i.hidden = !v; if (v) i.textContent = C.short(v); });
+      this.board.querySelectorAll('[data-bet]').forEach(b => { const v = this.bets[b.dataset.bet], i = b.querySelector('.bchip'); i.hidden = !v; if (v) i.textContent = C.short(v, true); });
       this.ctl.querySelector('.tot').textContent = fmt(this.total());
       this.ctl.querySelector('[data-a=spin]').disabled = this.spinning || !this.total();
       this.ctl.querySelector('[data-a=rebet]').disabled = this.spinning || !this.last;
@@ -302,7 +302,7 @@
         ({ clear: () => { this.betAmt = 0; this.refresh(); }, add: () => this.addChip(), deal: () => this.deal(), hit: () => this.hit(), stand: () => this.stand(), double: () => this.double(), split: () => this.split() })[x.dataset.a](); });
       this.refresh(); this.say('Setze deinen Einsatz und tippe auf AUSTEILEN.');
     }
-    addChip() { if (this.state !== 'bet') return; const n = this.betAmt + this.chip; if (n > Math.min(wallet.bal, 20000)) { C.toast(n > 20000 ? 'Höchsteinsatz 20.000' : 'Nicht genug Guthaben'); return; } this.betAmt = n; this.refresh(); }
+    addChip() { if (this.state !== 'bet') return; const n = this.betAmt + this.chip; if (n > Math.min(wallet.bal, 20000)) { C.toast(n > 20000 ? 'Höchsteinsatz ' + fmt(20000) : 'Nicht genug Guthaben'); return; } this.betAmt = n; this.refresh(); }
     say(t) { this.text = t; this.msg.innerHTML = (this.totals && this.state !== 'bet' ? `<div class="tl">${this.totals}</div>` : '') + `<div>${t}</div>`; }
     refresh() {
       const bet = this.state === 'bet', play = this.state === 'play';
@@ -563,7 +563,7 @@
     place(k) { if (this.spinning) return; if (this.total() + this.chip > wallet.bal) { C.toast('Nicht genug Guthaben'); return; } this.bets[k] = (this.bets[k] || 0) + this.chip; sound.play('chip'); this.fields.querySelectorAll('.hit').forEach(x => x.classList.remove('hit')); this.refresh(); }
     rebet() { if (this.spinning || !this.last) return; let t = 0; for (const k in this.last) t += this.last[k]; if (t > wallet.bal) { C.toast('Nicht genug Guthaben'); return; } this.bets = Object.assign({}, this.last); this.refresh(); }
     refresh() {
-      this.fields.querySelectorAll('[data-bet]').forEach(b => { const v = this.bets[b.dataset.bet], i = b.querySelector('.bchip'); i.hidden = !v; if (v) i.textContent = C.short(v); });
+      this.fields.querySelectorAll('[data-bet]').forEach(b => { const v = this.bets[b.dataset.bet], i = b.querySelector('.bchip'); i.hidden = !v; if (v) i.textContent = C.short(v, true); });
       this.ctl.querySelector('.tot').textContent = fmt(this.total());
       this.ctl.querySelector('[data-a=spin]').disabled = this.spinning || !this.total();
       this.ctl.querySelector('[data-a=rebet]').disabled = this.spinning || !this.last;
