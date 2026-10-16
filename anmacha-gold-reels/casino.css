@@ -189,3 +189,24 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .ghist i{font-style:normal;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:#fff}
 .ghist i.r{color:#d61f2c} .ghist i.b{color:#111}
 .no3d #hud::before{content:'3D wird auf diesem Gerät nicht unterstützt.';position:fixed;top:40%;left:0;right:0;text-align:center}
+/* Bonusspiele */
+.pick,.bwheel{background:radial-gradient(circle,rgba(30,10,50,.7),rgba(4,2,12,.92));cursor:default}
+.pick .sbox,.bwheel .sbox{border-radius:24px;width:min(560px,calc(100% - 20px));max-height:calc(100% - 20px);overflow:auto}
+.pick h2,.bwheel h2{margin:0;font:900 italic clamp(28px,7vw,44px)/1.1 var(--font);background:linear-gradient(180deg,#fff,var(--a,#ffd24a) 55%,var(--b,#ff2d95));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.pitem{position:relative;aspect-ratio:1;border-radius:16px;border:2px solid var(--a,#ffd24a);background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.18),rgba(0,0,0,.35));display:grid;place-items:center;cursor:pointer;transition:transform .2s;padding:0;color:#fff}
+.pitem canvas{width:70%;height:70%}
+.pitem .pv{position:absolute;inset:0;display:grid;place-items:center;font:900 clamp(13px,3.6vw,20px) var(--font);color:var(--gold);opacity:0;text-shadow:0 2px 6px #000}
+.pitem.open{background:linear-gradient(160deg,var(--b,#ff2d95),#1a0a2a);cursor:default;animation:flip .4s}
+.pitem.open canvas{opacity:0}.pitem.open .pv{opacity:1}
+@keyframes flip{0%{transform:scaleX(1)}50%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+.pitem.rest{filter:grayscale(.8) brightness(.6)}
+.pitem:not(.open):hover,.pitem.kfocus:not(.open){transform:translateY(-3px) scale(1.04)}
+.ptot{font:800 20px var(--font)}.ptot b{color:var(--gold)}
+.wwrap{position:relative;width:min(340px,70vw,52vh);aspect-ratio:1;margin:10px auto}
+.wwrap canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 0 40px rgba(255,200,60,.45)}
+.wwrap .ptr{position:absolute;left:50%;top:-10px;width:0;height:0;margin-left:-16px;border:16px solid transparent;border-top:30px solid #fff;filter:drop-shadow(0 3px 4px #000)}
+.wres{font:800 20px var(--font);min-height:26px}.wres b{color:var(--gold)}
+.rothint{display:none;position:fixed;left:50%;bottom:calc(196px + var(--safeB));transform:translateX(-50%);z-index:15;padding:6px 14px;border-radius:999px;background:rgba(10,8,24,.75);border:1px solid var(--line);font-weight:700;font-size:13px;white-space:nowrap;pointer-events:none}
+@media (orientation:portrait) and (max-width:700px){.rothint{display:block;animation:hintio 6s 1s both}}
+@keyframes hintio{0%,100%{opacity:0}12%,85%{opacity:1}}

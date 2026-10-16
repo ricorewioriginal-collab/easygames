@@ -3,14 +3,24 @@
 (function (G) {
   const $ = (s, r) => (r || document).querySelector(s);
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
-  const fmt = n => Math.round(n).toLocaleString('de-DE');
-  const short = n => (n >= 1e6 ? (n / 1e6).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' Mio' : n >= 1e4 ? (n / 1e3).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'k' : fmt(n));
+  // Beträge: intern ganze Cent, angezeigt als Spielgeld in € oder $ (data.cur)
+  const CUR = { EUR: ['de-DE', 'EUR'], USD: ['en-US', 'USD'] };
+  const nf = {};
+  const fmtr = (key, o) => nf[key] || (nf[key] = new Intl.NumberFormat(CUR[data.cur] ? CUR[data.cur][0] : 'de-DE', o));
+  const fmt = n => { const c = CUR[data.cur] ? data.cur : 'EUR'; return fmtr(c + 'f', { style: 'currency', currency: c, minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.round(n) / 100); };
+  // kurz: ohne unnötige Nachkommastellen, ab 10.000 kompakt; bare = ohne Währungszeichen (Chips, Münzen)
+  const short = (n, bare) => {
+    const c = CUR[data.cur] ? data.cur : 'EUR', v = Math.round(n) / 100, big = v >= 1e4, whole = Number.isInteger(v);
+    const key = c + (bare ? 'b' : 's') + (big ? 'c' : whole ? 'w' : 'd');
+    return fmtr(key, Object.assign({ style: bare ? 'decimal' : 'currency', currency: c }, big ? { notation: 'compact', maximumFractionDigits: 1 } : whole ? { maximumFractionDigits: 0 } : { minimumFractionDigits: 2, maximumFractionDigits: 2 })).format(v);
+  };
+  const setCurrency = c => { if (!CUR[c]) return; data.cur = c; for (const k in nf) delete nf[k]; save(); };
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   // ---------- Speicher (Schlüssel beginnen mit „agr“, damit der Cloud-Speicher sie mitnimmt) ----------
   const KEY = 'agrCasino', START = 10000;
-  const data = { bal: START, snd: true, turbo: false, bets: {}, best: 0, rounds: 0, daily: '', chip: 1 };
+  const data = { bal: START, snd: true, turbo: false, bets: {}, best: 0, rounds: 0, daily: '', chip: 1, cur: 'EUR', autoFs: true };
   try {
     const old = localStorage.getItem(KEY);
     if (old) Object.assign(data, JSON.parse(old));
@@ -232,5 +242,5 @@
   }
   const wait = ms => new Promise(r => setTimeout(r, ms));
 
-  G.CasinoCore = { $, el, fmt, short, clamp, esc, data, save, persist, wallet, sound, input, modal, layer, toast, wait, get modalOpen() { return modals.length > 0; } };
+  G.CasinoCore = { $, el, fmt, short, setCurrency, clamp, esc, data, save, persist, wallet, sound, input, modal, layer, toast, wait, get modalOpen() { return modals.length > 0; } };
 })(window);

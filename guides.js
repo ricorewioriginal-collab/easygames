@@ -293,7 +293,7 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-gold-reels": {
-  "anleitung": "AnMaCha Casino ist ein 3D-Casino nur mit Spielgeld (Startguthaben 10.000, täglich ein Bonus, bei leerem Konto kostenlos nachfüllen). In der Lobby wählst du einen von 10 Spielautomaten oder ein Tischspiel. Automaten: AnMaCha Gold Reels mit den Sender-Logos, Fruit Blaze, Triple Diamond 7, Book of Funk (Buch-Freispiele mit Sondersymbol), Golden Dragon (243 Wege), Gold Mine Hold & Win (Münzen, Respins, Jackpots), Neon 40 Hot, Lucky Clover, Red Hot Respin und Joker Star. Nach einem Gewinn kannst du ihn mit RISIKO auf Rot oder Schwarz verdoppeln. Tische: Roulette (europäisch), Blackjack (3:2, Teilen, Verdoppeln), Video-Poker (Jacks or Better) und Glücksrad. Info zeigt in jedem Spiel die Gewinntabelle für deinen Einsatz.",
+  "anleitung": "AnMaCha Casino ist ein 3D-Casino nur mit Spielgeld (Startguthaben 100 €, täglich ein Bonus, bei leerem Konto kostenlos nachfüllen; Anzeige in Euro oder Dollar umschaltbar). Spiele öffnen sich im Vollbild (in der Lobby abschaltbar). In der Lobby wählst du einen von 15 Spielautomaten oder ein Tischspiel. Automaten: AnMaCha Gold Reels mit den Sender-Logos (3 Mikrofone starten den Studio-Bonus), Eye of Ra (Freispiele mit Symbol-Upgrade), Lady Luna (15 Freispiele ×3), Pirate Treasure (Schatzkisten-Bonus), Fortune Wheel 7 (Bonusrad, Freispiele mit steigendem Multiplikator), Sticky Fire Fruits (klebende Wilds), Fruit Blaze, Triple Diamond 7, Book of Funk (Buch-Freispiele mit Sondersymbol), Golden Dragon (243 Wege), Gold Mine Hold & Win (Münzen, Respins, Jackpots), Neon 40 Hot, Lucky Clover, Red Hot Respin und Joker Star. Nach einem Gewinn kannst du ihn mit RISIKO auf Rot oder Schwarz verdoppeln. Tische: Roulette (europäisch), Blackjack (3:2, Teilen, Verdoppeln), Video-Poker (Jacks or Better) und Glücksrad. Info zeigt in jedem Spiel die Gewinntabelle für deinen Einsatz.",
   "steuerung": [
    "Touch/Maus: SPIN antippen (gedrückt halten = Autoplay), − und + ändern den Einsatz, MAX, AUTO, ⚡ Turbo, ℹ️ Gewinntabelle. An den Tischen Chip wählen und auf Felder tippen.",
    "Tastatur: Pfeiltasten wählen Knöpfe und Spiele, Enter drückt, Leertaste dreht oder gibt, + und − ändern den Einsatz, A Autoplay, I Info, M Ton, Esc zurück.",
@@ -301,6 +301,8 @@ window.EASYGAMES_GUIDES = {
   ],
   "tipps": [
    "Während eines Drehs stoppt ein erneuter Druck auf SPIN die Walzen schneller.",
+   "Im Bonusspiel tippst du Felder an (oder wählst sie mit Pfeiltasten/Controller und A). Im Autoplay wählt das Spiel selbst.",
+   "Auf dem Handy die Automaten quer halten – dann füllen sie den ganzen Bildschirm.",
    "Theoretische Auszahlungsquote der Automaten ca. 95 %, Roulette 97,3 %. Es ist nur Spielgeld – keine Einzahlung, keine echten Gewinne.",
    "Mit ☁ (Google) in der Lobby bleibt dein Spielgeld auf allen Geräten erhalten."
   ]

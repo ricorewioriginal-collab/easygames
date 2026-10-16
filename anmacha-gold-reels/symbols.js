@@ -108,8 +108,22 @@
     coin(g, val) { ball(g, 100, 100, 88, '#fff6c8', '#ffcc22', '#8a4b00'); g.lineWidth = 6; g.strokeStyle = '#7a4500'; g.beginPath(); g.arc(100, 100, 74, 0, 7); g.stroke();
       if (val) { const jp = /[A-Z]/.test(val); text(g, val, 100, 104, jp ? (val.length > 5 ? 30 : 36) : (val.length > 3 ? 46 : 60), jp ? '#fff' : '#5a2a00', jp ? '#7a0a3a' : '#fff6c8', jp ? 7 : 5); }
       else text(g, '$', 100, 106, 96, gold(g, 40, 160), '#6a3a00', 8); shine(g, 70, 60, 20); },
+    pyramid(g) { g.beginPath(); g.moveTo(100, 22); g.lineTo(186, 160); g.lineTo(14, 160); g.closePath(); g.fillStyle = lg(g, 14, 0, 186, 0, '#ffe7a0', '#e0a630', '#8a5a10'); g.fill(); g.lineWidth = 6; g.strokeStyle = '#5a3500'; g.stroke();
+      g.beginPath(); g.moveTo(100, 22); g.lineTo(130, 160); g.closePath(); g.strokeStyle = 'rgba(90,53,0,.6)'; g.lineWidth = 4; g.stroke();
+      g.strokeStyle = 'rgba(90,53,0,.35)'; g.lineWidth = 3; [70, 100, 130].forEach(y => { const w = (y - 22) / 138 * 86; g.beginPath(); g.moveTo(100 - w, y); g.lineTo(100 + w, y); g.stroke(); });
+      text(g, 'SCATTER', 100, 182, 28, '#fff', '#5a3500', 6); shine(g, 92, 52, 14); },
+    wheelBonus(g) { const C = ['#ff2d55', '#ffd24a', '#22c55e', '#3b82f6', '#a855f7', '#ff9500']; g.save(); g.translate(100, 96);
+      for (let i = 0; i < 12; i++) { g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 80, i * Math.PI / 6, (i + 1) * Math.PI / 6); g.fillStyle = C[i % 6]; g.fill(); }
+      g.lineWidth = 8; g.strokeStyle = gold(g, -80, 80); g.beginPath(); g.arc(0, 0, 82, 0, 7); g.stroke(); ball(g, 0, 0, 20, '#fff6c8', '#ffcc22', '#8a4b00');
+      g.fillStyle = '#fff'; g.beginPath(); g.moveTo(-12, -96); g.lineTo(12, -96); g.lineTo(0, -72); g.fill(); g.restore(); text(g, 'BONUS', 100, 180, 32, '#fff', '#5a0a3a', 7); },
     blank() {}
   };
+  // ew:EMOJI = Emoji mit WILD-Schriftzug, eb:EMOJI|TEXT = Emoji mit eigenem Schriftzug (z. B. BONUS)
+  function labelled(g, e, label) {
+    g.fillStyle = rg(g, 100, 92, 10, 96, 'rgba(255,255,255,.35)', 'rgba(255,255,255,0)'); g.beginPath(); g.arc(100, 92, 92, 0, 7); g.fill();
+    g.save(); g.translate(100, 84); g.scale(.82, .82); g.translate(-100, -108); emoji(g, e, 132); g.restore();
+    text(g, label, 100, 168, label.length > 5 ? 30 : 38, gold(g, 148, 188), '#2a0a00', 8, true);
+  }
   function shade(hex, f) { const n = parseInt(hex.slice(1), 16); let r = n >> 16, gg = (n >> 8) & 255, b = n & 255; const t = f < 0 ? 0 : 255, p = Math.abs(f); r = Math.round((t - r) * p) + r; gg = Math.round((t - gg) * p) + gg; b = Math.round((t - b) * p) + b; return '#' + ((1 << 24) + (r << 16) + (gg << 8) + b).toString(16).slice(1); }
   function emoji(g, e, size) { g.font = size + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 10; g.shadowOffsetY = 6; g.fillText(e, 100, 108); g.shadowColor = 'transparent'; }
   function logo(g, n) { const im = loadLogo(n); rr(g, 20, 20, 160, 160, 30); g.save(); g.clip(); g.fillStyle = '#fff'; g.fillRect(0, 0, 200, 200);
@@ -120,6 +134,8 @@
   function drawArt(g, art, extra) {
     if (!art) return;
     if (art.startsWith('emoji:')) return emoji(g, art.slice(6), 132);
+    if (art.startsWith('ew:')) return labelled(g, art.slice(3), 'WILD');
+    if (art.startsWith('eb:')) { const [e, t] = art.slice(3).split('|'); return labelled(g, e, t || 'BONUS'); }
     if (art.startsWith('logo:')) return logo(g, art.slice(5));
     if (art.startsWith('gem:')) return ART.gem(g, art.slice(4));
     if (art === 'coin') return ART.coin(g, extra);
