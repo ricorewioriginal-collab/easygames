@@ -25,7 +25,7 @@ Legende: ✅ umgesetzt und automatisch getestet · 🟢 umgesetzt, nur von Hand 
 | Bereich | Status | Anmerkung |
 |---|---|---|
 | 20 Welten aus Bunte Insel 1, neu aufgebaut, mit Brücken verbunden | ✅ | Alle 20 laden im Browsertest fehlerfrei, alle NPCs erscheinen |
-| Story-Modus: Prolog + Kapitel 1–9, Hauptquests main_0 bis main_8, Finale mit Flick | 🟡 | Prolog und Kapitel 1 automatisch durchgespielt, spätere Kapitel noch nicht am Stück |
+| Story-Modus: Prolog + Kapitel 1–9, Hauptquests main_0 bis main_8, Finale mit Flick | 🟡 | Prolog und Beginn von Kapitel 1 im Ablauf-Test; spätere Kapitel noch nicht am Stück |
 | Freie Welt mit eigenem Spielstand, alles offen | ✅ | |
 | Weltgeschichten (Quest je Welt) mit 3-stufigen Hinweisen | 🟡 | Alle Quests angelegt, nicht jede einzeln durchgespielt |
 | Nebenquests in Sonnenhafen (Hühner, Angeln, Strand, Feuer, Schatz, Training, Eis, Zuhause) | 🟢 | |
@@ -42,7 +42,7 @@ Legende: ✅ umgesetzt und automatisch getestet · 🟢 umgesetzt, nur von Hand 
 
 ## Arbeitsstand 16.10.2026 (Neuauflage zur Review)
 
-Entwurf: https://github.com/ricorewioriginal-collab/easygames/pull/231
+Grundüberarbeitung: PR #231 zusammengeführt. Folgeänderung zur Prüfung: https://github.com/ricorewioriginal-collab/easygames/pull/232
 
 - 19 neue Nachbarschaftsbereiche mit Bewohnern und ortsgebundenen Aktivitäten: Beete, Küchen, Klangstationen, Balancierpfade und freies Fußballspielen auf dem Rasen.
 - Bauland: eigene begehbare Bauwerke aus farbigen Klötzen, Abtragen und Rückgängig; Speichern im vorhandenen Format.
@@ -50,7 +50,7 @@ Entwurf: https://github.com/ricorewioriginal-collab/easygames/pull/231
 - Neue Spielstände beginnen bei Rosi. Der erste Hinweis erscheint während des Spielens.
 - Alle ursprünglichen Quest-Ziele besitzen einen geprüften Ortsverweis. Bereits verbrauchte Fundstellen werden ausgelassen.
 - Splitter werden dem tatsächlichen Fund zugeordnet und in korrekter Anzahl abgegeben. Der Prisma-Splitter ist vor dem Finale erforderlich.
-- Acht lokale Integrationsprüfungen bestanden. Typprüfung und Produktionsbuild auf GitHub bestanden; die Browserprüfung der Arbeitsfassung läuft über den Workflow „Bunte Insel 2 – Spielbarkeit“.
+- Acht Integrationsprüfungen, Typprüfung, Produktionsbuild und Android-Offline-Build bestanden. Der Browserlauf von PR #232 prüft alle 20 Welten, Hof, Küche, freies Bauen, echte Mitfahrt, Speichern und mobilen Start mit sichtbarer Touch-Steuerung. Der Ablauf-Test prüft den Prolog bis zum Beginn von Kapitel 1, Auto, Wald und Speichern/Laden; keine Browserfehler.
 
 Details je Welt und weiterhin fehlende Inhalte aus Teil 1: [NEUAUFLAGE.md](NEUAUFLAGE.md).
 
@@ -66,11 +66,12 @@ Details je Welt und weiterhin fehlende Inhalte aus Teil 1: [NEUAUFLAGE.md](NEUAU
 ## Tests
 
 Browsertests mit Playwright liegen in `source/e2e/`:
+- `renewal.mjs` – 20 Weltaktivitäten, Hof, Küche, Bauen, Mitfahrt, Speichern und mobiler Einstieg
 - `smoke.mjs` – Start, Editor, ein paar Schritte laufen
 - `flow.mjs` – Prolog-Quest, Kapitel 1, Fahrzeug, Wald-Kampfzone, Fenster, Speichern und Neu laden
 - `worlds.mjs` – Rundgang durch alle 20 Welten im freien Modus (Laden/Entladen, NPCs, Browserfehler)
 
-Letzter Lauf: alle bestanden, keine Fehler in der Browserkonsole.
+PR-Prüfung vom 16.10.2026: `renewal.mjs` und `flow.mjs` bestanden, keine Browserfehler. [Prüflauf](https://github.com/ricorewioriginal-collab/easygames/actions/runs/38889233742). Keine Aussage über spätere Story-Kapitel oder Leistung auf echten Handys.
 
 ## Änderungen außerhalb von `bunte-insel2/`
 

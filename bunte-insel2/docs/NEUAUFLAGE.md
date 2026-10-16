@@ -1,6 +1,6 @@
 # Überarbeitung: Orte mit spielbaren Aufgaben
 
-Stand: 15. Oktober 2026. Arbeitsfassung zur Prüfung; keine abgeschlossene inhaltliche Gleichwertigkeit zu Teil 1.
+Stand: 16. Oktober 2026. Arbeitsfassung zur Prüfung; keine abgeschlossene inhaltliche Gleichwertigkeit zu Teil 1.
 
 Die Weltgeschichten bleiben bestehen. Jede Insel erhält zusätzlich eine Tätigkeit in der 3D-Welt, die zum Ort gehört. Die bisherigen kleinen Minispiele bleiben als weitere Angebote erhalten.
 

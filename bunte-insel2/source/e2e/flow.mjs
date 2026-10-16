@@ -6,6 +6,7 @@ const BASE = process.env.BASE || 'http://localhost:8090/bunte-insel2/';
 const OUT = process.env.OUT || '/tmp/claude-0/shots';
 const browser = await pw.chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+page.setDefaultTimeout(45000);
 const errs = [];
 page.on('pageerror', e => errs.push('pageerror: ' + e.message));
 page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text()); });
@@ -46,12 +47,17 @@ await page.waitForTimeout(500);
 const veh = await page.evaluate(() => { const g = window.__bi2.g; const ia = g.interact.all.find(i => i.id.startsWith('veh:hub:auto')); if (!ia) return 'keins: ' + g.interact.all.filter(i => i.id.startsWith('veh')).map(i => i.id).join(','); ia.act(); return window.__bi2.sys.vehicles.inVehicle; });
 console.log('Fahrzeug:', veh);
 ok(veh === true, 'Ins Auto eingestiegen');
-await page.keyboard.down('KeyW'); await page.waitForTimeout(1500); await page.keyboard.up('KeyW');
+const beforeDrive = await page.evaluate(() => { const p = window.__bi2.g.player.pos; return { x: p.x, z: p.z }; });
+await page.keyboard.down('KeyW');
+await page.waitForFunction(p => { const s = window.__bi2; return Math.hypot(s.g.player.pos.x - p.x, s.g.player.pos.z - p.z) > 3 && s.sys.vehicles.exitCooldown <= 0; }, beforeDrive);
+await page.keyboard.up('KeyW');
 await page.screenshot({ path: OUT + '/12-auto.png' });
-await page.keyboard.press('KeyE'); await page.waitForTimeout(300);
+await page.keyboard.press('KeyE');
+await page.waitForFunction(() => !window.__bi2.sys.vehicles.inVehicle);
 ok(await page.evaluate(() => !window.__bi2.sys.vehicles.inVehicle), 'Ausgestiegen');
 // Wald
-await page.evaluate(() => window.__bi2.g.teleport(-140, -110)); await page.waitForTimeout(4500);
+await page.evaluate(() => window.__bi2.g.teleport(-140, -110));
+await page.waitForFunction(() => window.__bi2.sys.combat.inForest);
 const forest = await page.evaluate(() => ({ zone: window.__bi2.g.currentZone && window.__bi2.g.currentZone.id, inForest: window.__bi2.sys.combat.inForest }));
 ok(forest.inForest, 'Verbotener Wald erkannt (Kampfzone)');
 for (let i = 0; i < 6; i++) { await page.keyboard.press('KeyJ'); await page.waitForTimeout(200); }
