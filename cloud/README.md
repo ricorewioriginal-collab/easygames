@@ -48,6 +48,12 @@ Ersetzt beim ersten Abgleich einer Sitzung (Start oder Anmeldung) der neuere Sta
 - **Einmalig in der Firebase-Konsole:** Firestore → Regeln → den neuen Inhalt von `cloud/firestore.rules` einfügen und veröffentlichen (sonst zeigen die Ranglisten „noch nicht freigeschaltet“).
 - Die Werte kommen vom Gerät des Spielers und sind **nicht manipulationssicher** (Spaß-Ranglisten). Unpassende Spitznamen/Einträge entfernst du in der Konsole unter `boards/…/e/…`.
 
+## Erfolge (spielübergreifend, privat)
+**Zentrale Seite `erfolge.html`** (Hub „🏅 Erfolge“, `https://…/easygames/erfolge.html[?embed=1]`, einbettbar mit `data-easygames="erfolge"` / `EasyGames.open('erfolge')` / `EasyGames.achievements('#ziel')`). 14 Erfolge mit 40 Stufen (Entdecker, Stammgast, Serie, Rekordjäger, Sterne, Siege, Bestzeiten, Teamplayer, Komplettist, Nachteule, Frühaufsteher, Wochenend-Held, Wolkenspieler, Ranglisten-Star), Punkte ergeben einen Rang (Neuling … Legende).
+- **Quelle:** die lokalen Spielstände aller Spiele (erkannt über `anmacha-board.js`: `values()`, auch neue Spiele automatisch) und die Spielspuren `anmacha-seen` (Spiel, Tag, Uhrzeit), die jedes Spiel über die stille Laufzeit mitschreibt (auch Spiele ohne Rangliste). Rechenlogik ohne DOM in `cloud/anmacha-ach.js` (`node tools/test-ach.mjs`).
+- **Sicherung:** lokal in `anmacha-ach`; mit Google-Anmeldung zusätzlich im eigenen Profil `users/<uid>/saves/__ach` (**keine neue Firestore-Regel nötig**, gleiche Regel wie der Spielstand). Beim Abgleich zählt jede Freischaltung, die irgendein Gerät kennt (frühester Zeitpunkt gewinnt). Nichts davon ist öffentlich.
+- Neue Erfolge: in `DEFS` (`cloud/anmacha-ach.js`) eintragen (Kennzahl, Schwellen, Namen), Kennzahlen in `statsOf()`.
+
 ## RicoPoly 3D: Rangliste und Online-Räume
 
 `firestore.rules` enthält zusätzlich einen Abschnitt für RicoPoly (`ricopoly_board`, `ricopoly_rooms`, `ricopoly_pub`). Er braucht die **anonyme Anmeldung** (Authentication → Anmeldemethode → Anonym). Details, Verbrauch und Grenzen: `ricopoly/FIREBASE_SETUP.md`. Andere Spiele sind davon nicht betroffen.
