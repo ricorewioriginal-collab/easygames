@@ -15,7 +15,7 @@ const args = process.argv.slice(2), has = f => args.includes(f), val = f => { co
 
 const LINKS = { radio: 'https://www.ricorewi-radio.de', githubPage: 'https://ricorewioriginal-collab.github.io/easygames/' };
 const SHELL = ['index.html', 'einbinden.html', 'games.js', 'modes.js', 'guides.js', 'device.js', 'gamekit.js', 'easygames.js'];
-const SHELL_OPTIONAL = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'favicon.ico', 'manifest.webmanifest', 'branding/easygames-icon-192.png', 'branding/easygames-icon-512.png', 'branding/easygames-icon-512-maskable.png', 'branding/easygames-apple-touch-icon.png', 'cloud/anmacha-cloud.js', 'show-voice.js', 'gamepad.js'];
+const SHELL_OPTIONAL = ['ranglisten.html', 'cloud/anmacha-board.js', 'logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'favicon.ico', 'manifest.webmanifest', 'branding/easygames-icon-192.png', 'branding/easygames-icon-512.png', 'branding/easygames-icon-512-maskable.png', 'branding/easygames-apple-touch-icon.png', 'cloud/anmacha-cloud.js', 'show-voice.js', 'gamepad.js'];
 // Nicht ins Offline-Paket: Quellcode, Doku, Tests, Build-Hilfen
 const SKIP_DIRS = new Set(['node_modules', '.git', '.github', '.vscode', 'docs', 'doc', 'test', 'tests', '__tests__', 'tools', 'coverage', 'source', 'push-server']);   // source: Quellcode von bunte-insel2 (gebaut liegt das Spiel daneben)
 const SKIP_FILE = /(^|\/)(README[^/]*|[^/]*\.md|package(-lock)?\.json|tsconfig[^/]*\.json|eslint\.config\.[^/]*|\.[^/]*|THIRD_PARTY[^/]*|LICENSE[^/]*)$|\.(map|ts|tsx|sh|py|psd|blend|log)$/i;
@@ -98,6 +98,21 @@ for (const [url, where] of seen) {
 }
 const sortedVendor = Object.fromEntries(Object.entries(vendorMap).sort(([a], [b]) => a.localeCompare(b)));
 
+// Cloud-Skript je Spiel (data-game/data-prefix): die zentrale Ranglisten-Seite ordnet Spiele damit ihren Ranglisten zu – neue Spiele erscheinen automatisch
+function cloudOf(g) {
+  if (isUrl(g.path)) return null;
+  const dir = path.join(root, g.path.replace(/\/+$/, ''));
+  for (const rel of ['index.html', 'app/index.html', 'client/index.html']) {
+    const f = path.join(dir, rel);
+    if (!fs.existsSync(f)) continue;
+    const tag = /<script[^>]*anmacha-cloud\.js[^>]*>/.exec(fs.readFileSync(f, 'utf8'));
+    if (!tag) continue;
+    const game = /data-game="([^"]+)"/.exec(tag[0]), prefix = /data-prefix="([^"]*)"/.exec(tag[0]);
+    if (game) return { game: game[1], prefix: prefix ? prefix[1] : '' };
+  }
+  return null;
+}
+
 // Katalog (Spiele mit Anleitung, Modi, Größe)
 const catalog = {
   schema: 1, links: LINKS,
@@ -106,7 +121,7 @@ const catalog = {
     return {
       id: g.id, title: g.title, desc: g.desc, icon: g.icon || null, img: g.img || null, bg: g.bg || null, glow: g.glow || null, path: g.path,
       modes: m, multiplayer: mp, guide: GUIDES[g.id] || null,
-      size: sizes[g.id] || 0, files: counts[g.id] || 0, offline: !isUrl(g.path)
+      size: sizes[g.id] || 0, files: counts[g.id] || 0, offline: !isUrl(g.path), cloud: cloudOf(g)
     };
   })
 };

@@ -31,7 +31,11 @@
    },
    "size": 759732,
    "files": 12,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "ricoville",
+    "prefix": "ricoville.save,ricoville.profile"
+   }
   },
   {
    "id": "ricopoly",
@@ -62,7 +66,11 @@
    },
    "size": 582006,
    "files": 17,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "ricopoly",
+    "prefix": "ricopoly.v1."
+   }
   },
   {
    "id": "krawallvoegel",
@@ -92,7 +100,11 @@
    },
    "size": 171820,
    "files": 11,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "krawallvoegel",
+    "prefix": "easygames.krawallvoegel"
+   }
   },
   {
    "id": "rico-flap",
@@ -120,7 +132,11 @@
    },
    "size": 87184,
    "files": 8,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "rico-flap",
+    "prefix": "easygames.rico-flap.v1"
+   }
   },
   {
    "id": "kiko-sterneninseln",
@@ -134,9 +150,13 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 752433,
+   "size": 752639,
    "files": 23,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "kiko-sterneninseln",
+    "prefix": "kiko-sterneninseln-v1"
+   }
   },
   {
    "id": "kraterkommando",
@@ -152,7 +172,11 @@
    "guide": null,
    "size": 142492,
    "files": 7,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "kraterkommando",
+    "prefix": "easygames.kraterkommando."
+   }
   },
   {
    "id": "radio-maze",
@@ -180,7 +204,11 @@
    },
    "size": 68527,
    "files": 8,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "radio-maze",
+    "prefix": "easygames.radio-maze.v1"
+   }
   },
   {
    "id": "zeitsprung-wissen",
@@ -204,7 +232,11 @@
    },
    "size": 242487,
    "files": 16,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "zeitsprung-wissen",
+    "prefix": "zw-save-v1"
+   }
   },
   {
    "id": "zeitsprung-movie",
@@ -220,7 +252,11 @@
    "guide": null,
    "size": 327084,
    "files": 17,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "zeitsprung-movie",
+    "prefix": "zm-save-v1"
+   }
   },
   {
    "id": "zeitsprung-radio",
@@ -236,7 +272,11 @@
    "guide": null,
    "size": 277792,
    "files": 14,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "zeitsprung-radio",
+    "prefix": "zr-save-v2"
+   }
   },
   {
    "id": "mimori",
@@ -280,7 +320,11 @@
    },
    "size": 536953,
    "files": 19,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "mimori",
+    "prefix": "easygames.mimori.v1"
+   }
   },
   {
    "id": "pufi-farbwind",
@@ -312,7 +356,11 @@
    },
    "size": 137255,
    "files": 6,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "pufi-farbwind",
+    "prefix": "easygames.pufi-farbwind"
+   }
   },
   {
    "id": "lumo",
@@ -328,7 +376,11 @@
    "guide": null,
    "size": 43957,
    "files": 4,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "lumo",
+    "prefix": "easygames.lumo.v1"
+   }
   },
   {
    "id": "taschi",
@@ -344,7 +396,11 @@
    "guide": null,
    "size": 863641,
    "files": 52,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "taschi",
+    "prefix": "easygames.taschi.eight-lights.v1,taschi.settings.v3"
+   }
   },
   {
    "id": "zotik",
@@ -374,7 +430,11 @@
    },
    "size": 508534,
    "files": 5,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "zotik2",
+    "prefix": "zotik2_save_"
+   }
   },
   {
    "id": "riftzone",
@@ -403,7 +463,11 @@
    },
    "size": 2297807,
    "files": 22,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "riftzone",
+    "prefix": "riftzone.settings,riftzone.friends,riftzone.profile,riftzone.mode"
+   }
   },
   {
    "id": "aeru",
@@ -429,7 +493,11 @@
    },
    "size": 1437849,
    "files": 12,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "aeru",
+    "prefix": "aeru-save-v1"
+   }
   },
   {
    "id": "anmacha-radio-surfer",
@@ -452,7 +520,11 @@
    },
    "size": 3054678,
    "files": 19,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "radio-surfer",
+    "prefix": "anmachaRadioSurfer"
+   }
   },
   {
    "id": "anmacha-radio-match",
@@ -478,7 +550,11 @@
    },
    "size": 42187,
    "files": 3,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "radio-match",
+    "prefix": "anmacha-radio-match-v1"
+   }
   },
   {
    "id": "anmacha-flipper",
@@ -503,7 +579,11 @@
    },
    "size": 2943031,
    "files": 17,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "flipper",
+    "prefix": "anmachaFlipper,anmachaPinball"
+   }
   },
   {
    "id": "anmacha-beat-surfer",
@@ -528,7 +608,11 @@
    },
    "size": 2550476,
    "files": 17,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "beat-surfer",
+    "prefix": "anmachaBeat"
+   }
   },
   {
    "id": "prismrush",
@@ -553,7 +637,11 @@
    },
    "size": 787120,
    "files": 12,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "prismrush",
+    "prefix": "prismrush.save"
+   }
   },
   {
    "id": "anmacha-memory",
@@ -580,7 +668,11 @@
    },
    "size": 1765447,
    "files": 20,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "memory",
+    "prefix": "anmachaMemory"
+   }
   },
   {
    "id": "anmacha-quest-rpg",
@@ -607,7 +699,11 @@
    },
    "size": 72042627,
    "files": 241,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "quest-rpg",
+    "prefix": ""
+   }
   },
   {
    "id": "anmacha-snake",
@@ -633,7 +729,11 @@
    },
    "size": 1440406,
    "files": 17,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "snake",
+    "prefix": "anmachaSnake"
+   }
   },
   {
    "id": "anmacha-tower-defense",
@@ -659,7 +759,11 @@
    },
    "size": 1781353,
    "files": 17,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "tower-defense",
+    "prefix": "anmachaTD"
+   }
   },
   {
    "id": "anmacha-quiz",
@@ -688,7 +792,11 @@
    },
    "size": 1529331,
    "files": 23,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "quiz",
+    "prefix": "amq"
+   }
   },
   {
    "id": "anmacha-koffer-dealer",
@@ -714,7 +822,11 @@
    },
    "size": 1425622,
    "files": 22,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "koffer-dealer",
+    "prefix": "akd"
+   }
   },
   {
    "id": "anmacha-showdown",
@@ -740,7 +852,11 @@
    },
    "size": 1407535,
    "files": 22,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "showdown",
+    "prefix": "asd"
+   }
   },
   {
    "id": "anmacha-gesucht",
@@ -766,7 +882,11 @@
    },
    "size": 1419797,
    "files": 23,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "gesucht",
+    "prefix": "ggMute,ggSave,ggTts"
+   }
   },
   {
    "id": "anmacha-kart",
@@ -797,7 +917,11 @@
    },
    "size": 1510147,
    "files": 25,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "kart",
+    "prefix": "akChar,akKart,akLogo,akMute,akName,akSave,akTts"
+   }
   },
   {
    "id": "wobbel",
@@ -823,7 +947,11 @@
    },
    "size": 1021815,
    "files": 40,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "wobbel",
+    "prefix": "wobbelSave1,wobbelCustom1"
+   }
   },
   {
    "id": "anmacha-hoererwahl",
@@ -852,7 +980,11 @@
    },
    "size": 1468874,
    "files": 30,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "hoererwahl",
+    "prefix": "hwName,hwTeam,hoererwahl1"
+   }
   },
   {
    "id": "anmacha-frequenzrad",
@@ -882,7 +1014,11 @@
    },
    "size": 1386317,
    "files": 30,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "frequenzrad",
+    "prefix": "frName,frequenzrad1"
+   }
   },
   {
    "id": "anmacha-preisradar",
@@ -912,7 +1048,11 @@
    },
    "size": 1747890,
    "files": 34,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "preisradar",
+    "prefix": "prName,preisradar1"
+   }
   },
   {
    "id": "anmacha-funkparcours",
@@ -943,7 +1083,11 @@
    },
    "size": 1841499,
    "files": 33,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "funkparcours",
+    "prefix": "fpPhoneName,fpBest1,fpNames,fpSnd"
+   }
   },
   {
    "id": "FunkhausReality",
@@ -971,7 +1115,11 @@
    },
    "size": 1811858,
    "files": 33,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "funkhaus",
+    "prefix": "fhPhoneName,fhHumans,fhSnd,fhTts"
+   }
   },
   {
    "id": "MachMichAus",
@@ -1000,7 +1148,11 @@
    },
    "size": 1817705,
    "files": 32,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "machmichaus",
+    "prefix": "mmPhoneName,mmHumans,mmSnd,mmTts"
+   }
   },
   {
    "id": "turbokick",
@@ -1031,7 +1183,11 @@
    },
    "size": 1274595,
    "files": 35,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "turbokick",
+    "prefix": "turbokick.save"
+   }
   },
   {
    "id": "partyverse",
@@ -1061,7 +1217,11 @@
    },
    "size": 1558553,
    "files": 49,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "partyverse",
+    "prefix": "partyverse.save"
+   }
   },
   {
    "id": "anmacha-gold-reels",
@@ -1091,7 +1251,11 @@
    },
    "size": 1510730,
    "files": 27,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "gold-reels",
+    "prefix": "agr"
+   }
   },
   {
    "id": "anmacha-markthalle",
@@ -1118,7 +1282,11 @@
    },
    "size": 288351,
    "files": 8,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "markthalle",
+    "prefix": "amh_"
+   }
   },
   {
    "id": "anmacha-urwaldlager",
@@ -1144,7 +1312,11 @@
    },
    "size": 1333455,
    "files": 30,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "urwaldlager",
+    "prefix": "ul_"
+   }
   },
   {
    "id": "anmacha-spielesammlung",
@@ -1172,7 +1344,11 @@
    },
    "size": 103083,
    "files": 3,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "spielesammlung",
+    "prefix": "anmacha-sg-"
+   }
   },
   {
    "id": "anmacha-stapelrausch",
@@ -1201,7 +1377,11 @@
    },
    "size": 54810,
    "files": 3,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "stapelrausch",
+    "prefix": "stapelrausch-name"
+   }
   },
   {
    "id": "gay-life",
@@ -1229,7 +1409,11 @@
    },
    "size": 463223,
    "files": 29,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "gay-life",
+    "prefix": "anmachaGayLife"
+   }
   },
   {
    "id": "anmacha-klotzfunk",
@@ -1256,7 +1440,11 @@
    },
    "size": 1166729,
    "files": 22,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "klotzfunk",
+    "prefix": "klotzfunk."
+   }
   },
   {
    "id": "bunte-insel",
@@ -1287,7 +1475,11 @@
    },
    "size": 4292276,
    "files": 128,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "bunte-insel",
+    "prefix": "bunteInsel.,bunteInsel_"
+   }
   },
   {
    "id": "bunte-insel2",
@@ -1314,7 +1506,11 @@
    },
    "size": 1635454,
    "files": 35,
-   "offline": true
+   "offline": true,
+   "cloud": {
+    "game": "bunte-insel2",
+    "prefix": "bunteInsel2."
+   }
   }
  ]
 }

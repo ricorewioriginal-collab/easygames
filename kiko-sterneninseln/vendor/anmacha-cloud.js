@@ -5,7 +5,7 @@
  * data-idb / data-idb-files = optional für Godot-Exporte: IndexedDB-Pfad (z.B. /userfs) und Dateinamen-Anfang der Speicherdateien
  * data-save-btn = CSS-Selektor(en) der spieleigenen Speichern-Knöpfe: daneben erscheint „Mit Google speichern“ samt Hinweis, dass sonst nur lokal gespeichert wird
  * data-mount  = CSS-Selektor: Anmelde-Bereich dort einbetten statt schwebendem Knopf; data-hint = Einleitungstext dazu
- * data-ui="off" blendet den Cloud-Knopf aus. data-board="off" schaltet die Ranglisten (anmacha-board.js) ab.
+ * data-ui="off" blendet den Cloud-Knopf aus. data-board="off" schaltet die Ranglisten (anmacha-board.js) ab. data-sync="off" = nur Anmeldung, kein Spielstand-Abgleich.
  * Anmeldung per Google (Firebase Auth), Spielstand pro Nutzer (gzip ab 20 KB). Ohne Eintragungen in CONFIG tut das Skript nichts (Spiele laufen weiter nur mit localStorage). */
 (function () {
   'use strict';
@@ -242,6 +242,7 @@
   }
 
   function sync(keep) {
+    if (s.dataset.sync === 'off') return Promise.resolve();   // z. B. zentrale Ranglisten-Seite: nur Anmeldung, kein Spielstand
     if (!wanted()) return Promise.resolve();
     if (busy) { again = true; return Promise.resolve(); }
     busy = true;
@@ -461,7 +462,7 @@
       return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
     }).catch(function () { return null; });
   }
-  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, mine: mine, signIn: signIn, user: function () { return wanted() && user ? user : null; } };
+  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, mine: mine, signIn: signIn, signOut: signOut, user: function () { return wanted() && user ? user : null; } };
   // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
   if (s.dataset.board !== 'off') {
     var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');
