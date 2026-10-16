@@ -21,6 +21,12 @@ function makeEnv(game, { user = null, store = {}, firestore = {}, prefix = '' } 
   const fetchFake = async (url, opt = {}) => {
     const method = opt.method || 'GET';
     calls.push({ url, method, body: opt.body ? JSON.parse(opt.body) : null, auth: !!(opt.headers && opt.headers.Authorization) });
+    const pm = /users\/([^/]+)\/saves\/__board/.exec(url);
+    if (pm) {
+      const key = 'profile/' + pm[1];
+      if (method === 'PATCH') { firestore[key] = JSON.parse(opt.body).fields; return { ok: true, status: 200, json: async () => ({}) }; }
+      return firestore[key] ? { ok: true, status: 200, json: async () => ({ fields: firestore[key] }) } : { ok: false, status: 404, json: async () => ({}) };
+    }
     const m = /boards\/([^/:]+)(?:\/e\/([^/]+)|:runQuery)/.exec(url);
     if (!m) return { ok: false, status: 404, json: async () => ({}) };
     const [, board, uid] = m;
@@ -47,7 +53,7 @@ function makeEnv(game, { user = null, store = {}, firestore = {}, prefix = '' } 
     AnMaChaCloud: { game, FS: 'https://fs/v1/projects/p/databases/(default)/documents/', signIn() {}, user: () => user, mine: k => !!prefix && k.startsWith(prefix) },
   };
   win.window = win;
-  const ctx = vm.createContext({ ...win, document: { body: null, hidden: false, addEventListener() {} }, console, Date, JSON, Math, Number, String, Object, isFinite, Promise, Error, Array });
+  const ctx = vm.createContext({ ...win, document: { body: { appendChild() { throw new Error('UI im Spiel'); } }, createElement() { throw new Error('UI im Spiel'); }, hidden: false, addEventListener() {} }, console, Date, JSON, Math, Number, String, Object, isFinite, Promise, Error, Array });
   ctx.window = ctx; ctx.fetch = fetchFake; ctx.localStorage = ls;
   vm.runInContext(src, ctx);
   return { ctx, store, firestore, calls, timers };
@@ -166,9 +172,10 @@ const set = (store, v) => { store[b0.key] = typeof v === 'object' ? JSON.stringi
 const valFor = (order, base = 100) => (order === 'asc' ? base : base);
 const wrap = v => (b0.path ? b0.path.split('.').reduceRight((acc, k) => ({ [k]: acc }), v) : v);
 
+const wr = env => env.calls.filter(c => /boards\//.test(c.url) && c.method !== 'GET' && !/runQuery/.test(c.url)).length;   // Schreib-/Löschzugriffe auf Ranglisten
 const run = async () => {
   {
-    const env = makeEnv(g0, { user: mkUser(), store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico' } });
+    const env = makeEnv(g0, { user: mkUser(), prefix: b0.key, store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico' } });
     set(env.store, wrap(valFor(b0.order)));
     await env.ctx.window.AnMaChaBoard.submit();
     const id = T.boardId(g0, b0), doc = env.firestore[id + '/U1'];
@@ -176,9 +183,9 @@ const run = async () => {
     assert.equal(doc.n.stringValue, 'Rico'); assert.equal(doc.o.stringValue, b0.order);
     assert(env.calls.every(c => c.auth || c.method === 'GET'), 'Schreibzugriff ohne Anmeldung');
     n++; console.log('PASS Einreichen: Bestwert wird mit Freigabe und Anmeldung geschrieben');
-    const before = env.calls.length;
+    const before = wr(env);
     await env.ctx.window.AnMaChaBoard.submit();
-    assert.equal(env.calls.length, before, 'unveränderter Wert darf nicht erneut gesendet werden');
+    assert.equal(wr(env), before, 'unveränderter Wert darf nicht erneut gesendet werden');
     n++; console.log('PASS Einreichen: unveränderter Wert wird nicht erneut gesendet');
     set(env.store, wrap(b0.order === 'asc' ? 50 : 300));
     await env.ctx.window.AnMaChaBoard.submit();
@@ -198,13 +205,13 @@ const run = async () => {
     ['ohne Anmeldung', { user: null, store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico' } }],
     ['ohne gültigen Spitzname', { user: mkUser(), store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'x' } }],
   ]) {
-    const env = makeEnv(g0, setup); set(env.store, wrap(100));
+    const env = makeEnv(g0, { ...setup, prefix: b0.key }); set(env.store, wrap(100));
     await env.ctx.window.AnMaChaBoard.submit();
-    assert.equal(env.calls.length, 0, 'sendet ' + name);
+    assert.equal(wr(env), 0, 'sendet ' + name);
     n++; console.log('PASS Einreichen: nichts gesendet ' + name);
   }
   {
-    const env = makeEnv(g0, { user: mkUser(), store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico' }, firestore: { [T.boardId(g0, b0) + '/U1']: { n: { stringValue: 'Rico' }, s: { doubleValue: b0.order === 'asc' ? 10 : 1000 }, o: { stringValue: b0.order }, t: { integerValue: '1' } } } });
+    const env = makeEnv(g0, { user: mkUser(), store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico' }, prefix: b0.key, firestore: { [T.boardId(g0, b0) + '/U1']: { n: { stringValue: 'Rico' }, s: { doubleValue: b0.order === 'asc' ? 10 : 1000 }, o: { stringValue: b0.order }, t: { integerValue: '1' } } } });
     set(env.store, wrap(b0.order === 'asc' ? 99 : 5));
     await env.ctx.window.AnMaChaBoard.submit();
     const sent = JSON.parse(env.store['anmacha-board-sent:U1:' + T.boardId(g0, b0)]);
@@ -267,4 +274,55 @@ const runAuto = async () => {
   }
 };
 await runAuto();
+
+// ---------- keine Oberfläche, Profil, Abfrage, Katalog ----------
+const runNew = async () => {
+  {
+    const env = makeEnv('neuesspiel', { user: mkUser(), prefix: 'neu', store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico', 'neu.save': '{"best":10}' } });
+    await env.ctx.window.AnMaChaBoard.submit();   // würde bei jeder DOM-Nutzung werfen (Stub)
+    n++; console.log('PASS Spiel: Laufzeit baut keine Oberfläche (kein Knopf, kein Panel)');
+  }
+  {
+    const env = makeEnv('neuesspiel', { user: mkUser('U7'), prefix: 'neu', firestore: { 'profile/U7': { d: { stringValue: '{"s":1,"n":"Anna"}' }, t: { integerValue: '1' } } }, store: { 'neu.save': '{"best":55}' } });
+    await env.ctx.window.AnMaChaBoard.submit();
+    assert.equal(env.store['anmacha-board-share'], '1'); assert.equal(env.store['anmacha-board-nick'], 'Anna');
+    assert.equal(env.firestore['neuesspiel__hi/U7'].n.stringValue, 'Anna');
+    n++; console.log('PASS Profil: Freigabe und Spitzname kommen aus dem Firestore-Profil (gilt auf jedem Gerät/Ursprung)');
+  }
+  {
+    const env = makeEnv('x', { user: mkUser('U2') });
+    const B = env.ctx.window.AnMaChaBoard;
+    await B.saveProfile(true, '  Rico  ');
+    assert.equal(env.store['anmacha-board-nick'], 'Rico'); assert.equal(env.store['anmacha-board-share'], '1');
+    assert.equal(JSON.parse(env.firestore['profile/U2'].d.stringValue).n, 'Rico');
+    await assert.rejects(() => B.saveProfile(true, 'x'));
+    await B.saveProfile(false, '');
+    assert.equal(JSON.parse(env.firestore['profile/U2'].d.stringValue).s, 0);
+    n++; console.log('PASS Profil: speichern (Spitzname bereinigt, ungültiger Name abgelehnt, Freigabe beenden)');
+  }
+  {
+    const env = makeEnv('snake', { firestore: { 'snake/u1': { n: { stringValue: 'Rico' }, s: { doubleValue: 900 }, o: { stringValue: 'desc' }, t: { integerValue: '1' } }, 'memory__sum/u2': { n: { stringValue: 'Anna' }, s: { integerValue: '410' }, o: { stringValue: 'desc' }, t: { integerValue: '1' } } } });
+    const B = env.ctx.window.AnMaChaBoard;
+    const rows = await B.query('snake', B.boardsFor('snake')[0], 25);
+    assert.equal(rows.length, 1); assert.equal(rows[0].n, 'Rico'); assert.equal(rows[0].s, 900); assert.equal(rows[0].uid, 'u1');
+    assert(env.calls.every(c => !c.auth), 'Lesen darf keine Anmeldung brauchen');
+    const pr = await B.probe('memory', []);
+    assert.deepEqual([...pr.map(b => b.id)], ['sum']);
+    const prLocal = await B.probe('memory', [['m', '{"best":{"L1":1,"L2":2},"stars":{"L1":3,"L2":2}}']]);
+    assert.deepEqual([...prLocal.map(b => b.id)].sort(), ['stars', 'sum']);
+    assert.equal((await B.probe('klotzfunk', [])).length, 0);
+    assert.equal((await B.probe('quiz', [])).length, 2);
+    n++; console.log('PASS Zentrale Bibliothek: Abfrage ohne Anmeldung, Probe für automatische Spiele, Opt-out, kuratierte Spiele');
+  }
+  {
+    const env = makeEnv('x', { user: mkUser(), store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico', 'neu.save': '{"best":77}', 'wob.save': '{"stats":{"wins":4}}', 'fremd': '{"best":1}' } });
+    await env.ctx.window.AnMaChaBoard.submitLocal([{ cloud: { game: 'neuesspiel', prefix: 'neu' } }, { cloud: { game: 'wobspiel', prefix: 'wob' } }, { cloud: null }]);
+    assert.deepEqual(Object.keys(env.firestore).sort(), ['neuesspiel__hi/U1', 'wobspiel__wins/U1']);
+    n++; console.log('PASS Zentrale Seite: submitLocal reicht alle lokal gespeicherten Spiele anhand der Katalog-Präfixe ein');
+  }
+  const cat = JSON.parse(fs.readFileSync(path.join(root, 'sync/catalog.json'), 'utf8')).games;
+  assert(cat.length > 40 && cat.every(g => g.cloud && g.cloud.game), 'Katalog: jedes Spiel braucht cloud.game (node tools/build-sync.js)');
+  n++; console.log('PASS Katalog: jedes Spiel hat cloud.game/prefix (zentrale Seite findet neue Spiele automatisch)');
+};
+await runNew();
 console.log('OK: ' + n + ' Prüfungen');

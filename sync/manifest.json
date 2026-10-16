@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a84bda229103",
- "generated": "2026-10-16T22:18:06Z",
- "commit": "c257cf390e2acd1e7be1ab5bc1b7d0d19eadf7b8",
+ "version": "c74d1d1308c1",
+ "generated": "2026-10-16T22:19:44+00:00",
+ "commit": "46fbc3fb6893c548a2d2b9e0e47aa9d41a6539d8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4657,9 +4657,14 @@
    "h": "cd9e1426ee54852ddbce25c1ba5dec843d84ef6cac4304084c4d3d7eaf4ef948"
   },
   {
+   "p": "cloud/anmacha-board.js",
+   "s": 24954,
+   "h": "fe99de63bc80147bf844aa217ad85fac5d37317c5879d91d37065d08eb529f6a"
+  },
+  {
    "p": "cloud/anmacha-cloud.js",
-   "s": 30895,
-   "h": "bc39ac594a83f6c8b3b42c8fc1ba955cae9e30a5de7c646ef23d039580f4e3ea"
+   "s": 31101,
+   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
   },
   {
    "p": "device.js",
@@ -4668,8 +4673,8 @@
   },
   {
    "p": "easygames.js",
-   "s": 18303,
-   "h": "699a4d11c8107425db218f48d80a1786b2e8488d0f1c4daa21cb689b817cb82e"
+   "s": 19841,
+   "h": "6434e6c4e74586dc452e076f3a4daf7685db00de01274d0fc0863b96cee442a0"
   },
   {
    "p": "einbinden.html",
@@ -4848,8 +4853,8 @@
   },
   {
    "p": "index.html",
-   "s": 57622,
-   "h": "43b6940350b95057387aaee789d62db448b94d229c8027392f8b2983fe95420e"
+   "s": 57701,
+   "h": "0d04285ce8816ca762939433bdd0c5f0b01e64d58dc78167b90264e8e472ae2a"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -4953,8 +4958,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 30895,
-   "h": "bc39ac594a83f6c8b3b42c8fc1ba955cae9e30a5de7c646ef23d039580f4e3ea"
+   "s": 31101,
+   "h": "c8efa0a58a75cac14e0c65ea8e4c437363e09c867b4b328b70cedce9400885ee"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5562,6 +5567,11 @@
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
   },
   {
+   "p": "ranglisten.html",
+   "s": 11518,
+   "h": "1ab9d8b422865c6f03b1cf8e15b64a6c5c68c980c530c9fd7a0986256950dfad"
+  },
+  {
    "p": "rico-flap/card.png",
    "s": 16335,
    "h": "0598f334975a0e4831111bbce9b52c023847d29bc16d9dacdd0a1a4ade9ba242"
@@ -5863,8 +5873,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 89678,
-   "h": "3fc626feba5104245bb63e71dcfd635db1f736747458e09150ae4b078cb54091"
+   "s": 93655,
+   "h": "597d91d81b859402cd2d95571e25f30ffbb74e51dd3cd48c74692d5abd6f481c"
   },
   {
    "p": "taschi/card.svg",
