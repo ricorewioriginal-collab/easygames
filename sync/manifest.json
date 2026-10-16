@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1ad398f11dd9",
- "generated": "2026-10-17T01:18:20+02:00",
- "commit": "4f16df6d4cc7d96227cb27089005b30f82d262c6",
+ "version": "9a8a6c8e40e0",
+ "generated": "2026-10-16T23:18:28+00:00",
+ "commit": "48ebc4bbbd4625a15fde3d8e63a1c4290951ea1b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4688,8 +4688,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 59799,
-   "h": "256afc9cace107845310de309d2b4b8d64fbf876bef47b3933f611afedb29e80"
+   "s": 70674,
+   "h": "b8901c693ad34c9bfbd39e8c1568eb3b68ca5dab3d8adaa8e9533d63a5b6118b"
   },
   {
    "p": "erfolge.html",

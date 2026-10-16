@@ -28,15 +28,16 @@ const server = http.createServer((req, res) => {
     await host.waitForSelector('#b'); await host.click('#b');
     await host.waitForSelector('[role=dialog] iframe');
     const fr = await (await host.$('[role=dialog] iframe')).contentFrame();
-    await fr.waitForSelector('#backLink');
-    await fr.click('#backLink');
+    // Spiele ohne eigenes Verstecken (z. B. RicoPoly „← easygames“) navigieren per href="../" zur Bibliothek; Snake blendet den Link im Rahmen selbst aus, daher direkt navigieren
+    await fr.waitForLoadState('domcontentloaded');
+    await fr.evaluate(() => { location.href = '../'; });
     await host.waitForFunction(() => !document.querySelector('[role=dialog]'), null, { timeout: 5000 });
     assert(await host.$('#b'), 'Gastgeber-Seite ist wieder da');
     console.log('PASS Overlay: „← Alle Spiele“ im Spiel schließt das Overlay und zeigt wieder die Seite des Gastgebers');
 
     // fest eingebetteter Rahmen: statt der ganzen Bibliothek erscheint die eingebettete Liste (?embed=1)
     const inl = await (await host.$('#in iframe')).contentFrame();
-    await inl.waitForSelector('#backLink', { state: 'attached' }); await inl.evaluate(() => document.getElementById('backLink').click());
+    await inl.waitForLoadState('domcontentloaded'); await inl.evaluate(() => { location.href = '../'; });
     await host.waitForFunction(() => { const f = document.querySelector('#in iframe'); try { return /[?&]embed=1/.test(f.contentWindow.location.search); } catch (e) { return false; } }, null, { timeout: 8000 });
     console.log('PASS Eingebetteter Rahmen: Zurück öffnet die eingebettete Spieleliste statt der ganzen Seite');
 
