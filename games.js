@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261016.4'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261016.5'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'krawallvoegel', title: 'Krawallvögel 3D', icon: '💥', img: 'krawallvoegel/card.svg', bg: 'linear-gradient(145deg,#2a1466,#d92a2a 55%,#ffc93a)', glow: 'rgba(255,90,60,.55)', path: 'krawallvoegel/', desc: 'Schleuder-Physikspiel nach dem Vogel-gegen-Schweine-Klassiker in 3D: 150 Level in 10 Senderwelten mit Boss-Burgen, 8 Vögel mit Fähigkeiten (Teilen, Turbo, Bombe, Ei, Bumerang, Riese, Aufblasen), 6 Schweinetypen, Glas, Holz, Stein und TNT. Sterne, Power-ups mit Mega-Adler, goldene Sender-Kisten für die Senderwand. Handy, PC und Controller, Vollbild, Konsolen-Menü und Google-Spielstand.' },

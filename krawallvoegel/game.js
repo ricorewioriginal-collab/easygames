@@ -559,7 +559,7 @@ let current = 'loading', focused = null, selWorld = 0;
 function showScreen(id) {
   SCREENS.forEach(s => { $(s).hidden = s !== id; });
   current = id;
-  if (id) { $('hud').hidden = true; if (mode === 'play') { mode = 'menu'; } }
+  if (id) { $('hud').hidden = true; $('rotate').hidden = true; if (mode === 'play') { mode = 'menu'; } }
   if (id && id !== 'loading' && id !== 'title') {
     if (!demo || !level) enterDemo();
     renderScreen(id);
@@ -787,6 +787,8 @@ function act(name, el) {
       cam.manual = !isOver; if (cam.manual) { cam.tx = o.x0 + o.w / 2; cam.tw = o.w; cam.ty = viewH(o.w) / 2 - 1.2; }
       break;
     }
+    case 'landscape': goLandscape(); break;
+    case 'portrait': rotateDismissed = true; $('rotate').hidden = true; break;
     case 'closeIntro': closeOverlay('intro'); if (pendingIntros.length) setTimeout(nextIntro, 250); break;
   }
 }
@@ -1004,9 +1006,16 @@ function frame(now) {
 
 // ---------- Hochformat-Hinweis & Sichtbarkeit ----------
 let rotateDismissed = false;
+// Hochkant auf dem Handy: einmal anbieten, ins Querformat zu wechseln (Vollbild + Drehsperre, wo der Browser das kann)
 function checkRotate() {
-  if (rotateDismissed || mode !== 'play' || !isTouch || innerHeight < innerWidth * 1.15) return;
-  rotateDismissed = true; toast('📱↻ Quer halten zeigt mehr vom Level');
+  const tall = isTouch && innerHeight > innerWidth * 1.15;
+  if (!tall) { if (!$('rotate').hidden) $('rotate').hidden = true; return; }
+  if (!rotateDismissed && mode === 'play') $('rotate').hidden = false;
+}
+function goLandscape() {
+  $('rotate').hidden = true; rotateDismissed = true;
+  toggleFullscreen(true);
+  setTimeout(() => { if (innerHeight > innerWidth * 1.15) toast('📱↻ Bitte das Handy quer drehen'); }, 900);
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { A.suspend(true); if (mode === 'play' && !OVERLAYS.some(o => !$(o).hidden)) act('pause'); store(); }
