@@ -948,28 +948,30 @@
   },
   {
    "id": "anmacha-gold-reels",
-   "title": "AnMaCha Gold Reels",
-   "desc": "Moderner Video-Slot (nur Spielgeld): 5 Walzen, 20 Linien, Casino-Symbole & Sender-Logos, Wild, Bonus-Sterne mit Freispielen, Big Wins.",
+   "title": "AnMaCha Casino",
+   "desc": "3D-Casino mit Spielgeld: 10 Spielautomaten (Gold Reels mit Sender-Logos, Früchte-Klassiker, Buch-Freispiele, 243 Wege, Hold & Win mit Jackpots, Wild-Respin …), Risiko-Leiter, Roulette, Blackjack, Video-Poker und Glücksrad. Touch, Tastatur und Gamecontroller.",
    "icon": "🎰",
-   "img": null,
+   "img": "anmacha-gold-reels/card.png",
    "bg": "linear-gradient(145deg,#ffb11f,#ff2d95 55%,#8b5cf6)",
    "glow": "rgba(255,177,31,.55)",
    "path": "anmacha-gold-reels/",
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Spielautomat mit 5 Walzen, 3 Reihen und 20 Gewinnlinien, gespielt nur mit Spielgeld (Startguthaben 10.000). Stelle den Einsatz ein und starte einen Dreh; ab 3 gleichen Symbolen von links nach rechts gibt es einen Gewinn. Wild ersetzt alle Symbole außer Bonus, 3 oder mehr Bonus-Sterne lösen 10 Freispiele mit doppeltem Gewinn aus. Die Gewinntabelle öffnest du mit dem Info-Knopf.",
+    "anleitung": "AnMaCha Casino ist ein 3D-Casino nur mit Spielgeld (Startguthaben 10.000, täglich ein Bonus, bei leerem Konto kostenlos nachfüllen). In der Lobby wählst du einen von 10 Spielautomaten oder ein Tischspiel. Automaten: AnMaCha Gold Reels mit den Sender-Logos, Fruit Blaze, Triple Diamond 7, Book of Funk (Buch-Freispiele mit Sondersymbol), Golden Dragon (243 Wege), Gold Mine Hold & Win (Münzen, Respins, Jackpots), Neon 40 Hot, Lucky Clover, Red Hot Respin und Joker Star. Nach einem Gewinn kannst du ihn mit RISIKO auf Rot oder Schwarz verdoppeln. Tische: Roulette (europäisch), Blackjack (3:2, Teilen, Verdoppeln), Video-Poker (Jacks or Better) und Glücksrad. Info zeigt in jedem Spiel die Gewinntabelle für deinen Einsatz.",
     "steuerung": [
-     "PC: Leertaste oder Enter = SPIN; läuft der Dreh schon, stoppt dieselbe Taste die Walzen schneller. Einsatz mit den Knöpfen − und + oder MAX, AUTO startet Automatikspiel, ⚡ schaltet Turbo ein oder aus.",
-     "Touch: Dieselben Knöpfe antippen (SPIN, AUTO, ⚡, −, +, MAX); ℹ️ zeigt die Gewinntabelle, 🔊 schaltet den Ton, Tippen schließt die Gewinn-Anzeige."
+     "Touch/Maus: SPIN antippen (gedrückt halten = Autoplay), − und + ändern den Einsatz, MAX, AUTO, ⚡ Turbo, ℹ️ Gewinntabelle. An den Tischen Chip wählen und auf Felder tippen.",
+     "Tastatur: Pfeiltasten wählen Knöpfe und Spiele, Enter drückt, Leertaste dreht oder gibt, + und − ändern den Einsatz, A Autoplay, I Info, M Ton, Esc zurück.",
+     "Gamecontroller: Steuerkreuz/Stick wählen, A drücken bzw. drehen, B zurück, X Autoplay, Y Info, LB/RB Einsatz, Start oder RT drehen, Select Ton."
     ],
     "tipps": [
-     "Der Einsatz lässt sich während Freispielen und laufendem Dreh nicht ändern.",
-     "Fällt das Guthaben unter den kleinsten Einsatz, wird es wieder auf 10.000 Spielgeld gesetzt."
+     "Während eines Drehs stoppt ein erneuter Druck auf SPIN die Walzen schneller.",
+     "Theoretische Auszahlungsquote der Automaten ca. 95 %, Roulette 97,3 %. Es ist nur Spielgeld – keine Einzahlung, keine echten Gewinne.",
+     "Mit ☁ (Google) in der Lobby bleibt dein Spielgeld auf allen Geräten erhalten."
     ]
    },
-   "size": 1230440,
-   "files": 17,
+   "size": 1481675,
+   "files": 27,
    "offline": true
   },
   {
