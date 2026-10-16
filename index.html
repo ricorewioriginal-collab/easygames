@@ -340,7 +340,7 @@ const $ = id => document.getElementById(id);
 const base = new URL('.', location.href).href;
 const abs = p => new URL(p, base).href;
 const iframeCode = (url, title) =>
-  `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
+  `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
 const embedMode = new URLSearchParams(location.search).has('embed');
 if (embedMode) document.body.classList.add('embed-mode');
 if (new URLSearchParams(location.search).get('view') === 'apps') document.body.classList.add('view-apps');

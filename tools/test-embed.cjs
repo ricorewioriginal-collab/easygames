@@ -62,6 +62,14 @@ let fails = 0; const t = (n, ok, extra) => { console.log((ok ? 'OK    ' : 'FEHLE
     const g = await q.evaluate(() => { const f = document.querySelector('#pg iframe').getBoundingClientRect(); return { f: [f.x, f.y, f.width, f.height], src: document.querySelector('#pg iframe').src, sc: document.documentElement.scrollHeight }; });
     t('Seitenmodus ' + url + ' füllt das Fenster', g.f.join() === '0,0,1000,700' && rx.test(g.src), JSON.stringify(g)); await q.close();
   }
+  // Replace: genau ein Verlaufseintrag; Fokus zurück; Zurück-Taste (TV)
+  await p.goto(base + '/__overlay.html'); await p.waitForFunction(() => document.querySelector('#t'));
+  await p.focus('#t'); await p.evaluate(() => EasyGames.open('wobbel', { fullscreen: false })); await dlg().waitFor();
+  await p.evaluate(() => EasyGames.open('zotik', { fullscreen: false })); await p.waitForTimeout(100);
+    await p.evaluate(() => { document.activeElement.blur(); window.dispatchEvent(new KeyboardEvent('keydown', { key: 'GoBack', keyCode: 10009, bubbles: true })); }); await p.waitForTimeout(250);
+  t('Zurück-Taste (GoBack) schließt', (await dlg().count()) === 0);
+  t('nach Ersetzen bleibt kein toter Verlaufseintrag', await p.evaluate(() => !(history.state && history.state.egOverlay)));
+  t('Fokus kehrt zum Auslöser zurück', await p.evaluate(() => document.activeElement && document.activeElement.id === 't'));
   // App-Kachel-Ansicht
   await p.goto(base + '/__apps.html'); await p.waitForFunction(() => document.querySelector('#lib iframe') && document.querySelector('#tl button'));
   t('Katalog layout=apps lädt view=apps', /embed=1&view=apps/.test(await p.getAttribute('#lib iframe', 'src')));

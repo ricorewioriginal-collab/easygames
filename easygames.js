@@ -123,6 +123,7 @@
     EG.ready(function () {
       var g = game && game !== 'all' ? find(game) : null;
       if (game && game !== 'all' && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
+      var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
       var title = o.title || (g ? g.title : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
@@ -136,9 +137,13 @@
         if (box.parentNode) box.parentNode.removeChild(box);
         document.documentElement.style.overflow = htmlOv; document.body.style.overflow = bodyOv;
         if (!fromPop && pushed && history.state && history.state.egOverlay) history.back();
+        try { if (opener && opener !== document.body && opener.focus && document.contains(opener)) opener.focus(); } catch (e) {}   // Fokus zurück an den Auslöser
         if (typeof o.onClose === 'function') o.onClose();
       }
-      function onKey(e) { if (e.key === 'Escape' && !document.fullscreenElement) done(false); }
+      function onKey(e) {
+        var back = e.key === 'GoBack' || e.key === 'BrowserBack' || e.key === 'XF86Back' || e.keyCode === 10009 || e.keyCode === 461 || e.keyCode === 4;   // Zurück-Tasten von TV/WebView
+        if (back || (e.key === 'Escape' && !document.fullscreenElement)) { if (back) e.preventDefault(); done(false); }
+      }
       function onPop() { done(true); }
       function onMsg(e) { if (e.source === f.contentWindow && e.data && e.data.type === 'easygames:close') done(false); }
       if (o.close !== false && o.close !== 'false') {
@@ -150,10 +155,11 @@
       }
       document.body.appendChild(box);
       document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
-      try { history.pushState({ egOverlay: 1 }, ''); pushed = true; } catch (e) {}
+      if (reuse) pushed = true; else try { history.pushState({ egOverlay: 1 }, ''); pushed = true; } catch (e) {}
       window.addEventListener('keydown', onKey, true); window.addEventListener('popstate', onPop); window.addEventListener('message', onMsg);
       if (o.fullscreen !== false && o.fullscreen !== 'false') { var r = box.requestFullscreen || box.webkitRequestFullscreen; try { var p = r && r.call(box); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
       current = function (fromPop) { done(!!fromPop); };
+      current.opener = opener;
       if (typeof f.focus === 'function') setTimeout(function () { try { f.focus(); } catch (e) {} }, 50);
     });
   };
