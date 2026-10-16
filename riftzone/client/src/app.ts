@@ -41,23 +41,13 @@ interface Friend {
   name: string;
 }
 
-/** Adresse für Einladungen: In der Android-App (appassets…), lokal oder im Heimnetz kann ein Freund die eigene Adresse
- *  nicht öffnen, dann die öffentliche GitHub-Seite (wie device.js der Spielesammlung). */
+/** Adresse für Einladungen – Mehrspieler-Regel (easygames CLAUDE.md): immer die easygames-Homepage, nie die eigene
+ *  Adresse (Android-App appassets…, lokal, Heimnetz, Spiegel), damit der Link auf jeder Plattform gleich funktioniert. */
 const PUBLIC_GAME = 'https://ricorewioriginal-collab.github.io/easygames/riftzone/app/';
 function inviteBase(): string {
-  const here = location.origin + location.pathname;
   const cfg = (window as unknown as { EASYGAMES_PUBLIC_BASE?: string }).EASYGAMES_PUBLIC_BASE;
   if (cfg) return new URL('riftzone/app/', cfg.endsWith('/') ? cfg : cfg + '/').href;
-  const host = location.hostname;
-  const local =
-    !/^https?:$/.test(location.protocol) ||
-    host === 'localhost' ||
-    host === 'appassets.androidplatform.net' ||
-    host.endsWith('.local') ||
-    !host.includes('.') ||
-    host.includes(':') ||
-    /^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host);
-  return local ? PUBLIC_GAME : here;
+  return PUBLIC_GAME;
 }
 
 export class App {
@@ -437,7 +427,7 @@ export class App {
 
   private copyInvite(): void {
     if (!this.party) return;
-    const url = `${location.origin}${location.pathname}?server=${encodeURIComponent(settings.data.serverUrl)}&party=${this.party.code}`;
+    const url = `${inviteBase()}?server=${encodeURIComponent(settings.data.serverUrl)}&party=${this.party.code}`;
     navigator.clipboard?.writeText(url).then(
       () => toast('Einladungslink kopiert'),
       () => toast(`Code: ${this.party!.code}`),

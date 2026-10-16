@@ -454,11 +454,10 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
       <li><b>Im Spiel selbst:</b> <code>EasyGamesKit.tvUrl()</code> – zum Anzeigen oder als QR-Code für den TV.</li>
     </ul>
     <h3>Auch in Apps und auf anderen Seiten richtig</h3>
-    <p>Ein TV kann keine Adresse einer App, von <code>localhost</code> oder aus dem lokalen Netz öffnen. Deshalb nimmt easygames für TV-Links immer eine <b>öffentliche</b> Adresse:</p>
+    <p>Ein TV oder ein anderes Handy kann keine Adresse einer App, von <code>localhost</code> oder aus dem lokalen Netz öffnen. Deshalb gilt die feste <b>Mehrspieler-Regel</b>: TV-, Einladungs- und Spiellinks zeigen immer auf die easygames-Homepage, damit sie plattformübergreifend funktionieren:</p>
     <ol>
       <li>Ist <code>window.EASYGAMES_PUBLIC_BASE</code> gesetzt, gilt diese (z. B. deine eigene Domain).</li>
-      <li>Sonst die Adresse, unter der easygames gerade läuft, falls sie öffentlich ist (<code>https://…</code>).</li>
-      <li>Sonst (App, <code>file://</code>, <code>localhost</code>, lokale IPs) die Standardadresse <code>https://ricorewioriginal-collab.github.io/easygames/</code>.</li>
+      <li>Sonst immer die Homepage <code>https://ricorewioriginal-collab.github.io/easygames/</code> – auch in der App, unter <code>file://</code>, <code>localhost</code> oder im lokalen Netz.</li>
     </ol>
 <pre>&lt;script&gt;
   // vor easygames.js bzw. device.js setzen – nur nötig, wenn die Spiele auf einer eigenen Domain liegen

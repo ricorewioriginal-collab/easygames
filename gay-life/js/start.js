@@ -71,7 +71,7 @@
       { e: '▶', t: r ? 'Weiterspielen' : 'Spiel starten', s: r ? 'Tag ' + S.life.day + ' in Regenbogenkiez' : 'Dein Leben in Regenbogenkiez beginnt', big: 1, fn: function () { play(); }, keep: 1 },
       { e: '👤', t: 'Charakter', s: 'Look, Körperbau, Outfits', fn: function () { hide(); C().editor(); }, keep: 1 },
       { e: '🎮', t: 'Minispiele', s: 'Quiz, Rave, Match und mehr', fn: games, keep: 1 },
-      { e: '👥', t: 'Mehrspieler', s: 'Per PIN oder QR-Code', fn: function () { play(function () { if (GL.mp) GL.mp.panel(); }); }, keep: 1 },
+      { e: '🌐', t: 'Online-Mehrspieler', s: 'Per PIN, Link oder QR-Code', fn: function () { play(function () { if (GL.mp) GL.mp.panel(); }); }, keep: 1 },
       { e: '⚙️', t: 'Einstellungen', s: 'Ton, Grafik, Steuerung', fn: function () { scr = 'set'; sel = 0; } },
       { e: 'ℹ️', t: 'Info & Hilfe', s: 'Steuerung und Hinweise', fn: function () { scr = 'info'; sel = 0; } }
     ];

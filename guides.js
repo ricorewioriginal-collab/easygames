@@ -132,7 +132,7 @@ window.EASYGAMES_GUIDES = {
   "steuerung": [
    "PC: Antwort mit Taste A, B, C oder D wählen, dann Enter, J oder Leertaste für Ja (endgültig), N für Nein; Joker mit Taste 1 bis 4; P oder Esc Pause, M Ton",
    "Touch/Maus: Antwort antippen oder anklicken, dann Ja, final! oder Nein bestätigen; Joker über die Knöpfe; Aussteigen über den Knopf Aussteigen",
-   "Handy-Kopplung: im Menü Handys koppeln wählen, QR-Code scannen oder Code eingeben, dann dient das Handy als Eingabegerät"
+   "Handy-Kopplung und online: im Menü „Online & Handys“ wählen, QR-Code scannen oder Code eingeben, dann dient das Handy als Eingabegerät"
   ],
   "tipps": [
    "Jeder Joker kann pro Spieler nur einmal eingesetzt werden."
@@ -143,7 +143,7 @@ window.EASYGAMES_GUIDES = {
   "steuerung": [
    "PC/Maus: Koffer in der 3D-Ansicht anklicken, um ihn zu wählen oder zu öffnen; beim Angebot Knöpfe benutzen oder Taste D bzw. Enter für Deal, W oder N für Weiter; bei der Tauschoption T zum Tauschen, B zum Behalten; P oder Esc Pause, M Ton",
    "Touch: Koffer antippen; Angebote über die Knöpfe unten beantworten",
-   "Handy-Kopplung: im Menü Handys koppeln, bis zu 4 Spieler"
+   "Handy-Kopplung und online: im Menü „Online & Handys“, bis zu 4 Spieler"
   ],
   "tipps": []
  },

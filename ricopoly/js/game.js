@@ -878,16 +878,12 @@
       }
     }, { back: function () { leaveMatch(); } });
   }
-  // Einladungen werden auf anderen Geräten geöffnet: App-interne Adressen (appassets…, file:, localhost, LAN) durch die
-  // öffentliche GitHub-Pages-Adresse ersetzen (wie EasyGamesDevice.publicBase in ../device.js)
+  // Mehrspieler-Regel (CLAUDE.md): Einladungen zeigen immer auf die easygames-Homepage, nie auf die lokale App-Adresse
+  // (appassets…, file:, localhost, LAN) – wie EasyGamesDevice.publicBase in ../device.js und EasyGamesLink in ../cloud/fire-peer.js
   var PUBLIC_URL = 'https://ricorewioriginal-collab.github.io/easygames/ricopoly/';
   function inviteBase() {
-    try {
-      var u = new URL('.', location.href), h = u.hostname;
-      if (/^https?:$/.test(u.protocol) && h.indexOf('.') > 0 && h.indexOf(':') < 0 && !/(^localhost$|\.local$|^appassets\.)/.test(h)
-        && !/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h)) return u.href;
-    } catch (e) {}
-    return PUBLIC_URL;
+    var c = window.EASYGAMES_PUBLIC_BASE;
+    return c ? (/\/$/.test(c) ? c : c + '/') + 'ricopoly/' : PUBLIC_URL;
   }
   function copy(text) { (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { toast(t('copied')); }).catch(function () { window.prompt(t('net.copyLink'), text); }); }
   function rememberFriends(s) {

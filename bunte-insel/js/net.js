@@ -14,7 +14,7 @@ BI.createNet = function (cb) {
   N.normCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/O/g, '').replace(/I/g, '').replace(/L/g, '').replace(/[01]/g, '').slice(0, 4);
   N.connected = () => N.conns.size > 0;
   N.count = () => N.conns.size + 1;
-  N.link = () => { const u = location.href.split('#')[0] + '#join=' + N.code; return typeof window.__rrwLive === 'function' ? window.__rrwLive(u) : u; };
+  N.link = () => { const u = location.href.split('#')[0] + '#join=' + N.code; return window.EasyGamesLink ? EasyGamesLink.share(u) : typeof window.__rrwLive === 'function' ? window.__rrwLive(u) : u; };
 
   function handle(from, d) {
     if (!d || typeof d !== 'object') return;

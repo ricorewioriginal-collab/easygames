@@ -8,7 +8,7 @@ BI.createTv = function (G) {
   const T = { on: false, code: '', open: false, split: false, ptrOn: false, tv: false }, slots = [null, null, null, null], $ = id => document.getElementById(id);
   const { P, inp, cam, W, scene, camera, renderer, A, fx } = G, clamp = (v, a, b) => Math.max(a, Math.min(b, v)), pi = Math.PI;
   // App-interne appassets.local-Links für QR/Einladungen in öffentlich erreichbare URLs umsetzen.
-  const shareUrl = u => typeof window.__rrwLive === 'function' ? window.__rrwLive(u) : u;
+  const shareUrl = u => window.EasyGamesLink ? EasyGamesLink.share(u) : typeof window.__rrwLive === 'function' ? window.__rrwLive(u) : u;   // Mehrspieler-Regel: Homepage-Link
   let peer = null, hudT = 0, ptr = { x: innerWidth / 2, y: innerHeight / 2, sx: 0, sy: 0 }, camHoldT = 0, qrOk = false;
   const el = (tag, css, html) => { const e = document.createElement(tag); if (css) e.style.cssText = css; if (html != null) e.innerHTML = html; return e; };
 
@@ -48,7 +48,7 @@ BI.createTv = function (G) {
   const sleep = ms => new Promise(r => setTimeout(r, ms)), withTimeout = (pr, ms, err) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error(err)), ms))]);
   function newPeer(id) { return new Promise((res, rej) => { let done = false, q = null; const to = setTimeout(() => { if (done) return; done = true; try { q && q.destroy(); } catch (e) { } rej(Object.assign(new Error('timeout'), { type: 'timeout' })); }, 9000); try { q = new Peer(id); } catch (e) { clearTimeout(to); rej(e); return; } q.on('open', () => { if (done) return; done = true; clearTimeout(to); res(q); }); q.on('error', e => { if (done) return; done = true; clearTimeout(to); try { q.destroy(); } catch (x) { } rej(e || new Error('err')); }); }); }
   function renderPanel() {
-    $('tvCode').textContent = T.code || '----'; { const l = $('tvLink'), u = new URL('controller.html' + (T.code ? '?c=' + T.code : ''), location.href); l.textContent = location.host + location.pathname.replace(/[^/]*$/, '') + 'controller.html'; l.href = shareUrl(u.href); } if (T.on && !T.stat) setStat('ok', players().some(s => !s.away) ? '🟢 ' + players().filter(s => !s.away).length + ' Handy verbunden' : '🟢 Bereit – warte auf das Handy');
+    $('tvCode').textContent = T.code || '----'; { const l = $('tvLink'), u = new URL('controller.html' + (T.code ? '?c=' + T.code : ''), location.href); l.href = shareUrl(u.href); l.textContent = l.href.replace(/^https?:\/\//, '').replace(/[?#].*$/, ''); } if (T.on && !T.stat) setStat('ok', players().some(s => !s.away) ? '🟢 ' + players().filter(s => !s.away).length + ' Handy verbunden' : '🟢 Bereit – warte auf das Handy');
     const pl = $('tvPl'); pl.innerHTML = ''; for (let i = 0; i < 4; i++) { const s = slots[i], d = el('div', 'color:' + COL[i]); d.className = 'tvp' + (s ? ' on' : ''); d.innerHTML = '<i style="background:' + COL[i] + '"></i><span style="color:#fff">' + (s ? s.name : '<em>wartet …</em>') + '</span>'; pl.appendChild(d); }
     $('tvSplitB').textContent = '🪟 Splitscreen: ' + (T.split ? 'an' : 'aus'); chip.textContent = '📺 ' + T.code + ' · ' + players().length + ' Spieler';
   }
@@ -294,7 +294,7 @@ BI.createTv = function (G) {
   /* Am Fernseher (Smart-TV, ?tv=1, ?device=tv) startet der Fernseher-Modus von selbst */
   /* Handy/Tablet in der Hand (kein Fernseher): „Spiel am Fernseher öffnen“ öffnet direkt den Handy-Controller */
   T.isPhone = () => !T.isTvDevice() && (/iPhone|iPod|iPad|Android.*Mobile|Mobile.*Safari|Windows Phone/i.test(navigator.userAgent) || (!!(window.matchMedia && matchMedia('(pointer:coarse)').matches) && Math.min(screen.width, screen.height) < 900));
-  T.openController = () => { let c = ''; try { c = localStorage.getItem('bi-tv-last') || ''; } catch (e) { } location.href = shareUrl(new URL('controller.html' + (c ? '?c=' + c : ''), location.href).href); };
+  T.openController = () => { let c = ''; try { c = localStorage.getItem('bi-tv-last') || ''; } catch (e) { } location.href = new URL('controller.html' + (c ? '?c=' + c : ''), location.href).href; };   // gleiches Gerät: lokal bleiben
   T.isTvDevice = () => /[?&](tv=1|device=tv)\b/.test(location.search) || /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|AFTS|AFTM|AFTB|AFTT|AFTN|Android TV|GoogleTV|AppleTV|BRAVIA|CrKey|Viera|Roku|VIDAA|Fire TV|FireTV/i.test(navigator.userAgent);
   return T;
 };

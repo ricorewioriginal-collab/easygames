@@ -8,6 +8,29 @@
 (function (W) {
   'use strict';
   if (!W || W.FirePeer) return;
+  // Mehrspieler-Regel: Einladungs- und Spiellinks zeigen immer auf die easygames-Homepage, nie auf eine lokale
+  // App-Adresse (Android-App appassets…, file://, localhost, LAN). So öffnet jedes Gerät den Link, egal ob Browser, App oder TV.
+  // EasyGamesLink.share(url) macht aus jeder Adresse dieses Spiels die Homepage-Adresse (Pfad, ?… und #… bleiben gleich).
+  // Andere Homepage nur über window.EASYGAMES_PUBLIC_BASE (oder EasyGamesConfig.publicBase). Gleiche Adresse wie in ../device.js.
+  if (!W.EasyGamesLink) (function () {
+    var HOME = 'https://ricorewioriginal-collab.github.io/easygames/';
+    var me = W.document && W.document.currentScript && W.document.currentScript.src;
+    var ROOT = me ? new URL('../', me).href : '';   // Wurzel von easygames auf dem aktuellen Gerät (Datei liegt in cloud/)
+    function home() {
+      var c = W.EASYGAMES_PUBLIC_BASE || (W.EasyGamesConfig && W.EasyGamesConfig.publicBase);
+      return c ? (/\/$/.test(c) ? c : c + '/') : HOME;
+    }
+    function share(u) {
+      try {
+        var x = new URL(u || W.location.href, W.location && W.location.href), h = home(), rel = null, m;
+        if (x.href.indexOf(h) === 0) return x.href;
+        if (ROOT && x.href.indexOf(ROOT) === 0) rel = x.href.slice(ROOT.length);
+        else if ((m = /\/easygames\/(.*)$/.exec(x.pathname))) rel = m[1] + x.search + x.hash;
+        return rel === null ? x.href : h + rel;
+      } catch (e) { return u; }
+    }
+    W.EasyGamesLink = { home: home, share: share };
+  })();
   var CFG = { projectId: 'ricorewi-games-save', apiKey: 'AIzaSyB-4IuC85PsOrvsY0GkBGsCIXdW_i1SrnM' };   // öffentlich gedacht, Schutz sind die Regeln
   var EMU = W.FIRE_PEER_EMU || null;   // nur für Tests: { auth: 'http://127.0.0.1:9099', fs: 'http://127.0.0.1:8080' }
   var GA = EMU ? EMU.auth + '/' : 'https://';
