@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d72d5976c26f",
- "generated": "2026-10-16T15:41:05+02:00",
- "commit": "47735cf46824bc39ee0296691154c0de8c26a8de",
+ "version": "08aad576eac9",
+ "generated": "2026-10-16T16:26:21+02:00",
+ "commit": "90926cb507777b8cb1bcc4044c895726a70b7e7e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 19321,
-   "h": "33194b6a43d7df9f869fd79af14a3905621b0fa1930a0fa5ba2e8c49c2c5923b"
+   "s": 19376,
+   "h": "cce607e0c48f04b8145e52116f8f54dec479c781e1b90bf2feab9d06635e6dc4"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 50249,
-   "h": "3770dc10803a9b4984318b62c59963b92dbf9e8cc13b7e65df06c33d5461c630"
+   "s": 50455,
+   "h": "b98b2f716600977116ac019059132644bfb8fcc5fa0711d32e5dd54adc268850"
   },
   {
    "p": "index.html",
@@ -5383,8 +5383,8 @@
   },
   {
    "p": "radio-maze/game.js",
-   "s": 25342,
-   "h": "9759b5fe62ade24a5c289f6b838237732000c2e1da514e040ef16974e2708cc4"
+   "s": 30315,
+   "h": "3fd1e7b25e7c2eb499a89562fcfc2674b93abe6055dcbbd13ac642b505c1144d"
   },
   {
    "p": "radio-maze/icon.svg",
@@ -5393,13 +5393,13 @@
   },
   {
    "p": "radio-maze/index.html",
-   "s": 5301,
-   "h": "9af1ac4c86c1f46be1ddac18b26c189f3f309472524065b9be16fa29961bc534"
+   "s": 5922,
+   "h": "5e1a56ef298c1e315d8cbb89f3638f12123f5694e3d12431dc94dc6d70bbbcca"
   },
   {
    "p": "radio-maze/logic.js",
-   "s": 5063,
-   "h": "8f431addbc9ae70924ae779e6735a91042a0fff842be36794e1bc9ebd367247f"
+   "s": 15941,
+   "h": "5b0730640f825452c738c98fd8ca5d41271e34970f63fdf7175d8adc19d52bb2"
   },
   {
    "p": "radio-maze/manifest.webmanifest",
@@ -5408,13 +5408,13 @@
   },
   {
    "p": "radio-maze/style.css",
-   "s": 10193,
-   "h": "53187bfe878e87fbe930f1f7e777fc8a7ab8237eb2498fc0690d3f8424ddf7a4"
+   "s": 11074,
+   "h": "4a30c8721634516a20a0e46363ae445a9ac8b3ef9960b5740e199d982c14b49a"
   },
   {
    "p": "radio-maze/sw.js",
    "s": 1841,
-   "h": "c4283a690950e2ef66ece1169b1a26d4ab1c02caed82d8c98426987ccfca2b5b"
+   "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
   },
   {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 77208,
-   "h": "8f8871d0c571170da6722a301ae26365440bc686127138bcb2ab39d7f398452a"
+   "s": 77466,
+   "h": "5f8147bee151431c124255bd16150c97ad4a176fce330201240b6555b7e831d4"
   },
   {
    "p": "taschi/card.svg",

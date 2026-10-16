@@ -40,7 +40,7 @@
   {
    "id": "radio-maze",
    "title": "AnMaCha Radio Maze 3D",
-   "desc": "Modernes 3D-Radio-Labyrinth mit 60 Leveln in 6 Radiowelten, 13 originalen Senderlogos, Geistern, Verstärkern, Leben und Highscore. Vollbild, Handy-/PC-Steuerung, Offline-PWA und optionaler Google-Cloud-Spielstand.",
+   "desc": "Der Arcade-Labyrinth-Klassiker in 3D: originales Labyrinth mit Tunnel und Geisterhaus, vier Störsender mit Original-KI, Senderlogos als Bonus, 60 Level in 6 Radiowelten. Zwei Kameras, Handy-/PC-/Controller-Steuerung, Offline-PWA und optionaler Google-Cloud-Spielstand.",
    "icon": "📻",
    "img": "radio-maze/card.svg",
    "bg": "linear-gradient(145deg,#0a183d,#1c5fa3 52%,#b82d89)",
@@ -49,18 +49,19 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "AnMaCha Radio Maze 3D ist ein 3D-Arcade-Labyrinthspiel mit 60 nachspielbaren Leveln in sechs Radiowelten. Sammle alle Frequenzpunkte, Verstärker und Senderlogos, während dich bis zu vier Geister verfolgen. Leuchtende Verstärker machen die Geister acht Sekunden lang fangbar. Es gibt vier Startleben, Bonuspunkte und dauerhaft freischaltbare Level. Hauptmenü, Pause, Vollbild und Levelauswahl sind integriert. Der laufende Spielstand wird lokal gespeichert, optional über die vorhandene Google-Cloud-Verbindung synchronisiert.",
+    "anleitung": "AnMaCha Radio Maze 3D ist der Arcade-Labyrinth-Klassiker in 3D-Optik: originales Labyrinth mit 240 Frequenzpunkten, 4 Verstärkern, Seitentunnel und Geisterhaus. Die vier Störsender verhalten sich wie im Original: Rauschi jagt dich direkt, Pfeifi lauert dir auf, Knacki ist unberechenbar und Brummi wird in deiner Nähe scheu. Nach einem Verstärker kannst du sie für 200, 400, 800 und 1600 Punkte fangen. Zweimal pro Level erscheint ein Senderlogo als Bonus. Bei 10.000 Punkten gibt es ein Extraleben. 60 Level in sechs Radiowelten werden wie am Automaten schneller und die Turbo-Zeit kürzer. Der laufende Spielstand wird lokal gespeichert, optional über die vorhandene Google-Cloud-Verbindung synchronisiert.",
     "steuerung": [
-     "PC: Pfeiltasten oder WASD zum Steuern, P oder Esc für Pause, F für Vollbild.",
-     "Smartphone und Tablet: Steuerkreuz oder Fingerwisch in Spielrichtung; die Buttons oben steuern Pause, Ton und Vollbild.",
-     "Sammle alle Punkte, Power-Ups und Senderlogos, um das Level abzuschließen. Bei aktivem Verstärker können Geister gefangen werden."
+     "PC: Pfeiltasten oder WASD, P oder Esc Pause, C Kamera (Übersicht oder Verfolger), M Ton, F Vollbild.",
+     "Smartphone und Tablet: Steuerkreuz oder Wischen in Spielrichtung; Richtungen werden vorgemerkt, damit Kurven rechtzeitig klappen.",
+     "Controller: Steuerkreuz oder linker Stick, Start für Pause."
     ],
     "tipps": [
-     "Grüne, goldene und neonfarbene Labyrinthwelten werden mit fortschreitenden Leveln anspruchsvoller.",
-     "Bei Google-Anmeldung wird zusätzlich in Firebase gespeichert; Offline-Nutzung bleibt lokal möglich."
+     "Durch den Seitentunnel bist du schneller als die Störsender, denn sie werden dort langsamer.",
+     "Rauschi wird schneller, wenn nur noch wenige Punkte übrig sind.",
+     "Hebe die Verstärker auf, bis die Störsender nah sind, und fange dann möglichst alle vier."
     ]
    },
-   "size": 51174,
+   "size": 68527,
    "files": 8,
    "offline": true
   },
