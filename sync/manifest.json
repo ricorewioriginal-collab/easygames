@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "158972661922",
- "generated": "2026-10-16T17:58:39+02:00",
- "commit": "0c4b819fa370a471c13f1d2b5409a0e83419390c",
+ "version": "a7e5e10cf993",
+ "generated": "2026-10-16T18:19:33+02:00",
+ "commit": "b2cc1a46dfc8bdcd0790163ad2599cdffaec2e30",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4598,13 +4598,13 @@
   },
   {
    "p": "easygames.js",
-   "s": 9135,
-   "h": "8fa3827020b12cfe7c5f7343ffa5eaaabf1ab2f354141d4ddc6a25c6593820eb"
+   "s": 17528,
+   "h": "18c04128ba8d43d51bc06ab491eb9bcf1650978dd1b8ea44f478327d8b636bc0"
   },
   {
    "p": "einbinden.html",
-   "s": 50425,
-   "h": "50b7660509cb6f4b2b72385a6c31edf1d638189c3e5d29515698c1e9f3821db9"
+   "s": 58123,
+   "h": "a964bad95001a96030161f0715cbc6960f54ac6d3fbcb60b62ff07d09345d24e"
   },
   {
    "p": "gamekit.js",
@@ -4773,8 +4773,8 @@
   },
   {
    "p": "index.html",
-   "s": 53112,
-   "h": "ce4a564d4dab41473b2793d1387fa6e19559d4a9b794b58acc34416cf18ef2a0"
+   "s": 54582,
+   "h": "1b4dbf5de5c48fa8007abfefe95bc2c1ae0a05b93d9862685213d2ceaa98d61e"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -4925,6 +4925,11 @@
    "p": "kraterkommando/sw.js",
    "s": 1066,
    "h": "e4df137e84dfa27a6103701ccd8ef4928c1514f1c3354e9e3f6dd55bfa41c10c"
+  },
+  {
+   "p": "logo.png",
+   "s": 34732,
+   "h": "14c626be404d5188444f9137fa57bef6a22e7938eb3ab4fde71e8af00f2ef162"
   },
   {
    "p": "lumo/audio.js",
