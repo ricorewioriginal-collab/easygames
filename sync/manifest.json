@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0b7d434e7576",
- "generated": "2026-10-15T21:47:44+02:00",
- "commit": "9276d68fa31c022af14df5d4a1eaa61e5cd52fe2",
+ "version": "6fc770a7bb98",
+ "generated": "2026-10-16T12:50:33+02:00",
+ "commit": "8999d8daf188b8589f679b60ecbf16e1734a4164",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4412,9 +4412,9 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
-   "p": "bunte-insel2/assets/app-VHOU2L74.js",
-   "s": 519751,
-   "h": "3e0c491b704d6f7c1bb46275b079f7689504a08eceb6e10340cb25674a721e68"
+   "p": "bunte-insel2/assets/app-JSAXB7XK.js",
+   "s": 544739,
+   "h": "ba3518ed963232558789655e25720eeb8a5154aa1fc0487fe93b3d52302e8d37"
   },
   {
    "p": "bunte-insel2/assets/chunk-O2XFH626.js",
@@ -4422,14 +4422,14 @@
    "h": "d9cad469beb0997cded3780659461d023f24353d6a947fe77434f079536af5f9"
   },
   {
-   "p": "bunte-insel2/assets/main-DCL6DUIW.css",
-   "s": 20184,
-   "h": "6d2fb32b4867f4ad9e0227b55bd4eebf4e01cc82b2503cf4883943e5618fde4f"
+   "p": "bunte-insel2/assets/main-5ZT7FNFQ.js",
+   "s": 397,
+   "h": "12f3a1c1c42ed4a39dd439fa6b506688eeebee9f9ab5293e8e528b060b4d0b18"
   },
   {
-   "p": "bunte-insel2/assets/main-OPM7Z6YQ.js",
-   "s": 397,
-   "h": "a853323b7c19c1029ef19d227a048596fe96dbdb947fefc2d3b66baed14391a2"
+   "p": "bunte-insel2/assets/main-DMXKVHDI.css",
+   "s": 21301,
+   "h": "06360862e6dce453063e0e8a11368de4ee439b899f7c1ed033f573d6e5d09f6b"
   },
   {
    "p": "bunte-insel2/audio/bonk.mp3",
@@ -4564,7 +4564,7 @@
   {
    "p": "bunte-insel2/index.html",
    "s": 5326,
-   "h": "958f83c0c433e4056d3d0e8512fdb4d9e2f4c1f53984d73f60eb655153fec47f"
+   "h": "3ffa5ccf549ddf62191a3fa5a3f1a9117a4ebb1978e23e5941a55630214c7654"
   },
   {
    "p": "bunte-insel2/manifest.webmanifest",
@@ -4574,7 +4574,7 @@
   {
    "p": "bunte-insel2/sw.js",
    "s": 1968,
-   "h": "0099d8faf7ec6175a03ae95365ba6f8e2206e461bb585d0c8e25acad5f5c791a"
+   "h": "f09fa6d8e5e8374381d301a7e7559609d2264c04c4add6f573929bb95be7825c"
   },
   {
    "p": "bunte-insel2/vendor/three.min.js",
@@ -4584,7 +4584,7 @@
   {
    "p": "bunte-insel2/version.json",
    "s": 49,
-   "h": "03763b0752bdccdd196ee3684829f3d4efcca9f35737c20d0ca89fed3763f595"
+   "h": "5eb1cf145bae7b00fc3d7c2dc0c502427b83f8c91e8052860351ad470972442b"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -5529,7 +5529,7 @@
   {
    "p": "sync/catalog.json",
    "s": 74390,
-   "h": "79436b3ba353d05a1cb8225c33cf8c48a4572ea4831e7d6578483ebf157b4f88"
+   "h": "7169003e2df6031d1b5034eba3b66d13c26535b27ada0f3a19fc6bf4c05a1f36"
   },
   {
    "p": "taschi/card.svg",
