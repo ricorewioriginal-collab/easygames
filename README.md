@@ -59,9 +59,7 @@ Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …,
   - Ohne Controller läuft nichts mit. Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
 - **Texteingaben** (z. B. Antworten in der Hörerwahl) gehen weiterhin nur über Tastatur oder die Handy-Pads.
 
-**Eigenes Menü (EmulationStation, Batocera, RetroPie …):** jedes Spiel über seinen Direktlink im Vollbild-Browser starten, z. B.
-`chromium --kiosk --autoplay-policy=no-user-gesture-required https://ricorewioriginal-collab.github.io/easygames/anmacha-snake/`.
-Der Autoplay-Schalter ist wichtig: Browser zählen Controller-Tasten nicht als „Nutzer-Klick“, ohne ihn bleibt der Ton sonst eventuell stumm.
+Für EmulationStation siehe [unten](#emulationstation-es-de-retropie-batocera): das Startskript öffnet den Browser so, dass auch der Ton ohne Klick startet (Browser zählen Controller-Tasten nicht als „Nutzer-Klick“).
 
 ## Spieleliste, Vollbild und Teilen
 
