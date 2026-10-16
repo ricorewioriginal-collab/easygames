@@ -1,6 +1,6 @@
 /* Radio Maze 3D: eigenes Scope, Offline-Cache und kontrollierte Updates. */
 'use strict';
-const CACHE='easygames-radio-maze-v1';
+const CACHE='easygames-radio-maze-v2';
 const CORE=['./','./index.html','./style.css','./logic.js','./game.js','./icon.svg','./card.svg','./manifest.webmanifest','../vendor/three-r128.min.js'];
 const LOGOS=Array.from({length:13},(_,i)=>'../anmacha-memory/logos/'+String(i+1).padStart(2,'0')+'.png');
 self.addEventListener('install',event=>{
