@@ -81,3 +81,9 @@ h2{font-size:clamp(24px,3vw,32px);margin:9px 0 8px;letter-spacing:-.03em}
 @media(max-height:470px) and (orientation:landscape){.menu-layout{grid-template-columns:1fr 1fr;gap:15px}.menu-orb{display:none}.menu-brand h1{font-size:40px}.menu-brand p:not(.motto){font-size:12px}.menu-brand .mini-badges{display:none}.menu-box{padding:15px}.menu-box h2{font-size:18px}.primary,.secondary{min-height:36px;padding:7px}.help{display:none}#pad{transform:scale(.66);transform-origin:bottom left}.screen{padding:12px}}
 @media(pointer:fine){#pad{opacity:.45;transition:opacity .2s}#pad:hover{opacity:1}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#ready{position:absolute;z-index:5;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#ffe14a;font-size:clamp(26px,5vw,44px);font-weight:1000;letter-spacing:.12em;text-shadow:0 0 18px #ffb300,0 3px 0 #000}
+.ghost-list{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;font-size:13px;color:#c8d5f0;max-width:580px}
+.ghost-list li:before{content:"";display:inline-block;width:12px;height:12px;border-radius:6px 6px 2px 2px;margin-right:7px;vertical-align:-1px}
+.ghost-list .g0:before{background:#ff2b2b}.ghost-list .g1:before{background:#ffa0d8}.ghost-list .g2:before{background:#2ce8ff}.ghost-list .g3:before{background:#ffa640}
+@media(max-width:800px){.ghost-list{margin:8px auto;font-size:11px;text-align:left}}
+@media(max-height:470px) and (orientation:landscape){.ghost-list{display:none}}
