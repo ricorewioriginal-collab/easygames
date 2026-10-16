@@ -71,10 +71,16 @@ vendorFiles.add('vendor/licenses/jsqr-MIT.txt');
 for (const f of vendorFiles) { if (!fs.existsSync(path.join(root, f))) errors.push(`vendor: ${f} fehlt (node tools/fetch-vendor.js)`); else add(f, '_vendor'); }
 // Google-Fonts-Stylesheets (Fredoka) → lokales CSS
 const TEXT = /\.(html?|js|mjs|css|json)$/i, URL_RE = /https?:\/\/[A-Za-z0-9._-]+(?::\d+)?(?:\/[^\s"'`)<>\\]*)?/g;
-const seen = new Map();
+const seen = new Map(), LOCAL_VENDOR_RE = /(?:\.\.\/)+vendor\/[A-Za-z0-9._\/-]+\.(?:js|css|woff2|json)/g;
 for (const [p, who] of owner) {
   if (who === '_vendor' || !TEXT.test(p) || files.get(p).s > 3 * 1024 * 1024) continue;
-  for (const m of fs.readFileSync(path.join(root, p), 'utf8').match(URL_RE) || []) {
+  const text = fs.readFileSync(path.join(root, p), 'utf8');
+  // Lokal eingebundene Bibliotheken (../vendor/…) müssen in der App mitkommen, sonst startet das Spiel dort nicht
+  for (const ref of text.match(LOCAL_VENDOR_RE) || []) {
+    const f = path.posix.normalize(path.posix.join(path.posix.dirname(p), ref));
+    if (f.startsWith('vendor/') && !vendorFiles.has(f)) errors.push(`${p}: ${f} wird eingebunden, fehlt aber in vendor/map.json (App lädt die Datei sonst nicht)`);
+  }
+  for (const m of text.match(URL_RE) || []) {
     const url = m.replace(/[.,;]+$/, ''), host = new URL(url).hostname;
     if (!CDN_HOSTS.test(host) || new URL(url).pathname.length <= 1 && !new URL(url).search) continue;   // reine Host-Angaben (preconnect) sind keine Ressourcen
     if (!seen.has(url)) seen.set(url, new Set()); seen.get(url).add(p);

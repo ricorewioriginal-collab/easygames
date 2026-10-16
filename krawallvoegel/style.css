@@ -159,6 +159,10 @@ h1,h2{margin:0;font-weight:700}
 .dialog p{margin:0;color:var(--muted)}
 .btn{display:block;width:100%;padding:13px 16px;border-radius:16px;border:0;background:rgba(255,255,255,.12);font-size:17px;font-weight:600;text-decoration:none;color:#fff;outline:none;transition:transform .12s}
 .btn.primary{background:linear-gradient(145deg,#ff6a3c,#d92a2a);box-shadow:0 5px 0 #7a1a10}
+#rotate{z-index:30}
+.dialog.rotate{display:flex;flex-direction:column;gap:10px;text-align:center}
+.rot-ico{font-size:56px;line-height:1;animation:rot 1.8s ease-in-out infinite}
+@keyframes rot{0%,25%{transform:rotate(0)}55%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 .btn.small{font-size:14px;padding:10px 8px}
 .btn.focus,.btn:focus-visible{box-shadow:0 0 0 3px var(--focus)}
 .btn:active{transform:scale(.97)}
