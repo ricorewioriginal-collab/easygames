@@ -39,3 +39,7 @@ Google-Anmeldung → Spitzname (2–20 Zeichen) wählen → „Bestwerte öffent
 - Spiele mit abweichendem Skriptpfad (Kiko: `vendor/`) setzen `data-board-src`; `data-board="off"` schaltet die Rangliste eines Spiels ab.
 - **Einmalig in der Firebase-Konsole:** Firestore → Regeln → den neuen Inhalt von `cloud/firestore.rules` einfügen und veröffentlichen (sonst zeigen die Ranglisten „noch nicht freigeschaltet“).
 - Die Werte kommen vom Gerät des Spielers und sind **nicht manipulationssicher** (Spaß-Ranglisten). Unpassende Spitznamen/Einträge entfernst du in der Konsole unter `boards/…/e/…`.
+
+## RicoPoly 3D: Rangliste und Online-Räume
+
+`firestore.rules` enthält zusätzlich einen Abschnitt für RicoPoly (`ricopoly_board`, `ricopoly_rooms`, `ricopoly_pub`). Er braucht die **anonyme Anmeldung** (Authentication → Anmeldemethode → Anonym). Details, Verbrauch und Grenzen: `ricopoly/FIREBASE_SETUP.md`. Andere Spiele sind davon nicht betroffen.

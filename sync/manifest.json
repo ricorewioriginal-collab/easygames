@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "88bc96c411bd",
- "generated": "2026-10-16T20:59:58+00:00",
- "commit": "d6bd8e50684788aef273b0a002617cd4a67a8acd",
+ "version": "487c81e43d60",
+ "generated": "2026-10-16T21:41:10+00:00",
+ "commit": "189669da5b56c47cca90075e7333c8ff2697b727",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4694,7 +4694,7 @@
   {
    "p": "games.js",
    "s": 22176,
-   "h": "230f5a2b7fcf41f763892be726ce9964582992903b6b2886dbe5752c67436582"
+   "h": "89eaa80eb3bb05d559eb5b4b40796eaeb56809823cf8e1ee062913feef3b0562"
   },
   {
    "p": "gay-life/index.html",
@@ -5613,8 +5613,8 @@
   },
   {
    "p": "ricopoly/index.html",
-   "s": 9288,
-   "h": "c58ec0616c3e89c2237a731b5dd046419251726d8e9de33475275a6b12b023e1"
+   "s": 9329,
+   "h": "8ec89786db5c9f7381ee26b41840c0fd107db19cac342dd372e26f8575bcef67"
   },
   {
    "p": "ricopoly/js/ai.js",
@@ -5637,19 +5637,24 @@
    "h": "57c403ffd523f1599a4f2001022145ee4d165978623516f4fcecdffbf0f81444"
   },
   {
+   "p": "ricopoly/js/fire.js",
+   "s": 6877,
+   "h": "8700c7e03e1f94387cfff8ddc535020e65c72cbdfe70195092b33a4e201c5be1"
+  },
+  {
    "p": "ricopoly/js/game.js",
-   "s": 83047,
-   "h": "d7d92cfd9d015272a45cf8483e4169cb841f12be31af96ad838563dead7a25d0"
+   "s": 84852,
+   "h": "f66e0819ae4721fc715d7bd0d677beca23c6ffdb3b21ed9544a9f9c9951a5cb3"
   },
   {
    "p": "ricopoly/js/i18n.js",
-   "s": 50874,
-   "h": "8347143e996243744837462b9e00f29f5c768a73eb24239d12077305898c0b36"
+   "s": 51476,
+   "h": "e4abc752dc8a610045d386a6f3d3d415a8f711fd2859f27ab9c4143de875a304"
   },
   {
    "p": "ricopoly/js/net.js",
-   "s": 18701,
-   "h": "be5a62ddeb934167ea5ab1f444f692f0fbf104b8e231732e91281d7f559be006"
+   "s": 28747,
+   "h": "8355a01cb15812a7773869c98ac25ced42880ac5ed1f76dcdd81ce843d886c0f"
   },
   {
    "p": "ricopoly/js/profile.js",
@@ -5859,7 +5864,7 @@
   {
    "p": "sync/catalog.json",
    "s": 89678,
-   "h": "3fa3739561180bdf5fe5d7dc6ea0b516fdaad638072140fdac685c7368caa476"
+   "h": "6944afa160f81d5bd756a6e13c49c897369e5ae1116df750f2e80b7c94690b0d"
   },
   {
    "p": "taschi/card.svg",

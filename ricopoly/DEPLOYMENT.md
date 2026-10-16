@@ -8,6 +8,8 @@ Aus dem Repo-Stamm:
 
 ```bash
 node --test ricopoly/tests/*.test.js     # Regel-, Online- und Texttests
+# nach Änderungen an Firebase-Regeln oder js/fire.js / js/net.js zusätzlich (Firebase-Emulator, siehe TESTING.md):
+# node ricopoly/tests/fire-rules.js  und  node ricopoly/tests/browser-online.js
 python3 tools/make-pwa.py ricopoly       # PWA-Block, manifest.webmanifest, sw.js, Symbole (braucht Pillow)
 node tools/build-sync.js                 # sync/manifest.json und sync/catalog.json für die Apps
 node tools/check-games.js                # Katalog prüfen
@@ -18,7 +20,8 @@ Bei Änderungen an JS/CSS die `?v=`-Nummern in `index.html` erhöhen und in `gam
 ## Kosten
 
 - GitHub Pages: kostenlos.
-- PeerJS: öffentlicher Vermittlungsserver, kostenlos, ohne Zusage zur Verfügbarkeit. Für mehr Verlässlichkeit kann ein eigener PeerServer betrieben werden; dafür müssten in `js/net.js` beim Erzeugen von `Peer` die Optionen `host`, `port` und `path` ergänzt werden.
+- Firebase-Vermittlung und Rangliste: Spark-Tarif, Einrichtung und Verbrauch in `FIREBASE_SETUP.md`.
+- PeerJS (Rückfall, wenn Firebase nicht erreichbar ist): öffentlicher Vermittlungsserver, kostenlos, ohne Zusage zur Verfügbarkeit. Für mehr Verlässlichkeit kann ein eigener PeerServer betrieben werden; dafür müssten in `js/net.js` beim Erzeugen von `Peer` die Optionen `host`, `port` und `path` ergänzt werden.
 - Firebase (Cloud-Speicher): Spark-Tarif reicht; RicoPoly schreibt gebündelt (wenige Schreibzugriffe pro Partie).
 
 ## Offline
