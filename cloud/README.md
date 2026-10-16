@@ -23,7 +23,9 @@ Ohne Eintrag in `CONFIG` tut das Skript nichts.
 - Das Firebase-SDK wird nur geladen, wenn sich ein Spieler angemeldet hat; sonst bleibt alles bei localStorage.
 
 ## Apps (Android/Windows)
-Google sperrt die Anmeldung in App-Fenstern. Deshalb koppelt sich die App über den Browser: Sie zeigt einen Link `…/#koppeln=<Code>`, auf der Seite (ricorewi-radio.de, Skript eingebunden) meldet man sich mit Google an, die App erkennt die Kopplung automatisch und nutzt danach denselben Cloud-Speicher wie im Web. Dafür muss der Block `match /pair/{code}` aus `firestore.rules` veröffentlicht sein.
+Erkannt werden die RicoReWi-App (`appassets.local`), die easygames-App (`appassets.androidplatform.net` bzw. JS-Brücke `EasyGamesApp`) und Windows (User-Agent `RicoReWiApp/`). Nur dort gilt die Kopplung; in normalen Browsern läuft die Anmeldung direkt.
+
+Google sperrt die Anmeldung in App-Fenstern. Deshalb koppelt sich die App über den Browser: Sie zeigt einen Link `…/#koppeln=<Code>`, auf der Seite (ricorewi-radio.de, Skript eingebunden) meldet man sich mit Google an, die App erkennt die Kopplung automatisch und nutzt danach denselben Cloud-Speicher wie im Web. Dafür muss der Block `match /pair/{code}` aus `firestore.rules` veröffentlicht sein, und `www.ricorewi-radio.de` sowie `ricorewi-radio.de` müssen unter Authentication → Einstellungen → Autorisierte Domains stehen (dort findet die Anmeldung statt).
 
 ## Ältere Sicherung (genau eine je Nutzer und Spiel)
 
