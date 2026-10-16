@@ -91,6 +91,8 @@ test('Nachbarn: finden, hinzufügen, besuchen, helfen, beschenken, Post annehmen
 
   // Besuchen und an einem Haus helfen
   await page.click('[data-tab="mine"]');
+  // Einladungslink zeigt immer auf die öffentliche Seite, egal von wo das Spiel geladen wurde (Apps: appassets.local)
+  await expect(page.getByLabel('Einladungslink')).toHaveValue('https://ricorewioriginal-collab.github.io/easygames/ricoville/?nachbar=me');
   await page.locator('[data-neighbor="bob"] .btn', { hasText: 'Besuchen' }).click();
   await expect(page.locator('#visitbar')).toBeVisible();
   await expect(page.locator('#bar')).toBeHidden();
