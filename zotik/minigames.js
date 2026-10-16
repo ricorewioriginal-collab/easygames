@@ -38,7 +38,7 @@
   #zmActions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
   @media(max-width:540px){.zmTop{align-items:flex-start}.zmTop p{font-size:13px}#zMini button{padding:10px 12px}.zmGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.zmCard{min-height:203px;padding:13px!important}.zmCard b{font-size:17px}.zmCard .zmIcon{font-size:36px}.zmCard .zmDesc{font-size:12px}}
 
-  #zMini #zmQuiz{position:absolute;inset:0;z-index:7;display:grid;place-items:center;background:radial-gradient(circle at 50% 0%,#314e7a,#0b1232 70%);overflow-y:auto;padding:100px 15px 85px}
+  #zMini #zmQuiz{position:relative;display:grid;place-items:center;min-height:min(58vh,540px);border-radius:15px;background:radial-gradient(circle at 50% 0%,#314e7a,#0b1232 70%);overflow-y:auto;padding:18px 10px}
   #zMini #zmQuiz[hidden],#zMini #zmCanvas[hidden],#zMini #zmLeft[hidden],#zMini #zmRight[hidden]{display:none!important}
   #zMini .zqPanel{width:min(760px,100%);padding:clamp(20px,4vw,42px);background:linear-gradient(145deg,#293d6d,#101a3a);border:1px solid #90b3e85e;border-radius:26px;box-shadow:0 18px 60px #000a}
   #zMini .zqPanel small{color:#ffc861;letter-spacing:.15em;font-weight:800}
@@ -49,7 +49,7 @@
   #zMini .zqAnswers button.zqCorrect{background:#167567!important;border-color:#81f8c4!important}
   #zMini .zqAnswers button.zqWrong{background:#813c56!important;border-color:#f59ab1!important}
   #zMini .zqFeedback{min-height:26px;color:#ffdc83!important;font-weight:700}
-  @media(max-width:600px){#zMini .zqAnswers{grid-template-columns:1fr;gap:8px}#zMini .zqAnswers button{padding:12px 14px}#zMini #zmQuiz{padding-top:110px}}
+  @media(max-width:600px){#zMini .zqAnswers{grid-template-columns:1fr;gap:8px}#zMini .zqAnswers button{padding:12px 14px}#zMini #zmQuiz{padding:10px 4px;min-height:0}}
   `;document.head.appendChild(css);
   const $=id=>document.getElementById(id),canvas=$('zmCanvas'),ctx=canvas.getContext('2d');
   let active=null,raf=0,last=0,score=0,time=0,running=false,items=[],seq=[],turn=0,phase='',phaseUntil=0,player=360,hold=0,spawn=0;
@@ -121,10 +121,10 @@
   function circle(x,y,r,col){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill()}
   function text(t,x,y,size=30,col='#fff'){ctx.fillStyle=col;ctx.font='700 '+size+'px Fredoka,system-ui';ctx.textAlign='center';ctx.fillText(t,x,y)}
   function point(){score++;$('zmScore').textContent='⭐ '+score}
-  function end(){if(!running)return;running=false;hold=0;if(active.id==='quiz'){$('zmQuiz').hidden=true;canvas.hidden=false;}if(score>(records[active.id]||0)){records[active.id]=score;try{localStorage.setItem(key,JSON.stringify(records))}catch(_){}}$('zmAction').textContent='↻ Noch einmal';$('zmHint').textContent='Runde beendet! ⭐ '+score+' Punkte · Bestwert '+records[active.id];drawBase();text('Runde geschafft!',360,177,42,'#ffc861');text(score+' Punkte',360,239,35);ui()}
-  function start(){if(!active)return;running=true;score=0;time=0;spawn=0;player=360;hold=0;items=[];seq=[];turn=0;phase='';phaseUntil=0;runLives=3;runLane=1;quizIndex=0;$('zmQuiz').hidden=active.id!=='quiz';canvas.hidden=active.id==='quiz';$('zmScore').textContent='⭐ 0';$('zmAction').textContent='↻ Neustart';$('zmHint').textContent=active.id==='sterne'?'Merke dir die Farben!':active.id==='riss'?'Mit ◀ ▶ oder A/D ausweichen':'Tippe die Ziele auf dem Spielfeld';if(active.id==='sterne')nextSeq();if(active.id==='quiz'){quizOrder=questions.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,10);quizNext()}}
+  function end(){if(!running)return;running=false;hold=0;if(active.id==='quiz'){$('zmQuiz').hidden=true;canvas.hidden=false;}if(score>(records[active.id]||0)){records[active.id]=score;try{localStorage.setItem(key,JSON.stringify(records))}catch(_){}}$('zmAction').textContent='↻ Noch einmal';$('zmHint').textContent='Runde beendet! ⭐ '+score+' Punkte · Bestwert '+(records[active.id]||0);drawBase();text('Runde geschafft!',360,177,42,'#ffc861');text(score+' Punkte',360,239,35);ui()}
+  function start(){if(!active)return;running=true;score=0;time=0;spawn=0;player=360;hold=0;items=[];seq=[];turn=0;phase='';phaseUntil=0;runLives=3;runLane=1;quizIndex=0;$('zmQuiz').hidden=active.id!=='quiz';canvas.hidden=active.id==='quiz';$('zmScore').textContent='⭐ 0';$('zmAction').textContent='↻ Neustart';$('zmHint').textContent=active.id==='sterne'?'Merke dir die Farben!':active.id==='riss'?'Mit ◀ ▶ oder A/D ausweichen':active.id==='quiz'?'Wähle die richtige Antwort.':'Tippe die Ziele auf dem Spielfeld';if(active.id==='sterne')nextSeq();if(active.id==='quiz'){quizOrder=questions.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,10);quizNext()}}
   function nextSeq(){seq.push(Math.floor(Math.random()*4));turn=0;phase='show';phaseUntil=time+1.3+seq.length*.62;$('zmHint').textContent='Merke: '+seq.map(n=>['🔴','🟡','🟢','🔵'][n]).join(' ')}
-  function choose(g){active=g;running=false;cancelAnimationFrame(raf);root.classList.add('zmPlaying');$('zmList').hidden=true;$('zmStage').hidden=false;$('zmTitle').textContent=g.icon+' '+g.name;$('zmScore').textContent='⭐ 0';$('zmHint').textContent=g.desc;$('zmAction').textContent='▶ Starten';const move=g.id==='riss';$('zmQuiz').hidden=g.id!=='quiz';canvas.hidden=g.id==='quiz';$('zmLeft').hidden=!move;$('zmRight').hidden=!move;drawBase();text(g.icon,360,205,98);fitStage();last=performance.now();raf=requestAnimationFrame(frame)}
+  function choose(g){active=g;running=false;cancelAnimationFrame(raf);root.classList.add('zmPlaying');$('zmList').hidden=true;$('zmStage').hidden=false;$('zmTitle').textContent=g.icon+' '+g.name;$('zmScore').textContent='⭐ 0';$('zmHint').textContent=g.desc;$('zmAction').textContent='▶ Starten';const move=g.id==='riss';$('zmQuiz').hidden=true;canvas.hidden=false;$('zmLeft').hidden=!move;$('zmRight').hidden=!move;drawBase();text(g.icon,360,205,98);fitStage();last=performance.now();raf=requestAnimationFrame(frame)}
   function leave(){running=false;cancelAnimationFrame(raf);root.classList.remove('zmPlaying');active=null;$('zmQuiz').hidden=true;canvas.hidden=false;$('zmStage').hidden=true;$('zmList').hidden=false;ui()}
   function close(){leave();root.hidden=true;document.body.style.overflow=''}
   function frame(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;raf=requestAnimationFrame(frame);if(!active)return;if(!running)return;time+=dt;drawBase();
