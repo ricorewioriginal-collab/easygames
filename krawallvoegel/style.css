@@ -175,8 +175,6 @@ h1,h2{margin:0;font-weight:700}
 .result-buttons{display:flex;gap:10px}
 .result-buttons .btn{flex:1}
 .intro img{width:120px;height:120px;margin:0 auto}
-#rotate{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,6,28,.92);font-size:44px;text-align:center}
-#rotate p{font-size:18px}
 #fatal{align-items:center;justify-content:center;z-index:50;background:var(--bg)}
 
 @media (max-height:520px){

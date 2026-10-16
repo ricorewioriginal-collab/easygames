@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f462304e7ed6",
- "generated": "2026-10-16T19:24:47+00:00",
- "commit": "0d29255077a1d5e8c7adf213a9e344359729e32b",
+ "version": "c8e5ba5eee4a",
+ "generated": "2026-10-16T21:28:34+02:00",
+ "commit": "f0aa1d9672392b911b4d8bc84b58b339999fc150",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4694,7 +4694,7 @@
   {
    "p": "games.js",
    "s": 20804,
-   "h": "18cca94910e34e505ea44d22fd3a433b99e8de7789997ac15a15102552312c94"
+   "h": "2b18783cd22fa69957946996973f6776d207a612b1de3f2c78510a2a71ffdd8b"
   },
   {
    "p": "gay-life/index.html",
@@ -5013,8 +5013,8 @@
   },
   {
    "p": "krawallvoegel/game.js",
-   "s": 61992,
-   "h": "f45b83b352f8de0d7bed4f2171e78596d07c6fd21acf245f8c12492e69209748"
+   "s": 62476,
+   "h": "fbe704c0594dd7bb4ae0e01a621d48c46e3bc8b8a6e2f7c7ea46fe337de46301"
   },
   {
    "p": "krawallvoegel/icon.svg",
@@ -5023,8 +5023,8 @@
   },
   {
    "p": "krawallvoegel/index.html",
-   "s": 14061,
-   "h": "a16c9fbf1140c9c7e51b6201777312f448a574ab47f0d577611b5a3884016547"
+   "s": 13972,
+   "h": "4301dde8337bf29a9b447ed3684d3ea2fdb522e73ede5826a4e48b4581b9313d"
   },
   {
    "p": "krawallvoegel/levels.js",
@@ -5048,8 +5048,8 @@
   },
   {
    "p": "krawallvoegel/style.css",
-   "s": 18977,
-   "h": "1fdfaf29d739445b7a08c402ee559f806bafb972aa962b25511a61a6c9f77527"
+   "s": 18766,
+   "h": "e191cadf955c9de691870b0480cdff49b0607ae56d133146a7378c6be9a0d97d"
   },
   {
    "p": "krawallvoegel/sw.js",
@@ -5719,7 +5719,7 @@
   {
    "p": "sync/catalog.json",
    "s": 84306,
-   "h": "2e067b50a33c9fb41f280fde8f50f0d0ec746f72c5e890b64aa106ee1ccffedf"
+   "h": "7bd91baa384124b69941eb0af74778929a6fdad8d0cc85dc9d1cfe322c3e8ed3"
   },
   {
    "p": "taschi/card.svg",
