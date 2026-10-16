@@ -1,4 +1,5 @@
 import { EVENTS, WORLDS, formatYear } from './events.js';
+import { speak, stop as stopVoice, readQuestion } from './vito.js';
 import { KNOWLEDGE } from './knowledge.js';
 import { CLIPS, SONGS, clipSource, songFor, songChoices } from './media.js';
 import { VISUALS, visualChoices } from './visual.js';
@@ -85,13 +86,13 @@ function init() {
   ui.statEvents.textContent=EVENTS.length; ui.statQuiz.textContent=KNOWLEDGE.length; ui.statMedia.textContent=`${Object.keys(CLIPS).length} + ${SONGS.length}`;
   ui.addPlayer.onclick=()=>{if(state.players.length<4){state.players.push({name:`Spieler ${state.players.length+1}`,score:0,timeline:[]});playerInputs();}};
   ui.start.onclick=startGame;
-  ui.resume.onclick=()=>{if(loadSaved()){ui.category.value=state.filter;ui.musicMode.value=state.musicMode;playerInputs();showGame();renderRound();state.pair?.broadcast();say(`Willkommen zurück! ${currentPlayer().name}, deine Zeitreise geht weiter.`);}else{ui.resume.classList.add('hidden');}};
+  ui.resume.onclick=()=>{if(loadSaved()){ui.category.value=state.filter;ui.musicMode.value=state.musicMode;playerInputs();showGame();renderRound();state.pair?.broadcast();say(`Willkommen zurück! ${currentPlayer().name}, deine Zeitreise geht weiter.`);readCurrent();}else{ui.resume.classList.add('hidden');}};
   ui.menuButton.onclick=showMenu;
   $('menuTv').onclick=()=>{document.body.classList.add('tv-mode');ui.tvToggle.setAttribute('aria-pressed','true');openPair();};
   ui.playMusic.onclick=()=>playMedia(state.playing?state.sourceIndex:0);
   ui.switchSource.onclick=switchSource;
   ui.swapTrailer.onclick=swapItem;
-  ui.soundToggle.onclick=()=>{state.voice=!state.voice;ui.soundToggle.setAttribute('aria-pressed',String(state.voice));ui.soundToggle.textContent=state.voice?'♫':'♪';if(!state.voice&&'speechSynthesis'in window)speechSynthesis.cancel();if(state.voice)say('Vito ist wieder live!');};
+  ui.soundToggle.onclick=()=>{state.voice=!state.voice;ui.soundToggle.setAttribute('aria-pressed',String(state.voice));ui.soundToggle.textContent=state.voice?'♫':'♪';if(!state.voice)stopVoice();if(state.voice)say('Vito ist wieder live!');};
   ui.tvToggle.onclick=()=>{const enabled=!document.body.classList.contains('tv-mode');document.body.classList.toggle('tv-mode',enabled);ui.tvToggle.setAttribute('aria-pressed',String(enabled));if(enabled)openPair();else{state.pair?.destroy();state.pair=null;ui.pairPanel.classList.add('hidden');}};
   ui.pairToggle.onclick=()=>{document.body.classList.add('tv-mode');ui.tvToggle.setAttribute('aria-pressed','true');openPair();};
   ui.pairClose.onclick=ui.pairDone.onclick=()=>ui.pairPanel.classList.add('hidden');
@@ -104,7 +105,8 @@ function init() {
 function showMenu() { if(!ui.game.classList.contains('hidden'))saveSession();stopPlayer();ui.game.classList.add('hidden');ui.setup.classList.remove('hidden');playerInputs();scrollTo({top:0,behavior:'smooth'});state.pair?.broadcast(); }
 function showGame() { ui.setup.classList.add('hidden');ui.game.classList.remove('hidden');scrollTo({top:0,behavior:'smooth'}); }
 function tone(freq,duration,type='sine') { if(!state.voice)return;try{audioContext||=new(window.AudioContext||window.webkitAudioContext)();audioContext.resume();const o=audioContext.createOscillator(),g=audioContext.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.035,audioContext.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);o.connect(g).connect(audioContext.destination);o.start();o.stop(audioContext.currentTime+duration);}catch(_){}}
-function say(message) { ui.hostText.textContent=message;if(!state.voice||!('speechSynthesis'in window))return;speechSynthesis.cancel();const line=new SpeechSynthesisUtterance(message.replace(/(\d+) v\. Chr\./g,'$1 vor Christus'));line.lang='de-DE';line.rate=1.04;line.pitch=.88;const de=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de'));line.voice=de.find(v=>/male|männ|daniel|markus|stefan|vito/i.test(v.name))||de[0]||null;speechSynthesis.speak(line); }
+function say(message,queue=false) { ui.hostText.textContent=message;if(state.voice)speak(message,{queue}); }
+function readCurrent() { if(!state.voice||!state.current||state.solved)return;const options=ui.quizOptions.classList.contains('hidden')?[]:[...ui.quizOptions.querySelectorAll('button')].map(button=>button.lastChild.textContent);readQuestion(promptText(state.current),options); }
 function slotLabels(timeline) { return Array.from({length:timeline.length+1},(_,i)=>i===0?`Vor ${formatYear(timeline[0].year)}`:i===timeline.length?`Nach ${formatYear(timeline[i-1].year)}`:`Zwischen ${formatYear(timeline[i-1].year)} und ${formatYear(timeline[i].year)}`); }
 function promptText(c) {
   if (!c) return '';
@@ -176,6 +178,7 @@ function nextRound(announce=true) {
   state.current=kind==='event'?pickEvent(state.rounds===1):kind==='quiz'?pickQuiz():pickFeature(kind);
   renderRound();
   if(announce){const t=state.current.type;say(`${currentPlayer().name}, du bist dran! ${t==='timeline'?'Lege das Ereignis an die richtige Stelle deines Zeitstrahls.':t==='year'?'In welchem Jahr war das? Wähle A bis D.':t==='audio'?'Hör genau hin: Welches Ereignis besingt dieser Song?':t==='visual'?'Schau auf die Symbole. Welches Ereignis ist gemeint?':t==='order'?'Was war zuerst? Finde das älteste Ereignis.':'Hier kommt deine Wissensfrage.'}`);}
+  readCurrent();
   saveSession();state.pair?.broadcast();
 }
 
@@ -223,7 +226,7 @@ function swapItem() {
   if(c.type==='audio'){const others=songPool().filter(item=>item.id!==c.item.id);if(!others.length)return;const item=shuffle(others)[0];state.current={type:'audio',item,options:songChoices(item,SONGS)};}
   else if(c.type==='year'||c.type==='timeline'){const others=eventPool().filter(event=>event.id!==c.event.id&&!onTimeline(event));if(!others.length)return;state.current=eventRound(shuffle(others)[0]);}
   else return;
-  state.playing=false;state.sourceList=[];state.sourceIndex=0;renderRound();saveSession();state.pair?.broadcast();say(c.type==='audio'?'Neuer Song, neue Chance!':'Neues Ereignis, neue Chance!');
+  state.playing=false;state.sourceList=[];state.sourceIndex=0;renderRound();saveSession();state.pair?.broadcast();say(c.type==='audio'?'Neuer Song, neue Chance!':'Neues Ereignis, neue Chance!');readCurrent();
 }
 
 function renderRound() {
