@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "855cd58c368b",
- "generated": "2026-10-16T14:11:22+02:00",
- "commit": "b3f31e4230035b7cc26aceb4d9e2a110c8563c98",
+ "version": "76d15795cdc2",
+ "generated": "2026-10-16T14:53:33+02:00",
+ "commit": "c8917c9d3ffe31f72834372f5649da4a256011ef",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5534,7 +5534,7 @@
   {
    "p": "sync/catalog.json",
    "s": 77107,
-   "h": "8823600fa7bd277dc00e674b3daa60581e0f6eacbce6fafb29b7f66d4ce809e5"
+   "h": "69ee66cf0a5a5a5db73887fb92c503b19094597b02ded31bd9d33be6b0b0ef25"
   },
   {
    "p": "taschi/card.svg",
@@ -5628,8 +5628,8 @@
   },
   {
    "p": "taschi/src/engine/characters.js",
-   "s": 27475,
-   "h": "c8aafb030d574875ce5ed61f10c7bee04118b88ed72b4c0c168bbea454ca10df"
+   "s": 31935,
+   "h": "af54b0fd2ff982e4fbc5524ead3df0f045d3c2575f1aef42f42f2098003ffd22"
   },
   {
    "p": "taschi/src/engine/creatures.js",
@@ -5688,13 +5688,13 @@
   },
   {
    "p": "taschi/src/game/game.js",
-   "s": 61763,
-   "h": "e85f2d98696a52ce2bd7e4200b9646eedaf6fb5972b918b76fafc6bcba3081d5"
+   "s": 63031,
+   "h": "aa4ac256a5ebb86da58be90cee1dcd9f000e0712c65119c7f2de41d2e54056f8"
   },
   {
    "p": "taschi/src/game/world.js",
-   "s": 27238,
-   "h": "47958bc2d2660b734e2519a7c431bb87d373a55fb928eaf7ee12560ab74f6a2d"
+   "s": 28238,
+   "h": "0be6d3b9c38fe6956a1b70432ea595a396f8d063dc6659d314e35b81eb44f31c"
   },
   {
    "p": "taschi/src/logic/ai.js",
@@ -5718,8 +5718,8 @@
   },
   {
    "p": "taschi/src/logic/layout.js",
-   "s": 29314,
-   "h": "877bda27399892920d1b7afe7fbf42fd5399ca8621ebd1dd86bfa4287de47392"
+   "s": 31143,
+   "h": "ad744f09bc2e0c5625481314166c73e25f3608ee3276d0c46d3aa5e5b4f8df5b"
   },
   {
    "p": "taschi/src/logic/monster.js",
@@ -5738,13 +5738,13 @@
   },
   {
    "p": "taschi/src/logic/save.js",
-   "s": 13967,
-   "h": "a1478d25c42f4023bca5ddd4f64781e3dd4b368b4a0c45aed82e1bd5d97bfeba"
+   "s": 14244,
+   "h": "1ea6367a27d7bd974b72a46ce7f80458d5c567a0125574f8af6f2c9d510f08d4"
   },
   {
    "p": "taschi/src/logic/walkgrid.js",
-   "s": 4998,
-   "h": "7984e5b5416907db722aeca5f37889154aa564682e2b7c0fb7d15cf73a266faf"
+   "s": 5392,
+   "h": "a92ddcadaf827e2c9a02c4f2c71b1377504e9c7eb68359714d687b6f9f4be6d8"
   },
   {
    "p": "taschi/src/main.js",
@@ -5758,28 +5758,28 @@
   },
   {
    "p": "taschi/src/ui/menus.js",
-   "s": 27178,
-   "h": "623249942963687a5bf8349e415e8f50384945326e09bca1ab8a6c7209338a8c"
+   "s": 27772,
+   "h": "e627994bec0d332e6133a2e868d93cb26066e53a0120aaedf764c23211025c70"
   },
   {
    "p": "taschi/src/ui/screens.js",
-   "s": 8972,
-   "h": "43dea83c72f1795aec2da6b3f31acfa5f09759cd3b06dab64931ac9139d84eeb"
+   "s": 12799,
+   "h": "ef992c13d1992df6c059cc15a1c9a72d9fed43ad8813dd8f4a54e008d89718a3"
   },
   {
    "p": "taschi/src/ui/style.css",
-   "s": 22535,
-   "h": "269809f7321f23750bfa51c050f6fa8efb0c9ad2bae1784c85e47e3b6bd2ceea"
+   "s": 22656,
+   "h": "6fbbe2a9a2572340be8ec1c0cfdc89b102be4ffcdb39280318ed75390bb4b2e0"
   },
   {
    "p": "taschi/src/ui/ui.js",
-   "s": 9896,
-   "h": "338f49263c4833db47c4be7465b4c84d841e68f79326289441ff4ef32b626ac6"
+   "s": 9923,
+   "h": "a42bf275d4f8923fd100189a0ab9e6a227c7394f27023e3f240f56b3a17df698"
   },
   {
    "p": "taschi/src/world/interiors.js",
-   "s": 20663,
-   "h": "e7ad40554556e99efc96fce58b6e541b03ad16db5825deb11fa77a90abdcae98"
+   "s": 21100,
+   "h": "f70a70ce6c0259ca133f9d0968612030f31c0b6307ead471515e33340af1337b"
   },
   {
    "p": "taschi/src/world/puzzle-view.js",
@@ -5788,8 +5788,8 @@
   },
   {
    "p": "taschi/src/world/region-map.js",
-   "s": 24096,
-   "h": "952964dd9851b94d8b65c77e0d626882560f5372dd198d102e74e23095fc2f59"
+   "s": 23759,
+   "h": "61feebea1314779550da112313f05f12ae4953579f4338df536f8de07e823ea9"
   },
   {
    "p": "taschi/vite.config.mjs",
