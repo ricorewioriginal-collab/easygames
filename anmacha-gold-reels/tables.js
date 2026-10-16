@@ -75,7 +75,7 @@
         if (!T.from) { T.from = { x: o.position.x, y: o.position.y, z: o.position.z, rx: o.rotation.x, ry: o.rotation.y, rz: o.rotation.z, s: o.scale.x }; }
         const k = Math.min(1, T.t / T.dur), e = T.e(k), F = T.from, to = T.to;
         if ('x' in to) o.position.x = F.x + (to.x - F.x) * e;
-        if ('y' in to) o.position.y = F.y + (to.y - F.y) * e;
+        if ('y' in to || T.arc) o.position.y = F.y + (('y' in to ? to.y : F.y) - F.y) * e;   // Bogen nicht aufaddieren
         if ('z' in to) o.position.z = F.z + (to.z - F.z) * e;
         if (T.arc) o.position.y += Math.sin(k * Math.PI) * T.arc;
         if ('rx' in to) o.rotation.x = F.rx + (to.rx - F.rx) * e;
@@ -421,9 +421,9 @@
       if (!this.camera) return;
       const top = this.topH(), bottom = innerHeight - this.ctl.getBoundingClientRect().top;
       const rect = Gfx.freeRect(top + 30, bottom + 4, 0, 0);
-      const port = rect.w < rect.h;
-      const d = Gfx.fit(this.camera, port ? 5.6 : 8.6, port ? 5.2 : 6.2, rect, { pad: 1 });
-      this.camera.position.set(0, d * (port ? 0.95 : 0.86), d * (port ? 0.36 : 0.52) + 0.6); this.camera.lookAt(0, 0, port ? 0.1 : 0.35);
+      const port = rect.w < rect.h, flat = !port && rect.h < 320;      // flaches Querformat: näher ran, Bank-Karten unter die Anzeige
+      const d = Gfx.fit(this.camera, port ? 5.6 : 8.6, port ? 5.2 : (flat ? 4.3 : 6.2), rect, { pad: 1 });
+      this.camera.position.set(0, d * (port ? 0.95 : 0.86), d * (port ? 0.36 : 0.52) + 0.6); this.camera.lookAt(0, 0, port ? 0.1 : (flat ? -0.35 : 0.35));
     }
     update(dt, t) { return this.baseUpdate(dt, t); }
   }
@@ -501,12 +501,16 @@
     resize() {
       if (!this.camera) return;
       const ct = this.ctl.getBoundingClientRect(); this.holds.style.bottom = (innerHeight - ct.top + 50) + 'px'; this.msg.style.bottom = (innerHeight - ct.top + 6) + 'px';
-      const top = this.topH() + this.pt.offsetHeight + 8, bottom = innerHeight - this.holds.getBoundingClientRect().top;
-      const rect = Gfx.freeRect(top, bottom + 6, 0, 0);
+      const side = innerHeight <= 560 && innerWidth > innerHeight * 1.4;   // flaches Querformat: Gewinntabelle links daneben
+      this.pt.classList.toggle('side', side);
+      const top = this.topH() + (side ? 4 : this.pt.offsetHeight + 8), bottom = innerHeight - this.holds.getBoundingClientRect().top;
+      const rect = Gfx.freeRect(top, bottom + 6, side ? this.pt.getBoundingClientRect().right + 4 : 0, 0);
       const d = Gfx.fit(this.camera, 6, 1.9, rect, { pad: 1.02 });
       this.camera.position.set(0, d * 0.94, d * 0.34); this.camera.lookAt(0, 0, 0); this.camera.updateMatrixWorld();
-      const bw = Math.min(110, Math.max(54, rect.w / 6.2));
-      this.holds.querySelectorAll('.hold').forEach((b, i) => { const p = Gfx.project(this.camera, this.cx(i), 0, 0.2); b.style.left = (p.x - bw / 2) + 'px'; b.style.width = bw + 'px'; });
+      const ps = [0, 1, 2, 3, 4].map(i => Gfx.project(this.camera, this.cx(i), 0, 0.2));
+      const bw = Math.max(40, Math.min(110, (ps[4].x - ps[0].x) / 4 - 6));     // nie breiter als der Kartenabstand
+      this.holds.classList.toggle('tight', bw < 70);
+      this.holds.querySelectorAll('.hold').forEach((b, i) => { b.style.left = (ps[i].x - bw / 2) + 'px'; b.style.width = bw + 'px'; });
     }
     update(dt, t) { return this.baseUpdate(dt, t); }
     // Spiel verlassen mitten in der Runde: mit den gehaltenen Karten ziehen und sofort auszahlen.

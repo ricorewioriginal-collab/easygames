@@ -9,7 +9,7 @@
    "id": "krawallvoegel",
    "title": "Krawallvögel 3D",
    "desc": "Schleuder-Physikspiel nach dem Vogel-gegen-Schweine-Klassiker in 3D: 150 Level in 10 Senderwelten mit Boss-Burgen, 8 Vögel mit Fähigkeiten (Teilen, Turbo, Bombe, Ei, Bumerang, Riese, Aufblasen), 6 Schweinetypen, Glas, Holz, Stein und TNT. Sterne, Power-ups mit Mega-Adler, goldene Sender-Kisten für die Senderwand. Handy, PC und Controller, Vollbild, Konsolen-Menü und Google-Spielstand.",
-   "icon": "🐦",
+   "icon": "💥",
    "img": "krawallvoegel/card.svg",
    "bg": "linear-gradient(145deg,#2a1466,#d92a2a 55%,#ffc93a)",
    "glow": "rgba(255,90,60,.55)",
@@ -33,6 +33,34 @@
    },
    "size": 169785,
    "files": 11,
+   "offline": true
+  },
+  {
+   "id": "rico-flap",
+   "title": "Rico Flap 3D",
+   "desc": "Der Flatter-Klassiker in moderner 3D-Optik: Rico im RicoReWi-Hoodie flattert durch die Lücken der Funktürme. 10 Level in 5 Welten (Stadt, Wald, Wüste, Eis, Neon-Nacht), bewegliche Türme, Noten für bis zu drei Sterne und ein Endlos-Modus mit Rekord. Touch, Tastatur, Maus und Gamecontroller; lokaler Spielstand und optionaler Google-Speicher.",
+   "icon": "🐦",
+   "img": "rico-flap/card.svg",
+   "bg": "linear-gradient(145deg,#2a1356,#7b4bd1 55%,#ff9e6e)",
+   "glow": "rgba(200,245,90,.5)",
+   "path": "rico-flap/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Rico Flap 3D ist der Flatter-Klassiker in 3D: Rico, ein kleiner Vogel im RicoReWi-Hoodie mit Kopfhörern, fliegt durch die Lücken zwischen Funktürmen. Jeder Druck lässt ihn kurz nach oben flattern, sonst sinkt er. Wer einen Turm oder den Boden berührt, muss das Level neu starten. Jedes Level hat eine feste Zahl an Türmen und endet mit dem Zielring; in den Lücken schweben Noten. Ein geschafftes Level gibt einen Stern, die Hälfte der Noten einen zweiten und alle Noten den dritten. 10 Level in fünf Welten werden schneller, die Lücken enger, und ab Level 4 bewegen sich die Türme auf und ab. Im Endlos-Modus zählt jeder Turm und jede Note einen Punkt, alle 15 Türme wechselt die Welt. Level, Sterne und Rekord werden lokal gespeichert, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Smartphone und Tablet: irgendwo auf den Bildschirm tippen.",
+     "PC: Leertaste, Pfeil hoch, W oder Mausklick; P oder Esc Pause, M Ton.",
+     "Controller: A, B, X, Y oder rechter Trigger zum Flattern, Start für Pause, Steuerkreuz und A in den Menüs."
+    ],
+    "tipps": [
+     "Lieber oft und kurz flattern als selten und kräftig.",
+     "Bei beweglichen Türmen auf die Mitte der Lücke zielen, nicht auf die Kante.",
+     "Die Noten liegen genau in der Mitte der Lücke, sie zeigen dir also den sichersten Weg."
+    ]
+   },
+   "size": 87184,
+   "files": 8,
    "offline": true
   },
   {
@@ -1002,7 +1030,7 @@
      "Mit ☁ (Google) in der Lobby bleibt dein Spielgeld auf allen Geräten erhalten."
     ]
    },
-   "size": 1508769,
+   "size": 1510730,
    "files": 27,
    "offline": true
   },

@@ -7,6 +7,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 | Spiel | Verzeichnis |
 |---|---|
+| Rico Flap 3D – Flatter-Klassiker in 3D: Rico im RicoReWi-Hoodie, 10 Level in 5 Welten, bewegliche Türme, Noten und Sterne, Endlos-Modus mit Rekord; Touch, Tastatur, Maus und Gamecontroller, Google-Spielstand (Three.js, Sounds im Browser erzeugt) | [`rico-flap/`](rico-flap/) |
 | KIKO – Das Geheimnis der Sterneninseln – acht 3D-Level in vier Welten, Kristalle, Rätsel, Endgegner, Touch und Gamepad, lokaler Spielstand | [`kiko-sterneninseln/`](kiko-sterneninseln/) |
 | Krawallvögel 3D – Schleuder-Physikspiel mit 150 Leveln in 10 Sender-Welten, 8 Vogelarten mit Fähigkeiten, 6 Schweinetypen, Glas/Holz/Stein/TNT, Endgegner König Grunz, Power-ups, goldene Sender-Kisten und Senderwand; Touch, Maus, Tastatur, Gamecontroller, Google-Spielstand, Offline-PWA (Three.js + planck.js, Sounds und Musik im Browser erzeugt; Tests: `node tools/test-krawallvoegel.cjs`) | [`krawallvoegel/`](krawallvoegel/) |
 | AnMaCha Radio Maze 3D – Arcade-Labyrinth-Klassiker in 3D mit Original-Regeln, 60 Level, Senderlogos als Bonus, Google-Spielstand, Offline-PWA (Three.js) | [`radio-maze/`](radio-maze/) |
@@ -54,7 +55,7 @@ Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** a
 
 Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …, per USB oder Bluetooth) spielen.
 
-- **Eigene Controller-Steuerung** haben KIKO, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick, Funkparcours und AnMaCha Casino.
+- **Eigene Controller-Steuerung** haben KIKO, Rico Flap, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick, Funkparcours und AnMaCha Casino.
 - **Alle anderen Spiele** binden `gamepad.js` aus dem Hauptordner ein (`<script src="../gamepad.js" data-pad="…" defer></script>`). Die Datei übersetzt den Controller in das, was das Spiel schon kann:
   - Steuerkreuz und linker Stick = Pfeiltasten, **A** = Enter, **B** = Esc, **X** = Leertaste, **Y** = E, **LB/RB** = Q/E, **Start** = P, **Select** = M – pro Spiel angepasst im Attribut `data-pad` (z. B. `a=Space/Enter` = Leertaste, und nur wenn das Spiel sie nicht nutzt, Enter; `ls=wasd`; `y=-` = nichts).
   - In Menüs, die nicht auf Pfeiltasten reagieren, springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), **A** drückt ihn.

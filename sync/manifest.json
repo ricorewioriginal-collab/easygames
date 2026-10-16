@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "258e58ce8c9a",
- "generated": "2026-10-16T18:43:13+00:00",
- "commit": "a6a22cd41576101985c194cd324ea82ad35c01a9",
+ "version": "f462304e7ed6",
+ "generated": "2026-10-16T19:24:47+00:00",
+ "commit": "0d29255077a1d5e8c7adf213a9e344359729e32b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -993,8 +993,8 @@
   },
   {
    "p": "anmacha-gold-reels/app.js",
-   "s": 15033,
-   "h": "74544d887925190164a1091c2c6031ed70756ddb766000b6b3ac418b48142c8e"
+   "s": 14559,
+   "h": "50ed7ef1146246306bdf85200d8cd2e3243cb59f732f1717c81325f23ab6daa6"
   },
   {
    "p": "anmacha-gold-reels/card.png",
@@ -1003,8 +1003,8 @@
   },
   {
    "p": "anmacha-gold-reels/casino.css",
-   "s": 21427,
-   "h": "547994f2f09b5bdc992f180151308fccef99f7a7ed6312408449f29778b21461"
+   "s": 22857,
+   "h": "ab2ebdbe880c9b3242188bc39bd4d3291c5345238ed81064589ad79bc8b50546"
   },
   {
    "p": "anmacha-gold-reels/core.js",
@@ -1108,8 +1108,8 @@
   },
   {
    "p": "anmacha-gold-reels/slot3d.js",
-   "s": 36123,
-   "h": "cebefd7c12f7d71c46aff86a8a0ed1a95de249b551759a0646760c73229817f3"
+   "s": 36556,
+   "h": "9623a7d37529e27fbb2ff631e26b5346e676c3ba2fbdafa01a6d5c94f64b1878"
   },
   {
    "p": "anmacha-gold-reels/sw.js",
@@ -1123,8 +1123,8 @@
   },
   {
    "p": "anmacha-gold-reels/tables.js",
-   "s": 51070,
-   "h": "283834d5c63bb00e04ba6f1e1ae3375238c8ecc83be7ab2b93f7a3ee3371464f"
+   "s": 51642,
+   "h": "3803295645c8920943eb41e5173a656c0fb777eb8cf8086f6bd0ce27c87112c4"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 20253,
-   "h": "3172d14791c6796f4b96d7a23d2e8903716461c08f246030f8c22ad896d002ad"
+   "s": 20804,
+   "h": "18cca94910e34e505ea44d22fd3a433b99e8de7789997ac15a15102552312c94"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 54152,
-   "h": "d04ddc9c07006a5c4ab87a65b2a8bbbbafa9e9932af41894fed8ce63ba87aa8d"
+   "s": 55467,
+   "h": "a6820f01321715c72ee6b0761cd409c4bbc9bf555a4e6d8eda78a38ed12fb05c"
   },
   {
    "p": "index.html",
@@ -5562,6 +5562,46 @@
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
   },
   {
+   "p": "rico-flap/card.png",
+   "s": 16335,
+   "h": "0598f334975a0e4831111bbce9b52c023847d29bc16d9dacdd0a1a4ade9ba242"
+  },
+  {
+   "p": "rico-flap/card.svg",
+   "s": 4481,
+   "h": "9b994d624c40d541f987ee07c8903e6094dbada6a39cb22b6e8e133adbab3c62"
+  },
+  {
+   "p": "rico-flap/emblem.jpg",
+   "s": 13170,
+   "h": "02024fe8b3459c3d5d76b0d54c7eeb3512f502e80dda9095811340676a696b16"
+  },
+  {
+   "p": "rico-flap/game.js",
+   "s": 36771,
+   "h": "3086974f612a2469a1ba111a56e0203f652b9c016f94fe6fecc6f5b2370f85f3"
+  },
+  {
+   "p": "rico-flap/index.html",
+   "s": 7407,
+   "h": "e4dd602e04a285a3ccb3feed3c1c33e2de9a10c4b6301daa04d9af19be1c21ac"
+  },
+  {
+   "p": "rico-flap/manifest.webmanifest",
+   "s": 755,
+   "h": "80b905ce4fca48865b7400191216d681008d431505b9e6b0d0504aa56f00aac1"
+  },
+  {
+   "p": "rico-flap/style.css",
+   "s": 6285,
+   "h": "ee39f8c1258d71a91f9744239bc100ac350d22f0e6108b68c6dbf6dac8ffe650"
+  },
+  {
+   "p": "rico-flap/sw.js",
+   "s": 1980,
+   "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5678,8 +5718,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 82238,
-   "h": "673da26f83e9fbceb7b2f90ec0478622e7e5410452bd8e215960144347376127"
+   "s": 84306,
+   "h": "2e067b50a33c9fb41f280fde8f50f0d0ec746f72c5e890b64aa106ee1ccffedf"
   },
   {
    "p": "taschi/card.svg",
