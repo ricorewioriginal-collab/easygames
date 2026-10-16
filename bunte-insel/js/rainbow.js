@@ -83,8 +83,11 @@ BI.createRainbow = function (G) {
   /* ===== Brunnen: Freude teilen ===== */
   const SAYS = ['🌈 Jeder Mensch ist richtig, genau so wie er ist!', '🌈 Es gibt ganz viele Arten von Familien – wichtig ist, dass man sich lieb hat.', '🌈 Wir lachen niemanden aus. Wir spielen zusammen!', '🌈 Man darf Rosa mögen, Fußball mögen oder beides.', '🌈 Wer sich traurig fühlt, darf mit einem Erwachsenen reden, dem er vertraut.', '🌈 Alle Farben zusammen machen den schönsten Regenbogen!'];
   let si = 0, last = -1e9; const COLS = [[1, .23, .23], [1, .6, .18], [1, .88, .29], [.3, .82, .49], [.25, .63, 1], [.61, .3, .88]];
-  K.near = function () { if (P.veh || P.y > 1.5) return null; return Math.hypot(P.x - R.x, P.z - R.z) < 6.8 ? { k: 'rbow' } : null; };
+  K.near = function () { if (P.veh || P.y > 1.5) return null;
+    if (pLive && nearPride() && !K.wagon()) { let best = null, bd = 4.6; for (const v of parade) { const d = Math.hypot(P.x - v.g.position.x, P.z - v.g.position.z); if (d < bd) { bd = d; best = v; } } if (best) return { k: 'parade', v: best, label: '🌈 Auf den Paradewagen' }; }
+    return Math.hypot(P.x - R.x, P.z - R.z) < 6.8 ? { k: 'rbow' } : null; };
   K.act = function (n) {
+    if (n && n.k === 'parade') { hopOn(n.v); return; }
     if (!n || n.k !== 'rbow') return; G.flag && G.flag('rb_share'); const now = performance.now(); fx.burst(R.x, 3.2, R.z, 24, COLS, 4, 1.4, 28, 3); A.fanfare && A.fanfare(); say(SAYS[si++ % SAYS.length], 4200);
     if (now - last > 45000) { last = now; G.addStars(1); say('🌈 +1 ⭐ fürs Freude teilen!', 1800); G.earn && G.earn('play'); }
   };
@@ -123,7 +126,7 @@ BI.createRainbow = function (G) {
       for (let k = 0; k < 4; k++) b.sph(-1.1 + k * .75, 3.3 + (k % 2) * .3, -2.2, .3, RB[(k * 2) % 6], 1); }
     g.add(b.mesh(pmat));
     if (txt) { const m = board(txt); for (const sd of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.1), m); pl.position.set(sd * 1.38, 2.1, 0); pl.rotation.y = sd * Math.PI / 2; g.add(pl); } }
-    const it = { g, d, dancers: [] }; dancers.forEach(([x, z], i) => { const c = BI.makeChar(lookOf(false)); c.group.position.set(x, kind === 'truck' ? 1.2 : .85, z); g.add(c.group); it.dancers.push({ c, ph: i * 1.7, st: i % 3 }); });
+    const it = { g, d, kind, dancers: [] }; dancers.forEach(([x, z], i) => { const c = BI.makeChar(lookOf(false)); c.group.position.set(x, kind === 'truck' ? 1.2 : .85, z); g.add(c.group); it.dancers.push({ c, ph: i * 1.7, st: i % 3 }); });
     scene.add(g); parade.push(it); return it; };
   vehicle('truck', 0xff5aa0, 0, 'PRIDE 🌈', [[-.5, -1.2], [.5, -.2]]); vehicle('trailer', 0, -6.7, 'LIEBE FÜR ALLE', [[-.5, -1.5], [.5, -.2], [0, 1.2]]);
   vehicle('truck', 0x9b4de0, -24, '🏳️‍🌈 24/7', [[-.5, -1.2], [.5, -.2]]); vehicle('trailer', 0, -30.7, 'JEDER IST WILLKOMMEN', [[-.5, -1.5], [.5, -.2], [0, 1.2]]);
@@ -132,6 +135,18 @@ BI.createRainbow = function (G) {
       if (i % 2 === 0) { const fb = new BI.Batch(); fb.cyl(0, .2, 0, .025, .025, 1.9, 0xdddddd, 5); for (let k = 0; k < 6; k++) fb.box(0, 1.95 - .17 * (k + 1), -.3, .03, .17, .6, RB[(k + i) % 6]); const fm = fb.mesh(pmat); fm.position.set(.45, 0, .1); c.group.add(fm); }
       scene.add(c.group); walkers.push({ c, d, off, ph: Math.random() * 6 }); } });
   K.parade = parade; K.walkers = walkers;
+  /* Paradewagen sind begehbar: die Ladefläche ist Boden (Anhänger einfach hochlaufen, Truck per Sprung oder Knopf), wer drauf steht, fährt mit. */
+  const BED = { truck: { top: 1.2, w: 1.25, z0: -2.85, z1: 1 }, trailer: { top: .85, w: 1.25, z0: -2.45, z1: 2.45 } };
+  const local = (v, x, z) => { const h = v.g.rotation.y, dx = x - v.g.position.x, dz = z - v.g.position.z, c = Math.cos(h), s = Math.sin(h); return [dx * c - dz * s, dx * s + dz * c]; };
+  const onBed = (v, x, z) => { const b = BED[v.kind], l = local(v, x, z); return Math.abs(l[0]) < b.w && l[1] > b.z0 && l[1] < b.z1 ? l : null; };
+  const toWorld = (v, l) => { const h = v.g.rotation.y, c = Math.cos(h), s = Math.sin(h); return [v.g.position.x + l[0] * c + l[1] * s, v.g.position.z - l[0] * s + l[1] * c]; };
+  const nearPride = (x = P.x, z = P.z) => Math.abs(x - R.x) < 16 && Math.abs(z - R.z) < 16;
+  K.floorAt = function (x, z, y) { if (!pLive || !nearPride(x, z)) return -1e9; for (const v of parade) { const b = BED[v.kind]; if (y > b.top - 1.15 && onBed(v, x, z)) return b.top; } return -1e9; };
+  K.wagons = () => parade.map(v => ({ x: v.g.position.x, z: v.g.position.z, kind: v.kind }));
+  K.wagon = () => { if (P.veh || !pLive || !nearPride()) return null; for (const v of parade) if (Math.abs(P.y - BED[v.kind].top) < .12 && onBed(v, P.x, P.z)) return v; return null; };
+  let rode = false;
+  const hopOn = v => { const b = BED[v.kind], w = toWorld(v, [0, (b.z0 + b.z1) / 2]); P.x = w[0]; P.z = w[1]; P.y = b.top; P.vy = 0; P.h = v.g.rotation.y; fx.burst(P.x, b.top + 1, P.z, 18, COLS, 4, 1.2, 26, 3); A.fanfare && A.fanfare(); G.dance && G.dance();
+    if (!rode) { rode = true; G.flag && G.flag('rb_parade'); G.addStars(1); G.earn && G.earn('play'); say('🌈 Du fährst auf dem Paradewagen mit! Tanz mit – zum Absteigen einfach loslaufen. +1 ⭐', 3600); } else say('🌈 Auf dem Paradewagen! Zum Absteigen einfach loslaufen.', 2400); };
   let live = true;
   K.crowd = crowd; K.songs = SONGS;
   /* ===== Bewohner: verschiedene Menschen, bunte Haare & Kleider, erzählen kindgerecht ===== */
@@ -162,7 +177,9 @@ BI.createRainbow = function (G) {
     const dS = Math.hypot(P.x - ST.x, P.z - ST.z), on = dS < 80;
     const dP = Math.hypot(P.x - R.x, P.z - R.z), onP = dP < 90;
     if (onP !== pLive) { pLive = onP; for (const v of parade) v.g.visible = onP; for (const w of walkers) w.c.group.visible = onP; }
+    const rideOn = onP ? K.wagon() : null, rl = rideOn && local(rideOn, P.x, P.z), rh = rideOn && rideOn.g.rotation.y;
     if (onP) { ps += dt * PR.v; for (const v of parade) { const [x, z, h] = pAt(v.d, 0); v.g.position.set(x, 0, z); v.g.rotation.y = h; for (const q of v.dancers) { q.c.dance(t + q.ph, q.st); q.c.group.position.y = (v.dancers.length === 3 ? .85 : 1.2) + Math.abs(Math.sin((t + q.ph) * 8)) * .1; } }
+      if (rideOn) { const w = toWorld(rideOn, rl), dh = rideOn.g.rotation.y - rh; P.x = w[0]; P.z = w[1]; P.h += Math.atan2(Math.sin(dh), Math.cos(dh)); G.carry && G.carry(); }
       for (const w of walkers) { const [x, z, h] = pAt(w.d, w.off); w.c.group.position.set(x, W.groundY(x, z) + Math.abs(Math.sin(t * 7 + w.ph)) * .05, z); w.c.group.rotation.y = h; w.c.pose(t * 7 + w.ph, .7, false); } }
     if (on !== live) { live = on; for (const q of crowd) q.c.group.visible = on; scr.visible = on; }
     if (on) { const i = ((t / 12) | 0) % SONGS.length; if (i !== song) paint(i); for (const q of crowd) { q.c.dance(t + q.ph, q.st); q.c.group.position.y = q.y + Math.abs(Math.sin((t + q.ph) * 8)) * .14; } ts -= dt; if (ts <= 0 && dS < 50) { ts = 1.1; fx.burst(ST.x + 4, 9, ST.z + (Math.random() - .5) * 12, 4, COLS, 3, 1.6, 22, 2); } }

@@ -464,3 +464,15 @@ Eigene Insel, INSPIRIERT von klassischen 16-Bit-Rollenspielen mit Rätsel-Verlie
 ## Prisma-Archipel
 
 Das Prisma-Archipel ergänzt die Inselreise um drei eigenständige Abenteuerbereiche: den Ki-Garten, die Runen-Arena und den Datenhain. Jede Zone bietet ein dauerhaft gespeichertes Drei-Schritt-Rätsel mit Hinweis-Tafel, Story-Ziel und Sammelalbum-Sticker. Zwei Bewohner sprechen Deutsch und Englisch. Drei neue Fahrzeuge – Ki-Blitz-Roadster, Runen-Duell-Coupé und Datenhain-Buggy – stehen auf der Insel bereit und nutzen das vorhandene Fahrzeugsystem. Die Insel ist in Wegweiser, Story-Modus, Aufgabenbuch und Minikarte eingebunden.
+
+Ausbau (jede Zone als eigene kleine Welt, Test: `tests/prisma.mjs`):
+- **Ki-Garten:** Kampfkunst-Tempel mit Meister Wolkenbart, begehbarer Turnier-Ring mit **Ki-Welle** (drei Kristalle treffen), sieben orange **Sternkugeln** auf dem ganzen Archipel und ein Altar, an dem der **Lichtdrache** erscheint und einen Wunsch erfüllt. Die **goldene Flugwolke** fliegt wie das Schlüsselschwert-Mobil.
+- **Runen-Arena:** **Duell-Stadion** mit Tribünen, Kartenfeldern und zwei Holo-Monstern. Am blauen Podest startet das Mini-Spiel **Runen-Duell** gegen Duellmeisterin Kaia (Element-Vorteil Feuer > Pflanze > Wasser > Feuer). Am **Kartenautomaten** sammelt man 12 Runenkarten, das **Rätselprisma** erzählt Kinderrätsel.
+- **Datenhain:** leuchtendes Datengitter, Würfelbäume, das **Datentor** (alter Fernseher) und das **Partner-Ei**. Daraus schlüpft Bitti, das mit Datenwürfeln zu Byton (4) und Gigaflux (10) wächst und dir auf dem Archipel folgt.
+- Fünf neue Sticker, drei neue Akte der Inselgeschichte. Spielstand-Felder unter `save.prisma` wurden nur ergänzt.
+
+## Kamera & Pride-Parade (Feinschliff)
+- Die Nahebene der Kamera passt sich dem Abstand an. Vorher blieb sie nach einer Fahrzeugfahrt groß und schnitt Kopf und Haare der Figur an (Figur wirkte durchsichtig).
+- Die Kamera-Hinderniserkennung behandelt Meer und Uferkante nicht mehr als Wand. Vorher sprang die Kamera beim Fliegen oder Bootfahren über Wasser bis ins Fahrzeugmodell.
+- In der Ego-Sicht werden Fahrzeugmodelle ausgeblendet, in denen die Kamera sonst stecken würde.
+- Die Paradewagen der Pride-Parade sind begehbar: den Anhänger kann man hochlaufen, per Knopf „🌈 Auf den Paradewagen“ springt man auf und fährt tanzend mit. Test: `tests/kamera.mjs`.
