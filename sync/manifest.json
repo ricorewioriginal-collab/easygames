@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f4fdffda152e",
- "generated": "2026-10-16T21:32:09+00:00",
- "commit": "07eec88d6b31a0230fef50ff6564f7e3b9739c3a",
+ "version": "92b0f393b802",
+ "generated": "2026-10-16T21:41:58+00:00",
+ "commit": "3480a1217de11cbdccdd586e63105f9cbf5cf6f4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4659,7 +4659,7 @@
   {
    "p": "cloud/anmacha-cloud.js",
    "s": 30883,
-   "h": "d62e52c51aa0a979be82cb37226e6d0646bd986c8b167aaf4b38f1eaeabd83b2"
+   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
   },
   {
    "p": "device.js",
@@ -4694,7 +4694,7 @@
   {
    "p": "games.js",
    "s": 22176,
-   "h": "89eaa80eb3bb05d559eb5b4b40796eaeb56809823cf8e1ee062913feef3b0562"
+   "h": "d7068176356e896deef6da41738f6ed76c85fc41c1177023bcb3faf36b221d4e"
   },
   {
    "p": "gay-life/index.html",
@@ -4954,7 +4954,7 @@
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
    "s": 30883,
-   "h": "d62e52c51aa0a979be82cb37226e6d0646bd986c8b167aaf4b38f1eaeabd83b2"
+   "h": "b12a0d0541f111156cf46efc07976d71f8bc5dc510198281b32d5a19d4886028"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
