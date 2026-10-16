@@ -42,7 +42,7 @@
     var mm = s.stats[me] ? s.stats[me].maxMoney : pl.money; st.highestMoney = Math.max(st.highestMoney, mm);
     st.byWorld[s.world] = (st.byWorld[s.world] || 0) + 1; st.byChar[pl.char] = (st.byChar[pl.char] || 0) + 1;
     st.trades += s.stats[me] ? s.stats[me].trades : 0;
-    var order = s.players.map(function (x, i) { return { i: i, w: R.worth(s, i), out: x.out }; }).sort(function (a, b) { return (a.out - b.out) || b.w - a.w; });
+    var order = R.ranking(s);
     var place = order.map(function (o) { return o.i; }).indexOf(me) + 1;
     p.history.unshift({ d: Date.now(), mode: s.mode, world: s.world, won: won, place: place, n: s.players.length, worth: R.worth(s, me), rounds: s.round, online: !!s.online, ms: info.ms || 0,
       names: s.players.map(function (x) { return x.name; }).slice(0, 6) });
@@ -79,7 +79,7 @@
   function loadGame(slot) {
     var d = get('save.' + slot, null);
     if (!d || !d.s) return null;
-    var err = root.RicoRules.validate(d.s);
+    var err; try { err = root.RicoRules.validate(d.s); } catch (e) { err = 'schema'; }
     if (err) return { error: err, t: d.t };
     return d;
   }

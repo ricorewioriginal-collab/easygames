@@ -242,7 +242,13 @@
         var c = p.connect(PREFIX + 'pub-' + n), fin = false;
         var to = setTimeout(function () { if (!fin) { fin = true; if (--left <= 0) end(); } }, 4000);
         c.on('open', function () { c.send({ t: 'info' }); });
-        c.on('data', function (m) { if (m && m.t === 'info' && !m.started && /^[A-Z0-9]{6}$/.test(m.code)) found.push(m); if (!fin) { fin = true; clearTimeout(to); if (--left <= 0) end(); } });
+        c.on('data', function (m) {
+          // Fremde Antworten nur geprüft und normalisiert übernehmen (jeder kann eine Kennung belegen)
+          if (m && m.t === 'info' && !m.started && typeof m.code === 'string' && /^[A-Z0-9]{6}$/.test(m.code))
+            found.push({ code: m.code, host: clean(m.host) || '?', world: /^(metropolis|fantasy|future)$/.test(m.world) ? m.world : 'metropolis',
+              mode: /^(classic|quick|custom)$/.test(m.mode) ? m.mode : 'classic', n: Math.max(0, Math.min(6, m.n | 0)), max: Math.max(2, Math.min(6, m.max | 0)) });
+          if (!fin) { fin = true; clearTimeout(to); if (--left <= 0) end(); }
+        });
       })(n);
     });
     p.on('error', function () {});

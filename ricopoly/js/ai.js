@@ -48,7 +48,7 @@
     // Zuerst Gebäude verkaufen (billigste Wirkung zuerst), dann Hypotheken (Einzelstücke vor Gruppen)
     var best = null, bl = 1e9;
     ownedBy(s, p).forEach(function (sq) {
-      if (s.own[sq].h > 0 && (s.own[sq].h === 5 || !R.sellError(s, p, sq))) { var loss = B[sq].rent[s.own[sq].h] - B[sq].rent[s.own[sq].h - 1]; if (loss < bl) { bl = loss; best = sq; } }
+      if (s.own[sq].h > 0 && !R.sellError(s, p, sq)) { var loss = B[sq].rent[s.own[sq].h] - B[sq].rent[s.own[sq].h - 1]; if (loss < bl) { bl = loss; best = sq; } }
     });
     if (best != null) return { type: 'sell', p: p, sq: best };
     var cand = ownedBy(s, p).filter(function (sq) { return !R.mortgageError(s, p, sq); });
@@ -113,12 +113,13 @@
   function propose(s, p) {
     var L = lvl(s, p);
     if (s.trades.some(function (t) { return t.from === p; })) return null;
-    var pl = s.players[p], key = p + ':' + s.turnId;
+    var pl = s.players[p], key = s.id + ':' + p + ':' + s.turnId;
     if (memo[key]) return null;
+    if (Object.keys(memo).length > 4000) for (var mk in memo) delete memo[mk];   // Speicher begrenzen
     memo[key] = 1;
     var want = missingOne(s, p), best = null;
     want.forEach(function (w) {
-      var cool = memo['c' + p + ':' + w.sq] || -1e9;
+      var cool = memo[s.id + ':c' + p + ':' + w.sq] || -1e9;
       if (s.turnId - cool < 4 * s.players.length) return;
       var q = w.q, give = { money: 0, props: [], cards: 0 }, get = { money: 0, props: [w.sq], cards: 0 };
       // Tausch, der auch dem Partner eine Gruppe vervollständigt (beide profitieren)
@@ -141,7 +142,7 @@
       if (!best || myGain > best.gain) best = { gain: myGain, sq: w.sq, act: { type: 'propose', p: p, to: q, give: give, get: get } };
     });
     if (!best) return null;
-    memo['c' + p + ':' + best.sq] = s.turnId;
+    memo[s.id + ':c' + p + ':' + best.sq] = s.turnId;
     return best.act;
   }
   function countOf(s, g, p) { return G[g].filter(function (i) { return s.own[i].o === p; }).length; }
@@ -168,7 +169,7 @@
         if (L === 'hard') {   // Schwer: überbietet nur so weit, dass der Gegner nicht billig gewinnt
           others(s, p).forEach(function (q) { if (s.players[q].money < a.high + 20) max = Math.max(max, Math.min(budget, a.high + 1)); });
         }
-        var step = a.high < 100 ? 10 : 20, bid = Math.min(max, a.high + step);
+        var step = a.high < 100 ? 10 : 20, bid = Math.floor(Math.min(max, a.high + step));
         if (bid > a.high) return { type: 'bid', p: p, amount: bid };
         return { type: 'pass', p: p };
       }

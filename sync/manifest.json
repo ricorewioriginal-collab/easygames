@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "27371e74cbb9",
- "generated": "2026-10-16T20:28:30+00:00",
- "commit": "babca81b85690b5d7fba1e0e9844658a2cd1c633",
+ "version": "e548d71505d8",
+ "generated": "2026-10-16T20:32:22+00:00",
+ "commit": "aae69ab109923f24f3e246be5d6b1eec9bfefe8b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5618,8 +5618,8 @@
   },
   {
    "p": "ricopoly/js/ai.js",
-   "s": 12098,
-   "h": "286a2c3fd007a28236d13b6c37a31dd136c58db28dc577e3d8f8985b6954603b"
+   "s": 12219,
+   "h": "bf3a708d643fb082079c3a6dc250d19907af543ebed307a647005888b0af6620"
   },
   {
    "p": "ricopoly/js/audio.js",
@@ -5638,28 +5638,28 @@
   },
   {
    "p": "ricopoly/js/game.js",
-   "s": 82990,
-   "h": "06b98f5ca79780822b9e50918d36b5d933a67a80aea750ef1bec3f78b6f78bb0"
+   "s": 82889,
+   "h": "e93fe95943acdba09515305b7222b2219d40c4648e1316f5109e39878d413300"
   },
   {
    "p": "ricopoly/js/i18n.js",
-   "s": 50425,
-   "h": "b5cd777870ffd2ee8eee442d2ce55a335994ceca5b49a3d42c5ab06188db5bc7"
+   "s": 50663,
+   "h": "fdea364b6a9d117f987c12913398e295d8f4145468bc626507d35014830b7991"
   },
   {
    "p": "ricopoly/js/net.js",
-   "s": 18055,
-   "h": "9376cbef0c084a543446efdae239381af03ae84b1592214acafc8f0894c14ee1"
+   "s": 18515,
+   "h": "59cb69466ba2d959d7db11ee94c8d44432ca94270ac02b6af50f90c08fb45f66"
   },
   {
    "p": "ricopoly/js/profile.js",
-   "s": 6963,
-   "h": "57cff37e07a0173b655f93dc9ed9bb70f446e607b6647a9ae5391f54d87c91ca"
+   "s": 6874,
+   "h": "a358ac5e4b973abc1292f1c6b0cab8c1d2afbcf16a7beb9fea3cb3da1fd794fc"
   },
   {
    "p": "ricopoly/js/rules.js",
-   "s": 38438,
-   "h": "873a94406299a6a6b37d98f006f6ba2ac4d29ad234f6f1a4a9ce2ca3cb87a159"
+   "s": 40033,
+   "h": "bf77bdc6d7352c61d6897c3e9d09c1745431ba7abb734eba3271b51e60c06e55"
   },
   {
    "p": "ricopoly/js/worlds.js",
@@ -5799,7 +5799,7 @@
   {
    "p": "sync/catalog.json",
    "s": 87028,
-   "h": "b2b6d891c65ed5da321df8184b3897d5c65fb62531f8c63bf6194fd0fecec131"
+   "h": "34bdb66775af0a7581e5cde59a89a8a49608de2c346defdacdf8e17b1751ac04"
   },
   {
    "p": "taschi/card.svg",

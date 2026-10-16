@@ -441,3 +441,49 @@ test('Beschädigte Spielstände werden beim Laden erkannt', () => {
   const d = R.clone(ok); d.own[0] = { o: 0, h: 0, m: false }; assert.equal(R.validate(d), 'own');
   assert.equal(R.validate(null), 'schema');
 });
+
+test('Unvollständige Spielstände werfen keinen Fehler, sondern werden abgelehnt', () => {
+  for (const k of ['bank', 'cfg', 'decks', 'debts', 'trades', 'stats']) { const s = R.clone(two()); delete s[k]; assert.equal(R.validate(s), 'schema', k); }
+  const s = R.clone(two()); s.players[1] = null; assert.equal(R.validate(s), 'schema');
+});
+
+test('Hotel abbauen bei leerem Häuservorrat nur, wenn die Gruppe gleichmäßig bleibt', () => {
+  let s = three({ houses: 8 });
+  [1, 3].forEach(i => { s.own[i].o = 0; s.own[i].h = 0; });   // Gruppe 0: Felder 1 und 3
+  s.own[1].h = 5; s.own[3].h = 5; s.bank.hotels -= 2; s.bank.houses = 0;
+  bad(s, { type: 'sell', p: 0, sq: 1 }, 'uneven');
+  s.own[3].h = 1; s.bank.hotels++; s.bank.houses = 7;            // validate-konsistent: 1 Haus verbaut
+  s.bank.houses = 0; s.cfg.houses = 1;
+  s = act(s, { type: 'sell', p: 0, sq: 1 });                        // Hotel → 0 Häuser, Nachbar hat 1: erlaubt
+  assert.equal(s.own[1].h, 0);
+});
+
+test('Rangliste: Ausgeschiedene nach Reihenfolge des Ausscheidens', () => {
+  let s = R.newGame({ seed: 3, players: ['A', 'B', 'C', 'D'].map(n => ({ name: n, human: true })) });
+  s = act(s, { type: 'resign', p: 1 });   // B zuerst raus
+  s = act(s, { type: 'resign', p: 3 });   // dann D
+  s = act(s, { type: 'resign', p: 2 });   // dann C → A gewinnt
+  assert.deepEqual(R.ranking(s).map(o => o.i), [0, 2, 3, 1]);
+});
+
+test('Handel während offener Schulden darf den Schuldner nicht ausräumen', () => {
+  let s = two();
+  s.own[39].o = 1; s.own[1].o = 0; s.own[3].o = 0; s.players[0].money = 10;
+  s.players[0].pos = 30; s.cur = 0;
+  s.debts = [{ from: 0, to: 1, amount: 100, why: 'rent' }]; s.phase = 'debt';
+  s = act(s, { type: 'propose', p: 1, to: 0, give: { money: 1 }, get: { props: [1, 3] } });
+  const r = R.apply(s, { type: 'accept', p: 0, id: s.trades[0].id });
+  assert.equal(r.ok, false); assert.equal(r.err, 'debtTrade'); assert.equal(r.state.own[1].o, 0);
+  s = act(s, { type: 'propose', p: 1, to: 0, give: { money: 150 }, get: { props: [1] } });
+  s = act(s, { type: 'accept', p: 0, id: s.trades[s.trades.length - 1].id });   // bringt genug Geld: erlaubt
+  assert.equal(s.own[1].o, 1);
+});
+
+test('KI-Handelsgedächtnis gilt nur für die eigene Partie', () => {
+  const players = [{ name: 'A', bot: 'medium' }, { name: 'B', bot: 'medium' }];
+  const a = R.newGame({ seed: 9, players }), b = R.newGame({ seed: 9, players, id: 'zweite' });
+  a.own[1].o = 0; a.own[3].o = 1; b.own[1].o = 0; b.own[3].o = 1;
+  assert.ok(AI.propose(a, 0), 'Bot schlägt in Partie 1 einen Tausch vor');
+  assert.equal(AI.propose(a, 0), null, 'im selben Zug nicht noch einmal');
+  assert.ok(AI.propose(b, 0), 'eine neue Partie mit gleicher Zugnummer ist davon nicht betroffen');
+});

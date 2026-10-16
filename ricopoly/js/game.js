@@ -15,7 +15,7 @@
   function btn(label, cls, fn, attrs) { var b = h('button', cls || 'btn', label, attrs); b.type = 'button'; b.addEventListener('click', function (e) { A.unlock(); A.sfx('click'); fn(e); }); return b; }
   function sqName(i, s) { return W.sqName((s || (M && M.s) || { world: prof.world }).world, i, S.lang); }
   function pcol(i) { return BD.PCOL[i % 6]; }
-  function charName(id) { var c = C.BY[id]; return c ? c[S.lang] || c.de : id; }
+  function charName(id) { var c = C.BY[id]; return c ? c[S.lang] || c.de : esc(id); }
   function toast(msg, kind) { var el = h('div', 'toast ' + (kind || ''), esc(msg)); $('toasts').appendChild(el); setTimeout(function () { el.classList.add('out'); }, 2600); setTimeout(function () { el.remove(); }, 3200); }
   function saveProf() { PF.save(prof); }
   function applyLang() { document.documentElement.lang = S.lang; document.querySelectorAll('[data-t]').forEach(function (e) { e.textContent = t(e.getAttribute('data-t')); }); }
@@ -641,7 +641,7 @@
     var gained = M.spectator ? [] : PF.recordGame(prof, s, me, { ms: ms, tutorial: M.tutorial });
     if (M.client || M.host) rememberFriends(s);
     if (!M.client) { if (M.host) PF.deleteSave('host'); else PF.deleteSave(M.slot || 'auto'); }
-    var order = s.players.map(function (p, i) { return { i: i, w: R.worth(s, i), out: p.out }; }).sort(function (a, b) { return (a.out - b.out) || b.w - a.w; });
+    var order = R.ranking(s);
     setTimeout(function () {
       openModal(function (b) {
         b.className = 'modal-body results';
@@ -803,7 +803,7 @@
       b.appendChild(row);
       b.appendChild(h('h3', null, t('net.public')));
       var list = h('div', 'col', '<p class="muted">' + t('net.searching') + '</p>'); b.appendChild(list);
-      var search = function () { list.innerHTML = '<p class="muted">' + t('net.searching') + '</p>'; NET.scan(function (rooms) { list.innerHTML = ''; if (!rooms.length) list.appendChild(h('p', 'muted', t('net.noneFound'))); rooms.forEach(function (rm) { list.appendChild(btn('▶ ' + esc(rm.host) + ' · ' + W.get(rm.world).title[S.lang] + ' · ' + t('mode.' + rm.mode) + ' · ' + rm.n + '/' + rm.max, 'btn', function () { joinRoom(rm.code); })); }); list.appendChild(btn('↻ ' + t('net.refresh'), 'btn ghost sm', search)); }); };
+      var search = function () { list.innerHTML = '<p class="muted">' + t('net.searching') + '</p>'; NET.scan(function (rooms) { list.innerHTML = ''; if (!rooms.length) list.appendChild(h('p', 'muted', t('net.noneFound'))); rooms.forEach(function (rm) { var b = btn('', 'btn', function () { joinRoom(rm.code); }); b.textContent = '▶ ' + rm.host + ' · ' + W.get(rm.world).title[S.lang] + ' · ' + t('mode.' + rm.mode) + ' · ' + rm.n + '/' + rm.max; list.appendChild(b); }); list.appendChild(btn('↻ ' + t('net.refresh'), 'btn ghost sm', search)); }); };
       search();
     });
   }

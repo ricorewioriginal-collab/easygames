@@ -148,6 +148,10 @@
     return w;
   }
   // Was ein Spieler sofort flüssig machen kann (Gebäude halber Preis, Hypotheken)
+  function ranking(s) {
+    return s.players.map(function (x, i) { return { i: i, w: worth(s, i), out: !!x.out, at: x.outAt || 0 }; })
+      .sort(function (a, b) { return (a.out - b.out) || (a.out ? b.at - a.at : b.w - a.w); });
+  }
   function liquidity(s, p) {
     var v = s.players[p].money;
     s.own.forEach(function (o, i) { if (o && o.o === p) { v += o.h * BOARD[i].hc / 2; if (!o.m) v += BOARD[i].price / 2; } });
@@ -342,7 +346,7 @@
       pl.cards.forEach(function (d) { s.decks[d].order.push(DECKS[d].indexOf(DECKS[d].filter(function (x) { return x.t === 'goojf'; })[0])); });
     }
     ev(s, out, { e: 'bankrupt', p: p, to: cred, props: props, cash: pl.money, bsale: pl.money - before });
-    pl.money = 0; pl.cards = []; pl.out = true; pl.jail = false;
+    pl.money = 0; pl.cards = []; pl.out = true; pl.jail = false; pl.outAt = s.seq;
     s.debts = s.debts.filter(function (d) { return d.from !== p; });
     s.debts.forEach(function (d) { if (d.to === p) d.to = -1; });
     s.trades = s.trades.filter(function (t) { return t.from !== p && t.to !== p; });
@@ -406,6 +410,18 @@
     if (o.h === 4 ? s.bank.hotels < 1 : s.bank.houses < 1) return 'noStock';
     return '';
   }
+  // Ein Handel darf Schuldner nicht so ausräumen, dass sie ihre offenen Schulden danach nicht mehr decken können
+  function debtTradeError(s, tr) {
+    var bad = '';
+    [tr.from, tr.to].forEach(function (p) {
+      if (bad || !s.debts.some(function (d) { return d.from === p; })) return;
+      var t = clone(s), sink = [];
+      transferSide(t, sink, tr.from, tr.to, tr.give); transferSide(t, sink, tr.to, tr.from, tr.get);
+      var owe = t.debts.filter(function (d) { return d.from === p; }).reduce(function (a, d) { return a + d.amount; }, 0);
+      if (owe < 1e9 && liquidity(t, p) < owe) bad = 'debtTrade';
+    });
+    return bad;
+  }
   function sellError(s, p, sq) {
     var b = BOARD[sq], o = s.own[sq];
     if (!b || b.t !== 'prop') return 'notStreet';
@@ -413,6 +429,10 @@
     if (o.h < 1) return 'noBuilding';
     var max = Math.max.apply(null, GROUPS[b.g].map(function (i) { return s.own[i].h; }));
     if (o.h < max) return 'uneven';
+    if (o.h === 5) {   // Hotel wird zu so vielen Häusern, wie die Bank hat – die Gruppe muss danach gleichmäßig bleiben
+      var back = Math.min(4, s.bank.houses);
+      if (GROUPS[b.g].some(function (i) { return i !== sq && s.own[i].h > back + 1; })) return 'uneven';
+    }
     return '';
   }
   function mortgageError(s, p, sq) {
@@ -565,14 +585,14 @@
       case 'sell': {
         if (!canManage(s, p)) return fail(state, 'notNow');
         var so = s.own[action.sq], sb = BOARD[action.sq];
-        if (so && so.h === 5 && so.o === p) {
+        err = sellError(s, p, action.sq); if (err) return fail(state, err);
+        if (so.h === 5) {
           var back = Math.min(4, s.bank.houses);   // Hotel abbauen: so viele Häuser zurück, wie die Bank hat (Rest wird mitverkauft)
           s.bank.hotels++; s.bank.houses -= back;
           var lv = 5 - back; so.h = back;
           s.players[p].money += lv * sb.hc / 2;
           ev(s, out, { e: 'sell', p: p, sq: action.sq, h: so.h, amt: lv * sb.hc / 2 });
         } else {
-          err = sellError(s, p, action.sq); if (err) return fail(state, err);
           so.h--; s.bank.houses++; s.players[p].money += sb.hc / 2;
           ev(s, out, { e: 'sell', p: p, sq: action.sq, h: so.h, amt: sb.hc / 2 });
         }
@@ -636,7 +656,7 @@
         if (action.type === 'cancel' ? tr.from !== p : tr.to !== p) return fail(state, 'notYourTrade');
         if (action.type === 'accept') {
           if (s.phase === 'auction' || s.phase === 'resolve') return fail(state, 'notNow');
-          err = tradeError(s, tr);
+          err = tradeError(s, tr) || debtTradeError(s, tr);
           if (err) { s.trades.splice(ti, 1); ev(s, out, { e: 'tradeVoid', id: tr.id }); return { ok: false, err: err, state: commit(s, action), events: out }; }
           s.trades.splice(ti, 1);
           transferSide(s, out, tr.from, tr.to, tr.give);
@@ -698,11 +718,14 @@
     return r;
   }
   function validate(s) {   // Plausibilitätsprüfung eines geladenen Spielstands
-    if (!s || s.v !== SCHEMA || !Array.isArray(s.players) || !Array.isArray(s.own) || s.own.length !== 40) return 'schema';
+    if (!s || typeof s !== 'object' || s.v !== SCHEMA || !Array.isArray(s.players) || !Array.isArray(s.own) || s.own.length !== 40) return 'schema';
+    if (!s.bank || typeof s.bank !== 'object' || !s.cfg || typeof s.cfg !== 'object' || !s.decks || !Array.isArray(s.debts) || !Array.isArray(s.trades) || !Array.isArray(s.stats)) return 'schema';
+    if (s.players.some(function (p) { return !p || typeof p !== 'object' || !Array.isArray(p.cards); })) return 'schema';
     var h = 0, ho = 0;
     for (var i = 0; i < 40; i++) {
       var o = s.own[i];
       if (ownable(i) !== !!o) return 'own';
+      if (o && typeof o !== 'object') return 'own';
       if (o) { if (o.o >= s.players.length || o.h < 0 || o.h > 5) return 'own'; if (o.h === 5) ho++; else h += o.h; }
     }
     if (h + s.bank.houses !== s.cfg.houses || ho + s.bank.hotels !== s.cfg.hotels) return 'buildings';
@@ -715,6 +738,6 @@
     newGame: newGame, apply: apply, config: config, rent: rent, worth: worth, liquidity: liquidity, ownable: ownable, groupOwned: groupOwned, countOwned: countOwned,
     buildError: buildError, sellError: sellError, mortgageError: mortgageError, unmortgageError: unmortgageError, unmortgageCost: unmortgageCost, canManage: canManage,
     tradeError: function (s, t) { return tradeError(s, { from: t.from, to: t.to, give: normSide(t.give), get: normSide(t.get) }); },
-    groupHasBuildings: groupHasBuildings, buildingsOf: buildingsOf, actor: actor, legal: legal, active: active, validate: validate, clone: clone
+    groupHasBuildings: groupHasBuildings, buildingsOf: buildingsOf, actor: actor, legal: legal, active: active, validate: validate, clone: clone, ranking: ranking
   };
 });
