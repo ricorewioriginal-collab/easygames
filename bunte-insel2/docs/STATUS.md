@@ -47,10 +47,13 @@ Grundüberarbeitung: PR #231 zusammengeführt. Folgeänderung zur Prüfung: http
 - 19 neue Nachbarschaftsbereiche mit Bewohnern und ortsgebundenen Aktivitäten: Beete, Küchen, Klangstationen, Balancierpfade und freies Fußballspielen auf dem Rasen.
 - Bauland: eigene begehbare Bauwerke aus farbigen Klötzen, Abtragen und Rückgängig; Speichern im vorhandenen Format.
 - Freizeitpark: die Spielfigur fährt mit Riesenrad, Karussell und Achterbahn; Aussteigen und Speichern führen zum Einstieg zurück.
+- Hochformat: Menü und Statusanzeigen sind getrennt; Touch ersetzt den überlagernden Tastaturhinweis, die Sprungbeschriftung bleibt im Bildschirm.
 - Neue Spielstände beginnen bei Rosi. Der erste Hinweis erscheint während des Spielens.
 - Alle ursprünglichen Quest-Ziele besitzen einen geprüften Ortsverweis. Bereits verbrauchte Fundstellen werden ausgelassen.
 - Splitter werden dem tatsächlichen Fund zugeordnet und in korrekter Anzahl abgegeben. Der Prisma-Splitter ist vor dem Finale erforderlich.
 - Acht Integrationsprüfungen, Typprüfung, Produktionsbuild und Android-Offline-Build bestanden. Der Browserlauf von PR #232 prüft alle 20 Welten, Hof, Küche, freies Bauen, echte Mitfahrt, Speichern und mobilen Start mit sichtbarer Touch-Steuerung. Der Ablauf-Test prüft den Prolog bis zum Beginn von Kapitel 1, Auto, Wald und Speichern/Laden; keine Browserfehler.
+
+Die auslieferbaren Dateien und fünf Vorschaubilder wurden nach bestandenem Push-Prüflauf auf dem PR-Branch aktualisiert. [Vorschaubilder](review/05-touch.png).
 
 Details je Welt und weiterhin fehlende Inhalte aus Teil 1: [NEUAUFLAGE.md](NEUAUFLAGE.md).
 
@@ -71,7 +74,7 @@ Browsertests mit Playwright liegen in `source/e2e/`:
 - `flow.mjs` – Prolog-Quest, Kapitel 1, Fahrzeug, Wald-Kampfzone, Fenster, Speichern und Neu laden
 - `worlds.mjs` – Rundgang durch alle 20 Welten im freien Modus (Laden/Entladen, NPCs, Browserfehler)
 
-PR-Prüfung vom 16.10.2026: `renewal.mjs` und `flow.mjs` bestanden, keine Browserfehler. [Prüflauf](https://github.com/ricorewioriginal-collab/easygames/actions/runs/38889233742). Keine Aussage über spätere Story-Kapitel oder Leistung auf echten Handys.
+PR-Prüfung vom 16.10.2026: `renewal.mjs` und `flow.mjs` bestanden, keine Browserfehler. [Prüflauf](https://github.com/ricorewioriginal-collab/easygames/actions/runs/38890374518). Keine Aussage über spätere Story-Kapitel oder Leistung auf echten Handys.
 
 ## Änderungen außerhalb von `bunte-insel2/`
 
