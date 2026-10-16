@@ -6,7 +6,7 @@ const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
 // Schlüssel, die das Spiel wirklich nutzt: nach dem Speichern muss das Skript sie in seinen Zeitstempeln (anmacha-cloud-meta:<spiel>) führen
-const KEYS = { riftzone: ['riftzone.progress', 'riftzone'], turbokick: ['turbokick.save', 'turbokick'], partyverse: ['partyverse.save', 'partyverse'], aeru: ['aeru-save-v1', 'aeru'], 'bunte-insel2': ['bunteInsel2.slot1', 'bunte-insel2'], prismrush: ['prismrush.save.v1', 'prismrush'], kiko: ['kiko-sterneninseln-v1', 'kiko-sterneninseln'] };
+const KEYS = { riftzone: ['riftzone.profile', 'riftzone'], turbokick: ['turbokick.save', 'turbokick'], partyverse: ['partyverse.save', 'partyverse'], aeru: ['aeru-save-v1', 'aeru'], 'bunte-insel2': ['bunteInsel2.slot1', 'bunte-insel2'], prismrush: ['prismrush.save.v1', 'prismrush'], kiko: ['kiko-sterneninseln-v1', 'kiko-sterneninseln'] };
 const GAMES = { riftzone: 'riftzone/app/', turbokick: 'turbokick/app/', partyverse: 'partyverse/app/', aeru: 'aeru/', 'bunte-insel2': 'bunte-insel2/', prismrush: 'prismrush/', kiko: 'kiko-sterneninseln/' };
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.wasm': 'application/wasm', '.bin': 'application/octet-stream', '.woff2': 'font/woff2', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg' };
 const srv = http.createServer((req, res) => {
@@ -31,9 +31,10 @@ let fails = 0;
     const btn = await p.evaluate(() => !!Array.from(document.querySelectorAll('button')).find(b => /google|speicher|cloud/i.test((b.title || '') + (b.getAttribute('aria-label') || '') + b.textContent) || (b.style.cssText.includes('left: 8px') && b.style.cssText.includes('bottom: 8px'))) || !!document.querySelector('[data-anmacha-cloud],#anmacha-cloud')).catch(() => false);
     const [key, game] = KEYS[id];
     const tracked = await p.evaluate(([k, g]) => { try { localStorage.setItem(k, JSON.stringify({ t: 1 })); const m = localStorage.getItem('anmacha-cloud-meta:' + g) || ''; return m.indexOf(k) >= 0; } catch (e) { return false; } }, [key, game]).catch(() => false);
-    // Gegenprobe: Sitzungsdaten ohne Speicherstand (z. B. partyverse.reconnect) dürfen nicht in die Cloud wandern
-    const leaked = id === 'partyverse' ? await p.evaluate(() => { try { localStorage.setItem('partyverse.reconnect', 'x'); return (localStorage.getItem('anmacha-cloud-meta:partyverse') || '').indexOf('partyverse.reconnect') >= 0; } catch (e) { return false; } }).catch(() => false) : false;
-    const ok = cloud === 200 && !errs.length && tracked && !leaked;
+    // Gegenprobe: Sitzungsdaten ohne Speicherstand (partyverse.reconnect, riftzone.reconnect) dürfen nicht in die Cloud wandern
+    const SESSION = { partyverse: 'partyverse.reconnect', riftzone: 'riftzone.reconnect' }[id];
+    const leaked = SESSION ? await p.evaluate(([k, g]) => { try { localStorage.setItem(k, 'x'); return (localStorage.getItem('anmacha-cloud-meta:' + g) || '').indexOf(k) >= 0; } catch (e) { return false; } }, [SESSION, id]).catch(() => false) : false;
+    const ok = cloud === 200 && !errs.length && tracked && !leaked && btn;
     console.log((ok ? 'OK    ' : 'FEHLER') + ' ' + id.padEnd(14) + ' Skript ' + cloud + (tracked ? ', Speicherstand wird erfasst' : ', Speicherstand NICHT erfasst') + (btn ? ', Knopf sichtbar' : ', (Knopf nicht erkannt)') + (errs.length ? ' Fehler: ' + errs[0] : ''));
     if (!ok) fails++;
     await p.context().close();

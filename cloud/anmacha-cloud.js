@@ -255,12 +255,14 @@
           if (!local[k] || local[k].v === remote[k].v) continue;
           if (local[k].t > remote[k].t && remote[k].v !== null) { lost[k] = remote[k]; nl++; }
           else if (remote[k].t > local[k].t && local[k].v !== null) { lost[k] = local[k]; nl++; }
+          else if (remote[k].t === local[k].t && local[k].v !== null && remote[k].v !== null) { lost[k] = remote[k]; nl++; }   // Gleichstand mit abweichendem Wert (beide Geräte hatten schon Stände ohne Zeitstempel): nichts wird überschrieben, aber die Cloud-Kopie wird gesichert, weil der nächste lokale Speicherstand sie ersetzt
         }
         for (k in remote) merged[k] = remote[k];
         for (k in local) {
           if (!remote[k] || local[k].t > remote[k].t) { merged[k] = local[k]; if (!remote[k] || remote[k].v !== local[k].v) dirty = true; }
         }
         for (k in merged) {
+          if (!(k.slice(0, 4) === 'idb:' || match(k))) continue;   // Fremde Schlüssel (z. B. aus einem früher breiteren Präfix) bleiben in der Cloud, werden aber hier nie lokal überschrieben
           if (merged[k] !== local[k] && (!local[k] || merged[k].t > local[k].t) && (!local[k] || merged[k].v !== local[k].v)) {
             if (k.slice(0, 4) === 'idb:') writes.push(idbWrite(k.slice(4), merged[k]));
             else { if (merged[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, merged[k].v); meta[k] = merged[k].t; }
