@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3b26278c1666",
- "generated": "2026-10-16T20:19:05+00:00",
- "commit": "090fb2e9f2baba6102f7b50e0ce56afe03ea87a6",
+ "version": "27371e74cbb9",
+ "generated": "2026-10-16T20:28:30+00:00",
+ "commit": "babca81b85690b5d7fba1e0e9844658a2cd1c633",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 20804,
-   "h": "81b7ae8e43a76fb75885b6a34141e3afc0a7f29b6f22f2a1a3afbfe3641ecbfc"
+   "s": 21542,
+   "h": "00b73d03d34082e6fa314c24eec007f91d3dd6ce6c5b1a2db94fe3a00c74a2ec"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 55467,
-   "h": "a6820f01321715c72ee6b0761cd409c4bbc9bf555a4e6d8eda78a38ed12fb05c"
+   "s": 57214,
+   "h": "c3071d1645fe9447487684fde10c5fdd4b4e300a01edc3d1d0934b58311e6bdc"
   },
   {
    "p": "index.html",
@@ -5183,8 +5183,8 @@
   },
   {
    "p": "modes.js",
-   "s": 1332,
-   "h": "50b5169781cf8745fbbc6baf26d4db2d77d301024a44bbaad5e8a2257fcf1f42"
+   "s": 1377,
+   "h": "010afaea2013514ca289f96d9dc021d612f61725fcc82c642a9a8aeb58083e6d"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -5602,6 +5602,86 @@
    "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
   },
   {
+   "p": "ricopoly/card.jpg",
+   "s": 107716,
+   "h": "bfd67047d33387c074dd4e476fc4c9b708da743ae26ac6382c83c8fb630a624c"
+  },
+  {
+   "p": "ricopoly/card.png",
+   "s": 81162,
+   "h": "7d383dc20057c9775a361ca188d6694d3856a40cb1db258e10b27618b178e9de"
+  },
+  {
+   "p": "ricopoly/index.html",
+   "s": 9288,
+   "h": "7fa1dea008ea87207a8a3b0eb458dd3e5c8ac386b57c9cee903e6a564af7ffdf"
+  },
+  {
+   "p": "ricopoly/js/ai.js",
+   "s": 12098,
+   "h": "286a2c3fd007a28236d13b6c37a31dd136c58db28dc577e3d8f8985b6954603b"
+  },
+  {
+   "p": "ricopoly/js/audio.js",
+   "s": 8127,
+   "h": "e77ff4237b100ae28d76658c86fca9c17ad8784883f331acafa175455ab4922a"
+  },
+  {
+   "p": "ricopoly/js/board3d.js",
+   "s": 54419,
+   "h": "ea71e3069a62980e25042690f3667825d3ce80168bb215db82368dc580bd749b"
+  },
+  {
+   "p": "ricopoly/js/characters.js",
+   "s": 43043,
+   "h": "57c403ffd523f1599a4f2001022145ee4d165978623516f4fcecdffbf0f81444"
+  },
+  {
+   "p": "ricopoly/js/game.js",
+   "s": 82990,
+   "h": "06b98f5ca79780822b9e50918d36b5d933a67a80aea750ef1bec3f78b6f78bb0"
+  },
+  {
+   "p": "ricopoly/js/i18n.js",
+   "s": 50425,
+   "h": "b5cd777870ffd2ee8eee442d2ce55a335994ceca5b49a3d42c5ab06188db5bc7"
+  },
+  {
+   "p": "ricopoly/js/net.js",
+   "s": 18055,
+   "h": "9376cbef0c084a543446efdae239381af03ae84b1592214acafc8f0894c14ee1"
+  },
+  {
+   "p": "ricopoly/js/profile.js",
+   "s": 6963,
+   "h": "57cff37e07a0173b655f93dc9ed9bb70f446e607b6647a9ae5391f54d87c91ca"
+  },
+  {
+   "p": "ricopoly/js/rules.js",
+   "s": 38438,
+   "h": "873a94406299a6a6b37d98f006f6ba2ac4d29ad234f6f1a4a9ce2ca3cb87a159"
+  },
+  {
+   "p": "ricopoly/js/worlds.js",
+   "s": 19221,
+   "h": "e28bf37a55d38e59e888f356d39961e6cc4da6dc88eec36f665e839a8527a434"
+  },
+  {
+   "p": "ricopoly/manifest.webmanifest",
+   "s": 774,
+   "h": "ac3790825eb3f839b9b6cf92232b82bb2dc645c75029e7701e8403313e25fd9b"
+  },
+  {
+   "p": "ricopoly/style.css",
+   "s": 23961,
+   "h": "8c08051318081b4b16f2a5b372daf86821f8c7c8765983a38a438f446e381350"
+  },
+  {
+   "p": "ricopoly/sw.js",
+   "s": 2001,
+   "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5718,8 +5798,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 84306,
-   "h": "6c6cf3331b4c80de38bac490783ac0efec6c8d2adfe147dace6dcfe6064aa8b3"
+   "s": 87028,
+   "h": "b2b6d891c65ed5da321df8184b3897d5c65fb62531f8c63bf6194fd0fecec131"
   },
   {
    "p": "taschi/card.svg",

@@ -392,3 +392,52 @@ test('KI hält sich an die Regeln: jede Bot-Aktion ist gültig, kein Geld aus de
     s = r.state;
   }
 });
+
+test('Steuern und Topf-Regel: Steuer an die Bank bzw. in den Topf, Frei Parken kassiert den Topf', () => {
+  let s = two({ parkingPot: true });
+  s = act(s, { type: 'roll', p: 0 }, [1, 3]);        // Feld 4: Steuer 200
+  assert.equal(s.players[0].money, 1300); assert.equal(s.pot, 200);
+  s = act(s, { type: 'endTurn', p: 0 });
+  s.players[1].pos = 10;
+  s = act(s, { type: 'roll', p: 1 }, [4, 6]);        // Feld 20: Frei Parken
+  assert.equal(s.players[1].money, 1700); assert.equal(s.pot, 0);
+  let t = two();
+  t = act(t, { type: 'roll', p: 0 }, [1, 3]);
+  assert.equal(t.players[0].money, 1300); assert.equal(t.pot, 0, 'ohne Topf-Regel geht die Steuer an die Bank');
+});
+
+test('Aufgeben außerhalb des eigenen Zugs: Besitz zurück an die Bank, Partie läuft weiter', () => {
+  let s = three();
+  s.own[1].o = 1; s.own[3].o = 1;
+  s = act(s, { type: 'resign', p: 1 });
+  assert.equal(s.players[1].out, true);
+  assert.equal(s.own[1].o, -1); assert.equal(s.own[3].o, -1);
+  assert.equal(s.phase, 'roll'); assert.equal(s.cur, 0);
+  s = act(s, { type: 'resign', p: 2 });
+  assert.equal(s.phase, 'over'); assert.equal(s.winner, 0);
+});
+
+test('Zeitlimit: nur die Uhr darf die Partie beenden, Sieger nach Vermögen', () => {
+  let s = two({ timeLimit: 10 });
+  s.players[1].money = 2000;
+  bad(s, { type: 'timeUp', p: 0 }, 'notAllowed');
+  bad(two(), { type: 'timeUp', p: -1 }, 'notAllowed');
+  s = act(s, { type: 'timeUp', p: -1 });
+  assert.equal(s.phase, 'over'); assert.equal(s.endReason, 'time'); assert.equal(s.winner, 1);
+});
+
+test('Veraltete Aktionen (falsche Zug-ID) werden abgelehnt', () => {
+  const s = two();
+  bad(s, { type: 'roll', p: 0, tid: s.turnId + 1 }, 'staleTurn');
+  act(s, { type: 'roll', p: 0, tid: s.turnId }, [1, 2]);
+});
+
+test('Beschädigte Spielstände werden beim Laden erkannt', () => {
+  const ok = two();
+  assert.equal(R.validate(ok), '');
+  const a = R.clone(ok); a.bank.houses = 5; assert.equal(R.validate(a), 'buildings');
+  const b = R.clone(ok); b.players[0].money = -5; assert.equal(R.validate(b), 'players');
+  const c = R.clone(ok); c.own.pop(); assert.equal(R.validate(c), 'schema');
+  const d = R.clone(ok); d.own[0] = { o: 0, h: 0, m: false }; assert.equal(R.validate(d), 'own');
+  assert.equal(R.validate(null), 'schema');
+});
