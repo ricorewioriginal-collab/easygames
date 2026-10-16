@@ -55,7 +55,7 @@
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
-    <a href="#geraet">Geräteerkennung</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
+    <a href="#geraet">Geräteerkennung</a><a href="#pwa">PWA</a><a href="#pad">Gamecontroller</a><a href="#cloud">Cloud-Speicher</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
   <section id="wahl">
@@ -67,6 +67,7 @@
       <tr><td><a href="#js">easygames.js</a></td><td>Spiele per Attribut oder JavaScript-Variable einbauen, mit Vollbild-Knopf. Die Spieleliste kommt automatisch mit.</td><td>2 Zeilen</td></tr>
       <tr><td><a href="#lib">Bibliothek</a></td><td>Die komplette Übersicht mit Suche, Anleitungen und Spielfenster in deine Seite einbetten.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#retro">EmulationStation</a></td><td>Spiele im Retro-Frontend (ES-DE, RetroPie, Batocera) auf Konsole, Handheld oder Wohnzimmer-PC.</td><td>2 Befehle</td></tr>
+      <tr><td><a href="#pwa">PWA</a></td><td>Spiel direkt auf dem Handy als App installieren (Vollbild, offline, Updates automatisch) – über den Direktlink.</td><td>0 Zeilen</td></tr>
       <tr><td><a href="#app">App</a></td><td>Spiele in einer Android-, iOS- oder Hybrid-App, auch offline.</td><td>je nach App</td></tr>
     </table></div>
     <div class="note">Faustregel: Wo Vollbild wichtig ist (Handy, TV, App), öffne das Spiel am besten direkt als <b>eigene Seite</b> (Direktlink). Das ist am zuverlässigsten.</div>
@@ -276,8 +277,49 @@ parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
     <p>Karten zeigen Abzeichen (📱 Handy-Controller, 🌐 Online, 👥 Mehrspieler), und Filterknöpfe zeigen nur diese Spiele. Die Zuordnung steht in <code>modes.js</code>.</p>
   </section>
 
+  <section id="pwa">
+    <h2>Als App installieren (PWA)</h2>
+    <p>Jedes Spiel lässt sich über seinen <b>Direktlink</b> auf dem Handy als App installieren – ohne Store, im Vollbild, mit Symbol auf dem Startbildschirm.</p>
+    <ul>
+      <li><b>Android/Chrome:</b> Hinweis „📲 Als App installieren“ oder Menü ▸ „App installieren“. <b>iPhone:</b> Teilen ▸ „Zum Home-Bildschirm“.</li>
+      <li>Nach dem ersten Spielen läuft die App <b>offline</b> und <b>aktualisiert sich automatisch</b> (Service Worker: Netz zuerst, bei schlechtem Netz aus dem Zwischenspeicher).</li>
+      <li>Der Installationshinweis erscheint nicht, wenn das Spiel in einem <code>iframe</code> eingebettet ist, in den RicoReWi-Apps und im bereits installierten Fenster.</li>
+    </ul>
+    <h3>Für neue Spiele</h3>
+<pre>python3 tools/make-pwa.py            # alle Spiele (Python 3 + Pillow)
+python3 tools/make-pwa.py mein-spiel # nur dieser Ordner
+python3 tools/make-pwa.py --check    # nur prüfen</pre>
+    <p>Das Skript legt Manifest, Service Worker, Symbole (<code>pwa-icons/</code>) und den Installations-Block im <code>index.html</code> an (idempotent). Nach einem Vite-Build einmal erneut ausführen.</p>
+  </section>
+
+  <section id="pad">
+    <h2>Gamecontroller</h2>
+    <p>Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …, per USB oder Bluetooth) spielen. Spiele mit eigener Controller-Steuerung brauchen nichts; alle anderen binden <code>gamepad.js</code> ein:</p>
+<pre>&lt;script src="../gamepad.js" defer&gt;&lt;/script&gt;
+&lt;script src="../gamepad.js" data-pad="a=Space/Enter ls=wasd y=-" defer&gt;&lt;/script&gt;   &lt;!-- eigene Belegung --&gt;</pre>
+    <ul>
+      <li>Steuerkreuz und linker Stick = Pfeiltasten (<code>ls=wasd</code>: W A S D), <b>A</b> = Enter, <b>B</b> = Esc, <b>X</b> = Leertaste, <b>Y</b> = E, <b>LB/RB</b> = Q/E, <b>Start</b> = P, <b>Select</b> = M. Jede Taste ist per <code>data-pad</code> änderbar, <code>-</code> bedeutet „nichts“, <code>a=Space/Enter</code> sendet erst die Leertaste und nur wenn das Spiel sie nicht verarbeitet zusätzlich Enter.</li>
+      <li>In Menüs ohne Pfeiltasten-Steuerung springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), <b>A</b> drückt ihn. Der <b>rechte Stick</b> bewegt einen Mauszeiger, <b>A</b> klickt (halten = ziehen).</li>
+      <li>Spiele mit eigener Controller-Steuerung binden die Datei <b>nicht</b> ein, damit nichts doppelt reagiert. Texteingaben gehen weiterhin über Tastatur oder Handy-Pads.</li>
+    </ul>
+  </section>
+
+  <section id="cloud">
+    <h2>Cloud-Speicherstand (Google)</h2>
+    <p>Spieler können ihren Fortschritt mit einem Klick auf ☁ ▸ „Mit Google anmelden“ sichern; er folgt ihnen dann auf jedes Gerät. Ohne Anmeldung bleibt alles im Browser des Geräts (<code>localStorage</code>) und das Spiel läuft unverändert.</p>
+    <p>Ein Spiel anbinden (eine Zeile vor <code>&lt;/body&gt;</code>):</p>
+<pre>&lt;script src="../cloud/anmacha-cloud.js" data-game="snake" data-prefix="anmachaSnake" defer&gt;&lt;/script&gt;</pre>
+    <ul>
+      <li><code>data-prefix</code>: Anfänge der <code>localStorage</code>-Schlüssel, die mitgesichert werden (kommagetrennt). Am Spielcode ändert sich nichts.</li>
+      <li>Pro Schlüssel gewinnt der neuere Zeitstempel. Geschrieben wird gebündelt (3 s nach einer Änderung und beim Verlassen), geladen beim Start.</li>
+      <li><b>In den Apps</b> (Android/Windows) gilt eine Kopplung: Google sperrt die Anmeldung in App-Fenstern, deshalb zeigt die App einen Link, man meldet sich damit im Browser auf ricorewi-radio.de an, und die App übernimmt den Cloud-Speicher automatisch.</li>
+      <li>Die einmalige Einrichtung (Firebase-Projekt, Regeln, freigegebene Domains) steht in <a href="https://github.com/ricorewioriginal-collab/easygames/blob/main/cloud/README.md" target="_blank" rel="noopener"><code>cloud/README.md</code></a>.</li>
+    </ul>
+  </section>
+
   <section id="android">
     <h2>Android-App mit Offline-Sync</h2>
+    <p><a class="back" href="https://ricorewi-radio.de/downloads/easygames-Developer.apk" download>⬇ Android-APK herunterladen</a></p>
     <p>Die App ist eine native Android-Hülle (Kotlin) um die easygames-Oberfläche. Sie speichert alle Spiele samt Bibliotheken auf dem Gerät und hält sie über GitHub aktuell – ohne neues APK.</p>
     <h3>So kommen Updates auf das Handy</h3>
     <ol>
@@ -385,7 +427,10 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
       <tr><td>2</td><td><code>games.js</code></td><td><code>id</code>, <code>title</code>, <code>icon</code> oder <code>img</code>, <code>bg</code>, <code>glow</code>, <code>path</code>, <code>desc</code></td></tr>
       <tr><td>3</td><td><code>modes.js</code> oder <code>modes:{…}</code> am Eintrag</td><td><code>pad</code> (Handy-Controller), <code>online</code>, <code>multi</code>, <code>tvParam</code></td></tr>
       <tr><td>4</td><td><code>guides.js</code></td><td><code>anleitung</code>, <code>steuerung</code>, <code>tipps</code></td></tr>
-      <tr><td>5</td><td><code>node tools/check-games.js</code></td><td>Prüft IDs, Pfade, Bilder, Anleitungen, Modi</td></tr>
+      <tr><td>5</td><td><code>python3 tools/make-pwa.py</code></td><td>Macht das Spiel als App installierbar (<a href="#pwa">PWA</a>)</td></tr>
+      <tr><td>6</td><td><code>gamepad.js</code> (optional)</td><td>Gamecontroller-Unterstützung, wenn das Spiel keine eigene hat (<a href="#pad">Gamecontroller</a>)</td></tr>
+      <tr><td>7</td><td><code>anmacha-cloud.js</code> (optional)</td><td>Cloud-Speicherstand per Google (<a href="#cloud">Cloud-Speicher</a>)</td></tr>
+      <tr><td>8</td><td><code>node tools/check-games.js</code></td><td>Prüft IDs, Pfade, Bilder, Anleitungen, Modi</td></tr>
     </table></div>
     <h3>Was passiert ohne Eintrag?</h3>
     <ul>
@@ -397,7 +442,7 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
     <h3>Spiel-Vertrag</h3>
     <ul>
       <li>Das Spiel füllt die ganze Seite (<code>100vw × 100dvh</code>, kein Scrollen) und läuft auch in einem iframe.</li>
-      <li>Es ist mit Touch, Tastatur und am TV mit Pfeiltasten und OK bedienbar.</li>
+      <li>Es ist mit Touch, Tastatur und am TV mit Pfeiltasten und OK bedienbar, und mit einem Gamecontroller (eigene Steuerung oder <code>gamepad.js</code>).</li>
       <li><b>Handy als Controller:</b> Das Spiel läuft am PC/TV als Gastgeber und zeigt einen QR-Code mit <code>…/mein-spiel/?join=CODE</code>. Öffnet jemand die Seite mit <code>?join=</code>, wird das Gerät zum Controller.</li>
       <li><b>TV:</b> Optional ein Parameter (üblich: <code>?tv</code>), der direkt die Lobby mit QR-Code zeigt. Dann in <code>modes.js</code> <code>tvParam: true</code> setzen.</li>
       <li>Eigene Zurück-Taste (z. B. Pause-Menü)? Mit <code>EasyGamesKit.back(fn)</code> übernehmen, sonst schließt die Übersicht das Spiel.</li>
