@@ -21,6 +21,7 @@ BI.VEH = {
   rcheli:    { name: 'RC-Hubschrauber', icon: '🚁', max: 16, rev: 5, turn: 2.4, kind: 'heli', horn: 'bike', fly: true, remote: true, cols: [0], r: .5, cam: 5, scale: .3 },
   heli:      { name: 'Hubschrauber', icon: '🚁', max: 30, rev: 8, turn: 1.7, kind: 'heli', horn: 'bike', fly: true, cols: [0], r: 1.7, cam: 15 },
   keymobil:  { name: 'Schlüsselschwert-Mobil', icon: '🗝️', max: 30, rev: 8, turn: 2.1, kind: 'heli', horn: 'bike', fly: true, open: true, stand: true, cols: [0], r: 1.3, cam: 10 },
+  wolke:     { name: 'Goldene Flugwolke', icon: '☁️', max: 26, rev: 7, turn: 2.2, kind: 'heli', horn: 'bike', fly: true, open: true, stand: true, cols: [0], r: 1.3, cam: 10 },
   drake:     { name: 'Reit-Drache Zündel', icon: '🐲', max: 26, rev: 6, turn: 1.9, kind: 'heli', horn: 'bike', fly: true, open: true, drake: true, cols: [0], r: 1.7, cam: 13 },
   pupmobil:  { name: 'Fellnasen-Mobil', icon: '🐕', max: 26, rev: 7, acc: 13, brake: 24, drag: 5, turn: 1.9, kind: 'car', horn: 'car', bark: true, siren: 'pup', cols: [-1.2, 1.2], r: 1.1, cam: 9.5 },
   wannenmobil: { name: 'Wannen-Mobil', icon: '🛁', max: 24, rev: 6, acc: 12, brake: 22, drag: 5, turn: 2.0, kind: 'car', horn: 'bike', cols: [-1.1, 1.1], r: 1.4, cam: 9.5 },
@@ -241,6 +242,12 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
     b.sph(-1.6, .35, -2.2, .16, 0xffffff, 0); b.sph(1.6, .35, -2.2, .16, 0xffffff, 0);
     return { wheels: [], head: [[0, .36, 3.9]], tail: [[0, .36, -3.4]], seat: [0, .36, -.4] };
   };
+  MODELS.wolke = b => { /* Goldene Flugwolke (Prisma-Archipel): flauschige gelbe Wolke, auf der man steht und fliegt */
+    const Y1 = 0xffd84a, Y2 = 0xffe98a, Y3 = 0xfff4c0;
+    b.sph(0, .25, 0, 1.0, Y1, 1, 1.25, .45, 1.6); b.sph(-.8, .3, .5, .7, Y2, 1, 1, .6, 1); b.sph(.8, .3, .4, .72, Y2, 1, 1, .6, 1); b.sph(0, .35, 1.3, .6, Y3, 1, 1, .6, 1); b.sph(-.5, .3, -1.1, .6, Y2, 1, 1, .55, 1); b.sph(.6, .28, -1.0, .55, Y3, 1, 1, .55, 1);
+    for (let k = 0; k < 3; k++) b.sph(0, .25 - k * .04, -1.8 - k * .55, .42 - k * .1, k % 2 ? Y2 : Y1, 1, 1, .6, 1);
+    return { wheels: [], head: [[0, .4, 1.9]], tail: [[0, .3, -3.2]], seat: [0, .55, -.1] };
+  };
   MODELS.kart = (b, o) => { /* Flitzer-Kart (Hüpfland): flacher Rohrrahmen, Seitenkästen, Motor hinten mit Auspuff, Heckflügel, dicke Räder */
     const c = o.color || 0xffc933, DK = 0x23262d, GR = 0x8a94a6;
     b.box(0, .18, .1, 1.25, .16, 2.5, DK); b.box(0, .3, .95, 1.1, .2, .7, c); b.box(0, .34, 1.45, 1.5, .14, .25, c);                 /* Bodenplatte, Nase, Frontstoßstange */
@@ -318,7 +325,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         const pb = new BI.Batch(); for (let i = 0; i < 3; i++) pb.box(0, 0, 0, .14, 1.7, .08, 0xd8a24a, 0, 0, i * 2.094); this.prop = new THREE.Group(); this.prop.add(pb.mesh(BI.mat())); this.prop.position.set(0, 3.4, -5.6); this.tilt.add(this.prop);
         this.shadow = new THREE.Mesh(new THREE.CircleGeometry(3.6, 18), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow);
       }
-      if (type === 'keymobil') { this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.4, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow); }
+      if (type === 'keymobil' || type === 'wolke') { this.shadow = new THREE.Mesh(new THREE.CircleGeometry(2.4, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false })); this.shadow.rotation.x = -Math.PI / 2; this.root.add(this.shadow); }
       if (type === 'dino' && BI.makeDino) { this.rig = BI.makeDino(); this.tilt.add(this.rig.root); this.hopY = 0; this.hvy = 0; this.walkPh = 0; }
       if (type === 'drake') { // Reit-Drache: Zündel-Figur dreifach groß, Schatten am Boden
         this.rig = BI.makeDrache({}); this.rig.root.scale.setScalar(3); this.tilt.add(this.rig.root);
@@ -430,7 +437,7 @@ BI.tailMat = new THREE.MeshBasicMaterial({ color: 0xa02020 });
         this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .02); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .005);
         return;
       }
-      if (this.type === 'keymobil') { /* schwebt wie ein Brett, kippt in die Kurve, goldene Funkenspur */
+      if (this.type === 'keymobil' || this.type === 'wolke') { /* schwebt wie ein Brett, kippt in die Kurve, goldene Funkenspur */
         const air = this.y > .3 || (this.driver && Math.abs(this.v) > 1);
         this.tilt.rotation.x = BI.damp(this.tilt.rotation.x, BI.clamp(-this.vy * .03 + this.v / sp.max * .12, -.35, .35), 4, dt); this.tilt.rotation.z = BI.damp(this.tilt.rotation.z, air ? this.steerCur * .35 : 0, 4, dt); this.tilt.position.y = air ? .5 + Math.sin(t * 3) * .1 : .3;
         this.shadow.position.y = .1 - this.y; this.shadow.scale.setScalar(1 + this.y * .02); this.shadow.material.opacity = Math.max(.08, .3 - this.y * .005);

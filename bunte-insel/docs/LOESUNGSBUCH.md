@@ -335,6 +335,9 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 1: Löse die Lichtfolge im Ki-Garten → 🥋 Ki-Prüfung
 - Akt 2: Löse das Zeichenrätsel in der Runen-Arena → 🃏 Runenmeister
 - Akt 3: Repariere die Signalfolge im Datenhain → 💠 Datenhüter
+- Akt 4: Sammle 7 Sternkugeln und rufe den Lichtdrachen → 🐉 Lichtdrachen-Ruf
+- Akt 5: Gewinne ein Runen-Duell gegen Kaia → 🎴 Duell-Sieger
+- Akt 6: Lass deinen Digi-Partner bis zur 3. Stufe wachsen → 💠 Digi-Partner
 
 ---
 
@@ -397,6 +400,7 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 - 🐉 Drachenhöhen: Fackeln, Kristall-Freunde, Flugringe, Himmelstor „Drachenflug“.
 - 🚢 Dampfer-Hafen: Farbeimer, Orchester, Noten, Stummfilm. 🏗️ Bauland: Blöcke bauen, Startblock. ⚽ Fußball-Arena: Tore schießen, Turnier.
 - 🗺️ Schatzsuche: mit Schatzmeister Piet reden und alle 8 Kisten finden.
+- 🌀 Prisma-Archipel: drei Licht-Rätsel (Hinweis-Tafel lesen), 7 orange Sternkugeln einsammeln und am Altar den Lichtdrachen rufen, im Turnier-Ring mit der Ki-Welle alle 3 Kristalle treffen, im Duell-Stadion gegen Kaia 3 von 5 Runden gewinnen (Feuer > Pflanze > Wasser > Feuer), am Kartenautomaten 12 Runenkarten sammeln, im Datenhain das Partner-Ei nehmen und mit Datenwürfeln füttern (4 → Byton, 10 → Gigaflux).
 
 ---
 
@@ -815,6 +819,11 @@ So bekommst du jeden Sticker:
 | 🥋 Ki-Prüfung | Löse die Lichtfolge im Ki-Garten |
 | 🃏 Runenmeister | Löse das Zeichenrätsel in der Runen-Arena |
 | 💠 Datenhüter | Repariere die Signalfolge im Datenhain |
+| 🐉 Lichtdrachen-Ruf | Sammle alle 7 Sternkugeln und rufe am Altar den Lichtdrachen |
+| 🌀 Ki-Welle | Triff im Turnier-Ring alle drei Kristalle mit der Ki-Welle |
+| 🎴 Duell-Sieger | Gewinne ein Runen-Duell gegen Kaia im Stadion |
+| 🃏 Kartensammler | Sammle alle 12 Runenkarten am Kartenautomaten |
+| 💠 Digi-Partner | Lass dein Partner-Ei mit Datenwürfeln bis zur 3. Stufe wachsen |
 | 🌀 Prisma-Chronik | Schließe die Geschichte des Prisma-Archipels ab |
 
 ---

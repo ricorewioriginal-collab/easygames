@@ -102,7 +102,10 @@ BI.INSELSTORY = [
   { key: 'PRISMA', icon: '🌀', npc: 'Nuri', title: 'Die drei Lichtsignale', acts: [
     { text: 'Willkommen im Prisma-Archipel! Drei Bereiche haben ihr Signal verloren. Nuri zeigt dir den Ki-Garten.', hint: 'Löse die Lichtfolge im Ki-Garten', goal: ['prisma_ki'], done: 'Das erste Signal leuchtet wieder!' },
     { text: 'In der Runen-Arena warten leuchtende Zeichen. Lies den Hinweis und tippe die drei Symbole in der richtigen Reihenfolge.', hint: 'Löse das Zeichenrätsel in der Runen-Arena', goal: ['prisma_runen'], done: 'Die Runen-Arena ist wieder aktiv!' },
-    { text: 'Im Datenhain sind die Wegweiser durcheinander. Stelle die Lichtfolge wieder her.', hint: 'Repariere die Signalfolge im Datenhain', goal: ['prisma_daten'], done: 'Alle drei Signale verbinden die Insel – gut gemacht!' }
+    { text: 'Im Datenhain sind die Wegweiser durcheinander. Stelle die Lichtfolge wieder her.', hint: 'Repariere die Signalfolge im Datenhain', goal: ['prisma_daten'], done: 'Alle drei Signale verbinden die Insel – gut gemacht!' },
+    { text: 'Meister Wolkenbart erzählt von sieben Sternkugeln. Finde sie auf dem Archipel und bring sie zum Altar im Ki-Garten.', hint: 'Sammle 7 Sternkugeln und rufe den Lichtdrachen', goal: ['prisma_drache'], done: 'Der Lichtdrache hat deinen Wunsch erfüllt!' },
+    { text: 'Duellmeisterin Kaia wartet im Duell-Stadion. Stell dich aufs blaue Podest und gewinne ein Runen-Duell!', hint: 'Gewinne ein Runen-Duell gegen Kaia', goal: ['prisma_duell'], done: 'Kaia verbeugt sich: Was für ein Duell!' },
+    { text: 'Pixa hat ein Partner-Ei gefunden. Nimm es im Datenhain mit und füttere deinen Partner mit Datenwürfeln.', hint: 'Lass deinen Digi-Partner bis zur 3. Stufe wachsen', goal: ['prisma_partner'], done: 'Gigaflux strahlt – dein Partner ist ausgewachsen!' }
   ], end: 'Das Prisma-Archipel strahlt wieder. Nuri und Tavi feiern deine Entdeckerleistung!' },
 ];
 BI.createInselStory = function (G) {
