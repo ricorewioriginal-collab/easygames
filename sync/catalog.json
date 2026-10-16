@@ -17,7 +17,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 749807,
+   "size": 750338,
    "files": 23,
    "offline": true
   },
@@ -284,7 +284,7 @@
      "Grafikqualität „Automatisch“ passt sich der Bildrate an; auf älteren Handys hilft eine niedrigere Auflösung und eine Bildratenbegrenzung."
     ]
    },
-   "size": 2297487,
+   "size": 2297807,
    "files": 22,
    "offline": true
   },
@@ -310,7 +310,7 @@
      "Das Tagebuch zeigt das aktuelle Ziel; ein Kompass und ein Lichtstrahl weisen den Weg."
     ]
    },
-   "size": 1437749,
+   "size": 1437849,
    "files": 12,
    "offline": true
   },
@@ -434,7 +434,7 @@
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In den Einstellungen gibt es eine Latenz-Kalibrierung."
     ]
    },
-   "size": 787013,
+   "size": 787120,
    "files": 12,
    "offline": true
   },
@@ -912,7 +912,7 @@
      "Die vollständige Tastentabelle steht im Spiel unter Anleitung."
     ]
    },
-   "size": 1274375,
+   "size": 1274595,
    "files": 35,
    "offline": true
   },
@@ -942,7 +942,7 @@
      "Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelt): vorausplanen."
     ]
    },
-   "size": 1558329,
+   "size": 1558553,
    "files": 49,
    "offline": true
   },
@@ -1166,7 +1166,7 @@
      "Gekämpft wird nur in der Kampfarena und im Verbotenen Wald."
     ]
    },
-   "size": 4292263,
+   "size": 4292276,
    "files": 128,
    "offline": true
   },
@@ -1193,7 +1193,7 @@
      "Gekämpft wird nur im Verbotenen Wald – überall sonst wird geholfen, gerätselt und gespielt."
     ]
    },
-   "size": 1635346,
+   "size": 1635454,
    "files": 35,
    "offline": true
   }
