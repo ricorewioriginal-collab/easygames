@@ -15,5 +15,13 @@ if command -v setfacl >/dev/null 2>&1; then
 else
   apt-get install -y -qq acl >/dev/null && setfacl -m u:easygames:rwx "$DIR"
 fi
+# Der Benutzer muss auch durch die übergeordneten Ordner laufen dürfen (nur Durchgangsrecht "x", kein Lesen/Auflisten)
+d=$DIR
+while [ "$d" != "/" ]; do
+  d=$(dirname "$d")
+  [ "$d" = "/" ] && break
+  runuser -u easygames -- test -x "$d" || setfacl -m u:easygames:x "$d"
+done
+runuser -u easygames -- test -w "$DIR" || { echo "FEHLER: easygames kann trotz ACL nicht in $DIR schreiben – bitte 'namei -l $DIR' prüfen"; exit 1; }
 if grep -q '^#\?PUBLISH_DIR=' "$ENV_FILE"; then sed -i "s|^#\?PUBLISH_DIR=.*|PUBLISH_DIR=$DIR|" "$ENV_FILE"; else printf 'PUBLISH_DIR=%s\n' "$DIR" >> "$ENV_FILE"; fi
 echo "PUBLISH_DIR=$DIR gesetzt. Test: sudo systemctl start easygames-build.service ; danach: ls -l $DIR/easygames-*"

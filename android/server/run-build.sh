@@ -80,7 +80,7 @@ main() {
     export VERSION_CODE VERSION_NAME FORMAT BUNDLE_CONTENT="${BUNDLE_CONTENT:-1}"
     log "Baue App $VERSION_NAME (Code $VERSION_CODE, $FORMAT) …"
     touch "$STATE_DIR/build-start"
-    "$BUILD_CMD"
+    env -u PUBLISH_DIR "$BUILD_CMD"   # Bereitstellung übernimmt publish_download() unten (nicht abbrechend); build.sh würde bei fehlenden Rechten den ganzen Lauf abbrechen
     EXT=$FORMAT
     ART=$(find android -path '*/outputs/*' -name "*.$EXT" -newer "$STATE_DIR/build-start" 2>/dev/null | sort | grep -i release | head -1 || true)
     [ -n "$ART" ] || ART=$(find android -path '*/outputs/*' -name "*.$EXT" -newer "$STATE_DIR/build-start" 2>/dev/null | sort | head -1 || true)
