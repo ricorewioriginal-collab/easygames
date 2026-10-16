@@ -33,6 +33,7 @@ import xml.etree.ElementTree as ET
 import zlib
 
 BASE_URL = 'https://ricorewioriginal-collab.github.io/easygames/'
+DEFAULT_PORT = 18765  # fester Port im Offline-Modus: gleiche Adresse = gleiche Speicherstände im Browser-Profil
 SYSTEM = 'easygames'
 CFG_DIR = '.easygames'
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -287,9 +288,9 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 
-def start_server(root):
+def start_server(root, port=0):
     handler = functools.partial(QuietHandler, directory=root)
-    srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', port), handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv
 
@@ -316,8 +317,14 @@ def cmd_launch(a):
             if not repo or not os.path.isfile(os.path.join(repo, game['path'], 'index.html')):
                 print('Offline-Dateien nicht gefunden (%s). Repository-Ordner prüfen oder mit --mode online einrichten.' % repo, file=sys.stderr)
                 return 4
-            srv = start_server(repo)
-            url = 'http://127.0.0.1:%d/%s' % (srv.server_address[1], game['path'])
+            port = int(cfg.get('port') or DEFAULT_PORT)
+            try:
+                srv = start_server(repo, port)
+            except OSError:
+                srv = start_server(repo, 0)
+                print('Port %d ist belegt – Speicherstände dieses Starts liegen unter einer anderen Adresse. Anderen Port mit --port wählen.' % port, file=sys.stderr)
+            # „localhost“ (nicht 127.0.0.1): Firebase/Google-Anmeldung erlaubt localhost standardmäßig
+            url = 'http://localhost:%d/%s' % (srv.server_address[1], game['path'])
         else:
             url = cfg.get('base_url', BASE_URL) + game['path']
         if (a.tv or cfg.get('tv')) and 'tvParam' in game.get('modes', []):
@@ -465,7 +472,7 @@ def cmd_install(a):
     with open(os.path.join(cfg_dir, 'catalog.json'), 'w', encoding='utf-8') as f:
         json.dump({'games': games}, f, ensure_ascii=False, indent=1)
     with open(os.path.join(cfg_dir, 'config.json'), 'w', encoding='utf-8') as f:
-        json.dump({'mode': a.mode, 'repo': repo, 'base_url': base_url, 'browser': browser if a.browser else None, 'tv': a.tv, 'window': a.window}, f, indent=1)
+        json.dump({'mode': a.mode, 'repo': repo, 'base_url': base_url, 'browser': browser if a.browser else None, 'tv': a.tv, 'window': a.window, 'port': a.port}, f, indent=1)
 
     created = []
     gl = ET.Element('gameList')
@@ -585,6 +592,7 @@ def main(argv=None):
     i.add_argument('--exclude', help='diese Spiele auslassen (IDs, mit Komma)')
     i.add_argument('--tv', action='store_true', help='Spiele mit TV-Modus öffnen direkt die Lobby mit QR-Code (?tv)')
     i.add_argument('--window', action='store_true', help='Fenster statt Vollbild')
+    i.add_argument('--port', type=int, default=DEFAULT_PORT, help='Port des lokalen Webservers im Offline-Modus (Standard %d, fest, damit Speicherstände erhalten bleiben)' % DEFAULT_PORT)
     i.add_argument('--no-images', action='store_true', help='keine Titelbilder anlegen')
     i.add_argument('--no-system', action='store_true', help='Kategorie nicht in es_systems eintragen')
     i.add_argument('--dry-run', action='store_true', help='nur zeigen, was passieren würde')

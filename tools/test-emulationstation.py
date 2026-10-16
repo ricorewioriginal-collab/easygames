@@ -156,7 +156,7 @@ class Launch(Base):
             self.assertEqual(mod.main(['launch', 'anmacha-kart', '--print', '--tv']), 0)
         line = out.getvalue()
         self.assertIn('--kiosk', line)
-        self.assertIn('--app=http://127.0.0.1:', line)
+        self.assertIn('--app=http://localhost:%d/' % es.DEFAULT_PORT, line)
         self.assertIn('/anmacha-kart/?tv', line)
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
@@ -173,6 +173,22 @@ class Launch(Base):
             self.assertEqual(r.status, 200)
             r = urllib.request.urlopen(base + 'games.js')
             self.assertIn('javascript', r.headers['Content-Type'])
+        finally:
+            srv.shutdown()
+
+
+class Port(Base):
+    def test_fixed_port(self):
+        import socket
+        s = socket.socket()
+        s.bind(('127.0.0.1', 0))
+        port = s.getsockname()[1]
+        s.close()
+        srv = es.start_server(REPO, port)
+        try:
+            self.assertEqual(srv.server_address[1], port)
+            with self.assertRaises(OSError):
+                es.start_server(REPO, port)
         finally:
             srv.shutdown()
 
