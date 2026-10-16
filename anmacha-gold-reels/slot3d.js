@@ -114,7 +114,7 @@
       const wh = 2 * RAD * Math.sin(m.rows * DA / 2);
       this.winH = wh; this.reelsW = rw;
       const fw = 0.22, mh = 1.05, bh = 0.55;
-      this.cab = { w: rw + 2 * fw + 0.5, h: wh + 2 * fw + mh + bh, cy: (mh - bh) / 2 };
+      this.cab = { w: rw + 2 * fw + 0.5, h: wh + 2 * fw + mh + bh, cy: (mh - bh) / 2, fw, mh, bh };
       const metal = new THREE.MeshStandardMaterial({ color: new THREE.Color(th.a), metalness: 0.85, roughness: 0.28, emissive: new THREE.Color(th.a).multiplyScalar(0.12) });
       const dark = new THREE.MeshStandardMaterial({ color: 0x0a0814, metalness: 0.3, roughness: 0.6 });
       const box = (w, h, d, x, y, z, mat) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); b.position.set(x, y, z); grp.add(b); return b; };
@@ -199,7 +199,6 @@
         <button class="ib" data-nav data-act="turbo" aria-label="Turbo">⚡</button></div>
         <button class="spin" data-nav data-default data-act="spin" aria-label="Drehen"><span>SPIN</span></button>`;
       hud.appendChild(bar); this.bar = bar;
-      hud.appendChild(el('div', 'rothint', '📱 Quer halten für Vollbild'));
       this.q = s => bar.querySelector(s);
       bar.addEventListener('click', e => {
         const b = e.target.closest('[data-act]'); if (!b || b.disabled) return; sound.play('click');
@@ -482,9 +481,13 @@
       if (!this.camera) return;
       const top = (document.getElementById('top').getBoundingClientRect().bottom || 56) + (this.jackbar ? this.jackbar.offsetHeight + 4 : 0);
       const bottom = innerHeight - (this.bar ? Math.min(this.bar.getBoundingClientRect().top, this.q('.winbox').getBoundingClientRect().top) : innerHeight - 120);
-      const rect = Gfx.freeRect(top + 4, bottom + 6, 6, 6);
-      const d = Gfx.fit(this.camera, this.cab.w, this.cab.h, rect);
-      this.camDist = d; this.camera.position.set(0, this.cab.cy, d); this.camera.lookAt(0, this.cab.cy, 0);
+      const rect = Gfx.freeRect(top + 2, bottom + 4, 4, 4);
+      // Walzen so groß wie möglich: Kopfschild und Fußleiste dürfen hinter die Leisten ragen, die Seitenlichter an den Rand
+      const c = this.cab, wide = rect.w > rect.h * 1.2, low = wide && rect.h < 480, up = low ? 0.4 : wide ? 1 : 0.85, dn = low ? 0.15 : wide ? 1 : 0.5;
+      const fh = this.winH + 2 * c.fw + up * c.mh + dn * c.bh, fcy = (up * c.mh - dn * c.bh) / 2;
+      document.body.classList.toggle('slotwide', low);
+      const d = Gfx.fit(this.camera, this.reelsW + 2 * c.fw + 0.04, fh, rect, { pad: 1.01 });
+      c.cy = fcy; this.camDist = d; this.camera.position.set(0, fcy, d); this.camera.lookAt(0, fcy, 0);
       if (this.fx) this.clearLines();
     }
     update(dt, t) {
@@ -505,7 +508,7 @@
       return busy;
     }
     leave() {
-      this.dead = true; this.auto = false; this.clearWinShow(); sound.whirr(false);
+      this.dead = true; this.auto = false; document.body.classList.remove('slotwide'); this.clearWinShow(); sound.whirr(false);
       if (this.fx) this.clearLines();
       if (this.scene) Gfx.dispose(this.scene);
       this.texCache.forEach(t => t.dispose()); this.texCache.clear(); this.tiles.clear();
