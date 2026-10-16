@@ -196,6 +196,17 @@ describe('Farm, Produktion, Geschäfte', () => {
     expect(city.s.coins).toBeGreaterThanOrEqual(coins + 90);
     expect(city.status(city.get(bakery)!).kind).toBe('supply');
   });
+  it('startet nur, wenn das Ergebnis danach ins Lager passt', () => {
+    const { city, clock } = setup('relaxed', { coins: 20000, level: 30, inv: { mais: 3, weizen: 47 } });
+    const fab = city.place('snackfabrik', 26, 17, 0).uid!;
+    city.deliver(fab);
+    finish(city, clock);
+    expect(city.get(fab)!.state).toBe('done');
+    expect(city.startProduction(fab, 'r_popcorn').msg).toMatch(/Lager/);
+    expect(city.item('mais')).toBe(3);
+    city.s.inv.weizen = 46;
+    expect(city.startProduction(fab, 'r_popcorn').ok).toBe(true);
+  });
   it('Deko erhöht die Einnahmen, höchstens um 50 %', () => {
     const { city } = setup('creative');
     const h = city.s.buildings.find((b) => b.def === 'haus_rot')!;
@@ -318,6 +329,21 @@ describe('Transport', () => {
     expect(city.collect(uid).ok).toBe(true);
     expect(city.item('holz')).toBe(10);
     expect(city.collect(uid).ok).toBe(false);
+  });
+  it('ohne Straße keine neuen Aufträge (sonst wäre die Lieferung nicht abholbar)', () => {
+    const { city, clock } = setup('relaxed', { coins: 20000, level: 10, inv: { bretter: 6 } });
+    city.s.roads.push('20,17');
+    const uid = city.place('bahnhof', 22, 16, 1).uid!;
+    city.deliver(uid);
+    finish(city, clock);
+    for (const r of [...city.s.roads]) {
+      const [x, y] = r.split(',').map(Number);
+      city.removeRoad(x!, y!);
+    }
+    expect(city.hasRoadAccess(city.get(uid)!)).toBe(false);
+    const coins = city.s.coins;
+    expect(city.startOrder(uid, 'o_holz').msg).toMatch(/Straße/);
+    expect(city.s.coins).toBe(coins);
   });
   it('Hafen muss am Wasser stehen', () => {
     const { city } = setup('creative');

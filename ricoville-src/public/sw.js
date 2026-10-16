@@ -4,8 +4,16 @@
 const CACHE = 'eg-ricoville-v1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icons/icon-192.png', './icons/icon-512.png'];
 
+// Die gehashten Bundles stehen in index.html; sie gleich mit ablegen, damit schon der erste Neustart offline klappt.
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+  e.waitUntil(
+    caches.open(CACHE).then((c) =>
+      fetch('./index.html', { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.text() : ''))
+        .catch(() => '')
+        .then((html) => c.addAll([...SHELL, ...new Set(html.match(/\.\/assets\/[\w.-]+\.(?:js|css)/g) ?? [])])),
+    ),
+  );
 });
 self.addEventListener('message', (e) => {
   if (e.data && e.data.type === 'EG_SKIP_WAITING') self.skipWaiting();
