@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0704f6c0608a",
- "generated": "2026-10-16T18:36:15+00:00",
- "commit": "25294b60edf23a90d287e530c62b83479388ca68",
+ "version": "3a70ed8993e3",
+ "generated": "2026-10-16T18:43:13+00:00",
+ "commit": "a6a22cd41576101985c194cd324ea82ad35c01a9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 19641,
-   "h": "275d9a9fd6404a07a0eb1e70456f4b29bc28351a6a219a0d9a6705c946e0237e"
+   "s": 20192,
+   "h": "55f59146dcb8a4294e3253d35c283eeb885eea5c775c4bb682b1ab9cb8d185d7"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 51644,
-   "h": "2b52bf7ef5423080d629a69c0166844ed0327ab8de5b9ad9f14ce33e1b700364"
+   "s": 52959,
+   "h": "81983b98e6608f4ae873c8c3ad9e7d520f6cc13cabec838878e9ad7ce5adef17"
   },
   {
    "p": "index.html",
@@ -5507,6 +5507,41 @@
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
   },
   {
+   "p": "rico-flap/card.jpg",
+   "s": 28639,
+   "h": "dcb23c94a1f9761b544ce470e1a65b73f9460959d8c681c73bcf6f8df0b9cb5c"
+  },
+  {
+   "p": "rico-flap/emblem.jpg",
+   "s": 13170,
+   "h": "02024fe8b3459c3d5d76b0d54c7eeb3512f502e80dda9095811340676a696b16"
+  },
+  {
+   "p": "rico-flap/game.js",
+   "s": 36771,
+   "h": "3086974f612a2469a1ba111a56e0203f652b9c016f94fe6fecc6f5b2370f85f3"
+  },
+  {
+   "p": "rico-flap/index.html",
+   "s": 7407,
+   "h": "e4dd602e04a285a3ccb3feed3c1c33e2de9a10c4b6301daa04d9af19be1c21ac"
+  },
+  {
+   "p": "rico-flap/manifest.webmanifest",
+   "s": 755,
+   "h": "80b905ce4fca48865b7400191216d681008d431505b9e6b0d0504aa56f00aac1"
+  },
+  {
+   "p": "rico-flap/style.css",
+   "s": 6285,
+   "h": "ee39f8c1258d71a91f9744239bc100ac350d22f0e6108b68c6dbf6dac8ffe650"
+  },
+  {
+   "p": "rico-flap/sw.js",
+   "s": 1980,
+   "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5623,8 +5658,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 78917,
-   "h": "bb8f8719b517bef0436d24748edfd943a0d9a435e46971818a63c43f21d73d9b"
+   "s": 80985,
+   "h": "95f911a2b316206011becd28f4d68690c7d94e0b4ce474df98946f6499107329"
   },
   {
    "p": "taschi/card.svg",
