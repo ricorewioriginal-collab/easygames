@@ -13,7 +13,7 @@ import java.util.Date
 /** Nativer Einstellungsdialog: Nur-WLAN-Schalter, Versionsinfo, "Jetzt aktualisieren". */
 object SettingsDialog {
 
-    fun show(activity: Activity, coordinator: SyncCoordinator) {
+    fun show(activity: Activity, coordinator: SyncCoordinator, onCheckAppUpdate: (() -> Unit)? = null) {
         if (activity.isFinishing) return
         val pad = (16 * activity.resources.displayMetrics.density).toInt()
 
@@ -32,12 +32,15 @@ object SettingsDialog {
         column.addView(wifiSwitch, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         column.addView(info, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
-        AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert)
+        val dialog = AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert)
             .setTitle(R.string.settings_title)
             .setView(column)
             .setPositiveButton(R.string.settings_update_now) { _, _ -> coordinator.requestSync(SyncCoordinator.Trigger.MANUAL) }
             .setNegativeButton(R.string.settings_close, null)
-            .show()
+        if (onCheckAppUpdate != null && AppUpdate.enabled()) {
+            dialog.setNeutralButton(R.string.settings_check_app_update) { _, _ -> onCheckAppUpdate() }
+        }
+        dialog.show()
     }
 
     private fun infoText(ctx: Context, coordinator: SyncCoordinator): String {
