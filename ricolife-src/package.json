@@ -1,0 +1,27 @@
+{
+  "name": "ricolife",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RicoLife 3D – Dein Leben. Deine Regeln. Eigenständige 3D-Lebenssimulation für Browser und Handy (TypeScript, Three.js).",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build:easygames": "npm run build && rm -rf ../ricolife && cp -r dist ../ricolife"
+  },
+  "engines": { "node": ">=20.19" },
+  "dependencies": { "three": "^0.180.0" },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.18.8",
+    "@types/three": "^0.180.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
+  }
+}
