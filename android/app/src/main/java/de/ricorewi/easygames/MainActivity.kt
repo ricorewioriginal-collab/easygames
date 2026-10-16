@@ -3,6 +3,7 @@ package de.ricorewi.easygames
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -87,6 +88,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         applyImmersive()
         createWebView()
         showSplash()
+        root.postDelayed({ checkAppUpdate(false) }, 4000)   // nach dem Start, damit Splash und erster Seitenaufbau nicht konkurrieren
 
         coordinator.addListener(stateListener)
         updateOverlay()
@@ -100,6 +102,34 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
                 }
             }
         }
+    }
+
+    /** Hinweis auf eine neuere App-Hülle (APK). manual = aus den Einstellungen: meldet auch „aktuell“ oder einen Fehler. */
+    private fun checkAppUpdate(manual: Boolean) {
+        if (isFinishing || isDestroyed || !AppUpdate.enabled()) return
+        if (!manual && !AppUpdate.due(this)) return
+        coordinator.runInBackground {
+            val latest = AppUpdate.fetchLatest(this)
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                if (latest == null) {
+                    if (manual) Toast.makeText(this, R.string.update_check_failed, Toast.LENGTH_LONG).show()
+                } else if (!AppUpdate.isNewer(this, latest)) {
+                    if (manual) Toast.makeText(this, R.string.update_current, Toast.LENGTH_SHORT).show()
+                } else if (manual || !AppUpdate.dismissed(this, latest)) {
+                    showAppUpdateDialog(latest)
+                }
+            }
+        }
+    }
+
+    private fun showAppUpdateDialog(latest: AppUpdate.Info) {
+        AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+            .setTitle(R.string.update_title)
+            .setMessage(getString(R.string.update_message, latest.versionName, BuildConfig.VERSION_NAME))
+            .setPositiveButton(R.string.update_download) { _, _ -> openExternal(Uri.parse(BuildConfig.UPDATE_APK_URL)) }
+            .setNegativeButton(R.string.update_later) { _, _ -> AppUpdate.dismiss(this, latest) }
+            .show()
     }
 
     private fun showSplash() {
@@ -318,7 +348,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
     }
 
     override fun showSettings() {
-        runOnUiThread { SettingsDialog.show(this, coordinator) }
+        runOnUiThread { SettingsDialog.show(this, coordinator) { checkAppUpdate(true) } }
     }
 
     // ---------------------------------------------------------------- Chrome-Client (Vollbild, Berechtigungen)
@@ -454,7 +484,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
 
         settingsButton = Button(this)
         settingsButton.text = getString(R.string.boot_settings)
-        settingsButton.setOnClickListener { SettingsDialog.show(this, coordinator) }
+        settingsButton.setOnClickListener { SettingsDialog.show(this, coordinator) { checkAppUpdate(true) } }
 
         val wrap = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         val bar = LinearLayout.LayoutParams(dp(320), ViewGroup.LayoutParams.WRAP_CONTENT)

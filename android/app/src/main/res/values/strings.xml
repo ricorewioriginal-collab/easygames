@@ -31,5 +31,14 @@
     <string name="state_error">Fehler</string>
     <string name="state_offline">offline</string>
 
+    <!-- App-Update (neue APK) -->
+    <string name="settings_check_app_update">App-Update suchen</string>
+    <string name="update_title">Neue App-Version</string>
+    <string name="update_message">Version %1$s ist verfügbar (installiert: %2$s).\n\nNeue Symbole, Anmeldung und Funktionen der App kommen nur mit dem Update. Die Spiele aktualisieren sich weiterhin von selbst.</string>
+    <string name="update_download">Herunterladen</string>
+    <string name="update_later">Später</string>
+    <string name="update_current">Die App ist auf dem neuesten Stand.</string>
+    <string name="update_check_failed">Update-Prüfung nicht möglich (keine Verbindung?).</string>
+
     <string name="toast_no_browser">Kein Browser gefunden</string>
 </resources>

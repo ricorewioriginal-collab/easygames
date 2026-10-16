@@ -15,6 +15,9 @@ val syncBaseValue = prop("syncBase", "https://raw.githubusercontent.com/ricorewi
     .let { if (it.endsWith("/")) it else "$it/" }
 // false = Start-Inhalt (assets/easygames) nicht ins APK packen; die App lädt dann beim ersten Start.
 val bundleContent = prop("bundleContent", "true") != "false"
+// App-Update-Hinweis: Versionsangabe (JSON mit version, version_code) und Download der neuesten App. Leer = kein Hinweis.
+val updateInfoUrl = prop("updateInfoUrl", "https://ricorewi-radio.de/downloads/easygames-latest.json")
+val updateApkUrl = prop("updateApkUrl", "https://ricorewi-radio.de/downloads/easygames-Developer.apk")
 
 // ---- Release-Signierung über Umgebungsvariablen ----
 val keystorePath: String? = System.getenv("KEYSTORE_PATH")
@@ -41,6 +44,8 @@ android {
         versionCode = versionCodeValue
         versionName = versionNameValue
         buildConfigField("String", "SYNC_BASE", "\"$syncBaseValue\"")
+        buildConfigField("String", "UPDATE_INFO_URL", "\"$updateInfoUrl\"")
+        buildConfigField("String", "UPDATE_APK_URL", "\"$updateApkUrl\"")
     }
 
     signingConfigs {
