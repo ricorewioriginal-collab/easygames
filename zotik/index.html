@@ -1035,12 +1035,12 @@ cv.addEventListener('pointerdown',e=>{initAudio();if(mode!=='play'||menuOpen)ret
 cv.addEventListener('pointermove',e=>{if(fs.id===e.pointerId){fs.moved+=Math.abs(e.clientX-fs.x0)+Math.abs(e.clientY-fs.y0);joyMove(e);return}if(!drag||drag.id!==e.pointerId)return;drag.moved+=Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y);camYaw-=(e.clientX-drag.x)*.0058;camPitch=clamp(camPitch+(e.clientY-drag.y)*.0045,.08,1.1);drag.x=e.clientX;drag.y=e.clientY});
 const endDrag=e=>{if(fs.id===e.pointerId){const tap=e.type==='pointerup'&&fs.moved<12&&performance.now()-fs.t0<260;floatEnd();if(tap)tapGo(e.clientX,e.clientY);return}if(drag&&drag.id===e.pointerId){const tap=e.type==='pointerup'&&drag.moved<12&&performance.now()-drag.t0<260;drag=null;if(tap)tapGo(e.clientX,e.clientY)}};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);cv.addEventListener('lostpointercapture',e=>{if(fs.id===e.pointerId)floatEnd()});
 /* Touch-Steuerung: schwebender Stick (linke Hälfte; im Wisch-Modus überall), kurz tippen = dorthin gehen, zweiter Finger = Kamera */
-let steer=localStorage.getItem('zotik.steer')==='swipe'?'swipe':'stick';const fs={id:-1,t0:0,x0:0,y0:0,moved:0};let goTo=null;
+let steer='stick';try{if(localStorage.getItem('zotik.steer')==='swipe')steer='swipe'}catch(e){}const fs={id:-1,t0:0,x0:0,y0:0,moved:0};let goTo=null;
 function floatStart(e){joyEl.style.transform='';const r=joyEl.getBoundingClientRect(),w=r.width,cx=Math.min(Math.max(e.clientX,w/2+6),innerWidth-w/2-6),cy=Math.min(Math.max(e.clientY,w/2+6),innerHeight-w/2-6);joyEl.style.transform=`translate(${cx-(r.left+w/2)}px,${cy-(r.top+w/2)}px)`;joyEl.classList.add('on');joy.id=e.pointerId;fs.id=e.pointerId;fs.t0=performance.now();fs.x0=e.clientX;fs.y0=e.clientY;fs.moved=0;goTo=null;joyMove(e)}
 function floatEnd(){fs.id=-1;joy.id=-1;joy.x=joy.y=0;knob.style.transform='';joyEl.style.transform='';joyEl.classList.remove('on')}
 const tapMark=document.createElement('div');tapMark.id='tapMark';document.body.appendChild(tapMark);
 function tapGo(cx,cy){if(mode!=='play'||menuOpen||dlg.on||pl.dead||naut.on)return;const v=new T.Vector3(cx/innerWidth*2-1,-(cy/innerHeight)*2+1,.5).unproject(camera).sub(camera.position).normalize();if(v.y>=-.02)return;const k=(pl.y-camera.position.y)/v.y,x=camera.position.x+v.x*k,z=camera.position.z+v.z*k;if(Math.hypot(x-pl.x,z-pl.z)>70)return;goTo={x,z,t:performance.now()};tapMark.style.left=cx+'px';tapMark.style.top=cy+'px';tapMark.classList.add('on');setTimeout(()=>tapMark.classList.remove('on'),900)}
-{const b=$('steerBtn'),up=()=>{b.textContent=steer==='swipe'?'👆':'🕹️';b.title=steer==='swipe'?'Wischen: Finger irgendwo auflegen und ziehen':'Stick links'};up();b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();steer=steer==='swipe'?'stick':'swipe';localStorage.setItem('zotik.steer',steer);up();toast(steer==='swipe'?'👆 Wischen: Finger irgendwo auflegen und ziehen = laufen · kurz tippen = dorthin gehen · zweiter Finger = Kamera':'🕹️ Stick: links ziehen = laufen · rechts wischen = Kamera · tippen = dorthin gehen')})}
+{const b=$('steerBtn'),up=()=>{b.textContent=steer==='swipe'?'👆':'🕹️';b.title=steer==='swipe'?'Wischen: Finger irgendwo auflegen und ziehen':'Stick links'};up();b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();steer=steer==='swipe'?'stick':'swipe';try{localStorage.setItem('zotik.steer',steer)}catch(e){}up();toast(steer==='swipe'?'👆 Wischen: Finger irgendwo auflegen und ziehen = laufen · kurz tippen = dorthin gehen · zweiter Finger = Kamera':'🕹️ Stick: links ziehen = laufen · rechts wischen = Kamera · tippen = dorthin gehen')})}
 cv.addEventListener('wheel',e=>{camDist=clamp(camDist+e.deltaY*.004,4.5,13)},{passive:true});
 /* Joystick */
 const joyEl=$('joy'),knob=joyEl.firstElementChild;
@@ -2005,6 +2005,7 @@ $('crGo').onclick=()=>{S=DEF();S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit
 let crDrag=null;cv.addEventListener('pointerdown',e=>{if(mode==='creator')crDrag=e.clientX});addEventListener('pointermove',e=>{if(crDrag!==null&&mode==='creator'){cr.rot+=(e.clientX-crDrag)*.012;crDrag=e.clientX}});addEventListener('pointerup',()=>{crDrag=null});
 $('title').addEventListener('pointerdown',e=>{if(tStage==='press')startLoading()});
 addEventListener('keydown',e=>{
+  {const zm=document.getElementById('zMini');if(zm&&!zm.hidden)return}
   if(mode==='creator'){if(e.code==='Escape')$('crBack').click();else if(e.code==='ArrowLeft')cr.rot-=.2;else if(e.code==='ArrowRight')cr.rot+=.2;return}
   if(mode!=='title')return;
   if(tStage==='press'){startLoading();e.preventDefault();return}
@@ -2725,6 +2726,6 @@ if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(locati
 })();
 </script>
 <script src="../cloud/anmacha-cloud.js" data-mount="#cloudbox" data-hint="Optional: Spielstände mit Google sichern und auf anderen Geräten weiterspielen. Ohne Anmeldung bleibt alles nur auf diesem Gerät." data-game="zotik2" data-prefix="zotik2_save_" data-save-btn="#saveBtn" defer></script>
-<script src="minigames.js?v=3"></script>
+<script src="minigames.js?v=5"></script>
 </body>
 </html>
