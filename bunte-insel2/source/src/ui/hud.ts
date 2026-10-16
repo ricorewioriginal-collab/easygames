@@ -74,6 +74,7 @@ export class Hud {
   update(dt: number): void {
     const g = this.g, s = g.save;
     if (!s) return;
+    this.el.classList.toggle('touch-mode', g.mobile || g.input.lastDevice === 'touch');
     this.stars.textContent = '⭐ ' + s.stars;
     const lv = levelFromXp(s.xp), info = xpForLevel(lv), pct = Math.min(100, ((s.xp - info.start) / info.need) * 100);
     this.lvl.innerHTML = '';
@@ -100,7 +101,7 @@ export class Hud {
     // Aktions-Hinweis
     const n = g.nearest;
     if (n && !anyModal() && g.busy === 0) {
-      const key = g.input.lastDevice === 'gamepad' ? 'A' : g.input.lastDevice === 'touch' ? '👆' : 'E';
+      const key = g.input.lastDevice === 'gamepad' ? 'A' : (g.mobile || g.input.lastDevice === 'touch') ? '👆' : 'E';
       const label = g.interact.labelOf(n);
       const txt = n.icon + ' ' + label;
       if (this.prompt.dataset.t !== txt + key) {

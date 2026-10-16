@@ -1,6 +1,6 @@
 # Überarbeitung: Orte mit spielbaren Aufgaben
 
-Stand: 15. Oktober 2026. Arbeitsfassung zur Prüfung; keine abgeschlossene inhaltliche Gleichwertigkeit zu Teil 1.
+Stand: 16. Oktober 2026. Arbeitsfassung zur Prüfung; keine abgeschlossene inhaltliche Gleichwertigkeit zu Teil 1.
 
 Die Weltgeschichten bleiben bestehen. Jede Insel erhält zusätzlich eine Tätigkeit in der 3D-Welt, die zum Ort gehört. Die bisherigen kleinen Minispiele bleiben als weitere Angebote erhalten.
 
@@ -34,6 +34,7 @@ Die Weltgeschichten bleiben bestehen. Jede Insel erhält zusätzlich eine Tätig
 - Neue Spielstände beginnen wenige Schritte von Rosi entfernt. Der erste Hinweis ist eine Sprechblase und blockiert die Bewegung nicht.
 - Fehlende Ortsverweise in den ursprünglichen Quests sind ergänzt. Bereits aufgesammelte oder erledigte Interaktionen werden nicht als nächstes Ziel bevorzugt.
 - Während eines offenen Fensters läuft die Figur nicht weiter.
+- Im schmalen Hochformat überlappen Status und Menü nicht. Die Touch-Aktion ersetzt den Tastaturhinweis; Beschriftungen bleiben innerhalb des Bildschirms.
 - Niedrige und mittlere Grafikprofile fallen nicht mehr unter die CSS-Auflösung; die Leistungswirkung auf echten Handys muss geprüft werden.
 - Lasse nimmt die tatsächlich vorgesehenen Splitterzahlen entgegen. Alte Splitter bleiben dadurch nicht im Rucksack, um spätere Sammelziele vorzeitig zu erfüllen. Der letzte Prisma-Splitter muss vor dem Finale eingesammelt werden.
 - Vorhandene gespeicherte Positionen bleiben erhalten. Bauwerke und Beete nutzen das bestehende versionierte Speicherformat.

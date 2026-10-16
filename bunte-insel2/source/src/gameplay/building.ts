@@ -2,6 +2,7 @@
    Belegte Zellen werden als begrenzte numerische Flags gespeichert; bestehende Spielstände bleiben kompatibel. */
 import type { Game, GameSystem } from '../game.ts';
 import type { LoadedWorld } from '../world/registry.ts';
+import { FREE_BUILD_SITE } from '../world/layout.ts';
 import { GeoBuilder } from '../engine/geo.ts';
 import { mats } from '../engine/materials.ts';
 import { btn, h, modal } from '../ui/dom.ts';
@@ -11,7 +12,7 @@ export class Building implements GameSystem {
   id = 'building';
   private mesh: THREE.Mesh | null = null;
   constructor(private g: Game) { g.panels.freebuild = () => this.open(); }
-  private origin(): { x: number; z: number } { const w = this.g.worlds.byId('bauland')!; return { x: w.shape.x + 62, z: w.shape.z + 30 }; }
+  private origin(): { x: number; z: number } { const w = this.g.worlds.byId('bauland')!; return { x: w.shape.x + FREE_BUILD_SITE.dx, z: w.shape.z + FREE_BUILD_SITE.dz }; }
   private key(x: number, z: number, y: number): string { return PREFIX + x + ':' + z + ':' + y; }
   private height(x: number, z: number): number { let y = 0; while (y < MAX_HEIGHT) { const c = this.g.flag(this.key(x, z, y)); if (!Number.isInteger(c) || c < 1 || c > BLOCK_COLORS.length) break; y++; } return y; }
   private count(): number { let n = 0; for (let x = 0; x < N; x++) for (let z = 0; z < N; z++) n += this.height(x, z); return n; }
