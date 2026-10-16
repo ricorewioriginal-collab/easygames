@@ -6,6 +6,36 @@
  },
  "games": [
   {
+   "id": "krawallvoegel",
+   "title": "Krawallvögel 3D",
+   "desc": "Schleuder-Physikspiel nach dem Vogel-gegen-Schweine-Klassiker in 3D: 150 Level in 10 Senderwelten mit Boss-Burgen, 8 Vögel mit Fähigkeiten (Teilen, Turbo, Bombe, Ei, Bumerang, Riese, Aufblasen), 6 Schweinetypen, Glas, Holz, Stein und TNT. Sterne, Power-ups mit Mega-Adler, goldene Sender-Kisten für die Senderwand. Handy, PC und Controller, Vollbild, Konsolen-Menü und Google-Spielstand.",
+   "icon": "🐦",
+   "img": "krawallvoegel/card.svg",
+   "bg": "linear-gradient(145deg,#2a1466,#d92a2a 55%,#ffc93a)",
+   "glow": "rgba(255,90,60,.55)",
+   "path": "krawallvoegel/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Krawallvögel 3D ist ein Schleuder-Physikspiel nach dem Vorbild des Vogel-gegen-Schweine-Klassikers, mit eigenen Figuren und Grafiken. Zieh den Vogel in der Schleuder zurück, ziele und lass los: Die Schweine verstecken sich in Bauwerken aus Glas, Holz und Stein, TNT-Kisten explodieren in Kettenreaktionen. Jeder Vogel hat eine Spezialfähigkeit, die du im Flug auslöst: Rudi (Kampfschrei), Blitz-Trio (teilt sich in drei, stark gegen Glas), Zisch (Turbo, stark gegen Holz), Bumm (explodiert, stark gegen Stein), Mathilde (wirft ein Ei-Bombe), Kurvi (fliegt wie ein Bumerang zurück), Brocken (riesig und schwer) und Pustebacke (bläst sich auf). Ziel: alle Schweine erledigen – vom Ferkel über Helm- und Bartschwein bis König Grunz in den Boss-Burgen. Unbenutzte Vögel bringen 10.000 Punkte, je nach Punktzahl gibt es 1 bis 3 Sterne. 150 Level in 10 Welten, jede präsentiert von einem Sender (YourTime-FM, RapRadio 24, SchlagerPop 24, ChartRadio 24, ClubRadio 24, RockRadio 24, KultRadio 24, Zocker-FM, ChristmasRadio 24, AnMaCha 24). Sender-Kisten bringen 3.000 Bonuspunkte, die goldene Sender-Kiste jeder Welt und Sterne schalten die 16 Senderlogos der Senderwand frei. Power-ups: Zielfernrohr, Superschleuder, Krawallsamen, Erdbeben und Mega-Adler. Fortschritt wird lokal gespeichert und optional mit Google synchronisiert.",
+    "steuerung": [
+     "Smartphone/Tablet: Vogel antippen, nach hinten ziehen und loslassen. Im Flug irgendwo tippen = Fähigkeit. Mit einem Finger auf freier Fläche schwenken, mit zwei Fingern zoomen. Querformat empfohlen.",
+     "PC: Vogel mit der Maus ziehen und loslassen, Mausrad zoomt. Oder Tastatur: ←/→ Winkel, ↑/↓ Kraft, Leertaste schießen und im Flug Fähigkeit. 1–5 Power-ups, A/D schwenken, Q/E zoomen, V Übersicht, R Neustart, Esc/P Pause, F Vollbild, M Musik.",
+     "Controller: linker Stick zielt (Richtung und Kraft), Ⓐ schießt und löst die Fähigkeit aus, Ⓑ bricht das Zielen ab, Ⓨ wählt ein Power-up, Ⓧ setzt es ein, rechter Stick schwenkt, LB/RB zoomen, Start Pause, Select Neustart. Menüs mit Steuerkreuz, Ⓐ und Ⓑ."
+    ],
+    "tipps": [
+     "Triff die Stützen eines Bauwerks – dann fällt alles von selbst.",
+     "Blitz-Trio gegen Glas, Zisch gegen Holz, Bumm und Brocken gegen Stein.",
+     "Spare Vögel: Jeder übrige Vogel bringt 10.000 Punkte für den dritten Stern.",
+     "Jede Welt versteckt eine goldene Sender-Kiste – sie gibt außerdem Power-ups.",
+     "Hängst du fest? Der Mega-Adler fegt einmal quer durchs Level."
+    ]
+   },
+   "size": 169785,
+   "files": 11,
+   "offline": true
+  },
+  {
    "id": "kiko-sterneninseln",
    "title": "KIKO – Das Geheimnis der Sterneninseln",
    "desc": "3D-Abenteuer mit 20 unterschiedlichen Leveln in vier Welten und vier wählbaren Figuren: Sternenpuls, Rätsel, Wind, Federpilze, bröckelnde Inseln, Uhrtore und Endgegner. PC, Touch und Gamepad; lokale Spielstände und optionaler Google-Speicher.",

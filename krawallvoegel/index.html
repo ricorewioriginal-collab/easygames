@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/krawallvoegel-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Krawallvögel…"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#140b2e">
+<meta name="description" content="Krawallvögel 3D: Schleuder-Physikspiel mit 150 Leveln in 10 Senderwelten, 8 Vögeln mit Spezialfähigkeiten, Schweineburgen aus Glas, Holz und Stein, Power-ups und Google-Spielstand.">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../vendor/fonts/fredoka.css">
+<link rel="stylesheet" href="./style.css?v=1">
+<title>Krawallvögel 3D – easygames</title>
+</head>
+<body>
+<div id="app">
+  <div id="stage" aria-label="Dreidimensionale Spielwelt"></div>
+
+  <!-- Ladebildschirm -->
+  <section id="loading" class="screen">
+    <div class="load-center">
+      <div class="emblem" aria-hidden="true"><span class="e-bird"></span><span class="e-ring"></span></div>
+      <h1 class="game-logo">KRAWALL<span>VÖGEL</span><b>3D</b></h1>
+      <div class="load-bar"><i id="loadBar"></i></div>
+      <div class="load-row"><span id="loadText">Starte …</span><span id="loadPct">0 %</span></div>
+      <p id="loadTip" class="tip"></p>
+    </div>
+    <div class="presented">präsentiert von</div>
+    <div class="logo-strip" id="loadLogos" aria-hidden="true"></div>
+  </section>
+
+  <!-- Titelbildschirm -->
+  <section id="title" class="screen" hidden>
+    <div class="title-center">
+      <h1 class="game-logo big">KRAWALL<span>VÖGEL</span><b>3D</b></h1>
+      <p class="claim">10 Senderwelten · 150 Level · 8 Vögel · 0 Gnade für Schweine 😂</p>
+      <p class="press" id="pressText">Drücke eine beliebige Taste</p>
+    </div>
+    <div class="title-foot"><span>AnMaCha · easygames original</span><span id="titleVersion"></span></div>
+  </section>
+
+  <!-- Hauptmenü im Konsolen-Stil -->
+  <section id="menu" class="screen" hidden>
+    <header class="topbar">
+      <div class="profile"><span class="avatar" id="menuAvatar"></span><div><b>Krawall-Profil</b><small id="profileLine">0 ★</small></div></div>
+      <div class="top-stats"><span title="Sterne">★ <b id="statStars">0</b></span><span title="Goldene Sender-Kisten">📻 <b id="statGold">0</b>/10</span><span title="Uhrzeit" id="clock">--:--</span></div>
+    </header>
+    <div class="hero">
+      <div class="eyebrow" id="heroEyebrow">WEITERSPIELEN</div>
+      <h2 id="heroTitle">Sonnenstrand</h2>
+      <p id="heroText"></p>
+    </div>
+    <nav class="tiles" id="menuTiles" aria-label="Hauptmenü">
+      <button class="tile t-play" data-act="continue" data-eyebrow="WEITERSPIELEN"><i>▶</i><span>Spielen</span></button>
+      <button class="tile t-worlds" data-act="worlds" data-eyebrow="WELTEN"><i>🌍</i><span>Welten</span></button>
+      <button class="tile t-wall" data-act="gallery" data-eyebrow="SENDERWAND"><i>📻</i><span>Senderwand</span></button>
+      <button class="tile t-birds" data-act="birds" data-eyebrow="VOGELKUNDE"><i>🐦</i><span>Vogelkunde</span></button>
+      <button class="tile t-settings" data-act="settings" data-eyebrow="EINSTELLUNGEN"><i>⚙</i><span>Optionen</span></button>
+      <button class="tile t-cloud" data-act="cloud" data-eyebrow="GOOGLE CLOUD"><i>☁</i><span>Cloud</span></button>
+      <button class="tile t-home" data-act="home" data-eyebrow="EASYGAMES"><i>⌂</i><span>Sammlung</span></button>
+    </nav>
+    <footer class="hints" id="menuHints"></footer>
+  </section>
+
+  <!-- Welten -->
+  <section id="worlds" class="screen panel-screen" hidden data-back="menu">
+    <header class="sub-head"><button class="round back" data-act="back" aria-label="Zurück">←</button><div><div class="eyebrow">10 SENDERWELTEN</div><h2>Welt wählen</h2></div><div class="sub-stat">★ <b id="worldsStars">0</b></div></header>
+    <div class="world-list" id="worldList"></div>
+    <footer class="hints"></footer>
+  </section>
+
+  <!-- Level -->
+  <section id="levels" class="screen panel-screen" hidden data-back="worlds">
+    <header class="sub-head"><button class="round back" data-act="back" aria-label="Zurück">←</button><div><div class="eyebrow" id="levelsEyebrow">WELT 1</div><h2 id="levelsTitle">Sonnenstrand</h2></div><img id="levelsLogo" class="sub-logo" alt=""></header>
+    <div class="level-grid" id="levelGrid"></div>
+    <footer class="hints"></footer>
+  </section>
+
+  <!-- Senderwand -->
+  <section id="gallery" class="screen panel-screen" hidden data-back="menu">
+    <header class="sub-head"><button class="round back" data-act="back" aria-label="Zurück">←</button><div><div class="eyebrow">SAMMLUNG</div><h2>Senderwand</h2></div><div class="sub-stat"><b id="galleryCount">0</b>/16</div></header>
+    <p class="sub-text">Zerschlage in jeder Welt die <b>goldene Sender-Kiste</b> und sammle Sterne – jedes Senderlogo bekommt seinen Platz an der Wand. Normale Sender-Kisten in den Leveln bringen 3.000 Bonuspunkte.</p>
+    <div class="logo-wall" id="logoWall"></div>
+    <footer class="hints"></footer>
+  </section>
+
+  <!-- Vogelkunde -->
+  <section id="birds" class="screen panel-screen" hidden data-back="menu">
+    <header class="sub-head"><button class="round back" data-act="back" aria-label="Zurück">←</button><div><div class="eyebrow">VOGELKUNDE</div><h2>Vögel, Schweine &amp; Power-ups</h2></div></header>
+    <div class="dex" id="dex"></div>
+    <footer class="hints"></footer>
+  </section>
+
+  <!-- Einstellungen -->
+  <section id="settings" class="screen panel-screen" hidden data-back="menu">
+    <header class="sub-head"><button class="round back" data-act="back" aria-label="Zurück">←</button><div><div class="eyebrow">OPTIONEN</div><h2>Einstellungen</h2></div></header>
+    <div class="settings-list" id="settingsList"></div>
+    <footer class="hints"></footer>
+  </section>
+
+  <!-- Google Cloud -->
+  <section id="cloud" class="screen panel-screen" hidden data-back="menu">
+    <header class="sub-head"><button class="round back" data-act="back" aria-label="Zurück">←</button><div><div class="eyebrow">SPIELSTAND</div><h2>Google Cloud</h2></div></header>
+    <div class="cloud-box">
+      <p>Dein Fortschritt (Sterne, Rekorde, Senderlogos, Power-ups, Einstellungen) wird automatisch auf diesem Gerät gespeichert. Mit Google-Anmeldung landet er zusätzlich in der Cloud und folgt dir auf Handy, PC und Konsole.</p>
+      <div id="cloudMount"></div>
+    </div>
+    <footer class="hints"></footer>
+  </section>
+
+  <!-- Spiel-HUD -->
+  <div id="hud" hidden>
+    <div class="hud-left">
+      <button class="round" id="pauseBtn" data-act="pause" aria-label="Pause">Ⅱ</button>
+      <button class="round" id="restartBtn" data-act="restart" aria-label="Neustart">↻</button>
+      <button class="round" id="viewBtn" data-act="overview" aria-label="Übersicht">⤢</button>
+    </div>
+    <div class="hud-mid"><span id="hudLevel">1-1</span><small id="hudWorld">Sonnenstrand</small></div>
+    <div class="hud-right">
+      <div class="score" id="hudScore">0</div>
+      <div class="hud-best">Rekord <b id="hudBest">0</b> <span id="hudStars"></span></div>
+    </div>
+    <div class="powers" id="powers"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+  <div id="popups" aria-hidden="true"></div>
+  <div id="banner" hidden></div>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- Pause -->
+  <section id="pause" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+    <div class="dialog">
+      <h2 id="pauseTitle">Pause</h2>
+      <p id="pauseInfo"></p>
+      <button class="btn primary" data-act="resume">▶ Weiter</button>
+      <button class="btn" data-act="restart">↻ Neustart</button>
+      <button class="btn" data-act="levels">▦ Levelauswahl</button>
+      <div class="toggle-row"><button class="btn small" data-act="toggleSound" id="pauseSound">♪ Ton</button><button class="btn small" data-act="toggleMusic" id="pauseMusic">♫ Musik</button><button class="btn small" data-act="fullscreen">⛶ Vollbild</button></div>
+      <button class="btn" data-act="mainmenu">⌂ Hauptmenü</button>
+    </div>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="result" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="dialog result">
+      <div class="eyebrow" id="resultLevel">LEVEL 1-1</div>
+      <h2 id="resultTitle">Level geschafft!</h2>
+      <div class="stars" id="resultStars"><i></i><i></i><i></i></div>
+      <div class="result-score" id="resultScore">0</div>
+      <p id="resultInfo"></p>
+      <div class="result-buttons" id="resultButtons"></div>
+    </div>
+  </section>
+
+  <!-- Neuer Vogel / Weltintro -->
+  <section id="intro" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="dialog intro">
+      <img id="introImg" alt="">
+      <div class="eyebrow" id="introEyebrow">NEUER VOGEL</div>
+      <h2 id="introTitle"></h2>
+      <p id="introText"></p>
+      <button class="btn primary" data-act="closeIntro">Los geht's!</button>
+    </div>
+  </section>
+
+  <section id="confirm" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="dialog"><h2 id="confirmTitle">Sicher?</h2><p id="confirmText"></p><button class="btn primary" data-act="confirmYes">Ja</button><button class="btn" data-act="confirmNo">Abbrechen</button></div>
+  </section>
+
+  <div id="rotate" hidden><div>📱↻</div><p>Quer halten macht mehr Krawall!</p></div>
+  <div id="fatal" class="screen" hidden><div class="dialog"><h2>Oh nein!</h2><p id="fatalText">Dieses Gerät unterstützt kein WebGL.</p><a class="btn" href="../" target="_top">← Zur Spielesammlung</a></div></div>
+</div>
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/planck-1.4.2.min.js"></script>
+<script src="./levels.js?v=1"></script>
+<script src="./sim.js?v=1"></script>
+<script src="./audio.js?v=1"></script>
+<script src="./models.js?v=1"></script>
+<script src="./game.js?v=1"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="krawallvoegel" data-prefix="easygames.krawallvoegel" data-mount="#cloudMount" data-hint="Mit Google anmelden und Sterne, Rekorde, Senderlogos und Power-ups auf allen Geräten synchronisieren." defer></script>
+</body>
+</html>

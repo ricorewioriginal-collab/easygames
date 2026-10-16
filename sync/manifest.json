@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0704f6c0608a",
- "generated": "2026-10-16T18:36:15+00:00",
- "commit": "25294b60edf23a90d287e530c62b83479388ca68",
+ "version": "258e58ce8c9a",
+ "generated": "2026-10-16T18:43:13+00:00",
+ "commit": "a6a22cd41576101985c194cd324ea82ad35c01a9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 19641,
-   "h": "275d9a9fd6404a07a0eb1e70456f4b29bc28351a6a219a0d9a6705c946e0237e"
+   "s": 20253,
+   "h": "3172d14791c6796f4b96d7a23d2e8903716461c08f246030f8c22ad896d002ad"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 51644,
-   "h": "2b52bf7ef5423080d629a69c0166844ed0327ab8de5b9ad9f14ce33e1b700364"
+   "s": 54152,
+   "h": "d04ddc9c07006a5c4ab87a65b2a8bbbbafa9e9932af41894fed8ce63ba87aa8d"
   },
   {
    "p": "index.html",
@@ -5000,6 +5000,61 @@
    "p": "kraterkommando/sw.js",
    "s": 1066,
    "h": "e4df137e84dfa27a6103701ccd8ef4928c1514f1c3354e9e3f6dd55bfa41c10c"
+  },
+  {
+   "p": "krawallvoegel/audio.js",
+   "s": 9160,
+   "h": "10618d5b14b3128399426b5a942b3306b1ffdb89c5ace1feb4d795d5d8849b71"
+  },
+  {
+   "p": "krawallvoegel/card.svg",
+   "s": 3011,
+   "h": "597d968a0e57dad135b9cab11c79a81db974fe0d46eaba6a08a3c637d55a99a6"
+  },
+  {
+   "p": "krawallvoegel/game.js",
+   "s": 61992,
+   "h": "f45b83b352f8de0d7bed4f2171e78596d07c6fd21acf245f8c12492e69209748"
+  },
+  {
+   "p": "krawallvoegel/icon.svg",
+   "s": 1388,
+   "h": "65f6bcdb9e94ec98c303add2df5712637bd8dd6c34771006f7c649c5bb9bd5c4"
+  },
+  {
+   "p": "krawallvoegel/index.html",
+   "s": 14061,
+   "h": "a16c9fbf1140c9c7e51b6201777312f448a574ab47f0d577611b5a3884016547"
+  },
+  {
+   "p": "krawallvoegel/levels.js",
+   "s": 20331,
+   "h": "b81870102ce7eaabb1f9efe7ebf5bee95b27d84f3f92c6ce4c78f06a3311f43d"
+  },
+  {
+   "p": "krawallvoegel/manifest.webmanifest",
+   "s": 775,
+   "h": "c65d12e699f4ab2c81d36748a46d2cde19c4101afde095f9d4cbbd404cbe710b"
+  },
+  {
+   "p": "krawallvoegel/models.js",
+   "s": 21647,
+   "h": "df7d40f34d381e04172ef378a7e4d361d9acd58b08dd4f542809797fe73fcb49"
+  },
+  {
+   "p": "krawallvoegel/sim.js",
+   "s": 16451,
+   "h": "66d611015ec66ee5134291bb07d688b7d3aa42f2b369a997eea099269d52e0e1"
+  },
+  {
+   "p": "krawallvoegel/style.css",
+   "s": 18977,
+   "h": "1fdfaf29d739445b7a08c402ee559f806bafb972aa962b25511a61a6c9f77527"
+  },
+  {
+   "p": "krawallvoegel/sw.js",
+   "s": 1992,
+   "h": "f6a1587182700b23eb92b10e8c854db10141b88f3855ce088c3af610918de738"
   },
   {
    "p": "logo.png",
@@ -5623,8 +5678,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 78917,
-   "h": "bb8f8719b517bef0436d24748edfd943a0d9a435e46971818a63c43f21d73d9b"
+   "s": 82238,
+   "h": "673da26f83e9fbceb7b2f90ec0478622e7e5410452bd8e215960144347376127"
   },
   {
    "p": "taschi/card.svg",
