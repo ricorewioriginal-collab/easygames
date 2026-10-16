@@ -10,7 +10,7 @@
    "title": "Rico Flap 3D",
    "desc": "Der Flatter-Klassiker in moderner 3D-Optik: Rico im RicoReWi-Hoodie flattert durch die Lücken der Funktürme. 10 Level in 5 Welten (Stadt, Wald, Wüste, Eis, Neon-Nacht), bewegliche Türme, Noten für bis zu drei Sterne und ein Endlos-Modus mit Rekord. Touch, Tastatur, Maus und Gamecontroller; lokaler Spielstand und optionaler Google-Speicher.",
    "icon": "🐦",
-   "img": "rico-flap/card.jpg",
+   "img": "rico-flap/card.svg",
    "bg": "linear-gradient(145deg,#2a1356,#7b4bd1 55%,#ff9e6e)",
    "glow": "rgba(200,245,90,.5)",
    "path": "rico-flap/",
@@ -29,8 +29,8 @@
      "Die Noten liegen genau in der Mitte der Lücke, sie zeigen dir also den sichersten Weg."
     ]
    },
-   "size": 95007,
-   "files": 7,
+   "size": 87184,
+   "files": 8,
    "offline": true
   },
   {

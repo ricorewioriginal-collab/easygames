@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5edef2f55718",
- "generated": "2026-10-16T19:07:47+00:00",
- "commit": "16113342767f033a4cf3ce2e29e85515d4b95bb3",
+ "version": "09aff89b09fd",
+ "generated": "2026-10-16T21:14:23+02:00",
+ "commit": "fe93b3e7497b89ecdefaa7a1dab124279cc22083",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4694,7 +4694,7 @@
   {
    "p": "games.js",
    "s": 20192,
-   "h": "55f59146dcb8a4294e3253d35c283eeb885eea5c775c4bb682b1ab9cb8d185d7"
+   "h": "b7516a040e8bd61c1415cb310f1a73d2bad97d61c26ae71e696c057872fb1b0c"
   },
   {
    "p": "gay-life/index.html",
@@ -5507,9 +5507,14 @@
    "h": "92baeff1fd79f8a6297751782bc96b16f139325be16202dc317a5c9053527890"
   },
   {
-   "p": "rico-flap/card.jpg",
-   "s": 28639,
-   "h": "dcb23c94a1f9761b544ce470e1a65b73f9460959d8c681c73bcf6f8df0b9cb5c"
+   "p": "rico-flap/card.png",
+   "s": 16335,
+   "h": "0598f334975a0e4831111bbce9b52c023847d29bc16d9dacdd0a1a4ade9ba242"
+  },
+  {
+   "p": "rico-flap/card.svg",
+   "s": 4481,
+   "h": "9b994d624c40d541f987ee07c8903e6094dbada6a39cb22b6e8e133adbab3c62"
   },
   {
    "p": "rico-flap/emblem.jpg",
@@ -5659,7 +5664,7 @@
   {
    "p": "sync/catalog.json",
    "s": 80985,
-   "h": "3e178122f00963f3a204e43c8e2f7c6338ebed643a657e5ac45d83991cba9832"
+   "h": "f8e3dd5029476691ec6d31c6e26c8679578c725f9324945293d6860fcdd4dc2e"
   },
   {
    "p": "taschi/card.svg",
