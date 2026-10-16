@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b4336df6df35",
- "generated": "2026-10-16T20:03:56+02:00",
- "commit": "34a244403fe04d339699172cc05b9f35e81cebd6",
+ "version": "20ba79c6aa4a",
+ "generated": "2026-10-16T18:31:28+00:00",
+ "commit": "81671f1dcf35256adefbe687c9b7c7e3e73ee303",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -353,8 +353,8 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 12758,
-   "h": "96000023f91a472136fe1de73f7f41349fbcd120d5012bae9df84b306a5492cc"
+   "s": 12858,
+   "h": "84ab116c566480b17a8b740e7836c666ab2c52ac7771c4b791692d59fa514b91"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -3858,8 +3858,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109325,
-   "h": "dafcbcd5c019add7b0ffeb4f6486e5bce6b0676a396def83842fd8780df1442a"
+   "s": 109338,
+   "h": "e785c8ec0b5eb30a8c2e517cd67e5898334dc429080eafb734abb029ab1d47d6"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4633,8 +4633,8 @@
   },
   {
    "p": "bunte-insel2/index.html",
-   "s": 5326,
-   "h": "ab758bae2c986c67a122610d52c89d434297092c8dc4a7e592749ac89731802c"
+   "s": 5434,
+   "h": "04bf7c45bceb1129fd72c9e006daba17cd23567a8da263d5a9f367eaf0a5d16f"
   },
   {
    "p": "bunte-insel2/manifest.webmanifest",
@@ -4658,8 +4658,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 28312,
-   "h": "f72554762d34798d53271266e03f8aa6d5a2195c5867b33e1f9c0cf657d031ce"
+   "s": 29739,
+   "h": "85e1ac8d6e4bc131331d917d7cb04ef464dce033e77ff88aa23caa41536ceaca"
   },
   {
    "p": "device.js",
@@ -4848,8 +4848,8 @@
   },
   {
    "p": "index.html",
-   "s": 55829,
-   "h": "9dcb66205fb922e351a3a3f9b71adfb852b7492c3a1c23ff34fe19b9eb2ea164"
+   "s": 57588,
+   "h": "cdc63c78e83e7afb5518d8d967149f979a311b354552fe0fd689b1ff52449b20"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -4859,7 +4859,7 @@
   {
    "p": "kiko-sterneninseln/index.html",
    "s": 1897,
-   "h": "8fa81bac722ce5a74a1fa684745260fb0d983f265685becd5ca7bc08c1d844f8"
+   "h": "855014139aff472a3e7112edf68cd2ce05ae0ef6d92231765490a0e0317bc920"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
@@ -4953,8 +4953,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 28312,
-   "h": "f72554762d34798d53271266e03f8aa6d5a2195c5867b33e1f9c0cf657d031ce"
+   "s": 29739,
+   "h": "85e1ac8d6e4bc131331d917d7cb04ef464dce033e77ff88aa23caa41536ceaca"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5328,8 +5328,8 @@
   },
   {
    "p": "partyverse/app/index.html",
-   "s": 696,
-   "h": "cc1a532feeda7a165a5501765e3d9cb8e9311573ce62a60fb415d4edf30f8a6c"
+   "s": 808,
+   "h": "12104851142e53032234ae3794bf3c11bbe186c27306c58da443dc4618498abe"
   },
   {
    "p": "partyverse/card.png",
@@ -5338,8 +5338,8 @@
   },
   {
    "p": "partyverse/client/index.html",
-   "s": 595,
-   "h": "4c79c1be4fba05cf0644690594d528f1cae93f7d56232a8ea2783d029e2d6d0c"
+   "s": 707,
+   "h": "a0f8cdf8639d0f05f7bf641d67bf6567a60346c9670de80e276622789655a071"
   },
   {
    "p": "partyverse/client/src/style.css",
@@ -5423,8 +5423,8 @@
   },
   {
    "p": "prismrush/index.html",
-   "s": 2871,
-   "h": "f3096d7493cf51e02b54ff66cb9b83de276915a3623baa5c9242e3fa1df719d8"
+   "s": 2978,
+   "h": "60f15a457b2c00527fbfe901f030e4ef2e6d50274e6b6690a49337fab99b9c02"
   },
   {
    "p": "prismrush/manifest.webmanifest",
@@ -5533,8 +5533,8 @@
   },
   {
    "p": "riftzone/app/index.html",
-   "s": 971,
-   "h": "5ab620775b209ca58610b78f12647489d90e3cad520f1337d40701139459b6b8"
+   "s": 1131,
+   "h": "9ed04482a5d0104a9c3f21dc5b7447b15241c0cf918d7071ffb2264f845aadf7"
   },
   {
    "p": "riftzone/card.png",
@@ -5543,8 +5543,8 @@
   },
   {
    "p": "riftzone/client/index.html",
-   "s": 863,
-   "h": "42bcdd64106f23f1d4be2699a322cef40b3f03ed7876f526bd3d0522f0d95be8"
+   "s": 1023,
+   "h": "68ec5304779076c63f334c21a87665ae18512b0cc739bff72ff8c5210e90b4a3"
   },
   {
    "p": "riftzone/client/public/favicon.svg",
@@ -5624,7 +5624,7 @@
   {
    "p": "sync/catalog.json",
    "s": 78917,
-   "h": "b0f51a9a639fc6cede3ef8baac961f37b95761a11348d84543779a726e0a2b30"
+   "h": "bb8f8719b517bef0436d24748edfd943a0d9a435e46971818a63c43f21d73d9b"
   },
   {
    "p": "taschi/card.svg",
@@ -6018,8 +6018,8 @@
   },
   {
    "p": "turbokick/app/index.html",
-   "s": 562,
-   "h": "3dfb11f2a5939e7570a133647cc6840ecfa928a1f341033e15b6623c5c643ad2"
+   "s": 672,
+   "h": "796f5f0ae62d68f37c5c35cce13ed53b0ae4cba77b40db8a35b945afd1e99ca2"
   },
   {
    "p": "turbokick/card.png",
@@ -6028,8 +6028,8 @@
   },
   {
    "p": "turbokick/client/index.html",
-   "s": 461,
-   "h": "7673811603f9c302926b60e5b7f3758756ecced0dc3f6022a72cad77165f7780"
+   "s": 571,
+   "h": "f3bb1563b1ea6e206baa845ef52ea69c8e576d7b9f3badac1296eecec6d700ad"
   },
   {
    "p": "turbokick/client/src/input/touch.css",

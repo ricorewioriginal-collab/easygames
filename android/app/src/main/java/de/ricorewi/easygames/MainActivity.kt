@@ -53,7 +53,7 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
     private lateinit var retryButton: Button
     private lateinit var settingsButton: Button
 
-    // Start-Splash (Logo auf dunklem Grund): liegt über allem, bis die erste Seite steht (mindestens kurz, höchstens ~2 s)
+    // Start-Splash (Logo auf dunklem Grund): liegt über allem, bis die erste Seite steht (mindestens 1,2 s, höchstens ~3 s)
     private var splashView: View? = null
     private var splashSince = 0L
 
@@ -142,13 +142,13 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         root.addView(v, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         splashView = v
         splashSince = android.os.SystemClock.uptimeMillis()
-        v.postDelayed({ dismissSplash() }, 2000)
+        v.postDelayed({ dismissSplash() }, 3000)
     }
 
     private fun dismissSplash() {
         val v = splashView ?: return
         splashView = null
-        val wait = (600 - (android.os.SystemClock.uptimeMillis() - splashSince)).coerceAtLeast(0)
+        val wait = (1200 - (android.os.SystemClock.uptimeMillis() - splashSince)).coerceAtLeast(0)
         v.postDelayed({
             v.animate().alpha(0f).setDuration(250).withEndAction { (v.parent as? ViewGroup)?.removeView(v) }.start()
         }, wait)

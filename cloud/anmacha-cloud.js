@@ -27,6 +27,9 @@
   try { meta = JSON.parse(LS.getItem(META_KEY)) || {}; } catch (e) {}
 
   function match(k) { return prefixes.some(function (p) { return k.indexOf(p) === 0; }); }
+  // Gehört der Schlüssel zu diesem Spiel? (aktuelles Präfix oder IndexedDB-Datei). Fremde Cloud-Schlüssel (z. B. aus einem früher breiteren Präfix) werden nie lokal angewendet.
+  function mine(k) { return k.slice(0, 4) === 'idb:' || match(k); }
+  var backupTries = 0, retryFirst = false;   // Sicherung älterer Stände: höchstens 3 Fehlversuche, dann wird trotzdem abgeglichen
 
   // Kompression (gzip, nativ) für größere Spielstände
   function b64(u) { var t = '', i; for (i = 0; i < u.length; i += 8192) t += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return btoa(t); }
@@ -255,29 +258,37 @@
           if (!local[k] || local[k].v === remote[k].v) continue;
           if (local[k].t > remote[k].t && remote[k].v !== null) { lost[k] = remote[k]; nl++; }
           else if (remote[k].t > local[k].t && local[k].v !== null) { lost[k] = local[k]; nl++; }
+          else if (remote[k].t === local[k].t && local[k].v !== null && remote[k].v !== null) { lost[k] = remote[k]; nl++; }   // Gleichstand mit abweichendem Wert (beide Geräte hatten schon Stände ohne Zeitstempel): nichts wird überschrieben, aber die Cloud-Kopie wird gesichert, weil der nächste lokale Speicherstand sie ersetzt
         }
         for (k in remote) merged[k] = remote[k];
         for (k in local) {
           if (!remote[k] || local[k].t > remote[k].t) { merged[k] = local[k]; if (!remote[k] || remote[k].v !== local[k].v) dirty = true; }
         }
-        for (k in merged) {
-          if (merged[k] !== local[k] && (!local[k] || merged[k].t > local[k].t) && (!local[k] || merged[k].v !== local[k].v)) {
-            if (k.slice(0, 4) === 'idb:') writes.push(idbWrite(k.slice(4), merged[k]));
-            else { if (merged[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, merged[k].v); meta[k] = merged[k].t; }
-            changed = true;
+        // Erst die ältere Sicherung hochladen, dann lokal überschreiben: schlägt die Sicherung fehl, bleibt alles unverändert und der
+        // erste Abgleich wird später wiederholt (nach 3 Fehlversuchen gleicht das Skript trotzdem ab, damit die Anmeldung nicht blockiert).
+        var backupP = nl ? push(tok, lost, false, urlAlt()) : Promise.resolve();
+        return backupP.then(function () { backupTries = 0; }, function () {
+          if (++backupTries >= 3) return;
+          retryFirst = true; throw new Error('Sicherung des älteren Standes fehlgeschlagen – neuer Versuch beim nächsten Abgleich');
+        }).then(function () {
+          for (k in merged) {
+            if (!mine(k)) continue;
+            if (merged[k] !== local[k] && (!local[k] || merged[k].t > local[k].t) && (!local[k] || merged[k].v !== local[k].v)) {
+              if (k.slice(0, 4) === 'idb:') writes.push(idbWrite(k.slice(4), merged[k]));
+              else { if (merged[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, merged[k].v); meta[k] = merged[k].t; }
+              changed = true;
+            }
           }
-        }
-        saveMeta();
-        lastErr = ''; lastOk = Date.now();
-        var p = Promise.all(writes).then(function () { return dirty ? push(tok, merged, keep) : null; });
-        if (nl) { var p0 = p; p = push(tok, lost, false, urlAlt()).catch(function () {}).then(function () { return p0; }); }
-        return p.then(function () {
+          saveMeta();
+          lastErr = ''; lastOk = Date.now();
+          return Promise.all(writes).then(function () { return dirty ? push(tok, merged, keep) : null; });
+        }).then(function () {
           if (changed && first && !sessionStorage.getItem(RL)) { sessionStorage.setItem(RL, '1'); location.reload(); }
         });
       });
     }).catch(function (e) { lastErr = e.message || 'Fehler'; render(); })
       .then(function () {
-        busy = false; first = false; try { sessionStorage.removeItem(RL); } catch (e) {} render();
+        busy = false; first = retryFirst; retryFirst = false; try { sessionStorage.removeItem(RL); } catch (e) {} render();
         if (again) { again = false; queue(); }
       });
   }
@@ -308,6 +319,7 @@
     loadSdk().then(function () { return user.getIdToken(); }).then(pull).then(function (remote) {
       var k, n = 0, w = [];
       for (k in remote) {
+        if (!mine(k)) continue;
         if (k.slice(0, 4) === 'idb:') w.push(idbWrite(k.slice(4), remote[k]));
         else { if (remote[k].v === null) rawRemove.call(LS, k); else rawSet.call(LS, k, remote[k].v); meta[k] = remote[k].t; }
         n++;
@@ -328,6 +340,7 @@
       var alt = rl[0], cur = rl[1], k, n = 0, now = Date.now(), w = [], back = {}, merged = {};
       for (k in cur) merged[k] = cur[k];
       for (k in alt) {
+        if (!mine(k)) continue;
         if (cur[k] && cur[k].v !== alt[k].v) back[k] = cur[k];
         merged[k] = { v: alt[k].v, t: now };
         if (k.slice(0, 4) === 'idb:') w.push(idbWrite(k.slice(4), merged[k]));
@@ -439,5 +452,5 @@
   }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   if (wanted()) sync();
-  window.AnMaChaCloud = { sync: sync };
+  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder };
 })();

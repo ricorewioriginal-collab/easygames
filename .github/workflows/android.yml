@@ -28,6 +28,7 @@ jobs:
       - run: node tools/test-sync-build.js
       - run: bash android/server/test-publish.sh
       - run: node tools/test-cloud-copies.js
+      - run: node --test tools/test-cloud-merge.mjs
       - run: node tools/build-sync.js --strict --stage android/app/src/main/assets/easygames
       - name: Install browser test runtime
         run: |
@@ -35,6 +36,8 @@ jobs:
           node "$RUNNER_TEMP/easygames-browser/node_modules/playwright/cli.js" install --with-deps chromium
       - name: Verify offline in-app launches and deferred updates
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/android-runtime-audit.js
+      - name: Verify Google save script in all cloud games
+        run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-cloud-games.cjs
       - run: ./android/gradlew -p android :core:test :app:assembleDebug --console=plain
       - uses: actions/upload-artifact@v4
         with:
