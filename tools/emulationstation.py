@@ -245,6 +245,21 @@ def make_cover(game, repo, base_url, dst, tmp):
     return False
 
 
+def copy_asset(repo, base_url, rel, dst):
+    """Branding-Datei (z. B. branding/easygames-logo.png) aus dem Checkout oder von der Webseite holen; False, wenn nicht verfügbar."""
+    try:
+        if repo and os.path.isfile(os.path.join(repo, rel)):
+            shutil.copyfile(os.path.join(repo, rel), dst)
+        else:
+            with open(dst, 'wb') as f:
+                f.write(fetch(base_url + rel, binary=True))
+        return True
+    except Exception:
+        if os.path.isfile(dst):
+            os.remove(dst)
+        return False
+
+
 # ----------------------------------------------------------------------------------------------- Browser und Start
 CHROMIUM_NAMES = ['chromium', 'chromium-browser', 'google-chrome', 'google-chrome-stable', 'chrome', 'microsoft-edge', 'microsoft-edge-stable', 'brave-browser', 'firefox']
 
@@ -479,8 +494,15 @@ def cmd_install(a):
     tmp = os.path.join(cfg_dir, 'tmp')
     os.makedirs(tmp, exist_ok=True)
     esde_cov = os.path.join(esde_dir(a), 'downloaded_media', SYSTEM, 'covers') if fe == 'es-de' else None
+    esde_mar = os.path.join(esde_dir(a), 'downloaded_media', SYSTEM, 'marquees') if fe == 'es-de' else None
     if esde_cov:
         os.makedirs(esde_cov, exist_ok=True)
+        os.makedirs(esde_mar, exist_ok=True)
+    # Logo „easygames by RicoReWi × AnMaCha“ als Marquee jedes Spiels (ES-DE: downloaded_media/…/marquees, sonst <marquee> in der gamelist.xml)
+    logo = os.path.join(img_dir, 'easygames-logo.png')
+    has_logo = not a.no_images and copy_asset(repo, base_url, 'branding/easygames-logo.png', logo)
+    if has_logo:
+        created.append(logo)
     script = os.path.join(cfg_dir, 'emulationstation.py')
     for g in games:
         stem = safe_name(g['title'])
@@ -511,6 +533,12 @@ def cmd_install(a):
         ET.SubElement(e, 'desc').text = desc
         if not a.no_images:
             ET.SubElement(e, 'image').text = './images/%s.png' % g['id']
+        if has_logo:
+            ET.SubElement(e, 'marquee').text = './images/easygames-logo.png'
+            if esde_mar:
+                dst = os.path.join(esde_mar, stem + '.png')
+                shutil.copyfile(logo, dst)
+                created.append(dst)
         ET.SubElement(e, 'developer').text = 'RicoReWi'
         ET.SubElement(e, 'publisher').text = 'easygames'
         ET.SubElement(e, 'genre').text = 'Browser-Spiel'

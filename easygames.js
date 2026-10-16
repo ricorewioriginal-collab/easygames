@@ -129,18 +129,20 @@
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
-      var htmlOv = document.documentElement.style.overflow, bodyOv = document.body.style.overflow, pushed = false, closed = false;
+      var hidden = [], htmlOv = document.documentElement.style.overflow, bodyOv = document.body.style.overflow, pushed = false, closed = false;
       function done(fromPop) {
         if (closed) return; closed = true; current = null;
         window.removeEventListener('keydown', onKey, true); window.removeEventListener('popstate', onPop); window.removeEventListener('message', onMsg);
         try { if (document.fullscreenElement === box && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
         if (box.parentNode) box.parentNode.removeChild(box);
         document.documentElement.style.overflow = htmlOv; document.body.style.overflow = bodyOv;
+        hidden.forEach(function (h) { if (h[1] === null) h[0].removeAttribute('aria-hidden'); else h[0].setAttribute('aria-hidden', h[1]); try { h[0].inert = h[2]; } catch (e) {} });   // Seite dahinter wieder zugänglich
         if (!fromPop && pushed && history.state && history.state.egOverlay) history.back();
         try { if (opener && opener !== document.body && opener.focus && document.contains(opener)) opener.focus(); } catch (e) {}   // Fokus zurück an den Auslöser
         if (typeof o.onClose === 'function') o.onClose();
       }
       function onKey(e) {
+        if (e.key === 'Tab') { e.preventDefault(); try { f.focus(); } catch (x) {} return; }   // Tabulator bleibt im Overlay (Spiel)
         var back = e.key === 'GoBack' || e.key === 'BrowserBack' || e.key === 'XF86Back' || e.keyCode === 10009 || e.keyCode === 461 || e.keyCode === 4;   // Zurück-Tasten von TV/WebView
         if (back || (e.key === 'Escape' && !document.fullscreenElement)) { if (back) e.preventDefault(); done(false); }
       }
@@ -153,6 +155,9 @@
         b.onclick = function () { done(false); };
         box.appendChild(b);
       }
+      Array.prototype.forEach.call(document.body.children, function (n) {   // Seite dahinter für Screenreader/Tastatur sperren, solange das Overlay offen ist
+        if (n !== box && n.nodeType === 1 && !/^(SCRIPT|STYLE|LINK|NOSCRIPT)$/.test(n.tagName)) { hidden.push([n, n.getAttribute('aria-hidden'), !!n.inert]); n.setAttribute('aria-hidden', 'true'); try { n.inert = true; } catch (e) {} }
+      });
       document.body.appendChild(box);
       document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
       if (reuse) pushed = true; else try { history.pushState({ egOverlay: 1 }, ''); pushed = true; } catch (e) {}

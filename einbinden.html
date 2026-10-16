@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080B12">
 <title>easygames – Einbinden und Hilfe</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="branding/easygames-apple-touch-icon.png">
+<meta name="description" content="Spiele von easygames auf der eigenen Webseite einbinden: Vollbild, App-Kacheln, Overlay, Code-Generator und Anleitung.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="easygames by RicoReWi × AnMaCha">
+<meta property="og:title" content="easygames – Einbinden und Hilfe">
+<meta property="og:description" content="Spiele von easygames auf der eigenen Webseite einbinden: Vollbild, App-Kacheln, Overlay, Code-Generator und Anleitung.">
+<meta property="og:url" content="https://ricorewioriginal-collab.github.io/easygames/einbinden.html">
+<meta property="og:image" content="https://ricorewioriginal-collab.github.io/easygames/branding/easygames-social.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="easygames – Minispiele für Browser, Handy und TV, by RicoReWi × AnMaCha">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ricorewioriginal-collab.github.io/easygames/branding/easygames-social.png">
 <style>
   *{box-sizing:border-box}
   :root{--cy:#00E5FF;--ma:#FF2D95;--pu:#8B5CF6;--mut:#9fb4c8;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.12)}
@@ -240,6 +254,7 @@
     <ul>
       <li>Schließen mit dem <b>✕-Knopf</b> (mit <code>data-close="false"</code> bzw. <code>{ close:false }</code> ausblenden), der <b>Zurück-Taste</b> des Browsers/Handys, <b>Esc</b> (wenn der Fokus nicht im Spiel liegt) oder per <code>EasyGames.close()</code>. Ein Spiel kann sich auch selbst schließen (<a href="#msg"><code>easygames:close</code></a>).</li>
       <li>Die Seite dahinter scrollt nicht. Das Browser-Vollbild wird beim Klick angefordert; wo es der Browser nicht erlaubt (z. B. iPhone), bleibt das Overlay trotzdem vollflächig.</li>
+      <li><b>Barrierefreiheit:</b> Das Overlay ist ein <code>role="dialog"</code> mit <code>aria-modal</code>; die Seite dahinter wird für Screenreader und Tastatur gesperrt (<code>aria-hidden</code>/<code>inert</code>), der Fokus liegt im Spiel, der Tabulator bleibt im Overlay und beim Schließen kehrt der Fokus zum auslösenden Knopf zurück. Dazu schließen auch die Zurück-Tasten von TV und WebView.</li>
       <li>Nur ein Overlay gleichzeitig; ein neues ersetzt das offene. <code>EasyGames.open('zotik', { fullscreen:false, title:'…', onClose: fn })</code> bietet weitere Optionen.</li>
       <li><b>Controller und Sensoren:</b> Alle eingebetteten Fenster erlauben jetzt <code>gamepad</code>, <code>accelerometer</code> und <code>gyroscope</code>; ohne diese Freigabe funktionieren Gamepad und Neigungssteuerung in fremden Seiten nicht. Bei eigenem <code>iframe</code> bitte <code>allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope"</code> setzen.</li>
     </ul>

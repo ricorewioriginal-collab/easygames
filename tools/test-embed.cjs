@@ -70,6 +70,17 @@ let fails = 0; const t = (n, ok, extra) => { console.log((ok ? 'OK    ' : 'FEHLE
   t('Zurück-Taste (GoBack) schließt', (await dlg().count()) === 0);
   t('nach Ersetzen bleibt kein toter Verlaufseintrag', await p.evaluate(() => !(history.state && history.state.egOverlay)));
   t('Fokus kehrt zum Auslöser zurück', await p.evaluate(() => document.activeElement && document.activeElement.id === 't'));
+  // Barrierefreiheit: Seite dahinter gesperrt, Fokus im Spiel, Tab bleibt im Overlay, alles wird wieder freigegeben
+  await p.goto(base + '/__overlay.html'); await p.waitForFunction(() => document.querySelector('#t'));
+  await p.focus('#t'); await p.evaluate(() => EasyGames.open('wobbel', { fullscreen: false })); await dlg().waitFor(); await p.waitForTimeout(150);
+  const a11y = await p.evaluate(() => ({ role: document.querySelector('[role=dialog]').getAttribute('aria-modal'), label: !!document.querySelector('[role=dialog]').getAttribute('aria-label'), hid: document.querySelector('#t').getAttribute('aria-hidden'), inert: document.querySelector('#t').inert, foc: document.activeElement && document.activeElement.tagName }));
+  t('Overlay: aria-modal und Beschriftung', a11y.role === 'true' && a11y.label, JSON.stringify(a11y));
+  t('Overlay: Seite dahinter gesperrt (aria-hidden + inert)', a11y.hid === 'true' && a11y.inert === true, JSON.stringify(a11y));
+  t('Overlay: Fokus liegt im Spiel', a11y.foc === 'IFRAME', JSON.stringify(a11y));
+  await p.evaluate(() => document.querySelector('[role=dialog] button').focus()); await p.keyboard.press('Tab');
+  t('Tab aus dem ✕-Knopf geht ins Spiel statt in die Seite', await p.evaluate(() => document.activeElement && document.activeElement.tagName === 'IFRAME'));
+  await p.evaluate(() => EasyGames.close()); await p.waitForTimeout(150);
+  t('Nach dem Schließen ist die Seite wieder frei', await p.evaluate(() => !document.querySelector('#t').hasAttribute('aria-hidden') && document.querySelector('#t').inert === false));
   // App-Kachel-Ansicht
   await p.goto(base + '/__apps.html'); await p.waitForFunction(() => document.querySelector('#lib iframe') && document.querySelector('#tl button'));
   t('Katalog layout=apps lädt view=apps', /embed=1&view=apps/.test(await p.getAttribute('#lib iframe', 'src')));
