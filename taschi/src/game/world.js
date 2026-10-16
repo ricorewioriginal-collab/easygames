@@ -5,7 +5,7 @@ import { THREE } from '../engine/three.js';
 import { REGIONS } from '../data/regions.js';
 import { SPECIES } from '../data/species.js';
 import { TRAINERS } from '../data/trainers.js';
-import { buildLayout } from '../logic/layout.js';
+import { buildLayout, grassAt } from '../logic/layout.js';
 import { FREE } from '../logic/walkgrid.js';
 import { buildRegionMap, paletteFor } from '../world/region-map.js';
 import { buildInterior } from '../world/interiors.js';
@@ -193,7 +193,7 @@ export class World {
     const rng = createRng('wild:' + r + ':' + Date.now());
     const pool = regionPool(r, 'grass');
     if (!pool.length || !L.grass.length) return;
-    const n = Math.max(3, Math.round(5 * this.game.quality.vegetation));
+    const n = Math.max(3, Math.round(7 * this.game.quality.vegetation));
     for (let i = 0; i < n; i++) {
       const g = L.grass[i % L.grass.length];
       const total = pool.reduce((a, [, w]) => a + w, 0);
@@ -204,7 +204,7 @@ export class World {
       const x = g.x + (rng.next() - 0.5) * g.w, z = g.z + (rng.next() - 0.5) * g.d;
       c.root.position.set(x, this.current.height(x, z), z);
       this.scene.add(c.root);
-      this.wild.push({ id, c, home: { x: g.x, z: g.z, r: Math.max(g.w, g.d) * 0.7 }, target: null, wait: rng.next() * 3, behavior: SPECIES[id].behavior, state: 'idle', cooldown: 0 });
+      this.wild.push({ id, c, home: { x: g.x, z: g.z, r: Math.max(g.w, g.d) * 0.45 }, target: null, wait: rng.next() * 3, behavior: SPECIES[id].behavior, state: 'idle', cooldown: 0 });
     }
   }
 
@@ -435,7 +435,8 @@ export class World {
   inGrass() {
     const c = this.current, p = this.player.root.position;
     if (c.type === 'interior') return c.interior.encounters ? { habitat: c.interior.encounters.habitat, rate: c.interior.encounters.rate } : null;
-    for (const g of c.layout.grass) if (Math.abs(p.x - g.x) < g.w / 2 && Math.abs(p.z - g.z) < g.d / 2) return { habitat: g.habitat, rate: 0.11 };
+    const g = grassAt(c.layout, p.x, p.z);
+    if (g) return { habitat: g.habitat, rate: 0.11 };
     return null;
   }
   checkEncounters() {

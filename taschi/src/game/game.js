@@ -562,11 +562,11 @@ export class Game {
     const s = this.save;
     for (const l of ULME.afterBattle) { ulme.ch.setTalking(true, l.mood); await this.ui.say([l]); }
     ulme.ch.setTalking(false);
-    P.grantReward(s, { items: { taschiball: 5, trank: 3 }, keyItem: 'pfadkarte' });
+    P.grantReward(s, { items: { taschiball: 5, heilball: 2, trank: 3 }, keyItem: 'pfadkarte' });
     this.audio.sfx('item');
     s.flags.firstQuest = true; s.flags.travelStarted = true;
     for (const q of P.regionQuests(0)) if (q.id === 'q0_lost') P.acceptQuest(s, q);
-    this.ui.toast('Erhalten: 5× Taschiball, 3× Trank, Pfadkarte', '🎒');
+    this.ui.toast('Erhalten: 5× Taschiball, 2× Heilball, 3× Trank, Pfadkarte', '🎒');
     // Ulme walks back to his lab
     const lab = this.world.current.layout.buildings.find(b => b.kind === 'lab');
     ulme.facePlayer = false;
@@ -707,7 +707,7 @@ export class Game {
     s.guild[site] = 'done';
     await this.ui.say(scene.win, { guild: true });
     P.grantReward(s, { coins: 300 + site * 150, items: { superball: 3 + site, trank: 2 } });
-    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); }
+    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterball. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterball', '◉'); } }
     if (site === 7) return this.summitFinale();
     this.ui.toast('Die Schattengilde ist aus der Region vertrieben! Gefangene Taschis befreit.', '✦');
     for (const npc of this.world.npcs.filter(x => x.guild)) { npc.walkTo = { x: npc.ch.root.position.x + 30, z: npc.ch.root.position.z + 30, speed: 5, done: () => { this.world.scene.remove(npc.ch.root); this.world.npcs = this.world.npcs.filter(x => x !== npc); } }; }

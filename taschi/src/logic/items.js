@@ -106,4 +106,17 @@ export function sell(state, id, qty = 1) {
   return { ok: true, gain: price * qty, text: qty + '× ' + ITEMS[id].name + ' für ★' + price * qty + ' verkauft.' };
 }
 
-export function ballRate(id) { return ITEMS[id]?.category === 'ball' ? ITEMS[id].rate : 0; }
+// Catch multiplier of a ball. ctx: { foe, turn, night, dark, ownLevel }.
+// Special balls only shine in their situation, so the choice of ball matters.
+export function ballRate(id, ctx = {}) {
+  const it = ITEMS[id];
+  if (!it || it.category !== 'ball') return 0;
+  let r = it.rate;
+  const foe = ctx.foe ? SPECIES[ctx.foe.id] : null;
+  if (it.bonusTypes && foe && (it.bonusTypes.includes(foe.type) || it.bonusTypes.includes(foe.type2))) r *= it.bonus;
+  if (it.firstTurn) r = (ctx.turn || 1) <= 1 ? it.firstTurn : 0.5;
+  if (it.dark && (ctx.night || ctx.dark)) r *= it.dark;
+  if (it.timer) r = Math.min(4, 1 + Math.max(0, (ctx.turn || 1) - 1) * 0.3);
+  if (it.levelBased && ctx.foe && ctx.ownLevel) r = ctx.ownLevel >= ctx.foe.lv * 2 ? 4 : ctx.ownLevel > ctx.foe.lv ? 2 : 1;
+  return r;
+}

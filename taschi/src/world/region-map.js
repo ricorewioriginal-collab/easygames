@@ -5,7 +5,7 @@ import { THREE } from '../engine/three.js';
 import { REGIONS } from '../data/regions.js';
 import { TYPES } from '../data/types.js';
 import { buildTerrain } from '../engine/terrain.js';
-import { heightAt, HALF } from '../logic/layout.js';
+import { heightAt, HALF, grassAt } from '../logic/layout.js';
 import { buildWalkGrid } from '../logic/walkgrid.js';
 import { InstanceField, vegetationGeometry, rockGeometry, tallGrassGeometry, tuftGeometry, flowerGeometry, MATERIALS } from '../engine/vegetation.js';
 import * as BLD from '../engine/buildings.js';
@@ -264,14 +264,24 @@ export async function buildRegionMap(L, { quality, onProgress = () => {}, save }
   for (const b of L.bushes) { if (rng.next() > densityKeep) continue; field.add('bush', b.x, b.y - 0.05, b.z, b.s, b.ry, new THREE.Color(1, 1, 1).offsetHSL(0, 0, (rng.next() - 0.5) * 0.15).getHex()); types.add('bush'); }
   for (const k of L.rocks) { field.add('rock_' + k.kind, k.x, k.y - 0.15, k.z, k.s, k.ry, new THREE.Color(1, 1, 1).offsetHSL(0, 0, (rng.next() - 0.5) * 0.15).getHex()); types.add('rock_' + k.kind); }
   // tall grass patches
+  // meadows: clumps only where grassAt() says so, so the visible grass and the
+  // encounter zone always match (roads and water stay free). Density follows
+  // the quality preset to keep phones fast.
+  const grassDensity = 0.62 * Math.max(0.45, quality.vegetation);
+  const tint = new THREE.Color();
   for (const g of L.grass) {
-    const n = Math.round(g.w * g.d * 0.85);
-    for (let i = 0; i < n; i++) { const x = g.x + (rng.next() - 0.5) * g.w, z = g.z + (rng.next() - 0.5) * g.d; field.add('tallgrass', x, H(x, z) - 0.05, z, 0.8 + rng.next() * 0.45, rng.next() * 6, new THREE.Color(1, 1, 1).offsetHSL(0, 0, (rng.next() - 0.5) * 0.12).getHex()); }
+    const n = Math.round(Math.PI * g.rx * g.rz * grassDensity * 1.25);
+    for (let i = 0; i < n; i++) {
+      const x = g.x + (rng.next() - 0.5) * g.w * 1.12, z = g.z + (rng.next() - 0.5) * g.d * 1.12;
+      const s = 0.8 + rng.next() * 0.45, ry = rng.next() * 6, l = (rng.next() - 0.5) * 0.12;
+      if (grassAt(L, x, z) !== g) continue;
+      field.add('tallgrass', x, H(x, z) - 0.05, z, s, ry, tint.setRGB(1, 1, 1).offsetHSL(0, 0, l).getHex());
+    }
   }
   types.add('tallgrass');
   // tufts and flowers scattered on open ground
-  const tuftCount = Math.round(2600 * quality.tufts * (L.cfg.ground === 'snow' ? 0.2 : 1));
-  const flowerCount = Math.round(700 * quality.tufts * L.cfg.flowers);
+  const tuftCount = Math.round(3600 * quality.tufts * (L.cfg.ground === 'snow' ? 0.2 : 1));
+  const flowerCount = Math.round(950 * quality.tufts * L.cfg.flowers);
   const flowerCols = [0xffd75a, 0xf47a8a, 0xffffff, 0xc58af0, 0xff9a5a, 0x7ab8ff];
   const okGround = (x, z) => L.waterDist[0] !== undefined && Math.abs(x) < HALF - 4 && Math.abs(z) < HALF - 4 && !L.roads.some(rd => Math.abs(rd.pts[0][0] - x) < 400 && distToPolyline(x, z, rd.pts) < rd.width / 2 + 0.4) && Math.hypot(x - L.plaza.x, z - L.plaza.z) > L.plaza.r + 0.5;
   for (let i = 0, tries = 0; i < tuftCount && tries < tuftCount * 3; tries++) {

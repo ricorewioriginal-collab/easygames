@@ -7,7 +7,7 @@ import { MOVES, STATUS } from '../data/moves.js';
 import { TYPES, effectiveness } from '../data/types.js';
 import { ITEMS } from '../data/items.js';
 import { REGIONS } from '../data/regions.js';
-import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor } from '../logic/battle.js';
+import { createBattle, runTurn, replace, playerOptions, activeMon, targetsFor, catchChance } from '../logic/battle.js';
 import { maxHp, xpToNext, evolve, replaceMove } from '../logic/monster.js';
 import { createCreature, displayScale } from '../engine/creatures.js';
 import { createCharacter, lookForRole } from '../engine/characters.js';
@@ -257,7 +257,7 @@ export class BattleScene {
     this.menuEl = null; this.logEl = null;
     const indoor = !!opts.indoor;
     this.buildStage(opts.region, indoor);
-    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(),
+    const b = createBattle({ rng: g.rng, kind: opts.kind, format: opts.format, canRun: opts.canRun, canCatch: opts.canCatch, night: g.isNight(), dark: indoor,
       player: { team: save.team, bag: save.bag, name: save.player.name }, foe: { team: opts.foeTeam, ai: opts.ai ?? 0, trainer: opts.kind !== 'wild', name: opts.trainerName || '', items: { ...(opts.items || {}) } } });
     this.b = b; this.opts = opts;
     for (const m of opts.foeTeam) save.dex[m.id] ||= 1;
@@ -481,7 +481,7 @@ export class BattleScene {
     this.playerCh?.play('throw', 0.8);
     await wait(380);
     this.audio.sfx('throw');
-    const ball = ballModel([0xe9523f, 0x3a7fd0, 0x3a3048][['taschiball', 'superball', 'sternball'].indexOf(e.item)] ?? 0xe9523f, 0.22);
+    const ball = ballModel(ITEMS[e.item]?.color ?? 0xe9523f, 0.22);
     this.root.add(ball);
     const from = new THREE.Vector3(-5, 1.8, 5), to = foe.c.root.position.clone().setY(1.2);
     await new Promise(res => { const t0 = performance.now(); const step = () => { const u = Math.min(1, (performance.now() - t0) / 600); ball.position.lerpVectors(from, to, u); ball.position.y += Math.sin(u * Math.PI) * 2.2; ball.rotation.x += 0.4; if (u < 1) requestAnimationFrame(step); else res(); }; step(); });
@@ -595,6 +595,6 @@ function shadeCss(hex) { const c = new THREE.Color(hex); c.multiplyScalar(0.72);
 function catchHint(scene, ball) {
   const foe = scene.b.sides[1].team.find(m => m.hp > 0);
   if (!foe) return '';
-  const r = SPECIES[foe.id].catch * ITEMS[ball].rate * (1 + 1.7 * (1 - foe.hp / maxHp(foe)));
-  return r > 0.9 ? 'sehr hoch' : r > 0.5 ? 'hoch' : r > 0.25 ? 'mittel' : 'gering';
+  const r = catchChance(scene.b, foe, ball);
+  return r >= 1 ? 'sicher' : r > 0.55 ? 'sehr hoch' : r > 0.3 ? 'hoch' : r > 0.15 ? 'mittel' : 'gering';
 }

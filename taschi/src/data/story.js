@@ -33,7 +33,7 @@ export const ULME = {
   ],
   afterBattle: [
     { who: 'Professor Ulme', text: 'Großartig gemacht! Du hast ein echtes Gespür für Taschis.', mood: 'happy' },
-    { who: 'Professor Ulme', text: 'Hier sind fünf Taschibälle, drei Tränke und die Pfadkarte. Die Karte zeigt dir alle Regionen.', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Hier sind fünf Taschibälle, zwei Heilbälle, drei Tränke und die Pfadkarte. Im Laden gibt es mit jedem Siegel neue Ballsorten – jede hat ihre Stärke.', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Dein erster Auftrag: Löse das Mühlstein-Rätsel an der alten Wassermühle, dann öffnet Fels-Fiete seine Arena. Und fang unterwegs ein paar Taschis für deinen Taschidex!', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Wenn du Hilfe brauchst: Im Heilzentrum werden deine Taschis versorgt, im Laden gibt es Ausrüstung. Viel Glück!', mood: 'happy' }
   ]

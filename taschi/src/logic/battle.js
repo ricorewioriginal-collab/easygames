@@ -29,7 +29,7 @@ export function createBattle(o) {
     sides: [mkSide(o.player, true), mkSide(o.foe, false)],
     bag: o.player.bag || {}, vol: {}, participants: {}, runAttempts: 0,
     pendingEvolutions: [], learnRequests: [], night: !!o.night, expShare: o.expShare ?? true,
-    needReplace: [], fainted: new Set()
+    needReplace: [], fainted: new Set(), dark: !!o.dark
   };
   for (const side of b.sides) for (const i of side.active) initVol(b, side.team[i]);
   markParticipants(b);
@@ -182,12 +182,18 @@ function doItem(b, a, ev) {
   } else ev.push({ t: 'text', text: res.text });
 }
 
+export function catchContext(b, foe) {
+  const own = activeList(b, 0)[0]?.m;
+  return { foe, turn: b.turnNo || 1, night: b.night, dark: b.dark, ownLevel: own ? own.lv : 0 };
+}
+
 export function catchChance(b, foe, ball) {
+  if (ITEMS[ball]?.master) return 1;
   const s = SPECIES[foe.id];
   const hpFactor = 1 + 1.7 * (1 - foe.hp / maxHp(foe));
   const statusBonus = foe.status === 'schlaf' || foe.status === 'frost' ? 1.6 : foe.status ? 1.25 : 1;
   const levelPenalty = foe.lv > 40 ? 0.85 : 1;
-  return Math.min(0.97, s.catch * ballRate(ball) * hpFactor * statusBonus * levelPenalty * 0.62);
+  return Math.min(0.97, s.catch * ballRate(ball, catchContext(b, foe)) * hpFactor * statusBonus * levelPenalty * 0.62);
 }
 
 function doCatch(b, a, ev) {
@@ -204,6 +210,9 @@ function doCatch(b, a, ev) {
   if (caught) {
     ev.push({ t: 'caught', uid: foe.uid, text: 'Geschafft! ' + nameOf(foe) + ' wurde gefangen!' });
     foe.status = foe.status || null;
+    const ball = ITEMS[a.item];
+    if (ball.healOnCatch) { foe.hp = maxHp(foe); foe.status = null; for (const mv of foe.moves) mv.pp = maxPP(mv.id); }
+    if (ball.friendship) foe.friendship = Math.max(foe.friendship || 0, ball.friendship);
     b.result = { outcome: 'caught', caught: foe, ball: a.item };
     b.phase = 'end';
     awardXpFor(b, foe, ev, 0.7);
