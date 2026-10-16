@@ -6,7 +6,8 @@ export interface ControlHandlers {
   hover(x: number, y: number): void;
   /** true = Ziehen malt (Straßenmodus) statt die Kamera zu schieben. */
   paints(): boolean;
-  paint(x: number, y: number, phase: 'start' | 'move' | 'end'): void;
+  /** cancel = Strich verwerfen (zweiter Finger zum Zoomen, Abbruch durch den Browser). */
+  paint(x: number, y: number, phase: 'start' | 'move' | 'end' | 'cancel'): void;
 }
 
 export class Controls {
@@ -47,7 +48,7 @@ export class Controls {
       this.painting = this.h.paints() && e.button === 0;
       if (this.painting) this.h.paint(e.clientX, e.clientY, 'start');
     } else if (this.pts.size === 2) {
-      if (this.painting) this.h.paint(e.clientX, e.clientY, 'end');
+      if (this.painting) this.h.paint(e.clientX, e.clientY, 'cancel');
       this.painting = false;
       this.moved = true;
       this.pinch = this.dist();
@@ -96,6 +97,7 @@ export class Controls {
   };
   private cancel = (e: PointerEvent): void => {
     this.pts.delete(e.pointerId);
+    if (this.painting) this.h.paint(e.clientX, e.clientY, 'cancel');
     this.painting = false;
   };
   private wheel = (e: WheelEvent): void => {

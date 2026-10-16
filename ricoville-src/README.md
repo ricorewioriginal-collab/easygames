@@ -26,7 +26,7 @@ npm run build:easygames  # baut und kopiert nach ../ricoville/ (wird eingecheckt
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Aufbau des Codes, Datenfluss, Rendering |
 | [docs/GAMEPLAY_RULES.md](docs/GAMEPLAY_RULES.md) | Alle Spielregeln und Formeln |
 | [docs/CONTENT_CATALOG.md](docs/CONTENT_CATALOG.md) | Alle Gebäude, Pflanzen, Waren, Rezepte, Aufgaben (automatisch erzeugt) |
-| [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) | Google-Speicher heute, Nachbarn/Server-Prüfung später |
+| [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) | Google-Speicher und Nachbarn (Firestore-Regeln, Spark) |
 | [docs/SECURITY.md](docs/SECURITY.md) | Sicherheitsmodell und Grenzen |
 | [docs/TESTING.md](docs/TESTING.md) | Tests und wie man sie ausführt |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Bauen, einchecken, Service Worker, Cache-Versionen |

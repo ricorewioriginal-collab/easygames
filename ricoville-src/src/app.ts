@@ -3,11 +3,13 @@ import { BUILDING, BUILDINGS, CATEGORY_LABEL, ROAD_COST } from './catalogs/build
 import { CROPS, ITEM, ITEMS, MARKET, ORDERS, RECIPE } from './catalogs/items';
 import { ACHIEVEMENTS, NPCS, QUEST, TASK_TEMPLATES } from './catalogs/quests';
 import { Audio, type Sfx } from './audio/audio';
-import { City, footprint, maxEnergy, newCityState, SECTOR, sectorCost, xpToNext } from './core/city';
+import { City, footprint, GIFT_AMOUNT, GIFT_ITEMS, maxEnergy, NEIGHBOR_HELPS, newCityState, SECTOR, sectorCost, utcDay, xpToNext } from './core/city';
 import { localKV, parse, SaveManager, saveKey, type Slot } from './core/save';
 import type { Building, BuildingDef, Category, CityState, GameEvent, Mode, QuestDef, Rot } from './core/types';
 import { Controls } from './input/controls';
 import { World, type Quality } from './rendering/world';
+import { bridge, NeighborApi, SocialError } from './social/api';
+import { helpable, msgName, toPublic, validMsg, visitState, type InboxMsg, type PublicCity } from './social/codec';
 import { fmtDur, fmtTime, h, num } from './ui/dom';
 
 type Tool = 'normal' | 'build' | 'road' | 'move' | 'rotate' | 'demolish' | 'info' | 'expand';
@@ -86,6 +88,11 @@ export class App {
   private seenQuestIntro = new Set<string>();
   private els: Record<string, HTMLElement> = {};
   private e2e = new URLSearchParams(location.search).has('e2e');
+  // Nachbarn
+  private visit: { nid: string; pub: PublicCity; city: City } | null = null;
+  private inbox: InboxMsg[] = [];
+  private publishedAt = 0;
+  private pendingNeighbor = new URLSearchParams(location.search).get('nachbar');
 
   async start(progress: (p: number, msg: string) => void): Promise<void> {
     progress(0.15, 'Grafik wird vorbereitet …');
@@ -114,7 +121,8 @@ export class App {
     });
     window.addEventListener('pagehide', () => this.saveNow());
     window.addEventListener('storage', (e) => {
-      if (this.inGame && e.key === saveKey(this.slot) && this.saves.storedRev() > this.city.s.rev) this.conflict();
+      // Gelöscht (anderer Tab) zählt auch: sonst würde dieser Tab die Stadt beim nächsten Speichern wieder anlegen.
+      if (this.inGame && e.key === saveKey(this.slot) && (e.newValue === null || this.saves.storedRev() > this.city.s.rev)) this.conflict();
     });
     window.addEventListener('online', () => this.hud());
     window.addEventListener('offline', () => this.hud());
@@ -187,6 +195,7 @@ export class App {
   // ================================================================ Menü
   private showMenu(): void {
     this.leaveGame();
+    this.parkCloud();
     this.ui.innerHTML = '';
     const main = this.loadSlot('main');
     const creative = this.loadSlot('creative');
@@ -203,7 +212,7 @@ export class App {
       h('button', { class: 'big-btn', id: 'btn-creative', onclick: () => this.enter(creative ?? newCityState('Sandkasten', 'creative', this.clock()), 'creative') },
         h('span', { class: 'ic' }, '🎨'), h('span', {}, 'Kreativ-Sandkasten', h('small', {}, 'Frei bauen, eigener Speicherplatz, ohne Wertung'))),
       h('div', { class: 'menu-row' },
-        h('button', { class: 'big-btn', onclick: () => this.neighborsPanel() }, h('span', { class: 'ic' }, '👥'), 'Nachbarn'),
+        h('button', { class: 'big-btn', id: 'btn-menu-neighbors', onclick: () => (main ? (this.enter(this.loadSlot('main')!, 'main'), void this.neighborsPanel()) : this.newCityDialog()) }, h('span', { class: 'ic' }, '👥'), 'Nachbarn'),
         h('button', { class: 'big-btn', onclick: () => this.profilePanel() }, h('span', { class: 'ic' }, this.profile.crest), 'Profil'),
         h('button', { class: 'big-btn', onclick: () => this.settingsPanel() }, h('span', { class: 'ic' }, '⚙️'), 'Einstellungen'),
       ),
@@ -282,15 +291,12 @@ export class App {
     this.world.sync();
     this.hud();
     this.saveNow();
-    const cloud = document.getElementById('cloudMount');
-    if (cloud) {
-      cloud.classList.add('hidden');
-      document.body.append(cloud);
-    }
     this.introQuest();
+    if (slot === 'main') void this.socialStart();
   }
   private leaveGame(): void {
     if (!this.inGame) return;
+    if (this.visit) this.closeVisit();
     this.saveNow();
     this.setTool('normal');
     this.unsub?.();
@@ -301,6 +307,7 @@ export class App {
 
   // ================================================================ HUD
   private buildHud(): void {
+    this.parkCloud();
     this.ui.innerHTML = '';
     const tb = (id: string, e: string, label: string, fn: () => void) =>
       (this.els[id] = h('button', { class: 'tb', id: `tb-${id}`, onclick: () => (this.audio.play('click'), fn()), 'aria-label': label }, h('span', { class: 'e' }, e), label));
@@ -322,7 +329,7 @@ export class App {
       tb('transport', '🚂', 'Transport', () => this.transportPanel()),
       tb('storage', '📦', 'Lager', () => this.storagePanel()),
       tb('expand', '🗺️', 'Erweitern', () => this.setTool(this.tool === 'expand' ? 'normal' : 'expand')),
-      tb('neighbors', '👥', 'Nachbarn', () => this.neighborsPanel()),
+      tb('neighbors', '👥', 'Nachbarn', () => void this.neighborsPanel()),
       tb('settings', '⚙️', 'Optionen', () => this.settingsPanel()),
       tb('menu', '🏠', 'Menü', () => this.showMenu()),
     );
@@ -438,6 +445,10 @@ export class App {
       case 'expanded':
         this.toast('🗺️ Neues Gebiet erschlossen!', 'good');
         break;
+      case 'gift':
+        this.audio.play('deliver');
+        this.floatAt(undefined, `+${e.n} ${ITEM.get(e.id ?? '')?.icon ?? '🎁'}`);
+        break;
     }
     this.world.sync();
     this.hud();
@@ -466,7 +477,7 @@ export class App {
     this.toast(msg ?? 'Das geht gerade nicht.', 'bad');
   }
   private bubble(): void {
-    if (!this.inGame || !this.settings.bubbles || this.panel || document.hidden) return;
+    if (!this.inGame || this.visit || !this.settings.bubbles || this.panel || document.hidden) return;
     const homes = this.city.s.buildings.filter((b) => b.state === 'done' && ['residential', 'business'].includes(BUILDING.get(b.def)!.cat));
     if (!homes.length) return;
     const b = homes[Math.floor(Math.random() * homes.length)]!;
@@ -505,18 +516,24 @@ export class App {
     this.syncState = 'conflict';
     this.hud();
     const stored = parse(localStorage.getItem(saveKey(this.slot)));
-    this.openPanel('Neuerer Spielstand gefunden', h('div', {},
-      h('p', {}, 'Deine Stadt wurde inzwischen in einem anderen Tab oder auf einem anderen Gerät weitergespielt. Damit nichts verloren geht, wurde hier nicht überschrieben.'),
+    this.openPanel(stored ? 'Neuerer Spielstand gefunden' : 'Spielstand wurde gelöscht', h('div', {},
+      h('p', {}, stored
+        ? 'Deine Stadt wurde inzwischen in einem anderen Tab oder auf einem anderen Gerät weitergespielt. Damit nichts verloren geht, wurde hier nicht überschrieben.'
+        : 'Diese Stadt wurde in einem anderen Tab gelöscht. Dieser Tab speichert sie nicht wieder, außer du willst es.'),
       stored ? h('div', { class: 'kv' },
         h('span', {}, 'Gespeicherter Stand'), h('span', {}, `Level ${stored.level} · ${num(stored.coins)} 💰 · ${new Date(stored.savedAt).toLocaleString('de-DE')}`),
         h('span', {}, 'Dieser Tab'), h('span', {}, `Level ${this.city.s.level} · ${num(this.city.s.coins)} 💰`)) : null,
       h('div', { class: 'btns' },
-        h('button', { class: 'btn good', onclick: () => {
+        stored ? h('button', { class: 'btn good', onclick: () => {
           const s = this.saves.adopt();
           this.syncState = 'ok';
           this.closePanel();
           if (s) this.enter(s, this.slot);
-        } }, 'Neueren Stand laden'),
+        } }, 'Neueren Stand laden') : h('button', { class: 'btn good', id: 'btn-conflict-menu', onclick: () => {
+          this.closePanel();
+          this.showMenu(); // syncState bleibt bis hier 'conflict', damit beim Verlassen nicht gespeichert wird
+          this.syncState = 'ok';
+        } }, 'Zum Menü'),
         h('button', { class: 'btn alt', onclick: () => {
           this.syncState = 'ok';
           this.saves.force(this.city.s, this.clock());
@@ -654,6 +671,12 @@ export class App {
   private onTap(cx: number, cy: number): void {
     if (!this.inGame) return;
     if (this.panel) return this.closePanel();
+    if (this.visit) {
+      const t = this.tileAt(cx, cy);
+      const vb = t ? (t.uid !== undefined ? this.visit.city.get(t.uid) : this.visit.city.at(t.x, t.y)) : undefined;
+      if (vb) this.helpAt(vb);
+      return;
+    }
     const t = this.tileAt(cx, cy);
     if (!t) return;
     const b = t.uid !== undefined ? this.city.get(t.uid) : this.city.at(t.x, t.y);
@@ -755,7 +778,12 @@ export class App {
     }
   }
 
-  private onPaint(cx: number, cy: number, phase: 'start' | 'move' | 'end'): void {
+  private onPaint(cx: number, cy: number, phase: 'start' | 'move' | 'end' | 'cancel'): void {
+    if (phase === 'cancel') {
+      this.roadStroke = null;
+      this.placebar();
+      return;
+    }
     const t = this.tileAt(cx, cy);
     if (phase === 'start') {
       if (!t) return;
@@ -809,7 +837,7 @@ export class App {
       if (this.panel) this.closePanel();
       else if (this.inGame) this.setTool('normal');
     }
-    if (!this.inGame || this.panel) return;
+    if (!this.inGame || this.panel || this.visit) return;
     if (k === 'r' && this.placing) this.rotatePlacing();
     if (k === 'q') this.world.yaw += Math.PI / 2;
     if (k === 'e') this.world.yaw -= Math.PI / 2;
@@ -847,7 +875,16 @@ export class App {
     this.panel = p;
     this.panelRefresh = refresh ?? null;
   }
+  /** Der Cloud-Bereich gehört dem easygames-Skript: vor dem Leeren von Menü, HUD oder Fenster zurück in den body. */
+  private parkCloud(): void {
+    const cloud = document.getElementById('cloudMount');
+    if (cloud && cloud.parentElement !== document.body) {
+      cloud.classList.add('hidden');
+      document.body.append(cloud);
+    }
+  }
   private closePanel(): void {
+    this.parkCloud();
     this.panel?.remove();
     this.panel = null;
     this.panelRefresh = null;
@@ -1253,11 +1290,285 @@ export class App {
   }
 
   // ================================================================ Sonstige Fenster
-  private neighborsPanel(): void {
-    this.openPanel('👥 Nachbarn', h('div', {},
-      h('p', {}, 'Nachbarn besuchen, beim Bauen helfen, Geschenke schicken und Filialen eröffnen – das kommt als Nächstes.'),
-      h('p', {}, 'Ehrlicher Stand: Dafür braucht RicoVille geprüfte Server-Funktionen (Firebase Cloud Functions), damit niemand fremde Städte verändern oder Belohnungen erfinden kann. Die Regeln und das Datenmodell sind vorbereitet, aber noch nicht in Betrieb. Bis dahin gibt es keine erfundenen Demo-Nachbarn.'),
-      h('p', {}, 'Alles im Spiel ist ohne Nachbarn erreichbar: Material gibt es per Zug, Schiff, Sägewerk oder beim Baustoffhändler.')));
+  // ================================================================ Nachbarn (Firestore, Spark-Tarif, ohne Server)
+  private async socialApi(): Promise<NeighborApi | null> {
+    try {
+      const acc = await bridge()?.account?.();
+      return acc ? new NeighborApi(acc) : null;
+    } catch {
+      return null;
+    }
+  }
+  /** Nach dem Betreten der eigenen Stadt: Kurzansicht veröffentlichen und Post zählen (still, nur wenn angemeldet). */
+  private async socialStart(): Promise<void> {
+    const api = await this.socialApi();
+    if (!api) {
+      if (this.pendingNeighbor && this.inGame) void this.neighborsPanel('find');
+      return;
+    }
+    try {
+      await this.publishCity(api);
+      await this.loadInbox(api);
+      if (this.pendingNeighbor && this.inGame && !this.visit) void this.neighborsPanel('find');
+    } catch {
+      /* offline oder Regeln noch nicht veröffentlicht: das Fenster zeigt es beim Öffnen */
+    }
+  }
+  private async publishCity(api: NeighborApi, force = false): Promise<void> {
+    if (this.slot !== 'main' || this.city.creative) return;
+    if (!force && Date.now() - this.publishedAt < 10 * 60_000) return;
+    await api.putCity(toPublic(this.city.s, this.city.population(), Date.now()));
+    this.publishedAt = Date.now();
+  }
+  private async loadInbox(api: NeighborApi): Promise<void> {
+    const all = await api.inbox();
+    const today = utcDay(Date.now());
+    this.inbox = all.filter((m) => !m.done && validMsg(m, Date.now()));
+    this.badge('neighbors', this.inbox.length);
+    // Erledigtes von gestern und früher aufräumen (die Regeln erlauben Löschen erst ab dem Folgetag)
+    for (const m of all.filter((x) => (x.done || !validMsg(x, Date.now())) && x.day < today).slice(0, 20)) void api.remove(m.id).catch(() => undefined);
+  }
+  private inviteLink(uid: string): string {
+    return `${location.origin}${location.pathname}?nachbar=${encodeURIComponent(uid)}`;
+  }
+
+  private async neighborsPanel(tab: 'mine' | 'post' | 'find' = 'mine'): Promise<void> {
+    const tabs = h('div', { class: 'tabs' });
+    const t = (id: typeof tab, label: string) => h('button', { class: `tab ${id === tab ? 'on' : ''}`, 'data-tab': id, onclick: () => void this.neighborsPanel(id) }, label);
+    tabs.append(t('mine', '👥 Meine Nachbarn'), t('post', `📬 Post${this.inbox.length ? ` (${this.inbox.length})` : ''}`), t('find', '🔎 Neue finden'));
+    const body = h('div', {}, h('p', { class: 'meta' }, 'Lädt …'));
+    this.openPanel('👥 Nachbarn', body, true, true, tabs);
+    const panel = this.panel;
+    const show = (...els: HTMLElement[]) => {
+      if (this.panel === panel) body.replaceChildren(...els);
+    };
+    if (this.city.creative || this.slot !== 'main') return show(h('p', {}, 'Im Kreativ-Sandkasten gibt es keine Nachbarn. In deiner eigenen Stadt geht es los.'));
+    const b = bridge();
+    if (!b?.account) return show(h('p', {}, 'Nachbarn gibt es in der easygames-Fassung mit Google-Anmeldung.'));
+    const api = await this.socialApi();
+    if (!api) {
+      return show(h('div', {},
+        h('p', {}, 'Melde dich einmal mit Google an. Dann siehst du die Städte anderer Spieler, besuchst sie, hilfst beim Wachsen und schickst Baumaterial.'),
+        h('p', { class: 'meta' }, 'Andere sehen nur Stadtname, Wappen, Motto, Level, Einwohnerzahl und deine Gebäude. Dein Google-Name und deine E-Mail bleiben privat.'),
+        h('div', { class: 'btns' }, h('button', { class: 'btn good', id: 'btn-social-login', onclick: async () => {
+          await b.signIn?.();
+          void this.neighborsPanel(tab);
+        } }, 'Mit Google anmelden'))));
+    }
+    const retry = (e: unknown) => show(h('div', {},
+      h('p', { style: 'color:#a12b22' }, e instanceof SocialError ? e.message : 'Das hat nicht geklappt.'),
+      e instanceof SocialError && e.status === 403 ? h('p', { class: 'meta' }, 'Hinweis für den Betreiber: Die Regeln aus cloud/firestore.rules müssen in der Firebase-Konsole veröffentlicht sein.') : h('span'),
+      h('div', { class: 'btns' }, h('button', { class: 'btn', onclick: () => void this.neighborsPanel(tab) }, 'Nochmal versuchen'))));
+    try {
+      await this.publishCity(api);
+      const mine = await api.neighbors();
+      const isMine = new Set(mine.map((n) => n.uid));
+      if (tab === 'mine') {
+        const wrap = h('div', {});
+        if (!mine.length) wrap.append(h('p', {}, 'Noch keine Nachbarn. Unter „Neue finden“ siehst du Städte anderer Spieler, oder du schickst jemandem deinen Einladungslink.'));
+        for (const n of mine) {
+          const left = this.city.helpsLeft(n.uid);
+          wrap.append(h('div', { class: 'row', 'data-neighbor': n.uid }, h('div', { style: 'font-size:28px' }, '🏘️'),
+            h('div', { class: 'f' }, h('b', {}, n.name || 'Nachbarstadt'), h('small', {}, `🤝 heute noch ${left}× helfen${this.city.canGift(n.uid) ? ' · 🎁 Geschenk möglich' : ''}`)),
+            h('button', { class: 'btn', onclick: () => void this.startVisit(n.uid) }, 'Besuchen'),
+            h('button', { class: 'btn alt', disabled: !this.city.canGift(n.uid), 'aria-label': 'Geschenk', onclick: () => this.giftDialog(n.uid, n.name) }, '🎁'),
+            h('button', { class: 'btn alt', 'aria-label': 'Entfernen', onclick: async () => {
+              try {
+                await api.removeNeighbor(n.uid);
+                void this.neighborsPanel('mine');
+              } catch (e) {
+                this.fail(e instanceof SocialError ? e.message : undefined);
+              }
+            } }, '✕')));
+        }
+        const link = this.inviteLink(api.uid);
+        wrap.append(h('h3', {}, 'Einladungslink'),
+          h('div', { class: 'row' }, h('input', { class: 'f', readonly: true, value: link, 'aria-label': 'Einladungslink', onclick: (e: Event) => (e.target as HTMLInputElement).select() }),
+            h('button', { class: 'btn', onclick: () => {
+              const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+              if (nav.share) void nav.share({ title: 'RicoVille', text: `Werde mein Nachbar in ${this.city.s.name}!`, url: link }).catch(() => undefined);
+              else void navigator.clipboard?.writeText(link).then(() => this.toast('📋 Link kopiert.', 'good'));
+            } }, 'Teilen')),
+          h('p', { class: 'meta' }, `Pro Nachbar und Tag: ${NEIGHBOR_HELPS}× helfen und ein Geschenk. Wer dir hilft, bringt dir Münzen und Erfahrung.`));
+        return show(wrap);
+      }
+      if (tab === 'post') {
+        await this.loadInbox(api);
+        const wrap = h('div', {});
+        if (!this.inbox.length) wrap.append(h('p', {}, 'Keine neue Post. Nachbarn, die dich besuchen oder beschenken, erscheinen hier.'));
+        else wrap.append(h('div', { class: 'btns' }, h('button', { class: 'btn good', id: 'btn-claim-all', onclick: async () => {
+          for (const m of [...this.inbox]) if (m.type !== 'hello' && !(await this.claimMsg(api, m))) break;
+          void this.neighborsPanel('post');
+        } }, 'Alles annehmen')));
+        for (const m of this.inbox) {
+          const who = msgName(m);
+          const text = m.type === 'visit' ? `${who} hat dir ${m.n}× geholfen.` : m.type === 'gift' ? `${who} schenkt dir ${GIFT_AMOUNT}× ${ITEM.get(m.item ?? '')?.name ?? 'Material'}.` : `${who} ist jetzt dein Nachbar.`;
+          const icon = m.type === 'visit' ? '🤝' : m.type === 'gift' ? ITEM.get(m.item ?? '')?.icon ?? '🎁' : '👋';
+          wrap.append(h('div', { class: 'row', 'data-msg': m.id }, h('div', { style: 'font-size:28px' }, icon), h('div', { class: 'f' }, h('b', {}, text)),
+            m.type === 'hello' && !isMine.has(m.from)
+              ? h('button', { class: 'btn', onclick: async () => {
+                  try {
+                    await api.addNeighbor(m.from, who, Date.now());
+                    await this.claimMsg(api, m);
+                  } catch (e) {
+                    this.fail(e instanceof SocialError ? e.message : undefined);
+                  }
+                  void this.neighborsPanel('post');
+                } }, 'Auch hinzufügen')
+              : h('button', { class: 'btn good', onclick: async () => {
+                  await this.claimMsg(api, m);
+                  void this.neighborsPanel('post');
+                } }, m.type === 'hello' ? 'OK' : 'Annehmen')));
+        }
+        return show(wrap);
+      }
+      // Neue finden: zuletzt gespielte Städte, dazu eine per Einladungslink geöffnete
+      const list = (await api.recentCities(30)).filter((c) => c.uid !== api.uid && !isMine.has(c.uid));
+      if (this.pendingNeighbor && this.pendingNeighbor !== api.uid && !isMine.has(this.pendingNeighbor)) {
+        const inv = await api.getCity(this.pendingNeighbor);
+        if (inv) list.unshift(inv);
+      }
+      this.pendingNeighbor = null;
+      const wrap = h('div', {});
+      if (!list.length) wrap.append(h('p', {}, 'Gerade keine weiteren Städte gefunden. Schick deinen Einladungslink an Freunde!'));
+      for (const c of list.filter((x, i, a) => a.findIndex((y) => y.uid === x.uid) === i)) {
+        wrap.append(h('div', { class: 'row', 'data-city': c.uid }, h('div', { style: 'font-size:28px' }, String(c.crest || '🏰').slice(0, 8)),
+          h('div', { class: 'f' }, h('b', {}, String(c.name).slice(0, 24)), h('small', {}, `Level ${c.level} · ${num(Number(c.pop) || 0)} Einwohner${c.slogan ? ` · „${String(c.slogan).slice(0, 60)}“` : ''}`)),
+          h('button', { class: 'btn alt', onclick: () => void this.startVisit(c.uid) }, 'Ansehen'),
+          h('button', { class: 'btn good', onclick: async () => {
+            try {
+              await api.addNeighbor(c.uid, String(c.name), Date.now());
+              await api.send(c.uid, 'hello', utcDay(Date.now()), this.city.s.name).catch(() => undefined);
+              this.toast(`👥 ${String(c.name)} ist jetzt dein Nachbar.`, 'good');
+            } catch (e) {
+              this.fail(e instanceof SocialError ? e.message : undefined);
+            }
+            void this.neighborsPanel('find');
+          } }, 'Hinzufügen')));
+      }
+      return show(wrap);
+    } catch (e) {
+      retry(e);
+    }
+  }
+
+  /** Post annehmen: erst auf dem Server als erledigt markieren (verhindert doppeltes Annehmen, auch auf anderen Geräten), dann gutschreiben. */
+  private async claimMsg(api: NeighborApi, m: InboxMsg): Promise<boolean> {
+    if (m.type === 'gift') {
+      const can = this.city.canReceiveGift(m.item ?? '');
+      if (!can.ok) {
+        this.fail(can.msg);
+        return false;
+      }
+    }
+    try {
+      await api.markDone(m.id);
+    } catch (e) {
+      this.fail(e instanceof SocialError ? e.message : undefined);
+      return false;
+    }
+    if (m.type === 'visit') this.city.receiveVisit(m.n ?? 1);
+    else if (m.type === 'gift') this.city.receiveGift(m.item ?? '');
+    this.inbox = this.inbox.filter((x) => x.id !== m.id);
+    this.badge('neighbors', this.inbox.length);
+    this.saveNow();
+    return true;
+  }
+
+  private async startVisit(nid: string): Promise<void> {
+    const api = await this.socialApi();
+    if (!api) return;
+    let pub: PublicCity | null;
+    try {
+      pub = await api.getCity(nid);
+    } catch (e) {
+      return this.fail(e instanceof SocialError ? e.message : undefined);
+    }
+    if (!pub) return this.fail('Diese Stadt gibt es nicht mehr.');
+    this.saveNow();
+    this.closePanel();
+    this.setTool('normal');
+    const vc = new City(visitState(pub, this.clock()), () => this.clock());
+    this.visit = { nid, pub, city: vc };
+    this.world.statusFor = (b) => (helpable(b.def) && b.state === 'done' && this.city.helpsLeft(nid) > 0 && !this.city.helpedToday(nid, b.uid) ? 'help' : undefined);
+    this.world.setCity(vc);
+    this.ui.classList.add('visiting');
+    this.visitBar();
+    this.audio.play('click');
+  }
+  private visitBar(): void {
+    const v = this.visit;
+    if (!v) return;
+    let bar = this.els.visitbar;
+    if (!bar) {
+      bar = this.els.visitbar = h('div', { id: 'visitbar' });
+      this.ui.append(bar);
+    }
+    const left = this.city.helpsLeft(v.nid);
+    bar.replaceChildren(
+      h('div', { class: 'msg' }, h('b', {}, `${String(v.pub.crest || '🏰').slice(0, 8)} ${v.city.s.name}`), h('small', {}, ` · Level ${v.city.s.level}`), h('br'),
+        h('small', {}, left ? `🤝 Tippe auf Gebäude mit 🤝 und hilf (noch ${left}× heute)` : '🤝 Heute hast du hier genug geholfen. Danke!')),
+      h('button', { id: 'btn-visit-gift', disabled: !this.city.canGift(v.nid), onclick: () => this.giftDialog(v.nid, v.city.s.name) }, '🎁'),
+      h('button', { class: 'ok', id: 'btn-visit-home', onclick: () => void this.endVisit() }, '🏠 Heim'));
+  }
+  private helpAt(b: Building): void {
+    const v = this.visit!;
+    const d = BUILDING.get(b.def)!;
+    if (!helpable(b.def) || b.state !== 'done') return this.toast(`${d.name}: Hier gibt es nichts zu helfen.`);
+    const r = this.city.helpNeighbor(v.nid, b.uid);
+    if (!r.ok) return this.fail(r.msg);
+    this.floatAt(b.uid, '🤝 Geholfen!', 200);
+    this.world.sync();
+    this.visitBar();
+  }
+  /** Besuch beenden ohne Netz (z. B. beim Verlassen des Spiels). */
+  private closeVisit(): { nid: string; helped: number; name: string } | null {
+    const v = this.visit;
+    if (!v) return null;
+    this.visit = null;
+    this.world.statusFor = null;
+    this.ui.classList.remove('visiting');
+    this.els.visitbar?.remove();
+    delete this.els.visitbar;
+    this.world.setCity(this.city);
+    this.world.sync();
+    this.hud();
+    this.saveNow();
+    return { nid: v.nid, helped: NEIGHBOR_HELPS - this.city.helpsLeft(v.nid), name: v.city.s.name };
+  }
+  private async endVisit(): Promise<void> {
+    const r = this.closeVisit();
+    if (!r || r.helped < 1) return;
+    const api = await this.socialApi();
+    try {
+      await api?.send(r.nid, 'visit', utcDay(Date.now()), this.city.s.name, { n: r.helped });
+      this.toast(`🤝 ${r.name} erfährt, dass du geholfen hast.`, 'good');
+    } catch {
+      /* Heute schon gemeldet (eine Besuchsnachricht pro Tag) oder offline: die eigene Belohnung bleibt. */
+    }
+  }
+  private giftDialog(nid: string, name: string): void {
+    if (!this.city.canGift(nid)) return this.toast('Heute hast du dieser Stadt schon etwas geschenkt.');
+    const g = h('div', { class: 'grid' });
+    for (const id of GIFT_ITEMS) {
+      const it = ITEM.get(id)!;
+      g.append(h('button', { class: 'card', 'data-gift': id, onclick: async () => {
+        const api = await this.socialApi();
+        if (!api) return;
+        try {
+          await api.send(nid, 'gift', utcDay(Date.now()), this.city.s.name, { item: id });
+        } catch (e) {
+          return this.fail(e instanceof SocialError && e.status === 403 ? 'Heute schon verschenkt (oder die Nachbar-Regeln fehlen noch).' : e instanceof SocialError ? e.message : undefined);
+        }
+        this.city.markGifted(nid);
+        this.audio.play('deliver');
+        this.toast(`🎁 ${GIFT_AMOUNT}× ${it.name} an ${name} geschickt.`, 'good');
+        this.scheduleSave();
+        this.closePanel();
+        this.visitBar();
+      } }, h('div', { class: 'pic' }, it.icon), h('b', {}, it.name), h('div', { class: 'meta' }, `${GIFT_AMOUNT}× · kostet dich nichts`)));
+    }
+    this.openPanel(`🎁 Geschenk für ${name}`, h('div', {}, h('p', {}, 'Such ein Baumaterial aus. Einmal am Tag pro Nachbar, und es kostet dich nichts.'), g));
   }
 
   private profilePanel(): void {
@@ -1394,7 +1705,7 @@ export async function resetCaches(): Promise<void> {
     const regs = (await navigator.serviceWorker?.getRegistrations()) ?? [];
     await Promise.all(regs.map((r) => r.unregister()));
     const keys = (await caches?.keys()) ?? [];
-    await Promise.all(keys.filter((k) => k.startsWith('ricoville')).map((k) => caches.delete(k)));
+    await Promise.all(keys.filter((k) => k.startsWith('eg-ricoville-')).map((k) => caches.delete(k)));
   } catch {
     /* egal */
   }

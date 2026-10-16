@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 – 2026-10-16
+
+- Nachbarn ohne Server (Firebase Spark): eigene Stadt wird als Kurzansicht veröffentlicht, Nachbarn finden und per Link einladen, Städte besuchen, je Nachbar und Tag 5× helfen und ein Geschenk schicken, Post mit „Alles annehmen".
+- Firestore-Regeln für RicoVille in `cloud/firestore.rules` mit Emulator-Tests (`firebase/`).
+
 ## 0.1.0 – 2026-10-16
 
 Erste spielbare Fassung.

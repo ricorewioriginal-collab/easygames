@@ -452,7 +452,16 @@
   }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
   if (wanted()) sync();
-  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, game: game, FS: FS, signIn: signIn, user: function () { return wanted() && user ? user : null; } };
+  // Für Spiele mit Online-Funktionen (z. B. RicoVille-Nachbarn): angemeldeter Nutzer mit frischem ID-Token, sonst null.
+  function account() {
+    if (!wanted()) return Promise.resolve(null);
+    return loadSdk().then(function (u) {
+      u = u || user;
+      if (!u) return null;
+      return u.getIdToken().then(function (t) { return { uid: u.uid, name: u.displayName || '', token: t, project: CONFIG.projectId }; });
+    }).catch(function () { return null; });
+  }
+  window.AnMaChaCloud = { sync: sync, restore: restore, restoreOlder: restoreOlder, account: account, game: game, FS: FS, signIn: signIn, user: function () { return wanted() && user ? user : null; } };
   // Ranglisten (nur für Spiele mit Eintrag in anmacha-board.js; data-board="off" schaltet ab, data-board-src = abweichender Pfad)
   if (s.dataset.board !== 'off') {
     var bsrc = s.dataset.boardSrc || (s.src || '').replace(/[^\/?#]*([?#].*)?$/, 'anmacha-board.js');

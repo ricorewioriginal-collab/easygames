@@ -192,6 +192,16 @@ export interface CityState {
   achievements: string[];
   stats: Record<string, number>;
   tutorial: 'on' | 'skipped' | 'done';
+  /** Nachbarn: was heute (UTC-Tag JJJJMMTT) schon geholfen und verschenkt wurde. Nur lokal, schützt keine fremden Daten. */
+  social?: SocialState;
+}
+
+export interface SocialState {
+  day: number;
+  /** Nachbar-ID → heute geholfene Gebäude (uids in seiner Stadt) */
+  helped: Record<string, number[]>;
+  /** Nachbar-IDs, denen heute schon ein Geschenk geschickt wurde */
+  gifted: string[];
 }
 
 export interface Result {

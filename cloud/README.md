@@ -22,6 +22,9 @@ Ohne Eintrag in `CONFIG` tut das Skript nichts.
 - Daten liegen unter `users/<uid>/saves/<spiel>`; die Regeln erlauben nur dem eigenen Nutzer Lesen und Schreiben.
 - Das Firebase-SDK wird nur geladen, wenn sich ein Spieler angemeldet hat; sonst bleibt alles bei localStorage.
 
+## Für Spiele mit eigenen Daten
+`window.AnMaChaCloud.account()` liefert für Angemeldete `{ uid, name, token, project }` (sonst `null`), `signIn()` startet die Anmeldung. Damit spricht RicoVille Firestore für die Nachbarn direkt per REST an. Deren Regeln stehen im Block „RicoVille" in `firestore.rules`; nach Änderungen dort die ganze Datei neu veröffentlichen.
+
 ## Apps (Android/Windows)
 Erkannt werden die RicoReWi-App (`appassets.local`), die easygames-App (`appassets.androidplatform.net` bzw. JS-Brücke `EasyGamesApp`) und Windows (User-Agent `RicoReWiApp/`). Nur dort gilt die Kopplung; in normalen Browsern läuft die Anmeldung direkt.
 
