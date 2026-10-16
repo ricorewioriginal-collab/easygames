@@ -14,6 +14,7 @@ window.EASYGAMES_MODES = {
   'FunkhausReality': { pad: true },
   'MachMichAus': { pad: true },
   'turbokick': { online: true, multi: true },
+  'ricopoly': { online: true, multi: true },
   'partyverse': { online: true, multi: true },
   'riftzone': { online: true },
   'anmacha-stapelrausch': { online: true, multi: true },
