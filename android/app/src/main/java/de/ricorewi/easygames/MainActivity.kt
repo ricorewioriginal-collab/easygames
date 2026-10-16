@@ -4,6 +4,9 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -32,6 +35,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
@@ -347,6 +351,56 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         }
     }
 
+    // ---------------------------------------------------------------- Benachrichtigungen (Notification-API der Spiele)
+
+    private var notifyDenied = false
+
+    private fun notificationsAllowed(): Boolean =
+        (Build.VERSION.SDK_INT < 33 || hasPermission(Manifest.permission.POST_NOTIFICATIONS)) &&
+            getSystemService(NotificationManager::class.java).areNotificationsEnabled()
+
+    override fun notificationState(): String =
+        if (notificationsAllowed()) "granted" else if (notifyDenied) "denied" else "default"
+
+    override fun requestNotifications() {
+        runOnUiThread {
+            if (isFinishing || isDestroyed) return@runOnUiThread
+            if (Build.VERSION.SDK_INT >= 33 && !hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFY)
+            } else {
+                reportNotificationState()
+            }
+        }
+    }
+
+    private fun reportNotificationState() {
+        notifyDenied = !notificationsAllowed()
+        val state = notificationState()
+        webView?.evaluateJavascript("window.__egNotifyDone&&window.__egNotifyDone('$state')", null)
+    }
+
+    override fun showNotification(title: String, body: String, tag: String) {
+        if (!notificationsAllowed()) return
+        val nm = getSystemService(NotificationManager::class.java)
+        if (Build.VERSION.SDK_INT >= 26) {
+            nm.createNotificationChannel(NotificationChannel(CHANNEL_REMINDERS, "Erinnerungen", NotificationManager.IMPORTANCE_DEFAULT))
+        }
+        val open = PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val n = NotificationCompat.Builder(this, CHANNEL_REMINDERS)
+            .setSmallIcon(applicationInfo.icon)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setAutoCancel(true)
+            .setContentIntent(open)
+            .build()
+        // gleicher Tag ersetzt die vorige Meldung desselben Spiels
+        nm.notify(tag.ifEmpty { null }, 1, n)
+    }
+
     override fun showSettings() {
         runOnUiThread { SettingsDialog.show(this, coordinator) { checkAppUpdate(true) } }
     }
@@ -433,6 +487,10 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_NOTIFY) {
+            reportNotificationState()
+            return
+        }
         if (requestCode != REQUEST_MEDIA) return
         val req = pendingPermission ?: return
         pendingPermission = null
@@ -545,6 +603,8 @@ class MainActivity : Activity(), ContentWebViewClient.Callbacks, WebBridge.Host 
         const val TAG = "EasyGames"
         const val TAG_WEB = "EasyGamesWeb"
         const val REQUEST_MEDIA = 4711
+        const val REQUEST_NOTIFY = 4712
+        const val CHANNEL_REMINDERS = "reminders"
         const val PROGRESS_MAX = 1000
     }
 }

@@ -10,6 +10,28 @@ object NativeHtml {
             return Promise.reject(new Error('Offline-Inhalte werden von der easygames-App verwaltet.'));
           };
         }
+        // Android-WebView hat keine Notification-API: Erinnerungen der Spiele laufen über die App-Brücke.
+        if (window.EasyGamesApp && EasyGamesApp.notifyState) {
+          var waiting = [];
+          window.__egNotifyDone = function (state) {
+            var list = waiting; waiting = [];
+            list.forEach(function (done) { done(state); });
+          };
+          var AppNotification = function (title, options) {
+            options = options || {};
+            this.title = String(title); this.body = String(options.body || ''); this.tag = String(options.tag || '');
+            EasyGamesApp.notify(this.title, this.body, this.tag);
+          };
+          AppNotification.prototype.close = function () {};
+          AppNotification.requestPermission = function (callback) {
+            return new Promise(function (resolve) {
+              waiting.push(function (state) { resolve(state); if (typeof callback === 'function') callback(state); });
+              EasyGamesApp.notifyRequest();
+            });
+          };
+          Object.defineProperty(AppNotification, 'permission', { get: function () { return EasyGamesApp.notifyState(); } });
+          window.Notification = AppNotification;
+        }
         // Worklet module requests can bypass the WebView's local HTTP interceptor.
         // Godot's standalone audio worklet has no relative imports: fetch it via
         // the native store first, then load its verified bytes from a blob URL.

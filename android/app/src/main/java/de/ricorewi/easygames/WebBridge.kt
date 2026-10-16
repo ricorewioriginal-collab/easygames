@@ -17,7 +17,18 @@ class WebBridge(
 
         /** Öffnet den nativen Einstellungsdialog. */
         fun showSettings()
+
+        /** "granted" | "denied" | "default" für die Notification-API der Spiele. */
+        fun notificationState(): String
+
+        /** Fragt die Benachrichtigungs-Berechtigung (ggf. per Dialog) und meldet das Ergebnis an die Seite. */
+        fun requestNotifications()
+
+        /** Zeigt eine lokale Benachrichtigung (nur wenn erlaubt). */
+        fun showNotification(title: String, body: String, tag: String)
     }
+
+    private var lastNotify = 0L
 
     @JavascriptInterface
     fun getInfo(): String = try {
@@ -39,5 +50,22 @@ class WebBridge(
     @JavascriptInterface
     fun openSettings() {
         host.showSettings()
+    }
+
+    @JavascriptInterface
+    fun notifyState(): String = try { host.notificationState() } catch (e: Exception) { "denied" }
+
+    @JavascriptInterface
+    fun notifyRequest() {
+        host.requestNotifications()
+    }
+
+    /** Die Brücke ist in jedem Frame sichtbar: Länge und Takt begrenzen, damit fremde Frames nicht fluten. */
+    @JavascriptInterface
+    fun notify(title: String?, body: String?, tag: String?) {
+        val now = System.currentTimeMillis()
+        if (now - lastNotify < 5000) return
+        lastNotify = now
+        host.showNotification((title ?: "").take(80), (body ?: "").take(240), (tag ?: "").take(40))
     }
 }
