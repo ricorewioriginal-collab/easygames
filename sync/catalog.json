@@ -33,7 +33,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 142393,
+   "size": 142492,
    "files": 7,
    "offline": true
   },
@@ -85,7 +85,7 @@
      "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
     ]
    },
-   "size": 242443,
+   "size": 242487,
    "files": 16,
    "offline": true
   },
@@ -101,7 +101,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 327040,
+   "size": 327084,
    "files": 17,
    "offline": true
   },
@@ -117,7 +117,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 277748,
+   "size": 277792,
    "files": 14,
    "offline": true
   },
@@ -161,7 +161,7 @@
      "Tappe auf die kleinen Werte oben, um bei Bedarf alle Pflegewerte im Detail zu sehen."
     ]
    },
-   "size": 536909,
+   "size": 536953,
    "files": 19,
    "offline": true
   },
@@ -209,7 +209,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 43862,
+   "size": 43957,
    "files": 4,
    "offline": true
   },
@@ -255,7 +255,7 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 508378,
+   "size": 508534,
    "files": 5,
    "offline": true
   },
@@ -310,7 +310,7 @@
      "Das Tagebuch zeigt das aktuelle Ziel; ein Kompass und ein Lichtstrahl weisen den Weg."
     ]
    },
-   "size": 1437633,
+   "size": 1437749,
    "files": 12,
    "offline": true
   },
@@ -333,7 +333,7 @@
     ],
     "tipps": []
    },
-   "size": 3054607,
+   "size": 3054678,
    "files": 19,
    "offline": true
   },
@@ -359,7 +359,7 @@
      "Der Hinweis-Knopf zeigt einen möglichen Zug."
     ]
    },
-   "size": 42124,
+   "size": 42187,
    "files": 3,
    "offline": true
   },
@@ -384,7 +384,7 @@
      "Die Start-Taste halten und erst zum Abschuss loslassen."
     ]
    },
-   "size": 2942940,
+   "size": 2943031,
    "files": 17,
    "offline": true
   },
@@ -409,7 +409,7 @@
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
     ]
    },
-   "size": 2550385,
+   "size": 2550476,
    "files": 17,
    "offline": true
   },
@@ -434,7 +434,7 @@
      "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In den Einstellungen gibt es eine Latenz-Kalibrierung."
     ]
    },
-   "size": 786914,
+   "size": 787013,
    "files": 12,
    "offline": true
   },
@@ -461,7 +461,7 @@
      "Der Hinweis (Auge) zeigt kurz alle Karten, kostet aber 150 Punkte und ist begrenzt."
     ]
    },
-   "size": 1765403,
+   "size": 1765447,
    "files": 20,
    "offline": true
   },
@@ -514,7 +514,7 @@
      "In der Verfolger-Kamera lenkst du nur nach links oder rechts aus Sicht der Schlange."
     ]
    },
-   "size": 1440344,
+   "size": 1440406,
    "files": 17,
    "offline": true
   },
@@ -540,7 +540,7 @@
      "Die Türme haben unterschiedliche Aufgaben, zum Beispiel Flächenschaden, Verlangsamen, Kettenblitz, große Reichweite, Geld pro Welle oder Verstärkung für Türme in der Nähe."
     ]
    },
-   "size": 1781270,
+   "size": 1781353,
    "files": 17,
    "offline": true
   },
@@ -569,7 +569,7 @@
      "Jeder Joker kann pro Spieler nur einmal eingesetzt werden."
     ]
    },
-   "size": 1529287,
+   "size": 1529331,
    "files": 23,
    "offline": true
   },
@@ -595,7 +595,7 @@
     ],
     "tipps": []
    },
-   "size": 1425578,
+   "size": 1425622,
    "files": 22,
    "offline": true
   },
@@ -621,7 +621,7 @@
     ],
     "tipps": []
    },
-   "size": 1407491,
+   "size": 1407535,
    "files": 22,
    "offline": true
   },
@@ -647,7 +647,7 @@
     ],
     "tipps": []
    },
-   "size": 1419753,
+   "size": 1419797,
    "files": 23,
    "offline": true
   },
@@ -704,7 +704,7 @@
      "Mit dem Tipp-Knopf (kostet Muscheln) zeigt der Löser die nächsten Züge als Pfeile."
     ]
    },
-   "size": 1021733,
+   "size": 1021815,
    "files": 40,
    "offline": true
   },
@@ -733,7 +733,7 @@
      "Im Menü sind 2 Teams oder der Modus gegen das Funkhaus-Team, Rundenzahl, Gegner-Stufe und Antwortzeit einstellbar."
     ]
    },
-   "size": 1468830,
+   "size": 1468874,
    "files": 30,
    "offline": true
   },
@@ -763,7 +763,7 @@
      "Falsch gelöst bedeutet, der Zug ist weg."
     ]
    },
-   "size": 1386273,
+   "size": 1386317,
    "files": 30,
    "offline": true
   },
@@ -793,7 +793,7 @@
      "Alle Preise sind Durchschnittswerte ohne Gewähr."
     ]
    },
-   "size": 1747846,
+   "size": 1747890,
    "files": 34,
    "offline": true
   },
@@ -852,7 +852,7 @@
      "Wer beliebt ist, bleibt im Haus."
     ]
    },
-   "size": 1811814,
+   "size": 1811858,
    "files": 33,
    "offline": true
   },
@@ -881,7 +881,7 @@
      "Flunkern im Quiz hilft kurz, schadet aber beim Date."
     ]
    },
-   "size": 1817661,
+   "size": 1817705,
    "files": 32,
    "offline": true
   },
@@ -942,7 +942,7 @@
      "Auf manchen Brettern erscheinen und verschwinden Wege je Runde (gestrichelt): vorausplanen."
     ]
    },
-   "size": 1558231,
+   "size": 1558329,
    "files": 49,
    "offline": true
   },
@@ -968,7 +968,7 @@
      "Fällt das Guthaben unter den kleinsten Einsatz, wird es wieder auf 10.000 Spielgeld gesetzt."
     ]
    },
-   "size": 1230396,
+   "size": 1230440,
    "files": 17,
    "offline": true
   },
@@ -995,7 +995,7 @@
      "Der Marktpreis plus 8 % gilt als fair; zu teure Preise vertreiben Kunden."
     ]
    },
-   "size": 288248,
+   "size": 288351,
    "files": 8,
    "offline": true
   },
@@ -1021,7 +1021,7 @@
      "Auf schwachen Handys in den Einstellungen Grafik: Niedrig wählen."
     ]
    },
-   "size": 1333220,
+   "size": 1333455,
    "files": 30,
    "offline": true
   },
@@ -1049,7 +1049,7 @@
      "Dame: Bei Mehrfachsprüngen direkt das letzte Zielfeld antippen."
     ]
    },
-   "size": 103020,
+   "size": 103083,
    "files": 3,
    "offline": true
   },
@@ -1078,7 +1078,7 @@
      "Sind alle Handkarten gespielt, ziehst du sofort 5 neue."
     ]
    },
-   "size": 54747,
+   "size": 54810,
    "files": 3,
    "offline": true
   },
@@ -1106,7 +1106,7 @@
      "Ein Nein von Figuren wird im Spiel respektiert."
     ]
    },
-   "size": 463124,
+   "size": 463223,
    "files": 29,
    "offline": true
   },
