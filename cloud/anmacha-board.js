@@ -18,6 +18,10 @@
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
   // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden)
   var REG = {
+    'ricoville': [
+      { id: 'main', title: 'Höchstes Level', key: 'ricoville.profile.best', path: 'level', order: 'desc', unit: 'Level' },
+      { id: 'pop', title: 'Meiste Einwohner', key: 'ricoville.profile.best', path: 'pop', order: 'desc', unit: 'Einwohner' }
+    ],
     'ricopoly': [
       { id: 'main', title: 'Höchster Kontostand', key: 'ricopoly.v1.profile', path: 'stats.highestMoney', order: 'desc', unit: '€' }
     ],

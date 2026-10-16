@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 – 2026-10-16
+
+- Rangliste „Höchstes Level“ und „Meiste Einwohner“ (easygames-Ranglisten, nur mit Freigabe). Knopf 🏆 im Menü und im Profil öffnet die zentrale easygames-Ranglisten-Seite (`ranglisten.html`) eingebettet, mit RicoVille vorgewählt.
+- Einladungslink zeigt in den Apps auf die öffentliche Seite.
+
 ## 0.2.0 – 2026-10-16
 
 - Nachbarn ohne Server (Firebase Spark): eigene Stadt wird als Kurzansicht veröffentlicht, Nachbarn finden und per Link einladen, Städte besuchen, je Nachbar und Tag 5× helfen und ein Geschenk schicken, Post mit „Alles annehmen".

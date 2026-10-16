@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261016.10'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261016.11'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricoville', title: 'RicoVille – Deine Stadt lebt!', icon: '🏡', img: 'ricoville/card.svg', bg: 'linear-gradient(145deg,#2f7fd1,#55b86a 55%,#ffd36b)', glow: 'rgba(255,211,107,.5)', path: 'ricoville/', desc: 'Gemütliches 3D-Städtebauspiel in Iso-Ansicht: Straßen ziehen, Häuser bauen, Einwohner anlocken, Felder bestellen, Waren herstellen, Läden beliefern und Miete kassieren. Fabriken, Bahnhof, Hafen und Flughafen, Rathaus-Ausbau, neue Gebiete, über 80 Aufgaben mit Stadtgeschichte, Tages- und Wochenziele. Modi Nostalgisch, Entspannt und Kreativ; Handy und PC, offline spielbar, optionaler Google-Spielstand.' },
