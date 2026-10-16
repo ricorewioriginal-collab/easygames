@@ -1364,7 +1364,31 @@ body.is-touch .hotbar .slot {
 @media (max-width: 700px) {
   .lobby {
     grid-template-columns: 1fr;
+    grid-auto-rows: max-content;
     overflow-y: auto;
+  }
+  /* Auf dem Handy wird gescrollt: Felder nicht zusammenquetschen, Spielen-Leiste bleibt unten sichtbar */
+  .lobby .left,
+  .lobby .right {
+    min-height: auto;
+  }
+  .lobby .bottom {
+    /* .bottom ist auch die HUD-Leiste (absolut, mittig): hier im Fluss bleiben, sonst liegt sie über den Feldern */
+    position: sticky;
+    left: auto;
+    transform: none;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    bottom: 0;
+    padding: 8px 0 max(4px, env(safe-area-inset-bottom));
+    background: linear-gradient(transparent, var(--bg, #0a0d1c) 40%);
+    flex-wrap: nowrap;
+  }
+  .lobby .bottom .btn.primary {
+    flex: 1;
+    font-size: 1.15rem;
+    padding: 14px 18px;
   }
   .lobby .preview-spacer {
     display: none;

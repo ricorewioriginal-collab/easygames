@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a06e017e5c6f",
- "generated": "2026-10-16T22:46:14+00:00",
- "commit": "21c6a73589e9ee8d785772b752270341200fe4ca",
+ "version": "4047952da82a",
+ "generated": "2026-10-16T22:47:49+00:00",
+ "commit": "0aa4e0fe33c831800f4b20c792d8cf49c90b2443",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5762,14 +5762,14 @@
    "h": "6a1eb89b45d06d87ca4bd966e069db7305b926dfbab9ae6bdc5587437bd669a1"
   },
   {
-   "p": "riftzone/app/assets/index-4483c6bf45.js",
-   "s": 791824,
-   "h": "4483c6bf4556281ab30238135d427a9f9cb103655f85165f227485cc4c5f2539"
+   "p": "riftzone/app/assets/index-1b75f2c98e.js",
+   "s": 792275,
+   "h": "1b75f2c98ef7553003c0942707c6ef0cfc1464050b2e94cec979e84a4ae3b7be"
   },
   {
-   "p": "riftzone/app/assets/index-4d1af4a3fa.css",
-   "s": 23254,
-   "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
+   "p": "riftzone/app/assets/index-48e8dafcc5.css",
+   "s": 23659,
+   "h": "48e8dafcc56dcaf97f7b185ec83854ae9e5db73e1e6d2053125d84acb88a4db8"
   },
   {
    "p": "riftzone/app/assets/worker-2e5e107c3d.js",
@@ -5789,7 +5789,7 @@
   {
    "p": "riftzone/app/index.html",
    "s": 1131,
-   "h": "22f32d8a6bc5e019d6b7bedb862d5155d286eb04da9f2dbe39288374c2d13067"
+   "h": "026a363dbadb3ea74f4e0dcb4d169a68f3940980f208ff70e59501760204f3c6"
   },
   {
    "p": "riftzone/card.png",
@@ -5807,9 +5807,14 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
-   "s": 29432,
-   "h": "a6ec1dadfd937ef56e133b7c9ace0a776b2d2c9969db190ec575a5a47b011fca"
+   "s": 30181,
+   "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
   },
   {
    "p": "riftzone/deploy/Caddyfile.example",
@@ -5877,6 +5882,16 @@
    "h": "237ee1b872f39422b6b7945a01ed5953c9a09f1cf7c870b7757d7ec39a077617"
   },
   {
+   "p": "riftzone/test-results/p2p-1-raum.png",
+   "s": 57438,
+   "h": "8670f4eb4fe95192fc5ce46ff79fc2857b26ca67ec204f2a088b4067e135f8a6"
+  },
+  {
+   "p": "riftzone/test-results/p2p-2-match.png",
+   "s": 195915,
+   "h": "4a274d800f515ec699fdd7aaf49574e1d455410de10a79fbcf64c1a6d843a142"
+  },
+  {
    "p": "show-voice.js",
    "s": 3181,
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
@@ -5884,7 +5899,7 @@
   {
    "p": "sync/catalog.json",
    "s": 93655,
-   "h": "a5881e58a06b1261d77eb5f6c5ffab244f3629e1f234c4b27b78b001e4483d5e"
+   "h": "7c40089066840bd07f9380401c4c1871989420bbb78effae9a0df448b0dd3471"
   },
   {
    "p": "taschi/card.svg",

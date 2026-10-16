@@ -41,6 +41,25 @@ interface Friend {
   name: string;
 }
 
+/** Adresse für Einladungen: In der Android-App (appassets…), lokal oder im Heimnetz kann ein Freund die eigene Adresse
+ *  nicht öffnen, dann die öffentliche GitHub-Seite (wie device.js der Spielesammlung). */
+const PUBLIC_GAME = 'https://ricorewioriginal-collab.github.io/easygames/riftzone/app/';
+function inviteBase(): string {
+  const here = location.origin + location.pathname;
+  const cfg = (window as unknown as { EASYGAMES_PUBLIC_BASE?: string }).EASYGAMES_PUBLIC_BASE;
+  if (cfg) return new URL('riftzone/app/', cfg.endsWith('/') ? cfg : cfg + '/').href;
+  const host = location.hostname;
+  const local =
+    !/^https?:$/.test(location.protocol) ||
+    host === 'localhost' ||
+    host === 'appassets.androidplatform.net' ||
+    host.endsWith('.local') ||
+    !host.includes('.') ||
+    host.includes(':') ||
+    /^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host);
+  return local ? PUBLIC_GAME : here;
+}
+
 export class App {
   private readonly ui: HTMLElement;
   private readonly stage: LobbyStage;
@@ -390,7 +409,7 @@ export class App {
   private copyRoomInvite(): void {
     if (!this.p2p) return;
     const code = this.p2p.code;
-    const url = `${location.origin}${location.pathname}?room=${code}`;
+    const url = `${inviteBase()}?room=${code}`;
     navigator.clipboard?.writeText(url).then(
       () => toast('Einladungslink kopiert'),
       () => toast(`Raumcode: ${code}`),
