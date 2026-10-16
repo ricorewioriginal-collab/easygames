@@ -169,3 +169,18 @@ Alternative Server-Auslöser:
 - Fremde Bibliotheken (CDN-URLs) müssen in der Vendor-Map des Manifests stehen; unbekannte externe URLs gehen ins Netz.
 - Medien-Dateien werden ohne HTTP-Range-Unterstützung ausgeliefert (Abspielen geht, Springen in langen Audio-/Videodateien evtl. nicht).
 - Der Hintergrund-Sync läuft laut Android-Vorgabe frühestens alle 15 Minuten und nur nach Systemlaune (Doze, Energiesparmodus).
+
+## APK automatisch auf der RicoReWi-Radio-Seite bereitstellen
+
+Die Seiten (Startseite, Apps-Seite, easygames-Seite) verlinken `/downloads/easygames-Developer.apk` und lesen die Version aus
+`/downloads/easygames-latest.json`. Der Server-Job kann diese beiden Dateien nach jedem Build selbst dort ablegen:
+
+```bash
+sudo bash /opt/easygames/android/server/publish-setup.sh <Live-Webroot>/downloads     # einmalig
+sudo systemctl start easygames-build.service                                           # sofort veröffentlichen
+```
+
+`publish-setup.sh` gibt dem Benutzer `easygames` Schreibrecht nur auf diesen Ordner (ACL) und trägt `PUBLISH_DIR` in
+`/etc/easygames-build.env` ein. Danach legt jeder Lauf das neueste APK atomar als `easygames-Developer.apk` ab, dazu
+`easygames-latest.json` (`version`, `version_code`, `sha256`, `size_bytes`, `built_at`); unverändert wird nichts neu geschrieben.
+Der Deploy der Seite löscht fremde Dateien im Ordner nicht (kein globales `--delete`). Test: `bash android/server/test-publish.sh`.
