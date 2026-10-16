@@ -1068,7 +1068,7 @@ async function boot() {
   showScreen('title'); mode = 'title';
   document.getElementById('title').addEventListener('pointerdown', ev => { setInput(ev.pointerType === 'touch' ? 'touch' : 'mouse'); anyStart(); });
   // Debug-/Testzugang (z. B. für automatische Browser-Tests)
-  window.KV = { _ws:worldToScreen, _info:() => renderer.info, get sim() { return sim; }, get mode() { return mode; }, get screen() { return current; }, startLevel, act, save:() => save };
+  window.KV = { _ws:worldToScreen, _info:() => renderer.info, get sim() { return sim; }, get cam() { return cam; }, get mode() { return mode; }, get screen() { return current; }, startLevel, act, save:() => save };
 }
 boot();
 })();

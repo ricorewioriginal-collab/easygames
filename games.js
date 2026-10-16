@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261016.6'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261016.7'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricopoly', title: 'RicoPoly 3D – Baue dein Imperium!', icon: '🎩', img: 'ricopoly/card.jpg', bg: 'linear-gradient(145deg,#14102b,#6f5cff 55%,#ffc53d)', glow: 'rgba(255,197,61,.5)', path: 'ricopoly/', desc: 'Würfeln. Kaufen. Handeln. Herrschen! Das Grundstücks-Brettspiel in 3D mit allen klassischen Regeln: Kaufen, Versteigern, Miete, Häuser und Hotels, Hypotheken, Handel, Gefängnis und Bankrott. Drei Welten (Metropolis, Fantasy Kingdom, Future City) mit eigenen Straßen, Karten und Musik, 16 animierte Figuren mit Editor, Computergegner in drei Stufen, Spiel an einem Gerät für 2–6 und Online-Räume per Code oder Link. Klassisch, Schnell oder eigene Regeln; Deutsch und Englisch; optionaler Google-Speicher.' },
