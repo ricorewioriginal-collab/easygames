@@ -6,6 +6,8 @@
     <!-- Nur für Spiele, die Mikrofon/Kamera brauchen; wird zur Laufzeit erfragt. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Erinnerungen der Spiele (Notification-API); ab Android 13 wird sie zur Laufzeit erfragt. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Android TV / Set-Top-Boxen: kein Touchscreen nötig, Leanback optional. -->
     <uses-feature android:name="android.software.leanback" android:required="false" />

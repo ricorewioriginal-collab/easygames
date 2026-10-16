@@ -10,6 +10,11 @@ class NativeHtmlTest {
         assertTrue(prepared.startsWith("<!doctype html>"))
     }
 
+    @Test fun notificationBridgeRunsBeforeGameScripts() {
+        val prepared = NativeHtml.prepare("<html><head><script>startGame()</script></head></html>")
+        assertTrue(prepared.indexOf("EasyGamesApp.notifyRequest") in 0 until prepared.indexOf("startGame()"))
+    }
+
     @Test fun fragmentsAreSupported() {
         assertTrue(NativeHtml.prepare("<canvas></canvas>").endsWith("<canvas></canvas>"))
     }
