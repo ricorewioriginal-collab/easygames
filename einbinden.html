@@ -54,7 +54,7 @@
 
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
-    <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
+    <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#vollbild-einbinden">Vollbild einbinden</a><a href="#nav">Zurück &amp; TV</a>
     <a href="#geraet">Geräteerkennung</a><a href="#pwa">PWA</a><a href="#pad">Gamecontroller</a><a href="#cloud">Cloud-Speicher</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
@@ -78,6 +78,7 @@
     <p>Spiel wählen, Optionen einstellen, Code kopieren.</p>
     <div class="gen">
       <label>Spiel<select id="gGame"></select></label>
+      <label>Darstellung<select id="gMode"><option value="">Eingebettet (Box mit Vollbild-Knopf)</option><option value="page">Vollbild: ganze Seite</option><option value="overlay">Vollbild: Klick öffnet Overlay</option></select></label>
       <div class="row">
         <label>Seitenverhältnis<select id="gRatio"><option>16/10</option><option>16/9</option><option>4/3</option><option>1/1</option><option>9/16</option></select></label>
         <label>Maximale Breite<input id="gMax" value="960px"></label>
@@ -148,6 +149,8 @@
       <tr><td><code>data-height</code></td><td><code>height</code></td><td>–</td><td>Feste Höhe, ersetzt das Seitenverhältnis</td></tr>
       <tr><td><code>data-radius</code></td><td><code>radius</code></td><td>12px</td><td>Eckenrundung</td></tr>
       <tr><td><code>data-title</code></td><td><code>title</code></td><td>Spieltitel</td><td>Titel für Screenreader</td></tr>
+      <tr><td><code>data-mode</code></td><td><code>mode</code></td><td>eingebettet</td><td><code>page</code> = ganze Seite, <code>overlay</code> = Klick öffnet das Spiel vollflächig (siehe <a href="#vollbild-einbinden">Vollbild</a>)</td></tr>
+      <tr><td><code>data-close="false"</code></td><td><code>close:false</code></td><td>✕ an</td><td>✕-Knopf im Overlay ausblenden</td></tr>
       <tr><td><code>data-fullscreen="false"</code></td><td><code>fullscreen:false</code></td><td>Knopf an</td><td>Vollbild-Knopf ausblenden</td></tr>
       <tr><td><code>data-tv-link="false"</code></td><td><code>tvLink:false</code></td><td>Zeile an</td><td>TV-Link unter Mehrspieler-Spielen ausblenden</td></tr>
     </table></div>
@@ -160,6 +163,8 @@
       <tr><td><code>EasyGames.list()</code></td><td>Alle Spiele: <code>id, title, desc, icon, url, card</code>. Praktisch für eigene Menüs.</td></tr>
       <tr><td><code>EasyGames.get(id)</code> / <code>url(id)</code></td><td>Ein Spiel bzw. nur seine URL.</td></tr>
       <tr><td><code>EasyGames.guide(id, cb)</code></td><td>Anleitung und Bedienung als Objekt <code>{anleitung, steuerung, tipps}</code>.</td></tr>
+      <tr><td><code>EasyGames.open(id | 'all', optionen)</code></td><td>Öffnet ein Spiel oder den ganzen Katalog vollflächig als Overlay (<code>close</code>, <code>fullscreen</code>, <code>title</code>, <code>onClose</code>).</td></tr>
+      <tr><td><code>EasyGames.close()</code></td><td>Schließt das offene Overlay.</td></tr>
       <tr><td><code>EasyGames.fullscreen(iframe)</code></td><td>Startet Vollbild; fällt auf einen neuen Tab zurück, wenn der Browser es nicht kann (z. B. iPhone).</td></tr>
       <tr><td><code>EasyGames.tvUrl(id)</code></td><td>Link für den TV (öffentliche Adresse, ggf. mit <code>?tv</code>); <code>null</code> bei Einzelspielen, siehe <a href="#tvlink">TV-Link</a>.</td></tr>
       <tr><td><code>EasyGames.device()</code></td><td>Geräteinfos (Typ, Rolle, Eingaben …), siehe <a href="#geraet">Geräteerkennung</a>.</td></tr>
@@ -205,7 +210,33 @@
       <li><b>iframes auf fremden Seiten:</b> Brauchen <code>allow="fullscreen"</code>. Fehlt es, bleibt das Spiel in der iframe-Größe.</li>
       <li><b>Nutzer-Geste:</b> Browser erlauben Vollbild nur nach einem Tipp oder Klick. Die Übersicht fordert es deshalb beim Tippen auf ein Spiel an.</li>
       <li><b>iPhone/iPad Safari:</b> Kein Vollbild für Elemente. <code>EasyGames.fullscreen()</code> öffnet dann das Spiel als eigene Seite in einem neuen Tab. Für Handys ist ein <a href="#link">Direktlink</a> deshalb oft die beste Wahl.</li>
+      <li><b>Direkt im Vollbild einbinden:</b> siehe <a href="#vollbild-einbinden">unten</a> – ganze Seite oder Overlay, für ein Spiel oder den ganzen Katalog.</li>
       <li><b>Hoch-/Querformat:</b> Die Übersicht erzwingt keine Ausrichtung; ob ein Spiel Quer- oder Hochformat bevorzugt, entscheidet das Spiel.</li>
+    </ul>
+  </section>
+
+  <section id="vollbild-einbinden">
+    <h2>5a. Spiel oder Katalog direkt im Vollbild</h2>
+    <p>Zwei Darstellungen füllen das ganze Fenster – für ein einzelnes Spiel und für den <b>ganzen Katalog</b> (<code>all</code>). Beide stellt der <a href="#gen">Code-Generator</a> unter „Darstellung“ ein.</p>
+    <div class="tw"><table>
+      <tr><th>Darstellung</th><th>HTML</th><th>Wirkung</th></tr>
+      <tr><td><b>Ganze Seite</b></td><td><code>&lt;div data-easygames="zotik" data-mode="page"&gt;&lt;/div&gt;</code></td><td>Das Spiel (oder mit <code>all</code> der Katalog) füllt dauerhaft das ganze Fenster. Gedacht für eine eigene Spiele-Seite.</td></tr>
+      <tr><td><b>Overlay</b></td><td><code>&lt;button data-easygames="zotik" data-mode="overlay"&gt;Spielen&lt;/button&gt;</code></td><td>Ein Klick öffnet das Spiel (oder den Katalog) vollflächig über deiner Seite und fordert das Browser-Vollbild an.</td></tr>
+    </table></div>
+<pre>&lt;script src="<span class="u"></span>easygames.js"&gt;&lt;/script&gt;
+
+&lt;!-- ganzer Katalog, ganze Seite --&gt;
+&lt;div data-easygames="all" data-mode="page"&gt;&lt;/div&gt;
+
+&lt;!-- ein Spiel per Knopf im Vollbild; mit JavaScript: --&gt;
+&lt;button data-easygames="anmacha-quiz" data-mode="overlay"&gt;Quiz spielen&lt;/button&gt;
+&lt;button onclick="EasyGames.open('all')"&gt;Alle Spiele&lt;/button&gt;</pre>
+    <h3>Das Overlay</h3>
+    <ul>
+      <li>Schließen mit dem <b>✕-Knopf</b> (mit <code>data-close="false"</code> bzw. <code>{ close:false }</code> ausblenden), der <b>Zurück-Taste</b> des Browsers/Handys, <b>Esc</b> (wenn der Fokus nicht im Spiel liegt) oder per <code>EasyGames.close()</code>. Ein Spiel kann sich auch selbst schließen (<a href="#msg"><code>easygames:close</code></a>).</li>
+      <li>Die Seite dahinter scrollt nicht. Das Browser-Vollbild wird beim Klick angefordert; wo es der Browser nicht erlaubt (z. B. iPhone), bleibt das Overlay trotzdem vollflächig.</li>
+      <li>Nur ein Overlay gleichzeitig; ein neues ersetzt das offene. <code>EasyGames.open('zotik', { fullscreen:false, title:'…', onClose: fn })</code> bietet weitere Optionen.</li>
+      <li><b>Controller und Sensoren:</b> Alle eingebetteten Fenster erlauben jetzt <code>gamepad</code>, <code>accelerometer</code> und <code>gyroscope</code>; ohne diese Freigabe funktionieren Gamepad und Neigungssteuerung in fremden Seiten nicht. Bei eigenem <code>iframe</code> bitte <code>allow="fullscreen; autoplay; gamepad"</code> setzen.</li>
     </ul>
   </section>
 
@@ -553,17 +584,29 @@ web.loadFileURL(dir.appendingPathComponent("index.html"), allowingReadAccessTo: 
 const $ = id => document.getElementById(id);
 const base = new URL('.', location.href).href;
 document.querySelectorAll('.u').forEach(e => e.textContent = base);
+{ const o = document.createElement('option'); o.value = 'all'; o.textContent = '★ Ganzer Katalog (alle Spiele)'; $('gGame').appendChild(o); }
 GAMES.forEach(g => { const o = document.createElement('option'); o.value = g.id; o.textContent = g.title; $('gGame').appendChild(o); });
 function gen() {
-  const g = GAMES.find(x => x.id === $('gGame').value), url = new URL(g.path, base).href;
-  const ratio = $('gRatio').value, max = $('gMax').value || '960px', fs = $('gFs').value;
-  const fsAttr = fs ? ' data-fullscreen="false"' : '', fsOpt = fs ? ', fullscreen: false' : '';
-  $('oLink').textContent = `<a href="${url}">${g.title} spielen</a>`;
-  $('oIframe').textContent = `<iframe src="${url}" title="${g.title}"\n  allow="fullscreen; autoplay" allowfullscreen loading="lazy"\n  style="width:100%;max-width:${max};aspect-ratio:${ratio};border:0;border-radius:12px"></iframe>`;
-  $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${g.id}" data-ratio="${ratio}" data-max-width="${max}"${fsAttr}></div>`;
-  $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, ratio: '${ratio}', maxWidth: '${max}'${fsOpt} });\n<\/script>`;
+  const all = $('gGame').value === 'all', g = all ? { id: 'all', title: 'easygames – alle Spiele', path: 'index.html?embed=1' } : GAMES.find(x => x.id === $('gGame').value), url = new URL(g.path, base).href;
+  const mode = $('gMode').value, ratio = $('gRatio').value, max = $('gMax').value || '960px', fs = $('gFs').value;
+  const fsAttr = fs ? ' data-fullscreen="false"' : '', fsOpt = fs ? ', fullscreen: false' : '', allow = 'fullscreen; autoplay; gamepad';
+  const lib = all ? 'index.html?embed=1' : '';
+  $('oLink').textContent = all ? `<a href="${base}">Alle Spiele</a>` : `<a href="${url}">${g.title} spielen</a>`;
+  if (mode === 'page') {
+    $('oIframe').textContent = `<iframe src="${url}" title="${g.title}"\n  allow="${allow}" allowfullscreen\n  style="position:fixed;top:0;left:0;width:100%;height:100%;border:0;margin:0"></iframe>`;
+    $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${g.id}" data-mode="page"></div>`;
+    $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  ${all ? "EasyGames.library('#ziel', { mode: 'page' });" : `const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, mode: 'page' });`}\n<\/script>`;
+  } else if (mode === 'overlay') {
+    $('oIframe').textContent = '(Für das Overlay den easygames.js-Code verwenden – iframe, Schließen-Knopf, Esc und Zurück-Taste regelt das Skript.)';
+    $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<button data-easygames="${g.id}" data-mode="overlay">${all ? 'Alle Spiele' : g.title + ' spielen'}</button>`;
+    $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<button id="los">${all ? 'Alle Spiele' : 'Spielen'}</button>\n<script>\n  document.getElementById('los').onclick = () => EasyGames.open('${g.id}');   // EasyGames.close() schließt\n<\/script>`;
+  } else {
+    $('oIframe').textContent = `<iframe src="${url}" title="${g.title}"\n  allow="${allow}" allowfullscreen loading="lazy"\n  style="width:100%;max-width:${max};aspect-ratio:${ratio};border:0;border-radius:12px"></iframe>`;
+    $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${g.id}" data-ratio="${ratio}" data-max-width="${max}"${fsAttr}></div>`;
+    $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  ${all ? `EasyGames.library('#ziel', { ratio: '${ratio}', maxWidth: '${max}' });` : `const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, ratio: '${ratio}', maxWidth: '${max}'${fsOpt} });`}\n<\/script>`;
+  }
 }
-['gGame', 'gRatio', 'gMax', 'gFs'].forEach(i => $(i).addEventListener('input', gen)); gen();
+['gGame', 'gMode', 'gRatio', 'gMax', 'gFs'].forEach(i => $(i).addEventListener('input', gen)); gen();
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-c]'); if (!b) return;
   const t = $(b.dataset.c).textContent, old = b.textContent;
