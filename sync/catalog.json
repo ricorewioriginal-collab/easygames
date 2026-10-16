@@ -167,7 +167,7 @@
   {
    "id": "pufi-farbwind",
    "title": "Pufi & der Farbwind",
-   "desc": "Eigenständiges, detailreicher gestaltetes Retro-Jump-and-Run mit Pufi und Tamo: sechs abwechslungsreiche Inseln, Nebelgreifer-Entführung mit 15-Sekunden-Rettung, Farbwürfe, bewegliche Wolken, bröckelnde Klippen, Pilze, Wind, Kristallgrotten, Feuergefahren und zwei Bosse. PC/Touch, offline spielbar.",
+   "desc": "Insel-Jump-and-Run mit Pufi und Baby-Tamo auf dem Rücken: Flattersprung, Zunge zum Fangen, Eier legen, zielen und werfen, Stampfen, Sterne-Countdown bei Treffern, Farbringe als Rücksetzpunkte, rote Münzen, Farbblüten und Bestwert bis 100. 24 Level auf sechs Inseln, jede mit Bossburg. Vollbild, Tastatur, Touch-Stick und Gamepad, offline spielbar.",
    "icon": "🎨",
    "img": "pufi-farbwind/card.svg",
    "bg": "linear-gradient(145deg,#dc95b8,#84d8ee)",
@@ -176,21 +176,22 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pufi reitet auf seinem eigens entworfenen Wolkentaps Tamo durch sechs verschiedenartige Inseln. Landet ein Treffer auf Tamo, ruft er laut um Hilfe. Ein Nebelgreifer versucht, ihn zu entführen. Du hast 15 Sekunden, um Tamo zu erreichen (berühren oder Y/R drücken). Wirf Farbkugeln auf den Entführer, um ihn zu betäuben und mehr Zeit zu erhalten. Gelingt die Rettung nicht, beginnt das Level nach Game Over neu. Jede Welt besitzt eigene Hindernisse: Blumenpfade, bröckelnde Felsplattformen, hüpfende Pilze, Wolkenaufzüge und Wind, Kristallgrotten mit Wasser sowie Feuerfallen und Festung. Geschaffte Inseln und Rekorde bleiben erhalten.",
+    "anleitung": "Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln mit je vier Leveln; das vierte ist eine Burg mit Boss. Wird Pufi getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter. Berühre die Blase, bevor der Zähler 0 erreicht, sonst holen ihn die Nebelgreifer und ein Leben ist weg. Fang Gegner mit der Zunge und mach daraus Eier (bis zu sechs folgen dir), ziele und wirf sie auf Gegner, Flügelwolken und Bosse. Der Farbring in der Mitte speichert den Fortschritt und schenkt +10 Sterne. Am Ziel zählen Sterne (30), rote Münzen (20) und Farbblüten (50) zu einem Bestwert bis 100.",
     "steuerung": [
-     "PC: Pfeile oder A/D bewegen. Leertaste oder W = A (springen, halten zum Schweben); K/X = B (Farbkugel zielen/werfen); C/J = X (Farbenergie saugen); R/V = Y (Tamo reiten/retten). ↓/S = Stampfen; Esc/P = Pause. ⚙ öffnet Controller-Optionen.",
-     "Mobil: Links Steuerkreuz oder Wisch-Touchfeld, auswählbar in ⚙; rechts vier A/B/X/Y-Tasten in Konsolenanordnung. Mehrere Tasten gleichzeitig möglich. Bei Entführung schnell zu Tamo laufen und ihn berühren oder Y drücken."
+     "PC: ← → / A D laufen, Leertaste oder Z springen (halten = flattern), X/J Zunge (mit ↑ schräg nach oben), C/K Ei zielen und werfen, ↓/S Ei legen bzw. in der Luft stampfen, Esc/P Pause, F Vollbild, M Musik.",
+     "Gamepad: Stick oder Steuerkreuz laufen, A springen/flattern, X Zunge, B oder R1 zielen/werfen, rechter Stick zielt direkt, Y oder Stick ↓ Ei legen/stampfen, Start Pause. Menüs lassen sich mit dem Gamepad bedienen.",
+     "Touch: links Daumen-Stick (oder Steuerkreuz in den Optionen), rechts A Sprung, B Werfen, X Zunge, Y Ei/Stampfen. ⛶ schaltet Vollbild, im Querformat ist am meisten zu sehen."
     ],
     "tipps": [
-     "Wenn Tamo getroffen wird, folgt dem Hilferuf und der Countdown-Einblendung. Ein Pfeil zeigt an, wenn Tamo außerhalb der Kamera ist.",
-     "Mit Farbkugeln lassen sich Nebelgreifer betäuben; die Rettungszeit verlängert sich.",
-     "Windböen tragen dich durch die Wolkenwelt; rote Feuerfallen im Finale flammen rhythmisch auf.",
-     "Pilzplattformen katapultieren dich nach oben, Sandsteinplattformen können einbrechen.",
-     "Wirst du endgültig besiegt oder entführt man Tamo, startet das Level vollständig neu."
+     "Werfen: einmal tippen startet den Zielpfeil, nochmal tippen wirft. Halten und loslassen geht auch.",
+     "Stoß Eierblöcke von unten an, wenn dir die Eier ausgehen.",
+     "Flattern lässt sich in der Luft neu starten: Taste loslassen und erneut halten.",
+     "Stachelkugeln und Schnappblüten kann man nicht fressen – ein Ei hilft.",
+     "Rote Münzen sehen fast wie normale aus, achte auf den roten Kern."
     ]
    },
-   "size": 66258,
-   "files": 5,
+   "size": 106147,
+   "files": 6,
    "offline": true
   },
   {

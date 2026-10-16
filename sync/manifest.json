@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3f2df8f6054d",
- "generated": "2026-10-16T13:45:05+02:00",
- "commit": "dddb09887e14f269891f991d7edbdf51c09225f1",
+ "version": "56a54c9c38d5",
+ "generated": "2026-10-16T11:47:02+00:00",
+ "commit": "e6ff8a36fb5cee217bb3bd9432bc48e7a9578d51",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 19030,
-   "h": "9c0b75fa5bcc044700a1de583c1aceeb06624c71924136f84d77654ebb967a60"
+   "s": 19078,
+   "h": "d364374d74346487891b7fc5976c96d1303951075f92176a6014b96c45b5896b"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 49604,
-   "h": "1bbacc114932445d970f1258ab125a57106fad2d4eb83ef4dd2a1353edfea526"
+   "s": 49625,
+   "h": "99a19f367800d0c6f0a1315b0a2b3bcc13c96092979af7bd45cb9d366b7fe7d0"
   },
   {
    "p": "index.html",
@@ -5353,23 +5353,28 @@
   },
   {
    "p": "pufi-farbwind/game.js",
-   "s": 45804,
-   "h": "ea9e8bff305ff9da134f535763981d578e5a15ab1d092dd244f85ca0cffa2ebd"
+   "s": 79296,
+   "h": "bafaf03fc8aa97ecf5121c5e4d66602297b2bfc3812dda6ab5cce43291cb96ef"
   },
   {
    "p": "pufi-farbwind/index.html",
-   "s": 16654,
-   "h": "bcfcdd3eb4f7b534b60500139df44e290a1561858a33e7513fd25d5ec1b469e3"
+   "s": 9000,
+   "h": "1fefa7fac75ff58e650c66f4ac1c0e158cddf586f4fa114d9952f644cd8d1f82"
+  },
+  {
+   "p": "pufi-farbwind/levels.js",
+   "s": 14032,
+   "h": "ed161919a5b1ec6dcc6f730466cda846d7302284397c054bf2103ebda619249c"
   },
   {
    "p": "pufi-farbwind/manifest.webmanifest",
-   "s": 416,
-   "h": "dd8d539cd3a944c47403ae1cb411482195afae025cedfa573918c6ce6aebc8ba"
+   "s": 421,
+   "h": "dc555f7db2e8dc87dcedfadf1a6ca4afc58f5a0499d2a14b809c9f3e90451144"
   },
   {
    "p": "pufi-farbwind/sw.js",
-   "s": 752,
-   "h": "59326dd06d3f0bdf7684b8fd369e8c693464ae6e7849cacefa86522b0858c1ba"
+   "s": 766,
+   "h": "ee3977d4e316b4db1e99ff7eaf8e985859fd9c7560f7bc245e699b9141ca21c4"
   },
   {
    "p": "radio-maze/card.svg",
@@ -5528,8 +5533,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 76266,
-   "h": "d24182d15ad4a528266ef5a6fe25f57b252fc3a94463dfe9dc264ac08a813722"
+   "s": 76331,
+   "h": "3e70ee64f4fc1d0c133fda9251002bae5726050cd3bf8dbf112183ef6ca34d6f"
   },
   {
    "p": "taschi/card.svg",
