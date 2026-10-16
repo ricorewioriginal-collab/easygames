@@ -6,6 +6,34 @@
  },
  "games": [
   {
+   "id": "ricoville",
+   "title": "RicoVille – Deine Stadt lebt!",
+   "desc": "Gemütliches 3D-Städtebauspiel in Iso-Ansicht: Straßen ziehen, Häuser bauen, Einwohner anlocken, Felder bestellen, Waren herstellen, Läden beliefern und Miete kassieren. Fabriken, Bahnhof, Hafen und Flughafen, Rathaus-Ausbau, neue Gebiete, über 80 Aufgaben mit Stadtgeschichte, Tages- und Wochenziele. Modi Nostalgisch, Entspannt und Kreativ; Handy und PC, offline spielbar, optionaler Google-Spielstand.",
+   "icon": "🏡",
+   "img": "ricoville/card.svg",
+   "bg": "linear-gradient(145deg,#2f7fd1,#55b86a 55%,#ffd36b)",
+   "glow": "rgba(255,211,107,.5)",
+   "path": "ricoville/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "RicoVille ist ein gemütliches Städtebauspiel in 3D. Du startest mit einem kleinen Rathaus, ein paar Straßen und zwei Äckern. Baue Häuser an Straßen, damit Einwohner einziehen, und kassiere ihre Miete. Wie viele Menschen in der Stadt leben dürfen, bestimmen Gemeinschaftsgebäude wie Rathaus, Schule oder Feuerwache. Auf Äckern säst und erntest du Feldfrüchte, Produktionsgebäude wie Mühle oder Molkerei machen daraus Waren, und Läden verkaufen diese Waren an deine Einwohner. Baustellen größerer Gebäude brauchen Baumaterial wie Bretter, Ziegel, Stahl oder Glas. Mit Erfahrung steigst du auf und schaltest neue Gebäude frei, mit Münzen und Einwohnern erschließt du neue Gebiete. Die Bürgermeisterin und weitere Bewohner führen dich mit über 80 Aufgaben durch die Stadtgeschichte, dazu gibt es Tages- und Wochenziele. Nostalgisch spielt mit Energie wie früher, Entspannt ohne Energie und mit halben Zeiten, im Kreativ-Sandkasten baust du frei auf einem eigenen Speicherplatz. Die Stadt wird lokal gespeichert, optional mit Google auf allen Geräten.",
+    "steuerung": [
+     "Smartphone und Tablet: Ziehen verschiebt die Karte, zwei Finger zoomen. Gebäude antippen kassiert, beliefert oder öffnet das Fenster. Beim Bauen erst den Platz antippen, dann mit ✓ bestätigen.",
+     "PC: Maus ziehen verschiebt, Mausrad zoomt, Klick baut oder öffnet. WASD/Pfeile verschieben, Q/E drehen die Ansicht, R dreht das Gebäude, B Baumenü, T Straßenmodus, Esc bricht ab."
+    ],
+    "tipps": [
+     "Häuser brauchen eine Straße direkt daneben, sonst zieht niemand ein.",
+     "Bäume, Parks und Brunnen in der Nähe erhöhen die Miete.",
+     "Läden verkaufen nur, wenn sie beliefert sind: halte im Lager immer etwas Ware bereit.",
+     "Wird der Platz knapp, bau ein Lagerhaus oder erschließe ein neues Gebiet."
+    ]
+   },
+   "size": 740485,
+   "files": 12,
+   "offline": true
+  },
+  {
    "id": "ricopoly",
    "title": "RicoPoly 3D – Baue dein Imperium!",
    "desc": "Würfeln. Kaufen. Handeln. Herrschen! Das Grundstücks-Brettspiel in 3D mit allen klassischen Regeln: Kaufen, Versteigern, Miete, Häuser und Hotels, Hypotheken, Handel, Gefängnis und Bankrott. Drei Welten (Metropolis, Fantasy Kingdom, Future City) mit eigenen Straßen, Karten und Musik, 16 animierte Figuren mit Editor, Computergegner in drei Stufen, Spiel an einem Gerät für 2–6 und Online-Räume per Code oder Link. Klassisch, Schnell oder eigene Regeln; Deutsch und Englisch; optionaler Google-Speicher.",
@@ -106,7 +134,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": null,
-   "size": 751234,
+   "size": 751933,
    "files": 23,
    "offline": true
   },

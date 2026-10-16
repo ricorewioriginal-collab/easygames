@@ -1,0 +1,29 @@
+{
+  "name": "ricoville",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RicoVille – Deine Stadt lebt! 3D-Städtebauspiel für Browser und Handy (TypeScript, Three.js).",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "npm run test && npm run build && npm run test:e2e",
+    "docs:catalog": "esbuild scripts/catalog.ts --bundle --platform=node --format=esm --log-level=warning --outfile=node_modules/.cache/catalog.mjs && node node_modules/.cache/catalog.mjs",
+    "build:easygames": "npm run build && rm -rf ../ricoville && cp -r dist ../ricoville"
+  },
+  "engines": { "node": ">=20.19" },
+  "dependencies": { "three": "^0.180.0" },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.18.8",
+    "@types/three": "^0.180.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
+  }
+}

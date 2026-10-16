@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c4ab8f6a764e",
- "generated": "2026-10-16T23:12:40+02:00",
- "commit": "8aefac055a42822371e60cbab77860381c2621e8",
+ "version": "487c81e43d60",
+ "generated": "2026-10-16T21:41:10+00:00",
+ "commit": "189669da5b56c47cca90075e7333c8ff2697b727",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4658,8 +4658,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 29739,
-   "h": "85e1ac8d6e4bc131331d917d7cb04ef464dce033e77ff88aa23caa41536ceaca"
+   "s": 30395,
+   "h": "34af4c636347ac641aa1cbbb75313bc9b6a8307927e4f9964073bf792ac9efc8"
   },
   {
    "p": "device.js",
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 21542,
-   "h": "61a9b2c9799e97f5b4169b868d71c2f178e01395afef5928ce89c3f888796dd4"
+   "s": 22176,
+   "h": "89eaa80eb3bb05d559eb5b4b40796eaeb56809823cf8e1ee062913feef3b0562"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 57214,
-   "h": "c3071d1645fe9447487684fde10c5fdd4b4e300a01edc3d1d0934b58311e6bdc"
+   "s": 59026,
+   "h": "a366c5ffda5c8b858f7bd7056aadc326cec00406d935387e2fb3f65771121937"
   },
   {
    "p": "index.html",
@@ -4858,8 +4858,8 @@
   },
   {
    "p": "kiko-sterneninseln/index.html",
-   "s": 1897,
-   "h": "855014139aff472a3e7112edf68cd2ce05ae0ef6d92231765490a0e0317bc920"
+   "s": 1940,
+   "h": "15223788e1f1419798bd0e1b0ffa4a14aa567a8f044e04b7c9ab13c77549e0fa"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
@@ -4953,8 +4953,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 29739,
-   "h": "85e1ac8d6e4bc131331d917d7cb04ef464dce033e77ff88aa23caa41536ceaca"
+   "s": 30395,
+   "h": "34af4c636347ac641aa1cbbb75313bc9b6a8307927e4f9964073bf792ac9efc8"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5687,6 +5687,66 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
+   "p": "ricoville/assets/index-3QQqM-UI.js",
+   "s": 171766,
+   "h": "dc86b209d21c24254969e4a1cace71bf97668464d8e9efc64c6c5e52fa40bb43"
+  },
+  {
+   "p": "ricoville/assets/index-BJwfMcR4.css",
+   "s": 12493,
+   "h": "997c25bd46194defb4d5cfdd267fe1cf949e90b037123607245bf1ec757d1cd3"
+  },
+  {
+   "p": "ricoville/assets/three-DaP6-81L.js",
+   "s": 521014,
+   "h": "e303c4c452c142fee0e3b9dd156c5b64118699005820781e559fa50dd91315a6"
+  },
+  {
+   "p": "ricoville/card.svg",
+   "s": 11426,
+   "h": "1f7f1b7080652f793ef3366a2e2fcdad6b52221500582fc48d396692d51ee4a8"
+  },
+  {
+   "p": "ricoville/favicon.svg",
+   "s": 508,
+   "h": "42793c088b5a8cddaff5b7b5285a670fea272c9a8c6c6dcfe5014e1d9cafb32c"
+  },
+  {
+   "p": "ricoville/icons/apple-touch-icon.png",
+   "s": 4546,
+   "h": "9e4fa0d64cb8f3f4452dca7cea8c0e2bc3c8d3fc6344269a28d511fd2ff22173"
+  },
+  {
+   "p": "ricoville/icons/icon-192.png",
+   "s": 7761,
+   "h": "04fbfab4d56ce6ac065be19989d6c161925429f0b36b0fde6ac6b83ae5f0c93e"
+  },
+  {
+   "p": "ricoville/icons/icon-512.png",
+   "s": 3622,
+   "h": "faa3a8f96f5e1e8d2501cec113442e65f3d718e97a17df7296dee2e008303524"
+  },
+  {
+   "p": "ricoville/icons/maskable-512.png",
+   "s": 2696,
+   "h": "c18fbe55610e7dc21aced108e629b17a0c16da027acf79bfa162e2e4ea03b58f"
+  },
+  {
+   "p": "ricoville/index.html",
+   "s": 1940,
+   "h": "3b8f0a1dc0ed180660a6decbffbf6e170f654debd7838da37c1e2ad93fd65e4d"
+  },
+  {
+   "p": "ricoville/manifest.webmanifest",
+   "s": 767,
+   "h": "0d72ebafb5eccb7c97baf98d28edfdc92a4a32f76f96f1b609a632dd7bc87e6f"
+  },
+  {
+   "p": "ricoville/sw.js",
+   "s": 1946,
+   "h": "e112835945788cf36256cecd51cb2c06e961871734493daf155ec81ecd88a1a0"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5803,8 +5863,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 87028,
-   "h": "fc19d992e105559fa871ab9a7a808955a09bc2b69ece20c809ab325909d4fb83"
+   "s": 89678,
+   "h": "6944afa160f81d5bd756a6e13c49c897369e5ae1116df750f2e80b7c94690b0d"
   },
   {
    "p": "taschi/card.svg",
