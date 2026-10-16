@@ -105,6 +105,7 @@ function resize() {
   if (!renderer) return;
   const w = innerWidth, h = innerHeight;
   renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+  cam.manual = false;
   checkRotate();
 }
 
@@ -216,26 +217,29 @@ function updateViews(t) {
 const cam = { x:0, y:5, w:40, tx:0, ty:5, tw:40, manual:false, hold:0, demoT:0 };
 const DEG = Math.PI / 180;
 function viewH(w) { return w / camera.aspect; }
+// Hochformat: die ganze Breite passt nicht sinnvoll hinein, also enger zoomen und Ziel und Schleuder nacheinander zeigen.
+function portrait() { return camera.aspect < 0.85; }
 function overview() {
   let top = 6, right = 20;
   if (level) level.blocks.concat(level.pigs).forEach(b => { top = Math.max(top, b.y + 2); right = Math.max(right, b.x + (b.w || 1)); });
-  const x0 = -6.5, x1 = right + 3;
-  let w = Math.max(x1 - x0, (top + 2) * camera.aspect, 24);
-  return { w, x0 };
+  const x0 = -6.5, x1 = right + 3, full = Math.max(x1 - x0, (top + 2) * camera.aspect, 24);
+  if (portrait()) { const w = Math.min(full, Math.max(16, 30 * camera.aspect)); return { w, x0, full, target:Math.max(x0 + w / 2, x1 - w / 2) }; }
+  return { w:full, x0, full, target:x0 + full / 2 };
 }
 function aimView() {
   const o = overview(), minPx = isTouch ? 15 : 13, maxW = innerWidth / minPx;
+  if (portrait()) return { x:-5.5 + o.w / 2, w:o.w };
   if (o.w <= maxW) return { x:o.x0 + o.w / 2, w:o.w };
   const w = Math.max(26, maxW); return { x:-6.5 + w / 2, w };
 }
 function fitCamera(instant) {
   const a = aimView();
   cam.tx = a.x; cam.tw = a.w; cam.ty = viewH(a.w) / 2 - 1.2;
-  if (instant) { const o = overview(); cam.x = o.x0 + o.w / 2; cam.w = o.w; cam.y = viewH(o.w) / 2 - 1.2; }
+  if (instant) { const o = overview(); cam.x = o.target; cam.w = o.w; cam.y = viewH(o.w) / 2 - 1.2; }
 }
 function clampCam() {
   const o = overview();
-  cam.tw = Math.max(12, Math.min(o.w * 1.3, cam.tw));
+  cam.tw = Math.max(12, Math.min(o.full * 1.3, cam.tw));
   const h = viewH(cam.tw), minY = h / 2 - 1.5;
   cam.ty = Math.max(minY, Math.min(minY + 22, cam.ty));
   cam.tx = Math.max(-14, Math.min((level ? level.width : 40) + 10, cam.tx));
@@ -246,7 +250,7 @@ function updateCamera(dt, t) {
     cam.tw = Math.min(o.w, 34); cam.tx = -6.5 + cam.tw / 2 + span * (0.5 - 0.5 * Math.cos(cam.demoT * 0.08)); cam.ty = viewH(cam.tw) / 2 - 1.2;
   } else if (!cam.manual && sim) {
     const fly = sim.flyingBird();
-    if (levelTime < cam.hold) { const o = overview(); cam.tx = o.x0 + o.w / 2; cam.tw = o.w; cam.ty = viewH(o.w) / 2 - 1.2; }
+    if (levelTime < cam.hold) { const o = overview(); cam.tx = o.target; cam.tw = o.w; cam.ty = viewH(o.w) / 2 - 1.2; }
     else if (fly && sim.state === 'flying') {
       const p = fly.body.getPosition(), a = aimView(), w = Math.min(a.w, Math.max(28, a.w * 0.8)), h = viewH(w);
       cam.tw = w; cam.tx = Math.max(-6.5 + w / 2, Math.min(level.width + 6 - w / 2, p.x + w * 0.12));
@@ -433,8 +437,8 @@ function startLevel(id) {
   closeOverlays();
   save.last = id; store();
   buildLevel(id, false);
-  mode = 'play'; paused = false; cam.manual = false; cam.hold = 1.6; aim.active = false;
-  showScreen(null); $('hud').hidden = false;
+  mode = 'play'; paused = false; cam.manual = false; cam.hold = portrait() ? 2.6 : 1.6; aim.active = false;
+  showScreen(null); $('hud').hidden = false; checkRotate();
   const W = K.WORLDS[level.world];
   $('hudLevel').textContent = level.name; $('hudWorld').textContent = W.name;
   $('hudBest').textContent = fmt((save.lv[id] || [0, 0])[1]);
@@ -835,7 +839,7 @@ function stageDown(ev) {
       A.play('stretch', panOf(0)); return;
     }
   }
-  const w = screenToWorld(ev.clientX, ev.clientY); panning = { x:w.x, y:w.y, id:ev.pointerId };
+  panning = { sx:ev.clientX, sy:ev.clientY, cx:cam.tx, cy:cam.ty, id:ev.pointerId };
 }
 function stageMove(ev) {
   if (!pointers.has(ev.pointerId)) return;
@@ -851,9 +855,9 @@ function stageMove(ev) {
     aim.dx = dx; aim.dy = dy; return;
   }
   if (panning && panning.id === ev.pointerId) {
-    const w = screenToWorld(ev.clientX, ev.clientY);
-    cam.manual = true; cam.tx += panning.x - w.x; cam.ty += panning.y - w.y;
-    cam.x += panning.x - w.x; cam.y += panning.y - w.y;
+    const k = cam.w / innerWidth, dx = ev.clientX - panning.sx, dy = ev.clientY - panning.sy;
+    if (!cam.manual && Math.hypot(dx, dy) < 8) return;
+    cam.manual = true; cam.tx = cam.x = panning.cx - dx * k; cam.ty = cam.y = panning.cy + dy * k;
   }
 }
 function stageUp(ev) {
@@ -1000,8 +1004,10 @@ function frame(now) {
 
 // ---------- Hochformat-Hinweis & Sichtbarkeit ----------
 let rotateDismissed = false;
-function checkRotate() { $('rotate').hidden = rotateDismissed || !(mode === 'play' && isTouch && innerHeight > innerWidth * 1.15); }
-$('rotate').addEventListener('click', () => { rotateDismissed = true; checkRotate(); });
+function checkRotate() {
+  if (rotateDismissed || mode !== 'play' || !isTouch || innerHeight < innerWidth * 1.15) return;
+  rotateDismissed = true; toast('📱↻ Quer halten zeigt mehr vom Level');
+}
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { A.suspend(true); if (mode === 'play' && !OVERLAYS.some(o => !$(o).hidden)) act('pause'); store(); }
   else A.suspend(false);
