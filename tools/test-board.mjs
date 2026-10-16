@@ -12,7 +12,7 @@ let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('PASS ' + name); };
 
 // ---------- Harness ----------
-function makeEnv(game, { user = null, store = {}, firestore = {} } = {}) {
+function makeEnv(game, { user = null, store = {}, firestore = {}, prefix = '' } = {}) {
   const ls = {
     get length() { return Object.keys(store).length; }, key: i => Object.keys(store)[i] ?? null,
     getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; },
@@ -44,7 +44,7 @@ function makeEnv(game, { user = null, store = {}, firestore = {} } = {}) {
   const timers = [];
   const win = {
     localStorage: ls, fetch: fetchFake, addEventListener() {}, setTimeout: (f) => { timers.push(f); return 0; }, setInterval() { return 0; },
-    AnMaChaCloud: { game, FS: 'https://fs/v1/projects/p/databases/(default)/documents/', signIn() {}, user: () => user },
+    AnMaChaCloud: { game, FS: 'https://fs/v1/projects/p/databases/(default)/documents/', signIn() {}, user: () => user, mine: k => !!prefix && k.startsWith(prefix) },
   };
   win.window = win;
   const ctx = vm.createContext({ ...win, document: { body: null, hidden: false, addEventListener() {} }, console, Date, JSON, Math, Number, String, Object, isFinite, Promise, Error, Array });
@@ -63,7 +63,7 @@ const cloudTag = html => { const m = /<script[^>]*anmacha-cloud\.js[^>]*>/.exec(
 ok('Registry: mindestens ein Spiel, gültige Einträge', () => {
   assert(Object.keys(REG).length >= 1, 'keine Spiele in REG');
   for (const [g, list] of Object.entries(REG)) {
-    assert(Array.isArray(list) && list.length, g + ': leere Liste');
+    assert(Array.isArray(list), g + ': keine Liste');
     const seen = new Set();
     for (const b of list) {
       assert(b.id && /^[a-z0-9-]+$/.test(b.id) && !seen.has(b.id), g + ': Board-ID ungültig/doppelt ' + b.id); seen.add(b.id);
@@ -100,7 +100,7 @@ ok('Registry: jedes Spiel hat ein Cloud-Skript mit passendem data-game, Schlüss
     const info = games.get(g);
     assert(info, g + ': kein Spiel mit data-game="' + g + '" gefunden (REG-Schlüssel = data-game)');
     const prefixes = (/data-prefix="([^"]*)"/.exec(info.tag)?.[1] ?? '').split(',').map(x => x.trim()).filter(Boolean);
-    for (const b of list) assert(prefixes.some(p => b.key.startsWith(p)), g + '/' + b.id + ': Schlüssel "' + b.key + '" nicht von data-prefix gedeckt (' + prefixes.join(',') + ')');
+    for (const b of list.filter(b => !b.local)) assert(prefixes.some(p => b.key.startsWith(p)), g + '/' + b.id + ': Schlüssel "' + b.key + '" nicht von data-prefix gedeckt (' + prefixes.join(',') + ')');
   }
 });
 ok('Registry: Schlüsselnamen kommen im Spielcode vor (Tippfehler-Schutz)', () => {
@@ -213,4 +213,58 @@ const run = async () => {
   }
 };
 await run();
+
+// ---------- automatische Erkennung (Spiele ohne REG-Eintrag, auch neue) ----------
+const D = pairs => JSON.parse(JSON.stringify(T.detect(pairs)));
+ok('detect: Highscore aus Zahl, JSON, Top-Listen (Objekte und Arrays)', () => {
+  assert.equal(D([['anmachaFlipperBest', '5400']]).hi, 5400);
+  assert.equal(D([['x.save', '{"best":3200,"rank":[{"n":"A","s":3200},{"n":"B","s":100}]}']]).hi, 3200);
+  assert.equal(D([['td', '{"rank":[{"n":"X","s":900},{"n":"Y","s":50}]}']]).hi, 900);
+  assert.equal(D([['q', '{"hof":{"ladder":[{"n":"A","v":5000}],"night":[]}}']]).hi, 5000);
+  assert.equal(D([['g', '{"top":{"hint":[["A",77,"d"]],"ask":[]}}']]).hi, 77);
+  assert.equal(D([['m', '{"stats":{"highScore":1234}}']]).hi, 1234);
+});
+ok('detect: Gesamtpunkte, Sterne, Siege, XP, Bestzeit', () => {
+  const mem = D([['memory', '{"best":{"L1":120,"L2":90},"stars":{"L1":3,"L2":2}}']]);
+  assert.equal(mem.sum, 210); assert.equal(mem.stars, 5);
+  assert.equal(D([['mimori', '{"records":{"catch":120,"memory":0,"rhythm":300,"runner":50,"bubbles":0}}']]).sum, 470);
+  assert.equal(D([['rm', '{"stars":{"1":3,"2":2,"3":0},"unlocked":4}']]).stars, 5);
+  assert.equal(D([['w', '{"stats":{"wins":7,"games":10}}']]).wins, 7);
+  assert.equal(D([['xyzWins', '3']]).wins, 3);
+  assert.equal(D([['p', '{"xp":950}']]).xp, 950);
+  const t = D([['k', '{"best":{"wiese":{"lap":55.2},"strand":{"lap":61}}}']]);
+  assert.equal(t.time, 55.2); assert.equal(t.sum, undefined);
+});
+ok('detect: Spielzeit, Leeres, Ungültiges und Riesiges werden nicht als Rangliste erkannt', () => {
+  assert.deepEqual(D([['a', '{"playTime":9999,"elapsed":5,"totalTime":100}']]), {});
+  assert.deepEqual(D([['a', '{}'], ['b', '[]'], ['c', 'kein json'], ['d', null], ['e', '0'], ['f', '-3']]), {});
+  assert.deepEqual(D([['a', '{"best":' + '9'.repeat(400000) + '}']]), {});
+  assert.deepEqual(D([['a', '{"hi":{"hi":{"hi":{"hi":{"hi":{"hi":{"hi":5}}}}}}}']]), {});
+});
+
+const runAuto = async () => {
+  const save = JSON.stringify({ best: 1200, stats: { wins: 3 }, playTime: 500 });
+  {
+    const env = makeEnv('neuesspiel', { user: mkUser(), prefix: 'neu', store: { 'anmacha-board-share': '1', 'anmacha-board-nick': 'Rico', 'neu.save': save, 'fremd.key': '{"best":99999}' } });
+    await env.ctx.window.AnMaChaBoard.submit();
+    const keys = Object.keys(env.firestore).sort();
+    assert.deepEqual(keys, ['neuesspiel__hi/U1', 'neuesspiel__wins/U1']);
+    assert.equal(env.firestore['neuesspiel__hi/U1'].s.doubleValue, 1200);
+    assert.equal(env.firestore['neuesspiel__wins/U1'].s.doubleValue, 3);
+    n++; console.log('PASS Auto: neues Spiel ohne REG-Eintrag reicht erkannte Werte ein (fremde Schlüssel bleiben außen vor)');
+    save && (env.store['neu.save'] = JSON.stringify({ best: 2000, stats: { wins: 3 } }));
+    await env.ctx.window.AnMaChaBoard.submit();
+    assert.equal(env.firestore['neuesspiel__hi/U1'].s.doubleValue, 2000);
+    n++; console.log('PASS Auto: besserer Wert ersetzt den alten');
+    await env.ctx.window.AnMaChaBoard.removeAll();
+    assert.deepEqual(Object.keys(env.firestore), []);
+    n++; console.log('PASS Auto: Freigabe beenden löscht die automatisch angelegten Einträge');
+  }
+  {
+    const env = makeEnv('klotzfunk', { user: mkUser(), prefix: 'klotz', store: { 'klotz.x': '{"best":5}' } });
+    assert.equal(env.ctx.window.AnMaChaBoard.submit, undefined);
+    n++; console.log('PASS Auto: Spiele mit leerem REG-Eintrag (Sandbox) bekommen bewusst keine Rangliste');
+  }
+};
+await runAuto();
 console.log('OK: ' + n + ' Prüfungen');
