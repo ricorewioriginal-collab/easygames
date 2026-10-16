@@ -98,9 +98,12 @@ Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle S
 `tools/emulationstation.py` richtet alle Spiele in EmulationStation ein: Startskript je Spiel, Kategorie „RicoReWi easygames“, Spieleliste mit Titelbild und Beschreibung. Nur Python 3.8+ und ein Browser nötig.
 
 ```bash
-curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/emulationstation.py
-python3 emulationstation.py install            # online; --mode offline mit lokaler Kopie des Repos
-python3 emulationstation.py uninstall          # alles wieder entfernen
+# Startprogramme prüfen Python und installieren es bei Bedarf mit Rückfrage:
+sh tools/install-emulationstation.sh                 # Linux, Steam Deck, RetroPie, macOS
+powershell -ExecutionPolicy Bypass -File tools\install-emulationstation.ps1   # Windows
+# oder direkt (Python vorhanden):
+python3 tools/emulationstation.py install            # online; --mode offline mit lokaler Kopie des Repos
+python3 tools/emulationstation.py uninstall          # alles wieder entfernen
 ```
 
 Optionen (`--only`, `--exclude`, `--tv`, `--window`, `--browser`, `--frontend`, `--roms`, `--dry-run`) und Hinweise stehen auf der Homepage unter „Einbinden & Hilfe“ → EmulationStation. Test: `python3 tools/test-emulationstation.py`. Neue Spiele aus `games.js` werden beim erneuten `install` automatisch übernommen.

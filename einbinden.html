@@ -130,6 +130,13 @@
   EasyGames.embed('#ziel', { game: spielId, ratio: '16/10', maxWidth: '960px' });
   // Bibliothek: EasyGames.library('#alle');
 &lt;/script&gt;</pre>
+    <h3>Android (ES-DE für Android)</h3>
+    <p>Unter Android gibt es kein Skript und kein Python. Dort startet EmulationStation installierte Apps. Zwei Wege (nach meinem Kenntnisstand, auf Android noch nicht getestet):</p>
+    <ul>
+      <li><b>easygames-App:</b> Die Android-App (APK, siehe Download-Karte oben) enthält alle Spiele und läuft offline. ES-DE für Android zeigt installierte Apps im System „Android“ an; dort die easygames-App starten oder als Favorit markieren.</li>
+      <li><b>Einzelne Spiele als Apps:</b> Jedes Spiel lässt sich über seinen Direktlink in Chrome als App installieren (Menü → „App installieren“). Installierte Spiele erscheinen wie andere Apps in der Android-Liste.</li>
+      <li>Ein einzelnes Spiel direkt aus der EmulationStation-Spieleliste zu starten, geht auf Android noch nicht (die App hat keine Direktlinks auf einzelne Spiele).</li>
+    </ul>
     <h3>Optionen</h3>
     <div class="tw"><table>
       <tr><th>Attribut</th><th>JS-Option</th><th>Standard</th><th>Wirkung</th></tr>
@@ -296,18 +303,20 @@ parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
     <p><a class="back" href="tools/emulationstation.py" download="emulationstation.py">⬇ emulationstation.py herunterladen</a></p>
     <h3>Was du brauchst</h3>
     <ul>
-      <li><b>Python 3.8 oder neuer</b> (nur die Standardbibliothek, nichts nachinstallieren).</li>
+      <li><b>Python 3.8 oder neuer</b> (nur die Standardbibliothek). Fehlt es, bietet das Startprogramm die Installation mit Rückfrage an. Unter Linux, Steam Deck, macOS und Batocera ist es meist schon da.</li>
       <li>Einen Browser: <b>Chromium, Chrome, Edge oder Firefox</b>. Er wird automatisch gefunden (sonst <code>--browser PFAD</code>).</li>
       <li>Ein installiertes Frontend (ES-DE, RetroPie, Batocera …).</li>
     </ul>
     <h3>Schnellstart (online)</h3>
-    <p><b>Linux, Steam Deck, RetroPie, macOS</b> (Terminal):</p>
-<pre>curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/emulationstation.py
-python3 emulationstation.py install</pre>
-    <p><b>Windows</b> (PowerShell):</p>
-<pre>Invoke-WebRequest https://ricorewioriginal-collab.github.io/easygames/tools/emulationstation.py -OutFile emulationstation.py
-py emulationstation.py install</pre>
-    <p>Danach EmulationStation neu starten. Das Skript erkennt das Frontend selbst. Mit <code>--frontend es-de|retropie|ports</code> und <code>--roms ORDNER</code> lässt sich das festlegen. Neue Spiele holst du, indem du <code>install</code> einfach erneut ausführst.</p>
+    <p>Das Startprogramm prüft, ob Python da ist, und <b>bietet bei Bedarf mit Rückfrage die Installation an</b> (nichts passiert ohne dein Ja). Danach richtet es alle Spiele ein.</p>
+    <p><b>Windows</b> (PowerShell; Python wird bei Bedarf über <code>winget</code> installiert):</p>
+<pre>Invoke-WebRequest https://ricorewioriginal-collab.github.io/easygames/tools/install-emulationstation.ps1 -OutFile install-emulationstation.ps1
+powershell -ExecutionPolicy Bypass -File .\install-emulationstation.ps1</pre>
+    <p><b>Linux, Steam Deck, RetroPie, macOS</b> (Terminal; Python wird bei Bedarf über den Paketmanager installiert):</p>
+<pre>curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/install-emulationstation.sh
+sh install-emulationstation.sh</pre>
+    <p>Danach EmulationStation neu starten. Das Skript erkennt das Frontend selbst. Alle Optionen (siehe unten) hängst du einfach an, zum Beispiel <code>sh install-emulationstation.sh --mode offline</code>. Mit <code>--frontend es-de|retropie|ports</code> und <code>--roms ORDNER</code> lässt sich das Frontend festlegen. Neue Spiele holst du, indem du das Startprogramm einfach erneut ausführst.</p>
+    <p>Hast du Python schon, geht es auch direkt: <a href="tools/emulationstation.py" download="emulationstation.py">emulationstation.py</a> laden und <code>python3 emulationstation.py install</code> ausführen.</p>
     <h3>Offline-Variante</h3>
 <pre>git clone --depth 1 https://github.com/ricorewioriginal-collab/easygames
 python3 easygames/tools/emulationstation.py install --mode offline</pre>
