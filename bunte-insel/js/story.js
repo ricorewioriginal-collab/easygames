@@ -12,7 +12,7 @@ BI.STORY = [
   { icon: '🚜', name: 'Auf dem Bauernhof', intro: 'Bauer Heinz braucht Hilfe! Streichle die Tiere, mäh ein Feld und koch etwas Leckeres in der Hofküche.',
     tasks: [['stk', 'animal', '🐄', 'Streichle ein Tier auf dem Hof', 'zoo'], ['stk', 'farm', '🌾', 'Mäh ein Feld mit dem Traktor', 'fields'], ['stk', 'cook', '🍳', 'Koche etwas in der Hofküche', 'hof']] },
   { icon: '🛍️', name: 'Im Ort', intro: 'Im Ort ist immer was los. Geh einkaufen, probier die Schießbude und mach ein schönes Foto.',
-    tasks: [['stk', 'shopper', '🛒', 'Kaufe etwas in einem Laden', 'shops'], ['stk', 'shoot', '🎯', 'Spiel in der Schießbude', 'range'], ['stk', 'photo', '📸', 'Mach ein Foto (📷 oben links)']] },
+    tasks: [['stk', 'shopper', '🛒', 'Kaufe etwas in einem Laden', 'shop'], ['stk', 'shoot', '🎯', 'Spiel in der Schießbude', 'range'], ['stk', 'photo', '📸', 'Mach ein Foto (📷 oben links)']] },
   { icon: '🗺️', name: 'Abenteuer', intro: 'Jetzt wird es spannend! Hau einen Baum, such einen Schatz und schaff den Himmels-Parcours hoch über der Insel.',
     tasks: [['stk', 'tree', '🌳', 'Hau einen Baum (geh nah ran und tippe 🪓)'], ['stk', 'treasure', '🗺️', 'Finde einen Schatz (🎉 → Spiele → Schatzsuche)'], ['stk', 'obby', '🏁', 'Schaffe den Himmels-Parcours', 'obby']] },
   { icon: '🛡️', name: 'Mutprobe', intro: 'Zeig, wie mutig du bist: Gewinne einen Kampf in der Arena, segle aufs Meer und flieg mit dem Hubschrauber.',

@@ -22,9 +22,11 @@ BI.renderTaskLog = function (box, D) {
   if (D.tycoon && D.tycoon.next) next.push([D.tycoon.next.icon, 'Park: ' + D.tycoon.next.title + ' – ' + D.tycoon.next.text, 'park']);
   if (D.farm && D.farm.on) { const c = D.farm.items[D.farm.cur]; next.push(['🚜', 'Hof: ' + c.icon + ' ' + c.title + ' ' + c.p + '/' + c.need + (c.p >= c.need ? ' – zu Bauer Heinz!' : ''), 'hof']); }
   { const c = D.story.chapters.find(q => q.cur); if (c) { const t = c.tasks.find(q => !q.ok); if (t) next.push([t.icon, 'Inselreise – ' + c.name + ': ' + t.text, t.dest]); } }
+  /* Story-Modus: solange die Fellretter-Bucht gesperrt ist, nicht dorthin schicken */
+  const pupsLock = !!(D.world && D.world.worlds.some(w => w.key === 'PUPS' && !w.open));
   sec('▶ Als Nächstes', next.length ? next.length + ' offen' : '', true, d => {
-    if (next.length) next.forEach((n, i) => d.appendChild(row(false, n[0], n[1], n[2], i === 0))); else d.appendChild(el('p', 'help', '🎉 Gerade ist nichts offen – schau bei der Einsatz-Tafel in der Fellretter-Bucht oder bei Bauer Heinz auf dem Hof vorbei!'));
-    const tips = []; if (!cs) tips.push('💡 Einsätze nimmst du nur an der Einsatz-Tafel in der Fellretter-Bucht an (🧭 → Fellretter-Bucht).'); if (D.farm && !D.farm.on) tips.push('💡 Bauer Heinz auf dem Bauernhof hat neue Aufgaben für dich.');
+    if (next.length) next.forEach((n, i) => d.appendChild(row(false, n[0], n[1], n[2], i === 0))); else d.appendChild(el('p', 'help', pupsLock ? '🎉 Gerade ist nichts offen – schau bei Bauer Heinz auf dem Hof vorbei oder schaff Aufgaben für die nächste Welt (unten)!' : '🎉 Gerade ist nichts offen – schau bei der Einsatz-Tafel in der Fellretter-Bucht oder bei Bauer Heinz auf dem Hof vorbei!'));
+    const tips = []; if (!cs) tips.push(pupsLock ? '💡 Einsätze gibt es an der Einsatz-Tafel in der Fellretter-Bucht – die Bucht öffnet sich, wenn du ihre 3 Aufgaben geschafft hast (siehe unten).' : '💡 Einsätze nimmst du nur an der Einsatz-Tafel in der Fellretter-Bucht an (🧭 → Fellretter-Bucht).'); if (D.farm && !D.farm.on) tips.push('💡 Bauer Heinz auf dem Bauernhof hat neue Aufgaben für dich.');
     tips.push('💡 Mit 🧭 „Wohin?“ kommst du schnell überall hin, und mit „👣 Weg“ zeigt dir die Insel den Weg.'); if (D.daily && !D.daily.today) tips.push('💡 Dein Tagesgeschenk wartet beim nächsten Start auf dich.'); tips.slice(0, 3).forEach(t => d.appendChild(el('div', 'lgTip', t))); });
   /* ===== 🗺️ Story: Welten freischalten ===== */
   if (D.world) { const Wd = D.world; sec('🗺️ Story: Welten freischalten', Wd.count + ' offen', true, d => {

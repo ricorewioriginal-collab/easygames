@@ -32,7 +32,7 @@ BI.WUNSCH = (function () {
 
 BI.buildWunschGround = function (c) {
   const { W, st, lamp, ROADY } = c, T = BI.WUNSCH, Q = T.P, TAU = Math.PI * 2, rn = BI.rng(4242), L = T.at, ry = Math.atan2(T.ux, T.uz), GOLD = 0xffd23f;
-  W.spots.wunsch = { x: T.entry.x, z: T.entry.z }; W.wunsch = T; (W.isles || (W.isles = []));
+  W.spots.wunschinsel = { x: T.entry.x, z: T.entry.z }; W.wunsch = T; /* eigener Name: „wunsch“ ist der Wunschbrunnen im Märchenland */ (W.isles || (W.isles = []));
   st.disc(T.x, T.z, T.R + 9, 0, 0xf4e2b0, 96); st.ring(T.x, T.z, T.R - 5, T.R + 9, .012, 0xfff0c8, 96);
   { const p = L(8, 0); st.disc(p.x, p.z, T.R - 16, ROADY - .03, 0x8fd87a, 80); }          /* Wiese in der Mitte, Sand am Rand */
   BI.buildIsleBridge(c, T);

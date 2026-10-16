@@ -42,7 +42,9 @@ BI.createEinsatz = function (G) {
     wald: [SP.forest.gate.x, SP.forest.gate.z, 'Verbotener Wald'], kino: [CIT.door.x, CIT.door.z + 1.5, 'Kino']
   };
   const _o = {}, fit = (x, z) => { const q = W.resolve(x, z, .6, _o); return { x: q.x, z: q.z }; };
-  const cache = {}, spot = k => cache[k] || (cache[k] = fit(WHERE[k][0], WHERE[k][1]));
+  /* Story-Modus: Ziele in noch gesperrten Welten erkennen (und dort nichts zwischenspeichern – die Glaswand würde den Punkt sonst nach außen schieben) */
+  const locked = k => !!(G.lockedAt && G.lockedAt(WHERE[k][0], WHERE[k][1])), free = m => m.steps.every(s => !locked(s.at));
+  const cache = {}, spot = k => cache[k] || (locked(k) ? fit(WHERE[k][0], WHERE[k][1]) : (cache[k] = fit(WHERE[k][0], WHERE[k][1])));
   const board = () => SP.pupsBoard;
   const E = () => save.einsatz || (save.einsatz = { done: [], cur: null });
   const byId = id => MS.find(m => m.id === id);
@@ -75,7 +77,7 @@ BI.createEinsatz = function (G) {
     const b = board(); if (b && Math.hypot(P.x - b.x, P.z - b.z) < 3.4) return { k: 'ebrett' };
     return null;
   };
-  const next = () => MS.find(m => !E().done.includes(m.id)) || MS[(E().done.length) % MS.length];
+  const next = () => { const L = MS.filter(free).length ? MS.filter(free) : MS; return L.find(m => !E().done.includes(m.id)) || L[(E().done.length) % L.length]; }; /* Story-Modus: nur Einsätze, deren Ziele schon offen sind */
   const reward = m => { const e = E(), first = !e.done.includes(m.id), n = first ? 5 : 2; if (first) e.done.push(m.id); e.cur = null; let msg = '🏅 Einsatz geschafft: ' + m.title + '! +' + n + ' ⭐';
     G.addStars(n); if (first && e.done.length === MS.length) { G.addStars(30); e.medal = true; msg = '🥇 ALLE Einsätze geschafft! Du bekommst die Goldene Fellretter-Medaille! +35 ⭐'; }
     A.fanfare && A.fanfare(); const b = board(); fx.burst(b.x, 2.4, b.z, 30, COLS, 4, 1.5, 28, 3); say(msg, 5200); persist(); paint(); refresh(); };
@@ -84,7 +86,8 @@ BI.createEinsatz = function (G) {
     if (n.k === 'ehilfe' && m) { const st = m.steps[e.cur.step]; e.cur.step++; A.star && A.star(); fx.burst(P.x, 1.6, P.z, 22, COLS, 4, 1.2, 26, 3); const fin = e.cur.step >= m.steps.length; say(st.icon + ' ' + st.done + (fin ? ' – Auf zur Einsatz-Tafel in der Fellretter-Bucht!' : ''), 5200); persist(); paint(); refresh(); return; }
     if (n.k !== 'ebrett') return;
     if (m && e.cur.step >= m.steps.length) { reward(m); return; }
-    if (m) { const t = target(); say('🚨 ' + m.pup + ': „' + t.icon + ' ' + t.text + ' (' + t.world + ').“ Folge der gelben Leuchtsäule!', 5200); return; }
+    if (m && m.steps.slice(e.cur.step).some(s => locked(s.at)) && MS.some(free)) { e.cur = null; } /* angefangener Einsatz führt in eine gesperrte Welt: einen anderen geben */
+    else if (m) { const t = target(); say('🚨 ' + m.pup + ': „' + t.icon + ' ' + t.text + ' (' + t.world + ').“ Folge der gelben Leuchtsäule!', 5200); return; }
     const nm = next(); e.cur = { id: nm.id, step: 0 }; persist(); paint(); refresh(); A.fanfare && A.fanfare(); fx.burst(P.x, 1.6, P.z, 22, COLS, 4, 1.2, 26, 3);
     say('🚨 Einsatz angenommen! ' + nm.pup + ': „' + nm.quote + '“', 7000);
   };

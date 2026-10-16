@@ -10,7 +10,7 @@ await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/c
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 60000 }); await p.click('#bStart'); await p.waitForTimeout(800);
 const res = await p.evaluate(async () => {
   const b = __bi, P = b.P, sl = ms => new Promise(r => setTimeout(r, ms)), bad = [], out = {}; b.save.stars = 99999; b.save.cheat = b.save.cheat || {}; b.save.cheat.open = true;
-  const chk = (tag) => { const y = b.W.groundY(P.x, P.z); if (![P.x, P.y, P.z].every(Number.isFinite)) bad.push(tag + ' NaN'); else if (P.y < y - 3 || P.y < -5) bad.push(tag + ' unter Welt y=' + P.y.toFixed(1)); };
+  const chk = (tag) => { const y = b.W.groundY(P.x, P.z, P.y); /* Boden auf der eigenen Höhe (über dem Prüfungsturm schwebt die Festung) */ if (![P.x, P.y, P.z].every(Number.isFinite)) bad.push(tag + ' NaN'); else if (P.y < y - 3 || P.y < -5) bad.push(tag + ' unter Welt y=' + P.y.toFixed(1)); };
   /* 1. alle Ziele */
   for (const d of b.DEST) { try { const a = d.at(); P.veh = null; P.x = a.x; P.z = a.z; P.y = 0; } catch (x) { bad.push(d.id + ' at(): ' + x.message); continue; } await sl(200); chk('ziel ' + d.id); } out.ziele = b.DEST.length;
   /* 2. jedes Fahrzeug aufrufen und fahren */

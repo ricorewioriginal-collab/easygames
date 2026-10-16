@@ -232,6 +232,9 @@ python3 -m http.server 8080            # im Repo-Hauptordner
 npm i -D playwright                    # einmalig, nur für den Test
 BASE=http://localhost:8080 node bunte-insel/tests/e2e.mjs   # optional THREE=/pfad/three.min.js für Offline
 ```
+Die Tests prüfen deutsche Texte: auf einem Rechner mit englischer Systemsprache mit `LANG=de_DE.UTF-8` starten (sonst schaltet das Spiel auf Englisch um).
+
+**Story-Logik ohne Sackgassen** (`tests/storylogik.mjs`): Jede Welt lässt sich allein freispielen – „🛒 Einkäufer“ gibt es schon im Spielzeugladen auf der Hauptinsel, Taschi-Land verlangt „🐾 Haustierfreund“ (Haustier füttern) statt einer Party mit Freunden, Fellretter-Einsätze führen im Story-Modus nur in schon offene Welten, und das Sammelalbum hat keine doppelten Sticker mehr (💐 Schenker und 🐾 Haustierfreund haben eigene Sticker).
 Dateien: `js/util.js` (Geometrie-Bündelung, Figuren, Pappnase, Blitz, Partikel), `js/audio.js`, `js/world.js` (Insel, Straßen, Schienen, Spielzeugladen, Kollision), `js/vehicles.js` (Fahrzeuge, Hubschrauber, Zug), `js/fun.js` (Kaugummi, Tanz, Ball, Ballons, Feuerwerk, Blasen, Baum hauen), `js/build.js` (Bauen), `js/main.js` (Steuerung, Kamera, Missionen, Laden, Hund, Schnellmenü).
 
 
@@ -242,7 +245,7 @@ Das gemeinsame Figurenmodell nutzt jetzt glatte Oberflächen, abgerundete Körpe
 
 `js/characters.js` ergänzt `util.js` und muss danach geladen werden. Die bekannten Optionen sowie `group`, `armL`, `armR`, `legL`, `legR`, `remote`, `pose`, `dance`, `sit` und `punch` bleiben erhalten. Beim Wechseln der Spielfigur werden die alten Geometrien und Namensschilder freigegeben. Spielstände werden unverändert gelesen.
 
-Prüfung: `node bunte-insel/tests/characters.cjs` (nutzt die bereits im Repo vorhandene Three.js-Kopie unter `aeru/vendor/`). 80 Figuren-/Kleidungsvarianten, endliche Geometrie, Animationsschnittstellen, maximal sieben gebündelte Meshes und freie Augen bei allen Frisuren. Eine separat gerenderte Modellübersicht wurde visuell geprüft; ein vollständiger WebGL-Spieltest war in der Entwicklungsumgebung nicht verfügbar. Die tatsächliche Mobilgeräte-Performance wurde nicht gemessen.
+Prüfung: `node bunte-insel/tests/characters.cjs` (nutzt die eigene Three.js-Kopie unter `bunte-insel/vendor/`). 80 Figuren-/Kleidungsvarianten, endliche Geometrie, Animationsschnittstellen, maximal sieben gebündelte Meshes und freie Augen bei allen Frisuren. Eine separat gerenderte Modellübersicht wurde visuell geprüft; ein vollständiger WebGL-Spieltest war in der Entwicklungsumgebung nicht verfügbar. Die tatsächliche Mobilgeräte-Performance wurde nicht gemessen.
 
 ### Stadtgestaltung (Oktober 2026)
 
