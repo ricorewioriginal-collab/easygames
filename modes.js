@@ -1,18 +1,19 @@
 // Mehrspieler-Fähigkeiten je Spiel-ID (aus den Spielen bzw. ihren Beschreibungen).
 //   pad    = Handys koppeln sich per QR-Code/Code (?join=…) als Controller oder Pads; Gastgeber ist PC oder TV
-//   online = Mehrspieler über mehrere Geräte per Code/QR
+//   online = Mehrspieler über mehrere Geräte per Code/QR/Link, auch übers Internet (Firebase, cloud/fire-peer.js);
+//            Einladungslinks zeigen immer auf die easygames-Homepage (Mehrspieler-Regel, siehe CLAUDE.md)
 //   multi  = Mehrspieler/Duell/Splitscreen auf einem Gerät
 //   tvParam = Das Spiel kennt den Parameter ?tv (öffnet direkt die Lobby mit QR-Code für den Fernseher)
 window.EASYGAMES_MODES = {
   'anmacha-kart': { pad: true, multi: true, online: true, tvParam: true },
-  'anmacha-quiz': { pad: true, multi: true },
-  'anmacha-koffer-dealer': { pad: true },
-  'anmacha-hoererwahl': { pad: true },
-  'anmacha-frequenzrad': { pad: true, multi: true },
-  'anmacha-preisradar': { pad: true, multi: true },
-  'anmacha-funkparcours': { pad: true, multi: true },
-  'FunkhausReality': { pad: true },
-  'MachMichAus': { pad: true },
+  'anmacha-quiz': { pad: true, online: true, multi: true },
+  'anmacha-koffer-dealer': { pad: true, online: true },
+  'anmacha-hoererwahl': { pad: true, online: true },
+  'anmacha-frequenzrad': { pad: true, online: true, multi: true },
+  'anmacha-preisradar': { pad: true, online: true, multi: true },
+  'anmacha-funkparcours': { pad: true, online: true, multi: true },
+  'FunkhausReality': { pad: true, online: true },
+  'MachMichAus': { pad: true, online: true },
   'turbokick': { online: true, multi: true },
   'ricopoly': { online: true, multi: true },
   'partyverse': { online: true, multi: true },
@@ -20,6 +21,10 @@ window.EASYGAMES_MODES = {
   'anmacha-stapelrausch': { online: true, multi: true },
   'gay-life': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
+  'zeitsprung-wissen': { pad: true, online: true },
+  'zeitsprung-movie': { pad: true, online: true },
+  'zeitsprung-radio': { pad: true, online: true },
+  'zotik': { online: true },
   'anmacha-spielesammlung': { multi: true },
   'anmacha-memory': { multi: true },
   'anmacha-showdown': { multi: true },

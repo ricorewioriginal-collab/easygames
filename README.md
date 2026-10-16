@@ -55,7 +55,9 @@ Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** a
 
 ## Online-Kopplung über Firebase
 
-Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein. Details, Verbrauch und die einmalige Freischaltung in der Firebase-Konsole: [`cloud/README.md`](cloud/README.md#online-kopplung-aller-spiele-über-firebase-cloudfire-peerjs).
+Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein.
+
+**Mehrspieler-Regel:** Einladungs-, Beitritts- und TV-Links zeigen immer auf die easygames-Homepage (`https://ricorewioriginal-collab.github.io/easygames/…`), nie auf die lokale App-Adresse – so funktionieren sie auf jeder Plattform. Umgesetzt in `cloud/fire-peer.js` (`EasyGamesLink.share()`), `device.js` und `gamekit.js`; alle Regeln stehen in [`CLAUDE.md`](CLAUDE.md#mehrspieler-regeln-fest-gelten-für-alle-spiele). Jedes Online-Spiel zeigt die Möglichkeit im Hauptmenü mit 🌐 „Online“. Details, Verbrauch und die einmalige Freischaltung in der Firebase-Konsole: [`cloud/README.md`](cloud/README.md#online-kopplung-aller-spiele-über-firebase-cloudfire-peerjs).
 
 ## Gamecontroller
 

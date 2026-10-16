@@ -40,7 +40,12 @@
       return m;
     },
     // Adresse, die Handys per QR-Code öffnen (die Spielseite selbst, so funktioniert sie auch außerhalb der Übersicht)
-    joinUrl: function (room, extra) { return root.location.href.split('#')[0].split('?')[0] + '?join=' + encodeURIComponent(room) + (extra || ''); },
+    // Mehrspieler-Regel: immer die Homepage-Adresse (cloud/fire-peer.js), nie die lokale App-Adresse
+    joinUrl: function (room, extra) {
+      var q = '?join=' + encodeURIComponent(room) + (extra || '');
+      if (root.EasyGamesLink) return root.EasyGamesLink.share(root.location.href.split('#')[0].split('?')[0] + q);
+      return K.tvUrl(null) + q;   // ohne fire-peer.js: Homepage über device.js (sonst die eigene Adresse)
+    },
     // Gerät jetzt und bei Änderungen (device.js oder Nachricht der Übersicht)
     onDevice: function (cb) {
       var d = K.device(); if (d) cb(d);

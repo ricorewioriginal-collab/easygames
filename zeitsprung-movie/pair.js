@@ -20,7 +20,7 @@ export function startHost(handlers) {
   let peer = null, code = '', pin = '';
   const clients = new Map(); // data connection → Spielerindex
   const send = (connection, message) => { try { if (connection.open) connection.send(message); } catch (_) {} };
-  const url = () => `${location.origin}${location.pathname}?join=${code}`;
+  const url = () => (u => window.EasyGamesLink ? EasyGamesLink.share(u) : u)(location.href.split('#')[0].split('?')[0] + '?join=' + code);
 
   function showStatus(message) { $('pairStatus').textContent = message; }
   function render() {
