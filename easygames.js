@@ -16,6 +16,13 @@
  *      EasyGames.library('#alle-spiele');
  *      EasyGames.fullscreen(iframeElement);   // Vollbild (öffnet als Fallback einen neuen Tab, z. B. iPhone)
  *
+ * 4) Vollbild – ganze Seite oder Overlay (Spiel oder ganzer Katalog):
+ *      <div data-easygames="zotik" data-mode="page"></div>        // füllt die ganze Seite (eigene Spiele-Seite)
+ *      <div data-easygames="all"   data-mode="page"></div>        // ganzer Katalog vollflächig
+ *      <button data-easygames="zotik" data-mode="overlay">Spielen</button>   // Klick öffnet das Spiel vollflächig (Overlay)
+ *      EasyGames.open('zotik');  EasyGames.open('all', { close: false });   // per JavaScript; EasyGames.close() schließt
+ *    Overlay: ✕-Knopf, Zurück-Taste, Esc (wenn der Fokus nicht im Spiel liegt) und das Schließen aus dem Spiel (easygames:close) beenden es; Browser-Vollbild wird angefordert.
+ *
  * Weitere Funktionen:
  *      EasyGames.ready(() => console.log(EasyGames.list()));   // alle Spiele (id, title, desc, url …)
  *      EasyGames.get('zotik'); EasyGames.url('zotik');
@@ -41,10 +48,12 @@
   function abs(p) { return new URL(p, base).href; }
   function gameUrl(g) { var u = new URL(g.path, base); u.searchParams.set('eg_build', window.EASYGAMES_BUILD || 'current'); return u.href; }
 
+  // gamepad: Controller funktionieren in fremden Seiten nur, wenn der iframe es erlaubt (Permissions Policy)
+  var FRAME_ALLOW = 'fullscreen; autoplay; gamepad; accelerometer; gyroscope';
   function frame(src, title, o) {
     var f = document.createElement('iframe');
     f.src = src; f.title = title; f.loading = 'lazy';
-    f.allow = 'fullscreen; autoplay'; f.setAttribute('allowfullscreen', '');
+    f.allow = FRAME_ALLOW; f.setAttribute('allowfullscreen', '');
     var st = f.style;
     st.width = o.width || '100%'; st.maxWidth = o.maxWidth || '960px'; st.border = '0';
     st.borderRadius = o.radius || '12px'; st.display = 'block';
@@ -89,6 +98,78 @@
     return r;
   }
   EG.ready = function (cb) { if (games) cb(); else waiting.push(cb); };
+
+  // ---- Vollbild: ganze Seite (mode "page") und Overlay (mode "overlay" bzw. EasyGames.open) ----
+  function fullFrame(src, title) {
+    var f = document.createElement('iframe');
+    f.src = src; f.title = title; f.allow = FRAME_ALLOW; f.setAttribute('allowfullscreen', '');
+    f.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;margin:0;padding:0;background:#000;display:block';
+    return f;
+  }
+  var LAYER_CSS = 'position:fixed;top:0;left:0;right:0;bottom:0;margin:0;padding:0;z-index:2147483000;background:#000';
+  function pageLayer(t, src, title) {
+    t.style.cssText += ';' + LAYER_CSS;
+    t.appendChild(fullFrame(src, title));
+    document.documentElement.style.overflow = 'hidden';
+    if (document.body) document.body.style.overflow = 'hidden';
+  }
+  // Bibliothek-Adresse; layout "apps" = App-Kachel-Ansicht (nur Symbole mit Namen)
+  function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : ''); }
+  var current = null;
+  EG.close = function () { if (current) current(false); };
+  // EasyGames.open('zotik' | 'all', { close:false, fullscreen:false, title, onClose })
+  EG.open = function (game, o) {
+    o = o || {};
+    EG.ready(function () {
+      var g = game && game !== 'all' ? find(game) : null;
+      if (game && game !== 'all' && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
+      var reuse = !!current && !!(history.state && history.state.egOverlay), opener = current && current.opener || document.activeElement;   // Verlaufseintrag und Fokus-Ziel des alten Overlays weiterverwenden
+      if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
+      var title = o.title || (g ? g.title : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : libUrl(o), title);
+      box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
+      box.style.cssText = LAYER_CSS;
+      box.appendChild(f);
+      var htmlOv = document.documentElement.style.overflow, bodyOv = document.body.style.overflow, pushed = false, closed = false;
+      function done(fromPop) {
+        if (closed) return; closed = true; current = null;
+        window.removeEventListener('keydown', onKey, true); window.removeEventListener('popstate', onPop); window.removeEventListener('message', onMsg);
+        try { if (document.fullscreenElement === box && document.exitFullscreen) document.exitFullscreen(); } catch (e) {}
+        if (box.parentNode) box.parentNode.removeChild(box);
+        document.documentElement.style.overflow = htmlOv; document.body.style.overflow = bodyOv;
+        if (!fromPop && pushed && history.state && history.state.egOverlay) history.back();
+        try { if (opener && opener !== document.body && opener.focus && document.contains(opener)) opener.focus(); } catch (e) {}   // Fokus zurück an den Auslöser
+        if (typeof o.onClose === 'function') o.onClose();
+      }
+      function onKey(e) {
+        var back = e.key === 'GoBack' || e.key === 'BrowserBack' || e.key === 'XF86Back' || e.keyCode === 10009 || e.keyCode === 461 || e.keyCode === 4;   // Zurück-Tasten von TV/WebView
+        if (back || (e.key === 'Escape' && !document.fullscreenElement)) { if (back) e.preventDefault(); done(false); }
+      }
+      function onPop() { done(true); }
+      function onMsg(e) { if (e.source === f.contentWindow && e.data && e.data.type === 'easygames:close') done(false); }
+      if (o.close !== false && o.close !== 'false') {
+        var b = document.createElement('button');
+        b.type = 'button'; b.textContent = '\u2715'; b.setAttribute('aria-label', 'Schlie\u00DFen');
+        b.style.cssText = 'position:absolute;top:calc(8px + env(safe-area-inset-top,0px));right:calc(8px + env(safe-area-inset-right,0px));width:44px;height:44px;border:1px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(8,11,18,.72);color:#fff;font:700 18px system-ui,sans-serif;cursor:pointer;z-index:2';
+        b.onclick = function () { done(false); };
+        box.appendChild(b);
+      }
+      document.body.appendChild(box);
+      document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
+      if (reuse) pushed = true; else try { history.pushState({ egOverlay: 1 }, ''); pushed = true; } catch (e) {}
+      window.addEventListener('keydown', onKey, true); window.addEventListener('popstate', onPop); window.addEventListener('message', onMsg);
+      if (o.fullscreen !== false && o.fullscreen !== 'false') { var r = box.requestFullscreen || box.webkitRequestFullscreen; try { var p = r && r.call(box); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+      current = function (fromPop) { done(!!fromPop); };
+      current.opener = opener;
+      if (typeof f.focus === 'function') setTimeout(function () { try { f.focus(); } catch (e) {} }, 50);
+    });
+  };
+  // Klick auf das Element öffnet das Overlay (data-mode="overlay")
+  function bindOpen(t, game, o) {
+    if (!t.textContent.trim()) t.textContent = game === 'all' ? 'Alle Spiele' : 'Spielen';
+    t.style.cursor = 'pointer'; t.setAttribute('role', 'button'); if (!t.hasAttribute('tabindex')) t.tabIndex = 0;
+    t.addEventListener('click', function (e) { e.preventDefault(); EG.open(game, o); });
+    t.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); EG.open(game, o); } });
+  }
   function modesOf(g) { var m = {}, a = (window.EASYGAMES_MODES || {})[g.id] || {}, b = g.modes || {}, k; for (k in a) m[k] = a[k]; for (k in b) m[k] = b[k]; return m; }
   function multi(g) { var m = modesOf(g); return !!(m.pad || m.online || m.multi); }
   // Der richtige Link für TV-Gaming: öffentliche Spielseite (+ ?tv, wo das Spiel es kennt) – auch wenn diese Seite in einer App oder auf localhost läuft
@@ -106,15 +187,32 @@
     if (guides) go(); else load('guides.js', function () { guides = window.EASYGAMES_GUIDES; go(); });
   };
 
+  // App-Kachel für ein einzelnes Spiel (layout "tile"): Symbol mit Namen, Klick öffnet es im Vollbild (oder mode "page" lädt es direkt)
+  function appTile(t, o) {
+    var g = find(o.game);
+    if (!g) { console.error('EasyGames: unbekanntes Spiel "' + o.game + '"'); return; }
+    var b = document.createElement('button'), ic = document.createElement('span'), nm = document.createElement('span');
+    b.type = 'button'; b.setAttribute('aria-label', g.title + ' spielen');
+    b.style.cssText = 'display:inline-flex;flex-direction:column;align-items:center;gap:8px;width:' + (o.width || '96px') + ';padding:0;border:0;background:none;color:inherit;font:700 13px/1.25 system-ui,sans-serif;cursor:pointer;text-align:center';
+    ic.style.cssText = 'display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22%;overflow:hidden;font-size:40px;box-shadow:0 6px 16px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.14);background:' + (g.bg || '#222');
+    if (g.img) { var im = document.createElement('img'); im.src = abs(g.img); im.alt = ''; im.loading = 'lazy'; im.style.cssText = 'width:100%;height:100%;object-fit:cover'; ic.appendChild(im); } else ic.textContent = g.icon || '\uD83C\uDFAE';
+    nm.textContent = o.title || g.title;
+    b.appendChild(ic); b.appendChild(nm);
+    b.addEventListener('click', function () { if (o.mode === 'page') { t.removeChild(b); pageLayer(t, gameUrl(g), g.title); } else EG.open(o.game, o); });
+    t.appendChild(b);
+  }
   // EasyGames.embed(ziel, { game, width, maxWidth, ratio, height, radius, title, className })
   EG.embed = function (target, o) {
     o = o || {};
     var t = el(target);
     if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.layout === 'tile') { EG.ready(function () { appTile(t, o); }); return t; }
+    if (o.mode === 'overlay') { bindOpen(t, o.game, o); return t; }
     var f;
     EG.ready(function () {
       var g = find(o.game);
       if (!g) { console.error('EasyGames: unbekanntes Spiel "' + o.game + '"'); return; }
+      if (o.mode === 'page') { pageLayer(t, gameUrl(g), o.title || g.title); return; }
       f = frame(gameUrl(g), o.title || g.title, o);
       var node = wrap(f, o), row = tvRow(g, o);
       if (row) { var box = document.createElement('div'); box.style.cssText = 'width:' + (o.width || '100%') + ';max-width:' + (o.maxWidth || '960px'); node.style.width = '100%'; node.style.maxWidth = 'none'; box.appendChild(node); box.appendChild(row); node = box; }
@@ -127,7 +225,9 @@
     o = o || {};
     var t = el(target);
     if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
-    t.appendChild(frame(base + 'index.html?embed=1', o.title || 'easygames – Spielebibliothek', o));
+    if (o.mode === 'overlay') { bindOpen(t, 'all', o); return t; }
+    if (o.mode === 'page') { pageLayer(t, libUrl(o), o.title || 'easygames – Spielebibliothek'); return t; }
+    t.appendChild(frame(libUrl(o), o.title || 'easygames – Spielebibliothek', o));
     return t;
   };
 
@@ -136,7 +236,7 @@
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
-      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink };
+      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
       if (d.easygames === 'all') EG.library(n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }
