@@ -332,7 +332,8 @@ python3 easygames/tools/emulationstation.py install --mode offline</pre>
     </ul>
     <h3>Gut zu wissen</h3>
     <ul>
-      <li>Speicherstände und Einstellungen bleiben erhalten. Sie liegen im eigenen Browser-Profil unter <code>…/easygames/.easygames/browser-profile</code>.</li>
+      <li>Speicherstände und Einstellungen bleiben erhalten (im Offline-Modus, weil der lokale Server immer denselben Port 18765 nutzt; mit <code>--port</code> änderbar). Sie liegen im eigenen Browser-Profil unter <code>…/easygames/.easygames/browser-profile</code>.</li>
+      <li><b>Google-Anmeldung und Cloud-Speicherstand:</b> funktioniert im Browser-Fenster wie auf der Webseite („☁ → Mit Google anmelden“). Im Online-Modus läuft das auf der Adresse der Homepage (dort freigegeben), im Offline-Modus auf <code>localhost</code> (bei Firebase standardmäßig erlaubt). Zum Anmelden braucht es Internet, eine Tastatur oder ein Touch-Display (für die Google-Zugangsdaten), danach folgt dein Fortschritt dir auf jedes Gerät. Mit Controller allein ist die Anmeldung unbequem – melde dich einmal am Gerät an, das Profil merkt sich die Anmeldung. Nicht auf echten Geräten geprüft.</li>
       <li>Die Skripte liegen unter <code>…/ROMs/easygames/</code>. Ein Spiel lässt sich einzeln testen: <code>python3 …/.easygames/emulationstation.py launch anmacha-quiz --window</code>.</li>
       <li>Ohne PNG-Titelbild (manche Spiele haben nur ein SVG) erzeugt das Skript ein Farbverlaufsbild; mit <code>rsvg-convert</code>, Inkscape oder ImageMagick wird das echte Bild umgewandelt.</li>
       <li><b>Getestet</b> ist die Einrichtung (Dateien, Spieleliste, Systemeintrag, Startbefehl) auf Linux für ES-DE und RetroPie. Windows, macOS und Batocera sind vorbereitet, aber noch nicht auf echten Geräten geprüft – Rückmeldungen willkommen.</li>
