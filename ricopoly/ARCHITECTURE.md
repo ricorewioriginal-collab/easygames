@@ -29,9 +29,10 @@ game.js (UI, Ablauf)  ──►  rules.js (Zustand + Regeln)  ◄──  ai.js (
 
 - Der Ersteller eines Raums ist Gastgeber. `HostCore` ist transportunabhängig: Er nimmt Beitritte an, verwaltet Bereit-Status, prüft jede Aktion (`cleanAction` erzwingt den eigenen Platz und erlaubte Felder), wendet sie mit `rules.js` an und verteilt den Zustand ohne Zufallszustand (`sanitize`).
 - Schutz: Nachrichtenlimit (20/s pro Verbindung), Versionsprüfung, Wiederbeitritt nur mit dem geheimen Geräte-Schlüssel, Zugzeit und Abwesenheit werden vom Gastgeber per Computerzug überbrückt.
-- Öffentliche Räume melden sich unter festen Kennungen `ricopoly-pub-1..8` beim Vermittler; `scan()` fragt diese ab.
+- Transport: Bevorzugt WebRTC-Datenkanäle, deren Aufbau `js/fire.js` über Firestore vermittelt (Gast legt sein Angebot unter `ricopoly_rooms/<code>/join/<uid>` ab, der Gastgeber fragt nur in der Lobby oder bei fehlenden Mitspielern nach und trägt die Antwort ein; ohne Trickle-ICE, also je ein Schreibzugriff). Der Gastgeber öffnet zusätzlich seinen PeerJS-Platz; Gäste nehmen PeerJS, wenn es für den Code keinen Firebase-Raum gibt oder der Aufbau scheitert. Beide Wege liefern Verbindungen mit derselben Schnittstelle an `HostCore`.
+- Öffentliche Räume stehen in `ricopoly_pub` (mit Lebenszeichen) und zusätzlich unter festen PeerJS-Kennungen `ricopoly-pub-1..8`; `scan()` fragt beides ab und führt die Listen zusammen.
 - Clients verbinden sich mit Rückoff neu und fordern danach den aktuellen Stand an.
 
 ## Speicher
 
-`profile.js` schreibt alles unter dem Präfix `ricopoly.v1.` in `localStorage`. `../cloud/anmacha-cloud.js` (eingebunden mit `data-prefix="ricopoly.v1."`) gleicht diese Schlüssel nach Google-Anmeldung mit Firestore ab.
+`profile.js` schreibt alles unter dem Präfix `ricopoly.v1.` in `localStorage`. `../cloud/anmacha-cloud.js` (eingebunden mit `data-prefix="ricopoly.v1."`) gleicht diese Schlüssel nach Google-Anmeldung mit Firestore ab. Die weltweite Rangliste (`ricopoly_board`) schreibt `js/fire.js` nach jeder beendeten Partie; Regeln und Grenzen in `FIREBASE_SETUP.md`.
