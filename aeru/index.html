@@ -15,7 +15,8 @@ b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAt
 b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
 b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
 d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0b2a35"><meta name="description" content="Aeru – Die Sterneninseln. Ein eigenständiges 3D-Drachenabenteuer für Browser und Handy."><title>AERU · Die Sterneninseln</title><link rel="icon" href="card.svg" type="image/svg+xml"><link rel="icon" href="card.png" type="image/png"><link rel="apple-touch-icon" href="card.png"><link rel="stylesheet" href="style.css?v=story3"></head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0b2a35"><meta name="description" content="Aeru – Die Sterneninseln. Ein eigenständiges 3D-Drachenabenteuer für Browser und Handy."><title>AERU · Die Sterneninseln</title><link rel="icon" href="card.svg" type="image/svg+xml"><link rel="icon" href="card.png" type="image/png"><link rel="apple-touch-icon" href="card.png"><link rel="stylesheet" href="style.css?v=story3"><script src="../cloud/anmacha-cloud.js" data-game="aeru" data-prefix="aeru-save-v1" defer></script>
+</head>
 <body>
 <canvas id="world" aria-label="3D-Spielwelt" tabindex="-1"></canvas>
 <div id="graphicsNotice" hidden>Vereinfachter 2D-Modus</div>
