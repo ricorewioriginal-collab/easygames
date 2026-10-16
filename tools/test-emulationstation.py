@@ -193,6 +193,54 @@ class Port(Base):
             srv.shutdown()
 
 
+class Bootstrap(Base):
+    sh = os.path.join(HERE, 'install-emulationstation.sh')
+    ps1 = os.path.join(HERE, 'install-emulationstation.ps1')
+
+    def sh_run(self, env_extra, *args, path=None):
+        import subprocess
+        env = dict(os.environ, HOME=self.home, **env_extra)
+        if path is not None:
+            env['PATH'] = path
+        return subprocess.run(['/bin/sh', self.sh, *args], env=env, stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                              start_new_session=True, timeout=60)
+
+    def test_sh_syntax(self):
+        import subprocess
+        self.assertEqual(subprocess.run(['/bin/sh', '-n', self.sh]).returncode, 0)
+
+    def test_sh_runs_install_with_python_present(self):
+        r = self.sh_run({'EASYGAMES_SCRIPT': os.path.join(HERE, 'emulationstation.py')}, '--frontend', 'ports', '--roms', self.home, '--repo', REPO, '--dry-run')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn('Testlauf', r.stdout)
+
+    def test_sh_without_python_asks_and_stops(self):
+        r = self.sh_run({'EASYGAMES_SCRIPT': os.path.join(HERE, 'emulationstation.py')}, '--dry-run', path='/nonexistent')
+        self.assertEqual(r.returncode, 1)
+        self.assertIn('Python 3.8', r.stdout)
+        self.assertIn('Ohne Python', r.stderr)
+
+    def test_sh_download(self):
+        import shutil
+        if not (shutil.which('curl') or shutil.which('wget')):
+            self.skipTest('weder curl noch wget')
+        srv = es.start_server(REPO)
+        try:
+            r = self.sh_run({'EASYGAMES_BASE': 'http://127.0.0.1:%d' % srv.server_address[1]}, '--frontend', 'ports', '--roms', self.home, '--repo', REPO, '--dry-run')
+        finally:
+            srv.shutdown()
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn('Testlauf', r.stdout)
+
+    def test_ps1_static(self):
+        with open(self.ps1, encoding='utf-8') as f:
+            t = f.read()
+        for a, b in (('{', '}'), ('(', ')')):
+            self.assertEqual(t.count(a), t.count(b))
+        self.assertIn('winget install -e --id Python.Python.3.12', t)
+        self.assertIn('install @Rest', t)
+
+
 class Cover(Base):
     def test_gradient(self):
         p = os.path.join(self.home, 'c.png')
