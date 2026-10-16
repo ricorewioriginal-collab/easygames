@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dabd94635c5a",
- "generated": "2026-10-16T12:55:04+02:00",
- "commit": "c150b8ba64f5277374c919d5949d20b7a61989ea",
+ "version": "eaf91ba887ed",
+ "generated": "2026-10-16T13:09:26+02:00",
+ "commit": "97edb09ef1ea8caf6282542467abfa1653321f2d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4613,8 +4613,8 @@
   },
   {
    "p": "games.js",
-   "s": 18395,
-   "h": "4c32ff4026a09f7d62d2669ace155f6b83535e37487cf0034c34b47f64e9edbc"
+   "s": 19030,
+   "h": "9c0b75fa5bcc044700a1de583c1aceeb06624c71924136f84d77654ebb967a60"
   },
   {
    "p": "gay-life/index.html",
@@ -4763,8 +4763,8 @@
   },
   {
    "p": "guides.js",
-   "s": 48537,
-   "h": "c55a66be150fb68f2da702b6ca5a3ac8f28fdeeae65e96f357264f7caf72777e"
+   "s": 49604,
+   "h": "1bbacc114932445d970f1258ab125a57106fad2d4eb83ef4dd2a1353edfea526"
   },
   {
    "p": "index.html",
@@ -5528,8 +5528,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 74390,
-   "h": "e3727bf2d941d0124faa53c8e77251327dc62837ce758e633f89ab29986a429b"
+   "s": 76266,
+   "h": "01f0761d87f268779ef5f3ae4d363201d64c542442018eb987a69050e9d4b151"
   },
   {
    "p": "taschi/card.svg",
@@ -6345,6 +6345,81 @@
    "p": "zeitsprung-radio/year.js",
    "s": 644,
    "h": "88648943e5ce6d12286b60e50677973673ce05ce900eb5905d949228ae163fc7"
+  },
+  {
+   "p": "zeitsprung-wissen/card.png",
+   "s": 108295,
+   "h": "7c480b8dd1661e45b10a03d4defa184729f348aa48100d96b5c0be052c27edfd"
+  },
+  {
+   "p": "zeitsprung-wissen/card.svg",
+   "s": 2360,
+   "h": "2e1a366f0808a29763108ac25afa426cc0a760b323377bd2a6738a8ab9c92b9f"
+  },
+  {
+   "p": "zeitsprung-wissen/events.js",
+   "s": 13277,
+   "h": "623be71e26a0ac65e8c97d13faade4506d90f39026091361e60ddb4b03faf1bf"
+  },
+  {
+   "p": "zeitsprung-wissen/game.js",
+   "s": 35487,
+   "h": "f9963950f2cdb0464fe241838e178f87fa7f2cdda254fb5e7708cb6097c90117"
+  },
+  {
+   "p": "zeitsprung-wissen/icon.svg",
+   "s": 1560,
+   "h": "40c40c2fc842d1319b5fa946381858fc82df4be6c983732317a0c8be06597fc0"
+  },
+  {
+   "p": "zeitsprung-wissen/index.html",
+   "s": 8613,
+   "h": "733dd57d89f81163d358a4ee59f193d69cff7e82fc5fbcf38f0692dd4d465016"
+  },
+  {
+   "p": "zeitsprung-wissen/knowledge.js",
+   "s": 22454,
+   "h": "2f0a9b40d63e019622ad5bdde977eed316b26b4ff626f374e0c67f789464819f"
+  },
+  {
+   "p": "zeitsprung-wissen/manifest.webmanifest",
+   "s": 1160,
+   "h": "a20575d6863a213fdacf99dc2eabe570640ae26ffeb39baeee298b09aaa9a6a9"
+  },
+  {
+   "p": "zeitsprung-wissen/media.js",
+   "s": 4295,
+   "h": "f2eb3abb6c9dd6bb2cac20e7eb707e4d710dcfa34976c1c91f54afce5088154c"
+  },
+  {
+   "p": "zeitsprung-wissen/music.js",
+   "s": 2047,
+   "h": "e0fecfedd181ea12216f8496bf8cff2a6bbfe050a1a842c7fbd14a68ee244d8a"
+  },
+  {
+   "p": "zeitsprung-wissen/pair.js",
+   "s": 11797,
+   "h": "d2c213cf371b444e12deeae6fff802461364f9bb540615ff0cad029efb5d71ec"
+  },
+  {
+   "p": "zeitsprung-wissen/style.css",
+   "s": 22978,
+   "h": "1c9693b78fa4c41b30b58d0e826f1deeab11be48baea6e9f7452df665252bc21"
+  },
+  {
+   "p": "zeitsprung-wissen/sw.js",
+   "s": 1498,
+   "h": "cec162c33dde9f17d9447ab23230e35aaa39d8c8772752d8aff55d4424a3dbd5"
+  },
+  {
+   "p": "zeitsprung-wissen/visual.js",
+   "s": 2607,
+   "h": "0cc2ced7fdf1aea623ee9a223a6ba4b4c4db1704005d8558d068f8ab737514d3"
+  },
+  {
+   "p": "zeitsprung-wissen/year.js",
+   "s": 988,
+   "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
    "p": "zotik/card.png",
