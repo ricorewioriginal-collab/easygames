@@ -21,13 +21,13 @@
     <string name="settings_close">Schließen</string>
     <string name="settings_info">App-Version: %1$s\nInhalts-Version: %2$s\nInhalts-Stand: %3$s\nLetzte Prüfung: %4$s\nStatus: %5$s%6$s</string>
     <string name="settings_none">–</string>
-    <string name="settings_pending">\nUpdate bereit – wird beim nächsten Start aktiv (oder in der Oberfläche „Neu laden“).</string>
+    <string name="settings_pending">\nNeue Spiele-Inhalte bereit – werden beim nächsten Start aktiv (oder in der Oberfläche mit „Jetzt übernehmen“).</string>
 
     <!-- Status -->
     <string name="state_idle">aktuell</string>
     <string name="state_checking">prüfe …</string>
     <string name="state_downloading">lade …</string>
-    <string name="state_ready">Update bereit</string>
+    <string name="state_ready">Neue Inhalte bereit</string>
     <string name="state_error">Fehler</string>
     <string name="state_offline">offline</string>
 
