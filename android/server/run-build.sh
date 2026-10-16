@@ -33,6 +33,16 @@ publish_download() {
   log "Bereitgestellt: $dst"
 }
 
+# Neuestes Build-Ergebnis (Release bevorzugt). Bewusst ohne "neuer als Build-Start": Ist Gradle up-to-date, entsteht keine neue Datei.
+find_artifact() {
+  local ext=$1 list
+  list=$(find android -path '*/outputs/*' -name "*.$ext" -printf '%T@ %p\n' 2>/dev/null | sort -rn | cut -d' ' -f2- || true)
+  local r
+  r=$(printf '%s\n' "$list" | grep -i release | sed -n 1p || true)   # sed statt head: kein SIGPIPE unter pipefail
+  [ -n "$r" ] || r=$(printf '%s\n' "$list" | sed -n 1p)
+  printf '%s\n' "$r"
+}
+
 # Der gesamte Ablauf steckt in main(): Bash liest die Funktion vollständig ein, bevor sie läuft. So kann sich
 # diese Datei während des Laufs (git reset auf einen neuen Stand) gefahrlos ändern.
 main() {
@@ -80,10 +90,9 @@ main() {
     export VERSION_CODE VERSION_NAME FORMAT BUNDLE_CONTENT="${BUNDLE_CONTENT:-1}"
     log "Baue App $VERSION_NAME (Code $VERSION_CODE, $FORMAT) …"
     touch "$STATE_DIR/build-start"
-    "$BUILD_CMD"
+    env -u PUBLISH_DIR "$BUILD_CMD"   # Bereitstellung übernimmt publish_download() unten (nicht abbrechend); build.sh würde bei fehlenden Rechten den ganzen Lauf abbrechen
     EXT=$FORMAT
-    ART=$(find android -path '*/outputs/*' -name "*.$EXT" -newer "$STATE_DIR/build-start" 2>/dev/null | sort | grep -i release | head -1 || true)
-    [ -n "$ART" ] || ART=$(find android -path '*/outputs/*' -name "*.$EXT" -newer "$STATE_DIR/build-start" 2>/dev/null | sort | head -1 || true)
+    ART=$(find_artifact "$EXT")   # auch wenn Gradle nichts neu gebaut hat (up-to-date): das vorhandene Ergebnis zählt
     [ -n "$ART" ] || { log "Kein Build-Ergebnis (*.$EXT) gefunden"; exit 3; }
     TARGET="$OUT_DIR/easygames-$VERSION_NAME.$EXT"
     cp -f "$ART" "$TARGET.tmp" && mv -f "$TARGET.tmp" "$TARGET"
