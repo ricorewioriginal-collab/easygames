@@ -347,6 +347,7 @@
   }, true);
   let padPrev = {}, padRep = 0;
   UI.gamepad = function (dt) {
+    if (root.EasyGamesPad) return;   // ../gamepad.js übernimmt den Controller (Tasten wie Tastatur)
     const gp = navigator.getGamepads ? [...navigator.getGamepads()].find(g => g && g.connected) : null; if (!gp) return;
     const bt = i => gp.buttons[i] && gp.buttons[i].pressed, ay = gp.axes[1] || 0, st = { up: bt(12) || ay < -.6, down: bt(13) || ay > .6, ok: bt(0) || bt(9), back: bt(1) };
     padRep -= dt; ['up', 'down'].forEach(k => { if (st[k] && (!padPrev[k] || padRep <= 0)) { menuKey(k); padRep = padPrev[k] ? .16 : .38; } });
@@ -364,7 +365,7 @@
     UI.loading(100, 'Bereit'); const L = $('loading'); if (!L) return onStart(); L.classList.add('ready'); const st = $('ldStart'); st.textContent = I.touch ? 'Tippe zum Starten' : 'Drücke eine beliebige Taste'; st.hidden = false;
     const go = e => { if (loadDone) return; if (e && e.type === 'keydown' && (e.repeat || e.code === 'Tab')) return; loadDone = true; root.removeEventListener('keydown', go, true); L.removeEventListener('pointerdown', go); if (e && e.preventDefault) e.preventDefault(); Snd.unlock(); Snd.ambience(); Snd.fan(); UI.dismissLoading(); onStart(); };
     UI.pressStart = go; root.addEventListener('keydown', go, true); L.addEventListener('pointerdown', go);
-    const poll = () => { if (loadDone) return; const gp = navigator.getGamepads ? [...navigator.getGamepads()].find(g => g && g.connected) : null; if (gp && gp.buttons.some(b => b.pressed)) return go(); requestAnimationFrame(poll); }; poll();
+    const poll = () => { if (loadDone || root.EasyGamesPad) return; const gp = navigator.getGamepads ? [...navigator.getGamepads()].find(g => g && g.connected) : null; if (gp && gp.buttons.some(b => b.pressed)) return go(); requestAnimationFrame(poll); }; poll();
   };
   UI.dismissLoading = function () { loadDone = true; const L = $('loading'); if (!L || L.hidden) return; clearInterval(tipT); L.classList.add('out'); setTimeout(() => { L.hidden = true; }, 600); };
   // Neue Staffel

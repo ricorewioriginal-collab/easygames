@@ -15,7 +15,7 @@ const args = process.argv.slice(2), has = f => args.includes(f), val = f => { co
 
 const LINKS = { radio: 'https://www.ricorewi-radio.de', githubPage: 'https://ricorewioriginal-collab.github.io/easygames/' };
 const SHELL = ['index.html', 'einbinden.html', 'games.js', 'modes.js', 'guides.js', 'device.js', 'gamekit.js', 'easygames.js'];
-const SHELL_OPTIONAL = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'cloud/anmacha-cloud.js', 'show-voice.js'];
+const SHELL_OPTIONAL = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.webp', 'cloud/anmacha-cloud.js', 'show-voice.js', 'gamepad.js'];
 // Nicht ins Offline-Paket: Quellcode, Doku, Tests, Build-Hilfen
 const SKIP_DIRS = new Set(['node_modules', '.git', '.github', '.vscode', 'docs', 'doc', 'test', 'tests', '__tests__', 'tools', 'coverage', 'source', 'push-server']);   // source: Quellcode von bunte-insel2 (gebaut liegt das Spiel daneben)
 const SKIP_FILE = /(^|\/)(README[^/]*|[^/]*\.md|package(-lock)?\.json|tsconfig[^/]*\.json|eslint\.config\.[^/]*|\.[^/]*|THIRD_PARTY[^/]*|LICENSE[^/]*)$|\.(map|ts|tsx|sh|py|psd|blend|log)$/i;

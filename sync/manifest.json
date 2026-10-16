@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e292f5c49a52",
- "generated": "2026-10-16T17:14:55+02:00",
- "commit": "5888476c1dd4605b5b7d7fb1df3ab9f01101244a",
+ "version": "0905c39326c3",
+ "generated": "2026-10-16T15:17:39+00:00",
+ "commit": "eb4a65b1503bb1cde6f33f02caf5a78128c08f54",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -48,8 +48,8 @@
   },
   {
    "p": "FunkhausReality/index.html",
-   "s": 9229,
-   "h": "d113d6e75fd1d8333c97fbe5c382c18fbc9b5da0244eb5f1e1098d361e02a1d6"
+   "s": 9273,
+   "h": "ebf0fff0599883406685ca44686ea767928b53eb658b98a89359390a04370f59"
   },
   {
    "p": "FunkhausReality/logo.png",
@@ -208,8 +208,8 @@
   },
   {
    "p": "MachMichAus/index.html",
-   "s": 9089,
-   "h": "a9237f42b13a6a0b2459f3491006d0c00ff808a62a3e7cd0388761978fffd003"
+   "s": 9133,
+   "h": "caaec7064c33f3737a860cbc10bfa8b1cd4df49d6b2f1b44577ef6b690b67629"
   },
   {
    "p": "MachMichAus/logo.png",
@@ -353,8 +353,8 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 12642,
-   "h": "c7b10e29940cc0b20091743aeb0ccf0ef4532ccb905b1804544ce4f93a272556"
+   "s": 12758,
+   "h": "96000023f91a472136fe1de73f7f41349fbcd120d5012bae9df84b306a5492cc"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -393,8 +393,8 @@
   },
   {
    "p": "anmacha-beat-surfer/index.html",
-   "s": 63092,
-   "h": "263b7eebd6b2d6378f367499a4accf0bb0dc0d63de4806d1275d1664fd7ceb51"
+   "s": 63183,
+   "h": "319789719ede9906a1555f328712225b1cc5ef19fcd817870a1a21af65106a92"
   },
   {
    "p": "anmacha-beat-surfer/logo.png",
@@ -478,8 +478,8 @@
   },
   {
    "p": "anmacha-flipper/index.html",
-   "s": 81240,
-   "h": "dbcd87376e97994c660d59ff1175525b680ce9a495b3d2665feda9d8f0c0670e"
+   "s": 81331,
+   "h": "366c0fe904c56c863e2fbd5fb5ebe1dddf6f19f4038750ac8b563924ca2001e6"
   },
   {
    "p": "anmacha-flipper/logo.png",
@@ -583,8 +583,8 @@
   },
   {
    "p": "anmacha-frequenzrad/index.html",
-   "s": 9345,
-   "h": "972558cdef272907347e6811f1e76675ab69651fe75830f436a922e885446c79"
+   "s": 9389,
+   "h": "1f747ebac06d7a842322fd43078a63128e51df54fd29597db6602baf2f651c30"
   },
   {
    "p": "anmacha-frequenzrad/logo.png",
@@ -903,8 +903,8 @@
   },
   {
    "p": "anmacha-gesucht/index.html",
-   "s": 22317,
-   "h": "f8220e9847fa4b11a84ab429738463b4d6af303154b6233af2acc2d11760773a"
+   "s": 22361,
+   "h": "f3ac70380673ba33140df9f781b7634fbc96b4a80edec5c99de70f8d31db5d2c"
   },
   {
    "p": "anmacha-gesucht/logo.png",
@@ -993,8 +993,8 @@
   },
   {
    "p": "anmacha-gold-reels/index.html",
-   "s": 33238,
-   "h": "5f615da0ed386b301cbf37e95463ecdab51a0863889097fcc68f466c260a2dcd"
+   "s": 33282,
+   "h": "9db1210c6bb425bf2e9bf91601b6833587d9c6f1cbbba52cbb3186ea1a119601"
   },
   {
    "p": "anmacha-gold-reels/logos/01.png",
@@ -1098,8 +1098,8 @@
   },
   {
    "p": "anmacha-hoererwahl/index.html",
-   "s": 11517,
-   "h": "728b43d7dcdf192387d804feea41930cd6e81e77ebd54ae6bf7df85ed7a377d3"
+   "s": 11561,
+   "h": "dd493e533104a864dcc47125697f214a485717a29d3ce5c9a5dae8de34111f2e"
   },
   {
    "p": "anmacha-hoererwahl/logo.png",
@@ -1483,8 +1483,8 @@
   },
   {
    "p": "anmacha-koffer-dealer/index.html",
-   "s": 22428,
-   "h": "c6dd59a4d03593e6e9deb47093f70c966cfa67052ba4d79833c886fe0cd93930"
+   "s": 22472,
+   "h": "fb6592054d6a08632fd955e4a232fc905780fc22113e568c5035f54855cb2910"
   },
   {
    "p": "anmacha-koffer-dealer/logo.png",
@@ -1583,8 +1583,8 @@
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 33335,
-   "h": "529728bbf5187ad2f6fa82d687064b7f0d929bfade5696ddeebc9379e56cdf62"
+   "s": 33438,
+   "h": "6e66332160c6c2d852cfca00f5af2fde085f491f767c53d1060d4a7f260daae6"
   },
   {
    "p": "anmacha-markthalle/manifest.webmanifest",
@@ -1613,8 +1613,8 @@
   },
   {
    "p": "anmacha-memory/index.html",
-   "s": 34433,
-   "h": "b8f91c71c4133e3b73fa20227f0c9cbc631015a5e1f45ac17903e23d0cd8b8d8"
+   "s": 34477,
+   "h": "355b757f7786b09d3448827f6c34322c52555077a4299ce8285de29f452f80ac"
   },
   {
    "p": "anmacha-memory/logo.png",
@@ -1738,8 +1738,8 @@
   },
   {
    "p": "anmacha-preisradar/index.html",
-   "s": 9937,
-   "h": "068576eab962371297685f30ffda45ca805e770b7970c564eb803a2d2cada72c"
+   "s": 9981,
+   "h": "744e0040a9d557ba2432d4d50aa1bf2ba8e0bc3b444094df7b9cd5cb542e1013"
   },
   {
    "p": "anmacha-preisradar/inputs.js",
@@ -3108,8 +3108,8 @@
   },
   {
    "p": "anmacha-quiz/index.html",
-   "s": 26052,
-   "h": "36fcf963cba91e6125e9d212cb4f5dbdc0a2c688127256a0165aea9c4707abad"
+   "s": 26096,
+   "h": "8d9fbdc4c2e5d062ddbd33049e372e600a129cee7eb1c9dc8f7c84016e62a540"
   },
   {
    "p": "anmacha-quiz/logo.png",
@@ -3203,8 +3203,8 @@
   },
   {
    "p": "anmacha-radio-match/index.html",
-   "s": 39321,
-   "h": "24796636c19b2580df243af403b1f1fd6969be46e28ad5e279414c1b449b40b0"
+   "s": 39384,
+   "h": "7656defa073bf46c7b2366ac86811c064bb2c808e75f7b4b32dd2bc57f16f4bc"
   },
   {
    "p": "anmacha-radio-match/manifest.webmanifest",
@@ -3293,8 +3293,8 @@
   },
   {
    "p": "anmacha-radio-surfer/index.html",
-   "s": 60981,
-   "h": "cabc84c4fc15d1b6822a6b0fea017e1d6a48eaa3bd11666cfad794fd5a002bad"
+   "s": 61052,
+   "h": "e1b79c7c7f73306e81eef486c911867149f5302a153a972258e7264755e5c0cc"
   },
   {
    "p": "anmacha-radio-surfer/logo.png",
@@ -3333,8 +3333,8 @@
   },
   {
    "p": "anmacha-showdown/index.html",
-   "s": 17775,
-   "h": "0fdb03e64dbf9eb18c2786f83ece2c8c7ce31041eaae823eec1ef54a46b040e4"
+   "s": 17819,
+   "h": "8d631ba6bbca19d59aef7bbf0e8eb190a4d08d148b14c93e0e57d24380a85ae4"
   },
   {
    "p": "anmacha-showdown/logo.png",
@@ -3423,8 +3423,8 @@
   },
   {
    "p": "anmacha-snake/index.html",
-   "s": 46368,
-   "h": "5404620f433e6857b843ef4343314484ddcbfe4ba79fb7986afefdaed6343aea"
+   "s": 46430,
+   "h": "56e620eca59a130098de1a2f7d3d3241ea99c99c005f82d1b1988e1282033ee8"
   },
   {
    "p": "anmacha-snake/logo.png",
@@ -3508,8 +3508,8 @@
   },
   {
    "p": "anmacha-spielesammlung/index.html",
-   "s": 100194,
-   "h": "6695da7457c55ecf688d7ace89f31758aa14efd9094dcddc545dbad6fc733a55"
+   "s": 100257,
+   "h": "72fec69de20770f4fa9c1c3d7fd7968a06bc0ebb797be2626d5da3e344ee0858"
   },
   {
    "p": "anmacha-spielesammlung/manifest.webmanifest",
@@ -3523,8 +3523,8 @@
   },
   {
    "p": "anmacha-stapelrausch/index.html",
-   "s": 51936,
-   "h": "7a4e977a52caad3a6b4c6d6b79a2e27fee551a27e547165a006102c29f3305e1"
+   "s": 51999,
+   "h": "7d1afe0f2e5a399afc6fad6567bcfdcce263bdee8238c0573d3cb17fd6d99c50"
   },
   {
    "p": "anmacha-stapelrausch/manifest.webmanifest",
@@ -3543,8 +3543,8 @@
   },
   {
    "p": "anmacha-tower-defense/index.html",
-   "s": 17570,
-   "h": "ba1bfaf7ccada4253c9afe12cb9357dbe9970a2745a82090ba6cd5baf5e7fa68"
+   "s": 17653,
+   "h": "45c9a6222d6a144aa820bd16e5cff578c60f4af39a16c33033c6835f5b89b77a"
   },
   {
    "p": "anmacha-tower-defense/logos/01.png",
@@ -3653,8 +3653,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 6849,
-   "h": "d3fb1af5855d2f276f5eccaaa76306cdd6d9875ab7423520e19ac5b67178c1f5"
+   "s": 6961,
+   "h": "20b3e220b2add5f66b733d5ca7e2a716ba80b7e6c3ea594e42717a73e2f5ab8b"
   },
   {
    "p": "anmacha-urwaldlager/input.js",
@@ -3758,8 +3758,8 @@
   },
   {
    "p": "anmacha-urwaldlager/ui.js",
-   "s": 52922,
-   "h": "ec7a194b1705f131d6df7130bf18511beee8ae5ced07205fa80860ecd118829f"
+   "s": 53045,
+   "h": "88d6b05903e787506700daa73736f6b3e4590832b4d4d0a88fe95f30d9478e14"
   },
   {
    "p": "anmacha-urwaldlager/vendor/three.min.js",
@@ -4612,14 +4612,19 @@
    "h": "85ec317daa2acf1b6587e8e1d02b224f9c5e00dfc7c02e0bd3d89ba685b7d6ac"
   },
   {
+   "p": "gamepad.js",
+   "s": 16750,
+   "h": "b16b1730389ed1c01709246cf077d4229497ec4ad91bcf30346cba03e124ae0c"
+  },
+  {
    "p": "games.js",
    "s": 19376,
    "h": "cce607e0c48f04b8145e52116f8f54dec479c781e1b90bf2feab9d06635e6dc4"
   },
   {
    "p": "gay-life/index.html",
-   "s": 28669,
-   "h": "951ab13a003f4a2a8ff155725d29a28929450165cc10c40e0e6c12076d299b67"
+   "s": 28768,
+   "h": "24c982c22a60651a96b61d2f20afbf924abff5f94134795c12b297dceb4034cf"
   },
   {
    "p": "gay-life/js/audio.js",
@@ -4903,8 +4908,8 @@
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 8223,
-   "h": "201845de2a65bbb6af5b0102694341012d376da171bc161af6fbc1e99ebac292"
+   "s": 8322,
+   "h": "535b9d6c0831b44cc44950eeb509b494f636ea0da2e171383bfe0568df199f93"
   },
   {
    "p": "kraterkommando/manifest.webmanifest",
@@ -4938,8 +4943,8 @@
   },
   {
    "p": "lumo/index.html",
-   "s": 3815,
-   "h": "333eb14a9bef54adf6ab95baabb6dac23f1ce9b2de53ce2fd1e99561f776cf7e"
+   "s": 3910,
+   "h": "814e4ffc32ac5b9a5eb730cd084df82fb3e74e2a9fea94aae09a97952b78c3fb"
   },
   {
    "p": "mimori/arcade.css",
@@ -4988,8 +4993,8 @@
   },
   {
    "p": "mimori/index.html",
-   "s": 35413,
-   "h": "2aafeef972afa3daba44774dfb0f7265921111de99b4dc629fa7e9629e536afc"
+   "s": 35457,
+   "h": "eb9a2fbb99c4e32443599ada53961fe2a3a64d65e463695332693f641403ae84"
   },
   {
    "p": "mimori/manifest.webmanifest",
@@ -5238,8 +5243,8 @@
   },
   {
    "p": "partyverse/app/index.html",
-   "s": 647,
-   "h": "cb3f33092ca52615fe804d60939676656feb9cdf84a27955657e4f96df16ed8c"
+   "s": 696,
+   "h": "cc1a532feeda7a165a5501765e3d9cb8e9311573ce62a60fb415d4edf30f8a6c"
   },
   {
    "p": "partyverse/card.png",
@@ -5248,8 +5253,8 @@
   },
   {
    "p": "partyverse/client/index.html",
-   "s": 546,
-   "h": "3f7b4d361d02736b4a461b762ee95ca60f636f79a3d10917af82d4ee03784b96"
+   "s": 595,
+   "h": "4c79c1be4fba05cf0644690594d528f1cae93f7d56232a8ea2783d029e2d6d0c"
   },
   {
    "p": "partyverse/client/src/style.css",
@@ -5333,8 +5338,8 @@
   },
   {
    "p": "prismrush/index.html",
-   "s": 2772,
-   "h": "7bfacb9840f0cc4fb5de384e9834d10be5cb9b08b8fc41bddda97b6a1d592f37"
+   "s": 2871,
+   "h": "f3096d7493cf51e02b54ff66cb9b83de276915a3623baa5c9242e3fa1df719d8"
   },
   {
    "p": "prismrush/manifest.webmanifest",
@@ -5534,7 +5539,7 @@
   {
    "p": "sync/catalog.json",
    "s": 77466,
-   "h": "5f8147bee151431c124255bd16150c97ad4a176fce330201240b6555b7e831d4"
+   "h": "f3e41b43495c6e0000f958d1bd9ae23a6dc2b08ef43e15c934b109bbd1429c73"
   },
   {
    "p": "taschi/card.svg",
@@ -6033,8 +6038,8 @@
   },
   {
    "p": "wobbel/index.html",
-   "s": 12269,
-   "h": "1e9898d85e0906e034432082e55210f504ae0974114744b47eb56ee7f4ab760b"
+   "s": 12351,
+   "h": "f37810476fe532ff4aae0f9672af6e5c048bb20c5e824c437864c5b17c781b27"
   },
   {
    "p": "wobbel/js/audio.js",
@@ -6228,8 +6233,8 @@
   },
   {
    "p": "zeitsprung-movie/index.html",
-   "s": 8312,
-   "h": "f05493b2b509d1e6acbf7bc8f72833463cea388f9281a3809399fd913ac55fa9"
+   "s": 8356,
+   "h": "d21c21efdc6f411977275a4e4f3e335915f4ee6facf9b4c253c4346581fdac18"
   },
   {
    "p": "zeitsprung-movie/knowledge.js",
@@ -6313,8 +6318,8 @@
   },
   {
    "p": "zeitsprung-radio/index.html",
-   "s": 8208,
-   "h": "76bde8430b06df9da368a4b2f76aab4f40ea621080373732ffbaf23524c6697d"
+   "s": 8252,
+   "h": "24b50d532c82a4c7a919fa39ea75b12887b5d6a6e47a87d05a9ac42e973aa1a5"
   },
   {
    "p": "zeitsprung-radio/knowledge.js",
@@ -6388,8 +6393,8 @@
   },
   {
    "p": "zeitsprung-wissen/index.html",
-   "s": 8613,
-   "h": "733dd57d89f81163d358a4ee59f193d69cff7e82fc5fbcf38f0692dd4d465016"
+   "s": 8657,
+   "h": "1580a31f7fcaa8e515f60ca4ab32747c7e4e01bbf7173e4dda49be889f881f02"
   },
   {
    "p": "zeitsprung-wissen/knowledge.js",
@@ -6448,8 +6453,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 397473,
-   "h": "a3f559739424faa70ec30359a99eb792b543c4a76c57041917b2102b4590e175"
+   "s": 397629,
+   "h": "59ffcfc0c346b792ac345ea5a409f0b25dd47ccb322e5c33773bb823b76daf12"
   },
   {
    "p": "zotik/manifest.webmanifest",

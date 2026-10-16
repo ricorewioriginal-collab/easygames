@@ -47,6 +47,20 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 
 Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** auf dem Handy als App installieren (Chrome/Android: Hinweis „📲 Als App installieren“ oder Menü ▸ „App installieren“; iPhone: Teilen ▸ „Zum Home-Bildschirm“). Die App startet im Vollbild, läuft nach dem ersten Spielen auch offline und **aktualisiert sich automatisch** (Service Worker: Netz zuerst, bei Ausfall der Cache). Erzeugt von `tools/make-pwa.py` (siehe „Neues Spiel hinzufügen“); PRISMRUSH und Wobbel bringen eine eigene PWA mit.
 
+## Gamecontroller
+
+Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …, per USB oder Bluetooth) spielen.
+
+- **Eigene Controller-Steuerung** haben KIKO, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick und Funkparcours.
+- **Alle anderen Spiele** binden `gamepad.js` aus dem Hauptordner ein (`<script src="../gamepad.js" data-pad="…" defer></script>`). Die Datei übersetzt den Controller in das, was das Spiel schon kann:
+  - Steuerkreuz und linker Stick = Pfeiltasten, **A** = Enter, **B** = Esc, **X** = Leertaste, **Y** = E, **LB/RB** = Q/E, **Start** = P, **Select** = M – pro Spiel angepasst im Attribut `data-pad` (z. B. `a=Space/Enter` = Leertaste, und nur wenn das Spiel sie nicht nutzt, Enter; `ls=wasd`; `y=-` = nichts).
+  - In Menüs, die nicht auf Pfeiltasten reagieren, springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), **A** drückt ihn.
+  - **Rechter Stick** = Mauszeiger, **A** klickt (halten = ziehen), z. B. für Koffer, Spielbretter und Türme.
+  - Ohne Controller läuft nichts mit. Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
+- **Texteingaben** (z. B. Antworten in der Hörerwahl) gehen weiterhin nur über Tastatur oder die Handy-Pads.
+
+Für EmulationStation siehe [unten](#emulationstation-es-de-retropie-batocera): das Startskript öffnet den Browser so, dass auch der Ton ohne Klick startet (Browser zählen Controller-Tasten nicht als „Nutzer-Klick“).
+
 ## Spieleliste, Vollbild und Teilen
 
 Die Seite zeigt alle Spiele als App-Kacheln. Ein Klick öffnet das Spiel in einem App-Fenster, oben gibt es
