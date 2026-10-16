@@ -14,6 +14,10 @@
   // ---- Registry: je Spiel die Ranglisten. key = localStorage-Schlüssel, path = Pfad im JSON-Wert ('' = Zahl direkt),
   // order 'desc' = höher ist besser, 'asc' = niedriger ist besser (Zeiten), fmt: 'int' | 'sec' (Sekunden) | 'ms' (Millisekunden)
   var REG = {
+    'ricoville': [
+      { id: 'main', title: 'Höchstes Level', key: 'ricoville.profile.best', path: 'level', order: 'desc', unit: 'Level' },
+      { id: 'pop', title: 'Meiste Einwohner', key: 'ricoville.profile.best', path: 'pop', order: 'desc', unit: 'Einwohner' }
+    ],
     'ricopoly': [
       { id: 'main', title: 'Höchster Kontostand', key: 'ricopoly.v1.profile', path: 'stats.highestMoney', order: 'desc', unit: '€' }
     ],
@@ -415,7 +419,10 @@
     btn.type = 'button'; btn.setAttribute('aria-label', 'Rangliste');
     panel = el('div', 'position:fixed;left:8px;bottom:56px;z-index:2147483001;width:min(300px,calc(100vw - 16px));padding:14px;border-radius:12px;background:rgba(20,20,30,.97);color:#fff;font:14px/1.4 system-ui,sans-serif;display:none;box-sizing:border-box');
     btn.onclick = toggle;
-    document.body.appendChild(panel); document.body.appendChild(btn);
+    document.body.appendChild(panel);
+    // data-board-button="off" am Cloud-Skript: kein schwebender Knopf, das Spiel öffnet die Rangliste selbst (AnMaChaBoard.toggle)
+    var cs = document.querySelector('script[data-game]');
+    if (!(cs && cs.dataset.boardButton === 'off')) document.body.appendChild(btn);
   }
   if (document.body) ui(); else document.addEventListener('DOMContentLoaded', ui);
 
@@ -424,5 +431,5 @@
   setInterval(function () { if (!document.hidden) submit(); }, 20000);
   document.addEventListener('visibilitychange', function () { if (document.hidden) submit(); });
   window.addEventListener('pagehide', submit);
-  window.AnMaChaBoard.submit = submit; window.AnMaChaBoard.removeAll = removeAll;
+  window.AnMaChaBoard.submit = submit; window.AnMaChaBoard.removeAll = removeAll; window.AnMaChaBoard.toggle = function () { if (panel) toggle(); };
 })();

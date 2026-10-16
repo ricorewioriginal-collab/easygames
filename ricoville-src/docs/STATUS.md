@@ -24,6 +24,7 @@
 | PWA, offline, Update-Hinweis | 🟡 | Dateien gebaut; Installation/Update nicht automatisch getestet |
 | Musik, Klänge, Umgebung | 🟡 | erzeugt, nicht automatisch geprüft |
 | Nachbarn, Besuche, Helfen, Geschenke, Post | 🟡 | Regeln im Firestore-Emulator getestet, Spiel per E2E mit nachgebildetem Firestore; gegen echtes Firebase nicht getestet, Regeln müssen in der Konsole veröffentlicht werden |
+| Rangliste (Höchstes Level, Meiste Einwohner) | 🟡 | über easygames-Ranglisten (`cloud/anmacha-board.js`), nur Hauptstadt; Bestwerte und Panel per E2E, Einreichen per `tools/test-board.mjs` mit Fake-Firestore; echt nicht getestet |
 | Server-seitige Prüfung | ⛔ | nur Firestore-Regeln (Spark), siehe SECURITY.md |
 
 ## Bekannte Schwächen

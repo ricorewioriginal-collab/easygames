@@ -54,6 +54,7 @@ button:focus-visible { outline: 3px solid #ffd54f; outline-offset: 2px; }
 .big-btn.blue { background: linear-gradient(135deg, #59b4ff, #2f7fd1); color: #fff; box-shadow: 0 6px 0 #1d5d99; }
 .big-btn.blue small { color: rgba(255,255,255,.9); }
 .menu-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.menu-row.four { grid-template-columns: repeat(2, 1fr); }
 .menu-row .big-btn { flex-direction: column; justify-content: center; text-align: center; gap: 2px; font-size: 14px; padding: 10px 6px; }
 .cloud-card { font-size: 14px; color: var(--muted); }
 @media (max-width: 760px) {
