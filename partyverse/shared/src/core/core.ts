@@ -58,7 +58,7 @@ export function validateConfig(c: GameConfig, layout?: Layout): string | null {
 
 /**
  * Der Spielkern: reine Regeln ohne Oberfläche und ohne Uhr. Wird identisch im Browser (lokale Partie)
- * und im Colyseus-Server (Online) verwendet. Der Zufallsgenerator gehört dem Kern und ist NICHT Teil des
+ * und beim Online-Gastgeber verwendet. Der Zufallsgenerator gehört dem Kern und ist NICHT Teil des
  * sichtbaren Zustands – so kann kein Client Würfel vorhersagen.
  */
 export class GameCore {

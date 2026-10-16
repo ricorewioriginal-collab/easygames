@@ -6,7 +6,6 @@ import { applyTheme } from './theme';
 import { setLocale } from '../i18n';
 import { clear, h, toast } from '../ui/dom';
 import type { GameSession } from '../net/session';
-import type { OnlineClient } from '../net/online';
 
 /** Ein Bildschirm der Oberfläche (DOM). `dispose` räumt Zeitgeber, Listener und 3D-Objekte auf. */
 export interface ScreenView {
@@ -14,10 +13,12 @@ export interface ScreenView {
   dispose?(): void;
 }
 
-export type RouteName = 'menu' | 'setup' | 'p2p' | 'online' | 'options' | 'credits' | 'rules' | 'cosmetics' | 'achievements';
+export type RouteName = 'menu' | 'setup' | 'p2p' | 'options' | 'credits' | 'rules' | 'cosmetics' | 'achievements';
 export interface RouteParams {
   mode?: 'hotseat' | 'bots';
   back?: RouteName;
+  /** Raumcode aus einem Einladungslink (?room=) */
+  room?: string;
 }
 export type RouteModule = { create(app: App, params?: RouteParams): ScreenView | Promise<ScreenView> };
 
@@ -25,13 +26,41 @@ const ROUTES: Record<RouteName, () => Promise<RouteModule>> = {
   menu: () => import('../ui/mainMenu'),
   setup: () => import('../ui/setup'),
   p2p: () => import('../ui/p2p'),
-  online: () => import('../ui/online'),
   options: () => import('../ui/screens/options'),
   credits: () => import('../ui/screens/credits'),
   rules: () => import('../ui/screens/rules'),
   cosmetics: () => import('../ui/screens/cosmetics'),
   achievements: () => import('../ui/screens/achievements'),
 };
+
+const RELOAD_KEY = 'partyverse.chunkReload';
+/**
+ * Lädt einen Bildschirm. Schlägt das Nachladen fehl (z. B. nach einem Update liegen neue Dateinamen auf dem Server,
+ * die App hat aber noch die alte Startdatei), wird einmal kurz wiederholt und sonst die Seite einmal neu geladen.
+ */
+async function loadChunk<T>(load: () => Promise<T>): Promise<T> {
+  try {
+    return await load();
+  } catch (e) {
+    await new Promise((r) => setTimeout(r, 700));
+    try {
+      return await load();
+    } catch {
+      let last = 0;
+      try {
+        last = Number(sessionStorage.getItem(RELOAD_KEY)) || 0;
+        if (Date.now() - last > 60_000) sessionStorage.setItem(RELOAD_KEY, String(Date.now()));
+      } catch {
+        last = Date.now();
+      }
+      if (Date.now() - last > 60_000) {
+        location.reload();
+        await new Promise(() => undefined); // die Seite lädt neu
+      }
+      throw e;
+    }
+  }
+}
 
 /** Wurzel der Anwendung: besitzt 3D-Engine, Audio, Speicher und die Navigation zwischen Bildschirmen. */
 export class App {
@@ -42,8 +71,6 @@ export class App {
   readonly ui: HTMLElement;
   private current: ScreenView | null = null;
   private navToken = 0;
-  /** Aktive Online-Verbindung (bleibt zwischen Lobby und Spiel bestehen) */
-  online: OnlineClient | null = null;
   /** Aktives Spiel (wird beim Verlassen freigegeben) */
   private game: { dispose(): void } | null = null;
 
@@ -92,7 +119,7 @@ export class App {
   async go(name: RouteName, params?: RouteParams): Promise<void> {
     const token = ++this.navToken;
     try {
-      const mod = await ROUTES[name]();
+      const mod = await loadChunk(ROUTES[name]);
       const view = await mod.create(this, params);
       if (token !== this.navToken) {
         view.dispose?.();
@@ -119,7 +146,7 @@ export class App {
   async startGame(session: GameSession): Promise<void> {
     const token = ++this.navToken;
     this.stopGame();
-    const { GameScreen } = await import('../game/gameScreen');
+    const { GameScreen } = await loadChunk(() => import('../game/gameScreen'));
     if (token !== this.navToken) {
       session.dispose();
       return;
@@ -138,13 +165,9 @@ export class App {
     this.game = null;
   }
 
-  /** Zurück ins Hauptmenü (beendet Spiel und Online-Verbindung) */
+  /** Zurück ins Hauptmenü (beendet das Spiel samt Online-Verbindung) */
   async toMenu(): Promise<void> {
     this.stopGame();
-    if (this.online) {
-      this.online.leave();
-      this.online = null;
-    }
     await this.go('menu');
   }
 }

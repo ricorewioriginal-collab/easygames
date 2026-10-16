@@ -821,27 +821,11 @@ export class GameScreen {
       void this.app.toMenu();
       return;
     }
+    // Ohne Server gibt es kein Wiederverbinden: Hinweis zeigen, bis die Verbindung zurück ist oder endet
     if (!this.connEl) {
       this.connEl = h('div', { class: 'conn', role: 'alert' }, t('online.reconnecting'));
       this.el.appendChild(this.connEl);
     }
-    void this.tryReconnect(0);
-  }
-  private async tryReconnect(n: number): Promise<void> {
-    const net = this.app.online;
-    if (!net || this.disposed) return;
-    if (n >= 8) {
-      toast(t('online.closed'), 'error', 5000);
-      void this.app.toMenu();
-      return;
-    }
-    await delay(1500);
-    if (this.disposed) return;
-    if (await net.tryReconnect()) {
-      this.connEl?.remove();
-      this.connEl = null;
-      toast(t('online.reconnected'), 'good');
-    } else void this.tryReconnect(n + 1);
   }
 
   // ------------------------------------------------------------------ Finale

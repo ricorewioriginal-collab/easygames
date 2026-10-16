@@ -2,7 +2,7 @@ import { isCharacterId, CharacterId } from '../characters';
 import type { Action, Difficulty, GameEvent, GameState } from '../core/types';
 import { isItemId } from '../core/items';
 
-/** Name des Colyseus-Raumtyps */
+/** Name des Raumtyps (früher Colyseus-Server, heute nur noch Kennung) */
 export const ROOM_NAME = 'partyverse';
 export const PROTOCOL_VERSION = 1;
 export const MAX_NAME = 14;

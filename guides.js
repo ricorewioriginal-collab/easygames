@@ -289,7 +289,8 @@ window.EASYGAMES_GUIDES = {
   "steuerung": [
    "PC: Würfeln per Knopf, Leertaste oder Enter; Weg per Knopf oder Feld anklicken; Kamera ziehen = drehen, Mausrad = Zoom; Esc oder Menü-Knopf für Pause.",
    "Touch: Knöpfe und Felder antippen; Wischen = Kamera drehen, Zwei-Finger = Zoom; Minispiele mit virtuellem Stick und Knöpfen A/B bzw. Antippen.",
-   "Minispiele am PC: je nach Spiel WASD/Pfeile, Leertaste oder Maus; die Anleitung erscheint vor jedem Minispiel."
+   "Minispiele am PC: je nach Spiel WASD/Pfeile, Leertaste oder Maus; die Anleitung erscheint vor jedem Minispiel.",
+   "Online: im Menü „🌐 Online mit Freunden“ einen Raum eröffnen und Code, Link oder QR-Code teilen; Freunde treten von jedem Gerät bei."
   ],
   "tipps": [
    "Bei Mautbrücken zahlst du 3 Glimmer oder ein Schlüsselfragment.",

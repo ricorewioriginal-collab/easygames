@@ -67,7 +67,7 @@ const GAMES = [
   { id: 'turbokick', title: 'TURBOKICK', icon: '🚗', img: 'turbokick/card.png', bg: 'linear-gradient(145deg,#07070f,#ff7a1a 55%,#19c8ff)', glow: 'rgba(255,122,26,.55)',
     path: 'turbokick/', desc: '3D-Auto-Fußball mit Nitro: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 5 Karosserien, Tastatur, Gamepad und Touch.' },
   { id: 'partyverse', title: 'PARTYVERSE', icon: '🎲', img: 'partyverse/card.png', bg: 'linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)', glow: 'rgba(255,62,157,.55)',
-    path: 'partyverse/', desc: '3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online (eigener Server nötig). Handy und PC.' },
+    path: 'partyverse/', desc: '3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online mit Freunden per Raumcode. Handy und PC.' },
   { id: 'anmacha-gold-reels', title: 'AnMaCha Casino', icon: '🎰', img: 'anmacha-gold-reels/card.png', bg: 'linear-gradient(145deg,#ffb11f,#ff2d95 55%,#8b5cf6)', glow: 'rgba(255,177,31,.55)',
     path: 'anmacha-gold-reels/', desc: '3D-Casino mit Spielgeld in € oder $: 15 Spielautomaten (Gold Reels mit Sender-Logos und Studio-Bonus, Freispiele mit Symbol-Upgrade, klebenden Wilds und steigendem Multiplikator, Schatzkisten-Bonus, Bonusrad, Buch-Freispiele, 243 Wege, Hold & Win mit Jackpots …), Risiko-Leiter, Roulette, Blackjack, Video-Poker und Glücksrad. Touch, Tastatur und Gamecontroller.' },
   { id: 'anmacha-markthalle', title: 'AnMaCha Markthalle 24', icon: '🛒', bg: 'linear-gradient(145deg,#43e08a,#00e5ff 50%,#ff9a1f)', glow: 'rgba(67,224,138,.5)',

@@ -18,7 +18,6 @@ export function create(app: App, _params?: RouteParams): ScreenView {
       .split('')
       .map((c, i) => h('span', { style: `animation-delay:${i * 0.12}s`, 'aria-label': '' }, c)),
   );
-  const online = app.store.data.settings.serverUrl !== '';
   const el = h(
     'div',
     { class: 'screen side' },
@@ -29,7 +28,6 @@ export function create(app: App, _params?: RouteParams): ScreenView {
       btn(t('menu.bots'), () => void app.go('setup', { mode: 'bots' }), 'hot big'),
       btn(t('menu.hotseat'), () => void app.go('setup', { mode: 'hotseat' })),
       btn(t('menu.p2p'), () => void app.go('p2p'), 'good'),
-      btn(online ? t('menu.online') : t('menu.onlineOff'), () => void app.go('online')),
       h(
         'div',
         { class: 'menu-foot' },

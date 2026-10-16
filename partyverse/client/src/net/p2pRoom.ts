@@ -11,7 +11,7 @@ import {
   type ToGuest,
 } from '@shared/net/p2p';
 import { cleanName } from '@shared/net/protocol';
-import type { LobbyView } from './online';
+import type { LobbyView } from './lobby';
 import type { Link } from './p2pLink';
 import { GuestSession, HostSession, P2P_TIMING } from './p2pSession';
 
@@ -110,6 +110,16 @@ export class P2PHostRoom {
     return (CHARACTER_IDS.find((c) => !used.has(c)) ?? 'pip') as CharacterId;
   }
 
+  /** Gleiche Namen unterscheidbar machen („Spieler“ → „Spieler 2“) */
+  private freeName(want: string): string {
+    const used = new Set(this.seats.map((s) => s.slot.name));
+    if (!used.has(want)) return want;
+    for (let i = 2; ; i++) {
+      const n = `${want.slice(0, 11)} ${i}`;
+      if (!used.has(n)) return n;
+    }
+  }
+
   /** Ein neuer Datenkanal ist offen: Auf das „hello" des Gastes warten, dann Platz vergeben */
   adopt(link: Link): void {
     let seat: Seat | null = null;
@@ -130,7 +140,7 @@ export class P2PHostRoom {
         seat = {
           slot: {
             id: 'p' + ++this.counter,
-            name: m.name,
+            name: this.freeName(m.name),
             character: this.freeCharacter(m.character),
             kind: 'human',
             difficulty: 'normal',
@@ -153,7 +163,10 @@ export class P2PHostRoom {
         seat.slot.ready = m.ready;
         this.changed();
       } else if (m.t === 'profile') {
-        if (m.name) seat.slot.name = m.name;
+        if (m.name && m.name !== seat.slot.name) {
+          seat.slot.name = ''; // den eigenen alten Namen nicht als belegt zählen
+          seat.slot.name = this.freeName(m.name);
+        }
         if (m.character && !this.seats.some((s) => s !== seat && s.slot.character === m.character))
           seat.slot.character = m.character;
         this.changed();
