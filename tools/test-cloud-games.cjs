@@ -1,10 +1,39 @@
 #!/usr/bin/env node
-// Prüft, dass ausgewählte Spiele das gemeinsame Cloud-Skript laden (200, keine Skriptfehler vom Skript) und den Google-Knopf zeigen.
+// 1) Statisch für ALLE lokalen Spiele aus games.js: Seite bindet das Cloud-Skript ein, der Pfad stimmt, data-game und data-prefix (bzw. data-idb) sind gesetzt.
+// 2) Im Browser für ausgewählte Spiele: Skript lädt (200, keine Skriptfehler vom Skript), Google-Knopf erscheint, Speicherstand wird erfasst.
+// Spiele, die bewusst keine Cloud-Anbindung haben, stehen in NO_CLOUD.
 //   NODE_PATH=$(npm root -g) node tools/test-cloud-games.cjs [spiel …]      (braucht playwright + Chromium)
 'use strict';
-const http = require('http'), fs = require('fs'), path = require('path');
+const http = require('http'), fs = require('fs'), path = require('path'), vm = require('vm');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
+const NO_CLOUD = [];   // bewusst ohne Google-Speichern (Spiel-IDs)
+let fails = 0;
+function staticAudit() {
+  const w = { window: {} }; vm.createContext(w);
+  vm.runInContext(fs.readFileSync(path.join(root, 'games.js'), 'utf8') + ";this.G=(typeof GAMES!=='undefined'?GAMES:window.EASYGAMES_GAMES)", w);
+  let n = 0;
+  for (const g of w.G) {
+    if (/^[a-z]+:\/\//.test(g.path) || NO_CLOUD.includes(g.id)) continue;
+    const dir = g.path.replace(/\/?$/, '/'); let file = path.join(root, dir, 'index.html'), problems = [];
+    if (!fs.existsSync(file)) { console.log('FEHLER ' + g.id + ': ' + dir + 'index.html fehlt'); fails++; continue; }
+    let html = fs.readFileSync(file, 'utf8');
+    const refresh = /http-equiv="refresh"[^>]*url=([^"]+)"/i.exec(html);   // Wrapper, der auf app/ weiterleitet
+    if (refresh) { file = path.join(root, dir, refresh[1], 'index.html'); html = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : ''; }
+    const tag = /<script[^>]*anmacha-cloud[^>]*>/.exec(html);
+    if (!tag) problems.push('kein Cloud-Skript');
+    else {
+      const src = /src="([^"]+)"/.exec(tag[0]); const abs = src && path.resolve(path.dirname(file), src[1].split('?')[0]);
+      if (!abs || !fs.existsSync(abs)) problems.push('Skriptpfad stimmt nicht: ' + (src && src[1]));
+      if (!/data-game="[^"]+"/.test(tag[0])) problems.push('data-game fehlt');
+      if (!/data-prefix="[^",\s][^"]*"/.test(tag[0]) && !/data-idb="[^"]+"/.test(tag[0])) problems.push('weder data-prefix noch data-idb');
+    }
+    if (problems.length) { console.log('FEHLER ' + g.id.padEnd(26) + problems.join('; ') + '  (' + path.relative(root, file) + ')'); fails++; }
+    n++;
+  }
+  console.log((fails ? 'FEHLER' : 'OK    ') + ' Statische Prüfung: ' + n + ' Spiele binden das Cloud-Skript korrekt ein');
+}
+staticAudit();
 // Schlüssel, die das Spiel wirklich nutzt: nach dem Speichern muss das Skript sie in seinen Zeitstempeln (anmacha-cloud-meta:<spiel>) führen
 const KEYS = { riftzone: ['riftzone.profile', 'riftzone'], turbokick: ['turbokick.save', 'turbokick'], partyverse: ['partyverse.save', 'partyverse'], aeru: ['aeru-save-v1', 'aeru'], 'bunte-insel2': ['bunteInsel2.slot1', 'bunte-insel2'], prismrush: ['prismrush.save.v1', 'prismrush'], kiko: ['kiko-sterneninseln-v1', 'kiko-sterneninseln'] };
 const GAMES = { riftzone: 'riftzone/app/', turbokick: 'turbokick/app/', partyverse: 'partyverse/app/', aeru: 'aeru/', 'bunte-insel2': 'bunte-insel2/', prismrush: 'prismrush/', kiko: 'kiko-sterneninseln/' };
@@ -15,7 +44,6 @@ const srv = http.createServer((req, res) => {
   if (!fs.existsSync(f)) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { 'Content-Type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
 });
-let fails = 0;
 (async () => {
   await new Promise(r => srv.listen(0, '127.0.0.1', r)); const base = 'http://127.0.0.1:' + srv.address().port;
   const b = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });

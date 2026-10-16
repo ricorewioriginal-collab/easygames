@@ -30,6 +30,7 @@ const js = mainOut[0].split('/').pop(), css = outs.find(f => f.endsWith('.css'))
 let html = readFileSync(join(root, 'index.html'), 'utf8');
 html = html.replace('<script type="module" src="./src/main.ts"></script>', '<script type="module" src="./assets/' + js + '"></script>');
 if (css) html = html.replace('</head>', '<link rel="stylesheet" href="./assets/' + css + '">\n</head>');
+html = html.replace('../../cloud/anmacha-cloud.js', '../../../cloud/anmacha-cloud.js');   // Cloud-Skript: Pfad für den Ablageort dist/ (source/dist/ → Repo-Wurzel)
 writeFileSync(join(dist, 'index.html'), html);
 const sw = readFileSync(join(dist, 'sw.js'), 'utf8').replace('__BUILD__', build);
 writeFileSync(join(dist, 'sw.js'), sw);

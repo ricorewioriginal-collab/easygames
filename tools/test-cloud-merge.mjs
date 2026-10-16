@@ -9,7 +9,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 const source = readFileSync(new URL('../cloud/anmacha-cloud.js', import.meta.url), 'utf8');
 
-function harness({ prefix, remote = {}, local = {} }) {
+function harness({ prefix, remote = {}, local = {}, alt = null, failAlt = 0 }) {
   class Storage {
     constructor() { this.items = new Map(); }
     getItem(k) { return this.items.get(String(k)) ?? null; }
@@ -18,7 +18,7 @@ function harness({ prefix, remote = {}, local = {} }) {
     key(i) { return Array.from(this.items.keys())[i] ?? null; }
     get length() { return this.items.size; }
   }
-  const ls = new Storage(), session = new Storage(), requests = [], tasks = new Map(); let next = 0;
+  const ls = new Storage(), session = new Storage(), requests = [], tasks = new Map(); let next = 0, altPatches = 0, reloads = 0;
   for (const [k, v] of Object.entries(local)) ls.setItem(k, v);
   ls.setItem('anmacha-cloud-on', '1'); ls.setItem('anmacha-cloud-rt', 'test-only-refresh-token');
   const fetch = async (url, options = {}) => {
@@ -26,15 +26,19 @@ function harness({ prefix, remote = {}, local = {} }) {
     let data = {};
     if (url.includes('securetoken.googleapis.com')) data = { id_token: 'test-only-id-token', expires_in: 3600, user_id: 'test-user' };
     else if (url.includes('accounts:lookup')) data = { users: [{ displayName: 'Test' }] };
-    else if (!options.method) data = url.includes('__alt') ? {} : { fields: { d: { stringValue: JSON.stringify(remote) } } };
-    return { ok: !(!options.method && url.includes('__alt')) || true, status: 200, json: async () => data };
+    else if (options.method === 'PATCH' && url.includes('__alt') && ++altPatches <= failAlt) return { ok: false, status: 500, json: async () => ({}) };
+    else if (!options.method) {
+      if (url.includes('__alt')) { if (!alt) return { ok: false, status: 404, json: async () => ({}) }; data = { fields: { d: { stringValue: JSON.stringify(alt) } } }; }
+      else data = { fields: { d: { stringValue: JSON.stringify(remote) } } };
+    }
+    return { ok: true, status: 200, json: async () => data };
   };
   const document = { currentScript: { dataset: { game: 'testgame', prefix, ui: 'off' } }, body: {}, visibilityState: 'visible', addEventListener() {}, querySelectorAll: () => [] };
   const window = { localStorage: ls, Promise, fetch, addEventListener() {} };
-  const context = { window, document, Storage, fetch, sessionStorage: session, location: { hostname: 'appassets.local', reload() {} }, navigator: { userAgent: 'RicoReWiApp/test' },
+  const context = { window, document, Storage, fetch, sessionStorage: session, confirm: () => true, location: { hostname: 'appassets.local', reload() { reloads++; } }, navigator: { userAgent: 'RicoReWiApp/test' },
     setTimeout(fn) { const id = ++next; tasks.set(id, fn); return id; }, clearTimeout(id) { tasks.delete(id); }, setInterval() { return 0; }, clearInterval() {}, console, Date, JSON, Object, Array, Promise, String, Math, Error, encodeURIComponent, decodeURIComponent };
   vm.runInNewContext(source, context);
-  return { ls, requests, api: window.AnMaChaCloud, async idle() { for (let i = 0; i < 20; i++) await new Promise(r => setImmediate(r)); } };
+  return { ls, requests, api: window.AnMaChaCloud, get reloads() { return reloads; }, async idle() { for (let i = 0; i < 20; i++) await new Promise(r => setImmediate(r)); } };
 }
 const uploads = (h, alt) => h.requests.filter(r => r.options.method === 'PATCH' && (alt ? r.url.includes('__alt') : !r.url.includes('__alt?') && !r.url.includes('__alt')))
   .map(r => JSON.parse(JSON.parse(r.options.body).fields.d.stringValue));
@@ -62,4 +66,38 @@ test('Fremde Cloud-Schlüssel überschreiben lokal nichts, bleiben aber in der C
   const main = uploads(h, false);
   const last = main[main.length - 1];
   assert.ok(last['bi2.slot1'], 'fremder Schlüssel bleibt im Cloud-Dokument');
+});
+
+test('Manuelles Wiederherstellen wendet nur eigene Schlüssel an', async () => {
+  const h = harness({ prefix: 'bi.', remote: { 'bi.save': { v: 'CLOUD', t: 5 }, 'bi2.slot1': { v: 'ALT-AUS-BREITEM-PRAEFIX', t: 9 } }, local: { 'bi.save': 'LOKAL', 'bi2.slot1': 'NEUER-STAND' } });
+  h.ls.removeItem('anmacha-cloud-on'); // nur manuell
+  h.ls.setItem('anmacha-cloud-on', '1');
+  await h.api.restore(); await h.idle();
+  assert.equal(h.ls.getItem('bi.save'), 'CLOUD');
+  assert.equal(h.ls.getItem('bi2.slot1'), 'NEUER-STAND', 'fremder Schlüssel bleibt bei restore() unangetastet');
+});
+
+test('Ältere Sicherung zurückholen wendet nur eigene Schlüssel an', async () => {
+  const h = harness({ prefix: 'bi.', remote: { 'bi.save': { v: 'JETZT', t: 5 } }, alt: { 'bi.save': { v: 'FRUEHER', t: 1 }, 'bi2.slot1': { v: 'ALT-AUS-BREITEM-PRAEFIX', t: 1 } }, local: { 'bi.save': 'JETZT', 'bi2.slot1': 'NEUER-STAND' } });
+  await h.idle();
+  await h.api.restoreOlder(); await h.idle();
+  assert.equal(h.ls.getItem('bi.save'), 'FRUEHER');
+  assert.equal(h.ls.getItem('bi2.slot1'), 'NEUER-STAND', 'fremder Schlüssel bleibt bei restoreOlder() unangetastet');
+});
+
+test('Schlägt die Sicherung fehl, bleibt lokal alles unverändert und der erste Abgleich wird wiederholt', async () => {
+  const h = harness({ prefix: 'g.', remote: { 'g.save': { v: 'NEUER', t: 9 } }, local: { 'g.save': 'ALT' }, failAlt: 1 });
+  await h.idle();
+  assert.equal(h.ls.getItem('g.save'), 'ALT', 'nach fehlgeschlagener Sicherung nichts überschreiben');
+  await h.api.sync(); await h.idle();
+  assert.equal(h.ls.getItem('g.save'), 'NEUER', 'zweiter Versuch gelingt');
+  const alt = uploads(h, true);
+  assert.equal(alt[alt.length - 1]['g.save'].v, 'ALT', 'der alte Stand ist gesichert');
+});
+
+test('Nach drei Fehlversuchen der Sicherung wird trotzdem abgeglichen (keine Dauerblockade)', async () => {
+  const h = harness({ prefix: 'g.', remote: { 'g.save': { v: 'NEUER', t: 9 } }, local: { 'g.save': 'ALT' }, failAlt: 99 });
+  await h.idle();
+  for (let i = 0; i < 3; i++) { await h.api.sync(); await h.idle(); }
+  assert.equal(h.ls.getItem('g.save'), 'NEUER');
 });
