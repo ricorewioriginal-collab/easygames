@@ -52,3 +52,6 @@ export function bridgeEnds(b: BridgeDef): { ax: number; az: number; bx: number; 
   const dx = B.x - A.x, dz = B.z - A.z, L = Math.hypot(dx, dz), ux = dx / L, uz = dz / L;
   return { ax: A.x + ux * (A.r - 6), az: A.z + uz * (A.r - 6), bx: B.x - ux * (B.r - 6), bz: B.z - uz * (B.r - 6) };
 }
+
+/** Freie Bauwiese liegt vollständig auf der ebenen Innenfläche des Baulands. */
+export const FREE_BUILD_SITE = { dx: 38, dz: 18 };
