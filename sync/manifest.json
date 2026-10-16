@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9da0767b66bb",
- "generated": "2026-10-16T21:22:13+00:00",
- "commit": "a4578c3b99e4241682f4bc23c76dc052d1c786bd",
+ "version": "88bc96c411bd",
+ "generated": "2026-10-16T20:59:58+00:00",
+ "commit": "d6bd8e50684788aef273b0a002617cd4a67a8acd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 21542,
-   "h": "a1de91a76e43f707809ee5c329cf976755496a75b4c02eee93f8d76df09b2f46"
+   "s": 22176,
+   "h": "230f5a2b7fcf41f763892be726ce9964582992903b6b2886dbe5752c67436582"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 57214,
-   "h": "c3071d1645fe9447487684fde10c5fdd4b4e300a01edc3d1d0934b58311e6bdc"
+   "s": 59026,
+   "h": "a366c5ffda5c8b858f7bd7056aadc326cec00406d935387e2fb3f65771121937"
   },
   {
    "p": "index.html",
@@ -5682,6 +5682,66 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
+   "p": "ricoville/assets/index-3QQqM-UI.js",
+   "s": 171766,
+   "h": "dc86b209d21c24254969e4a1cace71bf97668464d8e9efc64c6c5e52fa40bb43"
+  },
+  {
+   "p": "ricoville/assets/index-BJwfMcR4.css",
+   "s": 12493,
+   "h": "997c25bd46194defb4d5cfdd267fe1cf949e90b037123607245bf1ec757d1cd3"
+  },
+  {
+   "p": "ricoville/assets/three-DaP6-81L.js",
+   "s": 521014,
+   "h": "e303c4c452c142fee0e3b9dd156c5b64118699005820781e559fa50dd91315a6"
+  },
+  {
+   "p": "ricoville/card.svg",
+   "s": 11426,
+   "h": "1f7f1b7080652f793ef3366a2e2fcdad6b52221500582fc48d396692d51ee4a8"
+  },
+  {
+   "p": "ricoville/favicon.svg",
+   "s": 508,
+   "h": "42793c088b5a8cddaff5b7b5285a670fea272c9a8c6c6dcfe5014e1d9cafb32c"
+  },
+  {
+   "p": "ricoville/icons/apple-touch-icon.png",
+   "s": 4546,
+   "h": "9e4fa0d64cb8f3f4452dca7cea8c0e2bc3c8d3fc6344269a28d511fd2ff22173"
+  },
+  {
+   "p": "ricoville/icons/icon-192.png",
+   "s": 7761,
+   "h": "04fbfab4d56ce6ac065be19989d6c161925429f0b36b0fde6ac6b83ae5f0c93e"
+  },
+  {
+   "p": "ricoville/icons/icon-512.png",
+   "s": 3622,
+   "h": "faa3a8f96f5e1e8d2501cec113442e65f3d718e97a17df7296dee2e008303524"
+  },
+  {
+   "p": "ricoville/icons/maskable-512.png",
+   "s": 2696,
+   "h": "c18fbe55610e7dc21aced108e629b17a0c16da027acf79bfa162e2e4ea03b58f"
+  },
+  {
+   "p": "ricoville/index.html",
+   "s": 1940,
+   "h": "3b8f0a1dc0ed180660a6decbffbf6e170f654debd7838da37c1e2ad93fd65e4d"
+  },
+  {
+   "p": "ricoville/manifest.webmanifest",
+   "s": 767,
+   "h": "0d72ebafb5eccb7c97baf98d28edfdc92a4a32f76f96f1b609a632dd7bc87e6f"
+  },
+  {
+   "p": "ricoville/sw.js",
+   "s": 1946,
+   "h": "e112835945788cf36256cecd51cb2c06e961871734493daf155ec81ecd88a1a0"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5798,8 +5858,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 87028,
-   "h": "ab98d4a55c63083caf54604f4bd6721480b35558c14c5a3f396552f685afdb13"
+   "s": 89678,
+   "h": "3fa3739561180bdf5fe5d7dc6ea0b516fdaad638072140fdac685c7368caa476"
   },
   {
    "p": "taschi/card.svg",

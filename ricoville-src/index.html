@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#2f7fd1" />
+    <meta name="description" content="RicoVille – Deine Stadt lebt! Gemütliches 3D-Städtebauspiel: Straßen, Häuser, Felder, Läden, Fabriken, Aufträge und Erweiterungen." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RicoVille" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <title>RicoVille – Deine Stadt lebt!</title>
+    <script src="../cloud/anmacha-cloud.js" data-game="ricoville" data-prefix="ricoville.save,ricoville.profile" data-mount="#cloudMount" defer></script>
+  </head>
+  <body>
+    <div id="boot">
+      <div>
+        <div class="logo" aria-label="RicoVille"><span>R</span><span>i</span><span>c</span><span>o</span><span>V</span><span>i</span><span>l</span><span>l</span><span>e</span></div>
+        <div class="bar"><i></i></div>
+        <small>RicoVille wird geladen …</small>
+      </div>
+    </div>
+    <div id="app">
+      <canvas id="scene" aria-label="Stadtansicht"></canvas>
+      <div id="ui" role="main"></div>
+      <div id="cloudMount" class="hidden"></div>
+      <noscript>RicoVille benötigt JavaScript.</noscript>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
