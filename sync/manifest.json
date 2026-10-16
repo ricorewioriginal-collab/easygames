@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1a008b0ab840",
- "generated": "2026-10-17T00:02:24+02:00",
- "commit": "08ca783d2f73d682d0bd3205d81995aaf022e523",
+ "version": "a46c10aaa5b0",
+ "generated": "2026-10-16T22:05:53+00:00",
+ "commit": "a30069f8c8897615631fa5589b99b1d8bc4824af",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 22176,
-   "h": "d7068176356e896deef6da41738f6ed76c85fc41c1177023bcb3faf36b221d4e"
+   "s": 22177,
+   "h": "21a4c261fa37b6642e579dc3a2f15b27d6947bcb3d44bd99bb7eac073e91b06d"
   },
   {
    "p": "gay-life/index.html",
@@ -5614,7 +5614,7 @@
   {
    "p": "ricopoly/index.html",
    "s": 9329,
-   "h": "8ec89786db5c9f7381ee26b41840c0fd107db19cac342dd372e26f8575bcef67"
+   "h": "9c974c049afdeabc36dfe9e0ada81d468b5024c19fd64618573cfdf4491dc792"
   },
   {
    "p": "ricopoly/js/ai.js",
@@ -5643,8 +5643,8 @@
   },
   {
    "p": "ricopoly/js/game.js",
-   "s": 84852,
-   "h": "f66e0819ae4721fc715d7bd0d677beca23c6ffdb3b21ed9544a9f9c9951a5cb3"
+   "s": 85509,
+   "h": "37db6eff2c79dac7f21eb17840e63d4ea9ca04bf7f4e5341c2d07a8603111028"
   },
   {
    "p": "ricopoly/js/i18n.js",
@@ -5864,7 +5864,7 @@
   {
    "p": "sync/catalog.json",
    "s": 89678,
-   "h": "2706cac4f8f99a3e94ec7477bd87e6e1f5d1dc7b4af5b092ba7f7bc1db58987e"
+   "h": "9b81ce12e1ca3425cb876585a93b05de64b2bc3218b1b908ac752f47a7e66208"
   },
   {
    "p": "taschi/card.svg",

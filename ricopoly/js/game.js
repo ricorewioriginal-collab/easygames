@@ -850,7 +850,7 @@
     if (!M || M.s) return;
     var l = M.lobby || (M.host ? M.host.core.lobbyInfo() : null), isHost = !!M.host;
     panel(t('net.lobby') + ' · ' + M.code, function (b) {
-      var link = location.origin + location.pathname + '#room=' + M.code;
+      var link = inviteBase() + '#room=' + M.code;
       b.appendChild(h('div', 'codebox', '<small>' + t('net.code') + '</small><b>' + M.code + '</b>'));
       var share = h('div', 'row');
       share.appendChild(btn('🔗 ' + t('net.copyLink'), 'btn sm', function () { copy(link); }));
@@ -877,6 +877,17 @@
         b.appendChild(btn(mine && mine.ready ? '✔ ' + t('net.ready') : t('net.setReady'), 'btn primary big', function () { M.client.send({ t: 'ready', v: !(mine && mine.ready) }); }));
       }
     }, { back: function () { leaveMatch(); } });
+  }
+  // Einladungen werden auf anderen Geräten geöffnet: App-interne Adressen (appassets…, file:, localhost, LAN) durch die
+  // öffentliche GitHub-Pages-Adresse ersetzen (wie EasyGamesDevice.publicBase in ../device.js)
+  var PUBLIC_URL = 'https://ricorewioriginal-collab.github.io/easygames/ricopoly/';
+  function inviteBase() {
+    try {
+      var u = new URL('.', location.href), h = u.hostname;
+      if (/^https?:$/.test(u.protocol) && h.indexOf('.') > 0 && h.indexOf(':') < 0 && !/(^localhost$|\.local$|^appassets\.)/.test(h)
+        && !/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h)) return u.href;
+    } catch (e) {}
+    return PUBLIC_URL;
   }
   function copy(text) { (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { toast(t('copied')); }).catch(function () { window.prompt(t('net.copyLink'), text); }); }
   function rememberFriends(s) {
