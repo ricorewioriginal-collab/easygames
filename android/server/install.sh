@@ -94,6 +94,7 @@ $(cat "$KEY.pub")
  2) Den Release-Keystore SICHERN (ohne ihn sind keine App-Updates möglich): $STATE_DIR/release.jks
     Passwörter stehen in $ENV_FILE
  3) $OUT_DIR per Webserver bereitstellen (z. B. nginx/Caddy), dort liegen easygames-latest.apk und latest.json.
+ 4) Optional, APK automatisch auf der RicoReWi-Radio-Seite bereitstellen: sudo bash $REPO_DIR/android/server/publish-setup.sh <Live-Webroot>/downloads
 
 Erster Lauf sofort:    sudo systemctl start easygames-build.service
 Fortschritt ansehen:   journalctl -fu easygames-build.service

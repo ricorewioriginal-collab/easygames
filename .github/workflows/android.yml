@@ -26,6 +26,7 @@ jobs:
       - run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
       - run: node tools/fetch-vendor.js --verify
       - run: node tools/test-sync-build.js
+      - run: bash android/server/test-publish.sh
       - run: node tools/build-sync.js --strict --stage android/app/src/main/assets/easygames
       - name: Install browser test runtime
         run: |

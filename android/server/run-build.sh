@@ -16,6 +16,23 @@ log() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*"; }
 notify() { [ -z "${NOTIFY_URL:-}" ] || curl -fsS -m 15 -X POST --data-urlencode "text=$1" "$NOTIFY_URL" >/dev/null 2>&1 || true; }
 trap 'rc=$?; log "FEHLER (Exit $rc, Zeile $LINENO)"; notify "easygames-build: FEHLER (Exit $rc) – siehe journalctl -u easygames-build"; exit $rc' ERR
 
+# Optional (PUBLISH_DIR gesetzt): fertiges APK + Versionsangabe unter den festen Namen der Webseite bereitstellen.
+# PUBLISH_DIR = Ordner "downloads" im Live-Webroot der RicoReWi-Radio-Seite; dort liegen dann easygames-Developer.apk und
+# easygames-latest.json (Startseite, Apps-Seite und easygames-Seite verlinken genau diese Namen). Schreibt nur bei Änderung, atomar.
+publish_download() {
+  [ -n "${PUBLISH_DIR:-}" ] || return 0
+  local src="$OUT_DIR/easygames-latest.$FORMAT" name="${PUBLISH_NAME:-easygames-Developer}" dst
+  [ -e "$src" ] || return 0
+  if [ ! -d "$PUBLISH_DIR" ] || [ ! -w "$PUBLISH_DIR" ]; then log "PUBLISH_DIR $PUBLISH_DIR fehlt oder ist nicht beschreibbar – Bereitstellung übersprungen"; return 1; fi
+  dst="$PUBLISH_DIR/$name.$FORMAT"
+  if [ -f "$dst" ] && [ -f "$PUBLISH_DIR/easygames-latest.json" ] && cmp -s "$src" "$dst"; then return 0; fi
+  cp -f "$src" "$dst.tmp" && chmod 644 "$dst.tmp" && mv -f "$dst.tmp" "$dst"
+  node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(JSON.stringify({version:j.versionName,version_code:j.versionCode,package:process.argv[3],filename:process.argv[2],size_bytes:j.bytes,sha256:j.sha256,built_at:j.built})+"\n")' \
+    "$OUT_DIR/latest.json" "$name.$FORMAT" "${APP_ID:-de.ricorewi.easygames}" > "$PUBLISH_DIR/easygames-latest.json.tmp"
+  chmod 644 "$PUBLISH_DIR/easygames-latest.json.tmp" && mv -f "$PUBLISH_DIR/easygames-latest.json.tmp" "$PUBLISH_DIR/easygames-latest.json"
+  log "Bereitgestellt: $dst"
+}
+
 # Der gesamte Ablauf steckt in main(): Bash liest die Funktion vollständig ein, bevor sie läuft. So kann sich
 # diese Datei während des Laufs (git reset auf einen neuen Stand) gefahrlos ändern.
 main() {
@@ -33,7 +50,7 @@ main() {
   LATEST_APK="$OUT_DIR/easygames-latest.apk"; [ "$FORMAT" = aab ] && LATEST_APK="$OUT_DIR/easygames-latest.aab"
   APK_OLD=0
   if [ -e "$LATEST_APK" ]; then [ -n "$(find "$LATEST_APK" -mtime +"$REBUILD_DAYS" -print 2>/dev/null)" ] && APK_OLD=1; else APK_OLD=1; fi
-  if [ "$FORCE" != 1 ] && [ "$REMOTE_SHA" = "$LAST_SHA" ] && [ "$APK_OLD" = 0 ]; then log "Keine Änderungen (${REMOTE_SHA:0:8})"; exit 0; fi
+  if [ "$FORCE" != 1 ] && [ "$REMOTE_SHA" = "$LAST_SHA" ] && [ "$APK_OLD" = 0 ]; then log "Keine Änderungen (${REMOTE_SHA:0:8})"; publish_download || true; exit 0; fi
   log "Stand ${REMOTE_SHA:0:8} ($BRANCH)"
 
   # --- 1. Spiele prüfen + Manifest ---------------------------------------------------------------
@@ -75,12 +92,14 @@ main() {
     printf '{"versionName":"%s","versionCode":%s,"file":"easygames-%s.%s","sha256":"%s","bytes":%s,"built":"%s","commit":"%s"}\n' \
       "$VERSION_NAME" "$VERSION_CODE" "$VERSION_NAME" "$EXT" "$SHA" "$SIZE" "$(date -u +%FT%TZ)" "$(git rev-parse HEAD)" > "$OUT_DIR/latest.json.tmp"
     mv -f "$OUT_DIR/latest.json.tmp" "$OUT_DIR/latest.json"
+    publish_download || log "Bereitstellung unter PUBLISH_DIR fehlgeschlagen (APK liegt weiter in $OUT_DIR)"
     ls -1t "$OUT_DIR"/easygames-[0-9]*."$EXT" 2>/dev/null | tail -n +"$((KEEP_APKS + 1))" | xargs -r rm -f
     echo "$APP_TREE" > "$STATE_DIR/last-app-tree"
     log "Fertig: $TARGET ($((SIZE / 1048576)) MB, sha256 ${SHA:0:12}…)"
     notify "easygames-build: App $VERSION_NAME gebaut ($((SIZE / 1048576)) MB)"
   else
     log "App unverändert – kein neues APK nötig (Spiele-Updates laufen per Sync)"
+    publish_download || log "Bereitstellung unter PUBLISH_DIR fehlgeschlagen"
   fi
   git rev-parse HEAD > "$STATE_DIR/last-commit"
 }
