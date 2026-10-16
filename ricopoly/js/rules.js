@@ -152,6 +152,9 @@
     return s.players.map(function (x, i) { return { i: i, w: worth(s, i), out: !!x.out, at: x.outAt || 0 }; })
       .sort(function (a, b) { return (a.out - b.out) || (a.out ? b.at - a.at : b.w - a.w); });
   }
+  function canRaise(s, p) {
+    return s.own.some(function (o, i) { return o && o.o === p && ((o.h > 0 && !sellError(s, p, i)) || (!o.m && !mortgageError(s, p, i))); });
+  }
   function liquidity(s, p) {
     var v = s.players[p].money;
     s.own.forEach(function (o, i) { if (o && o.o === p) { v += o.h * BOARD[i].hc / 2; if (!o.m) v += BOARD[i].price / 2; } });
@@ -623,6 +626,9 @@
       }
       case 'bankrupt': {
         if (s.phase !== 'debt' || !s.debts.length || s.debts[0].from !== p) return fail(state, 'notNow');
+        // Erst flüssig machen: Bankrott nur, wenn das Verkaufbare nicht reicht oder nichts mehr verkauft/beliehen werden kann
+        var owe = s.debts.filter(function (d) { return d.from === p; }).reduce(function (a, d) { return a + d.amount; }, 0);
+        if (liquidity(s, p) >= owe && canRaise(s, p)) return fail(state, 'mustLiquidate');
         bankrupt(s, out, p);
         break;
       }

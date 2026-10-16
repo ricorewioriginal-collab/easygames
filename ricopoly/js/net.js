@@ -82,7 +82,11 @@
   };
   HostCore.prototype.disconnect = function (cid) {
     var i = this.seatOf(cid); if (i < 0) return;
-    if (!this.started) { this.seats.splice(i, 1); this.pushLobby(); return; }
+    if (!this.started) {
+      this.seats.splice(i, 1);
+      for (var k = i; k < this.seats.length; k++) if (this.seats[k].cid && !this.seats[k].host) this.send(this.seats[k].cid, { t: 'welcome', seat: k, code: this.code });
+      this.pushLobby(); return;
+    }
     this.seats[i].online = false; this.offlineSince[i] = this.now(); this.pushLobby(); this.onChange({ offline: i });
   };
   HostCore.prototype.pushLobby = function () { var l = this.lobbyInfo(); this.broadcast({ t: 'lobby', lobby: l }); this.onChange({ lobby: l }); };

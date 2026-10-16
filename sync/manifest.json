@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e548d71505d8",
- "generated": "2026-10-16T20:32:22+00:00",
- "commit": "aae69ab109923f24f3e246be5d6b1eec9bfefe8b",
+ "version": "de021a76ccf7",
+ "generated": "2026-10-16T20:47:31+00:00",
+ "commit": "0b0da0ed26be23ce2a09455604efc7402546d079",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5614,7 +5614,7 @@
   {
    "p": "ricopoly/index.html",
    "s": 9288,
-   "h": "7fa1dea008ea87207a8a3b0eb458dd3e5c8ac386b57c9cee903e6a564af7ffdf"
+   "h": "c58ec0616c3e89c2237a731b5dd046419251726d8e9de33475275a6b12b023e1"
   },
   {
    "p": "ricopoly/js/ai.js",
@@ -5638,18 +5638,18 @@
   },
   {
    "p": "ricopoly/js/game.js",
-   "s": 82889,
-   "h": "e93fe95943acdba09515305b7222b2219d40c4648e1316f5109e39878d413300"
+   "s": 83047,
+   "h": "d7d92cfd9d015272a45cf8483e4169cb841f12be31af96ad838563dead7a25d0"
   },
   {
    "p": "ricopoly/js/i18n.js",
-   "s": 50663,
-   "h": "fdea364b6a9d117f987c12913398e295d8f4145468bc626507d35014830b7991"
+   "s": 50874,
+   "h": "8347143e996243744837462b9e00f29f5c768a73eb24239d12077305898c0b36"
   },
   {
    "p": "ricopoly/js/net.js",
-   "s": 18515,
-   "h": "59cb69466ba2d959d7db11ee94c8d44432ca94270ac02b6af50f90c08fb45f66"
+   "s": 18701,
+   "h": "be5a62ddeb934167ea5ab1f444f692f0fbf104b8e231732e91281d7f559be006"
   },
   {
    "p": "ricopoly/js/profile.js",
@@ -5658,8 +5658,8 @@
   },
   {
    "p": "ricopoly/js/rules.js",
-   "s": 40033,
-   "h": "bf77bdc6d7352c61d6897c3e9d09c1745431ba7abb734eba3271b51e60c06e55"
+   "s": 40551,
+   "h": "6e5aebe3b88aa2a1338a8992401d8152c534f581c27324c1ff76aa41b4faf607"
   },
   {
    "p": "ricopoly/js/worlds.js",
@@ -5799,7 +5799,7 @@
   {
    "p": "sync/catalog.json",
    "s": 87028,
-   "h": "34bdb66775af0a7581e5cde59a89a8a49608de2c346defdacdf8e17b1751ac04"
+   "h": "c3be67ecf598091bbb346ac33117fddb4fbd0ec029f2337b90c46d321e2e1569"
   },
   {
    "p": "taschi/card.svg",

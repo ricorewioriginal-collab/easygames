@@ -291,6 +291,7 @@ test('Insolvenz an die Bank: Grundstücke werden wieder frei, Partie geht weiter
   s.players[0].pos = 36;
   s = act(s, { type: 'roll', p: 0 }, [1, 1]);   // Feld 38: Steuer 100
   assert.equal(s.phase, 'debt');
+  s.debts[0].amount = 1000;   // mehr, als Verkaufen und Beleihen einbringen
   s = act(s, { type: 'bankrupt', p: 0 });
   assert.equal(s.players[0].out, true); assert.equal(s.own[1].o, -1); assert.equal(s.own[1].h, 0); assert.equal(s.bank.houses, 32);
   assert.equal(s.cur, 1); assert.equal(s.phase, 'roll'); assert.equal(R.validate(s), '');
@@ -486,4 +487,13 @@ test('KI-Handelsgedächtnis gilt nur für die eigene Partie', () => {
   assert.ok(AI.propose(a, 0), 'Bot schlägt in Partie 1 einen Tausch vor');
   assert.equal(AI.propose(a, 0), null, 'im selben Zug nicht noch einmal');
   assert.ok(AI.propose(b, 0), 'eine neue Partie mit gleicher Zugnummer ist davon nicht betroffen');
+});
+
+test('Bankrott erst, wenn Verkaufen und Beleihen die Schuld nicht decken', () => {
+  let s = two();
+  s.own[39].o = 1; s.own[1].o = 0; s.players[0].money = 0;
+  s.debts = [{ from: 0, to: 1, amount: 20, why: 'rent' }]; s.phase = 'debt';
+  bad(s, { type: 'bankrupt', p: 0 }, 'mustLiquidate');          // Hypothek auf Feld 1 bringt 30
+  s.debts[0].amount = 500;
+  act(s, { type: 'bankrupt', p: 0 });                             // reicht nicht: Bankrott erlaubt
 });

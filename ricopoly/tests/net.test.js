@@ -126,3 +126,16 @@ test('Rate-Limit: Flut von Nachrichten wird verworfen', () => {
   for (let i = 0; i < 100; i++) host.receive('c2', { t: 'act', a: { type: 'roll', aid: 'f' + i } });
   assert.equal(host.state.seq, before);
 });
+
+test('Lobby: Verlässt ein Gast den Raum, erfahren die nachrückenden ihren neuen Platz', () => {
+  const sent = [];
+  const core = new N.HostCore({ code: 'ABC123', send: (cid, m) => sent.push([cid, m]), onChange: () => {} });
+  core.addHost({ name: 'Host', token: 'hosttoken1' });
+  core.receive('c1', { t: 'hello', v: N.VERSION, name: 'Eins', token: 'token-eins-1' });
+  core.receive('c2', { t: 'hello', v: N.VERSION, name: 'Zwei', token: 'token-zwei-2' });
+  sent.length = 0;
+  core.disconnect('c1');
+  const w = sent.filter(([cid, m]) => cid === 'c2' && m.t === 'welcome');
+  assert.equal(w.length, 1); assert.equal(w[0][1].seat, 1);
+  assert.equal(core.seats[1].name, 'Zwei');
+});

@@ -7,6 +7,7 @@
   var prof = PF.load(), S = prof.settings, stage = null, M = null, screenStack = [];
   var t = function (k, v) { return I.t(S.lang, k, v); };
   var BOARD = R.BOARD;
+  var SESSION = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);   // macht Aktions-IDs nach dem Fortsetzen eindeutig
 
   // ---------- Hilfen ----------
   function h(tag, cls, html, attrs) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (attrs) for (var k in attrs) { if (k === 'on') for (var ev in attrs.on) e.addEventListener(ev, attrs.on[ev]); else e.setAttribute(k, attrs[k]); } return e; }
@@ -46,7 +47,7 @@
       var room = (location.hash.match(/room=([A-Z0-9]{6})/) || location.search.match(/room=([A-Z0-9]{6})/) || [])[1];
       if (room) joinRoom(room);
     }, 350);
-    document.addEventListener('pointerdown', function once() { A.unlock(); musicFor(M ? M.s.world : null); document.removeEventListener('pointerdown', once); });
+    document.addEventListener('pointerdown', function once() { document.removeEventListener('pointerdown', once); A.unlock(); musicFor(M && M.s ? M.s.world : null); });
     document.addEventListener('keydown', onKey);
     setInterval(clockTick, 1000);
     bindPadCamera();
@@ -204,7 +205,7 @@
     if (a.tid == null && /^(roll|buy|decline|endTurn|payJail|useCard)$/.test(a.type)) a.tid = M.s.turnId;
     if (M.client) { if (!M.client.act(a, M.s.turnId)) toast(t('net.offline'), 'warn'); return; }
     if (M.host) { M.host.act(a); return; }
-    a.aid = a.aid || ('l' + (++M.seqA || (M.seqA = 1)));
+    a.aid = a.aid || ('l' + SESSION + '-' + (++M.seqA || (M.seqA = 1)));
     var r = R.apply(M.s, a);
     take(r);
   }

@@ -6,10 +6,10 @@
 node --test ricopoly/tests/*.test.js
 ```
 
-48 Tests, Stand 2026-10-16 alle grün:
+50 Tests, Stand 2026-10-16 alle grün:
 
-- `rules.test.js` (37): Würfel-Verteilung, Bewegung und Startgeld, Pasch und Gefängnis, Kauf, Versteigerung, Miete (Straße, Gruppe, Häuser, Bahnhof, Werk, Hypothek), Bauen und Verkaufen mit Gebäudevorrat, Hypotheken, Handel mit Gegenangebot und Verfall, alle Karten, Mischen, Steuern und Topf, Schulden, Bankrott an Spieler und an Bank, Aufgeben, Zeit- und Rundenlimit, Schnellmodus, doppelte und veraltete Aktionen, Speichern/Laden mit Wiedergabe, Validierung beschädigter und unvollständiger Stände, gleichmäßiger Hotel-Abbau bei leerem Häuservorrat, Rangliste nach Ausscheide-Reihenfolge, kein Ausräumen von Schuldnern per Handel, KI-Gedächtnis je Partie, **komplette Bot-Partien bis zum Sieger** mit Prüfung der Invarianten (Geldsumme, Gebäudevorrat, Besitz) nach jeder Aktion.
-- `net.test.js` (8): Lobby und Bereit-Status, Zustand ohne Zufallsgenerator beim Client, kein Handeln für fremde Plätze, doppelte Netzwerkaktionen, gleichzeitige Angebote, Abbruch mit Vertretung und Wiederbeitritt per Schlüssel, Nachrichtenflut, **komplette Online-Partie über den Gastgeber** (simulierte Verbindungen) mit identischem Endstand bei allen.
+- `rules.test.js` (38): Würfel-Verteilung, Bewegung und Startgeld, Pasch und Gefängnis, Kauf, Versteigerung, Miete (Straße, Gruppe, Häuser, Bahnhof, Werk, Hypothek), Bauen und Verkaufen mit Gebäudevorrat, Hypotheken, Handel mit Gegenangebot und Verfall, alle Karten, Mischen, Steuern und Topf, Schulden, Bankrott an Spieler und an Bank, Aufgeben, Zeit- und Rundenlimit, Schnellmodus, doppelte und veraltete Aktionen, Speichern/Laden mit Wiedergabe, Validierung beschädigter und unvollständiger Stände, gleichmäßiger Hotel-Abbau bei leerem Häuservorrat, Rangliste nach Ausscheide-Reihenfolge, kein Ausräumen von Schuldnern per Handel, KI-Gedächtnis je Partie, Bankrott erst nach Verkaufen und Beleihen, **komplette Bot-Partien bis zum Sieger** mit Prüfung der Invarianten (Geldsumme, Gebäudevorrat, Besitz) nach jeder Aktion.
+- `net.test.js` (9): Lobby und Bereit-Status, neue Plätze nach Verlassen der Lobby, Zustand ohne Zufallsgenerator beim Client, kein Handeln für fremde Plätze, doppelte Netzwerkaktionen, gleichzeitige Angebote, Abbruch mit Vertretung und Wiederbeitritt per Schlüssel, Nachrichtenflut, **komplette Online-Partie über den Gastgeber** (simulierte Verbindungen) mit identischem Endstand bei allen.
 - `i18n.test.js` (3): Jeder Textschlüssel aus `game.js` und `index.html` existiert auf Deutsch und Englisch, beide Sprachen haben dieselben Schlüssel, Platzhalter und Rückfall.
 
 ## Browser
