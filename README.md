@@ -1,3 +1,5 @@
+<p align="center"><img src="branding/easygames-logo-lockup.png" alt="easygames by RicoReWi × AnMaCha" width="720"></p>
+
 # easygames
 
 Minispiele für Browser und Handy – jedes Spiel in einem eigenen Verzeichnis.
@@ -404,3 +406,6 @@ Eigenständiges Rollenspiel im 16-Bit-Stil – eigene Helden, Welten und Monster
 - **Inhalte:** `content.js` (18 Kandidaten, 40 Pult-Besetzungen, 14 Quizfragen, Moderator- und Date-Texte) – prüfen mit `node MachMichAus/tests/check-content.js`.
 - **Technik:** `engine.js` (Regeln, rein, mit Startwert nachspielbar), `studio.js` (Three.js), `panel.js`/`games.js` (Eingaben und Talent-Spiel, gleich am Gastgeber und Handy), `avatars.js`, `pair.js`/`controller.js`, `audio.js`, `main.js`.
 - **Tests:** `node MachMichAus/tests/engine-tests.js` (Passgenauigkeit, Phasen, Joker, Blackout, 400 KI-Runden mit Balance), Browser-Tests `tests/e2e.mjs` (ganze Show) und `tests/e2e-pair.mjs` (2 Handys).
+
+## Logo & Branding
+Logo, App-Symbol (auch maskable), Apple-Touch-Icon und Lockup „easygames by RicoReWi × AnMaCha“ liegen in [`branding/`](branding/); `logo.png` erscheint automatisch im Seitenkopf, `favicon.ico` als Browser-Symbol. Dateien nur in place austauschen (Namen nicht ändern).
