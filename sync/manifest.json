@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "56a54c9c38d5",
- "generated": "2026-10-16T11:47:02+00:00",
- "commit": "e6ff8a36fb5cee217bb3bd9432bc48e7a9578d51",
+ "version": "da118e651b88",
+ "generated": "2026-10-16T13:50:36+02:00",
+ "commit": "1f512892ee2a6743063d1319aee326cfabdcb399",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -5534,7 +5534,7 @@
   {
    "p": "sync/catalog.json",
    "s": 76331,
-   "h": "3e70ee64f4fc1d0c133fda9251002bae5726050cd3bf8dbf112183ef6ca34d6f"
+   "h": "11ac9e2e110e08111340d4cc8d5c695822da660fd473e570cd642345c58652a0"
   },
   {
    "p": "taschi/card.svg",
@@ -6218,8 +6218,8 @@
   },
   {
    "p": "zeitsprung-movie/game.js",
-   "s": 36257,
-   "h": "7ad69cc930f4402f4021c8596b68b17ad3b8a1cb3b99c73e5735622a6fb14d9a"
+   "s": 36282,
+   "h": "1a02a1724b1e822055e1ca27fe7ec137c1cc7c7a11ba18ce5e712cf0f6083ed6"
   },
   {
    "p": "zeitsprung-movie/icon.svg",
@@ -6263,8 +6263,8 @@
   },
   {
    "p": "zeitsprung-movie/sw.js",
-   "s": 1290,
-   "h": "fcd95d64ae4c0587c48a6f8ba446c02721b25f77088af67a023eb487e8172325"
+   "s": 1303,
+   "h": "5285bd1470bb55da2f32422f3767f034d12a91d69dd94bf247f06bba13cc1013"
   },
   {
    "p": "zeitsprung-movie/tracks.js",
@@ -6280,6 +6280,11 @@
    "p": "zeitsprung-movie/visual.js",
    "s": 2659,
    "h": "ea61805f333185cf03d06efe5123afe0f109cf92e672c94992140b1e15fff632"
+  },
+  {
+   "p": "zeitsprung-movie/vito.js",
+   "s": 3038,
+   "h": "c9f463f5edc95fceb9ac3d2c67f93a1ac3ce3538731a2543edf842ad43643727"
   },
   {
    "p": "zeitsprung-movie/year.js",
@@ -6298,8 +6303,8 @@
   },
   {
    "p": "zeitsprung-radio/game.js",
-   "s": 31441,
-   "h": "e36c982d174c2f2620f4690a42f83e7908032e75edc9aa9ce7e40c7c34fef21f"
+   "s": 31466,
+   "h": "c4aa998b68b049d98246eef9800618b05e0792c73a08dcc2230dd9441e50dffb"
   },
   {
    "p": "zeitsprung-radio/icon.svg",
@@ -6338,13 +6343,18 @@
   },
   {
    "p": "zeitsprung-radio/sw.js",
-   "s": 1239,
-   "h": "213e7c43398943438e336d194ac9b100e5471e865025dec6251e265442834637"
+   "s": 1252,
+   "h": "28da4ffd5be2bf3f675556b7e7a760fb69977e8a1b3f74fd95728d8dd7d0419a"
   },
   {
    "p": "zeitsprung-radio/tracks.js",
    "s": 12037,
    "h": "aa471632b10d554746c0bfbcbb03386331a5c1fb05de5216cb0cf497b8613d11"
+  },
+  {
+   "p": "zeitsprung-radio/vito.js",
+   "s": 3038,
+   "h": "c9f463f5edc95fceb9ac3d2c67f93a1ac3ce3538731a2543edf842ad43643727"
   },
   {
    "p": "zeitsprung-radio/year.js",
@@ -6368,8 +6378,8 @@
   },
   {
    "p": "zeitsprung-wissen/game.js",
-   "s": 35487,
-   "h": "f9963950f2cdb0464fe241838e178f87fa7f2cdda254fb5e7708cb6097c90117"
+   "s": 35463,
+   "h": "87198ca30b43ef2d11bb5f34d1d2e07946078547720d6662065d83a7d584859e"
   },
   {
    "p": "zeitsprung-wissen/icon.svg",
@@ -6413,13 +6423,18 @@
   },
   {
    "p": "zeitsprung-wissen/sw.js",
-   "s": 1498,
-   "h": "cec162c33dde9f17d9447ab23230e35aaa39d8c8772752d8aff55d4424a3dbd5"
+   "s": 1511,
+   "h": "a2b10b2f834ad75935c2c4ddd0e8b0b2196f622354fee9f7d0ebe394d5b1eae8"
   },
   {
    "p": "zeitsprung-wissen/visual.js",
    "s": 2607,
    "h": "0cc2ced7fdf1aea623ee9a223a6ba4b4c4db1704005d8558d068f8ab737514d3"
+  },
+  {
+   "p": "zeitsprung-wissen/vito.js",
+   "s": 3038,
+   "h": "c9f463f5edc95fceb9ac3d2c67f93a1ac3ce3538731a2543edf842ad43643727"
   },
   {
    "p": "zeitsprung-wissen/year.js",

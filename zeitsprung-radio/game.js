@@ -1,4 +1,5 @@
 import { COLLECTIONS, TRACKS, VIDEOS, questionFor } from './tracks.js';
+import { speak, stop as stopVoice, readQuestion } from './vito.js';
 import { KNOWLEDGE, SPECIAL_CATEGORIES } from './knowledge.js';
 import { resolveDeezer, sourcesFor } from './music.js';
 import { yearChoices } from './year.js';
@@ -83,13 +84,13 @@ function init() {
   for (const category of [...Object.keys(COLLECTIONS),...SPECIAL_CATEGORIES]) { const option=document.createElement('option'); option.value=category; option.textContent=`${category} · ${quizPool(category).length} Fragen`; ui.category.append(option); }
   ui.addPlayer.onclick=()=>{if(state.players.length<4){state.players.push({name:`Spieler ${state.players.length+1}`,score:0,timeline:[]});playerInputs();}};
   ui.start.onclick=startGame;
-  ui.resume.onclick=()=>{if(loadSaved()){ui.category.value=state.filter;ui.musicMode.value=state.musicMode;playerInputs();showGame();renderRound();state.pair?.broadcast();say(`Willkommen zurück! ${currentPlayer().name}, deine Show geht weiter.`);}else{ui.resume.classList.add('hidden');}};
+  ui.resume.onclick=()=>{if(loadSaved()){ui.category.value=state.filter;ui.musicMode.value=state.musicMode;playerInputs();showGame();renderRound();state.pair?.broadcast();say(`Willkommen zurück! ${currentPlayer().name}, deine Show geht weiter.`);readCurrent();}else{ui.resume.classList.add('hidden');}};
   ui.menuButton.onclick=showMenu;
   $('menuTv').onclick=()=>{document.body.classList.add('tv-mode');ui.tvToggle.setAttribute('aria-pressed','true');openPair();};
   ui.playMusic.onclick=playMusic;
   ui.switchSource.onclick=switchSource;
   ui.swapClip.onclick=swapClip;
-  ui.soundToggle.onclick=()=>{state.voice=!state.voice;ui.soundToggle.setAttribute('aria-pressed',String(state.voice));ui.soundToggle.textContent=state.voice?'♫':'♪';if(!state.voice&&'speechSynthesis'in window)speechSynthesis.cancel();if(state.voice)say('Vito ist wieder live!');};
+  ui.soundToggle.onclick=()=>{state.voice=!state.voice;ui.soundToggle.setAttribute('aria-pressed',String(state.voice));ui.soundToggle.textContent=state.voice?'♫':'♪';if(!state.voice)stopVoice();if(state.voice)say('Vito ist wieder live!');};
   ui.tvToggle.onclick=()=>{const enabled=!document.body.classList.contains('tv-mode');document.body.classList.toggle('tv-mode',enabled);ui.tvToggle.setAttribute('aria-pressed',String(enabled));if(enabled)openPair();else{state.pair?.destroy();state.pair=null;ui.pairPanel.classList.add('hidden');}};
   ui.pairToggle.onclick=()=>{document.body.classList.add('tv-mode');ui.tvToggle.setAttribute('aria-pressed','true');openPair();};
   ui.pairClose.onclick=ui.pairDone.onclick=()=>ui.pairPanel.classList.add('hidden');
@@ -102,7 +103,8 @@ function init() {
 function showMenu() { if(!ui.game.classList.contains('hidden'))saveSession();stopPlayer();ui.game.classList.add('hidden');ui.setup.classList.remove('hidden');playerInputs();scrollTo({top:0,behavior:'smooth'});state.pair?.broadcast(); }
 function showGame() { ui.setup.classList.add('hidden');ui.game.classList.remove('hidden');scrollTo({top:0,behavior:'smooth'}); }
 function tone(freq,duration,type='sine') { if(!state.voice)return;try{audioContext||=new(window.AudioContext||window.webkitAudioContext)();audioContext.resume();const o=audioContext.createOscillator(),g=audioContext.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.035,audioContext.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);o.connect(g).connect(audioContext.destination);o.start();o.stop(audioContext.currentTime+duration);}catch(_){}}
-function say(message) { ui.hostText.textContent=message;if(!state.voice||!('speechSynthesis'in window))return;speechSynthesis.cancel();const line=new SpeechSynthesisUtterance(message);line.lang='de-DE';line.rate=1.04;line.pitch=.88;const de=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de'));line.voice=de.find(v=>/male|männ|daniel|markus|stefan|vito/i.test(v.name))||de[0]||null;speechSynthesis.speak(line); }
+function say(message,queue=false) { ui.hostText.textContent=message;if(state.voice)speak(message,{queue}); }
+function readCurrent() { if(!state.voice||!state.current||state.solved)return;const options=ui.quizOptions.classList.contains('hidden')?[]:[...ui.quizOptions.querySelectorAll('button')].map(button=>button.lastChild.textContent);readQuestion(ui.questionTitle.textContent,options); }
 function openPair() {
   state.pair ||= startHost({
     allocate(name) {
@@ -149,6 +151,7 @@ function nextRound(announce=true) {
   const canClip=clipPool().length>0;
   state.current=canClip&&(state.rounds===1||Math.random()<.42)?pickClip():pickQuiz();
   renderRound();if(announce)say(`${currentPlayer().name}, du bist dran! ${state.current.type==='timeline'?'Hör den Song und setze ihn auf deine Zeitleiste.':state.current.type==='year'?'Hör den Song und wähle das richtige Jahr aus A bis D.':'Hier kommt deine Musikfrage.'}`);
+  readCurrent();
   saveSession();state.pair?.broadcast();
 }
 function stopPlayer() { ui.playerBox.replaceChildren(); }
@@ -206,7 +209,7 @@ function renderSource() {
   ui.hostText.textContent=`Der ${source.name}-Player ist im Studio. Tippe darin auf Play. Wenn der Anbieter den Clip sperrt, wechsle die Quelle.`;
 }
 function switchSource() { if(!['timeline','year'].includes(state.current?.type)||state.solved)return;if(!state.playing){playMusic();return;}if(state.sourceList.length<2){ui.hostText.textContent='Für diesen Song gibt es gerade nur eine Quelle. Wähle bei Bedarf einen anderen Song.';return;}state.sourceIndex=(state.sourceIndex+1)%state.sourceList.length;renderSource(); }
-function swapClip() { if(!['timeline','year'].includes(state.current?.type)||state.solved)return;const pool=clipPool();if(!pool.length)return;const alternatives=pool.filter(t=>t.id!==state.current.track.id&&!state.players.some(player=>player.timeline.some(card=>card.id===t.id)));if(!alternatives.length)return;state.current=musicRound(shuffle(alternatives)[0]);state.playing=false;state.sourceList=[];state.sourceIndex=0;state.deezerId=null;renderRound();saveSession();state.pair?.broadcast();say('Neuer Song, neue Chance! Spiele ihn direkt hier im Studio ab.'); }
+function swapClip() { if(!['timeline','year'].includes(state.current?.type)||state.solved)return;const pool=clipPool();if(!pool.length)return;const alternatives=pool.filter(t=>t.id!==state.current.track.id&&!state.players.some(player=>player.timeline.some(card=>card.id===t.id)));if(!alternatives.length)return;state.current=musicRound(shuffle(alternatives)[0]);state.playing=false;state.sourceList=[];state.sourceIndex=0;state.deezerId=null;renderRound();saveSession();state.pair?.broadcast();say('Neuer Song, neue Chance! Spiele ihn direkt hier im Studio ab.');readCurrent(); }
 function answerTimeline(position,timeline=sortedTimeline()) { if(state.solved||state.current?.type!=='timeline')return;const track=state.current.track,previous=timeline[position-1],following=timeline[position];const correct=(!previous||previous.year<=track.year)&&(!following||track.year<=following.year);if(correct){currentPlayer().timeline.push(track);currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Treffer! ${track.title} von ${track.artist} erschien ${track.year}.`:`Nicht ganz. ${track.title} von ${track.artist} erschien ${track.year}.`,`${questionFor(track)} Antwort: ${track.year}.`); }
 function answerYear(index) { if(state.solved||state.current?.type!=='year'||index<0||index>3)return;const track=state.current.track,correct=state.current.options[index]===track.year;if(correct){currentPlayer().timeline.push(track);currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Richtig! ${track.title} von ${track.artist} erschien ${track.year}.`:`Nicht ganz. ${track.title} von ${track.artist} erschien ${track.year}.`,`Gesucht war das Veröffentlichungsjahr ${track.year}.`); }
 function answerQuiz(index) { if(state.solved||state.current?.type!=='quiz'||index<0||index>3)return;const {question,options}=state.current,correct=options[index]===question.answer;if(correct){currentPlayer().score++;tone(660,.22);setTimeout(()=>tone(880,.35),160);}else tone(230,.4,'triangle');completeRound(correct,correct?`Richtig, ${currentPlayer().name}! ${question.answer} ist die Antwort.`:`Leider falsch. Die richtige Antwort lautet ${question.answer}.`,question.prompt); }
