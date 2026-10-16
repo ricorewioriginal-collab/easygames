@@ -55,8 +55,43 @@ h1{margin:4px 0 8px;font-size:clamp(24px,5.4vw,40px);line-height:1.05;color:#ffe
 #touch button.pressed{filter:brightness(1.3);transform:translateY(2px)}
 @media(max-height:420px){#face{grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,44px)}#face button{width:50px;height:50px;font-size:16px}#face .a{width:56px;height:56px}#hud{font-size:11px}#hud span{padding:2px 6px}#sheet{padding:12px}h1{font-size:24px}#description{font-size:12px;margin:4px auto 8px}#buttons button{padding:8px}}
 @media(max-width:560px){#hud{gap:3px;font-size:11px}#hud span{padding:2px 5px}#hud #hRed{display:none}.world{grid-template-columns:repeat(4,1fr)}.wname{grid-column:1/-1}}
+#boot{position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(22px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 30%,#3a4a7a00 30%,#1c203899);cursor:pointer;transition:opacity .4s}
+#boot.gone{opacity:0;pointer-events:none}
+.bootLogo{text-align:center;animation:drop .7s cubic-bezier(.3,1.6,.5,1) both}
+.bootLogo small{display:block;font-weight:900;letter-spacing:5px;font-size:clamp(10px,2.4vw,14px);color:#ffe7b3;text-shadow:0 2px 0 #3a2f4f}
+.bootLogo b{display:block;font-size:clamp(54px,14vw,108px);line-height:.9;letter-spacing:4px;color:#ffb3cf;-webkit-text-stroke:3px #5b3a62;text-shadow:0 6px 0 #5b3a62,0 12px 18px #0007}
+.bootLogo span{display:block;font-weight:900;font-size:clamp(16px,4vw,28px);letter-spacing:3px;color:#ffe1a4;text-shadow:2px 3px 0 #674e70}
+@keyframes drop{from{transform:translateY(-60px) scale(.8);opacity:0}}
+.bootFoot{width:min(360px,80vw);text-align:center}
+.bootBar{height:12px;border:2px solid #fff2ce;border-radius:8px;background:#2f3354aa;overflow:hidden}
+.bootBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff9cc0,#ffd27a,#9fd8ff);animation:load 1s ease-out forwards}
+#boot.ready .bootBar i{width:100%;animation:none;transition:width .2s}
+@keyframes load{to{width:86%}}
+#bootPrompt{margin:10px 0 4px;font-weight:900;letter-spacing:2px;font-size:clamp(13px,3vw,18px);text-shadow:0 2px 0 #3a2f4f}
+#boot.ready #bootPrompt{animation:blink 1.1s steps(2) infinite;color:#fff3a0}
+@keyframes blink{50%{opacity:.25}}
+.bootCopy{margin:0;font-size:10px;opacity:.6;letter-spacing:1px}
+#overlay[data-view=title],#overlay[data-view=bonusmenu],#overlay[data-view=cloud]{background:linear-gradient(90deg,#1c2038e6,#1c203899 48%,#1c203811 80%)}
+#overlay[data-view=title]{place-items:center start}
+#overlay[data-view=title] #sheet{width:min(400px,100%);margin-left:max(2vw,env(safe-area-inset-left));background:none;border:0;outline:0;box-shadow:none;text-align:left;padding:8px 10px}
+#overlay[data-view=title] #seal{font-size:16px;letter-spacing:4px}
+#overlay[data-view=title] h1{font-size:clamp(28px,6vw,46px);color:#ffb3cf;-webkit-text-stroke:1.5px #5b3a62;text-shadow:0 4px 0 #5b3a62,0 8px 14px #0006}
+#overlay[data-view=title] #description{margin:4px 0 10px;font-size:12px;opacity:.9}
+#overlay[data-view=title] #buttons{grid-template-columns:1fr;gap:2px;margin-top:4px}
+#overlay[data-view=title] #buttons button{position:relative;padding:8px 10px 8px 34px;background:none;border:0;border-radius:10px;box-shadow:none;color:#fff6e2;text-align:left;font-size:clamp(15px,3.2vw,19px);letter-spacing:1.5px;text-shadow:2px 2px 0 #3a2f4f;transform:none}
+#overlay[data-view=title] #buttons button:is(:hover,:focus-visible,:focus){outline:none;color:#ffe18f;background:linear-gradient(90deg,#ffffff26,#ffffff00)}
+#overlay[data-view=title] #buttons button:is(:hover,:focus-visible,:focus)::before{content:'▶';position:absolute;left:10px;color:#ff9cc0;animation:nudge .6s ease-in-out infinite alternate}
+@keyframes nudge{to{transform:translateX(4px)}}
+#overlay[data-view=bonusmenu] #buttons{grid-template-columns:1fr}
+#overlay[data-view=bonusmenu] #buttons button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-height:460px){#overlay[data-view=title] #seal{display:none}#overlay[data-view=title] h1{font-size:26px;margin:0 0 2px}#overlay[data-view=title] #description{margin:0 0 4px;font-size:11px}#overlay[data-view=title] #buttons button{padding:4px 10px 4px 30px;font-size:15px}}
+#cloudBox{display:none;text-align:left}#overlay[data-view=cloud] #cloudBox{display:block}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
+<div id="boot" role="dialog" aria-label="Pufi &amp; der Farbwind – Startbildschirm">
+  <div class="bootLogo"><small>DIE FARBWIND-INSELN</small><b>PUFI</b><span>&amp; DER FARBWIND</span></div>
+  <div class="bootFoot"><div class="bootBar"><i></i></div><p id="bootPrompt">LÄDT …</p><p class="bootCopy">EasyGames · ein eigenes Insel-Abenteuer</p></div>
+</div>
 <main><canvas id="stage" width="960" height="540" aria-label="Pufi & der Farbwind – Spielfeld"></canvas></main>
 <header id="hud">
   <span id="hLevel">1-1</span><span id="hStars">★ 10</span><span id="hLives">♥ 5</span><span id="hEggs">🥚 0/6</span><span id="hCoins">● 0</span><span id="hRed">◎ 0/20</span><span id="hFlowers">✿ 0/5</span>
@@ -82,8 +117,10 @@ h1{margin:4px 0 8px;font-size:clamp(24px,5.4vw,40px);line-height:1.05;color:#ffe
   <p id="description"></p>
   <div id="extra"></div>
   <div id="buttons"></div>
+  <div id="cloudBox"><div id="cloudMount"></div></div>
 </section></div>
 <script src="./levels.js"></script>
 <script src="./game.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="pufi-farbwind" data-prefix="easygames.pufi-farbwind" data-mount="#cloudMount" data-hint="Mit Google anmelden: Inseln, Bestwerte und Bonus-Guthaben geräteübergreifend speichern." defer></script>
 <script>if('serviceWorker' in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
 </body></html>

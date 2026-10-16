@@ -167,7 +167,7 @@
   {
    "id": "pufi-farbwind",
    "title": "Pufi & der Farbwind",
-   "desc": "Insel-Jump-and-Run mit Pufi und Baby-Tamo auf dem Rücken: Flattersprung, Zunge zum Fangen, Eier legen, zielen und werfen, Stampfen, Sterne-Countdown bei Treffern, Farbringe als Rücksetzpunkte, rote Münzen, Farbblüten und Bestwert bis 100. 24 Level auf sechs Inseln, jede mit Bossburg. Vollbild, Tastatur, Touch-Stick und Gamepad, offline spielbar.",
+   "desc": "Insel-Jump-and-Run mit Pufi und Baby-Tamo auf dem Rücken: Flattersprung, Zunge zum Fangen, Eier legen, zielen und werfen, Stampfen, Sterne-Countdown bei Treffern, Farbringe als Rücksetzpunkte, rote Münzen, Farbblüten und Bestwert bis 100. 24 Level auf sechs Inseln mit eigenem Look und eigenen Hindernissen, jede mit Bossburg. Blüten-Roulette am Ziel und drei Bonusspiele, Ladescreen und Konsolen-Hauptmenü, Google-Speicher. Vollbild, Tastatur, Touch-Stick und Gamepad, offline spielbar.",
    "icon": "🎨",
    "img": "pufi-farbwind/card.svg",
    "bg": "linear-gradient(145deg,#dc95b8,#84d8ee)",
@@ -176,7 +176,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln mit je vier Leveln; das vierte ist eine Burg mit Boss. Wird Pufi getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter. Berühre die Blase, bevor der Zähler 0 erreicht, sonst holen ihn die Nebelgreifer und ein Leben ist weg. Fang Gegner mit der Zunge und mach daraus Eier (bis zu sechs folgen dir), ziele und wirf sie auf Gegner, Flügelwolken und Bosse. Der Farbring in der Mitte speichert den Fortschritt und schenkt +10 Sterne. Am Ziel zählen Sterne (30), rote Münzen (20) und Farbblüten (50) zu einem Bestwert bis 100.",
+    "anleitung": "Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln mit je vier Leveln; das vierte ist eine Burg mit Boss. Wird Pufi getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter. Berühre die Blase, bevor der Zähler 0 erreicht, sonst holen ihn die Nebelgreifer und ein Leben ist weg. Fang Gegner mit der Zunge und mach daraus Eier (bis zu sechs folgen dir), ziele und wirf sie auf Gegner, Flügelwolken und Bosse. Der Farbring in der Mitte speichert den Fortschritt und schenkt +10 Sterne. Am Ziel zählen Sterne (30), rote Münzen (20) und Farbblüten (50) zu einem Bestwert bis 100. Danach dreht sich das Blüten-Roulette: Jede gefundene Farbblüte färbt zwei Felder, und landet der Zeiger auf einer Blüte, startet ein Bonusspiel (Ballonjagd, Glückskarten oder Farbrad) mit Extraleben und Münzen. Im Hauptmenü unter BONUSSPIELE lassen sie sich auch direkt spielen; Gewinne gibt es dann für die nächste Runde. Unter GOOGLE-SPEICHER sicherst du Inseln und Bestwerte geräteübergreifend.",
     "steuerung": [
      "PC: ← → / A D laufen, Leertaste oder Z springen (halten = flattern), X/J Zunge (mit ↑ schräg nach oben), C/K Ei zielen und werfen, ↓/S Ei legen bzw. in der Luft stampfen, Esc/P Pause, F Vollbild, M Musik.",
      "Gamepad: Stick oder Steuerkreuz laufen, A springen/flattern, X Zunge, B oder R1 zielen/werfen, rechter Stick zielt direkt, Y oder Stick ↓ Ei legen/stampfen, Start Pause. Menüs lassen sich mit dem Gamepad bedienen.",
@@ -187,10 +187,12 @@
      "Stoß Eierblöcke von unten an, wenn dir die Eier ausgehen.",
      "Flattern lässt sich in der Luft neu starten: Taste loslassen und erneut halten.",
      "Stachelkugeln und Schnappblüten kann man nicht fressen – ein Ei hilft.",
-     "Rote Münzen sehen fast wie normale aus, achte auf den roten Kern."
+     "Rote Münzen sehen fast wie normale aus, achte auf den roten Kern.",
+     "Alle fünf Farbblüten machen das Roulette zum sicheren Bonusspiel.",
+     "Jede Insel spielt sich anders: bröckelnde Honigstufen, Pilz-Sprungfedern, Wolkenpfade, niedrige Höhlen und Lavabecken mit Schwebeplatten."
     ]
    },
-   "size": 106147,
+   "size": 137255,
    "files": 6,
    "offline": true
   },

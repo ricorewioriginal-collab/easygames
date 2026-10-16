@@ -51,7 +51,28 @@ const server = http.createServer((req, res) => {
     // ---- Tastatur, Mechanik ----
     const page = await browser.newPage({ viewport: { width: 960, height: 540 } }); watch(page);
     await page.goto(url);
+    // Ladescreen → Taste → Konsolen-Hauptmenü
+    assert.equal(await page.evaluate(() => PufiTest.state().mode), 'boot');
+    await page.waitForSelector('#boot.ready', { timeout: 4000 });
+    if (shots) await page.screenshot({ path: path.join(shots, 'pufi-boot.png') });
+    await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => PufiTest.state().mode), 'title');
+    await page.waitForTimeout(500);
+    assert(await page.locator('#boot').isHidden(), 'Ladescreen verschwindet');
+    const menu = await page.locator('#buttons button').allTextContents();
+    for (const m of ['INSELKARTE', 'BONUSSPIELE', 'OPTIONEN', 'GOOGLE-SPEICHER']) assert(menu.includes(m), 'Hauptmenü zeigt ' + m + ': ' + menu);
+    if (shots) await page.screenshot({ path: path.join(shots, 'pufi-title.png') });
+    const camA = await page.evaluate(() => PufiTest.state().cam.x); await page.waitForTimeout(400);
+    assert(await page.evaluate(a => PufiTest.state().cam.x > a, camA), 'Vorspann scrollt hinter dem Menü');
+    // Google-Speicher ist wieder eingebunden
+    assert.equal(await page.locator('script[src="../cloud/anmacha-cloud.js"][data-game="pufi-farbwind"][data-prefix="easygames.pufi-farbwind"][data-mount="#cloudMount"]').count(), 1);
+    await page.getByRole('button', { name: 'GOOGLE-SPEICHER' }).click();
+    assert.equal(await page.evaluate(() => PufiTest.state().mode), 'cloud');
+    assert(await page.locator('#cloudMount').isVisible() && /Google/.test(await page.locator('#cloudMount').innerText()), 'Google-Anmeldung sichtbar');
+    if (shots) await page.screenshot({ path: path.join(shots, 'pufi-cloud.png') });
+    await page.keyboard.press('Escape');
+    assert.equal(await page.evaluate(() => PufiTest.state().mode), 'title');
+    await page.waitForTimeout(50);
     await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => PufiTest.state().mode), 'play');
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(500); await page.keyboard.up('ArrowRight');
@@ -100,7 +121,7 @@ const server = http.createServer((req, res) => {
       const lives = s.session.lives; s.P.inv = 0; A.hurt(); s.L.stars = 1; step(60 * 6);
       const s2 = S(); r.livesLost = lives - s2.session.lives; r.respawnAtRing = Math.abs(s2.P.x - (ring.x - 8)) < 40 && s2.L.baby.on; r.modeAfter = s2.mode;
       // Ziel → Abrechnung → nächstes Level frei
-      s = flat(); s.P.x = s.L.goal.x + 2; step(130); r.clear = S().mode; r.unlocked = S().save.unlocked; r.best = S().save.best[0];
+      s = flat(); s.L.counts.flowers = 0; s.P.x = s.L.goal.x + 2; step(60 * 2); r.roulette = !!S().L.roulette; step(60 * 4); r.clear = S().mode; r.unlocked = S().save.unlocked; r.best = S().save.best[0];
       // Boss: nur Eier verletzen ihn
       A.startLevel(3); s = S(); s.L.enemies = []; s.P.x = s.L.arenaX + 64; s.P.eggs = 6; step(30);
       r.locked = s.L.locked; r.bossHp = s.L.boss && s.L.boss.hp;
@@ -117,7 +138,7 @@ const server = http.createServer((req, res) => {
     assert(mech.babyOff); assert(mech.starsAfter2s <= 8, 'Countdown läuft'); assert(mech.rescued, 'Tamo wird gerettet'); assert.equal(mech.regen, 10, 'Sterne laden bis 10 nach');
     assert(mech.ringPassed); assert(mech.ringStars >= 20, 'Farbring gibt +10 Sterne');
     assert.equal(mech.livesLost, 1); assert(mech.respawnAtRing, 'Neustart am Farbring'); assert.equal(mech.modeAfter, 'play');
-    assert.equal(mech.clear, 'clear'); assert(mech.unlocked >= 2); assert(mech.best > 0);
+    assert(mech.roulette, 'Blüten-Roulette am Ziel'); assert.equal(mech.clear, 'clear'); assert(mech.unlocked >= 2); assert(mech.best > 0);
     assert(mech.locked && mech.bossHp >= 3); assert(mech.bossDone && mech.unlockedArena);
     console.log('OK  Mechanik:', JSON.stringify(mech));
 
@@ -148,7 +169,7 @@ const server = http.createServer((req, res) => {
       }
       return out;
     });
-    for (const b of bot) assert(b.mode === 'clear' && b.lost <= 0, 'Roboter schafft Level ' + (b.n + 1) + ' nicht: ' + JSON.stringify(b));
+    for (const b of bot) assert((b.mode === 'clear' || b.mode === 'bonus') && b.lost <= 0, 'Roboter schafft Level ' + (b.n + 1) + ' nicht: ' + JSON.stringify(b));
     console.log('OK  Spielroboter schafft alle 24 Level ohne Absturz');
 
     // ---- Alle Level zeichnen und Bildrate grob prüfen ----
@@ -160,6 +181,49 @@ const server = http.createServer((req, res) => {
     assert(perf.p90 < 12, 'Zeichnen dauert zu lange: ' + JSON.stringify(perf));
     console.log('OK  alle Level zeichnen, Median ' + perf.median.toFixed(1) + ' ms, 90 % unter ' + perf.p90.toFixed(1) + ' ms');
     if (shots) await page.screenshot({ path: path.join(shots, 'pufi-desktop.png') });
+
+    // ---- Blüten-Roulette und Bonusspiele ----
+    const bonus = await page.evaluate(() => {
+      const A = PufiTest, S = A.state, r = {};
+      const run = sec => { for (let i = 0; i < sec * 60; i++) { if (!A.bonus()) break; A.tickBonus(1 / 60); } };
+      // Alle 5 Blüten → Roulette landet sicher auf einer Blüte → Bonusspiel
+      A.startLevel(0); let s = S(); s.L.enemies = []; for (let i = 0; i < 40; i++) A.tick(1 / 60);
+      s.L.counts.flowers = 5; s.P.x = s.L.goal.x + 2; const lives = s.session.lives;
+      for (let i = 0; i < 60 * 6 && S().mode === 'play'; i++) A.tick(1 / 60);
+      r.fromLevel = S().mode; r.kind = A.bonus() && A.bonus().kind;
+      // Karten: feste Reihenfolge
+      A.startBonus('cards', true); let b = A.bonus();
+      b.cards = ['life', 'c10', 'x2', 'c20', 'bad', 'bad', 'c10', 'c10', 'c10', 'life', 'c20', 'x2'].map(k => ({ k, open: 0, flip: 0 }));
+      A.flipCard(0); A.flipCard(1); A.flipCard(2); A.flipCard(3); A.flipCard(4); r.cardsPrize = { ...b.prizes }; A.flipCard(5); r.cardsOver = b.over;
+      run(2); r.cardsDone = S().mode; r.livesAfter = S().session.lives - lives;
+      // Farbrad: drei Herzen
+      A.startBonus('wheel', false); b = A.bonus(); const bank0 = S().save.bank.lives;
+      for (let i = 0; i < 3; i++) { b.reels[i].pos = 2; A.bonusPress('jump'); }
+      r.wheelPrize = { ...b.prizes }; run(2); r.bank = S().save.bank.lives - bank0; r.wheelDone = S().mode;
+      // Ballonjagd: Ballon direkt über Pufi
+      A.startBonus('balloons', false); b = A.bonus(); b.spawn = 99;
+      b.balloons.push({ x: b.x, y: 120, vy: 0, k: 'life', col: '#ff8fb1', ph: 0 });
+      A.bonusPress('jump'); run(0.6); r.balloonPrize = { ...b.prizes };
+      b.time = 0; run(3); r.balloonDone = S().mode;
+      return r;
+    });
+    assert.equal(bonus.fromLevel, 'bonus', 'Roulette startet Bonusspiel'); assert(['balloons', 'cards', 'wheel'].includes(bonus.kind));
+    assert.deepEqual(bonus.cardsPrize, { lives: 1, coins: 50 }, 'Karten: 1UP, 10, ×2, 20×2'); assert(bonus.cardsOver, 'zweiter Nebelgreifer beendet die Runde');
+    assert.equal(bonus.cardsDone, 'bonusdone'); assert.equal(bonus.livesAfter, 1, 'Bonusleben zählen im Spiel');
+    assert.deepEqual(bonus.wheelPrize, { lives: 3, coins: 0 }); assert.equal(bonus.bank, 3, 'Menü-Gewinn wird gutgeschrieben'); assert.equal(bonus.wheelDone, 'bonusdone');
+    assert.equal(bonus.balloonPrize.lives, 1, 'Ei lässt Ballon platzen'); assert.equal(bonus.balloonDone, 'bonusdone');
+    await page.evaluate(() => PufiTest.openBonusMenu());
+    assert.equal(await page.locator('#buttons button:not([disabled])', { hasText: 'BALLONJAGD' }).count(), 1, 'Ballonjagd im Menü spielbar');
+    if (shots) await page.screenshot({ path: path.join(shots, 'pufi-bonusmenu.png') });
+    await page.locator('#buttons button', { hasText: 'BALLONJAGD' }).click();
+    assert.equal(await page.evaluate(() => PufiTest.state().mode), 'bonus');
+    await page.keyboard.down('ArrowRight'); await page.waitForTimeout(300); await page.keyboard.up('ArrowRight');
+    assert(await page.evaluate(() => PufiTest.bonus().x > PufiTest.state().VW / 2 + 10), 'Pfeiltaste bewegt Pufi im Bonusspiel');
+    await page.keyboard.press('Space'); await page.waitForTimeout(100);
+    assert(await page.evaluate(() => PufiTest.bonus().eggs.length >= 1), 'Leertaste wirft im Bonusspiel');
+    if (shots) { await page.waitForTimeout(1500); await page.screenshot({ path: path.join(shots, 'pufi-bonus-balloons.png') });
+      for (const k of ['cards', 'wheel']) { await page.evaluate(k => { PufiTest.startBonus(k, false); if (k === 'cards') { PufiTest.flipCard(0); PufiTest.flipCard(5); } else PufiTest.stopReel(); }, k); await page.waitForTimeout(400); await page.screenshot({ path: path.join(shots, 'pufi-bonus-' + k + '.png') }); } }
+    console.log('OK  Blüten-Roulette, Ballonjagd, Glückskarten, Farbrad, Bonusmenü');
 
     // ---- Optionen bleiben gespeichert, Karte zeigt Bestwerte ----
     await page.evaluate(() => PufiTest.openOptions());
@@ -178,8 +242,10 @@ const server = http.createServer((req, res) => {
     });
     await gp.goto(url);
     await gp.evaluate(() => { const e = new Event('gamepadconnected'); e.gamepad = window.__pad; window.dispatchEvent(e); });
-    await gp.evaluate(() => window.__press(0, true)); await gp.waitForTimeout(120); await gp.evaluate(() => window.__press(0, false)); await gp.waitForTimeout(120);
-    assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'play', 'A startet aus dem Menü');
+    await gp.waitForSelector('#boot.ready', { timeout: 4000 });
+    const tapA = async () => { await gp.evaluate(() => window.__press(0, true)); await gp.waitForTimeout(120); await gp.evaluate(() => window.__press(0, false)); await gp.waitForTimeout(120); };
+    await tapA(); assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'title', 'A verlässt den Ladescreen');
+    await tapA(); assert.equal(await gp.evaluate(() => PufiTest.state().mode), 'play', 'A startet aus dem Menü');
     await gp.waitForTimeout(300);
     await gp.evaluate(() => { window.__pad.axes[0] = 1; }); await gp.waitForTimeout(600); await gp.evaluate(() => { window.__pad.axes[0] = 0; });
     assert(await gp.evaluate(() => PufiTest.state().P.x > 70), 'Stick bewegt Pufi');
