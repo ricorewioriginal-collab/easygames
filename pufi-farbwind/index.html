@@ -1,132 +1,89 @@
 <!doctype html>
 <html lang="de"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#353857"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Pufi & der Farbwind – eigenständiges handgezeichnetes Retro-Jump-and-Run mit sechs Inseln.">
+<meta name="description" content="Pufi & der Farbwind – Insel-Jump-and-Run: Flattersprung, Zunge, Farbeier werfen und Tamo vor den Nebelgreifern retten.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./card.svg" type="image/svg+xml">
-<title>Pufi & der Farbwind – Die Farbwind-Inseln</title>
+<title>Pufi & der Farbwind</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#303552;color:#fff8e4;font-family:system-ui,Arial,sans-serif}
-body{height:100dvh;touch-action:none;-webkit-user-select:none;user-select:none}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #ffeba4;outline-offset:3px}button:disabled{cursor:not-allowed;opacity:.42}
-main{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#adc0c8 0%,#323658 83%)}
-canvas{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges}
-#top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:calc(8px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));background:linear-gradient(#34364bdc,#34364b00);font-weight:900;font-size:13px;text-shadow:0 2px 2px #32394b}
-#where{margin-right:auto;white-space:nowrap}#mountStatus{color:#baf2df;background:#343e60c2;border:1px solid #aff2d76b;border-radius:10px;padding:4px 7px;font-size:11px}#top span:not(#where){background:#323d64bd;border:1px solid #faf2d063;border-radius:9px;padding:4px 8px}#hearts{color:#ffbfd2}#top button{padding:5px 9px;background:#535476ba;border:1px solid #ffefd38a;border-radius:9px;font-size:12px}
-#overlay{position:absolute;inset:0;z-index:7;display:grid;place-items:center;overflow:auto;padding:66px 15px 22px;background:linear-gradient(135deg,#3d3d61d4,#263956b8);backdrop-filter:blur(5px)}[hidden]{display:none!important}
-#sheet{max-height:100%;overflow:auto;width:min(530px,100%);padding:21px 25px;border:4px solid #ffe6b3;border-radius:23px;background:linear-gradient(154deg,#7184a9,#424260 65%,#363951);box-shadow:0 7px 0 #6f5678,0 23px 50px #121632b0;text-align:center}
-#seal{font-size:clamp(28px,5vw,42px);line-height:1.1;text-shadow:3px 4px 0 #685a78}
-#subtitle{letter-spacing:3px;font-size:12px;font-weight:900;color:#ffe7b3;margin:10px 0}
-h1{margin:0;font-size:clamp(28px,6vw,44px);line-height:1.06;color:#ffe1a4;text-shadow:3px 4px #6c5479}
-#description{font-size:14px;line-height:1.55;color:#f5f2eb;margin:15px auto;max-width:465px}
-#actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 0 12px}
-#actions button{min-width:0;padding:13px 11px;font-weight:900;border:2px solid #fff5d6;border-radius:12px;background:#d18aaa;box-shadow:0 4px 0 #76536f}
-#actions button:first-child{background:#ffdb90;color:#4f4661;border-color:#fff8d8}
-#worldMap{display:block;max-width:100%;width:100%;height:auto;border:3px solid #d8e5e2;box-shadow:inset 0 0 0 2px #42476b;margin:6px auto 13px;image-rendering:pixelated}#stageList{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px}
-.island{padding:11px 9px;text-align:left;font-size:12px;background:#59638a;border:1px solid #eee4ff83;border-radius:9px}
-.island.picked{background:#a97a9e;border-color:#fff0c5;box-shadow:0 0 0 2px #ffecb3}
-#help{font-size:11px;line-height:1.5;opacity:.86}
-#overlay[data-view="gameover"]{background:#3c203ed9}
-#overlay[data-view="gameover"] #sheet{border-color:#ffb1ae;background:linear-gradient(145deg,#6d3b67,#332b50);box-shadow:0 8px 0 #9a557a,0 24px 70px #120e28}
-#overlay[data-view="gameover"] h1{color:#ffc0b4;font-size:clamp(38px,8vw,56px);letter-spacing:2px}
-#overlay[data-view="clear"] #sheet,#overlay[data-view="win"] #sheet{border-color:#ffdf91}
-#touch{position:absolute;z-index:5;inset:auto 0 0;display:flex;justify-content:space-between;align-items:flex-end;gap:9px;padding:0 max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));pointer-events:none}
-.pad,.rightpad{display:flex;align-items:end;gap:6px;pointer-events:none}.rightpad{justify-content:flex-end;max-width:56%;flex-wrap:wrap}
-#touch button{pointer-events:auto;height:62px;width:60px;border:3px solid #ffefd8a8;border-radius:15px;background:#555d82c9;box-shadow:0 5px #2a2b4fb0;touch-action:none;font-weight:900;font-size:21px}
-#touch [data-action="jump"]{width:75px;height:75px;border-radius:50%;background:#ffcd88;color:#4b4260}
-#touch [data-action="mount"]{background:#6ebea9}#touch [data-action="throw"]{background:#c98aaf}#touch [data-action="grab"]{background:#7ab8ac}
-#touch button small{font-size:8px;display:block;letter-spacing:.2px}
-#touch button.pressed{transform:translateY(4px);box-shadow:0 1px #2a2b4fb0}
-@media (pointer:fine){#touch{opacity:.3}#touch:hover{opacity:.93}}
-@media(max-width:700px){#mountStatus{font-size:9px;padding:3px 5px}#where{font-size:10px}#top{gap:4px;font-size:11px}#top span:not(#where){padding:3px 5px}#touch button{width:47px;height:52px;font-size:18px;border-width:2px;border-radius:12px}#touch [data-action="jump"]{width:57px;height:65px}.rightpad{max-width:61%}.pad,.rightpad{gap:4px}}
-@media(max-width:440px){#sheet{padding:15px}#actions{grid-template-columns:1fr}#stageList{grid-template-columns:1fr 1fr}}
-@media(max-height:520px){#overlay{padding:41px 14px 13px}#sheet{padding:12px}#seal{font-size:24px}#subtitle{margin:3px}h1{font-size:25px}#description{font-size:12px;margin:7px auto}#actions button{padding:8px}#help{font-size:10px}#touch button{width:48px;height:48px}#touch [data-action="jump"]{width:57px;height:59px}}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#262a45;color:#fff6e2;font-family:'Trebuchet MS',system-ui,sans-serif}
+body{height:100dvh;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:3px solid #ffe7a0;outline-offset:2px}
+[hidden]{display:none!important}
+main{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#262a45}
+body.portrait main{align-items:flex-start;padding-top:calc(46px + env(safe-area-inset-top))}
+canvas#stage{display:block;image-rendering:auto}
+#hud{position:fixed;top:0;left:0;right:0;z-index:3;display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));pointer-events:none;font-weight:900;font-size:13px;text-shadow:0 2px 0 #3a2f4f}
+#hud span{background:#2f3354b8;border:1px solid #ffefc955;border-radius:10px;padding:3px 8px;white-space:nowrap}
+#hud #hStars{color:#fff3a0}#hud #hStars.danger{background:#9a3d62e0;animation:pulse .6s steps(2) infinite}
+@keyframes pulse{50%{background:#d0577f}}
+#hud .grow{flex:1}
+#hud button{pointer-events:auto;min-width:34px;height:30px;padding:0 8px;background:#4c5078cc;border:1px solid #ffefc988;border-radius:10px;font-size:15px;font-weight:900}
+#overlay{position:fixed;inset:0;z-index:7;display:grid;place-items:center;overflow:auto;padding:max(14px,env(safe-area-inset-top)) 14px 14px;background:radial-gradient(ellipse at 50% 40%,#2a3a5a88,#1c2038e0)}
+#sheet{width:min(560px,100%);max-height:100%;overflow:auto;padding:18px 22px;border:4px solid #f5dfb2;outline:2px solid #856879;border-radius:22px;background:linear-gradient(150deg,#7484a6,#4b5578 62%,#3f4160);box-shadow:inset 0 0 0 2px #fff0c255,0 8px 0 #5d475d,0 24px 60px #0e1026cc;text-align:center}
+#overlay[data-view=gameover] #sheet{border-color:#ffb1ae;background:linear-gradient(150deg,#7a4470,#3a2c55)}
+#overlay[data-view=clear] #sheet{border-color:#ffe18f}
+#seal{font-size:26px;letter-spacing:6px;color:#ffe1a4}
+h1{margin:4px 0 8px;font-size:clamp(24px,5.4vw,40px);line-height:1.05;color:#ffe1a4;text-shadow:2px 3px 0 #674e70;letter-spacing:.5px}
+#description{margin:6px auto 12px;max-width:470px;font-size:14px;line-height:1.5}
+#buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+#buttons button{padding:12px 8px;font-weight:900;font-size:14px;border:2px solid #fff2ce;border-radius:13px;background:#cf88aa;box-shadow:inset 0 2px #ffffff70,0 4px 0 #6f4f68}
+#buttons button.primary{background:#ffd98e;color:#4b4060;grid-column:1/-1}
+#buttons button:active{transform:translateY(3px);box-shadow:inset 0 2px #ffffff70,0 1px 0 #6f4f68}
+.map{display:grid;gap:6px;text-align:left}
+.world{display:grid;grid-template-columns:minmax(110px,1.4fr) repeat(4,1fr);gap:6px;align-items:center}
+.wname{font-size:12px;font-weight:900;color:#ffeec4}
+.lvl{white-space:pre-line;padding:7px 2px;font-size:12px;font-weight:900;line-height:1.15;background:#5b668f;border:2px solid #e9e1ff88;border-radius:9px}
+.lvl:disabled{opacity:.35;cursor:not-allowed}.lvl.perfect{background:#b07aa6;border-color:#ffe7a0}
+.keys{width:100%;border-collapse:collapse;font-size:12px;text-align:left}.keys th,.keys td{padding:5px 6px;border-bottom:1px solid #ffffff22}.keys th{color:#ffe1a4}
+.tip{font-size:12px;line-height:1.5;opacity:.92;margin:10px 0 0}
+.tally{display:grid;grid-template-columns:1fr auto;gap:6px 14px;text-align:left;font-size:15px;max-width:340px;margin:0 auto}.tally .sum{font-size:18px;color:#ffe1a4;border-top:1px solid #ffffff44;padding-top:6px}
+#touch{position:fixed;inset:auto 0 0 0;z-index:5;height:min(46vh,230px);pointer-events:none}
+#stickZone{position:absolute;left:0;bottom:0;width:45%;height:100%;pointer-events:auto;touch-action:none}
+#stickBase{position:absolute;left:90px;top:60%;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;background:#ffffff1c;border:3px solid #ffffff55;opacity:.55;transition:opacity .15s}
+#stickBase.active{opacity:1}
+#stickKnob{position:absolute;left:24px;top:24px;width:44px;height:44px;border-radius:50%;background:#ffe5f0d0;border:3px solid #fff;box-shadow:0 3px 0 #0004}
+#dpad{position:absolute;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,50px);pointer-events:none}
+#dpad button{pointer-events:auto;touch-action:none;background:#3e4566d0;border:2px solid #c6c8dc;border-radius:10px;color:#ffe9b3;font-size:18px}
+#dpad .u{grid-area:1/2}#dpad .l{grid-area:2/1}#dpad .r{grid-area:2/3}#dpad .d{grid-area:3/2}
+#face{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,52px);pointer-events:none}
+#face button{pointer-events:auto;touch-action:none;width:58px;height:58px;border-radius:50%;border:3px solid #fff3d8;font-weight:900;font-size:19px;line-height:1;box-shadow:inset 0 2px #ffffff80,0 4px #00000055;display:grid;place-content:center;opacity:.9}
+#face button small{display:block;font:900 8px system-ui,sans-serif;margin-top:2px}
+#face .x{grid-area:1/2;background:#6f93d6}#face .y{grid-area:2/1;background:#9b78b5}#face .a{grid-area:2/3;background:#ffcf88;color:#4b4060;width:66px;height:66px}#face .b{grid-area:3/2;background:#e3879f}
+#touch button.pressed{filter:brightness(1.3);transform:translateY(2px)}
+@media(max-height:420px){#face{grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,44px)}#face button{width:50px;height:50px;font-size:16px}#face .a{width:56px;height:56px}#hud{font-size:11px}#hud span{padding:2px 6px}#sheet{padding:12px}h1{font-size:24px}#description{font-size:12px;margin:4px auto 8px}#buttons button{padding:8px}}
+@media(max-width:560px){#hud{gap:3px;font-size:11px}#hud span{padding:2px 5px}#hud #hRed{display:none}.world{grid-template-columns:repeat(4,1fr)}.wname{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
-
-/* Eigenständige 16-Bit-Konsolenästhetik ohne fremde Menü-Assets */
-#overlay{background:linear-gradient(135deg,#202340dd,#333657cc),repeating-linear-gradient(0deg,#fff1d014 0 4px,#0000 4px 8px)}
-#sheet{font-family:'Courier New',monospace;border-radius:5px;border:6px solid #fce8bd;outline:4px solid #4d4c73;box-shadow:inset 0 0 0 3px #b8a0c0,0 9px 0 #292840,0 28px 65px #151529d9;background:repeating-linear-gradient(0deg,#ffffff08 0 3px,#00000008 3px 6px),linear-gradient(145deg,#656a9b,#343c69 65%,#303350)}
-#subtitle{letter-spacing:2px;color:#ffde89}h1{font-family:'Courier New',monospace;font-weight:900;letter-spacing:1px;text-shadow:4px 4px 0 #49385e}
-#actions button,.island,#controllerChoices button{border-radius:4px;box-shadow:inset 2px 2px #ffffff65,inset -3px -3px #594d6a,0 4px #252843;transition:filter .1s}
-#actions button:active,.island:active,#controllerChoices button:active{transform:translateY(3px);box-shadow:inset 1px 1px #ffffff65,inset -2px -2px #594d6a}
-#optionSection{padding:4px 0 13px}.settingTitle{font-size:12px;color:#ffe2a3;font-weight:900}
-#controllerChoices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-#controllerChoices button{background:#56618e;border:2px solid #bab6d7;color:#fff4cf;font-weight:900;padding:12px 4px;font-size:12px}
-#controllerChoices button.selected{background:#a76e9f;border-color:#fff1c3}
-#controlLabel{font-size:12px;color:#ddffdf;font-weight:900}
-.controlHelp{font-size:11px;line-height:1.6;color:#fff1d2}
-#touch{align-items:center;gap:7px;pointer-events:none}
-#leftControls,#faceControls{pointer-events:none;flex:0 0 auto;position:relative}
-.crosspad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,47px);place-items:stretch;filter:drop-shadow(0 4px 0 #29283d)}
-.crosspad button{pointer-events:auto!important;background:#404761!important;border:2px solid #b0b2c8!important;box-shadow:inset 2px 2px #868ca7,inset -2px -2px #242c4e!important;color:#ffe9b3;border-radius:4px!important;width:100%!important;height:100%!important;padding:0!important}
-.crosspad .up{grid-column:2;grid-row:1}.crosspad .left{grid-column:1;grid-row:2}.crosspad .hub{grid-column:2;grid-row:2;display:grid;place-items:center;background:#404761;color:#929bb9}.crosspad .right{grid-column:3;grid-row:2}.crosspad .down{grid-column:2;grid-row:3}
-#swipeZone{width:156px;height:141px;position:relative;display:grid;place-items:center;overflow:hidden;border:3px solid #c8b6cf;border-radius:8px;background:radial-gradient(circle at center,#566189,#313957);touch-action:none;pointer-events:auto}
-#swipeZone:before{content:'';position:absolute;inset:9px;border:1px dashed #ffffff8a;border-radius:7px;pointer-events:none}
-#swipeCursor{position:absolute;top:calc(50% - 19px);left:calc(50% - 19px);width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#dfb4bb;border:3px solid #fff0cf;box-shadow:0 3px 0 #594b68;pointer-events:none}
-.swipeHint{position:absolute;bottom:8px;text-align:center;font-size:9px;line-height:1.2;color:#fff1d4;pointer-events:none}
-#faceControls{display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,47px);align-items:center;justify-items:center;transform:rotate(-6deg)}
-#faceControls .face{width:50px;height:48px;pointer-events:auto;border:3px solid #f4e9ce;border-radius:50%;box-shadow:inset 2px 2px #ffffff80,inset -3px -3px #473e66,0 4px #2b2c45;padding:3px 0 0;display:grid;place-items:center;align-content:center;line-height:1.1}
-#faceControls .face b{font-size:22px;font-family:'Courier New',monospace}#faceControls .face small{display:block;font:900 8px system-ui,sans-serif;letter-spacing:-.2px}
-#faceControls .face.x{grid-column:2;grid-row:1;background:#678dcc}
-#faceControls .face.y{grid-column:1;grid-row:2;background:#9671ad}
-#faceControls .face.a{grid-column:3;grid-row:2;background:#78af90}
-#faceControls .face.b{grid-column:2;grid-row:3;background:#dfab6d;color:#343950}
-#faceControls .face.pressed,.crosspad button.pressed{filter:brightness(1.3);transform:translateY(3px);box-shadow:inset 2px 2px #493956!important}
-@media(max-width:650px){.crosspad{grid-template-columns:repeat(3,43px);grid-template-rows:repeat(3,40px)}#faceControls{grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,40px)}#faceControls .face{width:43px;height:42px}#faceControls .face b{font-size:18px}#faceControls .face small{font-size:7px}#swipeZone{width:129px;height:120px}}
-@media(max-width:390px){.crosspad{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(3,35px)}#faceControls{grid-template-columns:repeat(3,39px);grid-template-rows:repeat(3,35px)}#faceControls .face{width:39px;height:38px}#swipeZone{width:114px;height:108px}}
-@media(max-height:420px){.crosspad{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(3,35px)}#faceControls{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,35px)}#faceControls .face{width:40px;height:37px}#swipeZone{width:115px;height:105px}}
-
-/* Timed rescue warning – readable over mobile gameplay, never blocks touch */
-#rescueStatus{position:absolute;z-index:4;top:calc(45px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);pointer-events:none;background:#5a315ddd;border:3px solid #fbe19b;box-shadow:3px 4px 0 #262943;color:#fff5c6;padding:7px 12px;font:900 clamp(11px,2.5vw,16px) 'Courier New',monospace;letter-spacing:.4px;white-space:nowrap;animation:rescuePulse 1s steps(2) infinite}
-@keyframes rescuePulse{50%{background:#9a4f70}}
-@media(max-height:410px){#rescueStatus{top:calc(36px + env(safe-area-inset-top));padding:3px 8px;font-size:10px}}
-/* Painterly high-resolution presentation: a warm paper palette rather than hard pixel scaling. */
-canvas{image-rendering:auto;image-rendering:high-quality}
-#overlay{background:radial-gradient(ellipse at 50% 42%,#27395666,#26304ad9),repeating-linear-gradient(13deg,#fff7dc08 0 2px,#0000 2px 8px);backdrop-filter:blur(2px)}
-#sheet{font-family:'Trebuchet MS',system-ui,sans-serif;border:4px solid #f5dfb2;outline:2px solid #856879;border-radius:23px;background:radial-gradient(ellipse at 12% 7%,#fff5d433,transparent 43%),repeating-linear-gradient(106deg,#ffffff08 0 2px,#0000 2px 9px),linear-gradient(145deg,#717f9b,#4c5679 67%,#414260);box-shadow:inset 0 0 0 2px #fff0c2,0 8px 0 #60495f,0 26px 62px #14162cd9}
-#seal{filter:drop-shadow(2px 3px 0 #7b5878)}
-#subtitle{font-family:Georgia,serif;letter-spacing:2.4px}
-h1{font-family:'Trebuchet MS',system-ui,sans-serif;font-weight:1000;letter-spacing:.3px;text-shadow:2px 3px 0 #674e70,0 0 12px #fff2c433}
-#actions button{border:2px solid #fff2ce;border-radius:14px;box-shadow:inset 0 2px #ffffff80,0 5px 0 #76546d;transition:transform .12s,filter .12s}
-#actions button:hover{filter:brightness(1.08);transform:translateY(-2px)}
-.island{border-radius:12px;box-shadow:inset 0 1px #ffffff56,0 3px 0 #353b5d}
-#worldMap{image-rendering:auto;border-radius:12px}
-#touch button{border-radius:18px!important;box-shadow:inset 0 2px #ffffff70,0 5px #2a2b4fb0}
 </style></head><body>
-<main><canvas id="stage" width="960" height="540" aria-label="Pufi und Tamo – handgemaltes Retro-Abenteuer mit Reitbegleiter, Schwebe-Sprung und Farb-Samen"></canvas></main>
-<header id="top"><span id="where">1/6 · Blütenbucht</span><span id="mountStatus">🐾 TAMO AN BORD</span><span id="hearts">♥♥♥</span><span id="ammo">● 4/6</span><span id="flowers">❀ 0</span><span id="score">✦ 0</span><button id="sound" aria-label="Ton umschalten">♪ AN</button><button id="options" aria-label="Controller-Optionen">⚙</button><button id="pause" aria-label="Pause">Ⅱ</button></header>
-<div id="rescueStatus" role="status" aria-live="polite" hidden>TAMO RETTEN!</div>
-<div id="touch" hidden aria-label="Konsolensteuerung">
-<div id="leftControls">
-  <div id="dpadControls" class="crosspad" aria-label="Steuerkreuz">
-    <button class="up" data-action="jump" aria-label="Steuerkreuz oben – springen">▲</button>
-    <button class="left" data-action="left" aria-label="Steuerkreuz links">◀</button>
-    <span class="hub" aria-hidden="true">✦</span>
-    <button class="right" data-action="right" aria-label="Steuerkreuz rechts">▶</button>
-    <button class="down" data-action="down" aria-label="Steuerkreuz unten – stampfen">▼</button>
+<main><canvas id="stage" width="960" height="540" aria-label="Pufi & der Farbwind – Spielfeld"></canvas></main>
+<header id="hud">
+  <span id="hLevel">1-1</span><span id="hStars">★ 10</span><span id="hLives">♥ 5</span><span id="hEggs">🥚 0/6</span><span id="hCoins">● 0</span><span id="hRed">◎ 0/20</span><span id="hFlowers">✿ 0/5</span>
+  <i class="grow"></i>
+  <button id="fullscreen" type="button" aria-label="Vollbild">⛶</button><button id="sound" type="button" aria-label="Ton umschalten">♪</button><button id="pause" type="button" aria-label="Pause">Ⅱ</button>
+</header>
+<div id="touch" hidden>
+  <div id="stickZone" aria-label="Bewegen: Daumen auflegen und ziehen"><div id="stickBase"><div id="stickKnob"></div></div></div>
+  <div id="dpad" hidden aria-label="Steuerkreuz">
+    <button class="u" data-action="up" aria-label="oben">▲</button><button class="l" data-action="left" aria-label="links">◀</button>
+    <button class="r" data-action="right" aria-label="rechts">▶</button><button class="d" data-action="down" aria-label="unten">▼</button>
   </div>
-  <div id="swipeControls" hidden aria-label="Wisch-Touchfeld">
-    <div id="swipeZone" aria-label="Finger wischen: links, rechts, oben oder unten"><span id="swipeCursor">✦</span><span class="swipeHint">WISCHEN<br>← ↑ ↓ →</span></div>
+  <div id="face" aria-label="Aktionstasten">
+    <button class="x" data-action="tongue" aria-label="X – Zunge">X<small>ZUNGE</small></button>
+    <button class="y" data-action="down" aria-label="Y – Ei legen oder stampfen">Y<small>EI ▼</small></button>
+    <button class="a" data-action="jump" aria-label="A – springen, halten zum Flattern">A<small>SPRUNG</small></button>
+    <button class="b" data-action="throw" aria-label="B – Ei zielen und werfen">B<small>WERFEN</small></button>
   </div>
 </div>
-<div id="faceControls" aria-label="Vier Retro-Aktionstasten">
-<button class="face x" data-action="grab" aria-label="X – Farbsaugen"><b>X</b><small>SAUGEN</small></button>
-<button class="face y" data-action="mount" aria-label="Y – auf Tamo reiten oder absteigen"><b>Y</b><small>REITEN</small></button>
-<button class="face a" data-action="jump" aria-label="A – springen und schweben"><b>A</b><small>SPRUNG</small></button>
-<button class="face b" data-action="throw" aria-label="B – zielen und werfen"><b>B</b><small>WERFEN</small></button>
-</div>
-</div>
-<div id="overlay" data-view="title"><section id="sheet"><div id="seal" aria-hidden="true">✿ ☁ ✦</div><div id="subtitle">DIE FARBWIND-INSELN</div><h1 id="heading">PUFI & DER FARBWIND</h1><p id="description">Handgezeichnetes Retro-Abenteuer</p><canvas id="worldMap" width="480" height="180" hidden aria-label="Sechs eigenständige Farbwind-Inseln als Karte"></canvas><div id="stageList" hidden></div>
-<div id="optionSection" hidden>
-<p class="settingTitle">LINKS: BEWEGUNGSSTEUERUNG</p>
-<div id="controllerChoices">
-<button id="chooseDpad" type="button">✚ STEUERKREUZ</button>
-<button id="chooseSwipe" type="button">◉ TOUCHFELD / WISCHEN</button>
-</div>
-<p id="controlLabel">STEUERKREUZ AKTIV</p>
-<p class="controlHelp">RECHTS: A SPRINGEN · B WERFEN · X SAUGEN · Y REITEN<br>
-PC: PFEILE/WASD, A=LEERTASTE, B=K/X, X=C/J, Y=R/V</p>
-</div>
-<div id="actions"><button id="primary">START GAME ▶</button><button id="secondary">INSELKARTE</button></div><div id="help">PC: ← → / A D laufen · R/V reiten · A = Leertaste springen · B = K/X werfen · X = C/J saugen · ↓/S stampfen · Esc/P Pause.<br>Handy: links Steuerkreuz oder Wischfeld, rechts A/B/X/Y. Wechsel über ⚙ OPTIONEN. Wird Tamo getroffen, rette ihn binnen 15 Sekunden vor den Nebelgreifern!</div></section></div>
+<div id="overlay" data-view="title"><section id="sheet" role="dialog" aria-labelledby="heading">
+  <div id="seal" aria-hidden="true">✿ ☁ ✦</div>
+  <h1 id="heading">PUFI & DER FARBWIND</h1>
+  <p id="description"></p>
+  <div id="extra"></div>
+  <div id="buttons"></div>
+</section></div>
+<script src="./levels.js"></script>
 <script src="./game.js"></script>
 <script>if('serviceWorker' in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
 </body></html>
