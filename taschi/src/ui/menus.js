@@ -48,7 +48,7 @@ export function openPauseMenu(game, tab = 'team') {
     const v = screen.el.querySelector('#cardview');
     if (v) { game.preview.attach(v); game.preview.showCharacter(game.save.player.look).hold('wave'); } else game.preview.detach();
   });
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); post(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); post(); };
   screen.el = render();
   post();
   screen.onBack = () => ui.pop(screen);
@@ -233,9 +233,10 @@ export function openMoveManager(game, m, onDone) {
           rerender();
         } }, 'Lernen ★' + RELEARN_PRICE)))) : h('p', {}, 'Im Moment gibt es nichts zu erinnern.')), { small: true });
   };
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
   screen.el = render();
   screen.onBack = () => game.ui.pop(screen);
+  screen.onMenu = () => game.ui.pop(screen);
   screen.onClose = () => onDone && onDone();
   game.ui.push(screen);
 }
@@ -291,7 +292,7 @@ export function openShop(game, clerkName) {
         : h('div.list', {}, sellable.length ? sellable.map(id => h('div.row', {}, h('div.grow', {}, h('b', {}, ITEMS[id].name), h('div.muted', {}, '×' + s.bag[id])), h('span.right', {}, '★' + sellPrice(id)), h('button.chip.focusable', { onclick: () => { const r = Items.sell(s, id, 1); game.audio.sfx(r.ok ? 'item' : 'error'); game.ui.toast(r.text); rerender(); } }, 'Verkaufen'))) : h('p', {}, 'Nichts zu verkaufen.')));
     return panel(game, 'Laden · ' + clerkName, body);
   };
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
   screen.el = render();
   return new Promise(res => { screen.onBack = () => game.ui.pop(screen); screen.onClose = res; game.ui.push(screen); });
 }
@@ -305,7 +306,7 @@ export function openStorage(game) {
     h('div.grid', {}, s.team.map((m, i) => monCard(game, m, i, () => { if (s.team.length <= 1) { game.ui.toast('Mindestens ein Taschi muss im Team bleiben.'); return; } s.team.splice(i, 1); s.box.unshift(m); game.world.refreshFollower(); rerender(); }))),
     h('h3', {}, 'Lager (' + s.box.length + ') – antippen zum Aufnehmen'),
     s.box.length ? h('div.grid', {}, s.box.map((m, i) => monCard(game, m, 1, () => { if (s.team.length >= 6) { game.ui.toast('Dein Team ist voll.'); return; } s.box.splice(i, 1); s.team.push(m); game.world.refreshFollower(); rerender(); }))) : h('p.muted', {}, 'Das Lager ist leer.')));
-  const rerender = () => { const old = screen.el; screen.el = render(); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
+  const rerender = () => { const old = screen.el; screen.el = render(); screen.el.classList.add('noanim'); old.replaceWith(screen.el); screen.nav = new FocusNav(screen.el); screen.nav.ensure(); };
   screen.el = render();
   return new Promise(res => { screen.onBack = () => game.ui.pop(screen); screen.onClose = res; game.ui.push(screen); });
 }

@@ -445,7 +445,7 @@ export class World {
     this.encounterCooldown--;
     const g = this.inGrass();
     if (!g || this.encounterCooldown > 0 || !this.save.flags.firstQuest) return;
-    if (Math.random() < g.rate) { this.encounterCooldown = 4; this.game.randomEncounter(g.habitat); }
+    if (Math.random() < g.rate) { this.encounterCooldown = 4; this.game.script(() => this.game.randomEncounter(g.habitat)); }
   }
   checkTrainerSight() {
     const pp = this.player.root.position;

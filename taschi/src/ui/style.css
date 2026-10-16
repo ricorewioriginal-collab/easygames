@@ -44,6 +44,8 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 /* ---------------------------------------------------------- panels / screens */
 .screen { pointer-events: auto; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: max(10px, var(--safe-t)) max(10px, var(--safe-r)) max(10px, var(--safe-b)) max(10px, var(--safe-l)); background: rgba(8, 18, 34, .45); backdrop-filter: blur(4px); z-index: 30; animation: fadeIn .18s ease; }
 @keyframes fadeIn { from { opacity: 0; } }
+/* re-rendered screens (tab switches, list updates) appear instantly */
+.screen.noanim, .screen.noanim .panel { animation: none; }
 @keyframes rise { from { transform: translateY(18px); opacity: 0; } }
 .panel { background: var(--panel); border-radius: 22px; box-shadow: 0 0 0 4px rgba(255,255,255,.55), 0 0 0 7px rgba(30, 50, 80, .55), var(--shadow); width: min(980px, 100%); max-height: 100%; display: flex; flex-direction: column; overflow: hidden; animation: rise .22s ease; }
 .panel.small { width: min(560px, 100%); }

@@ -161,8 +161,8 @@ export function migrateV1(old) {
   for (let i = 0; i < 16; i++) if (i <= s.badges && (i === 0 || s.champions[i - 1])) r = i;
   s.location = { map: 'region:' + r, x: 0, z: 34, ry: Math.PI, spawn: 'heal' };
   s.lastHeal = { map: 'region:' + r, x: 0, z: 34, spawn: 'heal' };
-  const starter = s.team.find(m => ['glutzahn', 'plaetscher', 'samenling', 'glutdrach', 'panzerlon', 'bluetling'].includes(m.id));
-  if (starter) s.flags.starter = ['glutzahn', 'glutdrach'].includes(starter.id) ? 'glutzahn' : ['plaetscher', 'panzerlon'].includes(starter.id) ? 'plaetscher' : 'samenling';
+  const starter = s.team.find(m => ['glutzahn', 'plaetscher', 'samenling', 'glutdrach', 'panzerlon', 'bluetling', 'magmadrach', 'gezeitenlon', 'florakron'].includes(m.id));
+  if (starter) s.flags.starter = ['glutzahn', 'glutdrach', 'magmadrach'].includes(starter.id) ? 'glutzahn' : ['plaetscher', 'panzerlon', 'gezeitenlon'].includes(starter.id) ? 'plaetscher' : 'samenling';
   return validate(s);
 }
 

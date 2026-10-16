@@ -21,8 +21,8 @@ import { SPECIES } from '../data/species.js';
 import { ITEMS } from '../data/items.js';
 import { MOVES } from '../data/moves.js';
 import { TYPES } from '../data/types.js';
-import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS } from '../data/trainers.js';
-import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, professorLines } from '../data/story.js';
+import { TRAINERS, GUILD_BATTLES, GUILD_MEMBERS, RIVAL_STAGES, rivalTrainer } from '../data/trainers.js';
+import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
 import { gainsText } from '../logic/battle.js';
 import { rollEncounter, levelRange } from '../logic/encounters.js';
@@ -172,7 +172,10 @@ export class Game {
       else { await this.world.loadRegion(r, 'heal', prog); }
     }, kind === 'region' ? (r === 16 ? 'Sternengipfel' : REGIONS[r].name) : 'Unterwegs …');
     this.world.buildPlayer();
-    const sp = loc.spawn ? (this.world.current.layout.spawn[loc.spawn] || this.world.current.layout.spawn.start) : loc;
+    let sp = loc.spawn ? (this.world.current.layout.spawn[loc.spawn] || this.world.current.layout.spawn.start) : loc;
+    // saves from before the map expansion may point at a spot that is now
+    // blocked (a tree or rock) – fall back to the heal centre then
+    if (!loc.spawn && this.world.current.type === 'region' && this.world.blocked(sp.x, sp.z)) sp = this.world.current.layout.spawn.heal || this.world.current.layout.spawn.start;
     this.world.placePlayer(sp.x, sp.z, sp.ry ?? 0);
     this.world.player.root.visible = true;
     this.afterRegionLoaded();
@@ -196,6 +199,35 @@ export class Game {
       this.setState(STATES.WORLD);
     } finally { await this.ui.fade(false); this.busy--; }
     this.saveNow();
+    await this.maybeRival();
+  }
+  // Rivale Rian waits on arrival in selected regions (see RIVAL_STAGES).
+  async maybeRival() {
+    const s = this.save, c = this.world.current;
+    if (c?.type !== 'region') return;
+    const stage = RIVAL_STAGES.findIndex(x => x.region === c.region);
+    if (stage < 0 || s.trainers['rival_' + stage] || !s.flags.starter || !s.team.some(m => m.hp > 0)) return;
+    const t = rivalTrainer(stage, s.flags.starter), lines = RIVAL.stages[stage];
+    const p = this.world.player.root.position, ry = this.world.player.root.rotation.y;
+    let sx = p.x + Math.sin(ry) * 7, sz = p.z + Math.cos(ry) * 7;
+    if (this.world.blocked(sx, sz)) { sx = p.x + 2; sz = p.z + 2; }
+    const n = this.world.addNPC({ id: 'rival', role: 'trainer', name: RIVAL.name, x: sx, z: sz, ry: ry + Math.PI, talk: 'rival' });
+    const say = async (arr) => { const live = this.world.npcs.includes(n); for (const l of arr) { if (live) n.ch.setTalking(true, l.mood); await this.ui.say([{ who: 'Rivale ' + RIVAL.name, text: l.text }]); } if (live) n.ch.setTalking(false); };
+    try {
+      this.busy++;
+      this.audio.sfx('encounter');
+      await new Promise(res => { n.walkTo = { x: p.x + Math.sin(ry) * 1.6, z: p.z + Math.cos(ry) * 1.6, speed: 4, done: res }; });
+      await say(lines.before);
+      const res = await this.trainerBattle(t, n, { music: stage === 4 ? 'champion' : 'trainer' });
+      if (res.outcome === 'win') {
+        await say(lines.win);
+        if (stage === 4) { P.grantReward(s, { items: { vitaltrank: 3, sternball: 3, levelbonbon: 2 } }); this.ui.toast('Von Rian erhalten: 3× Vitaltrank, 3× Sternball, 2× EP-Bonbon', '🎒'); }
+      } else if (res.outcome === 'lose') await say(lines.lose);
+    } finally {
+      this.busy--;
+      if (this.world.npcs.includes(n)) n.walkTo = { x: n.ch.root.position.x + 25, z: n.ch.root.position.z + 25, speed: 5, done: () => { this.world.scene.remove(n.ch.root); this.world.npcs = this.world.npcs.filter(x => x !== n); } };
+      this.saveNow();
+    }
   }
   async enterInterior(kind) {
     const c = this.world.current;
@@ -499,6 +531,7 @@ export class Game {
         if (q) await this.questTalk(n, P.questById(q.id));
         return;
       }
+      if (n.talk === 'rival') { ch.setTalking(true, 'happy'); await this.ui.say([{ who: 'Rivale ' + RIVAL.name, text: 'Wir sehen uns weiter oben auf dem Weg!' }]); ch.setTalking(false); return; }
       if (n.talk === 'family') { ch.setTalking(true); await this.ui.say([{ who: n.name, text: 'Schön, dass du vorbeischaust! Setz dich, wir haben gerade Tee gekocht. Hast du schon ' + REGIONS[Math.min(15, r)].landmark.name + ' gesehen?' }]); ch.setTalking(false); return; }
       if (n.talk === 'assistant') { ch.setTalking(true); await this.ui.say([{ who: n.name, text: 'Der Professor ist so stolz auf dich! Wusstest du, dass Taschis schneller wachsen, wenn sie im Team mitkämpfen?' }]); ch.setTalking(false); return; }
       if (n.talk === 'brix') { ch.setTalking(true, 'happy'); await this.ui.say([{ who: 'Brix', text: s.league >= 5 ? 'Sternenmeister! Schnurrik und ich bauen jetzt Nistkästen statt Fangmaschinen.' : 'Die Lichter sind frei. Viel Glück in der Sternenliga!' }]); ch.setTalking(false); return; }
@@ -563,7 +596,7 @@ export class Game {
   }
   async ulmeFinish(ulme) {
     const s = this.save;
-    for (const l of ULME.afterBattle) { ulme.ch.setTalking(true, l.mood); await this.ui.say([l]); }
+    for (const l of [...ULME.afterBattle, RIVAL.ulme]) { ulme.ch.setTalking(true, l.mood); await this.ui.say([l]); }
     ulme.ch.setTalking(false);
     P.grantReward(s, { items: { taschiball: 5, heilball: 2, trank: 3 }, keyItem: 'pfadkarte' });
     this.audio.sfx('item');
