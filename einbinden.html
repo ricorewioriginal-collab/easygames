@@ -55,7 +55,7 @@
   <nav class="toc" aria-label="Inhalt">
     <a href="#wahl">Welche Variante?</a><a href="#gen">Code-Generator</a><a href="#link">Direktlink</a><a href="#iframe">iframe</a>
     <a href="#js">JavaScript</a><a href="#lib">Bibliothek</a><a href="#vollbild">Vollbild</a><a href="#nav">Zurück &amp; TV</a>
-    <a href="#geraet">Geräteerkennung</a><a href="#android">Android-App</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
+    <a href="#geraet">Geräteerkennung</a><a href="#android">Android-App</a><a href="#retro">EmulationStation</a><a href="#tvlink">TV-Link</a><a href="#neu">Neues Spiel</a><a href="#msg">postMessage</a><a href="#app">App &amp; Offline</a><a href="#host">Eigener Server</a><a href="#hilfe">Fehlerhilfe</a>
   </nav>
 
   <section id="wahl">
@@ -66,6 +66,7 @@
       <tr><td><a href="#iframe">iframe</a></td><td>Ein Spiel soll mitten in einer Seite laufen.</td><td>1 Zeile</td></tr>
       <tr><td><a href="#js">easygames.js</a></td><td>Spiele per Attribut oder JavaScript-Variable einbauen, mit Vollbild-Knopf. Die Spieleliste kommt automatisch mit.</td><td>2 Zeilen</td></tr>
       <tr><td><a href="#lib">Bibliothek</a></td><td>Die komplette Übersicht mit Suche, Anleitungen und Spielfenster in deine Seite einbetten.</td><td>1 Zeile</td></tr>
+      <tr><td><a href="#retro">EmulationStation</a></td><td>Spiele im Retro-Frontend (ES-DE, RetroPie, Batocera) auf Konsole, Handheld oder Wohnzimmer-PC.</td><td>2 Befehle</td></tr>
       <tr><td><a href="#app">App</a></td><td>Spiele in einer Android-, iOS- oder Hybrid-App, auch offline.</td><td>je nach App</td></tr>
     </table></div>
     <div class="note">Faustregel: Wo Vollbild wichtig ist (Handy, TV, App), öffne das Spiel am besten direkt als <b>eigene Seite</b> (Direktlink). Das ist am zuverlässigsten.</div>
@@ -287,6 +288,55 @@ parent.postMessage({ type: 'easygames:getDevice' }, '*');   // jetzt anfordern
     </ul>
     <h3>Bauen</h3>
     <p>Die App wird auf eurem Server gebaut (<code>android/build.sh</code>, Anleitung in <code>android/README.md</code>). Ein neues APK ist nur für App-Änderungen nötig, nicht für Spiele-Updates.</p>
+  </section>
+
+  <section id="retro">
+    <h2>EmulationStation &amp; Retro-Konsolen <span class="tag">neu</span></h2>
+    <p>Alle easygames-Spiele lassen sich mit einem Skript in <b>EmulationStation</b> einrichten (ES-DE, RetroPie, Batocera/Ports und ähnliche Frontends). In der Systemliste erscheint die Kategorie <b>„RicoReWi easygames“</b> mit Titelbild und Beschreibung zu jedem Spiel – gestartet wird wie bei einem Retro-Spiel per Controller. Das Spiel läuft im Browser-Vollbild.</p>
+    <h3>Was du brauchst</h3>
+    <ul>
+      <li><b>Python 3.8 oder neuer</b> (nur die Standardbibliothek, nichts nachinstallieren).</li>
+      <li>Einen Browser: <b>Chromium, Chrome, Edge oder Firefox</b>. Er wird automatisch gefunden (sonst <code>--browser PFAD</code>).</li>
+      <li>Ein installiertes Frontend (ES-DE, RetroPie, Batocera …).</li>
+    </ul>
+    <h3>Schnellstart (online)</h3>
+    <p><b>Linux, Steam Deck, RetroPie, macOS</b> (Terminal):</p>
+<pre>curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/emulationstation.py
+python3 emulationstation.py install</pre>
+    <p><b>Windows</b> (PowerShell):</p>
+<pre>Invoke-WebRequest https://ricorewioriginal-collab.github.io/easygames/tools/emulationstation.py -OutFile emulationstation.py
+py emulationstation.py install</pre>
+    <p>Danach EmulationStation neu starten. Das Skript erkennt das Frontend selbst. Mit <code>--frontend es-de|retropie|ports</code> und <code>--roms ORDNER</code> lässt sich das festlegen. Neue Spiele holst du, indem du <code>install</code> einfach erneut ausführst.</p>
+    <h3>Offline-Variante</h3>
+<pre>git clone --depth 1 https://github.com/ricorewioriginal-collab/easygames
+python3 easygames/tools/emulationstation.py install --mode offline</pre>
+    <p>Dabei startet beim Spielstart ein kleiner lokaler Webserver (nur dein Gerät), der die Dateien aus dem Ordner liefert. Einige Spiele laden ihre 3D-Bibliothek (three.js) oder Schrift beim ersten Start noch aus dem Internet. Die komplett offline lauffähige Fassung aller Bibliotheken steckt in den Apps. Für den Dauerbetrieb ganz ohne Netz ist daher die Android-App der sicherere Weg; die Offline-Variante ist für das Wohnzimmer mit schwachem Netz gedacht.</p>
+    <h3>Optionen</h3>
+    <div class="tw"><table>
+      <tr><th>Option</th><th>Wirkung</th></tr>
+      <tr><td><code>--mode online|offline</code></td><td>Von der Homepage (Standard) oder aus lokaler Kopie spielen.</td></tr>
+      <tr><td><code>--only id1,id2</code> / <code>--exclude id1,id2</code></td><td>Nur bestimmte Spiele einrichten bzw. auslassen. Die IDs zeigt <code>python3 emulationstation.py list</code>.</td></tr>
+      <tr><td><code>--tv</code></td><td>Spiele mit Mehrspieler-Lobby öffnen direkt den QR-Code, damit sich Handys als Controller koppeln.</td></tr>
+      <tr><td><code>--window</code></td><td>Im Fenster statt im Vollbild starten.</td></tr>
+      <tr><td><code>--browser PFAD</code></td><td>Bestimmten Browser verwenden.</td></tr>
+      <tr><td><code>--no-images</code></td><td>Keine Titelbilder anlegen.</td></tr>
+      <tr><td><code>--dry-run</code></td><td>Nur anzeigen, was eingerichtet würde.</td></tr>
+      <tr><td><code>uninstall</code></td><td>Alles Angelegte wieder entfernen (auch den Systemeintrag).</td></tr>
+    </table></div>
+    <h3>Steuerung</h3>
+    <ul>
+      <li>Browser unterstützen Controller (Gamepad-Schnittstelle). Viele Spiele erkennen ein Gamepad selbst; wo nicht, hilft ein Mapping auf Tasten, zum Beispiel mit <b>AntiMicroX</b> (Windows/Linux), <b>joy2key</b> (RetroPie) oder <b>Steam Input</b>.</li>
+      <li><b>Handy als Controller:</b> Viele Mehrspieler-Spiele (Quiz, Rennen, Show-Spiele) koppeln Handys per QR-Code. Mit <code>--tv</code> erscheint der Code gleich beim Start – ideal am Fernseher.</li>
+      <li><b>Beenden:</b> Der Vollbild-Browser schließt mit <code>Alt+F4</code>. Auf Handhelds legst du das im Mapping auf eine Tastenkombination (zum Beispiel Select+Start).</li>
+    </ul>
+    <h3>Gut zu wissen</h3>
+    <ul>
+      <li>Speicherstände und Einstellungen bleiben erhalten. Sie liegen im eigenen Browser-Profil unter <code>…/easygames/.easygames/browser-profile</code>.</li>
+      <li>Die Skripte liegen unter <code>…/ROMs/easygames/</code>. Ein Spiel lässt sich einzeln testen: <code>python3 …/.easygames/emulationstation.py launch anmacha-quiz --window</code>.</li>
+      <li>Ohne PNG-Titelbild (manche Spiele haben nur ein SVG) erzeugt das Skript ein Farbverlaufsbild; mit <code>rsvg-convert</code>, Inkscape oder ImageMagick wird das echte Bild umgewandelt.</li>
+      <li><b>Getestet</b> ist die Einrichtung (Dateien, Spieleliste, Systemeintrag, Startbefehl) auf Linux für ES-DE und RetroPie. Windows, macOS und Batocera sind vorbereitet, aber noch nicht auf echten Geräten geprüft – Rückmeldungen willkommen.</li>
+    </ul>
+    <div class="note">Das Skript und der Test liegen im Repository: <code>tools/emulationstation.py</code>, <code>tools/test-emulationstation.py</code>.</div>
   </section>
 
   <section id="tvlink">

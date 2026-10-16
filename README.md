@@ -79,6 +79,18 @@ Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle S
 - Bibliotheken für Offline: `vendor/` (`node tools/fetch-vendor.js`), Zuordnung `vendor/map.json`; Prüfung aller Spiele: `node tools/offline-audit.js`
 - Server (Timer, Manifest-Push, APK-Bau): `android/server/` und `android/README.md`
 
+## EmulationStation (ES-DE, RetroPie, Batocera)
+
+`tools/emulationstation.py` richtet alle Spiele in EmulationStation ein: Startskript je Spiel, Kategorie „RicoReWi easygames“, Spieleliste mit Titelbild und Beschreibung. Nur Python 3.8+ und ein Browser nötig.
+
+```bash
+curl -fsSLO https://ricorewioriginal-collab.github.io/easygames/tools/emulationstation.py
+python3 emulationstation.py install            # online; --mode offline mit lokaler Kopie des Repos
+python3 emulationstation.py uninstall          # alles wieder entfernen
+```
+
+Optionen (`--only`, `--exclude`, `--tv`, `--window`, `--browser`, `--frontend`, `--roms`, `--dry-run`) und Hinweise stehen auf der Homepage unter „Einbinden & Hilfe“ → EmulationStation. Test: `python3 tools/test-emulationstation.py`. Neue Spiele aus `games.js` werden beim erneuten `install` automatisch übernommen.
+
 ## Neues Spiel hinzufügen
 
 Alles Weitere (Kachel, Suche, Filter, Anleitung, Einbettung, Teilen, TV-Navigation) ergibt sich aus den Einträgen:
