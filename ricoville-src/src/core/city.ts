@@ -686,7 +686,11 @@ export class City {
     const d = this.def(b);
     if (b.state !== 'done' || !d.recipes?.includes(recipeId)) return fail('Dieses Rezept gibt es hier nicht.');
     if (b.job) return fail('Hier läuft schon etwas.');
+    if (d.needsRoad && !this.hasRoadAccess(b)) return fail('Keine Straße angeschlossen.');
     if (!this.hasItems(r.inputs)) return fail('Dir fehlen Zutaten.');
+    // Platz fürs Ergebnis gleich mit prüfen, sonst bleibt der Platz nach dem Herstellen blockiert.
+    const used = Object.values(r.inputs).reduce((a, v) => a + v, 0);
+    if (this.storageUsed() - used + r.amount > this.storageCap()) return fail('Das Lager ist zu voll für das Ergebnis.');
     this.takeItems(r.inputs);
     b.job = r.id;
     b.t = this.now() + this.dur(r.time);
@@ -714,6 +718,7 @@ export class City {
     const d = this.def(b);
     if (b.state !== 'done' || d.station !== o.station) return fail('Dieser Auftrag passt nicht zu dieser Station.');
     if (b.job) return fail('Es ist schon eine Lieferung unterwegs.');
+    if (d.needsRoad && !this.hasRoadAccess(b)) return fail('Keine Straße angeschlossen.');
     if (o.level > this.s.level && !this.creative) return fail(`Ab Level ${o.level}.`);
     if (o.give && !this.hasItems(o.give)) return fail('Dir fehlen Waren für diesen Auftrag.');
     const p = this.pay(o.cost);

@@ -121,7 +121,8 @@ export class App {
     });
     window.addEventListener('pagehide', () => this.saveNow());
     window.addEventListener('storage', (e) => {
-      if (this.inGame && e.key === saveKey(this.slot) && this.saves.storedRev() > this.city.s.rev) this.conflict();
+      // Gelöscht (anderer Tab) zählt auch: sonst würde dieser Tab die Stadt beim nächsten Speichern wieder anlegen.
+      if (this.inGame && e.key === saveKey(this.slot) && (e.newValue === null || this.saves.storedRev() > this.city.s.rev)) this.conflict();
     });
     window.addEventListener('online', () => this.hud());
     window.addEventListener('offline', () => this.hud());
@@ -194,6 +195,7 @@ export class App {
   // ================================================================ Menü
   private showMenu(): void {
     this.leaveGame();
+    this.parkCloud();
     this.ui.innerHTML = '';
     const main = this.loadSlot('main');
     const creative = this.loadSlot('creative');
@@ -289,11 +291,6 @@ export class App {
     this.world.sync();
     this.hud();
     this.saveNow();
-    const cloud = document.getElementById('cloudMount');
-    if (cloud) {
-      cloud.classList.add('hidden');
-      document.body.append(cloud);
-    }
     this.introQuest();
     if (slot === 'main') void this.socialStart();
   }
@@ -310,6 +307,7 @@ export class App {
 
   // ================================================================ HUD
   private buildHud(): void {
+    this.parkCloud();
     this.ui.innerHTML = '';
     const tb = (id: string, e: string, label: string, fn: () => void) =>
       (this.els[id] = h('button', { class: 'tb', id: `tb-${id}`, onclick: () => (this.audio.play('click'), fn()), 'aria-label': label }, h('span', { class: 'e' }, e), label));
@@ -518,18 +516,24 @@ export class App {
     this.syncState = 'conflict';
     this.hud();
     const stored = parse(localStorage.getItem(saveKey(this.slot)));
-    this.openPanel('Neuerer Spielstand gefunden', h('div', {},
-      h('p', {}, 'Deine Stadt wurde inzwischen in einem anderen Tab oder auf einem anderen Gerät weitergespielt. Damit nichts verloren geht, wurde hier nicht überschrieben.'),
+    this.openPanel(stored ? 'Neuerer Spielstand gefunden' : 'Spielstand wurde gelöscht', h('div', {},
+      h('p', {}, stored
+        ? 'Deine Stadt wurde inzwischen in einem anderen Tab oder auf einem anderen Gerät weitergespielt. Damit nichts verloren geht, wurde hier nicht überschrieben.'
+        : 'Diese Stadt wurde in einem anderen Tab gelöscht. Dieser Tab speichert sie nicht wieder, außer du willst es.'),
       stored ? h('div', { class: 'kv' },
         h('span', {}, 'Gespeicherter Stand'), h('span', {}, `Level ${stored.level} · ${num(stored.coins)} 💰 · ${new Date(stored.savedAt).toLocaleString('de-DE')}`),
         h('span', {}, 'Dieser Tab'), h('span', {}, `Level ${this.city.s.level} · ${num(this.city.s.coins)} 💰`)) : null,
       h('div', { class: 'btns' },
-        h('button', { class: 'btn good', onclick: () => {
+        stored ? h('button', { class: 'btn good', onclick: () => {
           const s = this.saves.adopt();
           this.syncState = 'ok';
           this.closePanel();
           if (s) this.enter(s, this.slot);
-        } }, 'Neueren Stand laden'),
+        } }, 'Neueren Stand laden') : h('button', { class: 'btn good', id: 'btn-conflict-menu', onclick: () => {
+          this.closePanel();
+          this.showMenu(); // syncState bleibt bis hier 'conflict', damit beim Verlassen nicht gespeichert wird
+          this.syncState = 'ok';
+        } }, 'Zum Menü'),
         h('button', { class: 'btn alt', onclick: () => {
           this.syncState = 'ok';
           this.saves.force(this.city.s, this.clock());
@@ -774,7 +778,12 @@ export class App {
     }
   }
 
-  private onPaint(cx: number, cy: number, phase: 'start' | 'move' | 'end'): void {
+  private onPaint(cx: number, cy: number, phase: 'start' | 'move' | 'end' | 'cancel'): void {
+    if (phase === 'cancel') {
+      this.roadStroke = null;
+      this.placebar();
+      return;
+    }
     const t = this.tileAt(cx, cy);
     if (phase === 'start') {
       if (!t) return;
@@ -866,7 +875,16 @@ export class App {
     this.panel = p;
     this.panelRefresh = refresh ?? null;
   }
+  /** Der Cloud-Bereich gehört dem easygames-Skript: vor dem Leeren von Menü, HUD oder Fenster zurück in den body. */
+  private parkCloud(): void {
+    const cloud = document.getElementById('cloudMount');
+    if (cloud && cloud.parentElement !== document.body) {
+      cloud.classList.add('hidden');
+      document.body.append(cloud);
+    }
+  }
   private closePanel(): void {
+    this.parkCloud();
     this.panel?.remove();
     this.panel = null;
     this.panelRefresh = null;
@@ -1687,7 +1705,7 @@ export async function resetCaches(): Promise<void> {
     const regs = (await navigator.serviceWorker?.getRegistrations()) ?? [];
     await Promise.all(regs.map((r) => r.unregister()));
     const keys = (await caches?.keys()) ?? [];
-    await Promise.all(keys.filter((k) => k.startsWith('ricoville')).map((k) => caches.delete(k)));
+    await Promise.all(keys.filter((k) => k.startsWith('eg-ricoville-')).map((k) => caches.delete(k)));
   } catch {
     /* egal */
   }

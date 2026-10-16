@@ -858,7 +858,8 @@ export class World {
       this.updateTransport();
       this.updateAmbient(dt);
     }
-    this.yawShown += (this.yaw - this.yawShown) * Math.min(1, dt * 8);
+    // Ohne Animationen (dt = 0) springt die Drehung sofort, statt stehen zu bleiben.
+    this.yawShown = dt > 0 ? this.yawShown + (this.yaw - this.yawShown) * Math.min(1, dt * 8) : this.yaw;
     this.placeCamera();
     this.sun.position.set(this.target.x - 18, 40, this.target.z + 14);
     this.sun.target.position.copy(this.target);
