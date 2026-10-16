@@ -58,6 +58,16 @@
   .info{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px;flex:1}
   .tile b{font-size:17px;line-height:1.25;overflow-wrap:anywhere}
   .tile small{color:#9fb4c8;font-size:13px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  /* App-Kachel-Ansicht (?view=apps, z. B. data-layout="apps"): nur Symbole mit Namen wie auf dem Handy-Homescreen */
+  body.view-apps .grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:20px 10px}
+  body.view-apps .card{contain-intrinsic-size:auto 120px}
+  body.view-apps .tile{background:none;border:0;box-shadow:none;align-items:center;text-align:center;gap:8px;border-radius:0}
+  body.view-apps .tile:hover{transform:translateY(-3px);box-shadow:none}
+  body.view-apps .icon{width:100%;max-width:84px;aspect-ratio:1;border-radius:22%;font-size:40px;box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.12)}
+  body.view-apps .tile:hover .icon{box-shadow:0 10px 22px rgba(0,0,0,.5),0 0 22px var(--g,rgba(0,229,255,.35))}
+  body.view-apps .info{padding:0;gap:0;flex:0 0 auto;align-items:center}
+  body.view-apps .tile b{font-size:12.5px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body.view-apps .tile small,body.view-apps .play,body.view-apps .badges,body.view-apps .help,body.view-apps .ext{display:none}
   .play{margin-top:auto;padding-top:6px;font-size:13px;font-weight:800;color:var(--cy);opacity:.85;transition:opacity .2s,letter-spacing .2s}
   .tile:hover .play{opacity:1;letter-spacing:.03em}
   .ext{position:absolute;top:8px;right:8px;z-index:2;font-size:11px;background:rgba(0,0,0,.45);border-radius:8px;padding:1px 6px}
@@ -330,6 +340,7 @@ const iframeCode = (url, title) =>
   `<iframe src="${url}" title="${title}" allow="fullscreen; autoplay" loading="lazy"\n  style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>`;
 const embedMode = new URLSearchParams(location.search).has('embed');
 if (embedMode) document.body.classList.add('embed-mode');
+if (new URLSearchParams(location.search).get('view') === 'apps') document.body.classList.add('view-apps');
 const params = new URLSearchParams(location.search);
 // Geräteerkennung: device.js (TV, Handy, Tablet, Computer). Erzwingen mit ?device=tv|phone|tablet|desktop, ?tv=1 / ?tv=0
 if (!window.EasyGamesDevice) window.EasyGamesDevice = { get: () => ({ type: 'desktop', role: 'both', input: [], orientation: 'landscape' }), on: () => () => {}, is: () => false, tvUrl: p => new URL(p, location.href).href };   // device.js fehlt: ohne Erkennung weiterlaufen

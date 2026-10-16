@@ -113,6 +113,8 @@
     document.documentElement.style.overflow = 'hidden';
     if (document.body) document.body.style.overflow = 'hidden';
   }
+  // Bibliothek-Adresse; layout "apps" = App-Kachel-Ansicht (nur Symbole mit Namen)
+  function libUrl(o) { return base + 'index.html?embed=1' + (o && o.layout === 'apps' ? '&view=apps' : ''); }
   var current = null;
   EG.close = function () { if (current) current(false); };
   // EasyGames.open('zotik' | 'all', { close:false, fullscreen:false, title, onClose })
@@ -122,7 +124,7 @@
       var g = game && game !== 'all' ? find(game) : null;
       if (game && game !== 'all' && !g) { console.error('EasyGames: unbekanntes Spiel "' + game + '"'); return; }
       if (current) current(true);   // ersetzt ein offenes Overlay (ohne Verlaufsschritt zurück, sonst würde das neue sofort schließen)
-      var title = o.title || (g ? g.title : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : base + 'index.html?embed=1', title);
+      var title = o.title || (g ? g.title : 'easygames – Spielebibliothek'), box = document.createElement('div'), f = fullFrame(g ? gameUrl(g) : libUrl(o), title);
       box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title);
       box.style.cssText = LAYER_CSS;
       box.appendChild(f);
@@ -179,11 +181,26 @@
     if (guides) go(); else load('guides.js', function () { guides = window.EASYGAMES_GUIDES; go(); });
   };
 
+  // App-Kachel für ein einzelnes Spiel (layout "tile"): Symbol mit Namen, Klick öffnet es im Vollbild (oder mode "page" lädt es direkt)
+  function appTile(t, o) {
+    var g = find(o.game);
+    if (!g) { console.error('EasyGames: unbekanntes Spiel "' + o.game + '"'); return; }
+    var b = document.createElement('button'), ic = document.createElement('span'), nm = document.createElement('span');
+    b.type = 'button'; b.setAttribute('aria-label', g.title + ' spielen');
+    b.style.cssText = 'display:inline-flex;flex-direction:column;align-items:center;gap:8px;width:' + (o.width || '96px') + ';padding:0;border:0;background:none;color:inherit;font:700 13px/1.25 system-ui,sans-serif;cursor:pointer;text-align:center';
+    ic.style.cssText = 'display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:22%;overflow:hidden;font-size:40px;box-shadow:0 6px 16px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.14);background:' + (g.bg || '#222');
+    if (g.img) { var im = document.createElement('img'); im.src = abs(g.img); im.alt = ''; im.loading = 'lazy'; im.style.cssText = 'width:100%;height:100%;object-fit:cover'; ic.appendChild(im); } else ic.textContent = g.icon || '\uD83C\uDFAE';
+    nm.textContent = o.title || g.title;
+    b.appendChild(ic); b.appendChild(nm);
+    b.addEventListener('click', function () { if (o.mode === 'page') { t.removeChild(b); pageLayer(t, gameUrl(g), g.title); } else EG.open(o.game, o); });
+    t.appendChild(b);
+  }
   // EasyGames.embed(ziel, { game, width, maxWidth, ratio, height, radius, title, className })
   EG.embed = function (target, o) {
     o = o || {};
     var t = el(target);
     if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
+    if (o.layout === 'tile') { EG.ready(function () { appTile(t, o); }); return t; }
     if (o.mode === 'overlay') { bindOpen(t, o.game, o); return t; }
     var f;
     EG.ready(function () {
@@ -203,8 +220,8 @@
     var t = el(target);
     if (!t) { console.error('EasyGames: Ziel nicht gefunden:', target); return null; }
     if (o.mode === 'overlay') { bindOpen(t, 'all', o); return t; }
-    if (o.mode === 'page') { pageLayer(t, base + 'index.html?embed=1', o.title || 'easygames – Spielebibliothek'); return t; }
-    t.appendChild(frame(base + 'index.html?embed=1', o.title || 'easygames – Spielebibliothek', o));
+    if (o.mode === 'page') { pageLayer(t, libUrl(o), o.title || 'easygames – Spielebibliothek'); return t; }
+    t.appendChild(frame(libUrl(o), o.title || 'easygames – Spielebibliothek', o));
     return t;
   };
 
@@ -213,7 +230,7 @@
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i]; if (n.getAttribute('data-easygames-done')) continue;
       n.setAttribute('data-easygames-done', '1');
-      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close };
+      var d = n.dataset, o = { width: d.width, maxWidth: d.maxWidth, ratio: d.ratio, height: d.height, radius: d.radius, title: d.title, fullscreen: d.fullscreen, tvLink: d.tvLink, mode: d.mode, close: d.close, layout: d.layout };
       if (d.easygames === 'all') EG.library(n, o); else { o.game = d.easygames; EG.embed(n, o); }
     }
   }

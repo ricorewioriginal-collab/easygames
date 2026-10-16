@@ -7,6 +7,7 @@ const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
 const PAGES = {
   '/__overlay.html': '<!doctype html><meta charset=utf-8><body style="margin:20px"><p>Text</p><button id="t" data-easygames="wobbel" data-mode="overlay">Spielen</button><a id="all" href="#" data-easygames="all" data-mode="overlay"></a><div id="box" data-easygames="wobbel"></div><script src="/easygames.js"></script>',
+  '/__apps.html': '<!doctype html><meta charset=utf-8><body style="margin:20px"><div id="lib" data-easygames="all" data-layout="apps"></div><div id="tl" data-easygames="wobbel" data-layout="tile" data-mode="overlay"></div><div id="ov" data-easygames="all" data-layout="apps" data-mode="overlay"></div><script src="/easygames.js"></script>',
   '/__page.html': '<!doctype html><meta charset=utf-8><body style="margin:0"><div id="pg" data-easygames="all" data-mode="page"></div><script src="/easygames.js"></script>',
   '/__pagegame.html': '<!doctype html><meta charset=utf-8><body style="margin:0"><div id="pg" data-easygames="wobbel" data-mode="page"></div><script src="/easygames.js"></script>',
 };
@@ -61,6 +62,17 @@ let fails = 0; const t = (n, ok, extra) => { console.log((ok ? 'OK    ' : 'FEHLE
     const g = await q.evaluate(() => { const f = document.querySelector('#pg iframe').getBoundingClientRect(); return { f: [f.x, f.y, f.width, f.height], src: document.querySelector('#pg iframe').src, sc: document.documentElement.scrollHeight }; });
     t('Seitenmodus ' + url + ' füllt das Fenster', g.f.join() === '0,0,1000,700' && rx.test(g.src), JSON.stringify(g)); await q.close();
   }
+  // App-Kachel-Ansicht
+  await p.goto(base + '/__apps.html'); await p.waitForFunction(() => document.querySelector('#lib iframe') && document.querySelector('#tl button'));
+  t('Katalog layout=apps lädt view=apps', /embed=1&view=apps/.test(await p.getAttribute('#lib iframe', 'src')));
+  t('Katalog-Overlay mit layout=apps', await p.evaluate(() => { EasyGames.open('all', { layout: 'apps', fullscreen: false }); return /view=apps/.test(document.querySelector('[role=dialog] iframe').src); }));
+  await p.keyboard.press('Escape'); await p.evaluate(() => EasyGames.close());
+  const fr = p.frames().find(f => /view=apps/.test(f.url())); await fr.waitForSelector('.tile');
+  const m = await fr.evaluate(() => { const i = document.querySelector('.icon').getBoundingClientRect(), s = getComputedStyle(document.querySelector('.tile small')).display; return { w: Math.round(i.width), h: Math.round(i.height), s, n: document.querySelectorAll('.tile').length }; });
+  t('App-Ansicht: quadratische Symbole ohne Beschreibung', m.w === m.h && m.w <= 84 && m.s === 'none' && m.n > 5, JSON.stringify(m));
+  t('Einzelspiel-Kachel zeigt Namen', /\S/.test(await p.textContent('#tl button')));
+  await p.click('#tl button'); await dlg().waitFor(); t('Kachel öffnet Spiel im Vollbild', /\/wobbel\//.test(await p.getAttribute('[role=dialog] iframe', 'src')));
+  await p.evaluate(() => EasyGames.close());
   t('keine Skriptfehler', errs.length === 0, errs.join('|'));
   await b.close(); srv.close(); process.exit(fails ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });

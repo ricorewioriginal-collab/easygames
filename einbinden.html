@@ -78,7 +78,7 @@
     <p>Spiel wählen, Optionen einstellen, Code kopieren.</p>
     <div class="gen">
       <label>Spiel<select id="gGame"></select></label>
-      <label>Darstellung<select id="gMode"><option value="">Eingebettet (Box mit Vollbild-Knopf)</option><option value="page">Vollbild: ganze Seite</option><option value="overlay">Vollbild: Klick öffnet Overlay</option></select></label>
+      <label>Darstellung<select id="gMode"><option value="">Eingebettet (Box mit Vollbild-Knopf)</option><option value="page">Vollbild: ganze Seite</option><option value="overlay">Vollbild: Klick öffnet Overlay</option><option value="apps">App-Kacheln (Symbole wie auf dem Handy)</option></select></label>
       <div class="row">
         <label>Seitenverhältnis<select id="gRatio"><option>16/10</option><option>16/9</option><option>4/3</option><option>1/1</option><option>9/16</option></select></label>
         <label>Maximale Breite<input id="gMax" value="960px"></label>
@@ -150,6 +150,7 @@
       <tr><td><code>data-radius</code></td><td><code>radius</code></td><td>12px</td><td>Eckenrundung</td></tr>
       <tr><td><code>data-title</code></td><td><code>title</code></td><td>Spieltitel</td><td>Titel für Screenreader</td></tr>
       <tr><td><code>data-mode</code></td><td><code>mode</code></td><td>eingebettet</td><td><code>page</code> = ganze Seite, <code>overlay</code> = Klick öffnet das Spiel vollflächig (siehe <a href="#vollbild-einbinden">Vollbild</a>)</td></tr>
+      <tr><td><code>data-layout</code></td><td><code>layout</code></td><td>Kacheln</td><td><code>apps</code> = Katalog als App-Symbole (Icon + Name, wie ein Handy-Homescreen; auch mit <code>data-mode</code>); <code>tile</code> = einzelnes Spiel als App-Kachel, Klick startet es (mit <code>data-mode="overlay"</code> im Vollbild)</td></tr>
       <tr><td><code>data-close="false"</code></td><td><code>close:false</code></td><td>✕ an</td><td>✕-Knopf im Overlay ausblenden</td></tr>
       <tr><td><code>data-fullscreen="false"</code></td><td><code>fullscreen:false</code></td><td>Knopf an</td><td>Vollbild-Knopf ausblenden</td></tr>
       <tr><td><code>data-tv-link="false"</code></td><td><code>tvLink:false</code></td><td>Zeile an</td><td>TV-Link unter Mehrspieler-Spielen ausblenden</td></tr>
@@ -230,7 +231,11 @@
 
 &lt;!-- ein Spiel per Knopf im Vollbild; mit JavaScript: --&gt;
 &lt;button data-easygames="anmacha-quiz" data-mode="overlay"&gt;Quiz spielen&lt;/button&gt;
-&lt;button onclick="EasyGames.open('all')"&gt;Alle Spiele&lt;/button&gt;</pre>
+&lt;button onclick="EasyGames.open('all')"&gt;Alle Spiele&lt;/button&gt;
+
+&lt;!-- App-Kacheln: Katalog als Symbolraster, oder ein einzelnes Spiel als Kachel --&gt;
+&lt;div data-easygames="all" data-layout="apps"&gt;&lt;/div&gt;
+&lt;div data-easygames="zotik" data-layout="tile" data-mode="overlay"&gt;&lt;/div&gt;</pre>
     <h3>Das Overlay</h3>
     <ul>
       <li>Schließen mit dem <b>✕-Knopf</b> (mit <code>data-close="false"</code> bzw. <code>{ close:false }</code> ausblenden), der <b>Zurück-Taste</b> des Browsers/Handys, <b>Esc</b> (wenn der Fokus nicht im Spiel liegt) oder per <code>EasyGames.close()</code>. Ein Spiel kann sich auch selbst schließen (<a href="#msg"><code>easygames:close</code></a>).</li>
@@ -596,6 +601,17 @@ function gen() {
     $('oIframe').textContent = `<iframe src="${url}" title="${g.title}"\n  allow="${allow}" allowfullscreen\n  style="position:fixed;top:0;left:0;width:100%;height:100%;border:0;margin:0"></iframe>`;
     $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${g.id}" data-mode="page"></div>`;
     $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  ${all ? "EasyGames.library('#ziel', { mode: 'page' });" : `const spielId = '${g.id}';\n  EasyGames.embed('#ziel', { game: spielId, mode: 'page' });`}\n<\/script>`;
+  } else if (mode === 'apps') {
+    const au = new URL('index.html?embed=1&view=apps', base).href;
+    if (all) {
+      $('oIframe').textContent = `<iframe src="${au}" title="easygames – alle Spiele"\n  allow="${allow}" allowfullscreen loading="lazy"\n  style="width:100%;max-width:${max};aspect-ratio:${ratio};border:0;border-radius:12px"></iframe>`;
+      $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="all" data-layout="apps" data-ratio="${ratio}" data-max-width="${max}"></div>\n\n<!-- Variante: Klick öffnet die Kachel-Übersicht im Vollbild -->\n<button data-easygames="all" data-layout="apps" data-mode="overlay">Alle Spiele</button>`;
+      $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  EasyGames.library('#ziel', { layout: 'apps', ratio: '${ratio}', maxWidth: '${max}' });\n<\/script>`;
+    } else {
+      $('oIframe').textContent = '(Eine einzelne App-Kachel braucht den easygames.js-Code – Symbol, Name und Vollbild-Start regelt das Skript.)';
+      $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<div data-easygames="${g.id}" data-layout="tile" data-mode="overlay"></div>`;
+      $('oJs').textContent = `<script src="${base}easygames.js"><\/script>\n<div id="ziel"></div>\n<script>\n  EasyGames.embed('#ziel', { game: '${g.id}', layout: 'tile', mode: 'overlay' });\n<\/script>`;
+    }
   } else if (mode === 'overlay') {
     $('oIframe').textContent = '(Für das Overlay den easygames.js-Code verwenden – iframe, Schließen-Knopf, Esc und Zurück-Taste regelt das Skript.)';
     $('oAttr').textContent = `<script src="${base}easygames.js"><\/script>\n<button data-easygames="${g.id}" data-mode="overlay">${all ? 'Alle Spiele' : g.title + ' spielen'}</button>`;
