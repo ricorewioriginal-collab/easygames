@@ -25,7 +25,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
 | AnMaCha Kart Rush – 3D-Arcade-Kartrennen, Splitscreen mit Handys als Lenkrad (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-kart/`](anmacha-kart/) |
-| AnMaCha Gold Reels – moderner Video-Slot mit Spielgeld, 5 Walzen, 20 Linien, Freispielen (reines JavaScript/Canvas) | [`anmacha-gold-reels/`](anmacha-gold-reels/) |
+| AnMaCha Casino – 3D-Casino mit Spielgeld: 10 Spielautomaten (u. a. Gold Reels mit Sender-Logos, Buch-Freispiele, 243 Wege, Hold & Win mit Jackpots, Wild-Respin), Risiko-Leiter, Roulette, Blackjack, Video-Poker, Glücksrad; Touch, Tastatur, Gamecontroller (Three.js, Sounds im Browser erzeugt; Tests: `node anmacha-gold-reels/tests/logic-tests.js`) | [`anmacha-gold-reels/`](anmacha-gold-reels/) (Ordnername bleibt) |
 | AnMaCha Markthalle 24 – Supermarkt-Simulator (Draufsicht, Handy & PC), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | Urwaldlager – die große Wildnis-Show in 3D: begehbares Dschungelcamp (Holz, Wasser, Feuer, Kochen, Schlafen), Mitcamper mit eigenem Tagesablauf und Beziehungen, 12 spielbare 3D-/2D-Prüfungen plus dreiteiliges Finale, transparent simuliertes Publikum, ganze Staffel mit Ausscheidungen, Speichern & Weiterspielen (Three.js lokal eingebunden, Sounds im Browser erzeugt, PC & Handy) | [`anmacha-urwaldlager/`](anmacha-urwaldlager/) |
 | AnMaCha Gesucht & Gefunden – Ratestudio mit 4 Spielarten (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-gesucht/`](anmacha-gesucht/) |
@@ -53,7 +53,7 @@ Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** a
 
 Alle Spiele lassen sich mit einem Gamecontroller (Xbox, PlayStation, 8BitDo …, per USB oder Bluetooth) spielen.
 
-- **Eigene Controller-Steuerung** haben KIKO, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick und Funkparcours.
+- **Eigene Controller-Steuerung** haben KIKO, Radio Maze, Kart Rush, Klotzfunk, Quest RPG, Bunte Insel 1 und 2, Pufi Farbwind, Riftzone, Taschi, Turbokick, Funkparcours und AnMaCha Casino.
 - **Alle anderen Spiele** binden `gamepad.js` aus dem Hauptordner ein (`<script src="../gamepad.js" data-pad="…" defer></script>`). Die Datei übersetzt den Controller in das, was das Spiel schon kann:
   - Steuerkreuz und linker Stick = Pfeiltasten, **A** = Enter, **B** = Esc, **X** = Leertaste, **Y** = E, **LB/RB** = Q/E, **Start** = P, **Select** = M – pro Spiel angepasst im Attribut `data-pad` (z. B. `a=Space/Enter` = Leertaste, und nur wenn das Spiel sie nicht nutzt, Enter; `ls=wasd`; `y=-` = nichts).
   - In Menüs, die nicht auf Pfeiltasten reagieren, springt das Steuerkreuz von Knopf zu Knopf (gelber Rahmen), **A** drückt ihn.

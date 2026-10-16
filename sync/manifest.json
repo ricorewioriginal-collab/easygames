@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f9c0151b0588",
- "generated": "2026-10-16T18:41:47+02:00",
- "commit": "4bb8254567ab02969fcfa6f96d91c0feecd1ec59",
+ "version": "150575b47cd3",
+ "generated": "2026-10-16T17:40:01+00:00",
+ "commit": "0a1f3e4b38efd783679b306ac5d3079449894876",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -992,9 +992,39 @@
    "h": "3b870de2bb566c83904b9c893d7617bd9716b28f3319a6a51d6d385a05730d1b"
   },
   {
+   "p": "anmacha-gold-reels/app.js",
+   "s": 13145,
+   "h": "02269fc609cffbc8506a37f7a39bf36ecc1d2578f6579c4063432c951f2ad843"
+  },
+  {
+   "p": "anmacha-gold-reels/card.png",
+   "s": 90609,
+   "h": "2154b6b14f920b70b10b022df02b5da6dd268ef555dcc3436ff03bad733aefdc"
+  },
+  {
+   "p": "anmacha-gold-reels/casino.css",
+   "s": 19072,
+   "h": "f7578c75a45df8a787af6f61841c25bce404d190c9100f838f54997bcb2989ec"
+  },
+  {
+   "p": "anmacha-gold-reels/core.js",
+   "s": 14953,
+   "h": "88bd584f0e11b59cf0d6678a882945355eced7372fef094e17e0113890f4184b"
+  },
+  {
+   "p": "anmacha-gold-reels/gfx.js",
+   "s": 10658,
+   "h": "ec717ca4b5a3009d1f934f48c081b690c548594eebd35b7a9bed481bc506d2ae"
+  },
+  {
    "p": "anmacha-gold-reels/index.html",
-   "s": 33282,
-   "h": "9db1210c6bb425bf2e9bf91601b6833587d9c6f1cbbba52cbb3186ea1a119601"
+   "s": 5507,
+   "h": "3030d2e5449563d8c00e63f8602acb9c466d0664a391613f511f342991e1f832"
+  },
+  {
+   "p": "anmacha-gold-reels/logic.js",
+   "s": 16294,
+   "h": "7b0f766c57776cc2e276f9e72595d3d5877eb432ba0adbd53cf8d4cc4a4389c1"
   },
   {
    "p": "anmacha-gold-reels/logos/01.png",
@@ -1062,19 +1092,39 @@
    "h": "cd551dd5c08af26c6af661bf141e49cf67ac1252235d9a0b39c37769ebf9ef61"
   },
   {
-   "p": "anmacha-gold-reels/manifest.webmanifest",
-   "s": 786,
-   "h": "b385d5ee3788bd02c01a076832e1ea78b67f4bccfc55408e8d1edbc1e1bf955a"
+   "p": "anmacha-gold-reels/machines.js",
+   "s": 11425,
+   "h": "69f6a5ac652e2e3ebb9507490791c2ef2eaf64d1c63eb44bbe3dee24322b1922"
   },
   {
-   "p": "anmacha-gold-reels/slot.js",
-   "s": 3149,
-   "h": "04d097b0ca38e16b73026b583a8ff87e03cf4fbf6dd6999485e5a8a5c438e0d2"
+   "p": "anmacha-gold-reels/manifest.webmanifest",
+   "s": 778,
+   "h": "c760b809cc744b42b37b896a113f843ac8e8b58e39e80974ad2009cdfc16cc7f"
+  },
+  {
+   "p": "anmacha-gold-reels/overlay.js",
+   "s": 5863,
+   "h": "e5176051d1d5627de1bdfd7223752d9d713e14a821dc45d2532cb0bff887a86b"
+  },
+  {
+   "p": "anmacha-gold-reels/slot3d.js",
+   "s": 33396,
+   "h": "6cef9ebb1bb69d9b14ece19328a0d1f64b4337efee5d66e1b061da005b7a7df0"
   },
   {
    "p": "anmacha-gold-reels/sw.js",
    "s": 2000,
-   "h": "c0b1ad2a1e6b664628fe1d0b113d3168fbf0fe672053c33732989f27fd6a84cd"
+   "h": "4f492dde74a1682c7c7934a6ec2eaf72932ffcef83bdd9f80efd8c6699d660b8"
+  },
+  {
+   "p": "anmacha-gold-reels/symbols.js",
+   "s": 17680,
+   "h": "14e71d85c82e322d576602a0efe9bb94d67a4cc4eeaeee194d41813772e6f387"
+  },
+  {
+   "p": "anmacha-gold-reels/tables.js",
+   "s": 51027,
+   "h": "37d13b34a67e7f257cd8aaccade6872669a613bf06c04f73ff1c0e63edf0a660"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -4643,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 19376,
-   "h": "cce607e0c48f04b8145e52116f8f54dec479c781e1b90bf2feab9d06635e6dc4"
+   "s": 19536,
+   "h": "02f4549ce17250e4bd1ef9206dfc6cd51789754a7562560aac5860888a31aa79"
   },
   {
    "p": "gay-life/index.html",
@@ -4793,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 50455,
-   "h": "b98b2f716600977116ac019059132644bfb8fcc5fa0711d32e5dd54adc268850"
+   "s": 51065,
+   "h": "a192329af0844370f235c906610942f8ba52a78a8ac5aa487a3fec0dba86d38a"
   },
   {
    "p": "index.html",
@@ -5573,8 +5623,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 77466,
-   "h": "f3e41b43495c6e0000f958d1bd9ae23a6dc2b08ef43e15c934b109bbd1429c73"
+   "s": 78229,
+   "h": "ddfe840aa1577fc49bcaa19a1cd11cb2df5386aa91af8211d03733b794944aa4"
   },
   {
    "p": "taschi/card.svg",
