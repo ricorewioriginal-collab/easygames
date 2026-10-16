@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3a70ed8993e3",
- "generated": "2026-10-16T18:43:13+00:00",
- "commit": "a6a22cd41576101985c194cd324ea82ad35c01a9",
+ "version": "5edef2f55718",
+ "generated": "2026-10-16T19:07:47+00:00",
+ "commit": "16113342767f033a4cf3ce2e29e85515d4b95bb3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -993,8 +993,8 @@
   },
   {
    "p": "anmacha-gold-reels/app.js",
-   "s": 15033,
-   "h": "74544d887925190164a1091c2c6031ed70756ddb766000b6b3ac418b48142c8e"
+   "s": 14559,
+   "h": "50ed7ef1146246306bdf85200d8cd2e3243cb59f732f1717c81325f23ab6daa6"
   },
   {
    "p": "anmacha-gold-reels/card.png",
@@ -1003,8 +1003,8 @@
   },
   {
    "p": "anmacha-gold-reels/casino.css",
-   "s": 21427,
-   "h": "547994f2f09b5bdc992f180151308fccef99f7a7ed6312408449f29778b21461"
+   "s": 22857,
+   "h": "ab2ebdbe880c9b3242188bc39bd4d3291c5345238ed81064589ad79bc8b50546"
   },
   {
    "p": "anmacha-gold-reels/core.js",
@@ -1108,8 +1108,8 @@
   },
   {
    "p": "anmacha-gold-reels/slot3d.js",
-   "s": 36123,
-   "h": "cebefd7c12f7d71c46aff86a8a0ed1a95de249b551759a0646760c73229817f3"
+   "s": 36556,
+   "h": "9623a7d37529e27fbb2ff631e26b5346e676c3ba2fbdafa01a6d5c94f64b1878"
   },
   {
    "p": "anmacha-gold-reels/sw.js",
@@ -1123,8 +1123,8 @@
   },
   {
    "p": "anmacha-gold-reels/tables.js",
-   "s": 51070,
-   "h": "283834d5c63bb00e04ba6f1e1ae3375238c8ecc83be7ab2b93f7a3ee3371464f"
+   "s": 51642,
+   "h": "3803295645c8920943eb41e5173a656c0fb777eb8cf8086f6bd0ce27c87112c4"
   },
   {
    "p": "anmacha-hoererwahl/audio.js",
@@ -5659,7 +5659,7 @@
   {
    "p": "sync/catalog.json",
    "s": 80985,
-   "h": "95f911a2b316206011becd28f4d68690c7d94e0b4ce474df98946f6499107329"
+   "h": "3e178122f00963f3a204e43c8e2f7c6338ebed643a657e5ac45d83991cba9832"
   },
   {
    "p": "taschi/card.svg",

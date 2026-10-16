@@ -130,13 +130,8 @@
     if (!def) { showLobby(); return; }
     if (!Gfx.ok) { C.toast('3D wird von diesem Gerät nicht unterstützt'); location.hash = ''; return; }
     // Spiele im Vollbild: klappt nur direkt nach einer Berührung/einem Klick, sonst bleibt die Ansicht wie sie ist
-    if (C.data.autoFs && document.fullscreenEnabled) {
-      // Slots wie in der Spielhalle quer (geht nur im Vollbild, z. B. Android); Tischspiele dürfen auch hochkant
-      const lock = () => { try { if (kind === 'slot' && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) { /* nicht unterstützt */ } };
-      if (document.fullscreenElement) lock();
-      else { try { const p = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (p && p.then) p.then(lock, () => {}); } catch (e) { /* nicht erlaubt */ } }
-    }
-    if (kind !== 'slot') unlockOrientation();
+    // Spiele im Vollbild (Hoch- und Querformat bleiben frei); klappt nur direkt nach einer Berührung/einem Klick
+    if (C.data.autoFs && document.fullscreenEnabled && !document.fullscreenElement) { try { const p = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); } catch (e) { /* nicht erlaubt */ } }
     lobbyEl.hidden = true; document.body.classList.add('ingame'); document.body.classList.remove('inlobby');
     topTitle.textContent = def.title; document.title = def.title + ' – AnMaCha Casino';
     if (lobbyScene) { lobbyScene.dispose(); lobbyScene = null; }
@@ -144,9 +139,7 @@
     await current.enter(hud);
     if (current && current.resize) current.resize(innerWidth, innerHeight);
   }
-  function unlockOrientation() { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) { /* nicht unterstützt */ } }
   function showLobby() {
-    unlockOrientation();
     lobbyEl.hidden = false; document.body.classList.remove('ingame'); document.body.classList.add('inlobby');
     topTitle.textContent = 'AnMaCha Casino'; document.title = 'AnMaCha Casino';
     if (!lobbyScene) lobbyScene = lobby3d();
