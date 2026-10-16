@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c511d56a5d92",
- "generated": "2026-10-16T17:27:08+02:00",
- "commit": "f4b0db36f4a4e0a27a2d9304e6da92e737686171",
+ "version": "494a84677ef9",
+ "generated": "2026-10-16T17:30:03+02:00",
+ "commit": "1646c0362a797e578c636a0a2b931d32c1d6087b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4588,8 +4588,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 28218,
-   "h": "91eaf165358ccf7531fb04556ed6e9094e8b2c3f5a3c6e1194db9917c86f1792"
+   "s": 28312,
+   "h": "f72554762d34798d53271266e03f8aa6d5a2195c5867b33e1f9c0cf657d031ce"
   },
   {
    "p": "device.js",
