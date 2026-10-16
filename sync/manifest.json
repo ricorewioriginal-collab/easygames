@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7ceba442dcf0",
- "generated": "2026-10-16T20:44:21+00:00",
- "commit": "6570059e7d0c65a0d720ad38ec6b177b59e3764e",
+ "version": "88bc96c411bd",
+ "generated": "2026-10-16T20:59:58+00:00",
+ "commit": "d6bd8e50684788aef273b0a002617cd4a67a8acd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4658,8 +4658,8 @@
   },
   {
    "p": "cloud/anmacha-cloud.js",
-   "s": 29739,
-   "h": "85e1ac8d6e4bc131331d917d7cb04ef464dce033e77ff88aa23caa41536ceaca"
+   "s": 30395,
+   "h": "34af4c636347ac641aa1cbbb75313bc9b6a8307927e4f9964073bf792ac9efc8"
   },
   {
    "p": "device.js",
@@ -4693,8 +4693,8 @@
   },
   {
    "p": "games.js",
-   "s": 20804,
-   "h": "1c7f17d69d9f06ed464a0573e8f109b09a3c97f32bd26c4ab835876b32a1b441"
+   "s": 22176,
+   "h": "230f5a2b7fcf41f763892be726ce9964582992903b6b2886dbe5752c67436582"
   },
   {
    "p": "gay-life/index.html",
@@ -4843,8 +4843,8 @@
   },
   {
    "p": "guides.js",
-   "s": 55467,
-   "h": "a6820f01321715c72ee6b0761cd409c4bbc9bf555a4e6d8eda78a38ed12fb05c"
+   "s": 59026,
+   "h": "a366c5ffda5c8b858f7bd7056aadc326cec00406d935387e2fb3f65771121937"
   },
   {
    "p": "index.html",
@@ -4858,8 +4858,8 @@
   },
   {
    "p": "kiko-sterneninseln/index.html",
-   "s": 1897,
-   "h": "855014139aff472a3e7112edf68cd2ce05ae0ef6d92231765490a0e0317bc920"
+   "s": 1940,
+   "h": "15223788e1f1419798bd0e1b0ffa4a14aa567a8f044e04b7c9ab13c77549e0fa"
   },
   {
    "p": "kiko-sterneninseln/src/audio.js",
@@ -4953,8 +4953,8 @@
   },
   {
    "p": "kiko-sterneninseln/vendor/anmacha-cloud.js",
-   "s": 29739,
-   "h": "85e1ac8d6e4bc131331d917d7cb04ef464dce033e77ff88aa23caa41536ceaca"
+   "s": 30395,
+   "h": "34af4c636347ac641aa1cbbb75313bc9b6a8307927e4f9964073bf792ac9efc8"
   },
   {
    "p": "kiko-sterneninseln/vendor/three.min.js",
@@ -5183,8 +5183,8 @@
   },
   {
    "p": "modes.js",
-   "s": 1332,
-   "h": "50b5169781cf8745fbbc6baf26d4db2d77d301024a44bbaad5e8a2257fcf1f42"
+   "s": 1377,
+   "h": "010afaea2013514ca289f96d9dc021d612f61725fcc82c642a9a8aeb58083e6d"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-CZs_ypFH.js",
@@ -5602,6 +5602,146 @@
    "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
   },
   {
+   "p": "ricopoly/card.jpg",
+   "s": 107716,
+   "h": "bfd67047d33387c074dd4e476fc4c9b708da743ae26ac6382c83c8fb630a624c"
+  },
+  {
+   "p": "ricopoly/card.png",
+   "s": 81162,
+   "h": "7d383dc20057c9775a361ca188d6694d3856a40cb1db258e10b27618b178e9de"
+  },
+  {
+   "p": "ricopoly/index.html",
+   "s": 9288,
+   "h": "c58ec0616c3e89c2237a731b5dd046419251726d8e9de33475275a6b12b023e1"
+  },
+  {
+   "p": "ricopoly/js/ai.js",
+   "s": 12219,
+   "h": "bf3a708d643fb082079c3a6dc250d19907af543ebed307a647005888b0af6620"
+  },
+  {
+   "p": "ricopoly/js/audio.js",
+   "s": 8127,
+   "h": "e77ff4237b100ae28d76658c86fca9c17ad8784883f331acafa175455ab4922a"
+  },
+  {
+   "p": "ricopoly/js/board3d.js",
+   "s": 54419,
+   "h": "ea71e3069a62980e25042690f3667825d3ce80168bb215db82368dc580bd749b"
+  },
+  {
+   "p": "ricopoly/js/characters.js",
+   "s": 43043,
+   "h": "57c403ffd523f1599a4f2001022145ee4d165978623516f4fcecdffbf0f81444"
+  },
+  {
+   "p": "ricopoly/js/game.js",
+   "s": 83047,
+   "h": "d7d92cfd9d015272a45cf8483e4169cb841f12be31af96ad838563dead7a25d0"
+  },
+  {
+   "p": "ricopoly/js/i18n.js",
+   "s": 50874,
+   "h": "8347143e996243744837462b9e00f29f5c768a73eb24239d12077305898c0b36"
+  },
+  {
+   "p": "ricopoly/js/net.js",
+   "s": 18701,
+   "h": "be5a62ddeb934167ea5ab1f444f692f0fbf104b8e231732e91281d7f559be006"
+  },
+  {
+   "p": "ricopoly/js/profile.js",
+   "s": 6874,
+   "h": "a358ac5e4b973abc1292f1c6b0cab8c1d2afbcf16a7beb9fea3cb3da1fd794fc"
+  },
+  {
+   "p": "ricopoly/js/rules.js",
+   "s": 40551,
+   "h": "6e5aebe3b88aa2a1338a8992401d8152c534f581c27324c1ff76aa41b4faf607"
+  },
+  {
+   "p": "ricopoly/js/worlds.js",
+   "s": 19221,
+   "h": "e28bf37a55d38e59e888f356d39961e6cc4da6dc88eec36f665e839a8527a434"
+  },
+  {
+   "p": "ricopoly/manifest.webmanifest",
+   "s": 774,
+   "h": "ac3790825eb3f839b9b6cf92232b82bb2dc645c75029e7701e8403313e25fd9b"
+  },
+  {
+   "p": "ricopoly/style.css",
+   "s": 23961,
+   "h": "8c08051318081b4b16f2a5b372daf86821f8c7c8765983a38a438f446e381350"
+  },
+  {
+   "p": "ricopoly/sw.js",
+   "s": 2001,
+   "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
+  },
+  {
+   "p": "ricoville/assets/index-3QQqM-UI.js",
+   "s": 171766,
+   "h": "dc86b209d21c24254969e4a1cace71bf97668464d8e9efc64c6c5e52fa40bb43"
+  },
+  {
+   "p": "ricoville/assets/index-BJwfMcR4.css",
+   "s": 12493,
+   "h": "997c25bd46194defb4d5cfdd267fe1cf949e90b037123607245bf1ec757d1cd3"
+  },
+  {
+   "p": "ricoville/assets/three-DaP6-81L.js",
+   "s": 521014,
+   "h": "e303c4c452c142fee0e3b9dd156c5b64118699005820781e559fa50dd91315a6"
+  },
+  {
+   "p": "ricoville/card.svg",
+   "s": 11426,
+   "h": "1f7f1b7080652f793ef3366a2e2fcdad6b52221500582fc48d396692d51ee4a8"
+  },
+  {
+   "p": "ricoville/favicon.svg",
+   "s": 508,
+   "h": "42793c088b5a8cddaff5b7b5285a670fea272c9a8c6c6dcfe5014e1d9cafb32c"
+  },
+  {
+   "p": "ricoville/icons/apple-touch-icon.png",
+   "s": 4546,
+   "h": "9e4fa0d64cb8f3f4452dca7cea8c0e2bc3c8d3fc6344269a28d511fd2ff22173"
+  },
+  {
+   "p": "ricoville/icons/icon-192.png",
+   "s": 7761,
+   "h": "04fbfab4d56ce6ac065be19989d6c161925429f0b36b0fde6ac6b83ae5f0c93e"
+  },
+  {
+   "p": "ricoville/icons/icon-512.png",
+   "s": 3622,
+   "h": "faa3a8f96f5e1e8d2501cec113442e65f3d718e97a17df7296dee2e008303524"
+  },
+  {
+   "p": "ricoville/icons/maskable-512.png",
+   "s": 2696,
+   "h": "c18fbe55610e7dc21aced108e629b17a0c16da027acf79bfa162e2e4ea03b58f"
+  },
+  {
+   "p": "ricoville/index.html",
+   "s": 1940,
+   "h": "3b8f0a1dc0ed180660a6decbffbf6e170f654debd7838da37c1e2ad93fd65e4d"
+  },
+  {
+   "p": "ricoville/manifest.webmanifest",
+   "s": 767,
+   "h": "0d72ebafb5eccb7c97baf98d28edfdc92a4a32f76f96f1b609a632dd7bc87e6f"
+  },
+  {
+   "p": "ricoville/sw.js",
+   "s": 1946,
+   "h": "e112835945788cf36256cecd51cb2c06e961871734493daf155ec81ecd88a1a0"
+  },
+  {
    "p": "riftzone/app/assets/index-4d1af4a3fa.css",
    "s": 23254,
    "h": "4d1af4a3fa628dd51a1c50be1147a8b84d3bac62737bad815018d6d93b681d4e"
@@ -5718,8 +5858,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 84306,
-   "h": "4d8adbb2817e59a42bbf4e39329c70896587d5df6935337e72609ee9de12e08d"
+   "s": 89678,
+   "h": "3fa3739561180bdf5fe5d7dc6ea0b516fdaad638072140fdac685c7368caa476"
   },
   {
    "p": "taschi/card.svg",
