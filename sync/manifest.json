@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c8e5ba5eee4a",
- "generated": "2026-10-16T21:28:34+02:00",
- "commit": "f0aa1d9672392b911b4d8bc84b58b339999fc150",
+ "version": "4eabf8de6ff5",
+ "generated": "2026-10-16T21:40:17+02:00",
+ "commit": "095b50e69ec893141cff3ee67fa6599662b169a5",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6182,6 +6182,11 @@
    "h": "ad5d8870d1e389914f9cba8d35be313c4327c69ee0a221e482e9bf7621136fe5"
   },
   {
+   "p": "vendor/planck-1.4.2.min.js",
+   "s": 297472,
+   "h": "c16edf1b6f0b74526a6da9db3241f8a0cc7b174acbfea058e660a6e270ab693f"
+  },
+  {
    "p": "vendor/qrcode-generator-1.4.4.js",
    "s": 56694,
    "h": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780"
@@ -6655,6 +6660,7 @@
  "vendor": {
   "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js": "vendor/jsqr-1.4.0.js",
   "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
+  "https://cdn.jsdelivr.net/npm/planck@1.4.2/dist/planck.min.js": "vendor/planck-1.4.2.min.js",
   "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js": "vendor/qrcode-generator-1.4.4.js",
   "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js": "vendor/peerjs-1.5.4.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js": "vendor/qrcode-generator-1.4.4.js",
