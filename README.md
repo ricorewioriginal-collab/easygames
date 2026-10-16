@@ -39,7 +39,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | Funkhaus Reality – Live-WG-Simulation im Radiostudio (3D-Haus, Allianzen, Nominierung, Hörervotum, bis zu 4 Menschen mit Handy-Pads + KI-Mitbewohner) | [`FunkhausReality/`](FunkhausReality/) |
 | Mach mich aus! – Funk-Dating-Show mit 20 Pulten und Lampen (3D-Studio, Kandidat oder Pult, Quiz, Talent, Joker, bis zu 4 Menschen mit Handy-Pads) | [`MachMichAus/`](MachMichAus/) |
 | TURBOKICK – 3D-Auto-Fußball mit Nitro (Bots, Splitscreen, online per QR-Code/Text-Code ohne Server; TypeScript/Three.js, eigene Physik) | [`turbokick/`](turbokick/) |
-| RIFTZONE – 3D-Battle-Royale: Riftfähre, Gleiter, 14 Orte, 8 Waffen, Bauen oder ohne Bauen, Fahrzeuge, Sturm in 7 Phasen; Solo/Duo/Squad offline gegen bis zu 99 Bots oder online mit eigenem Server (Gruppen, öffentliche und private Lobbys). TypeScript, Three.js, WebSocket; Quelltext und Server in [`riftzone/`](riftzone/), gebautes Spiel in `riftzone/app/` | [`riftzone/`](riftzone/) |
+| RIFTZONE – 3D-Battle-Royale: Riftfähre, Gleiter, 14 Orte, 8 Waffen, Bauen oder ohne Bauen, Fahrzeuge, Sturm in 7 Phasen; Solo/Duo/Squad offline gegen bis zu 99 Bots oder online ohne Server (ein Gerät eröffnet einen Raum, Freunde treten per Code bei, Vermittlung über Firebase) bzw. mit eigenem Server (Gruppen, öffentliche und private Lobbys). TypeScript, Three.js, WebSocket/WebRTC; Quelltext und Server in [`riftzone/`](riftzone/), gebautes Spiel in `riftzone/app/` | [`riftzone/`](riftzone/) |
 | PARTYVERSE – 3D-Brett-Partyspiel mit 50 Brettern in 5 Welten, 22 Minispielen, 8 Figuren; gegen Bots, lokal oder online (Colyseus-Server, TypeScript/Three.js) | [`partyverse/`](partyverse/) |
 | AnMaCha Hörerwahl – das große Umfrage-Duell (reines HTML/CSS/JS, Sounds werden im Browser erzeugt, 120 Fragen) | [`anmacha-hoererwahl/`](anmacha-hoererwahl/) |
 | AnMaCha Showdown – Mikro-Duell mit 8 Mini-Spielen (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-showdown/`](anmacha-showdown/) |
@@ -52,6 +52,10 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 ## Als App installieren (PWA)
 
 Jedes Spiel lässt sich zusätzlich zur Einbindung über seinen **Direktlink** auf dem Handy als App installieren (Chrome/Android: Hinweis „📲 Als App installieren“ oder Menü ▸ „App installieren“; iPhone: Teilen ▸ „Zum Home-Bildschirm“). Die App startet im Vollbild, läuft nach dem ersten Spielen auch offline und **aktualisiert sich automatisch** (Service Worker: Netz zuerst, bei Ausfall der Cache). Erzeugt von `tools/make-pwa.py` (siehe „Neues Spiel hinzufügen“); PRISMRUSH und Wobbel bringen eine eigene PWA mit.
+
+## Online-Kopplung über Firebase
+
+Alle Spiele mit Handy-Kopplung oder Online-Modus (Code/QR) verbinden sich über Firebase wie RicoPoly: `cloud/fire-peer.js` ersetzt `window.Peer` durch eine PeerJS-kompatible Klasse, Firebase vermittelt nur den Verbindungsaufbau, gespielt wird direkt zwischen den Geräten. Fällt Firebase aus, läuft alles automatisch über PeerJS weiter. Neue Spiele mit PeerJS binden `<script src="../cloud/fire-peer.js"></script>` vor ihrem Spielcode ein. Details, Verbrauch und die einmalige Freischaltung in der Firebase-Konsole: [`cloud/README.md`](cloud/README.md#online-kopplung-aller-spiele-über-firebase-cloudfire-peerjs).
 
 ## Gamecontroller
 

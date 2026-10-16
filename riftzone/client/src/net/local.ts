@@ -2,6 +2,11 @@
 import type { Cosmetics, MatchConfig } from '../../../shared/src/types';
 import type { Transport } from './transport';
 
+/** Startet den Spiel-Worker (Offline-Match oder Gastgeber ohne Server). Die URL steht nur hier, der esbuild-Build biegt sie um. */
+export function spawnWorker(): Worker {
+  return new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+}
+
 export class LocalTransport implements Transport {
   readonly online = false;
   onMessage: ((data: ArrayBuffer | string) => void) | null = null;
@@ -9,7 +14,7 @@ export class LocalTransport implements Transport {
   private worker: Worker;
 
   constructor(cfg: MatchConfig, name: string, cos: Cosmetics, heights: Uint16Array | null) {
-    this.worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+    this.worker = spawnWorker();
     this.worker.onmessage = (ev: MessageEvent) => this.onMessage?.(ev.data as ArrayBuffer | string);
     this.worker.onerror = (e) => {
       console.error('Worker-Fehler', e);

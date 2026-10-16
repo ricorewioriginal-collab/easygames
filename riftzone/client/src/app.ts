@@ -12,6 +12,7 @@ import { load, save } from './core/storage';
 import { Game } from './game/game';
 import type { Session } from './game/session';
 import { LocalTransport } from './net/local';
+import { P2PHost, guestSocket, isCode, normCode } from './net/p2p';
 import { OnlineClient, serverHttpUrl, type LeaderEntry, type LobbyMsg, type PartyMember, type PrivateLobby } from './net/online';
 import { LobbyStage } from './render/preview';
 import type { Renderer3D } from './render/renderer';
@@ -55,6 +56,9 @@ export class App {
   private presence = new Map<string, { online: boolean; inMatch: boolean; name: string }>();
   private friends: Friend[];
   private current: () => void = () => undefined;
+  /** Online ohne eigenen Server: Raum auf einem Gerät (Gastgeber) oder beigetreten (Gast) */
+  private p2p: { role: 'host' | 'guest'; code: string; host: P2PHost | null } | null = null;
+  private p2pAsk = 0;
 
   constructor(
     private readonly R: Renderer3D,
@@ -76,7 +80,14 @@ export class App {
       this.refresh();
     };
     this.online.onLobby = (m) => this.onLobbyMsg(m);
+    this.online.socketFactory = (url) => {
+      const [, role, code] = url.split(':');
+      return role === 'host' && this.p2p?.host ? this.p2p.host.local() : guestSocket(code ?? '');
+    };
     const qs = new URLSearchParams(location.search);
+    const room = normCode(qs.get('room') ?? '');
+    if (isCode(room)) setTimeout(() => this.joinRoom(room), 0);
+    setInterval(() => this.ensureRoomLobby(), 5000);   // nach einem Match die Raum-Lobby wieder anlegen bzw. beitreten
     const srv = qs.get('server');
     if (srv) settings.set('serverUrl', srv);
     const join = qs.get('party');
@@ -134,7 +145,8 @@ export class App {
 
   private chip(): HTMLElement {
     const L = profile.levelInfo;
-    const statusTxt = !settings.data.serverUrl ? 'Offline' : this.onlineState === 'open' ? `Online · ${this.onlineCount} Spieler` : this.onlineState === 'connecting' ? 'Verbinde …' : 'Server getrennt';
+    const where = this.p2p ? `Raum ${this.p2p.code}` : 'Online';
+    const statusTxt = !this.hasOnline() ? 'Offline' : this.onlineState === 'open' ? `${where} · ${this.onlineCount} Spieler` : this.onlineState === 'connecting' ? 'Verbinde …' : this.p2p ? 'Raum getrennt' : 'Server getrennt';
     return h(
       'div',
       { class: 'row' },
@@ -150,6 +162,7 @@ export class App {
 
   showLobby(): void {
     this.current = () => this.showLobby();
+    this.ensureRoomLobby();
     this.stage.setCosmetics(profile.data.cos);
     this.stage.setMates(this.party ? this.party.members.filter((m) => m.id !== this.online.myId).map((m) => m.cos ?? { ...profile.data.cos, outfit: 1 }) : []);
     this.stage.offsetX = -0.2;
@@ -237,10 +250,14 @@ export class App {
 
   private partyPanel(): HTMLElement {
     const box = h('div', { class: 'panel col', style: 'padding:14px' }, h('h3', null, 'Gruppe & Freunde'));
+    if (this.p2p) return this.roomPanel(box);
     if (!settings.data.serverUrl) {
+      const inp = h('input', { type: 'text', placeholder: 'Raumcode', maxlength: '5', style: 'width:110px;text-transform:uppercase' }) as HTMLInputElement;
       box.append(
-        h('p', { class: 'muted', style: 'margin:0' }, 'Für Online-Matches, Gruppen und Freunde trage in den Einstellungen die Adresse deines RIFTZONE-Servers ein.'),
-        h('button', { class: 'btn small', onclick: () => this.showSettings(() => this.showLobby(), 'online') }, 'Server einrichten'),
+        h('p', { class: 'muted', style: 'margin:0' }, 'Online ohne Server: Ein Gerät eröffnet einen Raum und rechnet das Match, Freunde treten mit dem Code bei.'),
+        h('div', { class: 'row' }, h('button', { class: 'btn small rift', onclick: () => void this.openRoom() }, 'Raum eröffnen')),
+        h('div', { class: 'row' }, inp, h('button', { class: 'btn small', onclick: () => this.joinRoom(normCode(inp.value)) }, 'Beitreten')),
+        h('button', { class: 'btn small ghost', onclick: () => this.showSettings(() => this.showLobby(), 'online') }, 'Eigenen Server einrichten'),
       );
       return box;
     }
@@ -281,6 +298,103 @@ export class App {
     fl.append(h('div', { class: 'row' }, fin, h('button', { class: 'btn small', onclick: () => this.addFriend(fin.value) }, 'Freund hinzufügen')));
     box.append(fl);
     return box;
+  }
+
+  // ---------------- Raum ohne Server ----------------
+
+  private hasOnline(): boolean {
+    return !!this.p2p || !!settings.data.serverUrl;
+  }
+
+  private roomPanel(box: HTMLElement): HTMLElement {
+    const r = this.p2p!;
+    box.append(
+      h('div', { class: 'row' }, h('span', null, 'Raumcode '), h('b', { style: 'font-size:1.3rem;letter-spacing:.15em' }, r.code)),
+      h('small', { class: 'muted' }, r.role === 'host' ? 'Dein Gerät ist der Server. Lass das Spiel geöffnet, solange gespielt wird.' : 'Der Gastgeber startet das Match.'),
+    );
+    if (this.onlineState !== 'open') box.append(h('p', { class: 'muted', style: 'margin:0' }, this.onlineState === 'connecting' ? 'Verbinde …' : 'Nicht verbunden.'));
+    if (this.priv) box.append(...this.priv.members.map((m) => h('div', { class: 'row' }, h('b', { class: 'grow' }, m.name, m.leader ? ' ★' : ''), h('small', { class: 'muted' }, `Stufe ${m.level}`))));
+    box.append(h('div', { class: 'row' }, h('button', { class: 'btn small', onclick: () => this.copyRoomInvite() }, 'Einladung kopieren'), h('button', { class: 'btn small danger', onclick: () => this.leaveRoom() }, 'Raum verlassen')));
+    return box;
+  }
+
+  private async openRoom(): Promise<void> {
+    if (this.p2p) return;
+    this.online.disconnect();
+    const host = new P2PHost(this.heights);
+    host.onError = (msg) => {
+      toast(msg, 4000);
+      this.leaveRoom();
+    };
+    this.p2p = { role: 'host', code: '…', host };
+    this.onlineState = 'connecting';
+    this.refresh();
+    try {
+      this.p2p.code = await host.listen();
+    } catch (e) {
+      host.stop();
+      if (this.p2p?.host === host) this.p2p = null;
+      this.onlineState = 'off';
+      toast(`Raum konnte nicht eröffnet werden: ${(e as Error).message}`, 4000);
+      this.refresh();
+      return;
+    }
+    if (this.p2p?.host !== host) return;
+    this.setMode('private');
+    this.connectOnline();
+  }
+
+  private joinRoom(code: string): void {
+    if (!isCode(code)) {
+      toast('Bitte den 5-stelligen Raumcode eingeben');
+      return;
+    }
+    this.leaveRoom(false);
+    this.online.disconnect();
+    this.p2p = { role: 'guest', code, host: null };
+    this.setMode('private');
+    this.connectOnline();
+  }
+
+  private leaveRoom(reconnect = true): void {
+    if (!this.p2p) return;
+    const r = this.p2p;
+    this.p2p = null;
+    if (this.mode.kind !== 'offline') this.setMode('offline');
+    this.online.disconnect();
+    r.host?.stop();
+    this.onlineState = 'off';
+    this.party = null;
+    this.priv = null;
+    this.queue = null;
+    if (reconnect && settings.data.serverUrl) this.connectOnline();
+    this.refresh();
+  }
+
+  private setMode(kind: Kind): void {
+    this.mode = { ...this.mode, kind };
+    save('mode', this.mode);
+  }
+
+  /** Im Raum gibt es genau eine private Lobby mit dem Raumcode: der Gastgeber legt sie (nach jedem Match neu) an, Gäste treten bei. */
+  private ensureRoomLobby(): void {
+    const r = this.p2p;
+    if (!r || this.onlineState !== 'open' || this.priv || this.game || Date.now() - this.p2pAsk < 4000) return;
+    this.p2pAsk = Date.now();
+    if (r.role === 'host') {
+      const c = this.matchConfig();
+      this.online.send({ t: 'private.create', code: r.code, cfg: { teamSize: c.teamSize, build: c.build, maxPlayers: c.maxPlayers, fillBots: true, botSkill: c.botSkill, zoneScale: c.zoneScale } });
+    } else this.online.send({ t: 'private.join', code: r.code });
+  }
+
+  private copyRoomInvite(): void {
+    if (!this.p2p) return;
+    const code = this.p2p.code;
+    const url = `${location.origin}${location.pathname}?room=${code}`;
+    navigator.clipboard?.writeText(url).then(
+      () => toast('Einladungslink kopiert'),
+      () => toast(`Raumcode: ${code}`),
+    );
   }
 
   private addFriend(id: string): void {
@@ -325,7 +439,7 @@ export class App {
     };
     const opt = <K extends keyof ModeChoice>(k: K, v: ModeChoice[K], label: string, disabled = false): HTMLElement =>
       h('button', { class: `btn small ${m[k] === v ? 'sel' : ''}`, disabled, onclick: () => choose(k, v) }, label);
-    const onlineOk = !!settings.data.serverUrl;
+    const onlineOk = this.hasOnline();
     const codeIn = h('input', { type: 'text', placeholder: 'Lobby-Code', maxlength: '6', style: 'width:130px;text-transform:uppercase' }) as HTMLInputElement;
     const el = h(
       'div',
@@ -338,8 +452,8 @@ export class App {
           'div',
           { class: 'panel col scroll', style: 'max-width:640px;flex:1' },
           h('h3', null, 'Spielweise'),
-          h('div', { class: 'row' }, opt('kind', 'offline', 'Offline mit Bots'), opt('kind', 'public', 'Online öffentlich', !onlineOk), opt('kind', 'private', 'Online privat', !onlineOk)),
-          !onlineOk ? h('small', { class: 'muted' }, 'Online-Modi brauchen einen eigenen Server (Einstellungen → Online).') : '',
+          h('div', { class: 'row' }, opt('kind', 'offline', 'Offline mit Bots'), opt('kind', 'public', 'Online öffentlich', !onlineOk || !!this.p2p), opt('kind', 'private', 'Online privat', !onlineOk)),
+          !onlineOk ? h('small', { class: 'muted' }, 'Für Online: in der Lobby einen Raum eröffnen oder mit Code beitreten (ohne Server), oder einen eigenen Server eintragen (Einstellungen → Online).') : this.p2p ? h('small', { class: 'muted' }, `Raum ${this.p2p.code}: ${this.p2p.role === 'host' ? 'deine Einstellungen gelten für das nächste Match' : 'der Gastgeber legt Modus und Teilnehmer fest'}.`) : '',
           h('h3', null, 'Teamgröße'),
           h('div', { class: 'row' }, opt('teamSize', 1, 'Solo'), opt('teamSize', 2, 'Duo'), opt('teamSize', 4, 'Squad')),
           h('h3', null, 'Bauen'),
@@ -368,7 +482,7 @@ export class App {
                 h('div', { class: 'row' }, opt('weather', 'random', 'Zufall'), opt('weather', 'clear', 'Klar'), opt('weather', 'rain', 'Regen'), opt('weather', 'fog', 'Nebel')),
               )
             : '',
-          m.kind === 'private' && onlineOk
+          m.kind === 'private' && onlineOk && !this.p2p
             ? h(
                 'div',
                 { class: 'col' },
@@ -435,15 +549,18 @@ export class App {
   }
 
   private connectOnline(): void {
-    if (!settings.data.serverUrl) return;
-    if (this.online.connected || this.onlineState === 'connecting') return;
-    this.online.connect(settings.data.serverUrl, { name: profile.data.name, cos: profile.data.cos, profileId: profile.data.id, level: profile.level });
+    const url = this.p2p ? (this.p2p.code === '…' ? '' : `p2p:${this.p2p.role}:${this.p2p.code}`) : settings.data.serverUrl;
+    if (!url) return;
+    if (this.online.connected || (this.onlineState === 'connecting' && this.online.ws)) return;
+    this.online.connect(url, { name: profile.data.name, cos: profile.data.cos, profileId: profile.data.id, level: profile.level });
   }
 
   private onLobbyMsg(m: LobbyMsg): void {
     switch (m.t) {
       case 'welcome':
         this.onlineCount = m.online;
+        this.p2pAsk = 0;
+        this.ensureRoomLobby();
         if (this.friends.length) this.online.send({ t: 'friends', ids: this.friends.map((f) => f.id) });
         if (m.reconnect) toast('Verbinde dich wieder mit deinem Match …');
         break;
@@ -474,6 +591,7 @@ export class App {
         this.startOnline(m.matchId);
         return;
       case 'error':
+        if (this.p2p && m.msg.includes(this.p2p.code)) break; // Raum-Lobby gerade nicht da (Gastgeber noch im Match): leise später erneut
         toast(m.msg, 3500);
         break;
       case 'presence':

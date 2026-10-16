@@ -4,6 +4,10 @@ Der Server verwaltet Lobbys, Gruppen, Warteschlangen und private Matches und rec
 Bewegung, Treffer, Schaden, Inventar, Bauen, Zone und Platzierung entscheidet nur der Server. Clients schicken
 ausschließlich Eingaben (Bewegungsrichtung, Blickwinkel, Tasten, Einmal-Aktionen).
 
+> **Ohne Server spielen:** Im Menü „Online ohne Server → Raum eröffnen“. Das Gerät des Gastgebers rechnet dann dieselbe
+> Lobby und dasselbe Match im Web Worker, Freunde treten mit dem Code bei (Vermittlung über Firebase, siehe
+> `cloud/README.md`). Ein eigener Server lohnt sich nur für öffentliche Lobbys, mehrere Matches gleichzeitig und Bestenlisten.
+
 GitHub Pages kann keinen solchen Server betreiben (nur statische Dateien). Client und Server sind daher getrennt:
 
 | Teil   | Wo                                         | Was                                  |

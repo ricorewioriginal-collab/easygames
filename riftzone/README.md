@@ -2,8 +2,9 @@
 
 Ein eigenständiges 3D-Third-Person-Battle-Royale für Browser, Handy und Tablet. Bis zu 100 Teilnehmer springen aus
 der **Riftfähre** über der Insel **Aurelia** ab, gleiten zu einem von 14 Orten, plündern Waffen und Ausrüstung, bauen
-Deckung und überleben den schrumpfenden **Riftsturm**. Offline gegen Bots (Web Worker) oder online über einen eigenen
-Server – mit identischem Simulationscode auf beiden Seiten.
+Deckung und überleben den schrumpfenden **Riftsturm**. Offline gegen Bots (Web Worker), online **ohne Server** (ein Gerät eröffnet einen Raum und ist selbst der Server,
+Freunde treten mit dem 5-stelligen Code oder dem Link `?room=CODE` bei; Vermittlung über Firebase, gespielt wird direkt
+per WebRTC) oder über einen eigenen Server – mit identischem Simulationscode überall.
 
 Alle Modelle, Texturen, Klänge und die Musik werden im Code erzeugt; es gibt keine fremden Assets.
 
@@ -50,6 +51,7 @@ npm run server         # Spielserver im Entwicklungsmodus (Port 2610)
 | `npm test`              | Unit- und Integrationstests (Node-Testrunner via tsx)                              |
 | `npm run test:e2e`      | Browser-Test mit Playwright: Start → Lobby → Match → Karte/Inventar                |
 | `node e2e/online.mjs`   | Online-Test: echter Server + zwei Browser in einer Gruppe im selben Match          |
+| `node e2e/p2p.mjs`      | Online ohne Server: Raum eröffnen, zweiter Browser tritt per Code bei, Match (Firebase-Emulator nötig) |
 | `npm run server:build`  | Server nach `server/dist/server.mjs` bündeln                                       |
 | `npm run check`         | Typprüfung, Tests, Build, Browser-Test                                             |
 

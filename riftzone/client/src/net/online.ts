@@ -42,6 +42,19 @@ export type LobbyMsg =
   | { t: 'lb'; entries: LeaderEntry[] }
   | { t: 'stats'; online: number; matches: number };
 
+/** Was OnlineClient von einer Verbindung braucht: WebSocket erfüllt das, ebenso die Verbindungen ohne Server aus p2p.ts */
+export interface SockLike {
+  readonly readyState: number;
+  binaryType?: string;
+  onopen: (() => void) | null;
+  onmessage: ((ev: { data: string | ArrayBuffer }) => void) | null;
+  onclose: ((ev: { code: number; reason: string }) => void) | null;
+  onerror: (() => void) | null;
+  send(d: string | ArrayBuffer): void;
+  close(code?: number, reason?: string): void;
+}
+const OPEN = 1;
+
 /** Normalisiert eine Server-Adresse zu einer ws(s)-URL */
 export function serverWsUrl(input: string): string {
   let u = input.trim();
@@ -59,7 +72,9 @@ export function serverHttpUrl(input: string): string {
 }
 
 export class OnlineClient {
-  ws: WebSocket | null = null;
+  ws: SockLike | null = null;
+  /** Liefert die Verbindung für Adressen ohne Server ("p2p:…", siehe p2p.ts) */
+  socketFactory: ((url: string) => SockLike) | null = null;
   connected = false;
   myId = '';
   onLobby: ((m: LobbyMsg) => void) | null = null;
@@ -75,7 +90,7 @@ export class OnlineClient {
   private early: (string | ArrayBuffer)[] = [];
 
   connect(url: string, hello: { name: string; cos: Cosmetics; profileId: string; level: number }): void {
-    this.url = serverWsUrl(url);
+    this.url = url.startsWith('p2p:') ? url : serverWsUrl(url);
     this.hello = hello;
     this.closedByUser = false;
     this.open();
@@ -84,9 +99,12 @@ export class OnlineClient {
   private open(): void {
     if (!this.url) return;
     this.onStatus?.('connecting');
-    let ws: WebSocket;
+    let ws: SockLike;
     try {
-      ws = new WebSocket(this.url);
+      if (this.url.startsWith('p2p:')) {
+        if (!this.socketFactory) throw new Error('p2p');
+        ws = this.socketFactory(this.url);
+      } else ws = new WebSocket(this.url) as unknown as SockLike;
     } catch (e) {
       this.onStatus?.('closed', 'Ungültige Server-Adresse');
       return;
@@ -147,11 +165,11 @@ export class OnlineClient {
   }
 
   send(msg: Record<string, unknown>): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(msg));
+    if (this.ws && this.ws.readyState === OPEN) this.ws.send(JSON.stringify(msg));
   }
 
   sendBinary(b: ArrayBuffer): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(b);
+    if (this.ws && this.ws.readyState === OPEN) this.ws.send(b);
   }
 
   /** Transport für ein gefundenes Match erzeugen (übernimmt früh eingetroffene Pakete). */
