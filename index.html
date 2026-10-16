@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+<script>
+/* Aus einem eingebetteten Spiel (Overlay/iframe) führt „← Alle Spiele“ (href="../") sonst in die ganze Bibliothek INNERHALB des Rahmens. Die Bibliothek ohne ?embed
+   in einem Rahmen heißt: Das Spiel wollte zurück – Overlay des Gastgebers schließen (easygames:close), ein fest eingebetteter Rahmen zeigt stattdessen die eingebettete Liste. */
+(function () { try { if (window.parent !== window && !/[?&]embed(=|&|$)/.test(location.search)) { window.parent.postMessage({ type: 'easygames:close' }, '*'); setTimeout(function () { location.replace(location.pathname + '?embed=1'); }, 400); } } catch (e) {} })();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080B12">

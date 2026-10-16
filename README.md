@@ -97,6 +97,18 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
 
+- **Ranglisten und Erfolge einbetten** (eigene Seite oder App; Generator und alle Varianten in `einbinden.html`, Abschnitt 5b):
+
+```html
+<script src="https://ricorewioriginal-collab.github.io/easygames/easygames.js"></script>
+<button data-easygames="ranglisten" data-mode="overlay">🏆 Ranglisten</button>
+<button data-easygames="erfolge" data-mode="overlay">🏅 Erfolge</button>
+<!-- oder eingebettet: <div data-easygames="ranglisten" data-game="anmacha-snake"></div>  /  <div data-easygames="erfolge"></div> -->
+<!-- oder iframe: …/easygames/ranglisten.html?embed=1[&game=<id>]   …/easygames/erfolge.html?embed=1 -->
+```
+
+- Aus einem eingebetteten Spiel führt „← Alle Spiele“ automatisch zurück zur Seite des Gastgebers (schließt das Overlay, `easygames:close`).
+
 ## Android-App (offline, mit Sync über GitHub)
 
 Native Android-Hülle (Kotlin) um die Oberfläche, Quellen in `android/`. Alle Spiele und ihre Bibliotheken (three.js, PeerJS, QR-Code, Schrift) liegen auf dem Gerät; im WLAN lädt die App geänderte Dateien selbst von GitHub – ohne neues APK.
