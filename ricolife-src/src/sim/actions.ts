@@ -339,6 +339,8 @@ export function tickSim(g: Game, s: Sim, dt: number): void {
   }
   const c = ctxOf(g, s, a);
   if (a.data?.cancelled && a.phase !== 'done') a.phase = 'done';
+  // Ziel verschwunden (aufgegessen, verkauft, abgereist): Handlung beenden statt ins Leere greifen
+  if ((a.phase === 'queued' || a.phase === 'route') && ((d.on === 'obj' && a.obj && !c.o) || (d.on === 'sim' && a.target && !c.t) || (d.on === 'pet' && a.target && !c.p))) a.phase = 'done';
   switch (a.phase) {
     case 'queued':
       begin(g, s, a, d, c);

@@ -1,0 +1,19 @@
+{
+  "name": "RicoLife 3D – Dein Leben. Deine Regeln.",
+  "short_name": "RicoLife",
+  "description": "3D-Lebenssimulation: Figuren erstellen, Häuser bauen, Freundschaften, Beruf und Familie in Lindenhafen – offline spielbar.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#123a50",
+  "theme_color": "#123a50",
+  "categories": ["games"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

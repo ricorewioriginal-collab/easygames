@@ -191,8 +191,8 @@ def({
   adv: { hunger: 85 }, avail: (c) => (c.o?.def === 'prop-meal' && (c.o.st?.servings ?? 0) > 0 ? (mayUse(c.g, c.s, c.o) ? true : false) : false),
   dur: 0.6, anim: 'carry',
   start: (c) => {
-    const o = c.o!;
-    if ((o.st?.servings ?? 0) <= 0) return 'Schon aufgegessen';
+    const o = c.o;
+    if (!o || (o.st?.servings ?? 0) <= 0) return 'Schon aufgegessen';
     o.st!.servings!--;
     const r = recipeById(o.st?.recipe),
       q = o.st?.quality ?? 1;
