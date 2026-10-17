@@ -232,7 +232,7 @@ window.addEventListener('DOMContentLoaded', function () {
     clearInterval(timers.beat); timers.beat = setInterval(function () { beat(); }, 60000);
     clearInterval(timers.on); timers.on = setInterval(online, 30000);
     // Betreiber und Sperre vor dem ersten Anzeigen klären (Löschen-/Sperren-Knöpfe hängen daran)
-    Promise.all([api(Cloud.FS.replace(/\/$/, '') + '/chat_admin/' + me.uid).then(function (r) { admin = r.ok; }), checkBan()]).catch(function () {}).then(function () { drawRooms(); openRoom(); beat(); online(); });
+    Promise.all([api(Cloud.FS.replace(/\/$/, '') + '/chat_admin/' + me.uid).then(function (r) { admin = r.ok || C.isAdminEmail(user() && user().email); }), checkBan()]).catch(function () {}).then(function () { drawRooms(); openRoom(); beat(); online(); });
   }
   function login() {
     return Cloud.account().then(function (a) {

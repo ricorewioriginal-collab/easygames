@@ -160,7 +160,7 @@ window.addEventListener('DOMContentLoaded', function () {
       $('gate').hidden = !!a; $('formBox').hidden = !a;
       if (!a) { $('adm').hidden = true; return; }
       me = a; fill(); gh();
-      api(Cloud.FS.replace(/\/$/, '') + '/chat_admin/' + a.uid).then(function (r) { if (r.ok) { $('adm').hidden = false; admList(); } }).catch(function () {});
+      api(Cloud.FS.replace(/\/$/, '') + '/chat_admin/' + a.uid).then(function (r) { return r.ok || Bug.isAdminEmail(Cloud.user && Cloud.user() && Cloud.user().email); }).then(function (ok) { if (ok) { $('adm').hidden = false; admList(); } }).catch(function () {});
     }).catch(function () {});
   }
   fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(function () { fill(); gh(); return login(); });

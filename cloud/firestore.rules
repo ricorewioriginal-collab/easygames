@@ -170,8 +170,12 @@ service cloud.firestore {
     // Nachrichten chat/<raum>/m/<id>: u = eigene uid, n = Spitzname, x = Text (1–200 Zeichen), t = Serverzeit. Lesen nur angemeldet.
     // Flutschutz auf dem Server: Jede Nachricht muss im selben Schreibvorgang chat_last/<uid> auf die Serverzeit setzen, und das geht
     // höchstens alle 2 Sekunden. Gesperrte Spieler (chat_ban/<uid>) können nicht schreiben. Löschen: Autor oder Betreiber.
-    // Betreiber = Dokument chat_admin/<uid> (nur in der Firebase-Konsole anlegen; Meldungen chat_reports und Sperren chat_ban pflegt nur er).
-    function chatAdmin() { return signedIn() && exists(/databases/$(database)/documents/chat_admin/$(request.auth.uid)); }
+    // Betreiber = das Google-Konto ricorewioriginal@gmail.com (bestätigte E-Mail im Anmelde-Token) oder, zusätzlich, ein Dokument chat_admin/<uid>
+    // (nur in der Firebase-Konsole anlegen). Meldungen (chat_reports, bugs) und Sperren (chat_ban) pflegt nur der Betreiber.
+    function chatAdmin() {
+      return signedIn() && ((request.auth.token.email == 'ricorewioriginal@gmail.com' && request.auth.token.email_verified == true)
+        || exists(/databases/$(database)/documents/chat_admin/$(request.auth.uid)));
+    }
     match /chat/{room}/m/{mid} {
       allow get: if signedIn();
       allow list: if signedIn() && request.query.limit <= 60;
@@ -228,7 +232,7 @@ service cloud.firestore {
 
     // ---------- Fehlermeldungen (bug.html) ----------
     // bugs/<id>: u = eigene uid, g = Spiel, c = Art, x = Beschreibung (10–1000 Zeichen), i = technische Angaben (JSON, optional), p = Seite (optional), t = Serverzeit.
-    // Nur angemeldet und nicht gesperrt, höchstens eine Meldung alle 30 Sekunden (Pflicht-Schreibvorgang auf bug_last/<uid>). Lesen, Abhaken, Löschen: nur der Betreiber (chat_admin/<uid>).
+    // Nur angemeldet und nicht gesperrt, höchstens eine Meldung alle 30 Sekunden (Pflicht-Schreibvorgang auf bug_last/<uid>). Lesen, Abhaken, Löschen: nur der Betreiber (Konto ricorewioriginal@gmail.com oder chat_admin/<uid>).
     match /bugs/{id} {
       allow create: if signedIn()
         && request.resource.data.keys().hasOnly(['u', 'g', 'c', 'x', 'i', 'p', 't']) && request.resource.data.keys().hasAll(['u', 'g', 'c', 'x', 't'])

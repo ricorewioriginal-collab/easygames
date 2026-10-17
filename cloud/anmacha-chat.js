@@ -72,7 +72,10 @@
     (games || []).forEach(function (x) { if (m && x.cloud && x.cloud.game === m[1]) g = x; });
     return g ? (g.icon || '🎮') + ' ' + String(g.title || m[1]).split(' – ')[0] : '💬 ' + room;
   }
-  var api = { ROOMS: ROOMS, ROOM_RE: ROOM_RE, rid: rid, project: project, docName: docName, commitUrl: commitUrl, sendBody: sendBody, presenceBody: presenceBody, reportBody: reportBody, banBody: banBody, listQuery: listQuery, roomQueryUrl: roomQueryUrl, onlineQuery: onlineQuery, rootQueryUrl: rootQueryUrl, parse: parse, parseOnline: parseOnline, roomTitle: roomTitle };
+  // Betreiber-Konto (die Regeln in cloud/firestore.rules prüfen dieselbe bestätigte E-Mail serverseitig; hier nur zum Anzeigen der Knöpfe)
+  var ADMIN_EMAIL = 'ricorewioriginal@gmail.com';
+  function isAdminEmail(e) { return String(e || '').toLowerCase() === ADMIN_EMAIL; }
+  var api = { ADMIN_EMAIL: ADMIN_EMAIL, isAdminEmail: isAdminEmail, ROOMS: ROOMS, ROOM_RE: ROOM_RE, rid: rid, project: project, docName: docName, commitUrl: commitUrl, sendBody: sendBody, presenceBody: presenceBody, reportBody: reportBody, banBody: banBody, listQuery: listQuery, roomQueryUrl: roomQueryUrl, onlineQuery: onlineQuery, rootQueryUrl: rootQueryUrl, parse: parse, parseOnline: parseOnline, roomTitle: roomTitle };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.AnMaChaChat = api;
 })(typeof window !== 'undefined' ? window : this);

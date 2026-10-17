@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "057046728b4b",
- "generated": "2026-10-17T02:56:42+00:00",
- "commit": "5b4f5cbd568f925659b3c58f8095a89cd61beb00",
+ "version": "d9b64303027c",
+ "generated": "2026-10-17T05:03:55+02:00",
+ "commit": "7b97596212b21a215bd9f649c4f4ed35f0019e5f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3973,8 +3973,8 @@
   },
   {
    "p": "bug.html",
-   "s": 12525,
-   "h": "86dd64f1510a1acd7075b18230044ab12f7ba5c33975b3b86de6fce73f9b35b4"
+   "s": 12630,
+   "h": "7fb79a9e5d790afa15b1bdae57d5fd6410501e9b29de88504592c51cf16ff9cf"
   },
   {
    "p": "bunte-insel/card.png",
@@ -4618,8 +4618,8 @@
   },
   {
    "p": "chat.html",
-   "s": 19557,
-   "h": "f0eb7c687d48ee1f54383d3e12616e390dcb035fa83b0ba45560a4e7aa2467be"
+   "s": 19599,
+   "h": "362d459134422610e87087e214d53b720597720c55c232929ce603b572dfb083"
   },
   {
    "p": "cloud/anmacha-ach.js",
@@ -4633,13 +4633,13 @@
   },
   {
    "p": "cloud/anmacha-bug.js",
-   "s": 4537,
-   "h": "c968770aff8e6d04e0a360647103860385a8eba97733aacec41f7673084299c6"
+   "s": 4823,
+   "h": "86bdbba065e307ea6373679e9af3ae8d743fcdd2008c5a977c8f709806f0d6b5"
   },
   {
    "p": "cloud/anmacha-chat.js",
-   "s": 5687,
-   "h": "bba5a3493d80c1d78f72e76e20b09b64ecd62e7334cf07231b7dbc4b42cb0456"
+   "s": 6019,
+   "h": "031a698c86036ac89ef4c5f2a19cbcd05391599d099e7540f0aa6e1634b3203b"
   },
   {
    "p": "cloud/anmacha-chatfilter.js",
