@@ -35,8 +35,8 @@ function staticAudit() {
 }
 staticAudit();
 // Schlüssel, die das Spiel wirklich nutzt: nach dem Speichern muss das Skript sie in seinen Zeitstempeln (anmacha-cloud-meta:<spiel>) führen
-const KEYS = { riftzone: ['riftzone.profile', 'riftzone'], turbokick: ['turbokick.save', 'turbokick'], partyverse: ['partyverse.save', 'partyverse'], aeru: ['aeru-save-v1', 'aeru'], 'bunte-insel2': ['bunteInsel2.slot1', 'bunte-insel2'], prismrush: ['prismrush.save.v1', 'prismrush'], kiko: ['kiko-sterneninseln-v1', 'kiko-sterneninseln'], ricoville: ['ricoville.save.main', 'ricoville'] };
-const GAMES = { riftzone: 'riftzone/app/', turbokick: 'turbokick/app/', partyverse: 'partyverse/app/', aeru: 'aeru/', 'bunte-insel2': 'bunte-insel2/', prismrush: 'prismrush/', kiko: 'kiko-sterneninseln/', ricoville: 'ricoville/' };
+const KEYS = { riftzone: ['riftzone.profile', 'riftzone'], turbokick: ['turbokick.save', 'turbokick'], partyverse: ['partyverse.save', 'partyverse'], aeru: ['aeru-save-v1', 'aeru'], prismrush: ['prismrush.save.v1', 'prismrush'], kiko: ['kiko-sterneninseln-v1', 'kiko-sterneninseln'], ricoville: ['ricoville.save.main', 'ricoville'] };
+const GAMES = { riftzone: 'riftzone/app/', turbokick: 'turbokick/app/', partyverse: 'partyverse/app/', aeru: 'aeru/', prismrush: 'prismrush/', kiko: 'kiko-sterneninseln/', ricoville: 'ricoville/' };
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.wasm': 'application/wasm', '.bin': 'application/octet-stream', '.woff2': 'font/woff2', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg' };
 const srv = http.createServer((req, res) => {
   let f = path.join(root, decodeURIComponent(req.url.split('?')[0])); if (!f.startsWith(root)) { res.writeHead(403); return res.end(); }

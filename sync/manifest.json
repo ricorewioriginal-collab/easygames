@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "51077efc92a0",
- "generated": "2026-10-17T03:25:39+02:00",
- "commit": "c7676246111dbe79ac5a695d50cfb42201aba255",
+ "version": "d4a54bf54e5e",
+ "generated": "2026-10-17T03:29:16+02:00",
+ "commit": "5da848acb914f56b8d8cc6dd2e3e2e37e39f0ec3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4612,189 +4612,14 @@
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
   },
   {
-   "p": "bunte-insel2/assets/app-DADXP5PT.js",
-   "s": 544827,
-   "h": "984e33cddb03fc9f8606fbe9bad9bf9008f5e048d8764eb576dff512b2c740d1"
-  },
-  {
-   "p": "bunte-insel2/assets/chunk-O2XFH626.js",
-   "s": 180,
-   "h": "d9cad469beb0997cded3780659461d023f24353d6a947fe77434f079536af5f9"
-  },
-  {
-   "p": "bunte-insel2/assets/main-2SVZ5P2M.css",
-   "s": 22108,
-   "h": "cf8d8601b653e7fcc11c67cbdee8bc6e110161fb07751bb20e6cba67c4307df8"
-  },
-  {
-   "p": "bunte-insel2/assets/main-JLRFA6JU.js",
-   "s": 397,
-   "h": "c5b8370963c7599c6f404853161b171f23c57b0124bb517d91e6fcde08ab0e99"
-  },
-  {
-   "p": "bunte-insel2/audio/bonk.mp3",
-   "s": 4125,
-   "h": "df75516285c32078d2f4ee2a3f2f9b3955d815fe0060e25cdaaf9d62781c957e"
-  },
-  {
-   "p": "bunte-insel2/audio/bump.mp3",
-   "s": 2829,
-   "h": "f6387ed280d4a5bd65a935bf901b55ea131e406318473ab87c91c047e6fb98f3"
-  },
-  {
-   "p": "bunte-insel2/audio/buy.mp3",
-   "s": 5277,
-   "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
-  },
-  {
-   "p": "bunte-insel2/audio/cat.mp3",
-   "s": 6861,
-   "h": "dcc2c89455aaaf312bd6e50cd7390806bbb888d6d2729809b45b32863ef68c84"
-  },
-  {
-   "p": "bunte-insel2/audio/chicken.mp3",
-   "s": 10893,
-   "h": "b4bbaa95bd08f3eb9b4a9f30f7d76372e8f16dae36092efb45b29dd54e4394c9"
-  },
-  {
-   "p": "bunte-insel2/audio/chop.mp3",
-   "s": 1965,
-   "h": "1c5d0096227491654efb8ae151eae5b8c71a3e5f7f8318ca834ca56001999f07"
-  },
-  {
-   "p": "bunte-insel2/audio/coins.mp3",
-   "s": 2253,
-   "h": "9cac9f1ad4b4be66fb96e955effdd9ff4d0a67a9d5232e5fe99e3abeb7cbc107"
-  },
-  {
-   "p": "bunte-insel2/audio/cow.mp3",
-   "s": 9453,
-   "h": "12022a2615d45b2badc034372291a2dbc683252cfe10bd5aa15171ce7087336e"
-  },
-  {
-   "p": "bunte-insel2/audio/dog.mp3",
-   "s": 7725,
-   "h": "a6e48ad48049e070df1f6384967331c2495d7df6e3968de385fc5f7b0b5db826"
-  },
-  {
-   "p": "bunte-insel2/audio/donkey.mp3",
-   "s": 10173,
-   "h": "572ae6da2052c1821ea0ec9fe4d796fc28f0e89ea42a84524bed95ab1ca08ddc"
-  },
-  {
-   "p": "bunte-insel2/audio/duck.mp3",
-   "s": 9021,
-   "h": "a04a426764b748f5079edaf5a6bc0a24d14d162123508469f31d93fa430e11b7"
-  },
-  {
-   "p": "bunte-insel2/audio/enter.mp3",
-   "s": 5277,
-   "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
-  },
-  {
-   "p": "bunte-insel2/audio/goat.mp3",
-   "s": 9597,
-   "h": "645ecbe8afd7a7135f390a9d6637632b4dc17112952f7f85f25ee5b81913f4cb"
-  },
-  {
-   "p": "bunte-insel2/audio/hit.mp3",
-   "s": 3117,
-   "h": "3377d85a2b13c115f7eb61774504455c20436bdb0bc0b65ed54ec81f61d52493"
-  },
-  {
-   "p": "bunte-insel2/audio/horse.mp3",
-   "s": 13773,
-   "h": "db75edb20672b617af47fd5b4a663e4453e6689897ae471f2d5e3e4ca43abb1e"
-  },
-  {
-   "p": "bunte-insel2/audio/kick.mp3",
-   "s": 4557,
-   "h": "f6f990d31156d316933f3ede75cdfe846510b603ef4ef2bbbff6beb46592cce4"
-  },
-  {
-   "p": "bunte-insel2/audio/leave.mp3",
-   "s": 4557,
-   "h": "892226922e191bac77cd2cc7c198edd15f8ad37267384d38b050af1b29a4b189"
-  },
-  {
-   "p": "bunte-insel2/audio/pig.mp3",
-   "s": 9191,
-   "h": "b3df5fc22cd206ca9eac842793ea0be82c62d2a2935b9878330e39d228507636"
-  },
-  {
-   "p": "bunte-insel2/audio/sheep.mp3",
-   "s": 9597,
-   "h": "ecb6eba17aa33b239a0cd6d5d2e3dbcd8aa8b76c0c9fd5402f0d688eb5054729"
-  },
-  {
-   "p": "bunte-insel2/audio/thwack.mp3",
-   "s": 2541,
-   "h": "18d476b81e7152ec5cf839e0d517d45b04dcdf7c50a04314975409c01a900d02"
-  },
-  {
-   "p": "bunte-insel2/card.png",
-   "s": 167690,
-   "h": "9d37666b14c1e1c99e57fcc6cd397e82ffc2789143cafe0912061950214f3830"
-  },
-  {
-   "p": "bunte-insel2/fonts/fredoka-latin-wght-normal.woff2",
-   "s": 29732,
-   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
-  },
-  {
-   "p": "bunte-insel2/icons/icon-192.png",
-   "s": 19845,
-   "h": "ce223f06a76ea42354da0f38dd04b38359ffc84cec47472e176d8da17bd235a9"
-  },
-  {
-   "p": "bunte-insel2/icons/icon-512.png",
-   "s": 57148,
-   "h": "b0906ad7317dafd48a842d631a2406b00bc720d8b4d7a83b4cedcb214b3ae81b"
-  },
-  {
-   "p": "bunte-insel2/icons/icon-maskable-512.png",
-   "s": 47603,
-   "h": "e81177486fb13496a8437e28460bc5d583b38da2cf4caa9ba803f922084f886e"
-  },
-  {
-   "p": "bunte-insel2/icons/icon.svg",
-   "s": 1400,
-   "h": "eaf9955f61f35bae4f67cc4656ab1d137656b28b06acc96a362e1ff2ac2e3845"
-  },
-  {
-   "p": "bunte-insel2/index.html",
-   "s": 5434,
-   "h": "04bf7c45bceb1129fd72c9e006daba17cd23567a8da263d5a9f367eaf0a5d16f"
-  },
-  {
-   "p": "bunte-insel2/manifest.webmanifest",
-   "s": 846,
-   "h": "a3b2121931e05b425622f67fb52bfc1e3798c3e6ff60ecf856be73a09d460b39"
-  },
-  {
-   "p": "bunte-insel2/sw.js",
-   "s": 1968,
-   "h": "adecb13e3c1ed46f7276fd3523d5dd71d56e197f2a7d9e95ce3766b4b107f06b"
-  },
-  {
-   "p": "bunte-insel2/vendor/three.min.js",
-   "s": 603445,
-   "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
-  },
-  {
-   "p": "bunte-insel2/version.json",
-   "s": 49,
-   "h": "cd9e1426ee54852ddbce25c1ba5dec843d84ef6cac4304084c4d3d7eaf4ef948"
-  },
-  {
    "p": "cloud/anmacha-ach.js",
    "s": 10431,
    "h": "1d25162f86e2c0cd686df8325fecf11d994ad45bed4a49ee86a8ef5cf85a62f7"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 28298,
-   "h": "640a1fffddd3cb3fe8538d9e3f9ed19801e1508f3a97dc3459a84bc272f07411"
+   "s": 28274,
+   "h": "0df3788253d3cd9f6b00042c33b045de5d526e9379984eee3aa16f20317cd758"
   },
   {
    "p": "cloud/anmacha-cloud.js",
@@ -4843,8 +4668,8 @@
   },
   {
    "p": "games.js",
-   "s": 22673,
-   "h": "01c49c1b8f8db19f7359466d69af6fd6622afc16dd9e84525abb84318148967f"
+   "s": 22011,
+   "h": "91b912f7a1edbab36ca2252c92667c5093d53d2d41ae0807d4ed657ca9daa74f"
   },
   {
    "p": "gay-life/card.jpg",
@@ -5003,8 +4828,8 @@
   },
   {
    "p": "guides.js",
-   "s": 59210,
-   "h": "6cf00cb07f9cb0f9985fa4ded9d3ba4f0c2b4567c571cbb908e26ac7883949c3"
+   "s": 57553,
+   "h": "b26e97b8794c6df2d4ae29376100aee23f9fddfd0159db28bd659578f6cb69ff"
   },
   {
    "p": "index.html",
@@ -6018,8 +5843,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 94484,
-   "h": "5ade1c2343a338491c8bed33756209ee5da494505a9bed94319137e6218aa7c1"
+   "s": 91935,
+   "h": "d01993146e6a764a6fcb90458b8dc8c0b1c5e0fd609d10abba3bce93db2e91b1"
   },
   {
    "p": "taschi/card.svg",
