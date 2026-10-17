@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { LEVEL_H } from '../world/world';
 import type { Game } from '../sim/game';
+import { SPEEDS } from '../core/clock';
 import type { Sim } from '../sim/types';
 import { tripPos } from '../sim/actions';
 import { HumanModel } from './human';
@@ -123,7 +124,8 @@ export class SimsView {
         e.anim = s.rt.anim;
         e.t = 0;
       }
-      e.t += dt;
+      // Schrittfolge passt zum Spieltempo (sonst rutschen die Füße bei Zeitraffer)
+      e.t += s.rt.anim === 'walk' || s.rt.anim === 'run' ? dt * Math.min(3, SPEEDS[g.clock.speed] || 1) : dt;
       if (o.visible) {
         const seated = s.rt.y > 0.1 && !LYING.has(s.rt.anim) && s.rt.y < 1.2 && s.rt.anim !== 'walk' && s.rt.anim !== 'run';
         e.m.update({ anim: s.rt.anim, t: e.t, emo: s.emo, emoPower: s.emoPower, talking: !!s.rt.speech || s.rt.anim === 'talk', holding: s.rt.holding, seatY: seated ? s.rt.y : undefined }, dt);
