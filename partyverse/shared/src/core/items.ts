@@ -194,5 +194,12 @@ export const EVENTS: Record<EventId, EventDef> = {
     text: 'Der Chrono-Altar wandert an einen neuen Ort!',
     good: true,
   },
+  splitterraub: {
+    id: 'splitterraub',
+    name: 'Splitterräuber',
+    icon: '🦇',
+    text: 'Eine Chrono-Fledermaus holt dir für 15 Glimmer einen Splitter vom Führenden. Reicht dein Glimmer nicht, stibitzt sie 5 Glimmer.',
+    good: true,
+  },
 };
 export const EVENT_IDS = Object.keys(EVENTS) as EventId[];

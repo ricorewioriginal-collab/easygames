@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { Rng } from '../rng';
-import { runBot } from '../minigames/simulate';
+import { BotRunner, runBot } from '../minigames/simulate';
 import { getMiniGame } from '../minigames/registry';
 import { decide, distancesTo } from './ai';
 import { GameCore } from './core';
 import { makeTestLayout } from './testLayouts';
-import { ALTAR_COST, Action, Difficulty, GameConfig, GameEvent, PlayerSetup } from './types';
+import { ALTAR_COST, Action, Difficulty, GameConfig, GameEvent, PlayerSetup, PlayerState } from './types';
 import { ITEMS } from './items';
 
 const setup = (n: number, kinds: Array<'human' | 'bot'> = [], diffs: Difficulty[] = []): PlayerSetup[] =>
@@ -666,6 +666,85 @@ describe('KI', () => {
         expect(p.items.length).toBeLessThanOrEqual(3);
         expect(c.layout.nodes[p.position]).toBeTruthy();
       }
+    }
+  });
+});
+
+describe('Endspurt und Minispiel-Punkte', () => {
+  it('kündigt ab 6 Runden die letzten drei Runden einmal an und gibt dem Letzten Aufholhilfe', () => {
+    const c = mk(3, 8, 77, ['human']);
+    const ev = autoPlay(c, 4);
+    const fs = ev.filter((e) => e.t === 'finalStretch') as Array<Extract<GameEvent, { t: 'finalStretch' }>>;
+    expect(fs.length).toBe(1);
+    const i = ev.indexOf(fs[0] as GameEvent);
+    expect(ev.slice(0, i).some((e) => e.t === 'round' && e.round === 6)).toBe(true);
+    expect(ev[i + 1]).toMatchObject({ t: 'coins', player: fs[0]!.player, delta: 10 });
+  });
+  it('kein Endspurt in kurzen Partien', () => {
+    const ev = autoPlay(mk(3, 5, 78, ['human']), 4);
+    expect(ev.some((e) => e.t === 'finalStretch')).toBe(false);
+  });
+  it('meldet am Ende eines Minispiels die Punkte aller Spieler, auch der Bots', () => {
+    const ev = autoPlay(mk(3, 1, 79, ['human']), 4);
+    const done = ev.find((e) => e.t === 'minigameDone') as Extract<GameEvent, { t: 'minigameDone' }>;
+    expect(Object.keys(done.scores ?? {}).sort()).toEqual(['p0', 'p1', 'p2']);
+  });
+});
+
+describe('Splitterräuber und Live-Bots', () => {
+  it('nimmt dem Führenden für 15 Glimmer einen Splitter ab', () => {
+    const c = mk(3, 3, 8, ['human']);
+    const me = c.player(c.state.current);
+    const [a, b] = c.players.filter((p) => p.id !== me.id) as [PlayerState, PlayerState];
+    a.shards = 1;
+    b.shards = 2;
+    me.coins = 20;
+    c.forceEvent(me.id, 'splitterraub');
+    expect([me.shards, a.shards, b.shards, me.coins]).toEqual([1, 1, 1, 5]);
+  });
+  it('stibitzt nur Glimmer, wenn das Geld fehlt oder niemand Splitter hat', () => {
+    const c = mk(3, 3, 8, ['human']);
+    const me = c.player(c.state.current);
+    const [a] = c.players.filter((p) => p.id !== me.id) as [PlayerState];
+    a.shards = 1;
+    a.coins = 30;
+    me.coins = 10;
+    c.forceEvent(me.id, 'splitterraub');
+    expect([me.shards, a.shards, me.coins, a.coins]).toEqual([0, 1, 15, 25]);
+  });
+  it('Schutzschild hält den Splitterraub ab', () => {
+    const c = mk(3, 3, 8, ['human']);
+    const me = c.player(c.state.current);
+    const [a] = c.players.filter((p) => p.id !== me.id) as [PlayerState];
+    a.shards = 1;
+    a.shield = true;
+    me.coins = 20;
+    c.forceEvent(me.id, 'splitterraub');
+    expect([me.shards, a.shards, me.coins, a.shield]).toEqual([0, 1, 20, false]);
+  });
+  it('Bots lassen sich mit Seed und Stärke Takt für Takt nachspielen (gleiches Ergebnis)', () => {
+    for (const seed of [1, 2, 3]) {
+      const c = mk(3, 1, seed, ['human']);
+      const rng = new Rng(seed);
+      for (let n = 0; c.state.phase !== 'minigame' && n < 500; n++) {
+        const id = c.pendingActors()[0] as string;
+        c.apply(id, decide(c, id, rng)!);
+      }
+      const m = c.state.minigame!;
+      const g = getMiniGame(m.gameId);
+      c.state.order.forEach((id, i) => {
+        const r = m.results[id];
+        if (!r?.bot) return;
+        const b = new BotRunner(
+          g,
+          m.seed,
+          { playerIndex: i, players: c.state.order.length },
+          r.bot.skill,
+          r.bot.seed,
+        );
+        while (!b.done) b.step();
+        expect(b.score()).toBe(r.score);
+      });
     }
   });
 });

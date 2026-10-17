@@ -29,6 +29,8 @@ import {
 
 export const BOT_SKILL: Record<Difficulty, number> = { easy: 0.3, normal: 0.6, hard: 0.88 };
 const FFA_REWARDS: Record<number, number[]> = { 2: [8, 3], 3: [10, 5, 2], 4: [10, 6, 3, 1] };
+/** Preis für einen Splitter beim Ereignis Splitterräuber */
+const SHARD_THEFT_COST = 15;
 
 /** Fehler bei ungültiger Konfiguration (für Lobby/Server) */
 export function validateConfig(c: GameConfig, layout?: Layout): string | null {
@@ -58,7 +60,7 @@ export function validateConfig(c: GameConfig, layout?: Layout): string | null {
 
 /**
  * Der Spielkern: reine Regeln ohne Oberfläche und ohne Uhr. Wird identisch im Browser (lokale Partie)
- * und im Colyseus-Server (Online) verwendet. Der Zufallsgenerator gehört dem Kern und ist NICHT Teil des
+ * und beim Online-Gastgeber verwendet. Der Zufallsgenerator gehört dem Kern und ist NICHT Teil des
  * sichtbaren Zustands – so kann kein Client Würfel vorhersagen.
  */
 export class GameCore {
@@ -551,12 +553,12 @@ export class GameCore {
     this.emit({ t: 'land', player: id, node, kind: n.kind });
     switch (n.kind) {
       case 'glimmer':
-        this.addCoins(p, 3, 'Glimmer-Feld');
+        this.addCoins(p, this.finalStretch() ? 6 : 3, 'Glimmer-Feld');
         break;
       case 'thorn':
         if (p.mantle)
           this.emit({ t: 'blocked', player: id, reason: 'Der Phasenmantel schützt vor dem Dornenfeld.' });
-        else this.addCoins(p, -3, 'Dornenfeld');
+        else this.addCoins(p, this.finalStretch() ? -6 : -3, 'Dornenfeld');
         break;
       case 'item':
         this.giveItem(p, this.randomItem(), 'field');
@@ -630,6 +632,23 @@ export class GameCore {
       case 'schatz':
         this.giveItem(p, this.randomItem(), 'event');
         break;
+      case 'splitterraub': {
+        // Wie ein Sternenraub: Der Führende verliert einen Splitter, wenn man ihn bezahlen kann
+        const leader = others
+          .filter((o) => o.shards > 0)
+          .sort((a, b) => b.shards - a.shards || b.coins - a.coins)[0];
+        if (leader && p.coins >= SHARD_THEFT_COST) {
+          if (this.shielded(leader, 'Splitterraub')) break;
+          this.addCoins(p, -SHARD_THEFT_COST, 'Splitterräuber');
+          leader.shards--;
+          p.shards++;
+          this.emit({ t: 'shardStolen', from: leader.id, to: p.id, cost: SHARD_THEFT_COST });
+        } else {
+          const rich = others.slice().sort((a, b) => b.coins - a.coins)[0];
+          if (rich && !this.shielded(rich, 'Diebstahl')) this.steal(rich, p, 5, 'Splitterräuber');
+        }
+        break;
+      }
       case 'dieb': {
         const o = others.length ? this.rng.pick(others) : null;
         if (o) this.steal(p, o, 5, 'Taschendieb');
@@ -737,6 +756,12 @@ export class GameCore {
     this.emit({ t: 'order', order: sorted, rolls });
   }
 
+  /** Die letzten drei Runden einer Partie ab 6 Runden */
+  finalStretch(): boolean {
+    const s = this.state;
+    return s.rounds >= 6 && s.round > s.rounds - 3;
+  }
+
   private startRound(first = false): void {
     const s = this.state;
     s.foldPhase = this.effectivePhase();
@@ -746,6 +771,14 @@ export class GameCore {
     s.rolled = false;
     this.emit({ t: 'round', round: s.round, foldPhase: s.foldPhase });
     if (!first && this.layout.foldPhases > 1) this.emit({ t: 'fold', phase: s.foldPhase, reason: 'round' });
+    if (this.finalStretch() && s.round === s.rounds - 2) {
+      // Endspurt: Felder zählen doppelt, der Letzte bekommt Aufholhilfe
+      const last = this.players
+        .slice()
+        .sort((a, b) => a.shards - b.shards || a.coins - b.coins)[0] as PlayerState;
+      this.emit({ t: 'finalStretch', player: last.id });
+      this.addCoins(last, 10, 'Aufholhilfe');
+    }
     this.emit({ t: 'turn', player: s.current });
   }
 
@@ -773,14 +806,11 @@ export class GameCore {
     ids.forEach((id, i) => {
       const p = this.player(id);
       if (p.kind === 'bot') {
-        const r = runBot(
-          game,
-          seed,
-          { playerIndex: i, players: ids.length },
-          BOT_SKILL[p.difficulty],
-          this.rng.int(2147483647),
-        );
-        run.results[id] = { score: r.score, source: 'bot' };
+        const skill = BOT_SKILL[p.difficulty];
+        const botSeed = this.rng.int(2147483647);
+        const r = runBot(game, seed, { playerIndex: i, players: ids.length }, skill, botSeed);
+        // Seed und Stärke mitgeben: Clients lassen den Bot damit live mitlaufen (gleiches Ergebnis)
+        run.results[id] = { score: r.score, source: 'bot', bot: { seed: botSeed, skill } };
       } else {
         run.results[id] = null;
         run.ready[id] = false;
@@ -860,7 +890,9 @@ export class GameCore {
     }
     for (const id of ids) this.addCoins(this.player(id), rewards[id] as number, 'Minispiel');
     for (const id of winners) this.player(id).stats.minigameWins++;
-    this.emit({ t: 'minigameDone', ranking, rewards, winners });
+    const scores: Record<string, number> = {};
+    for (const id of ids) scores[id] = score(id);
+    this.emit({ t: 'minigameDone', ranking, rewards, winners, scores });
     s.minigame = null;
     this.endRound();
   }

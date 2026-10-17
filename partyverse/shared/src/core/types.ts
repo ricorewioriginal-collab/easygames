@@ -49,7 +49,8 @@ export type EventId =
   | 'gegenwind'
   | 'ausgleich'
   | 'portalblitz'
-  | 'altarruf';
+  | 'altarruf'
+  | 'splitterraub';
 
 export interface PlayerState {
   id: string;
@@ -100,7 +101,10 @@ export interface MinigameRun {
   teams: string[][];
   /** Wer muss noch bestätigen (Anleitung gelesen) bzw. ein Ergebnis abgeben */
   ready: Record<string, boolean>;
-  results: Record<string, { score: number; source: 'human' | 'bot' | 'auto' } | null>;
+  results: Record<
+    string,
+    { score: number; source: 'human' | 'bot' | 'auto'; bot?: { seed: number; skill: number } } | null
+  >;
   stage: 'intro' | 'play';
 }
 
@@ -163,6 +167,8 @@ export type GameEvent =
   | { t: 'land'; player: string; node: number; kind: string }
   | { t: 'coins'; player: string; delta: number; reason: string }
   | { t: 'shard'; player: string }
+  /** Ein Splitter wechselt den Besitzer (Ereignis Splitterräuber) */
+  | { t: 'shardStolen'; from: string; to: string; cost: number }
   | { t: 'itemGot'; player: string; item: ItemId; from: 'field' | 'shop' | 'event' }
   | { t: 'teleport'; player: string; from: number; to: number; reason: string }
   | { t: 'swap'; a: string; b: string; reason: string }
@@ -171,9 +177,18 @@ export type GameEvent =
   | { t: 'event'; player: string; id: EventId; arg?: string }
   | { t: 'fold'; phase: number; reason: 'round' | 'event' }
   | { t: 'altarMoved'; node: number }
+  /** Beginn der letzten drei Runden; player = Letzter, bekommt Aufholhilfe */
+  | { t: 'finalStretch'; player: string }
   | { t: 'minigameStart'; gameId: string; mode: MinigameMode; teams: string[][] }
   | { t: 'minigameResult'; player: string; score: number }
-  | { t: 'minigameDone'; ranking: string[]; rewards: Record<string, number>; winners: string[] }
+  | {
+      t: 'minigameDone';
+      ranking: string[];
+      rewards: Record<string, number>;
+      winners: string[];
+      /** Punkte aller Spieler, auch der Bots */
+      scores?: Record<string, number>;
+    }
   | { t: 'finale'; bonuses: FinaleBonus[]; ranking: string[] }
   | { t: 'turnEnd'; player: string };
 

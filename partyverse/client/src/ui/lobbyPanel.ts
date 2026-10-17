@@ -1,6 +1,6 @@
 import { CHARACTERS, type CharacterId } from '@shared/characters';
 import type { Difficulty } from '@shared/core/types';
-import type { LobbyView } from '../net/online';
+import type { LobbyView } from '../net/lobby';
 import { PLAYER_SYMBOLS } from '../app/theme';
 import { t } from '../i18n';
 import { btn, clear, h, toast } from './dom';
@@ -82,7 +82,7 @@ export class LobbyPanel {
         h(
           'div',
           { class: 'stepper' },
-          btn('−', () => api.config({ rounds: Math.max(3, v.rounds - 1) }), 'ghost', { 'aria-label': '−' }),
+          btn('−', () => api.config({ rounds: Math.max(5, v.rounds - 1) }), 'ghost', { 'aria-label': '−' }),
           h('b', null, String(v.rounds)),
           btn('+', () => api.config({ rounds: Math.min(30, v.rounds + 1) }), 'ghost', { 'aria-label': '+' }),
         ),

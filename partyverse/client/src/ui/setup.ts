@@ -1,4 +1,4 @@
-import { CHARACTER_IDS, type CharacterId } from '@shared/characters';
+import { CHARACTER_IDS, getCharacter, type CharacterId } from '@shared/characters';
 import { cleanName } from '@shared/net/protocol';
 import { getLayout } from '@shared/levels';
 import type { Difficulty, GameConfig, PlayerSetup } from '@shared/core/types';
@@ -15,8 +15,6 @@ interface Row {
   name: string;
   character: CharacterId;
 }
-
-const BOT_NAMES = ['Funki', 'Glimmo', 'Zeitfuchs', 'Raumkater'];
 
 /** Spiel einrichten: Spieler (Menschen/Bots), Brett, Runden – für „Gegen Bots" und Hot-Seat auf einem Gerät */
 export function create(app: App, params?: RouteParams): ScreenView {
@@ -47,7 +45,8 @@ export function create(app: App, params?: RouteParams): ScreenView {
     roundsOut.textContent = String(rounds);
   });
 
-  const botName = (i: number): string => BOT_NAMES[i % BOT_NAMES.length] ?? 'Bot';
+  // Bots heißen wie ihre Figur, damit Name und Figur zusammenpassen
+  const botName = (c: CharacterId): string => getCharacter(c).name;
   const renderRows = (): void => {
     list.textContent = '';
     rows.forEach((r, i) => {
@@ -72,7 +71,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
       );
       const name = h('input', {
         class: 'field',
-        value: r.kind === 'human' ? r.name : botName(i),
+        value: r.kind === 'human' ? r.name : botName(r.character),
         maxlength: 14,
         'aria-label': t('setup.name'),
         disabled: r.kind !== 'human',
@@ -124,7 +123,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
     err.textContent = '';
     const players: PlayerSetup[] = rows.map((r, i) => {
       const human = r.kind === 'human';
-      const nm = human ? cleanName(r.name) || `Spieler ${i + 1}` : botName(i);
+      const nm = human ? cleanName(r.name) || `Spieler ${i + 1}` : botName(r.character);
       return {
         id: 'p' + (i + 1),
         name: nm,
@@ -192,7 +191,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
             btn(
               '−',
               () => {
-                rounds = Math.max(3, rounds - 1);
+                rounds = Math.max(5, rounds - 1);
                 roundsOut.textContent = String(rounds);
               },
               'ghost',

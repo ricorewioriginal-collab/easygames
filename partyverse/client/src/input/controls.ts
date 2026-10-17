@@ -11,6 +11,8 @@ export class MiniInput {
   private pointer = { px: 0, py: 0, pd: false };
   private stick = { x: 0, y: 0 };
   private btn = { a: false, b: false };
+  /** Seit dem letzten read() gedrückt – so zählt auch ein Tipp, der zwischen zwei Takten endet */
+  private tap = { a: false, b: false, pd: false };
   private cleanup: Array<() => void> = [];
   private ui: HTMLElement | null = null;
 
@@ -26,6 +28,8 @@ export class MiniInput {
     on(window, 'keydown', (e) => {
       if (e.repeat) return;
       this.keys.add(e.code);
+      if (e.code === 'Space' || e.code === 'Enter') this.tap.a = true;
+      if (['ShiftLeft', 'ShiftRight', 'KeyX', 'KeyZ'].includes(e.code)) this.tap.b = true;
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
     });
     on(window, 'keyup', (e) => this.keys.delete(e.code));
@@ -42,8 +46,8 @@ export class MiniInput {
     const down = (e: PointerEvent) => {
       if ((e.target as HTMLElement).closest('.mg-touch')) return;
       move(e);
-      this.pointer.pd = true;
-      if (game.touch.a && !game.usesPointer && !showTouch) this.btn.a = true;
+      this.pointer.pd = this.tap.pd = true;
+      if (game.touch.a && !game.usesPointer && !showTouch) this.btn.a = this.tap.a = true;
     };
     const up = () => ((this.pointer.pd = false), !showTouch && (this.btn.a = false));
     area.addEventListener('pointerdown', down);
@@ -103,7 +107,10 @@ export class MiniInput {
       b.addEventListener(
         'pointerdown',
         (e) => (
-          (this.btn[k] = true), b.setPointerCapture(e.pointerId), b.classList.add('on'), e.preventDefault()
+          (this.btn[k] = this.tap[k] = true),
+          b.setPointerCapture(e.pointerId),
+          b.classList.add('on'),
+          e.preventDefault()
         ),
       );
       const end = () => ((this.btn[k] = false), b.classList.remove('on'));
@@ -118,15 +125,17 @@ export class MiniInput {
     let y = (k.has('ArrowUp') || k.has('KeyW') ? 1 : 0) - (k.has('ArrowDown') || k.has('KeyS') ? 1 : 0);
     if (x === 0) x = this.stick.x;
     if (y === 0) y = this.stick.y;
+    const tap = this.tap;
+    this.tap = { a: false, b: false, pd: false };
     return {
       ...NEUTRAL_INPUT,
       x,
       y,
-      a: k.has('Space') || k.has('Enter') || this.btn.a,
-      b: k.has('ShiftLeft') || k.has('ShiftRight') || k.has('KeyX') || k.has('KeyZ') || this.btn.b,
+      a: k.has('Space') || k.has('Enter') || this.btn.a || tap.a,
+      b: k.has('ShiftLeft') || k.has('ShiftRight') || k.has('KeyX') || k.has('KeyZ') || this.btn.b || tap.b,
       px: this.pointer.px,
       py: this.pointer.py,
-      pd: this.pointer.pd,
+      pd: this.pointer.pd || tap.pd,
     };
   }
 

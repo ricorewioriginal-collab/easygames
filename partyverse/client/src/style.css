@@ -1062,43 +1062,81 @@ select option {
   }
 }
 
-/* Verbinden ohne Server */
-textarea.field {
-  min-height: 84px;
-  resize: vertical;
-  font:
-    500 0.78em/1.25 ui-monospace,
-    Consolas,
-    monospace;
-  word-break: break-all;
-}
+/* Online mit Freunden (Raumcode über Firebase) */
 .qrrow {
   display: flex;
   gap: 14px;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
 }
-.qrrow > div {
+.qrrow > p {
   flex: 1;
-  min-width: 200px;
-  display: grid;
-  gap: 8px;
+  min-width: 180px;
+  margin: 0;
 }
-.invites {
+.invite {
+  border-color: var(--cyan);
   display: grid;
   gap: 10px;
   margin: 8px 0;
 }
-.invite {
-  border-color: var(--cyan);
+.roomcode {
+  font:
+    800 2.4em/1 ui-monospace,
+    Consolas,
+    monospace;
+  letter-spacing: 0.25em;
+  color: var(--cyan);
+  text-align: center;
 }
-.scanbox {
-  margin-top: 8px;
+.panel .inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
-.scan-video {
-  width: 100%;
-  max-height: 52vh;
-  border-radius: 12px;
-  background: #000;
-  object-fit: cover;
+.panel .inline .field {
+  flex: 1;
+  min-width: 0;
+}
+input.field.code {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+}
+
+/* Google-Speicherknopf (cloud/anmacha-cloud.js) im Minispiel ausblenden – er liegt sonst über dem Touch-Stick */
+body:has(.mg-on) > button[aria-label='Mit Google speichern'] {
+  display: none !important;
+}
+
+/* Live-Punktestand der Mitspieler im Minispiel */
+.mg-rivals {
+  position: absolute;
+  right: 10px;
+  top: calc(58px + var(--safe-t));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  font-size: 13px;
+}
+.mg-rivals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 120px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: rgba(11, 10, 31, 0.7);
+  border-left: 4px solid var(--c);
+}
+.mg-rivals div.me {
+  background: rgba(11, 10, 31, 0.9);
+  outline: 2px solid var(--c);
+}
+.mg-rivals span {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

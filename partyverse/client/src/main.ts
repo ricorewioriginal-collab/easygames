@@ -27,7 +27,19 @@ async function boot(): Promise<void> {
     const { App } = await import('./app/app');
     const app = new App(host);
     (window as unknown as { __app: unknown }).__app = app;
-    await app.go('menu');
+    // Einladungslink (?room=CODE): direkt zum Beitreten
+    const room = (params.get('room') || '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 5);
+    if (room) {
+      try {
+        history.replaceState(null, '', location.pathname);
+      } catch {
+        /* egal */
+      }
+      await app.go('p2p', { room });
+    } else await app.go('menu');
   } catch (e) {
     console.error(e);
     host.textContent =

@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['shared/src/**/*.test.ts', 'server/src/**/*.test.ts', 'client/src/**/*.test.ts'],
+    include: ['shared/src/**/*.test.ts', 'client/src/**/*.test.ts'],
     testTimeout: 30000,
   },
 });

@@ -7,13 +7,8 @@ Folgende Open-Source-Bibliotheken werden eingesetzt (Version und Lizenz aus `pac
 | Paket | Version | Lizenz | Verwendung |
 | --- | --- | --- | --- |
 | three | 0.170.0 | MIT | 3D-Darstellung |
-| colyseus | 0.15.57 | MIT | Spielserver (Online-Modus) |
-| colyseus.js | 0.15.28 | MIT | Client für den Online-Modus |
-| @colyseus/schema | 2.0.37 | MIT | Zustandssynchronisierung |
-| @colyseus/ws-transport | 0.15.3 | MIT | WebSocket-Transport des Servers |
-| express | 4.21.2 | MIT | HTTP-Server |
-| qrcode-generator | 1.4.4 | MIT | QR-Codes für „Online ohne Server“ zeichnen |
-| jsqr | 1.4.0 | Apache-2.0 | QR-Codes per Kamera lesen (Rückfall, wenn der Browser keinen eigenen Leser hat) |
+| qrcode-generator | 1.4.4 | MIT | QR-Codes für Einladungslinks zeichnen |
+| jsqr | 1.4.0 | Apache-2.0 | QR-Codes prüfen (nur in den Tests) |
 | vite | 5.4.21 | MIT | Entwicklung und Build |
 | typescript | 5.6.3 | Apache-2.0 | Programmiersprache und Typprüfung |
 | vitest | 2.1.9 | MIT | Tests |
