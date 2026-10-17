@@ -41,14 +41,22 @@
       'Richtige Antworten bringen 100 Punkte plus Tempobonus.',
       'Gewonnen, wenn du mindestens die angezeigte Zahl an Fragen richtig hast.'
     ],
-    controls: { key: '1–4 direkt oder Pfeile + Leertaste', touch: 'Antwort antippen', pad: 'Steuerkreuz + A' },
+    goal: d => 'Beantworte mindestens ' + Math.ceil(CFG[d].n * CFG[d].need) + ' von ' + CFG[d].n + ' Fragen richtig – pro Frage hast du ' + CFG[d].time + ' Sekunden.',
+    how: [
+      'Lies die Frage oben. Darunter stehen vier Antworten A–D, genau eine stimmt.',
+      'Tippe auf die richtige Antwort – oder drück 1–4.',
+      'Der gelbe Balken oben ist deine Zeit. Läuft er ab, zählt die Frage als falsch.',
+      'Je schneller du richtig antwortest, desto mehr Bonuspunkte.'
+    ],
+    tip: { key: 'Drück 1–4 (oder Pfeile + Leertaste) für die richtige Antwort', touch: 'Tippe auf die richtige Antwort', y: 240 },
+    controls: { key: '1–4 wählt A–D direkt, oder Pfeile + Leertaste', touch: 'Antwort-Kasten antippen', mouse: 'Antwort-Kasten anklicken', pad: 'Steuerkreuz + A' },
     touch: ['1', '2', '3', '4'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, diff: o.difficulty | 0, cfg: c, fx: [], t: 0,
         idx: 0, phase: 'q', qt: c.time, sel: 0, picked: -1, right: 0, points: 0, lastGain: 0, fbT: 0,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '' };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '' };
       const pool = PT.DATA.quiz.mc.filter(q => c.diffs.indexOf(q.diff) >= 0);
       st.qs = PT.shuffle(st, pool).slice(0, c.n).map(q => ({ id: q.id, cat: q.cat, q: q.q, a: q.a.slice(), c: q.c }));
       st.needN = Math.ceil(c.n * c.need);
@@ -84,7 +92,7 @@
       let score;
       if (won) score = 50 + Math.round(50 * (r - st.needN) / Math.max(1, n - st.needN) * 0.8 + Math.min(10, st.points / n / 15));
       else score = Math.round(49 * r / Math.max(1, st.needN));
-      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: r + ' von ' + n + ' Fragen richtig (Ziel ' + st.needN + '), ' + st.points + ' Punkte' };
+      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: won ? r + ' von ' + n + ' Fragen richtig (nötig ' + st.needN + '), ' + st.points + ' Punkte.' : 'Nur ' + r + ' von ' + n + ' Fragen richtig – nötig waren ' + st.needN + '.' };
     },
     bot(st, goal) {
       if (st.phase !== 'q' || st.cfg.time - st.qt < 0.6) return [];
@@ -98,7 +106,7 @@
       g.font = '600 20px system-ui'; g.textAlign = 'left'; g.fillStyle = '#cfd6ff';
       g.fillText('Frage ' + Math.min(st.idx + 1, st.qs.length) + ' / ' + st.qs.length + '  ·  ' + q.cat + (st.player ? '  ·  ' + st.player : ''), 40, 36);
       g.textAlign = 'right';
-      g.fillText('Richtig: ' + st.right + ' (Ziel ' + st.needN + ')   Punkte: ' + st.points, 920, 36);
+      g.fillText('Richtig: ' + st.right + ' von nötig ' + st.needN + '   Punkte: ' + st.points, 900, 36);
       // Zeitbalken
       const tr = st.phase === 'q' ? st.qt / c.time : 0;
       g.fillStyle = '#1d2342'; g.fillRect(40, 50, 880, 12);
@@ -125,10 +133,10 @@
       if (st.phase === 'fb') {
         const ok = st.picked === q.c;
         g.fillStyle = ok ? '#4be08a' : '#ff4d6d'; g.font = '800 24px system-ui'; g.textAlign = 'center';
-        g.fillText(ok ? 'Richtig! +' + st.lastGain : (st.picked < 0 ? 'Zeit um! ' : 'Leider falsch. ') + 'Richtig: ' + 'ABCD'[q.c], 480, 528);
+        g.fillText((ok ? '✓ Richtig! +' + st.lastGain : (st.picked < 0 ? '⏱ Zeit um! ' : '✗ Leider falsch. ') + 'Richtig: ' + 'ABCD'[q.c]) + '  ·  tippen = weiter', 480, 528);
       } else {
         g.fillStyle = '#cfd6ff'; g.font = '500 18px system-ui'; g.textAlign = 'center';
-        g.fillText(Math.ceil(st.qt) + ' s  ·  1–4 oder Pfeile + Leertaste  ·  Antwort antippen', 480, 526);
+        g.fillText('Noch ' + Math.ceil(st.qt) + ' s  ·  Antwort antippen oder Taste 1–4', 480, 526);
       }
     }
   });

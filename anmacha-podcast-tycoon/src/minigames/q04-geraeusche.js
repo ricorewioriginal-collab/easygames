@@ -39,14 +39,22 @@
       'Schnelle richtige Antworten bringen Bonuspunkte, Zeit abgelaufen zählt als falsch.',
       'Gewonnen, wenn du mindestens die Zielzahl richtig erkennst.'
     ],
-    controls: { key: '1–4 oder Pfeile + Leertaste, E/Q = nochmal hören', touch: 'Antwort antippen, 🔁 tippen', pad: 'Steuerkreuz + A, B = nochmal' },
+    goal: d => 'Erkenne mindestens ' + Math.ceil(CFG[d].n * CFG[d].need) + ' von ' + CFG[d].n + ' Geräuschen richtig – Ton einschalten! 🔊',
+    how: [
+      'Ton anmachen! Nach dem Start spielt ein Geräusch ab.',
+      'Tippe unten auf die Antwort, die dazu passt (oder drück 1–4).',
+      'Nicht sicher? „🔁 Nochmal hören“ spielt es noch einmal (je nach Stufe begrenzt).',
+      'Der blaue Balken oben ist deine Zeit – läuft er ab, zählt es als falsch.'
+    ],
+    tip: { key: '🔊 Ton an! Hör zu und drück 1–4 für die passende Antwort', touch: '🔊 Ton an! Hör zu und tippe die passende Antwort an', y: 245 },
+    controls: { key: '1–4 oder Pfeile + Leertaste, E/Q = nochmal hören', touch: 'Antwort antippen, „🔁 Nochmal hören“ antippen', mouse: 'Antwort anklicken, „🔁 Nochmal hören“ klicken', pad: 'Steuerkreuz + A, B = nochmal' },
     touch: ['1', '2', '3', '4', 'b'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, diff: o.difficulty | 0, cfg: c, fx: [], t: 0,
         idx: 0, phase: 'q', sel: 0, picked: -1, right: 0, points: 0, lastGain: 0, fbT: 0, pending: 0.8, replays: c.replays,
-        qt: 0, qMax: 1, playT: 99, playDur: 0, player: ((o.players || [])[o.turn | 0] || {}).name || '' };
+        qt: 0, qMax: 1, playT: 99, playDur: 0, player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '' };
       const all = sounds(), order = PT.shuffle(st, all.map((s, i) => i)).slice(0, c.n);
       st.rounds = order.map(si => {
         const same = all.map((s, i) => i).filter(i => i !== si && all[i].cat === all[si].cat);
@@ -89,7 +97,7 @@
     result(st) {
       const n = st.rounds.length, r = st.right, won = st.status === 'won';
       const score = won ? 50 + Math.round(50 * (r - st.needN + 1) / (n - st.needN + 1)) : Math.round(49 * r / st.needN);
-      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: r + ' von ' + n + ' Geräuschen erkannt (Ziel ' + st.needN + ')' };
+      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: won ? r + ' von ' + n + ' Geräuschen erkannt (nötig ' + st.needN + ').' : 'Nur ' + r + ' von ' + n + ' Geräuschen erkannt – nötig waren ' + st.needN + '.' };
     },
     bot(st, goal) {
       if (st.phase !== 'q' || st.pending > 0 || st.playT < 0.5) return [];
@@ -101,7 +109,7 @@
       const r = st.rounds[Math.min(st.idx, st.rounds.length - 1)], all = sounds(), c = st.cfg;
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
       g.fillText('Geräusch ' + Math.min(st.idx + 1, st.rounds.length) + ' / ' + st.rounds.length + (st.player ? '  ·  ' + st.player : ''), 40, 36);
-      g.textAlign = 'right'; g.fillText('Richtig: ' + st.right + ' (Ziel ' + st.needN + ')   Punkte: ' + st.points, 920, 36);
+      g.textAlign = 'right'; g.fillText('Richtig: ' + st.right + ' von nötig ' + st.needN + '   Punkte: ' + st.points, 900, 36);
       const tr = st.phase === 'q' && st.pending <= 0 ? st.qt / st.qMax : st.phase === 'q' ? 1 : 0;
       g.fillStyle = '#1d2342'; g.fillRect(40, 50, 880, 12);
       g.fillStyle = tr < 0.25 ? '#ff4d6d' : '#6ef0ff'; g.fillRect(40, 50, 880 * tr, 12);
@@ -115,7 +123,7 @@
         g.fillStyle = playing ? '#6ef0ff' : '#3a4270'; g.fillRect(200 + i * 22, 158 - h, 14, h * 2);
       }
       g.fillStyle = '#cfd6ff'; g.font = '600 20px system-ui'; g.textAlign = 'left';
-      g.fillText(st.pending > 0 && st.phase === 'q' ? 'Gleich geht’s los …' : playing ? 'Hör genau hin!' : 'Was war das?', 200, 225);
+      g.fillText(st.pending > 0 && st.phase === 'q' ? 'Gleich geht’s los … Ton an!' : playing ? 'Hör genau hin!' : st.phase === 'q' ? 'Was war das? Tippe unten die Antwort an ↓' : '', 200, 225);
       // Nochmal-hören-Knopf
       const canRep = st.phase === 'q' && st.replays > 0 && !playing && st.pending <= 0;
       g.fillStyle = canRep ? '#ffb02e' : '#3a4270'; g.fillRect(REP.x, REP.y, REP.w, REP.h);
@@ -137,7 +145,7 @@
       if (st.phase === 'fb') {
         const ok = st.picked === r.c;
         g.fillStyle = ok ? '#4be08a' : '#ff4d6d'; g.font = '800 22px system-ui'; g.textAlign = 'center';
-        g.fillText(ok ? 'Richtig erkannt! +' + st.lastGain : (st.picked < 0 ? 'Zeit um! ' : 'Nein – ') + 'Das war: ' + all[r.snd].name, 480, 528);
+        g.fillText((ok ? '✓ Richtig erkannt! +' + st.lastGain : (st.picked < 0 ? '⏱ Zeit um! ' : '✗ Nein – ') + 'Das war: ' + all[r.snd].name) + '  ·  tippen = weiter', 480, 528);
       }
     }
   });

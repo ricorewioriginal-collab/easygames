@@ -39,14 +39,22 @@
       'Richtige Antworten in Serie zählen mehr (bis vierfach). Zeit abgelaufen = falsch.',
       'Gewonnen, wenn du mindestens die Zielzahl richtig hast.'
     ],
-    controls: { key: '← / 1 = Wahr, → / 2 = Quatsch, Leertaste = weiter', touch: 'Knopf antippen', pad: 'Steuerkreuz links/rechts' },
+    goal: d => { const c = CFG[d], n = Math.min(c.n, PT.DATA.quiz.tf.filter(q => c.diffs.indexOf(q.diff) >= 0).length); return 'Schätze mindestens ' + Math.ceil(n * c.need) + ' von ' + n + ' Aussagen richtig ein – pro Aussage hast du ' + c.time + ' Sekunden.'; },
+    how: [
+      'Oben steht eine Behauptung. Stimmt sie oder ist sie Quatsch?',
+      'Tippe auf ✔ WAHR oder ✘ QUATSCH (Tastatur: ← oder →).',
+      'Danach siehst du die Auflösung mit Erklärung – tippen geht weiter.',
+      'Mehrere richtige hintereinander geben mehr Punkte (Serie bis ×4).'
+    ],
+    tip: { key: '← = WAHR, → = QUATSCH', touch: 'Tippe auf WAHR oder QUATSCH', y: 330 },
+    controls: { key: '← oder 1 = Wahr, → oder 2 = Quatsch, Leertaste = weiter', touch: 'Knopf WAHR oder QUATSCH antippen', mouse: 'Knopf WAHR oder QUATSCH anklicken', pad: 'Steuerkreuz links = Wahr, rechts = Quatsch' },
     touch: ['left', 'right', 'a'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, diff: o.difficulty | 0, cfg: c, fx: [], t: 0,
         idx: 0, phase: 'q', qt: c.time, picked: -1, right: 0, streak: 0, points: 0, lastGain: 0, fbT: 0,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '' };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '' };
       const pool = PT.DATA.quiz.tf.filter(q => c.diffs.indexOf(q.diff) >= 0);
       st.items = PT.shuffle(st, pool).slice(0, c.n).map(q => ({ id: q.id, cat: q.cat, s: q.s, t: q.t, ex: q.ex }));
       st.needN = Math.ceil(st.items.length * c.need);
@@ -77,7 +85,7 @@
     result(st) {
       const n = st.items.length, r = st.right, won = st.status === 'won';
       const score = won ? 50 + Math.round(50 * (r - st.needN + 1) / (n - st.needN + 1)) : Math.round(49 * r / st.needN);
-      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: r + ' von ' + n + ' Aussagen richtig eingeschätzt (Ziel ' + st.needN + '), ' + st.points + ' Punkte' };
+      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: won ? r + ' von ' + n + ' Aussagen richtig (nötig ' + st.needN + '), ' + st.points + ' Punkte.' : 'Nur ' + r + ' von ' + n + ' Aussagen richtig – nötig waren ' + st.needN + '.' };
     },
     bot(st, goal) {
       if (st.phase === 'fb') return st.fbT < 2 ? [{ type: 'key', key: 'a', down: true }] : [];
@@ -91,7 +99,7 @@
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
       g.fillText('Aussage ' + Math.min(st.idx + 1, st.items.length) + ' / ' + st.items.length + '  ·  ' + s.cat + (st.player ? '  ·  ' + st.player : ''), 40, 36);
       g.textAlign = 'right';
-      g.fillText('Richtig: ' + st.right + ' (Ziel ' + st.needN + ')   Serie ×' + Math.max(1, Math.min(4, st.streak)) + '   ' + st.points + ' P', 920, 36);
+      g.fillText('Richtig: ' + st.right + ' von nötig ' + st.needN + '   Serie ×' + Math.max(1, Math.min(4, st.streak)) + '   ' + st.points + ' P', 900, 36);
       const tr = st.phase === 'q' ? st.qt / c.time : 0;
       g.fillStyle = '#1d2342'; g.fillRect(40, 50, 880, 12);
       g.fillStyle = tr < 0.3 ? '#ff4d6d' : '#6ef0ff'; g.fillRect(40, 50, 880 * tr, 12);
@@ -118,7 +126,7 @@
         g.fillStyle = b.col; g.font = '800 40px system-ui'; g.fillText(b.label, b.x + BW / 2, BY + 62);
         g.fillStyle = '#8890b8'; g.font = '500 18px system-ui'; g.fillText(b.key, b.x + BW / 2, BY + 94);
       });
-      g.fillStyle = '#cfd6ff'; g.font = '600 22px system-ui'; g.fillText('Noch ' + Math.ceil(st.qt) + ' s', 480, 490);
+      g.fillStyle = '#cfd6ff'; g.font = '600 22px system-ui'; g.fillText('Stimmt das? Noch ' + Math.ceil(st.qt) + ' s', 480, 490);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

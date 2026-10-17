@@ -94,7 +94,15 @@
       'Streiche ausgeschlossene Gerüchte (✗) und melde die echte Nachricht.',
       'Falsch gemeldet = Fall verloren. Gewonnen, wenn genug Fälle vor Ablauf der Zeit gelöst sind.'
     ],
-    controls: { key: '↑/↓ wählen, E/Q streichen, Leertaste melden', touch: 'Meldung antippen, ✗ zum Streichen, „Melden“ tippen', pad: 'Steuerkreuz, B streichen, A melden' },
+    goal: d => 'Finde in mindestens ' + CFG[d].need + ' von ' + CFG[d].cases + ' Fällen die eine echte Nachricht – Zeit ' + CFG[d].time + ' s.',
+    how: [
+      'Links stehen mehrere schöne Meldungen mit Ort, Tag und Uhrzeit – nur eine ist wirklich passiert.',
+      'Rechts stehen Hinweise. Alle Hinweise stimmen! Prüfe jede Meldung dagegen.',
+      'Passt eine Meldung nicht zu einem Hinweis: mit ✗ durchstreichen (nur als Merkhilfe).',
+      'Die übrige Meldung antippen (gelber Rahmen) und „📣 Als echt melden“. Falsch gemeldet = Fall verloren.'
+    ],
+    tip: { key: '↑/↓ wählen · E streicht durch · Leertaste meldet', touch: 'Vergleiche mit den Hinweisen rechts, streiche mit ✗, dann melden', y: 300 },
+    controls: { key: '↑/↓ wählen, E/Q streichen, Leertaste melden', touch: 'Meldung antippen, ✗ zum Streichen, „📣 Als echt melden“ tippen', mouse: 'Meldung anklicken, ✗ zum Streichen, „📣 Als echt melden“ klicken', pad: 'Steuerkreuz, B streichen, A melden' },
     touch: ['up', 'down', 'a', 'b'],
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
@@ -134,7 +142,7 @@
       const won = st.status === 'won', c = st.cfg;
       const score = won ? 50 + Math.round(40 * (st.solved - c.need + 1) / (c.cases - c.need + 1) + 10 * Math.max(0, 1 - st.t / c.time)) : Math.round(45 * st.solved / c.cases);
       return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49),
-        detail: st.solved + ' von ' + c.cases + ' Fällen gelöst (Ziel ' + c.need + ')' + (!won && st.t >= c.time ? ' – die Zeit war um' : '') };
+        detail: won ? st.solved + ' von ' + c.cases + ' Fällen gelöst (nötig ' + c.need + ').' : 'Nur ' + st.solved + ' von ' + c.cases + ' Fällen gelöst – nötig waren ' + c.need + (st.t >= c.time ? ' (die Zeit war um).' : ' (zu viele falsche Meldungen).') };
     },
     bot(st, goal) {
       if (st.phase === 'fb') return st.fbT < 2 ? [{ type: 'key', key: 'a', down: true }] : [];
@@ -146,8 +154,8 @@
       const c = st.cfg, cs = st.cases[Math.min(st.idx, st.cases.length - 1)];
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
-      g.fillText('Fall ' + Math.min(st.idx + 1, c.cases) + ' / ' + c.cases + '   Gelöst: ' + st.solved + ' (Ziel ' + c.need + ')', 20, 30);
-      g.textAlign = 'right'; g.fillText('Zeit: ' + Math.max(0, Math.ceil(c.time - st.t)) + ' s', 940, 30);
+      g.fillText('Fall ' + Math.min(st.idx + 1, c.cases) + ' von ' + c.cases + '   Gelöst: ' + st.solved + ' von nötig ' + c.need, 20, 30);
+      g.textAlign = 'right'; g.fillText('Zeit: ' + Math.max(0, Math.ceil(c.time - st.t)) + ' s', 900, 30);
       g.fillStyle = '#1d2342'; g.fillRect(20, 42, 920, 10);
       g.fillStyle = '#ffb02e'; g.fillRect(20, 42, 920 * Math.max(0, 1 - st.t / c.time), 10);
       // Meldungen
@@ -170,14 +178,14 @@
       // Melden-Knopf / Ergebnis
       if (st.phase === 'fb') {
         g.fillStyle = st.lastOk ? '#4be08a' : '#ff4d6d'; g.font = '800 22px system-ui'; g.textAlign = 'center';
-        g.fillText(st.lastOk ? 'Richtig recherchiert – ab in die Sendung!' : 'Ente! Echt war: ' + cs.cands[cs.T].w, 245, 504);
+        g.fillText(st.lastOk ? '✓ Richtig recherchiert! (tippen = weiter)' : '✗ Ente! Echt war: ' + cs.cands[cs.T].w, 245, 504);
       } else {
         g.fillStyle = '#ffb02e'; g.fillRect(OKB.x, OKB.y, OKB.w, OKB.h);
         g.fillStyle = '#10142a'; g.font = '800 22px system-ui'; g.textAlign = 'center';
-        g.fillText('📣 Als echte Nachricht melden', OKB.x + OKB.w / 2, OKB.y + 35);
+        g.fillText('📣 Gewählte als echt melden', OKB.x + OKB.w / 2, OKB.y + 35);
       }
       // Hinweise
-      g.textAlign = 'left'; g.fillStyle = '#cfd6ff'; g.font = '700 20px system-ui'; g.fillText('Hinweise (alle stimmen):', 490, 74);
+      g.textAlign = 'left'; g.fillStyle = '#cfd6ff'; g.font = '700 20px system-ui'; g.fillText('🔎 Hinweise – alle stimmen:', 490, 74);
       let y = 86; g.font = '500 18px system-ui';
       cs.clues.forEach(s => {
         const L = wrap(g, s, 420).slice(0, 4), h = L.length * 22 + 14;

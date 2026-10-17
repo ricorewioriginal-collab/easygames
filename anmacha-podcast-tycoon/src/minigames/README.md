@@ -21,6 +21,12 @@ im Browser über `window.PT`, in Node über `globalThis.PT`. Muster:
 | `name`, `icon`, `short` | Anzeigename (deutsch), Emoji, ein Satz |
 | `rules` | Array mit 2–6 kurzen deutschen Sätzen (Regeln, Sieg/Niederlage) |
 | `controls` | `{ key, touch, pad }` – je ein kurzer Text |
+| `goal` | **Ziel-Satz** für Gelegenheitsspieler mit konkreter Zahl/Schwelle, Text oder Funktion `d => '…'` (d = Stufe 0..2). Steht groß auf Start-, Pause- und (bei Niederlage) Ergebniskarte |
+| `how` | 2–4 kurze Schritte „So geht’s“ in einfacher Sprache (was sehe ich, was tippe ich, was ist Fehler) |
+| `tip` | Einblendung in den ersten 5 s des Spiels: Text oder `{ key, touch, y }` (Text für Tastatur bzw. Touch, `y` = logische Höhe 0..540) |
+| `pic` | optional: kleines Inline-SVG als Beispielbild auf der Startkarte |
+| `controls.mouse` | optional: Mausbedienung (sonst wird `controls.touch` gezeigt); Touch-Geräte sehen `touch` zuerst |
+| `hover` | optional `true`: Mausbewegung ohne gedrückte Taste weiterleiten (Standard: nur bei gedrückter Taste/Finger) |
 | `touch` | Bildschirmtasten, Teilmenge von `left right up down a b 1 2 3 4` (Zeiger/Tippen geht immer) |
 | `multi` | optional `{ local: true, max: 4, mode: 'turns' }` = lokal reihum mit gleichem Seed spielbar |
 | `render` | `'2d'` (Standard) oder `'3d'` |
@@ -44,6 +50,9 @@ im Browser über `window.PT`, in Node über `globalThis.PT`. Muster:
   `d` = Dauer in s, `v` = Lautstärke 0..1; `filter`, `lfo`, `f2` optional). Die Oberfläche spielt die Einträge ab und leert `st.fx`.
 - Drei Schwierigkeitsstufen (0 Locker, 1 Standard, 2 Profi) verändern spürbar Zeit, Tempo, Fehlertoleranz oder Umfang.
 - Spieldauer etwa 30–90 Sekunden (Standard). Es muss eine **echte Niederlage** geben (Zeit abgelaufen, zu viele Fehler, …).
+- Verständlichkeit: Im Bild immer Ziel, Fortschritt („3 von 5“), Zeit und Fehler sichtbar; antippbare Dinge deutlich markieren;
+  Klartext statt Fachjargon. `result.detail` sagt bei Niederlage *warum* (z. B. „Nur 40 % im grünen Bereich – nötig sind 66 %.“).
+  Der Rahmen färbt den Rand kurz grün/rot bei den Klängen `good`/`coin` bzw. `bad`/`buzz`.
 - `result.score`: gewonnen → 50..100, verloren → 0..49 (wird getestet). `detail` erklärt das Ergebnis in einem Satz.
 - Sowohl `bot(st,'win')` als auch `bot(st,'lose')` müssen auf **allen drei Stufen** und für beliebige Seeds zuverlässig zum Ziel führen
   (der Test spielt Seeds 7, 99991 und 4242). Der Gewinn-Bot darf den Zustand lesen (er „sieht“ die Lösung), Eingaben aber nur über

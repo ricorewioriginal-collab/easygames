@@ -44,14 +44,22 @@
       'Läuft die Zeit ab, zählt der aktuelle Reglerwert.',
       'Gewonnen, wenn deine Gesamtpunkte das Ziel erreichen.'
     ],
-    controls: { key: '←/→ fein (halten = schneller), ↑/↓ große Sprünge, Leertaste einloggen', touch: 'Regler ziehen, „Einloggen“ tippen', pad: 'Steuerkreuz + A' },
+    goal: d => 'Sammle mit ' + CFG[d].n + ' Schätzungen zusammen mindestens ' + CFG[d].need * CFG[d].n + ' Punkte (jede Frage bringt bis zu 100) – im Schnitt ' + CFG[d].need + ' pro Frage.',
+    how: [
+      'Lies die Frage (z. B. „Wie hoch ist …?“).',
+      'Zieh den gelben Regler nach links (weniger) oder rechts (mehr). Die große blaue Zahl ist deine Schätzung.',
+      'Tippe auf „✓ Einloggen“. Je näher du dran bist, desto mehr Punkte (bis 2 % daneben = 100 Punkte).',
+      'Läuft die Zeit ab, zählt der Wert, auf dem der Regler gerade steht.'
+    ],
+    tip: { key: '←/→ verschieben (↑/↓ große Sprünge), Leertaste = einloggen', touch: 'Zieh den gelben Regler, dann „✓ Einloggen“ antippen', y: 395 },
+    controls: { key: '←/→ fein (halten = schneller), ↑/↓ große Sprünge, Leertaste = einloggen', touch: 'Gelben Regler nach links/rechts ziehen, dann „✓ Einloggen“ antippen', mouse: 'Regler anklicken und ziehen, dann „✓ Einloggen“ klicken', pad: 'Steuerkreuz + A' },
     touch: ['left', 'right', 'up', 'down', 'a'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, diff: o.difficulty | 0, cfg: c, fx: [], t: 0,
         idx: 0, phase: 'q', qt: c.time, p: 0.5, hold: 0, holdT: 0, drag: false, total: 0, last: null, fbT: 0,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '' };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '' };
       st.qs = PT.shuffle(st, PT.DATA.quiz.est).slice(0, c.n).map(q => ({ id: q.id, cat: q.cat, q: q.q, v: q.v, unit: q.unit, min: q.min, max: q.max, ex: q.ex, step: Math.max(Number.isInteger(q.v) ? 1 : 0, Math.min(niceStep((q.max - q.min) / 400), niceStep(q.v / 100))) }));
       st.needTotal = c.need * c.n;
       return st;
@@ -90,7 +98,7 @@
     result(st) {
       const won = st.status === 'won', max = 100 * st.qs.length;
       const score = won ? 50 + Math.round(50 * (st.total - st.needTotal) / Math.max(1, max - st.needTotal)) : Math.round(49 * st.total / st.needTotal);
-      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: st.total + ' von ' + max + ' Schätzpunkten (Ziel ' + st.needTotal + ')' };
+      return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49), detail: won ? st.total + ' Schätzpunkte (nötig ' + st.needTotal + ' von ' + max + ').' : 'Nur ' + st.total + ' Schätzpunkte – nötig waren ' + st.needTotal + '.' };
     },
     bot(st, goal) {
       if (st.phase === 'fb') return st.fbT < 2.5 ? [{ type: 'key', key: 'a', down: true }] : [];
@@ -105,7 +113,7 @@
       const q = st.qs[Math.min(st.idx, st.qs.length - 1)], c = st.cfg;
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
       g.fillText('Frage ' + Math.min(st.idx + 1, st.qs.length) + ' / ' + st.qs.length + '  ·  ' + q.cat + (st.player ? '  ·  ' + st.player : ''), 40, 36);
-      g.textAlign = 'right'; g.fillText('Punkte: ' + st.total + ' / Ziel ' + st.needTotal, 920, 36);
+      g.textAlign = 'right'; g.fillText('Punkte: ' + st.total + ' von nötig ' + st.needTotal, 900, 36);
       const tr = st.phase === 'q' ? st.qt / c.time : 0;
       g.fillStyle = '#1d2342'; g.fillRect(40, 50, 880, 12);
       g.fillStyle = tr < 0.25 ? '#ff4d6d' : '#ffb02e'; g.fillRect(40, 50, 880 * tr, 12);
@@ -128,7 +136,9 @@
       }
       const gx = st.phase === 'fb' ? TX + (st.last.guess - q.min) / (q.max - q.min) * TW : kx;
       g.fillStyle = '#ffb02e'; g.fillRect(gx - 14, TY - 26, 28, 52);
-      if (st.phase === 'q') { g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.strokeRect(gx - 17, TY - 29, 34, 58); }
+      if (st.phase === 'q') { g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.strokeRect(gx - 17, TY - 29, 34, 58);
+        g.fillStyle = '#ffb02e'; g.font = '700 22px system-ui'; g.textAlign = 'center'; g.fillText('◀', gx - 34, TY + 8); g.fillText('▶', gx + 34, TY + 8);
+        g.font = '500 18px system-ui'; g.fillStyle = '#8890b8'; g.fillText('weniger ◀ ziehen ▶ mehr', 480, TY + 40); }
       g.fillStyle = '#6ef0ff'; g.font = '800 34px system-ui'; g.textAlign = 'center';
       g.fillText(num(guess) + ' ' + q.unit, 480, 268);
       if (st.phase === 'fb') {
@@ -138,11 +148,12 @@
         g.fillStyle = '#cfd6ff'; g.font = '500 19px system-ui';
         g.fillText('100 P bis 2 %, 0 P ab ' + Math.round(c.tol * 100) + ' % Abweichung', 480, 455);
         g.fillStyle = '#ffffff'; wrap(g, q.ex, 840).slice(0, 2).forEach((s, i) => g.fillText(s, 480, 490 + i * 24));
+        g.fillStyle = '#8890b8'; g.font = '500 16px system-ui'; g.fillText('tippen = weiter', 900 - 50, 532);
       } else {
         g.fillStyle = '#ffb02e'; g.fillRect(OK.x, OK.y, OK.w, OK.h);
-        g.fillStyle = '#10142a'; g.font = '800 26px system-ui'; g.fillText('Einloggen', OK.x + OK.w / 2, OK.y + 40);
+        g.fillStyle = '#10142a'; g.font = '800 26px system-ui'; g.fillText('✓ Einloggen', OK.x + OK.w / 2, OK.y + 40);
         g.fillStyle = '#cfd6ff'; g.font = '500 18px system-ui';
-        g.fillText('Noch ' + Math.ceil(st.qt) + ' s  ·  0 Punkte ab ' + Math.round(c.tol * 100) + ' % Abweichung', 480, 515);
+        g.fillText('Noch ' + Math.ceil(st.qt) + ' s  ·  bis 2 % daneben = 100 Punkte, ab ' + Math.round(c.tol * 100) + ' % daneben = 0', 480, 515);
       }
     }
   });

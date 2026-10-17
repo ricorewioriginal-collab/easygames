@@ -60,7 +60,15 @@
       'Kisten blockieren, Kabelsalat bremst, gelbe Rampen geben Schwung.',
       'Genug Lieferungen vor Ablauf der Zeit = gewonnen, sonst verloren.'
     ],
-    controls: { key: '↑ Gas, ↓ Bremse/zurück, ←/→ lenken', touch: 'Finger halten: Scooter fährt dorthin', pad: 'Stick/Steuerkreuz' },
+    goal: d => 'Liefere ' + CFG[d].need + ' Mikros/Kabeltrommeln an die Station ihrer Farbe – in ' + CFG[d].time + ' s.',
+    how: [
+      'Du bist der orange Scooter (Markierung „DU“). Im Lager liegen bunte Mikros 🎤 und Kabeltrommeln 🧵.',
+      'Fahr drüber, um eins aufzuladen (oben unter „Ladung“ zu sehen, ' + 'Locker: 2 Plätze, sonst 1).',
+      'Bring es zur Station mit derselben Farbe (Rot, Blau, Gelb) – die gestrichelte Linie zeigt den Weg.',
+      'Kisten blockieren, schwarze Kabelsalat-Flecken bremsen, gelbe Rampen geben Schwung.'
+    ],
+    tip: { key: '↑ Gas · ←/→ lenken – fahr über ein Mikro und bring es zur gleichfarbigen Station', touch: 'Finger halten = Scooter fährt hin. Mikro holen → gleichfarbige Station', y: 300 },
+    controls: { key: '↑ Gas, ↓ Bremse/zurück, ←/→ lenken', touch: 'Finger auf den Boden halten: Scooter fährt dorthin', mouse: 'Maustaste gedrückt halten: Scooter fährt zum Zeiger', pad: 'Stick/Steuerkreuz' },
     touch: ['left', 'right', 'up', 'down'],
     render: '3d',
     init(o) {
@@ -124,7 +132,7 @@
     result(st) {
       const c = st.cfg;
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 50 * (1 - st.t / c.time) * 1.4, 50, 100)), detail: 'Alle ' + c.need + ' Lieferungen nach ' + st.t.toFixed(1) + ' s im Studio.' };
-      return { won: false, score: Math.round(PT.clamp(45 * st.done / c.need, 0, 49)), detail: 'Nur ' + st.done + ' von ' + c.need + ' Lieferungen vor Feierabend.' };
+      return { won: false, score: Math.round(PT.clamp(45 * st.done / c.need, 0, 49)), detail: 'Zeit abgelaufen: nur ' + st.done + ' von ' + c.need + ' Lieferungen geschafft.' };
     },
     bot(st, goal) {
       if (goal === 'lose') return st.ptr ? [{ type: 'pointer', phase: 'up', x: 0, y: 0 }] : [];
@@ -197,10 +205,16 @@
       g.fillStyle = '#4be08a'; g.fillText('Geliefert: ' + st.done + ' / ' + c.need, 130, 37);
       g.fillStyle = '#fff'; g.fillText('Ladung:', 350, 37);
       for (let i = 0; i < c.cap; i++) { const it = st.carry[i]; g.fillStyle = it ? COLS[it.col] : '#2a3050'; g.fillRect(445 + i * 40, 16, 32, 30); if (it) { g.fillStyle = '#10142a'; g.font = '20px system-ui'; g.fillText(it.kind ? '🧵' : '🎤', 449 + i * 40, 39); g.font = '700 22px system-ui'; } }
-      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.font = '600 18px system-ui'; g.fillText(st.msg || 'Gegenstand holen → Station gleicher Farbe', 942, 37);
+      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.font = '600 18px system-ui'; g.fillText(st.msg || 'Hol 🎤/🧵 → Station gleicher Farbe', 900, 37);
       g.textAlign = 'center'; g.font = '700 18px system-ui';
       STATIONS.forEach((s, i) => { const q = toScreen(s.x, 3, s.z); g.fillStyle = COLS[i]; g.fillText('Station ' + CNAME[i], PT.clamp(q.x, 80, 880), Math.max(80, q.y)); });
       if (st.carry.length) { const s = STATIONS[st.carry[0].col], q = toScreen(s.x, 0, s.z), pp = toScreen(st.p.x, 0, st.p.z); g.strokeStyle = COLS[st.carry[0].col]; g.lineWidth = 2; if (g.setLineDash) g.setLineDash([6, 8]); g.beginPath(); g.moveTo(pp.x, pp.y); g.lineTo(q.x, q.y); g.stroke(); if (g.setLineDash) g.setLineDash([]); }
+      else if (st.items.length) { // Wegweiser zum nächsten Gegenstand
+        let it = st.items[0], bd = 1e9; st.items.forEach(x => { const dd = Math.hypot(x.x - st.p.x, x.z - st.p.z); if (dd < bd) { bd = dd; it = x; } });
+        const q = toScreen(it.x, 0, it.z), pp = toScreen(st.p.x, 0, st.p.z); g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 2; if (g.setLineDash) g.setLineDash([6, 8]); g.beginPath(); g.moveTo(pp.x, pp.y); g.lineTo(q.x, q.y); g.stroke(); if (g.setLineDash) g.setLineDash([]);
+      }
+      st.items.forEach(it => { const q = toScreen(it.x, 0.5, it.z); g.strokeStyle = COLS[it.col]; g.lineWidth = 3; g.beginPath(); g.arc(q.x, q.y, 20 + 3 * Math.sin(st.t * 5), 0, 7); g.stroke(); });
+      { const pp = toScreen(st.p.x, 2.2, st.p.z); g.fillStyle = '#ffffff'; g.font = '800 18px system-ui'; g.textAlign = 'center'; g.fillText('DU', pp.x, pp.y - 18); }
       if (st.ptr) { const q = toScreen(st.ptr.x, 0, st.ptr.z); g.strokeStyle = '#ffb02e'; g.lineWidth = 3; g.beginPath(); g.arc(q.x, q.y, 14, 0, 7); g.stroke(); }
     }
   });

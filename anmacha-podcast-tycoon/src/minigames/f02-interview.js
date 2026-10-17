@@ -119,7 +119,15 @@
       'Jeder Gast hat eine verborgene Vorliebe und Abneigung – achte auf die Reaktionen!',
       'Gewonnen mit genug Rapport am Ende. Bei 0 Rapport geht der Gast.'
     ],
-    controls: { key: '↑/↓ + Leertaste oder 1–4', touch: 'Frage antippen', pad: 'Steuerkreuz + A' },
+    goal: d => 'Bring die Stimmung (Rapport) deines Gastes in ' + CFG[d].rounds + ' Fragen von ' + CFG[d].start + ' auf mindestens ' + CFG[d].need + ' – weiße Linie am Balken rechts.',
+    how: [
+      'Lies links, wer dein Gast ist – Beruf und Infos verraten, welche Themen er mag.',
+      'Tippe unten eine Frage an. Die Antwort zeigt, wie sie ankam: grün = gut (+), rot = schlecht (−).',
+      'Passende Themen und der richtige Ton (locker oder sachlich) steigern die Stimmung; Wiederholungen und Reizthemen senken sie.',
+      'Persönliche Fragen erst ab 60 Rapport. Nachhaken nur nach einer guten Antwort. Keine Antwort in der Bedenkzeit kostet Stimmung.'
+    ],
+    tip: { key: 'Wähle mit 1–4 eine Frage, die zum Gast passt', touch: 'Tippe eine Frage an, die zum Gast passt', y: 270 },
+    controls: { key: '↑/↓ + Leertaste oder 1–4', touch: 'Frage unten antippen', mouse: 'Frage unten anklicken', pad: 'Steuerkreuz + A' },
     touch: ['up', 'down', 'a', '1', '2', '3', '4'],
     init(o) {
       const c = CFG[o.difficulty | 0] || CFG[1];
@@ -164,7 +172,7 @@
       const won = st.status === 'won', c = st.cfg;
       const score = won ? 50 + Math.round(50 * (st.rapport - c.need) / Math.max(1, 100 - c.need)) : Math.round(49 * st.rapport / c.need);
       return { won, score: won ? PT.clamp(score, 50, 100) : PT.clamp(score, 0, 49),
-        detail: st.left ? st.guest.name + ' ist vorzeitig gegangen – das Gespräch ist gekippt.' : 'Rapport mit ' + st.guest.name + ': ' + st.rapport + ' (Ziel ' + c.need + ')' };
+        detail: st.left ? st.guest.name + ' ist vorzeitig gegangen – der Rapport fiel auf 0.' : won ? 'Rapport mit ' + st.guest.name + ': ' + st.rapport + ' (nötig ' + c.need + ').' : 'Rapport mit ' + st.guest.name + ' nur ' + st.rapport + ' – nötig waren ' + c.need + '.' };
     },
     bot(st, goal) {
       if (st.phase === 'react') return st.rt < 1.5 ? [{ type: 'key', key: 'a', down: true }] : [];
@@ -180,7 +188,7 @@
       g.font = '600 20px system-ui'; g.fillStyle = '#cfd6ff'; g.textAlign = 'left';
       g.fillText('Runde ' + Math.min(st.round + (st.phase === 'ask' ? 1 : 0), c.rounds) + ' / ' + c.rounds, 20, 30);
       g.textAlign = 'right';
-      g.fillText((st.phase === 'ask' ? 'Bedenkzeit ' + Math.ceil(st.qt) + ' s   ' : '') + 'Rapport ' + st.rapport + ' / Ziel ' + c.need, 940, 30);
+      g.fillText((st.phase === 'ask' ? 'Bedenkzeit ' + Math.ceil(st.qt) + ' s   ' : '') + 'Stimmung ' + st.rapport + ' → nötig ' + c.need, 900, 30);
       // Gast
       g.fillStyle = '#1a2040'; g.fillRect(20, 44, 320, 246);
       const mood = st.rapport >= c.need ? 2 : st.rapport >= 35 ? 1 : 0, bob = Math.sin(st.t * 2) * 3;
@@ -206,7 +214,7 @@
         wrap(g, gu.name.split(' ')[0] + ': ' + st.say.a, 480).slice(0, 4).forEach(l => { g.fillText(l, 372, y); y += 26; });
         g.font = '800 22px system-ui'; g.textAlign = 'right'; g.fillText((st.say.d > 0 ? '+' : '') + st.say.d + ' Rapport', 852, 278);
       } else {
-        g.font = '600 21px system-ui'; wrap(g, 'Herzlich willkommen im Studio! Wähle deine erste Frage – lies vorher die Gastinfo links.', 480).forEach((l, i) => g.fillText(l, 372, 80 + i * 28));
+        g.font = '600 21px system-ui'; wrap(g, 'Herzlich willkommen im Studio! Lies links, wer dein Gast ist, und wähle unten eine passende Frage. Ziel: Stimmungsbalken rechts bis zur weißen Linie füllen.', 480).forEach((l, i) => g.fillText(l, 372, 80 + i * 28));
       }
       // Rapport-Meter
       g.fillStyle = '#1d2342'; g.fillRect(884, 44, 56, 246);
@@ -214,6 +222,7 @@
       g.fillStyle = ['#ff4d6d', '#ffb02e', '#4be08a'][mood]; g.fillRect(884, 290 - h, 56, h);
       const ny = 290 - 246 * c.need / 100;
       g.fillStyle = '#ffffff'; g.fillRect(878, ny - 2, 68, 4);
+      g.font = '600 16px system-ui'; g.textAlign = 'center'; g.fillText('Ziel', 912, ny - 8); g.fillText(String(st.rapport), 912, 284);
       // Optionen bzw. Weiter-Hinweis
       g.textAlign = 'left';
       if (st.phase === 'ask') {

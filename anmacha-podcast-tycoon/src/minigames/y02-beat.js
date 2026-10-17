@@ -59,13 +59,21 @@
       'Verpasste Noten und Fehlschläge leeren die Stimmungsleiste – ist sie leer, ist die Session vorbei.',
       'Gewonnen, wenn am Ende die Trefferquote das Ziel erreicht. Mehrere Spieler: reihum, höchste Punktzahl gewinnt.'
     ],
-    controls: { key: '1–4 oder ← ↓ ↑ →', touch: 'Spur antippen oder Tasten 1–4', pad: 'Steuerkreuz ← ↓ ↑ →' },
+    goal: d => 'Triff im ganzen Lied mindestens ' + Math.round(CFG[d].need * 100) + ' % der Noten im Takt – und lass die Stimmungsleiste links nicht leer laufen.',
+    how: [
+      'Ton an! Nach dem Einzählen (4-3-2-1) fallen bunte Blöcke in vier Spalten nach unten.',
+      'Genau wenn ein Block die weiße Linie berührt: Tippe auf seine Spalte (oder Taste 1–4 bzw. ← ↓ ↑ →).',
+      'Genau getroffen = „Perfekt!“, knapp = „Gut“. Daneben oder verpasst kostet Stimmung.',
+      'Die Trefferquote rechts zählt über das ganze Lied – sie steigt, je mehr du triffst.'
+    ],
+    tip: { key: 'Drück 1–4 (← ↓ ↑ →), wenn ein Block die weiße Linie berührt', touch: 'Tippe die Spalte an, wenn ihr Block die weiße Linie berührt', y: 370 },
+    controls: { key: '1–4 oder ← ↓ ↑ → (je eine Spalte)', touch: 'Spalte antippen oder Tasten 1–4 unten', mouse: 'Spalte anklicken', pad: 'Steuerkreuz ← ↓ ↑ →' },
     touch: ['1', '2', '3', '4'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, fx: [], diff: d, cfg: c, t: 0, latency: +o.latency || 0, ni: 0, beat: -1,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '', perf: 0, good: 0, missed: 0, wrong: 0, combo: 0, maxCombo: 0, points: 0, energy: 60, flash: [-9, -9, -9, -9], judge: null };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '', perf: 0, good: 0, missed: 0, wrong: 0, combo: 0, maxCombo: 0, points: 0, energy: 60, flash: [-9, -9, -9, -9], judge: null };
       st.notes = makeSong(st, c); st.end = st.notes[st.notes.length - 1].t + 1.2;
       st.roots = []; for (let i = 0; i < c.bars; i++) st.roots.push(PT.randInt(st, 0, 3));
       return st;
@@ -102,7 +110,7 @@
       const c = st.cfg, acc = (st.perf + 0.6 * st.good) / st.notes.length, who = st.player ? st.player + ': ' : '';
       const det = who + Math.round(acc * 100) + ' % Treffer, beste Combo ' + st.maxCombo + ', ' + Math.round(st.points) + ' Punkte.';
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 50 * (acc - c.need) / (1 - c.need), 50, 100)), detail: det };
-      return { won: false, score: Math.round(PT.clamp(49 * acc / c.need, 0, 49)), detail: (st.energy <= 0 ? 'Das Publikum ist eingeschlafen – ' : 'Knapp daneben – ') + det };
+      return { won: false, score: Math.round(PT.clamp(49 * acc / c.need, 0, 49)), detail: (st.energy <= 0 ? 'Stimmungsleiste leer – zu viele verpasste Noten. ' : 'Nur ' + Math.round(acc * 100) + ' % getroffen – nötig waren ' + Math.round(c.need * 100) + ' %. ') + det };
     },
     bot(st, goal) {
       if (goal === 'lose') return [];
@@ -122,6 +130,7 @@
         g.fillStyle = LANE_COL[l]; g.font = '700 20px system-ui'; g.textAlign = 'center'; g.fillText(LANE_KEY[l], x + 46, 520); g.font = '18px system-ui'; g.fillText(LANE_NAME[l], x + 46, 84);
       }
       g.fillStyle = '#fff'; g.fillRect(280, HY - 3, 400, 6);
+      g.font = '700 18px system-ui'; g.textAlign = 'right'; g.fillText('jetzt tippen →', 274, HY + 6); g.textAlign = 'left'; g.fillText('← Linie', 686, HY + 6);
       for (let i = st.ni; i < st.notes.length; i++) {
         const n = st.notes[i], y = HY - (n.t - ta) * c.speed; if (y < 60) break; if (n.j || y > 500) continue;
         g.fillStyle = LANE_COL[n.l]; g.fillRect(290 + n.l * 100, y - 12, 80, 24); g.fillStyle = '#ffffff88'; g.fillRect(290 + n.l * 100, y - 12, 80, 6);
@@ -136,7 +145,7 @@
       if (st.player) g.fillText('🥁 ' + st.player, 90, 232);
       g.textAlign = 'right'; g.font = '700 22px system-ui'; g.fillStyle = '#fff';
       g.fillText('Treffer ' + Math.round((st.acc || 0) * 100) + ' %', 935, 90);
-      g.fillStyle = '#6ef0ff'; g.fillText('Ziel ' + Math.round(c.need * 100) + ' %', 935, 124);
+      g.fillStyle = '#6ef0ff'; g.fillText('nötig ' + Math.round(c.need * 100) + ' %', 935, 124);
       g.fillStyle = '#ffc84a'; g.fillText(Math.round(st.points) + ' Punkte', 935, 158);
       g.fillStyle = '#cfd6ff'; g.font = '18px system-ui'; g.fillText('Noch ' + Math.ceil(Math.max(0, st.end - st.t)) + ' s', 935, 192);
       g.fillStyle = '#1d2342'; g.fillRect(715, 210, 220, 12); g.fillStyle = '#ff4d9d'; g.fillRect(715, 210, 220 * PT.clamp(st.t / st.end, 0, 1), 12);

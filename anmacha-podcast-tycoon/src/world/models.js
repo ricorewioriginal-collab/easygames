@@ -154,77 +154,165 @@
   };
 
   // ── Figuren ────────────────────────────────────────────────
+  // Stilisierte Menschen (~1,8 m, Kopf ≈ 1/7): Hüfte y = 0.9, Schulter y = 1.4, Kinn ≈ 1.53, Scheitel ≈ 1.79.
   const HAIR_STYLES = ['short', 'long', 'bob', 'curly', 'bun', 'ponytail', 'side', 'bald'];
   M.HAIR_STYLES = HAIR_STYLES;
+  const HIP_Y = 0.9, HIP_X = 0.086, SHO_Y = 1.395, SHO_X = 0.19, ARM_Z = 0.1;
   /** Geometrien der Körperteile (weiß = wird mit der Instanzfarbe eingefärbt). */
   function partGeos(T) {
     if (prim.__fig) return prim.__fig;
-    const W = '#ffffff', mk = f => { const b = new Builder(T); f(b); return b.build(); };
+    const W = '#ffffff', S = f => M.shade(T, W, f), mk = f => { const b = new Builder(T); f(b); return b.build(); };
+    // Ellipsoid, Röhre (Zylinder mit Tiefenfaktor dk, open = ohne Deckel, wo sie verdeckt sind), offene Kappe (Kugelkalotte bis Winkel th, nach hinten gekippt)
+    const ell = (b, x, y, z, rx, ry, rz, c, rot, seg) => { seg = seg || 8; const geo = P(T, 'sph' + seg, () => new T.SphereGeometry(1, seg, Math.max(4, Math.round(seg * 0.7)))); return b.add(geo, b._local(x, y, z, rx, ry, rz, rot), M.col(T, c)); };
+    const tube = (b, x, y, z, rt, rb, h, dk, c, rot, seg, open) => {
+      seg = seg || 8; const base = Math.max(rt, rb, 1e-4), a = Math.round(rt / base * 50) / 50, bb = Math.round(rb / base * 50) / 50;
+      const geo = P(T, 'cyl' + a + '_' + bb + '_' + seg + (open ? 'o' : ''), () => new T.CylinderGeometry(a, bb, 1, seg, 1, !!open));
+      return b.add(geo, b._local(x, y, z, base, h, base * (dk || 1), rot), M.col(T, c));
+    };
+    const cap = (b, x, y, z, rx, ry, rz, th, tilt, c, seg) => { seg = seg || 12; const geo = P(T, 'fcap' + th.toFixed(2) + '_' + seg, () => new T.SphereGeometry(1, seg, Math.max(4, Math.round(seg * 0.6)), 0, Math.PI * 2, 0, th)); return b.add(geo, b._local(x, y, z, rx, ry, rz, { rx: tilt }), M.col(T, c)); };
     const g = {};
-    // Bein: Drehpunkt Hüfte (y = 0), reicht bis -0.78
-    g.leg = mk(b => { b.box(0, -0.31, 0, 0.2, 0.62, 0.24, W); b.box(0, -0.7, 0.04, 0.22, 0.16, 0.32, '#3a3a3a'); });
-    // Oberkörper (Polo): Rumpf, Kragen, Gürtel
+    // Bein (Drehpunkt Hüfte, y = 0): Hüfte, Oberschenkel, Knie, Unterschenkel, Hosensaum – reicht bis -0.9
+    g.leg = mk(b => {
+      ell(b, 0, -0.06, 0, 0.084, 0.09, 0.09, W);
+      tube(b, 0, -0.25, 0, 0.087, 0.068, 0.42, 1, W, null, 8, true);
+      ell(b, 0, -0.46, 0.004, 0.067, 0.06, 0.067, W, null, 6);
+      tube(b, 0, -0.655, 0, 0.065, 0.052, 0.39, 1, W, null, 8, true);
+      tube(b, 0, -0.835, 0, 0.055, 0.056, 0.04, 1, S(0.86), null, 8, true);
+    });
+    // Schuh (Drehpunkt Hüfte, wie das Bein): abgerundete Kappe + Sohle
+    g.shoe = mk(b => {
+      ell(b, 0, -0.858, 0.035, 0.06, 0.047, 0.118, W);
+      tube(b, 0, -0.893, 0.035, 0.062, 0.062, 0.016, 1.95, S(0.55));
+    });
+    // Oberkörper (Polo): Bauch, Brustkorb, runde Schultern, Kragen, Knopfleiste
     g.torso = mk(b => {
-      b.box(0, 1.08, 0, 0.52, 0.62, 0.3, W);
-      b.box(0, 1.385, 0.05, 0.3, 0.05, 0.22, M.shade(T, W, 0.82));
-      b.box(0, 1.34, 0.152, 0.12, 0.08, 0.01, M.shade(T, W, 0.8));
-      b.box(0, 0.8, 0, 0.53, 0.06, 0.31, '#555555');
+      tube(b, 0, 0.995, 0, 0.158, 0.174, 0.23, 0.63, W, null, 10, true);
+      tube(b, 0, 1.255, 0, 0.182, 0.158, 0.3, 0.64, W, null, 10, true);
+      ell(b, 0, 1.405, 0, 0.17, 0.058, 0.112, W, null, 10);
+      ell(b, -0.165, 1.378, 0, 0.058, 0.058, 0.066, W); ell(b, 0.165, 1.378, 0, 0.058, 0.058, 0.066, W);
+      tube(b, 0, 0.893, 0, 0.173, 0.175, 0.026, 0.64, S(0.86), null, 10, true);
+      tube(b, 0, 1.468, -0.004, 0.062, 0.08, 0.055, 1, S(0.8));
+      b.box(-0.033, 1.432, 0.093, 0.06, 0.028, 0.012, S(0.8), { rz: 0.45, rx: -0.45, ry: -0.3 });
+      b.box(0.033, 1.432, 0.093, 0.06, 0.028, 0.012, S(0.8), { rz: -0.45, rx: -0.45, ry: 0.3 });
+      b.box(0, 1.37, 0.116, 0.03, 0.09, 0.008, S(0.86));
+      b.box(0, 1.39, 0.12, 0.008, 0.008, 0.004, S(0.6)); b.box(0, 1.35, 0.12, 0.008, 0.008, 0.004, S(0.6));
     });
-    // Ärmel (Drehpunkt Schulter) und Unterarm mit Hand (Hautfarbe)
-    g.sleeve = mk(b => { b.box(0, -0.09, 0, 0.17, 0.22, 0.2, W); });
-    g.forearm = mk(b => { b.box(0, -0.34, 0, 0.13, 0.38, 0.14, W); b.box(0, -0.58, 0.01, 0.14, 0.13, 0.15, M.shade(T, W, 0.95)); });
-    // Kopf (groß, freundlich): Hals, Kopf, Augen, Nase, Mund, Ohren
+    // Ärmel (Drehpunkt Schulter): Kurzarm des Polos
+    g.sleeve = mk(b => { ell(b, 0, -0.005, 0, 0.06, 0.062, 0.064, W); tube(b, 0, -0.095, 0, 0.061, 0.057, 0.18, 1, W, null, 8, true); tube(b, 0, -0.185, 0, 0.058, 0.059, 0.016, 1, S(0.86), null, 8, true); });
+    // Arm in Hautfarbe (Drehpunkt Schulter): Oberarm, Ellbogen, leicht angewinkelter Unterarm, Hand mit Daumen
+    g.forearm = mk(b => {
+      const a = 0.2, c = Math.cos(a), s = Math.sin(a);
+      tube(b, 0, -0.16, 0, 0.052, 0.046, 0.3, 1, W, null, 8, true);
+      ell(b, 0, -0.3, 0, 0.046, 0.046, 0.046, W, null, 6);
+      tube(b, 0, -0.3 - 0.125 * c, 0.125 * s, 0.045, 0.036, 0.25, 1, W, { rx: -a }, 8, true);
+      ell(b, 0, -0.3 - 0.305 * c, 0.305 * s, 0.03, 0.056, 0.045, S(0.96), { rx: -a });
+      ell(b, 0, -0.585, 0.1, 0.019, 0.03, 0.019, S(0.96), { rx: -0.5 }, 6);
+    });
+    // Kopf: Hals, Schädel mit schmalerem Kiefer und Kinn (verformte Kugel, glatt schattiert), Nase, Ohren, Mund (Lächeln)
+    const skull = P(T, 'fskull', () => {
+      const sg = new T.SphereGeometry(1, 12, 9), a = sg.attributes.position;
+      for (let i = 0; i < a.count; i++) {
+        let x = a.getX(i), y = a.getY(i), z = a.getZ(i);
+        if (y < 0) { const t = -y; x *= 1 - 0.32 * t * t; z *= 1 - 0.1 * t * t; if (z > 0) z += (0.45 * t * t + 0.2 * t) * z; }
+        a.setXYZ(i, x, y, z);
+      }
+      sg.computeVertexNormals(); return sg;
+    });
     g.head = mk(b => {
-      b.box(0, 1.41, 0, 0.17, 0.08, 0.17, M.shade(T, W, 0.9));
-      b.box(0, 1.65, 0, 0.46, 0.44, 0.42, W);
-      b.box(-0.1, 1.68, 0.212, 0.07, 0.09, 0.02, '#141414'); b.box(0.1, 1.68, 0.212, 0.07, 0.09, 0.02, '#141414');
-      b.box(-0.085, 1.705, 0.224, 0.025, 0.025, 0.01, '#ffffff'); b.box(0.115, 1.705, 0.224, 0.025, 0.025, 0.01, '#ffffff');
-      b.box(0, 1.6, 0.225, 0.06, 0.07, 0.05, M.shade(T, W, 0.9));
-      b.box(0, 1.52, 0.212, 0.13, 0.03, 0.02, '#8c3a3a');
-      b.box(-0.24, 1.64, 0, 0.04, 0.1, 0.08, M.shade(T, W, 0.92)); b.box(0.24, 1.64, 0, 0.04, 0.1, 0.08, M.shade(T, W, 0.92));
-      b.box(-0.16, 1.58, 0.212, 0.06, 0.03, 0.01, '#ffb0a0'); b.box(0.16, 1.58, 0.212, 0.06, 0.03, 0.01, '#ffb0a0');
+      tube(b, 0, 1.5, -0.005, 0.053, 0.06, 0.13, 1, S(0.9), null, 8, true);
+      b.add(skull, b._local(0, 1.662, -0.005, 0.104, 0.128, 0.11, null), M.col(T, W));
+      ell(b, 0, 1.643, 0.104, 0.017, 0.03, 0.024, S(0.95), { rx: 0.25 }, 6);
+      ell(b, -0.1, 1.655, -0.008, 0.016, 0.034, 0.026, S(0.9), null, 6); ell(b, 0.1, 1.655, -0.008, 0.016, 0.034, 0.026, S(0.9), null, 6);
+      const L = '#9a4040';
+      b.box(0, 1.591, 0.106, 0.032, 0.008, 0.01, L);
+      b.box(-0.021, 1.595, 0.102, 0.016, 0.007, 0.01, L, { rz: -0.45, ry: -0.45 }); b.box(0.021, 1.595, 0.102, 0.016, 0.007, 0.01, L, { rz: 0.45, ry: 0.45 });
     });
-    // Frisuren
-    const top = b => { b.box(0, 1.885, -0.01, 0.5, 0.11, 0.46, W); b.box(0, 1.835, 0.2, 0.5, 0.07, 0.06, W); };
-    const back = (b, h) => b.box(0, 1.86 - h / 2, -0.205, 0.5, h, 0.08, W);
-    const sides = (b, h) => { b.box(-0.245, 1.86 - h / 2, -0.03, 0.04, h, 0.34, W); b.box(0.245, 1.86 - h / 2, -0.03, 0.04, h, 0.34, W); };
-    g.hair_short = mk(b => { top(b); back(b, 0.3); sides(b, 0.16); });
-    g.hair_long = mk(b => { top(b); back(b, 0.68); sides(b, 0.5); });
-    g.hair_bob = mk(b => { top(b); back(b, 0.42); b.box(-0.255, 1.66, 0.0, 0.06, 0.4, 0.42, W); b.box(0.255, 1.66, 0.0, 0.06, 0.4, 0.42, W); });
-    g.hair_curly = mk(b => { for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) b.sphere(i * 0.15, 1.88 + (j === 1 ? -0.02 : 0), j * 0.14 - 0.02, 0.13, W, null, 7); back(b, 0.3); sides(b, 0.18); });
-    g.hair_bun = mk(b => { top(b); back(b, 0.3); sides(b, 0.14); b.sphere(0, 1.98, -0.14, 0.12, W, null, 8); });
-    g.hair_ponytail = mk(b => { top(b); back(b, 0.28); sides(b, 0.14); b.box(0, 1.62, -0.29, 0.12, 0.38, 0.12, W, { rx: 0.25 }); b.box(0, 1.81, -0.25, 0.14, 0.08, 0.06, '#ff4d6d'); });
-    g.hair_side = mk(b => { top(b); back(b, 0.3); sides(b, 0.16); b.box(0.08, 1.905, 0.12, 0.36, 0.1, 0.2, W, { rz: -0.15 }); });
-    g.hair_bald = mk(b => { back(b, 0.2); b.box(-0.245, 1.68, -0.06, 0.04, 0.14, 0.26, W); b.box(0.245, 1.68, -0.06, 0.04, 0.14, 0.26, W); });
-    // Bart (Vollbart, Mund dunkel darin)
+    // Augen (feste Farben): Augenweiß, Iris, Glanzpunkt
+    g.eyes = mk(b => {
+      [-1, 1].forEach(sg => {
+        const x = sg * 0.037;
+        ell(b, x, 1.678, 0.09, 0.02, 0.016, 0.013, '#f6f3ee', null, 8);
+        ell(b, x, 1.677, 0.1, 0.0115, 0.0125, 0.006, '#2e2018', null, 6);
+        b.box(x + 0.004, 1.682, 0.105, 0.004, 0.004, 0.002, '#ffffff');
+      });
+    });
+    // Frisuren (Haarfarbe): Kappe über dem Schädel + Form; Augenbrauen gehören zur Frisur (Haarfarbe)
+    const brows = b => { b.box(-0.04, 1.705, 0.093, 0.036, 0.009, 0.012, W, { rz: 0.12, ry: -0.35 }); b.box(0.04, 1.705, 0.093, 0.036, 0.009, 0.012, W, { rz: -0.12, ry: 0.35 }); };
+    const top = b => { cap(b, 0, 1.668, -0.008, 0.112, 0.142, 0.124, 1.75, -0.62, W, 14); brows(b); };
+    const vol = b => ell(b, 0, 1.77, 0.03, 0.09, 0.05, 0.085, W, { rx: -0.35 });
+    g.hair_short = mk(b => { top(b); });
+    g.hair_long = mk(b => {
+      top(b); vol(b);
+      ell(b, 0, 1.55, -0.068, 0.112, 0.17, 0.072, W);
+      ell(b, -0.094, 1.57, -0.01, 0.03, 0.13, 0.072, W); ell(b, 0.094, 1.57, -0.01, 0.03, 0.13, 0.072, W);
+    });
+    g.hair_bob = mk(b => {
+      top(b); vol(b);
+      ell(b, -0.096, 1.615, -0.005, 0.036, 0.092, 0.1, W); ell(b, 0.096, 1.615, -0.005, 0.036, 0.092, 0.1, W);
+      ell(b, 0, 1.612, -0.062, 0.112, 0.095, 0.078, W);
+      ell(b, 0, 1.738, 0.078, 0.086, 0.028, 0.04, W);
+    });
+    g.hair_curly = mk(b => {
+      top(b);
+      for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2, fr = Math.cos(a) > 0.6; ell(b, Math.sin(a) * 0.094, fr ? 1.75 : 1.725, Math.cos(a) * 0.1 - 0.012, 0.046, 0.046, 0.046, W, null, 6); }
+      for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + 0.4; ell(b, Math.sin(a) * 0.045, 1.79, Math.cos(a) * 0.05 - 0.01, 0.052, 0.045, 0.052, W, null, 6); }
+      ell(b, -0.05, 1.64, -0.098, 0.048, 0.048, 0.04, W, null, 6); ell(b, 0.05, 1.64, -0.098, 0.048, 0.048, 0.04, W, null, 6);
+    });
+    g.hair_bun = mk(b => { top(b); vol(b); ell(b, 0, 1.79, -0.09, 0.056, 0.05, 0.056, W); });
+    g.hair_ponytail = mk(b => {
+      top(b); vol(b);
+      ell(b, 0, 1.71, -0.122, 0.026, 0.026, 0.026, '#ff4d6d', null, 8);
+      ell(b, 0, 1.6, -0.152, 0.036, 0.11, 0.036, W, { rx: 0.25 });
+    });
+    g.hair_side = mk(b => { top(b); vol(b); ell(b, 0.03, 1.748, 0.07, 0.086, 0.032, 0.05, W, { rz: -0.35 }); });
+    g.hair_bald = mk(b => {
+      brows(b);
+      ell(b, 0, 1.632, -0.072, 0.094, 0.042, 0.058, W);
+      ell(b, -0.092, 1.655, -0.03, 0.017, 0.036, 0.05, W, null, 8); ell(b, 0.092, 1.655, -0.03, 0.017, 0.036, 0.05, W, null, 8);
+    });
+    // Vollbart um Kinn/Wangen mit Schnurrbart, Mund dunkel darin
     g.beard = mk(b => {
-      b.box(0, 1.48, 0.17, 0.48, 0.16, 0.1, W);
-      b.box(-0.235, 1.56, 0.04, 0.05, 0.26, 0.3, W); b.box(0.235, 1.56, 0.04, 0.05, 0.26, 0.3, W);
-      b.box(0, 1.56, 0.226, 0.22, 0.045, 0.03, W);
-      b.box(0, 1.525, 0.228, 0.1, 0.025, 0.02, '#4a2a2a');
+      ell(b, 0, 1.585, 0.028, 0.09, 0.074, 0.095, W, null, 10);
+      ell(b, -0.086, 1.628, -0.004, 0.022, 0.062, 0.052, W, null, 8); ell(b, 0.086, 1.628, -0.004, 0.022, 0.062, 0.052, W, null, 8);
+      ell(b, 0, 1.613, 0.108, 0.038, 0.012, 0.016, W, null, 8);
+      ell(b, 0, 1.593, 0.114, 0.022, 0.0075, 0.008, '#4a2a2a', null, 8);
     });
     g.glasses = mk(b => {
-      const K = '#1d1f26';
-      [-0.1, 0.1].forEach(x => { b.box(x, 1.735, 0.226, 0.15, 0.02, 0.02, K); b.box(x, 1.63, 0.226, 0.15, 0.02, 0.02, K); b.box(x - 0.065, 1.68, 0.226, 0.02, 0.12, 0.02, K); b.box(x + 0.065, 1.68, 0.226, 0.02, 0.12, 0.02, K); });
-      b.box(0, 1.7, 0.226, 0.06, 0.02, 0.02, K); b.box(-0.23, 1.72, 0.1, 0.02, 0.02, 0.24, K); b.box(0.23, 1.72, 0.1, 0.02, 0.02, 0.24, K);
+      const K = '#1d1f26', ring = P(T, 'ftorus', () => new T.TorusGeometry(1, 0.16, 4, 12));
+      [-1, 1].forEach(sg => {
+        b.add(ring, b._local(sg * 0.037, 1.678, 0.111, 0.025, 0.021, 0.025, null), M.col(T, K));
+        b.box(sg * 0.1, 1.684, 0.055, 0.006, 0.006, 0.11, K);
+      });
+      b.box(0, 1.683, 0.113, 0.026, 0.005, 0.005, K);
     });
-    g.cap = mk(b => { b.box(0, 1.92, -0.01, 0.51, 0.13, 0.47, W); b.box(0, 1.87, 0.3, 0.44, 0.03, 0.2, W); b.box(0, 1.995, 0, 0.06, 0.03, 0.06, M.shade(T, W, 0.7)); });
-    // AnMaCha-Abzeichen: orange Plakette mit weißem Play-Dreieck (Farben fest)
+    g.cap = mk(b => {
+      cap(b, 0, 1.675, -0.005, 0.114, 0.136, 0.126, 1.45, -0.25, W);
+      ell(b, 0, 1.722, 0.128, 0.09, 0.01, 0.07, W, { rx: 0.1 });
+      ell(b, 0, 1.81, -0.02, 0.014, 0.008, 0.014, S(0.7), null, 6);
+    });
+    // AnMaCha-Abzeichen: orangener Kreis mit weißem Play-Dreieck auf der Brust (Farben fest)
     g.badge = mk(b => {
-      b.box(0.13, 1.25, 0.152, 0.12, 0.12, 0.012, '#ff8a1e');
-      b.at(0.13, 1.25, 0.159, 0); b.tri([-0.03, 0.04, 0], [-0.03, -0.04, 0], [0.045, 0, 0], '#ffffff'); b.at(null);
+      b.at(0.075, 1.32, 0.104, 0.4);
+      tube(b, 0, 0, 0.004, 0.032, 0.032, 0.008, 1, '#ff8a1e', { rx: HALF_PI }, 12);
+      b.tri([-0.011, 0.015, 0.0092], [-0.011, -0.015, 0.0092], [0.016, 0, 0.0092], '#ffffff');
+      b.at(null);
     });
-    g.mask = mk(b => { b.box(0, 1.68, 0.216, 0.48, 0.2, 0.03, '#1d1f26'); b.box(-0.1, 1.68, 0.232, 0.09, 0.04, 0.01, '#ffffff'); b.box(0.1, 1.68, 0.232, 0.09, 0.04, 0.01, '#ffffff'); b.box(0, 1.78, 0.22, 0.5, 0.04, 0.03, '#c58bff'); });
+    g.mask = mk(b => {
+      ell(b, 0, 1.678, -0.003, 0.106, 0.026, 0.12, '#1d1f26', null, 10);
+      ell(b, -0.037, 1.678, 0.112, 0.02, 0.014, 0.009, '#ffffff', null, 8); ell(b, 0.037, 1.678, 0.112, 0.02, 0.014, 0.009, '#ffffff', null, 8);
+      ell(b, 0, 1.706, -0.003, 0.107, 0.005, 0.121, '#c58bff', null, 10);
+    });
     g.shadow = (() => { const c = new T.CircleGeometry(0.42, 14); c.rotateX(-HALF_PI); const n = c.toNonIndexed(); c.dispose(); return n; })();
     prim.__fig = g;
     return g;
   }
   M.partGeos = partGeos;
 
-  const DEF_LOOK = { skin: '#f0c8a8', hair: '#3b2a1e', shirt: '#4bb8ff', pants: '#2b2f3a', hairStyle: 'short', build: 1 };
+  const DEF_LOOK = { skin: '#f0c8a8', hair: '#3b2a1e', shirt: '#4bb8ff', pants: '#2b2f3a', shoes: '#2b2522', hairStyle: 'short', build: 1 };
   function normLook(look) {
     const L = Object.assign({}, DEF_LOOK, look || {});
     if (HAIR_STYLES.indexOf(L.hairStyle) < 0) L.hairStyle = 'short';
+    if (!L.shoes) L.shoes = DEF_LOOK.shoes;
     L.build = Math.max(0.8, Math.min(1.3, +L.build || 1));
     return L;
   }
@@ -232,12 +320,13 @@
 
   /** Pose einer Figur: Beinschwung, Armschwung, Wippen. phase in Radiant, amt 0..1 (Laufen), idle 0..1 (Stehen). */
   function pose(phase, amt, t) {
-    const sw = Math.sin(phase) * 0.7 * amt;
-    const bob = Math.abs(Math.cos(phase)) * 0.06 * amt + Math.sin(t * 2.1) * 0.012 * (1 - amt);
+    const sw = Math.sin(phase) * 0.6 * amt;
+    const bob = Math.abs(Math.cos(phase)) * 0.045 * amt + Math.sin(t * 2.1) * 0.008 * (1 - amt);
     const arm = Math.sin(t * 1.7) * 0.05 * (1 - amt);
     return { sw, bob, arm };
   }
 
+  const LIMBS = ['leg', 'shoe', 'sleeve', 'forearm'], CORE = ['torso', 'head', 'eyes', 'shadow'];
   /** Figuren als InstancedMeshes. sys.add(look) → id; sys.set(id, x, y, z, ry, phase, walkAmt, visible); sys.update(time). */
   M.figureSystem = function (T, max, mats) {
     max = max || 40;
@@ -248,7 +337,8 @@
     const meshes = {};
     const white = new T.Color(1, 1, 1);
     const mk = (name, geo, cap, m) => { const im = new T.InstancedMesh(geo, m || mat, cap); for (let i = 0; i < cap; i++) im.setColorAt(i, white); im.count = 0; im.frustumCulled = false; im.name = 'fig_' + name; group.add(im); meshes[name] = im; return im; };
-    mk('leg', G.leg, max * 2); mk('torso', G.torso, max); mk('sleeve', G.sleeve, max * 2); mk('forearm', G.forearm, max * 2); mk('head', G.head, max);
+    LIMBS.forEach(k => mk(k, G[k], max * 2));
+    mk('torso', G.torso, max); mk('head', G.head, max); mk('eyes', G.eyes, max);
     mk('shadow', G.shadow, max, shMat);
     HAIR_STYLES.forEach(s => mk('hair_' + s, G['hair_' + s], max));
     ['beard', 'glasses', 'cap', 'badge', 'mask'].forEach(s => mk(s, G[s], max));
@@ -268,11 +358,10 @@
       const L = normLook(look);
       const f = { i, look: L, x: 0, y: 0, z: 0, ry: 0, phase: 0, amt: 0, vis: true, opt: {}, free: false, t: i * 1.37 };
       const need = { ['hair_' + L.hairStyle]: L.hair, beard: L.beard, glasses: L.glasses ? '#ffffff' : null, cap: L.cap, badge: L.badge ? '#ffffff' : null, mask: L.mask ? '#ffffff' : null };
-      if (L.mask) need['hair_' + L.hairStyle] = L.hair;
       Object.keys(need).forEach(k => { if (need[k]) { const s = takeSlot(k); f.opt[k] = s; setCol(k, s, M.col(T, need[k])); } });
-      const shirt = M.col(T, L.shirt), skin = M.col(T, L.skin), pants = M.col(T, L.pants);
-      setCol('torso', i, shirt); setCol('head', i, skin); setCol('leg', i * 2, pants); setCol('leg', i * 2 + 1, pants);
-      setCol('sleeve', i * 2, shirt); setCol('sleeve', i * 2 + 1, shirt); setCol('forearm', i * 2, skin); setCol('forearm', i * 2 + 1, skin);
+      const shirt = M.col(T, L.shirt), skin = M.col(T, L.skin), pants = M.col(T, L.pants), shoes = M.col(T, L.shoes);
+      setCol('torso', i, shirt); setCol('head', i, skin); setCol('eyes', i, white);
+      for (let sd = 0; sd < 2; sd++) { setCol('leg', i * 2 + sd, pants); setCol('shoe', i * 2 + sd, shoes); setCol('sleeve', i * 2 + sd, shirt); setCol('forearm', i * 2 + sd, skin); }
       setCol('shadow', i, tmpC.set(0, 0, 0));
       figs[i] = f;
       Object.keys(meshes).forEach(k => { if (meshes[k].instanceColor) meshes[k].instanceColor.needsUpdate = true; });
@@ -290,14 +379,14 @@
     };
     sys.update = function (time) {
       const n = figs.length;
-      meshes.leg.count = meshes.sleeve.count = meshes.forearm.count = n * 2;
-      meshes.torso.count = meshes.head.count = meshes.shadow.count = n;
+      LIMBS.forEach(k => { meshes[k].count = n * 2; });
+      CORE.forEach(k => { meshes[k].count = n; });
       opt.forEach(k => { meshes[k].count = slots[k].n; });
       for (let i = 0; i < n; i++) {
         const f = figs[i];
         if (!f || f.free || !f.vis) {
-          ['torso', 'head', 'shadow'].forEach(k => meshes[k].setMatrixAt(i, zero));
-          ['leg', 'sleeve', 'forearm'].forEach(k => { meshes[k].setMatrixAt(i * 2, zero); meshes[k].setMatrixAt(i * 2 + 1, zero); });
+          CORE.forEach(k => meshes[k].setMatrixAt(i, zero));
+          LIMBS.forEach(k => { meshes[k].setMatrixAt(i * 2, zero); meshes[k].setMatrixAt(i * 2 + 1, zero); });
           if (f) Object.keys(f.opt).forEach(k => meshes[k].setMatrixAt(f.opt[k], zero));
           continue;
         }
@@ -306,16 +395,17 @@
         root4.compose(v.set(f.x, f.y + p.bob, f.z), q, s3.set(bw, 1, 1 + (bw - 1) * 0.6));
         meshes.torso.setMatrixAt(i, root4);
         meshes.head.setMatrixAt(i, root4);
+        meshes.eyes.setMatrixAt(i, root4);
         Object.keys(f.opt).forEach(k => meshes[k].setMatrixAt(f.opt[k], root4));
         // Schatten (nicht wippen, flach auf dem Boden)
         m4.compose(v.set(f.x, f.y + 0.02, f.z), q, s3.set(bw, 1, 1)); meshes.shadow.setMatrixAt(i, m4);
         for (let sd = 0; sd < 2; sd++) {
           const sg = sd ? 1 : -1;
-          // Beine: gegenläufig
-          part4.makeTranslation(sg * 0.12, 0.78, 0); rx4.makeRotationX(p.sw * sg); part4.multiply(rx4);
-          m4.multiplyMatrices(root4, part4); meshes.leg.setMatrixAt(i * 2 + sd, m4);
-          // Arme: gegen die Beine
-          part4.makeTranslation(sg * 0.345, 1.36, 0); rx4.makeRotationX(-p.sw * sg * 0.9 + p.arm); part4.multiply(rx4); rx4.makeRotationZ(sg * 0.07); part4.multiply(rx4);
+          // Beine pendeln an der Hüfte, gegenläufig
+          part4.makeTranslation(sg * HIP_X, HIP_Y, 0); rx4.makeRotationX(p.sw * sg); part4.multiply(rx4);
+          m4.multiplyMatrices(root4, part4); meshes.leg.setMatrixAt(i * 2 + sd, m4); meshes.shoe.setMatrixAt(i * 2 + sd, m4);
+          // Arme pendeln an der Schulter, gegen die Beine
+          part4.makeTranslation(sg * SHO_X, SHO_Y, 0); rx4.makeRotationX(-p.sw * sg * 0.9 + p.arm); part4.multiply(rx4); rx4.makeRotationZ(sg * ARM_Z); part4.multiply(rx4);
           m4.multiplyMatrices(root4, part4); meshes.sleeve.setMatrixAt(i * 2 + sd, m4); meshes.forearm.setMatrixAt(i * 2 + sd, m4);
         }
       }
@@ -334,9 +424,9 @@
     const G = partGeos(T), L = normLook(look), grp = new T.Group(); grp.name = 'figure';
     const mats = [];
     const mm = c => { const m = new T.MeshLambertMaterial({ vertexColors: true, color: M.col(T, c) }); mats.push(m); return m; };
-    const shirt = mm(L.shirt), skin = mm(L.skin), pants = mm(L.pants), white = mm('#ffffff');
+    const shirt = mm(L.shirt), skin = mm(L.skin), pants = mm(L.pants), shoes = mm(L.shoes), white = mm('#ffffff');
     const body = new T.Group(); grp.add(body);
-    body.add(new T.Mesh(G.torso, shirt), new T.Mesh(G.head, skin));
+    body.add(new T.Mesh(G.torso, shirt), new T.Mesh(G.head, skin), new T.Mesh(G.eyes, white));
     body.add(new T.Mesh(G['hair_' + L.hairStyle], mm(L.hair)));
     if (L.beard) body.add(new T.Mesh(G.beard, mm(L.beard)));
     if (L.glasses) body.add(new T.Mesh(G.glasses, white));
@@ -346,8 +436,9 @@
     grp.userData.limbs = [];
     for (let sd = 0; sd < 2; sd++) {
       const sg = sd ? 1 : -1;
-      const leg = new T.Mesh(G.leg, pants); leg.position.set(sg * 0.12, 0.78, 0); body.add(leg);
-      const arm = new T.Group(); arm.position.set(sg * 0.345, 1.36, 0); arm.rotation.z = sg * 0.07;
+      const leg = new T.Group(); leg.position.set(sg * HIP_X, HIP_Y, 0);
+      leg.add(new T.Mesh(G.leg, pants), new T.Mesh(G.shoe, shoes)); body.add(leg);
+      const arm = new T.Group(); arm.position.set(sg * SHO_X, SHO_Y, 0); arm.rotation.z = sg * ARM_Z;
       arm.add(new T.Mesh(G.sleeve, shirt), new T.Mesh(G.forearm, skin)); body.add(arm);
       grp.userData.limbs.push({ leg, arm, sg });
     }

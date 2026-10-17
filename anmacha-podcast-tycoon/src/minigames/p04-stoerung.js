@@ -50,7 +50,15 @@
       'Tauschen repariert ein defektes Teil; ein heiles Teil tauschen ist ein Fehler.',
       'Alles repariert = gewonnen. Zu viele Fehltausche oder Zeit abgelaufen = verloren.'
     ],
-    controls: { key: 'Pfeile: Gerät wählen, Leertaste: messen, E: tauschen', touch: 'Gerät antippen, dann Messen oder Tauschen', pad: 'Steuerkreuz, A messen, B tauschen' },
+    goal: d => 'Finde ' + (CFG[d].defects > 1 ? 'die ' + CFG[d].defects + ' kaputten Geräte' : 'das kaputte Gerät') + ' und tausche ' + (CFG[d].defects > 1 ? 'sie' : 'es') + ' aus – in ' + CFG[d].time + ' s, höchstens ' + CFG[d].err + ' falscher Tausch.',
+    how: [
+      'Der Ton läuft entlang der Linie vom Mikro bis zum Kopfhörer. Ein Gerät unterwegs ist kaputt.',
+      'Gerät antippen, dann 📏 Messen: „Signal ok“ ✓ = bis hierher alles heil, „kein Signal“ ✗ = der Fehler liegt hier oder davor.',
+      'Tipp: in der Mitte messen, dann die Hälfte mit dem Fehler weiter eingrenzen. Der Akku 🔋 reicht nur für wenige Messungen.',
+      'Sicher? Gerät wählen und 🔧 Tauschen. Ein heiles Gerät tauschen = Fehler.'
+    ],
+    tip: { key: 'Pfeile: Gerät wählen · Leertaste: messen · E: tauschen', touch: 'Gerät antippen, dann unten 📏 Messen oder 🔧 Tauschen', y: 420 },
+    controls: { key: 'Pfeile: Gerät wählen, Leertaste: messen, E: tauschen', touch: 'Gerät antippen, dann unten 📏 Messen oder 🔧 Tauschen antippen', mouse: 'Gerät anklicken, dann 📏 Messen oder 🔧 Tauschen klicken', pad: 'Steuerkreuz wählen, A messen, B tauschen' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -88,7 +96,7 @@
     result(st) {
       const c = st.cfg, won = st.status === 'won', left = Math.max(0, c.time - st.t);
       const score = won ? PT.clamp(Math.round(50 + 25 * left / c.time + 25 * (c.budget - st.used) / c.budget - st.err * 8), 50, 100) : PT.clamp(Math.round(40 * st.fixed / c.defects), 0, 49);
-      return { won, score, detail: won ? 'Repariert mit ' + st.used + ' Messungen und ' + st.err + ' Fehltauschen.' : 'Störung nicht behoben: ' + st.fixed + ' von ' + c.defects + ' Defekten gefunden.' };
+      return { won, score, detail: won ? 'Repariert mit ' + st.used + ' Messungen und ' + st.err + ' Fehltauschen.' : (st.err > c.err ? 'Zu viele falsche Tausche (' + st.err + ') – ' : 'Zeit abgelaufen – ') + st.fixed + ' von ' + c.defects + ' kaputten Geräten repariert.' };
     },
     bot(st, goal) {
       let target = st.def.indexOf(true);
@@ -101,9 +109,9 @@
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('🔍 Studio-Störungssuche', 24, 36);
       g.textAlign = 'right'; g.fillStyle = '#cfd6ff';
-      g.fillText('🔋 ' + (c.budget - st.used) + '   Fehler ' + st.err + '/' + c.err + '   ⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 936, 36);
+      g.fillText('🔋 ' + (c.budget - st.used) + '   Fehler ' + st.err + '/' + c.err + '   ⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 36);
       g.font = '18px system-ui'; g.textAlign = 'center'; g.fillStyle = st.msgT > 0 ? '#ffb02e' : '#8f98c8';
-      g.fillText(st.msgT > 0 ? st.msg : 'Ziel: ' + c.defects + (c.defects > 1 ? ' Defekte' : ' Defekt') + ' finden · repariert ' + st.fixed, 480, 80);
+      g.fillText(st.msgT > 0 ? st.msg : 'Ziel: ' + c.defects + (c.defects > 1 ? ' kaputte Geräte' : ' kaputtes Gerät') + ' finden und tauschen · repariert ' + st.fixed + ' von ' + c.defects + ' · Ton fließt →', 480, 80);
       g.lineWidth = 4;
       for (let i = 0; i < nodes.length; i++) {
         const p = nodes[i][2]; if (p < 0) continue;
@@ -126,8 +134,11 @@
       }
       g.fillStyle = st.used < c.budget ? '#2a5c9e' : '#33384f'; g.fillRect(BTN_M.x, BTN_M.y, BTN_M.w, BTN_M.h);
       g.fillStyle = '#9e3a4f'; g.fillRect(BTN_T.x, BTN_T.y, BTN_T.w, BTN_T.h);
+      g.strokeStyle = '#ffffff'; g.lineWidth = 2; g.strokeRect(BTN_M.x, BTN_M.y, BTN_M.w, BTN_M.h); g.strokeRect(BTN_T.x, BTN_T.y, BTN_T.w, BTN_T.h);
       g.fillStyle = '#ffffff'; g.font = '600 20px system-ui';
       g.fillText('📏 Messen', BTN_M.x + 90, BTN_M.y + 38); g.fillText('🔧 Tauschen', BTN_T.x + 90, BTN_T.y + 38);
+      g.font = '16px system-ui'; g.fillStyle = '#8f98c8'; g.fillText('gewählt: ' + nodes[st.cur][0], 480, 446);
+      g.textAlign = 'left'; g.fillStyle = '#4be08a'; g.fillText('✓ = Ton kommt bis hier', 24, 470); g.fillStyle = '#ff4d6d'; g.fillText('✗ = Fehler hier oder davor', 24, 494);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

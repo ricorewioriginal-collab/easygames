@@ -28,13 +28,21 @@
       'Profi: zwei Sprecher, zwei Scheinwerfer – mit 1/2 oder B umschalten.',
       'Gewonnen, wenn am Ende der Show genug Zeit im Licht erreicht ist.'
     ],
-    controls: { key: 'Pfeile bewegen den Scheinwerfer, 1/2 oder Q wechseln (Profi)', touch: 'Scheinwerfer ziehen oder Ziel antippen', pad: 'Stick bewegen, B wechselt' },
+    goal: d => 'Halte den Scheinwerfer insgesamt ' + Math.round(CFG[d].need * CFG[d].time) + ' von ' + CFG[d].time + ' Sekunden auf ' + (CFG[d].active > 1 ? 'den beiden Personen, die gerade sprechen (zwei Scheinwerfer).' : 'der Person, die gerade spricht.'),
+    how: [
+      'Wer gerade spricht, hat ein 🎤 über dem Kopf und einen gestrichelten Ring.',
+      'Zieh den hellen Lichtkreis auf den Kopf dieser Person – der Ring wird grün, die Sekunden zählen.',
+      'Die Leute laufen herum und der Sprecher wechselt (Piepton) – Licht hinterher!',
+      'Profi: zwei Scheinwerfer (1 und 2) – mit 1/2 oder B umschalten, oder einfach den gewünschten antippen.'
+    ],
+    tip: { key: 'Pfeile bewegen den Lichtkreis – auf den Kopf mit dem 🎤!', touch: 'Zieh den Lichtkreis auf den Kopf mit dem 🎤', y: 300 },
+    controls: { key: 'Pfeile bewegen den Scheinwerfer, 1/2 oder Q wechseln (Profi)', touch: 'Finger auf die Bühne halten/ziehen: Licht folgt', mouse: 'Maustaste gedrückt halten/ziehen: Licht folgt', pad: 'Stick bewegen, B wechselt' },
     touch: ['left', 'right', 'up', 'down', 'b'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
       const d = o.difficulty | 0, c = CFG[d];
       const st = { status: 'playing', seed: (o.seed >>> 0) || 1, fx: [], diff: d, cfg: c, t: 0, lit: 0, sel: 0, hold: { left: 0, right: 0, up: 0, down: 0 }, ptr: false,
-        player: ((o.players || [])[o.turn | 0] || {}).name || '', act: [0, 1], spots: [{ x: 120, y: 90, gx: null, gy: 0 }] };
+        player: (o.players || []).length > 1 ? ((o.players[o.turn | 0] || {}).name || '') : '', act: [0, 1], spots: [{ x: 120, y: 90, gx: null, gy: 0 }] };
       if (c.spots > 1) st.spots.push({ x: 840, y: 90, gx: null, gy: 0 });
       st.ppl = [{ x: 480, y: 440, tx: 480, wait: 1, sit: false }];
       const ch = PT.shuffle(st, CHAIRS);
@@ -85,7 +93,7 @@
     result(st) {
       const c = st.cfg, q = st.lit / Math.max(1, Math.min(st.t, c.time)), who = st.player ? st.player + ': ' : '';
       if (st.status === 'won') return { won: true, score: Math.round(PT.clamp(50 + 50 * (q - c.need) / (1 - c.need), 50, 100)), detail: who + Math.round(q * 100) + ' % der Show im richtigen Licht.' };
-      return { won: false, score: Math.round(PT.clamp(49 * q / c.need, 0, 49)), detail: who + 'Nur ' + Math.round(q * 100) + ' % im Licht – die Zuschauer sahen viel Dunkelheit.' };
+      return { won: false, score: Math.round(PT.clamp(49 * q / c.need, 0, 49)), detail: who + 'Nur ' + Math.round(q * 100) + ' % der Show im Licht – nötig waren ' + Math.round(c.need * 100) + ' %.' };
     },
     bot(st, goal) {
       if (goal === 'lose') return [];
@@ -118,6 +126,7 @@
           const ok = covered(st, m); g.strokeStyle = ok ? '#4be08a' : '#ffb02e'; g.lineWidth = 3; if (g.setLineDash) g.setLineDash([8, 6]);
           g.beginPath(); g.arc(h.x, h.y, 30, 0, 7); g.stroke(); if (g.setLineDash) g.setLineDash([]);
           g.font = '26px system-ui'; g.textAlign = 'center'; g.fillText('🎤', h.x, h.y - 38);
+          g.font = '700 18px system-ui'; g.fillStyle = ok ? '#4be08a' : '#ffb02e'; g.fillText(ok ? '✓ im Licht' : 'Licht hierher!', h.x, h.y - 66);
         }
       });
       const op = g.globalCompositeOperation; g.globalCompositeOperation = 'lighter';
@@ -132,9 +141,9 @@
       g.font = '700 22px system-ui'; g.textAlign = 'left'; g.fillStyle = c.time - st.t < 10 ? '#ff4d6d' : '#fff';
       g.fillText('⏱ ' + Math.ceil(Math.max(0, c.time - st.t)) + ' s', 18, 36);
       const q = st.lit / Math.max(1, st.t);
-      g.fillStyle = q >= c.need ? '#4be08a' : '#ffc84a'; g.fillText('Im Licht: ' + Math.round(st.lit / c.time * 100) + ' % (Ziel ' + Math.round(c.need * 100) + ' %)', 130, 36);
+      g.fillStyle = st.lit >= c.need * c.time ? '#4be08a' : '#ffc84a'; g.fillText('Im Licht: ' + st.lit.toFixed(0) + ' von ' + Math.round(c.need * c.time) + ' s', 130, 36);
       g.textAlign = 'right'; g.fillStyle = '#cfd6ff';
-      g.fillText((st.player ? st.player + ' · ' : '') + 'Spricht: ' + st.act.map(i => NAMES[i]).join(' + '), 942, 36);
+      g.fillText((st.player ? st.player + ' · ' : '') + 'Spricht: ' + st.act.map(i => NAMES[i]).join(' + '), 900, 36);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

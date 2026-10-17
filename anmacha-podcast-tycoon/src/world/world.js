@@ -787,8 +787,14 @@
     function buildPan(dx, dz) {
       const R = lotsR[bstate.lot]; if (!R) return;
       const yaw = Math.PI + bstate.rot * HP, fx = Math.sin(yaw), fz = Math.cos(yaw), rx = -fz, rz = fx;
-      bstate.panX = clamp(bstate.panX + rx * dx - fx * dz, -R.w / 2 - 4, R.w / 2 + 4);
-      bstate.panZ = clamp(bstate.panZ + rz * dx - fz * dz, -R.d / 2 - 4, R.d / 2 + 4);
+      bstate.panX = clamp(bstate.panX + rx * dx - fx * dz, -R.w / 2 - 8, R.w / 2 + 8);
+      bstate.panZ = clamp(bstate.panZ + rz * dx - fz * dz, -R.d / 2 - 8, R.d / 2 + 8);
+    }
+    // Verschieben in Weltmetern (für „Greifen“ mit Finger/Maus: der Punkt unter dem Finger bleibt unter dem Finger)
+    function buildPanWorld(dx, dz) {
+      const R = lotsR[bstate.lot]; if (!R) return;
+      bstate.panX = clamp(bstate.panX + (+dx || 0), -R.w / 2 - 8, R.w / 2 + 8);
+      bstate.panZ = clamp(bstate.panZ + (+dz || 0), -R.d / 2 - 8, R.d / 2 + 8);
     }
     function buildZoom(f) { const t = buildTarget(); if (!t) return; f = +f || 1; bstate.zoom = clamp(bstate.zoom / f, 7, 70); }
     function buildRotate(dir) { bstate.rot = ((bstate.rot + (dir < 0 ? -1 : 1)) % 4 + 4) % 4; }
@@ -797,7 +803,7 @@
       cine.on = true; cine.t = 0; cine.dur = Math.max(1, +sec || 4); cine.x = d.cx; cine.z = d.cz; if (mode !== 'cine') cine.prev = mode === 'mg' ? 'follow' : mode; mode = 'cine';
     }
     function updateCamera(dt) {
-      const k = cam.snap ? 1 : 1 - Math.exp(-dt * 6);
+      const k = cam.snap ? 1 : 1 - Math.exp(-dt * (mode === 'build' ? 14 : 6));
       let px, py, pz, lx, ly, lz, fov = 55;
       if (mode === 'build') {
         const t = buildTarget(); if (!t) { mode = 'follow'; return updateCamera(dt); }
@@ -924,6 +930,13 @@
 
     // ── Bau-Modus: Auswahl, Vorschau, Markierung ──
     const raycaster = new T.Raycaster(), ndc = new T.Vector2(), plane = new T.Plane(new T.Vector3(0, 1, 0), -0.05), hit = new T.Vector3();
+    function groundAt(clientX, clientY) {
+      const r = canvas && canvas.getBoundingClientRect ? canvas.getBoundingClientRect() : { left: 0, top: 0, width: size.w, height: size.h };
+      const w = r.width || size.w, h = r.height || size.h;
+      ndc.set(((clientX - r.left) / w) * 2 - 1, -((clientY - r.top) / h) * 2 + 1);
+      camera.updateMatrixWorld(); raycaster.setFromCamera(ndc, camera);
+      return raycaster.ray.intersectPlane(plane, hit) ? { x: hit.x, z: hit.z } : null;
+    }
     function pick(clientX, clientY) {
       const R = lotsR[bstate.lot]; if (!R) return null;
       const r = canvas && canvas.getBoundingClientRect ? canvas.getBoundingClientRect() : { left: 0, top: 0, width: size.w, height: size.h };
@@ -1090,7 +1103,7 @@
 
     const api = {
       THREE: T, renderer, scene, camera,
-      load, refreshLot, refreshUnlocks, update, teleport, setCamMode, buildPan, buildZoom, buildRotate, buildDist: () => bstate.zoom, pick, ghost, ghostEdge, highlightCells,
+      load, refreshLot, refreshUnlocks, update, teleport, setCamMode, buildPan, buildZoom, buildRotate, buildDist: () => bstate.zoom, buildPanWorld, groundAt, pick, ghost, ghostEdge, highlightCells,
       cine: (distId, seconds) => { if (loaded) cineStart(distId, seconds); },
       mgScene, renderMg, render, resize, minimap, setTime, setQuality, dispose,
       onContextLost: cb => { if (typeof cb === 'function') cbLost.push(cb); },

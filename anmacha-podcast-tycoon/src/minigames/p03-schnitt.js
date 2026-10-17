@@ -59,7 +59,15 @@
       'Clips per Tauschen in die Reihenfolge des Sendeplans bringen und exportieren.',
       'Falscher Export kostet Zeit. Zu viele Fehler oder Zeit abgelaufen = verloren.'
     ],
-    controls: { key: 'Pfeile: Clip wählen, Leertaste: aufnehmen/tauschen, E: wegwerfen, 1: Export', touch: 'Clip antippen, zweiten antippen = tauschen; Papierkorb/Export antippen', pad: 'Steuerkreuz, A tauschen, B wegwerfen, 1 Export' },
+    goal: d => 'Wirf ' + (CFG[d].bad > 1 ? 'alle ' + CFG[d].bad + ' Versprecher' : 'den Versprecher') + ' weg, bring die Clips in die Reihenfolge des Sendeplans und drück „Export“ – in ' + CFG[d].time + ' s, höchstens ' + CFG[d].err + ' Fehler.',
+    how: [
+      'Oben steht der Sendeplan: So müssen die Clips am Ende von Platz 1 an liegen.',
+      'Tippe einen Clip an – unten liest du, was drin ist. Gestammel („äh …“, „Hatschi!“) = Versprecher → 🗑 Papierkorb.',
+      'Sortieren: Clip antippen, dann den Clip antippen, mit dem er den Platz tauschen soll.',
+      'Fertig? 📤 Export. Falscher Export oder ein guter Clip im Müll = Fehler und Zeitstrafe.'
+    ],
+    tip: { key: 'Pfeile + Leertaste: Clips tauschen · E: Versprecher wegwerfen · 1: Export', touch: 'Clip antippen = vorhören · zweiten Clip antippen = tauschen', y: 250 },
+    controls: { key: 'Pfeile: Clip wählen, Leertaste: auswählen/tauschen, E: in den Papierkorb, 1: Export', touch: 'Clip antippen, dann zweiten Clip antippen = tauschen; 🗑 und 📤 unten antippen', mouse: 'Clip anklicken, dann zweiten Clip anklicken = tauschen; 🗑 und 📤 unten anklicken', pad: 'Steuerkreuz wählen, A tauschen, B wegwerfen, 1 Export' },
     touch: ['left', 'right', 'up', 'down', 'a', 'b', '1'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -99,7 +107,7 @@
       const c = st.cfg, won = st.status === 'won', left = Math.max(0, c.time - st.t);
       const right = st.clips.filter((x, i) => !x.bad && x.sec === i).length;
       const score = won ? PT.clamp(Math.round(55 + 45 * left / c.time - st.err * 4), 50, 100) : PT.clamp(Math.round(40 * right / c.plan.length), 0, 49);
-      return { won, score, detail: won ? 'Folge exportiert mit ' + Math.round(left) + ' s Luft und ' + st.err + ' Fehlern.' : 'Schnitt nicht fertig: ' + right + ' von ' + c.plan.length + ' Abschnitten am richtigen Platz.' };
+      return { won, score, detail: won ? 'Folge exportiert mit ' + Math.round(left) + ' s Luft und ' + st.err + ' Fehlern.' : (st.err > c.err ? 'Zu viele Fehler (' + st.err + ', erlaubt ' + c.err + ') – ' : 'Zeit abgelaufen – ') + right + ' von ' + c.plan.length + ' Abschnitten lagen am richtigen Platz.' };
     },
     bot(st, goal) {
       if (goal === 'lose') return [{ type: 'key', key: '1', down: true }];
@@ -117,10 +125,11 @@
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('✂️ Schnitt-Challenge', 24, 36);
       g.textAlign = 'right'; g.fillStyle = '#cfd6ff';
-      g.fillText('Fehler ' + st.err + ' / ' + c.err + '   ⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 936, 36);
-      g.font = '18px system-ui'; g.textAlign = 'left'; g.fillStyle = '#6ef0ff';
-      g.fillText('Sendeplan: ' + c.plan.join(' › '), 24, 76);
-      g.fillStyle = '#8f98c8'; g.fillText('Timeline (' + st.clips.length + ' Clips)', 24, 112);
+      g.fillText('Fehler ' + st.err + ' / ' + c.err + '   ⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 36);
+      const plan = 'Sendeplan: ' + c.plan.map((n, i) => (i + 1) + ' ' + n).join(' › ');
+      let fs = 20; g.font = '600 ' + fs + 'px system-ui'; while (fs > 15 && g.measureText(plan).width > 912) { fs--; g.font = '600 ' + fs + 'px system-ui'; }
+      g.textAlign = 'left'; g.fillStyle = '#6ef0ff'; g.fillText(plan, 24, 76);
+      g.font = '18px system-ui'; g.fillStyle = '#8f98c8'; g.fillText('Deine Timeline – Platz 1 links oben (' + st.clips.length + ' Clips):', 24, 112);
       for (let i = 0; i < st.clips.length; i++) {
         const cl = st.clips[i], x = slotX(i), y = slotY(i), ok = !cl.bad && cl.sec === i;
         g.fillStyle = i === st.pick ? '#3a2f12' : '#1d2342'; g.fillRect(x, y, BW, BH);
@@ -130,6 +139,7 @@
         for (let k = 0; k < 14; k++) { const hgt = 6 + ((cl.sec * 7 + k * 5) % 11) * 2; g.fillRect(x + 8 + k * 9, y + 70 - hgt / 2, 5, hgt); }
         if (cl.bad && c.mark) { g.fillStyle = '#ff4d6d'; g.fillRect(x + 8 + 9 * 9, y + 52, 5, 36); }
         g.fillStyle = '#ffffff'; g.font = '600 19px system-ui'; g.textAlign = 'center'; g.fillText(cl.name, x + BW / 2, y + 34);
+        g.font = '14px system-ui'; g.textAlign = 'left'; g.fillStyle = '#8f98c8'; g.fillText(String(i + 1), x + 6, y + 22);
         g.lineWidth = 3;
         if (i === st.cur) { g.strokeStyle = '#ffb02e'; g.strokeRect(x - 3, y - 3, BW + 6, BH + 6); }
         if (i === st.pick) { g.strokeStyle = '#ff8fb0'; g.strokeRect(x + 2, y + 2, BW - 4, BH - 4); }
@@ -144,7 +154,7 @@
       g.fillStyle = '#ffffff'; g.font = '600 20px system-ui'; g.textAlign = 'center';
       g.fillText('🗑 Papierkorb (E)', TRASH.x + TRASH.w / 2, TRASH.y + 40); g.fillText('📤 Export (1)', EXPORT.x + EXPORT.w / 2, EXPORT.y + 40);
       g.font = '18px system-ui'; g.fillStyle = st.msgT > 0 ? '#ffb02e' : '#8f98c8';
-      g.fillText(st.msgT > 0 ? st.msg : 'Versprecher raus: ' + st.cut + ' / ' + c.bad, 480, 490);
+      g.fillText(st.msgT > 0 ? st.msg : st.pick >= 0 ? '„' + st.clips[st.pick].name + '“ gewählt → zweiten Clip tippen = tauschen, oder 🗑' : 'Versprecher weg: ' + st.cut + ' von ' + c.bad + ' · Clip antippen', 480, 490);
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);

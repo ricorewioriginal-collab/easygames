@@ -41,7 +41,15 @@
       'Übersteuerung (über 100 %) kostet Mix-Sekunden.',
       'Gewonnen, wenn die Leiste vor Sendeschluss voll ist.'
     ],
-    controls: { key: '←/→ Spur wählen, ↑/↓ Fader, 1–4 Spur direkt', touch: 'Fader ziehen oder ◀ ▶ ▲ ▼', pad: 'Steuerkreuz: Spur wählen und Fader bewegen' },
+    goal: d => 'Bring alle ' + CFG[d].n + ' Spuren gleichzeitig in ihr helles Fenster und halte sie dort, bis die Leiste „Sauberer Mix“ voll ist (' + CFG[d].need + ' s) – du hast ' + CFG[d].time + ' s.',
+    how: [
+      'Jede Spur hat einen Balken (wie laut sie ist) und einen hellen Streifen daneben: ihr Ziel.',
+      'Schieb den Regler der Spur hoch/runter, bis der Balken im Streifen endet – dann wird er grün ✓.',
+      'Pfeil unter der Spur: ▲ = Regler hoch, ▼ = runter. Sind alle grün, füllt sich die Leiste oben.',
+      'Spuren werden zwischendurch von selbst lauter/leiser (⚡) – nachregeln! Nie über die rote Linie.'
+    ],
+    tip: { key: 'Jede Spur in ihren hellen Streifen: ←/→ Spur wählen, ↑/↓ Regler', touch: 'Zieh jeden Regler, bis alle Balken grün sind', y: 300 },
+    controls: { key: '←/→ Spur wählen, ↑/↓ Regler bewegen, 1–4 Spur direkt', touch: 'Regler (helles Rechteck) einer Spur mit dem Finger hoch/runter ziehen', mouse: 'Regler einer Spur anklicken und hoch/runter ziehen', pad: 'Steuerkreuz: ←/→ Spur wählen, ↑/↓ Regler' },
     touch: ['left', 'right', 'up', 'down'],
     multi: { local: true, max: 4, mode: 'turns' },
     init(o) {
@@ -95,7 +103,7 @@
     result(st) {
       const c = st.cfg, won = st.status === 'won';
       const score = won ? PT.clamp(Math.round(55 + 45 * (1 - st.t / c.time) - st.clips * 2), 50, 100) : PT.clamp(Math.round(49 * st.prog / c.need), 0, 49);
-      return { won, score, detail: won ? 'Mix sauber nach ' + Math.round(st.t) + ' s, ' + st.clips + ' Übersteuerungen – die Hörer sind entzückt.' : 'Nur ' + Math.round(st.prog) + ' von ' + c.need + ' Sekunden sauberer Mix geschafft.' };
+      return { won, score, detail: won ? 'Mix sauber nach ' + Math.round(st.t) + ' s, ' + st.clips + ' Übersteuerungen – die Hörer sind entzückt.' : 'Nur ' + Math.round(st.prog) + ' von ' + c.need + ' Sekunden sauberer Mix – dafür müssen alle Spuren gleichzeitig grün sein.' };
     },
     bot(st, goal) {
       const acts = [];
@@ -110,18 +118,19 @@
       const c = st.cfg, w = stripW(st);
       g.fillStyle = '#10142a'; g.fillRect(0, 0, 960, 540);
       g.font = '600 22px system-ui'; g.textAlign = 'left'; g.fillStyle = '#ffb02e'; g.fillText('🎚️ Soundmixer', 24, 36);
-      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 936, 36);
+      g.textAlign = 'right'; g.fillStyle = '#cfd6ff'; g.fillText('⏱ ' + Math.max(0, c.time - st.t).toFixed(0) + ' s', 900, 36);
       // Fortschritt
       g.fillStyle = '#1d2342'; g.fillRect(250, 18, 440, 24);
       g.fillStyle = st.good === c.n ? '#4be08a' : '#2f9e64'; g.fillRect(250, 18, 440 * st.prog / c.need, 24);
       g.font = '600 18px system-ui'; g.textAlign = 'center'; g.fillStyle = '#ffffff';
       g.fillText('Sauberer Mix ' + st.prog.toFixed(1) + ' / ' + c.need + ' s', 470, 36);
-      g.fillStyle = st.msgT > 0 ? '#ffb02e' : '#8f98c8'; g.fillText(st.msgT > 0 ? st.msg : 'Spuren im Fenster: ' + (st.good || 0) + ' / ' + c.n, 480, 80);
+      g.fillStyle = st.msgT > 0 ? '#ffb02e' : (st.good === c.n ? '#4be08a' : '#cfd6ff');
+      g.fillText(st.msgT > 0 ? st.msg : st.good === c.n ? '✓ Alle Spuren grün – die Leiste füllt sich!' : 'Grün: ' + (st.good || 0) + ' von ' + c.n + ' Spuren – alle müssen grün sein', 480, 80);
       for (let i = 0; i < c.n; i++) {
         const T = TRACKS[i], x0 = 30 + i * w, o = out(st, i), inside = Math.abs(o - T.target) <= c.tol;
         g.fillStyle = i === st.sel ? '#1f2850' : '#161b38'; g.fillRect(x0 + 4, 96, w - 8, 430);
         if (i === st.sel) { g.strokeStyle = '#ffb02e'; g.lineWidth = 3; g.strokeRect(x0 + 4, 96, w - 8, 430); }
-        g.fillStyle = T.col; g.font = '600 20px system-ui'; g.textAlign = 'center'; g.fillText(T.name, x0 + w / 2, 124);
+        g.fillStyle = T.col; g.font = '600 20px system-ui'; g.textAlign = 'center'; g.fillText(T.name + (st.flash === i && st.msgT > 0 ? ' ⚡' : ''), x0 + w / 2, 124);
         // Pegelanzeige mit Fenster
         const mx = x0 + w * 0.18, mw = w * 0.26;
         g.fillStyle = '#0b0f22'; g.fillRect(mx, TOP, mw, HGT);
@@ -135,11 +144,12 @@
         // Fader
         const fx = faderX(st, i), fy = BOT - st.fad[i] * HGT;
         g.fillStyle = '#2a3160'; g.fillRect(fx - 4, TOP, 8, HGT);
-        g.fillStyle = i === st.sel ? '#ffb02e' : '#cfd6ff'; g.fillRect(fx - 24, fy - 12, 48, 24);
-        g.fillStyle = '#10142a'; g.fillRect(fx - 20, fy - 2, 40, 4);
-        g.fillStyle = inside ? '#4be08a' : '#cfd6ff'; g.font = '600 18px system-ui';
-        g.fillText(Math.round(o * 100) + ' %', x0 + w / 2, 470);
-        if (st.flash === i && st.msgT > 0) { g.fillStyle = '#ffb02e'; g.fillText('⚡', x0 + w / 2, 500); }
+        g.fillStyle = i === st.sel ? '#ffb02e' : '#cfd6ff'; g.fillRect(fx - 24, fy - 14, 48, 28);
+        g.fillStyle = '#10142a'; g.fillRect(fx - 18, fy - 6, 36, 3); g.fillRect(fx - 18, fy + 3, 36, 3);
+        g.font = '700 20px system-ui';
+        g.fillStyle = o > CLIP ? '#ff4d6d' : inside ? '#4be08a' : '#ffc84a';
+        g.fillText(inside ? '✓ passt' : o > CLIP ? '▼ zu laut!' : o < T.target ? '▲ hoch' : '▼ runter', x0 + w / 2, 474);
+        g.font = '16px system-ui'; g.fillStyle = '#8f98c8'; g.fillText('Ziel ' + Math.round(T.target * 100) + ' % · ist ' + Math.round(o * 100) + ' %', x0 + w / 2, 504);
       }
     }
   });
