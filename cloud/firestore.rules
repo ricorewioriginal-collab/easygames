@@ -29,7 +29,7 @@ service cloud.firestore {
         && request.resource.data.o == resource.data.o
         && ((request.resource.data.o == 'desc' && request.resource.data.s >= resource.data.s)
           || (request.resource.data.o == 'asc' && request.resource.data.s <= resource.data.s));
-      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow delete: if request.auth != null && (request.auth.uid == uid || chatAdmin());   // Betreiber darf unpassende Einträge entfernen (Verwaltung)
     }
     // Kopplung der Apps (Android/Windows): Die Browserseite legt nach der Google-Anmeldung einen Eintrag unter einem
     // 128-Bit-Zufallscode an, die App liest ihn genau einmal (Code kennt nur die App) und löscht ihn wieder. Kein Auflisten.
@@ -214,7 +214,7 @@ service cloud.firestore {
     match /chat_ban/{uid} {
       allow get: if isOwner(uid) || chatAdmin();
       allow create, update, delete: if chatAdmin();
-      allow list: if false;
+      allow list: if chatAdmin();
     }
     // Meldungen: jeder Angemeldete darf melden (je Meldung ein Dokument), lesen nur der Betreiber
     match /chat_reports/{rid} {
@@ -252,6 +252,17 @@ service cloud.firestore {
       allow update: if isOwner(uid) && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time
         && request.time > resource.data.t + duration.value(30, 's');
       allow read, delete: if false;
+    }
+
+    // ---------- Spiele-Verwaltung (verwaltung.html, im AnMaCha Control Center eingebettet) ----------
+    // config/games {d: JSON-Text, t}: Spiele ausblenden / Wartungshinweise für die Spieleliste. Öffentlich lesbar (die Liste holt es beim Laden), schreiben nur der Betreiber.
+    match /config/{doc} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if chatAdmin() && doc.matches('^[a-z0-9_-]{1,40}$')
+        && request.resource.data.keys().hasOnly(['d', 't'])
+        && request.resource.data.d is string && request.resource.data.d.size() < 20000 && request.resource.data.t is int;
+      allow delete: if chatAdmin();
     }
 
     // ---------- Online-Kopplung aller Spiele (cloud/fire-peer.js) ----------

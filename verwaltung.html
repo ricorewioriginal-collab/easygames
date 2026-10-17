@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="robots" content="noindex">
+<title>Spiele-Verwaltung – easygames</title>
+<style>
+:root{--bg:#0b1020;--card:#151b33;--line:#ffffff24;--text:#f3f5ff;--mut:#a9b0cf;--acc:#d4fd78;--bad:#f28b82;--good:#81c995;--warn:#ffc53d}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+header h1{font-size:20px;margin:0;flex:1}
+.back{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-weight:600;font-size:13px}
+body.embed .back{display:none}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{margin:12px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px}
+.card h2{font-size:15px;margin:0 0 6px}
+.card p,.hint{margin:6px 0;color:var(--mut);font-size:13px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px}
+.tab{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:99px;padding:7px 13px;font:600 13px system-ui;cursor:pointer;min-height:36px}
+.tab[aria-pressed=true]{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stats div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stats b{display:block;font-size:22px}.stats span{color:var(--mut);font-size:12px}
+.btn{min-height:36px;border-radius:10px;border:1px solid var(--line);background:#222a4d;color:var(--text);font:600 13px system-ui;cursor:pointer;padding:0 12px}
+.btn.pri{background:var(--acc);color:#10140a;border-color:var(--acc)}
+.btn.bad{color:var(--bad)}
+.btn:disabled{opacity:.5}
+input[type=text],select{min-height:36px;border-radius:10px;border:1px solid var(--line);background:#0f1530;color:var(--text);font:14px system-ui;padding:0 10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--mut);font-weight:600}
+td.g{min-width:170px}
+td input[type=text]{width:100%;min-width:140px}
+.sw{width:20px;height:20px}
+.it{border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin:8px 0 0}
+.it .h{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--mut);align-items:center}
+.it .h b{color:var(--text)}
+.it .x{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0;font-size:14px}
+.it .a{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+details{font-size:12px;color:var(--mut)}details pre{white-space:pre-wrap;word-break:break-all;background:#0f1530;border-radius:8px;padding:6px}
+.err{color:var(--bad)}.ok{color:var(--good)}
+#toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222a4d;border:1px solid var(--line);border-radius:12px;padding:8px 14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:92vw}
+#toast.on{opacity:1}
+[hidden]{display:none!important}
+@media(max-width:640px){th.h2,td.h2{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🛠️ easygames – Spiele-Verwaltung</h1>
+    <a class="back" href="index.html">← Spiele</a>
+  </header>
+
+  <section class="card" id="gate">
+    <h2>Anmeldung als Betreiber</h2>
+    <p>Diese Seite ist nur für das Betreiber-Konto. Melde dich mit Google an (einmal, gilt auch für Chat und Fehlermeldung).</p>
+    <div id="cloudMount"></div>
+  </section>
+  <section class="card" id="deny" hidden><h2 class="err">Kein Zugriff</h2><p>Dieses Konto ist nicht als Betreiber eingetragen. <a href="#" id="out" style="color:var(--acc)">Abmelden</a></p></section>
+
+  <div id="app" hidden>
+    <div class="tabs" id="tabs" role="group" aria-label="Bereiche">
+      <button class="tab" data-t="ov" type="button" aria-pressed="true">📊 Übersicht</button>
+      <button class="tab" data-t="games" type="button" aria-pressed="false">🎮 Spiele</button>
+      <button class="tab" data-t="bugs" type="button" aria-pressed="false">🐞 Fehler</button>
+      <button class="tab" data-t="chat" type="button" aria-pressed="false">💬 Chat</button>
+      <button class="tab" data-t="boards" type="button" aria-pressed="false">🏆 Ranglisten</button>
+    </div>
+
+    <section class="card" id="p-ov"><h2>Übersicht</h2><div class="stats" id="stats"></div><p class="hint" id="ovHint"></p><div class="row"><button class="btn" id="ovReload" type="button">↻ Aktualisieren</button></div></section>
+
+    <section class="card" id="p-games" hidden>
+      <h2>Spiele</h2>
+      <p>Hier steuerst du die Spieleliste auf easygames: Spiele ausblenden (bleiben per Link erreichbar) und einen Wartungshinweis auf der Kachel anzeigen. Die Liste übernimmt Änderungen innerhalb von ca. 10 Minuten.</p>
+      <div class="row"><input type="text" id="gq" placeholder="Spiel suchen …" aria-label="Spiel suchen" style="flex:1;min-width:160px"><button class="btn pri" id="gSave" type="button">Speichern</button></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Spiel</th><th class="h2">Arten</th><th>Fehler</th><th>Sichtbar</th><th>Wartungshinweis</th></tr></thead><tbody id="gBody"></tbody></table></div>
+      <p class="hint" id="gInfo"></p>
+    </section>
+
+    <section class="card" id="p-bugs" hidden>
+      <h2>Fehlermeldungen</h2>
+      <div class="row"><select id="bFilter" aria-label="Spiel filtern"><option value="">Alle Spiele</option></select><button class="btn" id="bReload" type="button">↻</button></div>
+      <div id="bList"></div>
+    </section>
+
+    <section class="card" id="p-chat" hidden>
+      <h2>Chat-Moderation</h2>
+      <div class="tabs" id="cTabs"><button class="tab" data-c="rep" type="button" aria-pressed="true">⚑ Meldungen</button><button class="tab" data-c="ban" type="button" aria-pressed="false">⛔ Sperren</button><button class="tab" data-c="room" type="button" aria-pressed="false">💬 Räume</button></div>
+      <div id="cBody"></div>
+    </section>
+
+    <section class="card" id="p-boards" hidden>
+      <h2>Ranglisten</h2>
+      <p>Einträge ansehen und unpassende (z. B. beleidigende Spitznamen oder gefälschte Werte) entfernen. Der Spieler kann sich danach neu eintragen.</p>
+      <div class="row"><select id="rGame" aria-label="Spiel"></select><select id="rBoard" aria-label="Wertung"></select><button class="btn" id="rReload" type="button">↻</button></div>
+      <div id="rList"></div>
+    </section>
+  </div>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="cloud/anmacha-cloud.js" data-game="verwaltung" data-prefix="anmacha-verwaltung-ohne-spielstand" data-mount="#cloudMount" data-sync="off" data-board="off" data-hint="Mit dem Betreiber-Konto anmelden." defer></script>
+<script src="cloud/anmacha-board.js" defer></script>
+<script src="cloud/anmacha-bug.js" defer></script>
+<script src="cloud/anmacha-chat.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var Cloud = window.AnMaChaCloud, B = window.AnMaChaBoard, Bug = window.AnMaChaBug, Chat = window.AnMaChaChat, $ = function (id) { return document.getElementById(id); };
+  if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');
+  if (!Cloud || !Bug || !Chat || !B) { $('gate').querySelector('p').textContent = 'Die Verwaltung ist gerade nicht verfügbar.'; $('cloudMount').hidden = true; return; }
+  var FS = Cloud.FS.replace(/\/$/, ''), me = null, games = [], cfg = { hide: [], note: {} }, bugs = [], active = 'ov', logging = false, toastT = 0;
+  function toast(t, bad) { var el = $('toast'); el.textContent = t; el.style.color = bad ? 'var(--bad)' : ''; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 3000); }
+  function api(url, opt) {
+    return Cloud.account().then(function (a) {
+      if (!a) throw new Error('login'); me = a; opt = opt || {};
+      opt.headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + a.token };
+      return fetch(url, opt);
+    });
+  }
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function btn(text, cls, fn) { var b = mk('button', 'btn' + (cls ? ' ' + cls : ''), text); b.type = 'button'; b.onclick = fn; return b; }
+  function fmt(t) { try { return new Date(t).toLocaleString('de-DE'); } catch (e) { return ''; } }
+  function simple(f) { var o = {}; Object.keys(f || {}).forEach(function (k) { var v = f[k]; o[k] = v.stringValue != null ? v.stringValue : v.integerValue != null ? Number(v.integerValue) : v.doubleValue != null ? v.doubleValue : v.timestampValue != null ? v.timestampValue : ''; }); return o; }
+  // Sammlung abfragen (parent = '' für Wurzel, sonst 'chat/lobby'); liefert [{ id, f }]
+  function list(parent, coll, order, dir, limit) {
+    var q = { from: [{ collectionId: coll }], limit: limit || 50 }; if (order) q.orderBy = [{ field: { fieldPath: order }, direction: dir || 'DESCENDING' }];
+    return api(FS + (parent ? '/' + parent : '') + ':runQuery', { method: 'POST', body: JSON.stringify({ structuredQuery: q }) }).then(function (r) { if (!r.ok) throw new Error('Laden fehlgeschlagen (' + r.status + ')'); return r.json(); }).then(function (rows) {
+      return (rows || []).filter(function (x) { return x.document; }).map(function (x) { return { id: x.document.name.split('/').pop(), f: simple(x.document.fields) }; });
+    });
+  }
+  function del(path) { return api(FS + '/' + path, { method: 'DELETE' }).then(function (r) { if (!r.ok) throw new Error('Löschen nicht möglich (' + r.status + ')'); }); }
+  function ban(uid) { return api(Chat.commitUrl(Cloud.FS), { method: 'POST', body: JSON.stringify(Chat.banBody(Cloud.FS, uid)) }).then(function (r) { if (!r.ok) throw new Error('Sperren nicht möglich'); }); }
+  function err(e) { toast(e && e.message ? e.message : 'Fehler', true); }
+  function gname(cloud) { var g = null; games.forEach(function (x) { if (x.cloud && x.cloud.game === cloud) g = x; }); return g ? (g.icon || '') + ' ' + String(g.title).split(' – ')[0] : (cloud || 'allgemein'); }
+
+  // ---- Übersicht ----
+  function overview() {
+    var el = $('stats'); el.textContent = '…';
+    Promise.all([list('', 'bugs', 't'), list('', 'chat_reports', 't'), list('', 'chat_ban', null, null, 60), list('', 'chat_online', 't', 'DESCENDING', 60)]).then(function (r) {
+      bugs = r[0]; el.textContent = '';
+      var online = r[3].filter(function (o) { return Date.parse(o.f.t) > Date.now() - 150000; }).length;
+      [[bugs.length >= 50 ? '50+' : bugs.length, '🐞 Fehlermeldungen'], [r[1].length >= 50 ? '50+' : r[1].length, '⚑ Chat-Meldungen'], [r[2].length, '⛔ Gesperrt'], [online, '💬 jetzt im Chat'], [games.length, '🎮 Spiele'], [cfg.hide.length, '🙈 ausgeblendet']].forEach(function (s) { var d = mk('div'); d.appendChild(mk('b', '', String(s[0]))); d.appendChild(mk('span', '', s[1])); el.appendChild(d); });
+      $('ovHint').textContent = (bugs.length || r[1].length) ? 'Es liegen offene Meldungen vor – siehe Fehler und Chat.' : 'Alles ruhig – keine offenen Meldungen. 🎉';
+    }).catch(function (e) { el.textContent = e.message; });
+  }
+
+  // ---- Spiele (Sichtbarkeit, Wartungshinweis) ----
+  function loadCfg() {
+    return api(FS + '/config/games').then(function (r) { return r.ok ? r.json() : { fields: {} }; }).then(function (j) {
+      var o = {}; try { o = JSON.parse((j.fields && j.fields.d && j.fields.d.stringValue) || '{}') || {}; } catch (e) {}
+      cfg = { hide: Array.isArray(o.hide) ? o.hide.map(String) : [], note: o.note && typeof o.note === 'object' ? o.note : {} };
+    }).catch(function () {});
+  }
+  function drawGames() {
+    var q = $('gq').value.trim().toLowerCase(), body = $('gBody'); body.textContent = '';
+    var counts = {}; bugs.forEach(function (b) { counts[b.f.g] = (counts[b.f.g] || 0) + 1; });
+    games.filter(function (g) { return !q || (g.title + ' ' + g.id).toLowerCase().indexOf(q) >= 0; }).forEach(function (g) {
+      var tr = mk('tr'), td = mk('td', 'g'), a = mk('a', '', (g.icon || '') + ' ' + String(g.title).split(' – ')[0]); a.href = g.path || '#'; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'inherit'; td.appendChild(a); td.appendChild(mk('div', 'hint', g.id)); tr.appendChild(td);
+      var m = []; if (g.modes && g.modes.online) m.push('🌐'); if (g.multiplayer) m.push('👥'); if (g.modes && g.modes.pad) m.push('📱'); tr.appendChild(mk('td', 'h2', m.join(' ')));
+      tr.appendChild(mk('td', '', String(g.cloud ? counts[g.cloud.game] || 0 : 0)));
+      var t3 = mk('td'), cb = mk('input', 'sw'); cb.type = 'checkbox'; cb.checked = cfg.hide.indexOf(g.id) < 0; cb.setAttribute('aria-label', 'Sichtbar: ' + g.title); cb.onchange = function () { var i = cfg.hide.indexOf(g.id); if (cb.checked && i >= 0) cfg.hide.splice(i, 1); if (!cb.checked && i < 0) cfg.hide.push(g.id); }; t3.appendChild(cb); tr.appendChild(t3);
+      var t4 = mk('td'), inp = mk('input'); inp.type = 'text'; inp.maxLength = 100; inp.placeholder = 'z. B. Wartung bis morgen'; inp.value = cfg.note[g.id] || ''; inp.setAttribute('aria-label', 'Wartungshinweis: ' + g.title); inp.oninput = function () { var v = inp.value.trim(); if (v) cfg.note[g.id] = v; else delete cfg.note[g.id]; }; t4.appendChild(inp); tr.appendChild(t4);
+      body.appendChild(tr);
+    });
+    $('gInfo').textContent = games.length + ' Spiele · ' + cfg.hide.length + ' ausgeblendet · ' + Object.keys(cfg.note).length + ' Hinweise';
+  }
+  function saveGames() {
+    var body = { fields: { d: { stringValue: JSON.stringify({ hide: cfg.hide, note: cfg.note }) }, t: { integerValue: String(Date.now()) } } };
+    $('gSave').disabled = true;
+    api(FS + '/config/games', { method: 'PATCH', body: JSON.stringify(body) }).then(function (r) { if (!r.ok) throw new Error('Speichern fehlgeschlagen (' + r.status + ')'); toast('Gespeichert ✓ – die Spieleliste übernimmt es innerhalb von ca. 10 Minuten.'); drawGames(); }).catch(err).then(function () { $('gSave').disabled = false; });
+  }
+
+  // ---- Fehler ----
+  function drawBugs() {
+    var f = $('bFilter').value, box = $('bList'); box.textContent = '';
+    var list2 = bugs.filter(function (b) { return !f || b.f.g === f; }).sort(function (a, b) { return Date.parse(b.f.t) - Date.parse(a.f.t); });
+    if (!list2.length) { box.appendChild(mk('p', '', 'Keine Fehlermeldungen. 🎉')); return; }
+    list2.forEach(function (b) {
+      var d = mk('div', 'it'), h = mk('div', 'h'); h.appendChild(mk('b', '', gname(b.f.g) + ' · ' + b.f.c)); h.appendChild(mk('span', '', fmt(Date.parse(b.f.t)))); d.appendChild(h);
+      d.appendChild(mk('div', 'x', b.f.x));
+      if (b.f.i || b.f.p) { var s = mk('details'); s.appendChild(mk('summary', '', 'Technische Angaben')); var pre = mk('pre', '', (b.f.p ? 'Seite: ' + b.f.p + '\n' : '') + (function () { try { return JSON.stringify(JSON.parse(b.f.i || '{}'), null, 1); } catch (e) { return b.f.i || ''; } })()); s.appendChild(pre); d.appendChild(s); }
+      var a = mk('div', 'a'); a.appendChild(btn('✓ erledigt', 'pri', function () { del('bugs/' + b.id).then(function () { bugs = bugs.filter(function (x) { return x.id !== b.id; }); drawBugs(); }).catch(err); }));
+      a.appendChild(btn('⛔ Melder sperren', 'bad', function () { if (window.confirm('Diesen Spieler vom Chat und von Meldungen ausschließen?')) ban(b.f.u).then(function () { toast('Gesperrt.'); }).catch(err); }));
+      d.appendChild(a); box.appendChild(d);
+    });
+  }
+  function loadBugs() { return list('', 'bugs', 't').then(function (r) { bugs = r; var sel = $('bFilter'), keep = sel.value; sel.innerHTML = '<option value="">Alle Spiele</option>'; var seen = {}; bugs.forEach(function (b) { if (!seen[b.f.g]) { seen[b.f.g] = 1; var o = mk('option', '', gname(b.f.g)); o.value = b.f.g; sel.appendChild(o); } }); sel.value = keep; drawBugs(); }).catch(err); }
+
+  // ---- Chat ----
+  var cTab = 'rep';
+  function chatPanel() {
+    var box = $('cBody'); box.textContent = '';
+    if (cTab === 'rep') {
+      box.appendChild(mk('p', '', 'Von Spielern gemeldete Nachrichten.'));
+      list('', 'chat_reports', 't').then(function (r) {
+        if (!r.length) { box.appendChild(mk('p', '', 'Keine Meldungen. 🎉')); return; }
+        r.forEach(function (x) {
+          var d = mk('div', 'it'), h = mk('div', 'h'); h.appendChild(mk('b', '', 'Raum ' + x.f.room)); h.appendChild(mk('span', '', fmt(Date.parse(x.f.t)))); d.appendChild(h); d.appendChild(mk('div', 'x', x.f.x));
+          var a = mk('div', 'a');
+          a.appendChild(btn('🗑 Nachricht löschen', '', function () { del('chat/' + x.f.room + '/m/' + x.f.m).then(function () { toast('Nachricht gelöscht.'); }).catch(function () { toast('Nachricht war schon weg.'); }); }));
+          a.appendChild(btn('⛔ Autor sperren', 'bad', function () { if (window.confirm('Autor sperren?')) ban(x.f.u).then(function () { toast('Gesperrt.'); }).catch(err); }));
+          a.appendChild(btn('✓ erledigt', 'pri', function () { del('chat_reports/' + x.id).then(function () { d.remove(); }).catch(err); }));
+          d.appendChild(a); box.appendChild(d);
+        });
+      }).catch(err);
+    } else if (cTab === 'ban') {
+      var row = mk('div', 'row'), inp = mk('input'); inp.type = 'text'; inp.placeholder = 'Nutzer-ID (uid) sperren'; inp.style.flex = '1'; row.appendChild(inp); row.appendChild(btn('Sperren', 'bad', function () { var u = inp.value.trim(); if (u) ban(u).then(function () { toast('Gesperrt.'); chatPanel(); }).catch(err); })); box.appendChild(row);
+      list('', 'chat_ban', null, null, 60).then(function (r) {
+        if (!r.length) { box.appendChild(mk('p', '', 'Niemand gesperrt.')); return; }
+        r.forEach(function (x) { var d = mk('div', 'it'), h = mk('div', 'h'); h.appendChild(mk('b', '', x.id)); d.appendChild(h); var a = mk('div', 'a'); a.appendChild(btn('Entsperren', 'pri', function () { del('chat_ban/' + x.id).then(function () { d.remove(); }).catch(err); })); d.appendChild(a); box.appendChild(d); });
+      }).catch(err);
+    } else {
+      var sel = mk('select'); sel.setAttribute('aria-label', 'Raum'); Chat.ROOMS.forEach(function (r) { var o = mk('option', '', r[1]); o.value = r[0]; sel.appendChild(o); });
+      games.filter(function (g) { return g.cloud && g.cloud.game; }).forEach(function (g) { var o = mk('option', '', 'Spiel: ' + gname(g.cloud.game)); o.value = 'g-' + g.cloud.game; sel.appendChild(o); });
+      var row2 = mk('div', 'row'); row2.appendChild(sel); var out = mk('div'); function show() { out.textContent = ''; api(Chat.roomQueryUrl(Cloud.FS, sel.value), { method: 'POST', body: JSON.stringify(Chat.listQuery('')) }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+        var ms = Chat.parse(rows).reverse(); if (!ms.length) { out.appendChild(mk('p', '', 'Keine Nachrichten.')); return; }
+        ms.forEach(function (m) { var d = mk('div', 'it'), h = mk('div', 'h'); h.appendChild(mk('b', '', m.n)); h.appendChild(mk('span', '', fmt(m.t))); d.appendChild(h); d.appendChild(mk('div', 'x', m.x)); var a = mk('div', 'a'); a.appendChild(btn('🗑', '', function () { del('chat/' + sel.value + '/m/' + m.id).then(function () { d.remove(); }).catch(err); })); a.appendChild(btn('⛔ sperren', 'bad', function () { if (window.confirm('„' + m.n + '“ sperren?')) ban(m.u).then(function () { toast('Gesperrt.'); }).catch(err); })); d.appendChild(a); out.appendChild(d); });
+      }).catch(err); }
+      sel.onchange = show; row2.appendChild(btn('↻', '', show)); box.appendChild(row2); box.appendChild(out); show();
+    }
+  }
+
+  // ---- Ranglisten ----
+  function boardList() {
+    var game = $('rGame').value, b = (B.boardsFor(game) || [])[Number($('rBoard').value) || 0] || { id: 'main', order: 'desc' }, id = (b.id && b.id !== 'main' ? game + '__' + b.id : game).replace(/[^\w-]/g, '').slice(0, 60), box = $('rList'); box.textContent = '';
+    list('boards/' + id, 'e', 's', b.order === 'asc' ? 'ASCENDING' : 'DESCENDING', 25).then(function (r) {
+      if (!r.length) { box.appendChild(mk('p', '', 'Noch keine Einträge.')); return; }
+      r.forEach(function (x, i) {
+        var d = mk('div', 'it'), h = mk('div', 'h'); h.appendChild(mk('b', '', (i + 1) + '. ' + x.f.n)); h.appendChild(mk('span', '', String(x.f.s))); h.appendChild(mk('span', '', fmt(x.f.t))); d.appendChild(h);
+        var a = mk('div', 'a'); a.appendChild(btn('Eintrag entfernen', 'bad', function () { if (window.confirm('Eintrag von „' + x.f.n + '“ entfernen?')) del('boards/' + id + '/e/' + x.id).then(function () { d.remove(); toast('Entfernt.'); }).catch(err); })); a.appendChild(btn('⛔ Spieler sperren', 'bad', function () { if (window.confirm('Spieler sperren?')) ban(x.id).then(function () { toast('Gesperrt.'); }).catch(err); })); d.appendChild(a); box.appendChild(d);
+      });
+    }).catch(err);
+  }
+  function boardsInit() {
+    var sel = $('rGame'); if (sel.options.length) return;
+    games.filter(function (g) { return g.cloud && g.cloud.game; }).forEach(function (g) { var o = mk('option', '', gname(g.cloud.game)); o.value = g.cloud.game; sel.appendChild(o); });
+    function fillBoards() { var bs = B.boardsFor(sel.value) || [], s2 = $('rBoard'); s2.textContent = ''; bs.forEach(function (b, i) { var o = mk('option', '', b.label || b.id || 'Hauptwertung'); o.value = String(i); s2.appendChild(o); }); if (!bs.length) { var o = mk('option', '', 'Hauptwertung'); o.value = '0'; s2.appendChild(o); } boardList(); }
+    sel.onchange = fillBoards; $('rBoard').onchange = boardList; fillBoards();
+  }
+
+  // ---- Tabs ----
+  function open(t) {
+    active = t; Array.prototype.forEach.call($('tabs').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.t === t)); });
+    ['ov', 'games', 'bugs', 'chat', 'boards'].forEach(function (k) { $('p-' + k).hidden = k !== t; });
+    if (t === 'ov') overview(); if (t === 'games') { Promise.all([loadCfg(), loadBugs()]).then(drawGames); } if (t === 'bugs') loadBugs(); if (t === 'chat') chatPanel(); if (t === 'boards') boardsInit();
+  }
+  $('tabs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.tab'); if (b) open(b.dataset.t); });
+  $('cTabs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.tab'); if (!b) return; cTab = b.dataset.c; Array.prototype.forEach.call($('cTabs').children, function (x) { x.setAttribute('aria-pressed', String(x === b)); }); chatPanel(); });
+  $('gq').addEventListener('input', drawGames); $('gSave').addEventListener('click', saveGames); $('bFilter').addEventListener('change', drawBugs); $('bReload').addEventListener('click', loadBugs); $('rReload').addEventListener('click', boardList); $('ovReload').addEventListener('click', overview);
+  $('out').addEventListener('click', function (e) { e.preventDefault(); Cloud.signOut(); });
+
+  var tries = 0;
+  function login() {
+    return Cloud.account().then(function (a) {
+      var u = Cloud.user && Cloud.user(); $('gate').hidden = !!a;
+      if (!a) { $('app').hidden = $('deny').hidden = true; return; }
+      me = a;
+      if (u && !u.email && tries++ < 20) return new Promise(function (ok) { setTimeout(ok, 500); }).then(login);   // App: Profil (E-Mail) lädt erst nach dem Token
+      if (!Bug.isAdminEmail(u && u.email)) { $('app').hidden = true; $('deny').hidden = false; return; }
+      $('deny').hidden = true; $('app').hidden = false; open(active);
+    }).catch(function () {});
+  }
+  fetch('sync/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : { games: [] }; }).then(function (c) { games = c.games || []; }, function () {}).then(login);
+  setInterval(function () {
+    var now = !!(Cloud.user && Cloud.user());
+    if (now && !me && !logging) { logging = true; login().then(function () { logging = false; }, function () { logging = false; }); }
+    else if (!now && me) { me = null; $('app').hidden = $('deny').hidden = true; $('gate').hidden = false; }
+  }, 1000);
+});
+</script>
+</body>
+</html>

@@ -28,6 +28,7 @@ const server = http.createServer((req, res) => {
     await ctx.route(/identitytoolkit\.googleapis\.com/, r => json(r, { users: [{ displayName: 'Rico Test', email: 'rico@example.test', photoUrl: '' }] }));
     await ctx.route(/firestore\.googleapis\.com/, r => {
       const req = r.request(), u = req.url(), m = req.method(), body = req.postData() ? JSON.parse(req.postData()) : null;
+      if (/\/config\/games$/.test(u)) return json(r, {}, 404);   // Spieleliste (Hub) fragt öffentlich nach Betreiber-Einstellungen
       assert(/Bearer tok/.test(req.headers().authorization || '') || /\/saves\//.test(u), 'Anfragen mit Anmelde-Token: ' + u);
       if (/\/chat\/([a-z0-9-]+):runQuery$/.test(u)) {
         const room = /\/chat\/([a-z0-9-]+):runQuery$/.exec(u)[1], q = body.structuredQuery, after = q.where && q.where.fieldFilter.value.timestampValue;

@@ -50,6 +50,7 @@ jobs:
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-konto.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-chat.cjs
           NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-bug.cjs
+          NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-verwaltung.cjs
       - name: Verify back link from embedded games
         run: NODE_PATH="$RUNNER_TEMP/easygames-browser/node_modules" node tools/test-embed-back.cjs
       - run: ./android/gradlew -p android :core:test :app:assembleDebug --console=plain
