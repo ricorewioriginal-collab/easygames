@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><defs><linearGradient id="s" x2="0" y2="1"><stop stop-color="#0b1a33"/><stop offset=".55" stop-color="#24456e"/><stop offset="1" stop-color="#f29f4b"/></linearGradient><linearGradient id="g" x2="0" y2="1"><stop stop-color="#2c4a2e"/><stop offset="1" stop-color="#14261a"/></linearGradient><linearGradient id="t" x2="0" y2="1"><stop stop-color="#ffd36b"/><stop offset="1" stop-color="#e08a00"/></linearGradient></defs>
+<rect width="800" height="500" fill="url(#s)"/>
+<circle cx="640" cy="300" r="70" fill="#ffcf70" opacity=".55"/>
+<path d="M0 300 L120 210 L230 280 L360 170 L470 270 L600 190 L800 300 L800 500 L0 500Z" fill="#1d3550"/>
+<path d="M0 340 L800 330 L800 500 L0 500Z" fill="url(#g)"/>
+<path d="M400 332 L120 500 L170 500 L400 332Z" fill="#6b5a48"/><path d="M400 332 L680 500 L630 500 L400 332Z" fill="#6b5a48"/>
+<path d="M396 332 L200 500 L214 500 L398 332Z" fill="#c9d3dd"/><path d="M404 332 L600 500 L586 500 L402 332Z" fill="#c9d3dd"/>
+<g fill="#4a3a2c"><rect x="285" y="430" width="230" height="9"/><rect x="315" y="400" width="170" height="7"/><rect x="340" y="378" width="120" height="6"/><rect x="358" y="361" width="84" height="5"/></g>
+<rect x="566" y="190" width="10" height="150" fill="#3a4656"/><rect x="552" y="160" width="38" height="70" rx="8" fill="#101820"/><circle cx="571" cy="178" r="9" fill="#3ccf6e"/><circle cx="571" cy="208" r="9" fill="#2a3a2a"/>
+<path d="M300 330 L330 150 Q400 112 470 150 L500 330Z" fill="url(#t)" stroke="#5a3a00" stroke-width="4"/>
+<path d="M336 170 Q400 140 464 170 L470 230 L330 230Z" fill="#13233a"/><path d="M345 178 Q400 154 455 178" stroke="#5fb8f0" stroke-width="4" fill="none" opacity=".7"/>
+<rect x="318" y="250" width="164" height="16" fill="#0d1726"/>
+<circle cx="338" cy="300" r="13" fill="#fff"/><circle cx="462" cy="300" r="13" fill="#fff"/><circle cx="400" cy="160" r="8" fill="#fff"/>
+<rect x="372" y="290" width="56" height="26" rx="4" fill="#0d1726"/>
+<path d="M340 150 L370 96 L430 96 L460 150" stroke="#222" stroke-width="5" fill="none"/><path d="M360 96 L440 96" stroke="#222" stroke-width="6"/>
+<path d="M0 92 L800 80" stroke="#0a0f18" stroke-width="2"/>
+<text x="400" y="470" text-anchor="middle" font-family="system-ui,sans-serif" font-size="58" font-weight="900" fill="#fff" stroke="#0d1726" stroke-width="10" paint-order="stroke">RicoRail <tspan fill="#f2a900">3D</tspan></text>
+</svg>
