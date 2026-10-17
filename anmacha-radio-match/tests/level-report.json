@@ -1,0 +1,3777 @@
+{
+ "levels": [
+  {
+   "id": 1,
+   "mask": "rect",
+   "moves": 12,
+   "cert": 3,
+   "fair": [
+    3,
+    4,
+    5,
+    7,
+    8
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:1"
+   ]
+  },
+  {
+   "id": 2,
+   "mask": "cut1",
+   "moves": 12,
+   "cert": 3,
+   "fair": [
+    3,
+    3,
+    4,
+    6,
+    7
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:2",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 3,
+   "mask": "rect",
+   "moves": 12,
+   "cert": 2,
+   "fair": [
+    4,
+    5,
+    5,
+    5,
+    7
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 4,
+   "mask": "diamond",
+   "moves": 16,
+   "cert": 6,
+   "fair": [
+    4,
+    6,
+    8,
+    9,
+    11
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:"
+   ]
+  },
+  {
+   "id": 5,
+   "mask": "rect",
+   "moves": 19,
+   "cert": 6,
+   "fair": [
+    7,
+    10,
+    10,
+    12,
+    15
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 6,
+   "mask": "cut2",
+   "moves": 17,
+   "cert": 6,
+   "fair": [
+    7,
+    9,
+    9,
+    10,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:2"
+   ]
+  },
+  {
+   "id": 7,
+   "mask": "ring",
+   "moves": 15,
+   "cert": 6,
+   "fair": [
+    6,
+    7,
+    7,
+    8,
+    9
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 8,
+   "mask": "rect",
+   "moves": 15,
+   "cert": 6,
+   "fair": [
+    3,
+    5,
+    5,
+    7,
+    9
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 9,
+   "mask": "plus",
+   "moves": 15,
+   "cert": 10,
+   "fair": [
+    9,
+    9,
+    9,
+    10,
+    11
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 10,
+   "mask": "octagon",
+   "moves": 15,
+   "cert": 10,
+   "fair": [
+    4,
+    7,
+    10,
+    16,
+    16
+   ],
+   "rate": 0.6,
+   "goals": [
+    "specials:"
+   ]
+  },
+  {
+   "id": 11,
+   "mask": "hshape",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    3,
+    8,
+    11,
+    18,
+    28
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:noise",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 12,
+   "mask": "tshape",
+   "moves": 35,
+   "cert": 13,
+   "fair": [
+    15,
+    22,
+    25,
+    26,
+    30
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 13,
+   "mask": "circle",
+   "moves": 15,
+   "cert": 10,
+   "fair": [
+    5,
+    7,
+    8,
+    9,
+    13
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "collect:"
+   ]
+  },
+  {
+   "id": 14,
+   "mask": "ushape",
+   "moves": 19,
+   "cert": 12,
+   "fair": [
+    10,
+    11,
+    13,
+    13,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 15,
+   "mask": "heart",
+   "moves": 24,
+   "cert": 10,
+   "fair": [
+    12,
+    15,
+    19,
+    20,
+    21
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 16,
+   "mask": "stairs",
+   "moves": 20,
+   "cert": 9,
+   "fair": [
+    9,
+    12,
+    14,
+    16,
+    19
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 17,
+   "mask": "pyramid",
+   "moves": 19,
+   "cert": 10,
+   "fair": [
+    6,
+    14,
+    15,
+    17,
+    26
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:noise",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 18,
+   "mask": "lattice",
+   "moves": 22,
+   "cert": 11,
+   "fair": [
+    10,
+    12,
+    15,
+    15,
+    20
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 19,
+   "mask": "cut1",
+   "moves": 15,
+   "cert": 10,
+   "fair": [
+    8,
+    9,
+    11,
+    11,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 20,
+   "mask": "octagon",
+   "moves": 19,
+   "cert": 8,
+   "fair": [
+    5,
+    13,
+    14,
+    14,
+    15
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "clear:noise",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 21,
+   "mask": "rect",
+   "moves": 17,
+   "cert": 9,
+   "fair": [
+    7,
+    8,
+    11,
+    13,
+    21
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:dusty",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 22,
+   "mask": "cut1",
+   "moves": 22,
+   "cert": 14,
+   "fair": [
+    9,
+    14,
+    15,
+    17,
+    19
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:dusty",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 23,
+   "mask": "diamond",
+   "moves": 25,
+   "cert": 8,
+   "fair": [
+    14,
+    17,
+    20,
+    22,
+    26
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:dusty",
+    "collect:"
+   ]
+  },
+  {
+   "id": 24,
+   "mask": "rect",
+   "moves": 40,
+   "cert": 29,
+   "fair": [
+    22,
+    25,
+    29,
+    49,
+    59
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 25,
+   "mask": "ring",
+   "moves": 25,
+   "cert": 8,
+   "fair": [
+    14,
+    15,
+    19,
+    30,
+    41
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 26,
+   "mask": "zigzag",
+   "moves": 19,
+   "cert": 11,
+   "fair": [
+    9,
+    9,
+    13,
+    16,
+    17
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:dusty"
+   ]
+  },
+  {
+   "id": 27,
+   "mask": "rect",
+   "moves": 19,
+   "cert": 15,
+   "fair": [
+    6,
+    6,
+    11,
+    18,
+    25
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 28,
+   "mask": "keyhole",
+   "moves": 45,
+   "cert": 32,
+   "fair": [
+    15,
+    29,
+    36,
+    45,
+    51
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 29,
+   "mask": "circle",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    6,
+    8,
+    9,
+    12,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:4",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 30,
+   "mask": "octagon",
+   "moves": 15,
+   "cert": 2,
+   "fair": [
+    5,
+    6,
+    8,
+    9,
+    33
+   ],
+   "rate": 0.8,
+   "goals": [
+    "combo:",
+    "clear:dusty"
+   ]
+  },
+  {
+   "id": 31,
+   "mask": "notches",
+   "moves": 31,
+   "cert": 11,
+   "fair": [
+    15,
+    19,
+    22,
+    22,
+    27
+   ],
+   "rate": 1,
+   "goals": [
+    "deliver:parcel",
+    "clear:dusty",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 32,
+   "mask": "hourglass",
+   "moves": 36,
+   "cert": 26,
+   "fair": [
+    6,
+    12,
+    14,
+    17,
+    23
+   ],
+   "rate": 1,
+   "goals": [
+    "deliver:parcel",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 33,
+   "mask": "towers",
+   "moves": 22,
+   "cert": 10,
+   "fair": [
+    10,
+    12,
+    17,
+    17,
+    24
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:dusty"
+   ]
+  },
+  {
+   "id": 34,
+   "mask": "xholes",
+   "moves": 37,
+   "cert": 12,
+   "fair": [
+    12,
+    29,
+    33,
+    41,
+    52
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 35,
+   "mask": "ibeam",
+   "moves": 19,
+   "cert": 12,
+   "fair": [
+    9,
+    13,
+    15,
+    16,
+    24
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:dusty"
+   ]
+  },
+  {
+   "id": 36,
+   "mask": "cut2",
+   "moves": 22,
+   "cert": 9,
+   "fair": [
+    8,
+    13,
+    15,
+    16,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 37,
+   "mask": "butterfly",
+   "moves": 26,
+   "cert": 14,
+   "fair": [
+    11,
+    13,
+    21,
+    21,
+    25
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:dusty",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 38,
+   "mask": "midcol",
+   "moves": 20,
+   "cert": 8,
+   "fair": [
+    11,
+    14,
+    14,
+    18,
+    35
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel",
+    "deliver:parcel",
+    "collect:"
+   ]
+  },
+  {
+   "id": 39,
+   "mask": "arch",
+   "moves": 23,
+   "cert": 13,
+   "fair": [
+    9,
+    11,
+    18,
+    18,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:dusty",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 40,
+   "mask": "rect",
+   "moves": 28,
+   "cert": 18,
+   "fair": [
+    12,
+    13,
+    21,
+    27,
+    28
+   ],
+   "rate": 1,
+   "goals": [
+    "deliver:parcel",
+    "clear:dusty",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 41,
+   "mask": "rect",
+   "moves": 15,
+   "cert": 5,
+   "fair": [
+    7,
+    9,
+    10,
+    12,
+    16
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:moss",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 42,
+   "mask": "cut1",
+   "moves": 18,
+   "cert": 12,
+   "fair": [
+    2,
+    9,
+    9,
+    10,
+    13
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 43,
+   "mask": "diamond",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    9,
+    10,
+    11,
+    15,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 44,
+   "mask": "circle",
+   "moves": 20,
+   "cert": 11,
+   "fair": [
+    10,
+    11,
+    14,
+    15,
+    17
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "clear:crate",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 45,
+   "mask": "plus",
+   "moves": 20,
+   "cert": 8,
+   "fair": [
+    9,
+    9,
+    14,
+    16,
+    20
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 46,
+   "mask": "hshape",
+   "moves": 20,
+   "cert": 11,
+   "fair": [
+    12,
+    13,
+    14,
+    29,
+    33
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:moss",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 47,
+   "mask": "lattice",
+   "moves": 15,
+   "cert": 4,
+   "fair": [
+    14,
+    14,
+    17,
+    17,
+    22
+   ],
+   "rate": 0.4,
+   "goals": [
+    "clear:moss",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 48,
+   "mask": "ring2",
+   "moves": 31,
+   "cert": 10,
+   "fair": [
+    16,
+    22,
+    23,
+    25,
+    29
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "clear:crate",
+    "collect:"
+   ]
+  },
+  {
+   "id": 49,
+   "mask": "heart",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    2,
+    5,
+    6,
+    7,
+    21
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:dusty"
+   ]
+  },
+  {
+   "id": 50,
+   "mask": "octagon",
+   "moves": 19,
+   "cert": 15,
+   "fair": [
+    10,
+    15,
+    15,
+    18,
+    19
+   ],
+   "rate": 1,
+   "goals": [
+    "score:"
+   ]
+  },
+  {
+   "id": 51,
+   "mask": "butterfly",
+   "moves": 26,
+   "cert": 18,
+   "fair": [
+    11,
+    17,
+    18,
+    26,
+    44
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:noise",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 52,
+   "mask": "pyramid",
+   "moves": 22,
+   "cert": 9,
+   "fair": [
+    7,
+    13,
+    15,
+    16,
+    19
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 53,
+   "mask": "islands",
+   "moves": 22,
+   "cert": 9,
+   "fair": [
+    8,
+    13,
+    17,
+    19,
+    22
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 54,
+   "mask": "funnel",
+   "moves": 36,
+   "cert": 12,
+   "fair": [
+    23,
+    25,
+    26,
+    29,
+    32
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 55,
+   "mask": "steps",
+   "moves": 17,
+   "cert": 7,
+   "fair": [
+    10,
+    12,
+    13,
+    15,
+    17
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 56,
+   "mask": "cut2",
+   "moves": 15,
+   "cert": 7,
+   "fair": [
+    7,
+    9,
+    10,
+    13,
+    14
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 57,
+   "mask": "circle",
+   "moves": 24,
+   "cert": 13,
+   "fair": [
+    8,
+    17,
+    19,
+    19,
+    23
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "clear:moss"
+   ]
+  },
+  {
+   "id": 58,
+   "mask": "ushape",
+   "moves": 20,
+   "cert": 14,
+   "fair": [
+    6,
+    10,
+    13,
+    17,
+    17
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "clear:noise",
+    "collect:"
+   ]
+  },
+  {
+   "id": 59,
+   "mask": "xholes",
+   "moves": 36,
+   "cert": 17,
+   "fair": [
+    16,
+    20,
+    29,
+    65,
+    78
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:moss",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 60,
+   "mask": "rect",
+   "moves": 19,
+   "cert": 10,
+   "fair": [
+    9,
+    12,
+    14,
+    17,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:moss",
+    "clear:noise",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 61,
+   "mask": "rect",
+   "moves": 19,
+   "cert": 6,
+   "fair": [
+    10,
+    12,
+    13,
+    15,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:cable",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 62,
+   "mask": "cut1",
+   "moves": 23,
+   "cert": 11,
+   "fair": [
+    15,
+    15,
+    16,
+    17,
+    33
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:cable",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 63,
+   "mask": "octagon",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    4,
+    8,
+    10,
+    12,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 64,
+   "mask": "rect",
+   "moves": 28,
+   "cert": 11,
+   "fair": [
+    16,
+    19,
+    20,
+    21,
+    21
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:switch",
+    "collect:6"
+   ]
+  },
+  {
+   "id": 65,
+   "mask": "diamond",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    5,
+    6,
+    6,
+    13,
+    14
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 66,
+   "mask": "plus",
+   "moves": 22,
+   "cert": 7,
+   "fair": [
+    8,
+    10,
+    15,
+    15,
+    20
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:cable",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 67,
+   "mask": "rect",
+   "moves": 28,
+   "cert": 14,
+   "fair": [
+    16,
+    17,
+    22,
+    23,
+    23
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:generator",
+    "collect:5"
+   ]
+  },
+  {
+   "id": 68,
+   "mask": "hshape",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    4,
+    4,
+    5,
+    6,
+    8
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 69,
+   "mask": "circle",
+   "moves": 19,
+   "cert": 13,
+   "fair": [
+    6,
+    10,
+    13,
+    15,
+    19
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:amp",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 70,
+   "mask": "cut2",
+   "moves": 33,
+   "cert": 12,
+   "fair": [
+    7,
+    17,
+    27,
+    32,
+    37
+   ],
+   "rate": 0.8,
+   "goals": [
+    "specials:",
+    "clear:cable",
+    "collect:5"
+   ]
+  },
+  {
+   "id": 71,
+   "mask": "ushape",
+   "moves": 27,
+   "cert": 15,
+   "fair": [
+    12,
+    14,
+    19,
+    19,
+    28
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:generator",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 72,
+   "mask": "towers",
+   "moves": 35,
+   "cert": 13,
+   "fair": [
+    23,
+    24,
+    25,
+    39,
+    46
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 73,
+   "mask": "ring",
+   "moves": 17,
+   "cert": 13,
+   "fair": [
+    9,
+    12,
+    12,
+    15,
+    21
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:switch",
+    "clear:amp",
+    "collect:6"
+   ]
+  },
+  {
+   "id": 74,
+   "mask": "lattice",
+   "moves": 28,
+   "cert": 13,
+   "fair": [
+    8,
+    15,
+    20,
+    22,
+    23
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:amp",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 75,
+   "mask": "tshape",
+   "moves": 19,
+   "cert": 9,
+   "fair": [
+    8,
+    15,
+    15,
+    16,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:generator",
+    "clear:dusty",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 76,
+   "mask": "keyhole",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    6,
+    10,
+    10,
+    17,
+    19
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:cable",
+    "collect:5"
+   ]
+  },
+  {
+   "id": 77,
+   "mask": "zigzag",
+   "moves": 28,
+   "cert": 15,
+   "fair": [
+    19,
+    20,
+    22,
+    26,
+    38
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:switch",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 78,
+   "mask": "heart",
+   "moves": 18,
+   "cert": 12,
+   "fair": [
+    5,
+    5,
+    7,
+    7,
+    7
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:amp",
+    "clear:generator"
+   ]
+  },
+  {
+   "id": 79,
+   "mask": "arch",
+   "moves": 30,
+   "cert": 16,
+   "fair": [
+    13,
+    15,
+    24,
+    26,
+    30
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:cable",
+    "clear:moss"
+   ]
+  },
+  {
+   "id": 80,
+   "mask": "octagon",
+   "moves": 24,
+   "cert": 18,
+   "fair": [
+    13,
+    15,
+    17,
+    21,
+    28
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:amp",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 81,
+   "mask": "lattice",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    8,
+    10,
+    10,
+    11,
+    11
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:1",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 82,
+   "mask": "mirror",
+   "moves": 20,
+   "cert": 12,
+   "fair": [
+    8,
+    13,
+    14,
+    19,
+    27
+   ],
+   "rate": 0.8,
+   "goals": [
+    "collect:5",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 83,
+   "mask": "xholes",
+   "moves": 27,
+   "cert": 9,
+   "fair": [
+    10,
+    18,
+    19,
+    21,
+    26
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:antenna",
+    "collect:"
+   ]
+  },
+  {
+   "id": 84,
+   "mask": "shift",
+   "moves": 28,
+   "cert": 10,
+   "fair": [
+    9,
+    13,
+    20,
+    25,
+    27
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:antenna",
+    "clear:crate",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 85,
+   "mask": "rect",
+   "moves": 45,
+   "cert": 34,
+   "fair": [
+    18,
+    24,
+    38,
+    42,
+    61
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:cassette"
+   ]
+  },
+  {
+   "id": 86,
+   "mask": "midcol",
+   "moves": 19,
+   "cert": 11,
+   "fair": [
+    10,
+    11,
+    13,
+    13,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:5"
+   ]
+  },
+  {
+   "id": 87,
+   "mask": "split",
+   "moves": 28,
+   "cert": 12,
+   "fair": [
+    22,
+    22,
+    22,
+    23,
+    25
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:6",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 88,
+   "mask": "towers",
+   "moves": 45,
+   "cert": 21,
+   "fair": [
+    15,
+    30,
+    33,
+    43,
+    44
+   ],
+   "rate": 1,
+   "goals": [
+    "deliver:cassette"
+   ]
+  },
+  {
+   "id": 89,
+   "mask": "mirror",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    6,
+    7,
+    11,
+    14,
+    18
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:antenna",
+    "clear:noise",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 90,
+   "mask": "ibeam",
+   "moves": 16,
+   "cert": 12,
+   "fair": [
+    5,
+    5,
+    7,
+    11,
+    14
+   ],
+   "rate": 1,
+   "goals": [
+    "specials:",
+    "clear:antenna"
+   ]
+  },
+  {
+   "id": 91,
+   "mask": "islands",
+   "moves": 40,
+   "cert": 13,
+   "fair": [
+    23,
+    26,
+    31,
+    39,
+    59
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:cassette",
+    "clear:antenna"
+   ]
+  },
+  {
+   "id": 92,
+   "mask": "shift",
+   "moves": 27,
+   "cert": 11,
+   "fair": [
+    12,
+    12,
+    19,
+    21,
+    31
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:noise",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 93,
+   "mask": "ring2",
+   "moves": 17,
+   "cert": 6,
+   "fair": [
+    15,
+    16,
+    24,
+    24,
+    25
+   ],
+   "rate": 0.4,
+   "goals": [
+    "clear:antenna",
+    "collect:"
+   ]
+  },
+  {
+   "id": 94,
+   "mask": "zigportal",
+   "moves": 36,
+   "cert": 21,
+   "fair": [
+    25,
+    25,
+    26,
+    30,
+    34
+   ],
+   "rate": 1,
+   "goals": [
+    "collect:"
+   ]
+  },
+  {
+   "id": 95,
+   "mask": "funnel",
+   "moves": 33,
+   "cert": 12,
+   "fair": [
+    17,
+    30,
+    35,
+    40,
+    53
+   ],
+   "rate": 0.4,
+   "goals": [
+    "deliver:cassette",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 96,
+   "mask": "keyhole",
+   "moves": 19,
+   "cert": 7,
+   "fair": [
+    11,
+    12,
+    13,
+    13,
+    13
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:antenna",
+    "collect:6"
+   ]
+  },
+  {
+   "id": 97,
+   "mask": "split",
+   "moves": 21,
+   "cert": 11,
+   "fair": [
+    9,
+    16,
+    16,
+    25,
+    27
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:noise",
+    "collect:6"
+   ]
+  },
+  {
+   "id": 98,
+   "mask": "steps",
+   "moves": 42,
+   "cert": 23,
+   "fair": [
+    14,
+    20,
+    30,
+    36,
+    41
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:antenna",
+    "deliver:cassette"
+   ]
+  },
+  {
+   "id": 99,
+   "mask": "mirror",
+   "moves": 29,
+   "cert": 13,
+   "fair": [
+    13,
+    22,
+    23,
+    26,
+    27
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 100,
+   "mask": "zigportal",
+   "moves": 45,
+   "cert": 37,
+   "fair": [
+    33,
+    35,
+    38,
+    55,
+    99
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:antenna",
+    "deliver:cassette",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 101,
+   "mask": "rect",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    7,
+    8,
+    11,
+    12,
+    14
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 102,
+   "mask": "circle",
+   "moves": 15,
+   "cert": 4,
+   "fair": [
+    4,
+    5,
+    6,
+    8,
+    20
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:noise",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 103,
+   "mask": "cut1",
+   "moves": 24,
+   "cert": 17,
+   "fair": [
+    8,
+    10,
+    13,
+    15,
+    22
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield",
+    "collect:5"
+   ]
+  },
+  {
+   "id": 104,
+   "mask": "ring",
+   "moves": 34,
+   "cert": 11,
+   "fair": [
+    17,
+    21,
+    24,
+    32,
+    41
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:noise",
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 105,
+   "mask": "diamond",
+   "moves": 32,
+   "cert": 23,
+   "fair": [
+    6,
+    7,
+    14,
+    18,
+    21
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 106,
+   "mask": "hourglass",
+   "moves": 19,
+   "cert": 8,
+   "fair": [
+    8,
+    9,
+    13,
+    19,
+    27
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:noise",
+    "clear:cable",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 107,
+   "mask": "plus",
+   "moves": 29,
+   "cert": 19,
+   "fair": [
+    10,
+    14,
+    23,
+    29,
+    31
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:shield",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 108,
+   "mask": "heart",
+   "moves": 20,
+   "cert": 11,
+   "fair": [
+    11,
+    13,
+    14,
+    14,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "collect:"
+   ]
+  },
+  {
+   "id": 109,
+   "mask": "lattice",
+   "moves": 35,
+   "cert": 19,
+   "fair": [
+    14,
+    15,
+    25,
+    26,
+    34
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield",
+    "clear:amp",
+    "collect:5"
+   ]
+  },
+  {
+   "id": 110,
+   "mask": "octagon",
+   "moves": 15,
+   "cert": 2,
+   "fair": [
+    3,
+    7,
+    37,
+    38,
+    98
+   ],
+   "rate": 0.4,
+   "goals": [
+    "combo:",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 111,
+   "mask": "xholes",
+   "moves": 28,
+   "cert": 20,
+   "fair": [
+    16,
+    17,
+    20,
+    20,
+    22
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 112,
+   "mask": "towers",
+   "moves": 40,
+   "cert": 17,
+   "fair": [
+    24,
+    29,
+    29,
+    35,
+    37
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 113,
+   "mask": "ring2",
+   "moves": 21,
+   "cert": 16,
+   "fair": [
+    4,
+    5,
+    9,
+    11,
+    160
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:moss",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 114,
+   "mask": "butterfly",
+   "moves": 38,
+   "cert": 26,
+   "fair": [
+    19,
+    23,
+    27,
+    32,
+    36
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "clear:dusty"
+   ]
+  },
+  {
+   "id": 115,
+   "mask": "cut2",
+   "moves": 15,
+   "cert": 11,
+   "fair": [
+    6,
+    8,
+    9,
+    14,
+    18
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 116,
+   "mask": "stairs",
+   "moves": 23,
+   "cert": 11,
+   "fair": [
+    11,
+    13,
+    16,
+    18,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 117,
+   "mask": "zigzag",
+   "moves": 45,
+   "cert": 38,
+   "fair": [
+    20,
+    24,
+    28,
+    30,
+    37
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 118,
+   "mask": "keyhole",
+   "moves": 23,
+   "cert": 14,
+   "fair": [
+    9,
+    10,
+    16,
+    17,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 119,
+   "mask": "arch",
+   "moves": 37,
+   "cert": 21,
+   "fair": [
+    23,
+    23,
+    30,
+    38,
+    42
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 120,
+   "mask": "circle",
+   "moves": 20,
+   "cert": 13,
+   "fair": [
+    9,
+    14,
+    15,
+    16,
+    20
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 121,
+   "mask": "rect",
+   "moves": 31,
+   "cert": 17,
+   "fair": [
+    17,
+    18,
+    22,
+    27,
+    35
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:switch",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 122,
+   "mask": "shift",
+   "moves": 23,
+   "cert": 11,
+   "fair": [
+    13,
+    14,
+    16,
+    19,
+    20
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:generator",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 123,
+   "mask": "diamond",
+   "moves": 15,
+   "cert": 5,
+   "fair": [
+    7,
+    8,
+    10,
+    11,
+    17
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:amp",
+    "collect:"
+   ]
+  },
+  {
+   "id": 124,
+   "mask": "ushape",
+   "moves": 24,
+   "cert": 12,
+   "fair": [
+    6,
+    9,
+    17,
+    44,
+    114
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "clear:switch"
+   ]
+  },
+  {
+   "id": 125,
+   "mask": "circle",
+   "moves": 22,
+   "cert": 13,
+   "fair": [
+    11,
+    11,
+    15,
+    16,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:generator"
+   ]
+  },
+  {
+   "id": 126,
+   "mask": "hshape",
+   "moves": 23,
+   "cert": 16,
+   "fair": [
+    8,
+    8,
+    12,
+    14,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:amp",
+    "clear:shield",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 127,
+   "mask": "mirror",
+   "moves": 16,
+   "cert": 12,
+   "fair": [
+    4,
+    5,
+    6,
+    7,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 128,
+   "mask": "heart",
+   "moves": 45,
+   "cert": 38,
+   "fair": [
+    18,
+    21,
+    23,
+    43,
+    45
+   ],
+   "rate": 1,
+   "goals": [
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 129,
+   "mask": "octagon",
+   "moves": 15,
+   "cert": 5,
+   "fair": [
+    7,
+    8,
+    9,
+    14,
+    14
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:cable",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 130,
+   "mask": "cut1",
+   "moves": 22,
+   "cert": 17,
+   "fair": [
+    6,
+    9,
+    14,
+    15,
+    19
+   ],
+   "rate": 1,
+   "goals": [
+    "specials:",
+    "clear:amp"
+   ]
+  },
+  {
+   "id": 131,
+   "mask": "plus",
+   "moves": 15,
+   "cert": 9,
+   "fair": [
+    7,
+    8,
+    10,
+    14,
+    14
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:switch",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 132,
+   "mask": "islands",
+   "moves": 31,
+   "cert": 12,
+   "fair": [
+    12,
+    21,
+    22,
+    23,
+    35
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:amp",
+    "collect:"
+   ]
+  },
+  {
+   "id": 133,
+   "mask": "ring",
+   "moves": 32,
+   "cert": 16,
+   "fair": [
+    13,
+    20,
+    26,
+    33,
+    33
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:generator",
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 134,
+   "mask": "funnel",
+   "moves": 27,
+   "cert": 18,
+   "fair": [
+    5,
+    18,
+    19,
+    28,
+    36
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "clear:amp"
+   ]
+  },
+  {
+   "id": 135,
+   "mask": "towers",
+   "moves": 32,
+   "cert": 13,
+   "fair": [
+    14,
+    24,
+    26,
+    26,
+    39
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:switch",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 136,
+   "mask": "lattice",
+   "moves": 19,
+   "cert": 9,
+   "fair": [
+    9,
+    10,
+    13,
+    16,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:amp",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 137,
+   "mask": "steps",
+   "moves": 44,
+   "cert": 26,
+   "fair": [
+    22,
+    27,
+    36,
+    37,
+    48
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:generator",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 138,
+   "mask": "zigportal",
+   "moves": 27,
+   "cert": 19,
+   "fair": [
+    11,
+    12,
+    16,
+    18,
+    32
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:switch",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 139,
+   "mask": "butterfly",
+   "moves": 31,
+   "cert": 16,
+   "fair": [
+    19,
+    21,
+    25,
+    26,
+    34
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:amp",
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 140,
+   "mask": "octagon",
+   "moves": 45,
+   "cert": 23,
+   "fair": [
+    19,
+    34,
+    38,
+    39,
+    40
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:generator",
+    "clear:amp",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 141,
+   "mask": "rect",
+   "moves": 19,
+   "cert": 13,
+   "fair": [
+    5,
+    7,
+    7,
+    8,
+    11
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 142,
+   "mask": "cut1",
+   "moves": 24,
+   "cert": 12,
+   "fair": [
+    12,
+    16,
+    17,
+    18,
+    28
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 143,
+   "mask": "diamond",
+   "moves": 35,
+   "cert": 18,
+   "fair": [
+    16,
+    16,
+    25,
+    29,
+    39
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 144,
+   "mask": "rect",
+   "moves": 20,
+   "cert": 8,
+   "fair": [
+    9,
+    12,
+    14,
+    16,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:rolling",
+    "collect:"
+   ]
+  },
+  {
+   "id": 145,
+   "mask": "ring",
+   "moves": 24,
+   "cert": 9,
+   "fair": [
+    15,
+    16,
+    17,
+    19,
+    160
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice",
+    "clear:rolling"
+   ]
+  },
+  {
+   "id": 146,
+   "mask": "hshape",
+   "moves": 28,
+   "cert": 19,
+   "fair": [
+    14,
+    18,
+    20,
+    22,
+    27
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 147,
+   "mask": "circle",
+   "moves": 16,
+   "cert": 12,
+   "fair": [
+    5,
+    5,
+    7,
+    7,
+    9
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:rolling",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 148,
+   "mask": "octagon",
+   "moves": 23,
+   "cert": 16,
+   "fair": [
+    11,
+    11,
+    16,
+    17,
+    24
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 149,
+   "mask": "plus",
+   "moves": 39,
+   "cert": 17,
+   "fair": [
+    27,
+    27,
+    28,
+    31,
+    32
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:ice",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 150,
+   "mask": "cut2",
+   "moves": 26,
+   "cert": 19,
+   "fair": [
+    14,
+    20,
+    21,
+    29,
+    36
+   ],
+   "rate": 0.6,
+   "goals": [
+    "score:",
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 151,
+   "mask": "lattice",
+   "moves": 45,
+   "cert": 17,
+   "fair": [
+    13,
+    160,
+    160,
+    160,
+    160
+   ],
+   "rate": 0.2,
+   "goals": [
+    "clear:rolling",
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 152,
+   "mask": "heart",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    7,
+    8,
+    9,
+    10,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:ice",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 153,
+   "mask": "towers",
+   "moves": 23,
+   "cert": 18,
+   "fair": [
+    12,
+    12,
+    17,
+    19,
+    31
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 154,
+   "mask": "ushape",
+   "moves": 19,
+   "cert": 7,
+   "fair": [
+    6,
+    11,
+    13,
+    13,
+    16
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:rolling",
+    "collect:4"
+   ]
+  },
+  {
+   "id": 155,
+   "mask": "xholes",
+   "moves": 44,
+   "cert": 32,
+   "fair": [
+    13,
+    22,
+    36,
+    52,
+    85
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:ice",
+    "clear:moss"
+   ]
+  },
+  {
+   "id": 156,
+   "mask": "keyhole",
+   "moves": 26,
+   "cert": 11,
+   "fair": [
+    16,
+    16,
+    18,
+    23,
+    39
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice",
+    "clear:rolling"
+   ]
+  },
+  {
+   "id": 157,
+   "mask": "ring2",
+   "moves": 28,
+   "cert": 22,
+   "fair": [
+    9,
+    15,
+    19,
+    21,
+    47
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice",
+    "clear:amp"
+   ]
+  },
+  {
+   "id": 158,
+   "mask": "stairs",
+   "moves": 20,
+   "cert": 11,
+   "fair": [
+    9,
+    14,
+    14,
+    17,
+    21
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:rolling",
+    "clear:ice",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 159,
+   "mask": "butterfly",
+   "moves": 45,
+   "cert": 20,
+   "fair": [
+    36,
+    38,
+    39,
+    45,
+    56
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 160,
+   "mask": "octagon",
+   "moves": 25,
+   "cert": 16,
+   "fair": [
+    7,
+    17,
+    19,
+    24,
+    27
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:ice",
+    "clear:rolling"
+   ]
+  },
+  {
+   "id": 161,
+   "mask": "mirror",
+   "moves": 45,
+   "cert": 29,
+   "fair": [
+    30,
+    34,
+    39,
+    47,
+    90
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:cassette",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 162,
+   "mask": "split",
+   "moves": 27,
+   "cert": 19,
+   "fair": [
+    9,
+    16,
+    18,
+    38,
+    39
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 163,
+   "mask": "crown",
+   "moves": 28,
+   "cert": 11,
+   "fair": [
+    3,
+    16,
+    20,
+    24,
+    32
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel",
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 164,
+   "mask": "shift",
+   "moves": 45,
+   "cert": 16,
+   "fair": [
+    15,
+    28,
+    35,
+    44,
+    50
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:cassette"
+   ]
+  },
+  {
+   "id": 165,
+   "mask": "zigportal",
+   "moves": 45,
+   "cert": 19,
+   "fair": [
+    20,
+    32,
+    40,
+    43,
+    57
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel",
+    "clear:antenna"
+   ]
+  },
+  {
+   "id": 166,
+   "mask": "funnel",
+   "moves": 42,
+   "cert": 30,
+   "fair": [
+    15,
+    17,
+    27,
+    31,
+    31
+   ],
+   "rate": 1,
+   "goals": [
+    "deliver:parcel",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 167,
+   "mask": "mirror",
+   "moves": 33,
+   "cert": 12,
+   "fair": [
+    11,
+    45,
+    121,
+    160,
+    160
+   ],
+   "rate": 0.2,
+   "goals": [
+    "clear:ice",
+    "deliver:cassette"
+   ]
+  },
+  {
+   "id": 168,
+   "mask": "arch",
+   "moves": 45,
+   "cert": 17,
+   "fair": [
+    18,
+    20,
+    37,
+    43,
+    80
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel",
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 169,
+   "mask": "split",
+   "moves": 32,
+   "cert": 14,
+   "fair": [
+    21,
+    21,
+    23,
+    23,
+    24
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:antenna",
+    "clear:noise",
+    "collect:5"
+   ]
+  },
+  {
+   "id": 170,
+   "mask": "cut1",
+   "moves": 23,
+   "cert": 9,
+   "fair": [
+    3,
+    10,
+    18,
+    28,
+    75
+   ],
+   "rate": 0.6,
+   "goals": [
+    "combo:",
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 171,
+   "mask": "shift",
+   "moves": 45,
+   "cert": 22,
+   "fair": [
+    16,
+    28,
+    34,
+    37,
+    72
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:parcel",
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 172,
+   "mask": "steps",
+   "moves": 30,
+   "cert": 20,
+   "fair": [
+    13,
+    18,
+    21,
+    29,
+    40
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:cassette",
+    "clear:moss"
+   ]
+  },
+  {
+   "id": 173,
+   "mask": "zigportal",
+   "moves": 45,
+   "cert": 31,
+   "fair": [
+    25,
+    28,
+    47,
+    57,
+    60
+   ],
+   "rate": 0.4,
+   "goals": [
+    "clear:noise",
+    "collect:1"
+   ]
+  },
+  {
+   "id": 174,
+   "mask": "hourglass",
+   "moves": 43,
+   "cert": 14,
+   "fair": [
+    17,
+    22,
+    40,
+    53,
+    53
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "clear:rolling"
+   ]
+  },
+  {
+   "id": 175,
+   "mask": "mirror",
+   "moves": 45,
+   "cert": 29,
+   "fair": [
+    16,
+    42,
+    63,
+    65,
+    95
+   ],
+   "rate": 0.4,
+   "goals": [
+    "deliver:parcel",
+    "clear:amp"
+   ]
+  },
+  {
+   "id": 176,
+   "mask": "islands",
+   "moves": 45,
+   "cert": 42,
+   "fair": [
+    23,
+    28,
+    35,
+    57,
+    58
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:cassette",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 177,
+   "mask": "mirror",
+   "moves": 36,
+   "cert": 23,
+   "fair": [
+    10,
+    16,
+    29,
+    47,
+    51
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 178,
+   "mask": "crown",
+   "moves": 45,
+   "cert": 26,
+   "fair": [
+    28,
+    32,
+    43,
+    50,
+    61
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "deliver:cassette",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 179,
+   "mask": "shift",
+   "moves": 21,
+   "cert": 16,
+   "fair": [
+    4,
+    7,
+    14,
+    22,
+    160
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:antenna",
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 180,
+   "mask": "zigportal",
+   "moves": 18,
+   "cert": 6,
+   "fair": [
+    4,
+    7,
+    16,
+    21,
+    25
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "deliver:parcel",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 181,
+   "mask": "octagon",
+   "moves": 19,
+   "cert": 8,
+   "fair": [
+    9,
+    11,
+    13,
+    15,
+    20
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "clear:crate"
+   ]
+  },
+  {
+   "id": 182,
+   "mask": "mirror",
+   "moves": 22,
+   "cert": 15,
+   "fair": [
+    6,
+    8,
+    10,
+    18,
+    18
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 183,
+   "mask": "circle",
+   "moves": 23,
+   "cert": 14,
+   "fair": [
+    15,
+    15,
+    16,
+    17,
+    23
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:shield",
+    "clear:amp"
+   ]
+  },
+  {
+   "id": 184,
+   "mask": "ring",
+   "moves": 45,
+   "cert": 20,
+   "fair": [
+    7,
+    9,
+    38,
+    50,
+    68
+   ],
+   "rate": 0.6,
+   "goals": [
+    "deliver:parcel",
+    "clear:moss",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 185,
+   "mask": "heart",
+   "moves": 19,
+   "cert": 6,
+   "fair": [
+    12,
+    13,
+    15,
+    16,
+    20
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:generator",
+    "clear:ice",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 186,
+   "mask": "shift",
+   "moves": 44,
+   "cert": 15,
+   "fair": [
+    26,
+    27,
+    32,
+    32,
+    70
+   ],
+   "rate": 0.8,
+   "goals": [
+    "deliver:cassette",
+    "clear:shield"
+   ]
+  },
+  {
+   "id": 187,
+   "mask": "lattice",
+   "moves": 45,
+   "cert": 37,
+   "fair": [
+    40,
+    44,
+    63,
+    160,
+    160
+   ],
+   "rate": 0.4,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 188,
+   "mask": "butterfly",
+   "moves": 27,
+   "cert": 13,
+   "fair": [
+    13,
+    15,
+    19,
+    24,
+    25
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:rolling",
+    "clear:dusty",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 189,
+   "mask": "towers",
+   "moves": 17,
+   "cert": 11,
+   "fair": [
+    3,
+    7,
+    8,
+    10,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:antenna",
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 190,
+   "mask": "octagon",
+   "moves": 19,
+   "cert": 14,
+   "fair": [
+    13,
+    15,
+    15,
+    17,
+    20
+   ],
+   "rate": 0.8,
+   "goals": [
+    "specials:",
+    "clear:jammer"
+   ]
+  },
+  {
+   "id": 191,
+   "mask": "zigportal",
+   "moves": 31,
+   "cert": 10,
+   "fair": [
+    8,
+    19,
+    22,
+    42,
+    53
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:switch",
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 192,
+   "mask": "plus",
+   "moves": 43,
+   "cert": 24,
+   "fair": [
+    24,
+    26,
+    31,
+    32,
+    33
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:ice"
+   ]
+  },
+  {
+   "id": 193,
+   "mask": "cut2",
+   "moves": 18,
+   "cert": 14,
+   "fair": [
+    9,
+    11,
+    13,
+    16,
+    17
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "collect:3"
+   ]
+  },
+  {
+   "id": 194,
+   "mask": "split",
+   "moves": 32,
+   "cert": 14,
+   "fair": [
+    21,
+    21,
+    23,
+    36,
+    46
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:generator",
+    "deliver:cassette"
+   ]
+  },
+  {
+   "id": 195,
+   "mask": "keyhole",
+   "moves": 45,
+   "cert": 17,
+   "fair": [
+    29,
+    39,
+    160,
+    160,
+    160
+   ],
+   "rate": 0.4,
+   "goals": [
+    "clear:moss",
+    "clear:ice",
+    "collect:2"
+   ]
+  },
+  {
+   "id": 196,
+   "mask": "stairs",
+   "moves": 15,
+   "cert": 7,
+   "fair": [
+    6,
+    6,
+    8,
+    10,
+    12
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "clear:rolling"
+   ]
+  },
+  {
+   "id": 197,
+   "mask": "ushape",
+   "moves": 45,
+   "cert": 21,
+   "fair": [
+    13,
+    31,
+    53,
+    63,
+    102
+   ],
+   "rate": 0.4,
+   "goals": [
+    "clear:switch",
+    "deliver:parcel"
+   ]
+  },
+  {
+   "id": 198,
+   "mask": "circle",
+   "moves": 30,
+   "cert": 14,
+   "fair": [
+    16,
+    20,
+    21,
+    26,
+    36
+   ],
+   "rate": 0.8,
+   "goals": [
+    "clear:amp",
+    "clear:ice",
+    "clear:noise"
+   ]
+  },
+  {
+   "id": 199,
+   "mask": "crown",
+   "moves": 45,
+   "cert": 33,
+   "fair": [
+    33,
+    34,
+    38,
+    56,
+    91
+   ],
+   "rate": 0.6,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "deliver:parcel",
+    "clear:cable"
+   ]
+  },
+  {
+   "id": 200,
+   "mask": "octagon",
+   "moves": 28,
+   "cert": 21,
+   "fair": [
+    15,
+    16,
+    17,
+    19,
+    20
+   ],
+   "rate": 1,
+   "goals": [
+    "clear:jammer",
+    "clear:noise",
+    "clear:ice",
+    "collect:3"
+   ]
+  }
+ ],
+ "masks": {
+  "#######/#######/#######/#######/#######/#######/#######/#######": 2,
+  ".######./########/########/########/########/########/########/.######.": 2,
+  "#######/#######/#######/#######/#######/#######/#######": 1,
+  "...#.../..###../.#####./#######/#######/.#####./..###../...#...": 2,
+  "########/########/########/########/########/########/########/########": 3,
+  "..###../.#####./#######/#######/#######/.#####./..###..": 1,
+  "#######/#######/#######/###.###/###.###/#######/#######/#######": 1,
+  "..###../..###../#######/#######/#######/..###../..###..": 1,
+  "###..###/###..###/########/########/########/########/###..###/###..###": 2,
+  "#######/#######/#######/#######/..###../..###../..###..": 1,
+  "..###../.#####./#######/#######/#######/#######/.#####./..###..": 1,
+  "##....##/##....##/##....##/########/########/########/########/########": 2,
+  ".##.##./#######/#######/#######/#######/.#####./...#...": 1,
+  "#####../######./#######/#######/#######/#######/.######/..#####": 1,
+  "..####../..####../..####../.######./.######./########/########/########": 2,
+  "#######/#.##.##/#######/#######/#.##.##/#######/#######": 1,
+  ".#####./#######/#######/#######/#######/#######/#######/.#####.": 1,
+  "...##.../..####../.######./########/########/.######./..####../...##...": 2,
+  "#######/#######/#######/#######/#######/#######/#######/#######/#######": 3,
+  "...##.../..####../.######./########/########/########/.######./..####../...##...": 2,
+  "########/########/########/###..###/###..###/########/########/########": 1,
+  "#.#.#.#./########/########/########/########/########/########/########/##.#.#.#": 1,
+  "########/########/###..###/###..###/###..###/###..###/########/########": 1,
+  "..####../.######./########/########/########/########/########/.######./..####..": 5,
+  "...#.../..###../.#####./#######/#######/#######/.#####./..###../...#...": 2,
+  "########/.######./########/########/.######./########/########/.######.": 1,
+  "########/########/########/.######./..####../.######./########/########/########": 1,
+  "###..###/###..###/###..###/###..###/###..###/###..###/########/########/########": 1,
+  "########/#.####.#/########/###..###/########/##.##.##/########/########": 1,
+  "########/########/########/..####../..####../..####../########/########/########": 1,
+  "..###../.#####./#######/#######/#######/#######/#######/.#####./..###..": 1,
+  "##....##/###..###/########/########/########/########/###..###/##....##": 1,
+  "########/########/###..###/###..###/###..###/###..###/###..###/########/########": 1,
+  "#######/#######/#######/#######/#######/#######/#######/##...##/##...##": 1,
+  "########/########/########/########/########/########/########/########/########": 4,
+  ".#######./#########/#########/#########/#########/#########/#########/#########/.#######.": 3,
+  "..#####../..#####../#########/#########/#########/#########/#########/..#####../..#####..": 3,
+  "########/#.##.###/########/########/#.##.###/########/########/#.##.###/########": 1,
+  "#########/#########/#########/###...###/###.#.###/###...###/#########/#########/#########": 3,
+  ".##..##./########/########/########/########/.######./..####../...##...": 1,
+  "##.....##/###...###/####.####/#########/#########/#########/####.####/###...###/##.....##": 3,
+  "########/###..###/###..###/###..###/###..###/###..###/###..###/###..###/########": 1,
+  "#########/#########/#########/.#######./.#######./..#####../..#####../..#####../...###...": 1,
+  "#####.../######../########/########/########/########/########/########": 1,
+  "..#####../.#######./#########/#########/#########/#########/#########/.#######./..#####..": 2,
+  "########/#.####.#/########/###..###/########/##.##.##/########/########/########": 1,
+  "#########/#########/#########/#########/#########/#########/#########/#########/#########": 4,
+  ".#######./#########/#########/#########/#########/#########/#########/.#######.": 1,
+  "...###.../..#####../.#######./#########/#########/#########/.#######./..#####../...###...": 5,
+  "...###.../..#####../.#######./#########/#########/.#######./..#####../...###...": 2,
+  "####.####/####.####/#########/#########/#########/#########/####.####/####.####": 1,
+  "###...###/###...###/###...###/#########/#########/#########/#########/#########": 1,
+  "###...###/###...###/###...###/###...###/###...###/###...###/#########/#########/#########": 2,
+  "########/########/########/###..###/###..###/###..###/########/########/########": 2,
+  "#########/#.##.##.#/#########/#########/#.##.##.#/#########/#########/#########": 1,
+  "#########/#########/#########/#########/#########/#########/..#####../..#####../..#####..": 1,
+  "#.#.#.#.#/#########/#########/#########/#########/#########/#########/##.#.#.##": 1,
+  ".###.###./#########/#########/#########/#########/#########/.#######./..#####../....#....": 3,
+  "########/########/########/########/########/########/########/##....##/##....##": 1,
+  "########/#.##.###/########/########/#.##.###/########/########/#.##.###/########/########": 1,
+  "#########/#########/#########/#########/........./#########/#########/#########/#########": 3,
+  "#########/#.#####.#/#########/###.#.###/#########/###.#.###/#########/#.#####.#/#########/#########": 2,
+  "########/########/########/########/########/......../########/########/########/########": 3,
+  "#########/#########/####.####/####.####/####.####/####.####/####.####/####.####/#########/#########": 1,
+  "####..../####..../####..../####..../####..../....####/....####/....####/....####/....####": 2,
+  "#########/#########/#########/#########/#########/........./#########/#########/#########/#########": 7,
+  "########/########/########/..####../..####../..####../..####../########/########/########": 1,
+  "#########/####.####/####.####/####.####/####.####/####.####/####.####/####.####/#########": 1,
+  "########/########/########/##....##/##.##.##/##.##.##/##....##/########/########/########": 1,
+  "#########/#########/........./#########/#########/#########/........./#########/#########": 3,
+  "#########/#########/#########/.#######./.#######./.#######./..#####../..#####../...###.../...###...": 1,
+  "########/########/########/###..###/###..###/###..###/###..###/########/########/########": 1,
+  "#####..../#####..../#####..../#####..../#####..../....#####/....#####/....#####/....#####/....#####": 2,
+  "#####..../######.../########./#########/#########/#########/#########/#########/#########/#########": 1,
+  "...###.../.#######./#########/#########/#########/#########/#########/#########/.#######./...###...": 5,
+  ".########./##########/##########/##########/##########/##########/##########/##########/.########.": 1,
+  "#########/#########/#########/####.####/####.####/####.####/#########/#########/#########": 4,
+  "....#..../...###.../..#####../.#######./#########/#########/.#######./..#####../...###.../....#....": 2,
+  "##########/##########/##########/.########./..######../.########./##########/##########/##########": 1,
+  ".###.###./#########/#########/#########/#########/#########/#########/.#######./..#####../....#....": 1,
+  "##########/#.##.##.##/##########/##########/#.##.##.##/##########/##########/#.##.##.##/##########": 1,
+  "###....###/###....###/###....###/###....###/###....###/###....###/##########/##########/##########": 1,
+  "#.......#/##.....##/####.####/#########/#########/#########/#########/####.####/##.....##/#.......#": 3,
+  "..######../.########./##########/##########/##########/##########/##########/.########./..######..": 1,
+  "#######../########./#########/#########/#########/#########/#########/.########/..#######": 1,
+  "#.#.#.#.#/#########/#########/#########/#########/#########/#########/#########/#########/##.#.#.##": 1,
+  "##########/##########/##########/####..####/####..####/####..####/##########/##########/##########": 1,
+  "#########/#########/#########/#########/#########/#########/#########/##.....##/##.....##": 1,
+  "##########/##########/##########/##########/##########/........../##########/##########/##########/##########": 3,
+  "###...###/###...###/###...###/#########/#########/#########/#########/#########/#########": 3,
+  "..######../.########./##########/##########/##########/##########/##########/##########/.########./..######..": 2,
+  "####.####/####.####/#########/#########/#########/#########/#########/#########/####.####/####.####": 1,
+  ".###..###./##########/##########/##########/##########/##########/##########/..######../...####.../....##....": 1,
+  "...###.../..#####../.#######./#########/#########/#########/#########/.#######./..#####../...###...": 1,
+  "..######../..######../##########/##########/##########/##########/##########/##########/..######../..######..": 1,
+  "#########/####.####/####.####/####.####/####.####/####.####/####.####/####.####/####.####/#########": 2,
+  "##########/##########/##########/.########./.########./..######../..######../...####.../...####.../...####...": 1,
+  "###...###/###...###/###...###/###...###/###...###/###...###/###...###/#########/#########/#########": 3,
+  "#########/#.##.##.#/#########/#########/#.##.##.#/#########/#########/#.##.##.#/#########": 2,
+  "######..../######..../########../##########/##########/##########/##########/##########/##########/##########": 1,
+  "#########/#########/........./#########/#########/#########/#########/........./#########/#########": 2,
+  "...####.../..######../.########./##########/##########/##########/##########/.########./..######../...####...": 3,
+  "#########/#########/#########/#########/#########/#########/#########/#########/#########/#########": 2,
+  "....##..../...####.../..######../.########./##########/.########./..######../...####.../....##....": 1,
+  "####..####/####..####/##########/##########/##########/##########/##########/####..####/####..####": 1,
+  "..######../..######../##########/##########/##########/##########/##########/..######../..######..": 1,
+  "..#####../.#######./#########/#########/#########/#########/#########/#########/.#######./..#####..": 2,
+  ".###..###./##########/##########/##########/##########/##########/..######../...####.../....##....": 1,
+  "##########/#.######.#/##########/###.##.###/##########/####..####/##########/##.####.##/##########": 1,
+  "#########/#########/#########/####.####/####.####/####.####/####.####/#########/#########/#########": 2,
+  "########../#########./##########/##########/##########/##########/##########/.#########/..########": 1,
+  "#####...../#####...../#####...../#####...../#####...../.....#####/.....#####/.....#####/.....#####/.....#####": 1,
+  "##.##.##/##.##.##/########/########/########/########/########/########/########/########": 2,
+  "##########/##########/........../##########/##########/##########/##########/........../##########/##########": 2,
+  "########/########/########/.######./.######./.######./.######./..####../..####../..####..": 1,
+  "##########/##########/##########/##########/##########/##########/##########/##########/##......##/##......##": 1,
+  ".#######./#########/#########/#########/#########/#########/#########/#########/#########/.#######.": 1,
+  "#####.../######../########/########/########/########/########/########/########/########": 1,
+  "##########/##########/##########/##########/.########./.########./##########/##########/##########/##########": 1,
+  "##########/##########/##########/##########/####..####/####..####/##########/##########/##########/##########": 1,
+  "##########/#.##.##.##/##########/##########/#.##.##.##/##########/##########/#.##.##.##/##########/##########": 1,
+  "..#####../..#####../..#####../#########/#########/#########/#########/..#####../..#####../..#####..": 1,
+  "########../#########./##########/##########/##########/##########/##########/##########/.#########/..########": 1,
+  "##.##.##.#/##.##.##.#/##########/##########/##########/##########/##########/##########/##########/##########": 1,
+  "..####../..####../########/########/########/########/########/..####../..####..": 1,
+  "...##.../..####../.######./########/########/########/########/.######./..####../...##...": 1,
+  "##########/##########/##########/##########/##########/##########/##########/##########/##########/##########": 1
+ },
+ "blockers": {
+  "hole": 190,
+  "crate": 191,
+  "noise": 894,
+  "dusty": 91,
+  "glass": 50,
+  "parcel": 37,
+  "moss": 88,
+  "cable": 233,
+  "switch": 35,
+  "barrier": 32,
+  "generator": 18,
+  "amp": 51,
+  "portal": 295,
+  "antenna": 40,
+  "cassette": 14,
+  "shield": 99,
+  "jammer": 10,
+  "ice": 370,
+  "rolling": 20
+ },
+ "goals": {
+  "collect": 100,
+  "clear:crate": 23,
+  "clear:noise": 52,
+  "specials": 8,
+  "clear:dusty": 15,
+  "deliver:parcel": 31,
+  "combo": 6,
+  "clear:moss": 18,
+  "score": 6,
+  "clear:cable": 21,
+  "clear:switch": 10,
+  "clear:generator": 11,
+  "clear:amp": 18,
+  "clear:antenna": 13,
+  "deliver:cassette": 14,
+  "clear:shield": 16,
+  "clear:jammer": 10,
+  "clear:ice": 27,
+  "clear:rolling": 11
+ },
+ "uniqueMasks": 127,
+ "seconds": 141
+}

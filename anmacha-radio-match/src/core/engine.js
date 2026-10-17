@@ -714,7 +714,9 @@
   };
 
   P._ensureMoves = function () {
-    if (this.status === 'play' && !this.hasMoves()) this.shuffle(false);
+    if (this.status !== 'play' || this.hasMoves()) return;
+    this.shuffle(false);
+    if (!this.hasMoves()) { this.status = 'lost'; this.stuck = true; this.emit({ e: 'end', won: false, stuck: true }); }   // Brett ohne Steine: sauber beenden statt hängen
   };
 
   // Faires, reproduzierbares Mischen: nur freie normale Steine, Spezialteile bleiben liegen
@@ -901,7 +903,7 @@
     return (h >>> 0).toString(16);
   };
 
-  Engine.BLOCK_TYPES = BLOCK_TYPES; Engine.COVER_TYPES = COVER_TYPES; Engine.ITEM_TYPES = ITEM_TYPES; Engine.SPECIAL_TYPES = SPECIAL_TYPES;
+  Engine.Rng = Rng; Engine.BLOCK_TYPES = BLOCK_TYPES; Engine.COVER_TYPES = COVER_TYPES; Engine.ITEM_TYPES = ITEM_TYPES; Engine.SPECIAL_TYPES = SPECIAL_TYPES;
   RRM.Engine = Engine;
   if (typeof module !== 'undefined' && module.exports) module.exports = Engine;
 })(typeof window !== 'undefined' ? window : globalThis);
