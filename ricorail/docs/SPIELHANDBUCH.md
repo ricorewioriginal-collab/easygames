@@ -36,6 +36,16 @@ In der leichten Schwierigkeit hält der Haltassistent den Zug notfalls selbst am
 4. Am Bahnsteig im Stillstand Türen freigeben (T) – sie öffnen auf der Bahnsteigseite – und vor der Abfahrt schließen (⇧T).
 5. Elektrisch: Stromabnehmer (P) und Hauptschalter (U); Diesel: Motor (U); Dampf: Regler, Steuerung (, .), Feuern (B), Injektor (⇧I).
 
+## Schaffner-Modus
+
+Im Hauptmenü „🎫 Schaffner“ antippen oder während einer Fahrplanfahrt mit Personenzug oben rechts 🎫 (Taste F4). Der Zug fährt und hält dann von selbst, du gehst als Schaffner durch die Wagen:
+
+- **Gehen:** ▲ / ▼ (W/S), Umsehen durch Ziehen, ↻ dreht dich um. Am Wagenende geht es in den nächsten Wagen.
+- **Kontrollieren:** Über dem nächsten Fahrgast ohne Kontrolle schwebt eine gelbe Raute. „🎫 Fahrkarte prüfen“ (Enter) zeigt die Fahrkarte, dann „Gültig“ oder „Nicht gültig“ wählen.
+- **Gültig** ist eine Fahrkarte von heute, bis zu einem Halt, der noch vor uns liegt, und mindestens für die Klasse des Wagens (1. Klasse gilt auch in der 2.). Manche Fahrgäste haben gar keine.
+- **Punkte:** richtig gültig +10, Fahrgast ohne gültige Fahrkarte erwischt +25, gültige Karte beanstandet −20, ungültige übersehen −15. Die Summe steht am Ende im Ergebnis.
+- An jedem Halt steigen Fahrgäste aus und neue ein. „🚆 Selbst fahren“ (F4) bringt dich zurück an den Fahrhebel.
+
 ## Signale, PZB, Sifa (Spielmodell)
 - Schwierigkeit: **Leicht** – ein Bremsassistent hält vor Halt zeigenden Signalen und überschreitet keine Höchstgeschwindigkeit. **Normal** – Zwangsbremsung bei mehr als 10 km/h zu schnell. **Experte** – zusätzlich das PZB-Spielmodell.
 - Rot = Halt, Gelb = Halt erwarten / Langsamfahrt, Grün = Fahrt. Überfahren eines Halt zeigenden Signals führt zur Zwangsbremsung und kostet das Szenario.
