@@ -189,14 +189,16 @@ export class Hud {
     const lamp = this.parts.lamp;
     if (lamp) lamp.className = `lamp ${asp === 'stop' ? 'stop' : asp === 'go' ? 'go' : asp === 'none' ? '' : 'caution'}`;
     const aspTxt: Record<string, string> = { stop: 'Halt', go: 'Fahrt', caution: 'Halt erwarten', slow: 'Langsamfahrt', none: '' };
-    this.put('sigt', sig ? `${aspTxt[asp] ?? asp}${sig.sig?.speed ? ` ${sig.sig.speed} km/h` : ''} · ${fmtDist(sig.d)}` : 'kein Signal voraus');
+    this.put('sigt', sig ? `Signal in ${fmtDist(sig.d)}: ${aspTxt[asp] ?? asp}${sig.sig?.speed ? ` ${sig.sig.speed} km/h` : ''}` : 'kein Signal voraus');
     const grade = Math.round(w.net.gradeAt(t.head) * 1000);
     this.put('info', `${hhmm(w.time)} · ${grade > 0 ? '↗' : grade < 0 ? '↘' : '→'} ${Math.abs(grade)} ‰ · ${w.weather.kind === 'clear' ? 'trocken' : w.rail === 'dry' ? 'Regen' : 'Schiene nass/glatt'}`);
     const c = t.ctl;
     const rv = c.reverser === 1 ? 'V' : c.reverser === -1 ? 'R' : '0';
     const L = this.g.getLever();
     const stufe = (x: number) => Math.max(1, Math.round(Math.abs(x) * 4));
-    if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahrstufe F${stufe(L)} · ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsstufe B${stufe(L)} · ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
+    const pl0 = w.plans.get(t.id);
+    if (this.simple && pl0?.state === 'dwell' && Math.abs(t.v) < 0.1) this.put('ctl', `⏱ Abfahrt ${hhmm(pl0.dwellUntil)} – bitte warten`);
+    else if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahrstufe F${stufe(L)} · ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsstufe B${stufe(L)} · ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
     else this.put('ctl', `Wender ${rv} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
     const air = `HLL ${t.brake.pipe.toFixed(1)} bar · Bz ${(t.brake.cyl * 3.8).toFixed(1)} bar`;
     const extra = t.traction === 'steam' ? `Kessel ${t.boiler.toFixed(1)} bar · Wasser ${Math.round(t.glass * 100)} % · Feuer ${Math.round(t.fire * 100)} %` : t.traction === 'electric' ? `Stromabn. ${c.panto ? 'oben' : 'unten'} · HS ${c.mainSwitch ? 'ein' : 'aus'}` : `Motor ${c.engine ? 'an' : 'aus'} · ${Math.round(t.engineRpm * 100)} %`;
@@ -209,7 +211,7 @@ export class Hud {
     // Nächster Halt + Fahrplan
     const plan = w.plans.get(t.id);
     // Haltepunkt: Entfernung und Balken auf den letzten 400 m
-    const sp = plan?.svc && plan.state === 'run' ? w.stopPoint(t, plan) : null;
+    const sp = plan?.svc && plan.state === 'run' && w.stopTarget(t, plan)?.side ? w.stopPoint(t, plan) : null;
     const nst = sp && plan!.svc!.stops[plan!.stopIdx];
     const hd = sp && nst && sp.d < 3000 ? Math.round(sp.d) : null;
     this.html('halt', hd === null ? '' : `${nst!.st}|${hd < 400 ? hd : Math.round(hd / 50)}`, () => hd === null ? [] : [

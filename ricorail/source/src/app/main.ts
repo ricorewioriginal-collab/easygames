@@ -155,7 +155,7 @@ function quickPick(): { route: string; line: string; dep: number; title: string 
 function quickStart(q: { route: string; line: string; dep: number; title: string }) {
   const player: PlayerSpec = { kind: 'service', line: q.line, back: false, dep: q.dep };
   const weather: Weather = { kind: 'clear', season: 'summer', wind: 3 };
-  const start = Math.max(0, q.dep - 120);
+  const start = Math.max(0, q.dep - 45); // kurz vor der Abfahrt: Fahrstraße wird gleich gestellt
   void run({ title: q.title, routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player, mode: 'drive', allowFreeCam: false, back: menu, scenario: serviceScenario(q.route, q.title) },
     { title: q.title, kind: 'service', routeId: q.route, time: start, weather, assist: 'easy', traffic: 1, player });
 }
