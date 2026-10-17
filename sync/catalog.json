@@ -642,32 +642,35 @@
   },
   {
    "id": "anmacha-radio-match",
-   "title": "AnMaCha Radio-Match 3D",
-   "desc": "3D-Match-3 mit Radio-Bauteilen: 100 Level mit wachsendem Raster, Power-ups und 6 Herausforderungen.",
-   "icon": "📡",
+   "title": "Royal Radio Match 3D",
+   "desc": "Triff den Beat. Räume die Frequenzen frei! 3D-Match-3 mit 200 Leveln in 10 Radio-Welten, Spezialteilen, Kombos, Funkhaus-Ausbau und Duell.",
+   "icon": "👑",
    "img": "anmacha-radio-match/card.jpg",
-   "bg": "linear-gradient(145deg,#19f0ff,#00ff66 55%,#ff2e88)",
-   "glow": "rgba(25,240,255,.5)",
+   "bg": "linear-gradient(145deg,#ffcf4a,#a45cff 55%,#2c2070)",
+   "glow": "rgba(255,207,74,.5)",
    "path": "anmacha-radio-match/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
    "guide": {
-    "anleitung": "Ein 3D-Match-3-Spiel mit 100 Leveln. Du tauschst zwei benachbarte Bauteile, drei gleiche in einer Reihe verschwinden. Jedes Level hat ein Ziel, etwa Punkte, bestimmte Bauteile sammeln, Rausch-Felder entstören, Power-ups erzeugen oder Kombo-Ketten schaffen, meist in begrenzten Zügen, manchmal in begrenzter Zeit. Geschaffte Level bringen Sterne und schalten das nächste Level frei.",
+    "anleitung": "Royal Radio Match 3D: ein 3D-Match-3 mit 200 Leveln in 10 Radio-Welten. Tausche zwei benachbarte Bauteile, drei gleiche in einer Reihe oder Spalte verschwinden. Jedes Level hat Ziele (Bauteile sammeln, Kisten, Moos, Eis oder Rauschen räumen, Pakete und Kassetten nach unten bringen, Punkte, Combos) in begrenzten Zügen. Vierer, L/T-Formen, Quadrate und Fünfer bauen Wellenrakete, Bassbombe, Funkdrohne und Frequenzkugel; zwei Spezialteile miteinander getauscht ergeben starke Kombos. Mit Sternen baust du das Funkhaus aus, Münzen gibt es nur fürs Spielen. Dazu Bonuslevel und ein Duell zu zweit oder gegen die KI.",
     "steuerung": [
-     "PC: Mit der Maus ein Bauteil anklicken und dann ein benachbartes anklicken, oder zum Nachbarn ziehen, um zu tauschen. Oben rechts: Hinweis (Glühbirne), Ton, Menü",
-     "Touch: Bauteil antippen und danach das Nachbarfeld antippen, oder in die gewünschte Richtung wischen. Knöpfe für Hinweis, Ton und Menü"
+     "PC: Bauteil anklicken und Nachbarn anklicken oder hinziehen. Tastatur: Pfeiltasten bewegen den Rahmen, Enter wählt und tauscht, Esc = Pause. Booster unten anklicken (Feld-Booster: Feld wählen, dann bestätigen)",
+     "Touch: Bauteil antippen und Nachbarfeld antippen oder in die Richtung wischen. Pause oben links, Booster unten; die Zurück-Taste öffnet die Pause"
     ],
     "tipps": [
-     "Vierer-Reihe: Wellen-Teil räumt Reihe oder Spalte; L/T-Form: Funkenbombe räumt 3x3; Fünfer: Frequenzkugel, mit einem Teil tauschen entfernt alle davon.",
-     "Der Hinweis-Knopf zeigt einen möglichen Zug."
+     "Spezialteile miteinander tauschen: Rakete + Bombe räumt drei Reihen und Spalten, Kugel + Kugel das ganze Brett.",
+     "Nach ein paar Sekunden ohne Zug hüpft ein möglicher Zug als Hinweis.",
+     "Alter Radio-Match-Fortschritt (Level 1–100) wird automatisch übernommen."
     ]
    },
-   "size": 84337,
-   "files": 5,
+   "size": 401555,
+   "files": 18,
    "offline": true,
    "cloud": {
     "game": "radio-match",
-    "prefix": "anmacha-radio-match-v1"
+    "prefix": "anmacha-radio-match-v1,royal-radio-match-v2"
    }
   },
   {

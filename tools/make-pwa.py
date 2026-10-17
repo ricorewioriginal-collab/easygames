@@ -50,7 +50,12 @@ def dark(c, f):
     return tuple(v * f for v in c)
 
 
+SHORT_NAMES = {'Royal Radio Match 3D': 'Radio Match 3D'}   # eigene Kurznamen, wo das Kürzen unschön wäre
+
+
 def short(title):
+    if title in SHORT_NAMES:
+        return SHORT_NAMES[title]
     t = re.sub(r'^AnMaCha\s+', '', title.split(' – ')[0].strip(), flags=re.I)
     return t if len(t) <= 14 else t[:13].rstrip() + '…'
 
